@@ -1,0 +1,86 @@
+MTEX - MATLAB toolbox for quantitative texture analysis
+
+Overview
+--------
+
+MTEX is a MATLAB toolbox containing the following features
+
+- Analyze and Visualize Crystallographic Geometries
+- Calculate with Model ODFs
+- Import, Analyze and Visualize arbitrary Diffraction Data
+- Recover Orientation Density Functions (ODFs)
+- Calculate Texture Characteristics 
+- Create Publication Ready Plots
+- Writting Scripts to Process Many Data Sets
+
+For an introduction, please have a look at the help first. If the 
+toolbox is installed the help can be found in the MATLAB help window 
+which can be opend by typing 'doc help'.
+For installation instructions, you can also refer to the file INSTALL
+in this directory.
+
+Directory structure
+-------------------
+AUTHORS			    Information about the authors of NFFT3
+c (dir)         Source code for core library routines
+ChangeLog		    A short version history
+COPYING			    Information about redistributing NFFT3
+data (dir)      some sample data sets
+examples (dir)  Simple examples for using NFFT3 routines
+geometry (dir)  geomtery tools
+help (dir)		  User and developer documentation
+info.xml        used by MATLAB
+INSTALL         Installation instructions
+MAKEFILE        contains the compiling options !! to be edited by the user !!
+plot (dir)      plot tools
+qta (dir)       core scripts for working with ODFs and PDFs
+statistic (dir) some statistic tools
+README          This file
+startup.m       installation routine automticaly called by MATLAB if the 
+                toolbox is contained in the search path of MATLAB
+startup_mtex    called by startup.m - contains the configuration of MTEX !! to be edited by the user !!     
+startup_root    used for the root installation
+tests (dir)     a self test
+tools           auxilary tools
+TODO		      	Current work to be done
+
+
+Feedback
+--------
+Your comments are welcome! This is the first version of the library and may not be 
+as robust or well documented as it should be. Please keep track of bugs or 
+missing/confusing instructions and report them to
+
+  Dr. Ralf Hielscher <Ralf.Hielscher@gmail.com,Ralf.Hielscher@gmail.com>
+  Freiberg University of Mining and Ingeneering 
+  Cotta Str. 3
+  09599 Freiberg, GERMANY 
+
+  personal Homepage: http://www.geo.tu-freiberg.de/~hielsch,http://www.geo.tu-freiberg.de/~hielsch
+  MTEX Homepage: http://code.google.com/p/mtex/downloads/list
+  
+If you find MTEX useful, we would be delighted to hear about what application you are using MTEX for!
+
+Legal Information & Credits
+---------------------------
+Copyright (C) 2005-2007 Ralf Hielscher
+
+This software was written by Ralf Hielscher and Florian Bachmann.
+It was developed at the Institute of Geoinformatics, 
+Freiberg University of Technology.
+
+MTEX is free software. You can redistribute it and/or modify it under the terms 
+of the GNU General Public License as published by the Free Software Foundation; 
+either version 2 of the License, or (at your option) any later version.
+If not stated otherwise, this applies to all files contained in this package and
+its sub-directories. 
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
