@@ -1,0 +1,62 @@
+function SO3G = loadEBSD_txt(fname,CS,SS,varargin)
+% load pole figure data from (alpha,beta,gamma) files
+%
+%% Description 
+%
+% *loadEBSD_txt* is a generic function that reads any txt files of
+% diffraction intensities that are of the following format
+%
+%  alpha_1 beta_1 gamma_1
+%  alpha_2 beta_2 gamma_2
+%  alpha_3 beta_3 gamma_3
+%     .      .       .
+%     .      .       .
+%     .      .       .
+%  alpha_M beta_M gamma_M
+%
+% The actual order of the columns in the file can be specified by the
+% option |LAYOUT|. Furthermore, the files can be contain any number of
+% header lines and columns to be ignored using the options |HEADER| and
+% |HEADERC|. 
+%
+%% Syntax
+%  pf   = loadPoleFiguretxt(fname,<options>)
+%
+%% Input
+%  fname - file name (text files only)
+%
+%% Options
+%  RADIAND           - treat input in radiand
+%  DELIMITER         - delimiter between numbers
+%  HEADER            - number of header lines
+%  HEADERC           - number of header colums
+%  LAYOUT            - [alpha beta gamma] - (default [1 2 3])
+% 
+%% Example
+%
+% loadEBSD_txt('ebsd/aachen.txt',symmetry('cubic'),symmetry,'header',1,'layout',[5,6,7]) 
+%
+% odf = ODF(S3G,ones(GridLength(S3G),1)./GridLength(S3G),kernel('de la Vallee Poussin','halfwidth',2*degree),symmetry('cubic'),symmetry)
+%
+%% See also
+% interfaces_index munich_interface loadPoleFigure
+
+dg = degree + (1-degree)*check_option(varargin,'RADIAND');
+dl = get_option(varargin,'DELIMITER','');
+hl = get_option(varargin,'HEADER',0);
+hr = get_option(varargin,'HEADERC',0);
+layout = get_option(varargin,'LAYOUT',[1 2 3]);
+
+try
+  % read data
+	d = dlmread(fname,dl,hl,hr);
+	alpha = d(:,layout(1))*dg; 
+  beta  = d(:,layout(2))*dg;
+	gamma = d(:,layout(3));
+  
+  q = euler2quat(alpha,beta,gamma,'bunge');
+
+  SO3G = SO3Grid(q,CS,SS);
+catch
+  error('format txt does not match file %s',fname);
+end
