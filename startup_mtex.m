@@ -78,6 +78,9 @@ mtex_path = fileparts(mfilename('fullpath'));
 global mtex_data_path;
 mtex_data_path = [mtex_path filesep 'data'];
 
+global mtex_startup_dir;
+mtex_startup_dir = pwd;
+
 %% setup search path 
 toadd = {'',...
   'qta','qta/interfaces','qta/interfaces/tools','qta/standardODFs','qta/tools',...

@@ -107,9 +107,10 @@ end
 %% create searchable database
 cd([mtex_path '/help']);
 disp('run: jar -cf help.jar -C html/ .');
-pause
+pastruse
 cd('html');
 builddocsearchdb('.');
+global mtex_startup_dir;
 unix(['rm -rf ' mtex_path '/help/helpsearch']);
-unix(['mv -f ~/helpsearch ' mtex_path '/help/']);
+unix(['mv -f ' mtex_startup_dir,'/helpsearch ' mtex_path '/help/']);
 cd([mtex_path '/help/make_help']);
