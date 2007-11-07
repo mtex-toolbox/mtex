@@ -10,7 +10,7 @@ FFTWPATH = /home/hielscher/c/
 #
 # path to the NFFT, i.e. to /lib/libnfft3.a
 NFFTPATH = /home/hielscher/c
-#NFFTPATH = /home/staff/hielsch1/Arbeit/c
+#NFFTPATH = /usr/local
 #
 # matlab path (for root install only)
 MATLABPATH = /opt/matlab-2006b
