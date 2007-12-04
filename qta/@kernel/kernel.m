@@ -151,7 +151,7 @@ else
 			case 'user'
 				K.name = name;
 				K.A   = p;
-				K.p1  = [];
+				K.p1  = p;
 				
 				K.K   = @(co2) ClenshawU(K.A,acos(co2)*2);
 				K.RK  = @(dmatrix) ClenshawL(K.A,dmatrix);

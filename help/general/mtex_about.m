@@ -2,11 +2,12 @@
 %
 % The MTEX toolbox is developed and maintained by 
 %
-%  Dr. Ralf Hielscher [[http://Ralf.Hielscher@gmail.com,Ralf.Hielscher@gmail.com]]
+%  Dr. Ralf Hielscher [[http://Ralf.Hielscher@gsf.de,Ralf.Hielscher@gsf.de]]
 %
-%  Freiberg University of Mining and Ingeneering 
-%  Cotta Str. 3
-%  09599 Freiberg, GERMANY 
+%  GSF - National Research Center for Environment and Health  
+%  Institute of Biomathematics and Biometry 
+%  Ingolstädter Landstraße 1
+%  85764 Neuherberg, Germany
 %
-%  personal homepage: [[http://www.geo.tu-freiberg.de/~hielsch,http://www.geo.tu-freiberg.de/~hielsch]]
+%  personal homepage: [[http://ibb.gsf.de/homepage/ralf.hielscher/,http://ibb.gsf.de/homepage/ralf.hielscher/]]
 %  MTEX homepage: [[http://mtex.googlecode.com,http://mtex.googlecode.com/]]

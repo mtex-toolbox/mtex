@@ -55,7 +55,8 @@ sym = findsymmetry(name);
 
 s.name = name;
 s.laue = sym.Laue;
-s.axis = calcAxis(sym.System,axis,angle);
+s.axis = calcAxis(sym.System,argin_check(axis,'double'),...
+  argin_check(angle,'double'));
 s.quat = calcQuat(s.laue,s.axis);
 
 superiorto('quaternion','SO3Grid');
