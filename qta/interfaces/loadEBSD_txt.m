@@ -30,7 +30,10 @@ function SO3G = loadEBSD_txt(fname,CS,SS,varargin)
 %  DELIMITER         - delimiter between numbers
 %  HEADER            - number of header lines
 %  HEADERC           - number of header colums
-%  LAYOUT            - [alpha beta gamma] - (default [1 2 3])
+%  BUNGE             - [phi1 Phi phi2] Euler angle in Bunge convention (default)
+%  ABG               - [alpha beta gamma] Euler angle in Mathies convention 
+%  LAYOUT            - colums of the Euler angle (default [1 2 3])
+%
 % 
 %% Example
 %
@@ -54,8 +57,15 @@ try
   beta  = d(:,layout(2))*dg;
 	gamma = d(:,layout(3));
   
-  q = euler2quat(alpha,beta,gamma,'bunge');
-
+  q = euler2quat(alpha,beta,gamma,...
+    set_default_option(...
+    extract_option(varargin,{'bunge','ABG'}),...
+    'bunge'));  
+  
+  disp(set_default_option(...
+    extract_option(varargin,{'bunge','ABG'}),...
+    'bunge'));
+  
   SO3G = SO3Grid(q,CS,SS);
 catch
   error('format txt does not match file %s',fname);

@@ -22,10 +22,8 @@ function multiplot(x,y,nplots,varargin)
 % S2Grid/plot savefigure   
 
 clf('reset');
-set(gcf,'Visible','off','toolbar','none');
-%set(gcf,'Renderer','zBuffer','Visible','off');
-%set(gcf,'Renderer','OpenGL','Visible','off');
-
+set(gcf,'Visible','off');
+%set(gcf,'toolbar','none');
 
 % calculate data
 minz = +inf; maxz = -inf;
