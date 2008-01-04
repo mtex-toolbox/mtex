@@ -59,6 +59,8 @@ for iter=1:length(v)
 		elseif  cs + ss > cos(epsilon) 
 			tol = acos((cos(epsilon)-cs)/ss);
 			dI =  find(S2G.rho(ith),rho,tol);
+    else 
+      dI = [];
 		end
 		ind = [ind,thetaindex(ith) + dI]; %#ok<AGROW>
 	end

@@ -29,7 +29,7 @@ if l1 < l2
   d = reshape(dist(g1rot,g2),[lCS * lSS,l1,l2]); %-> CS * SS x g1 x g2
   d = shiftdim(d,1);                             %-> g1 x g2 x CS * SS
 else
-  g2rot = reshape(reshape(SS.quat * g2,[],1) * CS.quat.',[lSS l1 lCS]);
+  g2rot = reshape(reshape(SS.quat * g2,[],1) * CS.quat.',[lSS l2 lCS]);
   g2rot = shiftdim(g2rot,1);                     % -> g2 x CS x SS
   
   d = reshape(dist(g1,g2rot),[l1,l2,lCS * lSS]);

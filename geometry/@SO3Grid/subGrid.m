@@ -10,8 +10,12 @@ function NG = subGrid(G,q,epsilon)
 %% Output
 %  NG - "not indexed" SO3Grid
 
+if nargin == 3
+  ind = find(G,q,epsilon);
+else
+  ind = q;
+end
 
-Ind = find(G,q,epsilon);
 
 NG.alphabeta = [];
 NG.gamma    = [];
@@ -19,7 +23,7 @@ NG.resolution = G.resolution;
 NG.options = delete_option(G.options,'indexed');
 NG.CS      = G.CS;
 NG.SS      = G.SS;
-NG.Grid    = G.Grid(Ind);
+NG.Grid    = G.Grid(ind);
 NG.dMatrix = [];
     
 NG = class(NG,'SO3Grid'); 
