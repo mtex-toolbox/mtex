@@ -1,11 +1,16 @@
 function G = S1Grid(points,min,max,varargin)
 % Constructor
+%
 %% Input
-%  points   - double
-%  minimum  - double
-%  maximum  - double
+%  points - double
+%  min    - double
+%  max    - double
+%
+%% Output
+%  S1G - @S1Grid
+%
 %% Options
-%  "PERIODIC" - periodic @S1Grid
+%  PERIODIC - periodic @S1Grid
 
 if (nargout == 0) && (nargin == 0)
 	disp('constructs a grid on S^1');
