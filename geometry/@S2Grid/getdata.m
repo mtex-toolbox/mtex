@@ -1,4 +1,4 @@
-function [theta,rho,itheta,prho] = getdata(S2G)
+function [theta,rho,itheta,prho,rhomin] = getdata(S2G)
 % return index of all points in a epsilon neighborhood of a vector
 %
 %% Input
@@ -13,4 +13,4 @@ function [theta,rho,itheta,prho] = getdata(S2G)
 theta = double(S2G.theta);
 itheta = cumsum([0,GridLength(S2G.rho)]);
 rho = double(S2G.rho);
-prho = getPeriod(S2G.rho);
+[rhomin,rhomax,prho] = getData(S2G.rho);

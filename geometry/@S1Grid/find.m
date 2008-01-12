@@ -8,14 +8,15 @@ function ind = find(S1G,x,epsilon)
 %% Input
 %  S1G     - @S1Grid
 %  x       - double
-%  epsilon . double
+%  epsilon - double
 %
 %% Output
 %  ind - int32
 
-d = dist(S1G,x);
-if nargin == 3
-  ind = find(d<epsilon);
-else
-  ind = find(d==min(d),1);
+if S1G(1).periodic, p = S1G.max - S1G.min; else p = 0; end
+
+if nargin == 2
+  ind = S1Grid_find(S1G.points(:),S1G.min,p,x);
+else  
+  ind = S1Grid_find_region(S1G.points(:),S1G.min,p,x,epsilon);
 end

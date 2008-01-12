@@ -51,7 +51,7 @@ if check_option(G2,'INDEXED')
     end
     
     % collect all rotational axes in G1 close to G2(iz2)
-    Ind1 = find(G1.alphabeta,vector3D(G2.alphabeta,iz2),epsilon);
+    Ind1 = find(G1.alphabeta,vector3d(G2.alphabeta,iz2),epsilon);
     Ind = [];
     for i = 1:length(Ind1)
       Ind = [Ind,(lz1(Ind1(i))+1):lz1(Ind1(i)+1)]; %#ok<AGROW>
