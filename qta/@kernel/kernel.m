@@ -25,9 +25,11 @@ function K = kernel(name,varargin)
 % ODF_index kernel/gethw unimodalODF uniformODF
 
 if check_option(varargin,'HALFWIDTH')
-  p = hw2p(name,get_option(varargin,'HALFWIDTH'));
+  hw = get_option(varargin,'HALFWIDTH');
+  p = hw2p(name,hw);
 elseif length(varargin)>=1
   p = varargin{1};
+  hw = p2hw(name,p);
 end
 L = get_option(varargin,'BANDWIDTH',1000);
        
@@ -38,6 +40,7 @@ if nargin == 0
   K.K    = [];
   K.RK   = [];
   K.RRK  = [];
+  K.hw   = 0;
   K = class(K,'kernel');
   warning('empty kernel'); %#ok<WNTAG>
 else
@@ -48,8 +51,7 @@ else
 		switch lower(name)
 			case 'laplace'
         K.A = Laplacekern(p,L);
-				K.p1 = p;  % -> h
-		
+				K.p1 = p;  % -> h		
 				K.K   = @(co2) ClenshawU(K.A,acos(co2)*2);
 				K.RK  = @(dmatrix) ClenshawL(K.A,dmatrix);
 				K.RRK = @rrk_clenshaw;
@@ -168,7 +170,8 @@ else
 					' local, \n',...
           ' Dirichlet, \n',...
 					' user']));
-		end
+    end
+    K.hw = hw;
     K = class(K,'kernel');
 	else
     error('first parameter should be char');

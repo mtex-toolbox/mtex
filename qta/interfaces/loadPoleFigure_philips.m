@@ -33,7 +33,7 @@ try
   assert_grid(d{1}(1),d{3}(1),d{2}(1),d{1}(2),d{3}(2),d{2}(2),'degree');
   theta = (d{1}(1):d{3}(1):d{2}(1))*degree;
   rho = (d{1}(2):d{3}(2):d{2}(2))*degree; 
-  r = S2Grid('theta',theta,'rho',rho(1:end-1));
+  r = S2Grid('theta',theta,'rho',rho(1:end-1),'hemisphere');
   
   % one free line
   assert(isempty(fgetl(fid)));

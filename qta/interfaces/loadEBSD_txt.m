@@ -50,7 +50,7 @@ hl = get_option(varargin,'HEADER',0);
 hr = get_option(varargin,'HEADERC',0);
 layout = get_option(varargin,'LAYOUT',[1 2 3]);
 
-try
+%try
   % read data
 	d = dlmread(fname,dl,hl,hr);
 	alpha = d(:,layout(1))*dg; 
@@ -67,6 +67,6 @@ try
     'bunge'));
   
   SO3G = SO3Grid(q,CS,SS);
-catch
-  error('format txt does not match file %s',fname);
-end
+%catch
+%  error('format txt does not match file %s',fname);
+%end

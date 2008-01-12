@@ -11,4 +11,4 @@ function hw = gethw(kk)
 %% Output
 %  hw - halfwidth in radiant (double)
 
-hw = p2hw(kk.name,kk.p1);
+hw = kk.hw;

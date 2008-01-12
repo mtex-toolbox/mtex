@@ -26,7 +26,7 @@ varargin = {varargin{:},mtex_plot_options{:}};
 
 % plotting grid
 if check_option(varargin,'3d')
-  r = S2Grid('PLOT','MAXTHETA',pi);
+  r = S2Grid('PLOT',varargin{:});
 else
   r = S2Grid('PLOT',varargin{:},...
     'MAXTHETA',rotangle_max_y(odf(1).SS,varargin{:})/2,...
