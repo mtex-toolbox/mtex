@@ -90,18 +90,18 @@ plot(Miller(1,3,-4,4,CS),'all','FontSize',20)
 
 %Definition:
 
-S2G = S2Grid(1000);
+S2G = S2Grid('equispaced','points',1000,'hemisphere');
 S2G = S2Grid(v);
-S2G = S2Grid('RESOLUTION',5*degree);
-S2G = S2Grid ([72,17],'MAXTHETA',80 * degree);
+S2G = S2Grid('equispaced','RESOLUTION',5*degree,'hemisphere');
+S2G = S2Grid ('regular','points',[72,17],'MAXTHETA',80 * degree);
 
 % Basic Functions:
 S2G = add(S2G,xvector);
 S2G = delete(S2G,zvector);
-union(S2G,S2Grid(100));
+union(S2G,S2Grid(-zvector));
 rotate(S2G,axis2quat(xvector,45*degree));
 subGrid(S2G,zvector,10*degree);
-refine(S2Grid(1000));
+refine(S2Grid('equispaced','resolution',1000,'hemisphere'));
 GridLength(S2G);
 getResolution(S2G);
 getRho(S2G);

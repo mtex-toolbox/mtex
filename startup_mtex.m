@@ -9,6 +9,12 @@ function startup_mtex
 %% user defined global settings
 %------------------------------------------------------------------------
 
+%% available memory 
+% change this value to specify the total amount of installed ram
+% on your system in kilobytes
+global mtex_memory;
+mtex_memory = getmem;
+
 %% default maximum iteration depth for calcODF
 % change this value if you want to have another maximum iteration depth to
 % be default
@@ -17,7 +23,8 @@ mtex_maxiter = 11;
 
 %% default global plotting options
 global mtex_plot_options;
-mtex_plot_options = {'reduced'};
+mtex_plot_options = {};
+% mtex_plot_options = {'reduced'};
 
 %% path for temporary files
 global mtex_tmppath;
@@ -96,3 +103,10 @@ for i = 1:length(toadd)
 end
 
 disp('MTEX toolbox (v0.3) loaded')
+
+function m = getmem
+% return total system memory in kb
+
+[r,s] = system('free');
+
+m = sscanf(s(strfind(s,'Mem:')+5:end),'%d',1);

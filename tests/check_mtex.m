@@ -13,7 +13,7 @@ disp('simulating pole figures')
 h = [Miller(1,0,0,CS),Miller(1,1,0,CS),Miller(1,1,1,CS),Miller(2,1,1,CS)];
 
 % specimen directions
-r = S2Grid('resolution',5*degree);
+r = S2Grid('equispaced','resolution',5*degree,'hemisphere');
 
 % pole figures
 pf = simulatePoleFigure(santafee,h,r) %#ok<NOPRT>
