@@ -12,7 +12,7 @@
 h = [Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(1,1,1,cs),Miller(2,1,1,cs)];
 
 % specimen directions
-r = S2Grid('resolution',5*degree);
+r = S2Grid('equispaced','resolution',5*degree,'hemisphere');
 
 % pole figures
 pf = simulatePoleFigure(santafee,h,r);
@@ -34,15 +34,15 @@ rec2 = calcODF(pf,'RESOLUTION',10*degree,'background',10,'iter_max',6,'ghost_cor
 %% Error analysis
 
 % calculate RP error
-calcerror(rec,santafee)
+calcerror(rec2,santafee)
 
 % difference plot between meassured and recalculated pole figures
 close; figure('position',[100,100,800,300])
-plotDiff(pf,rec)
+plotDiff(pf,rec2)
  
 %% Plot estimated pole figures
 
-plotpdf(rec,getMiller(pf),'complete')
+plotpdf(rec2,getMiller(pf),'complete')
 
 %% Plot estimated ODF (Ghost Corrected)
 
