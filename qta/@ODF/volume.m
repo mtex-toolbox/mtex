@@ -20,12 +20,15 @@ function v = volume(odf,center,radius,varargin)
 % ODF/entropy ODF/textureindex
 
 % get resolution
-res = get_option(varargin,'RESOLUTION',2.5*degree);
+res = get_option(varargin,'RESOLUTION',min(2.5*degree,radius/20));
 
 % discretisation
-S3G = SO3Grid(res,odf(1).CS,odf(1).SS);
-subS3G = subGrid(S3G,center,radius);
+S3G = center*SO3Grid(res,odf(1).CS,odf(1).SS,'MAX_ANGLE',radius);
 
+% estimate volume portion of odf space
+f = GridLength(SO3Grid(2.5*degree,odf(1).CS,odf(1).SS,'MAX_ANGLE',radius))/...
+  GridLength(SO3Grid(2.5*degree,odf(1).CS,odf(1).SS));
 
 % eval odf
-v = sum(eval(odf,subS3G))/GridLength(S3G);
+v = sum(eval(odf,S3G))/GridLength(S3G)*f;
+

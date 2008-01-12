@@ -42,7 +42,7 @@ while ~feof(fid)
     theta = (0:dtheta:maxtheta)*degree;
     rho = repmat(rho.',1,length(theta));
     theta = repmat(theta,size(rho,1),1);
-    r = S2Grid(sph2vec(theta,rho),'resolution',min(dtheta,dphi)*degree);
+    r = S2Grid(sph2vec(theta,rho),'resolution',min(dtheta,dphi)*degree,'hemisphere');
  
     % skip next line
     %  1000 .500 -112    0   0.   experimental data

@@ -13,7 +13,11 @@ function e = calcerror(rec,orig,varargin)
 %% See also
 % PoleFigure/calcODF PoleFigure/calcerror 
 
-S3G = get_option(varargin,'SO3Grid',getgrid(rec),'SO3Grid');
+if check_option(varargin,'resolution')
+  S3G = SO3Grid(get_option(varargin,'resolution'),rec(1).CS,rec(1).SS);
+else
+  S3G = get_option(varargin,'SO3Grid',getgrid(rec),'SO3Grid');
+end
 
 d1 = eval(rec,S3G,varargin{:});
 if isa(orig,'double')

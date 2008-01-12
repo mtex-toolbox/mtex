@@ -71,7 +71,7 @@ while ~feof(fid)
     
     rho = (rho(1):rho(2):rho(3))*degree;
     assert(~isempty(rho));
-    r = S2Grid('theta',theta,'rho',rho);
+    r = S2Grid('theta',theta,'rho',rho,'hemisphere');
 	
     d = [];
     while length(d) < GridLength(r)
