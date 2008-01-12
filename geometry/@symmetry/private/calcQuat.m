@@ -25,7 +25,7 @@ case '6/m'
 case '6/mmm'  
     q = reshape(Axis(axis(3),6).'*Axis(axis(1),2),[],1)*Axis(Tl0axis,2);
 case 'm-3'    
-    q = Axis(axis(1),2).'*Axis(lllaxis,3);
+    q = reshape(Axis(axis(1),2).'*Axis(axis(2),2),[],1)*Axis(lllaxis,3);
 case 'm-3m'   
     q = reshape(Axis(axis(3),4).'*Axis(ll0axis,2),[],1)*Axis(lllaxis,3);
 end

@@ -1,70 +1,66 @@
-function [Ind,distance] = find(SO3G,q,epsilon)
+function ind = find(SO3G,q,epsilon,varargin)
 % return indece and distance of all nodes within a eps neighborhood
 %
-% usage:  [Ind,dist] = find(SO3G,midpoint,radius)
+%% usage:  
+% [ind,dist] = find(SO3G,nodes,radius)
 %
 %% Input
-%  SO3G     - @SO3Grid
-%  midpoint - @quaternion
-%  radius   - double
+%  SO3G   - @SO3Grid
+%  nodes  - @quaternion
+%  radius - double
 %% Output
 %  [indece, distances]
+%
+%% TODO cubic case
 
+if ~check_option(SO3G,'indexed')
 
-%if ~getflag(SO3G,'indexed')
+  d = dist(SO3G.CS,SO3G.SS,q,SO3G.Grid);
   
-distance = dist(SO3G.CS,SO3G.SS,q,SO3G.Grid);
-Ind = find(distance<epsilon);
-distance = distance(Ind);
-return;
+  if nargin == 2
+    for i = 1:length(v)
+      ind(i) = find(d(:,i) == max(d(:,i)));
+    end
+  else
+    ind = d<epsilon;
+  end
+
+else
   
-%end
-
-Ind = [];
-distance = [];
-
-%  Ind = find(sdist(SO3G.CS,SO3G.SS,q,SO3G.Grid)<epsilon);
-%  return
-
-lz = cumsum([0,GridLength(SO3G.phi2)]);
-
-% look for z-axis
-Ind1 = find(SO3G.phi1Phi,q*zVector,epsilon);
-
-Ind = [];
-%  nz = Vector3d(SO3G.phi1Phi,Ind1);
-%  axis = crossprod(nz,q*zVector);
-%  naxis = norm(axis);
-%  i = find(naxis==0); naxis(i)=1;
-%  axis = 1./naxis .* axis;
-%  axis(i)=xVector;
-%  angle1 = pdist(q*zVector,nz);
-%  
-%  if m angle1 = min(angle1,pi-angle1);end
-%  
-%  % calculate maximal rotation of xaxis
-%  omega = 2*acos(cos(epsilon/2)./cos(angle1/2));
-%  
-%  qaxis = q*axis;
-%  naxis = SO3G.Grid(lz(Ind1)+1).'.*axis;
-%  delta = pdist(naxis,qaxis);
+  % symmetrice
+  s = quaternion(SO3G.CS);
+  if any(strcmp(Laue(SO3G.CS),{'m-3','m-3m'})) && check_option(varargin,'nocubictrifoldaxis')
+    s = s(1:length(s)/3);
+  end
+  [xalpha,xbeta,xgamma] = quat2euler(transpose(q(:)*s.'));
+  
+  % find columns with minimal beta angle
+  ind = xbeta == repmat(min(xbeta),length(SO3G.CS),1);
+  ind = ind & ind == cumsum(ind);
     
-for i=1:length(Ind1)
-  Ind = [Ind,(lz(Ind1(i))+1):lz(Ind1(i)+1)];continue; %#ok<AGROW>
+  xalpha = xalpha(ind);
+  xbeta  = xbeta(ind);
+  xgamma = xgamma(ind);
+   
+  [ybeta,yalpha,ialphabeta,palpha] = getdata(SO3G.alphabeta);
+
+  ygamma = double(SO3G.gamma);
+  sgamma = getMin(SO3G.gamma);
+  pgamma = getPeriod(SO3G.gamma(1));
+
+  if nargin == 2
+
+    % insert here loop for cubic case
+    
+    ind = SO3Grid_find(yalpha,ybeta,ygamma,sgamma, ...
+      int32(ialphabeta),palpha,pgamma, xalpha,xbeta,xgamma);
       
-%  Ind = [Ind,lz(Ind1(i))+cunion([...
-%  FindEnv(SO3G.phi2(Ind1(i)),...
-%  double(SO3G.phi2(Ind1(i)),1)+delta(i),omega(i)),...
-%  FindEnv(SO3G.phi2(Ind1(i)),...
-%  double(SO3G.phi2(Ind1(i)),1)-delta(i),omega(i))])];
-
-end
-    
-%disp(length(Ind));
-% check orientations found so far
-if numel(Ind)>0
-  distance = dist(SO3G.CS,SO3G.SS,q,SO3G.Grid(Ind));
-  t = find(distance<epsilon);
-  Ind = Ind(t);
-  distance = squeeze(distance(t));
+  else
+  
+    ind = SO3Grid_find_region(yalpha,ybeta,ygamma,sgamma, ...
+      int32(ialphabeta),palpha,pgamma, xalpha,xbeta,xgamma,epsilon);
+  
+    ind(SO3G.subGrid,:) = [];
+  end
+  
 end

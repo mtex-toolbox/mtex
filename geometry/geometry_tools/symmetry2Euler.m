@@ -1,4 +1,4 @@
-function [maxalpha,maxbeta,maxgamma] = symmetry2Euler(CS,SS)
+function [maxalpha,maxbeta,maxgamma] = symmetry2Euler(CS,SS,varargin)
 % maximum euler angles for crystal and specimen symmetry
 % 
 %% Syntax
@@ -23,3 +23,17 @@ maxbeta = min(rotangle_max_y(CS),rotangle_max_y(SS))/2;
 
 % gamma
 maxgamma = rotangle_max_z(CS);
+
+if check_option(varargin,'SO3Grid') 
+  
+  if strcmp(Laue(CS),'m-3')
+    
+    %maxalpha = 2*pi;maxgamma=2*pi;maxbeta = pi;
+    
+  elseif strcmp(Laue(CS),'m-3m')
+
+    maxbeta = pi/3;
+    
+  end
+  
+end

@@ -1,4 +1,5 @@
 function out = check_option(S1G,option)
+% return flags
 
 if nargin == 1
 
@@ -8,7 +9,6 @@ if nargin == 1
     out = {};
   end
   
-else
-  
+else  
   out = any(strcmpi(option,'periodic'));
 end
