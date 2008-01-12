@@ -22,7 +22,8 @@ if ~isempty(option)>0
   option_list = delete_option(option_list,option);
 
   % set option
-  out_list = {option_list{:},option,varargin{:}};
+  if ~iscell(option), option = {option};end
+  out_list = {option_list{:},option{:},varargin{:}};
 else
   out_list = option_list;
 end

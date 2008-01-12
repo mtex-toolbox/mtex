@@ -8,7 +8,7 @@ function pos = find_option(option_list,option,type)
 %% Output
 %  pos           - doule
 
-found = cellfun(@(c) (ischar(c) && ...
+found = cellfun(@(c) ((ischar(c) || iscellstr(c)) && ...
   any(strcmpi(c,option))),option_list);
 pos = find(found);
 
