@@ -35,7 +35,7 @@ pfi = loadPoleFigure(fnames,cs,ss)
 % ODF. This is done by the command 
 % [[ODF_simulatePoleFigure.html,simulatePoleFigure]]
 
-pfs = simulatePoleFigure(santafee,Miller(1,0,0),S2Grid(200))
+pfs = simulatePoleFigure(santafee,Miller(1,0,0),S2Grid('regular'))
 
 %% Modify pole figures
 %
