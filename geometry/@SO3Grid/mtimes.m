@@ -23,7 +23,7 @@ if isa(SO3G,'SO3Grid')
     out = SO3Grid(out,SO3G.CS,SO3G.SS);
   
   elseif isa(q,'vector3d')
-    out = SO3G.Grid * q;
+    out = SO3G.Grid(:) * q;
   else
     error('type mismatch!')
   end

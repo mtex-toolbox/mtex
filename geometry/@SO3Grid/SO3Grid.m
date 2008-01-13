@@ -43,7 +43,27 @@ if isa(points,'quaternion')    % SO3rid defined by a set quaternions
   else
 	  G.resolution = min(2*acos(dot_outer(CS,SS,points(1),points(2:end))));
   end 
-	   
+	
+elseif maxangle < pi
+  
+  if points > 1
+    res = maxangle / points^(1/3);
+  else
+    res = points;
+  end
+  
+  rotangle = res/2:res:maxangle;
+  points = GridLength(S2Grid('equispaced','resolution',res));
+
+  q = quaternion();
+  for i = 1:length(rotangle)
+    rotax = S2Grid('equispaced','points',sin(rotangle(i)/2)^2*points);
+    q = [q,axis2quat(vector3d(rotax),rotangle(i))];
+  end
+  
+  G.resolution = res;
+  G.Grid = q;
+  
 elseif isa(points,'double') && points > 0  % discretise euler space
 
   % special case: cubic symmetry
@@ -54,7 +74,7 @@ elseif isa(points,'double') && points > 0  % discretise euler space
   end
   
   [maxalpha,maxbeta,maxgamma] = symmetry2Euler(CS,SS,'SO3Grid');
-   maxbeta = min(maxbeta,maxangle);
+  maxbeta = min(maxbeta,maxangle);
   maxgamma = min(maxgamma/2,maxangle);
   
 	if points >= 1  % number of points specified?
@@ -91,7 +111,8 @@ elseif isa(points,'double') && points > 0  % discretise euler space
   dgamma = atan2(im,re);
   dgamma = repmat(reshape(dgamma,1,[]),ap2,1);
   gamma = -maxgamma + (0:ap2-1) * 2 * maxgamma / ap2;
-  
+
+  % arrange alpha, beta, gamma
   gamma  = dgamma+repmat(gamma.',1,GridLength(G.alphabeta));
 	alpha = repmat(reshape(alpha,1,[]),ap2,1);
 	beta  = repmat(reshape(beta,1,[]),ap2,1);
@@ -107,6 +128,7 @@ elseif isa(points,'double') && points > 0  % discretise euler space
 	
 	G.resolution = 2 * maxgamma / ap2;
 	
+  % eliminiate 3 fold symmetry axis of cubic symmetries
 	if strcmp(Laue(CS),'m-3m') || strcmp(Laue(CS),'m-3')
 		
 		c{1}.v = vector3d([1 1 1 1 -1 -1 -1 -1],[1 1 -1 -1 1 1 -1 -1],[1 -1 1 -1 1 -1 1 -1]);
@@ -129,21 +151,20 @@ elseif isa(points,'double') && points > 0  % discretise euler space
         p = dot(rodriguez,1/norm(c{i}.v(j)) * c{i}.v(j));
         ind = ind | (p>c{i}.h);
       end
-    end
-    
+    end    
     Grid(ind) = [];
-  else
-    ind = [];
+    G.subGrid = ind;
   end
+  
   G.options = {'indexed'};
 	G.Grid  = Grid;
-  G.subGrid = ind;
+    
 end
 
 superiorto('quaternion');
 G = class(G,'SO3Grid');
 
-if check_option(varargin,'MAX_ANGLE'), G = subGrid(G,idquaternion,maxangle);end
+%if check_option(varargin,'MAX_ANGLE'), G = subGrid(G,idquaternion,maxangle);end
 
 %--------------------------------------------------------------------------
 %function c = calcAnz(N,tmin,dt,dr)    

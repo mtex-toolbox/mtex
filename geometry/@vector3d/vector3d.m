@@ -1,4 +1,4 @@
-function v = vector3d(x,y,z)
+function v = vector3d(x,y,z,varargin)
 % Constructor
 %% Input
 %  x,y,z - cart. coordinates
@@ -26,15 +26,17 @@ elseif nargin ==1
     end
 elseif nargin == 2 %
     error('for spherical koordinates use sph2vec');
-elseif nargin == 3 %Standart
+else
     v.x = x;
     v.y = y;
     v.z = z;
     v = class(v,'vector3d');
-else 
-    error('to many parameters');
 end 
 
 if (length(v.x) ~= length(v.y)) || (length(v.x) ~= length(v.z))
     error('coordinates have different length');
+end
+
+if check_option(varargin,'normalize')
+  v = v ./ norm(v);
 end
