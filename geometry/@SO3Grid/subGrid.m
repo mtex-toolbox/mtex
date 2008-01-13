@@ -8,22 +8,24 @@ function NG = subGrid(G,q,epsilon)
 %  radius   - double
 %
 %% Output
-%  NG - "not indexed" SO3Grid
+%  NG - SO3Grid
+%
+%% See also
+%  SO3Grid/find S2Grid/subGrid
 
 if nargin == 3
   ind = find(G,q,epsilon);
-else
+elseif islogical(q) 
   ind = q;
+else
+  ind = zeros(GridLength(G));
+  ind(q) = 1;
 end
 
+NG = G;
+NG.Grid    = NG.Grid(ind);
 
-NG.alphabeta = [];
-NG.gamma    = [];
-NG.resolution = G.resolution;
-NG.options = delete_option(G.options,'indexed');
-NG.CS      = G.CS;
-NG.SS      = G.SS;
-NG.Grid    = G.Grid(ind);
-NG.dMatrix = [];
-    
-NG = class(NG,'SO3Grid'); 
+if check_option(G,'indexed')
+  rem = find(~G.subGrid);
+  NG.subGrid(rem(~ind)) = 1;
+end
