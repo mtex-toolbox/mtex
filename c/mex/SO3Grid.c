@@ -123,7 +123,7 @@ void SO3Grid_find_region(SO3Grid ths[],
   double cxa,cxb,cxg,sxa,sxb,sxg;
   double yalpha,ybeta,dalpha;
   double cya,cyb,cyg,sya,syb,syg;
-  double a,b,re,im,dg,dg2;
+  double a,b,c,re,im,dg,dg2;
 
   alpha = MOD(alpha,ths->alphabeta.rho[0].p);
 
@@ -163,14 +163,15 @@ void SO3Grid_find_region(SO3Grid ths[],
       (cxb+cyb)*sin(dalpha) * cxg;
     
     b = sqrt(re*re+im*im);
-    if (a > 1.0) continue;
-    if (a < -1.0) epsilon = 6;
+    c = (1 + 2*cos(epsilon) - a) / b;
+    if (c > 1.0) continue;
+    if (c < -1.0) c = -1;
 
     dg = -atan2(im,re);
 
     ind_old = ind_buffer->used;
     buffer_set_offset(ind_buffer,iab*ths->ngamma);
-    S1Grid_find_region(&ths->gamma[iab],dg,acos((1 + 2*cos(epsilon) - a) / b),
+    S1Grid_find_region(&ths->gamma[iab],dg,acos(c),
 		       ind_buffer);    
 
   }
@@ -190,7 +191,7 @@ void SO3Grid_dist_region(SO3Grid ths[],
   double cxa,cxb,cxg,sxa,sxb,sxg;
   double yalpha,ybeta,dalpha;
   double cya,cyb,cyg,sya,syb,syg;
-  double a,b,re,im,dg,dg2;
+  double a,b,c,re,im,dg,dg2;
 
   alpha = MOD(alpha,ths->alphabeta.rho[0].p);
 
@@ -229,15 +230,16 @@ void SO3Grid_dist_region(SO3Grid ths[],
       (cxb+cyb)*sin(dalpha) * cxg;
     
     b = sqrt(re*re+im*im);
-    if (a > 1.0) continue;
-    if (a < -1.0) epsilon = 6;
+    c = (1 + 2*cos(epsilon) - a) / b;
+    if (c > 1.0) continue;
+    if (c < -1.0) c = -1;
 
     dg = -atan2(im,re);
 
     ind_old = ind_buffer->used;
     buffer_set_offset(ind_buffer,iab*ths->ngamma);
-    S1Grid_find_region(&ths->gamma[iab],dg,acos((1 + 2*cos(epsilon) - a) / b),
-		       ind_buffer);
+    S1Grid_find_region(&ths->gamma[iab],dg,acos(c),
+		       ind_buffer);    
 
     /* calculate distances */
     double_buffer_reserve(dist_buffer,ind_buffer->used);

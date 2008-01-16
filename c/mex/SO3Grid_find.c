@@ -1,4 +1,12 @@
-/* find points in orientation grid */
+/**
+ * @file   SO3Grid_find.c
+ * @author ralf
+ * @date   Thu Oct 12 07:47:27 2007
+ * 
+ * @brief  find points in orientation grid
+ * 
+ * 
+ */
 
 
 /* If you are using a compiler that equates NaN to be zero, you must
