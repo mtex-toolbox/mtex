@@ -106,8 +106,11 @@ void S1Grid_find_region(S1Grid S1G[], double x, double e, buffer ind[])
     minp = S1Grid_find_greater(S1G,MOD3(x-e,S1G->p,S1G->min));
     maxp = S1Grid_find_lower(S1G,MOD3(x+e,S1G->p,S1G->min));
 
+    /*printf("%.4e %.4e %.4e",x,e,S1G->min + S1G->p);*/
     if ((x - e >= S1G->min) && (x + e < S1G->min + S1G->p))
       buffer_append(ind,minp,maxp);
+    else if ((x - e <= S1G->min) && (x + e >= S1G->min + S1G->p))
+       buffer_append(ind,0,S1G->n-1);
     else {
       buffer_append(ind,0,maxp);
       buffer_append(ind,MAX(minp,maxp+1),S1G->n-1);
