@@ -1,7 +1,8 @@
 function s = xnum2str(n)
 % convert number to string
 %
-% usage:  s = xnum2str(n)
+%% Syntax
+%  s = xnum2str(n)
 %
 %% Input
 %  n - double | int

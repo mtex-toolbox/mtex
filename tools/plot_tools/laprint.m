@@ -7,7 +7,8 @@ function laprint(figno,filename,varargin)
 %  and 'psfrag' (and possibly ''color'') are required for the LaTeX 
 %  run. A postscript driver like 'dvips' is required for printing. 
 %
-%  Usage:   >> laprint
+%% Syntax
+%  >> laprint
 %
 %  This opens a graphical user interface window, to control the
 %  various settings. It includes a help facility. Just try it.
@@ -764,7 +765,7 @@ end    % if isa(figno,'char')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-%%%% PART 1 of advanced usage:
+%%%% PART 1 of advanced Syntax:
 %%%% Check inputs and initialize
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -775,7 +776,7 @@ if isa(figno,'cell') % called from GUI (all set)
   figno=LAPRINTOPT.figno;
   filename=LAPRINTOPT.filename;
 
-else % advanced usage
+else % advanced Syntax
   
   % get settings 
   LAPRINTOPT = prefsettings;
@@ -805,9 +806,9 @@ end
 
 % read and check command line options  
 
-try  % try old usage (Version 2.03)
+try  % try old Syntax (Version 2.03)
    if nargin <=2
-      error('lets take new usage')
+      error('lets take new Syntax')
    end
    % 2.03 defaults
    width           = 12;
@@ -895,7 +896,7 @@ try  % try old usage (Version 2.03)
           'syntax. This syntax might not be supported in '...
           'future releases of LaPrint.'])
 
-catch % old usage doesn't work, take new one
+catch % old Syntax doesn't work, take new one
   
   % restore preferences / factory defaults
   width           = LAPRINTOPT.width;
@@ -1149,7 +1150,7 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-%%%% PART 2 of advanced usage:
+%%%% PART 2 of advanced Syntax:
 %%%% Create new figure, insert tags, and bookkeep original text
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1757,7 +1758,7 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-%%%% PART 3 of advanced usage:
+%%%% PART 3 of advanced Syntax:
 %%%% save eps and tex files
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

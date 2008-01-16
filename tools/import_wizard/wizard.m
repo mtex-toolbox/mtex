@@ -3,7 +3,8 @@ function varargout = wizard(varargin)
 %
 %
 %
-%% See also: loadPoleFigure
+%% See also
+% loadPoleFigure
 
 %%
 % Begin initialization code - DO NOT EDIT

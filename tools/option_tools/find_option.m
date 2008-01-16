@@ -2,13 +2,13 @@ function pos = find_option(option_list,option,type)
 % find postions of the options in option_list
 %
 %% Input
-%  option_list   - Cell Array
-%  options       - String Array
+%  option_list - Cell Array
+%  options     - String Array
 %
 %% Output
-%  pos           - doule
+%  pos         - doule
 
-found = cellfun(@(c) ((ischar(c) || iscellstr(c)) && ...
+found = cellfun(@(c) (ischar(c) && ...
   any(strcmpi(c,option))),option_list);
 pos = find(found);
 
@@ -31,3 +31,6 @@ end
 
 % no option required
 if isempty(pos), pos = 0;else pos = pos(1);end
+
+%cellfun(@(c) ((ischar(c) || iscellstr(c)) && ...
+%  any(strcmpi(c,{'PLAIN','reduced'}))),varargin)

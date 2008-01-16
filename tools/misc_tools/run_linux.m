@@ -1,7 +1,7 @@
 function varargout = run_linux(prg,varargin)
 % execute extern program with arguments
 %
-%% usage:
+%% Syntax
 %  varargout = run_linux(prg,variable_name,variable_value,...,flags,....)
 %
 %% Input 

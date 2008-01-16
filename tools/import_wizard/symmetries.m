@@ -1,6 +1,6 @@
 function [ sym ] = symmetries( index )
 %SYMMETRIES Summary of this function goes here
-%   Detailed explanation goes here
+%  Detailed explanation goes here
 
 sym =  [       {['-1'   ,'            tricline']}; ...
                {['2/m'  ,'          monocline']};...
