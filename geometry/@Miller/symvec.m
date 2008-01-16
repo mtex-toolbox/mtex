@@ -1,6 +1,7 @@
 function v = symvec(m)
 % directions symmetrically equivalent to m
-% usage:  v = symeq(m)    - vectors symmetrically equivalent to m
+%% Syntax
+%  v = symeq(m)    - vectors symmetrically equivalent to m
 %
 %% Input
 %  m - @Miller

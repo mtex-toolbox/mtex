@@ -1,7 +1,8 @@
 function [G,ind] = subGrid(S2G,v,epsilon)
 % subgrid 
 %
-% usage:  G = subGrid(S2G,Ind)
+%% Syntax
+%  G = subGrid(S2G,Ind)
 %  [G,ind] = subGrid(S2G,midpoint,epsilon)
 %
 %% Input

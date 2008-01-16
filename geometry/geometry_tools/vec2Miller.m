@@ -1,6 +1,7 @@
 function m = vec2Miller(v,CS)
 % vector3d --> Miller-indece 
-% usage:  m = vect2Miller(v,CS)
+%% Syntax
+%  m = vect2Miller(v,CS)
 %
 %% Input
 %  v - @vector3d

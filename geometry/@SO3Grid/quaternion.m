@@ -1,6 +1,7 @@
 function N = quaternion(SO3G,i,j)
 % convert to quaternion
-% usage:  N = quaternion(SO3G,i,j)
+%% Syntax
+%  N = quaternion(SO3G,i,j)
 %
 %% Input
 %  SO3G   - @SO3Grid

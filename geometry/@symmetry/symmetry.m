@@ -12,7 +12,7 @@ function s = symmetry(name,axis,angle)
 %% Supported Symmetries  
 %
 %  crystal system  Schoen-  Inter-    Laue     Rotational 
-%                  flies    national  class    axis
+%  flies    national  class    axis
 %  tricline        C1       1         -1       1    
 %  tricline        Ci       -1        -1       1    
 %  monocline       C2       2         2/m      2    

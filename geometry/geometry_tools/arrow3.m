@@ -1,298 +1,299 @@
 function hn=arrow3(p1,p2,s,w,h,ip,alpha,beta)
 % ARROW3 (R13)
-%   ARROW3(P1,P2) draws lines from P1 to P2 with directional arrowheads.
-%   P1 and P2 are either nx2 or nx3 matrices.  Each row of P1 is an
-%   initial point, and each row of P2 is a terminal point.
+%  ARROW3(P1,P2) draws lines from P1 to P2 with directional arrowheads.
+%  P1 and P2 are either nx2 or nx3 matrices.  Each row of P1 is an
+%  initial point, and each row of P2 is a terminal point.
 %
-%   ARROW3(P1,P2,S,W,H,IP,ALPHA,BETA) can be used to specify properties
-%   of the line, initial point marker, and arrowhead.  S is a character
-%   string made with one element from any or all of the following 3
-%   columns:
+%  ARROW3(P1,P2,S,W,H,IP,ALPHA,BETA) can be used to specify properties
+%  of the line, initial point marker, and arrowhead.  S is a character
+%  string made with one element from any or all of the following 3
+%  columns:
 %
-%     Color Switches      LineStyle            LineWidth
-%     ------------------  -------------------  --------------------
-%     k  blacK (default)  -  solid (default)   0.5 points (default)
-%     y  Yellow           :  dotted            0   no lines
-%     m  Magenta          -. dashdot           /   LineWidthOrder
-%     c  Cyan             -- dashed
-%     r  Red              *  LineStyleOrder            _______ __  
-%     g  Green                                       ^        |    
-%     b  Blue                                       / \       |    
-%     w  White                        Arrowhead    /   \   Height  
-%     a  Asparagus                                /     \     |    
-%     d  Dark gray                               /       \    |    
-%     e  Evergreen                              /___   ___\ __|__  
-%     f  Firebrick                             |    | |    |       
-%     h  Hot pink                              |-- Width --|       
-%     i  Indigo                                |    | |    |       
-%     j  Jade                                       | |            
-%     l  Light gray                                 | |            
-%     n  Nutbrown                                   | |            
-%     p  Pear                                       | |            
-%     q  kumQuat                      Line       -->| |<--LineWidth
-%     s  Sky blue                                   | |            
-%     t  Tawny                                      | |            
-%     u  bUrgundy                                   | |            
-%     v  Violet                                     | |            
-%     z  aZure                                      | |            
-%     x  random                       Initial      /   \           
-%     o  colorOrder                   Point    -->(     )<--IP     
-%     |  magnitude                    Marker       \_ _/           
+%  Color Switches      LineStyle            LineWidth
+%  ------------------  -------------------  --------------------
+%  k  blacK (default)  -  solid (default)   0.5 points (default)
+%  y  Yellow           :  dotted            0   no lines
+%  m  Magenta          -. dashdot           /   LineWidthOrder
+%  c  Cyan             -- dashed
+%  r  Red              *  LineStyleOrder            _______ __  
+%  g  Green                                       ^        |    
+%  b  Blue                                       / \       |    
+%  w  White                        Arrowhead    /   \   Height  
+%  a  Asparagus                                /     \     |    
+%  d  Dark gray                               /       \    |    
+%  e  Evergreen                              /___   ___\ __|__  
+%  f  Firebrick                             |    | |    |       
+%  h  Hot pink                              |-- Width --|       
+%  i  Indigo                                |    | |    |       
+%  j  Jade                                       | |            
+%  l  Light gray                                 | |            
+%  n  Nutbrown                                   | |            
+%  p  Pear                                       | |            
+%  q  kumQuat                      Line       -->| |<--LineWidth
+%  s  Sky blue                                   | |            
+%  t  Tawny                                      | |            
+%  u  bUrgundy                                   | |            
+%  v  Violet                                     | |            
+%  z  aZure                                      | |            
+%  x  random                       Initial      /   \           
+%  o  colorOrder                   Point    -->(     )<--IP     
+%  |  magnitude                    Marker       \_ _/           
 %
-%     -------------------------------------------------------------
-%                          Color Equivalencies
-%     -------------------------------------------------------------
-%     ColorOrder     Arrow3         |     Simulink       Arrow3
-%     ----------     ----------     |     ----------     ----------
-%     Color1         Blue           |     LightBlue      aZure
-%     Color2         Evergreen      |     DarkGreen      Asparagus
-%     Color3         Red            |     Orange         kumQuat
-%     Color4         Sky blue       |     Gray           Light gray
-%     Color5         Violet         |
-%     Color6         Pear           |
-%     Color7         Dark gray      |
-%     -------------------------------------------------------------
+%  -------------------------------------------------------------
+%  Color Equivalencies
+%  -------------------------------------------------------------
+%  ColorOrder     Arrow3         |     Simulink       Arrow3
+%  ----------     ----------     |     ----------     ----------
+%  Color1         Blue           |     LightBlue      aZure
+%  Color2         Evergreen      |     DarkGreen      Asparagus
+%  Color3         Red            |     Orange         kumQuat
+%  Color4         Sky blue       |     Gray           Light gray
+%  Color5         Violet         |
+%  Color6         Pear           |
+%  Color7         Dark gray      |
+%  -------------------------------------------------------------
 %
-%   The components of S may be specified in any order.  Invalid
-%   characters in S will be ignored and replaced by default settings.
+%  The components of S may be specified in any order.  Invalid
+%  characters in S will be ignored and replaced by default settings.
 %
-%   Prefixing the color code with '_' produces a darker shade, e.g.
-%   '_t' is dark tawny; prefixing the color code with '^' produces a
-%   lighter shade, e.g. '^q' is light kumquat.  The relative brightness
-%   of light and dark color shades is controled by the scalar parameter
-%   BETA.  Color code prefixes do not affect black (k), white (w), or
-%   the special color switches (xo|).
+%  Prefixing the color code with '_' produces a darker shade, e.g.
+%  '_t' is dark tawny; prefixing the color code with '^' produces a
+%  lighter shade, e.g. '^q' is light kumquat.  The relative brightness
+%  of light and dark color shades is controled by the scalar parameter
+%  BETA.  Color code prefixes do not affect black (k), white (w), or
+%  the special color switches (xo|).
 %
-%   ColorOrder may be achieved in two fashions:  The user may either
-%   set the ColorOrder property (using RGB triples) or define the
-%   global variable ColorOrder (using a string of valid color codes).
-%   If the color switch is specified with 'o', and the global variable
-%   ColorOrder is a string of color codes (color switches less 'xo|',
-%   optionally prefixed with '_' or '^'), then the ColorOrder property
-%   will be set to the sequence of colors indicated by the ColorOrder
-%   variable.  The color sequence 'bersvpd' matches the default
-%   ColorOrder property.  If the color switch is specified with 'o', and
-%   the global variable ColorOrder is empty or invalid, then the current
-%   ColorOrder property will be used.  Note that the ColorOrder variable
-%   takes precedence over the ColorOrder property.
+%  ColorOrder may be achieved in two fashions:  The user may either
+%  set the ColorOrder property (using RGB triples) or define the
+%  global variable ColorOrder (using a string of valid color codes).
+%  If the color switch is specified with 'o', and the global variable
+%  ColorOrder is a string of color codes (color switches less 'xo|',
+%  optionally prefixed with '_' or '^'), then the ColorOrder property
+%  will be set to the sequence of colors indicated by the ColorOrder
+%  variable.  The color sequence 'bersvpd' matches the default
+%  ColorOrder property.  If the color switch is specified with 'o', and
+%  the global variable ColorOrder is empty or invalid, then the current
+%  ColorOrder property will be used.  Note that the ColorOrder variable
+%  takes precedence over the ColorOrder property.
 %
-%   The magnitude color switch is used to visualize vector magnitudes
-%   in conjunction with a colorbar.  If the color switch is specified
-%   with '|', colors are linearly interpolated from the current ColorMap
-%   according to the length of the associated line.  This option sets
-%   CLim to [MinM,MaxM], where MinM and MaxM are the minimum and maximum
-%   magnitudes, respectively.
+%  The magnitude color switch is used to visualize vector magnitudes
+%  in conjunction with a colorbar.  If the color switch is specified
+%  with '|', colors are linearly interpolated from the current ColorMap
+%  according to the length of the associated line.  This option sets
+%  CLim to [MinM,MaxM], where MinM and MaxM are the minimum and maximum
+%  magnitudes, respectively.
 %
-%   The current LineStyleOrder property will be used if LineStyle is
-%   specified with '*'.  MATLAB cycles through the line styles defined
-%   by the LineStyleOrder property only after using all colors defined
-%   by the ColorOrder property.  If however, the global variable
-%   LineWidthOrder is defined, and LineWidth is specified with '/',
-%   then each line will be drawn with sequential color, linestyle, and
-%   linewidth.
+%  The current LineStyleOrder property will be used if LineStyle is
+%  specified with '*'.  MATLAB cycles through the line styles defined
+%  by the LineStyleOrder property only after using all colors defined
+%  by the ColorOrder property.  If however, the global variable
+%  LineWidthOrder is defined, and LineWidth is specified with '/',
+%  then each line will be drawn with sequential color, linestyle, and
+%  linewidth.
 %
-%   W (default = 1) is a vector of arrowhead widths; use W = 0 for no
-%   arrowheads.  H (default = 3W) is a vector of arrowhead heights.  If
-%   vector IP is neither empty nor negative, initial point markers will
-%   be plotted with diameter IP; for default diameter W, use IP = 0.
-%   The units of W, H and IP are 1/72 of the PlotBox diagonal.
+%  W (default = 1) is a vector of arrowhead widths; use W = 0 for no
+%  arrowheads.  H (default = 3W) is a vector of arrowhead heights.  If
+%  vector IP is neither empty nor negative, initial point markers will
+%  be plotted with diameter IP; for default diameter W, use IP = 0.
+%  The units of W, H and IP are 1/72 of the PlotBox diagonal.
 %
-%   ALPHA (default = 1) is a vector of FaceAlpha values ranging between
-%   0 (clear) and 1 (opaque).  FaceAlpha is a surface (arrowhead and
-%   initial point marker) property and does not affect lines.  FaceAlpha
-%   is not supported for 2D rendering.
+%  ALPHA (default = 1) is a vector of FaceAlpha values ranging between
+%  0 (clear) and 1 (opaque).  FaceAlpha is a surface (arrowhead and
+%  initial point marker) property and does not affect lines.  FaceAlpha
+%  is not supported for 2D rendering.
 %
-%   BETA (default = 0.4) is a scalar that controls the relative
-%   brightness of light and dark color shades, ranging between 0 (no
-%   contrast) and 1 (maximum contrast).
+%  BETA (default = 0.4) is a scalar that controls the relative
+%  brightness of light and dark color shades, ranging between 0 (no
+%  contrast) and 1 (maximum contrast).
 %
-%   Plotting lines with a single color, linestyle, and linewidth is
-%   faster than plotting lines with multiple colors and/or linestyles.
-%   Plotting lines with multiple linewidths is slower still.  ARROW3
-%   chooses renderers that produce the best screen images; exported
-%   or printed plots may benifit from different choices.
+%  Plotting lines with a single color, linestyle, and linewidth is
+%  faster than plotting lines with multiple colors and/or linestyles.
+%  Plotting lines with multiple linewidths is slower still.  ARROW3
+%  chooses renderers that produce the best screen images; exported
+%  or printed plots may benifit from different choices.
 %
-%   HN = ARROW3(P1,P2,...) returns a vector of handles to line and
-%   surface objects created by ARROW3.
+%  HN = ARROW3(P1,P2,...) returns a vector of handles to line and
+%  surface objects created by ARROW3.
 %
-%   ARROW3 COLORS will plot a table of named colors with default
-%   brightness.  ARROW3('colors',BETA) will plot a table of named
-%   colors with brightness BETA.
+%  ARROW3 COLORS will plot a table of named colors with default
+%  brightness.  ARROW3('colors',BETA) will plot a table of named
+%  colors with brightness BETA.
 %
-%   ARROW3 attempts to preserve the appearance of existing axes.  In
-%   particular, ARROW3 will not change XYZLim, View, or CameraViewAngle.
-%   ARROW3 does not, however, support stretch-to-fill scaling.  AXIS
-%   NORMAL will restore the current axis box to full size and remove any
-%   restrictions on the scaling of units, but will likely result in
-%   distorted arrowheads and initial point markers.  See
-%   (arrow3_messes_up_my_plots.html).
+%  ARROW3 attempts to preserve the appearance of existing axes.  In
+%  particular, ARROW3 will not change XYZLim, View, or CameraViewAngle.
+%  ARROW3 does not, however, support stretch-to-fill scaling.  AXIS
+%  NORMAL will restore the current axis box to full size and remove any
+%  restrictions on the scaling of units, but will likely result in
+%  distorted arrowheads and initial point markers.  See
+%  (arrow3_messes_up_my_plots.html).
 %
-%   If a particular aspect ratio or variable limit is required, use
-%   DASPECT, PBASPECT, AXIS, or XYZLIM commands before calling ARROW3.
-%   Changing limits or aspect ratios after calling ARROW3 may alter the
-%   appearance of arrowheads and initial point markers.  ARROW3 sets
-%   XYZCLimMode to manual for all plots, sets DataAspectRatioMode to
-%   manual for linear plots, and sets PlotBoxAspectRatioMode to manual
-%   for log plots and 3D plots.  CameraViewAngleMode is also set to
-%   manual for 3D plots.
+%  If a particular aspect ratio or variable limit is required, use
+%  DASPECT, PBASPECT, AXIS, or XYZLIM commands before calling ARROW3.
+%  Changing limits or aspect ratios after calling ARROW3 may alter the
+%  appearance of arrowheads and initial point markers.  ARROW3 sets
+%  XYZCLimMode to manual for all plots, sets DataAspectRatioMode to
+%  manual for linear plots, and sets PlotBoxAspectRatioMode to manual
+%  for log plots and 3D plots.  CameraViewAngleMode is also set to
+%  manual for 3D plots.
 %
-%   ARROW3 UPDATE will restore the the appearance of arrowheads and
-%   initial point markers that have become corrupted by changes to
-%   limits or aspect ratios.  ARROW3('update',SF) will redraw initial
-%   point markers and arrowheads with scale factor SF.  If SF has one
-%   element, SF scales W, H and IP.  If SF has two elements, SF(1)
-%   scales W and IP, and SF(2) scales H.  If SF has three elements,
-%   SF(1) scales W, SF(2) scales H, and SF(3) scales IP.
+%  ARROW3 UPDATE will restore the the appearance of arrowheads and
+%  initial point markers that have become corrupted by changes to
+%  limits or aspect ratios.  ARROW3('update',SF) will redraw initial
+%  point markers and arrowheads with scale factor SF.  If SF has one
+%  element, SF scales W, H and IP.  If SF has two elements, SF(1)
+%  scales W and IP, and SF(2) scales H.  If SF has three elements,
+%  SF(1) scales W, SF(2) scales H, and SF(3) scales IP.
 %
-%   ARROW3 UPDATE COLORS will update the magnitude coloring of
-%   arrowheads, initial point markers, and lines to conform to the
-%   current ColorMap.
+%  ARROW3 UPDATE COLORS will update the magnitude coloring of
+%  arrowheads, initial point markers, and lines to conform to the
+%  current ColorMap.
 %
-%   HN = ARROW3('update',...) returns a vector of handles to updated
-%   objects.
+%  HN = ARROW3('update',...) returns a vector of handles to updated
+%  objects.
 %
-%   EXAMPLES:
+%% Examples:
 %
-%     % 2D vectors
-%     arrow3([0 0],[1 3])
-%     arrow3([0 0],[1 2],'-.e')
-%     arrow3([0 0],[10 10],'--x2',1)
-%     arrow3(zeros(10,2),50*rand(10,2),'x',1,3)
-%     arrow3(zeros(10,2),[10*rand(10,1),500*rand(10,1)],'u')
-%     arrow3(10*rand(10,2),50*rand(10,2),'x',1,[],1)
+%  % 2D vectors
+%  arrow3([0 0],[1 3])
+%  arrow3([0 0],[1 2],'-.e')
+%  arrow3([0 0],[10 10],'--x2',1)
+%  arrow3(zeros(10,2),50*rand(10,2),'x',1,3)
+%  arrow3(zeros(10,2),[10*rand(10,1),500*rand(10,1)],'u')
+%  arrow3(10*rand(10,2),50*rand(10,2),'x',1,[],1)
 %
-%     % 3D vectors
-%     arrow3([0 0 0],[1 1 1])
-%     arrow3(zeros(20,3),50*rand(20,3),'--x1.5',2)
-%     arrow3(zeros(100,3),50*rand(100,3),'x',1,3)
-%     arrow3(zeros(10,3),[10*rand(10,1),500*rand(10,1),50*rand(10,1)],'a')
-%     arrow3(10*rand(10,3),50*rand(10,3),'x',[],[],0)
+%  % 3D vectors
+%  arrow3([0 0 0],[1 1 1])
+%  arrow3(zeros(20,3),50*rand(20,3),'--x1.5',2)
+%  arrow3(zeros(100,3),50*rand(100,3),'x',1,3)
+%  arrow3(zeros(10,3),[10*rand(10,1),500*rand(10,1),50*rand(10,1)],'a')
+%  arrow3(10*rand(10,3),50*rand(10,3),'x',[],[],0)
 %
-%     % Just for fun
-%     arrow3(zeros(100,3),50*rand(100,3),'x',8,4,[],0.95)
-%     light('Position',[-10 -10 -10],'Style','local')
-%     light('Position',[60,60,60]), lighting gouraud
+%  % Just for fun
+%  arrow3(zeros(100,3),50*rand(100,3),'x',8,4,[],0.95)
+%  light('Position',[-10 -10 -10],'Style','local')
+%  light('Position',[60,60,60]), lighting gouraud
 %
-%     % ColorOrder variable, color code prefixes, and Beta
-%     global ColorOrder, ColorOrder='^ui^e_hq^v';
-%     theta=[0:pi/22:pi/2]';
-%     arrow3(zeros(12,2),[cos(theta),sin(theta)],'1.5o',1.5,[],[],[],0.5)
+%  % ColorOrder variable, color code prefixes, and Beta
+%  global ColorOrder, ColorOrder='^ui^e_hq^v';
+%  theta=[0:pi/22:pi/2]';
+%  arrow3(zeros(12,2),[cos(theta),sin(theta)],'1.5o',1.5,[],[],[],0.5)
 %
-%     % ColorOrder property, LineStyleOrder, and LineWidthOrder
-%     global ColorOrder, ColorOrder=[];
-%     set(gca,'ColorOrder',[1,0,0;0,0,1;0.25,0.75,0.25;0,0,0])
-%     set(gca,'LineStyleOrder',{'-','--','-.',':'})
-%     global LineWidthOrder, LineWidthOrder=[1,2,4,8];
-%     w=[1,2,3,4]; h=[4,6,4,2];
-%     arrow3(zeros(4,2),[10*rand(4,1),500*rand(4,1)],'o*/',w,h,0)
+%  % ColorOrder property, LineStyleOrder, and LineWidthOrder
+%  global ColorOrder, ColorOrder=[];
+%  set(gca,'ColorOrder',[1,0,0;0,0,1;0.25,0.75,0.25;0,0,0])
+%  set(gca,'LineStyleOrder',{'-','--','-.',':'})
+%  global LineWidthOrder, LineWidthOrder=[1,2,4,8];
+%  w=[1,2,3,4]; h=[4,6,4,2];
+%  arrow3(zeros(4,2),[10*rand(4,1),500*rand(4,1)],'o*/',w,h,0)
 %
-%     % Magnitude coloring
-%     colormap spring
-%     arrow3(20*randn(20,3),50*randn(20,3),'|',[],[],0)
-%     set(gca,'color',0.7*[1,1,1])
-%     set(gcf,'color',0.5*[1,1,1]), grid on, colorbar
-%     pause % change the ColorMap and update colors
-%     colormap hot
-%     arrow3('update','colors')
+%  % Magnitude coloring
+%  colormap spring
+%  arrow3(20*randn(20,3),50*randn(20,3),'|',[],[],0)
+%  set(gca,'color',0.7*[1,1,1])
+%  set(gcf,'color',0.5*[1,1,1]), grid on, colorbar
+%  pause % change the ColorMap and update colors
+%  colormap hot
+%  arrow3('update','colors')
 %
-%     % LogLog plot
-%     set(gca,'xscale','log','yscale','log');
-%     axis([1e2,1e8,1e-2,1e-1]); hold on
-%     p1=repmat([1e3,2e-2],15,1);
-%     q1=[1e7,1e6,1e5,1e4,1e3,1e7,1e7,1e7,1e7,1e7,1e7,1e6,1e5,1e4,1e3];
-%     q2=1e-2*[9,9,9,9,9,7,5,4,3,2,1,1,1,1,1]; p2=[q1',q2'];
-%     global ColorOrder, ColorOrder=[];
-%     set(gca,'ColorOrder',rand(15,3))
-%     arrow3(p1,p2,'o'), grid on, hold off
+%  % LogLog plot
+%  set(gca,'xscale','log','yscale','log');
+%  axis([1e2,1e8,1e-2,1e-1]); hold on
+%  p1=repmat([1e3,2e-2],15,1);
+%  q1=[1e7,1e6,1e5,1e4,1e3,1e7,1e7,1e7,1e7,1e7,1e7,1e6,1e5,1e4,1e3];
+%  q2=1e-2*[9,9,9,9,9,7,5,4,3,2,1,1,1,1,1]; p2=[q1',q2'];
+%  global ColorOrder, ColorOrder=[];
+%  set(gca,'ColorOrder',rand(15,3))
+%  arrow3(p1,p2,'o'), grid on, hold off
 %
-%     % SemiLogX plot
-%     set(gca,'xscale','log','yscale','linear');
-%     axis([1e2,1e8,1e-2,1e-1]); hold on
-%     p1=repmat([1e3,0.05],15,1);
-%     q1=[1e7,1e6,1e5,1e4,1e3,1e7,1e7,1e7,1e7,1e7,1e7,1e6,1e5,1e4,1e3];
-%     q2=1e-2*[9,9,9,9,9,7,5,4,3,2,1,1,1,1,1]; p2=[q1',q2'];
-%     arrow3(p1,p2,'x'), grid on, hold off
+%  % SemiLogX plot
+%  set(gca,'xscale','log','yscale','linear');
+%  axis([1e2,1e8,1e-2,1e-1]); hold on
+%  p1=repmat([1e3,0.05],15,1);
+%  q1=[1e7,1e6,1e5,1e4,1e3,1e7,1e7,1e7,1e7,1e7,1e7,1e6,1e5,1e4,1e3];
+%  q2=1e-2*[9,9,9,9,9,7,5,4,3,2,1,1,1,1,1]; p2=[q1',q2'];
+%  arrow3(p1,p2,'x'), grid on, hold off
 %
-%     % SemiLogY plot
-%     set(gca,'xscale','linear','yscale','log');
-%     axis([2,8,1e-2,1e-1]); hold on
-%     p1=repmat([3,2e-2],17,1);
-%     q1=[7,6,5,4,3,7,7,7,7,7,7,7,7,6,5,4,3];
-%     q2=1e-2*[9,9,9,9,9,8,7,6,5,4,3,2,1,1,1,1,1]; p2=[q1',q2'];
-%     set(gca,'LineStyleOrder',{'-','--','-.',':'})
-%     arrow3(p1,p2,'*',1,[],0), grid on, hold off
+%  % SemiLogY plot
+%  set(gca,'xscale','linear','yscale','log');
+%  axis([2,8,1e-2,1e-1]); hold on
+%  p1=repmat([3,2e-2],17,1);
+%  q1=[7,6,5,4,3,7,7,7,7,7,7,7,7,6,5,4,3];
+%  q2=1e-2*[9,9,9,9,9,8,7,6,5,4,3,2,1,1,1,1,1]; p2=[q1',q2'];
+%  set(gca,'LineStyleOrder',{'-','--','-.',':'})
+%  arrow3(p1,p2,'*',1,[],0), grid on, hold off
 %
-%     % Color tables
-%     arrow3('colors')           % default color table
-%     arrow3('colors',0.3)       % low contrast color table
-%     arrow3('colors',0.5)       % high contrast color table
+%  % Color tables
+%  arrow3('colors')           % default color table
+%  arrow3('colors',0.3)       % low contrast color table
+%  arrow3('colors',0.5)       % high contrast color table
 %
-%     % Update initial point markers and arrowheads
-%     arrow3('update')           % redraw same size
-%     arrow3('update',2)         % redraw double size
-%     arrow3('update',0.5)       % redraw half size
-%     arrow3('update',[0.5,2,1]) % redraw W half size,
-%                                %        H double size, and
-%                                %        IP same size
+%  % Update initial point markers and arrowheads
+%  arrow3('update')           % redraw same size
+%  arrow3('update',2)         % redraw double size
+%  arrow3('update',0.5)       % redraw half size
+%  arrow3('update',[0.5,2,1]) % redraw W half size,
+%  %  H double size, and
+%  %  IP same size
 %
-%     See also (arrow3_examples.html), (arrow3_messes_up_my_plots.html).
+%% See also
+% (arrow3_examples.html), (arrow3_messes_up_my_plots.html).
 
-%   Copyright(c)2002-2007 Version 5.006
-%     Tom Davis  (tdavis@eng.usf.edu)
-%     Jeff Chang (cpmame@hotmail.com)
+%  Copyright(c)2002-2007 Version 5.006
+%  Tom Davis  (tdavis@eng.usf.edu)
+%  Jeff Chang (cpmame@hotmail.com)
 
-%   Revision History:
+%  Revision History:
 %
-%     07/08/07 - Modified named colors to match named Simulink
-%                colors; added light and dark shades for basic
-%                colors (ymcrgb) (TD)
-%     07/01/07 - Modified named colors to match default ColorOrder
-%                colors (TD)
-%     06/24/07 - Error checking for empty P1, P2 (TD)
-%     06/17/07 - Trim colors,W,H,IP,ALPHA to LENGTH(P1) (TD)
-%     05/27/07 - Magnitude coloring and documentation revision (TD)
-%     03/10/07 - Improved code metrics (TD)
-%     02/21/07 - Preserve existing axis appearance;
-%                use relative sizes for W, H, and IP;
-%                removed version checking; minor bug fixes (TD) 
-%     01/09/04 - Replaced calls to LINSPACE, INTERP1, and
-%                COLORMAP (TD)
-%     12/17/03 - Semilog examples, CAXIS support, magnitude
-%                coloring, and color updating; use CData instead
-%                of FaceColor; minor bug fixes (TD)
-%     07/17/03 - Changed 2D rendering from OpenGL to ZBuffer;
-%                defined HN for COLORS and UPDATE options (TD)
-%     02/27/03 - Replaced calls to RANDPERM, VIEW, REPMAT, SPHERE,
-%                and CYLINDER; added ZBuffer for log plots, RESET
-%                for CLA and CLF, and ABS for W and H (TD)
-%     02/01/03 - Added UPDATE scale factor and matlab version
-%                checking, replaced call to CROSS (TD)
-%     12/26/02 - Added UserData and UPDATE option (TD)
-%     11/16/02 - Added more named colors, color code prefix,
-%                global ColorOrder, ALPHA , and BETA (TD)
-%     10/12/02 - Added global LineWidthOrder,
-%                vectorized W, H and IP (TD)
-%     10/05/02 - Changed CLF to CLA for subplot support,
-%                added ColorOrder and LineStyleOrder support (TD)
-%     04/27/02 - Minor log plot revisions (TD)
-%     03/26/02 - Added log plot support (TD)
-%     03/24/02 - Adaptive grid spacing control to trade off
-%                appearance vs. speed based on size of matrix (JC)
-%     03/16/02 - Added "axis tight" for improved appearance (JC)
-%     03/12/02 - Added initial point marker (TD)
-%     03/03/02 - Added aspect ratio support (TD)
-%     03/02/02 - Enchance program's user friendliness (JC)
-%                (lump Color, LineStyle, and LineWidth together)
-%     03/01/02 - Replaced call to ROTATE (TD)
-%     02/28/02 - Modified line plotting,
-%                added linewidth and linestyle (TD)
-%     02/27/02 - Minor enhancements on 3D appearance (JC)
-%     02/26/02 - Minor enhancements for speed (TD&JC)
-%     02/26/02 - Optimise PLOT3 and SURF for speed (TD)
-%     02/25/02 - Return handler, error handling, color effect,
-%                generalize for 2D/3D vectors (JC)
-%     02/24/02 - Optimise PLOT3 and SURF for speed (TD)
-%     02/23/02 - First release (JC&TD)
+%  07/08/07 - Modified named colors to match named Simulink
+%  colors; added light and dark shades for basic
+%  colors (ymcrgb) (TD)
+%  07/01/07 - Modified named colors to match default ColorOrder
+%  colors (TD)
+%  06/24/07 - Error checking for empty P1, P2 (TD)
+%  06/17/07 - Trim colors,W,H,IP,ALPHA to LENGTH(P1) (TD)
+%  05/27/07 - Magnitude coloring and documentation revision (TD)
+%  03/10/07 - Improved code metrics (TD)
+%  02/21/07 - Preserve existing axis appearance;
+%  use relative sizes for W, H, and IP;
+%  removed version checking; minor bug fixes (TD) 
+%  01/09/04 - Replaced calls to LINSPACE, INTERP1, and
+%  COLORMAP (TD)
+%  12/17/03 - Semilog examples, CAXIS support, magnitude
+%  coloring, and color updating; use CData instead
+%  of FaceColor; minor bug fixes (TD)
+%  07/17/03 - Changed 2D rendering from OpenGL to ZBuffer;
+%  defined HN for COLORS and UPDATE options (TD)
+%  02/27/03 - Replaced calls to RANDPERM, VIEW, REPMAT, SPHERE,
+%  and CYLINDER; added ZBuffer for log plots, RESET
+%  for CLA and CLF, and ABS for W and H (TD)
+%  02/01/03 - Added UPDATE scale factor and matlab version
+%  checking, replaced call to CROSS (TD)
+%  12/26/02 - Added UserData and UPDATE option (TD)
+%  11/16/02 - Added more named colors, color code prefix,
+%  global ColorOrder, ALPHA , and BETA (TD)
+%  10/12/02 - Added global LineWidthOrder,
+%  vectorized W, H and IP (TD)
+%  10/05/02 - Changed CLF to CLA for subplot support,
+%  added ColorOrder and LineStyleOrder support (TD)
+%  04/27/02 - Minor log plot revisions (TD)
+%  03/26/02 - Added log plot support (TD)
+%  03/24/02 - Adaptive grid spacing control to trade off
+%  appearance vs. speed based on size of matrix (JC)
+%  03/16/02 - Added "axis tight" for improved appearance (JC)
+%  03/12/02 - Added initial point marker (TD)
+%  03/03/02 - Added aspect ratio support (TD)
+%  03/02/02 - Enchance program's user friendliness (JC)
+%  (lump Color, LineStyle, and LineWidth together)
+%  03/01/02 - Replaced call to ROTATE (TD)
+%  02/28/02 - Modified line plotting,
+%  added linewidth and linestyle (TD)
+%  02/27/02 - Minor enhancements on 3D appearance (JC)
+%  02/26/02 - Minor enhancements for speed (TD&JC)
+%  02/26/02 - Optimise PLOT3 and SURF for speed (TD)
+%  02/25/02 - Return handler, error handling, color effect,
+%  generalize for 2D/3D vectors (JC)
+%  02/24/02 - Optimise PLOT3 and SURF for speed (TD)
+%  02/23/02 - First release (JC&TD)
 
 %-------------------------------------------------------------------------
 % Error Checking
@@ -318,7 +319,7 @@ if strcmpi(p1,'update'), ud=get(ax,'UserData');    % update
   H=LocalUpdate(fig,ax,ud,sf,flag); if nargout, hn=H; end, return
 end
 InputError=['Invalid input, type HELP ',upper(mfilename),...
-  ' for usage examples'];
+  ' for Syntax examples'];
 if nargin<2, error(InputError), end
 [r1,c1]=size(p1); [r2,c2]=size(p2); n=r1; Zeros=zeros(n,1);
 if c1<2 || c1>3 || r1*r2==0, error(InputError), end
@@ -589,17 +590,17 @@ set(H,'XData',x,'YData',y,'ZData',z,'CData',cd,'FaceAlpha',a);
 % ColorTable
 function [vc,cn]=LocalColorTable(n,beta)
 vc='kymcrgbadefhijlnpqstuvzw';                     % valid color codes
-%                k               y               m               c
+%  k               y               m               c
 cn=[0.00,0.00,0.00; 1.00,1.00,0.00; 1.00,0.00,1.00; 0.00,1.00,1.00;
-%                r               g               b               a
+%  r               g               b               a
     1.00,0.00,0.00; 0.00,1.00,0.00; 0.00,0.00,1.00; 0.42,0.59,0.24;
-%                d               e               f               h
+%  d               e               f               h
     0.25,0.25,0.25; 0.00,0.50,0.00; 0.70,0.13,0.13; 1.00,0.41,0.71;
-%                i               j               l               n
+%  i               j               l               n
     0.29,0.00,0.51; 0.00,0.66,0.42; 0.50,0.50,0.50; 0.50,0.20,0.00;
-%                p               q               s               t
+%  p               q               s               t
     0.75,0.75,0.00; 1.00,0.50,0.00; 0.00,0.75,0.75; 0.80,0.34,0.00;
-%                u               v               z               w
+%  u               v               z               w
     0.50,0.00,0.13; 0.75,0.00,0.75; 0.38,0.74,0.99; 1.00,1.00,1.00];
 
 % Named Simulink Colors (zaql)

@@ -1,5 +1,6 @@
 function d = dist(CS,SS,g1,g2,varargin)
 % calcualtes distance between rotations g1 and g2 modulo symmetry
+%
 %% Syntax
 %  d = dist(CS,SS,g1,g2)
 %

@@ -1,6 +1,7 @@
 function NG = subGrid(G,q,epsilon)
 % sub-SO3Grid as epsilon neigborhood of a node
-% usage:  NG = subGrid(G,midpoint,radius)
+%% Syntax
+%  NG = subGrid(G,midpoint,radius)
 % 
 %% Input
 %  SO3G     - @SO3Grid
@@ -18,14 +19,18 @@ if nargin == 3
 elseif islogical(q) 
   ind = q;
 else
-  ind = zeros(GridLength(G));
-  ind(q) = 1;
+  ind = false(GridLength(G));
+  ind(q) = true;
 end
 
 NG = G;
 NG.Grid    = NG.Grid(ind);
 
 if check_option(G,'indexed')
-  rem = find(~G.subGrid);
-  NG.subGrid(rem(~ind)) = 1;
+  if isempty(G.subGrid)
+    NG.subGrid = ~ind;
+  else
+    rem = find(~G.subGrid);
+    NG.subGrid(rem(~ind)) = true;
+  end
 end

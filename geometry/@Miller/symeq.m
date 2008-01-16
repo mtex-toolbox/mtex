@@ -1,6 +1,7 @@
 function m = symeq(m1,m2)
 % directions symmetrically equivalent to m1
-% usage:  m = symeq(m1)    - Miller indice symmetrically equivalent to m1
+%% Syntax
+%  m = symeq(m1)    - Miller indice symmetrically equivalent to m1
 %  e = symeq(m1,m2) - check if vectors symmetrically equivalent
 %
 %% Input
