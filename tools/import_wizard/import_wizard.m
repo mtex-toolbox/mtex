@@ -3,7 +3,8 @@ function varargout = import_wizard(varargin)
 %
 %
 %
-%% See also: loadPoleFigure
+%% See also
+% loadPoleFigure
 
 %%
 % Begin initialization code - DO NOT EDIT
@@ -1517,7 +1518,7 @@ else
     end
 
     % If handle visibility is set to 'callback', turn it on until finished with
-    % OutputFcn
+%% OutputFcn
     if isscalar(gui_hFigure) && ishandle(gui_hFigure)
         gui_HandleVisibility = get(gui_hFigure,'HandleVisibility');
         if strcmp(gui_HandleVisibility, 'callback')

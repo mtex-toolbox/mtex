@@ -1,6 +1,6 @@
 function str = exportPF( pn, fn, pf )
 %EXPORTPF Summary of this function goes here
-%   Detailed explanation goes here
+%  Detailed explanation goes here
 
 str = ['%% created by importwizard';{''}];
 

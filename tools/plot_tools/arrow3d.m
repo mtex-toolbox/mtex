@@ -1,46 +1,46 @@
 function varargout=arrow3d(start,stop,ang,ltype,p,n)
-%   Plot 3d Arrows
+%  Plot 3d Arrows
 % 
-%   This functin is used to draw 3D-arrows. The size of arrow head is
-%   decided by the minimum distance between start and stop.
-%   
-%   
-%   Bug Fixed:
-%   1. arrow3d([ 0 0 -1 ], [ 0 0 -2]) points the wrong way 
-%      Found by Pavel Grinfeld(pg@math.drexel.edu)
-%      Fixed By: WaitingForMe 2006/7/24
+%  This functin is used to draw 3D-arrows. The size of arrow head is
+%  decided by the minimum distance between start and stop.
+%  
+%  
+%  Bug Fixed:
+%  1. arrow3d([ 0 0 -1 ], [ 0 0 -2]) points the wrong way 
+%  Found by Pavel Grinfeld(pg@math.drexel.edu)
+%  Fixed By: WaitingForMe 2006/7/24
 % 
-%   The functin will return the handles of arrow bodies and arrow heads   
+%  The functin will return the handles of arrow bodies and arrow heads   
 %
-%   Usage:
-%       [hline,hhead]=arrow3d(start,stop)
-%       [hline,hhead]=arrow3d(start,stop,ang)
-%       [hline,hhead]=arrow3d(start,stop,ang,linetype)
-%       [hline,hhead]=arrow3d(start,stop,ang,linetype,p)
-%       [hline,hhead]=arrow3d(start,stop,ang,linetype,p,n)
+%% Syntax
+%  [hline,hhead]=arrow3d(start,stop)
+%  [hline,hhead]=arrow3d(start,stop,ang)
+%  [hline,hhead]=arrow3d(start,stop,ang,linetype)
+%  [hline,hhead]=arrow3d(start,stop,ang,linetype,p)
+%  [hline,hhead]=arrow3d(start,stop,ang,linetype,p,n)
 % 
-%   Start:      The starting points.
-%   Stop :      The end points.
-%   Ang  :      The arrow head angle
-%   linetype:   Choose the body type, you can set this to be 'line' or 
-%               'cylinder', 'cylinder' is the default value
-%   p    :      P(1) is the ratio of arrow head height to the distance
-%               between start and stop points
-%               P(2) is the ratio of arrow body
-%   n    :      The arrow head has n(1) equally spaced points around its circumference.
-%               The arrow body has n(2) equally spaced points around its circumference.
+%  Start:      The starting points.
+%  Stop :      The end points.
+%  Ang  :      The arrow head angle
+%  linetype:   Choose the body type, you can set this to be 'line' or 
+%  'cylinder', 'cylinder' is the default value
+%  p    :      P(1) is the ratio of arrow head height to the distance
+%  between start and stop points
+%  P(2) is the ratio of arrow body
+%  n    :      The arrow head has n(1) equally spaced points around its circumference.
+%  The arrow body has n(2) equally spaced points around its circumference.
 %
-%   Example:
-%       t=linspace(0,4*pi,40);
-%       x=cos(t);y=sin(t);z=0.2*t;
-%       p=[x' y' z'];
-%       p1=p(1:end-1,:);p2=p(2:end,:);
-%       arrow3d(p1,p2,15,'cylinder',[0.5,0.5]);axis equal;grid on;
+%% Example
+%  t=linspace(0,4*pi,40);
+%  x=cos(t);y=sin(t);z=0.2*t;
+%  p=[x' y' z'];
+%  p1=p(1:end-1,:);p2=p(2:end,:);
+%  arrow3d(p1,p2,15,'cylinder',[0.5,0.5]);axis equal;grid on;
 % 
-%   Author: Changshun Deng
-%   Email: heroaq_2002@163.com
-%   WEB-Log: http://waitingforme.yculblog.com
-%   30/8/2005 
+%  Author: Changshun Deng
+%  Email: heroaq_2002@163.com
+%  WEB-Log: http://waitingforme.yculblog.com
+%  30/8/2005 
 
 
 %Check start and stop point data

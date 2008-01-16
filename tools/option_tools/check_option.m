@@ -1,7 +1,7 @@
 function out = check_option(option_list,option,varargin)
 % check for option in option list
 %
-%% Usage
+%% Syntax
 % out = check_option(option_list,option,type)
 %
 %% Input

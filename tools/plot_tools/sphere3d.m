@@ -3,192 +3,196 @@ function [Xout, Yout, Zout, Cmap] = sphere3d(Zin,theta_min,theta_max,...
 %
 % SPHERE3D  Plots 3D data on a spherical surface.
 % 
-%           SPHERE3D(Zin,theta_min,theta_max,phi_min,phi_max,Rho,meshscale) 
-%           plots the 3D profile Zin as a mesh plot on a spherical surface 
-%           of radius Rho, between horizontal sweep angles theta_min and 
-%           theta_max and vertical phi_min and phi_max, with mesh size 
-%           determined by meshscale. 
+%  SPHERE3D(Zin,theta_min,theta_max,phi_min,phi_max,Rho,meshscale) 
+%  plots the 3D profile Zin as a mesh plot on a spherical surface 
+%  of radius Rho, between horizontal sweep angles theta_min and 
+%  theta_max and vertical phi_min and phi_max, with mesh size 
+%  determined by meshscale. 
 % 
-%           SPHERE3D(Zin,...,meshscale,plotspec) plots the 3D profile Zin 
-%           with a plot type specification. If plotspec = 'surf' a standard
-%           surface is plotted, whereas 'mesh', or 'meshc' will plot mesh,
-%           or mesh with contour, respectively. A special contour is
-%           plotted when plotspec = 'contour'. The default is mesh if not
-%           specified.   
+%  SPHERE3D(Zin,...,meshscale,plotspec) plots the 3D profile Zin 
+%  with a plot type specification. If plotspec = 'surf' a standard
+%  surface is plotted, whereas 'mesh', or 'meshc' will plot mesh,
+%  or mesh with contour, respectively. A special contour is
+%  plotted when plotspec = 'contour'. The default is mesh if not
+%  specified.   
 %
-%           SPHERE3D(Zin,...,meshscale,interpspec) plots the 3D profile Zin
-%           with the interpolation specification, interpspec, which can be 
-%           one of 'spline', 'linear', 'nearest' or 'cubic'. The default  
-%           interpolation is linear if not specified.     
+%  SPHERE3D(Zin,...,meshscale,interpspec) plots the 3D profile Zin
+%  with the interpolation specification, interpspec, which can be 
+%  one of 'spline', 'linear', 'nearest' or 'cubic'. The default  
+%  interpolation is linear if not specified.     
 %
-%           SPHERE3D(Zin,...,meshscale,Zscale) plots the 3D profile Zin with 
-%           the data scaling factor, Zscale. This allows you to scale the 
-%           peaks and troughs of the data on the surface if the radius is
-%           relatively large. Zscale larger than 1 magnifies the data
-%           range correspondingly. Zscale defaults to 1 if not specified.
+%  SPHERE3D(Zin,...,meshscale,Zscale) plots the 3D profile Zin with 
+%  the data scaling factor, Zscale. This allows you to scale the 
+%  peaks and troughs of the data on the surface if the radius is
+%  relatively large. Zscale larger than 1 magnifies the data
+%  range correspondingly. Zscale defaults to 1 if not specified.
 % 
-%           [Xout,Yout,Zout,Cmap] = SPHERE3D(Zin,...) returns output values
-%           corresponding to the Cartesian positions (Xout,Yout,Zout) with 
-%           colour map, Cmap.         
+%  [Xout,Yout,Zout,Cmap] = SPHERE3D(Zin,...) returns output values
+%  corresponding to the Cartesian positions (Xout,Yout,Zout) with 
+%  colour map, Cmap.         
 % 
-% SYNTAX    sphere3D(Zin,theta_min,theta_max,phi_min,phi_max,Rho,meshscale)
-%           sphere3D(Zin,theta_min,theta_max,phi_min,phi_max,Rho,meshscale,plotspec)
-%           sphere3D(Zin,theta_min,theta_max,phi_min,phi_max,Rho,meshscale,interpspec)
-%           sphere3D(Zin,theta_min,theta_max,phi_min,phi_max,Rho,meshscale,Zscale)
-%           sphere3D(Zin,...,meshscale,plotspec,interpspec)
-%           sphere3D(Zin,...,meshscale,plotspec,Zscale)
-%           sphere3D(Zin,...,meshscale,interpspec,Zscale)
-%           sphere3D(Zin,...,meshscale,plotspec,interpspec,Zscale)
-%           [Xout,Yout,Zout,Cmap] = sphere3D(Zin,...)
-%           
-% INPUT     Zin         input magnitude profiles where each row in Zin is 
-%                       assumed to represent the horizontal sweep information 
-%                       between theta_min and theta_max at a given vertical 
-%                       sweep angle phi on the sphere. Alternatively, each 
-%                       column represents the data gathered between top to
-%                       bottom of the sphere at given angle theta.
-%                       
-%                       Zin is a (M x N) matrix, where M and N are not 
-%                       necessarily equal. If M is not equal to N then the
-%                       data are interpolated to make them equal. The final
-%                       size is determined by the larger value of (M,N),
-%                       and meshscale if different from 1.
+%% Syntax
+%  sphere3D(Zin,theta_min,theta_max,phi_min,phi_max,Rho,meshscale)
+%  sphere3D(Zin,theta_min,theta_max,phi_min,phi_max,Rho,meshscale,plotspec)
+%  sphere3D(Zin,theta_min,theta_max,phi_min,phi_max,Rho,meshscale,interpspec)
+%  sphere3D(Zin,theta_min,theta_max,phi_min,phi_max,Rho,meshscale,Zscale)
+%  sphere3D(Zin,...,meshscale,plotspec,interpspec)
+%  sphere3D(Zin,...,meshscale,plotspec,Zscale)
+%  sphere3D(Zin,...,meshscale,interpspec,Zscale)
+%  sphere3D(Zin,...,meshscale,plotspec,interpspec,Zscale)
+%  [Xout,Yout,Zout,Cmap] = sphere3D(Zin,...)
+%  
+%% Input
+%  Zin         input magnitude profiles where each row in Zin is 
+%  assumed to represent the horizontal sweep information 
+%  between theta_min and theta_max at a given vertical 
+%  sweep angle phi on the sphere. Alternatively, each 
+%  column represents the data gathered between top to
+%  bottom of the sphere at given angle theta.
+%  
+%  Zin is a (M x N) matrix, where M and N are not 
+%  necessarily equal. If M is not equal to N then the
+%  data are interpolated to make them equal. The final
+%  size is determined by the larger value of (M,N),
+%  and meshscale if different from 1.
 % 
-%                       The N columns of Zin are assumed to be equally
-%                       spaced measurements starting from top (phi_max) to 
-%                       bottom of the sphere (phi_min), and at angle theta_min  
-%                       and so on, to the last column at theta_max. The
-%                       vertical axis of the sphere is assumed to be 
-%                       parallel to the columns in the data.
+%  The N columns of Zin are assumed to be equally
+%  spaced measurements starting from top (phi_max) to 
+%  bottom of the sphere (phi_min), and at angle theta_min  
+%  and so on, to the last column at theta_max. The
+%  vertical axis of the sphere is assumed to be 
+%  parallel to the columns in the data.
 %
-%                       Zin(1,1) corresponds to (theta_min,phi_max) and 
-%                       Zin(M,1) corresponds to (theta_min,phi_min).
-%                       Zin(1,N) corresponds to (theta_max,phi_max) and 
-%                       Zin(M,N) corresponds to (theta_max,phi_min).  
-%                       Theta increases in the anticlockwise direction 
-%                       looking from the top of the sphere, while phi 
-%                       increases from lower hemisphere to the upper.
+%  Zin(1,1) corresponds to (theta_min,phi_max) and 
+%  Zin(M,1) corresponds to (theta_min,phi_min).
+%  Zin(1,N) corresponds to (theta_max,phi_max) and 
+%  Zin(M,N) corresponds to (theta_max,phi_min).  
+%  Theta increases in the anticlockwise direction 
+%  looking from the top of the sphere, while phi 
+%  increases from lower hemisphere to the upper.
 % 
-%           theta_min   the lower value in radians of the angular range 
-%                       (horizontal sweep) over which the data is defined. 
-%                       Theta_min is a scalar quantity.
+%  theta_min   the lower value in radians of the angular range 
+%  (horizontal sweep) over which the data is defined. 
+%  Theta_min is a scalar quantity.
 % 
-%           theta_max   the upper value in radians of the angular range 
-%                       (horizontal sweep) over which the data is defined. 
-%                       Theta_max is a scalar quantity.
+%  theta_max   the upper value in radians of the angular range 
+%  (horizontal sweep) over which the data is defined. 
+%  Theta_max is a scalar quantity.
 %
-%                       The difference between theta_max and theta_min
-%                       should be no more than 2pi.
+%  The difference between theta_max and theta_min
+%  should be no more than 2pi.
 % 
-%           phi_min     the lower value in radians of the angular range 
-%                       (vertical sweep) over which the data is defined. 
-%                       Phi_min is a scalar quantity.
+%  phi_min     the lower value in radians of the angular range 
+%  (vertical sweep) over which the data is defined. 
+%  Phi_min is a scalar quantity.
 % 
-%           phi_max     the upper value in radians of the angular range 
-%                       (vertical sweep) over which the data is defined. 
-%                       Phi_max is a scalar quantity.
+%  phi_max     the upper value in radians of the angular range 
+%  (vertical sweep) over which the data is defined. 
+%  Phi_max is a scalar quantity.
 %
-%                       The difference between phi_max and phi_min should
-%                       be no more than pi.
+%  The difference between phi_max and phi_min should
+%  be no more than pi.
 % 
-%           Rho         the radius of the cylinder. Rho is a scalar
-%                       quantity. See comments on Zscale for connection  
-%                       between Rho and Zscale.
+%  Rho         the radius of the cylinder. Rho is a scalar
+%  quantity. See comments on Zscale for connection  
+%  between Rho and Zscale.
 % 
-%           meshscale   a scalar that determines the size of the squares 
-%                       on the mesh or surf plots, and takes on integer or
-%                       non-integer values greater than 0.
+%  meshscale   a scalar that determines the size of the squares 
+%  on the mesh or surf plots, and takes on integer or
+%  non-integer values greater than 0.
 %
-%                       If meshscale = 1, the mesh remains unchanged relative
-%                       to the input grid. If meshscale = 2.15, say, the size  
-%                       of the squares is increased by this factor with
-%                       a consequential decrease in the dimensions of Xout,  
-%                       Yout and Zout by the same factor.
+%  If meshscale = 1, the mesh remains unchanged relative
+%  to the input grid. If meshscale = 2.15, say, the size  
+%  of the squares is increased by this factor with
+%  a consequential decrease in the dimensions of Xout,  
+%  Yout and Zout by the same factor.
 %
-%                       If meshscale is less than 1, a decrease in the mesh
-%                       squares will follow with a consequential increase 
-%                       in the dimensions of Xout, Yout and Zout by 1/meshscale.                                          
+%  If meshscale is less than 1, a decrease in the mesh
+%  squares will follow with a consequential increase 
+%  in the dimensions of Xout, Yout and Zout by 1/meshscale.                                          
 % 
-%           plotspec    = 'surf'  produces a surface plot.
-%                       = 'mesh'  produces a mesh plot.
-%                       = 'meshc'  produces a mesh plot with countour in 
-%                          the X-Y plane.
-%                       = 'contour'  produces a transparent 2D contour plot
-%                          on the curved surface of the cylinder.
-%                       = 'off' disengages plot function.
+%  plotspec    = 'surf'  produces a surface plot.
+%  = 'mesh'  produces a mesh plot.
+%  = 'meshc'  produces a mesh plot with countour in 
+%  the X-Y plane.
+%  = 'contour'  produces a transparent 2D contour plot
+%  on the curved surface of the cylinder.
+%  = 'off' disengages plot function.
 % 
-%           interpspec  = 'linear'  bilinear interpolation on Zin.
-%                       = 'spline'  spline interpolation on Zin.
-%                       = 'nearest'  nearest neighbour interpolation on Zin.
-%                       = 'cubic'  bicubic interpolation on Zin.
+%  interpspec  = 'linear'  bilinear interpolation on Zin.
+%  = 'spline'  spline interpolation on Zin.
+%  = 'nearest'  nearest neighbour interpolation on Zin.
+%  = 'cubic'  bicubic interpolation on Zin.
 %
-%                       If Zin is a square matrix and meshscale = 1, no
-%                       interpolation is carried out.
+%  If Zin is a square matrix and meshscale = 1, no
+%  interpolation is carried out.
 % 
-%           Zscale      a scalar that allows the user to scale the peaks and
-%                       troughs of the data so that it is more visible, 
-%                       especially when the radius of the sphere is large 
-%                       in comparison to the swings in the data.
+%  Zscale      a scalar that allows the user to scale the peaks and
+%  troughs of the data so that it is more visible, 
+%  especially when the radius of the sphere is large 
+%  in comparison to the swings in the data.
 %
-%                       When Zscale = 1, no data scaling occurs and the object 
-%                       appears in its true shape. 
+%  When Zscale = 1, no data scaling occurs and the object 
+%  appears in its true shape. 
 %
-%                       When Zscale is not 1, the maximum and minimum
-%                       radial values are rescaled and may become negative.
-%                       When this occurs Zscale defaults to the maximum 
-%                       scaling factor possible and a warning is given.  
-%                       No action is required by the user.
+%  When Zscale is not 1, the maximum and minimum
+%  radial values are rescaled and may become negative.
+%  When this occurs Zscale defaults to the maximum 
+%  scaling factor possible and a warning is given.  
+%  No action is required by the user.
 %
-%                       When Zscale is small in relation to the radius, a 
-%                       smooth spherical surface is produced with radius Rho.
-%                       When used in conjunction with surf plot, the result
-%                       gives the impression of a filled contour plot.
+%  When Zscale is small in relation to the radius, a 
+%  smooth spherical surface is produced with radius Rho.
+%  When used in conjunction with surf plot, the result
+%  gives the impression of a filled contour plot.
 % 
-% OUTPUT    Zout        output magnitude profiles defined by Zin at
-%                       positions (Xout,Yout). 
-%                       
-%                       Zout is square with dimensions determined by the 
-%                       maximum dimension of the input matrix Zin. The 
-%                       dimensions of Zout are reduced or enlarged by meshscale.                      
+%% Output
+%  Zout        output magnitude profiles defined by Zin at
+%  positions (Xout,Yout). 
+%  
+%  Zout is square with dimensions determined by the 
+%  maximum dimension of the input matrix Zin. The 
+%  dimensions of Zout are reduced or enlarged by meshscale.                      
 % 
-%           Xout        output X-positions corresponding to polar positions
-%                       (rho,theta). Xout is square with dimensions  
-%                       determined by the maximum dimension of the input 
-%                       matrix Zin. The dimensions of Xout are reduced or 
-%                       enlarged by meshscale.
+%  Xout        output X-positions corresponding to polar positions
+%  (rho,theta). Xout is square with dimensions  
+%  determined by the maximum dimension of the input 
+%  matrix Zin. The dimensions of Xout are reduced or 
+%  enlarged by meshscale.
 % 
-%           Yout        output Y-positions corresponding to polar positions
-%                       (rho,theta). Yout is square with dimensions  
-%                       determined by the maximum dimension of the input 
-%                       matrix Zin. The dimensions of Yout are reduced or 
-%                       enlarged by meshscale.
+%  Yout        output Y-positions corresponding to polar positions
+%  (rho,theta). Yout is square with dimensions  
+%  determined by the maximum dimension of the input 
+%  matrix Zin. The dimensions of Yout are reduced or 
+%  enlarged by meshscale.
 %
-%           Cmap        colour mapping associated with (Xout,Yout,Zout). The
-%                       dimension of Cmap is square and similar in size to
-%                       Xout, Yout and Zout.
+%  Cmap        colour mapping associated with (Xout,Yout,Zout). The
+%  dimension of Cmap is square and similar in size to
+%  Xout, Yout and Zout.
 %
-% See also POLAR3D, CYL3D, POLAR, POL2CART, SPH2CART and INTERP2
+%% See also
+% POLAR3D, CYL3D, POLAR, POL2CART, SPH2CART and INTERP2
 
-%           Written by JM DeFreitas, QinetiQ Ltd, Winfrith Technology
-%           Centre, Dorchester DT2 8XJ, UK. jdefreitas@qinetiq.com.
+%  Written by JM DeFreitas, QinetiQ Ltd, Winfrith Technology
+%  Centre, Dorchester DT2 8XJ, UK. jdefreitas@qinetiq.com.
 %
-%           Released 27 September 2005. (Beta Release).
+%  Released 27 September 2005. (Beta Release).
 %
-%           Terms and Conditions of Use
+%  Terms and Conditions of Use
 % 
-%           1.	This function is made available to Matlab� users under the 
-%               terms and conditions set out in the Matlab Exchange by 
-%               The Mathworks, Inc.
-%           2.	Where the use of SPHERE3D is to be cited, the following is recommended:
-%               J M De Freitas. �SPHERE3D: A Matlab� Function to Plot 3-Dimensional 
-%               Data on a Spherical Surface�. 
-%               QinetiQ Ltd, Winfrith Technology Centre, Winfrith, 
-%               Dorchester DT2 8XJ. UK. 15 September 2005. 
-%           3.	No offer of warranty is made or implied by the author and 
-%               use of this work means that the user has agreed to take full 
-%               responsibility for its use.
+%  1.	This function is made available to Matlab� users under the 
+%  terms and conditions set out in the Matlab Exchange by 
+%  The Mathworks, Inc.
+%  2.	Where the use of SPHERE3D is to be cited, the following is recommended:
+%  J M De Freitas. �SPHERE3D: A Matlab� Function to Plot 3-Dimensional 
+%  Data on a Spherical Surface�. 
+%  QinetiQ Ltd, Winfrith Technology Centre, Winfrith, 
+%  Dorchester DT2 8XJ. UK. 15 September 2005. 
+%  3.	No offer of warranty is made or implied by the author and 
+%  use of this work means that the user has agreed to take full 
+%  responsibility for its use.
 %
-%           
+%  
 if (nargin < 7)
     disp('SPHERE3D Error: Too few input arguments.');
     Xout = []; Yout = []; Zout = []; Cmap = [];
@@ -583,7 +587,7 @@ case 'contour'
     Zsph = Rho*sin(alpha);
 
     % draw contour lines one at a time with preset colour in rgbCol
-%     figure
+%  figure
     nCol = (nLevel-2:-1:0)'/nLevel;
     rgbCol = hsv2rgb(0.8*[nCol ones(nLevel-1,2)]);
     maxZ = max(max(Zin));
@@ -656,19 +660,22 @@ end %switch
     function [A] = shift(A,n)
         %
         % SHIFT     moves each element down by n steps along vector A,
-        %           treating the positions j as though they are on a circle,
-        %           so that A(j) moves to position(j+n), and A(L-n+1:L)occupy
-        %           positions(1:n), where L is the number of elements in A.
-        %           If n is positive the shift is in the forward direction
-        %           whereas if negative, the shift is backwards.
+%  treating the positions j as though they are on a circle,
+%  so that A(j) moves to position(j+n), and A(L-n+1:L)occupy
+%  positions(1:n), where L is the number of elements in A.
+%  If n is positive the shift is in the forward direction
+%  whereas if negative, the shift is backwards.
         %
-        % Usage:    [A] = shift(A,n)
+%% Syntax
+%  [A] = shift(A,n)
         %
-        % Input:    A,  array whose elements will be shifted
-        %           n,  number of shifts to perform
-        %               n can be negative as well.
+%% Input
+%  A,  array whose elements will be shifted
+%  n,  number of shifts to perform
+%  n can be negative as well.
         %
-        % Output:   A,  array with shifted elements.
+%% Output
+%  A,  array with shifted elements.
         %
         change = 0;
         [r,c] = size(A);
@@ -697,19 +704,22 @@ end %switch
         
    function [Cmap,Rmax,Rmin] = RadialColorMap(X,Y,Z,nColor)
        % RadialColorMap     maps a colour scale to the radial information
-       %                    formed from coordinates X, and Y. The number of
-       %                    colors formed is nColor.
+%  formed from coordinates X, and Y. The number of
+%  colors formed is nColor.
        %
-       % Usage              [Cmap,Rmax,Rmin] = RadialColorMap(X,Y,nColor)
+%% Syntax
+%  [Cmap,Rmax,Rmin] = RadialColorMap(X,Y,nColor)
        %
-       % Input              X       a square matrix of X-coordinates
-       %                    Y       a square matrix of Y-coordinates
-       %                    Z       a square matrix of Z-coordinates
-       %                    nColor  number of colours to use
+%% Input
+%  X       a square matrix of X-coordinates
+%  Y       a square matrix of Y-coordinates
+%  Z       a square matrix of Z-coordinates
+%  nColor  number of colours to use
        %
-       % Output             Cmap    the colour map
-       %                    Rmax    maximum radius of input data
-       %                    Rmin    minimum radius of input data
+%% Output
+%  Cmap    the colour map
+%  Rmax    maximum radius of input data
+%  Rmin    minimum radius of input data
        %
        R = sqrt(X.^2 + Y.^2 + Z.^2);
        [r,c] = size(R);

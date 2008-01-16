@@ -1,10 +1,11 @@
 function q = quantile(x,n)
 % n percent quantile of x 
 %
-% input: x - double
-%        n -
+%% Input
+% x - double
+%  n -
 %
-% output:
+%% Output
 
 if size(x,1) == 1, x = x.';end
 x = sort(x);

@@ -1,6 +1,7 @@
 function multiplot(x,y,nplots,varargin)
 % plot multiple graphs
-% usage:  multiplot(x,y,nplots,<options>)
+%% Syntax
+%  multiplot(x,y,nplots,<options>)
 %
 %% Input
 %  x      - grid (@S1Grid, @S2Grid, @SO3Grid)
