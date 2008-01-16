@@ -1,6 +1,7 @@
 function [NG,ind] = subGrid(S1G,x,epsilon)
 % epsilon - neighborhood of a point in the grid
-% usage:  [NG,ind] = subGrid(S1G,midpoint,radius)
+%% Syntax
+%  [NG,ind] = subGrid(S1G,midpoint,radius)
 %
 %% Input
 %  S1G        - @S1Grid

@@ -1,6 +1,7 @@
 function a = angle(m1,m2)
 % angle between two Miller indece
-% usage:  a = angle(m1,m2)
+%% Syntax
+%  a = angle(m1,m2)
 %
 %% Input
 %  m1,m2 - @Miller

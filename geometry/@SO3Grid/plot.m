@@ -6,9 +6,8 @@ function plot(SO3G,varargin)
 %
 %% Options
 %  RODRIGUEZ  - plot in rodriguez space
-%  distmatrix - plot distmatrix
 
-if check_option(varargin,'RODRIGUEZ')
+if check_option(varargin,'RODRIGUEZ') || GridLength(SO3G) > 50
 	r = quat2rodriguez(SO3G.Grid);
 
 	scatter3(getx(r),gety(r),getz(r));
@@ -29,21 +28,3 @@ else
   
 
 end
-
-
-% 	if length(SO3G) >= 700
-% 		error('Grid is to large')
-% 	end
-% 
-% 	M = distMatrix(SO3G.Grid.',SO3G.Grid);
-% 	pcolor(M);
-% 	axis equal tight
-% 	hold on
-% 	grid off
-% 	colorbar;
-% 	if GridLength(SO3G) > 100
-% 		shading interp;
-% 	end
-% 	hold off
-% 	M = M + 5*eye(size(M));
-% 	disp(min(min(M)));

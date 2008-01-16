@@ -1,6 +1,8 @@
 function d = dist(q1,q2)
 % calcualtes distance between rotations q1 and q2
-% usage:  d = dist(q1,q2)
+%
+%% Syntax  
+%  d = dist(q1,q2)
 %
 %% Input
 %  q1, q2 - @quaternion

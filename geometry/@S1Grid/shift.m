@@ -1,6 +1,7 @@
 function NG = shift(G,delta)
 % shifts S1Grid by delta
-% usage:  NG = shift(G,delta)
+%% Syntax
+%  NG = shift(G,delta)
 %
 %% Input
 %  S1G   - @S1Grid

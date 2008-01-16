@@ -1,7 +1,7 @@
 function ind = find(S2G,v,epsilon)
 % return index of all points in a epsilon neighborhood of a vector
 %
-%% usage:  
+%% Syntax  
 % ind = find(S2G,v,epsilon) - find all points in a epsilon neighborhood of v
 % ind = find(S2G,v)         - find closest point
 %
@@ -44,14 +44,12 @@ if check_option(S2G.options,'INDEXED')
   end
 else % not indexed points
 
-  d = dist(S2G,v);
+  d = dot_outer(S2G,v);
   
   if nargin == 3
     ind = d > cos(epsilon);
   else
-    for i = 1:length(v)
-      ind(i) = find(d(:,i) == max(d(:,i)));
-    end
+    md = repmat(max(d),1,size(d,2));
+    ind = d == md;
   end
-
 end

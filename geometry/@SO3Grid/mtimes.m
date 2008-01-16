@@ -1,6 +1,7 @@
 function out = mtimes(SO3G,q)
 % outer quaternion multiplication
-% usage:  SO3Gq = SO3G * q
+%% Syntax
+%  SO3Gq = SO3G * q
 %  SO3Gv = SO3G * v
 %
 %% Input
@@ -14,6 +15,7 @@ function out = mtimes(SO3G,q)
 
 if isa(SO3G,'SO3Grid')
   if isa(q,'SO3Grid'), q = q.Grid; end
+  if isa(q,'Miller'), q = vector3d(q,SO3G(1).CS);end
   if isa(q,'quaternion')
   
     out= quaternion;

@@ -47,8 +47,12 @@ end
 % -------------------- GET OPTIONS ----------------------------------------
 
 % data
-data = reshape(get_option(varargin,'DATA',ones(1,sum(GridLength(S2G)))),...
-  GridSize(S2G));
+data = get_option(varargin,'DATA',ones(1,sum(GridLength(S2G))));
+if length(data) > 1
+  data = reshape(data,GridSize(S2G)); 
+else
+  data = ones(1,sum(GridLength(S2G)));
+end
 
 % log plot? 
 if check_option(varargin,'logarithmic')
@@ -179,7 +183,7 @@ elseif check_option(varargin,'SMOOTH')
     end
     
 %  else
-%    pcolor(X,Y,data);
+%  pcolor(X,Y,data);
  % end
   %if numel(data) >= 500, shading interp;end
 %  set(gcf,'Renderer','OpenGL');
@@ -200,6 +204,10 @@ elseif isa(data,'cell') || check_option(varargin,'dots')% || numel(X)<20
         'Interpreter','latex');
     end
   end
+elseif check_option(varargin,'scatter')
+    
+  scatter(X,Y,(diameter*100)^2,'filled');
+  
 else
   set(gcf,'Renderer','painters');
   cminmax = get_option(varargin,'range',...

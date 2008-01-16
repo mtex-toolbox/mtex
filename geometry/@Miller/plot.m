@@ -6,6 +6,7 @@ function plot(m,varargin)
 %% Options
 %  ALL - plot symmetrically equivalent directions
 
+
 colororder = ['b','g','r','c','m','k','y'];
 
 if any(strcmpi(get(gcf,'Tag'),{'IPDF'}))  
@@ -31,6 +32,9 @@ if check_option(varargin,'ALL')
 end
 hold off
 
-
 %% Example
-% plot([Miller(0,0,1),Miller(1,0,0),Miller(1,1,0),Miller(1,-1,0),Miller(0,1,0),Miller(-1,1,0),Miller(-1,0,0),Miller(-1,-1,0),Miller(0,-1,0),Miller(2,-1,0),Miller(-1,2,0),Miller(1,-2,0),Miller(-2,1,0)],CS)
+%
+% plot([Miller(0,0,1),Miller(1,0,0),Miller(1,1,0),Miller(1,-1,0),Miller(0,1
+% ,0),Miller(-1,1,0),Miller(-1,0,0),Miller(-1,-1,0),Miller(0,-1,0),Miller(2
+% ,-1,0),Miller(-1,2,0),Miller(1,-2,0),Miller(-2,1,0)],CS)
+

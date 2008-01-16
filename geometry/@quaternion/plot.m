@@ -10,7 +10,7 @@ if numel(q) == 1
   
 else
   
-  %  plot(SO3Grid(q),varargin{:});
+%  plot(SO3Grid(q),varargin{:});
 
   colororder = ['b','g','r','c','m','k','y'];
   v = [xvector,yvector,zvector];

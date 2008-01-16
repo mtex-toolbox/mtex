@@ -1,12 +1,15 @@
-function v = vector3d(m)
+function v = vector3d(m,cs)
 % Miller-indece --> vector3d
 %% Input
 %  m - @Miller
+%  cs - crystal symmetry (optional)
 %
 %% Output
 %  v - @vector3d
 
-a = getaxes(m(1).CS);
+if nargin == 1, cs = m(1).CS; end
+
+a = getaxes(cs);
 V  = dot(a(1),cross(a(2),a(3)));
 aa = cross(a(2),a(3)) ./ V;
 bb = cross(a(3),a(1)) ./ V;

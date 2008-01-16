@@ -1,7 +1,7 @@
 function ind = find(SO3G,q,epsilon,varargin)
 % return indece and distance of all nodes within a eps neighborhood
 %
-%% usage:  
+%% Syntax  
 % [ind,dist] = find(SO3G,nodes,radius)
 %
 %% Input
@@ -60,7 +60,7 @@ else
     ind = SO3Grid_find_region(yalpha,ybeta,ygamma,sgamma, ...
       int32(ialphabeta),palpha,pgamma, xalpha,xbeta,xgamma,epsilon);
   
-    ind(SO3G.subGrid,:) = [];
+    if ~isempty(SO3G.subGrid), ind(SO3G.subGrid,:) = [];end
   end
   
 end

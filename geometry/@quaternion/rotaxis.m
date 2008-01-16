@@ -1,6 +1,7 @@
 function v = rotaxis(q)
 % rotational axis of the quaternion
-% usage:  v = rotaxis(q)
+%% Syntax
+%  v = rotaxis(q)
 %
 %% Input
 %  q - @quaternion
