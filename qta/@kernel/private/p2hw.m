@@ -26,7 +26,8 @@ switch name
 
   otherwise
     
-    K = getK(kernel(name,p));
+    K = construct_K(name,p,construct_A(name,p,1000));
+    
     hw = abs(fzero(@(omega) 0.5*K(1)-K(cos(omega/2)),0));
     
 end

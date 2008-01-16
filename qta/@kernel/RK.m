@@ -1,6 +1,7 @@
 function f = RK(kk,g,h,r,c,CS,SS,varargin)
 % sum Radon trasformed kernel
-% usage:  f = RK(kk,g,h,r,c,CS,SS,varargin)
+%% Syntax
+%  f = RK(kk,g,h,r,c,CS,SS,varargin)
 %
 %% Input
 %  kk   - @kernel

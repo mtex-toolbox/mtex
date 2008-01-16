@@ -25,7 +25,7 @@ while ~feof(fid)
     fgetl(fid);
       
     % one line describing hkl and grid of specimen directions
-    %  003 hxxxx  5.00 5.00 90.00    1    0  (12f6.0)
+%  003 hxxxx  5.00 5.00 90.00    1    0  (12f6.0)
     l = fgetl(fid);
     h = string2Miller(l(1:6));
     dtheta = str2double(l(11:15));
@@ -45,7 +45,7 @@ while ~feof(fid)
     r = S2Grid(sph2vec(theta,rho),'resolution',min(dtheta,dphi)*degree,'hemisphere');
  
     % skip next line
-    %  1000 .500 -112    0   0.   experimental data
+%  1000 .500 -112    0   0.   experimental data
     fgetl(fid);
 
     d = fscanf(fid,'%e',GridSize(r));

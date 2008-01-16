@@ -1,6 +1,6 @@
 function s = sum_K(kk,g1,g2,CS,SS,c,varargin)
 % sum up kernels modulo symmetries
-%% Usage
+%% Syntax
 % w = sum_K(kk,g1,g2,CS,SS,c,<options>)
 %
 %% Input

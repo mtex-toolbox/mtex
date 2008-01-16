@@ -7,12 +7,14 @@ function f = eval(odf,g,varargin)
 %  g   - @quaternion or @SO3Grid
 %
 %% Flags
-%  DISTMATRIX - use precomputed distmatrix in @SO3Grid g if exists
 %  EVEN       - calculate even portion only
+%  FOURIER    - use NFSOFT based algorithm
 %
 %% Output
 %  f   - values of the ODF at the orientations g
 %
+%% See also
+% kernel/sum_K kernel/K
 
 if isa(g,'SO3Grid')
   f = zeros(GridSize(g));

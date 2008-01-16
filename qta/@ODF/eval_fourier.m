@@ -1,11 +1,11 @@
 function f = eval_fourier(odf,g,varargin)
 % evaluate odf using NSOFT
 %
-%% Input:
+%% Input
 %  odf - @ODF
 %  g   - @quaternion
 % 
-%% Output:
+%% Output
 %  f - double
 %
 

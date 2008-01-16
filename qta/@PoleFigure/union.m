@@ -1,6 +1,7 @@
 function pf = union(pf1,pf2)
 % crytsallographic direction to one
-% usage:  pf = union(pf1,pf2)
+%% Syntax
+%  pf = union(pf1,pf2)
 %
 %% Input
 %  pf1 - @PoleFigure

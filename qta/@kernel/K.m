@@ -1,6 +1,6 @@
 function w = K(kk,g1,g2,CS,SS,varargin)
 % evaluate kernel modulo symmetries
-%% Usage
+%% Syntax
 % w = K(kk,g1,g2,CS,SS,<options>)
 %
 %% Input
@@ -66,10 +66,10 @@ elseif (lg1>0 || lg2>0) && ~check_option(varargin,'old')
   
   for iq = 1:length(q)  
     if (lg1 >= lg2)              % first argument is SO3Grid
-      d = dist(g1,quaternion(g2)*q(iq),'epsilon',epsilon,'nocubictrifoldaxis');
+      d = dot_outer(g1,quaternion(g2)*q(iq),'epsilon',epsilon,'nocubictrifoldaxis');
       w = w + spfun(kk.K,d);
     else                         % second argument is SO3Grid
-      d = dist(g2,quaternion(g1)*q(iq),'epsilon',epsilon,'nocubictrifoldaxis');
+      d = dot_outer(g2,quaternion(g1)*q(iq),'epsilon',epsilon,'nocubictrifoldaxis');
       w = w + spfun(kk.K,d.');
     end
   end

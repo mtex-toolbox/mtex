@@ -7,7 +7,7 @@ function odf_hat = fourier(odf,varargin)
 % returned. If the option 'bandwidth' is specified all Fourier coefficients
 % up to this bandwidth are returned.
 %
-%% usage:  
+%% Syntax  
 % odf_hat = fourier(odf,'order',L)
 % odf_hat = fourier(odf,'bandwidth',B)
 %
