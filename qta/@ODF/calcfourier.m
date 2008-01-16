@@ -5,7 +5,7 @@ function nodf = calcfourier(odf,L)
 % returned ODF. In order to get the Fourier coefficients of an ODF use
 % [[ODF_fourier.html,fourier]].
 %
-%% usage:  
+%% Syntax  
 % nodf = fourier(odf,L)
 %
 %% Input

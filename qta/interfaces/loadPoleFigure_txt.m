@@ -9,9 +9,9 @@ function pf = loadPoleFigure_txt(fname,varargin)
 %  theta_1 rho_1 intensity_1
 %  theta_2 rho_2 intensity_2
 %  theta_3 rho_3 intensity_3
-%     .      .       .
-%     .      .       .
-%     .      .       .
+%  .      .       .
+%  .      .       .
+%  .      .       .
 %  theta_M rho_M intensity_M
 %
 % The actual order of the columns in the file can be specified by the

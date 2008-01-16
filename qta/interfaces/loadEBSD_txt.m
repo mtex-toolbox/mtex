@@ -9,9 +9,9 @@ function SO3G = loadEBSD_txt(fname,CS,SS,varargin)
 %  alpha_1 beta_1 gamma_1
 %  alpha_2 beta_2 gamma_2
 %  alpha_3 beta_3 gamma_3
-%     .      .       .
-%     .      .       .
-%     .      .       .
+%  .      .       .
+%  .      .       .
+%  .      .       .
 %  alpha_M beta_M gamma_M
 %
 % The actual order of the columns in the file can be specified by the

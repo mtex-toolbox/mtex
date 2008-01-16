@@ -1,13 +1,15 @@
 function R = RegMatrix(kk,S3G,varargin)
 % regularisation matrix given kernel, grid and order of Sobolev space
+%
+%% Input
+%
+%% Output
 
-% calculate distmatrix for S3G
 if check_option(varargin,'EXACT')
   epsilon = pi;
 else 
   epsilon = get_option(varargin,'EPSILON',gethw(kk)*4);
 end
-dMatrix = distmatrix(S3G,[],epsilon);
 
 % calculate Fourier coefficients
 %order = get_option(varargin,'ORDER',2); TODO
@@ -19,5 +21,5 @@ omega = linspace(0,epsilon,20);
 Romega = ClenshawU(A,omega);
 
 % interpolate
-interpf = @(dM) interp1(cos(omega/2),Romega,dM);
-R = spfun(interpf,dMatrix);
+interpf = @(co2) interp1(omega,Romega,co2);
+R = spfun(interpf,dout_outer(S3G,S3G,epsilon));
