@@ -41,7 +41,7 @@ end
 if check_option(varargin,'absolute')
   
   % set range for colorcoding
-  varargin = set_default_option(varargin,'range',[minz,maxz]);
+  varargin = set_default_option(varargin,{},'range',[minz,maxz]);
   
   % set contour levels
   ncontour = get_option(varargin,{'contour','contourf'},10,'double');

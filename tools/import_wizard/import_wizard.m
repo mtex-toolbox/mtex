@@ -299,7 +299,7 @@ global pf
 ip =  get(handles.Dpolefigurelist,'Value');
 
 h = str2num(get(handles.Dh, 'String')); %#ok<ST2NM>
-k = str2num( get(handles.Dk, 'String')); %#ok<ST2NM>
+k = str2num(get(handles.Dk, 'String')); %#ok<ST2NM>
 l = str2num(get(handles.Dl, 'String')); %#ok<ST2NM>
 c = str2num(get(handles.Dscale, 'String')); %#ok<ST2NM>
 assert(length(h) == length(c));
@@ -327,7 +327,7 @@ else
   set(handles.Di, 'String','');
 end
 
-set(handles.Dscale, 'String', int2str(getc(pf(ip))));
+set(handles.Dscale, 'String', xnum2str(getc(pf(ip))));
 
 
 % --- Executes on selection change in Dpolefigurelist.
