@@ -15,6 +15,10 @@ function  varargout = plot(S2G,varargin)
 %  RANGE    - minimum and maximum for color coding [min,max]
 %  CONTOUR  - number of contour lines or list of contour lines
 %  CONTOURF - number of contour lines or list of contour lines
+%  ROTATE   - rotate plot about z-axis
+%  FLIPUD   - FLIP plot upside down
+%  FLIPLR   - FLIP plot left to rigth
+%
 %
 %% Flags
 %  NORTH       - plot only points on the north hemisphere (default)
@@ -48,7 +52,7 @@ end
 
 % data
 data = get_option(varargin,'DATA',ones(1,sum(GridLength(S2G))));
-if length(data) > 1
+if numel(data) == GridLength(S2G)
   data = reshape(data,GridSize(S2G)); 
 else
   data = ones(1,sum(GridLength(S2G)));
@@ -61,7 +65,7 @@ if check_option(varargin,'logarithmic')
 end
 
 % diamter of dots
-diameter = get_option(varargin,'DIAMETER',max(0.03,0.75*getResolution(S2G(end))));
+diameter = get_option(varargin,'DIAMETER',min(0.2,max(0.03,0.75*getResolution(S2G(end)))));
 
 
 % COLORMAP
@@ -78,6 +82,22 @@ end
 
 % calculate polar coordinates
 [theta,rho] = polar(S2G);
+if check_option(varargin,'rotate')
+  rho = rho + get_option(varargin,'rotate',-pi/2,'double');
+end
+
+if check_option(varargin,'flipud')
+  rho = 2*pi-rho;
+end
+
+% restrict 
+if numel(theta) > 100000
+  warning('to many data!'); %#ok<WNTAG>
+  disp('restrict to first 100000');
+  theta = theta(1:100000);
+  rho = rho(1:100000);
+  data = data(1:100000);
+end
 
 % decide wether one or two plots
 if ~check_option(S2G.options,'HEMISPHERE') && ~check_option(varargin,{'PLAIN','reduced'}) && ...

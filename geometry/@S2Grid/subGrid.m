@@ -21,9 +21,15 @@ else
   ind = v;
 end
 
+G = S2G;
+G.Grid = G.Grid(ind);
 G.res = S2G.res;
-G.theta = [];
-G.rho = [];
-G.Grid = S2G.Grid(ind);
-G.options = delete_option(S2G.options,'INDEXED');
-G = class(G,'S2Grid');
+
+if check_option(G,'indexed')
+  id = cumsum([0,GridLength(G.rho)]);
+  for i = 1:length(G.rho)
+    G.rho(i) = subGrid(G.rho(i),ind(1+id(i):id(i+1)));
+  end
+  G.theta = subGrid(G.theta,GridLength(G.rho)>0);
+  G.rho(GridLength(G.rho)==0) = [];
+end

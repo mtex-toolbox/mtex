@@ -11,4 +11,4 @@ function d = dist(SO3G,q,varargin)
 %% Output
 %  d      - sparse distance matrix
 
-d = 2*acos(dot_outer(SO3G,q,varargin));
+d = 2*acos(dot_outer(SO3G,q,varargin{:}));
