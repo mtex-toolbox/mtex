@@ -33,6 +33,10 @@ MTEX is a toolbox for quantitative texture analysis. It provides tools to analyz
    <type>M-file</type>
    <source>demo_santafee</source>
 </demoitem>
-
+<demoitem>
+   <label>Analysis of EBSD Data</label>
+   <type>M-file</type>
+   <source>ebsd_demo</source>
+</demoitem>
 </demos>
 

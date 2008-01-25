@@ -3,7 +3,11 @@ function format_mfile(file,keywords)
 
 % read source.
 code = file2cell(file);
-  
+
+code = strrep(code,'usage','Syntax');
+code = strrep(code,'Usage','Syntax');
+code = strrep(code,'USAGE','Syntax');
+
 for k = 1:length(keywords)
   % format keywords
   code = regexprep(code,['\s*%%?\s*',keywords{k},':?'],...

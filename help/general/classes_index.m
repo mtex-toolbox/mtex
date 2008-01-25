@@ -19,6 +19,7 @@
 % * <symmetry_index.html symmetry>
 % * <ODF_index.html ODF>
 % * <PoleFigure_index.html PoleFigure>
+% * <EBSD_index.html EBSD>
 % * <kernel_index.html kernel>
 %
 %% Functions
