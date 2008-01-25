@@ -10,6 +10,14 @@ function s = xnum2str(n)
 %% Output
 % s - string
 
+if length(n) > 1
+  s = num2str(n(1));
+  for i = 2:length(n)
+    s = [s,' ',num2str(n(i))];
+  end
+  return;
+end
+
 %check whether to use floating point or not
 if abs(n)>1000000
   s = num2str(n,'%7.2g');

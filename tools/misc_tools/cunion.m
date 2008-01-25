@@ -1,4 +1,4 @@
-function u = cunion(s)
+function u = cunion(s,eqfun)
 % disjoint union 
 
 if isempty(s)
@@ -16,9 +16,10 @@ else
 		end
 	else
 		u = s(1);
+    if nargin == 1, eqfun = @(a,b) norm(a-b);end
 		
 		for i=1:length(s)
-			if ~any(isnull(norm(u-s(i))))
+			if ~any(isnull(eqfun(u,s(i))))
 				u = [u,s(i)]; %#ok<AGROW>
 			end
 		end
