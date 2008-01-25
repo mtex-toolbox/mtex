@@ -7,37 +7,45 @@ typedef struct SO3Grid_ {
   S2Grid alphabeta;
   S1Grid *gamma;
   double *gamma_large;
+  int *igamma;
   int n, nalphabeta, ngamma;
 
   buffer alphabeta_buffer;
 
-} SO3Grid;
+} SO3Grid; 
+
+typedef struct inddist_ {
+
+  int ind;
+  double dist;
+
+} inddist;
 
 
 void SO3Grid_init(SO3Grid ths[],
 		  double alpha[],
 		  double beta[],
 		  double gamma[],
-		  double sgamma[],
-		  int nbeta,
-		  int ialphabeta[],
-		  int ngamma,
-		  double palpha,
+		  double sgamma[], /* gamma shift */
+		  int igamma[],    /* segmentation og gamma*/
+		  int ialphabeta[],/* segmentation of alphabeta*/
+		  int nbeta,       /* number of beta lists */
+		  double palpha,   /* period of alpha */
 		  double pgamma)
 {
   int i;
   /*printf("[%d,%d]",nalphabeta,ngamma);*/
 
   ths->nalphabeta = ialphabeta[nbeta];
-  ths->ngamma = ngamma / ths->nalphabeta;
-  ths->n = ngamma;
+  ths->n = igamma[ths->nalphabeta];
+  ths->igamma = igamma;
 
   S2Grid_init(&ths->alphabeta, alpha, beta, nbeta, ialphabeta, palpha);
 
   ths->gamma = (S1Grid*) mxCalloc(ths->nalphabeta,sizeof(S1Grid));
   for (i=0;i<ths->nalphabeta;i++)
-    S1Grid_init(&ths->gamma[i],&gamma[i*ths->ngamma],
-		ths->ngamma,sgamma[i],pgamma);
+    S1Grid_init(&ths->gamma[i],&gamma[igamma[i]],
+		ths->igamma[i+1]-ths->igamma[i],sgamma[i],pgamma);
   ths->gamma_large = gamma;
 
   buffer_init(&ths->alphabeta_buffer,ths->nalphabeta);
@@ -63,7 +71,7 @@ void SO3Grid_finalize(SO3Grid *ths)
   buffer_finalize(&ths->alphabeta_buffer);
 }
 
-int SO3Grid_find(SO3Grid ths[],
+inddist SO3Grid_find(SO3Grid ths[],
 		 double alpha,
 		 double beta,
 		 double gamma)
@@ -74,6 +82,8 @@ int SO3Grid_find(SO3Grid ths[],
   double yalpha,ybeta,dalpha;
   double cya,cyb,cyg,sya,syb,syg;
   double re,im,dg;
+  double a,b;
+  inddist id;
 
   alpha = MOD(alpha,ths->alphabeta.rho[0].p);
 
@@ -98,16 +108,27 @@ int SO3Grid_find(SO3Grid ths[],
   cyb = cos(ybeta); syb = sin(ybeta);
     
   /* calculate delta gamma */
+  a = cxb*cyb + sxb*syb*cos(dalpha);
+
   re = 0.5*cxb*cyb*(cos(dalpha-gamma)+cos(-dalpha-gamma)) + 
     cxg * (sxb*syb + cos(dalpha)) - 
     (cxb+cyb)*sin(dalpha) * sxg;
   im = 0.5*cxb*cyb*(sin(dalpha-gamma)+sin(-dalpha-gamma)) -
     sxg * (sxb*syb + cos(dalpha)) -
     (cxb+cyb)*sin(dalpha) * cxg;
+  b = sqrt(re*re+im*im);
     
   dg = -atan2(im,re);
 
-  return iab*ths->ngamma + S1Grid_find(&ths->gamma[iab],dg);    
+  id.ind =  ths->igamma[iab] + S1Grid_find(&ths->gamma[iab],dg);
+
+  dg = MOD0(ths->gamma_large[id.ind]-dg, ths->gamma[iab].p);
+
+  id.dist = cos(0.5*acos(MIN(1,MAX(-1, (-1.0 + a + b *  cos(dg))/2 ))));
+
+  /*printf("%.4e %.4e %.4e \n",a,b,dg);*/
+
+  return id;
 
 }
 
@@ -135,7 +156,7 @@ void SO3Grid_find_region(SO3Grid ths[],
   buffer_reset(&ths->alphabeta_buffer);
   S2Grid_find_region(&ths->alphabeta,beta,alpha,
 		     epsilon,&ths->alphabeta_buffer);
-
+  /*buffer_print(&ths->alphabeta_buffer);*/
   /*print_double(ths->alphabeta.theta_large,10);*/
 
   /* search gamma */
@@ -164,13 +185,17 @@ void SO3Grid_find_region(SO3Grid ths[],
     
     b = sqrt(re*re+im*im);
     c = (1 + 2*cos(epsilon) - a) / b;
+
+    /*printf("(%d, %.4e, %.4e, %.4e)\n",iab,gamma,dg,c);*/
+
     if (c > 1.0) continue;
     if (c < -1.0) c = -1;
 
     dg = -atan2(im,re);
+    /*printf("(%d, %.4e, %.4e)\n",iab,dg,acos(c));*/
 
     ind_old = ind_buffer->used;
-    buffer_set_offset(ind_buffer,iab*ths->ngamma);
+    buffer_set_offset(ind_buffer,ths->igamma[iab]);
     S1Grid_find_region(&ths->gamma[iab],dg,acos(c),
 		       ind_buffer);    
 
@@ -205,6 +230,7 @@ void SO3Grid_dist_region(SO3Grid ths[],
 		     epsilon,&ths->alphabeta_buffer);
 
   /*print_double(ths->alphabeta.theta_large,10);*/
+  /*buffer_print(&ths->alphabeta_buffer);*/
   /* search gamma */
   for (i=0;i<ths->alphabeta_buffer.used;i++) {
 
@@ -231,13 +257,15 @@ void SO3Grid_dist_region(SO3Grid ths[],
     
     b = sqrt(re*re+im*im);
     c = (1 + 2*cos(epsilon) - a) / b;
+
+    dg = -atan2(im,re);
+    /*printf("(%d, %.4e, %.4e, %.4e)\n",iab,gamma,dg,c);*/
+    
     if (c > 1.0) continue;
     if (c < -1.0) c = -1;
 
-    dg = -atan2(im,re);
-
     ind_old = ind_buffer->used;
-    buffer_set_offset(ind_buffer,iab*ths->ngamma);
+    buffer_set_offset(ind_buffer,ths->igamma[iab]);
     S1Grid_find_region(&ths->gamma[iab],dg,acos(c),
 		       ind_buffer);    
 
@@ -254,6 +282,7 @@ void SO3Grid_dist_region(SO3Grid ths[],
 					  (-1.0 + a + b *  cos(dg2))/2
 						    ))));
       /*printf("%.4e ",180/3.14*acos((-1.0 + a + b *  cos(dg2))/2));*/
+      /*printf("%.4e %.4e %.4e \n",a,b,dg);*/
     }
   }
 }

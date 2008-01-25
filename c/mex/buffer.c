@@ -60,6 +60,10 @@ void buffer_init(buffer *ths, mwSize N) {
   ths->used = 0;
 }
 
+void buffer_print(buffer *ths) {
+  print_int(ths->data,ths->used);
+}
+
 void buffer_reset(buffer *ths) {
   ths->used = 0;
   ths->offset = 0;
