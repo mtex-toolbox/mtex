@@ -1,4 +1,4 @@
-function SO3G = loadEBSD_txt(fname,CS,SS,varargin)
+function ebsd = loadEBSD_txt(fname,varargin)
 % load pole figure data from (alpha,beta,gamma) files
 %
 %% Description 
@@ -50,23 +50,27 @@ hl = get_option(varargin,'HEADER',0);
 hr = get_option(varargin,'HEADERC',0);
 layout = get_option(varargin,'LAYOUT',[1 2 3]);
 
-%try
+try
   % read data
 	d = dlmread(fname,dl,hl,hr);
 	alpha = d(:,layout(1))*dg; 
   beta  = d(:,layout(2))*dg;
-	gamma = d(:,layout(3));
+	gamma = d(:,layout(3))*dg;
   
-  q = euler2quat(alpha,beta,gamma,...
-    set_default_option(...
-    extract_option(varargin,{'bunge','ABG'}),...
-    'bunge'));  
   
-  disp(set_default_option(...
-    extract_option(varargin,{'bunge','ABG'}),...
-    'bunge'));
+  bunge = set_default_option(...
+    extract_option(varargin,{'bunge','ABG'}),{'bunge','ABG'},...
+    'bunge');
+  q = euler2quat(alpha,beta,gamma,bunge{:});  
   
-  SO3G = SO3Grid(q,CS,SS);
-%catch
-%  error('format txt does not match file %s',fname);
-%end
+  if check_option(varargin,'inverse'), q = inverse(q); end
+  
+  %disp(set_default_option(...
+  %  extract_option(varargin,{'bunge','ABG'}),...
+  %  'bunge'));
+  
+  SO3G = SO3Grid(q,symmetry('cubic'),symmetry());
+  ebsd = EBSD(SO3G,symmetry('cubic'),symmetry(),varargin{:});
+catch
+  error('format txt does not match file %s',fname);
+end
