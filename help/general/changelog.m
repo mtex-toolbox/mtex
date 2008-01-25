@@ -1,17 +1,23 @@
 %% MTEX Changelog
 %
 %
-%% MTEX 0.1
+%% MTEX 0.4
 %
-% * initial release
-%
-%% MTEX 0.2
-%
-% * new functions [[ODF_textureindex.html,textureindex]], [[ODF_entropy.html,entropy]], [[ODF_volume.html,volume]]
-% * creatly improved help 
-% * improved installation
-% * new options for plotting routines for specific ODF sections
-% * many bugfixes
+% * new function kernel_density_estimation to recover ODFs from EBSD data
+% * speed up evaluation of recalculated ODFs by a factor up to >100
+% * speed up of the functions [[ODF_textureindex.html,textureindex]],
+% [[ODF_entropy.html,entropy]], [[ODF_volume.html,volume]] by the same
+% factor
+% * speed up reconstruction of ODFs by a factor up to 4 (due to improvments
+% of the NFFT library)
+% * additionaly speed up reconstruction of cubic - orthorhombic ODFs by
+% factor 4 
+% * smaller overall speedups
+% * new, more flexibel syntax for the generation of
+% [[S2Grid_index.html,S2Grids]] 
+% * default plotting options are set to {}, i.e. 'reduced' has to add
+% manualy if desired
+% * some bug fixes
 %
 %% MTEX 0.3
 %
@@ -34,20 +40,15 @@
 % * new plot option _logarithmic_ 
 % * many bugfixes
 %
-%% MTEX 0.4
+%% MTEX 0.2
 %
-% * new function kernel_density_estimation to recover ODFs from EBSD data
-% * speed up evaluation of recalculated ODFs by a factor up to >100
-% * spped up of the functions [[ODF_textureindex.html,textureindex]],
-% [[ODF_entropy.html,entropy]], [[ODF_volume.html,volume]] by the same
-% factor
-% * speed up reconstruction of ODFs by a factor up to 4 (due to improvments
-% of the NFFT library)
-% * additionaly speed up reconstruction of cubic - orthorhombic ODFs by
-% factor 4 
-% * smaller overall speedups
-% * new, more flexibel syntax for the generation of
-% [[S2Grid_index.html,S2Grids]] 
-% * default plotting options are set to {}, i.e. 'reduced' has to add
-% manualy if desired
-% * some bug fixes
+% * new functions [[ODF_textureindex.html,textureindex]], [[ODF_entropy.html,entropy]], [[ODF_volume.html,volume]]
+% * creatly improved help 
+% * improved installation
+% * new options for plotting routines for specific ODF sections
+% * many bugfixes
+%
+%% MTEX 0.1
+%
+% * initial release
+%

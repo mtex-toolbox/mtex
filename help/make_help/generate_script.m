@@ -13,14 +13,14 @@ if nargin==0, help publish_m;return;end
 class_name = char(regexp(which(mfile),'(?<=@)\w*(?=/\w*\.m)','match'));
 
 % preformat mfile
-keywords = {'Syntax', 'Description','Input', 'Output', 'Options',...
-  'Flags', 'See also','Example'};
+%keywords = {'Syntax', 'Description','Input', 'Output', 'Options',...
+%  'Flags', 'See also','Example'};
 %format_mfile(mfile,keywords);
 
 % Read in source.
 [path, file_name, ext, versn] = fileparts(mfile); %#ok<NASGU,NASGU>
 code = file2cell(mfile);
-  
+
 % extract syntax
 syntax = strtrim(code{1}(10:end));
 
@@ -38,7 +38,7 @@ first_item = min(keywords_pos);
 % markup class links beginning with @
 code = regexprep(code,'([^/])@(\w*)','$1[[$2_index.html,$2]]');
 
-% markup Syntax 
+% markup Syntax
 for l = getrange('%% Syntax',code,keywords_pos)
   code{l} = regexprep(code{l},'^% ?','');
 end

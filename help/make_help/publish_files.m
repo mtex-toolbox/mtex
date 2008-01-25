@@ -17,7 +17,7 @@ old_dir = pwd;cd(in_dir);
 if get_option(varargin,'waitbar'), h = waitbar(0,'publishing');end
 for i=1:length(files)
   
-  if get_option(varargin,'waitbar'),waitbar(i/length(files));end
+  if check_option(varargin,'waitbar'),waitbar(i/length(files));end
   close all
   
   % publish

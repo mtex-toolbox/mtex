@@ -48,7 +48,7 @@
 %
 % The <TODO.html TODO list> is a list a planned features and bug fixes for
 % MTEX. You can modify the TODO list or adding new items by visiting our
-% homepage <http://iras.geo.tu-freiberg.de/mathe/mtex/Todo>.
+% homepage <http://code.google.com/p/mtex/issues/list>.
 %
 %% Bug Reports
 %

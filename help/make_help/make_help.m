@@ -5,6 +5,8 @@ function make_help(varargin)
 
 %% set global options
 
+tic
+
 global mtex_path;
 html_path = [mtex_path '/help/html'];
 
@@ -30,7 +32,7 @@ if check_option(varargin, {'classes','all'})
   
   current_path = [mtex_path '/help/classes'];
 
-  folders = {'qta/@ODF','qta/@PoleFigure','qta/@kernel',...
+  folders = {'qta/@ODF','qta/@PoleFigure','qta/@EBSD','qta/@kernel',...
     'qta/standardODFs','qta/interfaces',...
     'geometry/@vector3d','geometry/@quaternion','geometry/@Miller',...
     'geometry/@symmetry','geometry/@S1Grid','geometry/@S2Grid',...
@@ -104,10 +106,12 @@ if check_option(varargin, {'interfaces','all'})
     'evalcode',1,'stylesheet',[pwd '/example_style.xsl'],varargin{:});  
 end
 
+toc
+
 %% create searchable database
 cd([mtex_path '/help']);
 disp('run: jar -cf help.jar -C html/ .');
-pastruse
+pause
 cd('html');
 builddocsearchdb('.');
 global mtex_startup_dir;

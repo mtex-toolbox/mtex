@@ -32,8 +32,16 @@
 %
 %% S2Grid
 %
+% * make dist fast 
 % * defining complete S2Grid should be as simple as incomplete
 % * make flags right --> make use of it in calcODF
+%
+%
+%% SO3Grid
+%
+% * implement find for cubical case
+% * implement find/dist for local grids
+% * implement rotated local grid
 %
 %% EBSD
 %

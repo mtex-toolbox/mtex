@@ -26,6 +26,7 @@ Examples
 <tocitem target="geometry_demo.html"> Crystal Geometry </tocitem>
 <tocitem target="dubna_demo.html"> The Dubna Example </tocitem>
 <tocitem target="demo_santafee.html"> The Santafee Example</tocitem>
+<tocitem target="ebsd_demo.html"> EBSD Demo</tocitem>
 </tocitem>
 <tocitem target="interfaces_index.html" image="$toolbox/matlab/icons/boardicon.gif">
 Interfaces
@@ -51,11 +52,12 @@ image="$toolbox/matlab/icons/pagesicon.gif">
 <tocitem target="vector3d_index.html">class vector3d</tocitem>
 <tocitem target="ODF_index.html">class ODF</tocitem>
 <tocitem target="PoleFigure_index.html">class PoleFigure</tocitem>
+<tocitem target="EBSD_index.html">class EBSD</tocitem>
 <tocitem target="kernel_index.html">class kernel</tocitem>
 <tocitem target="standardODFs_index.html">standard ODFs</tocitem>
 <tocitem target="geometry_tools_index.html">geometry tools</tocitem>
-<tocitem target="plot_index.html">plotting tools</tocitem>
-<tocitem target="statistic_index.html">statistic tools</tocitem>
+<tocitem target="plot_tools_index.html">plotting tools</tocitem>
+<tocitem target="statistic_tools_index.html">statistic tools</tocitem>
 <tocitem target="tools_index.html">general tools</tocitem>
 </tocitem>
 <tocitem target="changelog.html"
