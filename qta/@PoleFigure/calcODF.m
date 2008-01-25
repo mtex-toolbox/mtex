@@ -37,7 +37,7 @@ function [odf,alpha] = calcODF(pf,varargin)
 %  alpha  - scaling factors - calculated during reconstruction
 %
 %% See also
-% examples_index
+% PoleFigure/loadPoleFigure interfaces_index examples_index
 
 tic
 
