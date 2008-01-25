@@ -11,6 +11,11 @@ function [NG,ind] = subGrid(S1G,x,epsilon)
 %  NG         - @S1Grid
 %  ind        - int32
 
-ind = find(S1G,x,epsilon);
-NG = S1Grid(S1G.points(ind),S1G.min,S1G.max);
+if nargin == 3
+  ind = find(S1G,x,epsilon);
+else
+  ind = x;
+end
+
+NG = S1Grid(reshape(S1G.points(ind),1,[]),S1G.min,S1G.max);
 NG.periodic = S1G.periodic;

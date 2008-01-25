@@ -19,7 +19,7 @@ if nargin == 3
 elseif islogical(q) 
   ind = q;
 else
-  ind = false(GridLength(G));
+  ind = false(GridLength(G),1);
   ind(q) = true;
 end
 
@@ -27,10 +27,11 @@ NG = G;
 NG.Grid    = NG.Grid(ind);
 
 if check_option(G,'indexed')
-  if isempty(G.subGrid)
-    NG.subGrid = ~ind;
-  else
-    rem = find(~G.subGrid);
-    NG.subGrid(rem(~ind)) = true;
+  id = cumsum([0,GridLength(G.gamma)]);
+  for i = 1:length(G.gamma)
+    G.gamma(i) = subGrid(G.gamma(i),ind(1+id(i):id(i+1)));
   end
+  G.alphabeta  = subGrid(G.alphabeta,GridLength(G.gamma)>0);
+  G.gamma(GridLength(G.gamma)==0) = [];
 end
+

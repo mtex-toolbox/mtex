@@ -31,7 +31,6 @@ G.options = {};
 G.CS      = CS;
 G.SS      = SS;
 G.Grid    = [];
-G.subGrid = [];
 G.dMatrix = [];
 
 if isa(points,'quaternion')    % SO3rid defined by a set quaternions
@@ -151,9 +150,17 @@ elseif isa(points,'double') && points > 0  % discretise euler space
         p = dot(rodriguez,1/norm(c{i}.v(j)) * c{i}.v(j));
         ind = ind | (p>c{i}.h);
       end
-    end    
+    end
     Grid(ind) = [];
-    G.subGrid = ind;
+    
+    id = cumsum([0,GridLength(G.gamma)]);
+    for i = 1:length(G.gamma)
+      G.gamma(i) = subGrid(G.gamma(i),...
+        ~ind(1+id(i):id(i+1)));
+    end
+    G.alphabeta  = subGrid(G.alphabeta,GridLength(G.gamma)>0);
+    G.gamma(GridLength(G.gamma)==0) = [];
+    
   end
   
   G.options = {'indexed'};

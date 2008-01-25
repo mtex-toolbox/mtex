@@ -1,10 +1,11 @@
 function plot(m,varargin)
 % plot Miller indece
 %% Input
-%  h  - qMiller
+%  m  - Miller
 %
 %% Options
-%  ALL - plot symmetrically equivalent directions
+%  ALL     - plot symmetrically equivalent directions
+%  NO_CHAR - no description
 
 
 colororder = ['b','g','r','c','m','k','y'];
@@ -15,6 +16,29 @@ else
   clf;
   set(gcf,'Name','Miller indece in a Schmidt net');  
 end
+
+for i = 1:numel(m)
+
+  if check_option(varargin,'ALL')  
+    mm = vec2Miller(symvec(m(i),varargin{:}),m(i).CS);
+  else
+    mm = m(i);
+  end
+  
+  s = cell(1,numel(mm));
+  for ii = 1:numel(mm)
+    s{ii} = char(char(mm(ii),'no_scopes'));
+  end
+  
+  plot(S2Grid(vector3d(mm)),varargin{:},'dots',...
+    'data',s,...
+    'color',colororder(1+mod(i-1,length(colororder))));
+  
+  hold on
+end
+
+hold off
+return
 
 s = cell(1,numel(m));
 for i = 1:numel(m)
