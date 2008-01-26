@@ -35,4 +35,5 @@
 % * <plotting_index.html plotting tools>
 % * <tools_index.html general tools>
 % * <statistic_index.html statistic tools>
-% * <interfaces.html import tools>
+% * <interfaces_index.html import tools>
+% * <interfacesEBSD_index.html import tools>

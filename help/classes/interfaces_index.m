@@ -3,7 +3,7 @@
 % Importing pole figure data in MTEX means to create a
 % <PoleFigure_index.html PoleFigure> object from data files containing 
 % diffration data. Once such an object has been created the data can be
-% analyzed and proceeded in many ways. See e.g.
+% analyzed and processed in many ways. See e.g.
 %
 % [[PoleFigure_index.html,pole figure manipulation]], 
 % <PoleFigure_plot.html plot>, <PoleFigure_hist hist>,
@@ -21,12 +21,12 @@
 % into the command line 
 import_wizard 
 %%
-% or by choosing _MTEX / import wizard_ from the start
-% menu. The import wizard provides a gui to import data of almost all data formats MTEX
-% currently supports and to specify crystal symmetry, Miller indece
-% and structure coefficients. The gui allows to plot the imported data,
-% save them as a <PoleFigure_index.html PoleFigure> object to the
-% workspace or to generate a m-file loading the data automatically. 
+% or by choosing _MTEX / import wizard_ from the start menu. The import
+% wizard provides a gui to import data of almost all data formats MTEX
+% currently supports and to specify crystal symmetry, Miller indece and
+% structure coefficients. The gui allows to plot the imported data, save
+% them as a <PoleFigure_index.html PoleFigure> object to the workspace or to
+% generate a m-file loading the data automatically.
 %
 %% List of automatically detected interfaces
 %
@@ -94,7 +94,7 @@ pf = loadPoleFigure(fnames,h,cs,ss,'superposition',c)
 %
 %% Importing pole figure data from unknown formats
 %
-% MTEX allows provides a way to import data from formats currently not 
+% MTEX also provides a way to import data from formats currently not 
 % supported directly. Therefore you can to use all standard MATLAB input
 % and output commands to read the pole figure informations, e.g. intensities,
 % specimen directions, crystal directions directly from the data files.

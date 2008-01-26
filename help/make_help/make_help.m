@@ -33,7 +33,7 @@ if check_option(varargin, {'classes','all'})
   current_path = [mtex_path '/help/classes'];
 
   folders = {'qta/@ODF','qta/@PoleFigure','qta/@EBSD','qta/@kernel',...
-    'qta/standardODFs','qta/interfaces',...
+    'qta/standardODFs','qta/interfaces','qta/interfacesEBSD',...
     'geometry/@vector3d','geometry/@quaternion','geometry/@Miller',...
     'geometry/@symmetry','geometry/@S1Grid','geometry/@S2Grid',...
     'geometry/@SO3Grid','geometry/geometry_tools',...
@@ -99,11 +99,12 @@ end
 %% calculate interfaces
 
 if check_option(varargin, {'interfaces','all'})
-  
+
   current_path = [mtex_path filesep 'help' filesep 'interfaces'];
   files = dir([current_path filesep '*.m']);
   publish_files({files.name},current_path,'out_dir',html_path,...
-    'evalcode',1,'stylesheet',[pwd '/example_style.xsl'],varargin{:});  
+    'evalcode',1,'stylesheet',[pwd '/example_style.xsl'],varargin{:});
+
 end
 
 toc
