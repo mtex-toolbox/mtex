@@ -14,13 +14,14 @@ function ebsd = loadEBSD_txt(fname,varargin)
 %  .      .       .
 %  alpha_M beta_M gamma_M
 %
-% The actual order of the columns in the file can be specified by the
-% option |LAYOUT|. Furthermore, the files can be contain any number of
-% header lines and columns to be ignored using the options |HEADER| and
-% |HEADERC|. 
+% The actual position and order of the columns in the file can be specified
+% by the option |LAYOUT|. Furthermore, the files can be contain any number
+% of header lines and columns to be ignored using the options |HEADER| and
+% |HEADERC|.
 %
 %% Syntax
-%  pf   = loadPoleFiguretxt(fname,<options>)
+%  pf   = loadEBSD_txt(fname,<options>)
+%  pf   = loadEBSD_txt(fname,'layout',[col_phi1,col_Phi,col_phi2]
 %
 %% Input
 %  fname - file name (text files only)
@@ -37,12 +38,10 @@ function ebsd = loadEBSD_txt(fname,varargin)
 % 
 %% Example
 %
-% loadEBSD_txt('ebsd/aachen.txt',symmetry('cubic'),symmetry,'header',1,'layout',[5,6,7]) 
-%
-% odf = ODF(S3G,ones(GridLength(S3G),1)./GridLength(S3G),kernel('de la Vallee Poussin','halfwidth',2*degree),symmetry('cubic'),symmetry)
+% ebsd = loadEBSD('ebsd.txt',symmetry('cubic'),symmetry,'header',1,'layout',[5,6,7]) 
 %
 %% See also
-% interfaces_index munich_interface loadPoleFigure
+% interfacesEBSD_index loadEBSD ebsd_demo
 
 dg = degree + (1-degree)*check_option(varargin,'RADIAND');
 dl = get_option(varargin,'DELIMITER','');
@@ -64,10 +63,6 @@ try
   q = euler2quat(alpha,beta,gamma,bunge{:});  
   
   if check_option(varargin,'inverse'), q = inverse(q); end
-  
-  %disp(set_default_option(...
-  %  extract_option(varargin,{'bunge','ABG'}),...
-  %  'bunge'));
   
   SO3G = SO3Grid(q,symmetry('cubic'),symmetry());
   ebsd = EBSD(SO3G,symmetry('cubic'),symmetry(),varargin{:});

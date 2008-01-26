@@ -1,21 +1,25 @@
-function odf = mtimes(x,y)
-% scaling of the ODF
+function ebsd = mtimes(x,y)
+% rotating the ebsd data by a certain rotation 
 %
-% overload the * operator, i.e. one can now write x*@ODF or @ODF*y in order
-% to scale an ODF
+% overload the * operator, i.e. one can now write g*@EBSD or @EBSD*v in
+% order to rotate EBSD data or the rotate a vector by EBSD data
 %
 %% See also
-% ODF_index ODF/plus
+% EBSD_index EBSD/rotate
 
-if isa(x,'ODF') && isa(y,'double')
-  odf = x;
+if isa(x,'EBSD') && isa(y,'vector3d')
+        
+  ebsd = getgrid(EBSD) * y;
+  
+elseif isa(x,'EBSD') && isa(y,'quaternion')
+  ebsd = x;
   f = y;
-elseif isa(y,'ODF') && isa(x,'double')
-  odf = y;
+elseif isa(y,'EBSD') && isa(x,'quaternion')
+  ebsd = y;
   f = x;
 end
 
-for i = 1:length(odf)
-  odf(i).c_hat = f*odf(i).c_hat;
-  odf(i).c = f*odf(i).c;
-end
+for i = 1:length(ebsd)
+  ebsd(i).grid = ebsd(i).grid * y;
+end 
+

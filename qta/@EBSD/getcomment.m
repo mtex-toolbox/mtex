@@ -1,13 +1,13 @@
-function c = getcomment(odf)
-% return comment corresponding to the odf
+function c = getcomment(ebsd)
+% return comment corresponding to the ebsd
 %
 %% Input 
-%  odf - @ODF
+%  ebsd - @EBSD
 %
 %% Output
-%  c   - comment specified for the ODF
+%  c   - comment specified for the EBSD
 %
 %% See also
-% ODF/ODF
+% EBSD/EBSD
 
-c = odf(1).comment;
+c = ebsd(1).comment;
