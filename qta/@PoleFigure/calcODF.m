@@ -83,8 +83,11 @@ clear ghtheta; clear ghrho;
 
 % extract kernel Fourier coefficents
 A = getA(psi);
-% if check_option(getr(pf(1)),'HEMISPHERE'), A(2:2:end) = 0; end;
-A(2:2:end) = 0;
+if check_option(getr(pf(1)),'HEMISPHERE')
+  A(2:2:end) = 0; 
+else
+  warning('Flag HEMISPHERE not set in PoleFigure data!');
+end;
 bw = min(get_option(varargin,'bandwidth',length(A)),length(A));
 A = A(1:bw);
 

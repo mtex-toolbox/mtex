@@ -1,5 +1,5 @@
 function [CS,SS] = getSym(ebsd)
-% get crystal and specimen symmetry of the EBSD
+% get crystal and specimen symmetry of the EBSD data
 %
 %% Input
 %  ebsd - @EBSD
