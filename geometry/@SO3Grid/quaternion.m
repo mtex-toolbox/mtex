@@ -15,7 +15,7 @@ if nargin == 1
         N = [N,SO3G(i).Grid]; %#ok<AGROW>
     end
 elseif nargin == 2
-    N = SO3G.Grid(i);
+    N = reshape(SO3G.Grid(i),size(i));
 else
     N = SO3G.Grid(i,j);
 end
