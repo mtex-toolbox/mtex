@@ -1,6 +1,6 @@
 %% MTEX - Analysing of EBSD data
 %
-% Analysis of single orientation measurement
+% Analysis of single orientation measurement.
 %
 % 
 % 
@@ -12,14 +12,11 @@ ss = symmetry('tricline');
 
 %% load EBSD data
 
-ebsd = loadEBSD_txt([mtexDataPath,'/aachen_ebsd/85_829grad_07_09_06.txt'],cs,ss,'header',1,'layout',[5,6,7])
-
+ebsd = loadEBSD([mtexDataPath,'/aachen_ebsd/85_829grad_07_09_06.txt'],cs, ...
+                ss,'header',1,'layout',[5,6,7])
 
 %% plot pole figures
-plotpdf(ebsd,xvector)
-
-%% plot single orientations
-plotodf(ebsd)
+plotpdf(ebsd,xvector,'points',500)
 
 %% kernel density estimation
 odf = calcODF(ebsd)
@@ -28,19 +25,24 @@ odf = calcODF(ebsd)
 h = [Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)];
 plotpdf(odf,h)
 
+%% plot ODF
+plotodf(odf,'alpha','sections',18,'resolution',5*degree,...
+     'plain','gray','contourf','FontSize',10)
+
 %% a sythetic example
 
-for i = 1:5
+ebsd = simulateEBSD(santafee,10000)
+plotodf(santafee,'alpha','sections',18,'resolution',5*degree,...
+     'plain','gray','contourf','FontSize',10)
 
-  ebsd = simulateEBSD(santafee,10^i)
+%%
+odf = calcODF(ebsd,'halfwidth',10*degree)
 
-  %%
-  odf = calcODF(ebsd)
+%%
+plotodf(odf,'alpha','sections',18,'resolution',5*degree,...
+     'plain','gray','contourf','FontSize',10)
 
-  %%
-  e(i) = calcerror(odf,santafee,SO3Grid(2.5*degree,symmetry('cubic'),symmetry()));
-end
-
-plot(e)
+%%
+calcerror(odf,santafee,'resolution',5*degree)
   
 
