@@ -29,8 +29,8 @@ Examples
 <tocitem target="ebsd_demo.html"> EBSD Demo</tocitem>
 </tocitem>
 <tocitem target="interfaces_index.html" image="$toolbox/matlab/icons/boardicon.gif">
-Interfaces
- <tocitem target="aachen_exp_interface.html">Aachen_exp</tocitem>
+ Interfaces
+<tocitem target="aachen_exp_interface.html">Aachen_exp</tocitem>
 <tocitem target="aachen_interface.html">Aachen</tocitem>
 <tocitem target="beartex_interface.html">BearTex</tocitem>
 <tocitem target="dubna_interface.html">Dubna</tocitem>
@@ -40,6 +40,10 @@ Interfaces
 <tocitem target="philips_interface.html">Philips</tocitem>
 <tocitem target="ptx_interface.html">ptx</tocitem>
  </tocitem>
+ <tocitem target="interfacesEBSD_index.html" image="$toolbox/matlab/icons/boardicon.gif">
+ EBSD Interfaces
+<tocitem target="ebsd_interface.html">EBSD</tocitem>	 
+</tocitem>
 <tocitem target="classes_index.html"
 image="$toolbox/matlab/icons/pagesicon.gif">
  Function Overview
