@@ -1,4 +1,4 @@
-function odf = unimodalODF(mod,psi,CS,SS)
+function odf = unimodalODF(mod,psi,CS,SS,varargin)
 % define a unimodal ODF
 %
 %% Description
