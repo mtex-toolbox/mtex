@@ -9,7 +9,11 @@ Feature Overview
 </tocitem>
 <tocitem target="odf_estimation.html"
 image="$toolbox/matlab/icons/pagesicon.gif">
-ODF Estimation
+ODF Estimation (Pole Figures)
+</tocitem>
+<tocitem target="EBSD2odf_estimation.html"
+image="$toolbox/matlab/icons/pagesicon.gif">
+ODF Estimation (EBSD)
 </tocitem>
 <tocitem target="getting_started.html"
  image="$toolbox/matlab/icons/greenarrowicon.gif">
@@ -29,7 +33,7 @@ Examples
 <tocitem target="ebsd_demo.html"> EBSD Demo</tocitem>
 </tocitem>
 <tocitem target="interfaces_index.html" image="$toolbox/matlab/icons/boardicon.gif">
- Interfaces
+ Interfaces (Pole Figures)
 <tocitem target="aachen_exp_interface.html">Aachen_exp</tocitem>
 <tocitem target="aachen_interface.html">Aachen</tocitem>
 <tocitem target="beartex_interface.html">BearTex</tocitem>
@@ -41,8 +45,8 @@ Examples
 <tocitem target="ptx_interface.html">ptx</tocitem>
  </tocitem>
  <tocitem target="interfacesEBSD_index.html" image="$toolbox/matlab/icons/boardicon.gif">
- EBSD Interfaces
-<tocitem target="ebsd_interface.html">EBSD</tocitem>	 
+ Interfaces (EBSD)
+ <tocitem target="ebsd_interface.html">Generic</tocitem>	 
 </tocitem>
 <tocitem target="classes_index.html"
 image="$toolbox/matlab/icons/pagesicon.gif">

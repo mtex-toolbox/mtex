@@ -26,11 +26,11 @@ h = [Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)];
 plotpdf(odf,h,'reduced')
 
 %% plot ODF
+close;figure('position',[46   171   752   486]);
 plotodf(odf,'alpha','sections',18,'resolution',5*degree,...
      'plain','gray','contourf','FontSize',10)
 
 %% a sythetic example
-
 ebsd = simulateEBSD(santafee,10000)
 plotodf(santafee,'alpha','sections',18,'resolution',5*degree,...
      'plain','gray','contourf','FontSize',10)
