@@ -83,5 +83,5 @@ plot(odf,'sections',18,'resolution',5*degree)
 %% rotate ODF back
 
 odfrotated = rotate(odf,axis2quat(xvector,45*degree));
-plotpdf(odfrotated,getMiller(pf(1)));
+plotpdf(odfrotated,getMiller(pf(1)),'rotated');
 

@@ -64,7 +64,8 @@ CS * q * SS;
 
 dist(CS,SS,q1,q2)/degree; 
 Laue(SS); length(CS);
-quaternion(CS); plot(CS,'FontSize',20)
+quaternion(CS); 
+set(gcf,'position',[50,50,400,400]);plot(CS,'FontSize',15,'reduced')
 %savefigure('pic/symmetry.pdf')
 
 %% The class Miller
@@ -83,7 +84,7 @@ CS * Miller(1,0,0,CS);
 angle(h1,h2); 
 vector3d(h); 
 symeq(h1,h2);
-plot(Miller(1,3,-4,4,CS),'all','FontSize',20)
+plot(Miller(1,3,-4,4,CS),'all','FontSize',15,'reduced')
 %savefigure('pic/miller.pdf')
 
 %% The Class S2Grid 
