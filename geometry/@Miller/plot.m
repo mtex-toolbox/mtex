@@ -27,7 +27,7 @@ for i = 1:numel(m)
   
   s = cell(1,numel(mm));
   for ii = 1:numel(mm)
-    s{ii} = char(char(mm(ii),'no_scopes'));
+    s{ii} = char(char(mm(ii),'latex'));
   end
   
   plot(S2Grid(vector3d(mm)),varargin{:},'dots',...
