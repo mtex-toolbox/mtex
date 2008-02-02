@@ -41,7 +41,7 @@ function ebsd = loadEBSD_txt(fname,varargin)
 % ebsd = loadEBSD('ebsd.txt',symmetry('cubic'),symmetry,'header',1,'layout',[5,6,7]) 
 %
 %% See also
-% interfaces_index munich_interface loadPoleFigure
+% interfacesEBSD_index loadEBSD ebsd_demo
 
 dg = degree + (1-degree)*check_option(varargin,'RADIAND');
 dl = get_option(varargin,'DELIMITER','');
@@ -63,10 +63,6 @@ try
   q = euler2quat(alpha,beta,gamma,bunge{:});  
   
   if check_option(varargin,'inverse'), q = inverse(q); end
-  
-  %disp(set_default_option(...
-  %  extract_option(varargin,{'bunge','ABG'}),...
-  %  'bunge'));
   
   SO3G = SO3Grid(q,symmetry('cubic'),symmetry());
   ebsd = EBSD(SO3G,symmetry('cubic'),symmetry(),varargin{:});

@@ -11,7 +11,7 @@ function ebsd = loadEBSD(fname,varargin)
 % [[loadEBSD_txt.html,loadEBSD_txt]] for additional options.
 %
 %% Syntax
-% pf = loadEBSD(fname,cs,ss,<options>)
+%  pf = loadEBSD(fname,cs,ss,<options>)
 %
 %% Input
 %  fname     - filename
@@ -25,7 +25,7 @@ function ebsd = loadEBSD(fname,varargin)
 %  ebsd - @EBSD
 %
 %% See also
-% interfaces_index ebsd/calcODF examples_index loadEBSD_txt
+% interfacesEBSD_index ebsd/calcODF ebsd_demo loadEBSD_txt
 
 %% proceed input argument
 
