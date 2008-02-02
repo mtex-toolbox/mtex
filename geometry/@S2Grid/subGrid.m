@@ -23,13 +23,9 @@ end
 
 G = S2G;
 G.Grid = G.Grid(ind);
-G.res = S2G.res;
 
 if check_option(G,'indexed')
-  id = cumsum([0,GridLength(G.rho)]);
-  for i = 1:length(G.rho)
-    G.rho(i) = subGrid(G.rho(i),ind(1+id(i):id(i+1)));
-  end
+  G.rho = subGrid(G.rho,ind);
   G.theta = subGrid(G.theta,GridLength(G.rho)>0);
   G.rho(GridLength(G.rho)==0) = [];
 end
