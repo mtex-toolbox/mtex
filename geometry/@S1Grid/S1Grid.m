@@ -33,10 +33,27 @@ elseif nargin == 1
 elseif nargin > 2
 
 	G.points = points;
-	G.min = min;
-	G.max = max;
+	G.min = min(1);
+	G.max = max(1);
   G.periodic = check_option(varargin,'PERIODIC');
-	G = class(G,'S1Grid');
+
+  if check_option(varargin,'matrix')
+    
+    G.points = G.points(:,1);
+    G = repmat(G,size(points,2),1);
+    
+    for i = 1:size(points,2)
+      G(i).min = min(i);
+      G(i).max = max(i);
+      G(i).points = points(:,i);
+    end
+  else
+    
+  end
+  
+  G = class(G,'S1Grid');
+  
+  
 else
 	error('wrong number of arguments')
 end

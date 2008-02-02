@@ -17,5 +17,18 @@ else
   ind = x;
 end
 
-NG = S1Grid(reshape(S1G.points(ind),1,[]),S1G.min,S1G.max);
-NG.periodic = S1G.periodic;
+for i = 1:length(S1G)
+  S1G(i).points = reshape(S1G(i).points,1,[]);
+end
+NG = S1G;
+id = cumsum([0,GridLength(NG)]);
+points = [NG.points];
+points = points(ind);
+
+idx = cumsum(full([0;ind(:)]));
+idx = idx(id+1);
+
+for i = 1:length(NG)
+  %NG(i).points = NG(i).points(ind(1+id(i):id(i+1)));
+  NG(i).points = points(1+idx(i):idx(i+1));
+end
