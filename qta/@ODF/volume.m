@@ -30,5 +30,9 @@ f = GridLength(SO3Grid(2.5*degree,odf(1).CS,odf(1).SS,'MAX_ANGLE',radius))/...
   GridLength(SO3Grid(2.5*degree,odf(1).CS,odf(1).SS));
 
 % eval odf
-v = sum(eval(odf,S3G))/GridLength(S3G)*f;
+if f==0
+  v = 0;
+else
+  v = sum(eval(odf,S3G))/GridLength(S3G)*f;
+end
 
