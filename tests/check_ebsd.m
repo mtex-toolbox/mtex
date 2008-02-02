@@ -1,4 +1,4 @@
-%% check simulateEBSD and calcODF
+%% MTEX check simulateEBSD and calcODF
 % check for the dependency between the number of sample
 % orientations and the error between the estimated and the 
 % true ODF
