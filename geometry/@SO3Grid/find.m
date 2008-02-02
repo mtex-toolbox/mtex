@@ -11,7 +11,7 @@ function [ind,d] = find(SO3G,q,epsilon,varargin)
 %% Output
 %  [indece, distances]
 %
-%% TODO cubic case
+
 
 if ~check_option(SO3G,'indexed')
 
@@ -25,11 +25,15 @@ if ~check_option(SO3G,'indexed')
     ind = d<epsilon;
   end
 
+elseif GridLength(SO3G) == 0
+  ind = [];
+  d = [];
 else
   
   % symmetrice
   s = quaternion(SO3G.CS);
   ls = length(SO3G.CS);
+  lq = numel(q);
   
   % special cubic case 1
   if any(strcmp(Laue(SO3G.CS),{'m-3','m-3m'})) && check_option(varargin,'nocubictrifoldaxis')
@@ -77,6 +81,12 @@ else
     end      
   else  
     ind = SO3Grid_find_region(yalpha,ybeta,ygamma,sgamma,int32(igamma), ...
-      int32(ialphabeta),palpha,pgamma, xalpha,xbeta,xgamma,epsilon);  
+      int32(ialphabeta),palpha,pgamma, xalpha,xbeta,xgamma,epsilon);
+    
+    % special cubic case 2
+    if any(strcmp(Laue(SO3G.CS),{'m-3','m-3m'})) && ~check_option(varargin,'nocubictrifoldaxis')
+      ind = reshape(ind,[],3);
+      ind = reshape(any(ind,2),[GridLength(SO3G) lq]);
+    end    
   end  
 end

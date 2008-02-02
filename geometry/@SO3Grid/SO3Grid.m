@@ -43,7 +43,7 @@ if isa(points,'quaternion')    % SO3rid defined by a set quaternions
 	  G.resolution = min(2*acos(dot_outer(CS,SS,points(1),points(2:end))));
   end 
 	
-elseif maxangle < rotangle_max_z(CS)/2
+elseif maxangle < rotangle_max_z(CS)/4
   
   if points > 1
     res = maxangle / points^(1/3);
@@ -116,11 +116,13 @@ elseif isa(points,'double') && points > 0  % discretise euler space
 	alpha = repmat(reshape(alpha,1,[]),ap2,1);
 	beta  = repmat(reshape(beta,1,[]),ap2,1);
  
-  G.gamma = S1Grid();
-  for ig = 1:GridLength(G.alphabeta)
-    G.gamma(ig) = S1Grid(gamma(:,ig),...
-      -maxgamma+dgamma(1,ig),maxgamma+dgamma(1,ig),'periodic');
-  end
+  G.gamma = S1Grid(gamma,-maxgamma+dgamma(1,:),...
+    maxgamma+dgamma(1,:),'periodic','matrix');
+  %G.gamma = S1Grid();
+  %for ig = 1:GridLength(G.alphabeta)
+  %  G.gamma(ig) = S1Grid(gamma(:,ig),...
+  %    -maxgamma+dgamma(1,ig),maxgamma+dgamma(1,ig),'periodic');
+  %end
 	  
   Grid = euler2quat(alpha,beta,gamma);
 	Grid = reshape(Grid,[],1);
@@ -142,7 +144,8 @@ elseif isa(points,'double') && points > 0  % discretise euler space
     % c{3}.v = vector3d([-1 0],[0 -1],[0 0]);
     % c{3}.h = 0;
     %end
-    
+ 
+    % find rotation not part of the fundamental region
 		rodriguez = quat2rodriguez(Grid);  
     ind = zeros(numel(rodriguez),1);
     for i = 1:length(c)
@@ -151,13 +154,12 @@ elseif isa(points,'double') && points > 0  % discretise euler space
         ind = ind | (p>c{i}.h);
       end
     end
+    
+    % eliminate those rotations
     Grid(ind) = [];
     
-    id = cumsum([0,GridLength(G.gamma)]);
-    for i = 1:length(G.gamma)
-      G.gamma(i) = subGrid(G.gamma(i),...
-        ~ind(1+id(i):id(i+1)));
-    end
+    % eliminate from index set
+    G.gamma = subGrid(G.gamma,~ind);
     G.alphabeta  = subGrid(G.alphabeta,GridLength(G.gamma)>0);
     G.gamma(GridLength(G.gamma)==0) = [];
     

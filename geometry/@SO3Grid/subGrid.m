@@ -26,12 +26,11 @@ end
 NG = G;
 NG.Grid    = NG.Grid(ind);
 
-if check_option(G,'indexed')
-  id = cumsum([0,GridLength(G.gamma)]);
-  for i = 1:length(G.gamma)
-    G.gamma(i) = subGrid(G.gamma(i),ind(1+id(i):id(i+1)));
-  end
-  G.alphabeta  = subGrid(G.alphabeta,GridLength(G.gamma)>0);
-  G.gamma(GridLength(G.gamma)==0) = [];
+if check_option(NG,'indexed')
+  NG.gamma = subGrid(NG.gamma,ind);
+  %disp([int2str(sum(GridLength(NG.gamma))), ' - ', int2str(numel(NG.Grid))]);
+  NG.alphabeta  = subGrid(NG.alphabeta,GridLength(NG.gamma)>0);
+  %disp(int2str(GridLength(NG.alphabeta)));
+  NG.gamma(GridLength(NG.gamma)==0) = [];
 end
 
