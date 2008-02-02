@@ -15,14 +15,14 @@ ss = symmetry('tricline');
 ebsd = loadEBSD([mtexDataPath,'/aachen_ebsd/85_829grad_07_09_06.txt'],cs, ...
                 ss,'header',1,'layout',[5,6,7])
 
-%% plot pole figures
-plotpdf(ebsd,xvector,'points',500,'reduced')
+%% plot pole figures as scatter plots
+h = [Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)];
+plotpdf(ebsd,h,'points',500,'reduced')
 
 %% kernel density estimation
 odf = calcODF(ebsd)
 
 %% plot pole figures
-h = [Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)];
 plotpdf(odf,h,'reduced')
 
 %% plot ODF
@@ -31,19 +31,47 @@ plotodf(odf,'alpha','sections',18,'resolution',5*degree,...
      'plain','gray','contourf','FontSize',10)
 
 %% a sythetic example
+%
+% simulate EBSD data for the Santafee sample ODF
 
 ebsd = simulateEBSD(santafee,10000)
 plotodf(santafee,'alpha','sections',18,'resolution',5*degree,...
      'plain','gray','contourf','FontSize',10)
 
-%%
+%% 
+% estimate an ODF from the simulated EBSD data
+
 odf = calcODF(ebsd,'halfwidth',10*degree)
 
 %%
+% plot the estimated ODF
+
 plotodf(odf,'alpha','sections',18,'resolution',5*degree,...
      'plain','gray','contourf','FontSize',10)
 
 %%
+% calculate estimation error
 calcerror(odf,santafee,'resolution',5*degree)
+
+%% Exploration of the relationship between estimation error and number of single orientations
+%
+% simulate 10, 100, ..., 100000 single orientations of the Santafee sample ODF, 
+% estimate an ODF from these data and calcuate the estimation error
+
+for i = 1:5
+
+  ebsd = simulateEBSD(santafee,10^i);
+
+  odf = calcODF(ebsd);
+
+  e(i) = calcerror(odf,santafee,'resolution',2.5*degree);
   
+end
+
+%% 
+% plot the error in dependency of the number of single orientations
+
+plot(e)
+
+
 
