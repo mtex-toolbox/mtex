@@ -3,5 +3,7 @@ function l = GridLength(G)
 
 l = zeros(1,length(G));
 for i = 1:length(G)
-	l(i) = length(G(i).points);
+	l(i) = numel(G(i).points);
 end
+%l = arrayfun(@(x) numel(x.points),struct(G));
+%l = reshape(l,1,[]);
