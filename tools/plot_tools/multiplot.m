@@ -22,10 +22,6 @@ function multiplot(x,y,nplots,varargin)
 %% See also
 % S2Grid/plot savefigure   
 
-clf('reset');
-set(gcf,'Visible','off');
-%set(gcf,'toolbar','none');
-
 % calculate data
 minz = +inf; maxz = -inf;
 for i = 1:nplots
@@ -41,7 +37,7 @@ end
 if check_option(varargin,'absolute')
   
   % set range for colorcoding
-  varargin = set_default_option(varargin,{},'range',[minz,maxz]);
+  varargin = set_default_option(varargin, {},'range',[minz,maxz]);
   
   % set contour levels
   ncontour = get_option(varargin,{'contour','contourf'},10,'double');
@@ -55,15 +51,28 @@ if check_option(varargin,'absolute')
   
 end
 
+%% plot
 
-% plot
+clf('reset');
+figure(clf);
+%set(gcf,'Visible','off');
+%set(gcf,'toolbar','none');
+
+if ~check_option(varargin,'3d')
+  % init statusbar
+  sb = statusbar('drawing plots ...');
+  set(sb.ProgressBar, 'Visible','on', 'Minimum',0, 'Maximum',nplots, 'Value',0, 'StringPainted','on');
+end
+
 fontsize = get_option(varargin,'FONTSIZE',12);
 for i = 1:nplots
 	
   a(i) = axes;%#ok<AGROW>
+  set(a(i),'Visible','off')
   Z = Y{i};
   X = x(i);
   plot(X,'DATA',Z,varargin{:});
+  if ~check_option(varargin,'3d'), set(sb.ProgressBar,'Value',i);end
     
   if check_option(varargin,'MINMAX') 
     anotation(a(i),min(Z(:)),max(Z(:)),fontsize);
@@ -78,6 +87,9 @@ for i = 1:nplots
 end
 
 if ~check_option(varargin,'3d')
+  % clear statusbar
+  statusbar;
+
   if check_option(varargin,'absolute'), fitcaxis;end
   set(gcf,'ResizeFcn',@(src,evt) figResize(src,evt,a));
   %set(gcf,'Position',get(gcf,'Position'));
@@ -92,9 +104,12 @@ if ~check_option(varargin,'3d')
     set(gcf,'Position',get(gcf,'Position'));
   end
 end
-set(gcf,'Visible','on');
+set(a,'Visible','on');
+if check_option(varargin,'3d'), axis off;end
 
 end
+
+%%-----------------------------------------------------------------------
 
 function anotation(a,mini,maxi,fontsize)
 mini = xnum2str(mini);
