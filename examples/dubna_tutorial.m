@@ -31,7 +31,7 @@ close;figure('position',[359 450 749 249])
 plot(pf)
 
 %% Estimate an ODF
-odf = calcODF(pf,'resolution',10*degree,'iter_max',10)
+odf = calcODF(pf,'resolution',7.5*degree,'iter_max',10)
 
 %% Calculate c-axis pole figure from the ODF
 plotpdf(odf,Miller(0,0,1,cs),'reduced')

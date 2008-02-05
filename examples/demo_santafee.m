@@ -26,10 +26,10 @@ plot(pf)
 
 %% ODF Estimation
 
-rec = calcODF(pf,'RESOLUTION',10*degree,'background',1,'iter_max',6)
+rec = calcODF(pf,'RESOLUTION',7.5*degree,'background',1,'iter_max',6)
 
 %% ODF Estimation with Ghost Correction
-rec2 = calcODF(pf,'RESOLUTION',10*degree,'background',10,'iter_max',6,'ghost_correction')
+rec2 = calcODF(pf,'RESOLUTION',7.5*degree,'background',10,'iter_max',6,'ghost_correction')
 
 %% Error analysis
 

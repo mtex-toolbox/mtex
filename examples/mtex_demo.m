@@ -222,7 +222,7 @@ q = Miller2quat([1 2 2],[2 2 1],CS);
 psi = kernel('von Mises Fisher','halfwidth',10*degree);
 
 % define ODF
-odf = unimodalODF(q,psi,CS,SS)
+odf = unimodalODF(q,CS,SS,psi)
 
 %%
 close;figure('position',[43   362   705   353])
@@ -244,7 +244,7 @@ r = xvector;
 psi = kernel('Abel Poisson','halfwidth',9*degree);
 
 % fibre ODFs
-odf = fibreODF(h,r,psi,CS,SS)
+odf = fibreODF(h,r,CS,SS,psi)
 
 %%
 plotpdf(odf,[Miller(1,0,-1,0,CS),Miller(0,0,0,1,CS)],'reduced');
