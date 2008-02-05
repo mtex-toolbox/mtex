@@ -17,6 +17,7 @@ ebsd = loadEBSD([mtexDataPath,'/aachen_ebsd/85_829grad_07_09_06.txt'],cs, ...
 
 %% plot pole figures as scatter plots
 h = [Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)];
+close; figure('position',[100,100,600,300])
 plotpdf(ebsd,h,'points',500,'reduced')
 
 %% kernel density estimation
@@ -55,10 +56,10 @@ calcerror(odf,santafee,'resolution',5*degree)
 
 %% Exploration of the relationship between estimation error and number of single orientations
 %
-% simulate 10, 100, ..., 100000 single orientations of the Santafee sample ODF, 
+% simulate 10, 100, ..., 1000000 single orientations of the Santafee sample ODF, 
 % estimate an ODF from these data and calcuate the estimation error
 
-for i = 1:5
+for i = 1:6
 
   ebsd = simulateEBSD(santafee,10^i);
 
@@ -70,8 +71,5 @@ end
 
 %% 
 % plot the error in dependency of the number of single orientations
-
-plot(e)
-
-
-
+close all;
+semilogx(10.^(1:6),e)

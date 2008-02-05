@@ -55,8 +55,8 @@ plot(pf_rotated)
 % we use here the option 'background' to specify the approximative
 % background radiation and to increase the accuracy of the reconstruction
 
-odf = calcODF(pf_corrected,'resolution',10*degree,'background',10,'iter_max',6)
 
+odf = calcODF(pf_corrected,'resolution',7.5*degree,'background',10,'iter_max',10)
 
 %% Error analysis
 
@@ -69,7 +69,8 @@ plotDiff(pf,odf)
 
 %% Recalculate c-axis pole figures
 
-plotpdf(odf,Miller(0,0,1,cs))
+plotpdf(odf,Miller(0,0,1,cs),'reduced')
+
 
 %% Plot inverse pole figure
 
@@ -77,8 +78,8 @@ plotipdf(odf,vector3d(1,1,2))
 
 %% plot recalculated ODF
 
-figure('position',[15 111 720 308])
-plot(odf,'sections',18,'resolution',5*degree)
+close all;figure('position',[15 111 920 508])
+plot(odf,'sections',18)
 
 %% rotate ODF back
 
