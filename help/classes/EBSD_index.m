@@ -36,7 +36,7 @@ ebsd_i = loadEBSD(fnames,cs,ss,'header',1,'layout',[5,6,7])
 
 ebsd_s = simulateEBSD(santafee,10000)
 
-%% Modify pole figures
+%% Modify EBSD
 %
 % Single EBSD data sets can be joined to a single variable using
 
@@ -66,3 +66,9 @@ plotpdf(ebsd_i,Miller(1,0,0,cs),'points',300)   % plot EBSD data
 
 odf = calcODF(ebsd_i,'halfwidth',10*degree)
 plotpdf(odf,Miller(1,0,0,cs),'reduced')
+
+%% Demo
+%
+% For a more exausive description of the EBSD class have a look at the 
+% [[ebsd_demo.html,EBSD demo]]!
+% 

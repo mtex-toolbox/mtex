@@ -25,7 +25,7 @@ cs   = symmetry('orthorhombic'); % crystal symmetry
 ss   = symmetry('tricline');     % specimen symmetry
 g    = Miller2quat([1,0,0],[0,1,1]);
 psi  = kernel('de la Vallee Poussin','halfwidth',10*degree);
-uodf = unimodalODF(g,psi,cs,ss)
+uodf = unimodalODF(g,cs,ss,psi)
 %%
 % For a *fibre symmetric ODF* a crystal direction and a specimen direction
 % are needed instead of the modal orientation, i.e.
@@ -36,7 +36,7 @@ uodf = unimodalODF(g,psi,cs,ss)
 % the corresponding method is [[fibreODF.html,fibreODF]]
 h    = Miller(1,0,0,cs);
 r    = xvector;
-fodf = fibreODF(h,r,psi,cs,ss)
+fodf = fibreODF(h,r,cs,ss,psi)
 
 
 %% Modifying ODFs

@@ -4,7 +4,7 @@
 % object from data files containing euler angles. Once such an object has
 % been created the data can be analyzed and processed in many ways. See e.g.
 %
-% [[EBSDEBSD_index.html,EBSD manipulation]], 
+% [[EBSD_index.html,EBSD manipulation]], 
 % <EBSD_plot.html plot>, 
 % <EBSD_rotate.html rotate>, <EBSD_delete delete>,
 %

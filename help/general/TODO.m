@@ -1,5 +1,9 @@
 %% TODO List
 %
+%% BUGS
+%
+% * run check_subGrid with cubic - orthorhombic symmetry
+%
 %% class symmetry
 %
 % * implement SS=symmetry('axial')
@@ -22,13 +26,16 @@
 %% class ODF
 %
 % * export ODF as superposition of unimodal ODFs
-% * speed up the evaluation of the ODF both using Fourier coefficients and
-% directly
+% * speed up the evaluation of the ODF using Fourier coefficients
 % * calculate means and std
 %
 %% Plotting:
 %
 % * annotation of Miller indece
+%
+%% S1Grid
+%
+% * speed up
 %
 %% S2Grid
 %
