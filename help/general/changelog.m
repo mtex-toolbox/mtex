@@ -3,18 +3,21 @@
 %
 %% MTEX 0.4
 %
-% * new function kernel_density_estimation to recover ODFs from EBSD data
-% * speed up evaluation of recalculated ODFs by a factor up to >100
+% * new class EBSD to work with EBSD data. This includes importing,
+% manipulating, rotating, ploting and saving the data.
+% * new function calcODF to recover ODFs from EBSD data via
+% kernel density estimation.
+% * speed up evaluation of ODFs by a factor up to >100
 % * speed up of the functions [[ODF_textureindex.html,textureindex]],
 % [[ODF_entropy.html,entropy]], [[ODF_volume.html,volume]] by the same
 % factor
-% * speed up reconstruction of ODFs by a factor up to 4 (due to improvments
+% * speed up reconstruction of ODFs by a factor up to 8 (due to improvments
 % of the NFFT library)
-% * additionaly speed up reconstruction of cubic - orthorhombic ODFs by
-% factor 4 
 % * smaller overall speedups
 % * new, more flexibel syntax for the generation of
 % [[S2Grid_index.html,S2Grids]] 
+% * slightly changed syntax of [[unimodalODF.html,unimodalODF]] and
+% [[fibreODF.html,fibreODF]]
 % * default plotting options are set to {}, i.e. 'reduced' has to add
 % manualy if desired
 % * some bug fixes
