@@ -1,14 +1,12 @@
-%% check SO3Grid/subGrid
+function check_subGrid(cs,ss)
+% check SO3Grid/subGrid
 %
 % compare subGrid function with the max_angle option to SO3Grid
 %
 
-cs = symmetry('cubic');
-ss = symmetry('tricline')
+res = 5*degree;
 
-res = 10*degree;
-
-radius = fliplr(linspace(res,120,20)*degree);
+radius = fliplr(linspace(res,120,40)*degree);
 
 q = SO3Grid(res,cs,ss);
 
@@ -21,7 +19,9 @@ for i = 1:length(radius)
   g(i) = GridLength(q) / m;
 
 end
-plot([f',g'])
+plot(radius/degree,[f',g'])
+
+return
 
 x = SO3Grid(1000,symmetry('cubic'));
 dist(x,idquaternion,'epsilon',20*degree);

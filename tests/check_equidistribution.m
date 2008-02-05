@@ -1,13 +1,8 @@
-cs = symmetry('cubic');
+function check_equidistribution(cs,ss)
 
 h = [Miller(1,0,0,cs),Miller(1,1,1,cs),Miller(1,1,0,cs)];
 
 hh = [symvec(h(1)),symvec(h(2)),symvec(h(3))];
-
-
-
-cs = symmetry('cubic')
-ss = symmetry('mmm');
 
 q = SO3Grid(5*degree,cs,ss);
 
@@ -17,6 +12,8 @@ odf = ODF(q,ones(GridSize(q))./GridLength(q),k,cs,ss)
 
 plotpdf(odf,h,'resolution',5*degree)
 
+
+return
 
 cs = symmetry();
 ss = symmetry();
