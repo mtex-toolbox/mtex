@@ -9,11 +9,11 @@ FFTWPATH = /home/hielscher/c/
 #FFTWPATH = /usr
 #
 # path to the NFFT, i.e. to /lib/libnfft3.a
-NFFTPATH = /home/hielscher/c
+NFFTPATH = /home/hielscher/c/nfft_trunk
 #NFFTPATH = /usr/local
 #
 # matlab path (for root install only)
-MATLABPATH = /opt/matlab-2006b
+MATLABPATH = /opt/matlab
 #
 #--------------- end editable section ---------------------------------
 #
@@ -22,12 +22,13 @@ BPATH = $(PWD)/c/bin/
 TPATH = $(PWD)/c/tools/
 KPATH = $(PWD)/c/kernel/
 SOPATH = $(PWD)/c/nsoft/
+MPATH = $(PWD)/c/mex/
 
 CC=gcc
 LD=gcc
 RM = /bin/rm -f
 LN = /bin/ln
-MYCFLAGS=$(CFLAGS) -g -c -Wall -I$(FFTWPATH)/include -I$(NFFTPATH)/include/nfft -I$(PWD)/c/include
+MYCFLAGS=$(CFLAGS) -o3 -c -Wall -I$(FFTWPATH)/include -I$(NFFTPATH)/include/nfft -I$(PWD)/c/include
 LDFLAGS=-lm
 
 # list of static libraris
@@ -54,7 +55,7 @@ PROG7 = $(BPATH)fc2odf        # Fourier coefficients - odf
 PROG8 = $(BPATH)test_nfsoft_adjoint   # check nfsoft
 
 # top-level rule, to compile everything.
-all: $(PROG1) $(PROG2) $(PROG3) $(PROG4) $(PROG5) $(PROG6) $(PROG7) $(PROG8) 
+all: $(PROG1) $(PROG2) $(PROG3) $(PROG4) $(PROG5) $(PROG6) $(PROG7) $(PROG8) mex
 
 $(PROG1): $(TOOLS) $(OBJS1) 
 	$(LD) $(LDFLAGS) $(TOOLS) $(OBJS1) $(LIBS) -o $(PROG1)
@@ -80,14 +81,19 @@ $(PROG7): $(TOOLS) $(SOOBJ) $(KPATH)fc2odf.o
 $(PROG8): $(TOOLS) $(SOOBJ) $(SOPATH)test_nfsoft_adjoint.o
 	$(LD) $(LDFLAGS) $(TOOLS) $(SOOBJ) $(SOPATH)test_nfsoft_adjoint.o $(LIBS) -o $(PROG8)
 
+mex: 
+	$(MAKE) -e MATLABPATH=$(MATLABPATH) -C $(MPATH) 
+	$(MAKE) install -e MATLABPATH=$(MATLABPATH) -C $(MPATH)
+
 %.o: %.c 
 	$(CC) $(MYCFLAGS) -c $< -o $@
+
 
 # rule for cleaning re-compilable files.
 clean:
 	$(RM) $(TOOLS) $(PROG1) $(OBJS1) $(PROG2) $(OBJS2) $(PROG3) $(OBJS3)  $(OBJS4) $(PROG4) $(OBJS5) $(PROG5) $(SOOBJ) $(PROG6)
 	$(RM) $(PWD)/qta/@PoleFigure/private/pf2odf $(PWD)/qta/@kernel/private/odf2pf
-	find . -name '*~' -or -name '*.log' -or -name '.directory' -or -name '*.o'| xargs /bin/rm -rf
+	find . -name '*~' -or -name '*.log' -or -name '.directory' -or -name '*.o' -or -name '*.mex*'| xargs /bin/rm -rf
 
 # rule for installing as user
 install_user:
@@ -117,14 +123,14 @@ uninstall:
 	rm -rf $(MATLABPATH)/toolbox/mtex
 
 # rule for making release
-RNAME = mtex-0.3
+RNAME = mtex-0.4
 release:
-	cp -R ../mtex ../$(RNAME)
-	find ../$(RNAME) -name .svn | xargs /bin/rm -rf
-	find ../$(RNAME) -name '*~' -or -name '*.log' -or -name '*.o' -or -name '.directory' | xargs /bin/rm -rf
-	rm -f ../$(RNAME)/c/bin/*
-	rm -rf ../$(RNAME)/help/html
-#	mv ../$(RNAME)/data ../mtex_data
-	tar -czf  ../$(RNAME).tar.gz ../$(RNAME)
-#	tar -czf  ../mtex_data.tar.gz ../mtex_data
+	cp -R ../trunk ../../$(RNAME)
+	find ../../$(RNAME) -name .svn | xargs /bin/rm -rf
+	find ../../$(RNAME) -name '*~' -or -name '*.log' -or -name '*.o' -or -name '.directory' | xargs /bin/rm -rf
+	rm -f ../../$(RNAME)/c/bin/*
+	rm -rf ../../$(RNAME)/help/html
+#	mv ../../$(RNAME)/data ../../mtex_data
+	tar -czf  ../../$(RNAME).tar.gz ../../$(RNAME)
+#	tar -czf  ../../mtex_data.tar.gz ../../mtex_data
 
