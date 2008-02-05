@@ -31,4 +31,3 @@ multiplot(@(i) pf(i).r,pfunc,length(pf),...
   varargin{:});
 
 set(gcf,'Name',['Pole Figures of Specimen ',inputname(1)]);
-figure(gcf);

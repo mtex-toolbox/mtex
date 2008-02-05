@@ -51,15 +51,20 @@ layout = get_option(varargin,'LAYOUT',[1 2 3]);
 
 try
   % read data
+  % modify the next lines to create your own interface
+  % the data should be read from file and stored in the variables 
+  % alpha, beta, gamma
 	d = dlmread(fname,dl,hl,hr);
 	alpha = d(:,layout(1))*dg; 
   beta  = d(:,layout(2))*dg;
 	gamma = d(:,layout(3))*dg;
   
-  
+  % get Euler angles option 
   bunge = set_default_option(...
     extract_option(varargin,{'bunge','ABG'}),{'bunge','ABG'},...
     'bunge');
+  
+  % store data as quaternions
   q = euler2quat(alpha,beta,gamma,bunge{:});  
   
   if check_option(varargin,'inverse'), q = inverse(q); end

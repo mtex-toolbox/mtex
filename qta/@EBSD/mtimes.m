@@ -13,13 +13,15 @@ if isa(x,'EBSD') && isa(y,'vector3d')
   
 elseif isa(x,'EBSD') && isa(y,'quaternion')
   ebsd = x;
-  f = y;
+  for i = 1:length(ebsd)
+    ebsd(i).grid = ebsd(i).grid * y;
+  end
 elseif isa(y,'EBSD') && isa(x,'quaternion')
   ebsd = y;
-  f = x;
+  for i = 1:length(ebsd)
+    ebsd(i).grid = x * ebsd(i).grid;
+  end
 end
 
-for i = 1:length(ebsd)
-  ebsd(i).grid = ebsd(i).grid * y;
-end 
+
 

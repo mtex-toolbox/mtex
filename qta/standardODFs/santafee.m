@@ -8,7 +8,7 @@ psi = kernel('von Mises Fisher','HALFWIDTH',10*degree);
 g0 = Miller2quat(Miller(1,2,2,CS),Miller(2,2,1,CS));
 
 odf =  0.73 * uniformODF(CS,SS,'comment','the Santafee-sample ODF') ...
-  + 0.27 * unimodalODF(g0,psi,CS,SS);
+  + 0.27 * unimodalODF(g0,CS,SS,psi);
 
 
 % 3,7
