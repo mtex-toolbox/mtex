@@ -19,8 +19,11 @@ function v = volume(odf,center,radius,varargin)
 %% See also
 % ODF/entropy ODF/textureindex
 
+argin_check(center,'quaternion');
+argin_check(radius,'double');
+
 % get resolution
-res = get_option(varargin,'RESOLUTION',min(2.5*degree,radius/20));
+res = get_option(varargin,'RESOLUTION',min(2.5*degree,radius/20),'double');
 
 % discretisation
 S3G = center*SO3Grid(res,odf(1).CS,odf(1).SS,'MAX_ANGLE',radius);

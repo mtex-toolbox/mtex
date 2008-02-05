@@ -29,5 +29,3 @@ multiplot(@(i) Sh(i),@(i) 1,length(r),...
           'scatter', varargin{:});
 
 set(gcf,'Name',['recalculated Pole Figures of Specimen ',inputname(1)]);
-figure(gcf)
-

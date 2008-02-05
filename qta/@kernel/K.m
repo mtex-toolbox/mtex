@@ -36,7 +36,7 @@ else
 end
 
 
-if epsilon*(length(CS)*length(SS))^(1/3)>pi % full matrixes
+if epsilon>rotangle_max_z(CS,'reduced') % full matrixes
  
   g1 = quaternion(g1);
   g2 = quaternion(g2);  

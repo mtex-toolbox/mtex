@@ -26,8 +26,6 @@ function plotodf(odf,varargin)
 %% See also
 % S2Grid/plot savefigure
 
-set(gcf,'Name',['ODF "',inputname(1),'"']);
-
 
 %% -------- one - dimensional plot ---------------------------------------
 if check_option(varargin,'RADIALLY')   
@@ -217,4 +215,4 @@ multiplot(@(i) S2G,...
   'MINMAX','SMOOTH','TIGHT',...
   varargin{:},'absolute','FontSize',12);
 
-figure(gcf)
+set(gcf,'Name',['ODF "',inputname(1),'"']);

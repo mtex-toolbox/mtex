@@ -19,17 +19,20 @@ function odf = calcODF(ebsd,varargin)
 disp('------ MTEX -- EBSD to ODF computation ------------------')
 disp('performing kernel density estimation')
 
+% extract orientations
+g = getgrid(ebsd);
+
 % get halfwidth
 hw = get_option(varargin,'halfwidth',...
-  max(getResolution(ebsd.orientations) * 3,1*degree));
+  max(getResolution(g) * 3,1*degree));
 k = kernel('de la Vallee Poussin','halfwidth',hw);
 
 disp([' used kernel: ' char(k)]);
 
 %% exact calculation
 if check_option(varargin,'exact')  
-  d = ones(1,GridLength(ebsd.orientations)) ./ GridLength(ebsd.orientations);  
-  odf = ODF(ebsd.orientations,d,k,...
+  d = ones(1,GridLength(g)) ./ GridLength(g);  
+  odf = ODF(g,d,k,...
     ebsd(1).CS,ebsd(1).SS,'comment',['ODF estimated from ',getcomment(ebsd(1))]);  
   return
 end
@@ -44,12 +47,31 @@ S3G = SO3Grid(res,ebsd(1).CS,ebsd(1).SS);
 disp([' approximation grid: ' char(S3G)]);
 
 %% restrict single orientations to this grid
-ind = find(S3G,quaternion(ebsd.orientations));
+
+% init variables
+global mtex_memory;
+g = quaternion(g);
 d = zeros(1,GridLength(S3G));
-for i = 1:length(ind)
-  d(ind(i)) = d(ind(i)) + 1;
+
+% iterate due to memory restrictions?
+maxiter = ceil(length(ebsd(1).CS)*length(ebsd(1).SS)*numel(g) / mtex_memory);
+if maxiter > 1, progress(0,maxiter);end
+
+for iter = 1:maxiter
+   
+  if maxiter > 1, progress(iter,maxiter); end
+   
+  dind = ceil(numel(g) / maxiter);
+  sind = 1+(iter-1)*dind:min(numel(g),iter*dind);
+      
+  ind = find(S3G,g(sind));
+  for i = 1:length(ind)
+    d(ind(i)) = d(ind(i)) + 1;
+  end
+
 end
-d = d ./ GridLength(ebsd.orientations);
+d = d ./ numel(g);
+
 
 %% generate ODF
 

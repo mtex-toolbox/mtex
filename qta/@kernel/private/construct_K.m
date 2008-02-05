@@ -14,13 +14,14 @@ switch lower(name)
 				        
   case 'de la vallee poussin'
     
-    K   = @(co2) beta(1.5,0.5)/beta(1.5,p+0.5) * co2.^(2*p);
+    C = beta(1.5,0.5)/beta(1.5,p+0.5);
+    K   = @(co2)  C * co2.^(2*p);
 		
   case 'von mises fisher'
 	
     if p < 500
-      K   = @(co2) 1/(besseli(0,p)-besseli(1,p))...
-        * exp(p*cos(acos(co2)*2));
+      C = 1/(besseli(0,p)-besseli(1,p));
+      K   = @(co2) C * exp(p*cos(acos(co2)*2));
       
     else      
       error('too small halfwidth - not yet supported');

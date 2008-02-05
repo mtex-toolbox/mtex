@@ -1,4 +1,8 @@
 function ebsd = simulateEBSD(odf,points,varargin)
+% simulate EBSD data from ODF
+%
+%% Syntax
+%  ebsd = simulateEBSD(odf,points)
 %
 %% Input
 %  odf    - @ODF
@@ -15,6 +19,8 @@ function ebsd = simulateEBSD(odf,points,varargin)
 
 cs = odf(1).CS;
 ss = odf(1).SS;
+
+argin_check(points,'double');
 
 res = get_option(varargin,'resolution',5*degree);
 S3G_global = SO3Grid(res,cs,ss);

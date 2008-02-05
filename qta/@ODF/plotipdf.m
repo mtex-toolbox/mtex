@@ -30,5 +30,3 @@ multiplot(@(i) h,@(i) pdf(odf,h,r(i)./norm(r(i)),varargin{:}),length(r),...
   varargin{:});
 
 set(gcf,'Name',['recalculated Pole Figures of Specimen ',inputname(1)]);
-figure(gcf)
-

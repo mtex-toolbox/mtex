@@ -48,4 +48,3 @@ else
 end
 
 set(gcf,'Name',['Pole figures of "',inputname(1),'"']);
-figure(gcf)
