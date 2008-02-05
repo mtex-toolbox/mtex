@@ -6,7 +6,7 @@ function check_NFSOFT
 global mtex_path
 
 %% input data
-L = 6;
+L = 16;
 
 %q = axis2quat(xvector+yvector,25*degree);
 %q = axis2quat(zvector,90*degree);
@@ -24,7 +24,6 @@ for iq = 1:length(qq)
   q = qq(iq);
   
   %% convert to export parameters
-
   [alpha,beta,gamma] = quat2euler(q);
   alpha = fft_rho(alpha); %-->z
   beta  = fft_theta(beta);
@@ -67,6 +66,7 @@ if mean(error(:)) > 0.001
   error('Error in NFSOFT');
 else
   disp('checking NFSOFT: ok')
+  disp(mean(error(:)))
 end
 
 function d = deg2dim(l)
