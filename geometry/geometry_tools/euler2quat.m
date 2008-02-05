@@ -20,6 +20,22 @@ function q = euler2quat(alpha,beta,gamma,varargin)
 % vec42quat hr2quat idquaternion 
 
 
+% if check_option(varargin,'BUNGE')
+%   b = -cos((alpha-gamma)./2) .* sin(beta./2);
+%   c = sin((alpha-gamma)./2) .* sin(beta./2);
+%   d = -sin((alpha+gamma)./2) .* cos(beta./2);
+%   a = cos((alpha+gamma)./2) .* cos(beta./2);
+% else
+%   b = -cos((alpha-gamma)./2) .* sin(beta./2);
+%   c = sin((alpha-gamma)./2) .* sin(beta./2);
+%   d = -sin((alpha+gamma)./2) .* cos(beta./2);
+%   a = cos((alpha+gamma)./2) .* cos(beta./2);
+% end
+% 
+% q = quaternion(a,b,c,d);
+% 
+% return
+
 if check_option(varargin,'BUNGE')
   q = axis2quat(zvector,alpha).*...
     axis2quat(xvector,beta).*axis2quat(zvector,gamma);

@@ -190,6 +190,15 @@ elseif check_option(varargin,'3d')
 %  delete(s)
   hold off
   
+% interpolated
+elseif check_option(varargin,'interp') 
+
+  pcolor(X,Y,data);
+
+  if numel(data) >= 500, shading interp;end
+  set(gcf,'Renderer','OpenGL');
+  %set(gcf,'Renderer','zBuffer');
+    
 % interpolated 
 elseif check_option(varargin,'SMOOTH') 
   
@@ -201,14 +210,7 @@ elseif check_option(varargin,'SMOOTH')
       [CM,h] = contourf(X,Y,data,200);
       set(h,'LineStyle','none');
     end
-    
-%  else
-%  pcolor(X,Y,data);
- % end
-  %if numel(data) >= 500, shading interp;end
-%  set(gcf,'Renderer','OpenGL');
-  %set(gcf,'Renderer','zBuffer');
-  
+
 % singular points 
 elseif isa(data,'cell') || check_option(varargin,'dots')% || numel(X)<20
   

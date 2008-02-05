@@ -31,7 +31,6 @@ G.options = {};
 G.CS      = CS;
 G.SS      = SS;
 G.Grid    = [];
-G.dMatrix = [];
 
 if isa(points,'quaternion')    % SO3rid defined by a set quaternions
 	
@@ -40,7 +39,8 @@ if isa(points,'quaternion')    % SO3rid defined by a set quaternions
   if numel(points) < 2
     G.resolution = 2*pi;
   else
-	  G.resolution = min(2*acos(dot_outer(CS,SS,points(1),points(2:end))));
+    %G.resolution = min(2*acos(dot_outer(CS,SS,points(1),points(2:end))))
+    G.resolution = quat2res(points,CS,SS);
   end 
 	
 elseif maxangle < rotangle_max_z(CS)/4
@@ -63,6 +63,26 @@ elseif maxangle < rotangle_max_z(CS)/4
   
   G.resolution = res;
   G.Grid = q;
+  
+	
+  if strcmp(Laue(SS),'mmm') && ~any(strcmp(Laue(CS),{'-1','2/m'}))
+      
+    c.v = vector3d([-1 0],[0 -1],[0 0]);
+    c.h = 0;
+    
+    % find rotation not part of the fundamental region
+		rodriguez = quat2rodriguez(q);  
+    ind = zeros(numel(rodriguez),1);
+
+    for j = 1:length(c.v)
+      p = dot(rodriguez,1/norm(c.v(j)) * c.v(j));
+      ind = ind | (p(:)>c.h);
+    end
+
+    
+    % eliminate those rotations
+    G.Grid(ind) = [];
+  end
   
 elseif isa(points,'double') && points > 0  % discretise euler space
 
@@ -188,3 +208,12 @@ if mod(round(2*pi/res),2) == 0
 else
   s = '';
 end
+
+function res = quat2res(quat,CS,SS)
+
+ml = min(numel(quat),500);
+ind1 = randsample(1:numel(quat),ml);
+ind2 = randsample(1:numel(quat),ml);
+d = 2*acos(dot_outer(CS,SS,quat(ind1),quat(ind2)));
+d(d<0.005) = pi;
+res = quantile(min(d,[],2),min(0.9,sqrt(ml/numel(quat))));
