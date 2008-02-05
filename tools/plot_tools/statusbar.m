@@ -95,7 +95,9 @@ function statusbarHandles = statusbar(varargin)
 
     % Check for available Java/AWT (not sure if Swing is really needed so let's just check AWT)
     if ~usejava('awt')
-        error('YMA:statusbar:noJava','statusbar only works on Matlab envs that run on java');
+	statusbarHandles.ProgressBar = {};
+    	return;
+        %error('YMA:statusbar:noJava','statusbar only works on Matlab envs that run on java');
     end
 
     % Args check
