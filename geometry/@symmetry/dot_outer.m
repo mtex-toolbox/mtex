@@ -28,3 +28,5 @@ elseif l2>0
 else
 	d = [];
 end
+
+d = max(min(d,1),-1);

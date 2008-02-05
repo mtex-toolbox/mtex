@@ -1,4 +1,4 @@
 function spy(N)
 % spy distance matrix
 
-spy(N.dMatrix);
+spy(dot_outer(N,N,'epsilon',2*getResolution(N)));

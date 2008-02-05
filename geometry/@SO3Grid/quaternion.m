@@ -10,12 +10,12 @@ function N = quaternion(SO3G,i,j)
 %  @quaternion
 
 if nargin == 1
-    N = quaternion;
-    for i = 1:length(SO3G)      
-        N = [N,SO3G(i).Grid]; %#ok<AGROW>
-    end
+  for i = 1:length(SO3G)
+    SO3G(i).Grid = reshape(SO3G(i).Grid,1,[]);
+  end
+  N = [SO3G.Grid];
 elseif nargin == 2
-    N = reshape(SO3G.Grid(i),size(i));
+  N = reshape(SO3G.Grid(i),size(i));
 else
-    N = SO3G.Grid(i,j);
+  N = SO3G.Grid(i,j);
 end

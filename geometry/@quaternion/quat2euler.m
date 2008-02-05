@@ -19,6 +19,25 @@ function [alpha,beta,gamma] = quat2euler(quat,varargin)
 %% See also
 % quaternion/quat2rodriguez
 
+if check_option(varargin,'BUNGE')
+  alpha = atan2(quat.b .* quat.d - quat.a .* quat.c,...
+    quat.c .* quat.d + quat.a .* quat.b);
+  beta = acos(-quat.b.^2 - quat.c.^2 + quat.d.^2 + quat.a.^2);
+  gamma = atan2(quat.b .* quat.d + quat.a .* quat.c,...
+    -quat.c .* quat.d + quat.a .* quat.b);
+else
+  alpha = atan2(quat.c .* quat.d - quat.a .* quat.b,...
+    quat.b .* quat.d + quat.a .* quat.c);
+  beta = acos(-quat.b.^2 - quat.c.^2 + quat.d.^2 + quat.a.^2);
+  gamma = atan2(quat.c .* quat.d + quat.a .* quat.b,...
+    -quat.b .* quat.d + quat.a .* quat.c);
+end
+
+% if rotational axis equal to z
+ind = isnull(alpha) & isnull(beta) & isnull(gamma);
+alpha(ind) = 2*asin(quat.d(ind));
+  
+return
 
 s = size(quat);
 quat = reshape(quat,1,[]);

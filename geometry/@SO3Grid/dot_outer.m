@@ -1,5 +1,5 @@
 function d = dot_outer(SO3G,q,varargin)
-% return outer innder product of all nodes within a eps neighborhood
+% return outer inner product of all nodes within a eps neighborhood
 %
 %% Syntax  
 %  d = dot_outer(SO3G,nodes,'epsilon',radius)
@@ -15,6 +15,7 @@ function d = dot_outer(SO3G,q,varargin)
 % cos angle(g1,g2)/2 = dout(g1,g2)
 
 epsilon = get_option(varargin,'epsilon',2*pi);
+if isa(q,'SO3Grid'), q = quaternion(q);end
 
 if ~check_option(SO3G,'indexed') || check_option(varargin,'full')
   
@@ -23,15 +24,15 @@ if ~check_option(SO3G,'indexed') || check_option(varargin,'full')
 else
 
   % symmetrice
-  s = quaternion(SO3G.CS);
+  s = quaternion_special(SO3G.CS);
   if any(strcmp(Laue(SO3G.CS),{'m-3','m-3m'})) && check_option(varargin,'nocubictrifoldaxis')
     s = s(1:length(s)/3);
   end
   [xalpha,xbeta,xgamma] = quat2euler(transpose(q(:)*s.'));
   
   % find columns with minimal beta angle
-  ind = xbeta == repmat(min(xbeta),length(s),1);
-  ind = ind & ind == cumsum(ind);
+  ind = xbeta == repmat(min(xbeta,[],1),length(s),1);
+  ind = ind & ind == cumsum(ind,1);
     
   xalpha = xalpha(ind);
   xbeta  = xbeta(ind);

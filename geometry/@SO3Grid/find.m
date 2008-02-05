@@ -31,8 +31,8 @@ elseif GridLength(SO3G) == 0
 else
   
   % symmetrice
-  s = quaternion(SO3G.CS);
-  ls = length(SO3G.CS);
+  s = quaternion_special(SO3G.CS);
+  ls = length(s);
   lq = numel(q);
   
   % special cubic case 1
@@ -50,8 +50,8 @@ else
   [xalpha,xbeta,xgamma] = quat2euler(qs);   clear qs;
   
   % find columns with minimal beta angle
-  ind = xbeta == repmat(min(xbeta),size(xbeta,1),1);
-  ind = ind & ind == cumsum(ind);
+  ind = xbeta == repmat(min(xbeta,[],1),size(xbeta,1),1);
+  ind = ind & ind == cumsum(ind,1);
     
   xalpha = xalpha(ind);
   xbeta  = xbeta(ind);
