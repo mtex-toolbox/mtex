@@ -22,7 +22,7 @@ if isa(SO3G,'SO3Grid')
     for i = 1:length(q)
       out = [out;SO3G.Grid*q(i)];
     end
-    out = SO3Grid(out,SO3G.CS,SO3G.SS);
+    out = SO3Grid(out,SO3G.CS,SO3G.SS,'resolution',getResolution(SO3G));
   
   elseif isa(q,'vector3d')
     out = SO3G.Grid(:) * q;
@@ -35,7 +35,7 @@ elseif isa(SO3G,'quaternion')
   for i = 1:length(SO3G)
     out = [out;SO3G(i)*q.Grid];
   end
-  out = SO3Grid(out,q.CS,q.SS);
+  out = SO3Grid(out,q.CS,q.SS,'resolution',getResolution(q));
 else
   error('type mismatch!')
 end
