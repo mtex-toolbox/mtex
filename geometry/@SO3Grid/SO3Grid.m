@@ -1,10 +1,14 @@
 function G = SO3Grid(points,CS,SS,varargin)
 % constructor
 %
+%% Syntax
+%  S3G = SO3Grid(nodes,CS,SS)
+%  S3G = SO3Grid(points,CS,SS)
+%  S3G = SO3Grid(resolution,CS,SS)
+%
 %% Input
-%  points     - nodes | number of nodes | resolution 
+%  points     - number of nodes 
 %  nodes      - @quaternion 
-%  number     - int32
 %  resolution - double
 %  CS, SS     - @symmetry groups
 %
@@ -38,6 +42,8 @@ if isa(points,'quaternion')    % SO3rid defined by a set quaternions
 	G.Grid = points;
   if numel(points) < 2
     G.resolution = 2*pi;
+  elseif check_option(varargin,'resolution')
+    G.resolution = get_option(varargin,'resolution');
   else
     %G.resolution = min(2*acos(dot_outer(CS,SS,points(1),points(2:end))))
     G.resolution = quat2res(points,CS,SS);
@@ -61,28 +67,9 @@ elseif maxangle < rotangle_max_z(CS)/4
     q = [q,axis2quat(vector3d(rotax),rot_angle(i))];
   end
   
-  G.resolution = res;
-  G.Grid = q;
-  
-	
-  if strcmp(Laue(SS),'mmm') && ~any(strcmp(Laue(CS),{'-1','2/m'}))
-      
-    c.v = vector3d([-1 0],[0 -1],[0 0]);
-    c.h = 0;
-    
-    % find rotation not part of the fundamental region
-		rodriguez = quat2rodriguez(q);  
-    ind = zeros(numel(rodriguez),1);
-
-    for j = 1:length(c.v)
-      p = dot(rodriguez,1/norm(c.v(j)) * c.v(j));
-      ind = ind | (p(:)>c.h);
-    end
-
-    
-    % eliminate those rotations
-    G.Grid(ind) = [];
-  end
+  G.resolution = res;  
+  ind = fundamental_region(q,symmetry(),SS);  
+  G.Grid = q(~ind);
   
 elseif isa(points,'double') && points > 0  % discretise euler space
 
@@ -138,11 +125,6 @@ elseif isa(points,'double') && points > 0  % discretise euler space
  
   G.gamma = S1Grid(gamma,-maxgamma+dgamma(1,:),...
     maxgamma+dgamma(1,:),'periodic','matrix');
-  %G.gamma = S1Grid();
-  %for ig = 1:GridLength(G.alphabeta)
-  %  G.gamma(ig) = S1Grid(gamma(:,ig),...
-  %    -maxgamma+dgamma(1,ig),maxgamma+dgamma(1,ig),'periodic');
-  %end
 	  
   Grid = euler2quat(alpha,beta,gamma);
 	Grid = reshape(Grid,[],1);
@@ -150,31 +132,9 @@ elseif isa(points,'double') && points > 0  % discretise euler space
 	G.resolution = 2 * maxgamma / ap2;
 	
   % eliminiate 3 fold symmetry axis of cubic symmetries
-	if strcmp(Laue(CS),'m-3m') || strcmp(Laue(CS),'m-3')
-		
-		c{1}.v = vector3d([1 1 1 1 -1 -1 -1 -1],[1 1 -1 -1 1 1 -1 -1],[1 -1 1 -1 1 -1 1 -1]);
-		c{1}.h = sqrt(3)/3;
-		
-    if strcmp(Laue(CS),'m-3m')
-      c{2}.v = vector3d([1 -1 0 0 0 0],[0 0 1 -1 0 0],[0 0 0 0 1 -1]);
-      c{2}.h = sqrt(2)-1;
-    end
-		
-    %if strcmp(Laue(SS),'mmm')
-    % c{3}.v = vector3d([-1 0],[0 -1],[0 0]);
-    % c{3}.h = 0;
-    %end
- 
-    % find rotation not part of the fundamental region
-		rodriguez = quat2rodriguez(Grid);  
-    ind = zeros(numel(rodriguez),1);
-    for i = 1:length(c)
-      for j = 1:length(c{i}.v)
-        p = dot(rodriguez,1/norm(c{i}.v(j)) * c{i}.v(j));
-        ind = ind | (p>c{i}.h);
-      end
-    end
-    
+  ind = fundamental_region(Grid,CS,symmetry());
+
+  if nnz(ind) ~= 0
     % eliminate those rotations
     Grid(ind) = [];
     
