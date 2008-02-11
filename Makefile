@@ -12,95 +12,32 @@ FFTWPATH = /home/hielscher/c/
 NFFTPATH = /home/hielscher/c/nfft_trunk
 #NFFTPATH = /usr/local
 #
-# matlab path (for root install only)
+# matlab path 
 MATLABPATH = /opt/matlab
+#
+# compiler flags
+CFLAGS= -o3 -c -Wall 
+LDFLAGS= -lm
+MEXFLAGS= -largeArrayDims
 #
 #--------------- end editable section ---------------------------------
 #
-# local variables
-BPATH = $(PWD)/c/bin/
-TPATH = $(PWD)/c/tools/
-KPATH = $(PWD)/c/kernel/
-SOPATH = $(PWD)/c/nsoft/
-MPATH = $(PWD)/c/mex/
-
-CC=gcc
-LD=gcc
-RM = /bin/rm -f
-LN = /bin/ln
-MYCFLAGS=$(CFLAGS) -o3 -c -Wall -I$(FFTWPATH)/include -I$(NFFTPATH)/include/nfft -I$(PWD)/c/include
-LDFLAGS=-lm
-
-# list of static libraris
-LIBS = $(NFFTPATH)/lib/libnfft3.a $(FFTWPATH)/lib/libfftw3.a 
-
-# list of generated object files.
-TOOLS = $(TPATH)pio.o $(TPATH)helper.o $(TPATH)sparse.o
-OBJS1 = $(KPATH)pdf.o $(KPATH)odf2pf.o
-OBJS2 = $(KPATH)pdf.o $(KPATH)odf.o $(KPATH)zbfm.o $(KPATH)zbfm_solver.o $(KPATH)pf2odf.o
-OBJS3 = $(KPATH)pdf.o $(KPATH)ipdf.o $(KPATH)pf2pdf.o
-OBJS4 = $(KPATH)pdf.o $(KPATH)evalpdf.o
-OBJS5 = $(TPATH)check_input.o
-SOOBJ = $(SOPATH)wigner.o $(SOPATH)nfsoft.o 
-
-# program executable file name.
-
-PROG1 = $(BPATH)odf2pf        # odf -> pdf
-PROG2 = $(BPATH)pf2odf        # pdf -> odf
-PROG3 = $(BPATH)pf2pdf        # pdf -> Fourier coefficients
-PROG4 = $(BPATH)evalpdf       # Fourier coefficients -> pdf
-PROG5 = $(BPATH)check_input   # check_input
-PROG6 = $(BPATH)odf2fc        # odf -> Fourier coefficients
-PROG7 = $(BPATH)fc2odf        # Fourier coefficients - odf
-PROG8 = $(BPATH)test_nfsoft_adjoint   # check nfsoft
+# local directories
+BPATH = c/bin/
+SUBDIRS = c/kernel.dir c/nsoft.dir c/test.dir c/mex.dir 
 
 # top-level rule, to compile everything.
-all: $(PROG1) $(PROG2) $(PROG3) $(PROG4) $(PROG5) $(PROG6) $(PROG7) $(PROG8) mex
+all: $(SUBDIRS)
 
-$(PROG1): $(TOOLS) $(OBJS1) 
-	$(LD) $(LDFLAGS) $(TOOLS) $(OBJS1) $(LIBS) -o $(PROG1)
-
-$(PROG2): $(TOOLS) $(OBJS2)
-	$(LD) $(LDFLAGS) $(TOOLS) $(OBJS2) $(LIBS) -o $(PROG2)
-
-$(PROG3): $(TOOLS) $(OBJS3)
-	$(LD) $(LDFLAGS) $(TOOLS) $(OBJS3) $(LIBS) -o $(PROG3)
-
-$(PROG4): $(TOOLS) $(OBJS4)
-	$(LD) $(LDFLAGS) $(TOOLS) $(OBJS4) $(LIBS) -o $(PROG4)
-
-$(PROG5): $(TOOLS) $(OBJS5)	
-	$(LD) $(LDFLAGS) $(TOOLS) $(OBJS5) $(LIBS) -o $(PROG5)
-
-$(PROG6): $(TOOLS) $(SOOBJ) $(KPATH)odf2fc.o 
-	$(LD) $(LDFLAGS) $(TOOLS) $(SOOBJ) $(KPATH)odf2fc.o $(LIBS) -o $(PROG6)
-
-$(PROG7): $(TOOLS) $(SOOBJ) $(KPATH)fc2odf.o 	
-	$(LD) $(LDFLAGS) $(TOOLS) $(SOOBJ) $(KPATH)fc2odf.o $(LIBS) -o $(PROG7)
-
-$(PROG8): $(TOOLS) $(SOOBJ) $(SOPATH)test_nfsoft_adjoint.o
-	$(LD) $(LDFLAGS) $(TOOLS) $(SOOBJ) $(SOPATH)test_nfsoft_adjoint.o $(LIBS) -o $(PROG8)
-
-mex: 
-	$(MAKE) -e MATLABPATH=$(MATLABPATH) -C $(MPATH) 
-	$(MAKE) install -e MATLABPATH=$(MATLABPATH) -C $(MPATH)
-
-%.o: %.c 
-	$(CC) $(MYCFLAGS) -c $< -o $@
-
+# descent into subdirectories
+%.dir: 
+	$(MAKE) -e CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" NFFTPATH=$(FFTWPATH) FFTWPATH=$(FFTWPATH) MATLABPATH=$(MATLABPATH) MEXFLAGS="$(MEXFLAGS)" -C $*
+	$(MAKE) install -C $*
 
 # rule for cleaning re-compilable files.
 clean:
-	$(RM) $(TOOLS) $(PROG1) $(OBJS1) $(PROG2) $(OBJS2) $(PROG3) $(OBJS3)  $(OBJS4) $(PROG4) $(OBJS5) $(PROG5) $(SOOBJ) $(PROG6)
-	$(RM) $(PWD)/qta/@PoleFigure/private/pf2odf $(PWD)/qta/@kernel/private/odf2pf
+	rm -f c/bin/*
 	find . -name '*~' -or -name '*.log' -or -name '.directory' -or -name '*.o' -or -name '*.mex*'| xargs /bin/rm -rf
-
-# rule for installing as user
-install_user:
-	export MATLABPATH=$(PWD)
-	export
-	echo "export MATLABPATH=$(PWD)" >> ~/.bashrc
-	echo "installation complete"
 
 # rule for installing as root
 install:
