@@ -7,7 +7,7 @@
  */
 #ifndef WIGNER_H
 #define WIGNER_H
-#include "api.h"
+#include <api.h>
 
 /**defines the absolute value */
 #define ABS(A) ((A) > 0 ? (A) : (-A))
