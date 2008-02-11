@@ -2,10 +2,9 @@
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
-#include "util.h"
-#include "nfft3.h"
-#include "api.h"
-     
+#include <util.h>
+#include <api.h>
+
 
 /**
  * The main program.

@@ -189,14 +189,16 @@ void SO3Grid_find_region(SO3Grid ths[],
     /*printf("(%d, %.4e, %.4e, %.4e)\n",iab,gamma,dg,c);*/
 
     if (c > 1.0) continue;
-    if (c < -1.0) c = -1;
+    else if (c < -1.0 + 1e-10) c = 3.1416;
+    else c = acos(c);
+   
 
     dg = -atan2(im,re);
     /*printf("(%d, %.4e, %.4e)\n",iab,dg,acos(c));*/
 
     ind_old = ind_buffer->used;
     buffer_set_offset(ind_buffer,ths->igamma[iab]);
-    S1Grid_find_region(&ths->gamma[iab],dg,acos(c),
+    S1Grid_find_region(&ths->gamma[iab],dg,c,
 		       ind_buffer);    
 
   }
@@ -262,11 +264,12 @@ void SO3Grid_dist_region(SO3Grid ths[],
     /*printf("(%d, %.4e, %.4e, %.4e)\n",iab,gamma,dg,c);*/
     
     if (c > 1.0) continue;
-    if (c < -1.0) c = -1;
+    else if (c < -1.0 + 1e-10) c = 3.1416;
+    else c = acos(c);
 
     ind_old = ind_buffer->used;
     buffer_set_offset(ind_buffer,ths->igamma[iab]);
-    S1Grid_find_region(&ths->gamma[iab],dg,acos(c),
+    S1Grid_find_region(&ths->gamma[iab],dg,c,
 		       ind_buffer);    
 
     /* calculate distances */

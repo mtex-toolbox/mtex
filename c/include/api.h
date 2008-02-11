@@ -12,7 +12,7 @@
 #define DEFAULT_NFFT_CUTOFF    6
 #define FPT_THRESHOLD          1000 
 
-#include "nfft3.h"
+#include <nfft3.h>
 #include <fftw3.h>
 
 /* PLANNER FLAGS */

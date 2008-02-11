@@ -1,5 +1,5 @@
-#include "wigner.h"
-#include "api.h"
+#include <wigner.h>
+#include <api.h>
 #include <math.h>
 
 
