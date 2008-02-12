@@ -23,14 +23,20 @@ argin_check(center,'quaternion');
 argin_check(radius,'double');
 
 % get resolution
-res = get_option(varargin,'RESOLUTION',min(2.5*degree,radius/20),'double');
+res = get_option(varargin,'RESOLUTION',min(2.5*degree,radius/10),'double');
 
 % discretisation
 S3G = center*SO3Grid(res,odf(1).CS,odf(1).SS,'MAX_ANGLE',radius);
 
 % estimate volume portion of odf space
-f = GridLength(SO3Grid(2.5*degree,odf(1).CS,odf(1).SS,'MAX_ANGLE',radius))/...
-  GridLength(SO3Grid(2.5*degree,odf(1).CS,odf(1).SS));
+if radius < rotangle_max_z(odf(1).CS) / 2
+  % theoretical value
+  f = length(odf(1).CS)*(radius - sin(radius))/pi;
+else
+  % numerical value
+  f = GridLength(SO3Grid(2.5*degree,odf(1).CS,odf(1).SS,'MAX_ANGLE',radius))/...
+    GridLength(SO3Grid(2.5*degree,odf(1).CS,odf(1).SS));
+end
 
 % eval odf
 if f==0
