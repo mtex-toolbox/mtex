@@ -16,11 +16,8 @@ L = dim2deg(length(odf.c_hat));
 L = int32(min(L,get_option(varargin,'bandwidth',L)));
 
 s = size(g);
-[alpha,beta,gamma] = quat2euler(g);
-alpha = fft_rho(alpha);
-beta  = fft_theta(beta);
-gamma = fft_rho(gamma);
-g = 2*pi*[alpha(:),beta(:),gamma(:)].';
+% export to Euler angle
+g = quat2euler(g,'nfft');
 	
 f_hat = [real(odf.c_hat(:)),imag(odf.c_hat(:))].';
 

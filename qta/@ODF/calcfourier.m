@@ -1,4 +1,4 @@
-function nodf = calcfourier(odf,L)
+function nodf = calcfourier(odf,L,varargin)
 % compute Fourier coefficients of odf
 %
 % Compute the Fourier coefficients of the ODF and store them in the
@@ -19,15 +19,13 @@ function nodf = calcfourier(odf,L)
 % ODF/fourier ODF/textureindex ODF/entropy ODF/eval
 %
 
-error(nargchk(2, 2, nargin))
-
-global mtex_path;
+%error(nargchk(2, 2, nargin))
 
 for i = 1:length(odf)
   
   % no precomputation
   if check_option(odf(i),'UNIFORM') || ...
-      dim2deg(length(odf(i).c_hat)) <= min(L,length(getA(odf(i).psi))-1) 
+      dim2deg(length(odf(i).c_hat)) < min(L,length(getA(odf(i).psi))-1) 
     
     if check_option(odf(i),'UNIFORM') % **** uniform portion *****
     
@@ -59,26 +57,61 @@ for i = 1:length(odf)
     else                           % **** radially symmetric portion ****
 
       % export center in Euler angle
-      g = odf(i).SS*reshape(quaternion(odf(i).center),1,[]); % SS x S3G
-      g = reshape(g.',[],1);                                 % S3G x SS
-      g = reshape(g*odf(i).CS,1,[]);                         % S3G x SS x CS
-      [alpha,beta,gamma] = quat2euler(g);
-      alpha = fft_rho(alpha);
-      beta  = fft_theta(beta);
-      gamma = fft_rho(gamma);
-      g = 2*pi*[alpha;beta;gamma];
+      if 10*numel(quaternion(odf(i).center))*length(odf(i).SS)*length(odf(i).CS)...
+          < L^3
+        g = odf(i).SS*reshape(quaternion(odf(i).center),1,[]); % SS x S3G
+        g = reshape(g.',[],1);                                 % S3G x SS
+        g = reshape(g*odf(i).CS,1,[]);                         % S3G x SS x CS        
+      else
+        g = quaternion(odf(i).center);        
+      end
+      
+      abg = quat2euler(g,'nfft');
       
       % set parameter
       c = odf(i).c / length(odf(i).SS) / length(odf(i).CS);
       A = getA(odf(i).psi);
       A = A(1:min(max(4,L+1),length(A)));
+  
       
-      % run NFSOFT
-      unimodal_hat = run_linux([mtex_path,'/c/bin/odf2fc'],'EXTERN',g,c,A);
+      % init variables
+      odf(i).c_hat = zeros(deg2dim(length(A)),1);
+
+      % iterate due to memory restrictions?
+      maxiter = ceil(numel(c)/25000);
+      if maxiter > 1, progress(0,maxiter);end
+
+      for iter = 1:maxiter
+   
+        if maxiter > 1, progress(iter,maxiter); end
+   
+        dind = ceil(numel(c) / maxiter);
+        ind = 1+(iter-1)*dind:min(numel(c),iter*dind);
+        
+        % calculate Fourier coefficients
+        odf(i).c_hat = odf(i).c_hat + gcA2fourier(abg(ind),c(ind),A);
+             
+      end
+    
+      if 10*numel(quaternion(odf(i).center))*length(odf(i).SS)*length(odf(i).CS)...
+          >= L^3        
       
-      % extract result
-      odf(i).c_hat = complex(unimodal_hat(1:2:end),unimodal_hat(2:2:end));
+        if length(quaternion(odf(i).CS)) ~= 1
+          % symmetrize crystal symmetry
+          abg = quat2euler(quaternion(odf(i).CS),'nfft');
+          A(1:end) = 1;
+          c = ones(1,length(odf(i).CS));
+          odf(i).c_hat = multiply(odf(i).c_hat,gcA2fourier(abg,c,A),length(A)-1);
+        end
       
+        if length(quaternion(odf(i).SS)) ~= 1
+          % symmetrize specimen symmetry
+          abg = quat2euler(quaternion(odf(i).SS),'nfft');
+          A(1:end) = 1;
+          c = ones(1,length(odf(i).SS));
+          odf(i).c_hat = multiply(gcA2fourier(abg,c,A),odf(i).c_hat,length(A)-1);
+        end
+      end
     end
     
     if ~isempty(inputname(1)) && nargout == 1
@@ -91,3 +124,25 @@ end
 nodf = odf;
 end
 
+function f = gcA2fourier(g,c,A)
+
+global mtex_path;
+
+% run NFSOFT
+f = run_linux([mtex_path,'/c/bin/odf2fc'],'EXTERN',g,c,A);
+      
+% extract result
+f = complex(f(1:2:end),f(2:2:end));
+
+end
+
+function f = multiply(f1,f2,lA)
+
+f = zeros(numel(f1),1);
+for l = 0:lA  
+  ind = deg2dim(l)+1:deg2dim(l+1);  
+  f(ind) = reshape(f1(ind),2*l+1,2*l+1) ...
+    * reshape(f2(ind),2*l+1,2*l+1);
+end
+
+end
