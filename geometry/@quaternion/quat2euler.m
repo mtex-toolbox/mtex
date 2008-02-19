@@ -22,21 +22,30 @@ function [alpha,beta,gamma] = quat2euler(quat,varargin)
 if check_option(varargin,'BUNGE')
   alpha = atan2(quat.b .* quat.d - quat.a .* quat.c,...
     quat.c .* quat.d + quat.a .* quat.b);
-  beta = acos(-quat.b.^2 - quat.c.^2 + quat.d.^2 + quat.a.^2);
+  beta = acos(max(-1,min(1,-quat.b.^2 - quat.c.^2 + quat.d.^2 + quat.a.^2)));
   gamma = atan2(quat.b .* quat.d + quat.a .* quat.c,...
     -quat.c .* quat.d + quat.a .* quat.b);
 else
   alpha = atan2(quat.c .* quat.d - quat.a .* quat.b,...
     quat.b .* quat.d + quat.a .* quat.c);
-  beta = acos(-quat.b.^2 - quat.c.^2 + quat.d.^2 + quat.a.^2);
+  beta = acos(max(-1,min(1,-quat.b.^2 - quat.c.^2 + quat.d.^2 + quat.a.^2)));
   gamma = atan2(quat.c .* quat.d + quat.a .* quat.b,...
     -quat.b .* quat.d + quat.a .* quat.c);
 end
 
 % if rotational axis equal to z
-ind = isnull(alpha) & isnull(beta) & isnull(gamma);
-alpha(ind) = 2*asin(quat.d(ind));
-  
+ind = isnull(quat.b) & isnull(quat.c);
+alpha(ind) = 2*asin(max(-1,min(1,ssign(quat.a(ind)).*quat.d(ind))));
+beta(ind) = 0;
+gamma(ind) = 0;
+
+if check_option(varargin,'nfft')
+  alpha = fft_rho(alpha);
+  beta  = fft_theta(beta);
+  gamma = fft_rho(gamma);
+  alpha = 2*pi*[alpha(:),beta(:),gamma(:)].';
+end
+
 return
 
 s = size(quat);
@@ -64,3 +73,8 @@ end
 alpha = reshape(alpha,s);
 beta = reshape(beta,s);
 gamma = reshape(gamma,s);
+
+function y = ssign(x)
+
+y = ones(size(x));
+y(x<0) = -1;
