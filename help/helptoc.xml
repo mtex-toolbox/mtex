@@ -30,6 +30,7 @@ Examples
 <tocitem target="geometry_demo.html"> Crystal Geometry </tocitem>
 <tocitem target="dubna_demo.html"> The Dubna Example </tocitem>
 <tocitem target="demo_santafee.html"> The Santafee Example</tocitem>
+<tocitem target="ODF_demo.html"> ODF Analysis</tocitem>
 <tocitem target="ebsd_demo.html"> EBSD Demo</tocitem>
 </tocitem>
 <tocitem target="interfaces_index.html" image="$toolbox/matlab/icons/boardicon.gif">

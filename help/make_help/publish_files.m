@@ -19,7 +19,7 @@ for i=1:length(files)
   
   if check_option(varargin,'waitbar'),waitbar(i/length(files));end
   close all
-  if check_option(varargin,'verbose'),disp(files{i});end
+  if poptions.evalCode || check_option(varargin,'verbose'),disp(files{i});end
   
   % publish
   publish(files{i},poptions);
