@@ -2,7 +2,6 @@
 %
 %% BUGS
 %
-% * run check_subGrid with cubic - orthorhombic symmetry
 %
 %% class symmetry
 %
@@ -47,6 +46,7 @@
 %
 %% EBSD
 %
+% * delete
 %
 %% quaternion
 %

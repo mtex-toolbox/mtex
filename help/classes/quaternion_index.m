@@ -20,6 +20,7 @@
 %  q = [[euler2quat.html,euler2quat]](alpha,beta,gamma) % by Euler angles
 %  q = [[Miller2quat.html,Miller2quat]]([h k l],[u v w],symmetry); % by Miller indece
 %  q = [[idquaternion.html,idquaternion]];                % identical quaternion
+%  q = [[vec42quat.html,vec42quat]](u1,v1,u2,v2);      % by four vectors
 %
 % Additional methods to define a rotation are [[hr2quat.html,hr2quat]] and 
 % [[vec42quat.html,vec42quat]].
