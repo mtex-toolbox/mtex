@@ -17,8 +17,9 @@ function v = volume(odf,center,radius,varargin)
 %  resolution - resolution of discretization
 %
 %% See also
-% ODF/entropy ODF/textureindex
+% ODF/fibrevolume ODF/entropy ODF/textureindex
 
+% check input
 argin_check(center,'quaternion');
 argin_check(radius,'double');
 
@@ -42,6 +43,6 @@ end
 if f==0
   v = 0;
 else
-  v = sum(eval(odf,S3G))/GridLength(S3G)*f;
+  v = mean(eval(odf,S3G)) * f;
 end
 

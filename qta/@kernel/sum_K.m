@@ -14,7 +14,8 @@ function s = sum_K(kk,g1,g2,CS,SS,c,varargin)
 %  EPSILON - 
 %
 %% general formula:
-% s(g1_i) = sum_j c_j K(g1_i,g2_j) 
+%
+% $$s(g1_i) = sum_j c_j K(g1_i,g2_j) $$
 
 
 % how to index grid representation 

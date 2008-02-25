@@ -21,7 +21,8 @@ function t = textureindex(odf,varargin)
 
 if check_option(varargin,'fourier')
   
-  t = sum(abs(fourier(odf,varargin{:})).^2);
+  L = get_option(varargin,'bandwidth',bandwidth(odf));
+  t = norm(fourier(odf,'bandwidth',L,'l2-normalization')).^2;
   
 else
   % get resolution

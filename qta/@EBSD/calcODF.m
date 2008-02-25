@@ -24,7 +24,7 @@ g = getgrid(ebsd);
 
 % get halfwidth
 hw = get_option(varargin,'halfwidth',...
-  max(getResolution(g) * 3,1*degree));
+  max(getResolution(g) * 3,2*degree));
 k = kernel('de la Vallee Poussin','halfwidth',hw);
 
 disp([' used kernel: ' char(k)]);
@@ -72,6 +72,9 @@ for iter = 1:maxiter
 end
 d = d ./ numel(g);
 
+%% eliminate spare rotations in grid
+S3G = subGrid(S3G,d ~= 0);
+d = d(d~=0);
 
 %% generate ODF
 

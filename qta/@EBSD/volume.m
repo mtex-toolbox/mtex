@@ -14,7 +14,7 @@ function v = volume(ebsd,center,radius,varargin)
 %  radius - double
 %
 %% See also
-% odf/volume
+% ODF/volume
 
 v = nnz(find(ebsd.orientations,center,radius,varargin{:})) / ...
     sum(GridLength(ebsd.orientations));
