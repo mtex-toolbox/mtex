@@ -1,4 +1,4 @@
-%% MTEX - Analysing of EBSD data
+%% MTEX - Analysis of EBSD Data
 %
 % Analysis of single orientation measurement.
 %
@@ -28,7 +28,7 @@ plotpdf(odf,h,'reduced')
 
 %% plot ODF
 close;figure('position',[46   171   752   486]);
-plotodf(odf,'alpha','sections',18,'resolution',5*degree,...
+plotodf(odf,'alpha','sections',18,'resolution',2*degree,...
      'plain','gray','contourf','FontSize',10)
 
 %% a sythetic example

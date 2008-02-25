@@ -26,10 +26,10 @@ plot(pf)
 
 %% ODF Estimation
 
-rec = calcODF(pf,'RESOLUTION',7.5*degree,'background',1,'iter_max',6)
+rec = calcODF(pf)
 
 %% ODF Estimation with Ghost Correction
-rec2 = calcODF(pf,'RESOLUTION',7.5*degree,'background',10,'iter_max',6,'ghost_correction')
+rec2 = calcODF(pf,'ghost_correction')
 
 %% Error analysis
 
@@ -57,3 +57,15 @@ close; figure('position',[46 171 752 486]);
 plot(santafee,'alpha','sections',18,...
      'plain','gray','contourf','FontSize',10)
    
+%% Plot Fourier Coefficients
+
+%%
+close all;
+% true ODF
+plotFourier(santafee,'bandwidth',32)
+hold on
+% Without ghost correction:
+plotFourier(rec,'bandwidth',32,'color','g')
+% With ghost correction:
+plotFourier(rec2,'bandwidth',32,'color','r')
+legend({'true ODF','without ghost correction','with ghost correction'})
