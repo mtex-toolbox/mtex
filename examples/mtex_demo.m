@@ -285,7 +285,7 @@ clf;hist(odf)
 
 %% Recalculate ODFs
 
-rec = calcODF(pf1,'resolution',10*degree,'background',10);
+rec = calcODF(pf1,'background',10);
 
 %% Error analysis
 

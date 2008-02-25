@@ -55,8 +55,7 @@ plot(pf_rotated)
 % we use here the option 'background' to specify the approximative
 % background radiation and to increase the accuracy of the reconstruction
 
-
-odf = calcODF(pf_corrected,'resolution',7.5*degree,'background',10,'iter_max',10)
+odf = calcODF(pf_corrected,'background',10)
 
 %% Error analysis
 
@@ -86,3 +85,6 @@ plot(odf,'sections',18)
 odfrotated = rotate(odf,axis2quat(xvector,45*degree));
 plotpdf(odfrotated,getMiller(pf(1)),'rotated');
 
+%% volume analysis
+
+volume(odf,modalorientation(odf),20*degree);
