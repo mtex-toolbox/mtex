@@ -35,7 +35,7 @@ for s = 1:length(sp)
   
     % ----------------------- uniform portion -------------------------------
     if check_option(odf(i),'UNIFORM')
-      Z = Z + sp(s) + odf(i).c;
+      Z = Z + sp(s) * odf(i).c;
       
       % -------------------- fibre symmetric portion --------------------------
     elseif check_option(odf(i),'FIBRE')

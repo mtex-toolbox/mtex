@@ -1,4 +1,4 @@
-function nodf = calcfourier(odf,L,varargin)
+function nodf = calcfourier(odf,L)
 % compute Fourier coefficients of odf
 %
 % Compute the Fourier coefficients of the ODF and store them in the
@@ -16,10 +16,11 @@ function nodf = calcfourier(odf,L,varargin)
 %  nodf - @ODF where Fourier coefficients are stored for further use 
 %
 %% See also
-% ODF/fourier ODF/textureindex ODF/entropy ODF/eval
+% ODF/fourier ODF/textureindex ODF/entropy ODF/eval ODF/plotFourier
 %
 
-%error(nargchk(2, 2, nargin))
+error(nargchk(2, 2, nargin));
+L = max(L,4);
 
 for i = 1:length(odf)
   
@@ -54,27 +55,31 @@ for i = 1:length(odf)
               
       end
         
-    else                           % **** radially symmetric portion ****
-
-      % export center in Euler angle
+    else
+      % **** radially symmetric portion ****
+      % set parameter
+      c = odf(i).c / length(odf(i).SS) / length(odf(i).CS);
+      
+      % symmetrization for a few center
       if 10*numel(quaternion(odf(i).center))*length(odf(i).SS)*length(odf(i).CS)...
-          < L^3
+          < max(L^3,100)
         g = odf(i).SS*reshape(quaternion(odf(i).center),1,[]); % SS x S3G
         g = reshape(g.',[],1);                                 % S3G x SS
         g = reshape(g*odf(i).CS,1,[]);                         % S3G x SS x CS        
+        
+        c = repmat(c,1,length(odf(i).CS)*length(odf(i).SS));         
       else
         g = quaternion(odf(i).center);        
-      end
+      end      
       
+      % export center in Euler angle
       abg = quat2euler(g,'nfft');
       
-      % set parameter
-      c = odf(i).c / length(odf(i).SS) / length(odf(i).CS);
+      % export Chebyshev coefficients
       A = getA(odf(i).psi);
       A = A(1:min(max(4,L+1),length(A)));
-  
-      
-      % init variables
+        
+      % init Fourier coefficients
       odf(i).c_hat = zeros(deg2dim(length(A)),1);
 
       % iterate due to memory restrictions?
@@ -83,16 +88,16 @@ for i = 1:length(odf)
 
       for iter = 1:maxiter
    
-        if maxiter > 1, progress(iter,maxiter); end
-   
+        % current iteration region
+        if maxiter > 1, progress(iter,maxiter); end   
         dind = ceil(numel(c) / maxiter);
         ind = 1+(iter-1)*dind:min(numel(c),iter*dind);
         
         % calculate Fourier coefficients
-        odf(i).c_hat = odf(i).c_hat + gcA2fourier(abg(ind),c(ind),A);
-             
+        odf(i).c_hat = odf(i).c_hat + gcA2fourier(abg(:,ind),c(ind),A);             
       end
     
+      % symmetrization for a many center      
       if 10*numel(quaternion(odf(i).center))*length(odf(i).SS)*length(odf(i).CS)...
           >= L^3        
       
@@ -136,6 +141,7 @@ f = complex(f(1:2:end),f(2:2:end));
 
 end
 
+% multiply Fourier matrixes
 function f = multiply(f1,f2,lA)
 
 f = zeros(numel(f1),1);

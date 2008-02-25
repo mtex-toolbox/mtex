@@ -19,7 +19,8 @@ function [odf,alpha] = calcODF(pf,varargin)
 %  KERNELWIDTH      - halfwidth of the ansatz functions (default = 2/3 * resolution)
 %  RESOLUTION       - localization grid for the ansatz fucntions (default = 3/2 resolution(pf))
 %  BANDWIDTH        - bandwidth of the ansatz functions (default = max)
-%  ITER_MAX         - number of iterations (default = 11)
+%  ITER_MAX         - maximum number of iterations (default = 11)
+%  ITER_MIN         - minimum number of iterations (default = 5)
 %  REGULARIZATION   - weighting coefficient lambda (default = 0)
 %  ODF_SAVE         - save ODF simultanously 
 %  C0               - initial guess (default = [1 1 1 1 ... 1])
@@ -37,7 +38,7 @@ function [odf,alpha] = calcODF(pf,varargin)
 %  alpha  - scaling factors - calculated during reconstruction
 %
 %% See also
-% PoleFigure/loadPoleFigure interfaces_index examples_index
+% loadPoleFigure interfaces_index examples_index
 
 tic
 
@@ -53,12 +54,13 @@ if ~(CS == getCSym(S3G) && SS == getSSym(S3G))
     qwarning('Symmetry of the Grid does not fit to the given Symmetrie');
 end
 
-kw = get_option(varargin,'KERNELWIDTH',2/3*getResolution(S3G),'double');
+kw = get_option(varargin,'KERNELWIDTH',getResolution(S3G),'double');
 psi = get_option(varargin,'kernel',...
   kernel('de la Vallee Poussin','HALFWIDTH',kw),'kernel');
 
 global mtex_maxiter;
 iter_max = int32(get_option(varargin,'ITER_MAX',mtex_maxiter,'double'));
+iter_min = int32(get_option(varargin,'ITER_MIN',iter_max/4,'double'));
 
 c0 = get_option(varargin,'C0',...
 	1/sum(GridLength(S3G))*ones(sum(GridLength(S3G)),1));
@@ -107,11 +109,12 @@ clear rtheta;clear rrho;
 
 
 % ----------------------- WHEIGHTS ----------------------------------
-if ~check_option(varargin,'NO_BACKGROUND') 
-  w = sqrt(1./sqrt(max(P+get_option(varargin,'BACKGROUND',1),0.0001)));
-  varargin = set_option(varargin,'BACKGROUND');
-elseif check_option(pf(1).options,'BACKGROUND')
+if check_option(pf(1).options,'BACKGROUND') && ...
+    ~check_option(varargin,'NO_BACKGROUND')
   w = sqrt(1./sqrt(max(P+getbg(pf),0.0001)));
+  varargin = set_option(varargin,'BACKGROUND');
+elseif ~check_option(varargin,'NO_BACKGROUND') 
+  w = sqrt(1./sqrt(max(P+get_option(varargin,'BACKGROUND',10),0.0001)));
   varargin = set_option(varargin,'BACKGROUND');
 else
   w = [];
@@ -158,7 +161,7 @@ global mtex_path;
 
 if check_option(varargin,'SILENT')
   c = run_linux([mtex_path,'/c/bin/pf2odf'],...
-    'INTERN',lP,lh,refl,iter_max,flags,...
+    'INTERN',lP,lh,refl,iter_max,iter_min,flags,...
     'EXTERN',P,r,gh,A,c0,w,RM,evaldata,evalmatrix,'SILENT');
   
   odf = @() silentODF(S3G,c,psi,CS,SS);
@@ -166,7 +169,7 @@ if check_option(varargin,'SILENT')
 else
   
   [c,alpha] = run_linux([mtex_path,'/c/bin/pf2odf'],...
-    'INTERN',lP,lh,refl,iter_max,flags,...
+    'INTERN',lP,lh,refl,iter_max,iter_min,flags,...
     'EXTERN',P,r,gh,A,c0,w,RM,evaldata,evalmatrix);
   disp(['required time: ',int2str(toc),'s']);
 
@@ -188,7 +191,12 @@ for ip = 1:length(pf)
   phon = min(phon,quantile(getdata(pf(i)),0.01)./alpha(i));
 end
 
-disp(['calculate with fixed background ',xnum2str(phon)]);
+if phon > 0.05
+  disp(['calculate with fixed background ',xnum2str(phon)]);
+else
+  disp('No phon! No ghost correction possible!');
+  return
+end
 
 % subtract from intensities
 P = [];

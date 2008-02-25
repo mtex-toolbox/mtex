@@ -41,6 +41,7 @@ for i = 1:length(kk)
       l = get_option(varargin,'bandwidth',l);
 			A = zeros(1,l);
 			A(1:min(l,length(kk(i).A))) = kk(i).A(1:min(l,length(kk(i).A)));
+      if check_option(varargin,'logarithmic'), A = log(A)/log(10);end
 			plot(A,charorder(i),'color',colororder(i),'MarkerSize',10)
       set(gcf,'Name',['Fourier coefficients of the kernel ',inputname(1)]);
     case 'FOURIER_LOGLOG'

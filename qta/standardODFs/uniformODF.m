@@ -19,4 +19,7 @@ function odf = uniformODF(CS,SS,varargin)
 w = get_option(varargin,'WEIGHT',1);
 if nargin < 2, SS = symmetry;end
 
+argin_check(CS,'symmetry');
+argin_check(SS,'symmetry');
+
 odf = ODF([],w,[],CS,SS,'UNIFORM',varargin{:});

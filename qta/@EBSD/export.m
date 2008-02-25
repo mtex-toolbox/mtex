@@ -2,7 +2,7 @@ function export(ebsd,fname,varargin)
 % export EBSD data to a ascii file
 %
 %% Input
-%  ebsd - @ebsd
+%  ebsd - @EBSD
 %  fname - filename
 %
 %% Options

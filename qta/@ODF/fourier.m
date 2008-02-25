@@ -16,6 +16,9 @@ function odf_hat = fourier(odf,varargin)
 %  L    - order of Fourier coefficients to be returned
 %  B    - maximum order of Fourier coefficients to be returned
 %
+%% Options
+%  l2-normalized - used L^2 normalization
+%
 %% Output
 %  odf_hat - Fourier coefficient - complex (2L+1)x(2L+1) matrix
 %  
@@ -24,8 +27,8 @@ function odf_hat = fourier(odf,varargin)
 %
 
 % compute Fourier coefficients 
-L = get_option(varargin,{'order','bandwidth'});
-if nargin > 1, odf = calcfourier(odf,L);end
+L = get_option(varargin,{'order','bandwidth'},bandwidth(odf));
+odf = calcfourier(odf,L);
 
 % sum up Fourier coefficients
 odf_hat = zeros(deg2dim(L+1),1);
@@ -33,6 +36,13 @@ odf_hat = zeros(deg2dim(L+1),1);
 for i = 1:length(odf)
   l = min(length(odf(i).c_hat),length(odf_hat));
   odf_hat(1:l) = odf_hat(1:l) + reshape(odf(i).c_hat(1:l),[],1);  
+end
+
+if check_option(varargin,'l2-normalization')
+  for l = 0:L
+    odf_hat(deg2dim(l)+1:deg2dim(l+1)) = ...
+      odf_hat(deg2dim(l)+1:deg2dim(l+1)) ./ sqrt(2*l+1);    
+  end
 end
   
 if check_option(varargin,'order')

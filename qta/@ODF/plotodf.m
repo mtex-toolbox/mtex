@@ -192,6 +192,12 @@ else
     'MAXTHETA',min(rotangle_max_y(odf(1).CS),rotangle_max_y(odf(1).SS))/2,...
     'MAXRHO',m);
   
+  if check_option(varargin,'complete')
+    S2G = S2Grid('PLOT',varargin{:},...
+    'MAXTHETA',pi/2,...
+    'MAXRHO',2*pi);
+  end
+  
   [beta,alpha] = polar(S2G);
   alpha = reshape(repmat(alpha,[1,1,nplots]),[GridSize(S2G),nplots]);
   beta  = reshape(repmat(beta ,[1,1,nplots]),[GridSize(S2G),nplots]);

@@ -2,7 +2,7 @@ function G = getgrid(ebsd,ind)
 % get mods of the components
 %
 %% Input
-%  ebsd - @ebsd
+%  ebsd - @EBSD
 %  ind - [double] indece to specific components (optional)
 %
 %% Output
