@@ -71,14 +71,18 @@ plotodf(rec,'sections',9)
 plotodf(rec_cor,'sections',9)
 
 %% 
-% radial plot without ghost correction:
+% radial plot of the true ODF
 close all
-plotodf(rec,'radially','center',idquaternion)
+plotodf(odf,'radially','center',idquaternion,'axes',yvector,'color','b')
+hold on
 
-%% 
+% radial plot without ghost correction:
+plotodf(rec,'radially','center',idquaternion,'axes',yvector,'color','g')
+
 % radial plot with ghost correction:
-plotodf(rec_cor,'radially','center',idquaternion)
-
+plotodf(rec_cor,'radially','center',idquaternion,'axes',yvector,'color','r','linestyle','--')
+hold off
+legend({'true ODF','without ghost correction','with ghost correction'})
 
 %% Calculate Fourier coefficients
 odf = calcfourier(odf,32);
@@ -102,12 +106,16 @@ calcerror(rec_cor,odf,'fourier','L2')
 % Fourier coefficients with ghost correction oszillates much more the the
 % Fourier coefficients with ghost correction
 
-%%
-% Without ghost correction:
+
+% true ODF
 close all;
 plotFourier(odf)
 hold on
+
+% Without ghost correction:
 plotFourier(rec,'color','g')
+
+% with ghost correction
 plotFourier(rec_cor,'color','r')
 legend({'true ODF','without ghost correction','with ghost correction'})
 hold off
