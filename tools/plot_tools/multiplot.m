@@ -1,7 +1,11 @@
 function multiplot(x,y,nplots,varargin)
 % plot multiple graphs
+%
 %% Syntax
-%  multiplot(x,y,nplots,<options>)
+%  multiplot(x,y,nplots,'FONTSIZE',fontsize)
+%  multiplot(x,y,nplots,'COLORCODING','equal')
+%  multiplot(x,y,nplots,'COLORCODING',[cmin cmax])
+%  multiplot(x,y,nplots,'ANNOTATION',string)
 %
 %% Input
 %  x      - grid (@S1Grid, @S2Grid, @SO3Grid)
@@ -9,20 +13,21 @@ function multiplot(x,y,nplots,varargin)
 %  nplots - number of plots
 %
 %% Options
-%  FONTSIZE,[int]     - fontsize used for annotations
-%  ANOTATION,[string] - some annotation to be added to the plot
+%  [cmin cmax] - minimum and maximum value for color coding
+%  fontsize    - fontsize used for annotations
+%  string      - some annotation to be added to the plot
+
 %
 %% Flags
-%  RELATIVE     - relative colorcoding (default)
-%  ABSOLUTE     - absolute colorcoding 
-%  MINMAX       - display minimum and maximum 
-%  uncroppped   - do not resize window for a cropped plot
-%  SILENT       - no output
+%  MINMAX      - display minimum and maximum 
+%  uncroppped  - do not resize window for a cropped plot
+%  SILENT      - no output
 %
 %% See also
 % S2Grid/plot savefigure   
 
-% calculate data
+
+%% calculate data
 minz = +inf; maxz = -inf;
 for i = 1:nplots
   Y{i} = y(i); %#ok<AGROW>
@@ -34,14 +39,23 @@ for i = 1:nplots
   end
 end
 
-if check_option(varargin,'absolute')
-  
+%% calculate contour levels for absolute colorcoding
+
+if strcmpi(get_option(varargin,'colorrange'),'equal')
+  colorrange = [minz,maxz];
+else
+  colorrange = get_option(varargin,'colorrange',[],'double');
+end
+
+
+if length(colorrange) == 2
+   
   % set range for colorcoding
-  varargin = set_default_option(varargin, {},'range',[minz,maxz]);
+  varargin = set_default_option(varargin, {},'range',colorrange);
   
   % set contour levels
   ncontour = get_option(varargin,{'contour','contourf'},10,'double');
-  if length(ncontour) == 1, ncontour = linspace(minz,maxz,ncontour);end
+  if length(ncontour) == 1, ncontour = linspace(colorrange(1),colorrange(2),ncontour);end
   
   if check_option(varargin,'contour') 
     varargin = set_option(varargin,'contour',ncontour);
@@ -51,20 +65,45 @@ if check_option(varargin,'absolute')
   
 end
 
-%% plot
 
+
+
+%% 3d plot
+
+if check_option(varargin,'3d')
+  
+  for i = 1:nplots
+	
+    figure
+    Z = Y{i};
+    X = x(i);
+    plot(X,'DATA',Z,varargin{:});
+    axis off;
+    set(gca,'Tag','3d');
+    h = rotate3d;
+    set(h,'ActionPostCallback',@mypostcallback);
+    set(h,'Enable','on');
+    
+  end
+
+  return  
+end
+
+
+%% 2d plot
+
+% clear figure
 clf('reset');
 figure(clf);
 %set(gcf,'Visible','off');
 %set(gcf,'toolbar','none');
 
-if ~check_option(varargin,'3d')
-  % init statusbar
-  sb = statusbar('drawing plots ...');
-  set(sb.ProgressBar, 'Visible','on', 'Minimum',0, 'Maximum',nplots, 'Value',0, 'StringPainted','on');
-end
+% init statusbar
+sb = statusbar('drawing plots ...');
+set(sb.ProgressBar, 'Visible','on', 'Minimum',0, 'Maximum',nplots, 'Value',0, 'StringPainted','on');
 
 fontsize = get_option(varargin,'FONTSIZE',12);
+
 for i = 1:nplots
 	
   a(i) = axes;%#ok<AGROW>
@@ -72,7 +111,7 @@ for i = 1:nplots
   Z = Y{i};
   X = x(i);
   plot(X,'DATA',Z,varargin{:});
-  if ~check_option(varargin,'3d'), set(sb.ProgressBar,'Value',i);end
+  set(sb.ProgressBar,'Value',i);
     
   if check_option(varargin,'MINMAX') 
     anotation(a(i),min(Z(:)),max(Z(:)),fontsize);
@@ -86,31 +125,31 @@ for i = 1:nplots
   end
 end
 
-if ~check_option(varargin,'3d')
-  % clear statusbar
-  statusbar;
+% clear statusbar
+statusbar;
 
-  if check_option(varargin,'absolute'), fitcaxis;end
-  set(gcf,'ResizeFcn',@(src,evt) figResize(src,evt,a));
-  %set(gcf,'Position',get(gcf,'Position'));
-  figResize([],[],a);
-  if ~check_option(varargin,'uncropped')
-    set(gcf,'Units','pixels');
-    pos = get(gcf,'Position');
-    si = get(gcf,'UserData');
-    pos([3,4]) = si;
-    set(gcf,'Position',pos);
-  else
-    set(gcf,'Position',get(gcf,'Position'));
-  end
+if length(colorrange) == 2, setcolorrange(colorrange);end
+set(gcf,'ResizeFcn',@(src,evt) figResize(src,evt,a));
+%set(gcf,'Position',get(gcf,'Position'));
+figResize([],[],a);
+if ~check_option(varargin,'uncropped')
+  set(gcf,'Units','pixels');
+  pos = get(gcf,'Position');
+  si = get(gcf,'UserData');
+  pos([3,4]) = si;
+  set(gcf,'Position',pos);
+else
+  set(gcf,'Position',get(gcf,'Position'));
 end
+
 set(a,'Visible','on');
-if check_option(varargin,'3d'), axis off;end
 
 end
 
-%%-----------------------------------------------------------------------
+%% ================== private functions =========================
 
+
+%% disp annotation in subfigures
 function anotation(a,mini,maxi,fontsize)
 mini = xnum2str(mini);
 maxi = xnum2str(maxi);
@@ -128,7 +167,7 @@ text(apos(3)-1,3,{'max:',maxi},'FontName','times','FontSize',fontsize,'Interpret
 
 end
 
-
+%% resize figure and reorder subfigs
 function figResize(src,evt,a) %#ok<INUSL,INUSL>
 
 if isempty(gcbo) || gcbo ~= round(gcbo)
@@ -169,6 +208,7 @@ set(fig,'Units',old_units);
 
 end
 
+%% determine best alignment of subfigures
 function [nx,ny,l] = bestfit(dx,dy,n)
 
 ny = 1;
@@ -185,4 +225,23 @@ for ny=2:n
     l = min(dx/nx,dy/ny);
   end
 end
+end
+
+%% Callbacks for syncing 3d rotations
+
+function mypostcallback(obj,evd)
+
+cVA = get(evd.Axes,'cameraViewAngle');
+cP = get(evd.Axes,'cameraPosition');
+cT = get(evd.Axes,'cameraTarget');
+cUV = get(evd.Axes,'cameraUpVector');
+
+a = findobj('Tag','3d');
+for i = 1:length(a)
+  set(a(i),'cameraViewAngle',cVA);
+  set(a(i),'cameraPosition',cP);
+  set(a(i),'cameraTarget',cT);
+  set(a(i),'cameraUpVector',cUV);
+end
+
 end
