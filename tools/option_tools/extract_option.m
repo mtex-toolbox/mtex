@@ -13,7 +13,7 @@ function out = extract_option(option_list,option,types)
 % get_option set_option clear_option
 
 if ~iscell(option), option = {option};end
-if nargin > 2 && ~iscell(types), option = {option};end
+if nargin > 2 && ~iscell(types), types = {types};end
 
 out = {};
 for o = 1:length(option)
