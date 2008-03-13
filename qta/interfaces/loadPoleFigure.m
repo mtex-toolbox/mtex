@@ -1,4 +1,4 @@
-function pf = loadPoleFigure(fname,varargin)
+function [pf,interface,options] = loadPoleFigure(fname,varargin)
 % import pole figure data 
 %
 %% Description
@@ -39,7 +39,6 @@ function pf = loadPoleFigure(fname,varargin)
 % interfaces_index PoleFigure/calcODF examples_index
 
 %% proceed input argument
-
 if ischar(fname), fname = {fname};end
 
 % get crystal directions
@@ -58,39 +57,21 @@ if ~isempty(varargin) && isa(varargin{1},'symmetry')
 end
 
 %% determine interface
-interface = get_option(varargin,'interface',check_interfaces(fname{1},varargin{:}));
-
-% txt interface does not fit are format that is already fitted by another
-% interface
-if length(interface)==2 && ~isempty(strcmp(interface,'txt'))
-  interface(strcmp(interface,'txt')) = [];
-
-elseif iscell(interface) && length(interface)>=2  % if there are multiple interfaces
- i = listdlg('PromptString',...
-   'There is more then one interface matching your data. Select one!',...
-   'SelectionMode','single',...
-   'ListSize',[400 100],...
-   'ListString',interface);
- interface = interface(i);
-end
-
-if isempty(interface)
-  if exist(fname{1},'file')
-    error('File %s does not match any supported interface.',fname{1});
-  else
-    error('File %s not found.',fname{1});
-  end
+if ~check_option(varargin,'interface')  
+  [interface,options] = check_interfaces(fname{1},varargin{:});  
+else
+  interface = get_option(varargin,'interface');
+  options = varargin;
 end
 
 %% import data
-
-c = get_option(varargin,'superposition');
+c = get_option(options,'superposition');
 if isa(c,'double'), c = {c};end
-varargin = delete_option(varargin,'superposition');
+varargin = delete_option(options,'superposition');
 
 pf = [];
 for i = 1:length(fname)  
-  pf = [pf,feval(['loadPoleFigure_',char(interface)],fname{i},varargin{:})]; 
+  pf = [pf,feval(['loadPoleFigure_',char(interface)],fname{i},options{:})]; 
 end
 
 for i = 1:length(pf)

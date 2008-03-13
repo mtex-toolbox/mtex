@@ -1,4 +1,4 @@
-function ebsd = loadEBSD(fname,varargin)
+function [ebsd,options] = loadEBSD(fname,varargin)
 % import ebsd data 
 %
 %% Description
@@ -41,35 +41,17 @@ if ~isempty(varargin) && isa(varargin{1},'symmetry')
 end
 
 %% determine interface
-interface = get_option(varargin,'interface',check_ebsd_interfaces(fname{1},varargin{:}));
-
-% txt interface does not fit are format that is already fitted by another
-% interface
-if length(interface)==2 && ~isempty(strcmp(interface,'txt'))
-  interface(strcmp(interface,'txt')) = [];
-
-elseif iscell(interface) && length(interface)>=2  % if there are multiple interfaces
- i = listdlg('PromptString',...
-   'There is more then one interface matching your data. Select one!',...
-   'SelectionMode','single',...
-   'ListSize',[400 100],...
-   'ListString',interface);
- interface = interface(i);
-end
-
-if isempty(interface)
-  if exist(fname{1},'file')
-    error('File %s does not match any supported interface.',fname{1});
-  else
-    error('File %s not found.',fname{1});
-  end
+if ~check_option(varargin,'interface')  
+  [interface,options] = check_ebsd_interfaces(fname{1},varargin{:});  
+else
+  interface = get_option(varargin,'interface');
+  options = varargin;
 end
 
 %% import data
-
 ebsd = [];
 for i = 1:length(fname)  
-  ebsd = [ebsd,feval(['loadEBSD_',char(interface)],fname{i},varargin{:})]; 
+  ebsd = [ebsd,feval(['loadEBSD_',char(interface)],fname{i},options{:})]; 
 end
 
 for i = 1:length(ebsd)
