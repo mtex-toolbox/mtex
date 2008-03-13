@@ -2,6 +2,7 @@
 %
 %% BUGS
 %
+% * textureindex, calcerror - Fourier and spatial algortihms not compatible
 %
 %% class symmetry
 %

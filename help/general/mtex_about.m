@@ -11,3 +11,13 @@
 %
 %  personal homepage: [[http://ibb.gsf.de/homepage/ralf.hielscher/,http://ibb.gsf.de/homepage/ralf.hielscher/]]
 %  MTEX homepage: [[http://mtex.googlecode.com,http://mtex.googlecode.com/]]
+%
+%% Credits
+%
+% * NFFT - D. Potts, S. Kunis, J. Keiner
+% * NSOFT - Antje Vollrath
+% * Import Wizard - Florian Bachmann
+% * txt2mat -  A.Tönnesmann
+% * Sphere3d - JM DeFreitas
+% * Arrow3d - Changshun Deng
+% * statusbar - Yair M. Altman
