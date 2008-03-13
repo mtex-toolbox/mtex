@@ -40,8 +40,8 @@ void pdf_init_advanced(pdf_plan *ths,unsigned int flags)
   ths->flags = flags;
 
   /* enable threads*/
-  /*fftw_init_threads();*/
-  /*fftw_plan_with_nthreads(2);*/
+  /*fftw_init_threads();
+    fftw_plan_with_nthreads(2);*/
 
   /* initialise NFSFT */
   nfsft_precompute(ths->lA,1000000,0U,0U);

@@ -16,6 +16,7 @@ typedef struct zbfm_solver_plan_{
 
   int iter;
   int iter_max;
+  int iter_min;
 
   double error_iter;
   double error_max;

@@ -5,8 +5,8 @@
 # please correct the following installation directories:
 #
 # path to FFTW, i.e. to lib/libfftw3.a
-FFTWPATH = /home/hielscher/c/
-#FFTWPATH = /usr
+#FFTWPATH = /home/hielscher/c/
+FFTWPATH = /usr/local
 #
 # path to the NFFT, i.e. to /lib/libnfft3.a
 NFFTPATH = /home/hielscher/c
@@ -25,10 +25,10 @@ RM = /bin/rm -f
 LN = /bin/ln
 CFLAGS = -o3 -c -Wall
 MYCFLAGS=$(CFLAGS) -I$(FFTWPATH)/include -I$(NFFTPATH)/include/nfft -I../include
-LDFLAGS=-lm
+LDFLAGS=-lm #-lpthread
 
 # list of static libraris
-LIBS = $(NFFTPATH)/lib/libnfft3.a $(FFTWPATH)/lib/libfftw3.a
+LIBS = $(NFFTPATH)/lib/libnfft3.a $(FFTWPATH)/lib/libfftw3.a #$(FFTWPATH)/lib/libfftw3_threads.a
 
 # list of generated object files.
 IOTOOLS = $(TPATH)/pio.o $(TPATH)/helper.o $(TPATH)/sparse.o
