@@ -27,7 +27,7 @@ odf = calcODF(pf)
 % In MTEX the ODF is approximated by a superposition of unimodal ODF. By 
 % default it is constructed a equidistribution in the orientation space 
 % with resolution addapted from the pole figure data. However the
-% resolution of the superposition my be adjusted by hand by 
+% resolution of the superposition may also be adjusted by hand by 
 odf = calcODF(of,'resolution',7.5*degree)
 %%
 % The shape of the unimodal ODF can be specified by passign a specfific kernel
