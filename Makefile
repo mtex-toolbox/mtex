@@ -5,19 +5,19 @@
 # please correct the following installation directories:
 #
 # path to FFTW, i.e. to lib/libfftw3.a
-FFTWPATH = /home/hielscher/c/
-#FFTWPATH = /usr
+#FFTWPATH = /home/hielscher/c/
+FFTWPATH = /usr/local
 #
 # path to the NFFT, i.e. to /lib/libnfft3.a
-NFFTPATH = /home/hielscher/c/nfft_trunk
+NFFTPATH = /home/hielscher/c
 #NFFTPATH = /usr/local
 #
 # matlab path 
 MATLABPATH = /opt/matlab
 #
 # compiler flags
-CFLAGS= -o3 -c -Wall 
-LDFLAGS= -lm
+CFLAGS= -o3 -c -Wall -fomit-frame-pointer -fstrict-aliasing -ffast-math
+LDFLAGS= -lm #-lpthread
 MEXFLAGS= -largeArrayDims
 #
 #--------------- end editable section ---------------------------------
@@ -31,7 +31,7 @@ all: $(SUBDIRS)
 
 # descent into subdirectories
 %.dir: 
-	$(MAKE) -e CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" NFFTPATH=$(FFTWPATH) FFTWPATH=$(FFTWPATH) MATLABPATH=$(MATLABPATH) MEXFLAGS="$(MEXFLAGS)" -C $*
+	$(MAKE) -e CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" NFFTPATH=$(NFFTPATH) FFTWPATH=$(FFTWPATH) MATLABPATH=$(MATLABPATH) MEXFLAGS="$(MEXFLAGS)" -C $*
 	$(MAKE) install -C $*
 
 # rule for cleaning re-compilable files.
