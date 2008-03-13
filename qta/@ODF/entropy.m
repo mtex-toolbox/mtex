@@ -22,13 +22,13 @@ function e = entropy(odf,varargin)
 res = get_option(varargin,'RESOLUTION',2.5*degree);
 
 % discretisation
-disp([' generate orientation grid with resolution ',...
-  xnum2str(res/degree),mtexdegchar]);
+%disp([' generate orientation grid with resolution ',...
+%  xnum2str(res/degree),mtexdegchar]);
 S3G = SO3Grid(res,odf(1).CS,odf(1).SS);
 
 
 % eval odf
-disp(' evaluate odf');
+%disp(' evaluate odf');
 e = eval(odf,S3G);
 e = e(e>0);
 e = - sum(e .* log(e))/GridLength(S3G);
