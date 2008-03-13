@@ -38,7 +38,7 @@ if check_option(varargin,'RADIALLY')
     q = axis2quat(axes(i),omega);
     d(:,i) = eval(odf,q*center,varargin{:}); %#ok<AGROW>
   end
-  plot(omega,d);
+  optionplot(omega,d,varargin{:});
   xlim([-pi pi]); xlabel('omega')
   return
   
