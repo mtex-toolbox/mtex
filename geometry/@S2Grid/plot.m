@@ -60,7 +60,7 @@ end
 
 % log plot? 
 if check_option(varargin,'logarithmic')
-  data = log(data);
+  data = log(data)./log(10);
   data(imag(data) ~= 0) = -inf;
 end
 
