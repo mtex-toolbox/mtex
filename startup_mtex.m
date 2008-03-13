@@ -9,6 +9,13 @@ function startup_mtex
 %% user defined global settings
 %------------------------------------------------------------------------
 
+%% file extensions to be associated with MTEX
+% add here your pole figure and EBSD data file extensions 
+global mtex_ext_polefigures;
+mtex_ext_polefigures = {'.exp','.XPa','.cns','.cnv', '.ptx','.pf'};
+global mtex_ext_ebsd;
+mtex_ext_ebsd = {'.ebsd'};
+
 %% available memory 
 % change this value to specify the total amount of installed ram
 % on your system in kilobytes
