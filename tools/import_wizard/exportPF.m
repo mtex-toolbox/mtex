@@ -1,4 +1,4 @@
-function str = exportPF( pn, fn, pf )
+function str = exportPF( pn, fn, pf, interface, options )
 %EXPORTPF Summary of this function goes here
 %  Detailed explanation goes here
 
@@ -76,11 +76,12 @@ end
 %% import the data 
 
 str = [ str; '%% import the data'; {''}];
-if length(getc(pf)) > length(pf)
-  str = [ str; 'pf = loadPoleFigure(fname,h,CS,SS,''superposition'',c);'];
-else
-  str = [ str; 'pf = loadPoleFigure(fname,h,CS,SS);'];
-end
+lpf = ['pf = loadPoleFigure(fname,h,CS,SS,''interface'',''',...
+  interface,''', ',option2str(options,'quoted')];
+
+if length(getc(pf)) > length(pf), lpf = [lpf,',''superposition'',c'];end
+
+str = [str; [lpf ');']];
 
 function s = n2s(n)
 
