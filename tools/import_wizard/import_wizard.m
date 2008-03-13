@@ -15,8 +15,10 @@ gui_State = struct('gui_Name',       'wizard', ...
                    'gui_OutputFcn',  @import_wizard_OutputFcn, ...
                    'gui_LayoutFcn',  @import_wizard_LayoutFcn, ...
                    'gui_Callback',   []);
-if nargin && ischar(varargin{1})
-    gui_State.gui_Callback = str2func(varargin{1});
+                 
+%
+if length(varargin)>1  && ischar(varargin{1})
+  gui_State.gui_Callback = str2func(varargin{1});
 end
 
 if nargout
@@ -42,15 +44,17 @@ guidata(hObject, handles);
 global pf
 global page
 global FileName
-global PathName
 global workpath
+global interface
+global options
 
 pf = [];
 workpath = cd;
 FileName = [];
-PathName = [];
 page =  1;
 set_tab(hObject,handles);
+interface = '';
+options = {};
         
 set(handles.Bdatalist, 'String', FileName);
 set(handles.Bdatalist,'Value',1);
@@ -59,6 +63,12 @@ set(handles.Ccrystalpopup, 'String', symmetries);
 set(handles.Cspecimepopup, 'String', symmetries);
 
 set([handles.i, handles.Di], 'Enable', 'off'); 
+
+% if there was given a file import it
+if nargin && ~isempty(varargin) && ischar(varargin{1})
+  [pathstr, name, ext, versn] = fileparts(varargin{1}); %#ok<NASGU>
+  addfile({[name,ext]}, [pathstr,filesep],handles);
+end
 
 %% ------------ switch between pages --------------------------------------
 %--------------------------------------------------------------------------
@@ -124,12 +134,52 @@ end
 %% ------------- First Page -----------------------------------------------
 % -------------------------------------------------------------------------
 
-% --- Executes on button press in Badd.
-function Badd_Callback(hObject, eventdata, handles) %#ok<INUSL,DEFNU>
+% -------------- add a file to the list ------------------------------
+function addfile(fname,PathName,handles)
 global pf
 global FileName
-global PathName
 global workpath
+global interface
+global options
+
+if ~isempty(interface)
+  interf = {'interface',interface};
+else
+  interf = {};
+end
+  
+% generate pole figure object
+try
+  [npf,interface,options] = ...
+    loadPoleFigure(strcat(PathName,fname(:)),interf{:},options{:});
+  
+  % new directory?
+  if ~strcmp(workpath,PathName)
+    
+    % replace pole figures
+    pf = npf;
+    workpath = PathName;
+    FileName = fname;
+  else
+      
+    % add pole figures
+    pf = [pf,npf];
+    FileName = [ FileName , fname ];
+  end
+    
+catch
+  errordlg(errortext);
+end
+  
+% set list of filenames
+set(handles.Bdatalist, 'String', FileName);
+set(handles.Bdatalist,'Value',1);
+
+
+% --- Executes on button press in Badd.
+function Badd_Callback(hObject, eventdata, handles) %#ok<INUSL,DEFNU>
+
+global workpath;
 
 [fn,PathName] = uigetfile( mtexfilefilter,...
   'Select Data files',...
@@ -137,41 +187,15 @@ global workpath
   workpath );
                                      
 if ~iscellstr(fn), fn = {fn};end;
-                                     
-if PathName ~= 0
-  
-  % generate pole figure object
-  try
-    npf = loadPoleFigure(strcat(PathName,fn(:)));
-        
-    % new directory?
-    if ~strcmp(workpath,PathName) 
-      
-      % replace pole figures
-      pf = npf;
-      workpath = PathName;
-      FileName = fn;                
-    else
-      
-      % add pole figures
-      pf = [pf,npf];
-      FileName = [ FileName , fn ];
-    end
-    
-  catch
-    errordlg(errortext);
-  end
-  
-  % set list of filenames
-  set(handles.Bdatalist, 'String', FileName);
-  set(handles.Bdatalist,'Value',1);
-  
-end
+if PathName ~= 0, addfile(fn,PathName,handles);end
+
 
 % --- Executes on button press in Bremove.
 function Bremove_Callback(hObject, eventdata, handles) %#ok<INUSL,DEFNU>
 global FileName
 global pf;
+global interface;
+global options;
 
 if ~isempty(pf)
   
@@ -190,6 +214,11 @@ if ~isempty(pf)
   
   set(handles.Bdatalist,'Value',selected);
   set(handles.Bdatalist,'String', FileName);
+  
+  if isempty(pf)
+    interface = '';
+    options = {};
+  end
   
 end
 
@@ -374,13 +403,15 @@ end
 function finish_Callback(hObject, eventdata, handles) %#ok<INUSL,DEFNU>
 global pf
 global FileName
-global PathName
+global workpath
+global interface
+global options
 
 if ~get(handles.runmfile,'Value');
   a = inputdlg({'enter name of workspace variable'},'MTEX Import Wizard',1,{'pf'});
   assignin('base',a{1},pf);
 else
-  str = exportPF(PathName, FileName, pf);
+  str = exportPF(workpath, FileName, pf,interface,options);
   str = generateCodeString(str);
   % Throw to command window if java is not available
   err = javachk('mwt','The MATLAB Editor');
