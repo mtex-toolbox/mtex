@@ -19,15 +19,21 @@ void nfsoft_init(nfsoft_plan *plan, int N, int M)
 }
 
 
-void nfsoft_init_advanced(nfsoft_plan *plan, int N, int M,unsigned int nfsoft_flags)
+void nfsoft_init_advanced(nfsoft_plan *plan, int N, int M,
+			  unsigned int nfsoft_flags)
 {
-  nfsoft_init_guru(plan, N, M, nfsoft_flags, PRE_PHI_HUT| PRE_PSI| MALLOC_X| MALLOC_F_HAT| MALLOC_F|
-		   FFTW_INIT| FFT_OUT_OF_PLACE,DEFAULT_NFFT_CUTOFF,FPT_THRESHOLD);
+  nfsoft_init_guru(plan, N, M, nfsoft_flags, 
+		   ((N>55)?(0U):(PRE_PHI_HUT | PRE_PSI)) |
+		   MALLOC_X| MALLOC_F_HAT| MALLOC_F|
+		   FFTW_INIT| FFT_OUT_OF_PLACE,
+		   DEFAULT_NFFT_CUTOFF,FPT_THRESHOLD);
 
 }
 
 
-void nfsoft_init_guru(nfsoft_plan *plan, int B, int M,unsigned int nfsoft_flags, int nfft_flags,int nfft_cutoff,int fpt_kappa)
+void nfsoft_init_guru(nfsoft_plan *plan, int B, int M,
+		      unsigned int nfsoft_flags, int nfft_flags,
+		      int nfft_cutoff,int fpt_kappa)
 {
   int N[3];
   int n[3];

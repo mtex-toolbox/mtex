@@ -69,10 +69,10 @@ void zbfm_solver_iterate(zbfm_solver_plan *ths){
 
   /* iteration loop */
   while (ths->iter < ths->iter_max && 
-	 (ths->flags & FORCE_ITER_MAX || 
+	 (ths->flags & FORCE_ITER_MAX || ths->iter < ths->iter_min ||
 	  ths->descent_iter >= ths->descent_max * ths->descent_min)) {
-    
- 
+    /*printf("<%.4e> %d;",ths->descent_min,ths->iter_min);
+      printf("[%.4e] ",ths->descent_iter/ths->descent_max);*/
     zbfm_one_step(ths->zbfm);
 
     /* check PDF error */

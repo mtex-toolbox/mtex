@@ -46,11 +46,6 @@ int main(int argc,char *argv[]){
   FILE *f_param;
   FILE *f_out;
 
-  int NFSOFT_flags= NFSOFT_MALLOC_X | NFSOFT_MALLOC_F | NFSOFT_MALLOC_F_HAT;
-  int NFFT_flags = PRE_PHI_HUT| PRE_PSI| MALLOC_F_HAT| MALLOC_F | MALLOC_X |
-    FFTW_INIT| FFT_OUT_OF_PLACE;
-  
-
   if (argc>2)
     printf("\n ------ MTEX -- ODF - Fourier coefficents calculation -------- \n");
 
@@ -67,6 +62,10 @@ int main(int argc,char *argv[]){
     abort();
   }
   fclose(f_param);
+
+  int NFSOFT_flags= NFSOFT_MALLOC_X | NFSOFT_MALLOC_F | NFSOFT_MALLOC_F_HAT;
+  int NFFT_flags = ((L>55)?(0U):(PRE_PHI_HUT | PRE_PSI)) | 
+    MALLOC_F_HAT| MALLOC_F | MALLOC_X | FFTW_INIT| FFT_OUT_OF_PLACE;
 
   /* check input data */
   if ((LL != 1 + F_HAT_INDEX(L,L,L)) || (M == 0)) { 

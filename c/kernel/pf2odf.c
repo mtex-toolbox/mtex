@@ -4,7 +4,7 @@
  * \author Ralf Hielscher
  */
 
-#define Nparam 21  /*number of parameters to be read from the parameter file*/
+#define Nparam 22  /*number of parameters to be read from the parameter file*/
 
 #include <zbfm_solver.h>
 #include <pio.h>
@@ -66,6 +66,7 @@ int main(int argc,char *argv[])
      {"w:","DATA_FILE",&zbfm.w,&lP1,sizeof(double)},
 
      {"iter_max:","%d",&solver.iter_max,NULL,sizeof(int)},
+     {"iter_min:","%d",&solver.iter_min,NULL,sizeof(int)},
      {"descent_min:","%lE",&solver.descent_min,NULL,sizeof(double)},
 
      {"RM_jc:","DATA_FILE",&reg_matrix.jc,&lc1,sizeof(int)},
@@ -90,7 +91,8 @@ int main(int argc,char *argv[])
 
   flags = 0;
   solver.iter_max = 20;
-  solver.descent_min = 0.0001;
+  solver.iter_min = 5;
+  solver.descent_min = 0.1;
 
   /******************** read parameters ***************************/
   if (argc<2) {
