@@ -16,6 +16,9 @@ function pf = simulatePoleFigure(odf,h,r,varargin)
 %% See also
 % PoleFigure/scale PoleFigure/simulatePoleFigure PoleFigure/noisepf
 
+argin_check(h,{'Miller'});
+argin_check(r,{'S2Grid','vector3d'});
+
 comment = get_option(varargin,'comment',...
     ['Pole figures simulated from ',getcomment(odf)]);
 

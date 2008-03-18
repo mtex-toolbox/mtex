@@ -28,7 +28,11 @@ function [ebsd,options] = loadEBSD(fname,varargin)
 % interfacesEBSD_index ebsd/calcODF ebsd_demo loadEBSD_txt
 
 %% proceed input argument
-
+if nargin < 1
+  [fname,PathName] = uigetfile( '*.*',...
+  'Select Data files');
+  fname = [PathName,fname];
+end
 if ischar(fname), fname = {fname};end
 
 % get crystal and specimen symmetry

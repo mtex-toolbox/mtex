@@ -39,22 +39,29 @@ for i = 1:nplots
   end
 end
 
-%% calculate contour levels for absolute colorcoding
+%% contour levels and colorcoding
 
+% option colorrange set ?
 if strcmpi(get_option(varargin,'colorrange'),'equal')
   colorrange = [minz,maxz];
 else
   colorrange = get_option(varargin,'colorrange',[],'double');
 end
 
+% contour levels specified ?
+ncontour = get_option(varargin,{'contour','contourf'},10,'double');
 
-if length(colorrange) == 2
+if length(ncontour) >= 2
+  colorrange(1) = min(ncontour);
+  colorrange(2) = max(ncontour);
+end
+
+if length(colorrange) == 2 
    
   % set range for colorcoding
-  varargin = set_default_option(varargin, {},'range',colorrange);
+  varargin = set_default_option(varargin, {},'colorrange',colorrange);
   
-  % set contour levels
-  ncontour = get_option(varargin,{'contour','contourf'},10,'double');
+  % expand contour levels
   if length(ncontour) == 1, ncontour = linspace(colorrange(1),colorrange(2),ncontour);end
   
   if check_option(varargin,'contour') 

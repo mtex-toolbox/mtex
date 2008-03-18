@@ -49,14 +49,8 @@ end
 % no options given -> ask
 if ~check_option(varargin,'layout')
   
-  % ask for remaining import options
-  disp(['Found table ',int2str(size(d,1)),'x',int2str(size(d,2))]);  
-  out = inputdlg({'polar','azimuth','intensity','background'},'Specify Column Numbers');
-  %[l1 l2 l3 dg] = generic_question_dlg(size(d));
-  
-  layout = str2double(out);
-  if isnan(layout(4)), layout = layout(1:3);end
-  varargin = {varargin{:},'layout',layout};
+  options = genericimport('data',d,'type','PoleFigure');
+  varargin = {varargin{:},options{:}};
 
 end
 

@@ -35,6 +35,7 @@ ax = findall(fig,'type','axes');
 %% find color range
 if check_option(varargin,'equal')
 
+  c = zeros(length(ax),2);
   for i = 1:length(ax)
     c(i,:) = caxis(ax(i));
   end

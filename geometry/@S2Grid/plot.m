@@ -232,7 +232,7 @@ elseif check_option(varargin,'scatter')
   
 else
   set(gcf,'Renderer','painters');
-  cminmax = get_option(varargin,'range',...
+  cminmax = get_option(varargin,'colorrange',...
     [min(data(data>-inf)),max(data(:))]);
   if length(cminmax)>1 && cminmax(2)>cminmax(1)
     data = 1+round((data-cminmax(1)) / (cminmax(2)-cminmax(1)) * 63);

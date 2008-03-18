@@ -40,6 +40,7 @@ if check_option(varargin,'RADIALLY')
   end
   optionplot(omega,d,varargin{:});
   xlim([-pi pi]); xlabel('omega')
+  legend(arrayfun(@(v) char(axes(v)),1:length(axes),'UniformOutput', false));
   return
   
 %% -------- alpha - sections ----------------------------------------------

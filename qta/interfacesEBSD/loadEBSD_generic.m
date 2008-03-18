@@ -54,14 +54,8 @@ end
 % no options given -> ask
 if ~check_option(varargin,'layout')
   
-  % ask for remaining import options
-  disp(['Found table ',int2str(size(d,1)),'x',int2str(size(d,2))]);  
-  out = inputdlg({'phi1','Phi','phi2','phase'},'Specify Column Numbers');
-
-  %[l1 l2 l3 dg] = generic_EBSDquestion_dlg(d);
-  
-  layout = str2double(out);
-  varargin = {varargin{:},'layout',layout};
+  options = genericimport('data',d,'type','EBSD');
+  varargin = {varargin{:},options{:}};
 
 end
 
