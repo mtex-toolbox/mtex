@@ -39,6 +39,11 @@ function [pf,interface,options] = loadPoleFigure(fname,varargin)
 % interfaces_index PoleFigure/calcODF examples_index
 
 %% proceed input argument
+if nargin < 1
+  [fname,PathName] = uigetfile( '*.*',...
+  'Select Data files');
+  fname = [PathName,fname];
+end
 if ischar(fname), fname = {fname};end
 
 % get crystal directions

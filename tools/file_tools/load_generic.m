@@ -28,7 +28,7 @@ end
 
 % read data using txt2mat
 try
-  d = txt2mat(fname,options{2:end});     
+  d = txt2mat(fname,options{2:end},'InfoLevel',0);
 catch
 end
   
@@ -48,7 +48,7 @@ if isstruct(s)
     d = extract_data(s.(fn{i}));
   end
   
-elseif iscell(s)  
+elseif iscell(s) && ischar(s)
   
   i = 1;
   while i <= length(s) && isempty(d)

@@ -104,5 +104,5 @@ startup_mtex
 check_mtex
 
 %%
-% You can also edit the file [[matlab:edit ../../startup_mtex.m,startup_mtex.m]] to change the 
+% You can also edit the file [[matlab:edit startup_mtex.m,startup_mtex.m]] to change the 
 % configuration of you MTEX installation. 
