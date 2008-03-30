@@ -13,11 +13,11 @@ function s = symmetry(name,axis,angle)
 %
 %  crystal system  Schoen-  Inter-    Laue     Rotational 
 %  flies    national  class    axis
-%  tricline        C1       1         -1       1    
-%  tricline        Ci       -1        -1       1    
-%  monocline       C2       2         2/m      2    
-%  monocline       Cs       m         2/m      2    
-%  monocline       C2h      2/m       2/m      2    
+%  triclinic       C1       1         -1       1    
+%  triclinic       Ci       -1        -1       1    
+%  monoclinic      C2       2         2/m      2    
+%  monoclinic      Cs       m         2/m      2    
+%  monoclinic      C2h      2/m       2/m      2    
 %  orthorhombic    D2       222       mmm      222  
 %  orthorhombic    C2v      mm2       mmm      222  
 %  orthorhombic    D2h      mmm       mmm      222  
@@ -51,7 +51,12 @@ if nargin == 0, name = '1';end
 if isa(name,'symmetry'),  s = name;return;end
 if nargin <= 1, axis = [1 1 1]; end 
 if nargin <= 2, angle= [90 90 90] * degree; end 
-sym = findsymmetry(name);
+try
+  sym = findsymmetry(name);
+catch
+  help symmetry;
+	error('symmetry "%s" not found',name);
+end
 
 s.name = name;
 s.laue = sym.Laue;
