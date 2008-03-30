@@ -31,7 +31,7 @@ while ~feof(fid)
     s = str2num(fgetl(fid)); %#ok<ST2NM>
     assert(all(s(1:6)>0 & s(1:6)<180));
     
-    laue = 'tricline';
+    laue = 'triclinic';
     if all(s(4:5)==90)
       if s(6)==90
         if all(s(1:2)==s(3))
