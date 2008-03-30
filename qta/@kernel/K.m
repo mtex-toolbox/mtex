@@ -56,20 +56,19 @@ elseif (lg1>0 || lg2>0) && ~check_option(varargin,'old')
 
   w = sparse(abs(lg1),abs(lg2));
   
-  % exeptional case of cubic symmetry
-  % extract trifold symmetry
-  if any(strcmp(Laue(CS),{'m-3','m-3m'}))
-    q = axis2quat(vector3d(1,1,1),2*pi/3*(0:2));
-  else
-    q = idquaternion;
-  end
-  
-  for iq = 1:length(q)  
-    if (lg1 >= lg2)              % first argument is SO3Grid
-      d = dot_outer(g1,quaternion(g2)*q(iq),'epsilon',epsilon,'nocubictrifoldaxis');
-      w = w + spfun(kk.K,d);
-    else                         % second argument is SO3Grid
-      d = dot_outer(g2,quaternion(g1)*q(iq),'epsilon',epsilon,'nocubictrifoldaxis');
+  % sum over specimen symmetry
+  ssq = quaternion(SS);
+
+  if (lg1 >= lg2)              % first argument is SO3Grid
+    for issq = 1:length(ssq)
+      d = dot_outer(g1,ssq(issq)*quaternion(g2),'epsilon',epsilon,...
+        'nospecimensymmetry');
+        w = w + spfun(kk.K,d);
+    end    
+  else                         % second argument is SO3Grid
+    for issq = 1:length(ssq)
+      d = dot_outer(g2,ssq(issq)*quaternion(g1),'epsilon',epsilon,...
+        'nospecimensymmetry');
       w = w + spfun(kk.K,d.');
     end
   end
