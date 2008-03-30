@@ -54,7 +54,8 @@ end
 % no options given -> ask
 if ~check_option(varargin,'layout')
   
-  options = genericimport('data',d,'type','EBSD');
+  options = generic_wizard('data',d,'type','EBSD');
+  if isempty(options), ebsd = []; return; end
   varargin = {varargin{:},options{:}};
 
 end
@@ -94,5 +95,5 @@ try
   options = varargin;
   
 catch
-  error('format txt does not match file %s',fname);
+  error('Generic interface could not extract data of file %s',fname);
 end

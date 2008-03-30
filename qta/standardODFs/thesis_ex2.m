@@ -2,7 +2,7 @@ function [odf,h] = thesis_ex2(varargin)
 % sample ODF 2 appearing in the thesis of Ralf Hielscher 2007
 
 CS = symmetry('orthorhombic');
-SS = symmetry('tricline');
+SS = symmetry('triclinic');
 
 k1 = kernel('von Mieses Fischer',100,255);
 q1 = quaternion(1,0,0,0);
