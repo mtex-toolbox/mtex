@@ -196,8 +196,8 @@ elseif check_option(varargin,'interp')
   pcolor(X,Y,data);
 
   if numel(data) >= 500, shading interp;end
-  set(gcf,'Renderer','OpenGL');
-  %set(gcf,'Renderer','zBuffer');
+  %set(gcf,'Renderer','OpenGL');
+  set(gcf,'Renderer','zBuffer');
     
 % interpolated 
 elseif check_option(varargin,'SMOOTH') 
