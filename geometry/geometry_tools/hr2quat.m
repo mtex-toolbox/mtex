@@ -7,7 +7,8 @@ function q = hr2quat(h,r)
 % |q * h = r| 
 %
 %% Input
-%  h, r - @vector3d
+%  h - @Miller or @vector3d
+%  r - @vector3d
 %
 %% Output
 %  q - @quaternion
@@ -16,7 +17,7 @@ function q = hr2quat(h,r)
 % quaternion_index quaternion/quaternion axis2quat Miller2quat 
 % vec42quat euler2quat idquaternion 
 
-
+h = vector3d(h);
 h = h./norm(h);
 r = r./norm(r);
 

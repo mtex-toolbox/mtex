@@ -11,9 +11,9 @@ function quat = Miller2quat(v1,v2,CS)
 %
 %% Input
 %  m1, m2 - @Miller
-%  h,k,l - Miller indece (double)
-%  u,v,w - Miller indece (double)
-%  CS    - crystal @symmetry
+%  h,k,l  - Miller indece (double)
+%  u,v,w  - Miller indece (double)
+%  CS     - crystal @symmetry
 %
 %% Output
 %  quat - @quaternion
