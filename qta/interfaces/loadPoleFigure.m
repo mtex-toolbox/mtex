@@ -1,4 +1,4 @@
-function [pf,interface,options] = loadPoleFigure(fname,varargin)
+function [pf,interface,options,ipf] = loadPoleFigure(fname,varargin)
 % import pole figure data 
 %
 %% Description
@@ -69,14 +69,20 @@ else
   options = varargin;
 end
 
+if isempty(interface), pf = []; return; end
+
+
 %% import data
 c = get_option(options,'superposition');
 if isa(c,'double'), c = {c};end
 varargin = delete_option(options,'superposition');
 
 pf = [];
+ipf = [];
 for i = 1:length(fname)  
-  pf = [pf,feval(['loadPoleFigure_',char(interface)],fname{i},options{:})]; 
+  npf = feval(['loadPoleFigure_',char(interface)],fname{i},options{:});
+  pf = [pf,npf]; 
+  ipf(i) = length(npf);
 end
 
 for i = 1:length(pf)

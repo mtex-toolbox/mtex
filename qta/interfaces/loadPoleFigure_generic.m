@@ -49,7 +49,8 @@ end
 % no options given -> ask
 if ~check_option(varargin,'layout')
   
-  options = genericimport('data',d,'type','PoleFigure');
+  options = generic_wizard('data',d,'type','PoleFigure');
+  if isempty(options), pf = []; return; end 
   varargin = {varargin{:},options{:}};
 
 end
