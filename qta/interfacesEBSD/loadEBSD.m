@@ -52,6 +52,8 @@ else
   options = varargin;
 end
 
+if isempty(interface), ebsd = []; return; end
+
 %% import data
 ebsd = [];
 for i = 1:length(fname)  

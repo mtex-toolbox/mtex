@@ -2,7 +2,7 @@ function [odf,h] = thesis_ex3(varargin)
 % sample ODF 3 appearing in the thesis of Ralf Hielscher 2007
 
 CS = symmetry('trigonal');
-SS = symmetry('tricline');
+SS = symmetry('triclinic');
 
 k = kernel('fibre von Mieses Fischer',100,255);
 

@@ -41,7 +41,12 @@ end
 if isempty(interface)
 
   [d,options] = loadEBSD_generic(fname,varargin{:});
-  interface = 'generic';
+  
+  if isempty(d)
+    interface = '';
+  else
+    interface = 'generic';
+  end
   
 end
 
