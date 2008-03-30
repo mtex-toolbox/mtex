@@ -6,11 +6,18 @@ function q = euler2quat(alpha,beta,gamma,varargin)
 % by Euler angles. You can choose whether to use the Bunge (phi,psi,phi2) 
 % convention or the Matthies (alpha,beta,gamma) convention.
 %
+%% Syntax
+%
+%  q = euler2quat(alpha,beta,gamma)
+%  q = euler2quat(phi1,Phi,phi2,'Bunge')
+%
 %% Input
 %  alpha, beta, gamma - double
+%  phi1, Phi, phi2    - double
 %
 %% Output
 %  q - @quaternion
+%
 %% Options
 %  ABG   - Matthies (alpha, beta, gamma) convention (default)
 %  BUNGE - Bunge (phi1,Phi,phi2) convention 
