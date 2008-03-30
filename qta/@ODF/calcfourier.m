@@ -1,12 +1,12 @@
-function nodf = calcfourier(odf,L)
+function nodf = calcFourier(odf,L)
 % compute Fourier coefficients of odf
 %
 % Compute the Fourier coefficients of the ODF and store them in the
 % returned ODF. In order to get the Fourier coefficients of an ODF use
-% [[ODF_fourier.html,fourier]].
+% [[ODF_Fourier.html,Fourier]].
 %
 %% Syntax  
-% nodf = fourier(odf,L)
+% nodf = calcFourier(odf,L)
 %
 %% Input
 %  odf  - @ODF
@@ -16,7 +16,7 @@ function nodf = calcfourier(odf,L)
 %  nodf - @ODF where Fourier coefficients are stored for further use 
 %
 %% See also
-% ODF/fourier ODF/textureindex ODF/entropy ODF/eval ODF/plotFourier
+% ODF/Fourier ODF/textureindex ODF/entropy ODF/eval ODF/plotFourier
 %
 
 error(nargchk(2, 2, nargin));
