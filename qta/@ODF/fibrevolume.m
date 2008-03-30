@@ -27,7 +27,7 @@ argin_check(r,'vector3d');
 argin_check(radius,'double');
 
 if ~strcmp(Laue(odf(1).SS),'-1')
-  error('Only tricline specimen symmetry is supported for fibrevolume');
+  error('Only triclinic specimen symmetry is supported for fibrevolume');
 end
 
 % get resolution
