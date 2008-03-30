@@ -19,8 +19,8 @@ function ebsd = EBSD(orientations,CS,SS,varargin)
 %% See also
 % ODF/simulateEBSD EBSD/calcODF loadEBSD
 
-if nargin <= 1, CS = symmetry('tricline'); end
-if nargin <= 2, SS = symmetry('tricline'); end
+if nargin <= 1, CS = symmetry('triclinic'); end
+if nargin <= 2, SS = symmetry('triclinic'); end
 
 if (nargin == 0)
     ebsd.comment = [];
