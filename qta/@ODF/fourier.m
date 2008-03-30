@@ -1,4 +1,4 @@
-function odf_hat = fourier(odf,varargin)
+function odf_hat = Fourier(odf,varargin)
 % get Fourier coefficients of and ODF
 %
 % Returns the Fourier coefficients of an ODF. If no option is specified all
@@ -8,8 +8,8 @@ function odf_hat = fourier(odf,varargin)
 % up to this bandwidth are returned.
 %
 %% Syntax  
-% odf_hat = fourier(odf,'order',L)
-% odf_hat = fourier(odf,'bandwidth',B)
+% odf_hat = Fourier(odf,'order',L)
+% odf_hat = Fourier(odf,'bandwidth',B)
 %
 %% Input
 %  odf  - @ODF
@@ -23,12 +23,12 @@ function odf_hat = fourier(odf,varargin)
 %  odf_hat - Fourier coefficient - complex (2L+1)x(2L+1) matrix
 %  
 %% See also
-% ODF/calcfourier ODF/textureindex ODF/entropy ODF/eval
+% ODF/calcFourier ODF/textureindex ODF/entropy ODF/eval
 %
 
 % compute Fourier coefficients 
 L = get_option(varargin,{'order','bandwidth'},bandwidth(odf));
-odf = calcfourier(odf,L);
+odf = calcFourier(odf,L);
 
 % sum up Fourier coefficients
 odf_hat = zeros(deg2dim(L+1),1);
