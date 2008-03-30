@@ -22,7 +22,7 @@
 % A unimodal ODF with a high uniform portion.
 
 cs = symmetry('mmm');
-ss = symmetry('tricline');
+ss = symmetry('triclinic');
 odf = 0.9*uniformODF(cs,ss) + ...
   0.1*unimodalODF(idquaternion,cs,ss,'halfwidth',10*degree)
 
@@ -64,11 +64,11 @@ calcerror(rec_cor,odf)
 
 %% 
 % without ghost correction:
-plotodf(rec,'sections',9)
+plotodf(rec,'sections',9,'silent')
 
 %% 
 % with ghost correction:
-plotodf(rec_cor,'sections',9)
+plotodf(rec_cor,'sections',9,'silent')
 
 %% 
 % radial plot of the true ODF
@@ -85,19 +85,19 @@ hold off
 legend({'true ODF','without ghost correction','with ghost correction'})
 
 %% Calculate Fourier coefficients
-odf = calcfourier(odf,32);
-rec = calcfourier(rec,32);
-rec_cor = calcfourier(rec_cor,32);
+odf = calcFourier(odf,32);
+rec = calcFourier(rec,32);
+rec_cor = calcFourier(rec_cor,32);
 
 %% Calculate Reconstruction Errors from Fourier Coefficients
 
 %% 
 % without ghost correction:
-calcerror(rec,odf,'fourier','L2')
+calcerror(rec,odf,'Fourier','L2')
 
 %% 
 % with ghost correction:
-calcerror(rec_cor,odf,'fourier','L2')
+calcerror(rec_cor,odf,'Fourier','L2')
 
 
 %% Plot Fourier Coefficients   

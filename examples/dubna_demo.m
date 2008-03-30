@@ -11,7 +11,7 @@
 
 % specify scrystal and specimen symmetry
 cs = symmetry('-3m',[1.4,1.4,1.5]);
-ss = symmetry('tricline');
+ss = symmetry('triclinic');
 
 % specify file names
 fname = {...
@@ -78,7 +78,7 @@ plotipdf(odf,vector3d(1,1,2))
 %% plot recalculated ODF
 
 close all;figure('position',[15 111 920 508])
-plot(odf,'sections',18)
+plot(odf,'sections',18,'silent')
 
 %% rotate ODF back
 

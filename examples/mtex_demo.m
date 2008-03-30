@@ -51,7 +51,7 @@ quat2rodriguez(q2); plot(q2,'FontSize',20)
 %% The class symmetry
 
 % Definition
-S = symmetry('tricline',[1.1 1.3 2.3],[80 110 120]*degree);
+S = symmetry('triclinic',[1.1 1.3 2.3],[80 110 120]*degree);
 CS = symmetry('-3m',[1,1,1]);
 SS = symmetry ('O');
 
@@ -199,7 +199,7 @@ subplot(1,5,1);plot(psi,'K');
 subplot(1,5,2);plot(psi,'RK');
 
 % Plot Fourrier coefficients of the kernels:
-subplot(1,5,3);plot(psi,'fourier','bandwidth',32);
+subplot(1,5,3);plot(psi,'Fourier','bandwidth',32);
 
 % Plot even part of the kernel:
 subplot(1,5,4);plot(psi,'even');
@@ -234,7 +234,7 @@ plotpdf(odf,[Miller(1,0,0,CS),Miller(1,2,2,CS)],'complete')
 
 % specify crystal and specimen symmetry
 CS = symmetry('hexagonal');
-SS = symmetry('tricline');
+SS = symmetry('triclinic');
 
 % specify crystal and specimen direction
 h = Miller(1,0,0,CS);
@@ -270,7 +270,7 @@ rotate(odf,q) % rotate an ODF
 %%
 %
 % Compute texure characteristics of ODFs
-fourier(odf2,'order',2)              % compute Fourier coefficients
+Fourier(odf2,'order',2)              % compute Fourier coefficients
 %%
 volume(odf,idquaternion,10*degree)  % compute volume portion
 %%
@@ -323,10 +323,10 @@ plot(rec,'RADIALLY','center',modalorientation(rec));
 %% 
 
 close;figure('position',[46   171   752   486]);
-plot(santafee,'sections',18,'gray','contourf','plain','FontSize',10,'alpha');
+plot(santafee,'sections',18,'gray','contourf','plain','FontSize',10,'alpha','silent');
 
 %% 
 
-plot(rec,'sections',18,'FontSize',10,'resolution',5*degree)
+plot(rec,'sections',18,'FontSize',10,'resolution',5*degree,'silent')
 
 %plotpdf(santafee,[Miller(1,0,0),Miller(1,2,2)],'complete')

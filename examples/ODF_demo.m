@@ -13,7 +13,7 @@
 
 %%
 % A bimodal ODF:
-cs = symmetry('orthorhombic');ss = symmetry('tricline');
+cs = symmetry('orthorhombic');ss = symmetry('triclinic');
 odf1 = unimodalODF(euler2quat(0,0,0),cs,ss) + ...
   unimodalODF(euler2quat(30*degree,0,0),cs,ss)
 
@@ -24,7 +24,7 @@ odf2 = fibreODF(Miller(0,0,1),xvector,cs,ss)
 %%
 % An ODF estimated from diffraction data:
 cs = symmetry('-3m',[1.4,1.4,1.5]);
-ss = symmetry('tricline');
+ss = symmetry('triclinic');
 
 fname = {...
   [mtexDataPath '/dubna/Q(10-10)_amp.cnv'],...
@@ -105,7 +105,7 @@ fibrevolume(odf2,Miller(0,0,1),xvector,20*degree)
 
 %%
 % The Fourier coefficients of order 2:
-fourier(odf2,'order',2)              
+Fourier(odf2,'order',2)              
 
 %%
 % The decay of the Fourier coefficients:

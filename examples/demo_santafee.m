@@ -48,14 +48,14 @@ plotpdf(rec2,getMiller(pf),'complete')
 
 close; figure('position',[46 171 752 486]);
 plot(rec2,'alpha','sections',18,'resolution',5*degree,...
-     'plain','gray','contourf','FontSize',10)
+     'plain','gray','contourf','FontSize',10,'silent')
 
 
 %% Plot odf
 
 close; figure('position',[46 171 752 486]);
 plot(santafee,'alpha','sections',18,...
-     'plain','gray','contourf','FontSize',10)
+     'plain','gray','contourf','FontSize',10,'silent')
    
 %% Plot Fourier Coefficients
 
