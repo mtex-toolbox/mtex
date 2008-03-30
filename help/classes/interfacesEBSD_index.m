@@ -18,7 +18,7 @@
 
 % specify crystal and specimen symmetry
 cs = symmetry('cubic');
-ss = symmetry('tricline');
+ss = symmetry('triclinic');
 
 % load EBSD data
 ebsd = loadEBSD([mtexDataPath,'/aachen_ebsd/85_829grad_07_09_06.txt'],cs,ss,'header',1,'layout',[5,6,7])

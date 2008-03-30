@@ -23,7 +23,7 @@
 % [[interfacesEBSD_index.html,EBSD inteerfaces]].
 
 cs = symmetry('-3m',[1.2 1.2 3.5]); % crystal symmetry
-ss   = symmetry('tricline');        % specimen symmetry
+ss   = symmetry('triclinic');        % specimen symmetry
 
 fnames = [mtexDataPath '/aachen_ebsd/85_829grad_07_09_06.txt'];
 

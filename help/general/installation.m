@@ -23,8 +23,9 @@
 %% Compiler
 %
 % In order to install the MTEX toolbox you will have to compile
-% it. Therefore you need the standard C compiler <http://gnu.gcc.org gcc>
-% and the *make* utility. Both components can be easily installed using
+% it. Therefore you need a standard C compiler <http://gnu.gcc.org gcc>
+% and the *make* utility. You may also need the package named *build-essentials*. 
+% All these components can be easily installed using
 % your favorite package manager.
 %
 %% MATLAB 

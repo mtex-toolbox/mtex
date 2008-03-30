@@ -16,10 +16,10 @@
 % *international* notation. In the case of non cubic crystal symmetry the
 % length of the crystal axis has to be specified as a second argument to
 % the constructor [[symmetry_symmetry.html,symmtry]] and in the case of
-% tricline crystal symmetry the angles between the axes has to be passed
+% triclinic crystal symmetry the angles between the axes has to be passed
 % as third argument. Hence, valid definitions are:
 
-cs = symmetry('tricline',[1,2.2,3.1],[80*degree,85*degree,95*degree]);
+cs = symmetry('triclinic',[1,2.2,3.1],[80*degree,85*degree,95*degree]);
 cs = symmetry('-3m',[2.5,2.5,1]);
 ss = symmetry('O');
 

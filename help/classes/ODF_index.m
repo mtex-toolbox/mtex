@@ -22,7 +22,7 @@
 %
 % using the command [[uniformODF.html,uniformODF]]
 cs   = symmetry('orthorhombic'); % crystal symmetry
-ss   = symmetry('tricline');     % specimen symmetry
+ss   = symmetry('triclinic');     % specimen symmetry
 g    = Miller2quat([1,0,0],[0,1,1]);
 psi  = kernel('de la Vallee Poussin','halfwidth',10*degree);
 uodf = unimodalODF(g,cs,ss,psi)

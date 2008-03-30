@@ -38,4 +38,4 @@ plot(demok,'RK','legend');
 
 %%
 % the Fourrier coefficients of the kernels
-plot(demok,'fourier','bandwidth',32,'legend');
+plot(demok,'Fourier','bandwidth',32,'legend');
