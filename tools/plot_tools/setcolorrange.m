@@ -30,7 +30,8 @@ else
 end
 
 % find all axes
-ax = findall(fig,'type','axes');
+ax = findall(fig,'type','axes','tag','S2Grid');
+if isempty(ax), return; end
 
 %% find color range
 if check_option(varargin,'equal')
@@ -58,4 +59,8 @@ else
   
 end
 
+% find all axes including hidden
+ax = findall(fig,'type','axes');
 for i = 1:length(ax),	caxis(ax(i),p);end
+
+
