@@ -11,6 +11,7 @@ function odf = calcODF(ebsd,varargin)
 %  HALFWIDTH  - halfwidth of the kernel function 
 %  RESOLUTION - resolution of the grid where the ODF is approximated
 %  EXACT      - no approximation to a corser grid
+%  KERNEL     - kernel function (default - de la Valee Poussin kernel)
 %
 %% See also
 % ebsd_demo EBSD/loadEBSD ODF/simulateEBSD
@@ -25,7 +26,8 @@ g = getgrid(ebsd);
 % get halfwidth
 hw = get_option(varargin,'halfwidth',...
   max(getResolution(g) * 3,2*degree));
-k = kernel('de la Vallee Poussin','halfwidth',hw);
+k = get_option(varargin,'kernel',...
+      kernel('de la Vallee Poussin','halfwidth',hw),'kernel');
 
 disp([' used kernel: ' char(k)]);
 
