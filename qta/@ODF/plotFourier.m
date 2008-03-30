@@ -7,13 +7,16 @@ function plotFourier(odf,varargin)
 %% Options
 %  bandwidth   - number of Fourier coefficients to be plotted
 %  logarithmic - logarithmic plot
+%
+%% See also
+% ODF_calcFourier ODF_Fourier
 
 L = get_option(varargin,'bandwidth',bandwidth(odf));
 
-if L > bandwidth(odf), odf = calcfourier(odf,L); end
+if L > bandwidth(odf), odf = calcFourier(odf,L); end
 if L == 0, L = 32;end
 
-odf_hat = fourier(odf,'bandwidth',L,'l2-normalization');
+odf_hat = Fourier(odf,'bandwidth',L,'l2-normalization');
 
 for l = 0:L
   f(l+1) = norm(odf_hat(deg2dim(l)+1:deg2dim(l+1)));
