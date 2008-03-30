@@ -17,12 +17,12 @@ function t = textureindex(odf,varargin)
 %  bandwidth  - bandwidth used for Fourier calculation
 %
 %% See also
-% ODF/entropy ODF/volume ODF_index ODF/calcfourier
+% ODF/entropy ODF/volume ODF_index ODF/calcFourier
 
 if check_option(varargin,'fourier')
   
   L = get_option(varargin,'bandwidth',bandwidth(odf));
-  t = norm(fourier(odf,'bandwidth',L,'l2-normalization')).^2;
+  t = norm(Fourier(odf,'bandwidth',L,'l2-normalization')).^2;
   
 else
   % get resolution
@@ -32,6 +32,7 @@ else
   S3G = SO3Grid(res,odf(1).CS,odf(1).SS);
 
   % eval odf
-  t = eval(odf,S3G);
+  t = eval(odf,S3G,varargin{:});
+  t = t / sum(t) * length(t);
   t = sum(t.^2)/GridLength(S3G);
 end

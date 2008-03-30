@@ -11,11 +11,9 @@ function ebsd = simulateEBSD(odf,points,varargin)
 %% Output
 %  ebsd   - @EBSD
 %
-%% Options
-%
 %
 %% See Also
-%
+% ODF_simulatePoleFigure
 
 cs = odf(1).CS;
 ss = odf(1).SS;

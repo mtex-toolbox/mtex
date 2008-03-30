@@ -21,8 +21,11 @@ function plotpdf(odf,h,varargin)
 %% See also
 % S2Grid/plot savefigure
 
+% default options
 global mtex_plot_options;
 varargin = {varargin{:},mtex_plot_options{:}};
+
+if iscell(h), h = [h{:}];end
 
 % plotting grid
 if check_option(varargin,'3d')
