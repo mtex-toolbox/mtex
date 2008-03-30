@@ -3,7 +3,7 @@ function saxis  = calcAxis(System,axis,angle)
 
 switch System
     
-  case {'monocline','tricline'}
+  case {'monocline','triclinic'}
     saxis = xvector;
     saxis(2) = cos(angle(3)) * xvector + sin(angle(3)) * yvector;
     saxis(3) = cos(angle(2)) * xvector + ...
