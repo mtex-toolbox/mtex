@@ -52,7 +52,7 @@ import_wizard
 % indices and the structure coefficients. The general syntax is
 
 cs = symmetry('-3m',[1.4,1.4,1.5]); % crystal symmetry
-ss = symmetry('tricline');          % specimen symmetry
+ss = symmetry('triclinic');         % specimen symmetry
 
 % specify file names
 fname = {...

@@ -23,7 +23,7 @@
 % [[interfaces_index.html,inteerfaces]].
 
 cs = symmetry('-3m',[1.2 1.2 3.5]); % crystal symmetry
-ss   = symmetry('tricline');        % specimen symmetry
+ss   = symmetry('triclinic');       % specimen symmetry
 
 fnames = {[mtexDataPath '/dubna/Q(10-10)_amp.cnv'],...
   [mtexDataPath '/dubna/Q(11-22)_amp.cnv']};

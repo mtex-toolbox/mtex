@@ -3,29 +3,51 @@
 %
 %% MTEX 0.4
 %
-% * speed improvement about factor 10 in ODF reconstruction and PDF 
-% calculation (thanks to the new NFFT 4.0 library)
-% * spped improvement about factor 100 in ODF plotting and the
+% *Speed Improvments*
+%
+% * ODF reconstruction and PDF calculation is about *10 times faster* now (thanks
+% to the new NFFT 4.0 library)
+% * ODF plotting and the
 % calculation of [[ODF_volume.html,volume fractions]], the
 % [[ODF_textureindex.html,texture index]], the [[ODF_entropy.html,entropy]] 
-% and [[ODF_calcfourier.html,Fourier coefficients]]
-% * new class [[EBSD_index.html,EBSD]] to work with EBSD data. 
-% * new functions to [[interfacesEBSD_index.html,import]], 
-% [[EBSD_plotpdf.html,plot]], analyse, manipulate and 
-% [[EBSD_export.html,save]] EBSD data.
-% * new function [[EBSD_calcODF.html,calcODF]] to recover ODFs from EBSD 
-% data via kernel density estimation.
-% * new function [[ODF_fibrevolume.html,fibrevolume]] to calculate the
-% volume fraction within a fibre
-% * new function [[ODF_plotFourier.html,plotFourier]] to plot the Fourier
-% coefficients of an ODF
-% * new, more flexibel syntax for the generation of
-% [[S2Grid_index.html,S2Grids]] 
-% * slightly changed syntax of [[unimodalODF.html,unimodalODF]] and
-% [[fibreODF.html,fibreODF]]
-% * default plotting options are set to {}, i.e. 'reduced' has to add
+% and [[ODF_calcfourier.html,Fourier coefficients]] is about *100 times
+% faster*
+%
+% *New Support of EBSD Data Analysis*
+%
+% * [[interfacesEBSD_index.html,Import]] EBSD data from arbitrary data formats.
+% * New class [[EBSD_index.html,EBSD]] to store and manipulate with EBSD
+% data. 
+% * [[EBSD_plotpdf.html,Plot pole figures]] and inverse pole figures from
+% EBSD data.
+% * [[EBSD_calcODF.html,Recover]] ODFs from EBSD data via kernel density
+% estimation.
+% * [[EBSD_calcODF.html,Estimate]] Fourier coefficients from EBSD data.
+% * [[ODF_simulateEBSD.html,Simulate]] EBSD data from ODFs.
+% * [[EBSD_export.html,Export]] EBSD data.
+%
+% *New Functions*
+%
+% * [[ODF_fibrevolume.html,fibrevolume]] calculates the
+% volume fraction within a fibre.
+% * [[ODF_plotFourier.html,plotFourier]] plots the Fourier
+% coefficients of an ODF.
+% * [[setcolorrange.html,setcolorrange]] and the plotting
+% option *colorrange* allow for consistent color coding for arbitrary
+% plots.
+% * A *colorbar* can be added to any plots.
+% * [[mat2quat.html,mat2quat]] and [[quaternion_quat2mat.html,quat2mat]] convert rotation matrices to quaternions and vice
+% versa.
+%
+% *Incompatible Changes With Previous Releases*
+%
+% * New, more flexibel syntax for the generation of
+% [[S2Grid_index.html,S2Grids]]
+% * Slightly changed syntax of [[unimodalODF.html,unimodalODF]] and
+% [[fibreODF.html,fibreODF]]. 
+% * Default plotting options are set to {}, i.e. 'reduced' has to add
 % manualy if desired
-% * some bug fixes
+% * Crystal symmetry *triclinic* is not called *tricline* anymore.
 %
 %% MTEX 0.3
 %

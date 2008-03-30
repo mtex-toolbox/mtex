@@ -8,12 +8,12 @@
 %% specify crystal and specimen symmetry
 
 cs = symmetry('cubic');
-ss = symmetry('tricline');
+ss = symmetry('triclinic');
 
 %% load EBSD data
 
 ebsd = loadEBSD([mtexDataPath,'/aachen_ebsd/85_829grad_07_09_06.txt'],cs, ...
-                ss,'header',1,'layout',[5,6,7])
+                ss,'header',1,'layout',[5,6,7,2],'phase',1)
 
 %% plot pole figures
 plotpdf(ebsd,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'points',500,'reduced')

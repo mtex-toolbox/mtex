@@ -5,7 +5,7 @@
 %% specify crystal and specimen symmetries
 
 cs = symmetry('-3m',[1.4,1.4,1.5]);
-ss = symmetry('tricline');
+ss = symmetry('triclinic');
 
 %% specify the file names
 

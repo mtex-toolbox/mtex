@@ -40,4 +40,20 @@ odf = calcODF(ebsd)
 % The choise of the model ODF $\psi$ and in particular its halfwidth has a
 % great impact in the resulting ODF. In MTEX these parameters can be
 % specified as options to the function <EBSD_calcODF.html calcODF>.
+%
+%% Estimation of Fourier Coefficients
+%
+% Once, a ODF has been estimated from EBSD data it is straight forward to
+% calculate Fourier coefficients. E.g. by
+Fourier(odf,'order',4)
+%%
+% However this is a biased estimator of the Fourier coefficents which
+% underestimates the true Fourier coefficients by a factor that
+% correspondes to the decreasing of the Fourier coeffients of the kernel
+% used for ODF estimation. Hence, one obtains a *unbiased* estimator of the
+% Fourier coefficients if they are calculated from an ODF estimated with
+% the help fo the Direchlet kernel. I.e.
 
+k = kernel('dirichlet',4);
+odf = calcODF(EBSD,'kernel',k);
+Fourier(odf,'order',4)
