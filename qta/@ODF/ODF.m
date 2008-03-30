@@ -43,8 +43,8 @@ end
 
 % default values
 if isa(center,'quaternion') 
-  if nargin <= 3, CS = symmetry('tricline'); end
-  if nargin <= 4, SS = symmetry('tricline'); end
+  if nargin <= 3, CS = symmetry('triclinic'); end
+  if nargin <= 4, SS = symmetry('triclinic'); end
 	center = SO3Grid(center,CS,SS); 
 end
 if nargin <= 1 || isempty(c), c = [1,ones(1,GridLength(center))]; end

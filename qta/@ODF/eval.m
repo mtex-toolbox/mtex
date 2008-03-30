@@ -17,6 +17,9 @@ function f = eval(odf,g,varargin)
 % kernel/sum_K kernel/K
 
 if isa(g,'SO3Grid')
+  if ~all([getCSym(g),getSSym(g)] == [odf(1).CS,odf(1).SS])
+    warning('symmetry missmatch');
+  end
   f = zeros(GridSize(g));
 else
   f = zeros(size(g));

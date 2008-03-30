@@ -13,11 +13,11 @@ function e = calcerror(rec,orig,varargin)
 %% See also
 % PoleFigure/calcODF PoleFigure/calcerror 
 
-if check_option(varargin,'fourier') && check_option(varargin,'L2')
+if check_option(varargin,'Fourier') && check_option(varargin,'L2')
   
   L = get_option(varargin,'bandwidth',min(bandwidth(rec),bandwidth(orig)));
-  f1_hat = fourier(rec,'bandwidth',L,'l2-normalization');
-  f2_hat = fourier(orig,'bandwidth',L,'l2-normalization');
+  f1_hat = Fourier(rec,'bandwidth',L,'l2-normalization');
+  f2_hat = Fourier(orig,'bandwidth',L,'l2-normalization');
 
   e = norm(f1_hat - f2_hat)./norm(f2_hat);
   
