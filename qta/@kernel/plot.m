@@ -41,7 +41,7 @@ for i = 1:length(kk)
       l = get_option(varargin,'bandwidth',l);
 			A = zeros(1,l);
 			A(1:min(l,length(kk(i).A))) = kk(i).A(1:min(l,length(kk(i).A)));
-      optionplot(0:length(A)-1,A,varargin{:},'marker',charorder(i),'color',colororder(i),'MarkerSize',10);
+      optionplot(0:length(A)-1,A./(2*(0:length(A)-1)+1),varargin{:},'marker',charorder(i),'color',colororder(i),'MarkerSize',10);
       
 %      if check_option(varargin,'logarithmic'), A = log(A)/log(10);end
 %			plot(A,charorder(i),'color',colororder(i),'MarkerSize',10)
@@ -53,7 +53,7 @@ for i = 1:length(kk)
       end
 			A = zeros(1,l);
 			A(1:length(kk(i).A)) = kk(i).A;
-			loglog(abs(A),charorder(i),'color',colororder(i),'MarkerSize',10);
+			loglog(abs(A./(2*(0:length(A)-1)+1)),charorder(i),'color',colororder(i),'MarkerSize',10);
       set(gcf,'Name',['Fourier coefficients of the kernel ',inputname(1)]);
 		case 'EVEN'
 			omega = linspace(-pi,pi,1000);

@@ -56,8 +56,7 @@ switch lower(name)
     
   case 'dirichlet'
     
-    if L == 1000 || L < p, L = p;end
-    A = [ones(1,p),zeros(1,L-p)];
+    A =  ones(1,p+1).*(2*(0:p)+1);
     
   case 'user'
     
@@ -71,5 +70,5 @@ switch lower(name)
 end
 
 % prevent from instability effects
-ind = find(A<=max(min(A),1E-10),1,'first');
-A = A(1:ind);
+ind = find(A<=max(min([A,1E-5]),1E-10),1,'first');
+A = A(1:min([ind,length(A)]));
