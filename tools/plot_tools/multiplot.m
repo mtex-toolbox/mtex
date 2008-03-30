@@ -31,8 +31,8 @@ function multiplot(x,y,nplots,varargin)
 minz = +inf; maxz = -inf;
 for i = 1:nplots
   Y{i} = y(i); %#ok<AGROW>
-  minz = min(minz,min(Y{i}(:)));
-  maxz = max(maxz,max(Y{i}(:)));
+  minz = min(minz,min(Y{i}(Y{i}>-inf)));
+  maxz = max(maxz,max(Y{i}(Y{i}<inf)));
   if ~check_option(varargin,'silent') && check_option(varargin,'DISP')
     s = get_option(varargin,'DISP');
     disp(s(i,Y{i}));
@@ -41,25 +41,27 @@ end
 
 %% contour levels and colorcoding
 
+colorrange = [];
+
+% contour levels specified ?
+ncontour = get_option(varargin,{'contour','contourf'},10,'double');
+if length(ncontour) >= 2, colorrange = [min(ncontour) max(ncontour)];end
+
 % option colorrange set ?
 if strcmpi(get_option(varargin,'colorrange'),'equal')
   colorrange = [minz,maxz];
 else
-  colorrange = get_option(varargin,'colorrange',[],'double');
-end
-
-% contour levels specified ?
-ncontour = get_option(varargin,{'contour','contourf'},10,'double');
-
-if length(ncontour) >= 2
-  colorrange(1) = min(ncontour);
-  colorrange(2) = max(ncontour);
+  colorrange = get_option(varargin,'colorrange',colorrange,'double');
 end
 
 if length(colorrange) == 2 
    
+  if check_option(varargin,'logarithmic')
+    colorrange = log(colorrange) / log(10);
+  end
+  
   % set range for colorcoding
-  varargin = set_default_option(varargin, {},'colorrange',colorrange);
+  varargin = set_option(varargin,'colorrange',colorrange);
   
   % expand contour levels
   if length(ncontour) == 1, ncontour = linspace(colorrange(1),colorrange(2),ncontour);end
@@ -149,6 +151,15 @@ else
   set(gcf,'Position',get(gcf,'Position'));
 end
 
+% invisible axes for adding a colorbar
+d = axes('visible','off','position',[0 0.1 1 0.8]);
+
+if length(colorrange) ~= 2, colorrange = [min(Z(:)) max(Z(:))]; end
+
+if colorrange(1) < colorrange(2), set(d,'clim',colorrange);end
+
+
+set(gcf,'color',[1 1 1]);
 set(a,'Visible','on');
 
 end

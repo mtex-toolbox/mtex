@@ -31,7 +31,7 @@ set(gcf,'Units','pixels');
 pos = get(gcf,'Position');
 si = get(gcf,'UserData');
 	
-if length(si) == 2
+if (length(si) == 2) && isempty(findall(gcf,'tag','Colorbar'))
   pos([3,4]) = si;
 	set(gcf,'Position',pos);
 %	annotation('rectangle',[0 0 1 1]);
