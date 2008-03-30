@@ -3,11 +3,11 @@ function l = SymList
 l = struct('Schoen',{},'Inter',{},'Laue',{},'Rot',{},'System',{});
 
 % Schoen, Inter, Laue , Rot ,a, b, Typ, Syms
-l = addSym(l,'C1' ,'1'    ,'-1'   ,'1'  ,'tricline'     );
-l = addSym(l,'Ci' ,'-1'   ,'-1'   ,'1'  ,'tricline'     );
-l = addSym(l,'C2' ,'2'    ,'2/m'  ,'2'  ,'monocline'    );
-l = addSym(l,'Cs' ,'m'    ,'2/m'  ,'2'  ,'monocline'    );
-l = addSym(l,'C2h','2/m'  ,'2/m'  ,'2'  ,'monocline'    );
+l = addSym(l,'C1' ,'1'    ,'-1'   ,'1'  ,'triclinic'     );
+l = addSym(l,'Ci' ,'-1'   ,'-1'   ,'1'  ,'triclinic'     );
+l = addSym(l,'C2' ,'2'    ,'2/m'  ,'2'  ,'monoclinic'    );
+l = addSym(l,'Cs' ,'m'    ,'2/m'  ,'2'  ,'monoclinic'    );
+l = addSym(l,'C2h','2/m'  ,'2/m'  ,'2'  ,'monoclinic'    );
 l = addSym(l,'D2' ,'222'  ,'mmm'  ,'222','orthorhombic' );
 l = addSym(l,'C2v','mm2'  ,'mmm'  ,'222','orthorhombic' );
 l = addSym(l,'D2h','mmm'  ,'mmm'  ,'222','orthorhombic' );
