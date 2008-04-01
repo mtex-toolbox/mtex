@@ -1,4 +1,4 @@
-function [ebsd,options] = loadEBSD(fname,varargin)
+function [ebsd,interface,options] = loadEBSD(fname,varargin)
 % import ebsd data 
 %
 %% Description

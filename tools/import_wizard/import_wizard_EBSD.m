@@ -11,7 +11,6 @@ end
 
 %% ------------ add data files callback -----------------------------------
 function addData()
-global handles
 global appdata
 
 [fname,pathname] = uigetfile( mtexfilefilter(),...
@@ -21,35 +20,54 @@ global appdata
 if ~iscellstr(fname)
   if fname ~= 0
     fn = {fname};
-  else return;end
+  else
+    return;
+  end
 else
     fn = fname;
 end;
 
+addfile(fn,pathname);
+
+%%
+% -------------- add a files to the list ------------------------------
+function addfile(fn,pathname)
+global handles
+global appdata
+
+if ~isempty(appdata.interface)
+  interf = {'interface',appdata.interface};
+else
+  interf = {};
+end
+
 % generate pole figure object
 try
-  [ebsd,appdata.options] = ...
-    loadEBSD(strcat(pathname,fn(:)),appdata.options{:});
-  
+  [nebsd,appdata.interface,appdata.options] = ...
+    loadEBSD(strcat(pathname,fn(:)),interf{:},appdata.options{:});
+
   % new directory?
   if ~strcmp(appdata.workpath,pathname)
-    % replace pole figures
-    appdata.ebsd = ebsd;
+    % replace ebsd data
+    appdata.ebsd = nebsd;
     appdata.workpath = pathname;
     appdata.filename = fn;
   else     
     % add pole figures
-    appdata.ebsd = [appdata.ebsd,ebsd];
+    appdata.ebsd = [appdata.ebsd,nebsd];
     appdata.filename = [ appdata.filename , fn ];
   end
     
 catch
-  errordlg('errortext');
+  errordlg(errortext);
 end
-  
+
 % set list of filenames
-set(handles.listbox, 'String', appdata.filename);
-set(handles.listbox,'Value',1);
+if get(0,'current') == handles.wzrd
+  set(handles.listbox, 'String', appdata.filename);
+  set(handles.listbox,'Value',1);
+end
+
 
 
 %% ------------ remove data callback --------------------------------------
@@ -131,7 +149,8 @@ if ~get(handles.runmfile,'Value');
   a = inputdlg({'enter name of workspace variable'},'MTEX Import Wizard',1,{'pf'});
   assignin('base',a{1},appdata.ebsd);
 else
-  str = exportEBSD(appdata.workpath, appdata.filename, appdata.ebsd,appdata.options);
+  str = exportEBSD(appdata.workpath, appdata.filename, ...
+    appdata.ebsd,appdata.interface,appdata.options);
   str = generateCodeString(str);
   openuntitled(str);
 end

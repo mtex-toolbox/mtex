@@ -64,6 +64,7 @@ uicontrol('Style','Text','Position',[dw,h-120,w-2*dw,60],...
  'required quantities.']);
 
 % table
+
 for k=1:y, colnames{k} = ['Column ' int2str(k)]; end;
 uitable('Data',data,...
  'ColumnNames',colnames,...
@@ -115,11 +116,11 @@ for k=1:2
 end
 
 if (~strcmp(type,'PoleFigure'))
- h3 = uipanel('title','Phase Convention','units','pixels','position',[dw h-tb-310 w-2*dw 46]);
+ h3 = uipanel('title','Phase(s)','units','pixels','position',[dw h-tb-310 w-2*dw 46]);
  phaseopt = uicontrol('Style','Edit',...
    'BackgroundColor',[1 1 1],...
    'HorizontalAlignment','left',...
-   'String',' insert Phase types here' ,...
+   'String','' ,...
     'Position',[dw 5 w-4*dw 23],'Parent',h3,'HandleVisibility','off');
 end
 
@@ -131,14 +132,19 @@ uicontrol('Style','PushButton','String','Cancel ','Position',[w-2*70-2*dw,dw,70,
 
 %% -------- retun statement ----------------------------------------------
 uiwait(htp);
+
 if ishandle(htp)
- for k=1:length(dscrpt)
-   if (k <= length(colnames)), val = get(col_nb{k},'Value'); end
-   if val > 1, layout(k) = val-1; end;
+
+ for k=1:length(col_nb)
+   layout(k) = get(col_nb{k},'Value')-1;
  end
+ if  length(layout)==4 && layout(4) == 0
+   layout = layout(1:3);
+ end
+ 
  options = {'layout',layout,...
    get(get(h1,'SelectedObject'),'String')};
-
+ 
  if ~strcmp(type,'PoleFigure')
    options = {options{:},get(get(h2,'SelectedObject'),'String')};
    if ~isempty(str2num(get(phaseopt,'String')))

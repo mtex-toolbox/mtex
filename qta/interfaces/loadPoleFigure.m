@@ -69,16 +69,15 @@ else
   options = varargin;
 end
 
-if isempty(interface), pf = []; return; end
-
+pf = [];ipf = [];
+if isempty(interface), return; end
 
 %% import data
 c = get_option(options,'superposition');
 if isa(c,'double'), c = {c};end
 varargin = delete_option(options,'superposition');
 
-pf = [];
-ipf = [];
+
 for i = 1:length(fname)  
   npf = feval(['loadPoleFigure_',char(interface)],fname{i},options{:});
   pf = [pf,npf]; 

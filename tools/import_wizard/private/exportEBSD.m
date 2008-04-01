@@ -1,6 +1,6 @@
-function str = exportEBSD( pn, fn, ebsd, options )
+function str = exportEBSD( pn, fn, ebsd, interface, options )
 
-str = ['%% created by importwizard';{''}];
+str = ['%% Created by importwizard';{''}];
 
 %% specify crystal and specimen symmetries
 
@@ -31,35 +31,19 @@ for k = 1:length(fn)
 end
 str = [ str; '};'; {''}];
 
-
-%% specifiy options
-
-
-if ~isempty(options)
-ostr = {'options = { ...'};
-for k=1:length(options)
-  if ~isa(options{k}, 'char')
-    ostr = [ ostr; strcat( '[', num2str(options{k}),'],...')] ;
-  else ostr =  [ostr; strcat( '''', options{k},''',...' )];
-  end
-end
-ostr = [ostr; '};'];
-
-
-str = [ str; '%% import options for EBSD data';{''}; ...
-        ostr; {''};];
-    
-istr = '''interface'',''generic'',';
-end
-
 %% import the data 
 
 str = [ str; '%% import the data'; {''}];
-lpf = ['pf = loadEBSD(fname,CS,SS,', istr, 'options'];
+lpf = ['ebsd = loadEBSD(fname,CS,SS,''interface'',''',...
+  interface,''''];
 
-%if length(getc(pf)) > length(pf), lpf = [lpf,',''superposition'',c'];end
+if ~isempty(options)
+  lpf = [lpf, ', ',option2str(options,'quoted')];
+end
 
 str = [str; [lpf ');']];
+
+
 
 function s = n2s(n)
 
