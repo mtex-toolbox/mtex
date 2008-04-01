@@ -18,8 +18,14 @@
 </listitem>
 
 <listitem>
-<label>Import Wizard</label>
-<callback>import_wizard</callback>
+<label>Import Wizard Pole Figure</label>
+<callback>import_wizard_PoleFigure</callback>
+<icon>$toolbox/matlab/icons/figureicon.gif</icon>
+</listitem>
+
+<listitem>
+<label>Import Wizard EBSD</label>
+<callback>import_wizard_EBSD</callback>
 <icon>$toolbox/matlab/icons/figureicon.gif</icon>
 </listitem>
 
