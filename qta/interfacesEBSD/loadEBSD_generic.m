@@ -95,5 +95,6 @@ try
   options = varargin;
   
 catch
-  error('Generic interface could not extract data of file %s',fname);
+  %error('Generic interface could not extract data of file %s',fname);
+  error(errortext);
 end

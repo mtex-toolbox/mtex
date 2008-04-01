@@ -11,7 +11,6 @@ end
 
 %% ------------ data import callback --------------------------------------
 function addData()
-global handles
 global appdata
 
 [fname,pathname] = uigetfile( mtexfilefilter(),...
@@ -67,9 +66,10 @@ catch
 end
 
 % set list of filenames
-set(handles.listbox, 'String', appdata.filename);
-set(handles.listbox,'Value',1);  
-
+if get(0,'current') == handles.wzrd
+  set(handles.listbox, 'String', appdata.filename);
+  set(handles.listbox,'Value',1);
+end
 
 
 %% ------------ remove data ----------------------------------------------- 
