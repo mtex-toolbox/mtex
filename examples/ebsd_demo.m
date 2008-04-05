@@ -5,82 +5,93 @@
 % 
 % 
 
-%% specify crystal and specimen symmetry
+%% Specify Crystal and Specimen Symmetry
 
 cs = symmetry('cubic');
 ss = symmetry('triclinic');
 
-%% load EBSD data
+%% Load EBSD Data
 
 ebsd = loadEBSD([mtexDataPath,'/aachen_ebsd/85_829grad_07_09_06.txt'],cs, ...
                 ss,'header',1,'layout',[5,6,7,2],'phase',1)
 
-%% plot pole figures as scatter plots
+%% Plot Pole Figures as Scatter Plots
+
 h = [Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)];
 close; figure('position',[100,100,600,300])
 plotpdf(ebsd,h,'points',500,'reduced')
 
-%% kernel density estimation
-odf = calcODF(ebsd)
+%% Kernel Density Estimation
+%
+% The crucial point in kernel density estimation in the choice of the
+% halfwidth of the kernel function used for estimation. If the halfwidth of
+% is chosen to small the single orientations are visible rather
+% then the ODF (compare plot of ODF1). If the halfwidth is chosen to wide
+% the estimated ODF becomes very smooth (ODF2).
+%
+odf1 = calcODF(ebsd)
+odf2 = calcODF(ebsd,'halfwidth',10*degree)
 
 %% plot pole figures
-plotpdf(odf,h,'reduced')
+
+close all;figure('position',[160   389   632   216])
+plotpdf(odf1,h,'reduced')
+figure('position',[160   389   632   216])
+plotpdf(odf2,h,'reduced')
 
 %% plot ODF
-close;figure('position',[46   171   752   486]);
-plotodf(odf,'alpha','sections',18,'resolution',2*degree,...
-     'plain','gray','contourf','FontSize',10,'silent')
-   
+
+close;figure('position',[46   300   702   300]);
+plotodf(odf2,'sections',9,'resolution',2*degree,...
+  'FontSize',10,'silent')
    
 %% Estimation of Fourier Coefficients
 %
 % Once, a ODF has been estimated from EBSD data it is straight forward to
 % calculate Fourier coefficients. E.g. by
-Fourier(odf,'order',4);
+F2 = Fourier(odf2,'order',4);
+
 %%
 % However this is a biased estimator of the Fourier coefficents which
 % underestimates the true Fourier coefficients by a factor that
-% correspondes to the decreasing of the Fourier coeffients of the kernel
-% used for ODF estimation. Hence, one obtains a *unbiased* estimator of the
-% Fourier coefficients if they are calculated from an ODF estimated with
+% correspondes to the decay rate of the Fourier coeffients of the kernel
+% used for ODF estimation. One obtains a *unbiased* estimator of the
+% Fourier coefficients if they are calculated from the ODF estimated with
 % the help fo the Direchlet kernel. I.e.
 
-k = kernel('dirichlet',4);
-odf2 = calcODF(ebsd,'kernel',k);
-Fourier(odf2,'order',4);
+dirichlet = kernel('dirichlet',32);
+odf3 = calcODF(ebsd,'kernel',dirichlet);
+F3 = Fourier(odf3,'order',4);
 
 %%
-k = kernel('dirichlet',32);
-odf2 = calcODF(ebsd,'kernel',k);
-odf2 = calcFourier(odf2,32);
-odf = calcFourier(odf,32);
+% Let us compare the Fourier coefficients obtained by both methods.
+%
 
-plotFourier(odf,'color','b')
+plotFourier(odf2,'bandwidth',32,'color','b')
 hold on
-plotFourier(odf2,'color','r')
+plotFourier(odf3,'bandwidth',32,'color','r')
 
 %% A Sythetic Example
 %
-% simulate EBSD data for the Santafee sample ODF
+% Simulate EBSD data from a given standard ODF
 
-ebsd = simulateEBSD(santafee,10000)
-plotodf(santafee,'alpha','sections',18,'resolution',5*degree,...
-     'plain','gray','contourf','FontSize',10,'silent')
+fibre_odf = 0.5*uniformODF(cs,ss) + 0.5*fibreODF(Miller(1,0,0),zvector,cs,ss);
+plotodf(fibre_odf,'sections',9,'silent')
+ebsd = simulateEBSD(fibre_odf,1000)
 
 %% 
-% estimate an ODF from the simulated EBSD data
+% Estimate an ODF from the simulated EBSD data
 
-odf = calcODF(ebsd,'halfwidth',10*degree)
+odf = calcODF(ebsd)
 
 %%
 % plot the estimated ODF
 
-plotodf(odf,'alpha','sections',18,'resolution',5*degree,...
-     'plain','gray','contourf','FontSize',10,'silent')
+plotodf(odf,'sections',9,'silent')
 
 %%
 % calculate estimation error
-calcerror(odf,santafee,'resolution',5*degree)
+calcerror(odf,fibre_odf,'resolution',5*degree)
 
 %% Exploration of the relationship between estimation error and number of single orientations
 %
@@ -90,15 +101,9 @@ calcerror(odf,santafee,'resolution',5*degree)
 odf = {};
 for i = 1:6
 
-  ebsd = simulateEBSD(santafee,10^i);
-
-  odf{i} = calcODF(ebsd);
-  %odf{i} = calcFourier(odf{i},32);
-  
-  %fodf{i} = calcODF(ebsd,'kernel',kernel('Dirichlet',32));
-  %fodf{i} = calcFourier(fodf{i},32);
-
-  e(i) = calcerror(odf{i},santafee,'resolution',2.5*degree);
+  ebsd = simulateEBSD(fibre_odf,10^i);
+  odf = calcODF(ebsd);
+  e(i) = calcerror(odf,fibre_odf,'resolution',2.5*degree);
   
 end
 

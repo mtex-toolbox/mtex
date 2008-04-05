@@ -43,11 +43,11 @@ rec_cor = calcODF(pf,'ghost_correction');
 
 %% 
 % without ghost correction:
-calcerror(pf,rec)
+calcerror(pf,rec,'RP')
 
 %% 
 % with ghost correction:
-calcerror(pf,rec_cor)
+calcerror(pf,rec_cor,'RP')
 
 %% Compare Reconstruction Errors
 
@@ -85,9 +85,9 @@ hold off
 legend({'true ODF','without ghost correction','with ghost correction'})
 
 %% Calculate Fourier coefficients
-odf = calcFourier(odf,32);
-rec = calcFourier(rec,32);
-rec_cor = calcFourier(rec_cor,32);
+odf = calcFourier(odf,25);
+rec = calcFourier(rec,25);
+rec_cor = calcFourier(rec_cor,25);
 
 %% Calculate Reconstruction Errors from Fourier Coefficients
 

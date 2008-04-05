@@ -26,12 +26,15 @@
 
 <tocitem target="examples_index.html" image="$toolbox/matlab/icons/demoicon.gif">
   Examples
-  <tocitem target="dubna_tutorial.html"> A short tutorial </tocitem>
-  <tocitem target="mtex_demo.html"> Presentation </tocitem>
+  <tocitem target="dubna_tutorial.html"> A Short Tutorial </tocitem>
   <tocitem target="geometry_demo.html"> Crystal Geometry </tocitem>
+  <tocitem target="ODF_demo.html"> ODF Analysis </tocitem>
+  <tocitem target="ebsd_demo.html"> EBSD Data Analysis Demo</tocitem>
+  <tocitem target="ghost_demo.html"> Ghost Effect Analysis </tocitem>
   <tocitem target="dubna_demo.html"> The Dubna Example </tocitem>
-  <tocitem target="demo_santafee.html"> The Santafee Example</tocitem>
-  <tocitem target="ebsd_demo.html"> EBSD Demo</tocitem>
+  <tocitem target="santafee_demo.html"> The Santafee Example </tocitem>
+  <tocitem target="plot_demo.html"> Plotting Demo </tocitem>
+  <tocitem target="mtex_demo.html"> Workshop 2007 </tocitem>
 </tocitem>
 
 <tocitem target="interfaces_index.html" image="$toolbox/matlab/icons/boardicon.gif">

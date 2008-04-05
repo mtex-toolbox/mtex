@@ -1,6 +1,7 @@
 %% MTEX Feature Overview 
 %
-% MTEX is a MATLAB toolbox containing the following features
+% MTEX is a MATLAB toolbox that provides powerfull tools for the
+% following common tasks in *texture analysis*.
 %
 %% Analyze and Visualize Crystallographic Geometries
 %
@@ -9,7 +10,8 @@
 % symmetry>. Working now with <Miller_index.html Miller indece> all aspects
 % of crystal geometry as <Miller_angle.html angle> or <Miller_symeq.html
 % crystallographically equivalent directions> can be computed and
-% visualized.
+% visualized. Have also a look at the example <geometry_demo.html Geometry
+% Demo>.
 %
 %
 %% Calculate with Model ODFs
@@ -18,7 +20,8 @@
 % <uniformODF.html uniform ODFs> or <fibreODF.hml fibre ODFs> or any
 % superposition of them. In particular the MTEX toolbox allready contains
 % some popular standard ODF as the <santafee.html Santafee> and the
-% <mix2.html mix2> sample ODFs.
+% <mix2.html mix2> sample ODFs. How to work best with model ODFs in MTEX is
+% explained in the <modelODF_demo.html Model ODF Demo>.
 %
 %
 %% Import, Analyze and Visualize Diffraction Data
@@ -27,7 +30,25 @@
 % pole figure formats>. However, it is also very simple to use one of the
 % generic methods to import data from an unsupported format. Once the data
 % are imported you there are various <PoleFigure_index.html methods> to
-% analyze and modify them.
+% analyze and modify them. The <dubna_demo.html Dubna Demo> is a practical
+% example demostrating how to apply MTEX for pole figure analysis.
+%
+%
+%% Import, Analyze and Visualize EBSD Data
+%
+% MTEX provides a <ebsd_interface.html generic interface> for EBSD
+% data. This data allows to extract orientations and phase informations from
+% almost arbitrary Ascii files. EBSD data may be used for
+% <EBSD2odf_estimation.html reconstruction>, Fourier coefficient
+% estimation, etc. In fact all methods that are available for ODFs may be
+% applied to ODFs estimated from EBSD. In particular it is possible to
+% compare ODFs estimated from EBSD data with those estimated from pole
+% figure data using the command <ODF_calcerror.html calcerror>. Another
+% usefull command in MTEX is <EBSD_simulateEBSD.html simulateEBSD> which
+% allows to simulate EBSD data for a given ODF.
+%
+% A practical guide to EBSD data analysis with MTEX can be found
+% <ebsd_demo.html here>.
 %
 %
 %% Recover Orientation Density Functions (ODFs)
@@ -40,15 +61,24 @@
 % 
 % There are also several options like _regularization_, _resolution_,
 % _zero_range_method_, _ghost_correction_ that allow addopt the estimation
-% method for your presonal needs. 
+% method for your presonal needs.
+%
+% A detailed description of the ODF reconstruction from pole figure data
+% can be found at <odf_estimation.html ODF Estimation>. The problem of
+% ghost effect is discussed in greater detail in <ghost_demo.html Ghost
+% Demo>.
 %
 %% Calculate Texture Characteristics 
 %
-% MTEX offers a wide range of texture characteristics like
+% MTEX offers to compute a wide range of texture characteristics like
 % <ODF_entropy.html entropy>, <ODF_textureindex.html texture index>, or
-% <ODF_volume.html volume portion> to be computed for any model ODF or
-% any recoverd ODF. You can also calculate the Fourier coefficients useing
-% the command <ODF_fourier.html fourier>.
+% <ODF_volume.html volume portion> to be computed for any model ODF or any
+% recoverd ODF. You can also calculate the Fourier coefficients useing the
+% command <ODF_fourier.html fourier>. Furthermore, you can compare arbitrary
+% ODF indepently whether they are model ODFs, ODFs estimated from pole
+% figure data or estimated from EBSD data. The <ODF_demo.html ODF Analysis
+% Demo> gives an overview over the texture characteristic that can be
+% computed using MTEX.
 %
 %
 %% Create Publication Ready Plots
@@ -59,7 +89,8 @@
 % There are also many <S2Grid_plot.html plotting options> to addapt the
 % plots to the specific standards of your journal. Plots may be
 % <savefigure.html saved> in any image format, e.g. as pdf, jpg, png,
-% eps, tiff, bmp.
+% eps, tiff, bmp. This is described in more detail in the <plot_demo.html
+% Plot Demo>.
 %
 %
 %% Writting Scripts to Process Many Data Sets
