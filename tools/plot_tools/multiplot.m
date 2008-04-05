@@ -159,7 +159,7 @@ if length(colorrange) ~= 2, colorrange = [min(Z(:)) max(Z(:))]; end
 if colorrange(1) < colorrange(2), set(d,'clim',colorrange);end
 
 
-set(gcf,'color',[1 1 1]);
+set(gcf,'color',[1 1 1],'tag','multiplot');
 set(a,'Visible','on');
 
 end
