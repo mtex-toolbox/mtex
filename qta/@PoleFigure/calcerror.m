@@ -26,8 +26,12 @@ function e = calcerror(pf,rec,varargin)
 %% See also
 % ODF/calcerror PoleFigure/calcnormalization PoleFigure/scale
 
+argin_check(rec,{'ODF','PoleFigure'});
+
+% calc difference PoleFigure
 pf = calcerrorpf(pf,rec,varargin{:});
 
+% calc error
 for i = 1:length(pf)
   
   e(i) = sum(pf(i).data(:));
