@@ -55,7 +55,7 @@ odf = calcODF(pf,'halfwidth',5*degree)
 % _Ghost correction_ is a technique first introduced by Matthies that
 % increases the uniform portion of the estimated ODF to reduce the so
 % called _ghost error_. It applies especially useful in the case of week 
-% ODFs. The classical example is the <demo_santafee.html Santafee model ODF>.
+% ODFs. The classical example is the <santafee_demo.html Santafee model ODF>.
 %
 %% Theory
 % ODF estimation in MTEX is based upon the modified least squares
