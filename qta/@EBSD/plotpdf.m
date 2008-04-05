@@ -20,7 +20,7 @@ function plotpdf(ebsd,h,varargin)
 %  COMPLETE - plot entire (hemi)-sphere
 %
 %% See also
-% S2Grid/plot savefigure
+% EBSD/plotebsd S2Grid/plot savefigure
 
 global mtex_plot_options;
 varargin = {varargin{:},mtex_plot_options{:}};
