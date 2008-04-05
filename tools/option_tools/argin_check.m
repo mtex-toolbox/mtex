@@ -1,9 +1,13 @@
 function x = argin_check(arg,classes)
 % check ar to be of class classes
 %
+%% Syntax
+%  x = argin_check(argument,classesnames)
+%
 %% Input
-%  argument
-%  classnames
+%  argument   - variable
+%  classnames - 
+%
 %% Output
 %  argument
 
