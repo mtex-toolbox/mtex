@@ -48,7 +48,7 @@ if length(S2G) > 1
   return
 end
 
-% -------------------- GET OPTIONS ----------------------------------------
+%% -------------------- GET OPTIONS ----------------------------------------
 
 % data
 data = get_option(varargin,'DATA',ones(1,sum(GridLength(S2G))));
@@ -65,7 +65,7 @@ if check_option(varargin,'logarithmic')
 end
 
 % diamter of dots
-diameter = get_option(varargin,'DIAMETER',min(0.2,max(0.03,0.75*getResolution(S2G(end)))));
+diameter = get_option(varargin,'DIAMETER',min(0.2,max(0.02,0.75*getResolution(S2G(end)))));
 
 
 % COLORMAP
@@ -126,7 +126,7 @@ end
 %rectangle('position',[x1 y1 (x2-x1) (y2-y1)])
 hold off
 
-%--------------------- PROJECTION ---------------------------------------
+%% --------------------- PROJECTION ---------------------------------------
 function [x1,y1,x2,y2] = plot_hemi_sphere(theta,rho,data,diameter,offset,varargin)
 
 if check_option(varargin,'PLAIN')
@@ -150,14 +150,14 @@ else
   y1 = -1.4142; y2 = 1.4142;
 end
 
-%-------------------- bounds ----------------------------------------
+%% -------------------- bounds ----------------------------------------
 if check_option(varargin,{'contour','contour','smooth'}) && ~check_option(varargin,'PLAIN') && ...
     ~isempty(rho) && ~isnull(mod(rho(1)-rho(end),2*pi))
   x1 = min(X(:)); x2 = max(X(:));
   y1 = min(Y(:)); y2 = max(Y(:));
 end
 
-%-------------------- contour lines --------------------------------------
+%% -------------------- contour lines --------------------------------------
 contours = get_option(varargin,{'contourf','contour'},{},'double');
 if ~isempty(contours), contours = {contours};end
 
@@ -189,20 +189,20 @@ elseif check_option(varargin,'3d')
 %  s = colorbar;
 %  delete(s)
   hold off
-  
-% interpolated
-elseif check_option(varargin,'interp') 
-
-  pcolor(X,Y,data);
-
-  if numel(data) >= 500, shading interp;end
-  %set(gcf,'Renderer','OpenGL');
-  set(gcf,'Renderer','zBuffer');
-    
+      
 % interpolated 
 elseif check_option(varargin,'SMOOTH') 
   
-%  if numel(data) >= 1000
+  % interpolated
+  if check_option(varargin,'interp')
+
+    pcolor(X,Y,data);
+
+    if numel(data) >= 500, shading interp;end
+    %set(gcf,'Renderer','OpenGL');
+    set(gcf,'Renderer','zBuffer');
+  else  
+    %  if numel(data) >= 1000
     if isappr(min(data(:)),max(data(:)))
       ind = convhull(X,Y);
       fill(X(ind),Y(ind),min(data(:)));
@@ -210,7 +210,7 @@ elseif check_option(varargin,'SMOOTH')
       [CM,h] = contourf(X,Y,data,200);
       set(h,'LineStyle','none');
     end
-
+  end
 % singular points 
 elseif isa(data,'cell') || check_option(varargin,'dots')% || numel(X)<20
   
@@ -228,12 +228,15 @@ elseif isa(data,'cell') || check_option(varargin,'dots')% || numel(X)<20
   end
 elseif check_option(varargin,'scatter')
     
-  scatter(X,Y,(diameter*100)^2,'filled');
+  set(gcf,'Renderer','painters');
+  h = scatter(X(:),Y(:),(diameter*100)^2,data(:),'filled');
+  set(h,'tag','scatterplot','UserData',diameter/3.2);
   
 else
+  
   set(gcf,'Renderer','painters');
   cminmax = get_option(varargin,'colorrange',...
-    [min(data(data>-inf)),max(data(:))]);
+    [min(data(data>-inf)),max(data(data<inf))]);
   if length(cminmax)>1 && cminmax(2)>cminmax(1)
     data = 1+round((data-cminmax(1)) / (cminmax(2)-cminmax(1)) * 63);
   else
