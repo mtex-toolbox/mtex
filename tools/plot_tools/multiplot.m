@@ -193,6 +193,7 @@ if isempty(gcbo) || gcbo ~= round(gcbo)
 else
   fig = gcbo;
 end
+
 old_units = get(fig,'Units');
 set(fig,'Units','pixels');
 figpos = get(fig,'Position');
@@ -210,6 +211,13 @@ for i = 1:length(a)
   [px,py] = ind2sub([nx ny],i);
   apos = [1+(px-1)*l,offsety+1+figpos(4)-py*l*dxdy,l,l*dxdy];
   set(a(i),'Units','pixels','Position',apos);
+end
+
+mystop
+u = findobj(gcbo,'Tag','scatterplot');
+for i = 1:length(u)
+  d = get(u(i),'UserData');
+  set(u(i),'SizeData',(l*d)^2);
 end
   
 u = findobj(gcbo,'Tag','rda');
