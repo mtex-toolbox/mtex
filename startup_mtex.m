@@ -114,7 +114,7 @@ end
 disp('MTEX toolbox (v0.4) loaded')
 
 %% raise help window
-web([mtex_path '/help/html/mtex_top.html'],'-helpbrowser')
+%web([mtex_path '/help/html/mtex_top.html'],'-helpbrowser')
 
 function m = getmem
 % return total system memory in kb
