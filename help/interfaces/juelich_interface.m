@@ -1,4 +1,4 @@
-%% Juelich data interface
+%% The Juelich Data Interface
 % 
 % The following examples shows how to import a Juelich data set.
 

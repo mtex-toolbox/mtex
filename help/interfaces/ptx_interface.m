@@ -1,4 +1,4 @@
-%% ptx data interface
+%% The PTX Data Interface
 % 
 % The following examples shows how to import a PTX data set.
 
@@ -21,6 +21,7 @@ pf = loadPoleFigure(fname,cs,ss);
 
 %% plot data
 
+close all; figure('position',[100 100 900 300])
 plot(pf)
 
 %% See also

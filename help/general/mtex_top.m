@@ -6,7 +6,7 @@
 %% A Feature Overview
 %
 % The <mtex_features.html feature overview> is a short summary of 
-% texture processing tasks that can be done using the MTEX toolbox.
+% texture processing tasks that can be done using the MTEX toolbox. 
 %
 %% Getting Started
 %
@@ -25,14 +25,14 @@
 %
 %% Examples / Tutorials
 %
-% There a available many <examples_index.html examples and tutorials> 
-% demonstrating the power of the MTEX toolbox
+% There is a bunch of <examples_index.html examples and tutorials> 
+% demonstrating the power of the MTEX toolbox.
 %
 %% Supported Interfaces
 %
-% The MTEX toolbox allows to import pole figure data in a wide varity of 
+% The MTEX toolbox allows to import pole figure data and EBSD data in a wide varity of 
 % formats. A list of all supported format and short examples for using them
-% can be found <interfaces_index.html here>.
+% can be found <interfaces_index.html here> and <interfacesEBSD_index.html here> .
 %
 %% A Function Overview
 %
@@ -61,7 +61,7 @@
 %
 %  Dr. Ralf Hielscher [[http://Ralf.Hielscher@gsf.de,Ralf.Hielscher@gsf.de]]
 %
-%  GSF - National Research Center for Environment and Health  
+%  Helmholtz Zentrum München 
 %  Institute of Biomathematics and Biometry 
 %  Ingolstädter Landstraße 1
 %  85764 Neuherberg, Germany

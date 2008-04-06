@@ -19,7 +19,7 @@
 %
 % The [[import_wizard.html,import wizard]] can be started either by typing 
 % into the command line 
-import_wizard 
+import_wizard_PoleFigure; 
 %%
 % or by choosing _MTEX / import wizard_ from the start menu. The import
 % wizard provides a gui to import data of almost all data formats MTEX
