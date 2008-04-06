@@ -46,9 +46,8 @@
   <tocitem target="dubna_interface.html">Dubna</tocitem>
   <tocitem target="geesthacht_interface.html">Geesthacht</tocitem>
   <tocitem target="juelich_interface.html">Juelich</tocitem>
-  <tocitem target="munich_interface.html">Munich</tocitem>
   <tocitem target="philips_interface.html">Philips</tocitem>
-  <tocitem target="ptx_interface.html">ptx</tocitem>
+  <tocitem target="ptx_interface.html">PTX</tocitem>
 </tocitem>
 
 <tocitem target="interfacesEBSD_index.html" image="$toolbox/matlab/icons/boardicon.gif">

@@ -1,4 +1,4 @@
-%% ptx data interface
+%% The Philips Data Interface
 % 
 % The following examples shows how to import a Philips data set.
 

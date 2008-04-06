@@ -1,4 +1,4 @@
-%% BearTex data interface
+%% The BearTex Data Interface
 % 
 % The following examples shows how to import a BearTex data set.
 

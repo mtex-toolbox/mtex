@@ -3,49 +3,61 @@
 % MTEX is a MATLAB toolbox that provides powerfull tools for the
 % following common tasks in *texture analysis*.
 %
+%
 %% Analyze and Visualize Crystallographic Geometries
 %
 % In MTEX you can define arbitrary crystal and specimen symmetries with
 % arbitrary geometries using the class <symmetry_index.html
-% symmetry>. Working now with <Miller_index.html Miller indece> all aspects
-% of crystal geometry as <Miller_angle.html angle> or <Miller_symeq.html
-% crystallographically equivalent directions> can be computed and
-% visualized. Have also a look at the example <geometry_demo.html Geometry
-% Demo>.
+% symmetry>. <Miller_index.html Miller indece> may be <Miller_plot.html
+% plotted> in various spherical projections, the <Miller_angle.html
+% angle> between two Miller indece can be computed or all
+% <Miller_symeq.html crystallographically equivalent directions> can be
+% computed. Orientations are represented as <quaternion_index.html
+% quaternions> in MTEX. However, they are methods to convert them into
+% Euler angles, Rodriguez parameters, matrices or axis - angle
+% parametrization. Quaternions can be applied to Miller indeces, ODFs,
+% pole figure data, and EBSD data to peform rotations. Have also a look 
+% at the <geometry_demo.html Geometry Demo>.
 %
 %
 %% Calculate with Model ODFs
 %
-% In MTEX it is very simple to define model ODF as
-% <uniformODF.html uniform ODFs> or <fibreODF.hml fibre ODFs> or any
-% superposition of them. In particular the MTEX toolbox allready contains
+% In MTEX it is very simple to define a model ODF as a
+% <uniformODF.html uniform ODFs>, a <unimodalODF.html unimodal ODFs>, a
+% <fibreODF.hml fibre ODFs>, or any superposition of these
+% components. Furthermore, the MTEX toolbox allready contains 
 % some popular standard ODF as the <santafee.html Santafee> and the
-% <mix2.html mix2> sample ODFs. How to work best with model ODFs in MTEX is
-% explained in the <modelODF_demo.html Model ODF Demo>.
+% <mix2.html mix2> sample ODFs. How to work best with model ODFs in MTEX
+% can be found <ODF_index.html here>.
 %
 %
 %% Import, Analyze and Visualize Diffraction Data
 %
 % Up to now MTEX allready supports a wide range of <interfaces_index.html
-% pole figure formats>. However, it is also very simple to use one of the
-% generic methods to import data from an unsupported format. Once the data
-% are imported you there are various <PoleFigure_index.html methods> to
-% analyze and modify them. The <dubna_demo.html Dubna Demo> is a practical
-% example demostrating how to apply MTEX for pole figure analysis.
+% pole figure formats>. Furthermore, there is a
+% <interface_generic.html generic interface> that allows to import pole
+% figure data that are stored in ASCII files in the theta - rho -
+% intensity notation. 
+%
+% It is also very simple to write your own interface utilizing the powerfull
+% generic methods provided by MTEX. Once the data are imported you there are
+% various <PoleFigure_index.html methods> to analyze and modify them. The
+% <dubna_demo.html Dubna Demo> is a practical example demostrating how to
+% apply MTEX for pole figure analysis.
 %
 %
 %% Import, Analyze and Visualize EBSD Data
 %
 % MTEX provides a <ebsd_interface.html generic interface> for EBSD
-% data. This data allows to extract orientations and phase informations from
-% almost arbitrary Ascii files. EBSD data may be used for
-% <EBSD2odf_estimation.html reconstruction>, Fourier coefficient
-% estimation, etc. In fact all methods that are available for ODFs may be
-% applied to ODFs estimated from EBSD. In particular it is possible to
-% compare ODFs estimated from EBSD data with those estimated from pole
-% figure data using the command <ODF_calcerror.html calcerror>. Another
-% usefull command in MTEX is <EBSD_simulateEBSD.html simulateEBSD> which
-% allows to simulate EBSD data for a given ODF.
+% data. This interface allows to extract orientations and phase informations
+% from almost arbitrary Ascii files. EBSD data may be used for
+% <EBSD2odf_estimation.html reconstruction>, Fourier coefficient estimation,
+% etc. In fact all methods that are available for ODFs may be applied to
+% ODFs estimated from EBSD. In particular it is possible to compare ODFs
+% estimated from EBSD data with those estimated from pole figure data using
+% the command <ODF_calcerror.html calcerror>. Another usefull command in
+% MTEX is <EBSD_simulateEBSD.html simulateEBSD> which allows to simulate
+% EBSD data for a given ODF.
 %
 % A practical guide to EBSD data analysis with MTEX can be found
 % <ebsd_demo.html here>.
@@ -68,17 +80,21 @@
 % ghost effect is discussed in greater detail in <ghost_demo.html Ghost
 % Demo>.
 %
+% In order to recover an ODF from EBSD data the method <EBSD_calcODF.html
+% calcODF> has to be called. It computes a ODF to your EBSD data using
+% <EBSD2odf_estimation.html kernel density estimation>.
+%
 %% Calculate Texture Characteristics 
 %
 % MTEX offers to compute a wide range of texture characteristics like
-% <ODF_entropy.html entropy>, <ODF_textureindex.html texture index>, or
-% <ODF_volume.html volume portion> to be computed for any model ODF or any
-% recoverd ODF. You can also calculate the Fourier coefficients useing the
-% command <ODF_fourier.html fourier>. Furthermore, you can compare arbitrary
-% ODF indepently whether they are model ODFs, ODFs estimated from pole
-% figure data or estimated from EBSD data. The <ODF_demo.html ODF Analysis
-% Demo> gives an overview over the texture characteristic that can be
-% computed using MTEX.
+% <ODF_modalorientation.html modal orientation>, <ODF_entropy.html entropy>,
+% <ODF_textureindex.html texture index>, or <ODF_volume.html volume portion>
+% to be computed for any model ODF or any recoverd ODF. You can also
+% calculate the Fourier coefficients useing the command <ODF_fourier.html
+% fourier>. Furthermore, you can compare arbitrary ODF indepently whether
+% they are model ODFs, ODFs estimated from pole figure data or estimated
+% from EBSD data. The <ODF_demo.html ODF Analysis Demo> gives an overview
+% over the texture characteristic that can be computed using MTEX.
 %
 %
 %% Create Publication Ready Plots
@@ -95,9 +111,10 @@
 %
 %% Writting Scripts to Process Many Data Sets
 %
-% Using the MTEX toolbox it is easy to write little scripts that import
-% pole figure data, preprocess them, recalculate an ODF, postprocess it,
-% store it to a given location and finaly create several plots. Such
-% scripts can now be applied to batch process many pole figure data
-% sets. <examples_index.html Examples> of those scripts are included in the help.
+% Using the MTEX toolbox it is easy to write little scripts that import pole
+% figure data, preprocess them, recalculate an ODF, postprocess it, store it
+% to a given location and finaly create several plots. Such scripts can be
+% easily applied to batch process many pole figure data
+% sets. <examples_index.html Examples> of those scripts are included in the
+% help.
 %

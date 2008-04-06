@@ -1,4 +1,4 @@
-%% The Aachen data interface
+%% The Aachen Data Interface
 %
 % The following examples shows how to import a Aachen data set.
 

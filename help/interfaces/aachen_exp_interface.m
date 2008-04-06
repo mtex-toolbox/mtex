@@ -1,4 +1,4 @@
-%% Aachen_exp data interface
+%% The Aachen_exp Data Interface
 % 
 % The following examples shows how to import a Aachen_exp data set.
 

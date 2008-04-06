@@ -1,4 +1,4 @@
-%% Dubna data interface
+%% The Dubna Data Interface
 %  
 % The following examples shows how to import a Dubna data set.
 
