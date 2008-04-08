@@ -21,20 +21,18 @@ in this directory.
 
 Directory structure
 -------------------
-AUTHORS			    Information about the authors of NFFT3
+AUTHORS		Information about the authors of NFFT3
 c (dir)         Source code for core library routines
-ChangeLog		    A short version history
-COPYING			    Information about redistributing NFFT3
+ChangeLog	A short version history
+COPYING		Information about redistributing NFFT3
 data (dir)      some sample data sets
 examples (dir)  Simple examples for using NFFT3 routines
 geometry (dir)  geomtery tools
-help (dir)		  User and developer documentation
+help (dir)	User and developer documentation
 info.xml        used by MATLAB
 INSTALL         Installation instructions
 MAKEFILE        contains the compiling options !! to be edited by the user !!
-plot (dir)      plot tools
 qta (dir)       core scripts for working with ODFs and PDFs
-statistic (dir) some statistic tools
 README          This file
 startup.m       installation routine automticaly called by MATLAB if the 
                 toolbox is contained in the search path of MATLAB
@@ -42,7 +40,6 @@ startup_mtex    called by startup.m - contains the configuration of MTEX !! to b
 startup_root    used for the root installation
 tests (dir)     a self test
 tools           auxilary tools
-TODO		      	Current work to be done
 
 
 Feedback

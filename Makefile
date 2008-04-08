@@ -64,7 +64,7 @@ RNAME = mtex-0.4
 release:
 	cp -R ../trunk ../../$(RNAME)
 	find ../../$(RNAME) -name .svn | xargs /bin/rm -rf
-	find ../../$(RNAME) -name '*~' -or -name '*.log' -or -name '*.o' -or -name '.directory' | xargs /bin/rm -rf
+	find ../../$(RNAME) -name '*~' -or -name '*.log' -or -name '*.o' -or -name '*.orig' -or -name '.directory' | xargs /bin/rm -rf
 	rm -f ../../$(RNAME)/c/bin/*
 	rm -rf ../../$(RNAME)/help/html
 #	mv ../../$(RNAME)/data ../../mtex_data

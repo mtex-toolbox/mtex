@@ -188,7 +188,7 @@ disp('ghost correction');
 % determine phon
 phon = 1;
 for ip = 1:length(pf)
-  phon = min(phon,quantile(getdata(pf(i)),0.01)./alpha(i));
+  phon = min(phon,quantile(getdata(pf(ip)),0.01)./alpha(ip));
 end
 
 if phon > 0.05
