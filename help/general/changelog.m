@@ -1,7 +1,7 @@
 %% MTEX Changelog
 %
 %
-%% MTEX 0.4
+%% MTEX 0.4 - 07.04.2008
 %
 % *Speed Improvments*
 %
@@ -49,7 +49,7 @@
 % manualy if desired
 % * Crystal symmetry *triclinic* is not called *tricline* anymore.
 %
-%% MTEX 0.3
+%% MTEX 0.3 - 22.10.2007
 %
 % * new function [[ODF_fourier.html,fourier]] to calculate the
 % Fouriercoefficents of an arbitrary ODF
@@ -70,7 +70,7 @@
 % * new plot option _logarithmic_ 
 % * many bugfixes
 %
-%% MTEX 0.2
+%% MTEX 0.2 - 01.07.2007
 %
 % * new functions [[ODF_textureindex.html,textureindex]], [[ODF_entropy.html,entropy]], [[ODF_volume.html,volume]]
 % * creatly improved help 
@@ -78,7 +78,7 @@
 % * new options for plotting routines for specific ODF sections
 % * many bugfixes
 %
-%% MTEX 0.1
+%% MTEX 0.1 - 01.04.2007
 %
 % * initial release
 %
