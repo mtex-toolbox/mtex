@@ -213,7 +213,6 @@ for i = 1:length(a)
   set(a(i),'Units','pixels','Position',apos);
 end
 
-mystop
 u = findobj(gcbo,'Tag','scatterplot');
 for i = 1:length(u)
   d = get(u(i),'UserData');
