@@ -21,8 +21,9 @@ function varargout = run_linux(prg,varargin)
 
 %% check input
 
-if ~exist(prg,'file')
-  error(['Can not find ',prg,'! Run "make install"']);
+if ispc, mtex_ext = '.exe';else mtex_ext = '';end
+if ~exist([prg,mtex_ext],'file')
+  error(['Can not find ',[prg,mtex_ext],'! Run "make install"']);
 end
 
 %% global flags
@@ -117,7 +118,7 @@ for i=1:nargin-1
 		
 		d = varargin{i};
 		s = whos('d');
-		fprintf(fid,[mtex_tmppath,name,'_',iname{i},'.dat\n']);
+		fprintf(fid,'%s\n',[mtex_tmppath,name,'_',iname{i},'.dat']);
 		fdata = fopen([mtex_tmppath,name,'_',iname{i},'.dat'],'w',mtex_machineformat);
 		fwrite(fdata,d,s.class);
 		fclose(fdata);
@@ -125,19 +126,24 @@ for i=1:nargin-1
 end
 
 for i=1:nargout
-	fprintf(fid,['res',int2str(i),': ',mtex_tmppath,name,'_res',int2str(i),'.dat\n']);
+	fprintf(fid,'%s\n',['res',int2str(i),': ',mtex_tmppath,name,'_res',int2str(i),'.dat']);
 end
 fclose(fid);
 
 
 %% run linux command
 vdisp(verbose,['  call ',prg]);
-cmd = [mtex_prefix_cmd,prg,' ',mtex_tmppath,name,...
-  '.txt 2>> ',mtex_logfile,mtex_postfix_cmd];
+if isunix
+  cmd = [mtex_prefix_cmd,prg,' ',mtex_tmppath,name,...
+    '.txt 2>> ',mtex_logfile,mtex_postfix_cmd];
+else
+  cmd = [mtex_prefix_cmd,prg,'.exe ',mtex_tmppath,name,...
+    '.txt check',mtex_postfix_cmd];
+end
 if ~isempty(global_computer), cmd = ['ssh ',global_computer,' ',cmd];end
 
 if silent
-  unix([cmd,' &'],'-echo');
+  system([cmd,' &'],'-echo');
   varargout{1} = @() finish(name,verbose,nargout);
 else
   if mtex_debug 
@@ -147,7 +153,7 @@ else
     disp('hit enter if finished')
     pause
   else
-    status = unix(cmd,'-echo');
+    status = system(cmd,'-echo');
     if status ~= 0, error('error running external program:\n\n %s',cmd);end
   end
 	
