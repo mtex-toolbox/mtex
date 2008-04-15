@@ -152,7 +152,7 @@ else
 end
 
 % invisible axes for adding a colorbar
-d = axes('visible','off','position',[0 0.1 1 0.8]);
+d = axes('visible','off','position',[0 0.1 1 0.8],'tag','colorbaraxis');
 
 if length(colorrange) ~= 2, colorrange = [min(Z(:)) max(Z(:))]; end
 
@@ -193,6 +193,9 @@ if isempty(gcbo) || gcbo ~= round(gcbo)
 else
   fig = gcbo;
 end
+
+d = get(fig,'userdata');
+if ischar(d), return;end
 
 old_units = get(fig,'Units');
 set(fig,'Units','pixels');
