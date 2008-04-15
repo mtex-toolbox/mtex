@@ -71,15 +71,41 @@ diameter = get_option(varargin,'DIAMETER',min(0.2,max(0.02,0.75*getResolution(S2
 % COLORMAP
 if check_option(varargin,'GRAY'),colormap(flipud(colormap('gray'))/1.2);end
 
-% set axis
+%% prepare axis
+
+% Annotation?
+if strcmp(get(gca,'tag'),'colorbaraxis') 
+  if ishold
+  
+    ox = gca;
+    ax = findobj(gcf,'tag','S2Grid');
+  
+    for i = 1:length(ax)
+      set(gcf,'currentAxes',ax(i));
+      hold all;
+      plot(S2G,'annotate',varargin{:});
+      hold off;
+    end
+  
+    set(gcf,'currentAxes',ox);
+    return
+    
+  else
+  
+    clf reset;
+    
+  end  
+end
+  
 if ~ishold
-  cla
+  cla reset
   if nargout > 0, varargout{1} = gca;end
   set(gca,'Tag','S2Grid','Box','on','DataAspectRatio',[1 1 1],'XTick',[],'YTick',[],...
     'drawmode','fast','layer','top');
   hold on
 end
 
+%% Prepare Data
 % calculate polar coordinates
 [theta,rho] = polar(S2G);
 if check_option(varargin,'rotate')
@@ -99,9 +125,12 @@ if numel(theta) > 100000
   data = data(1:100000);
 end
 
-% decide wether one or two plots
-if ~check_option(S2G.options,'HEMISPHERE') && ~check_option(varargin,{'PLAIN','reduced'}) && ...
-    ~isempty(theta) && min(theta(:)) < pi/2-0.001 && max(theta(:))>pi/2+0.001
+%% decide wether one or two plots
+
+if  ((~check_option(S2G.options,'HEMISPHERE') && ~check_option(varargin,{'PLAIN','reduced'}) && ...
+    ~isempty(theta)  && max(theta(:))>pi/2+0.001  && min(theta(:)) < pi/2-0.001)) ...
+    || ( max(xlim)>3)
+  % && check_option(varargin,'annotate')
   % two plots
   
   % nothern hemisphere
@@ -115,14 +144,16 @@ if ~check_option(S2G.options,'HEMISPHERE') && ~check_option(varargin,{'PLAIN','r
   [x2,y2,x2,y2] = ...
     plot_hemi_sphere(pi-submatrix(theta,ind),submatrix(rho,ind),...
     submatrix(data,ind),diameter,x2-x1,varargin{:});
-  xlim([x1,x2]);ylim([y1,y2]);
   
 else % single plot
+
   [x1,y1,x2,y2] = plot_hemi_sphere(theta,rho,data,diameter,0,varargin{:});
-  xlim([x1,x2]);ylim([y1,y2]);
+
 end
 
 % bounding box
+if ~check_option(varargin,'annotate'), xlim([x1,x2]);ylim([y1,y2]);end
+
 %rectangle('position',[x1 y1 (x2-x1) (y2-y1)])
 hold off
 
@@ -215,10 +246,22 @@ elseif check_option(varargin,'SMOOTH')
 elseif isa(data,'cell') || check_option(varargin,'dots')% || numel(X)<20
   
   set(gcf,'Renderer','painters');
-  for i = 1:numel(X)
+  
+  if check_option(varargin,'annotate')
+    x = get(gca,'xlim');
+    y = get(gca,'ylim');
+    ind = find(X >= x(1)-0.0001 & X <= x(2)+0.0001 & Y >= y(1)-0.0001 & Y <= y(2)+0.0001);
+  else
+    ind = 1:numel(X);
+  end  
+  
+  
+  cax = newplot(gca);
+  [ls,c,m] = nextstyle(gca);
+  for i = ind
     text(X(i),Y(i),'$\bullet$',...
       'FontSize',round(get_option(varargin,'FontSize',12)/2*3),...
-      'color',get_option(varargin,'color','black'),...
+      'color',get_option(varargin,'color',c),...
       'HorizontalAlignment','Center','VerticalAlignment','middle','interpreter','latex');
     if isa(data,'cell')
       smarttext(X(i),Y(i),data(i),[x1 x2 y1 y2],...
@@ -257,11 +300,13 @@ end
 
 
 %-------------------- bounding box ----------------------------------------
-if ~check_option(varargin,'PLAIN') && (isempty(rho) || ...
-    isnull(mod(rho(1)-rho(end),2*pi)) || ~(check_option(varargin,{'CONTOUR','SMOOTH'})))
-  circle((x1+x2)/2,(y1+y2)/2,(x2-x1)/2);
-elseif ~check_option(varargin,'PLAIN')
-  torte(X,Y);
+if ~check_option(varargin,{'PLAIN','annotate'})
+  if (isempty(rho) || isnull(mod(rho(1)-rho(end),2*pi)) || ...
+      ~(check_option(varargin,{'CONTOUR','SMOOTH'})))
+    circle((x1+x2)/2,(y1+y2)/2,(x2-x1)/2);
+  else
+    torte(X,Y);
+  end
 end
 
 

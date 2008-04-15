@@ -8,14 +8,14 @@ function plot(m,varargin)
 %  NO_CHAR - no description
 
 
-colororder = ['b','g','r','c','m','k','y'];
+%if any(strcmpi(get(gcf,'Tag'),{'IPDF'}))  
+%  hold on
+%else
+%  clf;
+%  set(gcf,'Name','Miller indece in a Schmidt net');  
+%end
 
-if any(strcmpi(get(gcf,'Tag'),{'IPDF'}))  
-  hold on
-else
-  clf;
-  set(gcf,'Name','Miller indece in a Schmidt net');  
-end
+washold = ishold;
 
 for i = 1:numel(m)
 
@@ -30,14 +30,13 @@ for i = 1:numel(m)
     s{ii} = char(char(mm(ii),'latex'));
   end
   
-  plot(S2Grid(vector3d(mm)),varargin{:},'dots',...
-    'data',s,...
-    'color',colororder(1+mod(i-1,length(colororder))));
+  plot(S2Grid(vector3d(mm)),varargin{:},'data',s);
   
-  hold on
+  hold all
 end
 
-hold off
+if ~washold, hold off;end
+
 return
 
 s = cell(1,numel(m));
@@ -49,8 +48,7 @@ plot(S2Grid(vector3d(m)),'data',s,varargin{:});
 if check_option(varargin,'ALL')  
   for i = 1:numel(m)
     hold on
-    plot(S2Grid(m(1).CS*vector3d(m(i)),'hemisphere'),varargin{:},'dots',...
-      'color',colororder(1+mod(i-1,length(colororder))));
+    plot(S2Grid(m(1).CS*vector3d(m(i)),'hemisphere'),varargin{:},'dots');
   end
   
 end
