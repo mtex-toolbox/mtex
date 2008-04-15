@@ -2,6 +2,7 @@ function B  = submatrix(A,ind)
 % B = A(ind) with size as A if possible
 
 B = A(ind);
+if isempty(B), return;end
 
 if isa(ind,'logical')
   ind = find(ind);
