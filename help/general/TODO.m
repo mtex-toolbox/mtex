@@ -27,7 +27,6 @@
 %
 %% Plotting:
 %
-% * annotation of Miller indece
 %
 %% S1Grid
 %
