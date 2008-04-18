@@ -1,5 +1,6 @@
 function plot(m,varargin)
 % plot Miller indece
+%
 %% Input
 %  m  - Miller
 %
@@ -36,27 +37,3 @@ for i = 1:numel(m)
 end
 
 if ~washold, hold off;end
-
-return
-
-s = cell(1,numel(m));
-for i = 1:numel(m)
-  s{i} = char(char(m(i),'latex'));
-end
-
-plot(S2Grid(vector3d(m)),'data',s,varargin{:});
-if check_option(varargin,'ALL')  
-  for i = 1:numel(m)
-    hold on
-    plot(S2Grid(m(1).CS*vector3d(m(i)),'hemisphere'),varargin{:},'dots');
-  end
-  
-end
-hold off
-
-%% Example
-%
-% plot([Miller(0,0,1),Miller(1,0,0),Miller(1,1,0),Miller(1,-1,0),Miller(0,1
-% ,0),Miller(-1,1,0),Miller(-1,0,0),Miller(-1,-1,0),Miller(0,-1,0),Miller(2
-% ,-1,0),Miller(-1,2,0),Miller(1,-2,0),Miller(-2,1,0)],CS)
-
