@@ -163,7 +163,7 @@ plot(pf1)
 
 %%
 pf2 = rotate(pf1,axis2quat(xvector-yvector,25*degree));
-plot(pf2)
+plot(pf2,'reduced')
 %savefigure('pic/pfrotated.pdf')
 
 %%
