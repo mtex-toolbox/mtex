@@ -112,15 +112,6 @@ if check_option(varargin,'flipud')
   rho = 2*pi-rho;
 end
 
-% restrict 
-if numel(theta) > 100000
-  warning('to many data!'); %#ok<WNTAG>
-  disp('restrict to first 100000');
-  theta = theta(1:100000);
-  rho = rho(1:100000);
-  data = data(1:100000);
-end
-
 
 %% which hemispheres to plot
 
