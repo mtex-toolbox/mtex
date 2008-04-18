@@ -15,6 +15,7 @@ function plotipdf(odf,r,varargin)
 %% See also
 % S2Grid/plot savefigure
 
+argin_check(r,'vector3d');
 
 % plotting grid
 h = S2Grid('PLOT',varargin{:},...

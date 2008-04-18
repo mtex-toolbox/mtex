@@ -1,8 +1,12 @@
 function B  = submatrix(A,ind)
 % B = A(ind) with size as A if possible
 
+if isempty(A) || isempty(ind) || ~any(ind(:))
+  B = [];
+  return;
+end
+
 B = A(ind);
-if isempty(B), return;end
 
 if isa(ind,'logical')
   ind = find(ind);

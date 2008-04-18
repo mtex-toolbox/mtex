@@ -188,6 +188,9 @@ plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'reduced','gray')
 plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'colorrange','equal','reduced')
 set(gcf,'position',[256 285 560 255])
 colorbar
+hold on
+plot([xvector,yvector,zvector],'data',{'x','y','z'},'FontSize',14);
+hold off
 
 
 %% Exporting Plots
