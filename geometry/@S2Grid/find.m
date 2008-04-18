@@ -1,4 +1,4 @@
-function ind = find(S2G,v,epsilon)
+function [ind,d] = find(S2G,v,epsilon)
 % return index of all points in a epsilon neighborhood of a vector
 %
 %% Syntax  
@@ -15,6 +15,7 @@ function ind = find(S2G,v,epsilon)
 
 if check_option(S2G.options,'INDEXED')
   
+  d = [];
   if check_option(S2G.options,'HEMISPHERE'), v = [v(:),-v(:)]; end
 
   [ytheta,yrho,iytheta,prho,rhomin] = getdata(S2G);
@@ -28,11 +29,17 @@ if check_option(S2G.options,'INDEXED')
     
     if check_option(S2G.options,'HEMISPHERE')    
       ind = reshape(ind,[],2);
-      for i = 1:size(ind,1)
-        d = abs(dot(S2G.Grid(ind(i,:)),v(i)));
-        if d(1) < d(2), ind2(i) = ind(i,2);else ind2(i) = ind(i,1);end
-      end
-      ind = ind2;
+%      for i = 1:size(ind,1)
+%        d = abs(dot(S2G.Grid(ind(i,:)),v(i)));
+%        if d(1) < d(2), ind2(i) = ind(i,2);else ind2(i) = ind(i,1);end
+%      end                 
+      
+      d = abs(dot(S2G.Grid(ind),v));
+      ind2 = d == repmat(max(d,[],2),1,2);
+      ind2(all(ind2,2),2) = false;
+      ind = ind(ind2);
+      d = d(ind2);
+   
     end
   else
     ind = S2Grid_find_region(ytheta,int32(iytheta),...
