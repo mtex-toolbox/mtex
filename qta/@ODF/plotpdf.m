@@ -21,6 +21,8 @@ function plotpdf(odf,h,varargin)
 %% See also
 % S2Grid/plot savefigure
 
+argin_check(h,{'Miller','vector3d'});
+
 % default options
 global mtex_plot_options;
 varargin = {varargin{:},mtex_plot_options{:}};

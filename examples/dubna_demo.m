@@ -48,7 +48,7 @@ plot(pf_corrected)
 %% Rotate pole figures
 
 pf_rotated = rotate(pf_corrected,axis2quat(xvector,45*degree));
-plot(pf_rotated)
+plot(pf_rotated,'reduced')
 
 %% Recalculate ODF
 %
