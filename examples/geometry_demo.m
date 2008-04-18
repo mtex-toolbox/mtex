@@ -78,12 +78,14 @@ SO3G = SO3Grid(500,CS,SS)
 
 
 % operate
+set(gcf,'position',[ 67   242   777   384]);
 plot(SO3G * xvector)
 %%
 plot(SO3G * symetriceVec(CS,xvector))
 
 %%
 % plot
+close all;
 plot(SO3G,'RODRIGUEZ')
 
 
