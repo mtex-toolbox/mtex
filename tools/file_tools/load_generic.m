@@ -46,6 +46,7 @@ if isstruct(s)
   i = 1;
   while i <= length(fn) && isempty(d)
     d = extract_data(s.(fn{i}));
+    i = i+1;
   end
   
 elseif iscell(s) && ischar(s)
@@ -53,6 +54,7 @@ elseif iscell(s) && ischar(s)
   i = 1;
   while i <= length(s) && isempty(d)
     d = extract_data(s{i});
+    i = i+1;
   end
   
 elseif isnumeric(s) && size(s,1)>10 && size(s,2)>2
