@@ -44,6 +44,7 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 % interfacesEBSD_index loadEBSD ebsd_demo
 
 % load data
+mystop;
 [d,varargin] = load_generic(fname,varargin{:});
 
 % no data found
@@ -74,11 +75,13 @@ try
   if length(layout) == 4 && ~isempty(phase)    
     d = d(any(d(:,layout(4))==repmat(reshape(phase,1,[]),size(d,1),1),2),:);
   end
-  
+ 
   % extract data
   alpha = d(:,layout(1))*dg; 
   beta  = d(:,layout(2))*dg;
   gamma = d(:,layout(3))*dg;
+  
+  assert(all(beta >=0 & beta <= pi & alpha >= -2*pi & alpha <= 4*pi & gamma > -2*pi & gamma<4*pi));
   
   % get Euler angles option 
   bunge = set_default_option(...
@@ -93,8 +96,8 @@ try
   SO3G = SO3Grid(q,symmetry('cubic'),symmetry());
   ebsd = EBSD(SO3G,symmetry('cubic'),symmetry(),varargin{:});
   options = varargin;
-  
+
 catch
-  %error('Generic interface could not extract data of file %s',fname);
-  error(errortext);
+  error('Generic interface could not extract data of file %s',fname);
+  %rethrow(lasterror);
 end
