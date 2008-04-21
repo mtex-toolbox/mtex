@@ -1,5 +1,5 @@
 function s = errortext
 e = lasterror;
-e = e.message;
-pos = strfind(e,'</a>');
-s = e(pos+5:end);
+s = e.message;
+pos = strfind(s,'</a>');
+if ~isempty(pos), s = s(pos+5:end);end
