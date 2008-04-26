@@ -19,7 +19,7 @@ function plotpdf(odf,h,varargin)
 %  COMPLETE - plot entire (hemi)-sphere
 %
 %% See also
-% S2Grid/plot savefigure
+% S2Grid/plot plot2all savefigure
 
 argin_check(h,{'Miller','vector3d'});
 
@@ -56,4 +56,6 @@ else
     varargin{:},'SMOOTH');
 end
 
-set(gcf,'Name',['Pole figures of "',inputname(1),'"']);
+name = inputname(1);
+if isempty(name), name = odf(1).comment;end
+set(gcf,'Name',['Pole figures of "',name,'"']);
