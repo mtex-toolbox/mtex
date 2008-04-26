@@ -30,4 +30,6 @@ multiplot(@(i) h,@(i) pdf(odf,h,r(i)./norm(r(i)),varargin{:}),length(r),...
   'MINMAX','SMOOTH',...
   varargin{:});
 
-set(gcf,'Name',['recalculated Pole Figures of Specimen ',inputname(1)]);
+name = inputname(1);
+if isempty(name), name = odf(1).comment;end
+set(gcf,'Name',['Inverse Pole Figures of ',name]);

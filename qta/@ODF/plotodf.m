@@ -222,4 +222,6 @@ multiplot(@(i) S2G,...
   'MINMAX','SMOOTH','TIGHT',...
   varargin{:},'colorrange','equal','FontSize',12);
 
-set(gcf,'Name',['ODF "',inputname(1),'"']);
+name = inputname(1);
+if isempty(name), name = odf(1).comment;end
+set(gcf,'Name',['ODF "',name,'"']);
