@@ -21,7 +21,7 @@ ipf = 1;
 while ~feof(fid)
 
   try
-    % read header
+%% read header
 	  
     % first 5 lines --> comments
     comment = textscan(fid,'%s',5,'delimiter','\n','whitespace','');
@@ -30,7 +30,8 @@ while ~feof(fid)
     % read crystal symmetry
     s = str2num(fgetl(fid)); %#ok<ST2NM>
     assert(all(s(1:6)>0 & s(1:6)<180));
-    
+
+%% guess crystal symmetry
     laue = 'triclinic';
     if all(s(4:5)==90)
       if s(6)==90
@@ -47,6 +48,7 @@ while ~feof(fid)
     end
     cs = symmetry(laue,[s(1) s(2) s(3)],[s(4) s(5) s(6)]);
 
+%% get Miller indece    
     % read Miller, theta (start stop step) and rho (start stop step)
     % and generate grid of specimen directions
     s = fgetl(fid);
@@ -55,7 +57,8 @@ while ~feof(fid)
     l = str2double(s(8:10));
     assert(all(round([h k l]) == [h k l] & [h k l]>=0 & [h k l]<10));
     h = Miller(h,k,l,cs);
-	
+
+%% generate specimen directions    
     theta(1) = str2double(s(11:15));
     theta(2) = str2double(s(21:25));
     theta(3) = str2double(s(16:20));
@@ -73,6 +76,7 @@ while ~feof(fid)
     assert(~isempty(rho));
     r = S2Grid('theta',theta,'rho',rho,'hemisphere');
 	
+%% read data    
     d = [];
     while length(d) < GridLength(r)
       l = fgetl(fid);
@@ -80,6 +84,7 @@ while ~feof(fid)
       d = [d;str2num(l)]; %#ok<ST2NM>
     end
           
+%% generate Polefigure    
     pf(ipf) = PoleFigure(h,r,d,cs,symmetry,varargin{:},'comment',comment); 
   
     % skip one line
