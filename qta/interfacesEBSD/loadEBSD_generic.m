@@ -44,7 +44,6 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 % interfacesEBSD_index loadEBSD ebsd_demo
 
 % load data
-mystop;
 [d,varargin] = load_generic(fname,varargin{:});
 
 % no data found
