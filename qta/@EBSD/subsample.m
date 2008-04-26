@@ -21,6 +21,6 @@ for i = 1:length(nebsd)
   
   ip = round(points * ss(i) / sum(ss(:)));
   nebsd(i).orientations = ...
-    subGrid(nebsd(i).orientations,randsample(ss(i),ip));
+    subGrid(nebsd(i).orientations,mtexrandsample(ss(i),ip));
   
 end

@@ -172,8 +172,8 @@ end
 function res = quat2res(quat,CS,SS)
 
 ml = min(numel(quat),500);
-ind1 = randsample(1:numel(quat),ml);
-ind2 = randsample(1:numel(quat),ml);
+ind1 = mtexrandsample(1:numel(quat),ml);
+ind2 = mtexrandsample(1:numel(quat),ml);
 d = 2*acos(dot_outer(CS,SS,quat(ind1),quat(ind2)));
 d(d<0.005) = pi;
 res = quantile(min(d,[],2),min(0.9,sqrt(ml/numel(quat))));
