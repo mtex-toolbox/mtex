@@ -19,17 +19,14 @@ if check_option(varargin,'RODRIGUEZ') || sum(GridLength(SO3G)) > 50
   
 else
 
-  colororder = ['b','g','r','c','m','k','y'];
   v = [xvector,yvector,zvector];
   
   for i = 1:numel(v)
 
-    plot(S2Grid(SO3G.Grid.*v(i)),varargin{:},'dots',...
-      'color',colororder(1+mod(i-1,length(colororder))));
-    hold on
+    plot(S2Grid(SO3G.Grid.*v(i)),varargin{:},'dots');
+    hold all
   end
   
   hold off  
   
-
 end
