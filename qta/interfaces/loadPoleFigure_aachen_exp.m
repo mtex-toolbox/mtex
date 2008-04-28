@@ -59,7 +59,9 @@ try
   end
   
 catch
-  error('format Aachen_exp does not match file %s',fname);
+  if ~exist('pf','var')
+    error('format Aachen_exp does not match file %s',fname);
+  end
 end
 
 fclose(fid);
