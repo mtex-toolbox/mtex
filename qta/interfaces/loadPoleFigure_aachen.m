@@ -13,7 +13,6 @@ function pf = loadPoleFigure_aachen(fname,varargin)
 %% See also
 % interfaces_index aachen_interface loadPoleFigure
 
-
 fid = efopen(fname);
 
 ih = 1;
@@ -73,14 +72,16 @@ while ~feof(fid)
       d = [d;str2num(l)]; %#ok<ST2NM>
     end
     %d = d * fakt;
-
+    
 %% generate Polefigure    
     pf(ih) = PoleFigure(h,r,d,symmetry('cubic'),symmetry,varargin{:});
     
     ih = ih +1;
     
   catch
-    error('format Aachen does not match file %s',fname);
+    if ~exist('pf','var')
+      error('format Aachen does not match file %s',fname);
+    end
   end
 end
 

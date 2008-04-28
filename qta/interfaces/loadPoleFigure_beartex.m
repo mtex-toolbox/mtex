@@ -91,7 +91,9 @@ while ~feof(fid)
     fgetl(fid);
     ipf = ipf+1;
   catch
-    error('format BearTex does not match file %s',fname);
+    if ~exist('pf','var')
+      error('format BearTex does not match file %s',fname);
+    end
   end
 end
 
