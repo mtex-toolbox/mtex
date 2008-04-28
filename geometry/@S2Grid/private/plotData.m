@@ -2,6 +2,14 @@ function plotData(X,Y,data,bounds,varargin)
 
 bounds(3:4) = bounds(1:2) + bounds(3:4);
 
+if isempty(get(gca,'children')) && ~isempty(data) && isa(data,'double')
+  if max(data(:))-min(data(:)) < 1e-15
+    caxis([min(min(data(:)),0),max(max(data(:)),1)]);
+  else
+    caxis([min(data(:)),max(data(:))]);
+  end
+end
+
 % contour plot
 if check_option(varargin, {'CONTOUR','CONTOURF'}) 
 
@@ -33,7 +41,7 @@ elseif check_option(varargin,'SMOOTH')
       ind = convhull(X,Y);
       fill(X(ind),Y(ind),min(data(:)));
     else
-      [CM,h] = contourf(X,Y,data,200);
+      [CM,h] = contourf(X,Y,data,50);
       set(h,'LineStyle','none');
     end
   end
@@ -52,12 +60,12 @@ elseif isa(data,'cell') || check_option(varargin,'dots')% || numel(X)<20
   
   for i = ind
     text(X(i),Y(i),'$\bullet$',...
-      'FontSize',round(get_option(varargin,'FontSize',12)/2*3),...
+      'FontSize',round(get_option(varargin,'FontSize',13)/2*3),...
       'color',get_option(varargin,'color','k'),...
       'HorizontalAlignment','Center','VerticalAlignment','middle','interpreter','latex');
     if isa(data,'cell')
       smarttext(X(i),Y(i),data(i),bounds,...
-        'FontSize',get_option(varargin,'FontSize',12),...
+        'FontSize',get_option(varargin,'FontSize',13),...
         'Interpreter','latex');
     end
   end
