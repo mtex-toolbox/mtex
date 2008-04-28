@@ -2,10 +2,12 @@ function out = check_option(option_list,option,varargin)
 % check for option in option list
 %
 %% Syntax
-% out = check_option(option_list,option,type)
+% out = check_option(option_list,option_name,type)
+% out = check_option(option_list,option_name,[],option)
 %
 %% Input
 %  option_list - Cell Array
+%  option_name - String
 %  option      - String
 %  type        - class
 %
@@ -15,4 +17,9 @@ function out = check_option(option_list,option,varargin)
 %% See also
 % get_option set_option clear_option find_option
 
-out = find_option(option_list,option,varargin{:}) > 0;
+if nargin <= 3
+  out = find_option(option_list,option,varargin{:}) > 0;
+else
+  pos = find_option(option_list,option,'char');
+  out = any(strcmpi(option_list{pos},varargin{2}));
+end
