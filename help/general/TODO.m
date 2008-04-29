@@ -2,6 +2,7 @@
 %
 %% BUGS
 %
+%
 %% class symmetry
 %
 % * implement SS=symmetry('axial')
@@ -33,9 +34,11 @@
 %
 %% S2Grid
 %
+% * make hemisphere options consistent
 %
 %% SO3Grid
 %
+% * rewrite randomsample
 % * implement find/dist for local grids
 % * implement rotated local grid
 %
