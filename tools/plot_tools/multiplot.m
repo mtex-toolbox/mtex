@@ -111,7 +111,7 @@ figure(clf);
 sb = statusbar('drawing plots ...');
 set(sb.ProgressBar, 'Visible','on', 'Minimum',0, 'Maximum',nplots, 'Value',0, 'StringPainted','on');
 
-fontsize = get_option(varargin,'FONTSIZE',12);
+fontsize = get_option(varargin,'FONTSIZE',13);
 
 for i = 1:nplots
 	
@@ -119,7 +119,7 @@ for i = 1:nplots
   set(a(i),'Visible','off')
   Z = Y{i};
   X = x(i);
-  plot(X,'DATA',Z,varargin{:});
+  plot(X,'DATA',Z,varargin{:},'axis',a(i));
   set(sb.ProgressBar,'Value',i);
     
   if check_option(varargin,'MINMAX') 
@@ -134,12 +134,35 @@ for i = 1:nplots
   end
 end
 
+% set color range later on?
+scr =  length(colorrange) == 2;
+
+% invisible axes for adding a colorbar
+d = axes('visible','off','position',[0 0.1 1 0.8],...
+  'tag','colorbaraxis','HandleVisibility','callback');
+setappdata(gcf,'colorbaraxis',d);
+
+
+if length(colorrange) ~= 2, colorrange = caxis; end
+
+if colorrange(1) < colorrange(2)
+  if check_option(varargin,'logarithmic')
+    set(d,'ZScale','log');
+    colorrange = 10.^colorrange;
+  end
+  set(d,'clim',colorrange);
+else
+  set(d,'clim',[0 2]);
+end
+
+if scr, setcolorrange(colorrange);end
+
 % clear statusbar
 statusbar;
 
-if length(colorrange) == 2, setcolorrange(colorrange);end
 set(gcf,'ResizeFcn',@(src,evt) figResize(src,evt,a));
 %set(gcf,'Position',get(gcf,'Position'));
+setappdata(gcf,'autofit','on');
 figResize([],[],a);
 if ~check_option(varargin,'uncropped')
   set(gcf,'Units','pixels');
@@ -151,15 +174,10 @@ else
   set(gcf,'Position',get(gcf,'Position'));
 end
 
-% invisible axes for adding a colorbar
-d = axes('visible','off','position',[0 0.1 1 0.8],'tag','colorbaraxis');
-
-if length(colorrange) ~= 2, colorrange = [min(Z(:)) max(Z(:))]; end
-
-if colorrange(1) < colorrange(2), set(d,'clim',colorrange);end
 
 
-set(gcf,'color',[1 1 1],'tag','multiplot');
+
+set(gcf,'color',[1 1 1],'tag','multiplot','nextplot','replace');
 set(a,'Visible','on');
 
 end
@@ -194,34 +212,37 @@ else
   fig = gcbo;
 end
 
-d = get(fig,'userdata');
-if ischar(d), return;end
-
 old_units = get(fig,'Units');
 set(fig,'Units','pixels');
-figpos = get(fig,'Position');
-offsety = 1;%25;
-offsetx = 0;%10;
-%figpos(3:4) = figpos(3:4) - 1;
-figpos(4) = figpos(4)-offsety;
-figpos(3) = figpos(3)-offsetx;
-dxdy = get(a(1),'PlotBoxAspectRatio');
-dxdy = dxdy(2)/dxdy(1);
-[nx,ny,l] = bestfit(figpos(3),figpos(4)/dxdy,length(a));
-set(gcf,'UserData',[nx*l,ny*l*dxdy]);
 
-for i = 1:length(a)
-  [px,py] = ind2sub([nx ny],i);
-  apos = [1+(px-1)*l,offsety+1+figpos(4)-py*l*dxdy,l,l*dxdy];
-  set(a(i),'Units','pixels','Position',apos);
+if strcmp(getappdata(fig,'autofit'),'on')
+
+  figpos = get(fig,'Position');
+  offsety = 1;%25;
+  offsetx = 0;%10;
+  %figpos(3:4) = figpos(3:4) - 1;
+  figpos(4) = figpos(4)-offsety;
+  figpos(3) = figpos(3)-offsetx;
+  dxdy = get(a(1),'PlotBoxAspectRatio');
+  dxdy = dxdy(2)/dxdy(1);
+  [nx,ny,l] = bestfit(figpos(3),figpos(4)/dxdy,length(a));
+  set(gcf,'UserData',[nx*l,ny*l*dxdy]);
+
+  for i = 1:length(a)
+    [px,py] = ind2sub([nx ny],i);
+    apos = [1+(px-1)*l,offsety+1+figpos(4)-py*l*dxdy,l,l*dxdy];
+    set(a(i),'Units','pixels','Position',apos);
+  end
 end
 
+% scale scatterplots
 u = findobj(gcbo,'Tag','scatterplot');
 for i = 1:length(u)
   d = get(u(i),'UserData');
   set(u(i),'SizeData',(l*d)^2);
 end
   
+% set position of labels
 u = findobj(gcbo,'Tag','rda');
 for i = 1:length(u)
  
