@@ -21,5 +21,5 @@ if nargin <= 3
   out = find_option(option_list,option,varargin{:}) > 0;
 else
   pos = find_option(option_list,option,'char');
-  out = any(strcmpi(option_list{pos},varargin{2}));
+  out = pos > 0 && any(strcmpi(option_list{pos},varargin{2}));
 end

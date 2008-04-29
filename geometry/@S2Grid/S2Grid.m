@@ -12,13 +12,13 @@ function G = S2Grid(varargin)
 %% Options
 %  POINTS     - [nrho,ntheta] number of points to be generated
 %  RESOLUTION - resolution of a equispaced grid
+%  HEMISPHERE - { NORTH | SOUTH | BOTH | IDENTIFIED }
 %  THETA      - theta angle
 %  RHO        - rho angle
 %
 %% Flags  
 %  REGULAR    - generate a regular grid
 %  EQUISPACED - generate equidistribution
-%  HEMISPHERE - generate hemisphere
 %  PLOT       - generate plotting grid
 %  MINRHO     - starting rho angle (default 0)
 %  MAXRHO     - maximum rho angle (default 2*pi)
@@ -34,14 +34,38 @@ function G = S2Grid(varargin)
 %
 %% See also
 %
-     
-mintheta = get_option(varargin,'MINTHETA',0);
-maxtheta = get_option(varargin,'MAXTHETA',pi /(1+check_option(varargin,'hemisphere')));
+
+%% extract options
+
+if check_option(varargin,'HEMISPHERE','char')     
+  hemisphereoption = extract_option(varargin,'hemisphere','char');
+  switch upper(hemisphereoption{2})
+    case 'NORTH'      
+      mintheta = 0; maxtheta = pi/2;
+    case 'SOUTH'
+      mintheta = pi/2; maxtheta = pi;
+    case 'BOTH'
+      mintheta = 0; maxtheta = pi;
+    otherwise
+      mintheta = 0; maxtheta = pi/2;
+      hemisphereoption = {'hemisphere','identified'};
+  end
+elseif check_option(varargin,'HEMISPHERE')
+      mintheta = 0; maxtheta = pi/2;
+      hemisphereoption = {'hemisphere','identified'};
+else
+  hemisphereoption = {};
+  mintheta = 0; maxtheta = pi;
+end
+
+mintheta = max(get_option(varargin,'MINTHETA',0),mintheta);
+maxtheta = min(get_option(varargin,'MAXTHETA',pi),maxtheta);
 dtheta = maxtheta - mintheta;
 minrho = get_option(varargin,'MINRHO',0);
 maxrho = get_option(varargin,'MAXRHO',2*pi);
 drho = maxrho - minrho;
 
+%% 
 if nargin == 0 % empty grid
 	G.res = 2*pi;
 	G.theta = [];
@@ -124,11 +148,11 @@ else
     end
 		G.theta = S1Grid(theta,mintheta,maxtheta);
     
+    identified = check_option(hemisphereoption,'hemisphere',[],'identified');
     for j = 1:length(theta)
         
       th = theta(j);
-      if isappr(th,pi/2) && isappr(drho,2*pi) && ...
-          check_option(varargin,'hemisphere') 
+      if isappr(th,pi/2) && isappr(drho,2*pi) && identified
         
         G.rho(j) = S1Grid(minrho + G.res*(0.5*mod(j,2)+(0:2*ntheta-1))...
           ,minrho,minrho + pi,'PERIODIC');
@@ -150,7 +174,8 @@ end
   
 
 
-G.options = set_option(G.options,extract_option(varargin,{'INDEXED','HEMISPHERE','PLOT'}));
+G.options = set_option(G.options,extract_option(varargin,{'INDEXED','PLOT'}));
+G.options = set_option(G.options,hemisphereoption);
 G = class(G,'S2Grid');
     
 

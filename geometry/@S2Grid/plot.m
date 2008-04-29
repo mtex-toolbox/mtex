@@ -18,7 +18,8 @@ function  varargout = plot(S2G,varargin)
 %  ROTATE   - rotate plot about z-axis
 %  FLIPUD   - FLIP plot upside down
 %  FLIPLR   - FLIP plot left to rigth
-%
+%  PROJECTION - {EAREA}, EDIST, PLAIN
+%  HEMISPHERE - {NORTH | SOUTH | BOTH | IDENTIFIED}
 %
 %% Flags
 %  NORTH       - plot only points on the north hemisphere (default)
@@ -39,36 +40,25 @@ function  varargout = plot(S2G,varargin)
 % 3d plot is extern
 if check_option(varargin,'3d'), plot3d(S2G,varargin{:});return; end
 
-%% prepare axis
+%% Prepare Axis
 
-% curent axis is dummy axis?
-if strcmp(get(gca,'tag'),'colorbaraxis') 
-  
-  if ishold   % add annotations to all subplot
-    ox = gca;
-    ax = findobj(gcf,'tag','S2Grid');  
-    for i = 1:length(ax)
-      set(gcf,'currentAxes',ax(i));
-      hold all;
-      plot(S2G,'annotate',varargin{:});
-      hold off;
-    end  
-    set(gcf,'currentAxes',ox);
-    return    
-  else        % clear figure
-    clf reset;    
-  end  
-end
-  
 washold = ishold;
-if ~ishold
-  cla reset
-  if nargout > 0, varargout{1} = gca;end
-  set(gca,'Tag','S2Grid','Box','on','DataAspectRatio',[1 1 1],'XTick',[],'YTick',[],...
-    'drawmode','fast','layer','top');
-  hold all
+if ~check_option(varargin,'axis'), newplot;end
+if isempty(get(gca,'children'))
+  if isappdata(gcf,'projection'), rmappdata(gcf,'projection');end
+  if isappdata(gcf,'hemisphere'), rmappdata(gcf,'hemisphere');end
 end
 
+if nargout > 0, varargout{1} = gca;end
+
+if strcmp(get(gcf,'Tag'),'multiplot')
+  varargin = {varargin{:},'annotate'};
+end
+
+set(gca,'Tag','S2Grid','Box','on','DataAspectRatio',[1 1 1],'XTick',[],'YTick',[],...
+  'drawmode','fast','layer','top');
+
+hold all
 
 %%  GET OPTIONS 
 
@@ -89,7 +79,7 @@ end
 
 % log plot? 
 if check_option(varargin,'logarithmic')
-  data = log(data)./log(10);
+  data = log10(data);
   data(imag(data) ~= 0) = -inf;
 end
 
@@ -113,18 +103,43 @@ if check_option(varargin,'flipud')
 end
 
 
-%% which hemispheres to plot
+%% Which Hemispheres to Plot
 
-combined = check_option(varargin,{'reduced','plain'}); % ||check_option(S2G,'hemisphere');
-south = check_option(varargin,'south') || (max(theta(:)) > pi/2+0.001 && ~combined);
-north = ~south || check_option(varargin,'north') || min(theta(:)) < pi/2-0.001 || max(xlim)>3;
+if isappdata(gcf,'hemisphere'), 
+    
+  hemisphere = getappdata(gcf,'hemisphere');
+  
+elseif check_option(varargin,{'reduced','plain','identified'})
+  
+  hemisphere = 'identified';
+  
+elseif check_option(varargin,'hemisphere','char')
+  
+  hemisphere = get_option(varargin,'hemisphere','char');
+   
+elseif check_option(S2G,'hemisphere','char')
+  
+  hemisphere = get_option(S2G(1).options,'hemisphere');
+
+elseif max(theta(:)) > pi/2+0.001 
+  
+  hemisphere = 'both';
+  
+else
+  
+  hemisphere = 'north';
+
+end
+
+setappdata(gcf,'hemisphere',hemisphere);
+  
 bounds = [0,0,0,0];
 
 
 %% Northern Hemisphere
 
-if north
-  if combined
+if any(strcmpi(hemisphere,{'north','both','identified'}))
+  if strcmp(hemisphere,'identified')
     ind = true(size(theta));    
   else
     ind = theta <= pi/2+0.001;
@@ -135,25 +150,41 @@ end
 
 %% Southern Hemisphere
 
-if south
+if any(strcmpi(hemisphere,{'south','both'}))
   ind = theta >= pi/2-0.001;
   bounds = plotHemiSphere(pi-submatrix(theta,ind),submatrix(rho,ind),...
     submatrix(data,ind),bounds(3),varargin{:});
 end
-  
-%% bounding box
 
-if ~check_option(varargin,'annotate')
+
+%% Finish
+
+% Bounding Box
+if ~check_option(varargin,{'annotate'})
   xlim([bounds(1),bounds(1)+bounds(3)]);
   ylim([bounds(2),bounds(2)+bounds(4)]);
 end
 
-
-%% finish
-
 if check_option(varargin,'plain') && ~check_option(varargin,'TIGHT')
   set(gca,'XTickmode','auto','YTickmode','auto')
   xlabel('rho');ylabel('theta')
+end
+
+% crop if neccary
+if ~check_option(varargin,{'axis','annotate'})
+  f = bounds(3) / bounds(4);
+  set(gca,'units','normalized');
+  set(gca,'position',[0.05/f 0.05 1-0.1/f 0.9]);
+%  set(gca,'units','points');
+  set(gcf,'units','points');
+  fpos = get(gcf,'position');
+
+  f = (f+0.1)/1.1;
+  
+  b = min(fpos(3) / f,fpos(4));
+  set(gcf,'position',[fpos(1:2),b*f,b]);
+  set(gcf,'Color',[1 1 1]);
+  axis off;
 end
 
 % set hold back

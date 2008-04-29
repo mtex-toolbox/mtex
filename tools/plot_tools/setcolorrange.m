@@ -52,6 +52,9 @@ elseif length(varargin)>=1 && isa(varargin{1},'double') &&...
     length(varargin{1})==2  
   
   p = varargin{1};  
+  ax = getappdata(gcf,'colorbaraxis');
+  if strcmp(get(ax,'zscale'),'log'), p = log10(p);end
+  
   
 else  
   
@@ -60,7 +63,12 @@ else
 end
 
 % find all axes including hidden
-ax = findall(fig,'type','axes');
+ax = findall(fig,'type','axes','tag','S2Grid');
 for i = 1:length(ax),	caxis(ax(i),p);end
 
-
+ax = getappdata(gcf,'colorbaraxis');
+if strcmp(get(ax,'zscale'),'log')
+  caxis(ax,10.^p);
+else
+  caxis(ax,p);
+end
