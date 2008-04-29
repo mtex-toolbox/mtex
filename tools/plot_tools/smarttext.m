@@ -4,7 +4,6 @@ function s = smarttext(x,y,s,box,varargin)
 arg{1} = 'HorizontalAlignment';
 arg{3} = 'VerticalAlignment';
 
-mystop;
 if box(1) + (box(3) - box(1))*2/3 < x
   arg{2} = 'Right';
   x = x - 0.05;
