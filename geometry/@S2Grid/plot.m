@@ -167,7 +167,8 @@ function bounds = plotHemiSphere(theta,rho,data,offset,varargin)
 [X,Y,bounds] = projectData(theta,rho,varargin{:});
 
 % plot
-plotData(X+offset,Y,data,bounds,varargin{:});
+box = bounds+[offset,0,bounds(1)+offset,bounds(2)];
+plotData(X+offset,Y,data,box,varargin{:});
 
 % bounding box
 if ~check_option(varargin,{'PLAIN','annotate'})
