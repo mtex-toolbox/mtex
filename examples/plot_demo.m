@@ -100,14 +100,14 @@ plotpdf(odf,Miller(1,0,0),'reduced')
 % The equal distance projection differs from the equal area projection by
 % the characteristic that it preserves angles. Hence it is the more
 % intuitive projection if you look for angles between crystal directions. 
-plot(cs,'edist','reduced')
+plot(cs,'projection','edist','reduced')
 
 %%
 % *Plain* means that the polar angles theta / rho are plotted in a simple
 % rectangular plot. This projection is often chosen for ODF plots, e.g.
 close; figure('position',[46 171 752 486]);
 plotodf(santafee,'alpha','sections',18,'resolution',5*degree,...
-  'plain','gray','contourf','FontSize',10,'silent')
+  'projection','plain','gray','contourf','FontSize',10,'silent')
 
 
 %%
@@ -146,7 +146,8 @@ figure(2)
 plotpdf(.5*odf+.5*uniformODF(cs,ss),[Miller(1,0,0),Miller(1,1,1)],...
   'colorrange','equal','reduced');
 
-%% 
+%% % 3d plot is extern
+if check_option(varargin,'3d'), plot3d(S2G,varargin{:});return; end
 figure(1)
 plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'reduced')
 figure(2)
@@ -182,15 +183,14 @@ plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'reduced','gray')
 % resize and move the colorbar such that it fits nicely. If you want to add
 % a colorbar automaticaly then you have to resize the figure first be the
 % command *set(gcf,'position',[x0 y0 dx dy])* and use the command
-% *colorbar* to add a colorbar to the free space.
+% *mtexcolorbar* to add a colorbar to the free space.
 %
 
 plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'colorrange','equal','reduced')
 set(gcf,'position',[256 285 560 255])
-colorbar
-hold on
-plot([xvector,yvector,zvector],'data',{'x','y','z'},'FontSize',14);
-hold off
+mtexcolorbar
+plot2all([xvector,yvector,zvector],'data',{'X','Y','Z'},'FontSize',14);
+
 
 
 %% Exporting Plots
