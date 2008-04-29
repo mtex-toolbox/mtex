@@ -1,7 +1,5 @@
 function plotData(X,Y,data,bounds,varargin)
 
-bounds(3:4) = bounds(1:2) + bounds(3:4);
-
 if isempty(get(gca,'children')) && ~isempty(data) && isa(data,'double')
   if max(data(:))-min(data(:)) < 1e-15
     caxis([min(min(data(:)),0),max(max(data(:)),1)]);
