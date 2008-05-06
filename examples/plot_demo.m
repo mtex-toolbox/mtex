@@ -182,12 +182,11 @@ plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'reduced','gray')
 % resize and move the colorbar such that it fits nicely. If you want to add
 % a colorbar automaticaly then you have to resize the figure first be the
 % command *set(gcf,'position',[x0 y0 dx dy])* and use the command
-% *mtexcolorbar* to add a colorbar to the free space.
+% *colorbar* to add a colorbar to the free space.
 %
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'colorrange','equal','reduced')
-set(gcf,'position',[256 285 560 255])
-mtexcolorbar
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'reduced')
+colorbar
 plot2all([xvector,yvector,zvector],'data',{'X','Y','Z'},'FontSize',14);
 
 
