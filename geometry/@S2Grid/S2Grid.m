@@ -19,6 +19,9 @@ function G = S2Grid(varargin)
 %% Flags  
 %  REGULAR    - generate a regular grid
 %  EQUISPACED - generate equidistribution
+%  NORTH      - northern hemisphere
+%  SOUTH      - southern hemisphere
+%  REDUCED    - 
 %  PLOT       - generate plotting grid
 %  MINRHO     - starting rho angle (default 0)
 %  MAXRHO     - maximum rho angle (default 2*pi)
@@ -37,24 +40,18 @@ function G = S2Grid(varargin)
 
 %% extract options
 
-if check_option(varargin,'HEMISPHERE','char')     
-  hemisphereoption = extract_option(varargin,'hemisphere','char');
-  switch upper(hemisphereoption{2})
-    case 'NORTH'      
-      mintheta = 0; maxtheta = pi/2;
-    case 'SOUTH'
-      mintheta = pi/2; maxtheta = pi;
-    case 'BOTH'
-      mintheta = 0; maxtheta = pi;
-    otherwise
-      mintheta = 0; maxtheta = pi/2;
-      hemisphereoption = {'hemisphere','identified'};
+if check_option(varargin,'north')  
+  mintheta = 0; 
+  if check_option(varargin,'south')
+    maxtheta = pi;
+  else
+    maxtheta = pi/2;
   end
-elseif check_option(varargin,'HEMISPHERE')
-      mintheta = 0; maxtheta = pi/2;
-      hemisphereoption = {'hemisphere','identified'};
-else
-  hemisphereoption = {};
+elseif check_option(varargin,'south')
+  mintheta = pi/2; maxtheta = pi;
+elseif check_option(varargin,'reduced')
+  mintheta = 0; maxtheta = pi/2;
+else  
   mintheta = 0; maxtheta = pi;
 end
 
@@ -148,7 +145,7 @@ else
     end
 		G.theta = S1Grid(theta,mintheta,maxtheta);
     
-    identified = check_option(hemisphereoption,'hemisphere',[],'identified');
+    identified = check_option(varargin,'reduced');
     for j = 1:length(theta)
         
       th = theta(j);
@@ -174,8 +171,9 @@ end
   
 
 
-G.options = set_option(G.options,extract_option(varargin,{'INDEXED','PLOT'}));
-G.options = set_option(G.options,hemisphereoption);
+G.options = set_option(G.options,...
+  extract_option(varargin,{'INDEXED','PLOT','north','south','reduced'}));
+
 G = class(G,'S2Grid');
     
 

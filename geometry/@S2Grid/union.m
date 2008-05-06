@@ -21,10 +21,6 @@ for i = 1:numel(varargin)
     s.theta = [s.theta,s2.theta];
     s.rho = [s.rho,s2.rho];
     s.Grid = [reshape(s.Grid,1,[]),reshape(s2.Grid,1,[])];
-    s.options = {};
-    if check_option(s.options,'hemisphere') && ...
-        check_option(s2.options,'hemisphere')
-      s.options = {'hemisphere'};
-    end
+    s.options = {s.options{:},s2.options{:}};
   end
 end

@@ -4,4 +4,4 @@ function plot(s,varargin)
 m = [Miller(1,0,0,s),Miller(0,0,1,s),Miller(0,1,1,s)];
 
 
-plot(m,'All',varargin{:},'hemisphere','both');
+plot(m,'All',varargin{:},'north','south');

@@ -16,7 +16,7 @@ function [ind,d] = find(S2G,v,epsilon)
 if check_option(S2G.options,'INDEXED')
   
   d = [];
-  if check_option(S2G.options,'HEMISPHERE'), v = [v(:),-v(:)]; end
+  if check_option(S2G.options,'reduced'), v = [v(:),-v(:)]; end
 
   [ytheta,yrho,iytheta,prho,rhomin] = getdata(S2G);
   yrho = yrho - rhomin;
@@ -27,7 +27,7 @@ if check_option(S2G.options,'INDEXED')
     ind = S2Grid_find(ytheta,int32(iytheta),...
       yrho,prho,xtheta,xrho);
     
-    if check_option(S2G.options,'HEMISPHERE')    
+    if check_option(S2G.options,'reduced')    
       ind = reshape(ind,[],2);
 %      for i = 1:size(ind,1)
 %        d = abs(dot(S2G.Grid(ind(i,:)),v(i)));
@@ -45,7 +45,7 @@ if check_option(S2G.options,'INDEXED')
     ind = S2Grid_find_region(ytheta,int32(iytheta),...
       yrho,prho,xtheta,xrho,epsilon);
     
-    if check_option(S2G.options,'HEMISPHERE')    
+    if check_option(S2G.options,'reduced')    
       ind = ind(:,1:size(v,1)) | ind(:,size(v,1) + 1:end);
     end
   end

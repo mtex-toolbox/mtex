@@ -80,7 +80,7 @@ try
     all(rh>=-360) && all(rh<=720));
 
   % specimen directions
-	r = S2Grid(sph2vec(th,rh),'hemisphere');
+	r = S2Grid(sph2vec(th,rh),'reduced');
   
   % crystal direction
   h = string2Miller(fname);

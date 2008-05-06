@@ -1,4 +1,4 @@
-function NS3G = plot_zero_range(pf,varargin)
+function plot_zero_range(pf,varargin)
 % implements the zero range method
 %
 %% Input
@@ -18,7 +18,7 @@ function NS3G = plot_zero_range(pf,varargin)
 global mtex_path;
 
 % plotting grid
-S2G = S2Grid('PLOT','hemisphere',varargin{:});
+S2G = S2Grid('PLOT','reduced',varargin{:});
 % transform in polar coordinates -> output nodes
 [out_theta,out_rho] = polar(S2G);
 out_theta= fft_theta(out_theta);
