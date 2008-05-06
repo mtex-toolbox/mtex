@@ -52,10 +52,13 @@ plot(pf_rotated,'reduced')
 
 %% Recalculate ODF
 %
-% we use here the option 'background' to specify the approximative
-% background radiation and to increase the accuracy of the reconstruction
+% We use here the option 'background' to specify the approximative
+% background radiation and to increase the accuracy of the reconstruction.
+% Furthermore, we have seen from the pole figures that the ODF is quit
+% sharp and hence using the zero range method reduces the computational
+% time.
 
-odf = calcODF(pf_corrected,'background',10)
+odf = calcODF(pf_corrected,'background',10,'zero_range')
 
 %% Error analysis
 
