@@ -91,9 +91,9 @@ plot(Miller(1,3,-4,4,CS),'all','FontSize',15,'reduced')
 
 %Definition:
 
-S2G = S2Grid('equispaced','points',1000,'hemisphere');
+S2G = S2Grid('equispaced','points',1000,'reduced');
 S2G = S2Grid(v);
-S2G = S2Grid('equispaced','RESOLUTION',5*degree,'hemisphere');
+S2G = S2Grid('equispaced','RESOLUTION',5*degree,'reduced');
 S2G = S2Grid ('regular','points',[72,17],'MAXTHETA',80 * degree);
 
 % Basic Functions:
@@ -102,7 +102,7 @@ S2G = delete(S2G,zvector);
 union(S2G,S2Grid(-zvector));
 rotate(S2G,axis2quat(xvector,45*degree));
 subGrid(S2G,zvector,10*degree);
-refine(S2Grid('equispaced','resolution',1000,'hemisphere'));
+refine(S2Grid('equispaced','resolution',1000,'reduced'));
 GridLength(S2G);
 getResolution(S2G);
 getRho(S2G);
@@ -323,7 +323,7 @@ plot(rec,'RADIALLY','center',modalorientation(rec));
 %% 
 
 close;figure('position',[46   171   752   486]);
-plot(santafee,'sections',18,'gray','contourf','plain','FontSize',10,'alpha','silent');
+plot(santafee,'sections',18,'gray','contourf','projection','plain','FontSize',10,'alpha','silent');
 
 %% 
 

@@ -13,7 +13,7 @@
 
 cs = symmetry('-3m'); ss = symmetry('-1');
 odf = fibreODF(Miller(1,1,0),zvector,cs,ss)
-pf = simulatePoleFigure(odf,Miller(1,0,0),S2Grid('equispaced','hemisphere'));
+pf = simulatePoleFigure(odf,Miller(1,0,0),S2Grid('equispaced','reduced'));
 
 
 %% Plot Types
@@ -146,8 +146,7 @@ figure(2)
 plotpdf(.5*odf+.5*uniformODF(cs,ss),[Miller(1,0,0),Miller(1,1,1)],...
   'colorrange','equal','reduced');
 
-%% % 3d plot is extern
-if check_option(varargin,'3d'), plot3d(S2G,varargin{:});return; end
+%%
 figure(1)
 plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'reduced')
 figure(2)
