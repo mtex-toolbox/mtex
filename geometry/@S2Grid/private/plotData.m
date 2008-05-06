@@ -29,7 +29,13 @@ elseif check_option(varargin,'SMOOTH')
   if check_option(varargin,'interp')   % interpolated
 
     pcolor(X,Y,data);
-    if numel(data) >= 500, shading interp;end
+    if numel(data) >= 500
+     if length(unique(data))<50
+       shading flat;
+     else
+       shading interp;
+     end
+    end
     %set(gcf,'Renderer','OpenGL');
     set(gcf,'Renderer','zBuffer');
     

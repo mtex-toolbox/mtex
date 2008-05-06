@@ -62,10 +62,10 @@ plot(santafee,'alpha','sections',18,...
 %%
 close all;
 % true ODF
-plotFourier(santafee,'bandwidth',32)
-hold on
+plotFourier(santafee,'bandwidth',16)
+hold all
 % Without ghost correction:
-plotFourier(rec,'bandwidth',32,'color','g')
+plotFourier(rec,'bandwidth',16)
 % With ghost correction:
-plotFourier(rec2,'bandwidth',32,'color','r')
+plotFourier(rec2,'bandwidth',16)
 legend({'true ODF','without ghost correction','with ghost correction'})
