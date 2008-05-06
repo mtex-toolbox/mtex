@@ -19,11 +19,11 @@ function  varargout = plot(S2G,varargin)
 %  FLIPUD   - FLIP plot upside down
 %  FLIPLR   - FLIP plot left to rigth
 %  PROJECTION - {EAREA}, EDIST, PLAIN
-%  HEMISPHERE - {NORTH | SOUTH | BOTH | IDENTIFIED}
 %
 %% Flags
 %  NORTH       - plot only points on the north hemisphere (default)
 %  SOUTH       - plot only points on the southern hemisphere
+%  REDUCED     - project all data to nothern hemisphere
 %  DOTS        - single points (default) 
 %  SMOOTH      - interpolated plot 
 %  CONTOUR     - contour plot
@@ -44,7 +44,7 @@ if check_option(varargin,'3d'), plot3d(S2G,varargin{:});return; end
 
 washold = ishold;
 if ~check_option(varargin,'axis'), newplot;end
-if isempty(get(gca,'children'))
+if isempty(get(gca,'children')) || all(strcmp(get(get(gca,'children'),'type'),'text'))
   if isappdata(gcf,'projection'), rmappdata(gcf,'projection');end
   if isappdata(gcf,'hemisphere'), rmappdata(gcf,'hemisphere');end
 end
@@ -109,21 +109,21 @@ if isappdata(gcf,'hemisphere'),
     
   hemisphere = getappdata(gcf,'hemisphere');
   
-elseif check_option(varargin,{'reduced','plain','identified'})
+elseif check_option(varargin,{'reduced','plain'})
   
-  hemisphere = 'identified';
+  hemisphere = 'reduced';
   
-elseif check_option(varargin,'hemisphere','char')
+elseif check_option(varargin,{'north','south','reduced'})
   
-  hemisphere = get_option(varargin,'hemisphere','char');
+  hemisphere = extract_option(varargin,{'north','south','reduced'});
    
-elseif check_option(S2G,'hemisphere','char')
+elseif check_option(S2G,{'north','south','reduced'})
   
-  hemisphere = get_option(S2G(1).options,'hemisphere');
+  hemisphere = extract_option(S2G(1).options,{'north','south','reduced'});
 
 elseif max(theta(:)) > pi/2+0.001 
   
-  hemisphere = 'both';
+  hemisphere = {'north','south'};
   
 else
   
@@ -138,8 +138,8 @@ bounds = [0,0,0,0];
 
 %% Northern Hemisphere
 
-if any(strcmpi(hemisphere,{'north','both','identified'}))
-  if strcmp(hemisphere,'identified')
+if any(strcmpi(hemisphere,'north')) || any(strcmpi(hemisphere,'reduced'))
+  if strcmp(hemisphere,'reduced')
     ind = true(size(theta));    
   else
     ind = theta <= pi/2+0.001;
@@ -150,7 +150,7 @@ end
 
 %% Southern Hemisphere
 
-if any(strcmpi(hemisphere,{'south','both'}))
+if any(strcmpi(hemisphere,'south'))
   ind = theta >= pi/2-0.001;
   bounds = plotHemiSphere(pi-submatrix(theta,ind),submatrix(rho,ind),...
     submatrix(data,ind),bounds(3),varargin{:});
@@ -207,6 +207,9 @@ if ~check_option(varargin,{'PLAIN','annotate'})
   if (isempty(rho) || isnull(mod(rho(1)-rho(end),2*pi)) || ...
       ~(check_option(varargin,{'CONTOUR','SMOOTH'})))
     circle(bounds(1)+offset+bounds(3)/2,bounds(2)+bounds(4)/2,bounds(3)/2);
+    
+    if check_option(varargin,'grid'), polarGrid(offset,varargin{:});end
+    
   else
     torte(X+offset,Y);
   end
@@ -214,10 +217,23 @@ if ~check_option(varargin,{'PLAIN','annotate'})
 end
 bounds(3) = bounds(3) + offset;
 
-%% Plot Circle
-function circle(x,y,r)
+%% Plot Grid
+function polarGrid(offset,varargin)
 
-rectangle('Position',[x-r,y-r,2*r,2*r],'Curvature',[1,1]);
+theta = [60 30 90 90 90 90 90 90 90 90].*degree;
+rho = [0 0 0 180 90 270 45 225 135 315] .*degree;
+
+[X,Y] = projectData(theta,rho,varargin{:});
+
+circle(offset,0,X(1),'LineStyle',':','edgecolor',[0.4 0.4 0.4]);
+circle(offset,0,X(2),'LineStyle',':','edgecolor',[0.4 0.4 0.4]);
+line(offset+reshape(X(3:end),2,[]),reshape(Y(3:end),2,[]),'LineStyle',':','color',[0.4 0.2 0.4]);
+
+
+%% Plot Circle
+function circle(x,y,r,varargin)
+
+rectangle('Position',[x-r,y-r,2*r,2*r],'Curvature',[1,1],varargin{:});
 
 %% Plot Tort
 function torte(X,Y)

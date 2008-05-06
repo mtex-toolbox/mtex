@@ -85,7 +85,7 @@ clear ghtheta; clear ghrho;
 
 % extract kernel Fourier coefficents
 A = getA(psi);
-if check_option(getr(pf(1)),'HEMISPHERE')
+if check_option(getr(pf(1)),'reduced')
   A(2:2:end) = 0; 
 else
   warning('Flag HEMISPHERE not set in PoleFigure data!');

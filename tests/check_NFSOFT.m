@@ -13,7 +13,7 @@ L = 16;
 %h = [xvector,-xvector,yvector];
 
 qq = quaternion(SO3Grid(50));
-h = vector3d(S2Grid('equispaced','points',100,'hemisphere'));
+h = vector3d(S2Grid('equispaced','points',100,'reduced'));
 
 progress(0,length(qq));
 

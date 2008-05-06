@@ -18,8 +18,8 @@
 S2G = S2Grid([xvector,yvector]);      % specify points directly
 
 % equidistributions
-S2G = S2Grid('equispaced','points',100,'hemisphere');  % specified by number of points
-S2G = S2Grid('equispaced','RESOLUTION',5*degree,'hemisphere');  % specified by resolution
+S2G = S2Grid('equispaced','points',100,'reduced');  % specified by number of points
+S2G = S2Grid('equispaced','RESOLUTION',5*degree,'reduced');  % specified by resolution
 
 % regular grids
 S2G = S2Grid('regular','points',[72,19]); % specified by number of theta and rho steps
@@ -32,5 +32,5 @@ S2G = S2Grid('equispaced','points',100,'MAXTHETA',75*degree);  % specifiy maximu
 %% Plots
 
 %set(gcf,'position',[100,100,300,400])
-plot(S2Grid('equispaced','points',100,'hemisphere'))  % plot grid of nodes
+plot(S2Grid('equispaced','points',100,'reduced'))  % plot grid of nodes
 

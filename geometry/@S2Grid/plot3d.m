@@ -45,7 +45,7 @@ end
 if check_option(varargin,'GRAY'),colormap(flipud(colormap('gray'))/1.2);end
 
 %% 3d plot
-sphere3d(data.',-pi,pi,-pi/2,pi/2,10,.4,'surf','spline',.001);
+sphere3d(data.',-pi,pi,-pi/2,pi/2,10,1.5,'surf','spline',.001);
 shading interp
 c = caxis;
 arrow3d(zeros(3),eye(3)*15,15,'cylinder',[0.15,0.15]);

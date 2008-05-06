@@ -35,6 +35,7 @@ ind = true(GridLength(S3G),1);
 % which pole figures to check
 ipf = get_option(varargin,'zero_range',1:length(pf),'double');
 
+  
 % loop over pole figures
 for ip = ipf
 
@@ -43,10 +44,12 @@ for ip = ipf
   % kernel used for calculation
   k = kernel('de la Vallee Poussin','halfwidth',...
     get_option(varargin,'zr_halfwidth',...
-    max([2.5*degree,2*getResolution(S3G),2*getResolution(pf(ip))])));
+    max([1.5*degree,2*getResolution(S3G),2*getResolution(pf(ip))])));
   
   % legendre coefficents
   Al = getA(k); Al(2:2:end) = 0;
+  bw = min(200,length(Al));
+  Al = Al(1:bw);
     
   % in - nodes to become r
   [in_theta,in_rho] = polar(pf(ip).r);
@@ -64,27 +67,44 @@ for ip = ipf
   bg = get_option(varargin,'zr_bg',delta * max(pf(ip).data(:)));
   if length(bg)>1, bg = bg(ip);end
   c = (get_option(varargin,'zr_factor',10)*(pf(ip).data > bg)-1)./c;
-    
+
+  % approximation grid
+  r = S2Grid('regular','resolution',1*degree,'reduced');
+  size_r = GridSize(r);
+  [r_theta,r_rho] = polar(r);
+  r_theta = fft_theta(r_theta);
+  r_rho   = fft_rho(r_rho);
+  r = [reshape(r_rho,1,[]);reshape(r_theta,1,[])];
+
+  % evaluate zero ranges at approximation grid
+  f = run_linux([mtex_path,'/c/bin/odf2pf'],'EXTERN',gh,r,c,Al);
+  
   % loop over symmetries
   for is = 1:size(g,2)
-    
+
     fprintf('.');
     
-    % calculate specimen directions corresponding to grid 
-    r = g(ind,is) * pf(ip).h;
+    % calculate specimen directions corresponding to grid
+    ggh = g(ind,is) * pf(ip).h;
     
     % transform in polar coordinates -> output nodes
-    [out_theta,out_rho] = polar(r);
-    out_theta= fft_theta(out_theta);
-    out_rho  = fft_rho(out_rho);          
-    r  = [reshape(out_rho,1,[]);reshape(out_theta,1,[])];
-	  
-    f = run_linux([mtex_path,'/c/bin/odf2pf'],'EXTERN',gh,r,c,Al);
-    f = reshape(f,sum(ind),[]);
+    [theta,rho] = polar(ggh);
+    theta= fft_theta(theta);
+    rho  = fft_rho(rho);          
+
+    % project to northern hemisphere
+    rho(theta>0.25) = 0.5 + rho(theta>0.25);
+    rho(rho<0) = rho(rho<0) + 1;
+    theta(theta>0.25) = 0.5-theta(theta>0.25);
+    
+    % calculate indece
+    ir = 1+round(theta * 4 * (size_r(2)-1))*size_r(1) + ...
+      round(rho * size_r(1));
+    ir(ir>prod(size_r)) = prod(size_r);
     
     % ignore all orientations that are close to a pole figure value that is
     % zero
-    ind(ind) = all(f >= -0.1,2);
+    ind(ind) = all(f(ir) >= -0.1,2);
     assert(any(ind),'Zero range methods has canceled out all orientations. Chose better parameters');
   
   end
