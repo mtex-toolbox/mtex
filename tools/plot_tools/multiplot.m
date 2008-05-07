@@ -108,8 +108,11 @@ figure(clf);
 %set(gcf,'toolbar','none');
 
 % init statusbar
-sb = statusbar('drawing plots ...');
-set(sb.ProgressBar, 'Visible','on', 'Minimum',0, 'Maximum',nplots, 'Value',0, 'StringPainted','on');
+try
+  sb = statusbar('drawing plots ...');
+  set(sb.ProgressBar, 'Visible','on', 'Minimum',0, 'Maximum',nplots, 'Value',0, 'StringPainted','on');
+catch
+end
 
 fontsize = get_option(varargin,'FONTSIZE',13);
 
@@ -120,7 +123,7 @@ for i = 1:nplots
   Z = Y{i};
   X = x(i);
   plot(X,'DATA',Z,varargin{:},'axis',a(i));
-  set(sb.ProgressBar,'Value',i);
+  try, set(sb.ProgressBar,'Value',i);catch end
     
   if check_option(varargin,'MINMAX') 
     anotation(a(i),min(Z(:)),max(Z(:)),fontsize);
@@ -138,7 +141,7 @@ end
 scr =  length(colorrange) == 2;
 
 % invisible axes for adding a colorbar
-d = axes('visible','off','position',[0 0.1 1 0.8],...
+d = axes('visible','off','position',[0 0 1 1],...
   'tag','colorbaraxis','HandleVisibility','callback');
 setappdata(gcf,'colorbaraxis',d);
 
@@ -158,7 +161,7 @@ end
 if scr, setcolorrange(colorrange);end
 
 % clear statusbar
-statusbar;
+try, statusbar;catch,end
 
 set(gcf,'ResizeFcn',@(src,evt) figResize(src,evt,a));
 %set(gcf,'Position',get(gcf,'Position'));
