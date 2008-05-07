@@ -1,4 +1,4 @@
-function cb = mtexcolorbar(varargin)
+function cb = colorbar(varargin)
 % inserts a colorbar into a figure
 
 if strcmp(get(gcf,'tag'),'multiplot')
