@@ -31,9 +31,9 @@ if check_option(varargin,'type')
  type = get_option(varargin,'type');
  switch type
   case 'EBSD'
-    dscrpt = {'alpha','beta','gamma','phase'};
+    dscrpt = {'Alpha','Beta','Gamma','Phase'};
   case 'PoleFigure'
-    dscrpt = {'polar angle','azimuth angle','intensity','background'};
+    dscrpt = {'Polar Angle','Azimuth Angle','Intensity','Background'};
   otherwise
     disp('wrong option');
   return
@@ -46,7 +46,7 @@ end
 % window dimension
 w = 466;
 tb = 250; %table size
-if (~strcmp(type,'PoleFigure')) h = tb+355; else h = tb+300; end;
+if (~strcmp(type,'PoleFigure')), h = tb+355; else h = tb+300; end;
 dw = 10;
 cw = (w-3*dw)/4;
 
@@ -89,7 +89,7 @@ for k=1:length(dscrpt)
   'BackgroundColor',[1 1 1],...
   'String',cols ,...
    'Parent',h0,...
-  'Position', colspos);
+  'Position', colspos); %#ok<AGROW>
   set(col_nb{k},'Value',1+mod(k,4));
  end
 end
