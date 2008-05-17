@@ -67,9 +67,10 @@ F3 = Fourier(odf3,'order',4);
 % Let us compare the Fourier coefficients obtained by both methods.
 %
 
-plotFourier(odf2,'bandwidth',32,'color','b')
-hold on
-plotFourier(odf3,'bandwidth',32,'color','r')
+plotFourier(odf2,'bandwidth',32)
+hold all
+plotFourier(odf3,'bandwidth',32)
+hold off
 
 %% A Sythetic Example
 %
