@@ -9,6 +9,7 @@ ph = 270;
 
 %% last page
 handles.page4 = get_panel(w,h,ph);
+set(handles.page4,'visible','off');
 
 handles.preview = uicontrol(...
   'Parent',handles.page4,...

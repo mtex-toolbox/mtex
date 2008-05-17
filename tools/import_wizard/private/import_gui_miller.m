@@ -9,6 +9,7 @@ ph = 270;
 
 %% hkil page
 handles.page3 = get_panel(w,h,ph);
+set(handles.page3,'visible','off');
 
 uicontrol(...
   'String','Imported Pole Figure Data Sets',...
