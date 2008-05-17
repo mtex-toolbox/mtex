@@ -62,10 +62,16 @@ plot(santafee,'alpha','sections',18,...
 %%
 close all;
 % true ODF
-plotFourier(santafee,'bandwidth',16)
+plotFourier(santafee,'bandwidth',32)
+% keep plot for adding the next plots
 hold all
+
 % Without ghost correction:
-plotFourier(rec,'bandwidth',16)
+plotFourier(rec,'bandwidth',32)
+
 % With ghost correction:
-plotFourier(rec2,'bandwidth',16)
+plotFourier(rec2,'bandwidth',32)
+
 legend({'true ODF','without ghost correction','with ghost correction'})
+% next plot command overwrites plot
+hold off
