@@ -10,7 +10,7 @@ type = get_option(varargin,'type');
 
 %% crystal system
 handles.page2 = get_panel(w,h,ph);
-
+set(handles.page2,'visible','off');
 
 cs = uibuttongroup('title','Crystal Coordinate System',...
   'Parent',handles.page2,...
