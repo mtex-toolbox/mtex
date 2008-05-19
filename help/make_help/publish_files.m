@@ -4,7 +4,7 @@ function publish_files(files,in_dir,varargin)
 % set publishing options
 poptions.format = 'html';
 poptions.useNewFigure = false;
-poptions.stopOnError = false;
+if ~newer_version(7.6), poptions.stopOnError = false;end
 poptions.stylesheet = get_option(varargin,'Stylesheet','');
 poptions.evalCode = check_option(varargin,'evalCode');
 poptions.outputDir = get_option(varargin,'out_dir','.');
