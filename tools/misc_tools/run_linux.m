@@ -34,6 +34,7 @@ global mtex_postfix_cmd;
 global mtex_machineformat;
 global mtex_logfile;
 global mtex_debug;
+global mtex_textmode;
 
 %% local flags
 inline = 0;
@@ -111,8 +112,15 @@ for i=1:nargin-1
 		fprintf(fid,'\n');
 		iname{i} = [];
 		
-	else
+  elseif mtex_textmode
+		vdisp(verbose,['  write extern: ',iname{i}]);
+		fprintf(fid,'%s: ',iname{i});
 		
+		d = varargin{i}; %#ok<NASGU>
+    fprintf(fid,'%s\n',[mtex_tmppath,name,'_',iname{i},'.txt']);
+    save([mtex_tmppath,name,'_',iname{i},'.txt'],'d','-ascii','-double');
+   
+  else
 		vdisp(verbose,['  write extern: ',iname{i}]);
 		fprintf(fid,'%s: ',iname{i});
 		
@@ -138,7 +146,7 @@ if isunix
     '.txt 2>> ',mtex_logfile,mtex_postfix_cmd];
 else
   cmd = [mtex_prefix_cmd,prg,'.exe ',mtex_tmppath,name,...
-    '.txt check',mtex_postfix_cmd];
+    '.txt',mtex_postfix_cmd];
 end
 if ~isempty(global_computer), cmd = ['ssh ',global_computer,' ',cmd];end
 
