@@ -41,6 +41,12 @@ layout = [2 3 1 4];
 
 pf = loadPoleFigure(fname,cs,ss,'layout',layout);
 
+%% using the import wizard
+% one may also use the import wizard to determine the right layout
+
+pf = loadPoleFigure(fname,cs,ss);
+
+
 %% plot data
 
 close; figure('position',[100,100,400,500]);
