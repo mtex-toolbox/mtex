@@ -47,7 +47,7 @@ mtex_logfile = [mtex_tmppath,'output_',host(1:end-1),'_',user(1:end-1),'.log'];
 % MTEX sometimes experences problems when printing the degree character
 % reenter the degree character here in this case
 global mtex_degree;
-mtex_degree = 'Â°';
+mtex_degree = '°';
 
 %% debugging
 % comment out to turn on debugging
@@ -110,7 +110,7 @@ for i = 1:length(toadd)
   p = [mtex_path,filesep,toadd{i}];
   addpath(p,0);
 end
-
+warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
 disp('MTEX toolbox (v0.4) loaded')
 
 %% raise help window
@@ -119,6 +119,13 @@ disp('MTEX toolbox (v0.4) loaded')
 function m = getmem
 % return total system memory in kb
 
-[r,s] = system('free');
-
-m = sscanf(s(strfind(s,'Mem:')+5:end),'%d',1);
+try
+  m = memory;
+  m = m.MemAvailableAllArrays / 1024;
+catch %#ok<CTCH>
+  [r,s] = system('free');
+  m = sscanf(s(strfind(s,'Mem:')+5:end),'%d',1);
+  if isempty(m)
+    m = 300 * 1024;
+  end
+end
