@@ -71,7 +71,7 @@ int main(int argc,char *argv[]){
   /*vpr_complex(plan.f,plan.M_total,"ndsft, vector f");*/
   P = (double*) malloc(sizeof(double)*lr);
   v_memcpy_complex2double(P,plan.f,lr);
-  f_out = check_fopen(f_out_name,"w");
+  f_out = check_fopen(f_out_name,"wb");
   fwrite(P,sizeof(double),lr,f_out);
   fclose(f_out);
 

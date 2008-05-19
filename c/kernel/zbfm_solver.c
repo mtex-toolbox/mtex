@@ -42,10 +42,10 @@ void zbfm_solver_iterate(zbfm_solver_plan *ths){
   
   fprintf(stdout,"start iteration\n");fflush(stdout);
 
-  time ( &rawtime );
-  timeinfo = localtime ( &rawtime );
-  fprintf(stderr,"date: %s", asctime (timeinfo) );
-  zbfm_print_flags(stderr,ths);
+  /* time ( &rawtime ); */
+/*   timeinfo = localtime ( &rawtime ); */
+/*   fprintf(stderr,"date: %s", asctime (timeinfo) ); */
+/*   zbfm_print_flags(stderr,ths); */
 
   zbfm_before_loop(ths->zbfm);
   
@@ -54,14 +54,14 @@ void zbfm_solver_iterate(zbfm_solver_plan *ths){
   fprintf(stdout,"error: %.4E ",ths->zbfm->error);fflush(stdout);
 
   /* output */
-  if (ths->flags & ODF_TEST)
-    fprintf(stderr,"%.4E ",odf_error(ths->odf,ths->zbfm->c_iter));
+  /* if (ths->flags & ODF_TEST) */
+/*     fprintf(stderr,"%.4E ",odf_error(ths->odf,ths->zbfm->c_iter)); */
   
-  if (ths->flags & RP_VALUES)
-    fprintf(stderr,"%.4E ",calculate_RP(ths->zbfm));
+/*   if (ths->flags & RP_VALUES) */
+/*     fprintf(stderr,"%.4E ",calculate_RP(ths->zbfm)); */
   
-  fprintf(stderr,"%.4E\n",ths->error_iter);
-  fflush(stderr);
+/*   fprintf(stderr,"%.4E\n",ths->error_iter); */
+/*   fflush(stderr); */
 
 
 
@@ -83,14 +83,15 @@ void zbfm_solver_iterate(zbfm_solver_plan *ths){
 
     /* check ODF error and output*/
     fprintf(stdout,"%.4E ",ths->error_iter);fflush(stdout);
-    if (ths->flags & ODF_TEST)
-      fprintf(stderr,"%.4E ",odf_error(ths->odf,ths->zbfm->c_iter));
+ 
+    /*     if (ths->flags & ODF_TEST) */
+/*       fprintf(stderr,"%.4E ",odf_error(ths->odf,ths->zbfm->c_iter)); */
 
-    if (ths->flags & RP_VALUES)
-      fprintf(stderr,"%.4E ",calculate_RP(ths->zbfm));
+/*     if (ths->flags & RP_VALUES) */
+/*       fprintf(stderr,"%.4E ",calculate_RP(ths->zbfm)); */
 	
-    fprintf(stderr,"%.4E\n",ths->error_iter);
-    fflush(stderr);
+/*     fprintf(stderr,"%.4E\n",ths->error_iter); */
+/*     fflush(stderr); */
 
     /* save result to disc */
     if (ths->flags & ODF_SAVE)
@@ -105,11 +106,11 @@ void zbfm_solver_iterate(zbfm_solver_plan *ths){
   printf("alpha: ");print_double(stdout,ths->zbfm->alpha_iter,ths->zbfm->NP);printf("\n");
 
   
-  time ( &rawtime );
-  timeinfo = localtime ( &rawtime );
-  fprintf(stderr,"\nalpha: ");print_double(stderr,ths->zbfm->alpha_iter,ths->zbfm->NP);
-  fprintf(stderr,"\ndate: %s\n", asctime (timeinfo) );
-  fflush(stderr);
+  /* time ( &rawtime ); */
+/*   timeinfo = localtime ( &rawtime ); */
+/*   fprintf(stderr,"\nalpha: ");print_double(stderr,ths->zbfm->alpha_iter,ths->zbfm->NP); */
+/*   fprintf(stderr,"\ndate: %s\n", asctime (timeinfo) ); */
+/*   fflush(stderr); */
 
 }
 

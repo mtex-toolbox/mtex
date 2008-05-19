@@ -12,7 +12,7 @@ int main(int argc,char *argv[]){
   char f_out_name[BUFSIZ];
   double *P;
   double *c;
-
+ 
   param_file_type param[Nparam] = 
     {{"gh:" ,"DATA_FILE" ,&plan.gh  ,&plan.lgh ,2*sizeof(double)},
      {"r:"  ,"DATA_FILE" ,&plan.r   ,&plan.lr  ,2*sizeof(double)},
@@ -23,7 +23,7 @@ int main(int argc,char *argv[]){
     
   FILE *f_param;
   FILE *f_out;
-
+ 
   if (argc>2)
     printf("\n ------ MTEX -- ODF to PDF calculation -------- \n");
 
@@ -32,7 +32,7 @@ int main(int argc,char *argv[]){
     printf("%s\n",argv[0]);
     abort();
   }
-  
+
   /* read parameter file */
   f_param = check_fopen(argv[1],"r");
   if (read_param_file(f_param,param,Nparam,argc==2)+1<Nparam){
@@ -49,16 +49,16 @@ int main(int argc,char *argv[]){
   }
   P = (double*) malloc(plan.lr*sizeof(double));
   plan.lA--; /*reduce lA*/
- 
-  /* perform pdf_trafo*/
-  pdf_init(&plan);
-  pdf_trafo(&plan,c,P);
   
-  /* save results */
-  f_out = check_fopen(f_out_name,"w");
+  /* perform pdf_trafo*/
+  pdf_init(&plan);  
+  pdf_trafo(&plan,c,P);
+
+   /* save results */
+  f_out = check_fopen(f_out_name,"wb");
   fwrite(P,sizeof(double),plan.lr,f_out);
   fclose(f_out);
-
+    
   /* free memory */
   free(plan.gh);
   free(plan.r);

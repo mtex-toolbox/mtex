@@ -374,7 +374,7 @@ inline void zbfm_residuum_one_step(zbfm_plan *ths,double tau){
 
     /* step 19 */
     /* alpha_i <- alpha_i talpha_i / denom */
-    ths->alpha_iter[ip] = ths->alpha_iter[ip]*ths->talpha_iter[ip]/denom;     
+    ths->alpha_iter[ip] = ths->alpha_iter[ip]*ths->talpha_iter[ip]/denom;
   }
   
   /* error -> ||u||_2^2 / ||P||_2^2 */
