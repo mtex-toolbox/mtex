@@ -21,7 +21,7 @@ function plotpdf(odf,h,varargin)
 %% See also
 % S2Grid/plot plot2all savefigure
 
-argin_check(h,{'Miller','vector3d'});
+argin_check(h,{'Miller','vector3d','cell'});
 if isa(h,'Miller'), h = set(h,'CS',getSym(odf));end
 
 % default options
