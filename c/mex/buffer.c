@@ -17,8 +17,12 @@
 #define	MOD3(A, B, C)	((A)-floor((A-C)/(B))*(B))
 #endif
 
+#if !defined(ROUND)
+#define	ROUND(A)	(floor((A)+0.5))
+#endif
+
 #if !defined(MOD0)
-#define	MOD0(A, B)	((A)-round((A)/(B))*(B))
+#define	MOD0(A, B)	((A)-ROUND((A)/(B))*(B))
 #endif
 
 #if !defined(DIST)

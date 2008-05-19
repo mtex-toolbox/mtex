@@ -91,7 +91,7 @@ int main(int argc,char *argv[]){
   for (m=0;m<M;m++)
     c[m] = creal(plan.f[m]);
 
-  f_out = check_fopen(f_out_name,"w");
+  f_out = check_fopen(f_out_name,"wb");
   fwrite(c,sizeof(double),M,f_out);
   fclose(f_out);
 

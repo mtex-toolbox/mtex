@@ -163,12 +163,12 @@ int main(int argc,char *argv[])
 
   /* save results */
   if (strlen(f_out_name1)>0){
-    f_out = check_fopen(f_out_name1,"w");
+    f_out = check_fopen(f_out_name1,"wb");
     fwrite(zbfm.c_iter,sizeof(double),zbfm.lc,f_out);
     fclose(f_out);
   }
   if (strlen(f_out_name2)>0){
-    f_out = check_fopen(f_out_name2,"w");
+    f_out = check_fopen(f_out_name2,"wb");
     fwrite(zbfm.alpha_iter,sizeof(double),zbfm.NP,f_out);
     fclose(f_out);
   }

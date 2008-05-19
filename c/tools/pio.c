@@ -59,7 +59,7 @@ int read_param_file(FILE *f_param,
 	if (!strcmp(in[i].format,"DATA_FILE")) { /* read input from seperate data file */
 	  	 
 	  sscanf(lp,"%s",f_name); lp = (char *)&line + strlen(f_name);
-	  f = check_fopen(f_name,"r");
+	  f = check_fopen(f_name,"rb");
 
 	  in[i].ldata[0] = fsize(f) / in[i].byte_size; 
 	  
@@ -71,9 +71,12 @@ int read_param_file(FILE *f_param,
 	  if (del_files) 
 	    unlink(f_name);
 	  else /* output */
-	    printf("%s read from file %s, size: %d \n",
-		   in[i].identifier,f_name,in[i].ldata[0]);
-	  
+	    {
+	    printf("%s read from file %s, size: %d x %d byte\n",
+		   in[i].identifier,f_name,in[i].ldata[0],in[i].byte_size);
+	    /*print_double(stdout,*(double **)in[i].data,in[i].ldata[0]);*/
+	    /*printf("\n");*/
+	    }
 	} else if (in[i].ldata==NULL) { /* read single formated input*/
 	  
 	  sscanf(lp,in[i].format,buff);

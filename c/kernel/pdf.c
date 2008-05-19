@@ -1,6 +1,7 @@
 #include <pdf.h>
 #include <util.h>
 #include <helper.h>
+#include <fftw3.h>
 /*#include <string.h>*/
 
 void extract_f_hat(nfsft_plan *ths, complex *f1_hat,complex *f2_hat)
@@ -55,6 +56,7 @@ void pdf_init_advanced(pdf_plan *ths,unsigned int flags)
     nfsft_precompute_x(&ths->plan_gh);
     ths->c         = ths->plan_gh.f;
     ths->P_hat     = ths->plan_gh.f_hat;
+
     nfsft_flags = nfsft_flags & (~NFSFT_MALLOC_F_HAT);
   }
   
@@ -129,7 +131,6 @@ void pdf_eval_adjoint(pdf_plan *ths, double *P)       /* P -> P_hat */
 
 void pdf_trafo(pdf_plan *ths, double *c, double *P)
 { 
-
   if (ths->flags & NO_TRAFO_GH)
     set_f_hat(&ths->plan_r,ths->P_hat,(complex*) c);
   else

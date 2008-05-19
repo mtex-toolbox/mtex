@@ -48,6 +48,13 @@ int main(int argc,char *argv[]){
   }
   fclose(f_param);
 
+  /* print_double(stdout,g,3*MM); */
+/*   printf("\n"); */
+/*   print_double(stdout,c,M); */
+/*   printf("\n"); */
+/*   print_double(stdout,A,L); */
+/*   printf("\n"); */
+
   /* check input data */
   if ((MM == 0) || (M == 0)) { 
     printf("Wrong parameters!");
@@ -68,9 +75,9 @@ int main(int argc,char *argv[]){
   for (m=0;m<3*MM;m++)
     plan.x[m] = g[m];
   
-    /* perform nfsoft_trafo*/ 
+  /* perform nfsoft_trafo*/ 
   nfsoft_adjoint(&plan);
-  
+
   /* save results */
   f_hat = (complex*) malloc((1+F_HAT_INDEX(L,L,L))*sizeof(complex));
 
@@ -90,7 +97,7 @@ int main(int argc,char *argv[]){
       }
     } 
 
-  f_out = check_fopen(f_out_name,"w");
+  f_out = check_fopen(f_out_name,"wb");
   fwrite(f_hat,sizeof(complex),1+F_HAT_INDEX(L,L,L),f_out);
   fclose(f_out);
 

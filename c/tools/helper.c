@@ -29,7 +29,7 @@ void print_int(FILE *f,int *x,int nx){
 
 void print_double(FILE *f,double *x,int nx){
   int i;
-  
+
   for (i=0;i<nx;i++){
     fprintf(f,"%.4E ",x[i]);
   }
