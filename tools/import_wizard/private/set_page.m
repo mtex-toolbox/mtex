@@ -15,9 +15,16 @@ else set(handles.finish,'enable','off');
   set(handles.next,'enable','on');
 end
 
-set(handles.tabs,'visible','off');
-set(handles.tabs(page),'visible','on');
+set(handles.tabs(1:end~=page),'visible','off');
+setall(handles.tabs(page),'visible','on');
 set(handles.name,'String',handles.pagename{page});
 
 
+function setall(ax,varargin)
 
+if iscell(ax), ax = cell2mat(ax);end
+try
+  setall(get(ax,'children'),varargin{:});
+catch
+end
+set(ax,varargin{:});
