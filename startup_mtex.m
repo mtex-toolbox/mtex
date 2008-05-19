@@ -47,7 +47,7 @@ mtex_logfile = [mtex_tmppath,'output_',host(1:end-1),'_',user(1:end-1),'.log'];
 % MTEX sometimes experences problems when printing the degree character
 % reenter the degree character here in this case
 global mtex_degree;
-mtex_degree = '°';
+mtex_degree = 'Â°';
 
 %% debugging
 % comment out to turn on debugging
