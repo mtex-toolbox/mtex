@@ -32,7 +32,7 @@ k = get_option(varargin,'kernel',...
 disp([' used kernel: ' char(k)]);
 
 %% exact calculation
-if check_option(varargin,'exact')  
+if check_option(varargin,'exact') || GridLength(g)<200  
   d = ones(1,GridLength(g)) ./ GridLength(g);  
   odf = ODF(g,d,k,...
     ebsd(1).CS,ebsd(1).SS,'comment',['ODF estimated from ',getcomment(ebsd(1))]);  
