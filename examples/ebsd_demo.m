@@ -75,10 +75,10 @@ hold off
 %% A Sythetic Example
 %
 % Simulate EBSD data from a given standard ODF
-
-fibre_odf = 0.5*uniformODF(cs,ss) + 0.5*fibreODF(Miller(1,0,0),zvector,cs,ss);
-plotodf(fibre_odf,'sections',9,'silent')
-ebsd = simulateEBSD(fibre_odf,1000)
+cs = symmetry('trigonal');
+fibre_odf = 0.5*uniformODF(cs,ss) + 0.5*fibreODF(Miller(0,0,0,1),zvector,cs,ss);
+plotodf(fibre_odf,'sections',6,'silent')
+ebsd = simulateEBSD(fibre_odf,10000)
 
 %% 
 % Estimate an ODF from the simulated EBSD data
@@ -88,7 +88,7 @@ odf = calcODF(ebsd)
 %%
 % plot the estimated ODF
 
-plotodf(odf,'sections',9,'silent')
+plotodf(odf,'sections',6,'silent')
 
 %%
 % calculate estimation error
@@ -99,7 +99,6 @@ calcerror(odf,fibre_odf,'resolution',5*degree)
 % simulate 10, 100, ..., 1000000 single orientations of the Santafee sample ODF, 
 % estimate an ODF from these data and calcuate the estimation error
 
-odf = {};
 for i = 1:6
 
   ebsd = simulateEBSD(fibre_odf,10^i);
@@ -111,7 +110,7 @@ end
 %% 
 % plot the error in dependency of the number of single orientations
 close all;
-semilogx(10.^(1:6),e)
+semilogx(10.^(1:length(e)),e)
 
 % %% 
 % % plot Fourier coefficients in dependency of the 
