@@ -110,12 +110,15 @@ calcerror(rec_cor,odf,'Fourier','L2')
 % true ODF
 close all;
 plotFourier(odf)
-hold on
+
+% keep plotting windows and add next plots
+hold all
 
 % Without ghost correction:
-plotFourier(rec,'color','g')
+plotFourier(rec)
 
 % with ghost correction
-plotFourier(rec_cor,'color','r')
+plotFourier(rec_cor)
 legend({'true ODF','without ghost correction','with ghost correction'})
+% next plot command overwrites plot window
 hold off

@@ -189,7 +189,9 @@ plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'reduced')
 colorbar
 plot2all([xvector,yvector,zvector],'data',{'X','Y','Z'},'FontSize',14);
 
-
+%%
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'reduced')
+colorbar('south')
 
 %% Exporting Plots
 %
