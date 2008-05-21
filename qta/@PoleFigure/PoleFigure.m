@@ -44,6 +44,9 @@ else
   % make definitions more robust
   P.h = set(P.h,'CS',P.CS);
   P.r = set_option(P.r,'reduced');
+  
+  assert(numel(P.data) == sum(GridLength(P.r)));
+
 end
 superiorto('quaternion');
 P = class(P,'PoleFigure');
