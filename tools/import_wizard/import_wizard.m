@@ -21,7 +21,7 @@ if ~check_option(varargin,'type')
                 'fus',3,...
                 'ffs',1,...
                 'ListString',typ);
-    if ~isempty(a) import_wizard('type',typ{a});end;
+    if ~isempty(a), import_wizard('type',typ{a});end;
   end
 else
   % init global variable appdata
@@ -62,7 +62,7 @@ else
         '(3/4) Set Miller Indizes',...
         '(4/4) Summary'};
  end
-  set_page(handles,appdata.page);
+ set_page(handles,appdata.page);
  
 end
 
