@@ -104,7 +104,7 @@ for i = 1:6
   ebsd = simulateEBSD(fibre_odf,10^i);
   odf = calcODF(ebsd);
   e(i) = calcerror(odf,fibre_odf,'resolution',2.5*degree);
-  
+
 end
 
 %% 
