@@ -15,7 +15,7 @@ function pf = loadPoleFigure_juelich(fname,varargin)
 fid = efopen(fname);
 fgetl(fid); 
 l = fgetl(fid);
-assert(strcmp(l,'     alpha      beta intensity'));
+mtex_assert(strcmp(l,'     alpha      beta intensity'));
 fclose(fid);
 
 % call txt interface with the right parameters

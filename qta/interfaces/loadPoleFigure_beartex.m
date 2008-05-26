@@ -29,7 +29,7 @@ while ~feof(fid)
 
     % read crystal symmetry
     s = str2num(fgetl(fid)); %#ok<ST2NM>
-    assert(all(s(1:6)>0 & s(1:6)<180));
+    mtex_assert(all(s(1:6)>0 & s(1:6)<180));
 
 %% guess crystal symmetry
     laue = 'triclinic';
@@ -55,25 +55,25 @@ while ~feof(fid)
     h = str2double(s(1:4));
     k = str2double(s(5:7));
     l = str2double(s(8:10));
-    assert(all(round([h k l]) == [h k l] & [h k l]>=0 & [h k l]<10));
+    mtex_assert(all(round([h k l]) == [h k l] & [h k l]>=0 & [h k l]<10));
     h = Miller(h,k,l,cs);
 
 %% generate specimen directions    
     theta(1) = str2double(s(11:15));
     theta(2) = str2double(s(21:25));
     theta(3) = str2double(s(16:20));
-    assert(all(theta>=0 & theta <= 90));
+    mtex_assert(all(theta>=0 & theta <= 90));
     
     theta = (theta(1):theta(2):theta(3))*degree;
-    assert(~isempty(theta));
+    mtex_assert(~isempty(theta));
     
     rho(1) = str2double(s(26:30));
     rho(2) = str2double(s(36:40));
     rho(3) = str2double(s(31:35));
-    assert(all(rho>=0 & rho <= 360));
+    mtex_assert(all(rho>=0 & rho <= 360));
     
     rho = (rho(1):rho(2):rho(3))*degree;
-    assert(~isempty(rho));
+    mtex_assert(~isempty(rho));
     r = S2Grid('theta',theta,'rho',rho,'reduced');
 	
 %% read data    

@@ -76,7 +76,7 @@ try
   d  = d(:,layout(3));
   
   if all(th<=0), th = -th;end
-  assert(length(d)>10 && all(th>=0 & th <= pi) && ...
+  mtex_assert(length(d)>10 && all(th>=0 & th <= pi) && ...
     all(rh>=-360) && all(rh<=720));
 
   % specimen directions
