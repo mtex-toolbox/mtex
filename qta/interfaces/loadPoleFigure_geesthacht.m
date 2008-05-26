@@ -17,10 +17,10 @@ d = textscan(fid,'%n %n %*n %n %n %n %*n %*n %*n %*n %*n:%*n',...
 fclose(fid);
 
 % identify data
-assert(all(d{1}.'==(1:length(d{1}))));
+mtex_assert(all(d{1}.'==(1:length(d{1}))));
 d = {d{2:5}};
-assert(~isempty(d{1})); % all items have the same length! (equal(cellfun('length',d),1))
-assert(all(d{2}>=0 & d{2}<=90 & d{3}>=-370 & d{3}<=370));
+mtex_assert(~isempty(d{1})); % all items have the same length! (equal(cellfun('length',d),1))
+mtex_assert(all(d{2}>=0 & d{2}<=90 & d{3}>=-370 & d{3}<=370));
 
 pos = 1;
 pf = [];
@@ -35,4 +35,4 @@ while pos <= length(d{1})
   
 end
 
-assert(GridLength(r)>=5);
+mtex_assert(GridLength(r)>=5);

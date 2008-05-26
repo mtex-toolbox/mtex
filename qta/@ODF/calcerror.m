@@ -26,7 +26,7 @@ if isa(odf2,'PoleFigure'), e = calcerror(odf2,odf1,varargin{:}); return;end
 % check for equal symmetries
 error(nargchk(2, inf, nargin))
 [CS1,SS1] = getSym(odf1); [CS2,SS2] = getSym(odf2);
-assert(CS1 == CS2 && SS1 == SS2,'Input ODFs does not have same symmetry.');
+mtex_assert(CS1 == CS2 && SS1 == SS2,'Input ODFs does not have same symmetry.');
 
 % Fourier based algorithm
 if check_option(varargin,'Fourier') && check_option(varargin,'L2')

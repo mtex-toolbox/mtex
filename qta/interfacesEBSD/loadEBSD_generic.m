@@ -80,7 +80,7 @@ try
   beta  = d(:,layout(2))*dg;
   gamma = d(:,layout(3))*dg;
   
-  assert(all(beta >=0 & beta <= pi & alpha >= -2*pi & alpha <= 4*pi & gamma > -2*pi & gamma<4*pi));
+  mtex_assert(all(beta >=0 & beta <= pi & alpha >= -2*pi & alpha <= 4*pi & gamma > -2*pi & gamma<4*pi));
   
   % get Euler angles option 
   bunge = set_default_option(...

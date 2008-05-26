@@ -22,7 +22,7 @@ try
   % ckeck 18th line
   % ~isempty(strfind(l,'Start'))
   l = fgetl(fid);
-  assert(~isempty(strfind(l,'Start')) ...
+  mtex_assert(~isempty(strfind(l,'Start')) ...
     && ~isempty(strfind(l,'End'))...
     && ~isempty(strfind(l,'Step')));
   
@@ -36,7 +36,7 @@ try
   r = S2Grid('theta',theta,'rho',rho(1:end-1),'reduced');
   
   % one free line
-  assert(isempty(fgetl(fid)));
+  mtex_assert(isempty(fgetl(fid)));
   
   % read hkl
   h = string2Miller(fgetl(fid));
@@ -49,7 +49,7 @@ try
   d = fscanf(fid,'%e',[length(theta)+1,length(rho)]);
   d = d(2:end,:);
   
-  assert(all(size(d.')==GridSize(r)));
+  mtex_assert(all(size(d.')==GridSize(r)));
   
   fclose(fid);
   pf = PoleFigure(h,r,d.',symmetry('cubic'),symmetry,'superposition',c,varargin{:}); 
