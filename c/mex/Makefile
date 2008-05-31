@@ -1,7 +1,7 @@
 #------ Pathes ---------------------------------------------------------------
 MATLABPATH ?= /opt/matlab
 INSTALLPATH ?= ../../geometry
-MEXFLAGS ?= -largeArrayDims
+MEXFLAGS ?= -compatibleArrayDims#-largeArrayDims
 
 # ----- NFFT library ---------------------------------------------------------
 
