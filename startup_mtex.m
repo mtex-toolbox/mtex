@@ -12,7 +12,7 @@ function startup_mtex
 %% file extensions to be associated with MTEX
 % add here your pole figure and EBSD data file extensions 
 global mtex_ext_polefigures;
-mtex_ext_polefigures = {'.exp','.XPa','.cns','.cnv', '.ptx','.pf'};
+mtex_ext_polefigures = {'.exp','.XPa','.cns','.cnv', '.ptx','.pf','.xrdml'};
 global mtex_ext_ebsd;
 mtex_ext_ebsd = {'.ebsd'};
 
@@ -95,6 +95,21 @@ mtex_data_path = [mtex_path filesep 'data'];
 global mtex_startup_dir;
 mtex_startup_dir = pwd;
 
+%% compatibility issues
+warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
+
+%% check for search path
+
+% check wether mtex_path is in search path
+cellpath = regexp(path,':','split');
+if ~any(strcmp(mtex_path,cellpath))
+  addpath(mtex_path);
+  disp('Permanently add MTEX to the MATLAB search path.');
+  if ~savepath
+    warning('The MATLAB search path could not be saved! Please save the modified MATLAB search path manually!');
+  end
+end
+
 %% setup search path 
 toadd = {'',...
   'qta','qta/interfaces','qta/interfaces/tools',...
@@ -110,12 +125,19 @@ for i = 1:length(toadd)
   p = [mtex_path,filesep,toadd{i}];
   addpath(p,0);
 end
-warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
+
+
+%% check installation
+check_installation;
+
+
+%% finish
 disp('MTEX toolbox (v0.4) loaded')
 
-%% raise help window
 %web([mtex_path '/help/html/mtex_top.html'],'-helpbrowser')
 
+
+%% --------- private functions ----------------------
 function m = getmem
 % return total system memory in kb
 
