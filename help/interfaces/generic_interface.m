@@ -44,7 +44,7 @@ pf = loadPoleFigure(fname,cs,ss,'layout',layout);
 %% using the import wizard
 % one may also use the import wizard to determine the right layout
 
-pf = loadPoleFigure(fname,cs,ss);
+pf2 = loadPoleFigure(fname,cs,ss);
 
 
 %% plot data
