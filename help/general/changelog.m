@@ -1,6 +1,35 @@
 %% MTEX Changelog
 %
 %
+%% MTEX 0.5 -
+%
+% *MTEX binaries for Windows, Linux, and Max OSX*
+%
+% MTEX ships now with binaries for Windows, Linux, and Max OSX. This makes
+% in unnecessary to install any additional library and to compile the toolbox.
+%
+% *New Functions*
+%
+% * new PoleFigure interface for xrdml data
+% * new plotting option north, south for spherical plots 
+% * Miller indeces and specimen directions can now be plotted directly into
+% pole figures or inverse pole figures.
+% * improved colorbar handling
+%
+% *Incompatible Changes With Previous Releases*
+%
+% * The flag *hemishpere* in <S2Grid_S2Grid.html S2Grid> has been replaced
+% by *north*, *south*, and *reduced* making it more consistent with the
+% plotting routine.
+%
+% *Bug Fixes*
+%
+% * Fixed zero range method
+% * Fixed automatic ghost correction
+% * Fixed some loadPoleFigure
+% * Many other bug fixes.
+% 
+%
 %% MTEX 0.4 - 07.04.2008
 %
 % *Speed Improvments*
@@ -49,6 +78,7 @@
 % manualy if desired
 % * Crystal symmetry *triclinic* is not called *tricline* anymore.
 %
+%
 %% MTEX 0.3 - 22.10.2007
 %
 % * new function [[ODF_fourier.html,fourier]] to calculate the
@@ -70,6 +100,7 @@
 % * new plot option _logarithmic_ 
 % * many bugfixes
 %
+%
 %% MTEX 0.2 - 01.07.2007
 %
 % * new functions [[ODF_textureindex.html,textureindex]], [[ODF_entropy.html,entropy]], [[ODF_volume.html,volume]]
@@ -77,6 +108,7 @@
 % * improved installation
 % * new options for plotting routines for specific ODF sections
 % * many bugfixes
+%
 %
 %% MTEX 0.1 - 01.04.2007
 %

@@ -1,90 +1,44 @@
 %% MTEX Installation Guide
 %
 % 
-%% Source
+%% Download
 % 
-% The source code of the MTEX toolbox is available at:
+% The MTEX toolbox is available for Windows, Linux and MAC-OSX at:
 % <http://code.google.com/p/mtex/>
 % 
-%% Linux /  BSD
-%
-% For running the MTEX toolbox a Linux or BSD operating system is
-% required. Recommended distributions are <http://www.ubuntu.com Ubuntu>,
-% <http://debian.org Debian> and <http://opensuse.org SuSe>.
-%
-%% MAC 
-%
-% The MTEX toolbox has been succesfully tested running under MAC OSX (Intel as well as 
-% PowerPC). When compiling the NFFT uder MAX OSX there is an isue with 
-% linking static libraries. However, this effects only the files contained 
-% in the applications directory of the NFFT. You might want to exclude them
-% from compiling since they are not needed for MTEX.
-
-%% Compiler
-%
-% In order to install the MTEX toolbox you will have to compile
-% it. Therefore you need a standard C compiler <http://gnu.gcc.org gcc>
-% and the *make* utility. You may also need the package named *build-essentials*. 
-% All these components can be easily installed using
-% your favorite package manager.
 %
 %% MATLAB 
 %
 % Since MTEX is a MATLAB toolbox <http://www.mathworks.com MATLAB> 
 % has to be installed in order to use MTEX. So far the MTEX toolbox 
-% has been test with MATLAB versions 6 and higher.
+% has been tested with MATLAB versions 7.1 and higher.
 %
-%% FFTW 
 %
-% The FFTW is one of the most popular fast Fourier transform libraries.
-% You can install using the package manager of your Linux distribution. 
-% The package is called fftw3 or similar. You will also need to install 
-% the header (developer) files. Alternatively you can download the latest 
-% source directly from <http://www.fftw.org> and compile it on your computer.
+%% Personal Installation
 %
-%% NFFT 
-% 
-% The NFFT is a C library for non equispaced fast Fourier transforms 
-% including Fourier transforms on the sphere. It can be downloaded at 
-% <http://www-user.tu-chemnitz.de/~potts/nfft> and has to be installed by 
-% the following steps:
+% If you want to have a personal installation that is vissible only to
+% you, then 
 %
-% * |cd nfft_download_directory|
-% * |./configure --prefix=nfft_install_directory|
-% * |make|
-% * |make install|
+% * extract MTEX to an arbitrary folder
+% * start MATLAB
+% * navigate to the MTEX folder
+% * type _startup_mtex__
 %
-%% MTEX 
-% 
-% Finally you have to download the MTEX toolbox. 
-% 
-% * |cd mtex_download_directory|
-% * edit the file [[matlab:edit([mtexDataPath '/../Makefile']),Makefile]] and specify the
-% FFTW3 and the NFFT3 installation directories
-% * |make|
-% * |make install|
 %
-% the last command requires you to be |root| on the system. If you do not
-% want to install the MTEX toolbox globally you can also replace the last
-% command by
+%% Installation for All Users
 %
-% * |make install_user|
+% If you want to habe MTEX available to all users of the computer, then
 %
-% This command essentially extends the file |.bashrc| to set the
-% environment variable |export MATLABPATH=MTEX_install_directory|. In some
-% cases this might be fail and you will have to set the path your
-% self. Alternatively, you can also manually add the
-% MTEX_install_directory to the MATLAB search path using the menu
-% |File/set Path|.
+% * extract MTEX to MATLAB_directoty/toolbox/mtex
+% * rename mtex/startup_root.m to mtex/startup.m overwritting the old
+% file mtex/startup.m
+% * move mtex/startup.m to MATLAB_directoty/toolbox/local
+% * start MATLAB
+%
 %
 %% Checking Your Installation
 %
-% Before starting MATLAB you can check whether the C programs where
-% compiled successfully by typing
-%
-% * |make check|
-%
-% After the next start of MATLAB you should either the message 
+% After the next start of MATLAB you should see either the message 
 
 'MTEX toolbox loaded'
 
@@ -107,3 +61,10 @@ check_mtex
 %%
 % You can also edit the file [[matlab:edit startup_mtex.m,startup_mtex.m]] to change the 
 % configuration of you MTEX installation. 
+%
+%% Compiling MTEX Your Self
+%
+% Compiling MTEX is only neccesary if the provided binaries does not run
+% on your system (e.g. if you have a 64 bit system) or if you want to
+% optimize them to you specific system. Compiling intstructions can be
+% found <compilation.html here>.
