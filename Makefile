@@ -60,7 +60,7 @@ uninstall:
 	rm -rf $(MATLABPATH)/toolbox/mtex
 
 # rule for making release
-RNAME = mtex-0.4
+RNAME = mtex-0.5-beta
 release:
 	cp -R ../trunk ../../$(RNAME)
 	find ../../$(RNAME) -name .svn | xargs /bin/rm -rf
@@ -71,3 +71,14 @@ release:
 	tar -czf  ../../$(RNAME).tar.gz ../../$(RNAME)
 #	tar -czf  ../../mtex_data.tar.gz ../../mtex_data
 
+windows-binaries:
+	rm -r ../../mtex-win.tar.gz
+	tar -czvf mtex-win.tar.gz ./c/bin `find . -name '*.mexw32'`
+
+linux-binaries:
+	rm -r ../../mactex.tar.gz
+	tar -czvf ../../mactex.tar.gz ./c/bin `find . -name '*.mexglx32'`
+
+mac-binaries:
+	rm -r ../../mtex-mac.tar.gz
+	tar -czvf ../../mtex-mac.tar.gz ./c/bin `find . -name '*.mexmaci'`
