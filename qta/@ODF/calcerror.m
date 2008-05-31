@@ -42,7 +42,7 @@ else
   
   % get approximation grid
   if check_option(varargin,'resolution')
-    S3G = SO3Grid(get_option(varargin,'resolution'),odf1.CS,odf1.SS);
+    S3G = SO3Grid(get_option(varargin,'resolution'),odf1(1).CS,odf1(1).SS);
   else
     if GridLength(getgrid(odf1)) > GridLength(getgrid(odf2))
       S3G = getgrid(odf1);
