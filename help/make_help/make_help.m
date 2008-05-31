@@ -82,6 +82,27 @@ if check_option(varargin, {'mfiles','all'})
  
 end
 
+%% calculate ODF files
+
+if check_option(varargin, {'odf','all'})
+  
+  current_path = [mtex_path '/help/ODFCalculation'];
+  files = dir([current_path '/*.m']);
+  publish_files({files.name},current_path,'stylesheet',[pwd '/example_style.xsl'],...
+    'out_dir',html_path,'evalcode',1);
+end
+
+
+%% calculate plotting files
+
+if check_option(varargin, {'plotting','all'})
+  
+  current_path = [mtex_path '/help/plotting'];
+  files = dir([current_path '/*.m']);
+  publish_files({files.name},current_path,'stylesheet',[pwd '/example_style.xsl'],...
+    'out_dir',html_path,'evalcode',1);
+end
+
 
 %% calculate examples
 
@@ -90,8 +111,7 @@ if check_option(varargin, {'examples','all'})
   current_path = [mtex_path '/examples'];
   files = dir([current_path '/*.m']);
   publish_files({files.name},current_path,'stylesheet',[pwd '/example_style.xsl'],...
-    'out_dir',[current_path '/html'],...
-    'evalcode',1);
+    'out_dir',[current_path '/html'],'evalcode',1);
   copyfile([current_path '/html/*.html'],html_path);
   copyfile([current_path '/html/*.png'],html_path);
 end
