@@ -103,6 +103,11 @@ else
     
     if check_option(varargin,'points')
       points = get_option(varargin,'points');
+      if length(points) == 1
+        res = sqrt(drho * dtheta/points);
+        res = dtheta/round(dtheta/res);
+        points = round([drho/res dtheta/res]);
+      end
     else
       points = get_option(varargin,'resolution',...
         5*degree ./ (1+check_option(varargin,'plot')));
