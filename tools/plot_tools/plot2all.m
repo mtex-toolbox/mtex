@@ -8,7 +8,9 @@ function plot2all(varargin)
 %
 %% Description
 % The function *plot2all* plots annotations, e.g. specimen or crystal
-% directions to all subfigures of the current figure
+% directions to all subfigures of the current figure. You can pass to
+% *plot2all* all the options you would normaly would like to pass to the
+% ordinary plot command.
 %
 %% See also
 % Miller/plot vector3d/plot
