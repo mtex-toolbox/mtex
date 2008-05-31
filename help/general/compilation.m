@@ -1,5 +1,9 @@
-%% MTEX Installation Guide
+%% Compiling MTEX 
 %
+% Compiling MTEX is only neccesary if the provided binaries does not run
+% on your system (e.g. if you have a 64 bit system). Compiling MTEX is
+% not that easy and you are encouraged to contact the author if you have
+% any problems.
 % 
 %% Source
 % 
