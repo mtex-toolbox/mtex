@@ -1,27 +1,28 @@
-function mex_install(mtexpath)
+function mex_install(mtexpath,mexoptions)
 % compiles all mex files for use with MTEX
 
 global mtex_path;
 if nargin == 0, mtexpath = mtex_path;end
 mexpath = [mtexpath,'/c/mex/'];
 
-places = {'S1Grid','S2Grid','SO3Grid'};
-%places = {'SO3Grid'};
-files = {'find','find_region','dist_region'};
-%files = {'find_region','dist_region'};
-%files = {'find.c','find_region.c'};
+places = {'S1Grid','S2Grid','SO3Grid','quaternion'};
 
-for p = 1:length(places)
-  for f=1:length(files)
-    if exist([mexpath,places{p},'_',files{f},'.c'],'file')
-      mex('-largeArrayDims',[mexpath,places{p},'_',files{f},'.c']);
-      movefile([mexpath,places{p},'_',files{f},'.mex*'],...
-        [mtexpath,'/geometry/@',places{p},'/private']);
-    end
+if nargin < 2
+  if strfind(computer,'64')
+    mexoptions = '-largeArrayDims';
+  else
+    mexoptions = '-compatibleArrayDims';
   end
 end
 
-
-mex('-largeArrayDims',[mexpath,'/quaternion_mtimes.c']);
-movefile([mexpath,'/quaternion_mtimes.mex*'],...
-        [mtexpath,'/geometry/@quaternion/private']);
+for p = 1:length(places)
+  files = dir([mexpath places{p} '*.c']);
+  files = {files.name};
+  for f = 1:length(files)
+    if exist([mexpath,files{f}],'file')      
+      mex(mexoptions,[mexpath,files{f}]);
+    end
+  end
+  movefile([mexpath,places{p},'*.mex*'],...
+           [mtexpath,'/geometry/@',places{p},'/private']);
+end
