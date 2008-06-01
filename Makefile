@@ -16,9 +16,9 @@ NFFTPATH = /home/hielscher/c
 MATLABPATH = /opt/matlab
 #
 # compiler flags
-CFLAGS= -o3 -c -Wall -fomit-frame-pointer -fstrict-aliasing -ffast-math
+CFLAGS= -c -O3 -Wall -fomit-frame-pointer -fstrict-aliasing -ffast-math -mfpmath=sse,387 -mieee-fp -m3dnow -mmmx -msse -msse2
 LDFLAGS= -lm #-lpthread
-MEXFLAGS= -largeArrayDims
+MEXFLAGS= -compatibleArrayDims#-largeArrayDims
 #
 #--------------- end editable section ---------------------------------
 #
