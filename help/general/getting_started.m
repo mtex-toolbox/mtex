@@ -8,7 +8,7 @@
 % In the case your MTEX toolbox is not correctly installed please consult
 % the following documentation.
 %
-% * <requirements.html Requirements>
 % * <installation.html Installation Guide>
 % * <configuration.html Configuration>
 % * <troubleshooting.html Troubleshooting>
+% * <compilation.html Compilation>
