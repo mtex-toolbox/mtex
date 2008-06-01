@@ -10,7 +10,8 @@ function plot(pf,varargin)
 %  BACKGROUND   - plot background data
 %
 %% See also
-% S2Grid/plot savefigure
+% S2Grid/plot savefigure plot_index Annotations_demo ColorCoding_demo PlotTypes_demo
+% SphericalProjection_demo 
 
 if check_option(varargin,'BACKGROUND')
   pfunc = @(i) pf(i).bgdata;

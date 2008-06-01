@@ -1,9 +1,13 @@
 function plot(v,varargin)
 % plot three dimensional vector
 
+if ~check_option(varargin,'scatter')  
+  varargin = {varargin{:},'color','k'};
+end
+
 if length(v) > 20 || check_option(varargin,'data')    
 
-  plot(S2Grid(v),varargin{:},'color','k');
+  plot(S2Grid(v),varargin{:});
   
 else
     
@@ -11,6 +15,6 @@ else
   for i = 1:numel(v)
     s{i} = char(subsref(v,i),'latex');
   end
-  plot(S2Grid(v),'data',s,varargin{:},'color','k');
+  plot(S2Grid(v),'data',s,varargin{:});
 
 end

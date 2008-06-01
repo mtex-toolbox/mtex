@@ -1,6 +1,18 @@
 function odf = calcODF(ebsd,varargin)
 % calculate ODF from EBSD data via kernel density estimation
 %
+% *calcODF* is one of the main function of the MTEX toolbox.
+% It estimates an ODF from given EBSD individual crystal orientations by 
+% <EBSD2odf_estimation.html kernel density estimation>. 
+% The function *calcODF* has several options to control the halfwidth of
+% the kernel functions, the resolution, etc. Most important the estimated
+% ODF is affected by the *halfwidth* of the kernel function. If the
+% halfwidth is large the estimated ODF is smooth whereas a small halfwidth
+% results in a sharp ODF. It depends on your prior information about the
+% ODF to choose this parameter right. Look at this
+% <EBSD_simulation_demo.html description> for exhausive discussion.
+%
+%
 %% Input
 %  ebsd - @EBSD
 %
@@ -14,11 +26,11 @@ function odf = calcODF(ebsd,varargin)
 %  KERNEL     - kernel function (default - de la Valee Poussin kernel)
 %
 %% See also
-% ebsd_demo EBSD/loadEBSD ODF/simulateEBSD
+% ebsd_demo EBSD2odf_estimation EBSDSimulation EBSD/loadEBSD ODF/simulateEBSD
 
 
-disp('------ MTEX -- EBSD to ODF computation ------------------')
-disp('performing kernel density estimation')
+vdisp('------ MTEX -- EBSD to ODF computation ------------------',varargin{:})
+vdisp('performing kernel density estimation',varargin{:})
 
 % extract orientations
 g = getgrid(ebsd);
@@ -29,7 +41,7 @@ hw = get_option(varargin,'halfwidth',...
 k = get_option(varargin,'kernel',...
       kernel('de la Vallee Poussin','halfwidth',hw),'kernel');
 
-disp([' used kernel: ' char(k)]);
+vdisp([' used kernel: ' char(k)],varargin{:});
 
 %% exact calculation
 if check_option(varargin,'exact') || GridLength(g)<200  
@@ -46,7 +58,7 @@ res = get_option(varargin,'resolution',max(1.5*degree,hw / 2));
 
 %% generate grid
 S3G = SO3Grid(res,ebsd(1).CS,ebsd(1).SS);
-disp([' approximation grid: ' char(S3G)]);
+vdisp([' approximation grid: ' char(S3G)],varargin{:});
 
 %% restrict single orientations to this grid
 
@@ -88,8 +100,14 @@ if check_option(varargin,'small_kernel') && hw > 2*getResolution(S3G)
   
   hw = 2/3*getResolution(S3G);
   k = kernel('de la Vallee Poussin','halfwidth',hw);
-  disp([' recalculate ODF for kernel: ',char(k)]);
+  vdisp([' recalculate ODF for kernel: ',char(k)],varargin{:});
   d = eval(odf,S3G);
   odf = ODF(S3G,d./sum(d),k,ebsd(1).CS,ebsd(1).SS,...
     'comment',['ODF estimated from ',getcomment(ebsd(1))]);
+end
+end
+%%
+
+function vdisp(s,varargin)
+if ~check_option(varargin,'silent'), disp(s);end
 end

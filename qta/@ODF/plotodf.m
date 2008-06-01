@@ -24,7 +24,8 @@ function plotodf(odf,varargin)
 %  RADIALLY
 %
 %% See also
-% S2Grid/plot savefigure
+% S2Grid/plot savefigure plot_index Annotations_demo ColorCoding_demo PlotTypes_demo
+% SphericalProjection_demo 
 
 
 %% -------- one - dimensional plot ---------------------------------------

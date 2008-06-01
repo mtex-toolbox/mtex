@@ -19,7 +19,8 @@ function plotpdf(odf,h,varargin)
 %  COMPLETE - plot entire (hemi)-sphere
 %
 %% See also
-% S2Grid/plot plot2all savefigure
+% S2Grid/plot plot2all savefigure plot_index Annotations_demo ColorCoding_demo PlotTypes_demo
+% SphericalProjection_demo 
 
 argin_check(h,{'Miller','vector3d','cell'});
 if isa(h,'Miller'), h = set(h,'CS',getSym(odf));end
