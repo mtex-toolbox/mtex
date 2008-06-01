@@ -16,10 +16,11 @@ if nargin < 2
 end
 
 for p = 1:length(places)
-  files = dir([mexpath places{p} '*.c']);
+  files = dir([mexpath places{p} '_*.c']);
   files = {files.name};
   for f = 1:length(files)
     if exist([mexpath,files{f}],'file')      
+      disp(['compile ',files{f}]);
       mex(mexoptions,[mexpath,files{f}]);
     end
   end
