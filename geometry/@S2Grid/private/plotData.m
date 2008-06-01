@@ -34,19 +34,22 @@ elseif check_option(varargin,'SMOOTH')
        shading flat;
      else
        shading interp;
+       set(gcf,'Renderer','zBuffer');
      end
+    else
+      set(gcf,'Renderer','painters');
     end
-    %set(gcf,'Renderer','OpenGL');
-    set(gcf,'Renderer','zBuffer');
-    
+        
   else  
 
     if isappr(min(data(:)),max(data(:))) % empty plot
       ind = convhull(X,Y);
       fill(X(ind),Y(ind),min(data(:)));
+      set(gcf,'Renderer','painters');
     else
       [CM,h] = contourf(X,Y,data,50);
       set(h,'LineStyle','none');
+      set(gcf,'Renderer','painters');
     end
   end
   
