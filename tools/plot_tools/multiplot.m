@@ -101,50 +101,74 @@ end
 
 %% 2d plot
 
-% clear figure
-clf('reset');
-figure(clf);
-%set(gcf,'Visible','off');
-%set(gcf,'toolbar','none');
+if ishold  
 
-% init statusbar
-try
-  sb = statusbar('drawing plots ...');
-  set(sb.ProgressBar, 'Visible','on', 'Minimum',0, 'Maximum',nplots, 'Value',0, 'StringPainted','on');
-catch
+  if isappdata(gcf,'axes') && strcmp(get(gcf,'tag'),'multiplot') && ...
+      length(findobj(gcf,'type','axes')) >= length(getappdata(gcf,'axes'))
+    a = getappdata(gcf,'axes');    
+  else
+    hold off;    
+  end
 end
 
+% clear figure
+if ~ishold
+  clf('reset');
+  figure(clf);
+
+  %set(gcf,'Visible','off');
+  %set(gcf,'toolbar','none');
+
+  % init statusbar
+  try
+    sb = statusbar('drawing plots ...');
+    set(sb.ProgressBar, 'Visible','on', 'Minimum',0, 'Maximum',nplots, 'Value',0, 'StringPainted','on');
+  catch
+  end
+end
 fontsize = get_option(varargin,'FONTSIZE',13);
 
 for i = 1:nplots
 	
-  a(i) = axes;%#ok<AGROW>
-  set(a(i),'Visible','off')
+  if ~ishold
+    a(i) = axes;
+    set(a(i),'Visible','off')
+  else
+    axes(a(i));
+    hold all;
+  end
   Z = Y{i};
   X = x(i);
   plot(X,'DATA',Z,varargin{:},'axis',a(i));
-  try, set(sb.ProgressBar,'Value',i);catch end
+  
+  if ~ishold
+    try, set(sb.ProgressBar,'Value',i);catch end
     
-  if check_option(varargin,'MINMAX') 
-    anotation(a(i),min(Z(:)),max(Z(:)),fontsize);
-  end
-  if check_option(varargin,'ANOTATION')
-    s = get_option(varargin,'ANOTATION');
-    text(0.98,0.99,s(i),...
-      'HorizontalAlignment','Right','VerticalAlignment','top',...
-      'FontName','times','FontSize',fontsize,'Interpreter','latex',...
-      'units','normalized');
+    if check_option(varargin,'MINMAX')
+      anotation(a(i),min(Z(:)),max(Z(:)),fontsize);
+    end
+    if check_option(varargin,'ANOTATION')
+      s = get_option(varargin,'ANOTATION');
+      text(0.98,0.99,s(i),...
+        'HorizontalAlignment','Right','VerticalAlignment','top',...
+        'FontName','times','FontSize',fontsize,'Interpreter','latex',...
+        'units','normalized');
+    end
   end
 end
 
 % set color range later on?
 scr =  length(colorrange) == 2;
 
-% invisible axes for adding a colorbar
-d = axes('visible','off','position',[0 0 1 1],...
-  'tag','colorbaraxis','HandleVisibility','callback');
-setappdata(gcf,'colorbaraxis',d);
-
+if ~ishold
+  % invisible axes for adding a colorbar
+  d = axes('visible','off','position',[0 0 1 1],...
+    'tag','colorbaraxis','HandleVisibility','callback');
+  setappdata(gcf,'colorbaraxis',d);
+  setappdata(gcf,'axes',a);
+else 
+  d = getappdata(gcf,'colorbaraxis');
+end
 
 if length(colorrange) ~= 2, colorrange = caxis; end
 
@@ -161,27 +185,30 @@ end
 if scr, setcolorrange(colorrange);end
 
 % clear statusbar
-try, statusbar;catch,end
+if ~ishold
+  
+  try, statusbar;catch,end; 
 
-set(gcf,'ResizeFcn',@(src,evt) figResize(src,evt,a));
-%set(gcf,'Position',get(gcf,'Position'));
-setappdata(gcf,'autofit','on');
-figResize([],[],a);
-if ~check_option(varargin,'uncropped')
-  set(gcf,'Units','pixels');
-  pos = get(gcf,'Position');
-  si = get(gcf,'UserData');
-  pos([3,4]) = si;
-  set(gcf,'Position',pos);
+  set(gcf,'ResizeFcn',@(src,evt) figResize(src,evt,a));
+  %set(gcf,'Position',get(gcf,'Position'));
+  setappdata(gcf,'autofit','on');
+  figResize([],[],a);
+  if ~check_option(varargin,'uncropped')
+    set(gcf,'Units','pixels');
+    pos = get(gcf,'Position');
+    si = get(gcf,'UserData');
+    pos([3,4]) = si;
+    set(gcf,'Position',pos);
+  else
+    set(gcf,'Position',get(gcf,'Position'));
+  end
+
+  set(gcf,'color',[1 1 1],'tag','multiplot','nextplot','replace');  
+  set(a,'Visible','on');
 else
-  set(gcf,'Position',get(gcf,'Position'));
+  scalescatterplots(gcf);
+  set(gcf,'nextplot','replace');
 end
-
-
-
-
-set(gcf,'color',[1 1 1],'tag','multiplot','nextplot','replace');
-set(a,'Visible','on');
 
 end
 
@@ -230,6 +257,7 @@ if strcmp(getappdata(fig,'autofit'),'on')
   dxdy = dxdy(2)/dxdy(1);
   [nx,ny,l] = bestfit(figpos(3),figpos(4)/dxdy,length(a));
   set(gcf,'UserData',[nx*l,ny*l*dxdy]);
+  setappdata(gcf,'length',l);
 
   for i = 1:length(a)
     [px,py] = ind2sub([nx ny],i);
@@ -238,12 +266,7 @@ if strcmp(getappdata(fig,'autofit'),'on')
   end
 end
 
-% scale scatterplots
-u = findobj(gcbo,'Tag','scatterplot');
-for i = 1:length(u)
-  d = get(u(i),'UserData');
-  set(u(i),'SizeData',(l*d)^2);
-end
+scalescatterplots(fig);
   
 % set position of labels
 u = findobj(gcbo,'Tag','rda');
@@ -257,6 +280,18 @@ end
 
 set(fig,'Units',old_units);
 
+
+end
+
+function scalescatterplots(x)
+
+% scale scatterplots
+u = findobj(x,'Tag','scatterplot');
+l = getappdata(x,'length');
+for i = 1:length(u)
+  d = get(u(i),'UserData');
+  set(u(i),'SizeData',(l*d)^2);
+end
 
 end
 

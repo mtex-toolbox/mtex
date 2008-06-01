@@ -17,5 +17,7 @@ function plotDiff(pfmeas,pfcalc,varargin)
 %
 %% See also
 % S2Grid/plot PoleFigure/calcerror ODF/calcerror savefigure
+% plot_index Annotations_demo ColorCoding_demo PlotTypes_demo
+% SphericalProjection_demo 
 
 plot(calcerrorpf(pfmeas,pfcalc,varargin{:}),varargin{:})

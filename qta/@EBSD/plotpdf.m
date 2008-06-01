@@ -21,16 +21,18 @@ function plotpdf(ebsd,h,varargin)
 %
 %% See also
 % EBSD/plotebsd S2Grid/plot savefigure
+% plot_index Annotations_demo ColorCoding_demo PlotTypes_demo
+% SphericalProjection_demo 
 
 global mtex_plot_options;
 varargin = {varargin{:},mtex_plot_options{:}};
 
 
-cs = getSym(ebsd);
+[cs,ss] = getSym(ebsd);
 
-if sum(sampleSize(ebsd))*length(cs) > 100000 || check_option(varargin,'points')
+if sum(sampleSize(ebsd))*length(cs)*length(ss) > 100000 || check_option(varargin,'points')
   
-  points = fix(get_option(varargin,'points',100000/length(cs)));  
+  points = fix(get_option(varargin,'points',100000/length(cs)/length(ss)));  
   disp(['plot ', int2str(points) ,' random orientations out of ', int2str(sum(sampleSize(ebsd))),' given orientations']);
   ebsd = subsample(ebsd,points);
 
@@ -40,11 +42,11 @@ grid = getgrid(ebsd);
 clear ebsd;
 
 if check_option(varargin,'superposition')
-  multiplot(@(i) reshape(grid * cs * h,[],1),@(i) 1,1,...
+  multiplot(@(i) reshape(ss * grid * cs * h,[],1),@(i) 1,1,...
             'ANOTATION',@(i) char(h,'LATEX'),...
             varargin{:},'scatter');
 else
-  multiplot(@(i) reshape(grid * cs * h(i),[],1),...
+  multiplot(@(i) reshape(ss * grid * cs * h(i),[],1),...
             @(i) 1,length(h),...
             'ANOTATION',@(i) char(h(i),'LATEX'),...
             varargin{:},'scatter');

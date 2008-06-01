@@ -35,7 +35,9 @@ function  varargout = plot(S2G,varargin)
 %  LOGARITHMIC - log plot
 %
 %% See also
-% savefigure
+% savefigure plot_index Annotations_demo ColorCoding_demo PlotTypes_demo
+% SphericalProjection_demo 
+
 
 % 3d plot is extern
 if check_option(varargin,'3d'), plot3d(S2G,varargin{:});return; end
