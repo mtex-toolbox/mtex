@@ -4,8 +4,8 @@ global mtex_path;
 
 %% check for mex files
 try
-  S2G = S2Grid('equispaced','points',10000);
-  find(S2G,xvector);
+  S3G = SO3Grid(100,symmetry,symmetry);
+  dot_outer(S3G,idquaternion,'epsilon',pi/10);
 catch
   warning('%s\n%s','--MTEX-- Error using mex files!',...
     'Recompile now mex files.');
@@ -13,6 +13,7 @@ catch
   cd([mtex_path '/c/mex']);
   mex_install;
   cd(opwd);
+  disp('Done!')
 end
 
 %% check for binaries
