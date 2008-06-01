@@ -94,52 +94,6 @@ plotodf(odf,'sections',6,'silent')
 % calculate estimation error
 calcerror(odf,fibre_odf,'resolution',5*degree)
 
-%% Exploration of the relationship between estimation error and number of single orientations
-%
-% simulate 10, 100, ..., 1000000 single orientations of the Santafee sample ODF, 
-% estimate an ODF from these data and calcuate the estimation error
-
-for i = 1:6
-
-  ebsd = simulateEBSD(fibre_odf,10^i);
-  odf = calcODF(ebsd);
-  e(i) = calcerror(odf,fibre_odf,'resolution',2.5*degree);
-
-end
-
-%% 
-% plot the error in dependency of the number of single orientations
-close all;
-semilogx(10.^(1:length(e)),e)
-
-% %% 
-% % plot Fourier coefficients in dependency of the 
-% colororder = ['b','g','r','c','m','k','y'];
-% l = {};
-% for i = 2:6
-%   plotFourier(odf{i},'color',colororder(i));
-%   l = {l{:},['10^' int2str(i) ' points - de la Vallee Poussin']};
-%   hold on
-%   plotFourier(fodf{i},'color',colororder(i),'LineStyle',':');
-%   l = {l{:},['10^' int2str(i) ' points - Dirichlet']};
-% end
-% plotFourier(santafee,'color','k','Linewidth',2,'bandwidth',32);
-% ylim([0,0.4])
-% legend(l)
-% hold off
-% 
-% %% 
-% % plot Fourier coefficients in dependency of the 
-% colororder = ['b','g','r','c','m','k','y'];
-% l = {};
-% for i = 2:6
-%   plotFourier(odf{i},'color',colororder(i),'LineStyle','none','Marker','o');
-%   l = {l{:},['10^' int2str(i) ' points - de la Vallee Poussin']};
-%   hold on
-%   plotFourier(fodf{i},'color',colororder(i),'LineStyle','none','Marker','x');
-%   l = {l{:},['10^' int2str(i) ' points - Dirichlet']};
-% end
-% plotFourier(santafee,'color','k','Marker','d','bandwidth',32,'LineStyle','none');
-% ylim([0,0.4])
-% legend(l)
-% hold off
+%%
+% For a more exhausive example see the 
+% <EBSDSimulation_demo.html EBSD Simulation demo>!
