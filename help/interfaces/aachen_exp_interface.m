@@ -2,28 +2,26 @@
 % 
 % The following examples shows how to import a Aachen_exp data set.
 
-%% specify crystal and specimen symmetries
+%% Specify Crystal and Specimen Symmetries
 
 cs = symmetry('cubic');
 ss = symmetry;
 
-%% specify the file names
-fname1 = [mtexDataPath '/aachen_exp/HCP.exp'];
-fname2 = [mtexDataPath '/aachen_exp/FCC.exp'];
 
-%% import the data
+%% Specify File Name
 
-pf1 = loadPoleFigure(fname1,cs,ss);
-pf2 = loadPoleFigure(fname2,cs,ss);
+fname = [mtexDataPath '/aachen_exp/HCP.exp'];
 
-%% plot data of pole figure 1
 
-plot(pf1)
+%% Import Data
 
-%% plot data of pole figure 2
+pf = loadPoleFigure(fname,cs,ss);
 
-close; figure('position',[100,100,600,500]);
-plot(pf2)
+
+%% Plot Pole Figures
+
+plot(pf)
+
 
 %% See also
 % [[interfaces_index.html,interfaces]] [[loadPoleFigure.html,loadPoleFigure]]

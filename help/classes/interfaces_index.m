@@ -20,6 +20,8 @@
 % The [[import_wizard.html,import wizard]] can be started either by typing 
 % into the command line 
 import_wizard_PoleFigure; 
+
+
 %%
 % or by choosing _MTEX / import wizard_ from the start menu. The import
 % wizard provides a gui to import data of almost all data formats MTEX
@@ -39,9 +41,9 @@ import_wizard_PoleFigure;
 % * <dubna_interface.html Dubna>
 % * <geesthacht_interface.html Geesthacht>
 % * <juelich_interface.html Juelich>
-% * <munich_interface.html Munich>
 % * <philips_interface.html Philips>
 % * <ptx_interface.html PTX>
+% * <xrdml_interface.html XRDML>
 %
 %% Importing pole figure data using the method loadPoleFigure
 %

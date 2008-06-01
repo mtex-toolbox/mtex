@@ -18,6 +18,11 @@ pf = loadPoleFigure(fname,cs,ss);
 %% plot data
 
 plot(pf) 
+
+%% See also
+% [[interfaces_index.html,interfaces]] [[loadPoleFigure.html,loadPoleFigure]]
+% [[S2Grid_plot.html,plot]] [[symmetry_symmetry.html,symmetry]]
+%
 %% Specification
 % * txt - files
 % * many pole figures per file
@@ -28,25 +33,7 @@ plot(pf)
 % * Multiplikationsfaktor ?
 % * superposed pole figures?
 %
-%% Import of a sample data set
-
-% specify crystal and specimen symmetry ???
-cs = symmetry('cubic');
-ss = symmetry;
-
-% set up data files
-fname = [mtexDataPath '/aachen/st08-1'];
-
-% import data
-pf = loadPoleFigure(fname,cs,ss);
-
-%% plot data
-plot(pf)
-
-%% See also
-% [[interfaces_index.html,interfaces]] [[loadPoleFigure.html,loadPoleFigure]]
-% [[S2Grid_plot.html,plot]] [[symmetry_symmetry.html,symmetry]]
-
+%
 %% precise specification:
 %Aachen-Format:
 %==============

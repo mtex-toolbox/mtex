@@ -28,6 +28,7 @@
   <tocitem target="juelich_interface.html">Juelich Interface</tocitem>
   <tocitem target="philips_interface.html">Philips Interface</tocitem>
   <tocitem target="ptx_interface.html">PTX Interface</tocitem>
+  <tocitem target="xrdml_interface.html">XRDML Interface</tocitem>
 </tocitem>
 
 <tocitem target="interfacesEBSD_index.html" image="$toolbox/matlab/icons/boardicon.gif">
