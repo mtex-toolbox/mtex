@@ -1,10 +1,14 @@
 function [odf,alpha] = calcODF(pf,varargin)
 % PDF to ODF inversion
 %
-% *calcODF* is the main function of the MTEX toolbox.
-% It recovers an ODF from given Polefigure intensities.
-% It does so by minimizing a least sqaures functional.
-% The function has several options to control convergence ...
+% *calcODF* is one of the main function of the MTEX toolbox.
+% It estimates an ODF from given Polefigure intensities by 
+% <odf_estimation.html fitting an ODF that consists of a large number of unimodal ODFs to the data>.
+% It does so by minimizing a least squares functional. The command
+% *calcODF* supports <ghost_demo.html automatic ghost correction> and 
+% <dubna_demo.html the zero range method>.
+% The function *calcODF* has several options to control convergence,
+% resolution, smoothing, etc. See belov for a complete description.
 %
 %% Syntax
 %  [odf,alpha] = calcODF(pf,<options>)
@@ -32,17 +36,19 @@ function [odf,alpha] = calcODF(pf,varargin)
 %  FORCE_ITER_MAX - allway go until ITER_MAX
 %  RP_VALUES      - calculate RP values during iteration
 %  ODF_TEST       - for testing only
+%  SILENT         - no output
 %
 %% Output
 %  odf    - reconstructed @ODF
 %  alpha  - scaling factors - calculated during reconstruction
 %
 %% See also
-% loadPoleFigure interfaces_index examples_index
+% odf_estimation ODF_demo PoleFigureSimulation_demo ODF_calculations_index
+% loadPoleFigure interfaces_index examples_index 
 
 tic
 
-disp('------ MTEX -- PDF to ODF inversion ------------------')
+vdisp('------ MTEX -- PDF to ODF inversion ------------------',varargin{:})
 
 % ------------------- get input--------------------------------------------
 CS = pf(1).CS; SS = pf(1).SS;
@@ -152,38 +158,28 @@ flags = calc_flags(varargin,CW_flags);
 % -------------------- call c-routine -----------------------------------
 % -----------------------------------------------------------------------
 
-disp('Call c-routine');
+vdisp('Call c-routine',varargin{:});
 
 comment = get_option(varargin,'comment',...
   ['ODF recalculated from ',getcomment(pf)]);
 
 global mtex_path;
 
-if check_option(varargin,'SILENT')
-  c = run_linux([mtex_path,'/c/bin/pf2odf'],...
-    'INTERN',lP,lh,refl,iter_max,iter_min,flags,...
-    'EXTERN',P,r,gh,A,c0,w,RM,evaldata,evalmatrix,'SILENT');
-  
-  odf = @() silentODF(S3G,c,psi,CS,SS);
-  
-else
-  
-  [c,alpha] = run_linux([mtex_path,'/c/bin/pf2odf'],...
-    'INTERN',lP,lh,refl,iter_max,iter_min,flags,...
-    'EXTERN',P,r,gh,A,c0,w,RM,evaldata,evalmatrix);
-  disp(['required time: ',int2str(toc),'s']);
+[c,alpha] = run_linux([mtex_path,'/c/bin/pf2odf'],...
+  'INTERN',lP,lh,refl,iter_max,iter_min,flags,...
+  'EXTERN',P,r,gh,A,c0,w,RM,evaldata,evalmatrix,...
+  char(extract_option(varargin,'silent')));
+vdisp(['required time: ',int2str(toc),'s'],varargin{:});
 
-  % return ODF
-  odf = 1/sum(c)*ODF(S3G,c,psi,CS,SS,'comment',comment);
-end
-
+% return ODF
+odf = 1/sum(c)*ODF(S3G,c,psi,CS,SS,'comment',comment);
 
 if ~check_option(varargin,'ghost_correction'), return;end
 
 % ------------------ ghost correction -----------------------------------
 % -----------------------------------------------------------------------
 
-disp('ghost correction');
+vdisp('ghost correction',varargin{:});
 
 % determine phon
 phon = 1;
@@ -192,9 +188,9 @@ for ip = 1:length(pf)
 end
 
 if phon > 0.05
-  disp(['calculate with fixed background ',xnum2str(phon)]);
+  vdisp(['calculate with fixed background ',xnum2str(phon)],varargin{:});
 else
-  disp('No phon! No ghost correction possible!');
+  vdisp('No phon! No ghost correction possible!',varargin{:});
   return
 end
 
@@ -209,7 +205,8 @@ c0 = (1-phon)/sum(GridLength(S3G))*ones(sum(GridLength(S3G)),1);
 % calculate new ODF
 [c,alpha] = run_linux([mtex_path,'/c/bin/pf2odf'],...
   'INTERN',lP,lh,refl,phon,iter_max,flags,...
-  'EXTERN',P,r,gh,A,c0,w,RM,evaldata,evalmatrix);
+  'EXTERN',P,r,gh,A,c0,w,RM,evaldata,evalmatrix,...
+  char(extract_option(varargin,'silent')));
 
 % return ODF
 odf(1) = phon * uniformODF(CS,SS,'comment',comment);
@@ -218,12 +215,6 @@ odf(1+(phon>0)) = (1-phon)/sum(c)*ODF(S3G,c,psi,CS,SS,'comment',comment);
 end
 
 
-function odf = silentODF(S3G,phon,c,psi,CS,SS)
-
-  cc = c();
-  if isempty(cc)
-    odf = cc;
-  else
-    odf = ODF(S3G,[phon;cc],psi,CS,SS);
-  end
+function vdisp(s,varargin)
+if ~check_option(varargin,'silent'), disp(s);end
 end

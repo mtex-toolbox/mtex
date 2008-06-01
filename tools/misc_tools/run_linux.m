@@ -11,7 +11,7 @@ function varargout = run_linux(prg,varargin)
 %
 %% Flags
 % *SILENT
-% *VERBOSW
+% *VERBOSE
 % *EXTERN
 % *INTERN
 %
@@ -39,7 +39,6 @@ global mtex_textmode;
 %% local flags
 inline = 0;
 verbose = 0;
-silent = 0;
 suffix = int2str(100*cputime);
 [path, name] = fileparts(prg);
 name = [name,suffix];
@@ -52,7 +51,6 @@ for i=1:nargin-1
 	if isempty(iname{i}) && ~isempty(inputname(i+1))
 		iname{i} = inputname(i+1);
   elseif strcmpi(varargin{i},'SILENT')
-		silent = 1;
 		continue;
   elseif strcmpi(varargin{i},'VERBOSE')
 		verbose = 1;
@@ -148,42 +146,33 @@ else
   cmd = [mtex_prefix_cmd,prg,'.exe ',mtex_tmppath,name,...
     '.txt',mtex_postfix_cmd];
 end
+if check_option(varargin,'silent'), cmd = [cmd,' >>',mtex_logfile]; end
 if ~isempty(global_computer), cmd = ['ssh ',global_computer,' ',cmd];end
 
-if silent
-  system([cmd,' &'],'-echo');
-  varargout{1} = @() finish(name,verbose,nargout);
+
+if mtex_debug
+  disp('Stopped because of "mtex_debug"-flag');
+  disp(['Files written to ',mtex_tmppath,name]);
+  fprintf('You may want to execute the command\n\n%s\n\n',cmd);
+  disp('hit enter if finished')
+  pause
 else
-  if mtex_debug 
-    disp('Stopped because of "mtex_debug"-flag');
-    disp(['Files written to ',mtex_tmppath,name]);
-    fprintf('You may want to execute the command\n\n%s\n\n',cmd);
-    disp('hit enter if finished')
-    pause
-  else
-    status = system(cmd,'-echo');
-    if status ~= 0, error('error running external program:\n\n %s',cmd);end
-  end
-	
-  % get output
-  varargout = readdata(name,verbose,nargout);
-  
-  % check output
-  if isempty(varargout{1}) || length(varargout) < nargout   
-    error('Error running external program:\n\n %s\n\n To few output files.',cmd);
-  end
-  
-  cleanup(name,verbose);
+  status = system(cmd,'-echo');
+  if status ~= 0, error('error running external program:\n\n %s',cmd);end
 end
+	
+% get output
+varargout = readdata(name,verbose,nargout);
+  
+% check output
+if isempty(varargout{1}) || length(varargout) < nargout
+  error('Error running external program:\n\n %s\n\n To few output files.',cmd);
+end
+  
+cleanup(name,verbose);
+
 end % function
 
-%% finish
-function varargout = finish(name,verbose,nout)
-  varargout = readdata(name,verbose,nout);
-  if ~isempty(varargout{1})
-    cleanup(name,verbose);
-  end
-end
 
 %% retrieve information
 function out = readdata(name,verbose,nout)
