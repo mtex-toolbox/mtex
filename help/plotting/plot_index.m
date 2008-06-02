@@ -102,10 +102,12 @@ hold off % next plot command deletes all plots
 % Next we are going to add some Miller indece to an inverse pole figure
 % plot.
 
-close all;figure('position',[100,100,300,200]);
+close all;
 plotipdf(odf,xvector);
 
 hold all % keep plot
 plot(Miller(1,1,-2,0,cs),'all')
+plot(Miller(0,1,-1,0,cs),'all')
 plot(Miller(1,1,-2,1,cs),'all')
 hold off % next plot command deletes all plots
+set(gcf,'position',[100,100,300,220]);

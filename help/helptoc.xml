@@ -40,12 +40,12 @@
 <tocitem target="ODFCalculations_index.html"
 	 image="$toolbox/matlab/icons/pagesicon.gif">
   ODF Calculations
-  <tocitem target="modelODFs.html">Model ODFs</tocitem>
+  <tocitem target="modelODFs_demo.html">Model ODFs</tocitem>
   <tocitem target="odf_estimation.html"> ODF Estimation from Pole Figures</tocitem>
   <tocitem target="EBSD2odf_estimation.html"> ODF Estimation from EBSD data</tocitem>
   <tocitem target="ODF_demo.html"> ODF Analysis</tocitem>	
-  <tocitem target="PoleFigureSimulation.html"> Pole Figure Simulation</tocitem>
-  <tocitem target="EBSDSimulation.html"> EBSD Data Simulation</tocitem>
+  <tocitem target="PoleFigureSimulation_demo.html"> Pole Figure Simulation</tocitem>
+  <tocitem target="EBSDSimulation_demo.html"> EBSD Data Simulation</tocitem>
   <tocitem target="ghost_demo.html"> Ghost Effect Analysis</tocitem>
 </tocitem>
 
@@ -53,10 +53,10 @@
 <tocitem target="plot_index.html"
 	 image="$toolbox/matlab/icons/tool_facecolor.gif">
   Generating Plots
-  <tocitem target="PlotTypes.html">Plot Types</tocitem>
-  <tocitem target="SphericalProjection.html">Spherical Projections</tocitem>
-  <tocitem target="ColorCoding.html">Color Coding</tocitem>
-  <tocitem target="Annotations.html">Annotations</tocitem>
+  <tocitem target="PlotTypes_demo.html">Plot Types</tocitem>
+  <tocitem target="SphericalProjection_demo.html">Spherical Projections</tocitem>
+  <tocitem target="ColorCoding_demo.html">Color Coding</tocitem>
+  <tocitem target="Annotations_demo.html">Annotations</tocitem>
 </tocitem>
 
 
