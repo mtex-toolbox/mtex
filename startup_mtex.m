@@ -47,7 +47,7 @@ mtex_logfile = [mtex_tmppath,'output_',host(1:end-1),'_',user(1:end-1),'.log'];
 % MTEX sometimes experences problems when printing the degree character
 % reenter the degree character here in this case
 global mtex_degree;
-mtex_degree = 'Â°';
+mtex_degree = '°';
 
 %% debugging
 % comment out to turn on debugging
@@ -71,7 +71,7 @@ mtex_prefix_cmd = '';
 %% commands to be executed after the external c program
 % this might be usefull when redirecting the output or close brackets
 global mtex_postfix_cmd;
-mtex_postfix_cmd = '';
+mtex_postfix_cmd = '°';
 
 
 %% local machineformat
@@ -101,11 +101,15 @@ warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
 %% check for search path
 
 % check wether mtex_path is in search path
-cellpath = regexp(path,':','split');
+if ispc
+  cellpath = regexp(path,';','split');
+else
+  cellpath = regexp(path,':','split');
+end
 if ~any(strcmp(mtex_path,cellpath))
   addpath(mtex_path);
   disp('Permanently add MTEX to the MATLAB search path.');
-  if ~savepath
+  if savepath
     warning('The MATLAB search path could not be saved! Please save the modified MATLAB search path manually!');
   end
 end
