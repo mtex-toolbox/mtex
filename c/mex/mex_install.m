@@ -24,6 +24,10 @@ for p = 1:length(places)
       mex(mexoptions,[mexpath,files{f}]);
     end
   end
-  movefile([mexpath,places{p},'*.mex*'],...
-           [mtexpath,'/geometry/@',places{p},'/private']);
+  try
+    movefile([mexpath,places{p},'*.mex*'],...
+      [mtexpath,'/geometry/@',places{p},'/private']);
+  catch
+    disp('There was an error while moving the mex files! Please move the files manualy')
+  end
 end
