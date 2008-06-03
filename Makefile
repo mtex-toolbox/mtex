@@ -62,18 +62,30 @@ uninstall:
 # rule for making release
 RNAME = mtex-0.5-beta
 release:
+	rm -rf ../../$(RNAME)*
 	cp -R ../trunk ../../$(RNAME)
 	find ../../$(RNAME) -name .svn | xargs /bin/rm -rf
 	find ../../$(RNAME) -name '*~' -or -name '*.log' -or -name '*.o' -or -name '*.orig' -or -name '.directory' | xargs /bin/rm -rf
 	rm -f ../../$(RNAME)/c/bin/*
 	rm -rf ../../$(RNAME)/help/html
 #	mv ../../$(RNAME)/data ../../mtex_data
-	tar -czf  ../../$(RNAME).tar.gz ../../$(RNAME)
-#	tar -czf  ../../mtex_data.tar.gz ../../mtex_data
+#
+	cp -R ../../$(RNAME) ../../$(RNAME)-Linux
+	cp -R ../../$(RNAME) ../../$(RNAME)-Windows
+	cp -R ../../$(RNAME) ../../$(RNAME)-MACOSX
+		
+	cp -R ../../mtex-binaries/Linux ../../$(RNAME)-Linux
+	cp -R ../../mtex-binaries/Windows ../../$(RNAME)-Windows
+	cp -R ../../mtex-binaries/MACOSX ../../$(RNAME)-MACOSX
+
+	
+	tar -czf ../../$(RNAME)-Linux.tar.gz ../../$(RNAME)-Linux
+	zip -rq  ../../$(RNAME)-Windows.zip ../../$(RNAME)-Windows
+	tar -czf  ../../$(RNAME)-MACOSX.tar.gz ../../$(RNAME)-MACOSX	
 
 windows-binaries:
 	rm -r ../../mtex-win.tar.gz
-	tar -czvf mtex-win.tar.gz ./c/bin `find . -name '*.mexw32'`
+	tar -czvf mtex-win.tar.gz ./c/bin/*.exe `find . -name '*.mexw32'`
 
 linux-binaries:
 	rm -r ../../mactex.tar.gz
