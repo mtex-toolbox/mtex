@@ -68,8 +68,7 @@ release:
 	find ../../$(RNAME) -name '*~' -or -name '*.log' -or -name '*.o' -or -name '*.orig' -or -name '.directory' | xargs /bin/rm -rf
 	rm -f ../../$(RNAME)/c/bin/*
 	rm -rf ../../$(RNAME)/help/html
-#	mv ../../$(RNAME)/data ../../mtex_data
-#
+
 	cp -R ../../$(RNAME) ../../$(RNAME)-Linux
 	cp -R ../../$(RNAME) ../../$(RNAME)-Windows
 	cp -R ../../$(RNAME) ../../$(RNAME)-MACOSX
@@ -84,13 +83,13 @@ release:
 	tar -czf  ../../$(RNAME)-MACOSX.tar.gz ../../$(RNAME)-MACOSX	
 
 windows-binaries:
-	rm -r ../../mtex-win.tar.gz
+	rm -rf ../../mtex-win.tar.gz
 	tar -czvf mtex-win.tar.gz ./c/bin/*.exe `find . -name '*.mexw32'`
 
 linux-binaries:
-	rm -r ../../mactex.tar.gz
-	tar -czvf ../../mactex.tar.gz ./c/bin `find . -name '*.mexglx32'`
+	rm -rf ../../mtex-linux.tar.gz
+	tar -czvf ../../mtex-linux.tar.gz ./c/bin/* `find . -name '*.mexglx'`
 
 mac-binaries:
-	rm -r ../../mtex-mac.tar.gz
-	tar -czvf ../../mtex-mac.tar.gz ./c/bin `find . -name '*.mexmaci'`
+	rm -rf ../../mtex-mac.tar.gz
+	tar -czvf ../../mtex-mac.tar.gz ./c/bin/* `find . -name '*.mexmaci'`
