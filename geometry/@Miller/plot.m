@@ -27,7 +27,7 @@ for i = 1:numel(m)
   end
   
   % plot
-  plot(S2Grid(vector3d(mm)),varargin{:},'data',s);
+  plot(S2Grid(vector3d(mm)),varargin{:},'data',s,'grid');
   
   hold all
 end

@@ -16,16 +16,24 @@ switch lower(projection)
 
     X = rho; Y = theta;
     
-  case 'edist' % equal distance
+  case {'stereo','eangle'} % equal angle
   
     [X,Y] = stereographicProj(theta,rho);
     bounds = [-2, -2, 4, 4];
+    
+  case 'edist' % equal distance
   
-  case 'earea' % equal area
+    [X,Y] = edistProj(theta,rho);
+    bounds = [-pi/2, -pi/2, pi, pi];
+  
+  case {'earea','schmidt'} % equal area
     
     [X,Y] = SchmidtProj(theta,rho);
     bounds = [-1.4142, -1.4142, 2*1.4142 , 2*1.4142];
 
+  case 'orthographic'
+    [X,Y] = orthographicProj(theta,rho);
+    bounds = [-1, -1, 2 , 2];
   otherwise
     
     error('Unknown Projection!')
