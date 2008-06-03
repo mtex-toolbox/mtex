@@ -222,14 +222,22 @@ bounds(3) = bounds(3) + offset;
 %% Plot Grid
 function polarGrid(offset,varargin)
 
-theta = [60 30 90 90 90 90 90 90 90 90].*degree;
-rho = [0 0 0 180 90 270 45 225 135 315] .*degree;
+% 
+dtheta = get_option(varargin,'grid_res',30*degree);
+theta = dtheta:dtheta:(pi/2-dtheta);
+rho = zeros(1,length(theta));
+X = projectData(theta,rho,varargin{:});
 
+arrayfun(@(x) circle(offset,0,x,'LineStyle',':','edgecolor',[0.4 0.4 0.4]),X);
+
+
+% meridans
+drho = get_option(varargin,'grid_res',30*degree);
+rho = [0:drho:(pi-drho);pi:drho:(2*pi-drho)];
+theta = ones(size(rho))*pi/2;
 [X,Y] = projectData(theta,rho,varargin{:});
 
-circle(offset,0,X(1),'LineStyle',':','edgecolor',[0.4 0.4 0.4]);
-circle(offset,0,X(2),'LineStyle',':','edgecolor',[0.4 0.4 0.4]);
-line(offset+reshape(X(3:end),2,[]),reshape(Y(3:end),2,[]),'LineStyle',':','color',[0.4 0.2 0.4]);
+line(offset+X,Y,'LineStyle',':','color',[0.4 0.2 0.4]);
 
 
 %% Plot Circle
