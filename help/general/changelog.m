@@ -8,19 +8,33 @@
 % MTEX ships now with binaries for Windows, Linux, and Max OSX. This makes
 % in unnecessary to install any additional library and to compile the toolbox.
 %
-% *New Functions*
+% *New Interfaces*
 %
 % * new PoleFigure interface for xrdml data
-% * new plotting option north, south for spherical plots 
+%
+% *Improved Plotting*
+%
+% * plot EBSD data and continious ODFs into one plot
 % * Miller indeces and specimen directions can now be plotted directly into
 % pole figures or inverse pole figures.
+% * new plotting option north, south for spherical plots 
 % * improved colorbar handling
+% * shpherical grids
+% * more spherical projections
 %
 % *Incompatible Changes With Previous Releases*
 %
 % * The flag *hemishpere* in <S2Grid_S2Grid.html S2Grid> has been replaced
 % by *north*, *south*, and *reduced* making it more consistent with the
 % plotting routine.
+%
+% *Improved Documentation*
+%
+% MTEX comes now with over 500 help pages explaining the mathematical concepts, 
+% the philisophy behing MTEX and the syntax and usage of all 300 functions
+% available in MTEX. Furthermore, you find numerous examples and tutorials on
+% ODF estimation, data import, calculation of texture characteristics, ODF and 
+% pole figure plotting, etc.
 %
 % *Bug Fixes*
 %

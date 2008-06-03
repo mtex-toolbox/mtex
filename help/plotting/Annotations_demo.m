@@ -65,3 +65,12 @@ plotFourier(unimodalODF(idquaternion,cs,ss))
 
 legend({'Fibre ODF','Unimodal ODF'})
 
+%% Adding a Spherical Grid
+%
+% Sometimes it is usefull to have a spherical grid in your plot to make the
+% projection easier to understand. For this reason there are the option
+% *grid*, which enables the grid and the option *grid_res*, which allows to
+% specifiy the spacing of the grid lines.
+
+plotpdf(odf,[Miller(1,0,0),Miller(0,0,1)],'grid','grid_res',15*degree,...
+  'gray','reduced');
