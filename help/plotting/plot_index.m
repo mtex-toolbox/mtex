@@ -8,9 +8,11 @@
 % the <PlotTypes_demo.html plot style>, the 
 % <SphericalProjection_demo.html spherical projection>, the
 % <ColorCoding_demo.html color coding>, or by adding 
-% <Annotations_demo.html colorbars or other annotations> to the plot. This way
-% MTEX allows you to create publication ready plots which can be exported
-% to almost any format using the commands <savefigure.html savefigure>.
+% <Annotations_demo.html colorbars or other annotations> to the plot. You
+% can even <CombinedPlots_demo.html combine plots> of different ODFs or
+% EBSD data. This way MTEX allows you to create publication ready plots
+% which can be exported to almost any format using the commands
+% <savefigure.html savefigure>.
 %
 %
 %% Plotting Three Dimensional Vectors
@@ -82,32 +84,3 @@ plot(ebsd)
 h = [Miller(0,0,0,1,cs),Miller(1,0,-1,0,cs)];
 plotpdf(ebsd,h,'reduced','diameter',0.05)
 
-
-%% Combining Several Plots
-%
-% Sometimes it is usefull to combine several plots, e.g. plotting on the
-% top of an inverse pole figure some important crystall directions. This
-% can be performed by the command <a href="matlab:doc hold">hold all</a>,
-% which preserfes MATLAB from replacing the old plot by the new one.
-%
-% First we want to superpose the above EBSD pole figure with another EBSD
-% pole figure.
-ebsd_rotated = simulateEBSD(rotate(odf,euler2quat(60*degree,60*degree,0*degree)),100);
-
-hold all % keep plot
-plotpdf(ebsd_rotated,h,'diameter',0.05);
-hold off % next plot command deletes all plots
-
-%%
-% Next we are going to add some Miller indece to an inverse pole figure
-% plot.
-
-close all;
-plotipdf(odf,xvector);
-
-hold all % keep plot
-plot(Miller(1,1,-2,0,cs),'all')
-plot(Miller(0,1,-1,0,cs),'all')
-plot(Miller(1,1,-2,1,cs),'all')
-hold off % next plot command deletes all plots
-set(gcf,'position',[100,100,300,220]);
