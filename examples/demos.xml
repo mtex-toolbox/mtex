@@ -31,7 +31,7 @@ MTEX is a toolbox for quantitative texture analysis. It provides tools to analyz
 <demoitem>
    <label>The Santafee example</label>
    <type>M-file</type>
-   <source>demo_santafee</source>
+   <source>santafee_demo</source>
 </demoitem>
 <demoitem>
    <label>ODF Analysis</label>
