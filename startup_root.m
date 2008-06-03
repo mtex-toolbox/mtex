@@ -3,7 +3,9 @@ function startup %#ok<FNDEF>
 
 addpath([matlabroot,'/toolbox/mtex'],0);
 
-disp('in order to start the MTEX toolbox type: startup_mtex')
+disp('MTEX toolbox not yet loaded!');
+disp(['To load the MTEX toolbox type: '...
+  '<a href="matlab:startup_mtex">startup_mtex</a>']);
 
 
 

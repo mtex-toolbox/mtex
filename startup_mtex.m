@@ -47,7 +47,7 @@ mtex_logfile = [mtex_tmppath,'output_',host(1:end-1),'_',user(1:end-1),'.log'];
 % MTEX sometimes experences problems when printing the degree character
 % reenter the degree character here in this case
 global mtex_degree;
-mtex_degree = '°';
+mtex_degree = 'ï¿½';
 
 %% debugging
 % comment out to turn on debugging
@@ -71,7 +71,7 @@ mtex_prefix_cmd = '';
 %% commands to be executed after the external c program
 % this might be usefull when redirecting the output or close brackets
 global mtex_postfix_cmd;
-mtex_postfix_cmd = '°';
+mtex_postfix_cmd = 'ï¿½';
 
 
 %% local machineformat
@@ -137,10 +137,13 @@ check_installation;
 
 
 %% finish
-disp('MTEX toolbox (v0.4) loaded')
-
-%web([mtex_path '/help/html/mtex_top.html'],'-helpbrowser')
-
+disp('MTEX toolbox (v0.5) loaded')
+disp(' ');
+disp('Basic tasks:')
+disp('- <a href="matlab:doc mtex">Show MTEX documentation</a>')
+disp('- <a href="matlab:import_wizard_PoleFigure">Import pole figure data</a>')
+disp('- <a href="matlab:import_wizard_EBSD">Import EBSD data</a>')
+disp(' ');
 
 %% --------- private functions ----------------------
 function m = getmem
