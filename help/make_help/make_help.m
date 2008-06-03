@@ -22,7 +22,7 @@ if check_option(varargin, {'general','all'})
   current_path = [mtex_path '/help/general'];
   files = dir([current_path '/*.m']);
   publish_files({files.name},current_path,'out_dir',html_path,varargin{:});
-  unix(['cp -f ' html_path '/mtex_top.html ' html_path '/help_product_page.html']);
+%  unix(['cp -f ' html_path '/mtex_top.html ' html_path '/help_product_page.html']);
 end
 
 
@@ -130,12 +130,10 @@ end
 toc
 
 %% create searchable database
-cd([mtex_path '/help']);
-disp('run: jar -cf help.jar -C html/ .');
-pause
-cd('html');
+system('jar -cf ../mtex/help.jar -C ../html/ .');
+cd([mtex_path '/help/html']);
 builddocsearchdb('.');
 global mtex_startup_dir;
-unix(['rm -rf ' mtex_path '/help/helpsearch']);
-unix(['mv -f ' mtex_startup_dir,'/helpsearch ' mtex_path '/help/']);
+unix(['rm -rf ' mtex_path '/help/mtex/helpsearch']);
+unix(['mv -f ' mtex_startup_dir,'/helpsearch ' mtex_path '/help/mtex/']);
 cd([mtex_path '/help/make_help']);

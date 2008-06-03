@@ -1,16 +1,17 @@
 %% MTEX Changelog
 %
 %
-%% MTEX 0.5 -
+%% MTEX 0.5 - 06/2008
 %
 % *MTEX binaries for Windows, Linux, and Max OSX*
 %
-% MTEX ships now with binaries for Windows, Linux, and Max OSX. This makes
-% in unnecessary to install any additional library and to compile the toolbox.
+% * MTEX ships now with binaries for Windows, Linux, and Max OSX. This makes
+% in unnecessary to install any additional library and to compile the
+% toolbox. (thanks to F. Bachmann and C. Randau )
 %
 % *New Interfaces*
 %
-% * new PoleFigure interface for xrdml data
+% * new PoleFigure interface for xrdml data (thanks to F. Bachmann)
 %
 % *Improved Plotting*
 %
@@ -44,7 +45,7 @@
 % * Many other bug fixes.
 % 
 %
-%% MTEX 0.4 - 07.04.2008
+%% MTEX 0.4 - 04/2008
 %
 % *Speed Improvments*
 %
@@ -93,7 +94,7 @@
 % * Crystal symmetry *triclinic* is not called *tricline* anymore.
 %
 %
-%% MTEX 0.3 - 22.10.2007
+%% MTEX 0.3 - 10/2007
 %
 % * new function [[ODF_fourier.html,fourier]] to calculate the
 % Fouriercoefficents of an arbitrary ODF
@@ -115,7 +116,7 @@
 % * many bugfixes
 %
 %
-%% MTEX 0.2 - 01.07.2007
+%% MTEX 0.2 - 07/2007
 %
 % * new functions [[ODF_textureindex.html,textureindex]], [[ODF_entropy.html,entropy]], [[ODF_volume.html,volume]]
 % * creatly improved help 
@@ -124,7 +125,7 @@
 % * many bugfixes
 %
 %
-%% MTEX 0.1 - 01.04.2007
+%% MTEX 0.1 - 03/2007
 %
 % * initial release
 %

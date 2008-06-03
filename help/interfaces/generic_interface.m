@@ -13,7 +13,8 @@
 %
 % The actual position and order of the columns in the file can be specified
 % by the option |LAYOUT|. Furthermore, the files can be contain any number
-% of header lines to be ignored using the option |HEADER|.
+% of header lines to be ignored using the option |HEADER|. If you feel
+% unsure how to set the options use the import wizard to create a template.
 % 
 % The following example was provided by Dr. Garbe from Munich
 
@@ -40,11 +41,6 @@ layout = [2 3 1 4];
 %% import the data
 
 pf = loadPoleFigure(fname,cs,ss,'layout',layout);
-
-%% using the import wizard
-% one may also use the import wizard to determine the right layout
-
-pf2 = loadPoleFigure(fname,cs,ss);
 
 
 %% plot data
