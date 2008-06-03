@@ -11,6 +11,17 @@
 % Furthermore, such a EBSD object is the starting point to estimate an ODF
 % using the command <EBSD_calcODF.html calcODF>.
 %
+%
+%% Inporting EBSD data using the import wizard
+%
+% The most simplest way to load EBSD data is to use the 
+% [[import_wizard_EBSD.html,import wizard]], which can be started either by
+% typing  nto the command line 
+
+import_wizard_PoleFigure; 
+
+% or by clicking *Start/Toolboxes/MTEX/load EBSD data*.
+%
 %% Importing EBSD data using the method loadEBSD
 % So far only diffraction data that are stored in a ascii file that consists
 % of a table containing in each row the Eule angles of a single orientation

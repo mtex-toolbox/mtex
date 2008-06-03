@@ -17,11 +17,12 @@
 %
 %% Inporting pole figure data using the import wizard
 %
-% The [[import_wizard.html,import wizard]] can be started either by typing 
-% into the command line 
+% The [[import_wizard_PoleFigure.html,import wizard]] can be started either
+% by typing into the command line 
 import_wizard_PoleFigure; 
 
-
+% or using the menu item *Start/Toolboxes/MTEX/import pole figure data*.
+%
 %%
 % or by choosing _MTEX / import wizard_ from the start menu. The import
 % wizard provides a gui to import data of almost all data formats MTEX
