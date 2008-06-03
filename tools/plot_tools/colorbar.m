@@ -24,11 +24,11 @@ if strcmp(get(gcf,'tag'),'multiplot')
     if ~check_option(varargin,'log') && (check_option(varargin,'south') || ...
         (fpos(4) > apos(2)+5 && ~check_option(varargin,'east')))
       varargin = {'south',varargin{:}};
-      fpos(4) = apos(2)+75;
+      fpos(4) = apos(2)+65;
     else
       varargin = {'east',varargin{:}};
       fpos(4) = apos(2)+1;
-      fpos(3) = apos(1)+75;
+      fpos(3) = apos(1)+65;
     end
 
   end

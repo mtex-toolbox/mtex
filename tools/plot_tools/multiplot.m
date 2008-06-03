@@ -184,9 +184,9 @@ end
 
 if scr, setcolorrange(colorrange);end
 
-% clear statusbar
 if ~ishold
   
+  % clear statusbar
   try, statusbar;catch,end; 
 
   set(gcf,'ResizeFcn',@(src,evt) figResize(src,evt,a));
@@ -248,20 +248,20 @@ set(fig,'Units','pixels');
 if strcmp(getappdata(fig,'autofit'),'on')
 
   figpos = get(fig,'Position');
-  offsety = 1;%25;
-  offsetx = 0;%10;
+  offsety = 10;
+  offsetx = 10;
   %figpos(3:4) = figpos(3:4) - 1;
-  figpos(4) = figpos(4)-offsety;
-  figpos(3) = figpos(3)-offsetx;
+  figpos(4) = figpos(4)-2*offsety;
+  figpos(3) = figpos(3)-2*offsetx;
   dxdy = get(a(1),'PlotBoxAspectRatio');
   dxdy = dxdy(2)/dxdy(1);
   [nx,ny,l] = bestfit(figpos(3),figpos(4)/dxdy,length(a));
-  set(gcf,'UserData',[nx*l,ny*l*dxdy]);
-  setappdata(gcf,'length',l);
+  set(fig,'UserData',[nx*l+2*offsetx,ny*l*dxdy+2*offsety]);
+  setappdata(fig,'length',l);
 
   for i = 1:length(a)
     [px,py] = ind2sub([nx ny],i);
-    apos = [1+(px-1)*l,offsety+1+figpos(4)-py*l*dxdy,l,l*dxdy];
+    apos = [1+offsetx+(px-1)*l,1+offsety+figpos(4)-py*l*dxdy,l,l*dxdy];
     set(a(i),'Units','pixels','Position',apos);
   end
 end
@@ -269,7 +269,7 @@ end
 scalescatterplots(fig);
   
 % set position of labels
-u = findobj(gcbo,'Tag','rda');
+u = findobj(fig,'Tag','rda');
 for i = 1:length(u)
  
  a = get(u(i),'parent');
