@@ -65,7 +65,7 @@ release:
 	rm -rf ../../$(RNAME)*
 	cp -R ../trunk ../../$(RNAME)
 	find ../../$(RNAME) -name .svn | xargs /bin/rm -rf
-	find ../../$(RNAME) -name '*~' -or -name '*.log' -or -name '*.o' -or -name '*.orig' -or -name '.directory' | xargs /bin/rm -rf
+	find ../../$(RNAME) -name '*~' -or -name '*.mex*' -or -name '*.log' -or -name '*.o' -or -name '*.orig' -or -name '.directory' | xargs /bin/rm -rf
 	rm -f ../../$(RNAME)/c/bin/*
 	rm -rf ../../$(RNAME)/help/html
 
@@ -73,9 +73,9 @@ release:
 	cp -R ../../$(RNAME) ../../$(RNAME)-Windows
 	cp -R ../../$(RNAME) ../../$(RNAME)-MACOSX
 		
-	cp -R ../../mtex-binaries/Linux ../../$(RNAME)-Linux
-	cp -R ../../mtex-binaries/Windows ../../$(RNAME)-Windows
-	cp -R ../../mtex-binaries/MACOSX ../../$(RNAME)-MACOSX
+	cp -R ../../mtex-binaries/Linux/* ../../$(RNAME)-Linux
+	cp -R ../../mtex-binaries/Windows/* ../../$(RNAME)-Windows
+	cp -R ../../mtex-binaries/MACOSX/* ../../$(RNAME)-MACOSX
 
 	
 	tar -czf ../../$(RNAME)-Linux.tar.gz ../../$(RNAME)-Linux
