@@ -130,6 +130,8 @@ end
 toc
 
 %% create searchable database
+copyfile([mtex_path,'/help/general/*.html'],[mtex_path,'/help/html'])
+copyfile([mtex_path,'/help/general/*.gif'],[mtex_path,'/help/html'])
 system('jar -cf ../mtex/help.jar -C ../html/ .');
 cd([mtex_path '/help/html']);
 builddocsearchdb('.');
