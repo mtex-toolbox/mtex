@@ -13,16 +13,24 @@ html_path = [mtex_path '/help/html'];
 global mtex_progress;
 mtex_progress = 0;
 
+if check_option(varargin,'all')
+  delete([html_path,' *.*']);
+end
+
+
 set(0,'FormatSpacing','compact')
 
 %% generate general help files
 
 if check_option(varargin, {'general','all'})
   
+  % copy html files
+  copyfile([mtex_path,'/help/general/*.html'],[mtex_path,'/help/html'])
+  copyfile([mtex_path,'/help/general/*.gif'],[mtex_path,'/help/html'])
+  
   current_path = [mtex_path '/help/general'];
   files = dir([current_path '/*.m']);
   publish_files({files.name},current_path,'out_dir',html_path,varargin{:});
-%  unix(['cp -f ' html_path '/mtex_top.html ' html_path '/help_product_page.html']);
 end
 
 
@@ -130,8 +138,6 @@ end
 toc
 
 %% create searchable database
-copyfile([mtex_path,'/help/general/*.html'],[mtex_path,'/help/html'])
-copyfile([mtex_path,'/help/general/*.gif'],[mtex_path,'/help/html'])
 system('jar -cf ../mtex/help.jar -C ../html/ .');
 cd([mtex_path '/help/html']);
 builddocsearchdb('.');
