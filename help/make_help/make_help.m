@@ -15,6 +15,7 @@ mtex_progress = 0;
 
 if check_option(varargin,'all')
   delete([html_path,' *.*']);
+  delete([mtex_path,'examples/html/*.*']);
 end
 
 
