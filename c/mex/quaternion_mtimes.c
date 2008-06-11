@@ -28,7 +28,14 @@
 #define	SQR(A)	((A)*(A))
 #endif
 
-#include "mex.h"
+#include <mex.h>
+#if !defined(MWSIZE_MAX)
+typedef	int mwSize;
+typedef	int mwIndex;
+typedef	int mwSignedIndex;
+#endif
+
+
 /* Input Arguments */
 
 #define	a_IN prhs[0]

@@ -1,5 +1,5 @@
 #include <math.h>
-#include "mex.h"
+#include <mex.h>
 
 #if !defined(MAX)
 #define	MAX(A, B)	((A) > (B) ? (A) : (B))
@@ -27,6 +27,12 @@
 
 #if !defined(DIST)
 #define	DIST(A, B)	(MIN(B-A,A))
+#endif
+
+#if !defined(MWSIZE_MAX)
+typedef	int mwSize;
+typedef	int mwIndex;
+typedef	int mwSignedIndex;
 #endif
 
 
