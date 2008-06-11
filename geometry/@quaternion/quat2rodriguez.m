@@ -11,4 +11,5 @@ function v = quat2rodriguez(q)
 %% See also
 % quaternion/quat2euler
 
+q.a(q.a==0) = 1e-100;
 v = vector3d(q.b./q.a,q.c./q.a,q.d./q.a);
