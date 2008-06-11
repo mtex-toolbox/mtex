@@ -47,7 +47,8 @@ mtex_logfile = [mtex_tmppath,'output_',host(1:end-1),'_',user(1:end-1),'.log'];
 % MTEX sometimes experences problems when printing the degree character
 % reenter the degree character here in this case
 global mtex_degree;
-mtex_degree = '�';
+mtex_degree = native2unicode([194 176],'UTF-8');
+%mtex_degree = '°';
 
 %% debugging
 % comment out to turn on debugging
@@ -71,7 +72,7 @@ mtex_prefix_cmd = '';
 %% commands to be executed after the external c program
 % this might be usefull when redirecting the output or close brackets
 global mtex_postfix_cmd;
-mtex_postfix_cmd = '�';
+mtex_postfix_cmd = '';
 
 
 %% local machineformat
@@ -98,20 +99,44 @@ mtex_startup_dir = pwd;
 %% compatibility issues
 warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
 
+
 %% check for search path
 
 % check wether mtex_path is in search path
 if ispc
-  cellpath = regexp(path,';','split');
+  cellpath = splitstr(path,';'); %regexp(path,';','split');
 else
-  cellpath = regexp(path,':','split');
+  cellpath = splitstr(path,':'); %regexp(path,':','split');
 end
 if ~any(strcmp(mtex_path,cellpath))
+  
+  cd('..'); % leave current directory for some unknown reason
   addpath(mtex_path);
-  disp('Permanently add MTEX to the MATLAB search path.');
-  if savepath
-    warning('The MATLAB search path could not be saved! Please save the modified MATLAB search path manually!');
+  disp('MTEX is currently not installed.');
+  r= input('Do you want to permanently install MTEX? Y/N [Y]','s');
+  if isempty(r) || any(strcmpi(r,{'Y',''}))
+    
+    disp(' ');
+    disp('Try to permanently add MTEX to the MATLAB search path.');
+    
+    if savepath
+      disp(' ');
+      disp('The MATLAB search path could not be saved!');
+      disp('This properply requires root privilegies.');
+      disp('In order to complete the installation you have two posibilities:');
+      disp('1. Move the file "startup_root.m" to matlab_directory/toolbox/local');
+      disp('   and rename it to "startup.m" --> global installation');
+      disp('2. Define the mtex path as you MATLAB  path i.e. include into ".bashrc":')
+      disp(['  export MATLABPATH="' mtex_path '"']);
+    else
+      disp('MTEX added to MATLAB search path.');
+    end   
   end
+  disp(' ');
+  disp('MTEX is now running. However MTEX documentation might not be functional.');
+  disp('In order to see the documentation restart MATLAB or click');
+  disp('start->Desktop Tools->View Source Files->Refresh Start Button');
+  disp(' ');
 end
 
 %% setup search path 
@@ -124,7 +149,7 @@ toadd = {'',...
   'tools/import_wizard','tools/plot_tools','tools/statistic_tools',...
   'tools/misc_tools','tools/math_tools',...
   'examples','tests',...
-  'help/interfaces','help/ODFCalculation','help/plotting'};
+  'help/interfaces','help/ODFCalculation','help/plotting','c/mex'};
 
 for i = 1:length(toadd)
   p = [mtex_path,filesep,toadd{i}];
@@ -159,3 +184,8 @@ catch %#ok<CTCH>
     m = 300 * 1024;
   end
 end
+
+function cstr = splitstr(str,c)
+
+pos = [0,findstr(str,c),length(str)+1];
+cstr = arrayfun(@(i) str(pos(i-1)+1:pos(i)-1),2:length(pos),'uniformoutput',0);
