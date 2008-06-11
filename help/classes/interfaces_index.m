@@ -15,16 +15,16 @@
 % Furthermore, such a PoleFigure object is the starting point to
 % recalculate an ODF using the command <PoleFigure_calcODF.html calcODF>.
 %
-%% Inporting pole figure data using the import wizard
+%% Inport Pole Figure Data Using the Import Wizard
 %
 % The [[import_wizard_PoleFigure.html,import wizard]] can be started either
 % by typing into the command line 
 import_wizard_PoleFigure; 
 
-% or using the menu item *Start/Toolboxes/MTEX/import pole figure data*.
-%
 %%
-% or by choosing _MTEX / import wizard_ from the start menu. The import
+% or using from the start menu the item 
+% *Start/Toolboxes/MTEX/Import Wizard* or by clicking rigth on a
+% data file and choosing *import*. The import
 % wizard provides a gui to import data of almost all data formats MTEX
 % currently supports and to specify crystal symmetry, Miller indece and
 % structure coefficients. The gui allows to plot the imported data, save
@@ -45,6 +45,7 @@ import_wizard_PoleFigure;
 % * <philips_interface.html Philips>
 % * <ptx_interface.html PTX>
 % * <xrdml_interface.html XRDML>
+%
 %
 %% Importing pole figure data using the method loadPoleFigure
 %

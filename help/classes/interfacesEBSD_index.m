@@ -20,9 +20,19 @@
 
 import_wizard_PoleFigure; 
 
-% or by clicking *Start/Toolboxes/MTEX/load EBSD data*.
+%%
+% or using from the start menu the item 
+% *Start/Toolboxes/MTEX/Import Wizard EBSD* or by clicking rigth on a
+% data file and choosing *import*. The import
+% wizard provides a gui to import data of almost all data formats MTEX
+% currently supports and to specify crystal symmetry, specimen symmetry,
+% Euler angle convention and phase. The gui allows to save the imported
+% them as a <EBSD_index.html EBSD> object to the workspace or to
+% generate a m-file loading the data automatically.
+%
 %
 %% Importing EBSD data using the method loadEBSD
+%
 % So far only diffraction data that are stored in a ascii file that consists
 % of a table containing in each row the Eule angles of a single orientation
 % can be imported using the command <loadEBSD.html loadEBSD>. 
