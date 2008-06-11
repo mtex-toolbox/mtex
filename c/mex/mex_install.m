@@ -21,13 +21,17 @@ for p = 1:length(places)
   for f = 1:length(files)
     if exist([mexpath,files{f}],'file')      
       disp(['compile ',files{f}]);
-      mex(mexoptions,[mexpath,files{f}]);
+      if newer_versionp(7.3)
+        mex(mexoptions,[mexpath,files{f}]);
+      else
+        mex([mexpath,files{f}]);
+      end
     end
   end
-  try
-    movefile([mexpath,places{p},'*.mex*'],...
-      [mtexpath,'/geometry/@',places{p},'/private']);
-  catch
-    disp('There was an error while moving the mex files! Please move the files manualy')
-  end
+%  try
+%    movefile([mexpath,places{p},'*.mex*'],...
+%      [mtexpath,'/geometry/@',places{p},'/private']);
+%  catch
+%    disp('There was an error while moving the mex files! Please move the files manualy')
+%  end
 end

@@ -15,8 +15,8 @@ all: $(MTEX_MEX)
 	$(MATLABPATH)/bin/mex $(MEXFLAGS) $< 
 
 install:
-	mv S1Grid*.mex* $(INSTALLPATH)/@S1Grid/private/
-	mv S2Grid*.mex* $(INSTALLPATH)/@S2Grid/private/
-	mv SO3Grid*.mex* $(INSTALLPATH)/@SO3Grid/private/
-	mv quaternion*.mex* $(INSTALLPATH)/@quaternion/private/
+#	mv S1Grid*.mex* $(INSTALLPATH)/@S1Grid/private/
+#	mv S2Grid*.mex* $(INSTALLPATH)/@S2Grid/private/
+#	mv SO3Grid*.mex* $(INSTALLPATH)/@SO3Grid/private/
+#	mv quaternion*.mex* $(INSTALLPATH)/@quaternion/private/
 clean:

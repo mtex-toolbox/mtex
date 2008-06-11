@@ -19,6 +19,12 @@
 
 
 #include <mex.h>
+#if !defined(MWSIZE_MAX)
+typedef	int mwSize;
+typedef	int mwIndex;
+typedef	int mwSignedIndex;
+#endif
+
 /* Input Arguments */
 
 #define	a1_IN prhs[0]
