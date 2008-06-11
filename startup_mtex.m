@@ -96,48 +96,14 @@ mtex_data_path = [mtex_path filesep 'data'];
 global mtex_startup_dir;
 mtex_startup_dir = pwd;
 
+
 %% compatibility issues
 warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
 
 
-%% check for search path
+%% needs installation ?
+install_mtex(mtex_path);
 
-% check wether mtex_path is in search path
-if ispc
-  cellpath = splitstr(path,';'); %regexp(path,';','split');
-else
-  cellpath = splitstr(path,':'); %regexp(path,':','split');
-end
-if ~any(strcmp(mtex_path,cellpath))
-  
-  cd('..'); % leave current directory for some unknown reason
-  addpath(mtex_path);
-  disp('MTEX is currently not installed.');
-  r= input('Do you want to permanently install MTEX? Y/N [Y]','s');
-  if isempty(r) || any(strcmpi(r,{'Y',''}))
-    
-    disp(' ');
-    disp('Try to permanently add MTEX to the MATLAB search path.');
-    
-    if savepath
-      disp(' ');
-      disp('The MATLAB search path could not be saved!');
-      disp('This properply requires root privilegies.');
-      disp('In order to complete the installation you have two posibilities:');
-      disp('1. Move the file "startup_root.m" to matlab_directory/toolbox/local');
-      disp('   and rename it to "startup.m" --> global installation');
-      disp('2. Define the mtex path as you MATLAB  path i.e. include into ".bashrc":')
-      disp(['  export MATLABPATH="' mtex_path '"']);
-    else
-      disp('MTEX added to MATLAB search path.');
-    end   
-  end
-  disp(' ');
-  disp('MTEX is now running. However MTEX documentation might not be functional.');
-  disp('In order to see the documentation restart MATLAB or click');
-  disp('start->Desktop Tools->View Source Files->Refresh Start Button');
-  disp(' ');
-end
 
 %% setup search path 
 toadd = {'',...
@@ -170,7 +136,110 @@ disp('- <a href="matlab:import_wizard_PoleFigure">Import pole figure data</a>')
 disp('- <a href="matlab:import_wizard_EBSD">Import EBSD data</a>')
 disp(' ');
 
+end
 %% --------- private functions ----------------------
+
+
+%% mtext installation
+function install_mtex(mtex_path)
+
+% check wether mtex_path is in search path
+if ispc
+  cellpath = splitstr(path,';'); %regexp(path,';','split');
+else
+  cellpath = splitstr(path,':'); %regexp(path,':','split');
+end
+
+if any(strcmp(mtex_path,cellpath)), return;end
+
+
+% if not yet installed
+disp('MTEX is currently not installed.');
+
+cd('..'); % leave current directory for some unknown reason
+addpath(mtex_path);
+
+r= input('Do you want to permanently install MTEX? Y/N [Y]','s');
+if isempty(r) && any(strcmpi(r,{'Y',''}))
+
+  disp(' ');
+  disp('Adding MTEX to the MATLAB search path.');
+  if isunix || ismac
+    r = install_mtex_linux;
+  else
+    r = install_mtex_windows;
+  end
+  
+  if r, disp('MTEX permanently added to MATLAB search path.');end
+end
+  
+
+disp(' ');
+disp('MTEX is now running. However MTEX documentation might not be functional.');
+disp('In order to see the documentation restart MATLAB or click');
+disp('start->Desktop Tools->View Source Files->Refresh Start Button');
+disp(' ');
+doc; pause(0.1);commandwindow;
+
+
+end
+
+%% windows
+function out = install_mtex_windows
+  
+out = 0;
+if ~savepath, out = 1;return;end
+
+disp(' ');
+disp('The MATLAB search path could not be saved!');
+disp('Save the search path manually using the MATLAB menu File -> Set Path.');
+
+end
+
+%% Linux
+function out = install_mtex_linux
+
+global mtex_path
+
+% try to save the normal way
+if ~savepath, out = 1;return;end
+
+% create startup_root
+addpath([mtex_path,'/tools/file_tools'],0);
+startup_file = file2cell([mtex_path '/startup_root.m']);
+line = strmatch('addpath',startup_file);
+
+startup_file{line} = ['addpath(''' mtex_path ''',0);'];
+cell2file([mtex_path '/startup_tmp.m'],startup_file);
+
+% copy startup_root
+disp('I need root privelegs to add MTEX to the MATLAB search path.');
+disp('Please enter the password!');
+
+% is there sudo?
+if exist('/usr/bin/sudo','file') 
+  
+  out = ~system(['sudo cp ' mtex_path '/startup_tmp.m ' toolboxdir('local') '/startup.m']);
+  
+else % use su
+  
+  out = ~system(['su -c cp ' mtex_path '/startup_tmp.m ' toolboxdir('local') '/startup.m']);
+  
+end
+
+if ~out
+  disp(' ');
+  disp('The MATLAB search path could not be saved!');
+  disp('In order to complete the installation you have two posibilities:');
+  disp('1. Move the file "startup_root.m" to matlab_directory/toolbox/local');
+  disp('   and rename it to "startup.m" --> global installation');
+  disp('2. Define the mtex path as you MATLAB  path i.e. include into ".bashrc":')
+  disp(['  export MATLABPATH="' mtex_path '"']);
+end
+
+end
+
+%% get memory
 function m = getmem
 % return total system memory in kb
 
@@ -184,8 +253,11 @@ catch %#ok<CTCH>
     m = 300 * 1024;
   end
 end
+end
 
+%%
 function cstr = splitstr(str,c)
 
 pos = [0,findstr(str,c),length(str)+1];
 cstr = arrayfun(@(i) str(pos(i-1)+1:pos(i)-1),2:length(pos),'uniformoutput',0);
+end
