@@ -7,11 +7,12 @@ try
   fast_check_mex;
 catch
   warning('%s\n','--MTEX-- Error using mex files!');
-  disp('Trying now with older version.');
-  
+
   try
+    mtex_assert(exist([mtex_path '/c/mex/v7.1'],'dir'));
     rmpath([mtex_path '/c/mex']);
     addpath([mtex_path '/c/mex/v7.1']);
+    disp('Trying now with older version.');
     fast_check_mex;    
     disp('Hurray - everythink works!')
     try
@@ -19,10 +20,12 @@ catch
       rmpath([mtex_path '/c/mex/v7.1']);
       addpath([mtex_path '/c/mex']);
     catch
-      disp('Befor starting the next session copy the mex files from ');
+      disp('Error while copying!')
+      disp('You should copy');
       disp([' ' mtex_path '/c/mex/v7.1']);
       disp(' to ');
       disp([' ', mtex_path '/c/mex']);
+      disp('Befor starting the next session');
     end    
   catch
     
