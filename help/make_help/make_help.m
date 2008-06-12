@@ -14,7 +14,7 @@ global mtex_progress;
 mtex_progress = 0;
 
 if check_option(varargin,'all')
-  delete([html_path,' *.*']);
+  delete([html_path,'/*.*']);
   delete([mtex_path,'examples/html/*.*']);
 end
 
@@ -86,7 +86,7 @@ if check_option(varargin, {'mfiles','all'})
  % publish all script_files in help/classes directory
  files = dir([html_path '/script_*.m']);
  publish_files({files.name},html_path,'out_dir',html_path,...
-   'stylesheet',[pwd '/publishmtex.xsl'],varargin{:});
+   'stylesheet',[pwd '/publishmtex.xsl'],varargin{:},'waitbar');
  delete([html_path '/script_*.m']);
  
 end

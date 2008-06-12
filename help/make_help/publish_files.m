@@ -9,20 +9,32 @@ poptions.stylesheet = get_option(varargin,'Stylesheet','');
 poptions.evalCode = check_option(varargin,'evalCode');
 poptions.outputDir = get_option(varargin,'out_dir','.');
 
+global mtex_progress;
+
 
 %% convert to html
 
 old_dir = pwd;cd(in_dir);
 
-if get_option(varargin,'waitbar'), h = waitbar(0,'publishing');end
+if check_option(varargin,'waitbar')
+  mtex_progress = 1;
+  progress(0,length(files),'publishing: ');
+end
+
 for i=1:length(files)
+
+  if check_option(varargin,'waitbar')
+    mtex_progress = 1;
+    progress(i,length(files),'publishing: ');
+    mtex_progress = 0;
+  end
   
-  if check_option(varargin,'waitbar'),waitbar(i/length(files));end
   close all
   if poptions.evalCode || check_option(varargin,'verbose'),disp(files{i});end
-  
+
   % publish
   publish(files{i},poptions);
+
   
   % format html file
   out_file = [poptions.outputDir filesep strrep(files{i},'.m','.html')];
