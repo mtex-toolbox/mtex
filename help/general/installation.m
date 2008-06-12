@@ -14,10 +14,9 @@
 % has been tested with MATLAB versions 7.1 and higher.
 %
 %
-%% Personal Installation
+%% Installation
 %
-% If you want to have a personal installation that is vissible only to
-% you, then 
+% In order to install MTEX proceed as follows
 %
 % * extract MTEX to an arbitrary folder
 % * start MATLAB
@@ -27,9 +26,10 @@
 %
 %% Installation for All Users
 %
-% If you want to habe MTEX available to all users of the computer, then
+% If you are a system administrator and want to install MTEX such that it
+% is available to all users of the computer, then 
 %
-% * extract MTEX to MATLAB_directoty/toolbox/mtex
+% * copy the MTEX directory to MATLAB_directoty/toolbox/mtex
 % * rename mtex/startup_root.m to mtex/startup.m overwritting the old
 % file mtex/startup.m
 % * move mtex/startup.m to MATLAB_directoty/toolbox/local
@@ -43,28 +43,32 @@
 'MTEX toolbox loaded'
 
 %%
-% for a local installation or the message
+% or in the case of a All User Installation
 
 'in order to start the MTEX toolbox type: startup_mtex'
 
-%% 
-% for a global installation. In this case you have to type in the command 
-
-startup_mtex
-
 %%
-% and the MTEX toolbox is loaded. After the MTEX toolbox is loaded you
-% can check your installation under MATLAB by typing 
+% After the MTEX toolbox is loaded you can check your installation by
+% typing  
 
 check_mtex
 
-%%
-% You can also edit the file [[matlab:edit startup_mtex.m,startup_mtex.m]] to change the 
-% configuration of you MTEX installation. 
+%% Configure MTEX
 %
-%% Compiling MTEX Your Self
+% You can configure your MTEX installation by editting the file
+% [[matlab:edit startup_mtex.m,startup_mtex.m]]. See 
+% <configuration.html Configuration> for more details!
+%
+%
+%% Compile MTEX Your Self
 %
 % Compiling MTEX is only neccesary if the provided binaries does not run
 % on your system (e.g. if you have a 64 bit system) or if you want to
 % optimize them to you specific system. Compiling intstructions can be
 % found <compilation.html here>.
+%
+%% Trouble Shooting
+%
+% Don't hesitate to contact the <mtex_about.html authors> of MTEX if you
+% have any problems.
+%

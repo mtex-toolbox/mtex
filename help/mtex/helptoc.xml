@@ -8,12 +8,10 @@
   Feature Overview
 </tocitem>
 
-<tocitem target="getting_started.html"
+<tocitem target="installation.html"
 	 image="$toolbox/matlab/icons/greenarrowicon.gif">
   Getting Started with the MTEX Toolbox
-  <tocitem target="installation.html">Installation Guide</tocitem>
   <tocitem target="configuration.html">Configuration</tocitem>
-  <tocitem target="troubleshooting.html">Troubleshooting</tocitem>
   <tocitem target="compilation.html">Compilation Guide</tocitem>
 </tocitem>
 

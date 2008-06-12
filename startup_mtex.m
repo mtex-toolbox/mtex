@@ -150,11 +150,23 @@ else
   cellpath = splitstr(path,':'); %regexp(path,':','split');
 end
 
-if any(strcmp(mtex_path,cellpath)), return;end
+if any(strcmpi(mtex_path,cellpath)), return;end
 
 
 % if not yet installed
 disp('MTEX is currently not installed.');
+
+% look for older version
+if any(strfind(path,'mtex'))
+  disp('I found an older version of MTEX!');
+  disp('I remove it from the current search path!');
+  for i = 1:length(cellpath)
+    if strfind(cellpath{i},'mtex')
+      rmpath(cellpath{i});
+    end
+  end  
+end
+
 
 cd('..'); % leave current directory for some unknown reason
 addpath(mtex_path);
@@ -162,6 +174,17 @@ addpath(mtex_path);
 r= input('Do you want to permanently install MTEX? Y/N [Y]','s');
 if isempty(r) && any(strcmpi(r,{'Y',''}))
 
+  % check for old startup.m
+  if exist([toolboxdir('local'),'/startup.m'],'file')
+    disp(['There is an old file startup.m in ' toolboxdir('local')]);
+    disp('I''m going to remove it!');
+    if ispc
+      delete([toolboxdir('local'),'/startup.m']);
+    else
+      sudo(['rm ' toolboxdir('local'),'/startup.m'])
+    end
+  end
+  
   disp(' ');
   disp('Adding MTEX to the MATLAB search path.');
   if isunix || ismac
@@ -199,43 +222,42 @@ end
 %% Linux
 function out = install_mtex_linux
 
-global mtex_path
-
 % try to save the normal way
 if ~savepath, out = 1;return;end
 
-% create startup_root
-addpath([mtex_path,'/tools/file_tools'],0);
-startup_file = file2cell([mtex_path '/startup_root.m']);
-line = strmatch('addpath',startup_file);
+savepath([tempdir 'pathdef.m']);
 
-startup_file{line} = ['addpath(''' mtex_path ''',0);'];
-cell2file([mtex_path '/startup_tmp.m'],startup_file);
+% move pathdef.m
+out = sudo(['mv ' tempdir '/pathdef.m ' toolboxdir('local')]);
 
-% copy startup_root
-disp('I need root privelegs to add MTEX to the MATLAB search path.');
+if ~out
+  disp(' ');
+  disp('The MATLAB search path could not be saved!');
+  disp('In order to complete the installation you have to move the file');
+  disp([tempdir '/pathdef.m']);
+  disp('to');
+  disp(toolboxdir('local'));
+end
+
+end
+
+function out = sudo(c)
+
+disp('I need root privelegs to perform the following command');
+disp(['  ' c]);
 disp('Please enter the password!');
 
 % is there sudo?
 if exist('/usr/bin/sudo','file') 
   
-  out = ~system(['sudo cp ' mtex_path '/startup_tmp.m ' toolboxdir('local') '/startup.m']);
+  out = ~system(['sudo ' c]);
   
 else % use su
   
-  out = ~system(['su -c cp ' mtex_path '/startup_tmp.m ' toolboxdir('local') '/startup.m']);
+  out = ~system(['su -c mv ' tmpdir '/pathdef.m ' toolboxdir('local')]);
   
 end
 
-if ~out
-  disp(' ');
-  disp('The MATLAB search path could not be saved!');
-  disp('In order to complete the installation you have two posibilities:');
-  disp('1. Move the file "startup_root.m" to matlab_directory/toolbox/local');
-  disp('   and rename it to "startup.m" --> global installation');
-  disp('2. Define the mtex path as you MATLAB  path i.e. include into ".bashrc":')
-  disp(['  export MATLABPATH="' mtex_path '"']);
-end
 
 end
 
