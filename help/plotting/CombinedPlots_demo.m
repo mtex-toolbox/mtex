@@ -31,7 +31,7 @@ hold off % next plot command deletes all plots
 % Combining a contour plot of a model ODF with a scatter plot of single
 % orientations.
 
-plotpdf(odf,h,'reduced','contourf','gray')
+plotpdf(odf,h,'reduced','contourf','gray','grid')
 hold all
 plotpdf(ebsd,h,'reduced','diameter',0.05,'color','b')
 hold all
