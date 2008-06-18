@@ -31,7 +31,7 @@ for i = 1:length(odf)
     
     f = f + odf(i).c;
   
-  elseif check_option(varargin,'FOURIER')
+  elseif check_option(varargin,'FOURIER') || check_option(odf(i),'FOURIER') 
     
     f = f + reshape(eval_fourier(odf(i),quaternion(g),varargin{:}),...
       size(f));
