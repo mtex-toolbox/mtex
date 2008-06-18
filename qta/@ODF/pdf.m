@@ -37,6 +37,10 @@ for s = 1:length(sp)
     if check_option(odf(i),'UNIFORM')
       Z = Z + sp(s) * odf(i).c;
       
+    elseif check_option(odf(i),'FOURIER')
+      
+      Z = Z + sp(s) * fourier2pdf(odf(i),vector3d(h(s)),r,varargin{:});
+      
       % -------------------- fibre symmetric portion --------------------------
     elseif check_option(odf(i),'FIBRE')
       

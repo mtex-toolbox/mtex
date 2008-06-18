@@ -47,14 +47,18 @@ if isa(center,'quaternion')
   if nargin <= 4, SS = symmetry('triclinic'); end
 	center = SO3Grid(center,CS,SS); 
 end
-if nargin <= 1 || isempty(c), c = [1,ones(1,GridLength(center))]; end
+if nargin <= 1 || isempty(c) && isa(center,'SO3Grid'), c = [1,ones(1,GridLength(center))]; end
 if nargin <= 2, psi = kernel; end
 if nargin <= 3, CS = getCSym(center); end
 if nargin <= 4, SS = getSSym(center); end
-
+c_hat = [];
 
 % check completness of parameters
-if check_option(varargin,'FIBRE')
+if check_option(varargin,'FOURIER')
+  c_hat = center;
+  c = c_hat(1);
+  center = [];
+elseif check_option(varargin,'FIBRE')
   if ~((isa(center{1},'Miller') || isa(center{1},'vector3d')) && isa(center{2},'vector3d')...
       && isa(c,'double') && isa(psi,'kernel')...
       && isa(CS,'symmetry') && isa(CS,'symmetry'))
@@ -72,7 +76,7 @@ else
 end 
 
 % check amount of coefficients
-if lg ~= length(c)
+if ~check_option(varargin,'FOURIER') && lg ~= length(c)
   error(['number of gridpoints and coefficients missmatch: ',int2str(lg),'-',int2str(c)]);
 end
 
@@ -84,9 +88,9 @@ end
 odf.comment = get_option(varargin,'comment',[]);
 odf.center = center;
 odf.c = c;
-odf.c_hat = [];
+odf.c_hat = c_hat;
 odf.psi = psi;
 odf.CS = CS;
 odf.SS = SS;
-odf.options = extract_option(varargin,{'uniform','fibre'});
+odf.options = extract_option(varargin,{'uniform','fibre','fourier'});
 odf = class(odf,'ODF');

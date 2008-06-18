@@ -13,6 +13,8 @@ disp(' ');
 for i = 1:length(odf)
   if check_option(odf(i),'UNIFORM')
     disp(' uniform portion:');    
+  elseif check_option(odf(i),'Fourier')
+    disp(' portion specified by Fourier coefficients:');    
   elseif check_option(odf(i),'FIBRE')
     disp(' fibre symmetric portion:');
     disp(['  kernel: ',char(odf(i).psi)]);
