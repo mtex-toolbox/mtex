@@ -143,6 +143,10 @@ if isunix
   cmd = [mtex_prefix_cmd,prg,' ',mtex_tmppath,name,...
     '.txt 2>> ',mtex_logfile,mtex_postfix_cmd];
 else
+    
+  %enclose whitespaces into parenthis
+  prg = regexprep(prg,'[^\\]*\s+[^\\]*','"$0"');
+  
   cmd = [mtex_prefix_cmd,prg,'.exe ',mtex_tmppath,name,...
     '.txt',mtex_postfix_cmd];
 end
