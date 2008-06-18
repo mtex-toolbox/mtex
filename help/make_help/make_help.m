@@ -28,6 +28,9 @@ if check_option(varargin, {'general','all'})
   % copy html files
   copyfile([mtex_path,'/help/general/*.html'],[mtex_path,'/help/html'])
   copyfile([mtex_path,'/help/general/*.gif'],[mtex_path,'/help/html'])
+  copyfile([mtex_path,'/README'],[mtex_path,'/help/html/README.txt']);
+  copyfile([mtex_path,'/COPYING'],[mtex_path,'/help/html/COPYING.txt']);
+  copyfile([mtex_path,'/VERSION'],[mtex_path,'/help/html/VERSION.txt']);
   
   current_path = [mtex_path '/help/general'];
   files = dir([current_path '/*.m']);
