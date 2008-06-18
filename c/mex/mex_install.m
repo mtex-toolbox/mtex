@@ -20,8 +20,8 @@ for p = 1:length(places)
   files = {files.name};
   for f = 1:length(files)
     if exist([mexpath,files{f}],'file')      
-      disp(['compile ',files{f}]);
-      if newer_versionp(7.3)
+      disp(['>   compile ',files{f}]);
+      if newer_version(7.3)
         mex(mexoptions,[mexpath,files{f}]);
       else
         mex([mexpath,files{f}]);
