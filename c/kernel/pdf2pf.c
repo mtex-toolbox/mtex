@@ -36,7 +36,7 @@ int main(int argc,char *argv[]){
   FILE *f_param;
   FILE *f_out;
 
-  printf("\n ------ MTEX -- Fourier to PDF -------- \n");
+  /*printf("\n ------ MTEX -- Fourier to PDF -------- \n");*/
 
   if (argc<2) {
     printf("Error! Missing parameter - parameter_file.\n");
@@ -52,23 +52,30 @@ int main(int argc,char *argv[]){
   }
   fclose(f_param);
 
+
   /*init nfsft plan */
   bw = sqrt(lP_hat)-1;
-  printf("bandwidth: %d\n",bw);
+  /*printf("bandwidth: %d\n",bw);*/
+
   nfsft_precompute(bw,1000000,0U,0U);
 
   plan.x = r;
-  nfsft_init_advanced(&plan,bw,lr,
-		  NFSFT_MALLOC_F | NFSFT_MALLOC_F_HAT);
-  set_f_hat(&plan,plan.f_hat,P_hat);
 
-  /*vpr_complex(plan.f_hat,plan.N_total,"ndsft, vector f_hat");*/
+  nfsft_init_guru(&plan,bw,lr,
+		  NFSFT_MALLOC_F | NFSFT_MALLOC_F_HAT,
+		  ((bw>312)?(0U):(PRE_PHI_HUT | PRE_PSI)) | 
+		  FFTW_INIT | FFT_OUT_OF_PLACE,6);
+  nfsft_precompute_x(&plan);
+
+  set_f_hat(&plan,plan.f_hat,P_hat);
+  /*print_complex(stdout,plan.f_hat,4*lP_hat);*/
+
 
   /* transform */
   nfsft_trafo(&plan);
   
   /* save results */
-  /*vpr_complex(plan.f,plan.M_total,"ndsft, vector f");*/
+  /*print_complex(stdout,plan.f,plan.M_total);*/
   P = (double*) malloc(sizeof(double)*lr);
   v_memcpy_complex2double(P,plan.f,lr);
   f_out = check_fopen(f_out_name,"wb");
