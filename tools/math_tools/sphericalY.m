@@ -24,8 +24,11 @@ w = sqrt(factorial(l-abs(0:l))./factorial(l+abs(0:l)));
 L = L * diag(w);       
 
 % expand to negative order
-if l>0, L = [fliplr(L(:,2:end))*diag((-1).^(-l:-1)),L];end
-L = fliplr(L);
+if l>0
+  %L = [fliplr(L(:,2:end))*diag((-1).^(-l:-1)),L];
+  L = [fliplr(L(:,2:end)),L]*diag((-1).^(-l:l));
+end
+%L = fliplr(L);
 %if l>0, L = [fliplr(L(:,2:end)),L];end
 
 % calcualte spherical harmonics
