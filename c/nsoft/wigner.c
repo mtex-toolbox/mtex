@@ -193,17 +193,15 @@ double SO3_beta_al ( int m1,
 
 if (0 <= j && j < M)
   {
-   if (j== 0 && (dm2==-M||dm1==M))
-    return (int)(dm1+dm2)%2==0?1.0:(-1.0);
-   else
    return (1.0);
+
   }
   else
   {
   if (dm1==0.|| dm2==0.)  
   return (0.0);
   else
-    return ((-dm1*dm2*(2.*dj+1.)/dj)/sqrt(((dj+1.)*(dj+1.) - dm1*dm1)*((dj+1.)*(dj+1.) - dm2*dm2)));
+  return ((-dm1*dm2*(2.*dj+1.)/dj)/sqrt(((dj+1.)*(dj+1.) - dm1*dm1)*((dj+1.)*(dj+1.) - dm2*dm2)));
   }
 
 
