@@ -46,12 +46,12 @@ for i = 1:length(pfmeas)
   elseif check_option(varargin,'l2')
     d = (d1-d2).^2;
   elseif check_option(varargin,'RP')
-    epsilon = get_option(varargin,'RP',1);
+    epsilon = get_option(varargin,'RP',1,'double');
     ind = d2 > epsilon*alpha;
     d = abs(d1(ind)-d2(ind))./d2(ind);
     pf(i).r = delete(pf(i).r,~ind);
   else
-    epsilon = get_option(varargin,'epsilon',1);
+    epsilon = get_option(varargin,'epsilon',1,'double');
     d = abs(d1-d2)./min(d1+epsilon*alpha,d2+epsilon*alpha);
   end
   pf(i).data = d;
