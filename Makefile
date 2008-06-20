@@ -61,26 +61,28 @@ uninstall:
 
 # rule for making release
 RNAME = mtex-0.5-beta
+RDIR = ../..
 release:
-	rm -rf ../../$(RNAME)*
-	cp -R ../trunk ../../$(RNAME)
-	find ../../$(RNAME) -name .svn | xargs /bin/rm -rf
-	find ../../$(RNAME) -name '*~' -or -name '*.mex*' -or -name '*.log' -or -name '*.o' -or -name '*.orig' -or -name '.directory' | xargs /bin/rm -rf
-	rm -f ../../$(RNAME)/c/bin/*
-	rm -rf ../../$(RNAME)/help/html
+	rm -rf $(RDIR)/$(RNAME)*
+	cp -R . $(RDIR)/$(RNAME)
+	chmod -R a+rX $(RDIR)/$(RNAME)
+	find $(RDIR)/$(RNAME) -name .svn | xargs /bin/rm -rf
+	find $(RDIR)/$(RNAME) -name '*~' -or -name '*.mex*' -or -name '*.log' -or -name '*.o' -or -name '*.orig' -or -name '.directory' | xargs /bin/rm -rf
+	rm -f $(RDIR)/$(RNAME)/c/bin/*
+	rm -rf $(RDIR)/$(RNAME)/help/html
 
-	cp -R ../../$(RNAME) ../../$(RNAME)-Linux
-	cp -R ../../$(RNAME) ../../$(RNAME)-Windows
-	cp -R ../../$(RNAME) ../../$(RNAME)-MACOSX
-		
-	cp -R ../../mtex-binaries/Linux/* ../../$(RNAME)-Linux
-	cp -R ../../mtex-binaries/Windows/* ../../$(RNAME)-Windows
-	cp -R ../../mtex-binaries/MACOSX/* ../../$(RNAME)-MACOSX
+	cd $(RDIR); cp -R $(RNAME) $(RNAME)-Linux
+	cd $(RDIR); cp -R $(RNAME) $(RNAME)-Windows
+	cd $(RDIR); cp -R $(RNAME) $(RNAME)-MACOSX
 
-	
-	tar -czf ../../$(RNAME)-Linux.tar.gz ../../$(RNAME)-Linux
-	zip -rq  ../../$(RNAME)-Windows.zip ../../$(RNAME)-Windows
-	tar -czf  ../../$(RNAME)-MACOSX.tar.gz ../../$(RNAME)-MACOSX	
+	cd $(RDIR); chmod -R a+rx mtex-binaries
+	cd $(RDIR); cp -R mtex-binaries/Linux/* $(RNAME)-Linux
+	cd $(RDIR); cp -R mtex-binaries/Windows/* $(RNAME)-Windows
+	cd $(RDIR); cp -R mtex-binaries/MACOSX/* $(RNAME)-MACOSX
+
+	cd $(RDIR); tar -czf $(RNAME)-Linux.tar.gz $(RNAME)-Linux
+	cd $(RDIR); zip -rq  $(RNAME)-Windows.zip $(RNAME)-Windows
+	cd $(RDIR); tar -czf $(RNAME)-MACOSX.tar.gz $(RNAME)-MACOSX	
 
 windows-binaries:
 	rm -rf ../../mtex-win.tar.gz
