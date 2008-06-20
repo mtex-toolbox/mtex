@@ -20,8 +20,15 @@
 % pole figures or inverse pole figures.
 % * new plotting option north, south for spherical plots 
 % * improved colorbar handling
-% * shpherical grids
+% * spherical grids
 % * more spherical projections
+%
+% *New ODF Class*
+%
+% * The function <FourierODF.html FourierODF> provides an easy way to define ODFs via
+% their Fourier coefficient. In particular MTEX allows now to calculate with
+% such an ODF in the same manner as with any other ODF. In particular pole
+% figure data or EBSD data can be simulated.
 %
 % *Incompatible Changes With Previous Releases*
 %
