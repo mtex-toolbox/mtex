@@ -35,6 +35,7 @@ if exist([mtex_path '/c/mex/v7.1'],'dir')
   disp('> Trying now with older version.');
   if fast_check_mex
     disp('> Hurray - everythink works!')
+    disp(' ');
     try
       copyfile([mtex_path '/c/mex/v7.1/*.*'],[mtex_path '/c/mex'],'f');
       % restore path
@@ -49,6 +50,7 @@ if exist([mtex_path '/c/mex/v7.1'],'dir')
       disp(['  ', mtex_path '/c/mex']);
       disp('> before starting the next session');
       disp('--------------------------------------------------')
+      disp(' ');
     end    
     return
   else
@@ -67,6 +69,7 @@ cd(opwd);
     
 if fast_check_mex
   disp('> Hurray - everythink works!')
+  disp(' ');
 else
   disp('--------------------------------------------------')
   disp('MTEX: Couldn''t get the mex files working!');
@@ -79,6 +82,7 @@ else
   disp(' ');
   disp('Contact author for help!');
   disp('--------------------------------------------------')
+  disp(' ');
 end
 
 
