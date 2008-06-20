@@ -50,7 +50,7 @@ tic
 
 vdisp('------ MTEX -- PDF to ODF inversion ------------------',varargin{:})
 
-% ------------------- get input--------------------------------------------
+%% ------------------- get input--------------------------------------------
 CS = pf(1).CS; SS = pf(1).SS;
 
 S3G = get_option(varargin,'RESOLUTION',getResolution(pf)*3/2,{'double','SO3Grid'});
@@ -72,10 +72,8 @@ c0 = get_option(varargin,'C0',...
 	1/sum(GridLength(S3G))*ones(sum(GridLength(S3G)),1));
 
 
-
-
-% ----------------- prepare for calling calcODF.c -------------------------
-% -------------------------------------------------------------------------
+%% ----------------- prepare for calling calcODF.c -------------------------
+%% -------------------------------------------------------------------------
 
 % calculate gh
 h = geth(pf);
@@ -107,7 +105,7 @@ end
 refl = getc(pf);
 
 % arrange Pole figure data
-P  = getdata(pf);
+P  = max(0,getdata(pf)); % ensure non negativity
 lP = int32(GridLength(pf));
 [rtheta,rrho] = polar(getr(pf));
 r = [reshape(rrho,1,[]);reshape(rtheta,1,[])]/2/pi;
@@ -184,7 +182,7 @@ vdisp('ghost correction',varargin{:});
 % determine phon
 phon = 1;
 for ip = 1:length(pf)
-  phon = min(phon,quantile(getdata(pf(ip)),0.01)./alpha(ip));
+  phon = min(phon,quantile(max(0,getdata(pf(ip))),0.01)./alpha(ip));
 end
 
 if phon > 0.05
@@ -199,6 +197,7 @@ P = [];
 for ip = 1:length(pf)
   P = [P,getdata(pf(ip))-alpha(ip)*phon];
 end
+P = max(0,P); %no negative values !
 
 c0 = (1-phon)/sum(GridLength(S3G))*ones(sum(GridLength(S3G)),1);
 
