@@ -10,7 +10,7 @@ function Y = sphericalY(l, theta, rho)
 %  Y - (2l+1) x numel(theta,rho) matrix of function values
 %
 %% See also
-%
+% wignerD
 
 if isa(theta,'vector3d')
   [theta,rho] = vec2sph(theta);

@@ -74,16 +74,22 @@ varargin = {varargin{:},'diameter',min(0.2,max(0.02,0.75*getResolution(S2G(end))
 % extract data
 data = get_option(varargin,'DATA',[]);
 if numel(data) == GridLength(S2G)
-  data = reshape(data,GridSize(S2G)); 
+  
+  data = reshape(data,GridSize(S2G));
+  
+  % log plot? 
+  if check_option(varargin,'logarithmic')
+    data = log10(data);
+    data(imag(data) ~= 0 | isinf(data)) = nan;
+  end
+  
+  varargin = {varargin{:},'colorrange',[min(data(:)),max(data(:))]};
 else
+  
   data = [];
+  
 end
 
-% log plot? 
-if check_option(varargin,'logarithmic')
-  data = log10(data);
-  data(imag(data) ~= 0) = -inf;
-end
 
 % COLORMAP
 if check_option(varargin,'GRAY'),colormap(flipud(colormap('gray'))/1.2);end
