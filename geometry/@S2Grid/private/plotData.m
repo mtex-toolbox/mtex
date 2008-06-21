@@ -1,10 +1,11 @@
 function plotData(X,Y,data,bounds,varargin)
 
-if isempty(get(gca,'children')) && ~isempty(data) && isa(data,'double')
-  if max(data(:))-min(data(:)) < 1e-15
-    caxis([min(min(data(:)),0),max(max(data(:)),1)]);
+if check_option(varargin,'colorrange','double')
+  cr = get_option(varargin,'colorrange',[],'double');
+  if cr(2)-cr(1) < 1e-15
+    caxis([min(cr(1),0),max(cr(2),1)]);
   else
-    caxis([min(data(:)),max(data(:))]);
+    caxis(cr);
   end
 end
 
@@ -94,7 +95,7 @@ else
   diameter  = get_option(varargin,'diameter');
 
   cminmax = get_option(varargin,'colorrange',...
-    [min(data(data>-inf)),max(data(data<inf))]);
+    [min(data(data>-inf)),max(data(data<inf))],'double');
     
   if length(cminmax)>1 && cminmax(2)>cminmax(1)
     data = 1+round((data-cminmax(1)) / (cminmax(2)-cminmax(1)) * 63);

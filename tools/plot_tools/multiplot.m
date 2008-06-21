@@ -157,9 +157,6 @@ for i = 1:nplots
   end
 end
 
-% set color range later on?
-scr =  length(colorrange) == 2;
-
 if ~ishold
   % invisible axes for adding a colorbar
   d = axes('visible','off','position',[0 0 1 1],...
@@ -181,8 +178,6 @@ if colorrange(1) < colorrange(2)
 else
   set(d,'clim',[0 2]);
 end
-
-if scr, setcolorrange(colorrange);end
 
 if ~ishold
   

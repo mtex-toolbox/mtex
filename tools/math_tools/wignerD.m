@@ -1,28 +1,31 @@
-function D = wignerD(l, alpha,beta,gamma)
-% spherical harmonics of degree l
+function D = wignerD(g,varargin)
+% Wiegner-D function
+%
+%% Syntax
+%
+%  Dl = wignerD(g,'degree',l)
+%  D = wignerD(l,'bandwidth',l)
 %
 %% Input
-%  l     - degree
-%  theta - azimuth angle
-%  rho   - polar
+%  l - degree
+%  g - single quaternion
 %
 %% Output
-%  Y - (2l+1) x numel(theta,rho) matrix of function values
+%  Dl - (2l+1) x (2l+1) 
+%  D - (l*(2*l-1)*(2*l+1)/3) x 1
 %
 %% See also
-%
+% sphericalY
 
-if isa(alpha,'quaternion')
-  g = quat2euler(alpha,'nfft');
-else
-  alpha = fft_rho(alpha);
-  beta  = fft_theta(beta);
-  gamma = fft_rho(gamma);
-  g = 2*pi*[alpha(:),beta(:),gamma(:)].';
+argin_check(g,'quaternion');
+if ~check_option(varargin,{'degree','bandwidth'})
+  help wignerD
+  error('No polynomial degree l specified');
 end
 
-
+g = quat2euler(g,'nfft');
 c = 1;
+l = get_option(varargin,{'degree','bandwidth'});
 L = max(l,3);
 A = ones(L+1,1);
 
@@ -34,9 +37,10 @@ D = run_linux([mtex_path,'/c/bin/odf2fc'],'EXTERN',g,c,A);
 % extract result
 D = complex(D(1:2:end),D(2:2:end));
 
-D = reshape(D(deg2dim(l)+1:deg2dim(l+1)),2*l+1,2*l+1);
+if check_option(varargin,'degree')
+  D = reshape(D(deg2dim(l)+1:deg2dim(l+1)),2*l+1,2*l+1);
+end
 
-%D = triu(D) - triu(D,1)';
 
 function d = deg2dim(l)
 % dimension of the harmonic space up to order l
