@@ -23,7 +23,7 @@ function odf_hat = Fourier(odf,varargin)
 %  odf_hat - Fourier coefficient - complex (2L+1)x(2L+1) matrix
 %  
 %% See also
-% ODF/calcFourier ODF/textureindex ODF/entropy ODF/eval
+% ODF/plotFourier WiegnerD ODF/calcFourier FourierODF ODF/textureindex ODF/entropy ODF/eval
 %
 
 % compute Fourier coefficients 
