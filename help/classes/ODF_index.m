@@ -4,10 +4,11 @@
 %% Description
 %
 % An object of the class @ODF represents an *Orientation Density Function*,
-% i.e. a function on SO(3). It is defined as a superposition of radialy
-% symmtric, fibre symmetric and uniform components. You can define ODFs
-% directly as model ODFs or recalcalculate them from pole figure data. It
-% exists methods to calculate the various texture characteristics as the
+% i.e. a function on SO(3). It can be defined as a superposition of radialy
+% symmtric, fibre symmetric, uniform components or components specfified by
+% their Fourier coefficients. You can define a ODF directly as a model ODF or
+% estimate it from pole figure data or EBSD data. It 
+% exists methods to calculate various texture characteristics as the
 % entropy, the texture index, the Fourier coefficients or the volume
 % percentage with a certain orientation.
 %
@@ -37,7 +38,20 @@ uodf = unimodalODF(g,cs,ss,psi)
 h    = Miller(1,0,0,cs);
 r    = xvector;
 fodf = fibreODF(h,r,cs,ss,psi)
+%%
+%
+% In order to define a ODF by it *Fourier coefficients* the Fourier
+% coefficients *C* has to be give as a literaly ordered, complex valued
+% vector of the form 
+%
+% $$ c_hat = [C_0,C_1^{-1-1},\ldots,C_1^{11},C_2^{-2-2},\ldots,C_L^{LL}] $$
+%
+% where $l=0,\ldots,L$ denotes the order.
 
+cs   = symmetry('triclinic');    % crystal symmetry
+ss   = symmetry('triclinic');    % specimen symmetry
+c_hat = [1;reshape(eye(3),[],1)]; % Fourier coefficients
+Fodf = FourierODF(c_hat,cs,ss)
 
 %% Modifying ODFs
 %
