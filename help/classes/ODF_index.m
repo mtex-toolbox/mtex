@@ -44,14 +44,14 @@ fodf = fibreODF(h,r,cs,ss,psi)
 % coefficients *C* has to be give as a literaly ordered, complex valued
 % vector of the form 
 %
-% $$ c_hat = [C_0,C_1^{-1-1},\ldots,C_1^{11},C_2^{-2-2},\ldots,C_L^{LL}] $$
+% $$ C = [C_0,C_1^{-1-1},\ldots,C_1^{11},C_2^{-2-2},\ldots,C_L^{LL}] $$
 %
-% where $l=0,\ldots,L$ denotes the order.
+% where $l=0,\ldots,L$ denotes the order of the Fourier coefficients.
 
 cs   = symmetry('triclinic');    % crystal symmetry
 ss   = symmetry('triclinic');    % specimen symmetry
-c_hat = [1;reshape(eye(3),[],1)]; % Fourier coefficients
-Fodf = FourierODF(c_hat,cs,ss)
+C = [1;reshape(eye(3),[],1)]; % Fourier coefficients
+Fodf = FourierODF(C,cs,ss)
 
 %% Modifying ODFs
 %
