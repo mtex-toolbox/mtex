@@ -105,7 +105,7 @@ Al = ones(10,1);
 
 try
     
-  f = run_linux([mtex_path,'/c/bin/odf2pf'],'EXTERN',gh,r,c,Al);
+  f = call_extern([mtex_path,'/c/bin/odf2pf'],'EXTERN',gh,r,c,Al);
   mtex_assert(any(f));
 
 catch
