@@ -25,4 +25,4 @@ else
 
 end
 
-text(x,y,s,varargin{:},arg{:});
+mtex_text(x,y,s,varargin{:},arg{:});

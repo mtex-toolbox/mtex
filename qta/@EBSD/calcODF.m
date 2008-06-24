@@ -24,6 +24,7 @@ function odf = calcODF(ebsd,varargin)
 %  RESOLUTION - resolution of the grid where the ODF is approximated
 %  EXACT      - no approximation to a corser grid
 %  KERNEL     - kernel function (default - de la Valee Poussin kernel)
+%  SILENT     - no output
 %
 %% See also
 % ebsd_demo EBSD2odf_estimation EBSDSimulation EBSD/loadEBSD ODF/simulateEBSD
@@ -63,12 +64,11 @@ vdisp([' approximation grid: ' char(S3G)],varargin{:});
 %% restrict single orientations to this grid
 
 % init variables
-global mtex_memory;
 g = quaternion(g);
 d = zeros(1,GridLength(S3G));
 
 % iterate due to memory restrictions?
-maxiter = ceil(length(ebsd(1).CS)*length(ebsd(1).SS)*numel(g) / mtex_memory);
+maxiter = ceil(length(ebsd(1).CS)*length(ebsd(1).SS)*numel(g) / get_mtex_option('memory'));
 if maxiter > 1, progress(0,maxiter);end
 
 for iter = 1:maxiter

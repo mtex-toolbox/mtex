@@ -64,8 +64,8 @@ kw = get_option(varargin,'KERNELWIDTH',getResolution(S3G),'double');
 psi = get_option(varargin,'kernel',...
   kernel('de la Vallee Poussin','HALFWIDTH',kw),'kernel');
 
-global mtex_maxiter;
-iter_max = int32(get_option(varargin,'ITER_MAX',mtex_maxiter,'double'));
+iter_max = int32(get_option(varargin,'ITER_MAX',...
+  get_mtex_option('ITER_MAX',11,'double'),'double'));
 iter_min = int32(get_option(varargin,'ITER_MIN',iter_max/4,'double'));
 
 c0 = get_option(varargin,'C0',...

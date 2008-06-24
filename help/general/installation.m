@@ -56,7 +56,7 @@ check_mtex
 %% Configure MTEX
 %
 % You can configure your MTEX installation by editting the file
-% [[matlab:edit startup_mtex.m,startup_mtex.m]]. See 
+% [[matlab:edit mtex_settings.m,mtex_settings.m]]. See 
 % <configuration.html Configuration> for more details!
 %
 %

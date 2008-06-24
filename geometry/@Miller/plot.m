@@ -20,11 +20,8 @@ for i = 1:numel(m)
     mm = m(i);
   end
   
-  % generate strings
-  s = cell(1,numel(mm));
-  for ii = 1:numel(mm)
-    s{ii} = char(char(mm(ii),'latex'));
-  end
+  % convert to cell
+  s = mat2cell(mm,ones(1,size(mm,1)),ones(1,size(mm,2)));
   
   % plot
   plot(S2Grid(vector3d(mm)),varargin{:},'data',s,'grid');

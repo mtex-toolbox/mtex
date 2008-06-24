@@ -1,13 +1,13 @@
 function check_installation
 
-global mtex_tmppath;
-if strfind(mtex_tmppath,' ')
+
+if strfind(get_mtex_option('tempdir'),' ')
   disp('--------------------------------------------------')
   disp('Warning: The path MTEX uses for temporary files');
-  disp(['  mtex_tmppath = ''' mtex_tmppath '''']);
+  disp(['  tempdir = ''' get_mtex_option('tempdir') '''']);
   disp('contains white spaces!');
-  disp(['Please change this in your <a href="matlab:edit startup_mtex">' ...
-    'startup_mtex.m</a>!']);
+  disp(['Please change this in your <a href="matlab:edit mtex_settings.m">' ...
+    'mtex_settings.m</a>!']);
   disp('--------------------------------------------------')
 end
 
