@@ -39,7 +39,7 @@ gh = [reshape(in_rho,1,[]);reshape(in_theta,1,[])];
   
 % normalization
 c = ones(size(pf.data));
-w = run_linux([mtex_path,'/c/bin/odf2pf'],'EXTERN',gh,r,c,Al);
+w = call_extern([mtex_path,'/c/bin/odf2pf'],'EXTERN',gh,r,c,Al);
 mw = RK(k,idquaternion,xvector,xvector,1,symmetry,symmetry);
 %w = max(RK(k,idquaternion,xvector,xvector,1,symmetry,symmetry)*0.25,w);
 %plot(S2G,'data',min(w,mw))
@@ -50,7 +50,7 @@ bg = get_option(varargin,'zr_bg',delta * max(pf.data(:)));
 c = (get_option(varargin,'zr_factor',10)*(pf.data > bg)-1);
 %plot(pf.r,'data',c)
 
-f = run_linux([mtex_path,'/c/bin/odf2pf'],'EXTERN',gh,r,c,Al);
+f = call_extern([mtex_path,'/c/bin/odf2pf'],'EXTERN',gh,r,c,Al);
 zr = reshape(w < 0.1*mw | f./w > -0.1,GridSize(S2G));
 % plot(S2G,'data',min(f,1))
 % plot(S2G,'data',zr)

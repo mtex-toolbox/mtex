@@ -32,7 +32,7 @@ A = ones(L+1,1);
 global mtex_path;
 
 % run NFSOFT
-D = run_linux([mtex_path,'/c/bin/odf2fc'],'EXTERN',g,c,A);
+D = call_extern([mtex_path,'/c/bin/odf2fc'],'EXTERN',g,c,A);
       
 % extract result
 D = complex(D(1:2:end),D(2:2:end));
