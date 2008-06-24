@@ -68,7 +68,8 @@ g = quaternion(g);
 d = zeros(1,GridLength(S3G));
 
 % iterate due to memory restrictions?
-maxiter = ceil(length(ebsd(1).CS)*length(ebsd(1).SS)*numel(g) / get_mtex_option('memory'));
+maxiter = ceil(length(ebsd(1).CS)*length(ebsd(1).SS)*numel(g) /...
+  get_mtex_option('memory',300 * 1024));
 if maxiter > 1, progress(0,maxiter);end
 
 for iter = 1:maxiter
