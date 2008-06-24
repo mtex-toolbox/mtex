@@ -3,7 +3,7 @@
 %% Global Configuration
 %
 % The central place of all configuration of the MTEX toolbox is the
-% m-file [[matlab:edit startup_mtex.m,startup_mtex]]. There the
+% m-file [[matlab:edit mtex_settings.m,mtex_settings.m]]. There the
 % following items can be customized
 %
 % * the default maximum iteration depth of the function [[PoleFigure_calcODF.html,calcODF]]

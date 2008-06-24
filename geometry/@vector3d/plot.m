@@ -11,10 +11,10 @@ if length(v) > 20 || check_option(varargin,'data')
   
 else
     
+  % convert to cell
   s = cell(1,numel(v));
-  for i = 1:numel(v)
-    s{i} = char(subsref(v,i),'latex');
-  end
+  for i = 1:numel(v), s{i} = subsref(v,i); end  
+  
   plot(S2Grid(v),'data',s,varargin{:},'grid');
 
 end

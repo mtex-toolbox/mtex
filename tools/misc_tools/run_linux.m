@@ -26,15 +26,7 @@ if ~exist([prg,mtex_ext],'file')
   error(['Can not find ',[prg,mtex_ext],'! Run "make install"']);
 end
 
-%% global flags
-global global_computer
-global mtex_tmppath;
-global mtex_prefix_cmd;
-global mtex_postfix_cmd;
-global mtex_machineformat;
-global mtex_logfile;
-global mtex_debug;
-global mtex_textmode;
+mtex_tmppath = get_mtex_option('tempdir');
 
 %% local flags
 inline = 0;
@@ -109,14 +101,6 @@ for i=1:nargin-1
 		end
 		fprintf(fid,'\n');
 		iname{i} = [];
-		
-  elseif mtex_textmode
-		vdisp(verbose,['  write extern: ',iname{i}]);
-		fprintf(fid,'%s: ',iname{i});
-		
-		d = varargin{i}; %#ok<NASGU>
-    fprintf(fid,'%s\n',[mtex_tmppath,name,'_',iname{i},'.txt']);
-    save([mtex_tmppath,name,'_',iname{i},'.txt'],'d','-ascii','-double');
    
   else
 		vdisp(verbose,['  write extern: ',iname{i}]);
@@ -125,7 +109,7 @@ for i=1:nargin-1
 		d = varargin{i};
 		s = whos('d');
 		fprintf(fid,'%s\n',[mtex_tmppath,name,'_',iname{i},'.dat']);
-		fdata = fopen([mtex_tmppath,name,'_',iname{i},'.dat'],'w',mtex_machineformat);
+		fdata = fopen([mtex_tmppath,name,'_',iname{i},'.dat'],'w');
 		fwrite(fdata,d,s.class);
 		fclose(fdata);
 	end
@@ -140,22 +124,20 @@ fclose(fid);
 %% run linux command
 vdisp(verbose,['  call ',prg]);
 if isunix
-  cmd = [mtex_prefix_cmd,prg,' ',mtex_tmppath,name,...
-    '.txt 2>> ',mtex_logfile,mtex_postfix_cmd];
+  cmd = [get_mtex_option('prefix_cmd'),prg,' ',mtex_tmppath,name,...
+    '.txt 2>> ',get_mtex_option('logfile'),get_mtex_option('postfix_cmd')];
 else
     
   %enclose whitespaces into parenthis
   prg = regexprep(prg,'[^\\]*\s+[^\\]*','"$0"');
   
-  cmd = [mtex_prefix_cmd,prg,'.exe ',mtex_tmppath,name,...
-    '.txt',mtex_postfix_cmd];
+  cmd = [get_mtex_option('prefix_cmd'),prg,'.exe ',mtex_tmppath,name,...
+    '.txt',get_mtex_option('postfix_cmd')];
 end
-if check_option(varargin,'silent'), cmd = [cmd,' >>',mtex_logfile]; end
-if ~isempty(global_computer), cmd = ['ssh ',global_computer,' ',cmd];end
+if check_option(varargin,'silent'), cmd = [cmd,' >>',get_mtex_option('logfile')]; end
 
-
-if mtex_debug
-  disp('Stopped because of "mtex_debug"-flag');
+if check_mtex_option('debug_mode')
+  disp('Stopped because of "debug_mode"');
   disp(['Files written to ',mtex_tmppath,name]);
   fprintf('You may want to execute the command\n\n%s\n\n',cmd);
   disp('hit enter if finished')
@@ -180,7 +162,8 @@ end % function
 
 %% retrieve information
 function out = readdata(name,verbose,nout)
-global mtex_tmppath;
+
+mtex_tmppath = get_mtex_option('tempdir');
 for i=1:nout
   vdisp(verbose,['  read result file ',int2str(i)]);
   fdata = fopen([mtex_tmppath,name,'_res',int2str(i),'.dat'],'r');
@@ -197,7 +180,8 @@ end
 
 %% cleanup
 function cleanup(name,verbose)
-global mtex_tmppath;
+
+mtex_tmppath = get_mtex_option('tempdir');
 % delete parameter files
 vdisp(verbose,'  delete datafiles:')
 delete([mtex_tmppath,name,'.txt']);

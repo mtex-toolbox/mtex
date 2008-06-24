@@ -22,13 +22,14 @@ plotodf(model_odf,'sections',6,'silent')
 
 %% Simulate Pole Figure Data
 %
-% In order to simulate fole figure data five thinks are required
+% In order to simulate pole figure data the following parameters has to be
+% specified
 %
-% * an arbitrary ODF
-% * a list of Miller indece
-% * a grid of specimen directions
-% * superposition coefficients (optional)
-% * the magnitude of error (optional)
+% * 1. an arbitrary <ODF_index.html ODF>
+% * 2. a list of <Miller_index.html Miller indece>
+% * 3. a grid of <S2Grid_index.html specimen directions>
+% * 4. superposition coefficients (optional)
+% * 5. the magnitude of error (optional)
 %
 
 %%

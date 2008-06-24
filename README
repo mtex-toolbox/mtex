@@ -8,6 +8,7 @@ MTEX is a MATLAB toolbox containing the following features
 - Analyze and Visualize Crystallographic Geometries
 - Calculate with Model ODFs
 - Import, Analyze and Visualize arbitrary Diffraction Data
+- Import, Analyze and Visualize arbitrary individuell orientation mesurements (EBSD)
 - Recover Orientation Density Functions (ODFs)
 - Calculate Texture Characteristics 
 - Create Publication Ready Plots
@@ -15,7 +16,7 @@ MTEX is a MATLAB toolbox containing the following features
 
 For an introduction, please have a look at the help first. If the 
 toolbox is installed the help can be found in the MATLAB help window 
-which can be opend by typing 'doc help'.
+which can be opend by typing 'doc mtex'.
 For installation instructions, you can also refer to the file INSTALL
 in this directory.
 
@@ -32,11 +33,12 @@ help (dir)	User and developer documentation
 info.xml        used by MATLAB
 INSTALL         Installation instructions
 MAKEFILE        contains the compiling options !! to be edited by the user !!
+mtex_settings   contains the configuration of MTEX !! to be edited by the user !!     
 qta (dir)       core scripts for working with ODFs and PDFs
 README          This file
 startup.m       installation routine automticaly called by MATLAB if the 
                 toolbox is contained in the search path of MATLAB
-startup_mtex    called by startup.m - contains the configuration of MTEX !! to be edited by the user !!     
+startup_mtex    installation routine for MTEX - called manualy or by startup.m
 startup_root    used for the root installation
 tests (dir)     a self test
 tools           auxilary tools
@@ -49,18 +51,19 @@ as robust or well documented as it should be. Please keep track of bugs or
 missing/confusing instructions and report them to
 
   Dr. Ralf Hielscher <Ralf.Hielscher@gmail.com,Ralf.Hielscher@gmail.com>
-  Freiberg University of Mining and Ingeneering 
-  Cotta Str. 3
-  09599 Freiberg, GERMANY 
+  HelmholzZentrum München
+  Forschungszentrum für Gesundheit und Umwelt
+  Ingolstädter Landstraße 1
+  D-85764 Neuherberg, GERMANY 
 
-  personal Homepage: http://www.geo.tu-freiberg.de/~hielsch,http://www.geo.tu-freiberg.de/~hielsch
-  MTEX Homepage: http://code.google.com/p/mtex/downloads/list
+  personal Homepage: http://ibb.helmholtz-muenchen.de/homepage/ralf.hielscher/
+  MTEX Homepage: http://code.google.com/p/mtex/
   
 If you find MTEX useful, we would be delighted to hear about what application you are using MTEX for!
 
 Legal Information & Credits
 ---------------------------
-Copyright (C) 2005-2007 Ralf Hielscher
+Copyright (C) 2005-2008 Ralf Hielscher
 
 This software was written by Ralf Hielscher and Florian Bachmann.
 It was developed at the Institute of Geoinformatics, 

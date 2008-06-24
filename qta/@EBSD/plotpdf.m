@@ -24,9 +24,8 @@ function plotpdf(ebsd,h,varargin)
 % plot_index Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo 
 
-global mtex_plot_options;
-varargin = {varargin{:},mtex_plot_options{:}};
-
+varargin = set_default_option(varargin,...
+  get_mtex_option('default_plot_options'));
 
 [cs,ss] = getSym(ebsd);
 
@@ -43,12 +42,12 @@ clear ebsd;
 
 if check_option(varargin,'superposition')
   multiplot(@(i) reshape(ss * grid * cs * h,[],1),@(i) 1,1,...
-            'ANOTATION',@(i) char(h,'LATEX'),...
+            'ANOTATION',@(i) h,...
             varargin{:},'scatter');
 else
   multiplot(@(i) reshape(ss * grid * cs * h(i),[],1),...
             @(i) 1,length(h),...
-            'ANOTATION',@(i) char(h(i),'LATEX'),...
+            'ANOTATION',@(i) h(i),...
             varargin{:},'scatter');
 end
 

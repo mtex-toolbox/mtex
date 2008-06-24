@@ -17,6 +17,11 @@ function out_list = set_default_option(option_list,preserve,option,varargin)
 %% See also
 % check_option get_option clear_option
 
+if nargin == 2
+  out_list = {option_list{:},preserve{:}};
+  return
+end
+
 if ~check_option(option_list,union_cell(ensure_cell(option),ensure_cell(preserve)))
   out_list = set_option(option_list,option,varargin{:});
 else 

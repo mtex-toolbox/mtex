@@ -9,18 +9,18 @@ if max(abs(v.z)) < 1e-14, v.z = zeros(size(v.z));end
 
 c = [];
 for i = 1:length(v.x)
-  if check_option(varargin,'LATEX')
+  if check_option(varargin,{'LATEX','tex'})
     iv = vec2int([v(i).x,v(i).y,v(i).z]);
     if ~isempty(iv)
-      c = [c,'(',barchar(iv(1)),barchar(iv(2)),barchar(iv(3)),')'];
+      c = [c,'(',barchar(iv(1),varargin{:}),...
+        barchar(iv(2),varargin{:}),...
+        barchar(iv(3),varargin{:}),')'];
     end
   else
     c = [c,'(',num2str(v.x(i)),',',num2str(v.y(i)),',',num2str(v.z(i)),')']; %#ok<AGROW>
   end
 end
 
-dm = findstr(c,'$$');
-c([dm,dm+1]) = [];
 
 function iv = vec2int(v)
 
@@ -40,12 +40,11 @@ else
   iv = [];
 end
 
-  
 
-function s=barchar(i)
+function s=barchar(i,varargin)
 
-if i<0
-		s = ['$\bar{',int2str(-i),'}$'];
+if i<0 && check_option(varargin,'latex')
+  s = ['\bar{',int2str(-i),'}'];
 else
-		s = int2str(i);
+  s = int2str(i);
 end

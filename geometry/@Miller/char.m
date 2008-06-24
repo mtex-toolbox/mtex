@@ -4,7 +4,7 @@ function c = char(v,varargin)
 %  NO_SCOPES
 %  LATEX
 
-c = cell(1,length(v));
+c = [];
 
 for i = 1:length(v)
   
@@ -16,26 +16,20 @@ for i = 1:length(v)
       varargin{:}),barchar(v(i).l,varargin{:})];
   end
   
-  if check_option(varargin,'LATEX')
-    
+  if check_option(varargin, {'TEX','LATEX'})
     s = ['\{',s,'\}'];
-    dm = findstr(s,'$$');
-    s([dm,dm+1]) = [];
-    
   elseif ~check_option(varargin,'NO_SCOPES')
     s = ['{',s,'}'];
   end
-  
-  c(i) = {s};
+    
+  c = strcat(c,s);
 end
-
-if ~check_option(varargin,'latex'), c = strcat(c{:});end
 
 
 function s=barchar(i,varargin)
 
 if (i<0) && check_option(varargin,'latex')
-		s = ['$\bar{',int2str(-i),'}$'];
+		s = ['\bar{',int2str(-i),'}'];
 else
 		s = int2str(i);
 end

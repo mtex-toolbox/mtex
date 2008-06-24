@@ -114,7 +114,7 @@
 % * new import wizard for pole figure data
 % * support of triclinic crystal [[symmetry_index.html,symmetry]] 
 % with arbitrary angles between the axes
-% * default plotting options may now be specified in startup_mtex
+% * default plotting options may now be specified in mtex_settings.m
 % * new plot option _3d_ for a three dimensional spherical plot of pole
 % figures
 % * contour levels may be specified explicitely in all plot functions

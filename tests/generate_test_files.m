@@ -16,12 +16,10 @@ odf = unimodalODF(idquaternion,cs,ss);
 pf = simulatePoleFigure(odf,h,r) %#ok<NOPRT>
 
 % debug mode
-global mtex_debug;
-mtex_debug = 1;
+set_mtex_option('debug_mode');
 
-global mtex_tmppath;
 global mtex_path;
-mtex_tmppath = [mtex_path,filesep,'c',filesep,'test',filesep];
+set_mtex_option('tempdir',[mtex_path,filesep,'c',filesep,'test',filesep]);
 
 % generate files
 disp('Press Strg-C to generate test files!')

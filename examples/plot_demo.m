@@ -205,6 +205,6 @@ colorbar('south')
 % If you want to change the default plotting options, e.g. set color coding
 % to *equal* in each plot or allways use the option *reduced*. Then the
 % desired options can be added in the start up file 
-% [[matlab: edit startup_mtex.m,startup_mtex]] to the global variable
-% *mtex_plot_options*.
+% [[matlab: edit mtex_settings.m,mtex_settings]] to the option
+% *default_plot_options*.
 %
