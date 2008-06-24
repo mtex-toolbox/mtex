@@ -43,7 +43,7 @@ end
 s = zeros(size(quaternion(g1)));
 
 % iterate due to memory restrictions?
-maxiter = ceil(total_nnz / get_mtex_option('memory'));
+maxiter = ceil(total_nnz / get_mtex_option('memory',300 * 1024));
 if maxiter > 1, progress(0,maxiter);end
 
 for iter = 1:maxiter

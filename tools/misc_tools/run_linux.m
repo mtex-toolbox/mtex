@@ -26,7 +26,7 @@ if ~exist([prg,mtex_ext],'file')
   error(['Can not find ',[prg,mtex_ext],'! Run "make install"']);
 end
 
-mtex_tmppath = get_mtex_option('tempdir');
+mtex_tmppath = get_mtex_option('tempdir',tempdir);
 
 %% local flags
 inline = 0;
@@ -163,7 +163,7 @@ end % function
 %% retrieve information
 function out = readdata(name,verbose,nout)
 
-mtex_tmppath = get_mtex_option('tempdir');
+mtex_tmppath = get_mtex_option('tempdir',tempdir);
 for i=1:nout
   vdisp(verbose,['  read result file ',int2str(i)]);
   fdata = fopen([mtex_tmppath,name,'_res',int2str(i),'.dat'],'r');
@@ -181,7 +181,7 @@ end
 %% cleanup
 function cleanup(name,verbose)
 
-mtex_tmppath = get_mtex_option('tempdir');
+mtex_tmppath = get_mtex_option('tempdir',tempdir);
 % delete parameter files
 vdisp(verbose,'  delete datafiles:')
 delete([mtex_tmppath,name,'.txt']);

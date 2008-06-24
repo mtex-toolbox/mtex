@@ -24,3 +24,5 @@ set_mtex_option('tempdir',[mtex_path,filesep,'c',filesep,'test',filesep]);
 % generate files
 disp('Press Strg-C to generate test files!')
 calcODF(pf)
+
+delete_mtex_option('debug_mode');

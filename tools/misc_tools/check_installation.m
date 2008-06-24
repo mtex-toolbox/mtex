@@ -1,7 +1,7 @@
 function check_installation
 
 
-if strfind(get_mtex_option('tempdir'),' ')
+if strfind(get_mtex_option('tempdir',tempdir),' ')
   disp('--------------------------------------------------')
   disp('Warning: The path MTEX uses for temporary files');
   disp(['  tempdir = ''' get_mtex_option('tempdir') '''']);

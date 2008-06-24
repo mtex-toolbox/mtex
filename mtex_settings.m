@@ -5,6 +5,7 @@ function mtex_settings
 % to be set by the user. Please read carefully the predefined 
 % settings and correct them if you experience troubles.
 
+delete_mtex_option;
 
 %% user defined global settings
 %------------------------------------------------------------------------
