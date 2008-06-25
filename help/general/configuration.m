@@ -1,4 +1,4 @@
-%% MTEX CONFIGURATION
+%% MTEX Configuration and Troubleshooting
 %
 %% Global Configuration
 %
@@ -6,13 +6,14 @@
 % m-file [[matlab:edit mtex_settings.m,mtex_settings.m]]. There the
 % following items can be customized
 %
+% * the default plotting style
 % * the default maximum iteration depth of the function [[PoleFigure_calcODF.html,calcODF]]
+% * the amount of available memory
 % * the path to the temporary files
 % * the name of the log file
-% * commands to be executed befor and after an extern program call
 %
 %
-%% Local Configuration
+%% The Option System
 %
 % Many functions provided by MTEX can be customized by options. A option
 % is passed to a method as a string parameter followed by a value. For
@@ -22,8 +23,17 @@
 plotpdf(odf,'resolution',5*degree,'contour');
 
 %%
-% Options that are not followed by a value are called flag. In the above
+% Options that are not followed by a value are called flags. In the above
 % example |contour| is a flag that says the plotting routine to plot
 % contour lines. Options and flags to a function are allways optional and
 % can be passed in any order.
 %
+%
+%% I Have Crazy Characters in Some Plots 
+%
+% This indicates that your MATLAB installation has problems to interprete
+% LaTex. As a workaround uncomment the following line in 
+% [[matlab:edit mtex_settings.m,mtex_settings.m]].
+
+set_mtex_option('noLaTex');
+

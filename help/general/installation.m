@@ -53,12 +53,15 @@
 
 check_mtex
 
-%% Configure MTEX
+%% Configuration and Troubleshooting
 %
 % You can configure your MTEX installation by editting the file
 % [[matlab:edit mtex_settings.m,mtex_settings.m]]. See 
-% <configuration.html Configuration> for more details!
+% <configuration.html Configuration> for more details! This page contains
+% also some workarounds for known problems.
 %
+% Don't hesitate to contact the <mtex_about.html authors> of MTEX if you
+% have any problems.
 %
 %% Compile MTEX Your Self
 %
@@ -67,8 +70,4 @@ check_mtex
 % optimize them to you specific system. Compiling intstructions can be
 % found <compilation.html here>.
 %
-%% Trouble Shooting
-%
-% Don't hesitate to contact the <mtex_about.html authors> of MTEX if you
-% have any problems.
-%
+

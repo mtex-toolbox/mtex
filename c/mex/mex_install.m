@@ -2,8 +2,11 @@ function mex_install(mtexpath,mexoptions)
 % compiles all mex files for use with MTEX
 
 global mtex_path;
+
+opwd = pwd; 
 if nargin == 0, mtexpath = mtex_path;end
 mexpath = [mtexpath,'/c/mex/'];
+cd(mexpath)
 
 places = {'S1Grid','S2Grid','SO3Grid','quaternion'};
 
@@ -35,3 +38,4 @@ for p = 1:length(places)
 %    disp('There was an error while moving the mex files! Please move the files manualy')
 %  end
 end
+cd(opwd);

@@ -16,7 +16,9 @@
 %
 %% Credits
 %
-% * NFFT - D. Potts, S. Kunis, J. Keiner
+% The toolbox is build upon the following great software packages:
+%
+% * <http://www-user.tu-chemnitz.de/~potts/nfft/ NFFT> - D. Potts, S. Kunis, J. Keiner 
 % * NSOFT - Antje Vollrath
 % * Import Wizard - Florian Bachmann
 % * txt2mat -  A.Tönnesmann

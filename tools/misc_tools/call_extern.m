@@ -23,7 +23,7 @@ function varargout = call_extern(prg,varargin)
 
 if ispc, mtex_ext = '.exe';else mtex_ext = '';end
 if ~exist([prg,mtex_ext],'file')
-  error(['Can not find ',[prg,mtex_ext],'! Run "make install"']);
+  error(['Can not find ',[prg,mtex_ext],'!']);
 end
 
 mtex_tmppath = get_mtex_option('tempdir',tempdir);
@@ -144,7 +144,7 @@ if check_mtex_option('debug_mode')
   pause
 else
   status = system(cmd,'-echo');
-  if status ~= 0, error('error running external program:\n\n %s',cmd);end
+  if status ~= 0, error('Error running external program:\n\n %s',cmd);end
 end
 	
 % get output

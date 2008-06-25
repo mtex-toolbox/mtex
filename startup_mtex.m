@@ -49,11 +49,13 @@ check_installation;
 %% finish
 disp('MTEX toolbox (v0.5) loaded')
 disp(' ');
-disp('Basic tasks:')
-disp('- <a href="matlab:doc mtex">Show MTEX documentation</a>')
-disp('- <a href="matlab:import_wizard_PoleFigure">Import pole figure data</a>')
-disp('- <a href="matlab:import_wizard_EBSD">Import EBSD data</a>')
-disp(' ');
+if isempty(javachk('desktop'))
+  disp('Basic tasks:')
+  disp('- <a href="matlab:doc mtex">Show MTEX documentation</a>')
+  disp('- <a href="matlab:import_wizard_PoleFigure">Import pole figure data</a>')
+  disp('- <a href="matlab:import_wizard_EBSD">Import EBSD data</a>')
+  disp(' ');
+end
 
 end
 %% --------- private functions ----------------------
@@ -125,7 +127,9 @@ disp('In order to see the documentation restart MATLAB or click');
 disp('start->Desktop Tools->View Source Files->Refresh Start Button');
 disp('-----------------------------------------------------------------');
 disp(' ');
-doc; pause(0.1);commandwindow;
+if isempty(javachk('jvm'))
+  doc; pause(0.1);commandwindow;
+end
 
 
 end
