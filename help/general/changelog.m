@@ -1,34 +1,34 @@
 %% MTEX Changelog
 %
 %
-%% MTEX 0.5 - 06/2008
+%% MTEX 1.0 - 06/2008
 %
-% *MTEX binaries for Windows, Linux, and Max OSX*
+% *New Installer Including Binaries for Windows, Linux, and Max OSX*
 %
-% * MTEX ships now with binaries for Windows, Linux, and Max OSX. This makes
-% in unnecessary to install any additional library and to compile the
-% toolbox. (thanks to F. Bachmann and C. Randau )
-%
-% *New Interfaces*
-%
-% * new PoleFigure interface for xrdml data (thanks to F. Bachmann)
-%
-% *Improved Plotting*
-%
-% * plot EBSD data and continious ODFs into one plot
-% * Miller indeces and specimen directions can now be plotted directly into
-% pole figures or inverse pole figures.
-% * new plotting option north, south for spherical plots 
-% * improved colorbar handling
-% * spherical grids
-% * more spherical projections
+% * MTEX ships now with an automated installer and binaries for Windows,
+% Linux, and Mac OSX. This makes it in unnecessary to install any
+% additional library and to compile the toolbox. (Thanks to F. Bachmann,
+% C. Randau, and F. Wobbe) 
 %
 % *New ODF Class*
 %
-% * The function <FourierODF.html FourierODF> provides an easy way to define ODFs via
-% their Fourier coefficient. In particular MTEX allows now to calculate with
-% such an ODF in the same manner as with any other ODF. In particular pole
-% figure data or EBSD data can be simulated.
+% * The new function <FourierODF.html FourierODF> provides an easy way to define ODFs via
+% their Fourier coefficients. In particular MTEX allows now to calculate with
+% those ODFs in the same manner as with any other ODFs.
+%
+% *New Interfaces*
+%
+% * New PoleFigure interface for xrdml data (F. Bachmann)
+%
+% *Improved Plotting*
+%
+% * Plot EBSD data and continious ODFs into one plot
+% * Miller indeces and specimen directions can now be plotted directly into
+% pole figures or inverse pole figures.
+% * New plotting option north, south for spherical plots 
+% * Improved colorbar handling
+% * Spherical grids
+% * More spherical projections
 %
 % *Incompatible Changes With Previous Releases*
 %
@@ -48,7 +48,7 @@
 %
 % * Fixed zero range method
 % * Fixed automatic ghost correction
-% * Fixed some loadPoleFigure
+% * Fixed some loadPoleFigure issues
 % * Many other bug fixes.
 % 
 %
