@@ -2,6 +2,9 @@
 %
 %% BUGS
 %
+%% Class Miller
+%
+% cs * Miller and symvec sollten Miller indece zurückgeben.
 %
 %% class symmetry
 %
