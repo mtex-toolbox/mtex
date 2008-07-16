@@ -2,17 +2,25 @@ function mtex_text(x,y,t,varargin)
 % insert text depending on mtex_options
 
 if isa(t,'Miller') || isa(t,'vector3d')
-  if check_mtex_option('noLaTex')
-    t = char(t,'Tex');
-  else
-    t = char(t,'LaTex');
+  for i = 1:length(t)
+    if check_mtex_option('noLaTex')
+      s{i} = char(t,'Tex');
+    else
+      s{i} = ['$' char(t(i),'LaTex') '$'];
+    end
   end
-elseif ~ischar(t)
-  t = char(t);
-end
-
-if check_mtex_option('noLaTex')
-  text(x,y,t,'interpreter','tex',varargin{:});
 else
-  text(x,y,['$' t '$'],'interpreter','latex',varargin{:});
+  if ~ischar(t)
+    s = char(t);
+  else
+    s = t;
+  end
+  if ~check_mtex_option('noLaTex')
+    s = ['$' s '$'];
+  end
+end
+if check_mtex_option('noLaTex')
+  text(x,y,s,'interpreter','tex',varargin{:});
+elseif ~isempty(t)
+  text(x,y,s,'interpreter','latex',varargin{:});
 end
