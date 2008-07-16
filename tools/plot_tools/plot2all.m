@@ -17,14 +17,20 @@ function plot2all(varargin)
 
 oax = get(gcf,'currentAxes');
   
-ax = get_option(varargin,'axes', findobj(gcf,'tag','S2Grid'));
+ax = get_option(varargin,'axes', ...
+  getappdata(gcf,'axes'));
+  %findobj(gcf,'tag','S2Grid'));
   
 for i = 1:length(ax)
   set(gcf,'currentAxes',ax(i));
   
   washold = ishold;
   hold all;
-  plot(varargin{:});
+  if isa(varargin{1},'function_handle')
+    plot(varargin{1}(i),varargin{2:end});
+  else
+    plot(varargin{:});
+  end
   if ~washold, hold off;end
 end
 
