@@ -45,26 +45,47 @@ else
   interf = {};
 end
 
-% generate pole figure object
+handles_proceed = [handles.next handles.prev handles.finish];
+set(handles_proceed,'Visible','off');
+drawnow; pause(0.001);
 try
-  [nebsd,appdata.interface,appdata.options] = ...
-    loadEBSD(strcat(pathname,fn(:)),interf{:},appdata.options{:});
-
-  % add ebsd data
-  appdata.ebsd = [appdata.ebsd,nebsd];
-  appdata.workpath = pathname;
-  appdata.filename = [ appdata.filename , strcat(pathname,fn)];
+  sb = statusbar(handles.wzrd,' Importing EBSD Data ...');
+  set(sb.ProgressBar, 'Visible','on', 'Minimum',0, 'Maximum',length(fn), 'Value',0, 'StringPainted','on')
+catch end
+  
+% generate pole figure object
+for i=1:length(fn)
+  try
+    [nebsd,appdata.interface,appdata.options] = ...
+      loadEBSD(strcat(pathname,fn(i)),interf{:},appdata.options{:});
+  catch
+    errordlg(errortext);
+     break;
+  end
+  
+ % 
+  if get(0,'CurrentFigure') == handles.wzrd
+    pause(0.025); % wait that generic wizard closes
+    try, set(sb.ProgressBar,'Value',i);catch end
+  end
+  
+  %pole figures
+  if ~isempty(nebsd);
+    appdata.ebsd =  [appdata.ebsd,nebsd];
+    appdata.workpath = pathname;
+    appdata.filename = [appdata.filename, strcat(pathname,fn(i))];
     
-catch
-  errordlg(errortext);
+    set(handles.listbox, 'String', path2filename(appdata.filename));
+    set(handles.listbox,'Value',1);
+    drawnow; pause(0.001);
+  end
 end
+try, statusbar(handles.wzrd);catch,end; 
+
+set(handles_proceed,'Visible','on');
+drawnow; pause(0.001);
 
 % set list of filenames
-if get(0,'current') == handles.wzrd
-  set(handles.listbox, 'String', path2filename(appdata.filename));
-  set(handles.listbox,'Value',1);
-end
-
 
 
 %% ------------ remove data callback --------------------------------------
@@ -84,8 +105,9 @@ if ~isempty(appdata.ebsd)
   
   selected = min([index_selected,length(appdata.filename)]);
   
-  set(handles.listbox,'Value',selected);
-  set(handles.listbox,'String', appdata.filename);
+  
+  set(handles.listbox,'String', path2filename(appdata.filename));
+  set(handles.listbox,'Value',1);
   
   if isempty(appdata.ebsd)
     appdata.interface = '';
