@@ -1,11 +1,13 @@
 function str = exportPF( pn, fn, pf, interface, options )
 
-str = ['%% created by importwizard';{''}];
+str = ['%% created with import_wizard';{''}];
 
 %% specify crystal and specimen symmetries
 
 str = [ str; '%% specify crystal and specimen symmetries';{''}];
+
 cs =get(pf,'CS');
+ss = get(pf,'SS');
 
 [c,angl] = get_axisangel( cs );
 axis =  strcat(n2s(c));
@@ -14,43 +16,65 @@ angle =  strcat(n2s([angl{:}]));
 cs = strrep(char(cs),'"','');
 str = [str; export_CS_tostr( cs,axis,angle )];
 
-ss = get(pf,'SS');
 str = [ str; strcat('SS = symmetry(''',strrep(char(ss),'"',''), ''');')];
 
 %% specify the file names
 
-pn = strrep(pn,'\','/');
-pn = strrep(pn,'./','');
 
-str = [ str; {''};'%% specify file names'; {''};'% path to data files'; ...
-  strcat('pname = ''',pn,''';')];
+% ordinary case
+if ~iscell(fn{1}) 
 
-str = [ str; {''};'% file names';'fname = { ...'];
+  pn = strrep(pn,'\','/');
+  pn = strrep(pn,'./','');
 
-for k = 1:length(fn)
+  str = [ str; {''};'%% specify file names'; {''};'% path to data files'; ...
+    strcat('pname = ''',pn,''';')];
+
+  str = [ str; {''};'% file names';'fname = { ...'];
+
+  for k = 1:length(fn)
     str = [ str; strcat('[pname,''', fn{k}, '''], ...')];
+  end
+  
+  str = [ str; '};'; {''}];
+
+   
+else % xrdml pole figures
+  
+  str = [ str; {''};'%% specify file names'; {''};'fname = { ...'];
+  str = [ str; '{...'];
+  for i=1:length(fn{1})
+    for k = 1:4
+      str = [ str; strcat('''',fn{k}{i},''',...')];
+    end
+    if i<length(fn{1}),str = [ str; '},{...'];end
+  end 
+  str = [ str; '}};'; {''}];
 end
-str = [ str; '};'; {''}];
+
 
 %% specify crystal directions
-str = [ str; {'%% specify crystal directions'; 'h = { ...'}];
+str = [ str; '%% specify crystal directions'; {''};'h = { ...'];
 
-for k = 1:length(pf)
-   m = get( pf(k),'h');
-   if any(strcmp(Laue(getCS(pf)),{'-3m','-3','6/m','6/mmm'}))
-     str = [ str; strcat('Miller(',n2s(get(m,'h')),',',n2s(get(m,'k')), ...
-       ',',n2s(-get(m,'h')-get(m,'k')),',',n2s(get(m,'l')),',CS), ...')];
-   else
-     str = [ str; strcat('Miller(',n2s(get(m,'h')),',',n2s(get(m,'k')), ...
-       ',',n2s(get(m,'l')),',CS), ...')];
-   end
+if ~iscell(fn{1})
+  for k = 1:length(pf)    
+    str = [ str; cs2miller(pf(k))];
+  end  
+  str = [ str; '};'; {''}];
+else
+  str = [ str; '{...'];
+  for i = 1:length(pf) 
+    for k=1:4
+      str = [ str; cs2miller(pf(i))];
+    end
+    if i<length(pf),str = [ str; '},{...'];end
+  end  
+  str = [ str; '}};'; {''}];
 end
-str = [ str; '};'; {''}];
 
 %% specifiy structural coefficients for superposed pole figures
 
 if length(getc(pf)) > length(pf)
-
   str = [ str; {'%% specifiy structural coefficients for superposed pole figures';}];
   c = [];
   for k = 1:length(pf)
@@ -62,16 +86,38 @@ end
 %% import the data 
 
 str = [ str; '%% import the data'; {''}];
-lpf = ['pf = loadPoleFigure(fname,h,CS,SS,''interface'',''',...
-  interface,''''];
 
-if ~isempty(options)
-  lpf = [lpf, ', ',option2str(options,'quoted')];
+if ~iscell(fn{1})
+  lpf = ['pf = loadPoleFigure(fname,h,CS,SS,''interface'',''',...
+    interface,''''];
+  if ~isempty(options), lpf = [lpf, ', ',option2str(options,'quoted')];end
+  if length(getc(pf)) > length(pf), lpf = [lpf,',''superposition'',c'];end
+  
+  str = [str; [lpf ');']];
+else
+  str = [str;'pf=[];';{''};...
+    'for k=1:length(fname)'; ...
+      'pf = [pf, xrdml_merge(...'; ...
+      'loadPoleFigure(fname{k},h{k},CS,SS,''interface'',''xrdml'')) ];';...
+    'end'];
 end
 
-if length(getc(pf)) > length(pf), lpf = [lpf,',''superposition'',c'];end
+%% add plot 
 
-str = [str; [lpf ');']];
+str = [str; {''}; '%% plot imported polefigure'; {''};'plot(pf)'];
+
+
+function s = cs2miller(pf)
+
+m = get( pf,'h');
+if any(strcmp(Laue(getCS(pf)),{'-3m','-3','6/m','6/mmm'}))
+  s = strcat('Miller(',n2s(get(m,'h')),',',n2s(get(m,'k')), ...
+    ',',n2s(-get(m,'h')-get(m,'k')),',',n2s(get(m,'l')),',CS), ...');
+else
+  s = strcat('Miller(',n2s(get(m,'h')),',',n2s(get(m,'k')), ...
+    ',',n2s(get(m,'l')),',CS), ...');
+end
+
 
 function s = n2s(n)
 
