@@ -27,6 +27,10 @@ if nargin <= 1, CS = symmetry; end
 if nargin <= 2, SS = symmetry; end
 maxangle = get_option(varargin,'MAX_ANGLE',2*pi);
 
+argin_check(points,{'double','quaternion'});
+argin_check(CS,'symmetry');
+argin_check(SS,'symmetry');
+
 % standard settings
 G.alphabeta = [];
 G.gamma    = [];
