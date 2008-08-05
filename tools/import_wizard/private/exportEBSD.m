@@ -24,7 +24,7 @@ pn = strrep(pn,'./','');
 str = [ str; {''};'%% specify file names'; {''};'fname = { ...'];
 
 for k = 1:length(fn)
-    str = [ str; strcat('''', [pn,fn{k}], ''', ...')];
+    str = [ str; strcat('''', fn{k}, ''', ...')];
 end
 str = [ str; '};'; {''}];
 
