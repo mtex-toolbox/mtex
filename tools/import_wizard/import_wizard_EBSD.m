@@ -50,17 +50,10 @@ try
   [nebsd,appdata.interface,appdata.options] = ...
     loadEBSD(strcat(pathname,fn(:)),interf{:},appdata.options{:});
 
-  % new directory?
-  if ~strcmp(appdata.workpath,pathname)
-    % replace ebsd data
-    appdata.ebsd = nebsd;
-    appdata.workpath = pathname;
-    appdata.filename = fn;
-  else     
-    % add ebsd data
-    appdata.ebsd = [appdata.ebsd,nebsd];
-    appdata.filename = [ appdata.filename , fn ];
-  end
+  % add ebsd data
+  appdata.ebsd = [appdata.ebsd,nebsd];
+  appdata.workpath = pathname;
+  appdata.filename = [ appdata.filename , strcat(pathname,fn)];
     
 catch
   errordlg(errortext);
@@ -68,7 +61,7 @@ end
 
 % set list of filenames
 if get(0,'current') == handles.wzrd
-  set(handles.listbox, 'String', appdata.filename);
+  set(handles.listbox, 'String', path2filename(appdata.filename));
   set(handles.listbox,'Value',1);
 end
 
