@@ -55,6 +55,8 @@ if nargout > 0, varargout{1} = gca;end
 
 if strcmp(get(gcf,'Tag'),'multiplot')
   varargin = {varargin{:},'annotate'};
+else
+  adjustToolbar('norotate');
 end
 
 set(gca,'Tag','S2Grid','Box','on','DataAspectRatio',[1 1 1],'XTick',[],'YTick',[],...
@@ -100,17 +102,9 @@ if check_option(varargin,'GRAY'),colormap(flipud(colormap('gray'))/1.2);end
 [ls,c] = nextstyle(gca);
 varargin = {varargin{:},'color',c};
 
-
 %% Prepare Coordinates
 % calculate polar coordinates
 [theta,rho] = polar(S2G);
-if check_option(varargin,'rotate')
-  rho = rho + get_option(varargin,'rotate',-pi/2,'double');
-end
-
-if check_option(varargin,'flipud')
-  rho = 2*pi-rho;
-end
 
 
 %% Which Hemispheres to Plot
@@ -171,8 +165,8 @@ end
 
 % Bounding Box
 if ~check_option(varargin,{'annotate'})
-  xlim([bounds(1),bounds(1)+bounds(3)]);
-  ylim([bounds(2),bounds(2)+bounds(4)]);
+  xlim([bounds(1)-0.005,bounds(1)+bounds(3)+0.01]);
+  ylim([bounds(2)-0.005,bounds(2)+bounds(4)+0.01]);
 end
 
 if check_option(varargin,'plain') && ~check_option(varargin,'TIGHT')
@@ -212,46 +206,26 @@ box = bounds+[offset,0,bounds(1)+offset,bounds(2)];
 plotData(X+offset,Y,data,box,varargin{:});
 
 % bounding box
-if ~check_option(varargin,{'PLAIN','annotate'})
+if ~check_option(varargin,'annotate')
+  if check_option(varargin,'PLAIN') && check_option(varargin,'grid')
+    
+    plotPlainGrid(theta,rho,varargin{:});
+    
+  elseif ~check_option(varargin,'PLAIN')
   
-  if (isempty(rho) || isnull(mod(rho(1)-rho(end),2*pi)) || ...
-      ~(check_option(varargin,{'CONTOUR','SMOOTH'})))
-    circle(bounds(1)+offset+bounds(3)/2,bounds(2)+bounds(4)/2,bounds(3)/2);
-    
-    if check_option(varargin,'grid'), polarGrid(offset,varargin{:});end
-    
-  else
-    torte(X+offset,Y);
+    if (isempty(rho) || isnull(mod(rho(1)-rho(end),2*pi)) || ...
+        ~(check_option(varargin,{'CONTOUR','SMOOTH'})))
+      circle(bounds(1)+offset+bounds(3)/2,bounds(2)+bounds(4)/2,bounds(3)/2,'edgecolor','k');
+      
+      if check_option(varargin,'grid'), polarGrid(offset,varargin{:});end
+      
+    else
+      torte(X+offset,Y);
+    end
   end
-  
 end
+
 bounds(3) = bounds(3) + offset;
-
-%% Plot Grid
-function polarGrid(offset,varargin)
-
-% 
-dtheta = get_option(varargin,'grid_res',30*degree);
-theta = dtheta:dtheta:(pi/2-dtheta);
-rho = zeros(1,length(theta));
-X = projectData(theta,rho,varargin{:});
-
-arrayfun(@(x) circle(offset,0,x,'LineStyle',':','edgecolor',[0.4 0.4 0.4]),X);
-
-
-% meridans
-drho = get_option(varargin,'grid_res',30*degree);
-rho = [0:drho:(pi-drho);pi:drho:(2*pi-drho)];
-theta = ones(size(rho))*pi/2;
-[X,Y] = projectData(theta,rho,varargin{:});
-
-line(offset+X,Y,'LineStyle',':','color',[0.4 0.2 0.4]);
-
-
-%% Plot Circle
-function circle(x,y,r,varargin)
-
-rectangle('Position',[x-r,y-r,2*r,2*r],'Curvature',[1,1],varargin{:});
 
 %% Plot Tort
 function torte(X,Y)
