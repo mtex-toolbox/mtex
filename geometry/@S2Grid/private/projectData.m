@@ -1,6 +1,6 @@
 function [X,Y,bounds] = projectData(theta,rho,varargin)
 
-% get projection
+%% get projection
 if isappdata(gcf,'projection')  
   projection = getappdata(gcf,'projection');
 else
@@ -8,13 +8,21 @@ else
 end
 projection = get_option(varargin,'projection',projection);
 
+%% modify polar coordinates
+if ~strcmpi(projection,'plain') && check_option(varargin,'rotate')
+  rho = rho + get_option(varargin,'rotate',-pi/2,'double');
+end
 
-% project data
+if check_option(varargin,'flipud')
+  rho = 2*pi-rho;
+end
+
+%% project data
 switch lower(projection)
   
   case 'plain'
 
-    X = rho; Y = theta;
+    X = rho; Y = fliplr(theta);
     
   case {'stereo','eangle'} % equal angle
   
@@ -30,6 +38,7 @@ switch lower(projection)
     
     [X,Y] = SchmidtProj(theta,rho);
     bounds = [-1.4142, -1.4142, 2*1.4142 , 2*1.4142];
+    %bounds = [-1.42, -1.42, 2*1.42 , 2*1.42];
 
   case 'orthographic'
     [X,Y] = orthographicProj(theta,rho);
