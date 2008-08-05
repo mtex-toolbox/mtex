@@ -57,7 +57,7 @@ try
     appdata.workpath = pathname;
     appdata.filename = fn;
   else     
-    % add pole figures
+    % add ebsd data
     appdata.ebsd = [appdata.ebsd,nebsd];
     appdata.filename = [ appdata.filename , fn ];
   end
