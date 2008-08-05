@@ -50,30 +50,22 @@ end
 try
   [npf,appdata.interface,appdata.options,ipf] = ...
     loadPoleFigure(strcat(pathname,fn(:)),interf{:},appdata.options{:});
+  
+  %pole figures
+  appdata.pf =  [appdata.pf,npf];
+  appdata.workpath = pathname;
+  appdata.filename = [appdata.filename, strcat(pathname,fn)];
+  appdata.ipf = [appdata.ipf,ipf];
 
-  % new directory?
-  if ~strcmp(appdata.workpath,pathname)
-    % replace pole figures
-    appdata.pf = npf;
-    appdata.workpath = pathname;
-    appdata.filename = fn;
-    appdata.ipf = [0,ipf];
-  else     
-    % add pole figures
-    appdata.pf = [appdata.pf,npf];
-    appdata.filename = [ appdata.filename , fn ];
-    appdata.ipf = [appdata.ipf,ipf];
-  end
-    
+  if strcmp(appdata.interface,'xrdml'), xrdml_help; end
 catch
   errordlg(errortext);
 end
 
 % set list of filenames
-if get(0,'current') == handles.wzrd
-  set(handles.listbox, 'String', appdata.filename);
-  set(handles.listbox,'Value',1);
-end
+set(handles.listbox, 'String',path2filename(appdata.filename));
+set(handles.listbox,'Value',1);
+
 
 
 %% ------------ remove data ----------------------------------------------- 
@@ -100,14 +92,15 @@ if ~isempty(appdata.pf)
   end;
   
   selected = min([index_selected,length(appdata.filename)]);
-  
+ 	if selected < 1, selected=1;end
+  set(handles.listbox, 'String',path2filename(appdata.filename));
   set(handles.listbox,'Value',selected);
-  set(handles.listbox,'String', appdata.filename);
-  
+   
   if isempty(appdata.pf)
     appdata.interface = '';
     appdata.options = {};
-  end 
+    appdata.assert_assistance= 'None';
+  end
 end
 
 
@@ -116,31 +109,33 @@ function leave_page()
 global handles;
 global appdata;
 switch appdata.page  
-   case 1
-      if isempty(appdata.pf), error('Add some data files to be imported!');end
+  case 1
+    if isempty(appdata.pf), error('Add some data files to be imported!');end  
   case 2
-      appdata = crystal2pf(appdata, handles);
+    appdata = crystal2pf(appdata, handles);
   case 3
-     try
-       appdata = set_hkil(appdata, handles);
-     catch
-       error('There must be the same number of hkli and structure coefficients.');
-     end
-   case 4
+    try
+      appdata = set_hkil(appdata, handles);
+    catch
+      error('There must be the same number of hkli and structure coefficients.');
+    end
+  case 4
+  case 5
 end
 %--------------------------------------------------------------------------
 function goto_page()
 global handles;
 global appdata;
-switch appdata.page
+switch appdata.page   
   case 2
-     handles = pf2crystal(appdata, handles);
-   case 3
-     handles = setup_polefigurelist(appdata, handles);
-     get_hkil(appdata, handles);
-   case 4
-      str = char(appdata.pf);
-      set(handles.preview,'String',str);
+    handles = pf2crystal(appdata, handles);
+  case 3
+    handles = setup_polefigurelist(appdata, handles);
+    get_hkil(appdata, handles);
+  case 4
+  case 5
+    str = char(appdata.pf);
+    set(handles.preview,'String',str);
 end
 
 
@@ -176,7 +171,8 @@ global appdata
 scrsz = get(0,'ScreenSize');
 figure('Position',[scrsz(3)/8 scrsz(4)/8 6*scrsz(3)/8 6*scrsz(4)/8]);
 
-plot( appdata.pf );
+plot( appdata.pf,'silent');
+plot2all([xvector,yvector,zvector])
 
 
 %% ---------- in the end --------------------------------------------------
@@ -187,10 +183,23 @@ global appdata
 if ~get(handles.runmfile,'Value');
   a = inputdlg({'Enter name of workspace variable'},'MTEX Import Wizard',1,{'pf'});
   assignin('base',a{1},appdata.pf);
+  if isempty(javachk('desktop'))
+    disp(['imported PoleFigure: ', a{1}]);  
+
+    disp(['- <a href="matlab:plot(',a{1},',''silent'')">Plot PDF</a>']);
+    disp(['- <a href="matlab:calcODF(',a{1},')">Calculate ODF</a>']);
+    disp(' ');
+  end
 else
-  str = exportPF(appdata.workpath, appdata.filename, appdata.pf,appdata.interface,appdata.options);
+  if ~strcmp(appdata.assert_assistance,'Yes')
+    str = exportPF(appdata.workpath, appdata.filename, appdata.pf, appdata.interface, appdata.options);
+  else
+    str = exportPF(appdata.workpath, appdata.f, appdata.pf, appdata.interface, appdata.options);
+  end
   str = generateCodeString(str);
   openuntitled(str);
 end
 
 close
+
+
