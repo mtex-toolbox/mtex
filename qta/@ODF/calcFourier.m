@@ -1,4 +1,4 @@
-function nodf = calcFourier(odf,L)
+function nodf = calcFourier(odf,L,varargin)
 % compute Fourier coefficients of odf
 %
 % Compute the Fourier coefficients of the ODF and store them in the
