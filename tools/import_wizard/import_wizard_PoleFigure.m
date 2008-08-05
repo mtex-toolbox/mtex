@@ -46,26 +46,49 @@ else
   interf = {};
 end
 
-% generate pole figure object
+handles_proceed = [handles.next handles.prev handles.finish];
+set(handles_proceed,'Visible','off');
+drawnow; pause(0.001);
+
 try
-  [npf,appdata.interface,appdata.options,ipf] = ...
-    loadPoleFigure(strcat(pathname,fn(:)),interf{:},appdata.options{:});
+  sb = statusbar(handles.wzrd,' Importing PoleFigure ...');
+  set(sb.ProgressBar, 'Visible','on', 'Minimum',0, 'Maximum',length(fn), 'Value',0, 'StringPainted','on')
+catch end
+
+% generate pole figure object
+for i=1:length(fn)
+  try
+    [npf,appdata.interface,appdata.options,ipf] = ...
+      loadPoleFigure(strcat(pathname,fn(i)),interf{:},appdata.options{:});  
+  catch
+    errordlg(errortext);
+     break;
+  end
   
-  %pole figures
-  appdata.pf =  [appdata.pf,npf];
-  appdata.workpath = pathname;
-  appdata.filename = [appdata.filename, strcat(pathname,fn)];
-  appdata.ipf = [appdata.ipf,ipf];
-
-  if strcmp(appdata.interface,'xrdml'), xrdml_help; end
-catch
-  errordlg(errortext);
+  if get(0,'CurrentFigure') == handles.wzrd
+    pause(0.025); % wait that generic wizard closes
+    try, set(sb.ProgressBar,'Value',i);catch end
+  end
+ % try, set(sb.ProgressBar,'Value',i);catch end
+  
+  if ~isempty(npf)
+    %pole figures
+    appdata.pf =  [appdata.pf,npf];
+    appdata.ipf = [appdata.ipf,ipf];   
+    appdata.filename = [appdata.filename, strcat(pathname,fn(i))]; 
+    appdata.workpath = pathname;
+    % set list of filenames  
+    set(handles.listbox, 'String',path2filename(appdata.filename));
+    set(handles.listbox,'Value',1);
+    drawnow; pause(0.001);
+  end
 end
+try, statusbar(handles.wzrd);catch,end;  
 
-% set list of filenames
-set(handles.listbox, 'String',path2filename(appdata.filename));
-set(handles.listbox,'Value',1);
+set(handles_proceed,'Visible','on');
+drawnow; pause(0.001);
 
+if strcmp(appdata.interface,'xrdml'), xrdml_help; end
 
 
 %% ------------ remove data ----------------------------------------------- 
@@ -172,7 +195,7 @@ scrsz = get(0,'ScreenSize');
 figure('Position',[scrsz(3)/8 scrsz(4)/8 6*scrsz(3)/8 6*scrsz(4)/8]);
 
 plot( appdata.pf,'silent');
-plot2all([xvector,yvector,zvector])
+plot2all([xvector,yvector,zvector]);
 
 
 %% ---------- in the end --------------------------------------------------
@@ -185,7 +208,6 @@ if ~get(handles.runmfile,'Value');
   assignin('base',a{1},appdata.pf);
   if isempty(javachk('desktop'))
     disp(['imported PoleFigure: ', a{1}]);  
-
     disp(['- <a href="matlab:plot(',a{1},',''silent'')">Plot PDF</a>']);
     disp(['- <a href="matlab:calcODF(',a{1},')">Calculate ODF</a>']);
     disp(' ');
