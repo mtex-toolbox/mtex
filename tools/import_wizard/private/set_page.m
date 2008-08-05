@@ -10,7 +10,8 @@ if(page == length(handles.tabs))
   set(handles.finish,'enable','on');
   set(handles.next,'enable','off');
   set(handles.plot,'visible','on');
-else set(handles.finish,'enable','off');
+else
+  set(handles.finish,'enable','off');
   set(handles.plot,'visible','off')
   set(handles.next,'enable','on');
 end
