@@ -54,12 +54,13 @@ if strcmp(xRoot.getTagName,'xrdMeasurements')
     for ii=0:scan.getLength-1
       
       val = str2num(scan.item(ii).getElementsByTagName('intensities').item(0).getFirstChild.getNodeValue);
-      d = [d,val];
+      time = str2num(scan.item(ii).getElementsByTagName('commonCountingTime').item(0).getFirstChild.getNodeValue);
+      d = [d,val/time];
       
       %get start and stop position
       pos = scan.item(ii).getElementsByTagName('positions');
-      rot_start = scan.item(ii).getElementsByTagName('startPosition').item(0);
-      
+      rot_start = scan.item(ii).getElementsByTagName('startPosition').item(0); 
+            
       %check units
       if strcmp(rot_start.getParentNode.getAttribute('unit'),'deg')
         isrho_deg=degree;
@@ -82,9 +83,9 @@ if strcmp(xRoot.getTagName,'xrdMeasurements')
           end;
           
           %get theta
-          theta = str2double(pos.item(k).getElementsByTagName('commonPosition').item(0).getFirstChild.getNodeValue);
+          theta = str2num(pos.item(k).getElementsByTagName('commonPosition').item(0).getFirstChild.getNodeValue);
           current_theta = [ current_theta; ...
-            repmat(pi/2-istheta_deg*theta,length(val),1)];
+            repmat(istheta_deg*theta,length(val),1)]; %pi/2-
         end
       end
       
@@ -102,7 +103,7 @@ if strcmp(xRoot.getTagName,'xrdMeasurements')
   end
   
 else
-  error('Format XRDM does not match file %s.',fname);
+  error('Format XRDML does not match file %s.',fname);
 end
 
 
