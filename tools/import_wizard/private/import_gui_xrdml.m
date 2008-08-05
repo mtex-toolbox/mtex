@@ -1,6 +1,6 @@
 function handles = import_gui_xrdml( handles, varargin )
 
-pos = get(handles.xrml_frame,'Position');
+pos = get(handles.xrdml_frame,'Position');
 h = pos(4);
 w = pos(3);
 
@@ -39,10 +39,10 @@ handles.delt = uicontrol(...
 end
 
 %%
-uicontrol('Style','PushButton','String','Proceed ',...
+handles.proceed = uicontrol('Style','PushButton','String','Proceed ',...
   'Position',[w-90,10,70,25],'CallBack','xrdml_help(''finish'')');
 
-uicontrol('Style','PushButton','String','Cancel ',...
+handles.cancel = uicontrol('Style','PushButton','String','Cancel ',...
   'Position',[w-160,10,70,25],'CallBack','xrdml_help(''cancel'')');
 
 uipanel('units','pixel',...
