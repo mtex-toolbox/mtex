@@ -32,6 +32,7 @@ if ~iscell(fn{1})
 
   str = [ str; {''};'% file names';'fname = { ...'];
 
+  fn = path2filename(fn);
   for k = 1:length(fn)
     str = [ str; strcat('[pname,''', fn{k}, '''], ...')];
   end
