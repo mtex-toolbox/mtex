@@ -47,7 +47,7 @@ mtex_settings;
 check_installation;
 
 %% finish
-disp('MTEX toolbox (v0.5) loaded')
+disp('MTEX toolbox (v1.01) loaded')
 disp(' ');
 if isempty(javachk('desktop'))
   disp('Basic tasks:')
