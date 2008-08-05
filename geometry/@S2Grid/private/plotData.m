@@ -46,12 +46,11 @@ elseif check_option(varargin,'SMOOTH')
     if isappr(min(data(:)),max(data(:))) % empty plot
       ind = convhull(X,Y);
       fill(X(ind),Y(ind),min(data(:)));
-      set(gcf,'Renderer','painters');
     else
       [CM,h] = contourf(X,Y,data,50);
       set(h,'LineStyle','none');
-      set(gcf,'Renderer','painters');
     end
+    set(gcf,'Renderer','painters');
   end
   
 % singular points 
@@ -66,16 +65,17 @@ elseif isa(data,'cell') || check_option(varargin,'dots')% || numel(X)<20
     ind = 1:numel(X);
   end  
   
-  for i = ind
-    mtex_text(X(i),Y(i),'\bullet',...
+  for i = 1:length(ind)
+    j = ind(i);
+    if isa(data,'cell') && ~check_option(varargin,'notext')
+      smarttext(X(j),Y(j),data{j},bounds,...
+        'FontSize',get_option(varargin,'FontSize',13),...
+        'Interpreter','latex','BackgroundColor','w','Margin',0.1);
+    end
+    mtex_text(X(j),Y(j),'\bullet',...
       'FontSize',round(get_option(varargin,'FontSize',13)/2*3),...
       'color',get_option(varargin,'color','k'),...
       'HorizontalAlignment','Center','VerticalAlignment','middle');
-    if isa(data,'cell')
-      smarttext(X(i),Y(i),data{i},bounds,...
-        'FontSize',get_option(varargin,'FontSize',13),...
-        'Interpreter','latex');
-    end
   end
   
 elseif check_option(varargin,'scatter')
