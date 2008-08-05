@@ -1,6 +1,6 @@
 function str = exportEBSD( pn, fn, ebsd, interface, options )
 
-str = ['%% Created by importwizard';{''}];
+str = ['%% created with import_wizard';{''}];
 
 %% specify crystal and specimen symmetries
 
@@ -21,13 +21,10 @@ str = [ str; strcat('SS = symmetry(''',strrep(char(ss),'"',''), ''');')];
 pn = strrep(pn,'\','/');
 pn = strrep(pn,'./','');
 
-str = [ str; {''};'%% specify file names'; {''};'% path to data files'; ...
-  strcat('pname = ''',pn,''';')];
-
-str = [ str; {''};'% file names';'fname = { ...'];
+str = [ str; {''};'%% specify file names'; {''};'fname = { ...'];
 
 for k = 1:length(fn)
-    str = [ str; strcat('[pname,''', fn{k}, '''], ...')];
+    str = [ str; strcat('''', fn{k}, ''', ...')];
 end
 str = [ str; '};'; {''}];
 
