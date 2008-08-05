@@ -28,6 +28,8 @@ for i = 1:length(ax)
   hold all;
   if isa(varargin{1},'function_handle')
     plot(varargin{1}(i),varargin{2:end});
+  elseif isa(varargin{1},'cell')
+    plot(varargin{1}{i},varargin{2:end});
   else
     plot(varargin{:});
   end

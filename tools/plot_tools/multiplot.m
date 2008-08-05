@@ -243,20 +243,24 @@ set(fig,'Units','pixels');
 if strcmp(getappdata(fig,'autofit'),'on')
 
   figpos = get(fig,'Position');
-  offsety = 10;
-  offsetx = 10;
-  %figpos(3:4) = figpos(3:4) - 1;
-  figpos(4) = figpos(4)-2*offsety;
-  figpos(3) = figpos(3)-2*offsetx;
+  border = get_mtex_option('border',10);
+  spacingx = get_mtex_option('spacingx',0);
+  spacingy = get_mtex_option('spacingy',0);
+
+  figpos(4) = figpos(4)-2*border;
+  figpos(3) = figpos(3)-2*border;
   dxdy = get(a(1),'PlotBoxAspectRatio');
   dxdy = dxdy(2)/dxdy(1);
-  [nx,ny,l] = bestfit(figpos(3),figpos(4)/dxdy,length(a));
-  set(fig,'UserData',[nx*l+2*offsetx,ny*l*dxdy+2*offsety]);
+  [nx,ny,l] = bestfit(figpos(3),figpos(4),dxdy,length(a),spacingx,spacingy);
+  set(fig,'UserData',[nx*l+2*border+(nx-1)*spacingx,...
+    ny*l*dxdy+2*border+(ny-1)*spacingy]);
   setappdata(fig,'length',l);
 
   for i = 1:length(a)
     [px,py] = ind2sub([nx ny],i);
-    apos = [1+offsetx+(px-1)*l,1+offsety+figpos(4)-py*l*dxdy,l,l*dxdy];
+    apos = [1+border+(px-1)*(l+spacingx),...
+      1+border+figpos(4)-py*l*dxdy-(py-1)*spacingy,...
+      l,l*dxdy];
     set(a(i),'Units','pixels','Position',apos);
   end
 end
@@ -291,23 +295,29 @@ end
 end
 
 %% determine best alignment of subfigures
-function [nx,ny,l] = bestfit(dx,dy,n)
+function [nx,ny,l] = bestfit(dx,dy,dxdy,n,spacingx,spacingy)
+
+% length in x direction
+lx = @(nx,ny) min((dx-(nx-1)*spacingx)/nx,...
+  (dy-(ny-1)*spacingy)/dxdy/ny);
 
 ny = 1;
 nx = n;
-l = min(dx/nx,dy/ny);
+l = lx(nx,ny);
 if n == 1, return;end
 for ny=2:n
   nx = ceil(n/ny);
-  if min(dx/nx,dy/ny) < l
+  if lx(nx,ny) > l
+    l = lx(nx,ny);
+  else
     ny = ny-1; %#ok<FXSET>
     nx = ceil(n/ny);
     break
-  else
-    l = min(dx/nx,dy/ny);
   end
 end
 end
+
+
 
 %% Callbacks for syncing 3d rotations
 
