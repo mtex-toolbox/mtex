@@ -33,7 +33,14 @@ else
   appdata.ipf = 0;
   appdata.ebsd = [];
   appdata.page = 1;
+  appdata.assert_assistance = 'None';  
   appdata.type = get_option(varargin,'type');
+  
+  for i=1:4
+    appdata.f{i} = '';
+    appdata.pf_merge{i} = '';
+    appdata.ipf_merge{i} = '';
+  end
   
   
   var = {'type', appdata.type};
@@ -47,20 +54,22 @@ else
   
   if ~strcmp(appdata.type,'EBSD')
     handles = import_gui_miller( handles );
+    handles = import_gui_options( handles );
   end
   handles = import_gui_finish( handles );
   
  switch appdata.type
    %page description
    case 'EBSD'
-     handles.tabs = [handles.page1 handles.page2 handles.page4]; 
+     handles.tabs = [handles.page1 handles.page2 handles.page5]; 
      handles.pagename = {'(1/3) Select Data Files','(2/3) Set Crystal Geometry','(3/3) Summary'};
    case 'PoleFigure'
-      handles.tabs = [handles.page1 handles.page2 handles.page3 handles.page4];
+      handles.tabs = [handles.page1 handles.page2 handles.page3 handles.page4 handles.page5];
       handles.pagename = {'(1/4) Select Data Files',...
-        '(2/4) Set Crystal Geometry',...
-        '(3/4) Set Miller Indizes',...
-        '(4/4) Summary'};
+        '(2/5) Set Crystal Geometry',...
+        '(3/5) Set Miller Indizes',...
+        '(4/5) Conventions',...
+        '(5/5) Summary'};
  end
  set_page(handles,appdata.page);
  
