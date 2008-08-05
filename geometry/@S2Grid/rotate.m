@@ -6,6 +6,10 @@ function G = rotate(S2G,q)
 %% Output
 %  "not - indexed" - grid
 
+if isa(q,'double')
+  q = axis2quat(zvector,q);
+end
+
 G = S2G;
 
 for i = 1:length(G)
