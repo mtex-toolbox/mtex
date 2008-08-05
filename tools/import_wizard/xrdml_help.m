@@ -24,7 +24,7 @@ else
   end
   if strcmp(appdata.assert_assistance,'Yes')
   %mainframe
-    handles.xrml_frame = import_frame('type', 'XRDML','width',670);
+    handles.xrdml_frame = import_frame('type', 'XRDML','width',670);
     handles = import_gui_xrdml(handles);
     
     for type=1:length(appdata.f)
@@ -33,7 +33,9 @@ else
   end 
 end
 
+%% ------------ finish callback -------------------------------------------
 function finish
+
 global appdata
 global handles
 
@@ -45,13 +47,26 @@ if ~isempty(appdata.pf)
       return;
     end
   end
+  
+  handles_proceed = [handles.proceed handles.cancel];
+  set(handles_proceed,'Visible','off');
+  drawnow; pause(0.001);
 
+  try
+    sb = statusbar(handles.xrdml_frame,' Merge PoleFigures ...');
+    set(sb.ProgressBar, 'Visible','on', 'Minimum',0, 'Maximum',length(appdata.pf_merge{1}), 'Value',0, 'StringPainted','on')
+  catch end
+  
   for i=1:length(appdata.pf_merge{1})
     appdata.pf(i) = xrdml_merge([appdata.pf_merge{1}(i),appdata.pf_merge{2}(i),appdata.pf_merge{3}(i),appdata.pf_merge{4}(i)]);
+    try, set(sb.ProgressBar,'Value',i);catch end
   end
+  
+  try, statusbar(handles.xrdml_frame);catch,end;  
 end 
 close
 
+%% ------------ cancel action ---------------------------------------------
 function cancel 
 global handles
 global appdata
@@ -61,6 +76,7 @@ check_gui
 
 close
 
+%% ------------ is every thing ok -----------------------------------------
 function check_gui
 global appdata
 global handles
@@ -84,7 +100,7 @@ else
   set(handles.listbox, 'String',path2filename( appdata.f{1}));
 end
 
-
+%% ------------ data import callback --------------------------------------
 function add(type)
 global handles
 global appdata
@@ -109,25 +125,44 @@ else
   interf = {};
 end
 
+
+handles_proceed = [handles.proceed handles.cancel];
+set(handles_proceed,'Visible','off');
+drawnow; pause(0.001);
+
 try
-  [npf,appdata.interface,appdata.options,ipf] = ...
-    loadPoleFigure(strcat(pathname,fn(:)),interf{:},appdata.options{:});
-     
-  check_warn(strcat(pathname,fn{1}),type)
-       
+  sb = statusbar(handles.xrdml_frame,' Importing PoleFigure ...');
+  set(sb.ProgressBar, 'Visible','on', 'Minimum',0, 'Maximum',length(fn), 'Value',0, 'StringPainted','on')
+catch end
+
+check_warn(strcat(pathname,fn{1}),type)
+  
+for i=1:length(fn) 
+  try
+    [npf,appdata.interface,appdata.options,ipf] = ...
+      loadPoleFigure(strcat(pathname,fn(i)),interf{:},appdata.options{:});
+  catch
+     errordlg(errortext);
+      break;
+  end
+  try, set(sb.ProgressBar,'Value',i);catch end
+  
   %pole figures
   appdata.pf_merge{type} =  [appdata.pf_merge{type},npf];
   appdata.workpath = pathname;
-  appdata.f{type} =  [appdata.f{type}, strcat(pathname,fn)];
+  appdata.f{type} =  [appdata.f{type}, strcat(pathname,fn(i))];
   appdata.ipf_merge{type} = [appdata.ipf_merge{type},ipf];
+  updatelist(type);
   
   if type==1,  appdata.pf = [appdata.pf,npf]; end
-catch
-  errordlg(errortext);
 end
-updatelist(type)
 
+try, statusbar(handles.xrdml_frame);catch,end;
 
+set(handles_proceed,'Visible','on');
+drawnow; pause(0.001);
+
+%% ------------ deleting data callback ------------------------------------
 function del(type)
 global handles
 global appdata
@@ -157,7 +192,8 @@ if ~isempty(appdata.pf_merge{type})
   updatelist(type)
 
 end
-  
+
+%% ------------ update listbox --------------------------------------------
 function updatelist(type)
 global handles
 global appdata
@@ -165,6 +201,7 @@ global appdata
 set(handles.list{type}, 'String', path2filename(appdata.f{type}));
 if type==1,set(handles.listbox, 'String',path2filename( appdata.f{1}));end
 set(handles.list{type},'Value',1);
+drawnow;
 
 function check_warn(file,type)
 try
@@ -186,6 +223,7 @@ try
   if ~w, warndlg('Data seems not to fit requirements, please be sure about correctness.');end
 end
 
+%% ------------ modify handles of import_wizard ---------------------------
 function modifie_handles
 global handles
 global appdata
