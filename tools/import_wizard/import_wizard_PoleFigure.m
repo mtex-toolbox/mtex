@@ -40,14 +40,15 @@ function addfile(fn,pathname)
 global handles
 global appdata
 
-handles_proceed = [handles.next handles.prev handles.finish];
+handles_proceed = [handles.next handles.prev handles.finish,handles.plot];
 set(handles_proceed,'Visible','off');
 drawnow; pause(0.001);
 
 try
   sb = statusbar(handles.wzrd,' Importing PoleFigure ...');
   set(sb.ProgressBar, 'Visible','on', 'Minimum',0, 'Maximum',length(fn), 'Value',0, 'StringPainted','on')
-catch end
+catch
+end
 
 % generate pole figure object
 for i=1:length(fn)
@@ -63,14 +64,13 @@ for i=1:length(fn)
       loadPoleFigure(strcat(pathname,fn(i)),interf{:},appdata.options{:});  
   catch
     errordlg(errortext);
-     break;
+    break;
   end
   
   if get(0,'CurrentFigure') == handles.wzrd
     pause(0.025); % wait that generic wizard closes
     try, set(sb.ProgressBar,'Value',i);catch end
   end
- % try, set(sb.ProgressBar,'Value',i);catch end
   
   if ~isempty(npf)
     %pole figures
@@ -144,6 +144,7 @@ switch appdata.page
       error('There must be the same number of hkli and structure coefficients.');
     end
   case 4
+    set(appdata.pf,'comment',get(handles.comment,'String'));
   case 5
 end
 %--------------------------------------------------------------------------
@@ -157,6 +158,7 @@ switch appdata.page
     handles = setup_polefigurelist(appdata, handles);
     get_hkil(appdata, handles);
   case 4
+    set(handles.comment,'String',get(appdata.pf,'comment'));
   case 5
     str = char(appdata.pf);
     set(handles.preview,'String',str);
@@ -192,10 +194,18 @@ setup_polefigurelist(appdata, handles);
 %% ------------ plotting preview ------------------------------------------
 function plot_PoleFigure()
 global appdata
+global handles
+
+if isempty(appdata.pf)
+  errordlg('Nothing to plot! Add files to import first!');
+  return;
+end
 scrsz = get(0,'ScreenSize');
 figure('Position',[scrsz(3)/8 scrsz(4)/8 6*scrsz(3)/8 6*scrsz(4)/8]);
 
-plot( appdata.pf,'silent');
+pf = appdata.pf;
+pf = modifypf(pf,handles);
+plot(pf,'silent');
 plot2all([xvector,yvector,zvector]);
 
 
@@ -224,5 +234,22 @@ else
 end
 
 close
+
+%% Modify ODF before exporting or plotting
+function npf = modifypf(pf,handles)
+
+if get(handles.rotate,'value')
+  pf = rotate(pf,str2num(get(handles.rotateAngle,'string')));
+end
+
+if get(handles.dnv,'value')
+  pf = delete(pf,getdata(pf)<0);
+end
+
+if get(handles.setnv,'value')
+  pf = setdata(pf,str2num(get(handles.rnv,'string')),getdata(pf)<0);
+end
+
+npf = pf;
 
 
