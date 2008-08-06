@@ -103,9 +103,29 @@ else
     'end'];
 end
 
+%% post process pole figure
+
+global handles;
+
+if get(handles.rotate,'value')
+  str = [str; {''}; '%% rotate pole figure'; {''};...
+    'pf = rotate(pf,',get(handles.rotateAngle,'string'),'*degree)'];
+end
+
+if get(handles.dnv,'value')
+  str = [str; {''}; '%% delete negative values'; {''};...
+    'pf = delete(pf,getdata(pf)<0);'];  
+end
+
+if get(handles.setnv,'value')
+  str = [str; {''}; '%% set negative values'; {''};...
+    'pf = setdata(pf,',get(handles.rnv,'string'),',getdata(pf)<0)'];
+end
+
+
 %% add plot 
 
-str = [str; {''}; '%% plot imported polefigure'; {''};'plot(pf)'];
+str = [str; {''}; '%% plot imported pole figure'; {''};'plot(pf)'];
 
 
 function s = cs2miller(pf)
