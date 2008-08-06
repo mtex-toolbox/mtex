@@ -40,12 +40,6 @@ function addfile(fn,pathname)
 global handles
 global appdata
 
-if ~isempty(appdata.interface)
-  interf = {'interface',appdata.interface};
-else
-  interf = {};
-end
-
 handles_proceed = [handles.next handles.prev handles.finish];
 set(handles_proceed,'Visible','off');
 drawnow; pause(0.001);
@@ -57,6 +51,13 @@ catch end
 
 % generate pole figure object
 for i=1:length(fn)
+  
+  if ~isempty(appdata.interface)
+    interf = {'interface',appdata.interface};
+  else
+    interf = {};
+  end
+  
   try
     [npf,appdata.interface,appdata.options,ipf] = ...
       loadPoleFigure(strcat(pathname,fn(i)),interf{:},appdata.options{:});  
