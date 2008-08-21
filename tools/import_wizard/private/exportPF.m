@@ -20,60 +20,46 @@ str = [ str; strcat('SS = symmetry(''',strrep(char(ss),'"',''), ''');')];
 
 %% specify the file names
 
+str = [ str; {''};'%% specify file names'; {''}];
 
-% ordinary case
-if ~iscell(fn{1}) 
+% ordinary case 
+if ~iscell(fn{1})
 
   pn = strrep(pn,'\','/');
   pn = strrep(pn,'./','');
 
-  str = [ str; {''};'%% specify file names'; {''};'% path to data files'; ...
-    strcat('pname = ''',pn,''';')];
-
-  str = [ str; {''};'% file names';'fname = { ...'];
-
-  fn = path2filename(fn);
+  [pname, fname] =  minpath(fn);
+  str = [ str; {''};strcat('pname = ''', pname,''';'); {''};'fname = {...']; 
   for k = 1:length(fn)
-    str = [ str; strcat('[pname,''', fn{k}, '''], ...')];
+      str = [ str; strcat('[ pname ''', fname{k}, '''], ...')];
   end
-  
   str = [ str; '};'; {''}];
-
-   
-else % xrdml pole figures
-  
-  str = [ str; {''};'%% specify file names'; {''};'fname = { ...'];
-  str = [ str; '{...'];
-  for i=1:length(fn{1})
-    for k = 1:4
-      str = [ str; strcat('''',fn{k}{i},''',...')];
+else
+  if strcmp(interface,'xrdml')
+    d = {'','_bg','_def','_defbg'};
+    for k=1:4
+      [pname, fname] =  minpath(fn{k});
+      str = [ str; {''};strcat('pname = ''', pname,''';'); {''};...
+        strcat('fname',d{k},' = {...')]; 
+        for k = 1:length(fn{k})
+          str = [ str; strcat('[ pname ''', fname{k}, '''], ...')];
+        end
+      str = [ str; '};'; {''}];
     end
-    if i<length(fn{1}),str = [ str; '},{...'];end
-  end 
-  str = [ str; '}};'; {''}];
+  end
 end
 
 
 %% specify crystal directions
 str = [ str; '%% specify crystal directions'; {''};'h = { ...'];
 
-if ~iscell(fn{1})
-  for k = 1:length(pf)    
-    str = [ str; cs2miller(pf(k))];
-  end  
-  str = [ str; '};'; {''}];
-else
-  str = [ str; '{...'];
-  for i = 1:length(pf) 
-    for k=1:4
-      str = [ str; cs2miller(pf(i))];
-    end
-    if i<length(pf),str = [ str; '},{...'];end
-  end  
-  str = [ str; '}};'; {''}];
-end
+for k = 1:length(pf)    
+  str = [ str; cs2miller(pf(k))];
+end  
+str = [ str; '};'; {''}];
 
 %% specifiy structural coefficients for superposed pole figures
+
 
 if length(getc(pf)) > length(pf)
   str = [ str; {'%% specifiy structural coefficients for superposed pole figures';}];
@@ -96,11 +82,16 @@ if ~iscell(fn{1})
   
   str = [str; [lpf ');']];
 else
-  str = [str;'pf=[];';{''};...
-    'for k=1:length(fname)'; ...
-      'pf = [pf, xrdml_merge(...'; ...
-      'loadPoleFigure(fname{k},h{k},CS,SS,''interface'',''xrdml'')) ];';...
-    'end'];
+  if strcmp(interface,'xrdml')
+    for k=1:4
+      str = [str; strcat('pf',d{k},' = loadPoleFigure(fname',d{k},',h,CS,SS,''interface'',''xrdml'');')]; 
+    end
+      str = [str; {''}; ...
+        'pf_corrected = correct(pf,...';
+        strcat('''BACKGROUND'',pf',d{2},',...');...
+        strcat('''DEFOCUSING'',pf',d{3},',...');...
+        strcat('''DEFOCUSING BACKGROUND'',pf',d{4},');')];
+  end
 end
 
 %% post process pole figure
@@ -125,8 +116,15 @@ end
 
 %% add plot 
 
-str = [str; {''}; '%% plot imported pole figure'; {''};'plot(pf)'];
-
+str = [str; {''}; '%% plot imported polefigure'; {''}];
+  
+if ~iscell(fn{1})
+  str = [str; 'plot(pf)'];
+else
+  if strcmp(interface,'xrdml')
+    str = [str; 'plot(pf_corrected)'];
+  end
+end
 
 function s = cs2miller(pf)
 
