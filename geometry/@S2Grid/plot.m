@@ -71,7 +71,7 @@ varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
 % default diameter
-varargin = {varargin{:},'diameter',min(0.2,max(0.02,0.75*getResolution(S2G(end))))};
+varargin = {'diameter',min(0.2,max(0.02,0.75*getResolution(S2G(end)))),varargin{:}};
 
 % extract data
 data = get_option(varargin,'DATA',[]);
@@ -86,7 +86,7 @@ if numel(data) == GridLength(S2G)
       data(imag(data) ~= 0 | isinf(data)) = nan;
     end
   
-    varargin = {varargin{:},'colorrange',[min(data(:)),max(data(:))]};
+    varargin = {'colorrange',[min(data(:)),max(data(:))],varargin{:}};
   end
 else
   
@@ -100,7 +100,7 @@ if check_option(varargin,'GRAY'),colormap(flipud(colormap('gray'))/1.2);end
 
 % color
 [ls,c] = nextstyle(gca);
-varargin = {varargin{:},'color',c};
+varargin = {'bulletcolor',c,varargin{:}};
 
 %% Prepare Coordinates
 % calculate polar coordinates
@@ -165,13 +165,10 @@ end
 
 % Bounding Box
 if ~check_option(varargin,{'annotate'})
-  xlim([bounds(1)-0.005,bounds(1)+bounds(3)+0.01]);
-  ylim([bounds(2)-0.005,bounds(2)+bounds(4)+0.01]);
-end
-
-if check_option(varargin,'plain') && ~check_option(varargin,'TIGHT')
-  set(gca,'XTickmode','auto','YTickmode','auto')
-  xlabel('rho');ylabel('theta')
+  %xlim([bounds(1)-0.005,bounds(1)+bounds(3)+0.01]);
+  %ylim([bounds(2)-0.005,bounds(2)+bounds(4)+0.01]);
+  xlim([bounds(1),bounds(1)+bounds(3)]);
+  ylim([bounds(2),bounds(2)+bounds(4)]);
 end
 
 % crop if neccary
@@ -207,11 +204,11 @@ plotData(X+offset,Y,data,box,varargin{:});
 
 % bounding box
 if ~check_option(varargin,'annotate')
-  if check_option(varargin,'PLAIN') && check_option(varargin,'grid')
+  if check_option(varargin,'PLAIN') 
     
     plotPlainGrid(theta,rho,varargin{:});
     
-  elseif ~check_option(varargin,'PLAIN')
+  else
   
     if (isempty(rho) || isnull(mod(rho(1)-rho(end),2*pi)) || ...
         ~(check_option(varargin,{'CONTOUR','SMOOTH'})))

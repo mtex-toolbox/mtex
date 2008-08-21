@@ -14,7 +14,7 @@ else
   
   for i = 1:numel(v)
 
-    plot(S2Grid(q.*v(i)),varargin{:},'dots');
+    plot(S2Grid(q.*v(i)),'dots',varargin{:});
     hold all
   end
   

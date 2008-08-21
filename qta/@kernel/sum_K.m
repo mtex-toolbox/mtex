@@ -56,7 +56,7 @@ for iter = 1:maxiter
     dind = ceil(numel(g2) / maxiter);
     ind = 1+(iter-1)*dind:min(numel(g2),iter*dind);
       
-    M = K(kk,g1,g2(ind),CS,SS,varargin{:},'nocubictrifoldaxis');
+    M = K(kk,g1,g2(ind),CS,SS,'nocubictrifoldaxis',varargin{:});
     s = s + reshape(M * reshape(c(ind),[],1),size(s));
       
   else % split along g1
@@ -64,7 +64,7 @@ for iter = 1:maxiter
     dind = ceil(numel(g1) / maxiter);
     ind = 1+(iter-1)*dind:min(numel(g1),iter*dind);
       
-    M = K(kk,g1(ind),g2,CS,SS,varargin{:},'nocubictrifoldaxis');
+    M = K(kk,g1(ind),g2,CS,SS,'nocubictrifoldaxis',varargin{:});
     s(ind) = s(ind) + reshape(M * c(:),size(s(ind)));
       
   end

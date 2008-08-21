@@ -2,10 +2,11 @@ function cb = colorbar(varargin)
 % inserts a colorbar into a figure
 
 if strcmp(get(gcf,'tag'),'multiplot')
-  ax = getappdata(gcf,'colorbaraxis');
-  varargin = {varargin{:},'peer',ax};
-  if strcmp(get(ax,'zscale'),'log')
-    varargin = {varargin{:},'yscale','log'};
+  cax = getappdata(gcf,'colorbaraxis');
+
+  
+  if strcmp(get(cax,'zscale'),'log')
+    varargin = {'yscale','log',varargin{:}};
   end
 
   ounits = get(gcf,'Units');
@@ -15,7 +16,9 @@ if strcmp(get(gcf,'tag'),'multiplot')
 
   if ~isempty(findobj(gcf,'tag','Colorbar'))
 
-    varargin = {'off',varargin{:}};
+    if ~check_option(varargin,'off')
+      varargin = {varargin{:},'off'};
+    end
     fpos(4) = apos(2)+1;
     fpos(3) = apos(1)+1;
 
@@ -35,13 +38,17 @@ if strcmp(get(gcf,'tag'),'multiplot')
   set(gcf,'Position',fpos);
   set(gcf,'Units',ounits);
 
+
+  
   % check whether colorrange has to be set equal
   ax = findall(gcf,'type','axes','tag','S2Grid');
 
   cl = get(ax,'clim');
   if iscell(cl), cl = cell2mat(cl);end
   if ~all(equal(cl,1)), setcolorrange('equal'); end
-
+  
+  varargin = delete_option(varargin,'peer',1);  
+  varargin = {'peer',cax,varargin{:}};
 end
 
 % locate default colorbar

@@ -51,7 +51,7 @@ if ~check_option(varargin,'layout')
   
   options = generic_wizard('data',d,'type','PoleFigure');
   if isempty(options), pf = []; return; end 
-  varargin = {varargin{:},options{:}};
+  varargin = {options{:},varargin{:}};
 
 end
 

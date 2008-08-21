@@ -17,12 +17,12 @@ for i = 1:length(kk)
   switch upper(options)
     case 'K'
 			omega = linspace(-pi,pi,1000);
-			optionplot(omega,kk(i).K(cos(omega/2)),varargin{:},'LineWidth',2);
+			optionplot(omega,kk(i).K(cos(omega/2)),'LineWidth',2,varargin{:});
 			set(gcf,'Name',['kernel ',inputname(1),' on SO(3)']);
 			xlim([-pi,pi]);
 		case {'RK','RADON'}
 			omega = linspace(-pi,pi,1000);
-			optionplot(omega,max(0,kk(i).RK(cos(omega))),varargin{:},'LineWidth',2);
+			optionplot(omega,max(0,kk(i).RK(cos(omega))),'LineWidth',2,varargin{:});
 			set(gcf,'Name',['Randon transformed kernel ',inputname(1),' on S^2']);
 			xlim([-pi,pi]);
 		case 'RRK'
@@ -40,7 +40,7 @@ for i = 1:length(kk)
       l = get_option(varargin,'bandwidth',l);
 			A = zeros(1,l);
 			A(1:min(l,length(kk(i).A))) = kk(i).A(1:min(l,length(kk(i).A)));
-      optionplot(0:length(A)-1,A./(2*(0:length(A)-1)+1),varargin{:},'marker',charorder(i),'MarkerSize',10);
+      optionplot(0:length(A)-1,A./(2*(0:length(A)-1)+1),'marker',charorder(i),'MarkerSize',10,varargin{:});
       
       set(gcf,'Name',['Fourier coefficients of the kernel ',inputname(1)]);
     case 'FOURIER_LOGLOG'
@@ -54,11 +54,11 @@ for i = 1:length(kk)
       set(gcf,'Name',['Fourier coefficients of the kernel ',inputname(1)]);
 		case 'EVEN'
 			omega = linspace(-pi,pi,1000);
-			optionplot(omega,GK(kk(i),cos(omega/2)),varargin{:},'LineWidth',2);
+			optionplot(omega,GK(kk(i),cos(omega/2)),'LineWidth',2,varargin{:});
       set(gcf,'Name',['Even part of the kernel ',inputname(1)]);
 		case 'ODD'
 			omega = linspace(-pi,pi,1000);
-			optionplot(omega,UK(kk(i),cos(omega/2)),varargin{:},'LineWidth',2);
+			optionplot(omega,UK(kk(i),cos(omega/2)),'LineWidth',2,varargin{:});
       set(gcf,'Name',['Odd part of the kernel ',inputname(1)]);
 		case 'EVEN_ODD'
 			omega = linspace(-pi,pi,1000);

@@ -19,7 +19,7 @@ if ~isempty(pos) && nargin > 2
   if pos(end) == length(option_list), pos = pos(1:end-1);end
   
   % check type for all found options
-  for p = 1:length(pos)
+  for p = length(pos):-1:1
     if isempty(type) || any(strcmpi(class(option_list{pos(p)+1}),type))
       pos = pos(p)+1;
       return
@@ -30,7 +30,7 @@ if ~isempty(pos) && nargin > 2
 end
 
 % no option required
-if isempty(pos), pos = 0;else pos = pos(1);end
+if isempty(pos), pos = 0;else pos = pos(end);end
 
 %cellfun(@(c) ((ischar(c) || iscellstr(c)) && ...
 %  any(strcmpi(c,{'PLAIN','reduced'}))),varargin)

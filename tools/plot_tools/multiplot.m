@@ -5,7 +5,7 @@ function multiplot(x,y,nplots,varargin)
 %  multiplot(x,y,nplots,'FONTSIZE',fontsize)
 %  multiplot(x,y,nplots,'COLORCODING','equal')
 %  multiplot(x,y,nplots,'COLORCODING',[cmin cmax])
-%  multiplot(x,y,nplots,'ANNOTATION',string)
+%  multiplot(x,y,nplots,'ANOTATION',string)
 %
 %% Input
 %  x      - grid (@S1Grid, @S2Grid, @SO3Grid)
@@ -14,8 +14,8 @@ function multiplot(x,y,nplots,varargin)
 %
 %% Options
 %  [cmin cmax] - minimum and maximum value for color coding
-%  fontsize    - fontsize used for annotations
-%  string      - some annotation to be added to the plot
+%  fontsize    - fontsize used for anotations
+%  string      - some anotation to be added to the plot
 
 %
 %% Flags
@@ -114,8 +114,8 @@ end
 % clear figure
 if ~ishold
   clf('reset');
-  figure(clf);
-
+  figure(clf);  
+  
   %set(gcf,'Visible','off');
   %set(gcf,'toolbar','none');
 
@@ -126,7 +126,6 @@ if ~ishold
   catch
   end
 end
-fontsize = get_option(varargin,'FONTSIZE',13);
 
 for i = 1:nplots
 	
@@ -139,20 +138,22 @@ for i = 1:nplots
   end
   Z = Y{i};
   X = x(i);
-  plot(X,'DATA',Z,varargin{:},'axis',a(i));
+  plot(X,'DATA',Z,'axis',a(i),varargin{:});
   
   if ~ishold
+    
+    fs = extract_argoption(varargin,'fontsize');
     try, set(sb.ProgressBar,'Value',i);catch end
     
     if check_option(varargin,'MINMAX')
-      anotation(a(i),min(Z(:)),max(Z(:)),fontsize);
+      anotation(a(i),min(Z(:)),max(Z(:)),fs{:});
     end
     if check_option(varargin,'ANOTATION')
       s = get_option(varargin,'ANOTATION');
       mtex_text(0.98,0.99,s(i),...
         'HorizontalAlignment','Right','VerticalAlignment','top',...
-        'FontName','times','FontSize',fontsize,...
-        'units','normalized');
+        'FontName','times',fs{:},...
+        'units','normalized','position',[0.98,0.99]);
     end
   end
 end
@@ -163,6 +164,10 @@ if ~ishold
     'tag','colorbaraxis','HandleVisibility','callback');
   setappdata(gcf,'colorbaraxis',d);
   setappdata(gcf,'axes',a);
+  setappdata(gcf,'border',get_option(varargin,'border',get_mtex_option('border',10)));
+  setappdata(gcf,'spacingx',get_option(varargin,'spacingx',get_mtex_option('spacingx',0)));
+  setappdata(gcf,'spacingy',get_option(varargin,'spacingy',get_mtex_option('spacingy',0)));
+  
 else 
   d = getappdata(gcf,'colorbaraxis');
 end
@@ -210,21 +215,21 @@ end
 %% ================== private functions =========================
 
 
-%% disp annotation in subfigures
-function anotation(a,mini,maxi,fontsize)
+%% disp anotation in subfigures
+function anotation(a,mini,maxi,varargin)
 mini = xnum2str(mini);
 maxi = xnum2str(maxi);
 
 set(a,'units','points');
 apos = get(a,'Position');
 
-text(1,3,{'min:',mini},'FontName','times','FontSize',fontsize,'Interpreter','tex',...
+optiondraw(text(1,3,{'min:',mini},'FontName','times','Interpreter','tex',...
   'HorizontalAlignment','Left','VerticalAlignment','bottom',...
-  'units','points');
+  'units','points'),varargin{:});
 
-text(apos(3)-1,3,{'max:',maxi},'FontName','times','FontSize',fontsize,'Interpreter','tex',...
+optiondraw(text(apos(3)-1,3,{'max:',maxi},'FontName','times','Interpreter','tex',...
   'HorizontalAlignment','Right','VerticalAlignment','bottom',...
-  'units','points','Tag','rda');
+  'units','points','Tag','rda'),varargin{:});
 
 end
 
@@ -243,9 +248,11 @@ set(fig,'Units','pixels');
 if strcmp(getappdata(fig,'autofit'),'on')
 
   figpos = get(fig,'Position');
-  border = get_mtex_option('border',10);
-  spacingx = get_mtex_option('spacingx',0);
-  spacingy = get_mtex_option('spacingy',0);
+  
+  spacingx = getappdata(fig,'spacingx');
+  spacingy = getappdata(fig,'spacingy');
+  border = getappdata(fig,'border');
+
 
   figpos(4) = figpos(4)-2*border;
   figpos(3) = figpos(3)-2*border;

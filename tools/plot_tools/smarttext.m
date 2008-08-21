@@ -6,23 +6,23 @@ arg{3} = 'VerticalAlignment';
 
 if box(1) + (box(3) - box(1))*2/3 < x
   arg{2} = 'Right';
-  x = x - 0.05;
+  x = x - 0.1;
 elseif box(1) + (box(3) - box(1))*1/3 < x
   arg{2} = 'Center';
 else
   arg{2} = 'Left';
-  x = x + 0.05;
+  x = x + 0.1;
 end
 
 if box(2) + (box(4) - box(2))*1/3 > y
   arg{4} = 'Bottom';
-  y = y + 0.05;
+  y = y + 0.1;
 elseif (box(2) + (box(4) - box(2))*2/3 > y) && ~strcmp(arg{2},'Center')
   arg{4} = 'Middle';
 else
   arg{4} = 'Top';
-  y = y - 0.05;
+  y = y - 0.1;
 
 end
 
-mtex_text(x,y,s,varargin{:},arg{:});
+mtex_text(x,y,s,arg{:},varargin{:});

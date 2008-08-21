@@ -27,7 +27,7 @@ set_mtex_option('ITER_MAX',11);
 %% default global plotting options
 % here you can define default plott options
 
-default_plot_options = {};
+default_plot_options = {'FontSize',13};
 %default_plot_options = {'reduced'};
 set_mtex_option('default_plot_options',default_plot_options);
 

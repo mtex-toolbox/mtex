@@ -20,7 +20,7 @@ else
   end
 end
 if check_mtex_option('noLaTex')
-  text(x,y,s,'interpreter','tex',varargin{:});
+  optiondraw(text(x,y,s,'interpreter','tex'),varargin{:});
 elseif ~isempty(t)
-  text(x,y,s,'interpreter','latex',varargin{:});
+  optiondraw(text(x,y,s,'interpreter','latex'),varargin{:});
 end

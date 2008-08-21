@@ -9,8 +9,10 @@ if check_option(varargin,'colorrange','double')
   end
 end
 
+plottype = get_flag(varargin,{'CONTOUR','CONTOURF','dots','smooth','scatter'});
+
 % contour plot
-if check_option(varargin, {'CONTOUR','CONTOURF'}) 
+if any(strcmpi(plottype,{'CONTOUR','CONTOURF'})) 
 
   contours = get_option(varargin,{'contourf','contour'},{},'double');
   if ~isempty(contours), contours = {contours};end
@@ -25,7 +27,7 @@ if check_option(varargin, {'CONTOUR','CONTOURF'})
   set(gcf,'Renderer','painters');
        
 % smooth plot
-elseif check_option(varargin,'SMOOTH') 
+elseif any(strcmpi(plottype,'SMOOTH'))
   
   if check_option(varargin,'interp')   % interpolated
 
@@ -54,7 +56,7 @@ elseif check_option(varargin,'SMOOTH')
   end
   
 % singular points 
-elseif isa(data,'cell') || check_option(varargin,'dots')% || numel(X)<20
+elseif isa(data,'cell') || any(strcmpi(plottype,'dots'))% || numel(X)<20
     set(gcf,'Renderer','painters');
   
   if check_option(varargin,'annotate')
@@ -69,23 +71,23 @@ elseif isa(data,'cell') || check_option(varargin,'dots')% || numel(X)<20
     j = ind(i);
     if isa(data,'cell') && ~check_option(varargin,'notext')
       smarttext(X(j),Y(j),data{j},bounds,...
-        'FontSize',get_option(varargin,'FontSize',13),...
-        'Interpreter','latex','BackgroundColor','w','Margin',0.1);
+        'Interpreter','latex','Margin',0.1,varargin{:});
     end
     mtex_text(X(j),Y(j),'\bullet',...
-      'FontSize',round(get_option(varargin,'FontSize',13)/2*3),...
-      'color',get_option(varargin,'color','k'),...
-      'HorizontalAlignment','Center','VerticalAlignment','middle');
+      'bulletFontSize',round(get_option(varargin,'FontSize',13)/2*3),...
+      'bulletHorizontalAlignment','Center',...
+      'bulletVerticalAlignment','middle',...
+      'prefix','bullet',varargin{:});
   end
   
-elseif check_option(varargin,'scatter')
+elseif any(strcmpi(plottype,'scatter'))
     
   diameter  = get_option(varargin,'diameter');
-  if~isempty(data), 
+  if ~isempty(data), 
     h = scatter(X(:),Y(:),(diameter*100)^2,data(:),'filled');
   else
     h = scatter(X(:),Y(:),(diameter*100)^2,...
-      get_option(varargin,'color'),'filled');
+      get_option(varargin,'bulletcolor'),'filled');
   end
   set(h,'tag','scatterplot','UserData',diameter/3.2);
   

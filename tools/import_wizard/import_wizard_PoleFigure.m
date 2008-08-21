@@ -206,7 +206,7 @@ figure('Position',[scrsz(3)/8 scrsz(4)/8 6*scrsz(3)/8 6*scrsz(4)/8]);
 pf = appdata.pf;
 pf = modifypf(pf,handles);
 plot(pf,'silent');
-plot2all([xvector,yvector,zvector]);
+plot2all([xvector,yvector,zvector],'Backgroundcolor','w','bulletcolor','k');
 
 
 %% ---------- in the end --------------------------------------------------
