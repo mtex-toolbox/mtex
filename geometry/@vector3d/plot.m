@@ -2,12 +2,12 @@ function plot(v,varargin)
 % plot three dimensional vector
 
 if ~check_option(varargin,'scatter')  
-  varargin = {varargin{:},'color','k'};
+  varargin = {'bulletcolor','k',varargin{:}};
 end
 
 if length(v) > 20 || check_option(varargin,'data')    
 
-  plot(S2Grid(v),varargin{:},'grid');
+  plot(S2Grid(v),'grid',varargin{:});
   
 else
     
@@ -18,6 +18,6 @@ else
     varargin = {'data',s,varargin{:}};    
   end
   
-  plot(S2Grid(v),varargin{:},'grid');
+  plot(S2Grid(v),'grid',varargin{:});
 
 end

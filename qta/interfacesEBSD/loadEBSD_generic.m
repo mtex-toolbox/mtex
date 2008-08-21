@@ -56,7 +56,7 @@ if ~check_option(varargin,'layout')
   
   options = generic_wizard('data',d,'type','EBSD');
   if isempty(options), ebsd = []; return; end
-  varargin = {varargin{:},options{:}};
+  varargin = {options{:},varargin{:}};
 
 end
 

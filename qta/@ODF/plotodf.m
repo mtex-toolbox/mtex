@@ -58,9 +58,9 @@ elseif check_option(varargin,'ALPHA')
   nplots = length(sec);
   
   % beta / gamma
-  S2G = S2Grid('PLOT',varargin{:},...
+  S2G = S2Grid('PLOT',...
     'MAXTHETA',min(rotangle_max_y(odf(1).CS),rotangle_max_y(odf(1).SS))/2,...
-    'MAXRHO',rotangle_max_z(odf(1).CS));
+    'MAXRHO',rotangle_max_z(odf(1).CS),varargin{:});
   
   alpha = repmat(reshape(sec,[1,1,nplots]),[GridSize(S2G),1]);
   [beta,gamma] = polar(S2G);
@@ -88,9 +88,9 @@ elseif check_option(varargin,'GAMMA')
   else
     m = rotangle_max_z(odf(1).SS);
   end
-  S2G = S2Grid('PLOT',varargin{:},...
+  S2G = S2Grid('PLOT',...
     'MAXTHETA',min(rotangle_max_y(odf(1).CS),rotangle_max_y(odf(1).SS))/2,...
-    'MAXRHO',m);
+    'MAXRHO',m,varargin{:});
   
   gamma = repmat(reshape(sec,[1,1,nplots]),[GridSize(S2G),1]);
   [beta,alpha] = polar(S2G);
@@ -114,9 +114,9 @@ elseif check_option(varargin,'phi1')
   nplots = length(sec);
   
   % beta / gamma
-  S2G = S2Grid('PLOT',varargin{:},...
+  S2G = S2Grid('PLOT',...
     'MAXTHETA',min(rotangle_max_y(odf(1).CS),rotangle_max_y(odf(1).SS))/2,...
-    'MAXRHO',rotangle_max_z(odf(1).CS));
+    'MAXRHO',rotangle_max_z(odf(1).CS),varargin{:});
   
   phi1 = repmat(reshape(sec,[1,1,nplots]),[GridSize(S2G),1]);
   [Phi,phi2] = polar(S2G);
@@ -144,9 +144,9 @@ elseif check_option(varargin,'phi2')
   else
     m = rotangle_max_z(odf(1).SS);
   end
-  S2G = S2Grid('PLOT',varargin{:},...
+  S2G = S2Grid('PLOT',...
     'MAXTHETA',min(rotangle_max_y(odf(1).CS),rotangle_max_y(odf(1).SS))/2,...
-    'MAXRHO',m);
+    'MAXRHO',m,varargin{:});
   
   phi2 = repmat(reshape(sec,[1,1,nplots]),[GridSize(S2G),1]);
   [Phi,phi1] = polar(S2G);
@@ -190,14 +190,14 @@ else
   else
     m = rotangle_max_z(odf(1).SS);
   end
-  S2G = S2Grid('PLOT',varargin{:},...
+  S2G = S2Grid('PLOT',...
     'MAXTHETA',min(rotangle_max_y(odf(1).CS),rotangle_max_y(odf(1).SS))/2,...
-    'MAXRHO',m);
+    'MAXRHO',m,varargin{:});
   
   if check_option(varargin,'complete')
-    S2G = S2Grid('PLOT',varargin{:},...
+    S2G = S2Grid('PLOT',...
     'MAXTHETA',pi/2,...
-    'MAXRHO',2*pi);
+    'MAXRHO',2*pi,varargin{:});
   end
   
   [beta,alpha] = polar(S2G);
@@ -221,7 +221,7 @@ multiplot(@(i) S2G,...
   ' Min: ',xnum2str(min(Z(:)))],...
 	'ANOTATION',@(i) [symbol,'=',int2str(sec(i)*180/pi),'^\circ'],...
   'MINMAX','SMOOTH','TIGHT',...
-  varargin{:},'colorrange','equal','FontSize',12);
+  'colorrange','equal',varargin{:});
 
 name = inputname(1);
 if isempty(name), name = odf(1).comment;end

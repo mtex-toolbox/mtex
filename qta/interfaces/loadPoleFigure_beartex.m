@@ -85,7 +85,7 @@ while ~feof(fid)
     end
           
 %% generate Polefigure    
-    pf(ipf) = PoleFigure(h,r,d,cs,symmetry,varargin{:},'comment',comment); 
+    pf(ipf) = PoleFigure(h,r,d,cs,symmetry,'comment',comment,varargin{:}); 
   
     % skip one line
     fgetl(fid);

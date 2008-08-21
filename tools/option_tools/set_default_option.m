@@ -18,7 +18,7 @@ function out_list = set_default_option(option_list,preserve,option,varargin)
 % check_option get_option clear_option
 
 if nargin == 2
-  out_list = {option_list{:},preserve{:}};
+  out_list = {preserve{:},option_list{:}};
   return
 end
 

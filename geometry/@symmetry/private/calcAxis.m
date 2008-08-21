@@ -1,9 +1,26 @@
 function saxis  = calcAxis(System,axis,angle)
 % calculate crystal axes
 
+if axis(3) == 0, axis(3) = max(axis);end
+if axis(3) == 0, axis(3) = 1;end
+
+if axis(1) == 0, axis(1) = axis(2);end
+if axis(2) == 0, axis(2) = axis(1);end
+if axis(2) == 0, 
+  axis(2) = axis(3);
+  axis(1) = axis(3);
+end
+
+if angle(1) == 0
+  if angle(2) == 0, angle(2) = pi/2;end
+  angle(1) = pi - angle(2);
+end
+if angle(2) == 0,  angle(2) = pi - angle(1);end
+if angle(3) == 0, angle(3) = pi/2;end
+
 switch System
     
-  case {'monocline','triclinic'}
+  case {'monocline','triclinic','monoclinic','tricline'}
     saxis = xvector;
     saxis(2) = cos(angle(3)) * xvector + sin(angle(3)) * yvector;
     saxis(3) = cos(angle(2)) * xvector + ...

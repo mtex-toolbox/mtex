@@ -8,7 +8,7 @@ function G = getgrid(odf,ind)
 %% Output
 %  G   - @SO3Grid of modal orientations
 
-G = SO3Grid(odf(1).CS,odf(1).SS);
+G = SO3Grid(0,odf(1).CS,odf(1).SS);
 for i = 1:length(odf)
   if isa(odf(i).center,'SO3Grid'),G = odf(i).center;end
 end

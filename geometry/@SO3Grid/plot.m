@@ -23,7 +23,7 @@ else
   
   for i = 1:numel(v)
 
-    plot(S2Grid(SO3G.Grid.*v(i)),varargin{:},'dots');
+    plot(S2Grid(SO3G.Grid.*v(i)),'dots',varargin{:});
     hold all
   end
   

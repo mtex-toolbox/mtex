@@ -48,9 +48,9 @@ if check_option(varargin,'ALPHA')
   [alpha beta gamma] = quat2euler(quaternion(ebsd.grid));
   
   % beta / gamma
-  S2G = S2Grid('PLOT',varargin{:},...
+  S2G = S2Grid('PLOT',...
     'MAXTHETA',min(rotangle_max_y(ebsd(1).CS),rotangle_max_y(ebsd(1).SS))/2,...
-    'MAXRHO',rotangle_max_z(ebsd(1).CS));
+    'MAXRHO',rotangle_max_z(ebsd(1).CS),varargin{:});
   
   alpha = repmat(reshape(sec,[1,1,nplots]),[GridSize(S2G),1]);
   [beta,gamma] = polar(S2G);
@@ -78,9 +78,9 @@ elseif check_option(varargin,'GAMMA')
   else
     m = rotangle_max_z(ebsd(1).SS);
   end
-  S2G = S2Grid('PLOT',varargin{:},...
+  S2G = S2Grid('PLOT',...
     'MAXTHETA',min(rotangle_max_y(ebsd(1).CS),rotangle_max_y(ebsd(1).SS))/2,...
-    'MAXRHO',m);
+    'MAXRHO',m,varargin{:});
   
   gamma = repmat(reshape(sec,[1,1,nplots]),[GridSize(S2G),1]);
   [beta,alpha] = polar(S2G);
@@ -104,9 +104,9 @@ elseif check_option(varargin,'phi1')
   nplots = length(sec);
   
   % beta / gamma
-  S2G = S2Grid('PLOT',varargin{:},...
+  S2G = S2Grid('PLOT',...
     'MAXTHETA',min(rotangle_max_y(ebsd(1).CS),rotangle_max_y(ebsd(1).SS))/2,...
-    'MAXRHO',rotangle_max_z(ebsd(1).CS));
+    'MAXRHO',rotangle_max_z(ebsd(1).CS),varargin{:});
   
   phi1 = repmat(reshape(sec,[1,1,nplots]),[GridSize(S2G),1]);
   [Phi,phi2] = polar(S2G);
@@ -134,9 +134,9 @@ elseif check_option(varargin,'phi2')
   else
     m = rotangle_max_z(ebsd(1).SS);
   end
-  S2G = S2Grid('PLOT',varargin{:},...
+  S2G = S2Grid('PLOT',...
     'MAXTHETA',min(rotangle_max_y(ebsd(1).CS),rotangle_max_y(ebsd(1).SS))/2,...
-    'MAXRHO',m);
+    'MAXRHO',m,varargin{:});
   
   phi2 = repmat(reshape(sec,[1,1,nplots]),[GridSize(S2G),1]);
   [Phi,phi1] = polar(S2G);
@@ -180,9 +180,9 @@ else
   else
     m = rotangle_max_z(ebsd(1).SS);
   end
-  S2G = S2Grid('PLOT',varargin{:},...
+  S2G = S2Grid('PLOT',...
     'MAXTHETA',min(rotangle_max_y(ebsd(1).CS),rotangle_max_y(ebsd(1).SS))/2,...
-    'MAXRHO',m);
+    'MAXRHO',m,varargin{:});
   
   [beta,alpha] = polar(S2G);
   alpha = reshape(repmat(alpha,[1,1,nplots]),[GridSize(S2G),nplots]);
@@ -205,6 +205,6 @@ multiplot(@(i) S2G,...
   ' Min: ',xnum2str(min(Z(:)))],...
 	'ANOTATION',@(i) [symbol,'=',int2str(sec(i)*180/pi),'^\circ'],...
   'MINMAX','SMOOTH','TIGHT',...
-  varargin{:},'absolute','FontSize',12);
+  'absolute',varargin{:});
 
 figure(gcf)
