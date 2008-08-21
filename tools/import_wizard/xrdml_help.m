@@ -58,7 +58,7 @@ if ~isempty(appdata.pf)
   catch end
   
   for i=1:length(appdata.pf_merge{1})
-    appdata.pf(i) = xrdml_merge([appdata.pf_merge{1}(i),appdata.pf_merge{2}(i),appdata.pf_merge{3}(i),appdata.pf_merge{4}(i)]);
+    appdata.pf(i) = correct( appdata.pf_merge{1}(i),'bg',appdata.pf_merge{2}(i),'def',appdata.pf_merge{3}(i),'def_bg',appdata.pf_merge{4}(i));
     try, set(sb.ProgressBar,'Value',i);catch end
   end
   
