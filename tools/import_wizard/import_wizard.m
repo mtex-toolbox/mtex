@@ -11,73 +11,78 @@ global handles
 global appdata
 
 if ~check_option(varargin,'type')
+  
   if nargin>0  && ischar(varargin{1})
-  feval(varargin{:});return
+    feval(varargin{:});
+    return
+  end
+  typ = {'EBSD','PoleFigure'};
+  a = listdlg('PromptString','Select Mode',...
+    'SelectionMode','single',...
+    'ListSize',[200 50],...
+    'fus',3,...
+    'ffs',1,...
+    'ListString',typ);
+  if ~isempty(a)
+    type = typ{a};
   else
-    typ = {'EBSD','PoleFigure'};  
-    a = listdlg('PromptString','Select Mode',...
-                'SelectionMode','single',...
-                'ListSize',[200 50],...
-                'fus',3,...
-                'ffs',1,...
-                'ListString',typ);
-    if ~isempty(a), import_wizard('type',typ{a});end;
-  end
+    return
+  end;
 else
-  % init global variable appdata
-  appdata.workpath = cd;
-  appdata.filename = [];
-  appdata.interface = '';
-  appdata.options = {};
-  appdata.pf = [];
-  appdata.ipf = 0;
-  appdata.ebsd = [];
-  appdata.page = 1;  
-  appdata.assert_assistance = 'None';  
-  appdata.type = get_option(varargin,'type');
+  type = get_option(varargin,'type');
+end
   
-  for i=1:4
-    appdata.f{i} = '';
-    appdata.pf_merge{i} = '';
-    appdata.ipf_merge{i} = '';
-  end
-  
-  
-  var = {'type', appdata.type};
-  %mainframe
-  handles.wzrd = import_frame(var{:});
-  
-  % add pages
-  handles.pages = [];
-  handles = import_gui_generic( handles,var{:} );
-  handles = import_gui_data( handles,var{:});
-  handles = import_gui_cs( handles,var{:});   
-  handles = import_gui_ss( handles );
-  
-  if ~strcmp(appdata.type,'EBSD')
-    handles = import_gui_miller( handles );
-  end
 
-  handles = import_gui_finish( handles );
+% init global variable appdata
+appdata.workpath = cd;
+appdata.filename = [];
+appdata.interface = '';
+appdata.options = {};
+appdata.pf = [];
+appdata.ipf = 0;
+appdata.ebsd = [];
+appdata.page = 1;
+appdata.assert_assistance = 'None';
+appdata.type = type;
+
+for i=1:4
+  appdata.f{i} = '';
+  appdata.pf_merge{i} = '';
+  appdata.ipf_merge{i} = '';
+end
   
- switch appdata.type
-   %page description
-   case 'EBSD'
-     handles.pagename = {'(1/4) Select Data Files',...
-       '(2/4) Set Crystal Geometry',...
-       '(3/4) Set Specimen Geometry',...
-       '(4/4) Summary'};
-   case 'PoleFigure'
-      handles.pagename = {'(1/4) Select Data Files',...
-        '(2/5) Set Crystal Geometry',...
-        '(3/5) Set Miller Indizes',...
-        '(4/5) Set Specimen Geometry',...
-        '(5/5) Summary'};
- end
- set_page(handles,appdata.page);
- 
+var = {'type', appdata.type};
+%mainframe
+handles.wzrd = import_frame(var{:});
+
+% add pages
+handles.pages = [];
+handles = import_gui_generic( handles,var{:} );
+handles = import_gui_data( handles,var{:});
+handles = import_gui_cs( handles,var{:});
+handles = import_gui_ss( handles );
+
+if ~strcmp(appdata.type,'EBSD')
+  handles = import_gui_miller( handles );
 end
 
+handles = import_gui_finish( handles );
+
+switch appdata.type
+  %page description
+  case 'EBSD'
+    handles.pagename = {'(1/4) Select Data Files',...
+      '(2/4) Set Crystal Geometry',...
+      '(3/4) Set Specimen Geometry',...
+      '(4/4) Summary'};
+  case 'PoleFigure'
+    handles.pagename = {'(1/5) Select Data Files',...
+      '(2/5) Set Crystal Geometry',...
+      '(3/5) Set Specimen Geometry',...
+      '(4/5) Set Miller Indizes',...
+      '(5/5) Summary'};
+end
+set_page(handles,appdata.page);
 
 %% switch pages
 function page_next()

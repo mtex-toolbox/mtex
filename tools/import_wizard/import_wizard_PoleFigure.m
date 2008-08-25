@@ -132,6 +132,7 @@ end
 function leave_page()
 global handles;
 global appdata;
+
 switch appdata.page  
   case 1
     if isempty(appdata.pf), error('Add some data files to be imported!');end  
@@ -149,9 +150,11 @@ switch appdata.page
   case 5
 end
 %--------------------------------------------------------------------------
+
 function goto_page()
 global handles;
 global appdata;
+
 switch appdata.page   
   case 2
     pf2cs(appdata.pf,handles);
