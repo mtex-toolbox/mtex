@@ -103,15 +103,15 @@ if get(handles.rotate,'value')
     'pf = rotate(pf,',get(handles.rotateAngle,'string'),'*degree)'];
 end
 
-if get(handles.dnv,'value')
-  str = [str; {''}; '%% delete negative values'; {''};...
-    'pf = delete(pf,getdata(pf)<0);'];  
-end
+%if get(handles.dnv,'value')
+%  str = [str; {''}; '%% delete negative values'; {''};...
+%    'pf = delete(pf,getdata(pf)<0);'];  
+%end
 
-if get(handles.setnv,'value')
-  str = [str; {''}; '%% set negative values'; {''};...
-    'pf = setdata(pf,',get(handles.rnv,'string'),',getdata(pf)<0)'];
-end
+%if get(handles.setnv,'value')
+%  str = [str; {''}; '%% set negative values'; {''};...
+%    'pf = setdata(pf,',get(handles.rnv,'string'),',getdata(pf)<0)'];
+%end
 
 
 %% add plot 
