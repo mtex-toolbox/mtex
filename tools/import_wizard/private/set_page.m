@@ -6,7 +6,7 @@ else
   set(handles.prev,'enable','on')
 end
 
-if(page == length(handles.tabs)) 
+if(page == length(handles.pages)) 
   set(handles.finish,'enable','on');
   set(handles.next,'enable','off');
 else
@@ -14,8 +14,8 @@ else
   set(handles.next,'enable','on');
 end
 
-set(handles.tabs(1:end~=page),'visible','off');
-setall(handles.tabs(page),'visible','on');
+set(handles.pages(1:end~=page),'visible','off');
+setall(handles.pages(page),'visible','on');
 set(handles.name,'String',handles.pagename{page});
 
 

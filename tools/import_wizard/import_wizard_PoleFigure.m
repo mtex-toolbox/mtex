@@ -136,7 +136,7 @@ switch appdata.page
   case 1
     if isempty(appdata.pf), error('Add some data files to be imported!');end  
   case 2
-    appdata = crystal2pf(appdata, handles);
+    appdata.pf = cs2pf(appdata.pf, handles);
   case 3
     try
       appdata = set_hkil(appdata, handles);
@@ -144,7 +144,8 @@ switch appdata.page
       error('There must be the same number of hkli and structure coefficients.');
     end
   case 4
-    set(appdata.pf,'comment',get(handles.comment,'String'));
+    appdata.pf = ss2pf(appdata.pf, handles);
+    %set(appdata.pf,'comment',get(handles.comment,'String'));
   case 5
 end
 %--------------------------------------------------------------------------
@@ -153,12 +154,13 @@ global handles;
 global appdata;
 switch appdata.page   
   case 2
-    handles = pf2crystal(appdata, handles);
+    pf2cs(appdata.pf,handles);
   case 3
     handles = setup_polefigurelist(appdata, handles);
     get_hkil(appdata, handles);
   case 4
-    set(handles.comment,'String',get(appdata.pf,'comment'));
+    pf2ss(appdata.pf,handles);
+%    set(handles.comment,'String',get(appdata.pf,'comment'));
   case 5
     str = char(appdata.pf);
     set(handles.preview,'String',str);
@@ -169,8 +171,8 @@ end
 function updatecrystal()
 global handles
 global appdata
-appdata = crystal2pf(appdata, handles);
-handles = pf2crystal(appdata, handles);
+appdata.pf = cs2pf(appdata.pf, handles);
+pf2cs(appdata.pf, handles);
 
 
 %% ------------ on miller indices page ------------------------------------
@@ -180,6 +182,7 @@ global handles
 get_hkil(appdata, handles);
 setup_polefigurelist(appdata, handles);
 %--------------------------------------------------------------------------
+
 function update_indices()
 global appdata
 global handles
@@ -242,13 +245,13 @@ if get(handles.rotate,'value')
   pf = rotate(pf,str2num(get(handles.rotateAngle,'string')));
 end
 
-if get(handles.dnv,'value')
-  pf = delete(pf,getdata(pf)<0);
-end
+%if get(handles.dnv,'value')
+%  pf = delete(pf,getdata(pf)<0);
+%end
 
-if get(handles.setnv,'value')
-  pf = setdata(pf,str2num(get(handles.rnv,'string')),getdata(pf)<0);
-end
+%if get(handles.setnv,'value')
+%  pf = setdata(pf,str2num(get(handles.rnv,'string')),getdata(pf)<0);
+%end
 
 npf = pf;
 

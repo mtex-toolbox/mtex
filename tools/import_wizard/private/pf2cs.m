@@ -1,4 +1,7 @@
-function handles = s2crystal( handles, cs, ss )
+function pf2cs(pf, handles)
+% write cs to page
+
+cs = getCS(pf);
 
 csname = strmatch(Laue(cs),symmetries);
 set(handles.crystal,'value',csname(1));
@@ -10,9 +13,6 @@ for k=1:3
   set(handles.axis{k},'String',c(k)); 
   set(handles.angle{k},'String',angle{k});
 end
-% set specimen symmetry
-ssname = strmatch(Laue(ss),symmetries);
-set(handles.specime,'value',ssname(1));
 
 set([handles.axis{:} handles.angle{:}], 'Enable', 'on');
 
@@ -23,3 +23,4 @@ end
 if any(strcmp(Laue(cs),{'m-3m','m-3'})),
   set([handles.axis{:}], 'Enable', 'off');
 end
+

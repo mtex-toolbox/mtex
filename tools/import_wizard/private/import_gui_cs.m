@@ -1,4 +1,4 @@
-function handles = import_gui_symmetry( handles, varargin )
+function handles = import_gui_cs( handles, varargin )
 
 pos = get(handles.wzrd,'Position');
 h = pos(4);
@@ -9,11 +9,12 @@ ph = 270;
 type = get_option(varargin,'type');
 
 %% crystal system
-handles.page2 = get_panel(w,h,ph);
-set(handles.page2,'visible','off');
+hp = get_panel(w,h,ph);
+handles.pages = [handles.pages,hp];
+set(hp,'visible','off');
 
 mineral = uibuttongroup('title','Mineral',...
-  'Parent',handles.page2,...
+  'Parent',hp,...
   'Visible','off',...
   'units','pixels','position',[0 ph - 85 380 75]);
 
@@ -32,7 +33,7 @@ handles.mineral = uicontrol(...
   'string','unknown');
 
 cs = uibuttongroup('title','Crystal Coordinate System',...
-  'Parent',handles.page2,...
+  'Parent',hp,...
   'Visible','off',...
   'units','pixels','position',[0 ph-260 380 150]);
 

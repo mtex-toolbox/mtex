@@ -1,4 +1,4 @@
-function pfsa = crystal2s( pfsa, handles )
+function pf = cs2pf(pf, handles )
 
 cs = get(handles.crystal,'Value');
 cs = symmetries(cs);
@@ -10,9 +10,4 @@ for k=1:3
 end
 
 cs = symmetry(cs,[axis{:}],[angle{:}]);
-pfsa = set(pfsa,'CS',cs);
-
-ss = symmetries(get(handles.specime,'Value'));
-ss = strtrim(ss{1}(1:6));
-ss = symmetry(ss);
-pfsa = set(pfsa,'SS',ss);
+pf = set(pf,'CS',cs);
