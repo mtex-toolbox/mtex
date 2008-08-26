@@ -14,7 +14,7 @@ end
 
 
 %% ------------ add data files callback -----------------------------------
-function addData()
+function addData() %#ok<DEFNU>
 global appdata
 
 [fname,pathname] = uigetfile( mtexfilefilter(),...
@@ -45,13 +45,14 @@ else
   interf = {};
 end
 
-handles_proceed = [handles.next handles.prev handles.finish];
+handles_proceed = [handles.next handles.prev handles.finish handles.plot];
 set(handles_proceed,'Visible','off');
 drawnow; pause(0.001);
 try
   sb = statusbar(handles.wzrd,' Importing EBSD Data ...');
   set(sb.ProgressBar, 'Visible','on', 'Minimum',0, 'Maximum',length(fn), 'Value',0, 'StringPainted','on')
-catch end
+catch
+end
   
 % generate pole figure object
 for i=1:length(fn)
@@ -60,7 +61,7 @@ for i=1:length(fn)
       loadEBSD(strcat(pathname,fn(i)),interf{:},appdata.options{:});
   catch
     errordlg(errortext);
-     break;
+    break;
   end
   
  % 
@@ -71,7 +72,7 @@ for i=1:length(fn)
   
   %pole figures
   if ~isempty(nebsd);
-    appdata.ebsd =  [appdata.ebsd,nebsd];
+    appdata.data =  [appdata.data,nebsd];
     appdata.workpath = pathname;
     appdata.filename = [appdata.filename, strcat(pathname,fn(i))];
     
@@ -89,13 +90,13 @@ drawnow; pause(0.001);
 
 
 %% ------------ remove data callback --------------------------------------
-function delData()
+function delData() %#ok<DEFNU>
 global handles
 global appdata
 
-if ~isempty(appdata.ebsd)
+if ~isempty(appdata.data)
   index_selected = get(handles.listbox,'Value');
-  appdata.ebsd(index_selected) = [];
+  appdata.data(index_selected) = [];
     
   if iscellstr(appdata.filename)
     appdata.filename(:,index_selected(:))=[];
@@ -103,13 +104,11 @@ if ~isempty(appdata.ebsd)
     appdata.filename = [];
   end;
   
-  selected = min([index_selected,length(appdata.filename)]);
-  
-  
   set(handles.listbox,'String', path2filename(appdata.filename));
-  set(handles.listbox,'Value',1);
+  selected = min([index_selected,length(appdata.filename)]);
+  set(handles.listbox,'Value',selected);
   
-  if isempty(appdata.ebsd)
+  if isempty(appdata.data)
     appdata.interface = '';
     appdata.options = {};
   end 
@@ -117,59 +116,63 @@ end
 
 
 %% ------------ switch between pages --------------------------------------
-function leave_page()
+function leave_page() %#ok<DEFNU>
 global handles;
 global appdata;
 
 switch appdata.page  
   case 1
-    if isempty(appdata.ebsd), error('Add some data files to be imported!');end
+    if isempty(appdata.data), error('Add some data files to be imported!');end
   case 2
-    appdata = crystal2ebsd(appdata, handles);
+    appdata.data = set_cs(appdata.data, handles);
+  case 3
+    appdata.data = set_ss(appdata.data, handles);
 end
 %--------------------------------------------------------------------------
-function goto_page()
+function goto_page() %#ok<DEFNU>
 global handles;
 global appdata;
 
 switch appdata.page
   case 2
-    handles = ebsd2crystal(appdata, handles);
+    handles = get_cs(appdata.data, handles);
   case 3
-    str = char(appdata.ebsd);
+    handles = get_ss(appdata.data, handles);
+  case 4
+    str = char(appdata.data);
     set(handles.preview,'String',str);
 end
 
 
 %% ------------ on symmetry page ------------------------------------------
-function updatecrystal()
+function update_cs() %#ok<DEFNU>
 global handles
 global appdata
 
-appdata = crystal2ebsd(appdata, handles);
-handles = ebsd2crystal(appdata, handles);
-
+appdata.data = set_cs(appdata.data, handles);
+handles = get_cs(appdata.data, handles);
+   
 
 %% ---------- plotting callback -------------------------------------------
-function plot_EBSD()
+function plot_EBSD() %#ok<DEFNU>
 global appdata
 scrsz = get(0,'ScreenSize');
 figure('Position',[scrsz(3)/8 scrsz(4)/8 6*scrsz(3)/8 6*scrsz(4)/8]);
 
-plot(appdata.ebsd);
+plot(appdata.data);
 
 
 %% ---------- in the end ---------------------------------------------------
-function finish()
+function finish() %#ok<DEFNU>
 global handles
 global appdata
 
 if ~get(handles.runmfile,'Value');
   a = inputdlg({'enter name of workspace variable'},'MTEX Import Wizard',1,{'pf'});
-  assignin('base',a{1},appdata.ebsd);
+  assignin('base',a{1},appdata.data);
 else
   str = exportEBSD(appdata.workpath, appdata.filename, ...
-    appdata.ebsd,appdata.interface,appdata.options);
+    appdata.data,appdata.interface,appdata.options);
   str = generateCodeString(str);
   openuntitled(str);
 end

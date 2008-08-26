@@ -1,7 +1,7 @@
-function pf2cs(pf, handles)
-% write cs to page
+function handles = get_cs(object, handles)
+% write cs of object (ebsd / pf) to page 
 
-cs = getCS(pf);
+cs = get(object,'CS');
 
 csname = strmatch(Laue(cs),symmetries);
 set(handles.crystal,'value',csname(1));

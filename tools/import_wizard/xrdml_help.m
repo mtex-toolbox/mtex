@@ -14,7 +14,7 @@ else
       modifie_handles;
       
       appdata.f{1} = appdata.filename;
-      appdata.pf_merge{1} = appdata.pf;
+      appdata.pf_merge{1} = appdata.data;
       appdata.ipf_merge{1} = appdata.ipf;
       for i=2:4 
          appdata.pf_merge{i} = [];
@@ -40,7 +40,7 @@ global appdata
 global handles
 
 check_gui
-if ~isempty(appdata.pf)
+if ~isempty(appdata.data)
   for i=2:4
     if length(appdata.pf_merge{i}) ~= length(appdata.pf_merge{1})
       warndlg('Polefigure assignment is unequal!')
@@ -58,7 +58,7 @@ if ~isempty(appdata.pf)
   catch end
   
   for i=1:length(appdata.pf_merge{1})
-    appdata.pf(i) = correct( appdata.pf_merge{1}(i),'bg',appdata.pf_merge{2}(i),'def',appdata.pf_merge{3}(i),'def_bg',appdata.pf_merge{4}(i));
+    appdata.data(i) = correct( appdata.pf_merge{1}(i),'bg',appdata.pf_merge{2}(i),'def',appdata.pf_merge{3}(i),'def_bg',appdata.pf_merge{4}(i));
     try, set(sb.ProgressBar,'Value',i);catch end
   end
   
@@ -89,7 +89,7 @@ if isempty([appdata.f{:}])
   appdata.filename = [];
   appdata.interface = '';
   appdata.options = {};
-  appdata.pf = [];
+  appdata.data = [];
   appdata.ipf = 0;
   
   for i=1:4
@@ -154,7 +154,7 @@ for i=1:length(fn)
   appdata.ipf_merge{type} = [appdata.ipf_merge{type},ipf];
   updatelist(type);
   
-  if type==1,  appdata.pf = [appdata.pf,npf]; end
+  if type==1,  appdata.data = [appdata.data,npf]; end
 end
 
 try, statusbar(handles.xrdml_frame);catch,end;
@@ -176,7 +176,7 @@ if ~isempty(appdata.pf_merge{type})
   end
   
   % remove pole figure
-  if type==1, appdata.pf(ipf) = []; end
+  if type==1, appdata.data(ipf) = []; end
   appdata.pf_merge{type}(ipf) = [];
   appdata.ipf_merge{type}(1+index_selected) = [];
     

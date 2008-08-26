@@ -1,4 +1,5 @@
 function appdata = set_hkil( appdata, handles )
+% set hkli in pole figure object
 
 ip =  get(handles.listbox_miller,'Value');
 
@@ -9,8 +10,8 @@ c = str2num(get(handles.structur, 'String')); %#ok<ST2NM>
 
 mtex_assert(all([length(h),length(k),length(l)] == length(c)));
 
-appdata.pf(ip) = set(appdata.pf(ip),'h',Miller(h,k,l,getCS(appdata.pf)));
-appdata.pf(ip) = set(appdata.pf(ip),'c',c);
+appdata.data(ip) = set(appdata.data(ip),'h',Miller(h,k,l,getCS(appdata.data)));
+appdata.data(ip) = set(appdata.data(ip),'c',c);
 
 get_hkil(appdata, handles);
   

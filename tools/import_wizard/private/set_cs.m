@@ -1,4 +1,5 @@
-function pf = cs2pf(pf, handles )
+function object = set_cs(object, handles )
+% set cs in object (pf/ebsd)
 
 cs = get(handles.crystal,'Value');
 cs = symmetries(cs);
@@ -10,4 +11,4 @@ for k=1:3
 end
 
 cs = symmetry(cs,[axis{:}],[angle{:}]);
-pf = set(pf,'CS',cs);
+object = set(object,'CS',cs);

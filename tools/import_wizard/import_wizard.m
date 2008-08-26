@@ -38,9 +38,8 @@ appdata.workpath = cd;
 appdata.filename = [];
 appdata.interface = '';
 appdata.options = {};
-appdata.pf = [];
+appdata.data = [];
 appdata.ipf = 0;
-appdata.ebsd = [];
 appdata.page = 1;
 appdata.assert_assistance = 'None';
 appdata.type = type;
@@ -84,8 +83,24 @@ switch appdata.type
 end
 set_page(handles,appdata.page);
 
+%% callbacks
+
+function lookup_mineral() %#ok<DEFNU>
+global handles
+global appdata
+
+name = get(handles.mineral,'string');
+m = find_mineral(name);
+if ~isempty(m)
+  appdata.data = set(appdata.data,'CS',m.sym);
+  get_cs(appdata.data,handles);
+else
+  errordlg('Mineral not found!')
+end
+
+
 %% switch pages
-function page_next()
+function page_next() %#ok<DEFNU>
 global handles
 global appdata
 if (length(handles.pages)>appdata.page)
@@ -100,7 +115,7 @@ if (length(handles.pages)>appdata.page)
   end
 end
 
-function page_prev()
+function page_prev() %#ok<DEFNU>
 global handles
 global appdata
 if (appdata.page>1)
