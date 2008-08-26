@@ -14,7 +14,7 @@ end
 
 
 %% ------------ data import callback --------------------------------------
-function addData()
+function addData() %#ok<DEFNU>
 global appdata
 
 [fname,pathname] = uigetfile( mtexfilefilter(),...
@@ -74,7 +74,7 @@ for i=1:length(fn)
   
   if ~isempty(npf)
     %pole figures
-    appdata.pf =  [appdata.pf,npf];
+    appdata.data =  [appdata.data,npf];
     appdata.ipf = [appdata.ipf,ipf];   
     appdata.filename = [appdata.filename, strcat(pathname,fn(i))]; 
     appdata.workpath = pathname;
@@ -93,11 +93,11 @@ if strcmp(appdata.interface,'xrdml'), xrdml_help; end
 
 
 %% ------------ remove data ----------------------------------------------- 
-function delData()
+function delData() %#ok<DEFNU>
 global handles
 global appdata
 
-if ~isempty(appdata.pf)
+if ~isempty(appdata.data)
   index_selected = get(handles.listbox,'Value');
   cpf = cumsum(appdata.ipf);
   ipf = [];
@@ -106,7 +106,7 @@ if ~isempty(appdata.pf)
   end
   
   % remove pole figure
-  appdata.pf(ipf) = [];
+  appdata.data(ipf) = [];
   appdata.ipf(1+index_selected) = [];
     
   if iscellstr(appdata.filename)
@@ -120,7 +120,7 @@ if ~isempty(appdata.pf)
   set(handles.listbox, 'String',path2filename(appdata.filename));
   set(handles.listbox,'Value',selected);
    
-  if isempty(appdata.pf)
+  if isempty(appdata.data)
     appdata.interface = '';
     appdata.options = {};
     appdata.assert_assistance= 'None';
@@ -129,64 +129,81 @@ end
 
 
 %% ------------ switch between page --------------------------------------
-function leave_page()
+function leave_page() %#ok<DEFNU>
 global handles;
 global appdata;
 
 switch appdata.page  
   case 1
-    if isempty(appdata.pf), error('Add some data files to be imported!');end  
+    if isempty(appdata.data), error('Add some data files to be imported!');end  
   case 2
-    appdata.pf = cs2pf(appdata.pf, handles);
+    appdata.data = set_cs(appdata.data, handles);
   case 3
+    appdata.data = set_ss(appdata.data, handles);
+    plot_options = get_mtex_option('default_plot_options');
+    if get(handles.plot_rotate,'value')
+      plot_options = set_option(plot_options,'rotate',...
+        str2double(get(handles.plot_rotateAngle,'string'))*degree);
+    else
+      plot_options = delete_option(plot_options,'rotate');
+    end
+    set_mtex_option('default_plot_options',plot_options);
+    %set(appdata.data,'comment',get(handles.comment,'String'));
+  case 4
     try
       appdata = set_hkil(appdata, handles);
     catch
       error('There must be the same number of hkli and structure coefficients.');
     end
-  case 4
-    appdata.pf = ss2pf(appdata.pf, handles);
-    %set(appdata.pf,'comment',get(handles.comment,'String'));
   case 5
 end
 %--------------------------------------------------------------------------
 
-function goto_page()
+function goto_page() %#ok<DEFNU>
 global handles;
 global appdata;
 
 switch appdata.page   
   case 2
-    pf2cs(appdata.pf,handles);
+    get_cs(appdata.data,handles);
   case 3
-    handles = setup_polefigurelist(appdata, handles);
-    get_hkil(appdata, handles);
+    get_ss(appdata.data,handles);
+    plot_options = get_mtex_option('default_plot_options');
+    if check_option(plot_options,'rotate')
+      set(handles.plot_rotate,'value',1);
+      set(handles.plot_rotateAngle,'string',int2str(get_option(plot_options,'rotate',0)/degree));
+    else
+      set(handles.plot_rotate,'value',0);
+    end
+    %    set(handles.comment,'String',get(appdata.data,'comment'));
   case 4
-    pf2ss(appdata.pf,handles);
-%    set(handles.comment,'String',get(appdata.pf,'comment'));
+    handles = setup_polefigurelist(appdata, handles);
+    get_hkil(appdata, handles);  
   case 5
-    str = char(appdata.pf);
+    str = char(appdata.data);
     set(handles.preview,'String',str);
 end
 
 
 %% ------------ on symmetry page ------------------------------------------
-function updatecrystal()
+function update_cs() %#ok<DEFNU>
 global handles
 global appdata
-appdata.pf = cs2pf(appdata.pf, handles);
-pf2cs(appdata.pf, handles);
+
+appdata.data = set_cs(appdata.data, handles);
+get_cs(appdata.data, handles);
 
 
 %% ------------ on miller indices page ------------------------------------
-function miller_update()
+function update_miller() %#ok<DEFNU>
 global appdata
 global handles
+
 get_hkil(appdata, handles);
 setup_polefigurelist(appdata, handles);
 %--------------------------------------------------------------------------
 
-function update_indices()
+function update_indices() %#ok<DEFNU>
 global appdata
 global handles
 
@@ -198,31 +215,32 @@ setup_polefigurelist(appdata, handles);
 
 
 %% ------------ plotting preview ------------------------------------------
-function plot_PoleFigure()
+function plot_PoleFigure() %#ok<DEFNU>
 global appdata
 global handles
 
-if isempty(appdata.pf)
+leave_page;
+if isempty(appdata.data)
   errordlg('Nothing to plot! Add files to import first!');
   return;
 end
 scrsz = get(0,'ScreenSize');
 figure('Position',[scrsz(3)/8 scrsz(4)/8 6*scrsz(3)/8 6*scrsz(4)/8]);
 
-pf = appdata.pf;
+pf = appdata.data;
 pf = modifypf(pf,handles);
 plot(pf,'silent');
 plot2all([xvector,yvector,zvector],'Backgroundcolor','w','bulletcolor','k');
 
 
 %% ---------- in the end --------------------------------------------------
-function finish()
+function finish() %#ok<DEFNU>
 global handles
 global appdata
 
 if ~get(handles.runmfile,'Value');
   a = inputdlg({'Enter name of workspace variable'},'MTEX Import Wizard',1,{'pf'});
-  assignin('base',a{1},appdata.pf);
+  assignin('base',a{1},appdata.data);
   if isempty(javachk('desktop'))
     disp(['imported PoleFigure: ', a{1}]);  
     disp(['- <a href="matlab:plot(',a{1},',''silent'')">Plot PDF</a>']);
@@ -231,9 +249,9 @@ if ~get(handles.runmfile,'Value');
   end
 else
   if ~strcmp(appdata.assert_assistance,'Yes')
-    str = exportPF(appdata.workpath, appdata.filename, appdata.pf, appdata.interface, appdata.options);
+    str = exportPF(appdata.workpath, appdata.filename, appdata.data, appdata.interface, appdata.options);
   else
-    str = exportPF(appdata.workpath, appdata.f, appdata.pf, appdata.interface, appdata.options);
+    str = exportPF(appdata.workpath, appdata.f, appdata.data, appdata.interface, appdata.options);
   end
   str = generateCodeString(str);
   openuntitled(str);

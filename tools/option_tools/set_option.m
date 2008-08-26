@@ -19,7 +19,7 @@ function out_list = set_option(option_list,option,varargin)
 % delete previous options
 
 if ~isempty(option)>0
-  option_list = delete_option(option_list,option);
+  option_list = delete_option(option_list,option,length(varargin));
 
   % set option
   if ~iscell(option), option = {option};end
