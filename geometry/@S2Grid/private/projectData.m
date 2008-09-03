@@ -14,7 +14,7 @@ switch lower(projection)
   
   case 'plain'
 
-    X = rho; Y = theta;
+    X = rho; Y = fliplr(theta);
     
   case {'stereo','eangle'} % equal angle
   
