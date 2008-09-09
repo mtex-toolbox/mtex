@@ -52,8 +52,8 @@ disp(' ');
 if isempty(javachk('desktop'))
   disp('Basic tasks:')
   disp('- <a href="matlab:doc mtex">Show MTEX documentation</a>')
-  disp('- <a href="matlab:import_wizard_PoleFigure">Import pole figure data</a>')
-  disp('- <a href="matlab:import_wizard_EBSD">Import EBSD data</a>')
+  disp('- <a href="matlab:import_wizard">Import pole figure data</a>')
+  disp('- <a href="matlab:import_wizard">Import EBSD data</a>')
   disp(' ');
 end
 
