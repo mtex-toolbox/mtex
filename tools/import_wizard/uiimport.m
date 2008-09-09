@@ -4,9 +4,9 @@ function uiimport(varargin)
 if nargin && ischar(varargin{1})
   [pathstr, name, ext] = fileparts(varargin{1});
   if any(strcmp(get_mtex_option('polefigure_ext',{},'cell'),ext))
-    import_wizard_PoleFigure('file',varargin{:});
+    import_wizard('file',varargin{:});
   elseif any(strcmp(get_mtex_option('EBSD_ext',{},'cell'),ext))
-    import_wizard_EBSD('file',varargin{:});      
+    import_wizard('file',varargin{:},'ebsd');      
   else
     old_uiimport(varargin{:});      
   end

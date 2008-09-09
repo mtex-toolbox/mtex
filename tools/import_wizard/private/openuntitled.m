@@ -1,4 +1,5 @@
 function  openuntitled( str )
+
 err = javachk('mwt','The MATLAB Editor');
 if ~isempty(err)
   local_display_mcode(str,'cmdwindow');

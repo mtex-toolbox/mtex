@@ -2,130 +2,49 @@ function import_wizard( varargin )
 % import data from known formats
 %
 %% Input
-%  type     - EBSD / PoleFigure
+%  file_name - files to be imported
 %
 %% See also
 % import_wizard_EBSD import_wizard_PoleFigure
 
-global handles
-global appdata
-
-if ~check_option(varargin,'type')
-  
-  if nargin>0  && ischar(varargin{1})
-    feval(varargin{:});
-    return
-  end
-  typ = {'EBSD','PoleFigure'};
-  a = listdlg('PromptString','Select Mode',...
-    'SelectionMode','single',...
-    'ListSize',[200 50],...
-    'fus',3,...
-    'ffs',1,...
-    'ListString',typ);
-  if ~isempty(a)
-    type = typ{a};
-  else
-    return
-  end;
-else
-  type = get_option(varargin,'type');
-end
-  
-
-% init global variable appdata
-appdata.workpath = cd;
-appdata.filename = [];
-appdata.interface = '';
-appdata.options = {};
-appdata.data = [];
-appdata.ipf = 0;
-appdata.page = 1;
-appdata.assert_assistance = 'None';
-appdata.type = type;
-
-for i=1:4
-  appdata.f{i} = '';
-  appdata.pf_merge{i} = '';
-  appdata.ipf_merge{i} = '';
-end
-  
-var = {'type', appdata.type};
-%mainframe
-handles.wzrd = import_frame(var{:});
+% mainframe
+h = import_gui_empty('width',500,varargin);
 
 % add pages
-handles.pages = [];
-handles = import_gui_generic( handles,var{:} );
-handles = import_gui_data( handles,var{:});
-handles = import_gui_cs( handles,var{:});
-handles = import_gui_ss( handles );
+import_gui_generic(h);
+import_gui_data(h);
+import_gui_cs(h);
+import_gui_ss(h);
+import_gui_miller(h);
+import_gui_finish(h);
 
-if ~strcmp(appdata.type,'EBSD')
-  handles = import_gui_miller( handles );
+% init global variable appdata
+handles = getappdata(h,'handles');
+for i = 1:length(handles.listbox)
+  setappdata(handles.listbox(i),'workpath',cd);
+  setappdata(handles.listbox(i),'filename',[]);
+  setappdata(handles.listbox(i),'interface','');
+  setappdata(handles.listbox(i),'options',{});
+  setappdata(handles.listbox(i),'data',[]);
+  setappdata(handles.listbox(i),'idata',0);
 end
+setappdata(h,'page',1);
 
-handles = import_gui_finish( handles );
+handles.pf_pages = handles.pages;
+handles.ebsd_pages = handles.pages([1:3 5]);
+setappdata(h,'handles',handles);
 
-switch appdata.type
-  %page description
-  case 'EBSD'
-    handles.pagename = {'(1/4) Select Data Files',...
-      '(2/4) Set Crystal Geometry',...
-      '(3/4) Set Specimen Geometry',...
-      '(4/4) Summary'};
-  case 'PoleFigure'
-    handles.pagename = {'(1/5) Select Data Files',...
-      '(2/5) Set Crystal Geometry',...
-      '(3/5) Set Specimen Geometry',...
-      '(4/5) Set Miller Indizes',...
-      '(5/5) Summary'};
-end
-set_page(handles,appdata.page);
+% activate first page
+set_page(h,1);
 
-%% callbacks
-
-function lookup_mineral() %#ok<DEFNU>
-global handles
-global appdata
-
-name = get(handles.mineral,'string');
-m = find_mineral(name);
-if ~isempty(m)
-  appdata.data = set(appdata.data,'CS',m.sym);
-  get_cs(appdata.data,handles);
-else
-  errordlg('Mineral not found!')
-end
-
-
-%% switch pages
-function page_next() %#ok<DEFNU>
-global handles
-global appdata
-if (length(handles.pages)>appdata.page)
-  try
-    f = str2func(['import_wizard_' appdata.type]);
-    feval(f,'leave_page');
-    appdata.page = appdata.page +1;
-    feval(f,'goto_page');
-    set_page(handles,appdata.page);
-  catch
-    errordlg(errortext);
+% load first data?
+if check_option(varargin,'file') || ...
+    (nargin >= 1 && exist(varargin{1},'file'))
+  [path,fn,ext] = fileparts(get_option(varargin,'file'),varargin{1});
+  if check_option(varargin,'ebsd')
+    lb = 2;
+  else 
+    lb = 1;
   end
-end
-
-function page_prev() %#ok<DEFNU>
-global handles
-global appdata
-if (appdata.page>1)
-  try
-    f = str2func(['import_wizard_' appdata.type]);
-    feval(f,'leave_page');
-    appdata.page = appdata.page -1;
-    feval(f,'goto_page');
-    set_page(handles,appdata.page);
-  catch
-    errordlg(errortext);
-  end
+  addfile(handles.listbox(lb),'file',{[fn,ext]}, [path,filesep],varargin{:});
 end
