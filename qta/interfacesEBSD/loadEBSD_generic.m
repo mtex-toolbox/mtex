@@ -34,6 +34,7 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 %  BUNGE             - [phi1 Phi phi2] Euler angle in Bunge convention (default)
 %  ABG               - [alpha beta gamma] Euler angle in Mathies convention 
 %  LAYOUT            - colums of the Euler angle (default [1 2 3])
+%  XY                - colums of the xy data
 %
 % 
 %% Example
@@ -61,8 +62,9 @@ if ~check_option(varargin,'layout')
 end
 
 %extract options
-dg = degree + (1-degree)*check_option(varargin,'RADIAND');
+dg = degree + (1-degree)*check_option(varargin,'RADIANT');
 layout = get_option(varargin,'LAYOUT',[1 2 3]);
+xy = get_option(varargin,'xy',[]);
 phase = get_option(varargin,'phase',[],'double');
     
 try
@@ -89,11 +91,14 @@ try
   
   % store data as quaternions
   q = euler2quat(alpha,beta,gamma,bunge{:});  
-  
+    
   if check_option(varargin,'inverse'), q = inverse(q); end
   
   SO3G = SO3Grid(q,symmetry('cubic'),symmetry());
-  ebsd = EBSD(SO3G,symmetry('cubic'),symmetry(),varargin{:});
+  
+  if ~isempty(xy), xy = d(:,xy);end
+  
+  ebsd = EBSD(SO3G,symmetry('cubic'),symmetry(),varargin{:},'xy',xy);
   options = varargin;
 
 catch
