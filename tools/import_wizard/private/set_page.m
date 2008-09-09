@@ -1,6 +1,8 @@
-function set_page(handles,page)
+function set_page(wzrd,page)
 
-if(page == 1) 
+handles = getappdata(wzrd,'handles');
+
+if (page == 1) 
   set(handles.prev,'enable','off');
 else
   set(handles.prev,'enable','on')
@@ -15,9 +17,11 @@ else
 end
 
 set(handles.pages(1:end~=page),'visible','off');
-setall(handles.pages(page),'visible','on');
-set(handles.name,'String',handles.pagename{page});
+%setall(handles.pages(page),'visible','on');
+set(handles.pages(page),'visible','on');
 
+set(handles.name,'String',getappdata(handles.pages(page),'pagename'));
+setappdata(wzrd,'page',page);
 
 function setall(ax,varargin)
 

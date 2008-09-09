@@ -1,4 +1,4 @@
-function str = exportPF( pn, fn, pf, interface, options )
+function str = exportPF(fn, pf, interface, options )
 
 str = ['%% created with import_wizard';{''}];
 
@@ -25,9 +25,6 @@ str = [ str; {''};'%% specify file names'; {''}];
 % ordinary case 
 if ~iscell(fn{1})
 
-  pn = strrep(pn,'\','/');
-  pn = strrep(pn,'./','');
-
   [pname, fname] =  minpath(fn);
   str = [ str; {''};strcat('pname = ''', pname,''';'); {''};'fname = {...']; 
   for k = 1:length(fn)
@@ -37,11 +34,11 @@ if ~iscell(fn{1})
 else
   if strcmp(interface,'xrdml')
     d = {'','_bg','_def','_defbg'};
-    for k=1:4
-      [pname, fname] =  minpath(fn{k});
+    for t=1:4
+      [pname, fname] =  minpath(fn{t});
       str = [ str; {''};strcat('pname = ''', pname,''';'); {''};...
-        strcat('fname',d{k},' = {...')]; 
-        for k = 1:length(fn{k})
+        strcat('fname',d{t},' = {...')]; 
+        for k = 1:length(fn{t})
           str = [ str; strcat('[ pname ''', fname{k}, '''], ...')];
         end
       str = [ str; '};'; {''}];
@@ -96,12 +93,11 @@ end
 
 %% post process pole figure
 
-global handles;
 
-if get(handles.rotate,'value')
-  str = [str; {''}; '%% rotate pole figure'; {''};...
-    'pf = rotate(pf,',get(handles.rotateAngle,'string'),'*degree)'];
-end
+%if get(handles.rotate,'value')
+%  str = [str; {''}; '%% rotate pole figure'; {''};...
+%    'pf = rotate(pf,',get(handles.rotateAngle,'string'),'*degree)'];
+%end
 
 %if get(handles.dnv,'value')
 %  str = [str; {''}; '%% delete negative values'; {''};...

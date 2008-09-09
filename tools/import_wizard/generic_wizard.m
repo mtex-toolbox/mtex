@@ -52,7 +52,7 @@ cw = (w-3*dw)/4;
 
 % data size
 [x,y] = size(data);
-htp = import_frame('type',type,'width',w,'height',h,'name','generic import');
+htp = import_gui_empty('type',type,'width',w,'height',h,'name','generic import');
 
 % static text
 uicontrol('Style','Text','Position',[dw,h-120,w-2*dw,60],...

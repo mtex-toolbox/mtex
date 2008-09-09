@@ -1,4 +1,4 @@
-function str = exportEBSD( pn, fn, ebsd, interface, options )
+function str = exportEBSD(fn, ebsd, interface, options )
 
 str = ['%% created with import_wizard';{''}];
 
@@ -17,9 +17,6 @@ str = [str; export_CS_tostr( cs,axis,angle )];
 str = [ str; strcat('SS = symmetry(''',strrep(char(ss),'"',''), ''');')];
 
 %% specify the file names
-
-pn = strrep(pn,'\','/');
-pn = strrep(pn,'./','');
 
 str = [ str; {''};'%% specify file names'; {''};'fname = { ...'];
 
