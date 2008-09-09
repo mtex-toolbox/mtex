@@ -18,39 +18,51 @@ function pf = correct( pf, varargin )
 %% See also
 % xrdml_interface loadPoleFigure_xrdml
 
-p{1} = get_option(varargin,{'background','bg'});
-p{2} = get_option(varargin,{'defocusing','def'});
-p{3} = get_option(varargin,{'defocusing background','def_bg'});
-
-epsilon = 1e-9;
-
-for i=1:length(pf)
-  for k=1:3 
-    if ~isempty(p{k})
-      if geth(p{k}(i)) == geth(pf(i)) 
-        theta = getTheta(getr(p{k}(i)));     
-        for g=1:GridLength(getr(p{k}(i)))
-          id = find(getTheta(getr(pf(i))) >= theta(g)-epsilon &...
-            getTheta(getr(pf(i))) <= theta(g)+epsilon);
-          d(id) = getdata(p{k}(i),g);
-        end  
-        p{k}(i) = PoleFigure(getMiller(pf(i)),...
-          getr(pf(i)),d,...
-          getCS(pf(i)),getSS(pf(i)));
-      else
-         error('crystal direction missmatch');
-      end     
-    end   
-  end
+% Background correction
+bg = get_option(varargin,{'background','bg'});
+if ~isempty(bg)
+  bg = adapt_pf(bg,pf,'Background correction pole figure');
+  pf = pf-bg;
 end
 
-if ~isempty(p{1}), pf = pf-p{1}; end
+% Defocussing
+def = get_option(varargin,{'defocusing','def'});
+def_bg = get_option(varargin,{'defocusing background','def_bg'});
 
-if ~isempty(p{2}) && ~isempty(p{3})
-  p{2} = p{2} - p{3}; end
+if isempty(def), return;end % no Defocussing
 
-if ~isempty(p{2}), pf = pf/p{2}; end
+def = adapt_pf(def,pf,'Defocusing pole figure');
+  
+if ~isempty(def_bg)
+    
+  def_bg = adapt_pf(def_bg,pf,'Defocusing background pole figure');
+  def = def-def_bg;
+    
+end
+  
+pf = pf./def;
 
 
+%% Handle the case of correction pole figurs that are given only by theta
+%% angles
+function pf_orig = adapt_pf(pf,pf_orig,msg)
 
+if length(pf) == 1, pf = repmat(pf,numel(pf_orig),1);end
+if numel(pf) ~= numel(pf_orig)
+  error(['number of ' msg ' does not fitt number of pole figures']);
+end
 
+% check for identical specimen directions
+if all([pf.r] == [pf_orig.r])
+  pf_orig = setdata(pf_orig,getdata(pf));
+  return
+end
+
+% otherwise interpolate according to theta
+try
+  for i = 1:length(pf)
+    pf_orig(i).data = interp1(getTheta(pf(i).r),pf(i).data,getTheta(pf_orig(i).r),'spline');
+  end
+catch
+  error([msg ' does not fit original pole figure data!']);
+end

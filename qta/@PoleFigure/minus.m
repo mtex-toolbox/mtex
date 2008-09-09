@@ -21,9 +21,11 @@ else
 end
 
 for i = 1:length(pf)
-  if isa(pf2,'PoleFigure')
-    pf(i).data = sgn * (pf(i).data - pf2(i).data);
-  else
-    pf(i).data = sgn * (pf(i).data - pf2);
-  end
+
+  if isa(pf2,'PoleFigure'), r  = pf2(i).data; else r  = pf2(i); end
+  
+  if numel(r)>1, r = reshape(r,size(pf(i).data));end
+  
+  pf(i).data = sgn * (pf(i).data - r);
+
 end
