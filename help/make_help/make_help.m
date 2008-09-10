@@ -7,7 +7,6 @@ function make_help(varargin)
 
 tic
 
-global mtex_path;
 html_path = [mtex_path '/help/html'];
 
 global mtex_progress;
@@ -89,7 +88,7 @@ if check_option(varargin, {'mfiles','all'})
  % publish all script_files in help/classes directory
  files = dir([html_path '/script_*.m']);
  publish_files({files.name},html_path,'out_dir',html_path,...
-   'stylesheet',[pwd '/publishmtex.xsl'],varargin{:},'waitbar');
+   'stylesheet',[pwd '/publishmtex.xsl'],'waitbar',varargin{:});
  delete([html_path '/script_*.m']);
  
 end
@@ -145,7 +144,7 @@ toc
 system('jar -cf ../mtex/help.jar -C ../html/ .');
 cd([mtex_path '/help/html']);
 builddocsearchdb('.');
-global mtex_startup_dir;
+mtex_startup_dir = get_mtex_option('startup_dir');
 unix(['rm -rf ' mtex_path '/help/mtex/helpsearch']);
 unix(['mv -f ' mtex_startup_dir,'/helpsearch ' mtex_path '/help/mtex/']);
 cd([mtex_path '/help/make_help']);

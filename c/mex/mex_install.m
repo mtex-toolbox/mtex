@@ -1,8 +1,6 @@
 function mex_install(mtexpath,mexoptions)
 % compiles all mex files for use with MTEX
 
-global mtex_path;
-
 opwd = pwd; 
 if nargin == 0, mtexpath = mtex_path;end
 mexpath = [mtexpath,'/c/mex/'];

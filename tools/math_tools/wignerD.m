@@ -29,8 +29,6 @@ l = get_option(varargin,{'degree','bandwidth'});
 L = max(l,3);
 A = ones(L+1,1);
 
-global mtex_path;
-
 % run NFSOFT
 D = call_extern([mtex_path,'/c/bin/odf2fc'],'EXTERN',g,c,A);
       

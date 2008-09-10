@@ -23,25 +23,29 @@ if nargin <= 1, CS = symmetry('triclinic'); end
 if nargin <= 2, SS = symmetry('triclinic'); end
 
 if (nargin == 0)
-    ebsd.comment = [];
-    ebsd.orientations = [];
-    ebsd.CS = symmetry;
-    ebsd.SS = symmetry;
-    ebsd.options = {};
-    ebsd = class(ebsd,'EBSD');
-    return
+  ebsd.comment = [];
+  ebsd.orientations = [];
+  ebsd.CS = symmetry;
+  ebsd.SS = symmetry;
+  ebsd.options = {};
+  ebsd.xy = [];
+  ebsd.phase = [];
+  ebsd = class(ebsd,'EBSD');
+  return
 elseif isa(orientations,'EBSD')
-    ebsd = orientations;
-    return
+  ebsd = orientations;
+  return
 elseif isa(orientations,'quaternion')
-    orientations = SO3Grid(orientations,CS,SS);
+  orientations = SO3Grid(orientations,CS,SS);
 elseif ~isa(orientations,'SO3Grid')
-    error('first argument should be of type SO3Grid or quaternion');
+  error('first argument should be of type SO3Grid or quaternion');
 end
 
 ebsd.comment = get_option(varargin,'comment',[]);
 ebsd.orientations = orientations;
 ebsd.CS = CS;
 ebsd.SS = SS;
+ebsd.xy = get_option(varargin,'xy');
+ebsd.phase = get_option(varargin,'phase');
 ebsd.options = extract_option(varargin,{});
 ebsd = class(ebsd,'EBSD');

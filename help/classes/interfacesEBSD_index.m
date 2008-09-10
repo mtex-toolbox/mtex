@@ -15,10 +15,10 @@
 %% Inporting EBSD data using the import wizard
 %
 % The most simplest way to load EBSD data is to use the 
-% [[import_wizard_EBSD.html,import wizard]], which can be started either by
+% [[import_wizard.html,import wizard]], which can be started either by
 % typing into the command line 
 
-import_wizard_EBSD; 
+import_wizard; 
 
 %%
 % or using from the start menu the item 

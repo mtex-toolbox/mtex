@@ -43,5 +43,4 @@ r = [reshape(out_rho,1,[]);reshape(out_theta,1,[])];
 P_hat = [real(P_hat(:)),-imag(P_hat(:))].';
 %P_hat = ones(size(P_hat));
 
-global mtex_path;
 Z = call_extern([mtex_path,'/c/bin/pdf2pf'],'EXTERN',r,P_hat);
