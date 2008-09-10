@@ -207,7 +207,7 @@ function pf = modifypf(wzrd,pf)
 
 handles = getappdata(wzrd,'handles');
 if get(handles.rotate,'value')
-  pf = rotate(pf,str2num(get(handles.rotateAngle,'string')));
+  pf = rotate(pf,str2num(get(handles.rotateAngle,'string'))*degree);
 end
 
 %if get(handles.dnv,'value')

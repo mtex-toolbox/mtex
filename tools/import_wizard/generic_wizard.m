@@ -31,9 +31,9 @@ if check_option(varargin,'type')
  type = get_option(varargin,'type');
  switch type
   case 'EBSD'
-    dscrpt = {'Alpha','Beta','Gamma','Phase'};
+    values = {'Ignore','Alpha','Beta','Gamma','phi 1','Phi','phi 2','x','y','Phase'};
   case 'PoleFigure'
-    dscrpt = {'Polar Angle','Azimuth Angle','Intensity','Background'};
+    values = {'Ignore','Polar Angle','Azimuth Angle','Intensity','Background'};
   otherwise
     disp('wrong option');
   return
@@ -46,7 +46,7 @@ end
 % window dimension
 w = 466;
 tb = 250; %table size
-if (~strcmp(type,'PoleFigure')), h = tb+355; else h = tb+300; end;
+h = tb+310; 
 dw = 10;
 cw = (w-3*dw)/4;
 
@@ -55,13 +55,11 @@ cw = (w-3*dw)/4;
 htp = import_gui_empty('type',type,'width',w,'height',h,'name','generic import');
 
 % static text
-uicontrol('Style','Text','Position',[dw,h-120,w-2*dw,60],...
+uicontrol('Style','Text','Position',[dw,h-120,w-2*dw,50],...
  'HorizontalAlignment','left',...
  'string',['The data format could not automatically detected. ',...
  'However the following ',int2str(size(data,1)) 'x' int2str(size(data,2)) ...
- ' data matrix could extracted from the file. ',...
- 'Please specify the column numbers that coresponds to the' ...
- 'required quantities.']);
+ ' data matrix was extracted from the file.']);
 
 % table
 
@@ -70,64 +68,49 @@ for k=1:y, colnames{k} = ['Column ' int2str(k)]; end;
 if ~strcmp(version('-release'),'2008a')
   uitable('Data',data(1:min(size(data,1),100),:),...
    'ColumnNames',colnames,...
-   'Position',[dw,h-(tb+120),w-2*dw,tb]);
+   'Position',[dw,h-(tb+110),w-2*dw,tb]);
 else
   uitable('Data',data(1:min(size(data,1),100),:),...
  'ColumnName',colnames,...
- 'Position',[dw,h-(tb+120),w-2*dw,tb]);
+ 'Position',[dw,h-(tb+110),w-2*dw,tb]);
 end
 
 % input selection
-cols = [' ',colnames] ;
-h0 = uipanel('title','Column Association','units','pixels','position',[dw h-tb-190 w-2*dw 65]);
-for k=1:length(dscrpt)
- colspos = [(dw+cw*(k-1)) -20 cw-dw 50];
- dscrptpos = [(dw+cw*(k-1)) 35 cw-dw 12];
- uicontrol(...
- 'HorizontalAlignment','left',...
- 'Position',dscrptpos,...
- 'String',dscrpt{k},...
- 'Style','text',...
- 'HandleVisibility','off',...
-  'Parent',h0,...
- 'HitTest','off');
- if (k <= length(colnames))
- col_nb{k} = uicontrol('Style', 'popup',...
-  'BackgroundColor',[1 1 1],...
-  'String',cols ,...
-   'Parent',h0,...
-  'Position', colspos); %#ok<AGROW>
-  set(col_nb{k},'Value',1+mod(k,4));
- end
+
+uicontrol('Style','Text','Position',[dw,h-(tb+120+25),w-2*dw,20],...
+  'HorizontalAlignment','left',...
+  'String','Please specify for each column how it should be interpreted!');
+
+cdata = repmat(values(1),1,size(data,2));
+colums = strcat('Column  ',num2str((1:length(cdata)).'));
+
+mtable = createTable([],cellstr(colums).',cdata,false,'units','pixel','position',[dw-1,h-(tb+120+85),w-2*dw,55]);
+jtable = mtable.getTable;
+cb = javax.swing.JComboBox(values); 
+cb.setEditable(true);  
+editor = javax.swing.DefaultCellEditor(cb);
+for i = 1:length(values)
+  jtable.getColumnModel.getColumn(i-1).setCellEditor(editor);
 end
+
 
 % checkboxes
-h1 = uibuttongroup('title','Angle Convention','units','pixels',...
-  'position',[dw h-(tb+260) cw*2 65]);
-chktxt_angle = {'Degree','Radiant'};
-chkpos = {[dw dw 100 15],[dw dw+20 100 15]};
-if ~strcmp(type,'PoleFigure')
- h2 = uibuttongroup('title','Euler Angle Convention','units',...
-   'pixels','position',[cw*2+2*dw h-(tb+260) cw*2 65]);
- chktxt_sys = {'Bunge','Matthis'};
-end;
+chk_angle = uibuttongroup('title','Angle Convention','units','pixels',...
+  'position',[dw h-(tb+260) cw*2 45]);
 
-for k=1:2
- chk_angle{k} = uicontrol('Style','Radio','String',chktxt_angle{k},...
-  'Position',chkpos{k},'Parent',h1,'HandleVisibility','off');
- if ~strcmp(type,'PoleFigure')
-  chk_sys{k} = uicontrol('Style','Radio','String',chktxt_sys{k},...
-    'Position',chkpos{k},'Parent',h2,'HandleVisibility','off');
- end
-end
+uicontrol('Style','Radio','String','Degree',...
+  'Position',[dw dw 80 15],'Parent',chk_angle,'HandleVisibility','off');
+uicontrol('Style','Radio','String','Radiant',...
+  'Position',[dw+cw dw 80 15],'Parent',chk_angle,'HandleVisibility','off');
 
 if (~strcmp(type,'PoleFigure'))
- h3 = uipanel('title','Phase(s)','units','pixels','position',[dw h-tb-310 w-2*dw 46]);
+ h3 = uipanel('title','Restrict to Phase(s)','units','pixels',...
+   'position',[2*cw+2*dw h-tb-260 cw*2 46]);
  phaseopt = uicontrol('Style','Edit',...
    'BackgroundColor',[1 1 1],...
    'HorizontalAlignment','left',...
    'String','' ,...
-   'Position',[dw 5 w-4*dw 23],'Parent',h3,'HandleVisibility','off');
+   'Position',[dw 5 cw*2-2*dw 23],'Parent',h3,'HandleVisibility','off');
 end
 
 uicontrol('Style','PushButton','String','Proceed ','Position',[w-70-dw,dw,70,25],...
@@ -141,22 +124,39 @@ uiwait(htp);
 
 if ishandle(htp)
 
- for k=1:length(col_nb)
-   layout(k) = get(col_nb{k},'Value')-1;
- end
- if  length(layout)==4 && layout(4) == 0
-   layout = layout(1:3);
- end
+  options = {};
+  
+  % get column association
+  data = cell(mtable.getData);
+
+  if any(strcmpi(data,'Alpha'))
+    layout(1) = find(strcmpi(data,'Alpha'),1);
+    layout(2) = find(strcmpi(data,'Beta'),1);
+    layout(3) = find(strcmpi(data,'Gamma'),1);
+    options = {options{:},'ABG'};
+  elseif any(strcmpi(data,'Phi'))
+    layout(1) = find(strcmpi(data,'phi 1'),1);
+    layout(2) = find(strcmpi(data,'Phi'),1);
+    layout(3) = find(strcmpi(data,'phi 2'),1);
+    options = {options{:},'Bunge'};
+  else
+    layout(1) = find(strcmpi(data,'Polar Angle'),1);
+    layout(2) = find(strcmpi(data,'Azimuth Angle'),1);
+    layout(3) = find(strcmpi(data,'Intensity'),1);
+  end
+  
+  if any(strcmpi(data,'Background'))
+    layout(4) = find(strcmpi(data,'Background'),1);
+  elseif any(strcmpi(data,'Phase'))
+    layout(4) = find(strcmpi(data,'Phase'),1);
+  end
+  
+  options = {options{:},'layout',layout};
  
- options = {'layout',layout,...
-   get(get(h1,'SelectedObject'),'String')};
- 
- if ~strcmp(type,'PoleFigure')
-   options = {options{:},get(get(h2,'SelectedObject'),'String')};
-   if ~isempty(str2num(get(phaseopt,'String')))
-     options = {options{:},'phase',str2num(get(phaseopt,'String'))};
-   end
- end;
- 
- close
+  if any(strcmpi(data,'x')) && any(strcmpi(data,'y'))
+    options = {options{:},'xy',...
+      [find(strcmpi(data,'x'),1),find(strcmpi(data,'y'),1)]};
+  end
+   
+  close
 end
