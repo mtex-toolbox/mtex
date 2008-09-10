@@ -131,8 +131,6 @@ end
 
 function f = gcA2fourier(g,c,A)
 
-global mtex_path;
-
 % run NFSOFT
 f = call_extern([mtex_path,'/c/bin/odf2fc'],'EXTERN',g,c,A);
       

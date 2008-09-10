@@ -3,8 +3,6 @@ function check_NFSOFT
 % checks for Y_l(g h) = T_l(g) Y_l(h)
 %
 
-global mtex_path
-
 %% input data
 L = 16;
 

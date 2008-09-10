@@ -33,9 +33,9 @@ hold off % next plot command deletes all plots
 
 plotpdf(odf,h,'reduced','contourf','gray','grid')
 hold all
-plotpdf(ebsd,h,'reduced','diameter',0.05,'color','b')
+plotpdf(ebsd,h,'reduced','diameter',0.05,'bulletcolor','b')
 hold all
-plotpdf(ebsd_rotated,h,'diameter',0.05,'color','r');
+plotpdf(ebsd_rotated,h,'diameter',0.05,'bulletcolor','r');
 hold off
 
 %% Add Miller Indece to a Inverse Pole Figure Plot

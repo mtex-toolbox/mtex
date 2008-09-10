@@ -4,23 +4,13 @@ function startup_mtex
 % 
 %
 
-%% set path to MTEX directories
-global mtex_path;
-mtex_path = fileparts(mfilename('fullpath'));
-
-global mtex_data_path;
-mtex_data_path = [mtex_path filesep 'data'];
-
-global mtex_startup_dir;
-mtex_startup_dir = pwd;
-
-
-%% compatibility issues
-warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
+% path to this function to be considered as the root of the MTEX
+% installation 
+local_path = fileparts(mfilename('fullpath'));
 
 
 %% needs installation ?
-install_mtex(mtex_path);
+install_mtex(local_path);
 
 
 %% setup search path 
@@ -36,12 +26,20 @@ toadd = {'',...
   'help/interfaces','help/ODFCalculation','help/plotting','c/mex'};
 
 for i = 1:length(toadd)
-  p = [mtex_path,filesep,toadd{i}];
+  p = [local_path,filesep,toadd{i}];
   addpath(p,0);
 end
 
+
 %% init settings
 mtex_settings;
+
+
+%% set path to MTEX directories
+set_mtex_option('mtex_path',local_path);
+set_mtex_option('mtex_data_path',[local_path filesep 'data']);
+set_mtex_option('mtex_startup_dir',pwd);
+
 
 %% check installation
 check_installation;
@@ -62,16 +60,16 @@ end
 
 
 %% mtext installation
-function install_mtex(mtex_path)
+function install_mtex(local_path)
 
-% check wether mtex_path is in search path
+% check wether local_path is in search path
 if ispc
   cellpath = splitstr(path,';'); %regexp(path,';','split');
 else
   cellpath = splitstr(path,':'); %regexp(path,':','split');
 end
 
-if any(strcmpi(mtex_path,cellpath)), return;end
+if any(strcmpi(local_path,cellpath)), return;end
 
 
 % if not yet installed

@@ -34,3 +34,12 @@ if check_option(varargin,'gridlabel')
 else
   set(gca,'xticklabel',[]);
 end
+
+%% Label
+if check_option(varargin,'xlabel')
+  optiondraw(xlabel(get_option(varargin,'xlabel'),'interpreter','latex'));
+end
+
+if check_option(varargin,'ylabel')
+  optiondraw(ylabel(get_option(varargin,'ylabel'),'interpreter','latex'));
+end

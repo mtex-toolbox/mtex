@@ -40,14 +40,15 @@ colorbar('south')  % add horizontal colorbar
 % <plot2all.html plot2all> one can easily add <vector3d_index.html specimen
 % coordinate axes> to a pole figure plot.
 
-plot2all([xvector,yvector,zvector],'data',{'X','Y','Z'},'FontSize',16);
+plot2all([xvector,yvector,zvector],'data',{'x','y','z'},...
+  'BackgroundColor','w');
 
 %%
 % The command <plot2all.html plot2all> allows also to plot
 % <Miller_index.html crystal directions> to inverse pole figures.
 
 plotipdf(odf,[xvector,zvector])
-plot2all([Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(0,0,1,cs)],'all','FontSize',16)
+plot2all([Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(0,0,1,cs)],'all','gray')
 set(gcf,'position',[139 258 672 266])
 
 

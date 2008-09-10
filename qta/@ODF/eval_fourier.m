@@ -9,8 +9,6 @@ function f = eval_fourier(odf,g,varargin)
 %  f - double
 %
 
-global mtex_path;
-
 % set parameter
 L = dim2deg(length(odf.c_hat));
 L = int32(min(L,get_option(varargin,'bandwidth',L)));

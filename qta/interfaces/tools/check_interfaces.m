@@ -1,7 +1,6 @@
 function [interface,options] = check_interfaces(fname,varargin)
 % determine interface from file
 
-global mtex_path;
 
 if ~exist(fname,'file'), error('File %s not found.',fname);end
 

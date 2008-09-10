@@ -1,6 +1,6 @@
 function p = mtexDataPath
 
-global mtex_data_path;
+mtex_data_path = get_mtex_option('mtex_data_path');
 
 if exist(mtex_data_path,'dir')
   p = mtex_data_path;

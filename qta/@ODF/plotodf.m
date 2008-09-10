@@ -69,6 +69,8 @@ elseif check_option(varargin,'ALPHA')
   
   rot = euler2quat(alpha,beta,gamma);
   symbol = '\alpha';
+  labelx = '$\gamma$';
+  labely = '$\beta$';
 
 %% --------- gamma - sections ---------------------------------------------  
 elseif check_option(varargin,'GAMMA')   
@@ -99,6 +101,8 @@ elseif check_option(varargin,'GAMMA')
   
   rot = euler2quat(alpha,beta,gamma);
   symbol = '\gamma';
+  labelx = '$\alpha$';
+  labely = '$\beta$';
     
   %% -------- phi1 - sections ----------------------------------------------
 elseif check_option(varargin,'phi1')   
@@ -125,6 +129,8 @@ elseif check_option(varargin,'phi1')
   
   rot = euler2quat(phi1,Phi,phi2,'Bunge');
   symbol = '\varphi_1';
+  labelx = '$\varphi_2$';
+  labely = '$\Phi$';
 
 %% --------- gamma - sections ---------------------------------------------  
 elseif check_option(varargin,'phi2')   
@@ -155,6 +161,8 @@ elseif check_option(varargin,'phi2')
   
   rot = euler2quat(phi1,Phi,phi2,'Bunge');
   symbol = '\varphi_2';
+  labelx = '$\varphi_1$';
+  labely = '$\Phi$';
     
 
 %% ------------ omega - sections ------------------------------------------  
@@ -207,7 +215,8 @@ else
   
   rot = euler2quat(alpha,beta,gamma-alpha);
   symbol = '\sigma';
-  
+  labelx = '$\sigma_2$';
+  labely = '$\Phi$';
 end
 
 %% ------------------------- plot -----------------------------------------
@@ -221,6 +230,7 @@ multiplot(@(i) S2G,...
   ' Min: ',xnum2str(min(Z(:)))],...
 	'ANOTATION',@(i) [symbol,'=',int2str(sec(i)*180/pi),'^\circ'],...
   'MINMAX','SMOOTH','TIGHT',...
+  'xlabel',labelx,'ylabel',labely,...
   'colorrange','equal',varargin{:});
 
 name = inputname(1);

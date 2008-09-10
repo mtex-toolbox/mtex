@@ -86,6 +86,9 @@ set_mtex_option('prefix_cmd','');
 
 set_mtex_option('postfix_cmd','');
 
+%% compatibility issues
+warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
+
 
 %% end user defined global settings
 %--------------------------------------------------------------------------

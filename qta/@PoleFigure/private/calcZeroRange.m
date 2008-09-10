@@ -14,9 +14,6 @@ function zr = calcZeroRange(pf,S2G,varargin)
 %% See also
 % PoleFigure/calcODF
 
-
-global mtex_path;
-
 % transform in polar coordinates -> output nodes
 [out_theta,out_rho] = polar(S2G);
 out_theta= fft_theta(out_theta);

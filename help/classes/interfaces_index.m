@@ -17,9 +17,9 @@
 %
 %% Inport Pole Figure Data Using the Import Wizard
 %
-% The [[import_wizard_PoleFigure.html,import wizard]] can be started either
+% The [[import_wizard.html,import wizard]] can be started either
 % by typing into the command line 
-import_wizard_PoleFigure; 
+import_wizard; 
 
 %%
 % or using from the start menu the item 
@@ -59,7 +59,7 @@ cs = symmetry('-3m',[1.4,1.4,1.5]); % crystal symmetry
 ss = symmetry('triclinic');         % specimen symmetry
 
 % specify file names
-fname = {...
+fnames = {...
   [mtexDataPath '/dubna/Q(10-10)_amp.cnv'],...
   [mtexDataPath '/dubna/Q(10-11)(01-11)_amp.cnv']};
 

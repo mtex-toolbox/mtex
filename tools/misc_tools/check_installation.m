@@ -18,8 +18,6 @@ check_binaries;
 %%----------- check mex files ---------------------------
 function check_mex
 
-global mtex_path;
-
 % check for mex files
 if fast_check_mex, return;end
         
@@ -88,8 +86,6 @@ end
 
 %%------------ check for binaries --------------------------
 function check_binaries
-
-global mtex_path;
 
 [th,rh] = polar(S2Grid('equispaced','points',10));
 	
