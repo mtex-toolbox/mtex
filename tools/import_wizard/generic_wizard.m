@@ -2,14 +2,12 @@ function [options] = generic_wizard(varargin)
 % generic data import helper
 %
 %% Input
-%  data  - input data
-%  type  - data type ('EBSD','PoleFigure')
+%  data   - input data
+%  header - header of data file
+%  type   - data type ('EBSD','PoleFigure')
 %
 %% Output
-%  col   -  vector of columns
-%  deg   -  (optional) type 'Degree','Radiant'
-%  sys   -  (if EBSD optional) 'Bunge','Matthis'
-%  phase -
+%  options - list of potions to be past to loadEBSD_generic or loadPoleFigure_generic
 %
 %% See also
 % loadEBSD_generic loadPoleFigure_generic
@@ -26,6 +24,8 @@ if check_option(varargin,'data')
  data = get_option(varargin,'data');
 else return
 end
+
+header = get_option(varargin,'header',[]);
 
 if check_option(varargin,'type')
  type = get_option(varargin,'type');
@@ -53,6 +53,19 @@ cw = (w-3*dw)/4;
 % data size
 [x,y] = size(data);
 htp = import_gui_empty('type',type,'width',w,'height',h,'name','generic import');
+
+uicontrol(...
+  'Parent',htp,...
+  'FontSize',12,...
+  'ForegroundColor',[0.3 0.3 0.3],...
+  'FontWeight','bold',...
+  'BackgroundColor',[1 1 1],...
+  'HorizontalAlignment','left',...
+  'Position',[10 h-37 w-150 20],...
+  'Style','text',...
+  'HandleVisibility','off',...
+  'String','Select Data Format',...
+  'HitTest','off');
 
 % static text
 uicontrol('Style','Text','Position',[dw,h-120,w-2*dw,50],...
@@ -84,15 +97,17 @@ uicontrol('Style','Text','Position',[dw,h-(tb+120+25),w-2*dw,20],...
 cdata = repmat(values(1),1,size(data,2));
 colums = strcat('Column  ',num2str((1:length(cdata)).'));
 
-mtable = createTable([],cellstr(colums).',cdata,false,'units','pixel','position',[dw-1,h-(tb+120+85),w-2*dw,55]);
-jtable = mtable.getTable;
-cb = javax.swing.JComboBox(values); 
-cb.setEditable(true);  
-editor = javax.swing.DefaultCellEditor(cb);
-for i = 1:length(values)
-  jtable.getColumnModel.getColumn(i-1).setCellEditor(editor);
+try
+  mtable = createTable([],cellstr(colums).',cdata,false,'units','pixel','position',[dw-1,h-(tb+120+85),w-2*dw,55]);
+  jtable = mtable.getTable;
+  cb = javax.swing.JComboBox(values);
+  cb.setEditable(true);
+  editor = javax.swing.DefaultCellEditor(cb);
+  for i = 1:length(values)
+    jtable.getColumnModel.getColumn(i-1).setCellEditor(editor);
+  end
+catch
 end
-
 
 % checkboxes
 chk_angle = uibuttongroup('title','Angle Convention','units','pixels',...
@@ -111,6 +126,11 @@ if (~strcmp(type,'PoleFigure'))
    'HorizontalAlignment','left',...
    'String','' ,...
    'Position',[dw 5 cw*2-2*dw 23],'Parent',h3,'HandleVisibility','off');
+end
+
+if ~isempty(header)
+  uicontrol('Style','PushButton','String','Show File Header','Position',[dw,dw,130,25],...
+    'CallBack',{@showFileHeader,header});
 end
 
 uicontrol('Style','PushButton','String','Proceed ','Position',[w-70-dw,dw,70,25],...
@@ -153,10 +173,39 @@ if ishandle(htp)
   
   options = {options{:},'layout',layout};
  
+  % coordinates
   if any(strcmpi(data,'x')) && any(strcmpi(data,'y'))
     options = {options{:},'xy',...
       [find(strcmpi(data,'x'),1),find(strcmpi(data,'y'),1)]};
   end
-   
+  
+  %phase
+  if strcmpi(type,'EBSD')
+    phase = str2num(get(phaseopt,'string'));
+    if ~isempty(phase)
+      options = {options{:},'phase',phase};
+    end
+  end   
+  
   close
 end
+
+%% Callbacks
+
+function showFileHeader(x,y,header) %#ok<INUSL>
+
+h = figure('MenuBar','none',...
+ 'Name','Header Preview',...
+ 'NumberTitle','off');
+
+uicontrol(...
+  'Parent',h,...
+  'BackgroundColor',[1 1 1],...
+  'FontName','monospaced',...
+  'HorizontalAlignment','left',...
+  'Max',2,...
+  'String',header,...
+  'units','normalized',...
+  'position',[0 0 1 1],...
+  'Style','edit',...
+  'Enable','inactive');

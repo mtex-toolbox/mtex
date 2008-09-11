@@ -4,15 +4,18 @@ function import_wizard( varargin )
 %% Input
 %  file_name - files to be imported
 %
+%% Options
+%  type - EBSD | PoleFigure
+%
 %% See also
-% import_wizard_EBSD import_wizard_PoleFigure
+% interfaces_index interfacesEBSD_index
 
 % mainframe
 h = import_gui_empty('width',500,varargin);
 
 % add pages
 import_gui_generic(h);
-import_gui_data(h);
+import_gui_data(h,varargin{:});
 import_gui_cs(h);
 import_gui_ss(h);
 import_gui_miller(h);
