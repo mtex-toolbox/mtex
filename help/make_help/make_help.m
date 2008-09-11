@@ -17,7 +17,7 @@ if check_option(varargin,'all')
   delete([mtex_path,'examples/html/*.*']);
 end
 
-
+set_mtex_option('generate_help',true);
 set(0,'FormatSpacing','compact')
 
 %% generate general help files
@@ -148,3 +148,6 @@ mtex_startup_dir = get_mtex_option('startup_dir');
 unix(['rm -rf ' mtex_path '/help/mtex/helpsearch']);
 unix(['mv -f ' mtex_startup_dir,'/helpsearch ' mtex_path '/help/mtex/']);
 cd([mtex_path '/help/make_help']);
+
+%% finisch
+set_mtex_option('generate_help',false);
