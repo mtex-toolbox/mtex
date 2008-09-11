@@ -40,7 +40,7 @@ else
     c2 = griddata(ebsd.xy(:,1),ebsd.xy(:,2),d(:,2),x,y);
     c3 = griddata(ebsd.xy(:,1),ebsd.xy(:,2),d(:,3),x,y);
     c = cat(3,c1,c2,c3);
-    
+    c = min(1,max(c,0));
   end
   
   image(c)

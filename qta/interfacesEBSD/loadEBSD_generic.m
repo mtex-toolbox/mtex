@@ -45,7 +45,7 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 % interfacesEBSD_index loadEBSD ebsd_demo
 
 % load data
-[d,varargin] = load_generic(fname,varargin{:});
+[d,varargin,header] = load_generic(fname,varargin{:});
 
 % no data found
 if size(d,1) < 10 || size(d,2) < 3
@@ -55,7 +55,7 @@ end
 % no options given -> ask
 if ~check_option(varargin,'layout')
   
-  options = generic_wizard('data',d,'type','EBSD');
+  options = generic_wizard('data',d,'type','EBSD','header',header);
   if isempty(options), ebsd = []; return; end
   varargin = {options{:},varargin{:}};
 
