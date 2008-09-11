@@ -1,18 +1,18 @@
-function pfn = delete(pf,id)
+function pf = delete(pf,id)
 % eliminates points from pole figures
 %
 % A new set of pole figures is constrcuted from the initial pole figures by
 % skipping the points specified by their index id
 %
 %% Syntax  
-% pfn  = delete(pf,id)
+% pf  = delete(pf,id)
 %
 %% Input
 %  pf   - @PoleFigure
 %  id   - index set 
 %
 %% Output
-%  pfn - @PoleFigure
+%  pf - @PoleFigure
 %
 %% See also
 % PoleFigure/getdata PoleFigure/getbg PoleFigure/getr PoleFigure_index
@@ -27,5 +27,3 @@ for i= 1:length(pf)
 	pf(i).data(idi-cs(i)) = [];
 	pf(i).r = delete(pf(i).r,idi-cs(i));
 end
-
-pfn = pf;
