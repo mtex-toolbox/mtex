@@ -23,8 +23,8 @@ else
   x = unique(sort(ebsd.xy(:,1)));
   y = unique(sort(ebsd.xy(:,2)));
 
-  ix = round(1 + ebsd.xy(:,1) ./(max(x)-min(x)) * (numel(x)-1));
-  iy = round(1 + ebsd.xy(:,2) ./(max(y)-min(y)) * (numel(y)-1));
+  ix = round(1 + (ebsd.xy(:,1)-min(x)) ./(max(x)-min(x)) * (numel(x)-1));
+  iy = round(1 + (ebsd.xy(:,2)-min(y)) ./(max(y)-min(y)) * (numel(y)-1));
   ix = max(min(numel(x),ix),1);
   iy = max(min(numel(y),iy),1);
 
