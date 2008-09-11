@@ -1,4 +1,4 @@
-function [d,options] = load_generic(fname,varargin)
+function [d,options,header] = load_generic(fname,varargin)
 % load file using import data and txt2mat
 
 % get options
@@ -13,7 +13,7 @@ d = [];
 % read data using importdata
 if ~check_option(varargin,'ascii')    
   try
-    d = importdata(fname,options{:});
+    [d,del,header] = importdata(fname,options{:});
   catch
   end
 end
@@ -28,7 +28,7 @@ end
 
 % read data using txt2mat
 try
-  d = txt2mat(fname,options{2:end},'InfoLevel',0);
+  [d,ffn,nh,SR,header] = txt2mat(fname,options{2:end},'InfoLevel',0);
 catch
 end
   

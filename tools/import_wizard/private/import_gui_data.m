@@ -1,4 +1,4 @@
-function handles = import_gui_data(wzrd)
+function handles = import_gui_data(wzrd,varargin)
 % page for adding files to be imported
 
 pos = get(wzrd,'Position');
@@ -14,6 +14,11 @@ setappdata(this_page,'pagename','Select Data Files');
 
 set(this_page,'visible','off');
 
+if check_option(varargin,'EBSD')
+  select = 2;
+else
+  select = 1;
+end
 handles.tabs = uitabpanel(...
   'Parent',this_page,...
   'TabPosition','lefttop',...
@@ -24,7 +29,8 @@ handles.tabs = uitabpanel(...
   'Title',{'Pole Figures','EBSD','Background','Defocussing','Defocussing BG'},...
   'FrameBackgroundColor',get(gcf,'color'),...
   'PanelBackgroundColor',get(gcf,'color'),...
-  'TitleForegroundColor',[0,0,0]);
+  'TitleForegroundColor',[0,0,0],...
+  'selectedItem',select);
 
 panels = getappdata(handles.tabs,'panels');
 
