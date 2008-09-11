@@ -73,7 +73,13 @@ function goto_callback(varargin)
 data = getappdata(gcbf,'data');
 handles = getappdata(gcbf,'handles');
 if ~isempty(getappdata(handles.listbox(1),'data'))
+  
+  % for pole figures take care not to change the data  
+  pf = getappdata(handles.listbox(1),'data');
+  d = getdata(pf);
+  data = setdata(data,d);
   setappdata(handles.listbox(1),'data',data);
+
 else
   setappdata(handles.listbox(2),'data',data);
 end
