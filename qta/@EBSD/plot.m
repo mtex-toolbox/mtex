@@ -25,6 +25,8 @@ else
 
   ix = round(1 + ebsd.xy(:,1) ./(max(x)-min(x)) * (numel(x)-1));
   iy = round(1 + ebsd.xy(:,2) ./(max(y)-min(y)) * (numel(y)-1));
+  ix = max(min(numel(x),ix),1);
+  iy = max(min(numel(y),iy),1);
 
   c = nan(numel(y)*numel(x),3);
   c(iy + (ix-1)*numel(y),:) = d;
@@ -32,18 +34,18 @@ else
   
   %pcolor(c);shading flat
   
-  
+
   if   numel(find(isnan(c))) / numel(c) > 0.5
-      
-    [x,y] = meshgrid(x,y);
-    c1 = griddata(ebsd.xy(:,1),ebsd.xy(:,2),d(:,1),x,y);
-    c2 = griddata(ebsd.xy(:,1),ebsd.xy(:,2),d(:,2),x,y);
-    c3 = griddata(ebsd.xy(:,1),ebsd.xy(:,2),d(:,3),x,y);
+    
+    [xx,yy] = meshgrid(x,y);
+    c1 = griddata(ebsd.xy(:,1),ebsd.xy(:,2),d(:,1),xx,yy);
+    c2 = griddata(ebsd.xy(:,1),ebsd.xy(:,2),d(:,2),xx,yy);
+    c3 = griddata(ebsd.xy(:,1),ebsd.xy(:,2),d(:,3),xx,yy);
     c = cat(3,c1,c2,c3);
     c = min(1,max(c,0));
   end
   
-  image(c)
+  image(x,y,c)
   axis equal
   axis tight
   
