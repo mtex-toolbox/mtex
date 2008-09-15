@@ -13,9 +13,9 @@ if ~strcmpi(projection,'plain') && check_option(varargin,'rotate')
   rho = rho + get_option(varargin,'rotate',-pi/2,'double');
 end
 
-if check_option(varargin,'flipud')
-  rho = 2*pi-rho;
-end
+if check_option(varargin,'flipud'), rho = 2*pi-rho;end
+
+if check_option(varargin,'fliplr'), rho = pi-rho;end
 
 %% project data
 switch lower(projection)
