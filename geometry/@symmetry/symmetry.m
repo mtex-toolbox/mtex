@@ -54,13 +54,19 @@ if nargin <= 2, angle= [90 90 90] * degree; end
 try
   sym = findsymmetry(name);
 catch
+  
+  % maybe it is a point group
   try
-    mineral = find_mineral(name);
-    s = mineral.sym;
-    return
+    sym = findsymmetry(hms2point(name));
   catch
-    help symmetry;
-    error('symmetry "%s" not found',name);
+    try
+      mineral = find_mineral(name);
+      s = mineral.sym;
+      return
+    catch
+      help symmetry;
+      error('symmetry "%s" not found',name);
+    end
   end
 end
 

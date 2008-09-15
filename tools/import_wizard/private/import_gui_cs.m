@@ -23,20 +23,21 @@ handles.mineral = uicontrol(...
   'Style','edit',...
   'Parent',mineral,...
   'BackgroundColor',[1 1 1],...
-  'Position',[10 20 260 20],...
-  'string','unknown');
+  'Position',[10 20 w-160 20],...
+  'HorizontalAlignment','left',...
+  'string','');
 
 uicontrol(...
   'Parent',mineral,...
-  'String','Look up',...
+  'String','Load Cif File',...
   'CallBack',@lookup_mineral,...
-  'Position',[280 17 80 25]);
+  'Position',[w-130 17 100 25]);
 
-uicontrol(...
-  'Parent',mineral,...
-  'String','Save',...
-  'CallBack',@lookup_mineral,...
-  'Position',[380 17 80 25]);
+% uicontrol(...
+%   'Parent',mineral,...
+%   'String','Save',...
+%   'CallBack',@lookup_mineral,...
+%   'Position',[380 17 80 25]);
 
 cs = uibuttongroup('title','Crystal Coordinate System',...
   'Parent',this_page,...
@@ -141,13 +142,24 @@ handles = getappdata(gcbf,'handles');
 data = getappdata(gcbf,'data');
 
 name = get(handles.mineral,'string');
-m = find_mineral(name);
-if ~isempty(m)
-  data = set(data,'CS',m.sym);
+
+if ~exist(name,'file')
+  name = [get_mtex_option('cif_path') filesep name '.cif'];
+end
+
+if ~exist(name,'file')
+  [fname,pathName] = uigetfile([get_mtex_option('cif_path') filesep '*.cif'],'Select cif File');
+  name = [pathName,fname];
+end
+
+try
+  [cs,mineral] = load_cif(name);
+  set(handles.mineral,'string',shrink_name(name));
+  data = set(data,'CS',cs);
   setappdata(gcbf,'data',data);
-  get_cs(gcbf);
-else
-  errordlg('Mineral not found!')
+  get_cs(gcbf);  
+catch
+  errordlg(errortext);  
 end
 
 %% ------------ Private Functions ---------------------------------
@@ -200,3 +212,13 @@ cs = symmetry(cs,[axis{:}],[angle{:}]);
 data = set(data,'CS',cs);
 
 setappdata(wzrd,'data',data);
+
+function fname = shrink_name(fname)
+
+[pathname, name, ext] = fileparts(fname);
+if strcmp(ext,'.cif'), ext = [];end
+if strcmp(pathname,get_mtex_option('cif_path'))
+  fname = [name ext];
+else
+  fname = [pathname filesep name ext];
+end
