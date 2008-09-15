@@ -172,6 +172,19 @@ if get(handles.plot_rotate,'value')
 else
   plot_options = delete_option(plot_options,'rotate');
 end
+if get(handles.plot_flipud,'value')
+  plot_options = set_option(plot_options,'flipud');
+else
+  plot_options = delete_option(plot_options,'flipud',0);
+end
+
+if get(handles.plot_fliplr,'value')
+  plot_options = set_option(plot_options,'fliplr');
+else
+  plot_options = delete_option(plot_options,'fliplr',0);
+end
+
+
 set_mtex_option('default_plot_options',plot_options);
 %set(appdata.data,'comment',get(handles.comment,'String'));
 

@@ -16,6 +16,16 @@ h = import_gui_empty('width',500,varargin);
 % add pages
 import_gui_generic(h);
 import_gui_data(h,varargin{:});
+
+% for help generation only
+if get_mtex_option('generate_help')
+  % activate first page
+  setappdata(h,'page',1);
+  set_page(h,1);
+  return
+end
+
+% remaining pages
 import_gui_cs(h);
 import_gui_ss(h);
 import_gui_miller(h);

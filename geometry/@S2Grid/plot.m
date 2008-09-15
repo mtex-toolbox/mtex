@@ -204,21 +204,20 @@ plotData(X+offset,Y,data,box,varargin{:});
 
 % bounding box
 if ~check_option(varargin,'annotate')
+  
   if check_option(varargin,'PLAIN') 
     
-    plotPlainGrid(theta,rho,varargin{:});
+    plotPlainGrid(theta,rho,varargin{:});    
     
   else
-  
     if (isempty(rho) || isnull(mod(rho(1)-rho(end),2*pi)) || ...
-        ~(check_option(varargin,{'CONTOUR','SMOOTH'})))
+        ~(check_option(varargin,{'CONTOUR','SMOOTH'})))      
       circle(bounds(1)+offset+bounds(3)/2,bounds(2)+bounds(4)/2,bounds(3)/2,'edgecolor','k');
-      
-      if check_option(varargin,'grid'), polarGrid(offset,varargin{:});end
-      
     else
       torte(X+offset,Y);
     end
+    
+    polarGrid(offset,varargin{:});
   end
 end
 

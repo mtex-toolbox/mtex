@@ -159,15 +159,14 @@ for i = 1:nplots
 end
 
 if ~ishold
-  % invisible axes for adding a colorbar
-  d = axes('visible','off','position',[0 0 1 1],...
-    'tag','colorbaraxis','HandleVisibility','callback');
-  setappdata(gcf,'colorbaraxis',d);
   setappdata(gcf,'axes',a);
   setappdata(gcf,'border',get_option(varargin,'border',get_mtex_option('border',10)));
   setappdata(gcf,'spacingx',get_option(varargin,'spacingx',get_mtex_option('spacingx',0)));
   setappdata(gcf,'spacingy',get_option(varargin,'spacingy',get_mtex_option('spacingy',0)));
-  
+  % invisible axes for adding a colorbar
+  d = axes('visible','off','position',[0 0 1 1],...
+    'tag','colorbaraxis','HandleVisibility','callback');
+  setappdata(gcf,'colorbaraxis',d);
 else 
   d = getappdata(gcf,'colorbaraxis');
 end
@@ -192,7 +191,7 @@ if ~ishold
   set(gcf,'ResizeFcn',@(src,evt) figResize(src,evt,a));
   %set(gcf,'Position',get(gcf,'Position'));
   setappdata(gcf,'autofit','on');
-  figResize([],[],a);
+  figResize(gcf,[],a);
   if ~check_option(varargin,'uncropped')
     set(gcf,'Units','pixels');
     pos = get(gcf,'Position');
@@ -225,22 +224,18 @@ apos = get(a,'Position');
 
 optiondraw(text(1,3,{'min:',mini},'FontName','times','Interpreter','tex',...
   'HorizontalAlignment','Left','VerticalAlignment','bottom',...
-  'units','points'),varargin{:});
+  'units','points','tag','minmax'),varargin{:});
 
 optiondraw(text(apos(3)-1,3,{'max:',maxi},'FontName','times','Interpreter','tex',...
   'HorizontalAlignment','Right','VerticalAlignment','bottom',...
-  'units','points','Tag','rda'),varargin{:});
+  'units','points','Tag','minmax'),varargin{:});
 
 end
 
 %% resize figure and reorder subfigs
-function figResize(src,evt,a) %#ok<INUSL,INUSL>
 
-if isempty(gcbo) || gcbo ~= round(gcbo)
-  fig = gcf;
-else
-  fig = gcbo;
-end
+
+function figResize(fig,evt,a) %#ok<INUSL,INUSL>
 
 old_units = get(fig,'Units');
 set(fig,'Units','pixels');
@@ -275,7 +270,7 @@ end
 scalescatterplots(fig);
   
 % set position of labels
-u = findobj(fig,'Tag','rda');
+u = findobj(fig,'Tag','minmax','HorizontalAlignment','Right');
 for i = 1:length(u)
  
  a = get(u(i),'parent');
@@ -283,6 +278,9 @@ for i = 1:length(u)
  apos = get(a,'Position');
  set(u(i),'Units','points','Position',[apos(3)-1,3]);
 end
+
+% resize colorbaraxis
+set(getappdata(fig,'colorbaraxis'),'units','pixel','position',[border,border,figpos(3:4)]);
 
 set(fig,'Units',old_units);
 

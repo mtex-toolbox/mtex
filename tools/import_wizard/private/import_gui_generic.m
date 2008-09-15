@@ -210,6 +210,10 @@ if get(handles.rotate,'value')
   pf = rotate(pf,str2num(get(handles.rotateAngle,'string'))*degree);
 end
 
+if get(handles.flipud,'value'), pf = flipud(pf);end
+
+if get(handles.fliplr,'value'), pf = fliplr(pf);end
+
 %if get(handles.dnv,'value')
 %  pf = delete(pf,getdata(pf)<0);
 %end

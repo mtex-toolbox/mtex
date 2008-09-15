@@ -43,11 +43,11 @@ hold off
 % plot.
 
 close all;
-plotipdf(odf,xvector);
+plotipdf(odf,xvector,'gray');
 
 hold all % keep plot
 plot(Miller(1,1,-2,0,cs),'all')
 plot(Miller(0,1,-1,0,cs),'all')
-plot(Miller(1,1,-2,1,cs),'all')
+plot(Miller(0,1,-1,1,cs),'all')
 hold off % next plot command deletes all plots
 set(gcf,'position',[100,100,300,220]);

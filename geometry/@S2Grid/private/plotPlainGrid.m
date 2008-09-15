@@ -3,17 +3,20 @@ function plotPlainGrid(theta,rho,varargin)
 
 axis on;
 %set(gca,'GridLineStyle','.')
-grid on
+
+if check_option(varargin,'grid')
+  grid on 
+else
+  grid off
+end
+
 dtheta = get_option(varargin,'grid_res',30*degree);
 th = (min(theta(:))+dtheta):dtheta:(max(theta(:)-dtheta));
 rh = rho(1)*ones(1,length(th));
 [X,Y] = projectData(th,rh,varargin{:});
 [Y,ind] = sort(Y);
-if check_option(varargin,'grid')
-  set(gca,'ytick',Y);
-else
-  set(gca,'ytick',[]);
-end
+set(gca,'ytick',Y);
+setappdata(gca,'yticklabel',th(ind)/degree);
 if check_option(varargin,'gridlabel')
   set(gca,'yticklabel',th(ind)/degree);
 else
@@ -24,22 +27,20 @@ rh = (min(rho(:))+drho):drho:(max(rho(:)-drho));
 th = theta(1)*ones(1,length(rh));
 X = projectData(th,rh,varargin{:});
 [X,ind] = sort(X);
-if check_option(varargin,'grid')
-  set(gca,'xtick',X);
-else
-  set(gca,'xtick',[]);
-end
+set(gca,'xtick',X);
+setappdata(gca,'xticklabel',rh(ind)/degree);
 if check_option(varargin,'gridlabel')
   set(gca,'xticklabel',rh(ind)/degree);
 else
   set(gca,'xticklabel',[]);
 end
 
-%% Label
-if check_option(varargin,'xlabel')
-  optiondraw(xlabel(get_option(varargin,'xlabel'),'interpreter','latex'));
-end
+%% Labels
 
-if check_option(varargin,'ylabel')
-  optiondraw(ylabel(get_option(varargin,'ylabel'),'interpreter','latex'));
-end
+if check_option(varargin,'label'), v = 'on'; else v = 'off'; end
+
+optiondraw(xlabel(get_option(varargin,'xlabel','$\rho$'),...
+  'visible',v,'interpreter','latex','tag','label'));
+
+optiondraw(ylabel(get_option(varargin,'ylabel','$\theta$'),...
+  'visible',v,'interpreter','latex','tag','label'));
