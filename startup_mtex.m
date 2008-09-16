@@ -31,14 +31,14 @@ for i = 1:length(toadd)
 end
 
 
-%% init settings
-mtex_settings;
-
-
 %% set path to MTEX directories
 set_mtex_option('mtex_path',local_path);
 set_mtex_option('mtex_data_path',[local_path filesep 'data']);
 set_mtex_option('mtex_startup_dir',pwd);
+
+
+%% init settings
+mtex_settings;
 
 
 %% check installation

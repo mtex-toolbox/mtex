@@ -157,6 +157,10 @@ if check_option(plot_options,'rotate')
 else
   set(handles.plot_rotate,'value',0);
 end
+
+if check_option(plot_options,'fliplr'), set(handles.plot_fliplr,'value',1);end
+if check_option(plot_options,'flipud'), set(handles.plot_flipud,'value',1);end
+
 %  set(handles.comment,'String',get(appdata.data,'comment'));
 
 

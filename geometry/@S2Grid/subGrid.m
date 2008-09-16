@@ -1,9 +1,9 @@
-function [G,ind] = subGrid(S2G,v,epsilon)
+function [S2G,ind] = subGrid(S2G,v,epsilon)
 % subgrid 
 %
 %% Syntax
-%  G = subGrid(S2G,Ind)
-%  [G,ind] = subGrid(S2G,midpoint,epsilon)
+%  S2G = subGrid(S2G,Ind)
+%  [S2G,ind] = subGrid(S2G,midpoint,epsilon)
 %
 %% Input
 %  S2G - S2Grid
@@ -12,7 +12,7 @@ function [G,ind] = subGrid(S2G,v,epsilon)
 %  epsilon  - double
 %
 %% Output
-% G   - "not indexed" - S2Grid
+%  S2G   - @S2Grid (not indexed)
 %  ind - int32
 
 if nargin == 3
@@ -21,11 +21,10 @@ else
   ind = v;
 end
 
-G = S2G;
-G.Grid = G.Grid(ind);
+S2G.Grid = S2G.Grid(ind);
 
-if check_option(G,'indexed')
-  G.rho = subGrid(G.rho,ind);
-  G.theta = subGrid(G.theta,GridLength(G.rho)>0);
-  G.rho(GridLength(G.rho)==0) = [];
+if check_option(S2G,'indexed')
+  S2G.rho = subGrid(S2G.rho,ind);
+  S2G.theta = subGrid(S2G.theta,GridLength(S2G.rho)>0);
+  S2G.rho(GridLength(S2G.rho)==0) = [];
 end

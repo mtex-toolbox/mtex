@@ -153,7 +153,8 @@ else
     if all(cellfun('isempty',fn(2:end)))
       fn = fn{1};
     end
-    str = exportPF(fn,data,getappdata(lb(1),'interface'), getappdata(lb(1),'options'));
+    str = exportPF(fn,data,getappdata(lb(1),'interface'), getappdata(lb(1),'options'),...
+      handles);
   end
        
   str = generateCodeString(str);

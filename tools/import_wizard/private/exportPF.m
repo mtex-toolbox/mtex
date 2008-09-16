@@ -1,4 +1,4 @@
-function str = exportPF(fn, pf, interface, options )
+function str = exportPF(fn, pf, interface, options, handles )
 
 str = ['%% created with import_wizard';{''}];
 
@@ -91,13 +91,23 @@ else
   end
 end
 
+
 %% post process pole figure
 
+if get(handles.rotate,'value')
+  str = [str; {''}; '%% rotate pole figure'; {''};...
+    'pf = rotate(pf,',get(handles.rotateAngle,'string'),'*degree)'];
+end
 
-%if get(handles.rotate,'value')
-%  str = [str; {''}; '%% rotate pole figure'; {''};...
-%    'pf = rotate(pf,',get(handles.rotateAngle,'string'),'*degree)'];
-%end
+if get(handles.fliplr,'value')
+  str = [str; {''}; '%% flip pole figures left to right'; {''};...
+    'pf = fliplr(pf);'];  
+end
+
+if get(handles.flipud,'value')
+  str = [str; {''}; '%% flip pole figures upside down'; {''};...
+    'pf = flipud(pf);'];  
+end
 
 %if get(handles.dnv,'value')
 %  str = [str; {''}; '%% delete negative values'; {''};...
