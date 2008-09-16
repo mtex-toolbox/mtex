@@ -1,15 +1,13 @@
-function G = add(S2G,points)
+function S2G = add(S2G,points)
 % add points to a grid
 %% Input
 %  S2G    - @S2Grid
 %  points - @vector3d
 %
 %% Output
-%  @S2Grid
+%  S2G    - @S2Grid
 
-G = S2G;
-
-G.options = delete_option(G.options,'INDEXED');
-G.Grid = [G.Grid(:);points(:)]; 
-G.theta = [];
-G.rho = [];
+S2G.options = delete_option(S2G.options,'INDEXED');
+S2G.Grid = [S2G.Grid(:);points(:)]; 
+S2G.theta = [];
+S2G.rho = [];

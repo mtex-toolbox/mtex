@@ -1,8 +1,8 @@
-function npf  = setdata(pf,data,id)
+function pf  = setdata(pf,data,id)
 % set polefigure data to a specific value 
 %
 %% Syntax
-%  npf  = setdata(pf,data,id)
+%  pf  = setdata(pf,data,id)
 %
 %% Input
 %  pf   - @PoleFigure
@@ -10,7 +10,7 @@ function npf  = setdata(pf,data,id)
 %  id   - index set (optional)
 %
 %% Output
-%  npf - @PoleFigure
+%  pf - @PoleFigure
 %
 %% See also
 % PoleFigure/getdata
@@ -23,13 +23,11 @@ if nargin == 3
     idi = id((id > cs(i)) & (id<=cs(i+1)));
     pf(i).data(idi-cs(i)) = data;
   end
-  npf = pf;
   
 else
   
-  npf = pf;
   for i = 1:length(pf)    
-    npf(i).data = data(min(numel(data),cs(i)+1:cs(i+1)));
+    pf(i).data = data(min(numel(data),cs(i)+1:cs(i+1)));
   end
   
 end
