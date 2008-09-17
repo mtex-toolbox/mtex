@@ -1,4 +1,4 @@
-function [cs,mineral] = load_cif(fname,varargin)
+function [cs,mineral] = cif2symmetry(fname,varargin)
 % import crystal symmetry from cif file
 
 [pathstr, name, ext] = fileparts(fname);

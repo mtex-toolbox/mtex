@@ -153,7 +153,7 @@ if ~exist(name,'file')
 end
 
 try
-  [cs,mineral] = load_cif(name);
+  cs = cif2symmetry(name);
   set(handles.mineral,'string',shrink_name(name));
   data = set(data,'CS',cs);
   setappdata(gcbf,'data',data);
