@@ -21,7 +21,16 @@ an = uibuttongroup('title','Annotations',...
   'Parent',gui,...
   'units','pixels','position',[dw 50 (w-3*dw)/2 150]);
 
-o = findall(fig,'type','axes','visible','on');
+o = findall(fig,'type','axes','tag','S2Grid');
+v = (~isempty(o) && strcmp(get(o(1),'box'),'on'));
+uicontrol(...
+  'Parent',an,...
+  'Style','check',...
+  'String','Box',...
+  'UserData','box',...
+  'Value',v,...
+  'position',[10 110 100 20]);
+
 v = (~isempty(o) && strcmp(get(o(1),'xgrid'),'on')) || ...
   ~isempty(findall(fig,'tag','grid','visible','on'));
 
@@ -85,7 +94,7 @@ uicontrol(...
   'HorizontalAlignment','left',...
   'position',[10 100 100 20]);
 
-o = findall(fig,'type','text');
+o = findobj(fig,'type','text','-not','tag','bullet');
 if ~isempty(o), v = get(o(1),'FontSize');else v = '';end
 handles.FontSize = uicontrol(...
   'Parent',ma,...
@@ -181,8 +190,11 @@ for i = 1:length(check)
   oo = onoff{1+get(check(i),'value')};
 
   switch type
+    case 'box'
+      obj = findall(h,'type','axes','tag','S2Grid');
+      set(obj,'box',oo,'visible',oo);
     case 'grid'
-      obj = findall(h,'type','axes','visible','on');
+      obj = findall(h,'type','axes','tag','S2Grid');
       set(obj,'XGrid',oo,'YGrid',oo);
       obj = findall(h,'tag','grid');
       set(obj,'visible',oo);
@@ -214,7 +226,7 @@ for i = 1:length(check)
 end
 
 %% FontSize
-o = findall(h,'type','text');
+o = findobj(h,'type','text','-not','tag','bullet');
 set(o,'FontSize',str2double(get(handles.FontSize,'string')));
 
 
