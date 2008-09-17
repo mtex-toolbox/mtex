@@ -185,9 +185,9 @@ plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'reduced','gray')
 % *colorbar* to add a colorbar to the free space.
 %
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'reduced')
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'reduced','gray')
 colorbar
-plot2all([xvector,yvector,zvector],'data',{'X','Y','Z'},'FontSize',14);
+plot2all([xvector,yvector,zvector],'data',{'X','Y','Z'});
 
 %%
 plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'reduced')

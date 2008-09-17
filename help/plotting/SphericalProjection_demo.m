@@ -109,4 +109,4 @@ plotpdf(odf,Miller(1,0,0),'3d')
 
 plotpdf(odf,Miller(1,0,0),'reduced','rotate',90*degree)
 plot2all([xvector,yvector,zvector],'data',{'X','Y','Z'},...
-  'rotate',90*degree,'FontSize',16);
+  'rotate',90*degree,'backgroundcolor','w');
