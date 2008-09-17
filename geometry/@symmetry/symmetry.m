@@ -59,14 +59,8 @@ catch
   try
     sym = findsymmetry(hms2point(name));
   catch
-    try
-      mineral = find_mineral(name);
-      s = mineral.sym;
-      return
-    catch
-      help symmetry;
-      error('symmetry "%s" not found',name);
-    end
+    help symmetry;
+    error('symmetry "%s" not found',name);
   end
 end
 
