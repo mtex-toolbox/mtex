@@ -108,5 +108,4 @@ plotpdf(odf,Miller(1,0,0),'3d')
 % the options *rotate*, *flipud* and *fliplr*.
 
 plotpdf(odf,Miller(1,0,0),'reduced','rotate',90*degree)
-plot2all([xvector,yvector,zvector],'data',{'X','Y','Z'},...
-  'rotate',90*degree,'backgroundcolor','w');
+plot2all([xvector,yvector,zvector],'data',{'X','Y','Z'},'backgroundcolor','w');
