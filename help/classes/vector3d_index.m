@@ -44,5 +44,5 @@ v = xvector + yvector;    % predefined vectors
 % arbitrary number of three dimensional vectors in a spherical projection
 
 cla reset;set(gcf,'position',[43   362   300   300])
-plot([zvector,xvector+yvector+zvector],'FontSize',20)
+plot([zvector,xvector+yvector+zvector])
 

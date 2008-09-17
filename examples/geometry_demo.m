@@ -15,7 +15,7 @@ v1 == v2;
 v3 = sph2vec(theta,rho);
 
 % plot
-plot(v3,'FontSize',15)
+plot(v3)
 
 
 
@@ -29,7 +29,7 @@ q = axis2quat(zvector,pi/2);
 % operate with quaternions
 q*q;
 q*v3;
-plot(q*v3,'FontSize',15)
+plot(q*v3)
 
 % transform
 [phi1,Phi,phi2] = quat2euler(q,'BUNGE');

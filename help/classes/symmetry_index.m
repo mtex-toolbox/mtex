@@ -37,4 +37,4 @@ ss * euler2quat(0,0,pi/4) * cs;  % all crystallographically equivalent orientati
 % corresponding equivalent directions
 
 close; figure('position',[50,50,400,400])
-plot(cs,'FontSize',15,'reduced')
+plot(cs,'reduced')
