@@ -90,7 +90,7 @@ end
 
 
 cd('..'); % leave current directory for some unknown reason
-addpath(mtex_path);
+addpath(local_path);
 
 disp(' ');
 r= input('Do you want to permanently install MTEX? Y/N [Y]','s');
