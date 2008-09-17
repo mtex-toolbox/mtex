@@ -46,11 +46,11 @@
 %
 %% Plotting quaternions
 % 
-% The [[quaternion_plot.html,plot]] function allowq2 = Miller2quat([-1 -1 -1],[1 -2 1]);s you to visualize an 
+% The [[quaternion_plot.html,plot]] function allows you to visualize an 
 % quaternion by plotting how the standard basis x,y,z transforms under the
 % rotation.
 
 cla reset;set(gcf,'position',[43   362   600   300])
-plot(Miller2quat([-1 -1 -1],[1 -2 1]),'FontSize',20)
+plot(Miller2quat([-1 -1 -1],[1 -2 1]))
 
 
