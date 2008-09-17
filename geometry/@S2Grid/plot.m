@@ -48,6 +48,9 @@ washold = ishold;
 if ~check_option(varargin,'axis'), newplot;end
 if isempty(get(gca,'children')) || all(strcmp(get(get(gca,'children'),'type'),'text'))
   if isappdata(gcf,'projection'), rmappdata(gcf,'projection');end
+  if isappdata(gcf,'rotate'), rmappdata(gcf,'rotate');end
+  if isappdata(gcf,'flipud'), rmappdata(gcf,'flipud');end
+  if isappdata(gcf,'fliplr'), rmappdata(gcf,'fliplr');end
   if isappdata(gcf,'hemisphere'), rmappdata(gcf,'hemisphere');end
 end
 

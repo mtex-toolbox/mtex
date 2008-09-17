@@ -1,5 +1,6 @@
 function [X,Y,bounds] = projectData(theta,rho,varargin)
 
+
 %% get projection
 if isappdata(gcf,'projection')  
   projection = getappdata(gcf,'projection');
@@ -8,14 +9,15 @@ else
 end
 projection = get_option(varargin,'projection',projection);
 
+
 %% modify polar coordinates
-if ~strcmpi(projection,'plain') && check_option(varargin,'rotate')
-  rho = rho + get_option(varargin,'rotate',-pi/2,'double');
+
+if ~strcmpi(projection,'plain')
+  rho = rho + appDataOption(varargin,'rotate',0);
 end
+if appDataOption(varargin,'flipud',false), rho = 2*pi-rho; end
+if appDataOption(varargin,'fliplr',false), rho = pi-rho; end
 
-if check_option(varargin,'flipud'), rho = 2*pi-rho;end
-
-if check_option(varargin,'fliplr'), rho = pi-rho;end
 
 %% project data
 switch lower(projection)
@@ -57,4 +59,17 @@ if check_option(varargin,{'plain','contour','contour','smooth'})
 
   bounds = [min(X(:)),min(Y(:)),max(X(:))-min(X(:)),max(Y(:))-min(Y(:))];
   
+end
+
+function v = appDataOption(options,token,default)
+
+if isappdata(gcf,token)
+  v = getappdata(gcf,token);
+else
+  if islogical(default)
+    v = check_option(options,token);
+  else
+    v = get_option(options,token,default);
+  end
+  setappdata(gcf,token,v);
 end
