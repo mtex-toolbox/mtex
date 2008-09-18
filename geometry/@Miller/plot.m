@@ -24,7 +24,7 @@ for i = 1:numel(m)
   s = mat2cell(mm,ones(1,size(mm,1)),ones(1,size(mm,2)));
   
   % plot
-  plot(S2Grid(vector3d(mm)),'data',s,'grid',varargin{:});
+  plot(S2Grid(vector3d(mm)),'data',s,'grid','markerEdgeColor','w','SizeData',70,varargin{:});
   
   hold all
 end

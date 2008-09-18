@@ -65,6 +65,13 @@ end
 set(gca,'Tag','S2Grid','Box','on','DataAspectRatio',[1 1 1],'XTick',[],'YTick',[],...
   'drawmode','fast','layer','top');
 
+% color
+if ~check_option(varargin,{'CONTOUR','CONTOURF','SMOOTH'})
+  [ls,c] = nextstyle(gca,true,true,~ishold);
+  varargin = {'ScatterColor',c,varargin{:}};
+end
+
+
 hold all
 
 %%  GET OPTIONS 
@@ -73,8 +80,8 @@ hold all
 varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
-% default diameter
-varargin = {'diameter',min(0.2,max(0.02,0.75*getResolution(S2G(end)))),varargin{:}};
+% default markerSize
+varargin = {'markerSize',min(0.1,max(0.02,0.75*getResolution(S2G(end)))),varargin{:}};
 
 % extract data
 data = get_option(varargin,'DATA',[]);
@@ -100,10 +107,6 @@ end
 
 % COLORMAP
 if check_option(varargin,'GRAY'),colormap(flipud(colormap('gray'))/1.2);end
-
-% color
-[ls,c] = nextstyle(gca);
-varargin = {'bulletcolor',c,varargin{:}};
 
 %% Prepare Coordinates
 % calculate polar coordinates
@@ -168,10 +171,13 @@ end
 
 % Bounding Box
 if ~check_option(varargin,{'annotate'})
-  %xlim([bounds(1)-0.005,bounds(1)+bounds(3)+0.01]);
-  %ylim([bounds(2)-0.005,bounds(2)+bounds(4)+0.01]);
-  xlim([bounds(1),bounds(1)+bounds(3)]);
-  ylim([bounds(2),bounds(2)+bounds(4)]);
+  if check_option(varargin,'PLAIN')
+    xlim([bounds(1),bounds(1)+bounds(3)]);
+    ylim([bounds(2),bounds(2)+bounds(4)]);
+  else
+    xlim([bounds(1)-0.005,bounds(1)+bounds(3)+0.01]);
+    ylim([bounds(2)-0.005,bounds(2)+bounds(4)+0.01]);
+  end
 end
 
 % crop if neccary

@@ -3,25 +3,26 @@ function s = smarttext(x,y,s,box,varargin)
 
 arg{1} = 'HorizontalAlignment';
 arg{3} = 'VerticalAlignment';
+if check_option(varargin,'BackgroundColor'), delta = 0.1; else delta = 0; end
 
 if box(1) + (box(3) - box(1))*2/3 < x
   arg{2} = 'Right';
-  x = x - 0.1;
+  x = x - delta;
 elseif box(1) + (box(3) - box(1))*1/3 < x
   arg{2} = 'Center';
 else
   arg{2} = 'Left';
-  x = x + 0.1;
+  x = x + delta;
 end
 
 if box(2) + (box(4) - box(2))*1/3 > y
   arg{4} = 'Bottom';
-  y = y + 0.1;
+  y = y + delta;
 elseif (box(2) + (box(4) - box(2))*2/3 > y) && ~strcmp(arg{2},'Center')
   arg{4} = 'Middle';
 else
   arg{4} = 'Top';
-  y = y - 0.1;
+  y = y - delta;
 
 end
 

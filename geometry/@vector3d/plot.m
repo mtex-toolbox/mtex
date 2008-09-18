@@ -2,7 +2,8 @@ function plot(v,varargin)
 % plot three dimensional vector
 
 if ~check_option(varargin,'scatter')  
-  varargin = {'bulletcolor','k',varargin{:}};
+  varargin = {'MarkerFaceColor','k','MarkerEdgeColor','w','marker','s',...
+    'LineWidth',1,'sizedata',80,varargin{:}};
 end
 
 if length(v) > 20 || check_option(varargin,'data')    
