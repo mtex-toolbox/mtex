@@ -55,85 +55,61 @@ elseif any(strcmpi(plottype,'SMOOTH'))
     set(gcf,'Renderer','painters');
   end
   
-% singular points 
-elseif isa(data,'cell') || any(strcmpi(plottype,'dots'))% || numel(X)<20
-    set(gcf,'Renderer','painters');
+% scatter plots
+else 
+    
+  color = get_option(varargin,'scatterColor','b');
   
-  if check_option(varargin,'annotate')
-    x = get(gca,'xlim');
-    y = get(gca,'ylim');
-    ind = find(X >= x(1)-0.0001 & X <= x(2)+0.0001 & Y >= y(1)-0.0001 & Y <= y(2)+0.0001);
-  else
-    ind = 1:numel(X);
-  end  
-  
-  for i = 1:length(ind)
-    j = ind(i);
-    if isa(data,'cell') && ~check_option(varargin,'notext')
-      smarttext(X(j),Y(j),data{j},bounds,...
-        'Interpreter','latex','Margin',0.1,varargin{:});
+  if isa(data,'cell') || isempty(data) && numel(X)<50 % unscaled scatter plot
+    
+    % restrict to plotted region
+    if check_option(varargin,'annotate')
+      x = get(gca,'xlim');
+      y = get(gca,'ylim');
+      ind = find(X >= x(1)-0.0001 & X <= x(2)+0.0001 & Y >= y(1)-0.0001 & Y <= y(2)+0.0001);
+    else
+      ind = 1:numel(X);
     end
-    mtex_text(X(j),Y(j),'\bullet',...
-      'bulletFontSize',round(get_option(varargin,'FontSize',13)),...
-      'bulletHorizontalAlignment','Center',...
-      'bulletVerticalAlignment','middle',...
-      'bullettag','bullet',...
-      'prefix','bullet',varargin{:});
-  end
-  
-elseif any(strcmpi(plottype,'scatter'))
+   
+    % plot labels
+    for i = 1:length(ind)
+      j = ind(i);
+      if isa(data,'cell') && ~check_option(varargin,'notext')
+        smarttext(X(j),Y(j),data{j},bounds,...
+          'Interpreter','latex','Margin',0.1,varargin{:});
+      end
+    end
     
-  diameter  = get_option(varargin,'diameter');
-  if ~isempty(data), 
-    h = scatter(X(:),Y(:),(diameter*100)^2,data(:),'filled');
-  else
-    h = scatter(X(:),Y(:),(diameter*100)^2,...
-      get_option(varargin,'bulletcolor'),'filled');
-  end
-  set(h,'tag','scatterplot','UserData',diameter/3.2);
-  
-else
-  
-  % get options
-  diameter  = get_option(varargin,'diameter');
-
-  cminmax = get_option(varargin,'colorrange',...
-    [min(data(data>-inf)),max(data(data<inf))],'double');
+    % plot markers
+    optiondraw(scatter(X(ind),Y(ind),[],color,'filled'),varargin{:});
     
-  if length(cminmax)>1 && cminmax(2)>cminmax(1)
-    data = 1+round((data-cminmax(1)) / (cminmax(2)-cminmax(1)) * 63);
-  else
-    data = ones(size(data));
-  end
+  else % scaled scatter plot
 
-  myscatter(X(:),Y(:),data(:),diameter,varargin{:})
-  
+    markerSize = get_option(varargin,'MarkerSize',0.01);
+    m1 = (markerSize*100)^2;
+    m2 = markerSize/3.2;   
+    
+    if ~isempty(data) && isa(data,'double')
+      
+      range = get_option(varargin,'colorrange',...
+        [min(data(data>-inf)),max(data(data<inf))],'double');
+    
+      in_range = data >= range(1) & data <= range(2);
+    
+      % draw out of range markers
+      optiondraw(scatter(X(~in_range),Y(~in_range),m1,...
+        'filled', 'MarkerEdgeColor','k','MarkerFaceColor','w'),...
+        'tag','scatterplot','UserData',m2,varargin{:});
+      
+      X=X(in_range); Y = Y(in_range);
+      color = data(in_range);
+      
+    end
+    
+    optiondraw(scatter(X(:), Y(:), m1 , color, 'filled'),...
+      'tag','scatterplot','UserData',markerSize/3.2,varargin{:});
+    
+  end  
+  set(gcf,'Renderer','zbuffer');
+    
 end
-
-
-function myscatter(X,Y,C,diameter,varargin)
-
-if isempty(C)
-
-  c = get_option(varargin,'color','b');
-  arrayfun(@(x,y) filled_circle(x,y,diameter,c),X,Y);  
-  
-else
-  cmap = colormap;
-
-  ind = C >= 1 & C <= 64;
-  C = cmap(C(ind),:);
-  
-  arrayfun(@(x,y,c1,c2,c3) filled_circle(x,y,diameter,[c1,c2,c3]),...
-    X(ind),Y(ind),C(:,1),C(:,2),C(:,3));  
-  arrayfun(@(x,y) empty_circle(x,y,diameter),X(~ind),Y(~ind));  
-  
-end
-
-function filled_circle(x,y,d,c)
-
-rectangle('Position',[x-d/2,y-d/2,d,d],'Curvature',[1,1],'FaceColor',c,'EdgeColor',c);
-
-function empty_circle(x,y,d)
-
-rectangle('Position',[x-d/2,y-d/2,d,d],'Curvature',[1,1]);

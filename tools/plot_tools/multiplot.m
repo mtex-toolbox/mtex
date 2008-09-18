@@ -294,7 +294,9 @@ u = findobj(x,'Tag','scatterplot');
 l = getappdata(x,'length');
 for i = 1:length(u)
   d = get(u(i),'UserData');
-  set(u(i),'SizeData',(l*d)^2);
+  o = get(u(i),'SizeData');
+  n = (l*d)^2;
+  if abs((o-n)/o) > 0.1, set(u(i),'SizeData',n);end
 end
 
 end
@@ -326,7 +328,7 @@ end
 
 %% Callbacks for syncing 3d rotations
 
-function mypostcallback(obj,evd)
+function mypostcallback(obj,evd) %#ok<INUSL>
 
 cVA = get(evd.Axes,'cameraViewAngle');
 cP = get(evd.Axes,'cameraPosition');
