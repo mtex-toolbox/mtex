@@ -23,7 +23,7 @@ pf = simulatePoleFigure(odf,Miller(1,0,0),S2Grid('equispaced','reduced'));
 % * contour plots 
 % * filled contour plots 
 % * smoots plots
-% * dots 
+% * scatter plots
 % * line plots
 
 %%
@@ -57,7 +57,7 @@ plot(pf)
 % The diameter of the dots is adjusted automatically by MTEX. However in
 % case you want to customize it my hand you can use the option
 % *diameter*.
-plot(pf,'diameter',0.02)
+plot(pf,'MarkerSize',3)
 
 %%
 % Line plots are used by MTEX for one dimesional ODF plots, plots of Fourier

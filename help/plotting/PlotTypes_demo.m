@@ -16,7 +16,7 @@ pf = simulatePoleFigure(odf,Miller(1,0,0),S2Grid('equispaced','reduced'));
 %% Single Dots
 % For raw pole figure data MTEX uses by default a plot where each datapoint
 % is represented by a single dot colored accordingly to the intensity. You
-% may addjust the size of the dots using the option *diameter*.
+% may addjust the size of the dots using the option *MarkerSize*.
 
 plot(pf)
 

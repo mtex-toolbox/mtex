@@ -94,7 +94,7 @@ uicontrol(...
   'HorizontalAlignment','left',...
   'position',[10 100 100 20]);
 
-o = findobj(fig,'type','text','-not','tag','bullet');
+o = findobj(fig,'type','text');
 if ~isempty(o), v = get(o(1),'FontSize');else v = '';end
 handles.FontSize = uicontrol(...
   'Parent',ma,...
@@ -226,7 +226,7 @@ for i = 1:length(check)
 end
 
 %% FontSize
-o = findobj(h,'type','text','-not','tag','bullet');
+o = findobj(h,'type','text');
 set(o,'FontSize',str2double(get(handles.FontSize,'string')));
 
 

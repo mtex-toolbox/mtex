@@ -200,7 +200,7 @@ function plot_pf(wzrd,pf)
 
 pf = modifypf(wzrd,pf);
 plot(pf,'silent');
-plot2all([xvector,yvector,zvector],'Backgroundcolor','w','bulletcolor','k');
+plot2all([xvector,yvector,zvector],'Backgroundcolor','w');
 
 
 function pf = modifypf(wzrd,pf)

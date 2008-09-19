@@ -1,4 +1,4 @@
-function out_list = delete_option(option_list,option,nparams)
+function out_list = delete_option(option_list,option,nparams,type)
 % clear options in option list
 %
 %% Syntax

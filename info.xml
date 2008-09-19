@@ -6,7 +6,7 @@
 <matlabrelease>14</matlabrelease>
 <name>MTEX</name>
 <type>toolbox</type>
-<icon>$toolbox/signal/sigtools/private/fdatoolicon.gif</icon>
+<icon>mtex_icon.gif</icon>
 <help_location>help/mtex</help_location>
 
 <list>
