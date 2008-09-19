@@ -11,7 +11,7 @@ function plot3d(S2G,varargin)
 %
 %% Options
 %  DATA     - coloring of the points [double] or {string}
-%  DIAMETER - diameter for single points plot [double]
+%  MarkerSize - diameter for single points plot [double]
 %  RANGE    - minimum and maximum for color coding [min,max]
 %
 %% Flags

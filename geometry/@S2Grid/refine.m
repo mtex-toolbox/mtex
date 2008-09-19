@@ -29,7 +29,7 @@ for i = 2:2:GridLength(S2G.theta)
   
   rho = rho(sin(theta(i-1))*d < S2G.res*1.5);
   S2G.rho(i) = S1Grid(rho,...
-    getMin(S2G.rho(i-1)),getMax(S2g.rho(i-1)),check_option(S2G.rho(i-1)));
+    getMin(S2G.rho(i-1)),getMax(S2G.rho(i-1)),check_option(S2G.rho(i-1)));
     
 end
 

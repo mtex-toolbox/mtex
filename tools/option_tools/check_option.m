@@ -17,7 +17,9 @@ function out = check_option(option_list,option,varargin)
 %% See also
 % get_option set_option clear_option find_option
 
-if nargin <= 3
+if isempty_cell(option_list)
+  out = false;
+elseif nargin <= 3
   out = find_option(option_list,option,varargin{:}) > 0;
 else
   pos = find_option(option_list,option,'char');

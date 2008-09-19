@@ -12,6 +12,12 @@ function import_wizard( varargin )
 
 % mainframe
 h = import_gui_empty('width',500,varargin);
+try
+  jframe=get(h,'javaframe');
+  jIcon=javax.swing.ImageIcon([mtex_path filesep 'mtex_icon.gif']);
+  jframe.setFigureIcon(jIcon);
+catch
+end
 
 % add pages
 import_gui_generic(h);

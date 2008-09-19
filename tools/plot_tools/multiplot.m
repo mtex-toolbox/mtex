@@ -294,9 +294,9 @@ u = findobj(x,'Tag','scatterplot');
 l = getappdata(x,'length');
 for i = 1:length(u)
   d = get(u(i),'UserData');
-  o = get(u(i),'SizeData');
-  n = (l*d)^2;
-  if abs((o-n)/o) > 0.1, set(u(i),'SizeData',n);end
+  o = get(u(i),'MarkerSize');
+  n = l*d/5;
+  if abs((o-n)/o) > 0.1, set(u(i),'MarkerSize',n);end
 end
 
 end

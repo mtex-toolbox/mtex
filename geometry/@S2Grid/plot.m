@@ -11,7 +11,7 @@ function  varargout = plot(S2G,varargin)
 %
 %% Options
 %  DATA     - coloring of the points [double] or {string}
-%  DIAMETER - diameter for single points plot [double]
+%  MarkerSize - diameter for single points plot [double]
 %  RANGE    - minimum and maximum for color coding [min,max]
 %  CONTOUR  - number of contour lines or list of contour lines
 %  CONTOURF - number of contour lines or list of contour lines
@@ -66,9 +66,9 @@ set(gca,'Tag','S2Grid','Box','on','DataAspectRatio',[1 1 1],'XTick',[],'YTick',[
   'drawmode','fast','layer','top');
 
 % color
-if ~check_option(varargin,{'CONTOUR','CONTOURF','SMOOTH'})
+if ~check_option(varargin,{'MarkerColor','CONTOUR','CONTOURF','SMOOTH'})
   [ls,c] = nextstyle(gca,true,true,~ishold);
-  varargin = {'ScatterColor',c,varargin{:}};
+  varargin = {'MarkerColor',c,varargin{:}};
 end
 
 
@@ -81,7 +81,7 @@ varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
 % default markerSize
-varargin = {'markerSize',min(0.1,max(0.02,0.75*getResolution(S2G(end)))),varargin{:}};
+varargin = {'scatter_resolution',getResolution(S2G(end)),varargin{:}};
 
 % extract data
 data = get_option(varargin,'DATA',[]);

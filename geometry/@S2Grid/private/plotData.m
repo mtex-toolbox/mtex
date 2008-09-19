@@ -14,6 +14,7 @@ plottype = get_flag(varargin,{'CONTOUR','CONTOURF','dots','smooth','scatter'});
 % contour plot
 if any(strcmpi(plottype,{'CONTOUR','CONTOURF'})) 
 
+  set(gcf,'Renderer','painters');
   contours = get_option(varargin,{'contourf','contour'},{},'double');
   if ~isempty(contours), contours = {contours};end
   
@@ -24,7 +25,6 @@ if any(strcmpi(plottype,{'CONTOUR','CONTOURF'}))
   end
   
   contour(X,Y,data,contours{:},'k');
-  set(gcf,'Renderer','painters');
        
 % smooth plot
 elseif any(strcmpi(plottype,'SMOOTH'))
@@ -44,7 +44,8 @@ elseif any(strcmpi(plottype,'SMOOTH'))
     end
         
   else  
-
+    
+    set(gcf,'Renderer','painters');
     if isappr(min(data(:)),max(data(:))) % empty plot
       ind = convhull(X,Y);
       fill(X(ind),Y(ind),min(data(:)));
@@ -52,15 +53,15 @@ elseif any(strcmpi(plottype,'SMOOTH'))
       [CM,h] = contourf(X,Y,data,50);
       set(h,'LineStyle','none');
     end
-    set(gcf,'Renderer','painters');
+
   end
   
 % scatter plots
 else 
     
-  color = get_option(varargin,'scatterColor','b');
+  color = get_option(varargin,'MarkerColor','b');
   
-  if isa(data,'cell') || isempty(data) && numel(X)<50 % unscaled scatter plot
+  if isa(data,'cell') || (isempty(data) && numel(X)<50) % unscaled scatter plot
     
     % restrict to plotted region
     if check_option(varargin,'annotate')
@@ -84,12 +85,15 @@ else
     optiondraw(scatter(X(ind),Y(ind),[],color,'filled'),varargin{:});
     
   else % scaled scatter plot
+    
+    set(gcf,'Renderer','Painters');
 
-    markerSize = get_option(varargin,'MarkerSize',0.01);
-    m1 = (markerSize*100)^2;
-    m2 = markerSize/3.2;   
+    res = get_option(varargin,'scatter_resolution',5*degree);
+    storeSize = get_option(varargin,'MarkerSize',50*res)/50;
+    markerSize = get_option(varargin,'MarkerSize',min(10,max(1,50*res)));
     
     if ~isempty(data) && isa(data,'double')
+      % data colored markers
       
       range = get_option(varargin,'colorrange',...
         [min(data(data>-inf)),max(data(data<inf))],'double');
@@ -97,19 +101,35 @@ else
       in_range = data >= range(1) & data <= range(2);
     
       % draw out of range markers
-      optiondraw(scatter(X(~in_range),Y(~in_range),m1,...
-        'filled', 'MarkerEdgeColor','k','MarkerFaceColor','w'),...
-        'tag','scatterplot','UserData',m2,varargin{:});
+      patch(X(~in_range),Y(~in_range),1,...
+        'FaceColor','none',...
+        'EdgeColor','none',...
+        'MarkerFaceColor','w',...
+        'MarkerEdgeColor','k',...
+        'MarkerSize',markerSize,...
+        'Marker','o',...
+        'tag','scatterplot','UserData',storeSize);
+
+      % draw ordinary markers
+      patch(X(in_range),Y(in_range),data(in_range),...
+      'FaceColor','none',...
+      'EdgeColor','none',...
+      'MarkerFaceColor','flat',...
+      'MarkerEdgeColor','flat',...
+      'MarkerSize',markerSize,...
+      'Marker','o',...
+      'tag','scatterplot','UserData',storeSize);
       
-      X=X(in_range); Y = Y(in_range);
-      color = data(in_range);
+    else % single colored markers
       
+      patch(X,Y,1,...
+        'FaceColor','none',...
+        'EdgeColor','none',...
+        'MarkerFaceColor',color,...
+        'MarkerEdgeColor',color,...
+        'MarkerSize',markerSize,...
+        'Marker','o',...
+        'tag','scatterplot','UserData',storeSize);
     end
-    
-    optiondraw(scatter(X(:), Y(:), m1 , color, 'filled'),...
-      'tag','scatterplot','UserData',markerSize/3.2,varargin{:});
-    
   end  
-  set(gcf,'Renderer','zbuffer');
-    
 end

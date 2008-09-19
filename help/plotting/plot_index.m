@@ -82,5 +82,5 @@ plot(ebsd)
 %%
 % MTEX allows also to plot pole figures of EBSD data.
 h = [Miller(0,0,0,1,cs),Miller(1,0,-1,0,cs)];
-plotpdf(ebsd,h,'reduced','diameter',0.05)
+plotpdf(ebsd,h,'reduced','MarkerSize',3)
 

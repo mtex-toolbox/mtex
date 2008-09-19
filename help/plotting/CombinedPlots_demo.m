@@ -22,9 +22,9 @@ ebsd_rotated = simulateEBSD(rotate(odf,euler2quat(60*degree,60*degree,0*degree))
 % Plot a superpostion of pole figures of both EBSD data sets.
 
 h = [Miller(0,0,0,1,cs),Miller(1,0,-1,0,cs)];
-plotpdf(ebsd,h,'reduced','diameter',0.05)
+plotpdf(ebsd,h,'reduced','MarkerSize',4)
 hold all % keep plot
-plotpdf(ebsd_rotated,h,'diameter',0.05);
+plotpdf(ebsd_rotated,h,'MarkerSize',4);
 hold off % next plot command deletes all plots
 
 %% Combine Smooth Pole Figure Plots with EBSD Data
@@ -33,9 +33,9 @@ hold off % next plot command deletes all plots
 
 plotpdf(odf,h,'reduced','contourf','gray','grid')
 hold all
-plotpdf(ebsd,h,'reduced','diameter',0.05,'bulletcolor','b')
+plotpdf(ebsd,h,'reduced','MarkerSize',4,'MarkerColor','b')
 hold all
-plotpdf(ebsd_rotated,h,'diameter',0.05,'bulletcolor','r');
+plotpdf(ebsd_rotated,h,'MarkerSize',4,'MarkerColor','r');
 hold off
 
 %% Add Miller Indece to a Inverse Pole Figure Plot
