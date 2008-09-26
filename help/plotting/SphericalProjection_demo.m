@@ -70,7 +70,7 @@ plotpdf(odf,Miller(1,0,0),'reduced')
 % crystal directions.
 
 cs = symmetry('m-3m');
-plot(cs,'projection','edist','reduced','grid_res',15*degree)
+plot(cs,'projection','edist','grid_res',15*degree,'reduced')
 
 
 %% Stereographic Projection (Equal Angle Projection)

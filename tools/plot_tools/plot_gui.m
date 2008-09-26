@@ -237,7 +237,7 @@ setappdata(h,'spacingy',str2double(get(handles.may,'string')));
 setappdata(h,'border',str2double(get(handles.mao,'string')));
   
 rsf = get(h,'ResizeFcn');
-rsf(h,[]);
+if ~isempty(rsf), rsf(h,[]);end
 
 figure(h);
 

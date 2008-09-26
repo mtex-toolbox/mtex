@@ -6,10 +6,12 @@ function plot(m,varargin)
 %
 %% Options
 %  ALL     - plot symmetrically equivalent directions
-%  NO_CHAR - no description
+%  labeled - plot Miller indice as label
+%  label   - plot user label
 
 % store hold status
 washold = ishold;
+label = repcell(get_option(varargin,'label'),numel(m));
 
 for i = 1:numel(m)
 
@@ -19,12 +21,18 @@ for i = 1:numel(m)
   else
     mm = m(i);
   end
-  
-  % convert to cell
-  s = mat2cell(mm,ones(1,size(mm,1)),ones(1,size(mm,2)));
+
+  options = {};
+  if check_option(varargin,'labeled')
+    % convert to cell
+    s = mat2cell(mm,ones(1,size(mm,1)),ones(1,size(mm,2)));
+    options = {'label',s,'MarkerEdgeColor','w'};
+  elseif ~isempty(label)
+    varargin = set_option(varargin,'label',{label{i}});
+  end
   
   % plot
-  plot(S2Grid(vector3d(mm)),'data',s,'grid','markerEdgeColor','w','SizeData',70,varargin{:});
+  plot(S2Grid(vector3d(mm)),options{:},varargin{:});
   
   hold all
 end

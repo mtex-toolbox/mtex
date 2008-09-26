@@ -44,4 +44,4 @@ angle(Miller(1,0,-1,0,cs),Miller(0,1,-1,0,cs)); % angle between both directions
 % projection as well as wheter to plot all equivalent directions can be
 % specified by options.
 
-plot(Miller(1,1,-2,1,cs),'all','projection','edist','reduced')   % plot Miller indece
+plot(Miller(2,1,-3,1,cs),'all','labeled')   % plot Miller indece

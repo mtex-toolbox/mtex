@@ -9,9 +9,10 @@ if check_option(varargin,'colorrange','double')
   end
 end
 
-plottype = get_flag(varargin,{'CONTOUR','CONTOURF','dots','smooth','scatter'});
+h = [];
+plottype = get_flag(varargin,{'CONTOUR','CONTOURF','SMOOTH','SCATTER'});
 
-% contour plot
+%% contour plot
 if any(strcmpi(plottype,{'CONTOUR','CONTOURF'})) 
 
   set(gcf,'Renderer','painters');
@@ -22,16 +23,18 @@ if any(strcmpi(plottype,{'CONTOUR','CONTOURF'}))
   
     [CM,h] = contourf(X,Y,data,contours{:});
     set(h,'LineStyle','none');
+
   end
   
-  contour(X,Y,data,contours{:},'k');
+  [CM,hh] = contour(X,Y,data,contours{:},'k');
+  h = [h,hh];
        
-% smooth plot
+%% smooth plot
 elseif any(strcmpi(plottype,'SMOOTH'))
   
   if check_option(varargin,'interp')   % interpolated
 
-    pcolor(X,Y,data);
+    h = pcolor(X,Y,data);
     if numel(data) >= 500
      if length(unique(data))<50
        shading flat;
@@ -56,80 +59,89 @@ elseif any(strcmpi(plottype,'SMOOTH'))
 
   end
   
-% scatter plots
+%% scatter plots
 else 
-    
-  color = get_option(varargin,'MarkerColor','b');
-  
-  if isa(data,'cell') || (isempty(data) && numel(X)<50) % unscaled scatter plot
-    
-    % restrict to plotted region
-    if check_option(varargin,'annotate')
-      x = get(gca,'xlim');
-      y = get(gca,'ylim');
-      ind = find(X >= x(1)-0.0001 & X <= x(2)+0.0001 & Y >= y(1)-0.0001 & Y <= y(2)+0.0001);
-    else
-      ind = 1:numel(X);
-    end
-   
-    % plot labels
-    for i = 1:length(ind)
-      j = ind(i);
-      if isa(data,'cell') && ~check_option(varargin,'notext')
-        smarttext(X(j),Y(j),data{j},bounds,...
-          'Interpreter','latex','Margin',0.1,varargin{:});
-      end
-    end
-    
-    % plot markers
-    optiondraw(scatter(X(ind),Y(ind),[],color,'filled'),varargin{:});
-    
-  else % scaled scatter plot
-    
-    set(gcf,'Renderer','Painters');
 
-    res = get_option(varargin,'scatter_resolution',5*degree);
-    storeSize = get_option(varargin,'MarkerSize',50*res)/50;
-    markerSize = get_option(varargin,'MarkerSize',min(10,max(1,50*res)));
+  set(gcf,'Renderer','Painters');
+
+  % get options
+  options = {};
+  
+  % restrict to plotted region
+  if check_option(varargin,'annotate')
+    x = get(gca,'xlim');
+    y = get(gca,'ylim');
+    ind = find(X >= x(1)-0.0001 & X <= x(2)+0.0001 & Y >= y(1)-0.0001 & Y <= y(2)+0.0001);
+    X = X(ind);
+    Y = Y(ind);
+    if ~isempty(data), data = data(ind);end
+  end
+
+  % Marker Size
+  res = get_option(varargin,'scatter_resolution',10*degree);
+  defaultMarkerSize = min(8,max(1,50*res));
+  
+  if check_option(varargin,'dynamicMarkerSize')
+    options = {'tag','scatterplot','UserData',get_option(varargin,'MarkerSize',50*res)/50};
+  end
+
+  if ~isempty(data) && isa(data,'double') % data colored markers
     
-    if ~isempty(data) && isa(data,'double')
-      % data colored markers
-      
-      range = get_option(varargin,'colorrange',...
-        [min(data(data>-inf)),max(data(data<inf))],'double');
+    range = get_option(varargin,'colorrange',...
+      [min(data(data>-inf)),max(data(data<inf))],'double');
     
-      in_range = data >= range(1) & data <= range(2);
+    in_range = data >= range(1) & data <= range(2);
     
-      % draw out of range markers
-      patch(X(~in_range),Y(~in_range),1,...
+    % draw out of range markers
+    if any(~in_range)
+      h(2) = patch(X(~in_range),Y(~in_range),1,...
         'FaceColor','none',...
         'EdgeColor','none',...
         'MarkerFaceColor','w',...
         'MarkerEdgeColor','k',...
-        'MarkerSize',markerSize,...
-        'Marker','o',...
-        'tag','scatterplot','UserData',storeSize);
+        'MarkerSize',get_option(varargin,'MarkerSize',defaultMarkerSize),...
+        'Marker','o',options{:});
+      X = X(in_range);
+      Y = Y(in_range);
+      data = data(in_range);
+    end    
+    
+  else
 
-      % draw ordinary markers
-      patch(X(in_range),Y(in_range),data(in_range),...
+    if ~isempty(data) % labels plot
+
+      for i = 1:numel(data)
+        smarttext(X(i),Y(i),data{i},bounds,'Margin',0.1,varargin{:});
+      end
+    end
+
+    data = 1;
+%   cax = getappdata(gcf,'colorbaraxis');
+%   if ~isempty(cax)
+%      hold(cax,'all');
+%      scatter(cax,1,1,...
+%        'MarkerFaceColor',get_option(varargin,{'MarkerFaceColor','MarkerColor'},'flat'),...
+%        'MarkerEdgeColor',get_option(varargin,{'MarkerEdgeColor','MarkerColor'},'flat'),...
+%        'visible','off',...
+%        'Marker',get_option(varargin,'Marker','o'));
+%      set(cax,'visible','off');
+%    end
+  end
+    
+  % draw markers
+  if ~isempty(X)
+    h(1) = patch(X,Y,data,...
       'FaceColor','none',...
       'EdgeColor','none',...
-      'MarkerFaceColor','flat',...
-      'MarkerEdgeColor','flat',...
-      'MarkerSize',markerSize,...
-      'Marker','o',...
-      'tag','scatterplot','UserData',storeSize);
-      
-    else % single colored markers
-      
-      patch(X,Y,1,...
-        'FaceColor','none',...
-        'EdgeColor','none',...
-        'MarkerFaceColor',color,...
-        'MarkerEdgeColor',color,...
-        'MarkerSize',markerSize,...
-        'Marker','o',...
-        'tag','scatterplot','UserData',storeSize);
-    end
-  end  
+      'MarkerFaceColor',get_option(varargin,{'MarkerFaceColor','MarkerColor'},'flat'),...
+      'MarkerEdgeColor',get_option(varargin,{'MarkerEdgeColor','MarkerColor'},'flat'),...
+      'MarkerSize',get_option(varargin,'MarkerSize',defaultMarkerSize),...
+      'Marker',get_option(varargin,'Marker','o'),...
+      options{:});
+  end
+  
 end
+
+% control legend entry
+setLegend(h,'off');
+

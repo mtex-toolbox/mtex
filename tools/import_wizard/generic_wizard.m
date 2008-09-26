@@ -115,7 +115,7 @@ chk_angle = uibuttongroup('title','Angle Convention','units','pixels',...
 
 uicontrol('Style','Radio','String','Degree',...
   'Position',[dw dw 80 15],'Parent',chk_angle,'HandleVisibility','off');
-uicontrol('Style','Radio','String','Radiant',...
+rad_box = uicontrol('Style','Radio','String','Radiant',...
   'Position',[dw+cw dw 80 15],'Parent',chk_angle,'HandleVisibility','off');
 
 if (~strcmp(type,'PoleFigure'))
@@ -178,6 +178,9 @@ if ishandle(htp)
     options = {options{:},'xy',...
       [find(strcmpi(data,'x'),1),find(strcmpi(data,'y'),1)]};
   end
+
+  % degree / radiant
+  if get(rad_box,'value'), options = {'RADIANT',options{:}};end
   
   %phase
   if strcmpi(type,'EBSD')
@@ -187,7 +190,7 @@ if ishandle(htp)
     end
   end   
   
-  close
+  close(htp);
 end
 
 %% Callbacks

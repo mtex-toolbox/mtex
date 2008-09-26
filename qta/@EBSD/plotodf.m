@@ -1,4 +1,4 @@
-function plotebsd(ebsd,varargin)
+function plotodf(ebsd,varargin)
 % plot ebsd
 %
 % Plots the EBSD scatter plots in various sections which can be controled by
@@ -31,7 +31,7 @@ set(gcf,'Name',['EBSD "',inputname(1),'"']);
 error('not yet implemented')
 
 %% -------- alpha - sections ----------------------------------------------
-if check_option(varargin,'ALPHA')   
+if check_option(varargin,'ALPHA')
 
   % alpha
   if rotangle_max_y(ebsd(1).CS) == pi && rotangle_max_y(ebsd(1).SS) == pi

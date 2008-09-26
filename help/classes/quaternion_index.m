@@ -50,7 +50,7 @@
 % quaternion by plotting how the standard basis x,y,z transforms under the
 % rotation.
 
-cla reset;set(gcf,'position',[43   362   600   300])
+cla reset;set(gcf,'position',[43   362   400   300])
 plot(Miller2quat([-1 -1 -1],[1 -2 1]))
 
 

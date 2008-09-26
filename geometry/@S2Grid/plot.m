@@ -66,7 +66,7 @@ set(gca,'Tag','S2Grid','Box','on','DataAspectRatio',[1 1 1],'XTick',[],'YTick',[
   'drawmode','fast','layer','top');
 
 % color
-if ~check_option(varargin,{'MarkerColor','CONTOUR','CONTOURF','SMOOTH'})
+if ~check_option(varargin,{'MarkerColor','MarkerFaceColor','CONTOUR','CONTOURF','SMOOTH','DATA'})
   [ls,c] = nextstyle(gca,true,true,~ishold);
   varargin = {'MarkerColor',c,varargin{:}};
 end
@@ -80,8 +80,10 @@ hold all
 varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
-% default markerSize
-varargin = {'scatter_resolution',getResolution(S2G(end)),varargin{:}};
+% S2Resolution
+if sum(GridLength(S2G))>20
+  varargin = {'scatter_resolution',getResolution(S2G(end)),varargin{:}};
+end
 
 % extract data
 data = get_option(varargin,'DATA',[]);
@@ -98,6 +100,10 @@ if numel(data) == GridLength(S2G)
   
     varargin = {'colorrange',[min(data(:)),max(data(:))],varargin{:}};
   end
+elseif check_option(varargin,'label')
+  
+  data = repcell(get_option(varargin,'label'),GridSize(S2G));
+  
 else
   
   data = [];

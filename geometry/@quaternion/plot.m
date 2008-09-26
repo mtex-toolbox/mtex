@@ -4,7 +4,7 @@ function plot(q,varargin)
 if numel(q) == 1
   
   v = [xvector,yvector,zvector];
-  plot(q*v,'data',...
+  plot(q*v,'label',...
     {char(v(1),'Latex'),char(v(2),'Latex'),char(v(3),'Latex')},...
     varargin{:});
   
@@ -14,7 +14,7 @@ else
   
   for i = 1:numel(v)
 
-    plot(S2Grid(q.*v(i)),'dots',varargin{:});
+    plot(S2Grid(q.*v(i)),varargin{:});
     hold all
   end
   

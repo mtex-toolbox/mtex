@@ -33,7 +33,7 @@ plot([xvector,yvector,zvector])
 
 close all;figure('position',[100,100,400,200]);
 cs = symmetry('-3m',[1 1 3])
-plot(Miller(1,1,-2,2,cs),'all')
+plot(Miller(1,1,-2,2,cs),'all','labeled')
 
 %% Plotting Rotations
 %
@@ -81,6 +81,7 @@ plot(ebsd)
 
 %%
 % MTEX allows also to plot pole figures of EBSD data.
+close; figure('position',[46 171 400 200]);
 h = [Miller(0,0,0,1,cs),Miller(1,0,-1,0,cs)];
 plotpdf(ebsd,h,'reduced','MarkerSize',3)
 

@@ -123,6 +123,7 @@ end
 if ~get(handles.runmfile,'Value');
 
   a = inputdlg({'Enter name of workspace variable'},'MTEX Import Wizard',1,{vname});
+  if isempty(a), return;end
   assignin('base',a{1},data);
   if isempty(javachk('desktop')) 
     if isa(data,'EBSD')
@@ -200,7 +201,9 @@ function plot_pf(wzrd,pf)
 
 pf = modifypf(wzrd,pf);
 plot(pf,'silent');
-plot2all([xvector,yvector,zvector],'Backgroundcolor','w');
+plot2all([xvector,yvector,zvector],...
+  'labeled','Backgroundcolor','w','Marker','s',...
+  'MarkerFaceColor','k','MarkerEdgeColor','w');
 
 
 function pf = modifypf(wzrd,pf)

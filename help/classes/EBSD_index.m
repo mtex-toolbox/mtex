@@ -57,7 +57,7 @@ ebsd_rotated = rotate(ebsd_s,axis2quat(xvector-yvector,25*degree));
 % interpreted as a pole figure.
 
 close; figure('position',[100 100 400 300])
-plotpdf(ebsd_i,Miller(1,0,0,cs),'points',300)   % plot EBSD data
+plotpdf(ebsd_i,Miller(1,0,0,cs),'points',300,'MarkerSize',3)   % plot EBSD data
 
 %% ODF - estimation
 %

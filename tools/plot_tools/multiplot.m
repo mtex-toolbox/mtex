@@ -138,7 +138,11 @@ for i = 1:nplots
   end
   Z = Y{i};
   X = x(i);
-  plot(X,'DATA',Z,'axis',a(i),varargin{:});
+  if ~isempty(Z)
+      plot(X,'DATA',Z,'axis',a(i),varargin{:});
+  else
+     plot(X,'axis',a(i),varargin{:});
+  end
   
   if ~ishold
     

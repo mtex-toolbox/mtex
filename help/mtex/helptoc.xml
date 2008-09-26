@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <!-- $Revision: 1.1.6.1 $ $Date: 2004/04/20 22:13:25 $ -->
 <toc version="1.0">
-  <tocitem target="mtex_product_page.html" image="$toolbox/matlab/icons/book_mat.gif">
+	<tocitem target="mtex_product_page.html" image="mtex_icon.gif">
     MTEX Toolbox
 <tocitem target="mtex_features.html"
 	 image="$toolbox/matlab/icons/book_link.gif">
