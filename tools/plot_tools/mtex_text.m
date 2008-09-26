@@ -1,4 +1,4 @@
-function mtex_text(x,y,t,varargin)
+function h = mtex_text(x,y,t,varargin)
 % insert text depending on mtex_options
 
 if isa(t,'Miller') || isa(t,'vector3d')
@@ -15,12 +15,12 @@ else
   else
     s = t;
   end
-  if ~check_mtex_option('noLaTex')
+  if ~check_mtex_option('noLaTex') && ~isempty(regexp(s,'[\\\^_]','ONCE'))
     s = ['$' s '$'];
   end
 end
 if check_mtex_option('noLaTex')
-  optiondraw(text(x,y,s,'interpreter','tex'),varargin{:});
+  h = optiondraw(text(x,y,s,'interpreter','tex'),varargin{:});
 elseif ~isempty(t)
-  optiondraw(text(x,y,s,'interpreter','latex'),varargin{:});
+  h = optiondraw(text(x,y,s,'interpreter','latex'),varargin{:});
 end

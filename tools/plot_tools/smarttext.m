@@ -1,9 +1,9 @@
-function s = smarttext(x,y,s,box,varargin)
+function h = smarttext(x,y,s,box,varargin)
 % align text smart with respect to the bounding box
 
 arg{1} = 'HorizontalAlignment';
 arg{3} = 'VerticalAlignment';
-if check_option(varargin,'BackgroundColor'), delta = 0.1; else delta = 0; end
+if check_option(varargin,'BackgroundColor'), delta = 0.1; else delta = 0.05; end
 
 if box(1) + (box(3) - box(1))*2/3 < x
   arg{2} = 'Right';
@@ -26,4 +26,4 @@ else
 
 end
 
-mtex_text(x,y,s,arg{:},varargin{:});
+h = mtex_text(x,y,s,arg{:},varargin{:});

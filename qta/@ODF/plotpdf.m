@@ -56,6 +56,7 @@ else
     'ANOTATION',@(i) h(i),...
     'MINMAX','SMOOTH',...
     varargin{:});
+  setappdata(gcf,'Miller',h);
 end
 
 name = inputname(1);

@@ -43,6 +43,6 @@ v = xvector + yvector;    % predefined vectors
 % The [[vector3d_plot.html,plot]] function allows you to visualize an 
 % arbitrary number of three dimensional vectors in a spherical projection
 
-cla reset;set(gcf,'position',[43   362   300   300])
-plot([zvector,xvector+yvector+zvector])
+cla reset;set(gcf,'position',[43   362   200   200])
+plot([zvector,xvector+yvector+zvector],'labeled')
 

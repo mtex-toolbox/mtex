@@ -21,6 +21,8 @@ ax = get_option(varargin,'axes', ...
   getappdata(gcf,'axes'));
   %findobj(gcf,'tag','S2Grid'));
   
+m = getappdata(gcf,'Miller');
+  
 for i = 1:length(ax)
   set(gcf,'currentAxes',ax(i));
   
@@ -30,6 +32,11 @@ for i = 1:length(ax)
     plot(varargin{1}(i),varargin{2:end});
   elseif isa(varargin{1},'cell')
     plot(varargin{1}{i},varargin{2:end});
+  elseif isa(varargin{1},'quaternion') && ~isempty(m)
+    plot(varargin{1}*symeq(m(i)),'MarkerEdgeColor','w',varargin{2:end});
+  elseif isa(varargin{1},'vector3d') 
+    plot(varargin{1},'Marker','s','MarkerFaceColor','k',...
+      'MarkerEdgeColor','w','Marker','s',varargin{2:end});
   else
     plot(varargin{:});
   end

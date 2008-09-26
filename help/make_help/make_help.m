@@ -144,7 +144,7 @@ toc
 system('jar -cf ../mtex/help.jar -C ../html/ .');
 cd([mtex_path '/help/html']);
 builddocsearchdb('.');
-mtex_startup_dir = get_mtex_option('startup_dir');
+mtex_startup_dir = get_mtex_option('mtex_startup_dir');
 unix(['rm -rf ' mtex_path '/help/mtex/helpsearch']);
 unix(['mv -f ' mtex_startup_dir,'/helpsearch ' mtex_path '/help/mtex/']);
 cd([mtex_path '/help/make_help']);

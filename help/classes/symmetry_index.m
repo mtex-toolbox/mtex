@@ -20,7 +20,7 @@
 % as third argument. Hence, valid definitions are:
 
 cs = symmetry('triclinic',[1,2.2,3.1],[80*degree,85*degree,95*degree]);
-cs = symmetry('-3m',[2.5,2.5,1]);
+cs = symmetry('-3m',[1.7,1.7,1.4]);
 ss = symmetry('O');
 
 %% Calculations
@@ -36,5 +36,5 @@ ss * euler2quat(0,0,pi/4) * cs;  % all crystallographically equivalent orientati
 % Symmetries are visualized by plotting their main axes and the
 % corresponding equivalent directions
 
-close; figure('position',[50,50,400,400])
+close; figure('position',[50,50,300,300])
 plot(cs,'reduced')

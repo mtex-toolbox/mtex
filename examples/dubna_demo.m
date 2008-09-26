@@ -86,7 +86,8 @@ plot(odf,'sections',18,'silent')
 %% rotate ODF back
 
 odfrotated = rotate(odf,axis2quat(xvector,45*degree));
-plotpdf(odfrotated,getMiller(pf(1)),'rotated');
+plotpdf(odfrotated,getMiller(pf),'reduced');
+plot2all(modalorientation(odfrotated),'marker','d');
 
 %% volume analysis
 

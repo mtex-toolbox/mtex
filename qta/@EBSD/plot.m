@@ -7,12 +7,23 @@ if isempty(ebsd.xy)
   plotebsd(ebsd,varargin{:});
 else
 
-  odf = calcODF(ebsd);
-  q0 = modalorientation(odf);
+  if check_option(varargin,'centered')
+    odf = calcODF(ebsd);
+    q0 = modalorientation(odf);
+  else
+    q0 = idquaternion;
+  end
   q = quaternion(getgrid(ebsd));
   
   %scatter(ebsd.xy(:,1),ebsd.xy(:,2),5,rotangle(q),'s','filled');
-  d = quat2rgb(q,ebsd.CS,'q0',q0,varargin{:});
+  switch get_option(varargin,'colorcoding','')
+    case 'Bunge'
+      d = euler2rgb(q,ebsd.CS,'q0',q0,varargin{:});
+    case 'ANGLE'
+      d = quat2rgb(q,ebsd.CS,'q0',q0,varargin{:});
+    otherwise
+      d = sigma2rgb(q,ebsd.CS,'q0',q0,varargin{:});
+  end
   
   %x = linspace(min(ebsd.xy(:,1)),max(ebsd.xy(:,1)),1000);
   %y = linspace(min(ebsd.xy(:,1)),max(ebsd.xy(:,1)),1000);
@@ -46,8 +57,21 @@ else
   end
   
   image(x,y,c)
-  axis equal
-  axis tight
+  axis equal tight
+  % axis xy
+  set(gcf,'units','pixel');
+  fig_pos = get(gcf,'position');
+  set(gca,'units','pixel');
+  d = get_option(varargin,'border',get_mtex_option('border',20));
+  a = pbaspect; a = a(1:2)./max(a(1:2));
+  b = (fig_pos(3:4) - 2*d);
+  c = b./a;
+  a = a * min(c);
+  
+  set(gca,'position',[d d a]);  
+  set(gcf,'position',[fig_pos(1:2) a+2*d]);
+  set(gcf,'units','normalized');  
+  set(gca,'units','normalized');
   
 end
 
@@ -97,3 +121,29 @@ c(:,3) = ones(size(omega));
 c(:,2) = omega;
 c = hsv2rgb(c);  
 
+function c = euler2rgb(q,cs,varargin)
+% converts orientations to rgb values
+
+q0 = get_option(varargin,'q0',idquaternion);
+q = q(:)*inverse(q0);
+[phi1,Phi,phi2] = quat2euler(q,'Bunge');
+
+phi1 = mod(-phi1,pi/2) *2 ./ pi;
+Phi = mod(-Phi,pi/2); Phi = Phi./max(Phi(:));
+phi2 = mod(-phi2,pi/2)*2 ./ pi;
+
+c = [phi1(:),Phi(:),phi2(:)];
+
+
+function c = sigma2rgb(q,cs,varargin)
+% converts orientations to rgb values
+
+q0 = get_option(varargin,'q0',idquaternion);
+q = q(:)*inverse(q0);
+[phi1,Phi,phi2] = quat2euler(q,'Bunge');
+
+s1 = mod(phi2-phi1,pi/2) *2 ./ pi;
+Phi = mod(-Phi,pi/2); Phi = Phi./max(Phi(:));
+s2 = mod(phi1+phi2,pi/2)*2 ./ pi;
+
+c = [s1(:),Phi(:),s2(:)];

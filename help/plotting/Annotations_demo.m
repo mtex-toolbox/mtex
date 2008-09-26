@@ -10,7 +10,7 @@
 % Let us first define some model ODFs to be plotted later on.
 
 cs = symmetry('-3m'); ss = symmetry('-1');
-odf = fibreODF(Miller(1,1,0),zvector,cs,ss)
+odf = unimodalODF(Euler2quat(30*degree,40*degree,10*degree),cs,ss)
 
 
 %% Adding a Colorbar
@@ -32,6 +32,15 @@ colorbar
 colorbar           % delete vertical colorbar
 colorbar('south')  % add horizontal colorbar
 
+%% Adding Preferred Orientations
+%
+%
+
+plot2all(modalorientation(odf),...
+    'marker','p','MarkerSize',13)
+plot2all(Euler2quat(10*degree,20*degree,10*degree),...
+  'marker','p','MarkerSize',13)
+
 
 %% Adding Specimen and Crystal Directions
 %
@@ -40,15 +49,15 @@ colorbar('south')  % add horizontal colorbar
 % <plot2all.html plot2all> one can easily add <vector3d_index.html specimen
 % coordinate axes> to a pole figure plot.
 
-plot2all([xvector,yvector,zvector],'data',{'x','y','z'},...
+plot2all([xvector,yvector,zvector],'label',{'x','y','z'},...
   'BackgroundColor','w');
 
 %%
 % The command <plot2all.html plot2all> allows also to plot
 % <Miller_index.html crystal directions> to inverse pole figures.
 
-plotipdf(odf,[xvector,zvector])
-plot2all([Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(0,0,1,cs)],'all','gray')
+plotipdf(odf,[xvector,zvector],'gray')
+plot2all([Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(0,0,1,cs)],'all','labeled')
 set(gcf,'position',[139 258 672 266])
 
 
@@ -62,7 +71,7 @@ set(gcf,'position',[139 258 672 266])
 
 plotFourier(odf)
 hold all
-plotFourier(unimodalODF(idquaternion,cs,ss))
+plotFourier(fibreODF(Miller(1,0,0),zvector,cs,ss))
 
 legend({'Fibre ODF','Unimodal ODF'})
 

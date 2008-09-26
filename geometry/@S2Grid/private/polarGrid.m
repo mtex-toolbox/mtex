@@ -20,7 +20,12 @@ rho = [0:drho:(pi-drho);pi:drho:(2*pi-drho)];
 theta = ones(size(rho))*pi/2;
 [X,Y] = projectData(theta,rho,varargin{:});
 
-line(offset+X,Y,'LineStyle',':','color',[0.4 0.2 0.4],'tag','grid','visible',v);
+l = line(offset+X,Y,'LineStyle',':','color',[0.4 0.2 0.4],'tag','grid','visible',v);
+
+% control legend entry
+hAnnotation = get(l,'Annotation');
+hLegendEntry = get([hAnnotation{:}],'LegendInformation');
+set([hLegendEntry{:}],'IconDisplayStyle','off')
 
 %% labels
 
@@ -29,11 +34,12 @@ set(gca,'ytickLabel',[]);
 if check_option(varargin,'ticks'), v = 'on';else v = 'off';end
 va = {'middle','bottom','middle','top'};
 ha = {'left','center','right','center'};
+r = mod(round(atan2(Y,X)/pi*2),4)+1;
 
 for i = 1:numel(rho)
 
-  r = mod(round(atan2(Y(i),X(i))/pi*2),4)+1;
-  optiondraw(text(offset+X(i),Y(i),[num2str(round(rho(i)/degree)) '°'],...
-    'tag','ticks','visible',v,...
-    'HorizontalAlignment',ha{r},'VerticalAlignment',va{r}));
+  h(i) = text(offset+X(i),Y(i),[num2str(round(rho(i)/degree)) '°'],...
+    'tag','ticks','visible',v,'interpreter','none',...
+    'HorizontalAlignment',ha{r(i)},'VerticalAlignment',va{r(i)});
 end
+optiondraw(h);

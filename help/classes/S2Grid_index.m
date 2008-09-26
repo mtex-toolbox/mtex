@@ -31,6 +31,6 @@ S2G = S2Grid('equispaced','points',100,'MAXTHETA',75*degree);  % specifiy maximu
 
 %% Plots
 
-%set(gcf,'position',[100,100,300,400])
+set(gcf,'position',[100,100,200,200])
 plot(S2Grid('equispaced','points',100,'reduced'))  % plot grid of nodes
 
