@@ -26,6 +26,7 @@ else return
 end
 
 header = get_option(varargin,'header',[]);
+colums = get_option(varargin,'colums',[]);
 
 if check_option(varargin,'type')
  type = get_option(varargin,'type');
@@ -76,7 +77,13 @@ uicontrol('Style','Text','Position',[dw,h-120,w-2*dw,50],...
 
 % table
 
-for k=1:y, colnames{k} = ['Column ' int2str(k)]; end;
+if ~isempty(colums) && length(colums) == y
+  colnames = colums;
+else
+  %colums = strcat('Column  ',num2str((1:length(cdata)).'));
+  %cellstr(colums).'
+  for k=1:y, colnames{k} = ['Column ' int2str(k)]; end;
+end
 
 if ~strcmp(version('-release'),'2008a')
   uitable('Data',data(1:min(size(data,1),100),:),...
@@ -94,11 +101,10 @@ uicontrol('Style','Text','Position',[dw,h-(tb+120+25),w-2*dw,20],...
   'HorizontalAlignment','left',...
   'String','Please specify for each column how it should be interpreted!');
 
-cdata = repmat(values(1),1,size(data,2));
-colums = strcat('Column  ',num2str((1:length(cdata)).'));
+cdata = guessColNames(values,size(data,2),colnames);
 
 try
-  mtable = createTable([],cellstr(colums).',cdata,false,'units','pixel','position',[dw-1,h-(tb+120+85),w-2*dw,55]);
+  mtable = createTable([],colnames,cdata,false,'units','pixel','position',[dw-1,h-(tb+120+85),w-2*dw,55]);
   jtable = mtable.getTable;
   cb = javax.swing.JComboBox(values);
   cb.setEditable(true);
@@ -212,3 +218,21 @@ uicontrol(...
   'position',[0 0 1 1],...
   'Style','edit',...
   'Enable','inactive');
+
+%% Private Functions
+
+function cdata = guessColNames(values,l,colnames)
+
+cdata = repmat(values(1),1,l);
+for i = 1:length(values)
+  ind = strmatch(lower(values(i)),lower(colnames));
+  if ~isempty(ind), cdata(ind(1)) = values(i); end
+end
+
+% Euler Angle=
+ind = strmatch('euler',lower(colnames));
+if length(ind)==3
+  cdata{ind(1)} = 'phi 1';
+  cdata{ind(2)} = 'Phi';
+  cdata{ind(3)} = 'phi 2';
+end

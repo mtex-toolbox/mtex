@@ -1,4 +1,4 @@
-function [d,options,header] = load_generic(fname,varargin)
+function [d,options,header,c] = load_generic(fname,varargin)
 % load file using import data and txt2mat
 
 % get options
@@ -18,7 +18,7 @@ if ~check_option(varargin,'ascii')
   end
 end
 
-d = extract_data(d);
+[d,c] = extract_data(d);
 
 % data found?
 if ~isempty(d)    
@@ -37,9 +37,32 @@ if size(d,1)>10 || size(d,2)>2
   options = {'ascii',varargin{:}};      
 end
 
-function d = extract_data(s)
+try
+  if ~isempty(header) && isempty(c)
+    % split into rows
+    rows = regexp(header,'\n','split');
+    %find last not empty row
+    while iscell(rows)
+      if isempty(rows{end})
+        rows = {rows{1:end-1}};
+      else
+        rows = rows{end};
+      end
+    end
+   
+    % extract colum header
+    c = regexp(rows,'\s','split');
+    c = {c{1:end-1}};
+  
+  end
+catch
+end
 
-d = [];
+function [d,c] = extract_data(s)
+
+c = []; d = [];
+if isfield(s,'colheaders'), c = s.colheaders;end
+  
 if isstruct(s)
   
   fn = fieldnames(s);
