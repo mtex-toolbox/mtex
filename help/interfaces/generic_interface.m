@@ -34,7 +34,7 @@ fname = {...
 %  first column  -> intensities
 %  second column -> rho angle
 %  third column  -> theta angle
-%  fourth column  -> background intensity
+%  fourth column -> background intensity
 % this can be passed to the loadPoleFigure method by specifying
 layout = [2 3 1 4];
 
