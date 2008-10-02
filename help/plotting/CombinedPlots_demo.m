@@ -2,7 +2,7 @@
 %
 % Sometimes it is usefull to combine several plots, e.g. plotting on the
 % top of an inverse pole figure some important crystall directions. This
-% can be performed by the command <a href="matlab:doc hold">hold all</a>,
+% can be performed by the command [[matlab:doc hold,hold all]],
 % which preserfes MATLAB from replacing the old plot by the new one.
 %
 

@@ -17,23 +17,18 @@ pf = simulatePoleFigure(odf,Miller(1,0,0),S2Grid('equispaced','reduced'));
 % Three dimensional vectors, Miller indices, spherical grids are plotted as
 % single markers in a spherical projection. The shape, size and color of
 % the markers can be adjusted using the following parameters (see also
-% <ref/scattergroupproperties.html scattergroup properties>.)
+% [[matlab:doc scattergroupproperties,scattergroup_properties]])
 %
-% * Marker
-% * MarkerSize
-% * MarkerFaceColor
-% * MarkerEdgeColor
+% |Marker|, |MarkerSize|, |MarkerFaceColor|, |MarkerEdgeColor|
 
+close all; figure('position',[50 50 200 200])
 plot(zvector,'Marker','p','MarkerSize',15,'MarkerFaceColor','red','MarkerEdgeColor','black')
 
 %%
-% One can also assign a label to a marker. The options controling the label
-% are
+% One can also assign a label to a marker. The main options controling the label
+% are (see [[matlab:doc text_props,text_properties]])
 %
-% * Label
-% * Color
-% * BackgroundColor
-% * FontSize
+% |Label|, |Color|, |BackgroundColor|, |FontSize|
 
 plot([Miller(1,1,1),Miller(-1,1,1)],...
   'label',{'X','Y'},...
@@ -50,9 +45,10 @@ plot(pf)
 
 %% Contour Plots
 %
-% Contour plots are plots consisting only of contour lines and mainly
-% used for pole figure or ODF plots. The number or exact location of the
-% contour levels can be specified as an option.
+% Contour plots are plots consisting only of contour lines and are mainly
+% used for pole figure and ODF plots. The number or exact location of the
+% contour levels can be specified as an option. (See [[matlab:doc
+% contourgroupproperties,contourgroup_properties]] for more options!)
 
 plotpdf(odf,Miller(1,0,0),'contour',0:0.5:4,'reduced')
 
@@ -68,9 +64,10 @@ plotpdf(odf,Miller(1,0,0),'contourf','reduced')
 %% Smooth Interpolated Plots
 %
 % The default plotting style for pole figures and ODFs is *smooth*. Which
-% results in a colored plot without contour lines
+% results in a colored plot without contour lines. Here one can specify the
+% resolution of the plot using the option |resolution|.
 
-plotpdf(odf,Miller(1,0,0),'reduced')
+plotpdf(odf,Miller(1,0,0),'reduced','resolution',10*degree)
 
 
 %% Line Plots
@@ -78,6 +75,6 @@ plotpdf(odf,Miller(1,0,0),'reduced')
 % Line plots are used by MTEX for one dimesional ODF plots, plots of Fourier
 % coefficients and plots of kernel functions functions.
 % They can be customized by the standard MATLAB linespec
-% options. See [[MATLAB:doc linespec,linespec]]!
+% options. See [[matlab:doc linespec,linespec]]!
 
 plotodf(odf,'radially','linewidth',2,'linestyle','-.')
