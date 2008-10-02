@@ -39,7 +39,7 @@ function [pf,options] = loadPoleFigure_generic(fname,varargin)
 
 
 % load data
-[d,varargin,header] = load_generic(fname,varargin{:});
+[d,varargin,header,colums] = load_generic(fname,varargin{:});
 
 % no data found
 if size(d,1) < 10 || size(d,2) < 3
@@ -49,7 +49,7 @@ end
 % no options given -> ask
 if ~check_option(varargin,'layout')
   
-  options = generic_wizard('data',d,'type','PoleFigure','header',header);
+  options = generic_wizard('data',d,'type','PoleFigure','header',header,'colums',colums);
   if isempty(options), pf = []; return; end 
   varargin = {options{:},varargin{:}};
 
