@@ -1,6 +1,9 @@
 function m = string2Miller(s)
 % converts string to Miller indece
 
+% default value
+m = Miller(1,0,0);
+
 % extract filename
 s = s(max([1,1+strfind(s,'/')]):end);
 
