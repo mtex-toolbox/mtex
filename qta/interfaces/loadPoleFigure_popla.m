@@ -36,7 +36,7 @@ while ~feof(fid)
     dtheta = p{2}; mtex_assert(dtheta > 0 && dtheta < 90);
     mtheta = p{3}; mtex_assert(mtheta > 0 && mtheta <= 180);
     drho = p{4}; mtex_assert(drho > 0 && drho < 90);
-    mrho = p{5}; mtex_assert(mrho > 0 && mrho <= 180);
+    mrho = p{5}; mtex_assert(mrho > 0 && mrho <= 360);
     shifttheta = p{6}; mtex_assert(shifttheta == 1 || shifttheta == 0);
     shiftrho = p{7}; mtex_assert(shiftrho == 1 || shiftrho == 0);
     iper = [p{8:10}]; mtex_assert(all(abs(iper)>0) && all(abs(iper)<4));
@@ -45,12 +45,13 @@ while ~feof(fid)
     
     % generate specimen directions
     theta = (dtheta*~shifttheta/2:dtheta:mtheta)*degree;
-    rho = (drho*~shiftrho/2:drho:mrho)*degree;
+    rho = (drho*~shiftrho/2:drho:mrho-drho/(1+~shiftrho))*degree;
     r = S2Grid('theta',theta,'rho',rho,'reduced');
 	
     % read data
-    d = textscan(fid,'%4d');
-    d = reshape(d{1},GridSize(r)).';
+    
+    a = textscan(fid,[' ',repmat('%4d',1,19)]);
+    d = reshape([a{1:18}].',GridSize(r));
           
     % generate Polefigure
     pf(ipf) = PoleFigure(h,r,double(d)*double(scaling),symmetry('cubic'),symmetry,'comment',comment,varargin{:});
