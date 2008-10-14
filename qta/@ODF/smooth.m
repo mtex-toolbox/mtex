@@ -1,4 +1,4 @@
-function sodf = smooth(odf,res)
+function odf = smooth(odf,varargin)
 % smooth ODF
 %
 %% Input
@@ -6,17 +6,28 @@ function sodf = smooth(odf,res)
 %  res - resolution
 %
 %% Output
-%  sodf - smmoothed @ODF
+%  odf - smmoothed @ODF
 %
 %% See also
 % loadEBSD_txt, SO3Grid/smooth
 
 
-for i = 1:legnth(odf)
+for i = 1:length(odf)
   
-  % smmoth grid - only for superpositions of radialy symmetric functions
-  if isa(odf(i).center,'SO3Grid')
+  if check_option(odf(i),'Fourier') % 
     
+    A = get_option(varargin,'Fourier');
+    L = min(bandwidth(odf),find(A,1,'last')-1);
+
+    odf(i).c_hat=odf(i).c_hat(1:deg2dim(L+1));
+    for l = 0:L
+      odf(i).c_hat(deg2dim(l)+1:deg2dim(l+1)) = odf(i).c_hat(deg2dim(l)+1:deg2dim(l+1)) * A(l+1);
+    end    
+
+  % smmoth grid - only for superpositions of radialy symmetric functions  
+  elseif isa(odf(i).center,'SO3Grid')
+    
+    res = get_option(varargin,'resolution');
     % smooth grid
     [odf(i).center,order] = smooth(idf(i).center,res);
     odf(i).c = odf(i).c(order);
@@ -34,10 +45,8 @@ for i = 1:legnth(odf)
   end
   
   % smooth kernel  
-  if isa(odf(i).kernel,'kernel')
-    odf(i).kernel = smooth(odf(i).kernel,res);
+  if isa(odf(i).psi,'kernel')
+    odf(i).psi = smooth(odf(i).psi,res);
   end
   
 end
-
-sodf = odf;

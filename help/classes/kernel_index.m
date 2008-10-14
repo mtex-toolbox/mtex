@@ -17,10 +17,12 @@
 demok(1) = kernel('Abel Poisson',0.79);
 demok(2) = kernel('de la Vallee Poussin',13);
 demok(3) = kernel('von Mises Fisher',7.5);
-demok(4) = kernel('local',0.85);
+demok(4) = kernel('bump',35*degree);
 demok(5) = kernel('Square Singularity',0.72);
 demok(6) = kernel('fibre von Mises Fisher',7.2);
 demok(7) = kernel('Gauss Weierstrass',0.07);
+demok(8) = kernel('Dirichlet',3);
+%demok(4) = kernel('local',0.85);
 
 
 %% Plotting the kernel
@@ -29,12 +31,13 @@ demok(7) = kernel('Gauss Weierstrass',0.07);
 % well as the corresponding PDF, or its Fourier coefficients
 
 % the kernel on SO(3)
-close; figure('position',[100,100,650,450])
+close; figure('position',[100,100,500,450])
 plot(demok,'K','legend');
 
 %%
 % the corresponding PDF
 plot(demok,'RK','legend');
+ylim([-5,20])
 
 %%
 % the Fourrier coefficients of the kernels

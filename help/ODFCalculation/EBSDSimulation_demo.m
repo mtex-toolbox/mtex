@@ -61,4 +61,5 @@ end
 
 close all;
 semilogx(10.^(1:length(e)),e)
-
+xlabel('Sample Size')
+ylabel('Estimation Error')

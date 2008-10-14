@@ -17,9 +17,10 @@
 % *Improved Plotting*
 %
 % * GUI to modify plots more easily
+% * Annotate orientations into pole figure plots
 % * Coordinate systems for ODF and pole figure plots
 % * More flexible and consistent option system
-% * Default plotting options like FontSize, rotation, ...
+% * Default plotting options like FontSize, Margin, ...
 % * Speed improvements
 %
 % *Bug Fixes*

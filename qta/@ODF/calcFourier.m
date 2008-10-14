@@ -1,4 +1,4 @@
-function nodf = calcFourier(odf,L,varargin)
+function odf = calcFourier(odf,L,varargin)
 % compute Fourier coefficients of odf
 %
 % Compute the Fourier coefficients of the ODF and store them in the
@@ -6,7 +6,7 @@ function nodf = calcFourier(odf,L,varargin)
 % [[ODF_Fourier.html,Fourier]].
 %
 %% Syntax  
-% nodf = calcFourier(odf,L)
+% odf = calcFourier(odf,L)
 %
 %% Input
 %  odf  - @ODF
@@ -25,8 +25,8 @@ L = max(L,4);
 for i = 1:length(odf)
   
   % no precomputation
-  if check_option(odf(i),'UNIFORM') || ...
-      dim2deg(length(odf(i).c_hat)) < min(L,length(getA(odf(i).psi))-1) 
+  if ~check_option(odf(i),'Fourier')  && (check_option(odf(i),'UNIFORM') || ...
+      dim2deg(length(odf(i).c_hat)) < min(L,length(getA(odf(i).psi))-1))
     
     if check_option(odf(i),'UNIFORM') % **** uniform portion *****
     
@@ -126,7 +126,7 @@ for i = 1:length(odf)
   end
   
 end
-nodf = odf;
+
 end
 
 function f = gcA2fourier(g,c,A)

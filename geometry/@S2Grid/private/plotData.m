@@ -82,7 +82,7 @@ else
   defaultMarkerSize = min(8,max(1,50*res));
   
   if check_option(varargin,'dynamicMarkerSize')
-    options = {'tag','scatterplot','UserData',get_option(varargin,'MarkerSize',50*res)/50};
+    options = {'tag','scatterplot','UserData',get_option(varargin,'MarkerSize',min(8,50*res))/50};
   end
 
   if ~isempty(data) && isa(data,'double') % data colored markers

@@ -165,8 +165,8 @@ end
 if ~ishold
   setappdata(gcf,'axes',a);
   setappdata(gcf,'border',get_option(varargin,'border',get_mtex_option('border',10)));
-  setappdata(gcf,'spacingx',get_option(varargin,'spacingx',get_mtex_option('spacingx',0)));
-  setappdata(gcf,'spacingy',get_option(varargin,'spacingy',get_mtex_option('spacingy',0)));
+  setappdata(gcf,'marginx',get_option(varargin,{'marginx','margin'},get_mtex_option({'marginx','margin'},0),'double'));
+  setappdata(gcf,'marginy',get_option(varargin,{'marginy','margin'},get_mtex_option({'marginy','margin'},0),'double'));
   % invisible axes for adding a colorbar
   d = axes('visible','off','position',[0 0 1 1],...
     'tag','colorbaraxis','HandleVisibility','callback');
@@ -248,8 +248,8 @@ if strcmp(getappdata(fig,'autofit'),'on')
 
   figpos = get(fig,'Position');
   
-  spacingx = getappdata(fig,'spacingx');
-  spacingy = getappdata(fig,'spacingy');
+  marginx = getappdata(fig,'marginx');
+  marginy = getappdata(fig,'marginy');
   border = getappdata(fig,'border');
 
 
@@ -257,15 +257,15 @@ if strcmp(getappdata(fig,'autofit'),'on')
   figpos(3) = figpos(3)-2*border;
   dxdy = get(a(1),'PlotBoxAspectRatio');
   dxdy = dxdy(2)/dxdy(1);
-  [nx,ny,l] = bestfit(figpos(3),figpos(4),dxdy,length(a),spacingx,spacingy);
-  set(fig,'UserData',[nx*l+2*border+(nx-1)*spacingx,...
-    ny*l*dxdy+2*border+(ny-1)*spacingy]);
+  [nx,ny,l] = bestfit(figpos(3),figpos(4),dxdy,length(a),marginx,marginy);
+  set(fig,'UserData',[nx*l+2*border+(nx-1)*marginx,...
+    ny*l*dxdy+2*border+(ny-1)*marginy]);
   setappdata(fig,'length',l);
 
   for i = 1:length(a)
     [px,py] = ind2sub([nx ny],i);
-    apos = [1+border+(px-1)*(l+spacingx),...
-      1+border+figpos(4)-py*l*dxdy-(py-1)*spacingy,...
+    apos = [1+border+(px-1)*(l+marginx),...
+      1+border+figpos(4)-py*l*dxdy-(py-1)*marginy,...
       l,l*dxdy];
     set(a(i),'Units','pixels','Position',apos);
   end
@@ -306,11 +306,11 @@ end
 end
 
 %% determine best alignment of subfigures
-function [nx,ny,l] = bestfit(dx,dy,dxdy,n,spacingx,spacingy)
+function [nx,ny,l] = bestfit(dx,dy,dxdy,n,marginx,marginy)
 
 % length in x direction
-lx = @(nx,ny) min((dx-(nx-1)*spacingx)/nx,...
-  (dy-(ny-1)*spacingy)/dxdy/ny);
+lx = @(nx,ny) min((dx-(nx-1)*marginx)/nx,...
+  (dy-(ny-1)*marginy)/dxdy/ny);
 
 ny = 1;
 nx = n;

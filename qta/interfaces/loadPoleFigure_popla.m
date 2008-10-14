@@ -32,7 +32,10 @@ while ~feof(fid)
     s = fgetl(fid);
     p = textscan(s,'%5c%5.1f%5.1f%5.1f%5.1f%2d%2d%2d%2d%2d%5d%5d%5c%5c');
     
-    h = string2Miller(p{1}); % Miller indice
+    % Miller indice
+    [h,r] = string2Miller(fname);
+    if ipf>1 || ~r, h = string2Miller(p{1});end
+    
     dtheta = p{2}; mtex_assert(dtheta > 0 && dtheta < 90);
     mtheta = p{3}; mtex_assert(mtheta > 0 && mtheta <= 180);
     drho = p{4}; mtex_assert(drho > 0 && drho < 90);
@@ -49,10 +52,20 @@ while ~feof(fid)
     r = S2Grid('theta',theta,'rho',rho,'reduced');
 	
     % read data
+    % TODO there are some data files that have 18 and some that have 19
+    % colums - make interface working for those!
+    d = [];
+    while length(d) < GridLength(r)
+      l = fgetl(fid);
+      l = reshape(l(2:end),4,[]).';
+      dd = str2num(l);
+      d = [d;dd(1:18)]; %#ok<ST2NM>
+    end
+
+    % restrict data to specified domain
+    d = reshape(d,GridSize(r,1),[]);
+    d = d(:,1:GridSize(r,2));
     
-    a = textscan(fid,[' ',repmat('%4d',1,19)]);
-    d = reshape([a{1:18}].',GridSize(r));
-          
     % generate Polefigure
     pf(ipf) = PoleFigure(h,r,double(d)*double(scaling),symmetry('cubic'),symmetry,'comment',comment,varargin{:});
   

@@ -18,11 +18,11 @@ else
   %scatter(ebsd.xy(:,1),ebsd.xy(:,2),5,rotangle(q),'s','filled');
   switch get_option(varargin,'colorcoding','')
     case 'Bunge'
-      d = euler2rgb(q,ebsd.CS,'q0',q0,varargin{:});
+      d = euler2rgb(q,ebsd.CS,ebsd.SS,'q0',q0,varargin{:});
     case 'ANGLE'
-      d = quat2rgb(q,ebsd.CS,'q0',q0,varargin{:});
+      d = quat2rgb(q,ebsd.CS,ebsd.SS,'q0',q0,varargin{:});
     otherwise
-      d = sigma2rgb(q,ebsd.CS,'q0',q0,varargin{:});
+      d = sigma2rgb(q,ebsd.CS,ebsd.SS,'q0',q0,varargin{:});
   end
   
   %x = linspace(min(ebsd.xy(:,1)),max(ebsd.xy(:,1)),1000);
@@ -135,15 +135,17 @@ phi2 = mod(-phi2,pi/2)*2 ./ pi;
 c = [phi1(:),Phi(:),phi2(:)];
 
 
-function c = sigma2rgb(q,cs,varargin)
+function c = sigma2rgb(q,cs,ss,varargin)
 % converts orientations to rgb values
 
 q0 = get_option(varargin,'q0',idquaternion);
 q = q(:)*inverse(q0);
 [phi1,Phi,phi2] = quat2euler(q,'Bunge');
 
-s1 = mod(phi2-phi1,pi/2) *2 ./ pi;
-Phi = mod(-Phi,pi/2); Phi = Phi./max(Phi(:));
-s2 = mod(phi1+phi2,pi/2)*2 ./ pi;
+[maxphi1,maxPhi,maxphi2] = getFundamentalRegion(cs,ss);
+
+s1 = mod(phi2-phi1,maxphi1) ./ maxphi1;
+Phi = mod(-Phi,maxPhi); Phi = Phi./max(Phi(:));
+s2 = mod(phi1+phi2,maxphi2)./ maxphi2;
 
 c = [s1(:),Phi(:),s2(:)];

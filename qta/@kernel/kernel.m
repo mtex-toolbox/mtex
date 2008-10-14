@@ -19,7 +19,7 @@ function K = kernel(name,varargin)
 % supported kernel:
 % Laplace, Abel Poisson, de la Vallee Poussin, von Mises Fisher,
 % fibre von Mises Fisher, Square Singularity, Gauss Weierstrass,
-% Dirichlet, local, user
+% Dirichlet, local, Fourier, bump
 %
 %% See also
 % ODF_index kernel/gethw unimodalODF uniformODF
@@ -46,7 +46,7 @@ elseif ~isa(name,'char')
   
 elseif ~any(strcmpi(name,{'Laplace','Abel Poisson','de la Vallee Poussin',...
     'von Mises Fisher','fibre von Mises Fisher','Square Singularity',...
-    'Gauss Weierstrass','local','Dirichlet','user'}))
+    'Gauss Weierstrass','local','Dirichlet','Fourier','bump'}))
   
   error(sprintf(['unknown kernel: "',name,'".\nAvailable kernels are: \n',...
     'Laplace, \n',...
@@ -58,7 +58,7 @@ elseif ~any(strcmpi(name,{'Laplace','Abel Poisson','de la Vallee Poussin',...
     'Gauss Weierstrass, \n',...
     'local, \n',...
     'Dirichlet, \n',...
-    'user'])); %#ok<SPERR>
+    'Fourier','bump'])); %#ok<SPERR>
   
 end
     
@@ -68,7 +68,8 @@ if check_option(varargin,'HALFWIDTH')
 elseif length(varargin)>=1
   p = varargin{1};
 end
-L = get_option(varargin,'BANDWIDTH',1000);
+
+L = get_option(varargin,'BANDWIDTH',100*(1+9*~strcmpi(name,'bump')));
 
 K.name = name;
 K.A = construct_A(name,p,L);

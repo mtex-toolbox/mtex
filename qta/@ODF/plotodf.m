@@ -47,20 +47,19 @@ if check_option(varargin,'RADIALLY')
 %% -------- alpha - sections ----------------------------------------------
 elseif check_option(varargin,'ALPHA')   
 
-  % alpha
-  if rotangle_max_y(odf(1).CS) == pi && rotangle_max_y(odf(1).SS) == pi
-    m = pi/2;
-  else
-    m = rotangle_max_z(odf(1).SS);
-  end
-  sec = linspace(0,m,get_option(varargin,'SECTIONS',round(m/degree/5))+1); sec(end) = [];
+  [max_alpha,max_beta,max_gamma] = getFundamentalRegion(odf(1).CS,odf(1).SS);
+  
+  
+  sec = linspace(0,max_alpha,...
+    get_option(varargin,'SECTIONS',round(max_alpha/degree/5))+1); 
+  sec(end) = [];
   sec = get_option(varargin,'ALPHA',sec,'double');
   nplots = length(sec);
   
   % beta / gamma
   S2G = S2Grid('PLOT',...
-    'MAXTHETA',min(rotangle_max_y(odf(1).CS),rotangle_max_y(odf(1).SS))/2,...
-    'MAXRHO',rotangle_max_z(odf(1).CS),varargin{:});
+    'MAXTHETA',max_beta,...
+    'MAXRHO',max_gamma,varargin{:});
   
   alpha = repmat(reshape(sec,[1,1,nplots]),[GridSize(S2G),1]);
   [beta,gamma] = polar(S2G);
@@ -231,7 +230,7 @@ multiplot(@(i) S2G,...
 	'ANOTATION',@(i) [symbol,'=',int2str(sec(i)*180/pi),'^\circ'],...
   'MINMAX','SMOOTH','TIGHT',...
   'xlabel',labelx,'ylabel',labely,...
-  'colorrange','equal',varargin{:});
+  'colorrange','equal','margin',0,varargin{:});
 
 name = inputname(1);
 if isempty(name), name = odf(1).comment;end

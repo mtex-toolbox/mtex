@@ -1,28 +1,32 @@
 function hw = p2hw(name,p)
 % kernel parameter to halfwidth
 
-switch name
+switch lower(name)
 
 	%case 'Abel Poisson'
   %  
   %  K = getK(kernel(name,p));
   %  hw = fminbnd(@(omega) (0.5*K(1)-K(cos(omega/2)))^2,0,pi/2);
 
-	case 'de la Vallee Poussin'
+	case 'de la vallee poussin'
 
 		hw = 2*acos(0.5^(1/2/p));
 
-	case 'von Mieses Fisher'
+	case 'von mieses fisher'
 
     hw = acos(1-log(2)/p);
 
-  case 'fibre von Mises Fisher'
+  case 'fibre von mises fisher'
 
     hw = acos(1-log(2)/p);
 
 	case 'local'
 
   	hw = acos(p);
+    
+  case 'bump'
+        
+  	hw = p;
 
   otherwise
 
