@@ -4,6 +4,10 @@ A = ones(1,L+1);
 
 switch lower(name)
 
+  case 'bump'
+    
+    A = calcChebyshevCoeff(construct_K(name,p,L),L,'maxangle',p);
+    
   case 'laplace'
     
     A = Laplacekern(p,L);
@@ -58,10 +62,10 @@ switch lower(name)
     
     A =  ones(1,p+1).*(2*(0:p)+1);
     
-  case 'user'
-    
+  case 'fourier'
     
     K.name = name;
+    A = p;
 
   otherwise
         
@@ -69,6 +73,8 @@ switch lower(name)
 
 end
 
-% prevent from instability effects
-ind = find(A<=max(min([A,1E-5]),1E-10),1,'first');
-A = A(1:min([ind,length(A)]));
+if ~any(strcmpi(name,{'Fourier','bump'}))
+  % prevent from instability effects
+  ind = find(A<=max(min([A,1E-5]),1E-10),1,'first');
+  A = A(1:min([ind,length(A)]));
+end

@@ -9,8 +9,10 @@
 %
 % Let us first define some model ODFs to be plotted later on.
 
-cs = symmetry('-3m'); ss = symmetry('-1');
-odf = unimodalODF(Euler2quat(30*degree,40*degree,10*degree),cs,ss)
+cs = symmetry('-3'); ss = symmetry('-1');
+q0 = Euler2quat(30*degree,40*degree,10*degree);
+q1 = Euler2quat(10*degree,80*degree,70*degree);
+odf = 0.7*unimodalODF(q0,cs,ss) + 0.3*unimodalODF(q1,cs,ss);
 
 
 %% Adding a Colorbar
@@ -20,7 +22,7 @@ odf = unimodalODF(Euler2quat(30*degree,40*degree,10*degree),cs,ss)
 % that the colorrange is automaticaly set to *equal* when adding a colorbar
 % to a figure with  more then one plot (see. <ColorCoding_demo.html Color Coding>).
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'reduced')
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'reduced','gray')
 colorbar
 
 
@@ -36,10 +38,14 @@ colorbar('south')  % add horizontal colorbar
 %
 %
 
-plot2all(modalorientation(odf),...
-    'marker','p','MarkerSize',13)
-plot2all(Euler2quat(10*degree,20*degree,10*degree),...
-  'marker','p','MarkerSize',13)
+plot2all(q0,...
+    'marker','s','MarkerSize',6,'MarkerFaceColor','r',...
+    'label','$q_0$','color','b')
+
+plot2all(q1,...
+    'marker','s','MarkerSize',6,'MarkerFaceColor','g',...
+    'label','$q_1$','color','b')
+
 
 
 %% Adding Specimen and Crystal Directions
@@ -56,7 +62,7 @@ plot2all([xvector,yvector,zvector],'label',{'x','y','z'},...
 % The command <plot2all.html plot2all> allows also to plot
 % <Miller_index.html crystal directions> to inverse pole figures.
 
-plotipdf(odf,[xvector,zvector],'gray')
+plotipdf(odf,[xvector,zvector],'gray','reduced')
 plot2all([Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(0,0,1,cs)],'all','labeled')
 set(gcf,'position',[139 258 672 266])
 
@@ -67,7 +73,7 @@ set(gcf,'position',[139 258 672 266])
 % saying which color / symbol correspond to which data set. 
 %
 % The following example compares the Fourier coefficients of the fibre ODF
-% with the Fourier coefficients of an unimodal ODF.
+% with the Fourier co,'margin'}efficients of an unimodal ODF.
 
 plotFourier(odf)
 hold all

@@ -24,6 +24,7 @@ setappdata(list_handle,'workpath',pathname);
 %% load data
 options = getappdata(list_handle,'options');
 interface = getappdata(list_handle,'interface');
+pause(0.1);
 
 for i=1:length(fnames)
   
@@ -34,6 +35,7 @@ for i=1:length(fnames)
   end
 
 %% try to load one file
+
   try
     if check_option(varargin,'EBSD')
       [data,interface,options] = ...
@@ -58,7 +60,7 @@ for i=1:length(fnames)
     % update file list
     set(list_handle, 'String',path2filename(getappdata(list_handle,'filename')));
     set(list_handle,'Value',1);
-    drawnow; pause(0.001);
+    drawnow; pause(0.01);
   end
 end
 

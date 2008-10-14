@@ -1,21 +1,21 @@
 function p = hw2p(name,hw)
 % (kernel,halfwidth) -> parameter
 
-switch name
+switch lower(name)
             
-	case 'Abel Poisson'
+	case 'abel poisson'
    
     p = fminbnd(@(t) (p2hw(name,t)-hw)^2,0,1);
     
-	case 'de la Vallee Poussin'
+	case 'de la vallee poussin'
                 
 		p = 0.5 * log(0.5) / log(cos(hw/2));
 
-	case 'von Mises Fisher'
+	case 'von mises fisher'
 
     p = log(2) / (1-cos(hw));
     
-  case 'fibre von Mises Fisher'
+  case 'fibre von mises fisher'
 
 		p = log(2) / (1-cos(hw));
     
@@ -23,7 +23,11 @@ switch name
 
 		p = cos(hw);
     
-  case 'Gauss Weierstrass'
+  case 'bump '
+    
+    p = hw;
+    
+  case 'gauss weierstrass'
     
     p = fminbnd(@(t) (p2hw(name,t)-hw)^2,0,1);
 

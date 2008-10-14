@@ -1,8 +1,11 @@
 function RK = construct_RK(name,p,A)
+%
+%
+% here dmatrix is 
 
 switch lower(name)
   
-  case {'laplace','local','user','gauss weierstrass','dirichlet','user'}
+  case {'laplace','local','fourier','gauss weierstrass','dirichlet','user'}
     
     RK  = @(dmatrix) ClenshawL(A,dmatrix);
 
@@ -28,8 +31,18 @@ switch lower(name)
     
     RK  = @(dmatrix) 2*p/log((1+p)/(1-p)) ./ (1-2*p*dmatrix+p^2);
     
+  case 'bump'
+    
+    RK = @(dmatrix) Rbump(dmatrix,p);
   otherwise    
 
     RK = [];
     
 end
+
+function RK = Rbump(dmatrix,p)
+
+RK = zeros(size(dmatrix));
+s = cos(p/2)./sqrt((1+dmatrix)./2);
+ind = s<=1;
+RK(ind) = (pi/(p-sin(p)))*2/pi*acos(s(ind));

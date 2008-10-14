@@ -44,7 +44,7 @@
 
 <listitem>
 <label>Configure</label>
-<callback>edit startup_mtex.m</callback>
+<callback>edit mtex_settings.m</callback>
 <icon>$toolbox/matlab/icons/boardicon.gif</icon>
 </listitem>
 

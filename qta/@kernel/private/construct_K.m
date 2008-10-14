@@ -3,10 +3,14 @@ function K = construct_K(name,p,A)
 switch lower(name)
   
   case {'laplace','fibre von mises fisher','square singularity',...
-      'gauss weierstrass','user','dirichlet'}
+      'gauss weierstrass','fourier','dirichlet'}
     
     K   = @(co2) ClenshawU(A,acos(co2)*2);
-        
+
+  case 'bump'
+    
+    K = @(co2) (pi/(p-sin(p)))*(co2>cos(p/2));
+    
   case 'abel poisson'
         
     K   = @(co2) 0.5*((1-p^2)./(1-2*p*co2+p^2).^2+...

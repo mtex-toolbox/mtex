@@ -3,7 +3,7 @@ function RRK = construct_RRK(name,p,A)
 switch lower(name)
   case {'laplace','abel poisson','de la vallee poussin',...
       'von mises fisher','local','gauss weierstrass',...
-      'dirichlet','user'}
+      'dirichlet','fourier'}
     
     RRK = @rrk_clenshaw;
 

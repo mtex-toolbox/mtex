@@ -43,7 +43,7 @@ else
   
   % make definitions more robust
   P.h = set(P.h,'CS',P.CS);
-  P.r = set_option(P.r,'reduced');
+  if ~check_option(varargin,'complete'), P.r = set_option(P.r,'reduced');end
   
   mtex_assert(numel(P.data) == sum(GridLength(P.r)),'Number of diffraction intensitites is not equal to the number of specimen directions!');
 

@@ -11,9 +11,11 @@ function e = calcerror(odf1,odf2,varargin)
 %  S3G  - @SO3Grid of quadrature nodes (optional)
 %
 %% Options
-%  L1 - l^1 error (default)
-%  L2 - l^2 error
+%  L0 - measure of the orientation space where |odf1 - odf2|>epsilon
+%  L1 - L^1 error (default)
+%  L2 - L^2 error
 %  RP - RP  error
+%  res - resolution used for calculation of the error
 %
 %% See also
 % PoleFigure/calcODF PoleFigure/calcerror 
@@ -41,16 +43,9 @@ if check_option(varargin,'Fourier') && check_option(varargin,'L2')
 else
   
   % get approximation grid
-  if check_option(varargin,'resolution')
-    S3G = SO3Grid(get_option(varargin,'resolution'),odf1(1).CS,odf1(1).SS);
-  else
-    if GridLength(getgrid(odf1)) > GridLength(getgrid(odf2))
-      S3G = getgrid(odf1);
-    else
-      S3G = getgrid(odf2);
-    end
-    S3G = get_option(varargin,'SO3Grid',S3G,'SO3Grid');
-  end
+  S3G = get_option(varargin,'SO3Grid',...
+    SO3Grid(get_option(varargin,'resolution',5*degree),...
+    odf1(1).CS,odf1(1).SS),'SO3Grid');
 
   % eval ODFs
   d1 = eval(odf2,S3G,varargin{:});
@@ -61,7 +56,10 @@ else
   end
 
   % calculate the error
-  if check_option(varargin,'L2')
+  if check_option(varargin,'L0')
+    epsilon = get_option(varargin,'L0',1);
+    e = sum(abs(d1-d2) > epsilon);
+  elseif check_option(varargin,'L2')
     e = norm(d1-d2) / norm(d2);
   else
     e = sum(abs(d1-d2)) / length(d1) /2;

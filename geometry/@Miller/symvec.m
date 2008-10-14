@@ -9,6 +9,7 @@ function v = symvec(m,varargin)
 %% Output
 %  v - @vector3d
 
+if length(m)~=1, error('Function supports only single vectors!');end
 
 v = reshape(vector3d(m),1,[]);
 
@@ -17,4 +18,3 @@ if check_option(varargin,'reduced')
 else
   v = cunion(quaternion(m.CS) * v);
 end
-
