@@ -35,9 +35,10 @@ if iscell(h), h = [h{:}];end
 if check_option(varargin,'3d')
   r = S2Grid('PLOT',varargin{:});
 else
+  [maxrho,maxtheta] = getFundamentalregion(odf(1).CS,odf(1).SS,varargin{:});
   r = S2Grid('PLOT',...
-    'MAXTHETA',rotangle_max_y(odf(1).SS,varargin{:})/2,...
-    'MAXRHO',max(2*pi*check_option(varargin,'COMPLETE'),rotangle_max_z(odf(1).SS)),varargin{:});
+    'MAXTHETA',maxtheta,...
+    'MAXRHO',maxrho,varargin{:});
 end
 
 if check_option(varargin,'superposition')
@@ -57,6 +58,7 @@ else
     'MINMAX','SMOOTH',...
     varargin{:});
   setappdata(gcf,'Miller',h);
+  setappdata(gcf,'SS',odf(1).SS);
 end
 
 name = inputname(1);

@@ -47,7 +47,7 @@ if check_option(varargin,'RADIALLY')
 %% -------- alpha - sections ----------------------------------------------
 elseif check_option(varargin,'ALPHA')   
 
-  [max_alpha,max_beta,max_gamma] = getFundamentalRegion(odf(1).CS,odf(1).SS);
+  [max_alpha,max_beta,max_gamma] = getFundamentalRegion(odf(1).CS,odf(1).SS,varargin{:});
   
   
   sec = linspace(0,max_alpha,...
@@ -235,3 +235,7 @@ multiplot(@(i) S2G,...
 name = inputname(1);
 if isempty(name), name = odf(1).comment;end
 set(gcf,'Name',['ODF "',name,'"']);
+setappdata(gcf,'sections',sec);
+setappdata(gcf,'SectionType',symbol(2:end));
+setappdata(gcf,'CS',odf(1).CS);
+setappdata(gcf,'SS',odf(1).SS);
