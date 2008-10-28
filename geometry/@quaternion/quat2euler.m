@@ -20,17 +20,19 @@ function [alpha,beta,gamma] = quat2euler(quat,varargin)
 % quaternion/quat2rodriguez
 
 if check_option(varargin,'BUNGE')
-  alpha = atan2(quat.b .* quat.d - quat.a .* quat.c,...
+  gamma = atan2(quat.b .* quat.d - quat.a .* quat.c,...
     quat.c .* quat.d + quat.a .* quat.b);
   beta = acos(max(-1,min(1,-quat.b.^2 - quat.c.^2 + quat.d.^2 + quat.a.^2)));
-  gamma = atan2(quat.b .* quat.d + quat.a .* quat.c,...
+  alpha = atan2(quat.b .* quat.d + quat.a .* quat.c,...
     -quat.c .* quat.d + quat.a .* quat.b);
+  labels = {'phi1','Phi','phi2'};
 else
   alpha = atan2(quat.c .* quat.d - quat.a .* quat.b,...
     quat.b .* quat.d + quat.a .* quat.c);
   beta = acos(max(-1,min(1,-quat.b.^2 - quat.c.^2 + quat.d.^2 + quat.a.^2)));
   gamma = atan2(quat.c .* quat.d + quat.a .* quat.b,...
     -quat.b .* quat.d + quat.a .* quat.c);
+    labels = {'alpha','beta','gamma'};
 end
 
 % if rotational axis equal to z
@@ -44,6 +46,19 @@ if check_option(varargin,'nfft')
   beta  = fft_theta(beta);
   gamma = fft_rho(gamma);
   alpha = 2*pi*[alpha(:),beta(:),gamma(:)].';
+end
+
+
+if nargout == 0
+  disp(' ');
+  disp('Euler angle in degree')
+  disp(' ');
+  disp([labels{1} ' = ']);
+  disp(alpha/degree);
+  disp([labels{2} ' = ']);
+  disp(beta/degree);
+  disp([labels{3} ' = ']);
+  disp(gamma/degree);
 end
 
 return

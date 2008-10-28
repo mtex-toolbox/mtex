@@ -47,11 +47,7 @@ if check_option(varargin,'3d'), plot3d(S2G,varargin{:});return; end
 washold = ishold;
 if ~check_option(varargin,'axis'), newplot;end
 if isempty(get(gca,'children')) || all(strcmp(get(get(gca,'children'),'type'),'text'))
-  if isappdata(gcf,'projection'), rmappdata(gcf,'projection');end
-  if isappdata(gcf,'rotate'), rmappdata(gcf,'rotate');end
-  if isappdata(gcf,'flipud'), rmappdata(gcf,'flipud');end
-  if isappdata(gcf,'fliplr'), rmappdata(gcf,'fliplr');end
-  if isappdata(gcf,'hemisphere'), rmappdata(gcf,'hemisphere');end
+  rmallappdata(gcf);
 end
 
 if nargout > 0, varargout{1} = gca;end
@@ -81,7 +77,7 @@ varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
 % S2Resolution
-if sum(GridLength(S2G))>20
+if sum(GridLength(S2G))>100
   varargin = {'scatter_resolution',getResolution(S2G(end)),varargin{:}};
 end
 
@@ -102,7 +98,7 @@ if numel(data) == GridLength(S2G)
   end
 elseif check_option(varargin,'label')
   
-  data = repcell(get_option(varargin,'label'),GridSize(S2G));
+  data = ensurecell(get_option(varargin,'label'),GridSize(S2G));
   
 else
   
@@ -215,7 +211,7 @@ function bounds = plotHemiSphere(theta,rho,data,offset,varargin)
 
 % plot
 box = bounds+[offset,0,bounds(1)+offset,bounds(2)];
-plotData(X+offset,Y,data,box,varargin{:});
+if ~isempty(X), plotData(X+offset,Y,data,box,varargin{:});end
 
 % bounding box
 if ~check_option(varargin,'annotate')
