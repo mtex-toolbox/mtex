@@ -21,4 +21,6 @@ if ~check_option(varargin,'radiant')
   d = d ./ degree; %#ok<NASGU>
 end
 
-save(fname,'d','-ASCII');
+if ~isempty(ebsd.xy), d = [d,ebsd.xy]; end
+
+save(fname,'d','-ASCII','-single');

@@ -58,7 +58,9 @@ else
   % calculate the error
   if check_option(varargin,'L0')
     epsilon = get_option(varargin,'L0',1);
-    e = sum(abs(d1-d2) > epsilon);
+    for i = 1:length(epsilon)
+      e(i) = sum(abs(d1-d2) > epsilon(i))/numel(d1);
+    end
   elseif check_option(varargin,'L2')
     e = norm(d1-d2) / norm(d2);
   else
