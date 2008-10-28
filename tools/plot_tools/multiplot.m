@@ -306,24 +306,23 @@ end
 end
 
 %% determine best alignment of subfigures
-function [nx,ny,l] = bestfit(dx,dy,dxdy,n,marginx,marginy)
+function [bx,by,l] = bestfit(dx,dy,dxdy,n,marginx,marginy)
 
 % length in x direction
 lx = @(nx,ny) min((dx-(nx-1)*marginx)/nx,...
   (dy-(ny-1)*marginy)/dxdy/ny);
 
-ny = 1;
-nx = n;
-l = lx(nx,ny);
+by = 1; bx = n;
+l = lx(bx,by);
+
 if n == 1, return;end
+
 for ny=2:n
   nx = ceil(n/ny);
-  if lx(nx,ny) > l
+  if lx(nx,ny) > l % new best fit
     l = lx(nx,ny);
-  else
-    ny = ny-1; %#ok<FXSET>
-    nx = ceil(n/ny);
-    break
+    bx = nx;
+    by = ny;
   end
 end
 end

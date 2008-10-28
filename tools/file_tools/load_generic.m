@@ -18,7 +18,7 @@ if ~check_option(varargin,'ascii')
   end
 end
 
-[d,c] = extract_data(d);
+[d,c,header] = extract_data(d);
 
 % data found?
 if ~isempty(d)    
@@ -58,10 +58,11 @@ try
 catch
 end
 
-function [d,c] = extract_data(s)
+function [d,c,header] = extract_data(s)
 
-c = []; d = [];
+c = []; d = [];header=[];
 if isfield(s,'colheaders'), c = s.colheaders;end
+if isfield(s,'textdata'), header = s.textdata;end
   
 if isstruct(s)
   

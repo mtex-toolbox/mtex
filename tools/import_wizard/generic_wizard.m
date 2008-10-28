@@ -14,9 +14,7 @@ function [options] = generic_wizard(varargin)
 
 %% -------- parameter overload -------------------------------------------
 
-if length(varargin) < 4, disp('need more arguments');
- return
-end
+if length(varargin) < 4, error('need more arguments');end
 
 options = {};
 
@@ -41,12 +39,13 @@ if check_option(varargin,'type')
  end
 end
 
+newversion = ~verLessThan('matlab','7.6');
 
 %% -------- init gui -----------------------------------------------------
 
 % window dimension
 w = 466;
-tb = 250; %table size
+tb = 250+10*newversion; %table size
 h = tb+310; 
 dw = 10;
 cw = (w-3*dw)/4;
@@ -85,14 +84,14 @@ else
   for k=1:y, colnames{k} = ['Column ' int2str(k)]; end;
 end
 
-if ~strcmp(version('-release'),'2008a')
+if newversion
   uitable('Parent',htp,'Data',data(1:min(size(data,1),100),:),...
-   'ColumnNames',colnames,...
-   'Position',[dw,h-(tb+110),w-2*dw,tb]);
+    'ColumnName',colnames,...
+    'Position',[dw,h-(tb+110),w-2*dw,tb]);
 else
   uitable('Parent',htp,'Data',data(1:min(size(data,1),100),:),...
- 'ColumnName',colnames,...
- 'Position',[dw,h-(tb+110),w-2*dw,tb]);
+    'ColumnNames',colnames,...
+    'Position',[dw,h-(tb+110),w-2*dw,tb]);
 end
 
 % input selection
@@ -103,18 +102,25 @@ uicontrol('Parent',htp,'Style','Text','Position',[dw,h-(tb+120+25),w-2*dw,20],..
 
 cdata = guessColNames(values,size(data,2),colnames);
 
-try
-  mtable = createTable([],colnames,cdata,false,'units','pixel','position',[dw-1,h-(tb+120+85),w-2*dw,55]);
-  jtable = mtable.getTable;
-  cb = javax.swing.JComboBox(values);
-  cb.setEditable(true);
-  editor = javax.swing.DefaultCellEditor(cb);
-  for i = 1:length(values)
-    jtable.getColumnModel.getColumn(i-1).setCellEditor(editor);
+if newversion
+  uitable('Parent',htp,'Data',cdata,...
+    'ColumnName',colnames,...
+    'ColumnEditable',true,...
+    'ColumnInputFormat',repcell(valus,[length(colnames),1]),...
+    'Position',[dw-1,h-(tb+120+85),w-2*dw,65]);
+else
+  try
+    mtable = createTable([],colnames,cdata,false,'units','pixel','position',[dw-1,h-(tb+120+85),w-2*dw,55]);
+    jtable = mtable.getTable;
+    cb = javax.swing.JComboBox(values);
+    cb.setEditable(true);
+    editor = javax.swing.DefaultCellEditor(cb);
+    for i = 1:length(values)
+      jtable.getColumnModel.getColumn(i-1).setCellEditor(editor);
+    end
+  catch
   end
-catch
 end
-
 % checkboxes
 chk_angle = uibuttongroup('Parent',htp,'title','Angle Convention','units','pixels',...
   'position',[dw h-(tb+260) cw*2 45]);
