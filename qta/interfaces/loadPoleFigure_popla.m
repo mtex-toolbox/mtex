@@ -41,7 +41,7 @@ while ~feof(fid)
     drho = p{4}; mtex_assert(drho > 0 && drho < 90);
     mrho = p{5}; mtex_assert(mrho > 0 && mrho <= 360);
     shifttheta = p{6}; mtex_assert(shifttheta == 1 || shifttheta == 0);
-    shiftrho = p{7}; mtex_assert(shiftrho == 1 || shiftrho == 0);
+    shiftrho = p{7}; mtex_assert(abs(shiftrho) == 1 || shiftrho == 0);
     iper = [p{8:10}]; mtex_assert(all(abs(iper)>0) && all(abs(iper)<4));
     scaling = p{11}; mtex_assert(scaling>0);
     bg = p{12};
