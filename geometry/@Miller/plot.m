@@ -11,7 +11,7 @@ function plot(m,varargin)
 
 % store hold status
 washold = ishold;
-label = repcell(get_option(varargin,'label'),numel(m));
+label = ensurecell(get_option(varargin,'label'),numel(m));
 
 for i = 1:numel(m)
 

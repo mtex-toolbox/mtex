@@ -21,13 +21,15 @@ for i = 1:length(rep)
 end
 
 % remove two consecutive numbers if the second is a divisor of the first
-% eg. 63 62 42 
-ind = regexp(s,'\d\d');
-if ~isempty(ind)
-  ind = ind(1);
-  n1 = str2num(s(ind));
-  n2 = str2num(s(ind+1));
-  if n1 > n2 && mod(n1,n2) == 0, s(ind+1) = [];end
+% eg. 63 62 42 32
+if length(regexp(s,'\d'))>=4
+  ind = regexp(s,'\d\d');
+  if ~isempty(ind)
+    ind = ind(1);
+    n1 = str2num(s(ind));
+    n2 = str2num(s(ind+1));
+    if n1 > n2, s(ind+1) = [];end
+  end
 end
 
 % ignore 1

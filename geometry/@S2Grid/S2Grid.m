@@ -63,7 +63,8 @@ maxrho = get_option(varargin,'MAXRHO',2*pi);
 drho = maxrho - minrho;
 
 %% 
-if nargin == 0 % empty grid
+if nargin == 0 || ... % empty grid
+    (check_option(varargin,{'theta','rho'}) && isempty(get_option(varargin,'theta')))
 	G.res = 2*pi;
 	G.theta = [];
 	G.rho = [];
@@ -92,7 +93,11 @@ else
     rho = get_option(varargin,'rho',[]);
     if check_option(varargin,'PLOT'), rho = [rho,rho(0)];end
     
-    G.res = min(abs(theta(1)-theta(2)),abs(rho(1)-rho(2)));
+    if numel(theta)<2
+      G.res = 2*pi;
+    else
+      G.res = min(abs(theta(1)-theta(2)),abs(rho(1)-rho(2)));
+    end
     G.theta = S1Grid(theta,0,max(theta));
     G.rho = repmat(...
       S1Grid(rho,0,2*pi,'PERIODIC'),...
@@ -183,6 +188,7 @@ G = class(G,'S2Grid');
     
 
 function res = vec2res(vec)
+if numel(vec) < 10, res = 2*pi;return; end
 ind = randperm(min(100,numel(vec)));
 d = acos(dot_outer(vec(ind),vec(:)));
 d(d<0.005) = pi/2;
