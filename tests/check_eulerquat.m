@@ -5,9 +5,9 @@
 
 q = quaternion(SO3Grid(10000,symmetry,symmetry));
 
-[alpha,beta,gamma] = quat2euler(q);
+[alpha,beta,gamma] = quat2euler(q,'Bunge');
 
-qq = euler2quat(alpha,beta,gamma);
+qq = euler2quat(alpha,beta,gamma,'Bunge');
 
 e  = abs(dot(q,qq));
 if mean(e) < 0.9
