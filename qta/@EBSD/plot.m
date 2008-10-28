@@ -46,12 +46,12 @@ else
   %pcolor(c);shading flat
   
 
-  if   numel(find(isnan(c))) / numel(c) > 0.5
+  if check_option(varargin,'interpolate')  %numel(find(isnan(c))) / numel(c) > 0.5
     
     [xx,yy] = meshgrid(x,y);
-    c1 = griddata(ebsd.xy(:,1),ebsd.xy(:,2),d(:,1),xx,yy);
-    c2 = griddata(ebsd.xy(:,1),ebsd.xy(:,2),d(:,2),xx,yy);
-    c3 = griddata(ebsd.xy(:,1),ebsd.xy(:,2),d(:,3),xx,yy);
+    c1 = griddata(ebsd.xy(:,1),ebsd.xy(:,2),d(:,1),xx,yy,'nearest');
+    c2 = griddata(ebsd.xy(:,1),ebsd.xy(:,2),d(:,2),xx,yy,'nearest');
+    c3 = griddata(ebsd.xy(:,1),ebsd.xy(:,2),d(:,3),xx,yy,'nearest');
     c = cat(3,c1,c2,c3);
     c = min(1,max(c,0));
   end
