@@ -4,7 +4,7 @@ A = ones(1,L+1);
 
 switch lower(name)
 
-  case 'bump'
+  case {'bump','user'}
     
     A = calcChebyshevCoeff(construct_K(name,p,L),L,'maxangle',p);
     

@@ -10,6 +10,11 @@ switch lower(name)
   case 'bump'
     
     K = @(co2) (pi/(p-sin(p)))*(co2>cos(p/2));
+
+    
+  case 'user'
+    
+    K = @(co2) p(co2);
     
   case 'abel poisson'
         
