@@ -28,6 +28,10 @@ switch lower(name)
         
   	hw = p;
 
+  case 'user'
+    
+    hw = pi;
+    
   otherwise
 
     K = construct_K(name,p,construct_A(name,p,1000));

@@ -16,10 +16,13 @@ function Z = RRK(kk,h1,r1,h2,r2,CS,SS,varargin)
 Z = zeros(numel(h2),numel(r2));
 
 sh = symetriceVec(CS,h1);
+sr = symetriceVec(SS,r1);
 if check_option(varargin,'reduced'), sh = [sh,-sh];end
 
-for i=1:length(sh)
-	dh = dot_outer(sh(i)./norm(sh(i)),h2./norm(h2));
-	dr = dot_outer(r1./norm(r1),r2./norm(r2));
-	Z = Z + kk.RRK(dh.',dr) / length(sh);
+for i = 1:length(sh)
+  for j = 1:length(sr)
+    dh = dot_outer(sh(i)./norm(sh(i)),h2./norm(h2));
+    dr = dot_outer(sr(j)./norm(sr(j)),r2./norm(r2));
+    Z = Z + kk.RRK(dh.',dr) / length(sh);
+  end
 end

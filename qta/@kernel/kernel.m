@@ -19,7 +19,7 @@ function K = kernel(name,varargin)
 % supported kernel:
 % Laplace, Abel Poisson, de la Vallee Poussin, von Mises Fisher,
 % fibre von Mises Fisher, Square Singularity, Gauss Weierstrass,
-% Dirichlet, local, Fourier, bump
+% Dirichlet, local, Fourier, bump, user
 %
 %% See also
 % ODF_index kernel/gethw unimodalODF uniformODF
@@ -46,7 +46,7 @@ elseif ~isa(name,'char')
   
 elseif ~any(strcmpi(name,{'Laplace','Abel Poisson','de la Vallee Poussin',...
     'von Mises Fisher','fibre von Mises Fisher','Square Singularity',...
-    'Gauss Weierstrass','local','Dirichlet','Fourier','bump'}))
+    'Gauss Weierstrass','local','Dirichlet','Fourier','bump','user'}))
   
   error(sprintf(['unknown kernel: "',name,'".\nAvailable kernels are: \n',...
     'Laplace, \n',...
@@ -58,7 +58,7 @@ elseif ~any(strcmpi(name,{'Laplace','Abel Poisson','de la Vallee Poussin',...
     'Gauss Weierstrass, \n',...
     'local, \n',...
     'Dirichlet, \n',...
-    'Fourier','bump'])); %#ok<SPERR>
+    'Fourier, \nbump, \nuser'])); %#ok<SPERR>
   
 end
     
