@@ -114,6 +114,19 @@ catch
   e = lasterror;
   disp(e.message);
   
+  % look for target
+  this_computer = importdata([mtex_path '/c/bin/target']);
+  if ~strcmpi(this_computer,computer)
+    disp('--------------------------------------------------');
+    disp(' ');
+    disp(['The architecture of your computer (',computer,')']);
+    disp(['does not fit the architecture of the executables (',this_computer{1} ,')!!']);
+    disp(' ');
+    disp('Please download the the right executables for your system!')
+    disp('--------------------------------------------------');
+    return
+  end
+  
   disp(' ');
   disp('Check the following options:');  
   disp('* Download the binaries that corresponds to your system.');
@@ -132,3 +145,12 @@ try
 catch
   e = 0;  
 end
+
+
+function s = translate_system(s)
+
+ss = {'LNX86','MAC','MACI','PCWIN','GLNXA64','PCWIN64','SOL64'};
+
+sss = {'Linux 32bit','not supported','Intel Mac 32bit','Windows 32bit',...
+  'Linux 64bit','Windows 64bit'};
+
