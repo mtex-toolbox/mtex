@@ -24,7 +24,7 @@ function odf = fibreODF(h,r,CS,SS,varargin)
 % ODF/ODF uniformODF unimodalODF
 
 error(nargchk(4, 6, nargin));
-argin_check(h,{'vector3d','Miller'});
+argin_check(h,'Miller');
 argin_check(r,'vector3d');
 argin_check(CS,'symmetry');
 argin_check(SS,'symmetry');
