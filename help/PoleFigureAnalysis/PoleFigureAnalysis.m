@@ -60,7 +60,7 @@ plot(pf)
 % * superpose pole figures
 %
 % An exhausive introduction how to modify pole figure data can be found
-% <PoleFigureModification.html here>
+% <ModifyPoleFigureData.html here>
 % As an example, if one wants to set all negative intensities to zero one
 % can issue the command
 
