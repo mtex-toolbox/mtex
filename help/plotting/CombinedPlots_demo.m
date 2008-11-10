@@ -37,6 +37,7 @@ plotpdf(ebsd,h,'reduced','MarkerSize',5,'MarkerColor','b','MarkerEdgeColor','w')
 hold all
 plotpdf(ebsd_rotated,h,'MarkerSize',5,'MarkerColor','r','MarkerEdgeColor','k');
 hold off
+hh = legend({'EBSD 1','EBSD 2'},'units','normalized','position',[0.022 0.9 0.1 0.08])
 
 %% Add Miller Indece to a Inverse Pole Figure Plot
 % Next we are going to add some Miller indece to an inverse pole figure
