@@ -93,11 +93,33 @@ if check_option(varargin, {'mfiles','all'})
  
 end
 
-%% calculate ODF files
+%% calculate PoleFigureAnalysis files
 
-if check_option(varargin, {'odf','all'})
+if check_option(varargin, {'PoleFigureAnalysis','all'})
   
-  current_path = [mtex_path '/help/ODFCalculation'];
+  current_path = [mtex_path '/help/PoleFigureAnalysis'];
+  files = dir([current_path '/*.m']);
+  publish_files({files.name},current_path,'stylesheet',[pwd '/example_style.xsl'],...
+    'out_dir',html_path,'evalcode',1);
+end
+
+
+%% calculate EBSDAnalysis files
+
+if check_option(varargin, {'EBSDAnalysis','all'})
+  
+  current_path = [mtex_path '/help/EBSDAnalysis'];
+  files = dir([current_path '/*.m']);
+  publish_files({files.name},current_path,'stylesheet',[pwd '/example_style.xsl'],...
+    'out_dir',html_path,'evalcode',1);
+end
+
+
+%% calculate ODFAnalysis files
+
+if check_option(varargin, {'ODFAnalysis','all'})
+  
+  current_path = [mtex_path '/help/ODFAnalysis'];
   files = dir([current_path '/*.m']);
   publish_files({files.name},current_path,'stylesheet',[pwd '/example_style.xsl'],...
     'out_dir',html_path,'evalcode',1);

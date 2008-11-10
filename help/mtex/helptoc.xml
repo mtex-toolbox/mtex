@@ -15,36 +15,46 @@
   <tocitem target="compilation.html">Compilation Guide</tocitem>
 </tocitem>
 
-<tocitem target="interfaces_index.html" image="$toolbox/matlab/icons/boardicon.gif">
-  Import of Pole Figure Data 
-  <tocitem target="generic_interface.html">Generic Interface</tocitem>	 
-  <tocitem target="aachen_exp_interface.html">Aachen_exp Interface</tocitem>
-  <tocitem target="aachen_interface.html">Aachen Interface</tocitem>
-  <tocitem target="beartex_interface.html">BearTex Interface</tocitem>
-  <tocitem target="dubna_interface.html">Dubna Interface</tocitem>
-  <tocitem target="geesthacht_interface.html">Geesthacht Interface</tocitem>
-  <tocitem target="juelich_interface.html">Juelich Interface</tocitem>
-  <tocitem target="philips_interface.html">Philips Interface</tocitem>
-  <tocitem target="ptx_interface.html">PTX Interface</tocitem>
-  <tocitem target="xrdml_interface.html">XRDML Interface</tocitem>
-</tocitem>
-
-<tocitem target="interfacesEBSD_index.html" image="$toolbox/matlab/icons/boardicon.gif">
-  Import of EBSD Data
-  <tocitem target="ebsd_interface.html">Generic Interface</tocitem>	 
-</tocitem>
-
-
-<tocitem target="ODFCalculations_index.html"
-	 image="$toolbox/matlab/icons/pagesicon.gif">
-  ODF Calculations
-  <tocitem target="modelODFs_demo.html">Model ODFs</tocitem>
-  <tocitem target="odf_estimation.html"> ODF Estimation from Pole Figures</tocitem>
-  <tocitem target="EBSD2odf_estimation.html"> ODF Estimation from EBSD data</tocitem>
-  <tocitem target="ODF_demo.html"> ODF Analysis</tocitem>	
-  <tocitem target="PoleFigureSimulation_demo.html"> Pole Figure Simulation</tocitem>
-  <tocitem target="EBSDSimulation_demo.html"> EBSD Data Simulation</tocitem>
+<tocitem target="PoleFigure_index.html" image="$toolbox/matlab/icons/boardicon.gif">
+  Pole Figure Analysis
+  <tocitem target="interfaces_index.html">
+    Import Pole Figure Data
+    <tocitem target="generic_interface.html">Generic Interface</tocitem>	 
+    <tocitem target="aachen_exp_interface.html">Aachen_exp Interface</tocitem>
+    <tocitem target="aachen_interface.html">Aachen Interface</tocitem>
+    <tocitem target="beartex_interface.html">BearTex Interface</tocitem>
+    <tocitem target="dubna_interface.html">Dubna Interface</tocitem>
+    <tocitem target="geesthacht_interface.html">Geesthacht Interface</tocitem>
+    <tocitem target="juelich_interface.html">Juelich Interface</tocitem>
+    <tocitem target="philips_interface.html">Philips Interface</tocitem>
+    <tocitem target="ptx_interface.html">PTX Interface</tocitem>
+    <tocitem target="xrdml_interface.html">XRDML Interface</tocitem>
+  </tocitem>
+  <tocitem target="dubna_demo.html"> Modify Pole Figure Data </tocitem>
+  <tocitem target="odf_estimation.html"> ODF Estimation from Pole
+  Figure Data</tocitem>
   <tocitem target="ghost_demo.html"> Ghost Effect Analysis</tocitem>
+</tocitem>
+
+<tocitem target="EBSD_index.html" image="$toolbox/matlab/icons/boardicon.gif">
+  EBSD Data Analysis
+  <tocitem target="interfacesEBSD_index.html">
+    Import EBSD Data
+    <tocitem target="ebsd_interface.html">Generic Interface</tocitem>	 
+  </tocitem>
+  <tocitem target="EBSD2odf_estimation.html"> Modify EBSD Data </tocitem>
+  <tocitem target="EBSD2odf_estimation.html"> Analyze EBSD Data </tocitem>
+  <tocitem target="EBSD2odf_estimation.html"> ODF Estimation from EBSD data</tocitem>
+</tocitem>
+
+<tocitem target="ODF_index.html"
+	 image="$toolbox/matlab/icons/pagesicon.gif">
+  ODF Analysis
+  <tocitem target="modelODFs_demo.html">Model ODFs</tocitem>
+  <tocitem target="ODFCalculations_index.html">ODF Calculations</tocitem>
+  <tocitem target="ODF_demo.html"> ODF Characteristics</tocitem>	
+  <tocitem target="PoleFigureSimulation_demo.html"> Pole Figure Simulation</tocitem>
+  <tocitem target="EBSDSimulation_demo.html"> EBSD Data Simulation</tocitem>  
 </tocitem>
 
 

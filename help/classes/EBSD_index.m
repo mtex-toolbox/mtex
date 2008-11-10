@@ -27,7 +27,7 @@ ss   = symmetry('triclinic');        % specimen symmetry
 
 fnames = [mtexDataPath '/aachen_ebsd/85_829grad_07_09_06.txt'];
 
-ebsd_i = loadEBSD(fnames,cs,ss,'header',1,'layout',[5,6,7])
+ebsd_i = loadEBSD(fnames,cs,ss,'header',1,'layout',[5,6,7],'xy',[3 4])
 
 %%
 % a second way to define EBSD data is to simulate them using a given
@@ -51,7 +51,13 @@ ebsd_rotated = rotate(ebsd_s,axis2quat(xvector-yvector,25*degree));
     
 %% Plotting EBSD data
 %
-% EBSD data can be plotted using the [[EBSD_plotpdf.html,plotpdf]] command.
+% The typical way of plotting EBSD data is to asign a color to each
+% orientation and plot a map of these colors.
+
+plot(ebsd)
+
+%%
+% EBSD data can also be plotted using the [[EBSD_plotpdf.html,plotpdf]] command.
 % It plottes the application of the orientations stored in the EBSD object
 % to a certain crystal direction as a scatter plot - which can be
 % interpreted as a pole figure.
