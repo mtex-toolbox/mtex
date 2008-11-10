@@ -15,7 +15,7 @@
   <tocitem target="compilation.html">Compilation Guide</tocitem>
 </tocitem>
 
-<tocitem target="PoleFigure_index.html" image="$toolbox/matlab/icons/boardicon.gif">
+<tocitem target="PoleFigure_index.html" image="$toolbox/matlab/icons/pagesicon.gif">
   Pole Figure Analysis
   <tocitem target="interfaces_index.html">
     Import Pole Figure Data
@@ -30,13 +30,13 @@
     <tocitem target="ptx_interface.html">PTX Interface</tocitem>
     <tocitem target="xrdml_interface.html">XRDML Interface</tocitem>
   </tocitem>
-  <tocitem target="dubna_demo.html"> Modify Pole Figure Data </tocitem>
+  <tocitem target="ModifyPoleFigureData.html"> Modify Pole Figure Data </tocitem>
   <tocitem target="odf_estimation.html"> ODF Estimation from Pole
   Figure Data</tocitem>
   <tocitem target="ghost_demo.html"> Ghost Effect Analysis</tocitem>
 </tocitem>
 
-<tocitem target="EBSD_index.html" image="$toolbox/matlab/icons/boardicon.gif">
+<tocitem target="EBSD_index.html" image="$toolbox/matlab/icons/pagesicon.gif">
   EBSD Data Analysis
   <tocitem target="interfacesEBSD_index.html">
     Import EBSD Data
