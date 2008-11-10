@@ -29,11 +29,18 @@ pf = loadPoleFigure(fname,h,cs,ss,'superposition',c)
 figure('position',[359 450 749 249])
 plot(pf)
 
+%% Correct Pole figure data
 
-%% Correct pole figures
 
-pf_corrected = delete(pf,getTheta(getr(pf)) >= 70*degree &...
-  getTheta(getr(pf)) <= 75*degree);
+
+%% Remove certain measurements from the data
+%
+
+% get theta angle
+theta = get(pf,'theta');
+
+% remove all measurement that have theta angle between 70 and 75 degree
+pf_corrected = delete(pf,theta > 69*degree & theta < 76*degree);
 
 plot(pf_corrected)
 
