@@ -35,7 +35,7 @@ if iscell(h), h = [h{:}];end
 if check_option(varargin,'3d')
   r = S2Grid('PLOT',varargin{:});
 else
-  [maxrho,maxtheta] = getFundamentalregion(odf(1).CS,odf(1).SS,varargin{:});
+  [maxrho,maxtheta] = getFundamentalRegion(odf(1).CS,odf(1).SS,varargin{:});
   r = S2Grid('PLOT',...
     'MAXTHETA',maxtheta,...
     'MAXRHO',maxrho,varargin{:});

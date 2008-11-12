@@ -22,7 +22,8 @@ function g0 = modalorientation(odf,varargin)
 % end
 
 res = 5*degree;
-resmax = get_option(varargin,'resolution',1*degree);
+resmax = get_option(varargin,'resolution',...
+  max(0.5*degree,get(odf,'resolution')/2));
 
 % initial gues
 S3G = SO3Grid(2*res,odf(1).CS,odf(1).SS);
@@ -30,10 +31,11 @@ f = eval(odf,S3G);
 
 g0 = quaternion(S3G,find(f>0.8*max(f)));
 
+f0 = max(f);
 
+while res >= resmax || (0.95 * max(f) > f0)
 
-while res >= resmax
-
+  f0 = max(f);
   S3G = g0*SO3Grid(res,odf(1).CS,odf(1).SS,'max_angle',2*res);
   f = eval(odf,S3G);
   g0 = quaternion(S3G,find(f(:)==max(f(:))));
