@@ -237,7 +237,10 @@ bounds(3) = bounds(3) + offset;
 %% Plot Tort
 function torte(X,Y)
 
-line(X(:,1),Y(:,1),'color','k')%,'LineWidth',2)
-line(X(:,end),Y(:,end),'color','k')%,'LineWidth',2)
-line(X(end,:),Y(end,:),'color','k')%,'LineWidth',2)
-line(X(1,:),Y(1,:),'color','k')%,'LineWidth',2)
+h(1) = line(X(:,1),Y(:,1),'color','k');%,'LineWidth',2)
+h(2) = line(X(:,end),Y(:,end),'color','k');%,'LineWidth',2)
+h(3) = line(X(end,:),Y(end,:),'color','k');%,'LineWidth',2)
+h(4) = line(X(1,:),Y(1,:),'color','k');%,'LineWidth',2)
+
+% control legend entry
+setLegend(h,'off');
