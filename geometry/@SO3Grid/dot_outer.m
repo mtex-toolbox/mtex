@@ -60,13 +60,8 @@ else
         transpose(q(:)*qcs(ic)*s.'));
   
       % find columns with minimal beta angle
-      ind = xbeta == repmat(min(xbeta,[],1),length(s),1);
-      ind = ind & ind == cumsum(ind,1);
+      [xbeta,xalpha,xgamma] = selectMinbyRow(xbeta,xalpha,xgamma);
       
-      xalpha = xalpha(ind);
-      xbeta  = xbeta(ind);
-      xgamma = xgamma(ind);
-   
       d = max(d,SO3Grid_dist_region(yalpha,ybeta,ygamma,sgamma,int32(igamma),...
         int32(ialphabeta),palpha,pgamma, xalpha,xbeta,xgamma,epsilon));
     

@@ -40,23 +40,18 @@ else
     s = s(1:ls/3);
   end
   
-  qs = transpose(q(:)*s.'); clear q;
+  qs = transpose(q(:)*s.'); clear q; % rows symmetries, columns elements
 
-  % special cubic case 2
+  % special cubic case 2 -> check trifold axis seperatly
   if any(strcmp(Laue(SO3G.CS),{'m-3','m-3m'})) && ~check_option(varargin,'nocubictrifoldaxis')
     qs = [qs(1:ls/3,:),qs(ls/3+1:2*ls/3,:),qs(2*ls/3+1:end,:)];
   end
 
+  % convert to euler and find rows with minimal beta angle
   [xalpha,xbeta,xgamma] = quat2euler(qs);   clear qs;
+  [xbeta,xalpha,xgamma] = selectMinbyRow(xbeta,xalpha,xgamma);
   
-  % find columns with minimal beta angle
-  ind = xbeta == repmat(min(xbeta,[],1),size(xbeta,1),1);
-  ind = ind & ind == cumsum(ind,1);
-    
-  xalpha = xalpha(ind);
-  xbeta  = xbeta(ind);
-  xgamma = xgamma(ind);
-   
+  % extract SO3Grid
   [ybeta,yalpha,ialphabeta,palpha] = getdata(SO3G.alphabeta);
 
   ygamma = double(SO3G.gamma);
@@ -72,11 +67,8 @@ else
     if any(strcmp(Laue(SO3G.CS),{'m-3','m-3m'})) && ~check_option(varargin,'nocubictrifoldaxis')          
 
       d = reshape(d,[],3); ind = reshape(ind,[],3);
-      ind2 = d == repmat(max(d,[],2),1,3);
-      ind2 = ind2 & ind2 == cumsum(ind2,2);
       
-      ind = ind(ind2);
-      d = d(ind2);
+      [d,ind] = selectMaxbyColumn(d,ind);
       
     end      
   else  
