@@ -14,12 +14,12 @@ sum(x)/length(x)
 
 %%
 x = eval(unimodalODF(axis2quat(xvector,0*degree),cs,ss,'halfwidth',5*degree),...
-  SO3Grid(2.5*degree,cs,ss));
+  SO3Grid(1.25*degree,cs,ss));
 sum(x)/length(x)
 
 %%
 x = eval(unimodalODF(axis2quat(xvector,45*degree),cs,ss,'halfwidth',5*degree),...
-  SO3Grid(2.5*degree,cs,ss));
+  SO3Grid(1.25*degree,cs,ss));
 sum(x)/length(x)
 %%
 ss = symmetry('mmm');
