@@ -5,9 +5,9 @@ switch vname
   case fields(obj)
     value = obj.(vname);
   case {'theta','polar'}
-    value = gettheta(getr(obj));
+    value = getTheta(getr(obj));
   case {'rho','azimuth'}
-    value = getrho(getr(obj));
+    value = getRho(getr(obj));
   case {'Miller','h','crystal directions'}
     value = getMiller(obj);
   otherwise

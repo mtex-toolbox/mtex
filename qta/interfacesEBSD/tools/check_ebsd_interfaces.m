@@ -2,7 +2,7 @@ function [interface,options] = check_ebsd_interfaces(fname,varargin)
 % determine interface from file
 
 
-if ~exist(fname,'file'), error('File %s not found.',fname{1});end
+if ~exist(fname,'file'), error('File %s not found.',fname);end
 
 %% find all installed interfaces
 interfaces = dir([mtex_path '/qta/interfacesEBSD/loadEBSD_*.m']);
