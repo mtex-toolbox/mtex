@@ -45,8 +45,7 @@ pf = loadPoleFigure(fname,h,cs,ss,'superposition',c)
 % plotted in MTEX. Have a look at the <plot_index plotting section> for
 % more informations.
 
-clf; set(gcf,'position',[100 100 600 300])
-plot(pf)
+plot(pf,'position',[100 100 600 300])
 
 %% Modify Pole Figure Data
 %
@@ -76,9 +75,8 @@ plot(pf)
 % algortihm as well as of the options can be found 
 % <odf_estimation.html here>
 
-clf; set(gcf,'position',[100 100 800 300])
 odf = calcODF(pf,'zero_range','silent')
-plotpdf(odf,h,'reduced')
+plotpdf(odf,h,'reduced','position',[100 100 800 300])
 
 
 %% Simulate Pole Figure Data

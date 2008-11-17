@@ -15,7 +15,7 @@
   <tocitem target="compilation.html">Compilation Guide</tocitem>
 </tocitem>
 
-<tocitem target="PoleFigure_index.html" image="$toolbox/matlab/icons/pagesicon.gif">
+<tocitem target="PoleFigureAnalysis.html" image="$toolbox/matlab/icons/pagesicon.gif">
   Pole Figure Analysis
   <tocitem target="interfaces_index.html">
     Import Pole Figure Data
@@ -36,14 +36,14 @@
   <tocitem target="ghost_demo.html"> Ghost Effect Analysis</tocitem>
 </tocitem>
 
-<tocitem target="EBSD_index.html" image="$toolbox/matlab/icons/pagesicon.gif">
+<tocitem target="EBSDAnalysis.html" image="$toolbox/matlab/icons/pagesicon.gif">
   EBSD Data Analysis
   <tocitem target="interfacesEBSD_index.html">
     Import EBSD Data
     <tocitem target="ebsd_interface.html">Generic Interface</tocitem>	 
   </tocitem>
-  <tocitem target="EBSD2odf_estimation.html"> Modify EBSD Data </tocitem>
-  <tocitem target="EBSD2odf_estimation.html"> Analyze EBSD Data </tocitem>
+  <tocitem target="ModifyEBSDData.html"> Modify EBSD Data </tocitem>
+  <tocitem target="AnalyzeEBSDData.html"> Analyze EBSD Data </tocitem>
   <tocitem target="EBSD2odf_estimation.html"> ODF Estimation from EBSD data</tocitem>
 </tocitem>
 
