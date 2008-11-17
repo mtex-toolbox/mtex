@@ -23,6 +23,10 @@ end
 
 for i=1:length(files)
 
+  out_file = [poptions.outputDir filesep strrep(files{i},'.m','.html')];
+  % check wether publishing is needed
+  if is_newer(strrep(out_file,'script_',''),files{i}), continue;end
+  
   if check_option(varargin,'waitbar')
     mtex_progress = 1;
     progress(i,length(files),'publishing: ');
@@ -36,8 +40,7 @@ for i=1:length(files)
   publish(files{i},poptions);
 
   
-  % format html file
-  out_file = [poptions.outputDir filesep strrep(files{i},'.m','.html')];
+  % format html file  
   code = file2cell(out_file);
   delete(out_file);
 
@@ -70,3 +73,9 @@ end
 
 cd(old_dir);
 if get_option(varargin,'waitbat'),close(h);end
+
+function o = is_newer(f1,f2)
+
+d1 = dir(f1);
+d2 = dir(f2);
+o = ~isempty(d1) && ~isempty(d2) && d1.datenum > d2.datenum;
