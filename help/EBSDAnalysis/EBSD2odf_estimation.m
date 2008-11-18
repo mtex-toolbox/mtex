@@ -74,5 +74,5 @@ Fourier(odf,'order',4)
 % the help fo the Direchlet kernel. I.e.
 
 k = kernel('dirichlet',4);
-odf = calcODF(EBSD,'kernel',k);
+odf = calcODF(ebsd,'kernel',k);
 Fourier(odf,'order',4)
