@@ -54,7 +54,7 @@ ebsd_rotated = rotate(ebsd_s,axis2quat(xvector-yvector,25*degree));
 % The typical way of plotting EBSD data is to asign a color to each
 % orientation and plot a map of these colors.
 
-plot(ebsd)
+plot(ebsd_i)
 
 %%
 % EBSD data can also be plotted using the [[EBSD_plotpdf.html,plotpdf]] command.

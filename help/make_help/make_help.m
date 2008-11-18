@@ -95,7 +95,7 @@ end
 
 %% calculate PoleFigureAnalysis files
 
-if check_option(varargin, {'PoleFigureAnalysis','all'})
+if check_option(varargin, {'PoleFigureAnalysis','all','demos'})
   
   current_path = [mtex_path '/help/PoleFigureAnalysis'];
   files = dir([current_path '/*.m']);
@@ -106,7 +106,7 @@ end
 
 %% calculate EBSDAnalysis files
 
-if check_option(varargin, {'EBSDAnalysis','all'})
+if check_option(varargin, {'EBSDAnalysis','all','demos'})
   
   current_path = [mtex_path '/help/EBSDAnalysis'];
   files = dir([current_path '/*.m']);
@@ -117,7 +117,7 @@ end
 
 %% calculate ODFAnalysis files
 
-if check_option(varargin, {'ODFAnalysis','all'})
+if check_option(varargin, {'ODFAnalysis','all','demos'})
   
   current_path = [mtex_path '/help/ODFAnalysis'];
   files = dir([current_path '/*.m']);
@@ -128,7 +128,7 @@ end
 
 %% calculate plotting files
 
-if check_option(varargin, {'plotting','all'})
+if check_option(varargin, {'plotting','all','demos'})
   
   current_path = [mtex_path '/help/plotting'];
   files = dir([current_path '/*.m']);
@@ -139,7 +139,7 @@ end
 
 %% calculate examples
 
-if check_option(varargin, {'examples','all'})
+if check_option(varargin, {'examples','all','demos'})
   
   current_path = [mtex_path '/examples'];
   files = dir([current_path '/*.m']);
@@ -151,7 +151,7 @@ end
 
 %% calculate interfaces
 
-if check_option(varargin, {'interfaces','all'})
+if check_option(varargin, {'interfaces','all','demos'})
 
   current_path = [mtex_path filesep 'help' filesep 'interfaces'];
   files = dir([current_path filesep '*.m']);
