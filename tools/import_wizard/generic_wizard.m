@@ -103,10 +103,10 @@ uicontrol('Parent',htp,'Style','Text','Position',[dw,h-(tb+120+25),w-2*dw,20],..
 cdata = guessColNames(values,size(data,2),colnames);
 
 if newversion
-  uitable('Parent',htp,'Data',cdata,...
+  mtable = uitable('Parent',htp,'Data',cdata,...
     'ColumnName',colnames,...
     'ColumnEditable',true,...
-    'ColumnInputFormat',repcell(valus,[length(colnames),1]),...
+    'ColumnFormat',repcell(values,[length(colnames),1]).',...
     'Position',[dw-1,h-(tb+120+85),w-2*dw,65]);
 else
   try
@@ -159,8 +159,12 @@ if ishandle(htp)
   options = {};
   
   % get column association
-  data = cell(mtable.getData);
-
+  if newversion
+    data = get(mtable,'data');
+  else
+    data = cell(mtable.getData);
+  end
+  
   if any(strcmpi(data,'Alpha'))
     layout(1) = find(strcmpi(data,'Alpha'),1);
     layout(2) = find(strcmpi(data,'Beta'),1);

@@ -11,7 +11,7 @@ v3 = 2*v1 + 3*v2;
 v1 == v2;
 
 % transform to spherical coordinates
-[theta,rho] = polar(v3);
+[theta,rho] = vec2sph(v3);
 v3 = sph2vec(theta,rho);
 
 % plot
