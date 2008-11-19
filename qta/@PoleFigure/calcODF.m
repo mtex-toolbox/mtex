@@ -145,7 +145,7 @@ else
 	else
 		evalmatrix = K(psi,S3G,[],CS,SS);
 	end
-  evaldata = eval(orig,test_S3G,'EXACT');
+  evaldata = eval(orig,test_S3G,'EXACT'); %#ok<*GTARG>
 end
 
 % --------------------- CALCULATE FLAGS ---------------------------------
