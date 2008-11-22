@@ -15,7 +15,7 @@ function mtex_settings
 set_mtex_option('polefigure_ext',...
   {'.exp','.XPa','.cns','.cnv', '.ptx','.pf','.xrdml'});
 set_mtex_option('ebsd_ext',...
-  {'.ebsd'});
+  {'.ebsd','.ctf','.ang','.hkl','.tsl'});
 
 %% Path to CIF files
 % modify this path if your CIF files are located at a different path
