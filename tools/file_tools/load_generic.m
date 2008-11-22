@@ -13,8 +13,8 @@ d = [];
 % read data using importdata
 if ~check_option(varargin,'ascii')    
   try
-    [d,del,header] = importdata(fname,options{:});
-  catch
+    d = importdata(fname,options{:});
+  catch %#ok<CTCH>
   end
 end
 
@@ -29,7 +29,7 @@ end
 % read data using txt2mat
 try
   [d,ffn,nh,SR,header] = txt2mat(fname,options{2:end},'InfoLevel',0);
-catch
+catch %#ok<CTCH>
 end
   
 % data found?
@@ -52,10 +52,10 @@ try
    
     % extract colum header
     c = regexp(rows,'\s','split');
-    c = {c{1:end-1}};
+    c = {c{~cellfun(@isempty,c)}}; % löscht evt. leere zellen.    
   
   end
-catch
+catch %#ok<CTCH>
 end
 
 function [d,c,header] = extract_data(s)
