@@ -16,14 +16,27 @@ function plotipdf(ebsd,r,varargin)
 % S2Grid/plot savefigure plot_index Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo 
 
+varargin = set_default_option(varargin,...
+  get_mtex_option('default_plot_options'));
+
+[cs,ss] = getSym(ebsd);
+
+if sum(sampleSize(ebsd))*length(cs)*length(ss) > 100000 || check_option(varargin,'points')
+  
+  points = fix(get_option(varargin,'points',100000/length(cs)/length(ss)));  
+  disp(['plot ', int2str(points) ,' random orientations out of ', int2str(sum(sampleSize(ebsd))),' given orientations']);
+  ebsd = subsample(ebsd,points);
+
+end
 
 % plotting grid
-h = @(i) reshape(inverse(quaternion(getgrid(ebsd))),[],1)*r(i);
+grid = getgrid(ebsd);
+h = @(i) reshape(inverse(quaternion(ss * grid * cs)),[],1) * r(i);
 
+[e1,maxtheta,maxrho] = getFundamentalRegion(cs,symmetry,varargin{:});
 Sh = @(i) S2Grid(h(i),...
-  'MAXTHETA',rotangle_max_y(getSym(ebsd),varargin{:})/2,...
-  'MAXRHO',max(2*pi*check_option(varargin,'COMPLETE'),...
-  rotangle_max_z(getSym(ebsd),varargin{:})),varargin{:});
+  'MAXTHETA',maxtheta,...
+  'MAXRHO',maxrho,varargin{:});
 
 multiplot(@(i) Sh(i),@(i) [],length(r),...
           'ANOTATION',@(i) r(i),...
