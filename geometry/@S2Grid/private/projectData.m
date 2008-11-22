@@ -9,15 +9,41 @@ else
 end
 projection = get_option(varargin,'projection',projection);
 
+%% get min and max rho
+if isappdata(gcf,'minrho')
+  minrho = getappdata(gcf,'minrho');
+else
+  minrho = get_option(varargin,'minrho',0);
+  setappdata(gcf,'minrho',minrho);
+end
+
+if isappdata(gcf,'maxrho')
+  maxrho = getappdata(gcf,'maxrho');
+else
+  maxrho = get_option(varargin,'maxrho',2*pi);
+  setappdata(gcf,'maxrho',maxrho);
+end
+
+
+%% restrict to plotable domain
+
+rho = mod(rho,2*pi);
+rho(rho<minrho-1e-6 | rho >maxrho+1e-6) = nan;
 
 %% modify polar coordinates
 
 if ~strcmpi(projection,'plain')
-  rho = rho + appDataOption(varargin,'rotate',0);
+  drho = appDataOption(varargin,'rotate',0);
+  rho = rho + drho;  
+  minrho = minrho + drho;
+  maxrho = maxrho + drho;
 end
 if appDataOption(varargin,'flipud',false), rho = 2*pi-rho; end
 if appDataOption(varargin,'fliplr',false), rho = pi-rho; end
 
+brho = linspace(minrho,maxrho,100);
+btheta = [0,pi/2];
+[brho,btheta] = meshgrid(brho,btheta);
 
 %% project data
 switch lower(projection)
@@ -25,28 +51,28 @@ switch lower(projection)
   case 'plain'
 
     X = rho; Y = theta;
+    bx = brho; by = btheta;
     axis ij;
-    bounds = [-10 -10 10 10];
     
   case {'stereo','eangle'} % equal angle
   
     [X,Y] = stereographicProj(theta,rho);
-    bounds = [-2, -2, 4, 4];
+    [bx,by] = stereographicProj(btheta,brho);
     
   case 'edist' % equal distance
   
     [X,Y] = edistProj(theta,rho);
-    bounds = [-pi/2, -pi/2, pi, pi];
+    [bx,by]= edistProj(btheta,brho);
   
   case {'earea','schmidt'} % equal area
     
     [X,Y] = SchmidtProj(theta,rho);
-    bounds = [-1.4142, -1.4142, 2*1.4142 , 2*1.4142];
-    %bounds = [-1.42, -1.42, 2*1.42 , 2*1.42];
+    [bx,by] = SchmidtProj(btheta,brho);
 
   case 'orthographic'
     [X,Y] = orthographicProj(theta,rho);
-    bounds = [-1, -1, 2 , 2];
+    [bx,by] = orthographicProj(btheta,brho);
+
   otherwise
     
     error('Unknown Projection!')
@@ -56,12 +82,10 @@ end
 % store projection
 setappdata(gcf,'projection',projection);
 
-% bounding box 
-if check_option(varargin,{'plain','contour','contour','smooth'})
 
-  bounds = [min(X(:)),min(Y(:)),max(X(:))-min(X(:)),max(Y(:))-min(Y(:))];
-  
-end
+% compute bounding box 
+bounds = [min(bx(:)),min(by(:)),max(bx(:))-min(bx(:)),max(by(:))-min(by(:))];
+
 
 function v = appDataOption(options,token,default)
 

@@ -2,30 +2,39 @@ function polarGrid(offset,varargin)
 % Plot Polar Grid
 % 
 
+circle(offset,0,pi/2,'boundary',varargin{:})
+
 if check_option(varargin,'grid'), v = 'on';else v = 'off';end
 
+%% latidudes
 dtheta = get_option(varargin,'grid_res',30*degree);
 theta = dtheta:dtheta:(pi/2-dtheta);
-rho = zeros(1,length(theta));
-[X,Y] = projectData(theta,rho,varargin{:});
-X = sqrt(sum(X(:).^2+Y(:).^2,2));
 
-arrayfun(@(x) circle(offset,0,x,'LineStyle',':',...
-  'edgecolor',[0.4 0.4 0.4],'tag','grid','visible',v),X);
-
+arrayfun(@(t) circle(offset,0,t,varargin{:},'LineStyle',':',...
+  'edgecolor',[0.4 0.4 0.4],'tag','grid','visible',v),theta);
 
 %% meridans
+maxrho = getappdata(gcf,'maxrho');
+minrho = getappdata(gcf,'minrho');
 drho = get_option(varargin,'grid_res',30*degree);
-rho = [0:drho:(pi-drho);pi:drho:(2*pi-drho)];
-theta = ones(size(rho))*pi/2;
+
+rho = minrho:drho:(maxrho-drho);
+if maxrho == 2*pi, rho(1) = [];end
+rho = [rho;zeros(1,length(rho))];
+
+theta = [ones(1,size(rho,2))*pi/2;zeros(1,size(rho,2))];
+
 [X,Y] = projectData(theta,rho,varargin{:});
 
 l = line(offset+X,Y,'LineStyle',':','color',[0.4 0.2 0.4],'tag','grid','visible',v);
 
 % control legend entry
-hAnnotation = get(l,'Annotation');
-hLegendEntry = get([hAnnotation{:}],'LegendInformation');
-set([hLegendEntry{:}],'IconDisplayStyle','off')
+try
+  hAnnotation = get(l,'Annotation');
+  hLegendEntry = get([hAnnotation{:}],'LegendInformation');
+  set([hLegendEntry{:}],'IconDisplayStyle','off')
+catch
+end
 
 %% labels
 
