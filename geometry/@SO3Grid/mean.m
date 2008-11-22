@@ -25,7 +25,7 @@ m = q(1);
 old_mean = inverse(q(1));
 q_cs = quaternion(getCSym(S3G));
 
-while (m ~= old_mean) 
+while dist(m,old_mean)>1*degree 
     old_mean = m;
     q_res = rearrange(m,q,q_cs);
     [m kappa v] = mean(q_res,w);
