@@ -117,6 +117,7 @@ if ~ishold
   figure(clf);
   if check_option(varargin,'position')
     set(gcf,'units','pixel','position',get_option(varargin,'position'));
+    varargin = delete_option(varargin,'position');
   end
   
   %set(gcf,'Visible','off');
