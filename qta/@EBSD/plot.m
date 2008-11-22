@@ -3,7 +3,7 @@ function plot(ebsd,varargin)
 %
 % this function is only a shortcut to EBSD/plotebsd
 
-if isempty(ebsd.xy)
+if size([ebsd.xy],1) ~= sum(GridLength([ebsd.orientations]))
   plotebsd(ebsd,varargin{:});
 else
 
