@@ -1,4 +1,4 @@
-function [m kappa q_res] = mean(S3G,varargin)
+function [m kappa v q_res] = mean(S3G,varargin)
 % returns mean, kappas and sorted q of crystal symmetry euqal quaternions 
 %
 %% Input
@@ -9,6 +9,7 @@ function [m kappa q_res] = mean(S3G,varargin)
 %% Output
 %  mean      - one equivalent mean orientation @quaternion
 %  kappa     - parameters of bingham distribution
+%  v         - eigenvectors of kappa
 %  q_res     - list of @quaternion around mean
 %
 
@@ -16,7 +17,8 @@ q = quaternion(S3G);
 
 if ~isempty(varargin)
     w = reshape(varargin{1},1,[]);
-%    q = w.*q;
+else
+    w = ones(GridSize(S3G));
 end
 
 m = q(1);
@@ -26,7 +28,7 @@ q_cs = quaternion(getCSym(S3G));
 while (m ~= old_mean) 
     old_mean = m;
     q_res = rearrange(m,q,q_cs);
-    [m kappa] = mean(q_res,w);
+    [m kappa v] = mean(q_res,w);
 end
 %kappa = K; %kappa = solve_kappa(K);
 
