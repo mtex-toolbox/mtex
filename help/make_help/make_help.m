@@ -99,7 +99,7 @@ if check_option(varargin, {'PoleFigureAnalysis','all','demos'})
   
   current_path = [mtex_path '/help/PoleFigureAnalysis'];
   files = dir([current_path '/*.m']);
-  publish_files({files.name},current_path,'stylesheet',[pwd '/example_style.xsl'],...
+  publish_files({files.name},current_path,...
     'out_dir',html_path,'evalcode',1);
 end
 
@@ -110,7 +110,7 @@ if check_option(varargin, {'EBSDAnalysis','all','demos'})
   
   current_path = [mtex_path '/help/EBSDAnalysis'];
   files = dir([current_path '/*.m']);
-  publish_files({files.name},current_path,'stylesheet',[pwd '/example_style.xsl'],...
+  publish_files({files.name},current_path,...
     'out_dir',html_path,'evalcode',1);
 end
 
@@ -121,8 +121,9 @@ if check_option(varargin, {'ODFAnalysis','all','demos'})
   
   current_path = [mtex_path '/help/ODFAnalysis'];
   files = dir([current_path '/*.m']);
-  publish_files({files.name},current_path,'stylesheet',[pwd '/example_style.xsl'],...
+  publish_files({files.name},current_path,...
     'out_dir',html_path,'evalcode',1);
+  copyfile([current_path,'/*.png'],[mtex_path,'/help/html'])
 end
 
 
@@ -169,6 +170,7 @@ builddocsearchdb('.');
 mtex_startup_dir = get_mtex_option('mtex_startup_dir');
 unix(['rm -rf ' mtex_path '/help/mtex/helpsearch']);
 unix(['mv -f ' mtex_startup_dir,'/helpsearch ' mtex_path '/help/mtex/']);
+%unix(['mv -f  ~/helpsearch ' mtex_path '/help/mtex/']);
 cd([mtex_path '/help/make_help']);
 
 %% finisch

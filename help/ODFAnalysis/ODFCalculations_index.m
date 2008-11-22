@@ -52,6 +52,16 @@
 % from EBSD data. The <ODF_demo.html ODF Analysis Demo> gives an overview
 % over the texture characteristic that can be computed using MTEX.
 %
+% [[ODF_entropy.html,entropy]], its [[ODF_textureindex.html,textureindex]]
+% or the [[ODF_volume.html,volume]] ratio corresponging to a specific
+% orientation. Additional functions are 
+% [[ODF_min.html,min]],
+% [[ODF_max.html,max]],
+% [[ODF_hist.html,hist]],
+% [[ODF_mean.html,mean]],
+% [[ODF_modalorientation.html,modalorientation]],
+% [[ODF_std.html,std]].
+
 %
 %% Simulate Pole Figures or EBSD Data
 %

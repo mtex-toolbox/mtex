@@ -9,9 +9,9 @@
 %
 % Let us first define some model ODFs to be plotted later on.
 
-cs = symmetry('-3'); ss = symmetry('-1');
-q0 = Euler2quat(30*degree,40*degree,10*degree);
-q1 = Euler2quat(10*degree,80*degree,70*degree);
+cs = symmetry('-3m'); ss = symmetry('-1');
+q0 = euler2quat(30*degree,40*degree,10*degree);
+q1 = euler2quat(10*degree,80*degree,70*degree);
 odf = 0.7*unimodalODF(q0,cs,ss) + 0.3*unimodalODF(q1,cs,ss);
 
 
@@ -34,20 +34,6 @@ colorbar
 colorbar           % delete vertical colorbar
 colorbar('south')  % add horizontal colorbar
 
-%% Adding Preferred Orientations
-%
-%
-
-plot2all(q0,...
-    'marker','s','MarkerSize',6,'MarkerFaceColor','r',...
-    'label','$q_0$','color','b')
-
-plot2all(q1,...
-    'marker','s','MarkerSize',6,'MarkerFaceColor','g',...
-    'label','$q_1$','color','b')
-
-
-
 %% Adding Specimen and Crystal Directions
 %
 % Pole figure and inverse pole figures are much more readable if there are
@@ -66,6 +52,30 @@ plotipdf(odf,[xvector,zvector],'gray','reduced')
 plot2all([Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(0,0,1,cs)],'all','labeled')
 set(gcf,'position',[139 258 672 266])
 
+
+%% Adding Preferred Orientations
+%
+% One can also mark specifc orientations in pole figure, inverse pole
+% figures
+
+plotipdf(odf,[xvector,zvector],'gray','reduced')
+plot2all(q0,...
+    'marker','s','MarkerSize',6,'MarkerFaceColor','r',...
+    'label','$q_0$','color','b')
+
+plot2all(q1,...
+    'marker','s','MarkerSize',6,'MarkerFaceColor','g',...
+    'label','$q_1$','color','b')
+
+%%
+% or ODF plots
+
+plot(odf,'sections',12,'gray','position',[100,100,500,380])
+plot2all(q0,...
+    'MarkerSize',15,'MarkerEdgeColor','r','MarkerFaceColor','none')
+
+plot2all(q1,...
+    'MarkerSize',15,'MarkerEdgeColor','g','MarkerFaceColor','none')
 
 %% Adding a Legend
 %

@@ -1,5 +1,6 @@
 %% Pole Figure Analysis
-%
+% This sections gives you an overview over the functionality MTEX offers to
+% analyze pole figure data.
 %
 %% Import of Pole Figures
 %
@@ -45,6 +46,7 @@ pf = loadPoleFigure(fname,h,cs,ss,'superposition',c)
 % plotted in MTEX. Have a look at the <plot_index plotting section> for
 % more informations.
 
+figure
 plot(pf,'position',[100 100 600 300])
 
 %% Modify Pole Figure Data
