@@ -9,7 +9,7 @@ function [x,y,z] = sph2vec(theta,rho,r)
 % [x,y,z] = sph2vec(theta,rho,r)
 %
 %% Input
-%  theta, rho - spherical coordinates in radiant
+%  theta, rho - spherical coordinates in radians
 %  r          - radius
 %
 %% Output

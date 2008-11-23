@@ -9,6 +9,6 @@ function hw = gethw(kk)
 %  kk - @kernel
 %
 %% Output
-%  hw - halfwidth in radiant (double)
+%  hw - halfwidth in radians (double)
 
 hw = [kk.hw];
