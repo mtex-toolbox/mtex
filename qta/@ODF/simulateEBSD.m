@@ -24,7 +24,7 @@ res = get_option(varargin,'resolution',5*degree);
 S3G_global = SO3Grid(res,cs,ss);
 S3G_local = SO3Grid(res/5,cs,ss,'max_angle',res);
 
-d = eval(odf,S3G_global);
+d = eval(odf,S3G_global); %#ok<EVLC>
 
 r1 = mtexrandsample(GridLength(S3G_global),points,1,d);
 r2 = mtexrandsample(GridLength(S3G_local),points,1);

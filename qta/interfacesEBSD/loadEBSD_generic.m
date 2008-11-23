@@ -27,7 +27,7 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 %  fname - file name (text files only)
 %
 %% Options
-%  RADIAND           - treat input in radiand
+%  RADIANS           - treat input in radiand
 %  DELIMITER         - delimiter between numbers
 %  HEADER            - number of header lines
 %  HEADERC           - number of header colums
@@ -62,7 +62,7 @@ if ~check_option(varargin,'layout')
 end
 
 %extract options
-dg = degree + (1-degree)*check_option(varargin,'RADIANT');
+dg = degree + (1-degree)*check_option(varargin,{'radians','radiant','radiand'});
 layout = get_option(varargin,'LAYOUT',[1 2 3]);
 xy = get_option(varargin,'xy',[]);
 phase = get_option(varargin,'phase',[],'double');
@@ -104,7 +104,7 @@ try
   ebsd = EBSD(SO3G,symmetry('cubic'),symmetry(),varargin{:},'xy',xy);
   options = varargin;
 
-catch
+catch %#ok<CTCH>
   error('Generic interface could not extract data of file %s',fname);
   %rethrow(lasterror);
 end

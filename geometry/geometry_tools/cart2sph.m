@@ -8,7 +8,7 @@ function [theta,rho,r] = cart2sph(x,y,z)
 %  x,y,z - cartesian coordinates (double)
 %
 %% Output
-%  theta, tho, radius - spherical coordinates in radiant
+%  theta, tho, radius - spherical coordinates in radians
 %
 %% See also
 % vector3d/vec2sph sph2vec
