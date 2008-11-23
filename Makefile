@@ -5,12 +5,10 @@
 # please correct the following installation directories:
 #
 # path to FFTW, i.e. to lib/libfftw3.a
-#FFTWPATH = /home/hielscher/c/
-FFTWPATH = /usr/local
+FFTWPATH = /usr
 #
 # path to the NFFT, i.e. to /lib/libnfft3.a
-NFFTPATH = /home/hielscher/c
-#NFFTPATH = /usr/local
+NFFTPATH = /usr/local
 #
 # matlab path 
 MATLABPATH = /opt/matlab
@@ -60,7 +58,7 @@ uninstall:
 	rm -rf $(MATLABPATH)/toolbox/mtex
 
 # rule for making release
-RNAME = mtex-1.0
+RNAME = mtex-1.1
 RDIR = ../..
 release:
 	rm -rf $(RDIR)/$(RNAME)*
