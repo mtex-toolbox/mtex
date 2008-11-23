@@ -4,6 +4,9 @@ function startup_mtex
 % 
 %
 
+%% start MTEX
+disp('initialize MTEX ...');
+
 % path to this function to be considered as the root of the MTEX
 % installation 
 local_path = fileparts(mfilename('fullpath'));
@@ -45,7 +48,7 @@ mtex_settings;
 check_installation;
 
 %% finish
-disp('MTEX toolbox (v1.1 beta) loaded')
+disp('MTEX toolbox (v1.1) loaded')
 disp(' ');
 if isempty(javachk('desktop'))
   disp('Basic tasks:')
