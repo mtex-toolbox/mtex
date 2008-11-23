@@ -1,13 +1,14 @@
 %% MTEX Changelog
 %
 %
-%% MTEX 1.1 - 10/2008
+%% MTEX 1.1 - 11/2008
 %
 % *Improved Import Wizzard*
 % 
 % * Load CIF files to specify crystal geometry
 % * Background correction and defocussing 
 % * Import EBSD data with coordinates
+% * More options to specify the alignment of the specimen coordinate system
 %
 % *Improved EBSD Data Support*
 %
@@ -18,6 +19,7 @@
 %
 % * GUI to modify plots more easily
 % * Annotate orientations into pole figure plots
+% * Annotate orientations into ODF sections
 % * Coordinate systems for ODF and pole figure plots
 % * More flexible and consistent option system
 % * Default plotting options like FontSize, Margin, ...
@@ -25,7 +27,7 @@
 %
 % *Bug Fixes*
 %
-% * ModalOrientation works also with fibre textures
+% * ModalOrientation works now much better
 % * Plot (0,0) coordinate in ODF plot at upper left
 %
 %
