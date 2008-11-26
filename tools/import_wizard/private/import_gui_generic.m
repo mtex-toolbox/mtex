@@ -148,14 +148,15 @@ else
   end
   
   if ~isempty(fn{2}) % EBSD data
-    str = exportEBSD(fn{2},data,getappdata(lb(2),'interface'), getappdata(lb(2),'options'));
+    str = exportEBSD(fn{2},data,getappdata(lb(2),'interface'),...
+      getappdata(lb(2),'options'), handles);
   else
     fn(2) = [];
     if all(cellfun('isempty',fn(2:end)))
       fn = fn{1};
     end
-    str = exportPF(fn,data,getappdata(lb(1),'interface'), getappdata(lb(1),'options'),...
-      handles);
+    str = exportPF(fn,data,getappdata(lb(1),'interface'),...
+      getappdata(lb(1),'options'), handles);
   end
        
   str = generateCodeString(str);

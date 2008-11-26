@@ -67,20 +67,24 @@ release:
 	find $(RDIR)/$(RNAME) -name .svn | xargs /bin/rm -rf
 	find $(RDIR)/$(RNAME) -name '*~' -or -name '*.mex*' -or -name '*.log' -or -name '*.o' -or -name '*.orig' -or -name '.directory' | xargs /bin/rm -rf
 	rm -f $(RDIR)/$(RNAME)/c/bin/*
+	rm -f $(RDIR)/$(RNAME)/c/nsoft/test_nfsoft_adjoint
 	rm -rf $(RDIR)/$(RNAME)/help/html
 
 	cd $(RDIR); cp -R $(RNAME) $(RNAME)-Linux
 	cd $(RDIR); cp -R $(RNAME) $(RNAME)-Windows
 	cd $(RDIR); cp -R $(RNAME) $(RNAME)-MACOSX
+	cd $(RDIR); cp -R $(RNAME) $(RNAME)-MACOSX64	
 
 	cd $(RDIR); chmod -R a+rx mtex-binaries
 	cd $(RDIR); cp -R mtex-binaries/Linux/* $(RNAME)-Linux
 	cd $(RDIR); cp -R mtex-binaries/Windows/* $(RNAME)-Windows
 	cd $(RDIR); cp -R mtex-binaries/MACOSX/* $(RNAME)-MACOSX
+	cd $(RDIR); cp -R mtex-binaries/MACOSX64/* $(RNAME)-MACOSX64
 
 	cd $(RDIR); tar -czf $(RNAME)-Linux.tar.gz $(RNAME)-Linux
 	cd $(RDIR); zip -rq  $(RNAME)-Windows.zip $(RNAME)-Windows
 	cd $(RDIR); tar -czf $(RNAME)-MACOSX.tar.gz $(RNAME)-MACOSX	
+	cd $(RDIR); tar -czf $(RNAME)-MACOSX64.tar.gz $(RNAME)-MACOSX64
 
 windows-binaries:
 	rm -rf ../../mtex-win.tar.gz
@@ -93,3 +97,7 @@ linux-binaries:
 mac-binaries:
 	rm -rf ../../mtex-mac.tar.gz
 	tar -czvf ../../mtex-mac.tar.gz ./c/bin/* `find . -name '*.mexmaci'`
+
+mac64-binaries:
+	rm -rf ../../mtex-mac64.tar.gz
+	tar -czvf ../../mtex-mac64.tar.gz ./c/bin/* `find . -name '*.mexmaci'`
