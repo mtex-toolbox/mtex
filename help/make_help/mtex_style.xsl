@@ -60,8 +60,8 @@ To make changes, update the M-file and republish this document.
 
     <div class="myheader">
       <div class="left"><a href="matlab:edit XXXX">
-	  Open matlab file in the Editor</a></div>
-      <div class="right"></div>
+	  Open Matlab File in the Editor</a></div>
+      <div class="right"><a href="mtex_product_page.html">MTEX</a></div>
     </div>
 
     <div class="content">
@@ -185,8 +185,7 @@ p.footer {
 div.myheader {
   top:0px;
   left:0px;
-  background: #005E8D;
-  border-bottom: 10px solid #EBF5F9;
+  background: #EBF5F9;
   margin-bottom: 10px;
   width: 100%;
 }
@@ -201,10 +200,10 @@ div.right {
   padding: 10px;
 }
 div.myheader a {
-  color: white;
+  color: black;
 }
 div.myheader {
-  color: white;
+  color: black;
 }   
 
 pre,.intend {

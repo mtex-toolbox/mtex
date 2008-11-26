@@ -1,4 +1,4 @@
-function str = exportEBSD(fn, ebsd, interface, options )
+function str = exportEBSD(fn, ebsd, interface, options, handles)
 
 str = ['%% created with import_wizard';{''}];
 
@@ -21,7 +21,7 @@ str = [ str; strcat('SS = symmetry(''',strrep(char(ss),'"',''), ''');')];
 str = [ str; {''};'%% specify file names'; {''};'fname = { ...'];
 
 for k = 1:length(fn)
-    str = [ str; strcat('''', fn{k}, ''', ...')];
+    str = [ str; strcat('''', fn{k}, ''', ...')]; %#ok<AGROW>
 end
 str = [ str; '};'; {''}];
 
@@ -36,6 +36,13 @@ if ~isempty(options)
 end
 
 str = [str; [lpf ');']];
+
+%% post process data
+
+if get(handles.rotate,'value')
+  str = [str; {''}; '%% rotate EBSD data'; {''};...
+    'ebsd = rotate(ebsd, axis2quat(zvector, ',get(handles.rotateAngle,'string'),'*degree));'];
+end
 
 
 

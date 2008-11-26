@@ -6,9 +6,13 @@
 % *Improved Import Wizzard*
 % 
 % * Load CIF files to specify crystal geometry
-% * Background correction and defocussing 
 % * Import EBSD data with coordinates
 % * More options to specify the alignment of the specimen coordinate system
+%
+% *Improved Pole Figure Analysis*
+%
+% * Background correction and defocussing 
+% * Outlier detection and elimination
 %
 % *Improved EBSD Data Support*
 %
@@ -29,6 +33,7 @@
 %
 % * ModalOrientation works now much better
 % * Plot (0,0) coordinate in ODF plot at upper left
+% * Fixed a bug in ODF estimation from EBSD data
 %
 %
 %% MTEX 1.0 - 06/2008

@@ -76,6 +76,10 @@ try
   if length(layout) == 4 && ~isempty(phase)    
     d = d(any(d(:,layout(4))==repmat(reshape(phase,1,[]),size(d,1),1),2),:);
   end
+  
+  % eliminate rows where angle is 4*pi
+  ind = abs(d(:,layout(1))*dg-4*pi)<1e-3;
+  d(ind,:) = [];
  
   % extract data
   alpha = d(:,layout(1))*dg; 
@@ -86,6 +90,12 @@ try
     gamma = gamma+30*degree;
   end
   mtex_assert(all(beta >=0 & beta <= pi & alpha >= -2*pi & alpha <= 4*pi & gamma > -2*pi & gamma<4*pi));
+  
+  % check for choosing 
+  if max(alpha) < 6*degree
+    warndlg('The imported Euler angles appears to be quit some, maybe your data are in radians and not in degree as you specified?');
+  end
+  
   
   % get Euler angles option 
   bunge = set_default_option(...
@@ -105,6 +115,6 @@ try
   options = varargin;
 
 catch %#ok<CTCH>
-  error('Generic interface could not extract data of file %s',fname);
+  error('Generic interface could not extract data of file %s (%s)' ,fname,lasterr); %#ok<LERR>
   %rethrow(lasterror);
 end
