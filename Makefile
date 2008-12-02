@@ -2,13 +2,26 @@
 #
 #--------------- begin editable section ------------------------------- 
 #
+# here comes your operating system
+# glnx86  - 32 bit Linux 
+# glnxa64 - 64 bit Linux 
+# maxi    - 32 bit Mac OSX
+# maxi64  - 64 bit Mac OSX
+# win32   - 32 bit Windows
+# win64   - 64 bit Windows
+#
+TARGET= glnxa64
+#
 # please correct the following installation directories:
 #
 # path to FFTW, i.e. to lib/libfftw3.a
-FFTWPATH = /usr
+#FFTWPATH = /usr
+FFTWPATH= /home/hielscher/coding/c
 #
 # path to the NFFT, i.e. to /lib/libnfft3.a
-NFFTPATH = /usr/local
+#NFFTPATH = /usr/local
+NFFTPATH= /home/hielscher/coding/c
+
 #
 # matlab path 
 MATLABPATH = /opt/matlab
@@ -21,7 +34,7 @@ MEXFLAGS= -compatibleArrayDims#-largeArrayDims
 #--------------- end editable section ---------------------------------
 #
 # local directories
-BPATH = c/bin/
+BPATH = c/bin/$(TARGET)/
 SUBDIRS = c/kernel.dir c/nsoft.dir c/test.dir c/mex.dir 
 
 # top-level rule, to compile everything.
@@ -29,7 +42,7 @@ all: $(SUBDIRS)
 
 # descent into subdirectories
 %.dir: 
-	$(MAKE) -e CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" NFFTPATH=$(NFFTPATH) FFTWPATH=$(FFTWPATH) MATLABPATH=$(MATLABPATH) MEXFLAGS="$(MEXFLAGS)" -C $*
+	$(MAKE) -e CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" NFFTPATH=$(NFFTPATH) FFTWPATH=$(FFTWPATH) MATLABPATH=$(MATLABPATH) MEXFLAGS="$(MEXFLAGS)" TARGET="$(TARGET)" -C $*
 	$(MAKE) install -C $*
 
 # rule for cleaning re-compilable files.
@@ -49,9 +62,9 @@ install:
 check:	
 	echo "check installation"
 # comment the next line out if you have a intel/amd processor
-	c/bin/pf2odf c/test/pf2odf.txt check
+	c/bin/$(target)/pf2odf c/test/pf2odf.txt check
 # comment the next line out if you have a ibm power cpu
-#	c/bin/pf2odf c/test/pf2odf_mac.txt check
+#	c/bin/$(target)/pf2odf c/test/pf2odf_mac.txt check
 
 uninstall: 
 	rm -f $(MATLABPATH)/toolbox/local/startup.m
@@ -65,39 +78,24 @@ release:
 	cp -R . $(RDIR)/$(RNAME)
 	chmod -R a+rX $(RDIR)/$(RNAME)
 	find $(RDIR)/$(RNAME) -name .svn | xargs /bin/rm -rf
-	find $(RDIR)/$(RNAME) -name '*~' -or -name '*.mex*' -or -name '*.log' -or -name '*.o' -or -name '*.orig' -or -name '.directory' | xargs /bin/rm -rf
-	rm -f $(RDIR)/$(RNAME)/c/bin/*
+	find $(RDIR)/$(RNAME) -name '*~' -or -name '*.log' -or -name '*.o' -or -name '*.orig' -or -name '.directory' | xargs /bin/rm -rf
 	rm -f $(RDIR)/$(RNAME)/c/nsoft/test_nfsoft_adjoint
 	rm -rf $(RDIR)/$(RNAME)/help/html
 
-	cd $(RDIR); cp -R $(RNAME) $(RNAME)-Linux
-	cd $(RDIR); cp -R $(RNAME) $(RNAME)-Windows
-	cd $(RDIR); cp -R $(RNAME) $(RNAME)-MACOSX
-	cd $(RDIR); cp -R $(RNAME) $(RNAME)-MACOSX64	
-
-	cd $(RDIR); chmod -R a+rx mtex-binaries
-	cd $(RDIR); cp -R mtex-binaries/Linux/* $(RNAME)-Linux
-	cd $(RDIR); cp -R mtex-binaries/Windows/* $(RNAME)-Windows
-	cd $(RDIR); cp -R mtex-binaries/MACOSX/* $(RNAME)-MACOSX
-	cd $(RDIR); cp -R mtex-binaries/MACOSX64/* $(RNAME)-MACOSX64
-
-	cd $(RDIR); tar -czf $(RNAME)-Linux.tar.gz $(RNAME)-Linux
-	cd $(RDIR); zip -rq  $(RNAME)-Windows.zip $(RNAME)-Windows
-	cd $(RDIR); tar -czf $(RNAME)-MACOSX.tar.gz $(RNAME)-MACOSX	
-	cd $(RDIR); tar -czf $(RNAME)-MACOSX64.tar.gz $(RNAME)-MACOSX64
+	cd $(RDIR); zip -rq  $(RNAME).zip $(RNAME)
 
 windows-binaries:
 	rm -rf ../../mtex-win.tar.gz
-	tar -czvf mtex-win.tar.gz ./c/bin/*.exe `find . -name '*.mexw32'`
+	tar -czvf mtex-win.tar.gz ./c/bin/win32/*.exe `find . -name '*.mexw32'`
 
 linux-binaries:
 	rm -rf ../../mtex-linux.tar.gz
-	tar -czvf ../../mtex-linux.tar.gz ./c/bin/* `find . -name '*.mexglx'`
+	tar -czvf ../../mtex-linux.tar.gz ./c/bin/glnx86/* `find . -name '*.mexglx'`
 
 mac-binaries:
 	rm -rf ../../mtex-mac.tar.gz
-	tar -czvf ../../mtex-mac.tar.gz ./c/bin/* `find . -name '*.mexmaci'`
+	tar -czvf ../../mtex-mac.tar.gz ./c/bin/maci/* `find . -name '*.mexmaci'`
 
 mac64-binaries:
 	rm -rf ../../mtex-mac64.tar.gz
-	tar -czvf ../../mtex-mac64.tar.gz ./c/bin/* `find . -name '*.mexmaci'`
+	tar -czvf ../../mtex-mac64.tar.gz ./c/bin/maci64(* `find . -name '*.mexmaci'`

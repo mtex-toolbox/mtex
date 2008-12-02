@@ -9,6 +9,12 @@ function mtex_settings
 %% user defined global settings
 %------------------------------------------------------------------------
 
+%% architecture 
+% this is usefull if the arcitecture is not automatically recognized by
+% MTEX
+
+%set_mtex_option('architecture','maci64');
+
 %% file extensions to be associated with MTEX
 % add here your pole figure and EBSD data file extensions 
 

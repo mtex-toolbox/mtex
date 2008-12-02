@@ -21,6 +21,6 @@ g = quat2euler(g,'nfft');
 f_hat = [real(odf.c_hat(1:Ldim)),imag(odf.c_hat(1:Ldim))].';
 
 % run NFSOFT
-f = reshape(call_extern([mtex_path,'/c/bin/fc2odf'],'intern',L,'EXTERN',g,f_hat),...
+f = reshape(call_extern('fc2odf','intern',L,'EXTERN',g,f_hat),...
   s);
     

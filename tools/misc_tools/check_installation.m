@@ -11,12 +11,65 @@ if strfind(get_mtex_option('tempdir',tempdir),' ')
   disp('--------------------------------------------------')
 end
 
-check_mex;
 check_binaries;
+check_mex;
+
+
+%%------------ check for binaries --------------------------
+function check_binaries
+
+[th,rh] = polar(S2Grid('equispaced','points',10));
+	
+th = fft_theta(th);
+rh = fft_rho(rh);
+
+gh = [reshape(rh,1,[]);reshape(th,1,[])];
+r = [reshape(rh,1,[]);reshape(th,1,[])];
+
+c = ones(10,1);
+
+Al = ones(10,1);
+
+try
+    
+  f = call_extern('odf2pf','EXTERN',gh,r,c,Al);
+  mtex_assert(any(f));
+  
+catch %#ok<*CTCH>
+  
+  if ismac % maybe it is a 64 bit mac
+    try
+      set_mtex_option('architecture','maci64');
+      f = call_extern('odf2pf','EXTERN',gh,r,c,Al);
+      mtex_assert(any(f));
+      return
+    catch
+      set_mtex_option('architecture','maci');
+    end    
+  end
+  
+  disp('--------------------------------------------------');
+  disp('MTEX binary check failed!');  
+  disp(' ');
+  disp('The original error message was:');
+  disp(' ');
+  e = lasterror; %#ok<*LERR>
+  disp(e.message); 
+   
+  disp(' ');
+  disp('Check the following options:');  
+  disp('* Compile the binaries yourself.');
+  disp('* Ask the maintainer for help!');
+  disp('--------------------------------------------------');
+end
 
 
 %%----------- check mex files ---------------------------
 function check_mex
+
+% set mex/directory
+mexpath = [mtex_path '/c/mex/' get_mtex_option('architecture')];
+addpath(mexpath,0);
 
 % check for mex files
 if fast_check_mex, return;end
@@ -25,27 +78,27 @@ disp('Checking mex files failed!');
 disp('--------------------------');
 
 % check old mex version
-if exist([mtex_path '/c/mex/v7.1'],'dir')
+if exist([mexpath '/v7.1'],'dir')
     
   % change path  
-  rmpath([mtex_path '/c/mex']);
-  addpath([mtex_path '/c/mex/v7.1']);
+  rmpath(mexpath);
+  addpath([mexpath '/v7.1']);
   disp('> Trying now with older version.');
   if fast_check_mex
     disp('> Hurray - everythink works!')
     disp(' ');
     try
-      copyfile([mtex_path '/c/mex/v7.1/*.*'],[mtex_path '/c/mex'],'f');
+      copyfile([mexpath '/v7.1/*.*'],mexpath,'f');
       % restore path
-      rmpath([mtex_path '/c/mex/v7.1']);
-      addpath([mtex_path '/c/mex']);
+      rmpath([mexpath '/v7.1']);
+      addpath(mexpath);
     catch
       disp('--------------------------------------------------')
       disp('> Error while copying!')
       disp('> You should copy');
-      disp(['  ' mtex_path '/c/mex/v7.1']);
+      disp(['  ' mexpath '/v7.1']);
       disp(' to ');
-      disp(['  ', mtex_path '/c/mex']);
+      disp(['  ', mexpath]);
       disp('> before starting the next session');
       disp('--------------------------------------------------')
       disp(' ');
@@ -54,8 +107,8 @@ if exist([mtex_path '/c/mex/v7.1'],'dir')
   else
     disp('> Checking old mex files failed!');
     % restore path
-    rmpath([mtex_path '/c/mex/v7.1']);
-    addpath([mtex_path '/c/mex']);   
+    rmpath([mexpath '/v7.1']);
+    addpath(mexpath);   
   end
 end   
 
@@ -83,59 +136,6 @@ else
   disp(' ');
 end
 
-
-%%------------ check for binaries --------------------------
-function check_binaries
-
-[th,rh] = polar(S2Grid('equispaced','points',10));
-	
-th = fft_theta(th);
-rh = fft_rho(rh);
-
-gh = [reshape(rh,1,[]);reshape(th,1,[])];
-r = [reshape(rh,1,[]);reshape(th,1,[])];
-
-c = ones(10,1);
-
-Al = ones(10,1);
-
-try
-    
-  f = call_extern([mtex_path,'/c/bin/odf2pf'],'EXTERN',gh,r,c,Al);
-  mtex_assert(any(f));
-
-catch
-  
-  disp('--------------------------------------------------');
-  disp('MTEX binary check failed!');  
-  disp(' ');
-  disp('The original error message was:');
-  disp(' ');
-  e = lasterror;
-  disp(e.message);
-  
-  % look for target
-  this_computer = importdata([mtex_path '/c/bin/target']);
-  if ~strcmpi(this_computer,computer)
-    disp('--------------------------------------------------');
-    disp(' ');
-    disp(['The architecture of your computer (',computer,')']);
-    disp(['does not fit the architecture of the executables (',this_computer{1} ,')!!']);
-    disp(' ');
-    disp('Please download the the right executables for your system!')
-    disp('--------------------------------------------------');
-    return
-  end
-  
-  disp(' ');
-  disp('Check the following options:');  
-  disp('* Download the binaries that corresponds to your system.');
-  disp('* Compile the binaries yourself.');
-  disp('* Ask the maintainer for help!');
-  disp('--------------------------------------------------');
-end
-
-
 function e = fast_check_mex
 
 e = 1;
@@ -145,12 +145,3 @@ try
 catch
   e = 0;  
 end
-
-
-function s = translate_system(s)
-
-ss = {'LNX86','MAC','MACI','PCWIN','GLNXA64','PCWIN64','SOL64'};
-
-sss = {'Linux 32bit','not supported','Intel Mac 32bit','Windows 32bit',...
-  'Linux 64bit','Windows 64bit'};
-
