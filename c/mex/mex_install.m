@@ -23,9 +23,9 @@ for p = 1:length(places)
     if exist([mexpath,files{f}],'file')      
       disp(['>   compile ',files{f}]);
       if newer_version(7.3)
-        mex(mexoptions,[mexpath,files{f}]);
+        mex(mexoptions,'-outdir',[mexpath get_mtex_option('architecture')],[mexpath,files{f}]);
       else
-        mex([mexpath,files{f}]);
+        mex('-outdir',[mexpath get_mtex_option('architecture')],[mexpath,files{f}]);
       end
     end
   end

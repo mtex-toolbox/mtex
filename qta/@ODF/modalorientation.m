@@ -31,11 +31,11 @@ f = eval(odf,S3G); %#ok<EVLC>
 
 g0 = quaternion(S3G,find(f>0.8*max(f)));
 
-f0 = max(f);
+f0 = max(f(:));
 
 while res >= resmax || (0.95 * max(f(:)) > f0)
 
-  f0 = max(f);
+  f0 = max(f(:));
   S3G = g0*SO3Grid(res,odf(1).CS,odf(1).SS,'max_angle',2*res);
   f = eval(odf,S3G); %#ok<EVLC>
   g0 = quaternion(S3G,find(f(:)==max(f(:))));

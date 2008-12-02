@@ -80,7 +80,7 @@ varargin = delete_option(options,'superposition');
 
 for i = 1:length(fname)  
   npf = feval(['loadPoleFigure_',char(interface)],fname{i},options{:});
-  pf = [pf,npf]; 
+  pf = [pf,npf];  %#ok<*AGROW>
   ipf(i) = length(npf);
 end
 
@@ -94,3 +94,4 @@ for i = 1:length(pf)
   pf(i) = set(pf(i),'comment',get_option(varargin,'comment',[fn ext]));
   
 end
+
