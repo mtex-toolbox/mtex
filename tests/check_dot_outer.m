@@ -18,9 +18,22 @@ x = eval(unimodalODF(axis2quat(xvector,0*degree),cs,ss,'halfwidth',5*degree),...
 sum(x)/length(x)
 
 %%
-x = eval(unimodalODF(axis2quat(xvector,45*degree),cs,ss,'halfwidth',5*degree),...
+x = eval(unimodalODF(axis2quat(xvector,45*degree),cs,ss,'halfwidth',15*degree),...
   SO3Grid(1.25*degree,cs,ss));
 sum(x)/length(x)
+%%
+cs = symmetry('m-3m')
+ss = symmetry('mmm')
+omega = linspace(0,pi/2,20);
+for i = 1:length(omega)
+  odf = unimodalODF(axis2quat(xvector,omega(i)),cs,ss,'halfwidth',5*degree);
+  x = eval(odf,SO3Grid(0.75*degree,cs,ss));
+  v(i) = sum(x)/length(x);
+  fprintf('.');
+end
+fprintf('\n');
+plot(omega,v);
+
 %%
 ss = symmetry('mmm');
 cs = symmetry('4/mmm');

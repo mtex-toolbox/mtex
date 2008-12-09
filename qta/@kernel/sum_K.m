@@ -33,10 +33,10 @@ end
 % check sparsity of the kernel matrix
 if (lg1 > lg2 && lg1 > 0) || (abs(lg1) > abs(lg2) && lg2 < 0)
   g2 = quaternion(g2); 
-  total_nnz = numel(g2) * max(1,nnz(K(kk,g1,g2(1),CS,SS,varargin)));
+  total_nnz = numel(g2) * max(1,nnz(K(kk,g1,g2(1),CS,SS,varargin{:})));
 else
   g1 = quaternion(g1);
-  total_nnz = numel(g1) * max(1,nnz(K(kk,g1(1),g2,CS,SS,varargin)));
+  total_nnz = numel(g1) * max(1,nnz(K(kk,g1(1),g2,CS,SS,varargin{:})));
 end
 
 % init variables
