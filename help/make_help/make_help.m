@@ -12,7 +12,7 @@ html_path = [mtex_path '/help/html'];
 global mtex_progress;
 mtex_progress = 0;
 
-if check_option(varargin,'all')
+if check_option(varargin,'clear')
   delete([html_path,'/*.*']);
   delete([mtex_path,'examples/html/*.*']);
 end
