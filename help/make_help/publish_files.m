@@ -16,10 +16,10 @@ global mtex_progress;
 
 old_dir = pwd;cd(in_dir);
 
-%if check_option(varargin,'waitbar')
-%  mtex_progress = 1;
-%  progress(0,length(files),'publishing: ');
-%end
+if check_option(varargin,'waitbar')
+  mtex_progress = 1;
+  progress(0,length(files),'publishing: ');
+end
 
 for i=1:length(files)
 
@@ -30,11 +30,11 @@ for i=1:length(files)
     continue;
   end
   
-  %if check_option(varargin,'waitbar')
-  %  mtex_progress = 1;
-  %  progress(i,length(files),'publishing: ');
-  %  mtex_progress = 0;
-  %end
+  if check_option(varargin,'waitbar')
+    mtex_progress = 1;
+    progress(i,length(files),'publishing: ');
+    mtex_progress = 0;
+  end
   
   close all
   if poptions.evalCode || check_option(varargin,'verbose'),disp(files{i});end
