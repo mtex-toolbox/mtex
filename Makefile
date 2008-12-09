@@ -5,8 +5,8 @@
 # here comes your operating system
 # glnx86  - 32 bit Linux 
 # glnxa64 - 64 bit Linux 
-# maxi    - 32 bit Mac OSX
-# maxi64  - 64 bit Mac OSX
+# maci    - 32 bit Mac OSX
+# maci64  - 64 bit Mac OSX
 # win32   - 32 bit Windows
 # win64   - 64 bit Windows
 #
