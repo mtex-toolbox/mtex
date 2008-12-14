@@ -1,4 +1,4 @@
-function nebsd = subsample(ebsd,points)
+function ebsd = subsample(ebsd,points)
 % subsample of ebsd data
 %
 %% Syntax
@@ -11,16 +11,14 @@ function nebsd = subsample(ebsd,points)
 %% See also
 % EBSD/delete EBSD/subGrid 
 
-nebsd = ebsd;
+ss = length(ebsd);
+sl = size(ebsd,2);
 
-ss = sampleSize(ebsd);
+if points >= sl, return;end
 
-if points >= sum(ss), return;end
-
-for i = 1:length(nebsd)
-  
-  ip = round(points * ss(i) / sum(ss(:)));
-  nebsd(i).orientations = ...
-    subGrid(nebsd(i).orientations,mtexrandsample(ss(i),ip));
-  
+for i = 1:numel(ebsd)
+  ip = fix(points * ss(i) / sl);
+  S1 = substruct('()', {i,mtexrandsample(ss(i),ip)});
+  S2 = substruct('()', {i});
+  ebsd = subsasgn(ebsd,S2, subsref(ebsd,S1));
 end

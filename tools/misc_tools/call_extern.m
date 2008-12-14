@@ -22,6 +22,9 @@ function varargout = call_extern(prg,varargin)
 %% check input
 
 if ispc, mtex_ext = '.exe';else mtex_ext = '';end
+
+path = [mtex_path '/c/bin/',get_mtex_option('architecture') '/'];
+prg = [path,prg];
 if ~exist([prg,mtex_ext],'file')
   error(['Can not find ',[prg,mtex_ext],'!']);
 end

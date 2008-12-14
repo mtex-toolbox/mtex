@@ -12,7 +12,7 @@ html_path = [mtex_path '/help/html'];
 global mtex_progress;
 mtex_progress = 0;
 
-if check_option(varargin,'all')
+if check_option(varargin,'clear')
   delete([html_path,'/*.*']);
   delete([mtex_path,'examples/html/*.*']);
 end
@@ -93,14 +93,14 @@ if check_option(varargin, {'mfiles','all'})
  
 end
 
-%% calculate PoleFigureAnalysis files
+%% process PoleFigureAnalysis files
 
 if check_option(varargin, {'PoleFigureAnalysis','all','demos'})
   
   current_path = [mtex_path '/help/PoleFigureAnalysis'];
   files = dir([current_path '/*.m']);
-  publish_files({files.name},current_path,'stylesheet',[pwd '/example_style.xsl'],...
-    'out_dir',html_path,'evalcode',1);
+  publish_files({files.name},current_path,...
+    'stylesheet',[pwd '/mtex_style.xsl'],'out_dir',html_path,'evalcode',1);
 end
 
 
@@ -110,8 +110,8 @@ if check_option(varargin, {'EBSDAnalysis','all','demos'})
   
   current_path = [mtex_path '/help/EBSDAnalysis'];
   files = dir([current_path '/*.m']);
-  publish_files({files.name},current_path,'stylesheet',[pwd '/example_style.xsl'],...
-    'out_dir',html_path,'evalcode',1);
+  publish_files({files.name},current_path,...
+    'stylesheet',[pwd '/mtex_style.xsl'],'out_dir',html_path,'evalcode',1);
 end
 
 
@@ -121,8 +121,9 @@ if check_option(varargin, {'ODFAnalysis','all','demos'})
   
   current_path = [mtex_path '/help/ODFAnalysis'];
   files = dir([current_path '/*.m']);
-  publish_files({files.name},current_path,'stylesheet',[pwd '/example_style.xsl'],...
-    'out_dir',html_path,'evalcode',1);
+  publish_files({files.name},current_path,...
+    'stylesheet',[pwd '/mtex_style.xsl'],'out_dir',html_path,'evalcode',1);
+  copyfile([current_path,'/*.png'],[mtex_path,'/help/html'])
 end
 
 
@@ -132,7 +133,7 @@ if check_option(varargin, {'plotting','all','demos'})
   
   current_path = [mtex_path '/help/plotting'];
   files = dir([current_path '/*.m']);
-  publish_files({files.name},current_path,'stylesheet',[pwd '/example_style.xsl'],...
+  publish_files({files.name},current_path,'stylesheet',[pwd '/mtex_style.xsl'],...
     'out_dir',html_path,'evalcode',1);
 end
 
@@ -156,7 +157,7 @@ if check_option(varargin, {'interfaces','all','demos'})
   current_path = [mtex_path filesep 'help' filesep 'interfaces'];
   files = dir([current_path filesep '*.m']);
   publish_files({files.name},current_path,'out_dir',html_path,...
-    'evalcode',1,'stylesheet',[pwd '/example_style.xsl'],varargin{:});
+    'evalcode',1,'stylesheet',[pwd '/mtex_style.xsl'],varargin{:});
 
 end
 
@@ -169,6 +170,7 @@ builddocsearchdb('.');
 mtex_startup_dir = get_mtex_option('mtex_startup_dir');
 unix(['rm -rf ' mtex_path '/help/mtex/helpsearch']);
 unix(['mv -f ' mtex_startup_dir,'/helpsearch ' mtex_path '/help/mtex/']);
+%unix(['mv -f  ~/helpsearch ' mtex_path '/help/mtex/']);
 cd([mtex_path '/help/make_help']);
 
 %% finisch

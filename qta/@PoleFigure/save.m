@@ -11,7 +11,7 @@ function save(pf,filename,varargin)
 %  filename - string
 %
 %% Options
-%  DEGREE - theta / rho output in degree instead of radiant
+%  DEGREE - theta / rho output in degree instead of radians
 %
 %% See also
 % loadPoleFigure_txt

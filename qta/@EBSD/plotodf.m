@@ -29,15 +29,16 @@ set(gcf,'Name',['EBSD "',inputname(1),'"']);
 
 
 error('not yet implemented')
+ [cs ss] = getSym(ebsd);
 
 %% -------- alpha - sections ----------------------------------------------
 if check_option(varargin,'ALPHA')
 
   % alpha
-  if rotangle_max_y(ebsd(1).CS) == pi && rotangle_max_y(ebsd(1).SS) == pi
+  if rotangle_max_y(cs) == pi && rotangle_max_y(cs) == pi
     m = pi/2;
   else
-    m = rotangle_max_z(ebsd(1).SS);
+    m = rotangle_max_z(cs);
   end
   sec = linspace(0,m,get_option(varargin,'SECTIONS',round(m/degree/5))+1); ...
         sec(end) = [];
@@ -49,8 +50,8 @@ if check_option(varargin,'ALPHA')
   
   % beta / gamma
   S2G = S2Grid('PLOT',...
-    'MAXTHETA',min(rotangle_max_y(ebsd(1).CS),rotangle_max_y(ebsd(1).SS))/2,...
-    'MAXRHO',rotangle_max_z(ebsd(1).CS),varargin{:});
+    'MAXTHETA',min(rotangle_max_y(cs),rotangle_max_y(cs))/2,...
+    'MAXRHO',rotangle_max_z(cs),varargin{:});
   
   alpha = repmat(reshape(sec,[1,1,nplots]),[GridSize(S2G),1]);
   [beta,gamma] = polar(S2G);
@@ -65,21 +66,21 @@ elseif check_option(varargin,'GAMMA')
 
   % gamma
 
-  sec = linspace(0,rotangle_max_z(ebsd(1).CS),...
+  sec = linspace(0,rotangle_max_z(cs),...
     get_option(varargin,'SECTIONS',...
-    round(rotangle_max_z(ebsd(1).CS)/degree/5))+1); 
+    round(rotangle_max_z(cs)/degree/5))+1); 
   sec(end) = [];
   sec = get_option(varargin,'GAMMA',sec,'double');
   nplots = length(sec);
   
   % alpha / beta
-  if rotangle_max_y(ebsd(1).CS) == pi && rotangle_max_y(ebsd(1).SS) == pi
+  if rotangle_max_y(cs) == pi && rotangle_max_y(cs) == pi
     m = pi/2;
   else
-    m = rotangle_max_z(ebsd(1).SS);
+    m = rotangle_max_z(cs);
   end
   S2G = S2Grid('PLOT',...
-    'MAXTHETA',min(rotangle_max_y(ebsd(1).CS),rotangle_max_y(ebsd(1).SS))/2,...
+    'MAXTHETA',min(rotangle_max_y(cs),rotangle_max_y(cs))/2,...
     'MAXRHO',m,varargin{:});
   
   gamma = repmat(reshape(sec,[1,1,nplots]),[GridSize(S2G),1]);
@@ -94,10 +95,10 @@ elseif check_option(varargin,'GAMMA')
 elseif check_option(varargin,'phi1')   
 
   % alpha
-  if rotangle_max_y(ebsd(1).CS) == pi && rotangle_max_y(ebsd(1).SS) == pi
+  if rotangle_max_y(cs) == pi && rotangle_max_y(cs) == pi
     m = pi/2;
   else
-    m = rotangle_max_z(ebsd(1).SS);
+    m = rotangle_max_z(cs);
   end
   sec = linspace(0,m,get_option(varargin,'SECTIONS',round(m/degree/5))+1); sec(end) = [];
   sec = get_option(varargin,'phi1',sec,'double');
@@ -105,8 +106,8 @@ elseif check_option(varargin,'phi1')
   
   % beta / gamma
   S2G = S2Grid('PLOT',...
-    'MAXTHETA',min(rotangle_max_y(ebsd(1).CS),rotangle_max_y(ebsd(1).SS))/2,...
-    'MAXRHO',rotangle_max_z(ebsd(1).CS),varargin{:});
+    'MAXTHETA',min(rotangle_max_y(cs),rotangle_max_y(cs))/2,...
+    'MAXRHO',rotangle_max_z(cs),varargin{:});
   
   phi1 = repmat(reshape(sec,[1,1,nplots]),[GridSize(S2G),1]);
   [Phi,phi2] = polar(S2G);
@@ -121,21 +122,21 @@ elseif check_option(varargin,'phi2')
 
   % gamma
 
-  sec = linspace(0,rotangle_max_z(ebsd(1).CS),...
+  sec = linspace(0,rotangle_max_z(cs),...
     get_option(varargin,'SECTIONS',...
-    round(rotangle_max_z(ebsd(1).CS)/degree/5))+1); 
+    round(rotangle_max_z(cs)/degree/5))+1); 
   sec(end) = [];
   sec = get_option(varargin,'phi2',sec,'double');
   nplots = length(sec);
   
   % alpha / beta
-  if rotangle_max_y(ebsd(1).CS) == pi && rotangle_max_y(ebsd(1).SS) == pi
+  if rotangle_max_y(cs) == pi && rotangle_max_y(cs) == pi
     m = pi/2;
   else
-    m = rotangle_max_z(ebsd(1).SS);
+    m = rotangle_max_z(cs);
   end
   S2G = S2Grid('PLOT',...
-    'MAXTHETA',min(rotangle_max_y(ebsd(1).CS),rotangle_max_y(ebsd(1).SS))/2,...
+    'MAXTHETA',min(rotangle_max_y(cs),rotangle_max_y(cs))/2,...
     'MAXRHO',m,varargin{:});
   
   phi2 = repmat(reshape(sec,[1,1,nplots]),[GridSize(S2G),1]);
@@ -151,7 +152,7 @@ elseif check_option(varargin,'phi2')
 elseif check_option(varargin,'OMEGA')
 
   h = get_option(varargin,'h',zvector);
-  if isa(h,'Miller'), h = vector3d(h,ebsd(1).CS); end
+  if isa(h,'Miller'), h = vector3d(h,cs); end
   r = get_option(varargin,'r',zvector);
   
   % rotate zvector to reference r
@@ -165,23 +166,23 @@ elseif check_option(varargin,'OMEGA')
 
 %% ------------ sigma - sections (default) --------------------------------
 else
-
+ 
   % sigma
-  sec = linspace(0,rotangle_max_z(ebsd(1).CS),...
+  sec = linspace(0,rotangle_max_z(cs),...
     get_option(varargin,'SECTIONS',...
-    round(rotangle_max_z(ebsd(1).CS)/degree/5))+1);
+    round(rotangle_max_z(cs)/degree/5))+1);
   sec(end) = [];
   sec = get_option(varargin,'SIGMA',sec,'double');
   nplots = length(sec);
   
   % alpha / beta
-  if rotangle_max_y(ebsd(1).CS) == pi && rotangle_max_y(ebsd(1).SS) == pi
+  if rotangle_max_y(cs) == pi && rotangle_max_y(ss) == pi
     m = pi/2;
   else
-    m = rotangle_max_z(ebsd(1).SS);
+    m = rotangle_max_z(ss);
   end
   S2G = S2Grid('PLOT',...
-    'MAXTHETA',min(rotangle_max_y(ebsd(1).CS),rotangle_max_y(ebsd(1).SS))/2,...
+    'MAXTHETA',min(rotangle_max_y(cs),rotangle_max_y(ss))/2,...
     'MAXRHO',m,varargin{:});
   
   [beta,alpha] = polar(S2G);

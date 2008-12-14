@@ -30,9 +30,9 @@ if check_option(varargin,'type')
  type = get_option(varargin,'type');
  switch type
   case 'EBSD'
-    values = {'Ignore','Alpha','Beta','Gamma','phi 1','Phi','phi 2','x','y','Phase'};
+    values = {'Ignore' 'Alpha' 'Beta' 'Gamma' 'phi 1' 'Phi' 'phi 2' 'q1' 'q2' 'q3' 'q4' 'x' 'y' 'Phase'};
   case 'PoleFigure'
-    values = {'Ignore','Polar Angle','Azimuth Angle','Intensity','Background'};
+    values = {'Ignore' 'Polar Angle' 'Azimuth Angle' 'Intensity' 'Background' 'char'};
   otherwise
     disp('wrong option');
   return
@@ -84,12 +84,12 @@ else
   for k=1:y, colnames{k} = ['Column ' int2str(k)]; end;
 end
 
-if newversion
+if ~newversion
   uitable('Parent',htp,'Data',data(1:min(size(data,1),100),:),...
-    'ColumnName',colnames,...
+    'ColumnNames',colnames,...
     'Position',[dw,h-(tb+110),w-2*dw,tb]);
 else
-  uitable('Parent',htp,'Data',data(1:min(size(data,1),100),:),...
+  uitable('v0','Parent',htp,'Data',data(1:min(size(data,1),100),:),...
     'ColumnNames',colnames,...
     'Position',[dw,h-(tb+110),w-2*dw,tb]);
 end
@@ -102,43 +102,43 @@ uicontrol('Parent',htp,'Style','Text','Position',[dw,h-(tb+120+25),w-2*dw,20],..
 
 cdata = guessColNames(values,size(data,2),colnames);
 
-if newversion
+if verLessThan('matlab','7.4')
   mtable = uitable('Parent',htp,'Data',cdata,...
-    'ColumnName',colnames,...
-    'ColumnEditable',true,...
-    'ColumnFormat',repcell(values,[length(colnames),1]).',...
+    'ColumnNames',colnames,... %    'ColumnEditable',true,...     'ColumnFormat',repcell(values,[length(colnames),1]),...
     'Position',[dw-1,h-(tb+120+85),w-2*dw,65]);
 else
-  try
-    mtable = createTable([],colnames,cdata,false,'units','pixel','position',[dw-1,h-(tb+120+85),w-2*dw,55]);
+   try
+    warning('off','MATLAB:uitable:OldTableUsage')
+    mtable = createTable(htp,colnames,cdata,false,'units','pixel','position',[ dw-1 h-(tb+200) w-2*dw 55],'v0'); %[dw-1,h-(tb+120+85),w-2*dw,55]
     jtable = mtable.getTable;
     cb = javax.swing.JComboBox(values);
     cb.setEditable(true);
     editor = javax.swing.DefaultCellEditor(cb);
-    for i = 1:length(values)
+    for i = 1:length(colnames)
       jtable.getColumnModel.getColumn(i-1).setCellEditor(editor);
     end
+    warning('on','MATLAB:uitable:OldTableUsage')
   catch
   end
 end
 % checkboxes
 chk_angle = uibuttongroup('Parent',htp,'title','Angle Convention','units','pixels',...
-  'position',[dw h-(tb+260) cw*2 45]);
+  'position',[dw h-(tb+260) cw*4+10 45]);
 
 uicontrol('Style','Radio','String','Degree',...
   'Position',[dw dw 80 15],'Parent',chk_angle,'HandleVisibility','off');
-rad_box = uicontrol('Style','Radio','String','Radiant',...
+rad_box = uicontrol('Style','Radio','String','Radians',...
   'Position',[dw+cw dw 80 15],'Parent',chk_angle,'HandleVisibility','off');
 
-if (~strcmp(type,'PoleFigure'))
- h3 = uipanel('Parent',htp,'title','Restrict to Phase(s)','units','pixels',...
-   'position',[2*cw+2*dw h-tb-260 cw*2 46]);
- phaseopt = uicontrol('Style','Edit',...
-   'BackgroundColor',[1 1 1],...
-   'HorizontalAlignment','left',...
-   'String','' ,...
-   'Position',[dw 5 cw*2-2*dw 23],'Parent',h3,'HandleVisibility','off');
-end
+% if (~strcmp(type,'PoleFigure'))
+%  h3 = uipanel('Parent',htp,'title','Restrict to Phase(s)','units','pixels',...
+%    'position',[2*cw+2*dw h-tb-260 cw*2 46]);
+%  phaseopt = uicontrol('Style','Edit',...
+%    'BackgroundColor',[1 1 1],...
+%    'HorizontalAlignment','left',...
+%    'String','' ,...
+%    'Position',[dw 5 cw*2-2*dw 23],'Parent',h3,'HandleVisibility','off');
+% end
 
 if ~isempty(header)
   uicontrol('Parent',htp,'Style','PushButton','String','Show File Header','Position',[dw,dw,130,25],...
@@ -159,7 +159,7 @@ if ishandle(htp)
   options = {};
   
   % get column association
-  if newversion
+  if verLessThan('matlab','7.4')
     data = get(mtable,'data');
   else
     data = cell(mtable.getData);
@@ -175,6 +175,12 @@ if ishandle(htp)
     layout(2) = find(strcmpi(data,'Phi'),1);
     layout(3) = find(strcmpi(data,'phi 2'),1);
     options = {options{:},'Bunge'};
+  elseif any(strcmpi(data,'q1'))
+    layout(1) = find(strcmpi(data,'q1'),1);
+    layout(2) = find(strcmpi(data,'q2'),1);
+    layout(3) = find(strcmpi(data,'q3'),1);
+    layout(4) = find(strcmpi(data,'q4'),1);
+    options = {options{:},'Quaternion'};
   else
     layout(1) = find(strcmpi(data,'Polar Angle'),1);
     layout(2) = find(strcmpi(data,'Azimuth Angle'),1);
@@ -183,28 +189,39 @@ if ishandle(htp)
   
   if any(strcmpi(data,'Background'))
     layout(4) = find(strcmpi(data,'Background'),1);
-  elseif any(strcmpi(data,'Phase'))
-    layout(4) = find(strcmpi(data,'Phase'),1);
   end
   
   options = {options{:},'layout',layout};
  
+  if any(strcmpi(data,'Phase'))
+    options = {options{:},'Phase',find(strcmpi(data,'Phase'),1)};
+  end
+  
   % coordinates
   if any(strcmpi(data,'x')) && any(strcmpi(data,'y'))
     options = {options{:},'xy',...
       [find(strcmpi(data,'x'),1),find(strcmpi(data,'y'),1)]};
   end
 
-  % degree / radiant
-  if get(rad_box,'value'), options = {'RADIANT',options{:}};end
+  % degree / radians
+  if get(rad_box,'value'), options = {'RADIANS',options{:}};end
   
   %phase
-  if strcmpi(type,'EBSD')
-    phase = str2num(get(phaseopt,'string'));
-    if ~isempty(phase)
-      options = {options{:},'phase',phase};
+%   if strcmpi(type,'EBSD')
+%     phase = str2num(get(phaseopt,'string'));
+%     if ~isempty(phase)
+%       options = {options{:},'phase',phase};
+%     end
+%   end   
+   if strcmpi(type,'EBSD')
+    id = cellfun(@(x) sum(strcmpi(values, x)),data,'UniformOutput',true);
+    if numel(id) > 0
+      ind = find(id==0);
+      if numel(ind) > 0
+        options = {options{:},'ColumnNames', {data{ind}}, 'ColumnIndex',ind};
+      end
     end
-  end   
+   end   
   
   close(htp);
   pause(0.3);

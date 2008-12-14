@@ -25,7 +25,10 @@ for i=1:length(files)
 
   out_file = [poptions.outputDir filesep strrep(files{i},'.m','.html')];
   % check wether publishing is needed
-  if is_newer(strrep(out_file,'script_',''),files{i}), continue;end
+  if is_newer(strrep(out_file,'script_',''),files{i}) && ...
+      ~check_option(varargin,'force')
+    continue;
+  end
   
   if check_option(varargin,'waitbar')
     mtex_progress = 1;
@@ -72,7 +75,7 @@ for i=1:length(files)
 end
 
 cd(old_dir);
-if get_option(varargin,'waitbat'),close(h);end
+%if get_option(varargin,'waitbar'),close(h);end
 
 function o = is_newer(f1,f2)
 

@@ -9,5 +9,5 @@ function [CS,SS] = getSym(ebsd)
 %  SS - specimen @symmetry
 %
 
-CS = ebsd(1).CS;
-SS = ebsd(1).SS;
+CS = get(ebsd,'CS');
+SS = get(ebsd,'SS');

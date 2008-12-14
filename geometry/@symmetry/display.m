@@ -1,7 +1,11 @@
 function display(s)
 % standard output
 
-disp([inputname(1) ' = "symmetry"']);
-disp(['name: ',s.name]);
-disp(['laue: ',s.laue]);
-disp(['size: ',int2str(numel(s.quat))]);
+disp(' ');
+disp([inputname(1) ' = ']);
+disp(' ')
+disp('  symmetry:')
+for i=1:numel(s)
+disp(['   name: ',s(i).name ', laue: ',s(i).laue ', size: ',int2str(numel(s(i).quat))]);
+end
+disp(' ')

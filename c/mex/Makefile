@@ -1,6 +1,6 @@
 #------ Pathes ---------------------------------------------------------------
 MATLABPATH ?= /opt/matlab
-INSTALLPATH ?= ../../geometry
+TARGET ?= glnxa64
 MEXFLAGS ?= -compatibleArrayDims#-largeArrayDims
 
 # ----- NFFT library ---------------------------------------------------------
@@ -11,12 +11,9 @@ MTEX_MEX = S1Grid_find S1Grid_find_region S2Grid_find S2Grid_find_region SO3Grid
 # -----------------------------------------------------------------------------
 all: $(MTEX_MEX)
 
-%: %.c $(MEX_TOOLS) 
-	$(MATLABPATH)/bin/mex $(MEXFLAGS) $< 
+%: %.c $(MEX_TOOLS)
+	$(MATLABPATH)/bin/mex $(MEXFLAGS) -outdir $(TARGET) $< 
 
 install:
-#	mv S1Grid*.mex* $(INSTALLPATH)/@S1Grid/private/
-#	mv S2Grid*.mex* $(INSTALLPATH)/@S2Grid/private/
-#	mv SO3Grid*.mex* $(INSTALLPATH)/@SO3Grid/private/
-#	mv quaternion*.mex* $(INSTALLPATH)/@quaternion/private/
+
 clean:

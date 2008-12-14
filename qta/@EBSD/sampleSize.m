@@ -10,6 +10,4 @@ function s = sampleSize(ebsd)
 %% See also
 % EBSD_index
 
-for i = 1:length(ebsd)
-  s(i) = sum(GridLength(ebsd(i).orientations)); %#ok<AGROW>
-end
+s = size(ebsd,2);

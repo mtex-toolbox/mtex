@@ -16,12 +16,17 @@ function ebsd = delete(ebsd,id)
 % EBSD/get EBSD_index
 
 if isa(id,'logical'), id = find(id);end
-cs = cumsum([0,sampleSize(ebsd)]);
+cs = cumsum([0,length(ebsd)]);
 
-for i= 1:length(ebsd)
-	
+for i= 1:numel(ebsd)
+ 
 	idi = id((id > cs(i)) & (id<=cs(i+1)));
-  if ~isempty(ebsd(i).xy), ebsd(i).xy(idi-cs(i),:) = [];end
+  if ~isempty(ebsd.xy(i)),  ebsd.xy{i}(idi-cs(i),:) = [];end
   %if ~isempty(ebsd(i).phase), ebsd(i).phase(idi-cs(i)) = [];end
-	ebsd(i).orientations = delete(ebsd(i).orientations,idi-cs(i));
+	ebsd.orientations(i) = delete(ebsd.orientations(i),idi-cs(i));
+  
+  vname = fields(ebsd.options);
+  for k=1:length(vname)
+    ebsd.options(1).(vname{k}){i}(idi-cs(i),:) = [];
+  end
 end

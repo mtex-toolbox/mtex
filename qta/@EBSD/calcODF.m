@@ -20,6 +20,7 @@ function odf = calcODF(ebsd,varargin)
 %  odf - @ODF
 %
 %% Options
+%  UNION      - cell-array of girds to merge, eg. { 1 [2 3]}
 %  HALFWIDTH  - halfwidth of the kernel function 
 %  RESOLUTION - resolution of the grid where the ODF is approximated
 %  EXACT      - no approximation to a corser grid
@@ -33,12 +34,24 @@ function odf = calcODF(ebsd,varargin)
 vdisp('------ MTEX -- EBSD to ODF computation ------------------',varargin{:})
 vdisp('performing kernel density estimation',varargin{:})
 
-% extract orientations
-g = getgrid(ebsd);
+u = get_option(varargin,'union',mat2cell(1:numel(ebsd),1,ones(1,numel(ebsd))));
+if isnumeric(u), u = {u};end
+for i=1:length(u)
+  g = getgrid(subsref(ebsd,substruct('()',u(i))));
+  odf(i) = calc(g,getcomment(ebsd),varargin{:});
+end
 
+end
+
+
+function odf = calc(g,ebsdcomment,varargin)
+% extract orientations
+
+CS = getCSym(g);
+SS = getSSym(g);
 % get halfwidth
 hw = get_option(varargin,'halfwidth',...
-  max(getResolution(g) * 3,2*degree));
+  max(getResolution(g) * pi,2*degree));
 k = get_option(varargin,'kernel',...
       kernel('de la Vallee Poussin','halfwidth',hw),'kernel');
 
@@ -48,7 +61,7 @@ vdisp([' used kernel: ' char(k)],varargin{:});
 if check_option(varargin,'exact') || GridLength(g)<200  
   d = ones(1,GridLength(g)) ./ GridLength(g);  
   odf = ODF(g,d,k,...
-    ebsd(1).CS,ebsd(1).SS,'comment',['ODF estimated from ',getcomment(ebsd(1))]);  
+    getCSym(g), getSSym(g),'comment',['estimated from ',ebsdcomment]);  
   return
 end
 
@@ -58,7 +71,7 @@ end
 res = get_option(varargin,'resolution',max(1.5*degree,hw / 2));
 
 %% generate grid
-S3G = SO3Grid(res,ebsd(1).CS,ebsd(1).SS);
+S3G = SO3Grid(res,CS,SS);
 vdisp([' approximation grid: ' char(S3G)],varargin{:});
 
 %% restrict single orientations to this grid
@@ -68,7 +81,7 @@ g = quaternion(g);
 d = zeros(1,GridLength(S3G));
 
 % iterate due to memory restrictions?
-maxiter = ceil(length(ebsd(1).CS)*length(ebsd(1).SS)*numel(g) /...
+maxiter = ceil(length(CS)*length(SS)*numel(g) /...
   get_mtex_option('memory',300 * 1024));
 if maxiter > 1, progress(0,maxiter);end
 
@@ -93,8 +106,8 @@ d = d(d~=0);
 
 %% generate ODF
 
-odf = ODF(S3G,d,k,ebsd(1).CS,ebsd(1).SS,...
-  'comment',['ODF estimated from ',getcomment(ebsd(1))]);
+odf = ODF(S3G,d,k,CS,SS,...
+  'comment',['estimated from ',ebsdcomment]);
 
 %% check wether kernel is to wide
 if check_option(varargin,'small_kernel') && hw > 2*getResolution(S3G)
@@ -103,12 +116,12 @@ if check_option(varargin,'small_kernel') && hw > 2*getResolution(S3G)
   k = kernel('de la Vallee Poussin','halfwidth',hw);
   vdisp([' recalculate ODF for kernel: ',char(k)],varargin{:});
   d = eval(odf,S3G);
-  odf = ODF(S3G,d./sum(d),k,ebsd(1).CS,ebsd(1).SS,...
-    'comment',['ODF estimated from ',getcomment(ebsd(1))]);
+  odf = ODF(S3G,d./sum(d),k,CS,SS,...
+    'comment',['estimated from ',ebsdcomment]);
 end
 end
 %%
 
 function vdisp(s,varargin)
-if ~check_option(varargin,'silent'), disp(s);end
+  if ~check_option(varargin,'silent'), disp(s);end
 end

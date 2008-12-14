@@ -1,4 +1,4 @@
-function [ebsd,interface,options] = loadEBSD(fname,varargin)
+function [ebsd,interface,options,iebsd] = loadEBSD(fname,varargin)
 % import ebsd data 
 %
 %% Description
@@ -60,11 +60,13 @@ for i = 1:length(fname)
   ebsd = [ebsd,feval(['loadEBSD_',char(interface)],fname{i},options{:})]; 
 end
 
-for i = 1:length(ebsd)
-  if exist('cs','var'), ebsd(i) = set(ebsd(i),'CS',cs);end
-  if exist('ss','var'), ebsd(i) = set(ebsd(i),'SS',ss);end
- 
-  [ps,fn,ext] = fileparts([fname{min(i,length(fname))}]);
-  ebsd(i) = set(ebsd(i),'comment',get_option(varargin,'comment',[fn ext]));
+for i = 1:numel(ebsd)
+  if exist('cs','var'), ebsd = set(ebsd,i,'CS',cs(i));end
+end 
+if exist('ss','var'), ebsd = set(ebsd,'SS',ss);end
+
+[ps,fn,ext] = fileparts([fname{min(1,length(fname))}]);
+ebsd = set(ebsd,'comment',get_option(varargin,'comment',[fn ext]));
   
-end
+iebsd = numel(ebsd);
+%end

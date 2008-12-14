@@ -34,7 +34,7 @@ for iq = 1:length(qq)
   A = ones(1,L+1);
 
   %% run NFSOFT
-  T = call_extern([mtex_path,'/c/bin/odf2fc'],'EXTERN',g,c,A);
+  T = call_extern('odf2fc','EXTERN',g,c,A);
 
   % extract result
   T = complex(T(1:2:end),T(2:2:end));

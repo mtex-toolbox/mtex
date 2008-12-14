@@ -109,7 +109,7 @@ To make changes, update the M-file and republish this document.
 
     <p class="footer">
       <xsl:value-of select="copyright"/><br/>
-      MTEX helpfile 2007<br/>
+      MTEX helpfile 2008<br/>
     </p>
 
     </div>

@@ -10,6 +10,6 @@ else
       hw = get(k,'halfwidth');
       value = min(hw);
     otherwise
-      error('Unknown field in class EBSD!')
+      error('Unknown field in class ODF!')
   end
 end
