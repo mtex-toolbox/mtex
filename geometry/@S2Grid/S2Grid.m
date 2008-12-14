@@ -66,8 +66,8 @@ drho = maxrho - minrho;
 if nargin == 0 || ... % empty grid
     (check_option(varargin,{'theta','rho'}) && isempty(get_option(varargin,'theta')))
 	G.res = 2*pi;
-	G.theta = [];
-	G.rho = [];
+	G.theta = S1Grid([],mintheta,maxtheta);
+	G.rho = S1Grid([],minrho,maxrho);
 	G.Grid = vector3d;
 	G.options = {};
   
@@ -78,9 +78,11 @@ elseif isa(varargin{1},'S2Grid') % copy constructor
 elseif isa(varargin{1},'vector3d')	% grid from vector3d
   
 	G.res = get_option(varargin,'RESOLUTION',vec2res(varargin{1}));
-	G.theta =  [];
-	G.rho = [];
+	G.theta =  S1Grid([],mintheta,maxtheta);
+	G.rho = S1Grid([],minrho,maxrho);
 	G.Grid = varargin{1};
+  [theta,rho] = vec2sph(G.Grid);
+  G.Grid = G.Grid(theta<=maxtheta+1e-06 & mod(rho,2*pi) <= maxrho+1e-06);
 	G.options = {};
 	
 % -------------------------- indexed grid ----------------------------
@@ -189,10 +191,11 @@ G = class(G,'S2Grid');
 
 function res = vec2res(vec)
 if numel(vec) < 10, res = 2*pi;return; end
-ind = randperm(min(100,numel(vec)));
+ind = mtexrandsample(numel(vec),min(100,numel(vec)));
 d = acos(dot_outer(vec(ind),vec(:)));
 d(d<0.005) = pi/2;
-res = quantile(min(d,[],2),0.25);
+%res = quantile(min(d,[],2),0.25);
+res = quantile(min(d,[],2),0.5);
 
 function ntheta = N2ntheta(N,maxtheta,maxrho)
 ntheta = 1;

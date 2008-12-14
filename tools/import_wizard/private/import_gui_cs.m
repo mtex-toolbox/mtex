@@ -1,6 +1,9 @@
 function import_gui_cs(wzrd)
 % page for setting crystall geometry
 
+
+setappdata(wzrd,'cs_count',1);
+
 pos = get(wzrd,'Position');
 h = pos(4);
 w = pos(3);
@@ -129,6 +132,9 @@ function leave_callback(varargin)
 
 set_cs(gcbf);
 
+handles = getappdata(gcbf,'handles');
+set(handles.mineral,'string','');
+
 
 function update_cs(varargin)
 
@@ -141,21 +147,27 @@ function lookup_mineral(varargin)
 handles = getappdata(gcbf,'handles');
 data = getappdata(gcbf,'data');
 
+cs_counter = getappdata(gcbf,'cs_count');
+
 name = get(handles.mineral,'string');
 
 if ~exist(name,'file')
   name = [get_mtex_option('cif_path') filesep name '.cif'];
 end
 
-if ~exist(name,'file')
+%if ~exist(name,'file')
   [fname,pathName] = uigetfile([get_mtex_option('cif_path') filesep '*.cif'],'Select cif File');
   name = [pathName,fname];
-end
+%end
 
 try
   cs = cif2symmetry(name);
   set(handles.mineral,'string',shrink_name(name));
-  data = set(data,'CS',cs);
+  if isa(data,'EBSD')
+    data = set(data,cs_counter,'CS',cs);
+  else
+    data = set(data,'CS',cs);
+  end
   setappdata(gcbf,'data',data);
   get_cs(gcbf);  
 catch
@@ -170,7 +182,20 @@ function get_cs(wzrd)
 handles = getappdata(wzrd,'handles');
 data = getappdata(wzrd,'data');
 
-cs = get(data,'CS');
+%data.orientations(1)
+
+cs_counter = getappdata(wzrd,'cs_count');
+if isa(data,'EBSD')
+  cs = get(data,cs_counter,'CS');
+  %get(data,cs_counter,'phase')
+  pagename = ['Set Crystal Geometry, Phase ' num2str(get(data,cs_counter,'phase'))];
+  eb_comment = char(get(data,'comment'));
+  if length(eb_comment)> 25, eb_comment = eb_comment(1:25); end
+  pagename = [pagename ', ' eb_comment ];
+  setappdata(handles.pages(2),'pagename',pagename );
+else
+  cs = get(data,'CS');   
+end
 
 csname = strmatch(Laue(cs),symmetries);
 set(handles.crystal,'value',csname(1));
@@ -198,6 +223,7 @@ function set_cs(wzrd)
 
 handles = getappdata(wzrd,'handles');
 data = getappdata(wzrd,'data');
+cs_counter = getappdata(wzrd,'cs_count');
 
 cs = get(handles.crystal,'Value');
 cs = symmetries(cs);
@@ -209,7 +235,11 @@ for k=1:3
 end
 
 cs = symmetry(cs,[axis{:}],[angle{:}]);
-data = set(data,'CS',cs);
+if isa(data,'EBSD')
+  data = set(data,cs_counter,'CS',cs);
+else
+  data = set(data,'CS',cs);
+end
 
 setappdata(wzrd,'data',data);
 

@@ -64,7 +64,7 @@ if numel(in) > 500 && numel(out) > 500 && ~isempty(c) && ~isempty(getA(kk))
   bw = get_option(varargin,'bandwidth',length(Al));
   Al = Al(1:min(bw,length(Al)));
   
-  f = call_extern([mtex_path,'/c/bin/odf2pf'],'EXTERN',gh,r,c,Al);
+  f = call_extern('odf2pf','EXTERN',gh,r,c,Al);
 	
 else % calculate matrix
 

@@ -1,10 +1,24 @@
-function nobj = set(obj,vname,value)
+function obj = set(obj,phase,vname,value)
 % set object variable to value
 
-for i = 1:numel(obj)
-  obj(i).(vname) = value;
-  if strcmp(vname,'CS'), obj(i).orientations = set(obj(i).orientations,'CS',{value});end
-  if strcmp(vname,'SS'), obj(i).orientations = set(obj(i).orientations,'SS',{value});end
+if nargin > 3
+  n = phase;
+else
+  n = ':';
+  value = vname;
+  vname = phase;  
 end
 
-nobj = obj;
+
+if any (strcmp (fields (obj),vname))
+  if ~iscell(obj.(vname))
+     obj.(vname) = value;
+  else
+    obj.(vname)(n) = value;
+  end
+elseif strcmp(vname,'CS'), obj.orientations(n) = set(obj.orientations(n),'CS',{value});
+elseif strcmp(vname,'SS'), obj.orientations(n) = set(obj.orientations(n),'SS',{value});
+else
+  obj.options.(vname)(n) = {value};
+end  
+

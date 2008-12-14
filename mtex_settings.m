@@ -9,13 +9,19 @@ function mtex_settings
 %% user defined global settings
 %------------------------------------------------------------------------
 
+%% architecture 
+% this is usefull if the arcitecture is not automatically recognized by
+% MTEX
+
+%set_mtex_option('architecture','maci64');
+
 %% file extensions to be associated with MTEX
 % add here your pole figure and EBSD data file extensions 
 
 set_mtex_option('polefigure_ext',...
   {'.exp','.XPa','.cns','.cnv', '.ptx','.pf','.xrdml'});
 set_mtex_option('ebsd_ext',...
-  {'.ebsd'});
+  {'.ebsd','.ctf','.ang','.hkl','.tsl'});
 
 %% Path to CIF files
 % modify this path if your CIF files are located at a different path

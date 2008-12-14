@@ -13,10 +13,10 @@ function plotebsd(ebsd,varargin)
 %% See also
 % EBSD/plotpdf savefigure
 
-if sum(sampleSize(ebsd)) > 100000 || check_option(varargin,'points')
+if size(ebsd,2) > 10000 || check_option(varargin,'points')
   points = get_option(varargin,'points',20000);
   disp(['plot ', int2str(points) ,' random orientations out of ', ...
-    int2str(sum(sampleSize(ebsd))),' given orientations']);
+    int2str(sum(size(ebsd,2))),' given orientations']);
   ebsd = subsample(ebsd,points);
 end
 

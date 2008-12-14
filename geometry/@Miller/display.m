@@ -1,5 +1,8 @@
 function display(v)
 % standard output
 
-disp([inputname(1) ' = Miller-indice']);
-disp(char(v));
+disp(' ')
+disp([inputname(1) ' = ']);
+disp(' ')
+disp(['  Miller: ' char(v)]);
+disp(' ')

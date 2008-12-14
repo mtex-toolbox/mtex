@@ -4,6 +4,9 @@ function startup_mtex
 % 
 %
 
+%% start MTEX
+disp('initialize MTEX ...');
+
 % path to this function to be considered as the root of the MTEX
 % installation 
 local_path = fileparts(mfilename('fullpath'));
@@ -23,7 +26,7 @@ toadd = {'',...
   'tools/import_wizard','tools/plot_tools','tools/statistic_tools',...
   'tools/misc_tools','tools/math_tools',...
   'examples','tests',...
-  'help/interfaces','help/ODFCalculation','help/plotting','c/mex'};
+  'help/interfaces','help/ODFAnalysis','help/PoleFigureAnalysis','help/EBSDAnalysis','help/plotting'};
 
 for i = 1:length(toadd)
   p = [local_path,filesep,toadd{i}];
@@ -35,6 +38,7 @@ end
 set_mtex_option('mtex_path',local_path);
 set_mtex_option('mtex_data_path',[local_path filesep 'data']);
 set_mtex_option('mtex_startup_dir',pwd);
+set_mtex_option('architecture',computer('arch'));
 
 
 %% init settings
@@ -45,7 +49,7 @@ mtex_settings;
 check_installation;
 
 %% finish
-disp('MTEX toolbox (v1.1 beta) loaded')
+disp('MTEX toolbox (v1.2 beta) loaded')
 disp(' ');
 if isempty(javachk('desktop'))
   disp('Basic tasks:')
@@ -64,9 +68,9 @@ function install_mtex(local_path)
 
 % check wether local_path is in search path
 if ispc
-  cellpath = splitstr(path,';'); %regexp(path,';','split');
+  cellpath = splitstr(path,';'); 
 else
-  cellpath = splitstr(path,':'); %regexp(path,':','split');
+  cellpath = splitstr(path,':'); 
 end
 
 if any(strcmpi(local_path,cellpath)), return;end
@@ -110,12 +114,11 @@ if isempty(r) || any(strcmpi(r,{'Y',''}))
   disp(' ');
   disp('> Adding MTEX to the MATLAB search path.');
   if isunix || ismac
-    r = install_mtex_linux;
+    install_mtex_linux;
   else
-    r = install_mtex_windows;
+    install_mtex_windows;
   end
   
-  if r, disp('> MTEX permanently added to MATLAB search path.');end
 end
   
 
@@ -133,35 +136,41 @@ end
 end
 
 %% windows
-function out = install_mtex_windows
+function install_mtex_windows
   
-out = 0;
-if ~savepath, out = 1;return;end
-
-disp(' ');
-disp('> Warning: The MATLAB search path could not be saved!');
-disp('> Save the search path manually using the MATLAB menu File -> Set Path.');
+if ~savepath
+  disp('> MTEX permanently added to MATLAB search path.');
+else
+  disp(' ');
+  disp('> Warning: The MATLAB search path could not be saved!');
+  disp('> Save the search path manually using the MATLAB menu File -> Set Path.');
+end
 
 end
 
 %% Linux
 function out = install_mtex_linux
 
-% try to save the normal way
-if ~savepath, out = 1;return;end
+if ~savepath % try to save the normal way
+  disp('> MTEX permanently added to MATLAB search path.');
+else
+  
+  % if it fails save to tmp dir and move
+  savepath([tempdir 'pathdef.m']);
 
-savepath([tempdir 'pathdef.m']);
+  % move pathdef.m
+  out = sudo(['mv ' tempdir '/pathdef.m ' toolboxdir('local')]);
 
-% move pathdef.m
-out = sudo(['mv ' tempdir '/pathdef.m ' toolboxdir('local')]);
-
-if ~out
-  disp(' ');
-  disp('> Warning: The MATLAB search path could not be saved!');
-  disp('> In order to complete the installation you have to move the file');
-  disp(['   ' tempdir '/pathdef.m']);
-  disp('    to');
-  disp(['   ' toolboxdir('local')]);
+  if ~out
+    disp(' ');
+    disp('> Warning: The MATLAB search path could not be saved!');
+    disp('> In order to complete the installation you have to move the file');
+    disp(['   ' tempdir '/pathdef.m']);
+    disp('    to');
+    disp(['   ' toolboxdir('local')]);
+  else
+    disp('> MTEX permanently added to MATLAB search path.');
+  end
 end
 
 end
@@ -179,10 +188,9 @@ if exist('/usr/bin/sudo','file')
   
 else % use su
   
-  out = ~system(['su -c mv ' tmpdir '/pathdef.m ' toolboxdir('local')]);
+  out = ~system(['su -c ' c]);
   
 end
-
 
 end
 

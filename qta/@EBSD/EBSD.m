@@ -1,4 +1,4 @@
-function ebsd = EBSD(orientations,CS,SS,varargin)
+function ebsd = EBSD(orientations,varargin)
 % constructor
 %
 % *EBSD* is the low level constructor for an *EBSD* object representing EBSD
@@ -19,33 +19,43 @@ function ebsd = EBSD(orientations,CS,SS,varargin)
 %% See also
 % ODF/simulateEBSD EBSD/calcODF loadEBSD
 
-if nargin <= 1, CS = symmetry('triclinic'); end
-if nargin <= 2, SS = symmetry('triclinic'); end
-
 if (nargin == 0)
-  ebsd.comment = [];
+  ebsd.comment = '';
   ebsd.orientations = [];
-  ebsd.CS = symmetry;
-  ebsd.SS = symmetry;
-  ebsd.options = {};
+  %ebsd.CS = symmetry;
+  %ebsd.SS = symmetry; 
   ebsd.xy = [];
   ebsd.phase = [];
+  ebsd.options = struct;
+  ebsd.grainid = [];
   ebsd = class(ebsd,'EBSD');
   return
 elseif isa(orientations,'EBSD')
   ebsd = orientations;
   return
 elseif isa(orientations,'quaternion')
+  if nargin >= 2
+    CS = varargin{1};
+  else
+    CS = symmetry('triclinic');
+  end
+  if nargin >= 3
+    SS = varargin{2}; 
+  else   
+    SS = symmetry('triclinic');
+  end
   orientations = SO3Grid(orientations,CS,SS);
 elseif ~isa(orientations,'SO3Grid')
   error('first argument should be of type SO3Grid or quaternion');
 end
 
-ebsd.comment = get_option(varargin,'comment',[]);
+ebsd.comment = get_option(varargin,'comment','');
 ebsd.orientations = orientations;
-ebsd.CS = CS;
-ebsd.SS = SS;
 ebsd.xy = get_option(varargin,'xy');
-ebsd.phase = get_option(varargin,'phase');
-ebsd.options = extract_option(varargin,{});
+ebsd.phase = get_option(varargin,'phase',mat2cell(1:numel(orientations),1,ones(1,numel(orientations))));
+
+opt = delete_option(varargin,{'comment','xy','phase'});
+ebsd.options = struct(opt{:});
+ebsd.grainid = [];
+
 ebsd = class(ebsd,'EBSD');

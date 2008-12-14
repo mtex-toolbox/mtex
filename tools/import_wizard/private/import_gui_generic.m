@@ -16,7 +16,7 @@ handles.name = uicontrol(...
  'FontWeight','bold',...
  'BackgroundColor',[1 1 1],...
  'HorizontalAlignment','left',...
- 'Position',[10 h-37 w-150 20],...
+ 'Position',[10 h-37 w-10 20],...
  'Style','text',...
  'HandleVisibility','off',...
  'HitTest','off');
@@ -147,15 +147,17 @@ else
     fn{i} = getappdata(lb(i),'filename');
   end
   
+  
   if ~isempty(fn{2}) % EBSD data
-    str = exportEBSD(fn{2},data,getappdata(lb(2),'interface'), getappdata(lb(2),'options'));
+    str = exportEBSD(fn{2},data,getappdata(lb(2),'interface'),...
+      getappdata(lb(2),'options'), handles);
   else
     fn(2) = [];
     if all(cellfun('isempty',fn(2:end)))
       fn = fn{1};
     end
-    str = exportPF(fn,data,getappdata(lb(1),'interface'), getappdata(lb(1),'options'),...
-      handles);
+    str = exportPF(fn,data,getappdata(lb(1),'interface'),...
+      getappdata(lb(1),'options'), handles);
   end
        
   str = generateCodeString(str);
@@ -175,7 +177,20 @@ handles = getappdata(wzrd,'handles');
 leavecallback = getappdata(handles.pages(page),'leave_callback');
 try
   leavecallback();
-  page = page + delta;
+%   page = page + delta;
+%   gotocallback = getappdata(handles.pages(page),'goto_callback');
+%   gotocallback();
+%   set_page(wzrd,page);
+  data = getappdata(wzrd,'data');
+  if isa(data,'EBSD')
+    oos = get(data,'orientations');
+    c = getappdata(wzrd,'cs_count');
+    if (((page+delta == 3) & (c < numel(oos))) || ((page+delta == 1) & (c > 1)))
+      setappdata(wzrd,'cs_count',c+delta);
+      delta = 0;
+    end
+  end 
+  page = page + delta;  
   gotocallback = getappdata(handles.pages(page),'goto_callback');
   gotocallback();
   set_page(wzrd,page);

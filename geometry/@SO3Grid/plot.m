@@ -12,7 +12,7 @@ if check_option(varargin,'RODRIGUEZ') || sum(GridLength(SO3G)) > 50
   for i = 1:length(SO3G)
     r = quat2rodriguez(SO3G(i).Grid);
 
-    scatter3(getx(r),gety(r),getz(r)); 
+    scatter3(getx(r),gety(r),getz(r),varargin{:}); 
     hold all
   end
   hold off

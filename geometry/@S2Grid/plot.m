@@ -157,7 +157,7 @@ if any(strcmpi(hemisphere,'north')) || any(strcmpi(hemisphere,'reduced'))
     ind = theta <= pi/2+0.001;
   end
   bounds = plotHemiSphere(submatrix(theta,ind),submatrix(rho,ind),...
-    submatrix(data,ind),0,varargin{:});
+    submatrix(data,ind),0,'maxrho',max(getMax(S2G.rho)),varargin{:});
 end
 
 %% Southern Hemisphere
@@ -165,7 +165,7 @@ end
 if any(strcmpi(hemisphere,'south'))
   ind = theta >= pi/2-0.001;
   bounds = plotHemiSphere(pi-submatrix(theta,ind),submatrix(rho,ind),...
-    submatrix(data,ind),bounds(3),varargin{:});
+    submatrix(data,ind),bounds(3),'maxrho',max(getMax(S2G.rho)),varargin{:});
 end
 
 
@@ -216,31 +216,12 @@ if ~isempty(X), plotData(X+offset,Y,data,box,varargin{:});end
 % bounding box
 if ~check_option(varargin,'annotate')
   
-  if check_option(varargin,'PLAIN') 
-    
-    plotPlainGrid(theta,rho,varargin{:});    
-    
-  else
-    if (isempty(rho) || isnull(mod(rho(1)-rho(end),2*pi)) || ...
-        ~(check_option(varargin,{'CONTOUR','SMOOTH'})))      
-      circle(bounds(1)+offset+bounds(3)/2,bounds(2)+bounds(4)/2,bounds(3)/2,'edgecolor','k');
-    else
-      torte(X+offset,Y);
-    end
-    
-    polarGrid(offset,varargin{:});
+  switch lower(getappdata(gcf,'projection'))
+    case 'plain'
+      plotPlainGrid(theta,rho,varargin{:});
+    otherwise  
+      polarGrid(offset,varargin{:});
   end
 end
 
 bounds(3) = bounds(3) + offset;
-
-%% Plot Tort
-function torte(X,Y)
-
-h(1) = line(X(:,1),Y(:,1),'color','k');%,'LineWidth',2)
-h(2) = line(X(:,end),Y(:,end),'color','k');%,'LineWidth',2)
-h(3) = line(X(end,:),Y(end,:),'color','k');%,'LineWidth',2)
-h(4) = line(X(1,:),Y(1,:),'color','k');%,'LineWidth',2)
-
-% control legend entry
-setLegend(h,'off');

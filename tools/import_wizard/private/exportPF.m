@@ -6,17 +6,12 @@ str = ['%% created with import_wizard';{''}];
 
 str = [ str; '%% specify crystal and specimen symmetries';{''}];
 
-cs =get(pf,'CS');
+cs = get(pf,'CS');
 ss = get(pf,'SS');
 
-[c,angl] = get_axisangel( cs );
-axis =  strcat(n2s(c));
-angle =  strcat(n2s([angl{:}]));
+str = [str; export_CS_tostr( cs )];
 
-cs = strrep(char(cs),'"','');
-str = [str; export_CS_tostr( cs,axis,angle )];
-
-str = [ str; strcat('SS = symmetry(''',strrep(char(ss),'"',''), ''');')];
+str = [ str; strcat('SS = symmetry(',char(ss),');')];
 
 %% specify the file names
 
@@ -142,10 +137,3 @@ else
   s = strcat('Miller(',n2s(get(m,'h')),',',n2s(get(m,'k')), ...
     ',',n2s(get(m,'l')),',CS), ...');
 end
-
-
-function s = n2s(n)
-
-s = num2str(n);
-s = regexprep(s,'\s*',',');
-if length(n) > 1, s = ['[',s,']'];end

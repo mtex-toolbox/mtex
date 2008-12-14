@@ -38,9 +38,9 @@ for i=1:length(fnames)
 
   try
     if check_option(varargin,'EBSD')
-      [data,interface,options] = ...
+      [data,interface,options,idata] = ...
         loadEBSD(strcat(pathname,fnames(i)),interf{:},options{:});
-      idata = 1;
+    %  idata = 1;
     else
       [data,interface,options,idata] = ...
         loadPoleFigure(strcat(pathname,fnames(i)),interf{:},options{:});

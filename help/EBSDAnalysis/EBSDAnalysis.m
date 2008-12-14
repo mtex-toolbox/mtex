@@ -1,4 +1,6 @@
 %% EBSD Data Analysis
+% This sections gives you an overview over the functionality MTEX offers to
+% analyze EBSD data.
 %
 %
 %% Import of EBSD Data
@@ -31,7 +33,7 @@ ebsd = loadEBSD(fnames,cs,ss,'header',1,'layout',[5,6,7],'xy',[3 4])
 % It asign a color to each orientation and plots a map of these colors.
 % There are several options to specify the way the colors are assigned.
 
-clf; set(gcf,'position',[100 100 600 300])
+figure('position',[100 100 600 300])
 plot(ebsd)
 
 %% Modify EBSD Data

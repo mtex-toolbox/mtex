@@ -1,4 +1,4 @@
-function nebsd = rotate(ebsd,q)
+function ebsd = rotate(ebsd,q)
 % rotate EBSD data
 %
 %% Input
@@ -8,8 +8,6 @@ function nebsd = rotate(ebsd,q)
 %% Output
 %  rotated ebsd - @EBSD
 
-nebsd = ebsd;
-
-for i = 1:length(ebsd) 
-  nebsd.orientations = q * nebsd(i).orientations;
+for i = 1:numel(ebsd) 
+  ebsd.orientations(i) = q * ebsd.orientations(i);
 end

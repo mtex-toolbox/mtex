@@ -1,8 +1,11 @@
 function display(k)
 % standard output
 
-disp([inputname(1) ' = "kernel"']);
-disp(['type: ',char(k(1))]);
-for i = 2:length(k)
-    disp(['type: ',char(k(i))]);
+disp(' ')
+disp([inputname(1) ' = ']);
+disp(' ')
+disp('  kernel: ')
+for i = 1:length(k)
+    disp(['   (' n2str(i) ') ',char(k(i))]);
 end
+disp(' ')

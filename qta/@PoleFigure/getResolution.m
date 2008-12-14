@@ -5,6 +5,6 @@ function res = getResolution(pf)
 % pf - @PoleFigure
 %
 %% Output
-% res - resolution of the specimen directions in radiant (double)
+% res - resolution of the specimen directions in radians (double)
 
 res = getResolution(getr(pf));

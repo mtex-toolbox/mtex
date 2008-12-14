@@ -25,7 +25,7 @@ function [pf,options] = loadPoleFigure_generic(fname,varargin)
 %  fname - file name (text files only)
 %
 %% Options
-%  RADIAND           - treat input in radiand
+%  RADIANS           - treat input in radians
 %  DELIMITER         - delimiter between numbers
 %  HEADER            - number of header lines
 %  LAYOUT            - [theta rho intensity] - (default [1 2 3])
@@ -56,7 +56,7 @@ if ~check_option(varargin,'layout')
 end
 
 %extract options
-dg = degree + (1-degree)*check_option(varargin,'RADIAND');
+dg = degree + (1-degree)*check_option(varargin,{'RADIAND','radiant','radians'});
 layout = get_option(varargin,'LAYOUT',[1 2 3]);
 
 try

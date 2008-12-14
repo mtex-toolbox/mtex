@@ -47,12 +47,11 @@
   <tocitem target="EBSD2odf_estimation.html"> ODF Estimation from EBSD data</tocitem>
 </tocitem>
 
-<tocitem target="ODF_index.html"
+<tocitem target="ODFAnalysis.html"
 	 image="$toolbox/matlab/icons/pagesicon.gif">
   ODF Analysis
-  <tocitem target="modelODFs_demo.html">Model ODFs</tocitem>
-  <tocitem target="ODFCalculations_index.html">ODF Calculations</tocitem>
-  <tocitem target="ODF_demo.html"> ODF Characteristics</tocitem>	
+  <tocitem target="ModelODFs.html">Model ODFs</tocitem>
+  <tocitem target="ODFCalculations.html">ODF Calculations</tocitem>
   <tocitem target="PoleFigureSimulation_demo.html"> Pole Figure Simulation</tocitem>
   <tocitem target="EBSDSimulation_demo.html"> EBSD Data Simulation</tocitem>  
 </tocitem>

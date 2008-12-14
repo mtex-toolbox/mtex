@@ -9,6 +9,7 @@ q = reshape(q,1,[]);
 
 if ~isempty(varargin)
     w = reshape(varargin{1},1,[]);
+    w = w./sum(w);
     w = repmat(w,4,1);
 else
     w = ones(4,numel(q))./numel(q);

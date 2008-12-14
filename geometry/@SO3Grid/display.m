@@ -1,13 +1,12 @@
 function display(N)
 % standard output
 
-disp([inputname(1) ' = "SO3Grid"']);
-if length(N) == 1
-	disp(['Symmetry: ',char(N.CS),' - ',char(N.SS)]);
-	disp(['Grid    : ',char(N)]);
-else
-	disp(['Symmetry: ',char(N(1).CS),' - ',char(N(1).SS)]);
-	for i = 1:length(N)
-		disp(['Grid ',int2str(i),'  : ',char(N(i))]);
-	end
+disp(' ')
+disp([inputname(1) ' = ']);
+disp(' ')
+
+disp('  SO3Grid:')
+for i = 1:length(N)
+  disp(['   (',int2str(i),') ', char(N(i).CS) '/' char(N(i).SS) ': ' char(N(i))]);
 end
+disp(' ')

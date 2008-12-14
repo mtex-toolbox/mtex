@@ -32,6 +32,10 @@ if ischar(d)
 elseif isa(d,'double')
   s = xnum2str(d);
   if length(d) > 1, s = ['[',s,']'];end
+elseif iscellstr(d)
+  f = ['{', strcat('''',d,''''),'}'];
+  f = strcat(f ,{' '});
+  s = [f{:}];
 else
   s = ['''',char(d),''''];
 end

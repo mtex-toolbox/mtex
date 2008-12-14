@@ -27,8 +27,8 @@ if ~isempty(data)
  	if selected < 1, selected=1;end
   set(list_handle,'String',path2filename(filename));
   set(list_handle,'Value',selected);
-   
-  if isempty(data)
+
+  if ~numel(data)
     setappdata(list_handle,'interface','');
     setappdata(list_handle,'options',{});
     setappdata(gcbf,'assert_assistance','None');
