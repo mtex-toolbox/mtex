@@ -54,8 +54,9 @@ ebsd.orientations = orientations;
 ebsd.xy = get_option(varargin,'xy');
 ebsd.phase = get_option(varargin,'phase',mat2cell(1:numel(orientations),1,ones(1,numel(orientations))));
 
-opt = delete_option(varargin,{'comment','xy','phase'});
-ebsd.options = struct(opt{:});
+opt = delete_option(varargin,{'comment','xy','phase'},1);
+if ~isempty(opt), ebsd.options = struct(opt{:}); 
+else ebsd.options = struct; end
 ebsd.grainid = [];
 
 ebsd = class(ebsd,'EBSD');

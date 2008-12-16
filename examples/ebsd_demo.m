@@ -13,10 +13,12 @@ ss = symmetry('triclinic');
 %% Load EBSD Data
 
 ebsd = loadEBSD([mtexDataPath,'/aachen_ebsd/85_829grad_07_09_06.txt'],cs, ...
-                ss,'header',1,'layout',[5,6,7,2],'phase',1,'xy',[3 4])
+                ss,'bunge','layout',[5 6 7],'phase',2,'xy',[3 4])
 
 %% Plot Spatial Data
 
+close; figure('position',[100,100,600,300])
+plot(ebsd,'BUNGE')
               
 %% Plot Pole Figures as Scatter Plots
 

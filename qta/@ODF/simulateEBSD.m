@@ -34,6 +34,6 @@ q = quaternion(S3G_global,r1) .* quaternion(S3G_local,r2);
 clear S3G_global; clear S3G_local;
 
 comment = get_option(varargin,'comment',...
-  ['EBSD data simulated from ',getcomment(odf)]);
+  ['data simulated from ',getcomment(odf)]);
   
-ebsd = EBSD(SO3Grid(q,cs,ss),cs,ss,'comment',comment);
+ebsd = EBSD(SO3Grid(q,cs,ss),'comment',comment);

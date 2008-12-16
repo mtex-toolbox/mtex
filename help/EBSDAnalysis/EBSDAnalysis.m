@@ -18,14 +18,29 @@ import_wizard
 % wizard looks a follows.
 
 
-cs = symmetry('-3m',[1.2 1.2 3.5]); % crystal symmetry
-ss   = symmetry('triclinic');        % specimen symmetry
+cs = [... % crystal symmetry  for each phase
+  symmetry('m-3m'),...
+  symmetry('m-3m'),...
+  symmetry('m-3m')];
 
-% file names
-fnames = [mtexDataPath '/aachen_ebsd/85_829grad_07_09_06.txt'];
+ss = symmetry('-1');  % specimen symmetry
 
-% load data
-ebsd = loadEBSD(fnames,cs,ss,'header',1,'layout',[5,6,7],'xy',[3 4])
+% file name
+fname = [mtexDataPath '/aachen_ebsd/85_829grad_07_09_06.txt'];
+
+% load the data
+ebsd = loadEBSD(fname,cs,ss,'interface','generic', 'Bunge', ...
+  'layout', [5 6 7], 'Phase', 2, 'xy', [3 4], ...
+  'ColumnNames', { 'Index' 'MAD' 'BC' 'BS' 'Bands' 'Error' 'RI' } , ...
+  'ColumnIndex', [1 8 9 10 11 12 13]);
+
+%%
+% 'layout' specifies the columns of orientation data, and 'Phase' the
+% column of phase. However, EBSD data often comes along with more 
+% information, i.R. with the location of measured orientation at 'xy', and
+% additional properties of the Kikuchi patterns and beam diffraction, which
+% can be specified by 'ColumnNames' and its corresponding 'ColumnIndex'.
+
 
 %% Plotting EBSD Data
 %
@@ -70,7 +85,7 @@ plotpdf(odf,Miller(1,0,0,cs),'reduced')
 % given error. The MTEX command to simulate EBSD data is
 % <ODF_simulateEBSD.html simulateEBSD>, e.g.
 
-ebsd = simulateEBSD(unimodalODF(idquaternion,cs,ss),500)
+ebsd = simulateEBSD(unimodalODF(idquaternion,cs(1),ss),500)
 plotpdf(ebsd,Miller(1,0,0),'reduced','MarkerSize',3)
 
 %% Demo
