@@ -10,9 +10,9 @@ if strcmp( S(1).type, '()')
      nobj = obj;
      nobj.comment = B.comment;
      nobj.orientations(n{1}) = B.orientations;
-     nobj.xy(n{1}) = B.xy;
+     if ~isempty(B.xy), nobj.xy(n{1}) = B.xy;end
      nobj.phase(n{1}) = B.phase;
-     nobj.grainid(n{1}) = B.grainid;
+     if ~isempty(B.grainid) nobj.grainid(n{1}) = B.grainid;end
 
      vname = fields(obj.options);
      for k=1:length(vname)

@@ -24,9 +24,8 @@ cs = symmetry('cubic');
 ss = symmetry('triclinic');
 
 %% load EBSD data
-
-ebsd = loadEBSD([mtexDataPath,'/aachen_ebsd/85_829grad_07_09_06.txt'],cs,ss,... 
-                'interface','generic','header',1,'layout',[5,6,7,2],'phase',1)
+ebsd = loadEBSD([mtexDataPath,'/aachen_ebsd/85_829grad_07_09_06.txt'],cs,ss,...
+  'interface','generic', 'Bunge', 'layout', [5 6 7], 'Phase', 2);
 
 %% plot pole figures
 

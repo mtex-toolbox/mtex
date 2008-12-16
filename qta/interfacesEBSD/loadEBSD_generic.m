@@ -131,7 +131,7 @@ try
       id = find(d(:,phase) == phases(i));
       
       SO3G(i) = SO3Grid(q(id),symmetry('cubic'),symmetry());
-      xy_s{i,1} = xy(id,:);
+      if ~isempty(xy), xy_s{i,1} = xy(id,:); end
       ph{i,1} = phases(i);
       
       if ~isempty(names)
@@ -139,12 +139,12 @@ try
       end
           
     end
-    xy = xy_s;
+    if ~isempty(xy), xy = xy_s; end
   else
     ph = {0};
     SO3G = SO3Grid(q,symmetry('cubic'),symmetry());
     d1 = d(:,indi);
-    xy = {xy};
+    if ~isempty(xy), xy = {xy}; end
   end
   
   if  ~isempty(names)       

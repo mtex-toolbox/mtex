@@ -45,6 +45,7 @@
   <tocitem target="ModifyEBSDData.html"> Modify EBSD Data </tocitem>
   <tocitem target="AnalyzeEBSDData.html"> Analyze EBSD Data </tocitem>
   <tocitem target="EBSD2odf_estimation.html"> ODF Estimation from EBSD data</tocitem>
+  <tocitem target="EBSDGrains.html"> EBSD Segmentation and Grain Analysis</tocitem>
 </tocitem>
 
 <tocitem target="ODFAnalysis.html"

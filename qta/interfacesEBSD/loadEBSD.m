@@ -60,9 +60,13 @@ for i = 1:length(fname)
   ebsd = [ebsd,feval(['loadEBSD_',char(interface)],fname{i},options{:})]; 
 end
 
-for i = 1:numel(ebsd)
-  if exist('cs','var'), ebsd = set(ebsd,i,'CS',cs(i));end
-end 
+if exist('cs','var')
+  if numel(cs) > 1
+    for i = 1:numel(cs), ebsd = set(ebsd,i,'CS',cs(i)); end
+  else
+    for i = 1:numel(ebsd), ebsd = set(ebsd,i,'CS',cs); end
+  end
+end
 if exist('ss','var'), ebsd = set(ebsd,'SS',ss);end
 
 [ps,fn,ext] = fileparts([fname{min(1,length(fname))}]);
