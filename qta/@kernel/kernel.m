@@ -67,6 +67,8 @@ if check_option(varargin,'HALFWIDTH')
   p = hw2p(name,hw);
 elseif length(varargin)>=1
   p = varargin{1};
+else
+  error('Missing argument! You have to specify either the halfwidth of the kernel function or the kernel parameter');
 end
 
 L = get_option(varargin,'BANDWIDTH',100*(1+9*~strcmpi(name,'bump')));

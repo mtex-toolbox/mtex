@@ -39,7 +39,7 @@ if check_option(varargin,'type')
  end
 end
 
-newversion = ~verLessThan('matlab','7.6');
+newversion = exist('verLessThan','file') && ~verLessThan('matlab','7.6');
 
 %% -------- init gui -----------------------------------------------------
 
@@ -71,9 +71,9 @@ uicontrol(...
 uicontrol('Parent',htp,'Style','Text','Position',[dw,h-120,w-2*dw,50],...
  'HorizontalAlignment','left',...
  'string',['The data format could not automatically detected. ',...
- 'However the following ',int2str(size(data,1)) 'x' int2str(size(data,2)) ...
+ 'However the following ', ...
  ' data matrix was extracted from the file.']);
-
+% ,int2str(size(data,1)) 'x' int2str(size(data,2))
 % table
 
 if ~isempty(colums) && length(colums) == y

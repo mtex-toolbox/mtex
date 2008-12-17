@@ -102,7 +102,7 @@ if check_option(varargin,'small_kernel') && hw > 2*getResolution(S3G)
   hw = 2/3*getResolution(S3G);
   k = kernel('de la Vallee Poussin','halfwidth',hw);
   vdisp([' recalculate ODF for kernel: ',char(k)],varargin{:});
-  d = eval(odf,S3G);
+  d = eval(odf,S3G); %#ok<EVLC>
   odf = ODF(S3G,d./sum(d),k,ebsd(1).CS,ebsd(1).SS,...
     'comment',['ODF estimated from ',getcomment(ebsd(1))]);
 end
