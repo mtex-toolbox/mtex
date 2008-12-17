@@ -19,7 +19,7 @@ w = warning;
 warning off all
 for i =1:length(interfaces)
   try
-    feval(interfaces{i}(1:end-2),fname,varargin{:});
+    feval(interfaces{i}(1:end-2),fname,varargin{:},'check');
     interface = {interface{:},interfaces{i}(16:end-2)};
   catch  
   end
@@ -39,7 +39,7 @@ end
 %% no interface - try generic interface
 if isempty(interface)
 
-  [d,options] = loadPoleFigure_generic(fname,varargin{:});
+  [d,options] = loadPoleFigure_generic(fname,varargin{:},'check');
   
   if isempty(d)
     interface = '';
