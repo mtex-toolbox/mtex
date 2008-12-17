@@ -16,18 +16,33 @@ resmax = min(2.5*degree,get_option(varargin,'resolution',...
 
 % initial gues
 S3G = SO3Grid(2*res,odf(1).CS,odf(1).SS);
-f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
+if 2*res - get(odf,'resolution') > res/2
+  f = eval(smooth(odf,'halfwidth',2*res),S3G,varargin{:}); %#ok<EVLC>
+else
+  f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
+end
 
-g0 = quaternion(S3G,find(f>0.8*max(f)));
+
+g0 = quaternion(S3G,find(f>0.8*max(f(:))));
 
 f0 = max(f(:));
 
 while res >= resmax || (0.95 * max(f(:)) > f0)
 
-  f0 = max(f(:));
+  f0 = max(f(:));  
   S3G = g0*SO3Grid(res,odf(1).CS,odf(1).SS,'max_angle',2*res);
-  f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
-  g0 = quaternion(S3G,find(f(:)==max(f(:))));
+  if res - get(odf,'resolution') > res/4
+    f = eval(smooth(odf,'halfwidth',res),S3G,varargin{:}); %#ok<EVLC>
+  else
+    f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
+  end
+  
+  %g0 = quaternion(S3G,find(f(:)==max(f(:))));
+  epsilon = sort(f(:));
+  epsilon = epsilon(length(epsilon)-100);
+  g0 = quaternion(S3G,find(f>epsilon));
+  f=  f(f>epsilon);
   res = res / 2;
 end
 
+g0 = g0(f(:)==max(f(:)));
