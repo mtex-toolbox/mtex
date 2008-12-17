@@ -12,6 +12,13 @@ end
 h = [];
 plottype = get_flag(varargin,{'CONTOUR','CONTOURF','SMOOTH','SCATTER'});
 
+%% for compatiility with version 7.1
+if ndims(X) == 2 && X(1,1) > X(1,end)
+  X = fliplr(X);
+  Y = fliplr(Y);
+  data = fliplr(data);
+end
+
 %% contour plot
 if any(strcmpi(plottype,{'CONTOUR','CONTOURF'})) 
 
