@@ -75,6 +75,6 @@ end
 
 if ~any(strcmpi(name,{'Fourier','bump'}))
   % prevent from instability effects
-  ind = find(A<=max(min([A,1E-5]),1E-10),1,'first');
+  ind = find(A<=max(min([A,1E-5]),1E-6),1,'first');
   A = A(1:min([ind,length(A)]));
 end
