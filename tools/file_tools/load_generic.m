@@ -10,51 +10,62 @@ else
 end    
 
 d = [];
-% read data using importdata
-if ~check_option(varargin,'ascii')    
+
+if ~check_option(varargin,'noascii')
+  % read data using txt2mat
   try
-    d = importdata(fname,options{:});
+    if check_option(varargin,'check')
+      [d,ffn,nh,SR,header] = txt2mat(fname,options{2:end},...
+        'RowRange',[1 1000],'InfoLevel',0);
+    else
+      [d,ffn,nh,SR,header] = txt2mat(fname,options{2:end},'InfoLevel',0);
+    end
   catch %#ok<CTCH>
   end
+  
+  % data found?
+  if size(d,1)>10 && size(d,2)>2,
+    c = extract_colnames(header);
+    options = delete_option(varargin,'check');
+    return;
+  end
+end
+
+% read data using importdata
+try
+  d = importdata(fname,options{:});
+catch %#ok<CTCH>
 end
 
 [d,c,header] = extract_data(d);
 
 % data found?
 if ~isempty(d)    
-  options = varargin;
+  options = {varargin{:},'noascii'};
   return
 end
 
-% read data using txt2mat
-try
-  [d,ffn,nh,SR,header] = txt2mat(fname,options{2:end},'InfoLevel',0);
-catch %#ok<CTCH>
-end
-  
-% data found?
-if size(d,1)>10 || size(d,2)>2
-  options = {'ascii',varargin{:}};      
-end
 
+
+function c = extract_colnames(header)
+
+c = [];
 try
-  if ~isempty(header) && isempty(c)
-    % split into rows
-    rows = regexp(header,'\n','split');
-    %find last not empty row
-    while iscell(rows)
-      if isempty(rows{end})
-        rows = {rows{1:end-1}};
-      else
-        rows = rows{end};
-      end
+  % split into rows
+  rows = regexp(header,'\n','split');
+  %find last not empty row
+  while iscell(rows)
+    if isempty(rows{end})
+      rows = {rows{1:end-1}};
+    else
+      rows = rows{end};
     end
-   
-    % extract colum header
-    c = regexp(rows,'\s','split');
-    c = {c{~cellfun(@isempty,c)}}; % löscht evt. leere zellen.    
-  
   end
+   
+  % extract colum header
+  c = regexp(rows,'\s','split');
+  c = {c{~cellfun(@isempty,c)}}; % löscht evt. leere zellen.
+  
 catch %#ok<CTCH>
 end
 

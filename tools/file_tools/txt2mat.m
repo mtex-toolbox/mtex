@@ -84,7 +84,7 @@ function [A,ffn,num_header,sr_input_ca,hl,fpos] = txt2mat(varargin) %#ok<FNDEF>
 %
 % Param/value-pairs with additional functionality:
 %
-% · The 'ReplaceExpr' argument works similar to the 'ReplaceChar' argument.
+% ï¿½ The 'ReplaceExpr' argument works similar to the 'ReplaceChar' argument.
 %   It just replaces whole expressions instead of single characters. A cell
 %   array containing at least one cell array of strings must be provided.
 %   Such a cell array of strings consists of <n> strings, each of the first
@@ -95,19 +95,19 @@ function [A,ffn,num_header,sr_input_ca,hl,fpos] = txt2mat(varargin) %#ok<FNDEF>
 %   especially if the strings differ in size.
 %   Expression replacements are performed before character replacements.
 %
-% · By the help of the 'ReplaceRegExpr' argument regular expressions can be
+% ï¿½ By the help of the 'ReplaceRegExpr' argument regular expressions can be
 %   replaced. The usage is analogous to 'ReplaceExpr'. Regular expression
 %   replacements are carried out before any other replacement (see 
 %   EXAMPLE 5).
 %
-% · The 'DialogString' argument provides the text shown in the title bar of
+% ï¿½ The 'DialogString' argument provides the text shown in the title bar of
 %   the file selection dialogue that may appear.
 %
-% · The 'InfoLevel' argument controls the verbosity of TXT2MAT's outputs in
+% ï¿½ The 'InfoLevel' argument controls the verbosity of TXT2MAT's outputs in
 %   the command window and the message boxes. Currently known values are: 
 %   0, 1, 2 (default)
 %
-% · 'ReadMode' is one of 'matrix', 'line', 'auto' (default), or 'block'. 
+% ï¿½ 'ReadMode' is one of 'matrix', 'line', 'auto' (default), or 'block'. 
 %   'matrix': Read and convert sections of multiple lines simultaneously, 
 %             requiring each line to contain the same number of values.
 %             Finding an improper number of values in such a section will
@@ -121,14 +121,14 @@ function [A,ffn,num_header,sr_input_ca,hl,fpos] = txt2mat(varargin) %#ok<FNDEF>
 %             section's number of values is not a multiple of the number of
 %             columns of the output data matrix. This is the fastest mode.
 %
-% · 'NumericType' is one of 'int8', 'int16', 'int32', 'int64', 'uint8',
+% ï¿½ 'NumericType' is one of 'int8', 'int16', 'int32', 'int64', 'uint8',
 %   'uint16', 'uint32', 'uint64', 'single', or 'double' (default),
 %   determining the numeric class of the output matrix A. If the numeric
 %   class does not support NaNs, missing elements are padded with zeros
 %   instead. Reduce memory  consumption by choosing an appropriate numeric
 %   class, if needed. 
 % 
-% · The 'RowRange' value is a sorted positive integer two element vector
+% ï¿½ The 'RowRange' value is a sorted positive integer two element vector
 %   defining an interval of data rows to be converted (header lines do not
 %   count, but lines that will be recognized as invalid - see above - do). 
 %   If the vector's second element exceeds the number of valid data rows in
@@ -136,7 +136,7 @@ function [A,ffn,num_header,sr_input_ca,hl,fpos] = txt2mat(varargin) %#ok<FNDEF>
 %   allowed as second argument). It may save memory and computation time if
 %   only a small part of data has to be extracted from a huge text file. 
 % 
-% · The 'FilePos' value <fp> is a nonnegative integer scalar. <fp>
+% ï¿½ The 'FilePos' value <fp> is a nonnegative integer scalar. <fp>
 %   characters from the beginning of the file will be ignored, i.e. not be
 %   read. If you run TXT2MAT with a 'RowRange' argument, you may
 %   use the <fpos> output as an 'FilePos' input during the next run in
@@ -144,7 +144,7 @@ function [A,ffn,num_header,sr_input_ca,hl,fpos] = txt2mat(varargin) %#ok<FNDEF>
 %   conversion process e.g. when the file is too big to be read as a whole
 %   (see EXAMPLE 6). 
 % 
-% · The 'MemPar' argument provides the minimum amount of characters TXT2MAT
+% ï¿½ The 'MemPar' argument provides the minimum amount of characters TXT2MAT
 %   will process simultaneously as an internal text section (= a set of
 %   text lines). It must be a positive integer. The value does not affect
 %   the outputs, but computation time and memory usage. The roughly
@@ -156,12 +156,12 @@ function [A,ffn,num_header,sr_input_ca,hl,fpos] = txt2mat(varargin) %#ok<FNDEF>
 %
 % 1) prerequisites for the automatic file format analysis (if the number of
 %    header lines and data columns is not given):
-%    · header lines can be detected by either non-numeric characters or
+%    ï¿½ header lines can be detected by either non-numeric characters or
 %      a strongly deviating number of numeric items in relation to the
 %      data section (<10%)
-%    · tab, space, slash, comma, colon, and semicolon are accepted as
+%    ï¿½ tab, space, slash, comma, colon, and semicolon are accepted as
 %      delimiters (e.g. "10/11/2006 08:30 1; 3.3; 0.52" is ok)
-%    · after the optional user supplied replacements have been carried out,
+%    ï¿½ after the optional user supplied replacements have been carried out,
 %      the data section must contain the delimiters and the decimal numbers 
 %      only (point or comma are accepted as decimal character).
 %    Note: if you do not trigger the internal file format analysis, i.e.
@@ -198,11 +198,11 @@ function [A,ffn,num_header,sr_input_ca,hl,fpos] = txt2mat(varargin) %#ok<FNDEF>
 % EXAMPLE 2:
 %
 % Supposed your ascii file C:\mydata.log contains the following lines: 
-% »
+% ï¿½
 % 10 11 2006 08 35.225 1  3.3  0.52
 % 31 05 2008 12 12     0  0.0  0.00
 %  7 01 2010 15 23.5  -1  3.3  0.535
-% «
+% ï¿½
 % type
 %
 % A = txt2mat('C:\mydata.log',0,8);
@@ -213,13 +213,13 @@ function [A,ffn,num_header,sr_input_ca,hl,fpos] = txt2mat(varargin) %#ok<FNDEF>
 %
 % Here, TXT2MAT uses its automatic file layout detection as the header line
 % and column number is not given. With the file looking like this:
-% » 
+% ï¿½ 
 % some example data
 % plus another header line
 % 10/11/2006 08:35,225 1; 3,3; 0,52
 % 31/05/2008 12:12     0; 0,0; 0,00
 % 7/01/2010  15:23,5  -1; 3,3; 0,535
-% «
+% ï¿½
 % txt2mat('C:\mydata.log') returns the same output data matrix as above.
 %
 % -------------------------------------------------------------------------
@@ -227,7 +227,7 @@ function [A,ffn,num_header,sr_input_ca,hl,fpos] = txt2mat(varargin) %#ok<FNDEF>
 % EXAMPLE 3:
 %
 % Supposed your ascii file C:\mydata.log starts as follows:
-% »
+% ï¿½
 % ;$FILEVERSION=1.1
 % ;$STARTTIME=38546.6741619815
 % ;---+--   ----+----  --+--  ----+---  +  -+ -- -- -- 
@@ -235,7 +235,7 @@ function [A,ffn,num_header,sr_input_ca,hl,fpos] = txt2mat(varargin) %#ok<FNDEF>
 %      4)         7,3  Rx         0310  8  06 6E 2B 9F 
 %      5)         9,5  Warng  FFFFFFFF  4  00 00 00 08  BUSHEAVY 
 %      6)        12,9  Rx         0320  8  02 E1 F6 EF 
-% «
+% ï¿½
 % you may specify 
 % nh   = 3          % header lines, 
 % nc   = 12         % data columns,
@@ -279,13 +279,13 @@ function [A,ffn,num_header,sr_input_ca,hl,fpos] = txt2mat(varargin) %#ok<FNDEF>
 % EXAMPLE 4:
 %
 % Supposed your ascii file C:\mydata.log begins with the following lines:
-% »
+% ï¿½
 % datetime	%	ppm	%	ppm	Nm
 % datetime	real8	real8	real8	
 % 30.10.2006 14:24:06,131	6,4459	478,519	6,5343	
 % 30.10.2006 14:24:17,400	6,4093	484,959	6,5343	
 % 30.10.2006 14:24:17,499	6,4093	484,959	6,5343	
-% «
+% ï¿½
 % you might specify 
 % nh   = 2          % header lines, 
 % nc   = 9          % data columns,
@@ -319,12 +319,12 @@ function [A,ffn,num_header,sr_input_ca,hl,fpos] = txt2mat(varargin) %#ok<FNDEF>
 %
 % If the data table of your file contains some gaps that can be identified
 % by some repeated delimiters (here ;)
-% »
+% ï¿½
 % ; 02; 03; 04; 05;
 % 11; ; 13; 14; 15;
 % 21; ; 23; ;;
 % ; 32; 33; 34; 35;
-% «
+% ï¿½
 % you can fill them with NaNs by the help of 'ReplaceRegExpr':
 %
 % A = txt2mat('C:\mydata.log','ReplaceRegExpr',...
@@ -365,7 +365,7 @@ function [A,ffn,num_header,sr_input_ca,hl,fpos] = txt2mat(varargin) %#ok<FNDEF>
 % 'matrix' mode. Besides, as TXT2MAT does not check for line breaks within
 % the (internally processed) sections of a file, you can use the block mode
 % to fill up any output matrix with a fixed number of columns.
-% »
+% ï¿½
 %  1  2  3  4  5
 %  6  7  8  9 10
 %    
@@ -375,7 +375,7 @@ function [A,ffn,num_header,sr_input_ca,hl,fpos] = txt2mat(varargin) %#ok<FNDEF>
 % 23 24 25
 % 26 27 28 29 30
 %
-% «
+% ï¿½
 % 
 % A = txt2mat('C:\mydata.txt',0,5,'ReadMode','block')
 % 
@@ -419,7 +419,7 @@ function [A,ffn,num_header,sr_input_ca,hl,fpos] = txt2mat(varargin) %#ok<FNDEF>
 
 
 % --- Author: -------------------------------------------------------------
-%   Copyright 2005-2008 A.Tönnesmann
+%   Copyright 2005-2008 A.Tï¿½nnesmann
 %   $Revision: 6.01 $  $Date: 2008/10/25 21:25:09 $
 % --- E-Mail: -------------------------------------------------------------
 % x=-2:3;
@@ -427,51 +427,51 @@ function [A,ffn,num_header,sr_input_ca,hl,fpos] = txt2mat(varargin) %#ok<FNDEF>
 %                  -4.44*x.^5+9.12*x.^4+29.8*x.^3-33.6*x.^2-52.9*x+ 98])))
 % --- History -------------------------------------------------------------
 % 05.61
-%   · fixed bug: possible wrong headerlines output when using 'FilePos'
-%   · fixed bug: produced an error if a bad line marker string was already
+%   ï¿½ fixed bug: possible wrong headerlines output when using 'FilePos'
+%   ï¿½ fixed bug: produced an error if a bad line marker string was already
 %     found in the first data line 
-%   · corrected user information if sscanf fails in matrix mode
-%   · added some more help lines
+%   ï¿½ corrected user information if sscanf fails in matrix mode
+%   ï¿½ added some more help lines
 % 05.62
-%   · allow negative NumColumns argument to capture a priori unknown
+%   ï¿½ allow negative NumColumns argument to capture a priori unknown
 %     numbers of values per line
 % 05.82 beta
-%   · support regular expression replacements ('ReplaceRegExpr' argument)
-%   · consider user supplied replacements when analysing the file layout
+%   ï¿½ support regular expression replacements ('ReplaceRegExpr' argument)
+%   ï¿½ consider user supplied replacements when analysing the file layout
 % 05.86 beta
-%   · some code clean-up (argincheck subfunction, ...)
+%   ï¿½ some code clean-up (argincheck subfunction, ...)
 % 05.86.1
-%   · fixed bug: possibly wrong numeric matlab version number detection
+%   ï¿½ fixed bug: possibly wrong numeric matlab version number detection
 % 05.90
-%   · consider skippable lines when analysing the file layout
-%   · code rearrangements (subfun for line termination detection, ...)
+%   ï¿½ consider skippable lines when analysing the file layout
+%   ï¿½ code rearrangements (subfun for line termination detection, ...)
 % 05.96
-%   · subfuns to find line breaks / bad-line pos and to initialize output A
-%   · better handling of errors and 'degenerate' files, e.g. exit without
+%   ï¿½ subfuns to find line breaks / bad-line pos and to initialize output A
+%   ï¿½ better handling of errors and 'degenerate' files, e.g. exit without
 %     an error if the file selection dialogue was cancelled 
 % 05.97
-%   · fixed bug: error in file analysis if first line contains bad line
+%   ï¿½ fixed bug: error in file analysis if first line contains bad line
 %     marker
-%   · fixed bug: a bad line marker is ignored if the string is split up by
+%   ï¿½ fixed bug: a bad line marker is ignored if the string is split up by
 %     two consecutive internal sections
-%   · better code readability in FindLineBreaks subfunction
+%   ï¿½ better code readability in FindLineBreaks subfunction
 % 05.97.1
-%   · simplifications by skipping the header when reading from the file;
+%   ï¿½ simplifications by skipping the header when reading from the file;
 %     the header is now read separately and is not affected by any
 %     replacements
-%   · corrected handling of bad line markers that already appear in header
+%   ï¿½ corrected handling of bad line markers that already appear in header
 % 05.98
-%   · corrected search for long bad line marker strings that could exceed
+%   ï¿½ corrected search for long bad line marker strings that could exceed
 %     text dimensions
-%   · speed-up by improved finding of line break positions
+%   ï¿½ speed-up by improved finding of line break positions
 % 06.00
-%   · introduction of 'high speed' read mode "block" requiring less line
+%   ï¿½ introduction of 'high speed' read mode "block" requiring less line
 %     break information
-%   · 'MemPar' buffer value changed to scalar
-%   · reduced memory demand by translating smaller text portions to char
-%   · modified help
+%   ï¿½ 'MemPar' buffer value changed to scalar
+%   ï¿½ reduced memory demand by translating smaller text portions to char
+%   ï¿½ modified help
 % 06.01
-%   · fixed bug: possible error message in file analysis when only header
+%   ï¿½ fixed bug: possible error message in file analysis when only header
 %     line number is given
 % --- Wish list -----------------------------------------------------------
 
@@ -568,13 +568,13 @@ if doAnalyzeFile
     num_sr      = num_sr + sum(is_new_sr);
     sr_input_ca = [sr_input_ca,ana_sr_input_ca(is_new_sr)];
     % display information:
-    if infolvl >= 1
+    if infolvl >= 2
         disp(repmat('*',1,length(ffn)+2));
         disp(['* ' ffn]);
         if numel(ferrmsg)==0
             sr_display_str = '';
             for idx = 1:num_sr;
-                sr_display_str = [sr_display_str ' »' sr_input_ca{idx} '«']; %#ok<AGROW>
+                sr_display_str = [sr_display_str ' ï¿½' sr_input_ca{idx} 'ï¿½']; %#ok<AGROW>
             end
             disp(['* read mode: ' readmode]);
             disp(['* ' num2str(num_ali)        ' data lines analysed' ]);
@@ -1432,7 +1432,7 @@ function [ffn, nhOrig, nc, cstr, SR, RM, llta, hl, ferrmsg, aerrmsg] = anatxt(ff
 % kl_input      cell array of strings to skip lines
 % nh            number of header lines; NaN if not provided
 % vn            matlab version number as a scalar (e.g. 6.5)
-%   Copyright 2006 A.Tönnesmann,
+%   Copyright 2006 A.Tï¿½nnesmann,
 %   $Revision: 2.86 $  $Date: 2008/10/25 13:05:08 $
 
 num_rr       = length(replace_regex);
