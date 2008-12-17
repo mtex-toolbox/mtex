@@ -2,8 +2,12 @@ function value = get(obj,vname)
 % get object variable
 
 switch vname
+  case {'CS','SS','comment','options'}
+    value = obj(1).(vname);
+  case {'data','intensities'}
+    value = getdata(obj);
   case fields(obj)
-    value = obj.(vname);
+    value = [obj.(vname)];
   case {'theta','polar'}
     value = getTheta(getr(obj));
   case {'rho','azimuth'}

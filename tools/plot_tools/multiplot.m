@@ -89,9 +89,12 @@ if check_option(varargin,'3d')
     plot(X,'DATA',Z,varargin{:});
     axis off;
     set(gca,'Tag','3d');
-    h = rotate3d;
-    set(h,'ActionPostCallback',@mypostcallback);
-    set(h,'Enable','on');
+    try
+      h = rotate3d;
+      set(h,'ActionPostCallback',@mypostcallback);
+      set(h,'Enable','on');
+    catch 
+    end
     
   end
 
@@ -127,7 +130,7 @@ if ~ishold
   try
     sb = statusbar('drawing plots ...');
     set(sb.ProgressBar, 'Visible','on', 'Minimum',0, 'Maximum',nplots, 'Value',0, 'StringPainted','on');
-  catch
+  catch %#ok<*CTCH>
   end
 end
 
@@ -151,7 +154,10 @@ for i = 1:nplots
   if ~ishold
     
     fs = extract_argoption(varargin,'fontsize');
-    try, set(sb.ProgressBar,'Value',i);catch end
+    try 
+      set(sb.ProgressBar,'Value',i);
+    catch
+    end
     
     if check_option(varargin,'MINMAX')
       anotation(a(i),min(Z(:)),max(Z(:)),fs{:});
@@ -194,7 +200,10 @@ end
 if ~ishold
   
   % clear statusbar
-  try, statusbar;catch,end; 
+  try 
+    statusbar;
+  catch
+  end;
 
   set(gcf,'ResizeFcn',@(src,evt) figResize(src,evt,a));
   %set(gcf,'Position',get(gcf,'Position'));
