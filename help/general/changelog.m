@@ -1,7 +1,7 @@
 %% MTEX Changelog
 %
 %
-%% MTEX 1.1 - 11/2008
+%% MTEX 1.1 - 12/2008
 %
 % *Improved Import Wizzard*
 % 
