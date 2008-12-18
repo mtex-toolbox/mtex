@@ -4,7 +4,7 @@
 %
 %% Class Miller
 %
-% cs * Miller and symvec sollten Miller indece zurückgeben.
+% cs * Miller and symvec should return Miller indece 
 %
 %% class symmetry
 %
@@ -21,7 +21,7 @@
 %% class PoleFigure
 %
 % * extend hist to show neg. values
-% * calculate means and std
+% * calculate and std
 %
 %% class ODF
 %
@@ -37,17 +37,14 @@
 %
 %% S2Grid
 %
-% * make hemisphere options consistent
 %
 %% SO3Grid
 %
-% * rewrite randomsample
 % * implement find/dist for local grids
 % * implement rotated local grid
 %
 %% EBSD
 %
-% * delete
 %
 %% quaternion
 %

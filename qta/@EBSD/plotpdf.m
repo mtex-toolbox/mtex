@@ -29,9 +29,9 @@ varargin = set_default_option(varargin,...
 
 [cs,ss] = getSym(ebsd);
 
-if sum(sampleSize(ebsd))*length(cs)*length(ss) > 100000 || check_option(varargin,'points')
+if sum(sampleSize(ebsd))*length(cs)*length(ss) > 10000 || check_option(varargin,'points')
   
-  points = fix(get_option(varargin,'points',100000/length(cs)/length(ss)));  
+  points = fix(get_option(varargin,'points',10000/length(cs)/length(ss)));  
   disp(['plot ', int2str(points) ,' random orientations out of ', int2str(sum(sampleSize(ebsd))),' given orientations']);
   ebsd = subsample(ebsd,points);
 
