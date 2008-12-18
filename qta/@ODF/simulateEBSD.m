@@ -26,8 +26,8 @@ S3G_local = SO3Grid(res/5,cs,ss,'max_angle',res);
 
 d = eval(odf,S3G_global); %#ok<EVLC>
 
-r1 = mtexrandsample(GridLength(S3G_global),points,1,d);
-r2 = mtexrandsample(GridLength(S3G_local),points,1);
+r1 = discretesample(d,points);
+r2 = discretesample(GridLength(S3G_local),points,1);
 
 q = quaternion(S3G_global,r1) .* quaternion(S3G_local,r2);
 
