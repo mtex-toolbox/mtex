@@ -8,6 +8,8 @@
 % * Load CIF files to specify crystal geometry
 % * Import EBSD data with coordinates
 % * More options to specify the alignment of the specimen coordinate system
+% * support for popla *.epf files, *.plf files, and *.nja files
+% 
 %
 % *Improved Pole Figure Analysis*
 %
