@@ -55,7 +55,7 @@ end
 %% approximation on a corser grid
 
 %% get resolution
-res = get_option(varargin,'resolution',max(1.5*degree,hw / 2));
+res = get_option(varargin,'resolution',max(0.75*degree,hw / 2));
 
 %% generate grid
 S3G = SO3Grid(res,ebsd(1).CS,ebsd(1).SS);
