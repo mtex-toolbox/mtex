@@ -37,7 +37,7 @@ if check_option(varargin,'RADIALLY')
   omega = linspace(-pi,pi,200);
   for i=1:length(axes)
     q = axis2quat(axes(i),omega);
-    d(:,i) = eval(odf,q*center,varargin{:}); %#ok<AGROW>
+    d(:,i) = eval(odf,q*center,varargin{:}); %#ok<EVLC,AGROW>
   end
   optionplot(omega,d,varargin{:});
   xlim([-pi pi]); xlabel('omega')

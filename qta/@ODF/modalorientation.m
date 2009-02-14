@@ -22,13 +22,15 @@ else
   f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
 end
 
-
-g0 = quaternion(S3G,find(f>0.8*max(f(:))));
+epsilon = sort(f(:));
+epsilon = epsilon(max(1,length(epsilon)-1000));
+g0 = quaternion(S3G,find(f>epsilon));
 
 f0 = max(f(:));
 
 while res >= resmax || (0.95 * max(f(:)) > f0)
 
+  disp('.')
   f0 = max(f(:));  
   S3G = g0*SO3Grid(res,odf(1).CS,odf(1).SS,'max_angle',2*res);
   if res - get(odf,'resolution') > res/4
@@ -39,7 +41,7 @@ while res >= resmax || (0.95 * max(f(:)) > f0)
   
   %g0 = quaternion(S3G,find(f(:)==max(f(:))));
   epsilon = sort(f(:));
-  epsilon = epsilon(length(epsilon)-100);
+  epsilon = epsilon(max(1,length(epsilon)-100));
   g0 = quaternion(S3G,find(f>epsilon));
   f=  f(f>epsilon);
   res = res / 2;
