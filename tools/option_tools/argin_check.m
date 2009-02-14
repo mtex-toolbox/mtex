@@ -13,7 +13,11 @@ function x = argin_check(arg,classes)
 
 if isempty(strmatch(class(arg),classes))
   if iscellstr(classes)
-    c = ['"',[classes{1:end-1},'", "'],classes{end},'"'];
+    c = '';
+    for i = 1:length(classes)-1
+      c = [c,'"' classes{i},'", ']; %#ok<AGROW>
+    end     
+    c = [c, 'or "' classes{end},'"'];
   else
     c = ['"' classes '"'];
   end
