@@ -10,7 +10,6 @@
 %
 % * implement SS=symmetry('axial')
 %
-%
 %% class kernel
 %
 % * double kernelwidth
@@ -18,10 +17,14 @@
 % * add standard names by Matthies
 %
 %
+%% EBSD
+%
+% * incorporate quateriuons interface into ordinary interface
+%
 %% class PoleFigure
 %
 % * extend hist to show neg. values
-% * calculate and std
+% * calculate std
 %
 %% class ODF
 %
@@ -43,18 +46,7 @@
 % * implement find/dist for local grids
 % * implement rotated local grid
 %
-%% EBSD
-%
-%
 %% quaternion
 %
 % * define some ideal lagen
 %
-%% manual
-%
-% 
-%% dubna
-%
-% * make spectra tools more relyable
-%
-
