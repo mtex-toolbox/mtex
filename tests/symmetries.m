@@ -17,7 +17,7 @@ plotipdf(odf,[xvector,yvector,vector3d(1,1,1)],'complete')
 
 %% 
 
-plot2all([q1,q2,q3,q])
+annotate([q1,q2,q3,q])
 
 
 %%
@@ -34,8 +34,8 @@ plotodf(odf,'alpha','projection','plain','sections',5)
 
 %%
 
-plot2all([q1,q2,q3,q],'MarkerSize',30,'MarkerFaceColor','none','MarkerEdgeColor','w')
+annotate([q1,q2,q3,q],'MarkerSize',30,'MarkerFaceColor','none','MarkerEdgeColor','w')
 
 %%
 
-plot2all(q)
+annotate(q)

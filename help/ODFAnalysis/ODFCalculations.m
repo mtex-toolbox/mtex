@@ -58,7 +58,7 @@ quat2euler(center)
 % Lets mark this prefered orientation in the pole figures
 
 plotpdf(odf3,h,'reduced');
-plot2all(center,'marker','s','MarkerFaceColor','black')
+annotate(center,'marker','s','MarkerFaceColor','black')
 
 %% Texture Characteristics
 %

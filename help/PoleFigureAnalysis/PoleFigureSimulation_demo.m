@@ -103,6 +103,7 @@ end
 
 close all;
 plot(1:length(pf),e)
+ylim([0.07 0.32])
 xlabel('Number of Pole Figures');
 ylabel('Reconstruction Error');
 legend({'Without Ghost Correction','With Ghost Correction'});
