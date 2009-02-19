@@ -3,7 +3,7 @@ function optionplot(x,y,varargin)
 %
 
 % new window?
-if ~ishold && strcmp(get(gcf,'tag'),'multiplot')
+if ~ishold && isappdata(gcf,'axes')
   clf;
 end
 

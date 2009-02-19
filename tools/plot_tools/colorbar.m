@@ -1,7 +1,7 @@
 function cb = colorbar(varargin)
 % inserts a colorbar into a figure
 
-if strcmp(get(gcf,'tag'),'multiplot')
+if isappdata(gcf,'axes')
   cax = getappdata(gcf,'colorbaraxis');
 
   
