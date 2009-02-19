@@ -52,7 +52,7 @@ end
 
 if nargout > 0, varargout{1} = gca;end
 
-if strcmp(get(gcf,'Tag'),'multiplot')
+if isappdata(gcf,'axes')
   varargin = {varargin{:},'annotate'};
 else
   adjustToolbar('norotate');
@@ -77,7 +77,7 @@ varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
 % S2Resolution
-if sum(GridLength(S2G))>100
+if sum(GridLength(S2G))>100 || get(S2G,'resolution') < 10 *degree
   varargin = {'scatter_resolution',getResolution(S2G(end)),varargin{:}};
 end
 
