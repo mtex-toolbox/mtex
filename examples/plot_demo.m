@@ -187,7 +187,7 @@ plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'reduced','gray')
 
 plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'reduced','gray')
 colorbar
-plot2all([xvector,yvector,zvector],'data',{'X','Y','Z'});
+annotate([xvector,yvector,zvector],'data',{'X','Y','Z'});
 
 %%
 plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'reduced')

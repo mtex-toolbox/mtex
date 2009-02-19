@@ -66,8 +66,9 @@ plot(pf)
 % get the polar angle of the pole figure data
 theta = get(pf,'theta');
 
-% and set the measurement in the center to a large value 
-pf_outlier = setdata(pf,1000,theta==0)
+% and set some measurements to a large value 
+pf_outlier = setdata(pf,600,...
+  theta>35*degree & theta<40*degree)
 
 % now we an outlier in the center of both pole figures
 plot(pf_outlier)

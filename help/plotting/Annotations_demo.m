@@ -38,18 +38,18 @@ colorbar('south')  % add horizontal colorbar
 %
 % Pole figure and inverse pole figures are much more readable if there are
 % included specimen or crystal directions. Using the MTEX command 
-% <plot2all.html plot2all> one can easily add <vector3d_index.html specimen
+% <annotate.html annotate> one can easily add <vector3d_index.html specimen
 % coordinate axes> to a pole figure plot.
 
-plot2all([xvector,yvector,zvector],'label',{'x','y','z'},...
+annotate([xvector,yvector,zvector],'label',{'x','y','z'},...
   'BackgroundColor','w');
 
 %%
-% The command <plot2all.html plot2all> allows also to plot
+% The command <annotate.html annotate> allows also to plot
 % <Miller_index.html crystal directions> to inverse pole figures.
 
 plotipdf(odf,[xvector,zvector],'gray','reduced')
-plot2all([Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(0,0,1,cs)],'all','labeled')
+annotate([Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(0,0,1,cs)],'all','labeled')
 set(gcf,'position',[139 258 672 266])
 
 
@@ -59,11 +59,11 @@ set(gcf,'position',[139 258 672 266])
 % figures
 
 plotipdf(odf,[xvector,zvector],'gray','reduced')
-plot2all(q0,...
+annotate(q0,...
     'marker','s','MarkerSize',6,'MarkerFaceColor','r',...
     'label','$q_0$','color','b')
 
-plot2all(q1,...
+annotate(q1,...
     'marker','s','MarkerSize',6,'MarkerFaceColor','g',...
     'label','$q_1$','color','b')
 
@@ -71,11 +71,22 @@ plot2all(q1,...
 % or ODF plots
 
 plot(odf,'sections',12,'gray','position',[100,100,500,380])
-plot2all(q0,...
+annotate(q0,...
     'MarkerSize',15,'MarkerEdgeColor','r','MarkerFaceColor','none')
 
-plot2all(q1,...
-    'MarkerSize',15,'MarkerEdgeColor','g','MarkerFaceColor','none')
+annotate(q1,...
+  'MarkerSize',15,'MarkerEdgeColor','g','MarkerFaceColor','none')
+  
+%%
+% or EBSD scatter plots
+
+ebsd = simulateEBSD(odf,200);
+scatter(ebsd,'center',q0);
+annotate(q0,...
+  'MarkerSize',10,'MarkerEdgeColor','r','MarkerFaceColor','r')
+annotate(q1,...
+  'MarkerSize',10,'MarkerEdgeColor','g','MarkerFaceColor','g')
+
 
 %% Adding a Legend
 %

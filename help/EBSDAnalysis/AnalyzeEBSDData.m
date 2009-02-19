@@ -25,7 +25,7 @@ m = mean(ebsd);
 % and plot it within a pole figure plot
 
 plotpdf(ebsd,[Miller(1,0,0),Miller(0,0,1)],'reduced')
-plot2all(m,'Marker','s','MarkerFaceColor','red')
+annotate(m,'Marker','s','MarkerFaceColor','red')
 
 %% Volume
 %

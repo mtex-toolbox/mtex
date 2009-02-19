@@ -1,5 +1,13 @@
 %% TODO List
 %
+%% Sudent projects
+%
+% * grain analysis
+% * robust mean
+% * cluster analysis of EBSD data
+% * cluster analysis of ODF
+%
+%
 %% BUGS
 %
 %% Class Miller
@@ -8,7 +16,7 @@
 %
 %% class symmetry
 %
-% * implement SS=symmetry('axial')
+% * implement second aufstellung
 %
 %% class kernel
 %
@@ -19,7 +27,8 @@
 %
 %% EBSD
 %
-% * incorporate quateriuons interface into ordinary interface
+% * incorporate quaternions interface into ordinary interface
+% * plot data in ODF sections
 %
 %% class PoleFigure
 %
@@ -28,6 +37,7 @@
 %
 %% class ODF
 %
+% * volume does not work properply
 % * approximate ODF by components
 % * calculate means and std
 % * calculate mean specimen properties
@@ -40,9 +50,11 @@
 %
 %% S2Grid
 %
+% * fliplr and flipud should not change max_theta max_rho check this!
 %
 %% SO3Grid
 %
+% * make mean more resistent against symmetry
 % * implement find/dist for local grids
 % * implement rotated local grid
 %

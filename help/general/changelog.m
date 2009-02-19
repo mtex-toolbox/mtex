@@ -1,5 +1,13 @@
 %% MTEX Changelog
 %
+%% MTEX 1.2beta
+%
+% *Improved EBSD plotting*
+% 
+% * plot EBSD data in axis angle and Rodriguez space
+% * annotations in these spaces
+% * superpose odf, pole figure and EBSD plots
+%
 %
 %% MTEX 1.1 - 12/2008
 %
