@@ -2,7 +2,7 @@ function d = dist(SO3G,q,varargin)
 % return indece and distance of all nodes within a eps neighborhood
 %
 %% Syntax  
-%  d = find(SO3G,nodes,radius)
+%  d = dist(SO3G,nodes,radius)
 %
 %% Input
 %  SO3G   - @SO3Grid

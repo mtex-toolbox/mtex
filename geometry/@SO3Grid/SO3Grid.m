@@ -1,4 +1,4 @@
-function G = SO3Grid(points,CS,SS,varargin)
+function [G,S2G,sec] = SO3Grid(points,CS,SS,varargin)
 % constructor
 %
 %% Syntax
@@ -27,7 +27,7 @@ if nargin <= 1, CS = symmetry; end
 if nargin <= 2, SS = symmetry; end
 maxangle = get_option(varargin,'MAX_ANGLE',2*pi);
 
-argin_check(points,{'double','quaternion'});
+argin_check(points,{'double','quaternion','char'});
 argin_check(CS,'symmetry');
 argin_check(SS,'symmetry');
 
@@ -40,7 +40,8 @@ G.CS      = CS;
 G.SS      = SS;
 G.Grid    = [];
 
-if isa(points,'quaternion')    % SO3rid defined by a set quaternions
+%% SO3rid defined by a set quaternions
+if isa(points,'quaternion')    
 	
 	points = points  ./ norm(points);
 	G.Grid = points;
@@ -52,7 +53,50 @@ if isa(points,'quaternion')    % SO3rid defined by a set quaternions
     %G.resolution = min(2*acos(dot_outer(CS,SS,points(1),points(2:end))))
     G.resolution = quat2res(points,CS,SS);
   end 
-	
+
+%% plot grid
+elseif isa(points,'char') && strcmp(points,'plot')
+
+  sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma'},'sigma');
+  
+  [max_rho,max_theta,max_sec] = getFundamentalRegion(CS,SS,varargin{:});
+
+  if any(strcmp(sectype,{'alpha','phi1'}))
+    dummy = max_sec; max_sec = max_rho; max_rho = dummy;
+  end
+
+  % sections
+  nsec = get_option(varargin,'SECTIONS',round(max_sec/degree/5));
+  sec = linspace(0,max_sec,nsec+1); sec(end) = [];
+  sec = get_option(varargin,sectype,sec,'double');
+  nsec = length(sec);
+
+  S2G = S2Grid('PLOT','MAXTHETA',max_theta,'MAXRHO',max_rho,varargin{:});
+
+  % generate SO(3) plot grids
+  [theta,rho] = polar(S2G);
+  sec_angle = repmat(reshape(sec,[1,1,nsec]),[GridSize(S2G),1]);
+  theta  = reshape(repmat(theta ,[1,1,nsec]),[GridSize(S2G),nsec]);
+  rho = reshape(repmat(rho,[1,1,nsec]),[GridSize(S2G),nsec]);
+
+  switch lower(sectype)
+    case {'phi1','phi2'}
+      convention = 'Bunge';
+    case {'alpha','gamma','sigma'}
+      convention = 'ABG';
+  end
+
+  switch lower(sectype)
+    case {'phi_1','alpha','phi1'}
+      G.Grid = euler2quat(sec_angle,theta,rho,convention);
+    case {'phi_2','gamma','phi2'}
+      G.Grid = euler2quat(rho,theta,sec_angle,convention);
+    case 'sigma'
+      G.Grid = euler2quat(rho,theta,sec_angle-rho,convention);
+  end
+  G.resolution = getResolution(S2G);
+  
+%% local Grid
 elseif maxangle < rotangle_max_z(CS)/4
   
   if points > 1
@@ -75,6 +119,7 @@ elseif maxangle < rotangle_max_z(CS)/4
   ind = fundamental_region(q,symmetry(),SS);  
   G.Grid = q(~ind);
   
+%% equidistribution  
 elseif isa(points,'double') && points > 0  % discretise euler space
 
   % special case: cubic symmetry
@@ -150,8 +195,8 @@ elseif isa(points,'double') && points > 0  % discretise euler space
   end
   
   G.options = {'indexed'};
-	G.Grid  = Grid;
-    
+	G.Grid  = Grid;    
+  
 end
 
 superiorto('quaternion');

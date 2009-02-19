@@ -5,18 +5,36 @@ function plot(SO3G,varargin)
 %  SO3G - @SO3Grid
 %
 %% Options
-%  RODRIGUEZ  - plot in rodriguez space
+%  RODRIGUEZ    - plot in rodriguez space
+%  AXISANGLE    - plot in axis angle space
+%  CENTER       - reference orientation
+%  
 
-if check_option(varargin,'RODRIGUEZ') || sum(GridLength(SO3G)) > 50
-  
+washold = ishold;
+
+%% Three Dimensional Plot
+if (ishold && strcmp(get(gca,'tag'),'ebsd_raster')) || ...
+  (check_option(varargin,{'RODRIGUEZ','AXISANGLE','scatter'}) || sum(GridLength(SO3G)) > 50)
+
   for i = 1:length(SO3G)
-    r = quat2rodriguez(SO3G(i).Grid);
-
-    scatter3(getx(r),gety(r),getz(r)); 
+   
+    if check_option(varargin,'center')
+      setappdata(gcf,'center',get_option(varargin,'center'));
+    elseif ishold && isappdata(gcf,'center')
+      varargin = {'center',getappdata(gcf,'center')};
+    end
+    
+    if ~check_option(varargin,'no_projection')
+      q = getFundamentalRegion(SO3G(i),varargin{:});
+    else
+      q = SO3G(i).Grid;
+    end
+    
+    plot(q,varargin{:});
     hold all
-  end
-  hold off
-  
+  end  
+
+%% two dimensional plot
 else
 
   v = [xvector,yvector,zvector];
@@ -25,8 +43,11 @@ else
 
     plot(S2Grid(SO3G.Grid.*v(i)),'dots',varargin{:});
     hold all
-  end
-  
-  hold off  
+  end  
   
 end
+
+%% finish
+
+% set hold back
+if ~washold, hold off;end

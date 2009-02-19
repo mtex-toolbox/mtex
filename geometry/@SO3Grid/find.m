@@ -61,7 +61,7 @@ else
     
     d = reshape(d,[],numel(s)); ind = reshape(ind,[],numel(s));
       
-    [d,ind] = selectMaxbyColumn(d,ind);
+    [d,ind] = selectMaxbyRow(d,ind);
       
   else  % search for environment
     

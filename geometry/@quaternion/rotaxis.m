@@ -10,5 +10,6 @@ function v = rotaxis(q)
 %  v - @vector3d
 
 v = vector3d(q.b,q.c,q.d);
+v(q.a<0) = -v(q.a<0);
 v(isnull(norm(v))) = xvector;
 v = v./norm(v);

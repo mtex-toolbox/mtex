@@ -7,7 +7,7 @@ function S2G = project2ODFsection(S3G,type,sec,varargin)
 %  sec  - sections
 %
 %% Output
-%  S2G  - vectors of @S2Grid
+%  S2G  - vector of @S2Grid
 %
 %% Options
 %  tolerance - 
@@ -21,14 +21,14 @@ else
 end
 tol = get_option(varargin,'tolerance',tol);
 
-S2G = repmat(S2Grid,numel(sec),1);
+S2G = repmat(S2Grid(vector3d,varargin{:}),numel(sec),1);
 
 %% symmetries and convert to Euler angle
 
-q = quaternion(S3G);
+q = quaternion(symmetrice(S3G));
 
 switch lower(type)
-  case {'phi_1','phi_2'}
+  case {'phi_1','phi_2','phi1','phi2'}
     convention = 'Bunge';
   case {'alpha','gamma','sigma'}
     convention = 'ABG';   
@@ -37,10 +37,10 @@ end
 [e1,e2,e3] = quat2euler(q,convention);
 
 switch lower(type)
-  case {'phi_1','alpha'}
+  case {'phi_1','alpha','phi1'}
     sec_angle = e1;
     rho = e3;
-  case {'phi_2','gamma'}
+  case {'phi_2','gamma','phi2'}
     sec_angle = e3;
     rho = e1;
   case 'sigma'
@@ -74,6 +74,8 @@ ind = isappr(d,repmat(dmin,1,size(sec,2)));
 
 for i = 1:size(sec,2)
   
-  S2G(i) = S2Grid(sph2vec(e2(ind(:,i)),mod(rho(ind(:,i)),2*pi)));
+  
+  
+  S2G(i) = S2Grid(sph2vec(e2(ind(:,i)),mod(rho(ind(:,i)),2*pi)),varargin{:});
   
 end
