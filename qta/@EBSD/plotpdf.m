@@ -24,10 +24,18 @@ function plotpdf(ebsd,h,varargin)
 % plot_index Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo 
 
+%% make new plot
+[cs,ss] = getSym(ebsd);
+if newMTEXplot('ensureTag','pdf',...
+    'ensureAppdata',{{'CS',cs},{'SS',ss}})
+  argin_check(h,{'Miller'});  
+else
+  h = getappdata(gcf,'h');  
+end
+
+%% get options
 varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
-
-[cs,ss] = getSym(ebsd);
 
 if sum(sampleSize(ebsd))*length(cs)*length(ss) > 10000 || check_option(varargin,'points')
   
@@ -36,21 +44,24 @@ if sum(sampleSize(ebsd))*length(cs)*length(ss) > 10000 || check_option(varargin,
   ebsd = subsample(ebsd,points);
 
 end
-
 grid = getgrid(ebsd);
-clear ebsd;
 
+%% plot
 if check_option(varargin,'superposition')
   multiplot(@(i) reshape(ss * grid * cs * h,[],1),@(i) [],1,...
     'ANOTATION',@(i) h,'dynamicMarkerSize',...
+    'appdata',@(i) {{'h',h}},...
     varargin{:});
 else
   multiplot(@(i) reshape(ss * grid * cs * h(i),[],1),...
     @(i) [],length(h),...
     'ANOTATION',@(i) h(i),'dynamicMarkerSize',...
-    varargin{:});
-  setappdata(gcf,'Miller',h);
-  setappdata(gcf,'SS',ss);
+    'appdata',@(i) {{'h',h(i)}},...
+    varargin{:});  
 end
 
+setappdata(gcf,'h',h);
+setappdata(gcf,'SS',ss);
+setappdata(gcf,'CS',cs);
 set(gcf,'Name',['Pole figures of "',inputname(1),'"']);
+set(gcf,'Tag','pdf');

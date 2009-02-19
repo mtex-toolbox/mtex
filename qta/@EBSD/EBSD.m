@@ -26,10 +26,10 @@ if (nargin == 0)
   ebsd.comment = [];
   ebsd.orientations = [];
   ebsd.CS = symmetry;
-  ebsd.SS = symmetry;
-  ebsd.options = {};
+  ebsd.SS = symmetry;  
   ebsd.xy = [];
   ebsd.phase = [];
+  ebsd.options = {};
   ebsd = class(ebsd,'EBSD');
   return
 elseif isa(orientations,'EBSD')
