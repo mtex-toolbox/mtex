@@ -106,8 +106,7 @@ end
 
 if ishold  
 
-  if isappdata(gcf,'axes') && strcmp(get(gcf,'tag'),'multiplot') && ...
-      length(findobj(gcf,'type','axes')) >= length(getappdata(gcf,'axes'))
+  if isappdata(gcf,'axes') && length(findobj(gcf,'type','axes')) >= length(getappdata(gcf,'axes'))
     a = getappdata(gcf,'axes');    
   else
     hold off;    
@@ -134,8 +133,10 @@ if ~ishold
   end
 end
 
+%% for all axes
 for i = 1:nplots
 	
+  % new axis
   if ~ishold
     a(i) = axes;
     set(a(i),'Visible','off')
@@ -143,8 +144,21 @@ for i = 1:nplots
     axes(a(i));
     hold all;
   end
+  
+  % set axes appdata
+  if check_option(varargin,'appdata')
+    ad = get_option(varargin,'appdata');
+    ad = ad(i);
+    for iad = 1:length(ad)
+      setappdata(a(i),ad{iad}{1},ad{iad}{2});
+    end
+  end
+  
+  % compute
   Z = Y{i};
   X = x(i);
+  
+  % plot
   if ~isempty(Z)
       plot(X,'DATA',Z,'axis',a(i),varargin{:});
   else
@@ -219,7 +233,7 @@ if ~ishold
     set(gcf,'Position',get(gcf,'Position'));
   end
 
-  set(gcf,'color',[1 1 1],'tag','multiplot','nextplot','replace');  
+  set(gcf,'color',[1 1 1],'nextplot','replace');  
   set(a,'Visible','on');
 else
   scalescatterplots(gcf);

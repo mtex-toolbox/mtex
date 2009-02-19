@@ -17,9 +17,13 @@ function plot2all(varargin)
 
 %% get data
 oax = get(gcf,'currentAxes');
-  
-ax = get_option(varargin,'axes', ...
-  getappdata(gcf,'axes'));
+
+if isappdata(gcf,'axes')
+  ax = get_option(varargin,'axes', ...
+    getappdata(gcf,'axes'));
+else
+  ax = findobj(gcf,'tag','ebsd_raster');
+end
 
 m = getappdata(gcf,'Miller');
 r = getappdata(gcf,'vector3d');
@@ -75,6 +79,11 @@ for i = 1:length(ax)
   elseif  isa(varargin{1},'quaternion') && isappdata(gcf,'sections')
    
     plot(S2G(i),varargin{2:end});
+    
+  elseif  isa(varargin{1},'quaternion') && isappdata(gcf,'center')
+   
+    S3G = SO3Grid(varargin{1},cs,ss);
+    plot(S3G,'center',getappdata(gcf,'center'),varargin{2:end});
     
   % vector3d  
   elseif isa(varargin{1},'vector3d')
