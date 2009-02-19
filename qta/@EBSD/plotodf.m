@@ -1,17 +1,11 @@
 function plotodf(ebsd,varargin)
-% plot ebsd
-%
-% Plots the EBSD scatter plots in various sections which can be controled by
-% options.
+% Plots the EBSD data at various sections which can be controled by options. 
 %
 %% Input
 %  ebsd - @EBSD
 %
 %% Options
 %  SECTIONS   - number of plots
-%  POINTS     - number of points to be plotted
-%  h          - @Miller / @vector3d reference crystal direction (omega plot)
-%  r          - reference specimen direction (omega plot)
 %
 %% Flags
 %  SIGMA (default)
@@ -19,192 +13,59 @@ function plotodf(ebsd,varargin)
 %  GAMMA      
 %  PHI1
 %  PHI2
-%  OMEGA (buggy)
-%  RADIALLY
 %
 %% See also
-% S2Grid/plot savefigure ODF/plts
+% S2Grid/plot savefigure plot_index Annotations_demo ColorCoding_demo PlotTypes_demo
+% SphericalProjection_demo 
 
-set(gcf,'Name',['EBSD "',inputname(1),'"']);
-
-
-error('not yet implemented')
-
-%% -------- alpha - sections ----------------------------------------------
-if check_option(varargin,'ALPHA')
-
-  % alpha
-  if rotangle_max_y(ebsd(1).CS) == pi && rotangle_max_y(ebsd(1).SS) == pi
-    m = pi/2;
-  else
-    m = rotangle_max_z(ebsd(1).SS);
-  end
-  sec = linspace(0,m,get_option(varargin,'SECTIONS',round(m/degree/5))+1); ...
-        sec(end) = [];
-  sec = get_option(varargin,'ALPHA',sec,'double');
-  nplots = length(sec);
-  
-  % get orientations
-  [alpha beta gamma] = quat2euler(quaternion(ebsd.grid));
-  
-  % beta / gamma
-  S2G = S2Grid('PLOT',...
-    'MAXTHETA',min(rotangle_max_y(ebsd(1).CS),rotangle_max_y(ebsd(1).SS))/2,...
-    'MAXRHO',rotangle_max_z(ebsd(1).CS),varargin{:});
-  
-  alpha = repmat(reshape(sec,[1,1,nplots]),[GridSize(S2G),1]);
-  [beta,gamma] = polar(S2G);
-  beta  = reshape(repmat(beta ,[1,1,nplots]),[GridSize(S2G),nplots]);
-  gamma = reshape(repmat(gamma,[1,1,nplots]),[GridSize(S2G),nplots]);
-  
-  rot = euler2quat(alpha,beta,gamma);
-  symbol = '\alpha';
-
-%% --------- gamma - sections ---------------------------------------------  
-elseif check_option(varargin,'GAMMA')   
-
-  % gamma
-
-  sec = linspace(0,rotangle_max_z(ebsd(1).CS),...
-    get_option(varargin,'SECTIONS',...
-    round(rotangle_max_z(ebsd(1).CS)/degree/5))+1); 
-  sec(end) = [];
-  sec = get_option(varargin,'GAMMA',sec,'double');
-  nplots = length(sec);
-  
-  % alpha / beta
-  if rotangle_max_y(ebsd(1).CS) == pi && rotangle_max_y(ebsd(1).SS) == pi
-    m = pi/2;
-  else
-    m = rotangle_max_z(ebsd(1).SS);
-  end
-  S2G = S2Grid('PLOT',...
-    'MAXTHETA',min(rotangle_max_y(ebsd(1).CS),rotangle_max_y(ebsd(1).SS))/2,...
-    'MAXRHO',m,varargin{:});
-  
-  gamma = repmat(reshape(sec,[1,1,nplots]),[GridSize(S2G),1]);
-  [beta,alpha] = polar(S2G);
-  beta  = reshape(repmat(beta ,[1,1,nplots]),[GridSize(S2G),nplots]);
-  alpha = reshape(repmat(alpha,[1,1,nplots]),[GridSize(S2G),nplots]); 
-  
-  rot = euler2quat(alpha,beta,gamma);
-  symbol = '\gamma';
-    
-  %% -------- phi1 - sections ----------------------------------------------
-elseif check_option(varargin,'phi1')   
-
-  % alpha
-  if rotangle_max_y(ebsd(1).CS) == pi && rotangle_max_y(ebsd(1).SS) == pi
-    m = pi/2;
-  else
-    m = rotangle_max_z(ebsd(1).SS);
-  end
-  sec = linspace(0,m,get_option(varargin,'SECTIONS',round(m/degree/5))+1); sec(end) = [];
-  sec = get_option(varargin,'phi1',sec,'double');
-  nplots = length(sec);
-  
-  % beta / gamma
-  S2G = S2Grid('PLOT',...
-    'MAXTHETA',min(rotangle_max_y(ebsd(1).CS),rotangle_max_y(ebsd(1).SS))/2,...
-    'MAXRHO',rotangle_max_z(ebsd(1).CS),varargin{:});
-  
-  phi1 = repmat(reshape(sec,[1,1,nplots]),[GridSize(S2G),1]);
-  [Phi,phi2] = polar(S2G);
-  Phi  = reshape(repmat(Phi,[1,1,nplots]),[GridSize(S2G),nplots]);
-  phi2 = reshape(repmat(phi2,[1,1,nplots]),[GridSize(S2G),nplots]);
-  
-  rot = euler2quat(phi1,Phi,phi2,'Bunge');
-  symbol = '\varphi_1';
-
-%% --------- gamma - sections ---------------------------------------------  
-elseif check_option(varargin,'phi2')   
-
-  % gamma
-
-  sec = linspace(0,rotangle_max_z(ebsd(1).CS),...
-    get_option(varargin,'SECTIONS',...
-    round(rotangle_max_z(ebsd(1).CS)/degree/5))+1); 
-  sec(end) = [];
-  sec = get_option(varargin,'phi2',sec,'double');
-  nplots = length(sec);
-  
-  % alpha / beta
-  if rotangle_max_y(ebsd(1).CS) == pi && rotangle_max_y(ebsd(1).SS) == pi
-    m = pi/2;
-  else
-    m = rotangle_max_z(ebsd(1).SS);
-  end
-  S2G = S2Grid('PLOT',...
-    'MAXTHETA',min(rotangle_max_y(ebsd(1).CS),rotangle_max_y(ebsd(1).SS))/2,...
-    'MAXRHO',m,varargin{:});
-  
-  phi2 = repmat(reshape(sec,[1,1,nplots]),[GridSize(S2G),1]);
-  [Phi,phi1] = polar(S2G);
-  Phi  = reshape(repmat(Phi ,[1,1,nplots]),[GridSize(S2G),nplots]);
-  phi1 = reshape(repmat(phi1,[1,1,nplots]),[GridSize(S2G),nplots]); 
-  
-  rot = euler2quat(phi1,Phi,phi2,'Bunge');
-  symbol = '\varphi_2';
-    
-
-%% ------------ omega - sections ------------------------------------------  
-elseif check_option(varargin,'OMEGA')
-
-  h = get_option(varargin,'h',zvector);
-  if isa(h,'Miller'), h = vector3d(h,ebsd(1).CS); end
-  r = get_option(varargin,'r',zvector);
-  
-  % rotate zvector to reference r
-  qr = hr2quat(zvector,r);
-  % rotate reference h to S2G
-  qh = hr2quat(repmat(h,GridSize(S2G)),vector3d(S2G));
-  % calc rotations
-  rot = reshape(qr*qh,[],1) * axis2quat(h,sec);
-  rot = reshape(rot,[GridSize(S2G),nplots]);
-  symbol = '\omega';
-
-%% ------------ sigma - sections (default) --------------------------------
-else
-
-  % sigma
-  sec = linspace(0,rotangle_max_z(ebsd(1).CS),...
-    get_option(varargin,'SECTIONS',...
-    round(rotangle_max_z(ebsd(1).CS)/degree/5))+1);
-  sec(end) = [];
-  sec = get_option(varargin,'SIGMA',sec,'double');
-  nplots = length(sec);
-  
-  % alpha / beta
-  if rotangle_max_y(ebsd(1).CS) == pi && rotangle_max_y(ebsd(1).SS) == pi
-    m = pi/2;
-  else
-    m = rotangle_max_z(ebsd(1).SS);
-  end
-  S2G = S2Grid('PLOT',...
-    'MAXTHETA',min(rotangle_max_y(ebsd(1).CS),rotangle_max_y(ebsd(1).SS))/2,...
-    'MAXRHO',m,varargin{:});
-  
-  [beta,alpha] = polar(S2G);
-  alpha = reshape(repmat(alpha,[1,1,nplots]),[GridSize(S2G),nplots]);
-  beta  = reshape(repmat(beta ,[1,1,nplots]),[GridSize(S2G),nplots]);
-  gamma = repmat(reshape(sec,[1,1,nplots]),[GridSize(S2G),1]);
-  
-  rot = euler2quat(alpha,beta,gamma-alpha);
-  symbol = '\sigma';
-  
+% subsample to reduce size
+if sum(sampleSize(ebsd)) > 2000 || check_option(varargin,'points')
+  points = get_option(varargin,'points',2000);
+  disp(['plot ', int2str(points) ,' random orientations out of ', ...
+    int2str(sum(sampleSize(ebsd))),' given orientations']);
+  ebsd = subsample(ebsd,points);
 end
 
-%% ------------------------- plot -----------------------------------------
-fprintf(['\nplot ',symbol(2:end),' sections, range: ',...
-  xnum2str(min(sec)/degree),mtexdegchar,' - ',xnum2str(max(sec)/degree),mtexdegchar,'\n']);
-multiplot(@(i) S2G,...
-  @(i) eval(ebsd,rot(:,:,i),varargin{:}),...
-  nplots,...
-  'DISP',@(i,Z) [' ',symbol(2:end),' = ',xnum2str(sec(i)/degree),mtexdegchar,' ',...
-  ' Max: ',xnum2str(max(Z(:))),...
-  ' Min: ',xnum2str(min(Z(:)))],...
-	'ANOTATION',@(i) [symbol,'=',int2str(sec(i)*180/pi),'^\circ'],...
-  'MINMAX','SMOOTH','TIGHT',...
-  'absolute',varargin{:});
+% reuse plot
+if ishold && isappdata(gcf,'sections') && ...
+    getappdata(gcf,'CS') == ebsd(1).CS && getappdata(gcf,'SS') == ebsd(1).SS
+  
+  sectype = getappdata(gcf,'SectionType');
+  sec = getappdata(gcf,'sections');
+  
+else
+  
+  rmallappdata(gcf);
+  hold off;
+  sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma'},'sigma');
 
-figure(gcf)
+  % get fundamental plotting region
+  [max_rho,max_theta,max_sec] = getFundamentalRegion(ebsd(1).CS,ebsd(1).SS,varargin{:});
+
+  if any(strcmp(sectype,{'alpha','phi1'}))
+    dummy = max_sec; max_sec = max_rho; max_rho = dummy;
+  end
+  
+  nsec = get_option(varargin,'SECTIONS',round(max_sec/degree/5));
+  sec = linspace(0,max_sec,nsec+1); sec(end) = [];
+  sec = get_option(varargin,sectype,sec,'double');
+  varargin = {varargin{:},'maxrho',max_rho,'maxtheta',max_theta};
+end
+
+[symbol,labelx,labely] = sectionLabels(sectype);
+
+%% generate plots
+S2G = project2ODFsection([ebsd.orientations],sectype,sec,varargin{:});
+S2G = set(S2G,'res',get(S2G,'resolution'));
+
+%% ------------------------- plot -----------------------------------------
+multiplot(@(i) S2G(i),@(i) [],length(sec),...
+  'ANOTATION',@(i) [symbol,'=',int2str(sec(i)*180/pi),'^\circ'],...
+  'xlabel',labelx,'ylabel',labely,...
+  'margin',0,'dynamicMarkerSize',...
+  varargin{:});
+
+setappdata(gcf,'sections',sec);
+setappdata(gcf,'SectionType',sectype);
+setappdata(gcf,'CS',ebsd(1).CS);
+setappdata(gcf,'SS',ebsd(1).SS);

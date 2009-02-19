@@ -8,7 +8,7 @@ function G = getgrid(ebsd,ind)
 %% Output
 %  G   - @SO3Grid of modal orientations
 
-G = union(ebsd.orientations); %#ok<LTARG>
+G = union(ebsd.orientations); 
 
 if nargin == 2
   G = quaternion(G,ind);

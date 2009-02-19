@@ -19,19 +19,23 @@ function plotpdf(odf,h,varargin)
 %  COMPLETE - plot entire (hemi)-sphere
 %
 %% See also
-% S2Grid/plot plot2all savefigure plot_index Annotations_demo ColorCoding_demo PlotTypes_demo
+% S2Grid/plot annotate savefigure plot_index Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo 
 
-argin_check(h,{'Miller','vector3d','cell'});
-if isa(h,'Miller'), h = set(h,'CS',getSym(odf));end
+%% check input
+if iscell(h), h = [h{:}];end
+argin_check(h,'Miller');
+h = set(h,'CS',getSym(odf));
 
 % default options
 varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
-if iscell(h), h = [h{:}];end
 
-% plotting grid
+%% make new plot
+newMTEXplot;
+
+%% plotting grid
 if check_option(varargin,'3d')
   r = S2Grid('PLOT',varargin{:});
 else
@@ -41,6 +45,8 @@ else
     'MAXRHO',maxrho,varargin{:});
 end
 
+
+%% plot
 if check_option(varargin,'superposition')
   multiplot(@(i) r,@(i) max(0,pdf(odf,h,r,varargin{:})),1,...
     'DISP',@(i,Z) [' PDF h=',char(h),...
@@ -48,6 +54,7 @@ if check_option(varargin,'superposition')
     ' Min: ',num2str(min(Z(:)))],...
     'ANOTATION',@(i) h,...
     'MINMAX','SMOOTH',...
+    'appdata',@(i) {{'h',h}},...
     varargin{:});
 else
   multiplot(@(i) r,@(i) max(0,pdf(odf,h(i),r,varargin{:})),length(h),...
@@ -56,11 +63,14 @@ else
     ' Min: ',num2str(min(Z(:)))],...
     'ANOTATION',@(i) h(i),...
     'MINMAX','SMOOTH',...
-    varargin{:});
-  setappdata(gcf,'Miller',h);
-  setappdata(gcf,'SS',odf(1).SS);
+    'appdata',@(i) {{'h',h(i)}},...
+    varargin{:});  
 end
 
+setappdata(gcf,'h',h);
+setappdata(gcf,'CS',odf(1).CS);
+setappdata(gcf,'SS',odf(1).SS);
+set(gcf,'tag','pdf');
 name = inputname(1);
 if isempty(name), name = odf(1).comment;end
 set(gcf,'Name',['Pole figures of "',name,'"']);
