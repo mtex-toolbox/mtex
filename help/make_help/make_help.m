@@ -100,7 +100,7 @@ if check_option(varargin, {'PoleFigureAnalysis','all','demos'})
   current_path = [mtex_path '/help/PoleFigureAnalysis'];
   files = dir([current_path '/*.m']);
   publish_files({files.name},current_path,...
-    'stylesheet',[pwd '/mtex_style.xsl'],'out_dir',html_path,'evalcode',1);
+    'stylesheet',[pwd '/mtex_style.xsl'],'out_dir',html_path,'evalcode',1,varargin{:});
 end
 
 
@@ -111,7 +111,7 @@ if check_option(varargin, {'EBSDAnalysis','all','demos'})
   current_path = [mtex_path '/help/EBSDAnalysis'];
   files = dir([current_path '/*.m']);
   publish_files({files.name},current_path,...
-    'stylesheet',[pwd '/mtex_style.xsl'],'out_dir',html_path,'evalcode',1);
+    'stylesheet',[pwd '/mtex_style.xsl'],'out_dir',html_path,'evalcode',1,varargin{:});
 end
 
 
@@ -122,7 +122,7 @@ if check_option(varargin, {'ODFAnalysis','all','demos'})
   current_path = [mtex_path '/help/ODFAnalysis'];
   files = dir([current_path '/*.m']);
   publish_files({files.name},current_path,...
-    'stylesheet',[pwd '/mtex_style.xsl'],'out_dir',html_path,'evalcode',1);
+    'stylesheet',[pwd '/mtex_style.xsl'],'out_dir',html_path,'evalcode',1,varargin{:});
   copyfile([current_path,'/*.png'],[mtex_path,'/help/html'])
 end
 
@@ -134,7 +134,7 @@ if check_option(varargin, {'plotting','all','demos'})
   current_path = [mtex_path '/help/plotting'];
   files = dir([current_path '/*.m']);
   publish_files({files.name},current_path,'stylesheet',[pwd '/mtex_style.xsl'],...
-    'out_dir',html_path,'evalcode',1);
+    'out_dir',html_path,'evalcode',1,varargin{:});
 end
 
 
@@ -145,7 +145,7 @@ if check_option(varargin, {'examples','all','demos'})
   current_path = [mtex_path '/examples'];
   files = dir([current_path '/*.m']);
   publish_files({files.name},current_path,'stylesheet',[pwd '/example_style.xsl'],...
-    'out_dir',[current_path '/html'],'evalcode',1);
+    'out_dir',[current_path '/html'],'evalcode',1,varargin{:});
   copyfile([current_path '/html/*.html'],html_path);
   copyfile([current_path '/html/*.png'],html_path);
 end
