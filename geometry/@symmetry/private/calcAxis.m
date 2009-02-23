@@ -1,4 +1,4 @@
-function saxis  = calcAxis(System,axis,angle)
+function saxis  = calcAxis(System,axis,angle,varargin)
 % calculate crystal axes
 
 if axis(3) == 0, axis(3) = max(axis);end
@@ -34,8 +34,14 @@ switch System
   case 'tetragonal'
     saxis = [axis(1)*xvector,axis(1)*yvector,axis(end)*zvector];
   case {'trigonal','hexagonal'}
-    saxis = [axis(1)*vector3d(cos(pi/6),-sin(pi/6),0),...
-      axis(1)*yvector,axis(end)*zvector];
+    if check_option(varargin,'a||y')
+      saxis = [axis(1)*xvector,...
+        axis(1)*vector3d(cos(2*pi/6),sin(2*pi/6),0),...
+        axis(end)*zvector];
+    else
+      saxis = [axis(1)*vector3d(cos(pi/6),-sin(pi/6),0),...
+        axis(1)*yvector,axis(end)*zvector];
+    end
   case 'cubic'
     saxis = [xvector,yvector,zvector];
 end

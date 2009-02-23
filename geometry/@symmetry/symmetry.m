@@ -1,4 +1,4 @@
-function s = symmetry(name,axis,angle)
+function s = symmetry(name,varargin)
 % constructor
 %
 %% Input
@@ -46,14 +46,26 @@ function s = symmetry(name,axis,angle)
 %  cubic           Td       -43m      m-3m     432  
 %  cubic           Oh       m-3m      m-3m     432  
 
-
+%% get input
 if nargin == 0, name = '1';end
 if isa(name,'symmetry'),  s = name;return;end
-if nargin <= 1, axis = [1 1 1]; end 
-if nargin <= 2, angle= [90 90 90] * degree; end 
+if ~isempty(varargin) && isa(varargin{1},'double')
+  axis = varargin{1};
+  varargin(1) = [];
+else
+  axis = [1 1 1]; 
+end
+if ~isempty(varargin) && isa(varargin{1},'double')
+  angle = varargin{1};
+  varargin(1) = [];
+else
+  angle= [90 90 90] * degree;  
+end
+
+%% search for symmetry
 try
   sym = findsymmetry(name);
-catch
+catch %#ok<*CTCH>
   
   % maybe it is a point group
   try
@@ -64,10 +76,10 @@ catch
   end
 end
 
+%% set up symmetry
 s.name = name;
 s.laue = sym.Laue;
-s.axis = calcAxis(sym.System,argin_check(axis,'double'),...
-  argin_check(angle,'double'));
+s.axis = calcAxis(sym.System,axis,angle,varargin{:});
 s.quat = calcQuat(s.laue,s.axis);
 
 superiorto('quaternion','SO3Grid');
