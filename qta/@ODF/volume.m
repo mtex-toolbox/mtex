@@ -43,6 +43,6 @@ end
 if f==0
   v = 0;
 else
-  v = mean(eval(odf,S3G)) * f;
+  v = mean(eval(odf,S3G)) * f; %#ok<EVLC>
 end
 
