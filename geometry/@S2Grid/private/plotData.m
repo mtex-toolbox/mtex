@@ -10,7 +10,7 @@ if check_option(varargin,'colorrange','double')
 end
 
 h = [];
-plottype = get_flag(varargin,{'CONTOUR','CONTOURF','SMOOTH','SCATTER'});
+plottype = get_flag(varargin,{'CONTOUR','CONTOURF','SMOOTH','SCATTER','TEXTUREMAP'});
 
 %% for compatiility with version 7.1
 if ndims(X) == 2 && X(1,1) > X(1,end)
@@ -19,8 +19,17 @@ if ndims(X) == 2 && X(1,1) > X(1,end)
   data = fliplr(data);
 end
 
+
 %% contour plot
-if any(strcmpi(plottype,{'CONTOUR','CONTOURF'})) 
+if any(strcmpi(plottype,'TEXTUREMAP')) 
+
+  set(gcf,'renderer','opengl');
+  surface(X,Y,ones(size(X)),data,...
+    'CDataMapping','direct','FaceColor','texturemap')
+  shading flat
+       
+%% contour plot
+elseif any(strcmpi(plottype,{'CONTOUR','CONTOURF'})) 
 
   set(gcf,'Renderer','painters');
   contours = get_option(varargin,{'contourf','contour'},{},'double');
