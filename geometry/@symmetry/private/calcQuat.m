@@ -1,4 +1,4 @@
-function q = calcQuat(Laue,axis)
+function q = calcQuat(Laue,axis,varargin)
 % calculate quaternions for Laue groups
 
 ll0axis = vector3d(1,1,0);

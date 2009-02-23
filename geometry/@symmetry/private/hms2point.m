@@ -26,8 +26,8 @@ if length(regexp(s,'\d'))>=4
   ind = regexp(s,'\d\d');
   if ~isempty(ind)
     ind = ind(1);
-    n1 = str2num(s(ind));
-    n2 = str2num(s(ind+1));
+    n1 = str2num(s(ind)); %#ok<ST2NM>
+    n2 = str2num(s(ind+1)); %#ok<ST2NM>
     if n1 > n2, s(ind+1) = [];end
   end
 end
