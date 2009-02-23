@@ -70,17 +70,17 @@ plot(santafee,'alpha','sections',18,'resolution',5*degree,...
 
 %% Plotting EBSD Data
 %
-% EBSD data are plotted by default in Rodriguez space. The command
-% <EBSD_plotpdf.html plotpdf> allows also to plot the individual axis
-% orientations.
+% EBSD data are plotted by default in axis angle space. 
 
 cs = symmetry('-3m'); ss = symmetry('triclinic');
 odf = unimodalODF(idquaternion,cs,ss);
 ebsd = simulateEBSD(odf,100);
-plot(ebsd)
+plot(ebsd,'scatter')
 
 %%
-% MTEX allows also to plot pole figures of EBSD data.
+% However, the command <EBSD_plotpdf.html plotpdf> allows to plot the individual
+% axis orientations. 
+
 close; figure('position',[46 171 400 200]);
 h = [Miller(0,0,0,1,cs),Miller(1,0,-1,0,cs)];
 plotpdf(ebsd,h,'reduced','MarkerSize',3)

@@ -1,5 +1,16 @@
 %% TODO List
 %
+%
+%% MTEX 1.2
+%
+% * make colorcoding in spatil ebsd plot right
+% * implement and test second aufstellung
+% * implement loadEBSD('file','columnames',{'alpha','beta','gamma'},'columns',[1 2 3])
+% * incorporate quaternions interface into ordinary interface
+% * implement standard lagen
+% * volume does not work properply
+% * fliplr and flipud should not change max_theta max_rho check this!
+%
 %% Sudent projects
 %
 % * grain analysis
@@ -16,7 +27,7 @@
 %
 %% class symmetry
 %
-% * implement second aufstellung
+% 
 %
 %% class kernel
 %
@@ -27,8 +38,6 @@
 %
 %% EBSD
 %
-% * incorporate quaternions interface into ordinary interface
-% * plot data in ODF sections
 %
 %% class PoleFigure
 %
@@ -37,7 +46,6 @@
 %
 %% class ODF
 %
-% * volume does not work properply
 % * approximate ODF by components
 % * calculate means and std
 % * calculate mean specimen properties
@@ -50,7 +58,6 @@
 %
 %% S2Grid
 %
-% * fliplr and flipud should not change max_theta max_rho check this!
 %
 %% SO3Grid
 %

@@ -15,12 +15,12 @@ fname = [mtexDataPath '/xrdml/Cu-111 Standard Tex-Pol-C 3degree.xrdml'];
 
 %% Import Data
 
-pf = loadPoleFigure(fname,cs,ss,'interface','xrdml');
+%pf = loadPoleFigure(fname,cs,ss,'interface','xrdml');
 
 
 %% Plot Pole Figure
 
-plot(pf)
+%plot(pf)
 
 
 %% See Also
