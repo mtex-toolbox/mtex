@@ -1,6 +1,12 @@
 function cb = colorbar(varargin)
 % inserts a colorbar into a figure
 
+%% EBSD plot?
+if strcmpi(get(gcf,'tag'),'ebsd_spatial')
+  ebsdColorbar
+  return
+end
+
 if isappdata(gcf,'axes')
   cax = getappdata(gcf,'colorbaraxis');
 
