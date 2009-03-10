@@ -18,7 +18,7 @@ epsilon = get_option(varargin,'epsilon',pi);
 if isa(q,'SO3Grid'), q = quaternion(q);end
 d = sparse(GridLength(SO3G),numel(q));
 
-if ~check_option(SO3G,'indexed') || check_option(varargin,'full')
+if ~check_option(SO3G,'indexed') || check_option(varargin,{'full','all'})
   
   d = cos(dist(SO3G.CS,SO3G.SS,SO3G.Grid(:),q(:).',varargin{:})/2);
 

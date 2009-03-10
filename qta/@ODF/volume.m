@@ -23,26 +23,74 @@ function v = volume(odf,center,radius,varargin)
 argin_check(center,'quaternion');
 argin_check(radius,'double');
 
-% get resolution
-res = get_option(varargin,'RESOLUTION',min(2.5*degree,radius/10),'double');
+% get resolution (for slow algorithm)
+res = get_option(varargin,'RESOLUTION',min(2.5*degree,radius/15),'double');
 
-% discretisation
-S3G = center*SO3Grid(res,odf(1).CS,odf(1).SS,'MAX_ANGLE',radius);
-
-% estimate volume portion of odf space
-if radius < rotangle_max_z(odf(1).CS) / 2
-  % theoretical value
-  f = length(odf(1).CS)*(radius - sin(radius))/pi;
-else
-  % numerical value
-  f = GridLength(SO3Grid(2.5*degree,odf(1).CS,odf(1).SS,'MAX_ANGLE',radius))/...
-    GridLength(SO3Grid(2.5*degree,odf(1).CS,odf(1).SS));
+% if radius is to large -> slow algorithm
+if radius > rotangle_max_z(odf(1).CS)/2 || length(odf(1).SS) > 1
+  v = slowVolume(odf,center,radius,res);
+  return
 end
 
+
+v = 0;
+S3G = [];
+% cycle through components
+for i = 1:length(odf)
+  
+  if check_option(odf(i),'UNIFORM') % uniform portion
+    
+    v = v + odf(i).c * length(odf(1).CS) * (radius - sin(radius))./pi;
+  
+  elseif check_option(varargin,'FOURIER') || check_option(odf(i),'FOURIER') 
+    
+    [vv,S3G] = slowVolume(odf(i),center,radius,res,S3G);
+    v = v + vv;
+    
+  elseif check_option(odf(i),'FIBRE') % fibre symmetric portion
+     
+    [vv,S3G] = slowVolume(odf(i),center,radius,res,S3G);
+    v = v + vv;
+      
+  else % radially symmetric portion
+      
+    v = v + fastVolume(odf(i),center,radius);
+    
+  end
+end
+
+
+
+function [v,S3G] = slowVolume(odf,center,radius,res,S3G)
+
+% discretisation
+if nargin < 5 || isempty(S3G)
+  S3G = SO3Grid(res,odf(1).CS,odf(1).SS,'MAX_ANGLE',radius,'center',center);
+end
+
+% estimate volume portion of odf space
+reference = 9897129 * 96 / length(odf(1).CS) / length(odf(1).SS);
+f = min(1,GridLength(S3G) * (res / 0.25 / degree)^3 / reference);
+  
 % eval odf
 if f==0
   v = 0;
 else
-  v = mean(eval(odf,S3G)) * f; %#ok<EVLC>
+  v = mean(eval(odf,S3G)) * f;  %#ok<EVLC>
+  v = min(v,sum(getweights(odf)));
 end
+
+function v = fastVolume(odf,center,radius)
+
+% compute distances
+d = reshape(dist(odf.center,center,'all'),GridLength(odf.center),[]);
+
+% precompute volumes
+[vol,r] = volume(odf.psi,radius);
+
+% interpolate
+v = interp1(r,vol,d,'spline');
+
+% sum up
+v = sum(v.' * odf.c(:));
 

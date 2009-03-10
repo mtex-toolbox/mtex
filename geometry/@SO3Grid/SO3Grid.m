@@ -14,7 +14,7 @@ function [G,S2G,sec] = SO3Grid(points,CS,SS,varargin)
 %
 %% Options
 %  MAX_ANGLE  - only up to maximum rotational angle
-%
+%  CENTER     - with respect to this given center
 
 if (nargout == 0) && (nargin == 0)
 	disp('constructs a grid on SS\SO(3)/CS');
@@ -116,7 +116,9 @@ elseif maxangle < rotangle_max_z(CS)/4
   end
   
   G.resolution = res;  
-  ind = fundamental_region(q,symmetry(),SS);  
+  center = get_option(varargin,'center',idquaternion);
+  q = center * q(:) * CS;
+  ind = fundamental_region(q,CS,SS);  
   G.Grid = q(~ind);
   
 %% equidistribution  
