@@ -8,7 +8,7 @@
 % * implement loadEBSD('file','columnames',{'alpha','beta','gamma'},'columns',[1 2 3])
 % * incorporate quaternions interface into ordinary interface
 % * implement standard lagen
-% * volume does not work properply
+% * implement volume the correct way
 % * fliplr and flipud should not change max_theta max_rho check this!
 %
 %% Sudent projects
