@@ -30,9 +30,17 @@ f0 = max(f(:));
 
 while res >= resmax || (0.95 * max(f(:)) > f0)
 
-  disp('.')
-  f0 = max(f(:));  
-  S3G = g0*SO3Grid(res,odf(1).CS,odf(1).SS,'max_angle',2*res);
+  %disp('.')
+  f0 = max(f(:));
+  
+  % new grid
+  if res < 2*degree
+    S3G = g0*SO3Grid(res,odf(1).CS,odf(1).SS,'max_angle',2*res);
+  else
+    S3G = SO3Grid(res,odf(1).CS,odf(1).SS);
+  end
+  
+  % evaluate ODF
   if res - get(odf,'resolution') > res/4
     f = eval(smooth(odf,'halfwidth',res),S3G,varargin{:}); %#ok<EVLC>
   else

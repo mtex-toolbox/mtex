@@ -59,7 +59,11 @@ dmin = min(d,[],2);
 %% restrict to those within tolerance
 
 ind = dmin < tol;
-if ~any(ind), return;end
+if ~any(ind)
+  warning(['There was no orientation plotted because there was no section within tolerance.',...
+    ' You may want to increase the tolerance by setting the option ''tolerance''.'])
+  return;
+end
 
 e2 = e2(ind);
 rho = rho(ind);
