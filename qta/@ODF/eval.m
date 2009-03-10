@@ -18,7 +18,7 @@ function f = eval(odf,g,varargin)
 
 if isa(g,'SO3Grid')
   if ~all([getCSym(g),getSSym(g)] == [odf(1).CS,odf(1).SS])
-    warning('symmetry missmatch');
+    warning('symmetry missmatch'); %#ok<WNTAG>
   end
   f = zeros(GridSize(g));
 else

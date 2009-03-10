@@ -7,6 +7,7 @@
 % * plot EBSD data in axis angle and Rodriguez space
 % * annotations in these spaces
 % * superpose odf, pole figure and EBSD plots
+% * faster and more accurate volume computation
 %
 %
 %% MTEX 1.1 - 12/2008
