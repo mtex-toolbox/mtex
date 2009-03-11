@@ -13,7 +13,7 @@ function [ind,d] = find(SO3G,q,epsilon,varargin)
 %
 
 
-if ~check_option(SO3G,'indexed') || check_option(SO3G,'exact')
+if ~check_option(SO3G,'indexed') || check_option(varargin,'exact')
 
   d = dist(SO3G.CS,SO3G.SS,q,SO3G.Grid);
   

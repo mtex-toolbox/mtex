@@ -1,4 +1,4 @@
-function NG = subGrid(G,q,epsilon)
+function NG = subGrid(G,q,epsilon,varargin)
 % sub-SO3Grid as epsilon neigborhood of a node
 %% Syntax
 %  NG = subGrid(G,midpoint,radius)
@@ -14,8 +14,8 @@ function NG = subGrid(G,q,epsilon)
 %% See also
 %  SO3Grid/find S2Grid/subGrid
 
-if nargin == 3
-  ind = find(G,q,epsilon);
+if nargin >= 3
+  ind = find(G,q,epsilon,varargin{:});
 elseif islogical(q) 
   ind = q;
 else
