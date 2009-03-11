@@ -28,7 +28,7 @@ res = get_option(varargin,'RESOLUTION',min(2.5*degree,radius/15),'double');
 
 % if radius is to large -> slow algorithm
 if radius > rotangle_max_z(odf(1).CS)/2 || length(odf(1).SS) > 1
-  v = slowVolume(odf,center,radius,res);
+  v = slowVolume(odf,center,radius,res,[],varargin{:});
   return
 end
 
@@ -61,11 +61,11 @@ end
 
 
 
-function [v,S3G] = slowVolume(odf,center,radius,res,S3G)
+function [v,S3G] = slowVolume(odf,center,radius,res,S3G,varargin)
 
 % discretisation
 if nargin < 5 || isempty(S3G)
-  S3G = SO3Grid(res,odf(1).CS,odf(1).SS,'MAX_ANGLE',radius,'center',center);
+  S3G = SO3Grid(res,odf(1).CS,odf(1).SS,'MAX_ANGLE',radius,'center',center,varargin{:});
 end
 
 % estimate volume portion of odf space

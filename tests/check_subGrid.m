@@ -29,3 +29,20 @@ dist(x,idquaternion,'epsilon',20*degree);
 q = SO3Grid(res,cs,ss);
 q = subGrid(q,idquaternion,50*degree);
 q = subGrid(q,idquaternion,20*degree);
+
+%%
+
+cs = symmetry('m-3m');
+ss = symmetry('mmm');
+
+center = axis2quat(xvector,25*degree);
+S3G = SO3Grid(2*degree,cs,ss);
+q1 = subGrid(S3G,center,20*degree,'exact')
+q2 = subGrid(S3G,center,20*degree)
+
+%%
+
+d1 = subGrid(S3G,center,20*degree,'exact')
+d2 = subGrid(S3G,center,20*degree)
+
+%%

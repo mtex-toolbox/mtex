@@ -107,6 +107,7 @@ elseif maxangle < rotangle_max_z(CS)/4
   
   rot_angle = res/2:res:maxangle;
 
+  % construct complete grid
   q = quaternion();
   for i = 1:length(rot_angle)
     dres = acos(max((cos(res/2)-cos(rot_angle(i)/2)^2)/...
@@ -117,9 +118,11 @@ elseif maxangle < rotangle_max_z(CS)/4
   
   G.resolution = res;  
   center = get_option(varargin,'center',idquaternion);
-  q = center * q(:) * CS;
-  ind = fundamental_region(q,CS,SS);  
-  G.Grid = q(~ind);
+  q = center * q(:);
+  
+  ind = fundamental_region2(q,center,CS,SS);  
+  %length(ind) / sum(ind)
+  G.Grid = q(ind);
   
 %% equidistribution  
 elseif isa(points,'double') && points > 0  % discretise euler space
@@ -132,7 +135,12 @@ elseif isa(points,'double') && points > 0  % discretise euler space
   end
   
   [maxalpha,maxbeta,maxgamma] = symmetry2Euler(CS,SS,'SO3Grid');
-  maxgamma = min(maxgamma/2,maxangle);
+  if ~check_option(varargin,'center')
+    maxgamma = min(maxgamma/2,maxangle);
+  else
+    maxgamma = maxgamma/2;
+  end
+  
   
 	if points >= 1  % number of points specified?
     
@@ -205,7 +213,9 @@ superiorto('quaternion');
 G = class(G,'SO3Grid');
 
 if check_option(G,'indexed') && check_option(varargin,'MAX_ANGLE')
-  G = subGrid(G,idquaternion,maxangle);
+  center = get_option(varargin,'center',idquaternion);
+  d = dot_outer(G,center,'epsilon',maxangle);
+  G = subGrid(G,find(d));  
 end
 
 %--------------------------------------------------------------------------
