@@ -4,21 +4,26 @@ function check_subGrid(cs,ss)
 % compare subGrid function with the max_angle option to SO3Grid
 %
 
-res = 5*degree;
+res = 2.5*degree;
 
 radius = fliplr(linspace(res,120,40)*degree);
 
 q = SO3Grid(res,cs,ss);
 
 m = GridLength(q);
+center = axis2quat(xvector+yvector,0*degree);
 
-for i = 1:length(radius)
-  f(i) = GridLength(SO3Grid(res,cs,ss,'max_angle',radius(i))) / m;
-  %f2(i) = GridLength(subGrid(SO3Grid(res,cs,ss),idquaternion,radius(i))) / m;
-  q = subGrid(q,idquaternion,radius(i));
-  g(i) = GridLength(q) / m;
-
+progress(0,length(radius));
+for i = 1:length(radius)  
+  
+  f(i) = GridLength(...
+    SO3Grid(res,cs,ss,'center',center,'max_angle',radius(i))) / m; %#ok<AGROW>
+  q = subGrid(q,center,radius(i));
+  g(i) = GridLength(q) / m; %#ok<AGROW>
+  progress(i,length(radius));
+  
 end
+
 plot(radius/degree,[f',g'])
 
 return

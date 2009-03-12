@@ -11,7 +11,7 @@ q = modalorientation(odf);
 
 %%
 v = [];
-r = linspace(0*degree,60*degree,20);
+r = linspace(0*degree,20*degree,20);
 for i = 1:length(r)
   fprintf('.');
   %v(i,1) = volume(odf,q,r(i)); 
@@ -28,7 +28,7 @@ clear v;
 cs = symmetry('m-3m');
 ss = symmetry('mmm');
 r = linspace(0*degree,60*degree,20);
-omega = linspace(0,25*degree,4);
+omega = linspace(0,45*degree,4);
 for i = 1:length(r)
   for j = 1:length(omega)
     %disp(r(i));

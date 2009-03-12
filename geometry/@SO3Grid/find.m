@@ -18,10 +18,7 @@ if ~check_option(SO3G,'indexed') || check_option(varargin,'exact')
   d = dist(SO3G.CS,SO3G.SS,q,SO3G.Grid);
   
   if nargin == 2
-    ind = zeros(1,length(v));
-    for i = 1:length(v)
-      ind(i) = find(d(:,i) == max(d(:,i)));
-    end
+    [d,ind] = selectMaxbyRow(d,1:size(d,2));
   else
     ind = d<epsilon;
   end
@@ -31,44 +28,52 @@ elseif GridLength(SO3G) == 0
   d = [];
 else
   
-  % symmetrice
-  s = quaternion_special(SO3G.CS);
-  ls = length(s);
-  lq = numel(q);
-  
-  % special cubic case 1
-  if any(strcmp(Laue(SO3G.CS),{'m-3','m-3m'})) && check_option(varargin,'nocubictrifoldaxis')
-    s = s(1:ls/3);
-  end
-  
-  qs = q(:)*s.'; clear q; % rows symmetries, columns elements
-
-  % convert to euler
-  [xalpha,xbeta,xgamma] = quat2euler(qs); clear qs;
+  % correct for crystal and specimen symmetry
+  qcs = quaternion_special(SO3G.CS);
+  qss = quaternion_special(SO3G.SS);
   
   % extract SO3Grid
   [ybeta,yalpha,ialphabeta,palpha] = getdata(SO3G.alphabeta);
-
+  palpha = max(palpha,pi);
   ygamma = double(SO3G.gamma);
   igamma = cumsum([0,GridLength(SO3G.gamma)]);
   sgamma = getMin(SO3G.gamma);
   pgamma = getPeriod(SO3G.gamma(1));
 
-  if nargin == 2 % search for nearest
+  if nargin == 2 
+%% search for nearest neighbour
+
+    d = zeros(numel(q),1);
+    ind = zeros(numel(q),1);
+    
+    for is = 1:length(qss)
+      for ic = 1:length(qcs)
+
+        [xalpha,xbeta,xgamma] = quat2euler(qss(is) * transpose(q(:)*qcs(ic)));
   
-    [ind,d] = SO3Grid_find(yalpha,ybeta,ygamma,sgamma,int32(igamma), ...
-      int32(ialphabeta),palpha,pgamma, xalpha,xbeta,xgamma);    
+        [hind,hd] = SO3Grid_find(yalpha,ybeta,ygamma,sgamma,int32(igamma), ...
+          int32(ialphabeta),palpha,pgamma, xalpha,xbeta,xgamma);
+
+        ind_better = hd > d;
+        ind(ind_better) = hind(ind_better);
+        d  = max(hd,d);
+            
+      end
+    end    
+  else  
+%% search for environment    
+    ind = logical(sparse(GridLength(SO3G),numel(q)));
     
-    d = reshape(d,[],numel(s)); ind = reshape(ind,[],numel(s));
-      
-    [d,ind] = selectMaxbyRow(d,ind);
-      
-  else  % search for environment
-    
-    ind = SO3Grid_find_region(yalpha,ybeta,ygamma,sgamma,int32(igamma), ...
-      int32(ialphabeta),palpha,pgamma, xalpha,xbeta,xgamma,epsilon);
-    
-    ind = reshape(ind,[],numel(s));
-    ind = reshape(any(ind,2),[GridLength(SO3G) lq]);
+    % for all symmetries
+    for is = 1:length(qss)
+      for ic = 1:length(qcs)
+
+        [xalpha,xbeta,xgamma] = quat2euler(qss(is) * transpose(q(:)*qcs(ic)));
+  
+        ind = ind | SO3Grid_find_region(yalpha,ybeta,ygamma,sgamma,int32(igamma), ...
+          int32(ialphabeta),palpha,pgamma, xalpha,xbeta,xgamma,epsilon);
+            
+      end
+    end
   end  
 end

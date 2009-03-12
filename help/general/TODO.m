@@ -3,13 +3,13 @@
 %
 %% MTEX 1.2
 %
-% * make colorcoding in spatil ebsd plot right
+% * make colorcoding in spatial ebsd plot right
 % * implement and test second aufstellung
 % * implement loadEBSD('file','columnames',{'alpha','beta','gamma'},'columns',[1 2 3])
 % * incorporate quaternions interface into ordinary interface
 % * implement standard lagen
-% * implement volume the correct way
-% * fliplr and flipud should not change max_theta max_rho check this!
+% * done -> check! - implement volume the correct way
+% * done -> check! - fliplr and flipud should not change max_theta max_rho 
 %
 %% Sudent projects
 %

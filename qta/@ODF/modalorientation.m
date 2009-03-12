@@ -14,6 +14,12 @@ res = 5*degree;
 resmax = min(2.5*degree,get_option(varargin,'resolution',...
   max(0.5*degree,get(odf,'resolution')/2)));
 
+if isempty(resmax)
+  warning('constant ODF - no modalorientation'); %#ok<WNTAG>
+  g0 = idquaternion;
+  return
+end
+
 % initial gues
 S3G = SO3Grid(2*res,odf(1).CS,odf(1).SS);
 if 2*res - get(odf,'resolution') > res/2
@@ -24,7 +30,7 @@ end
 
 epsilon = sort(f(:));
 epsilon = epsilon(max(1,length(epsilon)-1000));
-g0 = quaternion(S3G,find(f>epsilon));
+g0 = quaternion(S3G,find(f>=epsilon));
 
 f0 = max(f(:));
 
@@ -35,7 +41,7 @@ while res >= resmax || (0.95 * max(f(:)) > f0)
   
   % new grid
   if res < 2*degree
-    S3G = g0*SO3Grid(res,odf(1).CS,odf(1).SS,'max_angle',2*res);
+    S3G = SO3Grid(res,odf(1).CS,odf(1).SS,'max_angle',2*res,'center',g0);
   else
     S3G = SO3Grid(res,odf(1).CS,odf(1).SS);
   end
@@ -50,7 +56,7 @@ while res >= resmax || (0.95 * max(f(:)) > f0)
   %g0 = quaternion(S3G,find(f(:)==max(f(:))));
   epsilon = sort(f(:));
   epsilon = epsilon(max(1,length(epsilon)-100));
-  g0 = quaternion(S3G,find(f>epsilon));
+  g0 = quaternion(S3G,find(f>=epsilon));  
   f=  f(f>epsilon);
   res = res / 2;
 end
