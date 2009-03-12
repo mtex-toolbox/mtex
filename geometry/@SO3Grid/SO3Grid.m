@@ -38,7 +38,7 @@ G.resolution = 2*pi;
 G.options = {};
 G.CS      = CS;
 G.SS      = SS;
-G.Grid    = [];
+G.Grid    = quaternion;
 
 %% SO3rid defined by a set quaternions
 if isa(points,'quaternion')    
@@ -117,12 +117,14 @@ elseif maxangle < rotangle_max_z(CS)/4
   end
   
   G.resolution = res;  
-  center = get_option(varargin,'center',idquaternion);
-  q = center * q(:);
   
-  ind = fundamental_region2(q,center,CS,SS);  
-  %length(ind) / sum(ind)
-  G.Grid = q(ind);
+  % restrict to fundamental region - specimen symetry only
+  center = get_option(varargin,'center',idquaternion);
+  for i = 1:length(center)
+    cq = center(i) * q(:);
+    ind = fundamental_region2(cq,center(i),CS,SS);
+    G.Grid = [G.Grid;cq(ind)];
+  end
   
 %% equidistribution  
 elseif isa(points,'double') && points > 0  % discretise euler space
@@ -214,13 +216,9 @@ G = class(G,'SO3Grid');
 
 if check_option(G,'indexed') && check_option(varargin,'MAX_ANGLE')
   center = get_option(varargin,'center',idquaternion);
-  d = dot_outer(G,center,'epsilon',maxangle);
-  G = subGrid(G,find(d));  
+  G = subGrid(G,center,maxangle);
 end
 
-%--------------------------------------------------------------------------
-%function c = calcAnz(N,tmin,dt,dr)    
-%c = 2 + sum(round(sin(tmin+dt/N*(0:N)) * dr/dt * N));
 
 function s = no_center(res)
 

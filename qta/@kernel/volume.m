@@ -22,5 +22,5 @@ KV = @(rot_angle,quat_dist,volume_radius) weight(rot_angle,quat_dist,volume_radi
 %% perform quadrature
 vol = zeros(size(dist));
 for j = 1:length(dist)
-  vol(j) = quadv(@(rot_angle) KV(rot_angle,dist(j),radius),0,min(pi,5*k.hw));
+  vol(j) = quad(@(rot_angle) KV(rot_angle,dist(j),radius),0,min(pi,5*k.hw),1e-6);
 end

@@ -24,7 +24,7 @@ argin_check(center,'quaternion');
 argin_check(radius,'double');
 
 % get resolution (for slow algorithm)
-res = get_option(varargin,'RESOLUTION',min(2.5*degree,radius/15),'double');
+res = get_option(varargin,'RESOLUTION',min(1.25*degree,radius/30),'double');
 
 % if radius is to large -> slow algorithm
 if radius > rotangle_max_z(odf(1).CS)/2 || length(odf(1).SS) > 1

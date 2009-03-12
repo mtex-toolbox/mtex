@@ -44,24 +44,13 @@ else
   % for finding the minimial beta angle
   qcs = quaternion_special(SO3G.CS);
   
-  %% correct for trifold cubic axis
-  %if any(strcmp(Laue(SO3G.CS),{'m-3','m-3m'})) 
-  %  qcs = s(1:2:end);
-  %  s = s(1:length(s)/3);
-  %else 
-  %  qcs = idquaternion;
-  %end
-
-  % for all specimen symmetries 
+  % for all symmetries 
   for is = 1:length(qss)
     for ic = 1:length(qcs)
 
       [xalpha,xbeta,xgamma] = quat2euler(qss(is) * ...
         transpose(q(:)*qcs(ic)));
   
-      % find columns with minimal beta angle
-      %[xbeta,xalpha,xgamma] = selectMinbyRow(xbeta,xalpha,xgamma);
-      
       d = max(d,SO3Grid_dist_region(yalpha,ybeta,ygamma,sgamma,int32(igamma),...
         int32(ialphabeta),palpha,pgamma, xalpha,xbeta,xgamma,epsilon));
     
