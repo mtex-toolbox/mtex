@@ -29,7 +29,7 @@ else
 end
 
 epsilon = sort(f(:));
-epsilon = epsilon(max(1,length(epsilon)-1000));
+epsilon = epsilon(max(1,length(epsilon)-100));
 g0 = quaternion(S3G,find(f>=epsilon));
 
 f0 = max(f(:));
@@ -42,8 +42,9 @@ while res >= resmax || (0.95 * max(f(:)) > f0)
   % new grid
   if res < 2*degree
     S3G = SO3Grid(res,odf(1).CS,odf(1).SS,'max_angle',2*res,'center',g0);
-  else
+  else    
     S3G = SO3Grid(res,odf(1).CS,odf(1).SS);
+    S3G = subGrid(S3G,g0,2*res);
   end
   
   % evaluate ODF

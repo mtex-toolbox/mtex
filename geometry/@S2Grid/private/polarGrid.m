@@ -54,4 +54,4 @@ for i = 1:size(rho,2)
     'tag','ticks','visible',v,'interpreter','none',...
     'HorizontalAlignment',ha{r(i)},'VerticalAlignment',va{r(i)}); %#ok<AGROW>
 end
-optiondraw(h);
+if exist('h','var'), optiondraw(h);end

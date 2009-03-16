@@ -26,6 +26,7 @@ if check_option(varargin,'3d')
   h = S2Grid('PLOT',varargin{:});  
 else
   [e1,maxtheta,maxrho] = getFundamentalRegion(odf(1).CS,symmetry,varargin{:});
+  
   h = S2Grid('PLOT',...
     'MAXTHETA',maxtheta,...
     'MAXRHO',maxrho,varargin{:});
