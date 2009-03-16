@@ -22,7 +22,9 @@ q_mean = get_option(varargin,'q0',q(1));
 old_mean = [];
 
 % iterate mean 
-while isempty(old_mean) || dist(q_mean,old_mean)>1*degree 
+iter = 1;
+while iter < 5 && (isempty(old_mean) || (dist(q_mean,old_mean)>1*degree))
+  iter = iter + 1;
   old_mean = q_mean;  
   [q,omega] = getFundamentalRegion(S3G,'center',old_mean);
   q_std = sum(omega.^2) ./ (length(omega)-1);

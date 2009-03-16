@@ -17,6 +17,7 @@ function [S2G,ind] = subGrid(S2G,v,epsilon)
 
 if nargin == 3
   ind = find(S2G,v,epsilon);
+  ind = any(ind,2);
 else
   ind = v;
 end

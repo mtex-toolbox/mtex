@@ -3,7 +3,7 @@ function v = mtimes(v1,v2)
 
 if isa(v1,'vector3d')
     if isa(v2,'vector3d')
-        error('the product of two vectors is not definet. see dotprodukt or use .*');
+        error('the product of two vectors is not defined. see <a href="matlab: help vector3d/dot">dot</a> or use .*');
     else 
         v = vector3d(v1.x * v2,v1.y * v2,v1.z * v2);
     end
