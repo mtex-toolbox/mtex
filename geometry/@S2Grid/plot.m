@@ -96,6 +96,8 @@ if numel(data) == GridLength(S2G)
   
     varargin = {'colorrange',[min(data(:)),max(data(:))],varargin{:}};
   end
+elseif ndims(data) == 3 && all(size(data) == [GridSize(S2G),3])
+  
 elseif check_option(varargin,'label')
   
   data = ensurecell(get_option(varargin,'label'),GridSize(S2G));

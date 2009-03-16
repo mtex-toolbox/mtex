@@ -10,13 +10,13 @@ if check_option(varargin,'colorrange','double')
 end
 
 h = [];
-plottype = get_flag(varargin,{'CONTOUR','CONTOURF','SMOOTH','SCATTER','TEXTUREMAP'});
+plottype = get_flag(varargin,{'CONTOUR','CONTOURF','SMOOTH','SCATTER','TEXTUREMAP','rgb'});
 
 %% for compatiility with version 7.1
 if ndims(X) == 2 && X(1,1) > X(1,end)
   X = fliplr(X);
   Y = fliplr(Y);
-  data = fliplr(data);
+  data = flipdim(data,2);
 end
 
 
@@ -27,7 +27,15 @@ if any(strcmpi(plottype,'TEXTUREMAP'))
   surface(X,Y,ones(size(X)),data,...
     'CDataMapping','direct','FaceColor','texturemap')
   shading flat
+
+%% rgb plot
+elseif any(strcmpi(plottype,'rgb'))
+  
+  set(gcf,'renderer','zBuffer');
+  surf(X,Y,zeros(size(X)),data)
+  shading interp
        
+  
 %% contour plot
 elseif any(strcmpi(plottype,{'CONTOUR','CONTOURF'})) 
 

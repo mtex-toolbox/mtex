@@ -6,6 +6,13 @@ if isempty(A) || isempty(ind) || ~any(ind(:))
   return;
 end
 
+if length(size(A)) == 3
+  for i = 1:size(A,3)
+    B(:,:,i) = submatrix(A(:,:,i),ind); %#ok<AGROW>
+  end
+  return
+end
+
 B = A(ind);
 
 if isa(ind,'logical')

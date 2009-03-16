@@ -97,6 +97,7 @@ set_mtex_option('postfix_cmd','');
 
 %% compatibility issues
 warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
+warning('off','MATLAB:divideByZero');
 
 
 %% end user defined global settings
