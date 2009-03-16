@@ -18,7 +18,7 @@ end
 cs = get(ebsd,'CS');
   
 %% compute colorcoding
-switch lower(get_option(varargin,'colorcoding',''))
+switch lower(get_option(varargin,'colorcoding','ipdf'))
   case 'bunge'
     d = euler2rgb(getgrid(ebsd),'center',q0,varargin{:});
   case 'angle'
@@ -44,7 +44,7 @@ plotxy(ebsd.xy(:,1),ebsd.xy(:,2),d,varargin{:});
 set(gcf,'tag','ebsd_spatial');
 setappdata(gcf,'CS',cs);
 setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d'));
-setappdata(gcf,'colorcoding',@(h) ipdf2rgb(h,cs));
+setappdata(gcf,'colorcoding',@(h) ipdf2rgb(h,cs,varargin{:}));
 
 
 %% set data cursor
