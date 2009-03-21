@@ -22,7 +22,12 @@ if newMTEXplot('ensureTag','ipdf',...
     'ensureAppdata',{{'CS',cs},{'SS',ss}})
   argin_check(r,{'vector3d'});
 else
-  r = getappdata(gcf,'r');  
+  if ~isa(r,'vector3d')
+    varargin = {r,varargin{:}};
+  end
+  r = getappdata(gcf,'r');
+  o = getappdata(gcf,'options');
+  varargin = {o{:},varargin{:}};
 end
 
 
@@ -40,10 +45,8 @@ end
 grid = getgrid(ebsd);
 h = @(i) reshape(inverse(quaternion(ss * grid * cs)),[],1) * r(i);
 
-[e1,maxtheta,maxrho] = getFundamentalRegion(cs,symmetry,varargin{:});
-Sh = @(i) S2Grid(h(i),...
-  'MAXTHETA',maxtheta,...
-  'MAXRHO',maxrho,varargin{:});
+[maxtheta,maxrho] = getFundamentalRegionPF(cs,varargin{:});
+Sh = @(i) S2Grid(h(i),'MAXTHETA',maxtheta,'MAXRHO',maxrho,varargin{:});
 
 %% plot
 multiplot(@(i) Sh(i),@(i) [],length(r),...
@@ -53,6 +56,7 @@ multiplot(@(i) Sh(i),@(i) [],length(r),...
 
 setappdata(gcf,'r',r);
 setappdata(gcf,'SS',ss);
-setappdata(gcf,'CS',ss);
+setappdata(gcf,'CS',cs);
+setappdata(gcf,'options',extract_option(varargin,'reduced'));
 set(gcf,'Name',['Inverse Pole figures of "',inputname(1),'"']);
 set(gcf,'Tag','ipdf');

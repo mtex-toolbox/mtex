@@ -12,7 +12,11 @@ if isappr(maxrho-minrho,2*pi)
 else
   
   rho = linspace(minrho,maxrho,100);
-  theta = theta*ones(1,length(rho));
+  if isnumeric(theta)
+    theta = theta*ones(1,length(rho));
+  else
+    theta = theta(rho);
+  end
   
   if check_option(varargin,'boundary')
     rho = [0,rho,0];

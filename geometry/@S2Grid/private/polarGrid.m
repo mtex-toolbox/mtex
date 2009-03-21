@@ -2,7 +2,11 @@ function polarGrid(offset,varargin)
 % Plot Polar Grid
 % 
 
-circle(offset,0,pi/2,'boundary',varargin{:})
+maxrho = getappdata(gcf,'maxrho');
+minrho = getappdata(gcf,'minrho');
+maxtheta = getappdata(gcf,'maxtheta');
+
+circle(offset,0,maxtheta,'boundary')
 
 if check_option(varargin,'grid'), v = 'on';else v = 'off';end
 
@@ -14,8 +18,7 @@ arrayfun(@(t) circle(offset,0,t,varargin{:},'LineStyle',':',...
   'edgecolor',[0.4 0.4 0.4],'tag','grid','visible',v),theta);
 
 %% meridans
-maxrho = getappdata(gcf,'maxrho');
-minrho = getappdata(gcf,'minrho');
+
 drho = get_option(varargin,'grid_res',30*degree);
 
 rho = minrho:drho:(maxrho-drho);

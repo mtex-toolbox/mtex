@@ -11,7 +11,7 @@ function plotspatial(ebsd,varargin)
 
 % get reference orientation
 if ~check_option(varargin,'center','quaternion')
-  q0 = mean(ebsd);
+  q0 = mean(subsample(ebsd,1000));
 else
   q0 = get_option(varargin,'center');
 end
@@ -45,6 +45,7 @@ set(gcf,'tag','ebsd_spatial');
 setappdata(gcf,'CS',cs);
 setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d'));
 setappdata(gcf,'colorcoding',@(h) ipdf2rgb(h,cs,varargin{:}));
+setappdata(gcf,'options',extract_option(varargin,'reduced'));
 
 
 %% set data cursor

@@ -24,11 +24,22 @@ else
   setappdata(gcf,'maxrho',maxrho);
 end
 
+if isappdata(gcf,'maxtheta')
+  maxtheta = getappdata(gcf,'maxtheta');
+else
+  maxtheta = get_option(varargin,'maxtheta',pi/2);
+  setappdata(gcf,'maxtheta',maxtheta);
+end
+
 
 %% restrict to plotable domain
 
 rho = mod(rho,2*pi);
-rho(rho<minrho-1e-6 | rho >maxrho+1e-6) = nan;
+rho(mod(rho-1e-6,2*pi)<minrho-2e-6 | mod(rho+1e-6,2*pi)>maxrho+2e-6) = nan;
+
+if isa(maxtheta,'function_handle')
+  theta(theta-1e-6 > maxtheta(rho)) = NaN;
+end
 
 %% modify polar coordinates
 
@@ -42,8 +53,13 @@ if appDataOption(varargin,'flipud',false), rho = 2*pi-rho; end
 if appDataOption(varargin,'fliplr',false), rho = pi-rho; end
 
 brho = linspace(minrho,maxrho,100);
-btheta = [0,pi/2];
-[brho,btheta] = meshgrid(brho,btheta);
+if isa(maxtheta,'function_handle')
+  btheta = maxtheta(brho);
+else
+  btheta = maxtheta * ones(size(brho));
+end
+brho = [0,brho];
+btheta = [0,btheta];
 
 %% project data
 switch lower(projection)
