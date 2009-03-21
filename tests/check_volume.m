@@ -11,12 +11,12 @@ q = modalorientation(odf);
 
 %%
 v = [];
-r = linspace(0*degree,20*degree,20);
+r = linspace(5*degree,10*degree,10);
 for i = 1:length(r)
   fprintf('.');
   %v(i,1) = volume(odf,q,r(i)); 
-  v(i,2) = volume(odf2,idquaternion,r(i)); 
-  v(i,1) = volume(uniformODF(cs,ss),idquaternion,r(i)); 
+  v(i,2) = volume(odf,idquaternion,r(i)); 
+  %v(i,1) = volume(uniformODF(cs,ss),idquaternion,r(i)); 
 end
 fprintf('\n');
 %v(:,2) = length(cs)*(r - sin(r))./pi;
