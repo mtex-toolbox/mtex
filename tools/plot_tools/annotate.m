@@ -89,6 +89,7 @@ for i = 1:length(ax)
         plot(cs*sr(:).','MarkerEdgeColor','w',varargin{:});
       elseif isa(obj,'Miller')
       
+        obj = set(obj,'CS',cs);
         plot(obj,'MarkerEdgeColor','w','Marker','s',varargin{:});
       
       else

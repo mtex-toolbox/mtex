@@ -1,4 +1,4 @@
-function [theta,rho] = polar(S2G)
+function [theta,rho] = polar(S2G,varargin)
 % polar coordinates of S2Grid
 %
 %% Input
@@ -8,9 +8,9 @@ function [theta,rho] = polar(S2G)
 % [theta,rho] - double
 
 if check_option(S2G(1).options,'INDEXED')
-	theta = double([S2G.theta]);
-	theta = rep(theta,GridLength([S2G.rho]));
-	rho = double([S2G.rho]);
+  theta = double([S2G.theta]);
+  theta = rep(theta,GridLength([S2G.rho]));
+  rho = double([S2G.rho]);
   if length(S2G)==1
     theta = reshape(theta,GridSize(S2G));
     rho = reshape(rho,GridSize(S2G));

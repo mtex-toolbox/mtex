@@ -1,4 +1,4 @@
-function [ind,d] = find(S2G,v,epsilon)
+function [ind,d] = find(S2G,v,epsilon,varargin)
 % return index of all points in a epsilon neighborhood of a vector
 %
 %% Syntax  
@@ -13,7 +13,7 @@ function [ind,d] = find(S2G,v,epsilon)
 %% Output
 %  ind     - int32        
 
-if check_option(S2G.options,'INDEXED')
+if check_option(S2G.options,'INDEXED') && ~check_option(varargin,'direct')
   
   d = [];
   if check_option(S2G.options,'reduced'), v = [v(:),-v(:)]; end
@@ -53,7 +53,7 @@ else % not indexed points
 
   d = dot_outer(S2G,v);
   
-  if nargin == 3
+  if nargin >= 3
     ind = d > cos(epsilon);
   else
     md = repmat(max(d),1,size(d,2));

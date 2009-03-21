@@ -81,11 +81,13 @@ if sum(GridLength(S2G))>100 || get(S2G,'resolution') < 10 *degree
   varargin = {'scatter_resolution',getResolution(S2G(end)),varargin{:}};
 end
 
+
 % extract data
 data = get_option(varargin,'DATA',[]);
 if numel(data) == GridLength(S2G)
   
   if isnumeric(data)
+    
     data = reshape(data,GridSize(S2G));
   
     % log plot?
@@ -112,9 +114,11 @@ end
 % COLORMAP
 if check_option(varargin,'GRAY'),colormap(flipud(colormap('gray'))/1.2);end
 
+
 %% Prepare Coordinates
 % calculate polar coordinates
 [theta,rho] = polar(S2G);
+
 
 
 %% Which Hemispheres to Plot
@@ -156,10 +160,19 @@ if any(strcmpi(hemisphere,'north')) || any(strcmpi(hemisphere,'reduced'))
   if strcmp(hemisphere,'reduced')
     ind = true(size(theta));    
   else
-    ind = theta <= pi/2+0.001;
+    ind = (theta <= pi/2+0.001) | isnan(theta);
   end
+  
+  if isa(S2G.theta,'S1Grid')
+    maxtheta = min(pi/2,getMax(S2G.theta));
+  elseif isa(S2G.theta,'function_handle')
+    maxtheta = S2G.theta;
+  else
+    maxtheta = pi/2;
+  end
+  
   bounds = plotHemiSphere(submatrix(theta,ind),submatrix(rho,ind),...
-    submatrix(data,ind),0,'maxrho',max(getMax(S2G.rho)),varargin{:});
+    submatrix(data,ind),0,'maxrho',max(getMax(S2G.rho)),'maxtheta',maxtheta,varargin{:});
 end
 
 %% Southern Hemisphere
