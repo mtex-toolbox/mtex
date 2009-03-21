@@ -25,11 +25,8 @@ newMTEXplot;
 if check_option(varargin,'3d') 
   h = S2Grid('PLOT',varargin{:});  
 else
-  [e1,maxtheta,maxrho] = getFundamentalRegion(odf(1).CS,symmetry,varargin{:});
-  
-  h = S2Grid('PLOT',...
-    'MAXTHETA',maxtheta,...
-    'MAXRHO',maxrho,varargin{:});
+  [maxtheta,maxrho] = getFundamentalRegionPF(odf(1).CS,varargin{:});  
+  h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,varargin{:});
 end
 
 %% plot
@@ -45,6 +42,7 @@ setappdata(gcf,'r',r);
 setappdata(gcf,'CS',odf(1).CS);
 setappdata(gcf,'SS',odf(1).SS);
 set(gcf,'tag','ipdf');
+setappdata(gcf,'options',extract_option(varargin,'reduced'));
 name = inputname(1);
 if isempty(name), name = odf(1).comment;end
 set(gcf,'Name',['Inverse Pole Figures of ',name]);

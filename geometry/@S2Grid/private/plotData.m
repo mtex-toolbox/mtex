@@ -32,7 +32,7 @@ if any(strcmpi(plottype,'TEXTUREMAP'))
 elseif any(strcmpi(plottype,'rgb'))
   
   set(gcf,'renderer','zBuffer');
-  surf(X,Y,zeros(size(X)),data)
+  surf(X,Y,zeros(size(X)),real(data))
   shading interp
        
   
@@ -85,8 +85,8 @@ elseif any(strcmpi(plottype,'SMOOTH'))
   
 %% scatter plots
 else 
-
-  set(gcf,'Renderer','Painters');
+  lastwarn('')
+  set(gcf,'Renderer','Painters');  
 
   % get options
   options = {};
@@ -178,8 +178,7 @@ else
         options{:});
     end
 
-  end
-  
+  end  
 end
 
 % control legend entry

@@ -55,21 +55,28 @@ else
   mintheta = 0; maxtheta = pi;
 end
 
-mintheta = max(get_option(varargin,'MINTHETA',0),mintheta);
-maxtheta = min(get_option(varargin,'MAXTHETA',pi),maxtheta);
-dtheta = maxtheta - mintheta;
 minrho = get_option(varargin,'MINRHO',0);
 maxrho = get_option(varargin,'MAXRHO',2*pi);
 drho = maxrho - minrho;
+mintheta = max(get_option(varargin,'MINTHETA',0),mintheta);
+maxtheta_opt = get_option(varargin,'MAXTHETA',pi);
+if ~isnumeric(maxtheta_opt)
+  maxthetafun = @(rho) min(maxtheta_opt(rho),maxtheta);
+  maxtheta = max(maxthetafun(linspace(minrho,maxrho,5)));
+else
+  maxtheta = min(maxtheta_opt,maxtheta);
+end
+dtheta = maxtheta - mintheta;
+
 
 %% 
 if nargin == 0 || ... % empty grid
     (check_option(varargin,{'theta','rho'}) && isempty(get_option(varargin,'theta')))
-	G.res = 2*pi;
-	G.theta = S1Grid([],mintheta,maxtheta);
-	G.rho = S1Grid([],minrho,maxrho);
-	G.Grid = vector3d;
-	G.options = {};
+  G.res = 2*pi;
+  G.theta = S1Grid([],mintheta,maxtheta);
+  G.rho = S1Grid([],minrho,maxrho);
+  G.Grid = vector3d;
+  G.options = {};
   
 elseif isa(varargin{1},'S2Grid') % copy constructor
   
@@ -78,13 +85,38 @@ elseif isa(varargin{1},'S2Grid') % copy constructor
 elseif isa(varargin{1},'vector3d')	% grid from vector3d
   
 	G.res = get_option(varargin,'RESOLUTION',vec2res(varargin{1}));
-	G.theta =  S1Grid([],mintheta,maxtheta);
+  if exist('maxthetafun','var')
+    G.theta = maxthetafun;
+  else
+    G.theta =  S1Grid([],mintheta,maxtheta);
+  end
 	G.rho = S1Grid([],minrho,maxrho);
 	G.Grid = varargin{1};
   [theta,rho] = vec2sph(G.Grid);
-  G.Grid = G.Grid(theta<=maxtheta+1e-06 & mod(rho,2*pi) <= maxrho+1e-06);
+  G.Grid = G.Grid(theta<=maxtheta+1e-06 & mod(rho,2*pi) <= maxrho+1e-06);  
 	G.options = {};
 	
+elseif check_option(varargin,'plot') && exist('maxthetafun','var')
+  
+  res = get_option(varargin,'resolution',2.5*degree);
+  points(1) = ceil(drho / res);
+  points(2) = ceil(dtheta / res + 1);
+
+  G.res = min(dtheta/(points(2)-1),drho/points(1));
+  G.theta = maxthetafun;
+  G.rho = S1Grid([],minrho,maxrho);
+  
+  rho = linspace(minrho,maxrho,points(1));
+  theta = linspace(mintheta,maxtheta,points(2));
+  %theta = [theta,theta(end)];
+  
+  [rho,theta] = meshgrid(rho,theta);
+  theta = theta * diag(maxthetafun(rho(1,:))./maxtheta);
+  
+  G.Grid = sph2vec(theta,rho);
+  G.options = {};
+  
+  
 % -------------------------- indexed grid ----------------------------
 else
 
@@ -123,14 +155,13 @@ else
       points(2) = ceil(dtheta / points(2) + 1);
     end
     
-		G.res = min(dtheta/(points(2)-1),drho/points(1));
-		G.theta = S1Grid(linspace(mintheta,maxtheta,points(2)),mintheta,maxtheta);
+    G.res = min(dtheta/(points(2)-1),drho/points(1));
+    G.theta = S1Grid(linspace(mintheta,maxtheta,points(2)),mintheta,maxtheta);
       
 		steps = maxrho / points(1);
     if check_option(varargin,'PLOT'),
       G.rho = repmat(...
-        S1Grid(minrho + steps*(0:points(1)),minrho,maxrho,...
-        'PERIODIC'),1,points(2));
+        S1Grid(minrho + steps*(0:points(1)),minrho,maxrho,'periodic'),1,points(2));
     else
       G.rho = repmat(...
         S1Grid(minrho + steps*(0:points(1)-1),minrho,maxrho,...
@@ -155,8 +186,8 @@ else
     else
       theta = mintheta + (0:ntheta)*res;
     end
-		G.theta = S1Grid(theta,mintheta,maxtheta);
-    
+    G.theta = S1Grid(theta,mintheta,maxtheta);
+                
     identified = check_option(varargin,'reduced');
     for j = 1:length(theta)
         
@@ -167,9 +198,9 @@ else
           ,minrho,minrho + pi,'PERIODIC');
       
       else
-				steps = max(round(sin(th) * drho / dtheta * ntheta),1);
-				rho = minrho + (0:steps-1 )* drho /steps + mod(j,2) * drho/steps/2;
-				G.rho(j) = S1Grid(rho,minrho,maxrho,'PERIODIC'); %#ok<AGROW>
+        steps = max(round(sin(th) * drho / dtheta * ntheta),1);
+        rho = minrho + (0:steps-1 )* drho /steps + mod(j,2) * drho/steps/2;
+        G.rho(j) = S1Grid(rho,minrho,maxrho,'PERIODIC'); 
       end
     end
   else
@@ -178,11 +209,9 @@ else
   
   G.Grid = calcGrid(G.theta,G.rho);
   G.options = {'INDEXED'};
-  
+    
 end
   
-
-
 G.options = set_option(G.options,...
   extract_option(varargin,{'INDEXED','PLOT','north','south','reduced'}));
 

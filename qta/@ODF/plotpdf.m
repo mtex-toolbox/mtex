@@ -39,10 +39,8 @@ newMTEXplot;
 if check_option(varargin,'3d')
   r = S2Grid('PLOT',varargin{:});
 else
-  [maxrho,maxtheta] = getFundamentalRegion(symmetry,odf(1).SS,varargin{:});
-  r = S2Grid('PLOT',...
-    'MAXTHETA',maxtheta,...
-    'MAXRHO',maxrho,varargin{:});
+  [maxtheta,maxrho] = getFundamentalRegionPF(odf(1).SS,varargin{:});
+  r = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,varargin{:});
 end
 
 
