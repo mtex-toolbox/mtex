@@ -6,8 +6,6 @@ function c = ipdf2rgb(h,cs,varargin)
 
 [maxtheta,maxrho] = getFundamentalRegionPF(cs,varargin{:});
 
-if check_option(varargin,'reduced'), maxrho = maxrho * 2;end
-
 h = vector3d(h); h = h./norm(h);
 switch Laue(cs)
   
@@ -38,6 +36,8 @@ switch Laue(cs)
     center = sph2vec(pi/6,pi/8);
     
   otherwise
+    
+    if check_option(varargin,'reduced'), maxrho = maxrho * 2;end
     constraints = [yvector,axis2quat(zvector,maxrho/2) * (-yvector),zvector];
     %constraints = [-axis2quat(zvector,-maxrho/2) * yvector];
     center = sph2vec(pi/4,maxrho/4);
@@ -66,12 +66,14 @@ end
 
 dh = min(dh,[],3);
 dh(imag(dh) ~=0 ) = 0;
+dh = dh(:);
 
 %% compute angle
 rx = center - zvector; rx = rx ./ norm(rx);
 ry = cross(center,rx); ry = ry ./ norm(ry);
 dv = (center - sh); dv = dv ./ norm(dv);
 omega = mod(atan2(dot(rx,dv),dot(ry,dv))-pi/2,2*pi);
+omega = omega(:);
 
 %% compute colors
 c = zeros(numel(h),3);

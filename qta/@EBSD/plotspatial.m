@@ -66,14 +66,6 @@ function h = quat2ipdf(S3G,varargin)
   h = inverse(quaternion(S3G)) .* r;
 
 
-  % restrict to fundamental region
-  h = vector3d(h);
-  sh = cs * h(:).';
-  [theta,rho] = vec2sph(sh);
-  t = 100 * theta + mod(rho,2*pi);
-  [t,h] = selectMinbyColumn(t,sh);
-
-
 %% Tooltip function
 function txt = tooltip(empt,eventdata,ebsd) %#ok<INUSL>
 
