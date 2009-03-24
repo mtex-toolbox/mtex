@@ -16,6 +16,9 @@ function annotate(varargin)
 % Miller/plot vector3d/plot
 
 %% get axes 
+
+if nargin == 0 || isempty(varargin{1}), return; end
+
 oax = get(gcf,'currentAxes');
 
 if all(ishandle(varargin{1}))

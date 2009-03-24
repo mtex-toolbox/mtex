@@ -57,6 +57,24 @@ end
 %% get resolution
 res = get_option(varargin,'resolution',max(0.75*degree,hw / 2));
 
+% %% first approximation
+% 
+% % generate approximation grid
+% [maxalpha,maxbeta,maxgamma] = getFundamentalRegion(ebsd.CS,ebsd.SS);
+% nalpha = round(2*maxalpha/res);
+% nbeta = round(2*pi/res);
+% ngamma = round(4*pi/res);
+% 
+% % approximate
+% [alpha,beta,gamma] = quat2euler(quaternion(ebsd.orientations));
+% ialpha = 1+round(nalpha * mod(alpha,maxalpha) ./ maxalpha);
+% ibeta = 1+round(nbeta * beta ./ maxbeta);
+% igamma = 1+round(ngamma * gamma ./ maxgamma);
+% 
+% ind = ialpha + nalpha * (ibeta + nbeta * igamma);
+% c = histc(ind,1:nalpha*nbeta*ngamma);
+
+
 %% generate grid
 S3G = SO3Grid(res,ebsd(1).CS,ebsd(1).SS);
 vdisp([' approximation grid: ' char(S3G)],varargin{:});
@@ -80,7 +98,7 @@ for iter = 1:maxiter
   sind = 1+(iter-1)*dind:min(numel(g),iter*dind);
       
   ind = find(S3G,g(sind));
-  for i = 1:length(ind)
+  for i = 1:length(ind) % TODO -> make it faster
     d(ind(i)) = d(ind(i)) + 1;
   end
 

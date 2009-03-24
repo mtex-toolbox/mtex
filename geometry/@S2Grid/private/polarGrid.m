@@ -43,6 +43,8 @@ end
 
 set(gca,'xtickLabel',[]);
 set(gca,'ytickLabel',[]);
+
+if any(isnan(X)), return;end
 if check_option(varargin,'ticks'), v = 'on';else v = 'off';end
 
 % vertical/horizontal alignment

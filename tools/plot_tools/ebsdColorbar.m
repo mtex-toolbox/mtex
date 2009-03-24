@@ -15,7 +15,7 @@ else
 end
 
 % S2 Grid
-[maxtheta,maxrho] = getFundamentalRegionPF(cs,varargin{:});
+[maxtheta,maxrho,v] = getFundamentalRegionPF(cs,varargin{:});
 h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'resolution',1*degree,varargin{:});
 
 d = colorcoding(h);
@@ -30,8 +30,7 @@ setappdata(gcf,'options',extract_option(varargin,'reduced'));
 
 %% annotate crystal directions
 
-h = [Miller(1,0,0),Miller(0,0,1)];
-annotate(h,'MarkerFaceColor','k','labeled','all');
+annotate(v,'MarkerFaceColor','k','labeled','all');
 set(gcf,'renderer','opengl');
 
 
