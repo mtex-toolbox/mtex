@@ -13,7 +13,7 @@ switch Laue(cs)
     if check_option(varargin,'reduced')
       h(getz(h)<0) = -h(getz(h)<0);
     end
-    [theta,rho] = polar(h);
+    [theta,rho] = polar(h(:));
     rho = mod(rho,maxrho)./maxrho;
     pm = theta(:) >= pi/2;
     c(pm,:) = hsv2rgb([rho(pm),ones(sum(pm),1),2-theta(pm)./pi*2]);
