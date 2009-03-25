@@ -21,7 +21,7 @@ h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'resolution',1*degree,vara
 d = colorcoding(h);
 
 figure
-multiplot(@(i) h,@(i) d,1,  'ANOTATION',@(i) r,'rgb');
+multiplot(@(i) h,@(i) d,1,'rgb');
 set(gcf,'tag','ipdf');
 setappdata(gcf,'CS',cs);
 setappdata(gcf,'SS',symmetry);
