@@ -208,7 +208,7 @@ for k=1:3
   angle{k} =  str2double(get(handles.angle{k},'String'));
 end
 
-cs = symmetry(cs,[axis{:}],[angle{:}]);
+cs = symmetry(cs,[axis{:}],[angle{:}]*degree);
 data = set(data,'CS',cs);
 
 setappdata(wzrd,'data',data);
