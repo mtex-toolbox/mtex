@@ -132,7 +132,7 @@ else
     else
       G.res = min(abs(theta(1)-theta(2)),abs(rho(1)-rho(2)));
     end
-    G.theta = S1Grid(theta,0,max(theta));
+    G.theta = S1Grid(theta,0,maxtheta);%max(theta)
     G.rho = repmat(...
       S1Grid(rho,0,2*pi,'PERIODIC'),...
       1,length(theta));

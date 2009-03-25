@@ -16,6 +16,19 @@ c = nan(nx*ny,3);
 c(iy + (ix-1)*ny,:) = d;
 c = reshape(c,ny,nx,3);
 
+%%
+
+if all(all(isnan(c(1:2:end,1:2:end,1)))) || ...
+    all(all(isnan(c(1:2:end,2:2:end,1)))) 
+  
+  
+  c(2:end-1,2:end-1,:) = nanmedian(cat(4,...
+    c(2:end-1,2:end-1,:),...
+    c(1:end-2,2:end-1,:),c(3:end,2:end-1,:),...
+    c(2:end-1,1:end-2,:),c(2:end-1,3:end,:)),4);
+    
+end
+
 %% interpolate if necasarry
 if check_option(varargin,'interpolate')  %numel(find(isnan(c))) / numel(c) > 0.5
   
