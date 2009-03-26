@@ -23,16 +23,11 @@ function y = nanmedian(x,dim)
 %    
 %    $Revision: 1.2 $ $Date: 2007/07/30 17:19:19 $
 
-if isempty(x)
-	y = [];
-	return
-end
+if isempty(x), y = []; return; end
 
 if nargin < 2
-	dim = min(find(size(x)~=1));
-	if isempty(dim)
-		dim = 1;
-	end
+	dim = find(size(x)~=1,1);
+	if isempty(dim), dim = 1; end
 end
 
 siz  = size(x);
@@ -42,23 +37,15 @@ n    = size(x,dim);
 perm = [dim:max(length(size(x)),dim) 1:dim-1];
 x = reshape(permute(x,perm),n,prod(siz)/n);
 
-
 % force NaNs to bottom of each column
 x = sort(x,1);
 
-% identify and replace NaNs
-nans = isnan(x);
-x(isnan(x)) = 0;
-
-% new dimension of x
-[n m] = size(x);
-
 % number of non-NaN element in each column
-s = size(x,1) - sum(nans);
-y = zeros(size(s));
+s = size(x,1) - sum(isnan(x));
+y = NaN(size(s));
+
 
 % now calculate median for every element in y
-% (does anybody know a more eefficient way than with a 'for'-loop?)
 for i = 1:length(s)
 	if rem(s(i),2) && s(i) > 0
 		y(i) = x((s(i)+1)/2,i);
@@ -67,9 +54,16 @@ for i = 1:length(s)
 	end
 end
 
-% Protect against a column of NaNs
-i = find(y==0);
-y(i) = i + nan;
+% odd number of non nan entries
+%ind = find(rem(s,2) & s > 0);
+%y(ind) = x(sub2ind(size(x),(s(ind)+1)/2,ind));
+%y(ind) = x((s(ind)+1)/2 + size(x,1)*(ind-1));
+
+% even number of non nan entries
+%ind = find(rem(s,2)==0 & s > 0);
+%y(ind) = (x(sub2ind(size(x),s(ind)/2,ind)) + x(sub2ind(size(x),s(ind)/2+1,ind)))/2;	
+%y(ind) = (x(s(ind)/2 + size(x,1)*(ind-1)) + x(s(ind)/2+1 + size(x,1) * (ind-1)))/2;	
+
 
 % permute and reshape back
 siz(dim) = 1;
