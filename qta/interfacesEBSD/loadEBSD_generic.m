@@ -92,8 +92,8 @@ try
   mtex_assert(all(beta >=0 & beta <= pi & alpha >= -2*pi & alpha <= 4*pi & gamma > -2*pi & gamma<4*pi));
   
   % check for choosing 
-  if max(alpha) < 6*degree
-    warndlg('The imported Euler angles appears to be quit some, maybe your data are in radians and not in degree as you specified?');
+  if max(alpha) < 10*degree
+    warndlg('The imported Euler angles appears to be quit small, maybe your data are in radians and not in degree as you specified?');
   end
   
   
