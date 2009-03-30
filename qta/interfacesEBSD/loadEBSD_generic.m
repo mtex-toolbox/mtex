@@ -86,9 +86,6 @@ try
   beta  = d(:,layout(2))*dg;
   gamma = d(:,layout(3))*dg;
 
-  if check_option(varargin,'aufstellung2')
-    gamma = gamma+30*degree;
-  end
   mtex_assert(all(beta >=0 & beta <= pi & alpha >= -2*pi & alpha <= 4*pi & gamma > -2*pi & gamma<4*pi));
   
   % check for choosing 

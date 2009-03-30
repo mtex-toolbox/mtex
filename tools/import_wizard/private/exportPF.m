@@ -9,12 +9,7 @@ str = [ str; '%% specify crystal and specimen symmetries';{''}];
 cs =get(pf,'CS');
 ss = get(pf,'SS');
 
-[c,angl] = get_axisangel( cs );
-axis =  strcat(n2s(c));
-angle =  strcat(n2s([angl{:}]));
-
-cs = strrep(char(cs),'"','');
-str = [str; export_CS_tostr( cs,axis,angle )];
+str = [str; export_CS_tostr(cs)];
 
 str = [ str; strcat('SS = symmetry(''',strrep(char(ss),'"',''), ''');')];
 
@@ -51,7 +46,7 @@ end
 str = [ str; '%% specify crystal directions'; {''};'h = { ...'];
 
 for k = 1:length(pf)    
-  str = [ str; cs2miller(pf(k))];
+  str = [ str; cs2miller(pf(k))]; %#ok<AGROW>
 end  
 str = [ str; '};'; {''}];
 

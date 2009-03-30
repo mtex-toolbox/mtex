@@ -3,8 +3,8 @@
 %
 %% MTEX 1.2
 %
-% * make colorcoding in spatial ebsd plot right
-% * implement and test second aufstellung
+% * done -> check! make colorcoding in spatial ebsd plot right
+% * done -> check! implement and test second aufstellung
 % * implement loadEBSD('file','columnames',{'alpha','beta','gamma'},'columns',[1 2 3])
 % * incorporate quaternions interface into ordinary interface
 % * implement standard lagen
