@@ -1,4 +1,4 @@
-function [ c, w ] = get_axisangel( cs )
+function [c,w,a] = get_axisangel( cs )
 
 % set axes
 a = getaxes(cs);

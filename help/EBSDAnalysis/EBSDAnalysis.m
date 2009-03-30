@@ -18,7 +18,7 @@ import_wizard
 % wizard looks a follows.
 
 
-cs = symmetry('-3m',[1.2 1.2 3.5]); % crystal symmetry
+cs = symmetry('m-3m',[1.2 1.2 3.5]); % crystal symmetry
 ss   = symmetry('triclinic');        % specimen symmetry
 
 % file names
@@ -33,8 +33,19 @@ ebsd = loadEBSD(fnames,cs,ss,'header',1,'layout',[5,6,7],'xy',[3 4])
 % It asign a color to each orientation and plots a map of these colors.
 % There are several options to specify the way the colors are assigned.
 
+
 figure('position',[100 100 600 300])
-plot(ebsd)
+plot(ebsd,'reduced')
+
+%%
+% In order to understand the colorcoding one can plot the coloring of the
+% corresponding inverse pole figure via
+
+colorbar
+hold on
+plotipdf(ebsd,'markerSize',3,'points',500,'marker','o','markerfacecolor','none','markeredgecolor','k')
+set(gcf,'renderer','opengl')
+hold off
 
 %% Modify EBSD Data
 %

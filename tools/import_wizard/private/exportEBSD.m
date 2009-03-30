@@ -7,12 +7,7 @@ str = ['%% created with import_wizard';{''}];
 str = [ str; '%% specify crystal and specimen symmetries';{''}];
 [cs, ss] = getSym(ebsd);
 
-[c,angl] = get_axisangel( cs );
-axis =  strcat(n2s(c));
-angle =  strcat(n2s([angl{:}]));
-
-cs = strrep(char(cs),'"','');
-str = [str; export_CS_tostr( cs,axis,angle )];
+str = [str; export_CS_tostr(cs)];
 
 str = [ str; strcat('SS = symmetry(''',strrep(char(ss),'"',''), ''');')];
 
@@ -44,10 +39,3 @@ if get(handles.rotate,'value')
     'ebsd = rotate(ebsd, axis2quat(zvector, ',get(handles.rotateAngle,'string'),'*degree));'];
 end
 
-
-
-function s = n2s(n)
-
-s = num2str(n);
-s = regexprep(s,'\s*',',');
-if length(n) > 1, s = ['[',s,']'];end
