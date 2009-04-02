@@ -29,6 +29,9 @@ function s = double2quotedstr(d)
 
 if ischar(d)
   s = ['''',d,''''];
+elseif isa(d,'cell')  
+   s = strcat(' ''',d,'''');
+   s = ['{',s{:},'}'];
 elseif isa(d,'double')
   s = xnum2str(d);
   if length(d) > 1, s = ['[',s,']'];end

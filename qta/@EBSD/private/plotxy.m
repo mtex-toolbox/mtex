@@ -12,9 +12,9 @@ iy = round(1 + (y-min(ry)) ./(max(ry)-min(ry)) * (ny-1));
 ix = max(min(nx,ix),1);
 iy = max(min(ny,iy),1);
 
-c = nan(nx*ny,3);
+c = nan(nx*ny,size(d,3));
 c(iy + (ix-1)*ny,:) = d;
-c = reshape(c,ny,nx,3);
+c = reshape(c,ny,nx,size(d,3));
 
 %%
 
@@ -41,8 +41,13 @@ if check_option(varargin,'interpolate')  %numel(find(isnan(c))) / numel(c) > 0.5
 end
   
 %% plot
-image(rx,ry,c)
-axis equal tight
+if size(c,3) == 1
+  pcolor(rx,ry,c);shading flat
+else
+  image(rx,ry,c);
+end
+
+axis ij equal tight
 
 %% remove boundary from the figure
 set(gcf,'units','pixel');

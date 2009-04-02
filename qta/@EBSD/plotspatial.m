@@ -18,19 +18,25 @@ end
 cs = get(ebsd,'CS');
   
 %% compute colorcoding
-switch lower(get_option(varargin,'colorcoding','ipdf'))
+cc = lower(get_option(varargin,'colorcoding','ipdf'));
+switch cc
   case 'bunge'
     d = euler2rgb(getgrid(ebsd),'center',q0,varargin{:});
   case 'angle'
     d = quat2rgb(getgrid(ebsd),'center',q0,varargin{:});
   case 'sigma'
     d = sigma2rgb(getgrid(ebsd),'center',q0,varargin{:});
-  case 'IHS'
-    d = euler2rgb(q,ebsd.CS,ebsd.SS,'q0',q0,varargin{:});
+  case 'ihs'
+    d = euler2rgb(getgrid(ebsd),ebsd.CS,ebsd.SS,'q0',q0,varargin{:});
     d = rgb2hsv(d);      
   case 'ipdf'     % colorcoding according according to ipdf
     h = quat2ipdf(getgrid(ebsd),varargin{:});
     d = ipdf2rgb(h,cs,varargin{:});
+  case 'phase'
+    d = ebsd.phase;
+  case fields(ebsd.options)
+    %d = real2rgb(ebsd.options.(cc),colormap);
+    d = ebsd.options.(cc);
   otherwise
     error('Unknown colorcoding!')
 end
@@ -40,10 +46,11 @@ end
 newMTEXplot;
 
 plotxy(ebsd.xy(:,1),ebsd.xy(:,2),d,varargin{:});
-
+if strcmpi(cc,'ipdf')
+  setappdata(gcf,'CS',cs);
+  setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d'));
+end
 set(gcf,'tag','ebsd_spatial');
-setappdata(gcf,'CS',cs);
-setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d'));
 setappdata(gcf,'colorcoding',@(h) ipdf2rgb(h,cs,varargin{:}));
 setappdata(gcf,'options',extract_option(varargin,'reduced'));
 
@@ -58,9 +65,6 @@ function h = quat2ipdf(S3G,varargin)
 
   % get specimen direction
   r = get_option(varargin,'r',xvector,'vector3d');
-
-  % set crystal symmetry
-  cs = getCSym(S3G);
 
   % compute crystal directions
   h = inverse(quaternion(S3G)) .* r;

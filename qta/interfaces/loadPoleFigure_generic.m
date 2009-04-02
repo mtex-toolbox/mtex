@@ -47,7 +47,7 @@ if size(d,1) < 10 || size(d,2) < 3
 end
 
 % no options given -> ask
-if ~check_option(varargin,'layout')
+if ~check_option(varargin,'ColumnNames') || ~check_option(varargin,'Columns')
   
   options = generic_wizard('data',d,'type','PoleFigure','header',header,'colums',colums);
   if isempty(options), pf = []; return; end 
@@ -55,39 +55,59 @@ if ~check_option(varargin,'layout')
 
 end
 
+% get data
+cols = get_option(varargin,'Columns');
+names = lower(get_option(varargin,'ColumnNames'));
+
+mtex_assert(length(cols) == length(names), 'Length of ColumnNames and Columns differ');
+
+[names m] = unique(names);
+cols = cols(m);
+
+istype = @(in, a) all(cellfun(@(x) any(find(strcmpi(in,x))),a));
+layoutcol = @(in, a) cols(cellfun(@(x) find(strcmpi(in,x)),a));
+sphcoord = lower({'Polar Angle','Azimuth Angle','Intensity'});
+
+mtex_assert(istype(names,sphcoord) ...
+  ,'You should at least specify the columns of the spherical coordinates and the intensities!');
+  
+layout = layoutcol(names,sphcoord);
+  
+% eliminate nans
+d(any(isnan(d(:,layout)),2),:) = [];
+  
 %extract options
 dg = degree + (1-degree)*check_option(varargin,{'RADIAND','radiant','radians'});
-layout = get_option(varargin,'LAYOUT',[1 2 3]);
-
-try
   
-  % eliminate nans
-  d(any(isnan(d(:,layout)),2),:) = [];
+th = d(:,layout(1))*dg;
+rh = d(:,layout(2))*dg;
+v = d(:,layout(3));
   
-  % extract data
-  if length(layout) == 4 && ~isnan(layout(4))
-    bg = {'background',d(:,layout(4))};
-  else
-    bg = {};
-  end
-  
-  th = d(:,layout(1))*dg;
-  rh = d(:,layout(2))*dg;
-  d  = d(:,layout(3));
-  
-  if all(th<=0), th = -th;end
-  mtex_assert(length(d)>10 && all(th>=0 & th <= pi) && ...
-    all(rh>=-360) && all(rh<=720));
-
-  % specimen directions
-	r = S2Grid(sph2vec(th,rh),'reduced');
-  
-  % crystal direction
-  h = string2Miller(fname);
-  
-  pf = PoleFigure(h,r,d,symmetry('cubic'),symmetry,bg{:},varargin{:});
-  options = varargin;
-  
-catch
-  error('Generic interface could not extract data of file %s',fname);
+if max(rh) < 10*degree
+  warndlg('The imported polar angles appears to be quit small, maybe your data are in radians and not in degree as you specified?');
 end
+  
+if all(th<=0), th = -th;end
+mtex_assert(length(v)>=5,'To few data points');
+mtex_assert(all(th>=0 & th <= pi) && ...
+  all(rh>=-360) && all(rh<=720),'Polar coordinates out of range!');
+
+% specimen directions
+r = S2Grid(sph2vec(th,rh),'reduced');
+  
+% crystal direction
+h = string2Miller(fname);
+  
+%all other as options
+opt = struct;
+opts = delete_option(names,  sphcoord);
+if ~isempty(opts)
+  for i=1:length(opts),
+    opts_struct{i} = [opts{i} {d(:,layoutcol(names,opts(i)))}]; %#ok<AGROW>
+  end
+  opts_struct = [opts_struct{:}];
+  opt = struct(opts_struct{:});
+end
+  
+pf = PoleFigure(h,r,v,symmetry('cubic'),symmetry,'options',opt);
+options = varargin;

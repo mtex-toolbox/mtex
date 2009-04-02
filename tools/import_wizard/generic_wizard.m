@@ -19,34 +19,37 @@ if length(varargin) < 4, error('need more arguments');end
 options = {};
 
 if check_option(varargin,'data')
- data = get_option(varargin,'data');
-else return
+  data = get_option(varargin,'data');
+else
+  return
 end
 
 header = get_option(varargin,'header',[]);
 colums = get_option(varargin,'colums',[]);
 
 if check_option(varargin,'type')
- type = get_option(varargin,'type');
- switch type
-  case 'EBSD'
-    values = {'Ignore','Alpha','Beta','Gamma','phi 1','Phi','phi 2','x','y','Phase'};
-  case 'PoleFigure'
-    values = {'Ignore','Polar Angle','Azimuth Angle','Intensity','Background'};
-  otherwise
-    disp('wrong option');
-  return
- end
+  type = get_option(varargin,'type');
+  switch type
+    case 'EBSD'
+      values = {'Ignore','Euler 1','Euler 2','Euler 3','x','y','Phase','Quat real','Quat i','Quat j','Quat k','Weight'};
+    case 'PoleFigure'
+      values = {'Ignore','Polar Angle','Azimuth Angle','Intensity','Background'};
+    otherwise
+      disp('wrong option');
+      return
+  end
 end
 
 newversion = exist('verLessThan','file') && ~verLessThan('matlab','7.6');
+if ~newversion,  v0 = {}; else  v0 = {'v0'}; end
 
 %% -------- init gui -----------------------------------------------------
 
 % window dimension
 w = 466;
 tb = 250+10*newversion; %table size
-h = tb+310; 
+
+h = tb+310 + 60 * strcmp(type,'EBSD'); 
 dw = 10;
 cw = (w-3*dw)/4;
 
@@ -69,30 +72,19 @@ uicontrol(...
 
 % static text
 uicontrol('Parent',htp,'Style','Text','Position',[dw,h-120,w-2*dw,50],...
- 'HorizontalAlignment','left',...
- 'string',['The data format could not automatically detected. ',...
- 'However the following ', ...
+  'HorizontalAlignment','left',...
+  'string',['The data format could not automatically detected. ',...
+  'However the following ', ...
  ' data matrix was extracted from the file.']);
-% ,int2str(size(data,1)) 'x' int2str(size(data,2))
-% table
 
 if ~isempty(colums) && length(colums) == y
   colnames = colums;
 else
-  %colums = strcat('Column  ',num2str((1:length(cdata)).'));
-  %cellstr(colums).'
-  for k=1:y, colnames{k} = ['Column ' int2str(k)]; end;
+  for k=1:y, colnames{k} = ['Column ' int2str(k)]; end; %#ok<AGROW>
 end
 
-if newversion
-  uitable('Parent',htp,'Data',data(1:min(size(data,1),100),:),...
-    'ColumnName',colnames,...
-    'Position',[dw,h-(tb+110),w-2*dw,tb]);
-else
-  uitable('Parent',htp,'Data',data(1:min(size(data,1),100),:),...
-    'ColumnNames',colnames,...
-    'Position',[dw,h-(tb+110),w-2*dw,tb]);
-end
+uitable(v0{:},'Parent',htp,'Data',data(1:end<101,:),...
+  'ColumnNames',colnames,'Position',[dw,h-(tb+110),w-2*dw,tb]);
 
 % input selection
 
@@ -102,42 +94,63 @@ uicontrol('Parent',htp,'Style','Text','Position',[dw,h-(tb+120+25),w-2*dw,20],..
 
 cdata = guessColNames(values,size(data,2),colnames);
 
-if newversion
-  mtable = uitable('Parent',htp,'Data',cdata,...
-    'ColumnName',colnames,...
-    'ColumnEditable',true,...
-    'ColumnFormat',repcell(values,[length(colnames),1]).',...
-    'Position',[dw-1,h-(tb+120+85),w-2*dw,65]);
-else
-  try
-    mtable = createTable([],colnames,cdata,false,'units','pixel','position',[dw-1,h-(tb+120+85),w-2*dw,55]);
-    jtable = mtable.getTable;
-    cb = javax.swing.JComboBox(values);
-    cb.setEditable(true);
-    editor = javax.swing.DefaultCellEditor(cb);
-    for i = 1:length(values)
-      jtable.getColumnModel.getColumn(i-1).setCellEditor(editor);
-    end
-  catch
+mtable = uitable(v0{:},'Parent',htp,'Data',cdata,'ColumnNames',colnames,'Position',[ dw-1 h-(tb+200) w-2*dw 60],'rowheight',20); 
+
+try
+  mtable.getTable.setShowHorizontalLines(0);
+  cb = javax.swing.JComboBox(values);
+  cb.setEditable(true);
+  editor = javax.swing.DefaultCellEditor(cb);
+  for i = 1:length(colnames)
+    mtable.getTable.getColumnModel.getColumn(i-1).setCellEditor(editor);
   end
+catch
 end
-% checkboxes
-chk_angle = uibuttongroup('Parent',htp,'title','Angle Convention','units','pixels',...
-  'position',[dw h-(tb+260) cw*2 45]);
 
-uicontrol('Style','Radio','String','Degree',...
-  'Position',[dw dw 80 15],'Parent',chk_angle,'HandleVisibility','off');
-rad_box = uicontrol('Style','Radio','String','Radians',...
-  'Position',[dw+cw dw 80 15],'Parent',chk_angle,'HandleVisibility','off');
+%% checkboxes
+if strcmp(type,'PoleFigure')
+  chk_angle = uibuttongroup('Parent',htp,'title','Angle Convention','units','pixels',...
+    'position',[dw h-(tb+260) cw*2 45]);
+  
+  uicontrol('Style','Radio','String','Degree',...
+    'Position',[dw dw 80 15],'Parent',chk_angle,'HandleVisibility','off');
+  rad_box = uicontrol('Style','Radio','String','Radians',...
+    'Position',[dw+cw dw 80 15],'Parent',chk_angle,'HandleVisibility','off');
 
-if (~strcmp(type,'PoleFigure'))
- h3 = uipanel('Parent',htp,'title','Restrict to Phase(s)','units','pixels',...
-   'position',[2*cw+2*dw h-tb-260 cw*2 46]);
- phaseopt = uicontrol('Style','Edit',...
-   'BackgroundColor',[1 1 1],...
-   'HorizontalAlignment','left',...
-   'String','' ,...
-   'Position',[dw 5 cw*2-2*dw 23],'Parent',h3,'HandleVisibility','off');
+else
+
+  % Euler Angles
+  chk_angle = uibuttongroup('Parent',htp,'title','Euler Angles','units','pixels',...
+    'position',[dw h-(tb+260) 4*cw+dw 45]);
+ 
+  euler_convention = uicontrol('Style', 'popup',...
+    'String', 'ZXZ  Bunge (phi1 Phi Phi2)|ZYZ  Matthies (alpha,beta,gamma)',...
+    'Position',[dw 5 2*cw-2*dw 23],'Parent',chk_angle,'HandleVisibility','off');  
+  
+  uicontrol('Style','Radio','String','Degree',...
+    'Position',[2*cw+2*dw dw 80 15],'Parent',chk_angle,'HandleVisibility','off');
+  rad_box = uicontrol('Style','Radio','String','Radians',...
+    'Position',[2*dw+3*cw dw 80 15],'Parent',chk_angle,'HandleVisibility','off');
+  
+  
+  
+  h3 = uipanel('Parent',htp,'title','Restrict to Phase(s)','units','pixels',...
+    'position',[dw h-tb-320 cw*2 46]);
+  phaseopt = uicontrol('Style','Edit',...
+    'BackgroundColor',[1 1 1],...
+    'HorizontalAlignment','left',...
+    'String','' ,...
+    'Position',[dw 5 cw*2-2*dw 23],'Parent',h3,'HandleVisibility','off');
+ 
+  h3 = uibuttongroup('Parent',htp,'title','Rotation','units','pixels',...
+    'position',[2*cw+2*dw h-tb-320 cw*2 46]);
+ 
+  uicontrol('Style','Radio','String','Active',...
+    'Position',[dw dw 80 15],'Parent',h3,'HandleVisibility','off');
+  passive_box = uicontrol('Style','Radio','String','Passive',...
+    'Position',[dw+cw dw 80 15],'Parent',h3,'HandleVisibility','off');
+ 
+     
 end
 
 if ~isempty(header)
@@ -146,10 +159,10 @@ if ~isempty(header)
 end
 
 uicontrol('Parent',htp,'Style','PushButton','String','Proceed ','Position',[w-70-dw,dw,70,25],...
- 'CallBack','uiresume(gcbf)');
+  'CallBack','uiresume(gcbf)');
 
 uicontrol('Parent',htp,'Style','PushButton','String','Cancel ','Position',[w-2*70-2*dw,dw,70,25],...
- 'CallBack','close');
+  'CallBack','close');
 
 %% -------- retun statement ----------------------------------------------
 uiwait(htp);
@@ -159,53 +172,36 @@ if ishandle(htp)
   options = {};
   
   % get column association
-  if newversion
+  if verLessThan('matlab','7.4')
     data = get(mtable,'data');
   else
     data = cell(mtable.getData);
   end
-  
-  if any(strcmpi(data,'Alpha'))
-    layout(1) = find(strcmpi(data,'Alpha'),1);
-    layout(2) = find(strcmpi(data,'Beta'),1);
-    layout(3) = find(strcmpi(data,'Gamma'),1);
-    options = {options{:},'ABG'};
-  elseif any(strcmpi(data,'Phi'))
-    layout(1) = find(strcmpi(data,'phi 1'),1);
-    layout(2) = find(strcmpi(data,'Phi'),1);
-    layout(3) = find(strcmpi(data,'phi 2'),1);
-    options = {options{:},'Bunge'};
-  else
-    layout(1) = find(strcmpi(data,'Polar Angle'),1);
-    layout(2) = find(strcmpi(data,'Azimuth Angle'),1);
-    layout(3) = find(strcmpi(data,'Intensity'),1);
-  end
-  
-  if any(strcmpi(data,'Background'))
-    layout(4) = find(strcmpi(data,'Background'),1);
-  elseif any(strcmpi(data,'Phase'))
-    layout(4) = find(strcmpi(data,'Phase'),1);
-  end
-  
-  options = {options{:},'layout',layout};
- 
-  % coordinates
-  if any(strcmpi(data,'x')) && any(strcmpi(data,'y'))
-    options = {options{:},'xy',...
-      [find(strcmpi(data,'x'),1),find(strcmpi(data,'y'),1)]};
-  end
+
+  ind = find(~strcmpi(data(:)','Ignore'));
+  options = {'ColumnNames',data(ind),'Columns',ind};
 
   % degree / radians
   if get(rad_box,'value'), options = {'RADIANS',options{:}};end
   
-  %phase
-  if strcmpi(type,'EBSD')
-    phase = str2num(get(phaseopt,'string'));
+  if ~strcmp(type,'PoleFigure')
+    
+    phase = str2num(get(phaseopt,'string')); %#ok<ST2NM>
     if ~isempty(phase)
       options = {options{:},'phase',phase};
     end
-  end   
-  
+    
+    % Eule angle convention
+    conventions = {'Bunge','ABG'};
+    options = {options{:},conventions{get(euler_convention,'value')}};
+    
+    % active / pasive rotation
+    if get(passive_box,'value')
+      options = {options{:},'passive rotation'};
+    end
+    
+  end
+
   close(htp);
   pause(0.3);
 end
@@ -240,10 +236,20 @@ for i = 1:length(values)
   if ~isempty(ind), cdata(ind(1)) = values(i); end
 end
 
-% Euler Angle=
-ind = strmatch('euler',lower(colnames));
+% Euler Angler
+ind = [strmatch('euler',lower(colnames)),strmatch('phi',lower(colnames))];
 if length(ind)==3
-  cdata{ind(1)} = 'phi 1';
-  cdata{ind(2)} = 'Phi';
-  cdata{ind(3)} = 'phi 2';
+  cdata{ind(1)} = 'Euler 1';
+  cdata{ind(2)} = 'Euler 2';
+  cdata{ind(3)} = 'Euler 3';
 end
+
+if ~isempty(strmatch('alpha',lower(colnames))) && ...
+    ~isempty(strmatch('beta',lower(colnames))) && ...
+    ~isempty(strmatch('gamma',lower(colnames)))
+  
+  cdata{strmatch('alpha',lower(colnames))}='Euler 1';
+  cdata{strmatch('beta',lower(colnames))}='Euler 2';
+  cdata{strmatch('gamma',lower(colnames))}='Euler 3';
+end
+

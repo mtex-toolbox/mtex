@@ -29,7 +29,7 @@ if (nargin == 0)
   ebsd.SS = symmetry;  
   ebsd.xy = [];
   ebsd.phase = [];
-  ebsd.options = {};
+  ebsd.options = struct;
   ebsd = class(ebsd,'EBSD');
   return
 elseif isa(orientations,'EBSD')
@@ -47,5 +47,5 @@ ebsd.CS = CS;
 ebsd.SS = SS;
 ebsd.xy = get_option(varargin,'xy');
 ebsd.phase = get_option(varargin,'phase');
-ebsd.options = extract_option(varargin,{});
+ebsd.options = get_option(varargin,'options',struct);
 ebsd = class(ebsd,'EBSD');

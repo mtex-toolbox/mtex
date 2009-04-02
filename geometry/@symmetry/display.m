@@ -4,4 +4,5 @@ function display(s)
 disp([inputname(1) ' = "symmetry"']);
 disp(['name: ',s.name]);
 disp(['laue: ',s.laue]);
-disp(['size: ',int2str(numel(s.quat))]);
+l = size(horzcat(s.quat));
+disp(['size: ' int2str(l(1)) 'x' int2str(l(2))]);

@@ -1,7 +1,6 @@
 function [interface,options] = check_interfaces(fname,varargin)
 % determine interface from file
 
-
 if ~exist(fname,'file'), error('File %s not found.',fname);end
 
 %% find all installed interfaces

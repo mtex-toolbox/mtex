@@ -53,65 +53,94 @@ if size(d,1) < 10 || size(d,2) < 3
 end
 
 % no options given -> ask
-if ~check_option(varargin,'layout')
+if ~check_option(varargin,'ColumnNames') || ~check_option(varargin,'Columns')
   
-  options = generic_wizard('data',d,'type','EBSD','header',header,'colums',c);
+  options = generic_wizard('data',d(1:end<101,:),'type','EBSD','header',header,'colums',c);
   if isempty(options), ebsd = []; return; end
   varargin = {options{:},varargin{:}};
 
 end
 
-%extract options
-dg = degree + (1-degree)*check_option(varargin,{'radians','radiant','radiand'});
-layout = get_option(varargin,'LAYOUT',[1 2 3]);
-xy = get_option(varargin,'xy',[]);
-phase = get_option(varargin,'phase',[],'double');
+cols = get_option(varargin,'Columns');
+names = lower(get_option(varargin,'ColumnNames'));
+
+mtex_assert(length(cols) == length(names), 'Length of ColumnNames and Columns differ');
+
+[names m] = unique(names);
+cols = cols(m);
+
+istype = @(in, a) all(cellfun(@(x) any(find(strcmpi(in,x))),a));
+layoutcol = @(in, a) cols(cellfun(@(x) find(strcmpi(in,x)),a));
+   
+euler = lower({'Euler 1' 'Euler 2' 'Euler 3'});
+quat = lower({'Quat real' 'Quat i' 'Quat j' 'Quat k'});
+      
+if istype(names,euler) % Euler angles specified
     
-try
+  layout = layoutcol(names,euler);
+    
+  %extract options
+  dg = degree + (1-degree)*check_option(varargin,{'radians','radiant','radiand'});
     
   % eliminate nans
   d(any(isnan(d(:,layout)),2),:) = [];
   
-  % extract right phase
-  if length(layout) == 4 && ~isempty(phase)    
-    d = d(any(d(:,layout(4))==repmat(reshape(phase,1,[]),size(d,1),1),2),:);
-  end
-  
   % eliminate rows where angle is 4*pi
   ind = abs(d(:,layout(1))*dg-4*pi)<1e-3;
   d(ind,:) = [];
- 
+    
   % extract data
-  alpha = d(:,layout(1))*dg; 
+  alpha = d(:,layout(1))*dg;
   beta  = d(:,layout(2))*dg;
   gamma = d(:,layout(3))*dg;
 
   mtex_assert(all(beta >=0 & beta <= pi & alpha >= -2*pi & alpha <= 4*pi & gamma > -2*pi & gamma<4*pi));
   
-  % check for choosing 
+  % check for choosing
   if max(alpha) < 10*degree
     warndlg('The imported Euler angles appears to be quit small, maybe your data are in radians and not in degree as you specified?');
   end
-  
-  
-  % get Euler angles option 
-  bunge = set_default_option(...
-    extract_option(varargin,{'bunge','ABG'}),{'bunge','ABG'},...
-    'bunge');
-  
-  % store data as quaternions
-  q = euler2quat(alpha,beta,gamma,bunge{:});  
     
-  if check_option(varargin,'inverse'), q = inverse(q); end
+  % transform to quaternions
+  q = euler2quat(alpha,beta,gamma,varargin{:});
   
-  SO3G = SO3Grid(q,symmetry('cubic'),symmetry());
+elseif istype(names,quat) % import quaternion
+    
+  layout = layoutcol(names,quat);
+  d(any(isnan(d(:,layout)),2),:) = [];
+  q = quaternion(d(:,layout(1)),d(:,layout(2)),d(:,layout(3)),d(:,layout(4)));
   
-  if ~isempty(xy), xy = d(:,xy);end
-  
-  ebsd = EBSD(SO3G,symmetry('cubic'),symmetry(),varargin{:},'xy',xy);
-  options = varargin;
-
-catch %#ok<CTCH>
-  error('Generic interface could not extract data of file %s (%s)' ,fname,lasterr); %#ok<LERR>
-  %rethrow(lasterror);
+else
+  error('You should at least specify three Euler angles or four quaternion components!');
 end
+   
+if check_option(varargin,'passive rotation'), q = inverse(q); end
+ 
+SO3G = SO3Grid(q,symmetry('cubic'),symmetry());
+  
+%treat other options
+xy = [];
+if istype(names,{'x' 'y'}),
+  xy = d(:,layoutcol(names,{'x' 'y'}));
+end
+  
+phase = [];
+if istype(names,{'Phase'}),
+  phase = d(:,layoutcol(names,{'Phase'}));
+end
+  
+%all other as options
+opt = struct;
+opts = delete_option(names,  {euler{:} quat{:} 'Phase' 'x' 'y'});
+if ~isempty(opts)
+  for i=1:length(opts),
+    opts_struct{i} = [opts{i} {d(:,layoutcol(names,opts(i)))}]; %#ok<AGROW>
+  end
+  opts_struct = [opts_struct{:}];
+  opt = struct(opts_struct{:});
+end
+
+ebsd = EBSD(SO3G,symmetry('cubic'),symmetry(),varargin{:},'xy',xy,'phase',phase,'options',opt);
+
+
+options = varargin;
