@@ -19,4 +19,6 @@ mtex_assert(strcmp(l,'     alpha      beta intensity'));
 fclose(fid);
 
 % call txt interface with the right parameters
-pf = loadPoleFigure_generic(fname,'HEADER',2,varargin{:},'ascii','layout',[1 2 3],'degree');
+pf = loadPoleFigure_generic(fname,'HEADER',2,'ascii',...
+  'ColumnNames', {'Polar Angle' 'Azimuth Angle' 'Intensity'}, 'Columns', [1 2 3],...
+  'degree',varargin{:});

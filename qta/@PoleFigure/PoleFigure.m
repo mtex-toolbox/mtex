@@ -27,7 +27,7 @@ if nargin == 0
   P.SS = symmetry;
   P.c  = 1;
   P.P_hat = [];
-  P.options = {};
+  P.options = struct;
 else
   P.comment = get_option(varargin,'comment',[],'char');
   P.h = argin_check(h,{'vector3d','Miller'});
@@ -39,7 +39,7 @@ else
   P.c = reshape(get_option(varargin,'SUPERPOSITION',ones(1,length(h)),'double'),1,[]);
   P.c= P.c ./sum(P.c);
   P.P_hat = [];
-  P.options = {};  
+  P.options = get_option(varargin,'options',struct,'struct');  
   
   % make definitions more robust
   P.h = set(P.h,'CS',P.CS);

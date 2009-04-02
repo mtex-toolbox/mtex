@@ -17,8 +17,9 @@ function plot(pf,varargin)
 newMTEXplot('ensureTag','pdf','ensureAppdata',...
     {{'CS',pf(1).CS},{'SS',pf(1).SS},{'h',get(pf,'h')}})
 
-if check_option(varargin,'BACKGROUND')
-  pfunc = @(i) pf(i).bgdata;
+field = lower(get_option(varargin,'colorcoding',[]));
+if isfield(pf(1).options,field)
+  pfunc = @(i) pf(i).options.(field);
 else
   pfunc = @(i) pf(i).data;
 end
