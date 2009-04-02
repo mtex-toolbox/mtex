@@ -1,9 +1,10 @@
-function m = Miller(h,k,l,n,CS)
+function [m,er] = Miller(h,k,l,n,CS)
 % constructor
 %% Input
 %  h,k,l,n(optional) - double
 %  CS - crystal @symmetry
 
+er = 0;
 switch nargin 
 	case 0
 		m.h = 1;
@@ -27,7 +28,11 @@ switch nargin
       m.l = n;
       m.CS = symmetry;
       if h+k+l ~= 0
-        warning(['Convention h+k+i=0 violated! I assume i = ',int2str(-h-k)]); %#ok<WNTAG>
+        if nargout == 2
+          er = 1;
+        else
+          warning(['Convention h+k+i=0 violated! I assume i = ',int2str(-h-k)]); %#ok<WNTAG>
+        end
       end
     end
   case 5
