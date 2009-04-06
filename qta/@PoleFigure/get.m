@@ -14,6 +14,11 @@ switch vname
     value = getRho(getr(obj));
   case {'Miller','h','crystal directions'}
     value = getMiller(obj);
+  case fields(obj(1).options)
+    value = [];
+    for i = 1:length(obj)
+      value = [value;reshape(obj(i).options.(vname),[],1)]; %#ok<AGROW>
+    end
   otherwise
     error('Unknown property of class PoleFigure')
 end

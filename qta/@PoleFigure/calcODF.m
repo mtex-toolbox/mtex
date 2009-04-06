@@ -92,7 +92,7 @@ A = getA(psi);
 if check_option(getr(pf(1)),'reduced')
   A(2:2:end) = 0; 
 else
-  warning('Flag HEMISPHERE not set in PoleFigure data!');
+  warning('MTEX:missingFlag','Flag HEMISPHERE not set in PoleFigure data!');
 end;
 bw = min(get_option(varargin,'bandwidth',length(A)),length(A));
 A = A(1:bw);
@@ -113,9 +113,9 @@ clear rtheta;clear rrho;
 
 
 % ----------------------- WHEIGHTS ----------------------------------
-if check_option(pf(1).options,'BACKGROUND') && ...
+if isfield(pf(1).options,'background') && ...
     ~check_option(varargin,'NO_BACKGROUND')
-  w = sqrt(1./sqrt(max(P+getbg(pf),0.0001)));
+  w = sqrt(1./sqrt(max(P+get(pf,'background'),0.0001)));
   varargin = set_option(varargin,'BACKGROUND');
 elseif ~check_option(varargin,'NO_BACKGROUND') 
   w = sqrt(1./sqrt(max(P+get_option(varargin,'BACKGROUND',10),0.0001)));
@@ -193,7 +193,7 @@ end
 % subtract from intensities
 P = [];
 for ip = 1:length(pf)
-  P = [P,getdata(pf(ip))-alpha(ip)*phon];
+  P = [P,getdata(pf(ip))-alpha(ip)*phon]; %#ok<AGROW>
 end
 P = max(0,P); %no negative values !
 

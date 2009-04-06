@@ -27,7 +27,8 @@ ss   = symmetry('triclinic');        % specimen symmetry
 
 fnames = [mtexDataPath '/aachen_ebsd/85_829grad_07_09_06.txt'];
 
-ebsd_i = loadEBSD(fnames,cs,ss,'header',1,'layout',[5,6,7],'xy',[3 4])
+ebsd_i = loadEBSD(fnames,cs,ss,'header',1,...
+  'ColumnNames',{'Euler 1','Euler 2','Euler 3','x','y'},'Columns',[5,6,7,3 4])
 
 %%
 % a second way to define EBSD data is to simulate them using a given
