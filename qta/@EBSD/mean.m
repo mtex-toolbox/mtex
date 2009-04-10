@@ -16,6 +16,15 @@ v = zeros(4,4,numel(ebsd));
 
 S3G = get(ebsd,'data');
 
+
 for i=1:numel(S3G)
-  [m(i) kappa(:,:,i)  v(:,:,i)]  = mean(S3G(i));
+  
+  % extract weights
+  if isfield(ebsd(i).options,'weight')
+    weight = get(ebsd(i),'weight');    
+  else
+    weight = ones(1,GridLength(S3G(i)));
+  end
+    
+  [m(i) kappa(:,:,i)  v(:,:,i)]  = mean(S3G(i),'weights',weight);
 end

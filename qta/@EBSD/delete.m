@@ -22,6 +22,15 @@ for i= 1:length(ebsd)
 	
 	idi = id((id > cs(i)) & (id<=cs(i+1)));
   if ~isempty(ebsd(i).xy), ebsd(i).xy(idi-cs(i),:) = [];end
-  %if ~isempty(ebsd(i).phase), ebsd(i).phase(idi-cs(i)) = [];end
+  if ~isempty(ebsd(i).phase), ebsd(i).phase(idi-cs(i)) = [];end
+  
+  ebsd_fields = fields(ebsd.options);
+  for f = 1:length(ebsd_fields)
+    if numel(ebsd(i).options.(ebsd_fields{f})) == GridLength(ebsd(i).orientations)
+      ebsd(i).options.(ebsd_fields{f})(idi-cs(i),:) = [];
+    end
+  end
+  
 	ebsd(i).orientations = delete(ebsd(i).orientations,idi-cs(i));
+    
 end
