@@ -142,5 +142,15 @@ end
 
 ebsd = EBSD(SO3G,symmetry('cubic'),symmetry(),varargin{:},'xy',xy,'phase',phase,'options',opt);
 
+if check_option(varargin,'phase')
+  
+  sphase = get_option(varargin,'phase');
+  ind = false(size(phase));
+  
+  for i = 1:length(sphase)
+    ind = ind | phase == sphase(i);
+  end
+  ebsd = delete(ebsd,~ind);
+end
 
 options = varargin;
