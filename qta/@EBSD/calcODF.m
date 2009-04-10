@@ -34,7 +34,15 @@ vdisp('------ MTEX -- EBSD to ODF computation ------------------',varargin{:})
 vdisp('performing kernel density estimation',varargin{:})
 
 % extract orientations
-g = getgrid(ebsd);
+g = getgrid(ebsd,'checkPhase',varargin{:});
+
+% extract weights
+if isfield(ebsd(1).options,'weight')
+  weight = get(ebsd,'weight');  
+else
+  weight = ones(1,GridLength(g));
+end
+weight = weight ./ sum(weight(:));
 
 % get halfwidth
 hw = get_option(varargin,'halfwidth',...
@@ -46,8 +54,7 @@ vdisp([' used kernel: ' char(k)],varargin{:});
 
 %% exact calculation
 if check_option(varargin,'exact') || GridLength(g)<200  
-  d = ones(1,GridLength(g)) ./ GridLength(g);  
-  odf = ODF(g,d,k,...
+  odf = ODF(g,weight,k,...
     ebsd(1).CS,ebsd(1).SS,'comment',['ODF estimated from ',getcomment(ebsd(1))]);  
   return
 end
@@ -99,11 +106,11 @@ for iter = 1:maxiter
       
   ind = find(S3G,g(sind));
   for i = 1:length(ind) % TODO -> make it faster
-    d(ind(i)) = d(ind(i)) + 1;
+    d(ind(i)) = d(ind(i)) + weight(sind(i));
   end
 
 end
-d = d ./ numel(g);
+d = d ./ sum(d(:));
 
 %% eliminate spare rotations in grid
 S3G = subGrid(S3G,d ~= 0);

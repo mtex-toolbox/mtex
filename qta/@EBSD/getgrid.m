@@ -1,4 +1,4 @@
-function G = getgrid(ebsd,ind)
+function G = getgrid(ebsd,varargin)
 % get mods of the components
 %
 %% Input
@@ -10,6 +10,20 @@ function G = getgrid(ebsd,ind)
 
 G = union(ebsd.orientations); 
 
-if nargin == 2
-  G = quaternion(G,ind);
+phase = [ebsd.phase];
+
+if ~isempty(phase) && check_option(varargin,'phase')
+  
+  sphase = get_option(varargin,'phase');
+  ind = false(size(phase));
+  
+  for i = 1:length(sphase)
+    ind = ind | phase == sphase(i);
+  end
+  
+  G = subGrid(G,ind);
+  
+elseif check_option(varargin,'CheckPhase') && ...
+    (~isempty(phase) || all(phase == phase(1)))
+  warning('MTEX:MultiplePhases','Calculation includes multiple phases!');
 end

@@ -16,5 +16,14 @@ function v = volume(ebsd,center,radius,varargin)
 %% See also
 % ODF/volume
 
-v = nnz(find(ebsd.orientations,center,radius,varargin{:})) / ...
-    sum(GridLength(ebsd.orientations));
+% extract weights
+if isfield(ebsd(1).options,'weight')
+  weight = get(ebsd,'weight');  
+else
+  weight = ones(1,GridLength(ebsd.orientations));
+end
+weight = weight ./ sum(weight(:));
+
+g = getgrid(ebsd,'checkPhase',varargin{:});
+
+v = sum(weight(find(g,center,radius,varargin{:})));
