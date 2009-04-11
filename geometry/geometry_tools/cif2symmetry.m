@@ -14,7 +14,7 @@ str = file2cell([pathstr filesep name ext]);
 try
   mineral = extract_token(str,'_chemical_name_mineral');
 catch 
-  mineral = [];
+  mineral = name;
 end
 
 try
@@ -32,7 +32,7 @@ try
   beta = extract_token(str,'_cell_angle_beta');
   gamma = extract_token(str,'_cell_angle_gamma');
   
-  cs = symmetry(space_group,[a,b,c],[alpha,beta,gamma]*degree);
+  cs = symmetry(space_group,[a,b,c],[alpha,beta,gamma]*degree,'mineral',mineral);
 
 catch
   error(['Error reading cif file', fname]);
@@ -51,4 +51,5 @@ if s(1) == ''''
   t = s(2:end-1);
 else
   t = sscanf(s,'%f');
+  if isempty(t), t = s;end
 end

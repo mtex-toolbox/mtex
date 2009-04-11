@@ -81,6 +81,7 @@ s.name = name;
 s.laue = sym.Laue;
 s.axis = calcAxis(sym.System,axis,angle,varargin{:});
 s.quat = calcQuat(s.laue,s.axis);
+s.mineral = get_option(varargin,'mineral','');
 
 superiorto('quaternion','SO3Grid');
 s = class(s,'symmetry');
