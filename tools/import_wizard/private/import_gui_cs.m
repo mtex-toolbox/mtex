@@ -211,6 +211,9 @@ if any(strcmp(Laue(cs),{'m-3m','m-3'})),
   set([handles.axis{:}], 'Enable', 'off');
 end
 
+set(handles.mineral,'string',get(cs,'mineral'));
+
+
 function set_cs(wzrd)
 % set cs in object (pf/ebsd)
 
@@ -226,11 +229,13 @@ for k=1:3
   angle{k} =  str2double(get(handles.angle{k},'String')); %#ok<AGROW>
 end
 
+mineral = get(handles.mineral,'string');
+
 alignment = get(handles.axis_alignment,'Value');
 if alignment == 2
-  cs = symmetry(cs,[axis{:}],[angle{:}]*degree,'a||y');
+  cs = symmetry(cs,[axis{:}],[angle{:}]*degree,'a||y','mineral',mineral);
 else
-  cs = symmetry(cs,[axis{:}],[angle{:}]*degree);
+  cs = symmetry(cs,[axis{:}],[angle{:}]*degree,'mineral',mineral);
 end
 
 data = set(data,'CS',cs);
