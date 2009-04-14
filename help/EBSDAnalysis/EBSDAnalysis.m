@@ -18,14 +18,17 @@ import_wizard
 % wizard looks a follows.
 
 
-cs = symmetry('m-3m',[1.2 1.2 3.5]); % crystal symmetry
-ss   = symmetry('triclinic');        % specimen symmetry
+cs = symmetry('m-3m');      % crystal symmetry
+ss = symmetry('triclinic'); % specimen symmetry
 
 % file names
 fnames = [mtexDataPath '/aachen_ebsd/85_829grad_07_09_06.txt'];
 
 % load data
-ebsd = loadEBSD(fnames,cs,ss,'header',1,'layout',[5,6,7],'xy',[3 4])
+ebsd = loadEBSD(fname,cs,ss,... 
+                'interface','generic','Bunge','ignorePhase',[0 2],...
+                 'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3'},...
+                 'Columns', [2 3 4 5 6 7]);
 
 %% Plotting EBSD Data
 %

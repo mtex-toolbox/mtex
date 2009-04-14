@@ -42,6 +42,7 @@
     Import EBSD Data
     <tocitem target="ebsd_interface.html">Generic Interface</tocitem>	 
   </tocitem>
+  <tocitem target="EBSDPlot.html"> Plot EBSD Data </tocitem>
   <tocitem target="ModifyEBSDData.html"> Modify EBSD Data </tocitem>
   <tocitem target="AnalyzeEBSDData.html"> Analyze EBSD Data </tocitem>
   <tocitem target="EBSD2odf_estimation.html"> ODF Estimation from EBSD data</tocitem>

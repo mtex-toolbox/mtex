@@ -12,9 +12,10 @@
 %  theta_M rho_M intensity_M background_m
 %
 % The actual position and order of the columns in the file can be specified
-% by the option |LAYOUT|. Furthermore, the files can be contain any number
-% of header lines to be ignored using the option |HEADER|. If you feel
-% unsure how to set the options use the import wizard to create a template.
+% by the options |ColumnNames| and |Columns|. Furthermore, the files can be
+% contain any number of header lines to be ignored using the option
+% |HEADER|. If you feel unsure how to set the options use the import wizard
+% to create a template. 
 % 
 % The following example was provided by Dr. Garbe from Munich
 
@@ -36,11 +37,12 @@ fname = {...
 %  third column  -> theta angle
 %  fourth column -> background intensity
 % this can be passed to the loadPoleFigure method by specifying
-layout = [2 3 1 4];
+ColumnNames = {'intensity' 'polar angle' 'azimuth angle' 'background'};
+Columns = [1 2 3 4];
 
 %% import the data
 
-pf = loadPoleFigure(fname,cs,ss,'layout',layout);
+pf = loadPoleFigure(fname,cs,ss,'ColumnNames',ColumnNames,'Columns',Columns);
 
 
 %% plot data
@@ -52,11 +54,3 @@ plot(pf)
 % [[interfaces_index.html,interfaces]] [[loadPoleFigure.html,loadPoleFigure]]
 % [[S2Grid_plot.html,plot]] [[symmetry_symmetry.html,symmetry]]
 
-%% Specification
-%
-% * *.txt ascii - files
-% * one file per pole figure
-% * one headerline
-% * table with 4 colums containing: intensity, theta, rho, correction
-% * angles in degree
-%
