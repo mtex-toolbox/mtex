@@ -1,8 +1,9 @@
 %% The Generic EBSD Data Interface
 %
 % The generic interface allows to import EBSD data that are stored in a 
-% ASCII file in the following way
+% column oriented way, i.e.
 %
+%  EULER1  EULER2 EULER3  PHASE
 %  alpha_1 beta_1 gamma_1 phase_1
 %  alpha_2 beta_2 gamma_2 phase_2
 %  alpha_3 beta_3 gamma_3 phase_3
@@ -11,10 +12,8 @@
 %  .      .       .       .
 %  alpha_M beta_M gamma_M phase_m
 %
-% The actual position and order of the columns in the file can be specified
-% by the option |LAYOUT|. Furthermore, the files can be contain any number
-% of header lines to be ignored using the option |HEADER|. By using the |phase| 
-% option a specific phase can be specified to be imported
+% The actual position and order of the columns in the file has to be specified
+% by the options |ColumnNames| and |Columns|. 
 % 
 % The following example was provided by Dr. Lischwski from Aachen.
 
@@ -26,7 +25,9 @@ ss = symmetry('triclinic');
 %% load EBSD data
 
 ebsd = loadEBSD([mtexDataPath,'/aachen_ebsd/85_829grad_07_09_06.txt'],cs,ss,... 
-                'interface','generic','header',1,'layout',[5,6,7,2],'phase',1)
+                'interface','generic','phase',1,'Bunge',...
+                 'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3'},...
+                 'Columns', [2 3 4 5 6 7]);
 
 %% plot pole figures
 

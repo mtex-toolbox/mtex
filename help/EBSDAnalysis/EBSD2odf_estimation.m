@@ -9,9 +9,15 @@
 % Starting point of any ODF estimation from EBSD data is a 
 % <EBSD_index.html EBSD> object which is in general created by
 %
-ebsd = loadEBSD([mtexDataPath,'/aachen_ebsd/85_829grad_07_09_06.txt'],...
-  symmetry('m-3m'),symmetry('-1'),...
-  'layout', [5 6 7 2], 'xy', [3 4],'Bunge',  'phase', 1);
+
+cs = symmetry('cubic');
+ss = symmetry('triclinic');
+
+ebsd = loadEBSD([mtexDataPath,'/aachen_ebsd/85_829grad_07_09_06.txt'],cs,ss,... 
+                'interface','generic','Bunge',...
+                 'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3'},...
+                 'Columns', [2 3 4 5 6 7]);
+
 plot(ebsd)
 
 %%
@@ -21,7 +27,7 @@ plot(ebsd)
 % <EBSD_calcODF.html calcODF>. The most simplest
 % syntax is
 
-odf = calcODF(ebsd)
+odf = calcODF(ebsd,'phase',1)
 
 %% 
 % You may want to plot some pole figures of the estimated ODF:
@@ -55,7 +61,7 @@ plotpdf(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],'reduced','silent','posi
 % In order to change the default halfwidth of the kernel function psi the
 % option *halfwidth* has to be used, e.g.
 
-odf = calcODF(ebsd,'halfwidth',10*degree);
+odf = calcODF(ebsd,'halfwidth',10*degree,'phase',1);
 plotpdf(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],'reduced','silent')
 
 %% Estimation of Fourier Coefficients
@@ -74,5 +80,5 @@ Fourier(odf,'order',4)
 % the help fo the Direchlet kernel. I.e.
 
 k = kernel('dirichlet',4);
-odf = calcODF(ebsd,'kernel',k);
+odf = calcODF(ebsd,'kernel',k,'phase',1);
 Fourier(odf,'order',4)

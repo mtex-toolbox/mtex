@@ -11,24 +11,29 @@
 %
 % Let us first import some EBSD data:
 %
-ebsd = loadEBSD([mtexDataPath,'/aachen_ebsd/85_829grad_07_09_06.txt'],...
-  symmetry('m-3m'),symmetry('-1'),...
-  'layout', [5 6 7 2], 'xy', [3 4],'Bunge',  'phase', 1);
-plot(ebsd)
+
+cs = symmetry('cubic');
+ss = symmetry('triclinic');
+ebsd = loadEBSD([mtexDataPath,'/aachen_ebsd/85_829grad_07_09_06.txt'],cs,ss,... 
+                'interface','generic','Bunge',...
+                 'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3'},...
+                 'Columns', [2 3 4 5 6 7]);
+
+plot(ebsd,'phase',1)
 
 %% Mean Orientation
 %
-% Next we are going to determine the mean orientation
+% Next we are going to determine the mean orientation of the first phase
 
-m = mean(ebsd);
+m = mean(ebsd,'phase',2);
 
 % and plot it within a pole figure plot
 
-plotpdf(ebsd,[Miller(1,0,0),Miller(0,0,1)],'reduced')
+plotpdf(ebsd,[Miller(1,0,0),Miller(0,0,1)],'reduced','phase',2)
 annotate(m,'Marker','s','MarkerFaceColor','red')
 
 %% Volume
 %
 % Lets next compute the volume close to the mean orientation.
 
-volume(ebsd,m,10*degree)
+volume(ebsd,m,10*degree,'phase',1)
