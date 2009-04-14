@@ -17,7 +17,10 @@ function plotipdf(ebsd,r,varargin)
 % SphericalProjection_demo 
 
 %% make new plot
-[cs,ss] = getSym(ebsd);
+grid = getgrid(ebsd,'checkPhase',varargin{:});
+cs = get(grid,'CS');
+ss = get(grid,'SS');
+
 if newMTEXplot('ensureTag','ipdf',...
     'ensureAppdata',{{'CS',cs},{'SS',ss}})
   argin_check(r,{'vector3d'});
@@ -35,14 +38,13 @@ end
 varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
-if sum(sampleSize(ebsd))*length(cs)*length(ss) > 100000 || check_option(varargin,'points')  
+if sum(GridLength(grid))*length(cs)*length(ss) > 100000 || check_option(varargin,'points')  
   points = fix(get_option(varargin,'points',100000/length(cs)/length(ss)));  
-  disp(['plot ', int2str(points) ,' random orientations out of ', int2str(sum(sampleSize(ebsd))),' given orientations']);
-  ebsd = subsample(ebsd,points);
+  disp(['plot ', int2str(points) ,' random orientations out of ', int2str(sum(GridLength(grid))),' given orientations']);
+  grid = subsample(grid,points);
 end
 
 %% plotting grid
-grid = getgrid(ebsd);
 h = @(i) reshape(inverse(quaternion(ss * grid * cs)),[],1) * r(i);
 
 [maxtheta,maxrho] = getFundamentalRegionPF(cs,varargin{:});

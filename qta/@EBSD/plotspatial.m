@@ -9,34 +9,42 @@ function plotspatial(ebsd,varargin)
 %
 %% See also
 
-% get reference orientation
-if ~check_option(varargin,'center','quaternion')
-  q0 = mean(subsample(ebsd,1000));
-else
-  q0 = get_option(varargin,'center');
-end
-cs = get(ebsd,'CS');
+ind = true(numel(ebsd),1);
+cc = lower(get_option(varargin,'colorcoding','ipdf'));
   
 %% compute colorcoding
-cc = lower(get_option(varargin,'colorcoding','ipdf'));
 switch cc
-  case 'bunge'
-    d = euler2rgb(getgrid(ebsd),'center',q0,varargin{:});
-  case 'angle'
-    d = quat2rgb(getgrid(ebsd),'center',q0,varargin{:});
-  case 'sigma'
-    d = sigma2rgb(getgrid(ebsd),'center',q0,varargin{:});
-  case 'ihs'
-    d = euler2rgb(getgrid(ebsd),ebsd.CS,ebsd.SS,'q0',q0,varargin{:});
-    d = rgb2hsv(d);      
-  case 'ipdf'     % colorcoding according according to ipdf
-    h = quat2ipdf(getgrid(ebsd),varargin{:});
-    d = ipdf2rgb(h,cs,varargin{:});
+  case {'bunge','angle','sigma','ihs','ipdf'}
+    [grid,ind] = getgrid(ebsd,'checkPhase',varargin{:});
+    cs = get(grid,'CS');
+    ss = get(grid,'SS');
+    switch cc
+      case 'bunge'
+        d = euler2rgb(grid,varargin{:});
+      case 'angle'
+        d = quat2rgb(grid,varargin{:});
+      case 'sigma'
+        d = sigma2rgb(grid,varargin{:});
+      case 'ihs'
+        d = euler2rgb(grid,cs,ss,varargin{:});
+        d = rgb2hsv(d);
+      case 'ipdf'     % colorcoding according according to ipdf    
+        h = quat2ipdf(grid,varargin{:});
+        d = ipdf2rgb(h,cs,varargin{:});
+    end
   case 'phase'
-    d = ebsd.phase;
-  case fields(ebsd.options)
-    %d = real2rgb(ebsd.options.(cc),colormap);
-    d = ebsd.options.(cc);
+    d = [];
+    for i = 1:length(ebsd)
+      if numel(ebsd(i).phase == 1)
+        d = [d;ebsd(i).phase * ones(sampleSize(ebsd(i)),1)]; %#ok<AGROW>
+      elseif numel(ebsd(i).phase == 0)
+        d = [d;nan(sampleSize(ebsd(i)),1)]; %#ok<AGROW>
+      else
+        d = [d,ebsd.phase(:)]; %#ok<AGROW>
+      end
+    end
+  case fields(ebsd(1).options)
+    d = get(ebsd,cc);
   otherwise
     error('Unknown colorcoding!')
 end
@@ -45,13 +53,13 @@ end
 %% plot 
 newMTEXplot;
 
-plotxy(ebsd.xy(:,1),ebsd.xy(:,2),d,varargin{:});
+plotxy(get(ebsd(ind),'x'),get(ebsd(ind),'y'),d,varargin{:});
 if strcmpi(cc,'ipdf')
   setappdata(gcf,'CS',cs);
   setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d'));
+  setappdata(gcf,'colorcoding',@(h) ipdf2rgb(h,cs,varargin{:}));
 end
 set(gcf,'tag','ebsd_spatial');
-setappdata(gcf,'colorcoding',@(h) ipdf2rgb(h,cs,varargin{:}));
 setappdata(gcf,'options',extract_option(varargin,'reduced'));
 
 

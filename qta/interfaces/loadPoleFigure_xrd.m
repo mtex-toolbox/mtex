@@ -1,5 +1,5 @@
 function pf = loadPoleFigure_xrd(fname,varargin)
-% import data fom aachen ptx file
+% import data fom aachen xrd file
 %
 %% Syntax
 % pf = loadPoleFigure_aachen_exp(fname,<options>)

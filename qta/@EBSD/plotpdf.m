@@ -25,7 +25,9 @@ function plotpdf(ebsd,h,varargin)
 % SphericalProjection_demo 
 
 %% make new plot
-[cs,ss] = getSym(ebsd);
+grid = getgrid(ebsd,'checkPhase',varargin{:});
+cs = get(grid,'CS');
+ss = get(grid,'SS');
 if newMTEXplot('ensureTag','pdf',...
     'ensureAppdata',{{'CS',cs},{'SS',ss}})
   argin_check(h,{'Miller'});  
@@ -37,14 +39,14 @@ end
 varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
-if sum(sampleSize(ebsd))*length(cs)*length(ss) > 10000 || check_option(varargin,'points')
+if sum(GridLength(grid))*length(cs)*length(ss) > 10000 || check_option(varargin,'points')
   
   points = fix(get_option(varargin,'points',10000/length(cs)/length(ss)));  
-  disp(['plot ', int2str(points) ,' random orientations out of ', int2str(sum(sampleSize(ebsd))),' given orientations']);
-  ebsd = subsample(ebsd,points);
+  disp(['plot ', int2str(points) ,' random orientations out of ', int2str(sum(GridLength(grid))),' given orientations']);
+  grid = subsample(grid,points);
 
 end
-grid = getgrid(ebsd);
+
 
 %% plot
 if check_option(varargin,'superposition')

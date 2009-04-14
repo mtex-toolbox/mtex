@@ -57,14 +57,21 @@ if isempty(interface), ebsd = []; return; end
 %% import data
 ebsd = [];
 for i = 1:length(fname)  
-  ebsd = [ebsd,feval(['loadEBSD_',char(interface)],fname{i},options{:})]; 
+  ebsd = [ebsd,feval(['loadEBSD_',char(interface)],fname{i},options{:})];  %#ok<AGROW>
 end
 
+if exist('cs','var') && numel(cs) == 1
+  cs = repmat(cs,1,length(ebsd));
+elseif exist('cs','var') && numel(cs) < length(ebsd)
+  error('MTEX:inputMissmatch','Number of symmetries and phases does not coinside!');
+end
+
+
 for i = 1:length(ebsd)
-  if exist('cs','var'), ebsd(i) = set(ebsd(i),'CS',cs);end
-  if exist('ss','var'), ebsd(i) = set(ebsd(i),'SS',ss);end
+  if exist('cs','var'), ebsd(i) = set(ebsd(i),'CS',cs(i));end %#ok<AGROW>
+  if exist('ss','var'), ebsd(i) = set(ebsd(i),'SS',ss);end %#ok<AGROW>
  
   [ps,fn,ext] = fileparts([fname{min(i,length(fname))}]);
-  ebsd(i) = set(ebsd(i),'comment',get_option(varargin,'comment',[fn ext]));
+  ebsd(i) = set(ebsd(i),'comment',get_option(varargin,'comment',[fn ext])); %#ok<AGROW>
   
 end

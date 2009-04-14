@@ -1,4 +1,4 @@
-function [CS,SS] = getSym(ebsd)
+function [CS,SS] = getSym(ebsd,varargin)
 % get crystal and specimen symmetry of the EBSD data
 %
 %% Input
@@ -9,5 +9,9 @@ function [CS,SS] = getSym(ebsd)
 %  SS - specimen @symmetry
 %
 
-CS = ebsd(1).CS;
+if check_option(varargin,'all')
+  CS = [ebsd.CS];
+else
+  CS = ebsd(1).CS;
+end
 SS = ebsd(1).SS;

@@ -99,7 +99,7 @@ scrsz = get(0,'ScreenSize');
 figure('Position',[scrsz(3)/8 scrsz(4)/8 6*scrsz(3)/8 6*scrsz(4)/8]);
 
 if isa(data,'EBSD')
-  plot_EBSD(gcbf,data);
+  plot_EBSD(gcbf,data(1));
 else
   plot_pf(gcbf,data);
 end
@@ -147,6 +147,7 @@ else
     fn{i} = getappdata(lb(i),'filename');
   end
   
+  
   if ~isempty(fn{2}) % EBSD data
     str = exportEBSD(fn{2},data,getappdata(lb(2),'interface'),...
       getappdata(lb(2),'options'), handles);
@@ -176,6 +177,14 @@ handles = getappdata(wzrd,'handles');
 leavecallback = getappdata(handles.pages(page),'leave_callback');
 try
   leavecallback();
+  data = getappdata(wzrd,'data');
+  if isa(data,'EBSD')
+    c = getappdata(wzrd,'cs_count');
+    if (((page+delta == 3) && (c < numel(data))) || ((page+delta == 1) & (c > 1)))
+      setappdata(wzrd,'cs_count',c+delta);
+      delta = 0;
+    end
+  end 
   page = page + delta;
   gotocallback = getappdata(handles.pages(page),'goto_callback');
   gotocallback();

@@ -5,7 +5,7 @@ str = ['%% created with import_wizard';{''}];
 %% specify crystal and specimen symmetries
 
 str = [ str; '%% specify crystal and specimen symmetries';{''}];
-[cs, ss] = getSym(ebsd);
+[cs, ss] = getSym(ebsd,'all');
 
 str = [str; export_CS_tostr(cs)];
 

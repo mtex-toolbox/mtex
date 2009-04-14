@@ -6,6 +6,12 @@ function G = union(varargin)
 %  "points" - @SO3Grid
 
 OG = [varargin{:}];
+
+% check symmetries
+if ~equal([OG.CS],2) || ~equal([OG.SS],2)
+  warning('MTEX:SO3GridUnion','Processing orientations with different symmetries!');
+end
+
 for i = 1:length(OG), OG(i).Grid = reshape(OG(i).Grid,1,[]);end
 
 G.alphabeta = [];

@@ -8,8 +8,10 @@ if ~isempty(ebsd(1).comment)
 else
   disp([inputname(1),' = EBSD data',]);
 end
-disp([' symmetry: ',char(ebsd(1).CS),' - ',char(ebsd(1).SS)]);
-disp([' options: ',option2str(fields(ebsd(1).options))]);
+
+if ~isempty(fields(ebsd(1).options))
+  disp([' options: ',option2str(fields(ebsd(1).options))]);
+end
 for i = 1:length(ebsd)
   disp([' ' char(ebsd(i))]);
 end

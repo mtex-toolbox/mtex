@@ -1,26 +1,51 @@
 function str = export_CS_tostr(cs)
 
-[c,angl] = get_axisangel(cs);
-axis =  strcat(n2s(c));
-angle =  strcat(n2s([angl{:}]));
 
-if vector3d(Miller(1,0,0,cs)) == -yvector
-  options = ',''a||y''';    
-else
-  options = '';
+if numel(cs) > 1
+  str = 'CS = [...';
+else 
+  str = 'CS = ';
 end
 
-cs = strrep(char(cs),'"','');
+for i=1:numel(cs)
+  [c,angl] = get_axisangel(cs(i));
+  axis =  strcat(n2s(c));
+  angle =  strcat(n2s([angl{:}]));
 
-switch cs
-  case {'-1','2/m'}
-    str = strcat('CS = symmetry(''', cs,''',', axis, ',' , angle, options,');');
-  case {'m-3','m-3m'}
-    str = strcat('CS = symmetry(''', cs,'''',options,');');
-  otherwise
-    str = strcat('CS = symmetry(''', cs,''',', axis,options,');');
+  if vector3d(Miller(1,0,0,cs(i))) == -yvector
+    options = ',''a||y''';
+  else
+    options = '';
+  end
+
+  mineral = get(cs(i),'mineral');
+  if ~isempty(mineral)
+    options = [options,',''mineral'',''',mineral,'''']; %#ok<AGROW>
+  end
+  
+  cs_t = strrep(char(cs(i)),'"','');
+
+  switch cs_t
+    case {'-1','2/m'}
+      t = strcat('symmetry(''', cs_t,''',', axis, ',' , angle, options,')');
+    case {'m-3','m-3m'}
+      t = strcat('symmetry(''', cs_t,'''',options,')');
+    otherwise
+      t = strcat('symmetry(''', cs_t,''',', axis,options,')');
+  end
+
+  if numel(cs) > 1
+    str = [str; {t} ]; %#ok<AGROW>
+    if i == numel(cs)
+      str{end} = [ str{end} '];'];
+    else
+      str{end} = [ str{end} ',...'];
+    end
+  else
+    str = [str t ';']; %#ok<AGROW>
+  end
+  
 end
-
 %%
 function s = n2s(n)
 
