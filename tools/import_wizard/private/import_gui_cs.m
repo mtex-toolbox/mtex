@@ -1,6 +1,9 @@
 function import_gui_cs(wzrd)
 % page for setting crystall geometry
 
+
+setappdata(wzrd,'cs_count',1);
+
 pos = get(wzrd,'Position');
 h = pos(4);
 w = pos(3);
@@ -23,7 +26,7 @@ handles.mineral = uicontrol(...
   'Style','edit',...
   'Parent',mineral,...
   'BackgroundColor',[1 1 1],...
-  'Position',[10 20 w-160 20],...
+  'Position',[10 20 w-240 20],...
   'HorizontalAlignment','left',...
   'string','');
 
@@ -31,7 +34,14 @@ uicontrol(...
   'Parent',mineral,...
   'String','Load Cif File',...
   'CallBack',@lookup_mineral,...
-  'Position',[w-130 17 100 25]);
+  'Position',[w-220 17 100 25]);
+
+uicontrol(...
+  'Parent',mineral,...
+  'String','Search Web',...
+  'CallBack',@searchWeb,...
+  'Position',[w-110 17 80 25]);
+
 
 % uicontrol(...
 %   'Parent',mineral,...
@@ -152,6 +162,7 @@ function lookup_mineral(varargin)
 
 handles = getappdata(gcbf,'handles');
 data = getappdata(gcbf,'data');
+cs_counter = getappdata(gcbf,'cs_count');
 
 name = get(handles.mineral,'string');
 
@@ -167,12 +178,20 @@ end
 try
   cs = cif2symmetry(name);
   set(handles.mineral,'string',shrink_name(name));
-  data = set(data,'CS',cs);
+  if isa(data,'EBSD')
+    data(cs_counter) = set(data(cs_counter),'CS',cs);
+  else
+    data = set(data,'CS',cs);
+  end
   setappdata(gcbf,'data',data);
   get_cs(gcbf);  
-catch
+catch %#ok<CTCH>
   errordlg(errortext);  
 end
+
+function searchWeb(varargin)
+
+web('http://www.crystallography.net/search.html','-browser')
 
 %% ------------ Private Functions ---------------------------------
 
@@ -182,7 +201,19 @@ function get_cs(wzrd)
 handles = getappdata(wzrd,'handles');
 data = getappdata(wzrd,'data');
 
-cs = get(data,'CS');
+
+cs_counter = getappdata(wzrd,'cs_count');
+cs = get(data(cs_counter),'CS');
+
+% set page name
+if isa(data,'EBSD')
+  phase = get(data(cs_counter),'phase');
+  pagename = ['Set Crystal Geometry for Phase ' num2str(phase)];
+  %eb_comment = char(get(data(cs_counter),'comment'));
+  %if length(eb_comment)> 25, eb_comment = eb_comment(1:25); end
+  %pagename = [pagename ', ' eb_comment ];
+  setappdata(handles.pages(2),'pagename',pagename );
+end
 
 csname = strmatch(Laue(cs),symmetries);
 set(handles.crystal,'value',csname(1));
@@ -219,6 +250,7 @@ function set_cs(wzrd)
 
 handles = getappdata(wzrd,'handles');
 data = getappdata(wzrd,'data');
+cs_counter = getappdata(wzrd,'cs_count');
 
 cs = get(handles.crystal,'Value');
 cs = symmetries(cs);
@@ -238,7 +270,11 @@ else
   cs = symmetry(cs,[axis{:}],[angle{:}]*degree,'mineral',mineral);
 end
 
-data = set(data,'CS',cs);
+if isa(data,'EBSD')
+  data(cs_counter) = set(data(cs_counter),'CS',cs);
+else
+  data = set(data,'CS',cs);
+end
 
 setappdata(wzrd,'data',data);
 

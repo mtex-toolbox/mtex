@@ -22,7 +22,6 @@ for i= 1:length(ebsd)
 	
 	idi = id((id > cs(i)) & (id<=cs(i+1)));
   if ~isempty(ebsd(i).xy), ebsd(i).xy(idi-cs(i),:) = [];end
-  if ~isempty(ebsd(i).phase), ebsd(i).phase(idi-cs(i)) = [];end
   
   ebsd_fields = fields(ebsd.options);
   for f = 1:length(ebsd_fields)

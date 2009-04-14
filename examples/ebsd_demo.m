@@ -7,16 +7,27 @@
 
 %% Specify Crystal and Specimen Symmetry
 
-cs = symmetry('cubic');
-ss = symmetry('triclinic');
+% specify crystal and specimen symmetry
+CS = [...
+  symmetry('m-3m'),... % crystal symmetry phase 1
+  symmetry('m-3m')];   % crystal symmetry phase 2
+SS = symmetry('-1');   % specimen symmetry
 
-%% Load EBSD Data
+%% import ebsd data
 
-ebsd = loadEBSD([mtexDataPath,'/aachen_ebsd/85_829grad_07_09_06.txt'],cs, ...
-                ss,'header',1,'layout',[5,6,7,2],'phase',1,'xy',[3 4])
+% file name
+fname = [mtexDataPath '/aachen_ebsd/85_829grad_07_09_06.txt'];
+
+ebsd = loadEBSD(fname,CS,SS,'interface','generic',...
+  'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'Mad' 'BC'},...
+  'Columns', [2 3 4 5 6 7 8 9],...
+  'ignorePhase', 0, 'Bunge');
+
+
 
 %% Plot Spatial Data
 
+plot(ebsd,'phase',1)
               
 %% Plot Pole Figures as Scatter Plots
 

@@ -13,7 +13,7 @@ ix = max(min(nx,ix),1);
 iy = max(min(ny,iy),1);
 
 c = nan(nx*ny,size(d,3));
-c(iy + (ix-1)*ny,:) = d;
+c(iy + (ix-1)*ny,:) = d;%reshape(d,[],3);
 c = reshape(c,ny,nx,size(d,3));
 
 %%
@@ -45,6 +45,8 @@ if size(c,3) == 1
   pcolor(rx,ry,c);shading flat
 else
   image(rx,ry,c);
+  %[rrx,rry] = meshgrid(rx,ry);
+  %surf(rrx,rry,zeros(size(rrx)),c); shading flat
 end
 
 axis ij equal tight

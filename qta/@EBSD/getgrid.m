@@ -1,4 +1,4 @@
-function G = getgrid(ebsd,varargin)
+function [G,ind] = getgrid(ebsd,varargin)
 % get mods of the components
 %
 %% Input
@@ -8,22 +8,20 @@ function G = getgrid(ebsd,varargin)
 %% Output
 %  G   - @SO3Grid of modal orientations
 
-G = union(ebsd.orientations); 
-
+% phases present
 phase = [ebsd.phase];
+phases = unique(phase);
 
-if ~isempty(phase) && check_option(varargin,'phase')
+% check for phase
+if check_option(varargin,'phase')
   
-  sphase = get_option(varargin,'phase');
-  ind = false(size(phase));
+  ind = phase == get_option(varargin,'phase');
   
-  for i = 1:length(sphase)
-    ind = ind | phase == sphase(i);
-  end
-  
-  G = subGrid(G,ind);
-  
-elseif check_option(varargin,'CheckPhase') && ...
-    (~isempty(phase) || all(phase == phase(1)))
-  warning('MTEX:MultiplePhases','Calculation includes multiple phases!');
+elseif numel(phases) > 1 && check_option(varargin,'CheckPhase')
+  warning('MTEX:MultiplePhases','This operatorion is only permitted for a single phase! I''m going to process only the first phase.');
+  ind = phase == phases(1);
+else
+  ind = true(numel(ebsd),1);
 end
+
+G = union(ebsd(ind).orientations); 

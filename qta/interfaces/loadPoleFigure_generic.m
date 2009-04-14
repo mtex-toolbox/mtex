@@ -15,7 +15,7 @@ function [pf,options] = loadPoleFigure_generic(fname,varargin)
 %  theta_M rho_M intensity_M
 %
 % The actual order of the columns in the file can be specified by the
-% option |LAYOUT|. Furthermore, the files can be contain any number of
+% options |ColumnNames| and |Columns|. Furthermore, the files can be contain any number of
 % header lines to be ignored using the option |HEADER|. 
 %
 %% Syntax
@@ -25,6 +25,8 @@ function [pf,options] = loadPoleFigure_generic(fname,varargin)
 %  fname - file name (text files only)
 %
 %% Options
+%  ColumnNames       - content of the columns to be imported
+%  Columns           - columns to be imported
 %  RADIANS           - treat input in radians
 %  DELIMITER         - delimiter between numbers
 %  HEADER            - number of header lines

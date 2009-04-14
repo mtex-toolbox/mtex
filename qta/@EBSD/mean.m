@@ -1,8 +1,8 @@
-function [ m kappa v] = mean( ebsd )
+function [ m kappa v] = mean( ebsd,varargin)
 % returns mean, kappas and eigenvector of ebsd object
 %
 %% Input
-%  ebsd      - list of @ebsd
+%  ebsd      - @ebsd
 %
 %% Output
 %  m         - one equivalent mean orientation @quaternion
@@ -10,21 +10,14 @@ function [ m kappa v] = mean( ebsd )
 %  v         - eigenvectors of kappa
 %
 
-m = quaternion;
-kappa = zeros(4,4,numel(ebsd));
-v = zeros(4,4,numel(ebsd));
+[S3G,ind] = getgrid(ebsd,'CheckPhase',varargin{:});
 
-S3G = get(ebsd,'data');
-
-
-for i=1:numel(S3G)
-  
-  % extract weights
-  if isfield(ebsd(i).options,'weight')
-    weight = get(ebsd(i),'weight');    
-  else
-    weight = ones(1,GridLength(S3G(i)));
-  end
-    
-  [m(i) kappa(:,:,i)  v(:,:,i)]  = mean(S3G(i),'weights',weight);
+% extract weights
+if isfield(ebsd(1).options,'weight')
+  weight = get(ebsd(ind),'weight');
+else
+  weight = ones(1,GridLength(S3G));
 end
+
+[m kappa  v]  = mean(S3G,'weights',weight);
+

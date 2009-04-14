@@ -140,17 +140,34 @@ if ~isempty(opts)
   opt = struct(opts_struct{:});
 end
 
-ebsd = EBSD(SO3G,symmetry('cubic'),symmetry(),varargin{:},'xy',xy,'phase',phase,'options',opt);
+%% split according to phase
 
-if check_option(varargin,'phase')
-  
-  sphase = get_option(varargin,'phase');
-  ind = false(size(phase));
-  
-  for i = 1:length(sphase)
-    ind = ind | phase == sphase(i);
-  end
-  ebsd = delete(ebsd,~ind);
+phases = unique(phase);
+ignorePhase = get_option(varargin,'ignorePhase',0);
+phases(arrayfun(@(x) any(x == ignorePhase),phases)) = [];
+
+if length(phases)>10
+  error('MTEX:tomanyphases','Found more then 10 phases. This is to much for MTEX.');
 end
 
+% return varargin as options
 options = varargin;
+
+% load single phase
+if isempty(phases)
+  ebsd = EBSD(SO3G,symmetry('cubic'),symmetry(),varargin{:},'xy',xy,'options',opt,'phase',1); 
+  return
+end
+
+% load multiple phases
+for ip = 1:length(phases)
+
+  ind = phase == phases(ip);
+  pSO3G = subGrid(SO3G,ind);
+  pxy = xy(ind,:);
+  popt = structfun(@(x) x(ind),opt,'uniformOutput',false);
+  
+  ebsd(ip) = EBSD(pSO3G,symmetry('cubic'),symmetry(),varargin{:},'xy',pxy,'phase',phases(ip),'options',popt); %#ok<AGROW>
+end
+
+

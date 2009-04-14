@@ -1,5 +1,5 @@
 function out = equal(A,dim)
-% check all elements of A equal
+% check all elements of A to be equal
 
 %make dim first dimension
 A = shiftdim(A,dim-1);

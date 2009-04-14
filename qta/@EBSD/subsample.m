@@ -25,10 +25,9 @@ for i = 1:length(ebsd)
   
   % subsample xy and phase
   if ~isempty(ebsd(i).xy), ebsd(i).xy = ebsd(i).xy(ind); end
-  if ~isempty(ebsd(i).phase), ebsd(i).phase = ebsd(i).phase(ind); end
-  
+    
   % subsample all other options
-  ebsd_fields = fields(ebsd.options);
+  ebsd_fields = fields(ebsd(i).options);
   for f = 1:length(ebsd_fields)
     if numel(ebsd(i).options.(ebsd_fields{f})) == GridLength(ebsd(i).orientations)
       ebsd(i).options.(ebsd_fields{f}) = ebsd(i).options.(ebsd_fields{f})(ind);
