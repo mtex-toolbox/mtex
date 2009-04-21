@@ -2,13 +2,27 @@
 %
 %% MTEX 1.2beta
 %
+% *Imporved EBSD import*
+%
+% * import weighted EBSD (e.g. from odf modeling)
+% * new HKL and Chanel interfaces
+% * import of multiple phases
+% * import of arbitrary properties as MAD, detection error, etc.
+%
 % *Improved EBSD plotting*
 % 
 % * plot EBSD data in axis angle and Rodriguez space
 % * annotations in these spaces
+% * better orientation colorcoding
 % * superpose odf, pole figure and EBSD plots
-% * faster and more accurate volume computation
+% * better interpolation
 %
+% *General Improvements*
+%
+% * suport for different crystal geometry setups
+% * faster and more accurate volume computation
+% * improved function modalorientation
+% * improved documentation
 %
 %% MTEX 1.1 - 12/2008
 %
