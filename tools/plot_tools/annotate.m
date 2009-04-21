@@ -93,7 +93,7 @@ for i = 1:length(ax)
       elseif isa(obj,'Miller')
       
         obj = set(obj,'CS',cs);
-        plot(obj,'MarkerEdgeColor','w','Marker','s',varargin{:});
+        plot(obj,'all','MarkerEdgeColor','w','Marker','s',varargin{:});
       
       else
         error('Only orientations and Miller indece can be anotated to inverse pole figure plots');

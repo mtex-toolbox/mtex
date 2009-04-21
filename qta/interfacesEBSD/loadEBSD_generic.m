@@ -44,11 +44,15 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 %% See also
 % interfacesEBSD_index loadEBSD ebsd_demo
 
+% get options
+cs = get_option(varargin,'cs',symmetry('m-3m'));
+ss = get_option(varargin,'ss',symmetry('-1'));
+
 % load data
 [d,varargin,header,c] = load_generic(fname,varargin{:});
 
 % no data found
-if size(d,1) < 10 || size(d,2) < 3
+if size(d,1) < 1 || size(d,2) < 3
   error('Generic interface could not detect any numeric data in %s',fname);
 end
 
@@ -116,8 +120,6 @@ end
    
 if check_option(varargin,'passive rotation'), q = inverse(q); end
  
-SO3G = SO3Grid(q,symmetry('cubic'),symmetry());
-  
 %treat other options
 xy = [];
 if istype(names,{'x' 'y'}),
@@ -133,8 +135,11 @@ end
 opt = struct;
 opts = delete_option(names,  {euler{:} quat{:} 'Phase' 'x' 'y'});
 if ~isempty(opts)
+  
   for i=1:length(opts),
-    opts_struct{i} = [opts{i} {d(:,layoutcol(names,opts(i)))}]; %#ok<AGROW>
+    if layoutcol(names,opts(i)) <= size(d,2)
+      opts_struct{i} = [opts{i} {d(:,layoutcol(names,opts(i)))}]; %#ok<AGROW>
+    end
   end
   opts_struct = [opts_struct{:}];
   opt = struct(opts_struct{:});
@@ -146,28 +151,30 @@ phases = unique(phase);
 ignorePhase = get_option(varargin,'ignorePhase',0);
 phases(arrayfun(@(x) any(x == ignorePhase),phases)) = [];
 
-if length(phases)>10
-  error('MTEX:tomanyphases','Found more then 10 phases. This is to much for MTEX.');
+if length(phases)>20
+  error('MTEX:tomanyphases','Found more then 20 phases. This is to much for MTEX.');
 end
 
 % return varargin as options
 options = varargin;
 
 % load single phase
-if isempty(phases)
-  ebsd = EBSD(SO3G,symmetry('cubic'),symmetry(),varargin{:},'xy',xy,'options',opt,'phase',1); 
+if isempty(phases) || sum(phase ~= 0) < 10
+  ebsd = EBSD(SO3Grid(q,cs,ss),cs,ss,varargin{:},'xy',xy,'options',opt,'phase',1); 
   return
 end
+
+%
+if numel(cs) < length(phases), cs = repmat(cs(1),1,length(phases));end
 
 % load multiple phases
 for ip = 1:length(phases)
 
   ind = phase == phases(ip);
-  pSO3G = subGrid(SO3G,ind);
   pxy = xy(ind,:);
   popt = structfun(@(x) x(ind),opt,'uniformOutput',false);
   
-  ebsd(ip) = EBSD(pSO3G,symmetry('cubic'),symmetry(),varargin{:},'xy',pxy,'phase',phases(ip),'options',popt); %#ok<AGROW>
+  ebsd(ip) = EBSD(SO3Grid(q(ind),cs(ip),ss),cs(ip),ss,varargin{:},'xy',pxy,'phase',phases(ip),'options',popt); %#ok<AGROW>
 end
 
 

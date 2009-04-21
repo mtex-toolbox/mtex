@@ -18,6 +18,9 @@ function plotodf(ebsd,varargin)
 % S2Grid/plot savefigure plot_index Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo 
 
+varargin = set_default_option(varargin,...
+  get_mtex_option('default_plot_options'));
+
 grid = getgrid(ebsd,'checkPhase',varargin{:});
 cs = get(grid,'CS');
 ss = get(grid,'SS');

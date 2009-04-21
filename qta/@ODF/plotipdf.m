@@ -17,6 +17,8 @@ function plotipdf(odf,r,varargin)
 % SphericalProjection_demo 
 
 argin_check(r,{'vector3d'});
+varargin = set_default_option(varargin,...
+  get_mtex_option('default_plot_options'));
 
 %% make new plot
 newMTEXplot;

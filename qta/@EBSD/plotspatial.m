@@ -9,6 +9,10 @@ function plotspatial(ebsd,varargin)
 %
 %% See also
 
+% default plot options
+varargin = set_default_option(varargin,...
+  get_mtex_option('default_plot_options'));
+
 ind = true(numel(ebsd),1);
 cc = lower(get_option(varargin,'colorcoding','ipdf'));
   
@@ -43,6 +47,8 @@ switch cc
         d = [d,ebsd.phase(:)]; %#ok<AGROW>
       end
     end
+    co = get(gca,'colororder');
+    colormap(co(1:length(ebsd),:));
   case fields(ebsd(1).options)
     d = get(ebsd,cc);
   otherwise

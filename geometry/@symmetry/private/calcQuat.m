@@ -4,6 +4,8 @@ function q = calcQuat(Laue,axis,varargin)
 ll0axis = vector3d(1,1,0);
 %Tl0axis = axis(1)+axis(2);
 lllaxis = vector3d(1,1,1);
+maxis = axis(1);
+
 
 switch Laue
 case '-1'     
@@ -15,7 +17,7 @@ case 'mmm'
 case '-3'     
     q = Axis(axis(3),3);
 case '-3m'   
-    q = Axis(axis(1),2).'*Axis(axis(3),3);
+    q = Axis(maxis,2).'*Axis(axis(3),3);
 case '4/m'    
     q = Axis(axis(3),4);
 case '4/mmm' 
@@ -23,10 +25,9 @@ case '4/mmm'
 case '6/m'    
     q = Axis(axis(3),6);
 case '6/mmm'  
-    q = Axis(axis(1),2).'*Axis(axis(3),6);
+    q = Axis(maxis,2).'*Axis(axis(3),6);
 case 'm-3'    
     q = reshape((Axis(lllaxis,3).'*Axis(axis(1),2)).',[],1)*Axis(axis(3),2);
-    warning('there is a potentialy mistake!')
 case 'm-3m'   
     q = reshape((Axis(lllaxis,3).'*Axis(ll0axis,2)).',[],1)*Axis(axis(3),4);
 end

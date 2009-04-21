@@ -18,13 +18,13 @@ if ~check_option(varargin,'noascii')
       [d,ffn,nh,SR,header] = txt2mat(fname,options{2:end},...
         'RowRange',[1 1000],'InfoLevel',0);
     else
-      [d,ffn,nh,SR,header] = txt2mat(fname,options{2:end},'InfoLevel',0);
+      [d,ffn,nh,SR,header] = txt2mat(fname,options{2:end},'InfoLevel',1);
     end
   catch %#ok<CTCH>
   end
   
   % data found?
-  if size(d,1)>10 && size(d,2)>2,
+  if size(d,1)>0 && size(d,2)>2,
     c = extract_colnames(header);
     options = delete_option(varargin,'check');
     return;

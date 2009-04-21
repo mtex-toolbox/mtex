@@ -34,8 +34,7 @@ end
 
 %% restrict to plotable domain
 
-rho = mod(rho,2*pi);
-rho(mod(rho-1e-6,2*pi)<minrho-2e-6 | mod(rho+1e-6,2*pi)>maxrho+2e-6) = nan;
+rho(~inside(rho,minrho,maxrho))= NaN;
 
 if isa(maxtheta,'function_handle')
   theta(theta-1e-6 > maxtheta(rho)) = NaN;

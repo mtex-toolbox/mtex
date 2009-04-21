@@ -674,7 +674,7 @@ if num_header > 0
             fclose(logfid);
          	[A,sr_input_ca] = deal([]);
             if infolvl>=1
-                disp(['Exiting txt2mat: '  num2str(num_header) ' header lines expected, but only ' num2str(num_lb_curr) ' line breaks found.'])
+%                disp(['Exiting txt2mat: '  num2str(num_header) ' header lines expected, but only ' num2str(num_lb_curr) ' line breaks found.'])
                 close(hw)
             end
           	return
@@ -761,7 +761,7 @@ fclose(logfid);
 if numel(f8)==0
     A = [];
     if infolvl>=1
-        disp('Exiting txt2mat: no numeric data found.')
+%        disp('Exiting txt2mat: no numeric data found.')
         close(hw)
     end
     return
@@ -999,7 +999,7 @@ if any([num_sr,num_er,num_rr] > 0 )
             end % for
         end
         
-        if hasWaitbar && ~mod(sdx,256)
+        if hasWaitbar && ~mod(sdx,10)
             waitbar(0.20+0.25*((sdx-1)/(numSectionLb-1)),hw)
         end
         
@@ -1151,7 +1151,7 @@ if strcmpi(readmode,'block')
                 ARepeat = [];
             end
             
-            if hasWaitbar && ~mod(sdx,256)
+            if hasWaitbar && ~mod(sdx,10)
                 waitbar(0.5+0.5*((sdx-1)/(numSectionLb-1)),hw)
             end
             
@@ -1240,7 +1240,7 @@ if strcmpi(readmode,'auto') || strcmpi(readmode,'matrix')
             Atmp = reshape(Atmp,numColonMatrix,num_lines_loop)';
             A(startRow:endRow,:) = Atmp;
             
-            if hasWaitbar && ~mod(sdx,256)
+            if hasWaitbar && ~mod(sdx,10)
                 waitbar(0.5+0.5*((sdx-1)/(numSectionLb-1)),hw)
             end
 
@@ -1360,7 +1360,7 @@ if strcmpi(readmode,'line') || ~isempty(errmsg)
         A(ldx,1:min(num_data_per_row(ldx),width_A)) = a(1:min(num_data_per_row(ldx),width_A));
         
         % display waitbar:
-        if hasWaitbar && ~mod(ldx,10000)
+        if hasWaitbar && ~mod(ldx,100)
                 waitbar(0.5+0.5*(ldx./(num_lf-1)),hw)
         end % if
 	end % for

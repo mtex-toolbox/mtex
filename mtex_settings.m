@@ -19,7 +19,7 @@ function mtex_settings
 % add here your pole figure and EBSD data file extensions 
 
 set_mtex_option('polefigure_ext',...
-  {'.exp','.XPa','.cns','.cnv', '.ptx','.pf','.xrdml'});
+  {'.exp','.XPa','.cns','.cnv', '.ptx','.pf','.xrdml','.xrd','.epf','.plf','.nja','.gpf','.ras'});
 set_mtex_option('ebsd_ext',...
   {'.ebsd','.ctf','.ang','.hkl','.tsl'});
 
@@ -39,6 +39,7 @@ set_mtex_option('ITER_MAX',11);
 default_plot_options = {'FontSize',13};
 %default_plot_options = {'reduced'};
 set_mtex_option('default_plot_options',default_plot_options);
+plotx2north;
 
 %% available memory 
 % change this value to specify the total amount of installed ram

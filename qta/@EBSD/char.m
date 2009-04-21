@@ -13,9 +13,11 @@ for i = 1:length(ebsd)
     ss = [ss, get(ebsd(i).CS,'mineral') ', ']; %#ok<AGROW>
   end    
   
-  ss = [ss, char(ebsd(i).orientations),', '];    %#ok<AGROW>
+  if ~isempty(ebsd(i).orientations)
+    ss = [ss, char(ebsd(i).orientations,'nores'),', '];    %#ok<AGROW>
+  end
   
-  ss = [ss,' symmetry: ',char(ebsd(1).CS),' - ',char(ebsd(1).SS),', '];     %#ok<AGROW>
+  ss = [ss,' symmetry: ',char(ebsd(1).CS)];     %#ok<AGROW>
   
   s =strvcat(s,ss); %#ok<VCAT>
 end

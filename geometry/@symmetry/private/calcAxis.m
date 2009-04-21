@@ -21,12 +21,19 @@ if angle(3) == 0, angle(3) = pi/2;end
 switch System
     
   case {'monocline','triclinic','monoclinic','tricline'}
-    saxis = xvector;
-    saxis(2) = cos(angle(3)) * xvector + sin(angle(3)) * yvector;
-    saxis(3) = cos(angle(2)) * xvector + ...
-      (cos(angle(1)) - cos(angle(2)) * cos(angle(3)))/sin(angle(3)) * yvector +...
-      sqrt(1+2*prod(cos(angle)) - sum(cos(angle).^2))/sin(angle(3)) * zvector;
-
+    if check_option(varargin,'b||y')
+      saxis = xvector;
+      saxis(2) = cos(angle(3)) * xvector + sin(angle(3)) * yvector;
+      saxis(3) = cos(angle(2)) * xvector + ...
+        (cos(angle(1)) - cos(angle(2)) * cos(angle(3)))/sin(angle(3)) * yvector +...
+        sqrt(1+2*prod(cos(angle)) - sum(cos(angle).^2))/sin(angle(3)) * zvector;
+    else
+      saxis = xvector;
+      saxis(2) = cos(angle(3)) * xvector + sin(angle(3)) * yvector;
+      saxis(3) = cos(angle(2)) * xvector + ...
+        (cos(angle(1)) - cos(angle(2)) * cos(angle(3)))/sin(angle(3)) * yvector +...
+        sqrt(1+2*prod(cos(angle)) - sum(cos(angle).^2))/sin(angle(3)) * zvector;
+    end
     saxis = axis .* saxis;
 
   case 'orthorhombic'

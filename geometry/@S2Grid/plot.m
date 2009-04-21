@@ -172,7 +172,7 @@ if any(strcmpi(hemisphere,'north')) || any(strcmpi(hemisphere,'reduced'))
   end
   
   bounds = plotHemiSphere(submatrix(theta,ind),submatrix(rho,ind),...
-    submatrix(data,ind),0,'maxrho',max(getMax(S2G.rho)),'maxtheta',maxtheta,varargin{:});
+    submatrix(data,ind),0,'minrho',min(getMin(S2G.rho)),'maxrho',max(getMax(S2G.rho)),'maxtheta',maxtheta,varargin{:});
 end
 
 %% Southern Hemisphere
