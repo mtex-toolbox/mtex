@@ -58,6 +58,12 @@ end
 minrho = get_option(varargin,'MINRHO',0);
 maxrho = get_option(varargin,'MAXRHO',2*pi);
 drho = maxrho - minrho;
+if ~isappr(drho,2*pi) && check_option(varargin,'rotate')
+  rotate = get_option(varargin,'rotate',0);
+  minrho = minrho -rotate;
+  maxrho = maxrho -rotate;
+end
+
 mintheta = max(get_option(varargin,'MINTHETA',0),mintheta);
 maxtheta_opt = get_option(varargin,'MAXTHETA',pi);
 if ~isnumeric(maxtheta_opt)
@@ -93,7 +99,8 @@ elseif isa(varargin{1},'vector3d')	% grid from vector3d
 	G.rho = S1Grid([],minrho,maxrho);
 	G.Grid = varargin{1};
   [theta,rho] = vec2sph(G.Grid);
-  G.Grid = G.Grid(theta<=maxtheta+1e-06 & mod(rho,2*pi) <= maxrho+1e-06);  
+    
+  G.Grid = G.Grid(theta<=maxtheta+1e-06 & inside(rho,minrho,maxrho));
 	G.options = {};
 	
 elseif check_option(varargin,'plot') && exist('maxthetafun','var')
@@ -158,10 +165,10 @@ else
     G.res = min(dtheta/(points(2)-1),drho/points(1));
     G.theta = S1Grid(linspace(mintheta,maxtheta,points(2)),mintheta,maxtheta);
       
-		steps = maxrho / points(1);
+		steps = (maxrho-minrho) / points(1);
     if check_option(varargin,'PLOT'),
       G.rho = repmat(...
-        S1Grid(minrho + steps*(0:points(1)),minrho,maxrho,'periodic'),1,points(2));
+        S1Grid(minrho + steps*(0:points(1)),minrho,maxrho),1,points(2));
     else
       G.rho = repmat(...
         S1Grid(minrho + steps*(0:points(1)-1),minrho,maxrho,...

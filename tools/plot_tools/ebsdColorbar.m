@@ -14,6 +14,10 @@ else
   colorcoding = getappdata(gcf,'colorcoding');  
 end
 
+% get default options
+varargin = set_default_option(varargin,...
+  get_mtex_option('default_plot_options'));
+
 % S2 Grid
 [maxtheta,maxrho,v] = getFundamentalRegionPF(cs,varargin{:});
 h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'resolution',1*degree,varargin{:});

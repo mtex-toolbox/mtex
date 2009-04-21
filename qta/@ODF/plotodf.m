@@ -24,6 +24,8 @@ function plotodf(odf,varargin)
 % S2Grid/plot savefigure plot_index Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo 
 
+varargin = set_default_option(varargin,...
+  get_mtex_option('default_plot_options'));
 
 %% -------- one - dimensional plot ---------------------------------------
 if check_option(varargin,'RADIALLY')   

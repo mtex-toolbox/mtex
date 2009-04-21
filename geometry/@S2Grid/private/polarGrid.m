@@ -21,7 +21,11 @@ arrayfun(@(t) circle(offset,0,t,varargin{:},'LineStyle',':',...
 
 drho = get_option(varargin,'grid_res',30*degree);
 
-rho = minrho:drho:(maxrho-drho);
+if maxrho > minrho
+  rho = minrho:drho:(maxrho-drho);
+else
+  rho = mod(minrho:drho:(maxrho+2*pi-drho),2*pi);
+end
 if maxrho ~= 2*pi, rho(1) = [];end
 rho = [rho;zeros(1,length(rho))];
 

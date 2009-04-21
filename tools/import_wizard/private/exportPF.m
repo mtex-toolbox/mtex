@@ -13,6 +13,12 @@ str = [str; export_CS_tostr(cs)];
 
 str = [ str; strcat('SS = symmetry(''',strrep(char(ss),'"',''), ''');')];
 
+% plotting convention
+plotdir = cell2mat(get(handles.plot_dir,'value'))==1;
+plotdir = get(handles.plot_dir(plotdir),'string');
+str = [ str; {''};['plotx2' lower(plotdir) '    % plotting convention']];
+
+
 %% specify the file names
 
 str = [ str; {''};'%% specify file names'; {''}];

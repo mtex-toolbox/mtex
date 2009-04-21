@@ -1,13 +1,15 @@
-function str = file2cell(filename)
+function str = file2cell(filename,maxline)
 % reads a file rowise into a cellstr
+
+if nargin == 1, maxline = inf;end
 
 fid = efopen(filename,'r');
 
 str = {};
-while 1
+while length(str) < maxline
   tline = fgetl(fid);
   if ~ischar(tline), break; end
-  str{end+1} = tline;
+  str{end+1} = tline; %#ok<AGROW>
 end
 
 fclose(fid);

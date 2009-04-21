@@ -39,7 +39,7 @@ varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
 if sum(GridLength(grid))*length(cs)*length(ss) > 100000 || check_option(varargin,'points')  
-  points = fix(get_option(varargin,'points',100000/length(cs)/length(ss)));  
+  points = get_option(varargin,'points',fix(100000/length(cs)/length(ss)));  
   disp(['plot ', int2str(points) ,' random orientations out of ', int2str(sum(GridLength(grid))),' given orientations']);
   grid = subsample(grid,points);
 end
