@@ -2,7 +2,7 @@
 %
 %% MTEX 1.2beta
 %
-% *Imporved EBSD import*
+% *Improved EBSD import*
 %
 % * import weighted EBSD (e.g. from odf modeling)
 % * new HKL and Chanel interfaces
@@ -13,6 +13,7 @@
 % 
 % * plot EBSD data in axis angle and Rodriguez space
 % * annotations in these spaces
+% * plot arbitrary properties as MAD, detection error, etc.
 % * better orientation colorcoding
 % * superpose odf, pole figure and EBSD plots
 % * better interpolation

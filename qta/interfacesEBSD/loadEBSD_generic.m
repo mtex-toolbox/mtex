@@ -3,7 +3,7 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 %
 %% Description 
 %
-% *loadEBSD_txt* is a generic function that reads any txt files of
+% *loadEBSD_txt* is a generic function that reads any txt or exel files of
 % diffraction intensities that are of the following format
 %
 %  alpha_1 beta_1 gamma_1 phase_1
@@ -14,32 +14,31 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 %  .      .       .       .
 %  alpha_M beta_M gamma_M phase_m
 %
-% The actual position and order of the columns in the file can be specified
-% by the option |LAYOUT|. Furthermore, the files can be contain any number
-% of header lines and columns to be ignored using the options |HEADER| and
-% |HEADERC|.
+% The assoziation of the columns as Euler angles, phase informationl, etc.
+% is specified by the options |ColumnNames| and |Columns|. The files can be
+% contain any number of header lines.
 %
 %% Syntax
 %  pf   = loadEBSD_txt(fname,<options>)
-%  pf   = loadEBSD_txt(fname,'layout',[col_phi1,col_Phi,col_phi2]
 %
 %% Input
 %  fname - file name (text files only)
 %
 %% Options
+%  ColumnNames       - names of the colums to be imported, mandatory are euler 1, euler 2, euler 3 
+%  Columns           - postions of the columns to be imported
 %  RADIANS           - treat input in radiand
 %  DELIMITER         - delimiter between numbers
 %  HEADER            - number of header lines
-%  HEADERC           - number of header colums
 %  BUNGE             - [phi1 Phi phi2] Euler angle in Bunge convention (default)
-%  ABG               - [alpha beta gamma] Euler angle in Mathies convention 
-%  LAYOUT            - colums of the Euler angle (default [1 2 3])
-%  XY                - colums of the xy data
+%  ABG               - [alpha beta gamma] Euler angle in Mathies convention
 %
 % 
 %% Example
 %
-% ebsd = loadEBSD('ebsd.txt',symmetry('cubic'),symmetry,'header',1,'layout',[5,6,7]) 
+% ebsd = loadEBSD('ebsd.txt',symmetry('cubic'),symmetry,'header',1,...
+%        'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'x' 'y' 'phase'},...
+%        'Columns',[1,2,3,5,6,7])
 %
 %% See also
 % interfacesEBSD_index loadEBSD ebsd_demo
@@ -54,6 +53,34 @@ ss = get_option(varargin,'ss',symmetry('-1'));
 % no data found
 if size(d,1) < 1 || size(d,2) < 3
   error('Generic interface could not detect any numeric data in %s',fname);
+end
+
+% check for old version call
+if check_option(varargin,'layout')
+  
+  warning('MTEX:obsoleteSyntax',...
+    ['Option ''layout'' is obsolete. ' ...
+    'Use ''ColumnNames'' and ''Columns'' instead. '...
+    'You might also simply rerun the import wizzard.']);
+  layout = get_option(varargin,'layout');
+  varargin = delete_option(varargin,'layout',1);
+  ColumnNames = {'Euler 1','Euler 2','Euler 3'};
+  Columns = layout(1:3);
+  
+  if length(layout) == 4
+    ColumnNames = {ColumnNames{:},'Phase'};
+    Columns = layout;
+  end
+  
+  if check_option(varargin,'xy')
+    xy = get_option(varargin,'xy');
+    ColumnNames = {ColumnNames{:},'x','y'};
+    Columns = [layout,xy];
+    varargin = delete_option(varargin,'xy',1);
+  end
+  
+  
+  varargin = {varargin{:},'ColumnNames',ColumnNames,'Columns',Columns};
 end
 
 % no options given -> ask
