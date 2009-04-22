@@ -26,15 +26,16 @@ function [pf,options] = loadPoleFigure_generic(fname,varargin)
 %
 %% Options
 %  ColumnNames       - content of the columns to be imported
-%  Columns           - columns to be imported
+%  Columns           - positions of the columns to be imported
 %  RADIANS           - treat input in radians
 %  DELIMITER         - delimiter between numbers
 %  HEADER            - number of header lines
-%  LAYOUT            - [theta rho intensity] - (default [1 2 3])
 % 
 %% Example
 %
-%  pf = loadPoleFigure_generic('pf001.txt','HEADER',5,'Layout',[2 3 4],'degree')
+%  pf = loadPoleFigure_generic('pf001.txt','HEADER',5,'degree',...
+%        'ColumnNames',{'polar angle','azimuth angle','intensity'},...
+%        'Columns',[1 2 3])
 %
 %% See also
 % interfaces_index munich_interface loadPoleFigure
@@ -47,6 +48,22 @@ function [pf,options] = loadPoleFigure_generic(fname,varargin)
 if size(d,1) < 10 || size(d,2) < 3
   error('Generic interface could not detect any numeric data in %s',fname);
 end
+
+% check for old version call
+if check_option(varargin,'layout')
+  
+  warning('MTEX:obsoleteSyntax',...
+    ['Option ''layout'' is obsolete. ' ...
+    'Use ''ColumnNames'' and ''Columns'' instead. '...
+    'You might also simply rerun the import wizzard.']);
+  layout = get_option(varargin,'layout');
+  varargin = delete_option(varargin,'layout',1);
+  ColumnNames = {'Polar Angle','Azimuth Angle','Intensity'};
+  Columns = layout(1:3);
+  
+  varargin = {varargin{:},'ColumnNames',ColumnNames,'Columns',Columns};
+end
+
 
 % no options given -> ask
 if ~check_option(varargin,'ColumnNames') || ~check_option(varargin,'Columns')
