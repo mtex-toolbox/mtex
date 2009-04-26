@@ -13,29 +13,31 @@ function out = mtimes(SO3G,q)
 %  SO3Gq - @SO3Grid
 %  SO3Gv - @vector3d
 
-if isa(SO3G,'SO3Grid')
-  if isa(q,'SO3Grid'), q = q.Grid; end
+if isa(SO3G,'SO3Grid') % right multiplication
+  if isa(q,'SO3Grid'), q = quaternion(q); end
   if isa(q,'Miller'), q = vector3d(q,SO3G(1).CS);end
+  q = reshape(q,1,[]);
   if isa(q,'quaternion')
   
-    out= quaternion;
-    for i = 1:length(q)
-      out = [out;SO3G.Grid*q(i)];
+    if numel(q) == 1
+      for i = 1:length(SO3G)
+        SO3G(i).center = SO3G(i).center * q;
+      end
+      out = SO3G;
+    else      
+      out = SO3Grid(quaternion(SO3G).' * q,SO3G.CS,SO3G.SS,...
+        'resolution',getResolution(SO3G));            
     end
-    out = SO3Grid(out,SO3G.CS,SO3G.SS,'resolution',getResolution(SO3G));
-  
   elseif isa(q,'vector3d')
-    out = SO3G.Grid(:) * q;
+    out = quaternion(SO3G).' * q;
   else
     error('type mismatch!')
   end
 elseif isa(SO3G,'quaternion')
   
-  out= quaternion;
-  for i = 1:length(SO3G)
-    out = [out;SO3G(i)*q.Grid];
-  end
-  out = SO3Grid(out,q.CS,q.SS,'resolution',getResolution(q));
+  out = SO3Grid(SO3G(:) * quaternion(q),q.CS,q.SS,...
+    'resolution',getResolution(q));
+  
 else
   error('type mismatch!')
 end

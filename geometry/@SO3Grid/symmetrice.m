@@ -10,5 +10,5 @@ function S3G = symmetrice(S3G,varargin)
 %% See also
 
 cs = S3G(1).CS; ss = S3G(1).SS;
-S3G = SO3Grid(symmetriceQuat(cs,ss,S3G.Grid),cs,ss);
+S3G = SO3Grid(symmetriceQuat(cs,ss,quaternion(S3G)),cs,ss);
 

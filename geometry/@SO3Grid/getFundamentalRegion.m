@@ -13,7 +13,7 @@ function [q,omega] = getFundamentalRegion(S3G,varargin)
 
 q_ref = get_option(varargin,'center',idquaternion);
 
-q = symmetriceQuat(S3G.CS,symmetry,S3G.Grid);
+q = symmetriceQuat(S3G(1).CS,symmetry,quaternion(S3G));
 omega = rotangle(q * inverse(q_ref));
 
 [omega,q] = selectMinbyRow(omega,q);

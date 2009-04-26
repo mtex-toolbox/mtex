@@ -27,7 +27,7 @@ if (ishold && strcmp(get(gca,'tag'),'ebsd_raster')) || ...
     if ~check_option(varargin,'no_projection')
       q = getFundamentalRegion(SO3G(i),varargin{:});
     else
-      q = SO3G(i).Grid;
+      q = quaternion(SO3G(i));
     end
     
     plot(q,varargin{:});
@@ -41,7 +41,7 @@ else
   
   for i = 1:numel(v)
 
-    plot(S2Grid(SO3G.Grid.*v(i)),'dots',varargin{:});
+    plot(S2Grid(quaternion(SO3G).*v(i)),'dots',varargin{:});
     hold all
   end  
   
