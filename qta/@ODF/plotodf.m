@@ -41,7 +41,7 @@ newMTEXplot;
 % generate grids
 [S3G,S2G,sec] = SO3Grid('plot',odf(1).CS,odf(1).SS,varargin{:});
 
-rot = get(S3G,'Grid');
+rot = reshape(quaternion(S3G),GridSize(S3G));
 
 %% ------------------------- plot -----------------------------------------
 sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma'},'sigma');

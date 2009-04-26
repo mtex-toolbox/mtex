@@ -48,8 +48,8 @@ annotate([xvector,yvector,zvector],'label',{'x','y','z'},...
 % The command <annotate.html annotate> allows also to plot
 % <Miller_index.html crystal directions> to inverse pole figures.
 
-plotipdf(odf,[xvector,zvector],'gray','reduced')
-annotate([Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(0,0,1,cs)],'all','labeled')
+plotipdf(odf,[xvector,zvector],'gray','reduced','marginx',10,'minmax','off')
+annotate([Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(0,0,1,cs),Miller(2,-1,0)],'all','labeled')
 set(gcf,'position',[139 258 672 266])
 
 
@@ -58,7 +58,7 @@ set(gcf,'position',[139 258 672 266])
 % One can also mark specifc orientations in pole figure, inverse pole
 % figures
 
-plotipdf(odf,[xvector,zvector],'gray','reduced')
+plotipdf(odf,[xvector,zvector],'gray','reduced','marginx',10,'minmax','off')
 annotate(q0,...
     'marker','s','MarkerSize',6,'MarkerFaceColor','r',...
     'label','$q_0$','color','b')

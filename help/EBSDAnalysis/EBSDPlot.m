@@ -36,9 +36,10 @@ plotipdf(ebsd,xvector)
 % plots using the commands *hold on* and *hold off*. Morover, the phase to
 % be plotted can be explicitely specified by the option *phase*:
 
-plotipdf(ebsd,xvector,'MarkerSize',1,'phase',1,'complete','reduced')
+close all
+plotipdf(ebsd,xvector,'MarkerSize',3,'phase',1,'complete','reduced','points',100)
 hold on
-plotipdf(ebsd,xvector,'MarkerSize',1,'phase',2,'MarkerColor','r','complete')
+plotipdf(ebsd,xvector,'MarkerSize',3,'phase',2,'MarkerColor','r','complete','points',100)
 hold off
 
 %% Scatter Plot in ODF Sections
@@ -48,14 +49,13 @@ hold off
 % plot does not become to full. The number of randomly chosen orientations
 % can be explicetly specified by the option *points*.
 
-close all;figure('position',[100 100 500 300])
-plotodf(ebsd,'phase',1,'points',10000)
+close all;figure('position',[100 100 700 400])
+plotodf(ebsd,'phase',1,'points',1000,'MarkerSize',5)
 
 %% Scatter Plot in Axis Angle or Rodriguez Space
 % Another posibility is to plot the single orientations directly into the
 % orientation space - either in axis/angle parameterization or in Rodriguez
 % parameterization.
-
 scatter(ebsd,'phase 1','center',idquaternion)
 
 %% Spatial Single Orientation Plot
@@ -63,7 +63,6 @@ scatter(ebsd,'phase 1','center',idquaternion)
 % If the EBSD data are provided with spatial coordinates, one can 
 % asign a color to each orientation and plots a map of these colors.
 % There are several options to specify the way the colors are assigned.
-
 
 close all;figure('position',[100 100 600 300])
 plot(ebsd,'reduced','phase',1)

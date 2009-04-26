@@ -9,4 +9,4 @@ else
 end
 
 c = [s, ' points, ',...
-	'res.: ',num2str(getResolution(S2G) * 180/pi,2),mtexdegchar];
+	'res.: ',xnum2str(getResolution(S2G) * 180/pi),mtexdegchar];

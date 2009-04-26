@@ -15,7 +15,8 @@ function pf = loadPoleFigure_juelich(fname,varargin)
 fid = efopen(fname);
 fgetl(fid); 
 l = fgetl(fid);
-mtex_assert(strcmp(l,'     alpha      beta intensity'));
+assert(~isempty(regexp(l,'alpha\s*beta\s*intensity','ONCE')),...
+  'MTEX:InterfaceJuelichReadingError');
 fclose(fid);
 
 % call txt interface with the right parameters

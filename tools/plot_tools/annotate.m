@@ -49,7 +49,7 @@ if isa(obj,'quaternion')
   
   if isappdata(gcf,'sections') 
     % precalculate projection if plotted to sections
-    S2G = project2ODFsection(symmetrice(SO3Grid(obj,cs,ss)),...
+    S2G = project2ODFsection(SO3Grid(obj,cs,ss),...
       getappdata(gcf,'SectionType'),getappdata(gcf,'sections'),varargin{:});
   end  
 end

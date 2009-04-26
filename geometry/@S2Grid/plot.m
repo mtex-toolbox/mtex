@@ -157,8 +157,12 @@ bounds = [0,0,0,0];
 %% Northern Hemisphere
 
 if any(strcmpi(hemisphere,'north')) || any(strcmpi(hemisphere,'reduced'))
+  
   if strcmp(hemisphere,'reduced')
-    ind = true(size(theta));    
+    south = theta > pi/2+0.001;
+    rho(south) = rho(south) + pi;
+    theta(south) = pi - theta(south);
+    ind = true(size(theta));
   else
     ind = (theta <= pi/2+0.001) | isnan(theta);
   end
@@ -172,7 +176,8 @@ if any(strcmpi(hemisphere,'north')) || any(strcmpi(hemisphere,'reduced'))
   end
   
   bounds = plotHemiSphere(submatrix(theta,ind),submatrix(rho,ind),...
-    submatrix(data,ind),0,'minrho',min(getMin(S2G.rho)),'maxrho',max(getMax(S2G.rho)),'maxtheta',maxtheta,varargin{:});
+    submatrix(data,ind),0,'minrho',min(getMin(S2G.rho)),'maxrho',...
+    max(getMax(S2G.rho)),'maxtheta',maxtheta,varargin{:});
 end
 
 %% Southern Hemisphere

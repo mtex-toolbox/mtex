@@ -16,10 +16,12 @@ function multiplot(x,y,nplots,varargin)
 %  [cmin cmax] - minimum and maximum value for color coding
 %  fontsize    - fontsize used for anotations
 %  string      - some anotation to be added to the plot
-
+%  marginx     - 
+%  marginy     -
+%  border      -
+%  MINMAX      - display minimum and maximum 
 %
 %% Flags
-%  MINMAX      - display minimum and maximum 
 %  uncroppped  - do not resize window for a cropped plot
 %  SILENT      - no output
 %
@@ -173,7 +175,7 @@ for i = 1:nplots
     catch
     end
     
-    if check_option(varargin,'MINMAX')
+    if check_option(varargin,'MINMAX') && ~strcmp(get_option(varargin,'MINMAX'),'off')
       anotation(a(i),min(Z(:)),max(Z(:)),fs{:});
     end
     if check_option(varargin,'ANOTATION')
