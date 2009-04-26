@@ -1,15 +1,28 @@
-function  [maxTheta,maxRho,v] = getFundamentalRegionPF(cs,varargin)
+function  [maxTheta,maxRho,minRho,v] = getFundamentalRegionPF(cs,varargin)
 % get the fundamental region for (inverse) pole figure
 
+rotate = get_option(varargin,'rotate',0);
 if check_option(varargin,'complete')
+  minRho = 0;
   maxRho = 2*pi;
   maxTheta = pi;  
   v = [];
-else
+else  
+  
   maxRho = rotangle_max_z(cs);
+  if check_option(varargin,'reduced') && rotangle_max_y(cs)/2 < pi
+    maxRho = maxRho / 2;
+  end
   maxTheta = rotangle_max_y(cs,varargin{:})/2;
-    
+  v = [Miller(1,0,0),Miller(1,1,0),Miller(0,1,0),Miller(0,0,1)];
+      
   switch Laue(cs)
+    case '-3m'
+      if check_option(varargin,'reduced') && ...
+        xor(isappr(rem(rotate,60*degree),0),...
+          isappr(norm(xvector - vector3d(Miller(1,0,0,cs))),0))
+        rotate = rotate - 30*degree;
+      end
     case 'm-3m'
       if check_option(varargin,'reduced')
         maxRho = pi/4;  
@@ -29,11 +42,15 @@ else
       end
       v = [Miller(0,0,1),Miller(1,1,0),Miller(1,1,1),Miller(1,-1,1)];
     otherwise
-      v = [Miller(1,0,0),Miller(1,1,0),Miller(0,1,0),Miller(0,0,1)];
-      if check_option(varargin,'reduced') && rotangle_max_y(cs)/2 < pi
-        maxRho = maxRho / 2;
-      end
+            
   end
+  
+  if maxRho < 2*pi 
+    minRho = -rotate;
+    maxRho = maxRho - rotate;
+  end
+  
+  
 end
 
 function maxTheta = maxThetam3(rho)

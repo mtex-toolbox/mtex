@@ -4,7 +4,7 @@ function c = ipdf2rgb(h,cs,varargin)
 
 %% fundamental region
 
-[maxtheta,maxrho] = getFundamentalRegionPF(cs,varargin{:});
+[maxtheta,maxrho,minrho] = getFundamentalRegionPF(cs,varargin{:});
 
 h = vector3d(h); h = h./norm(h);
 switch Laue(cs)

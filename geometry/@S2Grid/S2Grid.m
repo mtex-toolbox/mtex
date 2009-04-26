@@ -58,11 +58,11 @@ end
 minrho = get_option(varargin,'MINRHO',0);
 maxrho = get_option(varargin,'MAXRHO',2*pi);
 drho = maxrho - minrho;
-if ~isappr(drho,2*pi) && check_option(varargin,'rotate')
-  rotate = get_option(varargin,'rotate',0);
-  minrho = minrho -rotate;
-  maxrho = maxrho -rotate;
-end
+%if ~isappr(drho,2*pi) && check_option(varargin,'rotate')
+%  rotate = get_option(varargin,'rotate',0);
+%  minrho = minrho -rotate;
+%  maxrho = maxrho -rotate;
+%end
 
 mintheta = max(get_option(varargin,'MINTHETA',0),mintheta);
 maxtheta_opt = get_option(varargin,'MAXTHETA',pi);
