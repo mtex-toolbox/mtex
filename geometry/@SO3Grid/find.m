@@ -15,7 +15,7 @@ function [ind,d] = find(SO3G,q,epsilon,varargin)
 
 if ~check_option(SO3G,'indexed') || check_option(varargin,'exact')
 
-  d = dist(SO3G.CS,SO3G.SS,q,SO3G.Grid);
+  d = dist(SO3G(1).CS,SO3G(1).SS,q,quaternion(SO3G));
   
   if nargin == 2
     [d,ind] = selectMaxbyRow(d,1:size(d,2));
@@ -27,6 +27,9 @@ elseif GridLength(SO3G) == 0
   ind = [];
   d = [];
 else
+  
+  % rotate q according to SO3Grid.center
+  q = q * inverse(SO3G.center);
   
   % correct for crystal and specimen symmetry
   qcs = quaternion_special(SO3G.CS);

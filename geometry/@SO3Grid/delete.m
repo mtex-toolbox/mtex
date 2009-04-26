@@ -1,4 +1,4 @@
-function NG = delete(N,ind)
+function S3G = delete(S3G,ind)
 % clear nodes by indece
 %% Input
 %  SOG    - @SO3Grid
@@ -6,8 +6,8 @@ function NG = delete(N,ind)
 %% Output
 %  "not indexed" SO3Grid
 
-index = 1:length(N.Grid);
+index = 1:length(S3G.Grid);
 index(ind) = [];
-N.Grid = N.Grid(index);
-N.options = delete_option(N.options,'INDEXED');
-NG = N;
+S3G.Grid = S3G.Grid(index);
+S3G.options = delete_option(S3G.options,'INDEXED');
+

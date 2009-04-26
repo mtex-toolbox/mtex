@@ -20,10 +20,13 @@ d = sparse(GridLength(SO3G),numel(q));
 
 if ~check_option(SO3G,'indexed') || check_option(varargin,{'full','all'})
   
-  d = cos(dist(SO3G.CS,SO3G.SS,SO3G.Grid(:),q(:).',varargin{:})/2);
+  d = cos(dist(SO3G.CS,SO3G.SS,quaternion(SO3G).',q(:).',varargin{:})/2);
 
 else
 
+  % rotate q according to SO3Grid.center
+  q = q * inverse(SO3G.center);
+  
   % extract SO3Grid
   [ybeta,yalpha,ialphabeta,palpha] = getdata(SO3G.alphabeta);
   

@@ -24,6 +24,6 @@ for i = 1:length(S3G)
   ind = discretesample(ss(i),ip);
   
   % subsample orientations
-  S3G(i) = subGrid(S3G(i),ind);
+  S3G(i) = subGrid(S3G(i),ind);    
   
 end
