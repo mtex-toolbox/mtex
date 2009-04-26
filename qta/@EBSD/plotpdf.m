@@ -31,6 +31,7 @@ ss = get(grid,'SS');
 if newMTEXplot('ensureTag','pdf',...
     'ensureAppdata',{{'CS',cs},{'SS',ss}})
   argin_check(h,{'Miller'});  
+  h = set(h,'CS',getSym(ebsd));
 else
   h = getappdata(gcf,'h');  
 end

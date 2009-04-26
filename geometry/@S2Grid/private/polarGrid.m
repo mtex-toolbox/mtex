@@ -2,6 +2,9 @@ function polarGrid(offset,varargin)
 % Plot Polar Grid
 % 
 
+% remember colorindex
+colorIndex = getappdata(gca,'PlotColorIndex');
+
 maxrho = getappdata(gcf,'maxrho');
 minrho = getappdata(gcf,'minrho');
 maxtheta = getappdata(gcf,'maxtheta');
@@ -64,3 +67,12 @@ for i = 1:size(rho,2)
     'HorizontalAlignment',ha{r(i)},'VerticalAlignment',va{r(i)}); %#ok<AGROW>
 end
 if exist('h','var'), optiondraw(h);end
+
+% set back color index
+if isappdata(gca,'PlotColorIndex')
+  if isempty(colorIndex)
+    setappdata(gca,'PlotColorIndex',1);
+  else
+    setappdata(gca,'PlotColorIndex',colorIndex);
+  end
+end

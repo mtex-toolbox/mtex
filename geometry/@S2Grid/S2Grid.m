@@ -227,11 +227,13 @@ G = class(G,'S2Grid');
 
 function res = vec2res(vec)
 if numel(vec) < 10, res = 2*pi;return; end
-ind = discretesample(numel(vec),min(100,numel(vec)));
+ind = discretesample(numel(vec),min(50,numel(vec)));
 d = acos(dot_outer(vec(ind),vec(:)));
 d(d<0.005) = pi/2;
 %res = quantile(min(d,[],2),0.25);
 res = quantile(min(d,[],2),0.5);
+
+
 
 function ntheta = N2ntheta(N,maxtheta,maxrho)
 ntheta = 1;

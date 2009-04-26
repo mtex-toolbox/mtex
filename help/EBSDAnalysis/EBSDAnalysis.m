@@ -22,7 +22,7 @@ cs = symmetry('m-3m');      % crystal symmetry
 ss = symmetry('triclinic'); % specimen symmetry
 
 % file names
-fnames = [mtexDataPath '/aachen_ebsd/85_829grad_07_09_06.txt'];
+fname = [mtexDataPath '/aachen_ebsd/85_829grad_07_09_06.txt'];
 
 % load data
 ebsd = loadEBSD(fname,cs,ss,... 
@@ -46,7 +46,7 @@ plot(ebsd,'reduced')
 
 colorbar
 hold on
-plotipdf(ebsd,'markerSize',3,'points',500,'marker','o','markerfacecolor','none','markeredgecolor','k')
+plotipdf(ebsd,xvector,'markerSize',3,'points',500,'marker','o','markerfacecolor','none','markeredgecolor','k')
 set(gcf,'renderer','opengl')
 hold off
 
