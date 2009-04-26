@@ -19,8 +19,8 @@ varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
 % S2 Grid
-[maxtheta,maxrho,v] = getFundamentalRegionPF(cs,varargin{:});
-h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'resolution',1*degree,varargin{:});
+[maxtheta,maxrho,minrho,v] = getFundamentalRegionPF(cs,varargin{:});
+h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'resolution',1*degree,varargin{:});
 
 d = colorcoding(h);
 

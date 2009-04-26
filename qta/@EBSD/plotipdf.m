@@ -17,7 +17,7 @@ function plotipdf(ebsd,r,varargin)
 % SphericalProjection_demo 
 
 %% make new plot
-grid = getgrid(ebsd,'checkPhase',varargin{:});
+[grid,ind] = getgrid(ebsd,'checkPhase',varargin{:});
 cs = get(grid,'CS');
 ss = get(grid,'SS');
 
@@ -33,6 +33,14 @@ else
   varargin = {o{:},varargin{:}};
 end
 
+%% colorcoding
+if check_option(varargin,'colorcoding')
+  cc = get_option(varargin,'colorcoding');  
+  data = get(ebsd(ind),cc);  
+else
+  data = [];
+end
+
 
 %% get options
 varargin = set_default_option(varargin,...
@@ -44,14 +52,16 @@ if sum(GridLength(grid))*length(cs)*length(ss) > 100000 || check_option(varargin
   grid = subsample(grid,points);
 end
 
+
 %% plotting grid
 h = @(i) reshape(inverse(quaternion(ss * grid * cs)),[],1) * r(i);
 
-[maxtheta,maxrho] = getFundamentalRegionPF(cs,varargin{:});
-Sh = @(i) S2Grid(h(i),'MAXTHETA',maxtheta,'MAXRHO',maxrho,varargin{:});
+[maxtheta,maxrho,minrho] = getFundamentalRegionPF(cs,varargin{:});
+Sh = @(i) S2Grid(h(i),'MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,varargin{:});
+
 
 %% plot
-multiplot(@(i) Sh(i),@(i) [],length(r),...
+multiplot(@(i) Sh(i),@(i) data,length(r),...
   'ANOTATION',@(i) r(i),...
   'appdata',@(i) {{'r',r(i)}},...
   'dynamicMarkerSize', varargin{:});
