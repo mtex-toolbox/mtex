@@ -48,6 +48,8 @@ else
   if maxRho < 2*pi 
     minRho = -rotate;
     maxRho = maxRho - rotate;
+  else
+    minRho = 0;
   end
   
   
