@@ -9,7 +9,7 @@ function scatter(ebsd,varargin)
 %
 %% Options
 %  AXISANGLE     - axis angle projection
-%  RODRIGUEZ     - rodriguez parameterization
+%  RODRIGUES     - rodrigues parameterization
 %  POINTS        - number of orientations to be plotted
 %  CENTER        - orientation center
 %

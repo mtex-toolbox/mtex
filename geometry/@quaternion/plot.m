@@ -5,7 +5,7 @@ function varargout = plot(q,varargin)
 %  q - Quaternion
 %
 %% Options
-%  RODRIGUEZ - plot in rodriguez space
+%  RODRIGUES - plot in rodrigues space
 %  AXISANGLE - plot in axis / angle
 %
 %% See also
@@ -13,7 +13,7 @@ function varargout = plot(q,varargin)
 %% two dimensional plot -> S2Grid/plot
 
 if ~(ishold && strcmp(get(gca,'tag'),'ebsd_raster')) && ...  
-  ~check_option(varargin,{'scatter','rodriguez','axisangle'}) 
+  ~check_option(varargin,{'scatter','rodrigues','axisangle'}) 
 
   if numel(q) == 1
   
@@ -68,8 +68,8 @@ if check_option(varargin,'GRAY'),colormap(flipud(colormap('gray'))/1.2);end
 
 if isappdata(gcf,'projection')  
   projection = getappdata(gcf,'projection');
-elseif check_option(varargin,{'rodriguez'})  
-  projection = 'rodriguez';
+elseif check_option(varargin,{'rodrigues'})  
+  projection = 'rodrigues';
 else
   projection = 'axisangle';  
 end
@@ -77,8 +77,8 @@ setappdata(gcf,'projection',projection);
 set(gca,'tag','ebsd_raster');
 
 switch projection
-  case 'rodriguez'
-    v = quat2rodriguez(q);
+  case 'rodrigues'
+    v = quat2rodrigues(q);
     v = v(abs(v) < 1e5);
     [x,y,z] = double(v);
   case 'axisangle'

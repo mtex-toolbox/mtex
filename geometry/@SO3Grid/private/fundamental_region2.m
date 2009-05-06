@@ -10,9 +10,9 @@ omega = rotangle(c_sym * inverse(center));
 [omega,c_sym] = selectMinbyRow(omega,c_sym);
 
 
-% convert to rodriguez space
-rq = quat2rodriguez(q); clear q;
-rc_sym = quat2rodriguez(c_sym); 
+% convert to rodrigues space
+rq = quat2rodrigues(q); clear q;
+rc_sym = quat2rodrigues(c_sym); 
 
 % find rotation not part of the fundamental region
 ind = true(numel(rq),1);

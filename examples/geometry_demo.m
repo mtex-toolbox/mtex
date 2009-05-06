@@ -86,7 +86,7 @@ plot(SO3G * symetriceVec(CS,xvector))
 %%
 % plot
 close all;
-plot(SO3G,'RODRIGUEZ')
+plot(SO3G,'RODRIGUES')
 
 
 
