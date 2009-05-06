@@ -11,7 +11,7 @@
 %
 % *Improved EBSD plotting*
 % 
-% * plot EBSD data in axis angle and Rodriguez space
+% * plot EBSD data in axis angle and Rodrigues space
 % * annotations in these spaces
 % * plot arbitrary properties as MAD, detection error, etc.
 % * better orientation colorcoding

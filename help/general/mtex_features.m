@@ -14,7 +14,7 @@
 % <Miller_symeq.html crystallographically equivalent directions> can be
 % computed. Orientations are represented as <quaternion_index.html
 % quaternions> in MTEX. However, they are methods to convert them into
-% Euler angles, Rodriguez parameters, matrices or axis - angle
+% Euler angles, Rodrigues parameters, matrices or axis - angle
 % parametrization. Quaternions can be applied to Miller indeces, ODFs,
 % pole figure data, and EBSD data to peform rotations. Have also a look 
 % at the <geometry_demo.html Geometry Demo>.

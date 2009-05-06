@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <!-- $Revision: 1.1.6.1 $ $Date: 2004/04/20 22:13:25 $ -->
-<toc version="1.0">
+<toc version="1.2">
 	<tocitem target="mtex_product_page.html" image="mtex_icon.gif">
     MTEX Toolbox
 <tocitem target="mtex_features.html"
@@ -13,6 +13,14 @@
   Getting Started with the MTEX Toolbox
   <tocitem target="configuration.html">Configuration</tocitem>
   <tocitem target="compilation.html">Compilation Guide</tocitem>
+</tocitem>
+
+<tocitem target="CrystalGeometry.html" image="$toolbox/matlab/icons/pagesicon.gif">
+  Crystal Geometry
+  <tocitem target="CrystalSymmetries.html"> Crystal Symmetries </tocitem>
+  <tocitem target="SpecimenDirections.html"> Specimen Directions </tocitem>
+  <tocitem target="CrystalDirections.html"> Crystal Directions </tocitem>
+  <tocitem target="CrystalOrientations.html"> CrystalOrientations </tocitem>
 </tocitem>
 
 <tocitem target="PoleFigureAnalysis.html" image="$toolbox/matlab/icons/pagesicon.gif">
@@ -51,6 +59,7 @@
 <tocitem target="ODFAnalysis.html"
 	 image="$toolbox/matlab/icons/pagesicon.gif">
   ODF Analysis
+  <tocitem target="ODFPlot.html">Visualising ODFs</tocitem>
   <tocitem target="ModelODFs.html">Model ODFs</tocitem>
   <tocitem target="ODFCalculations.html">ODF Calculations</tocitem>
   <tocitem target="PoleFigureSimulation_demo.html"> Pole Figure Simulation</tocitem>
