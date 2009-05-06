@@ -5,7 +5,7 @@ function plot(SO3G,varargin)
 %  SO3G - @SO3Grid
 %
 %% Options
-%  RODRIGUEZ    - plot in rodriguez space
+%  RODRIGUES    - plot in rodrigues space
 %  AXISANGLE    - plot in axis angle space
 %  CENTER       - reference orientation
 %  
@@ -14,7 +14,7 @@ washold = ishold;
 
 %% Three Dimensional Plot
 if (ishold && strcmp(get(gca,'tag'),'ebsd_raster')) || ...
-  (check_option(varargin,{'RODRIGUEZ','AXISANGLE','scatter'}) || sum(GridLength(SO3G)) > 50)
+  (check_option(varargin,{'RODRIGUES','AXISANGLE','scatter'}) || sum(GridLength(SO3G)) > 50)
 
   for i = 1:length(SO3G)
    

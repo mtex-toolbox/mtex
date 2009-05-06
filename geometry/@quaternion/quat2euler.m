@@ -17,7 +17,7 @@ function [alpha,beta,gamma] = quat2euler(quat,varargin)
 %  ABG   - Matthies (alpha,beta,gamma) convention (default)
 %  BUNGE - Bunge (phi, Phi, phi2) convention
 %% See also
-% quaternion/quat2rodriguez
+% quaternion/quat2rodrigues
 
 if check_option(varargin,'BUNGE')
   gamma = atan2(quat.b .* quat.d - quat.a .* quat.c,...

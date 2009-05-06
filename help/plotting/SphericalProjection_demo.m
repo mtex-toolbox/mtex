@@ -51,6 +51,27 @@ plotpdf(odf,Miller(1,1,0),'south')
 
 plotpdf(odf,Miller(1,1,0),'reduced')
 
+%% Rotate and Flip Plots
+%
+% Sometimes it is more convenient to have the coordinate system rotated or
+% flipped in some way. For this reason all plot commands in MTEX allows for
+% the options *rotate*, *flipud* and *fliplr*. A more direct way for
+% changing the orientation of the plot is to specify the direction of the
+% x-axis by the commands <plotx2east.html plotx2east>, <plotx2north.html
+% plotx2north>, <plotx2west.html plotx2west>, <plotx2south.html
+% plotx2south>.
+
+plotx2north
+
+plotpdf(odf,Miller(1,0,0),'reduced')
+annotate([xvector,yvector,zvector],'data',{'X','Y','Z'},'backgroundcolor','w');
+
+%%
+plotx2east
+
+plotpdf(odf,Miller(1,0,0),'reduced')
+annotate([xvector,yvector,zvector],'data',{'X','Y','Z'},'backgroundcolor','w');
+
 
 %% Equal Area Projection (Schmidt Projection)
 %
@@ -100,12 +121,3 @@ plotodf(santafee,'alpha','sections',18,'resolution',5*degree,...
 close all; 
 plotpdf(odf,Miller(1,0,0),'3d')
 
-
-%% Rotate and Flip Plots
-%
-% Sometimes it is more convenient to have the coordinate system rotated or
-% flipped in some way. For this reason all plot commands in MTEX allows for
-% the options *rotate*, *flipud* and *fliplr*.
-
-plotpdf(odf,Miller(1,0,0),'reduced','rotate',90*degree)
-annotate([xvector,yvector,zvector],'data',{'X','Y','Z'},'backgroundcolor','w');

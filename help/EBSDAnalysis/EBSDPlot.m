@@ -52,9 +52,9 @@ hold off
 close all;figure('position',[100 100 700 400])
 plotodf(ebsd,'phase',1,'points',1000,'MarkerSize',5)
 
-%% Scatter Plot in Axis Angle or Rodriguez Space
+%% Scatter Plot in Axis Angle or Rodrigues Space
 % Another posibility is to plot the single orientations directly into the
-% orientation space - either in axis/angle parameterization or in Rodriguez
+% orientation space - either in axis/angle parameterization or in Rodrigues
 % parameterization.
 scatter(ebsd,'phase 1','center',idquaternion)
 

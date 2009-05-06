@@ -10,7 +10,7 @@ function plot(ebsd,varargin)
 %% Options
 %  SCATTER       - three dimensional scatter plot
 %  AXISANGLE     - axis angle projection
-%  RODRIGUEZ     - rodriguez parameterization
+%  RODRIGUES     - rodrigues parameterization
 %  POINTS        - number of orientations to be plotted
 %  CENTER        - reference orientation
 %
@@ -19,7 +19,7 @@ function plot(ebsd,varargin)
 
 
 % determine plot type
-if check_option(varargin,{'scatter','axisangle','rodriguez'})
+if check_option(varargin,{'scatter','axisangle','rodrigues'})
   scatter(ebsd,varargin{:});
 elseif check_option(varargin,{'sections','sigma','phi1','phi2','alpha','gamma'})
   plotodf(ebsd,varargin{:});

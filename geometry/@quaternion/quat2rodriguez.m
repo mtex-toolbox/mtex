@@ -1,8 +1,8 @@
-function v = quat2rodriguez(q)
-% quaternion to rodriguez representation
+function v = quat2rodrigues(q)
+% quaternion to rodrigues representation
 %
 %% Description
-% calculates the Rodriguez vector for an rotation |q|
+% calculates the Rodrigues vector for an rotation |q|
 %
 %% Input
 %  q - @quaternion

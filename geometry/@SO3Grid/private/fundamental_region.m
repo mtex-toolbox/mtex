@@ -25,11 +25,11 @@ switch Laue(ss)
 end 
 
 % find rotation not part of the fundamental region
-rodriguez = quat2rodriguez(q); clear q;
-ind = false(numel(rodriguez),1);
+rodrigues = quat2rodrigues(q); clear q;
+ind = false(numel(rodrigues),1);
 for i = 1:length(c)
   for j = 1:length(c{i}.v)
-    p = dot(rodriguez,1/norm(c{i}.v(j)) * c{i}.v(j));
+    p = dot(rodrigues,1/norm(c{i}.v(j)) * c{i}.v(j));
     ind = ind | (p(:)>c{i}.h);
   end
 end
