@@ -31,7 +31,7 @@ if check_option(varargin, {'general','all'})
   copyfile([mtex_path,'/COPYING'],[mtex_path,'/help/html/COPYING.txt']);
   copyfile([mtex_path,'/VERSION'],[mtex_path,'/help/html/VERSION.txt']);
   
-  current_path = [mtex_path '/help/general'];
+  current_path = [mtex_path '/help/general','all'];
   files = dir([current_path '/*.m']);
   publish_files({files.name},current_path,'out_dir',html_path,varargin{:});
 end
@@ -84,7 +84,6 @@ if check_option(varargin, {'mfiles','all'})
   
   end
 
-
  % publish all script_files in help/classes directory
  files = dir([html_path '/script_*.m']);
  publish_files({files.name},html_path,'out_dir',html_path,...
@@ -93,54 +92,28 @@ if check_option(varargin, {'mfiles','all'})
  
 end
 
-%% process PoleFigureAnalysis files
+%% process special topics
+topics = {'CrystalGeometry','PoleFigureAnalysis','EBSDAnalysis','ODFAnalysis','plotting','interfaces'};
 
-if check_option(varargin, {'PoleFigureAnalysis','all','demos'})
+for i = 1:length(topics)
+
+  if check_option(varargin, {topics{i},'all','all-'})    
+    current_path = [mtex_path '/help/' topics{i}];
+    files = dir([current_path '/*.m']);
+    publish_files({files.name},current_path,...
+      'stylesheet',[pwd '/mtex_style.xsl'],'out_dir',html_path,'evalcode',1,varargin{:});    
+    try
+      copyfile([current_path,'/*.png'],[mtex_path,'/help/html'])
+    catch %#ok<CTCH>
+    end
+  end
   
-  current_path = [mtex_path '/help/PoleFigureAnalysis'];
-  files = dir([current_path '/*.m']);
-  publish_files({files.name},current_path,...
-    'stylesheet',[pwd '/mtex_style.xsl'],'out_dir',html_path,'evalcode',1,varargin{:});
-end
-
-
-%% calculate EBSDAnalysis files
-
-if check_option(varargin, {'EBSDAnalysis','all','demos'})
-  
-  current_path = [mtex_path '/help/EBSDAnalysis'];
-  files = dir([current_path '/*.m']);
-  publish_files({files.name},current_path,...
-    'stylesheet',[pwd '/mtex_style.xsl'],'out_dir',html_path,'evalcode',1,varargin{:});
-end
-
-
-%% calculate ODFAnalysis files
-
-if check_option(varargin, {'ODFAnalysis','all','demos'})
-  
-  current_path = [mtex_path '/help/ODFAnalysis'];
-  files = dir([current_path '/*.m']);
-  publish_files({files.name},current_path,...
-    'stylesheet',[pwd '/mtex_style.xsl'],'out_dir',html_path,'evalcode',1,varargin{:});
-  copyfile([current_path,'/*.png'],[mtex_path,'/help/html'])
-end
-
-
-%% calculate plotting files
-
-if check_option(varargin, {'plotting','all','demos'})
-  
-  current_path = [mtex_path '/help/plotting'];
-  files = dir([current_path '/*.m']);
-  publish_files({files.name},current_path,'stylesheet',[pwd '/mtex_style.xsl'],...
-    'out_dir',html_path,'evalcode',1,varargin{:});
 end
 
 
 %% calculate examples
 
-if check_option(varargin, {'examples','all','demos'})
+if check_option(varargin, {'examples','all','all-'})
   
   current_path = [mtex_path '/examples'];
   files = dir([current_path '/*.m']);
@@ -148,17 +121,6 @@ if check_option(varargin, {'examples','all','demos'})
     'out_dir',[current_path '/html'],'evalcode',1,varargin{:});
   copyfile([current_path '/html/*.html'],html_path);
   copyfile([current_path '/html/*.png'],html_path);
-end
-
-%% calculate interfaces
-
-if check_option(varargin, {'interfaces','all','demos'})
-
-  current_path = [mtex_path filesep 'help' filesep 'interfaces'];
-  files = dir([current_path filesep '*.m']);
-  publish_files({files.name},current_path,'out_dir',html_path,...
-    'evalcode',1,'stylesheet',[pwd '/mtex_style.xsl'],varargin{:});
-
 end
 
 toc
