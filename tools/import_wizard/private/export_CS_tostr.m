@@ -11,11 +11,15 @@ for i=1:numel(cs)
   [c,angl] = get_axisangel(cs(i));
   axis =  strcat(n2s(c));
   angle =  strcat(n2s([angl{:}]));
-
-  if vector3d(Miller(1,0,0,cs(i))) == -yvector
-    options = ',''a||y''';
+  
+  if ~isempty(strmatch(Laue(cs(i)),{'-3','-3m','-6','6/mmm'}))
+    if vector3d(Miller(1,0,0,cs)) == -yvector
+      options = ',''a||x''';
+    else
+      options = ',''a||y''';
+    end
   else
-    options = '';
+    options ='';
   end
 
   mineral = get(cs(i),'mineral');

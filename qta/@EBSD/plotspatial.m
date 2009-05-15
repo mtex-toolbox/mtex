@@ -36,6 +36,7 @@ switch cc
         h = quat2ipdf(grid,varargin{:});
         d = ipdf2rgb(h,cs,varargin{:});
     end
+    d = reshape(d,[max(size(d)) 1 3]);
   case 'phase'
     d = [];
     for i = 1:length(ebsd)

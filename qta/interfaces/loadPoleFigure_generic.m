@@ -86,34 +86,52 @@ cols = cols(m);
 istype = @(in, a) all(cellfun(@(x) any(find(strcmpi(in,x))),a));
 layoutcol = @(in, a) cols(cellfun(@(x) find(strcmpi(in,x)),a));
 sphcoord = lower({'Polar Angle','Azimuth Angle','Intensity'});
+euclidcoord = lower({'x','y','z','Intensity'});
 
-mtex_assert(istype(names,sphcoord) ...
-  ,'You should at least specify the columns of the spherical coordinates and the intensities!');
+if istype(names,sphcoord)
   
-layout = layoutcol(names,sphcoord);
+  layout = layoutcol(names,sphcoord);
   
-% eliminate nans
-d(any(isnan(d(:,layout)),2),:) = [];
+  % eliminate nans
+  d(any(isnan(d(:,layout)),2),:) = [];
   
-%extract options
-dg = degree + (1-degree)*check_option(varargin,{'RADIAND','radiant','radians'});
+  %extract options
+  dg = degree + (1-degree)*check_option(varargin,{'RADIAND','radiant','radians'});
   
-th = d(:,layout(1))*dg;
-rh = d(:,layout(2))*dg;
-v = d(:,layout(3));
+  th = d(:,layout(1))*dg;
+  rh = d(:,layout(2))*dg;
   
-if max(rh) < 10*degree
-  warndlg('The imported polar angles appears to be quit small, maybe your data are in radians and not in degree as you specified?');
+  
+  if max(rh) < 10*degree
+    warndlg('The imported polar angles appears to be quit small, maybe your data are in radians and not in degree as you specified?');
+  end
+  
+  if all(th<=0), th = -th;end  
+  mtex_assert(all(th>=0 & th <= pi) && ...
+    all(rh>=-360) && all(rh<=720),'Polar coordinates out of range!');
+
+  % specimen directions
+  r = S2Grid(sph2vec(th,rh),'reduced');
+
+elseif istype(names,euclidcoord)
+  
+  layout = layoutcol(names,euclidcoord);
+  
+  % eliminate nans
+  d(any(isnan(d(:,layout)),2),:) = [];
+  
+  % specimen directions
+  r = S2Grid(vector3d(d(:,layout(1:3)).'),'reduced');
+  
+else
+  error('MTEX:MISSINGDATA',...
+    'You should at least specify the columns of the spherical coordinates and the intensities!');
 end
-  
-if all(th<=0), th = -th;end
-mtex_assert(length(v)>=5,'To few data points');
-mtex_assert(all(th>=0 & th <= pi) && ...
-  all(rh>=-360) && all(rh<=720),'Polar coordinates out of range!');
 
-% specimen directions
-r = S2Grid(sph2vec(th,rh),'reduced');
-  
+% intensities
+v = d(:,layout(end));
+mtex_assert(length(v)>=5,'To few data points');
+
 % crystal direction
 h = string2Miller(fname);
   

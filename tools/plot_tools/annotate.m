@@ -37,6 +37,8 @@ varargin(1) = [];
 
 ss = getappdata(gcf,'SS');
 cs = getappdata(gcf,'CS');
+o = getappdata(gcf,'options');
+if ~isempty(o), varargin = {o{:},varargin{:}};end
 
 
 %% special case quaternion
@@ -71,7 +73,7 @@ for i = 1:length(ax)
         
       if isa(obj,'quaternion')
       
-        plot(ss*obj*symeq(h),'MarkerEdgeColor','w',varargin{:});
+        plot(ss*obj*symeq(h,varargin{:}),'MarkerEdgeColor','w',varargin{:});
         
       elseif isa(obj,'vector3d')
       
@@ -88,7 +90,7 @@ for i = 1:length(ax)
       r = getappdata(gca,'r');
     
       if isa(obj,'quaternion')
-        sr = inverse(obj)*(ss*(r./norm(r)));
+        sr = inverse(obj)*symetriceVec(ss,r./norm(r),varargin{:});
         plot(cs*sr(:).','MarkerEdgeColor','w',varargin{:});
       elseif isa(obj,'Miller')
       

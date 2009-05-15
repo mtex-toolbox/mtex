@@ -60,7 +60,7 @@ dmin = min(d,[],2);
 
 ind = dmin < tol;
 if ~any(ind)
-  warning(['There was no orientation plotted because there was no section within tolerance.',...
+  warning('MTEX:BadSectioning',['There was no orientation plotted because there was no section within tolerance.',...
     ' You may want to increase the tolerance by setting the option ''tolerance''.'])
   return;
 end

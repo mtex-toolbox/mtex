@@ -30,9 +30,9 @@ for i = 1:length(pfmeas)
   
   % evaluate ODF if neccesary
   if isa(pfcalc,'ODF')
-    pf(i) = simulatePoleFigure(pfcalc,pfmeas(i).h,pfmeas(i).r,'superposition',pfmeas(i).c);
+    pf(i) = simulatePoleFigure(pfcalc,pfmeas(i).h,pfmeas(i).r,'superposition',pfmeas(i).c); %#ok<AGROW>
   else
-    pf(i) = pfcalc(i);
+    pf(i) = pfcalc(i); %#ok<AGROW>
   end
   
   % normalization
@@ -49,11 +49,11 @@ for i = 1:length(pfmeas)
     epsilon = get_option(varargin,'RP',1,'double');
     ind = d2 > epsilon*alpha;
     d = abs(d1(ind)-d2(ind))./d2(ind);
-    pf(i).r = delete(pf(i).r,~ind);
+    pf(i).r = delete(pf(i).r,~ind); %#ok<AGROW>
   else
     epsilon = get_option(varargin,'epsilon',1,'double');
     d = abs(d1-d2)./min(d1+epsilon*alpha,d2+epsilon*alpha);
   end
-  pf(i).data = d;
+  pf(i).data = d; %#ok<AGROW>
   progress(i,length(pfmeas));
 end

@@ -15,7 +15,7 @@ function newFigure = newMTEXplot(varargin)
 
 %% new figure
 
-if (nargin == 0) || check_option(varargin,'newFigure')
+if ~ishold || (nargin == 0) || check_option(varargin,'newFigure')
   newFigure = true;
 else
   newFigure = false;

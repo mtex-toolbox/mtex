@@ -30,7 +30,7 @@ else
   end
   r = getappdata(gcf,'r');
   o = getappdata(gcf,'options');
-  varargin = {o{:},varargin{:}};
+  if ~isempty(o), varargin = {o{:},varargin{:}};end
 end
 
 %% colorcoding
@@ -54,8 +54,7 @@ end
 
 
 %% plotting grid
-h = @(i) reshape(inverse(quaternion(ss * grid * cs)),[],1) * r(i);
-
+h = @(i) reshape(inverse(quaternion(grid * cs)),[],1) * symetriceVec(ss,r(i));
 [maxtheta,maxrho,minrho] = getFundamentalRegionPF(cs,varargin{:});
 Sh = @(i) S2Grid(h(i),'MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,varargin{:});
 

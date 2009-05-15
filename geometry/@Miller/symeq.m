@@ -1,4 +1,4 @@
-function m = symeq(m1,m2)
+function m = symeq(m1,varargin)
 % directions symmetrically equivalent to m1
 %% Syntax
 %  m = symeq(m1)    - Miller indice symmetrically equivalent to m1
@@ -11,8 +11,8 @@ function m = symeq(m1,m2)
 %  m - @Miller
 %  e - logical
 
-if nargin == 1
-  m = vec2Miller(symvec(m1),m1.CS);  
+if nargin > 1 && isa(varargin{1},'Miller')
+  m = isnull(angle(m1,varargin{1},varargin{2:end}));  
 else
-  m = isnull(angle(m1,m2));
+  m = vec2Miller(symvec(m1,varargin{:}),m1.CS);  
 end

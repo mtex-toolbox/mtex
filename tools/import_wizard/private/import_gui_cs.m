@@ -82,7 +82,7 @@ handles.axis_alignment = uicontrol(...
   'String',blanks(0),...
   'Style','popup',...
   'CallBack',@update_cs,...
-  'String',{'a parallel x','a parallel y'},...
+  'String',{'m parallel x','m parallel y'},...
   'Value',1);
 
 uicontrol(...
@@ -221,10 +221,16 @@ set(handles.crystal,'value',csname(1));
 % set axes
 [c, angle] = get_axisangel(cs);
  
-if vector3d(Miller(1,0,0,cs)) == -yvector
-  set(handles.axis_alignment,'value',2);
+if ~isempty(strmatch(Laue(cs),{'-3','-3m','-6','6/mmm'}))
+  set(handles.axis_alignment,'string',{'a parallel y','a parallel x'});
+  if vector3d(Miller(1,0,0,cs)) == -yvector
+    set(handles.axis_alignment,'value',2);
+  else
+    set(handles.axis_alignment,'value',1);
+  end
 else
   set(handles.axis_alignment,'value',1);
+  set(handles.axis_alignment,'string',{''});
 end
 
 for k=1:3 
@@ -264,10 +270,10 @@ end
 mineral = get(handles.mineral,'string');
 
 alignment = get(handles.axis_alignment,'Value');
-if alignment == 2
+if alignment == 1
   cs = symmetry(cs,[axis{:}],[angle{:}]*degree,'a||y','mineral',mineral);
 else
-  cs = symmetry(cs,[axis{:}],[angle{:}]*degree,'mineral',mineral);
+  cs = symmetry(cs,[axis{:}],[angle{:}]*degree,'a||x','mineral',mineral);
 end
 
 if isa(data,'EBSD')

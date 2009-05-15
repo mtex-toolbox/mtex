@@ -17,13 +17,13 @@ try
       %case {'-3m' '3n' '3' '2' '62' '6'}
       %  options = {'a||y'};
       case '2'
-        options = {'a||y'};
+        options = {'a||x'};
         warning('MTEX:unsupportedSymmetry','symmetry not yet supported!')
       case '20'
         laue = '2';
       otherwise
         if lattice(6) ~= 90
-          options = {'a||y'};
+          options = {'a||x'};
         end
     end
     cs(phase) = symmetry(laue,lattice(1:3)',lattice(4:6)'*degree,'mineral',mineral,options{:}); %#ok<AGROW>
