@@ -9,6 +9,11 @@ switch vname
     value = [obj.(vname)];
   case 'data'
     value = [obj.orientations];
+  case 'quaternions'
+    value = quaternion();
+    for i = 1:length(obj)
+      value = [value;reshape(quaternion(obj(i).orientations),[],1)]; %#ok<AGROW>
+    end
   case 'x'
     for i = 1:length(obj)
       value = [value;obj(i).xy(:,1)]; %#ok<AGROW>

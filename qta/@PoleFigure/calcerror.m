@@ -32,16 +32,17 @@ argin_check(rec,{'ODF','PoleFigure'});
 pf = calcerrorpf(pf,rec,varargin{:});
 
 % calc error
+e = zeros(1,numel(pf));
 for i = 1:length(pf)
   
   e(i) = sum(pf(i).data(:));
   
   if check_option(varargin,'l1')
-    e(i) = e(i)/sum(abs(pf(i).data(:)));
+    e(i) = e(i)/sum(abs(pf(i).data(:))); % L^1 error
   elseif check_option(varargin,'l2')
-    e(i) = e(i)/sum((pf(i).data(:)).^2);
-  else
-    e(i) = e(i)/GridLength(pf(i));
+    e(i) = e(i)/sum((pf(i).data(:)).^2); % L^2 error
+  else 
+    e(i) = e(i)/GridLength(pf(i));       % RP error
   end
 end
 

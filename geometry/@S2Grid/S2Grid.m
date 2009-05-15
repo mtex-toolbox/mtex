@@ -99,9 +99,16 @@ elseif isa(varargin{1},'vector3d')	% grid from vector3d
 	G.rho = S1Grid([],minrho,maxrho);
 	G.Grid = varargin{1};
   [theta,rho] = vec2sph(G.Grid);
-    
+
+  if check_option(varargin,'reduced')
+    ind = theta > pi/2;
+    G.Grid(ind) = -G.Grid(ind);
+    theta(ind) = pi - theta(ind);
+    rho(ind) = mod(pi + rho(ind),2*pi);
+  end
+  
   G.Grid = G.Grid(theta<=maxtheta+1e-06 & inside(rho,minrho,maxrho));
-	G.options = {};
+  G.options = {};
 	
 elseif check_option(varargin,'plot') && exist('maxthetafun','var')
   

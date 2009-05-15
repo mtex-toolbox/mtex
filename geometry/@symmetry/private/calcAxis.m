@@ -41,15 +41,15 @@ switch System
   case 'tetragonal'
     saxis = [axis(1)*xvector,axis(1)*yvector,axis(end)*zvector];
   case {'trigonal','hexagonal'}
-    if check_option(varargin,'a||y')
+    if check_option(varargin,'a||x')
       saxis = [axis(1)*vector3d(cos(2*pi/3),-sin(2*pi/3),0),...
         axis(1)*xvector,...
         axis(end)*zvector];
-    elseif  check_option(varargin,'a||x')
+    elseif  check_option(varargin,'b||x')
       saxis = [axis(1)*xvector,...
         axis(1)*vector3d(cos(2*pi/6),sin(2*pi/6),0),...
         axis(end)*zvector];
-    else
+    else % a||y
       saxis = [axis(1)*vector3d(cos(pi/6),-sin(pi/6),0),...
         axis(1)*yvector,axis(end)*zvector];
     end

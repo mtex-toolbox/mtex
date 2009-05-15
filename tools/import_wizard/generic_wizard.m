@@ -33,7 +33,7 @@ if check_option(varargin,'type')
     case 'EBSD'
       values = {'Ignore','Euler 1','Euler 2','Euler 3','x','y','Phase','Quat real','Quat i','Quat j','Quat k','Weight'};
     case 'PoleFigure'
-      values = {'Ignore','Polar Angle','Azimuth Angle','Intensity','Background'};
+      values = {'Ignore','Polar Angle','Azimuth Angle','Intensity','Background','x','y','z'};
     otherwise
       disp('wrong option');
       return
