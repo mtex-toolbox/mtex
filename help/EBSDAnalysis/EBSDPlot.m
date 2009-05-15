@@ -50,7 +50,7 @@ hold off
 % can be explicetly specified by the option *points*.
 
 close all;figure('position',[100 100 700 400])
-plotodf(ebsd,'phase',1,'points',1000,'MarkerSize',5)
+plotodf(ebsd,'phase',1,'points',1000,'MarkerSize',5,'reduced')
 
 %% Scatter Plot in Axis Angle or Rodrigues Space
 % Another posibility is to plot the single orientations directly into the

@@ -22,27 +22,92 @@ cs = symmetry('trigonal');
 m = Miller(1,0,-1,1,cs)
 m = vec2Miller(zvector,cs)
 
-%% Calculations
-%
-% Basic calculations on Miller indece includes aplying a certain
-% orientation to obtain the corresponding specimen directions or applying a
-% [[symmetry_index.html,crystal symmetry class]] to obtain all
-% crystallographically equivalent specimen directions. Other methods to
-% calculate or check for crystallographically equivalent Miller indece are
-% [[Miller_symvec.html,symvec]] and [[Miller_symeq.html,symeq]]. In order
-% to calculate the angle between two Miller indece use [[Miller_angle.html,angle]]
-
-euler2quat(0,0,45*degree) * m; % applying a orientation
-cs * m;                        % applying a symmetry class
-symvec(m);                     % all equivalent directions 
-symeq(Miller(1,0,-1,0,cs),Miller(0,1,-1,0,cs)); % check for equivalents
-angle(Miller(1,0,-1,0,cs),Miller(0,1,-1,0,cs)); % angle between both directions
-
-
 %% Plotting Miller indece
 %
 % Miller indece are plotted as spherical projections. The specific
 % projection as well as wheter to plot all equivalent directions can be
 % specified by options.
 
+plot(Miller(2,1,-3,1,cs))   % plot Miller indece
+
+%% Plotting Miller indece
+%
+% By providing the options *all* and *labeled* all symmetrically equivalent
+% crystal directions are plotted together with there correct Miller indice.
+
 plot(Miller(2,1,-3,1,cs),'all','labeled')   % plot Miller indece
+
+%% Symmetrically Equivalent Crystal Directions
+%
+% A simple way to compute all symmetrically equivalent
+% directions to a given crystal direction is proveded by the command
+% <Miller_symeq.html symeq>
+
+m = Miller(1,1,-2,0,cs)
+symeq(m)
+
+%% 
+% As allways the keyword *reduced* adds antipodal symmetry to this
+% computation
+
+symeq(m,'reduced')
+
+%%
+% The command <Miller_symeq.html symeq> can also be used to check whether
+% two crystal directions are symmetrically equivalent. Compare
+
+symeq(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs))
+
+%%
+% and
+
+symeq(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'reduced')
+
+%% Angles
+%
+% The angle between two crystall directions m1 and m2 is defined as the
+% smallest angle between m1 and all symmetrically equivalent directions to
+% m2. This angle in radiand is calculated by the funtion <Miller_angle.html
+% angle> 
+
+angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs))/degree
+
+%% 
+% As allways the keyword *reduced* adds antipodal symmetry to this
+% computation
+
+angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'reduced')/degree
+
+%% Conversations
+%
+% Converting Miller indice into a three dimensional vector is straight
+% forward using the command <Miller_vectord3d.html vectord3d>.
+
+vector3d(m)
+
+% Conversion into spherical coordinates requires the function <vec2sph.html
+% vec2sph> 
+
+[theta,rho] = vec2sph(vector3d(m))
+
+%% Calculations
+%
+% Given a crystal orientation
+
+cs = symmetry('cubic');
+q = brassOrientation(cs);
+
+%%
+% one can apply it to a crystal direction to find its coordinates with
+% respect to the specimen coordinate system
+
+q * m
+
+%% 
+% By applying a [[symmetry_index.html,crystal symmetry class]] one obtains
+% the coordinates with respect to the specimen coordinate system of all
+% crystallographically equivalent specimen directions.  
+
+p = q * cs * m;
+plot(p)
+

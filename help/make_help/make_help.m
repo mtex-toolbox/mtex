@@ -31,7 +31,7 @@ if check_option(varargin, {'general','all'})
   copyfile([mtex_path,'/COPYING'],[mtex_path,'/help/html/COPYING.txt']);
   copyfile([mtex_path,'/VERSION'],[mtex_path,'/help/html/VERSION.txt']);
   
-  current_path = [mtex_path '/help/general','all'];
+  current_path = [mtex_path '/help/general'];
   files = dir([current_path '/*.m']);
   publish_files({files.name},current_path,'out_dir',html_path,varargin{:});
 end
