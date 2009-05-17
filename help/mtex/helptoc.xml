@@ -17,10 +17,11 @@
 
 <tocitem target="CrystalGeometry.html" image="$toolbox/matlab/icons/pagesicon.gif">
   Crystal Geometry
-  <tocitem target="CrystalSymmetries.html"> Crystal Symmetries </tocitem>
   <tocitem target="SpecimenDirections.html"> Specimen Directions </tocitem>
   <tocitem target="CrystalDirections.html"> Crystal Directions </tocitem>
+  <tocitem target="CrystalSymmetries.html"> Crystal Symmetries </tocitem>  
   <tocitem target="CrystalOrientations.html"> CrystalOrientations </tocitem>
+  <tocitem target="AxialDirectional.html"> Axial Symmetry </tocitem>
 </tocitem>
 
 <tocitem target="PoleFigureAnalysis.html" image="$toolbox/matlab/icons/pagesicon.gif">

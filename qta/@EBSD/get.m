@@ -14,6 +14,11 @@ switch vname
     for i = 1:length(obj)
       value = [value;reshape(quaternion(obj(i).orientations),[],1)]; %#ok<AGROW>
     end
+  case 'length'
+    value = zeros(1,length(obj));
+    for i = 1:length(obj)
+      value(i) = sum(GridLength(obj(i).orientations));
+    end
   case 'x'
     for i = 1:length(obj)
       value = [value;obj(i).xy(:,1)]; %#ok<AGROW>
