@@ -90,8 +90,8 @@
 % <ODF_modalorientation.html modal orientation>, <ODF_entropy.html entropy>,
 % <ODF_textureindex.html texture index>, or <ODF_volume.html volume portion>
 % to be computed for any model ODF or any recoverd ODF. You can also
-% calculate the Fourier coefficients useing the command <ODF_fourier.html
-% fourier>. Furthermore, you can compare arbitrary ODF indepently whether
+% calculate the Fourier coefficients useing the command <ODF_Fourier.html
+% Fourier>. Furthermore, you can compare arbitrary ODF indepently whether
 % they are model ODFs, ODFs estimated from pole figure data or estimated
 % from EBSD data. The <ODF_demo.html ODF Analysis Demo> gives an overview
 % over the texture characteristic that can be computed using MTEX.

@@ -62,14 +62,14 @@ hold off
 % * compute an ODF
 %
 % An exhausive introduction how to analyze and modify EBSD data can be found
-% <EBSDModification.html here>
+% <ModifyEBSDData.html here>
 
 %% Calculate an ODF from EBSD Data
 %
 % The command [[EBSD_calcODF.html,calcODF]]  performs an ODF calculation
 % from EBSD data using kernel density estimation EBSD data. For a precise
 % explaination of the algorithm and the available options look
-% <EBSD2ODFestimation.html here>. 
+% <EBSD2odf_estimation.html here>. 
 
 odf = calcODF(ebsd,'halfwidth',10*degree)
 plotpdf(odf,Miller(1,0,0,cs),'axial')
@@ -79,7 +79,7 @@ plotpdf(odf,Miller(1,0,0,cs),'axial')
 %
 % Simulating EBSD data from a given ODF has been proven to be
 % usefull to analyze the stability of the ODF estimation process. There is
-% an <EBSDSimulation.html example> demostrating how to determine the
+% an <EBSDSimulation_demo.html example> demostrating how to determine the
 % number of individuel orientation measurements to estimate the ODF up to a
 % given error. The MTEX command to simulate EBSD data is
 % <ODF_simulateEBSD.html simulateEBSD>, e.g.

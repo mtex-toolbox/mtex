@@ -81,7 +81,7 @@ angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'axial')/degree
 %% Conversations
 %
 % Converting Miller indice into a three dimensional vector is straight
-% forward using the command <Miller_vectord3d.html vectord3d>.
+% forward using the command <Miller_vector3d.html vectord3d>.
 
 vector3d(m)
 

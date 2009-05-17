@@ -48,7 +48,7 @@ plotipdf(odf,[xvector,zvector],'axial','complete')
 %% Plot ODF Sections
 % 
 % Plotting an ODF in two dimensional sections through the orientation space
-% is done using the command <PDF_plotodf.html plot>.
+% is done using the command <ODF_plotodf.html plot>.
 
 close; figure('position',[46 171 752 486]);
 plot(odf,'sections',12,'silent')

@@ -17,7 +17,7 @@ v = vector3d(1,1,0);
 % This gives a single vector with coordinates (1,1,0) with respect to the
 % x, y , z coordinate system. A second way to define a specimen directions
 % is by its spherical coordinates, i.e. by its polar angle and its azimuth
-% angle. This is done by the command <sph2vev.html sph2vec> 
+% angle. This is done by the command <sph2vec.html sph2vec> 
 
 polar_angle = 0*degree;
 azimuth_angle = 45*degree;

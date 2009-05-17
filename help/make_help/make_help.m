@@ -57,7 +57,12 @@ if check_option(varargin, {'classes','all'})
     folder = char(regexp(folders{i},'(\w*)$','match'));
     in_file =  [current_path '/' folder ,'_index.m'];
     script_file = [current_path '/script_' folder ,'_index.m'];
+    html_file =  [html_path '/' folder ,'_index.html'];
   
+    if is_newer(html_file,in_file) && ~check_option(varargin,'force')
+      continue;
+    end
+    
     % make index mfile
     disp(in_file)
     copyfile(in_file,script_file);
@@ -113,7 +118,7 @@ end
 
 %% calculate examples
 
-if check_option(varargin, {'examples','all','all-'})
+if check_option(varargin, {'examples'})
   
   current_path = [mtex_path '/examples'];
   files = dir([current_path '/*.m']);

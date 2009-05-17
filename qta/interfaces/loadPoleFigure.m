@@ -10,7 +10,7 @@ function [pf,interface,options,ipf] = loadPoleFigure(fname,varargin)
 % example how to import superposed pole figures. In the case of generic
 % ascii files each of which consist of a table containing in each row a
 % specimen direction and a diffraction intensity see
-% [[loadPoleFigure_txt.html,loadPoleFigure_txt]] for additional options.
+% [[loadPoleFigure_generic.html,loadPoleFigure_generic]] for additional options.
 % Furthermore, you can specify a comment to be associated with the data.
 %
 %

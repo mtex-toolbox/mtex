@@ -85,7 +85,7 @@ plotpdf(odf,h,'axial','position',[100 100 800 300])
 %
 % Simulating pole figure data from a given ODF has been proven to be
 % usefull to analyze the stability of the ODF estimation process. There is
-% an <PoleFigureSimulation.html example> demostrating how to determine the
+% an <PoleFigureSimulation_demo.html example> demostrating how to determine the
 % number of pole figures to estimate the ODF up to a given error. The MTEX
 % command to simulate pole figure is <ODF_simulatePoleFigure.html
 % simulatePoleFigure>, e.g.

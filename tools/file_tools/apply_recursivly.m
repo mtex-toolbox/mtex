@@ -9,7 +9,7 @@ sub_dirs = getSubDirs(in_dir);
 
 for id = 1:length(sub_dirs)
   
-  disp(sub_dirs{id});
+  %disp(sub_dirs{id});
   files = dir([sub_dirs{id},filesep,pattern]);
   
   for i = 1:length(files)

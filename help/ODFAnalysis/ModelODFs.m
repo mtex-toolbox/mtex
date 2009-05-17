@@ -1,8 +1,8 @@
 %% Model ODFs
 %
 % MTEX allows to create a wide range of model ODFs including 
-% [[ODF_uniformODF.html,uniformODFs]], [[ODF_unimodalODF.html,unimodalODFs]],
-% [[ODF_fibreODF.html,fibreODFs]] and any superposition of those ODF.
+% [[uniformODF.html,uniformODFs]], [[unimodalODF.html,unimodalODFs]],
+% [[fibreODF.html,fibreODFs]] and any superposition of those ODF.
 % These ODFs can be used to 
 % <MTEX_PoleFigureSimulation_demo.html simulate PoleFigures> or to 
 % <MTEX_EBSDSimulation_demo.html simulate EBSD data>.
@@ -13,7 +13,7 @@
 % everywhere identical to one.
 % In order to define a uniform ODF one needs only to specify its crystal
 % and specimen symmetry and to use the command 
-% <ODF_uniformODF.html uniformODF>.
+% <uniformODF.html uniformODF>.
 
 cs = symmetry('cubic');
 ss = symmetry('orthorhombic');
