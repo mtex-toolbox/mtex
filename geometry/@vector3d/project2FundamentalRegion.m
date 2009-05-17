@@ -40,7 +40,7 @@ else
   [d2,th2,rh2] = selectMinbyColumn(d2,pi-theta,mod(pi + rho,rotangle_max_z(sym)));
 end
 
-if check_option(varargin,'reduced')
+if check_option(varargin,'axial')
   swap = false(numel(v),1);
 else
   swap = d1 > d2;

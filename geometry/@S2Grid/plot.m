@@ -127,17 +127,17 @@ if isappdata(gcf,'hemisphere'),
     
   hemisphere = getappdata(gcf,'hemisphere');
   
-elseif check_option(varargin,{'reduced','plain'})
+elseif check_option(varargin,{'axial','plain'})
   
-  hemisphere = 'reduced';
+  hemisphere = 'axial';
   
-elseif check_option(varargin,{'north','south','reduced'})
+elseif check_option(varargin,{'north','south','axial'})
   
-  hemisphere = extract_option(varargin,{'north','south','reduced'});
+  hemisphere = extract_option(varargin,{'north','south','axial'});
    
-elseif check_option(S2G,{'north','south','reduced'})
+elseif check_option(S2G,{'north','south','axial'})
   
-  hemisphere = extract_option(S2G(1).options,{'north','south','reduced'});
+  hemisphere = extract_option(S2G(1).options,{'north','south','axial'});
 
 elseif max(theta(:)) > pi/2+0.001 
   
@@ -156,9 +156,9 @@ bounds = [0,0,0,0];
 
 %% Northern Hemisphere
 
-if any(strcmpi(hemisphere,'north')) || any(strcmpi(hemisphere,'reduced'))
+if any(strcmpi(hemisphere,'north')) || any(strcmpi(hemisphere,'axial'))
   
-  if strcmp(hemisphere,'reduced')
+  if strcmp(hemisphere,'axial')
     south = theta > pi/2+0.001;
     rho(south) = rho(south) + pi;
     theta(south) = pi - theta(south);

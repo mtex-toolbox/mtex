@@ -22,7 +22,7 @@ odf = 0.7*unimodalODF(q0,cs,ss) + 0.3*unimodalODF(q1,cs,ss);
 % that the colorrange is automaticaly set to *equal* when adding a colorbar
 % to a figure with  more then one plot (see. <ColorCoding_demo.html Color Coding>).
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'reduced','gray')
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'axial','gray')
 colorbar
 
 
@@ -48,7 +48,7 @@ annotate([xvector,yvector,zvector],'label',{'x','y','z'},...
 % The command <annotate.html annotate> allows also to plot
 % <Miller_index.html crystal directions> to inverse pole figures.
 
-plotipdf(odf,[xvector,zvector],'gray','reduced','marginx',10,'minmax','off')
+plotipdf(odf,[xvector,zvector],'gray','axial','marginx',10,'minmax','off')
 annotate([Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(0,0,1,cs),Miller(2,-1,0)],'all','labeled')
 set(gcf,'position',[139 258 672 266])
 
@@ -58,7 +58,7 @@ set(gcf,'position',[139 258 672 266])
 % One can also mark specifc orientations in pole figure, inverse pole
 % figures
 
-plotipdf(odf,[xvector,zvector],'gray','reduced','marginx',10,'minmax','off')
+plotipdf(odf,[xvector,zvector],'gray','axial','marginx',10,'minmax','off')
 annotate(q0,...
     'marker','s','MarkerSize',6,'MarkerFaceColor','r',...
     'label','$q_0$','color','b')
@@ -110,4 +110,4 @@ legend({'Fibre ODF','Unimodal ODF'})
 % specifiy the spacing of the grid lines.
 
 plotpdf(odf,[Miller(1,0,0),Miller(0,0,1)],'grid','grid_res',15*degree,...
-  'gray','reduced');
+  'gray','axial');

@@ -13,7 +13,7 @@ function d = dot_outer(S2G1,S2G2)
 d = dot_outer(reshape(vector3d(S2G1),[],1),...
   reshape(vector3d(S2G2),1,[]));
 
-if (isa(S2G1,'S2Grid') && check_option(S2G1,'reduced'))...
-    || (isa(S2G2,'S2Grid') && check_option(S2G2,'reduced'))
+if (isa(S2G1,'S2Grid') && check_option(S2G1,'axial'))...
+    || (isa(S2G2,'S2Grid') && check_option(S2G2,'axial'))
   d = abs(d);
 end

@@ -5,7 +5,7 @@ function plot_zero_range(pf,varargin)
 %  pf  - @PoleFigure
 %
 %% Output
-%  NS3G - reduced @SO3Grid
+%  NS3G - axial @SO3Grid
 %
 %% Options
 % 
@@ -14,7 +14,7 @@ function plot_zero_range(pf,varargin)
 % PoleFigure/calcODF
 
 % plotting grid
-S2G = S2Grid('PLOT','reduced',varargin{:});
+S2G = S2Grid('PLOT','axial',varargin{:});
 
 % loop over pole figures
 for ip = 1:length(pf)

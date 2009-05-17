@@ -32,7 +32,7 @@ g0 = Miller2quat(Miller(1,2,2,ss),Miller(2,2,1,cs));
 psi = kernel('von Mises Fisher','HALFWIDTH',10*degree);
 odf = unimodalODF(g0,cs,ss,psi)
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'reduced',...
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'axial',...
   'position',[100   100   600   170])
 
 %%
@@ -53,7 +53,7 @@ h0 = Miller(0,0,1);
 r0 = xvector;
 odf = fibreODF(h0,r0,cs,ss,psi)
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'reduced')
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'axial')
 
 %% ODFs given by Fourier coefficients
 %
@@ -70,7 +70,7 @@ ss   = symmetry('triclinic');    % specimen symmetry
 C = [1;reshape(eye(3),[],1)]; % Fourier coefficients
 odf = FourierODF(C,cs,ss)
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'reduced')
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'axial')
 
 %% Combining MODEL ODFs
 %
@@ -86,5 +86,5 @@ g0 = Miller2quat(Miller(1,2,2,cs),Miller(2,2,1,cs));
 odf =  0.73 * uniformODF(cs,ss,'comment','the Santafee-sample ODF') ...
   + 0.27 * unimodalODF(g0,cs,ss,psi)
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'reduced',...
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'axial',...
   'position',[100   100   600   170])

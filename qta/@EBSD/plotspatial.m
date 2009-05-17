@@ -67,7 +67,7 @@ if strcmpi(cc,'ipdf')
   setappdata(gcf,'colorcoding',@(h) ipdf2rgb(h,cs,varargin{:}));
 end
 set(gcf,'tag','ebsd_spatial');
-setappdata(gcf,'options',extract_option(varargin,'reduced'));
+setappdata(gcf,'options',extract_option(varargin,'axial'));
 
 
 %% set data cursor

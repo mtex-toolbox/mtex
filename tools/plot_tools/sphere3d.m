@@ -152,18 +152,18 @@ function [Xout, Yout, Zout, Cmap] = sphere3d(Zin,theta_min,theta_max,...
 %  
 %  Zout is square with dimensions determined by the 
 %  maximum dimension of the input matrix Zin. The 
-%  dimensions of Zout are reduced or enlarged by meshscale.                      
+%  dimensions of Zout are axial or enlarged by meshscale.                      
 % 
 %  Xout        output X-positions corresponding to polar positions
 %  (rho,theta). Xout is square with dimensions  
 %  determined by the maximum dimension of the input 
-%  matrix Zin. The dimensions of Xout are reduced or 
+%  matrix Zin. The dimensions of Xout are axial or 
 %  enlarged by meshscale.
 % 
 %  Yout        output Y-positions corresponding to polar positions
 %  (rho,theta). Yout is square with dimensions  
 %  determined by the maximum dimension of the input 
-%  matrix Zin. The dimensions of Yout are reduced or 
+%  matrix Zin. The dimensions of Yout are axial or 
 %  enlarged by meshscale.
 %
 %  Cmap        colour mapping associated with (Xout,Yout,Zout). The

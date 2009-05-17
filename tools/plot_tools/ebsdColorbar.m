@@ -30,7 +30,7 @@ set(gcf,'tag','ipdf');
 setappdata(gcf,'CS',cs);
 setappdata(gcf,'SS',symmetry);
 setappdata(gcf,'r',r);
-setappdata(gcf,'options',extract_option(varargin,'reduced'));
+setappdata(gcf,'options',extract_option(varargin,'axial'));
 
 %% annotate crystal directions
 

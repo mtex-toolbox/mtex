@@ -13,7 +13,7 @@ function Z = pdf(odf,h,r,varargin)
 %  SUPERPOSITION - calculate superposed pdf
 %
 %% Flags
-%  REDUCED - reduced PDF
+%  REDUCED - axial PDF
 %
 %% See also
 % ODF/plotpdf ODF/plotipdf ODF/simulatePoleFigure

@@ -54,7 +54,7 @@ symetriceVec(CS,zvector);
 % create
 S2G = S2Grid(v3);
 S2G = S2Grid('regular','RESOLUTION',5*pi/180,'north')
-S2G = S2Grid('equispaced','points',1000,'reduced');
+S2G = S2Grid('equispaced','points',1000,'axial');
 
 % operations
 rotate(S2G,q);

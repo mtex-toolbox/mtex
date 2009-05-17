@@ -6,7 +6,7 @@ function NS3G = zero_range(pf,S3G,varargin)
 %  S3G - initial @SO3Grid
 %
 %% Output
-%  NS3G - reduced @SO3Grid
+%  NS3G - axial @SO3Grid
 %
 %% Options
 %  zero_range   - which pole figures to be included
@@ -34,7 +34,7 @@ ipf = get_option(varargin,'zero_range',1:length(pf),'double');
 
   
 %% approximation grid
-S2G = S2Grid('regular','resolution',1*degree,'reduced');
+S2G = S2Grid('regular','resolution',1*degree,'axial');
 
 % loop over pole figures
 for ip = ipf

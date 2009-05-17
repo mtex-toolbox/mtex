@@ -33,4 +33,4 @@ end
 if isempty(pos), pos = 0;else pos = pos(end);end
 
 %cellfun(@(c) ((ischar(c) || iscellstr(c)) && ...
-%  any(strcmpi(c,{'PLAIN','reduced'}))),varargin)
+%  any(strcmpi(c,{'PLAIN','axial'}))),varargin)

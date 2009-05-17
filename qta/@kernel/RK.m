@@ -12,7 +12,7 @@ function f = RK(kk,g,h,r,c,CS,SS,varargin)
 %  CS,SS- crystal, specimen @symmetry
 %
 %% Options
-%  REDUCED   - reduced Radon transform P(h,r) = (Rf(h,r) + Rf(-h,r))/2
+%  REDUCED   - axial Radon transform P(h,r) = (Rf(h,r) + Rf(-h,r))/2
 %  BANDWIDTH - bandwidth of ansatz functions
 %
 %% Output

@@ -11,7 +11,7 @@ L = 16;
 %h = [xvector,-xvector,yvector];
 
 qq = quaternion(SO3Grid(50));
-h = vector3d(S2Grid('equispaced','points',20,'reduced'));
+h = vector3d(S2Grid('equispaced','points',20,'axial'));
 
 progress(0,length(qq));
 

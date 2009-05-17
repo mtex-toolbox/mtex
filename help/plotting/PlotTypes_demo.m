@@ -11,7 +11,7 @@
 
 cs = symmetry('-3m'); ss = symmetry('-1');
 odf = fibreODF(Miller(1,1,0),zvector,cs,ss)
-pf = simulatePoleFigure(odf,Miller(1,0,0),S2Grid('equispaced','reduced'));
+pf = simulatePoleFigure(odf,Miller(1,0,0),S2Grid('equispaced','axial'));
 
 %% Scatter Plots
 % Three dimensional vectors, Miller indices, spherical grids are plotted as
@@ -50,7 +50,7 @@ plot(pf)
 % contour levels can be specified as an option. (See [[matlab:doc
 % contourgroupproperties,contourgroup_properties]] for more options!)
 
-plotpdf(odf,Miller(1,0,0),'contour',0:0.5:4,'reduced')
+plotpdf(odf,Miller(1,0,0),'contour',0:0.5:4,'axial')
 
 
 %%  Filled Contour Plots
@@ -58,7 +58,7 @@ plotpdf(odf,Miller(1,0,0),'contour',0:0.5:4,'reduced')
 % Filled contour plots are obtained by the option *contourf*. Again you may
 % pass as an option the number of contour lines or its exact location.
 
-plotpdf(odf,Miller(1,0,0),'contourf','reduced')
+plotpdf(odf,Miller(1,0,0),'contourf','axial')
 
 
 %% Smooth Interpolated Plots
@@ -67,7 +67,7 @@ plotpdf(odf,Miller(1,0,0),'contourf','reduced')
 % results in a colored plot without contour lines. Here one can specify the
 % resolution of the plot using the option |resolution|.
 
-plotpdf(odf,Miller(1,0,0),'reduced','resolution',10*degree)
+plotpdf(odf,Miller(1,0,0),'axial','resolution',10*degree)
 
 
 %% Line Plots

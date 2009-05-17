@@ -24,9 +24,9 @@ plotpdf(odf,[Miller(1,0,-1,0),Miller(0,0,0,1)])
 %%
 % By default the <ODF_plotpdf.html plotpdf> command plots the upper as well
 % a the lower hemisphere of each pole sphere. In order to superpose
-% antipodal directions you have to use the option *reduced*.
+% antipodal directions you have to use the option *axial*.
 
-plotpdf(odf,[Miller(1,0,-1,0),Miller(0,0,0,1)],'reduced')
+plotpdf(odf,[Miller(1,0,-1,0),Miller(0,0,0,1)],'axial')
 
 
 %% Plot Inverse Pole Figures
@@ -35,7 +35,7 @@ plotpdf(odf,[Miller(1,0,-1,0),Miller(0,0,0,1)],'reduced')
 % <ODF_plotipdf.html plotipdf> and you to specify specimen directions and
 % not crystal directions.
 
-plotipdf(odf,[xvector,zvector],'reduced')
+plotipdf(odf,[xvector,zvector],'axial')
 
 %% 
 % By default MTEX alway plots only the Fundamental region with respect to
@@ -43,7 +43,7 @@ plotipdf(odf,[xvector,zvector],'reduced')
 % you have to use the option *complete*.
 
 close; figure('position',[100,100,400,200])
-plotipdf(odf,[xvector,zvector],'reduced','complete')
+plotipdf(odf,[xvector,zvector],'axial','complete')
 
 %% Plot ODF Sections
 % 

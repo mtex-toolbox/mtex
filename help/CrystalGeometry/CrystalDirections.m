@@ -47,10 +47,10 @@ m = Miller(1,1,-2,0,cs)
 symeq(m)
 
 %% 
-% As allways the keyword *reduced* adds antipodal symmetry to this
+% As allways the keyword *axial* adds antipodal symmetry to this
 % computation
 
-symeq(m,'reduced')
+symeq(m,'axial')
 
 %%
 % The command <Miller_symeq.html symeq> can also be used to check whether
@@ -61,7 +61,7 @@ symeq(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs))
 %%
 % and
 
-symeq(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'reduced')
+symeq(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'axial')
 
 %% Angles
 %
@@ -73,10 +73,10 @@ symeq(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'reduced')
 angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs))/degree
 
 %% 
-% As allways the keyword *reduced* adds antipodal symmetry to this
+% As allways the keyword *axial* adds antipodal symmetry to this
 % computation
 
-angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'reduced')/degree
+angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'axial')/degree
 
 %% Conversations
 %

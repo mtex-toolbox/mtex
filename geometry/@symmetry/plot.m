@@ -10,4 +10,4 @@ plot(m,'All','north','south','labeled','MarkerEdgeColor','k','grid',varargin{:})
 %setappdata(gcf,'r',S2Grid());
 setappdata(gcf,'CS',s);
 set(gcf,'tag','ipdf');
-setappdata(gcf,'options',extract_option(varargin,'reduced'));
+setappdata(gcf,'options',extract_option(varargin,'axial'));

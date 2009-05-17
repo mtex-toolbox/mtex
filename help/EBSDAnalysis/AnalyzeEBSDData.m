@@ -29,7 +29,7 @@ m = mean(ebsd,'phase',2);
 
 % and plot it within a pole figure plot
 
-plotpdf(ebsd,[Miller(1,0,0),Miller(0,0,1)],'reduced','phase',2)
+plotpdf(ebsd,[Miller(1,0,0),Miller(0,0,1)],'axial','phase',2)
 annotate(m,'Marker','s','MarkerFaceColor','red')
 
 %% Volume

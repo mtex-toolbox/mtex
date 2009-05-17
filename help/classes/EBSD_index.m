@@ -72,7 +72,7 @@ plotpdf(ebsd_i,Miller(1,0,0,cs),'points',300,'MarkerSize',3)   % plot EBSD data
 % ODF. This is done by the command [[EBSD_calcODF.html,calcODF]] 
 
 odf = calcODF(ebsd_i,'halfwidth',10*degree)
-plotpdf(odf,Miller(1,0,0,cs),'reduced')
+plotpdf(odf,Miller(1,0,0,cs),'axial')
 
 %% Demo
 %
