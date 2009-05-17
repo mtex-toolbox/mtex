@@ -115,17 +115,39 @@ symmetriceQuat(cs,ss,q)
 
 ss * q * cs
 
+%% Caclulating Missorientations
+%
+% Let cs and ss be crystal and specimen symmetry and q1 and q2 two crystal
+% orientations. Then one can ask for the missorientation between both
+% orientations. This missorientation can be calculated by the function
+% <symmetry_dist.html dist>.
 
-%% Calculating with three dimensional vectors
+dist(cs,ss,q1,q2) / degree
+
+%%
+% This missorientation angle is in general smaller then the missorientation
+% without crystal symmetry which can be computed via
+
+dist(q1,q2) /degree
+
+%% Calculating with Orientations and Rotations
 %
 % Beside the standard linear algebra operations there are also the
-% following functions available in MTEX.
-%
-%  [[quaternion_rotangle.html,rotangle(q)]]; % rotational angle
-%  [[quaternion_rotaxis.html,rotaxis(q);]]  % rotational axisq2 = Miller2quat([-1 -1 -1],[1 -2 1]);
-%  [[quaternion_inverse.html,inverse(q);]]  % inverse rotation 
-%
-%% Conversion
+% following functions available in MTEX. Then rotational angle and the axis
+% of rotation can be computed via then commands
+% <quaternion_rotangle.html rotangle(q)> and
+% <quaternion_rotaxis.html rotaxis(q)> 
+
+rotangle(q)/degree
+
+rotaxis(q)
+%%
+% The inverse rotation to q you get from the command
+% <quaternion_inverse.html inverse(q)>
+
+inverse(q);
+
+%% Conversion into Euler Angles and Rodrigues Parametrisation
 %
 % There are methods to transform quaternion in almost any other
 % parameterization of rotations as they are:
@@ -133,7 +155,7 @@ ss * q * cs
 % * [[quaternion_quat2euler.html,quat2euler(q)]]   in Euler angle
 % * [[quaternion_quat2rodrigues.html,quat2rodrigues(q)]] % in Rodrigues parameter
 %
-%% Plotting quaternions
+%% Plotting Orientations
 % 
 % The [[quaternion_plot.html,plot]] function allows you to visualize an 
 % quaternion by plotting how the standard basis x,y,z transforms under the
