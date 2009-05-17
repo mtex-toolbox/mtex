@@ -16,7 +16,7 @@ if length(m)~=1, error('Function supports only single vectors!');end
 
 v = reshape(vector3d(m),1,[]);
 
-if check_option(varargin,'reduced')
+if check_option(varargin,'axial')
   v = quaternion(m.CS) * v;
   v = [v;-v];
   if check_option(varargin,'plot'), v(getz(v)<-1e-6) = [];end

@@ -83,5 +83,5 @@ plot(ebsd,'scatter')
 
 close; figure('position',[46 171 400 200]);
 h = [Miller(0,0,0,1,cs),Miller(1,0,-1,0,cs)];
-plotpdf(ebsd,h,'reduced','MarkerSize',3)
+plotpdf(ebsd,h,'axial','MarkerSize',3)
 

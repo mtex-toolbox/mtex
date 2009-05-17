@@ -11,7 +11,7 @@ odf = 0.5*unimodalODF(q1,cs,ss) + ...
   0.5*unimodalODF(q3,cs,ss);
 
 %%
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1),Miller(0,0,1),Miller(1,1,0)],'gray','contourf','reduced')
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,1),Miller(0,0,1),Miller(1,1,0)],'gray','contourf','axial')
 %%
 plotipdf(odf,[xvector,yvector,vector3d(1,1,1)],'complete')
 

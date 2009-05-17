@@ -13,7 +13,7 @@ if check_option(varargin,'complete')
   max_phi1 = 2*pi;
   max_Phi = pi;
   max_phi2 = 2*pi;
-elseif check_option(varargin,'reduced')
+elseif check_option(varargin,'axial')
   if rotangle_max_y(cs)/2 < pi
     max_phi2 = max_phi2 / 2;
   end

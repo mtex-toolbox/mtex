@@ -37,7 +37,7 @@ plotipdf(ebsd,xvector)
 % be plotted can be explicitely specified by the option *phase*:
 
 close all
-plotipdf(ebsd,xvector,'MarkerSize',3,'phase',1,'complete','reduced','points',100)
+plotipdf(ebsd,xvector,'MarkerSize',3,'phase',1,'complete','axial','points',100)
 hold on
 plotipdf(ebsd,xvector,'MarkerSize',3,'phase',2,'MarkerColor','r','complete','points',100)
 hold off
@@ -45,12 +45,12 @@ hold off
 %% Scatter Plot in ODF Sections
 % In order to plot EBSD data as a scatter plot in ODF sections one has to
 % use the command <ebsd_plotodf.html plotodf>. In above examples the number
-% of plotted orientations was allways automatically reduced such that the
+% of plotted orientations was allways automatically axial such that the
 % plot does not become to full. The number of randomly chosen orientations
 % can be explicetly specified by the option *points*.
 
 close all;figure('position',[100 100 700 400])
-plotodf(ebsd,'phase',1,'points',1000,'MarkerSize',5,'reduced')
+plotodf(ebsd,'phase',1,'points',1000,'MarkerSize',5,'axial')
 
 %% Scatter Plot in Axis Angle or Rodrigues Space
 % Another posibility is to plot the single orientations directly into the
@@ -65,7 +65,7 @@ scatter(ebsd,'phase 1','center',idquaternion)
 % There are several options to specify the way the colors are assigned.
 
 close all;figure('position',[100 100 600 300])
-plot(ebsd,'reduced','phase',1)
+plot(ebsd,'axial','phase',1)
 
 %%
 % In order to understand the colorcoding one can plot the coloring of the

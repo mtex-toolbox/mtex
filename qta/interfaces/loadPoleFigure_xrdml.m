@@ -95,7 +95,7 @@ if strcmp(xRoot.getTagName,'xrdMeasurements')
     end
     
     %setup sphere
-    r = S2Grid(sph2vec(current_theta(:), current_rho(:)),'reduced');
+    r = S2Grid(sph2vec(current_theta(:), current_rho(:)),'axial');
     
     %add polefigure
     pf(i+1) = PoleFigure(h,r,d,symmetry('cubic'),symmetry,varargin{:});

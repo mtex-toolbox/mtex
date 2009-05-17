@@ -33,7 +33,7 @@ plot(ebsd,'phase',1)
 
 h = [Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)];
 close; figure('position',[100,100,600,300])
-plotpdf(ebsd,h,'points',500,'reduced')
+plotpdf(ebsd,h,'points',500,'axial')
 
 %% Kernel Density Estimation
 %
@@ -49,9 +49,9 @@ odf2 = calcODF(ebsd,'halfwidth',10*degree)
 %% plot pole figures
 
 close all;figure('position',[160   389   632   216])
-plotpdf(odf1,h,'reduced')
+plotpdf(odf1,h,'axial')
 figure('position',[160   389   632   216])
-plotpdf(odf2,h,'reduced')
+plotpdf(odf2,h,'axial')
 
 %% plot ODF
 

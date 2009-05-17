@@ -37,7 +37,7 @@ if check_option(varargin,'CNV') || strcmp(fname((end-2):end),'cnv')...
     && ~check_option(varargin,'REGULAR')
   r = DubnaGrid(size(d,2));
 else
-  r = S2Grid('regular','points',size(d),'maxtheta',5*degree*(size(d,2)-1),'reduced');
+  r = S2Grid('regular','points',size(d),'maxtheta',5*degree*(size(d,2)-1),'axial');
 end
   
 pf = PoleFigure(h,r,d,symmetry('cubic'),symmetry,...

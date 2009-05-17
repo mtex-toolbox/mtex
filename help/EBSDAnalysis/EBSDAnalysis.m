@@ -38,7 +38,7 @@ ebsd = loadEBSD(fname,cs,ss,...
 
 
 figure('position',[100 100 600 300])
-plot(ebsd,'reduced')
+plot(ebsd,'axial')
 
 %%
 % In order to understand the colorcoding one can plot the coloring of the
@@ -72,7 +72,7 @@ hold off
 % <EBSD2ODFestimation.html here>. 
 
 odf = calcODF(ebsd,'halfwidth',10*degree)
-plotpdf(odf,Miller(1,0,0,cs),'reduced')
+plotpdf(odf,Miller(1,0,0,cs),'axial')
 
 
 %% Simulate EBSD Data
@@ -85,7 +85,7 @@ plotpdf(odf,Miller(1,0,0,cs),'reduced')
 % <ODF_simulateEBSD.html simulateEBSD>, e.g.
 
 ebsd = simulateEBSD(unimodalODF(idquaternion,cs,ss),500)
-plotpdf(ebsd,Miller(1,0,0),'reduced','MarkerSize',3)
+plotpdf(ebsd,Miller(1,0,0),'axial','MarkerSize',3)
 
 %% Demo
 %

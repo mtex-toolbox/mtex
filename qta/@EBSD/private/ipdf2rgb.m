@@ -10,7 +10,7 @@ h = vector3d(h); h = h./norm(h);
 switch Laue(cs)
   
   case {'-1','2/m','-3','4/m','6/m'}
-    if check_option(varargin,'reduced')
+    if check_option(varargin,'axial')
       h(getz(h)<0) = -h(getz(h)<0);
     end
     [theta,rho] = polar(h(:));
@@ -25,11 +25,11 @@ switch Laue(cs)
     constraints = constraints ./ norm(constraints);
     center = sph2vec(pi/6,pi/8); 
   case 'm-3'
-    if ~check_option(varargin,'reduced')
-      warning('For symmetry ''m-3'' only reduced colorcoding is supported right now'); %#ok<WNTAG>
+    if ~check_option(varargin,'axial')
+      warning('For symmetry ''m-3'' only axial colorcoding is supported right now'); %#ok<WNTAG>
     end
     
-    varargin = delete_option(varargin,'reduced');
+    varargin = delete_option(varargin,'axial');
     cs = symmetry('m-3m');
     constraints = [vector3d(1,-1,0),vector3d(-1,0,1),yvector,zvector];
     constraints = constraints ./ norm(constraints);
@@ -37,7 +37,7 @@ switch Laue(cs)
     
   otherwise
     
-    if check_option(varargin,'reduced'), maxrho = maxrho * 2;end
+    if check_option(varargin,'axial'), maxrho = maxrho * 2;end
     constraints = [yvector,axis2quat(zvector,maxrho/2) * (-yvector),zvector];
     %constraints = [-axis2quat(zvector,-maxrho/2) * yvector];
     center = sph2vec(pi/4,maxrho/4);

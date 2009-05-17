@@ -89,7 +89,7 @@ clear ghtheta; clear ghrho;
 
 % extract kernel Fourier coefficents
 A = getA(psi);
-if check_option(getr(pf(1)),'reduced')
+if check_option(getr(pf(1)),'axial')
   A(2:2:end) = 0; 
 else
   warning('MTEX:missingFlag','Flag HEMISPHERE not set in PoleFigure data!');

@@ -49,7 +49,7 @@ if check_option(varargin,'north')
   end
 elseif check_option(varargin,'south')
   mintheta = pi/2; maxtheta = pi;
-elseif check_option(varargin,'reduced')
+elseif check_option(varargin,'axial')
   mintheta = 0; maxtheta = pi/2;
 else  
   mintheta = 0; maxtheta = pi;
@@ -100,7 +100,7 @@ elseif isa(varargin{1},'vector3d')	% grid from vector3d
 	G.Grid = varargin{1};
   [theta,rho] = vec2sph(G.Grid);
 
-  if check_option(varargin,'reduced')
+  if check_option(varargin,'axial')
     ind = theta > pi/2;
     G.Grid(ind) = -G.Grid(ind);
     theta(ind) = pi - theta(ind);
@@ -202,7 +202,7 @@ else
     end
     G.theta = S1Grid(theta,mintheta,maxtheta);
                 
-    identified = check_option(varargin,'reduced');
+    identified = check_option(varargin,'axial');
     for j = 1:length(theta)
         
       th = theta(j);
@@ -227,7 +227,7 @@ else
 end
   
 G.options = set_option(G.options,...
-  extract_option(varargin,{'INDEXED','PLOT','north','south','reduced'}));
+  extract_option(varargin,{'INDEXED','PLOT','north','south','axial'}));
 
 G = class(G,'S2Grid');
     

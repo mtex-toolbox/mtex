@@ -15,7 +15,7 @@ function plotpdf(odf,h,varargin)
 %  SUPERPOSITION - plot superposed pole figures
 %
 %% Flags
-%  REDUCED  - reduced pdf
+%  REDUCED  - axial pdf
 %  COMPLETE - plot entire (hemi)-sphere
 %
 %% See also

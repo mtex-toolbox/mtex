@@ -9,7 +9,7 @@ function plotipdf(odf,r,varargin)
 %  RESOLUTION - resolution of the plots
 %  
 %% Flags
-%  REDUCED  - reduced pdf
+%  REDUCED  - axial pdf
 %  COMPLETE - plot entire (hemi)-sphere
 %
 %% See also
@@ -44,7 +44,7 @@ setappdata(gcf,'r',r);
 setappdata(gcf,'CS',odf(1).CS);
 setappdata(gcf,'SS',odf(1).SS);
 set(gcf,'tag','ipdf');
-setappdata(gcf,'options',extract_option(varargin,'reduced'));
+setappdata(gcf,'options',extract_option(varargin,'axial'));
 name = inputname(1);
 if isempty(name), name = odf(1).comment;end
 set(gcf,'Name',['Inverse Pole Figures of ',name]);

@@ -4,13 +4,13 @@ function c = ipdf2rgb(h,cs,varargin)
 % compute colors
 [maxtheta,maxrho] = getFundamentalRegionPF(cs,varargin{:});
 
-if check_option(varargin,'reduced'), maxrho = maxrho * 2;end
+if check_option(varargin,'axial'), maxrho = maxrho * 2;end
 
 h = vector3d(h);
 switch Laue(cs)
   
   case '-1'
-    if check_option(varargin,'reduced')
+    if check_option(varargin,'axial')
       h(getz(h)<0) = -h(getz(h)<0);
     end
     [theta,rho] = polar(h);
@@ -44,7 +44,7 @@ rho = mod(rho,2*pi);
 d2 = rho + 1000*theta;
 [d2,sh2] = selectMinbyColumn(d2,-sh);
 
-if check_option(varargin,'reduced')
+if check_option(varargin,'axial')
   pm = false(numel(h),1);
 else
   pm = d1 > d2;

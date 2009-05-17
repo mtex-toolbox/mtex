@@ -12,4 +12,4 @@ rhostart = fliplr([360.00,336.40,327.05,320.11,314.44,309.57,305.26,301.37,297.8
 rhostart = repmat(rhostart(1:ntheta),72,1);
 rho = rhostart + rho;
 Grid = sph2vec(theta,rho);
-S2G = S2Grid(Grid,'reduced','RESOLUTION',5*degree);
+S2G = S2Grid(Grid,'axial','RESOLUTION',5*degree);

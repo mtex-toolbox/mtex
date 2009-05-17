@@ -6,7 +6,7 @@ function plot(m,varargin)
 %
 %% Options
 %  ALL     - plot symmetrically equivalent directions
-%  reduced - include antipodal symmetry
+%  axial - include antipodal symmetry
 %  labeled - plot Miller indice as label
 %  label   - plot user label
 
@@ -14,9 +14,9 @@ function plot(m,varargin)
 washold = ishold;
 label = ensurecell(get_option(varargin,'label'),numel(m));
 
-% get reduced status
-if washold && isappdata(gcf,'options') && check_option(getappdata(gcf,'options'),'reduced')
-  varargin = {varargin{:},'reduced'};
+% get axial status
+if washold && isappdata(gcf,'options') && check_option(getappdata(gcf,'options'),'axial')
+  varargin = {varargin{:},'axial'};
 end
 
 for i = 1:numel(m)
@@ -47,4 +47,4 @@ end
 if ~washold, hold off;end
 
 % set options
-setappdata(gcf,'options',extract_option(varargin,'reduced'));
+setappdata(gcf,'options',extract_option(varargin,'axial'));

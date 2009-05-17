@@ -16,7 +16,7 @@ function plotpdf(ebsd,h,varargin)
 %  POINTS        - number of points to be plotted
 %
 %% Flags
-%  REDUCED  - reduced pdf
+%  REDUCED  - axial pdf
 %  COMPLETE - plot entire (hemi)-sphere
 %
 %% See also
@@ -72,6 +72,6 @@ end
 setappdata(gcf,'h',h);
 setappdata(gcf,'SS',ss);
 setappdata(gcf,'CS',cs);
-setappdata(gcf,'options',extract_option(varargin,'reduced'));
+setappdata(gcf,'options',extract_option(varargin,'axial'));
 set(gcf,'Name',['Pole figures of "',inputname(1),'"']);
 set(gcf,'Tag','pdf');

@@ -47,9 +47,9 @@ plotpdf(odf,Miller(1,1,0),'south')
 % Due to Friedels law meassured pole figures are a superposition of the
 % nothern and the southern hemisphere (since antipodal directions are
 % associated). In order to plot pole figures as a superposition of the
-% northern and southern hemisphere use the option *reduced*.
+% northern and southern hemisphere use the option *axial*.
 
-plotpdf(odf,Miller(1,1,0),'reduced')
+plotpdf(odf,Miller(1,1,0),'axial')
 
 %% Rotate and Flip Plots
 %
@@ -63,13 +63,13 @@ plotpdf(odf,Miller(1,1,0),'reduced')
 
 plotx2north
 
-plotpdf(odf,Miller(1,0,0),'reduced')
+plotpdf(odf,Miller(1,0,0),'axial')
 annotate([xvector,yvector,zvector],'data',{'X','Y','Z'},'backgroundcolor','w');
 
 %%
 plotx2east
 
-plotpdf(odf,Miller(1,0,0),'reduced')
+plotpdf(odf,Miller(1,0,0),'axial')
 annotate([xvector,yvector,zvector],'data',{'X','Y','Z'},'backgroundcolor','w');
 
 
@@ -80,7 +80,7 @@ annotate([xvector,yvector,zvector],'data',{'X','Y','Z'},'backgroundcolor','w');
 % by area equal area projection is the default projection in MTEX. In can
 % be set explicetly by the flags *earea* or *schmidt*.
 
-plotpdf(odf,Miller(1,0,0),'reduced')
+plotpdf(odf,Miller(1,0,0),'axial')
 
 
 %% Equal Distance Projection 
@@ -91,7 +91,7 @@ plotpdf(odf,Miller(1,0,0),'reduced')
 % crystal directions.
 
 cs = symmetry('m-3m');
-plot(cs,'projection','edist','grid_res',15*degree,'reduced')
+plot(cs,'projection','edist','grid_res',15*degree,'axial')
 
 
 %% Stereographic Projection (Equal Angle Projection)
@@ -100,7 +100,7 @@ plot(cs,'projection','edist','grid_res',15*degree,'reduced')
 % which preserves the angle between arbitrary great circles. It 
 % can be chosen by setting the option *stereo* or *eangle*.
 
-plot(cs,'projection','eangle','reduced','grid_res',15*degree)
+plot(cs,'projection','eangle','axial','grid_res',15*degree)
 
 
 %% Plain Projection
