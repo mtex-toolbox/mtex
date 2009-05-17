@@ -30,10 +30,11 @@
 % provide shortcuts for printing, saving and publishing your work. These
 % functions are grouped into the following sectings.
 %
-% * <geometry_index.html crystal geometry tools>
-% * <modelodfs_index.html model ODFs>
-% * <plotting_index.html plotting tools>
+% * <geometry_tools_index.html crystal geometry tools>
+% * <standardODFs_index.html model ODFs>
+% * <plot_tools_index.html plotting tools>
 % * <tools_index.html general tools>
-% * <statistic_index.html statistic tools>
-% * <interfaces_index.html import tools>
-% * <interfacesEBSD_index.html import tools>
+% * <statistic_tools_index.html statistic tools>
+% * <interfaces_index.html pole figure import tools>
+% * <interfacesEBSD_index.html EBSD import tools>
+% * <dubna_tools_index.html dubna tools>

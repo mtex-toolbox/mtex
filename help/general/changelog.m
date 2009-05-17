@@ -122,7 +122,7 @@
 % * ODF plotting and the
 % calculation of [[ODF_volume.html,volume fractions]], the
 % [[ODF_textureindex.html,texture index]], the [[ODF_entropy.html,entropy]] 
-% and [[ODF_calcfourier.html,Fourier coefficients]] is about *100 times
+% and [[ODF_calcFourier.html,Fourier coefficients]] is about *100 times
 % faster*
 %
 % *New Support of EBSD Data Analysis*
@@ -164,7 +164,7 @@
 %
 %% MTEX 0.3 - 10/2007
 %
-% * new function [[ODF_fourier.html,fourier]] to calculate the
+% * new function [[ODF_Fourier.html,fourier]] to calculate the
 % Fouriercoefficents of an arbitrary ODF
 % * new option |ghost correction| in function 
 % [[PoleFigure_calcODF.html,calcODF]]

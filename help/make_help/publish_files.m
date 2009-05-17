@@ -16,7 +16,7 @@ global mtex_progress;
 
 old_dir = pwd;cd(in_dir);
 
-if check_option(varargin,'waitbar')
+if check_option(varargin,'waitbar') && ~check_option(varargin,'deadlinks')
   mtex_progress = 1;
   progress(0,length(files),'publishing: ');
 end
@@ -30,7 +30,7 @@ for i=1:length(files)
     continue;
   end
   
-  if check_option(varargin,'waitbar')
+  if check_option(varargin,'waitbar') && ~check_option(varargin,'deadlinks')
     mtex_progress = 1;
     progress(i,length(files),'publishing: ');
     mtex_progress = 0;
@@ -47,19 +47,6 @@ for i=1:length(files)
   code = file2cell(out_file);
   delete(out_file);
 
-  % check for dead links
-  if check_option(varargin,'deadlinks')
-    links = regexp(code, '\<(?:[[)(\S*?),.*?(?:\]\])\>','tokens');
-    links = links(~cellfun('isempty',links));
-    for j = 1:length(links)
-      if ~exist([poptions.outputDir filesep char(links{j}{1})],'file')
-        s = ['Dead link ',char(links{j}{1}),' in file <a href="matlab: edit ',...
-          poptions.outputDir,'/',files{i},'"> ',files{i},'</a> '];
-        disp(s);
-      end
-    end
-  end
-  
   % make links
   code = regexprep(code, '\<([[)(.*?),(.*?)(\]\])\>','<a href="$2">$3</a>');
   
@@ -69,6 +56,20 @@ for i=1:length(files)
   % insert true file name of mfile
   code = regexprep(code, 'XXXX',strrep(files{i},'.m',''));
 
+  
+  % check for dead links
+  if check_option(varargin,'deadlinks')
+    links = regexp(code, '\<(?:href=")(\S*?.html)(?:")\>','tokens');
+    links = links(~cellfun('isempty',links));
+    for j = 1:length(links)
+      if ~exist([poptions.outputDir filesep char(links{j}{1})],'file')
+        s = ['Dead link ',char(links{j}{1}),' in file <a href="matlab: edit ',...
+          in_dir,'/',files{i},'"> ',files{i},'</a> '];
+        disp(s);
+      end
+    end
+  end
+  
   % save  html file
   cell2file(strrep(out_file,'script_',''),code);
 

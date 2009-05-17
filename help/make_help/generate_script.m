@@ -1,16 +1,28 @@
-function generate_script(mfile, out_dir) 
-% copnvert comments of mfile to a a publish ready script
+function generate_script(mfile, out_dir,varargin) 
+% convert comments of mfile to a a publish ready script
 %
-% input:  mfile  - file to be published
-%         outdir - destination directory
-
-if nargin==0, help publish_m;return;end
-
+%% input
+% mfile  - file to be published
+% outdir - destination directory
 
 %% Parse m-file
 
 % class name
 class_name = char(regexp(which(mfile),'(?<=@)\w*(?=/\w*\.m)','match'));
+
+[path, file_name, ext, versn] = fileparts(mfile); %#ok<NASGU,NASGU>
+
+% check whether update is needed
+if isempty(class_name)
+  html_name = [out_dir filesep file_name '.html'];
+else
+  html_name = [out_dir filesep class_name '_' file_name '.html'];
+end
+if (is_newer(html_name,mfile) && ...
+    ~check_option(varargin,'force')) || strcmp(file_name,'Content')
+  return;
+end
+
 
 % preformat mfile
 %keywords = {'Syntax', 'Description','Input', 'Output', 'Options',...
@@ -18,7 +30,7 @@ class_name = char(regexp(which(mfile),'(?<=@)\w*(?=/\w*\.m)','match'));
 %format_mfile(mfile,keywords);
 
 % Read in source.
-[path, file_name, ext, versn] = fileparts(mfile); %#ok<NASGU,NASGU>
+
 code = file2cell(mfile);
 
 % extract syntax
@@ -103,3 +115,9 @@ function range = getrange(keyword,code,keywords_pos)
 rstart = min([strmatch(keyword,code);length(code)]);
 rend = min([keywords_pos(keywords_pos>rstart)-1;length(code)]);
 range = rstart+1:rend;
+
+function o = is_newer(f1,f2)
+
+d1 = dir(f1);
+d2 = dir(f2);
+o = ~isempty(d1) && ~isempty(d2) && d1.datenum > d2.datenum;

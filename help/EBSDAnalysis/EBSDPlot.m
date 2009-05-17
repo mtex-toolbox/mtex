@@ -23,8 +23,8 @@ ebsd = loadEBSD(fname,CS,SS,'interface','generic',...
 
 %% Scatter (Inverse) Pole Figure Plot
 % First we would like to plot a scatter plot of EBSD data in an (inverse) pole
-% figure. This is done via the commands <ebsd_plotpdf.html plotpdf> and
-% <ebsd_plotipdf.html plotipdf> respectively.
+% figure. This is done via the commands <EBSD_plotpdf.html plotpdf> and
+% <EBSD_plotipdf.html plotipdf> respectively.
 
 % A first try:
 plotipdf(ebsd,xvector)
@@ -44,7 +44,7 @@ hold off
 
 %% Scatter Plot in ODF Sections
 % In order to plot EBSD data as a scatter plot in ODF sections one has to
-% use the command <ebsd_plotodf.html plotodf>. In above examples the number
+% use the command <EBSD_plotodf.html plotodf>. In above examples the number
 % of plotted orientations was allways automatically axial such that the
 % plot does not become to full. The number of randomly chosen orientations
 % can be explicetly specified by the option *points*.

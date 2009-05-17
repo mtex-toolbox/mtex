@@ -79,7 +79,7 @@ pf = loadPoleFigure(fnames,h,cs,ss,'superposition',c)
 %
 %% Importing pole figure data from general ascii files
 %
-% MTEX function <loadPoleFigure_txt.html loadPoleFigure_txt> provides an 
+% MTEX function <loadPoleFigure_generic.html loadPoleFigure_generic> provides an 
 % easy way to import diffraction data from txt files that are of the 
 % following format
 %
@@ -93,7 +93,7 @@ pf = loadPoleFigure(fnames,h,cs,ss,'superposition',c)
 %
 % The txt files may contain an arbitrary number of header lines, columns or
 % comments and the actual order of the columns may specified by options.
-% For an example importing such data see <munich_interface.html here>.
+% For an example importing such data see <generic_interface.html here>.
 %
 %
 %% Importing pole figure data from unknown formats
