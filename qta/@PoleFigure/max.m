@@ -1,7 +1,7 @@
 function m = max(pf,pf2)
 % maximum of two pole figures or the maximum of a single polefigure
 %
-%% Syntay:
+%% Syntax:
 %  m  = max(pf)
 %  pf = max(pf1,pf2)
 %  pf = max(pf1,x) = max(x,pf1)
