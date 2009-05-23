@@ -1,4 +1,4 @@
-function [v,swap] = project2FundamentalRegion(v,sym,varargin)
+function [v,swap,rot] = project2FundamentalRegion(v,sym,varargin)
 % projects orientations to a fundamental region
 %
 %% Input
@@ -15,6 +15,13 @@ function [v,swap] = project2FundamentalRegion(v,sym,varargin)
 %q = quaternion_special(sym);
 [q,rho_rot] = quaternion_special(sym);
 
+if ~isempty(strmatch(Laue(sym),{'-3','-3m'})) && ...
+    vector3d(Miller(1,0,0,sym)) == -yvector
+  rot = 30*degree;
+else
+  rot = 0;
+end
+
 % symmetrice
 sv = q*v;
 [theta,rho] = vec2sph(sv);
@@ -27,17 +34,20 @@ if ~isempty(rho_rot)
 end
 
 % find element with minimal theta, rho angles
-rho = mod(rho,rotangle_max_z(sym));
+rho = modCentered(rho,rotangle_max_z(sym),rot);
+%d1 = pi/2 + rho + 1000*theta;
 d1 = rho + 1000*theta;
 [d1,th1,rh1] = selectMinbyColumn(d1,theta,rho);
 
 % apply inversion
 if ~isempty(rho_rot)
-  d2 = mod(pi + 2*rho_rot - rho,rotangle_max_z(sym)) + 1000*theta;
-  [d2,th2,rh2] = selectMinbyColumn(d2,theta,mod(pi + 2*rho_rot - rho,rotangle_max_z(sym)));
+  rho2 = modCentered(2*rho_rot - rho,rotangle_max_z(sym),rot);
+  d2 = rho2 + 1000*theta;
+  [d2,th2,rh2] = selectMinbyColumn(d2,theta,rho2);
 else
-  d2 = mod(pi + rho,rotangle_max_z(sym)) + 1000*(pi-theta);
-  [d2,th2,rh2] = selectMinbyColumn(d2,pi-theta,mod(pi + rho,rotangle_max_z(sym)));
+  rho2 = modCentered(pi + rho,rotangle_max_z(sym),rot);
+  d2 = rho2 + 1000*(pi-theta);
+  [d2,th2,rh2] = selectMinbyColumn(d2,pi-theta,rho2);
 end
 
 if check_option(varargin,'axial')
@@ -48,3 +58,7 @@ end
 
 [d,theta,rho] = selectMinbyColumn([d1;d2],[th1;th2],[rh1;rh2]);
 v = sph2vec(theta,rho);
+
+function d = modCentered(a,b,c)
+
+d = mod(a-c,b)+c;

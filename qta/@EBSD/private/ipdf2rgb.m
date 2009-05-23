@@ -5,7 +5,7 @@ function c = ipdf2rgb(h,cs,varargin)
 %% fundamental region
 
 [maxtheta,maxrho,minrho] = getFundamentalRegionPF(cs,varargin{:});
-
+maxrho = maxrho - minrho;
 h = vector3d(h); h = h./norm(h);
 switch Laue(cs)
   
@@ -41,11 +41,16 @@ switch Laue(cs)
     constraints = [yvector,axis2quat(zvector,maxrho/2) * (-yvector),zvector];
     %constraints = [-axis2quat(zvector,-maxrho/2) * yvector];
     center = sph2vec(pi/4,maxrho/4);
+    
 end
 
-[sh,pm] = project2FundamentalRegion(vector3d(h),cs,varargin{:});
+[sh,pm,rot] = project2FundamentalRegion(vector3d(h),cs,varargin{:});
 
-%% compute saturdation
+% if the Fundamental region does not start at rho = 0
+constraints = axis2quat(zvector,rot) * constraints;
+center = axis2quat(zvector,rot) * center;
+
+%% compute saturation
 
 % center
 center = get_option(varargin,'colorcenter',center);

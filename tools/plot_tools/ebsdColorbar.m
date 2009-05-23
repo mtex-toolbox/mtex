@@ -12,6 +12,7 @@ else
   o = getappdata(gcf,'options');
   varargin = {o{:},varargin{:}};
   colorcoding = getappdata(gcf,'colorcoding');  
+  varargin = set_default_option(varargin,[],'rotate',getappdata(gcf,'rotate'));
 end
 
 % get default options
@@ -25,7 +26,7 @@ h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'resolutio
 d = colorcoding(h);
 
 figure
-multiplot(@(i) h,@(i) d,1,'rgb');
+multiplot(@(i) h,@(i) d,1,'rgb',varargin{:});
 set(gcf,'tag','ipdf');
 setappdata(gcf,'CS',cs);
 setappdata(gcf,'SS',symmetry);
