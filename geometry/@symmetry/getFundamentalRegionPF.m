@@ -14,8 +14,8 @@ else
     maxRho = maxRho / 2;
   end
   maxTheta = rotangle_max_y(cs,varargin{:})/2;
-  v = [Miller(1,0,0),Miller(1,1,0),Miller(0,1,0),Miller(0,0,1)];
-      
+  v = [Miller(1,0,0),Miller(1,1,0),Miller(0,1,0),Miller(-1,2,0),Miller(0,0,1)];
+
   switch Laue(cs)
     case '-3m'
       if check_option(varargin,'axial') && ...
