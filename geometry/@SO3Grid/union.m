@@ -8,9 +8,11 @@ function G = union(varargin)
 OG = [varargin{:}];
 
 % check symmetries
-if ~equal([OG.CS],2) || ~equal([OG.SS],2)
+
+if GridLength(OG) > 1 && ( ~equal([OG.CS],2) || ~equal([OG.SS],2))
   warning('MTEX:SO3GridUnion','Processing orientations with different symmetries!');
 end
+
 
 G.alphabeta = [];
 G.gamma    = [];
