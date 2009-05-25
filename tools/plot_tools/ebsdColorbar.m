@@ -23,7 +23,7 @@ varargin = set_default_option(varargin,...
 [maxtheta,maxrho,minrho,v] = getFundamentalRegionPF(cs,varargin{:});
 h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'resolution',1*degree,varargin{:});
 
-d = colorcoding(h);
+d = reshape(colorcoding(h),[GridSize(h),3]);
 
 figure
 multiplot(@(i) h,@(i) d,1,'rgb',varargin{:});
