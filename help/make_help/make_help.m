@@ -43,7 +43,7 @@ if check_option(varargin, {'classes','all'})
   
   current_path = [mtex_path '/help/classes'];
 
-  folders = {'qta/@ODF','qta/@PoleFigure','qta/@EBSD','qta/@kernel',...
+  folders = {'qta/@ODF','qta/@PoleFigure','qta/@EBSD','qta/@kernel','qta/@grain'...
     'qta/standardODFs','qta/interfaces','qta/interfacesEBSD',...
     'geometry/@vector3d','geometry/@quaternion','geometry/@Miller',...
     'geometry/@symmetry','geometry/@S1Grid','geometry/@S2Grid',...
@@ -142,3 +142,10 @@ cd([mtex_path '/help/make_help']);
 
 %% finisch
 set_mtex_option('generate_help',false);
+
+function o = is_newer(f1,f2)
+
+d1 = dir(f1);
+d2 = dir(f2);
+o = ~isempty(d1) && ~isempty(d2) && d1.datenum > d2.datenum;
+
