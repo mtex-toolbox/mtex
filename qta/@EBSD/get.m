@@ -6,7 +6,7 @@ switch vname
   case {'comment','CS','SS','options'}
     value = obj(1).(vname);
   case fields(obj)
-    value = [obj.(vname)];
+    value = vertcat(obj.(vname));
   case 'data'
     value = [obj.orientations];
   case 'quaternions'
@@ -28,9 +28,11 @@ switch vname
       value = [value;obj(i).xy(:,2)]; %#ok<AGROW>
     end
   case fields(obj(1).options)
-    for i = 1:length(obj)
-      value = [value;reshape(obj(i).options.(vname),[],1)]; %#ok<AGROW>
-    end
+     options = [obj.options];
+     value = vertcat(options.(vname));    
+%     for i = 1:length(obj)
+%       value = [value;reshape(obj(i).options.(vname),[],1)]; %#ok<AGROW>
+%     end
   otherwise
     error('Unknown field in class EBSD!')
 end
