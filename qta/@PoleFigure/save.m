@@ -14,7 +14,7 @@ function save(pf,filename,varargin)
 %  DEGREE - theta / rho output in degree instead of radians
 %
 %% See also
-% loadPoleFigure_txt
+% loadPoleFigure_generic
 
 for i = 1:length(pf)
   dname = [filename,'_',char(pf(i).h),'.txt'];

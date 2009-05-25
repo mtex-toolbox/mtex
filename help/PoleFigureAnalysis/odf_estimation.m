@@ -64,7 +64,7 @@ plotpdf(odf,getMiller(pf),'axial','silent')
 %
 % In the following example the zero range method is applied with a the
 % treshhold 100. For more options to control the zero range method see the
-% documentation of <zero_range.html zero_range> or <plot_zero_range.html
+% documentation of <PoleFigure_zero_range.html zero_range> or <plot_zero_range.html
 % plot_zero_range>.
 
 odf = calcODF(pf,'zero_range','zr_bg',100)
