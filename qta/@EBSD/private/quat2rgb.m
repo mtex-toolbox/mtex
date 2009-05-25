@@ -7,7 +7,7 @@ qs = q*cs;
 omega = rotangle(qs);
 
 % find columns with minimum rotational angle
-ind = omega == repmat(min(omega,[],2),1,length(cs));
+ind = omega == repmat(min(omega,[],1),1,length(cs));
 ind = ind & ind == cumsum(ind,2);
 omega = omega(ind);
 

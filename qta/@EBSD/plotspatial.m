@@ -26,7 +26,7 @@ switch cc
       case 'bunge'
         d = euler2rgb(grid,varargin{:});
       case 'angle'
-        d = quat2rgb(grid,varargin{:});
+        d = quat2rgb(grid,cs,varargin{:});
       case 'sigma'
         d = sigma2rgb(grid,varargin{:});
       case 'ihs'
@@ -36,7 +36,6 @@ switch cc
         h = quat2ipdf(grid,varargin{:});
         d = ipdf2rgb(h,cs,varargin{:});
     end
-    d = reshape(d,[max(size(d)) 1 3]);
   case 'phase'
     d = [];
     for i = 1:length(ebsd)
