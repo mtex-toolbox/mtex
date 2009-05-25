@@ -15,7 +15,7 @@ function newFigure = newMTEXplot(varargin)
 
 %% new figure
 
-if ~ishold || (nargin == 0) || check_option(varargin,'newFigure')
+if ~ishold ||  check_option(varargin,'newFigure') %(nargin == 0) ||
   newFigure = true;
 else
   newFigure = false;
@@ -43,10 +43,8 @@ if check_option(varargin,'ensureAppdata')
 end
 
 
-if newFigure
-  
+if newFigure  
   clf('reset');
   figure(clf);
-  rmallappdata(gcf);
-  
+  rmallappdata(gcf);  
 end
