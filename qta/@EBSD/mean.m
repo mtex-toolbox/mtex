@@ -2,7 +2,7 @@ function [ m kappa v] = mean( ebsd,varargin)
 % returns mean, kappas and eigenvector of ebsd object
 %
 %% Input
-%  ebsd      - @ebsd
+%  ebsd      - @EBSD
 %
 %% Output
 %  m         - one equivalent mean orientation @quaternion

@@ -13,7 +13,7 @@ function ebsd = delete(ebsd,id)
 %  ebsd - @EBSD
 %
 %% See also
-% EBSD/get EBSD_index
+% EBSD/get EBSD/copy EBSD_index
 
 if isa(id,'logical'), id = find(id);end
 cs = cumsum([0,sampleSize(ebsd)]);
@@ -22,8 +22,8 @@ for i= 1:length(ebsd)
 	
 	idi = id((id > cs(i)) & (id<=cs(i+1)));
   if ~isempty(ebsd(i).xy), ebsd(i).xy(idi-cs(i),:) = [];end
-  
-  ebsd_fields = fields(ebsd.options);
+
+  ebsd_fields = fields(ebsd(i).options);  
   for f = 1:length(ebsd_fields)
     if numel(ebsd(i).options.(ebsd_fields{f})) == GridLength(ebsd(i).orientations)
       ebsd(i).options.(ebsd_fields{f})(idi-cs(i),:) = [];
