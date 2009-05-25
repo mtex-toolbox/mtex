@@ -6,10 +6,10 @@ function odf = smooth(odf,varargin)
 %  res - resolution
 %
 %% Output
-%  odf - smmoothed @ODF
+%  odf - smoothed @ODF
 %
 %% See also
-% loadEBSD_txt, SO3Grid/smooth
+% loadEBSD_generic, SO3Grid/smooth
 
 if nargin >= 2 && isa(varargin{1},'kernel')
   psi = varargin{1};
