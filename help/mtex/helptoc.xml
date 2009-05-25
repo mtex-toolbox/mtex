@@ -85,6 +85,7 @@
   <tocitem target="geometry_demo.html"> Crystal Geometry </tocitem>
   <tocitem target="ODF_demo.html"> ODF Analysis </tocitem>
   <tocitem target="ebsd_demo.html"> EBSD Data Analysis Demo</tocitem>
+  <tocitem target="grain_demo.html"> Grain Demo</tocitem>
   <tocitem target="ghost_demo.html"> Ghost Effect Analysis </tocitem>
   <tocitem target="dubna_demo.html"> The Dubna Example </tocitem>
   <tocitem target="santafee_demo.html"> The Santafee Example </tocitem>
