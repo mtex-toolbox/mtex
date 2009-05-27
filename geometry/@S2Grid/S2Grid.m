@@ -21,7 +21,7 @@ function G = S2Grid(varargin)
 %  EQUISPACED - generate equidistribution
 %  NORTH      - northern hemisphere
 %  SOUTH      - southern hemisphere
-%  REDUCED    - 
+%  axial      - include [[AxialDirectional.html,antipodal symmetry]]
 %  PLOT       - generate plotting grid
 %  MINRHO     - starting rho angle (default 0)
 %  MAXRHO     - maximum rho angle (default 2*pi)

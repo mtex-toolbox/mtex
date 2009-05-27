@@ -7,6 +7,9 @@ function d = dot_outer(S2G1,S2G2)
 %% Output
 %  dist matrix - dimension: [numel(S2G1),numel(S2G2)]
 %
+%% Options
+%  axial      - include [[AxialDirectional.html,antipodal symmetry]]
+%
 %% See also
 % S2Grid/find
 %

@@ -85,7 +85,7 @@ if check_option(varargin, {'mfiles','all'})
   for i=1:length(folders)
     
     apply_recursivly([mtex_path filesep folders{i}],...
-      @(file) generate_script(file,html_path),'*.m');
+      @(file) generate_script(file,html_path,varargin{:}),'*.m');
   
   end
 
@@ -148,4 +148,3 @@ function o = is_newer(f1,f2)
 d1 = dir(f1);
 d2 = dir(f2);
 o = ~isempty(d1) && ~isempty(d2) && d1.datenum > d2.datenum;
-

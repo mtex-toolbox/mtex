@@ -7,6 +7,7 @@ function [v,swap,rot] = project2FundamentalRegion(v,sym,varargin)
 %
 %% Options
 %  CENTER - reference orientation
+%  axial  - include [[AxialDirectional.html,antipodal symmetry]]
 %
 %% Output
 %  v  - @vector3d

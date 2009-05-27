@@ -262,6 +262,6 @@ function addOrUpdateProp(handle,propName,propValue)
         set(handle,propName,propValue);
     catch
         % never mind...
-        lasterr
+        %lasterr
     end
 %end  %#ok for Matlab 6 compatibility

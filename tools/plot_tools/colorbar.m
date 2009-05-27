@@ -32,7 +32,9 @@ if isappdata(gcf,'axes')
 
     if ~check_option(varargin,'log') && (check_option(varargin,'south') || ...
         (fpos(4) > apos(2)+5 && ~check_option(varargin,'east')))
-      varargin = {'south',varargin{:}};
+      if ~check_option(varargin,'south')
+        varargin = {'south',varargin{:}};
+      end
       fpos(4) = apos(2)+65;
     else
       varargin = {'east',varargin{:}};

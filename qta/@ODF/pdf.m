@@ -13,7 +13,7 @@ function Z = pdf(odf,h,r,varargin)
 %  SUPERPOSITION - calculate superposed pdf
 %
 %% Flags
-%  REDUCED - axial PDF
+%  axial - include [[AxialDirectional.html,antipodal symmetry]]
 %
 %% See also
 % ODF/plotpdf ODF/plotipdf ODF/simulatePoleFigure

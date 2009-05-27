@@ -10,6 +10,9 @@ function [ind,d] = find(S2G,v,epsilon,varargin)
 %  v       - @vector3d
 %  epsilon - double
 %
+%% Options
+%  axial      - include [[AxialDirectional.html,antipodal symmetry]]
+%
 %% Output
 %  ind     - int32        
 

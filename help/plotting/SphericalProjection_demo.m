@@ -10,7 +10,7 @@
 % Beside these standard projections there are options to custumize
 % the projection:
 %
-%  REDUCED - plot superposition of northern and southern hemisphere
+%  axial   - include [[AxialDirectional.html,antipodal symmetry]]
 %  NORTH   - plot only points of the northern hemisphere 
 %  SOUTH   - plot only points of the southern hemisphere
 %  ROTATE  - rotate plot about z-axis about a given angle
