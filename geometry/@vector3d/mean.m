@@ -8,7 +8,7 @@ function m = mean(v,varargin)
 %  m - @vector3d
 %
 %% Options
-%  axial - include axial symmetry
+%  axial - include [[AxialDirectional.html,antipodal symmetry]]
 % 
 
 if check_option(varargin,'axial')

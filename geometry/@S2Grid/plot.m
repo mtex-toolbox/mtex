@@ -23,7 +23,7 @@ function  varargout = plot(S2G,varargin)
 %% Flags
 %  NORTH       - plot only points on the north hemisphere (default)
 %  SOUTH       - plot only points on the southern hemisphere
-%  REDUCED     - project all data to nothern hemisphere
+%  axial      - include [[AxialDirectional.html,antipodal symmetry]]
 %  DOTS        - single points (default) 
 %  SMOOTH      - interpolated plot 
 %  CONTOUR     - contour plot

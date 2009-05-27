@@ -5,7 +5,7 @@
 % *Improved EBSD import*
 %
 % * import weighted EBSD (e.g. from odf modeling)
-% * new HKL and Chanel interfaces
+% * new HKL and Chanel interfaces (.ang and .ctf files)
 % * import of multiple phases
 % * import of arbitrary properties as MAD, detection error, etc.
 %
@@ -24,6 +24,11 @@
 % * faster and more accurate volume computation
 % * improved function modalorientation
 % * improved documentation
+%
+% *Incompatible Changes to Previous Versions*
+%
+% * The flag *reduced* has been replaced by the flag <AxialDirectional.html
+% axial> 
 %
 %% MTEX 1.1 - 12/2008
 %

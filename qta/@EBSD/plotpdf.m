@@ -16,7 +16,7 @@ function plotpdf(ebsd,h,varargin)
 %  POINTS        - number of points to be plotted
 %
 %% Flags
-%  REDUCED  - axial pdf
+%  axial    - include [[AxialDirectional.html,antipodal symmetry]]
 %  COMPLETE - plot entire (hemi)-sphere
 %
 %% See also

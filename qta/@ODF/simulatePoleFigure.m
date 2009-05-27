@@ -11,6 +11,7 @@ function pf = simulatePoleFigure(odf,h,r,varargin)
 %  r   - @vector3d specimen directions
 %
 %% Options
+%  axial         - include [[AxialDirectional.html,antipodal symmetry]]
 %  SUPERPOSITION - [double] superposition weights
 %
 %% See also

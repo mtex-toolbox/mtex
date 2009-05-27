@@ -77,7 +77,7 @@ c0 = get_option(varargin,'C0',...
 
 % calculate gh
 h = geth(pf);
-%[h,lh] = symetriceVec(CS,geth(pf),'REDUCED');
+%[h,lh] = symetriceVec(CS,geth(pf),'axial');
 g = SS*reshape(quaternion(S3G),1,[]); % SS x S3G
 g = reshape(g.',[],1);                % S3G x SS
 g = reshape(g*CS,[],1);               % S3G x SS x CS

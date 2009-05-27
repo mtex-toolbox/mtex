@@ -7,14 +7,14 @@ if rotangle_max_y(cs) == pi && rotangle_max_y(ss) == pi
 else
   max_phi1 = rotangle_max_z(ss);
 end
-max_phi2=rotangle_max_z(cs);
-max_Phi = min(rotangle_max_y(cs,varargin{:}),rotangle_max_y(ss,varargin{:}))/2;
+max_phi2 = rotangle_max_z(cs);
+max_Phi = min(rotangle_max_y(cs),rotangle_max_y(ss))/2;
 if check_option(varargin,'complete')
   max_phi1 = 2*pi;
   max_Phi = pi;
   max_phi2 = 2*pi;
-elseif check_option(varargin,'axial')
-  if rotangle_max_y(cs)/2 < pi
-    max_phi2 = max_phi2 / 2;
-  end
 end
+%elseif check_option(varargin,'axial')
+%  if rotangle_max_y(cs)/2 < pi
+%    max_phi2 = max_phi2 / 2;
+%end

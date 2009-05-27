@@ -9,7 +9,7 @@ function plotipdf(odf,r,varargin)
 %  RESOLUTION - resolution of the plots
 %  
 %% Flags
-%  REDUCED  - axial pdf
+%  axial    - include [[AxialDirectional.html,antipodal symmetry]]
 %  COMPLETE - plot entire (hemi)-sphere
 %
 %% See also

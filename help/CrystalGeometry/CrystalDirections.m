@@ -47,7 +47,7 @@ m = Miller(1,1,-2,0,cs)
 symeq(m)
 
 %% 
-% As allways the keyword *axial* adds antipodal symmetry to this
+% As allways the keyword <AxialDirectional.html axial> adds antipodal symmetry to this
 % computation
 
 symeq(m,'axial')
@@ -73,7 +73,7 @@ symeq(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'axial')
 angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs))/degree
 
 %% 
-% As allways the keyword *axial* adds antipodal symmetry to this
+% As allways the keyword <AxialDirectional.html axial> adds antipodal symmetry to this
 % computation
 
 angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'axial')/degree
@@ -85,7 +85,8 @@ angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'axial')/degree
 
 vector3d(m)
 
-% Conversion into spherical coordinates requires the function <vec2sph.html
+%%
+% Conversion into spherical coordinates requires the function <vector3d_vec2sph.html
 % vec2sph> 
 
 [theta,rho] = vec2sph(vector3d(m))

@@ -4,8 +4,10 @@ function plotspatial(ebsd,varargin)
 %% Syntax
 %
 %% Input
+%  ebsd - @EBSD
 %
 %% Options
+%  axial - include [[AxialDirectional.html,antipodal symmetry]]
 %
 %% See also
 

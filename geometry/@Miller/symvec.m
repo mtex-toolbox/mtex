@@ -10,7 +10,7 @@ function v = symvec(m,varargin)
 %  v - @vector3d
 %
 %% Options
-%  REDUCED - include antipodal symmetry
+%  axial - include [[AxialDirectional.html,antipodal symmetry]]
 
 if length(m)~=1, error('Function supports only single vectors!');end
 

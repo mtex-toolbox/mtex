@@ -1,5 +1,19 @@
 function  [maxTheta,maxRho,minRho,v] = getFundamentalRegionPF(cs,varargin)
 % get the fundamental region for (inverse) pole figure
+%
+%% Input
+%  cs - crystal symmetry
+%
+%% Ouput
+%  maxTheta
+%  maxRho
+%  minRho
+%  v
+%
+%% Options
+%  axial      - include [[AxialDirectional.html,antipodal symmetry]]
+%
+%
 
 rotate = get_option(varargin,'rotate',0);
 if check_option(varargin,'complete')

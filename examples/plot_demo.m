@@ -82,7 +82,7 @@ plotodf(odf,'radially','linewidth',2)
 % Beside these standard projections there are some options to custumize
 % the projection:
 %
-%  REDUCED - plot superposition of northern and southern hemisphere
+%  AXIAL   - include [[AxialDirectional.html,antipodal symmetry]]
 %  NORTH   - plot only points of the northern hemisphere 
 %  SOUTH   - plot only points of the southern hemisphere
 %  ROTATE  - rotate plot about z-axis about a given angle
