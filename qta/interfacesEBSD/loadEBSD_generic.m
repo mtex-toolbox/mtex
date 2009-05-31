@@ -179,7 +179,8 @@ ignorePhase = get_option(varargin,'ignorePhase',0);
 phases(arrayfun(@(x) any(x == ignorePhase),phases)) = [];
 
 if length(phases)>20
-  error('MTEX:tomanyphases','Found more then 20 phases. This is to much for MTEX.');
+  warning('MTEX:tomanyphases','Found more then 20 phases. I''m going to ignore them.');
+  phases = [];
 end
 
 % return varargin as options
