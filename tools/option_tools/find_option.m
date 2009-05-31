@@ -3,13 +3,20 @@ function pos = find_option(option_list,option,type)
 %
 %% Input
 %  option_list - Cell Array
-%  options     - String Array
+%  options     - String or Cell Array
 %
 %% Output
 %  pos         - doule
 
-found = cellfun(@(c) (ischar(c) && ...
-  any(strcmpi(c,option))),option_list);
+
+if ischar(option)
+  found = strcmpi(option_list,option);
+else
+  found = false(size(option_list));
+  for k=1:length(option)
+    found = found | strcmpi(option{k},option_list);
+  end
+end
 pos = find(found);
 
 % option value required ?
