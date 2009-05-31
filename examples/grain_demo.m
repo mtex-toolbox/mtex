@@ -37,7 +37,7 @@ figure('color','white'), hold on, plot(ebsd,'phase',1,'colorcoding','ihs')
 % grain_idXXXXXXXX as option, so it is possible to treat several
 % different segmentations with one ebsd object
 
-[grains5  ebsd] = segment2d(ebsd,'angle',5*degree,'augmentation','cube')
+[grains5 ebsd] = segment2d(ebsd,'angle',5*degree,'augmentation','cube')
 
 
 %% Plot Grains and Subfractions
@@ -48,9 +48,9 @@ hold on, plotsubfractions(grains,'color','red','linewidth',2)
 %% Select grains after their EBSD phase
 % The Segmentation is connected with the EBSD object, 
 
-grains_ph0 = grains == ebsd(1);
-grains_ph1 = grains == ebsd(2);
-grains_ph2 = grains == ebsd(3);
+grains_ph0 = get(grains,ebsd(1));
+grains_ph1 = get(grains,ebsd(2));
+grains_ph2 = get(grains,ebsd(3));
 
 %%
 % Some histogram for grainsizes
@@ -68,9 +68,9 @@ y3 = hist(grainsize(grains_ph2),x)';
 %%
 % and the histogram for the segmentation of 5 degrees
 
-y5_1 = hist(grainsize(grains5 == ebsd(1)),x)';
-y5_2 = hist(grainsize(grains5 == ebsd(2)),x)';
-y5_3 = hist(grainsize(grains5 == ebsd(3)),x)';
+y5_1 = hist(grainsize( get(grains5,ebsd(1)) ),x)';
+y5_2 = hist(grainsize( get(grains5,ebsd(2)) ),x)';
+y5_3 = hist(grainsize( get(grains5,ebsd(3)) ),x)';
 
 %%
 % print a table
@@ -131,7 +131,7 @@ axis tight
   %select grains with subfractions
 grains_fractions = grains( hassubfraction(grains) );
   %and its corresponding ebsd data
-ebsd_fractions = ebsd == grains_fractions
+ebsd_fractions = get(ebsd, grains_fractions)
 
 %%
 figure('color','white'), hold all

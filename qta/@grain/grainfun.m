@@ -30,7 +30,7 @@ if nargin > 1
       uniform = get_option(varargin,'UniformOutput',false);
       ebsd = varargin{hasebsd};    
 
-      [grains ebsd ids] = grains == ebsd;
+      [grains ebsd ids] = get(grains, ebsd);
       
       if ~isempty(grains)        
         if isa(FUN,'function_handle')
