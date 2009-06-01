@@ -1,5 +1,7 @@
-function s = sum(q,varargin)
+function q = sum(q,varargin)
 % overloads sum
 
-s = quaternion(sum(q.a,varargin{:}),sum(q.b,varargin{:}),...
-	sum(q.c),sum(q.d,varargin{:}));
+q.a = sum(q.a,varargin{:});
+q.b = sum(q.b,varargin{:});
+q.c = sum(q.c,varargin{:});
+q.d = sum(q.d,varargin{:});

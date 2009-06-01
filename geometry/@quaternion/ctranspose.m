@@ -1,4 +1,7 @@
-function q = ctranspose(q1)
+function q = ctranspose(q)
 % transpose quaternion
 
-q = quaternion(q1.a,-q1.b,-q1.c,-q1.d);
+q.a =  q.a;
+q.b = -q.b;
+q.c = -q.c;
+q.d = -q.d;

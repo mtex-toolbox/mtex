@@ -1,4 +1,4 @@
-function [mean lambda V] = mean(q,varargin)
+function [q lambda V] = mean(q,varargin)
 % returns mean, kappas and sorted q of crystal symmetry euqal quaternions 
 %
 %% Input
@@ -16,4 +16,7 @@ function [mean lambda V] = mean(q,varargin)
 
 T = qq(q,varargin{:});
 [V lambda ] = eigs(T);
-mean = quaternion(V(1,1),V(2,1),V(3,1),V(4,1));
+q.a = V(1,1);
+q.b = V(2,1);
+q.c = V(3,1);
+q.d = V(4,1);

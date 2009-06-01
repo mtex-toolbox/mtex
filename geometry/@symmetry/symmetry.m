@@ -47,7 +47,18 @@ function s = symmetry(name,varargin)
 %  cubic           Oh       m-3m      m-3m     432  
 
 %% get input
-if nargin == 0, name = '1';end
+
+if nargin == 0
+  s.name = '1';
+  s.laue = '-1';
+  s.axis =  [xvector,yvector,zvector];
+  s.quat = idquaternion;
+  s.mineral = '';
+  superiorto('quaternion','SO3Grid');
+  s = class(s,'symmetry');
+  return
+end
+
 if isa(name,'symmetry'),  s = name;return;end
 if ~isempty(varargin) && isa(varargin{1},'double')
   axis = varargin{1};
