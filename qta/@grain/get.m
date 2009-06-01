@@ -38,12 +38,14 @@ if nargin > 1
     if nargout > 2, varargout{3} = ids; end
   elseif ~isempty(opt_pos)
     optfield = varargin{opt_pos};
-    
     switch optfield
       case {'neighbour' 'cells'}
         varargout{1} = {grains.(optfield)};
       case fields(grains)
         varargout{1} = [grains.(optfield)]; 
+      case fields(grains(1).properties)  
+        property = [grains.properties];        
+        varargout{1} = [property.(optfield)]; 
       otherwise
          error('Unknown field in class grain')
     end

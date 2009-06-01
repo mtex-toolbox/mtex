@@ -24,6 +24,8 @@ function [gr id] = grain(id,varargin)
   gr.subfractions.xx = [];
   gr.subfractions.yy = [];
   gr.subfractions.pairs = [];
+  %allow arbitrary properties
+  gr.properties = struct;
 
 if nargin > 0 
   
@@ -51,6 +53,7 @@ if nargin > 0
     if nargin == 6
       gr.subfractions = varargin{5};
     end
+    gr.properties = get_option(varargin,'properties',struct);
   else
     error('wrong usage')
   end
