@@ -17,6 +17,15 @@ function [q_mean kappa v q q_std] = mean(S3G,varargin)
 
 q = quaternion(S3G);
 
+if numel(q) == 1
+  q_mean = q;
+  % !!!!!!!!!!  TODO !!!!!!!!!!!!!!!!!!!!
+  v = idquaternion;
+  kappa = [1 0 0 0];
+  q_std = 0;
+  return;
+end
+
 % first approximation
 q_mean = get_option(varargin,'q0',q(1));
 old_mean = [];
