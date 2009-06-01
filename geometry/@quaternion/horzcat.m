@@ -2,10 +2,8 @@ function q = horzcat(varargin)
 % implements [q1,q2,q3..]
 
 q = varargin{1};
-
-if length(varargin) > 1
-  q.a = cellfun(@(q) q.a,varargin);
-  q.b = cellfun(@(q) q.b,varargin);
-  q.c = cellfun(@(q) q.c,varargin);
-  q.d = cellfun(@(q) q.d,varargin);
-end
+qs = cat(2,varargin{:});
+q.a = horzcat(qs.a);
+q.b = horzcat(qs.b);
+q.c = horzcat(qs.c);
+q.d = horzcat(qs.d);
