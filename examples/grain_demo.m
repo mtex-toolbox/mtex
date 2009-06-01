@@ -21,7 +21,7 @@ fname = [mtexDataPath '/aachen_ebsd/85_829grad_07_09_06.txt'];
 ebsd = loadEBSD(fname,CS,SS,'interface','generic',...
   'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3'},...
   'Columns', [2 3 4 5 6 7],...
-  'Bunge');
+  'Bunge','ignorePhase',[]);
 
 plotx2east
 
@@ -148,6 +148,30 @@ plotellipse(grains_fractions,'hull','scale',0.25,'b','linewidth',1.5)
 
 %%
 subfractionratio(grains_fractions)
+
+%% Calculation of additional Properties: Mean
+% sometimes a property of a grain might be used repeatedly, hence we can
+% store it into the grain object.
+
+[q grains] = mean(grains, ebsd);
+
+%%
+% We want also visualize a property
+
+grains_ph1 = get(grains,ebsd(2));
+figure('color','white'), hold on, plot(grains_ph1,'property','mean', 'colorcoding','ihs')
+
+%%
+% and compare it with the original data set
+
+figure('color','white'), hold on, plot(ebsd(2),'colorcoding','ihs')
+
+%%
+% or combine this, e.g. plot the orientation needed to map ebsd-grain data
+% onto its grain-mean, to inspect visually whether a grain has a trends
+
+figure('color','white'), hold on, plot(grains_ph1,ebsd(2),'diffmean', 'colorcoding','ihs')
+hold on, plot(grains,'color','red')
 
 
 %% Spatial Relation - Join Counts
