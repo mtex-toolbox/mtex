@@ -71,7 +71,7 @@ function txt = tooltip(empt,eventdata,ebsd) %#ok<INUSL>
 pos = get(eventdata,'Position');
 [xp yp] = fixMTEXscreencoordinates(pos(1),pos(2));
 [x y] = fixMTEXscreencoordinates(ebsd.xy(:,1), ebsd.xy(:,2));
-q = quaternion(ebsd.orientations);
+q = get(ebsd,'quaternions');
 
 %does not work with surf
 ind = find(xp == x & yp == x);
