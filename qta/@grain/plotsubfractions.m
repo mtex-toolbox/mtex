@@ -26,12 +26,12 @@ if any(b)
   X = [X ; NaN(1,size(X,2))];
   Y = [Y ; NaN(1,size(Y,2))];
 
-  [X,Y,lx,ly] = fixMTEXscreencoordinates(X,Y,varargin);
-    
+  [X,Y,lx,ly] = fixMTEXscreencoordinates(X,Y,varargin); 
  
   plot(X(:),Y(:),varargin{:});
-  xlabel(lx); ylabel(ly);
   
+  prepareMTEXplot;
+  xlabel(lx); ylabel(ly);  
   fixMTEXplot;
 else
   return

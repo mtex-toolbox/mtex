@@ -58,12 +58,11 @@ else
   rx = [rx - [drx  drx(end)]/2   rx(end)+drx(end)/2];
   ry = [ry - [dry  drx(end)]/2   ry(end)+drx(end)/2];
   [rrx,rry] = meshgrid(rx,ry); 
- 
   surf(rrx,rry,zeros(size(rrx)),c); shading flat 
   view(0,90);
 end
 
+prepareMTEXplot;
 xlabel(lx); ylabel(ly);
-
 fixMTEXplot;
 

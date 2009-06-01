@@ -3,9 +3,8 @@ function fixMTEXplot(varargin)
 %
 %
 %
-
-axis equal
-axis tight
+set(gcf,'WindowStyle','normal')
+set(gcf,'DockControls','off')
 
 set(gcf,'units','pixel');
 fig_pos = get(gcf,'position');
@@ -20,4 +19,3 @@ set(gcf,'position',[fig_pos(1:2) 30+a+2*d]);
 set(gcf,'units','normalized');
 set(gca,'units','normalized');
 
-grid on
