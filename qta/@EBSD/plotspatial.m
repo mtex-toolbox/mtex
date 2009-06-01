@@ -59,7 +59,9 @@ setappdata(gcf,'options',extract_option(varargin,'axial'));
 set(gcf,'ResizeFcn',@fixMTEXplot);
 
 %% set data cursor
+
 dcm_obj = datacursormode(gcf);
+set(dcm_obj,'SnapToDataVertex','off')
 set(dcm_obj,'UpdateFcn',{@tooltip,ebsd});
 
 if check_option(varargin,'cursor'), datacursormode on;end
@@ -69,12 +71,17 @@ if check_option(varargin,'cursor'), datacursormode on;end
 function txt = tooltip(empt,eventdata,ebsd) %#ok<INUSL>
 
 pos = get(eventdata,'Position');
-[xp yp] = fixMTEXscreencoordinates(pos(1),pos(2));
+xp = pos(1); yp = pos(2);
 [x y] = fixMTEXscreencoordinates(ebsd.xy(:,1), ebsd.xy(:,2));
 q = get(ebsd,'quaternions');
 
-%does not work with surf
-ind = find(xp == x & yp == x);
+dx = min(diff(unique(sort(x))));
+dy = min(diff(unique(sort(y))));
+
+ind1 = find(xp+dx/2 >= x & xp-dx/2 < x);
+ind2 = find(yp+dy/2 >= y & yp-dy/2 < y);
+
+ind = intersect(ind1,ind2);
 
 txt =  {['(x,y) : ',num2str(xp),', ',num2str(yp)],...
   ['quaternion (id: ', num2str(ind),') : ' ], ...
@@ -82,3 +89,4 @@ txt =  {['(x,y) : ',num2str(xp),', ',num2str(yp)],...
   ['    b = ', num2str(q(ind).b,2)],...
   ['    c = ', num2str(q(ind).c,2)],...
   ['    d = ', num2str(q(ind).d,2) ]};
+
