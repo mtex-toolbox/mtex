@@ -12,10 +12,13 @@ if isa(q1,'quaternion') && isa(q2,'quaternion')
 %  [a,b,c,d] = quaternion_times_qq(q1.a,q1.b,q1.c,q1.d,q2.a,q2.b,q2.c,q2.d);
 %  q = quaternion(a,b,c,d);
   
-     q = quaternion(q1.a .* q2.a - q1.b .* q2.b - q1.c .* q2.c - q1.d .* q2.d,...
-       q1.a .* q2.b + q1.b .* q2.a + q1.c .* q2.d - q2.c .* q1.d,...
-       q1.a .* q2.c + q1.c .* q2.a + q1.d .* q2.b - q2.d .* q1.b,...
-       q1.a .* q2.d + q1.d .* q2.a + q1.b .* q2.c - q2.b .* q1.c);
+     a = q1.a .* q2.a - q1.b .* q2.b - q1.c .* q2.c - q1.d .* q2.d;
+     b = q1.a .* q2.b + q1.b .* q2.a + q1.c .* q2.d - q2.c .* q1.d;
+     c = q1.a .* q2.c + q1.c .* q2.a + q1.d .* q2.b - q2.d .* q1.b;
+     d = q1.a .* q2.d + q1.d .* q2.a + q1.b .* q2.c - q2.b .* q1.c;
+     q = q1;
+     q1.a = a; q1.b = b; q1.c = c; q1.d = d;
+
 elseif isa(q1,'quaternion') && isa(q2,'double')
     q = quaternion(q1.a .* q2,q1.b .* q2,q1.c .* q2,q1.d .* q2);
 elseif isa(q2,'quaternion') && isa(q1,'double')

@@ -1,4 +1,7 @@
-function q = uminus(q1)
+function q = uminus(q)
 % overload unitary minus
  
-q = quaternion(-q1.a,-q1.b,-q1.c,-q1.d);
+q.a = -q.a;
+q.b = -q.b;
+q.c = -q.c;
+q.d = -q.d;

@@ -1,7 +1,7 @@
-function quat = reshape(q,varargin) 
+function q = reshape(q,varargin) 
 % overloads reshape
 
-if isa(q,'quaternion')
-	quat = quaternion(reshape(q.a,varargin{:}),reshape(q.b,varargin{:}),...
-		reshape(q.c,varargin{:}),reshape(q.d,varargin{:}));
-end
+q.a = reshape(q.a,varargin{:});
+q.b = reshape(q.b,varargin{:});
+q.c =	reshape(q.c,varargin{:});
+q.d = reshape(q.d,varargin{:});
