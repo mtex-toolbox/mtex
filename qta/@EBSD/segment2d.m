@@ -163,7 +163,7 @@ else
 end
 
 s(1) = toc;
-disp(['  segmentation:        '  num2str(s(1)) ' sec']);
+disp(['  ebsd segmentation:        '  num2str(s(1)) ' sec']);
 
 
 %% retrieve polygons
@@ -175,14 +175,13 @@ grains = grain(nc);
 for k=1:nc
   regionid = id{k};
   ply = createpolygon(cells(regionid),vert);
-  
-  grains(k) = grain(k, regionid, nn{find(k == nfr)}, ply,checksum,fractions{find(k == cfr)}); 
+
+  grains(k) = grain(k, regionid, nn{find(k == nfr)},...
+    ply,checksum,fractions{find(k == cfr)});
 end
 
-
-
 s(3) = toc;
-disp(['  polygon generation:  '  num2str(s(3)) ' sec' ]);
+disp(['  grain generation:  '  num2str(s(3)) ' sec' ]);
 disp(' ')
 
 
