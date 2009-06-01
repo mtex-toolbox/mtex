@@ -2,14 +2,7 @@ function c = quat2rgb(q,cs,varargin)
 % converts orientations to rgb values
 
 q0 = get_option(varargin,'q0',idquaternion);
-q = q(:)*inverse(q0);
-qs = q*cs;
-omega = rotangle(qs);
-
-% find columns with minimum rotational angle
-ind = omega == repmat(min(omega,[],1),1,length(cs));
-ind = ind & ind == cumsum(ind,2);
-omega = omega(ind);
+[q omega] = getFundamentalRegion(q,'center',q0);
 
 if check_option(varargin,'logarithmic')
   omega = log(max(omega(:))/1000 + omega);

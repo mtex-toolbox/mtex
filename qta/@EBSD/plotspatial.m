@@ -21,23 +21,8 @@ cc = lower(get_option(varargin,'colorcoding','ipdf'));
 %% compute colorcoding
 switch cc
   case {'bunge','angle','sigma','ihs','ipdf'}
-    [grid,ind] = getgrid(ebsd,'checkPhase',varargin{:});
-    cs = get(grid,'CS');
-    ss = get(grid,'SS');
-    switch cc
-      case 'bunge'
-        d = euler2rgb(grid,varargin{:});
-      case 'angle'
-        d = quat2rgb(grid,cs,varargin{:});
-      case 'sigma'
-        d = sigma2rgb(grid,varargin{:});
-      case 'ihs'
-        d = euler2rgb(grid,cs,ss,varargin{:});
-        d = rgb2hsv(d);
-      case 'ipdf'     % colorcoding according according to ipdf    
-        h = quat2ipdf(grid,varargin{:});
-        d = ipdf2rgb(h,cs,varargin{:});
-    end
+    [grid,ind] = getgrid(ebsd,'checkPhase',varargin{:});    
+    d = orientation2color(grid,cc,varargin{:});
   case 'phase'
     d = [];
     for i = 1:length(ebsd)
@@ -63,39 +48,35 @@ newMTEXplot;
 
 plotxy(get(ebsd(ind),'x'),get(ebsd(ind),'y'),d,varargin{:});
 if strcmpi(cc,'ipdf')
-  setappdata(gcf,'CS',cs);
+  cs = get(grid,'CS');
+  setappdata(gcf,'CS',cs)
   setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d'));
-  setappdata(gcf,'colorcoding',@(h) ipdf2rgb(h,cs,varargin{:}));
+  setappdata(gcf,'colorcoding',@(h) orientation2color(h,cc,cs,varargin{:}))
 end
 set(gcf,'tag','ebsd_spatial');
 setappdata(gcf,'options',extract_option(varargin,'axial'));
 
+set(gcf,'ResizeFcn',@fixMTEXplot);
 
 %% set data cursor
 dcm_obj = datacursormode(gcf);
 set(dcm_obj,'UpdateFcn',{@tooltip,ebsd});
-    
+
 if check_option(varargin,'cursor'), datacursormode on;end
-
-function h = quat2ipdf(S3G,varargin)
-
-  % get specimen direction
-  r = get_option(varargin,'r',xvector,'vector3d');
-
-  % compute crystal directions
-  h = inverse(quaternion(S3G)) .* r;
 
 
 %% Tooltip function
 function txt = tooltip(empt,eventdata,ebsd) %#ok<INUSL>
 
 pos = get(eventdata,'Position');
-xy = ebsd.xy;
+[xp yp] = fixMTEXscreencoordinates(pos(1),pos(2));
+[x y] = fixMTEXscreencoordinates(ebsd.xy(:,1), ebsd.xy(:,2));
 q = quaternion(ebsd.orientations);
 
-ind = find((pos(1) == xy(:,1)) & (pos(2) == xy(:,2)));
+%does not work with surf
+ind = find(xp == x & yp == x);
 
-txt =  {['(x,y) : ',num2str(pos(1)),', ',num2str(pos(2))],...
+txt =  {['(x,y) : ',num2str(xp),', ',num2str(yp)],...
   ['quaternion (id: ', num2str(ind),') : ' ], ...
   ['    a = ',num2str(q(ind).a,2)], ...
   ['    b = ', num2str(q(ind).b,2)],...
