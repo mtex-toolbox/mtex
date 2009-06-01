@@ -51,16 +51,18 @@ end
 %% plot
 
 if size(c,3) == 1
-  pcolor(rx,ry,c); shading flat 
+  h = pcolor(rx,ry,c); shading flat 
 else
   drx = diff(rx);
   dry = diff(ry);
   rx = [rx - [drx  drx(end)]/2   rx(end)+drx(end)/2];
   ry = [ry - [dry  drx(end)]/2   ry(end)+drx(end)/2];
   [rrx,rry] = meshgrid(rx,ry); 
-  surf(rrx,rry,zeros(size(rrx)),c); shading flat 
+  h = surf(rrx,rry,zeros(size(rrx)),c); shading flat 
   view(0,90);
 end
+
+optiondraw(h,varargin{:});
 
 prepareMTEXplot;
 xlabel(lx); ylabel(ly);

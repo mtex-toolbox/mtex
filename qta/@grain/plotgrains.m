@@ -28,12 +28,9 @@ elseif nargin>1 && isa(grains,'EBSD') && isa(varargin{1},'grain')
   varargin = varargin(2:end);
 end
 
-noholes = check_option(varargin,'noholes');
 convhull = check_option(varargin,{'hull','convhull'});
 property = get_option(varargin,'property',[]);
   %treat varargin
-  varargin = delete_option(varargin,{'noholes','hull','convhull'},0);
-  varargin = delete_option(varargin,{'property'},1);
    
 %%
 
@@ -69,7 +66,6 @@ else xy = cell2mat(arrayfun(@(x) [x.xy ; NaN NaN],p,'UniformOutput',false)); end
 
 if property
   cc = lower(get_option(varargin,'colorcoding','ipdf'));
-    varargin = delete_option(varargin,{'colorcoding'},1);
   
   fac = get_faces({p.xy}); 
      
@@ -86,7 +82,7 @@ if property
         phase = get(grains,'phase');
         CS = get(grains,'CS');
         SS = get(grains,'SS');
-        [phase1, m, n] = unique(phase);
+        [phase1, m] = unique(phase);
         
         if numel(phase1)>1
           warning('MTEX:MultiplePhases','This operatorion is only permitted for a single phase! I''m going to process only the first phase.');
@@ -106,27 +102,25 @@ if property
   end  
  
   if convhull
-    patch('Vertices',[X Y],'Faces',fac,'FaceVertexCData',d,'FaceColor','flat',varargin{:});
+    h = patch('Vertices',[X Y],'Faces',fac,'FaceVertexCData',d,'FaceColor','flat',varargin{:});
   else
     hh = hasholes(grains);
     if any(hh)     
-      patch('Vertices',[X Y],'Faces',fac(hh,:),'FaceVertexCData',d(hh,:),'FaceColor','flat',varargin{:});
-      h = [p(hh).hxy];
-      hxy = vertcat(h{:});
+      h(1) = patch('Vertices',[X Y],'Faces',fac(hh,:),'FaceVertexCData',d(hh,:),'FaceColor','flat');
+      hp = [p(hh).hxy];
+      hxy = vertcat(hp{:});
       [hX,hY] = fixMTEXscreencoordinates(hxy(:,1),hxy(:,2),varargin);
-      hfac = get_faces(h);
+      hfac = get_faces(hp);
         c = repmat(get(gca,'color'),length(hfac),1);
-      patch('Vertices',[hX hY],'Faces',hfac,'FaceVertexCData',c,'FaceColor','flat',varargin{:});
+      h(2) = patch('Vertices',[hX hY],'Faces',hfac,'FaceVertexCData',c,'FaceColor','flat');
     end
 
     if any(~hh)
-      patch('Vertices',[X Y],'Faces',fac(~hh,:),'FaceVertexCData',d(~hh,:),'FaceColor','flat',varargin{:});
+      h(3) = patch('Vertices',[X Y],'Faces',fac(~hh,:),'FaceVertexCData',d(~hh,:),'FaceColor','flat');
     end  
   end
 elseif exist('ebsd','var') 
-  if check_option(varargin,'diffmean')
-    varargin = delete_option(varargin,'diffmean',0);
- 
+  if check_option(varargin,'diffmean') 
     if ~check_property(grains,'mean'),  
       warning('MATLAB:plotgrains:mean', ...
         'please calculate mean as object property first') 
@@ -150,18 +144,19 @@ elseif exist('ebsd','var')
   
       [omega,q_res] = selectMinbyRow(omega,q_res);
       
-      plot(set(ebsd(1),'orientations',SO3Grid(q_res,cs,ss)),varargin{:});
+      plotspatial(set(ebsd(1),'orientations',SO3Grid(q_res,cs,ss)),varargin{:});
+      return
     end
   end
   
 else 
   ih = ishold;
   if ~ih, hold on, end
-   
-  plot(X(:),Y(:),varargin{:});
- 
+  
+  h(1) = plot(X(:),Y(:));
+
   %holes
-  if ~noholes & ~convhull
+  if ~check_option(varargin,'noholes') & ~convhull
     bholes = hasholes(grains);
     
     if any(bholes)
@@ -172,7 +167,7 @@ else
         ps,'uniformoutput',false));
       
       [X,Y] = fixMTEXscreencoordinates(xy(:,1),xy(:,2),varargin);
-      plot(X(:),Y(:),varargin{:});
+      h(2) = plot(X(:),Y(:));
      
     end
   end
@@ -183,6 +178,8 @@ fixMTEXplot;
 
 set(gcf,'ResizeFcn',@fixMTEXplot);
 
+%apply plotting options
+optiondraw(h,varargin{:});
 
 
 function  b = check_property(grains,property)
