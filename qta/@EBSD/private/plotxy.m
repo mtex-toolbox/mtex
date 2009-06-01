@@ -30,11 +30,15 @@ c = reshape(c,ny,nx,s(end));
 if all(all(isnan(c(1:2:end,1:2:end,1)))) || ...
     all(all(isnan(c(1:2:end,2:2:end,1))))   
   
-  c(2:end-1,2:end-1,:) = nanmedian(cat(4,...
+  cc = cat(4,...
     c(2:end-1,2:end-1,:),...
     c(1:end-2,2:end-1,:),c(3:end,2:end-1,:),...
-    c(2:end-1,1:end-2,:),c(2:end-1,3:end,:)),4);
-    
+    c(2:end-1,1:end-2,:),c(2:end-1,3:end,:));
+  
+  d = nanmedian(cc,4);
+  d(sum(isnan(cc(:,:,1,:)),4)>=3 & isnan(cc(:,:,1,1))) = NaN;
+  c(2:end-1,2:end-1,:) = d;
+  
 end
 
 %% interpolate if necasarry
