@@ -14,8 +14,10 @@ a = pbaspect; a = a(1:2)./max(a(1:2));
 b = (fig_pos(3:4) -30 - 2*d);
 c = b./a;
 a = a * min(c);
-set(gca,'position',[30+d 30+d a]);
-set(gcf,'position',[fig_pos(1:2) 30+a+2*d]);
+if all(a > 0)
+  set(gca,'position',[30+d 30+d a]);
+  set(gcf,'position',[fig_pos(1:2) 30+a+2*d]);
+end
 set(gcf,'units','normalized');
 set(gca,'units','normalized');
 
