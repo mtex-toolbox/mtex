@@ -121,6 +121,9 @@ elseif maxangle < rotangle_max_z(CS)/4
   
   % restrict to fundamental region - specimen symetry only
   center = get_option(varargin,'center',idquaternion);
+  sym_center = symmetriceQuat(CS,SS,center);
+  [ignore,center] = selectMinbyRow(rotangle(sym_center),sym_center);
+  
   for i = 1:length(center)
     cq = center(i) * q(:);
     ind = fundamental_region2(cq,center(i),CS,SS);
