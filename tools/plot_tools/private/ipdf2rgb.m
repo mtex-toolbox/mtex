@@ -77,7 +77,7 @@ omega = omega(:);
 
 %% compute colors
 c = zeros(numel(h),3);
-c(pm,:) = hsv2rgb([omega(pm)./2./pi,ones(sum(pm),1),1-dh(pm)]);
-c(~pm,:) = hsv2rgb([omega(~pm)./2./pi,1-dh(~pm),ones(sum(~pm),1)]);
+if any(pm), c(pm,:) = hsv2rgb([omega(pm)./2./pi,ones(sum(pm),1),1-dh(pm)]);end
+if ~all(pm), c(~pm,:) = hsv2rgb([omega(~pm)./2./pi,1-dh(~pm),ones(sum(~pm),1)]);end
 %c = reshape(c,[size(h),3]);
 

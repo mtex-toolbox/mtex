@@ -105,6 +105,7 @@ if property
     h = patch('Vertices',[X Y],'Faces',fac,'FaceVertexCData',d,'FaceColor','flat',varargin{:});
   else
     hh = hasholes(grains);
+    h = [];
     if any(hh)     
       h(1) = patch('Vertices',[X Y],'Faces',fac(hh,:),'FaceVertexCData',d(hh,:),'FaceColor','flat');
       hp = [p(hh).hxy];
@@ -116,7 +117,7 @@ if property
     end
 
     if any(~hh)
-      h(3) = patch('Vertices',[X Y],'Faces',fac(~hh,:),'FaceVertexCData',d(~hh,:),'FaceColor','flat');
+      h(end+1) = patch('Vertices',[X Y],'Faces',fac(~hh,:),'FaceVertexCData',d(~hh,:),'FaceColor','flat');
     end  
   end
 elseif exist('ebsd','var') 
