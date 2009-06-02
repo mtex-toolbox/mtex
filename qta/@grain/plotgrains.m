@@ -237,15 +237,8 @@ cpl = [0 cumsum(pl)];
 xy = vertcat(p.xy);
 [X Y] = fixMTEXscreencoordinates( xy(:,1), xy(:,2) );
 
-dx = unique(X); %searchbuffer
-dy = unique(Y);
-dx = (max(dx)-min(dx))/(numel(dx))*10;
-dy = (max(dy)-min(dy))/(numel(dy))*10;
-
-ind1 = find(xp+dx >= X & xp-dx < X  );
-ind2 = find(yp+dy >= Y & yp-dy < Y );
-
-pp = intersect(ind1,ind2);
+dist = sqrt((X-xp).^2 + (Y-yp).^2);
+pp = find( dist <= min(dist)*sqrt(2));
 
 for k=length(pl):-1:1
     if any( cpl(k)+1 < pp & cpl(k+1) > pp)
