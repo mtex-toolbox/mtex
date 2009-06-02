@@ -46,5 +46,7 @@ end
 if newFigure  
   clf('reset');
   figure(clf);
+  set(gcf,'Toolbar','none');
+  set(gcf,'Toolbar','figure');
   rmallappdata(gcf);  
 end
