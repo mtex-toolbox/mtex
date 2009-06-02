@@ -31,11 +31,6 @@ end
 convhull = check_option(varargin,{'hull','convhull'});
 property = get_option(varargin,'property',[]);
   %treat varargin
-   
-%%
-
-newMTEXplot;
-set(gcf,'renderer','opengl');
 
 %% sort for fixing hole problem
 
@@ -55,8 +50,13 @@ if convhull
   end  
 end
 
-%%
+%% setup grain plot
 
+newMTEXplot;
+set(gcf,'renderer','opengl');
+selector(gcf,grains,p);
+
+%%
 if ~isempty(property), xy = vertcat(p.xy);
 else xy = cell2mat(arrayfun(@(x) [x.xy ; NaN NaN],p,'UniformOutput',false)); end
 
@@ -182,24 +182,7 @@ set(gcf,'ResizeFcn',@fixMTEXplot);
 %apply plotting options
 optiondraw(h,varargin{:});
 
-%% setup grain selector
 
-th=findobj(allchild(gcf),'type','uitoolbar');
-if ~any(strcmpi(get(allchild(th),'tag'),'MTEX.grainselector'))
-  a = rand(16,16,3);
-  htt = uitoggletool(th,'Tag','MTEX.grainselector','CData',a,'TooltipString','Grain Selection','OnCallback',{@grainselector,'start'},'OffCallback',{@grainselector,'stop'});
-end
-
-oldgrains = getappdata(gcf,'grains');
-oldpolygons = getappdata(gcf,'polygons');
-if ~isempty(oldgrains)
-  grains = [oldgrains(:)' grains(:)'];
-  p = [oldpolygons(:)' p(:)'];
-end
-setappdata(gcf,'grains',grains);
-setappdata(gcf,'polygons',p);
-
-% TODO grain selector with eval expression
 
 
 
@@ -220,125 +203,6 @@ end
 
 
 
-%% Grain Selector
-function [h sel] = tooltip(empt,eventdata) %#ok<INUSL>
 
-grains = getappdata(gcf,'grains');
-p = getappdata(gcf,'polygons');
-hs = getappdata(gcf,'selection');
-ks = getappdata(gcf,'selected');
-
-cp = get(gca,'CurrentPoint');
-xp = cp(1,1);
-yp = cp(1,2);
-
-pl = cellfun('length',{p.xy});
-cpl = [0 cumsum(pl)];
-
-xy = vertcat(p.xy);
-[X Y] = fixMTEXscreencoordinates( xy(:,1), xy(:,2) );
-
-dist = sqrt((X-xp).^2 + (Y-yp).^2);
-pp = find( dist <= min(dist)*sqrt(2));
-
-for k=length(pl):-1:1
-    if any( cpl(k)+1 < pp & cpl(k+1) > pp)
-     [X Y] = fixMTEXscreencoordinates( p(k).xy(:,1), p(k).xy(:,2) );
-     if inpolygon(xp,yp,X,Y)
-       setappdata(gcf,'selected',[ks k]);
-      
-       hold on, 
-        h(1) = plot(X(:),Y(:),'color','r','linewidth',2); 
-      
-        if hasholes(grains(k))
-          xy = cell2mat(cellfun(@(h) [h;  NaN NaN], p(k).hxy,'uniformoutput',false)') ;
-
-          [X,Y] = fixMTEXscreencoordinates(xy(:,1),xy(:,2));
-          h(2) = plot(X(:),Y(:),'color','r','linewidth',1);
-        end
-      
-      hold off
-      break
-     end
-  end
-end
-
-if exist('h','var')
-  setappdata(gcf,'selection',[hs h]);
-end
-
-
-function grainselector(hObject, eventdata,state)
-
-switch state
-  case 'start'        
-    set(gcf,'WindowButtonDownFcn',@tooltip)
-  case 'stop'
-    set(gcf,'WindowButtonDownFcn',[])
-    
-    hs = getappdata(gcf,'selection');
-    ks = getappdata(gcf,'selected');
-    
-    delete(hs)
-    setappdata(gcf,'selection',[]);
-    setappdata(gcf,'selected',[]);
-    
-    grains = getappdata(gcf,'grains');      
-    
-    if ~isempty(ks)
-      treatselection(grains(ks))
-    end
-end
-
-function treatselection(grains)
-
-str = {'assign in workspace','plot ODF','plot ODF with neighbours'};
-
-[sel,ok] = listdlg('Name','Grain Selection','PromptString','Select an Operation:',...
-                'SelectionMode','single',...
-                'ListSize',[150 200],...
-                'ListString',str);
-
-if ok
-  switch sel
-    case 1 % workspace
-      name = inputdlg({'Enter Variable name:'},'Grains to Workspace',1,{'grain_selection'});
-      if ~isempty(name), assignin('base', name{1}, grains ); end
-    case {2, 3} % odfs
-      ebsd = getappdata(gcf,'ebsd');
-      if isempty(ebsd)
-        name = inputdlg({'Workspace Variable of corresponding EBSD-data:'},'EBSD Data Setup',1,{'ebsd'});
-        ebsd = evalin('base', name{1});
-        setappdata(gcf,'ebsd',ebsd);
-      end
-      
-      types = {'SIGMA','ALPHA','GAMMA','PHI1','PHI2'};
-      [sel2, ok] = listdlg('Name','Plotting options',...
-        'SelectionMode','single',...
-        'ListSize',[150 70],...
-        'PromptString','Plot type','ListString',types);      
-      if ok, 
-        oldfig = gcf;
-        figure
-        eb = get(ebsd,grains);      
-        
-        if sel == 3
-          org_grains = getappdata(oldfig,'grains');
-          org_grains = org_grains(ismember(vertcat(org_grains(:).id),vertcat(grains(:).neighbour)));
-          
-          pha = get(eb,'phase');
-          phb = get(ebsd,'phase');         
-          
-          eb2 = get(ebsd(phb == pha(1)),org_grains);          
-          
-          plot(eb2,types{sel2},'SECTIONS',6,'markercolor','r','MarkerSize',1); 
-        end
-        
-        hold on, plot(eb,types{sel2},'SECTIONS',6); 
-      end
-     
-  end
-end
-       
 
 

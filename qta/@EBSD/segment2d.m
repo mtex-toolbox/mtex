@@ -141,7 +141,7 @@ ids = ids(n); %sort back
 
 %store grain id's into ebsd option field
 cids =  [0 cumsum(sampleSize(ebsd))];
-checksum = randi(16^8);
+checksum =  fix(rand(1)*16^8); %randi(16^8);
 checksumid = [ 'grain_id' dec2hex(checksum)];
 for k=1:numel(ebsd)
  ebsd(k).options.(checksumid) = ids(cids(k)+1:cids(k+1))';
