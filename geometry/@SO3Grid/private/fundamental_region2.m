@@ -1,14 +1,17 @@
 function ind = fundamental_region2(q,center,cs,ss)
 %
 %% Input
+%  q      - @quaternion to project
+%  center - center of fundamental region
+%  cs, ss - crystal and specimen @symmetry
 %
 %% Output
+%  ind    -
 
 % symmetrice
 c_sym = ss *  center * cs;
 omega = rotangle(c_sym * inverse(center));
 [omega,c_sym] = selectMinbyRow(omega,c_sym);
-
 
 % convert to rodrigues space
 rq = quat2rodrigues(q); clear q;
@@ -25,7 +28,7 @@ for i = 2:numel(rc_sym)
         d = yvector;
       else
         d = xvector;
-      end            
+      end
     else
       d = yvector;
     end
