@@ -17,10 +17,10 @@ varargin = set_default_option(varargin,...
 
 ind = true(numel(ebsd),1);
 cc = lower(get_option(varargin,'colorcoding','ipdf'));
-  
+
 %% compute colorcoding
 switch cc
-  case {'bunge','angle','sigma','ihs','ipdf'}
+  case orientation2color
     [grid,ind] = getgrid(ebsd,'checkPhase',varargin{:});    
     d = orientation2color(grid,cc,varargin{:});
   case 'phase'
@@ -75,15 +75,21 @@ xp = pos(1); yp = pos(2);
 [x y] = fixMTEXscreencoordinates(ebsd.xy(:,1), ebsd.xy(:,2));
 q = get(ebsd,'quaternions');
 
-dx = min(diff(unique(sort(x))));
-dy = min(diff(unique(sort(y))));
+dist = sqrt((x-xp).^2 + (y-yp).^2);
+[dist ndx] = sort(dist);
 
-ind1 = find(xp+dx/2 >= x & xp-dx/2 < x);
-ind2 = find(yp+dy/2 >= y & yp-dy/2 < y);
+ind = ndx(1); %select the nearest
 
-ind = intersect(ind1,ind2);
+% dx = min(diff(unique(sort(x))));
+% dy = min(diff(unique(sort(y))));
+% 
+% ind1 = find(xp+dx/2 >= x & xp-dx/2 < x);
+% ind2 = find(yp+dy/2 >= y & yp-dy/2 < y);
+% 
+% ind = intersect(ind1,ind2);
 
 txt =  {['(x,y) : ',num2str(xp),', ',num2str(yp)],...
+  ['nearest point (x,y) : ',num2str(x(ind)),', ',num2str(y(ind))],...
   ['quaternion (id: ', num2str(ind),') : ' ], ...
   ['    a = ',num2str(q(ind).a,2)], ...
   ['    b = ', num2str(q(ind).b,2)],...
