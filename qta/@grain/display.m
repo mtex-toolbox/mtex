@@ -10,4 +10,7 @@ if ~isempty(grains)
   checksums = strcat(' grain_id', cellstr(checksums) ,',');
   disp([ checksums{:}])
 end
+if ~isempty(fields(grains(1).properties))
+  disp([' properties: ',option2str(fields(grains(1).properties))]);
+end
 disp([' size: ' num2str(size(grains,1)) ' x ' num2str(size(grains,2))])
