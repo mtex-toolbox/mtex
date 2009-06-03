@@ -10,7 +10,7 @@ else
 end
 
 if ~isempty(fields(ebsd(1).options))
-  disp([' options: ',option2str(fields(ebsd(1).options))]);
+  disp([' properties: ',option2str(fields(ebsd(1).options))]);
 end
 for i = 1:length(ebsd)
   disp([' ' char(ebsd(i))]);

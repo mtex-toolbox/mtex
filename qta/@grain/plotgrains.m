@@ -57,8 +57,11 @@ set(gcf,'renderer','opengl');
 selector(gcf,grains,p);
 
 %%
-if ~isempty(property), xy = vertcat(p.xy);
-else xy = cell2mat(arrayfun(@(x) [x.xy ; NaN NaN],p,'UniformOutput',false)); end
+if ~isempty(property)
+  xy = vertcat(p.xy);
+else
+  xy = cell2mat(arrayfun(@(x) [x.xy ; NaN NaN],p,'UniformOutput',false)); 
+end
 
   [X,Y, lx,ly] = fixMTEXscreencoordinates(xy(:,1),xy(:,2),varargin);
   prepareMTEXplot(X,Y);
@@ -98,6 +101,10 @@ if property
         d = get(grains,'phase')';
         co = get(gca,'colororder');
         colormap(co(1:length(unique(d)),:))
+      case fields(grains(1).properties)
+        d = get(grains,property)';
+      otherwise
+        error('MTEX:wrongProperty',['Property ''',property,''' not found!']);
     end
   end  
  
@@ -180,7 +187,7 @@ fixMTEXplot;
 set(gcf,'ResizeFcn',@fixMTEXplot);
 
 %apply plotting options
-optiondraw(h,varargin{:});
+if exist('h','var'), optiondraw(h,varargin{:});end
 
 
 
