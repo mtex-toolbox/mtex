@@ -9,3 +9,4 @@ function def = centroidaldefect(grains)
 %
 
 def = sqrt(sum(centroid(grains)-hullcentroid(grains),2).^2);
+def = reshape(def,1,[]);

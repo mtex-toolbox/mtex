@@ -17,8 +17,8 @@ end
 assert_checksum(grains, ebsd);
 
 
-F = zeros(length(grains),1);
-st = zeros(length(grains),1);
+F = zeros(size(grains));
+st = zeros(size(grains));
 
 b = find(hassubfraction(grains));
 

@@ -1,4 +1,4 @@
-function plot(grains,varargin)
+function plot(varargin)
 % visualisation of grains
 %
 %% Syntax
@@ -21,8 +21,8 @@ if check_option(varargin,'subfractions')
   plotsubfractions(grains,varargin{:});
 elseif check_option(varargin,'ellipse')
   varargin = delete_option(varargin,'ellipse',0);
-  plotellipse(grains,varargin{:}); 
+  plotellipse(varargin{:}); 
 else 
-  plotgrains(grains,varargin{:});
+  plotgrains(varargin{:});
 end
 

@@ -15,3 +15,4 @@ dv = (v1 - v2).^2;
 sv = (v1 + v2).^2;
 
 asp = sum(dv,2)./sum(sv,2);
+asp = reshape(asp,1,[]);
