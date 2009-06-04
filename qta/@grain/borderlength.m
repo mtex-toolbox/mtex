@@ -12,7 +12,7 @@ function bl = borderlength(grains,varargin)
 bordersize = @(xy) sum(sqrt(sum(diff(xy).^2,2)));
 
 nc = length(grains);
-bl = zeros(nc,1);
+bl = zeros(size(grains));
 
 if check_option(varargin,'count');  
   p = polygon(grains);

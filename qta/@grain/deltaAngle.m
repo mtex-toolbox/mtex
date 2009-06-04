@@ -14,3 +14,4 @@ cmp2 = hullprincipalcomponents(grains);
 b = angle((cmp1).*conj(cmp2));
 
 delta = b(:,1);
+delta = reshape(delta,1,[]);

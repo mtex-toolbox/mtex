@@ -46,7 +46,12 @@ end
 if newFigure  
   clf('reset');
   figure(clf);
-  set(gcf,'Toolbar','none');
-  set(gcf,'Toolbar','figure');
   rmallappdata(gcf);  
+  
+	try
+  	jframe=get(gcf,'javaframe');
+    jIcon=javax.swing.ImageIcon([mtex_path filesep 'mtex_icon.gif']);
+    jframe.setFigureIcon(jIcon);
+  catch
+	end
 end

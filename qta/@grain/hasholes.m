@@ -9,4 +9,4 @@ function b = hasholes(grains)
 %
 
 p = polygon(grains);
-b = ~cellfun('isempty',{p.hxy})';
+b = ~cellfun('isempty',{p.hxy});
