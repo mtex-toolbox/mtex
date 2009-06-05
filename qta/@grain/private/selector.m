@@ -104,22 +104,21 @@ function addmenu2(h)
 if any(findall(allchild(h),'Label','Grains')), return, end;
  
   gm = uimenu(h,'Label','Grains');
-  gma(1) = uimenu(gm,'Label','Select by Expression','Callback',@selectByExpression);
+  uimenu(gm,'Label','Select by Expression','Callback',@selectByExpression);
   % TODO grain selector with eval expression
-  gma(2) = uimenu(gm,'Tag','onsel','Label','Invert Selection of Current Layer','Callback',@invertSelection);
-  gma(3) = uimenu(gm,'Tag','onsel','Label','Unselect all Grains of Current Layer','Callback',@unSelectLayer);
-  gma(3) = uimenu(gm,'Tag','onsel','Label','Unselect all Grains','Callback',@unSelectAll);
-  gma(4) = uimenu(gm,'Label','Change Layer-Selection Color','Callback',@changenSelectionColor);
+  uimenu(gm,'Tag','onsel','Label','Invert Selection of Current Layer','Callback',@invertSelection);
+  uimenu(gm,'Tag','onsel','Label','Unselect all Grains of Current Layer','Callback',@unSelectLayer);
+  uimenu(gm,'Tag','onsel','Label','Unselect all Grains','Callback',@unSelectAll);
+  uimenu(gm,'Label','Change Layer-Selection Color','Callback',@changenSelectionColor);
+  
   gmao = uimenu(gm,'Label','Operations on Layer-Selection','Separator','on');
- 
-  gmas(1) = uimenu(gmao,'Label','Convert Selection to Plot','Callback',@extracttolayer);
-  gmas(2) = uimenu(gmao,'Tag','onsel','Label','Plot ODF','Separator','on','Callback',@plotODFs);
-  gmas(3) = uimenu(gmao,'Tag','onsel','Label','Plot ODF with Neighbours','Callback',{@plotODFs,'neighbours'});
+  uimenu(gmao,'Label','Convert Selection to Plot','Callback',@extracttolayer);
+  uimenu(gmao,'Tag','onsel','Label','Plot ODF','Separator','on','Callback',@plotODFs);
+  uimenu(gmao,'Tag','onsel','Label','Plot ODF with Neighbours','Callback',{@plotODFs,'neighbours'});
+  uimenu(gmao,'Tag','onsel','Label','Variogram on Property','Separator','on','Callback',@variogrammplot);
   
-  
-  gmas(4) = uimenu(gm,'Label','Setup corresponding EBSD-Data','Separator','on','Callback',@updateEBSD);
-    
-  gma(5) = uimenu(gm,'Tag','onsel','Label','Export Selection to Workspace Variable','Separator','on','Callback',@exporttoWS);
+  uimenu(gm,'Label','Setup corresponding EBSD-Data','Separator','on','Callback',@updateEBSD);
+  uimenu(gm,'Tag','onsel','Label','Export Selection to Workspace Variable','Separator','on','Callback',@exporttoWS);
  % gma(6) = uimenu(gm,'Label','Export Selection to M-File via Clipboard','enable','off');
   
   % let be the grain menu on second position
@@ -494,6 +493,29 @@ if ok,
       
    hold on, plot(eb,types{sel2},'SECTIONS',6); 
 end
+
+function variogrammplot(e,h)
+
+[grains p ks] = getcurrentlayer;
+
+properties = [grains.properties];
+if ~isempty(properties)
+  fnames = fields(properties);
+  fnames = fnames(structfun(@(x) isfloat(x), properties(1)));
+
+  [sel ok] = listdlg('Name','Variogramm',...
+    'SelectionMode','single',...
+    'ListSize',[170 70],...
+    'PromptString','Select a Property','ListString',fnames,'fus',2,'ffs',2);      
+  
+  if ok
+    figure, variogram(grains(ks),fnames{sel});
+  else
+    return
+  end  
+  
+end
+
 
 
 function extracttolayer(e,h)
