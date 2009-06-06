@@ -48,7 +48,7 @@ cs = get_option(varargin,'cs',symmetry('m-3m'));
 ss = get_option(varargin,'ss',symmetry('-1'));
 
 % load data
-[d,varargin,header,c] = load_generic(fname,varargin{:});
+[d,varargin,header,c] = load_generic(char(fname),varargin{:});
 
 % no data found
 if size(d,1) < 1 || size(d,2) < 3
