@@ -24,7 +24,13 @@ prop = lower(get_option(varargin,'property','orientation'));
 
 
 %% compute colorcoding
+if isa(prop,'double')
+  d = prop;
+  prop = 'user';
+end;
+
 switch prop
+  case 'user'
   case 'orientation'
     cc = lower(get_option(varargin,'colorcoding','ipdf'));
     orientations = get(ebsd,'orientations');
