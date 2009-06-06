@@ -49,35 +49,48 @@ end
 constraints = axis2quat(zvector,rot) * constraints;
 center = axis2quat(zvector,rot) * center;
 
-%% compute saturation
-
-% center
-center = get_option(varargin,'colorcenter',center);
-center = center ./ norm(center);
-cc = cross(sh,center);
-cc = cc ./ norm(cc);
-
-dh = zeros([size(sh),length(constraints)]);
-for i = 1:length(constraints)
-  
-  % boundary points
-  bc = cross(cc,constraints(i));
-  bc = bc ./ norm(bc);
-
-  % compute distances
-  dh(:,:,i) = acos(dot(-sh,bc))./acos(dot(-center,bc));
-end
-
-dh = min(dh,[],3);
-dh(imag(dh) ~=0 ) = 0;
-dh = dh(:);
 
 %% compute angle
 rx = center - zvector; rx = rx ./ norm(rx);
 ry = cross(center,rx); ry = ry ./ norm(ry);
 dv = (center - sh); dv = dv ./ norm(dv);
 omega = mod(atan2(dot(rx,dv),dot(ry,dv))-pi/2,2*pi);
+omega(isnan(omega)) = 0;
 omega = omega(:);
+
+
+%% compute saturation
+
+% center
+center = get_option(varargin,'colorcenter',center);
+center = project2FundamentalRegion(center./ norm(center),cs,varargin{:});
+cc = cross(sh,center);
+cc = cc ./ norm(cc);
+
+if check_option(varargin,'radius') % linear interpolation to the radius
+  
+  radius = get_option(varargin,'radius',1);
+  dh(:,:) = 1-min(1,angle(sh,center)./radius);
+  
+else % linear interpolation to the boundaries
+  
+  dh = zeros([size(sh),length(constraints)]);
+  for i = 1:length(constraints)
+    
+    % boundary points
+    bc = cross(cc,constraints(i));
+    bc = bc ./ norm(bc);
+
+    % compute distances
+    dh(:,:,i) = angle(-sh,bc)./angle(-center,bc);
+    dh(isnan(dh)) = 1;
+  end
+  dh = min(dh,[],3);
+end
+
+dh(imag(dh) ~=0 ) = 0;
+dh = dh(:);
+
 
 %% compute colors
 c = zeros(numel(h),3);
