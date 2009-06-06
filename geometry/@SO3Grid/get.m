@@ -1,13 +1,13 @@
-function value = get(obj,vname)
+function varargout = get(obj,vname,varargin)
 % get object variable
 
 switch lower(vname)
   case {'cs','ss'}
-    value = obj(1).(vname);
+    varargout = {obj.(vname)};
   case {'quaternion','grid','orientation'}
-    value = quaternion(obj);    
+    varargout = quaternion(obj);    
   case fields(obj)
-    value = [obj.(vname)];
+    varargout = [obj.(vname)];
   otherwise
     error('Unknown field in class ODF!')
 end

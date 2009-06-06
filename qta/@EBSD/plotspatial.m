@@ -15,14 +15,13 @@ function plotspatial(ebsd,varargin)
 varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
-ind = true(numel(ebsd),1);
 cc = lower(get_option(varargin,'colorcoding','ipdf'));
 
 %% compute colorcoding
 switch cc
   case orientation2color
-    [grid,ind] = getgrid(ebsd,'checkPhase',varargin{:});    
-    d = orientation2color(grid,cc,varargin{:});
+    orientations = get(ebsd,'orientations');
+    d = orientation2color(orientations,cc,varargin{:});
   case 'phase'
     d = [];
     for i = 1:length(ebsd)
@@ -46,12 +45,13 @@ end
 %% plot 
 newMTEXplot;
 
-plotxy(get(ebsd(ind),'x'),get(ebsd(ind),'y'),d,varargin{:});
+plotxy(get(ebsd,'x'),get(ebsd,'y'),d,varargin{:});
 if strcmpi(cc,'ipdf')
-  cs = get(grid,'CS');
+  [cs{1:length(orientations)}] = get(orientations,'CS');
   setappdata(gcf,'CS',cs)
   setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d'));
-  setappdata(gcf,'colorcoding',@(h) orientation2color(h,cc,cs,varargin{:}))
+  setappdata(gcf,'colorcoding',...
+    @(h,i) orientation2color(h,cc,'cs',cs{i},varargin{:}))
 end
 set(gcf,'tag','ebsd_spatial');
 setappdata(gcf,'options',extract_option(varargin,'axial'));
