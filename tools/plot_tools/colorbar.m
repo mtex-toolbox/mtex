@@ -2,7 +2,7 @@ function cb = colorbar(varargin)
 % inserts a colorbar into a figure
 
 %% EBSD plot?
-if strcmpi(get(gcf,'tag'),'ebsd_spatial') && isappdata(gcf,'r')
+if isappdata(gcf,'colorcoding')
   ebsdColorbar
   return
 end

@@ -1,11 +1,25 @@
 function ebsdColorbar(varargin)
+% plot a inverse pole figure reflecting EBSD data colorcoding
+%
+%% Syntax
+%  ebsdColorbar
+%  ebsdColorbar(cs)
+%
+%% Input
+%  cs - @symmetry
+%
+%% Output
+%
+%
+%% See also
+%
 
 % input check
 if nargin >= 1 && isa(varargin{1},'symmetry')  
   cs = varargin{1};
-  colorcoding = varargin{2};
-  varargin = varargin(3:end);
-  r = xvector;
+  varargin = varargin(2:end);
+  colorcoding = get_option(varargin,'colorcoding',@(h) ipdf2rgb(h,cs,varargin{:}));  
+  r = get_option(varargin,'r',xvector);
 else
   cs = getappdata(gcf,'CS');
   r = getappdata(gcf,'r');
@@ -13,6 +27,13 @@ else
   varargin = {o{:},varargin{:}};
   colorcoding = getappdata(gcf,'colorcoding');  
   varargin = set_default_option(varargin,[],'rotate',getappdata(gcf,'rotate'));
+  
+  for i = 1:length(cs)
+    ebsdColorbar(cs{i},varargin{:},'colorcoding',@(h) colorcoding(h,i),...
+      'r',r);
+    set(gcf,'Name',['Colorcoding for phase ',get(cs{i},'mineral')]);
+  end
+  return
 end
 
 % get default options

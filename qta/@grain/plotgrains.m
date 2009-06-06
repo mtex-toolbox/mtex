@@ -86,17 +86,19 @@ if property
         CS = get(grains,'CS');
         SS = get(grains,'SS');
         [phase1, m] = unique(phase);
-        
-        if numel(phase1)>1
-          warning('MTEX:MultiplePhases','This operatorion is only permitted for a single phase! I''m going to process only the first phase.');
+        d = zeros(length(grains),3);
+        for i = 1:length(phase1)
+          sel = phase == phase1(i);
+          grid = SO3Grid(qm(sel),CS(m(i)),SS(m(i)));       
+          d(sel,:) = orientation2color(grid,cc,varargin{:});
         end
-        sel = phase == phase1(1);
-        grid = SO3Grid(qm(sel),CS(m(1)),SS(m(1)));
-
-        fac = fac(sel,:);
-        grains = grains(sel);
-        
-        d = orientation2color(grid,cc,varargin{:});    
+        if strcmpi(cc,'ipdf')
+          setappdata(gcf,'CS',vec2cell(CS(m)));
+          setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d'));
+          setappdata(gcf,'colorcoding',...
+            @(h,i) orientation2color(h,cc,'cs',CS(m(i)),varargin{:}))
+          setappdata(gcf,'options',extract_option(varargin,'axial'));
+        end
       case 'phase'
         d = get(grains,'phase')';
         co = get(gca,'colororder');
