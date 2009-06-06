@@ -2,24 +2,31 @@ function plotspatial(ebsd,varargin)
 % spatial EBSD plot
 %
 %% Syntax
+%  plotspatial(ebsd,'colocoding','ipdf')
+%  plotspatial(ebsd,'property','error')
 %
 %% Input
 %  ebsd - @EBSD
 %
 %% Options
-%  axial - include [[AxialDirectional.html,antipodal symmetry]]
+%  property   - property used for coloring (default: orientation)
+%  colocoding - how to convert orientation to color
+%  axial      - include [[AxialDirectional.html,antipodal symmetry]]
 %
 %% See also
+% ebsd/plot
 
 % default plot options
 varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
-cc = lower(get_option(varargin,'colorcoding','ipdf'));
+prop = lower(get_option(varargin,'property','orientation'));
+
 
 %% compute colorcoding
-switch cc
-  case orientation2color
+switch prop
+  case 'orientation'
+    cc = lower(get_option(varargin,'colorcoding','ipdf'));
     orientations = get(ebsd,'orientations');
     d = orientation2color(orientations,cc,varargin{:});
   case 'phase'
@@ -36,7 +43,7 @@ switch cc
     co = get(gca,'colororder');
     colormap(co(1:length(ebsd),:));
   case fields(ebsd(1).options)
-    d = get(ebsd,cc);
+    d = get(ebsd,prop);
   otherwise
     error('Unknown colorcoding!')
 end
@@ -46,7 +53,7 @@ end
 newMTEXplot;
 
 plotxy(get(ebsd,'x'),get(ebsd,'y'),d,varargin{:});
-if strcmpi(cc,'ipdf')
+if strcmpi(prop,'orientation') && strcmpi(cc,'ipdf')
   [cs{1:length(orientations)}] = get(orientations,'CS');
   setappdata(gcf,'CS',cs)
   setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d'));
@@ -72,7 +79,8 @@ function txt = tooltip(empt,eventdata,ebsd) %#ok<INUSL>
 
 pos = get(eventdata,'Position');
 xp = pos(1); yp = pos(2);
-[x y] = fixMTEXscreencoordinates(ebsd.xy(:,1), ebsd.xy(:,2));
+xy = vertcat(ebsd.xy);
+[x y] = fixMTEXscreencoordinates(xy(:,1), xy(:,2));
 q = get(ebsd,'quaternions');
 
 dist = sqrt((x-xp).^2 + (y-yp).^2);
@@ -80,16 +88,11 @@ dist = sqrt((x-xp).^2 + (y-yp).^2);
 
 ind = ndx(1); %select the nearest
 
-% dx = min(diff(unique(sort(x))));
-% dy = min(diff(unique(sort(y))));
-% 
-% ind1 = find(xp+dx/2 >= x & xp-dx/2 < x);
-% ind2 = find(yp+dy/2 >= y & yp-dy/2 < y);
-% 
-% ind = intersect(ind1,ind2);
+% get phase
+phase = find(ind>cumsum([0,GridLength(ebsd)]),1,'last');
+cs = get(ebsd(phase),'CS');
 
-txt =  {['(x,y) : ',num2str(xp),', ',num2str(yp)],...
-  ['nearest point (x,y) : ',num2str(x(ind)),', ',num2str(y(ind))],...
+txt =  {['Phase: ', get(cs,'mineral'),'' ], ...
   ['quaternion (id: ', num2str(ind),') : ' ], ...
   ['    a = ',num2str(q(ind).a,2)], ...
   ['    b = ', num2str(q(ind).b,2)],...
