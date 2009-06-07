@@ -25,7 +25,7 @@ function g = grainfun(FUN,grains,varargin)
 
 if nargin > 1  
   if ~isempty(varargin)    
-    hasebsd = find(cellfun(@(x) isa(x,'EBSD'), varargin));
+    hasebsd = find_type(varargin,'EBSD');
     if hasebsd
       uniform = get_option(varargin,'UniformOutput',false);
       ebsd = varargin{hasebsd};    
