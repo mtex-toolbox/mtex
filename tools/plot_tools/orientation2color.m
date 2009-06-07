@@ -47,6 +47,7 @@ for i = 1:length(grid)
           q = inverse(getFundamentalRegion(grid(i)));
       end
       h = quat2rodrigues(q);
+      cs = get(grid(i),'CS');
       d = ipdf2rgb(h,cs,varargin{:});
   end
   c(1+gl(i):gl(i+1),:) = d;

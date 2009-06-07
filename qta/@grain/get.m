@@ -24,10 +24,9 @@ function varargout = get(varargin)
 %
 
 if nargin > 1
-  type = cellfun(@(x) class(x),varargin,'uniformoutput',false);
-  grain_pos = find(strcmpi(type,'grain'));
-  ebsd_pos = find(strcmpi(type,'EBSD'));
-  opt_pos = find(strcmpi(type,'char'));
+  grain_pos = find_type(varargin,'grain');
+  ebsd_pos  = find_type(varargin,'EBSD');
+  opt_pos   = find_type(varargin,'char');
 
   grains = varargin{grain_pos};    
   if ~isempty(ebsd_pos)
