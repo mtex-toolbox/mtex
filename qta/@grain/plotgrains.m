@@ -32,29 +32,31 @@ convhull = check_option(varargin,{'hull','convhull'});
 property = get_option(varargin,'property',[]);
   %treat varargin
 
-%% sort for fixing hole problem
-
-A = area(grains); 
-[ignore ndx] = sort(A,'descend'); 
-grains = grains(ndx);
-
-%% data preperation
+%% get the polygons
 
 p = polygon(grains)';
+
+%% data preperation
 
 if convhull
   for k=1:length(p)
     xy = p(k).xy;
     K = convhulln(p(k).xy);
     p(k).xy = xy([K(:,1); K(1,1)],:);
-  end  
+  end 
 end
+
+%% sort for fixing hole problem
+
+pl = cellfun('length',{p.xy}); %pseudo-perimeter
+[pl ndx] = sort(pl,'descend');
+p = p(ndx);
+grains = grains(ndx);
 
 %% setup grain plot
 
 newMTEXplot;
 set(gcf,'renderer','opengl');
-selector(gcf,grains,p);
 
 %%
 if ~isempty(property)
@@ -70,14 +72,13 @@ end
 if property
   cc = lower(get_option(varargin,'colorcoding','ipdf'));
   
-  fac = get_faces({p.xy}); 
-     
+  %get the coloring   
   if ~check_property(grains,property)
 	  warning(['MATLAB:plotgrains:' property], ...
             ['please calculate ' property ' as object property first to ' ...
              'reduce subsequent calculations \n' ...
              'procede with random colors']) 
-    d = rand(length(fac),3);
+    d = rand(length(p),3);
   else     
     switch property
       case 'mean'
@@ -109,25 +110,44 @@ if property
         error('MTEX:wrongProperty',['Property ''',property,''' not found!']);
     end
   end  
- 
-  if convhull
-    h = patch('Vertices',[X Y],'Faces',fac,'FaceVertexCData',d,'FaceColor','flat',varargin{:});
-  else
-    hh = hasholes(grains);
-    h = [];
-    if any(hh)     
-      h(1) = patch('Vertices',[X Y],'Faces',fac(hh,:),'FaceVertexCData',d(hh,:),'FaceColor','flat');
-      hp = [p(hh).hxy];
-      hxy = vertcat(hp{:});
-      [hX,hY] = fixMTEXscreencoordinates(hxy(:,1),hxy(:,2),varargin);
-      hfac = get_faces(hp);
-        c = repmat(get(gca,'color'),length(hfac),1);
-      h(2) = patch('Vertices',[hX hY],'Faces',hfac,'FaceVertexCData',c,'FaceColor','flat');
-    end
+  
+  h = [];
+  %split data
+  ind = splitdata(pl);
+  for k=1:length(ind)
+    pind = ind{k}; 
+    tp = p(pind);  %temporary polygons
+    fac = get_faces({tp.xy}); % and its faces    
+    xy = vertcat(tp.xy);
+    if ~isempty(xy)
+      [X, Y] = fixMTEXscreencoordinates(xy(:,1),xy(:,2),varargin);
+    end    
+    
+    if ~isempty(fac)      
+      if convhull
+        h(end+1) = patch('Vertices',[X Y],'Faces',fac,'FaceVertexCData',d(pind,:),'FaceColor','flat');
+      else
+        hashols = hasholes(grains(pind));          
+        if any(hashols)   
+          hh = find(hashols);
+          
+          %hole polygon
+          hp = [tp(hh).hxy];
+          hxy = vertcat(hp{:});
+          [hX,hY] = fixMTEXscreencoordinates(hxy(:,1),hxy(:,2),varargin);
+          hfac = get_faces(hp);
+            c = repmat(get(gca,'color'),size(hfac,1),1);
+            
+          h(end+1) = patch('Vertices',[X Y],'Faces',fac(hh,:),'FaceVertexCData',d(pind(1)+hh-1,:),'FaceColor','flat');            
+          h(end+1) = patch('Vertices',[hX hY],'Faces',hfac,'FaceVertexCData',c,'FaceColor','flat');
+        end
 
-    if any(~hh)
-      h(end+1) = patch('Vertices',[X Y],'Faces',fac(~hh,:),'FaceVertexCData',d(~hh,:),'FaceColor','flat');
-    end  
+        if any(~hashols)
+          nh = find(~hashols);          
+          h(end+1) = patch('Vertices',[X Y],'Faces',fac(nh,:),'FaceVertexCData',d(pind(1)+nh-1,:),'FaceColor','flat');
+        end  
+      end
+    end
   end
 elseif exist('ebsd','var') 
   if check_option(varargin,'diffmean') 
@@ -185,9 +205,9 @@ else
 end
   
 fixMTEXplot;
-
+%
 set(gcf,'ResizeFcn',@fixMTEXplot);
-
+selector(gcf,grains,p);
 %apply plotting options
 if exist('h','var'), optiondraw(h,varargin{:});end
 
@@ -212,6 +232,39 @@ end
 
 
 
+function ind = splitdata(pl)
+
+% make n - partitions
+n = 1:4;
+n = sum(2.^n)+1;
+
+pk{1} = pl;
+ind{1} = 1:length(pl);
+ps{1} = 0;
+for k=1:n %pseudo recursion
+  [pk{end+1} pk{end+2} ind{end+1} ind{end+2} ps{end+1} ps{end+2}] = split(pk{k},ps{k});
+end
+ind = ind(end-n:end);
+
+
+function [s1 s2 ind1 ind2 low up] = split(s,ps)
+
+m = mean(s);
+ind1 = s >  m;
+ind2 = s <= m;
+s1 = s( ind1 );
+s2 = s( ind2 );
+
+ind1 = find(ind1)+ps;
+ind2 = find(ind2)+ps;
+
+if ~isempty(ind1)
+  low = ind1(1)-1;
+  up = ind1(end);
+else
+  low = ps;
+  up = ps;
+end
 
 
 
