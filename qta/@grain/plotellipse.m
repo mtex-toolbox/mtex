@@ -65,7 +65,7 @@ newMTEXplot;
 [x,y,lx,ly] = fixMTEXscreencoordinates(x,y,varargin);  
 
 %%
-prepareMTEXplot(x,y);
+
 
 for k=1:n  
   h(k)=line(a(k)*sina(k)*cosp + b(k)*cosa(k)*sinp + x(k), ...
@@ -79,7 +79,7 @@ set(h,'color',get_option(varargin,'EllipseColor','red'));
 set(h1,'color',get_option(varargin,'PrincipalAColor','blue'));
 set(h2,'color',get_option(varargin,'PrincipalBColor','green'));
 
-prepareMTEXplot;
+fixMTEXplot('x',x,'y',y);
 
 
 
