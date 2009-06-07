@@ -30,7 +30,6 @@ if any(b)
  
   plot(X(:),Y(:),varargin{:});
   
-  prepareMTEXplot;
   xlabel(lx); ylabel(ly);  
   fixMTEXplot;
 else

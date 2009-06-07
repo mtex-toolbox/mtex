@@ -68,7 +68,6 @@ end
 
 optiondraw(h,varargin{:});
 
-prepareMTEXplot;
 xlabel(lx); ylabel(ly);
 fixMTEXplot;
 

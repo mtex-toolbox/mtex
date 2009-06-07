@@ -59,16 +59,6 @@ newMTEXplot;
 set(gcf,'renderer','opengl');
 
 %%
-if ~isempty(property)
-  xy = vertcat(p.xy);
-else
-  xy = cell2mat(arrayfun(@(x) [x.xy ; NaN NaN],p,'UniformOutput',false)); 
-end
-
-  [X,Y, lx,ly] = fixMTEXscreencoordinates(xy(:,1),xy(:,2),varargin);
-  prepareMTEXplot(X,Y);
-  xlabel(lx); ylabel(ly);
-
 if property
   cc = lower(get_option(varargin,'colorcoding','ipdf'));
   
@@ -114,18 +104,19 @@ if property
   h = [];
   %split data
   ind = splitdata(pl);
+ 
   for k=1:length(ind)
     pind = ind{k}; 
     tp = p(pind);  %temporary polygons
     fac = get_faces({tp.xy}); % and its faces    
     xy = vertcat(tp.xy);
     if ~isempty(xy)
-      [X, Y] = fixMTEXscreencoordinates(xy(:,1),xy(:,2),varargin);
+      [X, Y lx ly] = fixMTEXscreencoordinates(xy(:,1),xy(:,2),varargin);
     end    
     
     if ~isempty(fac)      
       if convhull
-        h(end+1) = patch('Vertices',[X Y],'Faces',fac,'FaceVertexCData',d(pind,:),'FaceColor','flat');
+        h(end+1) = patch('Vertices',[X Y],'Faces',fac,'FaceVertexCData',d(pind,:));
       else
         hashols = hasholes(grains(pind));          
         if any(hashols)   
@@ -138,17 +129,18 @@ if property
           hfac = get_faces(hp);
             c = repmat(get(gca,'color'),size(hfac,1),1);
             
-          h(end+1) = patch('Vertices',[X Y],'Faces',fac(hh,:),'FaceVertexCData',d(pind(1)+hh-1,:),'FaceColor','flat');            
-          h(end+1) = patch('Vertices',[hX hY],'Faces',hfac,'FaceVertexCData',c,'FaceColor','flat');
+          h(end+1) = patch('Vertices',[X Y],'Faces',fac(hh,:),'FaceVertexCData',d(pind(1)+hh-1,:));            
+          h(end+1) = patch('Vertices',[hX hY],'Faces',hfac,'FaceVertexCData',c);
         end
-
+ 
         if any(~hashols)
           nh = find(~hashols);          
-          h(end+1) = patch('Vertices',[X Y],'Faces',fac(nh,:),'FaceVertexCData',d(pind(1)+nh-1,:),'FaceColor','flat');
+          h(end+1) = patch('Vertices',[X Y],'Faces',fac(nh,:),'FaceVertexCData',d(pind(1)+nh-1,:));
         end  
       end
     end
   end
+  set(h,'FaceColor','flat')
 elseif exist('ebsd','var') 
   if check_option(varargin,'diffmean') 
     if ~check_property(grains,'mean'),  
@@ -180,6 +172,10 @@ elseif exist('ebsd','var')
   end
   
 else 
+  
+  xy = cell2mat(arrayfun(@(x) [x.xy ; NaN NaN],p,'UniformOutput',false)); 
+  [X,Y, lx,ly] = fixMTEXscreencoordinates(xy(:,1),xy(:,2),varargin);
+  
   ih = ishold;
   if ~ih, hold on, end
   
@@ -204,7 +200,9 @@ else
   if ~ih, hold off, end
 end
   
+xlabel(lx); ylabel(ly);
 fixMTEXplot;
+  
 %
 set(gcf,'ResizeFcn',@fixMTEXplot);
 selector(gcf,grains,p);
@@ -231,11 +229,10 @@ for k = 1:length(cxy)
 end
 
 
-
 function ind = splitdata(pl)
 
 % make n - partitions
-n = 1:4;
+n = 1:2;
 n = sum(2.^n)+1;
 
 pk{1} = pl;
