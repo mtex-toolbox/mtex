@@ -10,7 +10,7 @@ function odf = calcODF(ebsd,varargin)
 % halfwidth is large the estimated ODF is smooth whereas a small halfwidth
 % results in a sharp ODF. It depends on your prior information about the
 % ODF to choose this parameter right. Look at this
-% <EBSD_simulation_demo.html description> for exhausive discussion.
+% <EBSDSimulation_demo.html description> for exhausive discussion.
 %
 %
 %% Input
@@ -38,6 +38,8 @@ g = getgrid(ebsd,'checkPhase',varargin{:});
 
 % extract weights
 if isfield(ebsd(1).options,'weight')
+  % ignore nans
+  %ebsd = delete(ebsd,isnan(get(ebsd,'weight')));
   weight = get(ebsd,'weight');  
 else
   weight = ones(1,GridLength(g));

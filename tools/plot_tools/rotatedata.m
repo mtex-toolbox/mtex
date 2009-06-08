@@ -18,9 +18,6 @@ function [newx,newy,newz]=rotatedata(xdata,ydata,zdata,azel,alpha,origin)
 %  vector [X Y Z] (Cartesian coordinates). The direction vector
 %  is the vector from the center of the plot box to (X,Y,Z).
 %
-%% See also
-% SPH2CART, CART2SPH.
-%
 %  Modified by ChangShun Deng
 %  Email: heroaq_2002@163.com
 %  Web-Log: http://waitingforme.yculblog.com
@@ -29,7 +26,7 @@ function [newx,newy,newz]=rotatedata(xdata,ydata,zdata,azel,alpha,origin)
 %  Copyright 1984-2002 The MathWorks, Inc. 
 %  $Revision: 5.17 $  $Date: 2002/06/05 20:05:16 $
 
-%�������ĸ��
+
 if nargin<6
     error('Not enough input arguments! Type ''help rotatedata'' to get some help!')
 end

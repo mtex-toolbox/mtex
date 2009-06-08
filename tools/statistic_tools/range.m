@@ -9,9 +9,7 @@ function y = range(x,dim)
 %
 %  Y = RANGE(X,DIM) operates along the dimension DIM.
 %
-%% See also
-% IQR, MAD, MAX, MIN, STD.
-
+%
 %  Copyright 1993-2004 The MathWorks, Inc.
 %  $Revision: 2.8.2.3 $  $Date: 2004/07/05 17:03:18 $
 

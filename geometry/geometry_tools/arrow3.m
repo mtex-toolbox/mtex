@@ -235,9 +235,6 @@ function hn=arrow3(p1,p2,s,w,h,ip,alpha,beta)
 %  %  H double size, and
 %  %  IP same size
 %
-%% See also
-% (arrow3_examples.html), (arrow3_messes_up_my_plots.html).
-
 %  Copyright(c)2002-2007 Version 5.006
 %  Tom Davis  (tdavis@eng.usf.edu)
 %  Jeff Chang (cpmame@hotmail.com)
