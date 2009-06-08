@@ -1,5 +1,4 @@
-function selector = selectorExp(grains)
-
+function selector = selectorExp(grains,hFig)
 
 selector = findall(0,'Tag','MTEX.selectByExpression');
 
@@ -104,15 +103,25 @@ if isempty(selector)
   
   
   fl = 65;
-  uicontrol(fig,'Style','pushbutton', 'String','Ok',...
-    'Position',[w-2*b-3*fl 10 fl 24],'Callback',@(e,h) set(fig,'UserData','eval'));
+    uicontrol(fig,'Style','pushbutton', 'String','Ok',...
+    'Position',[w-2*b-3*fl 10 fl 24],'Callback',@ok);
 
 
   uicontrol(fig,'Style','pushbutton', 'String','Apply',...
-    'Position',[w-2*b-2*fl 10 fl 24],'Callback',@(e,h) set(fig,'UserData','eval'));
+    'Position',[w-2*b-2*fl 10 fl 24],'Callback',@apply);
 
   uicontrol(fig,'Style','pushbutton', 'String','Cancel',...
     'Position',[w-b-fl 10 fl 24],'Callback','close');
+
+%   uicontrol(fig,'Style','pushbutton', 'String','Ok',...
+%     'Position',[w-2*b-3*fl 10 fl 24],'Callback',@(e,h) set(fig,'UserData','eval'));
+% 
+% 
+%   uicontrol(fig,'Style','pushbutton', 'String','Apply',...
+%     'Position',[w-2*b-2*fl 10 fl 24],'Callback',@(e,h) set(fig,'UserData','eval'));
+% 
+%   uicontrol(fig,'Style','pushbutton', 'String','Cancel',...
+%     'Position',[w-b-fl 10 fl 24],'Callback','close');
 
   selector = fig;
  
@@ -121,6 +130,45 @@ else
   feval( get(selector,'type'),double(selector));
 end
 
+setappdata(selector,'plot',hFig);
+
+
+
+function ok(e,h)
+
+status = evalselection;
+if status, close, end
+
+
+function apply(e,h)
+evalselection;
+
+
+function status = evalselection
+
+status = false;
+cFig = gcf;
+set(cFig,'Pointer','watch')
+drawnow
+hFig = getappdata(gcf,'plot');
+evalstatement = get(findall(gcf,'Tag','input'),'String');
+
+ly = findall(gcf,'Tag','layer');
+ly = length(get(ly,'String'))-get(ly,'Value')+1;
+method = get(findall(gcf,'Tag','operation'),'Value');
+
+invoke = getappdata(hFig,'eva');
+
+try
+  invoke(hFig,evalstatement,ly,method);
+  figure(cFig);
+  status = true;
+catch  
+  figure(cFig);
+  errordlg({'An Error occurred during evaluation','please correct your Syntax'});
+end
+
+set(cFig,'Pointer','arrow');
 
 
 

@@ -205,7 +205,7 @@ fixMTEXplot;
   
 %
 set(gcf,'ResizeFcn',@fixMTEXplot);
-selector(gcf,grains,p);
+selector(gcf,grains,p,h);
 %apply plotting options
 if exist('h','var'), optiondraw(h,varargin{:});end
 

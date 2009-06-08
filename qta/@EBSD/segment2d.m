@@ -163,7 +163,7 @@ else
 end
 
 s(1) = toc;
-disp(['  ebsd segmentation:        '  num2str(s(1)) ' sec']);
+disp(['  ebsd segmentation: '  num2str(s(1)) ' sec']);
 
 
 %% retrieve polygons
@@ -171,7 +171,6 @@ tic
 
 nc = length(id);
 grains = grain(nc);
-
 for k=1:nc
   regionid = id{k};
   ply = createpolygon(cells(regionid),vert);
