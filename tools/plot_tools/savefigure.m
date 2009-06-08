@@ -12,8 +12,6 @@ function savefigure(fname,varargin)
 %% Input
 %  filename - string
 %  
-%% See also
-% print
 
 if nargin == 0, 
   [name,pathstr] = uiputfile({'*.pdf;*.eps;*.ill','Vector Image File'; ...

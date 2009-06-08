@@ -2,15 +2,15 @@ function grains = copyproperty(grains, ebsd, property,varargin)
 % copy an abitrary property of the corresponding ebsd object
 %
 %% Input
-% grains   - @grain
-% ebsd     - @ebsd
-% property - char
+%  grains   - @grain
+%  ebsd     - @EBSD
+%  property - char
 %
-%% Option
-% METHOD   - function_handle
+%% Options
+%  METHOD   - function_handle
 %
 %% Output
-% grains   - @grain
+%  grains   - @grain
 %
 %% Example
 % grains = copyproperty(grains,ebsd,'phase');

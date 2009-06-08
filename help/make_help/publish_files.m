@@ -63,8 +63,17 @@ for i=1:length(files)
     links = links(~cellfun('isempty',links));
     for j = 1:length(links)
       if ~exist([poptions.outputDir filesep char(links{j}{1})],'file')
+        if strmatch('script',files{i})
+          ss = strrep(files{i},'script_','');
+          ss = strrep(ss,'_','/');
+          ss2 = ss;
+        else
+          ss2 = files{i};
+          ss = [in_dir,'/',files{i}];
+        end
+        
         s = ['Dead link ',char(links{j}{1}),' in file <a href="matlab: edit ',...
-          in_dir,'/',files{i},'"> ',files{i},'</a> '];
+          ss,'">',ss2,'</a> '];
         disp(s);
       end
     end

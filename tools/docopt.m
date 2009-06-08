@@ -23,9 +23,6 @@ function [doccmd,options,docpath] = docopt
 %
 %  specifies Mozilla as the Web browser MATLAB uses.
 %
-%% See also
-% DOC, HELPBROWSER, WEB.
-
 %  Copyright 1984-2004 The MathWorks, Inc.
 %  The MathWorks, Inc. grants permission for Licensee to modify
 %  this file.  Licensee's use of such modified file is subject
