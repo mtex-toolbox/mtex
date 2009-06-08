@@ -16,7 +16,7 @@
 cs = symmetry('-3m'); ss = symmetry('-1');
 odf = fibreODF(Miller(1,1,0),zvector,cs,ss)
 pf = simulatePoleFigure(odf,[Miller(1,0,0),Miller(1,1,1)],...
-  S2Grid('equispaced','points',500,'axial'));
+  S2Grid('equispaced','points',500,'antipodal'));
 
 
 %% Tight Colorcoding
@@ -45,10 +45,10 @@ plot(pf,'colorrange','equal')
 
 close all
 plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],...
-  'colorrange',[0 4],'axial');
+  'colorrange',[0 4],'antipodal');
 figure
 plotpdf(.5*odf+.5*uniformODF(cs,ss),[Miller(1,0,0),Miller(1,1,1)],...
-  'colorrange',[0 4],'axial');
+  'colorrange',[0 4],'antipodal');
 
 
 %% Setting the Contour Levels
@@ -58,7 +58,7 @@ plotpdf(.5*odf+.5*uniformODF(cs,ss),[Miller(1,0,0),Miller(1,1,1)],...
 
 close all
 plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],...
-  'contourf',0:1:5,'axial')
+  'contourf',0:1:5,'antipodal')
 
 
 %% Modifying the Colorrange After Plotting
@@ -74,9 +74,9 @@ setcolorrange([0.38,3.9])
 % equal colorcoding to all open figures.
 
 figure(1)
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'axial')
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal')
 figure(2)
-plotpdf(.5*odf+.5*uniformODF(cs,ss),[Miller(1,0,0),Miller(1,1,1)],'axial');
+plotpdf(.5*odf+.5*uniformODF(cs,ss),[Miller(1,0,0),Miller(1,1,1)],'antipodal');
 
 setcolorrange('equal','all')
 
@@ -87,7 +87,7 @@ setcolorrange('equal','all')
 % plots in MTEX understand the option *logarithmic*, e.g.
 
 close all;
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'axial','logarithmic')
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal','logarithmic')
 setcolorrange([0.01 12]);
 colorbar
 
@@ -96,5 +96,5 @@ colorbar
 %
 % Monochrome plots are obtained by the option *gray*.
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'axial','gray')
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal','gray')
 

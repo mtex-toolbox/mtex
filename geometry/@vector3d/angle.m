@@ -7,9 +7,9 @@ function a = angle(v1,v2,varargin)
 %  angle  - double
 %
 %% Options
-%  axial  - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal  - include [[AxialDirectional.html,antipodal symmetry]]
 
-if check_option(varargin,'axial')
+if check_option(varargin,'antipodal')
   a = abs(dot(v1./norm(v1),v2./norm(v2)));
 else
   a = dot(v1./norm(v1),v2./norm(v2));

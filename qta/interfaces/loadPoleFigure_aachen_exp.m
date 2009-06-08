@@ -31,7 +31,7 @@ try
 
   theta = (rd{1}:rd{3}:rd{2})*degree;
   rho = (rd{4}:rd{5}:360-rd{5})*degree;
-  r = S2Grid('theta',theta,'rho',rho,'axial');
+  r = S2Grid('theta',theta,'rho',rho,'antipodal');
 
   ip = 1;
   while ~feof(fid)

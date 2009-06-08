@@ -107,7 +107,7 @@ q = axis2quat(xvector,100*degree);
 % Second, the command <PoleFigure_rotate rotate> can be used to rotate the
 % pole figure data.
 pf_rotated = rotate(pf,q);
-plot(pf_rotated,'axial')
+plot(pf_rotated,'antipodal')
 
 
 

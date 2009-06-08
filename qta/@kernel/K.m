@@ -36,7 +36,7 @@ else
 end
 
 
-if epsilon>rotangle_max_z(CS,'axial') % full matrixes
+if epsilon>rotangle_max_z(CS,'antipodal') % full matrixes
  
   g1 = quaternion(g1);
   g2 = quaternion(g2);  

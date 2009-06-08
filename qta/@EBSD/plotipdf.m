@@ -9,7 +9,7 @@ function plotipdf(ebsd,r,varargin)
 %  RESOLUTION - resolution of the plots
 %  
 %% Flags
-%  axial    - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal    - include [[AxialDirectional.html,antipodal symmetry]]
 %  COMPLETE - plot entire (hemi)-sphere
 %
 %% See also
@@ -68,6 +68,6 @@ multiplot(@(i) Sh(i),@(i) data,length(r),...
 setappdata(gcf,'r',r);
 setappdata(gcf,'SS',ss);
 setappdata(gcf,'CS',cs);
-setappdata(gcf,'options',extract_option(varargin,'axial'));
+setappdata(gcf,'options',extract_option(varargin,'antipodal'));
 set(gcf,'Name',['Inverse Pole figures of "',inputname(1),'"']);
 set(gcf,'Tag','ipdf');

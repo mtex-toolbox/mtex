@@ -10,7 +10,7 @@ function plotgrains(grains,varargin)
 %
 %% Input
 %  grains - @grain
-%  ebsd   - @ebsd
+%  ebsd   - @EBSD
 %
 %% Options
 %  NOHOLES  -  plot grains without holes
@@ -88,7 +88,7 @@ if property
           setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d'));
           setappdata(gcf,'colorcoding',...
             @(h,i) orientation2color(h,cc,'cs',CS(m(i)),varargin{:}))
-          setappdata(gcf,'options',extract_option(varargin,'axial'));
+          setappdata(gcf,'options',extract_option(varargin,'antipodal'));
         end
       case 'phase'
         d = get(grains,'phase')';

@@ -77,7 +77,7 @@ c0 = get_option(varargin,'C0',...
 
 % calculate gh
 h = geth(pf);
-%[h,lh] = symetriceVec(CS,geth(pf),'axial');
+%[h,lh] = symetriceVec(CS,geth(pf),'antipodal');
 g = SS*reshape(quaternion(S3G),1,[]); % SS x S3G
 g = reshape(g.',[],1);                % S3G x SS
 g = reshape(g*CS,[],1);               % S3G x SS x CS
@@ -89,7 +89,7 @@ clear ghtheta; clear ghrho;
 
 % extract kernel Fourier coefficents
 A = getA(psi);
-if check_option(getr(pf(1)),'axial')
+if check_option(getr(pf(1)),'antipodal')
   A(2:2:end) = 0; 
 else
   warning('MTEX:missingFlag','Flag HEMISPHERE not set in PoleFigure data!');

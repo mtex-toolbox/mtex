@@ -49,7 +49,7 @@ while ~feof(fid)
     % generate specimen directions
     theta = (dtheta*~shifttheta/2:dtheta:mtheta)*degree;
     rho = (drho*~shiftrho/2:drho:mrho-drho/(1+~shiftrho))*degree;
-    r = S2Grid('theta',theta,'rho',rho,'axial');
+    r = S2Grid('theta',theta,'rho',rho,'antipodal');
 	
     % read data
     % TODO there are some data files that have 18 and some that have 19

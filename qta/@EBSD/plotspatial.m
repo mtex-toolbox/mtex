@@ -11,10 +11,10 @@ function plotspatial(ebsd,varargin)
 %% Options
 %  property   - property used for coloring (default: orientation)
 %  colocoding - how to convert orientation to color
-%  axial      - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal      - include [[AxialDirectional.html,antipodal symmetry]]
 %
 %% See also
-% ebsd/plot
+% EBSD/plot
 
 % default plot options
 varargin = set_default_option(varargin,...
@@ -67,7 +67,7 @@ if strcmpi(prop,'orientation') && strcmpi(cc,'ipdf')
     @(h,i) orientation2color(h,cc,'cs',cs{i},varargin{:}))
 end
 set(gcf,'tag','ebsd_spatial');
-setappdata(gcf,'options',extract_option(varargin,'axial'));
+setappdata(gcf,'options',extract_option(varargin,'antipodal'));
 
 set(gcf,'ResizeFcn',@fixMTEXplot);
 

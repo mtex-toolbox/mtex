@@ -48,7 +48,7 @@ plot(pf_corrected)
 %% Rotate pole figures
 
 pf_rotated = rotate(pf_corrected,axis2quat(xvector,45*degree));
-plot(pf_rotated,'axial')
+plot(pf_rotated,'antipodal')
 
 %% Recalculate ODF
 %
@@ -71,7 +71,7 @@ plotDiff(pf,odf)
 
 %% Recalculate c-axis pole figures
 
-plotpdf(odf,Miller(0,0,1,cs),'axial')
+plotpdf(odf,Miller(0,0,1,cs),'antipodal')
 
 
 %% Plot inverse pole figure
@@ -86,7 +86,7 @@ plot(odf,'sections',18,'silent')
 %% rotate ODF back
 
 odfrotated = rotate(odf,axis2quat(xvector,45*degree));
-plotpdf(odfrotated,getMiller(pf),'axial');
+plotpdf(odfrotated,getMiller(pf),'antipodal');
 annotate(modalorientation(odfrotated),'marker','d');
 
 %% volume analysis

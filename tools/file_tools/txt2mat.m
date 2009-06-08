@@ -468,7 +468,7 @@ function [A,ffn,num_header,sr_input_ca,hl,fpos] = txt2mat(varargin) %#ok<FNDEF>
 %   � introduction of 'high speed' read mode "block" requiring less line
 %     break information
 %   � 'MemPar' buffer value changed to scalar
-%   � axial memory demand by translating smaller text portions to char
+%   � antipodal memory demand by translating smaller text portions to char
 %   � modified help
 % 06.01
 %   � fixed bug: possible error message in file analysis when only header

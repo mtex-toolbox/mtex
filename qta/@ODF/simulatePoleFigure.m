@@ -11,7 +11,7 @@ function pf = simulatePoleFigure(odf,h,r,varargin)
 %  r   - @vector3d specimen directions
 %
 %% Options
-%  axial         - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal         - include [[AxialDirectional.html,antipodal symmetry]]
 %  SUPERPOSITION - [double] superposition weights
 %
 %% See also
@@ -22,9 +22,9 @@ h = set(h,'CS',odf(1).CS);
 argin_check(r,{'S2Grid','vector3d'});
 
 if check_option(varargin,'complete')
-  axial = 'complete';
+  antipodal = 'complete';
 else
-  axial = 'axial';
+  antipodal = 'antipodal';
 end
 
 comment = get_option(varargin,'comment',...
@@ -39,14 +39,14 @@ for iv = 1:length(h)/length(c)
     
     Z = zeros(GridSize(r(ir)));
     for ic = 0:length(c)-1
-      Z = Z + c(ic+1)*reshape(pdf(odf,vector3d(h(iv+ic)),r(ir),axial),GridSize(r(ir)));
+      Z = Z + c(ic+1)*reshape(pdf(odf,vector3d(h(iv+ic)),r(ir),antipodal),GridSize(r(ir)));
     end
     
     data = [data;reshape(Z,[],1)];
   end
   if length(c) == 1
-    pf(iv) = PoleFigure(h(iv),r,data,odf(1).CS,odf(1).SS,'comment',comment,axial); %#ok<AGROW>
+    pf(iv) = PoleFigure(h(iv),r,data,odf(1).CS,odf(1).SS,'comment',comment,antipodal); %#ok<AGROW>
   else
-    pf = PoleFigure(h,r,data,odf(1).CS,odf(1).SS,'SUPERPOSITION',c,'comment',comment,axial);
+    pf = PoleFigure(h,r,data,odf(1).CS,odf(1).SS,'SUPERPOSITION',c,'comment',comment,antipodal);
   end
 end

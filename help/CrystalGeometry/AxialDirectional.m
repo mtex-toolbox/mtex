@@ -14,9 +14,9 @@ plot([v1,v2],'label',{'v_1','v_2'})
 
 %%
 % occurs both on the upper and on the lower hemisphere. In order to treat
-% these vectors as axes one has to apply the keyword *axial*. 
+% these vectors as axes one has to apply the keyword *antipodal*. 
 
-plot([v1,v2],'label',{'v_1','v_2'},'axial')
+plot([v1,v2],'label',{'v_1','v_2'},'antipodal')
 
 %%
 % Now the direction $v_2$ is identified with the direction -$v_2$ which
@@ -30,11 +30,11 @@ angle(v1,v2) / degree
 
 %%
 
-angle(v1,v2,'axial') / degree
+angle(v1,v2,'antipodal') / degree
 
 %% Axial Symmetry in Experimental Pole Figures
 %
-% Due to Friedels law experimental pole figures are allways axial data. One
+% Due to Friedels law experimental pole figures are allways antipodal data. One
 % consequence of this fact is that MTEX plots pole figure data allway on
 % the upper hemisphere
 
@@ -63,7 +63,7 @@ annotate(vector3d(1,0,-1),'labeled')
 
 %% Axial Symmetry in Recalculated Pole Figures
 %
-% However, in the case of pole figures calculated from an ODF axial
+% However, in the case of pole figures calculated from an ODF antipodal
 % symmetry is in general not present.
 
 % some prefered orientation
@@ -77,30 +77,30 @@ plotpdf(odf,Miller(1,2,2),'position',[100 100 400 200])
 
 %%
 % Hence, if one wants to compare calculated pole figures with experimental
-% one, one has to add axial symmetry.
+% one, one has to add antipodal symmetry.
 
-plotpdf(odf,Miller(1,2,2),'axial')
+plotpdf(odf,Miller(1,2,2),'antipodal')
 
 %% Axial Symmetry in inverse Pole Figures
 % 
 % The same reasoning as above holds true for inverse pole figures. I we
-% look at complete, inverse pole figures they do not posses axial symmetry
+% look at complete, inverse pole figures they do not posses antipodal symmetry
 % in general
 
 plotipdf(odf,yvector,'position',[100 100 400 200],'complete')
 
 %%
-% However, if we add the keyword axial, axial symmetry is enforced.
+% However, if we add the keyword antipodal, antipodal symmetry is enforced.
 
-plotipdf(odf,yvector,'axial','complete')
+plotipdf(odf,yvector,'antipodal','complete')
 
 %%
 % Notice how MTEX, automatically reduces the fundamental region of inverse
-% pole figures in the case that axial symmetry is present.
+% pole figures in the case that antipodal symmetry is present.
 
 plotipdf(odf,yvector,'position',[100 100 400 200])
 
-plotipdf(odf,yvector,'axial')
+plotipdf(odf,yvector,'antipodal')
 
 
 %% EBSD Colocoding
@@ -123,15 +123,15 @@ ebsd = loadEBSD(fname,cs,ss,'interface','generic',...
 
 %%
 % Now we plot these data with a colorcoding according to the inverse
-% (1,0,0) pole figure. Here no axial symmetry is present.
+% (1,0,0) pole figure. Here no antipodal symmetry is present.
 
 close all
 plot(ebsd)
 colorbar
 
 %%
-% Compare to the result when axial symmetry is introduced.
+% Compare to the result when antipodal symmetry is introduced.
 
 
-plot(ebsd,'axial')
+plot(ebsd,'antipodal')
 colorbar

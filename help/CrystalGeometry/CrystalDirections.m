@@ -47,10 +47,10 @@ m = Miller(1,1,-2,0,cs)
 symeq(m)
 
 %% 
-% As allways the keyword <AxialDirectional.html axial> adds antipodal symmetry to this
+% As allways the keyword <AxialDirectional.html antipodal> adds antipodal symmetry to this
 % computation
 
-symeq(m,'axial')
+symeq(m,'antipodal')
 
 %%
 % The command <Miller_symeq.html symeq> can also be used to check whether
@@ -61,7 +61,7 @@ symeq(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs))
 %%
 % and
 
-symeq(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'axial')
+symeq(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'antipodal')
 
 %% Angles
 %
@@ -73,10 +73,10 @@ symeq(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'axial')
 angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs))/degree
 
 %% 
-% As allways the keyword <AxialDirectional.html axial> adds antipodal symmetry to this
+% As allways the keyword <AxialDirectional.html antipodal> adds antipodal symmetry to this
 % computation
 
-angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'axial')/degree
+angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'antipodal')/degree
 
 %% Conversations
 %

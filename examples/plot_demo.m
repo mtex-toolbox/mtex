@@ -13,7 +13,7 @@
 
 cs = symmetry('-3m'); ss = symmetry('-1');
 odf = fibreODF(Miller(1,1,0),zvector,cs,ss)
-pf = simulatePoleFigure(odf,Miller(1,0,0),S2Grid('equispaced','axial'));
+pf = simulatePoleFigure(odf,Miller(1,0,0),S2Grid('equispaced','antipodal'));
 
 
 %% Plot Types
@@ -31,22 +31,22 @@ pf = simulatePoleFigure(odf,Miller(1,0,0),S2Grid('equispaced','axial'));
 % used for pole figure or ODF plots. The number of contour levels can be
 % specified as an option.
 
-plotpdf(odf,Miller(1,0,0),'contour','axial')
+plotpdf(odf,Miller(1,0,0),'contour','antipodal')
 
 %% 
 % Alternatively, the exact position of the contour lines may be
 % specified.
 
-plotpdf(odf,Miller(1,0,0),'contour',0:1:4,'axial')
+plotpdf(odf,Miller(1,0,0),'contour',0:1:4,'antipodal')
 
 %%
 % Filled contour plots are obtained by the option *contourf*.
-plotpdf(odf,Miller(1,0,0),'contourf','axial')
+plotpdf(odf,Miller(1,0,0),'contourf','antipodal')
 
 %%
 % The default plotting style for pole figures and ODFs is *smooth*. Which
 % results in a colored plot without contour lines
-plotpdf(odf,Miller(1,0,0),'axial')
+plotpdf(odf,Miller(1,0,0),'antipodal')
 
 %%
 % For raw pole figure data MTEX uses by default a plot where each datapoint
@@ -94,13 +94,13 @@ plotodf(odf,'radially','linewidth',2)
 % Equal area projection is defined by the characteristic that it preserves
 % the spherical area. Since pole figures are defined as relative frequency
 % by area equal area projection is the default projection in MTEX.
-plotpdf(odf,Miller(1,0,0),'axial')
+plotpdf(odf,Miller(1,0,0),'antipodal')
 
 %%
 % The equal distance projection differs from the equal area projection by
 % the characteristic that it preserves angles. Hence it is the more
 % intuitive projection if you look for angles between crystal directions. 
-plot(cs,'projection','edist','axial')
+plot(cs,'projection','edist','antipodal')
 
 %%
 % *Plain* means that the polar angles theta / rho are plotted in a simple
@@ -125,10 +125,10 @@ plotpdf(odf,Miller(1,0,0),'3d')
 %
 %%
 close all
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'contourf',0:0.5:5,'axial')
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'contourf',0:0.5:5,'antipodal')
 figure
 plotpdf(.5*odf+.5*uniformODF(cs,ss),[Miller(1,0,0),Miller(1,1,1)],...
-  'colorrange',[0 5],'axial');
+  'colorrange',[0 5],'antipodal');
 
 %% 
 % The color range can be adjusted afterwards by
@@ -141,16 +141,16 @@ setcolorrange([0.38,3.9],'all')
 % sequences!
 
 figure(1)
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'colorrange','equal','axial')
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'colorrange','equal','antipodal')
 figure(2)
 plotpdf(.5*odf+.5*uniformODF(cs,ss),[Miller(1,0,0),Miller(1,1,1)],...
-  'colorrange','equal','axial');
+  'colorrange','equal','antipodal');
 
 %%
 figure(1)
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'axial')
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal')
 figure(2)
-plotpdf(.5*odf+.5*uniformODF(cs,ss),[Miller(1,0,0),Miller(1,1,1)],'axial');
+plotpdf(.5*odf+.5*uniformODF(cs,ss),[Miller(1,0,0),Miller(1,1,1)],'antipodal');
 setcolorrange('equal','all')
 
 
@@ -158,11 +158,11 @@ setcolorrange('equal','all')
 % Sometimes logarithmic sclaed plots are of intersted. For this case all
 % plots in MTEX understand the option *logarithmic*, e.g.
 close all;
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'axial','logarithmic')
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal','logarithmic')
 
 %% 
 % Monochrome plots are obtained by the option *gray*.
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'axial','gray')
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal','gray')
 
 %% Plot Annotations
 %
@@ -185,12 +185,12 @@ plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'axial','gray')
 % *colorbar* to add a colorbar to the free space.
 %
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'axial','gray')
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal','gray')
 colorbar
 annotate([xvector,yvector,zvector],'data',{'X','Y','Z'});
 
 %%
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'axial')
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal')
 colorbar('south')
 
 %% Exporting Plots
@@ -203,7 +203,7 @@ colorbar('south')
 %% Changing the Default Plotting Options
 %
 % If you want to change the default plotting options, e.g. set color coding
-% to *equal* in each plot or allways use the option *axial*. Then the
+% to *equal* in each plot or allways use the option *antipodal*. Then the
 % desired options can be added in the start up file 
 % [[matlab: edit mtex_settings.m,mtex_settings]] to the option
 % *default_plot_options*.

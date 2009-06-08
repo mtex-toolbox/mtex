@@ -21,7 +21,7 @@ function G = S2Grid(varargin)
 %  EQUISPACED - generate equidistribution
 %  NORTH      - northern hemisphere
 %  SOUTH      - southern hemisphere
-%  axial      - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal      - include [[AxialDirectional.html,antipodal symmetry]]
 %  PLOT       - generate plotting grid
 %  MINRHO     - starting rho angle (default 0)
 %  MAXRHO     - maximum rho angle (default 2*pi)
@@ -49,7 +49,7 @@ if check_option(varargin,'north')
   end
 elseif check_option(varargin,'south')
   mintheta = pi/2; maxtheta = pi;
-elseif check_option(varargin,'axial')
+elseif check_option(varargin,'antipodal')
   mintheta = 0; maxtheta = pi/2;
 else  
   mintheta = 0; maxtheta = pi;
@@ -100,7 +100,7 @@ elseif isa(varargin{1},'vector3d')	% grid from vector3d
 	G.Grid = varargin{1};
   [theta,rho] = vec2sph(G.Grid);
 
-  if check_option(varargin,'axial')
+  if check_option(varargin,'antipodal')
     ind = theta > pi/2;
     G.Grid(ind) = -G.Grid(ind);
     theta(ind) = pi - theta(ind);
@@ -202,7 +202,7 @@ else
     end
     G.theta = S1Grid(theta,mintheta,maxtheta);
                 
-    identified = check_option(varargin,'axial');
+    identified = check_option(varargin,'antipodal');
     for j = 1:length(theta)
         
       th = theta(j);
@@ -227,7 +227,7 @@ else
 end
   
 G.options = set_option(G.options,...
-  extract_option(varargin,{'INDEXED','PLOT','north','south','axial'}));
+  extract_option(varargin,{'INDEXED','PLOT','north','south','antipodal'}));
 
 G = class(G,'S2Grid');
     

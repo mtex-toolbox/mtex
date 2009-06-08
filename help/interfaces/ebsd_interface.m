@@ -31,7 +31,7 @@ ebsd = loadEBSD([mtexDataPath,'/aachen_ebsd/85_829grad_07_09_06.txt'],cs,ss,...
 
 %% plot pole figures
 
-plotpdf(ebsd,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'points',500,'axial')
+plotpdf(ebsd,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'points',500,'antipodal')
 
 %% kernel density estimation
 
@@ -40,7 +40,7 @@ odf = calcODF(ebsd,'halfwidth',5*degree)
 %% plot pole figures
 
 h = [Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)];
-plotpdf(odf,h,'axial')
+plotpdf(odf,h,'antipodal')
 
 %% plot ODF
 

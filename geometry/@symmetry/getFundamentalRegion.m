@@ -14,7 +14,7 @@ if check_option(varargin,'complete')
   max_Phi = pi;
   max_phi2 = 2*pi;
 end
-%elseif check_option(varargin,'axial')
+%elseif check_option(varargin,'antipodal')
 %  if rotangle_max_y(cs)/2 < pi
 %    max_phi2 = max_phi2 / 2;
 %end

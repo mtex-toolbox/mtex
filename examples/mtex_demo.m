@@ -65,7 +65,7 @@ CS * q * SS;
 dist(CS,SS,q1,q2)/degree; 
 Laue(SS); length(CS);
 quaternion(CS); 
-set(gcf,'position',[50,50,400,400]);plot(CS,'FontSize',15,'axial')
+set(gcf,'position',[50,50,400,400]);plot(CS,'FontSize',15,'antipodal')
 %savefigure('pic/symmetry.pdf')
 
 %% The class Miller
@@ -84,16 +84,16 @@ CS * Miller(1,0,0,CS);
 angle(h1,h2); 
 vector3d(h); 
 symeq(h1,h2);
-plot(Miller(1,3,-4,4,CS),'all','FontSize',15,'axial')
+plot(Miller(1,3,-4,4,CS),'all','FontSize',15,'antipodal')
 %savefigure('pic/miller.pdf')
 
 %% The Class S2Grid 
 
 %Definition:
 
-S2G = S2Grid('equispaced','points',1000,'axial');
+S2G = S2Grid('equispaced','points',1000,'antipodal');
 S2G = S2Grid(v);
-S2G = S2Grid('equispaced','RESOLUTION',5*degree,'axial');
+S2G = S2Grid('equispaced','RESOLUTION',5*degree,'antipodal');
 S2G = S2Grid ('regular','points',[72,17],'MAXTHETA',80 * degree);
 
 % Basic Functions:
@@ -102,7 +102,7 @@ S2G = delete(S2G,zvector);
 union(S2G,S2Grid(-zvector));
 rotate(S2G,axis2quat(xvector,45*degree));
 subGrid(S2G,zvector,10*degree);
-refine(S2Grid('equispaced','resolution',1000,'axial'));
+refine(S2Grid('equispaced','resolution',1000,'antipodal'));
 GridLength(S2G);
 getResolution(S2G);
 getRho(S2G);
@@ -163,12 +163,12 @@ plot(pf1)
 
 %%
 pf2 = rotate(pf1,axis2quat(xvector-yvector,25*degree));
-plot(pf2,'axial')
+plot(pf2,'antipodal')
 %savefigure('pic/pfrotated.pdf')
 
 %%
 pf2 = setdata(pf2,1,getdata(pf1)<1);
-plot(pf2,'axial')
+plot(pf2,'antipodal')
 %savefigure('pic/pfincreased.pdf')
 
 %% The class kernel
@@ -247,7 +247,7 @@ psi = kernel('Abel Poisson','halfwidth',9*degree);
 odf = fibreODF(h,r,CS,SS,psi)
 
 %%
-plotpdf(odf,[Miller(1,0,-1,0,CS),Miller(0,0,0,1,CS)],'axial');
+plotpdf(odf,[Miller(1,0,-1,0,CS),Miller(0,0,0,1,CS)],'antipodal');
 %savefigure('pic/fibreODF.pdf')
 
 
@@ -297,16 +297,16 @@ plotDiff(pf,rec)
 
 %% Pole Figure Plots
 
-plotpdf(odf,[Miller(1,0,0,CS),Miller(0,0,1,CS)],'axial');
+plotpdf(odf,[Miller(1,0,0,CS),Miller(0,0,1,CS)],'antipodal');
 %savefigure('pic/fibreodf1.pdf')
 
 %%
-plotpdf(odf,[Miller(1,0,0,CS),Miller(0,0,1,CS)],'axial','absolute','edist')
+plotpdf(odf,[Miller(1,0,0,CS),Miller(0,0,1,CS)],'antipodal','absolute','edist')
 %savefigure('pic/fibreodf2.pdf')
 
 %%
 
-plotpdf(odf,[Miller(1,0,0,CS),Miller(0,0,1,CS)],'axial','gray','contourf')
+plotpdf(odf,[Miller(1,0,0,CS),Miller(0,0,1,CS)],'antipodal','gray','contourf')
 %savefigure('pic/fibreodf3.pdf')
 
 %% Inverse Pole Figures Plots

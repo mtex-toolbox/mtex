@@ -28,7 +28,7 @@
 % *Incompatible Changes to Previous Versions*
 %
 % * The flag *reduced* has been replaced by the flag <AxialDirectional.html
-% axial> 
+% antipodal> 
 %
 %% MTEX 1.1 - 12/2008
 %
@@ -99,7 +99,7 @@
 % *Incompatible Changes With Previous Releases*
 %
 % * The flag *hemishpere* in <S2Grid_S2Grid.html S2Grid> has been replaced
-% by *north*, *south*, and *axial* making it more consistent with the
+% by *north*, *south*, and *antipodal* making it more consistent with the
 % plotting routine.
 %
 % *Improved Documentation*
@@ -162,7 +162,7 @@
 % [[S2Grid_index.html,S2Grids]]
 % * Slightly changed syntax of [[unimodalODF.html,unimodalODF]] and
 % [[fibreODF.html,fibreODF]]. 
-% * Default plotting options are set to {}, i.e. 'axial' has to add
+% * Default plotting options are set to {}, i.e. 'antipodal' has to add
 % manualy if desired
 % * Crystal symmetry *triclinic* is not called *tricline* anymore.
 %

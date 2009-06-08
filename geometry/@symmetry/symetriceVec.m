@@ -6,7 +6,7 @@ function [Sv,l] = symetriceVec(S,v,varargin)
 %  v - @vector3d
 %
 %% Flags
-%  axial - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
 %
 %% Output
 %  Sv - symmetrically equivalent vectors
@@ -20,7 +20,7 @@ for i=1:length(v)
 	u = h(1);
 	for j = 2:length(h)
 		if ~any(isnull(norm(u-h(j))))...
-      && ~(check_option(varargin,'axial') && any(isnull(norm(u+h(j)))))
+      && ~(check_option(varargin,'antipodal') && any(isnull(norm(u+h(j)))))
 			u = [u,h(j)]; %#ok<AGROW>
 		end
 	end

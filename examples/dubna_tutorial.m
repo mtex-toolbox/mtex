@@ -34,5 +34,5 @@ plot(pf)
 odf = calcODF(pf)
 
 %% Calculate c-axis pole figure from the ODF
-plotpdf(odf,Miller(0,0,1,cs),'axial')
+plotpdf(odf,Miller(0,0,1,cs),'antipodal')
 

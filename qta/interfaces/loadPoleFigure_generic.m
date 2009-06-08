@@ -111,7 +111,7 @@ if istype(names,sphcoord)
     all(rh>=-360) && all(rh<=720),'Polar coordinates out of range!');
 
   % specimen directions
-  r = S2Grid(sph2vec(th,rh),'axial');
+  r = S2Grid(sph2vec(th,rh),'antipodal');
 
 elseif istype(names,euclidcoord)
   
@@ -121,7 +121,7 @@ elseif istype(names,euclidcoord)
   d(any(isnan(d(:,layout)),2),:) = [];
   
   % specimen directions
-  r = S2Grid(vector3d(d(:,layout(1:3)).'),'axial');
+  r = S2Grid(vector3d(d(:,layout(1:3)).'),'antipodal');
   
 else
   error('MTEX:MISSINGDATA',...

@@ -7,7 +7,7 @@ function [v,swap,rot] = project2FundamentalRegion(v,sym,varargin)
 %
 %% Options
 %  CENTER - reference orientation
-%  axial  - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal  - include [[AxialDirectional.html,antipodal symmetry]]
 %
 %% Output
 %  v  - @vector3d
@@ -51,7 +51,7 @@ else
   [d2,th2,rh2] = selectMinbyColumn(d2,pi-theta,rho2);
 end
 
-if check_option(varargin,'axial')
+if check_option(varargin,'antipodal')
   swap = false(numel(v),1);
 else
   swap = d1 > d2;

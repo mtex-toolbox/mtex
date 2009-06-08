@@ -23,7 +23,7 @@ function  varargout = plot(S2G,varargin)
 %% Flags
 %  NORTH       - plot only points on the north hemisphere (default)
 %  SOUTH       - plot only points on the southern hemisphere
-%  axial      - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal      - include [[AxialDirectional.html,antipodal symmetry]]
 %  DOTS        - single points (default) 
 %  SMOOTH      - interpolated plot 
 %  CONTOUR     - contour plot
@@ -127,17 +127,17 @@ if isappdata(gcf,'hemisphere'),
     
   hemisphere = getappdata(gcf,'hemisphere');
   
-elseif check_option(varargin,{'axial','plain'})
+elseif check_option(varargin,{'antipodal','plain'})
   
-  hemisphere = 'axial';
+  hemisphere = 'antipodal';
   
-elseif check_option(varargin,{'north','south','axial'})
+elseif check_option(varargin,{'north','south','antipodal'})
   
-  hemisphere = extract_option(varargin,{'north','south','axial'});
+  hemisphere = extract_option(varargin,{'north','south','antipodal'});
    
-elseif check_option(S2G,{'north','south','axial'})
+elseif check_option(S2G,{'north','south','antipodal'})
   
-  hemisphere = extract_option(S2G(1).options,{'north','south','axial'});
+  hemisphere = extract_option(S2G(1).options,{'north','south','antipodal'});
 
 elseif max(theta(:)) > pi/2+0.001 
   
@@ -156,9 +156,9 @@ bounds = [0,0,0,0];
 
 %% Northern Hemisphere
 
-if any(strcmpi(hemisphere,'north')) || any(strcmpi(hemisphere,'axial'))
+if any(strcmpi(hemisphere,'north')) || any(strcmpi(hemisphere,'antipodal'))
   
-  if strcmp(hemisphere,'axial')
+  if strcmp(hemisphere,'antipodal')
     south = theta > pi/2+0.001;
     rho(south) = rho(south) + pi;
     theta(south) = pi - theta(south);

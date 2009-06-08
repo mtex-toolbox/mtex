@@ -37,7 +37,7 @@ set_mtex_option('ITER_MAX',11);
 % here you can define default plott options
 
 default_plot_options = {'FontSize',13};
-%default_plot_options = {'axial'};
+%default_plot_options = {'antipodal'};
 set_mtex_option('default_plot_options',default_plot_options);
 plotx2north;
 
