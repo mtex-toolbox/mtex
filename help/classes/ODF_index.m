@@ -88,7 +88,7 @@ volume(odf,g,5*degree);
 figure('position',[100 100 700 300])
 plot(odf,'sections',10,'silent')   % plot odf
 %%
-plotpdf(odf,Miller(0,0,1),'axial')   % plot pole figure
+plotpdf(odf,Miller(0,0,1),'antipodal')   % plot pole figure
 %%
 plotipdf(odf,xvector)        % plot inverse pole figure
 

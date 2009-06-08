@@ -74,7 +74,7 @@ while ~feof(fid)
     
     rho = (rho(1):rho(2):rho(3))*degree;
     mtex_assert(~isempty(rho));
-    r = S2Grid('theta',theta,'rho',rho,'axial');
+    r = S2Grid('theta',theta,'rho',rho,'antipodal');
 	
 %% read data    
     d = [];

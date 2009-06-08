@@ -80,4 +80,4 @@ ss * euler2quat(0,0,pi/4) * cs;  % all crystallographically equivalent orientati
 % corresponding equivalent directions
 
 close; figure('position',[50,50,300,300])
-plot(cs,'axial')
+plot(cs,'antipodal')

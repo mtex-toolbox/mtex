@@ -25,7 +25,7 @@ odf = calcODF(pf)
 % You may want to verify that the pole figures are reproduced. Here is a
 % plot of the computed pole figures.
 
-plotpdf(odf,getMiller(pf),'axial','silent')
+plotpdf(odf,getMiller(pf),'antipodal','silent')
 
 %%
 % You can give a lot of options to the function. You can specify the
@@ -45,7 +45,7 @@ plotpdf(odf,getMiller(pf),'axial','silent')
 % Next an example how to change the default resolution:
 
 odf = calcODF(pf,'resolution',15*degree)
-plotpdf(odf,getMiller(pf),'axial','silent')
+plotpdf(odf,getMiller(pf),'antipodal','silent')
 
 %%
 % Beside the resolution you can use the following options to change the
@@ -68,7 +68,7 @@ plotpdf(odf,getMiller(pf),'axial','silent')
 % plot_zero_range>.
 
 odf = calcODF(pf,'zero_range','zr_bg',100)
-plotpdf(odf,getMiller(pf),'axial','silent')
+plotpdf(odf,getMiller(pf),'antipodal','silent')
 
 %% Ghost Corrections
 %

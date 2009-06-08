@@ -48,7 +48,7 @@ try
   
   fclose(fid);
     
-  r = S2Grid('theta',theta*degree,'rho',rho*degree,'axial');
+  r = S2Grid('theta',theta*degree,'rho',rho*degree,'antipodal');
   
   pf = PoleFigure(h,r,d,symmetry('cubic'),symmetry,varargin{:});
 catch

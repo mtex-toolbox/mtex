@@ -7,7 +7,7 @@ function plot(s,varargin)
 %% Output
 %
 %% Options
-%  axial      - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal      - include [[AxialDirectional.html,antipodal symmetry]]
 
 m = [Miller(1,0,0,s),Miller(0,0,1,s),Miller(0,1,1,s),Miller(1,1,0,s)];
 
@@ -18,4 +18,4 @@ plot(m,'All','north','south','labeled','MarkerEdgeColor','k','grid',varargin{:})
 %setappdata(gcf,'r',S2Grid());
 setappdata(gcf,'CS',s);
 set(gcf,'tag','ipdf');
-setappdata(gcf,'options',extract_option(varargin,'axial'));
+setappdata(gcf,'options',extract_option(varargin,'antipodal'));

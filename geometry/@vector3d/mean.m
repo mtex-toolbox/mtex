@@ -8,10 +8,10 @@ function m = mean(v,varargin)
 %  m - @vector3d
 %
 %% Options
-%  axial - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
 % 
 
-if check_option(varargin,'axial')
+if check_option(varargin,'antipodal')
   M = [v.x(:) v.y(:) v.z(:)];
   M = M.' * M;
   s = svds(M,1);

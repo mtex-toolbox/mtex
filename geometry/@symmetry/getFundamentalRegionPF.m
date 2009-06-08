@@ -11,7 +11,7 @@ function  [maxTheta,maxRho,minRho,v] = getFundamentalRegionPF(cs,varargin)
 %  v
 %
 %% Options
-%  axial      - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal      - include [[AxialDirectional.html,antipodal symmetry]]
 %
 %
 
@@ -24,7 +24,7 @@ if check_option(varargin,'complete')
 else  
   
   maxRho = rotangle_max_z(cs);
-  if check_option(varargin,'axial') && rotangle_max_y(cs)/2 < pi
+  if check_option(varargin,'antipodal') && rotangle_max_y(cs)/2 < pi
     maxRho = maxRho / 2;
   end
   maxTheta = rotangle_max_y(cs,varargin{:})/2;
@@ -32,13 +32,13 @@ else
 
   switch Laue(cs)
     case '-3m'
-      if check_option(varargin,'axial') && ...
+      if check_option(varargin,'antipodal') && ...
         xor(isappr(rem(rotate,60*degree),0),...
           isappr(norm(xvector - vector3d(Miller(1,0,0,cs))),0))
         rotate = rotate - 30*degree;
       end
     case 'm-3m'
-      if check_option(varargin,'axial')
+      if check_option(varargin,'antipodal')
         maxRho = pi/4;  
         maxTheta = @(rho) pi- atan2(cos(pi/4),sin(pi/4)*cos(mod(rho,2*maxRho)+pi));        
       else
@@ -47,7 +47,7 @@ else
       end
       v = [Miller(0,0,1),Miller(1,1,0),Miller(1,1,1)];
     case 'm-3'
-      if check_option(varargin,'axial')
+      if check_option(varargin,'antipodal')
         maxRho = pi/4;
         maxTheta = @(rho) pi- atan2(cos(pi/4),sin(pi/4)*cos(mod(rho,2*maxRho)+pi/2));        
       else

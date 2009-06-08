@@ -28,7 +28,7 @@ odf = 0.9*uniformODF(cs,ss) + ...
 
 %% Simulate pole figures
 % 
-r = S2Grid('equispaced','resolution',5*degree,'axial');
+r = S2Grid('equispaced','resolution',5*degree,'antipodal');
 h = [Miller(1,0,0),Miller(0,1,0),Miller(0,0,1)];
 pf = simulatePoleFigure(odf,h,r);
 

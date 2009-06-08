@@ -57,7 +57,7 @@ quat2euler(center)
 %% 
 % Lets mark this prefered orientation in the pole figures
 
-plotpdf(odf3,h,'axial');
+plotpdf(odf3,h,'antipodal');
 annotate(center,'marker','s','MarkerFaceColor','black')
 
 %% Texture Characteristics

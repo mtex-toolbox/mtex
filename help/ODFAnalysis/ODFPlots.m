@@ -32,9 +32,9 @@ plotpdf(odf,h,'position',[100 100 600 300])
 % symmetry here is tricline they might differ. It is well known that
 % diffration data results in pole figures where the norther and the
 % southern hemispheres are superposed. This can achieved in MTEX by passing
-% the option *axial*.
+% the option *antipodal*.
 
-plotpdf(odf,h,'axial')
+plotpdf(odf,h,'antipodal')
 
 %% Inverse Pole Figure Plots
 %

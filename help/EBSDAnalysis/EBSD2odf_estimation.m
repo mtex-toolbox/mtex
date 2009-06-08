@@ -32,7 +32,7 @@ odf = calcODF(ebsd,'phase',1)
 %% 
 % You may want to plot some pole figures of the estimated ODF:
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],'axial','silent','position',[10 10 600 200])
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],'antipodal','silent','position',[10 10 600 200])
 
 %% Kernel Density Estimation
 %
@@ -62,7 +62,7 @@ plotpdf(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],'axial','silent','positi
 % option *halfwidth* has to be used, e.g.
 
 odf = calcODF(ebsd,'halfwidth',10*degree,'phase',1);
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],'axial','silent')
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],'antipodal','silent')
 
 %% Estimation of Fourier Coefficients
 %

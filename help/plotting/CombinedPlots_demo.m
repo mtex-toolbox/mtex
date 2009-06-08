@@ -31,7 +31,7 @@ hold off
 % a second way would be to superpose the pole figures of both EBSD data sets.
 
 h = [Miller(0,0,0,1,cs),Miller(1,0,-1,0,cs)];
-plotpdf(ebsd,h,'axial','MarkerSize',4)
+plotpdf(ebsd,h,'antipodal','MarkerSize',4)
 hold all % keep plot
 plotpdf(ebsd_rotated,h,'MarkerSize',4);
 hold off % next plot command deletes all plots
@@ -41,9 +41,9 @@ hold off % next plot command deletes all plots
 % You can also combine a contour plot of a model ODF with a scatter plot of single
 % orientations.
 
-plotpdf(odf,h,'axial','contourf','gray','grid')
+plotpdf(odf,h,'antipodal','contourf','gray','grid')
 hold all
-plotpdf(ebsd,h,'axial','MarkerSize',5,'MarkerColor','b','MarkerEdgeColor','w')
+plotpdf(ebsd,h,'antipodal','MarkerSize',5,'MarkerColor','b','MarkerEdgeColor','w')
 hold all
 plotpdf(ebsd_rotated,h,'MarkerSize',5,'MarkerColor','r','MarkerEdgeColor','k');
 hold off

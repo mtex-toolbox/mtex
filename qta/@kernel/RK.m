@@ -12,7 +12,7 @@ function f = RK(kk,g,h,r,c,CS,SS,varargin)
 %  CS,SS- crystal, specimen @symmetry
 %
 %% Options
-%  axial     - axial Radon transform P(h,r) = (Rf(h,r) + Rf(-h,r))/2
+%  antipodal     - antipodal Radon transform P(h,r) = (Rf(h,r) + Rf(-h,r))/2
 %  BANDWIDTH - bandwidth of ansatz functions
 %
 %% Output
@@ -60,7 +60,7 @@ if numel(in) > 500 && numel(out) > 500 && ~isempty(c) && ~isempty(getA(kk))
 	
 	% extract legendre coefficents
 	Al = getA(kk);
-	if check_option(varargin,'axial'), Al(2:2:end) = 0;end
+	if check_option(varargin,'antipodal'), Al(2:2:end) = 0;end
   bw = get_option(varargin,'bandwidth',length(Al));
   Al = Al(1:min(bw,length(Al)));
   
@@ -78,10 +78,10 @@ else % calculate matrix
   for is = 1:length(SS)*lh   
 		dmatrix = dot_outer(out,in(:,is));    
 		f = f + kk.RK(dmatrix);
-		if check_option(varargin,'axial'), f = f + kk.RK(-dmatrix);end		
+		if check_option(varargin,'antipodal'), f = f + kk.RK(-dmatrix);end		
 	end
 	
 	if ~isempty(c), f = f * reshape(c,[],1);end
-	if check_option(varargin,'axial'), f = f/2;end
+	if check_option(varargin,'antipodal'), f = f/2;end
 end
 f = f / length(SS) / lh;

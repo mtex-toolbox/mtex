@@ -8,7 +8,7 @@ function [q,omega] = getFundamentalRegion(S3G,varargin)
 %  CENTER - reference orientation
 %
 %% Output
-%  q     - @quaterion
+%  q     - @quaternion
 %  omega - rotational angle
 
 q_ref = get_option(varargin,'center',idquaternion);

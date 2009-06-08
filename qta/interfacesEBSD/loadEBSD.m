@@ -8,7 +8,7 @@ function [ebsd,interface,options] = loadEBSD(fname,varargin)
 % you can specify a comment to be associated with the data. In the case of
 % generic ascii files each of which consist of a table containing in each
 % row the euler angles of a certain orientation see
-% [[loadEBSD_txt.html,loadEBSD_txt]] for additional options.
+% [[loadEBSD_generic.html,loadEBSD_generic]] for additional options.
 %
 %% Syntax
 %  pf = loadEBSD(fname,cs,ss,<options>)
@@ -25,7 +25,7 @@ function [ebsd,interface,options] = loadEBSD(fname,varargin)
 %  ebsd - @EBSD
 %
 %% See also
-% interfacesEBSD_index ebsd/calcODF ebsd_demo loadEBSD_txt
+% interfacesEBSD_index ebsd/calcODF ebsd_demo loadEBSD_generic
 
 %% proceed input argument
 if nargin < 1

@@ -17,7 +17,7 @@ Z = zeros(numel(h2),numel(r2));
 
 sh = symetriceVec(CS,h1);
 sr = symetriceVec(SS,r1);
-if check_option(varargin,'axial'), sh = [sh,-sh];end
+if check_option(varargin,'antipodal'), sh = [sh,-sh];end
 
 for i = 1:length(sh)
   for j = 1:length(sr)
