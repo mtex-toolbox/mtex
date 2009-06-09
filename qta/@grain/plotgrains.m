@@ -91,9 +91,9 @@ if property
           setappdata(gcf,'options',extract_option(varargin,'antipodal'));
         end
       case 'phase'
-        d = get(grains,'phase')';
+        [x x d] = unique(get(grains,'phase')');
         co = get(gca,'colororder');
-        colormap(co(1:length(unique(d)),:))
+        colormap([get(gca,'color');co(unique(d),:)]);
       case fields(grains(1).properties)
         d = get(grains,property)';
       otherwise
