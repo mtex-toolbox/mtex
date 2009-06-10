@@ -167,11 +167,11 @@ cs_counter = getappdata(gcbf,'cs_count');
 name = get(handles.mineral,'string');
 
 if ~exist(name,'file')
-  name = [get_mtex_option('cif_path') filesep name '.cif'];
+  name = fullfile(get_mtex_option('cif_path'), [name '.cif']);
 end
 
 if ~exist(name,'file')
-  [fname,pathName] = uigetfile([get_mtex_option('cif_path') filesep '*.cif'],'Select cif File');
+  [fname,pathName] = uigetfile(fullfile(get_mtex_option('cif_path') ,'*.cif'),'Select cif File');
   name = [pathName,fname];
 end
 
@@ -291,5 +291,5 @@ if strcmp(ext,'.cif'), ext = [];end
 if strcmp(pathname,get_mtex_option('cif_path'))
   fname = [name ext];
 else
-  fname = [pathname filesep name ext];
+  fname = fullfile(pathname,[name ext]);
 end

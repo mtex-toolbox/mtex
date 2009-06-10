@@ -68,7 +68,7 @@ end
 function check_mex
 
 % set mex/directory
-mexpath = [mtex_path '/c/mex/' get_mtex_option('architecture')];
+mexpath = fullfile(mtex_path,'c','mex',get_mtex_option('architecture'));
 addpath(mexpath,0);
 
 % check for mex files
@@ -78,25 +78,25 @@ disp('Checking mex files failed!');
 disp('--------------------------');
 
 % check old mex version
-if exist([mexpath '/v7.1'],'dir')
+if exist(fullfile(mexpath,'v7.1'),'dir')
     
   % change path  
   rmpath(mexpath);
-  addpath([mexpath '/v7.1']);
+  addpath(fullfile(mexpath,'v7.1'));
   disp('> Trying now with older version.');
   if fast_check_mex
     disp('> Hurray - everythink works!')
     disp(' ');
     try
-      copyfile([mexpath '/v7.1/*.*'],mexpath,'f');
+      copyfile(fullfile(mexpath,'v7.1','*.*'),mexpath,'f');
       % restore path
-      rmpath([mexpath '/v7.1']);
+      rmpath(fullfile(mexpath,'v7.1'));
       addpath(mexpath);
     catch
       disp('--------------------------------------------------')
       disp('> Error while copying!')
       disp('> You should copy');
-      disp(['  ' mexpath '/v7.1']);
+      disp(['  ' fullfile(mexpath,'v7.1')]);
       disp(' to ');
       disp(['  ', mexpath]);
       disp('> before starting the next session');
@@ -107,14 +107,14 @@ if exist([mexpath '/v7.1'],'dir')
   else
     disp('> Checking old mex files failed!');
     % restore path
-    rmpath([mexpath '/v7.1']);
+    rmpath(fullfile(mexpath,'v7.1'));
     addpath(mexpath);   
   end
 end   
 
 disp('> Trying now to recompile mex files.');
 opwd = pwd;
-cd([mtex_path '/c/mex']);
+cd(fullfile(mtex_path,'c','mex'));
 mex_install;
 cd(opwd);    
     

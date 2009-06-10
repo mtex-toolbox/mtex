@@ -25,7 +25,7 @@ set_mtex_option('ebsd_ext',...
 
 %% Path to CIF files
 % modify this path if your CIF files are located at a different path
-set_mtex_option('cif_path',[mtex_path filesep 'cif']);
+set_mtex_option('cif_path',fullfile(mtex_path,'cif'));
 
 %% default maximum iteration depth for calcODF
 % change this value if you want to have another maximum iteration depth to

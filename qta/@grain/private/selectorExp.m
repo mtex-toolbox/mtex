@@ -20,7 +20,7 @@ if isempty(selector)
   
 	try
       jframe=get(fig,'javaframe');
-      jIcon=javax.swing.ImageIcon([mtex_path filesep 'mtex_icon.gif']);
+      jIcon=javax.swing.ImageIcon(fullfile(mtex_path,'mtex_icon.gif'));
       jframe.setFigureIcon(jIcon);
 	catch
   end

@@ -23,7 +23,7 @@ end
 
 for i=1:length(files)
 
-  out_file = [poptions.outputDir filesep strrep(files{i},'.m','.html')];
+  out_file = fullfile(poptions.outputDir,strrep(files{i},'.m','.html'));
   % check wether publishing is needed
   if is_newer(strrep(out_file,'script_',''),files{i}) && ...
       ~check_option(varargin,'force')
@@ -62,7 +62,7 @@ for i=1:length(files)
     links = regexp(code, '\<(?:href=")(\S*?.html)(?:")\>','tokens');
     links = links(~cellfun('isempty',links));
     for j = 1:length(links)
-      if ~exist([poptions.outputDir filesep char(links{j}{1})],'file')
+      if ~exist(fullfile(poptions.outputDir,char(links{j}{1})),'file')
         if strmatch('script',files{i})
           ss = strrep(files{i},'script_','');
           ss = strrep(ss,'_','/');

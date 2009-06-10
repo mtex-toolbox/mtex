@@ -21,7 +21,7 @@ for i = 1:length(uitags)
 end
 
 try
-  [pic,map] = imread([toolboxdir('matlab') filesep 'icons/tool_align.gif']);
+  [pic,map] = imread(fullfile(toolboxdir('matlab'),'icons','tool_align.gif'));
   pic = ind2rgb(pic,map);
 catch
   a = .20:.05:0.95;

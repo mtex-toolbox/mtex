@@ -122,6 +122,10 @@ if any(findall(allchild(h),'Label','Grains')), return, end;
   uimenu(gmao,'Label','Convert Selection to Plot','Callback',@extracttolayer);
   uimenu(gmao,'Tag','onsel','Label','Plot ODF','Separator','on','Callback',@plotODFs);
   uimenu(gmao,'Tag','onsel','Label','Plot ODF with Neighbours','Callback',{@plotODFs,'neighbours'});
+  uimenu(gmao,'Tag','onsel','Label','Plot PDF','Separator','on','Callback',@plotPDFs);
+  uimenu(gmao,'Tag','onsel','Label','Plot PDF with Neighbours','Callback',{@plotPDFs,'neighbours'});
+  uimenu(gmao,'Tag','onsel','Label','Plot in Rodrigues Space','Separator','on','Callback',@plotRodrigues);
+  uimenu(gmao,'Tag','onsel','Label','Plot in Rodrigues Space with Neighbours','Callback',{@plotRodrigues,'neighbours'});
   uimenu(gmao,'Tag','onsel','Label','Variogram on Property','Separator','on','Callback',@variogrammplot);
   
   uimenu(gm,'Label','Setup corresponding EBSD-Data','Separator','on','Callback',@updateEBSD);
@@ -194,7 +198,10 @@ ks = getappdata(hFig,'selected');
 
 grains = grains{ly}; %selected layer
 
-k = eval( evalstatement );
+k =  eval( evalstatement );
+
+if ~islogical(k), error, end;
+k = find(k);
 
 switch method
   case 2
@@ -494,6 +501,7 @@ function exporttoWS(e, h)
 name = inputdlg({'Enter Variable name:'},'Grains to Workspace',1,{['grain_selection_layer_' num2str(ly)]});
   if ~isempty(name), assignin('base', name{1}, grains(k) ); end
   
+
 %--------------------------------------------------------------------------
 function ebsd = updateEBSD(e,h)  
 
@@ -509,7 +517,49 @@ if ok
   ebsd = evalin('base', vars{sel});
   setappdata(gcf,'ebsd',ebsd);
 end
-  
+
+function plotRodrigues(e,h,varargin)
+ 
+ebsd = getappdata(gcf,'ebsd');
+if isempty(ebsd)
+ ebsd = updateEBSD;
+end
+
+[grains p ks] = getcurrentlayer;
+grains1 = grains(ks);
+eb = get(ebsd,grains1);     
+
+f = figure, plot(eb,'rodrigues')
+if check_option(varargin,'neighbours')
+  hold on,
+  grains2 = neighbours(grains, grains1);
+  eb2 = get(ebsd,grains2);
+  plot(eb2,'rodrigues')
+end
+set(f,'renderer','opengl');
+ 
+
+function plotPDFs(e,h,varargin)
+ 
+ebsd = getappdata(gcf,'ebsd');
+if isempty(ebsd)
+ ebsd = updateEBSD;
+end
+
+[grains p ks] = getcurrentlayer;
+grains1 = grains(ks);
+eb = get(ebsd,grains1);     
+
+f = figure, plotpdf(eb,[Miller(1,0,0)]);
+if check_option(varargin,'neighbours')
+  hold on,
+  grains2 = neighbours(grains, grains1);
+  eb2 = get(ebsd,grains2);
+  plotpdf(eb2);
+end
+set(f,'renderer','opengl');
+ 
+ 
 %--------------------------------------------------------------------------
 function plotODFs(e,h,varargin)
     
@@ -532,7 +582,8 @@ if ok,
    eb = get(ebsd,grains1);      
         
    if check_option(varargin,'neighbours')
-     grains = grains(ismember(vertcat(grains(:).id),vertcat(grains1(:).neighbour)));
+     grains = neighbours(grains, grains1);
+     % grains = grains(ismember(vertcat(grains(:).id),vertcat(grains1(:).neighbour)));
           
      eb2 = get(ebsd,grains);   
      

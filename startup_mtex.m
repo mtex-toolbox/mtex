@@ -17,28 +17,37 @@ install_mtex(local_path);
 
 
 %% setup search path 
-toadd = {'',...
-  'qta','qta/interfacesPoleFigure','qta/interfacesPoleFigure/tools',...
-  'qta/interfacesEBSD','qta/interfacesEBSD/tools',...
-  'qta/standardODFs','qta/tools',...
-  'geometry','geometry/geometry_tools',...
-  'tools','tools/dubna_tools','tools/file_tools','tools/option_tools',...
-  'tools/import_wizard','tools/plot_tools','tools/statistic_tools',...
-  'tools/misc_tools','tools/math_tools',...
-  'examples','tests',...
-  'help/interfaces','help/ODFAnalysis','help/PoleFigureAnalysis','help/EBSDAnalysis','help/plotting','help/CrystalGeometry'};
 
-for i = 1:length(toadd)
-  p = [local_path,filesep,toadd{i}];
-  addpath(p,0);
+toadd = { {''}, ...
+  {'qta'}, {'qta' 'interfacesPoleFigure'},{'qta' 'interfacesPoleFigure' 'tools'},...
+  {'qta' 'interfacesEBSD'},{'qta' 'interfacesEBSD' 'tools'},...
+  {'qta' 'interfacesODF'},...
+  {'qta' 'standardODFs'},{'qta' 'tools'},...
+  {'geometry'},{'geometry' 'geometry_tools'},...
+  {'tools'},{'tools' 'dubna_tools'}, {'tools' 'file_tools'},{'tools' 'option_tools'},...
+  {'tools' 'import_wizard'},{'tools' 'plot_tools'},{'tools' 'statistic_tools'},...
+  {'tools' 'misc_tools'},{'tools' 'math_tools'},...
+  {'examples'},{'tests'},...
+  {'help' 'interfaces'},{'help' 'ODFAnalysis'},{'help' 'PoleFigureAnalysis'},...
+  {'help' 'EBSDAnalysis'},{'help' 'plotting'},{'help' 'CrystalGeometry'}};
+
+for k=1:length(toadd)
+  addpath(fullfile(local_path,toadd{k}{:}),0);
 end
 
-
 %% set path to MTEX directories
+
+
 set_mtex_option('mtex_path',local_path);
-set_mtex_option('mtex_data_path',[local_path filesep 'data']);
+set_mtex_option('mtex_data_path',fullfile(local_path,'data'));
 set_mtex_option('mtex_startup_dir',pwd);
 set_mtex_option('architecture',computer('arch'));
+
+%read version from version file
+fid = fopen('VERSION','r');
+ver = fread(fid,'*char')';
+fclose(fid);
+set_mtex_option(0,'version',ver(1:end-1));
 
 
 %% init settings
@@ -49,7 +58,7 @@ mtex_settings;
 check_installation;
 
 %% finish
-disp('MTEX toolbox (v1.3beta) loaded')
+disp([get_mtex_option('version') ' toolbox loaded'])
 disp(' ');
 if isempty(javachk('desktop'))
   disp('Basic tasks:')
@@ -67,14 +76,9 @@ end
 function install_mtex(local_path)
 
 % check wether local_path is in search path
-if ispc
-  cellpath = splitstr(path,';'); 
-else
-  cellpath = splitstr(path,':'); 
-end
-
+cellpath = regexp(path,['(.*?)\' pathsep],'tokens'); 
+cellpath = [cellpath{:}]; %cellpath = regexp(path, pathsep,'split');
 if any(strcmpi(local_path,cellpath)), return;end
-
 
 % if not yet installed
 disp(' ');
@@ -85,11 +89,9 @@ disp('--------------------------------')
 if any(strfind(path,'mtex'))
   disp('I found an older version of MTEX!');
   disp('I remove it from the current search path!');
-  for i = 1:length(cellpath)
-    if strfind(cellpath{i},'mtex')
-      rmpath(cellpath{i});
-    end
-  end  
+  
+  inst_dir = cellpath(strcmp(cellpath,'mtex'));  
+  if ~isempty(inst_dir), rmpath(inst_dir{:}); end
 end
 
 
@@ -101,13 +103,14 @@ r= input('Do you want to permanently install MTEX? Y/N [Y]','s');
 if isempty(r) || any(strcmpi(r,{'Y',''}))
 
   % check for old startup.m
-  if exist([toolboxdir('local'),'/startup.m'],'file')
+  startup_file = fullfile(toolboxdir('local'),'startup.m');
+  if exist(startup_file,'file')
     disp(['> There is an old file startup.m in ' toolboxdir('local')]);
     disp('> I''m going to remove it!');
     if ispc
-      delete([toolboxdir('local'),'/startup.m']);
+      delete(startup_file);
     else
-      sudo(['rm ' toolboxdir('local'),'/startup.m'])
+      sudo(['rm ' startup_file])
     end
   end
   
@@ -194,9 +197,3 @@ end
 
 end
 
-%%
-function cstr = splitstr(str,c)
-
-pos = [0,findstr(str,c),length(str)+1];
-cstr = arrayfun(@(i) str(pos(i-1)+1:pos(i)-1),2:length(pos),'uniformoutput',0);
-end

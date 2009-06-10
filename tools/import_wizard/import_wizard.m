@@ -14,7 +14,7 @@ function import_wizard( varargin )
 h = import_gui_empty('width',500,varargin);
 try
   jframe=get(h,'javaframe');
-  jIcon=javax.swing.ImageIcon([mtex_path filesep 'mtex_icon.gif']);
+  jIcon=javax.swing.ImageIcon(fullfile(mtex_path,'mtex_icon.gif'));
   jframe.setFigureIcon(jIcon);
 catch
 end

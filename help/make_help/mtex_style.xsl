@@ -27,6 +27,7 @@ $Revision: 1.1.6.19 $  $Date: 2008/06/24 17:11:46 $
   </xsl:choose>
 </xsl:variable>
 
+<xsl:variable name="mtexversion">MTEX 1.3</xsl:variable>
 
 <xsl:template match="mscript">
 <html>
@@ -58,11 +59,7 @@ To make changes, update the M-file and republish this document.
     
     <xsl:call-template name="header"/>
 
-    <div class="myheader">
-      <div class="left"><a href="matlab:edit XXXX">
-	  Open Matlab File in the Editor</a></div>
-      <div class="right"><a href="mtex_product_page.html">MTEX</a></div>
-    </div>
+  
 
     <div class="content">
 
@@ -131,6 +128,7 @@ To make changes, update the M-file and republish this document.
 body {
   background-color: white;
   margin:10px;
+  margin-top:70px;
 }
 
 h1 {
@@ -146,9 +144,9 @@ h2 {
 /* Make the text shrink to fit narrow windows, but not stretch too far in 
 wide windows. */ 
 p,h1,h2,div.content div {
-  max-width: 600px;
+/*  max-width: 600px;*/
   /* Hack for IE6 */
-  width: auto !important; width: 600px;
+/*  width: auto !important; width: 600px;*/
 }
 
 pre.codeinput {
@@ -174,30 +172,28 @@ pre.error {
   color: red;
 }
 
-p.footer {
-  text-align: right;
-  font-size: xx-small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
 div.myheader {
+  position:absolute;
   top:0px;
   left:0px;
-  background: #EBF5F9;
+  background: #005E8D;
+  border-bottom: 10px solid #EBF5F9;
   margin-bottom: 10px;
+  font-weight: bold;
   width: 100%;
 }
+
 div.left {
   position: absolute;
-  top: 10px;
-  left: 10px;
+/*  top: 10px;
+  left: 10px;*/
   padding: 10px;
+  color: #FFFFFF;
 }
 div.right {
   text-align: right;
   padding: 10px;
+  color: #FFFFFF;
 }
 div.myheader a {
   color: black;
@@ -205,6 +201,48 @@ div.myheader a {
 div.myheader {
   color: black;
 }   
+
+.nav {
+  padding:4px 3px 3px 4px; background: #e1ebfd;
+}
+
+.footer {
+  text-align: right;
+  font-weight: lighter;
+  font-style: italic;
+  color: #666666;
+  padding:4px; background: #e1ebfd;
+  padding-right: 10px;
+  padding-bottom: 15px;
+}
+
+
+.contentstable {
+  border-collapse:collapse; 
+  border:1px solid #888888;
+  margin-left:15px;
+  margin-top:15px;
+  margin-bottom:5px;
+}
+.contenth { 
+  border:thin solid #666666; 
+  vertical-align:top;
+  padding:3px;
+  padding-left:15px;
+  padding-right:15px;
+  overflow:hidden; 
+  background: #DDDDDD;
+  font-weight: bold;
+}
+
+.contentstd { 
+/*  border:thin solid #FFFFFF; */
+  vertical-align:top;
+  padding:4px;
+  padding-left:15px;
+  padding-right:15px;
+  overflow:hidden; 
+}
 
 pre,.intend {
     margin:15px 15px 15px 15px;
@@ -215,27 +253,41 @@ pre,.intend {
 
 <!-- Header -->
 <xsl:template name="header">
+  <div class="myheader">
+      <div class="left"><a href="matlab:edit XXXX" style="color:white">
+	  Open Matlab File in the Editor</a></div>
+      <div class="right"><a href="mtex_product_page.html" style="color:white">MTEX</a></div>
+    </div>
+  <!-- <a name="top_of_page"></a>
+  <p style="font-size:1px;">&nbsp;</p>
+    <table class="nav" summary="Navigation aid" border="0" width="100%" cellpadding="0" cellspacing="0">
+      <tr><td valign="baseline"><b>MTEX</b> - A MATLAB Toolbox for Quantitative Texture Analysis</td><td valign="baseline" align="right"></td></tr>
+  </table>  -->
 </xsl:template>
 
 <!-- Footer -->
 <xsl:template name="footer">
-    <p class="footer">
-      <xsl:value-of select="copyright"/><br/>
-      MTEX helpfile 2008<br/>
-    </p>
+<p style="font-size:1px;">&nbsp;</p>
+        <table class="footer" border="0" width="100%" cellpadding="0" cellspacing="0">
+          <tr ><td valign="baseline" align="right">
+          <xsl:value-of select="$mtexversion"/> helpfile</td><td valign="baseline" align="right"></td></tr>
+      </table>  
 </xsl:template>
 
 <!-- Contents -->
 <xsl:template name="contents">
   <xsl:param name="body-cells"/>
-  <h2>Contents</h2>
-  <div><ul>
+ 
+  <div><table class="contentstable"> <!--<ul>-->
+    <tr ><td class="contenth">On this page…</td></tr>  
     <xsl:for-each select="$body-cells">
       <xsl:if test="./steptitle">        
-        <li><a><xsl:attribute name="href">#<xsl:value-of select="position()"/></xsl:attribute><xsl:apply-templates select="steptitle"/></a></li>
+        <tr ><td class="contentstd">
+          <a><xsl:attribute name="href">#<xsl:value-of select="position()"/></xsl:attribute><xsl:apply-templates select="steptitle"/></a>
+        </td></tr>
       </xsl:if>
     </xsl:for-each>
-  </ul></div>
+  <!--</ul>--></table></div>
 </xsl:template>
 
 

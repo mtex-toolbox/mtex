@@ -26,6 +26,7 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
   </xsl:choose>
 </xsl:variable>
 
+<xsl:variable name="mtexversion">MTEX 1.3</xsl:variable>
 
 <xsl:template match="mscript">
 <html>
@@ -101,10 +102,9 @@ To make changes, update the M-file and republish this document.
 
     </xsl:for-each>
 
-    <p class="footer">
-      <xsl:value-of select="copyright"/><br/>
-      MTEX helpfile 2007<br/>
-    </p>
+    <xsl:call-template name="footer"/>
+      
+    
 
     </div>
     
@@ -124,24 +124,25 @@ body {
 
 h1 {
   color: #990000; 
-  font-size: x-large;
+  font-size: xx-large;
+  font-weight:200;
 }
 
 h2 {
   color: #990000;
-  font-size: medium;
+  font-size: large;
 }
 
 /* Make the text shrink to fit narrow windows, but not stretch too far in 
 wide windows. */ 
 p,h1,h2,div.content div {
-  max-width: 600px;
+ /* max-width: 600px;*/
   /* Hack for IE6 */
-  width: auto !important; width: 600px;
+/*  width: auto !important; width: 600px;*/
 }
 
 pre.codeinput {
-  background: #EEEEEE;
+  background: #EFEFEF;
   padding: 10px;
 }
 @media print {
@@ -163,12 +164,19 @@ pre.error {
   color: red;
 }
 
-p.footer {
+.nav {
+  padding:4px 3px 3px 4px; background: #e1ebfd;
+}
+
+.footer {
   text-align: right;
-  font-size: xx-small;
+  font-size: small;
   font-weight: lighter;
   font-style: italic;
-  color: gray;
+  color: #666666;
+  padding:4px; background: #e1ebfd;
+  padding-right: 10px;
+  padding-bottom: 15px;
 }
 
 pre,.intend {
@@ -178,9 +186,21 @@ pre,.intend {
   </style>
 </xsl:template>
 
-<xsl:template name="header">
+<xsl:template name="header">  
+  <a name="top_of_page"></a>
+  <p style="font-size:1px;">&nbsp;</p>
+    <table class="nav" summary="Navigation aid" border="0" width="100%" cellpadding="0" cellspacing="0">
+      <tr><td valign="baseline"><b>MTEX</b> - A MATLAB Toolbox for Quantitative Texture Analysis</td><td valign="baseline" align="right"></td></tr>
+  </table>  
 </xsl:template>
 
+<xsl:template name="footer">
+<p style="font-size:1px;">&nbsp;</p>
+        <table class="footer" border="0" width="100%" cellpadding="0" cellspacing="0">
+          <tr ><td valign="baseline" align="right">
+          <xsl:value-of select="$mtexversion"/> helpfile</td><td valign="baseline" align="right"></td></tr>
+      </table>  
+</xsl:template>
 
 <!-- HTML Tags in text sections -->
 <xsl:template match="p">

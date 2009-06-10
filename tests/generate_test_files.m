@@ -18,7 +18,7 @@ pf = simulatePoleFigure(odf,h,r) %#ok<NOPRT>
 % debug mode
 set_mtex_option('debug_mode');
 
-set_mtex_option('tempdir',[mtex_path,filesep,'c',filesep,'test',filesep]);
+set_mtex_option('tempdir',fullfile(mtex_path,'c','test'));
 
 % generate files
 disp('Press Strg-C to generate test files!')

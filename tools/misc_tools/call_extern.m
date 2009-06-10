@@ -23,8 +23,8 @@ function varargout = call_extern(prg,varargin)
 
 if ispc, mtex_ext = '.exe';else mtex_ext = '';end
 
-path = [mtex_path '/c/bin/',get_mtex_option('architecture') '/'];
-prg = [path,prg];
+prg = fullfile(mtex_path,'c','bin',get_mtex_option('architecture'),prg);
+
 if ~exist([prg,mtex_ext],'file')
   error(['Can not find ',[prg,mtex_ext],'!']);
 end
@@ -40,7 +40,7 @@ name = [name,suffix];
 iname = cell(1,length(varargin)+1);
 
 %% generate parameter file
-fid = fopen([mtex_tmppath,filesep,name,'.txt'],'w');
+fid = fopen(fullfile(mtex_tmppath,[name '.txt']),'w');
 for i=1:nargin-1
 	
 	if isempty(iname{i}) && ~isempty(inputname(i+1))
