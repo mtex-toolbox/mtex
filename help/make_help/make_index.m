@@ -11,7 +11,7 @@ makecontentsfile('.','force');
 cd(current_dir);
 
 % read Contents file
-contents = file2cell([in_dir filesep 'Contents.m']);
+contents = file2cell(fullfile(in_dir,'Contents.m'));
 
 % make section 'Files' to be rearly a section
 contents = {contents{3:end}};

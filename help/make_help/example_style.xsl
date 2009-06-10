@@ -26,6 +26,7 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
   </xsl:choose>
 </xsl:variable>
 
+<xsl:variable name="mtexversion">MTEX 1.3</xsl:variable>
 
 <xsl:template match="mscript">
 <html>
@@ -55,13 +56,7 @@ To make changes, update the M-file and republish this document.
 
   <body>
     
-    <xsl:call-template name="header"/>
-
-    <div class="myheader">
-    <div class="left"><a href="matlab:edit XXXX">
-	Open matlab file in the Editor</a></div>
-    <div class="right"><a href="matlab:echodemo XXXX">
-	Run in the Command Window</a></div></div>
+    <xsl:call-template name="header"/>  
 
     <div class="content">
 
@@ -107,10 +102,7 @@ To make changes, update the M-file and republish this document.
 
     </xsl:for-each>
 
-    <p class="footer">
-      <xsl:value-of select="copyright"/><br/>
-      MTEX helpfile 2008<br/>
-    </p>
+    <xsl:call-template name="footer"/>
 
     </div>
     
@@ -126,6 +118,7 @@ To make changes, update the M-file and republish this document.
 body {
   background-color: white;
   margin:10px;
+  margin-top:70px;
 }
 
 h1 {
@@ -147,7 +140,7 @@ p,h1,h2,div.content div {
 }
 
 pre.codeinput {
-  background: #EEEEEE;
+  background: #EFEFEF;
   padding: 10px;
 }
 @media print {
@@ -169,15 +162,17 @@ pre.error {
   color: red;
 }
 
+
 p.footer {
   text-align: right;
-  font-size: xx-small;
+  font-size: small;
   font-weight: lighter;
   font-style: italic;
   color: gray;
 }
 
 div.myheader {
+  position:absolute;
   top:0px;
   left:0px;
   background: #005E8D;
@@ -186,33 +181,109 @@ div.myheader {
   font-weight: bold;
   width: 100%;
 }
+
 div.left {
   position: absolute;
-  top: 10px;
-  left: 10px;
+/*  top: 10px;
+  left: 10px;*/
   padding: 10px;
+  color: #FFFFFF;
 }
 div.right {
   text-align: right;
   padding: 10px;
+  color: #FFFFFF;
 }
 div.myheader a {
-  color: white;
+  color: black;
 }
 div.myheader {
-  color: white;
+  color: black;
 }   
+
+.nav {
+  padding:4px 3px 3px 4px; background: #e1ebfd;
+}
+
+.footer {
+  text-align: right;
+  font-size: small;
+  font-weight: lighter;
+  font-style: italic;
+  color: #666666;
+  padding:4px; background: #e1ebfd;
+  padding-right: 10px;
+  padding-bottom: 15px;
+}
+
+
+.contentstable {
+  border-collapse:collapse; 
+  border:1px solid #999999;
+  margin-left:15px;
+  margin-top:15px;
+  margin-bottom:5px;
+}
+.contenth { 
+  border:thin solid #999999; 
+  vertical-align:top;
+  padding:3px;
+  padding-left:15px;
+  padding-right:15px;
+  overflow:hidden; 
+  background: #EEEEEE;
+  font-weight: bold;
+}
+
+.contentstd { 
+/*  border:thin solid #FFFFFF; */
+  vertical-align:top;
+  padding:4px;
+  padding-left:15px;
+  overflow:hidden; 
+}
+
 
 pre,.intend {
     margin:15px 15px 15px 15px;
 }
-
   </style>
 </xsl:template>
 
+<!-- Header -->
 <xsl:template name="header">
+  <div class="myheader">
+      <div class="left"><a href="matlab:edit XXXX" style="color:white">
+	  Open Matlab File in the Editor</a></div>
+      <div class="right"><a href="mtex_product_page.html" style="color:white">MTEX</a></div>
+    </div>
 </xsl:template>
 
+
+<!-- Footer -->
+<xsl:template name="footer">
+<p style="font-size:1px;">&nbsp;</p>
+        <table class="footer" border="0" width="100%" cellpadding="0" cellspacing="0">
+          <tr ><td valign="baseline" align="right">
+          <xsl:value-of select="$mtexversion"/> helpfile</td><td valign="baseline" align="right"></td></tr>
+      </table>  
+</xsl:template>
+
+<!-- Contents -->
+<xsl:template name="contents">
+  <xsl:param name="body-cells"/>
+ 
+  <div><table class="contentstable"> <!--<ul>-->
+    <tr ><td class="contenth">Contents</td></tr>  
+    <xsl:for-each select="$body-cells">
+      <xsl:if test="./steptitle">        
+        <tr ><td class="contentstd">
+          <a><xsl:attribute name="href">#<xsl:value-of select="position()"/></xsl:attribute><xsl:apply-templates select="steptitle"/></a>
+        </td></tr>
+      </xsl:if>
+    </xsl:for-each>
+  <!--</ul>--></table></div>
+</xsl:template>
 
 <!-- HTML Tags in text sections -->
 <xsl:template match="p">

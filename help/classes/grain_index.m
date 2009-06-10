@@ -1,2 +1,2 @@
 %% The Class grain
-% class representing single grains in EBSD measurements
+% class representing single *Grains* in EBSD measurements

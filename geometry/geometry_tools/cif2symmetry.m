@@ -9,7 +9,7 @@ if isempty(pathstr) && ~exist([name,ext],'file')
 end
 
 % load file
-str = file2cell([pathstr filesep name ext]);
+str = file2cell(fullfile(pathstr,[name ext]));
 
 try
   mineral = extract_token(str,'_chemical_name_mineral');

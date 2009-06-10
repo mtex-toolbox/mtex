@@ -8,15 +8,15 @@ function generate_script(mfile, out_dir,varargin)
 %% Parse m-file
 
 % class name
-class_name = char(regexp(which(mfile),'(?<=@)\w*(?=/\w*\.m)','match'));
 
 [path, file_name, ext, versn] = fileparts(mfile); %#ok<NASGU,NASGU>
+class_name = char(regexp(path,'(?<=@)\w*','match'));
 
 % check whether update is needed
 if isempty(class_name)
-  html_name = [out_dir filesep file_name '.html'];
+  html_name = fullfile(out_dir,[file_name '.html']);
 else
-  html_name = [out_dir filesep class_name '_' file_name '.html'];
+  html_name = fullfile(out_dir,[class_name '_' file_name '.html']);
 end
 if (is_newer(html_name,mfile) && ...
     ~check_option(varargin,'force')) || strcmp(file_name,'Content')
