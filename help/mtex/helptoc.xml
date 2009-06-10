@@ -26,7 +26,7 @@
 
 <tocitem target="PoleFigureAnalysis.html" image="$toolbox/matlab/icons/pagesicon.gif">
   Pole Figure Analysis
-  <tocitem target="interfaces_index.html">
+  <tocitem target="interfacesPoleFigure_index.html">
     Import Pole Figure Data
     <tocitem target="generic_interface.html">Generic Interface</tocitem>	 
     <tocitem target="aachen_exp_interface.html">Aachen_exp Interface</tocitem>

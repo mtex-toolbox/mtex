@@ -4,11 +4,10 @@ function [interface,options] = check_interfaces(fname,varargin)
 if ~exist(fname,'file'), error('File %s not found.',fname);end
 
 %% find all installed interfaces
-interfaces = dir([mtex_path '/qta/interfaces/loadPoleFigure_*.m']);
+interfaces = dir([mtex_path '/qta/interfacesPoleFigure/loadPoleFigure_*.m']);
 interfaces = {interfaces.name};
 % do not use interfaces txt and generic
-ind = cellfun(@isempty,strfind(interfaces,'txt')) & ... 
-  cellfun(@isempty,strfind(interfaces,'generic'));
+ind = cellfun(@isempty,strfind(interfaces,'generic'));
 interfaces = interfaces(ind);
 
 interface = {}; options = varargin;

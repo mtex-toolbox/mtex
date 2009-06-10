@@ -33,7 +33,7 @@
 %
 %% Import, Analyze and Visualize Diffraction Data
 %
-% Up to now MTEX allready supports a wide range of <interfaces_index.html
+% Up to now MTEX allready supports a wide range of <interfacesPoleFigure_index.html
 % pole figure formats>. Furthermore, there is a
 % <interface_generic.html generic interface> that allows to import pole
 % figure data that are stored in ASCII files in the theta - rho -

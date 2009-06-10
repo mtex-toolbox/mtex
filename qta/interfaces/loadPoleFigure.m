@@ -6,7 +6,7 @@ function [pf,interface,options,ipf] = loadPoleFigure(fname,varargin)
 % from external files. It autodetects the format of the file. As parameters
 % the method requires the crystal and specimen @symmetry. Additionally it is
 % sometimes required to pass a list of crystal directions and a list of
-% structure coefficients. See [[interfaces_index.html,interfaces]] for an
+% structure coefficients. See [[interfacesPoleFigure_index.html,interfaces]] for an
 % example how to import superposed pole figures. In the case of generic
 % ascii files each of which consist of a table containing in each row a
 % specimen direction and a diffraction intensity see
@@ -36,7 +36,7 @@ function [pf,interface,options,ipf] = loadPoleFigure(fname,varargin)
 %  pf - vector of @PoleFigure
 %
 %% See also
-% interfaces_index PoleFigure/calcODF examples_index
+% interfacesPoleFigure_index PoleFigure/calcODF examples_index
 
 %% proceed input argument
 if nargin < 1

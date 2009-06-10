@@ -24,6 +24,6 @@ fname = [mtexDataPath '/xrdml/Cu-111 Standard Tex-Pol-C 3degree.xrdml'];
 
 
 %% See Also
-% [[interfaces_index.html,interfaces]] [[loadPoleFigure.html,loadPoleFigure]]
+% [[interfacesPoleFigure_index.html,interfaces]] [[loadPoleFigure.html,loadPoleFigure]]
 % [[S2Grid_plot.html,plot]] [[symmetry_symmetry.html,symmetry]]
 

@@ -44,7 +44,7 @@ function [odf,alpha] = calcODF(pf,varargin)
 %
 %% See also
 % odf_estimation ODF_demo PoleFigureSimulation_demo 
-% loadPoleFigure interfaces_index examples_index 
+% loadPoleFigure interfacesPoleFigure_index examples_index 
 
 tic
 
