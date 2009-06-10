@@ -6,7 +6,7 @@
 % An object of the class Polefigure represents experimental or sythetic 
 % pole figure data, i.e. numeric data indexed by crystal and specimen
 % directions. Pole figure data can be either important from data - files
-% (see: [[interfaces_index.html,interfaces]]) or simulated from 
+% (see: [[interfacesPoleFigure_index.html,interfaces]]) or simulated from 
 % [[ODF_index.html,ODFs]]. There is a large set of tools to analyse and 
 % modify pole figure data (see below).
 %
@@ -20,7 +20,7 @@
 %
 % an to use the command [[loadPoleFigure.html,loadPoleFigure]] to import
 % the data. For detailed information how importing pole figure data see
-% [[interfaces_index.html,inteerfaces]].
+% [[interfacesPoleFigure_index.html,inteerfaces]].
 
 cs = symmetry('-3m',[1.2 1.2 3.5]); % crystal symmetry
 ss   = symmetry('triclinic');       % specimen symmetry

@@ -11,7 +11,7 @@ function pf = loadPoleFigure_popla(fname,varargin)
 %  pf - vector of @PoleFigure
 %
 %% See also
-% interfaces_index popla_interface loadPoleFigure
+% interfacesPoleFigure_index popla_interface loadPoleFigure
 
 
 fid = efopen(fname);

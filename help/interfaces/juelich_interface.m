@@ -20,7 +20,7 @@ pf = loadPoleFigure(fname,cs,ss);
 plot(pf)
 
 %% See also
-% [[interfaces_index.html,interfaces]] [[loadPoleFigure.html,loadPoleFigure]]
+% [[interfacesPoleFigure_index.html,interfaces]] [[loadPoleFigure.html,loadPoleFigure]]
 % [[S2Grid_plot.html,plot]] [[symmetry_symmetry.html,symmetry]]
 
 

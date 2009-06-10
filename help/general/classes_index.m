@@ -35,6 +35,6 @@
 % * <plot_tools_index.html plotting tools>
 % * <tools_index.html general tools>
 % * <statistic_tools_index.html statistic tools>
-% * <interfaces_index.html pole figure import tools>
+% * <interfacesPoleFigure_index.html pole figure import tools>
 % * <interfacesEBSD_index.html EBSD import tools>
 % * <dubna_tools_index.html dubna tools>

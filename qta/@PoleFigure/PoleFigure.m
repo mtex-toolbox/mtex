@@ -2,7 +2,7 @@ function P = PoleFigure(h,r,data,CS,SS,varargin)
 % constructor 
 %
 % *PoleFigure* is the low level constructor. For importing real world data
-% you might want to use the predefined [[interfaces_index.html,interfaces]]
+% you might want to use the predefined [[interfacesPoleFigure_index.html,interfaces]]
 %
 %% Input
 %  h     - crystal directions (@vector3d | @Miller)
@@ -15,7 +15,7 @@ function P = PoleFigure(h,r,data,CS,SS,varargin)
 %  BACKGROUND    - background intensities
 %
 %% See also
-% interfaces_index loadPoleFigure loadPoleFigure_txt
+% interfacesPoleFigure_index loadPoleFigure loadPoleFigure_txt
 
 if nargin == 0  
   P.comment = [];

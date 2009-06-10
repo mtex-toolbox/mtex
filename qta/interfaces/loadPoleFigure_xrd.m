@@ -11,7 +11,7 @@ function pf = loadPoleFigure_xrd(fname,varargin)
 %  pf - vector of @PoleFigure
 %
 %% See also
-% interfaces_index aachen_interface loadPoleFigure
+% interfacesPoleFigure_index aachen_interface loadPoleFigure
 
 fid = efopen(fname);
 

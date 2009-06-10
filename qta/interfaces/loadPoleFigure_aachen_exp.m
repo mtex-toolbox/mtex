@@ -10,7 +10,7 @@ function pf = loadPoleFigure_aachen_exp(fname,varargin)
 %% Output
 %  pf - vector of @PoleFigure
 %% See also
-% interfaces_index aachen_exp_interface loadPoleFigure
+% interfacesPoleFigure_index aachen_exp_interface loadPoleFigure
 
 % open file
 fid = efopen(fname);

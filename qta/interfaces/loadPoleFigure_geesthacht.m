@@ -8,7 +8,7 @@ function pf = loadPoleFigure_geesthacht(fname,varargin)
 %  pf    - vector of @PoleFigure
 %
 %% See also
-% interfaces_index geesthacht_interface loadPoleFigure
+% interfacesPoleFigure_index geesthacht_interface loadPoleFigure
 
 % read data
 fid = efopen(fname);

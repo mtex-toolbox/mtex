@@ -8,7 +8,7 @@ function import_wizard( varargin )
 %  type - EBSD | PoleFigure
 %
 %% See also
-% interfaces_index interfacesEBSD_index
+% interfacesPoleFigure_index interfacesEBSD_index
 
 % mainframe
 h = import_gui_empty('width',500,varargin);
