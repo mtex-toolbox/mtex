@@ -15,10 +15,10 @@ function [ind,d] = find(SO3G,q,epsilon,varargin)
 
 if ~check_option(SO3G,'indexed') || check_option(varargin,'exact')
 
-  d = dist(SO3G(1).CS,SO3G(1).SS,q,quaternion(SO3G));
+  d = dist(SO3G(1).CS,SO3G(1).SS,quaternion(SO3G),q);
   
   if nargin == 2
-    [d,ind] = selectMaxbyRow(d,1:size(d,2));
+    [d,ind] = selectMaxbyColumn(d,1:size(d,2));
   else
     ind = d<epsilon;
   end

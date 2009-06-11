@@ -16,7 +16,7 @@ function G = subGrid(G,q,epsilon,varargin)
 
 if nargin >= 3
   ind = find(G,q,epsilon,varargin{:});
-  %ind = any(ind,2); reshape?
+  ind = any(ind,2);
 elseif islogical(q) 
   ind = q;
 else
