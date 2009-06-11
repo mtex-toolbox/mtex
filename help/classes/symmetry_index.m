@@ -1,6 +1,8 @@
 %% The Class symmetry
 % a class to represent crystal or specimen symmetries
 %
+%% content
+%
 %% Description
 %
 % The class *symmetry* may represent a crystal or a specimen symmetry. It

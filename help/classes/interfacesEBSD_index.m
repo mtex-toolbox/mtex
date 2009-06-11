@@ -11,6 +11,7 @@
 % Furthermore, such a EBSD object is the starting point to estimate an ODF
 % using the command <EBSD_calcODF.html calcODF>.
 %
+%% content
 %
 %% Inporting EBSD data using the import wizard
 %

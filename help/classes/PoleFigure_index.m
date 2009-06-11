@@ -1,6 +1,8 @@
 %% The class PoleFigure
 % class representing experimental or sythetic pole figure  data
 % 
+%% content
+%
 %% Description
 %
 % An object of the class Polefigure represents experimental or sythetic 

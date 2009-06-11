@@ -1,6 +1,8 @@
 %% The Class Miller
 % Miller indece
 %
+%% content
+%
 %% Description
 %
 % The class Miller is used in MTEX to work with Miller indece. Usualy they

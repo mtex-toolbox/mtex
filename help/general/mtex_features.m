@@ -3,6 +3,7 @@
 % MTEX is a MATLAB toolbox that provides powerfull tools for the
 % following common tasks in *texture analysis*.
 %
+%% content
 %
 %% Analyze and Visualize Crystallographic Geometries
 %

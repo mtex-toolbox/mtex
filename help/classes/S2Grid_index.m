@@ -1,6 +1,8 @@
 %% The Class S2Grid
 % represents a grid of nodes on the sphere 
 %
+%% content
+%
 %% Description
 % The class *S2Grid* is used in MTEX to store the set of specimen
 % directions organized in a [[PoleFigure_index.html,pole figure]]. Of 

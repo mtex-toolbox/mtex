@@ -15,6 +15,8 @@
 % Furthermore, such a PoleFigure object is the starting point to
 % recalculate an ODF using the command <PoleFigure_calcODF.html calcODF>.
 %
+%% content
+%
 %% Inport Pole Figure Data Using the Import Wizard
 %
 % The [[import_wizard.html,import wizard]] can be started either

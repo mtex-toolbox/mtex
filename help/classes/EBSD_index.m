@@ -1,6 +1,8 @@
 %% The class EBSD
 % class representing single orientation measurements
-% 
+%
+%% content
+%
 %% Description
 %
 % An object of the class Polefigure represents experimental or sythetic 
