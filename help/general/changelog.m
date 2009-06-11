@@ -2,7 +2,25 @@
 %
 %% content
 %
-%% MTEX 1.2beta
+%% MTEX 2.0 beta 1 - 10/2009
+%
+% *Grain-Analysis for EBSD*
+%
+% * MTEX now is able to partition Spatial-EBSD data into regions of similar
+% orientations, mentioned as Grains. A new class @grain with a lot of 
+% functionalites to work on EBSD data.
+% * ODF-Calculations form single Grains up to specified Grain-selections
+% * Interactive selection of Grains and a large palette of plotting
+% possibilities.
+%
+% *Improved*
+% 
+% * speed improvement of several side-functions as well as core-functions of
+% @quaternions and spherical grids.
+% * reduction of programming-errors in favour of new ones
+%
+%
+%% MTEX 1.2 - 05/2009 
 %
 % *Improved EBSD import*
 %

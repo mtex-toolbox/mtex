@@ -15,7 +15,7 @@ contents = file2cell(fullfile(in_dir,'Contents.m'));
 
 % make section 'Files' to be rearly a section
 contents = {contents{3:end}};
-contents{1} = '%% Complete function list';
+contents{1} = '%% *Complete function list*';
 
 % make links
 contents = regexprep(contents,'(?<=%\s*)(\w*)(?=\s*-\w*)',...
