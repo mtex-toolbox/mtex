@@ -60,6 +60,7 @@
 <tocitem target="ODFAnalysis.html"
 	 image="$toolbox/matlab/icons/pagesicon.gif">
   ODF Analysis
+  <tocitem target="interfacesODF_index.html">Import ODF Data</tocitem>
   <tocitem target="ODFPlot.html">Visualising ODFs</tocitem>
   <tocitem target="ModelODFs.html">Model ODFs</tocitem>
   <tocitem target="ODFCalculations.html">ODF Calculations</tocitem>
