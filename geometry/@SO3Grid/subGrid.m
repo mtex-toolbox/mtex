@@ -16,9 +16,7 @@ function [G ind] = subGrid(G,q,epsilon,varargin)
 
 if nargin >= 3
   ind = find(G,q,epsilon,varargin{:});
-  if issparse(ind),
-    ind = any(ind,2);
-  end
+  ind = any(ind,2);
 elseif islogical(q) 
   ind = q;
 else
@@ -26,7 +24,7 @@ else
   ind(q) = true;
 end
 
-G.Grid    = G.Grid(ind);
+G.Grid = G.Grid(ind);
 
 if check_option(G,'indexed')
   G.gamma = subGrid(G.gamma,ind);
