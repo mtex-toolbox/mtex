@@ -146,6 +146,7 @@ system(['jar -cf ' fullfile('..','mtex','help.jar') ' -C ' fullfile('..','html')
 builddocsearchdb(fullfile(mtex_path ,'help','html'));
 helpsearchpath = fullfile(mtex_path, 'help','html','helpsearch');
 if exist(helpsearchpath,'dir'),
+  rmdir(fullfile(mtex_path, 'help','mtex','helpsearch'),'s');
   movefile(helpsearchpath, fullfile(mtex_path, 'help','mtex'),'f');
 end
 
