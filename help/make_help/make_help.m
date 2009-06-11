@@ -7,6 +7,7 @@ function make_help(varargin)
 
 timing = tic;
 
+plotx2east;
 html_path = fullfile(mtex_path,'help','html');
 
 global mtex_progress;

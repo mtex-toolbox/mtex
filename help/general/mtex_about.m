@@ -11,8 +11,24 @@
 %  D-85764 Neuherberg, GERMANY
 %  GSF - National Research Center for Environment and Health  
 %
-%  personal homepage: [[http://ibb.gsf.de/homepage/ralf.hielscher/,http://ibb.gsf.de/homepage/ralf.hielscher/]]
-%  MTEX homepage: [[http://mtex.googlecode.com,http://mtex.googlecode.com/]]
+%  personal homepage:
+%  [[http://ibb.gsf.de/homepage/ralf.hielscher/,http://ibb.gsf.de/homepage/ralf.hielscher/]]
+%
+% and 
+%
+%  Florian Bachmann
+%
+%  TU Bergakademie Freiberg
+%  Institut für Geomathematik und Geoinformatik
+%  Bernhard-von-Cotta-Str. 2 
+%  D-09599 Freiberg, Germany
+%
+%% Website
+%
+% All MTEX releases, development news, FAQs can be found on the MTEX
+% hompage
+%
+%  [[http://mtex.googlecode.com,http://mtex.googlecode.com/]]
 %
 %% Credits
 %
@@ -20,7 +36,6 @@
 %
 % * <http://www-user.tu-chemnitz.de/~potts/nfft/ NFFT> - D. Potts, S. Kunis, J. Keiner 
 % * NSOFT - Antje Vollrath
-% * Import Wizard - Florian Bachmann
 % * txt2mat -  A.Tönnesmann
 % * Sphere3d - JM DeFreitas
 % * Arrow3d - Changshun Deng
