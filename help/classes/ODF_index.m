@@ -1,6 +1,8 @@
 %% The Class ODF
 % class representing an Orientation Density Function
 % 
+%% content
+%
 %% Description
 %
 % An object of the class @ODF represents an *Orientation Density Function*,

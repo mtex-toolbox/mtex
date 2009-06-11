@@ -26,7 +26,7 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
   </xsl:choose>
 </xsl:variable>
 
-<xsl:variable name="mtexversion">MTEX 1.3</xsl:variable>
+<xsl:variable name="mtexversion">MTEX 2.0beta1</xsl:variable>
 
 <xsl:template match="mscript">
 <html>
@@ -57,11 +57,19 @@ To make changes, update the M-file and republish this document.
   <body>
     
     <xsl:call-template name="header"/>
-
+<!--
+    <xsl:variable name="hasContent" select="count(cell[@style = 'overview'])"/>
+    <xsl:if test="$hasContent">
+      <xsl:call-template name="contents"/>
+    </xsl:if>-->
+    
+<!--     <xsl:call-template name="contents"/>-->
+      
     <div class="content">
 
     <!-- Determine if the there should be an introduction section. -->
     <xsl:variable name="hasIntro" select="count(cell[@style = 'overview'])"/>
+   
 
     <!-- If there is an introduction, display it. -->
     <xsl:if test = "$hasIntro">
@@ -70,29 +78,38 @@ To make changes, update the M-file and republish this document.
     </xsl:if>
     
     <xsl:variable name="body-cells" select="cell[not(@style = 'overview')]"/>
-
-    
-    
+   
     <!-- Loop over each cell -->
     <xsl:for-each select="$body-cells">
         <!-- Title of cell -->
         <xsl:if test="steptitle">
-          <xsl:variable name="headinglevel">
-            <xsl:choose>
-              <xsl:when test="steptitle[@style = 'document']">h1</xsl:when>
-              <xsl:otherwise>h2</xsl:otherwise>
-            </xsl:choose>
-          </xsl:variable>
-          <xsl:element name="{$headinglevel}">
-            <xsl:value-of select="steptitle"/>
-            <xsl:if test="not(steptitle[@style = 'document'])">
-              <a>
-                <xsl:attribute name="name">
-                  <xsl:value-of select="position()"/>
-                </xsl:attribute>
-              </a>
-            </xsl:if>
-          </xsl:element>
+          <!-- Include contents if there is a subsection contents. -->            
+          <xsl:choose>
+            <xsl:when test="steptitle = 'content'">
+              <xsl:call-template name="contents">
+                <xsl:with-param name="body-cells" select="$body-cells"/>
+              </xsl:call-template>
+            </xsl:when>  
+            <xsl:otherwise>
+              <xsl:variable name="headinglevel">
+                <xsl:choose>
+                  <xsl:when test="steptitle[@style = 'document']">h1</xsl:when>
+                  <xsl:otherwise>h2</xsl:otherwise>
+                </xsl:choose>
+              </xsl:variable>
+              <xsl:element name="{$headinglevel}">
+                <xsl:value-of select="steptitle"/>
+                <xsl:if test="not(steptitle[@style = 'document'])">
+                  <a>
+                    <xsl:attribute name="name">
+                      <xsl:value-of select="position()"/>
+                    </xsl:attribute>
+                  </a>
+                </xsl:if>
+              </xsl:element>
+            </xsl:otherwise>
+          </xsl:choose>
+          
         </xsl:if>
 
         <!-- Contents of each cell -->
@@ -183,6 +200,34 @@ pre,.intend {
     margin:15px 15px 15px 15px;
 }
 
+.contentstable {
+  border-collapse:collapse; 
+  border:1px solid #888888;
+  margin-left:15px;
+  margin-top:15px;
+  margin-bottom:5px;
+}
+.contenth { 
+  border:thin solid #666666; 
+  vertical-align:top;
+  padding:3px;
+  padding-left:15px;
+  padding-right:15px;
+  overflow:hidden; 
+  background: #DDDDDD;
+  font-weight: bold;
+}
+
+.contentstd { 
+/*  border:thin solid #FFFFFF; */
+  vertical-align:top;
+  padding:4px;
+  padding-left:15px;
+  padding-right:15px;
+  overflow:hidden; 
+}
+
+
   </style>
 </xsl:template>
 
@@ -202,15 +247,42 @@ pre,.intend {
       </table>  
 </xsl:template>
 
+
+<!-- Contents -->
+<xsl:template name="contents">
+  <xsl:param name="body-cells"/>
+ 
+  <div><table class="contentstable">
+    <tr ><td class="contenth">On this page…</td></tr>  
+    
+      <xsl:for-each select="$body-cells">
+         <xsl:if test="./steptitle">   
+           <xsl:if test="not(steptitle = 'content')"> 
+         
+            <tr ><td class="contentstd">
+              <a><xsl:attribute name="href">#<xsl:value-of select="position()"/></xsl:attribute><xsl:apply-templates select="steptitle"/></a>
+            </td></tr>
+            
+          </xsl:if>
+        </xsl:if>
+      </xsl:for-each>
+      
+   </table></div>
+</xsl:template>
+
+
 <!-- HTML Tags in text sections -->
 <xsl:template match="p">
   <p><xsl:apply-templates/></p>
 </xsl:template>
 <xsl:template match="ul">
-  <div class="intend"><xsl:apply-templates/></div>
+  <div><ul type="square"><xsl:apply-templates/></ul></div>
+</xsl:template>
+<xsl:template match="ol">
+  <div><ol><xsl:apply-templates/></ol></div>
 </xsl:template>
 <xsl:template match="li">
-  <div><xsl:apply-templates/></div>
+  <li><xsl:apply-templates/></li>
 </xsl:template>
 <xsl:template match="pre">
   <xsl:choose>

@@ -1,6 +1,8 @@
 %% The class kernel 
 % standard distributions on SO(3)
 %
+%% content
+%
 %% Description
 %
 % The class *kernel* is needed in MTEX to define the specific form of

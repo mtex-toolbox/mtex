@@ -27,7 +27,7 @@ $Revision: 1.1.6.19 $  $Date: 2008/06/24 17:11:46 $
   </xsl:choose>
 </xsl:variable>
 
-<xsl:variable name="mtexversion">MTEX 1.3</xsl:variable>
+<xsl:variable name="mtexversion">MTEX 2.0beta1</xsl:variable>
 
 <xsl:template match="mscript">
 <html>

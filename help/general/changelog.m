@@ -1,5 +1,7 @@
 %% MTEX Changelog
 %
+%% content
+%
 %% MTEX 1.2beta
 %
 % *Improved EBSD import*

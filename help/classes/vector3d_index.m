@@ -1,6 +1,8 @@
 %% The Class vector3d
 % class representing three dimensional vectors
 %
+%% content
+%
 %% Description
 %
 % The class vector3d allows to work with three dimensional vectors in MTEX,
@@ -31,12 +33,12 @@ v = xvector + yvector;    % predefined vectors
 % Beside the standard linear algebra operations there are also the
 % following functions available in MTEX.
 %
-%  [[vector3d_dot.html,dot(v1,v2);]]   % inner product
-%  [[vector3d_cross.html,cross(v1,v2);]] % cross product
-%  [[vector3d_norm.html,norm(v);]]      % norm of the vector
-%  [[vector3d_sum.html,sum(v);]]       % sum over all vectors in v
-%  [[vector3d_mean.html,mean(v);]]      % mean over all vectors in v  
-%  [[vector3d_vec2sph.html,vec2sph(v);]]   % conversion to spherical coordinates
+%  [[vector3d_dot.html,dot]](v1,v2);   % inner product
+%  [[vector3d_cross.html,cross]](v1,v2); % cross product
+%  [[vector3d_norm.html,norm]](v);      % norm of the vector
+%  [[vector3d_sum.html,sum]](v);       % sum over all vectors in v
+%  [[vector3d_mean.html,mean]](v);      % mean over all vectors in v  
+%  [[vector3d_vec2sph.html,vec2sph]](v);   % conversion to spherical coordinates
 %
 %% Plotting three dimensionl vectors
 % 
