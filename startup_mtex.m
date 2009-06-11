@@ -90,7 +90,7 @@ if any(strfind(path,'mtex'))
   disp('I found an older version of MTEX!');
   disp('I remove it from the current search path!');
   
-  inst_dir = cellpath(strcmp(cellpath,'mtex'));  
+  inst_dir = cellpath(~cellfun('isempty',strfind(cellpath,'mtex')));  
   if ~isempty(inst_dir), rmpath(inst_dir{:}); end
 end
 

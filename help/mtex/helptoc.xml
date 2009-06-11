@@ -117,16 +117,16 @@
 </tocitem>
 
 <tocitem target="changelog.html"
-	 image="$toolbox/matlab/icons/pagesicon.gif">
+	 image="$toolbox/matlab/icons/notesicon.gif">
   Changelog
 </tocitem>
 <tocitem target="TODO.html"
-	 image="$toolbox/matlab/icons/pagesicon.gif">
+	 image="$toolbox/matlab/icons/notesicon.gif">
   TODO List
 </tocitem>
 
 <tocitem target="mtex_about.html"
-	 image="$toolbox/matlab/icons/pagesicon.gif">
+	 image="$toolbox/matlab/icons/notesicon.gif">
   About
 </tocitem>
 
