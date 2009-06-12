@@ -1,12 +1,22 @@
 %% Pole Figure Analysis
+%
+%% Abstract
 % This sections gives you an overview over the functionality MTEX offers to
 % analyze pole figure data.
+%
+%
+%% Contents
+% 
+%% Open in Editor
 %
 %% Import of Pole Figures
 %
 % The most comfortable way to import pole figure data into MTEX is to use
 % the import wizard, which can be started by the command
 
+%%
+% 
+ 
 import_wizard
 
 %%

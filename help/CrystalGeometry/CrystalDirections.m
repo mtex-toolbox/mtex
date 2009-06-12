@@ -1,5 +1,9 @@
 %% Crystal Directions
 %
+%% Open in Editor
+%
+%% Contents
+%
 %% Description
 %
 % Crystal directions are represented in MTEX by the variables of the 

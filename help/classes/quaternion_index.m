@@ -1,7 +1,9 @@
 %% The Class quaternion
+%
+%% Abstract
 % class representing orientations
 %
-%% content
+%% Contents
 %
 %% Description
 %

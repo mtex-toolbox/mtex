@@ -1,11 +1,14 @@
 %% MTEX - ODF Calculations
 %
+%% Abstract
 % ODF calculations are at the heart of MTEX. The philosophy of MTEX is to
 % treat all the ODFs the same way, indepentently whether they where
 % constructed model ODFs, ODF estimated from pole figure data, or ODF
 % estimated from EBSD data. In particular, you can compare, combine and modify
 % all ODFs in the same manner.
 %
+%
+%% Contents
 %
 %% Calculate with Model ODFs
 %

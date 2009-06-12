@@ -1,6 +1,6 @@
 %% MTEX Changelog
 %
-%% content
+%% Contents
 %
 %% MTEX 2.0 beta 1 - 10/2009
 %

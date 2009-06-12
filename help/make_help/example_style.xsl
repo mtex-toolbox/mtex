@@ -33,32 +33,20 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
 
   <!-- head -->
   <head>
-<xsl:comment>
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      </xsl:comment>
-
     <title><xsl:value-of select="$title"/></title>
-
-    <meta name="generator">
-      <xsl:attribute name="content">MATLAB <xsl:value-of select="version"/></xsl:attribute>
-    </meta>
-    <meta name="date">
-      <xsl:attribute name="content"><xsl:value-of select="date"/></xsl:attribute>
-    </meta>
-    <meta name="m-file">
-      <xsl:attribute name="content"><xsl:value-of select="m-file"/></xsl:attribute>
-    </meta>
-
-    <xsl:call-template name="stylesheet"/>
-
+    <xsl:element name="link">
+      <xsl:attribute name="rel">stylesheet</xsl:attribute>
+      <xsl:attribute name="href"><xsl:value-of select="../make_help" />style.css</xsl:attribute>
+    </xsl:element>
   </head>
 
   <body>
     
     <xsl:call-template name="header"/>  
 
-    <div class="content">
+    <div class="content">               
+
+    
 
     <!-- Determine if the there should be an introduction section. -->
     <xsl:variable name="hasIntro" select="count(cell[@style = 'overview'])"/>
@@ -70,9 +58,10 @@ To make changes, update the M-file and republish this document.
     </xsl:if>
     
     <xsl:variable name="body-cells" select="cell[not(@style = 'overview')]"/>
-
-    
-    
+                         
+    <xsl:call-template name="contents">
+      <xsl:with-param name="body-cells" select="$body-cells"/>
+    </xsl:call-template>
     <!-- Loop over each cell -->
     <xsl:for-each select="$body-cells">
         <!-- Title of cell -->
@@ -106,156 +95,16 @@ To make changes, update the M-file and republish this document.
 
     </div>
     
-    <xsl:apply-templates select="originalCode"/>
-
-  </body>
+ </body>
 </html>
-</xsl:template>
-
-<xsl:template name="stylesheet">
-  <style>
-
-body {
-  background-color: white;
-  margin:10px;
-  margin-top:70px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: x-large;
-}
-
-h2 {
-  color: #990000;
-  font-size: medium;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
-  max-width: 600px;
-  /* Hack for IE6 */
-  width: auto !important; width: 600px;
-}
-
-pre.codeinput {
-  background: #EFEFEF;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-
-p.footer {
-  text-align: right;
-  font-size: small;
-  font-weight: lighter;
-  font-style: italic;
-  color: gray;
-}
-
-div.myheader {
-  position:absolute;
-  top:0px;
-  left:0px;
-  background: #005E8D;
-  border-bottom: 10px solid #EBF5F9;
-  margin-bottom: 10px;
-  font-weight: bold;
-  width: 100%;
-}
-
-div.left {
-  position: absolute;
-/*  top: 10px;
-  left: 10px;*/
-  padding: 10px;
-  color: #FFFFFF;
-}
-div.right {
-  text-align: right;
-  padding: 10px;
-  color: #FFFFFF;
-}
-div.myheader a {
-  color: black;
-}
-div.myheader {
-  color: black;
-}   
-
-.nav {
-  padding:4px 3px 3px 4px; background: #e1ebfd;
-}
-
-.footer {
-  text-align: right;
-  font-size: small;
-  font-weight: lighter;
-  font-style: italic;
-  color: #666666;
-  padding:4px; background: #e1ebfd;
-  padding-right: 10px;
-  padding-bottom: 15px;
-}
-
-
-.contentstable {
-  border-collapse:collapse; 
-  border:1px solid #999999;
-  margin-left:15px;
-  margin-top:15px;
-  margin-bottom:5px;
-}
-.contenth { 
-  border:thin solid #999999; 
-  vertical-align:top;
-  padding:3px;
-  padding-left:15px;
-  padding-right:15px;
-  overflow:hidden; 
-  background: #EEEEEE;
-  font-weight: bold;
-}
-
-.contentstd { 
-/*  border:thin solid #FFFFFF; */
-  vertical-align:top;
-  padding:4px;
-  padding-left:15px;
-  overflow:hidden; 
-}
-
-
-pre,.intend {
-    margin:15px 15px 15px 15px;
-}
-  </style>
 </xsl:template>
 
 <!-- Header -->
 <xsl:template name="header">
   <div class="myheader">
-      <div class="left"><a href="matlab:edit XXXX" style="color:white">
+      <div class="headerleft"><a href="matlab:edit XXXX" style="color:white">
 	  Open Matlab File in the Editor</a></div>
-      <div class="right"><a href="mtex_product_page.html" style="color:white">MTEX</a></div>
+      <div class="headerright"><a href="mtex_product_page.html" style="color:white">MTEX</a></div>
     </div>
 </xsl:template>
 
@@ -273,17 +122,25 @@ pre,.intend {
 <xsl:template name="contents">
   <xsl:param name="body-cells"/>
  
-  <div><table class="contentstable"> <!--<ul>-->
-    <tr ><td class="contenth">Contents</td></tr>  
-    <xsl:for-each select="$body-cells">
-      <xsl:if test="./steptitle">        
-        <tr ><td class="contentstd">
-          <a><xsl:attribute name="href">#<xsl:value-of select="position()"/></xsl:attribute><xsl:apply-templates select="steptitle"/></a>
-        </td></tr>
-      </xsl:if>
-    </xsl:for-each>
-  <!--</ul>--></table></div>
+  <div><table class="content">
+    <tr ><td class="header">On this page…</td></tr>  
+    
+      <xsl:for-each select="$body-cells">
+         <xsl:if test="./steptitle">   
+           <xsl:if test="not(steptitle = 'Contents' or steptitle = 'Abstract' or steptitle = 'Open in Editor')"> 
+             
+            <tr ><td>
+              <a><xsl:attribute name="href">#<xsl:value-of select="position()"/></xsl:attribute><xsl:apply-templates select="steptitle"/></a>
+            </td></tr>
+            
+          </xsl:if>
+        </xsl:if>
+      </xsl:for-each>
+      
+   </table></div>
 </xsl:template>
+
+
 
 <!-- HTML Tags in text sections -->
 <xsl:template match="p">

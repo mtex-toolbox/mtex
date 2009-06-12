@@ -2,12 +2,13 @@
 % This sections gives you an overview over the functionality MTEX offers to
 % analyze EBSD data.
 %
+%% Contents
 %
 %% Import of EBSD Data
 %
 % The most comfortable way to import EBSD data into MTEX is to use
 % the import wizard, which can be started by the command
-
+%
 import_wizard
 
 %%

@@ -1,8 +1,13 @@
 %% EBSD Simulations
 %
+%% Open in Editor
+%
+%% Abstract
 % MTEX allows to to simulate an arbitary number of EBSD data from any ODF.
 % This is quit helpfull if you want to analyse the EBSD to ODF estimation
 % routine.
+%
+%% Contents
 %
 
 %% Define an Model ODF

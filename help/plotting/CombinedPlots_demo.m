@@ -1,11 +1,16 @@
 %% Combinded Plots
 %
+%% Open in Editor
+%
+%% Abstract
 % Sometimes it is usefull to combine several plots, e.g. plotting on the
 % top of an inverse pole figure some important crystall directions. This
 % can be performed by the command [[matlab:doc hold,hold all]],
 % which preserfes MATLAB from replacing the old plot by the new one.
 %
-
+%
+%% Contents
+%
 
 %% Combine Different EBSD Data
 % First we want to show up two different EBSD data sets in one plot

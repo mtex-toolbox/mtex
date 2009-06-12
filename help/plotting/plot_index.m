@@ -1,5 +1,8 @@
 %% Plotting
 %
+%% Open in Editor
+%
+%% Abstract
 % In MTEX you can plot almost any type data. Simply apply the *plot*
 % command to any variable and MTEX tries to plot the content of the
 % variable in the most intuive way. In this way you can plot three
@@ -13,6 +16,8 @@
 % EBSD data. This way MTEX allows you to create publication ready plots
 % which can be exported to almost any format using the commands
 % <savefigure.html savefigure>.
+%
+%% Contents
 %
 %
 %% Plotting Three Dimensional Vectors

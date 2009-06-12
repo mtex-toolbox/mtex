@@ -1,9 +1,14 @@
 %% Plot Types
 %
+%% Open in Editor
+%
+%% Abstract
 % There are several ways in MTEX to plot spherical data. You can plot them
 % as colored dots, as contour lines, as filled contour lines or as smoothly
 % interpolated data. Another posibility is to plot one dimensional
 % sections.
+%
+%% Contents
 %
 %% A Sample ODFs
 %

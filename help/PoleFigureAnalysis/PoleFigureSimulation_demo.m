@@ -1,8 +1,13 @@
 %% Pole Figure Simulation
 %
+%% Open in Editor
+%
+%% Abstract
 % MTEX allows to to simulate an arbitary number of pole figure data from
 % any ODF. This is quit helpfull if you want to analyse the pole figure to
 % ODF estimation routine.
+%
+%% Contents
 %
 
 %% Define an Model ODF

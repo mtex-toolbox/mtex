@@ -1,5 +1,9 @@
 %% Crystal Orientations
 %
+%% Open in Editor
+%
+%% Contents
+%
 %% Description
 %
 % In texture analysis crystal orientations are used to describe the

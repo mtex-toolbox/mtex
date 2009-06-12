@@ -1,5 +1,8 @@
 %% Spherical Projections
 %
+%% Open in Editor
+%
+%% Abstract
 % MTEX supports four type of spherical projection which are avaiable for
 % all spherical plot, e.g. <ODF_plotpdf.html polefigure plots>,
 % <ODF_plotipdf.html inverse polefigure plots> or <ODF_plotodf.html
@@ -7,7 +10,10 @@
 % equal distance projetion, the stereographic projection (equal angle
 % projection), the three dimensional projection and the flat projection. 
 %
-% Beside these standard projections there are options to custumize
+%% Contents
+%
+%%
+%  Beside these standard projections there are options to custumize
 % the projection:
 %
 %  antipodal   - include [[AxialDirectional.html,antipodal symmetry]]

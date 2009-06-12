@@ -1,7 +1,12 @@
 %% ODF Estimation
 %
+%% Open in Editor
+%
+%% Abstract
 % This page describes how to use MTEX to estimate an ODF from pole figure
 % data.
+%
+%% Contents
 %
 %% Syntax
 %

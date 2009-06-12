@@ -1,7 +1,12 @@
 %% Plotting EBSD Data
+%
+%% Open in Editor
+%
+%% Abstract
 % This sections gives you an overview over the functionality MTEX offers to
 % visualize EBSD data.
 %
+%% Contents
 %
 %% Import of EBSD Data
 %

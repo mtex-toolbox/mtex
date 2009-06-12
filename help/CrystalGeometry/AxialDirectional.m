@@ -1,8 +1,14 @@
 %% Axial and Directional
+%
+%% Open in Editor
+%
+%% Abstract
 % In MTEX it is possible to consider three dimensional vectors either as
 % directions or as axes. By default a the pair of vectors 
 %
-%% 
+%% Contents
+%
+%%
 
 v1 = vector3d(1,1,2);
 v2 = vector3d(1,1,-2);

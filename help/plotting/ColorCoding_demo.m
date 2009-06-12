@@ -1,11 +1,16 @@
 %% Color Coding
 %
+%% Open in Editor
+%
+%% Abstract
 % A central issue when interpreting plots is to have a consistent color
 % coding among all plots. In MTEX this can be achieved in two ways. If the 
 % the minimum and maximum value is known then one can 
 % specify the colorrange directly using the options *colorrange* or
 % *contourf*, or the command <setcolorrange.html setcolorrange> is used
 % which allows to set the color range afterwards. 
+%
+%% Contents
 %
 %
 %% A sample ODFs and Simulated Pole Figure Data
