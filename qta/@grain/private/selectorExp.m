@@ -15,6 +15,8 @@ if isempty(selector)
     'Toolbar','none',...
     'NumberTitle','off' ); %,...
     %'WindowStyle','modal');
+    
+    set(gca,'Visible','off')
   pos = get(fig,'Position');
   set(fig,'Position',[pos(1:2) w h]);
   
