@@ -52,24 +52,44 @@ th=findobj(allchild(h),'type','uitoolbar');
 
   if ~oldtools
     hts = uitogglesplittool(th,'Tag','MTEX.grainselector','CData',selectorIcon('select'),'TooltipString','Select Grains','OnCallback',{@grainselector,'startrecord'},'OffCallback',{@grainselector,'stoprecord'});
-    htsm(1) = uimenu(hts,'Label','Single selection','Callback',{@updateSelmode,'single'});
-    htsm(2) = uimenu(hts,'Label','Add to current selection','Callback',{@updateSelmode,'add'});
-    htsm(3) = uimenu(hts,'Tag','onsel','Label','Remove from current selection','Callback',{@updateSelmode,'rem'});
+    htsm(1) = uimenu(hts,'Tag','MTEX.selmode','Label','Single selection','Callback',{@updateSelmode,'single'});
+    htsm(2) = uimenu(hts,'Tag','MTEX.selmode','Label','Add to current selection','Callback',{@updateSelmode,'add'});
+    htsm(3) = uimenu(hts,'Tag','MTEX.selmode','Tag','onsel','Label','Remove from current selection','Callback',{@updateSelmode,'rem'});
+     
+    htp = uitogglesplittool(th,'Tag','MTEX.polygonselector','CData',selectorIcon('polygonal'),'TooltipString','Unselect all Grains','OnCallback',{@grainselector,'startpolygonrecord'},'OffCallback',{@grainselector,'stoppolygonrecord'});
+    htsm(1) = uimenu(htp,'Tag','MTEX.pselmode','Label','Centroid within','Callback',{@updateSelP,'centroids'});
+    htsm(2) = uimenu(htp,'Tag','MTEX.pselmode','Label','Complete within','Callback',{@updateSelP,'complete'});
+    htsm(3) = uimenu(htp,'Tag','MTEX.pselmode','Label','Intersects','Callback',{@updateSelP,'intersect'});
+       
+    htsm(4) = uimenu(htp,'Tag','MTEX.selmode','separator','on','Label','Single selection','Callback',{@updateSelmode,'single'});
+    htsm(5) = uimenu(htp,'Tag','MTEX.selmode','Label','Add to current selection','Callback',{@updateSelmode,'add'});
+    htsm(6) = uimenu(htp,'Tag','MTEX.selmode','Tag','onsel','Label','Remove from current selection','Callback',{@updateSelmode,'rem'});
+    htsm(7) = uimenu(htp,'separator','on','Tag','MTEX.exportselpoly','Label','Export last Polygon to Workspace','Enable','off','Callback',@exportLastState);
   else
     hts = uitoggletool(th,'Tag','MTEX.grainselector','CData',selectorIcon('select'),'TooltipString','Select Grains','OnCallback',{@grainselector,'startrecord'},'OffCallback',{@grainselector,'stoprecord'});
-   
+    htp = uitoggletool(th,'Tag','MTEX.polygonselector','CData',selectorIcon('polygonal'),'TooltipString','Unselect all Grains','OnCallback',{@grainselector,'startpolygonrecord'},'OffCallback',{@grainselector,'stoppolygonrecord'});
+ 
     menu = findall(allchild(h),'Label','Grains');
     if isempty(findall(menu,'Label','Single selection'))
-      htsm(1) = uimenu(menu,'Label','Single selection','Callback',{@updateSelmode,'single'},'Separator','on');
-      htsm(2) = uimenu(menu,'Label','Add to current selection','Callback',{@updateSelmode,'add'});
-      htsm(3) = uimenu(menu,'Tag','onsel','Label','Remove from current selection','Callback',{@updateSelmode,'rem'});
+      htsm(1) = uimenu(menu,'Tag','MTEX.selmode','Label','Single selection','Callback',{@updateSelmode,'single'},'Separator','on');
+      htsm(2) = uimenu(menu,'Tag','MTEX.selmode','Label','Add to current selection','Callback',{@updateSelmode,'add'});
+      htsm(3) = uimenu(menu,'Tag','MTEX.selmode','Tag','onsel','Label','Remove from current selection','Callback',{@updateSelmode,'rem'});
+            
+      htsm(4) = uimenu(menu,'Tag','MTEX.pselmode','Label','Polygon Centroid within','separator','on','Callback',{@updateSelP,'centroids'});
+      htsm(5) = uimenu(menu,'Tag','MTEX.pselmode','Label','Polygon Complete within','Callback',{@updateSelP,'complete'});
+      htsm(6) = uimenu(menu,'Tag','MTEX.pselmode','Label','Polygon Intersects','Callback',{@updateSelP,'intersect'});
+      htsm(7) = uimenu(menu,'separator','on','Tag','MTEX.exportselpoly','Label','Export last Polygon to Workspace','Enable','off','Callback',@exportLastState);
     end
   end
   
   htu = uipushtool(th,'Tag','MTEX.grainunselector','CData',selectorIcon('unselect'),'TooltipString','Unselect all Grains','ClickedCallback',@unSelectAll);
-   
+  
+  
+ 
+  
+  
   chlds = allchild(th);
-  added = [htk hti hts htu]'; 
+  added = [htk hti hts htu htp]'; 
   justadded = ismember(chlds, added ); 
   chlds = [ chlds(~justadded) ; chlds(justadded)];% permutate positions
   set(th,'Children',chlds);
@@ -80,11 +100,14 @@ set([hti hts],'State','off');
 
   if ~oldtools
       mod = allchild(hts);
+      mod2 = allchild(htp);
   else
       mod = findall(allchild(h),'Label','Single selection');
+      mod2 = findall(allchild(h),'Label','Polygon Centroid within');
   end
   
 updateSelmode(mod(end),[],'single');
+updateSelP(mod2(end),[],'centroids');
 
 k = cell(size(grains));
 setappdata(h,'selected',k);
@@ -152,11 +175,7 @@ f = findall(gcf,'Tag','MTEX.layervis');
 [i i i ly] = getcurrentlayer;
 hs = getappdata(gcf,'layer');
 state = get(hs{ly},'Visible');
-set(f,'State',state{1})
-
-
-
-  
+set(f,'State',state{1});  
   
 %--------------------------------------------------------------------------
 function changenSelectionColor(empt,eventdata)
@@ -173,10 +192,17 @@ end
 %--------------------------------------------------------------------------
 function updateSelmode(hObject,eventdata,mode)
 
-set(allchild(get(hObject,'Parent')),'Checked','off');
+set(findall(gcf,'Tag','MTEX.selmode'),'Checked','off');
+set(findall(gcf,'Label',get(hObject,'Label')),'Checked','on');
+setappdata(gcf,'selmode', mode);
+
+
+function updateSelP(hObject,eventdata,mode)
+
+set(findall(gcf,'Tag','MTEX.pselmode'),'Checked','off');
 set(hObject,'Checked','on');
  
-setappdata(gcf,'selmode', mode);
+setappdata(gcf,'pselmode', mode);
 
 
 function selectByExpression(hObject,eventdata)
@@ -295,24 +321,10 @@ for k=length(ind):-1:1
   if inpolygon(xp,yp,X,Y) 
     switch modus
       case 'record'
-        mode = getappdata(gcf,'selmode');
-        if strcmpi(get(src,'SelectionType'),'alt'), mode = 'rem'; end
-        
-        switch mode
-          case 'single'
-            tks{ly} = current;
-            setappdata(gcf,'selected',tks);
-          case 'add'
-            if ~any(ks == current)
-              tks{ly} = [ks current];
-              setappdata(gcf,'selected',tks);
-            end
-          case 'rem'    
-            ls = ks ~= current;
-            if any(~ls)
-              tks{ly} = ks(ls);
-              setappdata(gcf,'selected',tks);            
-            end
+        if strcmpi(get(src,'SelectionType'),'alt'),
+          treatSelmode(current,'rem'); 
+        else
+          treatSelmode(current);
         end
       case 'ident'
         c = getappdata(gcf,'selectioncolor');     
@@ -341,14 +353,47 @@ for k=length(ind):-1:1
   end
 end
 
+
+function treatSelmode(current,alt)
+
+[grains p ks ly tks] = getcurrentlayer;
+mode = getappdata(gcf,'selmode');
+
+if nargin > 1 
+  mode = alt;
+end
+switch mode
+  case 'single'
+    tks{ly} = current;
+    setappdata(gcf,'selected',tks);
+  case 'add'
+    ind = ~ismember(current,ks);
+    if any(ind)
+      tks{ly} = [ks(:); current(ind)];
+      setappdata(gcf,'selected',tks);
+    end
+  case 'rem'    
+    ind = ~ismember(ks,current);
+    if any(ind)
+      tks{ly} = ks(ind);
+      setappdata(gcf,'selected',tks);            
+    end
+end
+
+
+
 %--------------------------------------------------------------------------
 function unSelectAll(empt,eventdata)
 
 tks = getappdata(gcf,'selected');
 setappdata(gcf,'selected',cell(size(tks)));
+
+cleanupPolygonSelection;
+
 updateSelectionPlot;
 updateMenus;
 
+%--------------------------------------------------------------------------
 function unSelectLayer(empt,eventdata)
 
 [grains p ks ly tks] = getcurrentlayer; 
@@ -394,6 +439,7 @@ c = getappdata(hFig,'selectioncolor');
 
 tks = getappdata(hFig,'selected');
 p = getappdata(hFig,'polygons');
+
 h = [];
 for k=1:length(tks)
   ps = p{k}(tks{k}); %restrict to needed
@@ -406,9 +452,8 @@ for k=1:length(tks)
     xy = cell2mat(arrayfun(@(x) [x.xy ; NaN NaN],ps,'UniformOutput',false));
     [X Y] = fixMTEXscreencoordinates( xy(:,1), xy(:,2) );
 
-    hold on
     
-    h(end+1) = plot(X(:),Y(:),'color',c{k},'linewidth',2);
+    h(end+1) = line(X(:),Y(:),'color',c{k},'linewidth',2);
 
     holes = ~cellfun('isempty',{ps.hxy});
     if any(holes)
@@ -417,11 +462,10 @@ for k=1:length(tks)
             ps(holes),'uniformoutput',false));
 
       [X,Y] = fixMTEXscreencoordinates(xy(:,1),xy(:,2));
-      h(end+1) = plot(X(:),Y(:),'color',c{k},'linewidth',1);
+      h(end+1) = line(X(:),Y(:),'color',c{k},'linewidth',1);
     end
   end
 end
-hold off
 
 
 setappdata(hFig,'selection',h);
@@ -435,10 +479,12 @@ activateuimode(gcf,[]);
 hP = get(hObject,'Parent');
 tts(1) = findall(allchild(hP),'Tag','MTEX.grainidentify');
 tts(2) = findall(allchild(hP),'Tag','MTEX.grainselector');
+tts(3) = findall(allchild(hP),'Tag','MTEX.polygonselector');
 
 switch state
+  
   case 'startidentify'    
-    set(tts(2),'State','off');
+    set(tts(2:3),'State','off');
     set(gcf,'WindowButtonDownFcn',{@spatialSelection,'ident'});
     set(gcf,'Pointer','custom','PointerShapeCData',selectorIcon('ident'));
   case 'stopidentify'
@@ -446,12 +492,23 @@ switch state
     set(gcf,'Pointer','arrow');
     hold off
   case 'startrecord'        
-    set(tts(1),'State','off');
+    set(tts([1 3]),'State','off');
     set(gcf,'WindowButtonDownFcn',{@spatialSelection,'record'});
     set(gcf,'Pointer','cross');
   case 'stoprecord'
     set(gcf,'WindowButtonDownFcn',[])
     set(gcf,'Pointer','arrow');
+  case 'startpolygonrecord'        
+    set(tts(1:2),'State','off');
+    set(gcf,'WindowButtonDownFcn',{@polygonSelection,'complete'});
+    set(gcf,'WindowButtonMotionFcn',{@polygonSelection,'lastline'});
+    set(gcf,'Pointer','crosshair');    
+    setappdata(gcf,'selector_ply',[]);
+  case 'stoppolygonrecord'
+    set(gcf,'WindowButtonDownFcn',[])
+    set(gcf,'WindowButtonMotionFcn',[]);
+    set(gcf,'Pointer','arrow');
+    setappdata(gcf,'selector_ply',[]);
   case 'hide_layer'
     [i i i ly] = getcurrentlayer;
     hs = getappdata(gcf,'layer');
@@ -625,7 +682,7 @@ end
 
 
 
-function extracttolayer(e,h)
+function extracttolayer(src,h)
 
 [grains p ks ly] = getcurrentlayer;
 c = getappdata(gcf,'selectioncolor');
@@ -633,4 +690,104 @@ c = getappdata(gcf,'selectioncolor');
 hold on, plotgrains( grains(ks), 'color', c{ly});
 
 
+function polygonSelection(src,h,lastline)
+
+cp = get(gca,'CurrentPoint');
+xp = cp(1,1);
+yp = cp(1,2);
+
+pys = getappdata(gcf,'selector_ply');
+
+if strcmp(lastline,'lastline')
+  updateLastLine(pys, xp, yp);
+  return
+end
+
+if strcmpi(get(src,'SelectionType'),'alt')
+  if length(pys)>2    
+    if (pys(1,:) ~= pys(end,:))
+      pys(end+1,:) =  pys(1,:);
+    end
+       
+    updateLastState(pys);
+    updatePolyLine(pys);
+        
+    pys = [];
+   
+    updateLastLine(pys, xp, yp)
+  end
+else  
+  pys(end+1,:) = [xp,yp];
+  
+  updatePolyLine(pys);
+end
+setappdata(gcf,'selector_ply',pys);
+
+
+function updatePolyLine(pys)
+
+ply_h = getappdata(gcf,'selector_ply_handle');
+if ~isempty(pys)
+  if ~isempty(ply_h)
+    set(ply_h,'XData',pys(:,1), 'YData',pys(:,2))
+  else
+    ply_h = line('XData',pys(:,1), 'YData',pys(:,2),'color','r','Marker','o','MarkerSize',3);
+  end
+end
+setappdata(gcf,'selector_ply_handle',ply_h);
+
+
+function updateLastLine(pys, xp, yp)
+
+ll = getappdata(gcf,'lastline');
+  
+if ~isempty(ll) && ~isempty(pys)
+  set(ll,'XData',[pys(end,1) xp],'YData',[pys(end,2) yp ],'Color','r');
+elseif ~isempty(pys)
+ ll = line('XData',[pys(end,1) xp],'YData',[pys(end,2) yp ],'Color','r');
+ setappdata(gcf,'lastline',ll);
+else
+ delete(ll);
+ setappdata(gcf,'lastline',[]);
+end  
+
+function updateLastState(pys)
+
+setappdata(gcf,'selector_ply_last',pys);
+
+if ~isempty(pys)
+  [xy(:,1),xy(:,2)] = fixMTEXscreencoordinates(pys(:,1),pys(:,2));
+
+  grains = getcurrentlayer;
+  [grains ind] = inpolygon(grains,xy,getappdata(gcf,'pselmode'));
+
+  treatSelmode(find(ind));
+  
+  set(findall(gcf,'Tag','MTEX.exportselpoly'),'Enable','on')
+else
+  set(findall(gcf,'Tag','MTEX.exportselpoly'),'Enable','off')
+end
+ 
+updateSelectionPlot;
+updateMenus;
+
+function cleanupPolygonSelection
+
+ply_h = getappdata(gcf,'selector_ply_handle');
+updateLastState([])
+if ~isempty(ply_h),
+  delete(ply_h); 
+  setappdata(gcf,'selector_ply_handle',[]); 
+end
+
+
+function exportLastState(e, h)
+
+pys = getappdata(gcf,'selector_ply_last');
+
+hh = figure('visible','off'); % bad, but apparently nescessary if polygon mode active
+name = inputdlg({'Enter Variable name:'},'last Polygon to Workspace',1,{'polygon_selection'});
+if ~isempty(name), assignin('base', name{1}, pys); end
+
+close(hh)
 
