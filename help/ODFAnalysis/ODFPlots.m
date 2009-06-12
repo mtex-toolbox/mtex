@@ -1,12 +1,18 @@
 %% ODF Plots
 %
+%% Open in Editor
+%
+
+%% Abstract
 % In this section the basic plotting commands for ODFs are described. MTEX 
 % offers a lot of possibilities the customize the resulting plots, e.g. by
 % changing the projection or the colorcoding, by outlining certain 
 % orientations or directions, or simply by adding colorbars or legends to
 % plots. All these posibilities are described in the section
 % <plot_index.html Plotting>. 
-
+%
+%% Contents
+%
 %% A Model ODF
 % Lets start with a simple ODF which is the superposition of a unimodal ODF
 % and a fibre symmetric model ODF 

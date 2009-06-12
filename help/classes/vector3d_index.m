@@ -1,7 +1,9 @@
 %% The Class vector3d
+%
+%% Abstract
 % class representing three dimensional vectors
 %
-%% content
+%% Contents
 %
 %% Description
 %

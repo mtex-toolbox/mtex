@@ -29,216 +29,125 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
 <xsl:variable name="mtexversion">MTEX 2.0beta1</xsl:variable>
 
 <xsl:template match="mscript">
-<html>
-
-  <!-- head -->
-  <head>
-<xsl:comment>
-This HTML is auto-generated from an M-file.
-To make changes, update the M-file and republish this document.
-      </xsl:comment>
-
-    <title><xsl:value-of select="$title"/></title>
-
-    <meta name="generator">
-      <xsl:attribute name="content">MATLAB <xsl:value-of select="version"/></xsl:attribute>
-    </meta>
-    <meta name="date">
-      <xsl:attribute name="content"><xsl:value-of select="date"/></xsl:attribute>
-    </meta>
-    <meta name="m-file">
-      <xsl:attribute name="content"><xsl:value-of select="m-file"/></xsl:attribute>
-    </meta>
-
-    <xsl:call-template name="stylesheet"/>
-
-  </head>
-
-  <body>
+  <html>
     
-    <xsl:call-template name="header"/>
-<!--
-    <xsl:variable name="hasContent" select="count(cell[@style = 'overview'])"/>
-    <xsl:if test="$hasContent">
-      <xsl:call-template name="contents"/>
-    </xsl:if>-->
+    <!-- head -->
+    <head>
+      <title><xsl:value-of select="$title"/></title>
+      <xsl:element name="link">
+        <xsl:attribute name="rel">stylesheet</xsl:attribute>
+        <xsl:attribute name="href"><xsl:value-of select="../make_help" />style.css</xsl:attribute>
+      </xsl:element>
+    </head>
     
-<!--     <xsl:call-template name="contents"/>-->
+    <body> 
       
-    <div class="content">
-
-    <!-- Determine if the there should be an introduction section. -->
-    <xsl:variable name="hasIntro" select="count(cell[@style = 'overview'])"/>
-   
-
-    <!-- If there is an introduction, display it. -->
-    <xsl:if test = "$hasIntro">
-      <h1><xsl:value-of select="cell[1]/steptitle"/></h1>
-      <introduction><xsl:apply-templates select="cell[1]/text"/></introduction>
-    </xsl:if>
-    
-    <xsl:variable name="body-cells" select="cell[not(@style = 'overview')]"/>
-   
-    <!-- Loop over each cell -->
-    <xsl:for-each select="$body-cells">
-        <!-- Title of cell -->
-        <xsl:if test="steptitle">
-          <!-- Include contents if there is a subsection contents. -->            
+      <xsl:variable name="hasOpen" select="count(cell[steptitle = 'Open in Editor'])"/>
+      <xsl:choose>      
+        <xsl:when test="$hasOpen">
+          <xsl:call-template name="openheader"/>              
+        </xsl:when>    
+        <xsl:otherwise>
+          <xsl:call-template name="header"/>
+        </xsl:otherwise>
+      </xsl:choose>   
+      
+      <div class="content">
+        
+        <!-- Determine if the there should be an introduction section. -->
+        <xsl:variable name="hasIntro" select="count(cell[@style = 'overview'])"/>        
+        
+        <!-- If there is an introduction, display it. -->
+        <xsl:if test = "$hasIntro">
+          <h1><xsl:value-of select="cell[1]/steptitle"/></h1>
+          <introduction><xsl:apply-templates select="cell[1]/text"/></introduction>
+        </xsl:if>        
+        
+        <xsl:variable name="body-cells" select="cell[not(@style = 'overview')]"/>
+        
+        <!-- Loop over each cell -->
+        <xsl:for-each select="$body-cells">
+          <!-- Title of cell -->
           <xsl:choose>
-            <xsl:when test="steptitle = 'content'">
-              <xsl:call-template name="contents">
-                <xsl:with-param name="body-cells" select="$body-cells"/>
-              </xsl:call-template>
-            </xsl:when>  
+            <xsl:when test="steptitle">
+            <!-- Include contents if there is a subsection contents. -->            
+              <xsl:choose>
+              
+                <xsl:when test="steptitle = 'Contents'">
+                  <xsl:call-template name="contents">
+                    <xsl:with-param name="body-cells" select="$body-cells"/>
+                  </xsl:call-template>
+                </xsl:when>  
+              
+                <xsl:when test="steptitle = 'Abstract'">
+                  <xsl:call-template name="abstract">
+                    <xsl:with-param name="body-cells" select="$body-cells"/>
+                  </xsl:call-template>
+                  <!-- erase the abstract? -->
+
+                </xsl:when>          
+              
+                <xsl:when test="steptitle = 'Open in Editor'"></xsl:when>
+                            
+                <xsl:otherwise>
+                  <xsl:variable name="headinglevel">
+                    <xsl:choose>
+                      <xsl:when test="steptitle[@style = 'document']">h1</xsl:when>
+                      <xsl:otherwise>h2</xsl:otherwise>
+                    </xsl:choose>
+                  </xsl:variable>
+                  <xsl:element name="{$headinglevel}">
+                    <xsl:value-of select="steptitle"/>
+                    <xsl:if test="not(steptitle[@style = 'document'])">
+                      <a><xsl:attribute name="name"><xsl:value-of select="position()"/></xsl:attribute></a>
+                    </xsl:if>
+                  </xsl:element>      
+                  
+                  <xsl:apply-templates select="text"/>
+                  <xsl:apply-templates select="mcode-xmlized"/>
+                  <xsl:apply-templates select="mcodeoutput|img"/>
+                </xsl:otherwise>
+              
+              </xsl:choose>                         
+            </xsl:when>
             <xsl:otherwise>
-              <xsl:variable name="headinglevel">
-                <xsl:choose>
-                  <xsl:when test="steptitle[@style = 'document']">h1</xsl:when>
-                  <xsl:otherwise>h2</xsl:otherwise>
-                </xsl:choose>
-              </xsl:variable>
-              <xsl:element name="{$headinglevel}">
-                <xsl:value-of select="steptitle"/>
-                <xsl:if test="not(steptitle[@style = 'document'])">
-                  <a>
-                    <xsl:attribute name="name">
-                      <xsl:value-of select="position()"/>
-                    </xsl:attribute>
-                  </a>
-                </xsl:if>
-              </xsl:element>
+              <xsl:apply-templates select="text"/>
+              <xsl:apply-templates select="mcode-xmlized"/>
+              <xsl:apply-templates select="mcodeoutput|img"/>
             </xsl:otherwise>
           </xsl:choose>
-          
-        </xsl:if>
-
+        </xsl:for-each>
+        
         <!-- Contents of each cell -->
-        <xsl:apply-templates select="text"/>
-        <xsl:apply-templates select="mcode-xmlized"/>
-        <xsl:apply-templates select="mcodeoutput|img"/>
-
-    </xsl:for-each>
-
-    <xsl:call-template name="footer"/>
+        
+        
+        <xsl:call-template name="footer"/>
+        
+      </div>
       
-    
-
-    </div>
-    
-    <xsl:apply-templates select="originalCode"/>
-
-  </body>
-</html>
+      
+    </body>
+  </html>
 </xsl:template>
 
-<xsl:template name="stylesheet">
-  <style>
-
-body {
-  background-color: white;
-  margin:10px;
-}
-
-h1 {
-  color: #990000; 
-  font-size: xx-large;
-  font-weight:200;
-}
-
-h2 {
-  color: #990000;
-  font-size: large;
-}
-
-/* Make the text shrink to fit narrow windows, but not stretch too far in 
-wide windows. */ 
-p,h1,h2,div.content div {
- /* max-width: 600px;*/
-  /* Hack for IE6 */
-/*  width: auto !important; width: 600px;*/
-}
-
-pre.codeinput {
-  background: #EFEFEF;
-  padding: 10px;
-}
-@media print {
-  pre.codeinput {word-wrap:break-word; width:100%;}
-} 
-
-span.keyword {color: #0000FF}
-span.comment {color: #228B22}
-span.string {color: #A020F0}
-span.untermstring {color: #B20000}
-span.syscmd {color: #B28C00}
-
-pre.codeoutput {
-  color: #666666;
-  padding: 10px;
-}
-
-pre.error {
-  color: red;
-}
-
-.nav {
-  padding:4px 3px 3px 4px; background: #e1ebfd;
-}
-
-.footer {
-  text-align: right;
-  font-size: small;
-  font-weight: lighter;
-  font-style: italic;
-  color: #666666;
-  padding:4px; background: #e1ebfd;
-  padding-right: 10px;
-  padding-bottom: 15px;
-}
-
-pre,.intend {
-    margin:15px 15px 15px 15px;
-}
-
-.contentstable {
-  border-collapse:collapse; 
-  border:1px solid #888888;
-  margin-left:15px;
-  margin-top:15px;
-  margin-bottom:5px;
-}
-.contenth { 
-  border:thin solid #666666; 
-  vertical-align:top;
-  padding:3px;
-  padding-left:15px;
-  padding-right:15px;
-  overflow:hidden; 
-  background: #DDDDDD;
-  font-weight: bold;
-}
-
-.contentstd { 
-/*  border:thin solid #FFFFFF; */
-  vertical-align:top;
-  padding:4px;
-  padding-left:15px;
-  padding-right:15px;
-  overflow:hidden; 
-}
-
-
-  </style>
-</xsl:template>
-
+<!-- Header -->
 <xsl:template name="header">  
   <a name="top_of_page"></a>
-  <p style="font-size:1px;">&nbsp;</p>
     <table class="nav" summary="Navigation aid" border="0" width="100%" cellpadding="0" cellspacing="0">
       <tr><td valign="baseline"><b>MTEX</b> - A MATLAB Toolbox for Quantitative Texture Analysis</td><td valign="baseline" align="right"></td></tr>
   </table>  
 </xsl:template>
 
+<!-- Header2 -->
+<xsl:template name="openheader">
+  <div class="myheader">
+      <div class="headerleft"><a href="matlab:edit XXXX" style="color:white">
+	  Open Matlab File in the Editor</a></div>
+      <div class="headerright"><a href="mtex_product_page.html" style="color:white">MTEX</a></div>
+    </div>
+</xsl:template>
+
+<!-- Footer -->
 <xsl:template name="footer">
 <p style="font-size:1px;">&nbsp;</p>
         <table class="footer" border="0" width="100%" cellpadding="0" cellspacing="0">
@@ -252,14 +161,14 @@ pre,.intend {
 <xsl:template name="contents">
   <xsl:param name="body-cells"/>
  
-  <div><table class="contentstable">
-    <tr ><td class="contenth">On this page…</td></tr>  
+  <div><table class="content">
+    <tr ><td class="header">On this page…</td></tr>  
     
       <xsl:for-each select="$body-cells">
          <xsl:if test="./steptitle">   
-           <xsl:if test="not(steptitle = 'content')"> 
-         
-            <tr ><td class="contentstd">
+           <xsl:if test="not(steptitle = 'Contents' or steptitle = 'Abstract' or steptitle = 'Open in Editor')"> 
+             
+            <tr ><td>
               <a><xsl:attribute name="href">#<xsl:value-of select="position()"/></xsl:attribute><xsl:apply-templates select="steptitle"/></a>
             </td></tr>
             
@@ -270,6 +179,12 @@ pre,.intend {
    </table></div>
 </xsl:template>
 
+<xsl:template name="abstract">    
+  <xsl:param name="body-cells"/>    
+    <abstract><div class="intro">
+      <xsl:apply-templates select="text"/>       
+    </div></abstract>    
+</xsl:template>
 
 <!-- HTML Tags in text sections -->
 <xsl:template match="p">

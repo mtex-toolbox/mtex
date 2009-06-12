@@ -25,6 +25,10 @@ set(0,'FormatSpacing','compact')
 
 generateversionnumber;
 
+%maintain style-sheet
+copyfile( fullfile(mtex_path,'help','make_help','*.css') , ...
+  fullfile(mtex_path,'help','html') );
+
 %% generate general help files
 
 if check_option(varargin, {'general','all'})
@@ -99,9 +103,11 @@ if check_option(varargin, {'mfiles','all'})
 
  % publish all script_files in help/classes directory
  files = dir(fullfile(html_path, 'script_*.m'));
- publish_files({files.name},html_path,'out_dir',html_path,...
-   'stylesheet',fullfile(pwd,'publishmtex.xsl'),'waitbar',varargin{:});
- delete(fullfile(html_path,'script_*.m'));
+ if ~isempty(files)
+   publish_files({files.name},html_path,'out_dir',html_path,...
+     'stylesheet',fullfile(pwd,'publishmtex.xsl'),'waitbar',varargin{:});
+   delete(fullfile(html_path,'script_*.m'));
+ end
  
 end
 
@@ -115,7 +121,7 @@ for i = 1:length(topics)
     current_path = fullfile(mtex_path,'help', topics{i});
     files = dir(fullfile(current_path,'*.m'));
     publish_files({files.name},current_path,...
-      'stylesheet',fullfile(pwd, 'mtex_style.xsl'),'out_dir',html_path,'evalcode',1,varargin{:});    
+      'stylesheet',fullfile(pwd, 'publishmtex.xsl'),'out_dir',html_path,'evalcode',1,varargin{:});    
     try
       copyfile(fullfile(current_path,'*.png'),fullfile(mtex_path,'help','html'))
     catch %#ok<CTCH>
@@ -128,7 +134,9 @@ end
 %% calculate examples
 
 if check_option(varargin, {'examples','all'})
-  
+  copyfile( fullfile(mtex_path,'help','make_help','*.css') , ...
+    fullfile(mtex_path,'examples','html') );
+
   current_path = fullfile(mtex_path,'examples');
   files = dir(fullfile(current_path ,'*.m'));
   publish_files({files.name},current_path,'stylesheet',fullfile(pwd, 'example_style.xsl'),...

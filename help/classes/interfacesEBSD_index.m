@@ -1,5 +1,6 @@
 %% Importing EBSD Data
 %
+%% Abstract
 % Importing EBSD data in MTEX means to create a <EBSD_index.html EBSD>
 % object from data files containing euler angles. Once such an object has
 % been created the data can be analyzed and processed in many ways. See e.g.
@@ -11,7 +12,7 @@
 % Furthermore, such a EBSD object is the starting point to estimate an ODF
 % using the command <EBSD_calcODF.html calcODF>.
 %
-%% content
+%% Contents
 %
 %% Inporting EBSD data using the import wizard
 %

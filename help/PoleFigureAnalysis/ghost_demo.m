@@ -1,5 +1,8 @@
 %% MTEX Ghost Effect Demo
 %
+%% Open in Editor
+%
+%% Abstract
 % A general problem in estimating an ODF from pole figure data is the fact,
 % that the odd order Fourier coefficients of the ODF are not present
 % anymore in the pole figure data and therefore it is difficult to estimate
@@ -13,6 +16,8 @@
 % substracting this uniform portion. This is allmost the approach Matthies
 % proposed in his book (He called the uniform portion *phon*).
 % 
+%% Contents
+%
 %%
 % In this example we are going to demonstarte the power of ghost correction
 % at a simple, synthetic example.

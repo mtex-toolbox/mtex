@@ -1,7 +1,9 @@
 %% The Class symmetry
+%
+%% Abstract
 % a class to represent crystal or specimen symmetries
 %
-%% content
+%% Contents
 %
 %% Description
 %

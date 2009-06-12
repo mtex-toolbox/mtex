@@ -1,7 +1,9 @@
 %% The Class S2Grid
+%
+%% Abstract
 % represents a grid of nodes on the sphere 
 %
-%% content
+%% Contents
 %
 %% Description
 % The class *S2Grid* is used in MTEX to store the set of specimen

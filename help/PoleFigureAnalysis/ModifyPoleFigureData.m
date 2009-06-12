@@ -1,7 +1,12 @@
 %% Modify Pole Figure Data
 % 
+%% Open in Editor
+%
+%% Abstract
 % This section explains how to manipulate pole figure data in MTEX.
-
+%
+%% Contents
+%
 %% Import diffraction data
 %
 % Let us therefore import some data and plot them.

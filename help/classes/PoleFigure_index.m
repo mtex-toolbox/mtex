@@ -1,7 +1,9 @@
 %% The class PoleFigure
+%
+%% Abstract
 % class representing experimental or sythetic pole figure  data
 % 
-%% content
+%% Contents
 %
 %% Description
 %

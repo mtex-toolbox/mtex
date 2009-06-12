@@ -1,7 +1,9 @@
 %% The Class Miller
+%
+%% Abstract
 % Miller indece
 %
-%% content
+%% Contents
 %
 %% Description
 %

@@ -1,7 +1,9 @@
 %% The Class ODF
+%
+%% Abstract
 % class representing an Orientation Density Function
 % 
-%% content
+%% Contents
 %
 %% Description
 %

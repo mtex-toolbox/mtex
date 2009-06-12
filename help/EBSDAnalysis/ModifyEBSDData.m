@@ -1,7 +1,11 @@
 %% Modify EBSD Data
 %
-% Support for EBSD data in MTEX is still at an early stage.
 
+%% Abstract
+% Support for EBSD data in MTEX is still at an early stage.
+%
+%% Contents
+%
 %% Import some EBSD data
 
 cs = symmetry('m-3m'); % crystal symmetry

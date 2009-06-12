@@ -1,7 +1,9 @@
 %% The class EBSD
+%
+%% Abstract
 % class representing single orientation measurements
 %
-%% content
+%% Contents
 %
 %% Description
 %

@@ -1,5 +1,9 @@
 %% Crystal Symmetries
 %
+%% Open in Editor
+%
+%% Contents
+%
 %% Description
 %
 % Crystal symmetries are a sets of rotations and mirroring operations that

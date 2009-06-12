@@ -1,5 +1,10 @@
 %% Model ODFs
 %
+%% Open in Editor
+%
+%% Contents
+%
+%% Abstract
 % MTEX allows to create a wide range of model ODFs including 
 % [[uniformODF.html,uniformODFs]], [[unimodalODF.html,unimodalODFs]],
 % [[fibreODF.html,fibreODFs]] and any superposition of those ODF.
