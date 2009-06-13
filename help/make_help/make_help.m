@@ -21,6 +21,9 @@ end
 set_mtex_option('generate_help',true);
 set(0,'FormatSpacing','compact')
 
+c = get(0,'DefaultFigureColor');
+set(0,'DefaultFigureColor','white');
+
 %% update version string
 
 generateversionnumber;
@@ -144,6 +147,8 @@ if check_option(varargin, {'examples','all'})
   copyfile(fullfile(current_path, 'html','*.html'),html_path);
   copyfile(fullfile(current_path, 'html','*.png'),html_path);
 end
+
+set(0,'DefaultFigureColor',c)
 
 toc(timing)
 

@@ -48,10 +48,7 @@ if newFigure
   figure(clf);
   rmallappdata(gcf);  
   
-	try
-  	jframe=get(gcf,'javaframe');
-    jIcon=javax.swing.ImageIcon(fullfile(mtex_path,'mtex_icon.gif'));
-    jframe.setFigureIcon(jIcon);
-  catch
-	end
+	iconMTEX(gcf);
 end
+
+

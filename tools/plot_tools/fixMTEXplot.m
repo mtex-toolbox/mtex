@@ -3,26 +3,6 @@ function fixMTEXplot(varargin)
 %
 %
 %
-set(gcf,'WindowStyle','normal')
-set(gcf,'DockControls','off')
-
-set(gcf,'units','pixel');
-% set(gcf,'position',[10 10 400 400])
-
-fig_pos = get(gcf,'position');
-set(gca,'units','pixel');
-d = get_option(varargin,'border',get_mtex_option('border',20));
-a = pbaspect; a = a(1:2)./max(a(1:2));
-b = (fig_pos(3:4) -30 - 2*d);
-c = b./a;
-a = a * min(c);
-if all(a > 0)
-  set(gca,'position',[30+d 30+d fig_pos(3:4)-40-d]);
-% set(gca,'position',[30+d 30+d a]);
-% set(gcf,'position',[fig_pos(1:2) 30+a+2*d]);
-end
-set(gcf,'units','normalized');
-set(gca,'units','normalized');
 
 axis equal
 
@@ -34,9 +14,28 @@ else
   axis tight
 end
 grid on
-% 
-setappdata(gcf,'extend',[xlim ylim])
 
+set(gcf,'units','pixel');
+fig_pos = get(gcf,'position');
+set(gca,'units','pixel');
+d = get_option(varargin,'border',get_mtex_option('border',5));
+a = pbaspect; a = a(1:2)./max(a(1:2));
+b = (fig_pos(3:4) -42 - 2*d);
+c = b./a;
+a = a * min(c);
+
+if ~check_option(varargin,'noresize')
+  set(gcf,'position',[fig_pos(1:2) 50+a(1)+2*d 42+a(2)+2*d]);
+end
+
+pos = get(gcf,'position');
+if all(pos(3:4)-50-d > 0)
+  set(gca,'position',[45+d 35+d pos(3)-50-d pos(4)-40-d]);
+end
+set(gcf,'units','normalized');
+set(gca,'units','normalized');
+
+setappdata(gcf,'extend',[xlim ylim])
 % try to extend zoom to hole figure % axis fill
 h = zoom;
 set(h,'ActionPreCallback',{@(e,v) setappdata(gcf,'previousZoom',[xlim ylim])});

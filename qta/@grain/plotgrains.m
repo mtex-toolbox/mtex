@@ -204,7 +204,7 @@ xlabel(lx); ylabel(ly);
 fixMTEXplot;
   
 %
-set(gcf,'ResizeFcn',@fixMTEXplot);
+set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
 selector(gcf,grains,p,h);
 %apply plotting options
 if exist('h','var'), optiondraw(h,varargin{:});end
