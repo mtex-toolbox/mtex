@@ -7,27 +7,18 @@ h = 450;
 b = 10;
 
 if isempty(selector)  
-  fig = figure('Name','Select By Expression',...
+  fig = dialog('Name','Select By Expression',...
     'Tag','MTEX.selectByExpression',...
-    'Color',get(0,'defaultUicontrolBackgroundColor'),...
-    'Resize','off',...
-    'Menubar','none',...
-    'Toolbar','none',...
-    'NumberTitle','off' ); %,...
-    %'WindowStyle','modal');
-    
-    set(gca,'Visible','off')
+    'Color',get(0,'defaultUicontrolBackgroundColor'),...  
+    'WindowStyle','normal' ); 
+  
+  set(gca,'Visible','off')
   pos = get(fig,'Position');
   set(fig,'Position',[pos(1:2) w h]);
   
-	try
-      jframe=get(fig,'javaframe');
-      jIcon=javax.swing.ImageIcon(fullfile(mtex_path,'mtex_icon.gif'));
-      jframe.setFigureIcon(jIcon);
-	catch
-  end
+	iconMTEX(fig);
   
-  %
+  
   uicontrol(fig,'Style','text','String','Method:',...
     'HorizontalAlignment','left',...
     'Position',[b h-b-34 50 20]);
@@ -101,9 +92,6 @@ if isempty(selector)
       'Callback',{@(ev,src) insertexp(op{k})});
   end
   
-  
-  
-  
   fl = 65;
     uicontrol(fig,'Style','pushbutton', 'String','Ok',...
     'Position',[w-2*b-3*fl 10 fl 24],'Callback',@ok);
@@ -115,20 +103,10 @@ if isempty(selector)
   uicontrol(fig,'Style','pushbutton', 'String','Cancel',...
     'Position',[w-b-fl 10 fl 24],'Callback','close');
 
-%   uicontrol(fig,'Style','pushbutton', 'String','Ok',...
-%     'Position',[w-2*b-3*fl 10 fl 24],'Callback',@(e,h) set(fig,'UserData','eval'));
-% 
-% 
-%   uicontrol(fig,'Style','pushbutton', 'String','Apply',...
-%     'Position',[w-2*b-2*fl 10 fl 24],'Callback',@(e,h) set(fig,'UserData','eval'));
-% 
-%   uicontrol(fig,'Style','pushbutton', 'String','Cancel',...
-%     'Position',[w-b-fl 10 fl 24],'Callback','close');
-
   selector = fig;
  
 else
-  %set focus
+  %set only focus
   feval( get(selector,'type'),double(selector));
 end
 
@@ -178,14 +156,13 @@ function addexp(e,h,p)
 
 ind = get(e,'Value');
 txt = get(e,'String');
-
 insertexp( [txt{ind} p] );
 
 
 function insertexp(expr)
 
 [a b] = curpos;
-field = findall(get(gcbo,'parent'),'Tag','input');
+field = findall(gcf,'Tag','input');
 str = get(field,'String');
 if strcmpi(str,'Enter Expression'), 
   str = expr;
@@ -202,11 +179,12 @@ function [a b] = curpos
 
 try 
   % dirty?
-  hh = com.mathworks.mde.desk.MLDesktop.getInstance.getClient('Select By Expression')  ;
-  fig = hh.getComponent(0).getComponent(0).getComponent(0);
-
-  cmpt = handle(fig.getComponent(18).getComponent(0).getComponent(0).getComponent(0),'callbackproperties');
-  
+  jFrame = get(gcf,'JavaFrame');
+  jFigPanel = get(jFrame,'FigurePanelContainer');
+  jRootPane = jFigPanel.getComponent(0);
+  jEditPanel = jRootPane.getComponent(18);
+  cmpt = handle(jEditPanel.getComponent(0).getComponent(0).getComponent(0),'callbackproperties');
+   
   a = cmpt.Caret.getDot;
   b = cmpt.Caret.getMark;
   if ( a > b), [a b] = swap(a,b);end

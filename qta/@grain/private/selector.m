@@ -84,9 +84,7 @@ th=findobj(allchild(h),'type','uitoolbar');
   
   htu = uipushtool(th,'Tag','MTEX.grainunselector','CData',selectorIcon('unselect'),'TooltipString','Unselect all Grains','ClickedCallback',@unSelectAll);
   
-  
- 
-  
+
   
   chlds = allchild(th);
   added = [htk hti hts htu htp]'; 
@@ -331,19 +329,13 @@ for k=length(ind):-1:1
         
         identdlg( grains(current) );
         
-        hold on
-        h = fill(X,Y,c{ly}); drawnow;            
-        pause(0.1);
-        delete(h); drawnow;
-        pause(0.1);
-        h = fill(X,Y,c{ly}); drawnow; 
-        pause(0.1);
-        delete(h); drawnow;
-            
-        pause(0.1);
+     
+        h = patch(X,Y,c{ly}); pause(0.1);
+        delete(h); pause(0.1);
+        h = patch(X,Y,c{ly}); pause(0.1);
+        delete(h); pause(0.1);
         waitfor(h);
-          
-        % how to hold?
+        
         return
     end
       
@@ -490,7 +482,6 @@ switch state
   case 'stopidentify'
     set(gcf,'WindowButtonDownFcn',[]);
     set(gcf,'Pointer','arrow');
-    hold off
   case 'startrecord'        
     set(tts([1 3]),'State','off');
     set(gcf,'WindowButtonDownFcn',{@spatialSelection,'record'});
@@ -687,7 +678,10 @@ function extracttolayer(src,h)
 [grains p ks ly] = getcurrentlayer;
 c = getappdata(gcf,'selectioncolor');
 
-hold on, plotgrains( grains(ks), 'color', c{ly});
+ih = ishold;
+if ~ih, hold on; end
+  plotgrains( grains(ks), 'color', c{ly});
+if ~ih, hold off; end
 
 
 function polygonSelection(src,h,lastline)

@@ -69,7 +69,7 @@ end
 set(gcf,'tag','ebsd_spatial');
 setappdata(gcf,'options',extract_option(varargin,'antipodal'));
 
-set(gcf,'ResizeFcn',@fixMTEXplot);
+set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
 
 %% set data cursor
 
