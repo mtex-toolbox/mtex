@@ -25,7 +25,7 @@ if ~check_option(varargin,'noascii')
   
   % data found?
   if size(d,1)>0 && size(d,2)>2,
-    c = extract_colnames(header);
+    c = extract_colnames(header,size(d,2));
     options = delete_option(varargin,'check');
     return;
   end
@@ -47,7 +47,7 @@ end
 
 
 
-function c = extract_colnames(header)
+function c = extract_colnames(header,ncol)
 
 c = [];
 try
@@ -63,7 +63,15 @@ try
   end
    
   % extract colum header
+  
+  % try regular
   c = regexp(rows,'\s','split');
+  c = {c{~cellfun(@isempty,c)}}; % löscht evt. leere zellen.
+  if length(c) == ncol, return;end
+  
+  
+  % try fancy
+  c = regexp(rows,'\s\s','split');
   c = {c{~cellfun(@isempty,c)}}; % löscht evt. leere zellen.
   
 catch %#ok<CTCH>
