@@ -16,10 +16,10 @@ else
 		end
 	else
 		u = s(1);
-    if nargin == 1, eqfun = @(a,b) norm(a-b);end
+    if nargin == 1, eqfun = @(a,b) isnull(norm(a-b));end
 		
 		for i=1:length(s)
-			if ~any(isnull(eqfun(u,s(i))))
+			if ~any(eqfun(u,s(i)))
 				u = [u,s(i)]; %#ok<AGROW>
 			end
 		end
