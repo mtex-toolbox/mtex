@@ -4,25 +4,30 @@ function fixMTEXplot(varargin)
 %
 %
 
-axis equal
+ax = gca;
+axis(ax,'equal');
 
 if check_option(varargin,{'x','y'})
   X = get_option(varargin,'x');
   Y = get_option(varargin,'y');
-  axis ([min(X) max(X) min(Y) max(Y)]);
+  axis (ax,[min(X) max(X) min(Y) max(Y)]);
 else
-  axis tight
+  axis(ax,'tight')
 end
 grid on
+set(ax,'TickDir','out','XMinorTick','on','YMinorTick','on','Layer','top')
 
 set(gcf,'units','pixel');
 fig_pos = get(gcf,'position');
-set(gca,'units','pixel');
+set(ax,'units','pixel');
 d = get_option(varargin,'border',get_mtex_option('border',5));
 a = pbaspect; a = a(1:2)./max(a(1:2));
 b = (fig_pos(3:4) -42 - 2*d);
 c = b./a;
 a = a * min(c);
+
+lx = 0; ly = 0;
+if strcmp(get(ax,'Visible'),'on'), ly = 35; lx = 55; end
 
 if ~check_option(varargin,'noresize')
   set(gcf,'position',[fig_pos(1:2) 50+a(1)+2*d 42+a(2)+2*d]);
@@ -30,10 +35,12 @@ end
 
 pos = get(gcf,'position');
 if all(pos(3:4)-50-d > 0)
-  set(gca,'position',[45+d 35+d pos(3)-50-d pos(4)-40-d]);
+  set(ax,'position',[lx+2+d ly+2+d pos(3)-2-lx-2*d pos(4)-ly-2-2*d]);
 end
 set(gcf,'units','normalized');
-set(gca,'units','normalized');
+set(ax,'units','normalized');
+
+
 
 setappdata(gcf,'extend',[xlim ylim])
 % try to extend zoom to hole figure % axis fill
