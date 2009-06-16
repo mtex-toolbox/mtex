@@ -18,7 +18,8 @@ function ebsdColorbar(varargin)
 if nargin >= 1 && isa(varargin{1},'symmetry')  
   cs = varargin{1};
   varargin = varargin(2:end);
-  colorcoding = get_option(varargin,'colorcoding',@(h) ipdf2rgb(h,cs,varargin{:}));  
+  colorcoding = get_option(varargin,'colorcoding',@(h) orientation2color(h,'ipdf',varargin{:}));  
+  cc = get_option(varargin,'colorcode','ipdf');
   r = get_option(varargin,'r',xvector);
 else
   cs = getappdata(gcf,'CS');
@@ -26,11 +27,12 @@ else
   o = getappdata(gcf,'options');
   varargin = {o{:},varargin{:}};
   colorcoding = getappdata(gcf,'colorcoding');  
+  cc = getappdata(gcf,'colorcode');
   varargin = set_default_option(varargin,[],'rotate',getappdata(gcf,'rotate'));
   
   for i = 1:length(cs)
     ebsdColorbar(cs{i},varargin{:},'colorcoding',@(h) colorcoding(h,i),...
-      'r',r);
+      'r',r,'colorcode',cc);
     set(gcf,'Name',['Colorcoding for phase ',get(cs{i},'mineral')]);
   end
   return
@@ -42,9 +44,22 @@ varargin = set_default_option(varargin,...
 
 % S2 Grid
 [maxtheta,maxrho,minrho,v] = getFundamentalRegionPF(cs,varargin{:});
-h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'resolution',1*degree,varargin{:});
 
-d = reshape(colorcoding(h),[GridSize(h),3]);
+if strcmp(cc,'ipdf') && r == xvector 
+   h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'resolution',1*degree,varargin{:});
+else
+   h =  S2Grid('resolution',1.5*degree,'Plot');
+end
+
+ vh = vector3d(h);
+ qh = (vec42quat(vh,repmat(r,size(vh)),...
+                repmat(r,size(vh)),-vh));              
+ qh = quaternion(real(qh(:).a), real(qh(:).b), real(qh(:).c), real(qh(:).d));
+              
+ qs = SO3Grid(qh,cs,symmetry);
+%     d = reshape(ihs(h),[GridSize(h),3]);
+ d = reshape(orientation2color(qs,cc),[GridSize(h),3]);
+ 
 
 figure
 multiplot(@(i) h,@(i) d,1,'rgb',varargin{:});

@@ -49,7 +49,9 @@ for i = 1:length(grid)
       h = quat2rodrigues(q);
       cs = get(grid(i),'CS');
       d = ipdf2rgb(h,cs,varargin{:});
+    otherwise
+      error('Unknown Colorcoding')
   end
-  c(1+gl(i):gl(i+1),:) = d;
+  c(1+gl(i):gl(i+1),:) = reshape(d,[],3);
 end
 
