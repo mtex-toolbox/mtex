@@ -61,22 +61,23 @@ if check_option(varargin,'layout')
   ColumnNames = {'Polar Angle','Azimuth Angle','Intensity'};
   Columns = layout(1:3);
   
-  varargin = {varargin{:},'ColumnNames',ColumnNames,'Columns',Columns};
+  varargin = [varargin,{'ColumnNames',ColumnNames,'Columns',Columns}];
 end
 
 
 % no options given -> ask
-if ~check_option(varargin,'ColumnNames') || ~check_option(varargin,'Columns')
+if ~check_option(varargin,'ColumnNames')
   
   options = generic_wizard('data',d,'type','PoleFigure','header',header,'colums',colums);
   if isempty(options), pf = []; return; end 
-  varargin = {options{:},varargin{:}};
+  varargin = [options,varargin];
 
 end
 
 % get data
-cols = get_option(varargin,'Columns');
 names = lower(get_option(varargin,'ColumnNames'));
+cols = get_option(varargin,'Columns',1:length(names));
+
 
 mtex_assert(length(cols) == length(names), 'Length of ColumnNames and Columns differ');
 

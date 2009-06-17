@@ -56,16 +56,17 @@ if size(d,1) < 1 || size(d,2) < 3
 end
 
 % no options given -> ask
-if ~check_option(varargin,'ColumnNames') || ~check_option(varargin,'Columns')
+if ~check_option(varargin,'ColumnNames')
   
   options = generic_wizard('data',d(1:end<101,:),'type','ODF','header',header,'colums',c);
   if isempty(options), odf = []; return; end
-  varargin = {options{:},varargin{:}};
+  varargin = [options,varargin];
 
 end
 
-cols = get_option(varargin,'Columns');
 names = lower(get_option(varargin,'ColumnNames'));
+cols = get_option(varargin,'Columns',1:length(names));
+
 
 mtex_assert(length(cols) == length(names), 'Length of ColumnNames and Columns differ');
 
@@ -122,7 +123,7 @@ if check_option(varargin,'passive rotation'), q = inverse(q); end
   
 %all other as options
 opt = struct;
-opts = delete_option(names,  {euler{:} quat{:}});
+opts = delete_option(names, [euler quat]);
 if ~isempty(opts)
   
   for i=1:length(opts),
@@ -138,7 +139,7 @@ end
 options = varargin;
 
 % load single orientations
-
 ebsd = EBSD(SO3Grid(q,cs,ss),cs,ss,varargin{:},'options',opt);
 
+% calc ODF
 odf = calcODF(ebsd,'silent',varargin{:});
