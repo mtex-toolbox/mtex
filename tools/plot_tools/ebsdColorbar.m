@@ -52,13 +52,9 @@ else
 end
 
  vh = vector3d(h);
- qh = (vec42quat(vh,repmat(r,size(vh)),...
-                repmat(r,size(vh)),-vh));              
- qh = quaternion(real(qh(:).a), real(qh(:).b), real(qh(:).c), real(qh(:).d));
-              
- qs = SO3Grid(qh,cs,symmetry);
-%     d = reshape(ihs(h),[GridSize(h),3]);
- d = reshape(orientation2color(qs,cc),[GridSize(h),3]);
+ grid = SO3Grid(axis2quat(cross(vh,r),angle(vh,r)),cs);
+ 
+ d = reshape(orientation2color(grid,cc),[GridSize(h),3]);
  
 
 figure
