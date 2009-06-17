@@ -18,7 +18,7 @@ function out_list = set_default_option(option_list,preserve,option,varargin)
 % check_option get_option clear_option
 
 if nargin == 2
-  out_list = {preserve{:},option_list{:}};
+  out_list = [preserve,option_list];
   return
 end
 
@@ -42,5 +42,5 @@ function c = union_cell(varargin)
 
 c = {};
 for i = 1:length(varargin)
-  c = {c{:},varargin{i}{:}};
+  c = [c,varargin{i}];
 end

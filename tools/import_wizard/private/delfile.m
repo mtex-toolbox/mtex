@@ -10,7 +10,7 @@ if ~isempty(data)
   cdata = cumsum(idata);
   didata = [];
   for i = 1:length(index_selected)
-    didata = [didata,1+cdata(index_selected(i)):cdata(index_selected(i)+1)];
+    didata = [didata,1+cdata(index_selected(i)):cdata(index_selected(i)+1)]; %#ok<AGROW>
   end
   
   % remove pole figure

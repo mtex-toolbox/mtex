@@ -27,6 +27,6 @@ for o = 1:length(option)
   end
   
   if pos 
-    out = {out{:},option_list{pos-p:pos}};
+    out = [out,option_list(pos-p:pos)]; %#ok<AGROW>
   end 
 end
