@@ -28,11 +28,12 @@ else
   varargin = {o{:},varargin{:}};
   colorcoding = getappdata(gcf,'colorcoding');  
   cc = getappdata(gcf,'colorcode');
+  ccenter = getappdata(gcf,'colorcenter');
   varargin = set_default_option(varargin,[],'rotate',getappdata(gcf,'rotate'));
   
   for i = 1:length(cs)
     ebsdColorbar(cs{i},varargin{:},'colorcoding',@(h) colorcoding(h,i),...
-      'r',r,'colorcode',cc);
+      'r',r,'colorcode',cc,'colorcenter',ccenter);
     set(gcf,'Name',['Colorcoding for phase ',get(cs{i},'mineral')]);
   end
   return
@@ -52,9 +53,9 @@ else
 end
 
  vh = vector3d(h);
- grid = SO3Grid(axis2quat(cross(vh,r),angle(vh,r)),cs);
+ grid = SO3Grid(axis2quat(cross(vh,r+eps),angle(vh,r)),cs);
  
- d = reshape(orientation2color(grid,cc),[GridSize(h),3]);
+ d = reshape(orientation2color(grid,cc,varargin{:}),[GridSize(h),3]);
  
 
 figure
