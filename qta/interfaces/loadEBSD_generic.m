@@ -68,19 +68,19 @@ if check_option(varargin,'layout')
   Columns = layout(1:3);
   
   if length(layout) == 4
-    ColumnNames = {ColumnNames{:},'Phase'};
+    ColumnNames = [ColumnNames,{'Phase'}];
     Columns = layout;
   end
   
   if check_option(varargin,'xy')
     xy = get_option(varargin,'xy');
-    ColumnNames = {ColumnNames{:},'x','y'};
+    ColumnNames = [ColumnNames,{'x','y'}];
     Columns = [layout,xy];
     varargin = delete_option(varargin,'xy',1);
   end
   
   
-  varargin = {varargin{:},'ColumnNames',ColumnNames,'Columns',Columns};
+  varargin = [varargin,{'ColumnNames',ColumnNames,'Columns',Columns}];
 end
 
 % no options given -> ask
@@ -88,7 +88,7 @@ if ~check_option(varargin,'ColumnNames')
   
   options = generic_wizard('data',d(1:end<101,:),'type','EBSD','header',header,'colums',c);
   if isempty(options), ebsd = []; return; end
-  varargin = {options{:},varargin{:}};
+  varargin = [options,varargin];
 
 end
 
@@ -161,7 +161,7 @@ end
   
 %all other as options
 opt = struct;
-opts = delete_option(names,  {euler{:} quat{:} 'Phase' 'x' 'y'});
+opts = delete_option(names,  [euler quat {'Phase' 'x' 'y'}]);
 if ~isempty(opts)
   
   for i=1:length(opts),

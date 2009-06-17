@@ -63,6 +63,7 @@ if isempty(javachk('desktop'))
   disp('- <a href="matlab:doc mtex">Show MTEX documentation</a>')
   disp('- <a href="matlab:import_wizard">Import pole figure data</a>')
   disp('- <a href="matlab:import_wizard(''type'',''EBSD'')">Import EBSD data</a>')
+  disp('- <a href="matlab:import_wizard(''type'',''ODF'')">Import ODF data</a>')
   disp(' ');
 end
 
