@@ -1,12 +1,12 @@
-function [interface,options] = check_interfaces(fname,varargin)
+function [interface,options] = check_interfaces(fname,type,varargin)
 % determine interface from file
 
 if ~exist(fname,'file'), error('File %s not found.',fname);end
 
 %% find all installed interfaces
-interfaces = dir([mtex_path '/qta/interfacesPoleFigure/loadPoleFigure_*.m']);
+interfaces = dir([mtex_path '/qta/interfaces' type '/load' type '_*.m']);
 interfaces = {interfaces.name};
-% do not use interfaces txt and generic
+% do not use interfaces generic
 ind = cellfun(@isempty,strfind(interfaces,'generic'));
 interfaces = interfaces(ind);
 
@@ -18,7 +18,8 @@ warning off all
 for i =1:length(interfaces)
   try
     feval(interfaces{i}(1:end-2),fname,varargin{:},'check');
-    interface = {interface{:},interfaces{i}(16:end-2)};
+    interfaceName = regexp(interfaces{i},'_(.*).m','tokens');
+    interface = {interface{:},char(interfaceName{1})};
   catch  
   end
 end
@@ -37,8 +38,8 @@ end
 %% no interface - try generic interface
 if isempty(interface)
 
-  [d,options] = loadPoleFigure_generic(fname,varargin{:},'check');
-  
+  [d,options] = feval(['load' type '_generic'],fname,varargin{:},'check');
+    
   if isempty(d)
     interface = '';
   else
