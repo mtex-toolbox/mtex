@@ -16,9 +16,12 @@ set(this_page,'visible','off');
 
 if check_option(varargin,'EBSD')
   select = 2;
+elseif check_option(varargin,'ODF')
+  select = 3;
 else
   select = 1;
 end
+
 handles.tabs = uitabpanel(...
   'Parent',this_page,...
   'TabPosition','lefttop',...
@@ -26,7 +29,7 @@ handles.tabs = uitabpanel(...
   'position',[0,0,w-18,270],...
   'Margins',{[2,2,2,2],'pixels'},...
   'PanelBorderType','beveledout',...
-  'Title',{'Pole Figures','EBSD','Background','Defocussing','Defocussing BG'},...
+  'Title',{'Pole Figures','EBSD','ODF','Background','Defocussing','Defocussing BG'},...
   'FrameBackgroundColor',get(gcf,'color'),...
   'PanelBackgroundColor',get(gcf,'color'),...
   'TitleForegroundColor',[0,0,0],...
@@ -80,8 +83,10 @@ if ~isempty(getappdata(handles.listbox(1),'data'))
   data = setdata(data,d);
   setappdata(handles.listbox(1),'data',data);
 
-else
-  setappdata(handles.listbox(2),'data',data);
+elseif ~isempty(getappdata(handles.listbox(2),'data'))
+  setappdata(handles.listbox(2),'data',data);  
+else  
+  setappdata(handles.listbox(3),'data',data);  
 end
 
 function leave_callback(varargin)
@@ -90,25 +95,36 @@ handles = getappdata(gcbf,'handles');
 lb = handles.listbox;
 pf = getappdata(lb(1),'data');
 ebsd = getappdata(lb(2),'data');
-if isempty(pf) 
-  if isempty(ebsd)
-    error('Add some data files to be imported!');
-  else
-    setappdata(gcbf,'data',ebsd);
-    handles.pages = handles.ebsd_pages;
-  end
-elseif isempty(ebsd) 
+odf = getappdata(lb(3),'data');
+
+s = ~isempty(pf) + ~isempty(ebsd) + ~isempty(odf);
+if s == 0
+  error('Add some data files to be imported!');
+elseif s > 1
+  error('You can only import one type of data! Clear one list to proceed!');
+end
+
+if ~isempty(ebsd) 
+  
+  setappdata(gcbf,'data',ebsd);
+  handles.pages = handles.ebsd_pages;
+  
+elseif ~isempty(odf)
+  
+  setappdata(gcbf,'data',odf);
+  handles.pages = handles.ebsd_pages;
+  
+elseif ~isempty(pf) 
   
   % pole figure correction
-  bg = getappdata(lb(2),'data');
-  def = getappdata(lb(3),'data');
-  def_bg = getappdata(lb(4),'data');
+  bg = getappdata(lb(3),'data');
+  def = getappdata(lb(4),'data');
+  def_bg = getappdata(lb(5),'data');
   pf = correct(pf,'bg',bg,'def',def,'def_bg',def_bg);
 
   setappdata(gcbf,'data',pf);
   handles.pages = handles.pf_pages;
-else
-  error('You can only import either Pole Figure Data or EBSD data! Clear one list to proceed!');
+
 end
 
 setappdata(gcbf,'handles',handles);
@@ -116,7 +132,7 @@ setappdata(gcbf,'handles',handles);
 function addData(h,event,t) %#ok<INUSL>
 
 handles = getappdata(gcbf,'handles');
-type = {'PoleFigure','EBSD','PoleFigure','PoleFigure','PoleFigure'};
+type = {'PoleFigure','EBSD','ODF','PoleFigure','PoleFigure','PoleFigure'};
 addfile(handles.listbox(t),type{t});
 
 

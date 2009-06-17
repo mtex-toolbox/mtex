@@ -27,7 +27,7 @@ if ~isempty(option)>0
 
   % set option
   if ~iscell(option), option = {option};end
-  out_list = {option_list{:},option{:},varargin{:}};
+  out_list = [option_list,option,varargin];
 else
   out_list = option_list;
 end

@@ -86,7 +86,7 @@ else
   leavecallback = getappdata(handles.pages(page),'leave_callback');
   try
     leavecallback();
-  catch
+  catch 
     errordlg(errortext);
     return
   end
@@ -98,10 +98,13 @@ end
 scrsz = get(0,'ScreenSize');
 figure('Position',[scrsz(3)/8 scrsz(4)/8 6*scrsz(3)/8 6*scrsz(4)/8]);
 
-if isa(data,'EBSD')
-  plot_EBSD(gcbf,data(1));
-else
-  plot_pf(gcbf,data);
+switch class(data)
+  case 'EBSD'
+    plot_EBSD(gcbf,data(1));
+  case 'PoleFigure'
+    plot_pf(gcbf,data);
+  case 'ODF'
+    plot_ODF(gcbf,data);
 end
 
 
@@ -112,11 +115,14 @@ lb = handles.listbox;
 
 data = getappdata(gcbf,'data');
 
-if isa(data,'EBSD')  
-  vname = 'ebsd';  
-else    
-  data = modifypf(gcbf,data);
-  vname = 'pf';  
+switch class(data)
+  case 'EBSD'
+    vname = 'ebsd';
+  case 'PoleFigure'
+    data = modifypf(gcbf,data);
+    vname = 'pf';
+  case 'ODF'
+    vname = 'odf';
 end
 
 %% copy to workspace
@@ -126,16 +132,22 @@ if ~get(handles.runmfile,'Value');
   if isempty(a), return;end
   assignin('base',a{1},data);
   if isempty(javachk('desktop')) 
-    if isa(data,'EBSD')
-      disp(['Imported EBSD Data: ', a{1}]);
-      disp(['- <a href="matlab:plot(',a{1},',''silent'')">Plot EBSD Data</a>']);
-      disp(['- <a href="matlab:calcODF(',a{1},')">Calculate ODF</a>']);
-      disp(' ');
-    else
-      disp(['imported Pole Figure Data: ', a{1}]);
-      disp(['- <a href="matlab:plot(',a{1},',''silent'')">Plot Pole Figure Data</a>']);
-      disp(['- <a href="matlab:calcODF(',a{1},')">Calculate ODF</a>']);
-      disp(' ');
+    
+    switch class(data)
+      case 'EBSD'
+        disp(['Imported EBSD Data: ', a{1}]);
+        disp(['- <a href="matlab:plot(',a{1},',''silent'')">Plot EBSD Data</a>']);
+        disp(['- <a href="matlab:calcODF(',a{1},')">Calculate ODF</a>']);
+        disp(' ');
+      case 'PoleFigure'
+        disp(['imported Pole Figure Data: ', a{1}]);
+        disp(['- <a href="matlab:plot(',a{1},',''silent'')">Plot Pole Figure Data</a>']);
+        disp(['- <a href="matlab:calcODF(',a{1},')">Calculate ODF</a>']);
+        disp(' ');
+      case 'ODF'
+        disp(['Imported ODF Data: ', a{1}]);
+        disp(['- <a href="matlab:plot(',a{1},',''silent'')">Plot ODF Data</a>']);
+        disp(' ');
     end
   end
   
@@ -143,21 +155,22 @@ if ~get(handles.runmfile,'Value');
 else 
     
   % extract file names
-  for i = 1:length(lb)
-    fn{i} = getappdata(lb(i),'filename');
-  end
-  
-  
-  if ~isempty(fn{2}) % EBSD data
-    str = exportEBSD(fn{2},data,getappdata(lb(2),'interface'),...
-      getappdata(lb(2),'options'), handles);
-  else
-    fn(2) = [];
-    if all(cellfun('isempty',fn(2:end)))
-      fn = fn{1};
-    end
-    str = exportPF(fn,data,getappdata(lb(1),'interface'),...
-      getappdata(lb(1),'options'), handles);
+  fn = arrayfun(@(x) getappdata(x,'filename'),lb,'UniformOutput',false);
+    
+  switch class(data)
+    case 'EBSD'
+      str = exportEBSD(fn{2},data,getappdata(lb(2),'interface'),...
+        getappdata(lb(2),'options'), handles);
+    case 'PoleFigure'
+      fn(2:3) = [];
+      if all(cellfun('isempty',fn(2:end)))
+        fn = fn{1};
+      end
+      str = exportPF(fn,data,getappdata(lb(1),'interface'),...
+        getappdata(lb(1),'options'), handles);
+    case 'ODF'
+      str = exportODF(fn{3},data,getappdata(lb(3),'interface'),...
+        getappdata(lb(3),'options'), handles);
   end
        
   str = generateCodeString(str);
@@ -180,7 +193,7 @@ try
   data = getappdata(wzrd,'data');
   if isa(data,'EBSD')
     c = getappdata(wzrd,'cs_count');
-    if (((page+delta == 3) && (c < numel(data))) || ((page+delta == 1) & (c > 1)))
+    if (((page+delta == 3) && (c < numel(data))) || ((page+delta == 1) && (c > 1)))
       setappdata(wzrd,'cs_count',c+delta);
       delta = 0;
     end
@@ -189,7 +202,7 @@ try
   gotocallback = getappdata(handles.pages(page),'goto_callback');
   gotocallback();
   set_page(wzrd,page);
-catch 
+catch  %#ok<*CTCH>
   errordlg(errortext);
 end
 
@@ -198,9 +211,15 @@ function str = generateCodeString(strCells)
 
 str = [];
 for n = 1:length(strCells)
-    str = [str, strCells{n}, sprintf('\n')];
+  str = [str, strCells{n}, sprintf('\n')]; %#ok<AGROW>
 end
 
+
+function plot_ODF(wzrd,odf) %#ok<INUSL>
+
+cs = get(odf,'CS');
+h = unique([Miller(1,0,0,cs),Miller(0,1,0,cs),Miller(0,0,1,cs),Miller(1,1,0),Miller(2,1,0)]);
+plotpdf(odf,h(1:min(3,end)),'antipodal');
 
 function plot_EBSD(wzrd,ebsd)  %#ok<INUSL>
 
@@ -221,7 +240,7 @@ function pf = modifypf(wzrd,pf)
 
 handles = getappdata(wzrd,'handles');
 if get(handles.rotate,'value')
-  pf = rotate(pf,str2num(get(handles.rotateAngle,'string'))*degree);
+  pf = rotate(pf,str2num(get(handles.rotateAngle,'string'))*degree); %#ok<ST2NM>
 end
 
 if get(handles.flipud,'value'), pf = flipud(pf);end

@@ -1,4 +1,4 @@
-function addfile(list_handle,varargin)
+function addfile(list_handle,type,varargin)
 
 %% get file names
 if check_option(varargin,'file')
@@ -37,15 +37,8 @@ for i=1:length(fnames)
 %% try to load one file
 
   try
-    if check_option(varargin,'EBSD')
-      [data,interface,options] = ...
-        loadEBSD(strcat(pathname,fnames(i)),interf{:},options{:});
-      idata = length(data);
-    else
-      [data,interface,options,idata] = ...
-        loadPoleFigure(strcat(pathname,fnames(i)),interf{:},options{:});
-    end
-  catch
+    [data interface options idata] = loadData(strcat(pathname,fnames(i)),type,interf{:},'exact',options{:});
+  catch %#ok<CTCH>
     errordlg(errortext);
     break;
   end

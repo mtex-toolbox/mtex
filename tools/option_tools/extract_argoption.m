@@ -17,7 +17,7 @@ out = {};
 for o = 1:length(option_list)
 
   if ischar(option_list{o}) && any(strcmpi(option_list{o},option))
-    out = {out{:},option_list{o:o+1}};
+    out = [out,option_list(o:o+1)]; %#ok<AGROW>
   end
 
 end

@@ -2,7 +2,7 @@ function str = export_CS_tostr(cs)
 
 
 if numel(cs) > 1
-  str = 'CS = [...';
+  str = 'CS = {...';
 else 
   str = 'CS = ';
 end
@@ -41,7 +41,7 @@ for i=1:numel(cs)
   if numel(cs) > 1
     str = [str; {t} ]; %#ok<AGROW>
     if i == numel(cs)
-      str{end} = [ str{end} '];'];
+      str{end} = [ str{end} '};'];
     else
       str{end} = [ str{end} ',...'];
     end

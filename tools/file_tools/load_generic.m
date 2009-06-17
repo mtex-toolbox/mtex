@@ -41,7 +41,7 @@ end
 
 % data found?
 if ~isempty(d)    
-  options = {varargin{:},'noascii'};
+  options = [varargin,{'noascii'}];
   return
 end
 

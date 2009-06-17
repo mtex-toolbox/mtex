@@ -4,7 +4,7 @@ function [options] = generic_wizard(varargin)
 %% Input
 %  data   - input data
 %  header - header of data file
-%  type   - data type ('EBSD','PoleFigure')
+%  type   - data type ('EBSD','PoleFigure','ODF')
 %
 %% Output
 %  options - list of potions to be past to loadEBSD_generic or loadPoleFigure_generic
@@ -34,6 +34,8 @@ if check_option(varargin,'type')
       values = {'Ignore','Euler 1','Euler 2','Euler 3','x','y','Phase','Quat real','Quat i','Quat j','Quat k','Weight'};
     case 'PoleFigure'
       values = {'Ignore','Polar Angle','Azimuth Angle','Intensity','Background','x','y','z'};
+    case 'ODF'
+      values = {'Ignore','Euler 1','Euler 2','Euler 3','Quat real','Quat i','Quat j','Quat k','Weight'};
     otherwise
       disp('wrong option');
       return
@@ -49,7 +51,7 @@ if ~newversion,  v0 = {}; else  v0 = {'v0'}; end
 w = 466;
 tb = 250+10*newversion; %table size
 
-h = tb+310 + 60 * strcmp(type,'EBSD'); 
+h = tb+310 + 60 * any(strcmp(type,{'EBSD','ODF'})); 
 dw = 10;
 cw = (w-3*dw)/4;
 
@@ -104,7 +106,7 @@ try
   for i = 1:length(colnames)
     mtable.getTable.getColumnModel.getColumn(i-1).setCellEditor(editor);
   end
-catch
+catch %#ok<CTCH>
 end
 
 %% checkboxes
@@ -133,15 +135,16 @@ else
     'Position',[2*dw+3*cw dw 80 15],'Parent',chk_angle,'HandleVisibility','off');
   
   
+  if strcmp(type,'EBSD')
+    h3 = uipanel('Parent',htp,'title','Ignore Phase(s)','units','pixels',...
+      'position',[dw h-tb-320 cw*2 46]);
+    phaseopt = uicontrol('Style','Edit',...
+      'BackgroundColor',[1 1 1],...
+      'HorizontalAlignment','left',...
+      'String','0' ,...
+      'Position',[dw 5 cw*2-2*dw 23],'Parent',h3,'HandleVisibility','off');
+  end
   
-  h3 = uipanel('Parent',htp,'title','Ignore Phase(s)','units','pixels',...
-    'position',[dw h-tb-320 cw*2 46]);
-  phaseopt = uicontrol('Style','Edit',...
-    'BackgroundColor',[1 1 1],...
-    'HorizontalAlignment','left',...
-    'String','0' ,...
-    'Position',[dw 5 cw*2-2*dw 23],'Parent',h3,'HandleVisibility','off');
- 
   h3 = uibuttongroup('Parent',htp,'title','Rotation','units','pixels',...
     'position',[2*cw+2*dw h-tb-320 cw*2 46]);
  
@@ -149,8 +152,7 @@ else
     'Position',[dw dw 80 15],'Parent',h3,'HandleVisibility','off');
   passive_box = uicontrol('Style','Radio','String','Passive',...
     'Position',[dw+cw dw 80 15],'Parent',h3,'HandleVisibility','off');
- 
-     
+      
 end
 
 if ~isempty(header)
@@ -169,8 +171,6 @@ uiwait(htp);
 
 if ishandle(htp)
 
-  options = {};
-  
   % get column association
   if verLessThan('matlab','7.4')
     data = get(mtable,'data');
@@ -179,26 +179,31 @@ if ishandle(htp)
   end
 
   ind = find(~strcmpi(data(:)','Ignore'));
-  options = {'ColumnNames',data(ind),'Columns',ind};
+  options = {'ColumnNames',data(ind)};
+  if length(ind) < length(data)
+    options = [options{:},{'Columns',ind}];
+  end
 
   % degree / radians
-  if get(rad_box,'value'), options = {'RADIANS',options{:}};end
+  if get(rad_box,'value'), options = [{'RADIANS'},options];end
   
   if ~strcmp(type,'PoleFigure')
-    
-    phase = str2num(get(phaseopt,'string')); %#ok<ST2NM>
-    if ~isempty(phase)
-      options = {options{:},'ignorePhase',phase};
-    end
-    
+  
     % Eule angle convention
     conventions = {'Bunge','ABG'};
-    options = {options{:},conventions{get(euler_convention,'value')}};
+    options = [options,conventions(get(euler_convention,'value'))];
     
     % active / pasive rotation
     if get(passive_box,'value')
-      options = {options{:},'passive rotation'};
+      options = [options,{'passive rotation'}];
     end
+    
+    if strcmp(type,'EBSD')
+      phase = str2num(get(phaseopt,'string')); %#ok<ST2NM>
+      if ~isempty(phase)
+        options = [options,{'ignorePhase',phase}];
+      end
+    end      
     
   end
 
@@ -230,13 +235,18 @@ uicontrol(...
 
 function cdata = guessColNames(values,l,colnames)
 
-cdata = repmat(values(1),1,l);
+if length(colnames) == l
+  cdata = colnames;
+else
+  cdata = repmat(values(1),1,l);
+end
+
 for i = 1:length(values)
   ind = strmatch(lower(values(i)),lower(colnames));
   if ~isempty(ind), cdata(ind(1)) = values(i); end
 end
 
-% Euler Angler
+% Euler Angle
 ind = [strmatch('euler',lower(colnames)),strmatch('phi',lower(colnames))];
 if length(ind)==3
   cdata{ind(1)} = 'Euler 1';
