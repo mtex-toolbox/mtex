@@ -63,6 +63,7 @@ if strcmpi(prop,'orientation') %&& strcmpi(cc,'ipdf')
   [cs{1:length(orientations)}] = get(orientations,'CS');
   setappdata(gcf,'CS',cs)
   setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d'));
+  setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',xvector,'vector3d'));
   setappdata(gcf,'colorcoding',...
     @(h,i) orientation2color(h,cc,'cs',cs{i},varargin{:}));
   setappdata(gcf,'colorcode',cc);
