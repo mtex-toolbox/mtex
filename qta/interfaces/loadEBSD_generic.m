@@ -1,4 +1,4 @@
-function [odf,options] = loadODF_generic(fname,varargin)
+function [ebsd,options] = loadEBSD_generic(fname,varargin)
 % load pole figure data from (alpha,beta,gamma) files
 %
 %% Description 
@@ -6,20 +6,20 @@ function [odf,options] = loadODF_generic(fname,varargin)
 % *loadEBSD_txt* is a generic function that reads any txt or exel files of
 % diffraction intensities that are of the following format
 %
-%  alpha_1 beta_1 gamma_1 weight_1
-%  alpha_2 beta_2 gamma_2 weight_2
-%  alpha_3 beta_3 gamma_3 weight_3
+%  alpha_1 beta_1 gamma_1 phase_1
+%  alpha_2 beta_2 gamma_2 phase_2
+%  alpha_3 beta_3 gamma_3 phase_3
 %  .      .       .       .
 %  .      .       .       .
 %  .      .       .       .
-%  alpha_M beta_M gamma_M weight_m
+%  alpha_M beta_M gamma_M phase_m
 %
 % The assoziation of the columns as Euler angles, phase informationl, etc.
 % is specified by the options |ColumnNames| and |Columns|. The files can be
 % contain any number of header lines.
 %
 %% Syntax
-%  odf   = loadODF_generic(fname,<options>)
+%  pf   = loadEBSD_txt(fname,<options>)
 %
 %% Input
 %  fname - file name (text files only)
@@ -36,12 +36,12 @@ function [odf,options] = loadODF_generic(fname,varargin)
 % 
 %% Example
 %
-% odf = loadODF_generic('odf.txt','cs',symmetry('cubic'),'header',1,...
-%        'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'weight'},...
-%        'Columns',[1,2,3,5])
+% ebsd = loadEBSD('ebsd.txt',symmetry('cubic'),symmetry,'header',1,...
+%        'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'x' 'y' 'phase'},...
+%        'Columns',[1,2,3,5,6,7])
 %
 %% See also
-% interfacesODF_index loadODF ODF_demo
+% interfacesEBSD_index loadEBSD ebsd_demo
 
 % get options
 cs = get_option(varargin,'cs',symmetry('m-3m'));
@@ -55,17 +55,46 @@ if size(d,1) < 1 || size(d,2) < 3
   error('Generic interface could not detect any numeric data in %s',fname);
 end
 
-% no options given -> ask
-if ~check_option(varargin,'ColumnNames') || ~check_option(varargin,'Columns')
+% check for old version call
+if check_option(varargin,'layout')
   
-  options = generic_wizard('data',d(1:end<101,:),'type','ODF','header',header,'colums',c);
-  if isempty(options), odf = []; return; end
+  warning('MTEX:obsoleteSyntax',...
+    ['Option ''layout'' is obsolete. ' ...
+    'Use ''ColumnNames'' and ''Columns'' instead. '...
+    'You might also simply rerun the import wizzard.']);
+  layout = get_option(varargin,'layout');
+  varargin = delete_option(varargin,'layout',1);
+  ColumnNames = {'Euler 1','Euler 2','Euler 3'};
+  Columns = layout(1:3);
+  
+  if length(layout) == 4
+    ColumnNames = {ColumnNames{:},'Phase'};
+    Columns = layout;
+  end
+  
+  if check_option(varargin,'xy')
+    xy = get_option(varargin,'xy');
+    ColumnNames = {ColumnNames{:},'x','y'};
+    Columns = [layout,xy];
+    varargin = delete_option(varargin,'xy',1);
+  end
+  
+  
+  varargin = {varargin{:},'ColumnNames',ColumnNames,'Columns',Columns};
+end
+
+% no options given -> ask
+if ~check_option(varargin,'ColumnNames')
+  
+  options = generic_wizard('data',d(1:end<101,:),'type','EBSD','header',header,'colums',c);
+  if isempty(options), ebsd = []; return; end
   varargin = {options{:},varargin{:}};
 
 end
 
-cols = get_option(varargin,'Columns');
 names = lower(get_option(varargin,'ColumnNames'));
+cols = get_option(varargin,'Columns',1:length(names));
+
 
 mtex_assert(length(cols) == length(names), 'Length of ColumnNames and Columns differ');
 
@@ -119,10 +148,20 @@ end
    
 if check_option(varargin,'passive rotation'), q = inverse(q); end
  
+%treat other options
+xy = [];
+if istype(names,{'x' 'y'}),
+  xy = d(:,layoutcol(names,{'x' 'y'}));
+end
+  
+phase = [];
+if istype(names,{'Phase'}),
+  phase = d(:,layoutcol(names,{'Phase'}));
+end
   
 %all other as options
 opt = struct;
-opts = delete_option(names,  {euler{:} quat{:}});
+opts = delete_option(names,  {euler{:} quat{:} 'Phase' 'x' 'y'});
 if ~isempty(opts)
   
   for i=1:length(opts),
@@ -134,11 +173,37 @@ if ~isempty(opts)
   opt = struct(opts_struct{:});
 end
 
+%% split according to phase
+
+phases = unique(phase);
+ignorePhase = get_option(varargin,'ignorePhase',0);
+phases(arrayfun(@(x) any(x == ignorePhase),phases)) = [];
+
+if length(phases)>20
+  warning('MTEX:tomanyphases','Found more then 20 phases. I''m going to ignore them.');
+  phases = [];
+end
+
 % return varargin as options
 options = varargin;
 
-% load single orientations
+% load single phase
+if isempty(phases) || sum(phase ~= 0) < 10
+  ebsd = EBSD(SO3Grid(q,cs,ss),cs,ss,varargin{:},'xy',xy,'options',opt,'phase',1); 
+  return
+end
 
-ebsd = EBSD(SO3Grid(q,cs,ss),cs,ss,varargin{:},'options',opt);
+%
+if numel(cs) < length(phases), cs = repmat(cs(1),1,length(phases));end
 
-odf = calcODF(ebsd,'varargin');
+% load multiple phases
+for ip = 1:length(phases)
+
+  ind = phase == phases(ip);
+  pxy = xy(ind,:);
+  popt = structfun(@(x) x(ind),opt,'uniformOutput',false);
+  
+  ebsd(ip) = EBSD(SO3Grid(q(ind),cs(ip),ss),cs(ip),ss,varargin{:},'xy',pxy,'phase',phases(ip),'options',popt); %#ok<AGROW>
+end
+
+
