@@ -28,6 +28,7 @@ argin_check(h,'Miller');
 argin_check(r,'vector3d');
 argin_check(CS,'symmetry');
 argin_check(SS,'symmetry');
+h = set(h,'CS',CS);
 
 if ~isempty(varargin) && isa(varargin{1},'kernel')
   psi = varargin{1};

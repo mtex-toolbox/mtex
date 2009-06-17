@@ -22,7 +22,7 @@ function v = fibrevolume(odf,h,r,radius,varargin)
 
 % check input
 argin_check(h,{'Miller','vector3d'});
-if isa(h,'Miller'), set(h,'CS',odf(1).CS);end
+if isa(h,'Miller'), h = set(h,'CS',odf(1).CS);end
 argin_check(r,'vector3d');
 argin_check(radius,'double');
 
@@ -31,26 +31,27 @@ if ~strcmp(Laue(odf(1).SS),'-1')
 end
 
 % get resolution
-res = get_option(varargin,'RESOLUTION',min(2.5*degree,radius/10),'double');
+res = get_option(varargin,'RESOLUTION',min(2.5*degree,radius/50),'double');
 
 % discretisation
-S2G = S2Grid('equispaced','resolution',res);
+[maxtheta,maxrho,minrho] = getFundamentalRegionPF(odf(1).CS);  
+S2G = S2Grid('equispaced','resolution',res,'MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,varargin{:});
 lS2G = GridLength(S2G);
-S2G = subGrid(S2G,vector3d(h),radius);
+S2G = subGrid(S2G,symvec(h),radius);
 
 % estimate volume portion of odf space
-if radius < rotangle_max_z(odf(1).CS) / 2
-  % theoretical value
-  f = (1-cos(radius))./2;
-else
+%if radius < rotangle_max_z(odf(1).CS) / 8
+%  % theoretical value
+%  f = length(odf(1).CS) * (1-cos(radius))./2;
+%else
   % numerical value
   f = GridLength(S2G)/lS2G;
-end
+%end  f = GridLength(S2G)/lS2G;
 
 % eval odf
 if f==0
   v = 0;
 else
-  v = mean(pdf(odf,S2G,r)) * f;
+  v = min(1,mean(pdf(odf,S2G,r)) * f);
 end
 
