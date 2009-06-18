@@ -30,6 +30,7 @@ end
 import_gui_cs(h);
 import_gui_ss(h);
 import_gui_miller(h);
+import_gui_kernel(h);
 import_gui_finish(h);
 
 
@@ -44,8 +45,9 @@ for i = 1:length(handles.listbox)
   setappdata(handles.listbox(i),'idata',0);
 end
 
-handles.pf_pages = handles.pages;
-handles.ebsd_pages = handles.pages([1:3 5]);
+handles.pf_pages = handles.pages([1:4 6]);
+handles.ebsd_pages = handles.pages([1:3 6]);
+handles.odf_pages = handles.pages([1:3 5 6]);
 setappdata(h,'handles',handles);
 
 % activate first page

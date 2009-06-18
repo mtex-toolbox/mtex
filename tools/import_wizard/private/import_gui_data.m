@@ -112,7 +112,7 @@ if ~isempty(ebsd)
 elseif ~isempty(odf)
   
   setappdata(gcbf,'data',odf);
-  handles.pages = handles.ebsd_pages;
+  handles.pages = handles.odf_pages;
   
 elseif ~isempty(pf) 
   

@@ -38,7 +38,7 @@ try
   for i = 1:length(props)
     if ~isempty(props{i})
       columns = [columns,str2double(props{i}{:}(1))]; %#ok<AGROW>
-      columnNames = {columnNames{:},props{i}{:}{2}};
+      columnNames = [columnNames,{props{i}{:}{2}}]; %#ok<AGROW>
     end
   end
   
@@ -49,5 +49,5 @@ end
 if check_option(varargin,'check'), return;end
 
 ebsd = loadEBSD_generic(fname,'bunge','radiant',...
-  'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' columnNames{:}},...
+  'ColumnNames',[{'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y'} columnNames],...
   'Columns',[angles,xy,columns],varargin{:},'header',nh);
