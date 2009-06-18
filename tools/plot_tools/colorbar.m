@@ -3,7 +3,7 @@ function cb = colorbar(varargin)
 
 %% EBSD plot?
 if isappdata(gcf,'colorcoding')
-  ebsdColorbar
+  ebsdColorbar(varargin{:});
   return
 end
 
