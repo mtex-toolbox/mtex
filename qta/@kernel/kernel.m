@@ -24,6 +24,10 @@ function K = kernel(name,varargin)
 %% See also
 % ODF_index kernel/gethw unimodalODF uniformODF
        
+kernels = {'Laplace','Abel Poisson','de la Vallee Poussin',...
+    'von Mises Fisher','fibre von Mises Fisher','Square Singularity',...
+    'Gauss Weierstrass','local','Dirichlet','Fourier','bump','user'};
+
 if nargin == 0
   
   K.name = [];
@@ -36,6 +40,11 @@ if nargin == 0
   K = class(K,'kernel');
   return;
   
+elseif isa(name,'char') && strcmpi(name,'names')
+  
+  K = kernels;
+  return
+  
 elseif isa(name,'kernel')
   
   K = name; return;
@@ -44,9 +53,7 @@ elseif ~isa(name,'char')
   
   error('first parameter should be char');
   
-elseif ~any(strcmpi(name,{'Laplace','Abel Poisson','de la Vallee Poussin',...
-    'von Mises Fisher','fibre von Mises Fisher','Square Singularity',...
-    'Gauss Weierstrass','local','Dirichlet','Fourier','bump','user'}))
+elseif ~any(strcmpi(name,kernels))
   
   error(sprintf(['unknown kernel: "',name,'".\nAvailable kernels are: \n',...
     'Laplace, \n',...
