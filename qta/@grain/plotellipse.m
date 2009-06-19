@@ -58,11 +58,11 @@ sina=sin(angl);
 
 newMTEXplot;
 
-[cosp,sinp] = fixMTEXscreencoordinates(cosp,sinp,varargin);
-[cosa,sina] = fixMTEXscreencoordinates(cosa,sina,varargin);
-[la,lb] = fixMTEXscreencoordinates(la,lb,varargin);
-[ka,kb] = fixMTEXscreencoordinates(ka,kb,varargin);
-[x,y,lx,ly] = fixMTEXscreencoordinates(x,y,varargin);  
+[cosp,sinp] = fixMTEXscreencoordinates(cosp,sinp,varargin{:});
+[cosa,sina] = fixMTEXscreencoordinates(cosa,sina,varargin{:});
+[la,lb] = fixMTEXscreencoordinates(la,lb,varargin{:});
+[ka,kb] = fixMTEXscreencoordinates(ka,kb,varargin{:});
+[x,y,lx,ly] = fixMTEXscreencoordinates(x,y,varargin{:});  
 
 %%
 

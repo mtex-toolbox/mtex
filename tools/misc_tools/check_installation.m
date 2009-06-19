@@ -26,9 +26,9 @@ rh = fft_rho(rh);
 gh = [reshape(rh,1,[]);reshape(th,1,[])];
 r = [reshape(rh,1,[]);reshape(th,1,[])];
 
-c = ones(10,1);
+c = ones(size(th));
 
-Al = ones(10,1);
+Al = ones(size(th));
 
 try
     

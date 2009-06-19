@@ -111,7 +111,7 @@ if property
     fac = get_faces({tp.xy}); % and its faces    
     xy = vertcat(tp.xy);
     if ~isempty(xy)
-      [X, Y lx ly] = fixMTEXscreencoordinates(xy(:,1),xy(:,2),varargin);
+      [X, Y lx ly] = fixMTEXscreencoordinates(xy(:,1),xy(:,2),varargin{:});
     end    
     
     if ~isempty(fac)      
@@ -125,7 +125,7 @@ if property
           %hole polygon
           hp = [tp(hh).hxy];
           hxy = vertcat(hp{:});
-          [hX,hY] = fixMTEXscreencoordinates(hxy(:,1),hxy(:,2),varargin);
+          [hX,hY] = fixMTEXscreencoordinates(hxy(:,1),hxy(:,2),varargin{:});
           hfac = get_faces(hp);
             c = repmat(get(gca,'color'),size(hfac,1),1);
             
@@ -174,7 +174,7 @@ elseif exist('ebsd','var')
 else 
   
   xy = cell2mat(arrayfun(@(x) [x.xy ; NaN NaN],p,'UniformOutput',false)); 
-  [X,Y, lx,ly] = fixMTEXscreencoordinates(xy(:,1),xy(:,2),varargin);
+  [X,Y, lx,ly] = fixMTEXscreencoordinates(xy(:,1),xy(:,2),varargin{:});
   
   ih = ishold;
   if ~ih, hold on, end
@@ -182,7 +182,7 @@ else
   h(1) = plot(X(:),Y(:));
 
   %holes
-  if ~check_option(varargin,'noholes') & ~convhull
+  if ~check_option(varargin,'noholes') && ~convhull
     bholes = hasholes(grains);
     
     if any(bholes)
@@ -192,7 +192,7 @@ else
         cell2mat(cellfun(@(h) [h;  NaN NaN], x.hxy,'uniformoutput',false)') ,...
         ps,'uniformoutput',false));
       
-      [X,Y] = fixMTEXscreencoordinates(xy(:,1),xy(:,2),varargin);
+      [X,Y] = fixMTEXscreencoordinates(xy(:,1),xy(:,2),varargin{:});
       h(2) = plot(X(:),Y(:));
      
     end
