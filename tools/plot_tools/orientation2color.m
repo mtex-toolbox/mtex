@@ -22,7 +22,7 @@ for i = 1:length(grid)
       d = euler2rgb(grid(i),varargin{:});
     case model(2)
       d = rotangle(quaternion(grid(i))).';
-      d = 1-repmat(d ./ max(d),1,3);
+      d = 1-repmat(( d-min(d) )./ (max(d)-min(d)),1,3);
     case model(3)
       d = sigma2rgb(grid(i),varargin{:});
     case model(4)
