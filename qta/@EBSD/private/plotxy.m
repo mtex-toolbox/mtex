@@ -2,7 +2,7 @@ function plotxy(x,y,d,varargin)
 % plot d along x and y
 
 
-[x,y, lx,ly] = fixMTEXscreencoordinates(x,y,varargin);
+[x,y, lx,ly] = fixMTEXscreencoordinates(x,y,varargin{:});
 
 %% get shape of plotting region
 rx = unique(sort(x));

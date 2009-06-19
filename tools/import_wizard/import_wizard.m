@@ -11,7 +11,7 @@ function import_wizard( varargin )
 % interfacesPoleFigure_index interfacesEBSD_index
 
 % mainframe
-h = import_gui_empty('width',500,varargin);
+h = import_gui_empty('width',500,varargin{:});
 iconMTEX(h);
 
 % add pages

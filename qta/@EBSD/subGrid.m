@@ -18,6 +18,6 @@ function ebsd = subGrid(ebsd,q,epsilon,varargin)
 cz = [0 cumsum(sampleSize(ebsd))];
 ind = false(cz(end),1);
 for k=1:numel(ebsd)
-  [ignore ind(cz(k)+1:cz(k+1))] = subGrid(ebsd(k).orientations,q,epsilon,varargin);  
+  [ignore ind(cz(k)+1:cz(k+1))] = subGrid(ebsd(k).orientations,q,epsilon,varargin{:});  
 end
 ebsd = copy(ebsd,ind);
