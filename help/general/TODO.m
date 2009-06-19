@@ -1,19 +1,23 @@
 %% TODO List
 %
 %
-%% MTEX 1.2
+%% MTEX 2.0
 %
-% * done -> check! make colorcoding in spatial ebsd plot right
-% * done -> check! implement and test second aufstellung
-% * implement loadEBSD('file','columnames',{'alpha','beta','gamma'},'columns',[1 2 3])
-% * incorporate quaternions interface into ordinary interface
-% * implement standard lagen
-% * done -> check! - implement volume the correct way
-% * done -> check! - fliplr and flipud should not change max_theta max_rho 
+% * fix edit m-file in documentation
+% * fix flipud,... in plotxy
+% * better exportODF function
+% * fix crystal coordinate system for symmetry 2/m
+% * allow copyproperty(ebsd,'all') and copyproperty(ebsd,'orientation')
+% * fix empty ebsd object does not give an error in any function
+% * finish ODF import wizard
+% * make that old convention cs = [cs1,cs2] also works in loadData + warning
+% * document new functionality
+% * work on compatibility issues, i.e. make an directory that will be added
+% to path when necassary
 %
 %% Sudent projects
 %
-% * grain analysis
+% * grain analysis 
 % * robust mean
 % * cluster analysis of EBSD data
 % * cluster analysis of ODF
