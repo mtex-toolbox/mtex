@@ -7,7 +7,7 @@ function c = orientation2color(grid,coloring,varargin)
 %
 
 model = {'bunge','angle','sigma','ihs','ipdf',...
-    'rodrigues','rodriguesquat','rodriguesinverse','euler'};
+    'rodrigues','rodriguesquat','rodriguesinverse','euler','bunge2'};
 
 if nargin == 0, c = model; return; end
 
@@ -51,6 +51,8 @@ for i = 1:length(grid)
       d = ipdf2rgb(h,cs,varargin{:});
     case model(9)
       d = euler2rgb2(grid(i),varargin{:});
+    case model(10)
+      d = euler2rgb3(grid(i),varargin{:});
     otherwise
       error('Unknown Colorcoding')
   end
