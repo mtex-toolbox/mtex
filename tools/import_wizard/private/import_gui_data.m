@@ -61,7 +61,14 @@ for i = 1:length(panels)
     'String','Remove File',...
     'CallBack',{@delData,i},...
     'Position',[w-145 ph-90 110 25]);
-
+  
+  if i == 2
+  handles.importcpr = uicontrol(...
+    'Parent',panels(i),...
+    'String','Import from Project',...
+    'CallBack',{@importProjectSettings},...
+    'Position',[w-145 ph-150 110 25]);
+  end
 end
 
 setappdata(this_page,'goto_callback',@goto_callback);
@@ -141,3 +148,25 @@ function delData(h,event,t)  %#ok<INUSL>
 handles = getappdata(gcbf,'handles');
 delfile(handles.listbox(t));
 
+
+function importProjectSettings(h,event)
+
+
+handles = getappdata(gcbf,'handles');
+lb = handles.listbox;
+ebsd = getappdata(lb(2),'data');
+
+
+if ~isempty(ebsd) 
+  try
+    [file path] = uigetfile('*.cpr','Select associated CPR Project-file');
+    if file ~=0
+      phases = cprproject_read(fullfile(path,file));
+      ebsd = set(ebsd,'CS',phases(get(ebsd,'phase')));  
+      setappdata(lb(2),'data',ebsd);
+      msgbox('Phases information successfully loaded!')
+    end
+  catch
+    errordlg('failed to import Project file')
+  end
+end

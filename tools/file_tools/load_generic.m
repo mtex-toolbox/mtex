@@ -16,9 +16,9 @@ if ~check_option(varargin,'noascii')
   try
     if check_option(varargin,'check')
       [d,ffn,nh,SR,header] = txt2mat(fname,options{2:end},...
-        'RowRange',[1 1000],'InfoLevel',0);
+        'RowRange',[1 1000],'InfoLevel',0,'ReplaceChar',{'\tR ';',R.'},'ReadMode','block');
     else
-      [d,ffn,nh,SR,header] = txt2mat(fname,options{2:end},'InfoLevel',1);
+      [d,ffn,nh,SR,header] = txt2mat(fname,options{2:end},'InfoLevel',1,'ReplaceChar',{'\tR ';',R.'},'ReadMode','block');
     end
   catch %#ok<CTCH>
   end
