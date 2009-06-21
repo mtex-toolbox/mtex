@@ -15,7 +15,7 @@ function plot(pf,varargin)
 
 %% new plot
 newMTEXplot('ensureTag','pdf','ensureAppdata',...
-    {{'CS',pf(1).CS},{'SS',pf(1).SS},{'h',get(pf,'h')}})
+    {{'CS',pf(1).CS},{'SS',pf(1).SS},{'h',get(pf,'h')}});
 
 field = lower(get_option(varargin,'colorcoding',[]));
 if isfield(pf(1).options,field)
