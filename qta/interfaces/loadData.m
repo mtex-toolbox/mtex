@@ -47,7 +47,7 @@ end
 if ~isempty(varargin) && checkClass(varargin{1},'symmetry')
   cs = varargin{1};varargin = {varargin{2:end}};
   
-  if ~iscell(cs), cs = mat2cell(cs,1,ones(size(cs))); end;
+  if ~iscell(cs) && strcmp(type,'EBSD'), cs = mat2cell(cs,1,ones(size(cs))); end;
 end
 
 if ~isempty(varargin) && checkClass(varargin{1},'symmetry')
