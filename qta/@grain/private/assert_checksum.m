@@ -1,15 +1,14 @@
 function [members_ebsd members_grains ids] = assert_checksum(grains,ebsd)
 
 
-
-checksum = (unique([grains.checksum]));  
-checksums = strcat('grain_id', cellstr(dec2hex(checksum)));
 opts = struct(ebsd);
 
-if length(checksums) > 1  
+checksum = ['grain_id', dec2hex(grains(1).checksum)];
+
+if any(diff([grains.checksum]))
 	error('operation with grain compositions not supported');
-elseif any(strcmpi(checksums, fields(opts(1).options)))
-  ids = get(ebsd,checksums{:});
+elseif any(strcmpi( checksum, fields(opts(1).options)))
+  ids = get(ebsd,checksum);
   gids = [grains.id];
  	members_ebsd = ismember(ids,gids);
   if nargout > 1

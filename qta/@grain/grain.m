@@ -13,13 +13,40 @@ function [gr id] = grain(id,varargin)
 %% See also
 % EBSD/segment2d
 
-  gr.checksum = [];
+
+if nargin > 0 && strcmp(id,'direct')
+  
+  gr.id = varargin{1};
+  gr.cells = varargin{2};
+  gr.neighbour = varargin{3};
+	%geometry
+  gr.polygon = varargin{4};
+  %checksum
+  gr.checksum = varargin{5};
+  %subfractions
+  if ~isempty(varargin{6});
+    gr.subfractions = varargin{6};
+  else
+    gr.subfractions.xx = [];
+    gr.subfractions.yy = [];
+    gr.subfractions.pairs = [];
+  end
+  %allow arbitrary properties
+  gr.properties = varargin{7};
+  
+  superiorto('EBSD');
+  gr = class(gr,'grain');
+  return 
+end
+
   gr.id = [];
   gr.cells = [];
   gr.neighbour = [];
 	%geometry
   gr.polygon.xy = [];
   gr.polygon.hxy = []; 
+  %checksum
+  gr.checksum = [];
   %subfractions
   gr.subfractions.xx = [];
   gr.subfractions.yy = [];

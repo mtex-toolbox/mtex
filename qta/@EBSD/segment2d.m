@@ -97,6 +97,7 @@ inner = T1 & T3 ;
 [ix iy] = find(inner);
 [ix ndx] = sort(ix);
 cfr = unique(ix);
+cfr = sparse(1,cfr,1:length(cfr),1,length(nn));
 iy = iy(ndx);
 innerc = mat2cell(iy,histc(ix,unique(ix)),1);
 
@@ -121,7 +122,7 @@ xx = [vert(lines(:,1),1) vert(lines(:,2),1)];
 yy = [vert(lines(:,1),2) vert(lines(:,2),2)];
 
 nic = length(innerc);
-fractions = cell(nic);
+fractions = cell(size(nic));
 
 for k=1:nic
   mm = ismember(ll,innerc{k});
@@ -138,6 +139,7 @@ end
 %% conversion to cells
 
 ids = ids(n); %sort back
+phase = phase(n);
 
 %store grain id's into ebsd option field
 cids =  [0 cumsum(sampleSize(ebsd))];
@@ -154,10 +156,10 @@ cells = cells(n);
 id = mat2cell(iy,1,histc(ix,unique(ix)));
 
 [ix iy] = find(nn);
-nfr = unique(iy);
+iyu = unique(iy);
+nfr = sparse(1,iyu,1:length(iyu),1,length(nn));
 if ~isempty(ix)
-  histc(iy,unique(iy));
-  nn = mat2cell(ix,histc(iy,unique(iy)),1);
+  nn = mat2cell(ix,histc(iy,iyu),1);
 else
   nn = cell(1);
 end
@@ -170,14 +172,26 @@ disp(['  ebsd segmentation: '  num2str(s(1)) ' sec']);
 tic
 
 nc = length(id);
-grains = grain(nc);
+grains = cell(1,nc);
+
 for k=1:nc
   regionid = id{k};
   ply = createpolygon(cells(regionid),vert);
-
-  grains(k) = grain(k, regionid, nn{find(k == nfr)},...
-    ply,checksum,fractions{find(k == cfr)});
+  
+  nei = [];
+  if nfr(k), nei = nn{nfr(k)}; end
+  
+  fra =[];
+  if cfr(k), fra = fractions{cfr(k)}; end
+  
+  
+  ph = phase(regionid(1));  
+  grains{k} = grain('direct',k, regionid,nei,...
+    ply,checksum,fra, ...
+    struct( 'phase',ph,'CS', phaseCS{ph},'SS', phaseSS{ph}) );
+ 
 end
+grains = horzcat(grains{:});
 
 s(3) = toc;
 disp(['  grain generation:  '  num2str(s(3)) ' sec' ]);
@@ -215,9 +229,6 @@ switch lower(angletype)
 end
 
 
-
-%misorientation
-%[q,omega] = getFundamentalRegion(ebsd(2).orientations);
 
 function ids = graph2ids(A)
 
@@ -293,7 +304,6 @@ xy = [xy; dummy];
 
 [v c] = voronoin(xy,{'Q7'});   %Qf {'Qf'} ,{'Q7'}
 
-
 % prepare data
   %c = c(1:end-length(dummy));
 c(end-length(dummy)+1:end) = [];
@@ -302,12 +312,21 @@ c(end-length(dummy)+1:end) = [];
 il = cat(2,c{:});
 jl = zeros(1,length(il));
 
-cl = cellfun('prodofsize',c);
+cl = cellfun('length',c);
 ccl = [ 0 ;cumsum(cl)];
 for i=1:length(c)
   jl(ccl(i)+1:ccl(i+1)) = i;
 end
-  clear cl ccl
+
+%sort everything clockwise
+dcv = diff(v([c{:}],:));
+x = dcv(:,1); y = dcv(:,2);
+l = ccl(end)-1;
+dir = x(1:l-1).*y(2:l)-x(2:l).*y(1:l-1);
+dir = dir( ccl(1:end-1)+1);
+c(dir>0) = cellfun(@fliplr,c(dir>0),'uniformoutput',false);
+
+  clear cl ccl dir l x y dcv
 % vertice map
 T = sparse(jl,il,1); 
   clear jl il
@@ -317,6 +336,7 @@ T(:,1) = 0; %inf
 F = T * T' > 1;
 clear T
 F = F - speye(length(c));
+
 
 
 
@@ -330,28 +350,25 @@ if length(c) == 1  %one cell
 else             
   %shift indices
   inds = 2:length(gl)+1;
-  r1 = cellfun('prodofsize',c);
+  r1 = cellfun('length',c);
   r1 = cumsum(r1);
   r2 = [1 ; r1+1];
   r2(end) =[];  
   inds(r1) = r2;
-  %	clear r1 r2
   
   gr = gl(inds); %partner pointel
-  %	clear inds 
-  ii = [gl ;gr]; % linels  
-  %	clear gl gr
+  ii = [gl ;gr]'; % linels  
   
 % remove double edges
-	ii = sort(ii)';
-  ii = sortrows(ii);  %transpose
+  tmpii = sort(ii,2);
+  [tmpii ndx] = sortrows(tmpii);  %transpose
   
-  dell = all(diff(ii) == 0,2);   %entry twice
+  dell = all(diff(tmpii) == 0,2);   %entry twice  
   dell = [ 0; dell] | [ dell; 0]; 
-  ii(dell,:) = [];  % free boundary  
-  %  clear dell
- 
-  nf = length(ii);  
+  gl = gl(ndx(~dell));
+  gr = gr(ndx(~dell));
+  
+  nf = length(gr)*2;  
   f = zeros(1,nf);  %minimum size
  
   if isempty(ii)
@@ -360,32 +377,30 @@ else
     return;
   end
     
-%hamiltonian  trials   /eulerian?
-  %setup first pointel   
-  f(1) = ii(1,1);
+%hamiltonian  trials
+  f(1) = gl(1);
   cc = 0; 
-  
-  k = 2;
-   
-  %for k=2:nf+1
-  while ~isempty(ii)
-    [ro co] = find(f(k-1) == ii);
-     
-    if ~isempty(co)
+      
+  k=2;
+  while 1
+    ro = find(f(k-1) == gr);
+    if ~isempty(ro)
       ro = ro(end);
-      co = co(end);
-      f(k) = ii(ro,3-co);     
-    else    
-      f(k) = ii(1,1);
-      cc(end+1) = k-1;
+      f(k) = gl(ro);     
+    else  
+      ro = find(gr>0);
+      if ~isempty(ro)
+        ro = ro(1);
+        f(k) = gl(ro);
+        cc(end+1) = k-1;
+      else
+        break;
+      end 
     end
     
-    ii(ro,:) = [];  %delete visited point
-    k = k+1; %for
+    gr(ro) = -1;
+    k = k+1;
   end
-  
-  
- %   clear ii
   
 %convert to cells
   nc = length(cc);
@@ -393,9 +408,12 @@ else
   
   plygn = cell(1,nc);
   for k=1:nc 
-    plygn{k} = [f(cc(k)+1:cc(k+1)) f(cc(k)+1)];
+    if k > 1
+      plygn{k} = [f(cc(k)+1:cc(k+1)) f(cc(k)+1)];
+    else
+      plygn{k} = f(cc(k)+1:cc(k+1));
+    end
   end  
-  %  clear f cc
 
 %border
   psz = length(plygn);

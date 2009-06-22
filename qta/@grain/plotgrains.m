@@ -83,13 +83,12 @@ if property
           grid = SO3Grid(qm(sel),CS(m(i)),SS(m(i)));       
           d(sel,:) = orientation2color(grid,cc,varargin{:});
         end
-        if strcmpi(cc,'ipdf')
-          setappdata(gcf,'CS',vec2cell(CS(m)));
-          setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d'));
-          setappdata(gcf,'colorcoding',...
-            @(h,i) orientation2color(h,cc,'cs',CS(m(i)),varargin{:}))
-          setappdata(gcf,'options',extract_option(varargin,'antipodal'));
-        end
+        
+        setappdata(gcf,'CS',vec2cell(CS(m)))
+        setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d')); 
+        setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
+        setappdata(gcf,'colorcoding',cc);
+        setappdata(gcf,'options',extract_option(varargin,'antipodal'));
       case 'phase'
         [x x d] = unique(get(grains,'phase')');
         co = get(gca,'colororder');
@@ -232,7 +231,7 @@ end
 function ind = splitdata(pl)
 
 % make n - partitions
-n = 1:2;
+n = 1:3;
 n = sum(2.^n)+1;
 
 pk{1} = pl;
