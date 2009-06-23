@@ -42,9 +42,16 @@ if nargin > 1
         varargout{1} = {grains.(optfield)};
       case fields(grains)
         varargout{1} = [grains.(optfield)]; 
-      case fields(grains(1).properties)  
-        property = [grains.properties];        
-        varargout{1} = [property.(optfield)]; 
+      case fields(grains(1).properties)          
+        opt = cell(size(grains));
+        for k=1:length(opt)
+          opt{k} = grains(k).properties.(optfield);
+        end        
+        if any(strcmpi(optfield,{'CS','SS'}))          
+          varargout{1} = opt;
+        else 
+          varargout{1} = [opt{:}];
+        end
       otherwise
          error('Unknown field in class grain')
     end

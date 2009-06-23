@@ -15,30 +15,12 @@ function [gr id] = grain(id,varargin)
 
 
 if nargin > 0 && strcmp(id,'direct')
-  
-  gr.id = varargin{1};
-  gr.cells = varargin{2};
-  gr.neighbour = varargin{3};
-	%geometry
-  gr.polygon = varargin{4};
-  %checksum
-  gr.checksum = varargin{5};
-  %subfractions
-  if ~isempty(varargin{6});
-    gr.subfractions = varargin{6};
-  else
-    gr.subfractions.xx = [];
-    gr.subfractions.yy = [];
-    gr.subfractions.pairs = [];
-  end
-  %allow arbitrary properties
-  gr.properties = varargin{7};
-  
+  gr = varargin{1};  
   superiorto('EBSD');
   gr = class(gr,'grain');
   return 
 end
-
+  
   gr.id = [];
   gr.cells = [];
   gr.neighbour = [];
@@ -52,7 +34,8 @@ end
   gr.subfractions.yy = [];
   gr.subfractions.pairs = [];
   %allow arbitrary properties
-  gr.properties = struct;
+  gr.properties = struct;  
+  gr.comment = [];
 
 if nargin > 0 
   
