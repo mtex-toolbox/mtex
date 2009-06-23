@@ -2,7 +2,11 @@ function display(grains)
 % standart output
 
 disp(' ')
-str = [inputname(1),' = grain data '];
+if ~isempty(grains(1).comment)
+  str = grains(1).comment;
+else
+  str = [inputname(1),' = grain data '];
+end
 disp(str);
 disp(repmat('-', size(str)))
 if ~isempty(grains) 

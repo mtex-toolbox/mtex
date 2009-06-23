@@ -4,8 +4,11 @@ function [members_ebsd members_grains ids] = assert_checksum(grains,ebsd)
 opts = struct(ebsd);
 
 checksum = ['grain_id', dec2hex(grains(1).checksum)];
+ 
+a = grains(1).checksum;
+b = [grains.checksum];
 
-if any(diff([grains.checksum]))
+if any(a ~= b)
 	error('operation with grain compositions not supported');
 elseif any(strcmpi( checksum, fields(opts(1).options)))
   ids = get(ebsd,checksum);

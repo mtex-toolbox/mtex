@@ -21,7 +21,8 @@ function [grains ebsd] = segment2d(ebsd,varargin)
 
 %% segmentation
 % prepare data
-tic;
+
+s = tic;
 
 xy = vertcat(ebsd.xy);
 
@@ -37,6 +38,10 @@ rl = [ 0 cumsum(l)];
 phase = ones(1,sum(l));
 phaseCS = cell(numel(l),1);
 phaseSS = cell(numel(l),1);
+phase_ebsd = get(ebsd,'phase');
+phase_ebsd = mat2cell(phase_ebsd,ones(size(phase_ebsd)),1);
+comment = get(ebsd,'comment');
+
 for i=1:numel(ebsd)
    phaseCS{i} = getCSym(ebsd(i).orientations);
    phaseSS{i} = getSSym(ebsd(i).orientations);
@@ -55,20 +60,14 @@ phase = phase(m);
   [sm sn] = size(neighbours); %preserve size of sparse matrices
 [ix iy]= find(neighbours);
 
-%s(1) = toc;
 
 %% disconnect phases
-
-%tic
 
 phases = sparse(ix,iy,phase(ix) ~= phase(iy),sm,sn);
 phases = xor(phases,neighbours);
 [ix iy]= find(phases);
 
-%s(1) =  toc;
-
 %% angel to neighbours
-%tic
 
 angels = sparse(ix,iy, nangle(z(ix),z(iy),phase(ix), phaseCS, phaseSS, varargin{:}),sm,sn);
   
@@ -81,8 +80,6 @@ regions = xor(angels,phases);
 
 ids = graph2ids(regions);
 
-%s(1) = toc; 
- 
 %% retrieve neighbours
 
 T2 = xor(regions,neighbours); %former neighbours
@@ -164,16 +161,18 @@ else
   nn = cell(1);
 end
 
-s(1) = toc;
-disp(['  ebsd segmentation: '  num2str(s(1)) ' sec']);
+disp(['  ebsd segmentation: '  num2str(toc(s)) ' sec']);
 
 
 %% retrieve polygons
-tic
+s = tic;
 
 nc = length(id);
-grains = cell(1,nc);
 
+comment =  ['from ' comment];
+gr(nc) = struct(grain);
+
+ph = zeros(1,nc);
 for k=1:nc
   regionid = id{k};
   ply = createpolygon(cells(regionid),vert);
@@ -184,19 +183,32 @@ for k=1:nc
   fra =[];
   if cfr(k), fra = fractions{cfr(k)}; end
   
+  gr(k).id = k;
+  gr(k).cells = regionid;
+  gr(k).neighbour = nei;
+	%geometry
+  gr(k).polygon = ply;
+  %checksum
+  gr(k).checksum = checksum;
+  %subfractions
+  gr(k).subfractions = fra;
+  %allow arbitrary properties
+  ph(k) = phase(regionid(1));
   
-  ph = phase(regionid(1));  
-  grains{k} = grain('direct',k, regionid,nei,...
-    ply,checksum,fra, ...
-    struct( 'phase',ph,'CS', phaseCS{ph},'SS', phaseSS{ph}) );
- 
+  gr(k).comment = comment;
 end
-grains = horzcat(grains{:});
 
-s(3) = toc;
-disp(['  grain generation:  '  num2str(s(3)) ' sec' ]);
+properties = struct( 'phase',phase_ebsd(ph),...
+                     'CS', phaseCS(ph),...
+                     'SS', phaseSS(ph));
+for k=1:nc
+  gr(k).properties = properties(k);
+end
+
+grains = grain('direct',gr);
+
+disp(['  grain generation:  '  num2str(toc(s)) ' sec' ]);
 disp(' ')
-
 
 
 
@@ -385,6 +397,7 @@ else
   k=2;
   while 1
     ro = find(f(k-1) == gr); % this can be done faster, since only the last match is of interest
+    
     if ~isempty(ro)
       ro = ro(end);
       f(k) = gl(ro);     
