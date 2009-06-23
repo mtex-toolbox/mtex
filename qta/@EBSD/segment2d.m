@@ -217,9 +217,10 @@ switch lower(angletype)
       	cur = ind(part(k):part(k+1)-1);
                 
         ql = symmetriceQuat(phaseCS{i},phaseSS{i},zl(cur)); 
-        qr = repmat(inverse(zr(cur)).',1,size(ql,2));
+        qr = repmat(zr(cur).',1,size(ql,2)); %this can be done faster
          
-        omega(cur) = min(rotangle(ql .* qr),[],2) ;       
+        %omega(cur) = min(rotangle(ql .* qr),[],2) ;       
+        omega(cur) = min(2*acos(abs(dot(ql,qr))),[],2);       
       end  
     end
   case 'disorientation'
@@ -383,7 +384,7 @@ else
       
   k=2;
   while 1
-    ro = find(f(k-1) == gr);
+    ro = find(f(k-1) == gr); % this can be done faster, since only the last match is of interest
     if ~isempty(ro)
       ro = ro(end);
       f(k) = gl(ro);     

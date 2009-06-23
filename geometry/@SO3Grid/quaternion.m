@@ -10,7 +10,7 @@ function N = quaternion(SO3G,i,j)
 %  @quaternion
 
 if nargin == 1  
-  for i = 1:length(SO3G)
+  for i = 1:length(SO3G) % this can be done faster
     SO3G(i).Grid = reshape(SO3G(i).Grid * SO3G(i).center,1,[]);
   end
   N = [SO3G.Grid];

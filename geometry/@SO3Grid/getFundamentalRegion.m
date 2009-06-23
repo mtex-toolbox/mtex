@@ -10,10 +10,24 @@ function [q,omega] = getFundamentalRegion(S3G,varargin)
 %% Output
 %  q     - @quaternion
 %  omega - rotational angle
+% 
+% q_ref = get_option(varargin,'center',idquaternion);
+% 
+% q = symmetriceQuat(S3G(1).CS,[],quaternion(S3G));
+% omega = 2*acos(abs(dot(q,q_ref)));
+% 
+% [omega,q] = selectMinbyRow(omega,q);
 
 q_ref = get_option(varargin,'center',idquaternion);
+q = quaternion(S3G);
 
-q = symmetriceQuat(S3G(1).CS,[],quaternion(S3G));
-omega = rotangle(q * inverse(q_ref));
+% may be we can skip something
+omega = 2*acos(abs(dot(q,q_ref)));
+ind = omega > 20*degree;
 
-[omega,q] = selectMinbyRow(omega,q);
+if ~any(ind), return;end
+
+qSym = symmetriceQuat(S3G(1).CS,[],q(ind));
+omegaSym = 2*acos(abs(dot(qSym,q_ref)));
+
+[omega(ind),q(ind)] = selectMinbyRow(omegaSym,qSym);

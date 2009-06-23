@@ -12,7 +12,7 @@ function q = symmetriceQuat(CS,SS,q,varargin)
 %% See also
 
 q = (q(:) * CS).'; % CS x M
-if ~isempty(SS)
+if length(SS)>1
   q = SS * q(:).';     % SS x (CS X M)
 end
 q = reshape(q,length(CS)*max(1,length(SS)),[]).'; % M x (CSxSS)
