@@ -228,11 +228,12 @@ switch lower(angletype)
       for k=1:length(part)-1
       	cur = ind(part(k):part(k+1)-1);
                 
-        ql = symmetriceQuat(phaseCS{i},phaseSS{i},zl(cur)); 
-        qr = repmat(zr(cur).',1,size(ql,2)); %this can be done faster
+        %ql = symmetriceQuat(phaseCS{i},phaseSS{i},zl(cur)); 
+        %qr = repmat(zr(cur).',1,size(ql,2)); %this can be done faster
          
         %omega(cur) = min(rotangle(ql .* qr),[],2) ;       
-        omega(cur) = min(2*acos(abs(dot(ql,qr))),[],2);       
+        %omega(cur) = min(2*acos(abs(dot(ql,qr))),[],2);       
+        omega(cur) = 2*acos(dot_sym(zl(cur),zr(cur),phaseCS{i},phaseSS{i}));
       end  
     end
   case 'disorientation'
