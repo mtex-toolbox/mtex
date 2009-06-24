@@ -83,6 +83,7 @@ ids = graph2ids(regions);
 %% retrieve neighbours
 
 T2 = xor(regions,neighbours); %former neighbours
+T2 = T2 + T2';
 T1 = sparse(ids,1:length(ids),1);
 T3 = T1*T2;
 nn = T3*T1'; %neighbourhoods of regions
@@ -324,24 +325,30 @@ for i=1:length(c)
 end
 
 %sort everything clockwise
-dcv = diff(v([c{:}],:));
-x = dcv(:,1); y = dcv(:,2);
-l = ccl(end)-1;
-dir = x(1:l-1).*y(2:l)-x(2:l).*y(1:l-1);
+ck = [c{:}];
+cv = v(ck,:);
+
+part = [ 1:10^6:length(cv) length(cv)+1];  % there might appear memory issues
+dir = zeros(size(ck));
+for k=1:length(part)-1
+	cur = part(k):part(k+1)-1;  
+  x = diff(cv(cur,1)); y = diff(cv(cur,2));
+  l = length(x);
+  dir(cur(1:end-2)) = x(1:l-1).*y(2:l)-x(2:l).*y(1:l-1);
+end
 dir = dir( ccl(1:end-1)+1);
 c(dir>0) = cellfun(@fliplr,c(dir>0),'uniformoutput',false);
 
-  clear cl ccl dir l x y dcv
+  clear cl ccl dir l x y dcv vc x y cv ck part i k cur
 % vertice map
 T = sparse(jl,il,1); 
   clear jl il
 T(:,1) = 0; %inf
 
 %edges
-F = T * T' > 1;
-clear T
-F = F - speye(length(c));
-
+F = T * T';
+  clear T;
+F = triu(F,1) > 1;
 
 
 function ply = createpolygons(cells,regionids,verts)
@@ -390,7 +397,7 @@ for k =1:nr
     psz = numel(border);
     if psz == 1
     	ply(k).xy = verts(border{1},:);      
-    else
+    elseif psz > 1
       bo = cell(1,psz);
       ar = zeros(1,psz);
       for l=1:psz
@@ -412,10 +419,17 @@ end
 
 
 function plygn = converttoborder(gl, gr)
- % this should be done faster
+% this should be done faster
+
+if isempty(gl)
+  plygn = {};
+  return
+end
+
+
 nf = length(gr)*2;  
 f = zeros(1,nf);  %minimum size
-    
+  
 %hamiltonian  trials
 f(1) = gl(1);
 cc = 0; 
