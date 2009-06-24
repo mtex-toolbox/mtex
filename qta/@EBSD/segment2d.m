@@ -146,7 +146,6 @@ for k=1:numel(ebsd)
  ebsd(k).options.(checksumid) = ids(cids(k)+1:cids(k+1))';
 end
   
-
 cells = cells(n);
 
 [ix iy] = sort(ids);
@@ -167,41 +166,33 @@ disp(['  ebsd segmentation: '  num2str(toc(s)) ' sec']);
 %% retrieve polygons
 s = tic;
 
-nc = length(id);
+ply = createpolygons(cells,id,vert);
 
 comment =  ['from ' comment];
-gr(nc) = struct(grain);
+nc = length(id);
 
-ph = zeros(1,nc);
-for k=1:nc
-  regionid = id{k};
-  ply = createpolygon(cells(regionid),vert);
-  
-  nei = [];
-  if nfr(k), nei = nn{nfr(k)}; end
-  
-  fra =[];
-  if cfr(k), fra = fractions{cfr(k)}; end
-  
-  gr(k).id = k;
-  gr(k).cells = regionid;
-  gr(k).neighbour = nei;
-	%geometry
-  gr(k).polygon = ply;
-  %checksum
-  gr(k).checksum = checksum;
-  %subfractions
-  gr(k).subfractions = fra;
-  %allow arbitrary properties
-  ph(k) = phase(regionid(1));
-  
-  gr(k).comment = comment;
-end
+neigh = cell(1,nc);
+neigh(find(nfr)) = nn;
+fract = cell(1,nc);
+fract(find(cfr)) = fractions;
 
+gr = struct('id',num2cell(1:nc),...
+       'cells',id,...
+       'neighbour',neigh,...
+       'polygon',[],...
+       'checksum',[],...
+       'subfractions',fract,...
+       'properties',[],...
+       'comment',[]);
+
+ph = phase(cellfun(@(x)x(1),id));
 properties = struct( 'phase',phase_ebsd(ph),...
                      'CS', phaseCS(ph),...
                      'SS', phaseSS(ph));
 for k=1:nc
+  gr(k).checksum = checksum;
+  gr(k).comment = comment;
+  gr(k).polygon = ply(k);
   gr(k).properties = properties(k);
 end
 
@@ -353,111 +344,238 @@ F = F - speye(length(c));
 
 
 
+function ply = createpolygons(cells,regionids,verts)
 
-function [ply] = createpolygon(c,v)
+rcells = cells([regionids{:}]);
 
-gl = cat(2,c{:});
-
-if length(c) == 1  %one cell
-  border = [gl gl(1)];
-  holes = cell(0);  
-else             
+gl = [rcells{:}];
   %shift indices
-  inds = 2:length(gl)+1;
-  r1 = cellfun('length',c);
-  r1 = cumsum(r1);
-  r2 = [1 ; r1+1];
-  r2(end) =[];  
-  inds(r1) = r2;
+indi = 1:length(gl);
+inds = indi+1;
+c1 = cellfun('length',rcells);
+cr1 = cellfun('length',regionids);
+r1 = cumsum(c1);
+r2 = [1 ; r1+1];
+r2(end) =[];  
+inds(r1) = r2;
   
-  gr = gl(inds); %partner pointel
-  ii = [gl ;gr]'; % linels  
-  
+gr = gl(inds); %partner pointel
+ii = [gl ;gr]'; % linels  
+
 % remove double edges
-  tmpii = sort(ii,2);
-  [tmpii ndx] = sortrows(tmpii);  %transpose
-  
-  dell = all(diff(tmpii) == 0,2);   %entry twice  
-  dell = [ 0; dell] | [ dell; 0]; 
-  gl = gl(ndx(~dell));
-  gr = gr(ndx(~dell));
-  
-  nf = length(gr)*2;  
-  f = zeros(1,nf);  %minimum size
- 
-  if isempty(ii)
-     ply.xy = v(gl,:);
-     ply.hxy = cell(0);
-    return;
-  end
+tmpii = sort(ii,2);
+[tmpii ndx] = sortrows(tmpii);  %transpose
+
+[k ib] = sort(ndx);
+
+cc = [0; r1];
+crc = [0 cumsum(cr1)];
+
+nr = length(regionids);
+ply = struct('xy',cell(1,nr), 'hxy',repmat({{}},1,nr));
+
+for k =1:nr
+  sel = cc(crc(k)+1)+1:cc(crc(k+1)+1);
+
+  if cr1(k) > 1
+    %remove double entries
+    [ig nd] = sort(ib(sel));
+    dell = all(diff(tmpii(ig,:)) == 0,2);
+    dell = [ 0; dell] | [ dell; 0];
+    sel = sel( nd(~dell) ); 
+    % polygon retrival
+
+    border = converttoborder(gl(sel), gr(sel));
+    
+    psz = numel(border);
+    if psz == 1
+    	ply(k).xy = verts(border{1},:);      
+    else
+      bo = cell(1,psz);
+      ar = zeros(1,psz);
+      for l=1:psz
+        bo{l} = verts(border{l},:);
+        ar(l) = farea(bo{l});
+      end
+      
+      [ig ndx] = sort(ar,'descend');
+      
+      ply(k).xy = bo{ndx(1)};
+      ply(k).hxy = bo(ndx(2:end));
+      %? holes
+    end
+  else
+    % finish polygon
+    ply(k).xy = verts([gl(sel) gl(sel(1))],:);
+  end  
+end
+
+
+function plygn = converttoborder(gl, gr)
+ % this should be done faster
+nf = length(gr)*2;  
+f = zeros(1,nf);  %minimum size
     
 %hamiltonian  trials
-  f(1) = gl(1);
-  cc = 0; 
+f(1) = gl(1);
+cc = 0; 
       
-  k=2;
-  while 1
-    ro = find(f(k-1) == gr); % this can be done faster, since only the last match is of interest
-    
+k=2;
+while 1
+  ro = find(f(k-1) == gr);
+  
+  if ~isempty(ro)
+    ro = ro(end);
+    f(k) = gl(ro);     
+  else  
+    ro = find(gr>0);
     if ~isempty(ro)
-      ro = ro(end);
-      f(k) = gl(ro);     
-    else  
-      ro = find(gr>0);
-      if ~isempty(ro)
-        ro = ro(1);
-        f(k) = gl(ro);
-        cc(end+1) = k-1;
-      else
-        break;
-      end 
-    end
-    
-    gr(ro) = -1;
-    k = k+1;
+      ro = ro(1);
+      f(k) = gl(ro);
+      cc(end+1) = k-1;
+    else
+      cc(end+1) = k-1;
+      break;
+    end 
   end
+    
+  gr(ro) = -1;
+  k = k+1;
+end
   
 %convert to cells
-  nc = length(cc);
-  cc(end+1) = k-1;
-  
-  plygn = cell(1,nc);
-  for k=1:nc 
-    if k > 1
-      plygn{k} = [f(cc(k)+1:cc(k+1)) f(cc(k)+1)];
-    else
-      plygn{k} = f(cc(k)+1:cc(k+1));
-    end
-  end  
-
-%border
-  psz = length(plygn);
- 
-  %holes?
-  if psz > 1
-    area = zeros(1,psz);
-    for kpc= 1:psz
-      inds = plygn{kpc};    
-      px = v(inds,1); 
-      py = v(inds,2);
-
-      area(kpc) = polyarea(px,py);
-    end
-    
-    [C I] = max(area);         
-    holes = plygn;
-    holes(I) = [];
-    border = plygn{I};
+nc = length(cc)-1;  
+plygn = cell(1,nc);
+for k=1:nc 
+  if k > 1
+    plygn{k} = [f(cc(k)+1:cc(k+1)) f(cc(k)+1)];
   else
-    border = plygn{:};
-    holes = cell(0);
+    plygn{k} = f(cc(k)+1:cc(k+1));
   end
-end
+end  
 
-ply.xy = v(border,:);
-ply.hxy = cell(0);
 
-if ~isempty(holes)
-  ply.hxy = cellfun(@(h) v(h,:),holes,'uniformoutput',false);
-end
+function A = farea(xy)
+x = xy(:,1);
+y = xy(:,2);
+
+l = length(x);
+
+cr = x(1:l-1).*y(2:l)-x(2:l).*y(1:l-1);
+
+A = abs(sum(cr)*0.5);
+
+% 
+% function [ply] = createpolygon(c,v)
+% 
+% gl = cat(2,c{:});
+% 
+% if length(c) == 1  %one cell
+%   border = [gl gl(1)];
+%   holes = cell(0);  
+% else             
+%   %shift indices
+%   inds = 2:length(gl)+1;
+%   r1 = cellfun('length',c);
+%   r1 = cumsum(r1);
+%   r2 = [1 ; r1+1];
+%   r2(end) =[];  
+%   inds(r1) = r2;
+%   
+%   gr = gl(inds); %partner pointel
+%   ii = [gl ;gr]'; % linels  
+%   
+%   
+% %   dell = gl'*gl -gr'*gr;
+% %   dell = any(dell == 0,2);
+% %   gl = gl(~dell);
+% %   gr = gr(~dell);
+% %   
+% % remove double edges
+%   tmpii = sort(ii,2);
+%   [tmpii ndx] = sortrows(tmpii);  %transpose
+%   
+%   dell = all(diff(tmpii) == 0,2);   %entry twice  
+%   dell = [ 0; dell] | [ dell; 0]; 
+%   gl = gl(ndx(~dell));
+%   gr = gr(ndx(~dell));
+%   
+%   nf = length(gr)*2;  
+%   f = zeros(1,nf);  %minimum size
+%  
+%   if isempty(ii)
+%      ply.xy = v(gl,:);
+%      ply.hxy = cell(0);
+%     return;
+%   end
+%     
+% %hamiltonian  trials
+%   f(1) = gl(1);
+%   cc = 0; 
+%       
+%   k=2;
+%   while 1
+%     ro = find(f(k-1) == gr); % this can be done faster, since only the last match is of interest
+%     
+%     if ~isempty(ro)
+%       ro = ro(end);
+%       f(k) = gl(ro);     
+%     else  
+%       ro = find(gr>0);
+%       if ~isempty(ro)
+%         ro = ro(1);
+%         f(k) = gl(ro);
+%         cc(end+1) = k-1;
+%       else
+%         break;
+%       end 
+%     end
+%     
+%     gr(ro) = -1;
+%     k = k+1;
+%   end
+%   
+% %convert to cells
+%   nc = length(cc);
+%   cc(end+1) = k-1;
+%   
+%   plygn = cell(1,nc);
+%   for k=1:nc 
+%     if k > 1
+%       plygn{k} = [f(cc(k)+1:cc(k+1)) f(cc(k)+1)];
+%     else
+%       plygn{k} = f(cc(k)+1:cc(k+1));
+%     end
+%   end  
+% 
+% %border
+%   psz = length(plygn);
+%  
+%   %holes?
+%   if psz > 1
+%     area = zeros(1,psz);
+%     for kpc= 1:psz
+%       inds = plygn{kpc};    
+%       px = v(inds,1); 
+%       py = v(inds,2);
+% 
+%       area(kpc) = polyarea(px,py);
+%     end
+%     
+%     [C I] = max(area);         
+%     holes = plygn;
+%     holes(I) = [];
+%     border = plygn{I};
+%   else
+%     border = plygn{:};
+%     holes = cell(0);
+%   end
+% end
+% 
+% ply.xy = v(border,:);
+% ply.hxy = cell(0);
+% 
+% if ~isempty(holes)
+%   ply.hxy = cellfun(@(h) v(h,:),holes,'uniformoutput',false);
+% end
 

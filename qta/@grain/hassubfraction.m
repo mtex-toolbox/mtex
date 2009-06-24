@@ -8,6 +8,5 @@ function b = hassubfraction(grains)
 %  b   - boolean
 %
 
-subs = [grains.subfractions];
-b = ~cellfun('isempty',{subs.xx});
+b = ~cellfun('isempty', {grains.subfractions});
 
