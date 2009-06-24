@@ -20,12 +20,13 @@ s = zeros(size(grains));
 area = @(x,y) abs(0.5.*sum(x(1:end-1).*y(2:end)-x(2:end).*y(1:end-1)));
 
 if check_option(varargin,'area')
-  p =  polygon(grains);
+%   p =  polygon(grains);
   for k=1:nc     
-    xy = p(k).xy;
+    p = grains(k).polygon;
+    xy = p.xy;
     s(k) = area(xy(:,1),xy(:,2));
   
-    hxy = p(k).hxy;
+    hxy = p.hxy;
     for l=1:length(hxy)
       xy = hxy{l};
       s(k) =  s(k) -  area(xy(:,1),xy(:,2));
