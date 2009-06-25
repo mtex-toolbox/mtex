@@ -35,7 +35,7 @@ if nargin > 1
       if ~isempty(grains)        
         if isa(FUN,'function_handle')
           g = cell(size(grains));
-          ebsd = partition(ebsd, ids);
+          ebsd = partition(ebsd, ids,'nooptions');
           for k=1:numel(ebsd)
             try           
               g{k} = FUN(ebsd(k));

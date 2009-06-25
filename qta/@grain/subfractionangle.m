@@ -1,4 +1,4 @@
-function [F st] = subfractionangle(grains,ebsd,varargin)
+function omega = subfractionangle(grains,ebsd,varargin)
 % returns a mean angle between ebsd-grain neighbours
 %
 %% Input
@@ -6,8 +6,10 @@ function [F st] = subfractionangle(grains,ebsd,varargin)
 %  ebsd     - @EBSD 
 %
 %% Output
-% F    - average angle
-% st   -  standart deviation
+%  omega    - average angle
+%
+%% Flag
+%  complete - output all angles 
 %
 
 if nargin < 2
@@ -16,9 +18,11 @@ end
 
 assert_checksum(grains, ebsd);
 
-
-F = zeros(size(grains));
-st = zeros(size(grains));
+if check_option(varargin,'complete')
+  omega = cell(size(grains));
+else
+  omega = zeros(size(grains));
+end
 
 b = find(hassubfraction(grains));
 
@@ -36,15 +40,11 @@ for k = b
   cs = get(s3,'CS');
   ss = get(s3,'SS');
       
-  qsR = symmetriceQuat(cs,ss,qs(pairs(:,1)));
-  qsL = repmat(qs(pairs(:,2)).',1,size(qsR,2));
-  omegas = rotangle( qsL .* inverse(qsR) );
-  
-  a = min( omegas, [], 2);
+  omegas = 2*acos(dot_sym(qs(pairs(:,1)),qs(pairs(:,2)),cs,ss));
 
-  mm = exp(i*a);
-  
-  F(k) = angle(mean(mm));
-  st(k) = std(mm);
- 
+  if check_option(varargin,'complete')
+    omega{k} = omegas;
+  else
+    omega(k) = mean(omegas);
+  end
 end

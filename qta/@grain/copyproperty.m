@@ -1,5 +1,8 @@
-function grains = copyproperty(grains, ebsd, property,varargin)
+function grains = copyproperty(grains, ebsd, varargin)
 % copy an abitrary property of the corresponding ebsd object
+%
+%% Syntax
+%  grains = copyproperty(grains,ebsd,'property');
 %
 %% Input
 %  grains   - @grain
@@ -13,7 +16,7 @@ function grains = copyproperty(grains, ebsd, property,varargin)
 %  grains   - @grain
 %
 %% Example
-% grains = copyproperty(grains,ebsd,'phase');
+% grains = copyproperty(grains,ebsd,'all');
 % grains = copyproperty(grains,ebsd,'bc',@min);
 %
 
@@ -25,23 +28,25 @@ else
   method = @mean;
 end
 
-[grains ebsd ids] = get(grains,ebsd);
-
-ebsd = partition(ebsd,ids);
-p    = get(ebsd,property);
-
-%type check
-if ~isnumeric(p), error('must be a numeric value'), end
-
-gl = GridLength(ebsd);
-
-if length(p) == sum(gl)
-  p = mat2cell(p,gl,1);
-elseif length(p) == length(grains)
-  p = mat2cell(p,ones(size(grains)),1);
-else
-  error('dimensional mismatch')
+m1 = find_type(varargin,'char');
+m2 = find_type(varargin,'cell');
+if isempty(m1) && isempty(m2), property = 'all'; 
+else  property = varargin{[m1 m2]};
 end
 
-%set the new property
-grains = set(grains,property,cellfun(method,p));
+[grains ebsd ids] = get(grains,ebsd);
+
+opts = partition(ebsd,ids,'fields',property);
+
+vname = fieldnames(opts);
+
+for k=1:length(vname)
+  if isempty(strfind(vname{k},'grain_id'))
+    if isnumeric(opts(end).(vname{k}))      
+      grains = set(grains,vname{k}, ...
+        cellfun(method,{opts.(vname{k})}));
+    else
+      grains = set(grains,vname{k}, {opts.(vname{k})});
+    end
+  end
+end
