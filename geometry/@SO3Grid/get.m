@@ -5,10 +5,10 @@ switch lower(vname)
   case {'cs','ss'}
     varargout = {obj.(vname)};
   case {'quaternion','grid','orientation'}
-    varargout = quaternion(obj);    
+    varargout = {quaternion(obj)};    
   case fields(obj)
-    varargout = [obj.(vname)];
+    varargout = {[obj.(vname)]};
   otherwise
-    error('Unknown field in class ODF!')
+    error('Unknown field in class SO3Grid!')
 end
 

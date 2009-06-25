@@ -5,8 +5,8 @@ function obj = partition(ebsd, id,varargin)
 %  g = partition(ebsd,id)
 %
 %% Input
-% ebsd  - @EBSD
-% id    - index set
+%  ebsd  - @EBSD
+%  id    - index set
 %
 %% Output
 %  obj     - @EBSD
@@ -14,42 +14,118 @@ function obj = partition(ebsd, id,varargin)
 %% Options
 %  UniformOutput - true/false
 %
+%% Flag
+%  nooptions - do not copy additional options
+%  field     - apply only on specified field
+%
 %% See also
 % grain/grainfun
 
-[id ndx] = sort(id);
-
-sec = histc(id,unique(id));
-
-css = cumsum([0 ;sec]);
 csz = cumsum([0 sampleSize(ebsd)]);
+holdit = false(1,sum(diff(sort(id))+1));
 
-opt = [ebsd.options];
-ebsd_fields = fields(opt);  
-opt2(size(sec,1)) = struct;
-
-for f = 1:length(ebsd_fields)
-   tt = vertcat(opt.(ebsd_fields{f}));
-   tt = tt(ndx,:); %sorting
-   if numel(tt) == length(id)
-     for k=1:length(sec)
-      opt2(k).(ebsd_fields{f}) = tt(css(k)+1:css(k+1),:);
-     end
-   end
-end
-
-obj(size(sec,1)) = EBSD; %preallocate
-
-ph = [ebsd.phase];
-
-for k = 1:length(sec)
-  id = css(k)+1:css(k+1);
+if ~check_option(varargin,'fields')
   
-  phase = sum(ndx(css(k+1)) > csz);  
-  rid = ndx(id)-csz(phase);
-     
-  obj(k) = ebsd(phase);
-  obj(k).orientations = copy(ebsd(phase).orientations,rid);
-  obj(k).xy = ebsd(phase).xy(rid,:);
-  obj(k).options = opt2(k);
+  topt = struct;
+  dooptions = ~check_option(varargin,'nooptions');
+  for k=1:numel(ebsd)
+    ind = id(csz(k)+1:csz(k+1));  
+
+    [ids ndx] = sort(ind);
+    aind = unique(ind)';
+    sec = histc(ids,aind)';
+    css = cumsum([0 sec]); 
+
+    holdit(aind) = true;
+
+    obj(aind) = repmat(ebsd(k) , size(aind));  
+    S3G = partition(ebsd(k).orientations,ind);
+
+  %presort
+    if ~isempty(ebsd(k).xy), xy = ebsd(k).xy(ndx,:); end
+    if dooptions
+      ebsd_fields = fields(ebsd(k).options);
+      rm = false(size(ebsd_fields));
+      for f = 1:length(ebsd_fields)
+        if length(ebsd(k).options.(ebsd_fields{f})) == length(ndx)
+          opt.(ebsd_fields{f}) = ebsd(k).options.(ebsd_fields{f})(ndx,:);
+        else
+          opt2.(ebsd_fields{f}) = ebsd(k).options.(ebsd_fields{f});        
+          rm(f) = true;
+        end
+      end
+      ebsd_fields(rm) = [];
+    end
+
+  %copy information
+    for l = 1:length(aind)
+      obj(aind(l)).orientations = S3G(l);
+
+      ind = css(l)+1:css(l+1);
+      if exist('xy','var'), obj(aind(l)).xy = xy(ind,:); end
+
+      if dooptions
+        for f = 1:length(ebsd_fields)
+          opt2.(ebsd_fields{f}) = opt.(ebsd_fields{f})(ind,:);
+        end
+        obj(aind(l)).options = opt2;
+      else
+        obj(aind(l)).options = topt;
+      end
+    end
+  end 
+else
+  eb_field = get_option(varargin,'fields','all');
+
+  for k=1:numel(ebsd)
+    ind = id(csz(k)+1:csz(k+1));  
+
+    [ids ndx] = sort(ind);        
+    aind = unique(ind)';
+    holdit(aind) = true;
+    
+    sec = histc(ids,aind)';
+    css = cumsum([0 sec]); 
+  
+    ebsd_fields = fields(ebsd(k).options);
+    
+    if ~strcmpi(eb_field,'all')
+      pr = cellfun(@(x) any(strcmpi(x, eb_field)),ebsd_fields);
+  
+      if all(pr == 0)
+        error('unknown option')
+      end
+    else
+      pr = true(size(ebsd_fields));
+    end
+    
+    ebsd_fields(~pr) = [];
+    
+    flds = cell(1,length(ebsd_fields)*2);
+    flds(1:2:length(ebsd_fields)*2) = ebsd_fields(1:length(ebsd_fields));
+    obj(aind) = struct(flds{:});
+  
+    rm = false(size(ebsd_fields));
+    for f = 1:length(ebsd_fields)
+      if length(ebsd(k).options.(ebsd_fields{f})) == length(ndx)
+        opt.(ebsd_fields{f}) = ebsd(k).options.(ebsd_fields{f})(ndx,:);
+      else
+        opt2.(ebsd_fields{f}) = ebsd(k).options.(ebsd_fields{f});        
+        rm(f) = true;
+      end
+    end
+    ebsd_fields(rm) = [];
+    
+    for l = 1:length(aind)
+      ind = css(l)+1:css(l+1);
+      for f = 1:length(ebsd_fields)
+        opt2.(ebsd_fields{f}) = opt.(ebsd_fields{f})(ind,:);
+      end  
+      obj(aind(l)) = opt2;
+    end
+  end
 end
+
+obj = obj(holdit); 
+
+
