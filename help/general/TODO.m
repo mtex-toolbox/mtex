@@ -3,14 +3,12 @@
 %
 %% MTEX 2.0
 %
-% * fix edit m-file in documentation
+% * ---fix edit m-file in documentation---
 % * fix flipud,... in plotxy
 % * better exportODF function
 % * fix crystal coordinate system for symmetry 2/m
-% * allow copyproperty(ebsd,'all') and copyproperty(ebsd,'orientation')
 % * fix empty ebsd object does not give an error in any function
 % * finish ODF import wizard
-% * make that old convention cs = [cs1,cs2] also works in loadData + warning
 % * document new functionality
 % * work on compatibility issues, i.e. make an directory that will be added
 % to path when necassary

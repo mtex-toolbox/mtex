@@ -12,9 +12,9 @@
 %
 % Let us first import some EBSD data.
 
-CS = [...
+CS = {...
   symmetry('m-3m'),... % crystal symmetry phase 1
-  symmetry('m-3m')];   % crystal symmetry phase 2
+  symmetry('m-3m')};   % crystal symmetry phase 2
 SS = symmetry('-1');   % specimen symmetry
 
 % file name

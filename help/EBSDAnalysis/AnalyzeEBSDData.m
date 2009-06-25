@@ -17,7 +17,8 @@
 % Let us first import some EBSD data:
 %
 
-cs = symmetry('cubic');
+cs = { symmetry('cubic'), ...
+       symmetry('cubic') };
 ss = symmetry('triclinic');
 ebsd = loadEBSD([mtexDataPath,'/aachen_ebsd/85_829grad_07_09_06.txt'],cs,ss,... 
                 'interface','generic','Bunge',...

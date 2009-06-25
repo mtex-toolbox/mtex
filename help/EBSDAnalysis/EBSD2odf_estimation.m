@@ -14,7 +14,8 @@
 % <EBSD_index.html EBSD> object which is in general created by
 %
 
-cs = symmetry('cubic');
+cs = { symmetry('cubic'), ...
+       symmetry('cubic') };
 ss = symmetry('triclinic');
 
 ebsd = loadEBSD([mtexDataPath,'/aachen_ebsd/85_829grad_07_09_06.txt'],cs,ss,... 

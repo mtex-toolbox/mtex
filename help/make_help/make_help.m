@@ -82,7 +82,11 @@ if check_option(varargin, {'classes','all'})
     
     % make index mfile
     disp(in_file)
+    disp(script_file)
     copyfile(in_file,script_file);
+    
+    isinterface = strfind(folders{i}(:),'interfaces');
+    if any([isinterface{:}]); folders{i} = {'qta' 'interfaces'}; end
     make_index(fullfile(mtex_path,folders{i}{:}),script_file);
 
   end
