@@ -42,7 +42,7 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
 
   <body>
     
-    <xsl:call-template name="header"/>  
+    <xsl:call-template name="openheader"/>  
 
     <div class="content">               
 
@@ -100,11 +100,16 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
 </xsl:template>
 
 <!-- Header -->
-<xsl:template name="header">
+<xsl:template name="openheader">
   <div class="myheader">
-      <div class="headerleft"><a href="matlab:edit XXXX" style="color:white">
-	  Open Matlab File in the Editor</a></div>
-      <div class="headerright"><a href="mtex_product_page.html" style="color:white">MTEX</a></div>
+      <table border="0" width="100%" cellpadding="10" cellspacing="0">
+        <tr>
+          <td valign="baseline" align="left" style="color:white"><a href="matlab:edit XXXX" style="color:white">
+            Open Matlab File in the Editor</a></td>
+          <td valign="baseline" align="right" style="color:white"><a href="mtex_product_page.html" style="color:white">
+            MTEX</a></td>
+        </tr>
+      </table>  
     </div>
 </xsl:template>
 

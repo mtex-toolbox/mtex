@@ -128,7 +128,7 @@ table.content td {
 
 
 div.myheader {
-  position:fixed;
+  position:absolute;
   top:0px;
   left:0px;
   background: #005E8D;
@@ -143,21 +143,11 @@ div.myheader + .content{
   margin-top:70px
 }
 
-div.headerleft {
-  position: absolute;
-  padding: 10px;
-  color: #FFFFFF;
-}
-div.headerright {
-  text-align: right;
-  padding: 10px;
-  color: #FFFFFF;
-}
 div.myheader a {
-  color: black;
+  color: white;
 }
 div.myheader {
-  color: black;
+  color: white;
 }   
 
 
