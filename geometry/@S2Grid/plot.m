@@ -53,7 +53,7 @@ end
 if nargout > 0, varargout{1} = gca;end
 
 if isappdata(gcf,'axes')
-  varargin = {varargin{:},'annotate'};
+  varargin = [varargin,'annotate'];
 else
   adjustToolbar('norotate');
 end
@@ -64,7 +64,7 @@ set(gca,'Tag','S2Grid','Box','on','DataAspectRatio',[1 1 1],'XTick',[],'YTick',[
 % color
 if ~check_option(varargin,{'MarkerColor','MarkerFaceColor','CONTOUR','CONTOURF','SMOOTH','DATA'})
   [ls,c] = nextstyle(gca,true,true,~ishold);
-  varargin = {'MarkerColor',c,varargin{:}};
+  varargin = ['MarkerColor',c,varargin];
 end
 
 
