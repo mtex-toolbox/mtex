@@ -11,11 +11,12 @@ function m = mean(v,varargin)
 %  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
 % 
 
+v = v./norm(v);
 if check_option(varargin,'antipodal')
   M = [v.x(:) v.y(:) v.z(:)];
   M = M.' * M;
-  s = svds(M,1);
-  m = vector3d(s(1),s(2),s(3));
+  [u,s,v] = svds(M,1); %#ok<NASGU>
+  m = vector3d(u(1),u(2),u(3));
 else
   m = sum(v);  
 end

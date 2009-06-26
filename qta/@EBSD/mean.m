@@ -14,10 +14,7 @@ function [ m kappa v] = mean( ebsd,varargin)
 
 % extract weights
 if isfield(ebsd(1).options,'weight')
-  weight = get(ebsd(ind),'weight');
+  [m kappa  v]  = mean(S3G,'weights',get(ebsd(ind),'weight'));
 else
-  weight = ones(1,GridLength(S3G));
+  [m kappa  v]  = mean(S3G);
 end
-
-[m kappa  v]  = mean(S3G,'weights',weight);
-
