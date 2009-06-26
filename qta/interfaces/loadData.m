@@ -46,9 +46,9 @@ end
 % get crystal and specimen symmetry
 if ~isempty(varargin) && checkClass(varargin{1},'symmetry')
   cs = varargin{1};varargin = {varargin{2:end}};
-  
-  if ~iscell(cs) && strcmp(type,'EBSD'),
-    cs = mat2cell(cs,1,ones(size(cs))); 
+
+  if ~iscell(cs) 
+    cs = num2cell(cs);
     warning('MTEX:loadData', ...
             ['Decrepated syntax: please use multiple symmetries in cells, this functionality ', ...
             'might be ignored in future releases.']) ;
@@ -64,8 +64,8 @@ end
 if ~check_option(varargin,'interface')  
   [interface,options] = check_interfaces(fname{1},type,varargin{:});  
 else
-  interface = get_option(varargin,'interface');
-  options = varargin;
+  interface = get_option(varargin,'interface');  
+  options = delete_option(varargin,'interface',1);
 end
 
 data = []; idata = ones(1,length(fname));
@@ -97,6 +97,11 @@ for i = 1:length(data)
   [ps,fn,ext] = fileparts([fname{find(i>pos,1,'last')}]);
   data(i) = set(data(i),'comment',...
     get_option(varargin,'comment',[fn ext])); %#ok<AGROW>
+end
+
+%% rotate data
+if check_option(varargin,'rotate')
+  data = rotate(data,axis2quat(zvector,get_option(varargin,'rotate')));
 end
 
 

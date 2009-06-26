@@ -54,7 +54,7 @@ uicontrol(...
   'HorizontalAlignment','left',...
   'Position',[10 40 50 15]);
 
-handles.specime = uicontrol(...
+handles.kernel = uicontrol(...
   'Parent',kg,...
   'BackgroundColor',[1 1 1],...
   'FontName','monospaced',...
@@ -100,142 +100,51 @@ setappdata(wzrd,'handles',handles);
 
 function goto_callback(varargin)
 
-get_ss(gcbf);
 handles = getappdata(gcbf,'handles');
 
-plot_options = get_mtex_option('default_plot_options');
-value = get_option(plot_options,'rotate',0);
- 
-direction = 1+mod(round(2*(value) / pi),4);
-   
-set(handles.plot_dir(direction),'value',1);
-set(handles.plot_dir(1:4 ~= direction),'value',0);
+if isappdata(gcbf,'kernel')
+  k = getappdata(gcbf,'kernel');
+else
+  k = kernel('de la Vallee Poussin','halfwidth',5*degree);
+  setappdata(gcbf,'kernel',k);
+end
 
-% plot_options = get_mtex_option('default_plot_options');
-% if check_option(plot_options,'rotate')
-%   set(handles.plot_rotate,'value',1);
-%   set(handles.plot_rotateAngle,'string',int2str(get_option(plot_options,'rotate',0)/degree));
-% else
-%   set(handles.plot_rotate,'value',0);
-% end
-% 
-% if check_option(plot_options,'fliplr'), set(handles.plot_fliplr,'value',1);end
-% if check_option(plot_options,'flipud'), set(handles.plot_flipud,'value',1);end
+knames = kernel('names');
 
-%  set(handles.comment,'String',get(appdata.data,'comment'));
+set(handles.kernel,'value',find(strcmp(get(k,'name'),knames)));
+set(handles.halfwidth,'string',xnum2str(get(k,'hw')/degree));
+
+plotkernel(gcbf);
 
 
 function leave_callback(varargin)
 
-set_ss(gcbf);
 handles = getappdata(gcbf,'handles');
 
-plot_options = get_mtex_option('default_plot_options');
-plot_options = set_option(plot_options,'rotate',...
-     (find(cell2mat(get(handles.plot_dir,'value')))-1)*pi/2);
-set_mtex_option('default_plot_options',plot_options);
+knames = kernel('names');
+kname = get(handles.kernel,'value');
 
-% plot_options = get_mtex_option('default_plot_options');
-% if get(handles.plot_rotate,'value')
-%   plot_options = set_option(plot_options,'rotate',...
-%     str2double(get(handles.plot_rotateAngle,'string'))*degree);
-% else
-%   plot_options = delete_option(plot_options,'rotate');
-% end
-% if get(handles.plot_flipud,'value')
-%   plot_options = set_option(plot_options,'flipud');
-% else
-%   plot_options = delete_option(plot_options,'flipud',0);
-% end
+hw = str2double(get(handles.halfwidth,'string'))*degree;
 
-% if get(handles.plot_fliplr,'value')
-%   plot_options = set_option(plot_options,'fliplr');
-% else
-%   plot_options = delete_option(plot_options,'fliplr',0);
-% end
-% 
-% 
-% set_mtex_option('default_plot_options',plot_options);
-%set(appdata.data,'comment',get(handles.comment,'String'));
+k = kernel(knames{kname},'halfwidth',hw);
+setappdata(gcbf,'kernel',k);
 
 
 %% ------------- Private Functions ------------------------------------------------
 
-function set_ss(wzrd)
-% set specimen symmetry
 
-handles = getappdata(wzrd,'handles');
-data = getappdata(wzrd,'data');
+function plotkernel(wzrd)
 
-ss = symmetries(get(handles.specime,'Value'));
-ss = strtrim(ss{1}(1:6));
-ss = symmetry(ss);
+try
+  k = getappdata(wzrd,'kernel');
+  data = getappdata(wzrd,'data');
+  cs = get(data(1),'CS');
+  ma = rotangle_max_z(cs);
+  omega = linspace(-ma,ma,5000);
+  
+  handles = getappdata(wzrd,'handles');
 
-% set data
-data = set(data,'SS',ss);
-setappdata(wzrd,'data',data);
-
-
-function get_ss(wzrd)
-% write ss to page
-
-handles = getappdata(wzrd,'handles');
-data = getappdata(wzrd,'data');
-
-% get ss
-ss = get(data,'SS');
-
-% set specimen symmetry
-ssname = strmatch(Laue(ss),symmetries);
-set(handles.specime,'value',ssname(1));
- 
- 
-%% ----------------------------------------------------------
-
-% nv = uibuttongroup('title','Negative Values',...
-%   'Parent',this_page,...
-%   'units','pixels','position',[0 ph-210 380 100]);
-% 
-% uicontrol(...
-%   'Parent',nv,...
-%   'Style','radi',...
-%   'String','keep negative values',...
-%   'Value',1,...
-%   'position',[10 60 160 20]);
-% 
-% handles.dnv = uicontrol(...
-%   'Parent',nv,...
-%   'Style','radi',...
-%   'String','delete negative values',...
-%   'Value',0,...
-%   'position',[10 35 160 20]);
-% 
-% handles.setnv = uicontrol(...
-%   'Parent',nv,...
-%   'Style','radi',...
-%   'String','set negative values to',...
-%   'Value',0,...
-%   'position',[10 10 160 20]);
-% 
-% handles.rnv = uicontrol(...
-%   'Parent',nv,...
-%   'BackgroundColor',[1 1 1],...
-%   'FontName','monospaced',...
-%   'HorizontalAlignment','right',...
-%   'Position',[190 8 80 25],...
-%   'String','0',...
-%   'Style','edit');
-% 
-% 
-% co = uibuttongroup('title','Comment',...
-%   'Parent',this_page,...
-%   'units','pixels','position',[0 0 380 54]);
-% 
-% handles.comment = uicontrol(...
-%   'Parent',co,...
-%   'BackgroundColor',[1 1 1],...
-%   'FontName','monospaced',...
-%   'HorizontalAlignment','left',...
-%   'Position',[10 8 360 25],...
-%   'String',blanks(0),...
-%   'Style','edit');
+  v = eval(k,omega); %#ok<EVLC>
+  plot(handles.kernelAxis,omega/degree,v);
+  set(handles.kernelAxis,'ylim',[min([0,v]),max(v)],'yTick',[]);
+end

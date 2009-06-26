@@ -1,4 +1,4 @@
-function nebsd = rotate(ebsd,q)
+function ebsd = rotate(ebsd,q)
 % rotate EBSD data
 %
 %% Input
@@ -8,8 +8,10 @@ function nebsd = rotate(ebsd,q)
 %% Output
 %  rotated ebsd - @EBSD
 
-nebsd = ebsd;
+if isa(q,'double')
+  q = axis2quat(zvector,q);
+end
 
 for i = 1:length(ebsd) 
-  nebsd.orientations = q * nebsd(i).orientations;
+  ebsd(i).orientations = q * ebsd(i).orientations;
 end

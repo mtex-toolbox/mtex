@@ -1,9 +1,15 @@
-function value = get(obj,vname)
+function value = get(obj,vname,varargin)
 % get object variable
 
 value = [];
 switch vname
-  case {'comment','CS','SS','options'}
+  case 'CS'
+    if check_option(varargin,'all')
+      value = [obj.(vname)];
+    else
+      value = obj(1).(vname);
+    end    
+  case {'comment','SS','options'}
     value = obj(1).(vname);
   case fields(obj)
     value = vertcat(obj.(vname));

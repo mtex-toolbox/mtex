@@ -10,16 +10,11 @@ else
 end
 
 for i = 1:numel(pf)
-	str = {str{:},strcat('h',ind2char(i,size(pf)),' = ',char(pf(i).h))};
-	str = {str{:},['r',ind2char(i,size(pf)),' = ',char(pf(i).r(1))]};
+	str = [str,['Miller indice h = ',char(pf(i).h)]]; %#ok<*AGROW>
+  str = [str,['r = ',char(pf(i).r(1))]]; 
 	for j = 2:length(pf(i).r)
-		str = {str{:},['     ',char(pf(i).r(j))]};
+		str = [str,['     ',char(pf(i).r(j))]];
 	end
 end
 
 str = char(str');
-
-%if ~isempty(pf(1).P_hat)
-%	disp(['Fourrier coefficients, bandwidth: ',...
-%  int2str(bandwidth(pf))]);
-%end

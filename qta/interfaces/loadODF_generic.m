@@ -67,7 +67,6 @@ end
 names = lower(get_option(varargin,'ColumnNames'));
 cols = get_option(varargin,'Columns',1:length(names));
 
-
 mtex_assert(length(cols) == length(names), 'Length of ColumnNames and Columns differ');
 
 [names m] = unique(names);
@@ -137,6 +136,7 @@ end
 
 % return varargin as options
 options = varargin;
+if ~check_option(varargin,'exact','halfwidth'), varargin = [varargin,'exact'];end
 
 % load single orientations
 ebsd = EBSD(SO3Grid(q,cs,ss),cs,ss,varargin{:},'options',opt);
