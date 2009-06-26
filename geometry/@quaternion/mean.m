@@ -15,8 +15,10 @@ function [q lambda V] = mean(q,varargin)
 %% See also
 
 T = qq(q,varargin{:});
-[V lambda ] = eigs(T);
-q.a = V(1,1);
-q.b = V(2,1);
-q.c = V(3,1);
-q.d = V(4,1);
+[V lambda ] = eig(T);
+l = diag(lambda);
+pos = find(max(l)==l,1);
+q.a = V(1,pos);
+q.b = V(2,pos);
+q.c = V(3,pos);
+q.d = V(4,pos);

@@ -19,6 +19,7 @@ function value = get_option(option_list,option,default,type)
 % check_option set_option clear_option
 
 if nargin <= 2, value = [];else value = default;end
+if isempty(option_list), return;end
 if nargin <= 3, type = [];end
 
 pos = find_option(option_list,option,type);

@@ -1,7 +1,6 @@
 function varargout = subsref(q,s)
 % overloads subsref
 
-varargout = cell(1,nargout);
 if isa(s,'double')
   q.a = q.a(s);
   q.b = q.b(s);
@@ -16,6 +15,8 @@ else
       q.b = subsref(q.b,ss);
       q.c = subsref(q.c,ss);
       q.d = subsref(q.d,ss);
+    case '{}'
+      varargout = cell(1,nargout);
     case '.'
       q = q.(ss.subs);
     otherwise

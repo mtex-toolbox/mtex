@@ -59,7 +59,7 @@ if nargin > 1
         cellclass = class(g{1});
         ciscellclass = cellfun('isclass',g,cellclass);
 
-        if uniform & all(ciscellclass(:))  
+        if uniform && all(ciscellclass(:))  
           g = [g{:}];
           % g = cell2mat(g);
         end

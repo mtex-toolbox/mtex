@@ -8,6 +8,13 @@ function [G,ind] = getgrid(ebsd,varargin)
 %% Output
 %  G   - @SO3Grid of modal orientations
 
+% no phases present
+if length(ebsd) == 1
+  G = ebsd.orientations;
+  ind = true;
+  return;
+end
+
 % phases present
 phase = [ebsd.phase];
 phases = unique(phase);

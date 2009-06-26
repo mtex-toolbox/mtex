@@ -5,6 +5,11 @@ function G = union(varargin)
 %% Output
 %  "points" - @SO3Grid
 
+if length(varargin) == 1 && length(varargin{1})==1
+  G = varargin{1};
+  return;
+end
+
 OG = [varargin{:}];
 
 % check symmetries
