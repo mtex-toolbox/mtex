@@ -37,7 +37,7 @@ for i=1:length(fnames)
 %% try to load one file
 
   try
-    [data interface options idata] = loadData(strcat(pathname,fnames(i)),type,interf{:},'exact',options{:});
+    [data interface options idata] = loadData(strcat(pathname,fnames(i)),type,interf{:},options{:});
   catch %#ok<CTCH>
     errordlg(errortext);
     break;

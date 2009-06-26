@@ -4,12 +4,13 @@ function s = option2str(options,varargin)
 if ~isempty(options)
   if check_option(varargin,'quoted')
     s = cellfun(@double2quotedstr,options,'uniformoutput',false);
+    s{1} = [', ' s{1}];
   else
     s = cellfun(@double2str,options,'uniformoutput',false);
   end
-  s = strcat(s,{', '});
-  s = [s{:}];
-  s = s(1:end-2);
+  s = strcat(s,{', '}); % add this to every line
+  s = [s{:}];           % now make one line out of all lines
+  s = s(1:end-2);       % remove the leading and the ending coma
 else
   s = '';
 end

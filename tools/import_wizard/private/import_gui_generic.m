@@ -100,7 +100,7 @@ figure('Position',[scrsz(3)/8 scrsz(4)/8 6*scrsz(3)/8 6*scrsz(4)/8]);
 
 switch class(data)
   case 'EBSD'
-    plot_EBSD(gcbf,data(1));
+    plot_EBSD(gcbf,data);
   case 'PoleFigure'
     plot_pf(gcbf,data);
   case 'ODF'
@@ -159,17 +159,17 @@ else
     
   switch class(data)
     case 'EBSD'
-      str = exportEBSD(fn{2},data,getappdata(lb(2),'interface'),...
+      str = generateScript('EBSD',fn{2},data,getappdata(lb(2),'interface'),...
         getappdata(lb(2),'options'), handles);
     case 'PoleFigure'
       fn(2:3) = [];
       if all(cellfun('isempty',fn(2:end)))
         fn = fn{1};
-      end
-      str = exportPF(fn,data,getappdata(lb(1),'interface'),...
+      end      
+      str = generateScript('PoleFigure',fn,data,getappdata(lb(1),'interface'),...
         getappdata(lb(1),'options'), handles);
     case 'ODF'
-      str = exportODF(fn{3},data,getappdata(lb(3),'interface'),...
+      str = generateScript('ODF',fn{3},data,getappdata(lb(3),'interface'),...
         getappdata(lb(3),'options'), handles);
   end
        
@@ -177,7 +177,7 @@ else
   openuntitled(str);
 end
 
-close
+%close
 
 
 %% ------------ Private Functions ----------------------------------
