@@ -38,7 +38,7 @@ G.resolution = 2*pi;
 G.options = {};
 G.CS      = CS;
 G.SS      = SS;
-G.center  = idquaternion;
+G.center  = [];
 G.Grid    = quaternion;
 
 %% SO3rid defined by a set quaternions

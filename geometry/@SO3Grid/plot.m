@@ -25,7 +25,7 @@ if (ishold && strcmp(get(gca,'tag'),'ebsd_raster')) || ...
     end
     
     if ~check_option(varargin,'no_projection')
-      q = getFundamentalRegion(SO3G(i),varargin{:});
+      q = getFundamentalRegion(SO3G(i),get_option(varargin,'center',idquaternion));
     else
       q = quaternion(SO3G(i));
     end

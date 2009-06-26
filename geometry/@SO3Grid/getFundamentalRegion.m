@@ -1,4 +1,4 @@
-function [q,omega] = getFundamentalRegion(S3G,varargin)
+function [q,omega] = getFundamentalRegion(S3G,q_ref)
 % projects orientations to a fundamental region
 %
 %% Input
@@ -18,7 +18,7 @@ function [q,omega] = getFundamentalRegion(S3G,varargin)
 % 
 % [omega,q] = selectMinbyRow(omega,q);
 
-q_ref = get_option(varargin,'center',idquaternion);
+if nargin == 1, q_ref = idquaternion;end
 q = quaternion(S3G);
 
 % may be we can skip something

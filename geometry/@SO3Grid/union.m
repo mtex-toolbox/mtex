@@ -24,7 +24,7 @@ G.resolution = min([OG.resolution]);
 G.options = {};
 G.CS      = OG(1).CS;
 G.SS      = OG(1).SS;
-G.center  = idquaternion;
+G.center  = [];
 G.Grid    = quaternion(OG);
 
 G = class(G,'SO3Grid');
