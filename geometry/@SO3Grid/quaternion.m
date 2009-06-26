@@ -22,7 +22,7 @@ if nargin == 1
     N = [SO3G.Grid];
   else
     if isempty(SO3G.center)
-      N = SO3G.Grid;
+      N = reshape(SO3G.Grid,1,[]);
     else
       N = reshape(SO3G.Grid * SO3G.center,1,[]);      
     end    
