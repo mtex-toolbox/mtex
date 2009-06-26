@@ -298,6 +298,9 @@ if strcmp(getappdata(fig,'autofit'),'on')
       l,l*dxdy];
     set(a(i),'Units','pixels','Position',apos);
   end
+  
+  % resize colorbaraxis
+  set(getappdata(fig,'colorbaraxis'),'units','pixel','position',[border,border,figpos(3:4)]);
 end
 
 scalescatterplots(fig);
@@ -312,8 +315,7 @@ for i = 1:length(u)
  set(u(i),'Units','points','Position',[apos(3)-1,3]);
 end
 
-% resize colorbaraxis
-set(getappdata(fig,'colorbaraxis'),'units','pixel','position',[border,border,figpos(3:4)]);
+
 
 set(fig,'Units',old_units);
 
