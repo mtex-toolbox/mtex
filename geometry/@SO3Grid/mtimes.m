@@ -21,7 +21,11 @@ if isa(SO3G,'SO3Grid') % right multiplication
   
     if numel(q) == 1
       for i = 1:length(SO3G)
-        SO3G(i).center = SO3G(i).center * q;
+        if isempty(SO3G(i).center)
+          SO3G(i).center = q;
+        else
+          SO3G(i).center = SO3G(i).center * q;
+        end
       end
       out = SO3G;
     else      

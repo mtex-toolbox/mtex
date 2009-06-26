@@ -2,7 +2,7 @@ function c = quat2rgb(q,cs,varargin)
 % converts orientations to rgb values
 
 q0 = get_option(varargin,'q0',idquaternion);
-[q omega] = getFundamentalRegion(q,'center',q0);
+[q omega] = getFundamentalRegion(q,q0);
 
 if check_option(varargin,'logarithmic')
   omega = log(max(omega(:))/1000 + omega);

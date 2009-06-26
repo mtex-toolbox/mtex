@@ -35,7 +35,7 @@ iter = 1;
 while iter < 5 && (isempty(old_mean) || (dist(q_mean,old_mean)>1*degree))
   iter = iter + 1;
   old_mean = q_mean;  
-  [q,omega] = getFundamentalRegion(S3G,'center',old_mean);
+  [q,omega] = getFundamentalRegion(S3G,old_mean);
   q_std = sum(omega.^2) ./ (length(omega)-1);
   [q_mean kappa v] = mean(q,varargin{:});
 end
