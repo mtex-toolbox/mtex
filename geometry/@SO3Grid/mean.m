@@ -32,7 +32,7 @@ old_mean = [];
 
 % iterate mean 
 iter = 1;
-while iter < 5 && (isempty(old_mean) || (dist(q_mean,old_mean)>1*degree))
+while iter < 5 && (isempty(old_mean) || (dot(q_mean,old_mean)<0.999))
   iter = iter + 1;
   old_mean = q_mean;  
   [q,omega] = getFundamentalRegion(S3G,old_mean);
