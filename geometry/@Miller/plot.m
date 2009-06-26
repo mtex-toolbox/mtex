@@ -16,7 +16,7 @@ label = ensurecell(get_option(varargin,'label'),numel(m));
 
 % get antipodal status
 if washold && isappdata(gcf,'options') && check_option(getappdata(gcf,'options'),'antipodal')
-  varargin = {varargin{:},'antipodal'};
+  varargin = [varargin,'antipodal'];
 end
 
 for i = 1:numel(m)
@@ -31,7 +31,7 @@ for i = 1:numel(m)
   options = {};
   if check_option(varargin,'labeled')
     % convert to cell
-    s = mat2cell(mm,ones(1,size(mm,1)),ones(1,size(mm,2)));
+    s = num2cell(mm);
     options = {'label',s,'MarkerEdgeColor','w'};
   elseif ~isempty(label)
     varargin = set_option(varargin,'label',{label{i}});
