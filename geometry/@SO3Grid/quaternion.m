@@ -28,7 +28,7 @@ if nargin == 1
     end    
   end
 elseif nargin == 2
-  if ~isempty(SO3G(i).center)
+  if ~isempty(SO3G.center)
     N = reshape(SO3G.Grid(i)*SO3G.center,size(i));
   else
     N = SO3G.Grid(i);
