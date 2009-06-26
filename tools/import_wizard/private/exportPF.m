@@ -6,7 +6,7 @@ str = ['%% created with import_wizard';{''}];
 
 str = [ str; '%% specify crystal and specimen symmetries';{''}];
 
-cs =get(pf,'CS');
+cs = get(pf,'CS');
 ss = get(pf,'SS');
 
 str = [str; export_CS_tostr(cs)];
