@@ -69,6 +69,7 @@ end
 set(gcf,'tag','ebsd_spatial');
 setappdata(gcf,'options',extract_option(varargin,'antipodal'));
 
+fixMTEXscreencoordinates('axis'); %due to axis;
 set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
 
 %% set data cursor

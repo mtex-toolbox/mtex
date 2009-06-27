@@ -3,8 +3,8 @@
 %
 %% MTEX 2.0
 %
-% * ---fix edit m-file in documentation---
-% * fix flipud,... in plotxy
+% * done -> fix edit m-file in documentation
+% * done -> fix flipud,... in plotxy
 % * better exportODF function
 % * fix crystal coordinate system for symmetry 2/m
 % * fix empty ebsd object does not give an error in any function

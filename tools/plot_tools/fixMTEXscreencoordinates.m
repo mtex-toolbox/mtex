@@ -1,4 +1,4 @@
-function [x y lx ly] = fixMTExscreencoordinates(x,y,varargin)
+function [x y lx ly] = fixMTEXscreencoordinates(x,y,varargin)
 %
 %
 %
@@ -15,7 +15,7 @@ dx = axis2quat(zvector,rot) * dx;
 dy = axis2quat(zvector,rot) * dy;
 lx = 'x'; ly = 'y';
   
-if isappr(dot(dx,xvector),0)
+if isappr(dot(dx,xvector),0) && ~strcmpi(x,'axis')
  % [dx,dy] = swap(dx,dy);
   [x,y] = swap(x,y);  
   [lx,ly] = swap(lx,ly);
