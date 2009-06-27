@@ -15,19 +15,19 @@ function [q_mean kappa v q q_std] = mean(S3G,varargin)
 %  q_res     - list of @quaternion around mean
 %
 
-q = quaternion(S3G);
-
-if numel(q) == 1
-  q_mean = q;
+if length(S3G) == 1 && length(S3G.Grid) == 1
+  q_mean = S3G.Grid;
   % !!!!!!!!!!  TODO !!!!!!!!!!!!!!!!!!!!
-  v = idquaternion;
-  kappa = [1 0 0 0];
-  q_std = 0;
+  if nargout > 1
+    v = idquaternion;
+    kappa = [1 0 0 0];
+    q_std = 0;
+  end
   return;
 end
 
 % first approximation
-q_mean = get_option(varargin,'q0',q(1));
+q_mean = get_option(varargin,'q0',S3G(1).Grid(1));
 old_mean = [];
 
 % iterate mean 
