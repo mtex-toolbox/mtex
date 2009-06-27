@@ -12,7 +12,7 @@ model = {'bunge','angle','sigma','ihs','ipdf',...
 if nargin == 0, c = model; return; end
 
 gl = GridLength(grid);
-gl = cumsum([0 gl]);
+gl = [0 cumsum(gl)];
 c = zeros(gl(end),3);
 
 for i = 1:length(grid)
