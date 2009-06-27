@@ -13,8 +13,4 @@ function [qm grains] = mean(grains,ebsd)
 % EBSD/mean 
 %
 
-qm = grainfun(@(e) mean(e), grains, ebsd,'uniformoutput',true);
-
-if nargout > 1
-  grains = set(grains,'mean',qm); 
-end
+[qm grains] = grainfun(@(e) mean(e), grains, ebsd,'property','mean');

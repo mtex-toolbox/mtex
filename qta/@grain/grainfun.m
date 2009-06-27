@@ -1,11 +1,10 @@
-function g = grainfun(FUN,grains,varargin)
+function [g grains] = grainfun(FUN,grains,varargin)
 % Apply function to each grain or to each grain and its corresponding ebsd data 
 %
 %% Syntax
 %  g = grainfun(fun,grains)
 %  g = grainfun(fun,grains,ebsd)
 %
-%  g = grainfun('phase',grains,ebsd)
 %
 %% Input
 %  fun      - function_handle
@@ -14,6 +13,7 @@ function g = grainfun(FUN,grains,varargin)
 %
 %% Options
 %  UniformOutput - true/false
+%  Property      - write uniformed value to given propertyname of grain-object
 %
 %% Example
 %  tindex = grainfun( @(x) textureindex(calcODF(x)), ...
@@ -26,54 +26,54 @@ function g = grainfun(FUN,grains,varargin)
 if nargin > 1  
   if ~isempty(varargin)    
     hasebsd = find_type(varargin,'EBSD');
-    if hasebsd
-      uniform = get_option(varargin,'UniformOutput',false);
-      ebsd = varargin{hasebsd};    
-
-      [grains ebsd ids] = get(grains, ebsd);
-      
-      if ~isempty(grains)        
-        if isa(FUN,'function_handle')
-          g = cell(size(grains));
-          ebsd = partition(ebsd, ids,'nooptions');
-          for k=1:numel(ebsd)
-            try           
-              g{k} = FUN(ebsd(k));
-            catch
-              g{k} = NaN;
-            end
-          end
-        elseif strcmpi(FUN,'phase')
-          phase = get(ebsd,'phase');
-          csz = cumsum([0 sampleSize(ebsd)]);
-          gid = [grains.id];
-            g = zeros(size(grains));
-          for k=1:length(phase)
-            g(ismember(gid,ids(csz(k)+1:csz(k+1)))) = phase(k);
-          end
-          return
-        else
-          error('grainfun:argChk' , ['Undefined function or variable ''' FUN '''']);
-        end     
-        
-        cellclass = class(g{1});
-        ciscellclass = cellfun('isclass',g,cellclass);
-
-        if uniform && all(ciscellclass(:))  
-          g = [g{:}];
-          % g = cell2mat(g);
-        end
-      end
-      return
-    end   
-  end
-    
-  for k=1:length(grains)
-    g{k} = FUN(grains(k));
+    uniform = false;
+  else
+    hasebsd = 0; 
+    uniform = true;
   end
   
-  if get_option(varargin,'UniformOutput',true)
-    g = [g{:}];
-  end 
+  uniform = get_option(varargin,'UniformOutput',uniform);
+  
+  if hasebsd
+    ebsd = varargin{hasebsd};    
+    [grains ebsd ids] = get(grains, ebsd);
+    
+    [s ndx] = sort([grains.id]);
+            
+    if ~isempty(grains)        
+      if isa(FUN,'function_handle')
+        g = cell(size(grains));
+        ebsd = partition(ebsd, ids,'nooptions');
+        for k=1:numel(ebsd)
+          try           
+            g{ndx(k)} = FUN(ebsd(k));
+          catch
+            g{ndx(k)} = NaN;
+          end
+        end
+      else
+        error('MTEX:grainfun:argChk' , ['Undefined function or variable ''' FUN '''']);
+      end     
+    end
+  else    
+    for k=1:length(grains)
+      g{k} = FUN(grains(k));
+    end
+  end
+else
+  error('MTEX:grainfun:argChk' , 'wrong number of arguments');
 end
+
+
+cellclass = class(g{1});
+ciscellclass = cellfun('isclass',g,cellclass);
+
+if (uniform  || check_option(varargin,'property','char')) && all(ciscellclass(:))
+  g = [g{:}];
+end
+
+if nargout > 1 && check_option(varargin,'property','char')    
+	grains = set(grains,get_option(varargin,'property'),g); 
+end
+
 
