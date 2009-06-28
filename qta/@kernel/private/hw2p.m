@@ -31,6 +31,10 @@ switch lower(name)
     
     p = fminbnd(@(t) (p2hw(name,t)-hw)^2,0,1);
 
+  case 'dirichlet'
+    
+    p = 2/hw;
+    
   otherwise
 
 		p = fminsearch(@(t) (p2hw(name,max(t,0))-hw)^2,0.5);

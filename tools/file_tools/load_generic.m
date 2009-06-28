@@ -65,13 +65,13 @@ try
   % extract colum header
   
   % try regular
-  c = regexp(rows,'\s','split');
+  c = regexp(rows,'\s+','split');
   c = {c{~cellfun(@isempty,c)}}; % löscht evt. leere zellen.
   if length(c) == ncol, return;end
   
   
   % try fancy
-  c = regexp(rows,'\s\s','split');
+  c = regexp(rows,'\s\s+','split');
   c = {c{~cellfun(@isempty,c)}}; % löscht evt. leere zellen.
   
 catch %#ok<CTCH>

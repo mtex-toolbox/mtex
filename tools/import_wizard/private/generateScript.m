@@ -60,6 +60,28 @@ end
 
 str = replaceToken(str,'c = {structural coefficients};',cstr);
 
+%% Specify kernel of ODF import
+
+
+if isa(data,'ODF') 
+  
+  psi = get(data,'psi');
+  kname = get(psi,'name');
+  hw = get(psi,'halfwidth');
+  str = replaceToken(str,'{kernel name}',['''' kname '''']);
+  str = replaceToken(str,'{halfwidth}',[xnum2str(hw/degree) '*degree']);
+  
+  if get(handles.exact,'value')
+    str = replaceToken(str,'{resolution}',[get(handles.approx,'string') '*degree']);
+  else
+    str = replaceToken(str,...
+      '''resolution'',{resolution}','''exact''');
+  end  
+end
+
+
+
+
 %% import the data 
 
 str = replaceToken(str,',{structural coefficients}',copt);
