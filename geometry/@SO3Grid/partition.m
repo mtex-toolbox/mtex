@@ -16,9 +16,14 @@ function obj = partition(S3G, id)
 
 sec = histc(id,unique(id))';
 css = cumsum([0 sec]);
-obj = repmat(S3G,size(sec));
+
+S3GT = S3G;
+S3GT.Grid = quaternion; %due to memory
+obj = repmat(S3GT,size(sec));
+
+S3G.Grid = S3G.Grid(ndx);
 
 for k = 1:length(sec)
    ids = css(k)+1:css(k+1);
-   obj(k).Grid = S3G.Grid(ndx(ids));
+   obj(k).Grid = S3G.Grid(ids);
 end
