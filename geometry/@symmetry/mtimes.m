@@ -12,6 +12,6 @@ elseif isa(b,'symmetry')
         R = a;
         return
     end
-    b = b.quat(:).'; 
+    b = reshape(b.quat,1,[]);
 end
 R = a * b;
