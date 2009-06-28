@@ -8,9 +8,9 @@ function pf = correct( pf, varargin )
 %  pf - list of @PoleFigure
 %
 %% Options
-%  BACKGROUND | BG                - Background PoleFigure
-%  DEFOCUSING | DEF               - Defocusing PoleFigure
-%  BACKGROUND DEFOCUSING | DEF_BG - Background of defocusing PoleFigure
+%  BACKGROUND | BG               - Background PoleFigure
+%  DEFOCUSING | DEF              - Defocusing PoleFigure
+%  BACKGROUND DEFOCUSING | DEFBG - Background of defocusing PoleFigure
 %
 %% Output
 %  pf    - @PoleFigure
@@ -27,7 +27,7 @@ end
 
 % Defocussing
 def = get_option(varargin,{'defocusing','def'});
-def_bg = get_option(varargin,{'defocusing background','def_bg'});
+def_bg = get_option(varargin,{'defocusing background','defbg'});
 
 if isempty(def), return;end % no Defocussing
 

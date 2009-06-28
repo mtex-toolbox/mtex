@@ -127,7 +127,7 @@ elseif ~isempty(pf)
   bg = getappdata(lb(3),'data');
   def = getappdata(lb(4),'data');
   def_bg = getappdata(lb(5),'data');
-  pf = correct(pf,'bg',bg,'def',def,'def_bg',def_bg);
+  pf = correct(pf,'bg',bg,'def',def,'defbg',def_bg);
 
   setappdata(gcbf,'data',pf);
   handles.pages = handles.pf_pages;

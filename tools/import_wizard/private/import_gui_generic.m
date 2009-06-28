@@ -177,7 +177,7 @@ else
   openuntitled(str);
 end
 
-%close
+close
 
 
 %% ------------ Private Functions ----------------------------------
