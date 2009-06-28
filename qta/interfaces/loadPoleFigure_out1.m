@@ -13,6 +13,8 @@ function pf = loadPoleFigure_out1(fname,varargin)
 %% See also
 % interfacesPoleFigure_index loadPoleFigure
 
+assert(strcmp(fname(end-4:end),'out1'));
+
 data = txt2mat(fname,'NumHeaderLines',15,'NumColumns',2,...
   'InfoLevel',0,'ReadMode','block','BadLineString',{'!@!'});
 

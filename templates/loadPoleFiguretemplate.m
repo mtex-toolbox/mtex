@@ -56,7 +56,7 @@ pf_def = loadPoleFigure(fname_def,h,CS,SS,{structural coefficients},'interface',
 % defocussing background
 pf_defbg = loadPoleFigure(fname_defbg,h,CS,SS,{structural coefficients},'interface',{interface},{options});
 
-% correct the data
+% correct data
 pf = correct(pf,{corrections});
 
 
