@@ -246,6 +246,10 @@ for i = 1:length(values)
   if ~isempty(ind), cdata(ind(1)) = values(i); end
 end
 
+% volume
+ind = strmatch('volume',lower(colnames));
+if length(ind) == 1,cdata{ind} = 'weight';end
+
 % Euler Angle
 ind = [strmatch('euler',lower(colnames)),strmatch('phi',lower(colnames))];
 if length(ind)==3

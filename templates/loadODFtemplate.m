@@ -1,4 +1,4 @@
-%% Import Script for EBSD Data
+%% Import Script for ODF Data
 %
 % This script was automatically created by the import wizard. You should
 % run the whoole script or parts of it in order to import your data. There
@@ -25,11 +25,14 @@ fname = {file names};
 
 %% Import the Data
 
+% specify kernel 
+psi = kernel({kernel name},'halfwidth',{halfwidth});
+
 % create an EBSD variable containing the data
-odf = loadODF(fname,CS,SS,'interface',{interface} ...
+odf = loadODF(fname,CS,SS,'kernel',psi,'resolution',{resolution},'interface',{interface} ...
   ,{options});
 
 %% Plot some Pole Figures
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)])
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
 

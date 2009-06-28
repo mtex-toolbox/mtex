@@ -1,4 +1,4 @@
-function value = get(obj,vname)
+function value = get(obj,vname,varargin)
 % get object variable
 
 switch vname

@@ -54,6 +54,11 @@ uicontrol(...
   'HorizontalAlignment','left',...
   'Position',[10 40 50 15]);
 
+
+knames = kernel('names');
+rm = cellfun(@(s) strmatch(s,knames),{'Laplace','Fourier','user'});
+knames(rm) = [];
+
 handles.kernel = uicontrol(...
   'Parent',kg,...
   'BackgroundColor',[1 1 1],...
@@ -62,7 +67,8 @@ handles.kernel = uicontrol(...
   'Position',[60 40 220 20],...
   'String',blanks(0),...
   'Style','popup',...
-  'String',kernel('names'),...
+  'String',knames,...
+  'Callback',@update_kernel,...
   'Value',1);
 
 uicontrol(...
@@ -80,6 +86,7 @@ handles.halfwidth = uicontrol(...
   'HorizontalAlignment','right',...
   'Position',[400 40 40 22],...
   'String','5',...
+  'Callback',@update_kernel,...
   'Style','edit');
 
 %% kernel plot
@@ -98,53 +105,61 @@ setappdata(wzrd,'handles',handles);
 
 %% -------------- Callbacks ---------------------------------
 
+function update_kernel(varargin)
+
+handles = getappdata(gcbf,'handles');
+knames = get(handles.kernel,'string');
+kname = get(handles.kernel,'value');
+
+hw = str2double(get(handles.halfwidth,'string'))*degree;
+
+k = kernel(knames{kname},'halfwidth',hw);
+
+plotkernel(gcbf,k);
+
 function goto_callback(varargin)
 
 handles = getappdata(gcbf,'handles');
 
-if isappdata(gcbf,'kernel')
-  k = getappdata(gcbf,'kernel');
-else
-  k = kernel('de la Vallee Poussin','halfwidth',5*degree);
-  setappdata(gcbf,'kernel',k);
-end
+k = get(getappdata(gcbf,'data'),'psi');
 
-knames = kernel('names');
-
+knames = get(handles.kernel,'string');
 set(handles.kernel,'value',find(strcmp(get(k,'name'),knames)));
 set(handles.halfwidth,'string',xnum2str(get(k,'hw')/degree));
 
-plotkernel(gcbf);
+plotkernel(gcbf,k);
 
 
 function leave_callback(varargin)
 
 handles = getappdata(gcbf,'handles');
 
-knames = kernel('names');
+knames = get(handles.kernel,'string');
 kname = get(handles.kernel,'value');
 
 hw = str2double(get(handles.halfwidth,'string'))*degree;
 
 k = kernel(knames{kname},'halfwidth',hw);
-setappdata(gcbf,'kernel',k);
+data = getappdata(gcbf,'data');
+data = set(data,'psi',k);
+setappdata(gcbf,'data',data);
 
 
 %% ------------- Private Functions ------------------------------------------------
 
 
-function plotkernel(wzrd)
+function plotkernel(wzrd,k)
 
-try
-  k = getappdata(wzrd,'kernel');
-  data = getappdata(wzrd,'data');
-  cs = get(data(1),'CS');
+try  
+  cs = get(getappdata(wzrd,'data'),'CS');
   ma = rotangle_max_z(cs);
-  omega = linspace(-ma,ma,5000);
+  omega = linspace(-ma/2,ma/2,5000);
   
   handles = getappdata(wzrd,'handles');
 
   v = eval(k,omega); %#ok<EVLC>
-  plot(handles.kernelAxis,omega/degree,v);
+  plot(handles.kernelAxis,omega/degree,v,'linewidth',2);
   set(handles.kernelAxis,'ylim',[min([0,v]),max(v)],'yTick',[]);
+  set(handles.kernelAxis,'xlim',[min(omega)/degree,max(omega)/degree]);
+catch %#ok<CTCH>
 end
