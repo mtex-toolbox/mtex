@@ -20,15 +20,28 @@ str = replaceToken(str,'{plotting convention}',['plotx2' lower(plotdir)]);
 
 %% specify the file names
 
-[pname, fname] =  minpath(fn);
+% main file names
+[fnames,pname] = generateFileNames(fn);
 str = replaceToken(str,'{path to files}',['''' pname '''']);
-
-fnames = {'{...'};
-for k = 1:length(fn)
-  fnames= [ fnames, {strcat('[pname ''', fname{k}, '''], ...')}]; %#ok<AGROW>
-end
-fnames = [ fnames, {'}'}];
 str = replaceToken(str,'{file names}',fnames);
+
+% background, defocussing, defocussing background
+d = {'bg','def','defbg'};
+for t=1:3
+  
+  if iscell(fn{1}) && ~isempty(fn{t+1})
+      
+    [fnames,pname] = generateFileNames(fn{t+1});
+    str = replaceToken(str,['{path to ' d{t} ' files}'],['''' pname '''']);
+    str = replaceToken(str,['{' d{t} ' file names}'],fnames);
+      
+  else
+    % remove lines
+    pos = strmatch(['fname_' d{t} ' '],str);
+    str(pos-3:pos) = [];
+  end
+end
+    
 
 
 %% specify crystal directions
@@ -79,9 +92,6 @@ if isa(data,'ODF')
   end  
 end
 
-
-
-
 %% import the data 
 
 str = replaceToken(str,',{structural coefficients}',copt);
@@ -94,6 +104,32 @@ end
 if get(handles.flipud,'value'), optionstr = [optionstr, ', ''flipud''']; end
 if get(handles.fliplr,'value'), optionstr = [optionstr, ', ''fliplr''']; end
 str = replaceToken(str,',{options}',optionstr);
+
+if isa(data,'PoleFigure')
+  
+  % background, defoccusing, defoccusing background
+  corrections = [];
+  for t=1:3
+  
+    if iscell(fn{1}) && ~isempty(fn{t+1})
+      corrections = [corrections,',''',d{t},''', pf_' d{t}]; %#ok<AGROW>
+    else
+      % remove lines
+      pos = strmatch(['pf_' d{t} ' '],str);
+      str(pos-2:pos) = [];
+    end
+    
+  end
+  if ~isempty(corrections)
+    str = replaceToken(str,',{corrections}',corrections);
+  else
+    % remove lines
+    pos = strmatch('% correct data',str);
+    str(pos:pos+2) = [];
+  end
+end
+
+
 
 
 function str = replaceToken(str,token,repstr)
@@ -129,3 +165,13 @@ s = num2str(n);
 s = regexprep(s,'\s*',',');
 if length(n) > 1, s = ['[',s,']'];end
 
+
+function [fnames,pname] = generateFileNames(fn)
+
+if iscell(fn{1}), fn = fn{1};end
+[pname, fname] =  minpath(fn);
+fnames = {'{...'};
+for k = 1:length(fn)
+  fnames= [ fnames, {strcat('[pname ''', fname{k}, '''], ...')}]; %#ok<AGROW>
+end
+fnames = [ fnames, {'}'}];

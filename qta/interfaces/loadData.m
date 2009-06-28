@@ -49,9 +49,11 @@ if ~isempty(varargin) && checkClass(varargin{1},'symmetry')
 
   if ~iscell(cs) 
     cs = num2cell(cs);
-    warning('MTEX:loadData', ...
-            ['Decrepated syntax: please use multiple symmetries in cells, this functionality ', ...
-            'might be ignored in future releases.']) ;
+    if length(cs) > 1
+      warning('MTEX:loadData', ...
+        ['Decrepated syntax: please use multiple symmetries in cells, this functionality ', ...
+        'might be ignored in future releases.']) ;
+    end
   end;
 end
 
