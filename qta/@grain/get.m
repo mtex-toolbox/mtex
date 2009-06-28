@@ -42,7 +42,16 @@ if nargin > 1
         varargout{1} = {grains.(optfield)};
       case fields(grains)
         varargout{1} = [grains.(optfield)]; 
-      case fields(grains(1).properties)          
+      case fields(grains(1).properties)     
+        if any(strcmpi(optfield,{'phase'})) % any numeric?
+          opt = zeros(size(grains));
+          for k=1:length(opt)
+            opt(k) = grains(k).properties.(optfield);
+          end     
+          varargout{1} = opt;
+          return
+        end
+        
         opt = cell(size(grains));
         for k=1:length(opt)
           opt{k} = grains(k).properties.(optfield);

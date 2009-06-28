@@ -1,13 +1,13 @@
 function varargout = subsref(q,s)
 % overloads subsref
 
-if isa(s,'double')
-  q.a = q.a(s);
-  q.b = q.b(s);
-  q.c = q.c(s);
-  q.d = q.d(s);  
-	varargout{1} = q;
-else
+% if isa(s,'double')
+%   q.a = q.a(s);
+%   q.b = q.b(s);
+%   q.c = q.c(s);
+%   q.d = q.d(s);  
+% 	varargout{1} = q;
+% else
   ss = s(1);
   switch ss.type
     case '()'
@@ -22,10 +22,10 @@ else
     otherwise
       error('wrong data type');
   end
-  if length(s) > 1
-    varargout{1} = subsref(q,s(2:end));
+  if numel(s) == 1
+    varargout{1} = q;   
   else
-    varargout{1} = q;
+    varargout{1} = subsref(q,s(2:end));         
   end
-end
+% end
 
