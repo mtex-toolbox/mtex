@@ -19,9 +19,13 @@ ry = min(ry):dry:max(ry);
 
 nx = numel(rx); ny = numel(ry);
 
+
+
 %% 
-ix = round(1 + ([x x+drx/2 x-drx/2] - min(rx)) ./ (max(rx)-min(rx)) * (nx-1));
-iy = round(1 + ([y y+dry/2 y-dry/2] - min(ry)) ./ (max(ry)-min(ry)) * (ny-1));
+rxy = sqrt(drx^2+dry^2)/4;
+
+ix = round(1 + ([x x+rxy x-rxy] - min(rx)) ./ (max(rx)-min(rx)) * (nx-1));
+iy = round(1 + ([y y+rxy y-rxy] - min(ry)) ./ (max(ry)-min(ry)) * (ny-1));
 
 ix = max(min(nx,ix),1);
 iy = max(min(ny,iy),1);
