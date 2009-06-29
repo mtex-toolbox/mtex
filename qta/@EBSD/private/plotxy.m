@@ -20,15 +20,17 @@ ry = min(ry):dry:max(ry);
 nx = numel(rx); ny = numel(ry);
 
 %% 
-ix = round(1 + (x-min(rx)) ./(max(rx)-min(rx)) * (nx-1));
-iy = round(1 + (y-min(ry)) ./(max(ry)-min(ry)) * (ny-1));
+ix = round(1 + ([x x+drx/2 x-drx/2] - min(rx)) ./ (max(rx)-min(rx)) * (nx-1));
+iy = round(1 + ([y y+dry/2 y-dry/2] - min(ry)) ./ (max(ry)-min(ry)) * (ny-1));
 
 ix = max(min(nx,ix),1);
 iy = max(min(ny,iy),1);
 
 s = size(d);
 c = nan(nx*ny,s(end));
-c(iy + (ix-1)*ny,:) = d;%reshape(d,[],3);
+for k=1:3
+  c(iy(:,k) + (ix(:,k)-1)*ny,:) = d;%reshape(d,[],3);
+end
 c = reshape(c,ny,nx,s(end));
 
 %%
