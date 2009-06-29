@@ -8,8 +8,14 @@ function plotxy(x,y,d,varargin)
 rx = unique(sort(x));
 ry = unique(sort(y));
 % 
-rx = min(rx):min(diff(rx)):max(rx);
-ry = min(ry):min(diff(ry)):max(ry);
+dxy = sqrt((max(rx)-min(rx))/(max(ry)-min(ry)));
+drx = (max(rx)-min(rx)) / (sqrt(numel(d))*dxy);
+dry = (max(ry)-min(ry)) / (sqrt(numel(d))/dxy);
+
+drx = max(drx,min(diff(rx)));
+dry = max(dry,min(diff(ry)));
+rx = min(rx):drx:max(rx);
+ry = min(ry):dry:max(ry);
 
 nx = numel(rx); ny = numel(ry);
 
@@ -27,8 +33,8 @@ c = reshape(c,ny,nx,s(end));
 
 %%
 
-if all(all(isnan(c(1:2:end,1:2:end,1)))) || ...
-    all(all(isnan(c(1:2:end,2:2:end,1))))   
+if 10*sum(isnan(c(:)))>sum(~isnan(c(:)))%all(all(isnan(c(1:2:end,1:2:end,1)))) || ...
+    %all(all(isnan(c(1:2:end,2:2:end,1))))   
   
   cc = cat(4,...
     c(2:end-1,2:end-1,:),...

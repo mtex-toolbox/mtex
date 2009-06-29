@@ -3,18 +3,16 @@
 %
 %% MTEX 2.0
 %
-% * done -> fix edit m-file in documentation
-% * done -> fix flipud,... in plotxy
+% * ebsd/rotate, ebsd/flipud, ebsd/fliplr  should also affect the spatial data
+% * implement grain/rotate, grain/flipud, grain/fliplr
+% * make ebsd/plot ebsd/segment2d work also with rotated ebsd data
 % * better exportODF function
 % * fix crystal coordinate system for symmetry 2/m
 % * fix empty ebsd object does not give an error in any function
-% * finish ODF import wizard
 % * document new functionality
 % * work on compatibility issues, i.e. make an directory that will be added
 % to path when necassary
-% * m-file generated from import wizard should contain also some sceme what
-% todo next, i.e. append something like [grains ebsd] = segment2s(ebsd);
-% grains = copyproperty(grains,ebsd,'all')
+% * improve template files
 % * say explicetly in generic wizard which columns has to be specified
 %
 %% Sudent projects
