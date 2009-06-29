@@ -5,21 +5,24 @@ function plotxy(x,y,d,varargin)
 [x,y, lx,ly] = fixMTEXscreencoordinates(x,y,varargin{:});
 
 %% get shape of plotting region
-rx = unique(sort(x));
-ry = unique(sort(y));
-% 
-dxy = sqrt((max(rx)-min(rx))/(max(ry)-min(ry)));
-drx = (max(rx)-min(rx)) / (sqrt(numel(d))*dxy);
-dry = (max(ry)-min(ry)) / (sqrt(numel(d))/dxy);
 
+% find resolution by number of points
+dxy = (max(x(:))-min(x(:)))/(max(y(:))-min(y(:)));
+drx = (max(x(:))-min(x(:))) / (1*sqrt(numel(d)*dxy));
+dry = (max(y(:))-min(y(:))) / (1*sqrt(numel(d)/dxy));
+
+% find resolution by differences beteen points
+rx = funique(x,1e-15);
+ry = funique(y,1e-15);
+
+% take the maximum of those
 drx = max(drx,min(diff(rx)));
 dry = max(dry,min(diff(ry)));
+
+% generate grid
 rx = min(rx):drx:max(rx);
 ry = min(ry):dry:max(ry);
-
 nx = numel(rx); ny = numel(ry);
-
-
 
 %% 
 rxy = sqrt(drx^2+dry^2)/4;
@@ -39,7 +42,7 @@ c = reshape(c,ny,nx,s(end));
 
 %%
 
-if 10*sum(isnan(c(:)))>sum(~isnan(c(:)))%all(all(isnan(c(1:2:end,1:2:end,1)))) || ...
+if 4*sum(isnan(c(:)))>sum(~isnan(c(:)))%all(all(isnan(c(1:2:end,1:2:end,1)))) || ...
     %all(all(isnan(c(1:2:end,2:2:end,1))))   
   
   cc = cat(4,...
@@ -82,4 +85,10 @@ optiondraw(h,varargin{:});
 
 xlabel(lx); ylabel(ly);
 fixMTEXplot;
+
+function x = funique(x,epsilon)
+
+x = sort(x);
+diff = [1;x(1:end-1) - x(2:end)];
+x = x(abs(diff)>epsilon); 
 
