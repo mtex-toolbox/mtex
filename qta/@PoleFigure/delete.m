@@ -17,13 +17,18 @@ function pf = delete(pf,id)
 %% See also
 % PoleFigure/getdata PoleFigure/getbg PoleFigure/getr PoleFigure_index
 
-if isa(id,'logical'), id = find(id);end
+if isnumeric(id),
+  inds = false(sum(GridLength(pf)),1);
+  inds(id) = true;
+  id = inds;
+end
+
 cs = cumsum([0,GridLength(pf)]);
 
-for i= 1:length(pf)
-	
-	idi = id((id > cs(i)) & (id<=cs(i+1)));
-  if ~isempty(pf(i).bgdata), pf(i).bgdata(idi-cs(i)) = [];end
-	pf(i).data(idi-cs(i)) = [];
-	pf(i).r = delete(pf(i).r,idi-cs(i));
+for k = 1:length(pf)
+  idi = id(cs(k)+1:cs(k+1));
+  
+  if ~isempty(pf(k).bgdata), pf(k).bgdata(idi) = [];end
+  pf(k).data(idi) = [];
+  pf(k).r = delete(pf(k).r,idi);
 end
