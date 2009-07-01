@@ -6,13 +6,18 @@ function ebsd = misorientation(grains,varargin)
 %
 %% Output
 %  ebsd    - @EBSD
-%
-%% Flags 
-%  weighted - weight the misorientations against grainsize
+%  
+%% Options
+%  direction -  'ij' (default)   specifies if to look from current grain i 
+%               'ji'             to neighbour j or other way round
+%  weighted  - weight the misorientations against grainsize could be
+%              function_handle @(i,j)
 %
 %% Example
 %  [q grains] = mean(grains,ebsd)
 %  ebsd_mis = misorientation(grains)
+%
+%  ebsd_mis = misorientation(grains,'direction','ji','weighted', @(i,j) j )
 %
 %% See also
 % EBSD/calcODF grain/mean grain/neighbours 
@@ -22,6 +27,13 @@ phu = unique(phase);
 
 ebsd = repmat(EBSD,size(phu));
 
+dir = get_option(varargin,'direction','ij');
+if strcmpi(dir, 'ji'), doinverse = true; 
+else doinverse = false; end
+
+weightfun = get_option(varargin,'weighted',...
+                @(i,j) j .* ( (i-j) ./ (i+j) + 1),'function_handle');
+              
 if check_option(varargin,'weighted'), doweights = true; else doweights = false; end
 
 % for each phase
@@ -49,7 +61,6 @@ for k=1:length(phu)
   for l = 1:length(grain_ids)
       ix(s(l)+1:s(l+1)) = grain_ids(l);
   end  
-%   ix = rep(grain_ids, cellfun('length',{gr.neighbour}));
   iy = vertcat(gr.neighbour);
 
   msz = max(max(ix),max(iy));
@@ -67,15 +78,15 @@ for k=1:length(phu)
     sel = cod(T1(:,grain_ids(l)));
         
     if ~isempty(sel)
-%       sym_q = symmetriceQuat(pCS,pSS, mean(sel));      
       sym_q = qsym(:,sel);
       cen_q = mean(l);
-      [omega ndx] = min(2*acos(abs(dot(sym_q,cen_q))),[],1);
-      s2 = numel(sel);
-           
-      qall{l} = cen_q .* sym_q(ndx + cndx(1:s2))'; 
+      [omega ndx] = min(2*acos(abs(dot(sym_q,cen_q))),[],1);      
+      nei_q =  sym_q(ndx + cndx(1:numel(sel)));
       
-      if doweights, weight{l} = (asr(l)+asr(sel))./tot; end
+      if doinverse, qall{l} = cen_q .* nei_q'; %qall{l}'
+      else        	qall{l} = nei_q .* cen_q'; end 
+     
+      if doweights, weight{l} = weightfun(asr(l),asr(sel)); end
     end  
   end  
   g = [qall{~cellfun('isempty',qall)}];
