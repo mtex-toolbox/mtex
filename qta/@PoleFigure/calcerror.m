@@ -29,13 +29,13 @@ function e = calcerror(pf,rec,varargin)
 argin_check(rec,{'ODF','PoleFigure'});
 
 % calc difference PoleFigure
-pf = calcerrorpf(pf,rec,varargin{:});
+errorpf = calcerrorpf(pf,rec,varargin{:});
 
 % calc error
 e = zeros(1,numel(pf));
 for i = 1:length(pf)
   
-  e(i) = sum(pf(i).data(:));
+  e(i) = sum(errorpf(i).data(:));
   
   if check_option(varargin,'l1')
     e(i) = e(i)/sum(abs(pf(i).data(:))); % L^1 error
