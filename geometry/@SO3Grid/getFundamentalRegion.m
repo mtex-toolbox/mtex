@@ -19,15 +19,47 @@ function [q,omega] = getFundamentalRegion(S3G,q_ref)
 % [omega,q] = selectMinbyRow(omega,q);
 
 if nargin == 1, q_ref = idquaternion;end
-q = quaternion(S3G);
+if length(S3G) > 1 || size(S3G.Grid,2) > 1
+  q = quaternion(S3G);
+else
+  q = S3G.Grid;
+end
 
 % may be we can skip something
-omega = 2*acos(abs(dot(q,q_ref)));
-ind = omega > 20*degree;
+omega = abs(dot(q,q_ref));
+ind = omega < cos(20*degree);
 
-if ~any(ind), return;end
+if ~any(ind), 
+  omega = 2*acos(max(1,omega));
+  return;
+end
 
-qSym = symmetriceQuat(S3G(1).CS,[],q(ind));
-omegaSym = 2*acos(abs(dot(qSym,q_ref)));
+% 
+qSym = quaternion(S3G(1).CS);
 
-[omega(ind),q(ind)] = selectMinbyRow(omegaSym,qSym);
+% compuate all distances to the fundamental regions
+omegaSym = dot_outer(q_ref .* qSym,q);
+
+% find fundamental region
+[omega,idy] = selectMaxbyColumn2(omegaSym);
+
+% project to fundamental region
+q = q .* qSym(idy);
+
+% compute angle
+omega = 2*acos(min(1,omega));
+
+
+function [maxA,idy] = selectMaxbyColumn2(A)
+% find maximum in each column
+
+% maxA
+maxA = max(A,[],1);
+
+% find min values
+ind = bsxfun(@ne,A,maxA);
+%A ~= repmat(maxA,size(A,1),1);
+
+% find index 
+idy = sum(cumprod(double(ind),1),1)+1;
+ 
