@@ -263,7 +263,70 @@ function [F v c] = neighbour(xy,varargin)
 augmentation = get_option(varargin,'augmentation','cube');
 %extrapolate dummy coordinates %dirty
 switch lower(augmentation)
-  case {'cube', 'cubei'}
+  case 'cube'
+    k = convhulln(xy);
+    k = [k(:,1); k(1,1)];    
+   
+    x = xy(1:200<end,1);
+    y = xy(1:200<end,2);
+    xx = repmat(x,1,length(x));
+    yy = repmat(y,1,length(y));
+    dist = abs(sqrt((xx-xx').^2 + (yy-yy').^2));
+    dxy = min(dist(triu(true(size(dist)),1)));
+       
+    dummy = [];
+    for ll = 1:length(k)-1
+      xx = xy([k(ll) k(ll+1)],1);
+      yy = xy([k(ll) k(ll+1)],2);
+           
+      dx = diff(xx);  dy = diff(yy);
+      
+      rot = angle(complex(dx,dy));    
+      shiftxy = [cos(rot) -sin(rot); sin(rot) cos(rot)] * [0 ; dxy]./2;
+      
+      l1 = [ dx dy ];
+      l1 = repmat(l1./norm(l1),length(xy),1);
+      l2 = repmat([xx(1) yy(1)] - shiftxy' ,length(xy),1);
+  
+      l3 =  [ -dy dx ];
+      l3 =  repmat(l3./norm(l3),length(xy),1);
+      dist = dot(xy - l2,l3,2);
+      
+      co = l2 + repmat( dot(xy - l2,l1,2) ,1,2).*l1;
+           
+      [co ia]= sortrows(co);
+      dist = dist(ia);      
+      
+      if sign(dx) < 0 , pmx = @ge; else pmx = @le; end
+      if sign(dy) < 0 , pmy = @ge; else pmy = @le;  end
+
+      idxy = (pmx(co(:,1) - xx(1),dx) & pmx(xx(2) - co(:,1),dx)) | ...
+             (pmy(co(:,2) - yy(1),dy) & pmy(yy(2) - co(:,2),dy));
+      co = co(idxy , : );
+      dist = dist(idxy);
+      
+      sel = false(size(dist));     
+      fdist = dxy*10; iter = 1;   
+      
+      while max(fdist) - dxy > 10^-10 
+        sel = sel | dist < dxy*iter;
+     
+        fdist = abs(sqrt(sum(diff(co(sel,:)).^2,2)));
+        iter = iter+1;
+     
+        if all(sel), break, end;
+      end
+     
+      co = co(sel,:);  
+      if ~isempty(co)
+        non = [true;any(diff(co)> dxy*10^-8 ,2) ];
+        co = co(non,:);
+      end
+      
+      dummy = [dummy ;co];
+    end
+    
+  case {'cubi','cubei'} %grid reconstruction, TODO
     hx = unique(xy(:,1));
     hy = unique(xy(:,2));    
       
@@ -276,12 +339,7 @@ switch lower(augmentation)
     [xx2 yy2] = meshgrid(x,y);
     
     clear x y
-    switch lower(augmentation) 
-      case 'cubei'
-        ff1 = [xy(:,1),xy(:,2)];
-      case 'cube'
-        ff1 = [xx1(:),yy1(:)];
-    end    
+    ff1 = [xy(:,1),xy(:,2)];
     ff2 = [xx2(:),yy2(:)];
       clear xx1 xx2 yy1 yy2
        
