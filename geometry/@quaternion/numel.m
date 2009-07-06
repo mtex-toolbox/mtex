@@ -1,4 +1,6 @@
-function n = numel(q)
+function n = numel(q,varargin)
 % overloads numel
 
-n = numel(q.a);
+n = numel(q.a,varargin{:});
+
+

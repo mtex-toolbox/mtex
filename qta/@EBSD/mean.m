@@ -1,5 +1,8 @@
-function [ m kappa v] = mean( ebsd,varargin)
+function varargout = mean( ebsd,varargin)
 % returns mean, kappas and eigenvector of ebsd object
+%
+%% Syntax
+% [m kappa v] = mean(ebsd)
 %
 %% Input
 %  ebsd      - @EBSD
@@ -14,7 +17,7 @@ function [ m kappa v] = mean( ebsd,varargin)
 
 % extract weights
 if isfield(ebsd(1).options,'weight')
-  [m kappa  v]  = mean(S3G,'weights',get(ebsd(ind),'weight'));
+  [varargout{1:nargout}]  = mean(S3G,'weights',get(ebsd(ind),'weight'));
 else
-  [m kappa  v]  = mean(S3G);
+  [varargout{1:nargout}]  = mean(S3G);
 end
