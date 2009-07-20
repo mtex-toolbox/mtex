@@ -19,7 +19,7 @@ function [q,omega] = getFundamentalRegion(S3G,q_ref)
 % [omega,q] = selectMinbyRow(omega,q);
 
 if nargin == 1, q_ref = idquaternion;end
-if length(S3G) > 1 || size(S3G.Grid,2) > 1
+if length(S3G) > 1 || size(S3G.Grid,1) > 1
   q = quaternion(S3G);
 else
   q = S3G.Grid;
