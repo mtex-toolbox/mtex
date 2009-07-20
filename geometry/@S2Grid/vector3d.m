@@ -7,19 +7,19 @@ function v = vector3d(S2G,i,j)
 %  @vector3d
 
 if nargin == 3
-    v = S2G(1).Grid(i,j);
+  v = S2G(1).Grid(i,j);
 elseif nargin == 2
-    v = vector3d;
-    for iG = 1:length(S2G)       
-        ind = find(i > 0 & i <= GridLength(S2G(iG)));
-        v(ind) = S2G(iG).Grid(i(ind));
-        i = i - GridLength(S2G(iG));        
-    end
+  v = vector3d;
+  for iG = 1:length(S2G)
+    ind = find(i > 0 & i <= GridLength(S2G(iG)));
+    v(ind) = S2G(iG).Grid(i(ind));
+    i = i - GridLength(S2G(iG));
+  end
 elseif length(S2G) == 1
-    v = S2G.Grid;
+  v = S2G.Grid;
 else
-    v = vector3d;
-    for i = 1:length(S2G)
-        v = [v,reshape(S2G(i).Grid,1,[])]; %#ok<AGROW>
-    end
+  v = vector3d;
+  for i = 1:length(S2G)
+    v = [v,reshape(S2G(i).Grid,1,[])]; %#ok<AGROW>
+  end
 end

@@ -44,7 +44,7 @@ omegaSym = dot_outer(q_ref .* qSym,q);
 [omega,idy] = selectMaxbyColumn2(omegaSym);
 
 % project to fundamental region
-qSym = inverse(qSym);
+qSym = reshape(inverse(qSym),1,[]);
 q = q .* qSym(idy);
 
 % compute angle
