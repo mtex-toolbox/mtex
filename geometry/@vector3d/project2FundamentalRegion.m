@@ -2,7 +2,7 @@ function [v,swap,rot] = project2FundamentalRegion(v,sym,varargin)
 % projects orientations to a fundamental region
 %
 %% Input
-%  v  -  @vector3d
+%  v  - @vector3d
 %  cs - @symmetry
 %
 %% Options

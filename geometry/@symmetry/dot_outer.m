@@ -1,5 +1,6 @@
 function d = dot_outer(CS,SS,g1,g2)
 % dout_outer modulo symmetry
+%
 %% Input
 %  CS, SS - @symmetry
 %  g1, g2 - @quaternion 
