@@ -15,6 +15,8 @@ if ~isempty(varargin) && check_option(varargin,'weights')
   w = w./sum(w);
   w = repmat(w,4,1);
   T = w(:,1:numel(q)).* T;
+else
+  T = T ./ numel(q);
 end
 
 
