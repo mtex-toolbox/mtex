@@ -1,14 +1,12 @@
 function v = vertcat(varargin)
 % overloads [v1,v2,v3..]
 
-v = vector3d;
-
-for i = 1:length(varargin)
-  v.x = [v.x;varargin{i}.x];
-  v.y = [v.y;varargin{i}.y];
-  v.z = [v.z;varargin{i}.z];
+vs = repmat(struct(varargin{1}),size(varargin));
+for k=1:numel(varargin)
+  vs(k) = struct(varargin{k});
 end
 
-% v.x = vertcat(cell2mat(cellfun(@(v) v.x,varargin,'UniformOutput',false).'));
-% v = builtin('vertcat',varargin{:});
-% vv.x = vertcat(v.x);
+v = varargin{1};
+v.x = vertcat(vs.x);
+v.y = vertcat(vs.y);
+v.z = vertcat(vs.z);

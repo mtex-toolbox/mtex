@@ -1,7 +1,6 @@
-function vr = reshape(v,varargin) 
+function v = reshape(v,varargin) 
 % overloads reshape
 
-if isa(v,'vector3d')
-	vr = vector3d(reshape(v.x,varargin{:}),...
-		reshape(v.y,varargin{:}),reshape(v.z,varargin{:}));
-end
+v.x = reshape(v.x,varargin{:});
+v.y = reshape(v.y,varargin{:});
+v.z = reshape(v.z,varargin{:});

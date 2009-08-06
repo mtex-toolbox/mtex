@@ -1,4 +1,6 @@
-function v=transpose(v1)
+function v1=transpose(v1)
 % transpose vector
 
-v = vector3d(v1.x.',v1.y.',v1.z.');
+v1.x = v1.x.';
+v1.y = v1.y.';
+v1.z = v1.z.';

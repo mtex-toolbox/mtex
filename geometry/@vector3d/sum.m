@@ -6,8 +6,9 @@ function s = sum(v,d)
 %% Output
 %  @vector3d
 
-if nargin == 1
-    s = vector3d(sum(v.x),sum(v.y),sum(v.z));
-else
-    s = vector3d(sum(v.x,d),sum(v.y,d),sum(v.z,d));
-end
+s = v;
+if nargin == 1, d = min(find(size(v.x)~=1)); end
+
+s.x = sum(v.x,d);
+s.y = sum(v.y,d);
+s.z = sum(v.z,d);

@@ -1,9 +1,6 @@
-function vec = repmat(v,varargin) 
+function v = repmat(v,varargin) 
 % overloads repmat
 
-if isa(v,'vector3d')
-	vec = vector3d(repmat(v.x,varargin{:}),...
-		repmat(v.y,varargin{:}),repmat(v.z,varargin{:}));
-else
-    error('this is for vector3d only')
-end 
+v.x = repmat(v.x,varargin{:});
+v.y = repmat(v.y,varargin{:});
+v.z = repmat(v.z,varargin{:});
