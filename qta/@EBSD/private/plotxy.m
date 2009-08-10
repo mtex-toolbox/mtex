@@ -4,46 +4,37 @@ function plotxy(x,y,d,varargin)
 
 [x,y, lx,ly] = fixMTEXscreencoordinates(x,y,varargin{:});
 
-%% get shape of plotting region
+%% estimate grid resolution
 
-% find resolution by number of points
-dxy = (max(x(:))-min(x(:)))/(max(y(:))-min(y(:)));
-drx = (max(x(:))-min(x(:))) / (1*sqrt(numel(d)*dxy));
-dry = (max(y(:))-min(y(:))) / (1*sqrt(numel(d)/dxy));
+rndsmp = [ (1:sum(1:length(x)<=75))'; unique(fix(1+rand(200,1)*(length(x)-1)))];
 
-% find resolution by differences beteen points
-rx = funique(x,1e-15);
-ry = funique(y,1e-15);
+xx = repmat(x(rndsmp),1,length(rndsmp));
+yy = repmat(y(rndsmp),1,length(rndsmp));
+dist = abs(sqrt((xx-xx').^2 + (yy-yy').^2));
 
-% take the maximum of those
-drx = max(drx,min(diff(rx)));
-dry = max(dry,min(diff(ry)));
+dxy = min(dist(dist>0));
 
-% generate grid
-rx = min(rx):drx:max(rx);
-ry = min(ry):dry:max(ry);
+%% generate a grid
+
+rx = min(x)-dxy/2:dxy:max(x)+dxy;
+ry = min(y)-dxy/2:dxy:max(y)+dxy;
+
+[xx,yy] = meshgrid(rx,ry); 
+
 nx = numel(rx); ny = numel(ry);
 
 %% 
-rxy = sqrt(drx^2+dry^2)/4;
-
-ix = round(1 + ([x x+rxy x-rxy] - min(rx)) ./ (max(rx)-min(rx)) * (nx-1));
-iy = round(1 + ([y y+rxy y-rxy] - min(ry)) ./ (max(ry)-min(ry)) * (ny-1));
-
-ix = max(min(nx,ix),1);
-iy = max(min(ny,iy),1);
+ix = fix(1 + (x-rx(1))/dxy); 
+iy = fix(1 + (y-ry(1))/dxy);
 
 s = size(d);
-c = nan(nx*ny,s(end));
-for k=1:3
-  c(iy(:,k) + (ix(:,k)-1)*ny,:) = d;%reshape(d,[],3);
-end
+c = NaN(nx*ny,s(end));
+c(iy + (ix-1)*ny,:) = d;
 c = reshape(c,ny,nx,s(end));
 
 %%
 
-if 4*sum(isnan(c(:)))>sum(~isnan(c(:)))%all(all(isnan(c(1:2:end,1:2:end,1)))) || ...
-    %all(all(isnan(c(1:2:end,2:2:end,1))))   
+if 4*sum(isnan(c(:)))>sum(~isnan(c(:))) && all(size(c(:,:,1)) > 2)
   
   cc = cat(4,...
     c(2:end-1,2:end-1,:),...
@@ -59,7 +50,6 @@ end
 %% interpolate if necasarry
 if check_option(varargin,'interpolate')  %numel(find(isnan(c))) / numel(c) > 0.5
   
-  [xx,yy] = meshgrid(rx,ry);
   c1 = griddata(x,y,d(:,1),xx,yy,'nearest');
   c2 = griddata(x,y,d(:,2),xx,yy,'nearest');
   c3 = griddata(x,y,d(:,3),xx,yy,'nearest');
@@ -70,14 +60,9 @@ end
 %% plot
 
 if size(c,3) == 1
-  h = pcolor(rx,ry,c); shading flat 
+  h = pcolor(xx,yy,c); shading flat 
 else
-  drx = diff(rx);
-  dry = diff(ry);
-  rx = [rx - [drx  drx(end)]/2   rx(end)+drx(end)/2];
-  ry = [ry - [dry  drx(end)]/2   ry(end)+drx(end)/2];
-  [rrx,rry] = meshgrid(rx,ry); 
-  h = surf(rrx,rry,zeros(size(rrx)),c); shading flat 
+  h = surf(xx,yy,zeros(size(xx)),c); shading flat 
   view(0,90);
 end
 
@@ -85,10 +70,3 @@ optiondraw(h,varargin{:});
 
 xlabel(lx); ylabel(ly);
 fixMTEXplot;
-
-function x = funique(x,epsilon)
-
-x = sort(x);
-diff = [1;x(1:end-1) - x(2:end)];
-x = x(abs(diff)>epsilon); 
-
