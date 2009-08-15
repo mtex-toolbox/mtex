@@ -17,19 +17,24 @@ function [g grains] = grainfun(FUN,grains,varargin)
 %
 %% Example
 %  tindex = grainfun( @(x) textureindex(calcODF(x)), ...
-%             grains,ebsd,'UniformOutput',true)
+%             grains,ebsd,'UniformOutput',true);
+%
+%  grains = calcODF(grains,ebsd);
+%  tindex = grainfun(@textureindex, grains,'ODF');
 %
 %% See also
 % 
 
 
-if nargin > 1  
+if nargin > 1
+  
+  hasebsd = 0; 
+  uniform = true;
   if ~isempty(varargin)    
     hasebsd = find_type(varargin,'EBSD');
-    uniform = false;
-  else
-    hasebsd = 0; 
-    uniform = true;
+    if hasebsd
+      uniform = false;
+    end
   end
   
   uniform = get_option(varargin,'UniformOutput',uniform);
@@ -44,7 +49,12 @@ if nargin > 1
       if isa(FUN,'function_handle')
         g = cell(size(grains));
         ebsd = partition(ebsd, ids,'nooptions');
-        for k=1:numel(ebsd)
+        
+        progress(0,numel(ebsd))
+        for k=1:numel(ebsd)          
+          if abs(fix(k/numel(ebsd)*40)-fix((k-1)/numel(ebsd)*40))>0 ,
+             progress(k,numel(ebsd)); end
+           
           try           
             g{ndx(k)} = FUN(ebsd(k));
           catch
@@ -56,8 +66,28 @@ if nargin > 1
       end     
     end
   else    
-    for k=1:length(grains)
-      g{k} = FUN(grains(k));
+    
+    if nargin > 2 && isa(varargin{1},'char')
+      switch varargin{1}       
+        case fields(grains(1).properties)
+           p = [grains.properties];
+           grains = {p.(varargin{1})};
+      end
+    end    
+    
+    cl = ~iscell(grains);
+    g = cell(size(grains));
+    
+    progress(0,length(grains))
+    for k=1:length(grains)      
+      if abs(fix(k/length(grains)*40)-fix((k-1)/length(grains)*40))>0 ,
+         progress(k,length(grains));end
+       
+      if cl
+        g{k} = FUN(grains(k));
+      else
+        g{k} = FUN(grains{k});
+      end
     end
   end
 else
