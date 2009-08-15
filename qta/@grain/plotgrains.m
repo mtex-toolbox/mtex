@@ -57,18 +57,23 @@ grains = grains(ndx);
 
 newMTEXplot;
 set(gcf,'renderer','opengl');
-
+% 
 %%
-if property
+
+if ~isempty(property)
   cc = lower(get_option(varargin,'colorcoding','ipdf'));
   
   %get the coloring   
   if ~check_property(grains,property)
-	  warning(['MATLAB:plotgrains:' property], ...
-            ['please calculate ' property ' as object property first to ' ...
-             'reduce subsequent calculations \n' ...
-             'procede with random colors']) 
-    d = rand(length(p),3);
+    if isnumeric(property) && length(p) == length(property) || islogical(property)
+      d = reshape(real(property(ndx)),[],1);
+    else
+      warning(['MATLAB:plotgrains:' property], ...
+              ['please calculate ' property ' as object property first to ' ...
+               'reduce subsequent calculations \n' ...
+               'procede with random colors']) 
+      d = rand(length(p),3);
+    end
   else     
     switch property
       case 'mean'
@@ -94,7 +99,7 @@ if property
         co = get(gca,'colororder');
         colormap([get(gca,'color');co(unique(d),:)]);
       case fields(grains(1).properties)
-        d = get(grains,property)';
+        d = reshape(get(grains,property),[],1);
       otherwise
         error('MTEX:wrongProperty',['Property ''',property,''' not found!']);
     end
@@ -147,27 +152,8 @@ elseif exist('ebsd','var')
         'please calculate mean as object property first') 
     end
     
-    [grains ebsd ids] = get(grains, ebsd(1));
-    grid = getgrid(ebsd,'CheckPhase');
-    cs = get(grid,'CS');
-    ss = get(grid,'SS');  
-    
-    if ~isempty(grains)
-      qm = get(grains,'mean');
-      
-      [ids2 ida idb] = unique(ids);
-      [a ia ib] = intersect([grains.id],ids2);
-
-      ql = symmetriceQuat(cs,ss,quaternion(grid));
-      qr = repmat(qm(ia(idb)).',1,size(ql,2));
-      q_res = ql.*inverse(qr);
-      omega = rotangle(q_res);
-  
-      [omega,q_res] = selectMinbyRow(omega,q_res);
-      
-      plotspatial(set(ebsd(1),'orientations',SO3Grid(q_res,cs,ss)),varargin{:});
-      return
-    end
+    plotspatial(misorientation(grains,ebsd),varargin{:});
+    return
   end
   
 else 

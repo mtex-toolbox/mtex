@@ -1,4 +1,4 @@
-function [qm grains] = mean(grains,ebsd)
+function [grains qm] = mean(grains,ebsd)
 % returns the mean
 %
 %% Input

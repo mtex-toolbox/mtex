@@ -106,7 +106,7 @@ ll = sortrows(sort(nx,2));
 ll = ll(1:2:end,:); % subractions
 
  
-nl = length(ll);
+nl = size(ll,1);
 lines = zeros(nl,2);
 
 for k=1:nl
@@ -366,7 +366,7 @@ switch lower(augmentation)
 end
 xy = [xy; dummy];
 
-[v c] = voronoin(xy,{'Q7'});   %Qf {'Qf'} ,{'Q7'}
+[v c] = voronoin(xy,{'Q7','Q8','Q5','Q3'});   %Qf {'Qf'} ,{'Q7'}
 
 % prepare data
   %c = c(1:end-length(dummy));
@@ -437,7 +437,7 @@ cc = [0; r1];
 crc = [0 cumsum(cr1)];
 
 nr = length(regionids);
-ply = struct('xy',cell(1,nr), 'hxy',repmat({{}},1,nr));
+ply = struct('xy',cell(1,nr), 'hxy',cell(1,nr)); %repmat({{}},1,nr));
 
 for k =1:nr
   sel = cc(crc(k)+1)+1:cc(crc(k+1)+1);
@@ -445,11 +445,9 @@ for k =1:nr
   if cr1(k) > 1
     %remove double entries
     [ig nd] = sort(ib(sel));
-    dell = all(diff(tmpii(ig,:)) == 0,2);
-    dell = [ 0; dell] | [ dell; 0];
-    sel = sel( nd(~dell) ); 
-    % polygon retrival
-
+    dell = find(sum(diff(tmpii(ig,:)) == 0,2)>1);
+    sel( nd([dell dell+1]) ) = []; 
+  
     border = converttoborder(gl(sel), gr(sel));
     
     psz = numel(border);

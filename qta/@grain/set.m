@@ -1,8 +1,8 @@
 function obj = set(obj,vname,value)
 % set object variable to value
 
-vname = lower(vname);
-if any(strcmp(vname,fields(obj)))
+% vname = lower(vname);
+if any(strcmpi(vname,fields(obj)))
   if length(value) == length(obj)
     for k=1:numel(obj)
       obj(k).(vname) = value(k);
