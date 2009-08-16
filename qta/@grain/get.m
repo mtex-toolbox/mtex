@@ -37,6 +37,7 @@ if nargin > 1
     if nargout > 2, varargout{3} = ids; end
   elseif ~isempty(opt_pos)
     optfield = varargin{opt_pos};
+    assert_property(grains,optfield);
     switch optfield
       case {'neighbour' 'cells'}
         varargout{1} = {grains.(optfield)};

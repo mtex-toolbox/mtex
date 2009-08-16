@@ -1,5 +1,5 @@
 function ebsd = toebsd(grains)
-% convert an grain object with mean-orientations to ebsd data
+% convert an grain object with orientation to ebsd data
 %
 %% Input
 %  grains   - @grain
@@ -13,13 +13,7 @@ function ebsd = toebsd(grains)
 cxy = centroid(grains);
 ar = area(grains);
 
-if ~isfield([grains.properties], 'mean')
-  error('ErrorTests:convertTest', ... 
-    ['this operation requires orientation data \n ' ...
-         'try grains = mean(grains,ebsd)' ])
-end
-
-mean = get(grains,'mean');
+mean = get(grains,'orientation');
 phase = get(grains,'phase');
 CS = get(grains,'CS');
 SS = get(grains,'SS');

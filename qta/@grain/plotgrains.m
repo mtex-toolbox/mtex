@@ -5,8 +5,8 @@ function plotgrains(grains,varargin)
 %  plotgrains(grains)
 %  plotgrains(grains,LineSpec,...)
 %  plotgrains(grains,'PropertyName',PropertyValue,...)
-%  plotgrains(grains,'property','mean',...)
-%  plotgrains(grains,ebsd,'diffmean',...)
+%  plotgrains(grains,'property','orientation',...)
+%  plotgrains(grains,ebsd,'misorientation',...)
 %
 %% Input
 %  grains - @grain
@@ -63,47 +63,41 @@ set(gcf,'renderer','opengl');
 if ~isempty(property)
   cc = lower(get_option(varargin,'colorcoding','ipdf'));
   
-  %get the coloring   
-  if ~check_property(grains,property)
-    if isnumeric(property) && length(p) == length(property) || islogical(property)
-      d = reshape(real(property(ndx)),[],1);
-    else
-      warning(['MATLAB:plotgrains:' property], ...
-              ['please calculate ' property ' as object property first to ' ...
-               'reduce subsequent calculations \n' ...
-               'procede with random colors']) 
-      d = rand(length(p),3);
+  %get the property     
+  if ischar(property) 
+    prop = get(grains,property);
+  else
+    prop = property(ndx);
+  end
+    
+  if isa(prop,'quaternion')
+    phase = get(grains,'phase');
+    CS = get(grains,'CS');
+    SS = get(grains,'SS');
+    [phase1, m] = unique(phase);
+    d = zeros(length(grains),3);
+    for i = 1:length(phase1)
+      sel = phase == phase1(i);
+      grid = SO3Grid(prop(sel),CS{m(i)},SS{m(i)});       
+      d(sel,:) = orientation2color(grid,cc,varargin{:});
     end
-  else     
-    switch property
-      case 'mean'
-        qm = get(grains,'mean');
-        phase = get(grains,'phase');
-        CS = get(grains,'CS');
-        SS = get(grains,'SS');
-        [phase1, m] = unique(phase);
-        d = zeros(length(grains),3);
-        for i = 1:length(phase1)
-          sel = phase == phase1(i);
-          grid = SO3Grid(qm(sel),CS{m(i)},SS{m(i)});       
-          d(sel,:) = orientation2color(grid,cc,varargin{:});
-        end
         
-        setappdata(gcf,'CS',vec2cell(CS(m)))
-        setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d')); 
-        setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
-        setappdata(gcf,'colorcoding',cc);
-        setappdata(gcf,'options',extract_option(varargin,'antipodal'));
-      case 'phase'
-        [x x d] = unique(get(grains,'phase')');
-        co = get(gca,'colororder');
-        colormap([get(gca,'color');co(unique(d),:)]);
-      case fields(grains(1).properties)
-        d = reshape(get(grains,property),[],1);
-      otherwise
-        error('MTEX:wrongProperty',['Property ''',property,''' not found!']);
-    end
-  end  
+    setappdata(gcf,'CS',vec2cell(CS(m)))
+    setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d')); 
+    setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
+    setappdata(gcf,'colorcoding',cc);
+    setappdata(gcf,'options',extract_option(varargin,'antipodal'));
+  elseif isnumeric(prop) && length(p) == length(prop) || islogical(prop)
+    d = reshape(real(prop),[],1);  
+  else
+    error('Please verify your property')
+  end
+   
+  if strcmpi(property,'phase')
+    [x x d] = unique(d);
+    co = get(gca,'colororder');
+    colormap([get(gca,'color');co(d,:)]);
+  end
   
   h = [];
   %split data
@@ -146,11 +140,7 @@ if ~isempty(property)
   end
   set(h,'FaceColor','flat')
 elseif exist('ebsd','var') 
-  if check_option(varargin,'diffmean') 
-    if ~check_property(grains,'mean'),  
-      warning('MATLAB:plotgrains:mean', ...
-        'please calculate mean as object property first') 
-    end
+  if check_option(varargin,'misorientation')
     
     plotspatial(misorientation(grains,ebsd),varargin{:});
     return
@@ -195,14 +185,6 @@ selector(gcf,grains,p,h);
 if exist('h','var'), optiondraw(h,varargin{:});end
 
 
-
-
-
-function  b = check_property(grains,property)
-
-b = any(strcmpi(fields(grains(1).properties),property));
-
-    
 function faces = get_faces(cxy)
 
 cl = cellfun('length',cxy);
