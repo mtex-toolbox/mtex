@@ -1,7 +1,9 @@
 function startup_mtex
 % init MTEX session
 %
-% 
+% This is the startup file for MTEX. In general it is not necessary to edit
+% this file. The startup options of MTEX can be edited in the file
+% mtex_settings.m in this directory.
 %
 
 %% start MTEX
@@ -13,28 +15,14 @@ local_path = fileparts(mfilename('fullpath'));
 
 
 %% needs installation ?
-install_mtex(local_path);
 
+install_mtex(local_path);
 
 %% setup search path 
 
-toadd = { {''}, ...
-  {'qta'}, {'qta' 'interfaces'},{'qta' 'interfaces' 'tools'},...
-  {'qta' 'standardODFs'},{'qta' 'tools'},...
-  {'geometry'},{'geometry' 'geometry_tools'},...
-  {'tools'},{'tools' 'dubna_tools'}, {'tools' 'file_tools'},{'tools' 'option_tools'},...
-  {'tools' 'import_wizard'},{'tools' 'plot_tools'},{'tools' 'statistic_tools'},...
-  {'tools' 'misc_tools'},{'tools' 'math_tools'},...
-  {'examples'},{'tests'},...
-  {'help' 'interfaces'},{'help' 'ODFAnalysis'},{'help' 'PoleFigureAnalysis'},...
-  {'help' 'EBSDAnalysis'},{'help' 'plotting'},{'help' 'CrystalGeometry'}};
-
-for k=1:length(toadd)
-  addpath(fullfile(local_path,toadd{k}{:}),0);
-end
+setMTEXPath(local_path);
 
 %% set path to MTEX directories
-
 
 set_mtex_option('mtex_path',local_path);
 set_mtex_option('mtex_data_path',fullfile(local_path,'data'));
@@ -177,6 +165,8 @@ end
 
 end
 
+
+%% sudo for linux
 function out = sudo(c)
 
 disp('> I need root privelegs to perform the following command');
@@ -196,3 +186,53 @@ end
 
 end
 
+%% set MTEX search path
+function setMTEXPath(local_path)
+
+% obligatory paths
+toadd = { {''}, ...
+  {'qta'}, {'qta' 'interfaces'},{'qta' 'interfaces' 'tools'},...
+  {'qta' 'standardODFs'},{'qta' 'tools'},...
+  {'geometry'},{'geometry' 'geometry_tools'},...
+  {'tools'},{'tools' 'dubna_tools'}, {'tools' 'file_tools'},{'tools' 'option_tools'},...
+  {'tools' 'import_wizard'},{'tools' 'plot_tools'},{'tools' 'statistic_tools'},...
+  {'tools' 'misc_tools'},{'tools' 'math_tools'},{'tools' 'compatibility'},...
+  {'examples'},{'tests'},...
+  {'help' 'interfaces'},{'help' 'ODFAnalysis'},{'help' 'PoleFigureAnalysis'},...
+  {'help' 'EBSDAnalysis'},{'help' 'plotting'},{'help' 'CrystalGeometry'}};
+
+for k=1:length(toadd)
+  addpath(fullfile(local_path,toadd{k}{:}),0);
+end
+
+% compatibility path
+comp = dir(fullfile(local_path,'tools','compatibility','ver*'));
+
+for k=1:length(comp)
+  if MATLABverLessThan(comp(k).name(4:end))
+    addpath(genpath(fullfile(local_path,'tools','compatibility',comp(k).name)),0);
+  end
+end
+
+if MATLABverLessThan('7.3'), make_bsx_mex;end
+
+end
+
+%% check MATLAB version 
+function result = MATLABverLessThan(verstr)
+
+MATLABver = ver('MATLAB');
+
+toolboxParts = getParts(MATLABver(1).Version);
+verParts = getParts(verstr);
+
+result = (sign(toolboxParts - verParts) * [1; .1; .01]) < 0;
+
+end
+
+function parts = getParts(V)
+parts = sscanf(V, '%d.%d.%d')';
+if length(parts) < 3
+  parts(3) = 0; % zero-fills to 3 elements
+end
+end
