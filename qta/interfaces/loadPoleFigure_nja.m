@@ -2,7 +2,7 @@ function pf =loadPoleFigure_nja(fname,varargin)
 
 try
   [fdir,fn,ext] = fileparts(fname);
-  mtex_assert(any(strcmpi(ext,{'.nja'})));
+  assert(any(strcmpi(ext,{'.nja'})));
 catch
   error('file not found or format nja does not match file %s',fname);
 end

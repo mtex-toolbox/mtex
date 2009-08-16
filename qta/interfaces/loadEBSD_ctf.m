@@ -52,8 +52,8 @@ iAcqE3 = sscanf(hl{nextline+2},'AcqE3\t%u',1);
 % Microscope Parameters
 %********************************************************
 
-%mpara = regexp(hl{nextline+3},'\t','split');
-mpara = splitstr(hl{nextline+3},char(9));
+mpara = regexpsplit(hl{nextline+3},'\t');
+%mpara = splitstr(hl{nextline+3},char(9));
 
 SCS = mpara{1}; % sample coordinate system
 mag = mpara{3}; % Magnification
@@ -86,8 +86,8 @@ NPHASES = sscanf(hl{nextline + 4},'Phases\t%u');
 for K = 1:NPHASES
   
   % load phase
-  %mpara = regexp(hl{nextline+4+K},'\t','split');
-  mpara = splitstr(hl{nextline+4+K},char(9));
+  mpara = regexpsplit(hl{nextline+4+K},'\t');
+  %mpara = splitstr(hl{nextline+4+K},char(9));
     
   abc = sscanf( mpara{1},'%f;%f;%f'); % Lattice ABC
   abg = sscanf( mpara{2},'%f;%f;%f'); % Lattice alpha beta gamma
@@ -105,10 +105,3 @@ end
 ebsd = loadEBSD_generic(fname,'cs',cs,'ss',ss,'bunge','degree',...
   'ColumnNames',{'Phase' 'X' 'Y' 'Bands' 'Error' 'Euler 1' 'Euler 2' 'Euler 3' 'MAD' 'BC' 'BS'}, ...
   'Columns',1:11,varargin{:});
-
-
-function cstr = splitstr(str,c)
-
-pos = [0,findstr(str,c),length(str)+1];
-cstr = arrayfun(@(i) str(pos(i-1)+1:pos(i)-1),2:length(pos),'uniformoutput',0);
-

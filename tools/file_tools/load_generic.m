@@ -52,7 +52,7 @@ function c = extract_colnames(header,ncol)
 c = [];
 try
   % split into rows
-  rows = regexp(header,'\n','split');
+  rows = regexpsplit(header,'\n');
   %find last not empty row
   while iscell(rows)
     if isempty(rows{end})
@@ -65,13 +65,13 @@ try
   % extract colum header
   
   % try regular
-  c = regexp(rows,'\s+','split');
+  c = regexpsplit(rows,'\s+');
   c = {c{~cellfun(@isempty,c)}}; % löscht evt. leere zellen.
   if length(c) == ncol, return;end
   
   
   % try fancy
-  c = regexp(rows,'\s\s+','split');
+  c = regexpsplit(rows,'\s\s+');
   c = {c{~cellfun(@isempty,c)}}; % löscht evt. leere zellen.
   
 catch %#ok<CTCH>

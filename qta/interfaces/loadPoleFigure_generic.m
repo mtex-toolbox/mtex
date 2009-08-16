@@ -79,7 +79,7 @@ names = lower(get_option(varargin,'ColumnNames'));
 cols = get_option(varargin,'Columns',1:length(names));
 
 
-mtex_assert(length(cols) == length(names), 'Length of ColumnNames and Columns differ');
+assert(length(cols) == length(names), 'Length of ColumnNames and Columns differ');
 
 [names m] = unique(names);
 cols = cols(m);
@@ -108,7 +108,7 @@ if istype(names,sphcoord)
   end
   
   if all(th<=0), th = -th;end  
-  mtex_assert(all(th>=0 & th <= pi) && ...
+  assert(all(th>=0 & th <= pi) && ...
     all(rh>=-360) && all(rh<=720),'Polar coordinates out of range!');
 
   % specimen directions
@@ -131,7 +131,7 @@ end
 
 % intensities
 v = d(:,layout(end));
-mtex_assert(length(v)>=5,'To few data points');
+assert(length(v)>=5,'To few data points');
 
 % crystal direction
 h = string2Miller(fname);

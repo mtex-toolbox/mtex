@@ -69,7 +69,7 @@ for ip = ipf
     
     % ignore all orientations that are close to the zero range
     ind(ind) = all(zr(ir),2);
-    mtex_assert(any(ind),'Zero range methods has canceled out all orientations. Chose better parameters');
+    assert(any(ind),'Zero range methods has canceled out all orientations. Chose better parameters');
   
   end
   fprintf(' - reduction: %d / %d\n',sum(ind),length(ind));
