@@ -6,11 +6,11 @@ function [grains qm] = mean(grains,ebsd)
 %  ebsd   - @EBSD
 %
 %% Output
-%  qm     - quaternion of mean%
-%  grains - grains with stored mean   
+%  grains - grains with stored mean as orientation  
+%  qm     - quaternion of mean
 %
 %% See also
 % EBSD/mean 
 %
 
-[qm grains] = grainfun(@(e) mean(e), grains, ebsd,'property','mean');
+[qm grains] = grainfun(@(e) mean(e), grains, ebsd,'property','orientation');

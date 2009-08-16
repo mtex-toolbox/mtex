@@ -1,8 +1,8 @@
 function obj = set(obj,vname,value)
 % set object variable to value
 
-% vname = lower(vname);
 if any(strcmpi(vname,fields(obj)))
+  vname = lower(vname);
   if length(value) == length(obj)
     for k=1:numel(obj)
       obj(k).(vname) = value(k);
@@ -15,6 +15,10 @@ if any(strcmpi(vname,fields(obj)))
     error('dimension missmatch')
   end
 else
+  vname2 = fields(obj(1).properties);
+  exists = strcmpi(vname,vname2); %case sensitiv
+  if any(exists),  vname = vname2{exists}; end
+  
   for k=1:numel(obj)
     obj(k).properties.(vname) = value(k);
   end  

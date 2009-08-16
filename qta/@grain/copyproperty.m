@@ -38,6 +38,10 @@ end
 
 opts = partition(ebsd,ids,'fields',property);
 
+if any(strcmpi(property,{'all','orientations'}))
+  grains = method(grains,ebsd);
+end
+
 vname = fieldnames(opts);
 
 for k=1:length(vname)

@@ -42,7 +42,7 @@ if nargin > 1 && isa(varargin{1},'ebsd') % misorientation to ebsd data
     cs = get(grid,'CS');
     ss = get(grid,'SS');  
     
-    qm = get(grs,'mean');
+    qm = get(grs,'orientation');
     
     [ids2 ida idb] = unique(ids);
     [a ia ib] = intersect([grs.id],ids2);
@@ -77,7 +77,7 @@ else % misorientation to neighbour grains
       asr = grainsize(gr);  tot = sum(asr); 
     end
 
-    mean = get(gr,'mean');
+    mean = get(gr,'orientation');
 
     pCS = get(gr(1),'CS');
     pCS = pCS{:};

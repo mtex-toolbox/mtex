@@ -173,7 +173,7 @@ f = findall(gcf,'Tag','MTEX.layervis');
 [i i i ly] = getcurrentlayer;
 hs = getappdata(gcf,'layer');
 state = get(hs{ly},'Visible');
-set(f,'State',state{1});  
+% set(f,'State',state{1});  
   
 %--------------------------------------------------------------------------
 function changenSelectionColor(empt,eventdata)
@@ -287,7 +287,7 @@ ind = [pp find(ismember([grains.id],grains(pp).neighbour))];
   %polygons which share the vertex
   
   hs = [p(ind).hxy]; 
- 
+  if isempty(hs), hs = cell(0); end
   hXY = vertcat(hs{:}); 
   ind2 = find(ismember(hXY, XYs, 'rows'));
   hl = cumsum(cellfun('length',{p(ind).hxy}));
@@ -533,7 +533,7 @@ if ~isempty(props)
   for k=1:length(props)
     p = grain.properties.(props{k});
     if isa(p,'quaternion')
-        disp(['  ' props{k} ':   quaternion(' num2str([p.a p.b p.c p.d],'%1.4f,') ')']);
+        disp(['  ' props{k} ':   quaternion(' num2str(double(grain.properties.orientation),'%1.4f ') ')']);
     elseif isa(p,'double')
         disp(['  ' props{k} ':  ' num2str(p)]);
     end
