@@ -24,9 +24,12 @@ else
   pfunc = @(i) pf(i).data;
 end
 
-if check_option(varargin,{'contourf','contour','smooth'})
+if check_option(varargin,{'contourf','contour','smooth'}) && ...
+    (size(pfunc(1),1) == 1 || size(pfunc(1),2) == 1)
+  
   warning('%s%s\n%s','Unexpected option: ',varargin{find_option(varargin,{'contourf','contour','smooth'})},...
     ' Discrete pole figure data should only plotted as points!'); %#ok<WNTAG>
+  
 end
 
 multiplot(@(i) pf(i).r,pfunc,length(pf),...
