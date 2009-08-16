@@ -67,6 +67,11 @@ switch lower(name)
     K.name = name;
     A = p;
 
+  case 'jackson'
+    
+    L = min(L,p);
+    for l=1:L, A(l+1) = (2*l+1)*(1-l*(l+1)./(L*(L+1)));end
+    
   otherwise
         
     A = [];

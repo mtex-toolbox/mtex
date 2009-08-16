@@ -5,7 +5,7 @@ function RK = construct_RK(name,p,A)
 
 switch lower(name)
   
-  case {'laplace','local','fourier','gauss weierstrass','dirichlet','user'}
+  case {'laplace','local','fourier','gauss weierstrass','dirichlet','user','jackson'}
     
     RK  = @(dmatrix) ClenshawL(A,dmatrix);
 
