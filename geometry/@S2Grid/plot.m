@@ -81,6 +81,11 @@ if sum(GridLength(S2G))>100 || get(S2G,'resolution') < 10 *degree
   varargin = {'scatter_resolution',getResolution(S2G(end)),varargin{:}};
 end
 
+% set correction flag for plotting pole figure data
+if ~check_option(S2G,'plot') && ...
+    check_option(varargin,{'CONTOUR','CONTOURF','SMOOTH','TEXTUREMAP','rgb'});
+  varargin = [varargin,'correctContour'];
+end
 
 % extract data
 data = get_option(varargin,'DATA',[]);
