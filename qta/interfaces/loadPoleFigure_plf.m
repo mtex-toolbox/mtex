@@ -13,7 +13,7 @@ function pf = loadPoleFigure_plf(fname,varargin)
 
 try
   [fdir,fn,ext] = fileparts(fname);
-  mtex_assert(any(strcmpi(ext,{'.plf'})));
+  assert(any(strcmpi(ext,{'.plf'})));
   fid = efopen(fname);
 catch
   error('file not found or format PLF does not match file %s',fname);

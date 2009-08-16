@@ -96,7 +96,7 @@ names = lower(get_option(varargin,'ColumnNames'));
 cols = get_option(varargin,'Columns',1:length(names));
 
 
-mtex_assert(length(cols) == length(names), 'Length of ColumnNames and Columns differ');
+assert(length(cols) == length(names), 'Length of ColumnNames and Columns differ');
 
 [names m] = unique(names);
 cols = cols(m);
@@ -126,7 +126,7 @@ if istype(names,euler) % Euler angles specified
   beta  = d(:,layout(2))*dg;
   gamma = d(:,layout(3))*dg;
 
-  mtex_assert(all(beta >=0 & beta <= pi & alpha >= -2*pi & alpha <= 4*pi & gamma > -2*pi & gamma<4*pi));
+  assert(all(beta >=0 & beta <= pi & alpha >= -2*pi & alpha <= 4*pi & gamma > -2*pi & gamma<4*pi));
   
   % check for choosing
   if max(alpha) < 10*degree

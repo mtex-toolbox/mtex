@@ -43,7 +43,7 @@ while ~feof(fid)
     l = fgetl(fid);
     fakt = str2double(l(1:6));
     
-    mtex_assert(0.5 < dtheta && 20 > dtheta && 0.5 < dphi && 20 > dphi &&...
+    assert(0.5 < dtheta && 20 > dtheta && 0.5 < dphi && 20 > dphi &&...
         10 <= maxtheta && maxtheta <= 90 && col > 0 && dig > 0 && fakt > 0);
 
 %% generate specimen directions  

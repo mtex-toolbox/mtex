@@ -42,7 +42,7 @@ if check_option(varargin,'type')
   end
 end
 
-newversion = exist('verLessThan','file') && ~verLessThan('matlab','7.6');
+newversion = ~verLessThan('matlab','7.6');
 if ~newversion,  v0 = {}; else  v0 = {'v0'}; end
 
 %% -------- init gui -----------------------------------------------------

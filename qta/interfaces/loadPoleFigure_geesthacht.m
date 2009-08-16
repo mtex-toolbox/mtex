@@ -17,10 +17,10 @@ d = textscan(fid,'%n %n %*n %n %n %n %*n %*n %*n %*n %*n:%*n',...
 fclose(fid);
 
 % identify data
-mtex_assert(all(d{1}.'==(1:length(d{1}))));
+assert(all(d{1}.'==(1:length(d{1}))));
 d = {d{2:5}};
-mtex_assert(~isempty(d{1})); % all items have the same length! (equal(cellfun('length',d),1))
-mtex_assert(all(d{2}>=0 & d{2}<=90 & d{3}>=-370 & d{3}<=370));
+assert(~isempty(d{1})); % all items have the same length! (equal(cellfun('length',d),1))
+assert(all(d{2}>=0 & d{2}<=90 & d{3}>=-370 & d{3}<=370));
 
 pos = 1;
 pf = [];
@@ -30,9 +30,9 @@ while pos <= length(d{1})
   r = S2Grid(sph2vec(pi/2-d{2}(pos:npos)*degree,d{3}(pos:npos)*degree),'antipodal');
   dd = d{4}(pos:npos);
   
-  pf = [pf,PoleFigure(Miller(1,0,0),r,dd,symmetry('cubic'),symmetry,varargin{:})];
+  pf = [pf,PoleFigure(Miller(1,0,0),r,dd,symmetry('cubic'),symmetry,varargin{:})]; %#ok<AGROW>
   pos = npos+1;  
   
 end
 
-mtex_assert(GridLength(r)>=5);
+assert(GridLength(r)>=5);

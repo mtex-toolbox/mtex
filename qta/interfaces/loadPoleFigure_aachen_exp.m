@@ -23,7 +23,7 @@ try
   % read grid data
   rd = textscan(fid,'%s %f %s %f %s %f %s %f %s %f\n',1);
 
-  mtex_assert(strcmp(rd{1},'ALPHASTART') && strcmp(rd{3},'END') && ...
+  assert(strcmp(rd{1},'ALPHASTART') && strcmp(rd{3},'END') && ...
     strcmp(rd{5},'DELTA') && strcmp(rd{7},'BETASTART') && strcmp(rd{9},'DELTA'));
 
   rd = {rd{[2,4,6,8,10]}};

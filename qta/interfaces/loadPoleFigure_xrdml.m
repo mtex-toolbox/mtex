@@ -15,7 +15,7 @@ function pf = loadPoleFigure_xrdml(fname,varargin)
 
 try
   [fdir,fn,ext] = fileparts(fname);
-  mtex_assert(any(strcmpi(ext,{'.xml','.xrdml'})));
+  assert(any(strcmpi(ext,{'.xml','.xrdml'})));
   doc = xmlread(fname);
 catch
   error('file not found or format xrdml does not match file %s',fname);

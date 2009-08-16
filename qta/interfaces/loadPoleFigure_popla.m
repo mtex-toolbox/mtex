@@ -36,14 +36,14 @@ while ~feof(fid)
     [h,r] = string2Miller(fname);
     if ipf>1 || ~r, h = string2Miller(p{1});end
     
-    dtheta = p{2}; mtex_assert(dtheta > 0 && dtheta < 90);
-    mtheta = p{3}; mtex_assert(mtheta > 0 && mtheta <= 180);
-    drho = p{4}; mtex_assert(drho > 0 && drho < 90);
-    mrho = p{5}; mtex_assert(mrho > 0 && mrho <= 360);
-    shifttheta = p{6}; mtex_assert(shifttheta == 1 || shifttheta == 0);
-    shiftrho = p{7}; mtex_assert(abs(shiftrho) == 1 || shiftrho == 0);
-    iper = [p{8:10}]; mtex_assert(all(abs(iper)>0) && all(abs(iper)<4));
-    scaling = p{11}; mtex_assert(scaling>0);
+    dtheta = p{2}; assert(dtheta > 0 && dtheta < 90);
+    mtheta = p{3}; assert(mtheta > 0 && mtheta <= 180);
+    drho = p{4}; assert(drho > 0 && drho < 90);
+    mrho = p{5}; assert(mrho > 0 && mrho <= 360);
+    shifttheta = p{6}; assert(shifttheta == 1 || shifttheta == 0);
+    shiftrho = p{7}; assert(abs(shiftrho) == 1 || shiftrho == 0);
+    iper = [p{8:10}]; assert(all(abs(iper)>0) && all(abs(iper)<4));
+    scaling = p{11}; assert(scaling>0);
     bg = p{12};
     
     % generate specimen directions
@@ -59,7 +59,7 @@ while ~feof(fid)
       l = fgetl(fid);
       l = reshape(l(2:end),4,[]).';
       dd = str2num(l);
-      d = [d;dd(1:18)]; %#ok<ST2NM>
+      d = [d;dd(1:18)]; 
     end
 
     % restrict data to specified domain
@@ -67,10 +67,10 @@ while ~feof(fid)
     d = d(:,1:GridSize(r,2));
     
     % generate Polefigure
-    pf(ipf) = PoleFigure(h,r,double(d)*double(scaling),symmetry('cubic'),symmetry,'comment',comment,varargin{:});
+    pf(ipf) = PoleFigure(h,r,double(d)*double(scaling),symmetry('cubic'),symmetry,'comment',comment,varargin{:}); %#ok<AGROW>
   
     ipf = ipf+1;
-  catch
+  catch %#ok<CTCH>
     if ~exist('pf','var')
       error('format Popla does not match file %s',fname);
     end

@@ -33,7 +33,7 @@ Al = ones(size(th));
 try
     
   f = call_extern('odf2pf','EXTERN',gh,r,c,Al);
-  mtex_assert(any(f));
+  assert(any(f));
   
 catch %#ok<*CTCH>
   
@@ -41,7 +41,7 @@ catch %#ok<*CTCH>
     try
       set_mtex_option('architecture','maci64');
       f = call_extern('odf2pf','EXTERN',gh,r,c,Al);
-      mtex_assert(any(f));
+      assert(any(f));
       return
     catch
       set_mtex_option('architecture','maci');
