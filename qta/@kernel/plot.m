@@ -3,6 +3,7 @@ function plot(kk,options,varargin)
 %% Input
 %  kk - @kernel
 %% Options
+%  symmetric - plot from -pi to pi
 %  K, RK, RADON, RRK, FOURIER, FOURIER_LOGLOG, EVEN, ODD, EVEN-ODD
 
 %charorder =  ['*','o','+','s','^','d','x'];
@@ -13,20 +14,28 @@ for i=1:length(kk)
 		names(i,1:length(char(kk(i)))) = char(kk(i)); %#ok<AGROW>
 end
 
+if check_option(varargin,'symmetric')
+  omega(1) = -pi;
+  omega(2) = pi;
+else
+  omega(1) = 0;
+  omega(2) = pi;
+end
+
 for i = 1:length(kk)
   switch upper(options)
     case 'K'
-			omega = linspace(0,pi,1000);
+			omega = linspace(omega(1),omega(2),1000);
 			optionplot(omega,kk(i).K(cos(omega/2)),'LineWidth',2,varargin{:});
 			set(gcf,'Name',['kernel ',inputname(1),' on SO(3)']);
-			xlim([0,pi]);
+			xlim([min(omega),max(omega)]);
 		case {'RK','RADON'}
-			omega = linspace(0,pi,1000);
+			omega = linspace(omega(1),omega(2),1000);
 			optionplot(omega,kk(i).RK(cos(omega)),'LineWidth',2,varargin{:});
 			set(gcf,'Name',['Randon transformed kernel ',inputname(1),' on S^2']);
 			xlim([0,pi]);
 		case 'RRK'
-			p = linspace(-pi,pi,200);
+			p = linspace(omega(1),omega(2),200);
 			Z = max(0,kk(i).RRK(cos(p)',cos(p)));
 			[X,Y] = meshgrid(p,p);
 			surf(X,Y,Z);
@@ -55,15 +64,15 @@ for i = 1:length(kk)
 			loglog(abs(A./(2*(0:length(A)-1)+1)),charorder(i),'MarkerSize',10);
       set(gcf,'Name',['Fourier coefficients of the kernel ',inputname(1)]);
 		case 'EVEN'
-			omega = linspace(0,pi,1000);
+			omega = linspace(omega(1),omega(2),1000);
 			optionplot(omega,GK(kk(i),cos(omega/2)),'LineWidth',2,varargin{:});
       set(gcf,'Name',['Even part of the kernel ',inputname(1)]);
 		case 'ODD'
-			omega = linspace(0,pi,1000);
+			omega = linspace(omega(1),omega(2),1000);
 			optionplot(omega,UK(kk(i),cos(omega/2)),'LineWidth',2,varargin{:});
       set(gcf,'Name',['Odd part of the kernel ',inputname(1)]);
 		case 'EVEN_ODD'
-			omega = linspace(0,pi,1000);
+			omega = linspace(omega(1),omega(2),1000);
 			optionplot(omega,GK(kk(i),cos(omega/2))-UK(kk(i),cos(omega/2)),varargin{:});
       set(gcf,'Name',['Difference between even and odd part of the kernel ',inputname(1)]);
     otherwise
