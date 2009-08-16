@@ -19,6 +19,13 @@ if ndims(X) == 2 && X(1,1) > X(1,end)
   data = flipdim(data,2);
 end
 
+%%
+
+if check_option(varargin,'correctContour')  
+  X = [X;X(1,:)];
+  Y = [Y;Y(1,:)];
+  data = [data;data(1,:)];
+end
 
 %% contour plot
 if any(strcmpi(plottype,'TEXTUREMAP')) 
