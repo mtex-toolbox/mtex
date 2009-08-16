@@ -18,7 +18,8 @@
 % * speed improvement of several side-functions as well as core-functions of
 % @quaternions and spherical grids.
 % * reduction of programming-errors in favour of new ones
-%
+% * plot pole figure data as contour plots
+% * new ODF fibre plot
 %
 %% MTEX 1.2 - 05/2009 
 %

@@ -3,6 +3,7 @@
 %
 %% MTEX 2.0
 %
+% * check fix S2Grid/plot incomplete pole figures are not plotted correctly
 % * ebsd/rotate, ebsd/flipud, ebsd/fliplr  should also affect the spatial data
 % * implement grain/rotate, grain/flipud, grain/fliplr
 % * make ebsd/plot ebsd/segment2d work also with rotated ebsd data
