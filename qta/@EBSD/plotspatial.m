@@ -58,7 +58,12 @@ end
 %% plot 
 newMTEXplot;
 
-plotxy(get(ebsd,'x'),get(ebsd,'y'),d,varargin{:});
+if check_option(varargin,'exact')
+  plotxyexact(get(ebsd,'x'),get(ebsd,'y'),d,varargin{:});
+else
+  plotxy(get(ebsd,'x'),get(ebsd,'y'),d,varargin{:});
+end
+
 if strcmpi(prop,'orientation') %&& strcmpi(cc,'ipdf')
   [cs{1:length(orientations)}] = get(orientations,'CS');
   setappdata(gcf,'CS',cs)
