@@ -1,6 +1,5 @@
 function delta = deltaarea(grains)
-% calculates an percentile area difference between hull-polygon an
-% grain-polygon
+% calculates an percentile area difference between hull-polygon an grain-polygon
 %
 %% Input
 %  grains - @grain

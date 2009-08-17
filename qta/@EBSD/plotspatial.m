@@ -9,9 +9,15 @@ function plotspatial(ebsd,varargin)
 %  ebsd - @EBSD
 %
 %% Options
-%  property   - property used for coloring (default: orientation)
-%  colocoding - how to convert orientation to color
+%  property       - property used for coloring (default: orientation)
+%  colocoding     - how to convert orientation to color
 %  antipodal      - include [[AxialDirectional.html,antipodal symmetry]]
+%  GridType       - 'tetragonal' (default)/ 'hexagonal', or custom, requires flag 'exact'
+%  GridResolution - specify the dimension of a unit cell, requires flag 'exact'
+%  GridRotation   - rotation of a unit cell, requires flag 'exact'
+%
+%% Flags
+%  exact - plot spatial data by unit cells
 %
 %% See also
 % EBSD/plot

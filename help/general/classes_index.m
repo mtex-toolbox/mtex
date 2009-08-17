@@ -20,6 +20,7 @@
 % * <ODF_index.html ODF>
 % * <PoleFigure_index.html PoleFigure>
 % * <EBSD_index.html EBSD>
+% * <grain_index.html grain>
 % * <kernel_index.html kernel>
 %
 %% Functions
