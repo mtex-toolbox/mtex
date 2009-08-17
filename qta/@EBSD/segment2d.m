@@ -11,7 +11,7 @@ function [grains ebsd] = segment2d(ebsd,varargin)
 %% Options
 %  angle         - threshold angle of mis/disorientation in radians
 %  augmentation  - 'cube'/ 'cubeI' / 'sphere'
-%  angletype     - misorientation / disorientation (default)
+%  angletype     - misorientation (default) / disorientation 
 %
 %% Example
 %  [grains ebsd] = segment2d(ebsd,'angle',15*degree,'augmentation','cube')

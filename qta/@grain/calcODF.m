@@ -1,5 +1,5 @@
 function grains = calcODF(grains,ebsd,varargin)
-% helper function to calculate an individual ODF for each grain
+% function to calculate individual ODFs for each grain or an ODF based on the orientation of each grain
 %
 %% Input
 %  grains - @grain

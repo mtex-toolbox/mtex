@@ -6,7 +6,7 @@
 % * check fix S2Grid/plot incomplete pole figures are not plotted correctly
 % * ebsd/rotate, ebsd/flipud, ebsd/fliplr  should also affect the spatial data
 % * implement grain/rotate, grain/flipud, grain/fliplr
-% * make ebsd/plot ebsd/segment2d work also with rotated ebsd data
+% * check! -> make ebsd/plot ebsd/segment2d work also with rotated ebsd data
 % * better exportODF function
 % * fix crystal coordinate system for symmetry 2/m
 % * fix empty ebsd object does not give an error in any function

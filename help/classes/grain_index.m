@@ -4,18 +4,23 @@
 % class representing single *Grains* in EBSD measurements
 %
 %% Description
+% A grain may be defined as a connected region, in which every orientation
+% satisfies an angle to at least one neighbour lower than a choosen
+% threshold. There is a [[EBSD_segment2d.html, segmentation]] to
+% regionalize the spatial EBSD data into grains.
 %
+
 %% Preliminary:  EBDS Data
 
-cs = { symmetry('m-3m'), ...
+CS = { symmetry('m-3m'), ...
        symmetry('m-3m') };      % crystal symmetry
-ss = symmetry('triclinic'); % specimen symmetry
+SS = symmetry('triclinic'); % specimen symmetry
 
 % file names
 fname = [mtexDataPath '/aachen_ebsd/85_829grad_07_09_06.txt'];
 
 % load data
-ebsd = loadEBSD(fname,cs,ss,...
+ebsd = loadEBSD(fname,CS,SS,...
                 'interface','generic','Bunge','ignorePhase',[0 2],...
                  'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3','MAD','BC'},...
                  'Columns', [2 3 4 5 6 7 8 9 ]);
@@ -49,11 +54,12 @@ plot(grains,'property','bc')
 
 grain_size = grainsize(grains);
 [m ndx] = max(grain_size);
-plot(grains(ndx))
+figure, plot(grains(ndx))
 
-ODFs = grainfun(@(x)calcODF(x,'silent'),grains (ndx ) ,ebsd)
+%%
+%
 
-plot(ODFs{:},'alpha','sections',18)
+grains(ndx) = calcODF(grains(ndx),ebsd);
 
-
+plotpdf(get(grains(ndx),'ODF'),Miller(1,1,1,CS{1}),'antipodal');
 

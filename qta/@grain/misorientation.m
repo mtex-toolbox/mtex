@@ -1,4 +1,7 @@
 function ebsd = misorientation(grains,varargin)
+% misorientation of grains
+%
+%% Description
 % returns misorientation to neighboures of same phase as ebsd object or
 % returns the misorientation of ebsd-data to mean of grains
 %

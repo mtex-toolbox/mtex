@@ -24,7 +24,7 @@ celltype = get_option(varargin,'GridType','tetragonal');
 cellrot = get_option(varargin,'GridRotation',0*degree);
 
 if ischar(celltype)
-  switch celltype 
+  switch lower(celltype) 
     case 'tetragonal'
       c = exp(1i*(pi/4+cellrot:pi/2:pi*9/4+cellrot))*1./sqrt(2)*dxy;
     case 'hexagonal'      

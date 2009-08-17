@@ -44,6 +44,11 @@ MTEX is a toolbox for quantitative texture analysis. It provides tools to analyz
    <source>grain_demo</source>
 </demoitem>
 <demoitem>
+   <label>Influence of Threshold Demo</label>
+   <type>M-file</type>
+   <source>influence_demo</source>
+</demoitem>
+<demoitem>
    <label>Ghost Effect Analysis</label>
    <type>M-file</type>
    <source>ghost_demo</source>

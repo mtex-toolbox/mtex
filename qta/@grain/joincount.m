@@ -6,10 +6,10 @@ function [J T q p] = joincount(grains,coloring,varargin)
 %  coloring - list corresponding to grains with its color
 %
 %% Output
-% J   - join count matrice
-% T   - normalized chi^2 test of independence
-% q   - empirical entities actually counted
-% p   - esitmated
+%  J - join count matrice
+%  T - normalized chi^2 test of independence
+%  q - empirical entities actually counted
+%  p - esitmated
 %
 %% Options
 % WEIGHTED/PERIMETER  - use perimeter as weight.
