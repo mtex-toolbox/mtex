@@ -13,6 +13,9 @@ function [grains ebsd] = segment2d(ebsd,varargin)
 %  augmentation  - 'cube'/ 'cubeI' / 'sphere'
 %  angletype     - misorientation (default) / disorientation 
 %
+%% Flags
+%  unitcell - omit voronoi decomposition and treat a unitcell lattice
+%
 %% Example
 %  [grains ebsd] = segment2d(ebsd,'angle',15*degree,'augmentation','cube')
 %
@@ -260,118 +263,7 @@ end;
 function [F v c] = neighbour(xy,varargin)
 % voronoi neighbours
 
-augmentation = get_option(varargin,'augmentation','cube');
-%extrapolate dummy coordinates %dirty
-switch lower(augmentation)
-  case 'cube'
-    k = convhulln(xy);
-    k = [k(:,1); k(1,1)];    
-   
-    x = xy(1:200<end,1);
-    y = xy(1:200<end,2);
-    xx = repmat(x,1,length(x));
-    yy = repmat(y,1,length(y));
-    dist = abs(sqrt((xx-xx').^2 + (yy-yy').^2));
-    dxy = min(dist(triu(true(size(dist)),1)));
-       
-    dummy = [];
-    for ll = 1:length(k)-1
-      xx = xy([k(ll) k(ll+1)],1);
-      yy = xy([k(ll) k(ll+1)],2);
-           
-      dx = diff(xx);  dy = diff(yy);
-      
-      rot = angle(complex(dx,dy));    
-      shiftxy = [cos(rot) -sin(rot); sin(rot) cos(rot)] * [0 ; dxy]./2;
-      
-      l1 = [ dx dy ];
-      l1 = repmat(l1./norm(l1),length(xy),1);
-      l2 = repmat([xx(1) yy(1)] - shiftxy' ,length(xy),1);
-  
-      l3 =  [ -dy dx ];
-      l3 =  repmat(l3./norm(l3),length(xy),1);
-      dist = dot(xy - l2,l3,2);
-      
-      co = l2 + repmat( dot(xy - l2,l1,2) ,1,2).*l1;
-           
-      [co ia]= sortrows(co);
-      dist = dist(ia);      
-      
-      if sign(dx) < 0 , pmx = @ge; else pmx = @le; end
-      if sign(dy) < 0 , pmy = @ge; else pmy = @le;  end
-
-      idxy = (pmx(co(:,1) - xx(1),dx) & pmx(xx(2) - co(:,1),dx)) | ...
-             (pmy(co(:,2) - yy(1),dy) & pmy(yy(2) - co(:,2),dy));
-      co = co(idxy , : );
-      dist = dist(idxy);
-      
-      sel = false(size(dist));     
-      fdist = dxy*10; iter = 1;   
-      
-      while max(fdist) - dxy > 10^-10 
-        sel = sel | dist < dxy*iter;
-     
-        fdist = abs(sqrt(sum(diff(co(sel,:)).^2,2)));
-        iter = iter+1;
-     
-        if all(sel), break, end;
-      end
-     
-      co = co(sel,:);  
-      if ~isempty(co)
-        non = [true;any(diff(co)> dxy*10^-8 ,2) ];
-        co = co(non,:);
-      end
-      
-      dummy = [dummy ;co];
-    end
-    
-  case {'cubi','cubei'} %grid reconstruction, TODO
-    hx = unique(xy(:,1));
-    hy = unique(xy(:,2));    
-      
-    [xx1 yy1] = meshgrid(hx,hy);
-
-    x = [ hx(1:2)-2*diff(hx(1:3)); hx(:); hx(end-1:end)+2*diff(hx(end-2:end))];
-    y = [ hy(1:2)-2*diff(hy(1:3)); hy(:); hy(end-1:end)+2*diff(hy(end-2:end))];
-      clear hx hy
-    
-    [xx2 yy2] = meshgrid(x,y);
-    
-    clear x y
-    ff1 = [xy(:,1),xy(:,2)];
-    ff2 = [xx2(:),yy2(:)];
-      clear xx1 xx2 yy1 yy2
-       
-    m = ismember(ff2,ff1,'rows');
-    
-    dummy = ff2(~m,:);    
-    	clear ff1 ff2 m
-  case 'sphere'
-    dx = (max(xy(:,1)) - min(xy(:,1)))/1.25;
-    dy = (max(xy(:,2)) - min(xy(:,2)))/1.25;
-    
-    cc = -pi:.05:pi;
-    hx = cos(cc);
-    hy = -sin(cc);
-   
-    hx = (hx)*dx+ (max(xy(:,1)) + min(xy(:,1)))/2;
-    hy = (hy)*dy+ (max(xy(:,2)) + min(xy(:,2)))/2;
-   
-    dummy = unique([hx(:),hy(:)],'first','rows');
-    
-      clear dx dy hx hy cc 
-  otherwise
-    error('wrong augmentation option')
-end
-xy = [xy; dummy];
-
-[v c] = voronoin(xy,{'Q7','Q8','Q5','Q3'});   %Qf {'Qf'} ,{'Q7'}
-
-% prepare data
-  %c = c(1:end-length(dummy));
-c(end-length(dummy)+1:end) = [];
-  clear dummy xy
+[v c] = spatialdecomposition(xy,'voronoi',varargin{:});
 
 il = cat(2,c{:});
 jl = zeros(1,length(il));
@@ -382,21 +274,22 @@ for i=1:length(c)
   jl(ccl(i)+1:ccl(i+1)) = i;
 end
 
-%sort everything clockwise
-ck = [c{:}];
-cv = v(ck,:);
+if ~check_option(varargin,'unitcell')
+  %sort everything clockwise
+  ck = [c{:}];
+  cv = v(ck,:);
 
-part = [ 1:10^6:length(cv) length(cv)+1];  % there might appear memory issues
-dir = zeros(size(ck));
-for k=1:length(part)-1
-	cur = part(k):part(k+1)-1;  
-  x = diff(cv(cur,1)); y = diff(cv(cur,2));
-  l = length(x);
-  dir(cur(1:end-2)) = x(1:l-1).*y(2:l)-x(2:l).*y(1:l-1);
+  part = [ 1:10^6:length(cv) length(cv)+1];  % there might appear memory issues
+  dir = zeros(size(ck));
+  for k=1:length(part)-1
+    cur = part(k):part(k+1)-1;  
+    x = diff(cv(cur,1)); y = diff(cv(cur,2));
+    l = length(x);
+    dir(cur(1:end-2)) = x(1:l-1).*y(2:l)-x(2:l).*y(1:l-1);
+  end
+  dir = dir( ccl(1:end-1)+1);
+  c(dir>0) = cellfun(@fliplr,c(dir>0),'uniformoutput',false);
 end
-dir = dir( ccl(1:end-1)+1);
-c(dir>0) = cellfun(@fliplr,c(dir>0),'uniformoutput',false);
-
   clear cl ccl dir l x y dcv vc x y cv ck part i k cur
 % vertice map
 T = sparse(jl,il,1); 
@@ -534,118 +427,3 @@ l = length(x);
 cr = x(1:l-1).*y(2:l)-x(2:l).*y(1:l-1);
 
 A = abs(sum(cr)*0.5);
-
-% 
-% function [ply] = createpolygon(c,v)
-% 
-% gl = cat(2,c{:});
-% 
-% if length(c) == 1  %one cell
-%   border = [gl gl(1)];
-%   holes = cell(0);  
-% else             
-%   %shift indices
-%   inds = 2:length(gl)+1;
-%   r1 = cellfun('length',c);
-%   r1 = cumsum(r1);
-%   r2 = [1 ; r1+1];
-%   r2(end) =[];  
-%   inds(r1) = r2;
-%   
-%   gr = gl(inds); %partner pointel
-%   ii = [gl ;gr]'; % linels  
-%   
-%   
-% %   dell = gl'*gl -gr'*gr;
-% %   dell = any(dell == 0,2);
-% %   gl = gl(~dell);
-% %   gr = gr(~dell);
-% %   
-% % remove double edges
-%   tmpii = sort(ii,2);
-%   [tmpii ndx] = sortrows(tmpii);  %transpose
-%   
-%   dell = all(diff(tmpii) == 0,2);   %entry twice  
-%   dell = [ 0; dell] | [ dell; 0]; 
-%   gl = gl(ndx(~dell));
-%   gr = gr(ndx(~dell));
-%   
-%   nf = length(gr)*2;  
-%   f = zeros(1,nf);  %minimum size
-%  
-%   if isempty(ii)
-%      ply.xy = v(gl,:);
-%      ply.hxy = cell(0);
-%     return;
-%   end
-%     
-% %hamiltonian  trials
-%   f(1) = gl(1);
-%   cc = 0; 
-%       
-%   k=2;
-%   while 1
-%     ro = find(f(k-1) == gr); % this can be done faster, since only the last match is of interest
-%     
-%     if ~isempty(ro)
-%       ro = ro(end);
-%       f(k) = gl(ro);     
-%     else  
-%       ro = find(gr>0);
-%       if ~isempty(ro)
-%         ro = ro(1);
-%         f(k) = gl(ro);
-%         cc(end+1) = k-1;
-%       else
-%         break;
-%       end 
-%     end
-%     
-%     gr(ro) = -1;
-%     k = k+1;
-%   end
-%   
-% %convert to cells
-%   nc = length(cc);
-%   cc(end+1) = k-1;
-%   
-%   plygn = cell(1,nc);
-%   for k=1:nc 
-%     if k > 1
-%       plygn{k} = [f(cc(k)+1:cc(k+1)) f(cc(k)+1)];
-%     else
-%       plygn{k} = f(cc(k)+1:cc(k+1));
-%     end
-%   end  
-% 
-% %border
-%   psz = length(plygn);
-%  
-%   %holes?
-%   if psz > 1
-%     area = zeros(1,psz);
-%     for kpc= 1:psz
-%       inds = plygn{kpc};    
-%       px = v(inds,1); 
-%       py = v(inds,2);
-% 
-%       area(kpc) = polyarea(px,py);
-%     end
-%     
-%     [C I] = max(area);         
-%     holes = plygn;
-%     holes(I) = [];
-%     border = plygn{I};
-%   else
-%     border = plygn{:};
-%     holes = cell(0);
-%   end
-% end
-% 
-% ply.xy = v(border,:);
-% ply.hxy = cell(0);
-% 
-% if ~isempty(holes)
-%   ply.hxy = cellfun(@(h) v(h,:),holes,'uniformoutput',false);
-% end
-

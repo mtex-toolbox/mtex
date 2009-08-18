@@ -12,12 +12,14 @@ function plotspatial(ebsd,varargin)
 %  property       - property used for coloring (default: orientation)
 %  colocoding     - how to convert orientation to color
 %  antipodal      - include [[AxialDirectional.html,antipodal symmetry]]
-%  GridType       - 'automatic' (default) / 'tetragonal' / 'hexagonal', or custom, requires flag 'exact'
-%  GridResolution - specify the dimension of a unit cell, requires flag 'exact'
-%  GridRotation   - rotation of a unit cell, requires flag 'exact'
+%  GridType       - 'automatic' (default) / 'tetragonal' / 'hexagonal', or custom, requires flag 'unitcell'
+%  GridResolution - specify the dimension of a unit cell, requires flag 'unitcell'
+%  GridRotation   - rotation of a unit cell, requires flag 'unitcell'
 %
 %% Flags
-%  exact - plot spatial data by unit cells
+%  unitcell - (default) plot spatial data by unit cells
+%  voronoi  - plot spatial data through a voronoi decomposition
+%  raster   - discretize on regular grid 
 %
 %% See also
 % EBSD/plot
@@ -64,7 +66,7 @@ end
 %% plot 
 newMTEXplot;
 
-if check_option(varargin,'exact')
+if ~check_option(varargin,'raster')
   plotxyexact(get(ebsd,'x'),get(ebsd,'y'),d,varargin{:});
 else
   plotxy(get(ebsd,'x'),get(ebsd,'y'),d,varargin{:});
