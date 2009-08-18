@@ -118,6 +118,11 @@ end
 
 % COLORMAP
 if check_option(varargin,'GRAY'),colormap(flipud(colormap('gray'))/1.2);end
+if check_option(varargin,'zerotowhite')
+  map = colormap;
+  map(1,:) = [1,1,1];
+  colormap(map);
+end
 
 
 %% Prepare Coordinates
