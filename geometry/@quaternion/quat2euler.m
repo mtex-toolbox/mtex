@@ -1,4 +1,4 @@
-function [alpha,beta,gamma] = quat2euler(quat,varargin)
+function varargout = quat2euler(quat,varargin)
 % quaternion to euler angle
 %
 %% Description
@@ -7,6 +7,7 @@ function [alpha,beta,gamma] = quat2euler(quat,varargin)
 %% Syntax
 % [alpha,beta,gamma] = quat2euler(quat)
 % [phi1,Phi,phi2] = quat2euler(quat,'Bunge')
+% euler = quat2euler(quat,'Bunge')
 %
 %% Input
 %  quat - @quaternion
@@ -14,8 +15,8 @@ function [alpha,beta,gamma] = quat2euler(quat,varargin)
 %  alpha, beta, gamma  - Matthies
 %  phi1, Phi, phi2     - BUNGE
 %% Options
-%  ABG   - Matthies (alpha,beta,gamma) convention (default)
-%  BUNGE - Bunge (phi, Phi, phi2) convention
+%  ABG, ZYZ   - Matthies (alpha,beta,gamma) convention (default)
+%  BUNGE, ZXZ - Bunge (phi, Phi, phi2) convention
 %% See also
 % quaternion/quat2rodrigues
 
@@ -41,15 +42,9 @@ alpha(ind) = 2*asin(max(-1,min(1,ssign(quat.a(ind)).*quat.d(ind))));
 beta(ind) = 0;
 gamma(ind) = 0;
 
-if check_option(varargin,'nfft')
-  alpha = fft_rho(alpha);
-  beta  = fft_theta(beta);
-  gamma = fft_rho(gamma);
-  alpha = 2*pi*[alpha(:),beta(:),gamma(:)].';
-end
-
 
 if nargout == 0
+  
   disp(' ');
   disp('Euler angle in degree')
   disp(' ');
@@ -59,6 +54,24 @@ if nargout == 0
   disp(beta/degree);
   disp([labels{3} ' = ']);
   disp(gamma/degree);
+  
+elseif check_option(varargin,'nfft')
+  
+  alpha = fft_rho(alpha);
+  beta  = fft_theta(beta);
+  gamma = fft_rho(gamma);
+  varargout{1} = 2*pi*[alpha(:),beta(:),gamma(:)].';
+  
+elseif nargout == 1
+  
+  varargout{1} = [alpha(:),beta(:),gamma(:)];
+  
+else
+  
+  varargout{1} = alpha;
+  varargout{2} = beta;
+  varargout{3} = gamma;
+  
 end
 
 return

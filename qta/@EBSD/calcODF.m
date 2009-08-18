@@ -37,7 +37,9 @@ vdisp('performing kernel density estimation',varargin{:})
 g = getgrid(ebsd,'checkPhase',varargin{:});
 
 % extract weights
-if isfield(ebsd(1).options,'weight')
+if check_option(varargin,'weight')
+  weight = get_option(varargin,'weight');
+elseif isfield(ebsd(1).options,'weight')
   % ignore nans
   %ebsd = delete(ebsd,isnan(get(ebsd,'weight')));
   weight = get(ebsd,'weight');  

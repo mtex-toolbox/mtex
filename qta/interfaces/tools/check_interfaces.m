@@ -38,7 +38,7 @@ end
 %% no interface - try generic interface
 if isempty(interface)
 
-  [d,options] = feval(['load' type '_generic'],fname,varargin{:},'check');
+  [d,options] = feval(['load' type '_generic'],fname,'check',varargin{:});
     
   if isempty(d)
     interface = '';
