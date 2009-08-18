@@ -40,12 +40,14 @@ if ischar(fname), fname = {fname};end
 % get crystal directions
 if ~isempty(varargin) && checkClass(varargin{1},'Miller') 
   h = vec2cell(varargin{1});
-  varargin = {varargin{2:end}};
+  varargin = varargin(2:end);
 end
 
 % get crystal and specimen symmetry
-if ~isempty(varargin) && checkClass(varargin{1},'symmetry')
-  cs = varargin{1};varargin = {varargin{2:end}};
+sym = {};
+if ~isempty(varargin) && checkClass(varargin{1},'symmetry')  
+  cs = varargin{1};varargin = varargin(2:end);
+  sym = {'cs',cs};
 
   if ~iscell(cs) 
     cs = num2cell(cs);
@@ -59,6 +61,7 @@ end
 
 if ~isempty(varargin) && checkClass(varargin{1},'symmetry')
   ss = varargin{1};varargin = {varargin{2:end}};
+  sym = [sym,'ss',{ss}];
 end
 
 %% determine interface
@@ -80,7 +83,7 @@ c = get_option(options,'superposition');
 if isa(c,'double'), c = {c};end
 
 for i = 1:length(fname)  
-  newdata = feval(['load' type '_',char(interface)],fname{i},options{:});
+  newdata = feval(['load' type '_',char(interface)],fname{i},options{:},sym{:});
   data = [data,newdata]; %#ok<AGROW>
   idata(i) = length(newdata);
 end

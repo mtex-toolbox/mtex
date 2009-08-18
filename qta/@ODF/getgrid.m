@@ -10,7 +10,7 @@ function G = getgrid(odf,ind)
 
 G = SO3Grid(0,odf(1).CS,odf(1).SS);
 for i = 1:length(odf)
-  if isa(odf(i).center,'SO3Grid'),G = odf(i).center;end
+  if isa(odf(i).center,'SO3Grid'),G(i) = odf(i).center;end
 end
 
 if nargin == 2

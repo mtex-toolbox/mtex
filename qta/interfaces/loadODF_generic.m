@@ -25,13 +25,13 @@ function [odf,options] = loadODF_generic(fname,varargin)
 %  fname - file name (text files only)
 %
 %% Options
-%  ColumnNames       - names of the colums to be imported, mandatory are euler 1, euler 2, euler 3 
-%  Columns           - postions of the columns to be imported
-%  RADIANS           - treat input in radiand
-%  DELIMITER         - delimiter between numbers
-%  HEADER            - number of header lines
-%  BUNGE             - [phi1 Phi phi2] Euler angle in Bunge convention (default)
-%  ABG               - [alpha beta gamma] Euler angle in Mathies convention
+%  ColumnNames  - names of the colums to be imported, mandatory are euler 1, euler 2, euler 3 
+%  Columns      - postions of the columns to be imported
+%  RADIANS      - treat input in radiand
+%  DELIMITER    - delimiter between numbers
+%  HEADER       - number of header lines
+%  ZXZ, BUNGE   - [phi1 Phi phi2] Euler angle in Bunge convention (default)
+%  ZYZ, ABG     - [alpha beta gamma] Euler angle in Mathies convention
 %
 % 
 %% Example
@@ -44,6 +44,7 @@ function [odf,options] = loadODF_generic(fname,varargin)
 % interfacesODF_index loadODF ODF_demo
 
 % get options
+ischeck = check_option(varargin,'check');
 cs = get_option(varargin,'cs',symmetry('m-3m'));
 ss = get_option(varargin,'ss',symmetry('-1'));
 
@@ -75,8 +76,8 @@ cols = cols(m);
 istype = @(in, a) all(cellfun(@(x) any(find(strcmpi(in,x))),a));
 layoutcol = @(in, a) cols(cellfun(@(x) find(strcmpi(in,x)),a));
    
-euler = lower({'Euler 1' 'Euler 2' 'Euler 3'});
-quat = lower({'Quat real' 'Quat i' 'Quat j' 'Quat k'});
+euler = lower({'Euler 1' 'Euler 2' 'Euler 3' 'weight'});
+quat = lower({'Quat real' 'Quat i' 'Quat j' 'Quat k' 'weight'});
       
 if istype(names,euler) % Euler angles specified
     
@@ -96,11 +97,12 @@ if istype(names,euler) % Euler angles specified
   alpha = d(:,layout(1))*dg;
   beta  = d(:,layout(2))*dg;
   gamma = d(:,layout(3))*dg;
+  weight = d(:,layout(4));
 
   assert(all(beta >=0 & beta <= pi & alpha >= -2*pi & alpha <= 4*pi & gamma > -2*pi & gamma<4*pi));
   
   % check for choosing
-  if max(alpha) < 10*degree
+  if ~ischeck && max(alpha) < 10*degree
     warndlg('The imported Euler angles appears to be quit small, maybe your data are in radians and not in degree as you specified?');
   end
     
@@ -112,34 +114,22 @@ elseif istype(names,quat) % import quaternion
   layout = layoutcol(names,quat);
   d(any(isnan(d(:,layout)),2),:) = [];
   q = quaternion(d(:,layout(1)),d(:,layout(2)),d(:,layout(3)),d(:,layout(4)));
+  weight = d(:,layout(4));
   
 else
-  error('You should at least specify three Euler angles or four quaternion components!');
+  error('You should at least specify three Euler angles or four quaternion components and the corresponding weight!');
 end
    
 if check_option(varargin,'passive rotation'), q = inverse(q); end
  
-  
-%all other as options
-opt = struct;
-opts = delete_option(names, [euler quat]);
-if ~isempty(opts)
-  
-  for i=1:length(opts),
-    if layoutcol(names,opts(i)) <= size(d,2)
-      opts_struct{i} = [opts{i} {d(:,layoutcol(names,opts(i)))}]; %#ok<AGROW>
-    end
-  end
-  opts_struct = [opts_struct{:}];
-  opt = struct(opts_struct{:});
-end
-
 % return varargin as options
 options = varargin;
-if ~check_option(varargin,'exact','halfwidth'), varargin = [varargin,'exact'];end
+if ischeck, odf = ODF;return;end
+
 
 % load single orientations
-ebsd = EBSD(SO3Grid(q,cs,ss),cs,ss,varargin{:},'options',opt);
+if ~check_option(varargin,{'exact','halfwidth'}), varargin = [varargin,'exact'];end
+ebsd = EBSD(SO3Grid(q,cs,ss),cs,ss,varargin{:});
 
 % calc ODF
-odf = calcODF(ebsd,'silent',varargin{:});
+odf = calcODF(ebsd,'weight',weight,'silent',varargin{:});

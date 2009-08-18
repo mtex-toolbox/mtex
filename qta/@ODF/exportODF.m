@@ -1,52 +1,71 @@
 function exportODF(odf,filename,varargin)
-% save ODF values to file
+% export an ODF to an ASCII file
+%
+%% Syntax
+% exportODF(odf,'file.txt',S3G)
+% exportODF(odf,'file.txt',regular,'resolution',2.5*degree)
+% exportODF(odf,'file.txt',regular,'resolution',2.5*degree)
 %
 %% Input
 %  odf      - ODF to be exported
 %  filename - name of the ascii file
-
-
+%
+%% Options
+%  weights   - export weights of the ODF components
+%  ZYZ, ABG  - Matthies (alpha, beta, gamma) convention (default)
+%  ZXZ,BUNGE - Bunge (phi1,Phi,phi2) convention 
+%
+%% See also
+%
+  
 %% define the orientations where the ODF should be evaluated
-% this is a little bit complicated. I proberbly will shift it to SO3Grid in
-% the future.
-
-% resolution
-res = 5*degree;
 
 % symmetries
 [CS,SS] = getSym(odf);
 
-% phi1
-if rotangle_max_y(CS) == pi && rotangle_max_y(SS) == pi
-  phi1_max = pi/2;
+% SO3Grid
+if check_option(varargin,'weights')
+  S3G = getgrid(odf);
+elseif nargin > 2 && isa(varargin{1},'SO3Grid')
+  S3G = varargin{1};
+  varargin = varargin(2:end);
 else
-  phi1_max = rotangle_max_z(odf(1).SS);
+  S3G = SO3Grid('regular',CS,SS,varargin{:});
 end
-phi1 = 0:res:phi1_max;
-  
-% Phi
-Phi_max = min(rotangle_max_y(CS),rotangle_max_y(SS))/2;
-Phi = 0:res:Phi_max;
- 
-% phi2
-phi2_max = rotangle_max_z(CS);
-phi2 = 0:res:phi2_max;
-
-% build up a uge phi1 x Phi x phi2 matrix
-[Phi phi2] = meshgrid(Phi,phi2);
-phi1 = repmat(reshape(phi1,[1,1,numel(phi1)]),[size(Phi),1]);
-Phi  = repmat(Phi,[1,1,size(phi1,3)]);
-phi2 = repmat(phi2,[1,1,size(phi1,3)]);
-  
-% convert to rotations
-rot = euler2quat(phi1(:),Phi(:),phi2(:),'Bunge');
 
 %% evaluate ODF
-v = eval(odf,rot);
+
+if check_option(varargin,'weights')
+  v = getdata(odf);
+else
+  v = eval(odf,S3G,varargin{:}); %#ok<EVLC>
+end
+
 
 %% build up matrix to be exported
-d = [phi1(:)/degree,Phi(:)/degree,phi2(:)/degree,v(:)]; %#ok<NASGU>
+
+d = Euler(S3G,varargin{:});
+if ~check_option(varargin,'radians'), d = d./degree;end
+
+%% convention
+if check_option(varargin,{'Bunge','ZXZ'})
+  convention = 'ZXZ';
+elseif check_option(varargin,{'ABG','ZYZ'})
+  convention = 'ZYZ';
+else
+  convention = get_flag(get(S3G,'options'),{'ZXZ','ZYZ'},'none');
+end
 
 %% save matrix
-save(filename,'d','-ascii');
+
+fid = fopen(filename,'w');
+
+if strcmp(convention,'ZXZ')
+  fprintf(fid,'phi1    Phi     phi2    volume\n');
+else
+  fprintf(fid,'alpha   beta    gamma   volume\n');
+end
+
+fprintf(fid,'%3.5f %3.5f %3.5f %3.5f\n',[d,v(:)].');
+fclose(fid);
 

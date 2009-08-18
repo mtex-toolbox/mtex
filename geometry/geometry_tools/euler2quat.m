@@ -19,8 +19,8 @@ function q = euler2quat(alpha,beta,gamma,varargin)
 %  q - @quaternion
 %
 %% Options
-%  ABG   - Matthies (alpha, beta, gamma) convention (default)
-%  BUNGE - Bunge (phi1,Phi,phi2) convention 
+%  ABG, ZYZ   - Matthies (alpha, beta, gamma) convention (default)
+%  BUNGE, ZXZ - Bunge (phi1,Phi,phi2) convention 
 %
 %% See also
 % quaternion_index quaternion/quaternion axis2quat Miller2quat 
@@ -43,7 +43,7 @@ function q = euler2quat(alpha,beta,gamma,varargin)
 % 
 % return
 
-if check_option(varargin,'BUNGE')
+if check_option(varargin,{'BUNGE','ZXZ'})
   q = axis2quat(zvector,alpha).*...
     axis2quat(xvector,beta).*axis2quat(zvector,gamma);
 else

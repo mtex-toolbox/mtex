@@ -19,7 +19,7 @@
   Crystal Geometry
   <tocitem target="SpecimenDirections.html"> Specimen Directions </tocitem>
   <tocitem target="CrystalDirections.html"> Crystal Directions </tocitem>
-  <tocitem target="CrystalSymmetries.html"> Crystal Symmetries </tocitem>  
+  <tocitem target="CrystalSymmetries.html"> Crystal Symmetries </tocitem>
   <tocitem target="CrystalOrientations.html"> CrystalOrientations </tocitem>
   <tocitem target="AxialDirectional.html"> Axial Symmetry </tocitem>
 </tocitem>
@@ -28,7 +28,7 @@
   Pole Figure Analysis
   <tocitem target="interfacesPoleFigure_index.html">
     Import Pole Figure Data
-    <tocitem target="generic_interface.html">Generic Interface</tocitem>	 
+    <tocitem target="generic_interface.html">Generic Interface</tocitem>
     <tocitem target="aachen_exp_interface.html">Aachen_exp Interface</tocitem>
     <tocitem target="aachen_interface.html">Aachen Interface</tocitem>
     <tocitem target="beartex_interface.html">BearTex Interface</tocitem>
@@ -49,23 +49,26 @@
   EBSD Data Analysis
   <tocitem target="interfacesEBSD_index.html">
     Import EBSD Data
-    <tocitem target="ebsd_interface.html">Generic Interface</tocitem>	 
+    <tocitem target="ebsd_interface.html">Generic Interface</tocitem>
   </tocitem>
   <tocitem target="EBSDPlot.html"> Plot EBSD Data </tocitem>
+  <tocitem target="GrainDetection.html"> Grain Detection </tocitem>
+  <tocitem target="GrainStatistics.html"> Grain Statistics </tocitem>
   <tocitem target="ModifyEBSDData.html"> Modify EBSD Data </tocitem>
   <tocitem target="AnalyzeEBSDData.html"> Analyze EBSD Data </tocitem>
+  <tocitem target="MissorientationAnalysis.html"> Missorientation Analysis </tocitem>
   <tocitem target="EBSD2odf_estimation.html"> ODF Estimation from EBSD data</tocitem>
 </tocitem>
 
 <tocitem target="ODFAnalysis.html"
 	 image="$toolbox/matlab/icons/pagesicon.gif">
   ODF Analysis
-  <tocitem target="interfacesODF_index.html">Import ODF Data</tocitem>
+  <tocitem target="ODFImportExport_index.html">Import and Export ODF Data</tocitem>
   <tocitem target="ODFPlot.html">Visualising ODFs</tocitem>
   <tocitem target="ModelODFs.html">Model ODFs</tocitem>
   <tocitem target="ODFCalculations.html">ODF Calculations</tocitem>
   <tocitem target="PoleFigureSimulation_demo.html"> Pole Figure Simulation</tocitem>
-  <tocitem target="EBSDSimulation_demo.html"> EBSD Data Simulation</tocitem>  
+  <tocitem target="EBSDSimulation_demo.html"> EBSD Data Simulation</tocitem>
 </tocitem>
 
 
