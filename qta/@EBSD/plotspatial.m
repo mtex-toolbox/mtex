@@ -12,7 +12,7 @@ function plotspatial(ebsd,varargin)
 %  property       - property used for coloring (default: orientation)
 %  colocoding     - how to convert orientation to color
 %  antipodal      - include [[AxialDirectional.html,antipodal symmetry]]
-%  GridType       - 'tetragonal' (default)/ 'hexagonal', or custom, requires flag 'exact'
+%  GridType       - 'automatic' (default) / 'tetragonal' / 'hexagonal', or custom, requires flag 'exact'
 %  GridResolution - specify the dimension of a unit cell, requires flag 'exact'
 %  GridRotation   - rotation of a unit cell, requires flag 'exact'
 %
