@@ -47,8 +47,8 @@ end
 sym = {};
 if ~isempty(varargin) && checkClass(varargin{1},'symmetry')  
   cs = varargin{1};varargin = varargin(2:end);
-  sym = {'cs',cs};
-
+  if strcmpi(type,'ODF'), sym = {'cs',cs};;end
+  
   if ~iscell(cs) 
     cs = num2cell(cs);
     if length(cs) > 1
@@ -61,7 +61,7 @@ end
 
 if ~isempty(varargin) && checkClass(varargin{1},'symmetry')
   ss = varargin{1};varargin = {varargin{2:end}};
-  sym = [sym,'ss',{ss}];
+  if strcmpi(type,'ODF'), sym = [sym,'ss',{ss}];end
 end
 
 %% determine interface
