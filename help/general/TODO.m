@@ -3,18 +3,17 @@
 %
 %% MTEX 2.0
 %
-% * check fix S2Grid/plot incomplete pole figures are not plotted correctly
+% * fix S2Grid/plot incomplete pole figures are not plotted correctly
 % * ebsd/rotate, ebsd/flipud, ebsd/fliplr  should also affect the spatial data
 % * implement grain/rotate, grain/flipud, grain/fliplr
 % * check! -> make ebsd/plot ebsd/segment2d work also with rotated ebsd data
-% * better exportODF function
-% * fix crystal coordinate system for symmetry 2/m
+% * check! -> better exportODF function
+% * maybe MTEX 2.1 -> fix crystal coordinate system for symmetry 2/m
 % * fix empty ebsd object does not give an error in any function
 % * document new functionality
-% * work on compatibility issues, i.e. make an directory that will be added
-% to path when necassary
+% * check! -> work on compatibility issues
 % * improve template files
-% * say explicetly in generic wizard which columns has to be specified
+% * maybe MTEX 2.1 -> say explicetly in generic wizard which columns has to be specified
 %
 %% Sudent projects
 %
