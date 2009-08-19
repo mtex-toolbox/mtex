@@ -21,21 +21,20 @@ else
   omega(1) = 0;
   omega(2) = pi;
 end
+omega = linspace(min(omega),max(omega),1000);
 
 for i = 1:length(kk)
   switch upper(options)
-    case 'K'
-			omega = linspace(omega(1),omega(2),1000);
+    case 'K'			
 			optionplot(omega,kk(i).K(cos(omega/2)),'LineWidth',2,varargin{:});
 			set(gcf,'Name',['kernel ',inputname(1),' on SO(3)']);
 			xlim([min(omega),max(omega)]);
 		case {'RK','RADON'}
-			omega = linspace(omega(1),omega(2),1000);
-			optionplot(omega,kk(i).RK(cos(omega)),'LineWidth',2,varargin{:});
+      optionplot(omega,kk(i).RK(cos(omega)),'LineWidth',2,varargin{:});
 			set(gcf,'Name',['Randon transformed kernel ',inputname(1),' on S^2']);
 			xlim([0,pi]);
 		case 'RRK'
-			p = linspace(omega(1),omega(2),200);
+			p = linspace(min(omega),max(omega),200);
 			Z = max(0,kk(i).RRK(cos(p)',cos(p)));
 			[X,Y] = meshgrid(p,p);
 			surf(X,Y,Z);
@@ -64,15 +63,12 @@ for i = 1:length(kk)
 			loglog(abs(A./(2*(0:length(A)-1)+1)),charorder(i),'MarkerSize',10);
       set(gcf,'Name',['Fourier coefficients of the kernel ',inputname(1)]);
 		case 'EVEN'
-			omega = linspace(omega(1),omega(2),1000);
 			optionplot(omega,GK(kk(i),cos(omega/2)),'LineWidth',2,varargin{:});
       set(gcf,'Name',['Even part of the kernel ',inputname(1)]);
 		case 'ODD'
-			omega = linspace(omega(1),omega(2),1000);
 			optionplot(omega,UK(kk(i),cos(omega/2)),'LineWidth',2,varargin{:});
       set(gcf,'Name',['Odd part of the kernel ',inputname(1)]);
 		case 'EVEN_ODD'
-			omega = linspace(omega(1),omega(2),1000);
 			optionplot(omega,GK(kk(i),cos(omega/2))-UK(kk(i),cos(omega/2)),varargin{:});
       set(gcf,'Name',['Difference between even and odd part of the kernel ',inputname(1)]);
     otherwise
