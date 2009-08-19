@@ -13,7 +13,7 @@
 %% Preliminary:  EBDS Data
 
 CS = { symmetry('m-3m'), ...
-       symmetry('m-3m') };      % crystal symmetry
+       symmetry('m-3m') };  % crystal symmetry
 SS = symmetry('triclinic'); % specimen symmetry
 
 % file names

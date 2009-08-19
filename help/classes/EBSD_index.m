@@ -26,14 +26,15 @@
 % the data. For detailed information how importing pole figure data see
 % [[interfacesEBSD_index.html,EBSD inteerfaces]].
 
-cs = symmetry('-3m',[1.2 1.2 3.5]); % crystal symmetry
-ss   = symmetry('triclinic');        % specimen symmetry
+cs = {symmetry('m-3m'),symmetry('m-3m')}; % crystal symmetry
+ss = symmetry('triclinic');             % specimen symmetry
 
 fnames = [mtexDataPath '/aachen_ebsd/85_829grad_07_09_06.txt'];
 
 ebsd_i = loadEBSD(fnames,cs,ss,'header',1,...
-  'ColumnNames',{'Euler 1','Euler 2','Euler 3','x','y'},'Columns',[5,6,7,3 4])
-
+  'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'Mad' 'BC'},...
+  'Columns', [2 3 4 5 6 7 8 9])
+  
 %%
 % a second way to define EBSD data is to simulate them using a given
 % ODF. This is done by the command 
@@ -68,7 +69,7 @@ plot(ebsd_i)
 % interpreted as a pole figure.
 
 close; figure('position',[100 100 400 300])
-plotpdf(ebsd_i,Miller(1,0,0,cs),'points',300,'MarkerSize',3)   % plot EBSD data
+plotpdf(ebsd_i,Miller(1,0,0,cs{1}),'points',300,'MarkerSize',3)   % plot EBSD data
 
 %% ODF - estimation
 %
@@ -76,7 +77,7 @@ plotpdf(ebsd_i,Miller(1,0,0,cs),'points',300,'MarkerSize',3)   % plot EBSD data
 % ODF. This is done by the command [[EBSD_calcODF.html,calcODF]] 
 
 odf = calcODF(ebsd_i,'halfwidth',10*degree)
-plotpdf(odf,Miller(1,0,0,cs),'antipodal')
+plotpdf(odf,Miller(1,0,0,cs{1}),'antipodal')
 
 %% Demo
 %
