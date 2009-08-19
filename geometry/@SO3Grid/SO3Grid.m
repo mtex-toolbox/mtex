@@ -87,7 +87,7 @@ elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
   sec = get_option(varargin,sectype,sec,'double');
   nsec = length(sec);
 
-  S2G = S2Grid(points,'MAXTHETA',max_theta,'MAXRHO',max_rho,varargin{:});
+  S2G = S2Grid(points,'MAXTHETA',max_theta,'MAXRHO',max_rho,'RESTRICT2MINMAX',varargin{:});
 
   % generate SO(3) plot grids
   [theta,rho] = polar(S2G);
@@ -183,7 +183,7 @@ elseif isa(points,'double') && points > 0  % discretise euler space
     N = 1; res = maxbeta;
     G.alphabeta = S2Grid('equispaced','resolution',res,...
                          'MAXTHETA',maxbeta,'MINRHO',0,'MAXRHO',maxalpha,...
-                         no_center(res));
+                         no_center(res),'RESTRICT2MINMAX');
     
     while round(2*N*maxgamma/maxbeta) * GridLength(G.alphabeta) < points 
       N = fix((N + 1) * ...
@@ -191,7 +191,7 @@ elseif isa(points,'double') && points > 0  % discretise euler space
       res = maxbeta / N;
       G.alphabeta = S2Grid('equispaced','resolution',res,...
                            'MAXTHETA',maxbeta,'MINRHO',0,'MAXRHO',maxalpha,...
-                           no_center(res));      
+                           no_center(res),'RESTRICT2MINMAX');      
     end        
     ap2 = round(2 * maxgamma / res);
 
@@ -199,7 +199,7 @@ elseif isa(points,'double') && points > 0  % discretise euler space
        
     G.alphabeta = S2Grid('equispaced','RESOLUTION',points,...
                          'MAXTHETA',maxbeta,'MINRHO',0,'MAXRHO',maxalpha,...
-                         no_center(points));    
+                         no_center(points),'RESTRICT2MINMAX');    
     ap2 = round(2*maxgamma/points);
   end
 

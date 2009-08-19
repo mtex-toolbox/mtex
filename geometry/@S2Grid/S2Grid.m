@@ -7,7 +7,7 @@ function G = S2Grid(varargin)
 %  S2Grid('equispaced',<options>)
 %
 %% Input
-%  nodes           - @vector3d 
+%  nodes           - @vector3d
 %
 %% Options
 %  POINTS     - [nrho,ntheta] number of points to be generated
@@ -16,18 +16,19 @@ function G = S2Grid(varargin)
 %  THETA      - theta angle
 %  RHO        - rho angle
 %
-%% Flags  
+%% Flags
 %  REGULAR    - generate a regular grid
 %  EQUISPACED - generate equidistribution
 %  NORTH      - northern hemisphere
 %  SOUTH      - southern hemisphere
-%  antipodal      - include [[AxialDirectional.html,antipodal symmetry]]
+%  ANTIPODAL  - include [[AxialDirectional.html,antipodal symmetry]]
 %  PLOT       - generate plotting grid
 %  MINRHO     - starting rho angle (default 0)
 %  MAXRHO     - maximum rho angle (default 2*pi)
 %  MINTHETA   - starting theta angle (default 0)
 %  MAXTHETA   - maximum theta angle (default pi)
 %  NO_CENTER  - ommit point at center
+%  RESTRICT2MINMAX - restrict margins to min / max
 %
 %% Examples
 %
@@ -40,64 +41,78 @@ function G = S2Grid(varargin)
 
 %% extract options
 
-if check_option(varargin,'north')  
-  mintheta = 0; 
+% rho range
+minrhoGrid = 0;
+maxrhoGrid = 2*pi;
+
+minrho = get_option(varargin,'MINRHO',minrhoGrid);
+maxrho = get_option(varargin,'MAXRHO',maxrhoGrid);
+drho = maxrho - minrho;
+
+% theta range
+if check_option(varargin,'north')
+  minthetaGrid = 0;
   if check_option(varargin,'south')
-    maxtheta = pi;
+    maxthetaGrid = pi;
   else
-    maxtheta = pi/2;
+    maxthetaGrid = pi/2;
   end
 elseif check_option(varargin,'south')
-  mintheta = pi/2; maxtheta = pi;
+  minthetaGrid = pi/2; maxthetaGrid = pi;
 elseif check_option(varargin,'antipodal')
-  mintheta = 0; maxtheta = pi/2;
-else  
-  mintheta = 0; maxtheta = pi;
+  minthetaGrid = 0; maxthetaGrid = pi/2;
+else
+  minthetaGrid = 0; maxthetaGrid = pi;
 end
 
-minrho = get_option(varargin,'MINRHO',0);
-maxrho = get_option(varargin,'MAXRHO',2*pi);
-drho = maxrho - minrho;
-%if ~isappr(drho,2*pi) && check_option(varargin,'rotate')
-%  rotate = get_option(varargin,'rotate',0);
-%  minrho = minrho -rotate;
-%  maxrho = maxrho -rotate;
-%end
+mintheta = max(get_option(varargin,'MINTHETA',minthetaGrid), ...
+               minthetaGrid);
 
-mintheta = max(get_option(varargin,'MINTHETA',0),mintheta);
-maxtheta_opt = get_option(varargin,'MAXTHETA',pi);
-if ~isnumeric(maxtheta_opt)
-  maxthetafun = @(rho) min(maxtheta_opt(rho),maxtheta);
+maxtheta = get_option(varargin,'MAXTHETA',maxthetaGrid);
+
+if ~isnumeric(maxtheta)
+  maxthetafun = @(rho) min(maxtheta(rho),maxthetaGrid);
   maxtheta = max(maxthetafun(linspace(minrho,maxrho,5)));
 else
-  maxtheta = min(maxtheta_opt,maxtheta);
+  maxtheta = min(maxtheta,maxthetaGrid);
 end
 dtheta = maxtheta - mintheta;
 
+% srict theta and rho range
+if check_option(varargin,'RESTRICT2MINMAX')
+  minrhoGrid = minrho;
+  maxrhoGrid = maxrho;
+  minthetaGrid = mintheta;
+  maxthetaGrid = maxtheta;
+end
 
-%% 
-if nargin == 0 || ... % empty grid
+
+%% empty grid
+if nargin == 0 || ...
     (check_option(varargin,{'theta','rho'}) && isempty(get_option(varargin,'theta')))
+
   G.res = 2*pi;
-  G.theta = S1Grid([],mintheta,maxtheta);
-  G.rho = S1Grid([],minrho,maxrho);
+  G.theta = S1Grid([],minthetaGrid,maxthetaGrid);
+  G.rho = S1Grid([],minrhoGrid,maxrhoGrid);
   G.Grid = vector3d;
   G.options = {};
-  
-elseif isa(varargin{1},'S2Grid') % copy constructor
-  
-	G = varargin{1};	
-  
-elseif isa(varargin{1},'vector3d')	% grid from vector3d
-  
-	G.res = get_option(varargin,'RESOLUTION',vec2res(varargin{1}));
+
+%% copy constructor
+elseif isa(varargin{1},'S2Grid')
+
+  G = varargin{1};
+
+%% grid from vector3d
+elseif isa(varargin{1},'vector3d')
+
+  G.res = get_option(varargin,'RESOLUTION',vec2res(varargin{1}));
   if exist('maxthetafun','var')
     G.theta = maxthetafun;
   else
-    G.theta =  S1Grid([],mintheta,maxtheta);
+    G.theta =  S1Grid([],minthetaGrid,maxthetaGrid);
   end
-	G.rho = S1Grid([],minrho,maxrho);
-	G.Grid = varargin{1};
+  G.rho = S1Grid([],minrhoGrid,maxrhoGrid);
+  G.Grid = varargin{1};
   [theta,rho] = vec2sph(G.Grid);
 
   if check_option(varargin,'antipodal')
@@ -106,54 +121,55 @@ elseif isa(varargin{1},'vector3d')	% grid from vector3d
     theta(ind) = pi - theta(ind);
     rho(ind) = mod(pi + rho(ind),2*pi);
   end
-  
-  G.Grid = G.Grid(theta<=maxtheta+1e-06 & inside(rho,minrho,maxrho));
+
+  G.Grid = G.Grid(theta<=maxthetaGrid+1e-06 & inside(rho,minrhoGrid,maxrhoGrid));
   G.options = {};
-	
+
+%% plot grid with maxtheta function
 elseif check_option(varargin,'plot') && exist('maxthetafun','var')
-  
+
   res = get_option(varargin,'resolution',2.5*degree);
   points(1) = ceil(drho / res);
   points(2) = ceil(dtheta / res + 1);
 
   G.res = min(dtheta/(points(2)-1),drho/points(1));
   G.theta = maxthetafun;
-  G.rho = S1Grid([],minrho,maxrho);
-  
+  G.rho = S1Grid([],minrhoGrid,maxrhoGrid);
+
   rho = linspace(minrho,maxrho,points(1));
   theta = linspace(mintheta,maxtheta,points(2));
   %theta = [theta,theta(end)];
-  
+
   [rho,theta] = meshgrid(rho,theta);
   theta = theta * diag(maxthetafun(rho(1,:))./maxtheta);
-  
+
   G.Grid = sph2vec(theta,rho);
   G.options = {};
-  
-  
-% -------------------------- indexed grid ----------------------------
+
+
+%% all other idexed grids
 else
 
-  % theta and rho are given
+  %% theta and rho are given directly
   if check_option(varargin,{'theta','rho'})
-    
+
     theta = get_option(varargin,'theta',[]);
     rho = get_option(varargin,'rho',[]);
     if check_option(varargin,'PLOT'), rho = [rho,rho(0)];end
-    
+
     if numel(theta)<2
       G.res = 2*pi;
     else
       G.res = min(abs(theta(1)-theta(2)),abs(rho(1)-rho(2)));
     end
-    G.theta = S1Grid(theta,0,maxtheta);%max(theta)
+    G.theta = S1Grid(theta,minthetaGrid,maxthetaGrid);
     G.rho = repmat(...
-      S1Grid(rho,0,2*pi,'PERIODIC'),...
+      S1Grid(rho,minrhoGrid,maxrhoGrid,'PERIODIC'),...
       1,length(theta));
-  
-  % regular
+
+  %% regular and plot grid
   elseif check_option(varargin,{'regular','plot'})
-    
+
     if check_option(varargin,'points')
       points = get_option(varargin,'points');
       if length(points) == 1
@@ -164,27 +180,27 @@ else
     else
       points = get_option(varargin,'resolution',...
         5*degree ./ (1+check_option(varargin,'plot')));
-      if length(points) == 1, points = [points points];end      
+      if length(points) == 1, points = [points points];end
       points(1) = ceil(drho / points(1));
       points(2) = ceil(dtheta / points(2) + 1);
     end
-    
+
     G.res = min(dtheta/(points(2)-1),drho/points(1));
-    G.theta = S1Grid(linspace(mintheta,maxtheta,points(2)),mintheta,maxtheta);
-      
-		steps = (maxrho-minrho) / points(1);
+    G.theta = S1Grid(linspace(mintheta,maxtheta,points(2)),minthetaGrid,maxthetaGrid);
+
+    steps = (maxrho-minrho) / points(1);
     if check_option(varargin,'PLOT'),
       G.rho = repmat(...
-        S1Grid(minrho + steps*(0:points(1)),minrho,maxrho),1,points(2));
+        S1Grid(minrho + steps*(0:points(1)),minrhoGrid,maxrhoGrid),1,points(2));
     else
       G.rho = repmat(...
-        S1Grid(minrho + steps*(0:points(1)-1),minrho,maxrho,...
+        S1Grid(minrho + steps*(0:points(1)-1),minrhoGrid,maxrhoGrid,...
         'PERIODIC'),1,points(2));
     end
-       
-  % equidistribution
+
+  %% equidistribution
   elseif check_option(varargin,'equispaced')
-       
+
     if check_option(varargin,'points') % calculate resolution
       ntheta = N2ntheta(get_option(varargin,'points'),maxtheta,maxrho);
       res =  maxtheta / ntheta;
@@ -193,44 +209,44 @@ else
       res =  2* maxtheta / round(2 * maxtheta / res);
       ntheta = fix(round(2 * maxtheta / res+ check_option(varargin,'NO_CENTER') )/2);
     end
-        
+
     G.res = res;
     if check_option(varargin,'NO_CENTER')
       theta = mintheta + (0.5:ntheta-0.5)*res;
     else
       theta = mintheta + (0:ntheta)*res;
     end
-    G.theta = S1Grid(theta,mintheta,maxtheta);
-                
+    G.theta = S1Grid(theta,minthetaGrid,maxthetaGrid);
+
     identified = check_option(varargin,'antipodal');
     for j = 1:length(theta)
-        
+
       th = theta(j);
       if isappr(th,pi/2) && isappr(drho,2*pi) && identified
-        
+
         G.rho(j) = S1Grid(minrho + G.res*(0.5*mod(j,2)+(0:2*ntheta-1))...
-          ,minrho,minrho + pi,'PERIODIC');
-      
+          ,minrhoGrid,minrhoGrid + pi,'PERIODIC');
+
       else
         steps = max(round(sin(th) * drho / dtheta * ntheta),1);
         rho = minrho + (0:steps-1 )* drho /steps + mod(j,2) * drho/steps/2;
-        G.rho(j) = S1Grid(rho,minrho,maxrho,'PERIODIC'); 
+        G.rho(j) = S1Grid(rho,minrhoGrid,maxrhoGrid,'PERIODIC');
       end
     end
   else
     error('no grid type specified');
-  end  
-  
+  end
+
   G.Grid = calcGrid(G.theta,G.rho);
   G.options = {'INDEXED'};
-    
+
 end
-  
+
 G.options = set_option(G.options,...
   extract_option(varargin,{'INDEXED','PLOT','north','south','antipodal'}));
 
 G = class(G,'S2Grid');
-    
+
 
 function res = vec2res(vec)
 if numel(vec) < 10, res = 2*pi;return; end

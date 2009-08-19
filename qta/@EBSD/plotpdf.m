@@ -60,7 +60,7 @@ if check_option(varargin,'superposition')
 else
   r = @(i) reshape(ss * grid * symvec(h(i)),[],1);
   [maxtheta,maxrho,minrho] = getFundamentalRegionPF(ss,varargin{:});
-  Sr = @(i) S2Grid(r(i),'MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,varargin{:});
+  Sr = @(i) S2Grid(r(i),'MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
   
   multiplot(@(i) Sr(i),...
     @(i) [],length(h),...

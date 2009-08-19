@@ -35,7 +35,7 @@ res = get_option(varargin,'RESOLUTION',min(2.5*degree,radius/50),'double');
 
 % discretisation
 [maxtheta,maxrho,minrho] = getFundamentalRegionPF(odf(1).CS);  
-S2G = S2Grid('equispaced','resolution',res,'MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,varargin{:});
+S2G = S2Grid('equispaced','resolution',res,'MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
 lS2G = GridLength(S2G);
 S2G = subGrid(S2G,symvec(h),radius);
 
