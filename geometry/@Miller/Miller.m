@@ -12,19 +12,26 @@ switch nargin
 		m.l = 0;
     m.CS = symmetry;
 	case 1
+    argin_check(h,'Miller');
 		m = h;
 	case 3
+    argin_check(h,'double');
+    argin_check(k,'double');
+    argin_check(l,'double');    
 		m.h = h;
     m.k = k;
     m.l = l;
     m.CS = symmetry;
 	case 4
+    argin_check(h,'double');
+    argin_check(k,'double');
+    argin_check(l,'double');    
     m.h = h;
     m.k = k;
     if isa(n,'symmetry')
       m.l = l;
       m.CS = n;
-    else
+    elseif isa(n,'double')
       m.l = n;
       m.CS = symmetry;
       if h+k+l ~= 0
@@ -34,8 +41,15 @@ switch nargin
           warning(['Convention h+k+i=0 violated! I assume i = ',int2str(-h-k)]); %#ok<WNTAG>
         end
       end
+    else
+      error('No symmetry specified in Miller!');
     end
   case 5
+    argin_check(h,'double');
+    argin_check(k,'double');
+    argin_check(l,'double');    
+    argin_check(n,'double');    
+    argin_check(CS,'symmetry');    
     m.h = h;
     m.k = k;
     m.l = n;
