@@ -50,7 +50,7 @@ varargin = set_default_option(varargin,...
 if strcmp(cc,'ipdf')
   [maxtheta,maxrho,minrho,v] = getFundamentalRegionPF(cs,varargin{:});
 
-  h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'resolution',1*degree,varargin{:}); 
+  h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX','resolution',1*degree,varargin{:}); 
   d = reshape(ipdf2rgb(h,cs,varargin{:}),[GridSize(h),3]);
   
   multiplot(@(i) h,@(i) d,1,'rgb',varargin{:});  

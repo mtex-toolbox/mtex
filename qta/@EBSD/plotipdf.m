@@ -56,7 +56,7 @@ end
 %% plotting grid
 h = @(i) reshape(inverse(quaternion(grid * cs)),[],1) * symetriceVec(ss,r(i));
 [maxtheta,maxrho,minrho] = getFundamentalRegionPF(cs,varargin{:});
-Sh = @(i) S2Grid(h(i),'MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,varargin{:});
+Sh = @(i) S2Grid(h(i),'MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
 
 
 %% plot

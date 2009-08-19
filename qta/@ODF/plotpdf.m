@@ -40,7 +40,7 @@ if check_option(varargin,'3d')
   r = S2Grid('PLOT',varargin{:});
 else
   [maxtheta,maxrho,minrho] = getFundamentalRegionPF(odf(1).SS,varargin{:});
-  r = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,varargin{:});
+  r = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
 end
 
 
