@@ -9,7 +9,7 @@ function ebsd = mtimes(x,y)
 
 if isa(x,'EBSD') && isa(y,'vector3d')
         
-  ebsd = getgrid(EBSD) * y;
+  ebsd = getgrid(x) * y;
   
 elseif isa(x,'EBSD') && isa(y,'quaternion')
   ebsd = x;

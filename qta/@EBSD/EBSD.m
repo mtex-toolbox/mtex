@@ -24,7 +24,7 @@ if nargin <= 2, SS = symmetry('triclinic'); end
 
 if (nargin == 0)
   ebsd.comment = [];
-  ebsd.orientations = [];
+  ebsd.orientations = SO3Grid(quaternion,symmetry,symmetry);
   ebsd.CS = symmetry;
   ebsd.SS = symmetry;  
   ebsd.xy = [];
