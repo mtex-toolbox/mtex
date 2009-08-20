@@ -25,11 +25,8 @@ if check_option(varargin,'fourier')
   t = norm(Fourier(odf,'bandwidth',L,'l2-normalization')).^2;
   
 else
-  % get resolution
-  res = get_option(varargin,'RESOLUTION',2.5*degree);
-
   % discretisation
-  S3G = SO3Grid(res,odf(1).CS,odf(1).SS);
+  S3G = extract_SO3grid(odf,varargin{:});
 
   % eval odf
   t = eval(odf,S3G,varargin{:});

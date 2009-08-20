@@ -18,14 +18,8 @@ function e = entropy(odf,varargin)
 % ODF/textureindex ODF/volume
 
 
-% get resolution
-res = get_option(varargin,'RESOLUTION',2.5*degree);
-
 % discretisation
-%disp([' generate orientation grid with resolution ',...
-%  xnum2str(res/degree),mtexdegchar]);
-S3G = SO3Grid(res,odf(1).CS,odf(1).SS);
-
+S3G = extract_SO3grid(odf,varargin{:});
 
 % eval odf
 %disp(' evaluate odf');
