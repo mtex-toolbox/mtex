@@ -8,7 +8,7 @@ S3G = S3G * inverse(q0);
 [max_phi1 max_Phi max_phi2] = getFundamentalRegion(get(S3G,'CS'),get(S3G,'SS'));
 
 % restrict to fundamental region
-q = quaternion(getFundamentalRegion(S3G));
+q = getFundamentalRegion(S3G);
 
 % convert to euler angles angles
 [phi1,Phi,phi2] = quat2euler(q(:),'BUNGE');

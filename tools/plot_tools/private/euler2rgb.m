@@ -6,7 +6,7 @@ q0 = get_option(varargin,'center',idquaternion);
 S3G = S3G * inverse(q0);
 
 % restrict to fundamental region
-q = quaternion(getFundamentalRegion(S3G));
+q = getFundamentalRegion(S3G);
 
 % convert to euler angles angles
 [phi1,Phi,phi2] = quat2euler(q(:),'Bunge');
