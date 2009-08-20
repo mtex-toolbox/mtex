@@ -13,3 +13,4 @@ A = A(ind);
 for i = 1:nargout-1
   varargout{i} = varargin{i}(ind);
 end
+

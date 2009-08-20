@@ -11,12 +11,6 @@ function [q,omega] = getFundamentalRegion(S3G,q_ref)
 %  q     - @quaternion
 %  omega - rotational angle to reference orientation
 %
-% q_ref = get_option(varargin,'center',idquaternion);
-%
-% q = symmetriceQuat(S3G(1).CS,[],quaternion(S3G));
-% omega = 2*acos(abs(dot(q,q_ref)));
-%
-% [omega,q] = selectMinbyRow(omega,q);
 
 %% get quaternions
 if nargin == 1, q_ref = idquaternion;end
