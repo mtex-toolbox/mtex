@@ -41,5 +41,5 @@ for i=1:length(ebsd)
 	ebsd(i).orientations = copy(ebsd(i).orientations,idi);  
 end
 
-ebsd = ebsd(sampleSize(ebsd)>0);
+% ebsd = ebsd(sampleSize(ebsd)>0); %causes empty ebsd
 
