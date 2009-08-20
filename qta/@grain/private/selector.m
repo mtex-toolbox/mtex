@@ -575,13 +575,13 @@ end
 
 [grains p ks] = getcurrentlayer;
 grains1 = grains(ks);
-eb = get(ebsd,grains1);     
+eb = link(ebsd,grains1);     
 
 f = figure, plot(eb,'rodrigues')
 if check_option(varargin,'neighbours')
   hold on,
   grains2 = neighbours(grains, grains1);
-  eb2 = get(ebsd,grains2);
+  eb2 = link(ebsd,grains2);
   plot(eb2,'rodrigues')
 end
 set(f,'renderer','opengl');
@@ -596,13 +596,13 @@ end
 
 [grains p ks] = getcurrentlayer;
 grains1 = grains(ks);
-eb = get(ebsd,grains1);     
+eb = link(ebsd,grains1);     
 
 f = figure, plotpdf(eb,[Miller(1,0,0)]);
 if check_option(varargin,'neighbours')
   hold on,
   grains2 = neighbours(grains, grains1);
-  eb2 = get(ebsd,grains2);
+  eb2 = link(ebsd,grains2);
   plotpdf(eb2);
 end
 set(f,'renderer','opengl');
@@ -627,13 +627,13 @@ types = {'SIGMA','ALPHA','GAMMA','PHI1','PHI2'};
 if ok, 
    oldfig = gcf;
    figure
-   eb = get(ebsd,grains1);      
+   eb = link(ebsd,grains1);      
         
    if check_option(varargin,'neighbours')
      grains = neighbours(grains, grains1);
      % grains = grains(ismember(vertcat(grains(:).id),vertcat(grains1(:).neighbour)));
           
-     eb2 = get(ebsd,grains);   
+     eb2 = link(ebsd,grains);   
      
      pha = get(eb,'phase');
      phb = get(eb2,'phase'); 

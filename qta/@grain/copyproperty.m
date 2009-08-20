@@ -34,7 +34,7 @@ if isempty(m1) && isempty(m2), property = 'all';
 else  property = varargin{[m1 m2]};
 end
 
-[grains ebsd ids] = get(grains,ebsd);
+[grains ebsd ids] = link(grains,ebsd);
 
 opts = partition(ebsd,ids,'fields',property);
 

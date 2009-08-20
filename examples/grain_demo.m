@@ -47,8 +47,8 @@ hold on, plotsubfractions(grains,'color','red','linewidth',2)
 % The Segmentation is connected with the EBSD object, we can select grains
 % after specified ebsd measurements
 
-grains_ph1 = get(grains,ebsd(1));
-grains_ph2 = get(grains,ebsd(2));
+grains_ph1 = link(grains,ebsd(1));
+grains_ph2 = link(grains,ebsd(2));
 
 %%
 % on application of this would be to take a look on the grainsize
@@ -63,8 +63,8 @@ y1 = hist(grainsize(grains_ph1),x)';
 y2 = hist(grainsize(grains_ph2),x)';
 
 % and the histogram for the segmentation of 5 degrees
-y5_1 = hist(grainsize( get(grains5,ebsd(1)) ),x)';
-y5_2 = hist(grainsize( get(grains5,ebsd(2)) ),x)';
+y5_1 = hist(grainsize( link(grains5,ebsd(1)) ),x)';
+y5_2 = hist(grainsize( link(grains5,ebsd(2)) ),x)';
 
 %%
 % print a table
@@ -124,7 +124,7 @@ grains_fractions = grains( hassubfraction(grains) )
 %%
 % and its corresponding ebsd data
 
-ebsd_fractions = get(ebsd, grains_fractions)
+ebsd_fractions = link(ebsd, grains_fractions)
 
 %% Plotting of grains
 % there are many ways to plot grains

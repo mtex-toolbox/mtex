@@ -1,5 +1,5 @@
 function grains = calcODF(grains,ebsd,varargin)
-% function to calculate individual ODFs for each grain or an ODF based on the orientation of each grain
+% bypass-function to calculate individual ODFs for each grain or an ODF based on the orientation of each grain
 %
 %% Input
 %  grains - @grain
@@ -13,7 +13,21 @@ function grains = calcODF(grains,ebsd,varargin)
 % ebsd/calcODF
 
 if nargin>1 && isa(ebsd,'ebsd')
-  [o grains] = grainfun(@(e) calcODF(e,varargin{:},'silent'), grains, ebsd,'property',get_option(varargin,'property','ODF'));
+  for l=1:numel(ebsd)
+    ebsd_cur = ebsd(l); 
+    ind = get(grains,'phase') == get(ebsd_cur,'phase');
+        
+    %do the same kernel for every grain of same phase    
+    [k hw options] = extract_kernel(getgrid(ebsd_cur),varargin);
+
+    %predefine a grid
+    if ~check_option(varargin,'exact'), 
+      [S3G options]= extract_SO3grid(ebsd_cur,options);
+    end
+    
+    [o grains(ind)] = grainfun(@calcODF, grains(ind), ebsd_cur,...
+      'property',get_option(varargin,'property','ODF'),options{:},'silent');
+  end
 else
   if nargin>1, varargin = [{ebsd} varargin]; end
   grains = calcODF(toebsd(grains),varargin{:});
