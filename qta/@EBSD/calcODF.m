@@ -35,6 +35,8 @@ vdisp('performing kernel density estimation',varargin{:})
 
 % extract orientations
 g = getgrid(ebsd,'checkPhase',varargin{:});
+gridlen = GridLength(g);
+if gridlen == 0, odf = ODF; return, end
 
 % extract weights
 if check_option(varargin,'weight')
@@ -44,20 +46,17 @@ elseif isfield(ebsd(1).options,'weight')
   %ebsd = delete(ebsd,isnan(get(ebsd,'weight')));
   weight = get(ebsd,'weight');  
 else
-  weight = ones(1,GridLength(g));
+  weight = ones(1,gridlen);
 end
 weight = weight ./ sum(weight(:));
 
-% get halfwidth
-hw = get_option(varargin,'halfwidth',...
-  max(getResolution(g) * 3,2*degree));
-k = get_option(varargin,'kernel',...
-      kernel('de la Vallee Poussin','halfwidth',hw),'kernel');
+% get halfwidth and kernel
+[k hw] = extract_kernel(g,varargin);
 
 vdisp([' used kernel: ' char(k)],varargin{:});
 
 %% exact calculation
-if check_option(varargin,'exact') || GridLength(g)<200  
+if check_option(varargin,'exact') || gridlen<200  
   odf = ODF(g,weight,k,...
     ebsd(1).CS,ebsd(1).SS,'comment',['ODF estimated from ',getcomment(ebsd(1))]);  
   return
@@ -87,7 +86,8 @@ res = get_option(varargin,'resolution',max(0.75*degree,hw / 2));
 
 
 %% generate grid
-S3G = SO3Grid(res,ebsd(1).CS,ebsd(1).SS);
+S3G = extract_SO3grid(ebsd,varargin{:},'resolution',res);
+
 vdisp([' approximation grid: ' char(S3G)],varargin{:});
 
 %% restrict single orientations to this grid
