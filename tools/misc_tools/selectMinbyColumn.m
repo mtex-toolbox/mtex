@@ -1,14 +1,10 @@
 function [A,varargout] = selectMinbyColumn(A,varargin)
-% find maximum in each row
+% find minimum in each column
 
-% find maximum values
-ind = A == repmat(min(A,[],1),size(A,1),1);
+s = size(A);
+[A,ind] = min(A,[],1);
+ind = sub2ind(s,ind,1:s(2));
 
-% select only the first maximum
-ind = ind & ind == cumsum(ind,1);
-
-% return results
-A = A(ind); A = A(:).';
 
 for i = 1:nargout-1
   varargout{i} = reshape(varargin{i}(ind),1,[]);

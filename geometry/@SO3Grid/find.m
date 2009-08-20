@@ -18,7 +18,7 @@ if ~check_option(SO3G,'indexed') || check_option(varargin,'exact')
   d = dist(SO3G(1).CS,SO3G(1).SS,quaternion(SO3G),q);
   
   if nargin == 2
-    [d,ind] = selectMaxbyColumn(d,repmat(1:size(d,1),1,size(d,2)));
+    [d,ind] = max(d,[],1);
   else
     ind = d<epsilon;
   end
