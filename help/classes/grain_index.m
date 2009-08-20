@@ -38,7 +38,7 @@ plot(grains)
 %% Interconnection between EBSD and Grain data
 
 grains_t = grains( hasholes(grains))
-ebsd_t = get(ebsd(1), grains_t)
+ebsd_t = link(ebsd(1), grains_t)
 
 plot(ebsd_t)
 hold on, plot(grains_t,'linewidth',2,'color','r')
@@ -61,5 +61,6 @@ figure, plot(grains(ndx))
 
 grains(ndx) = calcODF(grains(ndx),ebsd);
 
-plotpdf(get(grains(ndx),'ODF'),Miller(1,1,1,CS{1}),'antipodal');
+odf_largestgrain = get(grains(ndx),'ODF'); % as cell
+plotpdf(odf_largestgrain{:},Miller(1,1,1,CS{1}),'antipodal');
 

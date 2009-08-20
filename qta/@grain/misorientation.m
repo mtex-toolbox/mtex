@@ -39,7 +39,7 @@ if nargin > 1 && isa(varargin{1},'ebsd') % misorientation to ebsd data
   ebsd = varargin{1};
   
   for k=1:length(ebsd)
-    [grs eb ids] = get(grains, ebsd(k));
+    [grs eb ids] = link(grains, ebsd(k));
  
     grid = getgrid(eb,'CheckPhase');
     cs = get(grid,'CS');

@@ -13,4 +13,4 @@ function [grains qm] = mean(grains,ebsd)
 % EBSD/mean 
 %
 
-[qm grains] = grainfun(@(e) mean(e), grains, ebsd,'property','orientation');
+[qm grains] = grainfun(@(e) mean(e), grains, ebsd,'property','orientation','uniformoutput',true);
