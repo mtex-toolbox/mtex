@@ -33,17 +33,19 @@ if check_option(varargin,'unitcell') || ~check_option(varargin,'voronoi')
         cy = (max(y)-min(y))/2+min(y);
 
         fc = 1;  sublattice = 0;
-        while sum(sublattice) < 30  && fc <  2^10
+        kl = min(500,length(xy));
+        
+        while sum(sublattice) <  kl && fc <  2^10 % find 500 points (or less)
           sublattice = x > cx-fc*dxy & x < cx+fc*dxy & y > cy-fc*dxy & y < cy+fc*dxy;
           fc = fc*2;
         end
-
+        
         xy_s = [x(sublattice) y(sublattice)]; 
 
-        if length(xy_s) < 30,        
+        if length(xy_s) < kl,        
           warning('MTEX:plotspatial:UnitCell',['The automatic generation of a unit cell may have failed! \n',...
                                                'Please specify more parameters!']);
-          plotxyexact(x,y,d,'GridType','tetragonal')     
+          [v c] = spatialdecomposition(xy,'GridType','tetragonal',varargin{:});
           return
         end
 
@@ -56,11 +58,12 @@ if check_option(varargin,'unitcell') || ~check_option(varargin,'voronoi')
 
         cx = v(c{ci},1) - xy_s(ci,1);
         cy = v(c{ci},2) - xy_s(ci,2);
+        
 
-        if mod(length(cx),2), 
+        if mod(length(cx),2) && all(diff(diff(cx).^2 + diff(cy).^2) < 10^-5)
           warning('MTEX:plotspatial:UnitCell',['The automatic generation of a unit cell may have failed! \n',...
                                                'Please specify more parameters!']);
-          plotxyexact(x,y,d,'GridType','tetragonal')     
+          [v c] = spatialdecomposition(xy,'GridType','tetragonal',varargin{:});    
           return
         end
 
