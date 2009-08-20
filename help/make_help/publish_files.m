@@ -84,6 +84,10 @@ for i=1:length(files)
 
 end
 
+ % clear all calculations
+  evalin('base','clear all');
+  close all
+
 cd(old_dir);
 %if get_option(varargin,'waitbar'),close(h);end
 
