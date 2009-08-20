@@ -56,7 +56,7 @@ else
   nsec = get_option(varargin,'SECTIONS',round(max_sec/degree/5));
   sec = linspace(0,max_sec,nsec+1); sec(end) = [];
   sec = get_option(varargin,sectype,sec,'double');
-  varargin = {varargin{:},'maxrho',max_rho,'maxtheta',max_theta};
+  varargin = [varargin,'maxrho',max_rho,'maxtheta',max_theta];
 end
 
 [symbol,labelx,labely] = sectionLabels(sectype);
