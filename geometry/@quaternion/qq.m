@@ -6,7 +6,6 @@ function T = qq(q,varargin)
 %  w - list of weights
 
 ql = [q.a(:), q.b(:), q.c(:), q.d(:)];
-T = ql.'*ql;
 
 % weigths
 if ~isempty(varargin) && check_option(varargin,'weights')
@@ -14,8 +13,9 @@ if ~isempty(varargin) && check_option(varargin,'weights')
   w = reshape(w,1,[]);
   w = w./sum(w);
   w = repmat(w,4,1);
-  T = w(:,1:numel(q)).* T;
+  T = w.*ql'*ql;
 else
+  T = ql.'*ql;
   T = T ./ numel(q);
 end
 
