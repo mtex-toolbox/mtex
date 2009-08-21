@@ -32,23 +32,27 @@ end
 
 % check sparsity of the kernel matrix
 if (lg1 > lg2 && lg1 > 0) || (abs(lg1) > abs(lg2) && lg2 < 0)
-  g2 = quaternion(g2); 
-  total_nnz = numel(g2) * max(1,nnz(K(kk,g1,g2(1),CS,SS,varargin{:})));
+  g2 = quaternion(g2);
+  res = getResolution(g1);
+                                      % takes too long
+  % total_nnz = numel(g2) * max(1,nnz(K(kk,g1,g2(1),CS,SS,varargin{:})));
 else
   g1 = quaternion(g1);
-  total_nnz = numel(g1) * max(1,nnz(K(kk,g1(1),g2,CS,SS,varargin{:})));
+  res = getResolution(g2);
+  % total_nnz = numel(g1) * max(1,nnz(K(kk,g1(1),g2,CS,SS,varargin{:})));
 end
 
 % init variables
 s = zeros(size(quaternion(g1)));
 
 % iterate due to memory restrictions?
+total_nnz = abs(lg1*lg2) * exp(-res/gethw(kk)).^2;
 maxiter = ceil(total_nnz / get_mtex_option('memory',300 * 1024));
-if maxiter > 1, progress(0,maxiter);end
+if maxiter > 1 && ~check_option(varargin,'silent'), progress(0,maxiter);end
 
 for iter = 1:maxiter
    
-  if maxiter > 1, progress(iter,maxiter); end
+  if maxiter > 1 && ~check_option(varargin,'silent'), progress(iter,maxiter); end
    
   if (lg1 > lg2 && lg1 > 0) || (abs(lg1) > abs(lg2) && lg2 < 0) 
     % split along g2

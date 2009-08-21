@@ -117,8 +117,9 @@ end
 d = d ./ sum(d(:));
 
 %% eliminate spare rotations in grid
-S3G = subGrid(S3G,d ~= 0);
-d = d(d~=0);
+del = d ~= 0;
+S3G = subGrid(S3G,del);
+d = d(del);
 
 %% generate ODF
 
