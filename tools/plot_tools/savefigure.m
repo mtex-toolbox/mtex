@@ -44,13 +44,13 @@ switch lower(ext(2:end))
 
 case {'eps','ps'}
   flags = {'-depsc'};  
-  set(gcf,'renderer','painters');
+  %set(gcf,'renderer','painters');
 case 'ill'
   flags = {'-dill'};  
-  set(gcf,'renderer','painters');  
+  %set(gcf,'renderer','painters');  
 case {'pdf'}
   flags = {'-dpdf'};
-  set(gcf,'renderer','painters');  
+  %set(gcf,'renderer','painters');  
 case {'jpg','jpeg'}
   flags = {'-r600','-djpeg'};  
   set(gcf,'renderer','zbuffer');
