@@ -82,6 +82,7 @@ else
   % odf warper
   isodf = all(cellfun('isclass', evar, 'ODF'));
   if isodf    
+    options{end+1} = 'silent';
     foo = FUN;
     if isa(foo,'function_handle'), foo = func2str(foo);  end
     

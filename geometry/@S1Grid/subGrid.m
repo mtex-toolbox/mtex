@@ -19,12 +19,14 @@ else
   ind = x;
 end
 
-rs = [ 0 cumsum( GridLength(S1G) )];
+p = {S1G.points};
+rs = [ 0 cumsum( cellfun('prodofsize',p) )];
 
 if ~islogical(ind)
   ind = sparse(ind(:),ones(numel(ind),1),true(numel(ind),1),rs(end),1);
 end
-  
-for k=1:numel(S1G)
-  S1G(k).points = S1G(k).points( ind( rs(k)+1:rs(k+1) ));
+
+for k=1:numel(p)
+  sel = ind( rs(k)+1:rs(k+1) );
+  S1G(k).points = p{k}(sel);
 end
