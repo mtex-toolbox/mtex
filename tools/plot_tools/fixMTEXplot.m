@@ -69,23 +69,37 @@ dy = diff(cx(3:4));
 cy_r = dx/dy;
 cx_r = dy/dx;
 
-if ay_r < 0.5, return, end %causes somehow more problems
-if ax_r*ey_r < 0.5, return, end %causes somehow moreproblems
-
-if ay_r < ey_r               % resize ylim
+%% resize ylim
+if ay_r < ey_r              
   dy = dy.*(cy_r - ay_r)/ey_r;
 
   y = cx(3:4)+ [-dy dy]; %limit to extend
-  if y(1) < ex(3), y(1) = ex(3); end
-  if y(2) > ex(4), y(2) = ex(4); end
   
+  % may be a shift is necessary 
+  if y(1) < ex(3)
+    y(2) = min(ex(4),y(2)+ex(3)-y(1));
+    y(1) = ex(3);
+  elseif y(2) > ex(4)
+    y(1) = max(ex(3),y(1)+ex(4)-y(2));
+    y(2) = ex(4);
+  end
+    
   ylim(y)
-else                         % resize xlim  
+  
+%% resize xlim  
+else                         
   dx = dx.*(cx_r - ax_r)/ex_r;
 %   
   x = cx(1:2) + [-dx dx]; %limit to extend
-  if x(1) < ex(1), x(1) = ex(1); ylim(ex(3:4)); end
-  if x(2) > ex(2), x(2) = ex(2); ylim(ex(3:4)); end
   
-  xlim(x);   
+  % may be a shift is necessary 
+  if x(1) < ex(1)
+    x(2) = min(ex(2),x(2)+ex(1)-x(1));
+    x(1) = ex(1);
+  elseif x(2) > ex(2)
+    x(1) = max(ex(1),x(1)+ex(2)-x(2));
+    x(2) = ex(2);
+  end
+    
+  xlim(x);
 end
