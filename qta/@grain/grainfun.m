@@ -81,19 +81,19 @@ else
   
   % odf warper
   isodf = all(cellfun('isclass', evar, 'ODF'));
-  if isodf    
-    options{end+1} = 'silent';
+  if isodf
     foo = FUN;
     if isa(foo,'function_handle'), foo = func2str(foo);  end
     
-    if nargin(['@ODF\' foo]) < 0
+    if any(strcmpi(foo , methods(ODF))) && nargin(['@ODF\' foo]) < 0
+      options{end+1} = 'silent';
       res = get_option(varargin,'RESOLUTION',2.5*degree);
 
       ph = get(grains,'phase');
       [uph m ph] = unique(ph);
       S3G = cell(size(uph));
       for k=1:numel(uph)      
-        rp = find( ph == uph(k),1,'first');
+        rp = find( ph == k,1,'first');
         pCS = get(grains(rp),'CS');
         pSS = get(grains(rp),'SS');
         S3G{k} = SO3Grid(res,pCS{:},pSS{:});
@@ -107,7 +107,7 @@ else
     end
      
     if exist('S3G','var') && exist('ph','var') % pass a Grid if possible
-      g{k} = feval(FUN,evar{k},'SO3Grid',S3G{ph(k)},options{:});
+      g{k} = feval(FUN,evar{k},options{:},'SO3Grid',S3G{ph(k)});
     else
       g{k} = feval(FUN,evar{k},options{:});
     end

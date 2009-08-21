@@ -43,9 +43,7 @@ if check_option(varargin,'Fourier') && check_option(varargin,'L2')
 else
   
   % get approximation grid
-  S3G = get_option(varargin,'SO3Grid',...
-    SO3Grid(get_option(varargin,'resolution',5*degree),...
-    odf1(1).CS,odf1(1).SS),'SO3Grid');
+  S3G = extract_SO3grid(odf1,varargin{:},'resolution',5*degree);
 
   % eval ODFs
   d1 = eval(odf2,S3G,varargin{:});

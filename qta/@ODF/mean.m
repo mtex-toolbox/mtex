@@ -12,5 +12,5 @@ function [m kappa v] = mean(odf,varargin)
 %
 
 
-S3G = SO3Grid(get_option(varargin,'resolution',5*degree),odf(1).CS,odf(1).SS);
+S3G = extract_SO3grid(odf,varargin);
 [m kappa v] = mean(S3G,'weights',eval(odf,S3G)); %#ok<EVLC>
