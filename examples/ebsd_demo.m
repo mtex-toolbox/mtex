@@ -89,8 +89,8 @@ hold off
 %% A Sythetic Example
 %
 % Simulate EBSD data from a given standard ODF
-cs = symmetry('trigonal');
-fibre_odf = 0.5*uniformODF(cs,ss) + 0.5*fibreODF(Miller(0,0,0,1),zvector,cs,ss);
+CS = symmetry('trigonal');
+fibre_odf = 0.5*uniformODF(CS,SS) + 0.5*fibreODF(Miller(0,0,0,1),zvector,CS,SS);
 plotodf(fibre_odf,'sections',6,'silent')
 ebsd = simulateEBSD(fibre_odf,10000)
 

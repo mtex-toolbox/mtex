@@ -17,9 +17,18 @@ function odf = FourierODF(C,CS,SS,varargin)
 %% See also
 % ODF/ODF uniformODF fibreODF unimodalODF
 
-error(nargchk(3,3,nargin));
-argin_check(C,'double');
-argin_check(CS,'symmetry');
-argin_check(SS,'symmetry');
+if isa(C,'ODF')
+  
+  odf = C;
+  odf = set(odf,'center',[]);
+  odf = set(odf,'c',1);
+  odf = set(odf,'psi',[]);
+  odf = set_option(odf,'fourier');
+else
+  error(nargchk(3,3,nargin));
+  argin_check(C,'double');
+  argin_check(CS,'symmetry');
+  argin_check(SS,'symmetry');
 
-odf = ODF(C,[],[],CS,SS,'Fourier');
+  odf = ODF(C,[],[],CS,SS,'Fourier');
+end
