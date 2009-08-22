@@ -51,13 +51,35 @@ pf_background= pf([2 4]);
 2*pf(1) + 3*pf(3)
 
 
-%% Correct Pole figure data
+%% Correct pole figure data
 %
 % In order to correct pole figures for background radiation and
 % defocussing one can use the command 
 % <PoleFigure_correct.html correct>. In our case the syntax is
 
 pf = correct(pf_complete,'background',pf_background);
+plot(pf)
+
+%% Normalize pole figures
+%
+% Sometimes people want to have normalized pole figures. In the case of
+% compete pole figures this can be simply archived using the command
+% <PoleFigure_normalize.html normalize> 
+
+pf = normalize(pf);
+plot(pf)
+
+%%
+% However, in the case of incomplete pole figures it is well known, that
+% the normalization can only by computed from an ODF. Therefore, one has to
+% proceed as follows.
+
+% compute an ODF from the pole figure data
+odf = calcODF(pf);
+
+% and use it for normalization
+pf = normalize(pf,odf);
+
 plot(pf)
 
 
