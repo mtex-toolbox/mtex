@@ -53,6 +53,12 @@ set_mtex_option('memory',getmem);
 
 %set_mtex_option('noLaTex');
 
+%% FFT Accuracy 
+% change this value to have more accurate but slower computation when
+% involving FFT algorithms
+%
+set_mtex_option('FFTAccuracy',1E-2);
+
 %% path for temporary files
 
 set_mtex_option('tempdir',tempdir);
