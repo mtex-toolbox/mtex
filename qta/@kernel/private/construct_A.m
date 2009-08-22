@@ -18,7 +18,7 @@ switch lower(name)
     
   case 'de la vallee poussin'
 
-    A(fix(p)+1:L+1) = []; L = min(L,fix(p));
+    A(max(10,fix(p)+1):L+1) = []; L = min(L,max(10,fix(p)));
     A(2) = p/(p+2);
 
     for l=1:L-1, A(l+2) = ((p-l+1)*A(l)-(2*l+1)*A(l+1))/(p+l+2); end
@@ -78,8 +78,9 @@ switch lower(name)
 
 end
 
-if ~any(strcmpi(name,{'Fourier','bump'}))
+if length(A) > 11 && ~any(strcmpi(name,{'Fourier','bump'}))
   % prevent from instability effects
-  ind = find(A<=max(min([A,1E-5]),1E-6),1,'first');
+  epsilon = get_mtex_option('FFTAccuracy',1E-2);
+  ind = find(A<=max(min([A,10*epsilon]),epsilon),1,'first');
   A = A(1:min([ind,length(A)]));
 end
