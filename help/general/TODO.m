@@ -6,6 +6,7 @@
 % * improve template files
 % * say explicetly in generic wizard which columns has to
 % be specified
+% * implement grain/rotate, grain/flipud, grain/fliplr
 %
 %% MTEX 2.0
 %
@@ -13,8 +14,8 @@
 % data
 % * document new functionality
 % * check! -> ODF import / export
-% * check! -> fix S2Grid/plot incomplete pole figures are not plotted correctly
-% * implement grain/rotate, grain/flipud, grain/fliplr
+% * check! -> fix S2Grid/plot incomplete pole figures are not plotted
+% correctly
 % * check! -> make ebsd/plot ebsd/segment2d work also with rotated ebsd data
 % * check! -> better exportODF function
 % * check! -> fix empty ebsd object does not give an error in any function
