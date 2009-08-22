@@ -2,26 +2,46 @@
 %
 %% Contents
 %
-%% MTEX 2.0 beta 1 - 10/2009
+%% MTEX 2.0 beta 1 - 09/2009
 %
-% *Grain-Analysis for EBSD*
+% *Grain Analysis for EBSD Data*
 %
-% * MTEX now is able to partition Spatial-EBSD data into regions of similar
-% orientations, mentioned as Grains. A new class @grain with a lot of 
-% functionalites to work on EBSD data.
-% * ODF-Calculations form single Grains up to specified Grain-selections
-% * Interactive selection of Grains and a large palette of plotting
-% possibilities.
+% MTEX is now able to partition spatial EBSD data into grains. This
+% allows for the computation of various grain characteristics, as well as
+% the computation and visualization of the grain boundaries and
+% neighborhood relationships. Main features are:
 %
-% *Improved*
-% 
+% * Grains statistics (area, diameter, mean orientation, ...)
+% * Missorientation analysis
+% * Interactive selection of grains by various criteria
+% * ODF-calculations for any subset of grains
+% * A large palette of plotting possibilities.
+%
+% *Visualization Improvements*
+%
+% * ODF fibre plot
+% * support for different x-axis alignment - <plotx2north.html  plotx2north>,
+% <plotx2east.html plotx2east>
+% * plot EBSD data with respect to arbitrary properties
+% * plot zero regions of ODFs and pole figures white
+% * pole figure contour plots
+% * color triangle for spatial EBSD plots
+%
+% *General Improvements*
+%
+% * ODF import / export
+% * rotate EBSD data
+% * Pole figure normalization
+% * improved interfaces and import wizard
 % * speed improvement of several side-functions as well as core-functions of
 % @quaternions and spherical grids.
-% * reduction of programming-errors in favour of new ones
-% * plot pole figure data as contour plots
-% * new ODF fibre plot
 %
-%% MTEX 1.2 - 05/2009 
+% *Incompatible Changes to Previous Versions*
+%
+% * The flags *reduced* and *axial* have been replaced by the flag <AxialDirectional.html
+% antipodal>
+%
+%% MTEX 1.2 - 05/2009
 %
 % *Improved EBSD import*
 %
@@ -31,7 +51,7 @@
 % * import of arbitrary properties as MAD, detection error, etc.
 %
 % *Improved EBSD plotting*
-% 
+%
 % * plot EBSD data in axis angle and Rodrigues space
 % * annotations in these spaces
 % * plot arbitrary properties as MAD, detection error, etc.
@@ -41,7 +61,7 @@
 %
 % *General Improvements*
 %
-% * suport for different crystal geometry setups
+% * support for different crystal geometry setups
 % * faster and more accurate volume computation
 % * improved function modalorientation
 % * improved documentation
@@ -49,21 +69,21 @@
 % *Incompatible Changes to Previous Versions*
 %
 % * The flag *reduced* has been replaced by the flag <AxialDirectional.html
-% antipodal> 
+% axial>
 %
 %% MTEX 1.1 - 12/2008
 %
 % *Improved Import Wizzard*
-% 
+%
 % * Load CIF files to specify crystal geometry
 % * Import EBSD data with coordinates
 % * More options to specify the alignment of the specimen coordinate system
 % * support for popla *.epf files, *.plf files, and *.nja files
-% 
+%
 %
 % *Improved Pole Figure Analysis*
 %
-% * Background correction and defocussing 
+% * Background correction and defocussing
 % * Outlier detection and elimination
 %
 % *Improved EBSD Data Support*
@@ -95,7 +115,7 @@
 % * MTEX ships now with an automated installer and binaries for Windows,
 % Linux, and Mac OSX. This makes it in unnecessary to install any
 % additional library and to compile the toolbox. (Thanks to F. Bachmann,
-% C. Randau, and F. Wobbe) 
+% C. Randau, and F. Wobbe)
 %
 % *New ODF Class*
 %
@@ -112,7 +132,7 @@
 % * Plot EBSD data and continious ODFs into one plot
 % * Miller indeces and specimen directions can now be plotted directly into
 % pole figures or inverse pole figures.
-% * New plotting option north, south for spherical plots 
+% * New plotting option north, south for spherical plots
 % * Improved colorbar handling
 % * Spherical grids
 % * More spherical projections
@@ -125,10 +145,10 @@
 %
 % *Improved Documentation*
 %
-% MTEX comes now with over 500 help pages explaining the mathematical concepts, 
+% MTEX comes now with over 500 help pages explaining the mathematical concepts,
 % the philisophy behing MTEX and the syntax and usage of all 300 functions
 % available in MTEX. Furthermore, you find numerous examples and tutorials on
-% ODF estimation, data import, calculation of texture characteristics, ODF and 
+% ODF estimation, data import, calculation of texture characteristics, ODF and
 % pole figure plotting, etc.
 %
 % *Bug Fixes*
@@ -137,7 +157,7 @@
 % * Fixed automatic ghost correction
 % * Fixed some loadPoleFigure issues
 % * Many other bug fixes.
-% 
+%
 %
 %% MTEX 0.4 - 04/2008
 %
@@ -147,7 +167,7 @@
 % to the new NFFT 4.0 library)
 % * ODF plotting and the
 % calculation of [[ODF_volume.html,volume fractions]], the
-% [[ODF_textureindex.html,texture index]], the [[ODF_entropy.html,entropy]] 
+% [[ODF_textureindex.html,texture index]], the [[ODF_entropy.html,entropy]]
 % and [[ODF_calcFourier.html,Fourier coefficients]] is about *100 times
 % faster*
 %
@@ -155,7 +175,7 @@
 %
 % * [[interfacesEBSD_index.html,Import]] EBSD data from arbitrary data formats.
 % * New class [[EBSD_index.html,EBSD]] to store and manipulate with EBSD
-% data. 
+% data.
 % * [[EBSD_plotpdf.html,Plot pole figures]] and inverse pole figures from
 % EBSD data.
 % * [[EBSD_calcODF.html,Recover]] ODFs from EBSD data via kernel density
@@ -182,7 +202,7 @@
 % * New, more flexibel syntax for the generation of
 % [[S2Grid_index.html,S2Grids]]
 % * Slightly changed syntax of [[unimodalODF.html,unimodalODF]] and
-% [[fibreODF.html,fibreODF]]. 
+% [[fibreODF.html,fibreODF]].
 % * Default plotting options are set to {}, i.e. 'antipodal' has to add
 % manualy if desired
 % * Crystal symmetry *triclinic* is not called *tricline* anymore.
@@ -192,28 +212,28 @@
 %
 % * new function [[ODF_Fourier.html,fourier]] to calculate the
 % Fouriercoefficents of an arbitrary ODF
-% * new option |ghost correction| in function 
+% * new option |ghost correction| in function
 % [[PoleFigure_calcODF.html,calcODF]]
-% * new option |zero range| in function 
+% * new option |zero range| in function
 % [[PoleFigure_calcODF.html,calcODF]]
 % * new function [[loadEBSD]] to import EBSD data
 % * simplified syntax for the import of diffraction data
 % * new import wizard for pole figure data
-% * support of triclinic crystal [[symmetry_index.html,symmetry]] 
+% * support of triclinic crystal [[symmetry_index.html,symmetry]]
 % with arbitrary angles between the axes
 % * default plotting options may now be specified in mtex_settings.m
 % * new plot option _3d_ for a three dimensional spherical plot of pole
 % figures
 % * contour levels may be specified explicitely in all plot functions
 % [[ODF_plotodf.html,plotodf]],[[ODF_plotpdf.html,plotpdf]] and [[ODF_plotipdf.html,plotipdf]]
-% * new plot option _logarithmic_ 
+% * new plot option _logarithmic_
 % * many bugfixes
 %
 %
 %% MTEX 0.2 - 07/2007
 %
 % * new functions [[ODF_textureindex.html,textureindex]], [[ODF_entropy.html,entropy]], [[ODF_volume.html,volume]]
-% * creatly improved help 
+% * creatly improved help
 % * improved installation
 % * new options for plotting routines for specific ODF sections
 % * many bugfixes
