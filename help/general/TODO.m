@@ -1,26 +1,30 @@
 %% TODO List
 %
+%% MTEX 2.1
+%
+% * fix crystal coordinate system for symmetry 2/m
+% * improve template files
+% * say explicetly in generic wizard which columns has to
+% be specified
 %
 %% MTEX 2.0
 %
-% * fix S2Grid/plot incomplete pole figures are not plotted correctly
-% * ebsd/rotate, ebsd/flipud, ebsd/fliplr  should also affect the spatial data
+% * ebsd/rotate, ebsd/flipud, ebsd/fliplr  should also affect the spatial
+% data
+% * document new functionality
+% * check! -> ODF import / export
+% * check! -> fix S2Grid/plot incomplete pole figures are not plotted correctly
 % * implement grain/rotate, grain/flipud, grain/fliplr
 % * check! -> make ebsd/plot ebsd/segment2d work also with rotated ebsd data
 % * check! -> better exportODF function
-% * maybe MTEX 2.1 -> fix crystal coordinate system for symmetry 2/m
-% * fix empty ebsd object does not give an error in any function
-% * document new functionality
+% * check! -> fix empty ebsd object does not give an error in any function
 % * check! -> work on compatibility issues
-% * improve template files
-% * maybe MTEX 2.1 -> say explicetly in generic wizard which columns has to be specified
 %
 %% Sudent projects
 %
-% * grain analysis 
 % * robust mean
 % * cluster analysis of EBSD data
-% * cluster analysis of ODF
+% * cluster analysis of ODFs
 %
 %
 %% BUGS
