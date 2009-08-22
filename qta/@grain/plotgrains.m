@@ -94,9 +94,9 @@ if ~isempty(property)
   end
    
   if strcmpi(property,'phase')
-    [x x d] = unique(d);
+    [x f d] = unique(d);
     co = get(gca,'colororder');
-    colormap([get(gca,'color');co(d,:)]);
+    colormap([get(gca,'color');co(x,:)]);
   end
   
   h = [];

@@ -27,7 +27,7 @@ function ebsd = misorientation(grains,varargin)
 %  ebsd_mis = misorientation(grains,'direction','ji','weighted', @(i,j) j )
 %
 %% See also
-% EBSD/calcODF grain/mean grain/neighbours 
+% EBSD/calcODF EBSD/hist grain/mean grain/neighbours 
 
 
 phase = get(grains,'phase');
@@ -140,15 +140,5 @@ else % misorientation to neighbour grains
 end
 
 if nargout == 0
-  so3 = get(ebsd,'orientations');
-  if ~isempty(so3)
-    rr = cell(size(get(ebsd,'data')));
-    for k=1:length(so3)
-      rr{k} = hist( rotangle(quaternion(so3(k))) ,0:pi/36:pi);
-    end
-    his = cell2mat(rr(:));
-    bar(0:pi/36:pi,his');
-    axis tight
-    set(gca,'XTick',0:pi/4:pi,'xticklabel', {'0', 'pi/4','pi/2','3pi/4','pi'},'XGrid','on','TickDir','out')
-  end
+  hist(ebsd,varargin{:})
 end

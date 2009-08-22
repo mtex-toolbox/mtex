@@ -28,7 +28,7 @@ if length(S3G(1).SS) == 1
   ind = omega < cos(20*degree);
 
   if ~any(ind),
-    omega = 2*acos(max(1,omega));
+    omega = 2*acos(min(1,omega));
     return;
   end
 
