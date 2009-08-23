@@ -27,8 +27,13 @@ if isa(odf2,'PoleFigure'), e = calcerror(odf2,odf1,varargin{:}); return;end
 
 % check for equal symmetries
 error(nargchk(2, inf, nargin))
-[CS1,SS1] = getSym(odf1); [CS2,SS2] = getSym(odf2);
-assert(CS1 == CS2 && SS1 == SS2,'Input ODFs does not have same symmetry.');
+
+evaluated = ~check_option([{odf2} varargin],'evaluated');
+
+if evaluated
+  [CS1,SS1] = getSym(odf1); [CS2,SS2] = getSym(odf2);
+  assert(CS1 == CS2 && SS1 == SS2,'Input ODFs does not have same symmetry.');
+end
 
 % Fourier based algorithm
 if check_option(varargin,'Fourier') && check_option(varargin,'L2')
@@ -46,7 +51,12 @@ else
   S3G = extract_SO3grid(odf1,varargin{:},'resolution',5*degree);
 
   % eval ODFs
-  d1 = eval(odf2,S3G,varargin{:});
+  if evaluated %second ODF allready evaluated
+    d1 = eval(odf2,S3G,varargin{:});
+  else
+    d1 = get_option([{odf2} varargin],'evaluated',[],'double');
+  end
+  
   if isa(odf2,'double')
     d2 = odf1;
   else

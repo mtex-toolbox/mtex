@@ -97,7 +97,17 @@ else
         pCS = get(grains(rp),'CS');
         pSS = get(grains(rp),'SS');
         S3G{k} = SO3Grid(res,pCS{:},pSS{:});
-      end   
+      end        
+      
+      if find_type(options,'ODF')
+        odf_pos = find(cellfun('isclass',options,'ODF'));
+        assert(numel(odf_pos) == numel(uph), 'if any additional ODF is specified, the number of ODFs must agree with the phases');
+        
+        for k=1:numel(odf_pos)
+          odf_eval{k} = eval(options{odf_pos(k)},S3G{k},varargin{:});
+        end
+        options(odf_pos) = [];
+      end      
     end
   end
   
@@ -105,12 +115,16 @@ else
     if fix(k*nf) ~= fix((k-1)*nf)
        progress(k,nn);
     end
-     
+    
+    options2 = options;
     if exist('S3G','var') && exist('ph','var') % pass a Grid if possible
-      g{k} = feval(FUN,evar{k},options{:},'SO3Grid',S3G{ph(k)});
-    else
-      g{k} = feval(FUN,evar{k},options{:});
+      options2 =  { 'SO3Grid', S3G{ph(k)}, options2{:} };
     end
+    if exist('odf_eval','var') && exist('ph','var')
+      options2 = { 'evaluated',odf_eval{ph(k)},options2{:} };
+    end
+    
+    g{k} = feval(FUN,evar{k},options2{:});
   end
 end
 
