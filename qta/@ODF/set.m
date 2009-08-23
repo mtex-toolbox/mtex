@@ -11,7 +11,9 @@ for i = 1:numel(obj)
   end
   
   obj(i).(vname) = ivalue;
-  if strcmp(vname,'CS'), obj(i).center = set(obj(i).center,'CS',{ivalue});end
-  if strcmp(vname,'SS'), obj(i).center = set(obj(i).center,'SS',{ivalue});end
+  if isa(obj(i).center,'SO3Grid')
+    if strcmp(vname,'CS'), obj(i).center = set(obj(i).center,'CS',{ivalue});end
+    if strcmp(vname,'SS'), obj(i).center = set(obj(i).center,'SS',{ivalue});end
+  end
 end
 
