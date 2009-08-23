@@ -45,17 +45,17 @@ set(gca,'YScale','log')
 
 %% Estimate ODF with different threshold angles
 
-dirichlet = kernel('Dirichlet',16)
+kern = kernel('de la Vallee Poussin','halfwidth',10*degree);
 
 for k=1:numel(angles)  
   grains{k} = mean(grains{k}, ebsd);
   %misorientation to neighbour
   mis2m_ebsd = misorientation(grains{k},ebsd);
-  mis2m_odf{k}  = calcODF(mis2m_ebsd(1),'kernel',dirichlet,'resolution',1*degree,'silent');
+  mis2m_odf{k}  = calcODF(mis2m_ebsd(1),'kernel',kern,'resolution',2.5*degree,'silent');
    
   %misorientation to mean
   mis2n_ebsd = misorientation(grains{k});
-  mis2n_odf{k}  = calcODF(mis2n_ebsd(1),'kernel',dirichlet,'resolution',1*degree,'silent');
+  mis2n_odf{k}  = calcODF(mis2n_ebsd(1),'kernel',kern,'resolution',2.5*degree,'silent');
 end
 
 
@@ -88,8 +88,7 @@ semilogy(angles, [tindex_n;tindex_m ],'.-')
 grid on, ylabel('textureindex'),xlabel('threshold angle in°')
 
 subplot('position',[0.45 0.15 0.25 0.8])
-  % somehow tentropy_m gets positiv values, so we shift it for logarithmic plot
-semilogy(angles,[tentropy_n-max(tentropy_n)-0.03;tentropy_m ],'.-')
+semilogy(angles,[tentropy_n;tentropy_m ],'.-')
 grid on ,ylabel('entropy'),xlabel('threshold angle in°')
 
 legend('misorientation to neighbour','misorientation to mean','Location','BestOutside')
