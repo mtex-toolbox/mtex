@@ -251,6 +251,11 @@ xlabel('texture index')
 ylabel('area')
  axis tight
  grid on
+ 
+%%
+%
+
+close all
 
 %% Calculate ODFs
 % if our grain-data has an orientation, of course we can model an odf
@@ -267,14 +272,16 @@ odf_ebsd1 = calcODF(ebsd(1),'kernel',kern,'resolution',1*degree)
 %%
 % let us compare those two, original ebsd with the odf of grains
 
-figure, plotpdf(odf_ebsd1,[Miller(1,1,0) Miller(1,1,1)])
-figure, plotpdf(odf_grains1,[Miller(1,1,0) Miller(1,1,1)])
+figure, plotpdf(odf_ebsd1,[Miller(1,1,0) Miller(1,1,1)],'antipodal')
+figure, plotpdf(odf_grains1,[Miller(1,1,0) Miller(1,1,1)],'antipodal')
+
+calcerror(odf_ebsd1,odf_grains1)
 
 %% Misorientation to Neighbours
 
 ebsd_nmis = misorientation(grains,'weighted');
 odf_nmis1 = calcODF(ebsd_nmis(1),'kernel',kern,'resolution',1*degree);
 
-figure, plotpdf(odf_nmis1,[Miller(1,1,0) Miller(1,1,1)])
+figure, plotpdf(odf_nmis1,[Miller(1,1,0) Miller(1,1,1)],'antipodal')
 
 %%
