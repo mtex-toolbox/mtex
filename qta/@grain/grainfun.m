@@ -85,7 +85,7 @@ else
     foo = FUN;
     if isa(foo,'function_handle'), foo = func2str(foo);  end
     
-    if any(strcmpi(foo , methods(ODF))) && nargin(['@ODF\' foo]) < 0
+    if any(strcmpi(foo , methods(ODF))) && nargin(['@ODF' filesep foo]) < 0
       options{end+1} = 'silent';
       res = get_option(varargin,'RESOLUTION',2.5*degree);
 
