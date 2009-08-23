@@ -59,18 +59,16 @@ vdisp([' used kernel: ' char(k)],varargin{:});
 
 if (gridlen*length(ebsd(1).CS) > 200 && bandwidth(k) < 32) ...
     || check_option(varargin,'Fourier')
-  disp(' construct Fourier odf');
+  vdisp(' construct Fourier odf',varargin{:});
   odf = ODF(g,weight,k,...
     ebsd(1).CS,ebsd(1).SS,'comment',['ODF estimated from ',getcomment(ebsd(1))]);
   odf = calcFourier(odf,max(10,bandwidth(k)));
   odf = FourierODF(odf);
   return
-end
-
-
+  
 %% exact calculation
-if check_option(varargin,'exact') || gridlen*length(ebsd(1).CS) < 2000
-  disp(' construct exact odf');
+elseif check_option(varargin,'exact') || gridlen*length(ebsd(1).CS) < 2000
+  vdisp(' construct exact odf',varargin{:});
   odf = ODF(g,weight,k,...
     ebsd(1).CS,ebsd(1).SS,'comment',['ODF estimated from ',getcomment(ebsd(1))]);  
   return
