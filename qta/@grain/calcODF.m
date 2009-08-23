@@ -12,7 +12,7 @@ function grains = calcODF(grains,ebsd,varargin)
 %% See also
 % ebsd/calcODF
 
-if nargin>1 && isa(ebsd,'ebsd')
+if nargin>1 && isa(ebsd,'EBSD')
   for l=1:numel(ebsd)
     ebsd_cur = ebsd(l); 
     ind = get(grains,'phase') == get(ebsd_cur,'phase');

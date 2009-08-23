@@ -34,7 +34,7 @@ phase = get(grains,'phase');
 phu = unique(phase);
 
 
-if nargin > 1 && isa(varargin{1},'ebsd') % misorientation to ebsd data
+if nargin > 1 && isa(varargin{1},'EBSD') % misorientation to ebsd data
   
   ebsd = varargin{1};
   
