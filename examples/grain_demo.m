@@ -206,8 +206,8 @@ hold on, plot(pgrains)
 %%
 % and now the ODF with respect to its origial ebsd-data
 
-dirichlet = kernel('dirichlet',16);
-pgrains = calcODF(pgrains,ebsd,'kernel',dirichlet)
+kern = kernel('de la Vallee Poussin','halfwidth',10*degree);
+pgrains = calcODF(pgrains,ebsd,'kernel',kern,'exact')
 
 %%
 % the ODF of individual grains are stored as a property, alternativ we can
@@ -217,7 +217,7 @@ pgrains = calcODF(pgrains,ebsd,'kernel',dirichlet)
 % let us calculate the misorentation to mean followed by an ODF estimation
 
 ebsd_mis = misorientation(grains,ebsd);
-pgrains = calcODF(pgrains,ebsd_mis,'kernel',dirichlet,'property','ODF_mis')
+pgrains = calcODF(pgrains,ebsd_mis,'kernel',kern,'property','ODF_mis','exact')
 
 %%
 % now we can work with grainfun by specifiying the property-field 'ODF' and
@@ -257,12 +257,12 @@ ylabel('area')
 
 ph = get(grains,'phase');
 
-odf_grains1 = calcODF(grains( ph==1 ),'kernel',dirichlet,'resolution',1*degree)
+odf_grains1 = calcODF(grains( ph==1 ),'kernel',kern,'resolution',1*degree)
 
 %%
 % and the odf of the corresponding ebsd data
 
-odf_ebsd1 = calcODF(ebsd(1),'kernel',dirichlet,'resolution',1*degree)
+odf_ebsd1 = calcODF(ebsd(1),'kernel',kern,'resolution',1*degree)
 
 %%
 % let us compare those two, original ebsd with the odf of grains
@@ -273,7 +273,7 @@ figure, plotpdf(odf_grains1,[Miller(1,1,0) Miller(1,1,1)])
 %% Misorientation to Neighbours
 
 ebsd_nmis = misorientation(grains,'weighted');
-odf_nmis1 = calcODF(ebsd_nmis(1),'kernel',dirichlet,'resolution',1*degree);
+odf_nmis1 = calcODF(ebsd_nmis(1),'kernel',kern,'resolution',1*degree);
 
 figure, plotpdf(odf_nmis1,[Miller(1,1,0) Miller(1,1,1)])
 
