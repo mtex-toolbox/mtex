@@ -1,4 +1,4 @@
-function ebsd = rotate(ebsd,q,flag)
+function ebsd = rotate(ebsd,q,varargin)
 % rotate EBSD orientations or spatial data around point of origin
 %
 %% Input
@@ -6,23 +6,24 @@ function ebsd = rotate(ebsd,q,flag)
 %  q    - @quaternion
 %
 %% Option
-%  xy/spatial - rotate spatial data
+%  keepXY - do not rotate xy coordinates
 %
 %% Output
 %  rotated ebsd - @EBSD
 
-if nargin > 2 && any(strcmpi(flag,{'xy','spatial'})) && isa(q,'double')
-  A = [cos(q) -sin(q);sin(q) cos(q)];  
-  ebsd = affinetrans(ebsd,A);
-  return
-end
-
-if isa(q,'double')
-  q = axis2quat(zvector,q);
-end
+if isa(q,'double'), q = axis2quat(zvector,q); end
 
 for i = 1:length(ebsd)  
   ebsd(i).orientations = q * ebsd(i).orientations;
 end
 
-
+if ~check_option(varargin,'keepXY')
+  if abs(dot(rotaxis(q),zvector)) > 1-1e-10
+    omega = dot(rotaxis(q),zvector) * rotangle(q);
+    A = [cos(omega) -sin(omega);sin(omega) cos(omega)];
+    ebsd = affinetrans(ebsd,A);
+  else
+    warning('MTEX:rotate',...
+      'Spatial rotation of EBSD data is only supported for rotations about the z-axis. I''m going to rotate only the orientation data!');
+  end
+end
