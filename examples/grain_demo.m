@@ -38,7 +38,7 @@ plot(ebsd,'phase',1,'colorcoding','ihs')
 
 [grains5 ebsd] = segment2d(ebsd,'angle',5*degree,'augmentation','cube')
 
-%% Plot high/low-angle Grainboundary
+%% Plot grain-boundaries
 
 plot(grains,'color',[0.25 0.1 0.5])
 hold on, plotsubfractions(grains,'color','red','linewidth',2)
@@ -117,7 +117,7 @@ axis tight
 % phase 1 blue, phase 2 green
 
 %% Select Grains and its EBSD data by other properties
-% select grains with low-angle boundaries
+% select grains with boundaries within itself
 
 grains_fractions = grains( hassubfraction(grains) )
 
@@ -134,7 +134,7 @@ plot(ebsd_fractions,'colorcoding','ihs')
 plot(grains_fractions,'color','black','linewidth',1)
   % however the holes of a grain are plotted by default in an other color
 plot(grains_fractions,'b','noholes','linewidth',1.5)
-  % and now the low-angle-boundary 
+  % and now the boundary within
 plotsubfractions(grains_fractions,'r','linewidth',2)
   % and its convex hull
 plot(grains_fractions,'hull','b','linewidth',1.5)

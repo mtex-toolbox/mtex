@@ -38,12 +38,12 @@ plotx2east
 [grains ebsd] = segment2d(ebsd,'angle',12.5*degree)
 
 %%
-% Let us visualize the high-angle grain boundaries
+% Let us visualize the grain boundaries
 
 plot(grains)
 
 %%
-% and we can also plot low-angle boundaries
+% and we can also plot boundaries within a grain
 
 hold on, plotsubfractions(grains,'color','r')
 
