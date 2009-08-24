@@ -106,20 +106,21 @@ else
   %% extrapolate dummy coordinates %dirty
   switch lower(augmentation)
     case 'cube'
-      k = convhulln(xy);
-      k = [k(:,1); k(1,1)];    
+      x = xy(:,1);
+      y = xy(:,2);
+      k = convhull(x,y);
+      rndsmp = [ (1:sum(1:length(x)<=100))'; unique(fix(1+rand(200,1)*(length(x)-1)))];
 
-      x = xy(1:200<end,1);
-      y = xy(1:200<end,2);
-      xx = repmat(x,1,length(x));
-      yy = repmat(y,1,length(y));
-      dist = abs(sqrt((xx-xx').^2 + (yy-yy').^2));
-      dxy = min(dist(triu(true(size(dist)),1)));
+      xx = repmat(x(rndsmp),1,length(rndsmp));
+      yy = repmat(y(rndsmp),1,length(rndsmp));
+      dxy = abs(sqrt((xx-xx').^2 + (yy-yy').^2));
+
+      dxy = min(dxy(dxy>eps));
 
       dummy = [];
       for ll = 1:length(k)-1
-        xx = xy([k(ll) k(ll+1)],1);
-        yy = xy([k(ll) k(ll+1)],2);
+        xx = x([k(ll) k(ll+1)]);
+        yy = y([k(ll) k(ll+1)]);
 
         dx = diff(xx);  dy = diff(yy);
 
@@ -167,7 +168,7 @@ else
 
         dummy = [dummy ;co];
       end
-
+      dummy = unique(dummy,'first','rows');
     case {'cubi','cubei'} %grid reconstruction, TODO
       hx = unique(xy(:,1));
       hy = unique(xy(:,2));    
