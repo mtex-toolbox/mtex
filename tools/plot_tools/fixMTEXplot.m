@@ -44,9 +44,12 @@ set(ax,'units','normalized');
 
 setappdata(gcf,'extend',[xlim ylim])
 % try to extend zoom to hole figure % axis fill
-h = zoom;
-set(h,'ActionPreCallback',{@(e,v) setappdata(gcf,'previousZoom',[xlim ylim])});
-set(h,'ActionPostCallback',@resizeCanvas);
+try
+  h = zoom;
+  set(h,'ActionPreCallback',{@(e,v) setappdata(gcf,'previousZoom',[xlim ylim])});
+  set(h,'ActionPostCallback',@resizeCanvas);
+catch
+end
 
 
 function resizeCanvas(obj,eventdata)
