@@ -32,7 +32,7 @@ elseif nargin == 1
 		
 elseif nargin > 2
 
-	G.points = points;
+	G.points = reshape(points,1,[]);
 	G.min = min(1);
 	G.max = max(1);
   G.periodic = check_option(varargin,'PERIODIC');
@@ -45,7 +45,7 @@ elseif nargin > 2
     for i = 1:size(points,2)
       G(i).min = min(i);
       G(i).max = max(i);
-      G(i).points = points(:,i);
+      G(i).points = points(:,i)';
     end
   else
     
