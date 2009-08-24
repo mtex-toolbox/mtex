@@ -11,7 +11,10 @@ for i = 1:numel(obj)
   end
   
   obj(i).(vname) = ivalue;
-  if isa(obj(i).center,'SO3Grid')
+  if check_option(odf,'fibre')
+    if strcmp(vname,'CS'), obj(i).center{1} = set(obj(i).center{1},'CS',{ivalue});end
+    if strcmp(vname,'SS'), obj(i).center{1} = set(obj(i).center{1},'SS',{ivalue});end  
+  elseif isa(obj(i).center,'SO3Grid')
     if strcmp(vname,'CS'), obj(i).center = set(obj(i).center,'CS',{ivalue});end
     if strcmp(vname,'SS'), obj(i).center = set(obj(i).center,'SS',{ivalue});end
   end

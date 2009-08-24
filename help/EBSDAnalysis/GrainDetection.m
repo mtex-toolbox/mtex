@@ -30,6 +30,18 @@ ebsd = loadEBSD(fname,CS,SS,'interface','generic',...
 
 plotx2east
 
+%% Plot Boundaries
+% Let us first plot all misorientations between EBSD Measurement-sites that
+% have an angle higher than 2 degree in red, one might say to this low-angle
+% boundary, besides this high-angle boundaries above 10 degree in black,
+% and at last all phase boundaries green.
+
+figure('position',[50 50 800 400]),hold all
+plotboundaries(ebsd,'angle',2*degree,'color','r')
+plotboundaries(ebsd,'angle',10*degree,'color','k')
+plotboundaries(ebsd,'angle',pi,'color','g','linewidth',2)
+
+
 %% Detect Grains
 % The EBSD Data is [[EBSD_segment2d.html, regionalized]] according its
 % connected phases and an given threshold-angle, where neighboured
@@ -40,7 +52,7 @@ plotx2east
 %%
 % Let us visualize the grain boundaries
 
-plot(grains)
+figure, plot(grains)
 
 %%
 % and we can also plot boundaries within a grain

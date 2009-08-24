@@ -12,9 +12,12 @@ function [grains ebsd] = segment2d(ebsd,varargin)
 %  angle         - threshold angle of mis/disorientation in radians
 %  augmentation  - 'cube'/ 'cubeI' / 'sphere'
 %  angletype     - misorientation (default) / disorientation 
+%  distance      - maximum distance allowed between neighboured measurments
 %
 %% Flags
-%  unitcell - omit voronoi decomposition and treat a unitcell lattice
+%  unitcell     - omit voronoi decomposition and treat a unitcell lattice
+%  plot         - plot grain-boundies instead of generating grains
+%  graph/former - plot the neighbourhood graph, or the former neighbourhood graph
 %
 %% Example
 %  [grains ebsd] = segment2d(ebsd,'angle',15*degree,'augmentation','cube')
@@ -58,16 +61,27 @@ phase = phase(m);
 
 %% grid neighbours
 
-%%
 [neighbours vert cells] = neighbour(xy, varargin{:});
   [sm sn] = size(neighbours); %preserve size of sparse matrices
 [ix iy]= find(neighbours);
+
+%% maximum distance between neighbours
+
+if check_option(varargin,'distance')
+  distance = sqrt(sum((xy(ix,:)-xy(iy,:)).^2,2));
+  distance = distance > get_option(varargin,'distance',max(distance),'double');
+  distance = sparse(ix,iy,distance,sm,sn);
+  distance = xor(distance,neighbours);
+  [ix iy]= find(distance);
+else
+  distance = neighbours;
+end
 
 
 %% disconnect phases
 
 phases = sparse(ix,iy,phase(ix) ~= phase(iy),sm,sn);
-phases = xor(phases,neighbours);
+phases = xor(phases,distance);
 [ix iy]= find(phases);
 
 %% angel to neighbours
@@ -78,6 +92,49 @@ angels = sparse(ix,iy, nangle(z(ix),z(iy),phase(ix), phaseCS, phaseSS, varargin{
 
 angels = angels > get_option(varargin,'angle',15*degree); %map of disconnected neighbours.
 regions = xor(angels,phases); 
+
+%% plotting
+
+if check_option(varargin,{'plot', 'graph','former'})
+  if check_option(varargin,'former'),
+    regions = xor(regions,neighbours); end  
+  if check_option(varargin,'graph') || check_option(varargin,'former')    
+    [X Y] = gplot(regions,xy);
+  else  
+    [ix iy] = find(xor(neighbours,regions));
+
+    if isempty(iy), disp('nothing to plot'), return; end
+
+    c1 = cells(ix); c2 = cells(iy);
+
+    % c1 = cellfun(@(x,y) [x(ismember(x,y)) 1] ,c1,c2,'UniformOutput',false);
+    nv = cellfun('prodofsize',c1);
+    pf = false(1, max(nv));
+    for k=1:length(c1)
+      f = c1{k}; s = c2{k}; tf = pf;
+      for i=1:nv(k)
+        tf(i) = any( f(i) == s );
+      end    
+      c1{k} = [f(tf) 1];
+    end
+    
+    vert(1,:) = NaN;
+    cc = [c1{:}];  
+    X = vert(cc,1);
+    Y = vert(cc,2);
+  end
+  
+  [X,Y, lx, ly] = fixMTEXscreencoordinates(X,Y,varargin{:});
+  h = plot(X,Y);
+  
+  xlabel(lx); ylabel(ly);
+  fixMTEXplot;
+  
+  set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
+  
+  optiondraw(h,varargin{:});
+  return
+end
 
 %% convert to tree graph
 
@@ -100,39 +157,44 @@ inner = T1 & T3 ;
 cfr = unique(ix);
 cfr = sparse(1,cfr,1:length(cfr),1,length(nn));
 iy = iy(ndx);
-innerc = mat2cell(iy,histc(ix,unique(ix)),1);
 
-%partners
-[lx ly] = find(T2(iy,iy));
-nx = [iy(lx) iy(ly)];
-ll = sortrows(sort(nx,2));
-ll = ll(1:2:end,:); % subractions
+if ~isempty(iy)
+  innerc = mat2cell(iy,histc(ix,unique(ix)),1);
 
- 
-nl = size(ll,1);
-lines = zeros(nl,2);
+  %partners
+  [lx ly] = find(T2(iy,iy));
+  nx = [iy(lx) iy(ly)];
+  ll = sortrows(sort(nx,2));
+  ll = ll(1:2:end,:); % subractions
 
-for k=1:nl
-  left = cells{ll(k,1)};
-  right = cells{ll(k,2)};
-  mm = ismember(left, right);
-  lines(k,:) = left(mm);  
-end
 
-xx = [vert(lines(:,1),1) vert(lines(:,2),1)];
-yy = [vert(lines(:,1),2) vert(lines(:,2),2)];
+  nl = size(ll,1);
+  lines = zeros(nl,2);
 
-nic = length(innerc);
-fractions = cell(size(nic));
+  for k=1:nl
+    left = cells{ll(k,1)};
+    right = cells{ll(k,2)};
+    mm = ismember(left, right);
+    lines(k,:) = left(mm);  
+  end
 
-for k=1:nic
-  mm = ismember(ll,innerc{k});
-  mm = mm(:,1);
-  fr.xx = xx(mm,:)';
-  fr.yy = yy(mm,:)'; 
-  fr.pairs = m(ll(mm,:));
-    if numel(fr.pairs) <= 2, fr.pairs = fr.pairs'; end
-  fractions{k} = fr;
+  xx = [vert(lines(:,1),1) vert(lines(:,2),1)];
+  yy = [vert(lines(:,1),2) vert(lines(:,2),2)];
+
+  nic = length(innerc);
+  fractions = cell(size(nic));
+
+  for k=1:nic
+    mm = ismember(ll,innerc{k});
+    mm = mm(:,1);
+    fr.xx = xx(mm,:)';
+    fr.yy = yy(mm,:)'; 
+    fr.pairs = m(ll(mm,:));
+      if numel(fr.pairs) <= 2, fr.pairs = fr.pairs'; end
+    fractions{k} = fr;
+  end
+else
+  fractions = cell(0);
 end
                 
   %clean up
@@ -164,7 +226,7 @@ else
   nn = cell(1);
 end
 
-disp(['  ebsd segmentation: '  num2str(toc(s)) ' sec']);
+vdisp(['  ebsd segmentation: '  num2str(toc(s)) ' sec'],varargin{:});
 
 
 %% retrieve polygons
@@ -202,8 +264,8 @@ end
 
 grains = grain('direct',gr);
 
-disp(['  grain generation:  '  num2str(toc(s)) ' sec' ]);
-disp(' ')
+vdisp(['  grain generation:  '  num2str(toc(s)) ' sec' ],varargin{:});
+vdisp(' ',varargin{:})
 
 
 

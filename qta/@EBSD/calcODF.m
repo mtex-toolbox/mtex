@@ -149,9 +149,4 @@ if check_option(varargin,'small_kernel') && hw > 2*getResolution(S3G)
   odf = ODF(S3G,d./sum(d),k,ebsd(1).CS,ebsd(1).SS,...
     'comment',['ODF estimated from ',getcomment(ebsd(1))]);
 end
-end
-%%
 
-function vdisp(s,varargin)
-if ~check_option(varargin,'silent'), disp(s);end
-end
