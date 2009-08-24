@@ -4,10 +4,6 @@ function plotboundaries(ebsd,varargin)
 %% Input
 %  ebsd   - @EBSD
 %
-%% Output
-%  grains  - @grain
-%  ebsd    - connected @EBSD data
-%
 %% See also
 % EBSD/semgment2d grain/grain
 
