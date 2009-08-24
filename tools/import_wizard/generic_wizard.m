@@ -173,12 +173,12 @@ if ishandle(htp)
 
   % get column association
   if verLessThan('matlab','7.4')
-    data = get(mtable,'data');
+    data = cellstr(char(get(mtable,'data')));
   else
-    data = cell(mtable.getData);
+    data = cellstr(char(mtable.getData));
   end
 
-  ind = find(~strcmpi(data(:)','Ignore'));
+  ind = find(~strcmpi(data,'Ignore'));
   options = {'ColumnNames',data(ind)};
   if length(ind) < length(data)
     options = [options{:},{'Columns',ind}];
