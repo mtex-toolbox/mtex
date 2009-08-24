@@ -21,8 +21,7 @@ for k=1:nc
   
   sel = ':';
   if check_option(varargin,'hull')
-     K = convhulln(xy);
-     sel = [K(:,1); K(1,1)];
+     sel = convhull(xy(:,1),xy(:,2));
   end  
   x = xy(sel,1);
   y = xy(sel,2);

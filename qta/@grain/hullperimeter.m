@@ -20,7 +20,6 @@ peri = zeros(size(grains));
 p = polygon(grains);
 for k=1:nc
   xy = p(k).xy;
-  K = convhulln(xy);
-  xy = xy([K(:,1); K(1,1)],:);
-  peri(k) = lengths(xy); 
+  K = convhull(xy(:,1),xy(:,2));
+  peri(k) = lengths(xy(K,:)); 
 end
