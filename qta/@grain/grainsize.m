@@ -17,10 +17,8 @@ function s = grainsize(grains,varargin)
 nc = length(grains);
 s = zeros(size(grains));
 
-area = @(x,y) abs(0.5.*sum(x(1:end-1).*y(2:end)-x(2:end).*y(1:end-1)));
-
 if check_option(varargin,'area')
-%   p =  polygon(grains);
+  area = @(x,y) abs(0.5.*sum(x(1:end-1).*y(2:end)-x(2:end).*y(1:end-1)));
   for k=1:nc     
     p = grains(k).polygon;
     xy = p.xy;
@@ -35,9 +33,7 @@ if check_option(varargin,'area')
 elseif check_option(varargin,'hull')
   for k=1:nc
     xy = grains(k).polygon.xy;
-    K = convhulln(xy);
-    xy = xy([K(:,1); K(1,1)],:);
-    s(k) = area(xy(:,1),xy(:,2));
+    [ignore s(k)]= convhull(xy(:,1),xy(:,2));
   end  
 else
   s = cellfun('prodofsize',{grains.cells});

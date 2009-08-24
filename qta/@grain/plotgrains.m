@@ -28,7 +28,7 @@ elseif nargin>1 && isa(grains,'EBSD') && isa(varargin{1},'grain')
   varargin = varargin(2:end);
 end
 
-convhull = check_option(varargin,{'hull','convhull'});
+ishull = check_option(varargin,{'hull','convhull'});
 property = get_option(varargin,'property',[]);
   %treat varargin
 
@@ -38,11 +38,10 @@ p = polygon(grains)';
 
 %% data preperation
 
-if convhull
+if ishull
   for k=1:length(p)
-    xy = p(k).xy;
-    K = convhulln(p(k).xy);
-    p(k).xy = xy([K(:,1); K(1,1)],:);
+	xy = p(k).xy;    
+    p(k).xy = xy(convhull(xy(:,1),xy(:,2)),:);
   end 
 end
 
@@ -113,7 +112,7 @@ if ~isempty(property)
     end    
     
     if ~isempty(fac)      
-      if convhull
+      if ishull
         h(end+1) = patch('Vertices',[X Y],'Faces',fac,'FaceVertexCData',d(pind,:));
       else
         hashols = hasholes(grains(pind));          
@@ -157,7 +156,7 @@ else
   h(1) = plot(X(:),Y(:));
 
   %holes
-  if ~check_option(varargin,'noholes') && ~convhull
+  if ~check_option(varargin,'noholes') && ~ishull
     bholes = hasholes(grains);
     
     if any(bholes)

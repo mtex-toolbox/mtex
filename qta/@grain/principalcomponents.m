@@ -32,8 +32,7 @@ for k=1:nc
  xy = grains(k).polygon.xy;
  
  if hull
-   K = convhulln(xy);
-   xy = xy(K(:,1),:);
+   xy = xy(convhull(xy(:,1),xy(:,2)),:);
  else
    xy(end,:) = [];
  end
