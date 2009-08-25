@@ -48,8 +48,8 @@ if check_option(varargin,'unitcell') || ~check_option(varargin,'voronoi')
           [v c] = spatialdecomposition(xy,'GridType','tetragonal',varargin{:});
           return
         end
-
-        [v c] = voronoin(xy_s);
+        
+        [v c] = voronoin(xy_s,{'Qz'});
 
         area = @(x,y) abs(0.5.*sum(x(1:end-1).*y(2:end)-x(2:end).*y(1:end-1)));
         area = cellfun(@(c1) area(v([c1 c1(1)],1),v([c1 c1(1)],2)),c);
@@ -209,7 +209,7 @@ else
   end
   xy = [xy; dummy];
 %%  voronoi decomposition
-  [v c] = voronoin(xy,{'Q7','Q8','Q5','Q3'});   %Qf {'Qf'} ,{'Q7'}
+  [v c] = voronoin(xy,{'Q7','Q8','Q5','Q3','Qz'});   %Qf {'Qf'} ,{'Q7'}
   
   c(end-length(dummy)+1:end) = [];
     
