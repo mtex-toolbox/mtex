@@ -9,10 +9,18 @@ function grains = calcODF(grains,ebsd,varargin)
 %  grains  - @grain with odf as property
 %  or odf  - @ODF if based on orientation of grains
 %
+%% Options
+%  phase   - specifies the phase to calculate the odf for
+%
 %% See also
 % ebsd/calcODF
 
 if nargin>1 && isa(ebsd,'EBSD')
+  
+  ph = get(ebsd,'phase'); 
+  ph = ismember(ph,get_option(varargin,'phase',ph));
+  ebsd = ebsd(ph);
+  
   for l=1:numel(ebsd)
     ebsd_cur = ebsd(l); 
     ind = get(grains,'phase') == get(ebsd_cur,'phase');
@@ -30,6 +38,9 @@ if nargin>1 && isa(ebsd,'EBSD')
   end
 else
   if nargin>1, varargin = [{ebsd} varargin]; end
-  grains = calcODF(toebsd(grains),varargin{:});
+  ebsd = toebsd(grains);
+  ph = get(ebsd,'phase'); 
+  ph = ismember(ph,get_option(varargin,'phase',ph));
+  grains = calcODF(ebsd( ph ),varargin{:});
 end
 
