@@ -48,7 +48,7 @@ if check_option(varargin,'unitcell') || ~check_option(varargin,'voronoi')
           [v c] = spatialdecomposition(xy,'GridType','tetragonal',varargin{:});
           return
         end
-        
+        xy_s = unique(xy_s,'first','rows');
         [v c] = voronoin(xy_s,{'Qz'});
 
         area = @(x,y) abs(0.5.*sum(x(1:end-1).*y(2:end)-x(2:end).*y(1:end-1)));
@@ -59,8 +59,7 @@ if check_option(varargin,'unitcell') || ~check_option(varargin,'voronoi')
         cx = v(c{ci},1) - xy_s(ci,1);
         cy = v(c{ci},2) - xy_s(ci,2);
         
-
-        if mod(length(cx),2) && all(diff(diff(cx).^2 + diff(cy).^2) < 10^-5)
+        if mod(length(cx),2) || ~all(diff(diff(cx).^2 + diff(cy).^2) < dxy*10^-2)
           warning('MTEX:plotspatial:UnitCell',['The automatic generation of a unit cell may have failed! \n',...
                                                'Please specify more parameters!']);
           [v c] = spatialdecomposition(xy,'GridType','tetragonal',varargin{:});    
