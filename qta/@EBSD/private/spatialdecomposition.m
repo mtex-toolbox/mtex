@@ -1,4 +1,4 @@
-function [v c] = spatialdecomposition(xy,varargin)
+function [v c rind] = spatialdecomposition(xy,varargin)
 
 if check_option(varargin,'unitcell') || ~check_option(varargin,'voronoi')
   
@@ -98,6 +98,8 @@ if check_option(varargin,'unitcell') || ~check_option(varargin,'voronoi')
       ct{k} = c(k,:);
     end 
     c = ct;
+  else
+    rind = [];
   end
 else
   augmentation = get_option(varargin,'augmentation','cube');
@@ -211,14 +213,27 @@ else
   [v c] = voronoin(xy,{'Q7','Q8','Q5','Q3','Qz'});   %Qf {'Qf'} ,{'Q7'}
   
   c(end-length(dummy)+1:end) = [];
-    
+  
   if check_option(varargin,'faces')
-    cl = cellfun('length',c);
-    faces = NaN(length(c),max(cl));
-    for k = 1:length(c)
-      faces(k,1:cl(k)) =c{k};
-    end;
-    c = faces;
+    cl = cellfun('prodofsize',c);
+    [cl ndx] = sort(cl,'descend');
+    c = c(ndx);
+    idf = 1:numel(c);
+    idf = idf(ndx);    
+    
+    ind = splitdata(cl,3);
+    fc = cell(size(ind));
+    rind = cell(size(ind));
+    for k=1:numel(ind)
+      tind = ind{k};
+      tfaces = NaN(length(tind),max(cl(tind)));
+      for l = 1:length(tind)
+        tfaces(l,1:cl(tind(l))) = c{tind(l)};
+      end
+      fc{k} = tfaces;
+      rind{k} = idf(tind);
+    end   
+    c = fc;
   end
 end
 

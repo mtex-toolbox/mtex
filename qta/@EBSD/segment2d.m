@@ -124,8 +124,9 @@ if check_option(varargin,{'plot', 'graph','former'})
     Y = vert(cc,2);
   end
   
+  newMTEXplot;
   [X,Y, lx, ly] = fixMTEXscreencoordinates(X,Y,varargin{:});
-  h = plot(X,Y);
+  h = line(X,Y);
   
   xlabel(lx); ylabel(ly);
   fixMTEXplot;
