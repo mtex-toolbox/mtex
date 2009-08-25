@@ -39,7 +39,7 @@ if length(S3G(1).SS) == 1
   omegaSym = dot_outer(q_ref .* qSym,q);
   
   % find fundamental region
-  [omega,idy] = max(omegaSym);
+  [omega,idy] = max(omegaSym,[],1);
   
   % project to fundamental region
   qSym = reshape(inverse(qSym),1,[]);
