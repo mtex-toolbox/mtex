@@ -135,7 +135,7 @@ end
 function str = replaceToken(str,token,repstr)
 
 if ~iscell(repstr) || length(repstr) <= 1
-  str = regexprep(str,token,repstr);
+  str = regexprep(str,token,regexptranslate('escape', repstr));
 else
   pos = strfind(str,token);
   line = find(~cellfun('isempty',pos),1);

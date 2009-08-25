@@ -45,5 +45,11 @@ segAngle = 10*degree;
 
 [grains ebsd] = segment2d(ebsd,'angle',segAngle);
 
+%% Orientation of Grains
+
+grains = mean(grains,ebsd);
+
+plot(grains,'property','orientation')
+
 
 
