@@ -100,7 +100,7 @@ if ~isempty(property)
   
   h = [];
   %split data
-  ind = splitdata(pl);
+  ind = splitdata(pl,3);
  
   for k=1:length(ind)
     pind = ind{k}; 
@@ -194,40 +194,6 @@ for k = 1:length(cxy)
   faces(k,1:cl(k)) = (crl(k)+1):crl(k+1);
 end
 
-
-function ind = splitdata(pl)
-
-% make n - partitions
-n = 1:3;
-n = sum(2.^n)+1;
-
-pk{1} = pl;
-ind{1} = 1:length(pl);
-ps{1} = 0;
-for k=1:n %pseudo recursion
-  [pk{end+1} pk{end+2} ind{end+1} ind{end+2} ps{end+1} ps{end+2}] = split(pk{k},ps{k});
-end
-ind = ind(end-n:end);
-
-
-function [s1 s2 ind1 ind2 low up] = split(s,ps)
-
-m = mean(s);
-ind1 = s >  m;
-ind2 = s <= m;
-s1 = s( ind1 );
-s2 = s( ind2 );
-
-ind1 = find(ind1)+ps;
-ind2 = find(ind2)+ps;
-
-if ~isempty(ind1)
-  low = ind1(1)-1;
-  up = ind1(end);
-else
-  low = ps;
-  up = ps;
-end
 
 
 
