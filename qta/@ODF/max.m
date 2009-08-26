@@ -56,7 +56,7 @@ ids = false(1,nn);
 cx = [0 ; find(diff(iy))];
 
 num = get_option(varargin,'num',1);
-if nargin > 1, isa(varargin{1},'double')
+if nargin > 1 && isa(varargin{1},'double')
   num = varargin{1};
 end
 
