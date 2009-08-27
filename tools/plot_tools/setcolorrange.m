@@ -11,11 +11,12 @@ function setcolorrange(varargin)
 %  figurelist - list of figure where the plots should be scaled  
 %
 %% Options
-%  equal - scale plots to the same range
-%  tight - scale plots individually
-%  all   - scale all plots
-%  current - scale only plots in the current figure
-%  figure  - scale only plots in figurelist
+%  equal       - scale plots to the same range
+%  tight       - scale plots individually
+%  all         - scale all plots
+%  current     - scale only plots in the current figure
+%  figure      - scale only plots in figurelist
+%  ZERO2WHITE  - color zero values white
 %
 %% See also
 % multiplot S2Grid/plot
@@ -56,19 +57,34 @@ elseif length(varargin)>=1 && isa(varargin{1},'double') &&...
   if strcmp(get(ax,'zscale'),'log'), p = log10(p);end
   
   
-else  
+elseif check_option(varargin,'zero2white')
+  
+  for i = 1:length(ax)
+    c = caxis(ax(i));
+    caxis(ax(i),[0 c(2)]);
+  end
+    
+else
   
   error('First argument must either be the color range or the flag ''equal''');  
   
 end
 
-% find all axes including hidden
-ax = findall(fig,'type','axes','tag','S2Grid');
-for i = 1:length(ax),	caxis(ax(i),p);end
+if exist('p','var')
+  % find all axes including hidden
+  ax = findall(fig,'type','axes','tag','S2Grid');
+  for i = 1:length(ax),	caxis(ax(i),p);end
 
-ax = getappdata(gcf,'colorbaraxis');
-if strcmp(get(ax,'zscale'),'log')
-  caxis(ax,10.^p);
-else
-  caxis(ax,p);
+  ax = getappdata(gcf,'colorbaraxis');
+  if strcmp(get(ax,'zscale'),'log')
+    caxis(ax,10.^p);
+  else
+    caxis(ax,p);
+  end
+end
+
+if check_option(varargin,'zero2white')
+  map = colormap;
+  map(1,:) = [1,1,1];
+  colormap(map);
 end
