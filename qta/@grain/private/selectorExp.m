@@ -214,9 +214,9 @@ function list = functionlist
 s = what('grain');
 list = regexprep(s.m, '\.m', '');
 
-ignoreFunctions = {'centroid','display','eq','get','grain','grainfun',...
+ignoreFunctions = {'centroid','display','eq','get','grain','grainfun','calcODF','copyproperty','misorientation',...
   'hullcentroid','hullprincipalcomponents','joincount','polygon','set','mean',...
-  'principalcomponents','plot','plotellipse','plotgrains','plotsubfractions'};
+  'principalcomponents','plot','plotellipse','plotgrains','plotsubfractions','toebsd','variogram'};
 
 list = list( ~cellfun(@(x) any(strcmpi(x, ignoreFunctions)), list) );
 

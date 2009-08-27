@@ -1,4 +1,4 @@
-function q = max(odf,varargin)
+function [q val]= max(odf,varargin)
 % heuristic to find local maxima
 %
 %% Input
@@ -70,8 +70,9 @@ end
 
 % the retrived maximas
 q = qa(ids);
+val = dof(ids);
 
-accuracy = get_option(varargin,'accuracy',0.1*degree);
+accuracy = get_option(varargin,'accuracy',0.25*degree);
 %centering of local max
 for k=1:numel(q)
   res2 = res/2;

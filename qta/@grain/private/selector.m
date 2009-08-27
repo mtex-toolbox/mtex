@@ -27,11 +27,7 @@ delete(uigettool(gcf,'Exploration.Brushing')) %
 %toolsbar
 th=findobj(allchild(h),'type','uitoolbar');
 
-%   img=im2java(selectorIcon('layer')); 
-%   icon=javax.swing.ImageIcon(img);
-%   label=javax.swing.JLabel(icon);
-%   label.setMinimumSize(java.awt.Dimension(24,22));
-  htk = uitoggletool(th,'Tag','MTEX.layervis','CData',selectorIcon('layer'),'TooltipString','Layer Visebility','OnCallback',{@grainselector,'show_layer'},'OffCallback',{@grainselector,'hide_layer'});
+htk = uitoggletool(th,'Tag','MTEX.layervis','CData',selectorIcon('layer'),'TooltipString','Layer Visebility','OnCallback',{@grainselector,'show_layer'},'OffCallback',{@grainselector,'hide_layer'});
 
   
   fd = cell(1,length(grains));
@@ -122,8 +118,7 @@ set(h,'CloseRequestFcn',@closeit);
 
 updateSelectionPlot;
 updateMenus;
-setVisStatus
-
+setVisStatus('on')
 
 
 %--------------------------------------------------------------------------
@@ -140,14 +135,10 @@ if any(findall(allchild(h),'Label','Grains')), return, end;
   uimenu(gm,'Label','Change Layer-Selection Color','Callback',@changenSelectionColor);
   
   gmao = uimenu(gm,'Label','Operations on Layer-Selection','Separator','on');
-  uimenu(gmao,'Label','Convert Selection to Plot','Callback',@extracttolayer);
-  uimenu(gmao,'Tag','onsel','Label','Plot ODF','Separator','on','Callback',@plotODFs);
-  uimenu(gmao,'Tag','onsel','Label','Plot ODF with Neighbours','Callback',{@plotODFs,'neighbours'});
-  uimenu(gmao,'Tag','onsel','Label','Plot PDF','Separator','on','Callback',@plotPDFs);
-  uimenu(gmao,'Tag','onsel','Label','Plot PDF with Neighbours','Callback',{@plotPDFs,'neighbours'});
-  uimenu(gmao,'Tag','onsel','Label','Plot in Rodrigues Space','Separator','on','Callback',@plotRodrigues);
-  uimenu(gmao,'Tag','onsel','Label','Plot in Rodrigues Space with Neighbours','Callback',{@plotRodrigues,'neighbours'});
-  uimenu(gmao,'Tag','onsel','Label','Variogram on Property','Separator','on','Callback',@variogrammplot);
+  uimenu(gmao,'Tag','onsel','Label','Convert Selection to Plot','Callback',@extracttolayer);
+  uimenu(gmao,'Tag','onsel','Separator','on','Label','Plot ODF','Callback',@plotODFs);
+  uimenu(gmao,'Tag','onsel','Label','Plot PDF','Callback',@plotPDFs);
+  uimenu(gmao,'Tag','onsel','Label','Plot in Rodrigues Space','Callback',@plotRodrigues);
   
   uimenu(gm,'Label','Setup corresponding EBSD-Data','Separator','on','Callback',@updateEBSD);
   uimenu(gm,'Tag','onsel','Label','Export Selection to Workspace Variable','Separator','on','Callback',@exporttoWS);
@@ -163,17 +154,21 @@ function layerSelChanged(e,h)
 
 grains = getappdata(gcf,'grains');
 setappdata(gcf,'currentlayer',length(grains)-get(e,'SelectedIndex'))
-setVisStatus;
+
+[i i i ly] = getcurrentlayer;
+hs = getappdata(gcf,'layer');
+state = get(hs{ly},'Visible');
+setVisStatus(state{1});
 
 
-function setVisStatus
+function setVisStatus(state)
 
 f = findall(gcf,'Tag','MTEX.layervis');
 
 [i i i ly] = getcurrentlayer;
 hs = getappdata(gcf,'layer');
-state = get(hs{ly},'Visible');
-% set(f,'State',state{1});  
+set(hs{ly},'Visible',state);
+set(f,'State',state);  
   
 %--------------------------------------------------------------------------
 function changenSelectionColor(empt,eventdata)
@@ -501,13 +496,9 @@ switch state
     set(gcf,'Pointer','arrow');
     setappdata(gcf,'selector_ply',[]);
   case 'hide_layer'
-    [i i i ly] = getcurrentlayer;
-    hs = getappdata(gcf,'layer');
-    set(hs{ly},'Visible','off')
+    setVisStatus('off');
   case 'show_layer'
-    [i i i ly] = getcurrentlayer;
-    hs = getappdata(gcf,'layer');
-    set(hs{ly},'Visible','on')
+    setVisStatus('on');    
 end
 
 
@@ -566,113 +557,86 @@ if ok
   setappdata(gcf,'ebsd',ebsd);
 end
 
-function plotRodrigues(e,h,varargin)
  
-ebsd = getappdata(gcf,'ebsd');
-if isempty(ebsd)
- ebsd = updateEBSD;
-end
+%--------------------------------------------------------------------------
+function obj = choosePlotObject(varargin)
+
+obj = [];
 
 [grains p ks] = getcurrentlayer;
 grains1 = grains(ks);
-eb = link(ebsd,grains1);     
 
-f = figure, plot(eb,'rodrigues')
-if check_option(varargin,'neighbours')
-  hold on,
-  grains2 = neighbours(grains, grains1);
-  eb2 = link(ebsd,grains2);
-  plot(eb2,'rodrigues')
-end
-set(f,'renderer','opengl');
+props = [grains1.properties];
+propnames = fieldnames(props);
+odf_pos = find(cellfun('isclass',struct2cell(props(1)),'ODF'));
+
+if ~isempty(odf_pos) && ~check_option(varargin,'ebsd')
+  types = strcat('property : ', propnames(odf_pos));
+   
+  ebsd = getappdata(gcf,'ebsd');
+  if ~isempty(ebsd)
+    types = [types ;{'corresponding EBSD'}];
+  end
  
+  [sel2, ok] = listdlg('Name','Plot Object',...
+  'SelectionMode','single',...
+  'ListSize',[170 70],...
+  'PromptString','Object','ListString',types,'fus',2,'ffs',2);  
 
+  if ok
+    if sel2 > length(odf_pos)
+      obj = link(ebsd,grains1);
+    else
+      obj = [ props.(propnames{odf_pos(sel2)}) ];
+    end
+  end
+else
+  ebsd = getappdata(gcf,'ebsd');
+  if isempty(ebsd)
+   ebsd = updateEBSD;
+  end
+  obj = link(ebsd,grains1);
+end
+
+%--------------------------------------------------------------------------
 function plotPDFs(e,h,varargin)
  
-ebsd = getappdata(gcf,'ebsd');
-if isempty(ebsd)
- ebsd = updateEBSD;
+obj = choosePlotObject;
+ 
+if ~isempty(obj)
+  f = figure; plotpdf(obj,Miller(0,0,1));
+  set(f,'renderer','opengl');
 end
 
-[grains p ks] = getcurrentlayer;
-grains1 = grains(ks);
-eb = link(ebsd,grains1);     
-
-f = figure, plotpdf(eb,[Miller(1,0,0)]);
-if check_option(varargin,'neighbours')
-  hold on,
-  grains2 = neighbours(grains, grains1);
-  eb2 = link(ebsd,grains2);
-  plotpdf(eb2);
-end
-set(f,'renderer','opengl');
- 
- 
 %--------------------------------------------------------------------------
 function plotODFs(e,h,varargin)
     
-ebsd = getappdata(gcf,'ebsd');
-if isempty(ebsd)
- ebsd = updateEBSD;
+obj = choosePlotObject;
+
+if ~isempty(obj)
+  types = {'SIGMA','ALPHA','GAMMA','PHI1','PHI2'};
+  [sel2, ok] = listdlg('Name','Plotting options',...
+    'SelectionMode','single',...
+    'ListSize',[170 70],...
+    'PromptString','Plot type','ListString',types,'fus',2,'ffs',2);   
+
+  if ok,
+    f = figure;
+    hold on, plot(obj,types{sel2},'SECTIONS',6); 
+  end  
 end
 
-[grains p ks] = getcurrentlayer;
-grains1 = grains(ks);
-      
-types = {'SIGMA','ALPHA','GAMMA','PHI1','PHI2'};
-[sel2, ok] = listdlg('Name','Plotting options',...
-  'SelectionMode','single',...
-  'ListSize',[170 70],...
-  'PromptString','Plot type','ListString',types,'fus',2,'ffs',2);      
-if ok, 
-   oldfig = gcf;
-   figure
-   eb = link(ebsd,grains1);      
-        
-   if check_option(varargin,'neighbours')
-     grains = neighbours(grains, grains1);
-     % grains = grains(ismember(vertcat(grains(:).id),vertcat(grains1(:).neighbour)));
-          
-     eb2 = link(ebsd,grains);   
-     
-     pha = get(eb,'phase');
-     phb = get(eb2,'phase'); 
-        
-     plot(eb2(phb ==  pha(1)),types{sel2},'SECTIONS',6,'markercolor','r','MarkerSize',1); 
-   end
-      
-   hold on, plot(eb,types{sel2},'SECTIONS',6); 
+%--------------------------------------------------------------------------
+function plotRodrigues(e,h,varargin)
+ 
+obj = choosePlotObject('ebsd');
+ 
+if ~isempty(obj)
+  f = figure;  plot(obj,'rodrigues')
+  set(f,'renderer','opengl');
 end
 
-function variogrammplot(e,h)
-
-[grains p ks] = getcurrentlayer;
-
-properties = [grains.properties];
-if ~isempty(properties)
-  fnames = fields(properties);
-  fnames = fnames(structfun(@(x) isfloat(x), properties(1)));
-  
-  if ~isempty(fnames)
-
-    [sel ok] = listdlg('Name','Variogramm',...
-      'SelectionMode','single',...
-      'ListSize',[170 70],...
-      'PromptString','Select a Property','ListString',fnames,'fus',2,'ffs',2);      
-
-    if ok
-      figure, variogram(grains(ks),fnames{sel});
-    else
-      return
-    end  
-  else
-    errordlg('Need some properties');
-  end
-  
-end
-
-
-
+%--------------------------------------------------------------------------
 function extracttolayer(src,h)
 
 [grains p ks ly] = getcurrentlayer;
