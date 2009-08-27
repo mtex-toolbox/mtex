@@ -52,7 +52,7 @@ if nargin > 1 && isa(varargin{1},'EBSD') % misorientation to ebsd data
 
     ql = symmetriceQuat(cs,ss,quaternion(grid));
     qr = repmat(qm(ia(idb)).',1,size(ql,2));
-    q_res = ql.*inverse(qr);
+    q_res = inverse(ql).*qr;
     omega = rotangle(q_res);
   
     [omega,q_res] = selectMinbyRow(omega,q_res);
