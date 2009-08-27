@@ -18,54 +18,108 @@ function exportODF(odf,filename,varargin)
 %% See also
 %
   
-%% define the orientations where the ODF should be evaluated
+
+%% open the file
+if nargin == 1, filename = uigetfile;end
+fid = fopen(filename,'w');
+
+%% write intro
+fprintf(fid,'%% MTEX ODF\n');
+fprintf(fid,'%% %s\n',get(odf,'comment'));
 
 % symmetries
 [CS,SS] = getSym(odf);
+fprintf(fid,'%% crystal symmetry: %s\n',char(CS));
+fprintf(fid,'%% specimen symmetry: %s\n',char(SS));
 
-% SO3Grid
-if check_option(varargin,'weights')
-  S3G = getgrid(odf);
-elseif nargin > 2 && isa(varargin{1},'SO3Grid')
-  S3G = varargin{1};
-  varargin = varargin(2:end);
-else
-  S3G = SO3Grid('regular',CS,SS,varargin{:});
-end
+%% export as generic text file
+if check_option(varargin,'generic')
 
-%% evaluate ODF
+  % get SO3Grid
+  if nargin > 2 && isa(varargin{1},'SO3Grid')
+    S3G = varargin{1};
+    varargin = varargin(2:end);
+  else
+    S3G = SO3Grid('regular',CS,SS,varargin{:});
+  end
 
-if check_option(varargin,'weights')
-  v = getdata(odf);
-else
+  % evaluate ODF
   v = eval(odf,S3G,varargin{:}); %#ok<EVLC>
-end
 
+  % build up matrix to be exported
+  d = Euler(S3G,varargin{:});
+  if ~check_option(varargin,'radians'), d = d./degree;end
 
-%% build up matrix to be exported
+  % convention
+  if check_option(varargin,{'Bunge','ZXZ'})
+    convention = 'ZXZ';
+  elseif check_option(varargin,{'ABG','ZYZ'})
+    convention = 'ZYZ';
+  else
+    convention = get_flag(get(S3G,'options'),{'ZXZ','ZYZ'},'none');
+  end
 
-d = Euler(S3G,varargin{:});
-if ~check_option(varargin,'radians'), d = d./degree;end
+  % save matrix
+  if strcmp(convention,'ZXZ')
+    fprintf(fid,'%% phi1    Phi     phi2    volume\n');
+  else
+    fprintf(fid,'%% alpha   beta    gamma   volume\n');
+  end
 
-%% convention
-if check_option(varargin,{'Bunge','ZXZ'})
-  convention = 'ZXZ';
-elseif check_option(varargin,{'ABG','ZYZ'})
-  convention = 'ZYZ';
+  fprintf(fid,'%3.5f %3.5f %3.5f %3.5f\n',[d,v(:)].');
+
+%% save as MTEX format
 else
-  convention = get_flag(get(S3G,'options'),{'ZXZ','ZYZ'},'none');
+  for i = 1:length(odf)
+    
+    if check_option(odf(i),'UNIFORM') % uniform portion
+      
+      fprintf(fid,'%%\n%%%% uniform component\n');
+      fprintf(fid,'%% weight: %3.5f\n',odf(i).c);
+      
+    elseif check_option(varargin,'FOURIER') || check_option(odf(i),'FOURIER')
+      
+      fprintf(fid,'%%\n%%%% fourier component: currently not supported! \n');
+  
+    elseif check_option(odf(i),'FIBRE') % fibre symmetric portion
+      
+      fprintf(fid,'%%\n%%%% fibre component\n');
+      fprintf(fid,'%% weight: %3.5f\n',odf(i).c);
+      fprintf(fid,'%% kernel: %s\n',char(odf(i).psi));
+      fprintf(fid,'%% fibre h: %s\n',char(odf(i).center{1}));      
+      fprintf(fid,'%% fibre r: %s\n',char(odf(i).center{2}));
+      
+    else % radially symmetric portion
+  
+      fprintf(fid,'%%\n%%%% radial component:\n');
+      fprintf(fid,'%% kernel: %s\n',char(odf(i).psi));
+      
+      % build up matrix to be exported
+      d = Euler(odf(i).center,varargin{:});
+      if ~check_option(varargin,'radians'), d = d./degree;end
+
+      % convention
+      if check_option(varargin,{'Bunge','ZXZ'})
+        convention = 'ZXZ';
+      elseif check_option(varargin,{'ABG','ZYZ'})
+        convention = 'ZYZ';
+      else
+        convention = get_flag(get(odf(i).center,'options'),{'ZXZ','ZYZ'},'none');
+      end
+
+      % save matrix      
+      if strcmp(convention,'ZXZ')
+        fprintf(fid,'%% phi1    Phi     phi2    weight\n');
+      else
+        fprintf(fid,'%% alpha   beta    gamma   weight\n');
+      end
+    
+      fprintf(fid,'%3.5f %3.5f %3.5f %3.5f\n',[d,odf(i).c(:)].');
+      
+    end
+  end
 end
 
-%% save matrix
 
-fid = fopen(filename,'w');
-
-if strcmp(convention,'ZXZ')
-  fprintf(fid,'phi1    Phi     phi2    volume\n');
-else
-  fprintf(fid,'alpha   beta    gamma   volume\n');
-end
-
-fprintf(fid,'%3.5f %3.5f %3.5f %3.5f\n',[d,v(:)].');
 fclose(fid);
 
