@@ -181,7 +181,7 @@ if ishandle(htp)
   ind = find(~strcmpi(data,'Ignore'));
   options = {'ColumnNames',data(ind)};
   if length(ind) < length(data)
-    options = [options{:},{'Columns',ind}];
+    options = [options,{'Columns',ind}];
   end
 
   % degree / radians
