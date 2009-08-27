@@ -3,7 +3,7 @@
 cs = symmetry('m-3m');
 ss = symmetry('-1');
 
-odf2 = unimodalODF(idquaternion,cs,ss,'halfwidth',1.5*degree);
+odf = unimodalODF(idquaternion,cs,ss,'halfwidth',1.5*degree);
 
 %%
 
@@ -11,10 +11,10 @@ q = modalorientation(odf);
 
 %%
 v = [];
-r = linspace(5*degree,10*degree,10);
+r = linspace(1*degree,10*degree,10);
 for i = 1:length(r)
   fprintf('.');
-  %v(i,1) = volume(odf,q,r(i)); 
+  v(i,1) = volume(odf,q,r(i)); 
   v(i,2) = volume(odf,idquaternion,r(i)); 
   %v(i,1) = volume(uniformODF(cs,ss),idquaternion,r(i)); 
 end
@@ -58,14 +58,14 @@ plot(r/degree,reshape(v,size(v,1),[]));
 cs = symmetry('m-3m');
 ss = symmetry('mmm');
 S3G = SO3Grid(1*degree,cs,ss);
-r = S2Grid('plot','resolution',10*degree,'hemisphere','north','maxrho',90*degree);
+r = S2Grid('plot','resolution',10*degree,'hemisphere','north','maxrho',90*degree,'RESTRICT2MINMAX');
 rv = vector3d(r);
 d1 = zeros(size(rv));
 d2 = zeros(size(rv));
 for i = 1:numel(rv)
   q = axis2quat(rv(i),20*degree);
   d1(i) = length(find(dot_outer(S3G,q,'epsilon',20*degree)));
-  %d2(i) = volume(uniformODF(cs,ss),q,15*degree);
+  d2(i) = volume(uniformODF(cs,ss),q,15*degree);
   fprintf('.');
 end
 fprintf('\n');
