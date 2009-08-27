@@ -8,4 +8,9 @@ function S3G = copy(S3G,ind)
 
 
 S3G.Grid = S3G.Grid(ind);
-S3G.options = delete_option(S3G.options,'INDEXED');
+
+if check_option(S3G,'indexed')
+  S3G.gamma = subGrid(S3G.gamma,ind);
+  S3G.alphabeta  = subGrid(S3G.alphabeta,GridLength(S3G.gamma)>0);
+  S3G.gamma(GridLength(S3G.gamma)==0) = [];
+end
