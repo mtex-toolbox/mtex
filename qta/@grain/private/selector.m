@@ -158,8 +158,8 @@ setappdata(gcf,'currentlayer',length(grains)-get(e,'SelectedIndex'))
 [i i i ly] = getcurrentlayer;
 hs = getappdata(gcf,'layer');
 state = get(hs{ly},'Visible');
-setVisStatus(state{1});
-
+if iscell(state), state = state{1};end
+setVisStatus(state);    
 
 function setVisStatus(state)
 
