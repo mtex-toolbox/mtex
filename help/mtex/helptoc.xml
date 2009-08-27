@@ -39,6 +39,7 @@
     <tocitem target="ptx_interface.html">PTX Interface</tocitem>
     <tocitem target="xrdml_interface.html">XRDML Interface</tocitem>
   </tocitem>
+  <tocitem target="PlotPoleFigures.html"> Plot Pole Figure Data </tocitem>
   <tocitem target="ModifyPoleFigureData.html"> Pole Figure Correction </tocitem>
   <tocitem target="odf_estimation.html"> ODF Estimation from Pole
   Figure Data</tocitem>
