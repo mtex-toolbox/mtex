@@ -6,6 +6,9 @@ function S2G = delete(S2G,points)
 %
 %% Output
 %  S2G    - @S2Grid
+%
+%% See also
+% S2Grid/copy
 
 if isa(points,'S2Grid'), points = vector3d(points); end
 if isa(points,'vector3d'), points = find(S2G,points); end
