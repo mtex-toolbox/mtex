@@ -1,13 +1,13 @@
-function ebsd = copy(ebsd,id)
+function ebsd = copy(ebsd,condition)
 % copy selected points from EBSD data
 %
 %% Syntax  
-% ebsd  = delete(ebsd,id)
+% ebsd  = delete(ebsd,condition)
 % ebsd  = delete(ebsd,get(ebsd,'phase')~=1)
 %
 %% Input
-%  ebsd   - @EBSD
-%  id   - index set 
+%  ebsd      - @EBSD
+%  condition - index set 
 %
 %% Output
 %  ebsd - @EBSD
@@ -17,15 +17,15 @@ function ebsd = copy(ebsd,id)
 
 smpsz = sampleSize(ebsd);
 cs = cumsum([0,smpsz]);
-if isa(id,'double'),  
+if isa(condition,'double'),  
   x = zeros(1,cs(end));
-  x(id) = 1;
-  id = logical(x);
+  x(condition) = 1;
+  condition = logical(x);
 end
 
 
 for i=1:length(ebsd)
-  idi = id(cs(i)+1:cs(i+1));
+  idi = condition(cs(i)+1:cs(i+1));
  
  	if ~isempty(ebsd(i).xy)
     ebsd(i).xy = ebsd(i).xy(idi,:);
