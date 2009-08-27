@@ -58,8 +58,7 @@ else % not indexed points
   
   if nargin >= 3
     ind = d > cos(epsilon);
-  else
-    md = repmat(max(d),1,size(d,2));
-    ind = d == md;
+  else   
+    [d,ind] = max(d,[],1);
   end
 end
