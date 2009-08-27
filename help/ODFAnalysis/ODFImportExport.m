@@ -21,10 +21,21 @@ model_odf = 0.5*uniformODF(cs,ss) + ...
   0.3*unimodalODF(axis2quat(yvector,65*degree),cs,ss,'halfwidth',25*degree);
 plotodf(model_odf,'sections',6,'silent')
 
-%% Export an ODF to an ASCII File
+%% Export an ODF to an MTEX ASCII File
+% By default the ODF is exported to an ASCII file which contains
+% descriptions of all componets of the ODF in a human readable fassion. 
+
+% the filename
+fname = [mtexDataPath '/odf/odf.txt'];
+
+% export the ODF
+exportODF(model_odf,fname,'Bunge')
+
+
+%% Export as an generic ASCII file
 %
-% By default the ODF is exported to an ASCII file which contains four
-% columns. The first three column describe the Euler angles of a regular
+% The generic ASCII format consists of a large table with four
+% columns, where first three column describe the Euler angles of a regular
 % 5° grid in the orientation space and the fourth column contains the
 % value of the ODF at this specific position.
 
@@ -32,7 +43,7 @@ plotodf(model_odf,'sections',6,'silent')
 fname = [mtexDataPath '/odf/odf.txt'];
 
 % export the ODF
-exportODF(model_odf,fname,'Bunge')
+exportODF(model_odf,fname,'Bunge','generic')
 
 %%
 % Other Euler angle conventions or other resolutions can by specified by
@@ -43,7 +54,7 @@ exportODF(model_odf,fname,'Bunge')
 S3G = SO3Grid(5 * degree,cs,ss);
 
 % export the ODF by values at these locations
-exportODF(model_odf,fname,S3G,'Bunge')
+exportODF(model_odf,fname,S3G,'Bunge','generic')
 
 
 %% Import ODF Data using the import wizard
