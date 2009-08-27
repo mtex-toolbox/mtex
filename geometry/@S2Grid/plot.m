@@ -78,13 +78,7 @@ varargin = set_default_option(varargin,...
 
 % S2Resolution
 if sum(GridLength(S2G))>100 || get(S2G,'resolution') < 10 *degree
-  varargin = {'scatter_resolution',getResolution(S2G(end)),varargin{:}};
-end
-
-% set correction flag for plotting pole figure data
-if ~check_option(S2G,'plot') && ...
-    check_option(varargin,{'CONTOUR','CONTOURF','SMOOTH','TEXTUREMAP','rgb'});
-  varargin = [varargin,'correctContour'];
+  varargin = ['scatter_resolution',getResolution(S2G(end)),varargin];
 end
 
 % extract data
@@ -101,7 +95,7 @@ if numel(data) == GridLength(S2G)
       data(imag(data) ~= 0 | isinf(data)) = nan;
     end
   
-    varargin = {'colorrange',[min(data(:)),max(data(:))],varargin{:}};
+    varargin = ['colorrange',[min(data(:)),max(data(:))],varargin];
   end
 elseif ndims(data) == 3 && all(size(data) == [GridSize(S2G),3])
   
@@ -116,13 +110,32 @@ else
 end
 
 
+% set correction flag for plotting pole figure data
+if ~check_option(S2G,'plot') && ...
+    check_option(varargin,{'CONTOUR','CONTOURF','SMOOTH','TEXTUREMAP','rgb'});
+  if GridSize(S2G,1) == 1 || GridSize(S2G,2) == 1
+    
+    % interpolate
+    mintheta = getMin(S2G.theta);
+    maxtheta = getMax(S2G.theta);
+    res = max(2.5*degree,get(S2G,'resolution'));
+    newS2G = S2Grid('plot','resolution',res,...
+      'mintheta',mintheta,'maxtheta',maxtheta,'restrict2minmax',varargin{:});
+    
+    [ind,d] = find(S2G,vector3d(newS2G));
+    data = data(ind);
+    data(d < cos(2*res)) = nan;
+    S2G = newS2G;
+    data = reshape(data,GridSize(S2G));
+    
+  else
+    varargin = [varargin,'correctContour'];
+  end
+end
+
+
 % COLORMAP
 if check_option(varargin,'GRAY'),colormap(flipud(colormap('gray'))/1.2);end
-if check_option(varargin,'zerotowhite')
-  map = colormap;
-  map(1,:) = [1,1,1];
-  colormap(map);
-end
 
 
 %% Prepare Coordinates
