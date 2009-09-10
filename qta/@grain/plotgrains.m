@@ -77,7 +77,7 @@ if ~isempty(property)
     d = zeros(length(grains),3);
     for i = 1:length(phase1)
       sel = phase == phase1(i);
-      grid = SO3Grid(prop(sel),CS{m(i)},SS{m(i)});       
+      grid = SO3Grid(prop(sel),CS{m(i)},SS{m(i)},'resolution',pi);
       d(sel,:) = orientation2color(grid,cc,varargin{:});
     end
         
