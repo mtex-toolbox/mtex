@@ -135,7 +135,7 @@ end
 
 
 % COLORMAP
-if check_option(varargin,'GRAY'),colormap(flipud(colormap('gray'))/1.2);end
+if check_option(varargin,'GRAY'),colormap(flipud(colormap('gray'))/1.1);end
 
 
 %% Prepare Coordinates

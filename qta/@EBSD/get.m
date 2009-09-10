@@ -13,9 +13,9 @@ switch vname
     value = obj(1).(vname);
   case fields(obj)
     value = vertcat(obj.(vname));
-  case 'data'
+  case {'data','orientation'}
     value = [obj.orientations];
-  case 'quaternions'
+  case {'quaternions','quaternion'}
     value = quaternion();
     for i = 1:length(obj)
       value = [value;reshape(quaternion(obj(i).orientations),[],1)]; %#ok<AGROW>
