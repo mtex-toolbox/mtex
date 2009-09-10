@@ -62,7 +62,7 @@ exportODF(model_odf,fname,S3G,'Bunge','generic')
 % Importing ODF data into MTEX means to create an ODF variable from data
 % files containing euler angles and weigts. Once such an variable has been
 % created the data can be analyzed and processed in many ways. See e.g.
-% <ODFCalculations.html,ODFCalculations>. The most simplest way to import
+% [[ODFCalculations.html,ODFCalculations]]. The most simplest way to import
 % ODF data is to use the import wizard, which can be started either by
 % typing into the command line
 
