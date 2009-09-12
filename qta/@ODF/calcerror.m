@@ -15,7 +15,7 @@ function e = calcerror(odf1,odf2,varargin)
 %  L1 - L^1 error (default)
 %  L2 - L^2 error
 %  RP - RP  error
-%  res - resolution used for calculation of the error
+%  resolution - resolution used for calculation of the error
 %
 %% See also
 % PoleFigure/calcODF PoleFigure/calcerror 
