@@ -4,7 +4,7 @@ function plotgrains(grains,varargin)
 %% Syntax
 %  plotgrains(grains)
 %  plotgrains(grains,LineSpec,...)
-%  plotgrains(grains,'PropertyName',PropertyValue,...)
+%  plotgrains(grains,'property',PropertyValue,...)
 %  plotgrains(grains,'property','orientation',...)
 %  plotgrains(grains,ebsd,'misorientation',...)
 %
