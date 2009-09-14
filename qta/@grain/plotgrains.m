@@ -55,7 +55,7 @@ grains = grains(ndx);
 %% setup grain plot
 
 newMTEXplot;
-set(gcf,'renderer','opengl');
+%set(gcf,'renderer','opengl');
 % 
 %%
 
