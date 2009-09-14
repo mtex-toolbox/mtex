@@ -88,6 +88,7 @@ for i = 1:length(ax)
     case 'ipdf'
         
       r = getappdata(gca,'r');
+      if isempty(r), r = getappdata(gcf,'r');end
     
       if isa(obj,'quaternion')
         sr = inverse(obj)*symetriceVec(ss,r./norm(r),varargin{:});

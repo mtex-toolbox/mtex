@@ -95,7 +95,7 @@ if numel(data) == GridLength(S2G)
       data(imag(data) ~= 0 | isinf(data)) = nan;
     end
   
-    varargin = ['colorrange',[min(data(:)),max(data(:))],varargin];
+    varargin = [{'colorrange',[min(data(:)),max(data(:))]},varargin];
   end
 elseif ndims(data) == 3 && all(size(data) == [GridSize(S2G),3])
   
