@@ -17,7 +17,7 @@ for i = 1:length(ebsd)
     ss = [ss, char(ebsd(i).orientations,'nores'),', '];    %#ok<AGROW>
   end
   
-  ss = [ss,' symmetry: ',char(ebsd(i).CS)];     %#ok<AGROW>
+  ss = [ss,'symmetry: ',char(ebsd(i).CS)];     %#ok<AGROW>
   
   s =strvcat(s,ss); %#ok<VCAT>
 end
