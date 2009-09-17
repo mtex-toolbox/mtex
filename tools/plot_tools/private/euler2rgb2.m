@@ -3,7 +3,7 @@ function c = euler2rgb2(S3G,varargin)
 
 % get reference orientation
 q0 = get_option(varargin,'center',idquaternion);
-S3G = S3G * inverse(q0);
+S3G = inverse(q0) * S3G;
 
 [max_phi1 max_Phi max_phi2] = getFundamentalRegion(get(S3G,'CS'),get(S3G,'SS'));
 
