@@ -1,4 +1,4 @@
-function c = char(S2G)
+function c = char(S2G,varargin)
 % convert to char
 
 S2G = S2G(1);
@@ -8,5 +8,7 @@ else
     s = [int2str(size(S2G.Grid,1)),'x',int2str(size(S2G.Grid,2))];
 end
 
-c = [s, ' points, ',...
-	'res.: ',xnum2str(getResolution(S2G) * 180/pi),mtexdegchar];
+c = [s, ' points'];
+if ~check_option(varargin,'short')
+c = [s, ', res.: ',xnum2str(getResolution(S2G) * 180/pi),mtexdegchar];
+end

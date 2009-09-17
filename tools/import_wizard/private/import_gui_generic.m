@@ -133,19 +133,21 @@ if ~get(handles.runmfile,'Value');
   assignin('base',a{1},data);
   if isempty(javachk('desktop')) 
     
+    disp(' ');
+    disp('generated variable: ');
+    display(data,'vname',a{1});
+    disp(' ');
+    
     switch class(data)
-      case 'EBSD'
-        disp(['Imported EBSD Data: ', a{1}]);
+      case 'EBSD'    
         disp(['- <a href="matlab:plot(',a{1},',''silent'')">Plot EBSD Data</a>']);
-        disp(['- <a href="matlab:calcODF(',a{1},')">Calculate ODF</a>']);
+        disp(['- <a href="matlab:odf = calcODF(',a{1},')">Calculate ODF</a>']);
         disp(' ');
       case 'PoleFigure'
-        disp(['imported Pole Figure Data: ', a{1}]);
         disp(['- <a href="matlab:plot(',a{1},',''silent'')">Plot Pole Figure Data</a>']);
-        disp(['- <a href="matlab:calcODF(',a{1},')">Calculate ODF</a>']);
+        disp(['- <a href="matlab:odf = calcODF(',a{1},')">Calculate ODF</a>']);
         disp(' ');
       case 'ODF'
-        disp(['Imported ODF Data: ', a{1}]);
         disp(['- <a href="matlab:plot(',a{1},',''silent'')">Plot ODF Data</a>']);
         disp(' ');
     end
