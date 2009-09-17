@@ -1,10 +1,10 @@
 # Makefile of the MTEX toolbox
 #
-#--------------- begin editable section ------------------------------- 
+#--------------- begin editable section -------------------------------
 #
 # here comes your operating system
-# glnx86  - 32 bit Linux 
-# glnxa64 - 64 bit Linux 
+# glnx86  - 32 bit Linux
+# glnxa64 - 64 bit Linux
 # maci    - 32 bit Mac OSX
 # maci64  - 64 bit Mac OSX
 # win32   - 32 bit Windows
@@ -23,7 +23,7 @@ FFTWPATH= /home/hielscher/coding/c
 NFFTPATH= /home/hielscher/coding/c
 
 #
-# matlab path 
+# matlab path
 MATLABPATH = /opt/matlab
 #
 # compiler flags
@@ -35,13 +35,13 @@ MEXFLAGS= -compatibleArrayDims#-largeArrayDims
 #
 # local directories
 BPATH = c/bin/$(TARGET)/
-SUBDIRS = c/kernel.dir c/nsoft.dir c/test.dir c/mex.dir 
+SUBDIRS = c/kernel.dir c/nsoft.dir c/test.dir c/mex.dir
 
 # top-level rule, to compile everything.
 all: $(SUBDIRS)
 
 # descent into subdirectories
-%.dir: 
+%.dir:
 	$(MAKE) -e CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" NFFTPATH=$(NFFTPATH) FFTWPATH=$(FFTWPATH) MATLABPATH=$(MATLABPATH) MEXFLAGS="$(MEXFLAGS)" TARGET="$(TARGET)" -C $*
 	$(MAKE) install -C $*
 
@@ -53,25 +53,25 @@ clean:
 # rule for installing as root
 install:
 	rm -rf $(MATLABPATH)/toolbox/mtex/*.*
-	cp -f startup_root.m  $(MATLABPATH)/toolbox/local/startup.m	
+	cp -f startup_root.m  $(MATLABPATH)/toolbox/local/startup.m
 	mkdir -p $(MATLABPATH)/toolbox/mtex
 	cp -rf * $(MATLABPATH)/toolbox/mtex/
 	echo "installation complete"
 
 # rule for checking installation
-check:	
+check:
 	echo "check installation"
 # comment the next line out if you have a intel/amd processor
 	c/bin/$(target)/pf2odf c/test/pf2odf.txt check
 # comment the next line out if you have a ibm power cpu
 #	c/bin/$(target)/pf2odf c/test/pf2odf_mac.txt check
 
-uninstall: 
+uninstall:
 	rm -f $(MATLABPATH)/toolbox/local/startup.m
 	rm -rf $(MATLABPATH)/toolbox/mtex
 
 # rule for making release
-RNAME = mtex-2.0beta1
+RNAME = mtex-2.0beta2
 RDIR = ../..
 release:
 	rm -rf $(RDIR)/$(RNAME)*
