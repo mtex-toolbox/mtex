@@ -128,7 +128,7 @@ if ischeck, odf = ODF;return;end
 
 
 % load single orientations
-if ~check_option(varargin,{'exact','halfwidth'}), varargin = [varargin,'exact'];end
+if ~check_option(varargin,{'exact','resolution'}), varargin = [varargin,'exact'];end
 ebsd = EBSD(SO3Grid(q,cs,ss),cs,ss,varargin{:});
 
 % calc ODF
