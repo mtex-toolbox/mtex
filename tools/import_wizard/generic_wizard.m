@@ -251,7 +251,9 @@ ind = strmatch('volume',lower(colnames));
 if length(ind) == 1,cdata{ind} = 'weight';end
 
 % Euler Angle
-ind = [strmatch('euler',lower(colnames)),strmatch('phi',lower(colnames))];
+ind = regexp(lower(colnames),'phi|Euler');
+ind = find(~cellfun('isempty',ind));
+
 if length(ind)==3
   cdata{ind(1)} = 'Euler 1';
   cdata{ind(2)} = 'Euler 2';
