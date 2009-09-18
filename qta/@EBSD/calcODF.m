@@ -20,11 +20,17 @@ function odf = calcODF(ebsd,varargin)
 %  odf - @ODF
 %
 %% Options
-%  HALFWIDTH  - halfwidth of the kernel function 
-%  RESOLUTION - resolution of the grid where the ODF is approximated
-%  EXACT      - no approximation to a corser grid
-%  KERNEL     - kernel function (default - de la Valee Poussin kernel)
-%  SILENT     - no output
+%  HALFWIDTH        - halfwidth of the kernel function 
+%  RESOLUTION       - resolution of the grid where the ODF is approximated
+%  EXACT            - no approximation to a corser grid
+%  KERNEL           - kernel function (default - de la Valee Poussin kernel)
+%  SILENT           - no output
+%  L/HARMONICDEGREE - (if Fourier) order up to which Fourier coefficients are calculated
+%
+%% Flags
+%  EXACT            - exact ODF 
+%  FOURIER          - calculate an Fourier ODF
+%
 %
 %% See also
 % ebsd_demo EBSD2odf_estimation EBSDSimulation EBSD/loadEBSD ODF/simulateEBSD
@@ -55,25 +61,32 @@ weight = weight ./ sum(weight(:));
 
 vdisp([' used kernel: ' char(k)],varargin{:});
 
-%% Fourier ODF
+odf = ODF(g,weight,k,...
+  ebsd(1).CS,ebsd(1).SS,'comment',['ODF estimated from ',getcomment(ebsd(1))]);
 
-if ~check_option(varargin,'exact') && ((gridlen*length(ebsd(1).CS) > 200 && bandwidth(k) < 32) ...
-    || check_option(varargin,'Fourier')) 
+max_coef = 32;
+gridlen = gridlen*length(ebsd(1).CS);
+
+%% Fourier ODF
+if ~check_option(varargin,'exact') && ...
+    (check_option(varargin,'Fourier') || (gridlen > 200 && bandwidth(k) < max_coef))
   vdisp(' construct Fourier odf',varargin{:});
-  odf = ODF(g,weight,k,...
-    ebsd(1).CS,ebsd(1).SS,'comment',['ODF estimated from ',getcomment(ebsd(1))]);
-  odf = calcFourier(odf,max(10,bandwidth(k)));
-  odf = FourierODF(odf);
-  return
   
-%% exact calculation
-elseif check_option(varargin,'exact') || gridlen*length(ebsd(1).CS) < 2000
-  vdisp(' construct exact odf',varargin{:});
-  odf = ODF(g,weight,k,...
-    ebsd(1).CS,ebsd(1).SS,'comment',['ODF estimated from ',getcomment(ebsd(1))]);  
+  L = get_option(varargin,{'L','HarmonicDegree'},min(max(10,bandwidth(k)),max_coef),'double');
+  if bandwidth(k) > max_coef,
+    warning('MTEX:EBSD:calcODF',['Estimation of ODF might become vaque,' ...
+      'since Fourier Coefficents of higher order than ', num2str(max_coef),...
+      ' are not considered; increasing the kernel halfwidth might help.'])
+  end
+  odf = calcFourier(odf,get_option(varargin,'Fourier',L,'double'));
+  odf = FourierODF(odf);
+  
+  return
+elseif check_option(varargin,'exact') || gridlen < 2000
+%% exact ODF
+  vdisp(' construct exact odf',varargin{:}); 
   return
 end
-
 
 %% approximation on a corser grid
 
@@ -100,7 +113,6 @@ res = get_option(varargin,'resolution',max(0.75*degree,hw / 2));
 
 %% generate grid
 S3G = extract_SO3grid(ebsd,varargin{:},'resolution',res);
-
 vdisp([' approximation grid: ' char(S3G)],varargin{:});
 
 %% restrict single orientations to this grid
