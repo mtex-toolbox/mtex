@@ -32,7 +32,7 @@ else
 end
 
 %% plot
-multiplot(@(i) h,@(i) pdf(odf,h,r(i)./norm(r(i)),varargin{:}),length(r),...
+multiplot(@(i) h,@(i) pos(pdf(odf,h,r(i)./norm(r(i)),varargin{:})),length(r),...
   'DISP',@(i,Z) [' iPDF r=',char(r(i)),' Max: ',num2str(max(Z(:))),...
   ' Min: ',num2str(min(Z(:)))],...
   'ANOTATION',@(i) r(i),...
@@ -48,3 +48,7 @@ setappdata(gcf,'options',extract_option(varargin,'antipodal'));
 name = inputname(1);
 if isempty(name), name = odf(1).comment;end
 set(gcf,'Name',['Inverse Pole Figures of ',name]);
+
+function d = pos(d)
+
+if min(d(:)) > -1e-5, d = max(d,0);end
