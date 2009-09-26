@@ -7,7 +7,8 @@ function q = vec42quat(u1,v1,u2,v2)
 % |v1| and |v2| such that |q * u1 = v1| and |q * u2 = v2|
 %
 %% Input
-%  u1, v1 , u2, v2 - @vector3d
+%  u1, u2 - @vector3d
+%  v1, v2 - @vector3d, @Miller
 %
 %% Output
 %  q - @quaternion
@@ -16,6 +17,8 @@ function q = vec42quat(u1,v1,u2,v2)
 % quaternion_index quaternion/quaternion axis2quat Miller2quat 
 % euler2quat hr2quat idquaternion 
 
+u1 = vector3d(u1);
+u2 = vector3d(u2);
 
 % ckeck whether points have the same angle relative to each other
 if any(abs(dot(u1,u2)-dot(v1,v2))>1E-3)
@@ -106,8 +109,8 @@ q(ind4) = axis2quat(ax,omega);
 % u2 = sph2vec((90-53.327)*degree,47.396*degree);
 % v2 = sph2vec((90-28.795)*degree,-14.590*degree);
 
-u1 = sph2vec((90-64.063)*degree,76.128*degree);
-v1 = sph2vec((90-40.128)*degree,-20.725*degree);
-u2 = sph2vec((90-46.812)*degree,46.977*degree);
-v2 = sph2vec((90-39.573)*degree,0.773*degree);
+%u1 = sph2vec((90-64.063)*degree,76.128*degree);
+%v1 = sph2vec((90-40.128)*degree,-20.725*degree);
+%u2 = sph2vec((90-46.812)*degree,46.977*degree);
+%v2 = sph2vec((90-39.573)*degree,0.773*degree);
 %
