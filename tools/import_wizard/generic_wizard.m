@@ -235,7 +235,10 @@ uicontrol(...
 
 function cdata = guessColNames(values,l,colnames)
 
-if length(colnames) == l
+if isempty(colnames)
+  cdata = values(1:l<=end);
+  return
+elseif length(colnames) == l
   cdata = colnames;
 else
   cdata = repmat(values(1),1,l);
