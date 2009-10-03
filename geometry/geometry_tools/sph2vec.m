@@ -16,7 +16,7 @@ function [x,y,z] = sph2vec(theta,rho,r)
 %  v     - @vector3d 
 %  x,y,z - double
 
-  if nargin ==2, r = 1;end
+if nargin ==2, r = 1;end
 
 if nargout == 3
     x = r.*sin(theta).*cos(rho);

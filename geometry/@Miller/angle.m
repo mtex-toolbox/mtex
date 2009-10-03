@@ -12,4 +12,4 @@ function a = angle(m1,m2,varargin)
 m1 = symvec(m1,varargin{:});
 m2 = vector3d(m2);
 
-a = min(real(acos(dot(m1,m2)./norm(m1)./norm(m2))));
+a = min(real(acos(dot(m1,m2)./norm(m1)./norm(m2))),[],2);
