@@ -26,11 +26,11 @@ omega = linspace(min(omega),max(omega),1000);
 for i = 1:length(kk)
   switch upper(options)
     case 'K'			
-			optionplot(omega,kk(i).K(cos(omega/2)),'LineWidth',2,varargin{:});
+			optionplot(omega/degree,kk(i).K(cos(omega/2)),'LineWidth',2,varargin{:});
 			set(gcf,'Name',['kernel ',inputname(1),' on SO(3)']);
-			xlim([min(omega),max(omega)]);
+			xlim([min(omega/degree),max(omega/degree)]);
 		case {'RK','RADON'}
-      optionplot(omega,kk(i).RK(cos(omega)),'LineWidth',2,varargin{:});
+      optionplot(omega/degree,kk(i).RK(cos(omega)),'LineWidth',2,varargin{:});
 			set(gcf,'Name',['Randon transformed kernel ',inputname(1),' on S^2']);
 			xlim([0,pi]);
 		case 'RRK'
