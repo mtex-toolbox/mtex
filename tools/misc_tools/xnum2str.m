@@ -16,6 +16,8 @@ if length(n) > 1
     s = [s,' ',num2str(n(i))];
   end
   return;
+elseif isempty(n)
+  n = 0;
 end
 
 %check whether to use floating point or not

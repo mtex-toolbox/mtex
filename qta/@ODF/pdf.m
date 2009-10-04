@@ -22,7 +22,11 @@ if isa(h,'S2Grid')
   Z = zeros(GridLength(h),1);
 else
   if isa(h,'Miller'), h = set(h,'CS',getSym(odf));end
-  Z = zeros(GridLength(r),1);
+  if isa(r,'S2Grid')
+    Z = zeros(GridLength(r),1);
+  else
+    Z = zeros(numel(r),1);
+  end
 end
 
 % superposition coefficients

@@ -5,6 +5,6 @@ function plotboundaries(ebsd,varargin)
 %  ebsd   - @EBSD
 %
 %% See also
-% EBSD/semgment2d grain/grain
+% EBSD/segment2d grain/grain
 
 segment2d(ebsd,varargin{:},'plot','silent');

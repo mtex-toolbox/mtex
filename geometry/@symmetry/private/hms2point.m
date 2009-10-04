@@ -22,7 +22,7 @@ end
 
 % remove two consecutive numbers if the second is a divisor of the first
 % eg. 63 62 42 32
-if length(regexp(s,'\d'))>=4
+if length(regexp(s,'[\dm]'))>=4
   ind = regexp(s,'\d\d');
   if ~isempty(ind)
     ind = ind(1);

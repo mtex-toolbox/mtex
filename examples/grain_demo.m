@@ -2,8 +2,8 @@
 %
 % Analysis of single orientation measurement.
 %
-% 
-% 
+%
+%
 
 %% Specify Crystal and Specimen Symmetry
 
@@ -25,8 +25,8 @@ plotx2east
 
 %% Plot Spatial Data
 
-plot(ebsd,'phase',1,'colorcoding','ihs')
-              
+plot(ebsd,'phase',1)
+
 %% Segmentation
 
 [grains ebsd] = segment2d(ebsd)
@@ -71,7 +71,7 @@ y5_2 = hist(grainsize( link(grains5,ebsd(2)) ),x)';
 
 disp(' ')
 disp(' <= x <   phase1       | phase2      ');
-disp('           12.5°    5° |  12.5°   5° ');
+disp('           12.5Â°    5Â° |  12.5Â°   5Â° ');
 disp('-------------------------------------')
 
 disp(num2str([ x' y1,y5_1, y2, y5_2 ],' %10d %11d %6d|%6d %6d'))
@@ -82,7 +82,7 @@ disp(num2str([ x' y1,y5_1, y2, y5_2 ],' %10d %11d %6d|%6d %6d'))
 figure, bar(1:length(x),[y1,y5_1, y2,y5_2]);
 set(gca,'YScale','log')
 set(gca,'XTickLabel',mat2cell(x',ones(size(x))))
-legend('phase 1 : 15°','phase 1 : 5°','phase 2 : 15°','phase 2 : 5°')
+legend('phase 1 : 15Â°','phase 1 : 5Â°','phase 2 : 15Â°','phase 2 : 5Â°')
 
 %% Compare phases in scatter plots
 
@@ -130,7 +130,7 @@ ebsd_fractions = link(ebsd, grains_fractions)
 % there are many ways to plot grains
 
 figure, hold all
-plot(ebsd_fractions,'colorcoding','ihs')
+plot(ebsd_fractions)
 plot(grains_fractions,'color','black','linewidth',1)
   % however the holes of a grain are plotted by default in an other color
 plot(grains_fractions,'b','noholes','linewidth',1.5)
@@ -147,11 +147,11 @@ plotellipse(grains_fractions,'hull','scale',0.25,'b','linewidth',1.5)
 
 grains = mean(grains, ebsd)
 
-%% 
+%%
 % as we see, the mean is stored as new property 'orientation'. we can plot
 % it
 
-figure, plot(grains,'property','orientation','colorcoding','ihs')
+figure, plot(grains,'property','orientation')
 
 %% Properties of a grain
 % We also can copy known properties from the ebsd object to our grains
@@ -182,9 +182,9 @@ joincount(grains,hassubfraction(grains));
 joincount(grains,hasholes(grains));
   % ...
 
-%% Multiple Access of EBSD data 
+%% Multiple Access of EBSD data
 % there is a routine grainfun to allow iterative access
-% we can split our EBSD data  
+% we can split our EBSD data
 
 ebsd_fractions
 
@@ -221,7 +221,7 @@ pgrains = calcODF(pgrains,ebsd_mis,'kernel',kern,'property','ODF_mis','exact')
 
 %%
 % now we can work with grainfun by specifiying the property-field 'ODF' and
-% applying an function on it, e.g we want to calculate the textureindex of 
+% applying an function on it, e.g we want to calculate the textureindex of
 % each grain
 
 tindex = grainfun(@textureindex, pgrains,'ODF');
@@ -251,7 +251,7 @@ xlabel('texture index')
 ylabel('area')
  axis tight
  grid on
- 
+
 %%
 %
 

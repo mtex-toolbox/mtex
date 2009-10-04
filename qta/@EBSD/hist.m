@@ -7,7 +7,7 @@ function [h bins] = hist(ebsd,varargin)
 %  [n bins]= hist(ebsd,...)
 %
 %% Input
-%  ebsd     - @ebsd
+%  ebsd     - @EBSD
 %  q0       - reference @quaternion 
 %
 %% Output

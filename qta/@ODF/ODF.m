@@ -77,7 +77,7 @@ end
 
 % check amount of coefficients
 if ~check_option(varargin,'FOURIER') && lg ~= length(c)
-  error(['number of gridpoints and coefficients missmatch: ',int2str(lg),'-',int2str(c)]);
+  error(['number of gridpoints and coefficients missmatch: ',int2str(lg),'-',int2str(length(c))]);
 end
 
 % check symmetries

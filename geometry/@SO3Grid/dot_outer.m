@@ -25,7 +25,7 @@ if ~check_option(SO3G,'indexed') || check_option(varargin,{'full','all'})
 else
 
   % rotate q according to SO3Grid.center
-  if ~isempty(SO3G.center),q = q * inverse(SO3G.center); end
+  if ~isempty(SO3G.center),q = inverse(SO3G.center) * q; end
   
   % extract SO3Grid
   [ybeta,yalpha,ialphabeta,palpha] = getdata(SO3G.alphabeta);
