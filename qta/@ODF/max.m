@@ -28,7 +28,7 @@ res = get_option(varargin,'resolution',5*degree);
 S3G = SO3Grid(res,odf(1).CS,odf(1).SS);
 qa = getFundamentalRegion(S3G);
 
-dof = eval(odf,S3G,varargin{:});
+dof = eval(odf,S3G,varargin{:}); %#ok<EVLC>
 
 % eliminate zeros
 del = dof>0;

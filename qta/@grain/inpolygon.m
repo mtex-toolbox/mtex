@@ -11,7 +11,7 @@ function [grains ind] = inpolygon(grains, xy, method)
 %  method - 'complete' (default), 'centroids', 'intersect'
 %
 %% Output
-%  grains - @grains
+%  grains - @grain
 %  ind    - indices
 %
 

@@ -13,7 +13,7 @@ function grains = calcODF(grains,ebsd,varargin)
 %  phase   - specifies the phase to calculate the odf for
 %
 %% See also
-% ebsd/calcODF
+% EBSD/calcODF
 
 if nargin>1 && isa(ebsd,'EBSD')
   
