@@ -34,7 +34,7 @@ if newMTEXplot('ensureTag','ebsd_scatter',...
   
   % reference orientation for fundamental region
   if ~check_option(varargin,'center')
-    varargin = {varargin{:},'center',mean(grid)};
+    varargin = [varargin,{'center',mean(grid)}];
   end
     
 else

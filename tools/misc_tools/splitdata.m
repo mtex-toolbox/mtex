@@ -3,7 +3,7 @@ function ind = splitdata(pl,n)
 
 if issorted(pl)
   r = 0;
-elseif issorted(flipud(pl));
+elseif issorted(pl(end:-1:1))
   r = 1;
 else
   error('requires sorted input')

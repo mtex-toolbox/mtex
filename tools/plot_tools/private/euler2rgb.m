@@ -3,7 +3,7 @@ function c = euler2rgb(S3G,varargin)
 
 % get reference orientation
 q0 = get_option(varargin,'center',idquaternion);
-S3G = S3G * inverse(q0);
+S3G = inverse(q0) * S3G;
 
 % restrict to fundamental region
 q = getFundamentalRegion(S3G);

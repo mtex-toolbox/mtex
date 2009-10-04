@@ -1,13 +1,19 @@
-function display(odf)
+function display(odf,varargin)
 % standard output
 
 disp(' ');
-if ~isempty(odf(1).comment)
-  disp(odf(1).comment);
-  disp(repmat('-',1,length(odf(1).comment)));
-else
-  disp([inputname(1),' = ODF',]);
-end
+
+h = 'ODF';
+if check_option(varargin,'vname')
+  h = [get_option(varargin,'vname'), ' = ' h];
+elseif ~isempty(inputname(1))
+  h = [inputname(1), ' = ' h];
+end;
+if ~isempty(odf(1).comment), h = [h ' (' odf(1).comment ')']; end
+
+disp(h);
+disp(repmat('-',1,length(h)));
+
 disp([' symmetry: ',char(odf(1).CS),' - ',char(odf(1).SS)]);
 disp(' ');
 for i = 1:length(odf)

@@ -27,5 +27,5 @@ elseif ~isempty(ebsd(1).xy) %&& size([ebsd.xy],1) == sum(GridLength([ebsd.orient
   plotspatial(ebsd,varargin{:});
 else
   h = [Miller(0,0,1),Miller(1,1,0),Miller(1,1,1)];
-  plotpdf(ebsd,h);
+  plotpdf(ebsd,h,varargin{:});
 end

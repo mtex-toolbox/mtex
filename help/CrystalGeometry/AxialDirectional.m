@@ -1,27 +1,30 @@
-%% Axial and Directional
+%% Antipodal Symmetry
 %
 %% Open in Editor
 %
 %% Abstract
 % In MTEX it is possible to consider three dimensional vectors either as
-% directions or as axes. By default a the pair of vectors 
+% directions or as axes. The key option to distinguesh between both
+% interpretations is *antipodal*.
 %
 %% Contents
 %
 %%
+% By default a the pair of vectors
 
 v1 = vector3d(1,1,2);
 v2 = vector3d(1,1,-2);
 
 %%
-% when plotted at the sphere 
+% when plotted at the sphere
 
 close all; figure('position',[100 100 400 300])
 plot([v1,v2],'label',{'v_1','v_2'})
 
 %%
-% occurs both on the upper and on the lower hemisphere. In order to treat
-% these vectors as axes one has to apply the keyword *antipodal*. 
+% occurs either on the upper or on the lower hemisphere. In order to treat
+% these vectors as axes, i.e. in order to assume antipodal symmetry one
+% has to use the keyword *antipodal*.
 
 plot([v1,v2],'label',{'v_1','v_2'},'antipodal')
 
@@ -29,20 +32,23 @@ plot([v1,v2],'label',{'v_1','v_2'},'antipodal')
 % Now the direction $v_2$ is identified with the direction -$v_2$ which
 % plotts at the upper hemispher.
 
-%% The Angle between Directions and Axis
+%% The Angle between Directions and Axes
 %
-% In general there is also a difference 
+% Another example, where it matters whether antipdal symmetry is assumed
+% or not is the angle between two vectors. In the absence of antipdal
+% geometry we have
 
 angle(v1,v2) / degree
 
 %%
+% whereas, if antipodal symmetry is assumed we obtain
 
 angle(v1,v2,'antipodal') / degree
 
-%% Axial Symmetry in Experimental Pole Figures
+%% Antipodal Symmetry in Experimental Pole Figures
 %
-% Due to Friedels law experimental pole figures are allways antipodal data. One
-% consequence of this fact is that MTEX plots pole figure data allway on
+% Due to Friedels law experimental pole figures allways provide antipodal symmetry. One
+% consequence of this fact is that MTEX plots pole figure data allways on
 % the upper hemisphere
 
 % crystal and specimen symmetry
@@ -68,7 +74,7 @@ plot(pf)
 
 annotate(vector3d(1,0,-1),'labeled')
 
-%% Axial Symmetry in Recalculated Pole Figures
+%% Antipodal Symmetry in Recalculated Pole Figures
 %
 % However, in the case of pole figures calculated from an ODF antipodal
 % symmetry is in general not present.
@@ -84,12 +90,12 @@ plotpdf(odf,Miller(1,2,2),'position',[100 100 400 200])
 
 %%
 % Hence, if one wants to compare calculated pole figures with experimental
-% one, one has to add antipodal symmetry.
+% ones, one has to add antipodal symmetry.
 
 plotpdf(odf,Miller(1,2,2),'antipodal')
 
-%% Axial Symmetry in inverse Pole Figures
-% 
+%% Antipodal Symmetry in inverse Pole Figures
+%
 % The same reasoning as above holds true for inverse pole figures. I we
 % look at complete, inverse pole figures they do not posses antipodal symmetry
 % in general
@@ -112,7 +118,7 @@ plotipdf(odf,yvector,'antipodal')
 
 %% EBSD Colocoding
 %
-% Axial symmetry effects also the colocoding of ebsd plots. Lets first
+% Antipodal symmetry effects also the colocoding of ebsd plots. Lets first
 % import some data.
 
 % crystal symmetry

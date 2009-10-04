@@ -1,13 +1,21 @@
-function display(ebsd)
+function display(ebsd,varargin)
 % standard output
 
 disp(' ');
+h = 'Individuel Orientation Data';
+
+if check_option(varargin,'vname')
+  h = [get_option(varargin,'vname'), ' = ' h];
+elseif ~isempty(inputname(1))
+  h = [inputname(1), ' = ' h];
+end;
+
+disp(h);
+disp(repmat('-',1,length(h)));
+
 if numel(ebsd)>0 && ~isempty(ebsd(1).comment)
-  disp(ebsd(1).comment);
-  disp(repmat('-',1,length(ebsd(1).comment)));
-else
-  disp([inputname(1),' = EBSD data',]);
-end
+  disp([' file: ' ebsd(1).comment]);
+end  
 
 if numel(ebsd)>0 && ~isempty(fields(ebsd(1).options))
   disp([' properties: ',option2str(fields(ebsd(1).options))]);

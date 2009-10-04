@@ -7,7 +7,7 @@ function ebsd = misorientation(grains,varargin)
 %
 %% Input
 %  grains   - @grain
-%  ebsd     - @ebsd
+%  ebsd     - @EBSD
 %
 %% Output
 %  ebsd    - @EBSD

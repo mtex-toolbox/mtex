@@ -5,7 +5,7 @@ function ebsd = toebsd(grains)
 %  grains   - @grain
 %
 %% Output
-%  ebsd  - @ebsd
+%  ebsd  - @EBSD
 %
 %% See also
 % ebsd/calcODF
