@@ -101,8 +101,8 @@ assert(length(cols) == length(names), 'Length of ColumnNames and Columns differ'
 [names m] = unique(names);
 cols = cols(m);
 
-istype = @(in, a) all(cellfun(@(x) any(find(strcmpi(in,x))),a));
-layoutcol = @(in, a) cols(cellfun(@(x) find(strcmpi(in,x)),a));
+istype = @(in, a) all(cellfun(@(x) any(find(strcmpi(stripws(in),stripws(x)))),a));
+layoutcol = @(in, a) cols(cellfun(@(x) find(strcmpi(stripws(in),stripws(x))),a));
    
 euler = lower({'Euler 1' 'Euler 2' 'Euler 3'});
 quat = lower({'Quat real' 'Quat i' 'Quat j' 'Quat k'});
@@ -210,4 +210,6 @@ for ip = 1:length(phases)
   ebsd(ip) = EBSD(SO3Grid(q(ind),cs(ip),ss),cs(ip),ss,varargin{:},'xy',pxy,'phase',phases(ip),'options',popt); %#ok<AGROW>
 end
 
+function str = stripws(str)
 
+str = strrep(str,' ','');
