@@ -1,11 +1,23 @@
 function [vol,dist] = volume(k,radius,dist)
 
 if nargin < 3
-  dist = linspace(0,min(pi,radius + 5 * k.hw),50);
-  if dist(end) < pi
-    dist = [dist(1:end-1),linspace(dist(end),pi,10)];
+  N = 60;
+  dist = zeros(numel(radius),N);
+  for i = 1:length(radius)
+        
+    if radius(i) + 5 * k.hw < pi
+      dist(i,1:N-9) = linspace(0,radius(i) + 5 * k.hw,N-9);
+      dist(i,N-9:end) = linspace(radius(i) + 5 * k.hw,pi,10);
+    else
+      dist(i,:) = linspace(0,pi,N);
+    end
+    
   end
+
 end
+
+% make radius square as well
+radius = repmat(radius(:),1,size(dist,2));
 
 %% weight function
 weight = @(rot_angle,quat_dist,volume_radius) (max(0,min(4*pi,2*pi*(1-(cos(volume_radius/2) - ...
@@ -20,7 +32,9 @@ KV = @(rot_angle,quat_dist,volume_radius) weight(rot_angle,quat_dist,volume_radi
   .* sin(rot_angle ./2).^2 .* k.K(cos(rot_angle./2)) ./pi.*2 ;
 
 %% perform quadrature
-vol = zeros(size(dist));
-for j = 1:length(dist)
-  vol(j) = quad(@(rot_angle) KV(rot_angle,dist(j),radius),0,min(pi,5*k.hw),1e-6);
-end
+%vol = zeros(size(dist));
+%for j = 1:length(dist)
+%  vol(j) = quad(@(rot_angle) KV(rot_angle,dist(j),radius),0,min(pi,5*k.hw),1e-6);
+%end
+
+vol = quadv(@(rot_angle) KV(rot_angle,dist,radius),0,min(pi,5*k.hw),1e-7);
