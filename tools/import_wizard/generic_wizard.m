@@ -16,8 +16,6 @@ function [options] = generic_wizard(varargin)
 
 if length(varargin) < 4, error('need more arguments');end
 
-options = {};
-
 if check_option(varargin,'data')
   data = get_option(varargin,'data');
 else
@@ -32,10 +30,13 @@ if check_option(varargin,'type')
   switch type
     case 'EBSD'
       values = {'Ignore','Euler 1','Euler 2','Euler 3','x','y','Phase','Quat real','Quat i','Quat j','Quat k','Weight'};
+      mandatory = {values(2:4),values(8:11)};
     case 'PoleFigure'
       values = {'Ignore','Polar Angle','Azimuth Angle','Intensity','Background','x','y','z'};
+      mandatory = {values(2:4)};
     case 'ODF'
       values = {'Ignore','Euler 1','Euler 2','Euler 3','Quat real','Quat i','Quat j','Quat k','Weight'};
+      mandatory = {values([2:4,9]),values(5:9)};
     otherwise
       disp('wrong option');
       return
@@ -167,49 +168,76 @@ uicontrol('Parent',htp,'Style','PushButton','String','Cancel ','Position',[w-2*7
   'CallBack','close');
 
 %% -------- retun statement ----------------------------------------------
-uiwait(htp);
 
-if ishandle(htp)
+while ishandle(htp)
 
-  % get column association
-  if verLessThan('matlab','7.4')
-    data = cellstr(char(get(mtable,'data')));
-  else
-    data = cellstr(char(mtable.getData));
-  end
-
-  ind = find(~strcmpi(data,'Ignore'));
-  options = {'ColumnNames',data(ind)};
-  if length(ind) < length(data)
-    options = [options,{'Columns',ind}];
-  end
-
-  % degree / radians
-  if get(rad_box,'value'), options = [{'RADIANS'},options];end
+  options = {};
+  uiwait(htp);
   
-  if ~strcmp(type,'PoleFigure')
-  
-    % Eule angle convention
-    conventions = {'Bunge','ABG'};
-    options = [options,conventions(get(euler_convention,'value'))];
+  if ishandle(htp)
+
+    % get column association
+    if verLessThan('matlab','7.4')
+      data = cellstr(char(get(mtable,'data')));
+    else
+      data = cellstr(char(mtable.getData));
+    end
+
+    ind = find(~strcmpi(data,'Ignore'));
+    options = {'ColumnNames',data(ind)};
+    if length(ind) < length(data)
+      options = [options,{'Columns',ind}];
+    end
+
+    % check for mandatory columnnames
+    for i = 1:length(mandatory)
+      pass = true;
+      for j = 1:length(mandatory{i})
+        if sum(strcmp(stripws(data(ind)),stripws(mandatory{i}{j}))) ~= 1
+          pass = false;
+          break
+        end
+      end
     
-    % active / pasive rotation
-    if get(passive_box,'value')
-      options = [options,{'passive rotation'}];
+      if pass, break;end      
+    end
+    if ~pass
+      errordlg(['Not all of the mandatory columnnames ',...
+        sprintf('%s, ', mandatory{1}{:}) 'has been specified!'],...
+        'Error in generic wizzard','modal');
+      continue;
     end
     
-    if strcmp(type,'EBSD')
-      phase = str2num(get(phaseopt,'string')); %#ok<ST2NM>
-      if ~isempty(phase)
-        options = [options,{'ignorePhase',phase}];
-      end
-    end      
+    % degree / radians
+    if get(rad_box,'value'), options = [{'RADIANS'},options];end
     
+    if ~strcmp(type,'PoleFigure')
+    
+      % Eule angle convention
+      conventions = {'Bunge','ABG'};
+      options = [options,conventions(get(euler_convention,'value'))];
+      
+      % active / pasive rotation
+      if get(passive_box,'value')
+        options = [options,{'passive rotation'}];
+      end
+      
+      if strcmp(type,'EBSD')
+        phase = str2num(get(phaseopt,'string')); %#ok<ST2NM>
+        if ~isempty(phase)
+          options = [options,{'ignorePhase',phase}];
+        end
+      end
+      
+    end
+    
+    close(htp);
+    pause(0.3);
   end
-
-  close(htp);
-  pause(0.3);
 end
+
+
+
 
 %% Callbacks
 
@@ -235,14 +263,13 @@ uicontrol(...
 
 function cdata = guessColNames(values,l,colnames)
 
-if isempty(colnames)
-  cdata = values(1:l<=end);
-  return
-elseif length(colnames) == l
+if length(colnames) == l
   cdata = colnames;
 else
   cdata = repmat(values(1),1,l);
 end
+
+if isempty(colnames), return;end
 
 for i = 1:length(values)
   ind = strmatch(lower(values(i)),lower(colnames));
@@ -272,3 +299,6 @@ if ~isempty(strmatch('alpha',lower(colnames))) && ...
   cdata{strmatch('gamma',lower(colnames))}='Euler 3';
 end
 
+function str = stripws(str)
+
+str = strrep(str,' ','');
