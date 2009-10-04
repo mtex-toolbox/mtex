@@ -2,7 +2,7 @@
 %
 %% Contents
 %
-%% MTEX 2.0 beta 1 - 09/2009
+%% MTEX 2.0 - 10/2009
 %
 % *Grain Analysis for EBSD Data*
 %
