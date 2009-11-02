@@ -21,8 +21,7 @@ function t = textureindex(odf,varargin)
 
 if check_option(varargin,'fourier')
   
-  L = get_option(varargin,'bandwidth',bandwidth(odf));
-  t = norm(Fourier(odf,'bandwidth',L,'l2-normalization')).^2;
+  t = norm(Fourier(odf,'l2-normalization',varargin{:})).^2;
   
 else
   % discretisation
