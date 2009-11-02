@@ -1,38 +1,60 @@
-function c = crossCorrelation(ebsd,psi,N)
+function [psi,c] = crossCorrelation(ebsd,varargin)
 % computes the cross correlation for the kernel density estimator
+
+
+for k = 1:15
+  psi(k) = kernel('de la Vallee Poussin','halfwidth',40*degree/2^(k/4)); %#ok<AGROW>
+end
+psi = get_option(varargin,'kernel',psi);
 
 q = get(ebsd,'quaternion');
 
-c = zeros(N,length(psi));
-s = [];
+%% partition data set
+sN = ceil(min(length(q),get_option(varargin,'SamplingSize',1000)));
+pN = get_option(varargin,'PartitionSize',ceil(1000000/length(q)));
+cN = ceil(sN / pN);
 
-for i = 1:N
+c = zeros(cN,length(psi));
+iN = zeros(1,cN);
+progress(0,cN,' estimate optimal kernel halfwidth: ');
+
+for i = 1:cN
   
-  d = 2*acos(dot_outer(ebsd(1).CS,ebsd(1).SS,q(i),q([1:i-1 i+1:end])));
+  iN(i) = min(length(q),i*pN);
+  ind = ((i-1) * pN + 1):iN(i);
+  
+  d = dot_outer(ebsd(1).CS,ebsd(1).SS,q(ind),q);
   
   for k = 1:length(psi)
     
-    c(i,k) = log(sum(eval(psi(k),d))); %#ok<EVLC>
+    % eval kernel
+    f = evalCos(psi(k),d);
+    
+    % remove diagonal
+    f(sub2ind(size(f),1:size(f,1),ind)) = 0;
+    
+    % sum up
+    c(i,k) = sum(log(sum(f,2)));
     
   end
   
-  if mod(i,10) == 0
-    %  fprintf(repmat('\b',1,length(s)));
-    %  s = num2str(exp(sum(c)./i));
-    %  fprintf('%s',s);
-    %  %disp(c(i,:)./i);
-    [cm,ci] = max(sum(c));
-    fprintf('%d ',ci);
-  end
-    
+  %[cm,ci] = max(sum(c));
+  %fprintf('%d ',ci);
+  progress(i,cN,' estimate optimal kernel halfwidth: ');
+  
+  
 end
-fprintf('\n');
+%fprintf('\n');
 
-c = cumsum(c,1) ./ repmat((1:N).',1,length(psi));
+c = cumsum(c,1) ./ repmat(iN.',1,length(psi));
+[cm,ci] = max(c(end,:));
+psi = psi(ci);
 
 return
 
-cs = symmetry('orthorhombic');
+%% some testing data
+
+cs = symmetry('orthorhombic'); %#ok<*UNRCH>
 ss = symmetry('triclinic');
 model_odf = 0.5*uniformODF(cs,ss) + ...
   0.05*fibreODF(Miller(1,0,0),xvector,cs,ss,'halfwidth',10*degree) + ...
@@ -48,7 +70,14 @@ for k = 1:15
 end
 psi
 
+c = crossCorrelation(ebsd,psi,'PartitionSize',10,'SamplingSize',1000);
 
-crossCorrelation(ebsd,psi);
+plot(c)
 
+[cm,ci] = max(c,[],2);
 
+2^(-1/7)*pi^(4/7) * textureindex(model_odf,'fourier','bandwidth',32,'weighted',(1+(0:32)).*(0:32)).^(6/7)
+
+%1000   -> 
+%10000  -> 1000
+%100000 -> 100
