@@ -45,6 +45,15 @@ if check_option(varargin,'l2-normalization')
   end
 end
   
+if check_option(varargin,'weighted')
+  w = get_option(varargin,'weighted');
+  for l = 0:L
+    odf_hat(deg2dim(l)+1:deg2dim(l+1)) = ...
+      odf_hat(deg2dim(l)+1:deg2dim(l+1)) ./ sqrt(2*l+1) * w(l+1);
+  end
+end
+
+
 if check_option(varargin,'order')
   odf_hat = reshape(odf_hat(deg2dim(L)+1:deg2dim(L+1)),2*L+1,2*L+1);
 end
