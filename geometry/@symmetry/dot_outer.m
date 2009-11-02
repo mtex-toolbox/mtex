@@ -15,7 +15,7 @@ lSS = length(SS.quat);
 
 if (l1 < l2) && (l1>0)
 	g1rot = reshape(reshape(SS.quat * g1,[],1) * CS.quat.',[lSS l1 lCS]);
-	g1rot = shiftdim(g1rot,-1); % -> CS x SS x g1
+	g1rot = permute(g1rot,[3 1 2]); % -> CS x SS x g1
 						
 	d = reshape(dot_outer(g1rot,g2),[lCS * lSS,l1,l2]); %-> CS * SS x g1 x g2
 	d = reshape(max(d,[],1),l1,l2);
