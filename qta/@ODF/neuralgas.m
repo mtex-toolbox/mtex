@@ -68,7 +68,7 @@ for t=1:tmax
   [dst k] = sort(dst);  
   W = W(k,:); %sort vectors
   
-  dw = p*e(t).*exp(-kk./(p*l(t))); % probabilistic distance stimuli
+  dw = e(t).*exp(-kk./(p*l(t))); % probabilistic distance stimuli
   % dw = p.^2.*exp(-kk./l(t));
   
   % update direction
@@ -77,16 +77,23 @@ for t=1:tmax
   W(:,3) = W(:,3) + dw.*(d(3) - W(:,3)); 
   
   %vector normalisation on unit sphere
-  nrm =   sqrt(W(:,1).^2 + W(:,2).^2 + W(:,3).^2);
+  nrm = sqrt(W(:,1).^2 + W(:,2).^2 + W(:,3).^2);
   
   W(:,1) = W(:,1)./nrm;
   W(:,2) = W(:,2)./nrm; 
   W(:,3) = W(:,3)./nrm; 
       
   if verb && ~mod(t,500)
-    plot(S2Grid(vector3d(W')))
+    plot(S2Grid(vector3d(W')),'north');
     drawnow
   end  
 end
 
 S2G = S2Grid(vector3d(W'));
+
+
+if verb 
+  plotpdf(odf,h,'north');
+  hold on, 
+  plot(S2G);
+end
