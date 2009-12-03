@@ -25,6 +25,9 @@ for i = 1:length(odf)
     disp(' fibre symmetric portion:');
     disp(['  kernel: ',char(odf(i).psi)]);
     disp(['  center: ',char(odf(i).center{1}),'-',char(odf(i).center{2})]);
+  elseif check_option(odf(i),'Bingham')
+    disp(' Bingham distributed portion:');
+    disp(['  Lambda: ',xnum2str(odf(i).c)]); 
   else
     disp(' radially symmetric portion:');
     disp(['  kernel: ',char(odf(i).psi)]);

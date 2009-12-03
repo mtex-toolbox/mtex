@@ -52,7 +52,22 @@ for s = 1:length(sp)
         RRK(odf(i).psi,vector3d(odf(i).center{1}),odf(i).center{2},...
         vector3d(h(s)),vector3d(r),odf(i).CS,odf(i).SS,varargin{:}),[],1) *...
         odf(i).c(:);
-    
+      
+      % -------------------- Bingham portion --------------------------
+    elseif check_option(odf(i),'Bingham')
+      
+      q1 = hr2quat(vector3d(h),vector3d(r));
+      q2 = quaternion(rotaxis(q1));
+      
+      A1 = dot_outer(q1,quaternion(odf(i).center));
+      A2 = dot_outer(q2,quaternion(odf(i).center));
+      
+      a = (A1.^2 +  A2.^2) * reshape(odf(i).c,[],1) ./2;
+      b = (A1.^2 -  A2.^2) * reshape(odf(i).c,[],1) ./2;
+      c = (A1.^2 .*  A2.^2) * reshape(odf(i).c,[],1) ./2;
+      
+      Z = Z + exp(a) .* besseli(0,sqrt(b.^2 + c.^2));
+      
       % --------------- radially symmetric portion ----------------------------
     else
       Z = Z + sp(s) * reshape(...
