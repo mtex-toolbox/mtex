@@ -7,7 +7,8 @@ function odf = ODF(center,c,psi,CS,SS,varargin)
 %
 %% Syntax
 % odf = ODF(center,weigths,kernel,CS,SS,<options>)
-% odf = ODF({h,r},weigths,kernel,CS,SS,<options>)
+% odf = ODF({h,r},weigths,kernel,CS,SS,'Fibre',<options>)
+% odf = ODF([A],[Lambda],[],CS,SS,'Bingham',<options>)
 %
 %% Input
 %  center  - @SO3Grid of modal orientations
@@ -67,6 +68,8 @@ elseif check_option(varargin,'FIBRE')
   lg = length(center{1});
 elseif check_option(varargin,'UNIFORM')
   lg = 1;
+elseif check_option(varargin,'Bingham')
+  lg = 4;  
 else
   if ~(isa(center,'SO3Grid') && isa(c,'double') && isa(psi,'kernel')...
       && isa(CS,'symmetry') && isa(CS,'symmetry'))
@@ -92,5 +95,5 @@ odf.c_hat = c_hat;
 odf.psi = psi;
 odf.CS = CS;
 odf.SS = SS;
-odf.options = extract_option(varargin,{'uniform','fibre','fourier'});
+odf.options = extract_option(varargin,{'uniform','fibre','fourier','bingham'});
 odf = class(odf,'ODF');

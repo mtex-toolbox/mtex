@@ -11,7 +11,7 @@ elseif nargin == 1
     if isa(a,'quaternion')
         q=a;
     elseif isa(a,'vector3d')
-        q.a = 0;
+        q.a = zeros(size(a));
         [q.b,q.c,q.d] = double(a);
         q = class(q,'quaternion');
     elseif isa(a,'double') && size(a,1) == 4

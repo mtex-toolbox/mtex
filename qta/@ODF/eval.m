@@ -42,6 +42,24 @@ for i = 1:length(odf)
       vector3d(odf(i).center{1}),odf(i).center{2},...
       odf(i).c,odf(i).CS,odf(i).SS,1),size(f));
       
+  elseif check_option(odf(i),'Bingham')
+    
+    
+    %warning('MTEX:Bingham','Normalization missing!')
+    ASym = symmetriceQuat(odf(i).CS,odf(i).SS,quaternion(odf(i).center));
+    
+    
+    for iA = 1:size(ASym,2)
+    
+      h = dot_outer(quaternion(g),ASym(:,iA)).^2;
+      
+      h = h * reshape(odf(i).c,[],1);
+        
+      f = f + reshape(exp(h),size(f)) ./ size(ASym,2);
+    
+    end
+    
+    
   elseif check_option(varargin,'EVEN')
     
     M = GK(odf(i).psi,reshape(quaternion(g),[],1),...
