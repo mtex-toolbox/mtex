@@ -24,7 +24,12 @@ r = r./norm(r);
 n = cross(h,r);
 
 ind = isnull(n);
-n(ind) = orth(h(ind));
+
+if numel(h) >= numel(r)
+  n(ind) = orth(h(ind));
+else
+  n(ind) = orth(r(ind));
+end
 
 q = axis2quat(n,acos(dot(h,r)));
 
