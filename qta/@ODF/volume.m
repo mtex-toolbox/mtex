@@ -51,7 +51,12 @@ for i = 1:length(odf)
      
     [vv,S3G] = slowVolume(odf(i),center,radius,res,S3G);
     v = v + vv;
-      
+    
+  elseif check_option(odf(i),'BINGHAM') % fibre symmetric portion
+     
+    [vv,S3G] = slowVolume(odf(i),center,radius,res,S3G);
+    v = v + vv;
+    
   else % radially symmetric portion
       
     v = v + fastVolume(odf(i),center,radius);

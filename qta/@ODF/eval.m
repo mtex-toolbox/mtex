@@ -51,7 +51,7 @@ for i = 1:length(odf)
     
     for iA = 1:size(ASym,2)
     
-      h = dot_outer(quaternion(g),ASym(:,iA)).^2;
+      h = dot_outer_noabs(quaternion(g),ASym(:,iA)).^2;
       
       h = h * reshape(odf(i).c,[],1);
         

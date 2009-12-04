@@ -1,4 +1,4 @@
-function nodf = rotate(odf,q)
+function odf = rotate(odf,q)
 % rotate ODF
 %
 %% Input
@@ -8,12 +8,10 @@ function nodf = rotate(odf,q)
 %% Output
 %  rotated odf - @ODF
 
-nodf = odf;
-
 for i = 1:length(odf)
   if check_option(odf(i),'FIBRE')
     
-    nodf(i).center{2} = q * nodf(i).center{2};
+    odf(i).center{2} = q * odf(i).center{2};
     
   elseif check_option(odf(i),'FOURIER')
     
@@ -21,14 +19,14 @@ for i = 1:length(odf)
     D = wignerD(q,'bandwidth',L);
     
     for l = 0:L
-      nodf(i).c_hat(deg2dim(l)+1:deg2dim(l+1)) = ...
+      odf(i).c_hat(deg2dim(l)+1:deg2dim(l+1)) = ...
         reshape(D(deg2dim(l)+1:deg2dim(l+1)),2*l+1,2*l+1) * ...
         reshape(nodf.c_hat(deg2dim(l)+1:deg2dim(l+1)),2*l+1,2*l+1);
     end
     
   elseif ~check_option(odf(i),'UNIFORM')
     
-    nodf(i).center = q * nodf(i).center;
+    odf(i).center = q * odf(i).center;
     
   end
 end

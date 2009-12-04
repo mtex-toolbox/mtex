@@ -57,17 +57,25 @@ for s = 1:length(sp)
     elseif check_option(odf(i),'Bingham')
       
       q1 = hr2quat(vector3d(h),vector3d(r));
-      q2 = quaternion(rotaxis(q1));
+      q2 = q1 .* axis2quat(vector3d(h),pi);
       
-      A1 = dot_outer(q1,quaternion(odf(i).center));
-      A2 = dot_outer(q2,quaternion(odf(i).center));
+      ASym = symmetriceQuat(odf(i).CS,odf(i).SS,quaternion(odf(i).center));
+    
+    
+      for iA = 1:size(ASym,2)
+    
+        A1 = dot_outer_noabs(q1,ASym(:,iA));
+        A2 = dot_outer_noabs(q2,ASym(:,iA));
       
-      a = (A1.^2 +  A2.^2) * reshape(odf(i).c,[],1) ./2;
-      b = (A1.^2 -  A2.^2) * reshape(odf(i).c,[],1) ./2;
-      c = (A1.^2 .*  A2.^2) * reshape(odf(i).c,[],1) ./2;
+        a = (A1.^2 +  A2.^2) * reshape(odf(i).c,[],1) ./2;
+        b = (A1.^2 -  A2.^2) * reshape(odf(i).c,[],1) ./2;
+        c = (A1 .*  A2) * reshape(odf(i).c,[],1);
       
-      Z = Z + exp(a) .* besseli(0,sqrt(b.^2 + c.^2));
+        Z = Z + exp(a) .* besseli(0,sqrt(b.^2 + c.^2))./ size(ASym,2);
+
+      end
       
+            
       % --------------- radially symmetric portion ----------------------------
     else
       Z = Z + sp(s) * reshape(...

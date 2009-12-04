@@ -25,7 +25,7 @@ L = max(L,4);
 for i = 1:length(odf)
   
   % no precomputation
-  if ~check_option(odf(i),'Fourier')  && (check_option(odf(i),'UNIFORM') || ...
+  if check_option(odf(i),'Bingham') || ~check_option(odf(i),'Fourier')  && (check_option(odf(i),'UNIFORM') || ...
       dim2deg(length(odf(i).c_hat)) < min(L,length(getA(odf(i).psi))-1))
     
     if check_option(odf(i),'UNIFORM') % **** uniform portion *****
@@ -54,7 +54,11 @@ for i = 1:length(odf)
           length(odf(i).CS) / length(odf(i).SS);
               
       end
-        
+      
+    elseif check_option(odf(i),'BINGHAM') % ***** Bingham portion *****
+      
+      error('Computing the Fourier coefficients of Bingham ODFs is not yet supportet!');
+      
     else
       % **** radially symmetric portion ****
       % set parameter
