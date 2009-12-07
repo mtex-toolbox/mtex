@@ -70,8 +70,10 @@ for s = 1:length(sp)
         a = (A1.^2 +  A2.^2) * reshape(odf(i).c,[],1) ./2;
         b = (A1.^2 -  A2.^2) * reshape(odf(i).c,[],1) ./2;
         c = (A1 .*  A2) * reshape(odf(i).c,[],1);
+        
+        C = mhyper(odf(i).c);
       
-        Z = Z + exp(a) .* besseli(0,sqrt(b.^2 + c.^2))./ size(ASym,2);
+        Z = Z + exp(a)./C .* besseli(0,sqrt(b.^2 + c.^2))./ size(ASym,2);
 
       end
       

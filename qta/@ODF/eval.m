@@ -54,8 +54,10 @@ for i = 1:length(odf)
       h = dot_outer_noabs(quaternion(g),ASym(:,iA)).^2;
       
       h = h * reshape(odf(i).c,[],1);
-        
-      f = f + reshape(exp(h),size(f)) ./ size(ASym,2);
+      
+      C = mhyper(odf(i).c);
+      
+      f = f + reshape(exp(h)./C,size(f)) ./ size(ASym,2);
     
     end
     
