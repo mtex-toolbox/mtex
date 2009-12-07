@@ -48,14 +48,13 @@ for i = 1:length(odf)
     %warning('MTEX:Bingham','Normalization missing!')
     ASym = symmetriceQuat(odf(i).CS,odf(i).SS,quaternion(odf(i).center));
     
-    
+    C = mhyper(odf(i).c);
+      
     for iA = 1:size(ASym,2)
     
       h = dot_outer_noabs(quaternion(g),ASym(:,iA)).^2;
       
       h = h * reshape(odf(i).c,[],1);
-      
-      C = mhyper(odf(i).c);
       
       f = f + reshape(exp(h)./C,size(f)) ./ size(ASym,2);
     

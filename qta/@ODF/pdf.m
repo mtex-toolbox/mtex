@@ -61,7 +61,8 @@ for s = 1:length(sp)
       
       ASym = symmetriceQuat(odf(i).CS,odf(i).SS,quaternion(odf(i).center));
     
-    
+      C = mhyper(odf(i).c);
+       
       for iA = 1:size(ASym,2)
     
         A1 = dot_outer_noabs(q1,ASym(:,iA));
@@ -71,8 +72,6 @@ for s = 1:length(sp)
         b = (A1.^2 -  A2.^2) * reshape(odf(i).c,[],1) ./2;
         c = (A1 .*  A2) * reshape(odf(i).c,[],1);
         
-        C = mhyper(odf(i).c);
-      
         Z = Z + exp(a)./C .* besseli(0,sqrt(b.^2 + c.^2))./ size(ASym,2);
 
       end
