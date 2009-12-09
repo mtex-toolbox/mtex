@@ -176,7 +176,7 @@ for i = 1:nplots
     end
     
     if check_option(varargin,'MINMAX') && ~strcmp(get_option(varargin,'MINMAX'),'off')
-      anotation(a(i),min(Z(:)),max(Z(:)),fs{:});
+      anotation(a(i),min(Z(:)),max(Z(:)),maxz,fs{:});
     end
     if check_option(varargin,'ANOTATION')
       s = get_option(varargin,'ANOTATION');
@@ -248,9 +248,9 @@ end
 
 
 %% disp anotation in subfigures
-function anotation(a,mini,maxi,varargin)
-mini = xnum2str(mini);
-maxi = xnum2str(maxi);
+function anotation(a,mini,maxi,ref,varargin)
+mini = xnum2str(mini,ref);
+maxi = xnum2str(maxi,ref);
 
 set(a,'units','points');
 apos = get(a,'Position');
