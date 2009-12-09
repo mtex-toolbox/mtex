@@ -1,4 +1,4 @@
-function A = getA(k)
+function A = getA(k,varargin)
 % get Fourrier coefficients
 
-A = k.A;
+A = k.A(varargin{:});
