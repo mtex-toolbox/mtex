@@ -2,6 +2,7 @@ function Z = fourier2pdf(odf,h,r,varargin)
 % calculate pole figure from Fourier coefficients
 
 %% get input
+even = 1 + (check_option(varargin,'antipodal') || check_option(r,'antipodal'));
 h = vector3d(h);
 r = vector3d(r);
 if length(h) == 1
@@ -25,7 +26,10 @@ L = get_option(varargin,'bandwidth',bandwidth(odf));
 L = min(L,bandwidth(odf));
 
 ipdf_hat = cumsum([0,2*(0:L)+1]);
-for l = 0:L
+
+
+
+for l = 0:even:L
  
   P_hat(1+ipdf_hat(l+1):ipdf_hat(l+2)) = reshape(...
     odf.c_hat(1+deg2dim(l):deg2dim(l+1)),2*l+1,2*l+1) ./sqrt(2*l+1) ...
