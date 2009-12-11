@@ -15,6 +15,7 @@ function ebsd = misorientation(grains,varargin)
 %% Options
 %  direction -  'ij' (default)   specifies if to look from current grain i 
 %               'ji'             to neighbour j or other way round
+%  random    -  generate a random misorientation to neighbours
 %  weighted  - weight the misorientations against grainsize could be
 %              function_handle @(i,j)
 %
@@ -25,6 +26,8 @@ function ebsd = misorientation(grains,varargin)
 %  ebsd_mis = misorientation(grains,ebsd)
 %
 %  ebsd_mis = misorientation(grains,'direction','ji','weighted', @(i,j) j )
+%
+%  ebsd_mis = misorientation(grains,'random',10000)
 %
 %% See also
 % EBSD/calcODF EBSD/hist grain/mean grain/neighbours 
@@ -52,7 +55,8 @@ if nargin > 1 && isa(varargin{1},'EBSD') % misorientation to ebsd data
 
     ql = symmetriceQuat(cs,ss,quaternion(grid));
     qr = repmat(qm(ia(idb)).',1,size(ql,2));
-    q_res = inverse(ql).*qr;
+    q_res = ql'.*qr;
+%     q_res = inverse(ql).*qr;
     omega = rotangle(q_res);
   
     [omega,q_res] = selectMinbyRow(omega,q_res);
@@ -86,47 +90,75 @@ else % misorientation to neighbour grains
     pCS = pCS{:};
     pSS = get(gr(1),'SS');
     pSS = pSS{:};
-
-
-    grain_ids = [gr.id];
-    cod(grain_ids) = 1:length(grain_ids);  
-
-
-    s = [ 0 cumsum(cellfun('length',{gr.neighbour}))];
-    ix = zeros(1,s(end));
-    for l = 1:length(grain_ids)
-        ix(s(l)+1:s(l+1)) = grain_ids(l);
-    end  
-    iy = vertcat(gr.neighbour);
-
-    msz = max([max(ix), max(iy),max(grain_ids)]);
-    T1 = sparse(ix,iy,true,msz,msz);
-
-    qall = cell(1,length(gr));
-    weight = cell(1,length(gr));
-
+    
     qsym = symmetriceQuat(pCS,pSS, mean).';
+   
+    if check_option(varargin,'random')      
+      n = length(mean);
+      np = get_option(varargin,'random', n*(n-1)/2,'double');
+      
+      pairs = fix(rand(np,2)*(length(mean)-1)+1);
+      pairs(pairs(:,1)-pairs(:,2) == 0,:) = [];
+      pairs = unique(sort(pairs,2),'rows');
+      
+      sym_q = qsym(:,pairs(:,1));
+      cen_q = repmat(mean(pairs(:,2)),length(pCS),1);
+      
+      %partition due to memory
+      parts = [ 1:25000:size(sym_q,2) size(sym_q,2)+1];
+      
+      g = quaternion(zeros(4,size(sym_q,2)));
+      for l = 1:length(parts)-1
+      	cur = parts(l):parts(l+1)-1;
+        if doinverse, gp = cen_q(:,cur).*sym_q(:,cur)'; 
+        else          gp = sym_q(:,cur).*cen_q(:,cur)'; end
+        
+        [o ndx2] = min(rotangle(gp),[],1);
+        ndx = sub2ind(size(gp),ndx2,1:length(ndx2));
+        g(cur) =  gp(ndx);
+        
+      end      
+     
+      if doweights,  weight{1} = weightfun(asr(pairs(:,1)),asr(pairs(:,2)));  end
+    else
+      grain_ids = [gr.id];
+      cod(grain_ids) = 1:length(grain_ids);  
 
-    s1 = size(qsym,1);  
-    cndx = [0 cumsum(repmat(s1,1,max(sum(T1,2))))];
 
-    for l=1:length(gr)
-      sel = cod(T1(:,grain_ids(l)));
-
-      if ~isempty(sel)
-        sym_q = qsym(:,sel);
-        cen_q = mean(l);
-        [omega ndx] = min(2*acos(abs(dot(sym_q,cen_q))),[],1);     
-        nei_q =  sym_q(ndx + cndx(1:numel(sel)));
-
-        if doinverse, qall{l} = cen_q .* nei_q'; %qall{l}'
-        else        	qall{l} = nei_q .* cen_q'; end 
-
-        if doweights, weight{l} = weightfun(asr(l),asr(sel)); end
+      s = [ 0 cumsum(cellfun('length',{gr.neighbour}))];
+      ix = zeros(1,s(end));
+      for l = 1:length(grain_ids)
+          ix(s(l)+1:s(l+1)) = grain_ids(l);
       end  
-    end  
-    g = [qall{~cellfun('isempty',qall)}];
+      iy = vertcat(gr.neighbour);
 
+      msz = max([max(ix), max(iy),max(grain_ids)]);
+      T1 = sparse(ix,iy,true,msz,msz);
+
+      qall = cell(1,length(gr));
+      weight = cell(1,length(gr));
+      
+      s1 = size(qsym,1);  
+      cndx = [0 cumsum(repmat(s1,1,max(sum(T1,2))))];
+
+
+      for l=1:length(gr)
+        sel = cod(T1(:,grain_ids(l)));
+
+        if ~isempty(sel)
+          sym_q = qsym(:,sel);
+          cen_q = mean(l);
+          [omega ndx] = min(2*acos(abs(dot(sym_q,cen_q))),[],1);     
+          nei_q =  sym_q(ndx + cndx(1:numel(sel)));
+
+          if doinverse, qall{l} = cen_q .* nei_q'; %qall{l}'
+          else        	qall{l} = nei_q .* cen_q'; end 
+
+          if doweights, weight{l} = weightfun(asr(l),asr(sel)); end
+        end  
+      end  
+      g = [qall{~cellfun('isempty',qall)}];
+    end
     if doweights
       p.weight = [weight{:}]';
     else
