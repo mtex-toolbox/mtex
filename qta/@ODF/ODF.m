@@ -69,7 +69,7 @@ elseif check_option(varargin,'FIBRE')
 elseif check_option(varargin,'UNIFORM')
   lg = 1;
 elseif check_option(varargin,'Bingham')
-  lg = 4;  
+  lg = 1;  
 else
   if ~(isa(center,'SO3Grid') && isa(c,'double') && isa(psi,'kernel')...
       && isa(CS,'symmetry') && isa(CS,'symmetry'))
