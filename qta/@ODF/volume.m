@@ -52,7 +52,7 @@ for i = 1:length(odf)
     [vv,S3G] = slowVolume(odf(i),center,radius,res,S3G);
     v = v + vv;
     
-  elseif check_option(odf(i),'BINGHAM') % fibre symmetric portion
+  elseif check_option(odf(i),'BINGHAM') % Bingham portion
      
     [vv,S3G] = slowVolume(odf(i),center,radius,res,S3G);
     v = v + vv;

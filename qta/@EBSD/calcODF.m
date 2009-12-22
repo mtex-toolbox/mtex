@@ -68,7 +68,7 @@ max_coef = 32;
 gridlen = gridlen*length(ebsd(1).CS);
 
 %% Fourier ODF
-if ~check_option(varargin,'exact') && ...
+if ~check_option(varargin,{'exact','noFourier'}) && ...
     (check_option(varargin,'Fourier') || (gridlen > 200 && bandwidth(k) < max_coef))
   vdisp(' construct Fourier odf',varargin{:});
   

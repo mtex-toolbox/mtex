@@ -3,7 +3,7 @@ function display(odf,varargin)
 
 disp(' ');
 
-h = 'ODF';
+h = 'Orientation Density Function';
 if check_option(varargin,'vname')
   h = [get_option(varargin,'vname'), ' = ' h];
 elseif ~isempty(inputname(1))
@@ -18,18 +18,18 @@ disp([' symmetry: ',char(odf(1).CS),' - ',char(odf(1).SS)]);
 disp(' ');
 for i = 1:length(odf)
   if check_option(odf(i),'UNIFORM')
-    disp(' uniform portion:');    
+    disp(' Uniform portion:');    
   elseif check_option(odf(i),'Fourier')
-    disp(' portion specified by Fourier coefficients:');    
+    disp(' Portion specified by Fourier coefficients:');    
   elseif check_option(odf(i),'FIBRE')
-    disp(' fibre symmetric portion:');
+    disp(' Fibre symmetric portion:');
     disp(['  kernel: ',char(odf(i).psi)]);
     disp(['  center: ',char(odf(i).center{1}),'-',char(odf(i).center{2})]);
   elseif check_option(odf(i),'Bingham')
     disp(' Bingham distributed portion:');
-    disp(['  Lambda: ',xnum2str(odf(i).c)]); 
+    disp(['  lambda: ',xnum2str(odf(i).psi)]); 
   else
-    disp(' radially symmetric portion:');
+    disp(' Radially symmetric portion:');
     disp(['  kernel: ',char(odf(i).psi)]);
     disp(['  center: ',char(odf(i).center)]);
   end

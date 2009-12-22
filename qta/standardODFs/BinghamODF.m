@@ -24,6 +24,6 @@ argin_check(A,{'double','quaternion'});
 argin_check(CS,'symmetry');
 argin_check(SS,'symmetry');
 
-odf = ODF(A,Lambda,[],CS,SS,'Bingham');
+odf = ODF(A,1,Lambda,CS,SS,'Bingham');
 
 % 
