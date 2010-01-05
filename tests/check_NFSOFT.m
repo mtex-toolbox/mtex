@@ -10,7 +10,7 @@ L = 16;
 %q = axis2quat(zvector,90*degree);
 %h = [xvector,-xvector,yvector];
 
-qq = quaternion(SO3Grid(50));
+qq = quaternion(SO3Grid(10));
 h = vector3d(S2Grid('equispaced','points',20,'antipodal'));
 
 progress(0,length(qq));
@@ -22,11 +22,11 @@ for iq = 1:length(qq)
   q = qq(iq);
   
   %% convert to export parameters
-  [alpha,beta,gamma] = quat2euler(q);
-  alpha = fft_rho(alpha); %-->z
-  beta  = fft_theta(beta);
-  gamma = fft_rho(gamma); %-->z
-  g = 2*pi*[alpha;beta;gamma];
+  g = quat2euler(q,'nfft');
+%   alpha = fft_rho(alpha); %-->z
+%   beta  = fft_theta(beta);
+%   gamma = fft_rho(gamma); %-->z
+%   g = 2*pi*[alpha;beta;gamma];
   %g = [0;pi/2;0];
       
   %% set parameters

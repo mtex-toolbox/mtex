@@ -1,4 +1,6 @@
+#include <nfft3util.h>
 #include <nfft3.h>
+
 
 typedef struct ipdf_plan_ {
 
@@ -12,7 +14,7 @@ typedef struct ipdf_plan_ {
 
   nfsft_plan plan;           /**< plan for the nfsft */
   
-  infsft_plan iplan;         /**< plan for the inverse nfsft */
+  solver_plan_complex iplan;         /**< plan for the inverse nfsft */
   
 } ipdf_plan;
 

@@ -58,7 +58,7 @@ if nargout == 0
 elseif check_option(varargin,'nfft')
   
   alpha = fft_rho(alpha);
-  beta  = fft_theta(beta);
+  beta  = fft_theta(-beta);
   gamma = fft_rho(gamma);
   varargout{1} = 2*pi*[alpha(:),beta(:),gamma(:)].';
   

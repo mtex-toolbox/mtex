@@ -9,12 +9,11 @@
  */
 
 
-#include <zbfm.h>
-#include <nfft3.h>
 #include <stdlib.h>
 #include <helper.h>
-#include <util.h>
 #include <string.h>
+#include <zbfm.h>
+#include <nfft3.h>
 
 
 /************************** constructor ************************************/

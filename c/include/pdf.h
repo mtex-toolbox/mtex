@@ -1,4 +1,8 @@
+#include <complex.h>
+
+#include <nfft3util.h>
 #include <nfft3.h>
+
 
 #define NO_TRAFO_GH        (1U<< 10)
 #define NO_TRAFO_R         (1U<< 11)

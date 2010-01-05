@@ -24,5 +24,4 @@ S3G = extract_SO3grid(odf,varargin{:});
 % eval odf
 %disp(' evaluate odf');
 e = eval(odf,S3G,varargin{:});
-e = e(e>0);
-e = - sum(e .* log(e))/GridLength(S3G);
+e = - nansum(e .* log(e))/GridLength(S3G);
