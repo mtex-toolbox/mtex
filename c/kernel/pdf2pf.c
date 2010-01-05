@@ -9,10 +9,8 @@
  */
 
 #include <math.h>
-#include <complex.h>
 #include <pio.h>
 #include <helper.h>
-#include <nfft3.h>
 #include <pdf.h>
 
 #define Nparam 3

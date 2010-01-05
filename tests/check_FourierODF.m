@@ -4,11 +4,11 @@
 
 cs = symmetry('-1');
 ss = symmetry('-1');  
-h = [Miller(1,0,0),Miller(1,1,0),Miller(0,0,1)];
+h = [Miller(1,0,0),Miller(1,1,0),Miller(0,0,1),Miller(1,-3,-4)];
 
 %% check unimodal ODF
 
-odf = unimodalODF(axis2quat(xvector+zvector+yvector,60*degree),cs,ss);
+odf = unimodalODF(axis2quat(vector3d(2,-3,-5),60*degree),cs,ss);
 %odf = UnimodalODF(axis2quat(yvector,45*degree)*axis2quat(xvector,45*degree),cs,ss);
 fodf = calcFourier(odf,32); 
 fodf = FourierODF(fodf);

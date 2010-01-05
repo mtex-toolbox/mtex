@@ -1,9 +1,10 @@
-#include <nfft3.h>
+#include <complex.h>
 #include <pdf.h>
 #include <sparse.h>
 
 #define WEIGHTS                 (1U<< 0)
 #define REGULARISATION          (1U<< 1)
+
 
 typedef struct zbfm_plan_{
  

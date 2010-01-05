@@ -12,9 +12,7 @@ function Y = sphericalY(l, theta, rho)
 %% See also
 % wignerD
 
-if isa(theta,'vector3d')
-  [theta,rho] = vec2sph(theta);
-end
+if isa(theta,'vector3d'), [theta,rho] = vec2sph(theta); end
 
 % calculate assoziated legendre functions
 L = reshape(legendre(l,cos(theta(:))).',numel(theta),l+1); % nodes x order
@@ -25,12 +23,9 @@ L = L * diag(w);
 
 % expand to negative order
 if l>0
-  %L = [fliplr(L(:,2:end))*diag((-1).^(-l:-1)),L];
   L = [fliplr(L(:,2:end)),L]*diag((-1).^(-l:l));
 end
-%L = fliplr(L);
-%if l>0, L = [fliplr(L(:,2:end)),L];end
 
 % calcualte spherical harmonics
-Y = sqrt((2*l+1)/4/pi) .* L .* exp(i*rho(:) * (-l:l));
-%Y = fliplr(Y);
+Y = sqrt((2*l+1)/4/pi) .* L .* exp(1i*rho(:) * (-l:l));
+

@@ -35,7 +35,7 @@ MEXFLAGS= -compatibleArrayDims#-largeArrayDims
 #
 # local directories
 BPATH = c/bin/$(TARGET)/
-SUBDIRS = c/kernel.dir c/nsoft.dir c/test.dir c/mex.dir
+SUBDIRS = c/kernel.dir c/test.dir c/mex.dir
 
 # top-level rule, to compile everything.
 all: $(SUBDIRS)
@@ -43,11 +43,11 @@ all: $(SUBDIRS)
 # descent into subdirectories
 %.dir:
 	$(MAKE) -e CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" NFFTPATH=$(NFFTPATH) FFTWPATH=$(FFTWPATH) MATLABPATH=$(MATLABPATH) MEXFLAGS="$(MEXFLAGS)" TARGET="$(TARGET)" -C $*
-	$(MAKE) install -C $*
+	$(MAKE) TARGET="$(TARGET)" install -C $*
 
 # rule for cleaning re-compilable files.
 clean:
-	rm -f c/bin/*
+	# rm -f c/bin/*
 	find . -name '*~' -or -name '*.log' -or -name '.directory' -or -name '*.o' -or -name '*.mex*'| xargs /bin/rm -rf
 
 # rule for installing as root

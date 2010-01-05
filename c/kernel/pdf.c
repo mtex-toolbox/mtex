@@ -1,7 +1,9 @@
-#include <pdf.h>
-#include <util.h>
 #include <helper.h>
-#include <fftw3.h>
+
+#include <nfft3util.h>
+#include <nfft3.h>
+
+#include <pdf.h>
 /*#include <string.h>*/
 
 void extract_f_hat(nfsft_plan *ths, complex *f1_hat,complex *f2_hat)

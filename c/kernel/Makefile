@@ -1,16 +1,16 @@
 # Makefile of the MTEX toolbox
 #
-#--------------- begin editable section ------------------------------- 
+#--------------- begin editable section -------------------------------
 #
 # here comes your operating system
-# glnx86  - 32 bit Linux 
-# glnxa64 - 64 bit Linux 
+# glnx86  - 32 bit Linux
+# glnxa64 - 64 bit Linux
 # maci    - 32 bit Mac OSX
 # maci64  - 64 bit Mac OSX
 # win32   - 32 bit Windows
 # win64   - 64 bit Windows
 #
-TARGET ?= glnxa64
+TARGET ?= glnx86
 # please correct the following installation directories:
 #
 # path to FFTW, i.e. to lib/libfftw3.a
@@ -26,7 +26,6 @@ NFFTPATH ?= /home/hielscher/c
 # local variables
 BPATH = ../bin/$(TARGET)/
 TPATH = ../tools
-SOPATH = ../nsoft
 
 CC=gcc
 LD=gcc
@@ -42,16 +41,15 @@ LIBS = $(NFFTPATH)/lib/libnfft3.a $(FFTWPATH)/lib/libfftw3.a #$(FFTWPATH)/lib/li
 # list of generated object files.
 IOTOOLS = $(TPATH)/pio.o $(TPATH)/helper.o $(TPATH)/sparse.o
 SOLVERTOOLS = zbfm.o zbfm_solver.o odf.o
-SOOBJ = $(SOPATH)/wigner.o $(SOPATH)/nfsoft.o 
 
 #
-TARGETS = odf2pf pf2odf pf2pdf pdf2pf fc2odf odf2fc
+TARGETS = odf2pf pf2odf pdf2pf fc2odf odf2fc #pf2pdf
 
 # top-level rule, to compile everything.
 all: $(TARGETS)
 
 # odf -> pdf
-odf2pf: odf2pf.o pdf.o $(IOTOOLS) 
+odf2pf: odf2pf.o pdf.o $(IOTOOLS)
 	$(LD) $(LDFLAGS) $(IOTOOLS) pdf.o $(LIBS) $@.o -o $@
 
 # pdf -> odf
@@ -63,19 +61,19 @@ pf2pdf: pf2pdf.o $(IOTOOLS) pdf.o ipdf.o
 	$(LD) $(LDFLAGS) $(IOTOOLS) pdf.o ipdf.o $(LIBS) $@.o -o $@
 
 # Fourier coefficients -> pdf
-pdf2pf: pdf2pf.o $(IOTOOLS) pdf.o 
+pdf2pf: pdf2pf.o $(IOTOOLS) pdf.o
 	$(LD) $(LDFLAGS) $(IOTOOLS) pdf.o $(LIBS) $@.o -o $@
 
 # Fourier coefficients - odf
-fc2odf: fc2odf.o $(IOTOOLS) $(SOOBJ) 
-	$(LD) $(LDFLAGS) $(IOTOOLS) $(SOOBJ) $(LIBS) $@.o -o $@
+fc2odf: fc.o fc2odf.o $(IOTOOLS)
+	$(LD) $(LDFLAGS) $(IOTOOLS) fc.o $@.o $(LIBS) -o $@
 
 # odf -> Fourier coefficients
-odf2fc: odf2fc.o $(IOTOOLS) $(SOOBJ)
-	$(LD) $(LDFLAGS) $(IOTOOLS) $(SOOBJ) $(LIBS) $@.o -o $@
+odf2fc: fc.o odf2fc.o $(IOTOOLS)
+	$(LD) $(LDFLAGS) $(IOTOOLS) fc.o $@.o $(LIBS) -o $@
 
 install:
-	mv $(TARGETS) ../bin
+	mv $(TARGETS) $(BPATH)
 
-%.o: %.c 
+%.o: %.c
 	$(CC) $(MYCFLAGS) -c $< -o $@

@@ -44,12 +44,12 @@ for i = 1:length(odf)
       [theta_h,rho_h] = vec2sph(h(:));
       [theta_r,rho_r] = vec2sph(r(:));
     
+      odf(i).c_hat = zeros(deg2dim(length(A)),1);
       for l = 0:min(L,length(A)-1)
         hat = odf(i).c * 4*pi / (2*l+1) * A(l+1) *...
           sphericalY(l,theta_h,rho_h).' * conj(sphericalY(l,theta_r,rho_r));
         
         hat = hat';
-        
         odf(i).c_hat(deg2dim(l)+1:deg2dim(l+1)) = hat(:) / ...
           length(odf(i).CS) / length(odf(i).SS);
               
