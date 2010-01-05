@@ -22,15 +22,14 @@ function odf = calcODF(ebsd,varargin)
 %% Options
 %  HALFWIDTH        - halfwidth of the kernel function 
 %  RESOLUTION       - resolution of the grid where the ODF is approximated
-%  EXACT            - no approximation to a corser grid
 %  KERNEL           - kernel function (default - de la Valee Poussin kernel)
-%  SILENT           - no output
 %  L/HARMONICDEGREE - (if Fourier) order up to which Fourier coefficients are calculated
 %
 %% Flags
-%  EXACT            - exact ODF 
-%  FOURIER          - calculate an Fourier ODF
-%
+%  SILENT           - no output
+%  EXACT            - no approximation to a corser grid
+%  FOURIER          - force Fourier method
+%  noFourier        - no Fourier method
 %
 %% See also
 % ebsd_demo EBSD2odf_estimation EBSDSimulation EBSD/loadEBSD ODF/simulateEBSD
@@ -57,9 +56,29 @@ end
 weight = weight ./ sum(weight(:));
 
 % get halfwidth and kernel
-[k hw] = extract_kernel(g,varargin);
+if check_option(varargin,'kernel')
+  
+  k = get_option(varargin,'kernel');
+  
+elseif check_option(varargin,'halfwidth','double') 
+  
+  k = kernel('de la Vallee Poussin',varargin{:});
+  
+elseif check_option(varargin,'halfwidth') && ...
+    strcmpi(get_option(varargin,'halfwidth'),'auto')
+  
+  k = crossCorrelation(ebsd);
+  
+else
+    
+  k = kernel('de la Vallee Poussin','halfwidth',10*degree);
+  
+end
 
-vdisp([' used kernel: ' char(k)],varargin{:});
+hw = gethw(k);
+vdisp([' kernel: ' char(k)],varargin{:});
+
+
 
 odf = ODF(g,weight,k,...
   ebsd(1).CS,ebsd(1).SS,'comment',['ODF estimated from ',getcomment(ebsd(1))]);
