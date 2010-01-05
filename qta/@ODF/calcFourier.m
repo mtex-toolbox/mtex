@@ -35,6 +35,7 @@ for i = 1:length(odf)
     elseif check_option(odf(i),'FIBRE') % ***** fibre symmetric portion *****
     
       A = getA(odf(i).psi);
+      A = A(1:min(max(4,L+1),length(A)));
             
       % symmetrize
       h = odf(i).CS * vector3d(odf(i).center{1});
