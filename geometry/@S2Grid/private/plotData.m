@@ -12,6 +12,15 @@ end
 h = [];
 plottype = get_flag(varargin,{'CONTOUR','CONTOURF','SMOOTH','SCATTER','TEXTUREMAP','rgb'});
 
+%% round data for faster plotting
+
+if exist('cr','var') && isa(data,'double') && ndims(data) == 2
+  ca = caxis;
+  dd = ca(2) - ca(1);
+  data = dd/128 * round(128/dd * data);
+end
+
+
 %% for compatiility with version 7.1
 if ndims(X) == 2 && X(1,1) > X(1,end)
   X = fliplr(X);
@@ -52,14 +61,18 @@ elseif any(strcmpi(plottype,{'CONTOUR','CONTOURF'}))
   
   if check_option(varargin,'CONTOURF') % filled contour plot
   
-    [CM,h] = contourf(X,Y,data,contours{:});
-    set(h,'LineStyle','none');
-
+    if numel(unique(data)) == 1
+      fill(X,Y,data,'LineStyle','none');
+    else
+      [CM,h] = contourf(X,Y,data,contours{:});
+      set(h,'LineStyle','none');
+    end
   end
-  
-  [CM,hh] = contour(X,Y,data,contours{:},'k');
-  h = [h,hh];
-       
+  if numel(unique(data)) > 1
+    [CM,hh] = contour(X,Y,data,contours{:},'k');
+    h = [h,hh];
+  end
+
 %% smooth plot
 elseif any(strcmpi(plottype,'SMOOTH'))
   
