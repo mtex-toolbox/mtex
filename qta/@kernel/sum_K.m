@@ -52,10 +52,10 @@ while iter <= numiter
   %eval the kernel
   if along 
     M = K(kk,g1,g2(ind),CS,SS,'nocubictrifoldaxis',varargin{:});
-    s = s + reshape(M * reshape(c(ind),[],1),size(s));  
+    s = s + reshape(full(M * reshape(c(ind),[],1)),size(s));  
   else    
     M = K(kk,g1(ind),g2,CS,SS,'nocubictrifoldaxis',varargin{:});
-    s(ind) = s(ind) + reshape(M * c(:),size(s(ind)));
+    s(ind) = s(ind) + reshape(full(M * c(:)),size(s(ind)));
   end 
   
   if num == 1
