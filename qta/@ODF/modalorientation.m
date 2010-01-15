@@ -63,3 +63,4 @@ while res >= resmax || (0.95 * max(f(:)) > f0)
 end
 
 g0 = g0(f(:)==max(f(:)));
+g0 = orientation(g0,odf(1).CS,odf(1).SS);

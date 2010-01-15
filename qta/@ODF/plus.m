@@ -7,4 +7,16 @@ function odf = plus(o1,o2)
 %% See also
 % ODF_index ODF/mtimes
 
+if isa(o2,'double')
+  
+  o2 = o2 * uniformODF(o1.CS,o1.SS);  
+  
+elseif isa(o1,'double')
+  
+  o1 = o1 * uniformODF(o2.CS,o2.SS);  
+  
+end
+
 odf = [o1,o2];
+
+  

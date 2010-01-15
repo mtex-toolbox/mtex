@@ -1,14 +1,15 @@
 function display(v)
 % standard output
 
-if max(abs(v.x)) < 1e-14, v.x = zeros(size(v.x));end
-if max(abs(v.y)) < 1e-14, v.y = zeros(size(v.y));end
-if max(abs(v.z)) < 1e-14, v.z = zeros(size(v.z));end
+disp(' ');
+disp([inputname(1) ' = ' doclink('SpecimenDirections','vector3d') ': (size: ' int2str(size(v)) ')']);
 
-disp([inputname(1) ' = "vector3d"']);
-disp('  x = ');
-disp(v.x);
-disp('  y = ');
-disp(v.y);
-disp('  z = ');
-disp(v.z);
+if numel(v) < 20 && numel(v)>0
+  
+  d = [v.x(:),v.y(:),v.z(:)];
+  d(abs(d) < 1e-10) = 0;
+  
+  cprintf(d,'-L','  ','-Lc',{'x' 'y' 'z'});
+end
+
+disp(' ');

@@ -2,6 +2,11 @@
 %
 %% Contents
 %
+%% MTEX 2.1 -
+%
+% * added Bingham distribution
+% * MTEX is now compatibel with NFFT 3.1.3
+%
 %% MTEX 2.0 - 10/2009
 %
 % *Grain Analysis for EBSD Data*

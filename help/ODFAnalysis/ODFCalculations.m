@@ -19,8 +19,8 @@
 %%
 % A bimodal ODF:
 cs = symmetry('orthorhombic');ss = symmetry('triclinic');
-odf1 = unimodalODF(euler2quat(0,0,0),cs,ss) + ...
-  unimodalODF(euler2quat(30*degree,0,0),cs,ss)
+odf1 = unimodalODF(orientation('Euler',0,0,0,cs,ss)) + ...
+  unimodalODF(orientation('Euler',30*degree,0,0,cs,ss))
 
 %% 
 % A fibre ODF:
@@ -54,10 +54,6 @@ odf3 = calcODF(pf,'resolution',5*degree,'iter_max',10)
 % Determine the modalorientation as an
 % [[quaternion_index.html,quaternion]]:
 center = modalorientation(odf3);
-
-%% 
-% Convert into Euler angles:
-quat2euler(center)
 
 %% 
 % Lets mark this prefered orientation in the pole figures

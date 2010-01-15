@@ -24,7 +24,7 @@
 
 cs = symmetry('trigonal');
 m = Miller(1,0,-1,1,cs)
-m = vec2Miller(zvector,cs)
+m = Miller(zvector,cs)
 
 %% Plotting Miller indece
 %
@@ -45,27 +45,27 @@ plot(Miller(2,1,-3,1,cs),'all','labeled')   % plot Miller indece
 %
 % A simple way to compute all symmetrically equivalent
 % directions to a given crystal direction is proveded by the command
-% <Miller_symeq.html symeq>
+% <Miller_symmetrice.html symmetrice>
 
 m = Miller(1,1,-2,0,cs)
-symeq(m)
+symmetrice(m)
 
 %% 
 % As allways the keyword <AxialDirectional.html antipodal> adds antipodal symmetry to this
 % computation
 
-symeq(m,'antipodal')
+symmetrice(m,'antipodal')
 
 %%
 % The command <Miller_symeq.html symeq> can also be used to check whether
 % two crystal directions are symmetrically equivalent. Compare
 
-symeq(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs))
+Miller(1,1,-2,0,cs) == Miller(-1,-1,2,0,cs)
 
 %%
 % and
 
-symeq(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'antipodal')
+eq(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'antipodal')
 
 %% Angles
 %
@@ -93,26 +93,26 @@ vector3d(m)
 % Conversion into spherical coordinates requires the function <vector3d_vec2sph.html
 % vec2sph> 
 
-[theta,rho] = vec2sph(vector3d(m))
+[theta,rho] = vec2sph(m)
 
 %% Calculations
 %
 % Given a crystal orientation
 
 cs = symmetry('cubic');
-q = brassOrientation(cs);
+o = brassOrientation(cs)
 
 %%
 % one can apply it to a crystal direction to find its coordinates with
 % respect to the specimen coordinate system
 
-q * m
+o * m
 
 %% 
 % By applying a [[symmetry_index.html,crystal symmetry class]] one obtains
 % the coordinates with respect to the specimen coordinate system of all
 % crystallographically equivalent specimen directions.  
 
-p = q * cs * m;
+p = o * symmetrice(m);
 plot(p)
 

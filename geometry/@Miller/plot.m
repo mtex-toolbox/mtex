@@ -23,9 +23,9 @@ for i = 1:numel(m)
 
   % all symmetrically equivalent?
   if check_option(varargin,'ALL')  
-    mm = vec2Miller(symvec(m(i),'plot',varargin{:}),m(i).CS);
+    mm = symmetrice(subsref(m,i),'plot',varargin{:});
   else
-    mm = m(i);
+    mm = subsref(m,i);
   end
 
   options = {};
@@ -38,7 +38,7 @@ for i = 1:numel(m)
   end
   
   % plot
-  plot(S2Grid(vector3d(mm)),options{:},varargin{:});
+  plot(S2Grid(mm),options{:},varargin{:});
   
   hold all
 end

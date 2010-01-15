@@ -1,4 +1,14 @@
-function b = eq(v1,v2)
-% ? v1 == v2
+function b = eq(m1,m2,varargin)
+% ? m1 == m2
+%
+%% Input
+%  m1, m2 - @Miller
+%
+%% Output
+%  b - boolean
+%
+%% Options
+%  antipodal - include antipodal symmetry
+%
 
-b = ([v1.h] == [v2.h]) & ([v1.k] == [v2.k]) & ([v1.l] == [v2.l]);
+b = isnull(angle(m1,m2,varargin{:}));

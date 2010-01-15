@@ -10,4 +10,4 @@ function m = unique(m,varargin)
 %% Output
 %  m - @Miller
 
-m = cunion(m,@(a,b) symeq(a,b));
+m = cunion(m,@(a,b) eq(a,b,varargin{:}));

@@ -1,13 +1,15 @@
 function display(N)
 % standard output
 
-disp([inputname(1) ' = "SO3Grid"']);
+disp(' ');
+disp([inputname(1) ' = ' doclink('SO3Grid_index','SO3Grid')]);
 if length(N) == 1
-	disp(['Symmetry: ',char(N.CS),' - ',char(N.SS)]);
-	disp(['Grid    : ',char(N)]);
+	disp(['  symmetry: ',char(N.CS),' - ',char(N.SS)]);
+	disp(['  grid    : ',char(N)]);
 else
-	disp(['Symmetry: ',char(N(1).CS),' - ',char(N(1).SS)]);
+	disp(['  symmetry: ',char(N(1).CS),' - ',char(N(1).SS)]);
 	for i = 1:length(N)
-		disp(['Grid ',int2str(i),'  : ',char(N(i))]);
+		disp(['  grid ',int2str(i),'  : ',char(N(i))]);
 	end
 end
+disp(' ');

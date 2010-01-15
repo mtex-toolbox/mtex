@@ -94,5 +94,5 @@ s.axis = calcAxis(sym.System,axis,angle,varargin{:});
 s.quat = calcQuat(s.laue,s.axis);
 s.mineral = get_option(varargin,'mineral','');
 
-superiorto('quaternion','SO3Grid');
+superiorto('quaternion','SO3Grid','orientation');
 s = class(s,'symmetry');

@@ -3,7 +3,7 @@ function quat = Miller2quat(v1,v2,CS)
 %
 %% Description
 % The method *Miller2quat* defines a [[quaternion_index.html,rotation]]
-% by Miller indece as the rotation |q| such that |q * v1 = e3| and |q * v2 = e1|
+% by Miller indece as the rotation |q| such that |q * v1 = e3| and |q * e1 = v2|
 %
 %% Syntax
 %  quat = Miller2quat(m1,m2)
@@ -33,7 +33,7 @@ end
 % ensure angle (v1,v2) = 90°
 
 v1 = vector3d(v1);
-v2 = symvec(v2);
+v2 = symmetrice(v2);
 
 v2 = v2(isnull(dot(v1,v2))); v2 = v2(1);
 

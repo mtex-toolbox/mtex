@@ -56,8 +56,8 @@ for s = 1:length(sp)
       % -------------------- Bingham portion --------------------------
     elseif check_option(odf(i),'Bingham')
       
-      q1 = hr2quat(vector3d(h),vector3d(r));
-      q2 = q1 .* axis2quat(vector3d(h),pi);
+      q1 = hr2quat(vector3d(h(s)),vector3d(r));
+      q2 = q1 .* axis2quat(vector3d(h(s)),pi);
       
       ASym = symmetriceQuat(odf(i).CS,odf(i).SS,quaternion(odf(i).center));
     
@@ -72,7 +72,7 @@ for s = 1:length(sp)
         b = (A1.^2 -  A2.^2) * reshape(odf(i).psi,[],1) ./2;
         c = (A1 .*  A2) * reshape(odf(i).psi,[],1);
         
-        Z = Z + exp(a) .* C .* besseli(0,sqrt(b.^2 + c.^2))./ size(ASym,2);
+        Z = Z + sp(s) * exp(a) .* C .* besseli(0,sqrt(b.^2 + c.^2))./ size(ASym,2);
 
       end
       

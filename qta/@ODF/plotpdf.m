@@ -7,7 +7,7 @@ function plotpdf(odf,h,varargin)
 %
 %% Input
 %  odf - @ODF
-%  h   - @Miller / @vector3d crystallographic directions
+%  h   - @Miller crystallographic directions
 %  c   - structure coefficients
 %
 %% Options

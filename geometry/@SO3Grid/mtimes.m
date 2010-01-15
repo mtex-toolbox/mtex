@@ -16,7 +16,7 @@ function out = mtimes(SO3G,q)
 if isa(SO3G,'SO3Grid') % right multiplication
   
   if isa(q,'SO3Grid'), q = quaternion(q); end
-  if isa(q,'Miller'), q = vector3d(q,SO3G(1).CS);end
+  if isa(q,'Miller'), q = set(q,'CS',SO3G(1).CS);end
   q = reshape(q,1,[]);
   
   if isa(q,'quaternion') % returns quaternions

@@ -58,7 +58,7 @@ if check_option(varargin,'superposition')
     'appdata',@(i) {{'h',h}},...
     varargin{:});
 else
-  r = @(i) reshape(ss * grid * symvec(h(i)),[],1);
+  r = @(i) reshape(ss * grid * symmetrice(h(i)),[],1);
   [maxtheta,maxrho,minrho] = getFundamentalRegionPF(ss,varargin{:});
   Sr = @(i) S2Grid(r(i),'MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
   

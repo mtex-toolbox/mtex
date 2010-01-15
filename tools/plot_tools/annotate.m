@@ -73,7 +73,7 @@ for i = 1:length(ax)
         
       if isa(obj,'quaternion')
       
-        plot(ss*obj*symeq(h,varargin{:}),'MarkerEdgeColor','w',varargin{:});
+        plot(ss*obj*symmetrice(h,varargin{:}),'MarkerEdgeColor','w',varargin{:});
         
       elseif isa(obj,'vector3d')
       

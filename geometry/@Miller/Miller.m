@@ -1,70 +1,52 @@
-function [m,er] = Miller(h,k,l,n,CS)
+function [m,er] = Miller(varargin)
 % constructor
+%
 %% Input
 %  h,k,l,n(optional) - double
 %  CS - crystal @symmetry
+%
+%
 
 er = 0;
-switch nargin 
-	case 0
-		m.h = 1;
-		m.k = 0;
-		m.l = 0;
-    m.CS = symmetry;
-	case 1
-    argin_check(h,'Miller');
-		m = h;
-	case 3
-    argin_check(h,'double');
-    argin_check(k,'double');
-    argin_check(l,'double');    
-		m.h = h;
-    m.k = k;
-    m.l = l;
-    m.CS = symmetry;
-	case 4
-    argin_check(h,'double');
-    argin_check(k,'double');
-    argin_check(l,'double');    
-    m.h = h;
-    m.k = k;
-    if isa(n,'symmetry')
-      m.l = l;
-      m.CS = n;
-    elseif isa(n,'double')
-      m.l = n;
-      m.CS = symmetry;
-      if h+k+l ~= 0
-        if nargout == 2
-          er = 1;
-        else
-          warning(['Convention h+k+i=0 violated! I assume i = ',int2str(-h-k)]); %#ok<WNTAG>
-        end
-      end
-    else
-      error('No symmetry specified in Miller!');
-    end
-  case 5
-    argin_check(h,'double');
-    argin_check(k,'double');
-    argin_check(l,'double');    
-    argin_check(n,'double');    
-    argin_check(CS,'symmetry');    
-    m.h = h;
-    m.k = k;
-    m.l = n;
-    if h+k+l ~= 0
-      warning(['Convention h+k+i=0 violated! I assume i = ',int2str(-h-k)]); %#ok<WNTAG>
-    end
-    m.CS = CS;
+
+% check for symmetry
+if nargin > 0 && isa(varargin{nargin},'symmetry')
+  m.CS = varargin{nargin};
+  varargin = varargin(1:end-1);
+else
+  m.CS = symmetry;
 end
 
-if length(m.h)>1
-	for i=1:length(h)
-		mm(i) = Miller(m.h(i),m.k(i),m.l(i),m.CS); %#ok<AGROW>
-	end
-	m = mm;
-else
-	superiorto('symmetry','vector3d','quaternion');
-	m = class(m,'Miller');	
+if nargin == 0
+  
+  v = vector3d;
+
+elseif isa(varargin{1},'Miller')
+  
+  m = varargin{1};
+  return
+  
+elseif isa(varargin{1},'vector3d')
+  
+  v = varargin{1};
+  
+elseif isa(varargin{1},'double')
+  
+  for i = 2:length(varargin), argin_check(varargin{i},'double'); end
+  
+  if length(varargin) > 4 || length(varargin) < 3
+    error('wrong number of arguments!');
+  end
+  
+  v = m2v(varargin{1},varargin{2},varargin{end},m.CS);
+  if length(varargin)==4 && varargin{1} + varargin{2} + varargin{3} ~= 0
+    if nargout == 2
+      er = 1;
+    else
+      warning(['Convention h+k+i=0 violated! I assume i = ',int2str(-varargin{1} + varargin{2})]); %#ok<WNTAG>
+    end
+  end
 end
+
+m = class(m,'Miller',v);
+

@@ -3,7 +3,8 @@ function c = ensurecell(v,s)
 
 c = v;
 if isempty(v),  return; end
-if iscell(v) && numel(v) == prod(s)
+
+if iscell(v) && (nargin==1 || numel(v) == prod(s))
   return;
 else
   v = {v};

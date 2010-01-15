@@ -14,10 +14,11 @@ plottype = get_flag(varargin,{'CONTOUR','CONTOURF','SMOOTH','SCATTER','TEXTUREMA
 
 %% round data for faster plotting
 
-if exist('cr','var') && isa(data,'double') && ndims(data) == 2
+if check_option(varargin,{'contour','contourf','smooth'}) ...
+    && exist('cr','var') && isa(data,'double') && ndims(data) == 2
   ca = caxis;
   dd = ca(2) - ca(1);
-  data = dd/128 * round(128/dd * data);
+  data = ca(1) + dd/1024 * round(1024/dd * (data-ca(1)));
 end
 
 

@@ -17,6 +17,20 @@
 % possibility are the so called *Euler angles*. Here two conventions are
 % commonly used:
 %
+%%
+%
+% In general a each crystal orientation is represented by a class of 
+% crystallographically equivalent rotations. Let us specify certain
+% specimen and crystal symmetries
+
+cs = symmetry('-3m');
+ss = symmetry('triclinic');
+% *Crystal and Specimen Symmetry
+
+cs = symmetry('cubic');
+ss = symmetry('orthorhombic');
+
+%%
 % *The Bunge Euler Angle Convention*
 % Here an arbitrary rotation is determined by three consecutive rotations,
 % the first about the z-axis, the second about the y-axis, and the third
@@ -24,14 +38,14 @@
 % orientation by Euler angles. The command the defines a orientation by
 % three Euler angles is <euler2quat.html euler2quat>
 
-q = euler2quat(30*degree,50*degree,10*degree,'Bunge');
+o = orientation('Euler',30*degree,50*degree,10*degree,'Bunge',cs,ss)
 
 %%
 % *The Matthies Euler Angle Convention*
 % In contrast to the Bunge conventionen here the three rotations are taken
-% about the z-axis, the x-axis, and the z-axis.
+% about the z-axis, the y-axis, and the z-axis.
 
-q = euler2quat(30*degree,50*degree,10*degree,'Bunge');
+o = orientation('Euler',30*degree,50*degree,10*degree,'ZYZ',cs,ss)
 
 %%
 % *The axis angle parametrisation*
@@ -39,14 +53,14 @@ q = euler2quat(30*degree,50*degree,10*degree,'Bunge');
 % and its rotational angle. This can be done using the command
 % <axis2quat.html axis2quat>.
 
-q = axis2quat(xvector,30*degree);
+o = orientation('axis',xvector,'angle',30*degree,cs,ss)
 
 %%
 % *Miller indice*
 % The is also a Miller indice convention for defining crystal orientations.
 % The corresponding MTEX command is <Miller2quat.html Miller2quat>
 
-q = Miller2quat([1 0 0],[0 1 1],symmetry('cubic'));
+o = orientation('Miller',[1 0 0],[0 1 1],cs,ss)
 
 %%
 % *Four vectors defining a rotation*
@@ -54,7 +68,7 @@ q = Miller2quat([1 0 0],[0 1 1],symmetry('cubic'));
 % u and q b = v. This rotations can be computed using the command 
 % <vec42quat.html vec42quat>
 
-q = vec42quat(xvector,yvector,yvector,zvector);
+o = orientation(vec42quat(xvector,yvector,yvector,zvector),cs,ss)
 
 %%
 % A last method to define a rotation is [[hr2quat.html,hr2quat]].
@@ -72,52 +86,46 @@ q = vec42quat(xvector,yvector,yvector,zvector);
 %
 % Let 
 
-h = Miller(1,0,0);
+h = Miller(1,0,0,cs)
 
 %%
 % be a certain crystal direction and 
 
-q = euler2quat(90*degree,90*degree,0);
+o = orientation('Euler',90*degree,90*degree,0*degree,cs,ss)
 
 %%
 % a crystal orientation. Then the alignment of this crystal direction with
 % respect to the specimen coordinate system can be computed via
 
-r = q * h
+r = o * h
 
 %% Concatenating Rotations
 %
 % Let 
 
-q1 = euler2quat(90*degree,0,0);
-q2 = euler2quat(0,90*degree,0);
+o = orientation('Euler',90*degree,0,0,cs,ss);
+rot = euler2quat(0,90*degree,0);
 
 %%
-% two rotations than the rotation given by applying first rotation one and
-% then rotation two can be computed via
+% be a crystal orientation and a rotation of the specimen coordinate system. Then
+% the orientation of the crystal with respect to the rotated specimen
+% coordinate system calculates by
 
-q = q2 * q1
+o = rot * o
 
-%% Crystal Symmetries and Crystal Orientation
-%
-% In general a each crystal orientation is represented by a class of 
-% crystallographically equivalent rotations. Let us specify certain
-% specimen and crystal symmetries
 
-cs = symmetry('-3m');
-ss = symmetry('triclinic');
 
 %%
 % Then the class of rotations crystallographically equivalent to q can be
 % computed in two way. Either by using the command <symmetry_symmetriceQuat.html
 % symmetriceQuat> 
 
-symmetriceQuat(cs,ss,q)
+symmetrice(o)
 
 %%
 % or by using multiplication
 
-ss * q * cs
+%ss * o * cs
 
 %% Caclulating Missorientations
 %
@@ -126,13 +134,13 @@ ss * q * cs
 % orientations. This missorientation can be calculated by the function
 % <symmetry_dist.html dist>.
 
-dist(cs,ss,q1,q2) / degree
+angle(o1,o2) / degree
 
 %%
 % This missorientation angle is in general smaller then the missorientation
 % without crystal symmetry which can be computed via
 
-dist(q1,q2) /degree
+angle(quaternion(o1),quaternion(o2)) /degree
 
 %% Calculating with Orientations and Rotations
 %
@@ -142,14 +150,14 @@ dist(q1,q2) /degree
 % <quaternion_rotangle.html rotangle(q)> and
 % <quaternion_rotaxis.html rotaxis(q)> 
 
-rotangle(q)/degree
+angle(o1)/degree
 
-rotaxis(q)
+rotaxis(o1)
 %%
-% The inverse rotation to q you get from the command
+% The inverse orientation to o you get from the command
 % <quaternion_inverse.html inverse(q)>
 
-inverse(q);
+inverse(o1)
 
 %% Conversion into Euler Angles and Rodrigues Parametrisation
 %
@@ -166,6 +174,6 @@ inverse(q);
 % rotation.
 
 cla reset;set(gcf,'position',[43   362   400   300])
-plot(Miller2quat([-1 -1 -1],[1 -2 1]))
+plot(o1)
 
 

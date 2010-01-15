@@ -21,12 +21,6 @@ function [G,varargout] = SO3Grid(points,CS,SS,varargin)
 %  MAX_ANGLE  - only up to maximum rotational angle
 %  CENTER     - with respect to this given center
 
-if (nargout == 0) && (nargin == 0)
-	disp('constructs a grid on SS\SO(3)/CS');
-	disp('Arguments: resolution / number of points, crystal symmetry, specimen symmetry');
-	return;
-end
-
 if nargin <= 0, points = 0; end
 if nargin <= 1, CS = symmetry; end
 if nargin <= 2, SS = symmetry; end
