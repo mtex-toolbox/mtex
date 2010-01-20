@@ -12,11 +12,11 @@ mpf_t delta, delta2;
 
 void init_prec(){ // precision issues
 	/* set precision */
-	prec = digits * sizeof(mp_limb_t);	
-	mpf_set_default_prec( prec );	
+	prec = digits * sizeof(mp_limb_t);
+	mpf_set_default_prec( prec );
 	
 	/* set delta */
-	mpf_init(delta); 		
+	mpf_init(delta);
 	mpf_set_d(delta,10);
 	mpf_pow_ui(delta,delta,digits/2+1); //- digits*1/4); 
 	mpf_ui_div(delta,5,delta);
@@ -145,7 +145,7 @@ void mhyper(mpf_t f, mpf_t *kappa,long n){
 		
 		c1 = -(2*k-n);
 		for(l=0;l<n;l++){
-			mpf_set_d(tmp2, c1-l);				
+			mpf_set_d(tmp2, c1-l);
 			mpf_mul(tmp2,tmp2,p[l]);
 			mpf_mul(tmp2,tmp2,d[l]);
 			mpf_add(tmp1,tmp1,tmp2);
@@ -157,12 +157,12 @@ void mhyper(mpf_t f, mpf_t *kappa,long n){
 		mpf_add(f,f,tmp1);		
 		
 		/* divide and cycle entries */
-		mpf_set_d(tmp2,k+2.0);		
-		for(l=0;l<n-1;l++){			
+		mpf_set_d(tmp2,k+2.0);
+		for(l=0;l<n-1;l++){
 			mpf_div(d[l],d[l+1],tmp2);
 		}
 		
-		mpf_div(d[l],tmp1,tmp2);		
+		mpf_div(d[l],tmp1,tmp2);
 		
 		/* increase */
 		k+=1;
@@ -185,9 +185,9 @@ void mpf_log(mpf_t out, mpf_t in){
 	mpfr_t o;
 	
 	mpfr_init2(o, prec);
-	mpfr_set_f(o,in, prec);
-	mpfr_log(o,o, prec); /* take the natural logarithm */
-	mpfr_get_f(out,o, prec);
+	mpfr_set_f(o, in, prec);
+	mpfr_log(o, o, prec); /* take the natural logarithm */
+	mpfr_get_f(out, o, prec);
 	
 	mpfr_clear(o);
 }
@@ -218,20 +218,18 @@ void dmhyper(mpf_t *df, mpf_t *kappa,int n){
 	/*  df = (f(x+h) - f(x-h)) / (h*2)	*/
 	for(k=0;k<n;k++){
 		/* d1: f(x-h) */
-		copy(tmp1, kappa, n);		
+		copy(tmp1, kappa, n);
 		mpf_sub(tmp1[k], tmp1[k], delta);
 		mhyper(d1,tmp1,n);
 		
-		mpf_log(d1,d1);
-		
 		/* d2: f(x+h) */
 		copy(tmp2, kappa, n);
-		mpf_add(tmp2[k], tmp2[k], delta);			
-		mhyper(d2, tmp2, n);		
-		mpf_log(d2, d2);
-			
-		mpf_sub(df[k], d2, d1);
-		mpf_div(df[k], df[k], delta2);		
+		mpf_add(tmp2[k], tmp2[k], delta);
+		mhyper(d2, tmp2, n);
+		
+		mpf_div(df[k], d2, d1);
+		mpf_log(df[k],df[k]); /* log(f(x+h))- log(f(x-h)) : log(f(x+h)/f(x-h)) */
+		mpf_div(df[k], df[k], delta2);
 	}
 	
 	free_N(tmp1,n);
@@ -262,19 +260,19 @@ void jmhyper(mpf_t **jf, mpf_t *kappa,int n){
 	
 	
 	for(k=0;k<n;k++){
-		copy(tmp1, kappa,n);		
+		copy(tmp1, kappa,n);
 		mpf_sub(tmp1[k], tmp1[k], delta);
 		dmhyper(tmp11,tmp1,n);
 		
 		copy(tmp2, kappa,n);
-		mpf_add(tmp2[k], tmp2[k], delta);		
+		mpf_add(tmp2[k], tmp2[k], delta);
 		dmhyper(tmp22,tmp2,n);
 		
 		for(l=0;l<n;l++){
 			mpf_sub(jf[k][l],tmp22[l],tmp11[l]);
 			mpf_div(jf[k][l],jf[k][l],delta2);
 		}
-				
+	
 	}
 	
 	free_N(tmp1,n);
@@ -325,12 +323,9 @@ int min_N(mpf_t *z,const int n){
 void check_diag(mpf_t **A,const int n){
 	int k, w=0;
 	mpf_t tmp;
-	for(k=0;k<n;k++){
-		mpf_abs(tmp,A[k][k]);
-		if (mpf_cmp(tmp,delta) < 0) {
-			w = 1;
-		}
-	}
+	
+	for(k=0;k<n;k++)
+		if(mpf_eq(tmp,delta,digits/2)) w = 1;	
 
 	if (w) printf("warning: instable, increasing of precession might help\n");
 	
@@ -500,48 +495,48 @@ void newton(int iters, mpf_t *kappa, mpf_t *lambda, int n){
 	mpf_init(t1); mpf_init(t2);
 	int kpos;
 	
-	for(iter=0;iter<iters;iter++){		
-		kpos = max_N(kappa,n);		
+	for(iter=0;iter<iters;iter++){
+		kpos = max_N(kappa,n);
 		mpf_set(kappaN, kappa[kpos]);
 		
 		dmhyper(dl, kappa, n);
 		jmhyper(jf, kappa, n);
-	
-	
+		
+		
 		/* verbose defect */
 		mpf_init(t2);
 		for(k=0;k<n;k++){
 			mpf_sub(t1, dl[k],lambda[k]);
 			mpf_abs(t1,t1);
-			mpf_add(t2,t2,t1);		
-		}		
+			mpf_add(t2,t2,t1);
+		}
 		
 		gmp_printf("k = %d, defect = %.*Fe :\n", iter+1, 5, t2);
+		printf(" kappa :");  print_N(kappa,n);
+		printf(" lambda:");	 print_N(dl,n);
+		printf("\n");
 		
 		/*	*/	
 		for(k=0;k<n;k++)
 			mpf_set_d(jf[kpos][k], (k == kpos)?1:0);
-	
-		printf(" kappa :");  print_N(kappa,n);
-		printf(" lambda:");	 print_N(dl,n);
-		printf("\n");		
-			
+		
+		
 		for(k=0;k<n;++k)
 			if(k != kpos)
-			mpf_sub(dl[k], dl[k], lambda[k]);
+				mpf_sub(dl[k], dl[k], lambda[k]);
 			
 		mpf_sub(dl[kpos], kappa[kpos], kappaN);
-			
-			
+		
+		
 		solveAxb(df, jf, dl,n);
 		
 		for(k=0;k<n;++k)
 			mpf_sub(kappa[k], kappa[k], df[k]);
 		
 		
-		kpos = min_N(kappa,n);			
+		mpf_set(kappaN,kappa[min_N(kappa,n)]);
 		for(k=0;k<n;++k)
-			mpf_sub(kappa[k], kappa[k], kappa[kpos]);	
+			mpf_sub(kappa[k], kappa[k], kappaN);	
 		
 	}	
 	
@@ -596,11 +591,11 @@ int main (int argc, char *argv[]){
 	/*for(k=0;k<n;k++){ 
 		gmp_printf (" %.*Ff \n", digits, kappa[k]);
 	}*/
-		
+	
 	newton(iters,kappa, lambda, n);
 
 	free_N(lambda,n);
-	free_N(kappa,n);		
+	free_N(kappa,n);
   
 	return EXIT_SUCCESS;
 }
