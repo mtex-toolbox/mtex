@@ -1,4 +1,4 @@
-function plotfibre(odf,h,r,varargin)
+function [x,omega] = plotfibre(odf,h,r,varargin)
 % plot odf
 %
 % Plots the ODF as various sections which can be controled by options. 
@@ -30,6 +30,7 @@ omega = linspace(-pi,pi,199);
 center = get_option(varargin,'CENTER',hr2quat(h,r),'quaternion');
 
 fibre = axis2quat(r,omega) .* center;
+x = eval(odf,fibre,varargin{:});%#ok<EVLC>
 
-optionplot(omega,eval(odf,fibre,varargin{:}),varargin{:}); %#ok<EVLC>
+optionplot(omega,x,varargin{:}); 
 xlim([-pi pi]); xlabel('omega')
