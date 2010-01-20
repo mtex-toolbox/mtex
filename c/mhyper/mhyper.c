@@ -172,7 +172,9 @@ void mhyper(mpf_t f, mpf_t *kappa,long n){
 	free_N(cp,n+1);
 	free_N(d,n);
 	free_N(p,n);
-	mpf_clears(tmp1,tmp2,tmp3,NULL);
+	mpf_clear(tmp1);
+	mpf_clear(tmp2);
+	mpf_clear(tmp3);
 	
 	// gmp_printf ("after %d iterations : %.*Ff \n", k,100, f);
 	
@@ -234,7 +236,8 @@ void dmhyper(mpf_t *df, mpf_t *kappa,int n){
 	
 	free_N(tmp1,n);
 	free_N(tmp2,n);
-	mpf_clears(d1,d2,NULL);
+	mpf_clear(d1);
+	mpf_clear(d2);
 }
 
 
@@ -278,7 +281,44 @@ void jmhyper(mpf_t **jf, mpf_t *kappa,int n){
 	free_N(tmp11,n);
 	free_N(tmp2,n);
 	free_N(tmp22,n);
-	mpf_clears(d1,d2,NULL);
+	mpf_clear(d1);
+	mpf_clear(d2);
+}
+
+
+int max_N(mpf_t *z,const int n){
+	int k=0, pos=0;
+	mpf_t tmp;
+	
+	mpf_init_set(tmp,z[k]);
+	
+	for(k=1;k<n;k++){
+		if ( mpf_cmp(tmp,z[k]) < 0) {
+			pos = k;
+		}
+	}
+	
+	mpf_clear(tmp);
+	
+	return pos;
+}
+
+
+int min_N(mpf_t *z,const int n){
+	int k=0, pos=0;
+	mpf_t tmp;
+	
+	mpf_init_set(tmp,z[k]);
+	
+	for(k=1;k<n;k++){
+		if ( mpf_cmp(tmp,z[k]) > 0) {
+			pos = k;
+		}
+	}
+	
+	mpf_clear(tmp);
+	
+	return pos;
 }
 
 
@@ -383,12 +423,13 @@ void solveAxb(mpf_t *x, mpf_t **A, mpf_t *b ,int n){
 		mpf_div(x[k], tmp1, A[k][k]);
     }
 	
-	mpf_clears(tmp1,tmp2,NULL);
+	mpf_clear(tmp1);
+	mpf_clear(tmp2);
 }
 
 
 void guessinitial(mpf_t *kappa, mpf_t *lambda,const int n){
-	mpf_t *df, lower, upper, mm,half;
+	mpf_t *df, lower, upper, mm, half;
 	int k;
 	
 	mpf_init_set_d(lower,0);
@@ -400,14 +441,16 @@ void guessinitial(mpf_t *kappa, mpf_t *lambda,const int n){
 		mpf_init(df[k]);	
 	}
 	
+	int kpos = max_N(lambda,n);
+	
 	for(k=0;k<25;++k){	
 		mpf_add(mm,upper,lower);
 		mpf_div_ui(mm,mm,2);
 		
-		mpf_set(kappa[n-1],mm);	
+		mpf_set(kappa[kpos],mm);	
 		dmhyper(df,kappa,n);
 
-		if( mpf_cmp(lambda[n-1],df[n-1]) >= 0){
+		if( mpf_cmp(lambda[kpos],df[kpos]) >= 0){
 			mpf_set(lower,mm);
 		} else {
 			mpf_set(upper,mm);
@@ -415,7 +458,10 @@ void guessinitial(mpf_t *kappa, mpf_t *lambda,const int n){
 	}
 	
 	free_N(df,n);
-	mpf_clears(lower, upper, mm, half,NULL);
+	mpf_clear(lower);
+	mpf_clear(upper);
+	mpf_clear(mm);
+	mpf_clear(half);
 }
 
 
@@ -450,15 +496,19 @@ void newton(int iters, mpf_t *kappa, mpf_t *lambda, int n){
 	print_N(kappa,n);
 	printf("\n");
 	
-	mpf_t mink, t1,t2;
-	mpf_init(mink); mpf_init(t1); mpf_init(t2);
+	mpf_t  t1,t2;
+	mpf_init(t1); mpf_init(t2);
+	int kpos;
 	
-	for(iter=0;iter<iters;iter++){	
-		mpf_set(kappaN, kappa[n-1]);
+	for(iter=0;iter<iters;iter++){		
+		kpos = max_N(kappa,n);		
+		mpf_set(kappaN, kappa[kpos]);
 		
 		dmhyper(dl, kappa, n);
 		jmhyper(jf, kappa, n);
 	
+	
+		/* verbose defect */
 		mpf_init(t2);
 		for(k=0;k<n;k++){
 			mpf_sub(t1, dl[k],lambda[k]);
@@ -468,18 +518,19 @@ void newton(int iters, mpf_t *kappa, mpf_t *lambda, int n){
 		
 		gmp_printf("k = %d, defect = %.*Fe :\n", iter+1, 5, t2);
 		
-		
+		/*	*/	
 		for(k=0;k<n;k++)
-			mpf_set_d(jf[n-1][k], (k<n-1)?0:1);
+			mpf_set_d(jf[kpos][k], (k == kpos)?1:0);
 	
 		printf(" kappa :");  print_N(kappa,n);
 		printf(" lambda:");	 print_N(dl,n);
 		printf("\n");		
 			
-		for(k=0;k<n-1;++k)
+		for(k=0;k<n;++k)
+			if(k != kpos)
 			mpf_sub(dl[k], dl[k], lambda[k]);
 			
-		mpf_sub(dl[n-1], kappa[n-1], kappaN);
+		mpf_sub(dl[kpos], kappa[kpos], kappaN);
 			
 			
 		solveAxb(df, jf, dl,n);
@@ -487,15 +538,10 @@ void newton(int iters, mpf_t *kappa, mpf_t *lambda, int n){
 		for(k=0;k<n;++k)
 			mpf_sub(kappa[k], kappa[k], df[k]);
 		
-		mpf_set(mink,kappa[0]);
-		for(k=1;k<n;++k)
-			if ( mpf_cmp(kappa[k],mink)<0 )
-			mpf_set(mink,kappa[k]);
-			
-		for(k=0;k<n;++k)
-			mpf_sub(kappa[k], kappa[k], mink);	
-			
 		
+		kpos = min_N(kappa,n);			
+		for(k=0;k<n;++k)
+			mpf_sub(kappa[k], kappa[k], kappa[kpos]);	
 		
 	}	
 	
@@ -509,7 +555,9 @@ void newton(int iters, mpf_t *kappa, mpf_t *lambda, int n){
 	free_N(dl,n);
 	free_NN(jf,n);
 	free_NN(pf,n);
-	mpf_clears(kappaN,mink,t1,t2,NULL);
+	mpf_clear(kappaN);
+	mpf_clear(t1);
+	mpf_clear(t2);
 
 };
 
@@ -526,8 +574,7 @@ int main (int argc, char *argv[]){
 		printf("        d(k_i)                  \n\n ");
 		printf("Usage:  mhyper  d n  lamba_1 ... lambda_4 \n\n");
 		printf(" where 'd' is a number of precession, 'n' the \n");
-		printf(" number of iterations, and 'lambda' should be \n");
-		printf(" sorted ascending.\n");
+		printf(" number of iterations.\n");
 		
 		return EXIT_SUCCESS;
 	}
@@ -544,13 +591,14 @@ int main (int argc, char *argv[]){
 		mpf_init_set_str (lambda[k], argv[k+3], 0);
 	}
 	
+	
 	/* check input */
 	/*for(k=0;k<n;k++){ 
 		gmp_printf (" %.*Ff \n", digits, kappa[k]);
 	}*/
 		
 	newton(iters,kappa, lambda, n);
-	
+
 	free_N(lambda,n);
 	free_N(kappa,n);		
   
