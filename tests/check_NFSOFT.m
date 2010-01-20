@@ -34,7 +34,7 @@ for iq = 1:length(qq)
   A = ones(1,L+1);
 
   %% run NFSOFT
-  T = call_extern('odf2fc','EXTERN',g,c,A);
+  T = call_extern('odf2fc','EXTERN',g,c,A); % conjugate(D)
 
   % extract result
   T = complex(T(1:2:end),T(2:2:end));
@@ -44,13 +44,13 @@ for iq = 1:length(qq)
 
   for l = 0:L
   
-    Y = sphericalY(l,h).';
-    gY = sphericalY(l,q*h).';
+    Y = sphericalY(l,h).'; % -> Y
+    gY = sphericalY(l,q*h).'; % -> Y
     Tl = reshape(T(deg2dim(l)+1:deg2dim(l+1)),2*l+1,2*l+1);
     %    TY = flipud(Tl * flipud(Y));
     %    TY = flipud(fliplr(Tl) * Y);
     TY = Tl * Y;
-    error(l+1,iq) = sqrt(norm(TY(:) - gY(:)));
+    er(l+1,iq) = sqrt(norm(TY(:) - gY(:)));
     %TY = conj(Tl) * Y;norm(TY(:) - gY(:))
     %TY = Tl' * Y;norm(TY(:) - gY(:))
     %TY = Tl.' * Y;norm(TY(:) - gY(:))
@@ -59,13 +59,15 @@ for iq = 1:length(qq)
 
 end
 
-%plot(mean(error,2));
-if mean(error(:)) > 0.001
+%plot(mean(er,2));
+if mean(er(:)) > 0.001
   error('Error in NFSOFT');
 else
   disp('checking NFSOFT: ok')
-  disp(mean(error(:)))
+  disp(mean(er(:)))
 end
+
+pcolor(er)
 
 function d = deg2dim(l)
 % dimension of the harmonic space up to order l

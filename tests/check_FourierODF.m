@@ -23,9 +23,18 @@ figure(2);plotpdf(odf,h)
 disp('check for equal pole figures!')
 input('(return)')
 
+%% plotipdf
+
+r = [xvector,yvector,vector3d(1,-3,5)];
+figure(1);plotipdf(fodf,r)
+figure(2);plotipdf(odf,r)
+
+disp('check for equal pole figures!')
+input('(return)')
+
 %% plotodf
 
-figure(1);plot(fodf,'sections',6)
+figure(1);plot(fodf,'sections',6,'resolution',1*degree)
 figure(2);plot(odf,'sections',6)
 
 disp('check for equal ODFs!')
@@ -47,6 +56,15 @@ fodf = FourierODF(fodf);
 
 figure(1);plotpdf(fodf,h)
 figure(2);plotpdf(odf,h)
+
+disp('check for equal pole figures!')
+input('(return)')
+
+%% plotipdf
+
+r = [xvector,yvector,vector3d(1,-3,5)];
+figure(1);plotipdf(fodf,r)
+figure(2);plotipdf(odf,r)
 
 disp('check for equal pole figures!')
 input('(return)')
