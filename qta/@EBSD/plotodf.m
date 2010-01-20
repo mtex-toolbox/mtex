@@ -26,7 +26,7 @@ cs = get(grid,'CS');
 ss = get(grid,'SS');
 
 % subsample to reduce size
-if sum(GridLength(grid)) > 2000 || check_option(varargin,'points')
+if ~check_option(varargin,'all') && sum(GridLength(grid)) > 2000 || check_option(varargin,'points')
   points = get_option(varargin,'points',2000);
   disp(['plot ', int2str(points) ,' random orientations out of ', ...
     int2str(sum(GridLength(grid))),' given orientations']);
