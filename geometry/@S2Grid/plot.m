@@ -197,10 +197,11 @@ if any(strcmpi(hemisphere,'north')) || any(strcmpi(hemisphere,'antipodal'))
   else
     maxtheta = pi/2;
   end
+  maxtheta = min(maxtheta,get_option(varargin,'maxtheta',pi/2));
   
   bounds = plotHemiSphere(submatrix(theta,ind),submatrix(rho,ind),...
     submatrix(data,ind),0,'minrho',min(getMin(S2G.rho)),'maxrho',...
-    max(getMax(S2G.rho)),'maxtheta',maxtheta,varargin{:});
+    max(getMax(S2G.rho)),varargin{:},'maxtheta',maxtheta);
 end
 
 %% Southern Hemisphere
