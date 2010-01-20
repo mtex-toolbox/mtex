@@ -14,11 +14,11 @@ plottype = get_flag(varargin,{'CONTOUR','CONTOURF','SMOOTH','SCATTER','TEXTUREMA
 
 %% round data for faster plotting
 
-if exist('cr','var') && isa(data,'double') && ndims(data) == 2
-  ca = caxis;
-  dd = ca(2) - ca(1);
-  data = dd/128 * round(128/dd * data);
-end
+%if exist('cr','var') && isa(data,'double') && ndims(data) == 2
+%  ca = caxis;
+%  dd = ca(2) - ca(1);
+%  data = ca(1) + dd/1e4 * round(1e4/dd * (data-ca(1)));
+%end
 
 
 %% for compatiility with version 7.1
