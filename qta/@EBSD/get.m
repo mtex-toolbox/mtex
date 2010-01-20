@@ -1,43 +1,44 @@
-function value = get(obj,vname,varargin)
+function varargout = get(obj,vname,varargin)
 % get object variable
 
-value = [];
+varargout{1} = [];
 switch vname
   case 'CS'
-    if check_option(varargin,'all')
-      value = [obj.(vname)];
-    else
-      value = obj(1).(vname);
-    end    
+    varargout = {obj.(vname)};
+%    if check_option(varargin,'all')
+%      varargout{1} = [obj.(vname)];
+%    else
+%      varargout{1} = obj(1).(vname);
+%    end
   case {'comment','SS','options'}
-    value = obj(1).(vname);
+    varargout{1} = obj(1).(vname);
   case fields(obj)
-    value = vertcat(obj.(vname));
+    varargout{1} = vertcat(obj.(vname));
   case {'data','orientation'}
-    value = [obj.orientations];
+    varargout{1} = [obj.orientations];
   case {'quaternions','quaternion'}
-    value = quaternion();
+    varargout{1} = quaternion();
     for i = 1:length(obj)
-      value = [value;reshape(quaternion(obj(i).orientations),[],1)]; %#ok<AGROW>
+      varargout{1} = [varargout{1};reshape(quaternion(obj(i).orientations),[],1)]; %#ok<AGROW>
     end
   case 'length'
-    value = zeros(1,length(obj));
+    varargout{1} = zeros(1,length(obj));
     for i = 1:length(obj)
-      value(i) = sum(GridLength(obj(i).orientations));
+      varargout{1}(i) = sum(GridLength(obj(i).orientations));
     end
   case 'x'
     for i = 1:length(obj)
-      value = [value;obj(i).xy(:,1)]; %#ok<AGROW>
+      varargout{1} = [varargout{1};obj(i).xy(:,1)]; %#ok<AGROW>
     end
   case 'y'
     for i = 1:length(obj)
-      value = [value;obj(i).xy(:,2)]; %#ok<AGROW>
+      varargout{1} = [varargout{1};obj(i).xy(:,2)]; %#ok<AGROW>
     end
   case fields(obj(1).options)
      options = [obj.options];
-     value = vertcat(options.(vname));    
+     varargout{1} = vertcat(options.(vname));    
 %     for i = 1:length(obj)
-%       value = [value;reshape(obj(i).options.(vname),[],1)]; %#ok<AGROW>
+%       varargout{1} = [varargout{1};reshape(obj(i).options.(vname),[],1)]; %#ok<AGROW>
 %     end
   otherwise
     error('Unknown field in class EBSD!')

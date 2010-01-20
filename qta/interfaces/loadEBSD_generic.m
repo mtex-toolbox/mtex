@@ -134,13 +134,13 @@ if istype(names,euler) % Euler angles specified
   end
     
   % transform to quaternions
-  q = euler2quat(alpha,beta,gamma,varargin{:});
+  q = orientation('Euler',alpha,beta,gamma,cs,ss,varargin{:});
   
 elseif istype(names,quat) % import quaternion
     
   layout = layoutcol(names,quat);
   d(any(isnan(d(:,layout)),2),:) = [];
-  q = quaternion(d(:,layout(1)),d(:,layout(2)),d(:,layout(3)),d(:,layout(4)));
+  q = orientation(quaternion(d(:,layout(1)),d(:,layout(2)),d(:,layout(3)),d(:,layout(4))));
   
 else
   error('You should at least specify three Euler angles or four quaternion components!');
@@ -207,7 +207,7 @@ for ip = 1:length(phases)
   end
   popt = structfun(@(x) x(ind),opt,'uniformOutput',false);
   
-  ebsd(ip) = EBSD(SO3Grid(q(ind),cs(ip),ss),cs(ip),ss,varargin{:},'xy',pxy,'phase',phases(ip),'options',popt); %#ok<AGROW>
+  ebsd(ip) = EBSD(q(ind),cs(ip),ss,varargin{:},'xy',pxy,'phase',phases(ip),'options',popt); %#ok<AGROW>
 end
 
 function str = stripws(str)

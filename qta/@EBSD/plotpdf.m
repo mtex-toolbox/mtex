@@ -25,9 +25,9 @@ function plotpdf(ebsd,h,varargin)
 % SphericalProjection_demo 
 
 %% make new plot
-grid = getgrid(ebsd,'checkPhase',varargin{:});
-cs = get(grid,'CS');
-ss = get(grid,'SS');
+o = getgrid(ebsd,'checkPhase',varargin{:});
+cs = get(o,'CS');
+ss = get(o,'SS');
 if newMTEXplot('ensureTag','pdf',...
     'ensureAppdata',{{'CS',cs},{'SS',ss}})
   argin_check(h,{'Miller'});  
@@ -42,23 +42,23 @@ end
 varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
-if sum(GridLength(grid))*length(cs)*length(ss) > 10000 || check_option(varargin,'points')
+if sum(GridLength(o))*length(cs)*length(ss) > 10000 || check_option(varargin,'points')
   
   points = fix(get_option(varargin,'points',10000/length(cs)/length(ss)));  
-  disp(['plot ', int2str(points) ,' random orientations out of ', int2str(sum(GridLength(grid))),' given orientations']);
-  grid = subsample(grid,points);
+  disp(['plot ', int2str(points) ,' random orientations out of ', int2str(sum(GridLength(o))),' given orientations']);
+  o = subsample(o,points);
 
 end
 
 
 %% plot
 if check_option(varargin,'superposition')
-  multiplot(@(i) reshape(ss * grid * cs * h,[],1),@(i) [],1,...
+  multiplot(@(i) reshape(ss * o * cs * h,[],1),@(i) [],1,...
     'ANOTATION',@(i) h,'dynamicMarkerSize',...
     'appdata',@(i) {{'h',h}},...
     varargin{:});
 else
-  r = @(i) reshape(ss * grid * symmetrice(h(i)),[],1);
+  r = @(i) reshape(ss * o * symmetrice(h(i)),[],1);
   [maxtheta,maxrho,minrho] = getFundamentalRegionPF(ss,varargin{:});
   Sr = @(i) S2Grid(r(i),'MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
   

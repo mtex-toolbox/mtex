@@ -277,9 +277,9 @@ else
 end
 
 if isa(data,'EBSD')
-  data(cs_counter) = set(data(cs_counter),'CS',cs);
+  data(cs_counter) = set(data(cs_counter),'cs',cs);
 else
-  data = set(data,'CS',cs);
+  data = set(data,'cs',cs);
 end
 
 setappdata(wzrd,'data',data);

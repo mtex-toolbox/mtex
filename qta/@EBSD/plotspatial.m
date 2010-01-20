@@ -41,8 +41,10 @@ switch prop
   case 'user'
   case 'orientation'
     cc = lower(get_option(varargin,'colorcoding','ipdf'));
-    orientations = get(ebsd,'orientations');
-    d = orientation2color(orientations,cc,varargin{:});
+    d = [];
+    for i = 1:length(ebsd)
+      d = [d;orientation2color(ebsd(i).orientations,cc,varargin{:})];
+    end
   case 'phase'
     d = [];
     for i = 1:length(ebsd)
@@ -73,7 +75,7 @@ else
 end
 
 if strcmpi(prop,'orientation') %&& strcmpi(cc,'ipdf')
-  [cs{1:length(orientations)}] = get(orientations,'CS');
+  [cs{1:length(ebsd)}] = get(ebsd,'CS');
   setappdata(gcf,'CS',cs)
   setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d')); 
   setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));

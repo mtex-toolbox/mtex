@@ -14,7 +14,7 @@ for i = 1:length(ebsd)
   end    
   
   if ~isempty(ebsd(i).orientations)
-    ss = [ss, char(ebsd(i).orientations,'nores'),', '];    %#ok<AGROW>
+    ss = [ss, num2str(numel(ebsd(i).orientations)),' orientations, '];    %#ok<AGROW>
   end
   
   ss = [ss,'symmetry: ',char(ebsd(i).CS)];     %#ok<AGROW>
