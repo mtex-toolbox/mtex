@@ -72,8 +72,12 @@ plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
 
 cs   = symmetry('triclinic');    % crystal symmetry
 ss   = symmetry('triclinic');    % specimen symmetry
-C = [1;reshape(eye(3),[],1)]; % Fourier coefficients
+C = [1;reshape(eye(3),[],1);reshape(eye(5),[],1);reshape(eye(7),[],1)]; % Fourier coefficients
 odf = FourierODF(C,cs,ss)
+
+plot(odf,'sections',6)
+
+%%
 
 plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
 

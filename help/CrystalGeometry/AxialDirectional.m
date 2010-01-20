@@ -10,7 +10,7 @@
 %% Contents
 %
 %%
-% By default a the pair of vectors
+% By default the pair of vectors
 
 v1 = vector3d(1,1,2);
 v2 = vector3d(1,1,-2);
@@ -29,8 +29,8 @@ plot([v1,v2],'label',{'v_1','v_2'})
 plot([v1,v2],'label',{'v_1','v_2'},'antipodal')
 
 %%
-% Now the direction $v_2$ is identified with the direction -$v_2$ which
-% plotts at the upper hemispher.
+% Now the direction v_2 is identified with the direction -v_2 which
+% plots at the upper hemispher.
 
 %% The Angle between Directions and Axes
 %
@@ -111,9 +111,9 @@ plotipdf(odf,yvector,'antipodal','complete')
 % Notice how MTEX, automatically reduces the fundamental region of inverse
 % pole figures in the case that antipodal symmetry is present.
 
-plotipdf(odf,yvector,'position',[100 100 400 200])
+figure(1);plotipdf(odf,yvector,'position',[100 100 400 200])
 
-plotipdf(odf,yvector,'antipodal')
+figure(2);plotipdf(odf,yvector,'antipodal','position',[100 100 400 200])
 
 
 %% EBSD Colocoding
