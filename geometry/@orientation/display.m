@@ -3,7 +3,7 @@ function display(o)
 
 disp(' ');
 disp([inputname(1) ' = ' doclink('CrystalOrientations','orientation') ': (size: ' int2str(size(o)) ')']);
-disp(['  symmetry: ',char(o.cs),' - ',char(o.ss)]);
+disp(['  symmetry: ',char(o.CS),' - ',char(o.SS)]);
 
 if numel(o.i) < 30 && numel(o)>0
   

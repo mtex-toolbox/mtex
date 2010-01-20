@@ -14,11 +14,11 @@ g2 = reshape(quaternion(o2),1,[]);
 l1 = length(g1);
 l2 = length(g2);
 if isa(o1,'orientation')
-  cs = quaternion(o1.cs);
-  ss = quaternion(o1.ss);
+  cs = quaternion(o1.CS);
+  ss = quaternion(o1.SS);
 else
-  cs = quaternion(o2.cs);
-  ss = quaternion(o2.ss);
+  cs = quaternion(o2.CS);
+  ss = quaternion(o2.SS);
 end
 lCS = length(cs);
 lSS = length(ss);

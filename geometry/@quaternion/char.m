@@ -12,5 +12,5 @@ if length(q) == 1
     s = ['rot axis: ',char(v./norm(v)),', rot angle: ',int2str(2*acos(q.a)/degree),mtexdegchar];
   end
 else
-  s = ['Quaternions: ',size(q,1),'x',size(q,2)];
+  s = ['Quaternions: ',num2str(size(q,1)),'x',num2str(size(q,2))];
 end

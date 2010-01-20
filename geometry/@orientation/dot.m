@@ -7,9 +7,9 @@ else
   qss = [];
 end
 
-domega = rotangle_max_z(o1.cs);
+domega = rotangle_max_z(o1.CS);
 omega = 0:domega:2*pi-domega;
-qcs = quaternion_special(o1.cs);
+qcs = quaternion_special(o1.CS);
 
 %% no specimen symmetry
 dot = dot_angle(o1.quaternion,o2.quaternion,omega);

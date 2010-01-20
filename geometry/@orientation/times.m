@@ -4,7 +4,7 @@ function r = times(a,b)
 
 if isa(a,'orientation') && isa(b,'vector3d')
   
-  if isa(b,'Miller'), b = set(b,'CS',a.cs);end
+  if isa(b,'Miller'), b = set(b,'CS',a.CS);end
   
   r = a.i .* (a.quaternion .* vector3d(b));
    
@@ -15,19 +15,19 @@ elseif isa(a,'quaternion') && isa(b,'quaternion')
     if isa(b,'orientation')
       r.i = a.i .* b.i;
       % check that symmetries are ok
-      if a.cs ~= b.ss
+      if a.SS ~= b.CS
         warning('MTEX:Orientation','Symmetry mismatch!');
       end
-      r.cs = b.cs;      
+      r.CS = b.SS;      
     else
-      if length(r.cs) > 1
+      if length(r.CS) > 1
         warning('MTEX:Orientation','Symmetry mismatch!');
-        r.cs = symmetry;
+        r.CS = symmetry;
       end
     end
   else
     r = b;
-    if length(r.ss) > 1
+    if length(r.SS) > 1
       warning('MTEX:Orientation','Symmetry mismatch!');
       r.ss = symmetry;
     end

@@ -4,8 +4,8 @@ function o = orientation(varargin)
 %% empty constructor
 if nargin == 0
   
-  o.cs = symmetry;
-  o.ss = symmetry;
+  o.CS = symmetry;
+  o.SS = symmetry;
   o.i = 1;
   quat = quaternion;
   
@@ -22,18 +22,18 @@ else
   args  = find(cellfun(@(s) isa(s,'symmetry'),varargin,'uniformoutput',true));
 
   if length(args) >= 1
-    o.cs = varargin{args(1)};
+    o.CS = varargin{args(1)};
   else
-    o.cs = symmetry;
+    o.CS = symmetry;
   end
 
-  if length(args) == 2
-    o.ss = varargin{args(2)};
+  if length(args) >= 2
+    o.SS = varargin{args(2)};
   else
-    o.ss = symmetry;
+    o.SS = symmetry;
   end
   
-  if length(args) > 2, error('MTEX:orientation','to many symmetries specified');end
+  %if length(args) > 2, error('MTEX:orientation','to many symmetries specified');end
   
   %% orientation given by a quaternion
   
@@ -59,11 +59,11 @@ else
     
     args = find_option(varargin,'Miller');
     
-    quat = Miller2quat(varargin{args+1},varargin{args+2},o.cs);
+    quat = Miller2quat(varargin{args+1},varargin{args+2},o.CS);
     
   end
   
-  o.i = 1;
+  o.i = ones(size(quat));
 end
 
 superiorto('quaternion','SO3Grid');

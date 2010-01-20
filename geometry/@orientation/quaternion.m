@@ -17,9 +17,9 @@ function q = quaternion(o,varargin)
 q = o.quaternion;
 
 if check_option(varargin,{'all','symeq'})
-  q = (q(:) * o.cs).'; % CS x M
-  if length(o.ss)>1
-    q = o.ss * q(:).';     % SS x (CS X M)
+  q = (q(:) * o.CS).'; % CS x M
+  if length(o.SS)>1
+    q = o.SS * q(:).';     % SS x (CS X M)
   end
-  q = reshape(q,length(o.cs)*max(1,length(o.ss)),[]).'; % M x (CSxSS)
+  q = reshape(q,length(o.CS)*max(1,length(o.SS)),[]).'; % M x (CSxSS)
 end

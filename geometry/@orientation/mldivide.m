@@ -3,7 +3,7 @@ function r = mldivide(a,b)
 
 if isa(a,'orientation') && isa(b,'vector3d')
     
-  r = Miller(diag(a.i) * (a.quaternion' * vector3d(b)),a.cs);
+  r = Miller(diag(a.i) * (a.quaternion' * vector3d(b)),a.CS);
   
 else
   

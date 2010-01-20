@@ -1,9 +1,9 @@
-function c = orientation2color(grid,coloring,varargin)
+function c = orientation2color(o,coloring,varargin)
 % convert SO3Grid to color
 %
 %% Input
-% grid   - @SO3Grid
-% type   - as string: BUNGE, ANGLE, SIGMA, IHS, IPDF
+% o    - @SO3Grid
+% type - as string: BUNGE, ANGLE, SIGMA, IHS, IPDF
 %
 
 model = {'bunge','angle','sigma','ihs','ipdf',...
@@ -11,51 +11,44 @@ model = {'bunge','angle','sigma','ihs','ipdf',...
 
 if nargin == 0, c = model; return; end
 
-gl = GridLength(grid);
-gl = [0 cumsum(gl)];
-c = zeros(gl(end),3);
-
-for i = 1:length(grid)
-  
-  switch coloring
-    case model(1)
-      d = euler2rgb(grid(i),varargin{:});
-    case model(2)
-      d = rotangle(quaternion(grid(i))).';
-      d = 1-repmat(( d-min(d) )./ (max(d)-min(d)),1,3);
-    case model(3)
-      d = sigma2rgb(grid(i),varargin{:});
-    case model(4)
-      d = euler2rgb(grid(i),varargin{:});
-      d = rgb2hsv(d);
-    case model(5) % colorcoding according according to ipdf
-      if isa(grid,'SO3Grid')
-        h = quat2ipdf(grid(i),varargin{:});
-        cs = get(grid(i),'CS');
-      else
-        cs = get_option(varargin,'cs');
-        h = grid;
-      end
-      d = ipdf2rgb(vector3d(h),cs,varargin{:});
-    case model(6:8)
-      switch coloring
-        case model(6)
-          q = getFundamentalRegion(grid(i));
-        case model(7)
-          q = quaternion(grid(i));
-        case model(8)
-          q = inverse(getFundamentalRegion(grid(i)));
-      end
-      h = quat2rodrigues(q);
-      cs = get(grid(i),'CS');
-      d = ipdf2rgb(h,cs,varargin{:});
-    case model(9)
-      d = euler2rgb2(grid(i),varargin{:});
-    case model(10)
-      d = euler2rgb3(grid(i),varargin{:});
-    otherwise
-      error('Unknown Colorcoding')
-  end
-  c(1+gl(i):gl(i+1),:) = reshape(d,[],3);
+switch coloring
+  case model(1)
+    c = euler2rgb(o,varargin{:});
+  case model(2)
+    c = rotangle(quaternion(o)).';
+    c = 1-repmat(( c-min(c) )./ (max(c)-min(c)),1,3);
+  case model(3)
+    c = sigma2rgb(o,varargin{:});
+  case model(4)
+    c = euler2rgb(o,varargin{:});
+    c = rgb2hsv(c);
+  case model(5) % colorcoding according according to ipdf
+    if isa(o,'orientation')
+      h = quat2ipdf(o,varargin{:});
+      cs = get(o,'CS');
+    else
+      cs = get_option(varargin,'cs');
+      h = o;
+    end
+    c = ipdf2rgb(vector3d(h),cs,varargin{:});
+  case model(6:8)
+    switch coloring
+      case model(6)
+        q = getFundamentalRegion(o);
+      case model(7)
+        q = quaternion(o);
+      case model(8)
+        q = inverse(getFundamentalRegion(o));
+    end
+    h = quat2rodrigues(q);
+    cs = get(o,'CS');
+    c = ipdf2rgb(h,cs,varargin{:});
+  case model(9)
+    c = euler2rgb2(o,varargin{:});
+  case model(10)
+    c = euler2rgb3(o,varargin{:});
+  otherwise
+    error('Unknown Colorcoding')
 end
+
 

@@ -2,6 +2,10 @@ function varargout = get(obj,vname,varargin)
 % get object variable
 
 switch lower(vname)
+  case 'cs'
+    varargout{1} = obj.CS;
+  case 'ss'
+    varargout{1} = obj.SS;
   case {'euler'}
     [varargout{1:nargout}] = quat2euler(obj,varargin{:});
   case {'rodrigues'}

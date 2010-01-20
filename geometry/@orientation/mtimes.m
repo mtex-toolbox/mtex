@@ -4,7 +4,7 @@ function r = mtimes(a,b)
 
 if isa(a,'orientation') && isa(b,'vector3d')
   
-  if isa(b,'Miller'), b = set(b,'CS',a.cs);end
+  if isa(b,'Miller'), b = set(b,'CS',a.CS);end
   
   r = diag(a.i) * (a.quaternion * vector3d(b));
    
@@ -19,12 +19,12 @@ elseif isa(a,'symmetry')
   
 elseif isa(b,'symmetry')
   
-  if a.cs ~= b
+  if a.CS ~= b
     warning('MTEX:Orientation','Symmetry mismatch!');
   end
   r = a;
   r.quaternion = a.quaternion * quaternion(b);
-  r.cs = symmetry;
+  r.CS = symmetry;
   
 elseif isa(a,'quaternion') && isa(b,'quaternion')
     
@@ -34,14 +34,14 @@ elseif isa(a,'quaternion') && isa(b,'quaternion')
       
       r.i = a.i * b.i;
       % check that symmetries are ok
-      if a.cs ~= b.ss
+      if a.CS ~= b.SS
         warning('MTEX:Orientation','Symmetry mismatch!');
       end
-      r.cs = b.cs;
+      r.SS = b.CS;
     else
-      if length(r.cs) > 1
+      if length(r.CS) > 1
         warning('MTEX:Orientation','Symmetry mismatch!');
-        r.cs = symmetry;
+        r.CS = symmetry;
       end
     end
   else

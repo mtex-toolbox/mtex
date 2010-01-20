@@ -27,7 +27,7 @@ if length(o.ss) == 1
   end
 
   % symetry elements
-  qSym = quaternion(o.cs);
+  qSym = quaternion(o.CS);
   
   % compute all distances to the fundamental regions
   omegaSym = dot_outer(q_ref .* qSym,q);
@@ -46,8 +46,8 @@ if length(o.ss) == 1
 else 
   
   % symetry elements
-  qcs = quaternion(o.cs);
-  qss = quaternion(o.ss);
+  qcs = quaternion(o.CS);
+  qss = quaternion(o.SS);
   
   % compute all distances to the fundamental regions
   omegaSym = dot_outer(qss * reshape(q_ref .* qcs,1,[]),q);
