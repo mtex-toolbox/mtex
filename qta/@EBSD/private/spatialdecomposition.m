@@ -104,29 +104,19 @@ if check_option(varargin,'unitcell') || ~check_option(varargin,'voronoi')
 else
   augmentation = get_option(varargin,'augmentation','cube');
   
-  % extrapolate dummy coordinates %dirty
+  %% extrapolate dummy coordinates %dirty
   switch lower(augmentation)
     case 'cube'
       x = xy(:,1);
       y = xy(:,2);
       k = convhull(x,y);
-      
-      
-      
-%       plot(xy(:,1),xy(:,2),'.')
-%       hold on,
-%       plot(xy(k,1),xy(k,2),'.-')
-      
       rndsmp = [ (1:sum(1:length(x)<=100))'; unique(fix(1+rand(200,1)*(length(x)-1)))];
 
       xx = repmat(x(rndsmp),1,length(rndsmp));
       yy = repmat(y(rndsmp),1,length(rndsmp));
       dxy = abs(sqrt((xx-xx').^2 + (yy-yy').^2));
-      
-      dxy = sort(dxy);
-      dxy = dxy(1:6<end,:);
-      dxy = max(min( mean(dxy(2:end,:),1) ),10^-4);
-%        dxy = 0.1; %min(dxy(dxy>eps))
+
+      dxy = min(dxy(dxy>eps));
 
       dummy = [];
       for ll = 1:length(k)-1
@@ -138,10 +128,6 @@ else
         rot = angle(complex(dx,dy));    
         shiftxy = [cos(rot) -sin(rot); sin(rot) cos(rot)] * [0 ; dxy]./2;
 
-%         hold on
-%         plot(xx-shiftxy(1),yy-shiftxy(2),'r-')
-        
-        
         l1 = [ dx dy ];
         l1 = repmat(l1./norm(l1),length(xy),1);
         l2 = repmat([xx(1) yy(1)] - shiftxy' ,length(xy),1);
@@ -176,7 +162,7 @@ else
         end
 
         co = co(sel,:);  
-        if size(co,1) > 2
+        if ~isempty(co)
           non = [true;any(diff(co)> dxy*10^-8 ,2) ];
           co = co(non,:);
         end
@@ -222,18 +208,11 @@ else
     otherwise
       error('wrong augmentation option')
   end
-%   plot(dummy(:,1),dummy(:,2),'r.')
-  
   xy = [xy; dummy];
 %%  voronoi decomposition
   [v c] = voronoin(xy,{'Q7','Q8','Q5','Q3','Qz'});   %Qf {'Qf'} ,{'Q7'}
   
   c(end-length(dummy)+1:end) = [];
-  
-%   vv = cellfun(@(x) [v(x,:); v(x(1),:); NaN NaN] , c,'uniformoutput',false);
-%   vv = vertcat(vv{:});
-%   plot(vv(:,1),vv(:,2),'r-')
-  
   
   if check_option(varargin,'faces')
     cl = cellfun('prodofsize',c);
