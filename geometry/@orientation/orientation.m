@@ -37,7 +37,7 @@ else
   
   %% orientation given by a quaternion
   
-  args  = find(cellfun(@(s) isa(s,'quaternion'),varargin,'uniformoutput',true));
+  args  = find(cellfun(@(s) isa(s,'quaternion') & ~isa(s,'symmetry'),varargin,'uniformoutput',true));
   if length(args) == 1
     quat = [varargin{args}];
   end

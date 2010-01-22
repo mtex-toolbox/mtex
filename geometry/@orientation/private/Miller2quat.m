@@ -33,7 +33,7 @@ end
 % ensure angle (v1,v2) = 90°
 
 v1 = vector3d(v1);
-v2 = symmetrice(v2);
+v2 = symmetrise(v2);
 
 v2 = v2(isnull(dot(v1,v2))); v2 = v2(1);
 

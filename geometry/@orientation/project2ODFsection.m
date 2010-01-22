@@ -25,7 +25,7 @@ S2G = repmat(S2Grid(vector3d,varargin{:}),numel(sec),1);
 
 %% symmetries and convert to Euler angle
 
-q = quaternion(symmetrice(o));
+q = quaternion(symmetrise(o));
 
 switch lower(type)
   case {'phi_1','phi_2','phi1','phi2'}

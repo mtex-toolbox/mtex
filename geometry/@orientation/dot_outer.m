@@ -24,17 +24,15 @@ lCS = length(cs);
 lSS = length(ss);
 
 if (l1 < l2) && (l1>0)
-	g1rot = reshape(reshape(ss * g1,[],1) * cs.',[lSS l1 lCS]);
-	g1rot = permute(g1rot,[3 1 2]); % -> CS x SS x g1
-						
-	d = reshape(dot_outer(g1rot,g2),[lCS * lSS,l1,l2]); %-> CS * SS x g1 x g2
+  
+  g1rot = symmetrise(g1,cs,ss); % -> CS x SS x g1
+  d = reshape(dot_outer(g1rot,g2),[lCS * lSS,l1,l2]); %-> CS * SS x g1 x g2
 	d = reshape(max(d,[],1),l1,l2);
 		
 elseif l2>0
-	g2rot = reshape(reshape(ss * g2,[],1) * cs.',[lSS l2 lCS]);
-	g2rot = shiftdim(g2rot,1); % -> g2 x CS x SS
-						
-	d = reshape(dot_outer(g1,g2rot),[l1,l2,lCS * lSS]);
+  
+	g2rot = symmetrise(g2,cs,ss).'; % g2 x CS x SS
+  d = reshape(dot_outer(g1,g2rot),[l1,l2,lCS * lSS]);
 	d = max(d,[],3);
 else
 	d = [];
