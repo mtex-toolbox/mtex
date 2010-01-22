@@ -23,7 +23,7 @@ else
   rot = 0;
 end
 
-% symmetrice
+% symmetrise
 sv = q*v;
 [theta,rho] = vec2sph(sv);
 
