@@ -23,7 +23,7 @@ for i = 1:numel(m)
 
   % all symmetrically equivalent?
   if check_option(varargin,'ALL')  
-    mm = symmetrice(subsref(m,i),'plot',varargin{:});
+    mm = symmetrise(subsref(m,i),'plot',varargin{:});
   else
     mm = subsref(m,i);
   end

@@ -9,6 +9,4 @@ function a = angle(m1,m2,varargin)
 %% Output
 %  a - angle
 
-m1 = symmetrice(m1,varargin{:});
-
-a = min(real(acos(dot(m1,m2)./norm(m1)./norm(m2))),[],2);
+a = real(acos(dot(m1,m2,varargin{:})));
