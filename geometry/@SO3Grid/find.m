@@ -1,4 +1,4 @@
-function [ind,d] = find(SO3G,q,epsilon,varargin)
+function [ind,d] = find(SO3G,o,epsilon,varargin)
 % return indece and distance of all nodes within a eps neighborhood
 %
 %% Syntax  
@@ -15,7 +15,7 @@ function [ind,d] = find(SO3G,q,epsilon,varargin)
 
 if ~check_option(SO3G,'indexed') || check_option(varargin,'exact')
 
-  d = dist(SO3G(1).CS,SO3G(1).SS,quaternion(SO3G),q);
+  d = dist(SO3G,o);
   
   if nargin == 2
     [d,ind] = max(d,[],1);
@@ -27,6 +27,7 @@ elseif GridLength(SO3G) == 0
   ind = [];
   d = [];
 else
+  q = quaternion(o);
   
   % rotate q according to SO3Grid.center
   if ~isempty(SO3G.center),q = inverse(SO3G.center) * q; end

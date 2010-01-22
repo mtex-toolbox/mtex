@@ -20,10 +20,7 @@ function [h bins] = hist(ebsd,varargin)
 %% See also
 % grain/misorientation
 
-
-% if nargout == 0
-S3G = get(ebsd,'orientations');
-assert(sum(GridLength(S3G))>0,'No Data');
+assert(sum(sampleSize(ebsd))>0,'No Data');
 
 if nargin > 1 && isa(varargin{1},'quaternion')
   q0 = varargin{1};
@@ -31,11 +28,11 @@ else
   q0 = idquaternion;
 end
   
-nl = length(S3G);
-omega = cell(size(S3G)); m_omega = 0;
+nl = length(ebsd);
+omega = cell(size(ebsd)); m_omega = 0;
   
 for k=1:nl
-  [q,omega{k}] = getFundamentalRegion(S3G(k),q0);
+  [q,omega{k}] = getFundamentalRegion(ebsd(k).orientations,q0);
   m_omega = max(m_omega,max(omega{k}));
 end
 

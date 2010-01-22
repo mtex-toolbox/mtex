@@ -15,7 +15,7 @@ if nargin == 1, q_ref = idquaternion;end
 q = o.quaternion;
 
 %% no specimen symmetry
-if length(o.ss) == 1 
+if length(o.SS) == 1 
     
   % may be we can skip something
   omega = abs(dot(q,q_ref));

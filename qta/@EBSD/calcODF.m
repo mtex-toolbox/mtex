@@ -39,9 +39,8 @@ vdisp('------ MTEX -- EBSD to ODF computation ------------------',varargin{:})
 vdisp('performing kernel density estimation',varargin{:})
 
 % extract orientations
-g = getgrid(ebsd,'checkPhase',varargin{:});
-gridlen = GridLength(g);
-if gridlen == 0, odf = ODF; return, end
+o = get(ebsd,'orientations','checkPhase',varargin{:});
+if numel(o) == 0, odf = ODF; return, end
 
 % extract weights
 if check_option(varargin,'weight')
@@ -51,7 +50,7 @@ elseif isfield(ebsd(1).options,'weight')
   %ebsd = delete(ebsd,isnan(get(ebsd,'weight')));
   weight = get(ebsd,'weight');  
 else
-  weight = ones(1,gridlen);
+  weight = ones(1,numel(o));
 end
 weight = weight ./ sum(weight(:));
 
@@ -78,17 +77,17 @@ end
 hw = gethw(k);
 vdisp([' kernel: ' char(k)],varargin{:});
 
-
-
-odf = ODF(g,weight,k,...
-  ebsd(1).CS,ebsd(1).SS,'comment',['ODF estimated from ',getcomment(ebsd(1))]);
+odf = ODF(o,weight,k,...
+  ebsd(1).CS,ebsd(1).SS,'comment',['ODF estimated from ',ebsd(1).comment]);
 
 max_coef = 32;
-gridlen = gridlen*length(ebsd(1).CS);
+gridlen = numel(o)*length(ebsd(1).CS);
 
 %% Fourier ODF
 if ~check_option(varargin,{'exact','noFourier'}) && ...
-    (check_option(varargin,'Fourier') || (gridlen > 200 && bandwidth(k) < max_coef))
+    (check_option(varargin,'Fourier') || ...
+    strcmpi(get(k,'name'),'dirichlet') || ...
+    (gridlen > 200 && bandwidth(k) < max_coef))
   vdisp(' construct Fourier odf',varargin{:});
   
   L = get_option(varargin,{'L','HarmonicDegree'},min(max(10,bandwidth(k)),max_coef),'double');
@@ -137,11 +136,10 @@ vdisp([' approximation grid: ' char(S3G)],varargin{:});
 %% restrict single orientations to this grid
 
 % init variables
-g = quaternion(g);
 d = zeros(1,GridLength(S3G));
 
 % iterate due to memory restrictions?
-maxiter = ceil(length(ebsd(1).CS)*length(ebsd(1).SS)*numel(g) /...
+maxiter = ceil(length(ebsd(1).CS)*length(ebsd(1).SS)*numel(o) /...
   get_mtex_option('memory',300 * 1024));
 if maxiter > 1, progress(0,maxiter);end
 
@@ -149,10 +147,10 @@ for iter = 1:maxiter
    
   if maxiter > 1, progress(iter,maxiter); end
    
-  dind = ceil(numel(g) / maxiter);
-  sind = 1+(iter-1)*dind:min(numel(g),iter*dind);
+  dind = ceil(numel(o) / maxiter);
+  sind = 1+(iter-1)*dind:min(numel(o),iter*dind);
       
-  ind = find(S3G,g(sind));
+  ind = find(S3G,o(sind));
   for i = 1:length(ind) % TODO -> make it faster
     d(ind(i)) = d(ind(i)) + weight(sind(i));
   end
@@ -168,7 +166,7 @@ d = d(del);
 %% generate ODF
 
 odf = ODF(S3G,d,k,ebsd(1).CS,ebsd(1).SS,...
-  'comment',['ODF estimated from ',getcomment(ebsd(1))]);
+  'comment',['ODF estimated from ',ebsd(1).comment]);
 
 %% check wether kernel is to wide
 if check_option(varargin,'small_kernel') && hw > 2*getResolution(S3G)

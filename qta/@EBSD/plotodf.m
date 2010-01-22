@@ -21,16 +21,16 @@ function plotodf(ebsd,varargin)
 varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
-grid = getgrid(ebsd,'checkPhase',varargin{:});
-cs = get(grid,'CS');
-ss = get(grid,'SS');
+o = get(ebsd,'orientation','checkPhase',varargin{:});
+cs = get(o,'CS');
+ss = get(o,'SS');
 
 % subsample to reduce size
-if sum(GridLength(grid)) > 2000 || check_option(varargin,'points')
+if numel(o) > 2000 || check_option(varargin,'points')
   points = get_option(varargin,'points',2000);
   disp(['plot ', int2str(points) ,' random orientations out of ', ...
-    int2str(sum(GridLength(grid))),' given orientations']);
-  grid = subsample(grid,points);
+    int2str(numel(o)),' given orientations']);
+  o = o(discretesample(ones(1,numel(o)),points));
 end
 
 % reuse plot
@@ -62,7 +62,7 @@ end
 [symbol,labelx,labely] = sectionLabels(sectype);
 
 %% generate plots
-S2G = project2ODFsection(grid,sectype,sec,varargin{:});
+S2G = project2ODFsection(o,sectype,sec,varargin{:});
 S2G = set(S2G,'res',get(S2G,'resolution'));
 
 %% ------------------------- plot -----------------------------------------

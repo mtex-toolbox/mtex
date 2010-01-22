@@ -35,7 +35,6 @@ for i = 1:length(ebsd)
   end
   
   % subsample orientations
-  ebsd(i).orientations = ...
-    subGrid(ebsd(i).orientations,ind);
+  ebsd(i).orientations = ebsd(i).orientations(ind);
   
 end

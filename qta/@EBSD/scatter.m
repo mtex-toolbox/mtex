@@ -16,25 +16,25 @@ function scatter(ebsd,varargin)
 %% See also
 % EBSD/plotpdf savefigure
 
-grid = getgrid(ebsd,'checkPhase',varargin{:});
-cs = get(grid,'CS');
-ss = get(grid,'SS');
+o = get(ebsd,'orientation','checkPhase',varargin{:});
+cs = get(o,'CS');
+ss = get(o,'SS');
 
 %% subsample to reduce size
-if sum(GridLength(grid)) > 2000 || check_option(varargin,'points')
+if numel(o) > 2000 || check_option(varargin,'points')
   points = get_option(varargin,'points',2000);
   disp(['plot ', int2str(points) ,' random orientations out of ', ...
-    int2str(sum(GridLength(grid))),' given orientations']);
-  grid = subsample(grid,points);
+    int2str(numel(o)),' given orientations']);
+  o = o(discretesample(ones(1,numel(o)),points));
 end
 
 %% prepare new figure
 if newMTEXplot('ensureTag','ebsd_scatter',...
-    'ensureAppdata',{{'CS',ebsd(1).CS},{'SS',ebsd(1).SS}});
+    'ensureAppdata',{{'CS',cs},{'SS',ss}});
   
   % reference orientation for fundamental region
   if ~check_option(varargin,'center')
-    varargin = [varargin,{'center',mean(grid)}];
+    varargin = [varargin,{'center',mean(o)}];
   end
     
 else
@@ -47,7 +47,7 @@ end
 
 
 %% plot
-plot(grid,'scatter',varargin{:});
+plot(o,'scatter',varargin{:});
 
 %% store appdata
 setappdata(gcf,'CS',cs);

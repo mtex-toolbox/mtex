@@ -36,4 +36,4 @@ clear S3G_global; clear S3G_local;
 comment = get_option(varargin,'comment',...
   ['EBSD data simulated from ',getcomment(odf)]);
   
-ebsd = EBSD(SO3Grid(q,cs,ss),cs,ss,'comment',comment);
+ebsd = EBSD(orientation(q,cs,ss),cs,ss,'comment',comment);

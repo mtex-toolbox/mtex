@@ -2,8 +2,8 @@ function ebsd = copy(ebsd,condition)
 % copy selected points from EBSD data
 %
 %% Syntax  
-% ebsd  = delete(ebsd,condition)
-% ebsd  = delete(ebsd,get(ebsd,'phase')~=1)
+% ebsd  = copy(ebsd,condition)
+% ebsd  = copy(ebsd,get(ebsd,'phase')~=1)
 %
 %% Input
 %  ebsd      - @EBSD
@@ -38,7 +38,7 @@ for i=1:length(ebsd)
      end
   end
   
-	ebsd(i).orientations = copy(ebsd(i).orientations,idi);  
+	ebsd(i).orientations = ebsd(i).orientations(idi);  
 end
 
 % ebsd = ebsd(sampleSize(ebsd)>0); %causes empty ebsd

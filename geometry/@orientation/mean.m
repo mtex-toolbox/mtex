@@ -1,4 +1,4 @@
-function [q_mean kappa v q q_std]  = mean(o,varargin)
+function [o kappa v q q_std]  = mean(o,varargin)
 % returns mean, kappas and sorted q of crystal symmetry euqal quaternions 
 %
 %% Input
@@ -27,7 +27,7 @@ if numel(o.i) == 1
 end
 
 % first approximation
-q_mean = get_option(varargin,'q0',o.quat(1));
+q_mean = get_option(varargin,'q0',o.quaternion(1));
 old_mean = [];
 
 % iterate mean 
@@ -39,3 +39,6 @@ while iter < 5 && (isempty(old_mean) || (abs(dot(q_mean,old_mean))<0.999))
   q_std = sum(omega.^2) ./ (length(omega)-1);
   [q_mean kappa v] = mean(q,varargin{:});
 end
+
+o.quaternion = q_mean;
+o.i = 1;

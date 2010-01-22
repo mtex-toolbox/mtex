@@ -13,11 +13,11 @@ function varargout = mean( ebsd,varargin)
 %  v         - eigenvectors of kappa
 %
 
-[S3G,ind] = getgrid(ebsd,'CheckPhase',varargin{:});
+[o,ind] = get(ebsd,'orientation','CheckPhase',varargin{:});
 
 % extract weights
 if isfield(ebsd(1).options,'weight')
-  [varargout{1:nargout}]  = mean(S3G,'weights',get(ebsd(ind),'weight'));
+  [varargout{1:nargout}]  = mean(o,'weights',get(ebsd(ind),'weight'));
 else
-  [varargout{1:nargout}]  = mean(S3G);
+  [varargout{1:nargout}]  = mean(o);
 end

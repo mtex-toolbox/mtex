@@ -25,13 +25,13 @@ function plotpdf(ebsd,h,varargin)
 % SphericalProjection_demo 
 
 %% make new plot
-o = getgrid(ebsd,'checkPhase',varargin{:});
+o = get(ebsd,'orientation','checkPhase',varargin{:});
 cs = get(o,'CS');
 ss = get(o,'SS');
 if newMTEXplot('ensureTag','pdf',...
     'ensureAppdata',{{'CS',cs},{'SS',ss}})
   argin_check(h,{'Miller'});  
-  h = set(h,'CS',getSym(ebsd));
+  h = set(h,'CS',get(ebsd,'CS'));
 else
   h = getappdata(gcf,'h');  
   o = getappdata(gcf,'options');
@@ -42,11 +42,11 @@ end
 varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
-if sum(GridLength(o))*length(cs)*length(ss) > 10000 || check_option(varargin,'points')
+if sum(numel(o))*length(cs)*length(ss) > 10000 || check_option(varargin,'points')
   
   points = fix(get_option(varargin,'points',10000/length(cs)/length(ss)));  
-  disp(['plot ', int2str(points) ,' random orientations out of ', int2str(sum(GridLength(o))),' given orientations']);
-  o = subsample(o,points);
+  disp(['plot ', int2str(points) ,' random orientations out of ', int2str(numel(o)),' given orientations']);
+  o = o(discretesample(ones(1,numel(o)),points));
 
 end
 

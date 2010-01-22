@@ -66,5 +66,4 @@ else
   o.i = ones(size(quat));
 end
 
-superiorto('quaternion','SO3Grid');
 o = class(o,'orientation',quat);

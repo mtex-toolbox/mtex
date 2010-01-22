@@ -44,7 +44,7 @@ plotpdf(ebsd,h,'points',500,'antipodal')
 % the estimated ODF becomes very smooth (ODF2).
 %
 odf1 = calcODF(ebsd)
-odf2 = calcODF(ebsd,'halfwidth',10*degree)
+odf2 = calcODF(ebsd,'halfwidth',5*degree)
 
 %% plot pole figures
 

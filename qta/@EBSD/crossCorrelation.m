@@ -7,11 +7,11 @@ for k = 1:15
 end
 psi = get_option(varargin,'kernel',psi);
 
-q = get(ebsd,'quaternion');
+q = get(ebsd,'orientation');
 
 %% partition data set
 sN = ceil(min(length(q),get_option(varargin,'SamplingSize',1000)));
-pN = get_option(varargin,'PartitionSize',ceil(1000000/length(q)));
+pN = get_option(varargin,'PartitionSize',ceil(1000000/numel(q)));
 cN = ceil(sN / pN);
 
 c = zeros(cN,length(psi));

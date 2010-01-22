@@ -1,4 +1,4 @@
-function obj = set(obj,vname,value)
+function obj = set(obj,vname,value,varargin)
 % set object variable to value
 
 
@@ -15,8 +15,8 @@ if any(strcmp(vname,fields(obj)))
     end
 
     obj(i).(vname) = ivalue;
-    if strcmp(vname,'CS'), obj(i).orientations = set(obj(i).orientations,'CS',{ivalue});end
-    if strcmp(vname,'SS'), obj(i).orientations = set(obj(i).orientations,'SS',{ivalue});end
+    if strcmp(vname,'CS'), obj(i).orientations = set(obj(i).orientations,'CS',{ivalue},varargin{:});end
+    if strcmp(vname,'SS'), obj(i).orientations = set(obj(i).orientations,'SS',{ivalue},varargin{:});end
   end
 else
   for k=1:numel(obj)

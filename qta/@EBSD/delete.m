@@ -30,6 +30,6 @@ for i= 1:length(ebsd)
     end
   end
   
-	ebsd(i).orientations = delete(ebsd(i).orientations,idi-cs(i));
+	ebsd(i).orientations = ebsd(i).orientations(idi-cs(i));
     
 end
