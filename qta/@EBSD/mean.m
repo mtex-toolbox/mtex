@@ -13,7 +13,7 @@ function varargout = mean( ebsd,varargin)
 %  v         - eigenvectors of kappa
 %
 
-[o,ind] = get(ebsd,'orientation','CheckPhase',varargin{:});
+[o,ind] = get(ebsd,'orientations','CheckPhase',varargin{:});
 
 % extract weights
 if isfield(ebsd(1).options,'weight')

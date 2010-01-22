@@ -25,7 +25,7 @@ function plotpdf(ebsd,h,varargin)
 % SphericalProjection_demo 
 
 %% make new plot
-o = get(ebsd,'orientation','checkPhase',varargin{:});
+o = get(ebsd,'orientations','checkPhase',varargin{:});
 cs = get(o,'CS');
 ss = get(o,'SS');
 if newMTEXplot('ensureTag','pdf',...

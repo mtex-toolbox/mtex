@@ -21,7 +21,7 @@ function plotodf(ebsd,varargin)
 varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
-o = get(ebsd,'orientation','checkPhase',varargin{:});
+o = get(ebsd,'orientations','checkPhase',varargin{:});
 cs = get(o,'CS');
 ss = get(o,'SS');
 

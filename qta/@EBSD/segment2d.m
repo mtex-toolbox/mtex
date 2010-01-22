@@ -32,14 +32,11 @@ s = tic;
 
 xy = vertcat(ebsd.xy);
 
-if isempty(xy)
-  error('no spatial data')
-end
+if isempty(xy), error('no spatial data');end
 
-grid = [ebsd.orientations];
-z = quaternion(grid); 
+z = [ebsd.orientations]; 
 
-l = GridLength(grid);
+l = SampleSize(ebsd);
 rl = [ 0 cumsum(l)];
 phase = ones(1,sum(l));
 phaseCS = cell(numel(l),1);
@@ -49,8 +46,8 @@ phase_ebsd = mat2cell(phase_ebsd,ones(size(phase_ebsd)),1);
 comment = get(ebsd,'comment');
 
 for i=1:numel(ebsd)
-   phaseCS{i} = getCSym(ebsd(i).orientations);
-   phaseSS{i} = getSSym(ebsd(i).orientations);
+   phaseCS{i} = ebsd(i).CS;
+   phaseSS{i} = ebsd(i).SS;
    phase( rl(i)+(1:l(i)) ) = i;
 end
 

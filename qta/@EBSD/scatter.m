@@ -16,7 +16,7 @@ function scatter(ebsd,varargin)
 %% See also
 % EBSD/plotpdf savefigure
 
-o = get(ebsd,'orientation','checkPhase',varargin{:});
+o = get(ebsd,'orientations','checkPhase',varargin{:});
 cs = get(o,'CS');
 ss = get(o,'SS');
 

@@ -7,7 +7,7 @@ for k = 1:15
 end
 psi = get_option(varargin,'kernel',psi);
 
-q = get(ebsd,'orientation');
+q = get(ebsd,'orientations');
 
 %% partition data set
 sN = ceil(min(length(q),get_option(varargin,'SamplingSize',1000)));
