@@ -17,7 +17,7 @@ function f = eval(odf,g,varargin)
 % kernel/sum_K kernel/K
 
 if isa(g,'SO3Grid')
-  if ~all([getCSym(g),getSSym(g)] == [odf(1).CS,odf(1).SS])
+  if odf(1).CS ~= getCSym(g) && odf(1).SS ~= getSSym(g)
     warning('symmetry missmatch'); %#ok<WNTAG>
   end
   f = zeros(GridSize(g));
@@ -46,7 +46,7 @@ for i = 1:length(odf)
     
     
     %warning('MTEX:Bingham','Normalization missing!')
-    ASym = symmetriceQuat(odf(i).CS,odf(i).SS,quaternion(odf(i).center));
+    ASym = symmetrise(quaternion(odf(i).center,odf(i).CS,odf(i).SS));
     
     C = odf(i).c(1) ./ mhyper(odf(i).psi);
 

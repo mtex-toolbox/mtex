@@ -148,7 +148,7 @@ elseif maxangle < rotangle_max_z(CS)/4
   [ignore,center] = selectMinbyRow(rotangle(sym_center),sym_center);
   
   for i = 1:length(center)
-    cq = center(i) * q(:);
+    cq = center(i) .* q(:);
     ind = fundamental_region2(cq,center(i),CS,SS);
     G.Grid = [G.Grid;cq(ind)];
   end
@@ -260,6 +260,7 @@ function res = quat2res(quat,CS,SS)
 ml = min(numel(quat),500);
 ind1 = discretesample(numel(quat),ml);
 ind2 = discretesample(numel(quat),ml);
-d = 2*acos(dot_outer(CS,SS,quat(ind1),quat(ind2)));
+warning('TODO');
+d = 2*acos(dot_outer(quat(ind1),quat(ind2)));
 d(d<0.005) = pi;
 res = quantile(min(d,[],2),min(0.9,sqrt(ml/numel(quat))));

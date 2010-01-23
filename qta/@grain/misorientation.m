@@ -53,7 +53,7 @@ if nargin > 1 && isa(varargin{1},'EBSD') % misorientation to ebsd data
     [ids2 ida idb] = unique(ids);
     [a ia ib] = intersect([grs.id],ids2);
 
-    ql = symmetriceQuat(cs,ss,quaternion(grid));
+    ql = symmetrise(quaternion(grid),cs,ss);
     qr = repmat(qm(ia(idb)).',1,size(ql,2));
     q_res = ql'.*qr;
 %     q_res = inverse(ql).*qr;
@@ -91,7 +91,7 @@ else % misorientation to neighbour grains
     pSS = get(gr(1),'SS');
     pSS = pSS{:};
     
-    qsym = symmetriceQuat(pCS,pSS, mean).';
+    qsym = symmetrise(mean,pCS,pSS).';
    
     if check_option(varargin,'random')      
       n = length(mean);

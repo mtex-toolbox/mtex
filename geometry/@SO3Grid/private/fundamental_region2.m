@@ -18,7 +18,7 @@ rq = quat2rodrigues(q); clear q;
 rc_sym = quat2rodrigues(c_sym); 
 
 % find rotation not part of the fundamental region
-ind = true(numel(rq),1);
+ind = true(size(rq));
 for i = 2:numel(rc_sym)
   
   d = rc_sym(i)-rc_sym(1);

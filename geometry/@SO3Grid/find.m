@@ -12,7 +12,6 @@ function [ind,d] = find(SO3G,o,epsilon,varargin)
 %  [indece, distances]
 %
 
-
 if ~check_option(SO3G,'indexed') || check_option(varargin,'exact')
 
   d = dist(SO3G,o);

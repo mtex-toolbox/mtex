@@ -11,10 +11,10 @@ switch vname
 %      varargout{1} = obj(1).(vname);
 %    end
   case {'comment','SS','options'}
+    
     varargout{1} = obj(1).(vname);
-  case fields(obj)
-    varargout{1} = vertcat(obj.(vname));
-  case {'data','orientation'}
+    
+  case {'data','orientations'}
     
     
     % extract phases
@@ -37,8 +37,9 @@ switch vname
     end
     
     varargout{1} = [obj(ind).orientations];
-    varargout{2} = ind;
-    
+    varargout{2} = ind;  
+  case fields(obj)
+    varargout{1} = vertcat(obj.(vname));
     
   case {'quaternions','quaternion'}
     varargout{1} = quaternion();

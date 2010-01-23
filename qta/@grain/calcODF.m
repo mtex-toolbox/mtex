@@ -26,7 +26,7 @@ if nargin>1 && isa(ebsd,'EBSD')
     ind = get(grains,'phase') == get(ebsd_cur,'phase');
         
     %do the same kernel for every grain of same phase    
-    [k hw options] = extract_kernel(getgrid(ebsd_cur),varargin);
+    [k hw options] = extract_kernel(get(ebsd_cur,'orientations'),varargin);
 
     %predefine a grid
     if ~check_option(varargin,'exact'), 

@@ -34,8 +34,8 @@ if newMTEXplot('ensureTag','pdf',...
   h = set(h,'CS',get(ebsd,'CS'));
 else
   h = getappdata(gcf,'h');  
-  o = getappdata(gcf,'options');
-  if ~isempty(o), varargin = {o{:},varargin{:}};end
+  options = getappdata(gcf,'options');
+  if ~isempty(options), varargin = {options{:},varargin{:}};end
 end
 
 %% get options
@@ -58,7 +58,7 @@ if check_option(varargin,'superposition')
     'appdata',@(i) {{'h',h}},...
     varargin{:});
 else
-  r = @(i) reshape(ss * o * symmetrice(h(i)),[],1);
+  r = @(i) reshape(ss * o * symmetrise(h(i)),[],1);
   [maxtheta,maxrho,minrho] = getFundamentalRegionPF(ss,varargin{:});
   Sr = @(i) S2Grid(r(i),'MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
   

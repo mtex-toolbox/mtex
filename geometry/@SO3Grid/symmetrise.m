@@ -1,4 +1,4 @@
-function S3G = symmetrice(S3G,varargin)
+function S3G = symmetrise(S3G,varargin)
 % symmetrcially equivalent orientations
 %
 %% Input
@@ -10,5 +10,5 @@ function S3G = symmetrice(S3G,varargin)
 %% See also
 
 cs = S3G(1).CS; ss = S3G(1).SS;
-S3G = SO3Grid(symmetriceQuat(cs,ss,quaternion(S3G)),cs,ss);
+S3G = SO3Grid(symmetrise(quaternion(S3G),cs,ss),cs,ss);
 

@@ -16,7 +16,7 @@ function v = volume(ebsd,center,radius,varargin)
 %% See also
 % ODF/volume
 
-[o,ind] = getgrid(ebsd,'checkPhase',varargin{:});
+[o,ind] = get(ebsd,'orientations','checkPhase',varargin{:});
 
 % extract weights
 if isfield(ebsd(1).options,'weight')

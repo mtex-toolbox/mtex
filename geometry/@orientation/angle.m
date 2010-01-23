@@ -17,6 +17,6 @@ if nargin == 1
 
 else
   
-  omega = 2*acos(min(1,dot_outer(o1,o2)));
+  omega = 2*acos(min(1,dot_outer(o1,o2,varargin{:})));
   
 end

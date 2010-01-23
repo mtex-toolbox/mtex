@@ -288,7 +288,7 @@ switch lower(angletype)
          
         %omega(cur) = min(rotangle(ql .* qr),[],2) ;       
         %omega(cur) = min(2*acos(abs(dot(ql,qr))),[],2);       
-        omega(cur) = 2*acos(dot_sym(zl(cur),zr(cur),phaseCS{i},phaseSS{i}));
+        omega(cur) = 2*acos(dot(zl(cur),zr(cur)));
       end  
     end
   case 'disorientation'

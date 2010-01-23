@@ -59,7 +59,7 @@ for s = 1:length(sp)
       q1 = hr2quat(vector3d(h(s)),vector3d(r));
       q2 = q1 .* axis2quat(vector3d(h(s)),pi);
       
-      ASym = symmetriceQuat(odf(i).CS,odf(i).SS,quaternion(odf(i).center));
+      ASym = symmetrise(quaternion(odf(i).center),odf(i).CS,odf(i).SS);
     
       C = odf(i).c(1) ./ mhyper(odf(i).psi);
        

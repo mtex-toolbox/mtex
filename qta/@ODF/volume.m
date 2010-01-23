@@ -88,7 +88,8 @@ end
 function v = fastVolume(odf,center,radius)
 
 % compute distances
-d = reshape(angle(odf.center,center,'all'),GridLength(odf.center),[]);
+warning('TODO');
+d = reshape(angle(center,odf.center,'all'),GridLength(odf.center),[]);
 
 % precompute volumes
 [vol,r] = volume(odf.psi,radius);

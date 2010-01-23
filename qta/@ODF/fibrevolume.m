@@ -37,7 +37,7 @@ res = get_option(varargin,'RESOLUTION',min(2.5*degree,radius/50),'double');
 [maxtheta,maxrho,minrho] = getFundamentalRegionPF(odf(1).CS);  
 S2G = S2Grid('equispaced','resolution',res,'MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
 lS2G = GridLength(S2G);
-S2G = subGrid(S2G,symmetrice(h),radius);
+S2G = subGrid(S2G,symmetrise(h),radius);
 
 % estimate volume portion of odf space
 %if radius < rotangle_max_z(odf(1).CS) / 8

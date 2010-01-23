@@ -15,8 +15,8 @@ function Z = RRK(kk,h1,r1,h2,r2,CS,SS,varargin)
 
 Z = zeros(numel(h2),numel(r2));
 
-sh = symetriceVec(CS,h1);
-sr = symetriceVec(SS,r1);
+sh = symmetrise(h1,CS);
+sr = symmetrise(r1,SS);
 if check_option(varargin,'antipodal'), sh = [sh,-sh];end
 
 for i = 1:length(sh)
