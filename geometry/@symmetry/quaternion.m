@@ -2,7 +2,7 @@ function r = quaternion(s,i)
 % get quaternions
 
 if nargin ==2
-    r = s.quat(i);
+    r = s.quaternion(i);
 else
-    r = s.quat;
+    r = s.quaternion;
 end

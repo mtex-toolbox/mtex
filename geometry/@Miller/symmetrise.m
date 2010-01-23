@@ -2,7 +2,7 @@ function [m,l] = symmetrise(m,varargin)
 % directions symmetrically equivalent to m
 %
 %% Syntax
-%  v = symmetrice(m) - vectors symmetrically equivalent to m
+%  m = symmetrise(m) - @Miller indice symmetrically equivalent to m
 %
 %% Input
 %  m - @Miller

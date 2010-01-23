@@ -1,4 +1,4 @@
 function l = length(S)
 % number of symmetry elements
 
-l = numel(S.quat);
+l = numel(S.quaternion);
