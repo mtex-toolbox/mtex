@@ -52,7 +52,7 @@ else
     for is = 1:length(qss)
       for ic = 1:length(qcs)
 
-        [xalpha,xbeta,xgamma] = quat2euler(qss(is) * transpose(q(:)*qcs(ic)));
+        [xalpha,xbeta,xgamma] = Euler(qss(is) * transpose(q(:)*qcs(ic)));
   
         [hind,hd] = SO3Grid_find(yalpha,ybeta,ygamma,sgamma,int32(igamma), ...
           int32(ialphabeta),palpha,pgamma, xalpha,xbeta,xgamma);
@@ -71,7 +71,7 @@ else
     for is = 1:length(qss)
       for ic = 1:length(qcs)
 
-        [xalpha,xbeta,xgamma] = quat2euler(qss(is) * transpose(q(:)*qcs(ic)));
+        [xalpha,xbeta,xgamma] = Euler(qss(is) * transpose(q(:)*qcs(ic)));
   
         ind = ind | SO3Grid_find_region(yalpha,ybeta,ygamma,sgamma,int32(igamma), ...
           int32(ialphabeta),palpha,pgamma, xalpha,xbeta,xgamma,epsilon);

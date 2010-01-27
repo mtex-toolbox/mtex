@@ -113,7 +113,7 @@ elseif isa(varargin{1},'vector3d')
     G.theta =  S1Grid([],minthetaGrid,maxthetaGrid);
   end
   G.rho = S1Grid([],minrhoGrid,maxrhoGrid);
-  Grid = varargin{1};
+  Grid = vector3d(varargin{1});
   [theta,rho] = vec2sph(Grid);
 
   if check_option(varargin,'antipodal')

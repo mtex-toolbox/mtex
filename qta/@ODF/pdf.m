@@ -75,8 +75,14 @@ for s = 1:length(sp)
             
       % --------------- radially symmetric portion ----------------------------
     else
+      if length(sp) == 1
+        hh = h;
+      else
+        hh = h(s);
+      end
+      
       Z = Z + sp(s) * reshape(...
-        RK(odf(i).psi,quaternion(odf(i).center),h(s),r,odf(i).c,...
+        RK(odf(i).psi,quaternion(odf(i).center),hh,r,odf(i).c,...
         odf(i).CS,odf(i).SS,varargin{:}),size(Z));
     end
   end

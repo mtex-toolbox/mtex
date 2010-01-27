@@ -164,7 +164,7 @@ inverse(o1)
 % There are methods to transform quaternion in almost any other
 % parameterization of rotations as they are:
 %
-% * [[quaternion_quat2euler.html,quat2euler(q)]]   in Euler angle
+% * [[quaternion_Euler.html,Euler(q)]]   in Euler angle
 % * [[quaternion_quat2rodrigues.html,quat2rodrigues(q)]] % in Rodrigues parameter
 %
 %% Plotting Orientations

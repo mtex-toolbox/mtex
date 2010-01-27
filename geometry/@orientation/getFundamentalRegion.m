@@ -40,7 +40,7 @@ if length(o.SS) == 1
   q = q .* reshape(qSym(idy),size(q));
   
   % compute angle
-  omega = 2*acos(min(1,omega));
+  omega = reshape(2*acos(min(1,omega)),size(q));
   
 %% with specimen symmetry
 else 

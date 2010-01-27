@@ -20,6 +20,7 @@ elseif isa(a,'quaternion') && isa(b,'quaternion')
       end
       r.CS = b.SS;      
     else
+      r = b;
       if length(r.CS) > 1
         warning('MTEX:Orientation','Symmetry mismatch!');
         r.CS = symmetry;

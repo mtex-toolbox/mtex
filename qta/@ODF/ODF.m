@@ -43,10 +43,10 @@ elseif isa(center,'ODF')
 end
 
 % default values
-if ~isa(center,'orientation') 
-  if nargin <= 3, CS = symmetry('triclinic'); end
-  if nargin <= 4, SS = symmetry('triclinic'); end
-	center = orientation(center,CS,SS); 
+if nargin <= 3, CS = symmetry('triclinic'); end
+if nargin <= 4, SS = symmetry('triclinic'); end
+if isa(center,'quaternion') && ~isa(center,'orientation') 
+  center = orientation(center,CS,SS);
 end
 if nargin <= 1 || isempty(c) && isa(center,'SO3Grid'), c = [1,ones(1,numel(center))]; end
 if nargin <= 2, psi = kernel; end

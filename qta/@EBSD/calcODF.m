@@ -120,7 +120,7 @@ res = get_option(varargin,'resolution',max(0.75*degree,hw / 2));
 % ngamma = round(4*pi/res);
 % 
 % % approximate
-% [alpha,beta,gamma] = quat2euler(quaternion(ebsd.orientations));
+% [alpha,beta,gamma] = Euler(quaternion(ebsd.orientations));
 % ialpha = 1+round(nalpha * mod(alpha,maxalpha) ./ maxalpha);
 % ibeta = 1+round(nbeta * beta ./ maxbeta);
 % igamma = 1+round(ngamma * gamma ./ maxgamma);

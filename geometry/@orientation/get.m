@@ -7,9 +7,9 @@ switch lower(vname)
   case 'ss'
     varargout{1} = obj.SS;
   case {'euler'}
-    [varargout{1:nargout}] = quat2euler(obj,varargin{:});
+    [varargout{1:nargout}] = Euler(obj,varargin{:});
   case {'rodrigues'}
-    [varargout{1:nargout}] = quat2euler(obj,varargin{:});
+    [varargout{1:nargout}] = Euler(obj,varargin{:});
   case fields(obj)
     varargout{1} = obj.(vname);
   case 'a'

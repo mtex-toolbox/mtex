@@ -3,9 +3,9 @@ function varargout = get(obj,vname,varargin)
 
 switch lower(vname)  
   case {'euler'}
-    [varargout{1:nargout}] = quat2euler(obj,varargin{:});
+    [varargout{1:nargout}] = Euler(obj,varargin{:});
   case {'rodrigues'}
-    [varargout{1:nargout}] = quat2euler(obj,varargin{:});
+    [varargout{1:nargout}] = Euler(obj,varargin{:});
   case fields(obj)
     varargout{1} = obj.(vname);
   case 'a'

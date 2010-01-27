@@ -9,7 +9,7 @@ if numel(o.i) < 30 && numel(o)>0
   
   disp('  Bunge Euler angles in degree: ');
   %q = getFundamentalRegion(o);
-  [phi1,Phi,phi2] = quat2euler(o,'Bunge');
+  [phi1,Phi,phi2] = Euler(o,'Bunge');
   if any(o.i(:) < 0)
     d = [phi1(:)/degree,Phi(:)/degree,phi2(:)/degree,o.i(:)];
   else

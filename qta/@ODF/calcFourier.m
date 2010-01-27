@@ -78,7 +78,7 @@ for i = 1:length(odf)
       end      
       
       % export center in Euler angle
-      abg = quat2euler(g,'nfft');
+      abg = Euler(g,'nfft');
       
       % export Chebyshev coefficients
       A = getA(odf(i).psi);
@@ -108,7 +108,7 @@ for i = 1:length(odf)
       
         if length(quaternion(odf(i).CS)) ~= 1
           % symmetrize crystal symmetry
-          abg = quat2euler(quaternion(odf(i).CS),'nfft');
+          abg = Euler(quaternion(odf(i).CS),'nfft');
           A(1:end) = 1;
           c = ones(1,length(odf(i).CS));
           odf(i).c_hat = multiply(odf(i).c_hat,gcA2fourier(abg,c,A),length(A)-1);
@@ -116,7 +116,7 @@ for i = 1:length(odf)
       
         if length(quaternion(odf(i).SS)) ~= 1
           % symmetrize specimen symmetry
-          abg = quat2euler(quaternion(odf(i).SS),'nfft');
+          abg = Euler(quaternion(odf(i).SS),'nfft');
           A(1:end) = 1;
           c = ones(1,length(odf(i).SS));
           odf(i).c_hat = multiply(gcA2fourier(abg,c,A),odf(i).c_hat,length(A)-1);

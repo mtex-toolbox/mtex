@@ -3,7 +3,7 @@ function s = char(q,varargin)
 
 if length(q) == 1
   if check_option(varargin,'EULER')
-    [alpha,beta,gamma] = quat2euler(q);
+    [alpha,beta,gamma] = Euler(q);
     s = ['(',int2str(alpha/degree),mtexdegchar,',',int2str(beta/degree),mtexdegchar,',',int2str(gamma/degree),mtexdegchar,')'];
   elseif q.a == 1
     s = 'identical rotation';

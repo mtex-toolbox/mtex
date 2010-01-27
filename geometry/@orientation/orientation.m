@@ -1,14 +1,15 @@
 function o = orientation(varargin)
 % defines an orientation
 
+% empty quaternion;
+quat = quaternion;
+
 %% empty constructor
 if nargin == 0
   
   o.CS = symmetry;
   o.SS = symmetry;
-  o.i = 1;
-  quat = quaternion;
-  
+  o.i = 1;  
   
 %% copy constructor
 elseif isa(varargin{1},'orientation')

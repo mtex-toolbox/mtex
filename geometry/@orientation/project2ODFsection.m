@@ -36,7 +36,7 @@ switch lower(type)
     convention = 'ABG';   
 end
 
-[e1,e2,e3] = quat2euler(q,convention);
+[e1,e2,e3] = Euler(q,convention);
 
 switch lower(type)
   case {'phi_1','alpha','phi1'}

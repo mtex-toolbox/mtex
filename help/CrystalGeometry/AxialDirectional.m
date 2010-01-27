@@ -111,9 +111,9 @@ plotipdf(odf,yvector,'antipodal','complete')
 % Notice how MTEX, automatically reduces the fundamental region of inverse
 % pole figures in the case that antipodal symmetry is present.
 
-plotipdf(odf,yvector,'position',[100 100 400 200])
+figure(1); plotipdf(odf,yvector,'position',[100 100 400 200])
 
-plotipdf(odf,yvector,'antipodal')
+figure(2);plotipdf(odf,yvector,'antipodal')
 
 
 %% EBSD Colocoding

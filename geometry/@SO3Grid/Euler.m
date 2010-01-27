@@ -37,6 +37,6 @@ if check_option(S3G,convention)
     
 else
   
-  [varargout{1:nargout}] = quat2euler(quaternion(S3G),varargin{:});
+  [varargout{1:nargout}] = Euler(quaternion(S3G),varargin{:});
   
 end
