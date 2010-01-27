@@ -31,20 +31,20 @@ argin_check(CS,'symmetry');
 argin_check(SS,'symmetry');
 
 % standard settings
+G.CS = CS;
+G.SS = SS;
 G.alphabeta = [];
 G.gamma    = [];
 G.resolution = 2*pi;
 G.options = {};
-G.CS      = CS;
-G.SS      = SS;
 G.center  = [];
-G.Grid    = quaternion;
+Grid    = quaternion;
 
 %% SO3rid defined by a set quaternions
 if isa(points,'quaternion')    
 	
   points = points  ./ norm(points);
-  G.Grid = points;
+  Grid = points;
     
   if numel(points) < 2
     G.resolution = 2*pi;
@@ -85,9 +85,9 @@ elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
 
   % generate SO(3) plot grids
   [theta,rho] = polar(S2G);
-  sec_angle = repmat(reshape(sec,[1,1,nsec]),[GridSize(S2G),1]);
-  theta  = reshape(repmat(theta ,[1,1,nsec]),[GridSize(S2G),nsec]);
-  rho = reshape(repmat(rho,[1,1,nsec]),[GridSize(S2G),nsec]);
+  sec_angle = repmat(reshape(sec,[1,1,nsec]),[size(S2G),1]);
+  theta  = reshape(repmat(theta ,[1,1,nsec]),[size(S2G),nsec]);
+  rho = reshape(repmat(rho,[1,1,nsec]),[size(S2G),nsec]);
   
   % set convention
   switch lower(sectype)
@@ -106,7 +106,7 @@ elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
     case 'sigma'
       [sec_angle,theta,rho] = deal(rho,theta,sec_angle-rho);
   end
-  G.Grid = euler2quat(sec_angle,theta,rho,convention);
+  Grid = euler2quat(sec_angle,theta,rho,convention);
   
   % extra output
   if strcmpi(points,'plot')
@@ -150,7 +150,7 @@ elseif maxangle < rotangle_max_z(CS)/4
   for i = 1:length(center)
     cq = center(i) .* q(:);
     ind = fundamental_region2(cq,center(i),CS,SS);
-    G.Grid = [G.Grid;cq(ind)];
+    Grid = [Grid;cq(ind)];
   end
   
 %% equidistribution  
@@ -179,9 +179,9 @@ elseif isa(points,'double') && points > 0  % discretise euler space
                          'MAXTHETA',maxbeta,'MINRHO',0,'MAXRHO',maxalpha,...
                          no_center(res),'RESTRICT2MINMAX');
     
-    while round(2*N*maxgamma/maxbeta) * GridLength(G.alphabeta) < points 
+    while round(2*N*maxgamma/maxbeta) * numel(G.alphabeta) < points 
       N = fix((N + 1) * ...
-              (points / round(2*N*maxgamma/maxbeta) / GridLength(G.alphabeta)).^(0.2));
+              (points / round(2*N*maxgamma/maxbeta) / numel(G.alphabeta)).^(0.2));
       res = maxbeta / N;
       G.alphabeta = S2Grid('equispaced','resolution',res,...
                            'MAXTHETA',maxbeta,'MINRHO',0,'MAXRHO',maxalpha,...
@@ -207,7 +207,7 @@ elseif isa(points,'double') && points > 0  % discretise euler space
   gamma = -maxgamma + (0:ap2-1) * 2 * maxgamma / ap2;
 
   % arrange alpha, beta, gamma
-  gamma  = dgamma+repmat(gamma.',1,GridLength(G.alphabeta));
+  gamma  = dgamma+repmat(gamma.',1,numel(G.alphabeta));
   alpha = repmat(reshape(alpha,1,[]),ap2,1);
   beta  = repmat(reshape(beta,1,[]),ap2,1);
  
@@ -234,12 +234,10 @@ elseif isa(points,'double') && points > 0  % discretise euler space
   end
   
   G.options = {'indexed'};
-  G.Grid  = Grid;    
-  
+    
 end
 
-superiorto('quaternion');
-G = class(G,'SO3Grid');
+G = class(G,'SO3Grid',orientation(Grid,CS,SS));
 
 if check_option(G,'indexed') && check_option(varargin,'MAX_ANGLE')
   center = get_option(varargin,'center',idquaternion);

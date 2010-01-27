@@ -12,18 +12,18 @@ function d = dot_outer(SO3G,q,varargin)
 %  d      - sparse matrix
 %
 %% formuala:
-% cos angle(g1,g2)/2 = dout(g1,g2)
+% cos angle(g1,g2)/2 = dot(g1,g2)
 
 epsilon = get_option(varargin,'epsilon',pi);
-if isa(q,'SO3Grid'), q = quaternion(q);end
-d = sparse(GridLength(SO3G),numel(q));
+q = quaternion(q);
 
 if ~check_option(SO3G,'indexed') || check_option(varargin,{'full','all'})
   
-  d = cos(dist(SO3G.CS,SO3G.SS,quaternion(SO3G).',q(:).',varargin{:})/2);
-
+  d = dot_outer(SO3G.orientation,q,varargin{:});
+  
 else
-
+  d = sparse(numel(SO3G),numel(q));
+  
   % rotate q according to SO3Grid.center
   if ~isempty(SO3G.center),q = inverse(SO3G.center) * q; end
   

@@ -10,7 +10,7 @@ function ind = fundamental_region2(q,center,cs,ss)
 
 % symmetrise
 c_sym = ss *  center * cs;
-omega = rotangle(c_sym * inverse(center));
+omega = angle(c_sym * inverse(center));
 [omega,c_sym] = selectMinbyRow(omega,c_sym);
 
 % convert to rodrigues space

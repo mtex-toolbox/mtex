@@ -14,7 +14,7 @@ function [ind,d] = find(SO3G,o,epsilon,varargin)
 
 if ~check_option(SO3G,'indexed') || check_option(varargin,'exact')
 
-  d = dist(SO3G,o);
+  d = angle_outer(SO3G,o);
   
   if nargin == 2
     [d,ind] = max(d,[],1);
@@ -22,7 +22,7 @@ if ~check_option(SO3G,'indexed') || check_option(varargin,'exact')
     ind = d<epsilon;
   end
 
-elseif GridLength(SO3G) == 0
+elseif numel(SO3G) == 0
   ind = [];
   d = [];
 else
@@ -65,7 +65,7 @@ else
     end    
   else  
 %% search for environment    
-    ind = logical(sparse(GridLength(SO3G),numel(q)));
+    ind = logical(sparse(numel(SO3G),numel(q)));
     
     % for all symmetries
     for is = 1:length(qss)

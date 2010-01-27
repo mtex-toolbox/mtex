@@ -5,12 +5,12 @@ function save(SO3G,datei,varargin)
 
 if check_option(varargin,{'Euler','Bunge'})
   
-  [alpha,beta,gamma] = quat2euler(quaternion(SO3G),varargin{:});
-  q = [alpha(:),beta(:),gamma(:)];   %#ok<NASGU>
+  q = Euler(SO3G,varargin{:}); %#ok<NASGU>
+  
 else
   
-  q = double(quaternion(SO3G));
-  q = reshape(q,[],4); %#ok<NASGU>
+  q = reshape(double(SO3G),[],4); %#ok<NASGU>
+  
 end
 
 save(datei,'q','-ASCII');
