@@ -57,8 +57,8 @@ while res >= resmax || (0.95 * max(f(:)) > f0)
   %g0 = quaternion(S3G,find(f(:)==max(f(:))));
   epsilon = sort(f(:));
   epsilon = epsilon(max(1,length(epsilon)-100));
-  g0 = quaternion(S3G,find(f>=epsilon));  
-  f=  f(f>epsilon);
+  g0 = S3G(f>=epsilon);  
+  f=  f(f>=epsilon);
   res = res / 2;
 end
 

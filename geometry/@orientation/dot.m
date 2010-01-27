@@ -27,13 +27,13 @@ if length(qss) > 1
   
   for j = 2:length(qss)
 
-    sq1 = qss(j) * o1.quaternion;
-    sdot = dot_angle(sq1,o2.quaternion,omega);
+    sq1 = qss(j) * quaternion(o1);
+    sdot = dot_angle(sq1,o2,omega);
 
     for i = 2:length(qcs)
       ind = sdot < cos(domega/6);
       if ~any(ind), break;end
-      sdot(ind) = max(sdot(ind),dot_angle(sq1(ind)*qcs(i),o2.quaternion(ind),omega));
+      sdot(ind) = max(sdot(ind),dot_angle(sq1(ind)*qcs(i),subsref(o2,ind),omega));
     end
   
     dot = max(dot,sdot);

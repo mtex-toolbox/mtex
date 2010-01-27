@@ -66,4 +66,5 @@ else
   o.i = ones(size(quat));
 end
 
+superiorto('quaternion');
 o = class(o,'orientation',quat);

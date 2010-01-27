@@ -48,7 +48,7 @@ elseif isa(a,'quaternion') && isa(b,'quaternion')
     r = b;
     if length(r.SS) > 1
       warning('MTEX:Orientation','Symmetry mismatch!');
-      r.ss = symmetry;
+      r.SS = symmetry;
     end
   end
   
