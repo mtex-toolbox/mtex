@@ -11,4 +11,3 @@ switch lower(vname)
   otherwise
     error('Unknown field in class SO3Grid!')
 end
-

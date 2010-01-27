@@ -1,4 +1,4 @@
-function o = symmetrise(o)	
+function o = symmetrise(o,varargin)	
 % all crystallographically equivalent orientations
 
 

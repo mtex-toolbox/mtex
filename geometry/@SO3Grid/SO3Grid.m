@@ -38,7 +38,7 @@ G.gamma    = [];
 G.resolution = 2*pi;
 G.options = {};
 G.center  = [];
-Grid    = quaternion;
+Grid = orientation(CS,SS);
 
 %% SO3rid defined by a set quaternions
 if isa(points,'quaternion')    

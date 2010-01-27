@@ -91,4 +91,4 @@ annotate(modalorientation(odfrotated),'marker','d');
 
 %% volume analysis
 
-volume(odf,modalorientation(odf),20*degree);
+volume(odf,modalorientation(odf),20*degree)

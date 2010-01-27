@@ -20,7 +20,7 @@ elseif isa(a,'quaternion') && isa(b,'quaternion')
       end
       r.CS = b.SS;      
     else
-      r = b;
+      r.i = a.i .* ones(size(b));
       if length(r.CS) > 1
         warning('MTEX:Orientation','Symmetry mismatch!');
         r.CS = symmetry;
@@ -28,6 +28,7 @@ elseif isa(a,'quaternion') && isa(b,'quaternion')
     end
   else
     r = b;
+    r.i = r.i .* ones(size(a));
     if length(r.SS) > 1
       warning('MTEX:Orientation','Symmetry mismatch!');
       r.ss = symmetry;
