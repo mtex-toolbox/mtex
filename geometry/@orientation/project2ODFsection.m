@@ -21,8 +21,6 @@ else
 end
 tol = get_option(varargin,'tolerance',tol);
 
-% TODO -> this does not work anymore!!! -> make it a cell
-
 S2G = repcell(S2Grid(vector3d,varargin{:}),numel(sec),1);
 
 %% symmetries and convert to Euler angle

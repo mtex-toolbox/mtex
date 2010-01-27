@@ -94,4 +94,4 @@ odf = loadODF(fname,cs,ss,'halfwidth',halfwidth,'Bunge',...
   'ColumnNames',{'Euler 1','Euler 2','Euler 3','weight'});
 
 % plot data
-plotodf(odf,'sections',6,'silent')
+%plotodf(odf,'sections',6,'silent')

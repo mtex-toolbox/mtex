@@ -29,7 +29,8 @@ d = eval(odf,S3G_global); %#ok<EVLC>
 r1 = discretesample(d,points);
 r2 = discretesample(numel(S3G_local),points,1);
 
-q = orientation(S3G_global(r1) .* S3G_local(r2));
+q = orientation(quaternion(S3G_global(r1)).*quaternion(S3G_local(r2)),cs,ss);
+%q = orientation(quaternion(S3G_global(r1)),cs,ss);
 
 clear S3G_global; clear S3G_local;
 

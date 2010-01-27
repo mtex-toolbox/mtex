@@ -11,5 +11,5 @@ for k=1:numel(varargin)
 end
 
 o = varargin{1};
-o.i = vertcat(os.i);
-o.quaternion = vertcat(os.quaternion);
+o.i = horzcat(os.i);
+o.quaternion = horzcat(os.quaternion);

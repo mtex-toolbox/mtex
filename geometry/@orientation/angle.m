@@ -1,4 +1,4 @@
-function omega = angle(o1,o2,varargin)
+function omega = angle(o1,o2)
 % calcualtes rotational angle between orientations
 %
 %% Syntax  
@@ -17,6 +17,6 @@ if nargin == 1
 
 else
   
-  omega = 2*acos(min(1,dot(o1,o2,varargin{:})));
+  omega = 2*acos(min(1,dot(o1,o2)));
   
 end

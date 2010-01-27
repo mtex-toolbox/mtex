@@ -1,7 +1,7 @@
-function dot = dot(o1,o2)
+function d = dot(o1,o2)
 % compute minimum dot(o1,o2) modulo symmetry
 
-
+%% get symmetries
 if isa(o1,'orientation')
   domega = rotangle_max_z(o1.CS);
   qcs = quaternion_special(o1.CS);
@@ -13,13 +13,24 @@ else
 end
 omega = 0:domega:2*pi-domega;
 
+%% special cases
+
+if numel(o1) == 1
+  d = reshape(dot_outer(o1,o2),size(o2));
+  return
+elseif numel(o2) == 1
+  d = reshape(dot_outer(o1,o2),size(o1));
+  return
+end
+
+
 
 %% no specimen symmetry
-dot = dot_angle(o1,o2,omega);
+d = dot_angle(o1,o2,omega);
 for i = 2:length(qcs)
-  ind = dot < cos(domega/6);
+  ind = d < cos(domega/6);
   if ~any(ind), break;end
-  dot(ind) = max(dot(ind),dot_angle(subsref(o1,ind) * qcs(i),subsref(o2,ind),omega));
+  d(ind) = max(d(ind),dot_angle(subsref(o1,ind) * qcs(i),subsref(o2,ind),omega));
 end
 
 %% with specimen symmetry
@@ -36,6 +47,6 @@ if length(qss) > 1
       sdot(ind) = max(sdot(ind),dot_angle(sq1(ind)*qcs(i),subsref(o2,ind),omega));
     end
   
-    dot = max(dot,sdot);
+    d = max(dot,sdot);
   end
 end
