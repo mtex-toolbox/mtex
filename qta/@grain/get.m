@@ -16,29 +16,25 @@ function varargout = get(grains, vname)
 %
 
 if nargin > 1
-  assert_property(grains,vname);
+  %assert_property(grains,vname);
   switch vname
+    case {'CS','SS'}
+      [phase,id] = unique([grains.phase],'first');
+      varargout{1} = arrayfun(@(i) get(grains(i).orientation,vname),id,'uniformoutput',false);
     case {'neighbour' 'cells'}
       varargout{1} = {grains.(vname)};
     case fields(grains)
       varargout{1} = [grains.(vname)];
     case fields(grains(1).properties)
-      if strcmpi(vname,'phase')
-        opt = zeros(size(grains));
-        for k=1:length(opt), 
-          opt(k) = grains(k).properties.(vname);
-        end
-      else
-        opt = cell(size(grains));
-        for k=1:length(opt)
-          opt{k} = grains(k).properties.(vname);
-        end
-        
-        kind = grains(1).properties.(vname);
-        if (isnumeric(kind) || isa(kind,'quaternion')) && ...
-            sum(cellfun('prodofsize',opt)) == length(grains)
-          opt = [opt{:}];
-        end
+      opt = cell(size(grains));
+      for k=1:length(opt)
+        opt{k} = grains(k).properties.(vname);
+      end
+      
+      kind = grains(1).properties.(vname);
+      if (isnumeric(kind) || isa(kind,'quaternion')) && ...
+          sum(cellfun('prodofsize',opt)) == length(grains)
+        opt = [opt{:}];
       end
       varargout{1} = opt;
     otherwise

@@ -56,7 +56,7 @@ CS = pf(1).CS; SS = pf(1).SS;
 S3G = get_option(varargin,'RESOLUTION',getResolution(pf)*3/2,{'double','SO3Grid'});
 if ~isa(S3G,'SO3Grid'), S3G = SO3Grid(S3G,CS,SS); end
 if check_option(varargin,'zero_range'), S3G = zero_range(pf,S3G,varargin{:});end
-if ~(CS == getCSym(S3G) && SS == getSSym(S3G))
+if ~(CS == get(S3G,'CS') && SS == get(S3G,'SS'))
     qwarning('Symmetry of the Grid does not fit to the given Symmetrie');
 end
 
@@ -69,7 +69,7 @@ iter_max = int32(get_option(varargin,'ITER_MAX',...
 iter_min = int32(get_option(varargin,'ITER_MIN',iter_max/4,'double'));
 
 c0 = get_option(varargin,'C0',...
-	1/sum(GridLength(S3G))*ones(sum(GridLength(S3G)),1));
+	1/sum(numel(S3G))*ones(sum(numel(S3G)),1));
 
 
 %% ----------------- prepare for calling calcODF.c -------------------------
@@ -197,7 +197,7 @@ for ip = 1:length(pf)
 end
 P = max(0,P); %no negative values !
 
-c0 = (1-phon)/sum(GridLength(S3G))*ones(sum(GridLength(S3G)),1);
+c0 = (1-phon)/numel(S3G)*ones(numel(S3G),1);
 
 % calculate new ODF
 [c,alpha] = call_extern('pf2odf',...

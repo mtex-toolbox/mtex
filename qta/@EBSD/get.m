@@ -49,7 +49,7 @@ switch vname
   case 'length'
     varargout{1} = zeros(1,length(obj));
     for i = 1:length(obj)
-      varargout{1}(i) = sum(GridLength(obj(i).orientations));
+      varargout{1}(i) = sum(numel(obj(i).orientations));
     end
   case 'x'
     for i = 1:length(obj)

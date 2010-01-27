@@ -45,7 +45,7 @@ else
   P.h = set(P.h,'CS',P.CS);
   if ~check_option(varargin,'complete'), P.r = set_option(P.r,'antipodal');end
   
-  assert(numel(P.data) == sum(GridLength(P.r)),'Number of diffraction intensitites is not equal to the number of specimen directions!');
+  assert(numel(P.data) == numel(P.r),'Number of diffraction intensitites is not equal to the number of specimen directions!');
   
 end
 superiorto('quaternion');

@@ -19,7 +19,7 @@ end
 
 if ~check_option(varargin,'keepXY')
   if abs(dot(rotaxis(q),zvector)) > 1-1e-10
-    omega = dot(rotaxis(q),zvector) * rotangle(q);
+    omega = dot(rotaxis(q),zvector) * angle(q);
     A = [cos(omega) -sin(omega);sin(omega) cos(omega)];
     ebsd = affinetrans(ebsd,A);
   else

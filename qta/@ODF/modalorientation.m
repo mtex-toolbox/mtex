@@ -30,7 +30,7 @@ end
 
 epsilon = sort(f(:));
 epsilon = epsilon(max(1,length(epsilon)-100));
-g0 = quaternion(S3G,find(f>=epsilon));
+g0 = S3G(f>=epsilon);
 
 f0 = max(f(:));
 

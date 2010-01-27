@@ -39,5 +39,5 @@ I = nansum(h);
 if nargout > 1,
   S3G = subGrid(S3G,~ind);
   odf = ODF(S3G,h,extract_kernel(S3G,varargin),...
-    getCSym(S3G),getSSym(S3G),varargin{:});
+    get(S3G,'CS'),get(S3G,'SS'),varargin{:});
 end

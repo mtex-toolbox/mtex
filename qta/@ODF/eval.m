@@ -1,10 +1,10 @@
 function f = eval(odf,g,varargin)
-% evaluate an odf at quaternions g
+% evaluate an odf at orientation g
 %
 %
 %% Input
 %  odf - @ODF
-%  g   - @quaternion or @SO3Grid
+%  g   - @orientation
 %
 %% Flags
 %  EVEN       - calculate even portion only
@@ -16,14 +16,10 @@ function f = eval(odf,g,varargin)
 %% See also
 % kernel/sum_K kernel/K
 
-if isa(g,'SO3Grid')
-  if odf(1).CS ~= getCSym(g) && odf(1).SS ~= getSSym(g)
-    warning('symmetry missmatch'); %#ok<WNTAG>
-  end
-  f = zeros(GridSize(g));
-else
-  f = zeros(size(g));
+if isa(g,'orientation') && odf(1).CS ~= get(g,'CS') && odf(1).SS ~= get(g,'SS')
+  warning('symmetry missmatch'); %#ok<WNTAG>
 end
+f = zeros(size(g));
 
 for i = 1:length(odf)
   

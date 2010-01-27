@@ -10,10 +10,7 @@ else
 end
 for i = 1:numel(pf)
 	toadd = ['h = ',char(pf(i).h)];
-  toadd = [toadd,[', r = ',char(pf(i).r(1),'short')]]; 
-	for j = 2:length(pf(i).r)
-		toadd = [toadd,[', ',char(pf(i).r(j),'short')]];
-  end
+  toadd = [toadd,[', r = ',char(pf(i).r,'short')]]; 
   toadd = [toadd ', ' pf(i).comment];
   str = [str,toadd];
 end

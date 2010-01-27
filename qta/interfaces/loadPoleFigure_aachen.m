@@ -65,7 +65,7 @@ while ~feof(fid)
 %% read data
     
     d = [];
-    while length(d) < GridLength(r)
+    while length(d) < numel(r)
       l = fgetl(fid);
       if length(l)<dig*col, continue;end
       l = reshape(l(1:dig*col),dig,col).';

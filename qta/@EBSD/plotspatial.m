@@ -111,6 +111,7 @@ dist = sqrt((x-xp).^2 + (y-yp).^2);
 ind = ndx(1); %select the nearest
 
 % get phase
+%% TODO!!!
 phase = find(ind>cumsum([0,GridLength(ebsd)]),1,'last');
 cs = get(ebsd(phase),'CS');
 

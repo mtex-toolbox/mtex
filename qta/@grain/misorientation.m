@@ -57,7 +57,7 @@ if nargin > 1 && isa(varargin{1},'EBSD') % misorientation to ebsd data
     qr = repmat(qm(ia(idb)).',1,size(ql,2));
     q_res = ql'.*qr;
 %     q_res = inverse(ql).*qr;
-    omega = rotangle(q_res);
+    omega = angle(q_res);
   
     [omega,q_res] = selectMinbyRow(omega,q_res);
     
@@ -113,7 +113,7 @@ else % misorientation to neighbour grains
         if doinverse, gp = cen_q(:,cur).*sym_q(:,cur)'; 
         else          gp = sym_q(:,cur).*cen_q(:,cur)'; end
         
-        [o ndx2] = min(rotangle(gp),[],1);
+        [o ndx2] = min(angle(gp),[],1);
         ndx = sub2ind(size(gp),ndx2,1:length(ndx2));
         g(cur) =  gp(ndx);
         

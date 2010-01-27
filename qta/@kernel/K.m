@@ -25,12 +25,12 @@ end
 
 % how to use sparse matrix representation 
 if isa(g1,'SO3Grid') && check_option(g1,'indexed'),
-  lg1 = GridLength(g1);
+  lg1 = numel(g1);
 else
   lg1 = -numel(g1);
 end
 if isa(g2,'SO3Grid') && check_option(g2,'indexed')
-  lg2 = GridLength(g2);
+  lg2 = numel(g2);
 else
   lg2 = -numel(g2);
 end

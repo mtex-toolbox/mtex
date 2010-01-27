@@ -24,10 +24,10 @@ g = quaternion(S3G);
 cs = pf(1).CS; ss = pf(1).SS;
 g = ss*reshape(g,1,[]);               % SS x S3G
 g = reshape(g.',[],1);                % S3G x SS
-g = reshape(g*cs,GridLength(S3G),[]); % S3G x SS x CS
+g = reshape(g*cs,numel(S3G),[]); % S3G x SS x CS
 
 % start with complete grid
-ind = true(GridLength(S3G),1);
+ind = true(numel(S3G),1);
 
 % which pole figures to check
 ipf = get_option(varargin,'zero_range',1:length(pf),'double');
@@ -63,9 +63,9 @@ for ip = ipf
     theta(theta>0.25) = 0.5-theta(theta>0.25);
     
     % calculate indece
-    ir = 1+round(theta * 4 * (GridSize(S2G,2)-1))*GridSize(S2G,1) + ...
-      round(rho * GridSize(S2G,1));
-    ir(ir>GridLength(S2G)) = GridLength(S2G);
+    ir = 1+round(theta * 4 * (size(S2G,2)-1))*size(S2G,1) + ...
+      round(rho * size(S2G,1));
+    ir(ir>numel(S2G)) = numel(S2G);
     
     % ignore all orientations that are close to the zero range
     ind(ind) = all(zr(ir),2);

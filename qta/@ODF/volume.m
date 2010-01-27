@@ -75,7 +75,7 @@ end
 
 % estimate volume portion of odf space
 reference = 9897129 * 96 / length(odf(1).CS) / length(odf(1).SS);
-f = min(1,GridLength(S3G) * (res / 0.25 / degree)^3 / reference);
+f = min(1,numel(S3G) * (res / 0.25 / degree)^3 / reference);
   
 % eval odf
 if f==0
@@ -89,7 +89,7 @@ function v = fastVolume(odf,center,radius)
 
 % compute distances
 warning('TODO');
-d = reshape(angle(center,odf.center,'all'),GridLength(odf.center),[]);
+d = reshape(angle(center,odf.center,'all'),numel(odf.center),[]);
 
 % precompute volumes
 [vol,r] = volume(odf.psi,radius);

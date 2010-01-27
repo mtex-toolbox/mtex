@@ -136,7 +136,7 @@ vdisp([' approximation grid: ' char(S3G)],varargin{:});
 %% restrict single orientations to this grid
 
 % init variables
-d = zeros(1,GridLength(S3G));
+d = zeros(1,numel(S3G));
 
 % iterate due to memory restrictions?
 maxiter = ceil(length(ebsd(1).CS)*length(ebsd(1).SS)*numel(o) /...

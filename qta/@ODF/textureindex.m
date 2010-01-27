@@ -30,5 +30,5 @@ else
   % eval odf
   t = eval(odf,S3G,varargin{:});
   t = t / sum(t) * length(t);
-  t = sum(t.^2)/GridLength(S3G);
+  t = sum(t.^2)/numel(S3G);
 end

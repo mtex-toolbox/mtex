@@ -43,15 +43,15 @@ elseif isa(center,'ODF')
 end
 
 % default values
-if isa(center,'quaternion') 
+if ~isa(center,'orientation') 
   if nargin <= 3, CS = symmetry('triclinic'); end
   if nargin <= 4, SS = symmetry('triclinic'); end
-	center = SO3Grid(center,CS,SS); 
+	center = orientation(center,CS,SS); 
 end
-if nargin <= 1 || isempty(c) && isa(center,'SO3Grid'), c = [1,ones(1,GridLength(center))]; end
+if nargin <= 1 || isempty(c) && isa(center,'SO3Grid'), c = [1,ones(1,numel(center))]; end
 if nargin <= 2, psi = kernel; end
-if nargin <= 3, CS = getCSym(center); end
-if nargin <= 4, SS = getSSym(center); end
+if nargin <= 3, CS = get(center,'CS'); end
+if nargin <= 4, SS = get(center,'SS'); end
 c_hat = [];
 
 % check completness of parameters
@@ -75,7 +75,7 @@ else
       && isa(CS,'symmetry') && isa(CS,'symmetry'))
     error('wrong Arguments: SO3Grid, data, kernel, crystal-symmetry, specimen-symmetry');
   end
-  lg = sum(GridLength(center));
+  lg = numel(center);
 end 
 
 % check amount of coefficients
@@ -84,7 +84,7 @@ if ~check_option(varargin,'FOURIER') && lg ~= length(c)
 end
 
 % check symmetries
-if isa(center,'SO3Grid') && (~(getCSym(center) == CS) || ~(getSSym(center) == SS))
+if isa(center,'SO3Grid') && (~(get(center,'CS') == CS) || ~(get(center,'SS') == SS))
   qwarning('symmetry of the grid does not fit to the given symmetry');
 end
 

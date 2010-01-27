@@ -34,26 +34,19 @@ xy = vertcat(ebsd.xy);
 
 if isempty(xy), error('no spatial data');end
 
-z = [ebsd.orientations]; 
-
-l = SampleSize(ebsd);
-rl = [ 0 cumsum(l)];
-phase = ones(1,sum(l));
-phaseCS = cell(numel(l),1);
-phaseSS = cell(numel(l),1);
 phase_ebsd = get(ebsd,'phase');
 phase_ebsd = mat2cell(phase_ebsd,ones(size(phase_ebsd)),1);
-comment = get(ebsd,'comment');
 
+% generate long phase vector
+l = sampleSize(ebsd);
+rl = [ 0 cumsum(l)];
+phase = ones(1,sum(l));
 for i=1:numel(ebsd)
-   phaseCS{i} = ebsd(i).CS;
-   phaseSS{i} = ebsd(i).SS;
-   phase( rl(i)+(1:l(i)) ) = i;
+  phase( rl(i)+(1:l(i)) ) = i;
 end
 
 % sort for voronoi
 [xy m n]  = unique(xy,'first','rows');
-z = z(m);
 phase = phase(m);
 
 %% grid neighbours
@@ -75,68 +68,45 @@ else
 end
 
 
-%% disconnect phases
+%% disconnect by phase
 
 phases = sparse(ix,iy,phase(ix) ~= phase(iy),sm,sn);
 phases = xor(phases,distance);
 [ix iy]= find(phases);
 
-%% angel to neighbours
+%% disconnect by missorientation
 
-angels = sparse(ix,iy, nangle(z(ix),z(iy),phase(ix), phaseCS, phaseSS, varargin{:}),sm,sn);
+angles = sparse(sm,sn);
+
+for i=1:numel(ebsd)
   
-%% find all angles lower threshold
-
-angels = angels > get_option(varargin,'angle',15*degree); %map of disconnected neighbours.
-regions = xor(angels,phases); 
-
-%% plotting
-
-if check_option(varargin,{'plot', 'graph','former'})
-  if check_option(varargin,'former'),
-    regions = xor(regions,neighbours); end  
-  if check_option(varargin,'graph') || check_option(varargin,'former')    
-    [X Y] = gplot(regions,xy);
-  else  
-    [ix iy] = find(xor(neighbours,regions));
-
-    if isempty(iy), disp('nothing to plot'), return; end
-
-    c1 = cells(ix); c2 = cells(iy);
-
-    % c1 = cellfun(@(x,y) [x(ismember(x,y)) 1] ,c1,c2,'UniformOutput',false);
-    nv = cellfun('prodofsize',c1);
-    pf = false(1, max(nv));
-    for k=1:length(c1)
-      f = c1{k}; s = c2{k}; tf = pf;
-      for i=1:nv(k)
-        tf(i) = any( f(i) == s );
-      end    
-      c1{k} = [f(tf) 1];
-    end
-    
-    vert(1,:) = NaN;
-    cc = [c1{:}];  
-    X = vert(cc,1);
-    Y = vert(cc,2);
-  end
+  % convert to old indexing
+  zl = m(ix) - rl(i);
+  zr = m(iy) - rl(i);
   
-  newMTEXplot;
-  [X,Y, lx, ly] = fixMTEXscreencoordinates(X,Y,varargin{:});
-  h = line(X,Y);
+  % restrict to correct phase
+  ind = zl>0 & zl<numel(ebsd(i).orientations) & zr>0 & zr<numel(ebsd(i).orientations);
+  mix = ix(ind); miy = iy(ind);
+  zl = zl(ind); zr = zr(ind);
   
-  xlabel(lx); ylabel(ly);
-  fixMTEXplot;
+  % compute distances
+  omega = angle(ebsd(i).orientations(zl),ebsd(i).orientations(zr));
   
-  set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
+  % remove large angles
+  ind = omega > get_option(varargin,'angle',15*degree);
   
-  optiondraw(h,varargin{:});
-  return
+  angles = angles + sparse(mix(ind),miy(ind),1,sm,sn);
+  
 end
+
+% disconnect regions
+regions = xor(angles,phases); 
+
 
 %% convert to tree graph
 
 ids = graph2ids(regions);
+
 
 %% retrieve neighbours
 
@@ -195,8 +165,10 @@ else
   fractions = cell(0);
 end
                 
-  %clean up
-  clear T1 T2 T3 angles neighbours regions angel_treshold
+%clean up
+clear T1 T2 T3 angles neighbours regions angel_treshold
+
+
 %% conversion to cells
 
 ids = ids(n); %sort back
@@ -232,7 +204,7 @@ s = tic;
 
 ply = createpolygons(cells,id,vert);
 
-comment =  ['from ' comment];
+comment =  ['from ' ebsd(1).comment];
 nc = length(id);
 
 neigh = cell(1,nc);
@@ -240,24 +212,26 @@ neigh(find(nfr)) = nn;
 fract = cell(1,nc);
 fract(find(cfr)) = fractions;
 
+ph = phase(cellfun(@(x)x(1),id));
 gr = struct('id',num2cell(1:nc),...
        'cells',id,...
        'neighbour',neigh,...
        'polygon',[],...
        'checksum',[],...
-       'subfractions',fract,...
+       'subfractions',fract,...       
+       'phase',phase_ebsd(ph).',...
+       'orientation',[],...
        'properties',[],...
        'comment',[]);
 
-ph = phase(cellfun(@(x)x(1),id));
-properties = struct( 'phase',phase_ebsd(ph),...
-                     'CS', phaseCS(ph),...
-                     'SS', phaseSS(ph));
+
 for k=1:nc
   gr(k).checksum = checksum;
   gr(k).comment = comment;
   gr(k).polygon = ply(k);
-  gr(k).properties = properties(k);
+  gr(k).properties = struct;
+  gr(k).orientation = ...
+    mean(ebsd(ph(k)).orientations(gr(k).cells-rl(ph(k))));
 end
 
 grains = grain('direct',gr);
@@ -265,37 +239,6 @@ grains = grain('direct',gr);
 vdisp(['  grain generation:  '  num2str(toc(s)) ' sec' ],varargin{:});
 vdisp(' ',varargin{:})
 
-
-
-function omega = nangle(zl , zr , phase, phaseCS, phaseSS, varargin)
-
-angletype = get_option(varargin,'angletype','misorientation');
-
-switch lower(angletype)
-  case 'misorientation'
-    omega = zeros(1,size(zl,2));
-    %phase
-    for i=1:numel(phaseCS)
-      ind = find(phase == i); 
-      %partition data due to memory issues
-      part = [ 1:10000:length(ind) size(ind,2)+1]; 
-      
-      for k=1:length(part)-1
-      	cur = ind(part(k):part(k+1)-1);
-                
-        %ql = symmetriceQuat(phaseCS{i},phaseSS{i},zl(cur)); 
-        %qr = repmat(zr(cur).',1,size(ql,2)); %this can be done faster
-         
-        %omega(cur) = min(rotangle(ql .* qr),[],2) ;       
-        %omega(cur) = min(2*acos(abs(dot(ql,qr))),[],2);       
-        omega(cur) = 2*acos(dot(zl(cur),zr(cur)));
-      end  
-    end
-  case 'disorientation'
-    omega = rotangle(zl .* inverse(zr));
-  otherwise
-    error('wrong angletype option')
-end
 
 
 

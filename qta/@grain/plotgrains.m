@@ -29,7 +29,7 @@ elseif nargin>1 && isa(grains,'EBSD') && isa(varargin{1},'grain')
 end
 
 ishull = check_option(varargin,{'hull','convhull'});
-property = get_option(varargin,'property',[]);
+property = get_option(varargin,'property','orientation');
   %treat varargin
 
 %% get the polygons
@@ -70,18 +70,17 @@ if ~isempty(property)
   end
     
   if isa(prop,'quaternion')
+    
     phase = get(grains,'phase');
     CS = get(grains,'CS');
-    SS = get(grains,'SS');
     [phase1, m] = unique(phase);
     d = zeros(length(grains),3);
     for i = 1:length(phase1)
       sel = phase == phase1(i);
-      grid = SO3Grid(prop(sel),CS{m(i)},SS{m(i)},'resolution',pi);
-      d(sel,:) = orientation2color(grid,cc,varargin{:});
+      d(sel,:) = reshape(orientation2color(prop(sel),cc,varargin{:}),sum(sel),[]);
     end
         
-    setappdata(gcf,'CS',vec2cell(CS(m)))
+    setappdata(gcf,'CS',CS)
     setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d')); 
     setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
     setappdata(gcf,'colorcoding',cc);

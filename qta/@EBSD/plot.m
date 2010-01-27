@@ -23,7 +23,7 @@ if check_option(varargin,{'scatter','axisangle','rodrigues'})
   scatter(ebsd,varargin{:});
 elseif check_option(varargin,{'sections','sigma','phi1','phi2','alpha','gamma'})
   plotodf(ebsd,varargin{:});
-elseif ~isempty(ebsd(1).xy) %&& size([ebsd.xy],1) == sum(GridLength([ebsd.orientations]))
+elseif ~isempty(ebsd(1).xy) %&& size([ebsd.xy],1) == sum(numel([ebsd.orientations]))
   plotspatial(ebsd,varargin{:});
 else
   h = [Miller(0,0,1),Miller(1,1,0),Miller(1,1,1)];

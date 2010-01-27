@@ -29,7 +29,7 @@ b = find(hassubfraction(grains));
 S3G = get(ebsd,'data');
 qs  = get(S3G,'Grid');
 
-f = [1 cumsum(GridLength(S3G))];
+f = [1 cumsum(numel(S3G))];
 
 for k = b 
   pairs = grains(k).subfractions.pairs;

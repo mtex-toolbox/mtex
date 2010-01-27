@@ -48,7 +48,7 @@ for iodf = 1:length(odf)
 
     % init variables
     g = quaternion(odf(iodf).center);
-    d = zeros(1,GridLength(S3G));
+    d = zeros(1,numel(S3G));
 
     % iterate due to memory restrictions?
     maxiter = ceil(length(odf(1).CS)*length(odf(1).SS)*numel(g) /...

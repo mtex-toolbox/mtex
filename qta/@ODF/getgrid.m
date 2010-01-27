@@ -1,4 +1,4 @@
-function G = getgrid(odf,ind)
+function varargout = getgrid(odf,ind)
 % get mods of the components
 %
 %% Input
@@ -8,11 +8,11 @@ function G = getgrid(odf,ind)
 %% Output
 %  G   - @SO3Grid of modal orientations
 
-G = SO3Grid(0,odf(1).CS,odf(1).SS);
+varargout{1} = [];
 for i = 1:length(odf)
-  if isa(odf(i).center,'SO3Grid'),G(i) = odf(i).center;end
+  if isa(odf(i).center,'SO3Grid'),varargout{i} = odf(i).center;end
 end
 
 if nargin == 2
-  G = quaternion(G,ind);
+  varargout{1} = varargout{1}(ind);
 end

@@ -36,7 +36,7 @@ res = get_option(varargin,'RESOLUTION',min(2.5*degree,radius/50),'double');
 % discretisation
 [maxtheta,maxrho,minrho] = getFundamentalRegionPF(odf(1).CS);  
 S2G = S2Grid('equispaced','resolution',res,'MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
-lS2G = GridLength(S2G);
+lS2G = numel(S2G);
 S2G = subGrid(S2G,symmetrise(h),radius);
 
 % estimate volume portion of odf space
@@ -45,8 +45,8 @@ S2G = subGrid(S2G,symmetrise(h),radius);
 %  f = length(odf(1).CS) * (1-cos(radius))./2;
 %else
   % numerical value
-  f = GridLength(S2G)/lS2G;
-%end  f = GridLength(S2G)/lS2G;
+  f = numel(S2G)/lS2G;
+%end  f = numel(S2G)/lS2G;
 
 % eval odf
 if f==0

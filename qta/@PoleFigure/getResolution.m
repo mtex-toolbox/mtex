@@ -7,4 +7,9 @@ function res = getResolution(pf)
 %% Output
 % res - resolution of the specimen directions in radians (double)
 
-res = getResolution(getr(pf));
+for i = 1:length(pf)
+  res(i) = getResolution(getr(pf(i))); %#ok<AGROW>
+end
+
+res = max(res);
+  

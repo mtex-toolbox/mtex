@@ -34,6 +34,8 @@ end
   gr.subfractions.yy = [];
   gr.subfractions.pairs = [];
   %allow arbitrary properties
+  gr.phase = 1;  
+  gr.orientation = orientation;    
   gr.properties = struct;  
   gr.comment = [];
 
@@ -58,7 +60,7 @@ if nargin > 0
     gr.cells = varargin{1};
     gr.neighbour = varargin{2};
    %geometry  
-    gr.polygon = varargin{3};
+    gr.polygon = varargin{3};    
     gr.checksum = varargin{4};
     if nargin == 6
       gr.subfractions = varargin{5};
