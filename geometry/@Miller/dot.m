@@ -1,7 +1,7 @@
 function d = dot(m1,m2,varargin)
 % inner product between two Miller indece
 %% Syntax
-%  a = angle(m1,m2)
+%  a = dot(m1,m2)
 %
 %% Input
 %  m1,m2 - @Miller
