@@ -77,17 +77,17 @@ varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
 % S2Resolution
-if sum(GridLength(S2G))>100 || get(S2G,'resolution') < 10 *degree
-  varargin = ['scatter_resolution',getResolution(S2G(end)),varargin];
+if numel(S2G)>100 || get(S2G,'resolution') < 10 *degree
+  varargin = ['scatter_resolution',getResolution(S2G),varargin];
 end
 
 % extract data
 data = get_option(varargin,'DATA',[]);
-if numel(data) == GridLength(S2G)
+if numel(data) == numel(S2G)
   
   if isnumeric(data)
     
-    data = reshape(data,GridSize(S2G));
+    data = reshape(data,size(S2G));
   
     % log plot?
     if check_option(varargin,'logarithmic')
@@ -97,11 +97,11 @@ if numel(data) == GridLength(S2G)
   
     varargin = [{'colorrange',[min(data(:)),max(data(:))]},varargin];
   end
-elseif ndims(data) == 3 && all(size(data) == [GridSize(S2G),3])
+elseif ndims(data) == 3 && all(size(data) == [size(S2G),3])
   
 elseif check_option(varargin,'label')
   
-  data = ensurecell(get_option(varargin,'label'),GridSize(S2G));
+  data = ensurecell(get_option(varargin,'label'),size(S2G));
   
 else
   
@@ -113,7 +113,7 @@ end
 % set correction flag for plotting pole figure data
 if ~check_option(S2G,'plot') && ...
     check_option(varargin,{'CONTOUR','CONTOURF','SMOOTH','TEXTUREMAP','rgb'});
-  if GridSize(S2G,1) == 1 || GridSize(S2G,2) == 1
+  if size(S2G,1) == 1 || size(S2G,2) == 1
     
     % interpolate
     mintheta = getMin(S2G.theta);
@@ -126,7 +126,7 @@ if ~check_option(S2G,'plot') && ...
     data = data(ind);
     data(d < cos(2*res)) = nan;
     S2G = newS2G;
-    data = reshape(data,GridSize(S2G));
+    data = reshape(data,size(S2G));
     
   else
     varargin = [varargin,'correctContour'];
@@ -160,7 +160,7 @@ elseif check_option(varargin,{'north','south','antipodal'})
    
 elseif check_option(S2G,{'north','south','antipodal'})
   
-  hemisphere = extract_option(S2G(1).options,{'north','south','antipodal'});
+  hemisphere = extract_option(S2G.options,{'north','south','antipodal'});
 
 elseif max(theta(:)) > pi/2+0.001 
   
@@ -191,7 +191,7 @@ if any(strcmpi(hemisphere,'north')) || any(strcmpi(hemisphere,'antipodal'))
   end
   
   if isa(S2G.theta,'S1Grid')
-    maxtheta = min(pi/2,getMax(S2G.theta));
+    maxtheta = min(pi/2,max(getMax(S2G.theta)));
   elseif isa(S2G.theta,'function_handle')
     maxtheta = S2G.theta;
   else

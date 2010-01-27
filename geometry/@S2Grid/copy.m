@@ -11,10 +11,9 @@ function S2G = copy(S2G,condition)
 %% See also
 % S2Grid/copy
 
-if isa(condition,'S2Grid'), condition = vector3d(condition); end
 if isa(condition,'vector3d'), condition = find(S2G,condition); end
 if isnumeric(condition), 
-  inds = false(sum(GridLength(S2G)),1);
+  inds = false(numel(S2G),1);
   inds(condition) = true;
   condition = inds; 
 end

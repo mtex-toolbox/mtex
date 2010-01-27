@@ -94,13 +94,14 @@ if nargin == 0 || ...
   G.res = 2*pi;
   G.theta = S1Grid([],minthetaGrid,maxthetaGrid);
   G.rho = S1Grid([],minrhoGrid,maxrhoGrid);
-  G.Grid = vector3d;
+  Grid = vector3d;
   G.options = {};
 
 %% copy constructor
 elseif isa(varargin{1},'S2Grid')
 
   G = varargin{1};
+  return;
 
 %% grid from vector3d
 elseif isa(varargin{1},'vector3d')
@@ -112,17 +113,17 @@ elseif isa(varargin{1},'vector3d')
     G.theta =  S1Grid([],minthetaGrid,maxthetaGrid);
   end
   G.rho = S1Grid([],minrhoGrid,maxrhoGrid);
-  G.Grid = varargin{1};
-  [theta,rho] = vec2sph(G.Grid);
+  Grid = varargin{1};
+  [theta,rho] = vec2sph(Grid);
 
   if check_option(varargin,'antipodal')
     ind = theta > pi/2;
-    G.Grid(ind) = -G.Grid(ind);
+    Grid(ind) = -Grid(ind);
     theta(ind) = pi - theta(ind);
     rho(ind) = mod(pi + rho(ind),2*pi);
   end
 
-  G.Grid = G.Grid(theta<=maxthetaGrid+1e-06 & inside(rho,minrhoGrid,maxrhoGrid));
+  Grid = Grid(theta<=maxthetaGrid+1e-06 & inside(rho,minrhoGrid,maxrhoGrid));
   G.options = {};
 
 %% plot grid with maxtheta function
@@ -143,7 +144,7 @@ elseif check_option(varargin,'plot') && exist('maxthetafun','var')
   [rho,theta] = meshgrid(rho,theta);
   theta = theta * diag(maxthetafun(rho(1,:))./maxtheta);
 
-  G.Grid = sph2vec(theta,rho);
+  Grid = sph2vec(theta,rho);
   G.options = {};
 
 
@@ -237,7 +238,7 @@ else
     error('no grid type specified');
   end
 
-  G.Grid = calcGrid(G.theta,G.rho);
+  Grid = calcGrid(G.theta,G.rho);
   G.options = {'INDEXED'};
 
 end
@@ -245,7 +246,7 @@ end
 G.options = set_option(G.options,...
   extract_option(varargin,{'INDEXED','PLOT','north','south','antipodal'}));
 
-G = class(G,'S2Grid');
+G = class(G,'S2Grid',Grid);
 
 
 function res = vec2res(vec)

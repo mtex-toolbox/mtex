@@ -22,7 +22,7 @@ else
   ind = v;
 end
 
-S2G.Grid = S2G.Grid(ind);
+S2G.vector3d = S2G.vector3d(ind);
 
 if check_option(S2G,'indexed')
   S2G.rho = subGrid(S2G.rho,ind);

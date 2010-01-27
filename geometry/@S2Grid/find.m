@@ -37,7 +37,7 @@ if check_option(S2G.options,'INDEXED') && ~check_option(varargin,'direct')
 %        if d(1) < d(2), ind2(i) = ind(i,2);else ind2(i) = ind(i,1);end
 %      end                 
       
-      d = abs(dot(S2G.Grid(ind),v));
+      d = abs(dot(S2G(ind),v));
       ind2 = d == repmat(max(d,[],2),1,2);
       ind2(all(ind2,2),2) = false;
       ind = ind(ind2);

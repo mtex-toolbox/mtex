@@ -10,15 +10,14 @@ function S2G = delete(S2G,points)
 %% See also
 % S2Grid/copy
 
-if isa(points,'S2Grid'), points = vector3d(points); end
 if isa(points,'vector3d'), points = find(S2G,points); end
 if isnumeric(points), 
-  inds = false(sum(GridLength(S2G)),1);
+  inds = false(numel(S2G),1);
   inds(points) = true;
   points = inds; 
 end
 
-S2G.Grid(points) = [];
+S2G.vector3d(points) = [];
 
 if check_option(S2G.options,'INDEXED')
 

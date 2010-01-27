@@ -32,8 +32,8 @@ function plot3d(S2G,varargin)
 % -------------------- GET OPTIONS ----------------------------------------
 
 % data
-data = reshape(get_option(varargin,'DATA',ones(1,sum(GridLength(S2G)))),...
-  GridSize(S2G));
+data = reshape(get_option(varargin,'DATA',ones(1,numel(S2G))),...
+  size(S2G));
 
 % log plot? 
 if check_option(varargin,'logarithmic')

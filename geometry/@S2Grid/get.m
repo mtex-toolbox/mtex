@@ -3,7 +3,7 @@ function value = get(obj,vname)
 
 switch vname
   case {'resolution','res'}
-    value = min([obj(1).res]);
+    value = min([obj.res]);
   case fields(obj)
     value = [obj.(vname)];
   otherwise

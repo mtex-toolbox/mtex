@@ -1,14 +1,13 @@
 function c = char(S2G,varargin)
 % convert to char
 
-S2G = S2G(1);
-if length(S2G.Grid) == numel(S2G.Grid)
-    s = int2str(length(S2G.Grid));
+if length(S2G) == numel(S2G)
+    s = int2str(length(S2G));
 else
-    s = [int2str(size(S2G.Grid,1)),'x',int2str(size(S2G.Grid,2))];
+    s = [int2str(size(S2G,1)),'x',int2str(size(S2G,2))];
 end
 
 c = [s, ' points'];
 if ~check_option(varargin,'short')
-c = [s, ', res.: ',xnum2str(getResolution(S2G) * 180/pi),mtexdegchar];
+  c = [s, ', res.: ',xnum2str(getResolution(S2G) * 180/pi),mtexdegchar];
 end

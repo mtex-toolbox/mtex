@@ -1,4 +1,4 @@
-function s = union(s1,varargin)
+function s = union(s,varargin)
 % union of two S2Grids
 %
 %% Syntax
@@ -11,8 +11,7 @@ function s = union(s1,varargin)
 %  s      - @S2Grid
 %
 
-s = s1;
-
+warning('This function seems not to work correctly!');
 for i = 1:numel(varargin)
   
   s2 = varargin{i};
@@ -20,7 +19,7 @@ for i = 1:numel(varargin)
     s.res = min(s.res,s2.res);
     s.theta = [s.theta,s2.theta];
     s.rho = [s.rho,s2.rho];
-    s.Grid = [reshape(s.Grid,1,[]),reshape(s2.Grid,1,[])];
+    s.vector3d = [reshape(s.vector3d,1,[]),reshape(s2.vector3d,1,[])];
     s.options = {s.options{:},s2.options{:}};
   end
 end
