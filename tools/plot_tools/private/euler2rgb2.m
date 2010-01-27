@@ -11,7 +11,7 @@ S3G = inverse(q0) * S3G;
 q = getFundamentalRegion(S3G);
 
 % convert to euler angles angles
-[phi1,Phi,phi2] = quat2euler(q(:),'BUNGE');
+[phi1,Phi,phi2] = Euler(q(:),'BUNGE');
 
 c1 = mod( phi1, max_phi1);
 c2 = mod( Phi, max_Phi); 

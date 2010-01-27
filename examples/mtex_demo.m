@@ -44,7 +44,7 @@ w = q * v;
 
 
 % Basic Functions:
-rotangle(q2); rotaxis(q2);quat2euler(q2);
+rotangle(q2); rotaxis(q2);Euler(q2);
 quat2rodrigues(q2); plot(q2,'FontSize',20)
 %savefigure('pic/quaternion.pdf')
 
@@ -277,7 +277,7 @@ textureindex(odf)                   % compute texture index
 %%
 entropy(odf)                        % compute entropy
 %%
-[alpha,beta,gamma] = quat2euler(modalorientation(odf2)) % compute modalorientation
+[alpha,beta,gamma] = Euler(modalorientation(odf2)) % compute modalorientation
 %%
 clf;hist(odf) 
 

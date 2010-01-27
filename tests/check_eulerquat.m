@@ -5,7 +5,7 @@
 
 q = quaternion(SO3Grid(10000,symmetry,symmetry));
 
-[alpha,beta,gamma] = quat2euler(q,'Bunge');
+[alpha,beta,gamma] = Euler(q,'Bunge');
 
 qq = euler2quat(alpha,beta,gamma,'Bunge');
 

@@ -32,7 +32,7 @@ q*v3;
 plot(q*v3)
 
 % transform
-[phi1,Phi,phi2] = quat2euler(q,'BUNGE');
+[phi1,Phi,phi2] = Euler(q,'BUNGE');
 rotangle(q);
 
 

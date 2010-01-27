@@ -9,7 +9,7 @@ S3G = inverse(q0) * S3G;
 q = quaternion(getFundamentalRegion(S3G));
 
 % convert to sigma angles
-[phi1,Phi,phi2] = quat2euler(q,'Bunge');
+[phi1,Phi,phi2] = Euler(q,'Bunge');
 [maxphi1,maxPhi,maxphi2] = getFundamentalRegion(get(S3G,'CS'),get(S3G,'SS'));
 s1 = mod(phi2-phi1,maxphi1) ./ maxphi1;
 Phi = mod(-Phi,maxPhi); Phi = Phi./max(Phi(:));
