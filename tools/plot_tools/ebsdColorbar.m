@@ -51,13 +51,13 @@ if strcmp(cc,'ipdf')
   [maxtheta,maxrho,minrho,v] = getFundamentalRegionPF(cs,varargin{:});
 
   h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX','resolution',1*degree,varargin{:}); 
-  d = reshape(ipdf2rgb(h,cs,varargin{:}),[GridSize(h),3]);
+  d = reshape(ipdf2rgb(h,cs,varargin{:}),[size(h),3]);
   
   multiplot(@(i) h,@(i) d,1,'rgb',varargin{:});  
 else
   [S3G,S2G,sec] = SO3Grid('plot',cs,symmetry,varargin{:});
 
-  d = reshape(orientation2color(S3G,cc,varargin{:}),[GridSize(S3G),3]);
+  d = reshape(orientation2color(S3G,cc,varargin{:}),[size(S3G),3]);
   
 	sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma'},'sigma');
     [symbol,labelx,labely] = sectionLabels(sectype);   

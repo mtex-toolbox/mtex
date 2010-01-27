@@ -2,13 +2,13 @@ function check_equidistribution(cs,ss)
 
 h = [Miller(1,0,0,cs),Miller(1,1,1,cs),Miller(1,1,0,cs)];
 
-hh = [symvec(h(1)),symmetrice(h(2)),symvec(h(3))];
+hh = [symvec(h(1)),symmetrise(h(2)),symvec(h(3))];
 
 q = SO3Grid(5*degree,cs,ss);
 
 k = kernel('de la Vallee Poussin','halfwidth',10*degree)
 
-odf = ODF(q,ones(GridSize(q))./GridLength(q),k,cs,ss)
+odf = ODF(q,ones(size(q))./numel(q),k,cs,ss)
 
 plotpdf(odf,h,'resolution',5*degree)
 
@@ -21,7 +21,7 @@ ss = symmetry();
 res = 5*degree;
 
 rotangle = res/2:res:pi-res/2;
-points = GridLength(S2Grid('equispaced','resolution',res));
+points = numel(S2Grid('equispaced','resolution',res));
 
 q = quaternion();
 for i = 1:length(rotangle)
@@ -33,6 +33,6 @@ q = SO3Grid(q,cs,ss);
 
 k = kernel('de la Vallee Poussin','halfwidth',10*degree)
 
-odf = ODF(q,ones(GridSize(q))./GridLength(q),k,cs,ss)
+odf = ODF(q,ones(size(q))./numel(q),k,cs,ss)
 
 plotpdf(odf,h,'resolution',5*degree)

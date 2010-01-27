@@ -111,16 +111,16 @@ rot = euler2quat(0,90*degree,0);
 % the orientation of the crystal with respect to the rotated specimen
 % coordinate system calculates by
 
-o = rot * o
+o1 = rot * o
 
 
 
 %%
-% Then the class of rotations crystallographically equivalent to q can be
-% computed in two way. Either by using the command <symmetry_symmetriceQuat.html
-% symmetriceQuat> 
+% Then the class of rotations crystallographically equivalent to o can be
+% computed in two way. Either by using the command <orientation_symmetrise.html
+% symmetrise> 
 
-symmetrice(o)
+symmetrise(o)
 
 %%
 % or by using multiplication
@@ -129,25 +129,25 @@ symmetrice(o)
 
 %% Caclulating Missorientations
 %
-% Let cs and ss be crystal and specimen symmetry and q1 and q2 two crystal
+% Let cs and ss be crystal and specimen symmetry and o1 and o2 two crystal
 % orientations. Then one can ask for the missorientation between both
 % orientations. This missorientation can be calculated by the function
-% <symmetry_dist.html dist>.
+% <orientation_angle.html angle>.
 
-angle(o1,o2) / degree
+angle(o,o1) / degree
 
 %%
 % This missorientation angle is in general smaller then the missorientation
 % without crystal symmetry which can be computed via
 
-angle(quaternion(o1),quaternion(o2)) /degree
+angle(quaternion(o),quaternion(o1)) /degree
 
 %% Calculating with Orientations and Rotations
 %
 % Beside the standard linear algebra operations there are also the
 % following functions available in MTEX. Then rotational angle and the axis
 % of rotation can be computed via then commands
-% <quaternion_rotangle.html rotangle(q)> and
+% <quaternion_angle.html angle(q)> and
 % <quaternion_rotaxis.html rotaxis(q)> 
 
 angle(o1)/degree

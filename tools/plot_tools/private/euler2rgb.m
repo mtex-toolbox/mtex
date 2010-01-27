@@ -1,12 +1,11 @@
-function c = euler2rgb(S3G,varargin)
+function c = euler2rgb(o,varargin)
 % converts orientations to rgb values
 
 % get reference orientation
 q0 = get_option(varargin,'center',idquaternion);
-S3G = inverse(q0) * S3G;
 
 % restrict to fundamental region
-q = getFundamentalRegion(S3G);
+q = getFundamentalRegion(o,q0);
 
 % convert to euler angles angles
 [phi1,Phi,phi2] = quat2euler(q(:),'Bunge');

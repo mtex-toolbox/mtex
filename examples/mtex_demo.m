@@ -62,7 +62,6 @@ CS * q * SS;
 
 %Basic Functions:
 
-dist(CS,SS,q1,q2)/degree; 
 Laue(SS); length(CS);
 quaternion(CS); 
 set(gcf,'position',[50,50,400,400]);plot(CS,'FontSize',15,'antipodal')
@@ -103,7 +102,7 @@ union(S2G,S2Grid(-zvector));
 rotate(S2G,axis2quat(xvector,45*degree));
 subGrid(S2G,zvector,10*degree);
 refine(S2Grid('equispaced','resolution',1000,'antipodal'));
-GridLength(S2G);
+numel(S2G);
 getResolution(S2G);
 getRho(S2G);
 getTheta(S2G);

@@ -50,10 +50,6 @@ odf3 = calcODF(pf,'resolution',5*degree,'iter_max',10)
 % [[quaternion_index.html,quaternion]]:
 center = modalorientation(odf3)
 
-%% 
-% Convert into Euler angles:
-[alpha,beta,gamma] = quat2euler(center)
-
 
 %% Texture Characteristics
 %
@@ -87,7 +83,7 @@ volume(odf3,modalorientation(odf3),30*degree)
 %%
 % The relative volume of crystals with missorientation maximum 20 degree
 % from the prefered fibre:
-fibrevolume(odf2,Miller(0,0,1),xvector,20*degree)  
+fibrevolume(odf2,Miller(0,0,1),xvector,10*degree)  
 
 
 %% Fourier Coefficients

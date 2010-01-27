@@ -1,8 +1,8 @@
 function c = orientation2color(o,coloring,varargin)
-% convert SO3Grid to color
+% convert orientation to color
 %
 %% Input
-% o    - @SO3Grid
+% o    - @orientation
 % type - as string: BUNGE, ANGLE, SIGMA, IHS, IPDF
 %
 
@@ -15,7 +15,7 @@ switch coloring
   case model(1)
     c = euler2rgb(o,varargin{:});
   case model(2)
-    c = rotangle(quaternion(o)).';
+    c = angle(quaternion(o)).';
     c = 1-repmat(( c-min(c) )./ (max(c)-min(c)),1,3);
   case model(3)
     c = sigma2rgb(o,varargin{:});

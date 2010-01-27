@@ -51,7 +51,7 @@ if isa(obj,'quaternion')
   
   if isappdata(gcf,'sections') 
     % precalculate projection if plotted to sections
-    S2G = project2ODFsection(SO3Grid(obj,cs,ss),...
+    S2G = project2ODFsection(orientation(obj,cs,ss),...
       getappdata(gcf,'SectionType'),getappdata(gcf,'sections'),varargin{:});
   end  
 end
@@ -73,7 +73,7 @@ for i = 1:length(ax)
         
       if isa(obj,'quaternion')
       
-        plot(ss*obj*symmetrice(h,varargin{:}),'MarkerEdgeColor','w',varargin{:});
+        plot(ss*obj*symmetrise(h,varargin{:}),'MarkerEdgeColor','w',varargin{:});
         
       elseif isa(obj,'vector3d')
       
@@ -91,7 +91,7 @@ for i = 1:length(ax)
       if isempty(r), r = getappdata(gcf,'r');end
     
       if isa(obj,'quaternion')
-        sr = inverse(obj)*symetriceVec(ss,r./norm(r),varargin{:});
+        sr = inverse(obj)*symmetrise(r./norm(r),ss,varargin{:});
         plot(cs*sr(:).','MarkerEdgeColor','w',varargin{:});
       elseif isa(obj,'Miller')
       
@@ -106,7 +106,7 @@ for i = 1:length(ax)
     case 'odf'
    
       if isa(obj,'quaternion')
-        plot(S2G(i),varargin{:});
+        plot(S2G{i},varargin{:});
       else
         error('Only orientations can be anotated to ODF section plots');
       end

@@ -45,16 +45,16 @@ plot(Miller(2,1,-3,1,cs),'all','labeled')   % plot Miller indece
 %
 % A simple way to compute all symmetrically equivalent
 % directions to a given crystal direction is proveded by the command
-% <Miller_symmetrice.html symmetrice>
+% <Miller_symmetrise.html symmetrise>
 
 m = Miller(1,1,-2,0,cs)
-symmetrice(m)
+symmetrise(m)
 
 %% 
 % As allways the keyword <AxialDirectional.html antipodal> adds antipodal symmetry to this
 % computation
 
-symmetrice(m,'antipodal')
+symmetrise(m,'antipodal')
 
 %%
 % The command <Miller_symeq.html symeq> can also be used to check whether
@@ -113,6 +113,6 @@ o * m
 % the coordinates with respect to the specimen coordinate system of all
 % crystallographically equivalent specimen directions.  
 
-p = o * symmetrice(m);
+p = o * symmetrise(m);
 plot(p)
 

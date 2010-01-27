@@ -46,7 +46,7 @@ CS = symmetry('cubic')
 
 % operate
 CS * zvector;
-symetriceVec(CS,zvector);
+symmetrise(zvector,CS)
 
 %% the class S2grid
 %-------------------------------------------------------------------------
@@ -81,7 +81,7 @@ SO3G = SO3Grid(500,CS,SS)
 set(gcf,'position',[ 67   242   777   384]);
 plot(SO3G * xvector)
 %%
-plot(SO3G * symetriceVec(CS,xvector))
+plot(SO3G * symmetrise(xvector,CS))
 
 %%
 % plot
