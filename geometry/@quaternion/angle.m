@@ -9,11 +9,11 @@ function omega = angle(q1,q2)
 %  q1, q2 - @quaternion
 % 
 %% Output
-%  omega  - double [q1 x q2]
+%  omega  - double
 
 if nargin == 2
   
-  omega = 2*acos(min(1,dot_outer(q1,q2)));
+  omega = 2*acos(min(1,abs(dot(q1,q2))));
   
 else
 

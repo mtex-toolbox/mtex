@@ -84,7 +84,7 @@ if check_option(varargin,'BUNGE')
 	beta = real(acos(getz(v)));
 	alpha = atan2(gety(v),getx(v)) + pi/2;   
 	q = axis2quat(xvector,-beta) .* axis2quat(zvector,-alpha) .* quat;
-	gamma = rotangle(q);
+	gamma = angle(q);
 	% if rotational axis equal to -z
   ind = [q.a] .* [q.d] <= 0;
 	gamma(ind) = - gamma(ind);
@@ -93,7 +93,7 @@ else
 	beta = real(acos(getz(v)));
 	alpha = atan2(gety(v),getx(v));
 	q = axis2quat(yvector,-beta) .* axis2quat(zvector,-alpha) .* quat;
-	gamma = rotangle(q);
+	gamma = angle(q);
 	% if rotational axis equal to -z
   ind = [q.a] .* [q.d] <= 0;
 	gamma(ind) = - gamma(ind);

@@ -6,7 +6,7 @@ function d = dot_outer(g1,g2)
 %  d - double
 %
 %% formuala:
-% cos angle(g1,g2)/2 = dout(g1,g2)
+% cos angle(g1,g2)/2 = dot(g1,g2)
 
 if ~isempty(g1) && ~isempty(g2)
 

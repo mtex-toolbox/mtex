@@ -15,7 +15,7 @@ if isa(q1,'quaternion') && isa(q2,'quaternion')
   
 elseif isa(q1,'quaternion') && (isa(q2,'vector3d') || isa(q2,'Miller'))
 	
-	[x,y,z] = double(vector3d(q2));
+	[x,y,z] = double(q2);
   [nx,ny,nz] = quaternion_mtimes(q1.a(:),q1.b(:),q1.c(:),q1.d(:),x(:).',y(:).',z(:).');
 	q = vector3d(nx,ny,nz);
 	
