@@ -1,22 +1,25 @@
 function dot = dot(o1,o2)
-% compute minimum o1 o2 modulo symmetry
+% compute minimum dot(o1,o2) modulo symmetry
 
-if nargin > 3
-  qss = quaternion(o1.ss);
+
+if isa(o1,'orientation')
+  domega = rotangle_max_z(o1.CS);
+  qcs = quaternion_special(o1.CS);
+  qss = quaternion(o1.SS);
 else
-  qss = [];
+  domega = rotangle_max_z(o2.CS);
+  qcs = quaternion_special(o2.CS);
+  qss = quaternion(o2.SS);
 end
-
-domega = rotangle_max_z(o1.CS);
 omega = 0:domega:2*pi-domega;
-qcs = quaternion_special(o1.CS);
+
 
 %% no specimen symmetry
-dot = dot_angle(o1.quaternion,o2.quaternion,omega);
+dot = dot_angle(o1,o2,omega);
 for i = 2:length(qcs)
   ind = dot < cos(domega/6);
   if ~any(ind), break;end
-  dot(ind) = max(dot(ind),dot_angle(o1.quaternion(ind)*qcs(i),o2.quaternion(ind),omega));
+  dot(ind) = max(dot(ind),dot_angle(subsref(o1,ind) * qcs(i),subsref(o2,ind),omega));
 end
 
 %% with specimen symmetry
@@ -24,7 +27,7 @@ if length(qss) > 1
   
   for j = 2:length(qss)
 
-    sq1 = qss(j)*o1.quaternion;
+    sq1 = qss(j) * o1.quaternion;
     sdot = dot_angle(sq1,o2.quaternion,omega);
 
     for i = 2:length(qcs)

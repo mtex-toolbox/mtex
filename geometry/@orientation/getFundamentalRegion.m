@@ -63,5 +63,5 @@ else
   q = reshape(qss(idss),size(q)) .* q .* reshape(qcs(idcs),size(q));
   
   % compute angle
-  omega = 2*acos(min(1,omega));
+  omega = reshape(2*acos(min(1,omega)),size(q));
 end

@@ -21,7 +21,9 @@ else
 end
 tol = get_option(varargin,'tolerance',tol);
 
-S2G = repmat(S2Grid(vector3d,varargin{:}),numel(sec),1);
+% TODO -> this does not work anymore!!! -> make it a cell
+
+S2G = repcell(S2Grid(vector3d,varargin{:}),numel(sec),1);
 
 %% symmetries and convert to Euler angle
 
@@ -80,6 +82,6 @@ for i = 1:size(sec,2)
   
   
   
-  S2G(i) = S2Grid(sph2vec(e2(ind(:,i)),mod(rho(ind(:,i)),2*pi)),varargin{:});
+  S2G{i} = S2Grid(sph2vec(e2(ind(:,i)),mod(rho(ind(:,i)),2*pi)),varargin{:});
   
 end

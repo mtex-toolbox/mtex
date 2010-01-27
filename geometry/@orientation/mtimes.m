@@ -6,7 +6,7 @@ if isa(a,'orientation') && isa(b,'vector3d')
   
   if isa(b,'Miller'), b = set(b,'CS',a.CS);end
   
-  r = diag(a.i) * (a.quaternion * vector3d(b));
+  r = diag(a.i) * (a.quaternion * b);
    
 elseif isa(a,'symmetry')
   

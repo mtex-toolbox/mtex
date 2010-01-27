@@ -16,8 +16,6 @@ function [o kappa v q q_std]  = mean(o,varargin)
 
 if numel(o.i) == 1 
   
-  q_mean = o.quat;
-  
   if nargout > 1
     v = idquaternion;
     kappa = [1 0 0 0];
