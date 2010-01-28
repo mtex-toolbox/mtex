@@ -2,15 +2,14 @@ function o = orientation(varargin)
 % defines an orientation
 
 % empty quaternion;
-quat = quaternion;
+rot = rotation;
 
 %% empty constructor
 if nargin == 0
   
   o.CS = symmetry;
   o.SS = symmetry;
-  o.i = 1;  
-  
+    
 %% copy constructor
 elseif isa(varargin{1},'orientation')
         
@@ -34,38 +33,19 @@ else
     o.SS = symmetry;
   end
   
-  %if length(args) > 2, error('MTEX:orientation','to many symmetries specified');end
-  
-  %% orientation given by a quaternion
-  
-  args  = find(cellfun(@(s) isa(s,'quaternion') & ~isa(s,'symmetry'),varargin,'uniformoutput',true));
-  if length(args) == 1
-    quat = [varargin{args}];
-  end
-  
-  %% orientation by axis / angle
-  
-  if check_option(varargin,'axis')
-    quat = axis2quat(get_option(varargin,'axis'),get_option(varargin,'angle'));
-  end
-  
-  %% orientation by Euler angles
-  
-  if check_option(varargin,'Euler')
-    args = find_option(varargin,'Euler');
-    quat = euler2quat(varargin{args+1},varargin{args+2},varargin{args+3},varargin{:});
-  end
-
   if check_option(varargin,'Miller')
     
     args = find_option(varargin,'Miller');
     
-    quat = Miller2quat(varargin{args+1},varargin{args+2},o.CS);
+    rot = rotation(Miller2quat(varargin{args+1},varargin{args+2},o.CS));
+  
+  else
+    
+    rot = rotation(varargin{:});
     
   end
   
-  o.i = ones(size(quat));
 end
 
-superiorto('quaternion');
-o = class(o,'orientation',quat);
+superiorto('quaternion','rotation');
+o = class(o,'orientation',rot);

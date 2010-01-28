@@ -81,7 +81,7 @@ switch projection
     [x,y,z] = double(v);
   case 'axisangle'
     omega = angle(o);
-    v = rotaxis(o);
+    v = axis(o);
     [x,y,z] = double(v .* omega ./ degree);
 end
 

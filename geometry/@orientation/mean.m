@@ -14,7 +14,7 @@ function [o kappa v q q_std]  = mean(o,varargin)
 %
 %% See also
 
-if numel(o.i) == 1 
+if numel(o) == 1 
   
   if nargout > 1
     v = idquaternion;
@@ -25,7 +25,7 @@ if numel(o.i) == 1
 end
 
 % first approximation
-q_mean = get_option(varargin,'q0',o.quaternion(1));
+q_mean = get_option(varargin,'q0',quaternion(o,1));
 old_mean = [];
 
 % iterate mean 
@@ -38,5 +38,5 @@ while iter < 5 && (isempty(old_mean) || (abs(dot(q_mean,old_mean))<0.999))
   [q_mean kappa v] = mean(q,varargin{:});
 end
 
-o.quaternion = q_mean;
-o.i = 1;
+o.rotation = rotation(q_mean);
+

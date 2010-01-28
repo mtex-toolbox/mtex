@@ -1,4 +1,4 @@
 function o = inverse(o)
 
-o.quaternion = inverse(o.quaternion);
+o.rotation = inverse(o.rotation);
 [o.CS,o.SS] =  deal(o.SS,o.CS);

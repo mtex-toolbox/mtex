@@ -35,7 +35,7 @@ end
 v1 = vector3d(v1);
 v2 = symmetrise(v2);
 
-v2 = v2(isnull(dot(v1,v2))); v2 = v2(1);
+v2 = v2(isnull(dot(vector3d(v1),vector3d(v2)))); v2 = v2(1);
 
 if isempty(v2), error('Miller indece have to be orthogonal');end
 

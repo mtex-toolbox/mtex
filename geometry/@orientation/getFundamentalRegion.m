@@ -12,7 +12,7 @@ function [q,omega] = getFundamentalRegion(o,q_ref)
 
 %% get quaternions
 if nargin == 1, q_ref = idquaternion;end
-q = o.quaternion;
+q = quaternion(o);
 
 %% no specimen symmetry
 if length(o.SS) == 1 

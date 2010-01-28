@@ -25,7 +25,7 @@ switch lower(vname)
   case 'angle'
     varargout{1} = 2*acos(obj.a);
   case {'axis','rotaxis'}
-    varargout{1} = rotaxis(obj);
+    varargout{1} = axis(obj);
   otherwise
     error('Unknown field in class quaternion!')
 end

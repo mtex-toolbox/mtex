@@ -6,7 +6,7 @@ if isa(a,'orientation') && isa(b,'vector3d')
   
   if isa(b,'Miller'), b = set(b,'CS',a.CS);end
   
-  r = diag(a.i) * (a.quaternion * b);
+  r = a.rotation * b;
    
 elseif isa(a,'symmetry')
   
@@ -14,7 +14,7 @@ elseif isa(a,'symmetry')
     warning('MTEX:Orientation','Symmetry mismatch!');
   end
   r = b;
-  r.quaternion = quaternion(a) * b.quaternion;
+  r.rotation = quaternion(a) * b.rotation;
   r.ss = symmetry;
   
 elseif isa(b,'symmetry')
@@ -23,7 +23,7 @@ elseif isa(b,'symmetry')
     warning('MTEX:Orientation','Symmetry mismatch!');
   end
   r = a;
-  r.quaternion = a.quaternion * quaternion(b);
+  r.rotation = a.rotation * quaternion(b);
   r.CS = symmetry;
   
 elseif isa(a,'quaternion') && isa(b,'quaternion')
@@ -32,12 +32,11 @@ elseif isa(a,'quaternion') && isa(b,'quaternion')
     r = a;
     if isa(b,'orientation')
       
-      r.i = a.i * b.i;
       % check that symmetries are ok
       if a.CS ~= b.SS
         warning('MTEX:Orientation','Symmetry mismatch!');
       end
-      r.SS = b.CS;
+      r.CS = b.CS;
     else
       if length(r.CS) > 1
         warning('MTEX:Orientation','Symmetry mismatch!');
@@ -52,7 +51,7 @@ elseif isa(a,'quaternion') && isa(b,'quaternion')
     end
   end
   
-  r.quaternion = quaternion(a) * quaternion(b);
+  r.rotation = rotation(quaternion(a) * quaternion(b));
     
 else
   

@@ -4,6 +4,8 @@ function obj = set(obj,vname,value,varargin)
 if isa(vname,'CS') && ...
     check_option(varargin,'keepEuler')
     
+  %%TODO
+  
   [a,b,g] = get(obj,'Euler');
 
   obj.CS =  value;

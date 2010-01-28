@@ -1,12 +1,4 @@
 function r = mldivide(a,b)
 % o \ v 
 
-if isa(a,'orientation') && isa(b,'vector3d')
-    
-  r = Miller(diag(a.i) * (a.quaternion' * vector3d(b)),a.CS);
-  
-else
-  
-  error([class(a) ' \ ' class(b) ' is not defined!'])
-    
-end
+r = Miller(a.rotation \ b,a.CS);

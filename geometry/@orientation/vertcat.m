@@ -10,5 +10,4 @@ for k=1:numel(varargin)
 end
 
 o = varargin{1};
-o.i = vertcat(os.i);
-o.quaternion = vertcat(os.quaternion);
+o.rotation = vertcat(os.rotation);
