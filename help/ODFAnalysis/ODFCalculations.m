@@ -53,7 +53,7 @@ odf3 = calcODF(pf,'resolution',5*degree,'iter_max',10)
 %%
 % Determine the modalorientation as an
 % [[quaternion_index.html,quaternion]]:
-center = modalorientation(odf3);
+center = modalorientation(odf3)
 
 %% 
 % Lets mark this prefered orientation in the pole figures

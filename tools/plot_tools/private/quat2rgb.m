@@ -12,7 +12,7 @@ end
 disp(max(omega(:)));
 omega = omega ./ max(omega(:));
 
-a = reshape(double(rotaxis(q)),[],3);
+a = reshape(double(axis(q)),[],3);
 
 %c = 0.5 + 0.5 * reshape(a,[],3) ./ max(abs(a(:))) .* [omega omega omega];
 

@@ -44,7 +44,7 @@ w = q * v;
 
 
 % Basic Functions:
-rotangle(q2); rotaxis(q2);Euler(q2);
+angle(q2); axis(q2);Euler(q2);
 quat2rodrigues(q2); plot(q2,'FontSize',20)
 %savefigure('pic/quaternion.pdf')
 

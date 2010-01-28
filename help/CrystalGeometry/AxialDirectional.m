@@ -80,10 +80,10 @@ annotate(vector3d(1,0,-1),'labeled')
 % symmetry is in general not present.
 
 % some prefered orientation
-q = euler2quat(20*degree,30*degree,0);
+o = orientation('Euler',20*degree,30*degree,0,'ZYZ',cs,ss);
 
 % define an unimodal ODF
-odf = unimodalODF(q,cs,ss);
+odf = unimodalODF(o);
 
 % plot pole figures
 plotpdf(odf,Miller(1,2,2),'position',[100 100 400 200])

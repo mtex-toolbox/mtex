@@ -33,7 +33,7 @@ plot(q*v3)
 
 % transform
 [phi1,Phi,phi2] = Euler(q,'BUNGE');
-rotangle(q);
+angle(q);
 
 
 %% groups of quaternions - symmetries

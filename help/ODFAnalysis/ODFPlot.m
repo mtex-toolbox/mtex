@@ -14,8 +14,8 @@
 % Let us first define some model ODFs to be plotted later on.
 
 cs = symmetry('-3m'); ss = symmetry('-1');
-q0 = euler2quat(30*degree,40*degree,10*degree);
-q1 = euler2quat(10*degree,80*degree,70*degree);
+q0 = euler2quat(30*degree,40*degree,10*degree,'ZYZ');
+q1 = euler2quat(10*degree,80*degree,70*degree,'ZYZ');
 odf = 0.7*unimodalODF(q0,cs,ss) + 0.3*unimodalODF(q1,cs,ss);
 
 %% Plot Pole Figures

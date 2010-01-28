@@ -148,11 +148,11 @@ angle(quaternion(o),quaternion(o1)) /degree
 % following functions available in MTEX. Then rotational angle and the axis
 % of rotation can be computed via then commands
 % <quaternion_angle.html angle(q)> and
-% <quaternion_rotaxis.html rotaxis(q)> 
+% <quaternion_axis.html axis(q)> 
 
 angle(o1)/degree
 
-rotaxis(o1)
+axis(o1)
 %%
 % The inverse orientation to o you get from the command
 % <quaternion_inverse.html inverse(q)>
