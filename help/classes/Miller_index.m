@@ -32,13 +32,13 @@ m = vec2Miller(zvector,cs)
 % [[symmetry_index.html,crystal symmetry class]] to obtain all
 % crystallographically equivalent specimen directions. Other methods to
 % calculate or check for crystallographically equivalent Miller indece are
-% [[Miller_symvec.html,symvec]] and [[Miller_symeq.html,symeq]]. In order
+% [[Miller_symmetrise.html,symmetrise]] and [[Miller_eq.html,eq]]. In order
 % to calculate the angle between two Miller indece use [[Miller_angle.html,angle]]
 
 euler2quat(0,0,45*degree) * m; % applying a orientation
 cs * m;                        % applying a symmetry class
-symvec(m);                     % all equivalent directions 
-symeq(Miller(1,0,-1,0,cs),Miller(0,1,-1,0,cs)); % check for equivalents
+symmetrisec(m);                     % all equivalent directions 
+eq(Miller(1,0,-1,0,cs),Miller(0,1,-1,0,cs)); % check for equivalents
 angle(Miller(1,0,-1,0,cs),Miller(0,1,-1,0,cs)); % angle between both directions
 
 
