@@ -1,4 +1,4 @@
-function o = uminus(o)
+function rot = uminus(rot)
 % overload unitary minus
  
-o.i = -o.i;
+rot.i = -rot.i;

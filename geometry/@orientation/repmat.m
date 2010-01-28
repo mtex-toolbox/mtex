@@ -1,5 +1,5 @@
-function o = repmat(o,varargin) 
+function rot = repmat(rot,varargin) 
 % overloads repmat
 
-o.quaternion = repmat(o.quaternion,varargin{:});
-o.i = repmat(o.i,varargin{:});
+rot.quaternion = repmat(rot.quaternion,varargin{:});
+rot.i = repmat(rot.i,varargin{:});

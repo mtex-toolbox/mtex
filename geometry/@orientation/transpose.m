@@ -1,5 +1,5 @@
-function o=transpose(o)
+function rot=transpose(rot)
 % transpose array of orientations
 
-o.quaternion = o.quaternion.';
-o.i = o.i.';
+rot.quaternion = rot.quaternion.';
+rot.i = rot.i.';

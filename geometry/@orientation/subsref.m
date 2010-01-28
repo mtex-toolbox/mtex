@@ -1,10 +1,10 @@
-function o = subsref(o,s)
+function rot = subsref(rot,s)
 % overloads subsref
 
-o.quaternion = subsref(o.quaternion,s);
+rot.quaternion = subsref(rot.quaternion,s);
 
 if isa(s,'double') || isa(s,'logical')
-  o.i = o.i(s);
+  rot.i = rot.i(s);
 else
-  o.i = subsref(o.i,s);
+  rot.i = subsref(rot.i,s);
 end

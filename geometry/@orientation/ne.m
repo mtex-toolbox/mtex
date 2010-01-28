@@ -1,4 +1,4 @@
-function b = ne(o1,o2);
+function b = ne(rot1,rot2)
 % q1 ~= q2 ?
 
-b = ~ (o1 == o2);
+b = ~ (rot1 == rot2);

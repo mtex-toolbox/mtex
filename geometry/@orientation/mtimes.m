@@ -1,61 +1,51 @@
 function r = mtimes(a,b)
-% orientation times Miller and quaternion times orientation
+% rotation times vector3d and rotation times rotation
 
-
-if isa(a,'orientation') && isa(b,'vector3d')
+if isa(a,'rotation')
   
-  if isa(b,'Miller'), b = set(b,'CS',a.CS);end
-  
-  r = diag(a.i) * (a.quaternion * b);
-   
-elseif isa(a,'symmetry')
-  
-  if a ~= b.ss
-    warning('MTEX:Orientation','Symmetry mismatch!');
-  end
-  r = b;
-  r.quaternion = quaternion(a) * b.quaternion;
-  r.ss = symmetry;
-  
-elseif isa(b,'symmetry')
-  
-  if a.CS ~= b
-    warning('MTEX:Orientation','Symmetry mismatch!');
-  end
-  r = a;
-  r.quaternion = a.quaternion * quaternion(b);
-  r.CS = symmetry;
-  
-elseif isa(a,'quaternion') && isa(b,'quaternion')
+  if isa(b,'rotation')
     
-  if isa(a,'orientation')
     r = a;
-    if isa(b,'orientation')
-      
-      r.i = a.i * b.i;
-      % check that symmetries are ok
-      if a.CS ~= b.SS
-        warning('MTEX:Orientation','Symmetry mismatch!');
-      end
-      r.SS = b.CS;
-    else
-      if length(r.CS) > 1
-        warning('MTEX:Orientation','Symmetry mismatch!');
-        r.CS = symmetry;
-      end
-    end
-  else
-    r = b;
-    if length(r.SS) > 1
-      warning('MTEX:Orientation','Symmetry mismatch!');
-      r.SS = symmetry;
-    end
+    r.quaternion = a.quaternion * b.quaternion;
+    r.i = a.i * b.i;
+    
+  elseif isa(b,'quaternion')
+    
+    r = a;
+    r.quaternion = a.quaternion * b;
+    r.i = repmat(r.i(:),numel(b),1);    
+    
+  elseif isa(b,'vector3d')
+    
+    r = diag(a.i) * (a.quaternion * b);
+    
+  elseif isa(b,'double')
+    
+    r = a;
+    r.i = r.i * b;
+    
+  else 
+    
+    error('Type mismatch!')
+    
   end
   
-  r.quaternion = quaternion(a) * quaternion(b);
-    
 else
   
-  error([class(a) ' * ' class(b) ' is not defined!'])
+  if isa(a,'quaternion')
     
+    r = b;
+    r.quaternion = a * b.quaternion;
+    r.i = repmat(r.i(:).',numel(a),1);
+        
+  elseif isa(a,'double')
+    
+    r = b;
+    r.i = a * r.i; 
+    
+  else 
+    
+    error('Type mismatch!')
+    
+  end    
 end
