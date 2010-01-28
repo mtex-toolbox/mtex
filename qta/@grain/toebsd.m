@@ -13,17 +13,14 @@ function ebsd = toebsd(grains)
 cxy = centroid(grains);
 ar = area(grains);
 
-mean = get(grains,'orientation');
 phase = get(grains,'phase');
-CS = get(grains,'CS');
-SS = get(grains,'SS');
-
 uphase = unique(phase);
+
 for k=1:length(uphase)
   sel = uphase(k) == phase;
-  sel1 = find(sel,1,'first');
+  o = get(grains(sel),'orientation');
   
   options.weights = ar( sel );
-  ebsd(k) = EBSD( mean( sel ),CS{sel1},SS{sel1},...
-                  'xy',cxy( sel,: ),'phase',uphase(k),'options',options);
+  ebsd(k) = EBSD( o,...
+    'xy',cxy( sel,: ),'phase',uphase(k),'options',options);
 end

@@ -70,7 +70,10 @@ elseif check_option(varargin,'halfwidth') && ...
   
 else
     
-  k = kernel('de la Vallee Poussin','halfwidth',10*degree);
+  
+  k = extract_kernel(o,varargin{:});
+  
+  % k = kernel('de la Vallee Poussin','halfwidth',10*degree);
   
 end
 

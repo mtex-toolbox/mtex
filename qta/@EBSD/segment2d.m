@@ -35,7 +35,7 @@ xy = vertcat(ebsd.xy);
 if isempty(xy), error('no spatial data');end
 
 phase_ebsd = get(ebsd,'phase');
-phase_ebsd = mat2cell(phase_ebsd,ones(size(phase_ebsd)),1);
+phase_ebsd = mat2cell(phase_ebsd,ones(size(phase_ebsd)),1)';
 
 % generate long phase vector
 l = sampleSize(ebsd);
@@ -90,13 +90,16 @@ for i=1:numel(ebsd)
   zl = zl(ind); zr = zr(ind);
   
   % compute distances
-  omega = angle(ebsd(i).orientations(zl),ebsd(i).orientations(zr));
+  o1 = ebsd(i).orientations(zl);
+  o2 = ebsd(i).orientations(zr);
+  omega = angle(quaternion(o1),o2);
+  
+  %omega = angle(ebsd(i).orientations(zl),ebsd(i).orientations(zr));
   
   % remove large angles
   ind = omega > get_option(varargin,'angle',15*degree);
   
   angles = angles + sparse(mix(ind),miy(ind),1,sm,sn);
-  
 end
 
 % disconnect regions
@@ -213,6 +216,7 @@ fract = cell(1,nc);
 fract(find(cfr)) = fractions;
 
 ph = phase(cellfun(@(x)x(1),id));
+
 gr = struct('id',num2cell(1:nc),...
        'cells',id,...
        'neighbour',neigh,...
