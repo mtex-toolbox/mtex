@@ -1,5 +1,5 @@
-function o = permute(o,varargin) 
+function rot = permute(rot,varargin) 
 % overloads permute
 
-o.quaternion = permute(o.quaternion,varargin{:});
-o.i = permute(o.i,varargin{:});
+rot.quaternion = permute(rot.quaternion,varargin{:});
+rot.i = permute(rot.i,varargin{:});

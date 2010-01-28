@@ -1,7 +1,7 @@
-function o = reshape(o,varargin) 
+function rot = reshape(rot,varargin) 
 % overloads reshape
 
 
-o.quaternion = reshape(o.quaternion,varargin{:});
-o.i = reshape(o.i,varargin{:});
+rot.quaternion = reshape(rot.quaternion,varargin{:});
+rot.i = reshape(rot.i,varargin{:});
 
