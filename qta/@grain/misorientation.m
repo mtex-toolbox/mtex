@@ -44,25 +44,22 @@ if nargin > 1 && isa(varargin{1},'EBSD') % misorientation to ebsd data
   for k=1:length(ebsd)
     [grs eb ids] = link(grains, ebsd(k));
  
-    grid = getgrid(eb,'CheckPhase');
-    cs = get(grid,'CS');
-    ss = get(grid,'SS');  
-    
-    qm = get(grs,'orientation');
+    o1 = get(eb,'orientations','CheckPhase');    
+    o2 = get(grs,'orientation');
     
     [ids2 ida idb] = unique(ids);
     [a ia ib] = intersect([grs.id],ids2);
+        
+    o1 = quaternion(symmetrise(o1));
+    o2 = repmat(o2(ia(idb)),size(o1,1),1);
 
-    ql = symmetrise(quaternion(grid),cs,ss);
-    qr = repmat(qm(ia(idb)).',1,size(ql,2));
-    q_res = ql'.*qr;
-%     q_res = inverse(ql).*qr;
-    omega = angle(q_res);
-  
-    [omega,q_res] = selectMinbyRow(omega,q_res);
-    
-    ebsd(k) = set(ebsd(k),'orientations',set(grid,'Grid',{q_res}));
-    ebsd(k) = set(ebsd(k),'comment', ['misorientation '  get(ebsd(k),'comment')]);
+    % getFundamentalRegion(o2,o1);
+    o_res = o1'.*o2;
+    omega = rotangle(o_res);
+    [omega,o_res] = selectMinbyColumn(omega,o_res);
+
+     ebsd(k) = set(ebsd(k),'orientations', o_res);
+     ebsd(k) = set(ebsd(k),'comment', ['misorientation '  get(ebsd(k),'comment')]);
   end
 else % misorientation to neighbour grains
   ebsd = repmat(EBSD,size(phu));
@@ -84,14 +81,8 @@ else % misorientation to neighbour grains
       asr = grainsize(gr);  tot = sum(asr); 
     end
 
-    mean = get(gr,'orientation');
-
-    pCS = get(gr(1),'CS');
-    pCS = pCS{:};
-    pSS = get(gr(1),'SS');
-    pSS = pSS{:};
-    
-    qsym = symmetrise(mean,pCS,pSS).';
+    mean = get(gr,'orientation');    
+    qsym = quaternion(symmetrise(mean));
    
     if check_option(varargin,'random')      
       n = length(mean);
@@ -101,17 +92,18 @@ else % misorientation to neighbour grains
       pairs(pairs(:,1)-pairs(:,2) == 0,:) = [];
       pairs = unique(sort(pairs,2),'rows');
       
-      sym_q = qsym(:,pairs(:,1));
-      cen_q = repmat(mean(pairs(:,2)),length(pCS),1);
-      
       %partition due to memory
-      parts = [ 1:25000:size(sym_q,2) size(sym_q,2)+1];
+      parts = [ 1:25000:size(pairs,1) size(pairs,1)+1];
       
-      g = quaternion(zeros(4,size(sym_q,2)));
+      g = quaternion(zeros(4,size(pairs,1)));
       for l = 1:length(parts)-1
       	cur = parts(l):parts(l+1)-1;
-        if doinverse, gp = cen_q(:,cur).*sym_q(:,cur)'; 
-        else          gp = sym_q(:,cur).*cen_q(:,cur)'; end
+        
+        sym_q = qsym(:,pairs(cur,1));
+        cen_q = repmat(mean(pairs(cur,2)),size(sym_q,1),1);
+               
+        if doinverse, gp = cen_q.*sym_q'; 
+        else          gp = sym_q.*cen_q'; end
         
         [o ndx2] = min(angle(gp),[],1);
         ndx = sub2ind(size(gp),ndx2,1:length(ndx2));
@@ -141,14 +133,14 @@ else % misorientation to neighbour grains
       s1 = size(qsym,1);  
       cndx = [0 cumsum(repmat(s1,1,max(sum(T1,2))))];
 
-
       for l=1:length(gr)
         sel = cod(T1(:,grain_ids(l)));
 
         if ~isempty(sel)
           sym_q = qsym(:,sel);
           cen_q = mean(l);
-          [omega ndx] = min(2*acos(abs(dot(sym_q,cen_q))),[],1);     
+                  
+          [omega ndx] = min(2*acos(abs(dot(sym_q,cen_q))),[],1);
           nei_q =  sym_q(ndx + cndx(1:numel(sel)));
 
           if doinverse, qall{l} = cen_q .* nei_q'; %qall{l}'
@@ -166,7 +158,7 @@ else % misorientation to neighbour grains
     end  
 
     if ~isempty(g)
-      ebsd(k) = EBSD(g,pCS,pSS,'options',p,'comment',['grain misorientation ' grains(1).comment]);
+      ebsd(k) = EBSD(g,'options',p,'comment',['grain misorientation ' grains(1).comment]);
     end
   end
 end
