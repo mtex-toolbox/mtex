@@ -150,7 +150,7 @@ elseif maxangle < rotangle_max_z(CS)/4
   for i = 1:length(center)
     cq = center(i) .* q(:);
     ind = fundamental_region2(cq,center(i),CS,SS);
-    Grid = [Grid;cq(ind)];
+    Grid = [Grid;orientation(cq(ind),CS,SS)];
   end
   
 %% equidistribution  
