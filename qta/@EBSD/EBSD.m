@@ -35,6 +35,8 @@ if (nargin == 0)
 elseif isa(orientations,'EBSD')
   ebsd = orientations;
   return
+elseif isa(orientations,'SO3Grid')
+  orientations = orientation(orientations);
 elseif isa(orientations,'quaternion')
   orientations = orientation(orientations,CS,SS);
 else
