@@ -1,17 +1,16 @@
-function display(o)
+function display(rot)
 % standart output
 
 disp(' ');
-disp([inputname(1) ' = ' doclink('CrystalOrientations','orientation') ': (size: ' int2str(size(o)) ')']);
-disp(['  symmetry: ',char(o.CS),' - ',char(o.SS)]);
+disp([inputname(1) ' = ' doclink('Rotations','rotation') ': (size: ' int2str(size(rot)) ')']);
 
-if numel(o.i) < 30 && numel(o)>0
+if numel(rot.i) < 30 && numel(rot)>0
   
   disp('  Bunge Euler angles in degree: ');
-  %q = getFundamentalRegion(o);
-  [phi1,Phi,phi2] = Euler(o,'Bunge');
-  if any(o.i(:) < 0)
-    d = [phi1(:)/degree,Phi(:)/degree,phi2(:)/degree,o.i(:)];
+
+  [phi1,Phi,phi2] = Euler(rot,'Bunge');
+  if any(rot.i(:) < 0)
+    d = [phi1(:)/degree,Phi(:)/degree,phi2(:)/degree,rot.i(:)];
   else
     d = [phi1(:)/degree,Phi(:)/degree,phi2(:)/degree];
   end
