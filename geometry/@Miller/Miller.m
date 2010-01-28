@@ -48,5 +48,6 @@ elseif isa(varargin{1},'double')
   end
 end
 
+superiorto('vector3d');
 m = class(m,'Miller',v);
 

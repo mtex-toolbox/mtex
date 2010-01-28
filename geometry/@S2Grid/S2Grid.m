@@ -246,6 +246,7 @@ end
 G.options = set_option(G.options,...
   extract_option(varargin,{'INDEXED','PLOT','north','south','antipodal'}));
 
+superiorto('vector3d');
 G = class(G,'S2Grid',Grid);
 
 

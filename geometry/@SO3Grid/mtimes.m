@@ -1,40 +1,39 @@
-function out = mtimes(SO3G,q)
+function out = mtimes(a,b)
 % outer quaternion multiplication
 %
 %% Syntax
-%  SO3Gq = SO3G * q
-%  SO3Gv = SO3G * v
+%  out = a * b
+%  out = a * v
 %
 %% Input
-%  SO3G - @SO3Grid
-%  q    - @quaternion 
-%  v    - @vector3d
+%  a - @SO3rid
+%  b - @quaternion 
+%  v - @vector3d
 %
 %% Output
-%  SO3Gq - @SO3Grid
-%  SO3Gv - @vector3d
+%  out - @SO3Grid / @vector3d
 
-if isa(SO3G,'SO3Grid') % right multiplication
+if isa(a,'SO3Grid') % right multiplication
   
-  if isa(q,'SO3Grid'), q = q.orientation; end
+  if isa(b,'SO3Grid'), b = b.orientation; end
     
-  out = SO3G.orientation * q;
+  out = a.orientation * b;
       
-elseif isa(SO3G,'quaternion') 
+elseif isa(a,'quaternion') 
   
-  if numel(SO3G) == 1 % rotated grid
+  if numel(a) == 1 % rotate center only
     
-    out = q;
+    out = b;
     if isempty(out.center)
-      out.center = SO3G;
+      out.center = a;
     else
-      out.center = SO3G * out.center;
+      out.center = a * out.center;
     end
-    q.orientation = SO3G * q.orientation;
+    out.orientation = a * out.orientation;
     
   else
     
-    out = SO3Grid(SO3G * quaternion(q),SO3G.CS,SO3G.SS,...
+    out = SO3Grid(SO3G * quaternion(b),SO3G.CS,SO3G.SS,...
         'resolution',getResolution(SO3G));            
   end
           

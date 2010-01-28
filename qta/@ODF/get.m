@@ -5,7 +5,7 @@ switch vname
   case {'CS','SS','comment','options'}
     value = obj(1).(vname);
   case fields(obj)
-    value = [obj.(vname)];
+    value = obj(1).(vname);
   case 'resolution'
     k = [obj.psi];
     hw = get(k,'halfwidth');

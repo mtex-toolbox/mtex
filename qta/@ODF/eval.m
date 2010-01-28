@@ -16,8 +16,6 @@ function f = eval(odf,g,varargin)
 %% See also
 % kernel/sum_K kernel/K
 
-g = quaternion(g);
-
 if isa(g,'orientation') && odf(1).CS ~= get(g,'CS') && odf(1).SS ~= get(g,'SS')
   warning('symmetry missmatch'); %#ok<WNTAG>
 end
