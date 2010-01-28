@@ -1,55 +1,44 @@
 function r = times(a,b)
-% rotation times vector3d and rotation times rotation
+% orientation times Miller and quaternion times orientation
 
-if isa(a,'rotation')
+
+if isa(a,'orientation') && isa(b,'vector3d')
   
-  if isa(b,'rotation')
+  if isa(b,'Miller'), b = set(b,'CS',a.CS);end
+  
+  r = a.i .* (a.quaternion .* vector3d(b));
+   
+elseif isa(a,'quaternion') && isa(b,'quaternion')
     
+  if isa(a,'orientation')
     r = a;
-    r.quaternion = a.quaternion .* b.quaternion;
-    r.i = a.i .* b.i;
-    
-  elseif isa(b,'quaternion')
-    
-    r = a;
-    r.quaternion = a.quaternion .* b;
-    if numel(r.i) == 1
-      r.i = repmat(r.i,size(b));
+    if isa(b,'orientation')
+      r.i = a.i .* b.i;
+      % check that symmetries are ok
+      if a.SS ~= b.CS
+        warning('MTEX:Orientation','Symmetry mismatch!');
+      end
+      r.CS = b.SS;      
+    else
+      r.i = a.i .* ones(size(b));
+      if length(r.CS) > 1
+        warning('MTEX:Orientation','Symmetry mismatch!');
+        r.CS = symmetry;
+      end
     end
-    
-  elseif isa(b,'vector3d')
-    
-    r = a.i .* (a.quaternion .* b);
-    
-  elseif isa(b,'double')
-    
-    r = a;
-    r.i = r.i .* b;
-    
-  else 
-    
-    error('Type mismatch!')
-    
+  else
+    r = b;
+    r.i = r.i .* ones(size(a));
+    if length(r.SS) > 1
+      warning('MTEX:Orientation','Symmetry mismatch!');
+      r.ss = symmetry;
+    end
   end
   
+  r.quaternion = quaternion(a) .* quaternion(b);  
+    
 else
   
-  if isa(a,'quaternion')
+  error([class(a) ' * ' class(b) ' is not defined!'])
     
-    r = b;
-    r.quaternion = a .* b.quaternion;
-    if numel(r.i) == 1
-      r.i = repmat(r.i,size(a));
-    end
-        
-  elseif isa(a,'double')
-    
-    r = b;
-    r.i = a .* r.i; 
-    
-  else 
-    
-    error('Type mismatch!')
-    
-  end    
 end

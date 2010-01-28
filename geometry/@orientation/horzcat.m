@@ -1,14 +1,15 @@
-function rot = horzcat(varargin)
-% implements [rot1,rot2,rot3..]
+function o = horzcat(varargin)
+% implements [o1,o2,o3..]
+
 
 % preallocation
-rots = repmat(struct(varargin{1}),size(varargin));
+os = repmat(struct(varargin{1}),size(varargin));
 
 % copy cell content
 for k=1:numel(varargin)
-  rots(k) = struct(varargin{k});
+  os(k) = struct(varargin{k});
 end
 
-rot = varargin{1};
-rot.i = horzcat(rots.i);
-rot.quaternion = horzcat(rots.quaternion);
+o = varargin{1};
+o.i = horzcat(os.i);
+o.quaternion = horzcat(os.quaternion);

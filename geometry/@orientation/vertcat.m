@@ -1,14 +1,14 @@
-function rot = vertcat(varargin)
-% implements [rot1;rot2;rot3..]
+function o = vertcat(varargin)
+% implements [o1;o2;o3..]
 
 % preallocation
-rots = repmat(struct(varargin{1}),size(varargin));
+os = repmat(struct(varargin{1}),size(varargin));
 
 % copy cell content
 for k=1:numel(varargin)
-  rots(k) = struct(varargin{k});
+  os(k) = struct(varargin{k});
 end
 
-rot = varargin{1};
-rot.i = vertcat(rots.i);
-rot.quaternion = vertcat(rots.quaternion);
+o = varargin{1};
+o.i = vertcat(os.i);
+o.quaternion = vertcat(os.quaternion);

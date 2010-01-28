@@ -1,21 +1,21 @@
-function rot = subsasgn(rot,s,b)
+function o = subsasgn(o,s,b)
 % overloads subsasgn
 
 
-if isa(b,'rotation')
+if isa(b,'orientation')
   
-  rot.quaternion = subsasgn(rot.quaternion,s,b.quaternion);
-  rot.i = subsasgn(rot.i,s,b.i);
+  o.quaternion = subsasgn(o.quaternion,s,b.quaternion);
+  o.i = subsasgn(o.i,s,b.i);
   
 elseif isa(b,'quaternion')
   
-  rot.quaternion = subsasgn(rot.quaternion,s,b);
-  rot.i = subsasgn(rot.i,s,1);
+  o.quaternion = subsasgn(o.quaternion,s,b);
+  o.i = subsasgn(o.i,s,1);
   
 elseif isempty(b)
   
-  rot.quaternion = subsasgn(rot.quaternion,s,[]);
-  rot.i = subsasgn(rot.i,s,[]);
+  o.quaternion = subsasgn(o.quaternion,s,[]);
+  o.i = subsasgn(o.i,s,[]);
   
 else
   error('value must be of type orientation or quaternion');

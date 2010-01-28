@@ -1,6 +1,6 @@
-function rot = symmetrise(rot,CS,SS)	
+function o = symmetrise(o,varargin)	
 % all crystallographically equivalent orientations
 
 
-rot.quaternion = symmetrise(rot.quaternion,CS,SS);
-rot.i = repmat(rot.i(:).',length(SS) * length(CS),1);
+o.quaternion = symmetrise(o.quaternion,o.CS,o.SS);
+o.i = repmat(o.i(:).',length(o.SS) * length(o.CS),1);
