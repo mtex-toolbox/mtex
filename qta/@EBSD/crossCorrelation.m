@@ -22,8 +22,8 @@ for i = 1:cN
   
   iN(i) = min(length(q),i*pN);
   ind = ((i-1) * pN + 1):iN(i);
-  
-  d = dot_outer(ebsd(1).CS,ebsd(1).SS,q(ind),q);
+ 
+  d =  dot_outer(q(ind),q);
   
   for k = 1:length(psi)
     

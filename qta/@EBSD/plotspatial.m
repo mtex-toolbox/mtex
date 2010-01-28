@@ -68,9 +68,9 @@ end
 %% plot 
 newMTEXplot;
 
-if ~check_option(varargin,'raster')
+try %if ~check_option(varargin,'raster')
   plotxyexact(get(ebsd,'x'),get(ebsd,'y'),d,varargin{:});
-else
+catch
   plotxy(get(ebsd,'x'),get(ebsd,'y'),d,varargin{:});
 end
 

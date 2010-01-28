@@ -11,7 +11,8 @@ if isa(vname,'CS') && ...
   obj.quaternion = euler2quat(a,b,g,value);
    
 else
-  obj.(vname) = value{1};
+  if iscell(value), value = value{1}; end
+  obj.(vname) = value;
 end
 
 

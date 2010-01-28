@@ -47,6 +47,9 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 cs = get_option(varargin,'cs',symmetry('m-3m'));
 ss = get_option(varargin,'ss',symmetry('-1'));
 
+
+if ~iscell(cs), cs = {cs}; end
+
 % load data
 [d,varargin,header,c] = load_generic(char(fname),varargin{:});
 
@@ -134,7 +137,7 @@ if istype(names,euler) % Euler angles specified
   end
     
   % transform to quaternions
-  q = orientation('Euler',alpha,beta,gamma,cs,ss,varargin{:});
+  q = orientation('Euler',alpha,beta,gamma,cs{1},ss,varargin{:});
   
 elseif istype(names,quat) % import quaternion
     
@@ -189,12 +192,13 @@ options = varargin;
 
 % load single phase
 if isempty(phases) || sum(phase ~= 0) < 10
-  ebsd = EBSD(SO3Grid(q,cs,ss),cs,ss,varargin{:},'xy',xy,'options',opt,'phase',1); 
+  ebsd = EBSD(q,cs,ss,varargin{:},'xy',xy,'options',opt,'phase',1); 
   return
 end
 
 %
-if numel(cs) < length(phases), cs = repmat(cs(1),1,length(phases));end
+if numel(cs) < length(phases), cs = repmat({cs{1}},1,length(phases));end
+
 
 % load multiple phases
 for ip = 1:length(phases)
@@ -206,9 +210,10 @@ for ip = 1:length(phases)
     pxy = xy(ind,:);
   end
   popt = structfun(@(x) x(ind),opt,'uniformOutput',false);
-  
-  ebsd(ip) = EBSD(q(ind),cs(ip),ss,varargin{:},'xy',pxy,'phase',phases(ip),'options',popt); %#ok<AGROW>
+
+  ebsd(ip) = EBSD(set(q(ind),'CS',cs(ip)),varargin{:},'xy',pxy,'phase',phases(ip),'options',popt); %#ok<AGROW>
 end
+
 
 function str = stripws(str)
 

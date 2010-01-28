@@ -78,10 +78,11 @@ hw = gethw(k);
 vdisp([' kernel: ' char(k)],varargin{:});
 
 odf = ODF(o,weight,k,...
-  ebsd(1).CS,ebsd(1).SS,'comment',['ODF estimated from ',ebsd(1).comment]);
+  get(ebsd(1).orientations,'CS'),get(ebsd(1).orientations,'SS'),...
+  'comment',['ODF estimated from ',ebsd(1).comment]);
 
 max_coef = 32;
-gridlen = numel(o)*length(ebsd(1).CS);
+gridlen = numel(o)*length(get(ebsd(1).orientations,'CS'));
 
 %% Fourier ODF
 if ~check_option(varargin,{'exact','noFourier'}) && ...
@@ -139,7 +140,8 @@ vdisp([' approximation grid: ' char(S3G)],varargin{:});
 d = zeros(1,numel(S3G));
 
 % iterate due to memory restrictions?
-maxiter = ceil(length(ebsd(1).CS)*length(ebsd(1).SS)*numel(o) /...
+maxiter = ceil(length(get(ebsd(1).orientations,'CS'))*...
+  length(get(ebsd(1).orientations,'SS'))*numel(o) /...
   get_mtex_option('memory',300 * 1024));
 if maxiter > 1, progress(0,maxiter);end
 
@@ -165,7 +167,9 @@ d = d(del);
 
 %% generate ODF
 
-odf = ODF(S3G,d,k,ebsd(1).CS,ebsd(1).SS,...
+odf = ODF(S3G,d,k,...
+  get(ebsd(1).orientations,'CS'),...
+  get(ebsd(1).orientations,'SS'),...
   'comment',['ODF estimated from ',ebsd(1).comment]);
 
 %% check wether kernel is to wide
@@ -175,7 +179,8 @@ if check_option(varargin,'small_kernel') && hw > 2*getResolution(S3G)
   k = kernel('de la Vallee Poussin','halfwidth',hw);
   vdisp([' recalculate ODF for kernel: ',char(k)],varargin{:});
   d = eval(odf,S3G); %#ok<EVLC>
-  odf = ODF(S3G,d./sum(d),k,ebsd(1).CS,ebsd(1).SS,...
+  odf = ODF(S3G,d./sum(d),k,...
+    get(ebsd(1).orientations,'CS'),get(ebsd(1).orientations,'SS'),...
     'comment',['ODF estimated from ',getcomment(ebsd(1))]);
 end
 

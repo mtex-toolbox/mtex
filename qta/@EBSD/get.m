@@ -3,19 +3,11 @@ function varargout = get(obj,vname,varargin)
 
 varargout{1} = [];
 switch vname
-  case 'CS'
-    varargout = {obj.(vname)};
-%    if check_option(varargin,'all')
-%      varargout{1} = [obj.(vname)];
-%    else
-%      varargout{1} = obj(1).(vname);
-%    end
-  case {'comment','SS','options'}
-    
-    varargout{1} = obj(1).(vname);
-    
-  case {'data','orientations'}
-    
+  case {'SS','CS'}
+     varargout = cellfun(@(x) get(x,(vname)) ,{obj.orientations},'uniformoutput',false);
+  case {'comment','options'}    
+    varargout = {obj.(vname)};    
+  case {'data','orientations'}   
     
     % extract phases
     phase = [obj.phase];
@@ -36,11 +28,15 @@ switch vname
       
     end
     
-    varargout{1} = [obj(ind).orientations];
+    [d dim]= max(size(obj(ind(1)).orientations));
+    if dim==1
+      varargout{1} = vertcat(obj(ind).orientations);
+    else
+      varargout{1} = horzcat(obj(ind).orientations);
+    end
     varargout{2} = ind;  
   case fields(obj)
-    varargout{1} = vertcat(obj.(vname));
-    
+    varargout{1} = vertcat(obj.(vname));    
   case {'quaternions','quaternion'}
     varargout{1} = quaternion();
     for i = 1:length(obj)

@@ -51,4 +51,4 @@ switch coloring
     error('Unknown Colorcoding')
 end
 
-
+c = reshape(c,[],3);
