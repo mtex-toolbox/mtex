@@ -106,7 +106,7 @@ elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
     case 'sigma'
       [sec_angle,theta,rho] = deal(rho,theta,sec_angle-rho);
   end
-  Grid = euler2quat(sec_angle,theta,rho,convention);
+  Grid = euler2quat(sec_angle,theta,rho,convention,'ZYZ');
   
   % extra output
   if strcmpi(points,'plot')
@@ -145,7 +145,7 @@ elseif maxangle < rotangle_max_z(CS)/4
   % restrict to fundamental region - specimen symmetry only
   center = get_option(varargin,'center',idquaternion);
   sym_center = symmetrise(center,CS,SS);
-  [ignore,center] = selectMinbyColumn(rotangle(sym_center),sym_center);
+  [ignore,center] = selectMinbyRow(angle(quaternion(sym_center)),sym_center);
   
   for i = 1:length(center)
     cq = center(i) .* q(:);
@@ -214,7 +214,7 @@ elseif isa(points,'double') && points > 0  % discretise euler space
   G.gamma = S1Grid(gamma,-maxgamma+dgamma(1,:),...
                    maxgamma+dgamma(1,:),'periodic','matrix');
 	  
-  Grid = euler2quat(alpha,beta,gamma);
+  Grid = euler2quat(alpha,beta,gamma,'ZYZ');
   Grid = reshape(Grid,[],1);
 	
   G.resolution = 2 * maxgamma / ap2;

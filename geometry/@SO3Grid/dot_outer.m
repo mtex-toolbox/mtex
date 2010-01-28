@@ -14,8 +14,12 @@ function d = dot_outer(SO3G,q,varargin)
 %% formuala:
 % cos angle(g1,g2)/2 = dot(g1,g2)
 
+if ~isa(SO3G,'SO3Grid')
+  d = dot_outer(q,SO3G,varargin{:});
+  return
+end
+
 epsilon = get_option(varargin,'epsilon',pi);
-q = quaternion(q);
 
 if ~check_option(SO3G,'indexed') || check_option(varargin,{'full','all'})
   
@@ -52,7 +56,7 @@ else
     for ic = 1:length(qcs)
 
       [xalpha,xbeta,xgamma] = Euler(qss(is) * ...
-        transpose(q(:)*qcs(ic)));
+        transpose(q(:)*qcs(ic)),'ZYZ');
   
       d = max(d,SO3Grid_dist_region(yalpha,ybeta,ygamma,sgamma,int32(igamma),...
         int32(ialphabeta),palpha,pgamma, xalpha,xbeta,xgamma,epsilon));
