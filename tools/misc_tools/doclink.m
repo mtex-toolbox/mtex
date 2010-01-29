@@ -5,8 +5,9 @@ stack = dbstack;
 if isempty(strmatch('publish',{stack.name},'exact'))
 
   % generate link text
-  linkText = ['<a href="matlab:web(''jar:file:////' mtex_path '/help/mtex/help.jar!/' ...
-    fname '.html'',''-helpbrowser'')">' lname '</a>'];
+  linkText = ['<a href="matlab:web(''jar:file:///'  ...
+    fullfile(mtex_path,'','help','mtex','help.jar!',fname) ...
+    '.html'',''-helpbrowser'')">' lname '</a>'];
 else
   linkText = lname;
 end
