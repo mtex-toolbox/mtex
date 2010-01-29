@@ -3,7 +3,8 @@ function r = mldivide(a,b)
 
 if isa(a,'rotation') && isa(b,'vector3d')
     
-  r = diag(a.i) * (a.quaternion' * vector3d(b));
+  n = 1:length(a.i);
+  r = sparse(n,n,a.i) * (a.quaternion' * vector3d(b));
   
 else
   

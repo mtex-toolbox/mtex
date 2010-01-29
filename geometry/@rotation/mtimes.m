@@ -17,7 +17,8 @@ if isa(a,'rotation')
     
   elseif isa(b,'vector3d')
     
-    r = diag(a.i) * (a.quaternion * b);
+    n = 1:length(a.i);
+    r = sparse(n,n,a.i) * a.quaternion * b;
     
   elseif isa(b,'double')
     

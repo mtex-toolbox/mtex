@@ -2,7 +2,7 @@ function r = times(a,b)
 % orientation times Miller and quaternion times orientation
 
 
-if isa(a,'orientation') && isa(b,'vector3d')
+if isa(a,'rotation') && isa(b,'vector3d')
   
   if isa(b,'Miller'), b = set(b,'CS',a.CS);end
   
@@ -10,9 +10,9 @@ if isa(a,'orientation') && isa(b,'vector3d')
    
 elseif isa(a,'quaternion') && isa(b,'quaternion')
     
-  if isa(a,'orientation')
+  if isa(a,'rotation')
     r = a;
-    if isa(b,'orientation')
+    if isa(b,'rotation')
       r.i = a.i .* b.i;
       % check that symmetries are ok
       if a.SS ~= b.CS
