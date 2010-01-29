@@ -37,7 +37,7 @@ m = vec2Miller(zvector,cs)
 
 euler2quat(0,0,45*degree) * m; % applying a orientation
 cs * m;                        % applying a symmetry class
-symmetrisec(m);                     % all equivalent directions 
+symmetrise(m);                     % all equivalent directions 
 eq(Miller(1,0,-1,0,cs),Miller(0,1,-1,0,cs)); % check for equivalents
 angle(Miller(1,0,-1,0,cs),Miller(0,1,-1,0,cs)); % angle between both directions
 

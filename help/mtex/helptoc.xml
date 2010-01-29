@@ -99,26 +99,32 @@
   <tocitem target="mtex_demo.html"> Workshop 2007 </tocitem>
 </tocitem>
 
-<tocitem target="classes_index.html"
-	 image="$toolbox/matlab/icons/book_link.gif">
-  Complete Function List
-  <tocitem target="Miller_index.html">Class Miller</tocitem>
-  <tocitem target="S1Grid_index.html">Class S1Grid</tocitem>
-  <tocitem target="S2Grid_index.html">Class S2Grid</tocitem>
-  <tocitem target="SO3Grid_index.html">Class SO3Grid</tocitem>
-  <tocitem target="quaternion_index.html">Class quaternion</tocitem>
-  <tocitem target="symmetry_index.html">Class symmetry</tocitem>
-  <tocitem target="vector3d_index.html">Class vector3d</tocitem>
-  <tocitem target="ODF_index.html">Class ODF</tocitem>
-  <tocitem target="PoleFigure_index.html">Class PoleFigure</tocitem>
-  <tocitem target="EBSD_index.html">Class EBSD</tocitem>
-  <tocitem target="grain_index.html">Class grain</tocitem>
-  <tocitem target="kernel_index.html">Class kernel</tocitem>
-  <tocitem target="standardODFs_index.html">Model ODFs</tocitem>
-  <tocitem target="geometry_tools_index.html">Geometry Tools</tocitem>
-  <tocitem target="plot_tools_index.html">Plotting Tools</tocitem>
-  <tocitem target="statistic_tools_index.html">Statistic Tools</tocitem>
-  <tocitem target="tools_index.html">General Tools</tocitem>
+<tocitem target="classes_index.html" image="$toolbox/matlab/icons/book_link.gif"> Complete Function List
+  <tocitem target="classes_index.html" image="$toolbox/matlab/icons/reficon.gif">Geometry Class Reference
+    <tocitem target="Miller_index.html">Class Miller</tocitem>
+    <tocitem target="S1Grid_index.html">Class S1Grid</tocitem>
+    <tocitem target="S2Grid_index.html">Class S2Grid</tocitem>
+    <tocitem target="SO3Grid_index.html">Class SO3Grid</tocitem>
+    <tocitem target="quaternion_index.html">Class quaternion</tocitem>
+    <tocitem target="symmetry_index.html">Class symmetry</tocitem>
+    <tocitem target="vector3d_index.html">Class vector3d</tocitem>
+    <tocitem target="rotation_index.html">Class rotation</tocitem>
+    <tocitem target="orientation_index.html">Class orientation</tocitem>
+  </tocitem> 
+  <tocitem target="classes_index.html" image="$toolbox/matlab/icons/reficon.gif">Quantitative Texture Analysis Class Reference
+    <tocitem target="ODF_index.html">Class ODF</tocitem>
+    <tocitem target="PoleFigure_index.html">Class PoleFigure</tocitem>
+    <tocitem target="EBSD_index.html">Class EBSD</tocitem>
+    <tocitem target="grain_index.html">Class grain</tocitem>
+    <tocitem target="kernel_index.html">Class kernel</tocitem>
+    <tocitem target="standardODFs_index.html">Model ODFs</tocitem>
+  </tocitem>
+  <tocitem target="classes_index.html" image="$toolbox/matlab/icons/reficon.gif">Miscellaneous Functions
+    <tocitem target="geometry_tools_index.html">Geometry Tools</tocitem>
+    <tocitem target="plot_tools_index.html">Plotting Tools</tocitem>
+    <tocitem target="statistic_tools_index.html">Statistic Tools</tocitem>
+    <tocitem target="tools_index.html">General Tools</tocitem>
+  </tocitem>
 </tocitem>
 
 <tocitem target="changelog.html"
