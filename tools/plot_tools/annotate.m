@@ -85,7 +85,7 @@ for i = 1:length(ax)
       end
     
   %% inverse pole figure plot    
-    case 'ipdf'
+    case {'ipdf','hkl'}
         
       r = getappdata(gca,'r');
       if isempty(r), r = getappdata(gcf,'r');end
