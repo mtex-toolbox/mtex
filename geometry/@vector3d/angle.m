@@ -10,9 +10,9 @@ function a = angle(v1,v2,varargin)
 %  antipodal  - include [[AxialDirectional.html,antipodal symmetry]]
 
 if check_option(varargin,'antipodal')
-  a = abs(dot(v1./norm(v1),v2./norm(v2)));
+  a = abs(dot(v1./norm(v1),v2./norm(v2),varargin{:}));
 else
-  a = dot(v1./norm(v1),v2./norm(v2));
+  a = dot(v1./norm(v1),v2./norm(v2),varargin{:});
 end
 
-a = acos(max(-1,min(1,a)));
+a = real(acos(a));
