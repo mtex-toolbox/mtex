@@ -1,5 +1,8 @@
 function [m,er] = Miller(varargin)
-% constructor
+% define a crystal direction by Miller indice
+%
+%% Syntax
+%
 %
 %% Input
 %  h,k,l,n(optional) - double

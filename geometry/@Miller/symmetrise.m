@@ -8,7 +8,7 @@ function [m,l] = symmetrise(m,varargin)
 %  m - @Miller
 %
 %% Output
-%  v - @vector3d
+%  v - @Miller
 %
 %% Options
 %  antipodal - include [[AxialDirectional.html,antipodal symmetry]]

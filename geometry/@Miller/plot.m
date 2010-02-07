@@ -5,10 +5,13 @@ function plot(m,varargin)
 %  m  - Miller
 %
 %% Options
-%  ALL     - plot symmetrically equivalent directions
+%  ALL       - plot symmetrically equivalent directions
 %  antipodal - include antipodal symmetry
-%  labeled - plot Miller indice as label
-%  label   - plot user label
+%  labeled   - plot Miller indice as label
+%  label     - plot user label
+%
+%% See also
+% vector3d/plot
 
 % store hold status
 washold = ishold;
