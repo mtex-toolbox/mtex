@@ -7,7 +7,7 @@ switch lower(vname)
   case {'quaternion','grid','orientation'}
     varargout = {quaternion(obj)};    
   case fields(obj)
-    varargout = {[obj.(vname)]};
+    varargout = obj.(vname);
   otherwise
     error('Unknown field in class SO3Grid!')
 end
