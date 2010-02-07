@@ -13,10 +13,10 @@ function omega = angle(q1,q2)
 
 if nargin == 2
   
-  omega = 2*acos(min(1,abs(dot(q1,q2))));
+  omega = 2*real(acos(abs(dot(q1,q2))));
   
 else
 
-  omega = 2*acos(min(1,abs(q1.a)));
+  omega = 2*real(acos(abs(q1.a)));
   
 end

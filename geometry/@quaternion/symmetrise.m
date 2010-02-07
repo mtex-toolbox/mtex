@@ -12,8 +12,11 @@ function q = symmetrise(q,CS,SS,varargin)
 %% See also
 
 q = (q * CS).'; % CS x M
-if length(SS)>1
+if nargin>2 && length(SS)>1
   q = SS * q;     % SS x (CS X M)
+  lSS = length(SS);
+else
+  lSS = 1;
 end
 
-q = reshape(q,length(CS) * max(1,length(SS)),[]); % (CSxSS) x M
+q = reshape(q,length(CS) * lSS,[]); % (CSxSS) x M

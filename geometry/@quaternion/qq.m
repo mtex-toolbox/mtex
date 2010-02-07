@@ -16,7 +16,7 @@ if ~isempty(varargin) && check_option(varargin,'weights')
   T = w.*ql'*ql;
 else
   T = ql.'*ql;
-  T = T ./ numel(q);
+  T = T ./ numel(q.a);
 end
 
 

@@ -14,9 +14,8 @@ if ~isempty(g1) && ~isempty(g2)
 		g1.c(:) * g2.c(:).' + g1.d(:) * g2.d(:).';
 
   %d = quaternion_dot_outer(g1.a,g1.b,g1.c,g1.d,g2.a,g2.b,g2.c,g2.d);
-	d = abs(d);
-	d = reshape(d,[numel(g1),numel(g2)]);
-	
+	%d = abs(d);
+		
 else
 		d = [];
 end

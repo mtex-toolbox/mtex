@@ -10,5 +10,5 @@ function omega = angle_outer(q1,q2,varargin)
 %% Output
 %  omega  - double [q1 x q2]
 
-omega = 2*acos(min(1,dot_outer(q1,q2,varargin{:})));
+omega = real(2*acos(dot_outer(q1,q2,varargin{:})));
   
