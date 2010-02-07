@@ -3,6 +3,8 @@ function s = horzcat(varargin)
 
 % TODO! sort theta
 
+warning('not yet implemented!')
+
 s = varargin{1};
 
 for i = 2:numel(varargin)

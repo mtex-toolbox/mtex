@@ -44,4 +44,5 @@ else
   
 end
 
+superiorto('quaternion','symmetry');
 rot = class(struct([]),'rotation',quat);
