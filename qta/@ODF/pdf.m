@@ -55,14 +55,14 @@ for s = 1:length(sp)
       q1 = hr2quat(vector3d(h(s)),vector3d(r));
       q2 = q1 .* axis2quat(vector3d(h(s)),pi);
       
-      ASym = symmetrise(quaternion(odf(i).center),odf(i).CS,odf(i).SS);
+      ASym = quaternion(symmetrise(odf(i).center));
     
       C = odf(i).c(1) ./ mhyper(odf(i).psi);
        
       for iA = 1:size(ASym,2)
     
-        A1 = dot_outer_noabs(q1,ASym(:,iA));
-        A2 = dot_outer_noabs(q2,ASym(:,iA));
+        A1 = dot_outer(q1,ASym(:,iA));
+        A2 = dot_outer(q2,ASym(:,iA));
       
         a = (A1.^2 +  A2.^2) * reshape(odf(i).psi,[],1) ./2;
         b = (A1.^2 -  A2.^2) * reshape(odf(i).psi,[],1) ./2;

@@ -19,5 +19,5 @@ function t = norm(odf,varargin)
 %% See also
 % ODF/entropy ODF/volume ODF_index ODF/calcFourier
 
-t = norm(Fourier(odf,'l2-normalization',varargin{:})).^2;
+t = norm(Fourier(odf,'l2-normalization',varargin{:}));
   

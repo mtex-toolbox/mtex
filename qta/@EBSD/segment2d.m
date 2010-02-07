@@ -92,7 +92,7 @@ for i=1:numel(ebsd)
   % compute distances
   o1 = ebsd(i).orientations(zl);
   o2 = ebsd(i).orientations(zr);
-  omega = angle(quaternion(o1),o2);
+  omega = angle(o1,o2);
   
   %omega = angle(ebsd(i).orientations(zl),ebsd(i).orientations(zr));
   
