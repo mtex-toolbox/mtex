@@ -30,7 +30,7 @@ d = dot_angle(o1,o2,omega);
 for i = 2:length(qcs)
   ind = d < cos(domega/6);
   if ~any(ind), break;end
-  d(ind) = max(d(ind),dot_angle(subsref(o1,ind) * qcs(i),subsref(o2,ind),omega));
+  d(ind) = max(d(ind),dot_angle(quaternion(o1,ind) * qcs(i),subsref(o2,ind),omega));
 end
 
 %% with specimen symmetry

@@ -1,7 +1,7 @@
-function a = rotaxis(o)
+function a = axis(o)
 % rotational axis of the orientation
 %% Syntax
-%  v = rotaxis(o)
+%  v = axis(o)
 %
 %% Input
 %  q - @orientation
@@ -10,4 +10,4 @@ function a = rotaxis(o)
 %  v - @vector3d
 
 q = getFundamentalRegion(o);
-a = rotaxis(q);
+a = axis(q);

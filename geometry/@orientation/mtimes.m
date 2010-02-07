@@ -30,28 +30,31 @@ elseif isa(a,'quaternion') && isa(b,'quaternion')
     
   if isa(a,'orientation')
     r = a;
+    a = a.rotation;
     if isa(b,'orientation')
       
       % check that symmetries are ok
-      if a.CS ~= b.SS
+      if r.CS ~= b.SS
         warning('MTEX:Orientation','Symmetry mismatch!');
       end
       r.CS = b.CS;
+      b = b.rotation;
     else
       if length(r.CS) > 1
-        warning('MTEX:Orientation','Symmetry mismatch!');
+        warning('MTEX:Orientation','Symmetry lost!');
         r.CS = symmetry;
       end
     end
   else
     r = b;
+    b = b.rotation;
     if length(r.SS) > 1
-      warning('MTEX:Orientation','Symmetry mismatch!');
+      warning('MTEX:Orientation','Symmetry lost!');
       r.SS = symmetry;
     end
   end
   
-  r.rotation = rotation(quaternion(a) * quaternion(b));
+  r.rotation = a * b;
     
 else
   
