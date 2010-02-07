@@ -1,20 +1,24 @@
 function rot = rotation(varargin)
 % defines an rotation
 
-% empty quaternion;
-quat = quaternion;
+
 
 %% empty constructor
 if nargin == 0
-  
-  rot.i = [];
-  
+
+  % empty quaternion;
+  quat = quaternion;
+      
 %% copy constructor
 elseif isa(varargin{1},'rotation')
         
   rot = varargin{1};
   return;
 
+elseif isa(varargin{1},'quaternion') &&  ~isa(varargin{1},'symmetry')
+  
+  quat = varargin{1};
+  
 %% determine crystal and specimen symmetry
 else
   
@@ -38,8 +42,6 @@ else
     quat = euler2quat(varargin{args+1},varargin{args+2},varargin{args+3},varargin{:});
   end
   
-  rot.i = ones(size(quat));
 end
 
-superiorto('quaternion');
-rot = class(rot,'rotation',quat);
+rot = class(struct([]),'rotation',quat);

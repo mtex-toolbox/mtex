@@ -2,7 +2,7 @@ function d = dot_outer(rot1,rot2,varargin)
 % dot_outer
 %
 %% Input
-%  rot1, rot2 - @rotatiom
+%  rot1, rot2 - @rotation
 %
 %% Output
 %  
