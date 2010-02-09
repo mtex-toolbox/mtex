@@ -141,12 +141,6 @@ plot(grains_fractions,'hull','b','linewidth',1.5)
   % and also ellipses of principal components
 plotellipse(grains_fractions,'hull','scale',0.25,'b','linewidth',1.5)
 
-%% Assign an orientation to a grain
-% this is a quite important function, hence we need it for further
-% procedings, e.g. ODF estimation, misorientation
-
-grains = mean(grains, ebsd)
-
 %%
 % as we see, the mean is stored as new property 'orientation'. we can plot
 % it

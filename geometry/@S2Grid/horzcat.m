@@ -1,20 +1,11 @@
 function s = horzcat(varargin)
 % overloads [v1,v2,v3..]
 
-% TODO! sort theta
-
-warning('not yet implemented!')
-
 s = varargin{1};
 
-for i = 2:numel(varargin)
-  
-  s2 = varargin{i};
-  if isa(s2,'S2Grid')
-    s.res = min(s.res,s2.res);
-    s.theta = [s.theta,s2.theta];
-    s.rho = [s.rho,s2.rho];
-    s.vector3d = [reshape(s.vector3d,1,[]),reshape(s2.vector3d,1,[])];
-    s.options = {s.options{:},s2.options{:}};
-  end
-end
+cell = cellfun(@(S2G) reshape(vector3d(S2G),1,[]),varargin,'uniformoutput',false);
+
+s.vector3d = horzcat(cell{:});
+
+s.res = min(cellfun(@(S2G) S2G.res,varargin));
+s.options = delete_option(s.options,'indexed');

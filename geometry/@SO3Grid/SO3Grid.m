@@ -144,7 +144,7 @@ elseif maxangle < rotangle_max_z(CS)/4
   
   % restrict to fundamental region - specimen symmetry only
   center = get_option(varargin,'center',idquaternion);
-  sym_center = symmetrise(center,CS,SS);
+  sym_center = quaternion(symmetrise(center,CS,SS));
   [ignore,center] = selectMinbyRow(angle(quaternion(sym_center)),sym_center);
   
   for i = 1:length(center)
@@ -256,6 +256,7 @@ end
 
 function res = quat2res(quat,CS,SS)
 
+if numel(quat) == 0, res = 2*pi; return;end
 ml = min(numel(quat),500);
 ind1 = discretesample(numel(quat),ml);
 ind2 = discretesample(numel(quat),ml);

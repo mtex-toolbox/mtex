@@ -147,7 +147,24 @@ elseif check_option(varargin,'plot') && exist('maxthetafun','var')
   Grid = sph2vec(theta,rho);
   G.options = {};
 
+%% random points
+elseif check_option(varargin,'random')
+  
+  points = get_option(varargin,'points');
+  
+  G.res = 2*pi;
+  G.theta = maxtheta;
+  G.rho = S1Grid([],minrhoGrid,maxrhoGrid);
 
+  
+  theta = acos(2*(rand(points,1)-0.5));
+  rho   = 2*pi*rand(points,1);
+  
+  Grid = sph2vec(theta,rho);
+  G.options = {};
+
+  
+  
 %% all other idexed grids
 else
 

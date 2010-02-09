@@ -4,7 +4,7 @@ function r = times(a,b)
 
 if isa(a,'rotation') && isa(b,'vector3d')
   
-  r = a.i .* (a.quaternion .* vector3d(b));
+  r = a.quaternion .* vector3d(b);
    
 elseif isa(a,'quaternion') && isa(b,'quaternion')
     
@@ -12,16 +12,10 @@ elseif isa(a,'quaternion') && isa(b,'quaternion')
     r = a;
     a = a.quaternion;
     
-    if isa(b,'rotation')
-      r.i = r.i .* b.i;
-      b = b.quaternion;      
-    else      
-      r.i = a.i .* ones(size(b));      
-    end
+    if isa(b,'rotation'), b = b.quaternion; end
   else
     r = b;
     b = b.quaternion;
-    r.i = r.i .* ones(size(a));    
   end
   
   r.quaternion = a .* b;  

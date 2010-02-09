@@ -82,7 +82,7 @@ CS * Miller(1,0,0,CS);
 
 angle(h1,h2); 
 vector3d(h); 
-symeq(h1,h2);
+eq(h1,h2);
 plot(Miller(1,3,-4,4,CS),'all','FontSize',15,'antipodal')
 %savefigure('pic/miller.pdf')
 

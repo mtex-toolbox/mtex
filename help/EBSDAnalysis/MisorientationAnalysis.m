@@ -43,12 +43,6 @@ plotx2east
 [grains ebsd] = segment2d(ebsd,'angle',12.5*degree)
 
 
-%% Determine a mean orientaion
-% Later on, we will need an orientation for each grain, so let us assign
-% each grain a mean orientation of its underlaying ebsd data
-
-grains = mean(grains,ebsd)
-
 %% Misorientation to Mean
 % Let us inspect the [[grain_misorientation.html, misorientation]] from
 % the assigned mean orientation of each grain to its corresponding ebsd

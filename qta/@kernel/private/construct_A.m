@@ -60,11 +60,10 @@ switch lower(name)
     
   case 'dirichlet'
     
-    A =  ones(1,p+1).*(2*(0:p)+1);
+    A =  ones(1,round(p+1)).*(2*(0:round(p))+1);
     
   case 'fourier'
     
-    K.name = name;
     A = p;
 
   case 'jackson'
