@@ -10,12 +10,12 @@ if isa(a,'orientation') && isa(b,'vector3d')
    
 elseif isa(a,'symmetry')
   
-  if a ~= b.ss
+  if a ~= b.SS
     warning('MTEX:Orientation','Symmetry mismatch!');
   end
   r = b;
   r.rotation = quaternion(a) * b.rotation;
-  r.ss = symmetry;
+  r.SS = symmetry;
   
 elseif isa(b,'symmetry')
   

@@ -26,7 +26,7 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
   </xsl:choose>
 </xsl:variable>
 
-<xsl:variable name="mtexversion">MTEX trunk</xsl:variable>
+<xsl:variable name="mtexversion">MTEX 3.0</xsl:variable>
 
 <xsl:template match="mscript">
 <html>

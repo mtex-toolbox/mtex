@@ -47,5 +47,5 @@ else
   
 end
 
-superiorto('quaternion','rotation');
+superiorto('quaternion','rotation','symmetry');
 o = class(o,'orientation',rot);

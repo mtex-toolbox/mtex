@@ -7,7 +7,7 @@ function q = symmetrise(q,CS,SS,varargin)
 %  SS - specimen @symmetry
 %
 %% Output
-%  q - symmetrically equivalent orientations
+%  q - symmetrically equivalent orientations CS x SS x q
 %
 %% See also
 
