@@ -42,6 +42,11 @@ else
     quat = euler2quat(varargin{args+1},varargin{args+2},varargin{args+3},varargin{:});
   end
   
+  if check_option(varargin,'map')
+    args = find_option(varargin,'map');
+    quat = vec42quat(varargin{(args+1):(args+4)});
+  end
+  
 end
 
 superiorto('quaternion','symmetry');
