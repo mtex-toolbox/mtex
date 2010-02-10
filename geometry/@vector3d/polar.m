@@ -18,8 +18,8 @@ if isa(v,'vector3d')
         hr = sqrt(v.x.^2 + v.y.^2 + v.z.^2);
         hrho =  atan2(v.y,v.x);
         htheta = acos(v.z./hr);
-        disp(['theta = ',num2str(reshape(htheta,1,[]))]);
-        disp(['rho   = ',num2str(reshape(hrho,1,[]))]);
+        disp(['polar angle = ',xnum2str(reshape(htheta,1,[])/degree),mtexdegchar]);
+        disp(['azimuth     = ',xnum2str(reshape(hrho,1,[])/degree),mtexdegchar]);
     end
 else
     error('argument should be of type vector3d');

@@ -57,7 +57,7 @@ symmetrise(m)
 symmetrise(m,'antipodal')
 
 %%
-% The command <Miller_symeq.html symeq> can also be used to check whether
+% The command <Miller_eq.html eq> can also be used to check whether
 % two crystal directions are symmetrically equivalent. Compare
 
 Miller(1,1,-2,0,cs) == Miller(-1,-1,2,0,cs)
@@ -90,10 +90,10 @@ angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'antipodal')/degree
 vector3d(m)
 
 %%
-% Conversion into spherical coordinates requires the function <vector3d_vec2sph.html
-% vec2sph> 
+% Conversion into spherical coordinates requires the function <vector3d_polar.html
+% polar> 
 
-[theta,rho] = vec2sph(m)
+[theta,rho] = polar(m)
 
 %% Calculations
 %

@@ -73,11 +73,6 @@ link(grains,ebsd(1))
 
 link(ebsd, link(grains,ebsd(1)) )
 
-%% Orientation of a Grain
-% For several applications its required to assign each grain an average
-% orientation due to its EBSD Data
-
-grains = mean(grains,ebsd)
 
 %%
 % We can visualize the assigned orientation

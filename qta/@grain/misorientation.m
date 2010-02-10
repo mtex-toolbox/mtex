@@ -55,7 +55,7 @@ if nargin > 1 && isa(varargin{1},'EBSD') % misorientation to ebsd data
 
     % getFundamentalRegion(o2,o1);
     o_res = o1'.*o2;
-    omega = rotangle(o_res);
+    omega = angle(o_res);
     [omega,o_res] = selectMinbyColumn(omega,o_res);
 
      ebsd(k) = set(ebsd(k),'orientations', o_res);

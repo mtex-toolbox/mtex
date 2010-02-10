@@ -28,7 +28,7 @@ switch vname
       
     end
     
-    [d dim]= max(size(obj(ind(1)).orientations));
+    [d dim]= max(size(obj(1).orientations));
     if dim==1
       varargout{1} = vertcat(obj(ind).orientations);
     else
