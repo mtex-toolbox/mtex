@@ -30,6 +30,12 @@ sp = get_option(varargin,'superposition',1);
 
 for s = 1:length(sp)
 
+  if length(sp) == 1
+    hh = h;
+  else
+    hh = h(s);
+  end
+  
   % for all portions
   for i = 1:length(odf)
   
@@ -39,48 +45,42 @@ for s = 1:length(sp)
       
     elseif check_option(odf(i),'FOURIER')
       
-      Z = Z + sp(s) * fourier2pdf(odf(i),vector3d(h(s)),r,varargin{:});
+      Z = Z + sp(s) * fourier2pdf(odf(i),vector3d(hh),r,varargin{:});
       
       % -------------------- fibre symmetric portion --------------------------
     elseif check_option(odf(i),'FIBRE')
       
       Z = Z + sp(s) * reshape(...
         RRK(odf(i).psi,vector3d(odf(i).center{1}),odf(i).center{2},...
-        vector3d(h(s)),vector3d(r),odf(i).CS,odf(i).SS,varargin{:}),[],1) *...
+        vector3d(hh),vector3d(r),odf(i).CS,odf(i).SS,varargin{:}),[],1) *...
         odf(i).c(:);
       
       % -------------------- Bingham portion --------------------------
     elseif check_option(odf(i),'Bingham')
       
-      q1 = hr2quat(vector3d(h(s)),vector3d(r));
-      q2 = q1 .* axis2quat(vector3d(h(s)),pi);
+      q1 = hr2quat(vector3d(hh),vector3d(r));
+      q2 = q1 .* axis2quat(vector3d(hh),pi);
       
       ASym = quaternion(symmetrise(odf(i).center));
     
       C = odf(i).c(1) ./ mhyper(odf(i).psi);
        
-      for iA = 1:size(ASym,2)
+      for iA = 1:size(ASym,1)
     
-        A1 = dot_outer(q1,ASym(:,iA));
-        A2 = dot_outer(q2,ASym(:,iA));
+        A1 = dot_outer(q1,ASym(iA,:));
+        A2 = dot_outer(q2,ASym(iA,:));
       
         a = (A1.^2 +  A2.^2) * reshape(odf(i).psi,[],1) ./2;
         b = (A1.^2 -  A2.^2) * reshape(odf(i).psi,[],1) ./2;
         c = (A1 .*  A2) * reshape(odf(i).psi,[],1);
         
-        Z = Z + sp(s) * exp(a) .* C .* besseli(0,sqrt(b.^2 + c.^2))./ size(ASym,2);
+        Z = Z + sp(s) * exp(a) .* C .* besseli(0,sqrt(b.^2 + c.^2))./ size(ASym,1);
 
       end
       
             
       % --------------- radially symmetric portion ----------------------------
     else
-      if length(sp) == 1
-        hh = h;
-      else
-        hh = h(s);
-      end
-      
       Z = Z + sp(s) * reshape(...
         RK(odf(i).psi,quaternion(odf(i).center),hh,r,odf(i).c,...
         odf(i).CS,odf(i).SS,varargin{:}),size(Z));

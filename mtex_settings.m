@@ -51,7 +51,7 @@ set_mtex_option('memory',getmem);
 % comment out the following line if you have problems with displaying LaTex
 % symbols
 
-%set_mtex_option('noLaTex');
+set_mtex_option('noLaTex');
 
 %% FFT Accuracy 
 % change this value to have more accurate but slower computation when
