@@ -2,7 +2,7 @@
 %
 %% Contents
 %
-%% MTEX 2.1 -
+%% MTEX 3.0 -
 %
 % * added Bingham distribution
 % * MTEX is now compatibel with NFFT 3.1.3

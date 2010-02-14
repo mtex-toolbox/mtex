@@ -26,12 +26,14 @@ elseif nargin ==1
   end
 elseif nargin == 2 %
   error('for spherical koordinates use sph2vec');
-else
+elseif isa(x,'double')
   v.x = x;
   v.y = y;
   v.z = z;
     
   v = class(v,'vector3d');
+elseif strcmp(x,'polar')
+  v = sph2vec(y,z);
 end
 
 % check for equal size

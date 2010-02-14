@@ -7,9 +7,13 @@ switch vname
   case fields(obj)
     value = obj(1).(vname);
   case 'resolution'
-    k = [obj.psi];
-    hw = get(k,'halfwidth');
-    value = min(hw);
+    try
+      k = [obj.psi];
+      hw = get(k,'halfwidth');
+      value = min(hw);
+    catch %#ok<CTCH>
+      value = 5*degree;
+    end
   otherwise
     error('Unknown field in class ODF!')
 end

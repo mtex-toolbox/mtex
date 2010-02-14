@@ -38,6 +38,13 @@ for iodf = 1:length(odf)
     
   elseif check_option(odf(iodf),'fibre')
     
+    psi_old = odf(iodf).psi;
+    odf(iodf).psi = kernel(get(psi_old,'name'),'halfwidth',hw + get(psi_old,'halfwidth'));
+    
+  elseif check_option(odf(iodf),'Bingham')
+    
+    odf(iodf).psi = odf(iodf).psi./2;
+    
   %% unimodal portion
   else
     

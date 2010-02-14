@@ -47,6 +47,11 @@ else
     quat = vec42quat(varargin{(args+1):(args+4)});
   end
   
+  if check_option(varargin,'quaternion')
+    args = find_option(varargin,'quaternion');
+    quat = quaternion(varargin{(args+1):(args+4)});
+  end
+  
 end
 
 superiorto('quaternion','symmetry');

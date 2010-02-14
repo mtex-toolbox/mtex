@@ -11,13 +11,17 @@ function d = dot(m1,m2,varargin)
 
 %% special cases
 
-if numel(m1) == 1
-  d = reshape(dot_outer(m1,m2,varargin{:}),size(m2));
-  return
-elseif numel(m2) == 1
-  d = reshape(dot_outer(m1,m2,varargin{:}),size(m1));
+if numel(m1) == 1 || numel(m2) == 1
+  d = dot_outer(m1,m2,varargin{:});
+  
+  if numel(m1) == 1
+    d = reshape(d,[size(m2),size(d,3)]);
+  else
+    d = reshape(d,[size(m1),size(d,3)]);
+  end
   return
 end
+
 
 %% where is the symmetry
 if isa(m1,'Miller')

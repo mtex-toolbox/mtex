@@ -14,12 +14,6 @@ res = 5*degree;
 resmax = min(2.5*degree,get_option(varargin,'resolution',...
   max(0.5*degree,get(odf,'resolution')/2)));
 
-if isempty(resmax)
-  warning('constant ODF - no modalorientation'); %#ok<WNTAG>
-  g0 = idquaternion;
-  return
-end
-
 % initial gues
 S3G = SO3Grid(2*res,odf(1).CS,odf(1).SS);
 if 2*res - get(odf,'resolution') > res/2

@@ -39,9 +39,15 @@ else
     
     rot = rotation(Miller2quat(varargin{args+1},varargin{args+2},o.CS));
   
-  else
+  elseif isa(varargin{1},'char') && exist([varargin{1},'Orientation'],'file')
     
-    rot = rotation(varargin{:});
+    o = eval([varargin{1},'Orientation(o.CS,o.SS)']);
+    return
+    
+  else
+    args  = ~cellfun(@(s) isa(s,'symmetry'),varargin,'uniformoutput',true);
+    
+    rot = rotation(varargin{args});
     
   end
   
