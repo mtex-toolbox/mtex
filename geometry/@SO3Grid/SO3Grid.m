@@ -51,8 +51,7 @@ if isa(points,'quaternion')
   elseif check_option(varargin,'resolution')
     G.resolution = get_option(varargin,'resolution');
   else
-    %G.resolution = min(2*acos(dot_outer(CS,SS,points(1),points(2:end))))
-    G.resolution = quat2res(points,CS,SS);
+    G.resolution = ori2res(orientation(Grid,CS,SS));
   end 
 
 %% regular grid
@@ -254,13 +253,12 @@ else
   s = '';
 end
 
-function res = quat2res(quat,CS,SS)
+function res = ori2res(ori)
 
-if numel(quat) == 0, res = 2*pi; return;end
-ml = min(numel(quat),500);
-ind1 = discretesample(numel(quat),ml);
-ind2 = discretesample(numel(quat),ml);
-warning('TODO');
-d = 2*acos(dot_outer(quat(ind1),quat(ind2)));
+if numel(ori) == 0, res = 2*pi; return;end
+ml = min(numel(ori),500);
+ind1 = discretesample(numel(ori),ml);
+ind2 = discretesample(numel(ori),ml);
+d = angle_outer(ori(ind1),ori(ind2));
 d(d<0.005) = pi;
-res = quantile(min(d,[],2),min(0.9,sqrt(ml/numel(quat))));
+res = quantile(min(d,[],2),min(0.9,sqrt(ml/numel(ori))));

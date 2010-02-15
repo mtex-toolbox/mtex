@@ -15,11 +15,12 @@ function Z = RRK(kk,h1,r1,h2,r2,CS,SS,varargin)
 
 Z = zeros(numel(h2),numel(r2));
 
-sh = symmetrise(h1,CS,varargin{:});
+sh = symmetrise(vector3d(h1),CS,varargin{:});
+h2 = vector3d(h2./norm(h2));
 sr = symmetrise(r1,SS);
 
 for i = 1:numel(sh)
-  dh = dot_outer(sh(i)./norm(sh(i)),h2./norm(h2));
+  dh = dot_outer(sh(i)./norm(sh(i)),h2);
   for j = 1:numel(sr)
     dr = dot_outer(sr(j)./norm(sr(j)),r2./norm(r2));
     Z = Z + kk.RRK(dh.',dr) / numel(sh);
