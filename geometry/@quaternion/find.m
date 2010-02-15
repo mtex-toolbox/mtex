@@ -17,6 +17,6 @@ d = dot_outer(quats,quat);
 if nargin == 2
   [d,ind] = max(d,[],1);
 else
-  ind = d<epsilon;
+  ind = d > cos(epsilon/2);
 end
 

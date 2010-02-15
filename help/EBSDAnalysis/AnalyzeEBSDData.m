@@ -31,11 +31,11 @@ plot(ebsd,'phase',1)
 %
 % Next we are going to determine the mean orientation of the first phase
 
-m = mean(ebsd,'phase',2);
+m = mean(ebsd,'phase',1);
 
 % and plot it within a pole figure plot
 
-plotpdf(ebsd,[Miller(1,0,0),Miller(0,0,1)],'antipodal','phase',2)
+plotpdf(ebsd,[Miller(1,0,0),Miller(0,0,1)],'antipodal','phase',1)
 annotate(m,'Marker','s','MarkerFaceColor','red')
 
 %% Volume

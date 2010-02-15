@@ -9,10 +9,6 @@ function a = angle_outer(v1,v2,varargin)
 %% Options
 %  antipodal  - include [[AxialDirectional.html,antipodal symmetry]]
 
-if check_option(varargin,'antipodal')
-  a = abs(dot_outer(v1./norm(v1),v2./norm(v2)));
-else
-  a = dot_outer(v1./norm(v1),v2./norm(v2));
-end
+a = dot_outer(v1./norm(v1),v2./norm(v2),varargin{:});
 
-a = acos(max(-1,min(1,a)));
+a = real(acos(a));

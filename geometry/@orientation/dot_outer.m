@@ -26,7 +26,7 @@ lSS = length(ss);
 if (l1 < l2) && (l1>0)
   
   g1rot = symmetrise(g1,cs,ss,varargin{:}); % -> CS x SS x g1
-  d = reshape(dot_outer(g1rot,g2),[lCS * lSS,l1,l2]); %-> CS * SS x g1 x g2
+  d = reshape(abs(dot_outer(g1rot,g2)),[lCS * lSS,l1,l2]); %-> CS * SS x g1 x g2
   if check_option(varargin,'all')
     d = permute(d,[2 3 1]); % g1 x g2 x CS * SS
   else
@@ -36,7 +36,7 @@ if (l1 < l2) && (l1>0)
 elseif l2>0
   
 	g2rot = symmetrise(g2,cs,ss,varargin{:}).'; % g2 x CS x SS
-  d = reshape(dot_outer(g1,g2rot),[l1,l2,lCS * lSS]); % g1 x g2 x CS * SS
+  d = reshape(abs(dot_outer(g1,g2rot)),[l1,l2,lCS * lSS]); % g1 x g2 x CS * SS
   
   if ~check_option(varargin,'all')
     d = max(d,[],3);

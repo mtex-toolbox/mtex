@@ -1,5 +1,5 @@
 function dot = dot_angle(q1,q2,omega)
-% compute minimum q1 q2 modulo rotation about zaxis and angle omega
+% compute minimum q1 . q2 modulo rotation about zaxis and angle omega
 
 a1 = q1.a(:);
 b1 = q1.b(:);

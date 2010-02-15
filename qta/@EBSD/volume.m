@@ -26,4 +26,8 @@ else
 end
 weight = weight ./ sum(weight(:));
 
-v = sum(weight(find(o,center,radius,varargin{:})));
+if isempty(o)
+  v = 0;
+else
+  v = sum(weight(find(o,center,radius,varargin{:})));
+end
