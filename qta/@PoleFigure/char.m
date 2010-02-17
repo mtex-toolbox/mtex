@@ -11,7 +11,7 @@ end
 for i = 1:numel(pf)
 	toadd = ['h = ',char(pf(i).h)];
   toadd = [toadd,[', r = ',char(pf(i).r,'short')]]; 
-  toadd = [toadd ', ' pf(i).comment];
+%   toadd = [toadd ', ' pf(i).comment];
   str = [str,toadd];
 end
 

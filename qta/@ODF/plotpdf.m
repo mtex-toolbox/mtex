@@ -45,8 +45,8 @@ end
 
 
 %% plot
-disp(' ');
-disp('Plotting pole density functions:')
+vdisp(' ',varargin{:});
+vdisp('Plotting pole density functions:',varargin{:})
 if check_option(varargin,'superposition')
   multiplot(@(i) r,@(i) max(0,pdf(odf,h,r,varargin{:})),1,...
     'DISP',@(i,Z) [' h=',char(h),...

@@ -59,6 +59,7 @@ cw = (w-3*dw)/4;
 % data size
 [x,y] = size(data);
 htp = import_gui_empty('type',type,'width',w,'height',h,'name','generic import');
+iconMTEX(htp);
 
 uicontrol(...
   'Parent',htp,...

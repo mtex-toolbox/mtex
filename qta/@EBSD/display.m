@@ -1,4 +1,4 @@
-function display(ebsd,varargin)
+function  display(ebsd,varargin)
 % standard output
 
 disp(' ');
@@ -9,12 +9,12 @@ if check_option(varargin,'vname')
 elseif ~isempty(inputname(1))
   h = [inputname(1), ' = ' h];
 end;
-
+if numel(ebsd)>0 && ~isempty(ebsd(1).comment)
+  h = [h, ' (' ebsd(1).comment ')'];
+end  
 disp(h);
 
-if numel(ebsd)>0 && ~isempty(ebsd(1).comment)
-  disp(['  file: ' ebsd(1).comment]);
-end  
+
 
 if numel(ebsd)>0 && ~isempty(fields(ebsd(1).options))
   disp(['  properties: ',option2str(fields(ebsd(1).options))]);

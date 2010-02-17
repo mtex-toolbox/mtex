@@ -77,7 +77,13 @@ handles = getappdata(gcbf,'handles');
 if page == 1
   
   tab = getappdata(handles.tabs,'value');
-  data = getappdata(handles.listbox(tab),'data');
+  
+  
+handles = getappdata(gcbf,'handles');
+pane = handles.datapane;
+t= find(strcmpi(get(pane,'visible'),'on'),1,'last');
+  
+  data = getappdata(handles.listbox(t),'data');
   if isempty(data)
     errordlg('Nothing to plot! Add files to import first!');
     return;    
@@ -161,8 +167,8 @@ else
     
   switch class(data)
     case 'EBSD'
-      str = generateScript('EBSD',fn{2},data,getappdata(lb(2),'interface'),...
-        getappdata(lb(2),'options'), handles);
+      str = generateScript('EBSD',fn{5},data,getappdata(lb(5),'interface'),...
+        getappdata(lb(5),'options'), handles);
     case 'PoleFigure'
       fn(2:3) = [];
       if all(cellfun('isempty',fn(2:end)))
@@ -171,8 +177,8 @@ else
       str = generateScript('PoleFigure',fn,data,getappdata(lb(1),'interface'),...
         getappdata(lb(1),'options'), handles);
     case 'ODF'
-      str = generateScript('ODF',fn{3},data,getappdata(lb(3),'interface'),...
-        getappdata(lb(3),'options'), handles);
+      str = generateScript('ODF',fn{6},data,getappdata(lb(6),'interface'),...
+        getappdata(lb(6),'options'), handles);
   end
        
   str = generateCodeString(str);
@@ -221,7 +227,7 @@ function plot_ODF(wzrd,odf) %#ok<INUSL>
 
 cs = get(odf,'CS');
 h = unique([Miller(1,0,0,cs),Miller(0,1,0,cs),Miller(0,0,1,cs),Miller(1,1,0),Miller(2,1,0)]);
-plotpdf(odf,h(1:min(3,end)),'antipodal');
+plotpdf(odf,h(1:min(3,end)),'antipodal','silent');
 
 function plot_EBSD(wzrd,ebsd)  %#ok<INUSL>
 

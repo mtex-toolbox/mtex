@@ -10,11 +10,10 @@ elseif ~isempty(inputname(1))
   h = [inputname(1), ' = ' h];
 end;
 
-disp(h)
-
 if ~isempty(grains(1).comment)
-   disp(['  file: ' grains(1).comment ]);
+   h = [h, ' (' grains(1).comment ')'];
 end
+disp(h)
 
 if ~isempty(grains) 
   checksums = dec2hex(unique([grains.checksum]));  
