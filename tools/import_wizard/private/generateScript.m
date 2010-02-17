@@ -4,9 +4,10 @@ function str = generateScript(type,fn, data, interface, options, handles)
 str = file2cell([mtex_path filesep 'templates' filesep 'load' type 'template.m']);
 
 %% specify crystal and specimen symmetries
-cs = cell(size(data));
-for k=1:numel(data), 
-  cs{k} = get(data(k),'CS');
+if isa(data,'EBSD')
+  [cs{1:numel(data)}] = get(data,'CS');
+else
+  cs = {get(data,'CS')};
 end
 ss = get(data,'SS');
 

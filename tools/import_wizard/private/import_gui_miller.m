@@ -140,16 +140,13 @@ m = getMiller(data(ip));
 
 hkil={'h','k','i','l'};
 for k=1:4
-  if k ~=3,  set(handles.miller{k}, 'String', int2str(get(m,hkil{k})));
-  else
-    if any(strcmp(Laue(getCS(data)),{'-3m','-3','6/m','6/mmm'}))
-      set(handles.miller{k}, 'String', int2str(-get(m,'h') - get(m,'k')));
-    else
-      set(handles.miller{k}, 'String','');
-      set(handles.miller{k}, 'Enable','off');
-    end
-  end
+  set(handles.miller{k}, 'String', int2str(get(m,hkil{k})));
 end
+
+if ~any(strcmp(Laue(getCS(data)),{'-3m','-3','6/m','6/mmm'}))
+  set(handles.miller{3}, 'Enable','off');
+end
+
 set(handles.structur, 'String', xnum2str(getc(data(ip))));
 
 

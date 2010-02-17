@@ -46,7 +46,7 @@ if epsilon>rotangle_max_z(CS,'antipodal') % full matrixes
 		for ips = 1:length(SS) % for all symmetries
       
 			sg    = quaternion(SS,ips) * g1 * quaternion(CS,iks);  % rotate g1
-      omega = dot_outer(sg,g2);      % calculate full distance matrix            
+      omega = abs(dot_outer(sg,g2));      % calculate full distance matrix            
       w = w + kk.K(omega);          
       
 		end
@@ -61,14 +61,14 @@ elseif (lg1>0 || lg2>0) && ~check_option(varargin,'old')
 
   if (lg1 >= lg2)              % first argument is SO3Grid
     for issq = 1:length(ssq)
-      d = dot_outer(g1,ssq(issq)*quaternion(g2),'epsilon',epsilon,...
-        'nospecimensymmetry');
+      d = abs(dot_outer(g1,ssq(issq)*quaternion(g2),'epsilon',epsilon,...
+        'nospecimensymmetry'));
         w = w + spfun(kk.K,d);
     end    
   else                         % second argument is SO3Grid
     for issq = 1:length(ssq)
-      d = dot_outer(g2,ssq(issq)*quaternion(g1),'epsilon',epsilon,...
-        'nospecimensymmetry');
+      d = abs(dot_outer(g2,ssq(issq)*quaternion(g1),'epsilon',epsilon,...
+        'nospecimensymmetry'));
       w = w + spfun(kk.K,d.');
     end
   end
@@ -85,10 +85,10 @@ else
       
       if abs(lg1) > abs(lg2)
         sg    = quaternion(SS,ips) * g2 * quaternion(CS,iks);  % rotate g1
-        omega = dot_outer(g1,sg);      % calculate full distance matrix
+        omega = abs(dot_outer(g1,sg));      % calculate full distance matrix
       else
         sg    = quaternion(SS,ips) * g1 * quaternion(CS,iks);  % rotate g1
-        omega = dot_outer(sg,g2);      % calculate full distance matrix
+        omega = abs(dot_outer(sg,g2));      % calculate full distance matrix
       end
       
 

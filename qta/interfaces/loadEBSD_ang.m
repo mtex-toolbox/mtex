@@ -1,7 +1,7 @@
 function ebsd = loadEBSD_ang(fname,varargin)
 
 % read file header
-hl = file2cell(fname,200);
+hl = file2cell(fname,1000);
 
 phasePos = strmatch('# Phase',hl);
 
