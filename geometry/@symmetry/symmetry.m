@@ -74,14 +74,6 @@ end
 
 %% search for symmetry
 
-% may be it is a cif file
-try 
-  s = cif2symmetry(name);
-  return;
-catch
-end
-  
-
 % maybe this is a point group
 try 
   sym = findsymmetry(name);
@@ -91,6 +83,11 @@ catch %#ok<*CTCH>
   try
     sym = findsymmetry(hms2point(name));
   catch
+    try % may be it is a cif file
+      s = cif2symmetry(name);
+      return;
+    catch
+    end
     help symmetry;
     error('symmetry "%s" not found',name);
   end

@@ -166,27 +166,23 @@ cs_counter = getappdata(gcbf,'cs_count');
 
 name = get(handles.mineral,'string');
 
-if ~exist(name,'file')
-  name = fullfile(get_mtex_option('cif_path'), [name '.cif']);
-end
+[fname,pathName] = uigetfile(fullfile(get_mtex_option('cif_path') ,'*.cif'),'Select cif File');
+name = [pathName,fname];
 
-if ~exist(name,'file')
-  [fname,pathName] = uigetfile(fullfile(get_mtex_option('cif_path') ,'*.cif'),'Select cif File');
-  name = [pathName,fname];
-end
-
-try
-  cs = cif2symmetry(name);
-  set(handles.mineral,'string',shrink_name(name));
-  if isa(data,'EBSD')
-    data(cs_counter) = set(data(cs_counter),'CS',cs);
-  else
-    data = set(data,'CS',cs);
-  end
-  setappdata(gcbf,'data',data);
-  get_cs(gcbf);  
-catch %#ok<CTCH>
-  errordlg(errortext);  
+if fname ~= 0
+  try
+    cs = cif2symmetry(name);
+    set(handles.mineral,'string',shrink_name(name));
+    if isa(data,'EBSD')
+      data(cs_counter) = set(data(cs_counter),'CS',cs);
+    else
+      data = set(data,'CS',cs);
+    end
+    setappdata(gcbf,'data',data);
+    get_cs(gcbf);  
+  catch %#ok<CTCH>
+    errordlg(errortext);  
+  end 
 end
 
 function searchWeb(varargin)
@@ -277,9 +273,9 @@ else
 end
 
 if isa(data,'EBSD')
-  data(cs_counter) = set(data(cs_counter),'cs',cs);
+  data(cs_counter) = set(data(cs_counter),'CS',cs);
 else
-  data = set(data,'cs',cs);
+  data = set(data,'CS',cs);
 end
 
 setappdata(wzrd,'data',data);
