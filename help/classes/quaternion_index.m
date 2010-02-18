@@ -46,7 +46,7 @@
 % parameterization of rotations as they are:
 %
 %  [[quaternion_Euler.html,Euler]](q)     % in Euler angle
-%  [[quaternion_quat2rodrigues.html,quat2rodrigues]](q) % in Rodrigues parameter
+%  [[quaternion_Rodrigues.html,Rodrigues]](q) % in Rodrigues parameter
 %
 %% Plotting quaternions
 % 

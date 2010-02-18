@@ -52,6 +52,11 @@ else
     quat = quaternion(varargin{(args+1):(args+4)});
   end
   
+  if check_option(varargin,'matrix')
+    args = find_option(varargin,'matrix');
+    quat = mat2quat(varargin{args+1});
+  end
+  
 end
 
 superiorto('quaternion','symmetry');

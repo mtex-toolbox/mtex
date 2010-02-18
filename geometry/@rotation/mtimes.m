@@ -3,6 +3,8 @@ function r = mtimes(a,b)
 
 if isa(a,'rotation')
   
+  a = rotation(a);
+  
   if isa(b,'rotation')
     
     r = a;
@@ -27,7 +29,7 @@ else
   
   if isa(a,'quaternion')
     
-    r = b;
+    r = rotation(b);
     r.quaternion = a * b.quaternion;
             
   else

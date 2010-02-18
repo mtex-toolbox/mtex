@@ -14,9 +14,9 @@
 % Let us first define some model ODFs to be plotted later on.
 
 cs = symmetry('-3m'); ss = symmetry('-1');
-q0 = euler2quat(30*degree,40*degree,10*degree,'ZYZ');
-q1 = euler2quat(10*degree,80*degree,70*degree,'ZYZ');
-odf = 0.7*unimodalODF(q0,cs,ss) + 0.3*unimodalODF(q1,cs,ss);
+mod1 = orientation('euler',30*degree,40*degree,10*degree,'ZYZ');
+mod2 = orientation('euler',10*degree,80*degree,70*degree,'ZYZ');
+odf = 0.7*unimodalODF(mod1,cs,ss) + 0.3*unimodalODF(mod2,cs,ss);
 
 %% Plot Pole Figures
 % Plotting some pole figures of an <ODF_index.html ODF> is straight forward

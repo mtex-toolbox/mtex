@@ -14,8 +14,8 @@ omega = angle(c_sym * inverse(center));
 [omega,c_sym] = selectMinbyRow(omega,c_sym);
 
 % convert to rodrigues space
-rq = quat2rodrigues(q); clear q;
-rc_sym = quat2rodrigues(c_sym); 
+rq = Rodrigues(q); clear q;
+rc_sym = Rodrigues(c_sym); 
 
 % find rotation not part of the fundamental region
 ind = true(size(rq));

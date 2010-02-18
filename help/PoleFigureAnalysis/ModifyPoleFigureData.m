@@ -128,12 +128,12 @@ plot(pf_corrected)
 % with MTEX on has first to define a rotation, e.e. by
 
 % This defines a rotation around the x-axis about 100 degree
-q = axis2quat(xvector,100*degree);
+rot = rotation('axis',xvector,'angle',100*degree);
 
 %%
 % Second, the command <PoleFigure_rotate rotate> can be used to rotate the
 % pole figure data.
-pf_rotated = rotate(pf,q);
+pf_rotated = rotate(pf,rot);
 plot(pf_rotated,'antipodal')
 
 

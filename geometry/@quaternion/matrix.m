@@ -1,9 +1,9 @@
-function mat = quat2mat(q)
+function mat = matrix(q)
 % quaternion to direction cosine matrix conversion
 % converts direction cosine matrix to quaternion
 %
 %% Syntax
-%  mat = matrix2quat(q)
+%  mat = matrix(q)
 %
 %% Input
 %
@@ -15,7 +15,7 @@ function mat = quat2mat(q)
 %
 %% See also
 %
-% mat2quat, Euler2quat, axis2quat, hr2quat
+% mat2quat, Euler, axis2quat, hr2quat
 
 q = q';
 q = reshape(q,[1 1 numel(q)]);

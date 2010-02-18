@@ -34,7 +34,7 @@ m = Miller(zvector,cs)
 
 plot(Miller(2,1,-3,1,cs))   % plot Miller indece
 
-%% Plotting Miller indece
+%%
 %
 % By providing the options *all* and *labeled* all symmetrically equivalent
 % crystal directions are plotted together with there correct Miller indice.
@@ -44,7 +44,7 @@ plot(Miller(2,1,-3,1,cs),'all','labeled')   % plot Miller indece
 %% Symmetrically Equivalent Crystal Directions
 %
 % A simple way to compute all symmetrically equivalent
-% directions to a given crystal direction is proveded by the command
+% directions to a given crystal direction is provided by the command
 % <Miller_symmetrise.html symmetrise>
 
 m = Miller(1,1,-2,0,cs)
@@ -57,7 +57,7 @@ symmetrise(m)
 symmetrise(m,'antipodal')
 
 %%
-% The command <Miller_eq.html eq> can also be used to check whether
+% The command <eq.html eq or ==> can be used to check whether
 % two crystal directions are symmetrically equivalent. Compare
 
 Miller(1,1,-2,0,cs) == Miller(-1,-1,2,0,cs)
@@ -74,13 +74,13 @@ eq(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'antipodal')
 % m2. This angle in radiand is calculated by the funtion <Miller_angle.html
 % angle> 
 
-angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs))/degree
+angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs)) / degree
 
 %% 
 % As allways the keyword <AxialDirectional.html antipodal> adds antipodal symmetry to this
 % computation
 
-angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'antipodal')/degree
+angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'antipodal') / degree
 
 %% Conversations
 %

@@ -21,11 +21,11 @@ v = vector3d(1,1,0);
 % This gives a single vector with coordinates (1,1,0) with respect to the
 % x, y , z coordinate system. A second way to define a specimen directions
 % is by its spherical coordinates, i.e. by its polar angle and its azimuth
-% angle. This is done by the command <sph2vec.html sph2vec> 
+% angle. This is done by the option *polar*. 
 
-polar_angle = 0*degree;
+polar_angle = 60*degree;
 azimuth_angle = 45*degree;
-v = sph2vec(polar_angle,azimuth_angle); 
+v = vector3d('polar',polar_angle,azimuth_angle); 
 
 %%
 % Finally one can also define a vector as a linear combination of the
@@ -64,13 +64,13 @@ w = w + v;
 % Beside the standard linear algebra operations there are also the
 % following functions available in MTEX.
 %
-%  [[vector3d_angle.html,angle(v1,v2);]] % angle between two specimen  directions
-%  [[vector3d_dot.html,dot(v1,v2);]]   % inner product
-%  [[vector3d_cross.html,cross(v1,v2);]] % cross product
-%  [[vector3d_norm.html,norm(v);]]      % length of the specimen directions
-%  [[vector3d_sum.html,sum(v);]]       % sum over all specimen directions in v
-%  [[vector3d_mean.html,mean(v);]]      % mean over all specimen directions in v  
-%  [[vector3d_vec2sph.html,vec2sph(v);]]   % conversion to spherical coordinates
+%  [[vector3d_angle.html,angle(v1,v2)]] % angle between two specimen  directions
+%  [[vector3d_dot.html,dot(v1,v2)]]   % inner product
+%  [[vector3d_cross.html,cross(v1,v2)]] % cross product
+%  [[vector3d_norm.html,norm(v)]]      % length of the specimen directions
+%  [[vector3d_sum.html,sum(v)]]       % sum over all specimen directions in v
+%  [[vector3d_mean.html,mean(v)]]      % mean over all specimen directions in v  
+%  [[vector3d_polar.html,polar(v)]]   % conversion to spherical coordinates
 %
 % A simple example for apply the norm function is to normalize a set of
 % specimen directions

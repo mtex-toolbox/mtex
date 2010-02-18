@@ -45,7 +45,7 @@ w = q * v;
 
 % Basic Functions:
 angle(q2); axis(q2);Euler(q2);
-quat2rodrigues(q2); plot(q2,'FontSize',20)
+Rodrigues(q2); plot(q2,'FontSize',20)
 %savefigure('pic/quaternion.pdf')
 
 %% The class symmetry

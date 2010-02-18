@@ -13,35 +13,30 @@
 %
 %% Defining a Crystal Orientation
 %
-% There are several ways to specify crystal orientations. A well known
-% possibility are the so called *Euler angles*. Here two conventions are
-% commonly used:
-%
-%%
-%
-% In general a each crystal orientation is represented by a class of 
-% crystallographically equivalent rotations. Let us specify certain
-% specimen and crystal symmetries
-
-cs = symmetry('-3m');
-ss = symmetry('triclinic');
-% *Crystal and Specimen Symmetry
+% In order to define a crystal orientation one has to define crystal and
+% specimen symmetry first.
 
 cs = symmetry('cubic');
 ss = symmetry('orthorhombic');
 
 %%
+%
+% Now a crystal orientation is defined in the same way as a rotation. A
+% well known possibility are the so called *Euler angles*. Here two
+% conventions are commonly used:
+%
 % *The Bunge Euler Angle Convention*
+%
 % Here an arbitrary rotation is determined by three consecutive rotations,
 % the first about the z-axis, the second about the y-axis, and the third
 % again about the z-axis. Hence, one needs three angles two define an
-% orientation by Euler angles. The command the defines a orientation by
-% three Euler angles is <euler2quat.html euler2quat>
+% orientation by Euler angles. 
 
-o = orientation('Euler',30*degree,50*degree,10*degree,'Bunge',cs,ss)
+o = orientation('Euler',30*degree,50*degree,10*degree,cs,ss)
 
 %%
 % *The Matthies Euler Angle Convention*
+%
 % In contrast to the Bunge conventionen here the three rotations are taken
 % about the z-axis, the y-axis, and the z-axis.
 
@@ -49,31 +44,34 @@ o = orientation('Euler',30*degree,50*degree,10*degree,'ZYZ',cs,ss)
 
 %%
 % *The axis angle parametrisation*
+%
 % Another posibility to specify an rotation is the give its rotational axis
-% and its rotational angle. This can be done using the command
-% <axis2quat.html axis2quat>.
+% and its rotational angle.
 
 o = orientation('axis',xvector,'angle',30*degree,cs,ss)
 
 %%
 % *Miller indice*
-% The is also a Miller indice convention for defining crystal orientations.
-% The corresponding MTEX command is <Miller2quat.html Miller2quat>
+%
+% There is also a Miller indice convention for defining crystal orientations.
 
 o = orientation('Miller',[1 0 0],[0 1 1],cs,ss)
 
 %%
 % *Four vectors defining a rotation*
-% Given four vectors a,b,u,v there is a unique rotations q such that q a =
-% u and q b = v. This rotations can be computed using the command 
-% <vec42quat.html vec42quat>
+%
+% Given four vectors u1, v1, u2, v2 there is a unique rotations q such that 
+% q u1 = v1 and q u2 = v2. 
 
-o = orientation(vec42quat(xvector,yvector,yvector,zvector),cs,ss)
+o = orientation('map',xvector,yvector,zvector,zvector,cs,ss)
 
 %%
-% A last method to define a rotation is [[hr2quat.html,hr2quat]].
+% *Defining an orientation by a 3 times 3 matrix*
 
-%% Predifined Orientations
+o = orientation('matrix',eye(3),cs,ss)
+
+%%
+% *Predifined Orientations*
 % 
 % In the MTEX there is a list of predefined orientations:
 %
@@ -82,6 +80,9 @@ o = orientation(vec42quat(xvector,yvector,yvector,zvector),cs,ss)
 % * [[brassOrientation.html,brassOrientation]]
 %
 %
+
+o = orientation('goss',cs,ss)
+
 %% Rotating Crystal Directions onto Specimen Directions
 %
 % Let 
@@ -99,17 +100,23 @@ o = orientation('Euler',90*degree,90*degree,0*degree,cs,ss)
 
 r = o * h
 
+%%
+% Conversely the crystal direction that is mapped onto a certain specimen
+% direction can be computed via the <orientation_mldivide.html backslash operator>
+
+o \ r
+
 %% Concatenating Rotations
 %
 % Let 
 
 o = orientation('Euler',90*degree,0,0,cs,ss);
-rot = euler2quat(0,90*degree,0);
+rot = rotation('Euler',0,60*degree,0);
 
 %%
-% be a crystal orientation and a rotation of the specimen coordinate system. Then
-% the orientation of the crystal with respect to the rotated specimen
-% coordinate system calculates by
+% be a crystal orientation and a rotation of the specimen coordinate
+% system. Then the orientation of the crystal with respect to the rotated
+% specimen coordinate system calculates by
 
 o1 = rot * o
 
@@ -125,7 +132,7 @@ symmetrise(o)
 %%
 % or by using multiplication
 
-%ss * o * cs
+ss * o * cs
 
 %% Caclulating Missorientations
 %
@@ -140,15 +147,15 @@ angle(o,o1) / degree
 % This missorientation angle is in general smaller then the missorientation
 % without crystal symmetry which can be computed via
 
-angle(quaternion(o),quaternion(o1)) /degree
+angle(rotation(o),rotation(o1)) /degree
 
 %% Calculating with Orientations and Rotations
 %
 % Beside the standard linear algebra operations there are also the
 % following functions available in MTEX. Then rotational angle and the axis
 % of rotation can be computed via then commands
-% <quaternion_angle.html angle(q)> and
-% <quaternion_axis.html axis(q)> 
+% <quaternion_angle.html angle(o)> and
+% <quaternion_axis.html axis(o)> 
 
 angle(o1)/degree
 
@@ -164,12 +171,16 @@ inverse(o1)
 % There are methods to transform quaternion in almost any other
 % parameterization of rotations as they are:
 %
-% * [[quaternion_Euler.html,Euler(q)]]   in Euler angle
-% * [[quaternion_quat2rodrigues.html,quat2rodrigues(q)]] % in Rodrigues parameter
+% * [[quaternion_Euler.html,Euler(o)]]   in Euler angle
+% * [[quaternion_Rodrigues.html,Rodrigues(o)]] % in Rodrigues parameter
 %
+
+[phi1,Phi,phi2] = Euler(o)
+
+
 %% Plotting Orientations
 % 
-% The [[quaternion_plot.html,plot]] function allows you to visualize an 
+% The [[orientation_plot.html,plot]] function allows you to visualize an 
 % quaternion by plotting how the standard basis x,y,z transforms under the
 % rotation.
 

@@ -76,7 +76,7 @@ set(gca,'tag','ebsd_raster');
 
 switch projection
   case 'rodrigues'
-    v = quat2rodrigues(o);
+    v = Rodrigues(o);
     v = v(abs(v) < 1e5);
     [x,y,z] = double(v);
   case 'axisangle'

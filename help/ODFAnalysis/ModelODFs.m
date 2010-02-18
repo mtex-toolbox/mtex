@@ -29,7 +29,7 @@ odf = uniformODF(cs,ss)
 %
 % In order to define a unimodal ODF one needs 
 %
-% * a preferred orientation *g0*
+% * a preferred orientation *mod1*
 % * a kernel function *psi* defining the shape
 % * the crystal and specimen symmetry
 
@@ -127,10 +127,10 @@ cs = symmetry('cubic');
 ss = symmetry('orthorhombic');
 
 psi = kernel('von Mises Fisher','HALFWIDTH',10*degree);
-g0 = Miller2quat(Miller(1,2,2,cs),Miller(2,2,1,cs));
+mod1 = orientation('Miller',[1,2,2],[2,2,1],cs,ss);
 
 odf =  0.73 * uniformODF(cs,ss,'comment','the Santafee-sample ODF') ...
-  + 0.27 * unimodalODF(g0,cs,ss,psi)
+  + 0.27 * unimodalODF(mod1,cs,ss,psi)
 
 plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal',...
   'position',[100   100   600   170])

@@ -18,7 +18,7 @@ function varargout = Euler(quat,varargin)
 %  ABG, ZYZ   - Matthies (alpha,beta,gamma) convention (default)
 %  BUNGE, ZXZ - Bunge (phi, Phi, phi2) convention
 %% See also
-% quaternion/quat2rodrigues
+% quaternion/Rodrigues
 
 if check_option(varargin,{'nfft','ZYZ','ABG'})
   alpha = atan2(quat.c .* quat.d - quat.a .* quat.b,...
