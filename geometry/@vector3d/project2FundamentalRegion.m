@@ -13,8 +13,7 @@ function [v,swap,rot] = project2FundamentalRegion(v,sym,varargin)
 %  v  - @vector3d
 %  dist - distance
 
-%q = quaternion_special(sym);
-[q,rho_rot] = quaternion_special(sym);
+[q,rho_rot] = rotation_special(sym);
 
 if ~isempty(strmatch(Laue(sym),{'-3','-3m'})) && ...
     vector3d(Miller(1,0,0,sym)) == -yvector
@@ -24,7 +23,7 @@ else
 end
 
 % symmetrise
-sv = q*v;
+sv = q * v;
 [theta,rho] = vec2sph(sv);
 
 % if possible swap to upper hemisphere

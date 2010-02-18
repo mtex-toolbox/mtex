@@ -32,8 +32,8 @@ else
   if ~isempty(SO3G.center),q = inverse(SO3G.center) * q; end
     
   % correct for crystal and specimen symmetry
-  qcs = quaternion_special(SO3G.CS);
-  qss = quaternion_special(SO3G.SS);
+  qcs = quaternion(rotation_special(SO3G.CS));
+  qss = quaternion(rotation_special(SO3G.SS));
   
   % extract SO3Grid
   [ybeta,yalpha,ialphabeta,palpha] = getdata(SO3G.alphabeta);

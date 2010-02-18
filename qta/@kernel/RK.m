@@ -24,6 +24,7 @@ function f = RK(kk,g,h,r,c,CS,SS,varargin)
 % * f_j = sum c_i RK(g_i,h,r_j)
 % * RK((h,r);g) = Sum A_l P_l(g*h . r)
 
+g = quaternion(g);
 ng = numel(g);
 
 if length(h)>1 || isa(h,'S2Grid')   % inverse pole figure

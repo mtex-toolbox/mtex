@@ -44,12 +44,12 @@ else
     qss = idquaternion;
     palpha = 2*pi;
   else
-    qss = quaternion_special(SO3G.SS);
+    qss = quaternion(rotation_special(SO3G.SS));
     palpha = max(palpha,pi);
   end
   
   % for finding the minimial beta angle
-  qcs = quaternion_special(SO3G.CS);
+  qcs = quaternion(rotation_special(SO3G.CS));
   
   % for all symmetries 
   for is = 1:length(qss)

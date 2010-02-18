@@ -51,7 +51,9 @@ ss = get_option(varargin,'ss',symmetry('-1'));
 if ~iscell(cs), cs = {cs}; end
 
 % load data
-[d,varargin,header,c] = load_generic(char(fname),varargin{:});
+[d,options,header,c] = load_generic(char(fname),varargin{:});
+
+varargin = options;
 
 % no data found
 if size(d,1) < 1 || size(d,2) < 3

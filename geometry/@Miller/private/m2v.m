@@ -7,7 +7,7 @@ function v = m2v(h,k,l,cs)
 %% Output
 %  v - @vector3d
 
-a = getaxes(cs);
+a = get(cs,'axis');
 V  = dot(a(1),cross(a(2),a(3)));
 aa = cross(a(2),a(3)) ./ V;
 bb = cross(a(3),a(1)) ./ V;

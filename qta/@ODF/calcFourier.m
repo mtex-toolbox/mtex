@@ -63,16 +63,18 @@ for i = 1:length(odf)
     else
       % **** radially symmetric portion ****
       % set parameter
-      c = odf(i).c / length(odf(i).SS) / length(odf(i).CS);
+      c = odf(i).c / numel(odf(i).SS) / numel(odf(i).CS);
       
+      %% TODO
       % symmetrization for a few center
-      if 10*numel(quaternion(odf(i).center))*length(odf(i).SS)*length(odf(i).CS)...
+      if 10*numel(odf(i).center)*numel(odf(i).SS)*numel(odf(i).CS)...
           < max(L^3,100)
-        g = odf(i).SS*reshape(quaternion(odf(i).center),1,[]); % SS x S3G
+        g = odf(i).SS * reshape(quaternion(odf(i).center),1,[]); % SS x S3G
         g = reshape(g.',[],1);                                 % S3G x SS
         g = reshape(g*odf(i).CS,1,[]);                         % S3G x SS x CS        
+        % g = quaternion(symmetrise(odf(i).center));
         
-        c = repmat(c,1,length(odf(i).CS)*length(odf(i).SS));         
+        c = repmat(c,1,numel(odf(i).CS)*numel(odf(i).SS));         
       else
         g = quaternion(odf(i).center);        
       end      
@@ -103,22 +105,22 @@ for i = 1:length(odf)
       end
     
       % symmetrization for a many center      
-      if 10*numel(quaternion(odf(i).center))*length(odf(i).SS)*length(odf(i).CS)...
+      if 10*numel(odf(i).center)*numel(odf(i).SS)*numel(odf(i).CS)...
           >= L^3        
       
-        if length(quaternion(odf(i).CS)) ~= 1
+        if numel(odf(i).CS) ~= 1
           % symmetrize crystal symmetry
-          abg = Euler(quaternion(odf(i).CS),'nfft');
+          abg = Euler(odf(i).CS,'nfft');
           A(1:end) = 1;
-          c = ones(1,length(odf(i).CS));
+          c = ones(1,numel(odf(i).CS));
           odf(i).c_hat = multiply(odf(i).c_hat,gcA2fourier(abg,c,A),length(A)-1);
         end
       
-        if length(quaternion(odf(i).SS)) ~= 1
+        if numel(odf(i).SS) ~= 1
           % symmetrize specimen symmetry
-          abg = Euler(quaternion(odf(i).SS),'nfft');
+          abg = Euler(odf(i).SS,'nfft');
           A(1:end) = 1;
-          c = ones(1,length(odf(i).SS));
+          c = ones(1,numel(odf(i).SS));
           odf(i).c_hat = multiply(gcA2fourier(abg,c,A),odf(i).c_hat,length(A)-1);
         end
       end

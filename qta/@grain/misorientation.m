@@ -49,7 +49,8 @@ if nargin > 1 && isa(varargin{1},'EBSD') % misorientation to ebsd data
     
     [ids2 ida idb] = unique(ids);
     [a ia ib] = intersect([grs.id],ids2);
-        
+    
+    %% TODO
     o1 = quaternion(symmetrise(o1));
     o2 = repmat(o2(ia(idb)),size(o1,1),1);
 
@@ -81,6 +82,7 @@ else % misorientation to neighbour grains
       asr = grainsize(gr);  tot = sum(asr); 
     end
 
+    %% TODO
     mean = get(gr,'orientation');    
     qsym = quaternion(symmetrise(mean));
    

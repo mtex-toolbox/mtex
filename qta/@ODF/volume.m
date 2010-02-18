@@ -10,7 +10,7 @@ function v = volume(odf,center,radius,varargin)
 %
 %% Input
 %  odf    - @ODF
-%  center - @quaternion
+%  center - @orientation
 %  radius - double
 %
 %% Options

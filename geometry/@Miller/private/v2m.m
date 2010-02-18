@@ -11,7 +11,7 @@ function [h,k,l] = v2m(m,varargin)
 %  h,k,l - integer
 
 %% set up matrix
-a = getaxes(m.CS);
+a = get(m.CS,'axis');
 V  = dot(a(1),cross(a(2),a(3)));
 aa = squeeze(double(cross(a(2),a(3)) ./ V));
 bb = squeeze(double(cross(a(3),a(1)) ./ V));

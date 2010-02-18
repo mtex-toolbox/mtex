@@ -1,17 +1,6 @@
 function d = dot(o1,o2)
 % compute minimum dot(o1,o2) modulo symmetry
 
-%% get symmetries
-if isa(o1,'orientation')
-  domega = rotangle_max_z(o1.CS);
-  qcs = quaternion_special(o1.CS);
-  qss = quaternion(o1.SS);
-else
-  domega = rotangle_max_z(o2.CS);
-  qcs = quaternion_special(o2.CS);
-  qss = quaternion(o2.SS);
-end
-omega = 0:domega:2*pi-domega;
 
 %% special cases
 
@@ -23,6 +12,18 @@ elseif numel(o2) == 1
   return
 end
 
+
+%% get symmetries
+if isa(o1,'orientation')
+  domega = rotangle_max_z(o1.CS);
+  qcs = quaternion(rotation_special(o1.CS));
+  qss = quaternion(o1.SS);
+else
+  domega = rotangle_max_z(o2.CS);
+  qcs = quaternion(rotation_special(o2.CS));
+  qss = quaternion(o2.SS);
+end
+omega = 0:domega:2*pi-domega;
 
 
 %% no specimen symmetry

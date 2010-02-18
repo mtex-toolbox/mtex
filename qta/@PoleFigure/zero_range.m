@@ -20,6 +20,7 @@ function NS3G = zero_range(pf,S3G,varargin)
 
 
 %% calculate symmetrically equivalent orientations
+%% TODO
 g = quaternion(S3G);
 cs = pf(1).CS; ss = pf(1).SS;
 g = ss*reshape(g,1,[]);               % SS x S3G

@@ -14,7 +14,7 @@ function hist(odf,varargin)
 resolution = get_option(varargin,'resolution',5*degree);
 [CS,SS] = getSym(odf);
 SO3G = SO3Grid(resolution,CS,SS);
-d = eval(odf,quaternion(SO3G),'loosely');
+d = eval(odf,SO3G,'loosely'); %#ok<GTARG>
 
 % make log histogram 
 m = max(d(:));

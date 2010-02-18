@@ -21,4 +21,4 @@ end
 
 
 % compute crystal directions
-h = inverse(quaternion(S3G)) .* r;
+h = inverse(S3G) .* r;

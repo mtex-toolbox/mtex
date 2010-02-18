@@ -6,7 +6,7 @@ function [q val]= max(odf,varargin)
 %  n   - number of maximas
 %
 %% Output
-%  q - @quaternion
+%  q - @orientation
 %
 %% Options
 %  num         - number of maximas

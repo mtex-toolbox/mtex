@@ -1,4 +1,4 @@
 function rot = rotation(S)
 % 
 
-rot = rotation(S.quaternion);
+rot = rotation(S.rotation);

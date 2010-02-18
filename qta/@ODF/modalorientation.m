@@ -5,7 +5,7 @@ function g0 = modalorientation(odf,varargin)
 %  odf - @ODF 
 %
 %% Output
-%  g0 - @quaternion
+%  g0 - @orientation
 %
 %% See also
 %
@@ -56,7 +56,6 @@ while res >= resmax || (0.995 * max(f(:)) > f0)
     f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
   end
   
-  %g0 = quaternion(S3G,find(f(:)==max(f(:))));
   epsilon = sort(f(:));
   epsilon = epsilon(max(1,length(epsilon)-100));
   g0 = S3G(f>=epsilon);  

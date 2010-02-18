@@ -54,7 +54,7 @@ if nargin == 0
   s.axis =  [xvector,yvector,zvector];
   s.mineral = '';
   %superiorto('quaternion','SO3Grid','orientation');
-  s = class(s,'symmetry',idquaternion);
+  s = class(s,'symmetry',rotation(idquaternion));
   return
 end
 
@@ -100,4 +100,4 @@ s.axis = calcAxis(sym.System,axis,angle,varargin{:});
 s.mineral = get_option(varargin,'mineral','');
 
 %superiorto('quaternion','SO3Grid','orientation');
-s = class(s,'symmetry',calcQuat(s.laue,s.axis));
+s = class(s,'symmetry',rotation(calcQuat(s.laue,s.axis)));

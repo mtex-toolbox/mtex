@@ -29,12 +29,12 @@ for i = 1:length(odf)
   
   elseif check_option(varargin,'FOURIER') || check_option(odf(i),'FOURIER') 
     
-    f = f + reshape(eval_fourier(odf(i),quaternion(g),varargin{:}),...
+    f = f + reshape(eval_fourier(odf(i),g,varargin{:}),...
       size(f));
     
   elseif check_option(odf(i),'FIBRE') % fibre symmetric portion
      
-    f = f + reshape(RK(odf(i).psi,reshape(quaternion(g),[],1),...
+    f = f + reshape(RK(odf(i).psi,g(:),...
       vector3d(odf(i).center{1}),odf(i).center{2},...
       odf(i).c,odf(i).CS,odf(i).SS,1),size(f));
       
@@ -59,8 +59,7 @@ for i = 1:length(odf)
     
   elseif check_option(varargin,'EVEN')
     
-    M = GK(odf(i).psi,reshape(quaternion(g),[],1),...
-      quaternion(odf(i).center),odf(i).CS,odf(i).SS);
+    M = GK(odf(i).psi,g(:),odf(i).center,odf(i).CS,odf(i).SS);
     f = f + M * odf(i).c(:);
        
   else % radially symmetric portion

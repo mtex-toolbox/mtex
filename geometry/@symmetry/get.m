@@ -17,6 +17,6 @@ switch vname
     end
         
   otherwise
-    error('Unknown field in class ODF!')
+    error('Unknown field in class symmetry!')
 end
 

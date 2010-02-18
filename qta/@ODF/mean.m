@@ -1,12 +1,11 @@
 function [m kappa v] = mean(odf,varargin)
-% returns mean, kappas and sorted q of crystal symmetry euqal quaternions 
+% returns mean, kappas
 %
 %% Input
-%  q         - list of @quaternion
-%  cs        - crystal @symmetry
+%  odf       - @ODF
 %
 %% Output
-%  mean      - one equivalent mean orientation @quaternion
+%  mean      - @orientation
 %  kappa     - parameters of bingham distribution
 %  v         - eigenvectors
 %
