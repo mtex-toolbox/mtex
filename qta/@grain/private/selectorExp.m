@@ -1,6 +1,8 @@
-function selector = selectorExp(grains,hFig)
+function selector = selectorExp(hFig)
 
 selector = findall(0,'Tag','MTEX.selectByExpression');
+
+layers = getappdata(hFig,'layers');
 
 w = 350;
 h = 450;
@@ -45,11 +47,11 @@ if isempty(selector)
   
  
   uicontrol(fig,'Style','listbox',...
-    'String',evalProperties(grains),...
+    'String',evalProperties(layers),...
     'BackgroundColor',[1 1 1],...
     'Tag','layer',...
     'Position',[b h-b-130 w/2-b-3 65],...
-    'Callback',{@updateselectfrom,length(grains)});  
+    'Callback',{@updateselectfrom,length(layers)});  
 
   uicontrol(fig,'Style','listbox',...
     'String',functionlist,...
@@ -59,7 +61,7 @@ if isempty(selector)
 	uicontrol(fig,'Style','text',...
     'HorizontalAlignment','left',...
     'Tag','selfrom',...
-    'String', ['SELECT grains FROM ''' num2str(length(grains)) '. layer'' WHICH fullfill'],...
+    'String', ['SELECT grains FROM ''' num2str(length(layers)) '. layer'' WHICH fullfill'],...
     'Position',[b h-b-txth-225 w-2*b txth]);
     
 	uicontrol(fig,'Style','edit', ...
@@ -193,11 +195,11 @@ catch
   b = 0;
 end
 
-function props = evalProperties(grains)
+function props = evalProperties(layers)
 
-props = cell(1,length(grains));
-for k= 1:length(grains)
-  props{k} = [num2str(length(grains)-k+1) '. layer'];
+props = cell(1,length(layers));
+for k= 1:length(layers)
+  props{k} = [num2str(length(layers)-k+1) '. layer'];
 end
 
 function updateselectfrom(e,v,k)

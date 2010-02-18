@@ -2,20 +2,25 @@ function selector( h, grains, p,lya )
 %% Grain Selector
 
 % convert to cells for layers
-grains = {grains};
-p = {p};
-c = {'r'};
-lya = {lya};
-oldgrains = getappdata(h,'grains');
 
-if ~isempty(oldgrains) 
-  % select 
-  oldpolygons = getappdata(h,'polygons');
-  lya = [lya getappdata(h,'layer')];
-  c =  [c getappdata(h,'selectioncolor')];
-  grains = [grains oldgrains ]; %remove double entries or make layers?
-  p = [ p oldpolygons];
+
+
+newlayer.grains = grains;
+newlayer.polygon = p;
+newlayer.selected = false(size(grains));
+newlayer.selectioncolor = 'r';
+newlayer.handles = lya;
+
+
+
+layers = getappdata(h,'layers');
+if isempty(layers)
+  layers = newlayer;
+else  
+  layers = [layers newlayer];
 end
+setappdata(h,'layers',layers);
+setappdata(h,'currentlayer',length(layers));
 
 %the menu
 addmenu2(h);
@@ -29,10 +34,10 @@ th=findobj(allchild(h),'type','uitoolbar');
 
 htk = uitoggletool(th,'Tag','MTEX.layervis','CData',selectorIcon('layer'),'TooltipString','Layer Visebility','OnCallback',{@grainselector,'show_layer'},'OffCallback',{@grainselector,'hide_layer'});
 
-  
-  fd = cell(1,length(grains));
-  for k= 1:length(grains)
-    fd{k} = [num2str(length(grains)-k+1) '. layer'];
+  n=length({layers.grains});
+  fc = cell(1,n);
+  for k=1:n
+    fd{k} = [num2str(n-k+1) '. layer'];
   end
   
   jcb1 =javax.swing.JComboBox(fd);
@@ -103,16 +108,6 @@ set([hti hts],'State','off');
 updateSelmode(mod(end),[],'single');
 updateSelP(mod2(end),[],'centroids');
 
-k = cell(size(grains));
-setappdata(h,'selected',k);
-setappdata(h,'selectioncolor',c);
-
-setappdata(h,'grains',grains);
-setappdata(h,'polygons',p);
-
-setappdata(h,'currentlayer',length(grains));
-
-setappdata(h,'layer',lya)
 
 set(h,'CloseRequestFcn',@closeit);
 
@@ -152,33 +147,32 @@ if any(findall(allchild(h),'Label','Grains')), return, end;
 
 function layerSelChanged(e,h)
 
-grains = getappdata(gcf,'grains');
-setappdata(gcf,'currentlayer',length(grains)-get(e,'SelectedIndex'))
-
-[i i i ly] = getcurrentlayer;
-hs = getappdata(gcf,'layer');
-state = get(hs{ly},'Visible');
+layer = getcurrentlayer;
+state = get(layer.handles,'Visible');
 if iscell(state), state = state{1};end
-setVisStatus(state);    
+
+setVisStatus(state);
+setappdata(gcf,'currentlayer', get(e,'ItemCount')-get(e,'SelectedIndex'))
+
 
 function setVisStatus(state)
 
 f = findall(gcf,'Tag','MTEX.layervis');
 
-[i i i ly] = getcurrentlayer;
-hs = getappdata(gcf,'layer');
-set(hs{ly},'Visible',state);
+layer = getcurrentlayer;
+% hs = getappdata(gcf,'layer');
+set(layer.handles,'Visible',state);
 set(f,'State',state);  
   
 %--------------------------------------------------------------------------
 function changenSelectionColor(empt,eventdata)
 
 c = uisetcolor;
-if length(c)>1
-  co = getappdata(gcf,'selectioncolor');
-  ly = getappdata(gcf,'currentlayer');
-  co{ly} = c; 
-  setappdata(gcf,'selectioncolor',co);
+if length(c)>1  
+  layers = getappdata(gcf,'layers');
+  l = getappdata(gcf,'currentlayer');
+  layers(l).selectioncolor = c; 
+  setappdata(gcf,'layers',layers);
   updateSelectionPlot;
 end
 
@@ -201,9 +195,9 @@ setappdata(gcf,'pselmode', mode);
 function selectByExpression(hObject,eventdata)
 
 hFig = gcf;
-grainso = getappdata(hFig,'grains');
+% layers = getappdata(hFig,'layers');
 
-h = selectorExp(grainso,hFig);
+h = selectorExp(hFig);
 setappdata(hFig,'eva',@evalByExpression);
 setappdata(hFig,'evafig',h);
 
@@ -211,31 +205,36 @@ setappdata(hFig,'evafig',h);
 
 function evalByExpression(hFig, evalstatement, ly,method)
 
-grains = getappdata(hFig,'grains');
+layers = getappdata(hFig,'layers');
+l = getappdata(hFig,'currentlayer');
 ebsd = getappdata(hFig,'ebsd');
-ks = getappdata(hFig,'selected');
+% ks = getappdata(hFig,'selected');
 
-grains = grains{ly}; %selected layer
+grains = layers(l).grains;
+% grains = grains{ly}; %selected layer
 
-k =  eval( evalstatement );
+ind =  eval( evalstatement );
 
-if ~islogical(k), error, end;
-k = find(k);
+if ~islogical(ind), error, end;
 
 switch method
+  case 1 
+    layers(l).selected      = false(size( layers(l).selected ));
+    layers(l).selected(ind) = true; 
   case 2
-    k = union(ks{ly},k);
+    layers(l).selected(ind) = true; 
   case 3
-    k = ks{ly}( ~ismember(ks{ly},k));
+    layers(l).selected(ind) = false; 
   case 4
-    k = intersect(ks{ly},k);
+    layers(l).selected = layers(l).selected & ind; 
 end
-ks{ly} = k;
-setappdata(hFig,'selected',ks);
+
+setappdata(hFig,'layers',layers);
 
 figure(hFig);
 updateSelectionPlot;
 updateMenus;
+
 
 function closeit(e,h)
 
@@ -245,21 +244,39 @@ delete(gcbf);
 
 
 
-function [grains p ks ly tks] = getcurrentlayer
 
-grains = getappdata(gcf,'grains');
-p = getappdata(gcf,'polygons');
-tks = getappdata(gcf,'selected');
-ly = getappdata(gcf,'currentlayer');
-ks = tks{ly};
-grains = grains{ly};
-p = p{ly};
+function layer = getcurrentlayer
+
+layers = getappdata(gcf,'layers');
+l = getappdata(gcf,'currentlayer');
+
+layer = layers(l);
+
+% function [grains p ks ly tks] = getcurrentlayer
+% 
+% 
+% layers = getappdata(gcf,'layers');
+% l = getappdata(gcf,'currentlayer');
+% 
+% layers(l)
+
+
+% grains = getappdata(gcf,'grains');
+% p = getappdata(gcf,'polygons');
+% tks = getappdata(gcf,'selected');
+% ly = getappdata(gcf,'currentlayer');
+% ks = tks{ly};
+% grains = grains{ly};
+% p = p{ly};
 
 %--------------------------------------------------------------------------
 function [h sel] = spatialSelection(src,eventdata,modus) %#ok<INUSL>
 
 
-[grains p ks ly tks] = getcurrentlayer;
+layer = getcurrentlayer;
+grains = layer.grains;
+p = layer.polygon;
+
 
 cp = get(gca,'CurrentPoint');
 xp = cp(1,1);
@@ -325,9 +342,9 @@ for k=length(ind):-1:1
         identdlg( grains(current) );
         
      
-        h = patch(X,Y,c{ly}); pause(0.1);
+        h = patch(X,Y,layer.selectioncolor); pause(0.1);
         delete(h); pause(0.1);
-        h = patch(X,Y,c{ly}); pause(0.1);
+        h = patch(X,Y,layer.selectioncolor); pause(0.1);
         delete(h); pause(0.1);
         waitfor(h);
         
@@ -343,38 +360,36 @@ end
 
 function treatSelmode(current,alt)
 
-[grains p ks ly tks] = getcurrentlayer;
-mode = getappdata(gcf,'selmode');
 
+layers = getappdata(gcf,'layers');
+t = getappdata(gcf,'currentlayer');
+mode = getappdata(gcf,'selmode');
+% 
 if nargin > 1 
   mode = alt;
 end
 switch mode
   case 'single'
-    tks{ly} = current;
-    setappdata(gcf,'selected',tks);
+    layers(t).selected = false(size(layers(t).selected));
+    layers(t).selected(current) = true;
   case 'add'
-    ind = ~ismember(current,ks);
-    if any(ind)
-      tks{ly} = [ks(:); current(ind)];
-      setappdata(gcf,'selected',tks);
-    end
-  case 'rem'    
-    ind = ~ismember(ks,current);
-    if any(ind)
-      tks{ly} = ks(ind);
-      setappdata(gcf,'selected',tks);            
-    end
+    layers(t).selected(current) = true;
+  case 'rem'
+    layers(t).selected(current) = false;
 end
 
+setappdata(gcf,'layers',layers)
 
 
 %--------------------------------------------------------------------------
 function unSelectAll(empt,eventdata)
 
-tks = getappdata(gcf,'selected');
-setappdata(gcf,'selected',cell(size(tks)));
+layers = getappdata(gcf,'layers');
 
+for k=1:length(layers)
+  layers(k).selected = false(size(layers(k).selected));
+end
+setappdata(gcf,'layers',layers);
 cleanupPolygonSelection;
 
 updateSelectionPlot;
@@ -383,10 +398,12 @@ updateMenus;
 %--------------------------------------------------------------------------
 function unSelectLayer(empt,eventdata)
 
-[grains p ks ly tks] = getcurrentlayer; 
+% [grains p ks ly tks] = getcurrentlayer; 
+layers = getappdata(gcf,'layers');
+l = getappdata(gcf,'currentlayer');
+layers(l).selected = false(size(layers(l).selected));
 
-tks{ly} = [];
-setappdata(gcf,'selected',tks);
+setappdata(gcf,'layers',layers);
 updateSelectionPlot;
 updateMenus;
 
@@ -394,10 +411,11 @@ updateMenus;
 %--------------------------------------------------------------------------
 function [h sel] = invertSelection(empt,eventdata)
 
-[grains p ks ly tks] = getcurrentlayer;
+layers = getappdata(gcf,'layers');
+l = getappdata(gcf,'currentlayer');
+layers(l).selected = ~layers(l).selected;
 
-tks{ly} = find(~ismember(1:length(grains),ks));
-setappdata(gcf,'selected',tks);
+setappdata(gcf,'layers',layers);
 
 updateSelectionPlot;
 updateMenus;
@@ -419,43 +437,39 @@ set(treat,'enable',state);
 %--------------------------------------------------------------------------
 function updateSelectionPlot(varargin)
 
-hFig = gcf ; %get_option(varargin,'Figure',gcf);
-delete(getappdata(hFig,'selection')); %clean up previous
-
-c = getappdata(hFig,'selectioncolor');
-
-tks = getappdata(hFig,'selected');
-p = getappdata(hFig,'polygons');
+layers = getappdata(gcf,'layers');
+delete(getappdata(gcf,'selection'));
 
 h = [];
-for k=1:length(tks)
-  ps = p{k}(tks{k}); %restrict to needed
+for k=1:length(layers)
+  p = layers(k).polygon(layers(k).selected);
   
-	if ~isempty(ps)
-    if ~numel(p),
-      setappdata(hFig,'selection',[]);
-      return, end; %nothing to do
-
-    xy = cell2mat(arrayfun(@(x) [x.xy ; NaN NaN],ps,'UniformOutput',false));
-    [X Y] = fixMTEXscreencoordinates( xy(:,1), xy(:,2) );
-
+  if ~isempty(p)
+    for l=1:length(p), p(l).xy = [p(l).xy; NaN NaN]; end
     
-    h(end+1) = line(X(:),Y(:),'color',c{k},'linewidth',2);
-
-    holes = ~cellfun('isempty',{ps.hxy});
+    xy = vertcat(p.xy);
+    [X Y] = fixMTEXscreencoordinates( xy(:,1), xy(:,2) );
+    
+    h(end+1) = line(X(:),Y(:),'color',layers(k).selectioncolor,'linewidth',2);
+  
+    holes = ~cellfun('isempty',{p.hxy});
     if any(holes)
-       xy = cell2mat(arrayfun( @(x) ...
-            cell2mat(cellfun(@(h) [h;  NaN NaN], x.hxy,'uniformoutput',false)') ,...
-            ps(holes),'uniformoutput',false));
-
+      p = horzcat(p(holes).hxy);
+      for ll=1:length(p)
+        p{ll} = [p{ll}; NaN NaN];
+      end
+      xy = vertcat(p{:});
+ 
       [X,Y] = fixMTEXscreencoordinates(xy(:,1),xy(:,2));
-      h(end+1) = line(X(:),Y(:),'color',c{k},'linewidth',1);
+      h(end+1) = line(X(:),Y(:),'color',layers(k).selectioncolor,'linewidth',1);
     end
   end
 end
 
+setappdata(gcf,'layers',layers);
+setappdata(gcf,'selection',h);
 
-setappdata(hFig,'selection',h);
+
 
 
 %--------------------------------------------------------------------------
@@ -563,8 +577,8 @@ function obj = choosePlotObject(varargin)
 
 obj = [];
 
-[grains p ks] = getcurrentlayer;
-grains1 = grains(ks);
+layer = getcurrentlayer;
+grains1 = layer.grains(layer.selected);
 
 props = [grains1.properties];
 propnames = fieldnames(props);
@@ -630,21 +644,20 @@ end
 function plotRodrigues(e,h,varargin)
  
 obj = choosePlotObject('ebsd');
- 
+
 if ~isempty(obj)
-  f = figure;  plot(obj,'rodrigues')
+  f = figure;  plot(obj,'rodrigues');
   set(f,'renderer','opengl');
 end
 
 %--------------------------------------------------------------------------
 function extracttolayer(src,h)
 
-[grains p ks ly] = getcurrentlayer;
-c = getappdata(gcf,'selectioncolor');
+layer = getcurrentlayer;
 
 ih = ishold;
 if ~ih, hold on; end
-  plotgrains( grains(ks), 'color', c{ly});
+  plotgrains( layer.grains, 'color', layer.selectioncolor);
 if ~ih, hold off; end
 
 
@@ -716,8 +729,8 @@ setappdata(gcf,'selector_ply_last',pys);
 if ~isempty(pys)
   [xy(:,1),xy(:,2)] = fixMTEXscreencoordinates(pys(:,1),pys(:,2));
 
-  grains = getcurrentlayer;
-  [grains ind] = inpolygon(grains,xy,getappdata(gcf,'pselmode'));
+  layer = getcurrentlayer;
+  [grains ind] = inpolygon(layer.grains,xy,getappdata(gcf,'pselmode'));
 
   treatSelmode(find(ind));
   

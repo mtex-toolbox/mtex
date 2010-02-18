@@ -30,6 +30,7 @@ varargin = set_default_option(varargin,...
 
 prop = lower(get_option(varargin,'property','orientation'));
 
+newMTEXplot;
 
 %% compute colorcoding
 if isa(prop,'double')
@@ -56,8 +57,9 @@ switch prop
         d = [d,ebsd.phase(:)]; %#ok<AGROW>
       end
     end
-    co = get(gca,'colororder');
-    colormap(co(1:length(ebsd),:));
+    colormap(hsv(max(d)+1));
+%     co = get(gca,'colororder');
+%     colormap(co(1:length(ebsd),:));
   case fields(ebsd(1).options)
     d = get(ebsd,prop);
   otherwise
@@ -66,13 +68,19 @@ end
 
 
 %% plot 
-newMTEXplot;
+
+x = get(ebsd,'x');
+y = get(ebsd,'y');
 
 try %if ~check_option(varargin,'raster')
-  plotxyexact(get(ebsd,'x'),get(ebsd,'y'),d,varargin{:});
+  plotxyexact(x,y,d,varargin{:});
 catch
-  plotxy(get(ebsd,'x'),get(ebsd,'y'),d,varargin{:});
+  plotxy(x,y,d,varargin{:});
 end
+
+%dummy patch
+[tx ty] = fixMTEXscreencoordinates(min(x), min(y),varargin{:});
+patch('Vertices',[tx ty],'Faces',1,'FaceVertexCData',get(gca,'color'));
 
 if strcmpi(prop,'orientation') %&& strcmpi(cc,'ipdf')
   [cs{1:length(ebsd)}] = get(ebsd,'CS');

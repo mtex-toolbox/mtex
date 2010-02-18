@@ -9,4 +9,9 @@ function p = polygon(grains)
 %  p.hxy   - struct of holes
 %
 
-p = [grains.polygon];
+% p = [grains.polygon];
+
+p = repmat(struct( grains(1).polygon),size(grains));
+for k=1:length(p)
+  p(k) = grains(k).polygon;
+end
