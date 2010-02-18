@@ -3,12 +3,14 @@ function v = vertcat(varargin)
 
 v = varargin{1};
 
+vx = cell(size(varargin)); vy = vx; vz = vy;
 for i = 1:numel(varargin)
-  vs(i).x = varargin{i}.x;
-  vs(i).y = varargin{i}.y;
-  vs(i).z = varargin{i}.z;
+  vv = varargin{i};
+  vx{i} = vv.x;
+  vy{i} = vv.y;
+  vz{i} = vv.z;
 end
 
-v.x = vertcat(vs.x);
-v.y = vertcat(vs.y);
-v.z = vertcat(vs.z);
+v.x = vertcat(vx{:});
+v.y = vertcat(vy{:});
+v.z = vertcat(vz{:});

@@ -3,16 +3,17 @@ function q = vertcat(varargin)
 
 q = varargin{1};
 
+qa = cell(size(varargin)); qb = qa; qc = qa; qd = qa;
 for i = 1:numel(varargin)
-  qs(i).a = varargin{i}.a;
-  qs(i).b = varargin{i}.b;
-  qs(i).c = varargin{i}.c;
-  qs(i).d = varargin{i}.d;
+  qs = varargin{i};
+  qa{i} = qs.a;
+  qb{i} = qs.b;
+  qc{i} = qs.c;
+  qd{i} = qs.d;
 end
 
-q.a = vertcat(qs.a);
-q.b = vertcat(qs.b);
-q.c = vertcat(qs.c);
-q.d = vertcat(qs.d);
-
+q.a = vertcat(qa{:});
+q.b = vertcat(qb{:});
+q.c = vertcat(qc{:});
+q.d = vertcat(qd{:});
 

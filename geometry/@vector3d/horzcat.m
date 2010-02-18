@@ -3,12 +3,14 @@ function v = horzcat(varargin)
 
 v = varargin{1};
 
+vx = cell(size(varargin)); vy = vx; vz = vy;
 for i = 1:numel(varargin)
-  vs(i).x = varargin{i}.x;
-  vs(i).y = varargin{i}.y;
-  vs(i).z = varargin{i}.z;
+  vv = varargin{i};
+  vx{i} = vv.x;
+  vy{i} = vv.y;
+  vz{i} = vv.z;
 end
 
-v.x = horzcat(vs.x);
-v.y = horzcat(vs.y);
-v.z = horzcat(vs.z);
+v.x = horzcat(vx{:});
+v.y = horzcat(vy{:});
+v.z = horzcat(vz{:});
