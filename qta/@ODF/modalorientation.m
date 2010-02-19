@@ -19,8 +19,8 @@ S3G = rotation(SO3Grid(2*res,odf(1).CS,odf(1).SS));
 %S3G = SO3Grid(2*res,odf(1).CS,odf(1).SS);
 
 for i=1:length(odf)
-  if isa(odf.center,'quaternion')
-    S3G = [S3G(:); rotation(odf.center(:),odf(1).CS,odf(1).SS)];
+  if isa(odf(i).center,'quaternion')
+    S3G = [S3G(:); rotation(odf(i).center(:))];
   end
 end
 
