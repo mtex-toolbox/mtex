@@ -4,7 +4,7 @@ function [h bins] = hist(ebsd,varargin)
 %% Syntax
 %  hist(ebsd)
 %  hist(ebsd,q0)
-%  [n bins]= hist(ebsd,...)
+%  [n bins]= hist(ebsd,20)
 %
 %% Input
 %  ebsd     - @EBSD
@@ -15,39 +15,55 @@ function [h bins] = hist(ebsd,varargin)
 %  bins -  the bounds of each edge
 %
 %% Options
-%  Edges - define custom bins
+%  n/bins - define custom bins
 %  
 %% See also
 % grain/misorientation
 
+
 assert(sum(sampleSize(ebsd))>0,'No Data');
 
-if nargin > 1 && isa(varargin{1},'quaternion')
-  q0 = varargin{1};
+
+o0 = find_type(varargin,'quaternion');
+if ~isempty(o0)
+  o0 = quaternion(varargin{o0});
 else
-  q0 = idquaternion;
+  o0 = idquaternion;
 end
+
+
+for k=1:numel(ebsd)
   
-nl = length(ebsd);
-omega = cell(size(ebsd)); m_omega = 0;
+  omega{k} = angle( ebsd(k).orientations , o0 );
   
-for k=1:nl
-  [q,omega{k}] = getFundamentalRegion(ebsd(k).orientations,q0);
-  m_omega = max(m_omega,max(omega{k}));
 end
 
-bins = get_option(varargin,'Edges',0:m_omega/20:m_omega);
 
-his = zeros(nl,length(bins));
-for k=1:nl
-  his(k,:) = hist( omega{k},bins);
+bins = find_type(varargin,'double');
+if ~isempty(bins)
+  bins = varargin{bins};
+else
+  bins = 20;
 end
 
-if nargout > 0,
+max_omega = max(cellfun(@max,omega));
+min_omega = min(cellfun(@min,omega));
+if length(bins) == 1  
+  bins = linspace(min_omega,max_omega,bins);
+end
+
+nl = length(omega);
+his = zeros(nl,numel(bins));
+
+for k=1:nl
+  his(k,:) = hist(omega{k},bins);
+end
+
+if nargout > 0
   h = his;
 else
-  his = his./repmat(sum(his,2),1,length(bins));
-  bar(bins/degree,his');
+  his = his./repmat(sum(his,2),1,length(his));
+  bar(bins./degree,his');
   axis tight
   xlabel('(mis-)orientation / degree')
   ylabel('relative frequency %')
