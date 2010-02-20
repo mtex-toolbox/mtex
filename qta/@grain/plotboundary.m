@@ -11,111 +11,80 @@ function plotboundary(grains,varargin)
 %% See also
 % grain/misorientation
 
-ph = get(grains,'phase');
-uph = unique(ph);
+[phase uphase] = get(grains,'phase');
 
-boundary = [];
-boundaryc = [];
-
-for phase=uph
+for ph=uphase
   %neighboured grains per phase
-  gr = grains(ph == phase);
+  grains_phase = grains(phase == ph);
   
-  grain_ids = [gr.id];
+  pair = pairs(grains_phase);
+  pair(pair(:,1) == pair(:,2),:) = []; % self reference
   
-  s = [ 0 cumsum(cellfun('length',{gr.neighbour}))];
-  ix = zeros(1,s(end));
-  for l = 1:length(grain_ids)
-    ix(s(l)+1:s(l+1)) = grain_ids(l);
-  end  
-  iy = vertcat(gr.neighbour);
+  if ~isempty(pair)   
 
-  msz = max([max(ix), max(iy),max(grain_ids)]);
-  cod = zeros(1,msz);
-  cod(grain_ids) = 1:length(grain_ids);
-  
-  T1 = sparse(ix,iy,true,msz,msz);
-  T1 = triu(T1,1);
-  [ix iy] = find(T1);
-  ix = cod(ix);
-  iy = cod(iy);
+    pair = unique(sort(pair,2),'rows');
 
-  del = iy == 0 | ix == 0;
-  ix(del) = [];
-  iy(del) = [];
-  
-  
-  %common boundary
-  nn = NaN;
-  na = [NaN NaN];
-  bndry = cell(size(ix));
-  
-  for k=1:length(ix)  
-   pa = gr(ix(k)).polygon;
-   pb = gr(iy(k)).polygon;
-   fa = pa.xy;
-   fb = pb.xy;
+    p        = polygon(grains_phase);
+    boundary = cell(1,size(pair,1));
 
-   if ~isempty(pa.hxy), fa = [ fa ; cellcat(pa.hxy)]; end
-   if ~isempty(pb.hxy), fb = [ fb ; cellcat(pb.hxy)]; end
+    for k=1:size(pair,1)
 
-   m = ismember(fa(:,1),fb(:,1)) & ismember(fa(:,2),fb(:,2));
-   fa(~m,:) =  nn;
-   bndry{k} = [fa; na];
+      b1 = [p(pair(k,1)).boundary{:}];
+      b2 = [p(pair(k,2)).boundary{:}];
+      xy =  p(pair(k,2)).xy;
+
+      if ~isempty(p(pair(k,2)).hxy)
+        xy = vertcat(xy,p(pair(k,2)).hxy{:});
+      end
+
+      r = find(ismember(b2,b1));      
+      sp = [0 find(diff(r)>1) length(r)];
+      
+      for j=1:length(sp)-1 % line segments; still buggy on triple junction          
+        boundary{k} = [...
+          boundary{k}; ...
+          xy(r(sp(j)+1:sp(j+1)),:);...
+          [NaN NaN]];
+      end
+
+    end
+
+    cs = cellfun('prodofsize',boundary)/2;
+    boundaries{ph} = vertcat(boundary{:});
+
+    % boundary angle
+    o = get(grains_phase,'orientation');
+    omega = angle( o(pair(:,1)) \ o(pair(:,2)) )./degree;
+
+    % fill line with angle
+    csz = [0 cumsum(cs)];
+    tomega = zeros(length(boundaries{ph}),1);
+    for k=1:length(omega)
+      tomega( csz(k)+1:csz(k+1) ) = omega(k);
+    end
+
+    omegas{ph} = tomega;
+    
   end
-  
-  
-  %color criterion
-  q = get(gr,'orientation'); 
-  omega = 2*acos(dot_sym(q(ix),q(iy),gr(1).properties.CS,gr(1).properties.SS));
-  cl = cellfun('prodofsize',bndry)./2;
-  ccl = [ 0  cumsum(cl)];
-
-  bndryc = zeros(ccl(end),1);
-  for k=1:length(cl)
-    bndryc(ccl(k)+1:ccl(k+1)) = omega(k);
-  end
-
-  
-  % remove nans
-  bndry = vertcat(bndry{:});
-  el = any(isfinite(bndry),2);
-  el = el | [0 ;diff(el,[],1) == -1];
-
-  boundary = [boundary ; bndry(el,:)];
-  boundaryc = [boundaryc ; bndryc(el)];
   
 end
 
-%plot it
-newMTEXplot;
 
-fac = 1:length(boundaryc);
-boundaryc = boundaryc/degree;
+plot(grains,'property',[],'color',[0.8,0.8,0.8]);
 
-plot(grains,'color',[0.8 0.8 0.8]) % phase boundaries 
-                                   % time consuming
-patch('Faces',fac,'Vertices',boundary,'EdgeColor','flat',...
-  'FaceVertexCData',boundaryc);
-
-% plot(boundary(:,1),boundary(:,2))
-
-% fixMTEXplot;
-% set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
-
-
-
-
-function b = cellcat(c)
-
-co = cell(length(c)*2+1,1);
-
-co(1:2:length(c)*2+1) = {[NaN NaN]};
-co(2:2:length(c)*2) = c;
-
-b = vertcat(co{:});
-
-
-
+if ~isempty(boundaries)
+  
+  boundaries = vertcat(boundaries{:});
+  omegas = vertcat(omegas{:});
+  
+  h = patch('Faces',1:length(boundaries),'Vertices',boundaries,'EdgeColor','flat',...
+    'FaceVertexCData',omegas);
+  
+  % 
+  layers = getappdata(gcf,'layers');
+  layers(end).handles(end+1) = h;
+  setappdata(gcf,'layers',layers);
+  
+end
 
 

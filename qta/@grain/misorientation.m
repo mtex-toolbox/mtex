@@ -68,57 +68,44 @@ else % misorientation to neighbour grains
       n = numel(o);
       np = get_option(varargin,'random', n*(n-1)/2,'double');
       
-      pairs = fix(rand(np,2)*(n-1)+1);
-      pairs(pairs(:,1)-pairs(:,2) == 0,:) = [];
-      pairs = unique(sort(pairs,2),'rows');
+      pair = fix(rand(np,2)*(n-1)+1);
+      pair(pair(:,1)-pair(:,2) == 0,:) = [];
+      pair = unique(sort(pair,2),'rows');
      
     else
-     
-      grain_ids = vertcat(grains_phase.id);
-      grain_neighbours = vertcat(grains_phase.neighbour);
       
-      code = zeros(1,max([grain_ids; grain_neighbours]));
-      code(grain_ids) = 1:length(grain_ids);
-
-      cs = [ 0 cumsum(cellfun('length',{grains_phase.neighbour}))];
-      pairs = zeros(cs(end),2);
-      for l = 1:length(grain_ids)
-          pairs(cs(l)+1:cs(l+1),1) = l;
-      end
-      pairs(:,2) = code(grain_neighbours);
-      pairs(any(pairs == 0,2),:) = [];
-      pairs(pairs(:,1) == pairs(:,2),:) = []; % self reference
+      pair = pairs(grains_phase);
+      pair(pair(:,1) == pair(:,2),:) = []; % self reference
       
     end
     
     %partition due to memory
-    parts = [ 1:25000:length(pairs) length(pairs)+1];
-    of = repmat(orientation(o(1)),1,length(pairs));
+    parts = [ 1:25000:length(pair) length(pair)+1];
+    of = repmat(orientation(o(1)),1,length(pair));
     for l = 1:length(parts)-1
       
       cur = parts(l):parts(l+1)-1;
      
       if check_option(varargin,'inverse')
-        i = pairs(cur,1); j = pairs(cur,2);
+        i = pair(cur,1); j = pair(cur,2);
       else
-        i = pairs(cur,2); j = pairs(cur,1);
+        i = pair(cur,2); j = pair(cur,1);
       end
       
       of(cur) = o(i) \ o(j);
-      
+
     end
     
     if check_option(varargin,'weighted') && ~check_option(varargin,'random')
-      p.weight = zeros(size(pairs,1),1);
-      for l=1:size(pairs,1)
-        pa = grains_phase(pairs(l,1)).polygon;
-        pb = grains_phase(pairs(l,2)).polygon;
+      p.weight = zeros(size(pair,1),1);
+      
+      ply = polygon(grains_phase);
+      for l=1:size(pair,1)
+        b1 = [ply(pair(l,1)).boundary{:}];
+        b2 = ply(pair(l,2)).boundary{1};
+        % could also be geometric
         
-        if ~isempty(pa.hxy), t = horzcat(pa.hxy)';
-          pa.xy =  vertcat(pa.xy,t{:});
-        end
-        
-        p.weight(l) = sum(ismember(pa.xy,pb.xy,'rows'));
+        p.weight(l) = sum(ismember(b1,b2));
       end      
     else      
       p = struct;

@@ -55,6 +55,7 @@ grains = grains(ndx);
 %% setup grain plot
 
 newMTEXplot;
+selector(gcf);
 % set(gcf,'renderer','opengl');
 % 
 %%
@@ -152,31 +153,34 @@ elseif exist('ebsd','var')
   
 else
   
-  for k=1:length(p), p(k).xy = [p(k).xy; NaN NaN]; end
-  xy = vertcat(p.xy);
+  lxy = cell(numel(p)*2,1);
+  lxy(1:2:end) = {p.xy};
+  lxy(2:2:end) = {[NaN NaN]};  
+    
+  parts = [0:5000:length(lxy)-1 length(lxy)]; 
+  xy = [];
   
-  [X,Y, lx,ly] = fixMTEXscreencoordinates(xy(:,1),xy(:,2),varargin{:});
+  for k=1:length(parts)-1 % faster as at once
+    xy = vertcat(xy,lxy{parts(k)+1:parts(k+1)});
+  end
   
-  ih = ishold;
-  if ~ih, hold on, end
-  
-  h(1) = plot(X(:),Y(:));
-
   %holes
   if ~check_option(varargin,'noholes') && ~ishull
-    holes = hasholes(grains);
     
-    if any(holes)      
-      px = [p(holes).hxy]';
-      for k=1:length(px), px{k} = [px{k}; NaN NaN]; end
-      xy = vertcat(px{:});
-      
-      [X,Y] = fixMTEXscreencoordinates(xy(:,1),xy(:,2),varargin{:});
-      h(2) = plot(X(:),Y(:));
-     
-    end
+    holes = ~cellfun('isempty',{p.hxy});
+
+    hxy = [p(holes).hxy];
+    hc = cell(numel(hxy)*2,1);
+    hc(1:2:end) = hxy;
+    hc(2:2:end) = {[NaN NaN]};
+    
+    xy = vertcat(xy,hc{:});
+    
   end
-  if ~ih, hold off, end
+  
+  [X,Y,lx,ly] = fixMTEXscreencoordinates(xy(:,1),xy(:,2),varargin{:});
+  h = line(X(:),Y(:));
+    
 end
   
 xlabel(lx); ylabel(ly);

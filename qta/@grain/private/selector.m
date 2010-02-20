@@ -5,46 +5,36 @@ function selector( h, grains, p,lya )
 
 
 
-newlayer.grains = grains;
-newlayer.polygon = p;
-newlayer.selected = false(size(grains));
-newlayer.selectioncolor = 'r';
-newlayer.handles = lya;
+if nargin == 1
+  
 
+  %the menu
+  addmenu2(h);
 
-
-layers = getappdata(h,'layers');
-if isempty(layers)
-  layers = newlayer;
-else  
-  layers = [layers newlayer];
-end
-setappdata(h,'layers',layers);
-setappdata(h,'currentlayer',length(layers));
-
-%the menu
-addmenu2(h);
-
-% 
-set(h,'Toolbar','none')
-set(h,'Toolbar','figure')
-delete(uigettool(gcf,'Exploration.Brushing')) % 
-%toolsbar
-th=findobj(allchild(h),'type','uitoolbar');
-
-htk = uitoggletool(th,'Tag','MTEX.layervis','CData',selectorIcon('layer'),'TooltipString','Layer Visebility','OnCallback',{@grainselector,'show_layer'},'OffCallback',{@grainselector,'hide_layer'});
-
-  n=length({layers.grains});
-  fc = cell(1,n);
-  for k=1:n
-    fd{k} = [num2str(n-k+1) '. layer'];
+  % check whether tools already exists
+  th=findobj(allchild(h),'type','uitoolbar');
+  ly2 = getappdata(th, 'childhandles');
+  for k=1:length(ly2)
+    if  strcmpi(get(ly2(k),'Name'), 'MTEX.combolayer') && ishold      
+      return
+    end
   end
   
-  jcb1 =javax.swing.JComboBox(fd);
+  
+  set(h,'Toolbar','none')
+  set(h,'Toolbar','figure')
+  delete(uigettool(gcf,'Exploration.Brushing')) % 
+  %toolsbar
+  th=findobj(allchild(h),'type','uitoolbar');
+
+  htk = uitoggletool(th,'Tag','MTEX.layervis','CData',selectorIcon('layer'),'TooltipString','Layer Visebility','OnCallback',{@grainselector,'show_layer'},'OffCallback',{@grainselector,'hide_layer'});
+
+  jcb1 =javax.swing.JComboBox({''});
   jcb1.setMaximumSize(java.awt.Dimension(100,22));
-      
-%  ly1 = javacomponent(label,[],th);
+%   
   ly2 = javacomponent(jcb1,[],th); 
+  
+  set(ly2,'Name','MTEX.combolayer')
   set(ly2,'ItemStateChangedCallback',{@layerSelChanged})
 
   hti = uitoggletool(th,'Tag','MTEX.grainidentify','CData',selectorIcon('identify'),'Separator','on','TooltipString','Identify Grain','OnCallback',{@grainselector,'startidentify'},'OffCallback',{@grainselector,'stopidentify'});
@@ -85,8 +75,7 @@ htk = uitoggletool(th,'Tag','MTEX.layervis','CData',selectorIcon('layer'),'Toolt
   
   htu = uipushtool(th,'Tag','MTEX.grainunselector','CData',selectorIcon('unselect'),'TooltipString','Unselect all Grains','ClickedCallback',@unSelectAll);
   
-
-  
+ 
   chlds = allchild(th);
   added = [htk hti hts htu htp]'; 
   justadded = ismember(chlds, added ); 
@@ -95,25 +84,64 @@ htk = uitoggletool(th,'Tag','MTEX.layervis','CData',selectorIcon('layer'),'Toolt
   set(chlds(end-length(added)),'Separator','on');
   
 
-set([hti hts],'State','off');
+  set([hti hts],'State','off');
 
-  if ~oldtools
-      mod = allchild(hts);
-      mod2 = allchild(htp);
-  else
-      mod = findall(allchild(h),'Label','Single selection');
-      mod2 = findall(allchild(h),'Label','Polygon Centroid within');
+    if ~oldtools
+        mod = allchild(hts);
+        mod2 = allchild(htp);
+    else
+        mod = findall(allchild(h),'Label','Single selection');
+        mod2 = findall(allchild(h),'Label','Polygon Centroid within');
+    end
+
+  updateSelmode(mod(end),[],'single');
+  updateSelP(mod2(end),[],'centroids');
+
+
+  set(h,'CloseRequestFcn',@closeit);
+
+ 
+else
+  newlayer.grains = grains;
+  newlayer.polygon = p;
+  newlayer.selected = false(size(grains));
+  newlayer.selectioncolor = 'r';
+  newlayer.handles = lya;
+  
+  
+  layers = getappdata(h,'layers');
+  if isempty(layers)
+    layers = newlayer;
+  else  
+    layers = [layers newlayer];
+  end
+  setappdata(h,'layers',layers);
+  setappdata(h,'currentlayer',length(layers));
+
+  updateSelectionPlot;
+  updateMenus;
+  setVisStatus('on') 
+  
+  if ~isempty(layers)
+    th=findobj(allchild(h),'type','uitoolbar');
+
+    n=length({layers.grains});
+
+    ly2 = getappdata(th, 'childhandles');
+    for k=1:length(ly2)
+      if  strcmpi(get(ly2(k),'Name'), 'MTEX.combolayer')
+        ly2(k).removeAllItems;
+        for l=1:n,          
+          t = [num2str(n-l+1) '. layer'];  
+          ly2(k).addItem(t)
+        end
+      end
+    end
   end
   
-updateSelmode(mod(end),[],'single');
-updateSelP(mod2(end),[],'centroids');
-
-
-set(h,'CloseRequestFcn',@closeit);
-
-updateSelectionPlot;
-updateMenus;
-setVisStatus('on')
+  
+  
+end
 
 
 %--------------------------------------------------------------------------
@@ -245,7 +273,7 @@ delete(gcbf);
 
 
 
-function layer = getcurrentlayer
+function [layer l] = getcurrentlayer
 
 layers = getappdata(gcf,'layers');
 l = getappdata(gcf,'currentlayer');
@@ -550,9 +578,9 @@ disp(' ')
 %--------------------------------------------------------------------------
 function exporttoWS(e, h)
 
-[grains p k ly] = getcurrentlayer;
-name = inputdlg({'Enter Variable name:'},'Grains to Workspace',1,{['grain_selection_layer_' num2str(ly)]});
-  if ~isempty(name), assignin('base', name{1}, grains(k) ); end
+[layer l]= getcurrentlayer;
+name = inputdlg({'Enter Variable name:'},'Grains to Workspace',1,{['grain_selection_layer_' num2str(l)]});
+  if ~isempty(name), assignin('base', name{1}, layer.grains(layer.selected) ); end
   
 
 %--------------------------------------------------------------------------

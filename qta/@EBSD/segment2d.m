@@ -352,7 +352,8 @@ for k =1:nr
     
     psz = numel(border);
     if psz == 1
-    	ply(k).xy = verts(border{1},:);      
+    	ply(k).xy = verts(border{1},:);
+      ply(k).boundary = border;
     elseif psz > 1
       bo = cell(1,psz);
       ar = zeros(1,psz);
@@ -364,12 +365,15 @@ for k =1:nr
       [ig ndx] = sort(ar,'descend');
       
       ply(k).xy = bo{ndx(1)};
-      ply(k).hxy = bo(ndx(2:end));
+      ply(k).hxy = bo(ndx(2:end));      
+      ply(k).boundary = border(ndx);
       %? holes
     end
   else
     % finish polygon
     ply(k).xy = verts([gl(sel) gl(sel(1))],:);
+
+    ply(k).boundary = {[gl(sel) gl(sel(1))]};
   end  
 end
 
