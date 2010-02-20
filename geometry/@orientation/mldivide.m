@@ -2,7 +2,7 @@ function r = mldivide(a,b)
 % o \ v 
 
 
-if isa(b,'Miller')
+if isa(b,'vector3d')
 
   r = Miller(a.rotation \ b,a.CS);
 
