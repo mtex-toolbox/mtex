@@ -2,7 +2,7 @@ function display(s)
 % standard output
 
 disp(' ');
-disp([inputname(1) ' = ' doclink('CrystalSymmetries','Symmetry') ' (size: ' int2str(numel(s)) ')']);
+disp([inputname(1) ' = ' doclink('symmetry_index','Symmetry') ' (size: ' int2str(numel(s)) ')']);
 if ~isempty(s.mineral)
   disp(['  mineral: ',s.mineral ' (' s.laue ')']);  
 else

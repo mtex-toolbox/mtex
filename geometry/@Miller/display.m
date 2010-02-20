@@ -2,7 +2,7 @@ function display(m)
 % standard output
 
 disp(' ');
-disp([inputname(1) ' = ' doclink('CrystalDirections','Miller') ' (size: ' int2str(size(m)) ')']);
+disp([inputname(1) ' = ' doclink('Miller_index','Miller') ' (size: ' int2str(size(m)) ')']);
 disp(['  symmetry: ',char(m.CS)]);
 
 if numel(m) < 20 && numel(m) > 0

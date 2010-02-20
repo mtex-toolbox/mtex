@@ -17,14 +17,15 @@
 
 <tocitem target="CrystalGeometry.html" image="$toolbox/matlab/icons/pagesicon.gif">
   Crystal Geometry
-  <tocitem target="SpecimenDirections.html"> Specimen Directions </tocitem>
-  <tocitem target="CrystalDirections.html"> Crystal Directions </tocitem>
-  <tocitem target="CrystalSymmetries.html"> Crystal Symmetries </tocitem>
-  <tocitem target="CrystalOrientations.html"> CrystalOrientations </tocitem>
+  <tocitem target="vector3d_index.html"> Specimen Directions </tocitem>
+  <tocitem target="rotation_index.html"> Rotations </tocitem>
+  <tocitem target="Miller_index.html"> Crystal Directions </tocitem>
+  <tocitem target="symmetry_index.html"> Crystal Symmetries </tocitem>
+  <tocitem target="orientation_index.html"> CrystalOrientations </tocitem>
   <tocitem target="AxialDirectional.html"> Antipodal Symmetry </tocitem>
 </tocitem>
 
-<tocitem target="PoleFigureAnalysis.html" image="$toolbox/matlab/icons/pagesicon.gif">
+<tocitem target="PoleFigure_index.html" image="$toolbox/matlab/icons/pagesicon.gif">
   Pole Figure Analysis
   <tocitem target="interfacesPoleFigure_index.html">
     Import Pole Figure Data
@@ -46,7 +47,7 @@
   <tocitem target="ghost_demo.html"> Ghost Effect Analysis</tocitem>
 </tocitem>
 
-<tocitem target="EBSDAnalysis.html" image="$toolbox/matlab/icons/pagesicon.gif">
+<tocitem target="EBSD_index.html" image="$toolbox/matlab/icons/pagesicon.gif">
   EBSD Data Analysis
   <tocitem target="interfacesEBSD_index.html">
     Import EBSD Data
