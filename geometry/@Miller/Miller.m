@@ -2,13 +2,17 @@ function [m,er] = Miller(varargin)
 % define a crystal direction by Miller indice
 %
 %% Syntax
-%
+% m = Miller(h,k,l,cs)
+% m = Miller(h,k,i,l,cs)
+% m = Miller(v,cs)
 %
 %% Input
-%  h,k,l,n(optional) - double
-%  CS - crystal @symmetry
+%  h,k,l,i(optional) - double
+%  v  - @vector3d
+%  cs - crystal @symmetry
 %
-%
+%% See also
+% vector3d_index symmetry_index
 
 er = 0;
 

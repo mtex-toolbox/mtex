@@ -1,7 +1,26 @@
 function rot = rotation(varargin)
 % defines an rotation
-
-
+%
+%% Syntax
+%  rot = rotation('Euler',phi1,Phi,phi2)
+%  rot = rotation('Euler',alpha,beta,gamma,'ZYZ')
+%  rot = rotation('axis,v,'angle',omega)
+%  rot = rotation('matrix',A)
+%  rot = rotation('map',u1,v1,u2,v2)
+%  rot = rotation('quaternion',a,b,c,d)
+%  rot = rotation(q)
+%
+%% Input
+%  q         - @quaternion
+%  u1,u2     - @vector3d
+%  v, v1, v2 - @vector3d
+%  name      - {'brass','goss','cube'}
+%
+%% Ouptut
+%  rot - @rotation
+%
+%% See also
+% quaternion_index orientation_index
 
 %% empty constructor
 if nargin == 0

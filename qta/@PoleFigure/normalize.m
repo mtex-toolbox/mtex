@@ -2,8 +2,8 @@ function pf = normalize(pf,odf)
 % normalization of a meassured pole figure with respect to an ODF
 %
 %% Syntax
-% pf = calcnormalization(pf)
-% pf = calcnormalization(pf,odf)
+% pf = normalize(pf)
+% pf = normalize(pf,odf)
 %
 %% Input
 %  pf  - @PoleFigure
@@ -18,7 +18,7 @@ function pf = normalize(pf,odf)
 %% no ODF given 
 if nargin == 1
 
-  alpha = meanIntensity(pf);
+  alpha = mean(pf);
   
 %% ODF given
 else
