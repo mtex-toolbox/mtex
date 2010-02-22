@@ -34,29 +34,31 @@ property = get_option(varargin,'property','orientation');
 
 %% get the polygons
 
-p = polygon(grains)';
+% p = polygon(grains);
 
+% % plot(p)
+% return
 %% data preperation
 
-if ishull % do it faster somehow
-  for k=1:length(p)
-	xy = p(k).xy;    
-    p(k).xy = xy(convhull(xy(:,1),xy(:,2)),:);
-  end 
-end
-
-%% sort for fixing hole problem
-
-pl = cellfun('length',{p.xy}); %pseudo-perimeter
-[pl ndx] = sort(pl,'descend');
-p = p(ndx);
-grains = grains(ndx);
-
-%% setup grain plot
-
+% if ishull % do it faster somehow
+%   for k=1:length(p)
+% 	xy = p(k).xy;    
+%     p(k).xy = xy(convhull(xy(:,1),xy(:,2)),:);
+%   end 
+% end
+% 
+% %% sort for fixing hole problem
+% 
+% pl = cellfun('length',{p.xy}); %pseudo-perimeter
+% [pl ndx] = sort(pl,'descend');
+% p = p(ndx);
+% grains = grains(ndx);
+% 
+% %% setup grain plot
+% 
 newMTEXplot;
 selector(gcf);
-% set(gcf,'renderer','opengl');
+% % set(gcf,'renderer','opengl');
 % 
 %%
 
@@ -78,8 +80,8 @@ if ~isempty(property)
        c = orientation2color(o,cc,varargin{:});
        d(sel,:) = reshape(c,[],3);
     end
-           
-    setappdata(gcf,'CS',CS)
+    
+    setappdata(gcf,'CS',CS);
     setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d')); 
     setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
     setappdata(gcf,'colorcoding',cc);
@@ -94,54 +96,18 @@ if ~isempty(property)
       colormap(hsv(max(d)+1));
     end
     
-  elseif  isnumeric(property) && length(p) == length(property) || islogical(property)
+  elseif  isnumeric(property) && length(grains) == length(property) || islogical(property)
     
-    d = reshape(property(ndx),[],1);
+    d = reshape(property,[],1);
     
   end
   
-  h = [];
-  %split data
-  ind = splitdata(pl,3);
-  x = 0; y = 0;
-  for k=1:length(ind)
-    pind = ind{k}; 
-    tmp_ply = p(pind);  %temporary polygons
-        
-    [faces vertices] = get_faces(tmp_ply);
-    
-    if ~isempty(vertices)
-      [X, Y lx ly] = fixMTEXscreencoordinates(vertices(:,1),vertices(:,2),varargin{:});
-      x = min(X); y = min(Y);
-    end
-    
-    if ~isempty(faces)
-      if ishull
-        h(end+1) = patch('Vertices',[X Y],'Faces',faces,'FaceVertexCData',d(pind,:));
-      else
-        holes = hasholes(grains(pind));
-        
-        if any(holes)
-          [hfaces hvertices] = get_facesh(tmp_ply(holes));
-          [hX,hY] = fixMTEXscreencoordinates(hvertices(:,1),hvertices(:,2),varargin{:});
+  
+  
+  p = polygon(grains);
+  h = plot( p ,'fill',d,varargin{:});
 
-          c = repmat(get(gca,'color'),size(hfaces,1),1);
-          
-          h(end+1) = patch('Vertices',[X Y],'Faces',faces(holes,:),'FaceVertexCData',d(pind(holes),:));            
-          h(end+1) = patch('Vertices',[hX hY],'Faces',hfaces,'FaceVertexCData',c);
-        end
-
-        if any(~holes)
-          h(end+1) = patch('Vertices',[X Y],'Faces',faces(~holes,:),'FaceVertexCData',d(pind(~holes),:));
-        end  
-      end
-    end
-  end
-  %dummy patch
-  [tx ty] = fixMTEXscreencoordinates(min(x), min(y),varargin{:});
-  patch('Vertices',[tx ty],'Faces',1,'FaceVertexCData',get(gca,'color'));
-
-  set(h,'FaceColor','flat')
+  selector(gcf,grains,p,h);
   
 elseif exist('ebsd','var') 
   
@@ -153,46 +119,23 @@ elseif exist('ebsd','var')
   
 else
   
-  lxy = cell(numel(p)*2,1);
-  lxy(1:2:end) = {p.xy};
-  lxy(2:2:end) = {[NaN NaN]};  
-    
-  parts = [0:5000:length(lxy)-1 length(lxy)]; 
-  xy = [];
-  
-  for k=1:length(parts)-1 % faster as at once
-    xy = vertcat(xy,lxy{parts(k)+1:parts(k+1)});
-  end
-  
-  %holes
-  if ~check_option(varargin,'noholes') && ~ishull
-    
-    holes = ~cellfun('isempty',{p.hxy});
+  p = polygon(grains);
+  h = plot( p , varargin{:});
 
-    hxy = [p(holes).hxy];
-    hc = cell(numel(hxy)*2,1);
-    hc(1:2:end) = hxy;
-    hc(2:2:end) = {[NaN NaN]};
-    
-    xy = vertcat(xy,hc{:});
-    
-  end
+  selector(gcf,grains,p,h);
   
-  [X,Y,lx,ly] = fixMTEXscreencoordinates(xy(:,1),xy(:,2),varargin{:});
-  h = line(X(:),Y(:));
-    
 end
-  
-xlabel(lx); ylabel(ly);
-fixMTEXplot;
-  
-%
-
-set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
-selector(gcf,grains,p,h);
-%apply plotting options
-if exist('h','var'), optiondraw(h,varargin{:});end
-
+%   
+% xlabel(lx); ylabel(ly);
+% fixMTEXplot;
+%   
+% %
+% 
+% set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
+% selector(gcf,grains,p,h);
+% %apply plotting options
+% if exist('h','var'), optiondraw(h,varargin{:});end
+% 
 
 
 
@@ -215,7 +158,7 @@ function faces = tofaces(c)
 
 cl = cellfun('length',c);
 rl = max(cl);
-crl = [0 cumsum(cl)];
+crl = [0 cumsum(cl)];grains
 faces = NaN(numel(c),rl);
 for k = 1:numel(c)
   faces(k,1:cl(k)) = (crl(k)+1):crl(k+1);

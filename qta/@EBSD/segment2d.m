@@ -219,8 +219,7 @@ ph = phase(cellfun(@(x)x(1),id));
 
 gr = struct('id',num2cell(1:nc),...
        'cells',id,...
-       'neighbour',neigh,...
-       'polygon',[],...
+       'neighbour',neigh,...    %       'polygon',[],...
        'checksum',[],...
        'subfractions',fract,...       
        'phase',phase_ebsd(ph),...
@@ -228,17 +227,15 @@ gr = struct('id',num2cell(1:nc),...
        'properties',[],...
        'comment',[]);
 
-
 for k=1:nc
   gr(k).checksum = checksum;
   gr(k).comment = comment;
-  gr(k).polygon = ply(k);
   gr(k).properties = struct;
   gr(k).orientation = ...
-    mean(ebsd(ph(k)).orientations(gr(k).cells-rl(ph(k))));
+    mean(ebsd(ph(k)).orientations(gr(k).cells-rl(ph(k))));  
 end
 
-grains = grain('direct',gr);
+grains = grain(gr,ply);
 
 vdisp(['  grain generation:  '  num2str(toc(s)) ' sec' ],varargin{:});
 vdisp(' ',varargin{:})
@@ -337,7 +334,11 @@ cc = [0; r1];
 crc = [0 cumsum(cr1)];
 
 nr = length(regionids);
-ply = struct('xy',cell(1,nr), 'hxy',cell(1,nr)); %repmat({{}},1,nr));
+% ply = struct('xy',cell(1,nr), 'hxy',cell(1,nr)); %repmat({{}},1,nr));
+
+p = struct(polygon);
+ply = repmat(p,1,nr);
+
 
 for k =1:nr
   sel = cc(crc(k)+1)+1:cc(crc(k+1)+1);
@@ -350,32 +351,56 @@ for k =1:nr
   
     border = converttoborder(gl(sel), gr(sel));
     
-    psz = numel(border);
+    psz = numel(border);    
     if psz == 1
-    	ply(k).xy = verts(border{1},:);
-      ply(k).boundary = border;
-    elseif psz > 1
-      bo = cell(1,psz);
-      ar = zeros(1,psz);
+      
+      v = border{1};
+      xy = verts(v,:);
+      ply(k).xy = xy;
+      ply(k).point_ids = v;
+
+      ply(k).envelope = reshape([min(xy); max(xy)],1,[]);
+      
+    else
+      
+      hply = repmat(p,1,psz);
+      
       for l=1:psz
-        bo{l} = verts(border{l},:);
-        ar(l) = farea(bo{l});
+        
+        v = border{l};
+        xy = verts(v,:);
+        hply(l).xy = xy;
+        hply(l).point_ids = v;   
+        
+        hply(l).envelope = reshape([min(xy); max(xy)],1,[]);
+        
       end
+      hply = polygon(hply);
       
-      [ig ndx] = sort(ar,'descend');
+      [ig ndx] = sort(area(hply),'descend');
       
-      ply(k).xy = bo{ndx(1)};
-      ply(k).hxy = bo(ndx(2:end));      
-      ply(k).boundary = border(ndx);
-      %? holes
+      ply(k) = hply(ndx(1));      
+      ply(k).holes = hply(ndx(2:end));
+      
     end
   else
     % finish polygon
-    ply(k).xy = verts([gl(sel) gl(sel(1))],:);
-
-    ply(k).boundary = {[gl(sel) gl(sel(1))]};
-  end  
+    v = [gl(sel) gl(sel(1))];
+    xy = verts(v,:);
+    ply(k).xy = xy;
+    ply(k).point_ids = v;
+    
+    ply(k).envelope = reshape([min(xy); max(xy)],1,[]);
+    
+  end
+  
 end
+
+ply = polygon(ply);
+
+
+
+function p = setpolygon()
 
 
 function plygn = converttoborder(gl, gr)

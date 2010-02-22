@@ -1,17 +1,21 @@
-function p = polygon(grains)
+function p = polygon(grains,varargin)
 % returns the polygon of grains as struct
 %
 %% Input
 %  grains - @grain
 %
 %% Output
-%  p.xy    - border 
-%  p.hxy   - struct of holes
+%  p    - @polygon
 %
+% p = grains.polygon;
 
-% p = [grains.polygon];
-
-p = repmat(struct( grains(1).polygon),size(grains));
-for k=1:length(p)
-  p(k) = grains(k).polygon;
+n = numel(grains);
+parts = [0:5000:n-1 n];  % faster as at once
+% 
+p = repmat(polygon,size(grains));
+for k=1:length(parts)-1
+%   
+  ndx = parts(k)+1:parts(k+1);
+  p(ndx) = horzcat(grains(ndx).polygon);
+%  
 end

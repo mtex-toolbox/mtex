@@ -8,6 +8,7 @@ if nargin == 1
   nnei = cellfun('length',{grains.neighbour});
 
   grains = cellfun(@sum,mat2cell(ismember(nei,id),nnei,1));
+  
 else
   grains = grains(ismember(...
     vertcat(grains(:).id),vertcat(grains2(:).neighbour)));

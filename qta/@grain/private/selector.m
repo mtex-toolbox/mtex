@@ -104,6 +104,7 @@ if nargin == 1
 else
   newlayer.grains = grains;
   newlayer.polygon = p;
+  newlayer.boxes   = get(p,'envelope');
   newlayer.selected = false(size(grains));
   newlayer.selectioncolor = 'r';
   newlayer.handles = lya;
@@ -305,86 +306,65 @@ layer = getcurrentlayer;
 grains = layer.grains;
 p = layer.polygon;
 
-
 cp = get(gca,'CurrentPoint');
-xp = cp(1,1);
-yp = cp(1,2);
+[xp yp] = fixMTEXscreencoordinates( cp(1,1), cp(1,2) );
 
-pl = cellfun('length',{p.xy});
-cpl = cumsum(pl);
+xy = layer.boxes;
 
-xy = vertcat(p.xy);
-[X Y] = fixMTEXscreencoordinates( xy(:,1), xy(:,2) );
-dist = sqrt((X-xp).^2 + (Y-yp).^2);
+candits = xy(:,1) <= xp & xp <= xy(:,2) & xy(:,3) <= yp & yp <= xy(:,4);
+candits = find(candits);
 
-[dist ndx] = sort(dist);
-pp = sum(cpl <= ndx(1))+1;
-
-%possible polygons
-ind = [pp find(ismember([grains.id],grains(pp).neighbour))];
-
-  XYs = xy(ndx(1),:);
-  %polygons which share the vertex
+isit = false(size(candits));
+for k=1:length(candits)
+  pl = p(candits(k));
   
-  hs = [p(ind).hxy]; 
-  if isempty(hs), hs = cell(0); end
-  hXY = vertcat(hs{:}); 
-  ind2 = find(ismember(hXY, XYs, 'rows'));
-  hl = cumsum(cellfun('length',{p(ind).hxy}));
-  hll = cellfun('length',hs);
-  ppl = zeros(size(ind2));
-  for k=1:length(ind2)
-    ppl(k) = sum(hl  < (sum(hll <= ind2(k))))+1;
-  end
-   
-  XY = vertcat(p(ind).xy);
-  ind2 = find(ismember(XY, XYs, 'rows'));
-  pll = cumsum( cellfun('length',{p(ind).xy}));
-  ppk = zeros(size(ind2));
-  for k=1:length(ind2)
-    ppk(k) = sum(pll < ind2(k))+1;
-  end
+  inhole = false;
   
-  %check whether something went wrong
-  ppl = ppl(ppl <= length(ind));
-  ppk = ppk(ppk <= length(ind));
-  
-  ind = ind([ppl(:) ;ppk(:)]);
-
-
-
-for k=length(ind):-1:1
-  current = ind(k);
-  [X Y] = fixMTEXscreencoordinates( p(current).xy(:,1), p(current).xy(:,2) ); 
-  if inpolygon(xp,yp,X,Y) 
-    switch modus
-      case 'record'
-        if strcmpi(get(src,'SelectionType'),'alt'),
-          treatSelmode(current,'rem'); 
-        else
-          treatSelmode(current);
-        end
-      case 'ident'
-        c = getappdata(gcf,'selectioncolor');     
-        
-        identdlg( grains(current) );
-        
-     
-        h = patch(X,Y,layer.selectioncolor); pause(0.1);
-        delete(h); pause(0.1);
-        h = patch(X,Y,layer.selectioncolor); pause(0.1);
-        delete(h); pause(0.1);
-        waitfor(h);
-        
-        return
+  h = hashole(pl);
+  if any(h)
+    hp = get(pl,'holes');
+    
+    
+    for l=1:length(hp)
+      hxy = get(hp(l),'xy');
+      inhole = inhole | inpolygon(xp,yp,hxy(:,1),hxy(:,2));
     end
-      
-    updateSelectionPlot;
-    updateMenus;
-    return
+  end
+  
+  if ~inhole
+    xy = get(pl,'xy');
+    isit(k) = inpolygon(xp,yp,xy(:,1),xy(:,2));
   end
 end
 
+current = candits(isit);
+
+switch modus
+  case 'record'
+    if strcmpi(get(src,'SelectionType'),'alt'),
+      treatSelmode(current,'rem'); 
+    else
+      treatSelmode(current);
+    end
+  case 'ident'
+    c = getappdata(gcf,'selectioncolor');     
+        
+    identdlg( grains(current) );
+    xy = get(p(current),'xy');
+    [X Y] = fixMTEXscreencoordinates( xy(:,1), xy(:,2) ); 
+    h = patch(X,Y,layer.selectioncolor); pause(0.1);
+    delete(h); pause(0.1);
+    h = patch(X,Y,layer.selectioncolor); pause(0.1);
+    delete(h); pause(0.1);
+    waitfor(h);
+        
+    return
+end
+
+updateSelectionPlot;
+updateMenus;
+
+return
 
 function treatSelmode(current,alt)
 
@@ -473,28 +453,14 @@ for k=1:length(layers)
   p = layers(k).polygon(layers(k).selected);
   
   if ~isempty(p)
-    for l=1:length(p), p(l).xy = [p(l).xy; NaN NaN]; end
+    h(end+1) = plot(p,'noholes','color',layers(k).selectioncolor,'linewidth',2,'nofix');
     
-    xy = vertcat(p.xy);
-    [X Y] = fixMTEXscreencoordinates( xy(:,1), xy(:,2) );
-    
-    h(end+1) = line(X(:),Y(:),'color',layers(k).selectioncolor,'linewidth',2);
-  
-    holes = ~cellfun('isempty',{p.hxy});
-    if any(holes)
-      p = horzcat(p(holes).hxy);
-      for ll=1:length(p)
-        p{ll} = [p{ll}; NaN NaN];
-      end
-      xy = vertcat(p{:});
- 
-      [X,Y] = fixMTEXscreencoordinates(xy(:,1),xy(:,2));
-      h(end+1) = line(X(:),Y(:),'color',layers(k).selectioncolor,'linewidth',1);
+    p = p(hashole(p));
+    if ~isempty(p)
+      h(end+1) = plot(get(p,'holes'),'noholes','color',layers(k).selectioncolor,'linewidth',1,'nofix');
     end
   end
 end
-
-setappdata(gcf,'layers',layers);
 setappdata(gcf,'selection',h);
 
 
@@ -558,7 +524,7 @@ disp('---------------------------------')
 disp(['  area:         ' num2str(area(grain))])
 disp(['  perimeter:    ' num2str(perimeter(grain))])
 yesno = {'no','yes'};
-disp(['  holes:        ' yesno{hasholes(grain)+1}])
+disp(['  holes:        ' yesno{hashole(grain)+1}])
 disp(['  subfractions: ' yesno{hassubfraction(grain)+1}])
 
 props = fields(grain.properties);
@@ -758,7 +724,8 @@ if ~isempty(pys)
   [xy(:,1),xy(:,2)] = fixMTEXscreencoordinates(pys(:,1),pys(:,2));
 
   layer = getcurrentlayer;
-  [grains ind] = inpolygon(layer.grains,xy,getappdata(gcf,'pselmode'));
+  ind = inpolygon(layer.polygon,xy,getappdata(gcf,'pselmode'));
+%   [grains ind] = inpolygon(layer.polygon,xy,getappdata(gcf,'pselmode'));
 
   treatSelmode(find(ind));
   
@@ -783,6 +750,7 @@ end
 function exportLastState(e, h)
 
 pys = getappdata(gcf,'selector_ply_last');
+pys = polygon(pys);
 
 hh = figure('visible','off'); % bad, but apparently nescessary if polygon mode active
 name = inputdlg({'Enter Variable name:'},'last Polygon to Workspace',1,{'polygon_selection'});

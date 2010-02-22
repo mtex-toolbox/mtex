@@ -213,10 +213,11 @@ set(selfrom,'String', ['SELECT grains FROM ''' num2str(ly) '. layer'' WHICH full
 
 function list = functionlist
 
-s = what('grain');
-list = regexprep(s.m, '\.m', '');
+s1 = what('grain');
+s2 = what('polygon');
+list = regexprep([s2.m; s1.m], '\.m', '');
 
-ignoreFunctions = {'centroid','display','eq','get','grain','grainfun','calcODF','copyproperty','misorientation',...
+ignoreFunctions = {'Contents','centroid','display','eq','get','grain','grainfun','calcODF','copyproperty','misorientation',...
   'hullcentroid','hullprincipalcomponents','joincount','polygon','set','mean',...
   'principalcomponents','plot','plotellipse','plotgrains','plotsubfractions','toebsd','variogram'};
 

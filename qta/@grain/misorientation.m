@@ -93,7 +93,7 @@ else % misorientation to neighbour grains
       end
       
       of(cur) = o(i) \ o(j);
-
+      
     end
     
     if check_option(varargin,'weighted') && ~check_option(varargin,'random')

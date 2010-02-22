@@ -27,29 +27,41 @@ for ph=uphase
     p        = polygon(grains_phase);
     boundary = cell(1,size(pair,1));
 
+    point_ids = get(p,'point_ids');
+    pxy = get(p,'xy','cell');
+    hole = hashole(p);
+    
     for k=1:size(pair,1)
 
-      b1 = [p(pair(k,1)).boundary{:}];
-      b2 = [p(pair(k,2)).boundary{:}];
-      xy =  p(pair(k,2)).xy;
+      b1 = point_ids{pair(k,1)};
+      p2 = pair(k,2);
+      b2 = point_ids{p2};
+      xy =  pxy{p2};
 
-      if ~isempty(p(pair(k,2)).hxy)
-        xy = vertcat(xy,p(pair(k,2)).hxy{:});
+      if hole(p2)
+        pholes = get(p(pair(k,2)),'holes');
+        
+        bh2 = get(pholes,'point_ids');
+        b2 = [b2,bh2{:}];
+        xy = vertcat(xy,get(pholes,'xy'));
       end
 
       r = find(ismember(b2,b1));      
-      sp = [0 find(diff(r)>1) length(r)];
+      sp = [0 find(diff(r)>1) length(r)];      
       
+      bb = [];
       for j=1:length(sp)-1 % line segments; still buggy on triple junction          
-        boundary{k} = [...
-          boundary{k}; ...
+        bb = [...
+          bb; ...
           xy(r(sp(j)+1:sp(j+1)),:);...
           [NaN NaN]];
       end
+      boundary{k} = bb;
 
     end
 
     cs = cellfun('prodofsize',boundary)/2;
+% boundary
     boundaries{ph} = vertcat(boundary{:});
 
     % boundary angle
@@ -69,6 +81,7 @@ for ph=uphase
   
 end
 
+% set(gcf,'renderer','opengl')
 
 plot(grains,'property',[],'color',[0.8,0.8,0.8]);
 
