@@ -1,4 +1,4 @@
-function plotboundary(grains,varargin)
+function varargout = plotboundary(grains,varargin)
 % plot grain boundaries according to neighboured misorientation angle
 %
 %% Syntax
@@ -13,91 +13,75 @@ function plotboundary(grains,varargin)
 
 [phase uphase] = get(grains,'phase');
 
+selector(gcf);
+
+p = polygon( grains );
+
+h = plot(p,'color',[0.8 0.8 0.8]);
+
+CS = get(grains,'CS');
+
 for ph=uphase
   %neighboured grains per phase
-  grains_phase = grains(phase == ph);
+  ndx = phase == ph;
+  grains_phase = grains(ndx);
   
   pair = pairs(grains_phase);
   pair(pair(:,1) == pair(:,2),:) = []; % self reference
-  
+
   if ~isempty(pair)   
 
     pair = unique(sort(pair,2),'rows');
-
-    p        = polygon(grains_phase);
-    boundary = cell(1,size(pair,1));
-
-    point_ids = get(p,'point_ids');
-    pxy = get(p,'xy','cell');
-    hole = hashole(p);
-    
-    for k=1:size(pair,1)
-
-      b1 = point_ids{pair(k,1)};
-      p2 = pair(k,2);
-      b2 = point_ids{p2};
-      xy =  pxy{p2};
-
-      if hole(p2)
-        pholes = get(p(pair(k,2)),'holes');
-        
-        bh2 = get(pholes,'point_ids');
-        b2 = [b2,bh2{:}];
-        xy = vertcat(xy,get(pholes,'xy'));
-      end
-
-      r = find(ismember(b2,b1));      
-      sp = [0 find(diff(r)>1) length(r)];      
       
-      bb = [];
-      for j=1:length(sp)-1 % line segments; still buggy on triple junction          
-        bb = [...
-          bb; ...
-          xy(r(sp(j)+1:sp(j+1)),:);...
-          [NaN NaN]];
-      end
-      boundary{k} = bb;
-
-    end
-
-    cs = cellfun('prodofsize',boundary)/2;
-% boundary
-    boundaries{ph} = vertcat(boundary{:});
-
     % boundary angle
     o = get(grains_phase,'orientation');
-    omega = angle( o(pair(:,1)) \ o(pair(:,2)) )./degree;
-
-    % fill line with angle
-    csz = [0 cumsum(cs)];
-    tomega = zeros(length(boundaries{ph}),1);
-    for k=1:length(omega)
-      tomega( csz(k)+1:csz(k+1) ) = omega(k);
+    om = o(pair(:,1)) \ o(pair(:,2));
+    
+    
+    quat = find_type(varargin,'quaternion');
+    if ~isempty(quat)
+    
+      o0 = [varargin{quat}];
+      
+      delta = get_option(varargin,'delta',2*degree,'double');
+  
+      ind = false(size(om));
+      for l=1:length(o0)
+        ind = ind | angle(om,o0(l)) < delta;
+      end
+      
+      pair = pair(ind,:);
+      
+    elseif ~check_option(varargin,'colorcoding')
+      
+      d = angle( om )./degree;
+      pair(:,3) = d;
+      
+    else
+      
+      cc = get_option(varargin,'colorcoding');
+      
+      d = orientation2color(om,cc,varargin{:});
+      pair(:,3:5) = d;
+            
     end
-
-    omegas{ph} = tomega;
+    
+    h(end+1) = plot(p(ndx), 'pair', pair, varargin{:} );    
     
   end
   
 end
 
-% set(gcf,'renderer','opengl')
+selector(gcf,grains,p,h);
 
-plot(grains,'property',[],'color',[0.8,0.8,0.8]);
-
-if ~isempty(boundaries)
-  
-  boundaries = vertcat(boundaries{:});
-  omegas = vertcat(omegas{:});
-  
-  h = patch('Faces',1:length(boundaries),'Vertices',boundaries,'EdgeColor','flat',...
-    'FaceVertexCData',omegas);
-  
-  % 
-  layers = getappdata(gcf,'layers');
-  layers(end).handles(end+1) = h;
-  setappdata(gcf,'layers',layers);
-  
+if check_option(varargin,'colorcoding');
+  setappdata(gcf,'CS',CS);
+	setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d')); 
+	setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
+	setappdata(gcf,'colorcoding',cc);
+	setappdata(gcf,'options',extract_option(varargin,'antipodal'));
 end
 
-
+if nargout > 0
+  varargout{1} = h;
+end

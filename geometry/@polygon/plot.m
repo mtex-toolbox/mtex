@@ -1,6 +1,6 @@
 function handles = plot(p,varargin)
 
-% set(gcf,'renderer','opengl')
+set(gcf,'renderer','opengl')
 
 if check_option(varargin,'fill')
   c = get_option(varargin,'fill');
@@ -40,22 +40,22 @@ elseif check_option(varargin,'pair')
 
   point_ids = get(p,'point_ids');
   pxy = get(p,'xy','cell');
-  hole = hashole(p);
+  
+  for k=find(hashole(p))
+    
+    pholes = get(p(k),'holes');
+    
+    hpoint_ids = get(pholes,'point_ids');
+    point_ids{k} = [point_ids{k} hpoint_ids{:}];
+    pxy{k} = vertcat(pxy{k},get(pholes,'xy'));  
+    
+  end
     
   for k=1:size(pair,1)
 
-    b1 = point_ids{pair(k,1)};
-    p2 = pair(k,2);
-    b2 = point_ids{p2};
-    xy =  pxy{p2};
-
-    if hole(p2)
-      pholes = get(p(pair(k,2)),'holes');
-        
-      bh2 = get(pholes,'point_ids');
-      b2 = [b2,bh2{:}];
-      xy = vertcat(xy,get(pholes,'xy'));
-    end
+    b1 = point_ids{ pair(k,1) };
+    b2 = point_ids{ pair(k,2) };
+    xy =  pxy{ pair(k,2) };
 
     r = find(ismember(b2,b1));      
     sp = [0 find(diff(r)>1) length(r)];      
@@ -71,30 +71,33 @@ elseif check_option(varargin,'pair')
 
   end
   
-  boundary = vertcat(boundary{:});
+  xy = vertcat(boundary{:});
   
-  [X Y lx ly] = fixMTEXscreencoordinates(boundary(:,1), boundary(:,2), varargin);
+  [X Y lx ly] = fixMTEXscreencoordinates(xy(:,1), xy(:,2), varargin);
   
-  h = line(X(:),Y(:));
-%     cs = cellfun('prodofsize',boundary)/2;
-% % boundary
-%     boundaries{ph} = vertcat(boundary{:});
-% 
-%     % boundary angle
-%     o = get(grains_phase,'orientation');
-%     omega = angle( o(pair(:,1)) \ o(pair(:,2)) )./degree;
-% 
-%     % fill line with angle
-%     csz = [0 cumsum(cs)];
-%     tomega = zeros(length(boundaries{ph}),1);
-%     for k=1:length(omega)
-%       tomega( csz(k)+1:csz(k+1) ) = omega(k);
-%     end
-% 
-%     omegas{ph} = tomega;
-%     
-% %   end
-%   
+  if size(pair,2) == 2 % colorize monotone
+    
+    h = line(X(:),Y(:)); 
+    
+  else % colorize colormap
+    
+    d = pair(:,3:end);
+    
+    cs = cellfun('prodofsize',boundary)/2;
+    csz = [0 cumsum(cs)];
+    
+    c = zeros(length(X),size(d,2));
+    for k=1:size(pair,1)
+            
+      c( csz(k)+1:csz(k+1) , : ) = d( k*ones( cs( k ) ,1) ,:);      
+     
+    end
+    
+    h = patch('Faces',1:length(X),'Vertices',[X(:),Y(:)],'EdgeColor','flat',...
+    'FaceVertexCData',c);
+  
+  end
+  
 else
   
   if ~check_option(varargin,'noholes')
