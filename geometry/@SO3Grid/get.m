@@ -7,7 +7,7 @@ switch lower(vname)
   case {'quaternion','grid','orientation'}
     varargout = {quaternion(obj)};
   case {'res','resolution'}
-    varargout{1} = obj.res;
+    varargout{1} = obj.resolution;
   case fields(obj)
     varargout = obj.(vname);
   otherwise

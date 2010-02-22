@@ -32,8 +32,8 @@ for i = 1:length(kk)
 		case {'RK','RADON'}
       optionplot(omega/degree,kk(i).RK(cos(omega)),'LineWidth',2,varargin{:});
 			set(gcf,'Name',['Randon transformed kernel ',inputname(1),' on S^2']);
-			xlim([0,pi]);
-		case 'RRK'
+      xlim([min(omega/degree),max(omega/degree)]);
+    case 'RRK'
 			p = linspace(min(omega),max(omega),200);
 			Z = max(0,kk(i).RRK(cos(p)',cos(p)));
 			[X,Y] = meshgrid(p,p);
