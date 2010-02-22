@@ -2,7 +2,7 @@ function display(rot)
 % standart output
 
 disp(' ');
-disp([inputname(1) ' = ' doclink('Rotations','rotation') ': (size: ' int2str(size(rot)) ')']);
+disp([inputname(1) ' = ' doclink('Rotations','rotation') ' (size: ' int2str(size(rot)) ')']);
 
 if numel(rot) < 30 && numel(rot)>0
   

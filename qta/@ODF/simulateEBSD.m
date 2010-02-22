@@ -35,6 +35,6 @@ q = orientation(quaternion(S3G_global(r1)).*quaternion(S3G_local(r2)),cs,ss);
 clear S3G_global; clear S3G_local;
 
 comment = get_option(varargin,'comment',...
-  ['EBSD data simulated from ',getcomment(odf)]);
+  ['EBSD data simulated from ',get(odf,'comment')]);
   
 ebsd = EBSD(orientation(q,cs,ss),cs,ss,'comment',comment);

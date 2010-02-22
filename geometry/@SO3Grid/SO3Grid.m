@@ -117,7 +117,7 @@ elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
   
   G.alphabeta = [sec_angle(:),theta(:),rho(:)];      
   G.options = {convention};
-  G.resolution = getResolution(S2G);
+  G.resolution = get(S2G,'resolution');
   
 %% local Grid
 elseif maxangle < rotangle_max_z(CS)/4

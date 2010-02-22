@@ -28,7 +28,7 @@ fprintf(fid,'%% MTEX ODF\n');
 fprintf(fid,'%% %s\n',get(odf,'comment'));
 
 % symmetries
-[CS,SS] = getSym(odf);
+CS = odf(1).CS; SS = odf(1).SS;
 fprintf(fid,'%% crystal symmetry: %s\n',char(CS));
 fprintf(fid,'%% specimen symmetry: %s\n',char(SS));
 

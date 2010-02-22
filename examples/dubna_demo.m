@@ -40,8 +40,8 @@ hist(pf)
 
 %% Correct pole figures
 
-pf_corrected = delete(pf,getTheta(getr(pf)) >= 70*degree &...
-  getTheta(getr(pf)) <= 75*degree);
+pf_corrected = delete(pf,get(pf,'theta') >= 70*degree &...
+  get(pf,'theta') <= 75*degree);
 
 plot(pf_corrected)
 

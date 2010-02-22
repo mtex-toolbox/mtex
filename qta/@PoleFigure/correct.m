@@ -61,7 +61,7 @@ end
 % otherwise interpolate according to theta
 try
   for i = 1:length(pf)
-    pf_orig(i).data = interp1(getTheta(pf(i).r),pf(i).data,getTheta(pf_orig(i).r),'spline');
+    pf_orig(i).data = interp1(get(pf(i).r,'theta'),pf(i).data,get(pf_orig(i).r,'theta'),'spline');
   end
 catch
   error([msg ' does not fit original pole figure data!']);

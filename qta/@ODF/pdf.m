@@ -21,7 +21,7 @@ function Z = pdf(odf,h,r,varargin)
 if isa(h,'S2Grid')
   Z = zeros(numel(h),1);
 else
-  if isa(h,'Miller'), h = set(h,'CS',getSym(odf));end
+  if isa(h,'Miller'), h = set(h,'CS',odf(1).CS);end
   Z = zeros(numel(r),1);
 end
 

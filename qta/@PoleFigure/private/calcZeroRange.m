@@ -22,7 +22,7 @@ r  = [reshape(out_rho,1,[]);reshape(out_theta,1,[])];
 
 % kernel used for calculation
 k = kernel('de la Vallee Poussin','halfwidth',...
-  get_option(varargin,'zr_halfwidth',2*getResolution(getr(pf))),varargin{:});
+  get_option(varargin,'zr_halfwidth',2*get(pf,'resolution')),varargin{:});
 
 % legendre coefficents
 Al = getA(k); Al(2:2:end) = 0;

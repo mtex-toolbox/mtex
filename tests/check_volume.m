@@ -7,7 +7,7 @@ odf = unimodalODF(idquaternion,cs,ss,'halfwidth',1.5*degree);
 
 %%
 
-q = modalorientation(odf);
+q = modalorientation(odf)
 
 %%
 v = [];

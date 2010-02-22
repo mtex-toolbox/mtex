@@ -32,9 +32,7 @@ elseif isa(a,'quaternion')
     out.orientation = a * out.orientation;
     
   else
-    
-    out = SO3Grid(SO3G * quaternion(b),SO3G.CS,SO3G.SS,...
-        'resolution',getResolution(SO3G));            
+    out = a * b.orientation;
   end
           
 else

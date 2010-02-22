@@ -15,7 +15,7 @@ function pf = delete(pf,id)
 %  pf - @PoleFigure
 %
 %% See also
-% PoleFigure/getdata PoleFigure/getbg PoleFigure/getr PoleFigure_index
+% PoleFigure/get PoleFigure_index
 
 if isnumeric(id),
   inds = false(sum(GridLength(pf)),1);

@@ -2,7 +2,7 @@ function display(q)
 % standart output
 
 disp(' ');
-disp([inputname(1) ' = ' doclink('Rotations','Quaternion') ': (size: ' int2str(size(q.b)) ')']);
+disp([inputname(1) ' = ' doclink('Rotations','Quaternion') ' (size: ' int2str(size(q.b)) ')']);
 
 if numel(q) < 30 && numel(q)>0
   

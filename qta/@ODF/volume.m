@@ -82,7 +82,7 @@ if f==0
   v = 0;
 else
   v = mean(eval(odf,S3G)) * f;  %#ok<EVLC>
-  v = min(v,sum(getweights(odf)));
+  v = min(v,sum(get(odf,'weights')));
 end
 
 function v = fastVolume(odf,center,radius)

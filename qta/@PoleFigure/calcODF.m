@@ -53,14 +53,14 @@ vdisp('------ MTEX -- PDF to ODF inversion ------------------',varargin{:})
 %% ------------------- get input--------------------------------------------
 CS = pf(1).CS; SS = pf(1).SS;
 
-S3G = get_option(varargin,'RESOLUTION',getResolution(pf)*3/2,{'double','SO3Grid'});
+S3G = get_option(varargin,'RESOLUTION',get(pf,'resolution')*3/2,{'double','SO3Grid'});
 if ~isa(S3G,'SO3Grid'), S3G = SO3Grid(S3G,CS,SS); end
 if check_option(varargin,'zero_range'), S3G = zero_range(pf,S3G,varargin{:});end
 if ~(CS == get(S3G,'CS') && SS == get(S3G,'SS'))
     qwarning('Symmetry of the Grid does not fit to the given Symmetrie');
 end
 
-kw = get_option(varargin,'KERNELWIDTH',getResolution(S3G),'double');
+kw = get_option(varargin,'KERNELWIDTH',get(S3G,'resolution'),'double');
 psi = get_option(varargin,'kernel',...
   kernel('de la Vallee Poussin','HALFWIDTH',kw),'kernel');
 
@@ -153,7 +153,7 @@ flags = calc_flags(varargin,CW_flags);
 vdisp('Call c-routine',varargin{:});
 
 comment = get_option(varargin,'comment',...
-  ['ODF recalculated from ',getcomment(pf)]);
+  ['ODF recalculated from ',get(pf,'comment')]);
 
 [c,alpha] = call_extern('pf2odf',...
   'INTERN',lP,lh,refl,iter_max,iter_min,flags,...

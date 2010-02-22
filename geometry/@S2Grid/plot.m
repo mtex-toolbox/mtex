@@ -78,7 +78,7 @@ varargin = set_default_option(varargin,...
 
 % S2Resolution
 if numel(S2G)>100 || get(S2G,'resolution') < 10 *degree
-  varargin = ['scatter_resolution',getResolution(S2G),varargin];
+  varargin = ['scatter_resolution',get(S2G,'resolution'),varargin];
 end
 
 % extract data

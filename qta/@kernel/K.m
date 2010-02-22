@@ -39,7 +39,7 @@ end
 if epsilon>rotangle_max_z(CS,'antipodal') % full matrixes
  
   g1 = quaternion(g1);
-  g2 = quaternion(g2);  
+  g2 = quaternion(g2);
   w = zeros(numel(g1),numel(g2));
      
 	for iks = 1:length(CS)

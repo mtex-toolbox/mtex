@@ -40,7 +40,7 @@ S2G = S2Grid('regular','resolution',1*degree,'antipodal');
 % loop over pole figures
 for ip = ipf
 
-  fprintf('applying zero range method to %s',char(getMiller(pf(ip))));
+  fprintf('applying zero range method to %s',char(get(pf(ip),'Miller')));
   
   % compute zero ranges at approximation grid
   zr = calcZeroRange(pf(ip),S2G,varargin{:});

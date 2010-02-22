@@ -61,7 +61,7 @@ end
 
 %% specifiy structural coefficients for superposed pole figures
 
-if isa(data,'PoleFigure') && length(getc(data)) > length(data)
+if isa(data,'PoleFigure') && length(get(data,'c')) > length(data)
   cstr = [{'%% Specifiy Structural Coefficients for Superposed Pole Figures'},{' '}];
   c = [];
   for k = 1:length(data)

@@ -199,8 +199,8 @@ S2G = S2Grid('equispaced','points',1000,'antipodal');
 %%
 % operations
 rotate(S2G,q);
-delete(S2G,getTheta(S2G)==pi/2);
-subGrid(S2G,getTheta(S2G)<=80*degree);
+delete(S2G,get(S2G,'theta')==pi/2);
+subGrid(S2G,get(S2G,'theta')<=80*degree);
 
 %%
 % plot

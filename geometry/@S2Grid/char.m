@@ -9,5 +9,5 @@ end
 
 c = [s, ' points'];
 if ~check_option(varargin,'short')
-  c = [s, ', res.: ',xnum2str(getResolution(S2G) * 180/pi),mtexdegchar];
+  c = [s, ', res.: ',xnum2str(S2G.res * 180/pi),mtexdegchar];
 end

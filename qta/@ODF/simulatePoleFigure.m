@@ -28,7 +28,7 @@ else
 end
 
 comment = get_option(varargin,'comment',...
-    ['Pole figures simulated from ',getcomment(odf)]);
+    ['Pole figures simulated from ',get(odf,'comment')]);
 
 c = get_option(varargin,'SUPERPOSITION',1);
 c = c ./ sum(c);

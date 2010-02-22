@@ -103,10 +103,8 @@ rotate(S2G,axis2quat(xvector,45*degree));
 subGrid(S2G,zvector,10*degree);
 refine(S2Grid('equispaced','resolution',1000,'antipodal'));
 numel(S2G);
-getResolution(S2G);
-getRho(S2G);
-getTheta(S2G);
-%polar(S2G);
+get(S2G,'resolution');
+polar(S2G);
 vector3d(S2G);
 plot(S2G)
 
@@ -155,8 +153,8 @@ scale(pf,2);
 union(pf1,pf2);
 
 pf1 = delete(pf, ...
-  getTheta(getr(pf))>=70*degree & ...
-  getTheta(getr(pf))<=75*degree);
+  get(pf,'theta')>=70*degree & ...
+  get(pf,'theta')<=75*degree);
 plot(pf1)
 %savefigure('pic/pfdelted.pdf')
 

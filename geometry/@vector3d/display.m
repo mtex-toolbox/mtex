@@ -2,7 +2,7 @@ function display(v)
 % standard output
 
 disp(' ');
-disp([inputname(1) ' = ' doclink('vector3d_index','vector3d') ': (size: ' int2str(size(v)) ')']);
+disp([inputname(1) ' = ' doclink('vector3d_index','vector3d') ' (size: ' int2str(size(v)) ')']);
 
 if numel(v) < 20 && numel(v)>0
   

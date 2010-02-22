@@ -16,7 +16,7 @@ if isempty(k),
     [a b] = mean(g);    
     hw = max(prod(1-diag(b)) ,2*degree);
   end
-  %  if isempty(hw), hw = max(getResolution(g) * 3,2*degree); end
+  %  if isempty(hw), hw = max(get(g,'resolution') * 3,2*degree); end
   k = kernel('de la Vallee Poussin','halfwidth',hw);
 else
   hw = gethw(k);

@@ -176,14 +176,14 @@ odf = ODF(S3G,d,k,...
   'comment',['ODF estimated from ',ebsd(1).comment]);
 
 %% check wether kernel is to wide
-if check_option(varargin,'small_kernel') && hw > 2*getResolution(S3G)
+if check_option(varargin,'small_kernel') && hw > 2*get(S3G,'resolution')
   
-  hw = 2/3*getResolution(S3G);
+  hw = 2/3*get(S3G,'resolution');
   k = kernel('de la Vallee Poussin','halfwidth',hw);
   vdisp([' recalculate ODF for kernel: ',char(k)],varargin{:});
   d = eval(odf,S3G); %#ok<EVLC>
   odf = ODF(S3G,d./sum(d),k,...
     get(ebsd(1).orientations,'CS'),get(ebsd(1).orientations,'SS'),...
-    'comment',['ODF estimated from ',getcomment(ebsd(1))]);
+    'comment',['ODF estimated from ',get(ebsd,'copmment')]);
 end
 

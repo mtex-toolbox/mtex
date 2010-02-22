@@ -6,7 +6,8 @@
 %% Simulate pole figures
 
 % get crystal and specimen symmetry
-[cs,ss] = getSym(santafee);
+cs = get(santafee,'CS');
+ss = get(santafee,'SS');
 
 % crystal directions
 h = [Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(1,1,1,cs),Miller(2,1,1,cs)];
@@ -42,7 +43,7 @@ plotDiff(pf,rec2)
  
 %% Plot estimated pole figures
 
-plotpdf(rec2,getMiller(pf),'complete')
+plotpdf(rec2,get(pf,'Miller'),'complete')
 
 %% Plot estimated ODF (Ghost Corrected)
 
