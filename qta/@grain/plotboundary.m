@@ -4,6 +4,9 @@ function varargout = plotboundary(grains,varargin)
 %% Syntax
 %  plotboundary(grains)
 %
+%% Options
+%  property       - phase, @quaternion
+%
 %% Todo
 % Coincidence-site lattice classification
 % Twinning
@@ -11,65 +14,105 @@ function varargout = plotboundary(grains,varargin)
 %% See also
 % grain/misorientation
 
+% default plot options
+varargin = set_default_option(varargin,...
+  get_mtex_option('default_plot_options'));
+
+property = lower(get_option(varargin,'property',[]));
+
 newMTEXplot;
 selector(gcf);
+
+%%
 
 [phase uphase] = get(grains,'phase');
 
 p = polygon( grains );
-
 h = plot(p,'color',[0.8 0.8 0.8]);
 
-CS = get(grains,'CS');
 
-for ph=uphase
-  %neighboured grains per phase
-  ndx = phase == ph;
-  grains_phase = grains(ndx);
+if strcmpi(property,'phase')
   
-  pair = pairs(grains_phase);
-  pair(pair(:,1) == pair(:,2),:) = []; % self reference
-
-  if ~isempty(pair)   
-
+  pair = pairs(grains);
+  pair(pair(:,1) == pair(:,2),:) = [];
+  
+  if ~isempty(pair)
+    
     pair = unique(sort(pair,2),'rows');
-      
-    % boundary angle
-    o = get(grains_phase,'orientation');
-    om = o(pair(:,1)) \ o(pair(:,2));
     
+    np = length(uphase);
     
-    quat = find_type(varargin,'quaternion');
-    if ~isempty(quat)
+    [i j] = find(triu(ones(np)));
+    code = full(sparse(i,j,1:length(i)));
+    code = code + triu(code,1)';
     
-      o0 = [varargin{quat}];
-      
-      delta = get_option(varargin,'delta',2*degree,'double');
-  
-      ind = false(size(om));
-      for l=1:length(o0)
-        ind = ind | angle(om,o0(l)) < delta;
-      end
-      
-      pair = pair(ind,:);
-      
-    elseif ~check_option(varargin,'colorcoding')
-      
-      d = angle( om )./degree;
-      pair(:,3) = d;
-      
-    else
-      
-      cc = get_option(varargin,'colorcoding');
-      
-      d = orientation2color(om,cc,varargin{:});
-      pair(:,3:5) = d;
-            
-    end
+    d = phase(pair);
+    ndx = diff(d,[],2) == 0; % delete same phase
+    pair(ndx,:) = [];
+    d(ndx,:) = [];
     
-    h(end+1) = plot(p(ndx), 'pair', pair, varargin{:} );    
+    c(uphase) = 1:length(uphase);
+    d = c(d);
+    
+    pair(:,3) = code(sub2ind(size(code),d(:,1),d(:,2)));
+    
+    h(end+1) = plot(p, 'pair', pair, varargin{:} );    
     
   end
+  
+elseif ~isempty(property)
+
+  CS = get(grains,'CS');
+  
+  for ph=uphase
+    %neighboured grains per phase
+    ndx = phase == ph;
+    grains_phase = grains(ndx);
+
+    pair = pairs(grains_phase);
+    pair(pair(:,1) == pair(:,2),:) = []; % self reference
+
+    if ~isempty(pair)   
+
+      pair = unique(sort(pair,2),'rows');
+
+      % boundary angle
+      o = get(grains_phase,'orientation');
+      om = o(pair(:,1)) \ o(pair(:,2));
+
+
+      quat = find_type(varargin,'quaternion');
+      if ~isempty(quat)
+
+        o0 = [varargin{quat}];
+
+        delta = get_option(varargin,'delta',2*degree,'double');
+
+        pair = pair(find(om,o0,delta),:);
+
+      elseif ~check_option(varargin,'colorcoding')
+
+        d = angle( om )./degree;
+        pair(:,3) = d;
+
+      else
+
+        cc = get_option(varargin,'colorcoding');
+
+        d = orientation2color(om,cc,varargin{:});
+        pair(:,3:5) = d;
+
+      end
+
+      h = [h plot(p(ndx), 'pair', pair, varargin{:} )];
+      
+    end
+
+  end
+  
+else 
+  
+   optiondraw(h,varargin{:});
   
 end
 

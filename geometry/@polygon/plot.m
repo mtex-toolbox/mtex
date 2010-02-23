@@ -35,70 +35,73 @@ if check_option(varargin,'fill')
 elseif check_option(varargin,'pair')
 %
 	pair = get_option(varargin,'pair');
- 
-  boundary = cell(1,size(pair,1));
+ 	
+  if ~isempty(pair)
+    boundary = cell(1,size(pair,1));
 
-  point_ids = get(p,'point_ids');
-  pxy = get(p,'xy','cell');
-  
-  for k=find(hashole(p))
-    
-    pholes = get(p(k),'holes');
-    
-    hpoint_ids = get(pholes,'point_ids');
-    point_ids{k} = [point_ids{k} hpoint_ids{:}];
-    pxy{k} = vertcat(pxy{k},get(pholes,'xy'));  
-    
-  end
-    
-  for k=1:size(pair,1)
+    point_ids = get(p,'point_ids');
+    pxy = get(p,'xy','cell');
 
-    b1 = point_ids{ pair(k,1) };
-    b2 = point_ids{ pair(k,2) };
-    xy =  pxy{ pair(k,2) };
+    for k=find(hashole(p))
 
-    r = find(ismember(b2,b1));      
-    sp = [0 find(diff(r)>1) length(r)];      
-      
-    bb = [];
-    for j=1:length(sp)-1 % line segments; still buggy on triple junction          
-      bb = [...
-        bb; ...
-        xy(r(sp(j)+1:sp(j+1)),:);...
-        [NaN NaN]];
+      pholes = get(p(k),'holes');
+
+      hpoint_ids = get(pholes,'point_ids');
+      point_ids{k} = [point_ids{k} hpoint_ids{:}];
+      pxy{k} = vertcat(pxy{k},get(pholes,'xy'));  
+
     end
-    boundary{k} = bb;
 
-  end
-  
-  xy = vertcat(boundary{:});
-  
-  if ~isempty(xy)
-    
-    [X Y lx ly] = fixMTEXscreencoordinates(xy(:,1), xy(:,2), varargin{:});
+    for k=1:size(pair,1)
 
-    if size(pair,2) == 2 % colorize monotone
+      b1 = point_ids{ pair(k,1) };
+      b2 = point_ids{ pair(k,2) };
+      xy =  pxy{ pair(k,2) };
 
-      h = line(X(:),Y(:)); 
+      r = find(ismember(b2,b1));      
+      sp = [0 find(diff(r)>1) length(r)];      
 
-    else % colorize colormap
+      bb = [];
+      for j=1:length(sp)-1 % line segments; still buggy on triple junction          
+        bb = [...
+          bb; ...
+          xy(r(sp(j)+1:sp(j+1)),:);...
+          [NaN NaN]];
+      end
+      boundary{k} = bb;
 
-      d = pair(:,3:end);
+    end
 
-      cs = cellfun('prodofsize',boundary)/2;
-      csz = [0 cumsum(cs)];
+    xy = vertcat(boundary{:});
 
-      c = zeros(length(X),size(d,2));
-      for k=1:size(pair,1)
+    if ~isempty(xy)
 
-        c( csz(k)+1:csz(k+1) , : ) = d( k*ones( cs( k ) ,1) ,:);      
+      [X Y lx ly] = fixMTEXscreencoordinates(xy(:,1), xy(:,2), varargin{:});
+
+      if size(pair,2) == 2 % colorize monotone
+
+        h = line(X(:),Y(:)); 
+
+      else % colorize colormap
+
+        d = pair(:,3:end);
+
+        cs = cellfun('prodofsize',boundary)/2;
+        csz = [0 cumsum(cs)];
+
+        c = zeros(length(X),size(d,2));
+        for k=1:size(pair,1)
+
+          c( csz(k)+1:csz(k+1) , : ) = d( k*ones( cs( k ) ,1) ,:);      
+
+        end
+
+        h = patch('Faces',1:length(X),'Vertices',[X(:),Y(:)],'EdgeColor','flat',...
+        'FaceVertexCData',c);
 
       end
-
-      h = patch('Faces',1:length(X),'Vertices',[X(:),Y(:)],'EdgeColor','flat',...
-      'FaceVertexCData',c);
-
     end
+        
   end
   
 else
@@ -123,10 +126,12 @@ end
 
 if exist('h','var'), 
   optiondraw(h,varargin{:});
-
   xlabel(lx); ylabel(ly);
-  if nargout > 0, handles = h; end
+else
+  h = [];  
 end
+
+if nargout > 0, handles = h; end
 
 
 

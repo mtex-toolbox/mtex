@@ -16,8 +16,6 @@ function [grains ebsd] = segment2d(ebsd,varargin)
 %
 %% Flags
 %  unitcell     - omit voronoi decomposition and treat a unitcell lattice
-%  plot         - plot grain-boundies instead of generating grains
-%  graph/former - plot the neighbourhood graph, or the former neighbourhood graph
 %
 %% Example
 %  [grains ebsd] = segment2d(ebsd,'angle',15*degree,'augmentation','cube')

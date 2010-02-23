@@ -64,7 +64,7 @@ else
       sgamma, int32(igamma), int32(ialphabeta), palpha, pgamma, ...
       xalpha(ndx), xbeta(ndx), xgamma(ndx), epsilon);
       
-    if nnz(dist), d = max(d,dist); end
+    if nnz(dist) > 0, d = max(d,dist); end
     
   end    
   
