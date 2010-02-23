@@ -51,16 +51,21 @@ else
   % for finding the minimial beta angle
   qcs = quaternion(rotation_special(SO3G.CS));
   
-  % for all symmetries 
-  for is = 1:length(qss)
-    for ic = 1:length(qcs)
-
-      [xalpha,xbeta,xgamma] = Euler(qss(is) * ...
-        transpose(q(:)*qcs(ic)),'ZYZ');
+  [xalpha,xbeta,xgamma] = Euler( qss * q * qcs ,'ZYZ');
   
-      d = max(d,SO3Grid_dist_region(yalpha,ybeta,ygamma,sgamma,int32(igamma),...
-        int32(ialphabeta),palpha,pgamma, xalpha,xbeta,xgamma,epsilon));
+  ncs = numel(qss)*numel(qcs);
+  cs = 0:numel(q):ncs*numel(q);
+  
+  for k=1:ncs
+  
+    ndx = cs(k)+1:cs(k+1);
+  
+    dist = SO3Grid_dist_region(yalpha,ybeta,ygamma, ...
+      sgamma, int32(igamma), int32(ialphabeta), palpha, pgamma, ...
+      xalpha(ndx), xbeta(ndx), xgamma(ndx), epsilon);
+      
+    if nnz(dist), d = max(d,dist); end
     
-    end    
-  end
+  end    
+  
 end

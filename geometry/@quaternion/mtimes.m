@@ -4,12 +4,17 @@ function q = mtimes(q1,q2)
 if isa(q1,'quaternion') && isa(q2,'quaternion')
   
   q = q1;
+  
   a1 = q1.a(:);   b1 = q1.b(:);   c1 = q1.c(:);   d1 = q1.d(:);
   a2 = q2.a(:).'; b2 = q2.b(:).'; c2 = q2.c(:).'; d2 = q2.d(:).';
- 	q.a = a1 * a2 - b1 * b2 - c1 * c2 - d1 * d2;
- 	q.b = a1 * b2 + b1 * a2 + c1 * d2 - d1 * c2;
- 	q.c = a1 * c2 + c1 * a2 + d1 * b2 - b1 * d2;
- 	q.d = a1 * d2 + d1 * a2 + b1 * c2 - c1 * b2;
+  
+ 	a = a1 * a2 - b1 * b2 - c1 * c2 - d1 * d2;
+ 	b = a1 * b2 + b1 * a2 + c1 * d2 - d1 * c2;
+ 	c = a1 * c2 + c1 * a2 + d1 * b2 - b1 * d2;
+ 	d = a1 * d2 + d1 * a2 + b1 * c2 - c1 * b2;
+  
+  q.a = a; q.b = b; q.c = c; q.d = d;
+  
   %[a,b,c,d] = quaternion_mtimes_qq(q1.a,q1.b,q1.c,q1.d,q2.a,q2.b,q2.c,q2.d);
 	
 %    q = class(q,'quaternion');

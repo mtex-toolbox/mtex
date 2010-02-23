@@ -20,25 +20,26 @@ function varargout = Euler(quat,varargin)
 %% See also
 % quaternion/Rodrigues
 
-if check_option(varargin,{'nfft','ZYZ','ABG'})
-  alpha = atan2(quat.c .* quat.d - quat.a .* quat.b,...
-    quat.b .* quat.d + quat.a .* quat.c);
-  beta = acos(max(-1,min(1,-quat.b.^2 - quat.c.^2 + quat.d.^2 + quat.a.^2)));
-  gamma = atan2(quat.c .* quat.d + quat.a .* quat.b,...
-    -quat.b .* quat.d + quat.a .* quat.c);
+  qa = quat.a;
+  qb = quat.b;
+  qc = quat.c;
+  qd = quat.d;
+   
+if check_option(varargin,{'nfft','ZYZ','ABG'})  
+  alpha = atan2( qc .* qd - qa .* qb  ,  qb .* qd + qa .* qc );
+  beta = acos(max(-1,min(1,-qb.^2 - qc.^2 + qd.^2 + qa.^2)));
+  gamma = atan2( qc .* qd + qa .* qb  , -qb .* qd + qa .* qc );
     labels = {'alpha','beta','gamma'};
 else
-  gamma = atan2(quat.b .* quat.d - quat.a .* quat.c,...
-    quat.c .* quat.d + quat.a .* quat.b);
-  beta = acos(max(-1,min(1,-quat.b.^2 - quat.c.^2 + quat.d.^2 + quat.a.^2)));
-  alpha = atan2(quat.b .* quat.d + quat.a .* quat.c,...
-    -quat.c .* quat.d + quat.a .* quat.b);
-  labels = {'phi1','Phi','phi2'};
+  gamma = atan2( qb .* qd - qa .* qc ,   qc .* qd + qa .* qb );
+  beta = acos(max(-1,min(1,-qb.^2 - qc.^2 + qd.^2 + qa.^2)));
+  alpha = atan2( qb .* qd + qa .* qc  , -qc .* qd + qa .* qb );
+    labels = {'phi1','Phi','phi2'};
 end
 
 % if rotational axis equal to z
-ind = isnull(quat.b) & isnull(quat.c);
-alpha(ind) = 2*asin(max(-1,min(1,ssign(quat.a(ind)).*quat.d(ind))));
+ind = isnull(qb) & isnull(qc);
+alpha(ind) = 2*asin(max(-1,min(1,ssign(qa(ind)).*qd(ind))));
 beta(ind) = 0;
 gamma(ind) = 0;
 
