@@ -89,14 +89,13 @@ else
       options{end+1} = 'silent';
       res = get_option(varargin,'RESOLUTION',2.5*degree);
 
-      ph = get(grains,'phase');
-      [uph m ph] = unique(ph);
-      S3G = cell(size(uph));
-      for k=1:numel(uph)      
-        rp = find( ph == k,1,'first');
-        pCS = get(grains(rp),'CS');
-        pSS = get(grains(rp),'SS');
-        S3G{k} = SO3Grid(res,pCS{:},pSS{:});
+      [phase uphase] = get(grains,'phase');
+      CS = get(grains,'CS');
+      SS = get(grains,'SS');
+      
+      S3G = cell(size(uphase));
+      for k=1:numel(uphase)      
+        S3G{k} = SO3Grid(res,CS{:},SS{:});
       end        
       
       if find_type(options,'ODF')
@@ -117,11 +116,11 @@ else
     end
     
     options2 = options;
-    if exist('S3G','var') && exist('ph','var') % pass a Grid if possible
-      options2 =  { 'SO3Grid', S3G{ph(k)}, options2{:} };
+    if exist('S3G','var') && exist('phase','var') % pass a Grid if possible
+      options2 =  [ 'SO3Grid', S3G(phase(k)), options2 ];
     end
     if exist('odf_eval','var') && exist('ph','var')
-      options2 = { 'evaluated',odf_eval{ph(k)},options2{:} };
+      options2 = [ 'evaluated',odf_eval(ph(k)),options2 ];
     end
     
     g{k} = feval(FUN,evar{k},options2{:});

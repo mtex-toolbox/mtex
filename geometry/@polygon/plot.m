@@ -73,29 +73,32 @@ elseif check_option(varargin,'pair')
   
   xy = vertcat(boundary{:});
   
-  [X Y lx ly] = fixMTEXscreencoordinates(xy(:,1), xy(:,2), varargin);
-  
-  if size(pair,2) == 2 % colorize monotone
+  if ~isempty(xy)
     
-    h = line(X(:),Y(:)); 
-    
-  else % colorize colormap
-    
-    d = pair(:,3:end);
-    
-    cs = cellfun('prodofsize',boundary)/2;
-    csz = [0 cumsum(cs)];
-    
-    c = zeros(length(X),size(d,2));
-    for k=1:size(pair,1)
-            
-      c( csz(k)+1:csz(k+1) , : ) = d( k*ones( cs( k ) ,1) ,:);      
-     
+    [X Y lx ly] = fixMTEXscreencoordinates(xy(:,1), xy(:,2), varargin{:});
+
+    if size(pair,2) == 2 % colorize monotone
+
+      h = line(X(:),Y(:)); 
+
+    else % colorize colormap
+
+      d = pair(:,3:end);
+
+      cs = cellfun('prodofsize',boundary)/2;
+      csz = [0 cumsum(cs)];
+
+      c = zeros(length(X),size(d,2));
+      for k=1:size(pair,1)
+
+        c( csz(k)+1:csz(k+1) , : ) = d( k*ones( cs( k ) ,1) ,:);      
+
+      end
+
+      h = patch('Faces',1:length(X),'Vertices',[X(:),Y(:)],'EdgeColor','flat',...
+      'FaceVertexCData',c);
+
     end
-    
-    h = patch('Faces',1:length(X),'Vertices',[X(:),Y(:)],'EdgeColor','flat',...
-    'FaceVertexCData',c);
-  
   end
   
 else

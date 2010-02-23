@@ -21,51 +21,60 @@ if isa(g,'orientation') && odf(1).CS ~= get(g,'CS') && odf(1).SS ~= get(g,'SS')
 end
 f = zeros(size(g));
 
-for i = 1:length(odf)
+for i = 1:length(odf) 
   
-  if check_option(odf(i),'UNIFORM') % uniform portion
-    
-    f = f + odf(i).c;
+  switch type(odf(i).options{:},varargin{:})
   
-  elseif check_option(varargin,'FOURIER') || check_option(odf(i),'FOURIER') 
+    case 'UNIFORM' % uniform portion
     
-    f = f + reshape(eval_fourier(odf(i),g,varargin{:}),...
-      size(f));
+      f = f + odf(i).c;
+  
+    case 'FOURIER'
     
-  elseif check_option(odf(i),'FIBRE') % fibre symmetric portion
+      f = f + reshape(eval_fourier(odf(i),g,varargin{:}),...
+        size(f));
+    
+    case'FIBRE' % fibre symmetric portion
      
-    f = f + reshape(RK(odf(i).psi,g(:),...
-      vector3d(odf(i).center{1}),odf(i).center{2},...
-      odf(i).c,odf(i).CS,odf(i).SS,1),size(f));
+      f = f + reshape(RK(odf(i).psi,g(:),...
+        vector3d(odf(i).center{1}),odf(i).center{2},...
+        odf(i).c,odf(i).CS,odf(i).SS,1),size(f));
       
-  elseif check_option(odf(i),'Bingham')
-    
-    
-    %warning('MTEX:Bingham','Normalization missing!')
-    ASym = quaternion(symmetrise(odf(i).center));
-    
-    C = odf(i).c(1) ./ mhyper(odf(i).psi);
+    case 'Bingham'
+   
+      %warning('MTEX:Bingham','Normalization missing!')
+      ASym = quaternion(symmetrise(odf(i).center));
 
-    for iA = 1:size(ASym,1)
+      C = odf(i).c(1) ./ mhyper(odf(i).psi);
+
+      for iA = 1:size(ASym,1)
+
+        h = dot_outer(quaternion(g),ASym(iA,:)).^2;
+
+        h = h * reshape(odf(i).psi,[],1);
+
+        f = f + reshape(exp(h) .* C,size(f)) ./ size(ASym,2);
+
+      end    
     
-      h = dot_outer(quaternion(g),ASym(iA,:)).^2;
-      
-      h = h * reshape(odf(i).psi,[],1);
-      
-      f = f + reshape(exp(h) .* C,size(f)) ./ size(ASym,2);
+    case 'EVEN'
     
-    end
-    
-    
-  elseif check_option(varargin,'EVEN')
-    
-    M = GK(odf(i).psi,g(:),odf(i).center,odf(i).CS,odf(i).SS);
-    f = f + M * odf(i).c(:);
+      M = GK(odf(i).psi,g(:),odf(i).center,odf(i).CS,odf(i).SS);
+      f = f + M * odf(i).c(:);
        
-  else % radially symmetric portion
+    otherwise % radially symmetric portion
       
-    f = f + reshape(sum_K(odf(i).psi,g,odf(i).center,odf(i).CS,odf(i).SS,...
-      odf(i).c(:),varargin{:}),size(f));
+      f = f + reshape(sum_K(odf(i).psi,g,odf(i).center,odf(i).CS,odf(i).SS,...
+        odf(i).c(:),varargin{:}),size(f));
     
   end
 end
+
+
+function typ = type(varargin)
+
+typ = {'UNIFORM','FOURIER','FIBRE','Bingham','EVEN'};
+
+pos = find_option(typ,varargin);
+if pos > 0, typ = typ{find_option(typ,varargin)};
+else typ = ''; end

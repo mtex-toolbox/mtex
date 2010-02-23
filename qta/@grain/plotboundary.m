@@ -11,9 +11,10 @@ function varargout = plotboundary(grains,varargin)
 %% See also
 % grain/misorientation
 
-[phase uphase] = get(grains,'phase');
-
+newMTEXplot;
 selector(gcf);
+
+[phase uphase] = get(grains,'phase');
 
 p = polygon( grains );
 

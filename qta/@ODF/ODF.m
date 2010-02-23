@@ -55,28 +55,33 @@ if nargin <= 4, SS = get(center,'SS'); end
 c_hat = [];
 
 % check completness of parameters
-if check_option(varargin,'FOURIER')
-  c_hat = center;
-  c = c_hat(1);
-  center = [];
-elseif check_option(varargin,'FIBRE')
-  if ~((isa(center{1},'Miller') || isa(center{1},'vector3d')) && isa(center{2},'vector3d')...
-      && isa(c,'double') && isa(psi,'kernel')...
-      && isa(CS,'symmetry') && isa(CS,'symmetry'))
-    error('wrong Arguments: {Miller,vector3d}, data, kernel, crystal-symmetry, specimen-symmetry');
-  end
-  lg = length(center{1});
-elseif check_option(varargin,'UNIFORM')
-  lg = 1;
-elseif check_option(varargin,'Bingham')
-  lg = 1;  
-else
-  if ~(isa(center,'quaternion') && isa(c,'double') && isa(psi,'kernel')...
-      && isa(CS,'symmetry') && isa(CS,'symmetry'))
-    error('wrong Arguments: SO3Grid, data, kernel, crystal-symmetry, specimen-symmetry');
-  end
-  lg = numel(center);
-end 
+option = extract_option(varargin,{'UNIFORM','FIBRE','FOURIER','Bingham'});
+
+switch lower(char(option))
+  case 'fourier'
+    c_hat = center;
+    c = c_hat(1);
+    center = [];
+  case 'fibre'
+    if ~((isa(center{1},'Miller') || isa(center{1},'vector3d')) && isa(center{2},'vector3d')...
+        && isa(c,'double') && isa(psi,'kernel')...
+        && isa(CS,'symmetry') && isa(CS,'symmetry'))
+      error('wrong Arguments: {Miller,vector3d}, data, kernel, crystal-symmetry, specimen-symmetry');
+    end
+    lg = length(center{1});
+  case 'uniform'
+    lg = 1;
+  case 'bingham'
+    lg = 1;  
+  otherwise
+    if ~(isa(center,'quaternion') && isa(c,'double') && isa(psi,'kernel')...
+          && isa(CS,'symmetry') && isa(CS,'symmetry'))
+        error('wrong Arguments: SO3Grid, data, kernel, crystal-symmetry, specimen-symmetry');
+    end
+    lg = numel(center);  
+end
+
+
 
 % check amount of coefficients
 if ~check_option(varargin,'FOURIER') && lg ~= length(c)
@@ -88,6 +93,8 @@ if isa(center,'SO3Grid') && (~(get(center,'CS') == CS) || ~(get(center,'SS') == 
   qwarning('symmetry of the grid does not fit to the given symmetry');
 end
 
+
+
 odf.comment = get_option(varargin,'comment',[]);
 odf.center = center;
 odf.c = c;
@@ -95,5 +102,5 @@ odf.c_hat = c_hat;
 odf.psi = psi;
 odf.CS = CS;
 odf.SS = SS;
-odf.options = extract_option(varargin,{'uniform','fibre','fourier','bingham'});
+odf.options = option;
 odf = class(odf,'ODF');
