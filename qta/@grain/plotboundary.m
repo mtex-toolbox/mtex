@@ -78,17 +78,23 @@ elseif ~isempty(property)
 
       % boundary angle
       o = get(grains_phase,'orientation');
+      
+      twin = find_type(varargin,'symmetry');
+      if ~isempty(twin), o = set(o,'CS',varargin{twin}); end
+      
       om = o(pair(:,1)) \ o(pair(:,2));
-
-
+      
       quat = find_type(varargin,'quaternion');
-      if ~isempty(quat)
+      if ~isempty(quat) || ~isempty(twin)
+        if ~isempty(twin)
+          o0 = idquaternion;
+        else
+          o0 = [varargin{quat}];
+        end
 
-        o0 = [varargin{quat}];
+        epsilon = get_option(varargin,'delta',2*degree,'double');
 
-        delta = get_option(varargin,'delta',2*degree,'double');
-
-        pair = pair(find(om,o0,delta),:);
+        pair = pair(find(om,o0,epsilon),:);
 
       elseif ~check_option(varargin,'colorcoding')
 
