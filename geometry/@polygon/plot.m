@@ -11,6 +11,10 @@ if check_option(varargin,'fill')
   p = p(ndx);
   c = c(ndx,:);
   
+  if islogical(c)
+    c = double(c);
+  end
+  
   ind = splitdata(pl,3);
   
   h = zeros(size(ind));

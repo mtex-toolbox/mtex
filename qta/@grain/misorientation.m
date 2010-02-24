@@ -101,11 +101,14 @@ else % misorientation to neighbour grains
       
       ply = polygon(grains_phase);
       for l=1:size(pair,1)
-        b1 = [ply(pair(l,1)).boundary{:}];
-        b2 = ply(pair(l,2)).boundary{1};
-        % could also be geometric
+        p1 = ply(pair(l,1));
+        p2 = ply(pair(l,2));
         
-        p.weight(l) = sum(ismember(b1,b2));
+        b1 = get([p1 get(p1,'holes')],'point_ids');
+        b2 = get([p2 get(p2,'holes')],'point_ids');
+          % could also be geometric
+           
+        p.weight(l) =sum(ismember([b1{:}],[b2{:}]));
       end      
     else      
       p = struct;

@@ -11,17 +11,4 @@ function  peri = hullperimeter(p)
 % grain/borderlength 
 %
 
-p = polygon(p);
-
-lengths = @(xy) sum(sqrt(sum(diff(xy).^2,2)));
-
-nc = length(p);
-peri = zeros(size(p));
-
-%without respect to holes
-pxy = {p.xy};
-for k=1:nc
-  xy = pxy{k};
-  K = convhull(xy(:,1),xy(:,2));
-  peri(k) = lengths(xy(K,:)); 
-end
+peri = perimeter(convhull(p));

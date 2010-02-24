@@ -1,4 +1,4 @@
-function [cmp v]= hullprincipalcomponents(grains)
+function [cmp v]= hullprincipalcomponents(p)
 % returns the principalcomponents of convexhull
 %
 %% Input
@@ -12,4 +12,4 @@ function [cmp v]= hullprincipalcomponents(grains)
 % grain/principalcomponents grain/plotellipse
 %
 
-[cmp v] = principalcomponents(grains,'hull');
+[cmp v] = principalcomponents(convhull(p));

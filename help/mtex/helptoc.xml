@@ -111,6 +111,7 @@
     <tocitem target="vector3d_index.html">Class vector3d</tocitem>
     <tocitem target="rotation_index.html">Class rotation</tocitem>
     <tocitem target="orientation_index.html">Class orientation</tocitem>
+    <tocitem target="polygon_index.html">Class polygon</tocitem>
   </tocitem> 
   <tocitem target="classes_index.html" image="$toolbox/matlab/icons/reficon.gif">Quantitative Texture Analysis Class Reference
     <tocitem target="ODF_index.html">Class ODF</tocitem>

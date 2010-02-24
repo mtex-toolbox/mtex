@@ -25,36 +25,30 @@ plotx2east
 %% Segmentation
 % perform a regionalisation with different threshold angels
 
-angles = [2:2:20 25:5:45];
+angles = [2.5:2.5:20 25:5:45];
 grains = cell(size(angles));
 
 for k=1:numel(angles)
-  [grains{k} ebsd] = segment2d(ebsd,'angle', angles(k)*degree);
+  [grains{k} ebsd] = segment2d(ebsd,'angle', angles(k)*degree,'silent');
 end
  
 %% grain size distribution
 
 bin = exp(1:0.5:6);
-grsz = cell2mat(cellfun(@(x) hist(grainsize(x),bin), grains,'uniformoutput',false)')'
-
-%%
-% columns have same threshold angle, rows same grainsize
-
-bar(grsz)
-set(gca,'YScale','log') 
+cell2mat(cellfun(@(x) hist(grainsize(x),bin), grains,'uniformoutput',false)')'
 
 %% Estimate ODF with different threshold angles
 
-kern = kernel('de la Vallee Poussin','halfwidth',10*degree);
+kern = kernel('de la Vallee Poussin','halfwidth',7*degree);
 
 for k=1:numel(angles)  
   %misorientation to neighbour
   mis2m_ebsd = misorientation(grains{k},ebsd);
-  mis2m_odf{k}  = calcODF(mis2m_ebsd(1),'kernel',kern,'resolution',2.5*degree,'silent');
+  mis2m_odf{k}  = calcODF(mis2m_ebsd(1),'kernel',kern,'exact','silent');
    
   %misorientation to mean
   mis2n_ebsd = misorientation(grains{k});
-  mis2n_odf{k}  = calcODF(mis2n_ebsd(1),'kernel',kern,'resolution',2.5*degree,'silent');
+  mis2n_odf{k}  = calcODF(mis2n_ebsd(1),'kernel',kern,'exact','silent');
 end
 
 
@@ -70,11 +64,13 @@ tentropy_n = zeros(size(angles));
 %%
 % now we evaluate the misorientation odfs of every threshold 
 
+S3 = SO3Grid(5*degree,symmetry('m-3m'),symmetry);
+
 for k=1:numel(angles)
- tindex_n(k)   = textureindex(mis2n_odf{k},'resolution',5*degree);
- tentropy_n(k) = entropy(mis2n_odf{k},'resolution',5*degree);
- tindex_m(k)   = textureindex(mis2m_odf{k},'resolution',5*degree);
- tentropy_m(k) = entropy(mis2m_odf{k},'resolution',5*degree);
+ tindex_n(k)   = textureindex(mis2n_odf{k},'SO3Grid',S3);
+ tentropy_n(k) = entropy(mis2n_odf{k},'SO3Grid',S3);
+ tindex_m(k)   = textureindex(mis2m_odf{k},'SO3Grid',S3);
+ tentropy_m(k) = entropy(mis2m_odf{k},'SO3Grid',S3);
 end
 
 %%

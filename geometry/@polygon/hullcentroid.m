@@ -1,4 +1,4 @@
-function cxy = hullcentroid(grains)
+function cxy = hullcentroid(p)
 % returns the centroid of convexhull
 %
 %% Input
@@ -10,4 +10,4 @@ function cxy = hullcentroid(grains)
 %% See also
 % grain/centroid grain/principalcomponents
 
-cxy = centroid(grains,'hull');
+cxy = centroid(convhull(p));

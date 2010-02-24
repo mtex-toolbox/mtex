@@ -30,17 +30,6 @@ ebsd = loadEBSD(fname,CS,SS,'interface','generic',...
 
 plotx2east
 
-%% Plot Boundaries
-% Let us first plot all misorientations between EBSD Measurement-sites that
-% have an angle higher than 2 degree in red, one might say to this low-angle
-% boundary, besides this high-angle boundaries above 10 degree in black,
-% and at last all phase boundaries green.
-
-figure('position',[50 50 800 400]),hold all
-plotboundaries(ebsd,'angle',2*degree,'color','r')
-plotboundaries(ebsd,'angle',10*degree,'color','k')
-plotboundaries(ebsd,'angle',pi,'color','g','linewidth',2)
-
 
 %% Detect Grains
 % The EBSD Data is [[EBSD_segment2d.html, regionalized]] according its
@@ -52,7 +41,7 @@ plotboundaries(ebsd,'angle',pi,'color','g','linewidth',2)
 %%
 % Let us visualize the grain boundaries
 
-figure, plot(grains)
+figure, plotboundary(grains)
 
 %%
 % and we can also plot boundaries within a grain
@@ -75,22 +64,9 @@ link(ebsd, link(grains,ebsd(1)) )
 
 
 %%
-% We can visualize the assigned orientation
+% We can visualize the assigned mean orientation
 
 figure, plot(grains,'property','orientation')
 
-%%
-% compared to the original data
-
-figure, plot(ebsd)
-
-
-%% Determine Phase Boundaries
-% If the treshold angle is higher than its maximum misorienation angle of a
-% crystal symmetry we'll get the phase boundaries.
-
-[grains_phaseb ebsd] = segment2d(ebsd,'angle',180*degree);
-
-figure, plot(grains_phaseb,'property','phase')
 
 

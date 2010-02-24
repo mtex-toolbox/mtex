@@ -9,8 +9,8 @@
 % [[uniformODF.html,uniformODFs]], [[unimodalODF.html,unimodalODFs]],
 % [[fibreODF.html,fibreODFs]] and any superposition of those ODF.
 % These ODFs can be used to 
-% <MTEX_PoleFigureSimulation_demo.html simulate PoleFigures> or to 
-% <MTEX_EBSDSimulation_demo.html simulate EBSD data>.
+% [[PoleFigureSimulation_demo.html simulate PoleFigures]] or to 
+% [[EBSDSimulation_demo.html,simulate EBSD data]].
 
 %% The Uniform ODF
 %
@@ -18,7 +18,7 @@
 % everywhere identical to one.
 % In order to define a uniform ODF one needs only to specify its crystal
 % and specimen symmetry and to use the command 
-% <uniformODF.html uniformODF>.
+% [[uniformODF.html,uniformODF]].
 
 cs = symmetry('cubic');
 ss = symmetry('orthorhombic');

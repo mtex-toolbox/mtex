@@ -1,6 +1,6 @@
 %% Specimen Directions - The MTEX Class vector3d
 
-% *Deﬁnition*
+% *Definition*
 
 v = vector3d (1 ,0 ,0)                      % Cart . coordinates
 v = vector3d('polar', 20*degree, 10*degree) % polar coordinates
@@ -28,7 +28,7 @@ plot([v,w],'FontSize',20)
 
 %% Rotations
 
-% *Deﬁnition*
+% *Definition*
 rot = rotation('Euler',10*degree,20*degree,30*degree);
 rot = rotation('axis',xvector,'angle',30*degree);
 rot = rotation('map',Miller(1,0,0),yvector,Miller(0,1,1),zvector);
@@ -76,6 +76,18 @@ rotation(CS)
 % *plotting*
 set(gcf,'position',[50,50,400,400]);
 plot(CS,'FontSize',15,'antipodal')
+
+%%
+% *twinning*
+% a [[symmetry_twinning.html twinning]] operator adds symmetry elemtes
+
+dauphine = twinning(CS,'dauphine')
+figure, plot(CS)
+figure, plot(dauphine)
+
+%%
+%
+close all
 
 %% Crystal directions - the class *Miller*
 
@@ -187,12 +199,15 @@ ori * [h1,h2]
 
 %%
 % create
-S2G = S2Grid(v3);
+S2G = S2Grid(zvector);
 S2G = S2Grid('regular','RESOLUTION',5*pi/180,'north')
 S2G = S2Grid('equispaced','points',1000,'antipodal');
 
 %%
 % operations
+
+q = axis2quat(1,1,1,60*degree);
+
 rotate(S2G,q);
 delete(S2G,get(S2G,'theta')==pi/2);
 subGrid(S2G,get(S2G,'theta')<=80*degree);

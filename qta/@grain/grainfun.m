@@ -100,7 +100,7 @@ else
       
       if find_type(options,'ODF')
         odf_pos = find(cellfun('isclass',options,'ODF'));
-        assert(numel(odf_pos) == numel(uph), 'if any additional ODF is specified, the number of ODFs must agree with the phases');
+        assert(numel(odf_pos) == numel(uphase), 'if any additional ODF is specified, the number of ODFs must agree with the phases');
         
         for k=1:numel(odf_pos)
           odf_eval{k} = eval(options{odf_pos(k)},S3G{k},varargin{:});

@@ -104,7 +104,7 @@ subGrid(S2G,zvector,10*degree);
 refine(S2Grid('equispaced','resolution',1000,'antipodal'));
 numel(S2G);
 get(S2G,'resolution');
-polar(S2G);
+[theta rho] = polar(S2G);
 vector3d(S2G);
 plot(S2G)
 

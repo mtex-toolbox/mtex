@@ -31,7 +31,7 @@ plotx2east
 [grains ebsd] = segment2d(ebsd,'angle',12.5*degree)
 
 %% Grain-size Analysis
-% Since a grain is associated with a polygon, we can determine properties
+% Since a grain is associated with a @polygon, we can determine properties
 % of the geometry
 
 ar = area(grains);
@@ -61,7 +61,7 @@ scatter(sf, as, ar)
 % later on it could be set in relation to its textural properties
 
 %% Spatial Dependencies
-% One interessting question would be wether a polyphase system has
+% One interessting question would be, wether a polyphase system has
 % dependence in the spatial arrangement or not, therefor we can count the
 % transitions to a neighbour grain
 

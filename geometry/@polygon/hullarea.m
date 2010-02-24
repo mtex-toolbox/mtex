@@ -1,5 +1,5 @@
-function s = hullarea(grains)
-% returns the area of the convexhull of a grain
+function s = hullarea(p)
+% returns the area of the convexhull of a polygon
 %
 %% Input
 %  grains - @grain
@@ -10,4 +10,4 @@ function s = hullarea(grains)
 %% See also
 % grain/area grain/grainsize
 
-s = grainsize(grains,'hull');
+[h s] = convhull(p);

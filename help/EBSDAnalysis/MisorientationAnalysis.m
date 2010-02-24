@@ -3,7 +3,7 @@
 %% Open in Editor
 %
 %% Abstract
-% This Article gives you an overview over the functionality MTEX offers to
+% This Article gives an overview over the functionality MTEX offers to
 % analyze misorientation behavior of EBSD Data and Grains. Beside the
 % influence of the choosen high-angle theshold (see [[influence_demo.html,demo]]) on Misorientation
 % there are manifold ways to explain boundary and intergranular grain
@@ -12,7 +12,7 @@
 % $g_i$ uppon $g_j$ modulo crystal symmetry, or the other way round
 % depending on the point of view.
 %
-% $$ g_{mis}(g_i,g_j) = g_i *g_j^{-1} $$
+% $$ g_{mis}(g_i,g_j) = \left(g_i*G_{Laue}\right)^{-1} * \left(g_j *G_{Laue}\right)  $$
 %
 %
 %% Contents
@@ -40,7 +40,7 @@ plotx2east
 %% Detect Grains
 % First of all we have to regionalize our investigation area
 
-[grains ebsd] = segment2d(ebsd,'angle',12.5*degree)
+[grains ebsd] = segment2d(ebsd,'angle',15*degree)
 
 
 %% Misorientation to Mean
@@ -53,22 +53,19 @@ mis2m_ebsd = misorientation(grains,ebsd)
 %%
 % first look on the misorientation distribution
 
-figure, hist(mis2m_ebsd)
+figure, hist(mis2m_ebsd,30)
 
 
 %% Misorientation to Neighboured Grains
 % Futhermore we can use the orientation of each grain to calculate the
 % orientation needed to be its neighbour grain, since we have crystal
 % symmetrie, respectively different phases, this is done only to neighbours
-% of the same phase. However, thereinafter we'll have to weight each
-% performed rotation as to its area
+% of the same phase. However, thereinafter we'll can weight it after its,
+% common boundary length ..
 
-mis2n_ebsd = misorientation(grains,'weighted')
-
-%%
-% 
-
+mis2n_ebsd = misorientation(grains)
 figure, hist(mis2n_ebsd)
+
 
 %%
 % Now let us plot those two kinds of misorientation together. As one can
@@ -81,11 +78,11 @@ text(13.5,0.9,'threshold','rotation',-90)
 
 %% Intergranular Misorientation Analysis
 % Both misorientations are returned as a new ebsd object holding the
-% calculations. We can plot the misorientation to mean, 
+% calculations. We can plot the misorientation to mean spatially
 
 figure, 
 plotspatial(mis2m_ebsd,'r',sph2vec(30*degree,22.5*degree),'antipodal')
-hold on, plot(grains)
+hold on, plotboundary(grains)
 
 %%
 % many grains are plotted allmost white, some colored, let us quantize this
@@ -128,28 +125,41 @@ plotpdf(superposed,[Miller(1,0,0) Miller(1,1,0), Miller(1,1,1)]), colorbar
 %% Boundary Misorientation Analysis
 % as spoken to above we have calculated a new ebsd object holding the
 % misorientation to neighbours, however not the direct neighbours of grain
-% boundary neighbours are taken but mean orientations of grains. also for
-% this we can estimate an misorientation density function
+% boundary neighbours are taken but mean orientations of grains
+% If we take a closer look on the misorientation histogram above we may inspect 
+% a peak at $\pi/3$ for phase 2. lets us see the distribution  
 
-k = kernel('de la Vallee Poussin','halfwidth',10*degree);
-
-mis2n_odf = calcODF(mis2n_ebsd(1),'kernel',k);
-
-%%
-% let us compare it visually to the overall grains ODF
-
-odf = calcODF(link(grains,ebsd(1)),'kernel',k);
-
-figure('position',[100 100 800 200])
-plotpdf(mis2n_odf,[Miller(1,0,0) Miller(1,1,0), Miller(1,1,1)]), colorbar
-
-figure('position',[100 100 800 200])
-plotpdf(odf,[Miller(1,0,0) Miller(1,1,0), Miller(1,1,1)]), colorbar
+plotipdf(mis2n_ebsd(2),vector3d(0,0,1))
 
 %%
+% since its an EBSD object we can also estimate an misorientation density function
 
-calcerror(mis2n_odf,odf)
+mis2n_odf = calcODF(mis2n_ebsd(2))
 
+%%
+% maybe there are so called $\Sigma 3$ boundaries, 
+
+plotipdf(mis2n_odf,vector3d(0,0,1))
+annotate(CSL('3'))
+
+%%
+% let us visualize some special boundaries;
+% first [[grain_find.html, find]] some grains with a certain misorientation
+
+grains_S3 = find(grains,CSL('3'),2*degree,'misorientation')
+
+%%
+% and restrict them to a selection, e.g. adding some [[grain_neighours.html, neighboured]] grains
+
+grains_S3 = grains_S3([52 54]);
+grains_S3 = [grains_S3 neighbours(grains,grains_S3)];
+
+%%
+% and finally [[grain_plotboundary.html, plotting boundaries]]  
+
+plotboundary(grains_S3,'property','phase','linewidth',2)
+hold on, plotboundary(grains_S3,...
+  'property',CSL('3'),'linewidth',2)
 
 %% 
 close all

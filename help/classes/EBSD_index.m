@@ -36,7 +36,7 @@ ebsd = loadEBSD(fname,cs,ss,...
 %% Plotting EBSD Data
 %
 % EBSD data are plotted using the [[EBSD_plot.html,plot]] command.
-% It asign a color to each orientation and plots a map of these colors.
+% It assigns a color to each orientation and plots a map of these colors.
 % There are several options to specify the way the colors are assigned.
 
 
