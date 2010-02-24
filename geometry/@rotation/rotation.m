@@ -7,6 +7,7 @@ function rot = rotation(varargin)
 %  rot = rotation('axis,v,'angle',omega)
 %  rot = rotation('matrix',A)
 %  rot = rotation('map',u1,v1,u2,v2)
+%  rot = rotation('fibre',u1,v2,'resolution',5*degree)
 %  rot = rotation('quaternion',a,b,c,d)
 %  rot = rotation(q)
 %
@@ -23,59 +24,51 @@ function rot = rotation(varargin)
 % quaternion_index orientation_index
 
 %% empty constructor
-if nargin == 0
+if nargin == 0 
 
-  % empty quaternion;
-  quat = quaternion;
+  quat = quaternion; % empty quaternion;
+  superiorto('quaternion','symmetry');
+  rot = class(struct([]),'rotation',quat);
+  return
+end  
+
+switch class(varargin{1})       
+  
+  case 'rotation' 
+    rot = varargin{1}; % copy constructor
+    return;
+
+  case 'quaternion'
+    quat = varargin{1};
+  
+  case 'char'
+
+    switch varargin{1}
       
-%% copy constructor
-elseif isa(varargin{1},'rotation')
-        
-  rot = varargin{1};
-  return;
+      case 'axis' % orientation by axis / angle
+         quat = axis2quat(get_option(varargin,'axis'),get_option(varargin,'angle'));
+  
+      case 'Euler' % orientation by Euler angles
+         quat = euler2quat(varargin{2:end});
 
-elseif isa(varargin{1},'quaternion') &&  ~isa(varargin{1},'symmetry')
-  
-  quat = varargin{1};
-  
-%% determine crystal and specimen symmetry
-else
-  
-  %% orientation given by a quaternion
-  
-  args  = find(cellfun(@(s) isa(s,'quaternion') & ~isa(s,'symmetry'),varargin,'uniformoutput',true));
-  if length(args) == 1
-    quat = [varargin{args}];
-  end
-  
-  %% orientation by axis / angle
-  
-  if check_option(varargin,'axis')
-    quat = axis2quat(get_option(varargin,'axis'),get_option(varargin,'angle'));
-  end
-  
-  %% orientation by Euler angles
-  
-  if check_option(varargin,'Euler')
-    args = find_option(varargin,'Euler');
-    quat = euler2quat(varargin{args+1},varargin{args+2},varargin{args+3},varargin{:});
-  end
-  
-  if check_option(varargin,'map')
-    args = find_option(varargin,'map');
-    quat = vec42quat(varargin{(args+1):(args+4)});
-  end
-  
-  if check_option(varargin,'quaternion')
-    args = find_option(varargin,'quaternion');
-    quat = quaternion(varargin{(args+1):(args+4)});
-  end
-  
-  if check_option(varargin,'matrix')
-    args = find_option(varargin,'matrix');
-    quat = mat2quat(varargin{args+1});
-  end
-  
+      case 'map'
+        quat = vec42quat(varargin{2:end});
+    
+      case 'quaternion'
+        quat = quaternion(varargin{2:end});
+    
+      case 'matrix'
+        quat = mat2quat(varargin{2:end});
+        
+      case 'fibre'
+        quat = fibre2quat(varargin{2:end});
+        
+      otherwise
+        error('Unknown type of rotation!')
+    end
+    
+  otherwise
+    error('Type mismatch in rotation!')
 end
 
 superiorto('quaternion','symmetry');

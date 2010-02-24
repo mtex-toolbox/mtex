@@ -87,11 +87,6 @@ h2 = [Miller(1,1,-2,3,CS),Miller(0,1,-1,0,CS)]
 
 
 %%
-% *Calculations*
-
-ori * h2
-
-%%
 % *Basic Functions*
 
 eq(h1,h2)

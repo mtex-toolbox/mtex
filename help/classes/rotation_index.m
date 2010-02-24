@@ -40,6 +40,16 @@ o = rotation('Euler',30*degree,50*degree,10*degree,'ZYZ')
 
 o = rotation('axis',xvector,'angle',30*degree)
 
+%% 
+% *A fibre of rotations*
+%
+% You can also define a fibre of rotations that rotates a certain vector u
+% onto a vector v
+
+u = xvector;
+v = yvector;
+o = rotation('fibre',u,v)
+
 %%
 % *Four vectors defining a rotation*
 %

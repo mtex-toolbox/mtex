@@ -49,10 +49,12 @@ o = orientation('Euler',30*degree,50*degree,10*degree,cs,ss)
 % * Bunge Euler Angle Convention
 % * Matthies Euler Angle Convention
 % * Axis angle parametrisation
+% * Fibre of orientations
 % * Four vectors defining a rotation
 % * 3 times 3 matrix
 % * quaternion
 %
+% Have a look at <rotation_index.html rotation help page> for more details.
 % Beside these parameterisations for rotations there are also some
 % parameterisations which are unique for orientations
 %
@@ -71,8 +73,6 @@ o = orientation('Miller',[1 0 0],[0 1 1],cs,ss)
 % * [[cubeOrientation.html,cubeOrientation]]
 % * [[gossOrientation.html,gossOrientation]]
 % * [[brassOrientation.html,brassOrientation]]
-%
-%
 
 o = orientation('goss',cs,ss)
 

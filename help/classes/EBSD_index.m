@@ -11,7 +11,7 @@
 % The most comfortable way to import EBSD data into MTEX is to use
 % the import wizard, which can be started by the command
 %
-import_wizard
+import_wizard('type','ebsd')
 
 %%
 % If the data are in a format supported by MTEX the import wizard generates
