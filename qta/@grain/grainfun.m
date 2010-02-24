@@ -95,7 +95,7 @@ else
       
       S3G = cell(size(uphase));
       for k=1:numel(uphase)      
-        S3G{k} = SO3Grid(res,CS{:},SS{:});
+        S3G{k} = SO3Grid(res,CS{k},SS{k});
       end        
       
       if find_type(options,'ODF')
@@ -119,8 +119,8 @@ else
     if exist('S3G','var') && exist('phase','var') % pass a Grid if possible
       options2 =  [ 'SO3Grid', S3G(phase(k)), options2 ];
     end
-    if exist('odf_eval','var') && exist('ph','var')
-      options2 = [ 'evaluated',odf_eval(ph(k)),options2 ];
+    if exist('odf_eval','var') && exist('phase','var')
+      options2 = [ 'evaluated',odf_eval(phase(k)),options2 ];
     end
     
     g{k} = feval(FUN,evar{k},options2{:});

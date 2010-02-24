@@ -10,6 +10,9 @@ function s = sampleSize(ebsd)
 %% See also
 % EBSD_index
 
-s = arrayfun(@ (i) numel(ebsd(i).orientations),1:numel(ebsd),...
-  'uniformoutput',true);
+
+s = cellfun(@numel,{ebsd.orientations});
+
+% s = arrayfun(@ (i) numel(ebsd(i).orientations),1:numel(ebsd),...
+%   'uniformoutput',true);
 
