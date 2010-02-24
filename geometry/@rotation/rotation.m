@@ -24,49 +24,49 @@ function rot = rotation(varargin)
 % quaternion_index orientation_index
 
 %% empty constructor
-if nargin == 0 
+if nargin == 0
 
   quat = quaternion; % empty quaternion;
   superiorto('quaternion','symmetry');
   rot = class(struct([]),'rotation',quat);
   return
-end  
+end
 
-switch class(varargin{1})       
-  
-  case 'rotation' 
+switch class(varargin{1})
+
+  case 'rotation'
     rot = varargin{1}; % copy constructor
     return;
 
   case 'quaternion'
     quat = varargin{1};
-  
+
   case 'char'
 
-    switch varargin{1}
-      
+    switch lower(varargin{1})
+
       case 'axis' % orientation by axis / angle
          quat = axis2quat(get_option(varargin,'axis'),get_option(varargin,'angle'));
-  
-      case 'Euler' % orientation by Euler angles
+
+      case 'euler' % orientation by Euler angles
          quat = euler2quat(varargin{2:end});
 
       case 'map'
         quat = vec42quat(varargin{2:end});
-    
+
       case 'quaternion'
         quat = quaternion(varargin{2:end});
-    
+
       case 'matrix'
         quat = mat2quat(varargin{2:end});
-        
+
       case 'fibre'
         quat = fibre2quat(varargin{2:end});
-        
+
       otherwise
         error('Unknown type of rotation!')
     end
-    
+
   otherwise
     error('Type mismatch in rotation!')
 end
