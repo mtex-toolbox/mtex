@@ -1,12 +1,12 @@
-function def = centroidaldefect(grains)
+function def = centroidaldefect(p)
 % calculates distance between hullcentroid and centroid of grain-polygon 
 %
 %% Input
-%  grains - @grain
+%  p - @grain / @polygon
 %
 %% Output
 %  def   - defect
 %
 
-def = sqrt(sum(centroid(grains)-hullcentroid(grains),2).^2);
+def = sqrt(sum(centroid(grains)-hullcentroid(p),2).^2);
 def = reshape(def,1,[]);

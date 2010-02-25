@@ -26,7 +26,7 @@ function ebsd = misorientation(grains,varargin)
 %  ebsd_mis = misorientation(grains,'random',10000)
 %
 %% See also
-% EBSD/calcODF EBSD/hist grain/mean grain/neighbours 
+% EBSD/calcODF EBSD/hist grain/neighbours 
 
 
 if nargin > 1 && isa(varargin{1},'EBSD') % misorientation to ebsd data

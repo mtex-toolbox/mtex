@@ -2,7 +2,7 @@ function asp = aspectratio(p,varargin)
 % calculates the aspectratio of grain-polygon
 %
 %% Input
-%  grains - @grain
+%  p - @grain / @polygon
 %
 %% Output
 %  asp   - aspect-ratio
@@ -11,7 +11,7 @@ function asp = aspectratio(p,varargin)
 %  HULL  - aspectratio of the convex hull
 %
 %% See also
-% grain/deltaAspect 
+% polygon/deltaAspect 
 
 
 [h v] = principalcomponents(p,varargin{:});

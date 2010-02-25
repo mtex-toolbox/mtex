@@ -2,12 +2,12 @@ function p = equivalentperimeter(p)
 % returns the equivalent perimeter of grain-polygon
 %
 %% Input
-%  grains - @grain
+%  p - @grain / @polygon
 %
 %% Output
 %  p   - perimeter
 %
 %% See also
-% grain/deltaarea grain/paris grain/equivalentradius
+% polygon/deltaarea polygon/paris polygon/equivalentradius
 
 p = 2*pi*equivalentradius(p);

@@ -6,7 +6,7 @@
 % EBSD Data analysis is not yet complete in MTEX. However some main
 % functionalities are already implement. First of all one can estimate an
 % ODF from EBSD data. This is explained in detail in the section
-% <EBSD2ODF_etimation.hmtl EBSD estimation from EBSD data>. Further
+% <EBSD2odf_estimation.html EBSD estimation from EBSD data>. Further
 % posibilities are to compute volume fractions directly from EBSD data,
 % compute the mean orientation and to estimate the Fourier coefficients.
 %

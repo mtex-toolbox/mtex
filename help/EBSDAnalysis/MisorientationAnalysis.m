@@ -149,7 +149,7 @@ annotate(CSL('3'))
 grains_S3 = find(grains,CSL('3'),2*degree,'misorientation')
 
 %%
-% and restrict them to a selection, e.g. adding some [[grain_neighours.html, neighboured]] grains
+% and restrict them to a selection, e.g. adding some [[grain_neighbours.html, neighboured]] grains
 
 grains_S3 = grains_S3([52 54]);
 grains_S3 = [grains_S3 neighbours(grains,grains_S3)];
@@ -157,7 +157,7 @@ grains_S3 = [grains_S3 neighbours(grains,grains_S3)];
 %%
 % and finally [[grain_plotboundary.html, plotting boundaries]]  
 
-plotboundary(grains_S3,'property','phase','linewidth',2)
+figure, plotboundary(grains_S3,'property','phase','linewidth',2)
 hold on, plotboundary(grains_S3,...
   'property',CSL('3'),'linewidth',2)
 

@@ -1,5 +1,14 @@
 function grains = find(grains,q0,epsilon,varargin)
-
+% find grains with a specified orientation
+%
+%% Input
+%  grains  - @grain
+%  q0      - @rotation
+%  epsilon - angle distance
+%
+%% Output
+%  grains  - @grain
+%
 
 [phase uphase] = get(grains,'phase');
 
@@ -19,7 +28,7 @@ for k=1:numel(uphase)
     
     ind = find(om, q0, epsilon);
     
-    sel(ndx(pair(ind,:))) = true;    
+    sel(ndx(pair(ind,:))) = true;  
 
   else
     

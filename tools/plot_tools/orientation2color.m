@@ -2,9 +2,12 @@ function c = orientation2color(o,coloring,varargin)
 % convert orientation to color
 %
 %% Input
-% o    - @orientation
-% type - as string: BUNGE, ANGLE, SIGMA, IHS, IPDF
-%
+%  o    - @orientation
+%  coloring -
+%    IPDF, HKL
+%    BUNGE, BUNGE2, EULER, IHS
+%    SIGMA, RODRIGUES
+%    ANGLE
 
 model = {'bunge','angle','sigma','ihs','ipdf',...
     'rodrigues','rodriguesquat','rodriguesinverse','euler','bunge2','hkl'};

@@ -1,18 +1,16 @@
 function varargout = plotboundary(grains,varargin)
-% plot grain boundaries according to neighboured misorientation angle
+% plot grain boundaries
 %
 %% Syntax
 %  plotboundary(grains)
+%  plotboundary(grains,'LineSpec',...)
+%  plotboundary(grains,'property',...)
 %
 %% Options
-%  property       - phase, @quaternion
-%
-%% Todo
-% Coincidence-site lattice classification
-% Twinning
+%  property       - phase, @rotation, @symmetry
 %
 %% See also
-% grain/misorientation
+% grain/plot grain/plotgrains grain/misorientation
 
 % default plot options
 varargin = set_default_option(varargin,...

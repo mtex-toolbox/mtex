@@ -2,7 +2,7 @@ function [cmp v]= principalcomponents(p,varargin)
 % returns the principalcomponents of grain polygon, without holes
 %
 %% Input
-%  grains - @grain
+%  p - @grain / @polygon
 %
 %% Output
 %  cmp   - angle of components as complex
@@ -12,7 +12,7 @@ function [cmp v]= principalcomponents(p,varargin)
 %  HULL  - components of convex hull
 %
 %% See also
-% grain/hullprincipalcomponents grain/plotellipse
+% polygon/hullprincipalcomponents polygon/plotellipse
 %
 
 p = polygon( p );

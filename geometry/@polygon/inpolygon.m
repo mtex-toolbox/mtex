@@ -1,18 +1,18 @@
 function ind = inpolygon( p , p2, method)
-% select all grains in a given region
+% check whether a polygon is in a given polygon
+%
 %% Syntax
-%  grains = inpolygon(grains,[x y])
+%  ind = inpolygon(polygon1 ,polygon2)
 % 
 %% Input
-%  grains - @SO3Grid
-%  [x y]  - polygon coordinates
+%  p   - @polygon
+%  p2  - @polygon
 %
 %% Option
 %  method - 'complete' (default), 'centroids', 'intersect'
 %
 %% Output
-%  grains - @grain
-%  ind    - indices
+%  ind    - logical indexing
 %
 
 p = polygon( p );

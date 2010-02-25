@@ -2,13 +2,13 @@ function  peri = hullperimeter(p)
 % returns the perimeter of grain polygon, without holes
 %
 %% Input
-%  grains - @grain
+%  p - @grain / @polygon
 %
 %% Output
 %  peri   - perimeter
 %
 %% See also
-% grain/borderlength 
+% polygon/borderlength 
 %
 
 peri = perimeter(convhull(p));

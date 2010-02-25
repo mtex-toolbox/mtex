@@ -45,10 +45,10 @@ bar( hist(ar,bins) )
 
 %%
 % thera are various functions treating the geometry, respectively the shape
-% e.g. [[grain_perimeter.html,perimeter]], [[grain_equivalentradius.html,equivalentradius]],  
-% [[grain_equivalentperimeter.html,equivalentperimeter]], [[grain_aspectratio.html,aspectratio]], [[grain_shapefactor.html,shapefactor]] or concerning the
-% convex hull of a grain [[grain_hullarea.html,hullarea]], 
-% [[grain_paris.html,paris]], [[grain_deltaarea.html,deltaarea]], so
+% e.g. [[polygon_perimeter.html,perimeter]], [[polygon_equivalentradius.html,equivalentradius]],  
+% [[polygon_equivalentperimeter.html,equivalentperimeter]], [[polygon_aspectratio.html,aspectratio]], [[polygon_shapefactor.html,shapefactor]] or concerning the
+% convex hull of a grain [[polygon_hullarea.html,hullarea]], 
+% [[polygon_paris.html,paris]], [[polygon_deltaarea.html,deltaarea]], so
 % there are many ways to analyze its relation to geometry.
 %
 sf = shapefactor(grains);

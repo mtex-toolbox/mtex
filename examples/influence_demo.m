@@ -80,11 +80,11 @@ figure('position',[50 50 900 300])
 
 subplot('position',[0.1 0.15 0.25 0.8])
 semilogy(angles, [tindex_n;tindex_m ],'.-')
-grid on, ylabel('textureindex'),xlabel('threshold angle in�')
+grid on, ylabel('textureindex'),xlabel('threshold angle in degree')
 
 subplot('position',[0.45 0.15 0.25 0.8])
 semilogy(angles,[tentropy_n;tentropy_m ],'.-')
-grid on ,ylabel('entropy'),xlabel('threshold angle in�')
+grid on ,ylabel('entropy'),xlabel('threshold angle in degree')
 
 legend('misorientation to neighbour','misorientation to mean','Location','BestOutside')
 

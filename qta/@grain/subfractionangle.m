@@ -26,21 +26,22 @@ end
 
 b = find(hassubfraction(grains));
 
-S3G = get(ebsd,'data');
-qs  = get(S3G,'Grid');
+for k=1:length(ebsd)
+  qe{k} = get(ebsd(k),'orientations');
+end
+% qs  = get(S3G,'Grid');
 
-f = [1 cumsum(numel(S3G))];
+f = [1 cumsum(sampleSize(ebsd))];
+% f = [1 cumsum(numel(S3G))];
 
 for k = b 
   pairs = grains(k).subfractions.pairs;
-  
-  ig = sum(pairs(1) > f);
-   
-  s3 = S3G(ig);
-  cs = get(s3,'CS');
-  ss = get(s3,'SS');
+    
+  qs = qe{ sum(pairs(1) > f) };
+  cs = get(qs,'CS');
+  ss = get(qs,'SS');
       
-  omegas = 2*acos(dot_sym(qs(pairs(:,1)),qs(pairs(:,2)),cs,ss));
+  omegas = angle(qs(pairs(:,1)),qs(pairs(:,2)));
 
   if check_option(varargin,'complete')
     omega{k} = omegas;

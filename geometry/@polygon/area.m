@@ -1,6 +1,14 @@
 function A = area(p)
-% calculates the area of a polygon with holes
+% calculates the area of a polygon (with holes)
 %
+%% Input
+%  p - @polygon / @grain
+%
+%% Output
+%  A  - area of polygon
+%
+%% See alsoe
+% polygon/hullarea  grain/grainsize
 
 p = polygon(p); % could be a grain
 

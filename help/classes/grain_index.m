@@ -5,8 +5,8 @@
 %
 %% Description
 % A grain may be defined as a region, in which the misorientation
-% less thana choosen threshold. There is a function [[EBSD_segment2d.html, segmentation]] to
-% regionalize spatial EBSD data into grains.
+% less thana choosen threshold. There is a function <EBSD_segment2d.html segmentation> 
+% to regionalize spatial EBSD data into grains.
 %
 
 %% Preliminary:  EBDS Data
@@ -37,6 +37,9 @@ plotx2east
 
 plot(grains)
 
+%%
+% As we can see every grain is spatially a [[polygon_index.html, polygon]]
+%
 %% Selecting Grains
 % grains can be selected by subindexing, e.g. logical indexing
 

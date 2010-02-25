@@ -2,7 +2,7 @@ function cxy = centroid( p ,varargin)
 % calculates the barycenter of the grain-polygon, without respect to holes
 %
 %% Input
-%  grains - @grain
+%  p - @grain / @polygon
 %
 %% Output
 %  cxy   - center [x y];

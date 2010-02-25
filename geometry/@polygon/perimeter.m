@@ -2,13 +2,13 @@ function  peri = perimeter(p)
 % calculates the perimeter of the grain-polygon, without holes
 %
 %% Input
-%  grains - @p
+%  p - @grain / @polygon
 %
 %% Output
 %  peri    - perimeter
 %
 %% See also
-% grain/equivalentperimeter grain/borderlength
+% polygon/equivalentperimeter polygon/borderlength
 
 p = polygon(p);
 

@@ -1,4 +1,6 @@
 function handles = plot(p,varargin)
+% function for plotting polygons, mainly use to visualize grains
+
 
 set(gcf,'renderer','opengl')
 

@@ -2,12 +2,16 @@ function bl = borderlength( p ,varargin)
 % returns the borderlength of grain-polygon
 %
 %% Input
-%  grains - @grain
+%  grains - @grain / @polygon
 %
 %% Output
 %  bl   - borderlength
+%
 %% Options
 %  COUNT - return number of border elements
+%
+%% See also
+% polygon/perimeter
 
 p = polygon( p );
 

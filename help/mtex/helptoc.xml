@@ -53,13 +53,13 @@
     Import EBSD Data
     <tocitem target="ebsd_interface.html">Generic Interface</tocitem>
   </tocitem>
-  <tocitem target="EBSDPlot.html"> Plot EBSD Data </tocitem>
+  <tocitem target="EBSDPlot.html"> Plot EBSD Data </tocitem> 
+  <tocitem target="ModifyEBSDData.html"> Modify EBSD Data </tocitem>
+  <tocitem target="AnalyzeEBSDData.html"> Analyze EBSD Data </tocitem>  
+  <tocitem target="EBSD2odf_estimation.html"> ODF Estimation from EBSD data</tocitem>
   <tocitem target="GrainDetection.html"> Grain Detection </tocitem>
   <tocitem target="GrainStatistics.html"> Grain Statistics </tocitem>
-  <tocitem target="ModifyEBSDData.html"> Modify EBSD Data </tocitem>
-  <tocitem target="AnalyzeEBSDData.html"> Analyze EBSD Data </tocitem>
   <tocitem target="MisorientationAnalysis.html"> Misorientation Analysis </tocitem>
-  <tocitem target="EBSD2odf_estimation.html"> ODF Estimation from EBSD data</tocitem>
 </tocitem>
 
 <tocitem target="ODFAnalysis.html"
@@ -79,7 +79,8 @@
   Generating Plots
   <tocitem target="PlotTypes_demo.html">Plot Types</tocitem>
   <tocitem target="SphericalProjection_demo.html">Spherical Projections</tocitem>
-  <tocitem target="ColorCoding_demo.html">Color Coding</tocitem>
+  <tocitem target="ColorCoding_demo.html">Color Coding Polefigures/ODFs</tocitem>
+  <tocitem target="ColorCodingEBSD_demo.html">Color Coding EBSD/grains</tocitem>
   <tocitem target="Annotations_demo.html">Annotations</tocitem>
   <tocitem target="CombinedPlots_demo.html">Combined Plots</tocitem>
 </tocitem>

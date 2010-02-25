@@ -1,5 +1,5 @@
 function s = get(p,vname,varargin)
-
+% get some polygon properties
 
 switch vname
   case 'xy'

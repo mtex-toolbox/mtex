@@ -1,6 +1,20 @@
 function p = polygon(varargin)
 % polygon class for grains
-
+%
+% *polygon* is a low level constructor for polygons treating grain polygons
+% in MTEX.
+%
+%% Syntax
+%  p = polygon(xy)
+%  p = polygon(x,y)
+%  p = polygon(polygon)
+%  p = polygon({[xy],[xy],[xy]})
+%
+%% Output
+%  p - @polygon
+%
+%% See also
+% grain_index
 
 if nargin > 0 
   
