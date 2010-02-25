@@ -46,15 +46,24 @@ gamma(ind) = 0;
 
 if nargout == 0
   
+  d = [alpha(:) beta(:) gamma(:)]/degree;
+  d(abs(d)<1e-10)=0;
+  
   disp(' ');
   disp('Euler angle in degree')
+  cprintf(d,'-L','  ','-Lc',labels);
   disp(' ');
-  disp([labels{1} ' = ']);
-  disp(alpha/degree);
-  disp([labels{2} ' = ']);
-  disp(beta/degree);
-  disp([labels{3} ' = ']);
-  disp(gamma/degree);
+  
+%   
+%   disp(' ');
+%   disp('Euler angle in degree')
+%   disp(' ');
+%   disp([labels{1} ' = ']);
+%   disp(alpha/degree);
+%   disp([labels{2} ' = ']);
+%   disp(beta/degree);
+%   disp([labels{3} ' = ']);
+%   disp(gamma/degree);
   
 elseif check_option(varargin,'nfft')
   
