@@ -25,7 +25,7 @@ if numel(o) > 2000 || check_option(varargin,'points')
   points = get_option(varargin,'points',2000);
   disp(['plot ', int2str(points) ,' random orientations out of ', ...
     int2str(numel(o)),' given orientations']);
-  o = o(discretesample(ones(1,numel(o)),points));
+  o = o(discretesample(ones(1,numel(o)),fix(points)));
 end
 
 %% prepare new figure
