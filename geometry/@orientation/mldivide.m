@@ -13,6 +13,12 @@ elseif isa(a,'orientation') && isa(b,'orientation')
   
   if (a.CS == b.CS)
  
+    if numel(b) == 1 && numel(a) ~= numel(b),
+      b.rotation = repmat(b.rotation,size(a));
+    elseif numel(a) == 1 && numel(a) ~= numel(b),
+      a.rotation = repmat(a.rotation,size(b));
+    end
+    
     r = repmat(a.rotation',length(a.CS),1).*symmetrise(b);
   
     [omega r] = selectMinbyColumn(angle(r.rotation),r);
@@ -22,7 +28,11 @@ elseif isa(a,'orientation') && isa(b,'orientation')
     error('symmetry mismatch')
     
   end
- 
+  
+elseif isa(a,'orientation') && ~isa(b,'orientation') && isa(b,'quaternion')
+  r = a \ orientation(b,a.CS,a.SS);
+elseif isa(b,'orientation') && ~isa(a,'orientation') && isa(a,'quaternion')
+  r = orientation(a,b.CS,b.SS) \ b;
 else
   
   error([class(a) ' \ ' class(b) ' is not defined!'])
