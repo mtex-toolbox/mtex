@@ -87,3 +87,6 @@ for k=1:numel(q)
   end
 end
 
+q = orientation(q,odf(1).CS,odf(1).SS);
+
+
