@@ -16,6 +16,12 @@ switch vname
     end
     varargout{1} = w;
     
+  case 'kernel'
+    
+    if isa(obj(1).psi,'kernel')
+      varargout{1} = [obj.psi];
+    end
+    
   case fields(obj)
     varargout{1} = obj(1).(vname);
     
