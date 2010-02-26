@@ -80,7 +80,7 @@ elseif ~isempty(property)
       twin = find_type(varargin,'symmetry');
       if ~isempty(twin), o = set(o,'CS',varargin{twin}); end
       
-      om = o(pair(:,1)) \ o(pair(:,2));
+      om = o(pair(:,1)) .\ o(pair(:,2));
       
       quat = find_type(varargin,'quaternion');
       if ~isempty(quat) || ~isempty(twin)

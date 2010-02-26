@@ -13,7 +13,7 @@ for k=1:numel(uphase)
   t(k) = size(pair,1);
   
   o = get(grains_phase,'orientation');
-  om = o(pair(:,1)) \ o(pair(:,2));
+  om = o(pair(:,1)) .\ o(pair(:,2));
   
   if isa(type,'quaternion')
         

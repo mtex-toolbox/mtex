@@ -44,7 +44,9 @@ if nargin > 1 && isa(varargin{1},'EBSD') % misorientation to ebsd data
     
     if ~isempty(ndx)
 
-      ebsd(k) = set(ebsd(k),'orientations', reshape( o2(ndx) \ o1 ,size(o1)));
+      o2 = reshape(o2(ndx),size(o1));
+      
+      ebsd(k) = set(ebsd(k),'orientations', o2 .\ o1);
       
     end
     
@@ -92,7 +94,7 @@ else % misorientation to neighbour grains
         i = pair(cur,2); j = pair(cur,1);
       end
       
-      of(cur) = o(i) \ o(j);
+      of(cur) = o(i) .\ o(j);
       
     end
     

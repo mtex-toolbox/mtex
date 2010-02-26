@@ -24,7 +24,7 @@ for k=1:numel(uphase)
     pair = pairs(grains_phase);
     pair(pair(:,1) == pair(:,2),:) = [];
     
-    om = o(pair(:,1)) \ o(pair(:,2));
+    om = o(pair(:,1)) .\ o(pair(:,2));
     
     ind = find(om, q0, epsilon);
     
