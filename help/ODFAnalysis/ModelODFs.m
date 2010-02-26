@@ -29,8 +29,8 @@ odf = uniformODF(cs,ss)
 %
 % In order to define a unimodal ODF one needs
 %
-% * a preferred <orientation_index.html mod1> mod1
-% * a <kernel_index.html kernel > function *psi* defining the shape
+% * a preferred <orientation_index.html orientation> mod1
+% * a <kernel_index.html kernel> function *psi* defining the shape
 % * the crystal and specimen <symmetry_index.html symmetry>
 
 mod1 = orientation('Miller',[1,2,2],[2,2,1],cs,ss);

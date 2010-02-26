@@ -72,7 +72,7 @@ pf_modified = delete(pf,theta >= 70*degree & theta <= 75*degree)
 plot(pf_modified)
 
 %%
-rot = rotation('axis' xvector-yvector,'angle',25*degree);
+rot = rotation('axis', xvector-yvector,'angle',25*degree);
 pf_modified = rotate(pf,rot)
 
 plot(pf_modified)

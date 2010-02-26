@@ -2,8 +2,8 @@ function plotspatial(ebsd,varargin)
 % spatial EBSD plot
 %
 %% Syntax
-%  plotspatial(ebsd,'colocoding','ipdf')
-%  plotspatial(ebsd,'property','error')
+% plotspatial(ebsd,'colocoding','ipdf')
+% plotspatial(ebsd,'property','error')
 %
 %% Input
 %  ebsd - @EBSD
@@ -19,7 +19,7 @@ function plotspatial(ebsd,varargin)
 %% Flags
 %  unitcell - (default) plot spatial data by unit cells
 %  voronoi  - plot spatial data through a voronoi decomposition
-%  raster   - discretize on regular grid 
+%  raster   - discretize on regular grid
 %
 %% See also
 % EBSD/plot
@@ -67,7 +67,7 @@ switch prop
 end
 
 
-%% plot 
+%% plot
 
 x = get(ebsd,'x');
 y = get(ebsd,'y');
@@ -85,7 +85,7 @@ patch('Vertices',[tx ty],'Faces',1,'FaceVertexCData',get(gca,'color'));
 if strcmpi(prop,'orientation') %&& strcmpi(cc,'ipdf')
   [cs{1:length(ebsd)}] = get(ebsd,'CS');
   setappdata(gcf,'CS',cs)
-  setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d')); 
+  setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d'));
   setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
   setappdata(gcf,'colorcoding',cc);
 end

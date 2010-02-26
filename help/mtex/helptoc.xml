@@ -68,7 +68,7 @@
   <tocitem target="influence_demo.html"> Influence of Threshold Demo</tocitem>
 </tocitem>
 
-<tocitem target="ODFAnalysis.html"
+<tocitem target="ODF_index.html"
 	 image="$toolbox/matlab/icons/pagesicon.gif">
   ODF Analysis
   <tocitem target="ODFImportExport.html">Import and Export ODF Data</tocitem>
