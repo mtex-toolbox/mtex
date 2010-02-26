@@ -20,10 +20,25 @@ function varargout = Euler(quat,varargin)
 %% See also
 % quaternion/Rodrigues
 
+if isa(quat,'quaternion')
   qa = quat.a;
   qb = quat.b;
   qc = quat.c;
   qd = quat.d;
+elseif find_type(varargin,'symmetry')
+  varargout{1} = orientation('Euler',quat,varargin{:});
+  return
+end
+
+if nargout == 0  
+  type = find_type(varargin,'char');
+  if isempty(type)
+   type = get_mtex_option('default_display_convention');
+   varargin = [type varargin];
+  else
+   type = varargin{type};
+  end
+end
    
 if check_option(varargin,{'nfft','ZYZ','ABG'})  
   alpha = atan2( qc .* qd - qa .* qb  ,  qb .* qd + qa .* qc );
@@ -50,7 +65,7 @@ if nargout == 0
   d(abs(d)<1e-10)=0;
   
   disp(' ');
-  disp('Euler angle in degree')
+  disp(['  ' type ' Euler angle in degree'])
   cprintf(d,'-L','  ','-Lc',labels);
   disp(' ');
   

@@ -41,6 +41,12 @@ default_plot_options = {'FontSize',13};
 set_mtex_option('default_plot_options',default_plot_options);
 plotx2north;
 
+%% standard displaying
+% formating standard display output
+
+set_mtex_option('default_display_convention','Bunge');
+% set_mtex_option('default_display_convention','ABG');
+
 %% available memory 
 % change this value to specify the total amount of installed ram
 % on your system in kilobytes
