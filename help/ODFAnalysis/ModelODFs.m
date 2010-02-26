@@ -5,11 +5,11 @@
 %% Contents
 %
 %% Abstract
-% MTEX allows to create a wide range of model ODFs including 
+% MTEX allows to create a wide range of model ODFs including
 % [[uniformODF.html,uniformODFs]], [[unimodalODF.html,unimodalODFs]],
 % [[fibreODF.html,fibreODFs]] and any superposition of those ODF.
-% These ODFs can be used to 
-% [[PoleFigureSimulation_demo.html simulate PoleFigures]] or to 
+% These ODFs can be used to
+% [[PoleFigureSimulation_demo.html simulate PoleFigures]] or to
 % [[EBSDSimulation_demo.html,simulate EBSD data]].
 
 %% The Uniform ODF
@@ -17,7 +17,7 @@
 % The most simplest case of a model ODF is the uniform ODF which is
 % everywhere identical to one.
 % In order to define a uniform ODF one needs only to specify its crystal
-% and specimen symmetry and to use the command 
+% and specimen symmetry and to use the command
 % [[uniformODF.html,uniformODF]].
 
 cs = symmetry('cubic');
@@ -27,11 +27,11 @@ odf = uniformODF(cs,ss)
 
 %% Unimodal ODFs
 %
-% In order to define a unimodal ODF one needs 
+% In order to define a unimodal ODF one needs
 %
-% * a preferred orientation *mod1*
-% * a kernel function *psi* defining the shape
-% * the crystal and specimen symmetry
+% * a preferred <orientation_index.html mod1> mod1
+% * a <kernel_index.html kernel > function *psi* defining the shape
+% * the crystal and specimen <symmetry_index.html symmetry>
 
 mod1 = orientation('Miller',[1,2,2],[2,2,1],cs,ss);
 psi = kernel('von Mises Fisher','HALFWIDTH',10*degree);
@@ -47,12 +47,12 @@ plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal',...
 
 %% Fibre ODFs
 %
-% In order to define a fibre ODF one needs 
+% In order to define a fibre ODF one needs
 %
-% * a crystal direction *h0*
-% * a specimen direction *r0*
-% * a kernel function *psi* defining the shape
-% * the crystal and specimen symmetry
+% * a <Miller_index.html crystal direction> *h0*
+% * a <vector3d_index.html specimen direction> *r0*
+% * a <kernel_index.html kernel> function *psi* defining the shape
+% * the crystal and specimen <symmetry_index.html symmetry>
 
 h0 = Miller(0,0,1);
 r0 = xvector;
@@ -64,7 +64,7 @@ plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
 %
 % In order to define a ODF by it *Fourier coefficients* the Fourier
 % coefficients *C* has to be give as a literaly ordered, complex valued
-% vector of the form 
+% vector of the form
 %
 % $$ C = [C_0,C_1^{-1-1},\ldots,C_1^{11},C_2^{-2-2},\ldots,C_L^{LL}] $$
 %
@@ -88,7 +88,7 @@ plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
 %
 % A Bingham distribution is characterized by
 %
-% * four orientations ([quaternion_index.html,quaternions])
+% * four <orientation_index.html orientations>
 % * four values lambda
 %
 
@@ -102,14 +102,14 @@ odf = BinghamODF([-10,-10,-10,10],quaternion(eye(4)),cs,ss)
 
 plot(odf,'sections',6,'silent','position',[100 100 600 300])
 
-%% 
+%%
 % A Bingham fibre ODF
 
 odf = BinghamODF([-10,-10,10,10],quaternion(eye(4)),cs,ss)
 
 plot(odf,'sections',6,'silent')
 
-%% 
+%%
 % A Bingham spherical ODF
 
 odf = BinghamODF([-10,10,10,10],quaternion(eye(4)),cs,ss)

@@ -279,3 +279,34 @@ odf_nmis1 = calcODF(ebsd_nmis(1),'kernel',kern,'resolution',1*degree);
 figure, plotipdf(odf_nmis1,[vector3d(1,1,0) vector3d(1,1,1)],'antipodal')
 
 %%
+
+%% Exercises
+%
+% 4)
+%
+% a) Load the EBSD data: |data/ebsd\_txt/85\_829grad\_07\_09\_06.txt|!
+
+
+
+%%
+% b) Perform grain detection with a certain threshold!
+
+[grains,ebsd] = segment2d(ebsd)
+%%
+% c) Plot the EBSD data together with the grain boundaries!
+
+plot(ebsd)
+hold on
+plotboundaries(grains)
+
+%%
+% d) Plot the grains together with their mean orientation!
+
+plot(grains)
+
+%%
+% e) Compute and visualize the grains size distribution!
+
+%%
+% f) Explore the geometric properties of the grains! Is there any
+% relationship between the size and the mad of the grains?

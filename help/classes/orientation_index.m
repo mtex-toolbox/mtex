@@ -1,5 +1,9 @@
 %% Crystal Orientations
 %
+%% Abstract
+% This sections describes the class *orientation* and gives an overview how
+% to work with crystal orientation in MTEX.
+%
 %% Open in Editor
 %
 %% Contents
@@ -67,7 +71,7 @@ o = orientation('Miller',[1 0 0],[0 1 1],cs,ss)
 
 %%
 % *Predifined Orientations*
-% 
+%
 % In the MTEX there is a list of predefined orientations:
 %
 % * [[cubeOrientation.html,cubeOrientation]]
@@ -78,12 +82,12 @@ o = orientation('goss',cs,ss)
 
 %% Rotating Crystal Directions onto Specimen Directions
 %
-% Let 
+% Let
 
 h = Miller(1,0,0,cs)
 
 %%
-% be a certain crystal direction and 
+% be a certain crystal direction and
 
 o = orientation('Euler',90*degree,90*degree,0*degree,cs,ss)
 
@@ -101,7 +105,7 @@ o \ r
 
 %% Concatenating Rotations
 %
-% Let 
+% Let
 
 o = orientation('Euler',90*degree,0,0,cs,ss);
 rot = rotation('Euler',0,60*degree,0);
@@ -118,7 +122,7 @@ o1 = rot * o
 %%
 % Then the class of rotations crystallographically equivalent to o can be
 % computed in two way. Either by using the command <orientation_symmetrise.html
-% symmetrise> 
+% symmetrise>
 
 symmetrise(o)
 
@@ -148,7 +152,7 @@ angle(rotation(o),rotation(o1)) /degree
 % following functions available in MTEX. Then rotational angle and the axis
 % of rotation can be computed via then commands
 % <quaternion_angle.html angle(o)> and
-% <quaternion_axis.html axis(o)> 
+% <quaternion_axis.html axis(o)>
 
 angle(o1)/degree
 
@@ -172,8 +176,8 @@ inverse(o1)
 
 
 %% Plotting Orientations
-% 
-% The [[orientation_plot.html,plot]] function allows you to visualize an 
+%
+% The [[orientation_plot.html,plot]] function allows you to visualize an
 % quaternion by plotting how the standard basis x,y,z transforms under the
 % rotation.
 

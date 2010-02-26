@@ -2,8 +2,8 @@
 %
 % Analysis of single orientation measurement.
 %
-% 
-% 
+%
+%
 
 %% Specify Crystal and Specimen Symmetry
 
@@ -28,7 +28,7 @@ ebsd = loadEBSD(fname,CS,SS,'interface','generic',...
 %% Plot Spatial Data
 
 plot(ebsd)
-              
+
 %% Plot Pole Figures as Scatter Plots
 
 h = [Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)];
@@ -58,7 +58,7 @@ plotpdf(odf2,h,'antipodal')
 close;figure('position',[46   300   702   300]);
 plotodf(odf2,'sections',9,'resolution',2*degree,...
   'FontSize',10,'silent')
-   
+
 %% Estimation of Fourier Coefficients
 %
 % Once, a ODF has been estimated from EBSD data it is straight forward to
@@ -94,7 +94,7 @@ fibre_odf = 0.5*uniformODF(CS,SS) + 0.5*fibreODF(Miller(0,0,0,1),zvector,CS,SS);
 plotodf(fibre_odf,'sections',6,'silent')
 ebsd = simulateEBSD(fibre_odf,10000)
 
-%% 
+%%
 % Estimate an ODF from the simulated EBSD data
 
 odf = calcODF(ebsd)
@@ -109,5 +109,30 @@ plotodf(odf,'sections',6,'silent')
 calcerror(odf,fibre_odf,'resolution',5*degree)
 
 %%
-% For a more exhausive example see the 
+% For a more exhausive example see the
 % <EBSDSimulation_demo.html EBSD Simulation demo>!
+%
+
+%%% Exercises
+%
+% 5)
+%
+% a) Load the EBSD data: |data/ebsd\_txt/85\_829grad\_07\_09\_06.txt|!
+
+import_wizard('type','ebsd')
+
+%%
+% b) Estimate an ODF from the above EBSD data.
+
+odf = calcODF(ebsd)
+
+
+%%
+% c) Visualize the ODF and some of its pole figures!
+
+plot(odf,'sections',6,'silent')
+
+%%
+% d) Explore the influence of the halfwidth to the kernel density estimation by looking at the pole figures!
+
+

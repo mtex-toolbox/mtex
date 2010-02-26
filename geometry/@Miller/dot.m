@@ -12,7 +12,7 @@ function d = dot(m1,m2,varargin)
 %  m1,m2 - @Miller
 %
 %% Output
-%  d - m1 . m2 
+%  d - double [size(m1) numel(cs)]
 % 
 %% Options
 %  antipodal - consider m1,m2 with antipodal symmetry

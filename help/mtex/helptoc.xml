@@ -11,6 +11,7 @@
 <tocitem target="installation.html"
 	 image="$toolbox/matlab/icons/greenarrowicon.gif">
   Getting Started with the MTEX Toolbox
+  <tocitem target="dubna_tutorial.html"> A Short Tutorial </tocitem>
   <tocitem target="configuration.html">Configuration</tocitem>
   <tocitem target="compilation.html">Compilation Guide</tocitem>
 </tocitem>
@@ -23,6 +24,7 @@
   <tocitem target="symmetry_index.html"> Crystal Symmetries </tocitem>
   <tocitem target="orientation_index.html"> CrystalOrientations </tocitem>
   <tocitem target="AxialDirectional.html"> Antipodal Symmetry </tocitem>
+  <tocitem target="geometry_demo.html"> Crystal Geometry Demo </tocitem>
 </tocitem>
 
 <tocitem target="PoleFigure_index.html" image="$toolbox/matlab/icons/pagesicon.gif">
@@ -45,6 +47,7 @@
   <tocitem target="odf_estimation.html"> ODF Estimation from Pole
   Figure Data</tocitem>
   <tocitem target="ghost_demo.html"> Ghost Effect Analysis</tocitem>
+  <tocitem target="PoleFigureDemo.html"> Pole Figure Demo</tocitem>
 </tocitem>
 
 <tocitem target="EBSD_index.html" image="$toolbox/matlab/icons/pagesicon.gif">
@@ -53,13 +56,16 @@
     Import EBSD Data
     <tocitem target="ebsd_interface.html">Generic Interface</tocitem>
   </tocitem>
-  <tocitem target="EBSDPlot.html"> Plot EBSD Data </tocitem> 
+  <tocitem target="EBSDPlot.html"> Plot EBSD Data </tocitem>
   <tocitem target="ModifyEBSDData.html"> Modify EBSD Data </tocitem>
-  <tocitem target="AnalyzeEBSDData.html"> Analyze EBSD Data </tocitem>  
+  <tocitem target="AnalyzeEBSDData.html"> Analyze EBSD Data </tocitem>
   <tocitem target="EBSD2odf_estimation.html"> ODF Estimation from EBSD data</tocitem>
   <tocitem target="GrainDetection.html"> Grain Detection </tocitem>
   <tocitem target="GrainStatistics.html"> Grain Statistics </tocitem>
   <tocitem target="MisorientationAnalysis.html"> Misorientation Analysis </tocitem>
+  <tocitem target="ebsd_demo.html"> EBSD Analysis Demo </tocitem>
+  <tocitem target="grain_demo.html"> Grain Analysis Demo </tocitem>
+  <tocitem target="influence_demo.html"> Influence of Threshold Demo</tocitem>
 </tocitem>
 
 <tocitem target="ODFAnalysis.html"
@@ -71,6 +77,7 @@
   <tocitem target="ODFCalculations.html">ODF Calculations</tocitem>
   <tocitem target="PoleFigureSimulation_demo.html"> Pole Figure Simulation</tocitem>
   <tocitem target="EBSDSimulation_demo.html"> EBSD Data Simulation</tocitem>
+  <tocitem target="ODF_demo.html"> ODF Demo </tocitem>
 </tocitem>
 
 
@@ -85,7 +92,7 @@
   <tocitem target="CombinedPlots_demo.html">Combined Plots</tocitem>
 </tocitem>
 
-
+<!--
 <tocitem target="examples_index.html" image="$toolbox/matlab/icons/demoicon.gif">
   Examples
   <tocitem target="dubna_tutorial.html"> A Short Tutorial </tocitem>
@@ -100,6 +107,7 @@
   <tocitem target="plot_demo.html"> Plotting Demo </tocitem>
   <tocitem target="mtex_demo.html"> Workshop 2007 </tocitem>
 </tocitem>
+-->
 
 <tocitem target="classes_index.html" image="$toolbox/matlab/icons/book_link.gif"> Complete Function List
   <tocitem target="classes_index.html" image="$toolbox/matlab/icons/reficon.gif">Geometry Class Reference
@@ -113,7 +121,7 @@
     <tocitem target="rotation_index.html">Class rotation</tocitem>
     <tocitem target="orientation_index.html">Class orientation</tocitem>
     <tocitem target="polygon_index.html">Class polygon</tocitem>
-  </tocitem> 
+  </tocitem>
   <tocitem target="classes_index.html" image="$toolbox/matlab/icons/reficon.gif">Quantitative Texture Analysis Class Reference
     <tocitem target="ODF_index.html">Class ODF</tocitem>
     <tocitem target="PoleFigure_index.html">Class PoleFigure</tocitem>

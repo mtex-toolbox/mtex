@@ -1,5 +1,9 @@
 %% Rotations
 %
+%% Abstract
+% This sections describes the class *rotation* and gives an overview how
+% to work with rotations in MTEX.
+%
 %% Open in Editor
 %
 %% Contents
@@ -20,7 +24,7 @@
 % Here an arbitrary rotation is determined by three consecutive rotations,
 % the first about the z-axis, the second about the y-axis, and the third
 % again about the z-axis. Hence, one needs three angles two define an
-% rotation by Euler angles. 
+% rotation by Euler angles.
 
 o = rotation('Euler',30*degree,50*degree,10*degree)
 
@@ -40,7 +44,7 @@ o = rotation('Euler',30*degree,50*degree,10*degree,'ZYZ')
 
 o = rotation('axis',xvector,'angle',30*degree)
 
-%% 
+%%
 % *A fibre of rotations*
 %
 % You can also define a fibre of rotations that rotates a certain vector u
@@ -53,8 +57,8 @@ o = rotation('fibre',u,v)
 %%
 % *Four vectors defining a rotation*
 %
-% Given four vectors u1, v1, u2, v2 there is a unique rotations q such that 
-% q u1 = v1 and q u2 = v2. 
+% Given four vectors u1, v1, u2, v2 there is a unique rotations q such that
+% q u1 = v1 and q u2 = v2.
 
 o = rotation('map',xvector,yvector,zvector,zvector)
 
@@ -67,7 +71,7 @@ o = rotation('matrix',eye(3))
 % *Defining an rotation by a quaternion*
 %
 % A last possibility is to define a rotation by a quaternion, i.e., by its
-% components a,b,c,d. 
+% components a,b,c,d.
 
 
 o = rotation('quaternion',1,0,0,0)
@@ -81,7 +85,7 @@ o = rotation(q)
 
 %% Rotating Vectors
 %
-% Let 
+% Let
 
 o = rotation('Euler',90*degree,90*degree,0*degree)
 
@@ -97,7 +101,7 @@ o \ v
 
 %% Concatenating Rotations
 %
-% Let 
+% Let
 
 rot1 = rotation('Euler',90*degree,0,0);
 rot2 = rotation('Euler',0,60*degree,0);
@@ -116,7 +120,7 @@ rot = rot2 * rot1
 % following functions available in MTEX. Then rotational angle and the axis
 % of rotation can be computed via then commands
 % <quaternion_angle.html angle(rot)> and
-% <quaternion_axis.html axis(rot)> 
+% <quaternion_axis.html axis(rot)>
 
 angle(rot)/degree
 
@@ -140,8 +144,8 @@ inverse(rot)
 
 
 %% Plotting Rotations
-% 
-% The [[rotation_plot.html,plot]] function allows you to visualize an 
+%
+% The [[rotation_plot.html,plot]] function allows you to visualize an
 % rotation by plotting how the standard basis x,y,z transforms under the
 % rotation.
 

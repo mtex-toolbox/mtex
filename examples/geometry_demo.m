@@ -12,7 +12,7 @@ v = xvector                                 % predefined vector
 v = [xvector, yvector]; w = v(1);
 v = 2*xvector - yvector;
 
-%% 
+%%
 % *Basic Functions*
 angle(v, w)
 norm(v)
@@ -20,7 +20,7 @@ dot(v ,w)
 cross(v, w)
 [theta, rho] = polar(v)
 
-%% 
+%%
 % *plotting*
 
 close;figure('position',[43   362   300   300])
@@ -50,7 +50,7 @@ plot([rot rot2])
 % *Basic Functions*
 angle(rot)
 axis(rot)
-angle(rot, rot2) 
+angle(rot, rot2)
 inverse(rot)
 [alpha, beta ,gamma] = Euler(rot)
 
@@ -131,7 +131,7 @@ symmetrise(ori)
 angle(ori)
 [alpha,beta,gamma]  = Euler(ori)
 
-%% 
+%%
 % *Plotting*
 
 plot([ori,ori2])
@@ -139,10 +139,11 @@ plot([ori,ori2])
 
 
 %% Exercises
-% 
-%  1) Consider trigonal crystal symmetry.
-%   a) Find all crystallographic directions symmetrically equivalent to $h
-%   = (1, 0, \bar 1, 0)$ (Miller indices)! 
+%
+% 1) Consider trigonal crystal symmetry.
+%
+% a) Find all crystallographic directions symmetrically equivalent to $h =
+% (1, 0, \bar 1, 0)$ (Miller indices)!
 
 CS = symmetry('-3m')
 h = Miller(1,0,-1,0,CS);
@@ -150,9 +151,9 @@ symmetrise(h)
 
 
 %%
-%   b) Find crystallographic directions such that the number of their
-%   crystallographic equivalent directions on the upper hemisphere (without
-%   equator) is 1, 3, or 6 when including antipodal symmetry?
+% b) Find crystallographic directions such that the number of their
+% crystallographic equivalent directions on the upper hemisphere (without
+% equator) is 1, 3, or 6 when including antipodal symmetry?
 
 h1 = Miller(0,0,0,1,CS);
 h2 = Miller(1,1,-2,1,CS);
@@ -160,18 +161,18 @@ h3 = Miller(1,0,-1,1,CS);
 
 plot([h1 h2 h3],'all','antipodal')
 
-%% 
-%   d) Consider the orientation given by the Euler angles 30, 90, 90
-%   degree. Give the Euler angles of all symmetrically equivalent
-%   orientations!
+%%
+% c) Consider the orientation given by the Euler angles 30, 90, 90
+% degree. Give the Euler angles of all symmetrically equivalent
+% orientations!
 
 ori = orientation('Euler',30*degree,90*degree,90*degree,CS)
 symmetrise(ori);
 
-%% 
-%   d)  Which positions in the (0,0,0,1) - pole figure correspond to
-%   above defined orientation. Which crystal direction is rotated by this
-%   orientation to the specimen direction (0,0,1)?
+%%
+% d) Which positions in the (0,0,0,1) - pole figure correspond to above
+% defined orientation. Which crystal direction is rotated by this
+% orientation to the specimen direction (0,0,1)?
 
 ori * symmetrise(Miller(0,0,0,1,CS))
 
@@ -179,9 +180,9 @@ ori \ zvector
 
 
 %%
-%   e) Construct an orientation that rotates the crystallographic
-%   directions $(0,0,0,1)$ and $(2,\bar 1,\bar 1,0)$ onto the specimen
-%   directions $(1,0,0)$ and $(0,1,0)$, respectively. Check your result!
+% e) Construct an orientation that rotates the crystallographic directions
+% $(0,0,0,1)$ and $(2,\bar 1,\bar 1,0)$ onto the specimen directions
+% $(1,0,0)$ and $(0,1,0)$, respectively. Check your result!
 
 h1 = Miller(0,0,0,1,CS);
 h2 = Miller(2,-1,-1,0,CS);
@@ -217,7 +218,7 @@ subGrid(S2G,get(S2G,'theta')<=80*degree);
 plot(S2G)
 
 %%
-% operations: 
+% operations:
 % *subgrid
 % *transformation to spherical coordinates
 %
@@ -225,7 +226,7 @@ plot(S2G)
 % * orientation grids*
 
 %%
-% create 
+% create
 SO3G = SO3Grid(q);
 SO3G = SO3Grid(5*pi/180,CS,SS);
 SO3G = SO3Grid(500,CS,SS)
