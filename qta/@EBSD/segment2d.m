@@ -103,6 +103,8 @@ end
 % disconnect regions
 regions = xor(angles,phases); 
 
+clear angles phases
+
 
 %% convert to tree graph
 
@@ -167,7 +169,7 @@ else
 end
                 
 %clean up
-clear T1 T2 T3 angles neighbours regions angel_treshold
+clear T1 T2 T3 regions angel_treshold
 
 
 %% conversion to cells
@@ -225,6 +227,7 @@ gr = struct('id',num2cell(1:nc),...
        'properties',[],...
        'comment',[]);
 
+     
 for k=1:nc
   gr(k).checksum = checksum;
   gr(k).comment = comment;
@@ -312,28 +315,44 @@ gl = [rcells{:}];
   %shift indices
 indi = 1:length(gl);
 inds = indi+1;
-c1 = cellfun('length',rcells);
+c1 = cellfun('length',rcells); 
 cr1 = cellfun('length',regionids);
 r1 = cumsum(c1);
 r2 = [1 ; r1+1];
 r2(end) =[];  
 inds(r1) = r2;
-  
-gr = gl(inds); %partner pointel
-ii = [gl ;gr]'; % linels  
-
-% remove double edges
-tmpii = sort(ii,2);
-[tmpii ndx] = sortrows(tmpii);  %transpose
-
-[k ib] = sort(ndx);
 
 cc = [0; r1];
 crc = [0 cumsum(cr1)];
 
-nr = length(regionids);
-% ply = struct('xy',cell(1,nr), 'hxy',cell(1,nr)); %repmat({{}},1,nr));
+gr = gl(inds); %partner pointel
 
+clear rcells r1 r2 indi c1 inds
+
+ii = [gl(:) gr(:)]; % linels  
+% remove double edges
+ii = sort(ii,2);
+gll = ii(:,1);
+grr = ii(:,2);
+
+clear ii
+
+ndx = 1:numel(gll);
+[ig,ind] = sort(grr);
+ndx = ndx(ind);
+[ig,ind] = sort(gll(ndx));
+ndx = ndx(ind);
+
+clear ig ind
+
+gll = gll(ndx);
+grr = grr(ndx);
+
+[k ib] = sort(ndx);
+
+clear ndx k
+
+nr = length(regionids);
 p = struct(polygon);
 ply = repmat(p,1,nr);
 
@@ -344,7 +363,8 @@ for k =1:nr
   if cr1(k) > 1
     %remove double entries
     [ig nd] = sort(ib(sel));
-    dell = find(sum(diff(tmpii(ig,:)) == 0,2)>1);
+    dell = diff(gll(ig)) == 0 &  diff(grr(ig)) == 0;
+    dell = find(dell);
     sel( nd([dell dell+1]) ) = []; 
   
     border = converttoborder(gl(sel), gr(sel));
