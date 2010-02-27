@@ -12,13 +12,21 @@ end
 d = [];
 
 if ~check_option(varargin,'noascii')
+  
+  % replace delimiters
+  if strcmpi(fname(end-2:end),'csv')
+    rc = {'\t, '};
+  else
+    rc = {'\t ';',.'};
+  end
+  
   % read data using txt2mat
   try
     if check_option(varargin,'check')
       [d,ffn,nh,SR,header] = txt2mat(fname,options{2:end},...
-        'RowRange',[1 1000],'InfoLevel',0,'ReplaceChar',{'\tR ';',R.'},'ReadMode','block');
+        'RowRange',[1 1000],'InfoLevel',0,'ReplaceChar',rc);
     else
-      [d,ffn,nh,SR,header] = txt2mat(fname,options{2:end},'InfoLevel',1,'ReplaceChar',{'\tR ';',R.'},'ReadMode','block');
+      [d,ffn,nh,SR,header] = txt2mat(fname,options{2:end},'InfoLevel',1,'ReplaceChar',rc);
     end
   catch %#ok<CTCH>
   end
@@ -55,7 +63,7 @@ try
   rows = regexpsplit(header,'\n');
   %find last not empty row
   while iscell(rows)
-    if isempty(rows{end})
+    if isempty(rows{end}) || isempty(regexp(rows{end},'\w'))
       rows = {rows{1:end-1}};
     else
       rows = rows{end};
@@ -63,6 +71,10 @@ try
   end
    
   % extract colum header
+  
+  c = regexpsplit(rows,'[,;:]');
+  c = {c{~cellfun(@isempty,c)}}; % löscht evt. leere zellen.
+  if length(c) == ncol, return;end
   
   % try regular
   c = regexpsplit(rows,'\s+');

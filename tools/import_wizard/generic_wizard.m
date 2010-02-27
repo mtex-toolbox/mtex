@@ -300,6 +300,15 @@ if ~isempty(strmatch('alpha',lower(colnames))) && ...
   cdata{strmatch('gamma',lower(colnames))}='Euler 3';
 end
 
+if ~isempty(strmatch('phi1',lower(colnames))) && ...
+    ~isempty(strmatch('phi2',lower(colnames),'exact')) && ...
+    ~isempty(strmatch('phi',lower(colnames)))
+  
+  cdata{strmatch('phi1',lower(colnames))}='Euler 1';
+  cdata{strmatch('phi',lower(colnames),'exact')}='Euler 2';
+  cdata{strmatch('phi2',lower(colnames))}='Euler 3';
+end
+
 function str = stripws(str)
 
 str = strrep(str,' ','');

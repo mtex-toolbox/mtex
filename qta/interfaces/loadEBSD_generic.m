@@ -171,7 +171,7 @@ if ~isempty(opts)
   
   for i=1:length(opts),
     if layoutcol(names,opts(i)) <= size(d,2)
-      opts_struct{i} = [opts{i} {d(:,layoutcol(names,opts(i)))}]; %#ok<AGROW>
+      opts_struct{i} = [strrep(opts{i},' ','') {d(:,layoutcol(names,opts(i)))}]; %#ok<AGROW>
     end
   end
   opts_struct = [opts_struct{:}];
