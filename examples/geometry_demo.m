@@ -166,8 +166,8 @@ plot([h1 h2 h3],'all','antipodal')
 % degree. Give the Euler angles of all symmetrically equivalent
 % orientations!
 
-ori = orientation('Euler',30*degree,90*degree,90*degree,CS)
-symmetrise(ori);
+ori = orientation('Euler',30*degree,90*degree,90*degree,CS);
+symmetrise(ori)
 
 %%
 % d) Which positions in the (0,0,0,1) - pole figure correspond to above
@@ -182,7 +182,8 @@ ori \ zvector
 %%
 % e) Construct an orientation that rotates the crystallographic directions
 % $(0,0,0,1)$ and $(2,\bar 1,\bar 1,0)$ onto the specimen directions
-% $(1,0,0)$ and $(0,1,0)$, respectively. Check your result!
+% $(1,0,0)$ and $(0,1,0)$, respectively. Check your result and describe the
+% rotation by axis and angle.
 
 h1 = Miller(0,0,0,1,CS);
 h2 = Miller(2,-1,-1,0,CS);

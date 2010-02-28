@@ -54,7 +54,7 @@ end
 
 % check for identical specimen directions
 if all([pf.r] == [pf_orig.r])
-  pf_orig = setdata(pf_orig,getdata(pf));
+  pf_orig = set(pf_orig,'intensities',get(pf,'intensities'));
   return
 end
 

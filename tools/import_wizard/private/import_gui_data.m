@@ -110,8 +110,8 @@ if ~isempty(getappdata(handles.listbox(1),'data'))
   
   % for pole figures take care not to change the data  
   pf = getappdata(handles.listbox(1),'data');
-  d = getdata(pf);
-  data = setdata(data,d);
+  d = get(pf,'intensities');
+  data = set(data,'intensities',d);
   setappdata(handles.listbox(1),'data',data);
 
 elseif ~isempty(getappdata(handles.listbox(2),'data'))

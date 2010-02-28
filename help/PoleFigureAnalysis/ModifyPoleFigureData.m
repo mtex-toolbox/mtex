@@ -94,7 +94,7 @@ plot(pf)
 theta = get(pf,'theta');
 
 % and set some measurements to a large value 
-pf_outlier = setdata(pf,600,...
+pf_outlier = set(pf,'intensities',600,...
   theta>35*degree & theta<40*degree)
 
 % now we an outlier in the center of both pole figures
@@ -115,10 +115,10 @@ plot(pf_outlier)
 
 
 % find those values
-large_values = getdata(pf) > 500;
+large_values = get(pf,'intensities') > 500;
 
 % cap the values in the pole figures
-pf_corrected = setdata(pf,500,large_values);
+pf_corrected = set(pf,'intensities',500,large_values);
 
 plot(pf_corrected)
 
