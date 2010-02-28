@@ -1,64 +1,143 @@
-function q = CSL(sigma)
+function q = CSL(sigma,varargin)
+% return orientation of coincidence site lattice for cubic symmetry
+%
+%% Syntax
+%  q = CSL(sigma)
+%  q = CSL(angle)   - angle in radians of csl rotation
+%  q = CSL([u v w]) - axis of csl rotation
+%
+%% Options
+%  delta    - search radius around angle or axis
+%  maxsigma - 
+%
+%% Output 
+%  o - @orientation
+%
 
-csl = listCSL;
+csl = generateCubicCSL(varargin{:});
 
-if nargin>0
-  nd = strcmpi(sigma,{csl.sigma});
+if isa(sigma,'vector3d') || numel(sigma) == 3
+  [qr csl] = findbyAxis(csl,sigma,varargin{:});
+elseif sigma > 100*degree
+  [qr csl] = findbySigma(csl,sigma);
+elseif numel(sigma) == 1
+  [qr csl] = findbyAngle(csl,sigma,varargin{:});
+end
 
-  if any(nd)
-    q = csl(nd).quaternion;
-    return
+if nargout == 0
+  listCSL(csl);
+else
+  q = orientation(qr,symmetry('cubic'));
+end
+
+
+function csl = generateCubicCSL(varargin)  % only cubic
+
+csl = struct('sigma',[],'axis',[],'angle',[]);
+
+maxsigma = get_option(varargin,'maxsigma',60);
+
+% heuristic
+for u=0:5
+  for v=0:5
+    for w=0:5
+      maxis = [u v w];
+      if sum(maxis) ~= 0
+        for m=1:10
+          
+          N = sum(mod([maxis m],2));
+
+          if mod(N,2)
+            alpha = 1;
+          else
+            alpha = N;
+          end
+
+          sigma = sum([maxis m].^2)/alpha;
+
+          omega =  2*atan( sqrt( sum(maxis.^2) )/m );
+
+          if omega < 63*degree && sigma < maxsigma
+            n = numel(csl)+1;
+            if isempty(csl(1).sigma), n=1; end
+
+            csl(n).angle = omega;
+            csl(n).axis = maxis;
+            csl(n).sigma = sigma;
+
+          end
+        end
+        
+      end
+    end
   end
 end
 
-for k=1:length(csl)
-  fprintf(['  Sigma ' csl(k).sigma '\t: %4.2f' mtexdegchar '/<%i%i%i>\n'],csl(k).angle,csl(k).axis)
+
+
+function [q csl] = findbySigma(csl,sigma)
+
+sigmas = [csl.sigma];
+
+ndx = find( sigmas == sigma );
+
+q = quaternion;
+for k = ndx
+  q(end+1) =  axis2quat(vector3d(csl(k).axis),csl(k).angle);
 end
 
+csl = csl(ndx);
 
 
-function csl = listCSL
+function [q csl] = findbyAngle(csl,omega,varargin)
 
-csl = struct('sigma',[],'angle',[],'axis',[]);
+angles = [csl.angle];
+delta = get_option(varargin,'delta',1*degree);
 
-% b.c.c.  <  other symmetries other csl? 
-csl = addCSL(csl, '3'  , 60   , [1 1 1]);
-csl = addCSL(csl, '5'  , 36.86,	[1 0 0]);
-csl = addCSL(csl, '7'  , 38.21,	[1 1 1]);
-csl = addCSL(csl, '9'  , 38.94,	[1 1 0]);
-csl = addCSL(csl, '11' , 50.47,	[1 1 0]);
-csl = addCSL(csl, '13a', 22.62,	[1 0 0]);
-csl = addCSL(csl, '13b', 27.79,	[1 1 1]);
-csl = addCSL(csl, '15' , 48.19,	[2 1 0]);
-csl = addCSL(csl, '17a', 28.07,	[1 0 0]);
-csl = addCSL(csl, '17b', 61.9	, [2 2 1]);
-csl = addCSL(csl, '19a', 26.53,	[1 1 0]);
-csl = addCSL(csl, '19b', 46.8	, [1 1 1]);
-csl = addCSL(csl, '21a', 21.78,	[1 1 1]);
-csl = addCSL(csl, '21b', 44.41,	[2 1 1]);
-csl = addCSL(csl, '23' , 40.45,	[3 1 1]);
-csl = addCSL(csl, '25a', 16.26,	[1 0 0]);
-csl = addCSL(csl, '25b', 51.68,	[3 3 1]);
-csl = addCSL(csl, '27a', 31.59,	[1 1 0]);
-csl = addCSL(csl, '27b', 35.43,	[2 1 0]);
-csl = addCSL(csl, '29a', 43.6	, [1 0 0]);
-csl = addCSL(csl, '29b', 46.4	, [2 2 1]);
-csl = addCSL(csl, '31a', 17.9	, [1 1 1]);
-csl = addCSL(csl, '31b', 52.2	, [2 1 1]);
-csl = addCSL(csl, '33a', 20.1	, [1 1 0]);
-csl = addCSL(csl, '33b', 33.6	, [3 1 1]);
-csl = addCSL(csl, '33c', 59.0	, [1 1 0]);
-csl = addCSL(csl, '35a', 34.0	, [2 1 1]); 
-csl = addCSL(csl, '35b', 43.2	, [3 3 1]);
+ndx = find( abs(angles-omega) < delta );
+
+[a ndx2] = sort([csl(ndx).sigma]);
+
+q = quaternion;
+for k=ndx(ndx2)
+  q(end+1) =  axis2quat(vector3d(csl(k).axis),csl(k).angle);
+end
+
+csl = csl(ndx(ndx2));
 
 
-function csl = addCSL(csl,sigma,angle, axis)
+function [q csl] = findbyAxis(csl,saxis,varargin)
 
-if isempty(csl(1).sigma), n = 1;
-else n = numel(csl)+1; end
+saxis = vector3d(saxis);
+delta = get_option(varargin,'delta',.1*degree);
 
-csl(n).sigma = sigma;
-csl(n).angle = angle;
-csl(n).axis  = axis;
-csl(n).quaternion = axis2quat(vector3d(axis),angle*degree);
+axess = vector3d(vertcat(csl.axis)');
 
+
+
+% fprintf('CSL by axis: %s with delta %5.2f\n',char(saxis), delta/degree);
+
+ndx = find( angle(axess,saxis) < delta );
+
+[a ndx2] = sort([csl(ndx).sigma]);
+
+q = quaternion;
+for k=ndx(ndx2)
+  q(end+1) =  axis2quat(vector3d(csl(k).axis),csl(k).angle);
+end
+
+csl = csl(ndx(ndx2));
+
+
+function listCSL(csl)
+
+ndx = 1:numel(csl);
+[a ind] = sort([csl.angle]);
+ndx = ndx(ind);
+[a ind] = sort([csl(ndx).sigma]);
+ndx = ndx(ind);
+
+for k = ndx
+  cs = csl(k); 
+  fprintf(' sigma: %2d  | %5.3f°/[%d%d%d]  \n', cs.sigma, cs.angle/degree,cs.axis);
+end
