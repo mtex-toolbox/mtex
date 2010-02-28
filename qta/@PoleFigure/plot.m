@@ -43,7 +43,7 @@ multiplot(@(i) pf(i).r,pfunc,length(pf),...
   varargin{:});
 
 setappdata(gcf,'h',get(pf,'h'));
-setappdata(gcf,'SS',pf(1).CS);
-setappdata(gcf,'CS',pf(1).SS);
+setappdata(gcf,'SS',pf(1).SS);
+setappdata(gcf,'CS',pf(1).CS);
 set(gcf,'Name',['Pole Figures of Specimen ',inputname(1)]);
 set(gcf,'Tag','pdf');
