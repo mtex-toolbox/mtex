@@ -23,7 +23,7 @@ f = zeros(size(g));
 
 for i = 1:length(odf) 
   
-  switch type(odf(i).options{:},varargin{:})
+  switch ODF_type(odf(i).options{:},varargin{:})
   
     case 'UNIFORM' % uniform portion
     
@@ -70,11 +70,3 @@ for i = 1:length(odf)
   end
 end
 
-
-function typ = type(varargin)
-
-typ = {'UNIFORM','FOURIER','FIBRE','Bingham','EVEN'};
-
-pos = find_option(typ,varargin);
-if pos > 0, typ = typ{find_option(typ,varargin)};
-else typ = ''; end

@@ -26,7 +26,7 @@ function [q val]= max(odf,varargin)
 
 res = get_option(varargin,'resolution',5*degree);
 S3G = SO3Grid(res,odf(1).CS,odf(1).SS);
-qa = getFundamentalRegion(S3G);
+qa = S3G;
 
 dof = eval(odf,S3G,varargin{:}); %#ok<EVLC>
 
@@ -79,7 +79,7 @@ for k=1:numel(q)
   while res2 > accuracy
     res2 = res2/2;
     S3G = SO3Grid(res2,odf(1).CS,odf(1).SS,'center',q(k),'max_angle',res2*2);
-    qa = getFundamentalRegion(S3G);
+    qa = S3G;
     dof = eval(odf,S3G,varargin{:});
     
     [mo ndx] = max(dof);

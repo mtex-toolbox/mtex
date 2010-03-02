@@ -3,10 +3,17 @@ function q = quantile(x,n)
 %
 %% Input
 % x - double
-%  n -
+% n -
 %
 %% Output
 
 if size(x,1) == 1, x = x.';end
 x = sort(x);
-q = x(max(1,round(size(x,1)*n)),:);
+
+if n < 0
+  q = x(max(1,end+n));
+elseif n < 1
+  q = x(max(1,round(size(x,1)*n)),:);
+else
+  q = x(min(n,numel(q)));
+end
