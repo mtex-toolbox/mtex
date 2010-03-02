@@ -17,7 +17,7 @@ if isa(o,'ebsd') || isa(o,'orientation')
   CS = get(o,'CS');
   
   %% kernel density ?
-  [a omegas] = getFundamentalRegion(o);
+  [a omegas] = project2FundamentalRegion(o);
   
   %gaussian kernel
   k = @(t) 1./sqrt(2*pi) .* exp(-1/2.*t.^2);

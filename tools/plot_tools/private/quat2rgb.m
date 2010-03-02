@@ -1,8 +1,8 @@
-function c = quat2rgb(q,cs,varargin)
+function c = quat2rgb(o,varargin)
 % converts orientations to rgb values
 
 q0 = get_option(varargin,'q0',idquaternion);
-[q omega] = getFundamentalRegion(q,q0);
+[o omega] = project2FundamentalRegion(o,q0);
 
 if check_option(varargin,'logarithmic')
   omega = log(max(omega(:))/1000 + omega);
@@ -12,7 +12,7 @@ end
 disp(max(omega(:)));
 omega = omega ./ max(omega(:));
 
-a = reshape(double(axis(q)),[],3);
+a = reshape(double(axis(o)),[],3);
 
 %c = 0.5 + 0.5 * reshape(a,[],3) ./ max(abs(a(:))) .* [omega omega omega];
 

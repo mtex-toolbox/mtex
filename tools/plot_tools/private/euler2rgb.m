@@ -5,10 +5,10 @@ function c = euler2rgb(o,varargin)
 q0 = get_option(varargin,'center',idquaternion);
 
 % restrict to fundamental region
-q = getFundamentalRegion(o,q0);
+o = project2FundamentalRegion(o,q0);
 
 % convert to euler angles angles
-[phi1,Phi,phi2] = Euler(q(:),'Bunge');
+[phi1,Phi,phi2] = Euler(o(:),'Bunge');
 
 phi1 = mod(-phi1,pi/2) *2 ./ pi;
 Phi = mod(-Phi,pi/2); Phi = Phi./max(Phi(:));

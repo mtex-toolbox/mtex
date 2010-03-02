@@ -4,10 +4,10 @@ function a = axis(o)
 %  v = axis(o)
 %
 %% Input
-%  q - @orientation
+%  o - @orientation
 %
 %% Output
 %  v - @vector3d
 
-q = getFundamentalRegion(o);
-a = axis(q);
+o = project2FundamentalRegion(o);
+a = axis(o.rotation);

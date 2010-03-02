@@ -43,13 +43,11 @@ switch coloring
   case model(6:8)
     switch coloring
       case model(6)
-        q = getFundamentalRegion(o);
-      case model(7)
-        q = quaternion(o);
+        o = project2FundamentalRegion(o);
       case model(8)
-        q = inverse(getFundamentalRegion(o));
+        o = inverse(project2FundamentalRegion(o));
     end
-    h = Rodrigues(q);
+    h = Rodrigues(o);
     cs = get(o,'CS');
     c = ipdf2rgb(h,cs,varargin{:});
   case model(9)

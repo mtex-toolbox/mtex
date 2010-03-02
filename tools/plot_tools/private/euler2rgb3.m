@@ -8,10 +8,10 @@ S3G = inverse(q0) * S3G;
 [max_phi1 max_Phi max_phi2] = getFundamentalRegion(get(S3G,'CS'),get(S3G,'SS'));
 
 % restrict to fundamental region
-q = getFundamentalRegion(S3G);
+o = project2FundamentalRegion(S3G);
 
 % convert to euler angles angles
-[phi1,Phi,phi2] = Euler(q(:),'BUNGE');
+[phi1,Phi,phi2] = Euler(o(:),'BUNGE');
 
 c1 = max(abs(phi1))-mod( abs(phi1), max_phi1);
 c2 = max(Phi)-mod( Phi, max_Phi); 
