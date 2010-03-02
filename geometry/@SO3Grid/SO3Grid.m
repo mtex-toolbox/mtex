@@ -144,12 +144,15 @@ elseif maxangle < rotangle_max_z(CS)/4
   % restrict to fundamental region - specimen symmetry only
   center = get_option(varargin,'center',idquaternion);
   sym_center = quaternion(symmetrise(center,CS,SS));
-  [ignore,center] = selectMinbyRow(angle(quaternion(sym_center)),sym_center);
+  [ignore,center] = selectMinbyColumn(angle(sym_center),sym_center);
   
   for i = 1:length(center)
     cq = center(i) .* q(:);
-    ind = fundamental_region2(cq,center(i),CS,SS);
-    Grid = [Grid;orientation(cq(ind),CS,SS)];
+    if numel(SS) > 1      
+      ind = fundamental_region2(cq,center(i),CS,SS);
+      cq = cq(ind);
+    end
+    Grid = [Grid;orientation(cq,CS,SS)];
   end
   
 %% equidistribution  
