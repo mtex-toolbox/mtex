@@ -1,14 +1,22 @@
 function [g0,f0] = modalorientation(odf,varargin)
-% caclulate the modal orientation of the odf
+% caclulate the modal orientation of an odf
+%
+%% Syntax
+% [g0,f0] = modalorientation(odf,'resolution',res)
 %
 %% Input
-%  odf - @ODF 
+%  odf - @ODF
+%  res - resolutions
 %
 %% Output
-%  g0 - @orientation
+%  g0 - modal @orientation
+%  f0 - modal value
+%
+%% Options
+%  resolution - desired resolution
 %
 %% See also
-%
+% ODF_max
 
 % initial resolution
 res = 5*degree;
@@ -62,11 +70,8 @@ while res > 0.25*degree
   f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
   
   % extract largest values
-  if res < 2*degree
-    g0 = S3G(f>=quantile(f,-1));
-  else
-    g0 = S3G(f>=quantile(f,-20));
-  end
+  g0 = S3G(f>=quantile(f,0));
+  
   res = res / 2; 
 end
 
