@@ -297,7 +297,7 @@ figure, plotipdf(odf_nmis1,[vector3d(1,1,0) vector3d(1,1,1)],'antipodal')
 
 plot(ebsd)
 hold on
-plotboundaries(grains)
+plotboundary(grains)
 
 %%
 % d) Plot the grains together with their mean orientation!

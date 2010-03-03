@@ -3,15 +3,12 @@ function plotpdf(ebsd,h,varargin)
 %
 %% Syntax
 % plotpdf(ebsd,[h1,..,hN],<options>)
-% plotpdf(ebsd,[h1,..,hN],'superposition',[c1,..,cN],<options>)
 %
 %% Input
 %  ebsd - @EBSD
-%  h    - @Miller / @vector3d crystallographic directions
-%  c    - structure coefficients
+%  h    - @Miller crystallographic directions
 %
 %% Options
-%  RESOLUTION    - resolution of the plots
 %  SUPERPOSITION - plot superposed pole figures
 %  POINTS        - number of points to be plotted
 %

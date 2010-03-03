@@ -89,7 +89,7 @@ plotpdf(rec,h)
 %
 % define specimen directions
 r = S2Grid('regular','antipodal')
-pf_santafee = simulatePoleFigure(santafee,);
+pf_santafee = simulatePoleFigure(santafee,r);
 
 rec = calcODF(pf_santafee,'RESOLUTION',10*degree,...
  'background',10,'iter_max',6)
