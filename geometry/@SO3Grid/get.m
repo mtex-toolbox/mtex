@@ -9,7 +9,7 @@ switch lower(vname)
   case {'res','resolution'}
     varargout{1} = obj.resolution;
   case fields(obj)
-    varargout = obj.(vname);
+    varargout{1} = obj.(vname);
   otherwise
     error('Unknown field in class SO3Grid!')
 end
