@@ -53,7 +53,7 @@ elseif ~isa(name,'char')
   
   error('first parameter should be char');
   
-elseif isempty(strmatch(name,kernels))
+elseif isempty(strmatch(lower(name),lower(kernels)))
   
   error(sprintf(['unknown kernel: "',name,'".\nAvailable kernels are: \n',...
     'Laplace, \n',...
@@ -67,13 +67,13 @@ elseif isempty(strmatch(name,kernels))
     'Dirichlet, \n',...
     'Fourier, \nbump, \nuser'])); %#ok<SPERR>
   
-elseif length(strmatch(name,kernels)) > 1
+elseif length(strmatch(lower(name),lower(kernels))) > 1
   
   error(['Multiple kernel functions matching "' name '"!']);
   
 else
   
-  name = kernels{strmatch(name,kernels)};
+  name = kernels{strmatch(lower(name),lower(kernels))};
   
 end
     

@@ -6,7 +6,7 @@ function [g0,f0] = modalorientation(odf,varargin)
 %
 %% Input
 %  odf - @ODF
-%  res - resolutions
+%  res - resolution
 %
 %% Output
 %  g0 - modal @orientation
@@ -20,6 +20,9 @@ function [g0,f0] = modalorientation(odf,varargin)
 
 % initial resolution
 res = 5*degree;
+
+% target resolution
+targetRes = get_option(varargin,'resolution',0.25*degree);
 
 % initial seed
 ori = orientation(odf(1).CS,odf(1).SS);
@@ -61,7 +64,7 @@ f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
 % extract 20 largest values
 g0 = S3G(f>=quantile(f,-20));
 
-while res > 0.25*degree
+while res > targetRes
 
   % new grid
   S3G = [g0;orientation(SO3Grid(res/4,odf(1).CS,odf(1).SS,'max_angle',res,'center',g0))];
