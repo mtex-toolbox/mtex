@@ -43,10 +43,10 @@ function q = euler2quat(alpha,beta,gamma,varargin)
 % 
 % return
 
-if check_option(varargin,{'BUNGE','ZXZ'})
-  q = axis2quat(zvector,alpha).*...
-    axis2quat(xvector,beta).*axis2quat(zvector,gamma);
-else
+if check_option(varargin,{'ABG','ZYZ'})
   q = axis2quat(zvector,alpha).*...
     axis2quat(yvector,beta).*axis2quat(zvector,gamma);
+else
+  q = axis2quat(zvector,alpha).*...
+    axis2quat(xvector,beta).*axis2quat(zvector,gamma);  
 end

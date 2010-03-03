@@ -42,4 +42,6 @@ s = strrep(s,' ','');
 ind = s==upper(s) & s~=lower(s);
 s(ind) = [];
 
+s= regexprep(s,'[:.]','');  % occurs sometimes
+
 if isempty(s), s = '1';end

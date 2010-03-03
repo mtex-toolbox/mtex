@@ -23,7 +23,7 @@ if ~check_option(varargin,{'degree','bandwidth'})
   error('No polynomial degree l specified');
 end
 
-g = quat2euler(g,'nfft');
+g = Euler(g,'nfft');
 c = 1;
 l = get_option(varargin,{'degree','bandwidth'});
 L = max(l,3);

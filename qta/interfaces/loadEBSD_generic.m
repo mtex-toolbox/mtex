@@ -47,8 +47,13 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 cs = get_option(varargin,'cs',symmetry('m-3m'));
 ss = get_option(varargin,'ss',symmetry('-1'));
 
+
+if ~iscell(cs), cs = {cs}; end
+
 % load data
-[d,varargin,header,c] = load_generic(char(fname),varargin{:});
+[d,options,header,c] = load_generic(char(fname),varargin{:});
+
+varargin = options;
 
 % no data found
 if size(d,1) < 1 || size(d,2) < 3
@@ -134,13 +139,13 @@ if istype(names,euler) % Euler angles specified
   end
     
   % transform to quaternions
-  q = euler2quat(alpha,beta,gamma,varargin{:});
+  q = orientation('Euler',alpha,beta,gamma,cs{1},ss,varargin{:});
   
 elseif istype(names,quat) % import quaternion
     
   layout = layoutcol(names,quat);
   d(any(isnan(d(:,layout)),2),:) = [];
-  q = quaternion(d(:,layout(1)),d(:,layout(2)),d(:,layout(3)),d(:,layout(4)));
+  q = orientation(quaternion(d(:,layout(1)),d(:,layout(2)),d(:,layout(3)),d(:,layout(4))));
   
 else
   error('You should at least specify three Euler angles or four quaternion components!');
@@ -166,7 +171,7 @@ if ~isempty(opts)
   
   for i=1:length(opts),
     if layoutcol(names,opts(i)) <= size(d,2)
-      opts_struct{i} = [opts{i} {d(:,layoutcol(names,opts(i)))}]; %#ok<AGROW>
+      opts_struct{i} = [strrep(opts{i},' ','') {d(:,layoutcol(names,opts(i)))}]; %#ok<AGROW>
     end
   end
   opts_struct = [opts_struct{:}];
@@ -189,12 +194,13 @@ options = varargin;
 
 % load single phase
 if isempty(phases) || sum(phase ~= 0) < 10
-  ebsd = EBSD(SO3Grid(q,cs,ss),cs,ss,varargin{:},'xy',xy,'options',opt,'phase',1); 
+  ebsd = EBSD(q,cs,ss,varargin{:},'xy',xy,'options',opt,'phase',1); 
   return
 end
 
 %
-if numel(cs) < length(phases), cs = repmat(cs(1),1,length(phases));end
+if numel(cs) < length(phases), cs = repmat({cs{1}},1,length(phases));end
+
 
 % load multiple phases
 for ip = 1:length(phases)
@@ -206,9 +212,10 @@ for ip = 1:length(phases)
     pxy = xy(ind,:);
   end
   popt = structfun(@(x) x(ind),opt,'uniformOutput',false);
-  
-  ebsd(ip) = EBSD(SO3Grid(q(ind),cs(ip),ss),cs(ip),ss,varargin{:},'xy',pxy,'phase',phases(ip),'options',popt); %#ok<AGROW>
+
+  ebsd(ip) = EBSD(set(q(ind),'CS',cs(ip)),varargin{:},'xy',pxy,'phase',phases(ip),'options',popt); %#ok<AGROW>
 end
+
 
 function str = stripws(str)
 

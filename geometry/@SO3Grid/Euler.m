@@ -25,7 +25,7 @@ else
   convention = get_flag(get(S3G,'options'),{'ZXZ','ZYZ'},'none');
 end
 
-if check_option(S3G,convention)
+if isempty(S3G.center) && check_option(S3G,convention)
   
   if nargout == 3
     varargout{1} = vertcat(S3G.alphabeta(:,1));
@@ -37,6 +37,6 @@ if check_option(S3G,convention)
     
 else
   
-  [varargout{1:nargout}] = quat2euler(quaternion(S3G),varargin{:});
+  [varargout{1:nargout}] = Euler(quaternion(S3G),varargin{:});
   
 end

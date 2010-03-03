@@ -20,11 +20,11 @@ if nargin >= 3
 elseif islogical(q) 
   ind = q;
 else
-  ind = false(GridLength(G),1);
+  ind = false(numel(G),1);
   ind(q) = true;
 end
 
-G.Grid = G.Grid(ind);
+G.orientation = G.orientation(ind);
 
 if check_option(G,'indexed')
   G.gamma = subGrid(G.gamma,ind);

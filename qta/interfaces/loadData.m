@@ -47,16 +47,7 @@ end
 sym = {};
 if ~isempty(varargin) && checkClass(varargin{1},'symmetry')  
   cs = varargin{1};varargin = varargin(2:end);
-  if strcmpi(type,'ODF'), sym = {'cs',cs};;end
-  
-  if ~iscell(cs) 
-    cs = num2cell(cs);
-    if length(cs) > 1
-      warning('MTEX:loadData', ...
-        ['Decrepated syntax: please use multiple symmetries in cells, this functionality ', ...
-        'might be ignored in future releases.']) ;
-    end
-  end;
+  if strcmpi(type,'ODF'), sym = {'cs',cs};;end  
 end
 
 if ~isempty(varargin) && checkClass(varargin{1},'symmetry')

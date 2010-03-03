@@ -40,7 +40,7 @@ plot(ebsd,'phase',1)
 
 %% Plot grain-boundaries
 
-plot(grains,'color',[0.25 0.1 0.5])
+plotboundary(grains,'color',[0.25 0.1 0.5])
 hold on, plotsubfractions(grains,'color','red','linewidth',2)
 
 %% Select grains after their EBSD phase
@@ -141,12 +141,6 @@ plot(grains_fractions,'hull','b','linewidth',1.5)
   % and also ellipses of principal components
 plotellipse(grains_fractions,'hull','scale',0.25,'b','linewidth',1.5)
 
-%% Assign an orientation to a grain
-% this is a quite important function, hence we need it for further
-% procedings, e.g. ODF estimation, misorientation
-
-grains = mean(grains, ebsd)
-
 %%
 % as we see, the mean is stored as new property 'orientation'. we can plot
 % it
@@ -179,7 +173,7 @@ coloring = get(grains,'phase');
 % we can use also other coloring, for instance binary
 
 joincount(grains,hassubfraction(grains));
-joincount(grains,hasholes(grains));
+joincount(grains,hashole(grains));
   % ...
 
 %% Multiple Access of EBSD data
@@ -197,11 +191,11 @@ grainfun(@(ebsd) ebsd, grains_fractions,ebsd_fractions,'uniformoutput',true)
 % calculate all ODFs of grains, since this takes quite long we restrict the
 % selected grains to a region of interest
 
-plxy = [90 90;150 90;150 150; 90 150; 90 90];
-pgrains = inpolygon( grains, plxy,'intersect')
+ply = polygon([90 90;140 90;140 140; 90 140; 90 90]);
+pgrains = grains( inpolygon( grains, ply,'intersect') )
 
-figure, plot(plxy(:,1),plxy(:,2),'r')
-hold on, plot(pgrains)
+figure, plot(pgrains)
+hold on, plot(ply,'color','r','linewidth',2)
 
 %%
 % and now the ODF with respect to its origial ebsd-data
@@ -282,6 +276,37 @@ calcerror(odf_ebsd1,odf_grains1)
 ebsd_nmis = misorientation(grains,'weighted');
 odf_nmis1 = calcODF(ebsd_nmis(1),'kernel',kern,'resolution',1*degree);
 
-figure, plotpdf(odf_nmis1,[Miller(1,1,0) Miller(1,1,1)],'antipodal')
+figure, plotipdf(odf_nmis1,[vector3d(1,1,0) vector3d(1,1,1)],'antipodal')
 
 %%
+
+%% Exercises
+%
+% 4)
+%
+% a) Load the EBSD data: |data/ebsd\_txt/85\_829grad\_07\_09\_06.txt|!
+
+
+
+%%
+% b) Perform grain detection with a certain threshold!
+
+[grains,ebsd] = segment2d(ebsd)
+%%
+% c) Plot the EBSD data together with the grain boundaries!
+
+plot(ebsd)
+hold on
+plotboundary(grains)
+
+%%
+% d) Plot the grains together with their mean orientation!
+
+plot(grains)
+
+%%
+% e) Compute and visualize the grains size distribution!
+
+%%
+% f) Explore the geometric properties of the grains! Is there any
+% relationship between the size and the mad of the grains?

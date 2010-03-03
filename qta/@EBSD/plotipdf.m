@@ -17,9 +17,9 @@ function plotipdf(ebsd,r,varargin)
 % SphericalProjection_demo 
 
 %% make new plot
-[grid,ind] = getgrid(ebsd,'checkPhase',varargin{:});
-cs = get(grid,'CS');
-ss = get(grid,'SS');
+[ori,ind] = get(ebsd,'orientations','checkPhase',varargin{:});
+cs = get(ori,'CS');
+ss = get(ori,'SS');
 
 if newMTEXplot('ensureTag','ipdf',...
     'ensureAppdata',{{'CS',cs},{'SS',ss}})
@@ -29,8 +29,8 @@ else
     varargin = {r,varargin{:}};
   end
   r = getappdata(gcf,'r');
-  o = getappdata(gcf,'options');
-  if ~isempty(o), varargin = {o{:},varargin{:}};end
+  options = getappdata(gcf,'options');
+  if ~isempty(options), varargin = {options{:},varargin{:}};end
 end
 
 %% colorcoding
@@ -46,15 +46,15 @@ end
 varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
-if sum(GridLength(grid))*length(cs)*length(ss) > 100000 || check_option(varargin,'points')  
+if numel(ori)*length(cs)*length(ss) > 100000 || check_option(varargin,'points')  
   points = get_option(varargin,'points',fix(100000/length(cs)/length(ss)));  
-  disp(['plot ', int2str(points) ,' random orientations out of ', int2str(sum(GridLength(grid))),' given orientations']);
-  grid = subsample(grid,points);
+  disp(['plot ', int2str(points) ,' random orientations out of ', int2str(numel(ori)),' given orientations']);
+  ori = ori(discretesample(ones(1,numel(ori)),points));
 end
 
 
 %% plotting grid
-h = @(i) reshape(inverse(quaternion(grid * cs)),[],1) * symetriceVec(ss,r(i));
+h = @(i) reshape(inverse(quaternion(ori * cs)),[],1) * symmetrise(r(i),ss);
 [maxtheta,maxrho,minrho] = getFundamentalRegionPF(cs,varargin{:});
 Sh = @(i) S2Grid(h(i),'MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
 

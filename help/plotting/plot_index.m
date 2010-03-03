@@ -8,9 +8,9 @@
 % variable in the most intuive way. In this way you can plot three
 % Miller indeces, rotations, pole figures, or ODFs. MTEX also offers you
 % a wide range of possibilities to custumize your plots, e.g. by changing
-% the <PlotTypes_demo.html plot style>, the 
+% the <PlotTypes_demo.html plot style>, the
 % <SphericalProjection_demo.html spherical projection>, the
-% <ColorCoding_demo.html color coding>, or by adding 
+% <ColorCoding_demo.html color coding>, or by adding
 % <Annotations_demo.html colorbars or other annotations> to the plot. You
 % can even <CombinedPlots_demo.html combine plots> of different ODFs or
 % EBSD data. This way MTEX allows you to create publication ready plots
@@ -19,74 +19,80 @@
 %
 %% Contents
 %
+%% Plot Types
 %
-%% Plotting Three Dimensional Vectors
+% In general MTEX knows the following <PlotTypes_demo.html plot types>
 %
-% A three dimensional vector is plotted by its
-% <SphericalProjection_demo.html spherical projection>.
-
-close all;figure('position',[100,100,200,200]);
-plot([xvector,yvector,zvector])
-
-
-%% Plotting Miller Indice
+% * contour plots
+% * filled contour plots
+% * smoots plots
+% * scatter plots
+% * line plots
 %
-% Miller indeces are first converted into three dimensional vectors using
-% the crystal coordinate system and then plotted as described above. Using
-% the option *all* one makes MTEX plotting all crystallographic equivalent
-% directions to a given one.
+% Contour plots are plots consisting only of contour lines and mainly used
+% for pole figure or ODF plots. For raw pole figure data MTEX uses by
+% default a plot where each datapoint is represented by a single dot colored
+% accordingly to the intensity. Line plots are used by MTEX for one
+% dimesional ODF plots, plots of Fourier coefficients and plots of kernel
+% functions functions
 
-close all;figure('position',[100,100,400,200]);
-cs = symmetry('-3m',[1 1 3])
-plot(Miller(1,1,-2,2,cs),'all','labeled')
-
-%% Plotting Rotations
+%% Spherical Projections
+% Whenever MTEX plots pole figures, ODFs, or crystal or specimen directions
+% MTEX uses spherical projections to map the spherical data to the plane. By
+% doing so MTEX supports a wide varity of <SphericalProjection_demo.html
+% spherical projections>, i.e.,
 %
-% Rotations are visualzied by plotting the rotated X, Y, and Z axis in a
-% spherical plot. Take care the rotations have first be converted into
-% quaternions to be plotted, e.g. by using <euler2quat.html euler2quat>,
-% <axis2quat.html axis2quat>, or <Miller2quat.html Miller2quat>.
-
-q = euler2quat(30*degree,50*degree,10*degree);
-plot(q)
-
-%% Plotting Pole Figures Data
+% * equal area projection (Schmidt)
+% * equal distance projection
+% * equal angle projection (stereographic)
+% * plain
+% * 3d plots
 %
-% Pole figure data are plotted in MTEX by single points in a 
-% <SphericalProjection_demo.html spherical projection> which are colored
-% according to their intensity.
-
-pf = simulatePoleFigure(santafee,Miller(1,0,0),S2Grid('regular'));
-plot(pf)
-
-
-%% Plotting ODFs
+%% Color Coding
+% A central issue when interpreting plots is to have a consistent
+% <ColorCoding_demo.html color coding> among all plots. In MTEX this can be
+% achieved in two ways. If the the minimum and maximum value is known then
+% one can use one of the following syntaxes to have a consistent color
+% coding.
 %
-% The ODF plotting command <ODF_plotodf.html plotodf> allows to plot
-% various sections of an ODF. Pole figure of an ODF are plotted by
-% <ODF_plotpdf.html plotpdf> and inverse pole figures by 
-% <ODF_plotipdf.html plotipdf>. In all cases one can specify the 
-% <SphericalProjection_demo.html spherical projections>, the 
-% <PlotTypes_demo.html plotting type>, and the <ColorCoding_demo.html color coding>.
-
-close; figure('position',[46 171 752 486]);
-plot(santafee,'alpha','sections',18,'resolution',5*degree,...
-  'projection','plain','gray','contourf','FontSize',10,'silent')
-
-%% Plotting EBSD Data
+% * Specifying the colorrange
+% * Setting a logarithmic color scale
+% * Switching to a monochrome color scale
+% *
+% See also <ColorCodingEBSD_demo color coding EBSD>.
 %
-% EBSD data are plotted by default in axis angle space. 
-
-cs = symmetry('-3m'); ss = symmetry('triclinic');
-odf = unimodalODF(idquaternion,cs,ss);
-ebsd = simulateEBSD(odf,100);
-plot(ebsd,'scatter')
-
-%%
-% However, the command <EBSD_plotpdf.html plotpdf> allows to plot the individual
-% axis orientations. 
-
-close; figure('position',[46 171 400 200]);
-h = [Miller(0,0,0,1,cs),Miller(1,0,-1,0,cs)];
-plotpdf(ebsd,h,'antipodal','MarkerSize',3)
-
+%% Plot Annotations
+%
+% After generating a plot with MTEX it is possible to modify it
+% interactivly using the MATLAB plotting tools in the plotting figure. This
+% includes
+%
+% * adding a colorbar
+% * adding a legend
+% * adding annotations
+% * resizing / shifting parts of the plot
+%
+% This is described in more detail <Annotations_demo.html here.>
+%
+%% Cobined Plots
+%
+% Sometimes it is usefull to combine several plots, e.g. plotting on the
+% top of an inverse pole figure some important crystall directions. This
+% can be performed by the command [[matlab:doc hold,hold all]],
+% which preserfes MATLAB from replacing the old plot by the new one. This
+% technique is described in more detail <CombinedPlots_demo.html here.>
+%
+%% Exporting Plots
+%
+% Plots generated by MTEX can be exported to a wide range of formats using
+% the MATLAB function *save as* in the figure menu or using the command
+% <savefigure.html savefigure>
+%
+%% Changing the Default Plotting Options
+%
+% If you want to change the default plotting options, e.g. set color coding
+% to *equal* in each plot or allways use the option *antipodal*. Then the
+% desired options can be added in the start up file
+% [[matlab: edit mtex_settings.m,mtex_settings]] to the option
+% *default_plot_options*.
+%

@@ -9,14 +9,18 @@ function plot(varargin)
 %  grains - @grain
 %
 %% Options
+%  BOUNDARY      - plot grainboundaries
 %  SUBFRACTIONS  - subfractions plot
 %  ELLIPSE       - ellipse plot
 %
 %% See also
-% grain/plot grain/plotgrains grain/plotsubfractions
+% grain/plotboundary grain/plotgrains grain/plotsubfractions
 %
 
-if check_option(varargin,'subfractions')
+if check_option(varargin,'boundary')
+  varargin = delete_option(varargin,'boundary',0);
+  plotboundary(varargin{:});
+elseif check_option(varargin,'subfractions')
   varargin = delete_option(varargin,'subfractions',0);
   plotsubfractions(grains,varargin{:});
 elseif check_option(varargin,'ellipse')

@@ -38,6 +38,13 @@ for iodf = 1:length(odf)
     
   elseif check_option(odf(iodf),'fibre')
     
+    psi_old = odf(iodf).psi;
+    odf(iodf).psi = kernel(get(psi_old,'name'),'halfwidth',hw + get(psi_old,'halfwidth'));
+    
+  elseif check_option(odf(iodf),'Bingham')
+    
+    odf(iodf).psi = odf(iodf).psi./2;
+    
   %% unimodal portion
   else
     
@@ -48,10 +55,10 @@ for iodf = 1:length(odf)
 
     % init variables
     g = quaternion(odf(iodf).center);
-    d = zeros(1,GridLength(S3G));
+    d = zeros(1,numel(S3G));
 
     % iterate due to memory restrictions?
-    maxiter = ceil(length(odf(1).CS)*length(odf(1).SS)*numel(g) /...
+    maxiter = ceil(numel(odf(1).CS)*numel(odf(1).SS)*numel(g) /...
       get_mtex_option('memory',300 * 1024));
     if maxiter > 1, progress(0,maxiter);end
 

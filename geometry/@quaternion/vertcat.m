@@ -1,13 +1,19 @@
 function q = vertcat(varargin)
 % implements [q1;q2;q3..]
 
-qs = repmat(struct(varargin{1}),size(varargin));
-for k=1:numel(varargin)
-  qs(k) = struct(varargin{k});
+q = varargin{1};
+
+qa = cell(size(varargin)); qb = qa; qc = qa; qd = qa;
+for i = 1:numel(varargin)
+  qs = varargin{i};
+  qa{i} = qs.a;
+  qb{i} = qs.b;
+  qc{i} = qs.c;
+  qd{i} = qs.d;
 end
 
-q = varargin{1};
-q.a = vertcat(qs.a);
-q.b = vertcat(qs.b);
-q.c = vertcat(qs.c);
-q.d = vertcat(qs.d);
+q.a = vertcat(qa{:});
+q.b = vertcat(qb{:});
+q.c = vertcat(qc{:});
+q.d = vertcat(qd{:});
+

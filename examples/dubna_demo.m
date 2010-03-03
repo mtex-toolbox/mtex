@@ -40,8 +40,8 @@ hist(pf)
 
 %% Correct pole figures
 
-pf_corrected = delete(pf,getTheta(getr(pf)) >= 70*degree &...
-  getTheta(getr(pf)) <= 75*degree);
+pf_corrected = delete(pf,get(pf,'theta') >= 70*degree &...
+  get(pf,'theta') <= 75*degree);
 
 plot(pf_corrected)
 
@@ -86,9 +86,9 @@ plot(odf,'sections',18,'silent')
 %% rotate ODF back
 
 odfrotated = rotate(odf,axis2quat(xvector,45*degree));
-plotpdf(odfrotated,getMiller(pf),'antipodal');
+plot(odfrotated,'sections',6);
 annotate(modalorientation(odfrotated),'marker','d');
 
 %% volume analysis
 
-volume(odf,modalorientation(odf),20*degree);
+volume(odf,modalorientation(odf),20*degree)

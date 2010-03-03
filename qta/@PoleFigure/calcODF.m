@@ -53,14 +53,14 @@ vdisp('------ MTEX -- PDF to ODF inversion ------------------',varargin{:})
 %% ------------------- get input--------------------------------------------
 CS = pf(1).CS; SS = pf(1).SS;
 
-S3G = get_option(varargin,'RESOLUTION',getResolution(pf)*3/2,{'double','SO3Grid'});
+S3G = get_option(varargin,'RESOLUTION',get(pf,'resolution')*3/2,{'double','SO3Grid'});
 if ~isa(S3G,'SO3Grid'), S3G = SO3Grid(S3G,CS,SS); end
 if check_option(varargin,'zero_range'), S3G = zero_range(pf,S3G,varargin{:});end
-if ~(CS == getCSym(S3G) && SS == getSSym(S3G))
+if ~(CS == get(S3G,'CS') && SS == get(S3G,'SS'))
     qwarning('Symmetry of the Grid does not fit to the given Symmetrie');
 end
 
-kw = get_option(varargin,'KERNELWIDTH',getResolution(S3G),'double');
+kw = get_option(varargin,'KERNELWIDTH',get(S3G,'resolution'),'double');
 psi = get_option(varargin,'kernel',...
   kernel('de la Vallee Poussin','HALFWIDTH',kw),'kernel');
 
@@ -69,27 +69,21 @@ iter_max = int32(get_option(varargin,'ITER_MAX',...
 iter_min = int32(get_option(varargin,'ITER_MIN',iter_max/4,'double'));
 
 c0 = get_option(varargin,'C0',...
-	1/sum(GridLength(S3G))*ones(sum(GridLength(S3G)),1));
+	1/sum(numel(S3G))*ones(sum(numel(S3G)),1));
 
 
 %% ----------------- prepare for calling calcODF.c -------------------------
 %% -------------------------------------------------------------------------
 
 % calculate gh
-h = geth(pf);
-%[h,lh] = symetriceVec(CS,geth(pf),'antipodal');
-g = SS*reshape(quaternion(S3G),1,[]); % SS x S3G
-g = reshape(g.',[],1);                % S3G x SS
-g = reshape(g*CS,[],1);               % S3G x SS x CS
-gh = g * h;                           % S3G x SS x CS x h
-clear g;
-[ghtheta,ghrho] = vec2sph(reshape(gh,[],1));
-gh = [reshape(ghrho,1,[]);reshape(ghtheta,1,[])]/2/pi;
+gh = symmetrise(S3G).' * get(pf,'h'); % S3G x SS x CS x h
+[ghtheta,ghrho] = polar(gh(:));
+gh = [ghrho.';ghtheta.'] /2 /pi;
 clear ghtheta; clear ghrho;
 
 % extract kernel Fourier coefficents
 A = getA(psi);
-if check_option(getr(pf(1)),'antipodal')
+if check_option(get(pf(1),'r'),'antipodal')
   A(2:2:end) = 0; 
 else
   warning('MTEX:missingFlag','Flag HEMISPHERE not set in PoleFigure data!');
@@ -100,14 +94,14 @@ A = A(1:bw);
 % detect superposed pole figures
 lh = int32(zeros(1,length(pf)));
 for i=1:length(pf)
-	lh(i) = int32(length(geth(pf(i)))*length(CS)*length(SS));	
+	lh(i) = int32(length(get(pf(i),'h'))*length(CS)*length(SS));	
 end
-refl = getc(pf);
+refl = get(pf,'c');
 
 % arrange Pole figure data
-P  = max(0,getdata(pf)); % ensure non negativity
+P  = max(0,get(pf,'data')); % ensure non negativity
 lP = int32(GridLength(pf));
-[rtheta,rrho] = polar(getr(pf));
+[rtheta,rrho] = polar(get(pf,'r'));
 r = [reshape(rrho,1,[]);reshape(rtheta,1,[])]/2/pi;
 clear rtheta;clear rrho;
 
@@ -159,7 +153,7 @@ flags = calc_flags(varargin,CW_flags);
 vdisp('Call c-routine',varargin{:});
 
 comment = get_option(varargin,'comment',...
-  ['ODF recalculated from ',getcomment(pf)]);
+  ['ODF recalculated from ',get(pf,'comment')]);
 
 [c,alpha] = call_extern('pf2odf',...
   'INTERN',lP,lh,refl,iter_max,iter_min,flags,...
@@ -180,7 +174,7 @@ vdisp('ghost correction',varargin{:});
 % determine phon
 phon = 1;
 for ip = 1:length(pf)
-  phon = min(phon,quantile(max(0,getdata(pf(ip))),0.01)./alpha(ip));
+  phon = min(phon,quantile(max(0,get(pf(ip),'data')),0.01)./alpha(ip));
 end
 
 if phon > 0.05
@@ -193,11 +187,11 @@ end
 % subtract from intensities
 P = [];
 for ip = 1:length(pf)
-  P = [P,getdata(pf(ip))-alpha(ip)*phon]; %#ok<AGROW>
+  P = [P,get(pf(ip),'data')-alpha(ip)*phon]; %#ok<AGROW>
 end
 P = max(0,P); %no negative values !
 
-c0 = (1-phon)/sum(GridLength(S3G))*ones(sum(GridLength(S3G)),1);
+c0 = (1-phon)/numel(S3G)*ones(numel(S3G),1);
 
 % calculate new ODF
 [c,alpha] = call_extern('pf2odf',...

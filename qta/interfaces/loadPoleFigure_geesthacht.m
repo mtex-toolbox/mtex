@@ -35,4 +35,4 @@ while pos <= length(d{1})
   
 end
 
-assert(GridLength(r)>=5);
+assert(numel(r)>=5);

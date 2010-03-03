@@ -19,8 +19,9 @@
 
 cs = symmetry('-3m'); 
 ss = symmetry('-1');
+mod1 = orientation('euler',50*degree,30*degree,20*degree,'ZYZ',cs,ss);
 
-odf = 0.1 * unimodalODF(euler2quat(50*degree,30*degree,20*degree),cs,ss) ...
+odf = 0.1 * unimodalODF(mod1,cs,ss) ...
   + 0.9*fibreODF(Miller(0,0,1),xvector,cs,ss) 
 
 %% Pole Figure Plots

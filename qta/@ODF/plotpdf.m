@@ -7,7 +7,7 @@ function plotpdf(odf,h,varargin)
 %
 %% Input
 %  odf - @ODF
-%  h   - @Miller / @vector3d crystallographic directions
+%  h   - @Miller crystallographic directions
 %  c   - structure coefficients
 %
 %% Options
@@ -25,7 +25,7 @@ function plotpdf(odf,h,varargin)
 %% check input
 if iscell(h), h = [h{:}];end
 argin_check(h,'Miller');
-h = set(h,'CS',getSym(odf));
+h = set(h,'CS',odf(1).CS);
 
 % default options
 varargin = set_default_option(varargin,...
@@ -45,9 +45,11 @@ end
 
 
 %% plot
+vdisp(' ',varargin{:});
+vdisp('Plotting pole density functions:',varargin{:})
 if check_option(varargin,'superposition')
   multiplot(@(i) r,@(i) max(0,pdf(odf,h,r,varargin{:})),1,...
-    'DISP',@(i,Z) [' PDF h=',char(h),...
+    'DISP',@(i,Z) [' h=',char(h),...
     ' Max: ',num2str(max(Z(:))),...
     ' Min: ',num2str(min(Z(:)))],...
     'ANOTATION',@(i) h,...

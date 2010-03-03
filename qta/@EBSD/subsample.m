@@ -29,13 +29,12 @@ for i = 1:length(ebsd)
   % subsample all other options
   ebsd_fields = fields(ebsd(i).options);
   for f = 1:length(ebsd_fields)
-    if numel(ebsd(i).options.(ebsd_fields{f})) == GridLength(ebsd(i).orientations)
+    if numel(ebsd(i).options.(ebsd_fields{f})) == numel(ebsd(i).orientations)
       ebsd(i).options.(ebsd_fields{f}) = ebsd(i).options.(ebsd_fields{f})(ind);
     end
   end
   
   % subsample orientations
-  ebsd(i).orientations = ...
-    subGrid(ebsd(i).orientations,ind);
+  ebsd(i).orientations = ebsd(i).orientations(ind);
   
 end

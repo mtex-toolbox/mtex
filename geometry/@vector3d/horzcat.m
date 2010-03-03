@@ -1,12 +1,16 @@
 function v = horzcat(varargin)
 % overloads [v1,v2,v3..]
 
-vs = repmat(struct(varargin{1}),size(varargin));
-for k=1:numel(varargin)
-  vs(k) = struct(varargin{k});
+v = varargin{1};
+
+vx = cell(size(varargin)); vy = vx; vz = vy;
+for i = 1:numel(varargin)
+  vv = varargin{i};
+  vx{i} = vv.x;
+  vy{i} = vv.y;
+  vz{i} = vv.z;
 end
 
-v = varargin{1};
-v.x = horzcat(vs.x);
-v.y = horzcat(vs.y);
-v.z = horzcat(vs.z);
+v.x = horzcat(vx{:});
+v.y = horzcat(vy{:});
+v.z = horzcat(vz{:});

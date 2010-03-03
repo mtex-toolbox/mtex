@@ -1,4 +1,4 @@
-function [ind,d] = find(SO3G,q,epsilon,varargin)
+function [ind,d] = find(SO3G,o,epsilon,varargin)
 % return indece and distance of all nodes within a eps neighborhood
 %
 %% Syntax  
@@ -12,10 +12,9 @@ function [ind,d] = find(SO3G,q,epsilon,varargin)
 %  [indece, distances]
 %
 
-
 if ~check_option(SO3G,'indexed') || check_option(varargin,'exact')
 
-  d = dist(SO3G(1).CS,SO3G(1).SS,quaternion(SO3G),q);
+  d = angle_outer(SO3G,o);
   
   if nargin == 2
     [d,ind] = max(d,[],1);
@@ -23,17 +22,18 @@ if ~check_option(SO3G,'indexed') || check_option(varargin,'exact')
     ind = d<epsilon;
   end
 
-elseif GridLength(SO3G) == 0
+elseif numel(SO3G) == 0
   ind = [];
   d = [];
 else
+  q = quaternion(o);
   
   % rotate q according to SO3Grid.center
   if ~isempty(SO3G.center),q = inverse(SO3G.center) * q; end
     
   % correct for crystal and specimen symmetry
-  qcs = quaternion_special(SO3G.CS);
-  qss = quaternion_special(SO3G.SS);
+  qcs = quaternion(rotation_special(SO3G.CS));
+  qss = quaternion(rotation_special(SO3G.SS));
   
   % extract SO3Grid
   [ybeta,yalpha,ialphabeta,palpha] = getdata(SO3G.alphabeta);
@@ -52,7 +52,7 @@ else
     for is = 1:length(qss)
       for ic = 1:length(qcs)
 
-        [xalpha,xbeta,xgamma] = quat2euler(qss(is) * transpose(q(:)*qcs(ic)));
+        [xalpha,xbeta,xgamma] = Euler(qss(is) * transpose(q(:)*qcs(ic)),'ZYZ');
   
         [hind,hd] = SO3Grid_find(yalpha,ybeta,ygamma,sgamma,int32(igamma), ...
           int32(ialphabeta),palpha,pgamma, xalpha,xbeta,xgamma);
@@ -65,13 +65,13 @@ else
     end    
   else  
 %% search for environment    
-    ind = logical(sparse(GridLength(SO3G),numel(q)));
+    ind = logical(sparse(numel(SO3G),numel(q)));
     
     % for all symmetries
     for is = 1:length(qss)
       for ic = 1:length(qcs)
 
-        [xalpha,xbeta,xgamma] = quat2euler(qss(is) * transpose(q(:)*qcs(ic)));
+        [xalpha,xbeta,xgamma] = Euler(qss(is) * transpose(q(:)*qcs(ic)),'ZYZ');
   
         ind = ind | SO3Grid_find_region(yalpha,ybeta,ygamma,sgamma,int32(igamma), ...
           int32(ialphabeta),palpha,pgamma, xalpha,xbeta,xgamma,epsilon);

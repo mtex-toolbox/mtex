@@ -55,7 +55,7 @@ while ~feof(fid)
     % TODO there are some data files that have 18 and some that have 19
     % colums - make interface working for those!
     d = [];
-    while length(d) < GridLength(r)
+    while length(d) < numel(r)
       l = fgetl(fid);
       l = reshape(l(2:end),4,[]).';
       dd = str2num(l);
@@ -63,8 +63,8 @@ while ~feof(fid)
     end
 
     % restrict data to specified domain
-    d = reshape(d,GridSize(r,1),[]);
-    d = d(:,1:GridSize(r,2));
+    d = reshape(d,size(r,1),[]);
+    d = d(:,1:size(r,2));
     
     % generate Polefigure
     pf(ipf) = PoleFigure(h,r,double(d)*double(scaling),symmetry('cubic'),symmetry,'comment',comment,varargin{:}); %#ok<AGROW>

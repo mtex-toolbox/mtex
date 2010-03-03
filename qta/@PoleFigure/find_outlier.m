@@ -22,7 +22,7 @@ for ipf = 1:length(pf)
   
   r = pf(ipf).r;
   
-  next = find(r,vector3d(r),3*getResolution(r));
+  next = find(r,vector3d(r),3*get(r,'resolution'));
   
   dmean = (10 * next * pf(ipf).data(:) - pf(ipf).data) ./ (10*sum(next,2)-9);
   

@@ -27,4 +27,4 @@ if ~check_option(varargin,'center')
   varargin = {varargin{:},'center',mean(ebsd)};
 end
 
-plot(getgrid(ebsd),varargin{:});
+plot(get(ebsd,'orientations'),varargin{:});

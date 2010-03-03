@@ -11,7 +11,9 @@ function x = argin_check(arg,classes)
 %% Output
 %  argument
 
-if isempty(strmatch(class(arg),classes))
+if ~any(cellfun(@(className) isa(arg,className),ensurecell(classes)))
+  
+  % generate error string
   if iscellstr(classes)
     c = '';
     for i = 1:length(classes)-1

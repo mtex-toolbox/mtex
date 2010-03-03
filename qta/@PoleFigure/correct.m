@@ -54,14 +54,14 @@ end
 
 % check for identical specimen directions
 if all([pf.r] == [pf_orig.r])
-  pf_orig = setdata(pf_orig,getdata(pf));
+  pf_orig = set(pf_orig,'intensities',get(pf,'intensities'));
   return
 end
 
 % otherwise interpolate according to theta
 try
   for i = 1:length(pf)
-    pf_orig(i).data = interp1(getTheta(pf(i).r),pf(i).data,getTheta(pf_orig(i).r),'spline');
+    pf_orig(i).data = interp1(get(pf(i),'theta'),pf(i).data,get(pf_orig(i),'theta'),'spline');
   end
 catch
   error([msg ' does not fit original pole figure data!']);

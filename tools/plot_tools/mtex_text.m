@@ -4,7 +4,7 @@ function h = mtex_text(x,y,t,varargin)
 if isa(t,'Miller') || isa(t,'vector3d')
   for i = 1:length(t)
     if check_mtex_option('noLaTex')
-      s{i} = char(t,'Tex');
+      s{i} = char(t(i),'Tex');
     else
       s{i} = ['$' char(t(i),'LaTex') '$'];
     end

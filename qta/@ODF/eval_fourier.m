@@ -16,7 +16,7 @@ Ldim = deg2dim(double(L+1));
 
 s = size(g);
 % export to Euler angle
-g = quat2euler(g,'nfft');
+g = Euler(g,'nfft');
 	
 f_hat = [real(odf.c_hat(1:Ldim)),imag(odf.c_hat(1:Ldim))].';
 

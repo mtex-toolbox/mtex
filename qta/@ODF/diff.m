@@ -24,7 +24,7 @@ e2 = eval(odf2,S3G,varargin{:});
 d = abs(e1-e2)./numel(e1);
 
 odf = ODF(S3G,d,extract_kernel(S3G,varargin),...
-  getCSym(S3G),getSSym(S3G),varargin{:});
+  get(S3G,'CS'),get(S3G,'SS'),varargin{:});
 
 if check_option(varargin,'Fourier')
   odf = calcFourier(odf,max(10,bandwidth(k)));

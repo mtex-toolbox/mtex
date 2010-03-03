@@ -79,6 +79,7 @@ if any(strfind(path,'mtex'))
   
   inst_dir = cellpath(~cellfun('isempty',strfind(cellpath,'mtex')));  
   if ~isempty(inst_dir), rmpath(inst_dir{:}); end
+  clear classes
 end
 
 

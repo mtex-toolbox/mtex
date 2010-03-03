@@ -65,20 +65,9 @@ Tilt_Angle = mpara{11}; % Tilt Angle
 Tilt_Axis = mpara{13}; % Tilt Axis
 ss = symmetry;
 
-%********************************************************
 % Crystallogaphic Parameters of all phases
-%********************************************************
-Laue{1}='-1';
-Laue{2}='2/m';
-Laue{3}='mmm';
-Laue{4}='4/m';
-Laue{5}='4/mmm';
-Laue{6}='-3';
-Laue{7}='-3m';
-Laue{8}='6/m';
-Laue{9}='6/mmm';
-Laue{10}='m3';
-Laue{11}='m3m';
+Laue = {'-1','2/m','mmm','4/m','4/mmm',...
+  '-3','-3m','6/m','6/mmm','m3','m3m'};
 
 % number of phases
 NPHASES = sscanf(hl{nextline + 4},'Phases\t%u');
@@ -97,9 +86,8 @@ for K = 1:NPHASES
   
   % Laue group (class) number
   laue = Laue{sscanf(mpara{4},'%u')};
-  
-  cs(K) = symmetry(laue,abc.',abg.','mineral',mineral); %#ok<AGROW>
-    
+  cs{K} = symmetry(laue,abc(:)',abg(:)','mineral',mineral); %#ok<AGROW>
+     
 end
 
 ebsd = loadEBSD_generic(fname,'cs',cs,'ss',ss,'bunge','degree',...

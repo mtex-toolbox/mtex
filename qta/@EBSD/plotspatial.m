@@ -2,8 +2,8 @@ function plotspatial(ebsd,varargin)
 % spatial EBSD plot
 %
 %% Syntax
-%  plotspatial(ebsd,'colocoding','ipdf')
-%  plotspatial(ebsd,'property','error')
+% plotspatial(ebsd,'colocoding','ipdf')
+% plotspatial(ebsd,'property','error')
 %
 %% Input
 %  ebsd - @EBSD
@@ -19,7 +19,7 @@ function plotspatial(ebsd,varargin)
 %% Flags
 %  unitcell - (default) plot spatial data by unit cells
 %  voronoi  - plot spatial data through a voronoi decomposition
-%  raster   - discretize on regular grid 
+%  raster   - discretize on regular grid
 %
 %% See also
 % EBSD/plot
@@ -30,6 +30,7 @@ varargin = set_default_option(varargin,...
 
 prop = lower(get_option(varargin,'property','orientation'));
 
+newMTEXplot;
 
 %% compute colorcoding
 if isa(prop,'double')
@@ -41,8 +42,10 @@ switch prop
   case 'user'
   case 'orientation'
     cc = lower(get_option(varargin,'colorcoding','ipdf'));
-    orientations = get(ebsd,'orientations');
-    d = orientation2color(orientations,cc,varargin{:});
+    d = [];
+    for i = 1:length(ebsd)
+      d = [d;orientation2color(ebsd(i).orientations,cc,varargin{:})];
+    end
   case 'phase'
     d = [];
     for i = 1:length(ebsd)
@@ -54,8 +57,9 @@ switch prop
         d = [d,ebsd.phase(:)]; %#ok<AGROW>
       end
     end
-    co = get(gca,'colororder');
-    colormap(co(1:length(ebsd),:));
+    colormap(hsv(max(d)+1));
+%     co = get(gca,'colororder');
+%     colormap(co(1:length(ebsd),:));
   case fields(ebsd(1).options)
     d = get(ebsd,prop);
   otherwise
@@ -63,19 +67,25 @@ switch prop
 end
 
 
-%% plot 
-newMTEXplot;
+%% plot
 
-if ~check_option(varargin,'raster')
-  plotxyexact(get(ebsd,'x'),get(ebsd,'y'),d,varargin{:});
-else
-  plotxy(get(ebsd,'x'),get(ebsd,'y'),d,varargin{:});
+x = get(ebsd,'x');
+y = get(ebsd,'y');
+
+try %if ~check_option(varargin,'raster')
+  plotxyexact(x,y,d,varargin{:});
+catch
+  plotxy(x,y,d,varargin{:});
 end
 
+%dummy patch
+[tx ty] = fixMTEXscreencoordinates(min(x), min(y),varargin{:});
+patch('Vertices',[tx ty],'Faces',1,'FaceVertexCData',get(gca,'color'));
+
 if strcmpi(prop,'orientation') %&& strcmpi(cc,'ipdf')
-  [cs{1:length(orientations)}] = get(orientations,'CS');
+  [cs{1:length(ebsd)}] = get(ebsd,'CS');
   setappdata(gcf,'CS',cs)
-  setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d')); 
+  setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d'));
   setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
   setappdata(gcf,'colorcoding',cc);
 end
@@ -109,6 +119,7 @@ dist = sqrt((x-xp).^2 + (y-yp).^2);
 ind = ndx(1); %select the nearest
 
 % get phase
+%% TODO!!!
 phase = find(ind>cumsum([0,GridLength(ebsd)]),1,'last');
 cs = get(ebsd(phase),'CS');
 

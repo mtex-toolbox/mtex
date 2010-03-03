@@ -59,6 +59,7 @@ cw = (w-3*dw)/4;
 % data size
 [x,y] = size(data);
 htp = import_gui_empty('type',type,'width',w,'height',h,'name','generic import');
+iconMTEX(htp);
 
 uicontrol(...
   'Parent',htp,...
@@ -297,6 +298,15 @@ if ~isempty(strmatch('alpha',lower(colnames))) && ...
   cdata{strmatch('alpha',lower(colnames))}='Euler 1';
   cdata{strmatch('beta',lower(colnames))}='Euler 2';
   cdata{strmatch('gamma',lower(colnames))}='Euler 3';
+end
+
+if ~isempty(strmatch('phi1',lower(colnames))) && ...
+    ~isempty(strmatch('phi2',lower(colnames),'exact')) && ...
+    ~isempty(strmatch('phi',lower(colnames)))
+  
+  cdata{strmatch('phi1',lower(colnames))}='Euler 1';
+  cdata{strmatch('phi',lower(colnames),'exact')}='Euler 2';
+  cdata{strmatch('phi2',lower(colnames))}='Euler 3';
 end
 
 function str = stripws(str)

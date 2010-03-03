@@ -29,17 +29,18 @@ if ~check_option(varargin,'fields')
   topt = struct;
   dooptions = ~check_option(varargin,'nooptions');
   for k=1:numel(ebsd)
-    ind = id(csz(k)+1:csz(k+1));  
-
+    ind = id(csz(k)+1:csz(k+1));
+    
     [ids ndx] = sort(ind);
     aind = unique(ind)';
     sec = histc(ids,aind)';
-    css = cumsum([0 sec]); 
+    css = cumsum([0 sec]);
+     
+    o = ebsd(k).orientations(ndx);
+     
+    obj(aind) = repmat(ebsd(k) , size(aind));
 
     holdit(aind) = true;
-
-    obj(aind) = repmat(ebsd(k) , size(aind));  
-    S3G = partition(ebsd(k).orientations,ind);
 
   %presort
     if ~isempty(ebsd(k).xy), xy = ebsd(k).xy(ndx,:); end
@@ -59,9 +60,9 @@ if ~check_option(varargin,'fields')
 
   %copy information
     for l = 1:length(aind)
-      obj(aind(l)).orientations = S3G(l);
-
       ind = css(l)+1:css(l+1);
+      obj(aind(l)).orientations = o(ind);
+          
       if exist('xy','var'), obj(aind(l)).xy = xy(ind,:); end
 
       if dooptions
@@ -73,6 +74,7 @@ if ~check_option(varargin,'fields')
         obj(aind(l)).options = topt;
       end
     end
+    
   end 
 else
   eb_field = get_option(varargin,'fields','all');

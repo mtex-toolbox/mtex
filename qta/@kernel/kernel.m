@@ -26,7 +26,7 @@ function K = kernel(name,varargin)
        
 kernels = {'Laplace','Abel Poisson','de la Vallee Poussin',...
     'von Mises Fisher','fibre von Mises Fisher','Square Singularity',...
-    'Gauss Weierstrass','local','Dirichlet','Fourier','bump','user','jackson'};
+    'Gauss Weierstrass','local','Dirichlet','Fourier','bump','user','Jackson'};
 
 if nargin == 0
   

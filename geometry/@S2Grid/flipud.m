@@ -5,9 +5,8 @@ function S2G = flipud(S2G)
 %% Output
 %  S2G      - @S2Grid (not indexed)
 
-for i = 1:length(S2G)
-  S2G(i).rho = 2*pi - S2G(i).rho;
-  [theta,rho] = vec2sph(S2G(i).Grid);
-	S2G(i).Grid = sph2vec(theta,2*pi-rho);
-	S2G(i).options = delete_option(S2G(i).options,'INDEXED');
-end
+S2G.rho = 2*pi - S2G.rho;
+[theta,rho] = vec2sph(S2G.vector3d);
+S2G.vector3d = sph2vec(theta,2*pi-rho);
+S2G.options = delete_option(S2G.options,'INDEXED');
+

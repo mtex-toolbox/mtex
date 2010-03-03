@@ -25,12 +25,12 @@ end
 
 % how to use sparse matrix representation 
 if isa(g1,'SO3Grid') && check_option(g1,'indexed'),
-  lg1 = GridLength(g1);
+  lg1 = numel(g1);
 else
   lg1 = -numel(g1);
 end
 if isa(g2,'SO3Grid') && check_option(g2,'indexed')
-  lg2 = GridLength(g2);
+  lg2 = numel(g2);
 else
   lg2 = -numel(g2);
 end
@@ -39,14 +39,14 @@ end
 if epsilon>rotangle_max_z(CS,'antipodal') % full matrixes
  
   g1 = quaternion(g1);
-  g2 = quaternion(g2);  
+  g2 = quaternion(g2);
   w = zeros(numel(g1),numel(g2));
      
 	for iks = 1:length(CS)
 		for ips = 1:length(SS) % for all symmetries
       
 			sg    = quaternion(SS,ips) * g1 * quaternion(CS,iks);  % rotate g1
-      omega = dot_outer(sg,g2);      % calculate full distance matrix            
+      omega = abs(dot_outer(sg,g2));      % calculate full distance matrix            
       w = w + kk.K(omega);          
       
 		end
@@ -61,14 +61,14 @@ elseif (lg1>0 || lg2>0) && ~check_option(varargin,'old')
 
   if (lg1 >= lg2)              % first argument is SO3Grid
     for issq = 1:length(ssq)
-      d = dot_outer(g1,ssq(issq)*quaternion(g2),'epsilon',epsilon,...
-        'nospecimensymmetry');
+      d = abs(dot_outer(g1,ssq(issq)*quaternion(g2),'epsilon',epsilon,...
+        'nospecimensymmetry'));
         w = w + spfun(kk.K,d);
     end    
   else                         % second argument is SO3Grid
     for issq = 1:length(ssq)
-      d = dot_outer(g2,ssq(issq)*quaternion(g1),'epsilon',epsilon,...
-        'nospecimensymmetry');
+      d = abs(dot_outer(g2,ssq(issq)*quaternion(g1),'epsilon',epsilon,...
+        'nospecimensymmetry'));
       w = w + spfun(kk.K,d.');
     end
   end
@@ -85,10 +85,10 @@ else
       
       if abs(lg1) > abs(lg2)
         sg    = quaternion(SS,ips) * g2 * quaternion(CS,iks);  % rotate g1
-        omega = dot_outer(g1,sg);      % calculate full distance matrix
+        omega = abs(dot_outer(g1,sg));      % calculate full distance matrix
       else
         sg    = quaternion(SS,ips) * g1 * quaternion(CS,iks);  % rotate g1
-        omega = dot_outer(sg,g2);      % calculate full distance matrix
+        omega = abs(dot_outer(sg,g2));      % calculate full distance matrix
       end
       
 

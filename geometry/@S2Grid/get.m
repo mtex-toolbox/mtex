@@ -3,7 +3,13 @@ function value = get(obj,vname)
 
 switch vname
   case {'resolution','res'}
-    value = min([obj(1).res]);
+    value = obj.res;
+  case 'theta'
+    [theta,rho] = polar(obj);
+    value = theta;
+  case 'rho'
+    [theta,rho] = polar(obj);
+    value = rho;
   case fields(obj)
     value = [obj.(vname)];
   otherwise

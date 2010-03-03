@@ -22,7 +22,7 @@ for iq = 1:length(qq)
   q = qq(iq);
   
   %% convert to export parameters
-  g = quat2euler(q,'nfft');
+  g = Euler(q,'nfft');
 %   alpha = fft_rho(alpha); %-->z
 %   beta  = fft_theta(beta);
 %   gamma = fft_rho(gamma); %-->z

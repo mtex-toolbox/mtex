@@ -42,7 +42,7 @@ for i = 1:length(pf)
   elseif check_option(varargin,'l2')
     e(i) = e(i)/sum((pf(i).data(:)).^2); % L^2 error
   else 
-    e(i) = e(i)/GridLength(pf(i));       % RP error
+    e(i) = e(i)/numel(pf(i).r);       % RP error
   end
 end
 

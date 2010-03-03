@@ -21,12 +21,6 @@ function [G,varargout] = SO3Grid(points,CS,SS,varargin)
 %  MAX_ANGLE  - only up to maximum rotational angle
 %  CENTER     - with respect to this given center
 
-if (nargout == 0) && (nargin == 0)
-	disp('constructs a grid on SS\SO(3)/CS');
-	disp('Arguments: resolution / number of points, crystal symmetry, specimen symmetry');
-	return;
-end
-
 if nargin <= 0, points = 0; end
 if nargin <= 1, CS = symmetry; end
 if nargin <= 2, SS = symmetry; end
@@ -37,28 +31,27 @@ argin_check(CS,'symmetry');
 argin_check(SS,'symmetry');
 
 % standard settings
+G.CS = CS;
+G.SS = SS;
 G.alphabeta = [];
 G.gamma    = [];
 G.resolution = 2*pi;
 G.options = {};
-G.CS      = CS;
-G.SS      = SS;
 G.center  = [];
-G.Grid    = quaternion;
+Grid = orientation(rotation,CS,SS);
 
 %% SO3rid defined by a set quaternions
 if isa(points,'quaternion')    
 	
   points = points  ./ norm(points);
-  G.Grid = points;
+  Grid = points;
     
   if numel(points) < 2
     G.resolution = 2*pi;
   elseif check_option(varargin,'resolution')
     G.resolution = get_option(varargin,'resolution');
   else
-    %G.resolution = min(2*acos(dot_outer(CS,SS,points(1),points(2:end))))
-    G.resolution = quat2res(points,CS,SS);
+    G.resolution = ori2res(orientation(Grid,CS,SS));
   end 
 
 elseif isa(points,'char') && any(strcmpi(points,{'random'}))
@@ -103,9 +96,9 @@ elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
 
   % generate SO(3) plot grids
   [theta,rho] = polar(S2G);
-  sec_angle = repmat(reshape(sec,[1,1,nsec]),[GridSize(S2G),1]);
-  theta  = reshape(repmat(theta ,[1,1,nsec]),[GridSize(S2G),nsec]);
-  rho = reshape(repmat(rho,[1,1,nsec]),[GridSize(S2G),nsec]);
+  sec_angle = repmat(reshape(sec,[1,1,nsec]),[size(S2G),1]);
+  theta  = reshape(repmat(theta ,[1,1,nsec]),[size(S2G),nsec]);
+  rho = reshape(repmat(rho,[1,1,nsec]),[size(S2G),nsec]);
   
   % set convention
   switch lower(sectype)
@@ -124,7 +117,7 @@ elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
     case 'sigma'
       [sec_angle,theta,rho] = deal(rho,theta,sec_angle-rho);
   end
-  G.Grid = euler2quat(sec_angle,theta,rho,convention);
+  Grid = euler2quat(sec_angle,theta,rho,convention,'ZYZ');
   
   % extra output
   if strcmpi(points,'plot')
@@ -136,7 +129,7 @@ elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
   
   G.alphabeta = [sec_angle(:),theta(:),rho(:)];      
   G.options = {convention};
-  G.resolution = getResolution(S2G);
+  G.resolution = get(S2G,'resolution');
   
 %% local Grid
 elseif maxangle < rotangle_max_z(CS)/4
@@ -160,15 +153,18 @@ elseif maxangle < rotangle_max_z(CS)/4
   
   G.resolution = res;  
   
-  % restrict to fundamental region - specimen symetry only
+  % restrict to fundamental region - specimen symmetry only
   center = get_option(varargin,'center',idquaternion);
-  sym_center = symmetriceQuat(CS,SS,center);
-  [ignore,center] = selectMinbyRow(rotangle(sym_center),sym_center);
+  sym_center = quaternion(symmetrise(center,CS,SS));
+  [ignore,center] = selectMinbyColumn(angle(sym_center),sym_center);
   
   for i = 1:length(center)
-    cq = center(i) * q(:);
-    ind = fundamental_region2(cq,center(i),CS,SS);
-    G.Grid = [G.Grid;cq(ind)];
+    cq = center(i) .* q(:);
+    if numel(SS) > 1      
+      ind = fundamental_region2(cq,center(i),CS,SS);
+      cq = cq(ind);
+    end
+    Grid = [Grid;orientation(cq,CS,SS)];
   end
   
 %% equidistribution  
@@ -197,9 +193,9 @@ elseif isa(points,'double') && points > 0  % discretise euler space
                          'MAXTHETA',maxbeta,'MINRHO',0,'MAXRHO',maxalpha,...
                          no_center(res),'RESTRICT2MINMAX');
     
-    while round(2*N*maxgamma/maxbeta) * GridLength(G.alphabeta) < points 
+    while round(2*N*maxgamma/maxbeta) * numel(G.alphabeta) < points 
       N = fix((N + 1) * ...
-              (points / round(2*N*maxgamma/maxbeta) / GridLength(G.alphabeta)).^(0.2));
+              (points / round(2*N*maxgamma/maxbeta) / numel(G.alphabeta)).^(0.2));
       res = maxbeta / N;
       G.alphabeta = S2Grid('equispaced','resolution',res,...
                            'MAXTHETA',maxbeta,'MINRHO',0,'MAXRHO',maxalpha,...
@@ -225,14 +221,14 @@ elseif isa(points,'double') && points > 0  % discretise euler space
   gamma = -maxgamma + (0:ap2-1) * 2 * maxgamma / ap2;
 
   % arrange alpha, beta, gamma
-  gamma  = dgamma+repmat(gamma.',1,GridLength(G.alphabeta));
+  gamma  = dgamma+repmat(gamma.',1,numel(G.alphabeta));
   alpha = repmat(reshape(alpha,1,[]),ap2,1);
   beta  = repmat(reshape(beta,1,[]),ap2,1);
  
   G.gamma = S1Grid(gamma,-maxgamma+dgamma(1,:),...
                    maxgamma+dgamma(1,:),'periodic','matrix');
 	  
-  Grid = euler2quat(alpha,beta,gamma);
+  Grid = euler2quat(alpha,beta,gamma,'ZYZ');
   Grid = reshape(Grid,[],1);
 	
   G.resolution = 2 * maxgamma / ap2;
@@ -252,12 +248,11 @@ elseif isa(points,'double') && points > 0  % discretise euler space
   end
   
   G.options = {'indexed'};
-  G.Grid  = Grid;    
-  
+    
 end
 
-superiorto('quaternion');
-G = class(G,'SO3Grid');
+superiorto('quaternion','orientation');
+G = class(G,'SO3Grid',orientation(Grid,CS,SS));
 
 if check_option(G,'indexed') && check_option(varargin,'MAX_ANGLE')
   center = get_option(varargin,'center',idquaternion);
@@ -273,11 +268,12 @@ else
   s = '';
 end
 
-function res = quat2res(quat,CS,SS)
+function res = ori2res(ori)
 
-ml = min(numel(quat),500);
-ind1 = discretesample(numel(quat),ml);
-ind2 = discretesample(numel(quat),ml);
-d = 2*acos(dot_outer(CS,SS,quat(ind1),quat(ind2)));
+if numel(ori) == 0, res = 2*pi; return;end
+ml = min(numel(ori),500);
+ind1 = discretesample(numel(ori),ml);
+ind2 = discretesample(numel(ori),ml);
+d = angle_outer(ori(ind1),ori(ind2));
 d(d<0.005) = pi;
-res = quantile(min(d,[],2),min(0.9,sqrt(ml/numel(quat))));
+res = quantile(min(d,[],2),min(0.9,sqrt(ml/numel(ori))));

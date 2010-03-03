@@ -36,8 +36,8 @@
 % Beside the standard linear algebra operations there are also the
 % following functions available in MTEX.
 %
-%  [[quaternion_rotangle.html,rotangle]](q); % rotational angle
-%  [[quaternion_rotaxis.html,rotaxis]](q);  % rotational axisq2 = Miller2quat([-1 -1 -1],[1 -2 1]);
+%  [[quaternion_angle.html,angle]](q); % rotational angle
+%  [[quaternion_axis.html,axis]](q);  % rotational axis 
 %  [[quaternion_inverse.html,inverse]](q);  % inverse rotation 
 %
 %% Conversion
@@ -45,8 +45,8 @@
 % There are methods to transform quaternion in almost any other
 % parameterization of rotations as they are:
 %
-%  [[quaternion_quat2euler.html,quat2euler]](q)     % in Euler angle
-%  [[quaternion_quat2rodrigues.html,quat2rodrigues]](q) % in Rodrigues parameter
+%  [[quaternion_Euler.html,Euler]](q)     % in Euler angle
+%  [[quaternion_Rodrigues.html,Rodrigues]](q) % in Rodrigues parameter
 %
 %% Plotting quaternions
 % 

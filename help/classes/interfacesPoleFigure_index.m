@@ -7,11 +7,11 @@
 % analyzed and processed in many ways. See e.g.
 %
 % [[PoleFigure_index.html,pole figure manipulation]], 
-% <PoleFigure_plot.html plot>, <PoleFigure_hist hist>,
-% <PoleFigure_rotate.html rotate>, <PoleFigure_delete delete>,
-% <PoleFigure_min.html min>, <PoleFigure_max max>,
-% <PoleFigure_plus.html plus>, <PoleFigure_minus minus>,
-% <PoleFigure_scale.html scale>, <PoleFigure_minus setdata>.
+% <PoleFigure_plot.html plot>, <PoleFigure_hist.html hist>,
+% <PoleFigure_rotate.html rotate>, <PoleFigure_delete.html delete>,
+% <PoleFigure_min.html min>, <PoleFigure_max.html max>,
+% <PoleFigure_plus.html plus>, <PoleFigure_minus.htnl minus>,
+% <PoleFigure_scale.html scale>, <PoleFigure_set.html set>.
 %
 % Furthermore, such a PoleFigure object is the starting point to
 % recalculate an ODF using the command <PoleFigure_calcODF.html calcODF>.

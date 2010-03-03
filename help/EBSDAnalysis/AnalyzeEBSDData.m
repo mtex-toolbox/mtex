@@ -6,7 +6,7 @@
 % EBSD Data analysis is not yet complete in MTEX. However some main
 % functionalities are already implement. First of all one can estimate an
 % ODF from EBSD data. This is explained in detail in the section
-% <EBSD2ODF_etimation.hmtl EBSD estimation from EBSD data>. Further
+% <EBSD2odf_estimation.html EBSD estimation from EBSD data>. Further
 % posibilities are to compute volume fractions directly from EBSD data,
 % compute the mean orientation and to estimate the Fourier coefficients.
 %
@@ -31,11 +31,11 @@ plot(ebsd,'phase',1)
 %
 % Next we are going to determine the mean orientation of the first phase
 
-m = mean(ebsd,'phase',2);
+m = mean(ebsd,'phase',1);
 
 % and plot it within a pole figure plot
 
-plotpdf(ebsd,[Miller(1,0,0),Miller(0,0,1)],'antipodal','phase',2)
+plotpdf(ebsd,[Miller(1,0,0),Miller(0,0,1)],'antipodal','phase',1)
 annotate(m,'Marker','s','MarkerFaceColor','red')
 
 %% Volume
