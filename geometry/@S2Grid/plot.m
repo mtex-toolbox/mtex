@@ -191,14 +191,13 @@ if any(strcmpi(hemisphere,'north')) || any(strcmpi(hemisphere,'antipodal'))
   end
   
   if isa(S2G.theta,'S1Grid')
-    maxtheta = min(pi/2,max(getMax(S2G.theta)));
+    maxtheta = min([pi/2,max(getMax(S2G.theta)),get_option(varargin,'maxtheta',pi/2)]);
   elseif isa(S2G.theta,'function_handle')
     maxtheta = S2G.theta;
   else
-    maxtheta = pi/2;
+    maxtheta = min(pi/2,get_option(varargin,'maxtheta',pi/2));
   end
-  maxtheta = min(maxtheta,get_option(varargin,'maxtheta',pi/2));
-  
+    
   bounds = plotHemiSphere(submatrix(theta,ind),submatrix(rho,ind),...
     submatrix(data,ind),0,'minrho',min(getMin(S2G.rho)),'maxrho',...
     max(getMax(S2G.rho)),varargin{:},'maxtheta',maxtheta);
