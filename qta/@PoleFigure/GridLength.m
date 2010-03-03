@@ -8,8 +8,8 @@ function l = GridLength(pf)
 % l - number of specimen directions per pole figure
 %
 %% See also
-% S2Grid/GridLength
+% S2Grid/numel
 
 for i = 1:length(pf)
-    l(i) = sum(GridLength(pf(i).r)); %#ok<AGROW>
+    l(i) = numel(pf(i).r); %#ok<AGROW>
 end

@@ -1,18 +1,26 @@
-function v = subsasgn(a,s,b)
+function v = subsasgn(v,s,b)
 % overloads subsasgn
 
-switch s.type
-	case '()'
-		if isa(b,'vector3d')
-			v = vector3d(subsasgn(a.x,s,b.x),subsasgn(a.y,s,b.y),subsasgn(a.z,s,b.z));
-		elseif isempty(b)
-			v = vector3d(subsasgn(a.x,s,[]),subsasgn(a.y,s,[]),subsasgn(a.z,s,[]));
-		else
-			error('value must be of type vector3d');
-		end
-	case '.'
-		a.(s.subs) = b;
-		v = a;
-	otherwise
-		error('wrong data type');
+if isempty(v)
+  v = b;
+  v.x = [];
+  v.y = [];
+  v.z = [];
+end
+
+if isa(b,'vector3d')
+  switch s.type
+    case '()'
+      v.x = subsasgn(v.x,s,b.x);
+      v.y = subsasgn(v.y,s,b.y);
+      v.z = subsasgn(v.z,s,b.z);
+    otherwise
+      error('Wrong indexing. Only ()-indexing is allowed for vector3d!');
+  end
+elseif isempty(b)
+  v.x = subsasgn(v.x,s,[]);
+  v.y = subsasgn(v.y,s,[]);
+  v.z = subsasgn(v.z,s,[]);
+else
+  error('Value must be of type quaternion!');
 end

@@ -10,16 +10,16 @@ radius = fliplr(linspace(res,120,40)*degree);
 
 q = SO3Grid(res,cs,ss);
 
-m = GridLength(q);
+m = numel(q);
 center = axis2quat(xvector+yvector,0*degree);
 
 progress(0,length(radius));
 for i = 1:length(radius)  
   
-  f(i) = GridLength(...
+  f(i) = numel(...
     SO3Grid(res,cs,ss,'center',center,'max_angle',radius(i))) / m; %#ok<AGROW>
   q = subGrid(q,center,radius(i));
-  g(i) = GridLength(q) / m; %#ok<AGROW>
+  g(i) = numel(q) / m; %#ok<AGROW>
   progress(i,length(radius));
   
 end

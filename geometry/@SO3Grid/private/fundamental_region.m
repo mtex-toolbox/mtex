@@ -25,7 +25,7 @@ switch Laue(ss)
 end 
 
 % find rotation not part of the fundamental region
-rodrigues = quat2rodrigues(q); clear q;
+rodrigues = Rodrigues(q); clear q;
 ind = false(numel(rodrigues),1);
 for i = 1:length(c)
   for j = 1:length(c{i}.v)

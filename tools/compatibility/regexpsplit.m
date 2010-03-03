@@ -9,4 +9,5 @@ b = [1,b+1];
 
 str = arrayfun(@(i) varargin{1}(b(i):a(i)),1:length(a),'uniformoutput',0);
 ind = cellfun('isempty',str);
-if any(ind),  str{ind} = ''; end
+str(ind) = {''};
+% if any(ind),  str{ind} = ''; end

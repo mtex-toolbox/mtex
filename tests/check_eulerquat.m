@@ -5,7 +5,7 @@
 
 q = quaternion(SO3Grid(10000,symmetry,symmetry));
 
-[alpha,beta,gamma] = quat2euler(q,'Bunge');
+[alpha,beta,gamma] = Euler(q,'Bunge');
 
 qq = euler2quat(alpha,beta,gamma,'Bunge');
 
@@ -22,12 +22,12 @@ e = 0;
 for i = 1:length(q)
   
   q1 = q(i);
-  q2 = mat2quat(quat2mat(q(i)));
+  q2 = mat2quat(matrix(q(i)));
   e(i) = abs(dot(q2,q1));
   
 end
 
-qq = mat2quat(quat2mat(q));
+qq = mat2quat(matrix(q));
 e  = abs(dot(q,qq));
 
 if mean(e) < 0.9

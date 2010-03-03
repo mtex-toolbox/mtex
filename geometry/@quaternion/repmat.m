@@ -1,9 +1,8 @@
-function quat = repmat(q,varargin) 
+function q = repmat(q,varargin) 
 % overloads repmat
 
-if isa(q,'quaternion')
-	quat = quaternion(repmat(q.a,varargin{:}),repmat(q.b,varargin{:}),...
-		repmat(q.c,varargin{:}),repmat(q.d,varargin{:}));
-else
-    error('this is for quaternions only')
-end 
+q.a = repmat(q.a,varargin{:});
+q.b = repmat(q.b,varargin{:});
+q.c = repmat(q.c,varargin{:});
+q.d = repmat(q.d,varargin{:});
+

@@ -4,8 +4,11 @@ function str = generateScript(type,fn, data, interface, options, handles)
 str = file2cell([mtex_path filesep 'templates' filesep 'load' type 'template.m']);
 
 %% specify crystal and specimen symmetries
-
-cs = get(data,'CS','all');
+if isa(data,'EBSD')
+  [cs{1:numel(data)}] = get(data,'CS');
+else
+  cs = {get(data,'CS')};
+end
 ss = get(data,'SS');
 
 str = replaceToken(str,'{crystal symmetry}',export_CS_tostr(cs));
@@ -58,7 +61,7 @@ end
 
 %% specifiy structural coefficients for superposed pole figures
 
-if isa(data,'PoleFigure') && length(getc(data)) > length(data)
+if isa(data,'PoleFigure') && length(get(data,'c')) > length(data)
   cstr = [{'%% Specifiy Structural Coefficients for Superposed Pole Figures'},{' '}];
   c = [];
   for k = 1:length(data)

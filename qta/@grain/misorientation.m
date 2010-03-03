@@ -13,28 +13,20 @@ function ebsd = misorientation(grains,varargin)
 %  ebsd    - @EBSD
 %  
 %% Options
-%  direction -  'ij' (default)   specifies if to look from current grain i 
-%               'ji'             to neighbour j or other way round
-%  random    -  generate a random misorientation to neighbours
-%  weighted  - weight the misorientations against grainsize could be
-%              function_handle @(i,j)
+%  inverse  - specifies if to look from current grain i to neighbour j or other way round
+%  random   - generate a random misorientation to neighbours
+%  weighted - weight the misorientations against length of common boundary
 %
 %% Example
-%  [q grains] = mean(grains,ebsd)
+%
 %  ebsd_mis = misorientation(grains)
 %
 %  ebsd_mis = misorientation(grains,ebsd)
 %
-%  ebsd_mis = misorientation(grains,'direction','ji','weighted', @(i,j) j )
-%
 %  ebsd_mis = misorientation(grains,'random',10000)
 %
 %% See also
-% EBSD/calcODF EBSD/hist grain/mean grain/neighbours 
-
-
-phase = get(grains,'phase');
-phu = unique(phase);
+% EBSD/calcODF EBSD/hist grain/neighbours 
 
 
 if nargin > 1 && isa(varargin{1},'EBSD') % misorientation to ebsd data
@@ -42,135 +34,91 @@ if nargin > 1 && isa(varargin{1},'EBSD') % misorientation to ebsd data
   ebsd = varargin{1};
   
   for k=1:length(ebsd)
-    [grs eb ids] = link(grains, ebsd(k));
+    
+    [grains_phase ebsd(k) ids] = link(grains, ebsd(k));
  
-    grid = getgrid(eb,'CheckPhase');
-    cs = get(grid,'CS');
-    ss = get(grid,'SS');  
+    o1 = get(ebsd(k),'orientations');
+    o2 = get(grains_phase,'orientation');
+        
+    [i i ndx] = unique(ids);
     
-    qm = get(grs,'orientation');
-    
-    [ids2 ida idb] = unique(ids);
-    [a ia ib] = intersect([grs.id],ids2);
+    if ~isempty(ndx)
 
-    ql = symmetriceQuat(cs,ss,quaternion(grid));
-    qr = repmat(qm(ia(idb)).',1,size(ql,2));
-    q_res = ql'.*qr;
-%     q_res = inverse(ql).*qr;
-    omega = rotangle(q_res);
-  
-    [omega,q_res] = selectMinbyRow(omega,q_res);
+      o2 = reshape(o2(ndx),size(o1));
+      
+      ebsd(k) = set(ebsd(k),'orientations', o2 .\ o1);
+      
+    end
     
-    ebsd(k) = set(ebsd(k),'orientations',set(grid,'Grid',{q_res}));
     ebsd(k) = set(ebsd(k),'comment', ['misorientation '  get(ebsd(k),'comment')]);
+    
   end
+  
 else % misorientation to neighbour grains
-  ebsd = repmat(EBSD,size(phu));
-
-  dir = get_option(varargin,'direction','ij');
-  if strcmpi(dir, 'ji'), doinverse = true; 
-  else doinverse = false; end
-
-  weightfun = get_option(varargin,'weighted',...
-                  @(i,j) j .* ( (i-j) ./ (i+j) + 1),'function_handle');
-
-  if check_option(varargin,'weighted'), doweights = true; else doweights = false; end
+  [phase uphase]= get(grains,'phase');
+  
+  ebsd = repmat(EBSD,size(uphase));
 
   % for each phase
-  for k=1:length(phu)
-    indp = phase == phu(k);
-    gr = grains(indp);
-    if doweights,
-      asr = grainsize(gr);  tot = sum(asr); 
-    end
+  for k=1:length(uphase)
+    grains_phase = grains(phase == uphase(k));
 
-    mean = get(gr,'orientation');
-
-    pCS = get(gr(1),'CS');
-    pCS = pCS{:};
-    pSS = get(gr(1),'SS');
-    pSS = pSS{:};
-    
-    qsym = symmetriceQuat(pCS,pSS, mean).';
-   
-    if check_option(varargin,'random')      
-      n = length(mean);
+    o = get(grains_phase,'orientation');
+        
+    if check_option(varargin,'random')
+      
+      n = numel(o);
       np = get_option(varargin,'random', n*(n-1)/2,'double');
       
-      pairs = fix(rand(np,2)*(length(mean)-1)+1);
-      pairs(pairs(:,1)-pairs(:,2) == 0,:) = [];
-      pairs = unique(sort(pairs,2),'rows');
-      
-      sym_q = qsym(:,pairs(:,1));
-      cen_q = repmat(mean(pairs(:,2)),length(pCS),1);
-      
-      %partition due to memory
-      parts = [ 1:25000:size(sym_q,2) size(sym_q,2)+1];
-      
-      g = quaternion(zeros(4,size(sym_q,2)));
-      for l = 1:length(parts)-1
-      	cur = parts(l):parts(l+1)-1;
-        if doinverse, gp = cen_q(:,cur).*sym_q(:,cur)'; 
-        else          gp = sym_q(:,cur).*cen_q(:,cur)'; end
-        
-        [o ndx2] = min(rotangle(gp),[],1);
-        ndx = sub2ind(size(gp),ndx2,1:length(ndx2));
-        g(cur) =  gp(ndx);
-        
-      end      
+      pair = fix(rand(np,2)*(n-1)+1);
+      pair(pair(:,1)-pair(:,2) == 0,:) = [];
+      pair = unique(sort(pair,2),'rows');
      
-      if doweights,  weight{1} = weightfun(asr(pairs(:,1)),asr(pairs(:,2)));  end
     else
-      grain_ids = [gr.id];
-      cod(grain_ids) = 1:length(grain_ids);  
-
-
-      s = [ 0 cumsum(cellfun('length',{gr.neighbour}))];
-      ix = zeros(1,s(end));
-      for l = 1:length(grain_ids)
-          ix(s(l)+1:s(l+1)) = grain_ids(l);
-      end  
-      iy = vertcat(gr.neighbour);
-
-      msz = max([max(ix), max(iy),max(grain_ids)]);
-      T1 = sparse(ix,iy,true,msz,msz);
-
-      qall = cell(1,length(gr));
-      weight = cell(1,length(gr));
       
-      s1 = size(qsym,1);  
-      cndx = [0 cumsum(repmat(s1,1,max(sum(T1,2))))];
-
-
-      for l=1:length(gr)
-        sel = cod(T1(:,grain_ids(l)));
-
-        if ~isempty(sel)
-          sym_q = qsym(:,sel);
-          cen_q = mean(l);
-          [omega ndx] = min(2*acos(abs(dot(sym_q,cen_q))),[],1);     
-          nei_q =  sym_q(ndx + cndx(1:numel(sel)));
-
-          if doinverse, qall{l} = cen_q .* nei_q'; %qall{l}'
-          else        	qall{l} = nei_q .* cen_q'; end 
-
-          if doweights, weight{l} = weightfun(asr(l),asr(sel)); end
-        end  
-      end  
-      g = [qall{~cellfun('isempty',qall)}];
+      pair = pairs(grains_phase);
+      pair(pair(:,1) == pair(:,2),:) = []; % self reference
+      
     end
-    if doweights
-      p.weight = [weight{:}]';
-    else
+    
+    %partition due to memory
+    parts = [ 1:25000:length(pair) length(pair)+1];
+    of = repmat(orientation(o(1)),1,length(pair));
+    for l = 1:length(parts)-1
+      
+      cur = parts(l):parts(l+1)-1;
+     
+      if check_option(varargin,'inverse')
+        i = pair(cur,1); j = pair(cur,2);
+      else
+        i = pair(cur,2); j = pair(cur,1);
+      end
+      
+      of(cur) = o(i) .\ o(j);
+      
+    end
+    
+    if check_option(varargin,'weighted') && ~check_option(varargin,'random')
+      p.weight = zeros(size(pair,1),1);
+      
+      ply = polygon(grains_phase);
+      for l=1:size(pair,1)
+        p1 = ply(pair(l,1));
+        p2 = ply(pair(l,2));
+        
+        b1 = get([p1 get(p1,'holes')],'point_ids');
+        b2 = get([p2 get(p2,'holes')],'point_ids');
+          % could also be geometric
+           
+        p.weight(l) =sum(ismember([b1{:}],[b2{:}]));
+      end      
+    else      
       p = struct;
-    end  
-
-    if ~isempty(g)
-      ebsd(k) = EBSD(g,pCS,pSS,'options',p,'comment',['grain misorientation ' grains(1).comment]);
+    end
+    
+    if ~isempty(of)
+      ebsd(k) = EBSD(of,'options',p,'comment',['grain misorientation ' grains(1).comment]);
     end
   end
 end
 
-if nargout == 0
-  hist(ebsd,varargin{:})
-end

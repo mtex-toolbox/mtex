@@ -1,65 +1,80 @@
-function g0 = modalorientation(odf,varargin)
-% caclulate the modal orientation of the odf
+function [g0,f0] = modalorientation(odf,varargin)
+% caclulate the modal orientation of an odf
+%
+%% Syntax
+% [g0,f0] = modalorientation(odf,'resolution',res)
 %
 %% Input
-%  odf - @ODF 
+%  odf - @ODF
+%  res - resolutions
 %
 %% Output
-%  g0 - @quaternion
+%  g0 - modal @orientation
+%  f0 - modal value
+%
+%% Options
+%  resolution - desired resolution
 %
 %% See also
-%
+% ODF_max
 
+% initial resolution
 res = 5*degree;
-resmax = min(2.5*degree,get_option(varargin,'resolution',...
-  max(0.5*degree,get(odf,'resolution')/2)));
 
-if isempty(resmax)
-  warning('constant ODF - no modalorientation'); %#ok<WNTAG>
-  g0 = idquaternion;
-  return
-end
-
-% initial gues
-S3G = SO3Grid(2*res,odf(1).CS,odf(1).SS);
-if 2*res - get(odf,'resolution') > res/2
-  f = eval(smooth(odf,'halfwidth',2*res),S3G,varargin{:}); %#ok<EVLC>
-else
-  f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
-end
-
-epsilon = sort(f(:));
-epsilon = epsilon(max(1,length(epsilon)-100));
-g0 = quaternion(S3G,find(f>=epsilon));
-
-f0 = max(f(:));
-
-while res >= resmax || (0.95 * max(f(:)) > f0)
-
-  %disp('.')
-  f0 = max(f(:));
+% initial seed
+ori = orientation(odf(1).CS,odf(1).SS);
+S3G = orientation(odf(1).CS,odf(1).SS);
+for i = 1:length(odf) 
   
+  switch ODF_type(odf(i).options{:})
+  
+    case 'UNIFORM' % uniform portion
+    
+    case 'FOURIER'
+    
+      S3G = SO3Grid(res,odf(1).CS,odf(1).SS);
+          
+    case'FIBRE' % fibre symmetric portion
+     
+      ori = [ori;orientation('fibre',...
+        odf(i).center{1},odf(i).center{2},odf(1).CS,odf(1).SS,'resolution',res)]; %#ok<AGROW>
+      
+    case 'Bingham'
+   
+      ori = [ori;orientation(odf(i).center(:),odf(1).CS,odf(1).SS)]; %#ok<AGROW>
+      S3G = SO3Grid(res,odf(1).CS,odf(1).SS);
+       
+    otherwise % radially symmetric portion
+      
+      center = odf(1).center(odf(1).c>=quantile(odf(1).c,-20));
+      ori = [ori;center(:)]; %#ok<AGROW>
+           
+  end
+end
+
+% the search grid
+S3G = [orientation(S3G(:)); ori];
+
+% first evaluation
+f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
+
+% extract 20 largest values
+g0 = S3G(f>=quantile(f,-20));
+
+while res > 0.25*degree
+
   % new grid
-  if res < 2*degree
-    S3G = SO3Grid(res,odf(1).CS,odf(1).SS,'max_angle',2*res,'center',g0);
-  else    
-    S3G = SO3Grid(res,odf(1).CS,odf(1).SS);
-    S3G = subGrid(S3G,g0,2*res);
-  end
-  
+  S3G = [g0;orientation(SO3Grid(res/4,odf(1).CS,odf(1).SS,'max_angle',res,'center',g0))];
+    
   % evaluate ODF
-  if res - get(odf,'resolution') > res/4
-    f = eval(smooth(odf,'halfwidth',res),S3G,varargin{:}); %#ok<EVLC>
-  else
-    f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
-  end
+  f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
   
-  %g0 = quaternion(S3G,find(f(:)==max(f(:))));
-  epsilon = sort(f(:));
-  epsilon = epsilon(max(1,length(epsilon)-100));
-  g0 = quaternion(S3G,find(f>=epsilon));  
-  f=  f(f>epsilon);
-  res = res / 2;
+  % extract largest values
+  g0 = S3G(f>=quantile(f,0));
+  
+  res = res / 2; 
 end
 
-g0 = g0(f(:)==max(f(:)));
+[f0,i0] = max(f(:));
+g0 = S3G(i0);
+

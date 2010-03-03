@@ -9,19 +9,16 @@ function ebsd = mtimes(x,y)
 
 if isa(x,'EBSD') && isa(y,'vector3d')
         
-  ebsd = getgrid(x) * y;
+  ebsd = [x.orientations] * y;
   
 elseif isa(x,'EBSD') && isa(y,'quaternion')
   ebsd = x;
   for i = 1:length(ebsd)
-    ebsd(i).grid = ebsd(i).grid * y;
+    ebsd(i).orientations = ebsd(i).orientations * y;
   end
 elseif isa(y,'EBSD') && isa(x,'quaternion')
   ebsd = y;
   for i = 1:length(ebsd)
-    ebsd(i).grid = x * ebsd(i).grid;
+    ebsd(i).orientations = x * ebsd(i).orientations;
   end
 end
-
-
-

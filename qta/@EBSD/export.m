@@ -11,16 +11,13 @@ function export(ebsd,fname,varargin)
 %  DEGREE  - output in degree (default)
 %  RADIANS - output in radians
 
-G = [ebsd.orientations];
-q = quaternion(G);
-
-[a,b,g] = quat2euler(q,'Bunge');
-d = [a(:),b(:),g(:)]; 
+d = get([ebsd.orientations],'Euler','Bunge',varargin{:});
 
 if ~check_option(varargin,{'radians','radiant','radiand'})
   d = d ./ degree; 
 end
 
-if ~isempty(ebsd.xy), d = [d,ebsd.xy]; end %#ok<NASGU>
+if ~isempty(ebsd.xy), d = [d,ebsd.xy(:)]; end 
+if ~isempty(ebsd.phase), d = [d,ebsd.phase(:)]; end %#ok<NASGU>
 
 save(fname,'d','-ASCII','-single');

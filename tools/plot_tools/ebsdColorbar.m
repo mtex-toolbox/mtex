@@ -47,17 +47,29 @@ newMTEXplot;
 varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
-if strcmp(cc,'ipdf')
-  [maxtheta,maxrho,minrho,v] = getFundamentalRegionPF(cs,varargin{:});
-
-  h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX','resolution',1*degree,varargin{:}); 
-  d = reshape(ipdf2rgb(h,cs,varargin{:}),[GridSize(h),3]);
+if any(strcmp(cc,{'ipdf','hkl'}))  
+  % hkl is antipodal
+  if strcmp(cc,'hkl'),  varargin = {'antipodal',varargin{:}}; end  
   
-  multiplot(@(i) h,@(i) d,1,'rgb',varargin{:});  
+  [maxtheta,maxrho,minrho,v] = getFundamentalRegionPF(cs,varargin{:});
+  
+  maxrho = maxrho-minrho+eps;
+  minrho = 0; % rotate like canvas %TODO:flipud!
+  h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX','resolution',1*degree,varargin{:});
+
+  if strcmp(cc,'ipdf')
+    d = ipdf2rgb(h,cs,varargin{:});
+  elseif strcmp(cc,'hkl')    
+    d = ipdf2hkl(h,cs,varargin{:});
+  end
+  
+  d = reshape(d,[size(h),3]);
+  
+  multiplot(@(i) h,@(i) d,1,'rgb',varargin{:});
 else
   [S3G,S2G,sec] = SO3Grid('plot',cs,symmetry,varargin{:});
 
-  d = reshape(orientation2color(S3G,cc,varargin{:}),[GridSize(S3G),3]);
+  d = reshape(orientation2color(S3G,cc,varargin{:}),[size(S3G),3]);
   
 	sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma'},'sigma');
     [symbol,labelx,labely] = sectionLabels(sectype);   
@@ -82,9 +94,8 @@ setappdata(gcf,'r',r);
 setappdata(gcf,'options',extract_option(varargin,'antipodal'));
 
 %% annotate crystal directions
-if strcmp(cc,'ipdf')
+if any(strcmp(cc,{'ipdf','hkl'}))
   annotate(v,'MarkerFaceColor','k','labeled','all');
 end
 set(gcf,'renderer','opengl');
-
 

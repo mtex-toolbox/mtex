@@ -16,8 +16,6 @@ function [grains ebsd] = segment2d(ebsd,varargin)
 %
 %% Flags
 %  unitcell     - omit voronoi decomposition and treat a unitcell lattice
-%  plot         - plot grain-boundies instead of generating grains
-%  graph/former - plot the neighbourhood graph, or the former neighbourhood graph
 %
 %% Example
 %  [grains ebsd] = segment2d(ebsd,'angle',15*degree,'augmentation','cube')
@@ -32,31 +30,21 @@ s = tic;
 
 xy = vertcat(ebsd.xy);
 
-if isempty(xy)
-  error('no spatial data')
-end
+if isempty(xy), error('no spatial data');end
 
-grid = [ebsd.orientations];
-z = quaternion(grid); 
+phase_ebsd = get(ebsd,'phase');
+phase_ebsd = mat2cell(phase_ebsd,ones(size(phase_ebsd)),1)';
 
-l = GridLength(grid);
+% generate long phase vector
+l = sampleSize(ebsd);
 rl = [ 0 cumsum(l)];
 phase = ones(1,sum(l));
-phaseCS = cell(numel(l),1);
-phaseSS = cell(numel(l),1);
-phase_ebsd = get(ebsd,'phase');
-phase_ebsd = mat2cell(phase_ebsd,ones(size(phase_ebsd)),1);
-comment = get(ebsd,'comment');
-
 for i=1:numel(ebsd)
-   phaseCS{i} = getCSym(ebsd(i).orientations);
-   phaseSS{i} = getSSym(ebsd(i).orientations);
-   phase( rl(i)+(1:l(i)) ) = i;
+  phase( rl(i)+(1:l(i)) ) = i;
 end
 
 % sort for voronoi
 [xy m n]  = unique(xy,'first','rows');
-z = z(m);
 phase = phase(m);
 
 %% grid neighbours
@@ -78,68 +66,50 @@ else
 end
 
 
-%% disconnect phases
+%% disconnect by phase
 
 phases = sparse(ix,iy,phase(ix) ~= phase(iy),sm,sn);
 phases = xor(phases,distance);
 [ix iy]= find(phases);
 
-%% angel to neighbours
+%% disconnect by missorientation
 
-angels = sparse(ix,iy, nangle(z(ix),z(iy),phase(ix), phaseCS, phaseSS, varargin{:}),sm,sn);
+angles = sparse(sm,sn);
+
+for i=1:numel(ebsd)
   
-%% find all angles lower threshold
-
-angels = angels > get_option(varargin,'angle',15*degree); %map of disconnected neighbours.
-regions = xor(angels,phases); 
-
-%% plotting
-
-if check_option(varargin,{'plot', 'graph','former'})
-  if check_option(varargin,'former'),
-    regions = xor(regions,neighbours); end  
-  if check_option(varargin,'graph') || check_option(varargin,'former')    
-    [X Y] = gplot(regions,xy);
-  else  
-    [ix iy] = find(xor(neighbours,regions));
-
-    if isempty(iy), disp('nothing to plot'), return; end
-
-    c1 = cells(ix); c2 = cells(iy);
-
-    % c1 = cellfun(@(x,y) [x(ismember(x,y)) 1] ,c1,c2,'UniformOutput',false);
-    nv = cellfun('prodofsize',c1);
-    pf = false(1, max(nv));
-    for k=1:length(c1)
-      f = c1{k}; s = c2{k}; tf = pf;
-      for i=1:nv(k)
-        tf(i) = any( f(i) == s );
-      end    
-      c1{k} = [f(tf) 1];
-    end
-    
-    vert(1,:) = NaN;
-    cc = [c1{:}];  
-    X = vert(cc,1);
-    Y = vert(cc,2);
-  end
+  % convert to old indexing
+  zl = m(ix) - rl(i);
+  zr = m(iy) - rl(i);
   
-  newMTEXplot;
-  [X,Y, lx, ly] = fixMTEXscreencoordinates(X,Y,varargin{:});
-  h = line(X,Y);
+  % restrict to correct phase
+  ind = zl>0 & zl<numel(ebsd(i).orientations) & zr>0 & zr<numel(ebsd(i).orientations);
+  mix = ix(ind); miy = iy(ind);
+  zl = zl(ind); zr = zr(ind);
   
-  xlabel(lx); ylabel(ly);
-  fixMTEXplot;
+  % compute distances
+  o1 = ebsd(i).orientations(zl);
+  o2 = ebsd(i).orientations(zr);
+  omega = angle(o1,o2);
   
-  set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
+  %omega = angle(ebsd(i).orientations(zl),ebsd(i).orientations(zr));
   
-  optiondraw(h,varargin{:});
-  return
+  % remove large angles
+  ind = omega > get_option(varargin,'angle',15*degree);
+  
+  angles = angles + sparse(mix(ind),miy(ind),1,sm,sn);
 end
+
+% disconnect regions
+regions = xor(angles,phases); 
+
+clear angles phases
+
 
 %% convert to tree graph
 
 ids = graph2ids(regions);
+
 
 %% retrieve neighbours
 
@@ -198,8 +168,10 @@ else
   fractions = cell(0);
 end
                 
-  %clean up
-  clear T1 T2 T3 angles neighbours regions angel_treshold
+%clean up
+clear T1 T2 T3 regions angel_treshold
+
+
 %% conversion to cells
 
 ids = ids(n); %sort back
@@ -235,7 +207,7 @@ s = tic;
 
 ply = createpolygons(cells,id,vert);
 
-comment =  ['from ' comment];
+comment =  ['from ' ebsd(1).comment];
 nc = length(id);
 
 neigh = cell(1,nc);
@@ -243,62 +215,32 @@ neigh(find(nfr)) = nn;
 fract = cell(1,nc);
 fract(find(cfr)) = fractions;
 
+ph = phase(cellfun(@(x)x(1),id));
+
 gr = struct('id',num2cell(1:nc),...
        'cells',id,...
-       'neighbour',neigh,...
-       'polygon',[],...
+       'neighbour',neigh,...    %       'polygon',[],...
        'checksum',[],...
-       'subfractions',fract,...
+       'subfractions',fract,...       
+       'phase',phase_ebsd(ph),...
+       'orientation',[],...
        'properties',[],...
        'comment',[]);
 
-ph = phase(cellfun(@(x)x(1),id));
-properties = struct( 'phase',phase_ebsd(ph),...
-                     'CS', phaseCS(ph),...
-                     'SS', phaseSS(ph));
+     
 for k=1:nc
   gr(k).checksum = checksum;
   gr(k).comment = comment;
-  gr(k).polygon = ply(k);
-  gr(k).properties = properties(k);
+  gr(k).properties = struct;
+  gr(k).orientation = ...
+    mean(ebsd(ph(k)).orientations(gr(k).cells-rl(ph(k))));  
 end
 
-grains = grain('direct',gr);
+grains = grain(gr,ply);
 
 vdisp(['  grain generation:  '  num2str(toc(s)) ' sec' ],varargin{:});
 vdisp(' ',varargin{:})
 
-
-
-function omega = nangle(zl , zr , phase, phaseCS, phaseSS, varargin)
-
-angletype = get_option(varargin,'angletype','misorientation');
-
-switch lower(angletype)
-  case 'misorientation'
-    omega = zeros(1,size(zl,2));
-    %phase
-    for i=1:numel(phaseCS)
-      ind = find(phase == i); 
-      %partition data due to memory issues
-      part = [ 1:10000:length(ind) size(ind,2)+1]; 
-      
-      for k=1:length(part)-1
-      	cur = ind(part(k):part(k+1)-1);
-                
-        %ql = symmetriceQuat(phaseCS{i},phaseSS{i},zl(cur)); 
-        %qr = repmat(zr(cur).',1,size(ql,2)); %this can be done faster
-         
-        %omega(cur) = min(rotangle(ql .* qr),[],2) ;       
-        %omega(cur) = min(2*acos(abs(dot(ql,qr))),[],2);       
-        omega(cur) = 2*acos(dot_sym(zl(cur),zr(cur),phaseCS{i},phaseSS{i}));
-      end  
-    end
-  case 'disorientation'
-    omega = rotangle(zl .* inverse(zr));
-  otherwise
-    error('wrong angletype option')
-end
 
 
 
@@ -373,27 +315,47 @@ gl = [rcells{:}];
   %shift indices
 indi = 1:length(gl);
 inds = indi+1;
-c1 = cellfun('length',rcells);
+c1 = cellfun('length',rcells); 
 cr1 = cellfun('length',regionids);
 r1 = cumsum(c1);
 r2 = [1 ; r1+1];
 r2(end) =[];  
 inds(r1) = r2;
-  
-gr = gl(inds); %partner pointel
-ii = [gl ;gr]'; % linels  
-
-% remove double edges
-tmpii = sort(ii,2);
-[tmpii ndx] = sortrows(tmpii);  %transpose
-
-[k ib] = sort(ndx);
 
 cc = [0; r1];
 crc = [0 cumsum(cr1)];
 
+gr = gl(inds); %partner pointel
+
+clear rcells r1 r2 indi c1 inds
+
+ii = [gl(:) gr(:)]; % linels  
+% remove double edges
+ii = sort(ii,2);
+gll = ii(:,1);
+grr = ii(:,2);
+
+clear ii
+
+ndx = 1:numel(gll);
+[ig,ind] = sort(grr);
+ndx = ndx(ind);
+[ig,ind] = sort(gll(ndx));
+ndx = ndx(ind);
+
+clear ig ind
+
+gll = gll(ndx);
+grr = grr(ndx);
+
+[k ib] = sort(ndx);
+
+clear ndx k
+
 nr = length(regionids);
-ply = struct('xy',cell(1,nr), 'hxy',cell(1,nr)); %repmat({{}},1,nr));
+p = struct(polygon);
+ply = repmat(p,1,nr);
+
 
 for k =1:nr
   sel = cc(crc(k)+1)+1:cc(crc(k+1)+1);
@@ -401,33 +363,62 @@ for k =1:nr
   if cr1(k) > 1
     %remove double entries
     [ig nd] = sort(ib(sel));
-    dell = find(sum(diff(tmpii(ig,:)) == 0,2)>1);
+    dell = diff(gll(ig)) == 0 &  diff(grr(ig)) == 0;
+    dell = find(dell);
     sel( nd([dell dell+1]) ) = []; 
   
     border = converttoborder(gl(sel), gr(sel));
     
-    psz = numel(border);
+    psz = numel(border);    
     if psz == 1
-    	ply(k).xy = verts(border{1},:);      
-    elseif psz > 1
-      bo = cell(1,psz);
-      ar = zeros(1,psz);
+      
+      v = border{1};
+      xy = verts(v,:);
+      ply(k).xy = xy;
+      ply(k).point_ids = v;
+
+      ply(k).envelope = reshape([min(xy); max(xy)],1,[]);
+      
+    else
+      
+      hply = repmat(p,1,psz);
+      
       for l=1:psz
-        bo{l} = verts(border{l},:);
-        ar(l) = farea(bo{l});
+        
+        v = border{l};
+        xy = verts(v,:);
+        hply(l).xy = xy;
+        hply(l).point_ids = v;   
+        
+        hply(l).envelope = reshape([min(xy); max(xy)],1,[]);
+        
       end
+      hply = polygon(hply);
       
-      [ig ndx] = sort(ar,'descend');
+      [ig ndx] = sort(area(hply),'descend');
       
-      ply(k).xy = bo{ndx(1)};
-      ply(k).hxy = bo(ndx(2:end));
-      %? holes
+      ply(k) = hply(ndx(1));      
+      ply(k).holes = hply(ndx(2:end));
+      
     end
   else
     % finish polygon
-    ply(k).xy = verts([gl(sel) gl(sel(1))],:);
-  end  
+    v = [gl(sel) gl(sel(1))];
+    xy = verts(v,:);
+    ply(k).xy = xy;
+    ply(k).point_ids = v;
+    
+    ply(k).envelope = reshape([min(xy); max(xy)],1,[]);
+    
+  end
+  
 end
+
+ply = polygon(ply);
+
+
+
+function p = setpolygon()
 
 
 function plygn = converttoborder(gl, gr)

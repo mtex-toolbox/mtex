@@ -7,19 +7,14 @@ function [theta,rho] = polar(S2G,varargin)
 %% Output
 % [theta,rho] - double
 
-if check_option(S2G(1).options,'INDEXED')
+if check_option(S2G.options,'INDEXED')
   theta = double([S2G.theta]);
-  theta = rep(theta,GridLength([S2G.rho]));
+  theta = rep(theta,GridLength(S2G.rho));
   rho = double([S2G.rho]);
-  if length(S2G)==1
-    theta = reshape(theta,GridSize(S2G));
-    rho = reshape(rho,GridSize(S2G));
-  end
-elseif length(S2G) == 1
-  [theta,rho] = polar(S2G.Grid);
+  theta = reshape(theta,size(S2G));
+  rho = reshape(rho,size(S2G));
 else
-  for i = 1:length(S2G), S2G(i).Grid = reshape(S2G(i).Grid,1,[]);end  
-	[theta,rho] = polar([S2G.Grid]);
+  [theta,rho] = polar(S2G.vector3d);
 end
 
 if nargout == 0

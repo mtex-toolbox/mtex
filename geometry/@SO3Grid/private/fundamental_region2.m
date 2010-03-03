@@ -8,17 +8,17 @@ function ind = fundamental_region2(q,center,cs,ss)
 %% Output
 %  ind    -
 
-% symmetrice
+% symmetrise
 c_sym = ss *  center * cs;
-omega = rotangle(c_sym * inverse(center));
+omega = angle(c_sym * inverse(center));
 [omega,c_sym] = selectMinbyRow(omega,c_sym);
 
 % convert to rodrigues space
-rq = quat2rodrigues(q); clear q;
-rc_sym = quat2rodrigues(c_sym); 
+rq = Rodrigues(q); clear q;
+rc_sym = Rodrigues(c_sym); 
 
 % find rotation not part of the fundamental region
-ind = true(numel(rq),1);
+ind = true(size(rq));
 for i = 2:numel(rc_sym)
   
   d = rc_sym(i)-rc_sym(1);

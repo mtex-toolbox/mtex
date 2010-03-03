@@ -10,7 +10,7 @@ function v = volume(odf,center,radius,varargin)
 %
 %% Input
 %  odf    - @ODF
-%  center - @quaternion
+%  center - @orientation
 %  radius - double
 %
 %% Options
@@ -75,20 +75,20 @@ end
 
 % estimate volume portion of odf space
 reference = 9897129 * 96 / length(odf(1).CS) / length(odf(1).SS);
-f = min(1,GridLength(S3G) * (res / 0.25 / degree)^3 / reference);
+f = min(1,numel(S3G) * (res / 0.25 / degree)^3 / reference);
   
 % eval odf
 if f==0
   v = 0;
 else
   v = mean(eval(odf,S3G)) * f;  %#ok<EVLC>
-  v = min(v,sum(getweights(odf)));
+  v = min(v,sum(get(odf,'weights')));
 end
 
 function v = fastVolume(odf,center,radius)
 
 % compute distances
-d = reshape(dist(odf.center,center,'all'),GridLength(odf.center),[]);
+d = reshape(angle_outer(center,odf.center,'all'),numel(odf.center),[]);
 
 % precompute volumes
 [vol,r] = volume(odf.psi,radius);

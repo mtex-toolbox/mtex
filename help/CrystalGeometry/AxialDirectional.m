@@ -80,10 +80,10 @@ annotate(vector3d(1,0,-1),'labeled')
 % symmetry is in general not present.
 
 % some prefered orientation
-q = euler2quat(20*degree,30*degree,0);
+o = orientation('Euler',20*degree,30*degree,0,'ZYZ',cs,ss);
 
 % define an unimodal ODF
-odf = unimodalODF(q,cs,ss);
+odf = unimodalODF(o);
 
 % plot pole figures
 plotpdf(odf,Miller(1,2,2),'position',[100 100 400 200])
@@ -111,9 +111,9 @@ plotipdf(odf,yvector,'antipodal','complete')
 % Notice how MTEX, automatically reduces the fundamental region of inverse
 % pole figures in the case that antipodal symmetry is present.
 
-figure(1);plotipdf(odf,yvector,'position',[100 100 400 200])
+figure(1); plotipdf(odf,yvector,'position',[100 100 400 200])
 
-figure(2);plotipdf(odf,yvector,'antipodal','position',[100 100 400 200])
+figure(2);plotipdf(odf,yvector,'antipodal')
 
 
 %% EBSD Colocoding

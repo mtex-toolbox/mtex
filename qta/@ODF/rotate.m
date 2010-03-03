@@ -3,7 +3,7 @@ function odf = rotate(odf,q)
 %
 %% Input
 %  odf - @ODF
-%  q   - @quaternion
+%  q   - @rotation
 %
 %% Output
 %  rotated odf - @ODF

@@ -1,19 +1,25 @@
-function c = char(v,varargin)
+function c = char(m,varargin)
 % Miller indece to string
+%
 %% Options
 %  NO_SCOPES
 %  LATEX
 
+[h,k,l] = v2m(m);
+
 c = [];
 
-for i = 1:length(v)
+for i = 1:length(m)
   
-  if any(strcmp(Laue(v(i).CS),{'-3','-3m','6/m','6/mmm'}))
-    s = [barchar(v(i).h,varargin{:}),barchar(v(i).k,varargin{:}),...
-      barchar(-v(i).h-v(i).k,varargin{:}),barchar(v(i).l,varargin{:})];
+  if any(strcmp(Laue(m.CS),{'-3','-3m','6/m','6/mmm'}))
+    
+    s = [barchar(h(i),varargin{:}),barchar(k(i),varargin{:}),...
+      barchar(-h(i)-k(i),varargin{:}),barchar(l(i),varargin{:})];
+    
   else
-    s= [barchar(v(i).h,varargin{:}),barchar(v(i).k,...
-      varargin{:}),barchar(v(i).l,varargin{:})];
+    
+    s= [barchar(h(i),varargin{:}),barchar(k(i),...
+      varargin{:}),barchar(l(i),varargin{:})];
   end
   
   if check_option(varargin, {'TEX','LATEX'})

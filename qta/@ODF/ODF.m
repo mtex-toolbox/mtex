@@ -43,40 +43,45 @@ elseif isa(center,'ODF')
 end
 
 % default values
-if isa(center,'quaternion') 
-  if nargin <= 3, CS = symmetry('triclinic'); end
-  if nargin <= 4, SS = symmetry('triclinic'); end
-	center = SO3Grid(center,CS,SS); 
+if nargin <= 3, CS = symmetry('triclinic'); end
+if nargin <= 4, SS = symmetry('triclinic'); end
+if isa(center,'quaternion') && ~isa(center,'orientation') 
+  center = orientation(center,CS,SS);
 end
-if nargin <= 1 || isempty(c) && isa(center,'SO3Grid'), c = [1,ones(1,GridLength(center))]; end
+if nargin <= 1 || isempty(c) && isa(center,'SO3Grid'), c = [1,ones(1,numel(center))]; end
 if nargin <= 2, psi = kernel; end
-if nargin <= 3, CS = getCSym(center); end
-if nargin <= 4, SS = getSSym(center); end
+if nargin <= 3, CS = get(center,'CS'); end
+if nargin <= 4, SS = get(center,'SS'); end
 c_hat = [];
 
 % check completness of parameters
-if check_option(varargin,'FOURIER')
-  c_hat = center;
-  c = c_hat(1);
-  center = [];
-elseif check_option(varargin,'FIBRE')
-  if ~((isa(center{1},'Miller') || isa(center{1},'vector3d')) && isa(center{2},'vector3d')...
-      && isa(c,'double') && isa(psi,'kernel')...
-      && isa(CS,'symmetry') && isa(CS,'symmetry'))
-    error('wrong Arguments: {Miller,vector3d}, data, kernel, crystal-symmetry, specimen-symmetry');
-  end
-  lg = length(center{1});
-elseif check_option(varargin,'UNIFORM')
-  lg = 1;
-elseif check_option(varargin,'Bingham')
-  lg = 1;  
-else
-  if ~(isa(center,'SO3Grid') && isa(c,'double') && isa(psi,'kernel')...
-      && isa(CS,'symmetry') && isa(CS,'symmetry'))
-    error('wrong Arguments: SO3Grid, data, kernel, crystal-symmetry, specimen-symmetry');
-  end
-  lg = sum(GridLength(center));
-end 
+option = extract_option(varargin,{'UNIFORM','FIBRE','FOURIER','Bingham'});
+
+switch lower(char(option))
+  case 'fourier'
+    c_hat = center;
+    c = c_hat(1);
+    center = [];
+  case 'fibre'
+    if ~((isa(center{1},'Miller') || isa(center{1},'vector3d')) && isa(center{2},'vector3d')...
+        && isa(c,'double') && isa(psi,'kernel')...
+        && isa(CS,'symmetry') && isa(CS,'symmetry'))
+      error('wrong Arguments: {Miller,vector3d}, data, kernel, crystal-symmetry, specimen-symmetry');
+    end
+    lg = length(center{1});
+  case 'uniform'
+    lg = 1;
+  case 'bingham'
+    lg = 1;  
+  otherwise
+    if ~(isa(center,'quaternion') && isa(c,'double') && isa(psi,'kernel')...
+          && isa(CS,'symmetry') && isa(CS,'symmetry'))
+        error('wrong Arguments: SO3Grid, data, kernel, crystal-symmetry, specimen-symmetry');
+    end
+    lg = numel(center);  
+end
+
+
 
 % check amount of coefficients
 if ~check_option(varargin,'FOURIER') && lg ~= length(c)
@@ -84,9 +89,11 @@ if ~check_option(varargin,'FOURIER') && lg ~= length(c)
 end
 
 % check symmetries
-if isa(center,'SO3Grid') && (~(getCSym(center) == CS) || ~(getSSym(center) == SS))
+if isa(center,'SO3Grid') && (~(get(center,'CS') == CS) || ~(get(center,'SS') == SS))
   qwarning('symmetry of the grid does not fit to the given symmetry');
 end
+
+
 
 odf.comment = get_option(varargin,'comment',[]);
 odf.center = center;
@@ -95,5 +102,5 @@ odf.c_hat = c_hat;
 odf.psi = psi;
 odf.CS = CS;
 odf.SS = SS;
-odf.options = extract_option(varargin,{'uniform','fibre','fourier','bingham'});
+odf.options = option;
 odf = class(odf,'ODF');

@@ -2,6 +2,28 @@
 %
 %% Contents
 %
+%% MTEX 3.0 -
+%
+% *Crystal Geometry*
+%
+% This release contains a newly designed crystal geometry engine which is
+% thought to be much more intuitive and flexible.
+%
+% * new class <rotation_index.html rotation>
+% * new orientation <orientation_index.html orientation>
+% *
+%
+% *Generel Code Refactorisation*
+%
+% * MTEX is now compatibel with NFFT 3.1.3
+%
+% *New Features*
+%
+% Beside all the technical changes there are also some new features
+%
+% * Bingham distrubted ODFs
+% * Faster and more accurate EBSD simulation
+%
 %% MTEX 2.0 - 10/2009
 %
 % *Grain Analysis for EBSD Data*

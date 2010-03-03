@@ -6,7 +6,7 @@ function pf = rotate(pf,q)
 % 
 %% Input
 %  pf - @PoleFigure
-%  q  - @quaternion
+%  q  - @rotation
 %
 %% Output
 %  pf - rotated @PoleFigure

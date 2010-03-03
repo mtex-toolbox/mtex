@@ -1,15 +1,38 @@
-function value = get(obj,vname,varargin)
+function varargout = get(obj,vname,varargin)
 % get object variable
 
 switch vname
   case {'CS','SS','comment','options'}
-    value = obj(1).(vname);
+    varargout{1} = obj(1).(vname);
+    
+  case 'symmetry'
+    varargout{1} = obj(1).CS;
+    varargout{2} = obj(1).SS;
+    
+  case 'weights'
+    
+    for i=1:length(obj)
+      w(i) = sum(obj(i).c(:)); %#ok<AGROW>
+    end
+    varargout{1} = w;
+    
+  case 'kernel'
+    
+    if isa(obj(1).psi,'kernel')
+      varargout{1} = [obj.psi];
+    end
+    
   case fields(obj)
-    value = [obj.(vname)];
+    varargout{1} = obj(1).(vname);
+    
   case 'resolution'
-    k = [obj.psi];
-    hw = get(k,'halfwidth');
-    value = min(hw);
+    try
+      k = [obj.psi];
+      hw = get(k,'halfwidth');
+      varargout{1} = min(hw);
+    catch %#ok<CTCH>
+      varargout{1} = 5*degree;
+    end
   otherwise
     error('Unknown field in class ODF!')
 end

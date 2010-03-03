@@ -129,7 +129,7 @@ if ischeck, odf = ODF;return;end
 
 % load single orientations
 if ~check_option(varargin,{'exact','resolution'}), varargin = [varargin,'exact'];end
-ebsd = EBSD(SO3Grid(q,cs,ss),cs,ss,varargin{:});
+ebsd = EBSD(q,cs,ss,varargin{:});
 
 % calc ODF
 odf = calcODF(ebsd,'weight',weight,'silent',varargin{:});

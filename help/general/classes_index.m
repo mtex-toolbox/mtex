@@ -10,6 +10,8 @@
 % Below you can find a list of all classes introduced by MTEX. 
 % For short examples for using them please follow the links.
 %
+% *classes for geometry*
+%
 % * <vector3d_index.html vector3d>
 % * <Miller_index.html Miller>
 % * <quaternion_index.html quaternion>
@@ -17,6 +19,10 @@
 % * <S2Grid_index.html S2Grid>
 % * <SO3Grid_index.html SO3Grid>
 % * <symmetry_index.html symmetry>
+% * <polygon_index.html polygon>
+%
+% *classes for quantitative texture analysis*
+%
 % * <ODF_index.html ODF>
 % * <PoleFigure_index.html PoleFigure>
 % * <EBSD_index.html EBSD>

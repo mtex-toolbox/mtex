@@ -24,17 +24,17 @@ function f = RK(kk,g,h,r,c,CS,SS,varargin)
 % * f_j = sum c_i RK(g_i,h,r_j)
 % * RK((h,r);g) = Sum A_l P_l(g*h . r)
 
+g = quaternion(g);
 ng = numel(g);
 
 if length(h)>1 || isa(h,'S2Grid')   % inverse pole figure
-	r = reshape(r./norm(r),1,[]);
-	g = reshape(reshape((CS * reshape(g',1,[])).',[],1) * SS,[],1);
-	in = reshape(g*r,[ng,length(CS),length(SS)]);
-	out = h;lh = length(CS);
+	r = r./norm(r);
+  in = reshape(symmetrise(g,CS,SS)' * r,[ng,length(CS),length(SS)]);
+	out = h; lh = length(CS);
 else % pole figure
   h = vector3d(h);
 	h = reshape(h./norm(h),1,[]);
-	[h,lh] = symetriceVec(CS,h,varargin{:});
+	[h,lh] = symmetrise(h,CS,varargin{:});
 	%lh = length(CS);
 	g = reshape(reshape((SS * reshape(g,1,[])).',[],1),[],1);
 	in = reshape(g*h,[ng,length(SS),lh]);

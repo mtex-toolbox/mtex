@@ -38,7 +38,7 @@ v = reshape(v,[],3);
 
 P = pdf(odf,h,r);
 
-nr = GridLength(r);
+nr = numel(r);
 nx = get_option(varargin,'Points',100);
 W = v(randi(nr,nx,1),:);
 

@@ -12,18 +12,22 @@ function d = dot_outer(SO3G,q,varargin)
 %  d      - sparse matrix
 %
 %% formuala:
-% cos angle(g1,g2)/2 = dout(g1,g2)
+% cos angle(g1,g2)/2 = dot(g1,g2)
+
+if ~isa(SO3G,'SO3Grid')
+  d = dot_outer(q,SO3G,varargin{:});
+  return
+end
 
 epsilon = get_option(varargin,'epsilon',pi);
-if isa(q,'SO3Grid'), q = quaternion(q);end
-d = sparse(GridLength(SO3G),numel(q));
 
 if ~check_option(SO3G,'indexed') || check_option(varargin,{'full','all'})
   
-  d = cos(dist(SO3G.CS,SO3G.SS,quaternion(SO3G).',q(:).',varargin{:})/2);
-
+  d = dot_outer(SO3G.orientation,q,varargin{:});
+  
 else
-
+  d = sparse(numel(SO3G),numel(q));
+  
   % rotate q according to SO3Grid.center
   if ~isempty(SO3G.center),q = inverse(SO3G.center) * q; end
   
@@ -40,23 +44,28 @@ else
     qss = idquaternion;
     palpha = 2*pi;
   else
-    qss = quaternion_special(SO3G.SS);
+    qss = quaternion(rotation_special(SO3G.SS));
     palpha = max(palpha,pi);
   end
   
   % for finding the minimial beta angle
-  qcs = quaternion_special(SO3G.CS);
+  qcs = quaternion(rotation_special(SO3G.CS));
   
-  % for all symmetries 
-  for is = 1:length(qss)
-    for ic = 1:length(qcs)
-
-      [xalpha,xbeta,xgamma] = quat2euler(qss(is) * ...
-        transpose(q(:)*qcs(ic)));
+  [xalpha,xbeta,xgamma] = Euler( qss * q * qcs ,'ZYZ');
   
-      d = max(d,SO3Grid_dist_region(yalpha,ybeta,ygamma,sgamma,int32(igamma),...
-        int32(ialphabeta),palpha,pgamma, xalpha,xbeta,xgamma,epsilon));
+  ncs = numel(qss)*numel(qcs);
+  cs = 0:numel(q):ncs*numel(q);
+  
+  for k=1:ncs
+  
+    ndx = cs(k)+1:cs(k+1);
+  
+    dist = SO3Grid_dist_region(yalpha,ybeta,ygamma, ...
+      sgamma, int32(igamma), int32(ialphabeta), palpha, pgamma, ...
+      xalpha(ndx), xbeta(ndx), xgamma(ndx), epsilon);
+      
+    if nnz(dist) > 0, d = max(d,dist); end
     
-    end    
-  end
+  end    
+  
 end

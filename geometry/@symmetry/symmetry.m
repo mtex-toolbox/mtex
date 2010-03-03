@@ -52,10 +52,9 @@ if nargin == 0
   s.name = '1';
   s.laue = '-1';
   s.axis =  [xvector,yvector,zvector];
-  s.quat = idquaternion;
   s.mineral = '';
-  superiorto('quaternion','SO3Grid');
-  s = class(s,'symmetry');
+  %superiorto('quaternion','SO3Grid','orientation');
+  s = class(s,'symmetry',rotation(idquaternion));
   return
 end
 
@@ -74,14 +73,21 @@ else
 end
 
 %% search for symmetry
-try
+
+% maybe this is a point group
+try 
   sym = findsymmetry(name);
 catch %#ok<*CTCH>
   
-  % maybe it is a point group
+  % maybe it is a space group
   try
     sym = findsymmetry(hms2point(name));
   catch
+    try % may be it is a cif file
+      s = cif2symmetry(name);
+      return;
+    catch
+    end
     help symmetry;
     error('symmetry "%s" not found',name);
   end
@@ -91,8 +97,7 @@ end
 s.name = name;
 s.laue = sym.Laue;
 s.axis = calcAxis(sym.System,axis,angle,varargin{:});
-s.quat = calcQuat(s.laue,s.axis);
 s.mineral = get_option(varargin,'mineral','');
 
-superiorto('quaternion','SO3Grid');
-s = class(s,'symmetry');
+%superiorto('quaternion','SO3Grid','orientation');
+s = class(s,'symmetry',rotation(calcQuat(s.laue,s.axis)));

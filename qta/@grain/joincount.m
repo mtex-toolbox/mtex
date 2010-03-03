@@ -11,52 +11,33 @@ function [J T q p] = joincount(grains,coloring,varargin)
 %  q - empirical entities actually counted
 %  p - esitmated
 %
-%% Options
-% WEIGHTED/PERIMETER  - use perimeter as weight.
-% AREA                - use area as weight.
-%
 %% Example
-% [J Jt q p] = joincount(grains,hassubfractions(grains))
+% [J Jt q p] = joincount(grains,get(grains,'phase'))
 %
 
-nc = length(grains);
 
-[colors m n] = unique(coloring(:));
-J = zeros(size(colors,1));
-if check_option(varargin,{'weighted','perimeter'})
-  w = perimeter(grains);
-elseif check_option(varargin,'area')
-  w = area(grains);
-else
-  w = ones(nc,1);
+pair = pairs(grains);
+pair(pair(:,1) == pair(:,2),:) = []; % delete self reference
+
+[c m color] = unique(coloring);
+colors =  color(pair);
+
+
+J = full(sparse(colors(:,1),colors(:,2),1))./2;
+ 
+q = ( J ./ sum(sum(triu(J))) );
+
+w = numel(color);
+p = zeros(size(J));
+for k=1:length(c)
+  p(k,k) = sum(k == color)./w;
 end
 
-for k=1:nc
-  kn = grains(k).neighbour; %carefull with deleted neighbours
-  kn = kn(grains(k).id ~= grains(k).neighbour); % without selfreference
-
-  J(n(k),n(kn)) =    J(n(k),n(kn)) + w(kn)';
-  J(n(kn),n(k)) =    J(n(kn),n(k)) + w(kn); 
-end
-
-J = J./2;
-Js = triu(J);
-Js = sum(Js(:));
-% 
-q = (J./Js);
-
-
-[a ndx] = sort(n);
-wt = w(ndx);
-pa = histc(n, n(m));
-wc = mat2cell(wt,pa);
-%
-p = diag(cellfun(@(x) sum(x) ,wc)./sum(w));
 
 %%
 
 nc = size(J,1);
-pi = zeros(nc,nc);
+pi = zeros(size(J));
 for i=1:nc  
   for j=1:nc-1
     pi(i,i) = pi(i,i) + 0.5* ( q(i,j) +  q(j+1,i) );
@@ -72,7 +53,7 @@ Pb = zeros(nc,nc);
 
 for k=1:nc
   for l=1:nc
-    if k ~=l
+    if k ~= l
       Pb(k,l) = (2*J(k,k)+J(k,l)) ./ (2*(J(k,k)+J(k,l)+J(l,l)));     
     end    
   end
@@ -82,7 +63,7 @@ T = zeros(nc,nc);
 for k=1:nc
   for l=1:nc
     if k<l      
-      tJ = (J(k,k)+J(k,l)+J(l,l));   
+      tJ = (J(k,k)+J(k,l)+J(l,l));
       
       mJbb = tJ * Pb(k,l)^2;
       mJbw = tJ * Pb(k,l) * Pb(l,k);

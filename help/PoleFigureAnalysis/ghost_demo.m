@@ -28,8 +28,9 @@
 
 cs = symmetry('mmm');
 ss = symmetry('triclinic');
+mod1 = orientation('Euler',0,0,0);
 odf = 0.9*uniformODF(cs,ss) + ...
-  0.1*unimodalODF(idquaternion,cs,ss,'halfwidth',10*degree)
+  0.1*unimodalODF(mod1,cs,ss,'halfwidth',10*degree)
 
 %% Simulate pole figures
 % 

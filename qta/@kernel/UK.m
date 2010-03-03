@@ -8,7 +8,7 @@ function w = UK(kern,co2)
 %
 %% Input
 %  kern - @kernel
-%  co2  - cos(rotangle/2)
+%  co2  - cos(angle/2)
 %
 %% Output
 %  w - value of the odd part of the kernel

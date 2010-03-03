@@ -20,7 +20,7 @@ data = txt2mat(fname,'NumHeaderLines',15,'NumColumns',2,...
 
 r = S2Grid('points',[72 18],'regular','maxtheta',85*degree);
 
-gz = GridLength(r);
+gz = numel(r);
 numpf = length(data)/gz;
 
 h = [ Miller(1,0,0), Miller(1,1,0),  Miller(1,0,2),  Miller(2,0,0),...

@@ -11,4 +11,8 @@ function m = mean(S2G,varargin)
 %  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
 % 
 
-m = mean(vector3d(S2G),varargin{:});
+if check_option(S2G,'antipodal')
+  varargin = ['antipodal',varargin];
+end
+
+m = mean(S2G.vector3d,varargin{:});

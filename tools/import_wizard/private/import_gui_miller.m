@@ -136,21 +136,18 @@ ip =  get(handles.listbox_miller,'Value');
 
 set(handles.miller{3}, 'Enable','on');
 
-m = getMiller(data(ip));
+m = get(data(ip),'Miller');
 
 hkil={'h','k','i','l'};
 for k=1:4
-  if k ~=3,  set(handles.miller{k}, 'String', int2str(get(m,hkil{k})));
-  else
-    if any(strcmp(Laue(getCS(data)),{'-3m','-3','6/m','6/mmm'}))
-      set(handles.miller{k}, 'String', int2str(-get(m,'h') - get(m,'k')));
-    else
-      set(handles.miller{k}, 'String','');
-      set(handles.miller{k}, 'Enable','off');
-    end
-  end
+  set(handles.miller{k}, 'String', int2str(get(m,hkil{k})));
 end
-set(handles.structur, 'String', xnum2str(getc(data(ip))));
+
+if ~any(strcmp(Laue(get(data,'CS')),{'-3m','-3','6/m','6/mmm'}))
+  set(handles.miller{3}, 'Enable','off');
+end
+
+set(handles.structur, 'String', xnum2str(get(data(ip),'c')));
 
 
 
@@ -168,7 +165,7 @@ c = str2num(get(handles.structur, 'String')); %#ok<ST2NM>
 
 assert(all([length(h),length(k),length(l)] == length(c)));
 
-data(ip) = set(data(ip),'h',Miller(h,k,l,getCS(data)));
+data(ip) = set(data(ip),'h',Miller(h,k,l,get(data,'CS')));
 data(ip) = set(data(ip),'c',c);
 
 setappdata(wzrd,'data',data);
@@ -181,8 +178,8 @@ handles = getappdata(wzrd,'handles');
 data = getappdata(wzrd,'data');
 
 for i=1:length(data) 
- m{i} = char(getMiller(data(i)));  
- p{i} = ['  ',getcomment(data(i))];
+ m{i} = char(get(data(i),'Miller'));  
+ p{i} = ['  ',get(data(i),'comment')];
 end
 pflist = cellstr([strvcat(m),strvcat(p)]);
 

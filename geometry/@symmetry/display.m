@@ -1,12 +1,13 @@
 function display(s)
 % standard output
 
-disp([inputname(1) ' = "symmetry"']);
+disp(' ');
+disp([inputname(1) ' = ' doclink('symmetry_index','Symmetry') ' (size: ' int2str(numel(s)) ')']);
 if ~isempty(s.mineral)
-  disp(['mineral: ',s.mineral]);  
+  disp(['  mineral: ',s.mineral ' (' s.laue ')']);  
 else
-  disp(['name: ',s.name]);  
+  disp(['  name: ',s.name ' (' s.laue ')']);  
 end
-disp(['laue: ',s.laue]);
-l = size(horzcat(s.quat));
-disp(['size: ' int2str(l(1)) 'x' int2str(l(2))]);
+
+disp(' ');
+

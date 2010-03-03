@@ -62,8 +62,8 @@ try
    mintheta = str2num(gridinfo(12:15));
    maxtheta = str2num(gridinfo(16:20));
 
-   pf(ipf) = delete(pf(ipf), getTheta(getr(pf(ipf)))  < info(1)*degree-eps | ...
-     getTheta(getr(pf(ipf)))  > info(2)*degree+eps);
+   pf(ipf) = delete(pf(ipf), get(pf(ipf),'theta')  < info(1)*degree-eps | ...
+     get(pf(ipf),'theta')  > info(2)*degree+eps);
 
    ipf = ipf+1;
   end

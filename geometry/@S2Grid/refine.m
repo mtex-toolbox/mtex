@@ -33,4 +33,4 @@ for i = 2:2:GridLength(S2G.theta)
     
 end
 
-S2G.Grid = calcGrid(S2G.theta,S2G.rho);
+S2G.vector3d = calcGrid(S2G.theta,S2G.rho);

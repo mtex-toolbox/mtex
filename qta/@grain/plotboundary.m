@@ -1,121 +1,135 @@
-function plotboundary(grains,varargin)
-% plot grain boundaries according to neighboured misorientation angle
+function varargout = plotboundary(grains,varargin)
+% plot grain boundaries
 %
 %% Syntax
 %  plotboundary(grains)
+%  plotboundary(grains,'LineSpec',...)
+%  plotboundary(grains,'property',...)
 %
-%% Todo
-% Coincidence-site lattice classification
-% Twinning
+%% Options
+%  property       - phase, @rotation, @symmetry
 %
 %% See also
-% grain/misorientation
+% grain/plot grain/plotgrains grain/misorientation
 
-ph = get(grains,'phase');
-uph = unique(ph);
+% default plot options
+varargin = set_default_option(varargin,...
+  get_mtex_option('default_plot_options'));
 
-boundary = [];
-boundaryc = [];
+property = lower(get_option(varargin,'property',[]));
 
-for phase=uph
-  %neighboured grains per phase
-  gr = grains(ph == phase);
+newMTEXplot;
+selector(gcf);
+
+%%
+
+[phase uphase] = get(grains,'phase');
+
+p = polygon( grains );
+h = plot(p,'color',[0.8 0.8 0.8]);
+
+
+if strcmpi(property,'phase')
   
-  grain_ids = [gr.id];
+  pair = pairs(grains);
+  pair(pair(:,1) == pair(:,2),:) = [];
   
-  s = [ 0 cumsum(cellfun('length',{gr.neighbour}))];
-  ix = zeros(1,s(end));
-  for l = 1:length(grain_ids)
-    ix(s(l)+1:s(l+1)) = grain_ids(l);
-  end  
-  iy = vertcat(gr.neighbour);
-
-  msz = max([max(ix), max(iy),max(grain_ids)]);
-  cod = zeros(1,msz);
-  cod(grain_ids) = 1:length(grain_ids);
-  
-  T1 = sparse(ix,iy,true,msz,msz);
-  T1 = triu(T1,1);
-  [ix iy] = find(T1);
-  ix = cod(ix);
-  iy = cod(iy);
-
-  del = iy == 0 | ix == 0;
-  ix(del) = [];
-  iy(del) = [];
-  
-  
-  %common boundary
-  nn = NaN;
-  na = [NaN NaN];
-  bndry = cell(size(ix));
-  
-  for k=1:length(ix)  
-   pa = gr(ix(k)).polygon;
-   pb = gr(iy(k)).polygon;
-   fa = pa.xy;
-   fb = pb.xy;
-
-   if ~isempty(pa.hxy), fa = [ fa ; cellcat(pa.hxy)]; end
-   if ~isempty(pb.hxy), fb = [ fb ; cellcat(pb.hxy)]; end
-
-   m = ismember(fa(:,1),fb(:,1)) & ismember(fa(:,2),fb(:,2));
-   fa(~m,:) =  nn;
-   bndry{k} = [fa; na];
+  if ~isempty(pair)
+    
+    pair = unique(sort(pair,2),'rows');
+    
+    np = length(uphase);
+    
+    [i j] = find(triu(ones(np)));
+    code = full(sparse(i,j,1:length(i)));
+    code = code + triu(code,1)';
+    
+    d = phase(pair);
+    ndx = diff(d,[],2) == 0; % delete same phase
+    pair(ndx,:) = [];
+    d(ndx,:) = [];
+    
+    c(uphase) = 1:length(uphase);
+    d = c(d);
+    
+    pair(:,3) = code(sub2ind(size(code),d(:,1),d(:,2)));
+    
+    h(end+1) = plot(p, 'pair', pair, varargin{:} );    
+    
   end
   
-  
-  %color criterion
-  q = get(gr,'orientation'); 
-  omega = 2*acos(dot_sym(q(ix),q(iy),gr(1).properties.CS,gr(1).properties.SS));
-  cl = cellfun('prodofsize',bndry)./2;
-  ccl = [ 0  cumsum(cl)];
+elseif ~isempty(property)
 
-  bndryc = zeros(ccl(end),1);
-  for k=1:length(cl)
-    bndryc(ccl(k)+1:ccl(k+1)) = omega(k);
+  CS = get(grains,'CS');
+  
+  for ph=uphase
+    %neighboured grains per phase
+    ndx = phase == ph;
+    grains_phase = grains(ndx);
+
+    pair = pairs(grains_phase);
+    pair(pair(:,1) == pair(:,2),:) = []; % self reference
+
+    if ~isempty(pair)   
+
+      pair = unique(sort(pair,2),'rows');
+
+      % boundary angle
+      o = get(grains_phase,'orientation');
+      
+      twin = find_type(varargin,'symmetry');
+      if ~isempty(twin), o = set(o,'CS',varargin{twin}); end
+      
+      om = o(pair(:,1)) .\ o(pair(:,2));
+      
+      quat = find_type(varargin,'quaternion');
+      if ~isempty(quat) || ~isempty(twin)
+        if ~isempty(twin)
+          o0 = idquaternion;
+        else
+          o0 = [varargin{quat}];
+        end
+
+        epsilon = get_option(varargin,'delta',2*degree,'double');
+
+        pair = pair(find(om,o0,epsilon),:);
+
+      elseif ~check_option(varargin,'colorcoding')
+
+        d = angle( om )./degree;
+        pair(:,3) = d;
+
+      else
+
+        cc = get_option(varargin,'colorcoding');
+
+        d = orientation2color(om,cc,varargin{:});
+        pair(:,3:5) = d;
+
+      end
+
+      h = [h plot(p(ndx), 'pair', pair, varargin{:} )];
+      
+    end
+
   end
-
   
-  % remove nans
-  bndry = vertcat(bndry{:});
-  el = any(isfinite(bndry),2);
-  el = el | [0 ;diff(el,[],1) == -1];
-
-  boundary = [boundary ; bndry(el,:)];
-  boundaryc = [boundaryc ; bndryc(el)];
+else 
+  
+   optiondraw(h,varargin{:});
   
 end
 
-%plot it
-newMTEXplot;
+selector(gcf,grains,p,h);
 
-fac = 1:length(boundaryc);
-boundaryc = boundaryc/degree;
+if check_option(varargin,'colorcoding');
+  setappdata(gcf,'CS',CS);
+	setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d')); 
+	setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
+	setappdata(gcf,'colorcoding',cc);
+	setappdata(gcf,'options',extract_option(varargin,'antipodal'));
+end
 
-plot(grains,'color',[0.8 0.8 0.8]) % phase boundaries 
-                                   % time consuming
-patch('Faces',fac,'Vertices',boundary,'EdgeColor','flat',...
-  'FaceVertexCData',boundaryc);
-
-% plot(boundary(:,1),boundary(:,2))
-
-% fixMTEXplot;
-% set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
-
-
-
-
-function b = cellcat(c)
-
-co = cell(length(c)*2+1,1);
-
-co(1:2:length(c)*2+1) = {[NaN NaN]};
-co(2:2:length(c)*2) = c;
-
-b = vertcat(co{:});
-
-
-
-
-
+if nargout > 0
+  varargout{1} = h;
+end

@@ -15,9 +15,9 @@
 % Let us first define some model ODFs to be plotted later on.
 
 cs = symmetry('-3m'); ss = symmetry('-1');
-q0 = euler2quat(30*degree,40*degree,10*degree);
-q1 = euler2quat(10*degree,80*degree,70*degree);
-odf = 0.7*unimodalODF(q0,cs,ss) + 0.3*unimodalODF(q1,cs,ss);
+mod1 = orientation('Euler',30*degree,40*degree,10*degree);
+mod2 = orientation('Euler',10*degree,80*degree,70*degree);
+odf = 0.7*unimodalODF(mod1,cs,ss) + 0.3*unimodalODF(mod2,cs,ss);
 
 
 %% Adding a Colorbar
@@ -54,7 +54,7 @@ annotate([xvector,yvector,zvector],'label',{'x','y','z'},...
 % <Miller_index.html crystal directions> to inverse pole figures.
 
 plotipdf(odf,[xvector,zvector],'gray','antipodal','marginx',10,'minmax','off')
-annotate([Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(0,0,1,cs),Miller(2,-1,0)],'all','labeled')
+annotate([Miller(1,0,0),Miller(1,1,0),Miller(0,0,1),Miller(2,-1,0)],'all','labeled')
 set(gcf,'position',[139 258 672 266])
 
 
@@ -64,32 +64,32 @@ set(gcf,'position',[139 258 672 266])
 % figures
 
 plotipdf(odf,[xvector,zvector],'gray','antipodal','marginx',10,'minmax','off')
-annotate(q0,...
+annotate(mod1,...
     'marker','s','MarkerSize',6,'MarkerFaceColor','r',...
-    'label','$q_0$','color','b')
+    'label','A','color','w')
 
-annotate(q1,...
+annotate(mod2,...
     'marker','s','MarkerSize',6,'MarkerFaceColor','g',...
-    'label','$q_1$','color','b')
+    'label','B','color','w')
 
 %%
 % or ODF plots
 
 plot(odf,'sections',12,'gray','position',[100,100,500,380])
-annotate(q0,...
+annotate(mod1,...
     'MarkerSize',15,'MarkerEdgeColor','r','MarkerFaceColor','none')
 
-annotate(q1,...
+annotate(mod2,...
   'MarkerSize',15,'MarkerEdgeColor','g','MarkerFaceColor','none')
   
 %%
 % or EBSD scatter plots
 
 ebsd = simulateEBSD(odf,200);
-scatter(ebsd,'center',q0);
-annotate(q0,...
+scatter(ebsd,'center',mod1);
+annotate(mod1,...
   'MarkerSize',10,'MarkerEdgeColor','r','MarkerFaceColor','r')
-annotate(q1,...
+annotate(mod2,...
   'MarkerSize',10,'MarkerEdgeColor','g','MarkerFaceColor','g')
 
 

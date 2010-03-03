@@ -49,7 +49,7 @@ try
   d = fscanf(fid,'%e',[length(theta)+1,length(rho)]);
   d = d(2:end,:);
   
-  assert(all(size(d.')==GridSize(r)));
+  assert(all(size(d.')==size(r)));
   
   fclose(fid);
   pf = PoleFigure(h,r,d.',symmetry('cubic'),symmetry,'superposition',c,varargin{:}); 

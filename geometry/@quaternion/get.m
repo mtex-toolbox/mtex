@@ -1,11 +1,11 @@
 function varargout = get(obj,vname,varargin)
 % get object variable
 
-switch lower(vname)
+switch lower(vname)  
   case {'euler'}
-    [varargout{1:nargout}] = quat2euler(obj,varargin{:});
+    [varargout{1:nargout}] = Euler(obj,varargin{:});
   case {'rodrigues'}
-    [varargout{1:nargout}] = quat2euler(obj,varargin{:});
+    [varargout{1:nargout}] = Euler(obj,varargin{:});
   case fields(obj)
     varargout{1} = obj.(vname);
   case 'a'
@@ -20,8 +20,8 @@ switch lower(vname)
     varargout{1} = obj.a;    
   case 'angle'
     varargout{1} = 2*acos(obj.a);
-  case {'axis','rotaxis'}
-    varargout{1} = rotaxis(obj);
+  case 'axis'
+    varargout{1} = axis(obj);
   otherwise
     error('Unknown field in class quaternion!')
 end

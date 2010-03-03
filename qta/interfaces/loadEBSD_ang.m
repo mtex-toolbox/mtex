@@ -1,7 +1,7 @@
 function ebsd = loadEBSD_ang(fname,varargin)
 
 % read file header
-hl = file2cell(fname,200);
+hl = file2cell(fname,1000);
 
 phasePos = strmatch('# Phase',hl);
 
@@ -26,7 +26,8 @@ try
           options = {'a||x'};
         end
     end
-    cs(phase) = symmetry(laue,lattice(1:3)',lattice(4:6)'*degree,'mineral',mineral,options{:}); %#ok<AGROW>
+    
+    cs{phase} = symmetry(laue,lattice(1:3)',lattice(4:6)'*degree,'mineral',mineral,options{:}); %#ok<AGROW>
   end
   assert(~isempty(cs));
 catch %#ok<CTCH>

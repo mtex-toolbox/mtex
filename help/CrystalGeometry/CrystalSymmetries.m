@@ -40,7 +40,7 @@ cs = symmetry('Td');
 % Finally, MTEX allows to define a crystal symmetry by importing a
 % crystallographic information file (*.cif).
 
-cs = cif2symmetry('quartz')
+cs = symmetry('quartz.cif')
 
 
 %% The Crystal Coordinate System
@@ -73,10 +73,10 @@ plot(cs)
 %% Calculations
 %
 % applaying the specimen symmetry from the left and the crystal symmetry from the 
-% right onto a [[quaternion_index.html,orientation]] results in a vector
+% right onto a [[orientation_index.html,orientation]] results in a vector
 % containing all crystallographically equivalent orientations.
 
-ss * euler2quat(0,0,pi/4) * cs;  % all crystallographically equivalent orientations
+ss * orientation('euler',0,0,pi/4,cs,ss) * cs  % all crystallographically equivalent orientations
 
 %% Ploting symmetries
 %

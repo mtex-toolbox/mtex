@@ -25,11 +25,11 @@ for i= 1:length(ebsd)
 
   ebsd_fields = fields(ebsd(i).options);  
   for f = 1:length(ebsd_fields)
-    if numel(ebsd(i).options.(ebsd_fields{f})) == GridLength(ebsd(i).orientations)
+    if numel(ebsd(i).options.(ebsd_fields{f})) == numel(ebsd(i).orientations)
       ebsd(i).options.(ebsd_fields{f})(idi-cs(i),:) = [];
     end
   end
   
-	ebsd(i).orientations = delete(ebsd(i).orientations,idi-cs(i));
+	ebsd(i).orientations(idi-cs(i)) = [];
     
 end

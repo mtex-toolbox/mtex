@@ -22,7 +22,7 @@ r  = [reshape(out_rho,1,[]);reshape(out_theta,1,[])];
 
 % kernel used for calculation
 k = kernel('de la Vallee Poussin','halfwidth',...
-  get_option(varargin,'zr_halfwidth',2*getResolution(getr(pf))),varargin{:});
+  get_option(varargin,'zr_halfwidth',2*get(pf,'resolution')),varargin{:});
 
 % legendre coefficents
 Al = getA(k); Al(2:2:end) = 0;
@@ -48,7 +48,7 @@ c = (get_option(varargin,'zr_factor',10)*(pf.data > bg)-1);
 %plot(pf.r,'data',c)
 
 f = call_extern('odf2pf','EXTERN',gh,r,c,Al);
-zr = reshape(w < 0.1*mw | f./w > -0.1,GridSize(S2G));
+zr = reshape(w < 0.1*mw | f./w > -0.1,size(S2G));
 % plot(S2G,'data',min(f,1))
 % plot(S2G,'data',zr)
 

@@ -7,7 +7,7 @@ function S3G = copy(S3G,ind)
 %  EBSD/delete EBSD/subGrid
 
 
-S3G.Grid = S3G.Grid(ind);
+S3G.orientation = S3G.orientation(ind);
 
 if check_option(S3G,'indexed')
   S3G.gamma = subGrid(S3G.gamma,ind);
