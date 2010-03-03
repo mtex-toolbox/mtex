@@ -1,11 +1,14 @@
 function plotodf(ebsd,varargin)
-% Plots the EBSD data at various sections which can be controled by options. 
+% Plot EBSD data at ODF sections
 %
 %% Input
 %  ebsd - @EBSD
 %
 %% Options
 %  SECTIONS   - number of plots
+%  points     - number of orientations to be plotted
+%  all        - plot all orientations
+%  phase      - phase to be plotted
 %
 %% Flags
 %  SIGMA (default)
@@ -26,7 +29,7 @@ cs = get(o,'CS');
 ss = get(o,'SS');
 
 % subsample to reduce size
-if numel(o) > 2000 || check_option(varargin,'points')
+if ~check_option(varargin,'all') && numel(o) > 2000 || check_option(varargin,'points')
   points = get_option(varargin,'points',2000);
   disp(['plot ', int2str(points) ,' random orientations out of ', ...
     int2str(numel(o)),' given orientations']);
