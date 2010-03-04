@@ -45,7 +45,7 @@ r = get(pf,'r')            % specimen directions
 min(pf)
 max(pf)
 hist(pf)
-find_outlier(pf)
+find_outlier(pf);
 
 %% Manipulate pole figure data
 %

@@ -12,6 +12,10 @@ function [v,l] = symmetrise(v,S,varargin)
 %  Sv - symmetrically equivalent vectors
 %  l  - number of symmetrically equivalent vectors
 
+%% TODO
+% symmetrise behaviour for case 1 and option 'antipodal' is not very
+% intuitive
+
 if nargout == 2
   
   l = zeros(size(v));
@@ -20,7 +24,7 @@ if nargout == 2
   for i=1:length(v)
 	
     h = S * subsref(v,i);
-    u = subsref(v,1);
+    u = subsref(v,i);
     for j = 2:length(h)
       if ~any(isnull(norm(u-subsref(h,j))))...
           && ~(check_option(varargin,'antipodal') && any(isnull(norm(u+subsref(h,j)))))
