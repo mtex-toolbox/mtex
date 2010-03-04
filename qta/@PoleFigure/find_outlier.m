@@ -22,12 +22,17 @@ for ipf = 1:length(pf)
   
   r = pf(ipf).r;
   
+  % find neighbours
   next = find(r,vector3d(r),3*get(r,'resolution'));
   
-  dmean = (10 * next * pf(ipf).data(:) - pf(ipf).data) ./ (10*sum(next,2)-9);
+  %remove diagonal
+  next(speye(length(next))==1) = false;
   
-  dstd = std(pf(ipf).data);
+  % compute mean
+  dmean = next * pf(ipf).data(:) ./ sum(next,2);
   
-  ind = [ind;lpf(ipf) + find(abs(dmean - pf(ipf).data)>alpha*dstd)]; %#ok<AGROW>
+  dstd = std(pf(ipf).data(:));
+  
+  ind = [ind;lpf(ipf) + find(abs(dmean - pf(ipf).data(:))>alpha*dstd)]; %#ok<AGROW>
   
 end
