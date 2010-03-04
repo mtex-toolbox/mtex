@@ -41,10 +41,10 @@ if check_option(varargin,'unitcell') || ~check_option(varargin,'voronoi')
         xy_s = unique(xy_s,'first','rows');
         [v c] = voronoin(xy_s,{'Qz'});
 
-        area = @(x,y) abs(0.5.*sum(x(1:end-1).*y(2:end)-x(2:end).*y(1:end-1)));
-        area = cellfun(@(c1) area(v([c1 c1(1)],1),v([c1 c1(1)],2)),c);
+        areaf = @(x,y) abs(0.5.*sum(x(1:end-1).*y(2:end)-x(2:end).*y(1:end-1)));
+        areaf = cellfun(@(c1) areaf(v([c1 c1(1)],1),v([c1 c1(1)],2)),c);
 
-        [a ci] = min(area);
+        [a ci] = min(areaf);
 
         cx = v(c{ci},1) - xy_s(ci,1);
         cy = v(c{ci},2) - xy_s(ci,2);
@@ -108,41 +108,73 @@ else
       dxy = [0; dy/2];
       R = @(rot) [cos(rot) -sin(rot); sin(rot) cos(rot)];
       
-      k = convhull(x,y);  
+      k = convhulln(xy);
+      k = [k(:,1);k(1)];
+      
+      pxy = xy(k,:);     
       
       % erase linear dependend lines
-      l = 2;
-      while l < length(k)-1
-        a = xy(k(l-1),:)';
-        b = xy(k(l),:)';
-        c = xy(k(l+1),:)';
-
-        ab = a-b; ab = ab./norm(ab);
-        bc = b-c; bc = bc./norm(bc);
-
-        if det([ab bc]) < eps, k(l) = [];
-        else l = l+1; end
+      det = x(k(1:end-1)).*y(k(2:end)) - x(k(2:end)).*y(k(1:end-1));
+      k = k(~[false; logical(diff(abs(det)>eps)); false]);
+      
+      % fill up with some new dummy lines
+      l = 1; dx = sqrt(numel(xy)/2)*dy/2;      
+      
+      nto = fix(sqrt(sum(diff(pxy).^2,2))/ dx);
+      cs = cumsum([1; 1 + nto]);
+      
+      ptxy(cs,: ) = pxy;
+      for lk=1:length(nto);
+        a = pxy(lk,:)';
+        b = pxy(lk+1,:)';
+        ab = a-b;
+        for llk = cs(lk)+1:cs(lk+1)-1
+          ptxy(llk,:) = a-(llk-cs(lk)).*ab./(nto(lk)+1);          
+        end
       end
+      pxy = ptxy;
       
       dummy = [];
-      for l=1:length(k)-1
+      for l=1:size(pxy,1)-1
         
-        a = xy(k(l),:)';
-        b = xy(k(l+1),:)';
+        a = pxy(l,:)';
+        b = pxy(l+1,:)';
         ab = a-b;
+        nab = ab./norm(ab);
         
         H = -(I-2/(ab'*ab)*(ab*ab'));  %mirrow
         
         shiftab = R( atan2(ab(2),ab(1)) ) * dxy;
-        
-        hxy =  [x-a(1)-shiftab(1) y-a(2)-shiftab(2)]*H;
+                
+        hxy = [x-a(1)-shiftab(1) y-a(2)-shiftab(2)]*H;
         hxy = [hxy(:,1)+a(1)+shiftab(1) hxy(:,2)+a(2)+shiftab(2)];
         
-        hxy(sqrt(sum((hxy-xy).^2,2)) >  75*dy,:) = [];   
+        d = sqrt(sum((hxy-xy).^2,2));
+       
+        lk = 2; cont = true;
+        dab = sqrt(sum(ab.^2));
+        df = 2*dy*sign(ab);
+        while cont && lk < 250
+          
+          tmpxy = hxy(d < lk*dy,:);
+          tx = tmpxy(:,1);
+          ty = tmpxy(:,2);
+          
+          cc1 =  (tx-(a(1)+ df(1))).*nab(1)+ (ty-(a(2)+df(2))).*nab(2) ;
+          cc2 =  (tx-(b(1)- df(1))).*nab(1)+ (ty-(b(2)-df(2))).*nab(2) ;
+           
+          ind = cc1 > 0 | cc2 < 0;
+          tmpxy = tmpxy(~ind,:);
+          
+          cont = dab./size(tmpxy,1) > dy/3;
+          if lk < 50, lk = lk*2;
+          else lk = lk+10; end
+        end
         
-        dummy = [dummy; hxy];
+        dummy = [dummy; tmpxy];
         
       end
+      
       dummy = unique(dummy,'first','rows');
       
     case {'cubi','cubei'} %grid reconstruction, TODO

@@ -4,6 +4,11 @@ function handles = plot(p,varargin)
 
 set(gcf,'renderer','opengl')
 
+[ig ig lx ly] = fixMTEXscreencoordinates(1,1,varargin{:});
+
+%faster
+xlabel(lx);ylabel(ly);
+
 if check_option(varargin,'fill')
   c = get_option(varargin,'fill');
   
@@ -17,7 +22,7 @@ if check_option(varargin,'fill')
     c = double(c);
   end
   
-  ind = splitdata(pl,3);
+  ind = splitdata(pl,6);
   
   h = zeros(size(ind));
   for k=1:length(ind)
@@ -33,7 +38,7 @@ if check_option(varargin,'fill')
     
     [faces vertices] = get_faces(tmp_p);
     
-    [X, Y lx ly] = fixMTEXscreencoordinates(vertices(:,1),vertices(:,2),varargin{:});
+    [X, Y] = fixMTEXscreencoordinates(vertices(:,1),vertices(:,2),varargin{:});
   
     h(k) = patch('Vertices',[X Y],'Faces',faces,'FaceVertexCData',tmp_c,'FaceColor','flat');
 
@@ -82,7 +87,7 @@ elseif check_option(varargin,'pair')
 
     if ~isempty(xy)
 
-      [X Y lx ly] = fixMTEXscreencoordinates(xy(:,1), xy(:,2), varargin{:});
+      [X Y] = fixMTEXscreencoordinates(xy(:,1), xy(:,2), varargin{:});
 
       if size(pair,2) == 2 % colorize monotone
 
@@ -119,7 +124,7 @@ else
   xy = get(p,'xy','plot');
  
   if ~isempty(xy)
-    [X,Y,lx,ly] = fixMTEXscreencoordinates(xy(:,1),xy(:,2),varargin{:});
+    [X,Y] = fixMTEXscreencoordinates(xy(:,1),xy(:,2),varargin{:});
     h = line(X(:),Y(:));
   end
   % axis equal
@@ -132,7 +137,6 @@ end
 
 if exist('h','var'), 
   optiondraw(h,varargin{:});
-  xlabel(lx); ylabel(ly);
 else
   h = [];  
 end
