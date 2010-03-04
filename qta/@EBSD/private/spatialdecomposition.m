@@ -4,22 +4,12 @@ if check_option(varargin,'unitcell') || ~check_option(varargin,'voronoi')
   
   unitcell = @(s,d,rot) exp(1i*(pi/s+rot:pi/(s/2):2*pi+rot))*1./sqrt((s/2))*d;
 
-  %% estimate grid resolution
-
-  dxy = get_option(varargin,'GridResolution',[]);
-
   x = xy(:,1);
   y = xy(:,2);
   
-  if isempty(dxy)
-    rndsmp = [ (1:sum(1:length(x)<=100))'; unique(fix(1+rand(200,1)*(length(x)-1)))];
-
-    xx = repmat(x(rndsmp),1,length(rndsmp));
-    yy = repmat(y(rndsmp),1,length(rndsmp));
-    dist = abs(sqrt((xx-xx').^2 + (yy-yy').^2));
-
-    dxy = min(dist(dist>eps)); 
-  end
+  %% estimate grid resolution  
+  dxy = get_option(varargin,'GridResolution',[]);
+  if isempty(dxy), dxy =estimateGridResolution(x,y); end
 
   %% Generate a Unit Cell
 
@@ -106,70 +96,55 @@ else
   
   %% extrapolate dummy coordinates %dirty
   switch lower(augmentation)
-    case 'cube'
+    case 'cube'   
+      
       x = xy(:,1);
       y = xy(:,2);
-      k = convhull(x,y);
-      rndsmp = [ (1:sum(1:length(x)<=100))'; unique(fix(1+rand(200,1)*(length(x)-1)))];
+      I = eye(2);
+      
+      dxy = get_option(varargin,'GridResolution',[]);
+      if isempty(dxy), dy =estimateGridResolution(x,y); end 
+      
+      dxy = [0; dy/2];
+      R = @(rot) [cos(rot) -sin(rot); sin(rot) cos(rot)];
+      
+      k = convhull(x,y);  
+      
+      % erase linear dependend lines
+      l = 2;
+      while l < length(k)-1
+        a = xy(k(l-1),:)';
+        b = xy(k(l),:)';
+        c = xy(k(l+1),:)';
 
-      xx = repmat(x(rndsmp),1,length(rndsmp));
-      yy = repmat(y(rndsmp),1,length(rndsmp));
-      dxy = abs(sqrt((xx-xx').^2 + (yy-yy').^2));
+        ab = a-b; ab = ab./norm(ab);
+        bc = b-c; bc = bc./norm(bc);
 
-      dxy = min(dxy(dxy>eps));
-
+        if det([ab bc]) < eps, k(l) = [];
+        else l = l+1; end
+      end
+      
       dummy = [];
-      for ll = 1:length(k)-1
-        xx = x([k(ll) k(ll+1)]);
-        yy = y([k(ll) k(ll+1)]);
-
-        dx = diff(xx);  dy = diff(yy);
-
-        rot = angle(complex(dx,dy));    
-        shiftxy = [cos(rot) -sin(rot); sin(rot) cos(rot)] * [0 ; dxy]./2;
-
-        l1 = [ dx dy ];
-        l1 = repmat(l1./norm(l1),length(xy),1);
-        l2 = repmat([xx(1) yy(1)] - shiftxy' ,length(xy),1);
-
-        l3 =  [ -dy dx ];
-        l3 =  repmat(l3./norm(l3),length(xy),1);
-        dist = dot(xy - l2,l3,2);
-
-        co = l2 + repmat( dot(xy - l2,l1,2) ,1,2).*l1;
-
-        [co ia]= sortrows(co);
-        dist = dist(ia);      
-
-        if sign(dx) < 0 , pmx = @ge; else pmx = @le; end
-        if sign(dy) < 0 , pmy = @ge; else pmy = @le;  end
-
-        idxy = (pmx(co(:,1) - xx(1),dx) & pmx(xx(2) - co(:,1),dx)) | ...
-               (pmy(co(:,2) - yy(1),dy) & pmy(yy(2) - co(:,2),dy));
-        co = co(idxy , : );
-        dist = dist(idxy);
-
-        sel = false(size(dist));     
-        fdist = dxy*10; iter = 1;   
-
-        while max(fdist) - dxy > 10^-10 
-          sel = sel | dist < dxy*iter;
-
-          fdist = abs(sqrt(sum(diff(co(sel,:)).^2,2)));
-          iter = iter+1;
-
-          if all(sel), break, end;
-        end
-
-        co = co(sel,:);  
-        if ~isempty(co)
-          non = [true;any(diff(co)> dxy*10^-8 ,2) ];
-          co = co(non,:);
-        end
-
-        dummy = [dummy ;co];
+      for l=1:length(k)-1
+        
+        a = xy(k(l),:)';
+        b = xy(k(l+1),:)';
+        ab = a-b;
+        
+        H = -(I-2/(ab'*ab)*(ab*ab'));  %mirrow
+        
+        shiftab = R( atan2(ab(2),ab(1)) ) * dxy;
+        
+        hxy =  [x-a(1)-shiftab(1) y-a(2)-shiftab(2)]*H;
+        hxy = [hxy(:,1)+a(1)+shiftab(1) hxy(:,2)+a(2)+shiftab(2)];
+        
+        hxy(sqrt(sum((hxy-xy).^2,2)) >  75*dy,:) = [];   
+        
+        dummy = [dummy; hxy];
+        
       end
       dummy = unique(dummy,'first','rows');
+      
     case {'cubi','cubei'} %grid reconstruction, TODO
       hx = unique(xy(:,1));
       hy = unique(xy(:,2));    
@@ -251,4 +226,14 @@ pos = cumsum(ind);
 pos(ndx) = pos;
 % 
 xy = xy(ndx(ind),:);
+
+
+function dxy = estimateGridResolution(x,y)
+
+rndsmp = [ (1:sum(1:length(x)<=100))'; unique(fix(1+rand(200,1)*(length(x)-1)))];
+
+xx = repmat(x(rndsmp),1,length(rndsmp));
+yy = repmat(y(rndsmp),1,length(rndsmp));
+dist = abs(sqrt((xx-xx').^2 + (yy-yy').^2));
+dxy = min(dist(dist>eps)); 
 
