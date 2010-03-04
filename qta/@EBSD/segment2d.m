@@ -9,7 +9,7 @@ function [grains ebsd] = segment2d(ebsd,varargin)
 %  ebsd    - connected @EBSD data
 %
 %% Options
-%  angle         - threshold angle of mis/disorientation in radians
+%  angle         - array of threshold angles per phase of mis/disorientation in radians
 %  augmentation  - 'cube'/ 'cubeI' / 'sphere'
 %  angletype     - misorientation (default) / disorientation 
 %  distance      - maximum distance allowed between neighboured measurments
@@ -18,7 +18,7 @@ function [grains ebsd] = segment2d(ebsd,varargin)
 %  unitcell     - omit voronoi decomposition and treat a unitcell lattice
 %
 %% Example
-%  [grains ebsd] = segment2d(ebsd,'angle',15*degree,'augmentation','cube')
+%  [grains ebsd] = segment2d(ebsd(1:2),'angle',[10 15]*degree,'augmentation','cube')
 %
 %% See also
 % grain/grain
@@ -27,6 +27,12 @@ function [grains ebsd] = segment2d(ebsd,varargin)
 % prepare data
 
 s = tic;
+
+thresholds = get_option(varargin,'angle',15*degree);
+if numel(thresholds) == 1 && numel(ebsd) > 1
+  thresholds = repmat(thresholds,size(ebsd));
+end
+
 
 xy = vertcat(ebsd.xy);
 
@@ -92,10 +98,8 @@ for i=1:numel(ebsd)
   o2 = ebsd(i).orientations(zr);
   omega = angle(o1,o2);
   
-  %omega = angle(ebsd(i).orientations(zl),ebsd(i).orientations(zr));
-  
   % remove large angles
-  ind = omega > get_option(varargin,'angle',15*degree);
+  ind = omega > thresholds(i);
   
   angles = angles + sparse(mix(ind),miy(ind),1,sm,sn);
 end
