@@ -15,9 +15,9 @@ switch Laue(cs)
     end
     [theta,rho] = polar(h(:));
     rho = mod(rho,maxrho)./maxrho;
-    pm = theta(:) >= pi/2;
-    c(pm,:) = hsv2rgb([rho(pm),ones(sum(pm),1),2-theta(pm)./pi*2]);
-    c(~pm,:) = hsv2rgb([rho(~pm),theta(~pm)./pi*2,ones(sum(~pm),1)]);
+    pm = theta(:) >= pi/2;    
+    if any(pm), c(pm,:) = hsv2rgb([rho(pm),ones(sum(pm),1),2-theta(pm)./pi*2]); end
+    if any(~pm), c(~pm,:) = hsv2rgb([rho(~pm),theta(~pm)./pi*2,ones(sum(~pm),1)]); end
     c = reshape(c,[size(h),3]);
     return
   case 'm-3m'
