@@ -5,9 +5,11 @@ function varargout = plotboundary(grains,varargin)
 %  plotboundary(grains)
 %  plotboundary(grains,'LineSpec',...)
 %  plotboundary(grains,'property',...)
+%  plotboundary(grains,'property',@rotation)
+%  plotboundary(grains,'property','colorcoding',...)
 %
 %% Options
-%  property       - phase, @rotation, @symmetry
+%  property       - phase, angle, @rotation, @orientation
 %
 %% See also
 % grain/plot grain/plotgrains grain/misorientation
@@ -77,22 +79,15 @@ elseif ~isempty(property)
       % boundary angle
       o = get(grains_phase,'orientation');
       
-      twin = find_type(varargin,'symmetry');
-      if ~isempty(twin), o = set(o,'CS',varargin{twin}); end
-      
       om = o(pair(:,1)) .\ o(pair(:,2));
       
-      quat = find_type(varargin,'quaternion');
-      if ~isempty(quat) || ~isempty(twin)
-        if ~isempty(twin)
-          o0 = idquaternion;
-        else
-          o0 = [varargin{quat}];
-        end
-
+      if isa(property,'quaternion')
+        
         epsilon = get_option(varargin,'delta',2*degree,'double');
 
-        pair = pair(find(om,o0,epsilon),:);
+        ind = any(find(om,property,epsilon),2);
+        
+        pair = pair(ind,:);
 
       elseif ~check_option(varargin,'colorcoding')
 
