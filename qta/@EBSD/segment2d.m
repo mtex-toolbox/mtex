@@ -38,6 +38,16 @@ xy = vertcat(ebsd.xy);
 
 if isempty(xy), error('no spatial data');end
 
+% sort for voronoi
+[xy m n]  = unique(xy,'first','rows');
+
+if numel(m) ~= numel(n)
+  warning('mtex:GrainGeneration','spatially duplicated data points, perceed by erasing them')
+  ind = ~ismember(1:sum(sampleSize(ebsd)),m);
+  [grains ebsd] = segment2d(delete(ebsd,ind),varargin{:});
+  return
+end
+
 phase_ebsd = get(ebsd,'phase');
 phase_ebsd = mat2cell(phase_ebsd,ones(size(phase_ebsd)),1)';
 
@@ -49,9 +59,11 @@ for i=1:numel(ebsd)
   phase( rl(i)+(1:l(i)) ) = i;
 end
 
-% sort for voronoi
-[xy m n]  = unique(xy,'first','rows');
+
+
 phase = phase(m);
+
+
 
 %% grid neighbours
 
@@ -82,23 +94,21 @@ phases = xor(phases,distance);
 
 angles = sparse(sm,sn);
 
+zl = m(ix);
+zr = m(iy);
+
 for i=1:numel(ebsd)
+  %   restrict to correct phase
+  ind = rl(i) < zl & zl <=  rl(i+1);
   
-  % convert to old indexing
-  zl = m(ix) - rl(i);
-  zr = m(iy) - rl(i);
-  
-  % restrict to correct phase
-  ind = zl>0 & zl<numel(ebsd(i).orientations) & zr>0 & zr<numel(ebsd(i).orientations);
+  zll = zl(ind)-rl(i); zrr = zr(ind)-rl(i);
   mix = ix(ind); miy = iy(ind);
-  zl = zl(ind); zr = zr(ind);
   
-  % compute distances
-  o1 = ebsd(i).orientations(zl);
-  o2 = ebsd(i).orientations(zr);
+  %   compute distances
+  o1 = ebsd(i).orientations(zll);
+  o2 = ebsd(i).orientations(zrr);
   omega = angle(o1,o2);
   
-  % remove large angles
   ind = omega > thresholds(i);
   
   angles = angles + sparse(mix(ind),miy(ind),1,sm,sn);
@@ -188,7 +198,7 @@ checksumid = [ 'grain_id' dec2hex(checksum)];
 for k=1:numel(ebsd)
  ebsd(k).options.(checksumid) = ids(cids(k)+1:cids(k+1))';
 end
-  
+
 cells = cells(n);
 
 [ix iy] = sort(ids);
@@ -237,7 +247,7 @@ for k=1:nc
   gr(k).comment = comment;
   gr(k).properties = struct;
   gr(k).orientation = ...
-    mean(ebsd(ph(k)).orientations(gr(k).cells-rl(ph(k))));  
+    mean(ebsd(ph(k)).orientations(gr(k).cells-rl(ph(k))));
 end
 
 grains = grain(gr,ply);
@@ -308,7 +318,8 @@ T(:,1) = 0; %inf
 %edges
 F = T * T';
   clear T;
-F = triu(F,1) > 1;
+F = triu(F,1);
+F = F > 1;
 
 
 function ply = createpolygons(cells,regionids,verts)
@@ -422,9 +433,6 @@ ply = polygon(ply);
 
 
 
-function p = setpolygon()
-
-
 function plygn = converttoborder(gl, gr)
 % this should be done faster
 
@@ -476,12 +484,3 @@ for k=1:nc
 end  
 
 
-function A = farea(xy)
-x = xy(:,1);
-y = xy(:,2);
-
-l = length(x);
-
-cr = x(1:l-1).*y(2:l)-x(2:l).*y(1:l-1);
-
-A = abs(sum(cr)*0.5);

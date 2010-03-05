@@ -2,8 +2,11 @@ function handles = plot(p,varargin)
 % function for plotting polygons, mainly use to visualize grains
 
 
-set(gcf,'renderer','opengl')
+%preparing canvas
+set(gcf,'renderer','zbuffer');
+fixMTEXplot('noresize');
 
+%%
 [ig ig lx ly] = fixMTEXscreencoordinates(1,1,varargin{:});
 
 %faster
@@ -11,38 +14,34 @@ xlabel(lx);ylabel(ly);
 
 if check_option(varargin,'fill')
   c = get_option(varargin,'fill');
+  if islogical(c), c = double(c); end  
   
-  pl = cellfun('length',{p.xy});
-  [pl ndx] = sort(pl,'descend');
-  
-  p = p(ndx);
-  c = c(ndx,:);
-  
-  if islogical(c)
-    c = double(c);
+	if ~check_option(varargin,'noholes')  
+    hole = hashole(p);
+    tmp_ph = [p(hole).holes];
+    nl = numel(p); nlh = numel(tmp_ph);    
+    p = [tmp_ph p ];
+    
+    c(nlh+1:nl+nlh,:) = c;
+    c(1:nlh,:) = 1;    
   end
   
-  ind = splitdata(pl,6);
+  pl = cellfun('prodofsize',{p.xy});
+  A = area(p);
   
-  h = zeros(size(ind));
-  for k=1:length(ind)
-    
-    tmp_p = p(ind{k});
-    tmp_c = c(ind{k},:);
-    
-    if ~check_option(varargin,'noholes')
-      hole = hashole(tmp_p);
-      tmp_p = [tmp_p tmp_p(hole).holes];
-      tmp_c(length(hole)+1:length(tmp_p),:) = 1;
-    end
-    
-    [faces vertices] = get_faces(tmp_p);
-    
-    [X, Y] = fixMTEXscreencoordinates(vertices(:,1),vertices(:,2),varargin{:});
+  ind = splitdata(pl,fix(log(length(pl))/2),'descend');
   
-    h(k) = patch('Vertices',[X Y],'Faces',faces,'FaceVertexCData',tmp_c,'FaceColor','flat');
-
+  for k=1:length(ind)    
+    ndx = ind{k};
+    [ignore zorder] = sort(A(ndx),'descend');    
+    zorder = ndx(zorder);
+    
+    [faces vertices] = get_faces( p( zorder ) );
+    [vertices(:,1), vertices(:,2)] = fixMTEXscreencoordinates(vertices(:,1),vertices(:,2),varargin{:});
+  
+    h(k) = patch('Vertices',vertices,'Faces',faces,'FaceVertexCData',c(zorder,:),'FaceColor','flat');
   end
+  
 elseif check_option(varargin,'pair')
 %
 	pair = get_option(varargin,'pair');
