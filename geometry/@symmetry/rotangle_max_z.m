@@ -5,7 +5,7 @@ switch Laue(s)
   case '-1'                          % I
     rho = 2*pi;
   case '2/m'                         % C2
-    rho = pi;
+    rho = 2*pi;
   case {'mmm','m-3'}               % D2, T
     rho = pi/(1+check_option(varargin,'ALPHA'));
   case '-3'                          % C3
