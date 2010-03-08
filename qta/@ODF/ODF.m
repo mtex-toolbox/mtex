@@ -79,6 +79,7 @@ switch lower(char(option))
         error('wrong Arguments: SO3Grid, data, kernel, crystal-symmetry, specimen-symmetry');
     end
     lg = numel(center);  
+    option = {'unimodal'};
 end
 
 
