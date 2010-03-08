@@ -1,7 +1,7 @@
 function str = generateScript(type,fn, data, interface, options, handles)
 
 % load template file
-str = file2cell([mtex_path filesep 'templates' filesep 'load' type 'template.m']);
+str = file2cell(fullfile(mtex_path,'templates','import',['load' type 'template.m']));
 
 %% specify crystal and specimen symmetries
 if isa(data,'EBSD')

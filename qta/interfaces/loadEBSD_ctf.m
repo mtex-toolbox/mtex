@@ -10,73 +10,22 @@ elseif check_option(varargin,'check')
   return
 end
 
-% Line 2 - Prj
-project = hl{2};
 
-% Author
-author = sscanf(hl{3},'Author\t%s');
+phase_line = find(~cellfun('isempty',strfind(hl,'Phases')));
 
-% JobMode
-Job = sscanf(hl{4},'JobMode\t%s');
+nphase = sscanf(hl{phase_line},'%s\t%u');
+nphase = nphase(end);
 
-
-%********************************************************
-% Grid Parameters for EBSD Map
-%********************************************************
-if strcmp(Job,'Grid')
-
-  % XCells and YCells
-  ixcells = sscanf(hl{5},'XCells\t%u',1);
-  iycells = sscanf(hl{6},'YCells\t%u',1);
-  
-  % Xstep and Ystep
-  xsteps = sscanf(hl{7},'XStep\t%u',1);
-  ysteps = sscanf(hl{8},'YStep\t%u',1);
-      
-  nextline = 9;
-  
-elseif strcmp(Job,'Interactive')
-
-  % Number of measurements
-  NoMeas = sscanf(hl{5},'NoMeas\t%u',1);
-  
-  nextline = 6;
-end
-
-% AcqE1, AcqE2
-iAcqE1 = sscanf(hl{nextline},'AcqE1\t%u',1);
-iAcqE2 = sscanf(hl{nextline+1},'AcqE2\t%u',1);
-iAcqE3 = sscanf(hl{nextline+2},'AcqE3\t%u',1);
-
-%********************************************************
-% Microscope Parameters
-%********************************************************
-
-mpara = regexpsplit(hl{nextline+3},'\t');
-%mpara = splitstr(hl{nextline+3},char(9));
-
-SCS = mpara{1}; % sample coordinate system
-mag = mpara{3}; % Magnification
-Cover = mpara{5}; % Coverage
-Device= mpara{7};
-KV = mpara{9};
-
-Tilt_Angle = mpara{11}; % Tilt Angle
-Tilt_Axis = mpara{13}; % Tilt Axis
 ss = symmetry;
 
 % Crystallogaphic Parameters of all phases
 Laue = {'-1','2/m','mmm','4/m','4/mmm',...
   '-3','-3m','6/m','6/mmm','m3','m3m'};
 
-% number of phases
-NPHASES = sscanf(hl{nextline + 4},'Phases\t%u');
-
-for K = 1:NPHASES
+for K = 1:nphase
   
   % load phase
-  mpara = regexpsplit(hl{nextline+4+K},'\t');
-  %mpara = splitstr(hl{nextline+4+K},char(9));
+  mpara = regexpsplit(hl{phase_line+K},'\t');
     
   abc = sscanf( mpara{1},'%f;%f;%f'); % Lattice ABC
   abg = sscanf( mpara{2},'%f;%f;%f'); % Lattice alpha beta gamma

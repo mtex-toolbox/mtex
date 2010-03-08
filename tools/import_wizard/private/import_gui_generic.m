@@ -161,11 +161,13 @@ if ~get(handles.runmfile,'Value');
   
 %% write to file
 else 
-    
+  
+  type = class(data);
+      
   % extract file names
   fn = arrayfun(@(x) getappdata(x,'filename'),lb,'UniformOutput',false);
     
-  switch class(data)
+  switch type
     case 'EBSD'
       str = generateScript('EBSD',fn{5},data,getappdata(lb(5),'interface'),...
         getappdata(lb(5),'options'), handles);
@@ -182,6 +184,26 @@ else
   end
        
   str = generateCodeString(str);
+    
+   % find some other templates 
+  templates = dir( fullfile(mtex_path,'templates',[ type '_*.m']) );
+  templates = {templates.name};
+
+  if numel(templates) > 1
+   templ = regexprep(templates,[ type '_(\w*).m'],'$1');  
+
+   [s,v] = listdlg('PromptString','Select a template script:',...
+                  'SelectionMode','single',...
+                  'ListSize',[200,100],'fus',4,'ffs',4,...
+                  'Name',[type ' Template Script'],...
+                  'ListString',templ); 
+    if isempty(s), return;end
+    templates = templates(s);
+  end
+  templatestr = file2cell( fullfile(mtex_path,'templates',templates{:}) );
+
+  str = [str generateCodeString(templatestr)];
+  
   openuntitled(str);
 end
 

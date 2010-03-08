@@ -59,17 +59,3 @@ pf_defbg = loadPoleFigure(fname_defbg,h,CS,SS,{structural coefficients},'interfa
 % correct data
 pf = correct(pf,{corrections});
 
-
-%% Visualize the Data
-
-% plot of the raw data
-plot(pf)
-
-%% ODF estimatio
-
-% estimate some ODF
-odf = calcODF(pf)
-
-%% Plot Caclulated Pole Figures
-
-plotpdf(odf,h)
