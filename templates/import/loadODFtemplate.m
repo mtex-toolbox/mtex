@@ -1,4 +1,4 @@
-%% Import Script for EBSD Data
+%% Import Script for ODF Data
 %
 % This script was automatically created by the import wizard. You should
 % run the whoole script or parts of it in order to import your data. There
@@ -25,29 +25,10 @@ fname = {file names};
 
 %% Import the Data
 
+% specify kernel 
+psi = kernel({kernel name},'halfwidth',{halfwidth});
+
 % create an EBSD variable containing the data
-ebsd = loadEBSD(fname,CS,SS,'interface',{interface} ...
+odf = loadODF(fname,CS,SS,'kernel',psi,'resolution',{resolution},'interface',{interface} ...
   ,{options});
-
-%% Visualize the Data
-
-plot(ebsd)
-
-
-%% Calculate an ODF
-
-odf = calcODF(ebsd)
-
-%% Detect grains
-
-%segmentation angle
-segAngle = 10*degree;
-
-[grains ebsd] = segment2d(ebsd,'angle',segAngle);
-
-%% Orientation of Grains
-
-plot(grains)
-
-
 
