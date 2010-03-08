@@ -67,7 +67,7 @@ g0 = S3G(f>=quantile(f,-20));
 while res > targetRes
 
   % new grid
-  S3G = [g0;orientation(SO3Grid(res/4,odf(1).CS,odf(1).SS,'max_angle',res,'center',g0))];
+  S3G = [g0(:);orientation(SO3Grid(res/4,odf(1).CS,odf(1).SS,'max_angle',res,'center',g0))];
     
   % evaluate ODF
   f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
