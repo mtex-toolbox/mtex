@@ -27,7 +27,7 @@ for k=1:numel(pf)
   d = pf(k).data;
   v = any(find(pf(k).r,v,radius),2);
   v = reshape(full(v),size(d));  
-   
-  vol(k) = sum(d.*any(v,1))./sum(d);
+  
+  vol(k) = sum(d.*v)./sum(d);
   
 end
