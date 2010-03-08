@@ -25,21 +25,21 @@ function [q val]= max(odf,varargin)
 % ODF/modalorientation
 
 res = get_option(varargin,'resolution',5*degree);
-S3G = SO3Grid(res,odf(1).CS,odf(1).SS);
-qa = S3G;
 
-dof = eval(odf,S3G,varargin{:}); %#ok<EVLC>
+S3G = extract_SO3Grid(odf,'resolution',res,varargin{:});
+f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
+
 
 % eliminate zeros
-del = dof>0;
-qa = qa(del);
-dof = dof(del);
+del = f>0;
+qa = S3G(del);
+f = f(del);
 
 % the search grid
 S3Gs = subGrid(S3G,del);
 T = find(S3Gs,qa,res*1.5);
 
-[dof ndx] = sort(dof,'descend');
+[f ndx] = sort(f,'descend');
 qa = qa(ndx);
 
 T = T(ndx,:);
@@ -48,7 +48,7 @@ T = T -speye(size(T));
 
 
 % look for maxima
-nn = numel(dof);
+nn = numel(f);
 ls = false(1,nn);
 ids = false(1,nn);
 
@@ -70,7 +70,7 @@ end
 
 % the retrived maximas
 q = qa(ids);
-val = dof(ids);
+val = f(ids);
 
 accuracy = get_option(varargin,'accuracy',0.25*degree);
 %centering of local max
@@ -78,12 +78,11 @@ for k=1:numel(q)
   res2 = res/2;
   while res2 > accuracy
     res2 = res2/2;
-    S3G = SO3Grid(res2,odf(1).CS,odf(1).SS,'center',q(k),'max_angle',res2*2);
-    qa = S3G;
-    dof = eval(odf,S3G,varargin{:});
+    S3G = SO3Grid(res2,odf(1).CS,odf(1).SS,'center',q(k),'max_angle',res2*4);
+    f = eval(odf,S3G,varargin{:});
     
-    [mo ndx] = max(dof);
-    q(k) = qa(ndx);
+    [mo ndx] = max(f);
+    q(k) = S3G(ndx);
   end
 end
 
