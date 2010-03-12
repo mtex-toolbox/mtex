@@ -27,13 +27,9 @@ if nargin > 1
       end
       varargout{1} = sym;
     case 'phase'
-      phase = zeros(size(grains));
-      for k=1:numel(grains)
-        phase(k) = grains(k).phase;
-      end
-      varargout{1} = phase;
+      varargout{1} = [grains.phase];
       if nargout > 1
-        [varargout{2}, varargout{3}] = unique(phase,'first');
+        [varargout{2}, varargout{3}] = unique(varargout{1},'first');
       end
     case {'neighbour' 'cells'}
       varargout{1} = {grains.(vname)};

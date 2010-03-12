@@ -15,7 +15,7 @@ for i=1:length(pf)
  s = [s, pf(i).comment];
  if i~=length(pf), s = [s ', ']; end
 end
- length(s)
+
 if length(s) > 60
  h = [h, s(1:60) '...'];
 else

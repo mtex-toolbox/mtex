@@ -10,12 +10,10 @@ function p = polygon(grains,varargin)
 % p = grains.polygon;
 
 n = numel(grains);
-parts = [0:5000:n-1 n];  % faster as at once
+parts = [0:500:n-1 n];  % faster as at once
 % 
-p = repmat(polygon,size(grains));
-for k=1:length(parts)-1
-%   
-  ndx = parts(k)+1:parts(k+1);
-  p(ndx) = horzcat(grains(ndx).polygon);
-%  
+p = cell(1,numel(parts)-1);
+for k=1:numel(parts)-1  
+	p{k} = horzcat(grains(parts(k)+1:parts(k+1)).polygon);
 end
+p = horzcat(p{:});

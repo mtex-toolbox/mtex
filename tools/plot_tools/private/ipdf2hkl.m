@@ -51,10 +51,13 @@ switch Laue(cs)
   case 'm-3'
     error('For symmetry ''m-3'' colorcoding is supported right now'); %#ok<WNTAG>
   case 'm-3m'
-    maxtheta = pi/4; maxrho = pi/4;
+    [maxtheta,maxrho,minrho] = getFundamentalRegionPF(cs,'antipodal');
+    maxtheta = maxtheta(rho);
+%     maxtheta = maxtheta(rho);
+%     maxtheta = 0.84; maxrho = pi/4;
 end
 
-r = 1-theta/maxtheta;
+r = 1-theta./maxtheta;
 g = theta./maxtheta .* (maxrho - rho) ./ maxrho;
 b = theta./maxtheta .* (rho) ./ maxrho;   
 

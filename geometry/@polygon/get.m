@@ -14,13 +14,15 @@ switch vname
       lxy = {p.xy};
     end
 
-    parts = [0:5000:length(lxy)-1 length(lxy)]; 
-    s = [];
-    for k=1:length(parts)-1 % faster as at once
-      s = vertcat(s,lxy{parts(k)+1:parts(k+1)});
+    parts = [0:1000:length(lxy)-1 length(lxy)];    
+    s = cell(numel(parts)-1,1);
+    for k=1:numel(parts)-1 % faster as at once      
+      s{k} = vertcat(lxy{parts(k)+1:parts(k+1)});
     end
+    s = vertcat(s{:});
+    
   case {'holes'}
-    s = horzcat(p.(vname));
+    s = horzcat(p(hashole(p)).(vname));
   case {'point_ids'}
     s = {p.(vname)};
   otherwise
