@@ -190,28 +190,48 @@ clear T1 T2 T3 regions angel_treshold
 
 ids = ids(n); %sort back
 phase = phase(n);
+cells = cells(n);
 
 %store grain id's into ebsd option field
 cids =  [0 cumsum(sampleSize(ebsd))];
 checksum =  fix(rand(1)*16^8); %randi(16^8);
 checksumid = [ 'grain_id' dec2hex(checksum)];
 for k=1:numel(ebsd)
- ebsd(k).options.(checksumid) = ids(cids(k)+1:cids(k+1))';
+	ide = ids(cids(k)+1:cids(k+1));
+	ebsd(k).options.(checksumid) = ide(:);
+ 
+	[ide ndx] = sort(ide(:));
+	pos = [0 ;find(diff(ide)); numel(ide)];
+	aind = ide(pos(1:end-1)+1);
+  
+  orientations(aind) = ...
+    partition(ebsd(k).orientations(ndx),pos);
 end
 
-cells = cells(n);
-
+% cell ids
 [ix iy] = sort(ids);
-id = mat2cell(iy,1,histc(ix,unique(ix)));
+id = cell(1,ix(end));
+pos = [0 find(diff(ix)) numel(ix)];
+for l=1:numel(pos)-1
+  id{l} = iy(pos(l)+1:pos(l+1));
+end
 
+
+nc = length(id);
+
+% neighbours
 [ix iy] = find(nn);
-iyu = unique(iy);
-nfr = sparse(1,iyu,1:length(iyu),1,length(nn));
+pos = [0; find(diff(iy)); numel(iy)];
 if ~isempty(ix)
-  nn = mat2cell(ix,histc(iy,iyu),1);
+  nn = cell(1,nc);
+  for l=1:nc
+    nn{l} = ix(pos(l)+1:pos(l+1));
+  end
 else
   nn = cell(1);
 end
+
+nfr = sparse(1,iy(pos(2:end)),1:numel(pos)-1,1,length(nn));
 
 vdisp(['  ebsd segmentation: '  num2str(toc(s)) ' sec'],varargin{:});
 
@@ -222,35 +242,44 @@ s = tic;
 ply = createpolygons(cells,id,vert);
 
 comment =  ['from ' ebsd(1).comment];
-nc = length(id);
+
 
 neigh = cell(1,nc);
 neigh(find(nfr)) = nn;
 fract = cell(1,nc);
 fract(find(cfr)) = fractions;
 
-ph = phase(cellfun(@(x)x(1),id));
+%cf = cellfun(@numel,orientations)>1;
+orientations = cellfun(@mean,orientations,'uniformoutput',false);
 
-gr = struct('id',num2cell(1:nc),...
+cid = cell(1,nc);
+cchek = cell(1,nc);
+ccom = cell(1,nc);
+cprop = cell(1,nc);
+phase_ebsd = cell(1,nc);
+tstruc = struct;
+for i=1:numel(cchek)
+  cid{i} = i;
+  cchek{i} = checksum;
+  ccom{i} = comment;
+  cprop{i} = tstruc;
+  phase_ebsd{i} = phase(id{i}(1));
+end 
+
+gr = struct('id',cid,...
        'cells',id,...
        'neighbour',neigh,...    %       'polygon',[],...
-       'checksum',[],...
+       'checksum',cchek,...
        'subfractions',fract,...       
-       'phase',phase_ebsd(ph),...
-       'orientation',[],...
-       'properties',[],...
-       'comment',[]);
-
-     
-for k=1:nc
-  gr(k).checksum = checksum;
-  gr(k).comment = comment;
-  gr(k).properties = struct;
-  gr(k).orientation = ...
-    mean(ebsd(ph(k)).orientations(gr(k).cells-rl(ph(k))));
-end
+       'phase',phase_ebsd,...
+       'orientation',orientations,...
+       'properties',cprop,...
+       'comment',ccom);
 
 grains = grain(gr,ply);
+
+
+
 
 vdisp(['  grain generation:  '  num2str(toc(s)) ' sec' ],varargin{:});
 vdisp(' ',varargin{:})
@@ -289,28 +318,36 @@ jl = zeros(1,length(il));
 
 cl = cellfun('length',c);
 ccl = [ 0 ;cumsum(cl)];
-for i=1:length(c)
-  jl(ccl(i)+1:ccl(i+1)) = i;
-end
 
 if ~check_option(varargin,'unitcell')
-  %sort everything clockwise
-  ck = [c{:}];
-  cv = v(ck,:);
-
-  part = [ 1:10^6:length(cv) length(cv)+1];  % there might appear memory issues
-  dir = zeros(size(ck));
-  for k=1:length(part)-1
-    cur = part(k):part(k+1)-1;  
-    x = diff(cv(cur,1)); y = diff(cv(cur,2));
-    l = length(x);
-    dir(cur(1:end-2)) = x(1:l-1).*y(2:l)-x(2:l).*y(1:l-1);
+  %sort everything clockwise  
+  parts = [0:10000:numel(c)-1 numel(c)];
+  
+  f = false(size(c));
+  for l=1:numel(parts)-1
+    ind = parts(l)+1:parts(l+1);
+    cv = v( il( ccl(ind(1))+1:ccl(ind(end)+1) ),:);
+        
+    r = diff(cv);
+    r = r(1:end-1,1).*r(2:end,2)-r(2:end,1).*r(1:end-1,2);
+    r = r > 0;
+    
+    f( ind ) = r( ccl(ind)+1-ccl(ind(1)) );
   end
-  dir = dir( ccl(1:end-1)+1);
-  c(dir>0) = cellfun(@fliplr,c(dir>0),'uniformoutput',false);
+  
+  for i=1:length(c)
+    jl(ccl(i)+1:ccl(i+1)) = i;    
+    if f(i), l = c{i}; c{i} = l(end:-1:1); end
+  end
+  
+  clear cv parts ind r f
+else  
+  for i=1:length(c)
+    jl(ccl(i)+1:ccl(i+1)) = i;
+  end
 end
-  clear cl ccl dir l x y dcv vc x y cv ck part i k cur
-% vertice map
+
+  % vertice map
 T = sparse(jl,il,1); 
   clear jl il
 T(:,1) = 0; %inf

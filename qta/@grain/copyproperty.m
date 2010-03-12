@@ -1,13 +1,12 @@
-function grains = copyproperty(grains, ebsd, varargin)
+function grains = copyproperty(grains, ebsd, f)
 % copy an abitrary property of the corresponding ebsd object
 %
 %% Syntax
-%  grains = copyproperty(grains,ebsd,'property');
+%  grains = copyproperty(grains,ebsd,@function_handle);
 %
 %% Input
 %  grains   - @grain
 %  ebsd     - @EBSD
-%  property - char
 %
 %% Options
 %  METHOD   - function_handle
@@ -16,30 +15,21 @@ function grains = copyproperty(grains, ebsd, varargin)
 %  grains   - @grain
 %
 %% Example
-% grains = copyproperty(grains,ebsd,'all');
-% grains = copyproperty(grains,ebsd,'bc',@min);
+% grains = copyproperty(grains,ebsd);
+% grains = copyproperty(grains,ebsd,@min);
 %
 
 
-m = find_type(varargin,'function_handle');
-if ~isempty(m)
-  method = varargin{m};
+if nargin > 2
+  method = f;
 else
-  method = @mean;
-end
-
-m1 = find_type(varargin,'char');
-m2 = find_type(varargin,'cell');
-if isempty(m1) && isempty(m2), property = 'all'; 
-else  property = varargin{[m1 m2]};
+  method = @(x)sum(x)./numel(x);
 end
 
 [grains ebsd ids] = link(grains,ebsd);
 
-opts = partition(ebsd,ids,'fields',property);
-
+opts = partition(ebsd,ids,'fields');
 vname = fieldnames(opts);
-
 for k=1:length(vname)
   if isempty(strfind(vname{k},'grain_id'))
     if isnumeric(opts(end).(vname{k}))      
