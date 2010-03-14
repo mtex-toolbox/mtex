@@ -82,15 +82,17 @@ if check_option(varargin,'unitcell') || ~check_option(varargin,'voronoi')
    
   c = reshape( n, length(cx),length(x))';  
   
-  if ~check_option(varargin,'faces')
+  if ~check_option(varargin,'plot')
     ct = cell(length(x),1);
     for k=1:length(c)
       ct{k} = c(k,:);
     end 
     c = ct;
   else
-    rind = [];
+    rind = {1:size(c,1)};
+    c = {c};    
   end
+  
 else
   augmentation = get_option(varargin,'augmentation','cube');
   
@@ -221,28 +223,22 @@ else
   
   c(end-length(dummy)+1:end) = [];
   
-  if check_option(varargin,'faces')
+  if check_option(varargin,'plot')
     cl = cellfun('prodofsize',c);
-    [cl ndx] = sort(cl,'descend');
-    c = c(ndx);
-    idf = 1:numel(c);
-    idf = idf(ndx);    
-    
-    ind = splitdata(cl,3);
-    fc = cell(size(ind));
-    rind = cell(size(ind));
-    for k=1:numel(ind)
-      tind = ind{k};
-      tfaces = NaN(length(tind),max(cl(tind)));
+    rind = splitdata(cl,3);
+    for k=1:numel(rind)
+      tind = rind{k};
+      faces = NaN(length(tind),max(cl(tind)));
       for l = 1:length(tind)
-        tfaces(l,1:cl(tind(l))) = c{tind(l)};
+        faces(l,1:cl(tind(l))) = c{tind(l)};
       end
-      fc{k} = tfaces;
-      rind{k} = idf(tind);
-    end   
+      fc{k} = faces;
+    end
     c = fc;
   end
+  
 end
+
 
 
 function [xy, ndx, pos] = uniquepoint(xy,eps)
@@ -268,4 +264,5 @@ xx = repmat(x(rndsmp),1,length(rndsmp));
 yy = repmat(y(rndsmp),1,length(rndsmp));
 dist = abs(sqrt((xx-xx').^2 + (yy-yy').^2));
 dxy = min(dist(dist>eps)); 
+
 

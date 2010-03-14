@@ -1,8 +1,8 @@
-function plotxy(x,y,d,varargin)
+function plotxy(xy,d,varargin)
 % plot d along x and y
 
 
-[x,y, lx,ly] = fixMTEXscreencoordinates(x,y,varargin{:});
+[x,y, lx,ly] = fixMTEXscreencoordinates(xy(:,1),xy(:,2),varargin{:});
 
 %% estimate grid resolution
 

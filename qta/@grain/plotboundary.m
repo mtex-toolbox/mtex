@@ -27,8 +27,9 @@ selector(gcf);
 
 [phase uphase] = get(grains,'phase');
 
+
 p = polygon( grains );
-h = plot(p,'color',[0.8 0.8 0.8]);
+h = plot(p,'color',[0.8 0.8 0.8],'nofix');
 
 
 if strcmpi(property,'phase')
@@ -103,7 +104,7 @@ elseif ~isempty(property)
 
       end
 
-      h = [h plot(p(ndx), 'pair', pair, varargin{:} )];
+      h = [h plot(p(ndx), 'pair', pair,'nofix', varargin{:} )];
       
     end
 
@@ -115,7 +116,12 @@ else
   
 end
 
+
+fixMTEXplot
+set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
+
 selector(gcf,grains,p,h);
+
 
 if check_option(varargin,'colorcoding');
   setappdata(gcf,'CS',CS);
