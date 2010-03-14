@@ -4,7 +4,9 @@ function handles = plot(p,varargin)
 
 %preparing canvas
 set(gcf,'renderer','zbuffer');
-fixMTEXplot('noresize');
+if ~check_option(varargin,'nofix')
+  fixMTEXplot('noresize');
+end
 
 %%
 [ig ig lx ly] = fixMTEXscreencoordinates(1,1,varargin{:});
@@ -47,7 +49,9 @@ elseif check_option(varargin,'pair')
 	pair = get_option(varargin,'pair');
  	
   if ~isempty(pair)
-    boundary = cell(1,size(pair,1));
+    npair = size(pair,1);
+    
+    boundary = cell(1,npair);
 
     point_ids = get(p,'point_ids');
     pxy = get(p,'xy','cell');
@@ -58,39 +62,54 @@ elseif check_option(varargin,'pair')
 
       hpoint_ids = get(pholes,'point_ids');
       point_ids{k} = [point_ids{k} hpoint_ids{:}];
-      pxy{k} = vertcat(pxy{k},get(pholes,'xy'));  
-
+      pxy{k} = vertcat(pxy{k},get(pholes,'xy'));
     end
+    
+    point_ids = point_ids(pair(:,1:2));
+    pxy = pxy( pair(:,2) );
 
-    for k=1:size(pair,1)
+    for k=1:npair
 
-      b1 = point_ids{ pair(k,1) };
-      b2 = point_ids{ pair(k,2) };
-      xy =  pxy{ pair(k,2) };
-
-      r = find(ismember(b2,b1));      
-      sp = [0 find(diff(r)>1) length(r)];      
-
-      bb = [];
-      for j=1:length(sp)-1 % line segments; still buggy on triple junction          
-        bb = [...
-          bb; ...
-          xy(r(sp(j)+1:sp(j+1)),:);...
-          [NaN NaN]];
+      b1 = point_ids{k,1};
+      b2 = point_ids{k,2};
+      
+      %	r = find(ismember(b2,b1));       
+      
+      [b1 n1] = sort(b1);
+      [b2 n2] = sort(b2);      
+      rr = ismembc(b2,b1);      
+      r = sort(n2(rr));
+      
+      pos = find(diff(r)>1);
+      npos = numel(pos);
+      
+      xy =  pxy{ k };   
+      border = [];
+      if npos > 0
+        pos = [0 pos numel(r)];
+        for j=1:npos
+          border = [border; xy(r(pos(j)+1:pos(j+1)),:)];
+          border(end+1,:) = NaN;
+        end
+      else
+        border = xy(r,:);
+        border(end+1,:) = NaN;
       end
-      boundary{k} = bb;
+    
+      boundary{k} = border;
 
     end
 
     xy = vertcat(boundary{:});
+    
 
     if ~isempty(xy)
 
-      [X Y] = fixMTEXscreencoordinates(xy(:,1), xy(:,2), varargin{:});
+      [xy(:,1), xy(:,2)] = fixMTEXscreencoordinates(xy(:,1), xy(:,2), varargin{:});
 
       if size(pair,2) == 2 % colorize monotone
 
-        h = line(X(:),Y(:)); 
+        h = line(xy(:,1),xy(:,2)); 
 
       else % colorize colormap
 
@@ -99,21 +118,20 @@ elseif check_option(varargin,'pair')
         cs = cellfun('prodofsize',boundary)/2;
         csz = [0 cumsum(cs)];
 
-        c = zeros(length(X),size(d,2));
+        c = ones(size(xy,1),size(d,2));
         for k=1:size(pair,1)
-
+          
           c( csz(k)+1:csz(k+1) , : ) = d( k*ones( cs( k ) ,1) ,:);      
 
         end
 
-        h = patch('Faces',1:length(X),'Vertices',[X(:),Y(:)],'EdgeColor','flat',...
+        h = patch('Faces',1:size(xy,1),'Vertices',xy,'EdgeColor','flat',...
         'FaceVertexCData',c);
 
       end
     end
         
   end
-  
 else
   
   if ~check_option(varargin,'noholes')
@@ -147,7 +165,6 @@ if nargout > 0, handles = h; end
 function [faces vertices] = get_faces(p)
 
 vertices = vertcat(p.xy);
-
 
 cl = cellfun('length',{p.xy});
 rl = max(cl);

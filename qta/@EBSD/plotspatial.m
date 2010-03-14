@@ -69,18 +69,18 @@ end
 
 %% plot
 
-x = get(ebsd,'x');
-y = get(ebsd,'y');
+xy = get(ebsd,'xy');
+% y = get(ebsd,'y');
 
 try %if ~check_option(varargin,'raster')
-  plotxyexact(x,y,d,varargin{:});
+  plotxyexact(xy,d,varargin{:});
 catch
-  plotxy(x,y,d,varargin{:});
+  plotxy(xy,d,varargin{:});
 end
 
 %dummy patch
-[tx ty] = fixMTEXscreencoordinates(min(x), min(y),varargin{:});
-patch('Vertices',[tx ty],'Faces',1,'FaceVertexCData',get(gca,'color'));
+% [tx ty] = fixMTEXscreencoordinates(min(x), min(y),varargin{:});
+% patch('Vertices',[tx ty],'Faces',1,'FaceVertexCData',get(gca,'color'));
 
 if strcmpi(prop,'orientation') %&& strcmpi(cc,'ipdf')
   [cs{1:length(ebsd)}] = get(ebsd,'CS');
@@ -109,26 +109,33 @@ function txt = tooltip(empt,eventdata,ebsd) %#ok<INUSL>
 
 pos = get(eventdata,'Position');
 xp = pos(1); yp = pos(2);
+
 xy = vertcat(ebsd.xy);
-[x y] = fixMTEXscreencoordinates(xy(:,1), xy(:,2));
-q = get(ebsd,'quaternions');
+[x y] = fixMTEXscreencoordinates(xy(:,1),xy(:,2));
 
-dist = sqrt((x-xp).^2 + (y-yp).^2);
-[dist ndx] = sort(dist);
+delta = prod(diff([min(xy);max(xy)]))./(size(xy,1)/2);
 
-ind = ndx(1); %select the nearest
+candits = find(~(xp-delta > x | xp+delta < x | yp-delta > y | yp+delta < y));
 
-% get phase
-%% TODO!!!
-phase = find(ind>cumsum([0,GridLength(ebsd)]),1,'last');
-cs = get(ebsd(phase),'CS');
+if ~isempty(candits)
+  dist = sqrt( (xp-x(candits)).^2 + (yp-y(candits)).^2);
+  [dist ind] = sort(dist);
+  candits = candits(ind);
 
-quat = double(q(ind));
-
-txt =  {['Phase: ', num2str(phase), ' ' get(cs,'mineral'),'' ], ...
-  ['quaternion (id: ', num2str(ind),') : ' ], ...
-  ['    a = ',num2str(quat(1),2)], ...
-  ['    b = ', num2str(quat(2),2)],...
-  ['    c = ', num2str(quat(3),2)],...
-  ['    d = ', num2str(quat(4),2) ]};
+  nd = candits(1);
+  
+  sz = sampleSize(ebsd);
+  csz = cumsum([0,sz]);
+  phase = find(nd>csz,1,'last');
+  pos = nd-csz(phase);
+  o = ebsd(phase).orientations(pos);
+  
+  txt = {['Phase: ', num2str(ebsd(phase).phase), ' ' get(get(o,'CS'),'mineral'),'' ], ...
+         ['index:' num2str(pos)],...
+         [char(o)]};
+ 
+else
+  
+  txt = 'no data';
+end
 

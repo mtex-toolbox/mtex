@@ -1,18 +1,11 @@
-function plotxyexact(x,y,d,varargin)
+function plotxyexact(xy,d,varargin)
 
-[v faces rind] = spatialdecomposition([x y],'faces',varargin{:});
-[x,y, lx,ly] = fixMTEXscreencoordinates(v(:,1),v(:,2),varargin{:});
+[v faces rind] = spatialdecomposition(xy,'plot',varargin{:});
+[v(:,1), v(:,2), lx,ly] = fixMTEXscreencoordinates(v(:,1),v(:,2),varargin{:});
 
-xy = [x y];
-
-if iscell(faces)
-  h = zeros(size(faces));
-  for k=1:numel(faces)
-    h(k)= patch('Vertices',xy,'Faces',faces{k},'FaceVertexCData',d(rind{k},:),...
-      'FaceColor','flat','EdgeColor','none');
-  end
-else
-  h = patch('Vertices',xy,'Faces',faces,'FaceVertexCData',d,...
+h = zeros(size(faces));
+for k=1:numel(faces)
+  h(k)= patch('Vertices',v,'Faces',faces{k},'FaceVertexCData',d(rind{k},:),...
     'FaceColor','flat','EdgeColor','none');
 end
   
