@@ -373,51 +373,30 @@ r1 = cumsum(c1);
 r2 = [1 ; r1+1];
 r2(end) =[];  
 inds(r1) = r2;
+gr = gl(inds); %partner pointel
 
 cc = [0; r1];
-crc = [0 cumsum(cr1)];
-
-gr = gl(inds); %partner pointel
+cr = cumsum(cr1);
 
 clear rcells r1 r2 indi c1 inds
 
-ii = [gl(:) gr(:)]; % linels  
-% remove double edges
-ii = sort(ii,2);
-gll = ii(:,1);
-grr = ii(:,2);
-
-clear ii
-
-ndx = 1:numel(gll);
-[ig,ind] = sort(grr);
-ndx = ndx(ind);
-[ig,ind] = sort(gll(ndx));
-ndx = ndx(ind);
-
-clear ig ind
-
-gll = gll(ndx);
-grr = grr(ndx);
-
-[k ib] = sort(ndx);
-
-clear ndx k
-
+% 
 nr = length(regionids);
 p = struct(polygon);
 ply = repmat(p,1,nr);
 
-for k =1:nr
-  sel = cc(crc(k)+1)+1:cc(crc(k+1)+1);
+f = (gl+gr).*gl.*gr; % try to make unique linel ids
+rid = [0;cc(cr+1)];
 
-  if cr1(k) > 1
-    %remove double entries
-    [ig nd] = sort(ib(sel));
-    dell = diff(gll(ig)) == 0 &  diff(grr(ig)) == 0;
-    dell = find(dell);
-    sel( nd([dell dell+1]) ) = []; 
+for k=1:nr  
+  sel = rid(k)+1:rid(k+1);
   
+  if cr1(k)>1    
+    [ft nd] = sort(f(sel));
+    
+    dell = find(diff(ft) == 0);
+    sel( nd([dell dell+1]) ) = [];
+    
     border = converttoborder(gl(sel), gr(sel));
     
     psz = numel(border);    
@@ -427,8 +406,7 @@ for k =1:nr
       xy = verts(v,:);
       ply(k).xy = xy;
       ply(k).point_ids = v;
-
-      ply(k).envelope = reshape([min(xy); max(xy)],1,[]);
+      ply(k).envelope = envelope(xy);
       
     else
       
@@ -439,9 +417,8 @@ for k =1:nr
         v = border{l};
         xy = verts(v,:);
         hply(l).xy = xy;
-        hply(l).point_ids = v;   
-        
-        hply(l).envelope = reshape([min(xy); max(xy)],1,[]);
+        hply(l).point_ids = v;
+        hply(l).envelope = envelope(xy);
         
       end
       hply = polygon(hply);
@@ -453,20 +430,25 @@ for k =1:nr
       
     end
   else
-    % finish polygon
-    v = [gl(sel) gl(sel(1))];
+    
+    v = gl(sel);
+    v(end+1) = v(1);
     xy = verts(v,:);
     ply(k).xy = xy;
     ply(k).point_ids = v;
-    
-    ply(k).envelope = reshape([min(xy); max(xy)],1,[]);
+    ply(k).envelope = envelope(xy);
     
   end
-  
 end
 
 ply = polygon(ply);
 
+
+
+function env = envelope(xy)
+
+env([1,3]) = min(xy);
+env([2,4]) = max(xy);    
 
 
 function plygn = converttoborder(gl, gr)
@@ -489,8 +471,9 @@ k=2;
 while 1
   ro = find(f(k-1) == gr);
   n = numel(ro);
-  if n>0
-    ro = ro(n);
+
+  if n > 0
+    ro = ro(end);
     f(k) = gl(ro);     
   else 
     ro = find(gr>0);
@@ -513,11 +496,9 @@ end
 nc = numel(cc)-1; 
 if nc > 1, plygn = cell(1,nc); end
 for k=1:nc 
-  if k > 1
-    plygn{k} = [f(cc(k)+1:cc(k+1)) f(cc(k)+1)];
-  else
-    plygn{k} = f(cc(k)+1:cc(k+1));
-  end
+  ft = f(cc(k)+1:cc(k+1));
+  if k > 1, ft(end+1) = ft(1); end
+  plygn(k) = {ft};
 end  
 
 
