@@ -55,66 +55,18 @@ grains_ph2 = link(grains,ebsd(2));
 % distribution
 
 % make a expotential bin size
-x = fix(exp(1:0.5:log(max(grainsize(grains)))));
-  %also try area(grains), hullarea(grains)
+x = fix(exp(.5:.5:7.5));
+figure, bar( hist(grainsize(grains_ph1),x) );
 
-% the histograms
-y1 = hist(grainsize(grains_ph1),x)';
-y2 = hist(grainsize(grains_ph2),x)';
 
-% and the histogram for the segmentation of 5 degrees
-y5_1 = hist(grainsize( link(grains5,ebsd(1)) ),x)';
-y5_2 = hist(grainsize( link(grains5,ebsd(2)) ),x)';
+%% Accessing geometric properties 
+
+p = polygon(grains_ph1)
 
 %%
-% print a table
-
-disp(' ')
-disp(' <= x <   phase1       | phase2      ');
-disp('           12.5°    5° |  12.5°   5° ');
-disp('-------------------------------------')
-
-disp(num2str([ x' y1,y5_1, y2, y5_2 ],' %10d %11d %6d|%6d %6d'))
-
-%%
-% and more visual as barplot
-
-figure, bar(1:length(x),[y1,y5_1, y2,y5_2]);
-set(gca,'YScale','log')
-set(gca,'XTickLabel',mat2cell(x',ones(size(x))))
-legend('phase 1 : 15°','phase 1 : 5°','phase 2 : 15°','phase 2 : 5°')
-
-%% Compare phases in scatter plots
-
-% plot grain against shapefactor
-
-figure('Position',[15 50 1200 350]), subplot(1,3,1)
-hold on,semilogx(area(grains_ph1),shapefactor(grains_ph1),'b.');
-hold on,semilogx(area(grains_ph2),shapefactor(grains_ph2),'g.');
-xlabel('area'); ylabel('shapefactor');
-grid on
-axis tight
-
-% plot perimeter area against aspect ratio
-
-subplot(1,3,2)
-hold on, semilogx(perimeter(grains_ph1),aspectratio(grains_ph1),'b.');
-hold on, semilogx(perimeter(grains_ph2),aspectratio(grains_ph2),'g.');
-xlabel('perimeter'); ylabel('aspect ratio');
-grid on
-axis tight
-
-% plot paris area against deltaarea
-
-subplot(1,3,3)
-hold on, semilogx(paris(grains_ph1),deltaarea(grains_ph1),'b.');
-hold on, semilogx(paris(grains_ph2),deltaarea(grains_ph2),'g.');
-xlabel('paris'); ylabel('deltaarea');
-grid on
-axis tight
-
-%%
-% phase 1 blue, phase 2 green
+%
+area(grains_ph1); perimeter(grains_ph1);
+shapefactor(grains_ph1); paris(grains_ph1); %...
 
 %% Select Grains and its EBSD data by other properties
 % select grains with boundaries within itself
@@ -129,23 +81,41 @@ ebsd_fractions = link(ebsd, grains_fractions)
 %% Plotting of grains
 % there are many ways to plot grains
 
-figure, hold all
-plot(ebsd_fractions)
-plot(grains_fractions,'color','black','linewidth',1)
-  % however the holes of a grain are plotted by default in an other color
-plot(grains_fractions,'b','noholes','linewidth',1.5)
-  % and now the boundary within
-plotsubfractions(grains_fractions,'r','linewidth',2)
-  % and its convex hull
-plot(grains_fractions,'hull','b','linewidth',1.5)
-  % and also ellipses of principal components
-plotellipse(grains_fractions,'hull','scale',0.25,'b','linewidth',1.5)
+%%
+% default plotting
+plot(grains)
+
+%%
+% its also possible to plot an abitrary property
+plot(grains,'property',shapefactor(grains))
+
+%%
+% grainboundary
+
+plotboundary(grains)
+
+%%
+% classified after some specific 
+
+%%
+%
+plotboundary(grains,'property','phase')
+%%
+%
+plotboundary(grains,'property','angle')
+%%
+%
+plotboundary(grains,'property','colorcoding','hkl')
+%%
+%
+plotboundary(grains,'property',axis2quat(1,1,1,60*degree))
+
 
 %%
 % as we see, the mean is stored as new property 'orientation'. we can plot
 % it
 
-figure, plot(grains,'property','orientation')
+figure, plot(grains)
 
 %% Properties of a grain
 % We also can copy known properties from the ebsd object to our grains
@@ -155,11 +125,6 @@ grains = copyproperty(grains,ebsd)
 %%
 %
 figure, plot(grains,'property','bc')
-
-%%
-% its also possible to plot an abitrary property
-
-figure, plot(grains,'property',shapefactor(grains))
 
 %% Spatial Relation - Join Counts
 % find out which phases depends on other phases and how
@@ -192,15 +157,20 @@ grainfun(@(ebsd) ebsd, grains_fractions,ebsd_fractions,'uniformoutput',true)
 % selected grains to a region of interest
 
 ply = polygon([90 90;140 90;140 140; 90 140; 90 90]);
-pgrains = grains( inpolygon( grains, ply,'intersect') )
+pgrains = grains( inpolygon( grains, ply,'centroids') )
 
 figure, plot(pgrains)
 hold on, plot(ply,'color','r','linewidth',2)
 
 %%
+% the five larges grains
+[a nd] = sort(grainsize(pgrains),'descend');
+pgrains = pgrains(nd(1:5))
+
+%%
 % and now the ODF with respect to its origial ebsd-data
 
-kern = kernel('de la Vallee Poussin','halfwidth',10*degree);
+kern = kernel('de la Vallee Poussin','halfwidth',5*degree);
 pgrains = calcODF(pgrains,ebsd,'kernel',kern,'exact')
 
 %%
@@ -218,38 +188,9 @@ pgrains = calcODF(pgrains,ebsd_mis,'kernel',kern,'property','ODF_mis','exact')
 % applying an function on it, e.g we want to calculate the textureindex of
 % each grain
 
-tindex = grainfun(@textureindex, pgrains,'ODF');
-tindex_mis = grainfun(@textureindex, pgrains,'ODF_mis');
+tindex = grainfun(@textureindex, pgrains,'ODF','resolution',5*degree)
+tindex_mis = grainfun(@textureindex, pgrains,'ODF_mis','resolution',5*degree)
 
-%%
-
-figure, plot(pgrains,'property',tindex);
-
-%%
-
-figure, plot(pgrains,'property',tindex_mis);
-
-%%
-% and finally, let us plot all grains with a texture index higher than
-% their misorientation texture index in red
-
-plot(pgrains,'property',tindex>tindex_mis)
-
-%%
-% some scatter plots, are grainsizes somehow correlated with their
-% textureindicies?
-
-figure, loglog(tindex,area(pgrains),'b.')
-hold on, loglog(tindex_mis,area(pgrains),'r.')
-xlabel('texture index')
-ylabel('area')
- axis tight
- grid on
-
-%%
-%
-
-close all
 
 %% Calculate ODFs
 % if our grain-data has an orientation, of course we can model an odf
@@ -274,39 +215,10 @@ calcerror(odf_ebsd1,odf_grains1)
 %% Misorientation to Neighbours
 
 ebsd_nmis = misorientation(grains,'weighted');
-odf_nmis1 = calcODF(ebsd_nmis(1),'kernel',kern,'resolution',1*degree);
+odf_nmis2 = calcODF(ebsd_nmis(2),'kernel',kern,'resolution',1*degree);
 
-figure, plotipdf(odf_nmis1,[vector3d(1,1,0) vector3d(1,1,1)],'antipodal')
+figure, plotipdf(odf_nmis2,[vector3d(1,1,0) vector3d(1,1,1)],'antipodal')
 
-%%
-
-%% Exercises
-%
-% 4)
-%
-% a) Load the EBSD data: |data/ebsd\_txt/85\_829grad\_07\_09\_06.txt|!
+annotate(CSL(3))
 
 
-
-%%
-% b) Perform grain detection with a certain threshold!
-
-[grains,ebsd] = segment2d(ebsd)
-%%
-% c) Plot the EBSD data together with the grain boundaries!
-
-plot(ebsd)
-hold on
-plotboundary(grains)
-
-%%
-% d) Plot the grains together with their mean orientation!
-
-plot(grains)
-
-%%
-% e) Compute and visualize the grains size distribution!
-
-%%
-% f) Explore the geometric properties of the grains! Is there any
-% relationship between the size and the mad of the grains?
