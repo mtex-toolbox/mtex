@@ -42,8 +42,8 @@ for i = 1:length(odf)
       h = repmat(h,1,length(odf(i).SS));
       r = odf(i).SS * odf(i).center{2};
       r = repmat(r,length(odf(i).CS),1);
-      [theta_h,rho_h] = vec2sph(h(:));
-      [theta_r,rho_r] = vec2sph(r(:));
+      [theta_h,rho_h] = polar(h(:));
+      [theta_r,rho_r] = polar(r(:));
     
       odf(i).c_hat = zeros(deg2dim(length(A)),1);
       for l = 0:min(L,length(A)-1)
@@ -89,22 +89,10 @@ for i = 1:length(odf)
       % init Fourier coefficients
       odf(i).c_hat = zeros(deg2dim(length(A)),1);
 
-      % iterate due to memory restrictions?
-      maxiter = ceil(numel(c)/25000);
-      if maxiter > 1, progress(0,maxiter);end
-
-      for iter = 1:maxiter
-   
-        % current iteration region
-        if maxiter > 1, progress(iter,maxiter); end   
-        dind = ceil(numel(c) / maxiter);
-        ind = 1+(iter-1)*dind:min(numel(c),iter*dind);
-        
-        % calculate Fourier coefficients
-        odf(i).c_hat = odf(i).c_hat + gcA2fourier(abg(:,ind),c(ind),A);             
-      end
-    
-      % symmetrization for a many center      
+      % calculate Fourier coefficients
+      odf(i).c_hat = gcA2fourier(abg,c,A);
+          
+      % symmetrization for many center      
       if 10*numel(odf(i).center)*numel(odf(i).SS)*numel(odf(i).CS)...
           >= L^3        
       
@@ -125,7 +113,7 @@ for i = 1:length(odf)
         end
       end
     end
-    
+
     if ~isempty(inputname(1)) && nargout == 1
       assignin('caller',inputname(1),odf);
     end

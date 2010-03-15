@@ -81,7 +81,7 @@ text(13.5,0.9,'threshold','rotation',-90)
 % calculations. We can plot the misorientation to mean spatially
 
 figure, 
-plotspatial(mis2m_ebsd,'r',sph2vec(30*degree,22.5*degree),'antipodal')
+plotspatial(mis2m_ebsd,'r',vector3d('polar',30*degree,22.5*degree),'antipodal')
 hold on, plotboundary(grains)
 
 %%
