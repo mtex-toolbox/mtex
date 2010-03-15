@@ -408,7 +408,6 @@ nr = length(regionids);
 p = struct(polygon);
 ply = repmat(p,1,nr);
 
-
 for k =1:nr
   sel = cc(crc(k)+1)+1:cc(crc(k+1)+1);
 
@@ -489,11 +488,11 @@ cc = 0;
 k=2;
 while 1
   ro = find(f(k-1) == gr);
-  
-  if ~isempty(ro)
-    ro = ro(end);
+  n = numel(ro);
+  if n>0
+    ro = ro(n);
     f(k) = gl(ro);     
-  else  
+  else 
     ro = find(gr>0);
     if ~isempty(ro)
       ro = ro(1);
@@ -508,10 +507,11 @@ while 1
   gr(ro) = -1;
   k = k+1;
 end
+
   
 %convert to cells
-nc = length(cc)-1;  
-plygn = cell(1,nc);
+nc = numel(cc)-1; 
+if nc > 1, plygn = cell(1,nc); end
 for k=1:nc 
   if k > 1
     plygn{k} = [f(cc(k)+1:cc(k+1)) f(cc(k)+1)];
