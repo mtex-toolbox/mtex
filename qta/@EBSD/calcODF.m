@@ -42,6 +42,9 @@ vdisp('performing kernel density estimation',varargin{:})
 o = get(ebsd,'orientations','checkPhase',varargin{:});
 if numel(o) == 0, odf = ODF; return, end
 
+CS = get(ebsd(1).orientations,'CS');
+SS = get(ebsd(1).orientations,'SS');
+
 % extract weights
 if check_option(varargin,'weight')
   weight = get_option(varargin,'weight');
@@ -80,12 +83,11 @@ end
 hw = gethw(k);
 vdisp([' kernel: ' char(k)],varargin{:});
 
-odf = ODF(o,weight,k,...
-  get(ebsd(1).orientations,'CS'),get(ebsd(1).orientations,'SS'),...
+odf = ODF(o,weight,k,CS,SS,...
   'comment',['ODF estimated from ',ebsd(1).comment]);
 
 max_coef = 32;
-gridlen = numel(o)*length(get(ebsd(1).orientations,'CS'));
+gridlen = numel(o)*length(CS);
 
 %% Fourier ODF
 if ~check_option(varargin,{'exact','noFourier'}) && ...
@@ -143,8 +145,8 @@ vdisp([' approximation grid: ' char(S3G)],varargin{:});
 d = zeros(1,numel(S3G));
 
 % iterate due to memory restrictions?
-maxiter = ceil(length(get(ebsd(1).orientations,'CS'))*...
-  length(get(ebsd(1).orientations,'SS'))*numel(o) /...
+maxiter = ceil(length(CS)*...
+  length(SS)*numel(o) /...
   get_mtex_option('memory',300 * 1024));
 if maxiter > 1, progress(0,maxiter);end
 
@@ -170,9 +172,7 @@ d = d(del);
 
 %% generate ODF
 
-odf = ODF(S3G,d,k,...
-  get(ebsd(1).orientations,'CS'),...
-  get(ebsd(1).orientations,'SS'),...
+odf = ODF(S3G,d,k,CS,SS,...
   'comment',['ODF estimated from ',ebsd(1).comment]);
 
 %% check wether kernel is to wide
@@ -182,8 +182,7 @@ if check_option(varargin,'small_kernel') && hw > 2*get(S3G,'resolution')
   k = kernel('de la Vallee Poussin','halfwidth',hw);
   vdisp([' recalculate ODF for kernel: ',char(k)],varargin{:});
   d = eval(odf,S3G); %#ok<EVLC>
-  odf = ODF(S3G,d./sum(d),k,...
-    get(ebsd(1).orientations,'CS'),get(ebsd(1).orientations,'SS'),...
+  odf = ODF(S3G,d./sum(d),k,CS,SS,...
     'comment',['ODF estimated from ',get(ebsd,'copmment')]);
 end
 

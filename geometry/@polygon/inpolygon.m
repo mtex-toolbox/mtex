@@ -27,7 +27,7 @@ end
 switch lower(method)
   case 'complete'
     ind = in_it(p,xy,@all);
-  case 'centroids'  
+  case {'centroids','centroid'}
     pxy = centroid(p);
     ind = inpolygon(pxy(:,1),pxy(:,2),xy(:,1),xy(:,2));
   case 'intersect'

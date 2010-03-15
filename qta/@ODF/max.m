@@ -26,7 +26,7 @@ function [q val]= max(odf,varargin)
 
 res = get_option(varargin,'resolution',5*degree);
 
-S3G = extract_SO3Grid(odf,'resolution',res,varargin{:});
+S3G = extract_SO3grid(odf,'resolution',res,varargin{:});
 f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
 
 

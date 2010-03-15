@@ -78,14 +78,6 @@ set(gcf,'position',[50,50,400,400]);
 plot(CS,'FontSize',15,'antipodal')
 
 %%
-% *twinning*
-% a [[symmetry_twinning.html twinning]] operator adds symmetry elemtes
-
-dauphine = twinning(CS,'dauphine')
-figure, plot(CS)
-figure, plot(dauphine)
-
-%%
 %
 close all
 

@@ -7,10 +7,8 @@
 %% Specify Crystal and Specimen Symmetry
 
 % specify crystal and specimen symmetry
-CS = {...
-  symmetry('m-3m'),... % crystal symmetry phase 1
-  symmetry('m-3m')};   % crystal symmetry phase 2
-SS = symmetry('-1');   % specimen symmetry
+CS = symmetry('m-3m');
+SS = symmetry('-1'); 
 
 %% Import ebsd data
 
@@ -22,56 +20,34 @@ ebsd = loadEBSD(fname,CS,SS,'interface','generic',...
 
 plotx2east
 
-%% Segmentation
-% perform a regionalisation with different threshold angels
-
-angles = [2.5:2.5:20 25:5:45];
-grains = cell(size(angles));
-
-for k=1:numel(angles)
-  [grains{k} ebsd] = segment2d(ebsd,'angle', angles(k)*degree,'silent');
-end
- 
-%% grain size distribution
-
-bin = exp(1:0.5:6);
-cell2mat(cellfun(@(x) hist(grainsize(x),bin), grains,'uniformoutput',false)')'
-
 %% Estimate ODF with different threshold angles
+% Calculate Texture-properties: index and entroy
+
+angles = [5 10 15 20 30 45];
 
 kern = kernel('de la Vallee Poussin','halfwidth',7*degree);
+S3m = SO3Grid(7.5*degree,CS,CS); % predefine an SO3 discretisation 
 
 for k=1:numel(angles)  
+  
+  % perform a regionalisation with different threshold angels
+  [grains ebsdt] = segment2d(ebsd,'angle', angles(k)*degree,'silent');
+  
   %misorientation to neighbour
-  mis2m_ebsd = misorientation(grains{k},ebsd);
-  mis2m_odf{k}  = calcODF(mis2m_ebsd(1),'kernel',kern,'exact','silent');
+  mis2m_odf  = calcODF(misorientation(link(grains,ebsdt(1))),...
+    'kernel',kern,'silent','SO3Grid',S3);
    
   %misorientation to mean
-  mis2n_ebsd = misorientation(grains{k});
-  mis2n_odf{k}  = calcODF(mis2n_ebsd(1),'kernel',kern,'exact','silent');
+  mis2n_odf  = calcODF(misorientation(grains,ebsdt(1)),...
+    'kernel',kern,'silent','SO3Grid',S3);  
+  
+  tindex_n(k)   = textureindex(mis2n_odf,'SO3Grid',S3);
+  tentropy_n(k) = entropy(mis2n_odf,'SO3Grid',S3);
+  tindex_m(k)   = textureindex(mis2m_odf,'SO3Grid',S3);
+  tentropy_m(k) = entropy(mis2m_odf,'SO3Grid',S3);
+  
 end
 
-
-%% Calculate Texture-properties: index and entroy
-
-%% 
-% preallocation of some variables
-tindex_n = zeros(size(angles));
-tindex_m = zeros(size(angles));
-tentropy_m = zeros(size(angles));
-tentropy_n = zeros(size(angles));
-
-%%
-% now we evaluate the misorientation odfs of every threshold 
-
-S3 = SO3Grid(5*degree,symmetry('m-3m'),symmetry);
-
-for k=1:numel(angles)
- tindex_n(k)   = textureindex(mis2n_odf{k},'SO3Grid',S3);
- tentropy_n(k) = entropy(mis2n_odf{k},'SO3Grid',S3);
- tindex_m(k)   = textureindex(mis2m_odf{k},'SO3Grid',S3);
- tentropy_m(k) = entropy(mis2m_odf{k},'SO3Grid',S3);
-end
 
 %%
 % and plot it

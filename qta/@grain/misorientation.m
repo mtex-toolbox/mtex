@@ -83,7 +83,6 @@ else % misorientation to neighbour grains
     
     %partition due to memory
     parts = [ 1:25000:length(pair) length(pair)+1];
-    of = repmat(orientation(o(1)),1,length(pair));
     for l = 1:length(parts)-1
       
       cur = parts(l):parts(l+1)-1;
