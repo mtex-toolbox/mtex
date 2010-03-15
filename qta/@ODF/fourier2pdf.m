@@ -20,7 +20,7 @@ end
 %% calculate Fourier coefficients of the pole figure
 
 % 
-[in_theta,in_rho] = vec2sph(in(:));
+[in_theta,in_rho] = polar(in(:));
 
 % bandwidth
 L = get_option(varargin,'bandwidth',bandwidth(odf));
@@ -42,7 +42,7 @@ end
 
 %% evaluate Fourier coefficients
 
-[out_theta,out_rho] = vec2sph(out(:));
+[out_theta,out_rho] = polar(out(:));
 out_theta = fft_theta(out_theta); 
 out_rho   = fft_rho(out_rho); 
 r = [reshape(out_rho,1,[]);reshape(out_theta,1,[])];

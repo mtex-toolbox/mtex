@@ -23,7 +23,7 @@ if check_option(S2G.options,'INDEXED') && ~check_option(varargin,'direct')
 
   [ytheta,yrho,iytheta,prho,rhomin] = getdata(S2G);
   yrho = yrho - rhomin;
-  [xtheta,xrho] = vec2sph(v);
+  [xtheta,xrho] = polar(v);
   xrho = xrho - rhomin;
 
   if nargin == 2
