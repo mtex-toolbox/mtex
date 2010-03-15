@@ -39,7 +39,7 @@ else
       v = vector3d(1,1,0);
   end
   
-  [theta,rho] = vec2sph(v);
+  [theta,rho] = polar(v);
   rho = mod(rho,rotangle_max_z(cs));
   
   q = q(:);

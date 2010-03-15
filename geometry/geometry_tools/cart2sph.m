@@ -11,7 +11,7 @@ function [theta,rho,r] = cart2sph(x,y,z)
 %  theta, tho, radius - spherical coordinates in radians
 %
 %% See also
-% vector3d/vec2sph sph2vec
+% vector3d/polar vector3d
 
 if nargout == 2
     rho = atan2(y,x);

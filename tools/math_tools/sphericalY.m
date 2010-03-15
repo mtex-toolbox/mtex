@@ -12,7 +12,7 @@ function Y = sphericalY(l, theta, rho)
 %% See also
 % wignerD
 
-if isa(theta,'vector3d'), [theta,rho] = vec2sph(theta); end
+if isa(theta,'vector3d'), [theta,rho] = polar(theta); end
 
 % calculate assoziated legendre functions
 L = reshape(legendre(l,cos(theta(:))).',numel(theta),l+1); % nodes x order

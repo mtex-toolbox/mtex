@@ -25,7 +25,7 @@ ss = odf(1).SS;
 if length(odf) == 1
   iodf = ones(points,1);
 else
-  iodf = discretesample(get(odf.weights), points);
+  iodf = discretesample(get(odf,'weights'), points);
 end
 
 ori = repmat(orientation(cs,ss),points,1);

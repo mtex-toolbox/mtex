@@ -24,7 +24,7 @@ end
 
 % symmetrise
 sv = q * v;
-[theta,rho] = vec2sph(sv);
+[theta,rho] = polar(sv);
 
 % if possible swap to upper hemisphere
 if ~isempty(rho_rot)

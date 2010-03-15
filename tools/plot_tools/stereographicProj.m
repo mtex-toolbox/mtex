@@ -6,7 +6,7 @@ function [x,y] = stereographicProj(theta,rho)
 %% Output
 %  x, y 
 
-if nargin == 1, [theta,rho] = vec2sph(theta);end
+if nargin == 1, [theta,rho] = polar(theta);end
 
 ind = find(theta > pi/2+10^(-10));
 theta(ind)  = pi - theta(ind);
