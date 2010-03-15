@@ -31,9 +31,9 @@ if check_option(varargin,'fill')
   pl = cellfun('prodofsize',{p.xy});
   A = area(p);
   
-  ind = splitdata(pl,fix(log(length(pl))/2),'descend');
+  ind = splitdata(pl,fix(log(length(pl))/2),'ascend');
   
-  for k=1:length(ind)    
+  for k=length(ind):-1:1  
     ndx = ind{k};
     [ignore zorder] = sort(A(ndx),'descend');    
     zorder = ndx(zorder);
