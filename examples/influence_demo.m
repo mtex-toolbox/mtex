@@ -26,7 +26,7 @@ plotx2east
 angles = [5 10 15 20 30 45];
 
 kern = kernel('de la Vallee Poussin','halfwidth',7*degree);
-S3m = SO3Grid(7.5*degree,CS,CS); % predefine an SO3 discretisation 
+S3 = SO3Grid(7.5*degree,CS,CS); % predefine an SO3 discretisation 
 
 for k=1:numel(angles)  
   

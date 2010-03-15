@@ -5,6 +5,12 @@ function ebsd = misorientation(grains,varargin)
 % returns misorientation to neighboures of same phase as ebsd object or
 % returns the misorientation of ebsd-data to mean of grains
 %
+%% Syntax
+% ebsd = misorientation(grains)
+% ebsd_mis = misorientation(grains,ebsd)
+% ebsd_mis = misorientation(grains,'random',10000)
+%
+%
 %% Input
 %  grains   - @grain
 %  ebsd     - @EBSD
@@ -16,14 +22,6 @@ function ebsd = misorientation(grains,varargin)
 %  inverse  - specifies if to look from current grain i to neighbour j or other way round
 %  random   - generate a random misorientation to neighbours
 %  weighted - weight the misorientations against length of common boundary
-%
-%% Example
-%
-%  ebsd_mis = misorientation(grains)
-%
-%  ebsd_mis = misorientation(grains,ebsd)
-%
-%  ebsd_mis = misorientation(grains,'random',10000)
 %
 %% See also
 % EBSD/calcODF EBSD/hist grain/neighbours 
@@ -81,22 +79,13 @@ else % misorientation to neighbour grains
       
     end
     
-    %partition due to memory
-    parts = [ 1:25000:length(pair) length(pair)+1];
-    for l = 1:length(parts)-1
-      
-      cur = parts(l):parts(l+1)-1;
-     
-      if check_option(varargin,'inverse')
-        i = pair(cur,1); j = pair(cur,2);
-      else
-        i = pair(cur,2); j = pair(cur,1);
-      end
-      
-      of(cur) = o(i) .\ o(j);
-      
+    % compute the misorientation 
+    if check_option(varargin,'inverse')
+      of = o(pair(:,1)) .\ o(pair(:,2));
+    else
+      of = o(pair(:,2)) .\ o(pair(:,1));
     end
-    
+      
     if check_option(varargin,'weighted') && ~check_option(varargin,'random')
       p.weight = zeros(size(pair,1),1);
       
