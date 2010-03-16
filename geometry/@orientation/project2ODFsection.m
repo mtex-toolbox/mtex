@@ -1,4 +1,4 @@
-function S2G = project2ODFsection(o,type,sec,varargin)
+function [S2G, data]= project2ODFsection(o,type,sec,varargin)
 % project orientation to ODF sections used by plotodf
 %
 %% Input
@@ -72,14 +72,27 @@ dmin = dmin(ind);
 
 %% Find closest section
 
-ind = isappr(d,repmat(dmin,1,size(sec,2)));
+ind2 = isappr(d,repmat(dmin,1,size(sec,2)));
 
 %% construct output
 
 for i = 1:size(sec,2)
   
+  S2G{i} = S2Grid(sph2vec(e2(ind2(:,i)),mod(rho(ind2(:,i)),2*pi)),varargin{:});
   
+end
+
+
+if nargout > 1 && check_option(varargin,'data')
+  dat = get_option(varargin,'data');
+  if ~isempty(dat)
+    dat = repmat(dat,numel(o.CS),numel(o.SS));
   
-  S2G{i} = S2Grid(sph2vec(e2(ind(:,i)),mod(rho(ind(:,i)),2*pi)),varargin{:});
-  
+    dat = dat(ind);
+    for i = 1:size(sec,2)
+      data{i} = dat(ind2(:,i));
+    end
+  else
+    data = repcell([],size(sec));
+  end
 end
