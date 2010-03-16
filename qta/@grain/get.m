@@ -1,4 +1,4 @@
-function varargout = get(grains, vname)
+function varargout = get(grains, vname, varargin)
 % get object property or intersection with ebsd 
 %
 %% Input
@@ -33,6 +33,31 @@ if nargin > 1
       end
     case {'neighbour' 'cells'}
       varargout{1} = {grains.(vname)};
+    case {'orientations','orientation'}
+      
+      if check_option(varargin,'phase')
+        
+        [phase uphase] = get(grains,'phase');
+      	ind = phase == get_option(varargin,'phase',uphase(1));
+      
+      elseif check_option(varargin,'CheckPhase')
+
+        [phase uphase] = get(grains,'phase');
+        warning('MTEX:MultiplePhases','This operatorion is only permitted for a single phase! I''m going to process only the first phase.');
+        ind = phase == uphase(1);
+
+      else
+
+        ind = true(size(grains));
+
+      end
+      
+      varargout{1} = [grains(ind).orientation];
+      
+      if nargout > 1
+        varargout{2} = ind;
+      end
+      
     case fields(grains)
       varargout{1} = [grains.(vname)];
     case fields(grains(1).properties)

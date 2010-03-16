@@ -18,9 +18,10 @@ function plotipdf(ebsd,r,varargin)
 
 %% make new plot
 
-o = ebsd(1).orientations;
 
-varargin = set_option_property(ebsd,varargin{:});
+[o ind] = get(ebsd,'orientations','CheckPhase',varargin{:});
+
+varargin = set_option_property(ebsd(ind),varargin{:});
 
 plotipdf(o,r,...
   'FigureTitle',[inputname(1) ' (' get(ebsd,'comment') ')'],varargin{:});

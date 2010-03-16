@@ -32,7 +32,10 @@ for k=1:numel(uphase)
 
   else
     
-    ind = find(o,q0,epsilon);    
+    ind = false(numel(o),1);
+    for l=1:numel(q0)
+      ind = ind | find(o,q0(l),epsilon);  
+    end
     sel(ndx(ind)) = true;
 
   end

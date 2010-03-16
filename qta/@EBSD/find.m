@@ -2,7 +2,10 @@ function ebsd = find(ebsd,q0,epsilon)
 
 
 for k=1:length(ebsd)
-  
-  ebsd(k) = delete(ebsd(k), ~find(ebsd(k).orientations,q0,epsilon));
+  ind = false(size(ebsd(k).orientations));
+  for l=1:numel(q0)
+    ind = ind | find(ebsd(k).orientations,q0(l),epsilon);
+  end
+  ebsd(k) = delete(ebsd(k),~ind );
   
 end

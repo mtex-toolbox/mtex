@@ -7,7 +7,7 @@ switch vname
      varargout = cellfun(@(x) get(x,(vname)) ,{obj.orientations},'uniformoutput',false);
   case {'comment','options'}    
     varargout = {obj.(vname)};    
-  case {'data','orientations'}   
+  case {'data','orientations','orientation'}   
     
     % extract phases
     phase = [obj.phase];

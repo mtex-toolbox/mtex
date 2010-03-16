@@ -1,10 +1,9 @@
 function plotodf(grains,varargin)
 
-[phase,uphase] = get(grains,'phase');
-grains = grains(phase == uphase(1));
-o = get(grains,'orientation');
 
-varargin = set_option_property(grains,varargin{:});
+[o ind] = get(grains,'orientations','CheckPhase',varargin{:});
+
+varargin = set_option_property(grains(ind),varargin{:});
 
 plotodf(o,...
   'FigureTitle',[inputname(1) ' (' get(grains(1),'comment') ')'],varargin{:});
