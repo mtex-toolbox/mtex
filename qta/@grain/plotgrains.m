@@ -28,6 +28,10 @@ end
 % ishull = check_option(varargin,{'hull','convhull'});
 property = get_option(varargin,'property','orientation');
   %treat varargin
+  
+if check_option(varargin,'phase') && ~strcmpi(property,'phase') %restrict to a given phase
+	grains(~ismember([grains.phase],get_option(varargin,'phase'))) = [];
+end   
 
 %% get the polygons
 

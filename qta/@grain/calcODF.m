@@ -11,6 +11,7 @@ function grains = calcODF(grains,ebsd,varargin)
 %
 %% Options
 %  phase   - specifies the phase to calculate the odf for
+%  weight  - weighting estimation after volume portion of grains
 %
 %% See also
 % EBSD/calcODF
@@ -42,11 +43,13 @@ if nargin>1 && isa(ebsd,'EBSD')
 
 else
   if nargin>1, varargin = [{ebsd} varargin]; end
-  [phase uphase] = get(grains,'phase');
-  if length(uphase) > 1
-    warning('MTEX:MultiplePhases','This operatorion is only permitted for a single phase! I''m going to process only the first phase.'); end
+  [o ind] = get(grains,'orientation','CheckPhase',varargin{:});
   
-  o = get(grains(phase == uphase(1)),'orientation');  
-  grains = calcODF( EBSD( o ) ,varargin{:});
+  if check_option(varargin,'weight')
+    weight = get_option(varargin,'weight',area(grains),'double');
+    varargin = set_option(varargin,'weight',weight(ind));
+  end
+  
+  grains = calcODF(EBSD(o,'phase',get_option(varargin,'phase',[])),varargin{:});  
 end
 

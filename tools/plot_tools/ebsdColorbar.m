@@ -66,6 +66,8 @@ if any(strcmp(cc,{'ipdf','hkl'}))
   d = reshape(d,[size(h),3]);
   
   multiplot(@(i) h,@(i) d,1,'rgb',varargin{:});
+  
+  type = 'ipdf';
 else
   [S3G,S2G,sec] = SO3Grid('plot',cs,symmetry,varargin{:});
 
@@ -83,9 +85,11 @@ else
     'ANOTATION',@(i) [symbol,'=',int2str(sec(i)*180/pi),'^\circ'],...  'MINMAX','SMOOTH','TIGHT',...
        'xlabel',labelx,'ylabel',labely,...  
        'equal','margin',0,varargin{:}); %#ok<*EVLC>
+     
+	type = '';
 end
 
-set(gcf,'tag',cc);
+set(gcf,'tag',type);
 setappdata(gcf,'colorcoding',cc);
 setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
 setappdata(gcf,'CS',cs);

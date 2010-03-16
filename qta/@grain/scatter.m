@@ -1,10 +1,8 @@
 function scatter(grains,varargin)
 
-[phase,uphase] = get(grains,'phase');
-grains = grains(phase == uphase(1));
-o = get(grains,'orientation');
+[o ind] = get(grains,'orientations','CheckPhase',varargin{:});
 
-varargin = set_option_property(grains,varargin{:});
+varargin = set_option_property(grains(ind),varargin{:});
 
 scatter(o,...
   'FigureTitle',[inputname(1) ' (' get(grains(1),'comment') ')'],varargin{:});

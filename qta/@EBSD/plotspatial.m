@@ -28,7 +28,12 @@ function plotspatial(ebsd,varargin)
 varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
+
 prop = lower(get_option(varargin,'property','orientation'));
+
+if check_option(varargin,'phase') && ~strcmpi(prop,'phase') %restrict to a given phase
+	ebsd(~ismember([ebsd.phase],get_option(varargin,'phase'))) = [];
+end   
 
 newMTEXplot;
 
@@ -40,12 +45,12 @@ end;
 
 switch prop
   case 'user'
-  case 'orientation'
+  case 'orientation'    
     cc = lower(get_option(varargin,'colorcoding','ipdf'));
     d = [];
     for i = 1:length(ebsd)
       d = [d;orientation2color(ebsd(i).orientations,cc,varargin{:})];
-    end
+    end    
   case 'phase'
     d = [];
     for i = 1:length(ebsd)
