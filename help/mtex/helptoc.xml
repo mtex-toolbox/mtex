@@ -56,16 +56,21 @@
     Import EBSD Data
     <tocitem target="ebsd_interface.html">Generic Interface</tocitem>
   </tocitem>
-  <tocitem target="EBSDPlot.html"> Plot EBSD Data </tocitem>
-  <tocitem target="ModifyEBSDData.html"> Modify EBSD Data </tocitem>
-  <tocitem target="AnalyzeEBSDData.html"> Analyze EBSD Data </tocitem>
-  <tocitem target="EBSD2odf_estimation.html"> ODF Estimation from EBSD data</tocitem>
-  <tocitem target="GrainDetection.html"> Grain Detection </tocitem>
-  <tocitem target="GrainStatistics.html"> Grain Statistics </tocitem>
+  <tocitem target="GrainModelling.html"> Grain Modelling </tocitem>
+  <tocitem target="OrientationPlots.html"> Visualising EBSD &amp; Grains
+    <tocitem target="OrientationPlots.html"> Orientation Plots </tocitem>
+    <tocitem target="SpatialPlots.html"> Spatial Plots </tocitem>
+  </tocitem>
+  <tocitem target="ModifyEBSDData.html"> Manipulate EBSD &amp; Grains</tocitem>
+ <!-- <tocitem target="AnalyzeEBSDData.html"> Analyze EBSD Data </tocitem> -->
+  <tocitem target="EBSD2odf_estimation.html"> ODF Estimation </tocitem>  
+ <!-- <tocitem target="GrainStatistics.html"> Grain Statistics </tocitem> -->
   <tocitem target="MisorientationAnalysis.html"> Misorientation Analysis </tocitem>
-  <tocitem target="ebsd_demo.html"> EBSD Analysis Demo </tocitem>
-  <tocitem target="grain_demo.html"> Grain Analysis Demo </tocitem>
-  <tocitem target="influence_demo.html"> Influence of Threshold Demo</tocitem>
+  <tocitem target="ebsd_demo.html"> EBSD &amp; Grain Demos
+    <tocitem target="ebsd_demo.html"> EBSD Analysis Demo </tocitem>
+    <tocitem target="grain_demo.html"> Grain Analysis Demo </tocitem>
+    <tocitem target="influence_demo.html"> Influence of Threshold Demo</tocitem>
+  </tocitem>
 </tocitem>
 
 <tocitem target="ODF_index.html"
@@ -75,9 +80,11 @@
   <tocitem target="ODFPlot.html">Visualising ODFs</tocitem>
   <tocitem target="ModelODFs.html">Model ODFs</tocitem>
   <tocitem target="ODFCalculations.html">ODF Calculations</tocitem>
-  <tocitem target="PoleFigureSimulation_demo.html"> Pole Figure Simulation</tocitem>
-  <tocitem target="EBSDSimulation_demo.html"> EBSD Data Simulation</tocitem>
-  <tocitem target="ODF_demo.html"> ODF Demo </tocitem>
+  <tocitem target="PoleFigureSimulation_demo.html"> ODF Demos
+    <tocitem target="PoleFigureSimulation_demo.html"> Pole Figure Simulation</tocitem>
+    <tocitem target="EBSDSimulation_demo.html"> EBSD Data Simulation</tocitem>
+    <tocitem target="ODF_demo.html"> ODF Demo </tocitem>
+  </tocitem>
 </tocitem>
 
 
