@@ -15,5 +15,5 @@ if n <= 0
 elseif n < 1
   q = x(max(1,round(size(x,1)*n)),:);
 else
-  q = x(min(n,numel(q)));
+  q = x(min(n,numel(x)));
 end

@@ -13,6 +13,8 @@ function odf = conv(odf,psi,varargin)
 
 L = bandwidth(odf);
 A = getA(psi);
+A(end+1:L+1) = 0;
+
 
 for l = 0:L
   odf.c_hat(deg2dim(l)+1:deg2dim(l+1)) = A(l+1) / (2*l+1) * odf.c_hat(deg2dim(l)+1:deg2dim(l+1)) ;
