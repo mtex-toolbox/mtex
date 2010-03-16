@@ -12,27 +12,25 @@ function newFigure = newMTEXplot(varargin)
 % 
 
 
-%% new figure
-if ~ishold ||  check_option(varargin,'newFigure') %(nargin == 0) ||
-  newFigure = true;
-else
-  newFigure = false;
-end
-
+%% check hold state
+newFigure = ~ishold ||  check_option(varargin,'newFigure');
 
 %% check tag
-if check_option(varargin,'ensureTag')
-  newFigure = newFigure  || ...
-    ~any(strcmpi(get(gcf,'tag'),get_option(varargin,'ensureTag')));
+if ~newFigure && check_option(varargin,'ensureTag') && ...
+  ~any(strcmpi(get(gcf,'tag'),get_option(varargin,'ensureTag')))
+  newFigure = true;
+  warning('MTEX:newFigure','Plot type not compatible to previous plot! I''going to create a new figure.');
 end
 
 %% check appdata
-if check_option(varargin,'ensureAppdata')
-  ad = get_option(varargin,'ensureAppdata');
+ad = get_option(varargin,'ensureAppdata');
+if ~newFigure
   try
     for i = 1:length(ad)
       if ~(getappdata(gcf,ad{i}{1}) == ad{i}{2})
         newFigure = true;
+        warning('MTEX:newFigure','Plot properties not compatible to previous plot! I''going to create a new figure.');
+        break
       end
     end
   catch %#ok<CTCH>
