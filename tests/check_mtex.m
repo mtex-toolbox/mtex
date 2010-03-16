@@ -7,7 +7,7 @@ disp('this might take some time');
 disp(' ');
 
 disp('simulating pole figures')
-[CS,SS] = get(santafee,'symmetry'); %#ok<NASGU>
+[CS,SS] = get(SantaFe,'symmetry'); %#ok<NASGU>
 
 % crystal directions
 h = [Miller(1,0,0,CS),Miller(1,1,0,CS),Miller(1,1,1,CS),Miller(2,1,1,CS)];
@@ -16,7 +16,7 @@ h = [Miller(1,0,0,CS),Miller(1,1,0,CS),Miller(1,1,1,CS),Miller(2,1,1,CS)];
 r = S2Grid('equispaced','resolution',10*degree,'antipodal');
 
 % pole figures
-pf = simulatePoleFigure(santafee,h,r) %#ok<NOPRT>
+pf = simulatePoleFigure(SantaFe,h,r) %#ok<NOPRT>
 
 disp(' ');
 

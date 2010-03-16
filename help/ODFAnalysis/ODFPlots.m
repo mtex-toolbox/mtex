@@ -80,7 +80,7 @@ plot(odf,'sections',12,'position',[100 100 450 350],'silent')
 % corresponding name as an option. E.g. the traditional ODF plot is
 % achieved by
 
-plot(santafee,'alpha','sections',9,...
+plot(SantaFe,'alpha','sections',9,...
   'projection','plain','gray','contourf','silent')
 
 

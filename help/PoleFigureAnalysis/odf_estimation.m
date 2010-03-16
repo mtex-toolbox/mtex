@@ -80,7 +80,7 @@ plotpdf(odf,get(pf,'Miller'),'antipodal','silent')
 % _Ghost correction_ is a technique first introduced by Matthies that
 % increases the uniform portion of the estimated ODF to reduce the so
 % called _ghost error_. It applies especially useful in the case of week 
-% ODFs. The classical example is the <santafee_demo.html Santafee model
+% ODFs. The classical example is the <SantaFe_demo.html SantaFe model
 % ODF>. An analysis of the approximation error under ghost correction can
 % be found <PoleFigureSimulation.html here>
 %

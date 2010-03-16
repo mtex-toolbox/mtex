@@ -84,18 +84,18 @@ h = [Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)];
 
 %%
 % simulate EBSD pole figure data
-pf_santafee = simulatePoleFigure(santafee,h,r);
+pf_SantaFe = simulatePoleFigure(SantaFe,h,r);
 
 %%
 % estimate an ODF
-rec = calcODF(pf_santafee,'RESOLUTION',10*degree,...
+rec = calcODF(pf_SantaFe,'RESOLUTION',10*degree,...
  'background',10,'iter_max',6)
 
 plotodf(rec,'sections',6)
 
 %%
 %
-rec_corrected = calcODF(pf_santafee,'RESOLUTION',10*degree,...
+rec_corrected = calcODF(pf_SantaFe,'RESOLUTION',10*degree,...
  'background',10,'iter_max',6,'ghost_correction')
 
 plotodf(rec,'sections',6)
@@ -104,8 +104,8 @@ plotodf(rec,'sections',6)
 %% Error Analysis
 
 
-calcerror(pf_santafee,rec)
-calcerror(pf_santafee,rec_corrected)
+calcerror(pf_SantaFe,rec)
+calcerror(pf_SantaFe,rec_corrected)
 
 %%
 % *Difference plot*
@@ -116,8 +116,8 @@ plotDiff(pf,rec)
 %%
 % *ODF error*
 
-calcError(santafee,rec)
-calcError(santafee,rec_corrected)
+calcError(SantaFe,rec)
+calcError(SantaFe,rec_corrected)
 
 %% Exercises
 %

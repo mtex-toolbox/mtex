@@ -5,11 +5,11 @@
 
 for i = 1:5
 
-  ebsd = simulateEBSD(santafee,10^i);
+  ebsd = simulateEBSD(SantaFe,10^i);
 
   odf = calcODF(ebsd);
 
-  e(i) = calcerror(odf,santafee,'resolution',2.5*degree);
+  e(i) = calcerror(odf,SantaFe,'resolution',2.5*degree);
   
 end
 

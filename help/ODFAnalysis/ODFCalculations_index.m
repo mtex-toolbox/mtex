@@ -17,7 +17,7 @@
 % <fibreODF.hml fibre ODFs>, or any superposition of these
 % components. Actually you can calculate with ODFs by adding, subtracting
 % and scalling components. Furthermore, the MTEX toolbox allready contains  
-% some popular standard ODF as the <santafee.html Santafee> and the
+% some popular standard ODF as the <SantaFe.html SantaFe> and the
 % <mix2.html mix2> sample ODFs. How to work best with model ODFs in MTEX
 % can be found <modelODFs_demo.html here> and <ODF_index.html here>.
 %
