@@ -90,7 +90,7 @@ plotipdf(odf,[xvector,zvector])
 % *Plotting an ODF*
 
 close all
-plot(santafee,'alpha','sections',6,'projection','plain','gray','contourf')
+plot(SantaFe,'alpha','sections',6,'projection','plain','gray','contourf')
 
 %% Exercises
 %

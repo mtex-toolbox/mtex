@@ -62,7 +62,7 @@ plot(cs,'projection','eangle','antipodal','grid_res',15*degree)
 % rectangular plot. This projection is often chosen for ODF plots, e.g.
 
 close; figure('position',[46 171 752 486]);
-plotodf(santafee,'alpha','sections',18,'resolution',5*degree,...
+plotodf(SantaFe,'alpha','sections',18,'resolution',5*degree,...
   'projection','plain','gray','contourf','FontSize',10,'silent')
 
 

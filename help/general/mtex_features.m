@@ -28,7 +28,7 @@
 % <uniformODF.html uniform ODFs>, a <unimodalODF.html unimodal ODFs>, a
 % <fibreODF.hml fibre ODFs>, or any superposition of these
 % components. Furthermore, the MTEX toolbox allready contains 
-% some popular standard ODF as the <santafee.html Santafee> and the
+% some popular standard ODF as the <SantaFe.html SantaFe> and the
 % <mix2.html mix2> sample ODFs. How to work best with model ODFs in MTEX
 % can be found <ODF_index.html here>.
 %

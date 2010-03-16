@@ -10,7 +10,7 @@
 % * <ebsd_demo.html EBSD Data Analysis Demo>
 % * <ghost_demo.html Ghost Effect Demo>
 % * <dubna_demo.html Dubna demo>
-% * <santafee_demo.html Santafee Demo>
+% * <SantaFe_demo.html SantaFe Demo>
 % * <plot_demo.html Plotting Demo>
 % * <mtex_demo.html MTEX Workshop 2007>
 %

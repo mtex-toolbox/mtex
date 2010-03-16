@@ -1,13 +1,13 @@
-%% The santafee example
+%% The SantaFe example
 %
-% Simulate a set of pole figures for the Santafee standard ODF, estimate
-% an ODF and compare it to the inital Santafee ODF.
+% Simulate a set of pole figures for the SantaFe standard ODF, estimate
+% an ODF and compare it to the inital SantaFe ODF.
 
 %% Simulate pole figures
 
 % get crystal and specimen symmetry
-cs = get(santafee,'CS');
-ss = get(santafee,'SS');
+cs = get(SantaFe,'CS');
+ss = get(SantaFe,'SS');
 
 % crystal directions
 h = [Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(1,1,1,cs),Miller(2,1,1,cs)];
@@ -16,7 +16,7 @@ h = [Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(1,1,1,cs),Miller(2,1,1,cs)];
 r = S2Grid('equispaced','resolution',5*degree,'antipodal');
 
 % pole figures
-pf = simulatePoleFigure(santafee,h,r);
+pf = simulatePoleFigure(SantaFe,h,r);
 
 % add some noise
 pf = noisepf(pf,100);
@@ -35,7 +35,7 @@ rec2 = calcODF(pf,'ghost_correction')
 %% Error analysis
 
 % calculate RP error
-calcerror(rec2,santafee)
+calcerror(rec2,SantaFe)
 
 % difference plot between meassured and recalculated pole figures
 close; figure('position',[100,100,800,300])
@@ -55,7 +55,7 @@ plot(rec2,'alpha','sections',18,'resolution',5*degree,...
 %% Plot odf
 
 close; figure('position',[46 171 752 486]);
-plot(santafee,'alpha','sections',18,...
+plot(SantaFe,'alpha','sections',18,...
      'projection','plain','gray','contourf','FontSize',10,'silent')
    
 %% Plot Fourier Coefficients
@@ -63,7 +63,7 @@ plot(santafee,'alpha','sections',18,...
 %%
 close all;
 % true ODF
-plotFourier(santafee,'bandwidth',32)
+plotFourier(SantaFe,'bandwidth',32)
 % keep plot for adding the next plots
 hold all
 

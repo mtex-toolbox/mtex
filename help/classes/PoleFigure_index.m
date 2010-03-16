@@ -107,5 +107,5 @@ plotpdf(odf,h,'antipodal','position',[100 100 800 300])
 % command to simulate pole figure is <ODF_simulatePoleFigure.html
 % simulatePoleFigure>, e.g.
 
-pf = simulatePoleFigure(santafee,Miller(1,0,0),S2Grid('regular'))
+pf = simulatePoleFigure(SantaFe,Miller(1,0,0),S2Grid('regular'))
 plot(pf)

@@ -3,7 +3,7 @@ ss = symmetry('mmm')
 g0 = Miller2quat(Miller(1,2,2,cs),Miller(2,2,1,cs));
 
 %%
-x = eval(santafee,...
+x = eval(SantaFe,...
   SO3Grid(1.25*degree,cs,ss));
 sum(x)/length(x)
 
