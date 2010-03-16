@@ -34,6 +34,8 @@ plot(pf)
 %% Extract information from imported pole figure data
 %
 % *get raw data*
+% Data stored in a <PoleFigure_index.html PoleFigure> variable can be
+% extracted using the command <PoleFigure_get.hmtl get>, e.g., by
 
 I = get(pf,'intensities'); % intensities
 h = get(pf,'Miller')       % Miller indice
@@ -41,6 +43,7 @@ r = get(pf,'r')            % specimen directions
 
 %%
 % *basic statistics*
+% There are also some basic statics on pole figure intensities
 
 min(pf)
 max(pf)
@@ -49,21 +52,6 @@ find_outlier(pf);
 
 %% Manipulate pole figure data
 %
-% *Correct data*
-
-pf = 2*pf1 + 5*pf2;
-pf = [pf1,pf2];
-pf = pf([1,3,5]);
-
-%%
-% *sdf*
-
-scale(pf,alpha),
-union(pf1,pf2),
-pf = delete(pf,indices)
-pf = rotate(pf,q)
-pf = set(pf,'data',value,indices)
-
 %%
 
 [theta,rho] = get(pf,'polar');
@@ -89,8 +77,17 @@ plotpdf(rec,h)
 %
 % define specimen directions
 r = S2Grid('regular','antipodal')
-pf_santafee = simulatePoleFigure(santafee,r);
 
+%%
+% define crystal directions
+h = [Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)];
+
+%%
+% simulate EBSD pole figure data
+pf_santafee = simulatePoleFigure(santafee,h,r);
+
+%%
+% estimate an ODF
 rec = calcODF(pf_santafee,'RESOLUTION',10*degree,...
  'background',10,'iter_max',6)
 

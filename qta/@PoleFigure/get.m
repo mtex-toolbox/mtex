@@ -57,9 +57,10 @@ switch vname
     varargout{1} = [pf.(vname)];
     
   case {'theta','polar'}
-    [theta,rho] = polar([pf.r]); %#ok<NASGU>
+    [theta,rho] = polar([pf.r]);
     varargout{1} = theta;
-        
+    varargout{2} = rho;    
+    
   case {'rho','azimuth'}
     [theta,rho] = polar([pf.r]); %#ok<ASGLU>
     varargout{1} = rho;
