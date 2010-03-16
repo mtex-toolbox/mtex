@@ -1,20 +1,18 @@
 function newFigure = newMTEXplot(varargin)
 % initalize new plot for MTEX
 %
-%% 
 %% Options
 %  newFigure
 %  newAxis
 %  ensureAppdata
 %  ensureTag
-% 
+%  FigureTitle    - figure title to be set for new figures
 %
 %%
 % 
 
 
 %% new figure
-
 if ~ishold ||  check_option(varargin,'newFigure') %(nargin == 0) ||
   newFigure = true;
 else
@@ -43,12 +41,28 @@ if check_option(varargin,'ensureAppdata')
 end
 
 
-if newFigure  
-  clf('reset');
-  figure(clf);
-  rmallappdata(gcf);  
-  
-	iconMTEX(gcf);
+if ~newFigure, return;end
+
+%% new figure
+clf('reset');
+figure(clf);
+rmallappdata(gcf);
+
+iconMTEX(gcf);
+
+% set tag
+if check_option(varargin,'ensureTag','char')
+  set(gcf,'tag',get_option(varargin,'ensureTag'));
 end
 
+% set appdata
+if check_option(varargin,'ensureAppdata')
+  for i = 1:length(ad)
+    setappdata(gcf,ad{i}{1},ad{i}{2})
+  end
+end
 
+% set figure name
+if ~isempty(get_option(varargin,'FigureTitle'))
+  set(gcf,'Name',get_option(varargin,'FigureTitle'));
+end
