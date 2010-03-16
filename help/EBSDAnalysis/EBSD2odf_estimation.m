@@ -8,54 +8,22 @@
 %  
 %% Contents
 %
-%% Syntax
-%
-% Starting point of any ODF estimation from EBSD data is a 
-% <EBSD_index.html EBSD> object which is in general created by
-%
-
-cs = { symmetry('cubic'), ...
-       symmetry('cubic') };
-ss = symmetry('triclinic');
-
-ebsd = loadEBSD([mtexDataPath,'/aachen_ebsd/85_829grad_07_09_06.txt'],cs,ss,... 
-                'interface','generic','Bunge',...
-                 'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3'},...
-                 'Columns', [2 3 4 5 6 7]);
-
-plot(ebsd)
-
 %%
-% See [[interfacesEBSD_index.html,EBSD interfaces]] for more infomations how to import
-% EBSD data and to create a EBSD object. ODF estimation from
-% a EBSD object is done by the function 
-% <EBSD_calcODF.html calcODF>. The most simplest
-% syntax is
+% Starting point of any ODF estimation from EBSD data is a 
+% <EBSD_index.html EBSD> object, which here is imported by a [[loadaachen.html,script file]]
 
-odf = calcODF(ebsd,'phase',1)
+loadaachen;
 
-%% 
-% You may want to plot some pole figures of the estimated ODF:
-
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],'antipodal','silent','position',[10 10 600 200])
-
-%% Kernel Density Estimation
+%% Kernel Density Estimation from EBSD Data
 %
 % There is no unique ODF determined by a set EBSD data. Indeed there is a
 % many different ODFs that all could serve as a good model for the measured
 % EBSD data. In MTEX an ODF ist estimated using kenel density estimation
 % which can be interpreted as a generalized histogram. 
 %
-% Let
-%
-% $$ \psi : SO(3) \to R $$
-%
-% be a radially symmetric, unimodal model ODF. Then the kernel density
-% estimate for the EBSD data
-%
-% $$g_1,g_2,\ldots,g_M \in SO(3)$$
-%
-% is given by
+% Let $\psi : SO(3) \to R$ be a radially symmetric, unimodal model ODF. 
+% Then the kernel density estimate for the EBSD data $g_1,g_2,\ldots,g_M
+% \in SO(3)$ is given by
 %
 % $$f(g) = \frac{1}{M} \sum_{i=1}^{M} \psi(g g_i^{-1})$$
 %
@@ -63,11 +31,20 @@ plotpdf(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],'antipodal','silent','po
 % great impact in the resulting ODF. In MTEX these parameters can be
 % specified as options to the function <EBSD_calcODF.html calcODF>.
 %
-% In order to change the default halfwidth of the kernel function psi the
+
+odf = calcODF(ebsd,'phase',1)
+
+%%
+% In order to change the default halfwidth of the kernel function $\psi$ the
 % option *halfwidth* has to be used, e.g.
 
 odf = calcODF(ebsd,'halfwidth',10*degree,'phase',1);
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],'antipodal','silent')
+
+%%
+% You may want to [[ODFPlot.html, plot]] some pole figures of the estimated ODF:
+
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],'antipodal','silent','position',[10 10 600 200])
+
 
 %% Estimation of Fourier Coefficients
 %
@@ -85,5 +62,56 @@ Fourier(odf,'order',4)
 % the help fo the Direchlet kernel. I.e.
 
 k = kernel('dirichlet',4);
-odf = calcODF(ebsd,'kernel',k,'phase',1);
-Fourier(odf,'order',4)
+odf_b = calcODF(ebsd,'kernel',k,'phase',1);
+Fourier(odf_b,'order',4)
+
+%% Kernel Density Estimation from Grains
+% EBSD data has often spatially dependend orientations, because one grain
+% is measuered several times. By modelling grains
+
+[grains ebsd] = segment2d(ebsd);
+
+%%
+% we can omit these fact. As above the command
+% [[grain_calcODF.html,calcODF]] performes a kernel density estimation
+
+odf_grains = calcODF(grains,'halfwidth',10*degree,'phase',1)
+
+%%
+% we are able to quantify what changed, by comparing the ODFs
+
+close all;
+plotDiff(odf_grains,odf,'sections',9)
+
+%%
+% however weighting after volume portion by optioning with *weight* results
+
+odf_grains = calcODF(grains,'weight',area(grains),'halfwidth',10*degree,'phase',1)
+
+close all;
+plotDiff(odf_grains,odf,'sections',9)
+
+%%
+% Since we have for each grain individual orientation measurements we can
+% estimate for every grain an ODF by overloading the corresponding EBSD
+% object, the resulting ODFs are stored as a grain property
+
+grains = calcODF(grains,ebsd,'exact');
+
+%%
+% The property can be accessed using the *get* command with
+
+get(grains,'ODF');
+
+%%
+% However, one might calculate the [[ODF_textureindex.html,textureindex]] or
+% other texture property, this can be done by a helper function
+% [[grain_grainfun.html, grainfun]], which allows to apply a
+% [[matlab:doc function_handle, function_handle]] on each ODF, or generally
+% single grain. Since this may take a while, we restrict the grainset some
+% of the largest grains
+
+grain_selection = grains( grainsize(grains) > 600 );
+tindex = grainfun(@textureindex, grain_selection, 'ODF')
+
+

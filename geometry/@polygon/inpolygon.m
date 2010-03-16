@@ -15,6 +15,11 @@ function ind = inpolygon( p , p2, method)
 %  ind    - logical indexing
 %
 
+if isa(p,'EBSD')
+  ind = inpolygon(p,polygon(p2));
+  return
+end
+
 p = polygon( p );
 x = polygon( p2 );
 

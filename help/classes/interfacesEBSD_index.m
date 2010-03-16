@@ -5,8 +5,8 @@
 % object from data files containing euler angles. Once such an object has
 % been created the data can be analyzed and processed in many ways. See e.g.
 %
-% [[EBSD_index.html,EBSD manipulation]], 
-% <EBSD_plot.html plot>, 
+% [[ModifyEBSDData.html,EBSD manipulation]], 
+% <EBSDPlot.html plot>, 
 % <EBSD_rotate.html rotate>, <EBSD_delete delete>,
 %
 % Furthermore, such a EBSD object is the starting point to estimate an ODF
