@@ -1,4 +1,4 @@
-function mispdf(o)
+function [prop radians]= mispdf(o)
 % random misorientation and kernel density estimated
 %
 %% Input
@@ -102,12 +102,12 @@ else
   chi2 = @(r) chi1(r) - 2*S1( alpha1(r) );
   
   switch Laue(CS)
-    case {'-1','-3','4/m','6/m'}   % Cyclic groups C
+    case {'-1','2/m','-3','4/m','6/m'}   % Cyclic groups C
       % TODO check '2/m'
       chi = @(r) [chi1(r(r<=h)) chi2(r(r>h))];
-    case '2/m'
-      warning('not yet')
-      return
+%     case 
+%       warning('not yet')
+%       return
     case {'mmm','-3m','4/mmm','6/mmm'}  % Dihedral groups D
       alpha2 = @(r) acos(1./r);
 
@@ -141,12 +141,20 @@ p = @(omega) n./(2*pi^2) .* sin(omega./2).^2 .* chi( tan(omega./2) );
 
 w = @(omega) (pi/180).*p(omega*pi/180);
 
-degrees = (0:1*degree/5:max_cs(CS))/degree; % discretisation
+degrees = (0:1*degree/10:max_cs(CS))/degree; % discretisation
+
+
+% quadv(
 
 pd =  w(degrees);
 pd = pd./trapz(degrees, pd);
-plot(degrees, pd,'g')
 
+if nargout > 0
+  prop = pd;
+  radians = degrees;
+else
+  plot(degrees, pd,'g')
+end
 
 if exist('o','var')
 % do some test
