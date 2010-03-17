@@ -76,14 +76,14 @@ disp('--------------------------------')
 if any(strfind(path,'mtex'))
   disp('I found an older version of MTEX!');
   disp('I remove it from the current search path!');
+  disp('You may need to restart MTEX!')
   
   inst_dir = cellpath(~cellfun('isempty',strfind(cellpath,'mtex')));  
   if ~isempty(inst_dir), rmpath(inst_dir{:}); end
-  clear classes
 end
 
 
-cd('..'); % leave current directory for some unknown reason
+%cd('..'); % leave current directory for some unknown reason
 addpath(local_path);
 
 disp(' ');
