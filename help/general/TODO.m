@@ -1,9 +1,12 @@
 %% TODO List
 %
-%% Assigned to MTEX 2.1
+%% Assigned to MTEX 3.1
 %
-% empty
+%% Computation of Material Properties
 %
+% Compute various macroscopic material properties for EBSD data and ODFs.
+%
+
 %% EBSD Statistics
 %
 % Implement Geralds Diss. I.e. allow MTEX to answer the following
@@ -14,14 +17,14 @@
 %
 %% Misorientation Analysis
 %
-% Allow to compute an Misorientation ODF from EBSD data. Therefore, a new
+% Allow to compute an misorientation ODF from EBSD data. Therefore, a new
 % class MODF is needed which differs from an ordinary ODF by the fact
 % that the specimen symmetry is replaced by the crystal symmetry of the
 % second phase.
 %
 % *This requires a better find functionality in SO3Grid*
 %
-%% Grain Boundary Analysis
+%% Grain Boundary Analysis (Florian Bachmann)
 %
 % * Compute grain boundary planes.
 % * Analyze and visualize the distribution of grain boundary planes.
@@ -36,20 +39,16 @@
 % Implement a 3d version of the EBSD/segment2d function and update the
 % EBSD and Grain class accordingly.
 %
-%% Topological Grain Data Structure
+%% Topological Grain Data Structure (Florian Bachmann)
 %
 % The function segment2d should provide a grain class that allows to
 % answer questions like:
 %
-% * give me all phase one to phase one grain boundaries
+% * give me all phase one to phase two grain boundaries
 % * give me all grain boundaries between grains with a certain missorientation
 %
 % Therefore not only the neigbouring grains has to be stored in the grain
 % object but also the line segment representing the grain boundary.
-%
-%% Computation of Material Properties
-%
-% Compute various macroscopic material properties for EBSD data and ODFs.
 %
 %% Kernel Density Estimation
 %
@@ -82,7 +81,7 @@
 % Allow to simulate grains under certain assumptions. To be used for
 % joined counts statistics and ODF -> MODF analysis.
 %
-%% Voronoi Decomposition  of the Orientation Space
+%% Voronoi Decomposition of the Orientation Space
 %
 % Use the Rodriguez representation to compute an Voronoi neighborhood
 % graph of a set of orientations. This can be used for faster searching
@@ -93,21 +92,6 @@
 % Find and implement an algorithm that finds under certain conditions the
 % true mean orientation for a given set of orientations!
 %
-%% New Class Orientation
-%
-% Implement a new class orientation. Advantages:
-%
-% * No more inconsistency:  - (g * h) ~=  (- g) * h
-% * no quaternions appearing to the user
-% * misorientation(q1,q2) can be computed directly since the symmetries
-% are already stored inside.
-% * faster EBSD computations due to less overhead
-% * nicer syntax, e.g.
-
-q1 = orientation('Euler',alpha,beta,gamma)
-q2 = orientation('Axis',x,'angle',omega)
-q3 = orientation('quaternion',a,b,c,d)
-
 %% New Class Fibre
 %
 % Implement a new class fibre, which can be used for any computations
