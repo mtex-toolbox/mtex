@@ -19,7 +19,7 @@
 %
 
 %%
-% Let us first import some EBSD data by a <loadaachen.html script file>
+% Let us first import some EBSD data by a [[matlab:edit loadaachen.m, script file]]
 
 loadaachen;
 
@@ -129,6 +129,7 @@ annotate( CSL(3) )
 %%
 % and it is possible to select pairs of grains with such a common boundary
 
+close all;
 grain_selection = find(grains,CSL(3),2*degree,'misorientation')
 plotboundary(grain_selection,'property',CSL(3))
 

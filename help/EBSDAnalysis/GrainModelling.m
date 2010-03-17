@@ -13,7 +13,7 @@
 
 %%
 % Let us first import some standard EBSD data with a
-% <loadaachen.html script file>
+% [[matlab:edit loadaachen.m, script file]]
 
 loadaachen;
 
@@ -59,7 +59,7 @@ plot(grains([34 51 57 75]))
 %
 % As an example lets plot an histogram of the grain sizes.
 
-x = fix(exp(.5:.5:7.5));
+x = fix(exp(0.5:.5:7.5));
 figure, bar(hist(grainsize(grains),x) );
 
 

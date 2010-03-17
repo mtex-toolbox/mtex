@@ -1,5 +1,6 @@
 %% Specimen Directions - The MTEX Class vector3d
 
+%%
 % *Definition*
 
 v = vector3d (1 ,0 ,0)                      % Cart . coordinates
@@ -28,6 +29,7 @@ plot([v,w],'FontSize',20)
 
 %% Rotations
 
+%%
 % *Definition*
 rot = rotation('Euler',10*degree,20*degree,30*degree);
 rot = rotation('axis',xvector,'angle',30*degree);
@@ -56,6 +58,7 @@ inverse(rot)
 
 %% Crystal and Specimen Symmetries
 
+%%
 % *Definition*
 S = symmetry('triclinic',[1.1 1.3 2.3],[80 110 120]*degree);
 CS = symmetry('-3m',[2,2,1],'a||x','mineral','iron');
@@ -83,6 +86,7 @@ close all
 
 %% Crystal directions - the class *Miller*
 
+%%
 % *Definition*
 
 h = Miller(v,CS);
@@ -100,6 +104,7 @@ plot([h1,h2],'all','labeled')
 
 %% Orientations
 
+%%
 % *Definition*
 
 ori = orientation(rot,CS,SS)

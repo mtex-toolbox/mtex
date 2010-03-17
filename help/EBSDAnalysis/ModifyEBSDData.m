@@ -9,7 +9,7 @@
 %% Contents
 %
 %%
-% Let us first import some standard EBSD data with a [[loadaachen.html,script file]]
+% Let us first import some standard EBSD data with a [[matlab:edit loadaachen.m, script file]]
 
 loadaachen;
 

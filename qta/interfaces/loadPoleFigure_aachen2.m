@@ -13,13 +13,12 @@ function pf = loadPoleFigure_aachen2(fname,varargin)
 %% See also
 % interfacesPoleFigure_index aachen_interface loadPoleFigure
 
-
 % Alpha Beta Intensität Defokus BG korIntensität
 try
   
   h = string2Miller(fname);
   
-  data = txt2mat(fname,1,6,'ReadMode','matrix');
+  data = txt2mat(fname,1,6,'ReadMode','block');
 
   % correction / should be column 6
   d = (data(:,3)-data(:,5))./data(:,4);
