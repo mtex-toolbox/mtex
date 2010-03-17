@@ -105,7 +105,7 @@ else % misorientation to neighbour grains
     end
     
     if ~isempty(of)
-      ebsd(k) = EBSD(of,'options',p,'comment',['grain misorientation ' grains(1).comment]);
+      ebsd(k) = EBSD(of,'phase',uphase(k),'options',p,'comment',['grain misorientation ' grains(1).comment]);
     end
   end
 end
