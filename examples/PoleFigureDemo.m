@@ -25,9 +25,9 @@ h = {Miller(1,0,-1,0,CS),...
 c = {1,[0.52 ,1.23],1};
 
 % import data
-pf = loadPoleFigure(fname,h,CS,SS,'superposition',c);
+pf = loadPoleFigure(fname,h,CS,SS,'interface','dubna','superposition',c);
 
-close;figure('position',[43   362   1005   353])
+close;figure('position',[100 100 900 300])
 plot(pf)
 
 
@@ -110,14 +110,14 @@ calcerror(pf_SantaFe,rec_corrected)
 %%
 % *Difference plot*
 
-plotDiff(pf,rec)
+plotDiff(pf,rec,'position',[100 100 900 300])
 
 
 %%
 % *ODF error*
 
-calcError(SantaFe,rec)
-calcError(SantaFe,rec_corrected)
+calcerror(SantaFe,rec)
+calcerror(SantaFe,rec_corrected)
 
 %% Exercises
 %

@@ -34,21 +34,16 @@ plot(ebsd,'phase',1)
 %%
 % we can see which segmentations are stored in the ebsd object indicated by
 % grain_idXXXXXXXX as option, so it is possible to treat several
-% different segmentations with one ebsd object
+% different segmentations with one ebsd object, an we can define for each
+% phase a custom threshold
 
-[grains5 ebsd] = segment2d(ebsd,'angle',5*degree,'augmentation','cube')
+[grains5 ebsd] = segment2d(ebsd,'angle',[10 5]*degree)
 
-%% Plot grain-boundaries
+%% 
+% Plot grain-boundaries
 
 plotboundary(grains,'color',[0.25 0.1 0.5])
 hold on, plotsubfractions(grains,'color','red','linewidth',2)
-
-%% Select grains after their EBSD phase
-% The Segmentation is connected with the EBSD object, we can select grains
-% after specified ebsd measurements
-
-grains_ph1 = link(grains,ebsd(1));
-grains_ph2 = link(grains,ebsd(2));
 
 %%
 % on application of this would be to take a look on the grainsize
@@ -56,75 +51,18 @@ grains_ph2 = link(grains,ebsd(2));
 
 % make a expotential bin size
 x = fix(exp(.5:.5:7.5));
-figure, bar( hist(grainsize(grains_ph1),x) );
+figure, bar( hist(grainsize(grains5),x) );
 
 
 %% Accessing geometric properties 
 
-p = polygon(grains_ph1)
+p = polygon(grains)
 
 %%
 %
-area(grains_ph1); perimeter(grains_ph1);
-shapefactor(grains_ph1); paris(grains_ph1); %...
+area(grains); perimeter(grains);
+shapefactor(grains); paris(grains); %...
 
-%% Select Grains and its EBSD data by other properties
-% select grains with boundaries within itself
-
-grains_fractions = grains( hassubfraction(grains) )
-
-%%
-% and its corresponding ebsd data
-
-ebsd_fractions = link(ebsd, grains_fractions)
-
-%% Plotting of grains
-% there are many ways to plot grains
-
-%%
-% default plotting
-plot(grains)
-
-%%
-% its also possible to plot an abitrary property
-plot(grains,'property',shapefactor(grains))
-
-%%
-% grainboundary
-
-plotboundary(grains)
-
-%%
-% classified after some specific 
-
-%%
-%
-plotboundary(grains,'property','phase')
-%%
-%
-plotboundary(grains,'property','angle')
-%%
-%
-plotboundary(grains,'property','colorcoding','hkl')
-%%
-%
-plotboundary(grains,'property',axis2quat(1,1,1,60*degree))
-
-
-%%
-% as we see, the mean is stored as new property 'orientation'. we can plot
-% it
-
-figure, plot(grains)
-
-%% Properties of a grain
-% We also can copy known properties from the ebsd object to our grains
-
-grains = copyproperty(grains,ebsd)
-
-%%
-%
-figure, plot(grains,'property','bc')
 
 %% Spatial Relation - Join Counts
 % find out which phases depends on other phases and how
@@ -145,12 +83,11 @@ joincount(grains,hashole(grains));
 % there is a routine grainfun to allow iterative access
 % we can split our EBSD data
 
-ebsd_fractions
-
 %%
 % into several EBSD objects corresponding to our grains
 
-grainfun(@(ebsd) ebsd, grains_fractions,ebsd_fractions,'uniformoutput',true)
+grainfun(@(ebsd_fun) ebsd_fun, grains(grainsize(grains) > 600), ebsd,'uniformoutput',true)
+
 
 %% Multiple Access and ODF Estimation
 % calculate all ODFs of grains, since this takes quite long we restrict the
@@ -190,35 +127,4 @@ pgrains = calcODF(pgrains,ebsd_mis,'kernel',kern,'property','ODF_mis','exact')
 
 tindex = grainfun(@textureindex, pgrains,'ODF','resolution',5*degree)
 tindex_mis = grainfun(@textureindex, pgrains,'ODF_mis','resolution',5*degree)
-
-
-%% Calculate ODFs
-% if our grain-data has an orientation, of course we can model an odf
-
-ph = get(grains,'phase');
-
-odf_grains1 = calcODF(grains( ph==1 ),'kernel',kern,'resolution',1*degree)
-
-%%
-% and the odf of the corresponding ebsd data
-
-odf_ebsd1 = calcODF(ebsd(1),'kernel',kern,'resolution',1*degree)
-
-%%
-% let us compare those two, original ebsd with the odf of grains
-
-figure, plotpdf(odf_ebsd1,[Miller(1,1,0) Miller(1,1,1)],'antipodal')
-figure, plotpdf(odf_grains1,[Miller(1,1,0) Miller(1,1,1)],'antipodal')
-
-calcerror(odf_ebsd1,odf_grains1)
-
-%% Misorientation to Neighbours
-
-ebsd_nmis = misorientation(grains,'weighted');
-odf_nmis2 = calcODF(ebsd_nmis(2),'kernel',kern,'resolution',1*degree);
-
-figure, plotipdf(odf_nmis2,[vector3d(1,1,0) vector3d(1,1,1)],'antipodal')
-
-annotate(CSL(3))
-
 
