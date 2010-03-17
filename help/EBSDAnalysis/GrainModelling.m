@@ -1,60 +1,107 @@
-%% Modelling Grains
+%% Grains
 %
 %% Open in Editor
 %
 %% Abstract
-% One may define a Grain as a homogeneous connected Region, in which at
-% least one neighboured measurements fulfil a misorientation lower than a
-% choosen threshold, or lets say, neighboured measurements with a higher
-% misorientation build a boundary. 
+% Reconstructing grains and grain boundaries is one of the central problems
+% when analyzing EBSD data. In MTEX grain boundaries are modeled as
+% bisections between neighbouring measurements that have a 
+% misorientation that is larger then a certain threshold.
 %
 %% Contents
 %
 
 %%
-% Let us first import some standard EBSD data with a [[loadaachen.html,script file]]
+% Let us first import some standard EBSD data with a
+% <loadaachen.html script file>
 
 loadaachen;
 
-%% Modeling Grains
-% The EBSD Data is [[EBSD_segment2d.html, regionalized]] according its
-% phases and an given threshold-angle, where neighboured measurements
-% are determined through its Voronoi Graph
+%% Grain Reconstruction
+% Grain reconstruction in MTEX is done via the command <EBSD_segment2d.html
+% segment2d>. As an optional argument the desired threshold angle for
+% missorientations defining a grains boundary can be specified.
 
 [grains ebsd] = segment2d(ebsd,'angle',12.5*degree)
 
 %%
-% The retrived grains consists as a set of single [[grain_index.html,grain objects]], hence they are
-% accessible over indexing like, and offer an easy way an of
-% [[ModifyEBSDData.html, manipulation]]
+% In order to verify the result lets plot the grain boundaries into the
+% spatial EBSD plot.
+
+plot(ebsd)
+hold on
+plotboundary(grains)
+hold off
+
+%% 
+% When plotting the grains directly the associated color is defined by the
+% mean orientation within each grain.
+
+plot(grains)
+
+
+%%
+% The reconstrcuted grains are stored in the variable *grains* which is
+% actually a list of single [[grain_index.html,grain objects]] each which
+% can be adressed individually.
 
 grains(1)
-grains(1:20)
+plot(grains([34 51 57 75]))
+
+%% Grain properties 
+%
+% There is a long list of properties that can be computed for computed for
+% each indiviual grain, e.g.
+%
+% * perimeter
+% * grain size
+% * borderlength
+%
+% As an example lets plot an histogram of the grain sizes.
+
+x = fix(exp(.5:.5:7.5));
+figure, bar(hist(grainsize(grains),x) );
+
 
 %%
-% of logical indexing like
+% One can also use these properties to select specific grains. E.g. to
+% select all grains with perimeter larger then 150 we have to write
 
-grains( get(grains,'phase') == 1 )
+peri = perimeter(grains);
 
-%%
-% Let us visualize the grain retrived regions, there may other ways of
-% [[SpatialPlots.html, visualising grains]].
+large_grains = grains(peri > 150)
 
-figure, plot(grains)
+plot(large_grains)
 
 %% Connection between EBSD Data and a Grain-set
-% The retrieved Grains are connected with its underlaying EBSD Data by an
-% identification number, which allows us to interconnet choosen Grains
-% with EBSD data
+%
+% The reconstrcuted grains are connected with its underlaying EBSD data by an
+% identification number. The command <ebsd_link.html link> allows extract
+% all individuell orientations out of an EBSD data set that correspond to a
+% certain list of grains
 
-link(grains,ebsd(1))
-link(grains,ebsd(2)) 
+% the grain of maximum size
+max_grain = grains(grainsize(grains)==max(grainsize(grains)))
+
+% the corresponding EBSD data
+ebsd_max_grain = link(ebsd,max_grain)
+
+% plot the EBSD data for this grain
+plot(ebsd_max_grain)
 
 %%
-% We can use this to *[[ModifyEBSDData.html,select grains]]* e.g. by a defined subset of the EBSD
-% Data. the other way is also possible, to select ebsd data with respect to
-% selected grains, so we can combine several sets to our wishes
+% The other way round one may also ask for the list of all grains that
+% contain certain EBSD data. Again the command <grain_link.html link>
+% establishes this connection.
 
-grain_selection = grains( grainsize(grains) > 1000 )
-ebsd_selection = link(ebsd, grain_selection)
+% get MAD
+mad = get(ebsd,'mad');
 
+% the EBSD data with bad MAD
+bad_ebsd = copy(ebsd,mad>1.2)
+
+% select grains containing data with bad MAD
+bad_grains = link(grains,bad_ebsd)
+
+% plot them
+plot(bad_grains)
