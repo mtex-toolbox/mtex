@@ -10,7 +10,8 @@
 %
 %%
 % Starting point of any ODF estimation from EBSD data is a 
-% <EBSD_index.html EBSD> object, which here is imported by a [[loadaachen.html,script file]]
+% <EBSD_index.html EBSD> object, which here is imported by a
+% <loadaachen.html script file>
 
 loadaachen;
 
