@@ -6,6 +6,16 @@
 %
 %% Contents
 %
+%% Description 
+% 
+% The following mindmap might give a basic idea about EBSD data
+% analyis in MTEX, with the ability of <GrainModelling.html grain
+% modelling> for spatial data, it offers varios way of interpreting
+% individual orientation measurements, i.e. in terms of quantifying
+% macro-,micro- and  mesotexture.
+%
+% <<grain.png>>
+%
 %% Import of EBSD Data
 %
 % The most comfortable way to import EBSD data into MTEX is to use
