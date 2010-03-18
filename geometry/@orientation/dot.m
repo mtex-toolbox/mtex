@@ -48,6 +48,6 @@ if length(qss) > 1
       sdot(ind) = max(sdot(ind),dot_angle(sq1(ind)*qcs(i),subsref(o2,ind),omega));
     end
   
-    d = max(dot,sdot);
+    d = max(d,sdot);
   end
 end
