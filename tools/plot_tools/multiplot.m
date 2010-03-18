@@ -249,7 +249,7 @@ end
 
 %% disp anotation in subfigures
 function anotation(a,mini,maxi,ref,varargin)
-mini = xnum2str(mini,ref);
+mini = xnum2str(mini,ref/10);
 maxi = xnum2str(maxi,ref);
 
 set(a,'units','points');
