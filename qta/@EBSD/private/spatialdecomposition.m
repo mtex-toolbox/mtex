@@ -110,10 +110,8 @@ else
       dxy = [0; dy/2];
       R = @(rot) [cos(rot) -sin(rot); sin(rot) cos(rot)];
       
-      k = convhulln(xy);
-      k = [k(:,1);k(1)];
-      
-      pxy = xy(k,:);     
+      k = convhull(x,y);
+      pxy = xy(k,:);
       
       % erase linear dependend lines
       det = x(k(1:end-1)).*y(k(2:end)) - x(k(2:end)).*y(k(1:end-1));
@@ -217,6 +215,7 @@ else
     otherwise
       error('wrong augmentation option')
   end
+  
   xy = [xy; dummy];
 %%  voronoi decomposition
   [v c] = voronoin(xy,{'Q7','Q8','Q5','Q3','Qz'});   %Qf {'Qf'} ,{'Q7'}

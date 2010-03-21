@@ -179,7 +179,6 @@ function layerSelChanged(e,h)
 layer = getcurrentlayer;
 state = get(layer.handles,'Visible');
 if iscell(state), state = state{1};end
-
 setVisStatus(state);
 setappdata(gcf,'currentlayer', get(e,'ItemCount')-get(e,'SelectedIndex'))
 
@@ -189,9 +188,11 @@ function setVisStatus(state)
 f = findall(gcf,'Tag','MTEX.layervis');
 
 layer = getcurrentlayer;
-% hs = getappdata(gcf,'layer');
-set(layer.handles,'Visible',state);
-set(f,'State',state);  
+
+if ~isempty(layer.handles)
+  set(layer.handles,'Visible',state);
+  set(f,'State',state);  
+end
   
 %--------------------------------------------------------------------------
 function changenSelectionColor(empt,eventdata)

@@ -10,6 +10,7 @@ function varargout = plotboundary(grains,varargin)
 %
 %% Options
 %  property       - phase, angle, @rotation, @orientation
+%  noBG           - omit plotting boundary when property is set 
 %
 %% See also
 % grain/plot grain/plotgrains grain/misorientation
@@ -27,10 +28,13 @@ selector(gcf);
 
 [phase uphase] = get(grains,'phase');
 
-
-p = polygon( grains );
-h = plot(p,'color',[0.8 0.8 0.8],'nofix');
-
+ p = polygon( grains );
+ 
+if ~check_option(varargin,'noBG') 
+  h = plot(p,'color',[0.8 0.8 0.8],'nofix');
+else
+  h = [];
+end
 
 if strcmpi(property,'phase')
   
@@ -103,7 +107,6 @@ elseif ~isempty(property)
         pair(:,3:5) = d;
 
       end
-
       h = [h plot(p(ndx), 'pair', pair,'nofix', varargin{:} )];
       
     end
