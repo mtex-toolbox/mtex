@@ -249,8 +249,8 @@ neigh(find(nfr)) = nn;
 fract = cell(1,nc);
 fract(find(cfr)) = fractions;
 
-%cf = cellfun(@numel,orientations)>1;
-orientations = cellfun(@mean,orientations,'uniformoutput',false);
+domean = cellfun('prodofsize',id) > 1;
+orientations(domean) = cellfun(@mean,orientations(domean),'uniformoutput',false);
 
 cid = cell(1,nc);
 cchek = cell(1,nc);
@@ -340,7 +340,7 @@ if ~check_option(varargin,'unitcell')
     if f(i), l = c{i}; c{i} = l(end:-1:1); end
   end
   
-  clear cv parts ind r f
+  clear cv parts ind r f cl
 else  
   for i=1:length(c)
     jl(ccl(i)+1:ccl(i+1)) = i;
@@ -349,7 +349,7 @@ end
 
   % vertice map
 T = sparse(jl,il,1); 
-  clear jl il
+  clear jl il ccl
 T(:,1) = 0; %inf
 
 %edges
@@ -362,8 +362,8 @@ F = F > 1;
 function ply = createpolygons(cells,regionids,verts)
 
 rcells = cells([regionids{:}]);
-
 gl = [rcells{:}];
+
   %shift indices
 indi = 1:length(gl);
 inds = indi+1;
@@ -387,19 +387,21 @@ ply = repmat(p,1,nr);
 
 f = (gl+gr).*gl.*gr; % try to make unique linel ids
 rid = [0;cc(cr+1)];
-
 for k=1:nr  
   sel = rid(k)+1:rid(k+1);
   
-  if cr1(k)>1    
-    [ft nd] = sort(f(sel));
-    
+  if cr1(k)>1
+    ft = f(sel); % erase double edges
+    [ft nd] = sort(ft);
     dell = find(diff(ft) == 0);
-    sel( nd([dell dell+1]) ) = [];
+    nd([dell dell+1]) = [];
+    sel = sel(nd);
+    gll = gl(sel);
+    grr = gr(sel);
     
-    border = converttoborder(gl(sel), gr(sel));
+    border = convert2border(gll, grr);
     
-    psz = numel(border);    
+    psz = numel(border);
     if psz == 1
       
       v = border{1};
@@ -421,11 +423,12 @@ for k=1:nr
         hply(l).envelope = envelope(xy);
         
       end
+      
       hply = polygon(hply);
       
       [ig ndx] = sort(area(hply),'descend');
       
-      ply(k) = hply(ndx(1));      
+      ply(k) = hply(ndx(1));
       ply(k).holes = hply(ndx(2:end));
       
     end
@@ -440,7 +443,6 @@ for k=1:nr
     
   end
 end
-
 ply = polygon(ply);
 
 
@@ -451,54 +453,48 @@ env([1,3]) = min(xy);
 env([2,4]) = max(xy);    
 
 
-function plygn = converttoborder(gl, gr)
-% this should be done faster
+function border = convert2border(gl,gr)
 
-if isempty(gl)
-  plygn = {};
-  return
-end
-
-
-nf = length(gr)*2;  
-f = zeros(1,nf);  %minimum size
-  
-%hamiltonian  trials
-f(1) = gl(1);
-cc = 0; 
-      
-k=2;
-while 1
-  ro = find(f(k-1) == gr);
-  n = numel(ro);
-
-  if n > 0
-    ro = ro(end);
-    f(k) = gl(ro);     
-  else 
-    ro = find(gr>0);
-    if ~isempty(ro)
-      ro = ro(1);
-      f(k) = gl(ro);
-      cc(end+1) = k-1;
-    else
-      cc(end+1) = k-1;
-      break;
-    end 
-  end
+[gll a] = sort(gl);
+[grr b] = sort(gr);
     
-  gr(ro) = -1;
-  k = k+1;
+nn = numel(gl);
+    
+sb = zeros(nn,1);
+v = sb;
+    
+sb(b) = a;    
+v(1) = a(1);
+    
+cc = 0;
+l = 2;
+lp = 1;
+    
+while true
+  np = sb(v(lp));
+      
+  if np > 0
+    v(l) = np;
+    sb(v(lp)) = -1;
+  else
+    cc(end+1) = lp;      
+    n = sb(sb>0);
+    if isempty(n)
+      break
+    else
+      v(l) = n(1);
+    end
+  end  
+      
+  lp = l;
+  l=l+1;      
 end
 
-  
-%convert to cells
 nc = numel(cc)-1; 
-if nc > 1, plygn = cell(1,nc); end
-for k=1:nc 
-  ft = f(cc(k)+1:cc(k+1));
-  if k > 1, ft(end+1) = ft(1); end
-  plygn(k) = {ft};
-end  
+if nc > 1, border = cell(1,nc); end
 
+for k=1:nc
+  vt = gl(v(cc(k)+1:cc(k+1)));
+  border(k) = {vt};
+end  
 
