@@ -110,12 +110,14 @@ else
       dxy = [0; dy/2];
       R = @(rot) [cos(rot) -sin(rot); sin(rot) cos(rot)];
       
+      % get convex hull
       k = convhull(x,y);
-      pxy = xy(k,:);
       
-      % erase linear dependend lines
-      det = x(k(1:end-1)).*y(k(2:end)) - x(k(2:end)).*y(k(1:end-1));
-      k = k(~[false; logical(diff(abs(det)>eps)); false]);
+      % erase all linear dependend points
+      det = atan2(x(k(1:end-1))-x(k(2:end)),y(k(1:end-1))-y(k(2:end)));
+      k = k([true; abs(diff(det))>eps; true]);
+      
+      pxy = xy(k,:);
       
       % fill up with some new dummy lines
       l = 1; dx = sqrt(numel(xy)/2)*dy/2;      
