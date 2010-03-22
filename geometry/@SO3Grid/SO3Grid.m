@@ -77,10 +77,10 @@ elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
     sectype= 'alpha'; % default for regular
   end
       
-  sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma'},sectype);
+  sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','axisangle'},sectype);
   
   [max_rho,max_theta,max_sec] = getFundamentalRegion(CS,SS,varargin{:});
-
+  
   if any(strcmp(sectype,{'alpha','phi1'}))
     dummy = max_sec; max_sec = max_rho; max_rho = dummy;
   end
@@ -90,6 +90,24 @@ elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
   sec = linspace(0,max_sec,nsec+1); sec(end) = [];
   sec = get_option(varargin,sectype,sec,'double');
   nsec = length(sec);
+  
+  if strcmpi(sectype,'axisangle')
+    S2G = S2Grid('plot','maxtheta',max_theta,'maxrho',max_rho,'RESTRICT2MINMAX',varargin{:});
+    for i=1:nsec
+      Grid(:,:,i) = axis2quat(S2G,sec(i));
+    end
+    
+    G.alphabeta = Euler(Grid,'ABG');
+    G.options = {'ZYZ'};
+    G.resolution = get(S2G,'resolution');
+    
+      if strcmpi(points,'plot')
+        varargout{1} = S2G;
+        varargout{2} = sec;
+      else
+        varargout{1} = G.alphabeta;
+      end
+  else
 
   S2G = S2Grid(points,'MAXTHETA',max_theta,'MAXRHO',max_rho,'RESTRICT2MINMAX',varargin{:});
 
@@ -129,7 +147,7 @@ elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
   G.alphabeta = [sec_angle(:),theta(:),rho(:)];      
   G.options = {convention};
   G.resolution = get(S2G,'resolution');
-  
+  end
 %% local Grid
 elseif maxangle < rotangle_max_z(CS)/4
   

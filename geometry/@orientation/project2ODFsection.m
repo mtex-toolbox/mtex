@@ -23,6 +23,26 @@ tol = get_option(varargin,'tolerance',tol);
 
 S2G = repcell(S2Grid(vector3d,varargin{:}),numel(sec),1);
 
+%% axis angle
+
+if strcmpi(type,'axisangle')
+  
+  for i=1:numel(sec)
+    ind(:,i) = angle(o)-tol < sec(i) & sec(i) < angle(o)+tol;    
+    S2G{i} = S2Grid(axis(subsref(o,ind(:,i))));
+  end
+  
+  if nargout > 1 && check_option(varargin,'data')
+    dat = get_option(varargin,'data');
+    if ~isempty(dat),
+      for i = 1:size(sec,2), data{i} = dat(ind(:,i)); end
+    else
+      data = repcell([],size(sec));
+    end
+  end
+	return
+end
+
 %% symmetries and convert to Euler angle
 
 q = quaternion(symmetrise(o));

@@ -34,4 +34,11 @@ switch lower(type)
     symbol = '\sigma';
     labelx = '$\sigma_2$';
     labely = '$\Phi$';
+    
+  case 'axisangle'
+    
+    symbol = '\theta';
+    labelx = '$\r$';
+    labely = '$\Theta$';   
+    
 end

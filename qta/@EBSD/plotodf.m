@@ -16,6 +16,7 @@ function plotodf(ebsd,varargin)
 %  GAMMA      
 %  PHI1
 %  PHI2
+%  AXISANGLE
 %
 %% See also
 % S2Grid/plot savefigure plot_index Annotations_demo ColorCoding_demo PlotTypes_demo

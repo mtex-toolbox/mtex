@@ -19,6 +19,7 @@ function plotodf(odf,varargin)
 %  PHI1
 %  PHI2
 %  RADIALLY
+%  AXISANGLE
 %
 %% See also
 % S2Grid/plot savefigure plot_index Annotations_demo ColorCoding_demo PlotTypes_demo
@@ -45,7 +46,7 @@ Z = eval(odf,orientation(S3G),varargin{:});
 clear S3G;
 
 %% ------------------------- plot -----------------------------------------
-sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma'},'sigma');
+sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','axisangle'},'sigma');
 [symbol,labelx,labely] = sectionLabels(sectype);
 
 fprintf(['\nPlotting ODF as ',sectype,' sections, range: ',...
