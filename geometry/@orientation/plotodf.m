@@ -16,6 +16,7 @@ function plotodf(o,varargin)
 %  GAMMA      
 %  PHI1
 %  PHI2
+%  AXISANGLE
 %
 %% See also
 % S2Grid/plot savefigure plot_index Annotations_demo ColorCoding_demo PlotTypes_demo
@@ -53,7 +54,7 @@ else
   
   rmallappdata(gcf);
   hold off;
-  sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma'},'sigma');
+  sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','axisangle'},'sigma');
 
   % get fundamental plotting region
   [max_rho,max_theta,max_sec] = getFundamentalRegion(cs,ss,varargin{:});
@@ -65,7 +66,9 @@ else
   nsec = get_option(varargin,'SECTIONS',round(max_sec/degree/5));
   sec = linspace(0,max_sec,nsec+1); sec(end) = [];
   sec = get_option(varargin,sectype,sec,'double');
+
   varargin = [varargin,'maxrho',max_rho,'maxtheta',max_theta];
+  
 end
 
 [symbol,labelx,labely] = sectionLabels(sectype);
