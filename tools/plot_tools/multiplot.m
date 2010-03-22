@@ -289,13 +289,15 @@ if strcmp(getappdata(fig,'autofit'),'on')
   [nx,ny,l] = bestfit(figpos(3),figpos(4),dxdy,length(a),marginx,marginy);
   set(fig,'UserData',[nx*l+2*border+(nx-1)*marginx,...
     ny*l*dxdy+2*border+(ny-1)*marginy]);
-  setappdata(fig,'length',l);
-
+  setappdata(fig,'length',l); 
+ 
+  l = ceil(l);
+  ldxdy = ceil(l*dxdy); 
   for i = 1:length(a)
     [px,py] = ind2sub([nx ny],i);
     apos = [1+border+(px-1)*(l+marginx),...
-      1+border+figpos(4)-py*l*dxdy-(py-1)*marginy,...
-      l,l*dxdy];
+      1+border+figpos(4)-py*ldxdy-(py-1)*(marginy-1),...
+      l,ldxdy];
     set(a(i),'Units','pixels','Position',apos);
   end
   
