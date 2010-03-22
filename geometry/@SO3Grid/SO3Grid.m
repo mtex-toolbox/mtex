@@ -92,7 +92,9 @@ elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
   nsec = length(sec);
   
   if strcmpi(sectype,'axisangle')
-    S2G = S2Grid('plot','maxtheta',max_theta,'maxrho',max_rho,'RESTRICT2MINMAX',varargin{:});
+%     S2G = S2Grid('plot','maxtheta',max_theta,'maxrho',max_rho,'RESTRICT2MINMAX',varargin{:});
+    S2G = S2Grid('plot',varargin{:});
+    
     for i=1:nsec
       Grid(:,:,i) = axis2quat(S2G,sec(i));
     end
