@@ -33,7 +33,7 @@ if length(regexp(s,'[\dm]'))>=4
 end
 
 % ignore 1
-s = strrep(s,'1','');
+if ~isempty(regexp(s,'[m2-6]')), s = strrep(s,'1','');end
 
 % clear all spaces
 s = strrep(s,' ','');
