@@ -136,7 +136,7 @@ elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
     case 'sigma'
       [sec_angle,theta,rho] = deal(rho,theta,sec_angle-rho);
   end
-  Grid = euler2quat(sec_angle,theta,rho,convention,'ZYZ');
+  Grid = euler2quat(sec_angle,theta,rho,convention);
   
   % extra output
   if strcmpi(points,'plot')
