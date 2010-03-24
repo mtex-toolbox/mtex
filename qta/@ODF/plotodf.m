@@ -55,26 +55,30 @@ fprintf(['\nPlotting ODF as ',sectype,' sections, range: ',...
 if check_option(varargin,'contour3s')
   
 	alphabeta = get(S3G,'alphabeta');
+  alphabeta = alphabeta(:,[2,3]);
   clear S3G;
-  switch lower(sectype)
-    case {'phi_1','alpha','phi1'}
-      alphabeta = alphabeta(:,[3 2]);
-    case {'phi_2','gamma','phi2'}
-      alphabeta = alphabeta(:,[1 2]);
-    case 'sigma'
-      alphabeta = alphabeta(:,[2 1]);
-  end
-    
+  
   lim = [min(alphabeta) max(alphabeta)];
   xlim = linspace(lim(1),lim(3),size(Z,1));
   ylim = linspace(lim(2),lim(4),size(Z,2));
-  zlim = sec;    
- 
+  zlim = sec;
+  
+  switch lower(sectype)
+    case 'phi2' % according to phi1
+      Z = permute(Z,[3 2 1]);
+      [zlim,ylim,xlim] = deal(xlim,ylim,zlim);
+      [symbol,labely,labelx] = deal(labelx,labely,symbol);
+    case 'alpha'
+      [labely,labelx] = deal(labelx,labely);
+    case 'gamma'
+      [symbol,labely,labelx] = deal(labelx,labely,symbol);
+  end
+  
   v = get_option(varargin,'contour3s',10,'double');
   
   contour3s(xlim./degree,ylim./degree,zlim./degree,Z,v,varargin{:})
  
-  xlabel(labely);  ylabel(labelx);  zlabel(symbol);
+  xlabel(labelx);  ylabel(labely);  zlabel(symbol);
     
 else
   
