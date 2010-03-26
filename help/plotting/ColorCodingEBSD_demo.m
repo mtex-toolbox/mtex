@@ -9,94 +9,102 @@
 %% Contents
 %
 %% Prelimery  
-% Let us first import some EBSD data:
+% Let us first import some EBSD data by a [[matlab:edit loadaachen.m, script file]]
 
-
-cs = { symmetry('cubic') };
-ss = symmetry('triclinic');
-ebsd = loadEBSD([mtexDataPath,'/aachen_ebsd/85_829grad_07_09_06.txt'],cs,ss,... 
-                'interface','generic','Bunge',...
-                 'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3'},...
-                 'ignorePhase',[0 2],...
-                 'Columns', [2 3 4 5 6 7]);
+loadaachen
 
 %% IPDF Colorcoding
-% the standard way of plotting EBSD data spatial is based on an inverse polfigure
+% *IPDF*. 
+% the standard way of plotting EBSD data spatial is based on an inverse
+% polfigure, looking onto the specime we see crystal directions
 
-plotspatial(ebsd)
+plotspatial(ebsd,'phase',1)
 
 %%
-% 
-colorbar
+
+
+pos = {'position',[100 100 400 250]};
+colorbar(pos{:})
+
+%%
+% *HKL*. 
+% Another inverse Polefigure colorcoding
+
+close all; plotspatial(ebsd,'phase',1,'colorcoding','hkl')
 
 %%
 %
+colorbar(pos{:})
 
-plotspatial(ebsd,'colorcoding','hkl')
+odf = calcODF(ebsd,'phase',1,'silent');
+figure, plotipdf(odf,xvector,'antipodal','silent',pos{:})
+
+%%
+% We can change the default view onto the specime (xvector) by setting the option *r*
+
+close all, plotspatial(ebsd,'phase',1,'colorcoding','hkl','r',zvector)
 
 %%
 %
-colorbar
+colorbar(pos{:})
+figure, plotipdf(odf,zvector,'antipodal','silent',pos{:})
+
+%%
+close all
 
 %% IPDF Overview
 % standard colorcoding and the so called (antipodal) oxford colorcoding
 
-p = get(0,'DefaultFigurePosition');
-set(0,'DefaultFigurePosition',[100 100 400 250]);
-
 %% 
 % *triclinic symmetry*
-ebsdColorbar(symmetry('-1'))
-ebsdColorbar(symmetry('-1'),'colorcoding','hkl')
+ebsdColorbar(symmetry('-1'),pos{:})
+ebsdColorbar(symmetry('-1'),'colorcoding','hkl','position',[100 100 400 210])
 
 %%
 % *monoclinic symmetry*
-ebsdColorbar(symmetry('2/m'))
-ebsdColorbar(symmetry('2/m'),'colorcoding','hkl')
+ebsdColorbar(symmetry('2/m'),pos{:})
+ebsdColorbar(symmetry('2/m'),'colorcoding','hkl','position',[100 100 250 250])
 
 %%
 % *orthorhombic symmetry*
-ebsdColorbar(symmetry('mmm'))
-ebsdColorbar(symmetry('mmm'),'colorcoding','hkl')
+ebsdColorbar(symmetry('mmm'),pos{:})
+ebsdColorbar(symmetry('mmm'),'colorcoding','hkl','position',[100 100 211 211])
 
 %%
 % *tetragonal symmetry*
-ebsdColorbar(symmetry('4/m'))
-ebsdColorbar(symmetry('4/m'),'colorcoding','hkl')
+ebsdColorbar(symmetry('4/m'),pos{:})
+ebsdColorbar(symmetry('4/m'),'colorcoding','hkl','position',[100 100 211 211])
 
 %% 
 % *trigonal symmetry*
-ebsdColorbar(symmetry('-3'))
-ebsdColorbar(symmetry('-3'),'colorcoding','hkl')
+ebsdColorbar(symmetry('-3'),pos{:})
+ebsdColorbar(symmetry('-3'),'colorcoding','hkl','position',[100 100 300 148])
 
 %%
 %
-ebsdColorbar(symmetry('-3m'))
-ebsdColorbar(symmetry('-3m'),'colorcoding','hkl')
+ebsdColorbar(symmetry('-3m'),pos{:})
+ebsdColorbar(symmetry('-3m'),'colorcoding','hkl','position',[100 100 250 250])
 
 %%
 %
-ebsdColorbar(symmetry('4/mmm'))
-ebsdColorbar(symmetry('4/mmm'),'colorcoding','hkl')
+ebsdColorbar(symmetry('4/mmm'),pos{:})
+ebsdColorbar(symmetry('4/mmm'),'colorcoding','hkl','position',[100 100 250 250])
 
 %% 
 % *hexagonal symmetry*
-ebsdColorbar(symmetry('6/m'))
-ebsdColorbar(symmetry('6/m'),'colorcoding','hkl')
+ebsdColorbar(symmetry('6/m'),pos{:})
+ebsdColorbar(symmetry('6/m'),'colorcoding','hkl','position',[100 100 211 211])
 
 %%
 %
-ebsdColorbar(symmetry('6/mmm'))
-ebsdColorbar(symmetry('6/mmm'),'colorcoding','hkl')
+ebsdColorbar(symmetry('6/mmm'),pos{:})
+ebsdColorbar(symmetry('6/mmm'),'colorcoding','hkl','position',[100 100 285 250])
 
 %% 
 % *cubic symmetry*
-ebsdColorbar(symmetry('m-3m'))
-ebsdColorbar(symmetry('m-3m'),'colorcoding','hkl')
+ebsdColorbar(symmetry('m-3m'),pos{:})
+ebsdColorbar(symmetry('m-3m'),'colorcoding','hkl','position',[100 100 285 197])
 
-%%
-%
-set(0,'DefaultFigurePosition',p);
 
 %% Other Colorcodes
 % there are many other ways to  [[orientation2color.html, colorize]]
