@@ -1,6 +1,12 @@
 function varargout = get(obj,vname,varargin)
 % get object variable
 
+if nargin == 1
+	vnames = get_obj_fields(obj(1));
+  if nargout, varargout{1} = vnames; else disp(vnames), end
+else
+
+
 switch vname
   case {'CS','SS','comment','options'}
     varargout{1} = obj(1).(vname);
@@ -34,6 +40,7 @@ switch vname
       varargout{1} = 5*degree;
     end
   otherwise
-    error('Unknown field in class ODF!')
+    error(['There is no ''' vname ''' property in the ''ODF'' object'])
 end
 
+end

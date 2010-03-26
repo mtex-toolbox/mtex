@@ -23,6 +23,13 @@ function varargout = get(pf,vname,varargin)
 %% See also
 % PoleFigure/set
 
+
+if nargin == 1
+	vnames = get_obj_fields(pf(1),'options');
+  if nargout, varargout{1} = vnames; else disp(vnames), end
+else
+
+
 switch vname
   
   case {'SS','CS','comment','options'}
@@ -81,5 +88,7 @@ switch vname
       varargout{1} = [varargout{1};reshape(pf(i).options.(vname),[],1)]; 
     end
   otherwise
-    error('Unknown property of class PoleFigure')
+    error(['There is no ''' vname ''' property in the ''PoleFigure'' object'])
+end
+
 end
