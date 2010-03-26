@@ -73,8 +73,9 @@ if nargin > 1
       end
       varargout{1} = opt;
     otherwise
-      error('Unknown field in class grain')
+     error(['There is no ''' vname ''' property in the ''grain'' object'])
   end
 else
-  error('wrong usage')
+  vnames = get_obj_fields(grains(1),'properties');
+  if nargout, varargout{1} = vnames; else disp(vnames), end
 end

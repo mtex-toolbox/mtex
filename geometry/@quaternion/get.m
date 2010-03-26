@@ -1,6 +1,7 @@
 function varargout = get(obj,vname,varargin)
 % get object variable
 
+
 switch lower(vname)  
   case {'euler'}
     [varargout{1:nargout}] = Euler(obj,varargin{:});
@@ -23,6 +24,6 @@ switch lower(vname)
   case 'axis'
     varargout{1} = axis(obj);
   otherwise
-    error('Unknown field in class quaternion!')
+    error(['There is no ''' vname ''' property in the ''' class(obj) ''' object'])
 end
 

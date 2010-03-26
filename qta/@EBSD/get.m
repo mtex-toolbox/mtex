@@ -1,6 +1,12 @@
 function varargout = get(obj,vname,varargin)
 % get object variable
 
+
+if nargin == 1
+  vnames = get_obj_fields(obj(1),'options');
+  if nargout, varargout{1} = vnames; else disp(vnames), end
+else
+
 varargout{1} = [];
 switch vname
   case {'SS','CS'}
@@ -62,6 +68,7 @@ switch vname
 %       varargout{1} = [varargout{1};reshape(obj(i).options.(vname),[],1)]; %#ok<AGROW>
 %     end
   otherwise
-    error('Unknown field in class EBSD!')
+    error(['There is no ''' vname ''' property in the ''EBSD'' object'])
 end
 
+end
