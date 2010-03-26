@@ -33,8 +33,9 @@ while ~feof(fid)
     p = textscan(s,'%5c%5.1f%5.1f%5.1f%5.1f%2d%2d%2d%2d%2d%5d%5d%5c%5c');
     
     % Miller indice
-    [h,r] = string2Miller(fname);
-    if ipf>1 || ~r, h = string2Miller(p{1});end
+    % [h,r] = string2Miller(fname);
+    % if ipf>1 || ~r, h = string2Miller(p{1});end
+    h = string2Miller(p{1});
     
     dtheta = p{2}; assert(dtheta > 0 && dtheta < 90);
     mtheta = p{3}; assert(mtheta > 0 && mtheta <= 180);
@@ -57,15 +58,15 @@ while ~feof(fid)
     d = [];
     while length(d) < numel(r)
       l = fgetl(fid);
-      l = reshape(l(2:end),4,[]).';
-      dd = str2num(l);
+      l = l(end-fix(numel(l)/4)*4+1:end);
+      dd = str2num(reshape(l,4,[])');
       d = [d;dd(1:18)]; 
     end
 
     % restrict data to specified domain
     d = reshape(d,size(r,1),[]);
     d = d(:,1:size(r,2));
-    
+
     % generate Polefigure
     pf(ipf) = PoleFigure(h,r,double(d)*double(scaling),symmetry('cubic'),symmetry,'comment',comment,varargin{:}); %#ok<AGROW>
   
