@@ -43,7 +43,7 @@ newMTEXplot;
 [S3G,S2G,sec] = SO3Grid('plot',odf(1).CS,odf(1).SS,varargin{:});
 
 Z = eval(odf,orientation(S3G),varargin{:});
-
+clear S3G;
 
 %% ------------------------- plot -----------------------------------------
 sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','axisangle'},'sigma');
@@ -52,37 +52,16 @@ sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','axisangle'},
 fprintf(['\nPlotting ODF as ',sectype,' sections, range: ',...
   xnum2str(min(sec)/degree),mtexdegchar,' - ',xnum2str(max(sec)/degree),mtexdegchar,'\n']);
 
-if check_option(varargin,'contour3s')
+if check_option(varargin,{'contour3','surf3','slice3'})
+
+  [xlim ylim] = polar(S2G);
   
-	alphabeta = get(S3G,'alphabeta');
-  alphabeta = alphabeta(:,[2,3]);
-  clear S3G;
-  
-  lim = [min(alphabeta) max(alphabeta)];
-  xlim = linspace(lim(1),lim(3),size(Z,1));
-  ylim = linspace(lim(2),lim(4),size(Z,2));
-  zlim = sec;
-  
-  switch lower(sectype)
-    case 'phi2' % according to phi1
-      Z = permute(Z,[3 2 1]);
-      [zlim,ylim,xlim] = deal(xlim,ylim,zlim);
-      [symbol,labely,labelx] = deal(labelx,labely,symbol);
-    case 'alpha'
-      [labely,labelx] = deal(labelx,labely);
-    case 'gamma'
-      [symbol,labely,labelx] = deal(labelx,labely,symbol);
-  end
-  
-  v = get_option(varargin,'contour3s',10,'double');
-  
-  contour3s(xlim./degree,ylim./degree,zlim./degree,Z,v,varargin{:})
- 
-  xlabel(labelx);  ylabel(labely);  zlabel(symbol);
+  v = get_option(varargin,{'surf3','contour3'},10,'double');
+  contour3s(xlim(1,:)./degree,ylim(:,1)'./degree,sec./degree,Z,v,varargin{:},...
+    'xlabel',labely,'ylabel',labelx,'zlabel',symbol);
     
 else
   
-  clear S3G;
   multiplot(@(i) S2G,...
     @(i) Z(:,:,i),...
     length(sec),...
