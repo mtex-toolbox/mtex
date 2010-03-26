@@ -60,6 +60,7 @@ elseif any(strcmpi(plottype,{'CONTOUR','CONTOURF'}))
   contours = get_option(varargin,{'contourf','contour'},{},'double');
   if ~isempty(contours), contours = {contours};end
   
+  opt = {};
   if check_option(varargin,'CONTOURF') % filled contour plot
   
     if numel(unique(data)) == 1
@@ -67,10 +68,11 @@ elseif any(strcmpi(plottype,{'CONTOUR','CONTOURF'}))
     else
       [CM,h] = contourf(X,Y,data,contours{:});
       set(h,'LineStyle','none');
+      opt{1} = 'k';
     end
   end
   if numel(unique(data)) > 1
-    [CM,hh] = contour(X,Y,data,contours{:},'k');
+    [CM,hh] = contour(X,Y,data,contours{:},opt{:});
     h = [h,hh];
   end
 
