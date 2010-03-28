@@ -22,7 +22,7 @@ d = repmat(c,s,1);
 f = 1;
 
 % the first few steps are a little different
-for i = 1:s-1    
+for i = 1:s-1
     d(i+1) = (-(i:2*i-1).*p(s-i+1:end))*d(1:i)/(2*i);
     f = f + d(i+1);
     d = d/(2+i);    
@@ -30,11 +30,11 @@ end
 
 % the main iteration, note the cyclic shift of the entries of vector d
 while max(abs(d))/(abs(f)+1) > eps
+  i=i+1;
+  
   d = [d(2:end); (-(2*i-s:2*i-1).*p)*d/(2*i)];
   f = f + d(end);
   d = d/(2+i);
-   
-  i=i+1;     
 end
 
 iters = i-s+1;

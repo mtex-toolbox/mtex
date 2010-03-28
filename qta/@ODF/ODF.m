@@ -72,7 +72,13 @@ switch lower(char(option))
   case 'uniform'
     lg = 1;
   case 'bingham'
-    lg = 1;  
+    lg = 1;
+    if isa(center,'double')
+      center = orientation(quaternion(center),CS,SS);
+    end
+    if ~isappr(abs(det(squeeze(double(center)))),1) %orthogonality check
+       warning('center seems not to be orthogonal');
+    end
   otherwise
     if ~(isa(center,'quaternion') && isa(c,'double') && isa(psi,'kernel')...
           && isa(CS,'symmetry') && isa(CS,'symmetry'))

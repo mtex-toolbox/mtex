@@ -42,21 +42,9 @@ for i = 1:length(odf)
       
     case 'Bingham'
    
-      %warning('MTEX:Bingham','Normalization missing!')
-      ASym = quaternion(symmetrise(odf(i).center));
-
-      C = odf(i).c(1) ./ mhyper(odf(i).psi);
-
-      for iA = 1:size(ASym,1)
-
-        h = dot_outer(quaternion(g),ASym(iA,:)).^2;
-
-        h = h * reshape(odf(i).psi,[],1);
-
-        f = f + reshape(exp(h) .* C,size(f)) ./ size(ASym,2);
-
-      end    
-    
+      f = f + reshape(eval_bingham(odf(i),g,varargin{:}),...
+        size(f));
+      
     case 'EVEN'
     
       M = GK(odf(i).psi,g(:),odf(i).center,odf(i).CS,odf(i).SS);

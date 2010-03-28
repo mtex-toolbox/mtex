@@ -10,30 +10,43 @@
 # win32   - 32 bit Windows
 # win64   - 64 bit Windows
 #
+TARGET ?= win32
 
+LIBPATH = /local/lib
+GMPINCPATH = /local/include
+MPFRPATH = /local/mpfr-2.4.2
 
-GMPPATH = /local
-MPFRPATH = /local
+TPATH = ../tools
+BPATH = ../bin/$(TARGET)/
 
 CC=gcc
 LD=gcc
 RM = /bin/rm -f
 LN = /bin/ln
-CFLAGS = -std=c99 -o3 -c -Wall 
-MYCFLAGS=$(CFLAGS) -I$(GMPPATH)/include -I$(MPFRPATH)/include
-LDFLAGS= -std=c99  -lm  
-LIBS = $(MPFRPATH)/lib/libmpfr.a $(GMPPATH)/lib/libgmp.a 
+CFLAGS = -std=c99 -o3 -c -Wall #-fopenmp
+MYCFLAGS=$(CFLAGS) -I$(GMPINCPATH) -I$(MPFRPATH) -I../mhyper -I../include
+LDFLAGS= -std=c99  -lm #-fopenmp
+LIBS = $(LIBPATH)/libmpfr.a $(LIBPATH)/libgmp.a 
+IOTOOLS = $(TPATH)/pio.o $(TPATH)/helper.o $(TPATH)/sparse.o
+LIBEXT = dll
 
 #
-TARGETS = mhyper
+TARGETS = evalmhyper
 
 # top-level rule, to compile everything.
 all: $(TARGETS)
 
-# odf -> pdf
-mhyper: mhyper.o
-	$(LD)  $@.o $(LDFLAGS)  $(LIBS) -o $@
+#mhyper: mhyper.o $(IOTOOLS)
+#	$(LD)  -shared  $@.o $(IOTOOLS) $(LDFLAGS)  $(LIBS) -o  $@.$(LIBEXT) 
+
+evalmhyper: mhyper.o evalmhyper.o  $(IOTOOLS)
+	$(LD)  $(LDFLAGS) mhyper.o    $@.o  $(IOTOOLS)  $(LIBS)  -o $@
+
+clean:
+	rm *.o  mhyper.$(LIBEXT) evalmhyper
 	
+install:
+	mv evalmhyper  $(BPATH)
 
 %.o: %.c
 	$(CC) $(MYCFLAGS) -c $< -o $@
