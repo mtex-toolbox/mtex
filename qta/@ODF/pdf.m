@@ -58,26 +58,7 @@ for s = 1:length(sp)
       % -------------------- Bingham portion --------------------------
     elseif check_option(odf(i),'Bingham')
       
-      q1 = hr2quat(vector3d(hh),vector3d(r));
-      q2 = q1 .* axis2quat(vector3d(hh),pi);
-      
-      ASym = quaternion(symmetrise(odf(i).center));
-    
-      C = odf(i).c(1) ./ mhyper(odf(i).psi);
-       
-      for iA = 1:size(ASym,1)
-    
-        A1 = dot_outer(q1,ASym(iA,:));
-        A2 = dot_outer(q2,ASym(iA,:));
-      
-        a = (A1.^2 +  A2.^2) * reshape(odf(i).psi,[],1) ./2;
-        b = (A1.^2 -  A2.^2) * reshape(odf(i).psi,[],1) ./2;
-        c = (A1 .*  A2) * reshape(odf(i).psi,[],1);
-        
-        Z = Z + sp(s) * exp(a) .* C .* besseli(0,sqrt(b.^2 + c.^2))./ size(ASym,1);
-
-      end
-      
+       Z = Z + sp(s) * bingham2pdf(odf(i),vector3d(hh),r,varargin{:});
             
       % --------------- radially symmetric portion ----------------------------
     else

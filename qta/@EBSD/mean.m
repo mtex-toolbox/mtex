@@ -8,9 +8,10 @@ function varargout = mean( ebsd,varargin)
 %  ebsd      - @EBSD
 %
 %% Output
-%  m         - one equivalent mean orientation @quaternion
-%  kappa     - parameters of bingham distribution
-%  v         - eigenvectors of kappa
+%  m        - one equivalent mean orientation @quaternion
+%  lambda   - eigenvalues of orientation tensor
+%  v        - eigenvectors of orientation tensor
+%  kappa    - parameters of bingham distribution
 %
 
 [o,ind] = get(ebsd,'orientations','CheckPhase',varargin{:});

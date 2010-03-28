@@ -1,14 +1,14 @@
-function odf = BinghamODF(Lambda,A,CS,SS,varargin)
+function odf = BinghamODF(Kappa,A,CS,SS,varargin)
 % defines an fibre symmetric ODF
 %
 %% Description
 % *BinhamODF* defines a Bingham distributed ODF with A and Lambda.
 %
 %% Syntax
-%  odf = fibreODF(Lambda,A,CS,SS)
+%  odf = BinghamODF(Kappa,A,CS,SS)
 %
 %% Input
-%  Lambda - [double]
+%  Kappa  - form parameter
 %  A      - 
 %  CS, SS - crystal, specimen @symmetry
 %
@@ -19,11 +19,11 @@ function odf = BinghamODF(Lambda,A,CS,SS,varargin)
 % ODF/ODF uniformODF unimodalODF fibreODF
 
 error(nargchk(4, 6, nargin));
-argin_check(Lambda,'double');
+argin_check(Kappa,'double');
 argin_check(A,{'double','quaternion'});
 argin_check(CS,'symmetry');
 argin_check(SS,'symmetry');
 
-odf = ODF(A,1,Lambda,CS,SS,'Bingham');
+odf = ODF(A,1,Kappa,CS,SS,'Bingham');
 
 % 
