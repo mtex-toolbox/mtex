@@ -9,7 +9,9 @@ try
   for i = 1:length(phasePos)
     pos = phasePos(i);
     phase = sscanf(hl{pos},'# Phase %u');
-    mineral = sscanf(hl{pos+1},'# MaterialName %s %s');
+    mineral = hl{pos+1}(15:end);
+    mineral = strtrim(mineral);
+    %mineral = sscanf(hl{pos+1},'# MaterialName %s %s %s');
     laue = sscanf(hl{pos+4},'# Symmetry %s');
     lattice = sscanf(hl{pos+5},'# LatticeConstants %f %f %f %f %f %f');
     options = {};
