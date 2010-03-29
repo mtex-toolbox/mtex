@@ -13,7 +13,10 @@ function d = dot(v1,v2,varargin)
 %% Output
 %  double
 
-d = v1.x .* v2.x + v1.y .* v2.y + v1.z .* v2.z;
+xx = v1.x .* v2.x;
+yy = v1.y .* v2.y;
+zz = v1.z .* v2.z;
+d = xx + yy + zz;
 
 if check_option(varargin,'antipodal')
   d = abs(d);
