@@ -1,5 +1,5 @@
-%% Visualize the Data
-
+%% Standard template
+%% Visualize Data
 % plot of the raw data
 plot(pf)
 

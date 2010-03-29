@@ -1,4 +1,5 @@
-%% Template template
+%% Template Example
+% <author:fl.bachmann@googlemail.com F. Bachmann> 
 % Template scripting allows a standard way of analysing just imported data,
 % e.g. for a frequently used manner.
 %
@@ -17,3 +18,6 @@
 %   ebsd - EBSD
 %   odf  - ODF
 %
+%% Code begins here
+
+plot(pf)
