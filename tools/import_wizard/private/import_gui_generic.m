@@ -188,18 +188,23 @@ else
    % find some other templates 
   templates = dir( fullfile(mtex_path,'templates',[ type '_*.m']) );
   templates = {templates.name};
-
-  if numel(templates) > 1
-   templ = regexprep(templates,[ type '_(\w*).m'],'$1');  
+  
+%   if numel(templates) > 1
+   templ = regexprep(templates,[ type '_(\w*).m'],'$1');
+   templ = [templ, 'Look for new Templates'];
 
    [s,v] = listdlg('PromptString','Select a template script:',...
                   'SelectionMode','single',...
                   'ListSize',[200,100],'fus',4,'ffs',4,...
                   'Name',[type ' Template Script'],...
-                  'ListString',templ); 
+                  'ListString',templ);
     if isempty(s), return;end
+    if s> numel(templates)
+      mtex_templates('type',{type});
+      return;
+    end    
     templates = templates(s);
-  end
+  %end
   templatestr = file2cell( fullfile(mtex_path,'templates',templates{:}) );
 
   str = [str generateCodeString(templatestr)];

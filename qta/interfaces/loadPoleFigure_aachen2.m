@@ -18,7 +18,7 @@ try
   
   h = string2Miller(fname);
   
-  data = txt2mat(fname,1,6,'ReadMode','block');
+  data = txt2mat(fname,1,6,'ReadMode','matrix','InfoLevel',0);
 
   % correction / should be column 6
   d = (data(:,3)-data(:,5))./data(:,4);
