@@ -26,19 +26,20 @@ if nargin>1 && isa(ebsd,'EBSD')
   for k=1:length(uphase)
     
     vdisp(['density estimation for grains of phase ' num2str(uphase(k)) ],varargin{:}) 
-    
-    [kernel hw options] = extract_kernel(get(ebsd(k),'orientations'),varargin{:});
-    
-    vdisp([' kernel: ' char(kernel)],varargin{:});
-    if ~check_option(varargin,'exact'), 
-      [S3G options]= extract_SO3grid(ebsd(k),options);
+    if ~check_option(varargin,'bingham')
+      [kernel hw options] = extract_kernel(get(ebsd(k),'orientations'),varargin{:});
+
+      vdisp([' kernel: ' char(kernel)],varargin{:});
+      if ~check_option(varargin,'exact'), 
+        [S3G options]= extract_SO3grid(ebsd(k),options);
+      end
+    else
+      options = varargin;
     end
-    
     ndx = phase == uphase(k);
     [o grains( ndx )] = ...
         grainfun(@calcODF,grains(ndx),ebsd(k),'property',get_option(varargin,'property','ODF'),...
         options{:},'silent');
-    
   end
 
 else
