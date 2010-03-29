@@ -29,6 +29,7 @@ function odf = calcODF(ebsd,varargin)
 %  SILENT           - no output
 %  EXACT            - no approximation to a corser grid
 %  FOURIER          - force Fourier method
+%  BINGHAM          - model bingham odf
 %  noFourier        - no Fourier method
 %
 %% See also
@@ -56,6 +57,14 @@ else
   weight = ones(1,numel(o));
 end
 weight = weight ./ sum(weight(:));
+
+
+if check_option(varargin,'bingham')
+  [qc,ew,ev,kappa] = mean(o,varargin{:});
+  odf = BinghamODF(kappa,ev,CS,SS);
+  return
+end
+
 
 % get halfwidth and kernel
 if check_option(varargin,'kernel')

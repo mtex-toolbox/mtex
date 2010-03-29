@@ -14,220 +14,207 @@
 //#include <mpfr.h>
 //#include "gmp.h"
 
-int digits;
-long int prec; 
-mpf_t delta, delta2;
+mp_rnd_t prec; 
+mpfr_t delta, delta2;
 
 
 void init_prec(int digit){ // precision issues
 	/* set precision */
-	digits = digit;
-	prec = digits * sizeof(mp_limb_t);
-	mpf_set_default_prec( prec );	
-	//mpfr_set_default_prec ( digits*4 );
-	
+	prec = digit;
+	mpfr_set_default_prec( prec );
+		
 	/* set delta */
-	mpf_init(delta);
-	mpf_set_d(delta,10);
-	mpf_pow_ui(delta,delta,digits/2+1); //- digits*1/4); 
-	mpf_ui_div(delta,5,delta);
+	mpfr_init_set_d(delta,10,prec);
+	mpfr_pow_ui(delta,delta,prec/16,GMP_RNDN); //- digits*1/4); 
+	mpfr_ui_div(delta,5,delta,GMP_RNDN);
 	
-	mpf_init(delta2);
-	mpf_mul_ui(delta2,delta,2);
+	mpfr_init2(delta2,prec);
+	mpfr_mul_ui(delta2,delta,2,GMP_RNDN);
 	
-	//gmp_printf("precision : %d digits\n", digits);
-	//gmp_printf("delta     : %.*Fe \n",4,delta2);
+/*	mpfr_printf("precision : %d digits\n", digit);
+	mpfr_printf (" %.16RE\t", delta);
+	mpfr_printf (" %.16RE\t", delta2);
+	*/
 }
 
 
-void print_N(mpf_t *a, const int n){
+void print_N(mpfr_t *a, const int n){
 	int k;
 	for(k=0;k<n;k++)
-		gmp_printf (" %.*Fe\t", 10, a[k]);
+		mpfr_printf (" %.12RE\t", a[k]);
 	printf("\n");
 }
 
 
-void print_Nf(mpf_t *a, const int n){
+void print_Nf(mpfr_t *a, const int n){
 	int k;
 	for(k=0;k<n;k++)
-		gmp_printf (" %.*Ff\t", 14, a[k]);
+		mpfr_printf (" %.12RE\t", a[k]);
 	printf("\n");
 }
 
 
-void print_NN(mpf_t **A,const int n){
+void print_NN(mpfr_t **A,const int n){
 	int k,l;
 	for(k=0;k<n;k++){
 		for(l=0;l<n;l++){
-			gmp_printf (" %.*Fe \t", 8, A[k][l]);
+			mpfr_printf (" %.12RE \t", A[k][l]);
 		}
 		printf("\n");
 	}
 }
 
 
-void free_N(mpf_t *t, const int n){
+void free_N(mpfr_t *t, const int n){
 	int k;
 	for(k=0;k<n;k++)
-		mpf_clear (t[k]);
+		mpfr_clear (t[k]);
 	free(t);
 }
 
 
-void free_NN(mpf_t **t, const int n){
+void free_NN(mpfr_t **t, const int n){
 	int k,l;
 	for(k=0;k<n;k++){
 		for(l=0;l<n;l++)
-			mpf_clear (t[k][l]);
+			mpfr_clear (t[k][l]);
 		free(t[k]);
 	}
 	free(t);
 }
 
 
-void mhyper(mpf_t f, mpf_t *kappa,long n){
+void mhyper(mpfr_t f, mpfr_t *kappa,const long n){
 
-	mpf_t *p,*cp,*d; 
-	mpf_t tmp1,tmp2,tmp3;
+	mpfr_t *p,*cp,*d; 
+	mpfr_t tmp1,tmp2;
 	int k,l;
   	double c1 = 0; 
 	
 	/* allocate memory */
-	d = (mpf_t*) malloc (n*sizeof(mpf_t));  
-	p = (mpf_t*) malloc (n*sizeof(mpf_t));  
-	cp = (mpf_t*) malloc ((n+1)*sizeof(mpf_t));
+	d = (mpfr_t*) malloc (n*sizeof(mpfr_t));  
+	p = (mpfr_t*) malloc (n*sizeof(mpfr_t));  
+	cp = (mpfr_t*) malloc ((n+1)*sizeof(mpfr_t));
 	
 	/* init variables */
 	for(k=0;k<n;k++){ 
-		mpf_init(d[k]);
-		mpf_init(p[k]);
-		mpf_init(cp[k+1]);    
-		mpf_set_d(d[k], 0.5);		
+		mpfr_init_set_d(d[k],0.5,prec);
+		mpfr_init_set_ui(p[k],0,prec);
+		mpfr_init_set_ui(cp[k+1],0,prec);
 	}
 	
 			
 	/* function value */
-	mpf_init(f);
-	mpf_set_d(f,1.0);
+	mpfr_init_set_d(f,1.0,prec);
 	
 	/* init characteristic polynomial */
-	mpf_init(cp[0]);
-	mpf_set_d(cp[0],1.0);
-	/* characteristic polynomial */
+	mpfr_init_set_ui(cp[0],1,prec);
+	/* characteristic polynomial */	
 	
-	mpf_init(tmp1); mpf_init(tmp2); mpf_init(tmp3);
+	mpfr_init2(tmp1,prec); mpfr_init2(tmp2,prec);
+	
 	for(k=0;k<n;k++) 
 		for(l=k+1;l>0;l--){
-			mpf_mul(tmp1, kappa[k], cp[l-1]);
-			mpf_sub(cp[l], cp[l], tmp1);
+			mpfr_mul(tmp1, kappa[k], cp[l-1],GMP_RNDN);
+			mpfr_sub(cp[l], cp[l], tmp1,GMP_RNDN);
 			}
 
-	/* init p */	
-	for(k=0;k<n;k++) mpf_set(p[k],cp[n-k]);
+			
 		
+	/* init p */	
+	for(k=0;k<n;k++) mpfr_set(p[k],cp[n-k],prec);
+	
+	
 	/*the first few steps are a little different*/
 	for(k=1;k<n;k++){
-		mpf_set_d(d[k],0.0);
+		mpfr_set_ui(d[k],0,prec);
 		for(l=0;l<k;l++){	
-			mpf_set_d(tmp2,-k-l);
+			mpfr_set_si(tmp2,-k-l,prec);
 			
-			mpf_mul(tmp2, tmp2, cp[k-l]);
-			mpf_mul(tmp2, tmp2, d[l]);
-			mpf_add(d[k],d[k],tmp2);
+			mpfr_mul(tmp2, tmp2, cp[k-l],GMP_RNDN);
+			mpfr_mul(tmp2, tmp2, d[l],GMP_RNDN);
+			mpfr_add(d[k],d[k],tmp2,GMP_RNDN);
 		}
 		
-		mpf_set_d(tmp2,2*k);
-		mpf_div(d[k],d[k],tmp2);
+		mpfr_set_ui(tmp2,2*k,prec);
+		mpfr_div(d[k],d[k],tmp2,GMP_RNDN);
 		
-		mpf_add(f,f,d[k]);
+		mpfr_add(f,f,d[k],GMP_RNDN);
 		
 		for(l=0;l<n;l++){
-			mpf_set_d(tmp2,2+k);
-			mpf_div(d[l],d[l],tmp2);
+			mpfr_set_ui(tmp2,2+k,GMP_RNDN);
+			mpfr_div(d[l],d[l],tmp2,GMP_RNDN);
 		}
 	}
 	
 	
 	//k -=1; 
-
-	while (! mpf_eq(tmp3,f,digits) ) {	
-		mpf_set_d(tmp1,0.0);
-		mpf_add(tmp3,f,tmp1); /* abort? */
+	mpfr_t old_f;
+	mpfr_init2(old_f,prec);
+	for (;;)
+	{	
+		mpfr_set(old_f,f,prec);
+		mpfr_set_ui(tmp1,0,prec);	
 		
 		c1 = -(2*k-n);
 		for(l=0;l<n;l++){
-			mpf_set_d(tmp2, c1-l);
-			mpf_mul(tmp2,tmp2,p[l]);
-			mpf_mul(tmp2,tmp2,d[l]);
-			mpf_add(tmp1,tmp1,tmp2);
+			mpfr_set_si(tmp2, c1-l,prec);
+			mpfr_mul(tmp2,tmp2,p[l],GMP_RNDN);
+			mpfr_mul(tmp2,tmp2,d[l],GMP_RNDN);
+			mpfr_add(tmp1,tmp1,tmp2,GMP_RNDN);
 		}
-		mpf_set_d(tmp2,2.0*k);
-		mpf_div(tmp1,tmp1,tmp2);
+		mpfr_set_ui(tmp2,2*k,prec);
+		mpfr_div(tmp1,tmp1,tmp2,GMP_RNDN);
 	
 		/* add to function */
-		mpf_add(f,f,tmp1);		
+		mpfr_add(f,f,tmp1,GMP_RNDN);		
 		
 		/* divide and cycle entries */
-		mpf_set_d(tmp2,k+2.0);
+		mpfr_set_ui(tmp2,k+2,prec);
 		for(l=0;l<n-1;l++){
-			mpf_div(d[l],d[l+1],tmp2);
+			mpfr_div(d[l],d[l+1],tmp2,GMP_RNDN);
 		}
 		
-		mpf_div(d[l],tmp1,tmp2);
+		mpfr_div(d[l],tmp1,tmp2,GMP_RNDN);
 		
 		/* increase */
 		k+=1;
+	
+		if ( mpfr_eq(old_f,f,prec-1) > 0)
+		 break;
+		
 	}
-	
-	
+		
 	free_N(cp,n+1);
 	free_N(d,n);
 	free_N(p,n);
-	mpf_clear(tmp1);
-	mpf_clear(tmp2);
-	mpf_clear(tmp3);
-	
-	// gmp_printf ("after %d iterations : %.*Ff \n", k,100, f);
+	mpfr_clear(tmp1);
+	mpfr_clear(tmp2);
 	
 }
 
 
-void mpf_log(mpf_t out, mpf_t in){
-	mpfr_t o;
-	
-	mpfr_init2(o,prec);
-	mpfr_set_f(o, in, prec);
-	mpfr_log(o, o, prec); /* take the natural logarithm */
-	mpfr_get_f(out, o, prec);
-	
-	mpfr_clear(o);
-}
-
-void eval_exp_Ah(mpf_t C, double *f, int n){
+void eval_exp_Ah(mpfr_t C, double *f, int n){
 
 	int k;
 	
-	mpfr_t fz, Cz;
-	mpfr_init2(Cz,prec); mpfr_set_f(Cz, C, prec);
+	mpfr_t fz;
 	mpfr_init2(fz, prec);
 		
 	for(k=0;k<n;k++){
 		mpfr_init_set_d(fz,f[k],prec);
-		mpfr_exp(fz,fz,prec);
-		mpfr_div(fz,fz,Cz,prec);
-		f[k] = mpfr_get_d(fz,prec);
+		mpfr_exp(fz,fz,GMP_RNDN);
+		mpfr_div(fz,fz,C,GMP_RNDN);
+		f[k] = mpfr_get_d(fz,GMP_RNDN);
 	}
 
 }
 
-void eval_exp_besseli(double *a, double *bc, mpf_t C, int n){
+void eval_exp_besseli(double *a, double *bc, mpfr_t C, int n){
 
 	int k;
 	
-	mpfr_t az, bz, Cz;
-	 
-	mpfr_init2(Cz,prec); mpfr_set_f(Cz, C, prec);
+	mpfr_t az, bz;
 	mpfr_init2(az, prec);
 	mpfr_init2(bz, prec);
 	
@@ -236,11 +223,11 @@ void eval_exp_besseli(double *a, double *bc, mpf_t C, int n){
 	for(k=0;k<n;k++){
 		mpfr_init_set_d(az,a[k],prec);
 		mpfr_init_set_d(bz,bc[k],prec);
-		mpfr_exp(az,az,prec);
-		mpfr_div(az,az,Cz,prec);
-		mpfr_i0(bz,bz,prec);
-		mpfr_mul(az,az,bz,prec);
-		a[k] = mpfr_get_d(az,prec);
+		mpfr_exp(az,az,GMP_RNDN);
+		mpfr_div(az,az,C,GMP_RNDN);
+		mpfr_i0(bz,bz,GMP_RNDN);
+		mpfr_mul(az,az,bz,GMP_RNDN);
+		a[k] = mpfr_get_d(az,GMP_RNDN);
 	}
 }
 
@@ -320,90 +307,81 @@ int mpfr_i0(mpfr_t res, mpfr_srcptr z, mp_rnd_t r){
 }
 
 
-void copy(mpf_t *out, mpf_t *in,int n){
+void copy(mpfr_t *out, mpfr_t *in,int n){
 	int k;
+	
 	for(k=0;k<n;k++){
-		mpf_set(out[k],in[k]);
+		mpfr_init_set(out[k],in[k],prec);
 	}
 }
 
 
-void dmhyper(mpf_t *df, mpf_t *kappa,int n){
-	int k;
-	
+void dmhyper(mpfr_t *df, mpfr_t *kappa,int n){
+	int k,l;
+	mpfr_t *tmp1, *tmp2;
+	tmp1 = (mpfr_t*) malloc (n*sizeof(mpfr_t));
+	tmp2 = (mpfr_t*) malloc (n*sizeof(mpfr_t));
+		
+    mpfr_t d1, d2;
+	mpfr_init2(d1,prec);
+	mpfr_init2(d2,prec);
+
 	/*  df = (f(x+h) - f(x-h)) / (h*2)	*/
-	//#pragma omp parallel for private(k) shared(df,kappa) num_threads(n)
 	for(k=0;k<n;k++){	
-		mpf_t *tmp1, *tmp2;
-		mpf_t d1, d2;
-		
-		int l;
-		
-		mpf_init(d1);  mpf_init(d2);
-		tmp1 = (mpf_t*) malloc (n*sizeof(mpf_t));
-		tmp2 = (mpf_t*) malloc (n*sizeof(mpf_t));  	
-		//#pragma omp parallel for	
-		for(l=0;l<n;l++){
-			mpf_init(tmp1[l]);
-			mpf_init(tmp2[l]);
-		}	
-		
+		mpfr_init2(df[k], prec);
 		/* d1: f(x-h) */			
-		copy(tmp1, kappa, n);
-		mpf_sub(tmp1[k], tmp1[k], delta);
-		mhyper(d1,tmp1,n);
+		copy(tmp1, kappa, n);	
+		mpfr_sub(tmp1[k], tmp1[k], delta, GMP_RNDD);
+		mhyper(d1, tmp1,n);
 		
 		/* d2: f(x+h) */
-		copy(tmp2, kappa, n);
-		mpf_add(tmp2[k], tmp2[k], delta);
+		copy(tmp2, kappa, n);		
+		mpfr_add(tmp2[k], tmp2[k], delta, GMP_RNDU);	
 		mhyper(d2, tmp2, n);
 		
-		mpf_div(df[k], d2, d1);
-		mpf_log(df[k], df[k]); /* log(f(x+h))- log(f(x-h)) : log(f(x+h)/f(x-h)) */
-		mpf_div(df[k], df[k], delta2);
+		mpfr_sub(df[k],d1,d2,GMP_RNDN);
+		mpfr_div(df[k],df[k],delta2,GMP_RNDN);
 		
-		free_N(tmp1,n);
-		free_N(tmp2,n);
-		mpf_clear(d1);
-		mpf_clear(d2);
+		mpfr_div(df[k], d2, d1, GMP_RNDN);	
+		mpfr_log(df[k], df[k], GMP_RNDN); /* log(f(x+h))- log(f(x-h)) : log(f(x+h)/f(x-h)) */
+		mpfr_div(df[k], df[k], delta2, GMP_RNDN);
 	}
+	
+	free_N(tmp1,n);
+	free_N(tmp2,n);
+	mpfr_clear(d1);
+	mpfr_clear(d2);		
 	
 	
 }
 
 
-void jmhyper(mpf_t **jf, mpf_t *kappa,int n){
-	mpf_t *tmp1, *tmp11, *tmp2, *tmp22;
-	mpf_t d1,d2;
-	int k,l;
+void jmhyper(mpfr_t **jf, mpfr_t *kappa,int n){
+	mpfr_t *tmp1, *tmp11, *tmp2, *tmp22;
+	mpfr_t d1,d2;
+	int k,l;	
 	
+	mpfr_init2(d1,prec);
+	mpfr_init2(d2,prec);
 	
-	mpf_init(d1);
-	mpf_init(d2);
-	tmp1 = (mpf_t*) malloc (n*sizeof(mpf_t));
-	tmp2 = (mpf_t*) malloc (n*sizeof(mpf_t)); 
-	tmp11 = (mpf_t*) malloc (n*sizeof(mpf_t));
-	tmp22 = (mpf_t*) malloc (n*sizeof(mpf_t)); 	
-	//#pragma omp parallel for
-	for(k=0;k<n;k++){
-		mpf_init(tmp1[k]);
-		mpf_init(tmp2[k]);
-		mpf_init(tmp11[k]);
-		mpf_init(tmp22[k]);
-	}		
+	tmp1 = (mpfr_t*) malloc (n*sizeof(mpfr_t));
+	tmp2 = (mpfr_t*) malloc (n*sizeof(mpfr_t)); 
+	tmp11 = (mpfr_t*) malloc (n*sizeof(mpfr_t));
+	tmp22 = (mpfr_t*) malloc (n*sizeof(mpfr_t));
 
 	for(k=0;k<n;k++){
 		copy(tmp1, kappa,n);
-		mpf_sub(tmp1[k], tmp1[k], delta);
+		mpfr_sub(tmp1[k], tmp1[k], delta,GMP_RNDD);
 		dmhyper(tmp11,tmp1,n);
 		
 		copy(tmp2, kappa,n);
-		mpf_add(tmp2[k], tmp2[k], delta);
+		mpfr_add(tmp2[k], tmp2[k], delta,GMP_RNDU);
 		dmhyper(tmp22,tmp2,n);
 		
 		for(l=0;l<n;l++){
-			mpf_sub(jf[k][l],tmp22[l],tmp11[l]);
-			mpf_div(jf[k][l],jf[k][l],delta2);
+			mpfr_init2(jf[k][l],prec);
+			mpfr_sub(jf[k][l],tmp22[l],tmp11[l],GMP_RNDN);
+			mpfr_div(jf[k][l],jf[k][l],delta2,GMP_RNDN);
 		}
 	
 	}
@@ -412,109 +390,100 @@ void jmhyper(mpf_t **jf, mpf_t *kappa,int n){
 	free_N(tmp11,n);
 	free_N(tmp2,n);
 	free_N(tmp22,n);
-	mpf_clear(d1);
-	mpf_clear(d2);
+	mpfr_clear(d1);
+	mpfr_clear(d2);
 }
 
 
-int max_N(mpf_t *z,const int n){
+int max_N(mpfr_t *z,const int n){
 	int k=0, pos=0;
-	mpf_t tmp;
+	mpfr_t tmp;
 	
-	mpf_init_set(tmp,z[k]);
+	mpfr_init_set(tmp,z[k],prec);
 	
 	for(k=1;k<n;k++){
-		if ( mpf_cmp(tmp,z[k]) < 0) {
+		if ( mpfr_less_p(tmp,z[k]) ) {
 			pos = k;
-			mpf_set(tmp,z[k]);
+			mpfr_set(tmp,z[k],prec);
 		}
 	}
 	
-	mpf_clear(tmp);
+	mpfr_clear(tmp);
 	
 	return pos;
 }
 
 
-int min_N(mpf_t *z,const int n){
+int min_N(mpfr_t *z,const int n){
 	int k=0, pos=0;
-	mpf_t tmp;
+	mpfr_t tmp;
 	
-	mpf_init_set(tmp,z[k]);
+	mpfr_init_set(tmp,z[k],prec);
 	for(k=1;k<n;k++){
-		if ( mpf_cmp(tmp,z[k]) > 0) {
+		if ( mpfr_greater_p(tmp,z[k]) ) {
 			pos = k;
-			mpf_set(tmp,z[k]);
+			mpfr_set(tmp,z[k],prec);
 		}
 	}
 	
-	mpf_clear(tmp);
+	mpfr_clear(tmp);
 	
 	return pos;
 }
 
 
-void check_diag(mpf_t **A,const int n){
+void check_diag(mpfr_t **A,const int n){
 	int k;
-	mpf_t tmp,zero;
+	mpfr_t tmp,zero;
 		
-	mpf_init(zero);
-	mpf_init_set_d(tmp,1);
+	mpfr_init2(zero,prec);
+	mpfr_init_set_d(tmp,1,prec);
 	
 	for(k=0;k<n;++k){
-		mpf_mul(tmp,tmp,A[k][k]);
+		mpfr_mul(tmp,tmp,A[k][k],GMP_RNDN);
 	}
 	
-	if ( mpf_eq(tmp,zero,digits/2) ){
+	if ( mpfr_zero_p(tmp) ){
 		printf("warning: system singular to working precision\n");
-		//gmp_printf("det: %.*Fe ", 10, tmp);
+		//mpfr_printf("det: %.18RE ", tmp);
 		exit(0);
 	}
 	
-	mpf_clear(tmp);
-	mpf_clear(zero);
+	mpfr_clear(tmp);
+	mpfr_clear(zero);
 	
 }
 
 
-void swap_row_NN(mpf_t **A, int from, int to ,const int n){
-	int l;
-	mpf_t tmp;
-	
-	mpf_init(tmp);	
-	for(l=0;l<n;++l){
-		mpf_set(tmp,A[to][l]);
-		mpf_set(A[to][l],A[from][l]);
-		mpf_set(A[from][l],tmp);	
-	}
-	
-	mpf_clear(tmp);
+void swap_row_NN(mpfr_t **A, int from, int to ,const int n){
+	mpfr_t *tmps1;
+	tmps1 = A[to];
+	A[to] = A[from];
+	A[from] = tmps1;	
 }
 
 
-void swap_row_N(mpf_t *b, int from, int to ,const int n){
-	mpf_t tmp;	
-	mpf_init(tmp);	
-	
-	mpf_set(tmp,b[to]);
-	mpf_set(b[to],b[from]);
-	mpf_set(b[from],tmp);	
-	
-	mpf_clear(tmp);
+void swap_row_N(mpfr_t *b, int from, int to ,const int n){
+	mpfr_t tmp1[1];	
+	tmp1[0][0] = b[to][0];
+	b[to][0]= b[from][0];
+	b[from][0] = tmp1[0][0];
 }
 
 
-void pivot(mpf_t **A, mpf_t *b,const int n){
+void pivot(mpfr_t **A, mpfr_t *b,const int n){
 	int k,l;
-	mpf_t tmp1,tmp2;
+	mpfr_t tmp1,tmp2;
 	
 	/*partial pivoting*/	
 	for (l = 0; l < n; ++l){		
-		mpf_init(tmp1); mpf_init(tmp2);
+		mpfr_init_set_ui(tmp1,0,prec); 
+		mpfr_init_set_ui(tmp2,0,prec);
 		for (k = l+1; k < n; ++k){
-			mpf_abs(tmp2, A[k][l]);
-			if (mpf_cmp(tmp1,tmp2) < 0){
-				mpf_set(tmp1,tmp2);
+			mpfr_abs(tmp2, A[k][l],GMP_RNDN);
+						
+			if ( mpfr_less_p(tmp1,tmp2) ){
+				mpfr_set(tmp1,tmp2,prec);
 				swap_row_NN(A,k,l,n);
 				swap_row_N(b,k,l,n);
 			}
@@ -523,176 +492,160 @@ void pivot(mpf_t **A, mpf_t *b,const int n){
 }
 
 
-void solveAxb(mpf_t *x, mpf_t **A, mpf_t *b ,int n){
+void solveAxb(mpfr_t *x, mpfr_t **A, mpfr_t *b ,int n){
 	int k,l,m;
-	mpf_t tmp1,tmp2;
-	mpf_init(tmp1);
-	mpf_init(tmp2);
-	
-	pivot(A,b,n);	
-	
+	mpfr_t tmp1,tmp2;
+	mpfr_init2(tmp1,prec);
+	mpfr_init2(tmp2,prec);
+		
+	pivot(A,b,n);
+		
 	/* is singular? */
 	check_diag(A,n);
 	
 	for(k=0; k<n;k++)
-		mpf_init(x[k]); // clear values of x
-	
+		mpfr_init2(x[k],prec); // clear values of x	
 	
 	/* gaussian elemination */
 
 	/* upper triangle */
 	for (k = 0; k < n; ++k)
       for (l = k+1; l < n; ++l) {
-        mpf_div(tmp1, A[l][k], A[k][k]);
+        mpfr_div(tmp1, A[l][k], A[k][k],GMP_RNDN);
         for (m = k; m<n; ++m){
-			mpf_mul(tmp2,tmp1,A[k][m]);
-			mpf_sub(A[l][m],A[l][m],tmp2);
+			mpfr_mul(tmp2,tmp1,A[k][m],GMP_RNDN);
+			mpfr_sub(A[l][m],A[l][m],tmp2,GMP_RNDN);
 		}
-		mpf_mul(tmp2,tmp1,b[k]);
-		mpf_sub(b[l],b[l], tmp2);
+		mpfr_mul(tmp2,tmp1,b[k],GMP_RNDN);
+		mpfr_sub(b[l],b[l], tmp2,GMP_RNDN);
 	}	
 	
 	
 	/* fill it */
 	for (k = n-1; k>=0; --k) {
-		mpf_set(tmp1,b[k]);
+		mpfr_set(tmp1,b[k],GMP_RNDN);
 		for (l=k+1; l<n; ++l){ 
-			mpf_mul(tmp2, x[l], A[k][l]);
-			mpf_sub(tmp1, tmp1, tmp2);
+			mpfr_mul(tmp2, x[l], A[k][l],GMP_RNDN);
+			mpfr_sub(tmp1, tmp1, tmp2,GMP_RNDN);
 		}
-		mpf_div(x[k], tmp1, A[k][k]);
+		mpfr_div(x[k], tmp1, A[k][k],GMP_RNDN);
     }
 	
-	mpf_clear(tmp1);
-	mpf_clear(tmp2);
+	mpfr_clear(tmp1);
+	mpfr_clear(tmp2);
 }
 
 
-void guessinitial(mpf_t *kappa, mpf_t *lambda,const int n){
-	mpf_t mm;
+void guessinitial(mpfr_t *kappa, mpfr_t *lambda,const int n){
+	mpfr_t mm;
 	int k,mpos;	
 	
-	mpf_init(mm);	
+	mpfr_init2(mm,prec);	
 	mpos = max_N(lambda,n);
 	for(k=0;k<n;++k){
 		if (k != mpos){  // 1/2*(l-1)*l
-			mpf_sub_ui(kappa[k],lambda[k],1);
-			mpf_mul_ui(kappa[k],kappa[k],2);
-			mpf_mul(kappa[k],kappa[k],lambda[k]);
+			mpfr_sub_ui(kappa[k],lambda[k],1,prec);
+			mpfr_mul_ui(kappa[k],kappa[k],2,GMP_RNDN);
+			mpfr_mul(kappa[k],kappa[k],lambda[k],GMP_RNDN);
 			
-			if( !mpf_eq(kappa[k],mm,digits/2) ) //omit x/0
-				mpf_ui_div(kappa[k],1,kappa[k]);
+			if( !mpfr_eq(kappa[k],mm,prec/2) ) //omit x/0
+				mpfr_ui_div(kappa[k],1,kappa[k],GMP_RNDN);
 			else {
 				printf("warning: system might go infty, since one entry is zero\n");
-				mpf_set_d(kappa[k],-10000);
+				mpfr_set_d(kappa[k],-10000,prec);
 			}
 		}
 	}
 	
-	mpf_set(mm, kappa[min_N(kappa,n)]);
+	mpfr_set(mm, kappa[min_N(kappa,n)],prec);
 	for(k=0;k<n;++k){
-		mpf_sub(kappa[k],kappa[k],mm);
+		mpfr_sub(kappa[k],kappa[k],mm,GMP_RNDN);
 	}
-	mpf_clear(mm);
+	mpfr_clear(mm);
+	
 }
 
 
-void newton(int iters, mpf_t *kappa, mpf_t *lambda, int n){
-	mpf_t *df, **jf, **pf, *dl, kappaN;
-  mpf_t  t1,t2;
-  int kpos;
+void newton(int iters, mpfr_t *kappa, mpfr_t *lambda, int n){
+	mpfr_t *df, **jf, *dl, kappaN;
+	mpfr_t  t1,t2;
+	int kpos;
 	int k,l,iter;
 	
 	/* allocate memory & init variables */
-	mpf_init(kappaN);
-	df = (mpf_t*) malloc (n*sizeof(mpf_t));  
-	dl = (mpf_t *) malloc (n*sizeof(mpf_t));
-	
-	jf = (mpf_t **) malloc (n*sizeof(mpf_t *)); 
-	pf = (mpf_t **) malloc (n*sizeof(mpf_t *));
-		
-	for(k=0;k<n;k++){
-		mpf_init(df[k]);
-		mpf_init(dl[k]);
-	
-		jf[k] = (mpf_t *) malloc (n*sizeof(mpf_t));
-		pf[k] = (mpf_t *) malloc (n*sizeof(mpf_t));
-		for(l=0;l<n;l++){ 
-			mpf_init(jf[k][l]);
-			mpf_init(pf[k][l]);
-		}
-		
-	}	
+	mpfr_init2(kappaN,prec);
+	df = (mpfr_t*) malloc (n*sizeof(mpfr_t));  
+	dl = (mpfr_t *) malloc (n*sizeof(mpfr_t));	
+	jf = (mpfr_t **) malloc (n*sizeof(mpfr_t *));		
+	for(k=0;k<n;k++)
+		jf[k] = (mpfr_t *) malloc (n*sizeof(mpfr_t));	
 	
 	guessinitial(kappa,lambda,n);  // solvesym
 	
-/*	printf("\nstarting at: \n kappa :");
-	print_N(kappa,n);
-	printf("\n");
-	*/
-
-	mpf_init(t1); mpf_init(t2);
-	
+	mpfr_init2(t1,prec); mpfr_init2(t2,prec);
 	
 	for(iter=0;iter<iters;iter++){
 		kpos = max_N(kappa,n);
-		mpf_set(kappaN, kappa[kpos]);
+		mpfr_set(kappaN, kappa[kpos],prec);
 		
 		dmhyper(dl, kappa, n);
 		jmhyper(jf, kappa, n);
 		
 		/* verbose defect */
-		mpf_init(t2);
+		/*mpfr_init_set_ui(t2,0,prec);
 		for(k=0;k<n;k++){
-			mpf_sub(t1, dl[k],lambda[k]);
-			mpf_abs(t1,t1);
-			mpf_add(t2,t2,t1);
+			mpfr_sub(t1, dl[k],lambda[k],GMP_RNDN);
+			mpfr_abs(t1,t1,GMP_RNDN);
+			mpfr_add(t2,t2,t1,GMP_RNDN);
 		}
 		
-		//gmp_printf("iteration: %d, defect: %.*Fe\n", iter+1, 5, t2);
-		//printf(" kappa :");  print_N(kappa,n);
-		//printf(" lambda:");	 print_N(dl,n);
+		mpfr_printf("iteration: %d, defect: %.16RE\n", iter+1,  t2);
+		printf(" kappa :");  print_N(kappa,n);
+		printf(" lambda:");	 print_N(dl,n);*/
 		//printf("\n");
-		
+
 		/*	*/	
 		for(k=0;k<n;k++){
-			mpf_set_d(jf[kpos][k], (k == kpos)?1:0);
-			mpf_set_d(jf[k][kpos], (k == kpos)?1:0);
+			mpfr_set_d(jf[kpos][k], (k == kpos)?1:0,prec);
+			mpfr_set_d(jf[k][kpos], (k == kpos)?1:0,prec);
 			}
 		
 		
 		for(k=0;k<n;++k)
 			if(k != kpos)
-				mpf_sub(dl[k], dl[k], lambda[k]);
+				mpfr_sub(dl[k], dl[k], lambda[k],GMP_RNDN);
 			
-		mpf_sub(dl[kpos], kappa[kpos], kappaN);
+		mpfr_sub(dl[kpos], kappa[kpos], kappaN,GMP_RNDN);
 		
 		
 		/*  inv(A)*b */
 		solveAxb(df, jf, dl,n);
 		
-		
+				
 		for(k=0;k<n;++k)
-			mpf_sub(kappa[k], kappa[k], df[k]);
+			mpfr_sub(kappa[k], kappa[k], df[k],GMP_RNDN);
 		
 		
-		mpf_set(kappaN,kappa[min_N(kappa,n)]);
+		mpfr_set(kappaN,kappa[min_N(kappa,n)],prec);
 		for(k=0;k<n;++k)
-			mpf_sub(kappa[k], kappa[k], kappaN);
+			mpfr_sub(kappa[k], kappa[k], kappaN,prec);
+			
+		//	exit(0);
 		
 	}	
 	
-	dmhyper(dl, kappa, n);
+/*	dmhyper(dl, kappa, n);
 	
-	/*printf("\n kappa             :");  print_Nf(kappa,n);
+	printf("\n kappa             :");  print_Nf(kappa,n);
 	printf(" approximate lambda:");	 print_Nf(dl,n);
 	printf(" prescribed  lambda:");	 print_Nf(lambda,n);
 	printf("\n");
-	*/
+	
 	
 	for(k=0;k<n;++k){
-		mpf_sub(dl[k],dl[k],lambda[k]);
+		mpfr_sub(dl[k],dl[k],lambda[k],prec);
 	}
+	*/
 	/*
 	printf(" ( al - pl. )      :");	 print_N(dl,n);
 	printf("\n");		
@@ -700,9 +653,8 @@ void newton(int iters, mpf_t *kappa, mpf_t *lambda, int n){
 	free_N(df,n);
 	free_N(dl,n);
 	free_NN(jf,n);
-	free_NN(pf,n);
-	mpf_clear(kappaN);
-	mpf_clear(t1);
-	mpf_clear(t2);
+	mpfr_clear(kappaN);
+	mpfr_clear(t1);
+	mpfr_clear(t2);
 
 };
