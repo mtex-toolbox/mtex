@@ -13,8 +13,8 @@ k = get_option(varargin,'kernel',[],'kernel');
 if isempty(k), 
   hw = get_option(varargin,'halfwidth');
   if isempty(hw), 
-    [a b] = mean(g);    
-    hw = max(prod(1-diag(b)) ,2*degree);
+    [a b] = mean(g);
+    hw = max(prod(1-b) ,2*degree);
   end
   %  if isempty(hw), hw = max(get(g,'resolution') * 3,2*degree); end
   k = kernel('de la Vallee Poussin','halfwidth',hw);

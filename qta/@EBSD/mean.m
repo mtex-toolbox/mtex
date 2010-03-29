@@ -18,7 +18,7 @@ function varargout = mean( ebsd,varargin)
 
 % extract weights
 if isfield(ebsd(1).options,'weight')
-  [varargout{1:nargout}]  = mean(o,'weights',get(ebsd(ind),'weight'));
+  [varargout{1:nargout}]  = mean(o,'weights',get(ebsd(ind),'weight'),varargin{:});
 else
-  [varargout{1:nargout}]  = mean(o);
+  [varargout{1:nargout}]  = mean(o,varargin{:});
 end

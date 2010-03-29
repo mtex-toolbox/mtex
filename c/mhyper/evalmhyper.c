@@ -9,7 +9,7 @@
 
 int main (int argc, char *argv[]){
 
-	mpf_t *lambda, *kappa;
+	mpfr_t *lambda, *kappa;
 	
 	char f_out_name[BUFSIZ];
 	int d,iters,n, k, nk,nf,na,nb;
@@ -44,16 +44,18 @@ int main (int argc, char *argv[]){
 	
 	/* precission & delta */
 	init_prec(d);
-
+	
+	long int prec = d;
+	
 	
 	if (nk>0) {   // kappas given
-		mpf_t C;
+		mpfr_t C;
 		
-		kappa = (mpf_t*) malloc (nk*sizeof(mpf_t));
+		kappa = (mpfr_t*) malloc (nk*sizeof(mpfr_t));
 		
 		for(k=0;k<nk;k++){ 
-			mpf_init(kappa[k]);
-			mpf_init_set_d(kappa[k], kappas[k]);
+			mpfr_init2(kappa[k],prec);
+			mpfr_init_set_d(kappa[k], kappas[k],prec);
 		}
 		
 		mhyper(C, kappa, nk);
@@ -75,16 +77,16 @@ int main (int argc, char *argv[]){
 						
 			for(k=0;k<na;k++){
 			
-				mpfr_init2(in, d);
-				mpfr_set_d(in,	a[k],d);
-				mpfr_init2(out, d);
+				mpfr_init2(in, prec);
+				mpfr_set_d(in,	a[k],prec);
+				mpfr_init2(out, prec);
 				
-				mpfr_i0(out, in, d);
+				mpfr_i0(out, in, prec);
 				
 				
 				mpfr_printf ("%.1028RNf\ndd", out);
 				
-				a[k] = mpfr_get_d(out,d);
+				a[k] = mpfr_get_d(out,prec);
 				
 			}
 				
@@ -103,7 +105,7 @@ int main (int argc, char *argv[]){
 		
 		if (nf == 0 && na == 0) { // only return constant		
 	
-			double CC = mpf_get_d(C);
+			double CC = mpfr_get_d(C,prec);
 			
 			f_out = check_fopen(f_out_name,"wb");
 			fwrite(&CC,sizeof(double),1,f_out);
@@ -113,49 +115,54 @@ int main (int argc, char *argv[]){
 	
 	} else {	// solve kappas
 		/* copy input variables */	
-		lambda = (mpf_t*) malloc (n*sizeof(mpf_t));
-		kappa = (mpf_t*) malloc (n*sizeof(mpf_t));	
+		lambda = (mpfr_t*) malloc (n*sizeof(mpfr_t));
+		kappa = (mpfr_t*) malloc (n*sizeof(mpfr_t));	
 		
 		for(k=0;k<n;k++){ 
-				mpf_init(kappa[k]);
-				mpf_init_set_d(lambda[k], lambdas[k]);
+				mpfr_init_set_ui(kappa[k],0,prec);
+				mpfr_init_set_d(lambda[k],lambdas[k],prec);
 			}
+			
 				
 		if(iters>0){		
 			/* check input */
-			mpf_t tmp;
-			mpf_init(tmp);
+			mpfr_t tmp;
+			mpfr_init(tmp);
+			mpfr_set_d(tmp,0,prec);
+			
 			for(k=0;k<n;k++){
-				mpf_add(tmp,tmp,lambda[k]);
+				mpfr_add(tmp,tmp,lambda[k],prec);
 			}
 			
-			mpf_ui_sub(tmp,1,tmp);
-			mpf_div_ui(tmp,tmp,n);
+			mpfr_ui_sub(tmp,1,tmp,prec);
+			mpfr_div_ui(tmp,tmp,n,prec);
 			
 			for(k=0;k<n;k++){ 		
-				mpf_add(lambda[k],lambda[k],tmp);
+				mpfr_add(lambda[k],lambda[k],tmp,prec);
 			}
 			
-			mpf_init(tmp);
+			mpfr_init2(tmp,prec);
 			for(k=0;k<n;k++){
-				mpf_add(tmp,tmp,lambda[k]);
+				mpfr_add(tmp,tmp,lambda[k],prec);
 			}
 			
-			mpf_init(tmp);
-			if( mpf_cmp(lambda[min_N(lambda,n)],tmp) < 0 ){
+			mpfr_init2(tmp,prec);
+			if( mpfr_cmp(lambda[min_N(lambda,n)],tmp) < 0 ){
 				printf("not well formed! sum should be exactly 1 and no lambda negativ");
 				exit(0);
 			}
+			
+			
 			/* solve the problem */	
 			newton(iters,kappa, lambda, n);
 
-		} else {		
-			dmhyper(kappa,lambda,n);
+		} else {
+			guessinitial(kappa, lambda, n);
 		}
 		
 				
 		for(k=0;k<n;k++){
-			lambdas[k] = mpf_get_d(kappa[k]);	// something wents wront in matlab for 473.66316276431799;
+			lambdas[k] = mpfr_get_d(kappa[k],prec);	// something wents wront in matlab for 473.66316276431799;
 								// % bug:   lambda= [0.97 0.01 0.001];
 		}
 			

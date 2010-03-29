@@ -36,7 +36,7 @@ for iA = 1:n
     fz = sc.*call_extern('evalmhyper','INTERN',d,'EXTERN',kappa,h); 
   end
   
-  f = f + reshape(fz, size(f))./ size(ASym,2);
+  f = f + reshape(fz, size(f))./ size(ASym,1);
   
 end 
 

@@ -43,7 +43,7 @@ for iA = 1:n
   if isfinite(C)
     Zf = sp.* exp(a) ./ C .* besseli(0,bc)./ size(ASym,1);
   else  	
-    Zf = sp.* call_extern('evalmhyper','INTERN',d,'EXTERN',kappa,a,bc);
+    Zf = sp.* call_extern('evalmhyper','INTERN',d,'EXTERN',kappa,a,bc)./ size(ASym,1);
   end
   
   Z = Z + Zf;
