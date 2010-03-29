@@ -28,6 +28,10 @@ switch vname
       varargout{1} = [obj.psi];
     end
     
+  case 'kappa'
+    
+    varargout{1} = obj(1).psi;
+    
   case fields(obj)
     varargout{1} = obj(1).(vname);
     
