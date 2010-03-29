@@ -9,7 +9,7 @@
 % [[uniformODF.html,uniformODFs]], [[unimodalODF.html,unimodalODFs]],
 % [[fibreODF.html,fibreODFs]] and any superposition of those ODF.
 % These ODFs can be used to
-% [[PoleFigureSimulation_demo.html simulate PoleFigures]] or to
+% [[PoleFigureSimulation_demo.html,simulate PoleFigures]] or to
 % [[EBSDSimulation_demo.html,simulate EBSD data]].
 
 %% The Uniform ODF
