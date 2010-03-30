@@ -23,7 +23,7 @@ function [o lambda eigv kappa q]  = mean(o,varargin)
 if numel(o) == 1 
   
   if nargout > 1
-    eigv = quaternion(eye(4));
+    eigv = eye(4);
     lambda = [1 0 0 0]';
     kappa = [Inf 0 0 0]';
     q = quaternion(o);
