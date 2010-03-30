@@ -162,7 +162,7 @@ int main (int argc, char *argv[]){
 		
 				
 		for(k=0;k<n;k++){
-			lambdas[k] = mpfr_get_d(kappa[k],prec);	// something wents wront in matlab for 473.66316276431799;
+			lambdas[k] = mpfr_get_d(kappa[k],GMP_RNDN);	// something wents wront in matlab for 473.66316276431799;
 								// % bug:   lambda= [0.97 0.01 0.001];
 		}
 			
