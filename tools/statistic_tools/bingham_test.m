@@ -6,8 +6,8 @@ function [T,p,v] = binham_test(o,varargin)
 %
 %% Options
 %  spherical - test case
-%  prolat    -
-%  oblat     - 
+%  prolate    -
+%  oblate     - 
 %  c_hat     - test without kappas
 %
 %% See also
@@ -30,6 +30,15 @@ elseif isa(o,'double')
   lambda = varargin{2};
 end
 
+if isempty(strfind(test_fun,'chat'))
+  lambda = sort(lambda,'descend');
+  kappa  = sort(kappa,'descend');
+else
+  if ~issorted(lambda(4:-1:1)),
+    warning('assure lambda 1 > lambda 2 .. > lambda 4, as well as corresonding chat');
+  end
+end
+
 [p,v] = feval(test_fun, n, kappa, lambda);
 
 switch v  % chi2pdf
@@ -47,9 +56,9 @@ function [test_fun]= parseArgs(varargin)
 
 if check_option(varargin,{'sphere','spherical'})
   test_fun = 'spher';
-elseif check_option(varargin,{'prolat','prolatnes'})
+elseif check_option(varargin,{'prolate','prolatnes'})
   test_fun = 'prolat';
-elseif check_option(varargin,{'oblat','oblatnes'})
+elseif check_option(varargin,{'oblate','oblatnes'})
   test_fun = 'oblat';
 end
 
@@ -62,8 +71,6 @@ end
 
 %-- spherical ------------------------------------------------------------%
 function [p,chin]= test_spher(n,kappa,lambda)
-  kappa = sort(kappa,'descend');
-  lambda = sort(lambda,'descend');
   mkappas = mean(kappa(2:4,:));
   mlambdas = mean(lambda(2:4,:));
 
@@ -80,10 +87,7 @@ function [p,chin] = test_spher_chat(n,chat,lambda)
 
   
 %-- prolatnes ------------------------------------------------------------%
-function [p,chin] = test_prolat(n,kappa,lambda)  
-  kappa = sort(kappa,'descend');
-  lambda = sort(lambda,'descend');
-
+function [p,chin] = test_prolat(n,kappa,lambda)
   p = n/2.*(kappa(3,:)-kappa(4,:)).*(lambda(3,:)-lambda(4,:));
     kappa = sort(kappa,'descend');
   chin = 2; % freedom
@@ -97,9 +101,6 @@ function [p,chin] = test_prolat_chat(n,chat,lambda)
 
 %-- oblatnes -------------------------------------------------------------%
 function [p,chin] = test_oblat(n,kappa,lambda)
-  kappa = sort(kappa,'descend');
-  lambda = sort(lambda,'descend');
-
   p = n/2.*(kappa(2,:)-kappa(3,:)).*(lambda(2,:)-lambda(3,:));
 
   chin = 2; % freedom
