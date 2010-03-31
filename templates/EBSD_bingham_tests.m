@@ -31,20 +31,20 @@ plotodf(odf_model,'sigma','sections',9);
 %% Testing on distribution by parameters
 
 T_spherical = bingham_test(ebsd,'spherical')
-T_oblate    = bingham_test(ebsd,'prolatnes')
-T_prolate   = bingham_test(ebsd,'oblatnes')
+T_prolate   = bingham_test(ebsd,'prolatnes')
+T_oblate    = bingham_test(ebsd,'oblatnes')
 
 %% Testing on distribution by second moments
 
 T_spherical_c = bingham_test(ebsd,'spherical','chat')
-T_oblate_c    = bingham_test(ebsd,'prolatnes','chat')
-T_prolate_c   = bingham_test(ebsd,'oblatnes','chat')
-
+T_prolate_c   = bingham_test(ebsd,'prolatnes','chat')
+T_oblate_c    = bingham_test(ebsd,'oblatnes','chat')
+   
 % some output
 
 fprintf('p-spherical : %2.5f\t%2.5f\n', T_spherical ,T_spherical_c)
-fprintf('p-oblate    : %2.5f\t%2.5f\n', T_oblate    ,T_oblate_c)
 fprintf('p-prolate   : %2.5f\t%2.5f\n', T_prolate   ,T_prolate_c)
+fprintf('p-oblate    : %2.5f\t%2.5f\n', T_oblate    ,T_oblate_c)
 
 %% Variing the size of samples (parameters)
 

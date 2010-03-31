@@ -1,5 +1,17 @@
 function [chat T Tv n] = c_hat(varargin)
-
+% return the second moments for bingham test
+%
+%% Input
+%  o   -  @EBSD / @orientation / @grain
+%
+%% Output
+%  chat  - 4x4 tensor 
+%  T     - eigenvalues
+%  Tv    - eigenvectors
+%  n     - number of points
+%
+%% See also
+% bingham_test
 
 
 if isa(varargin{1},'EBSD')
