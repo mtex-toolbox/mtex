@@ -41,15 +41,10 @@ end
 
 [p,v] = feval(test_fun, n, kappa, lambda);
 
-switch v  % chi2pdf
-  case 2
-    chi2v = @(x) exp(-x./2)./2;
-  case 5
-    chi2v = @(x) exp(-x./2).*x.^(3/2)./(3*sqrt(2*pi));
-end
-  
-T = chi2v( p );
+T = 1-gammainc(p/2,v/2);
 
+% v=2, exp(-x/2)
+% T = 1-chi2cdf(p,v);
 
 
 function [test_fun]= parseArgs(varargin)

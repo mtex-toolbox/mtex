@@ -30,5 +30,10 @@ end
 
 function kappa = evalkappaapprox(lambda)
 
-kappa = sort(1./((2.*lambda-1).*lambda));
-kappa = (kappa-min(kappa))/2;
+lambda = sort(lambda);
+kappa = -1./(2.*lambda);
+kappa(4) = 0;
+kappa = kappa - kappa(1);
+
+% kappa = sort(1./((2.*lambda-1).*lambda));
+% kappa = (kappa-min(kappa))/2;
