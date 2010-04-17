@@ -79,6 +79,26 @@ for i = 1:length(fname)
   idata(i) = length(newdata);
 end
 
+
+if strcmpi(type,'EBSD') && check_option(varargin,'3d')
+  Z = get_option(varargin,'3d',[],'double');
+  
+  if isempty(Z), warning('Z-Values for each data layer are not specified!');
+    Z = 1:numel(idata); end
+  csz = [0 cumsum(idata)];
+  
+  for k=1:numel(idata)
+    ndx = csz(k)+1:csz(k+1);
+    for l=1:numel(ndx)
+      xy = get(data(ndx(l)),'xy');
+      xy(:,3) = Z(k);
+      data(ndx(l)) = set(data(ndx(l)),'xy',xy);
+    end    
+  end
+  data = union(data); 
+end
+
+
 %% set crystal and specimen symmetry
 
 if exist('cs','var'), data = set(data,'CS',cs);end
@@ -99,7 +119,6 @@ end
 if check_option(varargin,'rotate')
   data = rotate(data,axis2quat(zvector,get_option(varargin,'rotate')));
 end
-
 
 function v = checkClass(var,className)
 

@@ -9,12 +9,24 @@ if check_option(varargin,'vname')
 elseif ~isempty(inputname(1))
   h = [inputname(1), ' = ' h];
 end;
-if numel(ebsd)>0 && ~isempty(ebsd(1).comment)
-  h = [h, ' (' ebsd(1).comment ')'];
-end  
-disp(h);
+% if numel(ebsd)>0 && ~isempty(ebsd(1).comment)
+%   h = [h, ' (' ebsd(1).comment ')'];
+% end  
+% disp(h);
 
+s = [' ('];
+for i=1:length(ebsd)
+ s = [s, ebsd(i).comment];
+ if i~=length(ebsd), s = [s ', ']; end
+end
 
+if length(s) > 60
+ h = [h, s(1:60) '...'];
+else
+  h = [h,s];
+end
+h = [h,')'];
+disp(h)
 
 if numel(ebsd)>0 && ~isempty(fields(ebsd(1).options))
   disp(['  properties: ',option2str(fields(ebsd(1).options))]);

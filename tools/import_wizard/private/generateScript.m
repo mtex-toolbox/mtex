@@ -95,18 +95,33 @@ if isa(data,'ODF')
   end  
 end
 
+
+%% EBSD 3d
+if isa(data,'EBSD')
+  Z = getappdata(handles.listbox(5),'zvalues');
+  if ~isempty(Z), 
+    str = replaceToken(str,'{Z-values}',['[' num2str(Z) ']']);
+  else
+    str = replaceToken(str,'%% Z-Values','');
+    str = replaceToken(str,'Z = {Z-values};','');
+  end
+end
+
 %% import the data 
 
 str = replaceToken(str,',{structural coefficients}',copt);
 str = replaceToken(str,'{interface}',['''' interface '''']);
 
 optionstr = option2str(options,'quoted');
+
+if exist('Z','var') && ~isempty(Z), optionstr = [optionstr ', ''3d'', Z']; end
 if get(handles.rotate,'value')
   optionstr = [optionstr, ', ''rotate'', ',get(handles.rotateAngle,'string') '*degree'];
 end
 if get(handles.flipud,'value'), optionstr = [optionstr, ', ''flipud''']; end
 if get(handles.fliplr,'value'), optionstr = [optionstr, ', ''fliplr''']; end
 str = replaceToken(str,',{options}',optionstr);
+
 
 if isa(data,'PoleFigure')
   
@@ -132,6 +147,9 @@ if isa(data,'PoleFigure')
   end
 end
 
+% erase some blank space
+ws = cellfun('isempty',str);
+str( find(ws(1:end-2)+ws(2:end-1)+ws(3:end)>2) ) = [];
 
 
 
