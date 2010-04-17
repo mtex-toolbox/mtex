@@ -222,21 +222,29 @@ function switch_page(wzrd,delta)
 
 page = getappdata(wzrd,'page');
 handles = getappdata(wzrd,'handles');
-leavecallback = getappdata(handles.pages(page),'leave_callback');
+
 try
-  leavecallback();
-  data = getappdata(wzrd,'data');
+  
+  feval( getappdata(handles.pages(page),'leave_callback') );
+  handles = getappdata(wzrd,'handles');
+  
+  data = getappdata(wzrd,'data');  
   if isa(data,'EBSD')
+    is3d = ~isempty(getappdata(handles.listbox(5),'zvalues'));    
+    if ~is3d && (page + delta == 2), delta = 2*delta; end
+    
     c = getappdata(wzrd,'cs_count');
-    if (((page+delta == 3) && (c < numel(data))) || ((page+delta == 1) && (c > 1)))
-      setappdata(wzrd,'cs_count',c+delta);
-      delta = 0;
+    if ((page+delta == 4) && (c < numel(data))) || (( page+delta == 2 - ~is3d) && (c > 1))
+        setappdata(wzrd,'cs_count',c+sign(delta));
+        delta = 0;
     end
   end 
+  
   page = page + delta;
-  gotocallback = getappdata(handles.pages(page),'goto_callback');
-  gotocallback();
+  
+  feval( getappdata(handles.pages(page),'goto_callback') ) ;
   set_page(wzrd,page);
+  
 catch  %#ok<*CTCH>
   errordlg(errortext);
 end

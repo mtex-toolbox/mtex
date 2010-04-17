@@ -23,9 +23,18 @@ pname = {path to files};
 % which files to be imported
 fname = {file names};
 
+%% Z-Values
+
+Z = {Z-values};
+
 %% Import the Data
 
 % create an EBSD variable containing the data
 ebsd = loadEBSD(fname,CS,SS,'interface',{interface} ...
   ,{options});
+
+
+
+
+
 

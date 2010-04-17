@@ -205,10 +205,7 @@ cs = get(data(cs_counter),'CS');
 if isa(data,'EBSD')
   phase = get(data(cs_counter),'phase');
   pagename = ['Set Crystal Geometry for Phase ' num2str(phase)];
-  %eb_comment = char(get(data(cs_counter),'comment'));
-  %if length(eb_comment)> 25, eb_comment = eb_comment(1:25); end
-  %pagename = [pagename ', ' eb_comment ];
-  setappdata(handles.pages(2),'pagename',pagename );
+  setappdata(handles.pages(3),'pagename',pagename );
 end
 
 csname = strmatch(Laue(cs),symmetries);
