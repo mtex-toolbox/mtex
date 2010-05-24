@@ -49,7 +49,7 @@ for i = 1:length(odf)
        
     otherwise % radially symmetric portion
       
-      center = odf(1).center(odf(1).c>=quantile(odf(1).c,-20));
+      center = odf(i).center(odf(i).c>=quantile(odf(i).c,-20));
       ori = [ori;center(:)]; %#ok<AGROW>
            
   end
