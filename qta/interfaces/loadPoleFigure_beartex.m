@@ -34,13 +34,12 @@ try
    end
 
    crystal = cell2mat(textscan(c{1}{6},'%n'))';
-   cs = symmetry(spacegroup{crystal(7)}, crystal(4:6)*degree,crystal(1:3));
+   cs = symmetry(spacegroup{crystal(7)}, crystal(1:3), crystal(4:6)*degree);
    ss = symmetry(spacegroup{crystal(8)});
 
    gridinfo = c{1}{7};
    hkl = cell2mat(textscan(gridinfo,'%n',3));
    h = Miller(hkl(1),hkl(2),hkl(3),cs);
-
 
    k = 11:5:40;
    info = zeros(size(k));
@@ -67,6 +66,7 @@ try
 
    ipf = ipf+1;
   end
+  fclose(fid);
 catch
   if ~exist('pf','var')
     error('format BearTex does not match file %s',fname);
