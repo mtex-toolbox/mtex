@@ -54,7 +54,7 @@ for i = 1:length(handles.listbox)
   setappdata(handles.listbox(i),'idata',0);
 end
 
-handles.pf_pages = handles.pages([1:3 7]);
+handles.pf_pages = handles.pages([1:4 7]);
 handles.ebsd_pages = handles.pages([1 6 2 3 7]);
 handles.odf_pages = handles.pages([1:3 5 7]);
 setappdata(h,'handles',handles);
