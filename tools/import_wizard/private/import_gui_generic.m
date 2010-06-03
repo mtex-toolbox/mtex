@@ -117,11 +117,14 @@ end
 function finish_callback(varargin)
 
 handles = getappdata(gcbf,'handles');
+templates = getappdata(gcbf,'templates');
 lb = handles.listbox;
 
 data = getappdata(gcbf,'data');
 
-switch class(data)
+type = class(data);
+
+switch type
   case 'EBSD'
     vname = 'ebsd';
   case 'PoleFigure'
@@ -131,8 +134,14 @@ switch class(data)
     vname = 'odf';
 end
 
+% handles.
+
+sel = get(handles.template,'Value')-1;
+
+
+
 %% copy to workspace
-if ~get(handles.runmfile,'Value');
+if any(~sel)
 
   a = inputdlg({'Enter name of workspace variable'},'MTEX Import Wizard',1,{vname});
   if isempty(a), return;end
@@ -144,70 +153,47 @@ if ~get(handles.runmfile,'Value');
     display(data,'vname',a{1});
     disp(' ');
     
-    switch class(data)
-      case 'EBSD'    
-        disp(['- <a href="matlab:plot(',a{1},',''silent'')">Plot EBSD Data</a>']);
+    disp(['- <a href="matlab:plot(',a{1},',''silent'')">Plot ' type ' Data</a>']);
+    switch type
+      case {'EBSD','PoleFigure'}       
         disp(['- <a href="matlab:odf = calcODF(',a{1},')">Calculate ODF</a>']);
-        disp(' ');
-      case 'PoleFigure'
-        disp(['- <a href="matlab:plot(',a{1},',''silent'')">Plot Pole Figure Data</a>']);
-        disp(['- <a href="matlab:odf = calcODF(',a{1},')">Calculate ODF</a>']);
-        disp(' ');
-      case 'ODF'
-        disp(['- <a href="matlab:plot(',a{1},',''silent'')">Plot ODF Data</a>']);
-        disp(' ');
     end
+    disp(' ');
   end
+  
+elseif all(sel > numel(templates))
+  
+  mtex_templates('type',{type},'online');
+  return
+  
   
 %% write to file
 else 
-  
-  type = class(data);
       
   % extract file names
   fn = arrayfun(@(x) getappdata(x,'filename'),lb,'UniformOutput',false);
     
   switch type
     case 'EBSD'
-      str = generateScript('EBSD',fn{5},data,getappdata(lb(5),'interface'),...
-        getappdata(lb(5),'options'), handles);
+      fl = {fn{5}, lb(5)};
     case 'PoleFigure'
       fn(2:3) = [];
       if all(cellfun('isempty',fn(2:end)))
         fn = fn{1};
-      end      
-      str = generateScript('PoleFigure',fn,data,getappdata(lb(1),'interface'),...
-        getappdata(lb(1),'options'), handles);
+      end   
+      fl = {fn, lb(1)};
     case 'ODF'
-      str = generateScript('ODF',fn{6},data,getappdata(lb(6),'interface'),...
-        getappdata(lb(6),'options'), handles);
-  end
+      fl = {fn{6}, lb(6)};
+  end  
+  
+	str = generateScript(type,fl{1},data,getappdata(fl{2},'interface'),...
+    getappdata(fl{2},'options'), handles);
        
   str = generateCodeString(str);
-    
-   % find some other templates 
-  templates = dir( fullfile(mtex_path,'templates',[ type '_*.m']) );
-  templates = {templates.name};
-  
-%   if numel(templates) > 1
-   templ = regexprep(templates,[ type '_(\w*).m'],'$1');
-   templ = [templ, 'Look for new Templates'];
-
-   [s,v] = listdlg('PromptString','Select a template script:',...
-                  'SelectionMode','single',...
-                  'ListSize',[200,100],'fus',4,'ffs',4,...
-                  'Name',[type ' Template Script'],...
-                  'ListString',templ);
-    if isempty(s), return;end
-    if s> numel(templates)
-      mtex_templates('type',{type});
-      return;
-    end    
-    templates = templates(s);
-  %end
-  templatestr = file2cell( fullfile(mtex_path,'templates',templates{:}) );
-
-  str = [str generateCodeString(templatestr)];
+  for l = sel(sel <= numel(templates))
+    templatestr = file2cell( fullfile(mtex_path,'templates',templates{l}));
+    str = [str generateCodeString(templatestr)];
+  end
   
   openuntitled(str);
 end
