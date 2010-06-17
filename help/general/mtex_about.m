@@ -1,18 +1,22 @@
 %% MTEX About
 %
-% The MTEX toolbox is developed and maintained by 
+% 
+%% Authors
+% 
+% <html>
+% The MTEX toolbox is developed and maintained by <br> <br>
+% Dr. Ralf Hielscher 
+% <a href="mailto:Ralf.Hielscher@mathematik.tu-chemnitz.de">Ralf.Hielscher@mathematik.tu-chemnitz.de</a>
+% </html>
+% 
 %
-%  Dr. Ralf Hielscher [[http://Ralf.Hielscher@gsf.de,Ralf.Hielscher@gsf.de]]
-%
-%  HelmholzZentrum München
-%  Forschungszentrum für Gesundheit und Umwelt
-%  Institute of Biomathematics and Biometry 
-%  Ingolstädter Landstraße 1
-%  D-85764 Neuherberg, GERMANY
-%  GSF - National Research Center for Environment and Health  
+%  TU Chemnitz
+%  Fakultät für Mathematik 
+%  Reichenhainer Str.39, Zimmer 710
+%  D-09107 Chemnitz, GERMANY
 %
 %  personal homepage:
-%  [[http://ibb.gsf.de/homepage/ralf.hielscher/,http://ibb.gsf.de/homepage/ralf.hielscher/]]
+%  [[http://www-user.tu-chemnitz.de/~rahi/,http://ibb.gsf.de/homepage/ralf.hielscher/,http://ibb.gsf.de/homepage/ralf.hielscher/]]
 %
 % and 
 %
@@ -34,8 +38,7 @@
 %
 % The toolbox is build upon the following great software packages:
 %
-% * <http://www-user.tu-chemnitz.de/~potts/nfft/ NFFT> - D. Potts, S. Kunis, J. Keiner 
-% * NSOFT - Antje Vollrath
+% * <http://www-user.tu-chemnitz.de/~potts/nfft/ NFFT> - D. Potts, S. Kunis, J. Keiner, A. Vollrath 
 % * txt2mat -  A.Tönnesmann
 % * Sphere3d - JM DeFreitas
 % * Arrow3d - Changshun Deng
