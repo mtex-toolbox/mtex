@@ -1,10 +1,10 @@
-%% Manipulation of Individual Orientation Data
+%% Correct Individual Orientation Data
 %
 %% Open in Editor
 %
 %% Abstract
-% MTEX offers some routines for manipulation of EBSD or grain objects, this
-% section gives a short overview over the most helpfull commands.
+% This script shows how to use MTEX to correct EBSD data for measurement
+% errors.
 %
 %% Contents
 %
@@ -13,178 +13,128 @@
 
 loadaachen;
 
-%%
-% and model some grains
+%% 
+% and plot the raw data
+close all,plot(ebsd)
 
-[grains, ebsd] = segment2d(ebsd);
 
-%% Object Manipulation
-% In general for every object there exists a *set* and *get* command to
-% retrive object properties, taking a look on the command window one may
-% find several properties like bands, bc, bs and so on
-
-ebsd
-
-%%
+%% Realign / Rotate the data
 %
+% Sometimes its required to realign the EBSD data, e.g. by rotating,
+% shifting or flipping them. This is done by the commands 
+% <EBSD_rotate.html rotate>, <EBSD_fliplr.html fliplr>, <EBSD_flipud.html
+% flipud> and <EBSD_shift.html shift>.
 
-o  = get(ebsd,'orientations')
-xy = get(ebsd,'xy');
-b  = get(ebsd,'mad');
+% define a rotation
+rot = rotation('axis',zvector,'angle',5*degree);
 
-%%
-% naturally it behaves as well with grains, however we can set and get
-% properties
+% rotate the EBSD data
+ebsd_rot = rotate(ebsd,rot);
 
-ebsd = set(ebsd,'property','property')
-get(ebsd,'property')
-
-%%
-% that is the way of object manipulation. Nontheless there are some more
-% sophisticated routines, e.g. simply extracting a new EBSD object or to
-% rotate the EBSD Specime concurrent to PoleFigure Measurements
-
-%% Extracting subsets by Indexing
-% Another task is [[EBSD_copy.html,copying]] or [[EBSD_delete.html,deleting]]
-% some orientations in an EBSD data-set, i.e. we want to get rid of the
-% first 10000 measurements, it can be done by giving its linear index 
-% in the dataset
-
-ebsd_deleted = delete(ebsd, 1:10000)
-ebsd_copied  = copy(ebsd, 1:10000)
+% plot the rotated EBSD data
+close all, plot(ebsd_rot)
 
 %%
+% It should be stressed, that the rotation does not only effect the spatial
+% data, i.e. the x, y values, but also the crystal orientations are rotated
+% accordingly. This is true as well for the flipping commands
+% <EBSD_rotate.html rotate> and <EBSD_fliplr.html fliplr>. Observe, how not
+% only the picture is flipped but also the color of the grains chages!
+
+ebsd_flip = flipud(ebsd_rot);
+close all, plot( ebsd_flip )
+
+
+%% Restricting to a region of interest
+% If on is not interested in the whole data set but only in those
+% measurements inside a certain polygon, the restriction can be
+% constructed as follows. Lets start by defining a polygon.
+
+
+% the polygon
+p = polygon([120 130; 120 100; 200 100; 200 130; 120 130]);
+
+% plot the ebsd data
+plot(ebsd)
+
+% plot the polygon on top
+hold on
+plot(p,'color','r','linewidth',2)
+hold off
+
+
+%%
+% In order to restrict the ebsd data to the polygon we use the command
+% <ebsd_inpolygon.html inpolygon>.
+
+% restrict
+ebsd = inpolygon(ebsd,p)
+
+% plot
+plot(ebsd)
+
+
+%% Detecting Inaccurate Orientation Measurements
 %
-plot(ebsd_deleted)
+% 
+% *By *
+%
+% In order 
+
+% extract the quantity mad 
+mad = get(ebsd,'mad');
+
+% plot a histogram
+hist(mad)
 
 %%
 % 
-plot(ebsd_copied)
 
-%%
-% or by logical indexing, e.g. falsification of some object property 
-
-x = get(ebsd,'x');
-
-close all;
-plot( copy(ebsd, x > 100 & x < 200 ) ,'property','bc')
-hold on,
-plot( delete(ebsd, x > 100 ) ,'colorcoding','hkl')
-
-%%
-% having grains its easier to treat indexing, since each grain is stored in
-% a data vector, we can simply give the position directly
-
-grains(1); grains(300:400);
-
-%%
-% thus it allows us to index directly, e.g. return the 10 largest grains
-
-[grain_sizes ndx] = sort( grainsize(grains), 'descend' );
-grain_selection = grains( ndx(1:10) ) 
+ebsd_corrected = delete(ebsd,mad>1)
 
 %%
 %
-close all;
-plot(grain_selection)
+plot(ebsd_corrected)
 
-%%
-% Futhermore it allows [[matlab:doc cat, concatenation]] of several grain subsets
 
-grain_selection_2 = grains( ndx(30:40) );
-grain_selection   = [grain_selection, grain_selection_2]
-
-%%
-% taking into account, that every grain owns a [[polygon_index.html,
-% polygon]] it allows powerfull selection
-
-grains( area(grains) > 300 )
-grains( shapefactor(grains) > 2 )
-grains( paris(grains) > 50 )
-
-%% Extracting spatial subsets 
-% Subsets of data may be very usefull for analysing something with very
-% special respects
-
-%%
-% When having *spatially* information, one can select data after its
-% location, e.g. by given bounds like a [[polygon_index.html,polygon]] with
-% the command [[EBSD_inpolygon.html,inpolygon]]
-
-p = polygon([120 130; 120 100; 200 100; 200 130; 120 130]);
-ebsd_of_p = inpolygon(ebsd,p)
-
-%%
+%% 
+% *By grain size*
 %
-close all;
-plotboundary(grains)
-hold on, plot(ebsd_of_p)
-hold on, plot(p,'color','r')
+% Sometimes measurements that belongs to grains consisting of only very
+% few measurements can be regarded as inaccurate. In order to detect such
+% measuremens we have first to reconstruct grains from the EBSD
+% measurements using the command <EBSD_segment2d.html segment2d>
+
+[grains,ebsd_corrected] = segment2d(ebsd_corrected,10*degree)
 
 %%
-% and also grains in a similar same manner
-% [[polygon_inpolygon.html,inpolygon]], where the command now returns a
-% logical indexing
+% The histogram of the grainsize shows that there a lot of grains
+% consisting only of very few measurements.
 
-grain_selection = grains( inpolygon(grains,p) )
-
-%%
-% the grains are *[[grain_link.html,linked]]* to its underlaying ebsd data by
-% an intrinsic object id, which could be used to select accordingly
-
-ebsd_selection = link( ebsd, grain_selection)
+hist(grainsize(grains),50)
 
 %%
-%
-close all;
-plotboundary(grains)
-hold on, plot(ebsd_selection)
-hold on, plotboundary(grain_selection,'color','r','linewidth',2)
+% Lets find all grains containing at least 5 measurements
+
+large_grains = grains(grainsize(grains) >= 20)
 
 %%
-% so with regard to aboves selected ebsd object we can get its grains in 
-% another way
+% and remove all orientation measurements not belonging to these grains
 
-grains_of_p = link(grains, ebsd_of_p)
+ebsd_corrected = link(ebsd_corrected,large_grains)
 
-%% Extracting subsets by orientation
-% An other way of selecting data is by an given orientation / rotation. 
+plot(ebsd_corrected)
 
-rot = rotation('Euler',[-2.5795 -1.8764 -2.0348 -1.6752  1.5785],...
-   [ 0.9852  0.4761  0.8748  0.7838  0.5469],...
-   [ 2.2687  2.3882  2.3065  2.3701 -2.3617],'ABG');
-    
-ebsd_by_rot = find(ebsd,rot,5*degree)
-grains_by_rot = find(grains,rot,5*degree)
+%% 
+% Now reconstructing again grains in our reduced EBSD data set
+
+[grains_corrected,ebsd_corrected] = segment2d(ebsd_corrected,10*degree)
+
+plot(grains_corrected)
 
 %%
-% since we have a assigned a mean orientation for each grain we may expect
-% different results 
+% we observe that there are no very small grains anymore
 
-close all; 
-plotboundary(grains)
-hold on, plot(ebsd_by_rot)
-hold on, plotboundary(grains_by_rot,'color','r')
+hist(grainsize(grains_corrected),50)
 
 
-%% Rotating, Flipping of EBSD Data
-% Sometimes its required to edit EBSD Data, e.g. by
-% [[EBSD_rotate.html,rotating]] the Sample, or sometimes only the
-% orientations
-
-ebsd_rot = rotate(ebsd, 15*degree)
-ebsd_rot = rotate(ebsd_rot,rot(4),'keepXY')
-
-close all
-plot(ebsd_rot)
-
-%%
-% as a consequence, when manipulating the ebsd object, grains have 
-% to be modelled again, since they may be not any longer congruent.
-
-%%
-% sometimes coordinates are flipped, it can be resolved by using the
-% [[EBSD_flipud.html,flipud]] or [[EBSD_fliplr.html,fliplr]]
-
-close all
-plot( fliplr( flipud(ebsd) ) )
