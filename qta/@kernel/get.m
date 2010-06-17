@@ -1,4 +1,4 @@
-function varargout = get(obj,vname)
+function varargout = get(obj,vname,varargin)
 % get object variable
 
 if nargin == 1
@@ -12,6 +12,12 @@ else
   switch vname
     case {'hw','halfwidth'}
       varargout{1} = [obj.hw];
+    case {'Fourier'}
+      varargout{1} = obj.A;
+      if check_option(varargin,'normalized')
+        L = 0:length(obj.A)-1;
+        varargout{1} = varargout{1} ./ (2*L+1);
+      end
     otherwise
       error(['There is no ''' vname ''' property in the ''kernel'' object'])
   end

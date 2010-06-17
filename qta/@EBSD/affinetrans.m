@@ -9,7 +9,7 @@ function ebsd = affinetrans(ebsd, A, b)
 %% Output
 %  transformed ebsd - @EBSD
 
-if all(size(A) == [ 3 3])
+if all(size(A) == [3 3])
   T = A;
 elseif nargin < 3
   T(1:2,1:2) = A;
@@ -20,7 +20,7 @@ else
   else 
      T(1:2,1:2) = eye(2);
   end
-  T(1:2,3) = b;
+  T(1:2,3) = b(:);
   T(3,3) = 1;
 end
 
