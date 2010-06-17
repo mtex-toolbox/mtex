@@ -44,7 +44,7 @@ clear g;
 
 
 % NFSFT-based algorithm
-if numel(in) > 500 && numel(out) > 500 && ~isempty(c) && ...
+if numel(in) > 50 && numel(out) > 50 && ~isempty(c) && ...
     ~isempty(getA(kk)) && ~check_option(varargin,'exact')
 		
 	% transform in polar coordinates
