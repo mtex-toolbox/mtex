@@ -100,7 +100,7 @@ elseif any(strcmpi(plottype,'SMOOTH'))
       ind = convhull(X,Y);
       fill(X(ind),Y(ind),min(data(:)));
     else
-      [CM,h] = contourf(X,Y,data,50);
+      [CM,h] = contourf(X,Y,data,get_option(varargin,'contours',50));
       set(h,'LineStyle','none');
     end
 
