@@ -9,11 +9,18 @@ function mtex_settings
 %% user defined global settings
 %------------------------------------------------------------------------
 
-%% architecture 
-% this is usefull if the arcitecture is not automatically recognized by
-% MTEX
+%% default global plotting options
+% here you can define default plott options
 
-%set_mtex_option('architecture','maci64');
+default_plot_options = {'FontSize',13};
+%default_plot_options = {'antipodal'};
+set_mtex_option('default_plot_options',default_plot_options);
+plotx2north;
+
+%% Euler angle convention
+% default Euler angle convention
+
+set_mtex_option('EulerAngleConvention','Bunge');
 
 %% file extensions to be associated with MTEX
 % add here your pole figure and EBSD data file extensions 
@@ -27,37 +34,29 @@ set_mtex_option('ebsd_ext',...
 % modify this path if your CIF files are located at a different path
 set_mtex_option('cif_path',fullfile(mtex_path,'cif'));
 
+%% Turn of LaTex output
+% comment out the following line if you have problems with displaying LaTex
+% symbols
+
+set_mtex_option('noLaTex');
+
+%% architecture 
+% this is usefull if the arcitecture is not automatically recognized by
+% MTEX
+
+%set_mtex_option('architecture','maci64');
+
 %% default maximum iteration depth for calcODF
 % change this value if you want to have another maximum iteration depth to
 % be default
 
 set_mtex_option('ITER_MAX',11);
 
-%% default global plotting options
-% here you can define default plott options
-
-default_plot_options = {'FontSize',13};
-%default_plot_options = {'antipodal'};
-set_mtex_option('default_plot_options',default_plot_options);
-plotx2north;
-
-%% standard displaying
-% formating standard display output
-
-set_mtex_option('default_display_convention','Bunge');
-% set_mtex_option('default_display_convention','ABG');
-
 %% available memory 
 % change this value to specify the total amount of installed ram
 % on your system in kilobytes
 
 set_mtex_option('memory',getmem);
-
-%% Turn of LaTex output
-% comment out the following line if you have problems with displaying LaTex
-% symbols
-
-set_mtex_option('noLaTex');
 
 %% FFT Accuracy 
 % change this value to have more accurate but slower computation when
