@@ -23,11 +23,11 @@ function odf = unimodalODF(mod,CS,SS,varargin)
 %% See also
 % ODF/ODF uniformODF fibreODF
 
-%error(nargchk(3,5,nargin));
 if nargin == 0, mod = orientation(idquaternion);end
-if nargin <= 1, CS = get(mod,'cs');end
-if nargin <= 2, SS = get(mod,'ss');end
 argin_check(mod,'quaternion');
+if ~isa(mod,'orientation'), mod = orientation(mod);end
+if nargin <= 1, CS = get(mod,'CS'); else mod = set(mod,'CS',CS); end
+if nargin <= 2, SS = get(mod,'SS'); else mod = set(mod,'CS',SS); end
 argin_check(CS,'symmetry');
 argin_check(SS,'symmetry');
 
