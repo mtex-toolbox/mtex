@@ -128,8 +128,10 @@ else
     'position',[dw h-(tb+260) 4*cw+dw 45]);
  
   euler_convention = uicontrol('Style', 'popup',...
-    'String', 'ZXZ  Bunge (phi1 Phi phi2)|ZYZ  Matthies (alpha,beta,gamma)',...
-    'Position',[dw 5 2*cw-2*dw 23],'Parent',chk_angle,'HandleVisibility','off');  
+    'String', ['Bunge (phi1 Phi phi2) ZXZ|',...
+    'Matthies (alpha,beta,gamma) ZYZ|',...
+    'Roe (Psi,Theta,Phi)|Kocks (Psi,Theta,phi)|Canova (omega,Theta,phi)'],...
+    'Position',[dw 5 2*cw-dw 23],'Parent',chk_angle,'HandleVisibility','off');  
   
   uicontrol('Style','Radio','String','Degree',...
     'Position',[2*cw+2*dw dw 80 15],'Parent',chk_angle,'HandleVisibility','off');
@@ -187,7 +189,7 @@ while ishandle(htp)
     ind = find(~strcmpi(data,'Ignore'));
     options = {'ColumnNames',data(ind)};
     if length(ind) < length(data)
-      options = [options,{'Columns',ind}];
+      options = [options,{'Columns',ind}]; %#ok<AGROW>
     end
 
     % check for mandatory columnnames
@@ -210,23 +212,23 @@ while ishandle(htp)
     end
     
     % degree / radians
-    if get(rad_box,'value'), options = [{'RADIANS'},options];end
+    if get(rad_box,'value'), options = [{'RADIANS'},options];end %#ok<AGROW>
     
     if ~strcmp(type,'PoleFigure')
     
       % Eule angle convention
-      conventions = {'Bunge','ABG'};
-      options = [options,conventions(get(euler_convention,'value'))];
+      conventions = {'Bunge','Matthies','Roe','Kocks','Canova'};
+      options = [options,conventions(get(euler_convention,'value'))]; %#ok<AGROW>
       
       % active / pasive rotation
       if get(passive_box,'value')
-        options = [options,{'passive rotation'}];
+        options = [options,{'passive rotation'}]; %#ok<AGROW>
       end
       
       if strcmp(type,'EBSD')
         phase = str2num(get(phaseopt,'string')); %#ok<ST2NM>
         if ~isempty(phase)
-          options = [options,{'ignorePhase',phase}];
+          options = [options,{'ignorePhase',phase}]; %#ok<AGROW>
         end
       end
       
