@@ -76,7 +76,7 @@ switch convention
     
   case {'Kocks'}
 
-    labels = {'Psi','Theta','Phi'};
+    labels = {'Psi','Theta','phi'};
     if beta ~= 0
       gamma = pi - gamma;
     end
