@@ -43,10 +43,36 @@ function q = euler2quat(alpha,beta,gamma,varargin)
 % 
 % return
 
-if check_option(varargin,{'ABG','ZYZ'})
-  q = axis2quat(zvector,alpha).*...
-    axis2quat(yvector,beta).*axis2quat(zvector,gamma);
-else
-  q = axis2quat(zvector,alpha).*...
-    axis2quat(xvector,beta).*axis2quat(zvector,gamma);  
+%% transform to right convention
+
+conventions = {'nfft','ZYZ','ABG','Matthies','Roe','Kocks','Bunge','ZXZ','Canova'};
+convention = get_flag(varargin,conventions,get_mtex_option('EulerAngleConvention'));
+
+switch convention
+  
+  case {'Matthies','nfft','ZYZ','ABG'}
+
+  case 'Roe'
+    
+  case {'Bunge','ZXZ'}
+
+    alpha = alpha - pi/2;
+    gamma = 3*pi/2 - gamma;
+      
+  case {'Kocks'}
+
+    gamma = pi - gamma;
+        
+  case {'Canova'}
+    
+    alpha = pi/2 - alpha;
+    gamma = 3*pi/2 - gamma;
+        
 end
+
+
+%% construct quaternion
+
+q = axis2quat(zvector,alpha).*...
+  axis2quat(yvector,beta).*axis2quat(zvector,gamma);
+
