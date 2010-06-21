@@ -1,7 +1,7 @@
 %% Rotations
 %
 %% Abstract
-% This sections describes the class *rotation* and gives an overview how
+% This section describes the class *rotation* and gives an overview on how
 % to work with rotations in MTEX.
 %
 %% Open in Editor
@@ -13,46 +13,61 @@
 % The class *rotation* is an inheritant of the class <quaternion_index.html
 % quaternion> and allow to work with rotations as with matrixes in MTEX.
 %
-%% Defining a Rotation
+%% Euler Angle Conventions
 %
 % There are several ways to specify a rotation in MTEX. A
-% well known possibility are the so called *Euler angles*. Here two
-% conventions are commonly used:
+% well known possibility are the so called *Euler angles*. In texture
+% analysis the following conventions are commonly used
 %
-% *The Bunge Euler Angle Convention*
+% * Bunge (phi1,Phi,phi2)       - ZXZ
+% * Matthies (alpha,beta,gamma) - ZYZ
+% * Roe (Psi,Theta,Phi)
+% * Kocks (Psi,Theta,phi)
+% * Canova (omega,Theta,phi)
 %
-% Here an arbitrary rotation is determined by three consecutive rotations,
+% *Defining a Rotation by Bunge Euler Angles*
+%
+% The default Euler angle convention in MTEX are the Bunge Euler angles.
+% Here a rotation is determined by three consecutive rotations,
 % the first about the z-axis, the second about the y-axis, and the third
 % again about the z-axis. Hence, one needs three angles two define an
-% rotation by Euler angles.
+% rotation by Euler angles. The following command defines a rotation by its
+% three Bunge Euler angles
 
 o = rotation('Euler',30*degree,50*degree,10*degree)
 
+
 %%
-% *The Matthies Euler Angle Convention*
+% *Defining a Rotation by Other Euler Angle Conventions*
 %
-% In contrast to the Bunge conventionen here the three rotations are taken
-% about the z-axis, the y-axis, and the z-axis.
+% In order to define a rotation by a Euler angle convention different to
+% the default Euler angle convention you to specify the convention as an
+% additional parameter, e.g.
 
-o = rotation('Euler',30*degree,50*degree,10*degree,'ZYZ')
+o = rotation('Euler',30*degree,50*degree,10*degree,'Roe')
+
+
+%% 
+% *Changing the Default Euler Angle Convention*
+%
+% The default euler angle convention can be changes by the command
+% <set_mtex_option.html set_mtex_option>. Compare
+
+set_mtex_option('EulerAngleConvention','Roe')
+o
 
 %%
+set_mtex_option('EulerAngleConvention','Bunge')
+o
+
+%% Other Ways of Defining a Rotation
+% 
 % *The axis angle parametrisation*
 %
-% Another posibility to specify a rotation is the give its rotational axis
-% and its rotational angle.
+% A very simple posibility to specify a rotation is to specify the 
+% rotational axis and the rotational angle.
 
 o = rotation('axis',xvector,'angle',30*degree)
-
-%%
-% *A fibre of rotations*
-%
-% You can also define a fibre of rotations that rotates a certain vector u
-% onto a vector v
-
-u = xvector;
-v = yvector;
-o = rotation('fibre',u,v)
 
 %%
 % *Four vectors defining a rotation*
@@ -61,6 +76,24 @@ o = rotation('fibre',u,v)
 % q u1 = v1 and q u2 = v2.
 
 o = rotation('map',xvector,yvector,zvector,zvector)
+
+%%
+% If only two vectors are specified the rotation with the smalles angle is
+% returned that maps the first vector onto the second one.
+
+o = rotation('map',xvector,yvector)
+
+%%
+% *A fibre of rotations*
+%
+% The set of all rotations that rotate a certaion vector u onto a certain 
+% vector v define a fibre in the rotation space. A discretisation of such
+% an fibre is defined by
+
+u = xvector;
+v = yvector;
+o = rotation('fibre',u,v)
+
 
 %%
 % *Defining an rotation by a 3 times 3 matrix*
@@ -83,7 +116,10 @@ o = rotation('quaternion',1,0,0,0)
 q = quaternion(1,0,0,0)
 o = rotation(q)
 
-%% Rotating Vectors
+
+%% Calculating with Rotations
+%
+% *Rotating Vectors*
 %
 % Let
 
@@ -99,7 +135,7 @@ v = o * xvector
 
 o \ v
 
-%% Concatenating Rotations
+% *Concatenating Rotations*
 %
 % Let
 
@@ -112,12 +148,9 @@ rot2 = rotation('Euler',0,60*degree,0);
 
 rot = rot2 * rot1
 
-
-
-%% Calculating with Orientations and Rotations
+% *Computing the rotation angle and the rotational axis*
 %
-% Beside the standard linear algebra operations there are also the
-% following functions available in MTEX. Then rotational angle and the axis
+% Then rotational angle and the axis
 % of rotation can be computed via then commands
 % <quaternion_angle.html angle(rot)> and
 % <quaternion_axis.html axis(rot)>
@@ -125,7 +158,18 @@ rot = rot2 * rot1
 angle(rot)/degree
 
 axis(rot)
+
 %%
+% If two rotations are specifies the command 
+% <quaternion_angle.html angle(rot1,rot2)> computes the rotational angle
+% between both rotations
+
+angle(rot1,rot2)/degree
+
+
+%%
+% *The inverse Rotation*
+%
 % The inverse rotation you get from the command
 % <quaternion_inverse.html inverse(rot)>
 
@@ -140,7 +184,7 @@ inverse(rot)
 % * [[quaternion_Rodrigues.html,Rodrigues(rot)]] % in Rodrigues parameter
 %
 
-[phi1,Phi,phi2] = Euler(rot)
+[alpha,beta,gamma] = Euler(rot,'Matthies')
 
 
 %% Plotting Rotations

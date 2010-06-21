@@ -6,8 +6,9 @@ function rot = rotation(varargin)
 %  rot = rotation('Euler',alpha,beta,gamma,'ZYZ')
 %  rot = rotation('axis,v,'angle',omega)
 %  rot = rotation('matrix',A)
+%  rot = rotation('map',u1,v1)
 %  rot = rotation('map',u1,v1,u2,v2)
-%  rot = rotation('fibre',u1,v2,'resolution',5*degree)
+%  rot = rotation('fibre',u1,v1,'resolution',5*degree)
 %  rot = rotation('quaternion',a,b,c,d)
 %  rot = rotation(q)
 %
@@ -52,7 +53,12 @@ switch class(varargin{1})
          quat = euler2quat(varargin{2:end});
 
       case 'map'
-        quat = vec42quat(varargin{2:end});
+        
+        if nargin==5
+          quat = vec42quat(varargin{2:end});
+        else
+          quat = hr2quat(varargin{2:end});
+        end
 
       case 'quaternion'
         quat = quaternion(varargin{2:end});

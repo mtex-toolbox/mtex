@@ -40,13 +40,17 @@ if strcmp(xRoot.getTagName,'xrdMeasurements')
     scan = xrdMeasurement.getElementsByTagName('scan');  
     
     %read hkl from first entry
-    hkl_node = scan.item(0).getElementsByTagName('hkl').item(0).getChildNodes; 
-    hkl = 'hkl';
-    for k=1:3
-      h(k) = str2num(hkl_node.getElementsByTagName(...
-        hkl(k)).item(0).getFirstChild.getNodeValue);  
+    try
+      hkl_node = scan.item(0).getElementsByTagName('hkl').item(0).getChildNodes;
+      hkl = 'hkl';
+      for k=1:3
+        h(k) = str2num(hkl_node.getElementsByTagName(...
+          hkl(k)).item(0).getFirstChild.getNodeValue);
+      end
+      h = Miller(h(1),h(2),h(3));
+    catch
+      h = string2Miller(fname);
     end
-    h = Miller(h(1),h(2),h(3));
     
     step_axis = xrdMeasurement.getAttribute('measurementStepAxis');
 
