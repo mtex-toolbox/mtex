@@ -71,13 +71,17 @@ switch lower(name)
     L = min(L,p);
     for l=1:L, A(l+1) = (2*l+1)*(1-l*(l+1)./(L*(L+1)));end
     
+  case 'sobolev'
+    
+    A= (2*(0:L)+1) .* (0:L).^p .* (1:L+1).^p;
+        
   otherwise
         
     A = [];
 
 end
 
-if length(A) > 11 && ~any(strcmpi(name,{'Fourier','bump'}))
+if length(A) > 11 && ~any(strcmpi(name,{'Fourier','bump','Sobolev'}))
   % prevent from instability effects
   epsilon = get_mtex_option('FFTAccuracy',1E-2);
   ind = find(A<=max(min([A,10*epsilon]),epsilon),1,'first');
