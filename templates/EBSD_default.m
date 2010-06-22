@@ -1,4 +1,4 @@
-%% Standard template
+%% Default template
 %% Visualize the Data
 
 plot(ebsd)

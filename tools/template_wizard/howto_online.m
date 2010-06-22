@@ -1,4 +1,4 @@
-%% MTEX Templates 
+%% MTEX Templates (online)
 %
 %% Abstract
 % <http://code.google.com/p/mtex/source/browse/#svn/trunk/templates Templates> 
@@ -6,10 +6,8 @@
 % <matlab:doc('import_wizard') import_wizard> 
 % 
 %
-% <mailto:fl.bachmann@googlemail.com?subject=Template%20Submission Share> a
-% Template
-%
-% look for a Template <matlab:mtex_templates('online')  online> 
+% <mailto:fl.bachmann@googlemail.com?subject=Template%20Submission share a
+% Template>
 %
 %% Contents
 %

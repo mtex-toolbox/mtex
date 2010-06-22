@@ -182,11 +182,13 @@ if ~isempty(ebsd)
   
   handles.pages = handles.ebsd_pages;
   
+  vname = 'ebsd';
 elseif ~isempty(odf)
   
   setappdata(gcbf,'data',odf);
   handles.pages = handles.odf_pages;
   
+  vname = 'odf';
 elseif ~isempty(pf) 
   
   % pole figure correction
@@ -197,10 +199,12 @@ elseif ~isempty(pf)
 
   setappdata(gcbf,'data',pf);
   handles.pages = handles.pf_pages;
-
+  
+  vname = 'pf';
 end
 
 setappdata(gcbf,'handles',handles);
+set(handles.workspace(1),'String',vname);
 
 
 function addData(h,event,t) %#ok<INUSL>
