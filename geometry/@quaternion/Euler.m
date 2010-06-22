@@ -70,8 +70,8 @@ switch convention
 
     labels = {'phi1','Phi','phi2'};
     if beta ~= 0
-      alpha = alpha - pi/2;
-      gamma = gamma - 3*pi/2;
+      alpha = alpha + pi/2;
+      gamma = gamma + 3*pi/2;
     end
     
   case {'Kocks'}
