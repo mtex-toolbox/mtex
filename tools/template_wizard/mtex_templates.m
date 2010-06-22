@@ -27,7 +27,7 @@ else
   template_files = dir(turl);
   template_files = {template_files.name};
   template_files(cellfun('isempty',strfind(template_files,'.m'))) = [];
-  url = ['file:///' turl '\'];
+  url = ['file:///' turl filesep];
   src = file2cell(fullfile(mtex_path,'tools','template_wizard','howto.m'));
 end
   
