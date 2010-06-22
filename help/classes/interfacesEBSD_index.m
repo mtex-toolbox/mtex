@@ -15,7 +15,7 @@
 %% Inporting EBSD data using the import wizard
 %
 % The most simplest way to load EBSD data is to use the 
-% <matlab:import_wizard('type','EBSD') import wizard>, which 
+% <matlab:import_wizard('EBSD') import wizard>, which 
 % can be started either by typing into the command line 
 
 import_wizard('EBSD'); 
