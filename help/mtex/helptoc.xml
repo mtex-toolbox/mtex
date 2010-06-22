@@ -116,7 +116,7 @@
 </tocitem>
 -->
 
-<tocitem target="classes_index.html" image="$toolbox/matlab/icons/book_link.gif"> Complete Function List
+<tocitem target="classes_index.html" image="$toolbox/matlab/icons/help_fx.png"> Complete Function List
   <tocitem target="classes_index.html" image="$toolbox/matlab/icons/reficon.gif">Geometry Class Reference
     <tocitem target="Miller_index.html">Class Miller</tocitem>
     <tocitem target="S1Grid_index.html">Class S1Grid</tocitem>
