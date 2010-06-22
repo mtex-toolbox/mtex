@@ -119,7 +119,7 @@ calcerror(odf,fibre_odf,'resolution',5*degree)
 %
 % a) Load the EBSD data: |data/ebsd\_txt/85\_829grad\_07\_09\_06.txt|!
 
-import_wizard('type','ebsd')
+import_wizard('ebsd')
 
 %%
 % b) Estimate an ODF from the above EBSD data.
