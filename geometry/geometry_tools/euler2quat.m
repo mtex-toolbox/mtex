@@ -54,16 +54,16 @@ switch convention
 
   case 'Roe'
     
-  case {'Bunge','ZXZ'}
+  case {'Bunge','ZXZ'}  % Bunge -> Matthies
 
-    alpha = alpha + pi/2;
-    gamma = gamma + 3*pi/2;
+    alpha = alpha - pi/2;
+    gamma = gamma - 3*pi/2;
       
-  case {'Kocks'}
+  case {'Kocks'}        % Kocks -> Matthies
 
     gamma = pi - gamma;
         
-  case {'Canova'}
+  case {'Canova'}       % Canova -> Matthies
     
     alpha = pi/2 - alpha;
     gamma = 3*pi/2 - gamma;
