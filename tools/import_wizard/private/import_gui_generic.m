@@ -124,52 +124,41 @@ data = getappdata(gcbf,'data');
 
 type = class(data);
 
-switch type
-  case 'EBSD'
-    vname = 'ebsd';
-  case 'PoleFigure'
-    data = modifypf(gcbf,data);
-    vname = 'pf';
-  case 'ODF'
-    vname = 'odf';
-end
-
-% handles.
-
-sel = get(handles.template,'Value')-1;
 
 
+handles = getappdata(gcbf,'handles');
 
-%% copy to workspace
-if any(~sel)
-
-  a = inputdlg({'Enter name of workspace variable'},'MTEX Import Wizard',1,{vname});
-  if isempty(a), return;end
-  assignin('base',a{1},data);
+if get(handles.radio_exp(1),'Value')
+  
+  vname = get(handles.workspace(1),'String');
+  if isempty(vname), 
+    errordlg('Enter name of workspace variable')
+    return; end
+  
+  switch type
+    case 'PoleFigure'
+      data = modifypf(gcbf,data);
+  end
+ 
+  assignin('base',vname,data);
+  
+  
   if isempty(javachk('desktop')) 
-    
     disp(' ');
     disp('generated variable: ');
-    display(data,'vname',a{1});
+    display(data,'vname',vname);
     disp(' ');
     
-    disp(['- <a href="matlab:plot(',a{1},',''silent'')">Plot ' type ' Data</a>']);
+    disp(['- <a href="matlab:plot(',vname,',''silent'')">Plot ' type ' Data</a>']);
     switch type
       case {'EBSD','PoleFigure'}       
-        disp(['- <a href="matlab:odf = calcODF(',a{1},')">Calculate ODF</a>']);
+        disp(['- <a href="matlab:odf = calcODF(',vname,')">Calculate ODF</a>']);
     end
     disp(' ');
   end
+
+elseif get(handles.radio_exp(2),'Value')
   
-elseif all(sel > numel(templates))
-  
-  mtex_templates('type',{type},'online');
-  return
-  
-  
-%% write to file
-else 
-      
   % extract file names
   fn = arrayfun(@(x) getappdata(x,'filename'),lb,'UniformOutput',false);
     
@@ -189,7 +178,9 @@ else
 	str = generateScript(type,fl{1},data,getappdata(fl{2},'interface'),...
     getappdata(fl{2},'options'), handles);
        
-  str = generateCodeString(str);
+  str = generateCodeString(str);  
+  
+  sel = get(handles.template(1),'Value');
   for l = sel(sel <= numel(templates))
     templatestr = file2cell( fullfile(mtex_path,'templates',templates{l}));
     str = [str generateCodeString(templatestr)];

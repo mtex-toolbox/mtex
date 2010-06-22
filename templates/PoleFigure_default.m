@@ -1,4 +1,4 @@
-%% Standard template
+%% Default template
 %% Visualize Data
 % plot of the raw data
 plot(pf)
