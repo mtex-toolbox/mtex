@@ -1,12 +1,12 @@
-%% Grains
+%% Grain Reconstruction
 %
 %% Open in Editor
 %
 %% Abstract
 % Reconstructing grains and grain boundaries is one of the central problems
-% when analyzing EBSD data. In MTEX grain boundaries are modeled as
-% bisections between neighbouring measurements that have a 
-% misorientation that is larger then a certain threshold.
+% when analyzing EBSD data. It is instrumental for ODF estimation from EBSD
+% data as well as missorientation analysis.
+%
 %
 %% Contents
 %
@@ -25,7 +25,7 @@ loadaachen;
 [grains ebsd] = segment2d(ebsd,'angle',12.5*degree)
 
 %%
-% In order to verify the result lets plot the grain boundaries into the
+% In order to verify the result let us plot the grain boundaries into the
 % spatial EBSD plot.
 
 plot(ebsd)
@@ -41,16 +41,16 @@ plot(grains)
 
 
 %%
-% The reconstrcuted grains are stored in the variable *grains* which is
+% The reconstructed grains are stored in the variable *grains* which is
 % actually a list of single [[grain_index.html,grain objects]] each which
 % can be adressed individually.
 
 grains(1)
-plot(grains([34 51 57 75]))
+plot(grains([110 134 192 199]))
 
 %% Grain properties 
 %
-% There is a long list of properties that can be computed for computed for
+% There is a long list of properties that can be computed for
 % each indiviual grain, e.g.
 %
 % * perimeter
@@ -73,10 +73,10 @@ large_grains = grains(peri > 150)
 
 plot(large_grains)
 
-%% Connection between EBSD Data and a Grain-set
+%% Connection between EBSD Data and a Grains
 %
 % The reconstrcuted grains are connected with its underlaying EBSD data by an
-% identification number. The command <ebsd_link.html link> allows extract
+% identification number. The command <ebsd_link.html link> allows to extract
 % all individuell orientations out of an EBSD data set that correspond to a
 % certain list of grains
 

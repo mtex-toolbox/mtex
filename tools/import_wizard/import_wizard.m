@@ -31,6 +31,8 @@ if get_mtex_option('generate_help')
   % activate first page
   setappdata(h,'page',1);
   set_page(h,1);
+  drawnow;
+  pause(2);
   return
 end
 

@@ -18,7 +18,7 @@
 % <matlab:import_wizard('type','EBSD') import wizard>, which 
 % can be started either by typing into the command line 
 
-import_wizard('type','EBSD'); 
+import_wizard('EBSD'); 
 
 %%
 % or using from the start menu the item 
@@ -67,8 +67,7 @@ fname = [mtexDataPath '/aachen_ebsd/85_829grad_07_09_06.txt'];
 
 % import ebsd data
 ebsd = loadEBSD(fname,CS,SS,'interface','generic',...
-  'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'Mad' 'BC'},...
-  'Columns', [2 3 4 5 6 7 8 9],...
+  'ColumnNames', { 'id' 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'Mad' 'BC'},...
   'ignorePhase', 0, 'Bunge');
 
 plot(ebsd,'phase',1)
