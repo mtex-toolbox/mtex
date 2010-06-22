@@ -1,6 +1,5 @@
 function modf = calcMODF(odf,varargin)
-% calc an MODF from an ODF
-%
+% calculate the uncorrelated MODF from an ODF
 %
 %% Syntax  
 %
@@ -10,7 +9,8 @@ function modf = calcMODF(odf,varargin)
 %% Options
 %
 %% Output
-%  
+%  modf - @ODF
+%
 %% See also
 %
 
@@ -33,4 +33,4 @@ for l = 1:L
 end
 
 % construct MODF
-modf = FourierODF(odf_hat,symmetry,symmetry);
+modf = FourierODF(odf_hat,get(odf,'CS'),get(odf,'CS'));

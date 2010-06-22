@@ -19,14 +19,14 @@ function K = kernel(name,varargin)
 % supported kernel:
 % Laplace, Abel Poisson, de la Vallee Poussin, von Mises Fisher,
 % fibre von Mises Fisher, Square Singularity, Gauss Weierstrass,
-% Dirichlet, local, Fourier, bump, user
+% Dirichlet, local, Fourier, Sobolev, bump, user
 %
 %% See also
 % ODF_index kernel/gethw unimodalODF uniformODF
        
 kernels = {'Laplace','Abel Poisson','de la Vallee Poussin',...
     'von Mises Fisher','fibre von Mises Fisher','Square Singularity',...
-    'Gauss Weierstrass','local','Dirichlet','Fourier','bump','user','Jackson'};
+    'Gauss Weierstrass','local','Dirichlet','Sobolev','Fourier','bump','user','Jackson'};
 
 if nargin == 0
   
@@ -65,6 +65,7 @@ elseif isempty(strmatch(lower(name),lower(kernels)))
     'Gauss Weierstrass, \n',...
     'local, \n',...
     'Dirichlet, \n',...
+    'Sobolev,\n',...
     'Fourier, \nbump, \nuser'])); %#ok<SPERR>
   
 elseif length(strmatch(lower(name),lower(kernels))) > 1

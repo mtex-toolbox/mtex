@@ -39,6 +39,8 @@ function odf = calcODF(ebsd,varargin)
 vdisp('------ MTEX -- EBSD to ODF computation ------------------',varargin{:})
 vdisp('performing kernel density estimation',varargin{:})
 
+
+%% extract orientations and weights
 % extract orientations
 o = get(ebsd,'orientations','checkPhase',varargin{:});
 if numel(o) == 0, odf = ODF; return, end
@@ -59,6 +61,7 @@ end
 weight = weight ./ sum(weight(:));
 
 
+%% Bingham ODF estimation
 if check_option(varargin,'bingham')
   [qc,ew,ev,kappa] = mean(o,varargin{:});
   odf = BinghamODF(kappa,ev,CS,SS);
@@ -66,6 +69,7 @@ if check_option(varargin,'bingham')
 end
 
 
+%% construct kernel for kernel density estimation
 % get halfwidth and kernel
 if check_option(varargin,'kernel')
   
@@ -84,19 +88,23 @@ else
     
   
   k = extract_kernel(o,varargin{:});
-  
   % k = kernel('de la Vallee Poussin','halfwidth',10*degree);
   
 end
 
+% result
 hw = gethw(k);
 vdisp([' kernel: ' char(k)],varargin{:});
+
+
+%% construct exact kernel density estimation estimation 
 
 odf = ODF(o,weight,k,CS,SS,...
   'comment',['ODF estimated from ',ebsd(1).comment]);
 
 max_coef = 32;
 gridlen = numel(o)*length(CS);
+
 
 %% Fourier ODF
 if ~check_option(varargin,{'exact','noFourier'}) && ...
@@ -120,6 +128,7 @@ elseif check_option(varargin,'exact') || gridlen < 2000
   vdisp(' construct exact odf',varargin{:}); 
   return
 end
+
 
 %% approximation on a corser grid
 
