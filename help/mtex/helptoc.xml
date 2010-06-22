@@ -56,16 +56,16 @@
     Import EBSD Data
     <tocitem target="ebsd_interface.html">Generic Interface</tocitem>
   </tocitem>
-  <tocitem target="GrainModelling.html"> Grain Modelling </tocitem>
-  <tocitem target="OrientationPlots.html"> Visualising EBSD &amp; Grains
+  <tocitem target="ModifyEBSDData.html"> Correct EBSD Data</tocitem>
+  <tocitem target="GrainModelling.html"> Grain Reconstruction </tocitem>
+  <tocitem target="EBSD2odf_estimation.html"> ODF Estimation </tocitem>  
+  <tocitem target="MisorientationAnalysis.html"> Misorientation Analysis </tocitem>
+  <tocitem target="OrientationPlots.html"> Plot EBSD data
     <tocitem target="OrientationPlots.html"> Orientation Plots </tocitem>
     <tocitem target="SpatialPlots.html"> Spatial Plots </tocitem>
   </tocitem>
-  <tocitem target="ModifyEBSDData.html"> Manipulate EBSD &amp; Grains</tocitem>
- <!-- <tocitem target="AnalyzeEBSDData.html"> Analyze EBSD Data </tocitem> -->
-  <tocitem target="EBSD2odf_estimation.html"> ODF Estimation </tocitem>  
+   <!-- <tocitem target="AnalyzeEBSDData.html"> Analyze EBSD Data </tocitem> -->  
  <!-- <tocitem target="GrainStatistics.html"> Grain Statistics </tocitem> -->
-  <tocitem target="MisorientationAnalysis.html"> Misorientation Analysis </tocitem>
   <tocitem target="ebsd_demo.html"> EBSD &amp; Grain Demos
     <tocitem target="ebsd_demo.html"> EBSD Analysis Demo </tocitem>
     <tocitem target="grain_demo.html"> Grain Analysis Demo </tocitem>

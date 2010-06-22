@@ -1,4 +1,4 @@
-%% Correct Individual Orientation Data
+%% Correct EBSD Data
 %
 %% Open in Editor
 %
@@ -46,7 +46,7 @@ close all, plot( ebsd_flip )
 
 
 %% Restricting to a region of interest
-% If on is not interested in the whole data set but only in those
+% If one is not interested in the whole data set but only in those
 % measurements inside a certain polygon, the restriction can be
 % constructed as follows. Lets start by defining a polygon.
 
@@ -76,10 +76,11 @@ plot(ebsd)
 
 %% Detecting Inaccurate Orientation Measurements
 %
-% 
-% *By *
+% *By MAD*
 %
-% In order 
+% Most EBSD measurements contain quantities indicating inaccurate
+% measurements. Here we will use the MAD value to identify and eliminate
+% inaccurate measurements.
 
 % extract the quantity mad 
 mad = get(ebsd,'mad');
@@ -88,8 +89,8 @@ mad = get(ebsd,'mad');
 hist(mad)
 
 %%
-% 
 
+% eliminate all meassurements with MAD larger then one
 ebsd_corrected = delete(ebsd,mad>1)
 
 %%
@@ -126,14 +127,14 @@ ebsd_corrected = link(ebsd_corrected,large_grains)
 plot(ebsd_corrected)
 
 %% 
-% Now reconstructing again grains in our reduced EBSD data set
+% Now reconstruct again grains in our reduced EBSD data set
 
 [grains_corrected,ebsd_corrected] = segment2d(ebsd_corrected,10*degree)
 
 plot(grains_corrected)
 
 %%
-% we observe that there are no very small grains anymore
+% we observe that there are no small grains anymore
 
 hist(grainsize(grains_corrected),50)
 
