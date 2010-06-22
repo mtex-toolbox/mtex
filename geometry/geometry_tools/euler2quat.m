@@ -56,8 +56,8 @@ switch convention
     
   case {'Bunge','ZXZ'}
 
-    alpha = alpha - pi/2;
-    gamma = 3*pi/2 - gamma;
+    alpha = alpha + pi/2;
+    gamma = gamma + 3*pi/2;
       
   case {'Kocks'}
 
