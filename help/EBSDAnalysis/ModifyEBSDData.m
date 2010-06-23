@@ -41,7 +41,7 @@ close all, plot(ebsd_rot)
 % <EBSD_rotate.html rotate> and <EBSD_fliplr.html fliplr>. Observe, how not
 % only the picture is flipped but also the color of the grains chages!
 
-ebsd_flip = flipud(ebsd_rot);
+ebsd_flip = fliplr(ebsd_rot);
 close all, plot( ebsd_flip )
 
 
