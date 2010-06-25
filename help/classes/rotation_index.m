@@ -50,8 +50,9 @@ o = rotation('Euler',30*degree,50*degree,10*degree,'Roe')
 %% 
 % *Changing the Default Euler Angle Convention*
 %
-% The default euler angle convention can be changes by the command
-% <set_mtex_option.html set_mtex_option>. Compare
+% The default euler angle convention can be changed by the command
+% <set_mtex_option.html set_mtex_option>, for a permanent change the
+% <matlab:edit('mtex_settings.m') mtex_settings> should be edited. Compare
 
 set_mtex_option('EulerAngleConvention','Roe')
 o
@@ -135,6 +136,7 @@ v = o * xvector
 
 o \ v
 
+%%
 % *Concatenating Rotations*
 %
 % Let
@@ -148,6 +150,7 @@ rot2 = rotation('Euler',0,60*degree,0);
 
 rot = rot2 * rot1
 
+%%
 % *Computing the rotation angle and the rotational axis*
 %
 % Then rotational angle and the axis
