@@ -129,7 +129,7 @@ end
 
 %% process special topics
 
-topics = {'CrystalGeometry','PoleFigureAnalysis','EBSDAnalysis','ODFAnalysis','Plotting','Interfaces'};
+topics = {'CrystalGeometry','PoleFigureAnalysis','EBSDAnalysis','ODFAnalysis','plotting','interfaces'};
 
 for i = 1:length(topics)
 

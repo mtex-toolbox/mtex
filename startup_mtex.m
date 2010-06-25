@@ -49,9 +49,9 @@ disp(' ');
 if isempty(javachk('desktop'))
   disp('Basic tasks:')
   disp('- <a href="matlab:doc mtex">Show MTEX documentation</a>')
-  disp('- <a href="matlab:import_wizard">Import pole figure data</a>')
-  disp('- <a href="matlab:import_wizard(''type'',''EBSD'')">Import EBSD data</a>')
-  disp('- <a href="matlab:import_wizard(''type'',''ODF'')">Import ODF data</a>')
+  disp('- <a href="matlab:import_wizard(''PoleFigure'')">Import pole figure data</a>')
+  disp('- <a href="matlab:import_wizard(''EBSD'')">Import EBSD data</a>')
+  disp('- <a href="matlab:import_wizard(''ODF'')">Import ODF data</a>')
   disp(' ');
 end
 
@@ -200,8 +200,8 @@ toadd = { {''}, ...
   {'tools' 'misc_tools'},{'tools' 'math_tools'},{'tools' 'compatibility'},...
   {'tools' 'template_wizard'},...
   {'examples'},{'tests'},...
-  {'help' 'interfaces'},{'help' 'ODFAnalysis'},{'help' 'PoleFigureAnalysis'},...
-  {'help' 'EBSDAnalysis'},{'help' 'plotting'},{'help' 'CrystalGeometry'}};
+  {'help' 'UsersGuide' 'interfaces'},{'help' 'UsersGuide' 'ODFAnalysis'},{'help' 'UsersGuide' 'PoleFigureAnalysis'},...
+  {'help' 'UsersGuide' 'EBSDAnalysis'},{'help' 'UsersGuide' 'plotting'},{'help' 'UsersGuide' 'CrystalGeometry'}};
 
 for k=1:length(toadd)
   addpath(fullfile(local_path,toadd{k}{:}),0);
