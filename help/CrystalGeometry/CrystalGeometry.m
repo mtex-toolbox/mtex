@@ -1,4 +1,0 @@
-%% Crystal Geometry
-%
-% <<crystalgeometry.png>>
-%
