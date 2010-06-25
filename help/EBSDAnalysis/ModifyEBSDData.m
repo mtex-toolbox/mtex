@@ -117,7 +117,7 @@ hist(grainsize(grains),50)
 %%
 % Lets find all grains containing at least 5 measurements
 
-large_grains = grains(grainsize(grains) >= 20)
+large_grains = grains(grainsize(grains) >= 5)
 
 %%
 % and remove all orientation measurements not belonging to these grains

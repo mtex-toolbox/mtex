@@ -4,25 +4,18 @@
 % Importing pole figure data in MTEX means to create a
 % <PoleFigure_index.html PoleFigure> object from data files containing 
 % diffration data. Once such an object has been created the data can be
-% analyzed and processed in many ways. See e.g.
-%
-% [[PoleFigure_index.html,pole figure manipulation]], 
-% <PoleFigure_plot.html plot>, <PoleFigure_hist.html hist>,
-% <PoleFigure_rotate.html rotate>, <PoleFigure_delete.html delete>,
-% <PoleFigure_min.html min>, <PoleFigure_max.html max>,
-% <PoleFigure_plus.html plus>, <PoleFigure_minus.htnl minus>,
-% <PoleFigure_scale.html scale>, <PoleFigure_set.html set>.
-%
-% Furthermore, such a PoleFigure object is the starting point to
-% recalculate an ODF using the command <PoleFigure_calcODF.html calcODF>.
+% <ModifyPoleFigures.html analyzed and processed> in many ways.
+% Furthermore, such a PoleFigure object is the starting point for 
+% <odf_estimation.html PoleFigure to ODF estimation>.
 %
 %% Contents
 %
 %% Inport Pole Figure Data Using the Import Wizard
 %
 % The [[import_wizard.html,import wizard]] can be started either
-% by typing into the command line 
-import_wizard; 
+% by typing into the command line
+
+import_wizard
 
 %%
 % or using from the start menu the item 
@@ -39,17 +32,25 @@ import_wizard;
 % The following formats are currently supported by MTEX. If you have any
 % comments, remarks or request on interfaces please contact us.
 %
-% * <aachen_interface.html Aachen>
-% * <aachen_exp_interface.html Aachen_exp>
-% * <beartex_interface.html BearTex> 
-% * <dubna_interface.html Dubna>
-% * <geesthacht_interface.html Geesthacht>
-% * <juelich_interface.html Juelich>
-% * <philips_interface.html Philips>
-% * <ptx_interface.html PTX>
-% * <xrdml_interface.html XRDML>
-%
-%
+% * <loadPoleFigure_aachen.html Aachen> (<aachen_interface.html example>)
+% * <loadPoleFigure_aachen2.html Aachen2>
+% * <loadPoleFigure_aachen_exp.html Aachen *.exp> (<aachen_exp_interface.html example>)
+% * <loadPoleFigure_beartex.html BearTex> (<beartex_interface.html example>) 
+% * <loadPoleFigure_frame.html Bruker *.axs frame data>
+% * <loadPoleFigure_cnvindex.html dubna *.cnv> (<dubna_interface.html example>)
+% * <loadPoleFigure_dubna dubna *.cns>
+% * <loadPoleFigure_geesthacht.html Geesthacht> (<geesthacht_interface.html example>)
+% * <loadPoleFigure_juelich.html Juelich> (<juelich_interface.html example>)
+% * <loadPoleFigure_nja.html *.nja>
+% * <loadPoleFigure_out1.html Graz *.out1>
+% * <loadPoleFigure_philips.html Philips *.txt> (<philips_interface.html example>)
+% * <loadPoleFigure_plf *.plf>
+% * <loadPoleFigure_popla Popla>
+% * <loadPoleFigure_ptx *.ptx> (<ptx_interface.html example>)
+% * <loadPoleFigure_xrd Aachen *.xrd>
+% * <loadPoleFigure_xrdml *.xrdml> (<xrdml_interface.html example>)
+% * <loadPoleFigure_generic.html theta,rho,intensity text files>
+% 
 %% Importing pole figure data using the method loadPoleFigure
 %
 % Diffraction data that are stored in one of the formats listed above can
@@ -74,6 +75,9 @@ c = {1,[0.52 ,1.23]};
 
 % load data
 pf = loadPoleFigure(fnames,h,cs,ss,'superposition',c)
+
+% plot the data
+plot(pf)
 
 %%
 % See <loadPoleFigure.html loadPoleFigure> 
