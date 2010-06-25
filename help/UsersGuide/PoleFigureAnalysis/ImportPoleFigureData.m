@@ -38,17 +38,17 @@ import_wizard
 % * <loadPoleFigure_beartex.html BearTex> (<beartex_interface.html example>) 
 % * <loadPoleFigure_frame.html Bruker *.axs frame data>
 % * <loadPoleFigure_cnvindex.html dubna *.cnv> (<dubna_interface.html example>)
-% * <loadPoleFigure_dubna dubna *.cns>
+% * <loadPoleFigure_dubna.html dubna *.cns>
 % * <loadPoleFigure_geesthacht.html Geesthacht> (<geesthacht_interface.html example>)
 % * <loadPoleFigure_juelich.html Juelich> (<juelich_interface.html example>)
 % * <loadPoleFigure_nja.html *.nja>
 % * <loadPoleFigure_out1.html Graz *.out1>
 % * <loadPoleFigure_philips.html Philips *.txt> (<philips_interface.html example>)
-% * <loadPoleFigure_plf *.plf>
-% * <loadPoleFigure_popla Popla>
-% * <loadPoleFigure_ptx *.ptx> (<ptx_interface.html example>)
-% * <loadPoleFigure_xrd Aachen *.xrd>
-% * <loadPoleFigure_xrdml *.xrdml> (<xrdml_interface.html example>)
+% * <loadPoleFigure_plf.html *.plf>
+% * <loadPoleFigure_popla.html Popla>
+% * <loadPoleFigure_ptx.html *.ptx> (<ptx_interface.html example>)
+% * <loadPoleFigure_xrd.html Aachen *.xrd>
+% * <loadPoleFigure_xrdml.html *.xrdml> (<xrdml_interface.html example>)
 % * <loadPoleFigure_generic.html theta,rho,intensity text files>
 % 
 %% Importing pole figure data using the method loadPoleFigure

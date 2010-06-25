@@ -68,7 +68,7 @@ exportODF(model_odf,fname,S3G,'Bunge','generic')
 % ODF data is to use the import wizard, which can be started either by
 % typing into the command line
 
-import_wizard
+import_wizard('ODF')
 
 %%
 % or using from the start menu the item Start/Toolboxes/MTEX/Import Wizard.
