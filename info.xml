@@ -31,7 +31,7 @@
 
 
 <listitem>
-<label>Examples</label>
+<label>Demos</label>
 <callback>demo toolbox MTEX</callback>
 <icon>$toolbox/matlab/icons/demoicon.gif</icon>
 </listitem>
