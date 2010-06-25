@@ -29,7 +29,7 @@
 
 <tocitem target="PoleFigure_index.html" image="$toolbox/matlab/icons/pagesicon.gif">
   Pole Figure Analysis
-  <tocitem target="interfacesPoleFigure_index.html">
+  <tocitem target="ImportPoleFigureData.html">
     Import Pole Figure Data
     <tocitem target="generic_interface.html">Generic Interface</tocitem>
     <tocitem target="aachen_exp_interface.html">Aachen_exp Interface</tocitem>
@@ -52,19 +52,19 @@
 
 <tocitem target="EBSD_index.html" image="$toolbox/matlab/icons/pagesicon.gif">
   EBSD Data Analysis
-  <tocitem target="interfacesEBSD_index.html">
+  <tocitem target="ImportEBSDData.html">
     Import EBSD Data
     <tocitem target="ebsd_interface.html">Generic Interface</tocitem>
   </tocitem>
   <tocitem target="ModifyEBSDData.html"> Correct EBSD Data</tocitem>
   <tocitem target="GrainModelling.html"> Grain Reconstruction </tocitem>
-  <tocitem target="EBSD2odf_estimation.html"> ODF Estimation </tocitem>  
+  <tocitem target="EBSD2odf_estimation.html"> ODF Estimation </tocitem>
   <tocitem target="MisorientationAnalysis.html"> Misorientation Analysis </tocitem>
   <tocitem target="OrientationPlots.html"> Plot EBSD data
     <tocitem target="OrientationPlots.html"> Orientation Plots </tocitem>
     <tocitem target="SpatialPlots.html"> Spatial Plots </tocitem>
   </tocitem>
-   <!-- <tocitem target="AnalyzeEBSDData.html"> Analyze EBSD Data </tocitem> -->  
+   <!-- <tocitem target="AnalyzeEBSDData.html"> Analyze EBSD Data </tocitem> -->
  <!-- <tocitem target="GrainStatistics.html"> Grain Statistics </tocitem> -->
   <tocitem target="ebsd_demo.html"> EBSD &amp; Grain Demos
     <tocitem target="ebsd_demo.html"> EBSD Analysis Demo </tocitem>

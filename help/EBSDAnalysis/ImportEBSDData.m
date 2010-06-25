@@ -1,14 +1,13 @@
-%% Importing EBSD Data
+%% Import EBSD Data
 %
 %% Abstract
 % Importing EBSD data into MTEX means to create a variable of type
 % <EBSD_index.html EBSD> from certain data files. Once such an variable has
-% been created the data can be analyzed and processed in many ways. See e.g.
-% <ModifyEBSDData.html EBSD manipulation>, <EBSDPlot.html plot>, 
-% <EBSD_rotate.html rotate>, <EBSD_delete delete>,
-%
-% Furthermore, such an EBSD variable is the starting point to estimate an ODF
-% using the command <EBSD_calcODF.html calcODF>.
+% been created the data can be <EBSDPlot.html plotted> and  
+% <ModifyEBSDData.html analyzed and processed> in many ways.
+% Furthermore, such an EBSD variable is the starting point for
+% <GrainModelling.html grain reconstruction> and <EBSD2ODF_estimation.html
+% ODF estimation>.
 %
 %% Contents
 %
@@ -41,14 +40,14 @@ import_wizard('EBSD');
 %
 % MTEX inlcudes interfaces to the EBSD data formates 
 %
-% * .ang
-% * .ctf
-% * .csv
-% * .txt
+% * [[loadEBSD_ang.html,.ang]]
+% * [[loadEBSD_ctf.html,.ctf]]
+% * [[loadEBSD_xxx.html,.csv]]
+% * [[loadEBSD_generic.html,.txt]]
 %
-% In some cases, if MTEX is unsure about the column association in the
-% data file it will ask the user which colums corresponds to which physical
-% properties.
+% In the case of generic text files MTEX is unsure about the column
+% association in the data file. It will ask the user which colums
+% corresponds to which physical properties.
 %
 %% The Import Script
 %
