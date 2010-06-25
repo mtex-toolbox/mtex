@@ -170,7 +170,7 @@ set_mtex_option('generate_help',false);
 
 %% create searchable database
 
-system(['jar -cf ' fullfile('..','mtex','help.jar') ' -C ' fullfile('..','html') ' .']);
+system(['jar -cf ' fullfile(mtex_path,'help','mtex','help.jar') ' -C ' fullfile(mtex_path,'help','html') ' .']);
 
 builddocsearchdb(fullfile(mtex_path ,'help','html'));
 helpsearchpath = fullfile(mtex_path, 'help','html','helpsearch');
