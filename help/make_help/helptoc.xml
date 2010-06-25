@@ -26,7 +26,7 @@
 
       <tocitem target="PoleFigure_index.html" image="$toolbox/matlab/icons/pagesicon.gif">
         Pole Figure Analysis
-        <tocitem target="interfacesPoleFigure_index.html">
+        <tocitem target="ImportPoleFigureData.html">
           Import Pole Figure Data
           <tocitem target="generic_interface.html">Generic Interface</tocitem>
           <tocitem target="aachen_exp_interface.html">Aachen_exp Interface</tocitem>
@@ -48,7 +48,7 @@
 
       <tocitem target="EBSD_index.html" image="$toolbox/matlab/icons/pagesicon.gif">
         EBSD Data Analysis
-        <tocitem target="interfacesEBSD_index.html">
+        <tocitem target="ImportEBSDData.html">
           Import EBSD Data
           <tocitem target="ebsd_interface.html">Generic Interface</tocitem>
         </tocitem>
