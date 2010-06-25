@@ -30,6 +30,26 @@ h2 {
   font-size: large;
 }
 
+h1.ref {
+  color: #990000; 
+  font-size: x-large;
+  font-weight:100;
+}
+
+h1.reft {
+  color: #990000; 
+  font-size: xx-large;
+  font-weight:100;
+}
+
+h2.ref {
+  color: #990000;
+  font-size: large;
+}
+h3.ref {
+  color: #990000;
+}
+
 li {
   padding:2px;
 }
@@ -106,6 +126,27 @@ table.content {
 }
 
 
+table.ref {
+  border:2px solid #888888;
+  padding:5px;
+  margin-left:15px;
+  margin-top:15px;
+  margin-bottom:5px;
+  background-color:#E7EBF7; 
+}
+
+
+table.refsub {
+  border:2px solid #888888;
+  padding:5px;
+  margin-left:15px;
+  margin-top:15px;
+  margin-bottom:5px;
+  background-color:#F3F4F5; 
+}
+
+
+
 
 td.header { 
   border:thin solid #666666; 
@@ -148,6 +189,6 @@ div.myheader a {
 }
 div.myheader {
   color: white;
-}   
+} 
 
 

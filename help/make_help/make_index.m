@@ -14,12 +14,18 @@ cd(current_dir);
 contents = file2cell(fullfile(in_dir,'Contents.m'));
 
 % make section 'Files' to be rearly a section
-contents = {contents{3:end}};
-contents{1} = '%% *Complete function list*';
 
 % make links
-contents = regexprep(contents,'(?<=%\s*)(\w*)(?=\s*-\w*)',...
-  ['[[' class_name '$1.html,$1]]']);
+% contents = {contents{3:end}};
+% contents{1} = '%% *Complete function list*';
+% contents = regexprep(contents,'(?<=%\s*)(\w*)(?=\s*-\w*)',...
+%   ['[[' class_name '$1.html,$1]]']);
+
+contents =  [  '%% *Complete function list*',...
+               '% <html><table>',...
+               regexprep(contents(4:end),'%\s+(\w*)\s+-([\W\S]*)', ...
+                ['%  <tr><td width=200px><a href="' class_name '$1.html">$1</td><td> $2 </td></tr>']),...
+              '% </table></html>'];
 
 % append contents to out_file
 cell2file(out_file,contents,'a');

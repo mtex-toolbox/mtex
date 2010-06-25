@@ -32,6 +32,13 @@ generateversionnumber;
 copyfile( fullfile(mtex_path,'help','make_help','*.css') , ...
   fullfile(mtex_path,'help','html') );
 
+
+%% generate TOCs
+
+if nargin > 0
+  make_toc;
+end
+
 %% generate general help files
 
 if check_option(varargin, {'general','all'})
@@ -56,12 +63,12 @@ end
 %% generate classes index files
 
 if check_option(varargin, {'classes','all'})
-  
+   
   current_path = fullfile(mtex_path, 'help','classes');
 
   folders = {...
     {'qta' '@ODF'},{'qta' '@PoleFigure'},{'qta' '@EBSD'},{'qta' '@kernel'},{'qta' '@grain'},...
-    {'qta' 'standardODFs'},{'qta' 'interfacesPoleFigure'},{'qta' 'interfacesEBSD'},{'qta' 'interfacesODF'},...
+    {'qta' 'standardODFs'},...
     {'geometry' '@vector3d'},{'geometry' '@quaternion'},{'geometry' '@Miller'},...
     {'geometry' '@symmetry'},{'geometry' '@S1Grid'},{'geometry' '@S2Grid'},...
     {'geometry' '@rotation'},{'geometry' '@orientation'},...
@@ -122,12 +129,12 @@ end
 
 %% process special topics
 
-topics = {'CrystalGeometry','PoleFigureAnalysis','EBSDAnalysis','ODFAnalysis','plotting','interfaces'};
+topics = {'CrystalGeometry','PoleFigureAnalysis','EBSDAnalysis','ODFAnalysis','Plotting','Interfaces'};
 
 for i = 1:length(topics)
 
   if check_option(varargin, {topics{i},'all','all-'})    
-    current_path = fullfile(mtex_path,'help', topics{i});
+    current_path = fullfile(mtex_path,'help','UsersGuide', topics{i});
     files = dir(fullfile(current_path,'*.m'));
     publish_files({files.name},current_path,...
       'stylesheet',fullfile(pwd, 'publishmtex.xsl'),'out_dir',html_path,'evalcode',1,varargin{:});    
