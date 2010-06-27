@@ -1,6 +1,7 @@
 %% EBSD Data Analysis
-% This sections gives you an overview over the functionality MTEX offers to
-% analyze EBSD data.
+% Data Import of Electron Backscatter Diffraction Data, Correct Data,
+% Estimeate Orientation Density Functions out of EBSD Data, Model Grains
+% and Misorientation Density Functions
 %
 %% Contents
 %

@@ -1,4 +1,6 @@
 %% Plotting
+% Make annotations in plots, plotting types, manipulating plots, combine plots, 
+% change colorcoding
 %
 %% Open in Editor
 %

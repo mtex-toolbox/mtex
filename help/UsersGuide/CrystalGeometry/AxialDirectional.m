@@ -1,4 +1,5 @@
 %% Antipodal Symmetry
+% How to work with +h,-h
 %
 %% Open in Editor
 %

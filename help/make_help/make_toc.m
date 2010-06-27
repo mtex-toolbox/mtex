@@ -1,15 +1,14 @@
-function make_toc
+function make_toc(varargin)
 
 
 catfile = 'mtexfuncbycat.html';
 
-cattoc = fullfile(mtex_path,'help','mtex','helptoc.xml');
-tocfile = file2cell(fullfile(mtex_path,'help','make_help','helptoc.xml'));
-
-tocpos = find(~cellfun('isempty',strfind(tocfile,'<makefuncbycat>')));
+toc_template = fullfile(mtex_path,'help','make_help','helptoc.xml');
+toc_file = fullfile(mtex_path,'help','mtex','helptoc.xml');
 
 
-     
+
+find_entry = @(tocfile,entry) find(~cellfun('isempty',strfind(tocfile,entry)));
 categories = generateToky;
 
 str = [makeTocHeader makeTable(categories,true)];
@@ -77,16 +76,28 @@ end
 toc = closeTocEntry(toc);
 
 str{end+1} =  '</body></html>';
-
-
 cell2file(fullfile(mtex_path,'help','html',catfile),str,'w');
 
 
-toc = [tocfile(1:tocpos-1)  toc  tocfile(tocpos+1:end)];
-toc = makeDemosToc(toc);
 
-cell2file(cattoc,toc,'w');
 
+toc_toc = file2cell(toc_template);
+
+toc_toc = replace_entry(toc_toc,make_toc_ug,...
+                         find_entry(toc_toc,'<makeuserguide>'));
+                            
+toc_toc = replace_entry(toc_toc,toc,...
+                         find_entry(toc_toc,'<makefuncbycat>'));       
+                            
+toc_toc = replace_entry(toc_toc,make_toc_demo,...
+                         find_entry(toc_toc,'<makedemo>'));
+
+cell2file(toc_file,toc_toc,'w');
+
+
+
+function tocfile = replace_entry(tocfile,tocrep,pos)
+tocfile = [tocfile(1:pos-1)  tocrep  tocfile(pos+1:end)];
 
 
 function str = makeTable(cat,sub)
@@ -104,7 +115,7 @@ str{end+1} = '</table>';
 
 
 
-function toc = makeDemosToc(toc)
+function toc = make_toc_demo
 
 
 fl = makeContentStr( fullfile(mtex_path,'examples') );
@@ -117,12 +128,10 @@ str = [ makeDemoTocHeader,...
 cell2file(fullfile(mtex_path,'examples','demos.xml'),str,'w');
 
 % makedemotoc
-demotoc = [ '<tocitem target="demos.html" image="$toolbox/matlab/icons/demoicon.gif">Demos',...
+toc = [ '<tocitem target="demos.html" image="$toolbox/matlab/icons/demoicon.gif">Demos',...
             regexprep(fl(4:end),'%\s+(\w*)\s+-([\W\S]*)', '<tocitem target="$1.html">$2</tocitem>'),...
             '</tocitem>'];
-          
-tocpos = find(~cellfun('isempty',strfind(toc,'<makedemo>')));
-toc = [toc(1:tocpos-1)  demotoc  toc(tocpos+1:end)];
+
 
 function toc = addTocEntry(toc,refpage,title)
   toc = [toc ...

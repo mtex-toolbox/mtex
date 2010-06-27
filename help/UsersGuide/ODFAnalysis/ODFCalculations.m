@@ -1,121 +1,74 @@
-%% MTEX - Analysis of ODFs
-%
-%% Open in Editor
+%% MTEX - ODF Calculations
 %
 %% Abstract
-% This example demonstrates the most important MTEX tools for analysing
-% ODFs. All described commands can be applied to model ODFs constructed via
-% [[uniformODF.html,uniformODF]], [[unimodalODF.html,unimodalODF]],
-% or [[fibreODF.html,fibreODF]] and to all estimated ODF calculated
-% from [[PoleFigure_calcODF.html,pole figures]] or 
-% [[EBSD_calcODF.html,EBSD data]].
+% ODF calculations are at the heart of MTEX. The philosophy of MTEX is to
+% treat all the ODFs the same way, indepentently whether they where
+% constructed model ODFs, ODF estimated from pole figure data, or ODF
+% estimated from EBSD data. In particular, you can compare, combine and modify
+% all ODFs in the same manner.
+%
 %
 %% Contents
 %
-
-%% Some Sample ODFs
-% First we construct some ODFs to be analyzed below
-
-%%
-% A bimodal ODF:
-cs = symmetry('orthorhombic');ss = symmetry('triclinic');
-odf1 = unimodalODF(orientation('Euler',0,0,0,cs,ss)) + ...
-  unimodalODF(orientation('Euler',30*degree,0,0,cs,ss))
-
-%% 
-% A fibre ODF:
-odf2 = fibreODF(Miller(0,0,1),xvector,cs,ss)
-
-%%
-% An ODF estimated from diffraction data:
-cs = symmetry('-3m',[1.4,1.4,1.5]);
-ss = symmetry('triclinic');
-
-fname = {...
-  [mtexDataPath '/dubna/Q(10-10)_amp.cnv'],...
-  [mtexDataPath '/dubna/Q(10-11)(01-11)_amp.cnv'],...
-  [mtexDataPath '/dubna/Q(11-22)_amp.cnv']};
-h = {Miller(1,0,-1,0,cs),[Miller(0,1,-1,1,cs),Miller(1,0,-1,1,cs)],Miller(1,1,-2,2,cs)};
-c = {1,[0.52 ,1.23],1};
-
-pf = loadPoleFigure(fname,h,cs,ss,'superposition',c,...
-  'comment','Dubna Tutorial pole figures');
-
-odf3 = calcODF(pf,'resolution',5*degree,'iter_max',10)
-
-
-%% Modal Orientations
-% The modal orientation of an ODF is the crystallographic prefered
-% orientation of the texture. It is characterized as the maximum of the
-% ODF. In MTEX it can be computed by the command 
-% [[ODF_modalorientation.html,modalorientation]]
-
-%%
-% Determine the modalorientation as an
-% [[quaternion_index.html,quaternion]]:
-center = modalorientation(odf3)
-
-%% 
-% Lets mark this prefered orientation in the pole figures
-
-plotpdf(odf3,h,'antipodal');
-annotate(center,'marker','s','MarkerFaceColor','black')
-
-%% Texture Characteristics
+%% Calculate with Model ODFs
 %
-% Texture characteristics are used for a rough classification of ODF into
-% sharp and weak ones. The two most common texture characteristcs are the
-% [[ODF_entropy.html,entropy]] and the 
-% [[ODF_textureindex.html,texture index]]. 
-
-%%
-% Compute the texture index:
-textureindex(odf1)                   
-
-%%
-% Compute the entropy:
-entropy(odf2)
-
-
-%% Volume Portions
+% In MTEX it is very simple to define a model ODF as a
+% <uniformODF.html uniform ODFs>, a <unimodalODF.html unimodal ODFs>, a
+% <fibreODF.hml fibre ODFs>, or any superposition of these
+% components. Actually you can calculate with ODFs by adding, subtracting
+% and scalling components. Furthermore, the MTEX toolbox allready contains  
+% some popular standard ODF as the <SantaFe.html SantaFe> and the
+% <mix2.html mix2> sample ODFs. How to work best with model ODFs in MTEX
+% can be found <modelODFs_demo.html here> and <ODF_index.html here>.
 %
-% Volume portions describes the relative volume of crystals having a
-% certain orientation. The relative volume of crystals having a orientation
-% close to a given orientation is computed by the command
-% [[ODF_volume.html,volume]] and the relative volume of crystals having a 
-% orientation close to a given fibre is computed by the command
-% [[ODF_fibrevolume.html,fibrevolume]]
-
-%%
-% The relative volume of crystals with missorientation maximum 30 degree
-% from the modal orientation:
-volume(odf3,modalorientation(odf3),30*degree)  
-
-%%
-% The relative volume of crystals with missorientation maximum 20 degree
-% from the prefered fibre:
-fibrevolume(odf2,Miller(0,0,1),xvector,20*degree)  
-
-
-%% Fourier Coefficients
+%
+%% Recover Orientation Density Functions (ODFs)
+%
+% Using the method <PoleFigure_calcODF.html calcODF> MTEX allows you to
+% recover an ODF from your pole figure data. The method used is based on a
+% discretization of the ODF space by radially symmetric function and on the
+% fast spherical Fourier transform. The algorithms has proven to be very
+% stable and adaptive inparticular to very sharp textures with low symmetry.
 % 
-% The Fourier coefficients allow for a complete characterization of the
-% ODF. The are of particular importance for the calcuation of mean
-% macroscopic properties e.g. the second order Fourier coefficients 
-% characterize thermal expansion, optical refraction index, and 
-% electrical conductivity whereas the fourth order Fourier
-% coefficients characterize the elastic properties of the specimen.
-% Moreover, the decay of the Fourier coefficients is directly related to
-% the smoothness of the ODF. The decay of the Fourier coefficients might
-% also hint for the presents of a ghost effect. See 
-% [[ghost_demo.html,ghost effect]].
+% There are also several options like _regularization_, _resolution_,
+% _zero_range_method_, _ghost_correction_ that allow addopt the estimation
+% method for your presonal needs.
+%
+% A detailed description of the ODF reconstruction from pole figure data
+% can be found at <odf_estimation.html ODF Estimation>. The problem of
+% ghost effect is discussed in greater detail in <ghost_demo.html Ghost
+% Demo>.
+%
+% In order to recover an ODF from EBSD data the method <EBSD_calcODF.html
+% calcODF> has to be called. It computes a ODF to your EBSD data using
+% <EBSD2odf_estimation.html kernel density estimation>.
+%
+%% Calculate Texture Characteristics 
+%
+% MTEX offers to compute a wide range of texture characteristics like
+% <ODF_modalorientation.html modal orientation>, <ODF_entropy.html entropy>,
+% <ODF_textureindex.html texture index>, or <ODF_volume.html volume portion>
+% to be computed for any model ODF or any recoverd ODF. You can also
+% calculate the Fourier coefficients useing the command <ODF_Fourier.html
+% fourier>. Furthermore, you can compare arbitrary ODF indepently whether
+% they are model ODFs, ODFs estimated from pole figure data or estimated
+% from EBSD data. The <ODF_demo.html ODF Analysis Demo> gives an overview
+% over the texture characteristic that can be computed using MTEX.
+%
+% [[ODF_entropy.html,entropy]], its [[ODF_textureindex.html,textureindex]]
+% or the [[ODF_volume.html,volume]] ratio corresponging to a specific
+% orientation. Additional functions are 
+% [[ODF_hist.html,hist]],
+% [[ODF_mean.html,mean]],
+% [[ODF_modalorientation.html,modalorientation]],
 
-%%
-% The Fourier coefficients of order 2:
-Fourier(odf2,'order',2)              
-
-%%
-% The decay of the Fourier coefficients:
-close all;
-plotFourier(odf3,'bandwidth',32)
-
+%
+%% Simulate Pole Figures or EBSD Data
+%
+% In order to analys the relyability of the ODF estimation it is usefull to
+% start with a given ODF and simulate pole figure or EBSD data, estimate an
+% ODF from these data and to compare the estimated ODF with the original
+% one. This allows one to find best parameters for ODF estimation as well
+% as for the experimental design. This approach is discused in more detail
+% at <PoleFigureSimulation_demo.html PoleFigureSimulation> and
+% <EBSDSimulation_demo.html EBSDSimulation>.
