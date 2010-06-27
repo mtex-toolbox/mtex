@@ -35,8 +35,8 @@ copyfile( fullfile(mtex_path,'help','make_help','*.css') , ...
 
 %% generate TOCs
 
-if nargin > 0
-  make_toc;
+if nargin > 0 && ~check_option(varargin,'clear')
+  make_toc(varargin{:});
 end
 
 %% generate general help files
@@ -46,6 +46,7 @@ if check_option(varargin, {'general','all'})
   locations = {...
     {{'help' 'general' '*.html'},    {'help' 'html'}},...
     {{'help' 'general' '*.gif'},     {'help' 'html'}},...
+    {{'help' 'general' '*.js'},      {'help' 'html'}},...
     {{'README'},                     {'help' 'html' 'README.txt'}},...
     {{'COPYING'},                    {'help' 'html' 'COPYING.txt'}},...
     {{'VERSION'},                    {'help' 'html' 'VERSION.txt'}}};
@@ -84,7 +85,8 @@ if check_option(varargin, {'classes','all'})
     in_file = fullfile(current_path,[folder '_index.m']);
     script_file = fullfile(current_path, ['script_',folder,'_index.m']);
     html_file = fullfile(html_path,[folder,'_index.html']);
-  
+    
+%     in_file
     if is_newer(html_file,in_file) && ~check_option(varargin,'force')
       continue;
     end
@@ -127,24 +129,10 @@ if check_option(varargin, {'mfiles','all'})
  
 end
 
-%% process special topics
 
-topics = {'CrystalGeometry','PoleFigureAnalysis','EBSDAnalysis','ODFAnalysis','plotting','interfaces'};
+%% Make User Guide
 
-for i = 1:length(topics)
-
-  if check_option(varargin, {topics{i},'all','all-'})    
-    current_path = fullfile(mtex_path,'help','UsersGuide', topics{i});
-    files = dir(fullfile(current_path,'*.m'));
-    publish_files({files.name},current_path,...
-      'stylesheet',fullfile(pwd, 'publishmtex.xsl'),'out_dir',html_path,'evalcode',1,varargin{:});    
-    try
-      copyfile(fullfile(current_path,'*.png'),fullfile(mtex_path,'help','html'))
-    catch %#ok<CTCH>
-    end
-  end
-  
-end
+if check_option(varargin,{'UsersGuide','all','all-'}), make_ug([],varargin{:}); end
 
 
 %% calculate examples
@@ -184,4 +172,65 @@ function o = is_newer(f1,f2)
 
 d1 = dir(f1);
 d2 = dir(f2);
+% o = isempty(d1) || isempty(d2) || (d1.datenum > d2.datenum);
 o = ~isempty(d1) && ~isempty(d2) && d1.datenum > d2.datenum;
+
+
+%% Make User Guide
+function make_ug(folder,varargin)
+
+if isempty(folder)
+	folder = fullfile(mtex_path,'help','UsersGuide');
+end
+
+[path topic] = fileparts(folder);
+html_file = fullfile(mtex_path,'help','html',[topic '.html']);
+
+if exist([folder '.m'])
+  if ~is_newer(html_file,[folder '.m']) || check_option(varargin,'force')
+    publish_files({[topic '.m']},path,...
+        'stylesheet',fullfile(mtex_path,'help','make_help','publishmtex.xsl'),...
+        'out_dir',fullfile(mtex_path,'help','html'),'evalcode',1,varargin{:}); 
+  end
+end
+
+if isdir(folder)
+  
+  try copyfile(fullfile(folder,'*.png'),fullfile(mtex_path,'help','html')); catch, end
+  try copyfile(fullfile(folder,'*.html'),fullfile(mtex_path,'help','html')); catch, end
+  
+  str = file2cell(fullfile(folder,'toc'));
+  for subtoc=regexp(str,'\s','split')
+    make_ug(fullfile(folder,subtoc{1}{1}),varargin{:});
+  end
+  
+  
+  top_page = fullfile(folder,[topic '.m']);
+  if ~is_newer(html_file,top_page) || check_option(varargin,'force')
+    fid = fopen(top_page);  
+    mst = m2struct(char(fread(fid))');
+    fclose(fid);
+    mst(1).text = [mst(1).text , ' ', '<html>',make_toc_table(folder),'</html>'];
+    cell2file(fullfile(mtex_path,'help','html',['script_' topic,'.m']), struct2m(mst),'w');
+    
+    publish_files({['script_' topic,'.m']},fullfile(mtex_path,'help','html'),...
+        'stylesheet',fullfile(mtex_path,'help','make_help','publishmtex.xsl'),...
+        'out_dir',fullfile(mtex_path,'help','html'),'evalcode',1,varargin{:});
+  end
+  delete(fullfile(mtex_path,'help','html', 'script_*.m'));
+%   
+end
+
+
+function mtext = struct2m(mst)
+
+mtext = {};
+for k=1:numel(mst)  
+  mtext = [mtext ...
+              ['%% ' mst(k).title] ...
+              regexprep(strcat('%[' , mst(k).text,']%'),{'%[',']%'},{'% ','  '}),...
+              mst(k).code];
+end
+
+
+

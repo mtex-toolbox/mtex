@@ -1,653 +1,341 @@
-<html><head>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>MATLAB</title>
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+<script language="JavaScript" src="docscripts.js"></script>
+<meta name="toctype" content="ug">
+<style type="text/css">
+/* These are special CSS styles for these DOCUMENT MAP Pages PLEASE DO NOT DELETE */
 
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>MTEX Toolbox</title>
-    <style type="text/css">
+		/* Hyper Link Styles */
 
-      /* These are special CSS styles for these DOCUMENT MAP Pages PLEASE DO NOT DELETE */
+		a:link {
+	color: #0000FF;
+	text-decoration:underline;
+	font-weight:bold;
+}
+a:visited {
+	color: #0000FF;
+	text-decoration:underline;
+	font-weight:bold;
+}
+a:hover {
+	color: #0000FF;
+	text-decoration:underline;
+	font-weight:bold;
+}
+a:active {
+	color: #0000FF;
+	text-decoration:underline;
+	font-weight:bold;
+}
+div.expander a:link {
+	font-weight:normal;
+} /* unvisited expander link */
+div.expander a:visited {
+	font-weight:normal;
+} /* visited expander link */
+p.copy a {
+	font-weight:normal;
+}
+/* Text Classes */
 
-      /* Hyper Link Styles */
-
-      a:link {color: #0000FF; text-decoration:underline; font-weight:bold;}
-      a:visited {color: #0000FF; text-decoration:underline; font-weight:bold;}
-      a:hover {color: #0000FF; text-decoration:underline; font-weight:bold;}
-      a:active {color: #0000FF; text-decoration:underline; font-weight:bold;}
-      div.expander a:link {font-weight:normal;} /* unvisited expander link */
-      div.expander a:visited {font-weight:normal;} /* visited expander link */
-      p.copy a {font-weight:normal;}
-
-      /* Text Classes */
-
-      .a12obsolete 		{font-family:arial; font-size:12px; font-weight:bold;}
-      .a15obsolete 		{font-family:arial; font-size:15px; font-weight:bold;}
-      .v8 		{font-family:arial; font-size:8pt; font-weight:normal;}
-      p.copy 		{ margin:0; padding:2px; background-color:#FFFFFF; }
-      div.expander dd {margin-top:-1ex; margin-left:3ex;}
-      table {border-width:0;}
-  </style></head>
-
-  <body style="font-family: arial, helvetica, sans-serif;" bgcolor="#336699" 
-	text="#000000" leftmargin="0" topmargin="0" marginwidth="0" 
-	marginheight="0">
-    <a name="bqkolhl"></a>
-    <table width="100%" cellspacing="0" cellpadding="0">
-      <tr>
-	<td height="47" valign="top" background="pattern_bkgd1.gif">
-	  <img src="banner.gif" width="507" 
-	       alt="MTEX Toolbox roadmap page"> &nbsp;
-	</td>
-      </tr>
-    </table>
-    <table width="100%" cellspacing="0" cellpadding="0" height="26">
-      <tr>
-	<td bgcolor="#336699" height="15">
-	  <img src="pixelclear.gif" height="1" width="1">
-	</td>
-      </tr>
-      <tr>
-	<td bgcolor="#FFFFFF" height="13">&nbsp;</td>
-      </tr>
-    </table>
-    <table width="100%" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF">
-      <tr>
-	<td>
-
-
-	  <div class="sect1">
-	    <div class="titlepage">
-	      <div>
-		<table width="95%" cellspacing="0" cellpadding="0">
-		  <tr>
-		    <td width="5" height="1">
-		      <img src="pixelclear.gif" width="1" height="1">
-		    </td>
-		  </tr>
-		  <tr>
-		    <td height="6">
-		      <img src="pixelclear.gif" width="1" height="1">
-		    </td>
-		    <td height="6">
-		      <img src="pixelclear.gif" width="1" height="1">
-		    </td>
-		  </tr>
-		  <tr>
-		    <td>
-		      <div style="margin-left:5px;">
-		      </div>
-		    </td>
-		    <td>
-		      <font size="4" face="Arial, Helvetica, sans-serif" color="#000099">
-			<b>Getting Started</b>
-		      </font>
-		    </td>
-		  </tr>
-		  <tr>
-		    <td height="10">
-		      <img src="pixelclear.gif" width="1" height="1">
-		    </td>
-		    <td>
-		      &nbsp;</td>
-		  </tr>
-		</table>
-	      </div>
-	    </div>
-	    <table width="95%" cellspacing="0" cellpadding="0">
-	      <div style="margin-left:10px;">
-		<tr>
-		  <td width="15">
-		    <img src="pixelclear.gif" width="15" height="15">
-		  </td>
-		  <td>
-		    <table width="100%" cellspacing="0" cellpadding="0">
-		      <tr>
-			<td width="15">
-			  <div align="center">
-			    <img src="bullet_orange.gif" alt="bullet" width="6" height="6">
-			  </div>
-			</td>
-			<td>
-			  <font size="3">
-			    <a href="installation.html">
-			      Installation
-			    </a>
-			  </font>
-			</td>
-		      </tr>
-		      <tr>
-			<td width="15">&nbsp;</td>
-			<td>
-			  <font size="3">
-			    Explains how to install and configure MTEX Toolbox
-			    on your Computer.
-			  </font>
-			</td>
-		      </tr>
-		      <tr>
-			<td>
-			  <img src="pixelclear.gif" width="10" height="10">
-			</td>
-			<td>
-			  &nbsp;</td>
-		      </tr>
-
-
-		      <tr>
-			<td width="15">
-			  <div align="center">
-			    <img src="bullet_orange.gif" alt="bullet" width="6" height="6">
-			  </div>
-			</td>
-			<td>
-			  <font size="3">
-			    <a href="mtex_features.html">
-			      Feature Overview</a>
-			  </font>
-			</td>
-		      </tr>
-		      <tr>
-			<td width="15">
-			  &nbsp;</td>
-			<td>
-			  <font size="3">
-			    Lists major features of the MTEX toolbox.</font>
-			</td>
-		      </tr>
-		      <tr>
-			<td>
-			  <img src="pixelclear.gif" width="10" height="10">
-			</td>
-			<td>
-			  &nbsp;</td>
-		      </tr>
-		    </table>
-		  </td>
-		</tr>
-	      </div>
-	    </table>
-	  </div>
-	  <div class="sect1">
-	    <div class="titlepage">
-	      <div>
-		<table width="95%" cellspacing="0" cellpadding="0">
-		  <tr>
-		    <td width="5" height="1">
-		      <img src="pixelclear.gif" width="1" height="1">
-		    </td>
-		    <td height="1" bgcolor="#003366">
-		      <img src="pixelclear.gif" width="1" height="1">
-		    </td>
-		  </tr>
-		  <tr>
-		    <td height="6">
-		      <img src="pixelclear.gif" width="1" height="1">
-		    </td>
-		    <td height="6">
-		      <img src="pixelclear.gif" width="1" height="1">
-		    </td>
-		  </tr>
-		  <tr>
-		    <td>
-		      <div style="margin-left:5px;">
-		      </div>
-		    </td>
-		    <td>
-		      <font size="4" face="Arial, Helvetica, sans-serif" 
-			    color="#000099">
-			<b> Documentation Set </b>
-		      </font>
-		    </td>
-		  </tr>
-		  <tr>
-		    <td height="10">
-		      <img src="pixelclear.gif" width="1" height="1">
-		    </td>
-		    <td>
-		      &nbsp;</td>
-		  </tr>
-		</table>
-	      </div>
-	    </div>
-	    <table width="95%" cellspacing="0" cellpadding="0">
-	      <div style="margin-left:10px;">
-		<tr>
-		  <td width="15">
-		    <img src="pixelclear.gif" width="15" height="15">
-		  </td>
-		  <td>
-		    <table width="100%" cellspacing="0" cellpadding="0">
-		      <tr>
-			<td width="15">
-			  <div align="center">
-			    <img src="bullet_orange.gif" alt="bullet" width="6" height="6">
-			  </div>
-			</td>
-			<td>
-			  <font size="3">
-			    <a href="CrystalGeometry.html">
-			      Crystal Geometry
-			    </a>
-			  </font>
-			</td>
-		      </tr>
-		      <tr>
-			<td width="15">
-			  &nbsp;</td>
-			<td>
-			  <font size="3">
-			    Explains how to use MTEX to model and investigate crystal geometry, i.e. how to calculate with crystal symmetries, Miller indice and crystal orientations
-			  </font>
-			</td>
-		      </tr>
-		      <tr>
-			<td>
-			  <img src="pixelclear.gif" width="10" height="10">
-			</td>
-			<td>
-			  &nbsp;</td>
-		      </tr>
-		      <tr>
-			<td width="15">
-			  <div align="center">
-			    <img src="bullet_orange.gif" alt="bullet" width="6" height="6">
-			  </div>
-			</td>
-			<td>
-			  <font size="3">
-			    <a href="PoleFigureAnalysis.html">
-			      Pole Figure Analysis
-			    </a>
-			  </font>
-			</td>
-		      </tr>
-		      <tr>
-			<td width="15">
-			  &nbsp;</td>
-			<td>
-			  <font size="3">
-			    Explains how to use MTEX to import, analyze, and
-			    modify pole figure data, and how to estimate
-			    ODFs from those data.
-			  </font>
-			</td>
-		      </tr>
-		      <tr>
-			<td>
-			  <img src="pixelclear.gif" width="10" height="10">
-			</td>
-			<td>
-			  &nbsp;</td>
-		      </tr>
-		      <tr>
-			<td width="15">
-			  <div align="center">
-			    <img src="bullet_orange.gif" alt="bullet" width="6" height="6">
-			  </div>
-			</td>
-			<td>
-			  <font size="3">
-			    <a href="EBSDAnalysis.html" target="_top">
-			      EBSD Data Analysis
-			    </a>
-			  </font>
-			</td>
-		      </tr>
-		      <tr>
-			<td width="15">
-			  &nbsp;</td>
-			<td>
-			  <font size="3">
-			    Explains how to use MTEX to import, analyze, and
-			    modify single orientation data, and how to estimate
-			    ODFs from those data
-			  </font>
-			</td>
-		      </tr>
-		      <tr>
-			<td>
-			  <img src="pixelclear.gif" width="10" height="10">
-			</td>
-			<td>
-			  &nbsp;</td>
-		      </tr>
-		      <tr>
-			<td width="15">
-			  <div align="center">
-			    <img src="bullet_orange.gif" alt="bullet" width="6" height="6">
-			  </div>
-			</td>
-			<td>
-			  <font size="3">
-			    <a href="ODFAnalysis.html" target="_top">
-			      ODF Analysis
-			    </a>
-			  </font>
-			</td>
-		      </tr>
-		      <tr>
-			<td width="15">
-			  &nbsp;</td>
-			<td>
-			  <font size="3">
-			    Explains how to use MTEX to compute texture
-			    characteristics, to compare ODFs, or to work with
-			    model ODFs
-			</td>
-		      </tr>
-		      <tr>
-			<td>
-			  <img src="pixelclear.gif" width="10" height="10">
-			</td>
-			<td>
-			  &nbsp;</td>
-		      </tr>
-
-		      <tr>
-			<td width="15">
-			  <div align="center">
-			    <img src="bullet_orange.gif" alt="bullet" width="6" height="6">
-			  </div>
-			</td>
-			<td>
-			  <font size="3">
-			    <a href="plot_index.html" target="_top">
-			      Generating Plots
-			    </a>
-			  </font>
-			</td>
-		      </tr>
-		      <tr>
-			<td width="15">
-			  &nbsp;</td>
-			<td>
-			  <font size="3">
-			    Explains how to create publication ready
-			    plots.
-			  </font>
-			</td>
-		      </tr>
-		      <tr>
-			<td>
-			  <img src="pixelclear.gif" width="10" height="10">
-			</td>
-			<td>
-			  &nbsp;</td>
-		      </tr>
-		    </table>
-		  </td>
-		</tr>
-	      </div>
-	    </table>
-	  </div>
-	  <div class="sect1">
-	    <div class="titlepage">
-	      <div>
-		<table width="95%" cellspacing="0" cellpadding="0">
-		  <tr>
-		    <td width="5" height="1">
-		      <img src="pixelclear.gif" width="1" height="1">
-		    </td>
-		    <td height="1" bgcolor="#003366">
-		      <img src="pixelclear.gif" width="1" height="1">
-		    </td>
-		  </tr>
-		  <tr>
-		    <td height="6">
-		      <img src="pixelclear.gif" width="1" height="1">
-		    </td>
-		    <td height="6">
-		      <img src="pixelclear.gif" width="1" height="1">
-		    </td>
-		  </tr>
-		  <tr>
-		    <td>
-		      <div style="margin-left:5px;">
-		      </div>
-		    </td>
-		    <td>
-		      <font size="4" face="Arial, Helvetica, sans-serif" color="#000099">
-			<b> Product Demos</b>
-		      </font>
-		    </td>
-		  </tr>
-		  <tr>
-		    <td height="10">
-		      <img src="pixelclear.gif" width="1" height="1">
-		    </td>
-		    <td>
-		      &nbsp;</td>
-		  </tr>
-
-		</table>
-	      </div>
-	    </div>
-	    <table width="95%" cellspacing="0" cellpadding="0">
-	      <div style="margin-left:10px;">
-		<tr>
-		  <td width="15">
-		    <img src="pixelclear.gif" width="15" height="15">
-		  </td>
-		  <td>
-		    <table width="100%" cellspacing="0" cellpadding="0">
-		      <tr>
-			<td width="15">
-			  <div align="center">
-			    <img src="bullet_orange.gif" alt="bullet" width="6" height="6">
-			  </div>
-			</td>
-			<td>
-			  <font size="3">
-			    <a href="matlab:demo('toolbox','mtex')" 
-			       target="_top">
-			      MTEX Toolbox Demos</a>
-			  </font>
-			</td>
-		      </tr>
-		      <tr>
-			<td width="15">
-			  &nbsp;</td>
-			<td>
-			  <font size="3">
-			    Presents a collection of demos that you can run
-			    from the Help browser to help you learn the MTEX
-			    toolbox.
-			  </font>
-			</td>
-		      </tr>
-		      <tr>
-			<td>
-			  <img src="pixelclear.gif" width="10" height="10">
-			</td>
-			<td>
-			  &nbsp;</td>
-		      </tr>
-
-		    </table>
-		  </td>
-		</tr>
-	      </div>
-	    </table>
-	  </div>
-	  <div class="sect1">
-	    <div class="titlepage">
-	      <div>
-		<table width="95%" cellspacing="0" cellpadding="0">
-		  <tr>
-		    <td width="5" height="1">
-		      <img src="pixelclear.gif" width="1" height="1">
-		    </td>
-		    <td height="1" bgcolor="#003366">
-		      <img src="pixelclear.gif" width="1" height="1">
-		    </td>
-		  </tr>
-		  <tr>
-		    <td height="6">
-		      <img src="pixelclear.gif" width="1" height="1">
-		    </td>
-		    <td height="6">
-		      <img src="pixelclear.gif" width="1" height="1">
-		    </td>
-		  </tr>
-		  <tr>
-		    <td>
-		      <div style="margin-left:5px;">
-		      </div>
-		    </td>
-		    <td>
-		      <font size="4" face="Arial, Helvetica, sans-serif" color="#000099">
-			<b>Reference</b>
-		      </font>
-		    </td>
-		  </tr>
-		  <tr>
-		    <td height="10">
-		      <img src="pixelclear.gif" width="1" height="1">
-		    </td>
-		    <td>
-		      &nbsp;</td>
-		  </tr>
-		</table>
-	      </div>
-	    </div>
-	    <table width="95%" cellspacing="0" cellpadding="0">
-	      <div style="margin-left:10px;">
-		<tr>
-		  <td width="15">
-		    <img src="pixelclear.gif" width="15" height="15">
-		  </td>
-		  <td>
-		    <table width="100%" cellspacing="0" cellpadding="0">
-		      		      <tr>
-			<td width="15">
-			  <div align="center">
-			    <img src="bullet_orange.gif" alt="bullet" width="6" height="6">
-			  </div>
-			</td>
-			<td width="0">
-			  <font size="3">
-			    <a href="mtexfuncbycat.html">
-			      Complete Function List</a>
-			  </font>
-			</td>
-
-		      </tr>
-		      <tr>
-			<td width="15">
-			  &nbsp;</td>
-			<td>
-			  <font size="3">
-			    A complete list of all functions and classes
-			    provided by MTEX.</font>
-			</td>
-		      </tr>
-		      <tr>
-			<td>
-			  <img src="pixelclear.gif" width="10" height="10">
-			</td>
-			<td>
-			  &nbsp;</td>
-		      </tr>
-
-		      <tr>
-			<td width="15">
-			  <div align="center">
-			    <img src="bullet_orange.gif" alt="bullet" width="6" height="6">
-			  </div>
-			</td>
-			<td width="0">
-			  <font size="3">
-			    <a href="changelog.html">
-			      Release Notes</a>
-			  </font>
-			</td>
-
-		      </tr>
-		      <tr>
-			<td width="15">
-			  &nbsp;</td>
-			<td>
-			  <font size="3">
-			    Summarizes new features, bug fixes, upgrade
-			    issues, etc.</font>
-			</td>
-		      </tr>
-		      <tr>
-			<td>
-			  <img src="pixelclear.gif" width="10" height="10">
-			</td>
-			<td>
-			  &nbsp;</td>
-		      </tr>
-		      <tr>
-			<td width="15">
-			  <div align="center">
-			    <img src="bullet_orange.gif" alt="bullet" width="6" height="6">
-			  </div>
-			</td>
-			<td width="0">
-			  <font size="3">
-			    <a href="mtex_about.html">
-			      Contact</a>
-			  </font>
-			</td>
-
-		      </tr>
-		      <tr>
-			<td width="15">
-			  &nbsp;</td>
-			<td>
-			  <font size="3">
-			    Contact information of the author and credits to
-			    involved developers.</font>
-			</td>
-		      </tr>
-		      <tr>
-			<td>
-			  <img src="pixelclear.gif" width="10" height="10">
-			</td>
-			<td>
-			  &nbsp;</td>
-		      </tr>
-		    </table>
-		  </td>
-		</tr>
-	      </div>
-	    </table>
-	  </div>
-	</td>
-      </tr>
-    </table>
-
-
-
-    <table width="100%" cellspacing="0" cellpadding="0">
-      <tr>
-	<td height="25">
-	  &nbsp;</td>
-      </tr>
-    </table>
-    <img src="pixelclear.gif" width="1" height="1">
-    
-    <p class="copy">
-      &copy; 2008 Ralf Hielscher 
-      <tt class="minicdot">
-	&#149;</tt>
-      <a href="COPYING.txt">
-	License</a>
-      <tt class="minicdot">
-	&#149;</tt>
-      <a href="README.txt">
-	README</a>
-      <tt class="minicdot">
-	&#149;</tt>
-      <a href="VERSION.txt">
-	VERSION</a>
-      <tt class="minicdot">
-	&#149;</tt>
-      <a href="mtex_about.html">
-	About</a>
-    </p>
-    
-    <!-- Last updated: Tue Jul 31 18:48:20 EDT 2007-->
-  </body>
+		.a12obsolete {
+	font-family:arial;
+	font-size:12px;
+	font-weight:bold;
+}
+.a15obsolete {
+	font-family:arial;
+	font-size:15px;
+	font-weight:bold;
+}
+.v8 {
+	font-family:arial;
+	font-size:8pt;
+	font-weight:normal;
+}
+p.copy {
+	margin:0;
+	padding:2px;
+	background-color:#FFFFFF;
+}
+div.expander dd {
+	margin-top:-1ex;
+	margin-left:3ex;
+}
+table {
+	border-width:0;
+}
+</style>
+</head>
+<body bgcolor="#336699" text="#000000" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+<a></a>
+<table width="100%" cellspacing="0" cellpadding="0">
+  <tr>
+    <td height="48" valign="top" background="pattern_bkgd1.gif"><img src="banner.gif" width="507" alt="MTEX">&nbsp; </td>
+  </tr>
+</table>
+<table width="100%" cellspacing="0" cellpadding="0" height="26">
+  <tr>
+    <td bgcolor="#336699" height="15"><img src="pixelclear.gif" height="1" width="1"></td>
+  </tr>
+  <tr>
+    <td bgcolor="#FFFFFF" height="13">&nbsp;</td>
+  </tr>
+</table>
+<table width="100%" cellspacing="0" cellpadding="0" bgcolor="#FFFFFF">
+  <tr>
+    <td><table width="100%" cellspacing="0" cellpadding="0">
+        <tr>
+          <td width="15"><img src="pixelclear.gif" width="15" height="15"></td>
+          <td width="200" align="left" valign="top"><table width="100%" cellspacing="0" cellpadding="0">
+              <tr>
+                <td width="15"><div align="center"><img src="pixelclear.gif" width="1" height="1"></div></td>
+                <td><b><font color="#000099" size="4">Functions:</font></b></td>
+              </tr>
+              <tr>
+                <td width="15"><div align="center"><img src="bullet_orange.gif" width="6" height="6"></div></td>
+                <td><p><a href="mtexfuncbycat.html">By Category</a></p></td>
+              </tr>
+            </table></td>
+          <td align="left" valign="top">&nbsp;</td>
+        </tr>
+      </table>
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td height="25"><img src="pixelclear.gif" width="1" height="1"></td>
+        </tr>
+      </table>
+      <div class="sect1">
+        <div class="titlepage">
+          <div>
+            <table width="95%" cellspacing="0" cellpadding="0">
+              <tr>
+                <td width="5" height="1"><img src="pixelclear.gif" width="1" height="1"></td>
+                <td height="1" bgcolor="#003366"><img src="pixelclear.gif" width="1" height="1"></td>
+              </tr>
+              <tr>
+                <td height="6"><img src="pixelclear.gif" width="1" height="1"></td>
+                <td height="6"><img src="pixelclear.gif" width="1" height="1"></td>
+              </tr>
+              <tr>
+                <td><div style="margin-left:5px;"></div></td>
+                <td><font size="4" color="#000099"><b>What's New</b></font></td>
+              </tr>
+              <tr>
+                <td height="10"><img src="pixelclear.gif" width="1" height="1"></td>
+                <td>&nbsp;</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <table width="95%" cellspacing="0" cellpadding="0">
+          <div style="margin-left:10px;">
+            <tr>
+              <td width="15"><img src="pixelclear.gif" width="15" height="15"></td>
+              <td><table width="100%" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td width="15"><div align="center"><img src="bullet_orange.gif" alt="bullet" width="6" height="6"></div></td>
+                    <td><font size="3"><a href="changelog.html">MTEX Release
+                      Notes</a></font></td>
+                  </tr>
+                  <tr>
+                    <td width="15">&nbsp;</td>
+                    <td><font size="3">Summarizes new features, bug fixes, upgrade issues, etc.</font></td>
+                  </tr>
+                  <tr>
+                    <td width="15">&nbsp;</td>
+                    <td><font size="3">&nbsp;</font></td>
+                  </tr>
+                </table></td>
+            </tr>
+          </div>
+        </table>
+      </div>
+      <div class="sect1">
+        <div class="titlepage">
+          <div>
+            <table width="95%" cellspacing="0" cellpadding="0">
+              <tr>
+                <td width="5" height="1"><img src="pixelclear.gif" width="1" height="1"></td>
+                <td height="1" bgcolor="#003366"><img src="pixelclear.gif" width="1" height="1"></td>
+              </tr>
+              <tr>
+                <td height="6"><img src="pixelclear.gif" width="1" height="1"></td>
+                <td height="6"><img src="pixelclear.gif" width="1" height="1"></td>
+              </tr>
+              <tr>
+                <td><div style="margin-left:5px;"></div></td>
+                <td><font size="4" color="#000099"><b>Documentation Set</b></font></td>
+              </tr>
+              <tr>
+                <td height="10"><img src="pixelclear.gif" width="1" height="1"></td>
+                <td>&nbsp;</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <table width="95%" cellspacing="0" cellpadding="0">
+          <div style="margin-left:10px;">
+            <tr>
+              <td width="15"><img src="pixelclear.gif" width="15" height="15"></td>
+              <td><table width="100%" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td width="15"><div align="center"><a href="#" onClick="return toggleexpander('features_block','features_expandable_text');"><img style="border:0;" id="features_expandable_text" src="arrow_right.gif"></a></div></td>
+                    <td><font size="3"><a href="#" onClick="return toggleexpander('features_block','features_expandable_text');">Getting Started</a></font></td>
+                  </tr>
+                  <tr>
+                    <td width="15">&nbsp;</td>
+                    <td><div style="display:none; background:#e7ebf7; padding-left:2ex;" id="features_block" class="expander">
+                        <p>Getting Started with the MTEX Toolbox</p>
+                        <p><a href="installation.html">Installing the Toolbox</a><br></p>
+                        <p><a href="dubna_tutorial.html">Short Tutorial</a><br>
+                          A short tutorial to get into touch with the MTEX way of analysing data</p>
+                        <p><a href="configuration.html">Configuration</a><br>
+                          Setting up Basic MTEX configurations</p>
+                        <p><a href="compilation.html">Compilation</a><br>
+                          Compiling MTEX is only neccesary if the provided binaries does not run on your system, 
+                          or one want to modify the binaries</p>
+                       
+                      </div></td>
+                  </tr>
+                  <tr>
+                    <td><div align="center"><a href="#" onClick="return toggleexpander('userguide_block','userguide_expandable_text');"><img style="border:0;" id="userguide_expandable_text2" src="arrow_right.gif"></a></div></td>
+                    <td><font size="3"><a href="#" onClick="return toggleexpander('userguide_block','userguide_expandable_text2');">Users's Guide</a></font></td>
+                  </tr>
+                  <tr>
+                    <td>&nbsp;</td>
+                    <td><div style="display:none; background:#e7ebf7; padding-left:2ex;" id="userguide_block" class="expander">
+                        <p>Provide tutorials and comprehensive product information for the MTEX Toolbox</p>
+                        <p><a href="FeatureOverview.html">Feature Overview</a><br>
+                          Starting with MTEX, summary of the functionalitis of the Toolbox</p>
+                        <p><a href="CrystalGeometry.html">Crystal Geometry</a><br>
+                          How to define Specime Directions, Crystal Directions, Crystal Symmetries, Rotations and Orientations</p>
+                        <p><a href="PoleFigureAnalysis.html">Analysis of PoleFigure Data</a><br>
+                          Data Import of PoleFigure Data, Correct Data, Recovere Orientation Density Functions out of PoleFigure Data</p>
+                        <p><a href="EBSDAnalysis.html">Analysis of EBSD Data</a><br>
+                          Data Import of Electron Backscatter Diffraction Data, Correct Data, 
+                          Estimeate Orientation Density Functions out of EBSD Data, 
+                          Model Grains and Misorientation Density Functions</p>
+                        <p><a href="ODFAnalysis.html">ODF Analysis</a><br>
+                          Importing and Exporting ODFs, Model ODFs, Advanced estimation via Ghost Correction, Zero Range,
+                          Simulating Polefigure Data and EBSD Data out of ODFs</p>
+                        <p><a href="plotting.html">Plotting</a><br>
+                          Make annotations, manipulate plots and plot types, combine plots, change colorcoding</p>
+                        <p><a href="Templates.html">Templates</a><br>
+                          Overview of the templates provided with the import wizard</p>
+                      </div></td>
+                  </tr>
+                </table></td>
+            </tr>
+          </div>
+        </table>
+      </div>
+      <div class="sect1">
+        <div class="titlepage">
+          <div>
+            <table width="95%" cellspacing="0" cellpadding="0">
+              <tr>
+                <td width="5" height="1"><img src="pixelclear.gif" width="1" height="1"></td>
+                <td height="1" bgcolor="#003366"><img src="pixelclear.gif" width="1" height="1"></td>
+              </tr>
+              <tr>
+                <td height="6"><img src="pixelclear.gif" width="1" height="1"></td>
+                <td height="6"><img src="pixelclear.gif" width="1" height="1"></td>
+              </tr>
+              <tr>
+                <td><div style="margin-left:5px;"></div></td>
+                <td><font size="4" color="#000099"><b>Product Demos</b></font></td>
+              </tr>
+              <tr>
+                <td height="10"><img src="pixelclear.gif" width="1" height="1"></td>
+                <td>&nbsp;</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <table width="95%" cellspacing="0" cellpadding="0">
+          <div style="margin-left:10px;">
+            <tr>
+              <td width="15"><img src="pixelclear.gif" width="15" height="15"></td>
+              <td><table width="100%" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td width="15"><div align="center"><img src="bullet_orange.gif" alt="bullet" width="6" height="6"></div></td>
+                    <td><font size="3"><a href="matlab:demo toolbox mtex" target="_top">MTEX Demos</a></font></td>
+                  </tr>
+                  <tr>
+                    <td width="15">&nbsp;</td>
+                    <td><font size="3">Presents a collection of demos that you can run from the Help
+                      browser to help you learn the MTEX product</font></td>
+                  </tr>
+                  <tr>
+                    <td><img src="pixelclear.gif" width="10" height="10"></td>
+                    <td>&nbsp;</td>
+                  </tr>
+                </table></td>
+            </tr>
+          </div>
+        </table>
+      </div>
+      <div class="sect1">
+        <div class="titlepage">
+          <div></div>
+        </div>
+        <table width="95%" cellspacing="0" cellpadding="0">
+        </table>
+      </div></td>
+  </tr>
+</table>
+<table width="100%" cellspacing="0" cellpadding="0">
+  <tr>
+    <td height="2" bgcolor="#0303B7"><img src="divider_fade.gif" width="507" height="2"></td>
+  </tr>
+</table>
+<table width="95%" cellspacing="0" cellpadding="0">
+  <tr>
+    <td height="10"><img src="pixelclear.gif" width="1" height="1"></td>
+  </tr>
+  <tr>
+    <td><font size="4" color="#FFFFFF"><b style="margin-left:5px;">MTEX Web Site Resources</b></font></td>
+  </tr>
+  <tr>
+    <td height="10"><img src="pixelclear.gif" width="1" height="1"></td>
+  </tr>
+</table>
+<table width="95%" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="15"><img src="pixelclear.gif" width="15" height="15"></td>
+    <td><table width="100%" cellspacing="0" cellpadding="0">
+        <tr>
+          <td width="250" align="left" valign="top"><table width="100%" cellspacing="0" cellpadding="0">
+              <tr>
+                <td width="15"><div align="center"><img src="bullet_orange.gif" width="6" height="6"></div></td>
+                <td class="a12"><a href="http://code.google.com/p/mtex/" style="color:#FFFFFF;">MTEX at Google Code</a></td>
+              </tr>
+              <tr>
+                <td width="15"><div align="center"><img src="bullet_orange.gif" width="6" height="6"></div></td>
+                <td class="a12"><a href="http://code.google.com/p/mtex/downloads/list" style="color:#FFFFFF;">Latest files</a></td>
+              </tr>
+            </table></td>
+          <td align="left" valign="top"><table width="100%" cellspacing="0" cellpadding="0">
+              <tr>
+                <td width="15"><div align="center"><img src="bullet_orange.gif" width="6" height="6"></div></td>
+                <td class="a12"><a href="http://code.google.com/p/mtex/#Reference_Paper" style="color:#FFFFFF;">Reference Papers</a></td>
+              </tr>
+            </table></td>
+        </tr>
+      </table></td>
+  </tr>
+</table>
+<table width="100%" cellspacing="0" cellpadding="0">
+  <tr>
+    <td height="25">&nbsp;</td>
+  </tr>
+</table>
+<img src="pixelclear.gif" width="1" height="1">
+<p class="copy">&copy; 2010 Ralf Hielscher <tt class="minicdot">&#149;</tt> <a href="COPYING.txt">License</a> <tt class="minicdot">&#149;</tt> <a href="README.txt">ReadMe</a> <tt class="minicdot">&#149;</tt> <a href="VERSION.txt">Version</a> <tt class="minicdot">&#149;</tt> <a href="mtex_about.html">About</a></p>
+<!-- Last updated: Fri Jan 22 00:16:42 EST 2010-->
+</body>
 </html>
-

@@ -7,6 +7,10 @@
 % represent the volume of a bell shaped function centerd at this
 % orientation.
 %
+%% Open in Editor 
+% 
+%% Contents
+%
 %% Define an Model ODF
 %
 % Let us first define a superposition of model ODFs.

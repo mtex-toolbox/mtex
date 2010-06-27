@@ -1,5 +1,6 @@
 %% Crystal Directions
-%
+% How to work with Miller indices
+% 
 %% Open in Editor
 %
 %% Contents

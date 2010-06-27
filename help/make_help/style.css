@@ -145,6 +145,24 @@ table.refsub {
   background-color:#F3F4F5; 
 }
 
+table.ref td { 
+  padding-top:5px;
+  padding-bottom:5px;
+}
+
+table.refsub td { 
+  padding-top:5px;
+  padding-bottom:5px;
+}
+
+table.summary {
+  border:2px solid #888888;
+  padding:5px;
+  margin-left:15px;
+  margin-top:15px;
+  margin-bottom:5px;
+  background-color:#F3F4F5; 
+}
 
 
 

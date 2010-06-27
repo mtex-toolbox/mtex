@@ -1,4 +1,5 @@
 %% Specimen Directions
+% Representation of specime directions as vector3d
 %
 %% Open in Editor
 %

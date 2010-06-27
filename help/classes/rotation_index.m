@@ -1,4 +1,5 @@
 %% Rotations
+% Rotations in MTEX
 %
 %% Abstract
 % This section describes the class *rotation* and gives an overview on how

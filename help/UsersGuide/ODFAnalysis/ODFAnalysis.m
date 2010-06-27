@@ -1,10 +1,8 @@
 %% ODF Analysis
+% Importing and Exporting ODFs, Model ODFs, Advanced estimation via Ghost
+% Correction, Zero Range, Simulating Polefigure Data and EBSD Data out of
+% ODFs
 %
-
-%% Abstract
-% This sections gives you an overview over the functionality MTEX offers to
-% analyze orientation density functions.
-% 
 %% Contents
 % 
 %

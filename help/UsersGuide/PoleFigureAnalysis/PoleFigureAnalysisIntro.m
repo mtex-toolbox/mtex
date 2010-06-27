@@ -1,9 +1,5 @@
-%% Pole Figure Analysis
-%
-%% Abstract
-% This sections gives you an overview over the functionality MTEX offers to
-% analyze pole figure data.
-%
+%% Indroduction to PoleFigure Analysis
+% Short summary of the way to workt with PoleFigure Data
 %
 %% Contents
 % 

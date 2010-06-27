@@ -1,4 +1,5 @@
 %% Crystal Symmetries
+% How to define Laue Groups, Space Group
 %
 %% Open in Editor
 %
