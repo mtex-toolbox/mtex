@@ -5,16 +5,12 @@
 %
 %% Contents
 %
-%% 
+%% Introduction
+%
 % MTEX allows to to simulate an arbitary number of pole figure data from
 % any ODF. This is quit helpfull if you want to analyse the pole figure to
-% ODF estimation routine.
-%
-
-%%
-% *Define an Model ODF*
-%
-% Let us first define a superposition of model ODFs.
+% ODF estimation routine. Let us start with a model ODF given as the
+% superposition of 6 components.
 
 cs = symmetry('orthorhombic');
 ss = symmetry('triclinic');

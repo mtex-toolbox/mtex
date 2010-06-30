@@ -1,11 +1,8 @@
 %% Annotations
+% Explains how to add annotations to plots. This
+% includes colorbars, legends, specimen directions and crystal directions.
 %
 %% Open in Editor
-%
-%% Abstract
-% After generating a plot with MTEX it is possible to modify it
-% interactivly using the MATLAB plotting tools in the plotting figure. This
-% includes colorbars, legends, specimen directions and crystal directions.
 %
 %% Contents
 %

@@ -1,16 +1,24 @@
 %% Combinded Plots
+% Explains how to combine several plots, e.g. plotting on the
+% top of an inverse pole figure some important crystall directions. 
 %
 %% Open in Editor
 %
-%% Abstract
-% Sometimes it is usefull to combine several plots, e.g. plotting on the
-% top of an inverse pole figure some important crystall directions. This
-% can be performed by the command [[matlab:doc hold,hold all]],
-% which preserfes MATLAB from replacing the old plot by the new one.
-%
-%
 %% Contents
 %
+
+%% General Principle
+% In order to tell MATLAB to plot one plot right on the top of an older
+% plot one has to use the commands [[matlab:doc hold,hold all]] and
+% [[matlab:doc hold,hold off]]. Let demostrate this at a simple example.
+
+plot([2 2])
+
+hold all
+
+plot([1 3])
+
+hold off
 
 %% Combine Different EBSD Data
 % First we want to show up two different EBSD data sets in one plot
