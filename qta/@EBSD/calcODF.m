@@ -35,9 +35,7 @@ function odf = calcODF(ebsd,varargin)
 %% See also
 % ebsd_demo EBSD2odf_estimation EBSDSimulation EBSD/loadEBSD ODF/simulateEBSD
 
-
-vdisp('------ MTEX -- EBSD to ODF computation ------------------',varargin{:})
-vdisp('performing kernel density estimation',varargin{:})
+vdisp(' performing kernel density estimation',varargin{:})
 
 
 %% extract orientations and weights
@@ -79,16 +77,15 @@ elseif check_option(varargin,'halfwidth','double')
   
   k = kernel('de la Vallee Poussin',varargin{:});
   
-elseif check_option(varargin,'halfwidth') && ...
-    strcmpi(get_option(varargin,'halfwidth'),'auto')
-  
-  k = crossCorrelation(ebsd);
-  
 else
     
+  disp(' ')
+  warning('MTEX:nokernel',['No kernel halfwidth has been specified!' ...
+    ' I''m going to use the default 10 degree kernel. You may be interested in '...
+    doclink('EBSD2odf','automatic optimal kernel detection'),'.\n ']);
+  disp(' ')
   
-  k = extract_kernel(o,varargin{:});
-  % k = kernel('de la Vallee Poussin','halfwidth',10*degree);
+  k = kernel('de la Vallee Poussin','halfwidth',10*degree,varargin{:});
   
 end
 

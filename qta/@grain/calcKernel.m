@@ -23,4 +23,5 @@ opt.weight = grainsize(grains(ind));
 ebsd = EBSD(o,'options',opt);
   
 % compute kernel function
+varargin = delete_option(varargin,'Phase');
 [psi,c] = calcKernel(ebsd,varargin{:});
