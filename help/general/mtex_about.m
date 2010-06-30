@@ -1,30 +1,30 @@
 %% MTEX About
 %
-% 
+%
 %% Authors
-% 
+%
 % <html>
 % The MTEX toolbox is developed and maintained by <br> <br>
-% Dr. Ralf Hielscher 
+% Dr. Ralf Hielscher
 % <a href="mailto:Ralf.Hielscher@mathematik.tu-chemnitz.de">Ralf.Hielscher@mathematik.tu-chemnitz.de</a>
 % </html>
-% 
+%
 %
 %  TU Chemnitz
-%  Fakultät für Mathematik 
+%  Fakultät für Mathematik
 %  Reichenhainer Str.39, Zimmer 710
 %  D-09107 Chemnitz, GERMANY
 %
 %  personal homepage:
-%  [[http://www-user.tu-chemnitz.de/~rahi/,http://ibb.gsf.de/homepage/ralf.hielscher/,http://ibb.gsf.de/homepage/ralf.hielscher/]]
+%  [[http://www-user.tu-chemnitz.de/~rahi,http://www-user.tu-chemnitz.de/~rahi]]
 %
-% and 
+% and
 %
 %  Florian Bachmann
 %
 %  TU Bergakademie Freiberg
 %  Institut für Geomathematik und Geoinformatik
-%  Bernhard-von-Cotta-Str. 2 
+%  Bernhard-von-Cotta-Str. 2
 %  D-09599 Freiberg, Germany
 %
 %% Website
@@ -38,7 +38,7 @@
 %
 % The toolbox is build upon the following great software packages:
 %
-% * <http://www-user.tu-chemnitz.de/~potts/nfft/ NFFT> - D. Potts, S. Kunis, J. Keiner, A. Vollrath 
+% * <http://www-user.tu-chemnitz.de/~potts/nfft/ NFFT> - D. Potts, S. Kunis, J. Keiner, A. Vollrath
 % * txt2mat -  A.Tönnesmann
 % * Sphere3d - JM DeFreitas
 % * Arrow3d - Changshun Deng

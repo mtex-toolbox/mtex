@@ -1,7 +1,7 @@
 PoleFigureAnalysisIntro
 ImportPoleFigureData
-PlotPoleFigures tool_facecolor
 ModifyPoleFigureData
-odf_estimation
+PoleFigure2odf
 ghost_demo
 PoleFigureSimulation_demo
+PlotPoleFigures
