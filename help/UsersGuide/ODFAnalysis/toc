@@ -1,6 +1,8 @@
-ODFCalculations
 ODFImportExport
-EstimatingODFs
-SimulatingData
-ODFPlot tool_facecolor
+ModelODFs
+PoleFigure2odf
+EBSD2odf
+PoleFigureSimulation_demo
+EBSDSimulation_demo
 ODFCharacteristics
+ODFPlot
