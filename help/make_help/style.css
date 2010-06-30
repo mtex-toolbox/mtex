@@ -20,7 +20,7 @@ a:hover {
 } 
 
 h1 {
-  color: #990000; 
+  color: #990000;
   font-size: xx-large;
   font-weight:100;
 }
@@ -208,5 +208,9 @@ div.myheader a {
 div.myheader {
   color: white;
 } 
+
+
+p.pagenavlink { margin-top:2.2ex; margin-bottom:0; padding-top:0; padding-bottom:0; }
+a.pagenavimglink { text-decoration:none; }
 
 

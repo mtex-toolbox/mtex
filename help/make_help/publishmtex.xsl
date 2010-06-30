@@ -38,6 +38,10 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
         <xsl:attribute name="rel">stylesheet</xsl:attribute>
         <xsl:attribute name="href"><xsl:value-of select="../make_help" />style.css</xsl:attribute>
       </xsl:element>
+      <xsl:element name="script">
+        <xsl:attribute name="language">JavaScript</xsl:attribute>
+        <xsl:attribute name="src">docscripts.js</xsl:attribute>
+      </xsl:element>
     </head>
     
     <body> 
@@ -50,9 +54,11 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
         <xsl:otherwise>
           <xsl:call-template name="header"/>
         </xsl:otherwise>
-      </xsl:choose>   
+      </xsl:choose>
       
       <div class="content">
+        <a><xsl:attribute name="name">top_of_page</xsl:attribute></a>        
+        <p><xsl:attribute name="style">font-size:1px;</xsl:attribute></p>
         
         <!-- Determine if the there should be an introduction section. -->
         <xsl:variable name="hasIntro" select="count(cell[@style = 'overview'])"/>        
@@ -61,7 +67,7 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
         <xsl:if test = "$hasIntro">
           <h1><xsl:value-of select="cell[1]/steptitle"/></h1>
           <introduction><xsl:apply-templates select="cell[1]/text"/></introduction>
-        </xsl:if>        
+        </xsl:if>      
         
         <xsl:variable name="body-cells" select="cell[not(@style = 'overview')]"/>
         
@@ -90,6 +96,8 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
                 <xsl:when test="steptitle = 'Open in Editor'"></xsl:when>
                             
                 <xsl:otherwise>
+                  <xsl:call-template name="backtotop"/>
+                  
                   <xsl:variable name="headinglevel">
                     <xsl:choose>
                       <xsl:when test="steptitle[@style = 'document']">h1</xsl:when>
@@ -97,7 +105,7 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
                     </xsl:choose>
                   </xsl:variable>
                   <xsl:element name="{$headinglevel}">
-                    <xsl:value-of select="steptitle"/>
+                    <xsl:value-of select="steptitle"/> 
                     <xsl:if test="not(steptitle[@style = 'document'])">
                       <a><xsl:attribute name="name"><xsl:value-of select="position()"/></xsl:attribute></a>
                     </xsl:if>
@@ -105,10 +113,10 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
                   
                   <xsl:apply-templates select="text"/>
                   <xsl:apply-templates select="mcode-xmlized"/>
-                  <xsl:apply-templates select="mcodeoutput|img"/>
+                  <xsl:apply-templates select="mcodeoutput|img"/>                  
                 </xsl:otherwise>
               
-              </xsl:choose>                         
+              </xsl:choose>
             </xsl:when>
             <xsl:otherwise>
               <xsl:apply-templates select="text"/>
@@ -119,7 +127,7 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
         </xsl:for-each>
         
         <!-- Contents of each cell -->
-        
+        <xsl:call-template name="backtotop"/>
         
         <xsl:call-template name="footer"/>
         
@@ -159,6 +167,12 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
           <tr ><td valign="baseline" align="right">
           <xsl:value-of select="$mtexversion"/> helpfile</td><td valign="baseline" align="right"></td></tr>
       </table>  
+</xsl:template>
+
+
+
+<xsl:template name="backtotop">  
+  <p class="pagenavlink"><script language="Javascript">addTopOfPageButtons();</script><a href="#top_of_page">Back to Top</a></p>
 </xsl:template>
 
 
@@ -250,7 +264,6 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
-
 
 <!-- Figure and model snapshots -->
 
