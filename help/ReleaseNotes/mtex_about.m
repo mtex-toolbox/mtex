@@ -1,4 +1,4 @@
-%% MTEX About
+%% About MTEX
 %
 %
 %% Authors
