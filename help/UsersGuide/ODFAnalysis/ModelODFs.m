@@ -1,16 +1,28 @@
 %% Model ODFs
+% Describes how to define model ODFs in MTEX, i.e., uniform ODFs, unimodal
+% ODFs, fibre ODFs, Bingham distributed ODFs and ODFs defined by its
+% Fourier coefficients. 
 %
 %% Open in Editor
 %
 %% Contents
 %
-%% Abstract
-% MTEX allows to create a wide range of model ODFs including
-% [[uniformODF.html,uniformODFs]], [[unimodalODF.html,unimodalODFs]],
-% [[fibreODF.html,fibreODFs]] and any superposition of those ODF.
-% These ODFs can be used to
-% [[PoleFigureSimulation_demo.html,simulate PoleFigures]] or to
-% [[EBSDSimulation_demo.html,simulate EBSD data]].
+
+%% Introduction
+%
+% MTEX provides a very simple way to define model ODFs, e.g. unimodal ODFs,
+% fibre ODF, Bingham distributed ODFs, or ODFs specified by Fourier
+% coefficients. The central idea is that MTEX allows you to calculate with
+% ODFs as with ordinary number, i.e., you can multiply and ODF with a
+% certain number, you can add, subtract or rotate ODFs. Model ODFs may be
+% used as references for ODFs estimated from pole figure data or EBSD data
+% and are
+% instrumental for <PoleFigureSimulation_demo.html pole figure simulations>
+% and <EBSDSimulation_demo.html sinle orientation simulations>. These
+% relationships are visualized in the following chart.
+%
+%
+% <<odf.png>>
 
 %% The Uniform ODF
 %

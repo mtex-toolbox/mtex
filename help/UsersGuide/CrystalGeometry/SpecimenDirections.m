@@ -1,5 +1,5 @@
 %% Specimen Directions
-% Representation of specime directions as vector3d
+% Explains how to define and calculate with specimen directions.
 %
 %% Open in Editor
 %
