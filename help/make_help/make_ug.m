@@ -45,7 +45,10 @@ for k=1:numel(dirs)
     end
     
     if make_topic
+      try
       make_topic_withtable( fullfile(current_folder,[topic '.m'] ) )
+     	catch,
+      end
     end
     
     if make_abovetopic
