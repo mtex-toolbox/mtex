@@ -6,23 +6,29 @@
 %
 % *Crystal Geometry*
 %
-% This release contains a newly designed crystal geometry engine which is
-% thought to be much more intuitive and flexible.
+% This release contains a completely redesigned crystal geometry engine which is
+% thought to be much more intuitive and flexible. In particular, it
+% introduces two new classes <rotation_index.html rotation> and
+% <orientation_index.html orientation> which make it much more easier to
+% work with crystal orientations. Resulting features are
 %
-% * new class <rotation_index.html rotation>
-% * new orientation <orientation_index.html orientation>
-% *
+% * no more need for quaternions
+% * support for Bunge, Roe, Matthies, Kocks, and Canova Euler angle
+% convention
+% * simple definition of fibres
+% * simple check whether two orientations are symmetrically equivalent
 %
-% *Generel Code Refactorisation*
+% *Other Enhangments*
 %
+% * automatic kernel selection in ODF estimation from EBSD data
+% * support for Bingham distributed model ODFs
+% * esimation of Bingham parameters from EBSD data 
+% * faster and more accurate EBSD simulation
+% * faster grain reconstruction
+% * improved documentation
+% * impoved output
 % * MTEX is now compatibel with NFFT 3.1.3
 %
-% *New Features*
-%
-% Beside all the technical changes there are also some new features
-%
-% * Bingham distrubted ODFs
-% * Faster and more accurate EBSD simulation
 %
 %% MTEX 2.0 - 10/2009
 %
