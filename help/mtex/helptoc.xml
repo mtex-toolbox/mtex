@@ -10,7 +10,7 @@
     <tocitem target="compilation.html">Compilation Guide</tocitem>
   </tocitem>
     
-<tocitem target="UsersGuide.html" image="$toolbox/matlab/icons/book_mat.gif">Users's Guide
+<tocitem target="UsersGuide.html" image="$toolbox/matlab/icons/book_mat.gif">User's Guide
 <tocitem target="FeatureOverview.html" image="$toolbox/matlab/icons/greenarrowicon.gif">MTEX Feature Overview
 <tocitem target="FeatureOverview.html#2">Analyze and Visualize Crystallographic Geometries</tocitem>
 <tocitem target="FeatureOverview.html#3">Calculate with Model ODFs</tocitem>
@@ -23,31 +23,28 @@
 </tocitem>
 <tocitem target="CrystalGeometry.html" image="$toolbox/matlab/icons/pagesicon.gif">Crystal Geometry
 <tocitem target="SpecimenDirections.html">Specimen Directions
-<tocitem target="SpecimenDirections.html#3">Description</tocitem>
 <tocitem target="SpecimenDirections.html#4">Defining Specimen Directions</tocitem>
 <tocitem target="SpecimenDirections.html#7">Calculating with Specimen Directions</tocitem>
 <tocitem target="SpecimenDirections.html#11">Plotting three dimensionl vectors</tocitem>
 </tocitem>
-<tocitem target="rotation_index.html">Rotations
-<tocitem target="rotation_index.html#4">Description</tocitem>
-<tocitem target="rotation_index.html#5">Euler Angle Conventions</tocitem>
-<tocitem target="rotation_index.html#9">Other Ways of Defining a Rotation</tocitem>
-<tocitem target="rotation_index.html#16">Calculating with Rotations</tocitem>
-<tocitem target="rotation_index.html#24">Conversion into Euler Angles and Rodrigues Parametrisation</tocitem>
-<tocitem target="rotation_index.html#25">Plotting Rotations</tocitem>
+<tocitem target="Rotations.html">Rotations
+<tocitem target="Rotations.html#3">Description</tocitem>
+<tocitem target="Rotations.html#4">Euler Angle Conventions</tocitem>
+<tocitem target="Rotations.html#8">Other Ways of Defining a Rotation</tocitem>
+<tocitem target="Rotations.html#15">Calculating with Rotations</tocitem>
+<tocitem target="Rotations.html#23">Conversion into Euler Angles and Rodrigues Parametrisation</tocitem>
+<tocitem target="Rotations.html#24">Plotting Rotations</tocitem>
 </tocitem>
 <tocitem target="CrystalSymmetries.html">Crystal Symmetries
-<tocitem target="CrystalSymmetries.html#3">Description</tocitem>
 <tocitem target="CrystalSymmetries.html#4">Defining a Crystal Symmetry by the Name of its Laue Group</tocitem>
 <tocitem target="CrystalSymmetries.html#6">Defining a Crystal Symmetry by the Name of its Point Group or its Space Group</tocitem>
 <tocitem target="CrystalSymmetries.html#7">Defining a Crystal Symmetry by a CIF File</tocitem>
 <tocitem target="CrystalSymmetries.html#8">The Crystal Coordinate System</tocitem>
 <tocitem target="CrystalSymmetries.html#9">A and B Configurations</tocitem>
 <tocitem target="CrystalSymmetries.html#11">Calculations</tocitem>
-<tocitem target="CrystalSymmetries.html#12">Ploting symmetries</tocitem>
+<tocitem target="CrystalSymmetries.html#12">Plotting symmetries</tocitem>
 </tocitem>
 <tocitem target="CrystalDirections.html">Crystal Directions
-<tocitem target="CrystalDirections.html#3">Description</tocitem>
 <tocitem target="CrystalDirections.html#4">Definition</tocitem>
 <tocitem target="CrystalDirections.html#5">Plotting Miller indece</tocitem>
 <tocitem target="CrystalDirections.html#7">Symmetrically Equivalent Crystal Directions</tocitem>
@@ -56,25 +53,25 @@
 <tocitem target="CrystalDirections.html#15">Calculations</tocitem>
 </tocitem>
 <tocitem target="CrystalOrientations.html">Crystal Orientations
-<tocitem target="CrystalOrientations.html#3">Description</tocitem>
-<tocitem target="CrystalOrientations.html#4">Defining a Crystal Orientation</tocitem>
-<tocitem target="CrystalOrientations.html#12">Rotating Crystal Directions onto Specimen Directions</tocitem>
-<tocitem target="CrystalOrientations.html#16">Concatenating Rotations</tocitem>
-<tocitem target="CrystalOrientations.html#20">Caclulating Missorientations</tocitem>
-<tocitem target="CrystalOrientations.html#22">Calculating with Orientations and Rotations</tocitem>
-<tocitem target="CrystalOrientations.html#24">Conversion into Euler Angles and Rodrigues Parametrisation</tocitem>
-<tocitem target="CrystalOrientations.html#25">Plotting Orientations</tocitem>
+<tocitem target="CrystalOrientations.html#5">Defining a Crystal Orientation</tocitem>
+<tocitem target="CrystalOrientations.html#13">Rotating Crystal Directions onto Specimen Directions</tocitem>
+<tocitem target="CrystalOrientations.html#17">Concatenating Rotations</tocitem>
+<tocitem target="CrystalOrientations.html#21">Caclulating Missorientations</tocitem>
+<tocitem target="CrystalOrientations.html#23">Calculating with Orientations and Rotations</tocitem>
+<tocitem target="CrystalOrientations.html#25">Conversion into Euler Angles and Rodrigues Parametrisation</tocitem>
+<tocitem target="CrystalOrientations.html#26">Plotting Orientations</tocitem>
 </tocitem>
 <tocitem target="AxialDirectional.html">Antipodal Symmetry
-<tocitem target="AxialDirectional.html#8">The Angle between Directions and Axes</tocitem>
-<tocitem target="AxialDirectional.html#10">Antipodal Symmetry in Experimental Pole Figures</tocitem>
-<tocitem target="AxialDirectional.html#12">Antipodal Symmetry in Recalculated Pole Figures</tocitem>
-<tocitem target="AxialDirectional.html#14">Antipodal Symmetry in inverse Pole Figures</tocitem>
-<tocitem target="AxialDirectional.html#17">EBSD Colocoding</tocitem>
+<tocitem target="AxialDirectional.html#3">Directions vs. Axes</tocitem>
+<tocitem target="AxialDirectional.html#7">The Angle between Directions and Axes</tocitem>
+<tocitem target="AxialDirectional.html#9">Antipodal Symmetry in Experimental Pole Figures</tocitem>
+<tocitem target="AxialDirectional.html#11">Antipodal Symmetry in Recalculated Pole Figures</tocitem>
+<tocitem target="AxialDirectional.html#13">Antipodal Symmetry in inverse Pole Figures</tocitem>
+<tocitem target="AxialDirectional.html#16">EBSD Colocoding</tocitem>
 </tocitem>
 </tocitem>
 <tocitem target="PoleFigureAnalysis.html" image="$toolbox/matlab/icons/pagesicon.gif">Pole Figure Analysis
-<tocitem target="PoleFigureAnalysisIntro.html">Indroduction to PoleFigure Analysis
+<tocitem target="PoleFigureAnalysisIntro.html">First Steps
 <tocitem target="PoleFigureAnalysisIntro.html#3">Import of Pole Figures</tocitem>
 <tocitem target="PoleFigureAnalysisIntro.html#6">Plotting Pole Figure Data</tocitem>
 <tocitem target="PoleFigureAnalysisIntro.html#7">Modify Pole Figure Data</tocitem>
@@ -82,13 +79,13 @@
 <tocitem target="PoleFigureAnalysisIntro.html#9">Simulate Pole Figure Data</tocitem>
 </tocitem>
 <tocitem target="ImportPoleFigureData.html">Importing Pole Figure Data
-<tocitem target="ImportPoleFigureData.html#3">Inport Pole Figure Data Using the Import Wizard</tocitem>
+<tocitem target="ImportPoleFigureData.html#3">Import Pole Figure Data Using the Import Wizard</tocitem>
 <tocitem target="ImportPoleFigureData.html#5">List of automatically detected interfaces</tocitem>
 <tocitem target="ImportPoleFigureData.html#6">Importing pole figure data using the method loadPoleFigure</tocitem>
 <tocitem target="ImportPoleFigureData.html#8">Importing pole figure data from general ascii files</tocitem>
 <tocitem target="ImportPoleFigureData.html#9">Importing pole figure data from unknown formats</tocitem>
 <tocitem target="ImportPoleFigureData.html#10">Writing your own interface</tocitem>
-<tocitem target="aachen_exp_interface.html">The Aachen_exp Data Interface
+<tocitem target="aachen_exp_interface.html">Aachen_exp Interface
 <tocitem target="aachen_exp_interface.html#1">Specify Crystal and Specimen Symmetries</tocitem>
 <tocitem target="aachen_exp_interface.html#2">Specify File Name</tocitem>
 <tocitem target="aachen_exp_interface.html#3">Import Data</tocitem>
@@ -97,7 +94,7 @@
 <tocitem target="aachen_exp_interface.html#6">Specification</tocitem>
 <tocitem target="aachen_exp_interface.html#7">Questions:</tocitem>
 </tocitem>
-<tocitem target="aachen_interface.html">The Aachen Data Interface
+<tocitem target="aachen_interface.html">Aachen Interface
 <tocitem target="aachen_interface.html#1">specify crystal and specimen symmetries</tocitem>
 <tocitem target="aachen_interface.html#2">specify the file names</tocitem>
 <tocitem target="aachen_interface.html#3">import the data</tocitem>
@@ -107,7 +104,7 @@
 <tocitem target="aachen_interface.html#7">open questions:</tocitem>
 <tocitem target="aachen_interface.html#8">precise specification:</tocitem>
 </tocitem>
-<tocitem target="beartex_interface.html">The BearTex Data Interface
+<tocitem target="beartex_interface.html">BearTex Interface
 <tocitem target="beartex_interface.html#1">specify crystal and specimen symmetries</tocitem>
 <tocitem target="beartex_interface.html#2">specify the file names</tocitem>
 <tocitem target="beartex_interface.html#3">import the data</tocitem>
@@ -116,7 +113,7 @@
 <tocitem target="beartex_interface.html#6">Specification</tocitem>
 <tocitem target="beartex_interface.html#7">precise specification:</tocitem>
 </tocitem>
-<tocitem target="dubna_interface.html">The Dubna Data Interface
+<tocitem target="dubna_interface.html">Dubna Interface
 <tocitem target="dubna_interface.html#1">specify crystal and specimen symmetries</tocitem>
 <tocitem target="dubna_interface.html#2">specify the file names</tocitem>
 <tocitem target="dubna_interface.html#3">specify crystal directions</tocitem>
@@ -126,7 +123,7 @@
 <tocitem target="dubna_interface.html#7">See also</tocitem>
 <tocitem target="dubna_interface.html#8">Specification</tocitem>
 </tocitem>
-<tocitem target="geesthacht_interface.html">Geesthacht data interface
+<tocitem target="geesthacht_interface.html">Geesthacht interface
 <tocitem target="geesthacht_interface.html#1">specify crystal and specimen symmetries</tocitem>
 <tocitem target="geesthacht_interface.html#2">specify the file names</tocitem>
 <tocitem target="geesthacht_interface.html#3">specify crystal directions</tocitem>
@@ -136,15 +133,15 @@
 <tocitem target="geesthacht_interface.html#7">Specification</tocitem>
 <tocitem target="geesthacht_interface.html#8">Precise specification</tocitem>
 </tocitem>
-<tocitem target="generic_interface.html">MTEX - Generic Pole Figure Data Interface
-<tocitem target="generic_interface.html#1">specify crystal and specimen symmetries</tocitem>
-<tocitem target="generic_interface.html#2">specify the file names</tocitem>
-<tocitem target="generic_interface.html#3">set data layout</tocitem>
-<tocitem target="generic_interface.html#4">import the data</tocitem>
-<tocitem target="generic_interface.html#5">plot data</tocitem>
-<tocitem target="generic_interface.html#6">See also</tocitem>
+<tocitem target="generic_interface.html">Generic Pole Figure Data Interface
+<tocitem target="generic_interface.html#2">specify crystal and specimen symmetries</tocitem>
+<tocitem target="generic_interface.html#3">specify the file names</tocitem>
+<tocitem target="generic_interface.html#4">set data layout</tocitem>
+<tocitem target="generic_interface.html#5">import the data</tocitem>
+<tocitem target="generic_interface.html#6">plot data</tocitem>
+<tocitem target="generic_interface.html#7">See also</tocitem>
 </tocitem>
-<tocitem target="juelich_interface.html">The Juelich Data Interface
+<tocitem target="juelich_interface.html">Juelich Interface
 <tocitem target="juelich_interface.html#1">specify crystal and specimen symmetries</tocitem>
 <tocitem target="juelich_interface.html#2">specify the file names</tocitem>
 <tocitem target="juelich_interface.html#3">import the data</tocitem>
@@ -161,7 +158,7 @@
 <tocitem target="philips_interface.html#5">See also</tocitem>
 <tocitem target="philips_interface.html#6">Specification</tocitem>
 </tocitem>
-<tocitem target="ptx_interface.html">The PTX Data Interface
+<tocitem target="ptx_interface.html">PTX Interface
 <tocitem target="ptx_interface.html#1">specify crystal and specimen symmetries</tocitem>
 <tocitem target="ptx_interface.html#2">specify the file names</tocitem>
 <tocitem target="ptx_interface.html#3">import the data</tocitem>
@@ -170,7 +167,7 @@
 <tocitem target="ptx_interface.html#6">Specification</tocitem>
 <tocitem target="ptx_interface.html#7">Remarks</tocitem>
 </tocitem>
-<tocitem target="xrdml_interface.html">The XRDML Data Interface
+<tocitem target="xrdml_interface.html">XRDML Interface
 <tocitem target="xrdml_interface.html#1">Specify Crystal and Specimen Symmetries</tocitem>
 <tocitem target="xrdml_interface.html#2">Specify File Names</tocitem>
 <tocitem target="xrdml_interface.html#3">Import Data</tocitem>
@@ -178,7 +175,7 @@
 <tocitem target="xrdml_interface.html#5">See Also</tocitem>
 </tocitem>
 </tocitem>
-<tocitem target="PlotPoleFigures.html" image="$toolbox/matlab/icons/tool_facecolor.gif">Pole Figure Plotting
+<tocitem target="PlotPoleFigures.html" image="$toolbox/matlab/icons/tool_facecolor.gif">Plotting of Pole Figures
 <tocitem target="PlotPoleFigures.html#4">Import of Pole Figures</tocitem>
 <tocitem target="PlotPoleFigures.html#5">Visualize the Data</tocitem>
 <tocitem target="PlotPoleFigures.html#7">Contour Plots</tocitem>
@@ -193,12 +190,7 @@
 <tocitem target="ModifyPoleFigureData.html#12">Remove certain measurements from the data</tocitem>
 <tocitem target="ModifyPoleFigureData.html#13">Rotate pole figures</tocitem>
 </tocitem>
-<tocitem target="odf_estimation.html">ODF Estimation
-<tocitem target="odf_estimation.html#4">Syntax</tocitem>
-<tocitem target="odf_estimation.html#8">Discretization</tocitem>
-<tocitem target="odf_estimation.html#10">Zero Range Method</tocitem>
-<tocitem target="odf_estimation.html#11">Ghost Corrections</tocitem>
-<tocitem target="odf_estimation.html#12">Theory</tocitem>
+<tocitem target="odf_estimation.html">odf_estimation
 </tocitem>
 <tocitem target="ghost_demo.html">MTEX Ghost Effect Demo
 <tocitem target="ghost_demo.html#5">Construct Model ODF</tocitem>
@@ -212,32 +204,29 @@
 <tocitem target="ghost_demo.html#23">Plot Fourier Coefficients</tocitem>
 </tocitem>
 <tocitem target="PoleFigureSimulation_demo.html">Pole Figure Simulation
-<tocitem target="PoleFigureSimulation_demo.html#4">Define an Model ODF</tocitem>
-<tocitem target="PoleFigureSimulation_demo.html#5">Simulate Pole Figure Data</tocitem>
-<tocitem target="PoleFigureSimulation_demo.html#11">ODF Estimation from Pole Figure Data</tocitem>
-<tocitem target="PoleFigureSimulation_demo.html#14">Exploration of the relationship between estimation error and number of single orientations</tocitem>
+<tocitem target="PoleFigureSimulation_demo.html#6">Simulate Pole Figure Data</tocitem>
+<tocitem target="PoleFigureSimulation_demo.html#12">ODF Estimation from Pole Figure Data</tocitem>
+<tocitem target="PoleFigureSimulation_demo.html#15">Exploration of the relationship between estimation error and number of single orientations</tocitem>
 </tocitem>
 </tocitem>
 <tocitem target="EBSDAnalysis.html" image="$toolbox/matlab/icons/pagesicon.gif">EBSD Data Analysis
-<tocitem target="EBSDAnalysis.html#2">Import of EBSD Data</tocitem>
-<tocitem target="EBSDAnalysis.html#4">Plotting EBSD Data</tocitem>
-<tocitem target="EBSDAnalysis.html#6">Modify EBSD Data</tocitem>
-<tocitem target="EBSDAnalysis.html#7">Calculate an ODF from EBSD Data</tocitem>
-<tocitem target="EBSDAnalysis.html#8">Simulate EBSD Data</tocitem>
-<tocitem target="EBSDAnalysis.html#9">Demo</tocitem>
+<tocitem target="EBSDAnalysisIntro.html">First Steps
+<tocitem target="EBSDAnalysisIntro.html#3">Modelling Grains</tocitem>
+<tocitem target="EBSDAnalysisIntro.html#4">Analyzing EBSD Data</tocitem>
+</tocitem>
 <tocitem target="ImportEBSDData.html">Import EBSD Data
-<tocitem target="ImportEBSDData.html#3">Inporting EBSD data using the import wizard</tocitem>
+<tocitem target="ImportEBSDData.html#3">Importing EBSD data using the import wizard</tocitem>
 <tocitem target="ImportEBSDData.html#5">Features of the import wizard</tocitem>
 <tocitem target="ImportEBSDData.html#6">Supported Interfaces</tocitem>
 <tocitem target="ImportEBSDData.html#7">The Import Script</tocitem>
 <tocitem target="ImportEBSDData.html#8">Writing your own interface</tocitem>
-<tocitem target="ebsd_interface.html">The Generic EBSD Data Interface
-<tocitem target="ebsd_interface.html#1">specify crystal and specimen symmetry</tocitem>
-<tocitem target="ebsd_interface.html#2">load EBSD data</tocitem>
-<tocitem target="ebsd_interface.html#3">plot pole figures</tocitem>
-<tocitem target="ebsd_interface.html#4">kernel density estimation</tocitem>
-<tocitem target="ebsd_interface.html#5">plot pole figures</tocitem>
-<tocitem target="ebsd_interface.html#6">plot ODF</tocitem>
+<tocitem target="ebsd_interface.html">Generic EBSD Data Interface
+<tocitem target="ebsd_interface.html#2">specify crystal and specimen symmetry</tocitem>
+<tocitem target="ebsd_interface.html#3">load EBSD data</tocitem>
+<tocitem target="ebsd_interface.html#4">plot pole figures</tocitem>
+<tocitem target="ebsd_interface.html#5">kernel density estimation</tocitem>
+<tocitem target="ebsd_interface.html#6">plot pole figures</tocitem>
+<tocitem target="ebsd_interface.html#7">plot ODF</tocitem>
 </tocitem>
 </tocitem>
 <tocitem target="GrainModelling.html">Grain Reconstruction
@@ -254,13 +243,12 @@
 <tocitem target="MisorientationAnalysis.html#12">Boundary Misorientation</tocitem>
 </tocitem>
 </tocitem>
-<tocitem target="EBSDPlot.html" image="$toolbox/matlab/icons/tool_facecolor.gif">Plotting EBSD Data
-<tocitem target="EBSDPlot.html#4">Import of EBSD Data</tocitem>
-<tocitem target="EBSDPlot.html#5">Scatter (Inverse) Pole Figure Plot</tocitem>
-<tocitem target="EBSDPlot.html#7">Scatter Plot in ODF Sections</tocitem>
-<tocitem target="EBSDPlot.html#8">Scatter Plot in Axis Angle or Rodrigues Space</tocitem>
-<tocitem target="EBSDPlot.html#9">Spatial Single Orientation Plot</tocitem>
-<tocitem target="EBSDPlot.html#11">Spatial Plot of Other Properties</tocitem>
+<tocitem target="ModifyEBSDData.html">Correct EBSD Data
+<tocitem target="ModifyEBSDData.html#6">Realign / Rotate the data</tocitem>
+<tocitem target="ModifyEBSDData.html#8">Restricting to a region of interest</tocitem>
+<tocitem target="ModifyEBSDData.html#10">Detecting Inaccurate Orientation Measurements</tocitem>
+</tocitem>
+<tocitem target="EBSDPlot.html" image="$toolbox/matlab/icons/tool_facecolor.gif">Visualizing EBSD Data and Grains
 <tocitem target="OrientationPlots.html">Plotting Individual Orientations
 <tocitem target="OrientationPlots.html#6">Scatter Pole Figure Plot</tocitem>
 <tocitem target="OrientationPlots.html#7">Scatter (Inverse) Pole Figure Plot</tocitem>
@@ -274,40 +262,31 @@
 <tocitem target="SpatialPlots.html#17">Coloring other properties</tocitem>
 </tocitem>
 </tocitem>
-<tocitem target="ModifyEBSDData.html">Correct EBSD Data
-<tocitem target="ModifyEBSDData.html#6">Realign / Rotate the data</tocitem>
-<tocitem target="ModifyEBSDData.html#8">Restricting to a region of interest</tocitem>
-<tocitem target="ModifyEBSDData.html#10">Detecting Inaccurate Orientation Measurements</tocitem>
+<tocitem target="AnalyseEBSD.html">EBSD Data Analysis
+<tocitem target="EBSD2odf.html">ODF Estimation from EBSD data
+<tocitem target="EBSD2odf.html#4">ODF Estimation</tocitem>
+<tocitem target="EBSD2odf.html#8">Halfwidth selection</tocitem>
 </tocitem>
-<tocitem target="AnalyzeEBSDData.html">Analyze EBSD Data
-<tocitem target="AnalyzeEBSDData.html#4">Syntax</tocitem>
-<tocitem target="AnalyzeEBSDData.html#5">Mean Orientation</tocitem>
-<tocitem target="AnalyzeEBSDData.html#6">Volume</tocitem>
-</tocitem>
-<tocitem target="EBSD2odf_estimation.html">ODF Estimation from EBSD data
-<tocitem target="EBSD2odf_estimation.html#5">ODF Estimation</tocitem>
-<tocitem target="EBSD2odf_estimation.html#8">Halfwidth selection</tocitem>
-</tocitem>
-<tocitem target="EBSDSimulation_demo.html">EBSD Simulations
-<tocitem target="EBSDSimulation_demo.html#4">Define an Model ODF</tocitem>
-<tocitem target="EBSDSimulation_demo.html#5">Simulate EBSD Data</tocitem>
-<tocitem target="EBSDSimulation_demo.html#6">ODF Estimation from EBSD Data</tocitem>
-<tocitem target="EBSDSimulation_demo.html#9">Exploration of the relationship between estimation error and number of single orientations</tocitem>
 </tocitem>
 </tocitem>
 <tocitem target="ODFAnalysis.html" image="$toolbox/matlab/icons/pagesicon.gif">ODF Analysis
-<tocitem target="ODFAnalysis.html#2">Introduction</tocitem>
-<tocitem target="ODFAnalysis.html#3">Model ODFs</tocitem>
-<tocitem target="ODFAnalysis.html#4">Estimating ODFs from EBSD Data or POole Figure Data</tocitem>
-<tocitem target="ODFAnalysis.html#5">Analyzing ODFs</tocitem>
-<tocitem target="ODFImportExport.html">Import and Export of ODF Data
-<tocitem target="ODFImportExport.html#3">Define an Model ODF</tocitem>
-<tocitem target="ODFImportExport.html#4">Export an ODF to an MTEX ASCII File</tocitem>
-<tocitem target="ODFImportExport.html#5">Export as an generic ASCII file</tocitem>
-<tocitem target="ODFImportExport.html#7">Import ODF Data using the import wizard</tocitem>
-<tocitem target="ODFImportExport.html#9">Importing EBSD data using the method loadODF</tocitem>
+<tocitem target="ODFCalculations.html">First Steps
+<tocitem target="ODFCalculations.html#2">Introduction</tocitem>
+<tocitem target="ODFCalculations.html#3">Model ODFs</tocitem>
+<tocitem target="ODFCalculations.html#4">Estimating ODFs from EBSD Data or Pole Figure Data</tocitem>
+<tocitem target="ODFCalculations.html#5">Analyzing ODFs</tocitem>
+<tocitem target="ODFCalculations.html#6">Simulate Pole Figures or EBSD Data</tocitem>
 </tocitem>
+<tocitem target="ODFImportExport.html">Import and Export of ODF Data
+<tocitem target="ODFImportExport.html#4">Define an Model ODF</tocitem>
+<tocitem target="ODFImportExport.html#5">Export an ODF to an MTEX ASCII File</tocitem>
+<tocitem target="ODFImportExport.html#6">Export as an generic ASCII file</tocitem>
+<tocitem target="ODFImportExport.html#8">Import ODF Data using the import wizard</tocitem>
+<tocitem target="ODFImportExport.html#10">Importing EBSD data using the method loadODF</tocitem>
+</tocitem>
+<tocitem target="EstimatingODFs.html">Model ODFs and ODF Estimation
 <tocitem target="ModelODFs.html">Model ODFs
+<tocitem target="ModelODFs.html#3">Introduction</tocitem>
 <tocitem target="ModelODFs.html#4">The Uniform ODF</tocitem>
 <tocitem target="ModelODFs.html#5">Unimodal ODFs</tocitem>
 <tocitem target="ModelODFs.html#7">Fibre ODFs</tocitem>
@@ -315,20 +294,50 @@
 <tocitem target="ModelODFs.html#10">Bingham distributed ODFs</tocitem>
 <tocitem target="ModelODFs.html#14">Combining MODEL ODFs</tocitem>
 </tocitem>
-<tocitem target="ODFEstimation.html">MTEX - Analysis of ODFs
-<tocitem target="ODFEstimation.html#4">Some Sample ODFs</tocitem>
-<tocitem target="ODFEstimation.html#8">Modal Orientations</tocitem>
-<tocitem target="ODFEstimation.html#11">Texture Characteristics</tocitem>
-<tocitem target="ODFEstimation.html#14">Volume Portions</tocitem>
-<tocitem target="ODFEstimation.html#17">Fourier Coefficients</tocitem>
+<tocitem target="PoleFigure2odf.html">ODF Estimation from Pole Figure Data
+<tocitem target="PoleFigure2odf.html#4">ODF Estimation</tocitem>
+<tocitem target="PoleFigure2odf.html#7">Discretization</tocitem>
+<tocitem target="PoleFigure2odf.html#9">Zero Range Method</tocitem>
+<tocitem target="PoleFigure2odf.html#10">Ghost Corrections</tocitem>
+<tocitem target="PoleFigure2odf.html#11">Theory</tocitem>
+</tocitem>
+<tocitem target="EBSD2odf.html">ODF Estimation from EBSD data
+<tocitem target="EBSD2odf.html#4">ODF Estimation</tocitem>
+<tocitem target="EBSD2odf.html#8">Halfwidth selection</tocitem>
+</tocitem>
+<tocitem target="kernel_index.html">The class kernel
+<tocitem target="kernel_index.html#2">Description</tocitem>
+<tocitem target="kernel_index.html#3">Defining a kernel function</tocitem>
+<tocitem target="kernel_index.html#4">Plotting the kernel</tocitem>
+</tocitem>
+</tocitem>
+<tocitem target="SimulatingData.html">Simulating Data based on ODFs
+<tocitem target="PoleFigureSimulation_demo.html">Pole Figure Simulation
+<tocitem target="PoleFigureSimulation_demo.html#6">Simulate Pole Figure Data</tocitem>
+<tocitem target="PoleFigureSimulation_demo.html#12">ODF Estimation from Pole Figure Data</tocitem>
+<tocitem target="PoleFigureSimulation_demo.html#15">Exploration of the relationship between estimation error and number of single orientations</tocitem>
+</tocitem>
+<tocitem target="EBSDSimulation_demo.html">EBSD Simulation
+<tocitem target="EBSDSimulation_demo.html#6">Simulate EBSD Data</tocitem>
+<tocitem target="EBSDSimulation_demo.html#7">ODF Estimation from EBSD Data</tocitem>
+<tocitem target="EBSDSimulation_demo.html#10">Exploration of the relationship between estimation error and number of single orientations</tocitem>
+</tocitem>
 </tocitem>
 <tocitem target="ODFPlot.html" image="$toolbox/matlab/icons/tool_facecolor.gif">Visualising ODFs
-<tocitem target="ODFPlot.html#4">Some sample ODFs</tocitem>
-<tocitem target="ODFPlot.html#5">Plot Pole Figures</tocitem>
-<tocitem target="ODFPlot.html#7">Plot Inverse Pole Figures</tocitem>
-<tocitem target="ODFPlot.html#9">Plot ODF Sections</tocitem>
-<tocitem target="ODFPlot.html#11">Plot One Dimensional ODF Sections</tocitem>
-<tocitem target="ODFPlot.html#12">Plot Fourier Coefficients</tocitem>
+<tocitem target="ODFPlot.html#4">Plot Pole Figures</tocitem>
+<tocitem target="ODFPlot.html#6">Plot Inverse Pole Figures</tocitem>
+<tocitem target="ODFPlot.html#8">Plot ODF Sections</tocitem>
+<tocitem target="ODFPlot.html#13">Plot ODF in 3D Euler Space</tocitem>
+<tocitem target="ODFPlot.html#14">Plot One Dimensional ODF Sections and Fibres</tocitem>
+<tocitem target="ODFPlot.html#16">Plot Fourier Coefficients</tocitem>
+</tocitem>
+<tocitem target="ODFCharacteristics.html">ODF Characteristics
+<tocitem target="ODFCharacteristics.html#7">Modal Orientations</tocitem>
+<tocitem target="ODFCharacteristics.html#10">Texture Characteristics</tocitem>
+<tocitem target="ODFCharacteristics.html#13">Volume Portions</tocitem>
+<tocitem target="ODFCharacteristics.html#16">Fourier Coefficients</tocitem>
+<tocitem target="ODFCharacteristics.html#19">Pole Figures and Values at Specific Orientations</tocitem>
+<tocitem target="ODFCharacteristics.html#22">Extract Internal Representation</tocitem>
 </tocitem>
 </tocitem>
 <tocitem target="plotting.html" image="$toolbox/matlab/icons/tool_facecolor.gif">Plotting
@@ -858,6 +867,7 @@
 <tocitem target="EBSD_index.html">@EBSD
 <tocitem target="EBSD_affinetrans.html"  image="$toolbox/matlab/icons/help_fx.png">affinetrans</tocitem>
 <tocitem target="EBSD_BCV.html"  image="$toolbox/matlab/icons/help_fx.png">BCV</tocitem>
+<tocitem target="EBSD_calcKernel.html"  image="$toolbox/matlab/icons/help_fx.png">calcKernel</tocitem>
 <tocitem target="EBSD_calcODF.html"  image="$toolbox/matlab/icons/help_fx.png">calcODF</tocitem>
 <tocitem target="EBSD_char.html"  image="$toolbox/matlab/icons/help_fx.png">char</tocitem>
 <tocitem target="EBSD_check_option.html"  image="$toolbox/matlab/icons/help_fx.png">check_option</tocitem>
@@ -873,6 +883,7 @@
 <tocitem target="EBSD_get.html"  image="$toolbox/matlab/icons/help_fx.png">get</tocitem>
 <tocitem target="EBSD_hist.html"  image="$toolbox/matlab/icons/help_fx.png">hist</tocitem>
 <tocitem target="EBSD_inpolygon.html"  image="$toolbox/matlab/icons/help_fx.png">inpolygon</tocitem>
+<tocitem target="EBSD_KLCV.html"  image="$toolbox/matlab/icons/help_fx.png">KLCV</tocitem>
 <tocitem target="EBSD_LSCV.html"  image="$toolbox/matlab/icons/help_fx.png">LSCV</tocitem>
 <tocitem target="EBSD_mean.html"  image="$toolbox/matlab/icons/help_fx.png">mean</tocitem>
 <tocitem target="EBSD_mtimes.html"  image="$toolbox/matlab/icons/help_fx.png">mtimes</tocitem>
@@ -899,6 +910,7 @@
 </tocitem>
 <tocitem target="grain_index.html">@grain
 <tocitem target="grain_boundarycount.html"  image="$toolbox/matlab/icons/help_fx.png">boundarycount</tocitem>
+<tocitem target="grain_calcKernel.html"  image="$toolbox/matlab/icons/help_fx.png">calcKernel</tocitem>
 <tocitem target="grain_calcODF.html"  image="$toolbox/matlab/icons/help_fx.png">calcODF</tocitem>
 <tocitem target="grain_copyproperty.html"  image="$toolbox/matlab/icons/help_fx.png">copyproperty</tocitem>
 <tocitem target="grain_corvario.html"  image="$toolbox/matlab/icons/help_fx.png">corvario</tocitem>

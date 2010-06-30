@@ -1,6 +1,4 @@
 %% The class kernel 
-%
-%% Abstract
 % standard distributions on SO(3)
 %
 %% Contents
