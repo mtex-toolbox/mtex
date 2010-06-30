@@ -1,18 +1,17 @@
 %% Rotations
 % Rotations in MTEX
 %
-%% Abstract
-% This section describes the class *rotation* and gives an overview on how
-% to work with rotations in MTEX.
-%
 %% Open in Editor
 %
 %% Contents
 %
-%% Description
+%%
+% This section describes the class  <rotation_rotation.html *rotation*> and 
+% gives an overview on how to work with rotations in MTEX.
 %
+%%
 % The class *rotation* is an inheritant of the class <quaternion_index.html
-% quaternion> and allow to work with rotations as with matrixes in MTEX.
+% *quaternion*> and allow to work with rotations as with matrixes in MTEX.
 %
 %% Euler Angle Conventions
 %
