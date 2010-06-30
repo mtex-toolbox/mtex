@@ -1,34 +1,55 @@
-function [psi,c] = LSCV(ebsd,varargin)
-% Least squares cross valiadation
+function c = LSCV(ebsd,psi,varargin)
+% least squares cross valiadation
+%
+%% Input
+%  ebsd - @EBSD
+%  psi  - @kernel
+%
+%% Output
+%  c
+%
+%% See also
+% EBSD/calcODF EBSD/calcKernel grain/calcKernel EBSD/BCV
 
-%% input
-
+% extract data
 N = sampleSize(ebsd);
 o = get(ebsd,'orientations');
-
-%% prepare kernels for testing
-for k = 1:5
-  psi(k) = kernel('de la Vallee Poussin','halfwidth',40*degree/2^(k/4)); %#ok<AGROW>
+try
+  w = get(ebsd,'weight');
+  w = ones(size(w));
+catch
+  w = ones(size(o));
 end
-psi = get_option(varargin,'kernel',psi);
+w = w ./ sum(w(:));
+ebsd = set(ebsd,'weight',w);
 
-
-%% compute Fourier coefficients
+% compute Fourier coefficients
 L = 32;
-odf_d = calcODF(ebsd,'kernel',kernel('Dirichlet',L),'Fourier','L',L,'silent');
+odf_d = calcODF(ebsd,'kernel',kernel('Dirichlet',L),'Fourier',L,'silent');
 
-%%
 
 c = zeros(1,length(psi));
 
 for i = 1:length(psi)
   
-  disp('.');
-  % compute
+  % compute ODF
   eodf = conv(odf_d,psi(i));
-  c(i) = (1-2/N)./(1-1/N)^2 * norm(Fourier(eodf,'l2-normalization'))^2 ...
-    + 1./(N-1)^2 * norm(psi(i))^2 ...
-    - 2./(N-1) * sum(eval(eodf,o)) + 2./(N-1) * eval(psi(i),0); %#ok<EVLC>
+  
+  %c(i) = (1-2/N)./(1-1/N)^2 * norm(Fourier(eodf,'l2-normalization'))^2 ...
+  %  + 1./(N-1)^2 * norm(psi(i))^2 ...
+  %  - 2./(N-1) * sum(eval(eodf,o)) + 2./(N-1) * eval(psi(i),0); %#ok<EVLC>
+  
+  % compute LSCV
+  c(i) = (1-1/N)^2 * norm(Fourier(eodf,'l2-normalization'))^2 ...
+    - 2/N * sum(1./(1-w) .* eval(eodf,o)) ...
+    + 2/N * eval(psi(i),0)* sum(w./(1-w)); %#ok<EVLC>
+    
+  % compute something else ---> no sence
+  %c(i) = sum(w.^2./(1-w).^2) * ...
+  %  ( norm(Fourier(eodf,'l2-normalization'))^2 + norm(psi(i)) ) ...
+  %  - sum(w.^2./(1-w).^2 .* eval(conv(eodf,psi(i)),o));
+    
+  disp(c(i));
   
 end
 
