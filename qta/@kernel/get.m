@@ -12,6 +12,8 @@ else
   switch vname
     case {'hw','halfwidth'}
       varargout{1} = [obj.hw];
+    case {'kappa','param','parameter'}
+      varargout{1} = [obj.p1];
     case {'Fourier'}
       varargout{1} = obj.A;
       if check_option(varargin,'normalized')

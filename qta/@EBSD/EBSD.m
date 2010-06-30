@@ -19,15 +19,9 @@ function ebsd = EBSD(varargin)
 %% See also
 % ODF/simulateEBSD EBSD/calcODF loadEBSD
 
-%if nargin <= 1, CS = symmetry('triclinic'); end
-%if nargin <= 2, SS = symmetry('triclinic'); end
-
-
 if (nargin == 0)
   ebsd.comment = [];
   ebsd.orientations = orientation;
- % ebsd.CS = symmetry;
- % ebsd.SS = symmetry;  
   ebsd.xy = [];
   ebsd.phase = [];
   ebsd.options = struct;
@@ -38,13 +32,10 @@ elseif isa(varargin{1},'EBSD')
   return
 else
   orientations = orientation(varargin{:});
-  % error('first argument should be of type orientation or quaternion');
 end
 
 ebsd.comment = get_option(varargin,'comment',[]);
 ebsd.orientations = orientations;
-%ebsd.CS = CS;
-%ebsd.SS = SS;
 ebsd.xy = get_option(varargin,'xy');
 ebsd.phase = get_option(varargin,'phase');
 ebsd.options = get_option(varargin,'options',struct);

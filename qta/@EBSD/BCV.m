@@ -1,34 +1,53 @@
-function [psi,c] = BCV(ebsd,varargin)
-% Least squares cross valiadation
+function c = BCV(ebsd,psi,varargin)
+% biased cross validation
+%
+%% Input
+%  ebsd - @EBSD
+%  psi  - @kernel
+%
+%% Output
+%  c
+%
+%% See also
+% EBSD/calcODF EBSD/calcKernel grain/calcKernel EBSD/LSCV
 
-%%
+% extract data
+N = sampleSize(ebsd);
+NCS = N * numel(get(ebsd,'CS'));
 
 o = get(ebsd,'orientations');
-N = length(o);
+try
+  w = get(ebsd,'weight');
+  w = ones(size(w));
+catch
+  w = ones(size(o));
+end
+w = w ./ sum(w(:));
+ebsd = set(ebsd,'weight',w);
+
+% compute Fourier coefficients
+L = 16;
+odf_d = calcODF(ebsd,'kernel',kernel('Dirichlet',L),'Fourier',L,'silent');
 
 
-%% kernel based approach
+sob = kernel('Sobolev',1,'bandwidth',L);
 
-%
-psi = kernel('de la Vallee Poussin','halfwidth',10*degree);
-sob = kernel('Sobolev',1,'bandwidth',64);
-psi = psi * sob^(0.5);
+c = zeros(1,length(psi));
 
-% set up matrix
-k = K(psi,o,o,get(o,'CS'),get(o,'SS'));
-
-% remove diagonal
-n = 1:N;
-k((n-1).*N + n) = [];
-
-sn = sqrt(sum(k))./N;
-
-%% compute Fourier coefficients
-L = 32;
-odf_d = calcODF(ebsd,'kernel',kernel('Dirichlet',L),'Fourier','L',L,'silent');
-
-
-%% compute Sobolev Norm
-psi = kernel('Sobolev',1,'bandwidth',32);
-eodf = conv(odf_d,psi);
-sn = 2*sum(eval(eodf,o)) - eval(psi,0); %#ok<EVLC>
+for i = 1:length(psi)
+  
+  kappa = get(psi(i),'kappa');
+  
+  % compute ODF
+  eodf = conv(odf_d,(psi(i)*sob)^2);
+  
+  
+  % compute BCV
+  rf =  1/N * sum(1./(1-w) .* eval(eodf,o)) ...
+    - 1/N * eval(psi(i),0)* sum(w./(1-w)); %#ok<EVLC>
+  
+  c(i) = (kappa+2)^(-2) * rf + pi/8 * kappa^(3/2) / NCS;
+      
+  disp(c(i));
+  
+end
