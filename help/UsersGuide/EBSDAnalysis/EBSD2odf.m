@@ -25,31 +25,41 @@ loadaachen;
 % $$f(o) = \frac{1}{M} \sum_{i=1}^{M} \psi(o o_i^{-1})$$
 %
 % The choise of the model ODF $\psi$ and in particular its halfwidth has a
-% great impact in the resulting ODF. MTEX offers an rule of thumb algorithm
-% to automatically detect a suitable halfwidth.
+% great impact in the resulting ODF. The following line computes the kernel
+% density estimator for the first phase with kernel halfwidth set to
+% 10*degree.
 %
 
-odf = calcODF(ebsd,'phase',1)
+odf = calcODF(ebsd,'phase',1,'halfwidth',10*degree)
+
+
+%% Automatic halfwidth selection
+%
+% MTEX includes an automatic halfwidth selection algorithm which is called
+% by the command <EBSD_calcKernel.html calcKernel>. A neccesary condition
+% that this algorithm works is that the ebsd data are spatialy independend,
+% as it is the case for very rough EBSD meassurements, i.e. only one
+% measurement per grain. 
+
+% try to compute an optimal kernel
+psi = calcKernel(ebsd,'phase',1)
 
 %%
-% However, it is much more recommended to specify the kernel halfwidth by
-% hand according to prior knowledge on the ODF.
+% The above command fails, since the EBSD are spatial dependend. In this
+% case we have to estimate the optimal kernel halfwidth from reconstructed
+% grains.
 
-odf = calcODF(ebsd,'halfwidth',10*degree,'phase',1);
-
-%%
-% Detect grains and correct for to small grains.
-
+% grains reconstruction
 [grains ebsd] = segment2d(ebsd);
 
-ebsd = link(ebsd,grains(grainsize(grains)>5));
+% correct for to small grains
+grains = grains(grainsize(grains)>5);
 
-[grains ebsd] = segment2d(ebsd);
+% compute optimal halfwidth from grains
+psi = calcKernel(grains,'phase',1)
 
-psi = calcKernel(grains);
-
-odf = calcODF(grains)
-
+% compute the ODF with the kernel psi
+odf = calcODF(ebsd,'phase',1,'kernel',psi)
 
 
 %%
@@ -59,7 +69,7 @@ odf = calcODF(grains)
 plotpdf(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],'antipodal','silent','position',[10 10 600 200])
 
 
-%% Halfwidth selection
+%% Effect of halfwidth selection
 %
 % As mentioned above a propper halfwidth selection is crucial for ODF
 % estimation. The following simple numerical experiment illustrates the

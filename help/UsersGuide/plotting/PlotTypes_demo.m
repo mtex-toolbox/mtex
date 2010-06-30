@@ -4,9 +4,6 @@
 %
 %% Open in Editor
 %
-%% Abstract
-% 
-%
 %% Contents
 %
 %% A Sample ODFs
