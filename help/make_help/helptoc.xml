@@ -5,8 +5,10 @@
   
   <tocitem target="installation.html" image="$toolbox/matlab/icons/greenarrowicon.gif">
     Getting Started with the MTEX Toolbox
+    <tocitem target="FeatureOverview.html">Feature Overview</tocitem>
     <tocitem target="dubna_tutorial.html">A Short Tutorial</tocitem>
     <tocitem target="configuration.html">Configuration</tocitem>
+    <tocitem target="installation.html">Installation Guide</tocitem>
     <tocitem target="compilation.html">Compilation Guide</tocitem>
   </tocitem>
     
