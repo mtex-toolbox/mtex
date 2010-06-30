@@ -104,7 +104,7 @@ if check_option(varargin, {'classes','all'})
 
   files = dir(fullfile(current_path,'script_*.m'));
   publish_files({files.name},current_path,'out_dir',html_path,...
-    'evalcode',1,'stylesheet',fullfile(pwd,'publishmtex.xsl'),varargin{:});
+    'evalcode',1,'stylesheet',fullfile(mtex_path,'help','make_help','publishmtex.xsl'),varargin{:});
   delete(fullfile(current_path, 'script_*.m'));
 end
 
@@ -132,7 +132,7 @@ end
 
 %% Make User Guide
 
-if check_option(varargin,{'UsersGuide','all','all-'}), make_ug([],varargin{:}); end
+if check_option(varargin,[ug_topics,'all','all-']), make_ug([],varargin{:}); end
 
 
 %% calculate examples
@@ -183,43 +183,54 @@ if isempty(folder)
 	folder = fullfile(mtex_path,'help','UsersGuide');
 end
 
-[path topic] = fileparts(folder);
-html_file = fullfile(mtex_path,'help','html',[topic '.html']);
+html_dir =  fullfile(mtex_path,'help','html');
+dirs = getSubDirs(folder);
 
-if exist([folder '.m'])
-  if ~is_newer(html_file,[folder '.m']) || check_option(varargin,'force')
-    publish_files({[topic '.m']},path,...
-        'stylesheet',fullfile(mtex_path,'help','make_help','publishmtex.xsl'),...
-        'out_dir',fullfile(mtex_path,'help','html'),'evalcode',1,varargin{:}); 
+if check_option(varargin,'all','all-','UsersGuide')
+  dotopics = ug_topics;
+else
+  dotopics = extract_option(varargin,ug_topics);
+end
+
+for k=1:numel(dirs)
+  current_folder = dirs{k};
+  [ig topic] = fileparts(current_folder);
+  if ismember(topic,dotopics)
+    ug_mfiles = dir(fullfile(current_folder,'*.m'));
+ 
+    for l=1:numel(ug_mfiles)
+      ug_mfile = ug_mfiles(l).name;
+      html_file = fullfile(html_dir,[topic '.html']);
+      
+      if ~is_newer(html_file,fullfile(current_folder,ug_mfile)) || check_option(varargin,'force')
+        [ig mfile] = fileparts(ug_mfile);
+
+        if strcmp(topic,mfile)
+          fid = fopen(ug_mfile);
+          mst = m2struct(char(fread(fid))');
+          fclose(fid);
+
+          mst(1).text = [mst(1).text , ' ', '<html>',make_toc_table(current_folder),'</html>'];
+          cell2file(fullfile(mtex_path,'help','html',ug_mfile), struct2m(mst),'w');
+        else
+          copyfile(fullfile(current_folder,ug_mfile),fullfile(mtex_path,'help','html'));
+        end
+      end
+      
+      try, copyfile(fullfile(current_folder,'*.png'),html_dir); catch, end
+    end
   end
 end
 
-if isdir(folder)
-  
-  try copyfile(fullfile(folder,'*.png'),fullfile(mtex_path,'help','html')); catch, end
-  try copyfile(fullfile(folder,'*.html'),fullfile(mtex_path,'help','html')); catch, end
-  
-  str = file2cell(fullfile(folder,'toc'));
-  for subtoc=regexp(str,'\s','split')
-    make_ug(fullfile(folder,subtoc{1}{1}),varargin{:});
-  end
-  
-  
-  top_page = fullfile(folder,[topic '.m']);
-  if ~is_newer(html_file,top_page) || check_option(varargin,'force')
-    fid = fopen(top_page);  
-    mst = m2struct(char(fread(fid))');
-    fclose(fid);
-    mst(1).text = [mst(1).text , ' ', '<html>',make_toc_table(folder),'</html>'];
-    cell2file(fullfile(mtex_path,'help','html',['script_' topic,'.m']), struct2m(mst),'w');
-    
-    publish_files({['script_' topic,'.m']},fullfile(mtex_path,'help','html'),...
-        'stylesheet',fullfile(mtex_path,'help','make_help','publishmtex.xsl'),...
-        'out_dir',fullfile(mtex_path,'help','html'),'evalcode',1,varargin{:});
-  end
-  delete(fullfile(mtex_path,'help','html', 'script_*.m'));
-%   
-end
+
+mfiles = dir( fullfile(html_dir,'*.m') );
+
+publish_files({mfiles.name},html_dir,...
+  'stylesheet',fullfile(mtex_path,'help','make_help','publishmtex.xsl'),...
+  'out_dir',html_dir,'evalcode',1,varargin{:}); 
+
+delete(fullfile(html_dir,'*.m') );
+
 
 
 function mtext = struct2m(mst)
@@ -231,6 +242,11 @@ for k=1:numel(mst)
               regexprep(strcat('%[' , mst(k).text,']%'),{'%[',']%'},{'% ','  '}),...
               mst(k).code];
 end
+
+function tops = ug_topics
+folder = fullfile(mtex_path,'help','UsersGuide');
+[ig tops] = cellfun(@fileparts, getSubDirs(folder)','Uniformoutput',false);
+
 
 
 
