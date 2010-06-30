@@ -1,7 +1,6 @@
-%% The Juelich Data Interface
-% 
-% The following examples shows how to import a Juelich data set.
-
+%% Juelich Interface
+% An examples how to import Juelich data.
+%
 %% specify crystal and specimen symmetries
 
 cs = symmetry('cubic');

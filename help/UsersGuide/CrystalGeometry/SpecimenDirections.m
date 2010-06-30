@@ -5,12 +5,11 @@
 %
 %% Contents
 %
-%% Description
-%
+%%
 % Specimen directions are three dimensional vectors in the Euclidean space
 % represented by coordinates with respect to a outer specimen coordinate
 % system x, y, z. Im MTEX Specimen directions are represented by variables
-% of the class <vector3d_index.html vector3d>. 
+% of the class <vector3d_index.html *vector3d*>.
 %
 %% Defining Specimen Directions
 %

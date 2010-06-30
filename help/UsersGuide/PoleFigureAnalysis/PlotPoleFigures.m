@@ -1,4 +1,4 @@
-%% Pole Figure Plotting
+%% Plotting of Pole Figures
 %
 %% Abstract
 % This section describes the various possibilities MTEX offers to

@@ -1,11 +1,11 @@
 %% Import and Export of ODF Data
-% Explains how to import and export ODF data.
+% Read and write ODFs to a Data file
 %
 %% Open in Editor 
 % 
 %% Contents
 %
-%
+%%
 % So far ODFs may only exported from and imported into ASCII files that
 % consists of a table of orientatiotions and weights. The orientations may
 % be given either as Euler angles or as quaternions. The weight may either
@@ -13,6 +13,8 @@
 % represent the volume of a bell shaped function centerd at this
 % orientation.
 %
+
+
 %% Define an Model ODF
 %
 % Let us first define a superposition of model ODFs.

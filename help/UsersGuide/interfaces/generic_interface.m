@@ -1,5 +1,7 @@
-%% MTEX - Generic Pole Figure Data Interface
+%% Generic Pole Figure Data Interface
+% generic interface to import Pole Figure data
 %
+%%
 % The generic interface allows to import pole figure data that are stored in a 
 % ASCII file in the following way
 %

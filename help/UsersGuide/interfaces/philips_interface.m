@@ -1,7 +1,6 @@
 %% The Philips Data Interface
-% 
-% The following examples shows how to import a Philips data set.
-
+% An examples how to import Philips data.
+%
 %% specify crystal and specimen symmetries
 
 cs = symmetry('cubic');

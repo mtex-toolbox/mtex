@@ -1,7 +1,6 @@
-%% The Aachen Data Interface
+%% Aachen Interface
+% An examples how to import Aachen data.
 %
-% The following examples shows how to import a Aachen data set.
-
 %% specify crystal and specimen symmetries
 
 cs = symmetry('cubic');

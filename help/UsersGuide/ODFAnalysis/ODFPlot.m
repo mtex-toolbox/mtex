@@ -6,8 +6,7 @@
 %
 %% Contents
 %
-%% Some sample ODFs
-%
+%%
 % Let us first define some model ODFs to be plotted later on.
 
 cs = symmetry('-3m'); ss = symmetry('-1');
@@ -57,8 +56,21 @@ close; figure('position',[46 171 752 486]);
 plot(odf,'sections',12,'silent')
 
 %%
-% By default ODFs are plotted in sigma sections. One can also plot ODF
-% sections along any of the Euler angles alpha, gamma, ph1 or phi2.
+% By default ODFs are plotted in sigma sections. One can plot ODF
+% sections along any of the Euler angles 
+% 
+% * SIGMA (alpha+gamma)
+% * ALPHA
+% * GAMMA
+% * PHI1
+% * PHI2
+%
+%%
+% It is also possible to section along the rotation angle of a rotation axis
+%
+% * axisangle
+%
+%%
 % Adapting <SphericalProjection_demo.html spherical projection> and
 % <ColorCoding_demo color coding> one can produce any standard ODF plot.
 
@@ -66,12 +78,32 @@ close; figure('position',[46 171 752 486]);
 plot(odf,'alpha','sections',12,...
      'projection','plain','gray','contourf','FontSize',10,'silent')
 
+%%
+%One can also specify the sectioning angles direct
 
-%% Plot One Dimensional ODF Sections
+plot(odf,'alpha',[25 30 35]*degree,...
+     'projection','plain','gray','contourf','FontSize',10,'silent')
+   
+%% Plot ODF in 3D Euler Space
+% Instead of Sectioning one could plot the Euler Angles in 3D
+%
+% * contour3
+% * surf3
+% * slice3
+%
+
+plot(odf,'sigma','surf3')
+
+%% Plot One Dimensional ODF Sections and Fibres
 % In the case you have a simple ODF it might be helpfull to plot one
 % dimensional ODF sections.
 
 plot(odf,'radially','LineWidth',2)
+
+%% 
+% actually on can specify the one dimensional ODF section along a fibre
+
+plotfibre(odf,Miller(1,2,2),vector3d(2,1,1),'LineWidth',2);
 
 %% Plot Fourier Coefficients
 % A last way to visualize an ODF is to plot its Fourier coefficients

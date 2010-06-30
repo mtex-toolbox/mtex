@@ -1,8 +1,9 @@
 %% Plotting Individual Orientations
+% Basics to the plot types for individual orientations data
 %
 %% Open in Editor
 %
-%% Abstract
+%% 
 % This sections gives you an overview over the functionality MTEX offers to
 % visualize orientation data. Generally they are all
 % [[PlotTypes_demo.html#5, Scatter plots]] of [[SphericalProjection_demo.html,spherical projections]]

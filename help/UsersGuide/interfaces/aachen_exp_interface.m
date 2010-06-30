@@ -1,7 +1,6 @@
-%% The Aachen_exp Data Interface
-% 
-% The following examples shows how to import a Aachen_exp data set.
-
+%% Aachen_exp Interface
+% An examples how to import Aachen_exp data.
+%
 %% Specify Crystal and Specimen Symmetries
 
 cs = symmetry('cubic');

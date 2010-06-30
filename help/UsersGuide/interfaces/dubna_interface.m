@@ -1,7 +1,6 @@
-%% The Dubna Data Interface
-%  
-% The following examples shows how to import a Dubna data set.
-
+%% Dubna Interface
+% An examples how to import Dubna data.
+%
 %% specify crystal and specimen symmetries
 
 cs = symmetry('-3m',[1.4,1.4,1.5]);

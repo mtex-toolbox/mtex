@@ -5,8 +5,7 @@
 %
 %% Contents
 %
-%% Description
-%
+%%
 % Crystal symmetries are a sets of rotations and mirroring operations that
 % leave the lattice of a crystal invariant. They form so called groups
 % since the concatenation of to symmetry operations is again a symmetry
@@ -15,8 +14,9 @@
 % group, or the corresponding Laue group. In total there are only 11
 % different Laue groups present in crystallography. All these 11 Laue
 % groups are supported by MTEX. More precisely, in MTEX a Laue group is
-% represented by a variable of the class <symmetry_index.html symmetry>.
+% represented by a variable of the class <symmetry_index.html *symmetry*>.
 %
+
 %% Defining a Crystal Symmetry by the Name of its Laue Group
 %
 
@@ -80,7 +80,7 @@ plot(cs)
 ss = symmetry('mmm');   % specimen symmetry
 ss * orientation('euler',0,0,pi/4,cs,ss) * cs  % all crystallographically equivalent orientations
 
-%% Ploting symmetries
+%% Plotting symmetries
 %
 % Symmetries are visualized by plotting their main axes and the
 % corresponding equivalent directions

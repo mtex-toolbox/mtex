@@ -1,16 +1,18 @@
 %% Pole Figure Simulation
+% Simulate arbitary pole figure data
 %
 %% Open in Editor
 %
-%% Abstract
+%% Contents
+%
+%% 
 % MTEX allows to to simulate an arbitary number of pole figure data from
 % any ODF. This is quit helpfull if you want to analyse the pole figure to
 % ODF estimation routine.
 %
-%% Contents
-%
 
-%% Define an Model ODF
+%%
+% *Define an Model ODF*
 %
 % Let us first define a superposition of model ODFs.
 
@@ -24,6 +26,10 @@ model_odf = 0.5*uniformODF(cs,ss) + ...
   0.05*fibreODF(Miller(0,0,1),zvector,cs,ss,'halfwidth',10*degree) + ...
   0.05*unimodalODF(mod1,cs,ss,'halfwidth',15*degree) + ...
   0.3*unimodalODF(mod2,cs,ss,'halfwidth',25*degree);
+
+%%
+%
+
 plotodf(model_odf,'sections',6,'silent')
 
 

@@ -1,7 +1,6 @@
-%% The BearTex Data Interface
-% 
-% The following examples shows how to import a BearTex data set.
-
+%% BearTex Interface
+% An examples how to import BearTex data.
+%
 %% specify crystal and specimen symmetries
 
 cs = symmetry('cubic');

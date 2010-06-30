@@ -1,5 +1,5 @@
-%% Indroduction to PoleFigure Analysis
-% Short summary of the way to workt with PoleFigure Data
+%% First Steps
+% Get in touch with PoleFigure Data in MTEX
 %
 %% Contents
 % 

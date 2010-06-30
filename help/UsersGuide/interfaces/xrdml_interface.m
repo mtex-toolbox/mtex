@@ -1,6 +1,6 @@
-%% The XRDML Data Interface
-% 
-% The following examples shows how to import XRDML data.
+%% XRDML Interface
+% An examples how to import XRDML data.
+%
 
 %% Specify Crystal and Specimen Symmetries
 

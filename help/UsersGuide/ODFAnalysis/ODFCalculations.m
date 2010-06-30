@@ -1,74 +1,56 @@
-%% MTEX - ODF Calculations
-%
-%% Abstract
-% ODF calculations are at the heart of MTEX. The philosophy of MTEX is to
-% treat all the ODFs the same way, indepentently whether they where
-% constructed model ODFs, ODF estimated from pole figure data, or ODF
-% estimated from EBSD data. In particular, you can compare, combine and modify
-% all ODFs in the same manner.
-%
+%% First Steps
+% Indroduction to analysis of ODFs
 %
 %% Contents
 %
-%% Calculate with Model ODFs
+%% Introduction
+% ODFs are at the very heart of MTEX. Almost any computation in MTEX can be
+% done by estimating ODFs from various data, analyzing modell ODFs,
+% simulating experimental data from ODFs, or calculating any texture
+% characteristics from an ODF. The following mindmap may give you an
+% idea what is possible in MTEX.
 %
-% In MTEX it is very simple to define a model ODF as a
-% <uniformODF.html uniform ODFs>, a <unimodalODF.html unimodal ODFs>, a
-% <fibreODF.hml fibre ODFs>, or any superposition of these
-% components. Actually you can calculate with ODFs by adding, subtracting
-% and scalling components. Furthermore, the MTEX toolbox allready contains  
-% some popular standard ODF as the <SantaFe.html SantaFe> and the
-% <mix2.html mix2> sample ODFs. How to work best with model ODFs in MTEX
-% can be found <modelODFs_demo.html here> and <ODF_index.html here>.
+% <<odf.png>>
 %
-%
-%% Recover Orientation Density Functions (ODFs)
-%
-% Using the method <PoleFigure_calcODF.html calcODF> MTEX allows you to
-% recover an ODF from your pole figure data. The method used is based on a
-% discretization of the ODF space by radially symmetric function and on the
-% fast spherical Fourier transform. The algorithms has proven to be very
-% stable and adaptive inparticular to very sharp textures with low symmetry.
-% 
-% There are also several options like _regularization_, _resolution_,
-% _zero_range_method_, _ghost_correction_ that allow addopt the estimation
-% method for your presonal needs.
-%
-% A detailed description of the ODF reconstruction from pole figure data
-% can be found at <odf_estimation.html ODF Estimation>. The problem of
-% ghost effect is discussed in greater detail in <ghost_demo.html Ghost
-% Demo>.
-%
-% In order to recover an ODF from EBSD data the method <EBSD_calcODF.html
-% calcODF> has to be called. It computes a ODF to your EBSD data using
-% <EBSD2odf_estimation.html kernel density estimation>.
-%
-%% Calculate Texture Characteristics 
-%
-% MTEX offers to compute a wide range of texture characteristics like
-% <ODF_modalorientation.html modal orientation>, <ODF_entropy.html entropy>,
-% <ODF_textureindex.html texture index>, or <ODF_volume.html volume portion>
-% to be computed for any model ODF or any recoverd ODF. You can also
-% calculate the Fourier coefficients useing the command <ODF_Fourier.html
-% fourier>. Furthermore, you can compare arbitrary ODF indepently whether
-% they are model ODFs, ODFs estimated from pole figure data or estimated
-% from EBSD data. The <ODF_demo.html ODF Analysis Demo> gives an overview
-% over the texture characteristic that can be computed using MTEX.
-%
-% [[ODF_entropy.html,entropy]], its [[ODF_textureindex.html,textureindex]]
-% or the [[ODF_volume.html,volume]] ratio corresponging to a specific
-% orientation. Additional functions are 
-% [[ODF_hist.html,hist]],
-% [[ODF_mean.html,mean]],
-% [[ODF_modalorientation.html,modalorientation]],
 
+%% Model ODFs
+% MTEX provides a very simple way to define model ODFs, e.g. unimodal ODFs,
+% fibre ODF, Bingham distributed ODFs or ODFs specified by Fourier
+% coefficients. The central idea is that MTEX allows you to calculate with
+% ODF as with ordinary number. That is you can multiply and ODF with a
+% certain number, you can add, subtract or rotate ODFs. More precise
+% information how to work with model ODFs in MTEX can be found in the
+% section <ModelODFs.html ModelODFs>. There are also some predefined
+% <standardODFs_index.html standard ODFs> used in literature.
 %
+
+%% Estimating ODFs from EBSD Data or Pole Figure Data
+% The second natural way how ODFs occurs in MTEX is by estimating them from
+% EBSD or pole figure data. It should be stressed that for MTEX there is no
+% estimated ODFs and difference between model ODFs and estimated ODF. That
+% means any operation that is valid for model ODFs is valid for estimated
+% ODFs as well. More information how to estimate ODFs can be found in the
+% sections <EBSD2odf.html ODF estimation from EBSD data> and
+% <PoleFigure2odf.html ODF estimation from Pole Figure data>.
+%
+
+%% Analyzing ODFs
+% MTEX provides a lot of tool to make analyzing and interpreting ODFs as
+% simple as possible. The tools may be split into two groups - texture
+% characteristics and visualization tools.
+%
+% <<odf2.png>>
+%
+% Have a look at the sections <ODFEstimation.html Texture Properties>  and
+% <ODFPlot.html ODF plots> for more information. 
+%
+
 %% Simulate Pole Figures or EBSD Data
-%
-% In order to analys the relyability of the ODF estimation it is usefull to
+% In order to analyse the relyability of the ODF estimation it is usefull to
 % start with a given ODF and simulate pole figure or EBSD data, estimate an
 % ODF from these data and to compare the estimated ODF with the original
 % one. This allows one to find best parameters for ODF estimation as well
 % as for the experimental design. This approach is discused in more detail
-% at <PoleFigureSimulation_demo.html PoleFigureSimulation> and
-% <EBSDSimulation_demo.html EBSDSimulation>.
+% at <PoleFigureSimulation_demo.html PoleFigure Data Simulation> and
+% <EBSDSimulation_demo.html EBSD Data Simulation>.
+%
