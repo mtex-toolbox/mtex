@@ -63,13 +63,21 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
         <!-- Determine if the there should be an introduction section. -->
         <xsl:variable name="hasIntro" select="count(cell[@style = 'overview'])"/>        
         
+
         <!-- If there is an introduction, display it. -->
         <xsl:if test = "$hasIntro">
           <h1><xsl:value-of select="cell[1]/steptitle"/></h1>
           <introduction><xsl:apply-templates select="cell[1]/text"/></introduction>
-        </xsl:if>      
-        
+        </xsl:if>
+      
         <xsl:variable name="body-cells" select="cell[not(@style = 'overview')]"/>
+        
+        <xsl:variable name="hasContents"> 
+          <xsl:for-each select="$body-cells">
+            <xsl:if test="steptitle = 'Contents'"><xsl:value-of select="position()"/></xsl:if>
+          </xsl:for-each>
+        </xsl:variable>   
+           
         
         <!-- Loop over each cell -->
         <xsl:for-each select="$body-cells">
@@ -89,14 +97,16 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
                   <xsl:call-template name="abstract">
                     <xsl:with-param name="body-cells" select="$body-cells"/>
                   </xsl:call-template>
-                  <!-- erase the abstract? -->
-
                 </xsl:when>          
               
                 <xsl:when test="steptitle = 'Open in Editor'"></xsl:when>
                             
                 <xsl:otherwise>
-                  <xsl:call-template name="backtotop"/>
+                  
+                  
+                  <xsl:if  test="position()-1 > $hasContents">
+                    <xsl:call-template name="backtotop"/>
+                  </xsl:if>
                   
                   <xsl:variable name="headinglevel">
                     <xsl:choose>
@@ -127,7 +137,10 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
         </xsl:for-each>
         
         <!-- Contents of each cell -->
-        <xsl:call-template name="backtotop"/>
+         <xsl:if  test="$hasContents > 0">
+           <xsl:call-template name="backtotop"/>
+         </xsl:if>
+        
         
         <xsl:call-template name="footer"/>
         

@@ -11,7 +11,7 @@ end
 if exist([topic '.m'],'file')
   toc = [toc m2subToc([topic '.m'],varargin{:})];
 elseif exist([folder '.m'],'file')
-  toc = [toc m2subToc([folder '.m'],varargin{:})];  
+  toc = [toc m2subToc([folder '.m'],varargin{:})];
 else
   toc = [toc tocItemOpen(topic,[topic '.html'],varargin{:})];
 end
