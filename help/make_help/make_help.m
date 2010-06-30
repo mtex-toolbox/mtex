@@ -150,7 +150,7 @@ if check_option(varargin, {'examples','all'})
 
   current_path = fullfile(mtex_path,'examples');
   files = dir(fullfile(current_path ,'*.m'));
-  publish_files({files.name},current_path,'stylesheet',fullfile(mtex_path,'html','make_help', 'example_style.xsl'),...
+  publish_files({files.name},current_path,'stylesheet',fullfile(mtex_path,'help','make_help', 'example_style.xsl'),...
     'out_dir',fullfile(current_path, 'html'),'evalcode',1,varargin{:});
   copyfile(fullfile(current_path, 'html','*.html'),html_path);
   copyfile(fullfile(current_path, 'html','*.png'),html_path);
