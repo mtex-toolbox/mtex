@@ -1,6 +1,6 @@
 %% Pole Figure Analysis
-% Data Import of PoleFigure Data, Correct Data, Recovere Orientation
-% Density Functions out of PoleFigure Data
+% Explains how to import pole figure data, how to correct them, and how to
+% recover an ODF.
 %
 %%
 %

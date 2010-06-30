@@ -1,4 +1,5 @@
-%% Color Coding
+%% Pole Figure Color Coding
+% Explains how to control color coding across multiple plots.
 %
 %% Open in Editor
 %

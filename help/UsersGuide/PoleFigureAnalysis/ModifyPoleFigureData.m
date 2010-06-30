@@ -1,16 +1,13 @@
 %% Modify Pole Figure Data
-% 
-%% Open in Editor
+% Explains how to manipulate pole figure data in MTEX. 
 %
-%% Abstract
-% This section explains how to manipulate pole figure data in MTEX.
+%% Open in Editor
 %
 %% Contents
 %
 %% Import diffraction data
 %
-% Let us therefore import some data and plot them.
-
+% Let us import some data and plot them.
 
 % specify crystal and specimen symmetries
 cs = symmetry('m-3m');
@@ -111,7 +108,9 @@ plot(pf_outlier)
 
 %% Remove certain measurements from the data
 % In the same way one can manipulate and delete pole figure data by any
-% criteria. Lets, e.g. cap all values that are larger then 500.
+% criteria. Of particular importance are the functions <PoleFigure_set.html
+% set> and <PoleFigure_get.html get> which allows to address the raw pole
+% figure data directly. Lets, e.g. cap all values that are larger then 500.
 
 
 % find those values

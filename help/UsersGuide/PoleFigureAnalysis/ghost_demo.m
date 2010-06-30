@@ -1,8 +1,14 @@
-%% MTEX Ghost Effect Demo
+%% Ghost Effect Analysis
+% Explains the ghost effect to ODF reconstruction and the MTEX option
+% ghostcorrection.
 %
 %% Open in Editor
 %
-%% Abstract
+%% Contents
+%
+%%
+%% Introduction
+%
 % A general problem in estimating an ODF from pole figure data is the fact,
 % that the odd order Fourier coefficients of the ODF are not present
 % anymore in the pole figure data and therefore it is difficult to estimate
@@ -15,11 +21,7 @@
 % unknown ODF and to transform the unknown weak ODF into a sharp ODF by
 % substracting this uniform portion. This is allmost the approach Matthies
 % proposed in his book (He called the uniform portion *phon*).
-% 
-%% Contents
-%
-%%
-% In this example we are going to demonstarte the power of ghost correction
+% In this section we are going to demonstarte the power of ghost correction
 % at a simple, synthetic example.
 
 %% Construct Model ODF

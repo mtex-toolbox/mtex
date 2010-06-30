@@ -1,4 +1,4 @@
-%% Plotting
+%% Plotting Overview
 % Overview over the plotting faccilities of MTEX, including annotations,
 % plot types, color coding, combined plots and export of plots.
 %

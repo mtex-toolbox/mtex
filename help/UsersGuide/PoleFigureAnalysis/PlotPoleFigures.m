@@ -1,8 +1,5 @@
 %% Plotting of Pole Figures
-%
-%% Abstract
-% This section describes the various possibilities MTEX offers to
-% visualize pole figure data.
+% Described various possibilities to visualize pole figure data.
 %
 %% Contents
 %

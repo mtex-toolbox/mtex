@@ -1,14 +1,10 @@
-%% Color Coding
+%% EBSD Color Coding
+% Explains how to control EBSD color coding.
 %
 %% Open in Editor
 %
-%% Abstract
-% When plotting [[EBSD_index.html, EBSD]] or [[grain_index.html, grains]]
-% spatially one might colorize orientations for interpretation purposes.
-%
 %% Contents
 %
-%% Prelimery  
 % Let us first import some EBSD data by a [[matlab:edit loadaachen.m, script file]]
 
 loadaachen
