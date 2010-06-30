@@ -186,7 +186,7 @@ end
 html_dir =  fullfile(mtex_path,'help','html');
 dirs = getSubDirs(folder);
 
-if check_option(varargin,'all','all-','UsersGuide')
+if check_option(varargin,{'all','all-','UsersGuide'})
   dotopics = ug_topics;
 else
   dotopics = extract_option(varargin,ug_topics);
