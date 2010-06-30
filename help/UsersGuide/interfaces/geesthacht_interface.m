@@ -1,6 +1,6 @@
-%% Geesthacht data interface
-%  
-% The following examples shows how to import a Geesthacht data set.
+%% Geesthacht interface
+% An examples how to import Geesthacht data.
+%
 
 %% specify crystal and specimen symmetries
 

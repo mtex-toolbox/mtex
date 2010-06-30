@@ -1,15 +1,12 @@
-%% ODF Estimation
-%
-%% Open in Editor
-%
-%% Abstract
+%% ODF Estimation from Pole Figure Data
 % This page describes how to use MTEX to estimate an ODF from pole figure
 % data.
 %
+%% Open in Editor
+%
 %% Contents
 %
-%% Syntax
-%
+%% 
 % Starting point of any ODF reconstruction is a 
 % <PoleFigure_index.html PoleFigure> object which can be load e.g. by
 
@@ -17,7 +14,7 @@ pf = loadPoleFigure([mtexDataPath,'/BearTex/Test_2.XPa']);
 plot(pf,'silent','position',[100 100 900 350])
 
 
-%%
+%% ODF Estimation
 % See <interfacesPoleFigure_index.html interfaces> for more infomations how to import
 % pole figure data and to create a pole figure object. ODF estimation from
 % a pole figure object is done by the function 

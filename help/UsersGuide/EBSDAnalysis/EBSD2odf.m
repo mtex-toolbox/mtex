@@ -1,10 +1,8 @@
 %% ODF Estimation from EBSD data
-%
-%% Open in Editor
-%
-%% Abstract
 % This page describes how to use MTEX to estimate an ODF from single
 % orientation measurements.
+%
+%% Open in Editor
 %  
 %% Contents
 %

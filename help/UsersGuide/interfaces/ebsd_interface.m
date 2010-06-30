@@ -1,6 +1,8 @@
-%% The Generic EBSD Data Interface
+%% Generic EBSD Data Interface
+% generic interface to import EBSD data
 %
-% The generic interface allows to import EBSD data that are stored in a 
+%% 
+% Interface to import EBSD data that are stored in a 
 % column oriented way, i.e.
 %
 %  EULER1  EULER2 EULER3  PHASE

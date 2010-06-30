@@ -1,6 +1,5 @@
-%% The PTX Data Interface
-% 
-% The following examples shows how to import a PTX data set.
+%% PTX Interface
+% An examples how to import PTX data.
 
 %% specify crystal and specimen symmetries
 

@@ -1,8 +1,9 @@
 %% Plotting Spatial Orientation Data
+% Howto plot spatially indexed orientations 
 %
 %% Open in Editor
 %
-%% Abstract
+%% 
 % This sections gives you an overview over the functionality MTEX offers to
 % visualize spatial orientation data.
 %

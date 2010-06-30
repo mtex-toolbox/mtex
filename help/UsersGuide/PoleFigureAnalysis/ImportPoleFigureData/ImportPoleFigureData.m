@@ -1,6 +1,7 @@
 %% Importing Pole Figure Data
+% How to import Pole Figure Data
 %
-%% Abstract
+%%
 % Importing pole figure data in MTEX means to create a
 % <PoleFigure_index.html PoleFigure> object from data files containing 
 % diffration data. Once such an object has been created the data can be
@@ -10,7 +11,8 @@
 %
 %% Contents
 %
-%% Inport Pole Figure Data Using the Import Wizard
+
+%% Import Pole Figure Data Using the Import Wizard
 %
 % The [[import_wizard.html,import wizard]] can be started either
 % by typing into the command line

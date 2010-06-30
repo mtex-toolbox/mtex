@@ -4,12 +4,12 @@
 %
 %% Open in Editor
 %
-%
 %% Contents
 %
-
-%% Some Sample ODFs
-% First we construct some ODFs to be analyzed below
+%%
+% *Some Sample ODFs*
+%
+% Let us first begin with some constructed ODFs to be analyzed below
 
 %%
 % A bimodal ODF:

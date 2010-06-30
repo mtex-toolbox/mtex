@@ -1,6 +1,7 @@
 %% Import EBSD Data
+% How to import EBSD Data
 %
-%% Abstract
+%%
 % Importing EBSD data into MTEX means to create a variable of type
 % <EBSD_index.html EBSD> from certain data files. Once such an variable has
 % been created the data can be <EBSDPlot.html plotted> and  
@@ -11,7 +12,7 @@
 %
 %% Contents
 %
-%% Inporting EBSD data using the import wizard
+%% Importing EBSD data using the import wizard
 %
 % The most simplest way to load EBSD data is to use the 
 % <matlab:import_wizard('EBSD') import wizard>, which 

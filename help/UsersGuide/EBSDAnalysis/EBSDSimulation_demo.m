@@ -1,22 +1,26 @@
-%% EBSD Simulations
+%% EBSD Simulation
+% Simulate an arbitary number of individual orientations data from any ODF
 %
 %% Open in Editor
 %
-%% Abstract
+%% Contents
+%
+%% 
 % MTEX allows to to simulate an arbitary number of EBSD data from any ODF.
 % This is quit helpfull if you want to analyse the EBSD to ODF estimation
 % routine.
 %
-%% Contents
-%
-
-%% Define an Model ODF
+%% 
+% *Define an Model ODF*
 %
 % Let us first define a simple fibre symmetric ODF.
 
 cs = symmetry('trigonal');
 ss = symmetry('triclinic');
 fibre_odf = 0.5*uniformODF(cs,ss) + 0.5*fibreODF(Miller(0,0,0,1),zvector,cs,ss);
+
+%%
+%
 plotodf(fibre_odf,'sections',6,'silent')
 
 
@@ -26,13 +30,11 @@ plotodf(fibre_odf,'sections',6,'silent')
 
 ebsd = simulateEBSD(fibre_odf,10000)
 
-
 %% ODF Estimation from EBSD Data
 %
 % From the 10000 individal orientations we can now estimate an ODF,
 
 odf = calcODF(ebsd)
-
 
 %%
 % which can be plotted,

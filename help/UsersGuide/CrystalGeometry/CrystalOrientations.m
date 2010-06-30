@@ -7,12 +7,15 @@
 %
 %% Contents
 %
-%% Description
-%
+%%
 % In texture analysis crystal orientations are used to describe the
 % alignment of the crystals within the specimen. A crystal orientation is
 % defined as the rotation that maps the specimen coordinate system onto the
 % crystal coordinate system. 
+%
+%%
+% The class <orientation_orientation.html *orientation*> is an inheritant of the class <rotation_index.html
+% *rotation*> and allow to work with orientation in MTEX.
 %
 %% Defining a Crystal Orientation
 %

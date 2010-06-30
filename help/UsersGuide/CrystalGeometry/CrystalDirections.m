@@ -6,8 +6,7 @@
 %
 %% Contents
 %
-%% Description
-%
+%% 
 % Crystal directions are represented in MTEX by the variables of the 
 % class <Miller_index.html Miller> which in turn represent a direction with
 % respect to the crystal coordinate system.  
