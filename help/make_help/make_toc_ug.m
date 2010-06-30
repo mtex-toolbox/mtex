@@ -1,16 +1,17 @@
 function toc = make_toc_ug(toc,folder,varargin)
 
-if nargin < 1
-  toc = {};
-	folder = fullfile(mtex_path,'help','UsersGuide');
-  varargin = {'book_mat'};
-end
-
-
 [path topic] = fileparts(folder);
 
-if exist([topic '.m'])
+
+if isdir(folder),
+  old_dir = pwd;
+  cd(folder);
+end
+
+if exist([topic '.m'],'file')
   toc = [toc m2subToc([topic '.m'],varargin{:})];
+elseif exist([folder '.m'],'file')
+  toc = [toc m2subToc([folder '.m'],varargin{:})];  
 else
   toc = [toc tocItemOpen(topic,[topic '.html'],varargin{:})];
 end
@@ -24,9 +25,11 @@ if isdir(folder)
   end
 end
 
-
 toc = [toc tocItemClose];
 
+if isdir(folder),
+  cd(old_dir)
+end
 
 
 function str = tocItemOpen(title,ref,icon)

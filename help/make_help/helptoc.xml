@@ -3,27 +3,15 @@
 <toc version="2.0">
 	<tocitem target="mtex_product_page.html" image="mtex_icon.gif">MTEX Toolbox
   
-  <tocitem target="installation.html" image="$toolbox/matlab/icons/greenarrowicon.gif">
-    Getting Started with the MTEX Toolbox
-    <tocitem target="FeatureOverview.html">Feature Overview</tocitem>
-    <tocitem target="dubna_tutorial.html">A Short Tutorial</tocitem>
-    <tocitem target="configuration.html">Configuration</tocitem>
-    <tocitem target="installation.html">Installation Guide</tocitem>
-    <tocitem target="compilation.html">Compilation Guide</tocitem>
-  </tocitem>
+  <makegettingstared>
     
   <makeuserguide>
    
   <makefuncbycat>
  
   <makedemo>
-
-  <tocitem target="changelog.html" image="$toolbox/matlab/icons/notesicon.gif">Release Notes
-    <tocitem target="changelog.html">Changelog</tocitem>
-    <tocitem target="TODO.html">TODO List</tocitem>
-    <tocitem target="mtex_about.html">About</tocitem>    
-  </tocitem>
- 
+    
+  <makereleasenotes>
 
   <tocitem target="http://mtex.googlecode.com/"
      image="$toolbox/matlab/icons/webicon.gif">
