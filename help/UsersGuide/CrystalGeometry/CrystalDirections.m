@@ -1,5 +1,6 @@
 %% Crystal Directions
-% How to work with Miller indices
+% Explains how to define crysral directions by Miller indices and how to
+%  compute crystallographic equivalent directions.
 % 
 %% Open in Editor
 %

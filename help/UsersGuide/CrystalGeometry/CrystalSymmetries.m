@@ -1,5 +1,5 @@
 %% Crystal Symmetries
-% How to define Laue Groups, Space Group
+% Explains how to define crystal symmetries. 
 %
 %% Open in Editor
 %
@@ -77,6 +77,7 @@ plot(cs)
 % right onto a [[orientation_index.html,orientation]] results in a vector
 % containing all crystallographically equivalent orientations.
 
+ss = symmetry('mmm');   % specimen symmetry
 ss * orientation('euler',0,0,pi/4,cs,ss) * cs  % all crystallographically equivalent orientations
 
 %% Ploting symmetries

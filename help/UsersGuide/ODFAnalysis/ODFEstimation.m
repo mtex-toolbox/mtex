@@ -1,14 +1,9 @@
-%% MTEX - Analysis of ODFs
+%% ODF Characteristics
+% Explains how to analyze ODFs, i.e. how to compute modal orientations,
+% texture index, volume portions, Fourier coefficients and pole figures.
 %
 %% Open in Editor
 %
-%% Abstract
-% This example demonstrates the most important MTEX tools for analysing
-% ODFs. All described commands can be applied to model ODFs constructed via
-% [[uniformODF.html,uniformODF]], [[unimodalODF.html,unimodalODF]],
-% or [[fibreODF.html,fibreODF]] and to all estimated ODF calculated
-% from [[PoleFigure_calcODF.html,pole figures]] or 
-% [[EBSD_calcODF.html,EBSD data]].
 %
 %% Contents
 %
@@ -119,3 +114,29 @@ Fourier(odf2,'order',2)
 close all;
 plotFourier(odf3,'bandwidth',32)
 
+%% Pole Figures and Values at Specific Orientations
+%
+% Using the command <ODF_eval.html eval> any ODF can be evaluated at any
+% (set of) orientation(s).
+
+eval(odf1,orientation('Euler',0*degree,20*degree,30*degree))
+
+%%
+% For a more complex example let us define a fibre and plot the ODF there.
+
+fibre = orientation('fibre',Miller(1,0,0),yvector);
+
+plot(eval(odf2,fibre));
+
+%%
+% Evaluation of the corresponding pole figure or inverse pole figure is
+% done using the command <ODF_pdf.html pdf>.
+
+pdf(odf2,Miller(1,0,0),xvector)
+
+%% Extract Internal Representation
+%
+% As allway the <ODF_get.html> and <ODF_set.html set> offers a simple way
+% to addres the internal ODF representation of MTEX.
+
+get(odf3,'center')

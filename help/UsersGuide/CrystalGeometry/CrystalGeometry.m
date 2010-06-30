@@ -1,7 +1,5 @@
 %% Crystal Geometry
-% How to define Specime Directions, Crystal Directions, Crystal Symmetries,
-% Rotations and Orientations
-%
-%%
-% <<crystalgeometry.png>>
+% Introduces key concepts about the MTEX representation of specimen
+% directions, crystal directions, crystal symmetries, rotations and
+% orientations.
 %

@@ -1,11 +1,8 @@
 %% Visualising ODFs
+% Explains all possibilities to visualize ODfs, i.e. pole figure plots,
+% inverse pole figure plots, ODF sections, fibre sections.
 %
 %% Open in Editor
-%
-
-%% Abstract
-% This sections gives you an overview over the functionality MTEX offers to
-% visualize ODfs.
 %
 %% Contents
 %

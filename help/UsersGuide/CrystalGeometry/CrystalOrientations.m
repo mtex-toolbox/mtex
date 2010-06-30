@@ -1,5 +1,7 @@
 %% Crystal Orientations
-% Crystallographic equivalent rotations
+% Explains how to define crystal orientations, how to switch between
+% different convention and how to compute crystallographic equivalent
+% orientations.
 %
 %% Open in Editor
 %

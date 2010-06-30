@@ -1,16 +1,17 @@
 %% Antipodal Symmetry
-% How to work with +h,-h
+% Explains the MTEX option antipodal and the impact of antipodal symmetry
+% to pole figure plots and EBSD colorcoding. 
 %
 %% Open in Editor
 %
-%% Abstract
+%% Contents
+%
+%% Directions vs. Axes
+%
 % In MTEX it is possible to consider three dimensional vectors either as
 % directions or as axes. The key option to distinguesh between both
 % interpretations is *antipodal*.
 %
-%% Contents
-%
-%%
 % By default the pair of vectors
 
 v1 = vector3d(1,1,2);

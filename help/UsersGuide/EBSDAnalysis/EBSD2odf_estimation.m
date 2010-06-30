@@ -40,6 +40,21 @@ odf = calcODF(ebsd,'phase',1)
 odf = calcODF(ebsd,'halfwidth',10*degree,'phase',1);
 
 %%
+% Detect grains and correct for to small grains.
+
+[grains ebsd] = segment2d(ebsd);
+
+ebsd = link(ebsd,grains(grainsize(grains)>5));
+
+[grains ebsd] = segment2d(ebsd);
+
+psi = calcKernel(grains);
+
+odf = calcODF(grains)
+
+
+
+%%
 % Once an ODF is estimated all the functionallity MTEX offers for 
 % <ODFCalculations.html ODF analysis> and <ODFPlot.html ODF visualisation> is available. 
 
