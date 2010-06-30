@@ -8,6 +8,9 @@ function make_ug(folder,varargin)
 html_dir =  fullfile(mtex_path,'help','html');
 dirs = getSubDirs(folder);
 
+% clean up all files before
+delete(fullfile(html_dir,'*.m'))
+
 % if check_option(varargin,{'all','all-'})
   dotopics = ug_topics(folder);
 % else
