@@ -13,8 +13,12 @@ function [psi,c] = calcKernel(ebsd,varargin)
 %% See also
 % EBSD/calcODF
 
+[o,ind] = get(ebsd,'orientations','checkPhase',varargin{:});
+
+ebsd = ebsd(ind);
+
 if ~isempty(ebsd.xy)
-  warning('');
+  error('Measurements seem to be spatially dependend.');
 end
 
 % prepare kernels for testing
@@ -25,7 +29,7 @@ psi = get_option(varargin,'kernel',psi);
 
 %
 
-method = get_option(varargin,'method','LSCV');
+method = get_option(varargin,'method','KLCV');
 switch method
   
   case 'LSCV'
