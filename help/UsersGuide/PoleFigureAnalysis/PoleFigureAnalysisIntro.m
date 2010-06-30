@@ -1,5 +1,5 @@
 %% First Steps
-% Get in touch with PoleFigure Data in MTEX
+% Get in touch with PoleFigure Data in MTEX.
 %
 %% Contents
 % 
@@ -11,7 +11,7 @@
 % the import wizard, which can be started by the command
 
 %%
-% 
+%
  
 import_wizard
 

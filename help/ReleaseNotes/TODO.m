@@ -1,4 +1,6 @@
-%% TODO List
+%% ToDo List
+%
+%% Contents
 %
 %% Assigned to MTEX 3.1
 %
