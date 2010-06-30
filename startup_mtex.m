@@ -6,6 +6,15 @@ function startup_mtex
 % mtex_settings.m in this directory.
 %
 
+
+if  MATLABverLessThan('7.1')
+  
+  error(['MTEX can not be installed because your MATLAB version ',version,...
+    ' is outdated and not longer supported by MTEX. The oldest MATLAB ',...
+    'version MTEX has been tested on is 7.1.']);
+end
+
+
 %% start MTEX
 disp('initialize MTEX ...');
 
@@ -82,8 +91,9 @@ if any(strfind(path,'mtex'))
   if ~isempty(inst_dir), rmpath(inst_dir{:}); end
 end
 
-
-%cd('..'); % leave current directory for some unknown reason
+if  MATLABverLessThan('7.8')
+  cd('..'); % leave current directory for some unknown reason
+end
 addpath(local_path);
 
 disp(' ');
