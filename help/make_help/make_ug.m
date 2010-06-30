@@ -20,6 +20,11 @@ for k=1:numel(dirs)
   if ismember(topic,dotopics)
     ug_mfiles = dir(fullfile(current_folder,'*.m'));
     
+    if isdir(current_folder),
+      old_dir = pwd;
+      cd(current_folder);
+    end
+    
     make_topic = false;
     make_abovetopic = false;
     for l=1:numel(ug_mfiles)
@@ -52,6 +57,9 @@ for k=1:numel(dirs)
        end
     end
     
+    if isdir(current_folder),
+      cd(old_dir);
+    end
   end
 end
 
