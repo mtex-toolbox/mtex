@@ -1,71 +1,45 @@
 function make_ug(folder,varargin)
 % Make User Guide
-
-% if isempty(folder)
-% 	folder = fullfile(mtex_path,'help','UsersGuide');
-% end
+%
+%% options
+% TopicPages  - force topic page creation
 
 html_dir =  fullfile(mtex_path,'help','html');
-dirs = getSubDirs(folder);
+ug_example_path = fullfile(mtex_path,'examples','UsersGuide');
+ug_files = get_ug_files(folder,{'*.m','*.html'});
 
 % clean up all files before
-delete(fullfile(html_dir,'*.m'))
+delete(fullfile(html_dir,'*.m'));
 
-% if check_option(varargin,{'all','all-'})
-  dotopics = ug_topics(folder);
-% else
-%   dotopics = extract_option(varargin,ug_topics);
-% end
-
-for k=1:numel(dirs)
-  current_folder = dirs{k};
-  [ig topic] = fileparts(current_folder);
-  if ismember(topic,dotopics)
-    ug_mfiles = dir(fullfile(current_folder,'*.m'));
-    
-    if isdir(current_folder),
-      old_dir = pwd;
-      cd(current_folder);
+for k=1:numel(ug_files)
+  ug_file = ug_files{k};
+  
+  [above_folder topic] = fileparts(ug_file);
+  [a above_topic] = fileparts(above_folder);
+  
+  html_file = fullfile(html_dir,[topic,'.html']);
+  
+  if strcmpi(topic,above_topic) % special topic
+    toc_list = {};    
+    for tocentry = regexprep(file2cell(fullfile(above_folder,'toc')),'\s(\w*)','');
+      toc_list = [toc_list, get_ug_filebytopic(ug_files,tocentry{:})];
     end
-    
+        
     make_topic = false;
-    make_abovetopic = false;
-    for l=1:numel(ug_mfiles)
-      ug_mfile = ug_mfiles(l).name;
-      [ig mfile] = fileparts(ug_mfile);
-      html_file = fullfile(html_dir,strrep(ug_mfile,'.m','.html'));
-      
-      if ~is_newer(html_file,fullfile(current_folder,ug_mfile)) || check_option(varargin,'force')
-      	if ~strcmp(topic,mfile)
-          trycopyfile(fullfile(current_folder,ug_mfile),fullfile(mtex_path,'help','html'));
-          make_topic = true;
-        else
-          make_topic = true;
-          make_abovetopic = true;
-        end
-      end           
-      trycopyfile(fullfile(current_folder,'*.png'),html_dir);
+   
+    for tocentry = toc_list
+      make_topic = make_topic | ~is_newer(html_file,tocentry{:});
     end
     
-    if make_topic
-      try
-      make_topic_withtable( fullfile(current_folder,[topic '.m'] ) )
-     	catch,
-      end
+    if make_topic || ~is_newer(html_file,ug_file)  || check_option(varargin,'force')  || check_option(varargin,'TopicPages')
+      make_topic_withtable( ug_file, toc_list);
     end
-    
-    if make_abovetopic
-       [above_folder ig] = fileparts(current_folder);
-       [ig above_topic] = fileparts(above_folder);
-       try
-       make_topic_withtable( fullfile(above_folder,[above_topic '.m'] ) );
-       catch,
-       end
-    end
-    
-    if isdir(current_folder),
-      cd(old_dir);
-    end
+  elseif ~is_newer(html_file,ug_file) || check_option(varargin,'force')
+    trycopyfile(ug_file,html_dir);
+  end
+  
+  if is_openineditor(ug_file)
+    trycopyfile(ug_file,ug_example_path);
   end
 end
 
@@ -91,20 +65,66 @@ for k=1:numel(mst)
 end
 
 function tops = ug_topics(folder)
-% folder = fullfile(mtex_path,'help','UsersGuide');
 [ig tops] = cellfun(@fileparts, getSubDirs(folder)','Uniformoutput',false);
 
-function make_topic_withtable(mfile)
+function make_topic_withtable(mfile, toc_list)
 
-[current_folder ug_mfile] = fileparts(mfile);
+l = dir(mfile);
 
 fid = fopen(mfile);
 mst = m2struct(char(fread(fid))');
 fclose(fid);
 
-mst(1).text = [mst(1).text , ' ', '<html>',make_toc_table(current_folder),'</html>'];
-cell2file(fullfile(mtex_path,'help','html',[ug_mfile '.m']), struct2m(mst),'w');
+mst(1).text = [mst(1).text , ' ', '<html>',toc_table(toc_list),'</html>'];
+cell2file(fullfile(mtex_path,'help','html',l.name), struct2m(mst),'w');
 
+
+
+
+function table = toc_table(toc_list)
+
+table = {'<table class="refsub" width="90%">'};
+
+for tocentry = toc_list
+  [ig ref] = fileparts(tocentry{:});
+  
+  switch get_fileext(tocentry{:})
+    case '.m'
+      fid = fopen(tocentry{:});  
+      mst = m2struct(char(fread(fid))');
+      fclose(fid);
+    case '.html'
+      docr = xmlread(tocentry{:});
+      title = docr.getElementsByTagName('title');
+      intro = docr.getElementsByTagName('introduction');
+      
+      mst(1).title = char(title.item(0).getFirstChild.getNodeValue());
+      mst(1).text = {char(intro.item(0).getFirstChild.getNodeValue)};
+  end
+  table = [table addItem( mst(1).title,ref,mst(1).text)];
+end
+
+table{end+1} = '</table>';
+
+
+function item = addItem(title,ref,text)
+% 
+if ~isempty(text)
+text = strcat(text{:});
+end
+
+item = strcat(' <tr><td width="250px"  valign="top"><a href="', ref,  '.html">' ,title, ...
+                           '</a></td><td valign="top">',text , '</td></tr>');
+
+
+
+
+function b = is_openineditor(mfile)
+
+fid = fopen(mfile);
+mst = m2struct(char(fread(fid))');
+fclose(fid);
+b = any(strcmpi({mst.title},'Open in Editor'));
 
 function trycopyfile(varargin)
 
@@ -119,4 +139,8 @@ function o = is_newer(f1,f2)
 d1 = dir(f1);
 d2 = dir(f2);
 o = ~isempty(d1) && ~isempty(d2) && d1.datenum > d2.datenum;
+
+
+function extension = get_fileext(fname)
+extension = fname(find(fname == '.', 1, 'last'):end);
 
