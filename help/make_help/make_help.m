@@ -144,7 +144,7 @@ end
 
 %% calculate examples
 if check_option(varargin, {'examples','all'})
-  make_ug(fullfile(mtex_path,'examples','examples'),varargin{:}); 
+ 
   
   copyfile( fullfile(mtex_path,'help','make_help','*.css') , ...
     fullfile(mtex_path,'examples','html') );
@@ -155,6 +155,8 @@ if check_option(varargin, {'examples','all'})
     'out_dir',fullfile(current_path, 'html'),'evalcode',1,varargin{:});
   copyfile(fullfile(current_path, 'html','*.html'),html_path);
   copyfile(fullfile(current_path, 'html','*.png'),html_path);
+  
+  make_ug(fullfile(mtex_path,'examples'),'topicpages',varargin{:}); 
 end
 
 set(0,'DefaultFigureColor',c)
