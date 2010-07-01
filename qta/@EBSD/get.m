@@ -1,5 +1,28 @@
 function varargout = get(obj,vname,varargin)
-% get object variable
+% extract data from a Pole Figure object
+%
+%% Syntax
+%  d = get(ebsd,'orientations')  % individuel orientations
+%  s = get(ebsd,'CS')            % crystal symmetry
+%  x = get(ebsd,'x')             % x coordinates
+%  y = get(ebsd,'y')             % y coordinates
+%  p = get(ebsd,'property')      % properties asociated with the orientations
+%  m = get(ebsd,'mad')           % MAD
+% 
+%% Input
+%  ebsd - @EBSD
+%
+%% Options
+%  phase - phase to consider
+%
+%% Output
+%  d - @orientation
+%  s - @symmetry
+%  x,y,p,m - double
+%
+%% See also
+% EBSD/set
+
 
 
 if nargin == 1

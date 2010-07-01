@@ -1,5 +1,5 @@
 function varargout = get(pf,vname,varargin)
-% extract data frp, Pole Figure object
+% extract data from a Pole Figure object
 %
 %% Syntax
 %  d = get(pf,'intensities,'id)  % raw diffraction intensities
