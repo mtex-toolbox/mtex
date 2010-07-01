@@ -211,16 +211,12 @@ toadd = { {''}, ...
   {'tools' 'misc_tools'},{'tools' 'math_tools'},{'tools' 'compatibility'},...
   {'tools' 'template_wizard'},...
   {'help','classes'},...
-  {'examples'},{'tests'}};
+  {'examples'},{'examples' 'UsersGuide'},...
+  {'tests'}};
 
 for k=1:length(toadd)
   addpath(fullfile(local_path,toadd{k}{:}),0);
 end
-
-for helppath = getSubDirs(fullfile(local_path,'help','UsersGuide'))'
-  addpath(helppath{:},0);
-end
-% getSubDirs(fullfile(local_path,'help','UsersGuide'))
 
 % compatibility path
 comp = dir(fullfile(local_path,'tools','compatibility','ver*'));

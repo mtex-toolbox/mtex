@@ -1,41 +1,42 @@
-function toc = make_toc_ug(toc,folder,varargin)
-
-[path topic] = fileparts(folder);
+function toc = make_toc_ug(folder,varargin)
 
 
-if isdir(folder),
-  old_dir = pwd;
-  cd(folder);
+ug_files = get_ug_files(folder,{'*.m','*.html'});
+ug_tocs = get_ug_files(folder,'toc');
+
+toc = make_sub({},folder,ug_files,varargin{:});
+
+
+function toc = make_sub(toc,folder,ug_files,varargin)
+
+[ig topic] = fileparts(folder);
+
+topic_file = get_ug_filebytopic(ug_files,topic);
+
+switch get_fileext(topic_file)
+  case '.m'
+    toc = [toc m2subToc(topic_file,varargin{:})];
+  case '.html'
+    toc = [toc tocItemOpen(topic,[ topic '.html'])];
 end
-
-if exist([topic '.m'],'file')
-  toc = [toc m2subToc([topic '.m'],varargin{:})];
-elseif exist([folder '.m'],'file')
-  toc = [toc m2subToc([folder '.m'],varargin{:})];
-else
-  toc = [toc tocItemOpen(topic,[topic '.html'],varargin{:})];
-end
-
 
 if isdir(folder)
-  str = file2cell(fullfile(folder,'toc'));
-  for subtoc=regexp(str,'\s','split')
-    subtoc = subtoc{1};
-    toc = make_toc_ug(toc, fullfile(folder,subtoc{1}),subtoc{2:end});
+  toccontents = file2cell(fullfile(folder,'toc'));
+  toccontents = regexpi(toccontents,'(?<item>\w*)\s(?<icon>\w*)|(?<item>\w*)','names');
+  for entry = [toccontents{:}]  
+    toc = make_sub(toc,fullfile(folder,entry.item),ug_files,entry.icon);
   end
 end
 
 toc = [toc tocItemClose];
 
-if isdir(folder),
-  cd(old_dir)
-end
 
 
 function str = tocItemOpen(title,ref,icon)
-if nargin > 2
+
+if nargin > 2 && ~isempty(icon)    
   str = ['<tocitem target="' ref '" image="$toolbox/matlab/icons/' icon '.gif">' title];
-else
+else  
   str = ['<tocitem target="' ref '">' title];
 end
 
@@ -48,11 +49,9 @@ str = ['<tocitem target="' ref '">' title '</tocitem>'];
 
 function str = m2subToc(mfile,varargin)
 
-fid = fopen(mfile);  
+fid = fopen(mfile);
 mst = m2struct(char(fread(fid))');
 fclose(fid);
-
-
     
 [path mfile] = fileparts(mfile);
 str = {tocItemOpen(mst(1).title,[mfile '.html'],varargin{:})}; 
@@ -65,4 +64,8 @@ for k=2:numel(refcells)
     str{end+1} = tocItem(mst(k).title,[ mfile '.html#' num2str(k-1)]);
   end
 end
+
+
+function extension = get_fileext(fname)
+extension = fname(find(fname == '.', 1, 'last'):end);
 

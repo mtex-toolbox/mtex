@@ -1,7 +1,7 @@
 function make_help(varargin)
 %
 %
-%
+% 'topicpages'
 
 %% set global options
 
@@ -142,10 +142,10 @@ if check_option(varargin,{'ReleaseNotes','all','all-'}),
   make_ug(fullfile(mtex_path,'help','ReleaseNotes'),varargin{:}); 
 end
 
-
 %% calculate examples
-
 if check_option(varargin, {'examples','all'})
+  make_ug(fullfile(mtex_path,'examples','examples'),varargin{:}); 
+  
   copyfile( fullfile(mtex_path,'help','make_help','*.css') , ...
     fullfile(mtex_path,'examples','html') );
 

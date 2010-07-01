@@ -6,7 +6,6 @@
 %
 %% Contents
 %
-%%
 %% Introduction
 %
 % A general problem in estimating an ODF from pole figure data is the fact,
@@ -84,9 +83,11 @@ close all
 plotodf(odf,'radially','center',idquaternion,'axes',yvector,'color','b')
 hold on
 
+%%
 % radial plot without ghost correction:
 plotodf(rec,'radially','center',idquaternion,'axes',yvector,'color','g')
 
+%%
 % radial plot with ghost correction:
 plotodf(rec_cor,'radially','center',idquaternion,'axes',yvector,'color','r','linestyle','--')
 hold off
@@ -114,17 +115,20 @@ calcerror(rec_cor,odf,'Fourier','L2')
 % Fourier coefficients with ghost correction oszillates much more the the
 % Fourier coefficients with ghost correction
 
-
+%%
 % true ODF
 close all;
 plotFourier(odf)
 
+%%
 % keep plotting windows and add next plots
 hold all
 
+%%
 % Without ghost correction:
 plotFourier(rec)
 
+%%
 % with ghost correction
 plotFourier(rec_cor)
 legend({'true ODF','without ghost correction','with ghost correction'})
