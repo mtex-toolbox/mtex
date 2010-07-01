@@ -24,12 +24,38 @@ odf = fibreODF(Miller(1,1,0),zvector,cs,ss)
 pf = simulatePoleFigure(odf,[Miller(1,0,0),Miller(1,1,1)],...
   S2Grid('equispaced','points',500,'antipodal'));
 
+%% Setting a Colormap
+%
+% By default MTEX uses the default MATLAB colormap *jet*, which varies from
+% blue to red for increasing values.
+
+plot(pf)
+
+%%
+% However, sometimes more simple colormaps are prefered, like the LaboTeX
+% colormap
+
+colormap(LaboTeXColorMap)
+
+%%
+% or a gray scale colormap.
+
+colormap(grayColorMap)
+
+%%
+% One can set a default colormap adding the following command to
+% the configuration file mtex_settings.m
+
+set_mtex_option('defaultColorMap',LaboTeXColorMap);
+
 
 %% Tight Colorcoding
 %
 % When <PoleFigure_plot.html plot> is called without option the colorcoding
 % of each plot is choosen *tight* to the range of the data independently
-% from the other plots.
+% from the other plots, i.e., in each subplot the largest value is assigned
+% to the maximum color and the smallest value is assigned to the minimum
+% color from the colormap.
 
 close all
 plot(pf)
@@ -97,10 +123,8 @@ plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal','logarithmic')
 setcolorrange([0.01 12]);
 colorbar
 
+%%
+% Finally, lets set back the default colormap.
 
-%% Monochrome Plots
-%
-% Monochrome plots are obtained by the option *gray*.
-
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal','gray')
+set_mtex_option('defaultColorMap','default');
 

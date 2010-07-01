@@ -47,6 +47,7 @@ figure(clf);
 rmallappdata(gcf);
 
 iconMTEX(gcf);
+set(gcf,'colormap',get_mtex_option('defaultColorMap'));
 
 % set tag
 if check_option(varargin,'ensureTag','char')

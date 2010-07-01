@@ -34,6 +34,17 @@ set_mtex_option('ebsd_ext',...
 % modify this path if your CIF files are located at a different path
 set_mtex_option('cif_path',fullfile(mtex_path,'cif'));
 
+%% Default ColorMap
+
+% LaboTeX color map 
+% set_mtex_option('defaultColorMap',LaboTeXColorMap);
+
+% white to black color map 
+%set_mtex_option('defaultColorMap',grayColorMap);
+
+% MATLAB default color map
+%set_mtex_option('defaultColorMap','default');
+
 %% Turn of LaTex output
 % comment out the following line if you have problems with displaying LaTex
 % symbols

@@ -14,6 +14,11 @@ mod1 = orientation('euler',30*degree,40*degree,10*degree,'ZYZ');
 mod2 = orientation('euler',10*degree,80*degree,70*degree,'ZYZ');
 odf = 0.7*unimodalODF(mod1,cs,ss) + 0.3*unimodalODF(mod2,cs,ss);
 
+%%
+% and lets switch to the LaboTex colormap
+set_mtex_option('defaultColorMap',LaboTeXColorMap);
+
+
 %% Plot Pole Figures
 % Plotting some pole figures of an <ODF_index.html ODF> is straight forward
 % using the <ODF_plotpdf.html plotpdf> command. The only mandatory
@@ -110,3 +115,9 @@ plotfibre(odf,Miller(1,2,2),vector3d(2,1,1),'LineWidth',2);
 
 close all;
 plotFourier(odf,'bandwidth',32)
+
+%%
+% Finally, lets set back the default colormap.
+
+set_mtex_option('defaultColorMap','default');
+
