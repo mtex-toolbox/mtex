@@ -7,6 +7,7 @@ function make_help(varargin)
 
 timing = tic;
 
+addpath(pwd);
 plotx2east;
 html_path = fullfile(mtex_path,'help','html');
 
@@ -162,6 +163,7 @@ toc(timing)
 
 %% finisch
 set_mtex_option('generate_help',false);
+rmpath(pwd);
 
 %% create searchable database
 
@@ -173,6 +175,7 @@ if exist(helpsearchpath,'dir'),
   e = rmdir(fullfile(mtex_path, 'help','mtex','helpsearch'),'s');
   movefile(helpsearchpath, fullfile(mtex_path, 'help','mtex'),'f');
 end
+
 
 
 function o = is_newer(f1,f2)

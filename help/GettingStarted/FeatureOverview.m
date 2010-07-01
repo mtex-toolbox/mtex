@@ -1,6 +1,5 @@
 %% MTEX Feature Overview 
-% MTEX is a MATLAB toolbox that provides powerfull tools for the
-% following common tasks in *texture analysis*.
+% Gives an overview over the central features of the MTEX toolbox.
 %
 %% Contents
 %
@@ -8,27 +7,26 @@
 %
 % In MTEX you can define arbitrary crystal and specimen symmetries with
 % arbitrary geometries using the class <symmetry_index.html
-% symmetry>. <Miller_index.html Miller indece> may be <Miller_plot.html
+% symmetry>. <Miller_index.html Miller indice> may be <Miller_plot.html
 % plotted> in various spherical projections, the <Miller_angle.html
 % angle> between two Miller indece can be computed or all
 % <Miller_symeq.html crystallographically equivalent directions> can be
-% computed. Orientations are represented as <quaternion_index.html
-% quaternions> in MTEX. However, they are methods to convert them into
-% Euler angles, Rodrigues parameters, matrices or axis - angle
-% parametrization. Quaternions can be applied to Miller indeces, ODFs,
+% computed. Orientations can be specified in terms of different Euler angle
+% conventions, in terms of Rodrigues parameters, matrices or axis - angle
+% parametrization. Orientations can be applied to Miller indeces, ODFs,
 % pole figure data, and EBSD data to peform rotations. Have also a look 
-% at the <geometry_demo.html Geometry Demo>.
+% at the <CrystalGeometry.html Crystal Geometry help page>.
 %
 %
 %% Calculate with Model ODFs
 %
 % In MTEX it is very simple to define a model ODF as a
 % <uniformODF.html uniform ODFs>, a <unimodalODF.html unimodal ODFs>, a
-% <fibreODF.hml fibre ODFs>, or any superposition of these
-% components. Furthermore, the MTEX toolbox allready contains 
-% some popular standard ODF as the <SantaFe.html SantaFe> and the
-% <mix2.html mix2> sample ODFs. How to work best with model ODFs in MTEX
-% can be found <ODF_index.html here>.
+% <fibreODF.hml fibre ODFs>, a <BinghamODF.html Bingham distributed ODF>,
+% or any superposition of these components. Furthermore, the MTEX toolbox
+% allready contains some popular standard ODF as the <SantaFe.html SantaFe>
+% and the <mix2.html mix2> sample ODFs. How to work best with model ODFs in
+% MTEX can be found <ODFAnalysis.html here>.
 %
 %
 %% Import, Analyze and Visualize Diffraction Data
