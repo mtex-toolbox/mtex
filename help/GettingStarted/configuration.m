@@ -1,4 +1,6 @@
 %% MTEX Configuration and Troubleshooting
+% Explains how to globaly configure MTEX, i.e. how to set a default Euler angle
+% convention.
 %
 %% Global Configuration
 %
@@ -6,7 +8,10 @@
 % m-file [[matlab:edit mtex_settings.m,mtex_settings.m]]. There the
 % following items can be customized
 %
+% * default Euler angle convention
 % * the default plotting style
+% * file extension associated with EBSD and pole figure files
+% * path to the CIF files
 % * the default maximum iteration depth of the function [[PoleFigure_calcODF.html,calcODF]]
 % * the amount of available memory
 % * the path to the temporary files
@@ -20,7 +25,7 @@
 % example allmost all ploting methods support the option |RESOLUTION|
 % followed by a double value specifying the resolution
 
-plotpdf(odf,'resolution',5*degree,'contour');
+plotpdf(odf,Miller(1,0,0),'resolution',5*degree,'contour');
 
 %%
 % Options that are not followed by a value are called flags. In the above

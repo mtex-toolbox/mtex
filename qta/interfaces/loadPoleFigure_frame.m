@@ -32,9 +32,11 @@ try
   theta = sqrt((ix).^2+(iy).^2); %dist to center %check projection!
   theta = theta./(size(A,2)/pi); %alpha   
 
+  assert(all((theta>0) & (theta<pi/2)) && all((rho>0) & (rho<2*pi)));
   h = string2Miller(fname);
   r = S2Grid(vector3d('polar',theta,rho));
-
+  assert(numel(r) > 10);
+    
   pf = PoleFigure(h,r,data,symmetry('cubic'),symmetry,'antipodal');
 catch
    if ~exist('pf','var')
