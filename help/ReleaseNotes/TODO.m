@@ -11,8 +11,8 @@
 
 %% EBSD Statistics
 %
-% Implement Geralds Diss. I.e. allow MTEX to answer the following
-% questions:
+% Implement results of K. G. v.d. Boogaart dissertation. i.e. allow MTEX to
+% answer the following questions:
 %
 % * is a EBSD data set a random sample of a certain ODF
 % * are two EBSD data sets random sample of the same ODF
@@ -54,15 +54,7 @@
 %
 %% Kernel Density Estimation
 %
-% Implement a robust estimator of the best kernel width. Possible ideas
-% are
-%
-% * maximum likelihood cross validation
-%
-% Questions to answer:
-%
-% * asymptotic behavior
-% *
+% Improve automatic optimal kernel detection from EBSD data
 %
 %% ODF Analysis
 %
@@ -71,8 +63,8 @@
 %
 %% Bingham Distribtution
 %
-% Define Bingham distributed ODFs and allow to compute pole figures for
-% them. Implement Bingham parameter estimation from EBSD data.
+% Implement Bingham parameter estimation from EBSD data and compute Fourier
+% coefficients of Bingham distributed ODFs.
 %
 %% Joined Counts
 %
@@ -109,7 +101,4 @@
 % * implement grain/rotate, grain/flipud, grain/fliplr
 % * better ODF import / export
 % * add kernel names by Matthies
-%
-%% Bugs
-%
 %

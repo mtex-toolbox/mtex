@@ -36,22 +36,22 @@ import_wizard
 %
 % * <loadPoleFigure_aachen.html Aachen> (<aachen_interface.html example>)
 % * <loadPoleFigure_aachen2.html Aachen2>
-% * <loadPoleFigure_aachen_exp.html Aachen *.exp> (<aachen_exp_interface.html example>)
-% * <loadPoleFigure_beartex.html BearTex> (<beartex_interface.html example>) 
-% * <loadPoleFigure_frame.html Bruker *.axs frame data>
-% * <loadPoleFigure_cnvindex.html dubna *.cnv> (<dubna_interface.html example>)
-% * <loadPoleFigure_dubna.html dubna *.cns>
-% * <loadPoleFigure_geesthacht.html Geesthacht> (<geesthacht_interface.html example>)
-% * <loadPoleFigure_juelich.html Juelich> (<juelich_interface.html example>)
-% * <loadPoleFigure_nja.html *.nja>
-% * <loadPoleFigure_out1.html Graz *.out1>
-% * <loadPoleFigure_philips.html Philips *.txt> (<philips_interface.html example>)
-% * <loadPoleFigure_plf.html *.plf>
-% * <loadPoleFigure_popla.html Popla>
-% * <loadPoleFigure_ptx.html *.ptx> (<ptx_interface.html example>)
-% * <loadPoleFigure_xrd.html Aachen *.xrd>
-% * <loadPoleFigure_xrdml.html *.xrdml> (<xrdml_interface.html example>)
-% * <loadPoleFigure_generic.html theta,rho,intensity text files>
+% * <loadPoleFigure_aachen_exp.html Aachen ASCII data format *.exp *.EXP> (<aachen_exp_interface.html example>)
+% * <loadPoleFigure_beartex.html BearTex ASCII data format *.xpe *.xpf> (<beartex_interface.html example>) 
+% * <loadPoleFigure_frame.html Bruker ASCII data format *.axs>
+% * <loadPoleFigure_cnvindex.html Dubna ASCII data format *.cnv> (<dubna_interface.html example>)
+% * <loadPoleFigure_dubna.html Dubna ASCII data format *.cns (interpolated)>
+% * <loadPoleFigure_geesthacht.html Geesthacht ASCII data format *.dat > (<geesthacht_interface.html example>)
+% * <loadPoleFigure_juelich.html Juelich ASCII data format *.jul> (<juelich_interface.html example>)
+% * <loadPoleFigure_nja.html Seifert ASCII data format *.nja>  
+% * <loadPoleFigure_out1.html Graz ASCII data format *.out>
+% * <loadPoleFigure_philips.html Philips ASCII data format *.txt> (<philips_interface.html example>)
+% * <loadPoleFigure_plf.html Queens Univ. PF Format files *.plf>
+% * <loadPoleFigure_popla.html popLA ASCII data format *.epf *.gpf>
+% * <loadPoleFigure_ptx.html Heilbronner *.ptx *.rpf> (<ptx_interface.html example>)
+% * <loadPoleFigure_xrd.html 'Bruker XRD ASCII data format *.xrd *.ras>
+% * <loadPoleFigure_xrdml.html PANalytical XML data format *.xrdml> (<xrdml_interface.html example>)
+% * <loadPoleFigure_generic.html plain (theta,rho,intensity) text files>
 % 
 %% Importing pole figure data using the method loadPoleFigure
 %

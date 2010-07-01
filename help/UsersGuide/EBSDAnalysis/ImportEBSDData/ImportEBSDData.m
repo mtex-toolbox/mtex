@@ -41,10 +41,11 @@ import_wizard('EBSD');
 %
 % MTEX inlcudes interfaces to the EBSD data formates 
 %
-% * [[loadEBSD_ang.html,.ang]]
-% * [[loadEBSD_ctf.html,.ctf]]
-% * [[loadEBSD_xxx.html,.csv]]
-% * [[loadEBSD_generic.html,.txt]]
+% * <loadEBSD_ang.html TSL singel orientation files *.ang>
+% * <loadEBSD_ctf.html HKL single orientations files *.ctf>
+% * <loadEBSD_xxx.html Oxford Crystal single orientations files *.csv>
+% * <loadEBSD_sor.html LaboTeX single orientations files *.SOR>
+% * <loadEBSD_generic.html .txt>
 %
 % In the case of generic text files MTEX is unsure about the column
 % association in the data file. It will ask the user which colums

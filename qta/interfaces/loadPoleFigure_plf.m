@@ -1,5 +1,5 @@
 function pf = loadPoleFigure_plf(fname,varargin)
-% load dubna cnv file 
+% load plf file 
 %
 %% Syntax
 % pf = loadPoleFigure_plf(fname,<options>)

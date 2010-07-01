@@ -39,7 +39,7 @@ if nargin == 1
 
   hti = uitoggletool(th,'Tag','MTEX.grainidentify','CData',selectorIcon('identify'),'Separator','on','TooltipString','Identify Grain','OnCallback',{@grainselector,'startidentify'},'OffCallback',{@grainselector,'stopidentify'});
 
-  oldtools = verLessThan('matlab','7.5');
+  oldtools = verLessThan('matlab','7.6');
 
   if ~oldtools
     hts = uitogglesplittool(th,'Tag','MTEX.grainselector','CData',selectorIcon('select'),'TooltipString','Select Grains','OnCallback',{@grainselector,'startrecord'},'OffCallback',{@grainselector,'stoprecord'});

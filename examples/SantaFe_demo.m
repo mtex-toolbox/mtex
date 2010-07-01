@@ -43,7 +43,7 @@ plotDiff(pf,rec2)
  
 %% Plot estimated pole figures
 
-plotpdf(rec2,get(pf,'Miller'),'complete')
+plotpdf(rec2,get(pf,'Miller'),'antipodal')
 
 %% Plot estimated ODF (Ghost Corrected)
 
