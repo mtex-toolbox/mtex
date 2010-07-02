@@ -38,12 +38,16 @@ set_mtex_option('cif_path',fullfile(mtex_path,'cif'));
 
 % LaboTeX color map 
 % set_mtex_option('defaultColorMap',LaboTeXColorMap);
-
+% 
 % white to black color map 
-%set_mtex_option('defaultColorMap',grayColorMap);
+% set_mtex_option('defaultColorMap',grayColorMap);
+
+% jet colormap begin with white
+% set_mtex_option('defaultColorMap',WhiteJetColorMap);
 
 % MATLAB default color map
-%set_mtex_option('defaultColorMap','default');
+% set_mtex_option('defaultColorMap','default');
+
 
 %% Turn of LaTex output
 % comment out the following line if you have problems with displaying LaTex
@@ -68,6 +72,12 @@ set_mtex_option('ITER_MAX',11);
 % on your system in kilobytes
 
 set_mtex_option('memory',getmem);
+
+%% Turn of LaTex output
+% comment out the following line if you have problems with displaying LaTex
+% symbols
+
+% set_mtex_option('noLaTex');
 
 %% FFT Accuracy 
 % change this value to have more accurate but slower computation when
