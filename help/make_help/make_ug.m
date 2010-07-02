@@ -78,47 +78,8 @@ fid = fopen(mfile);
 mst = m2struct(char(fread(fid))');
 fclose(fid);
 
-mst(1).text = [mst(1).text , ' ', '<html>',toc_table(toc_list),'</html>'];
+mst(1).text = [mst(1).text , ' ', '<html>',make_toc_table(toc_list),'</html>'];
 cell2file(fullfile(mtex_path,'help','html',l.name), struct2m(mst),'w');
-
-
-
-
-function table = toc_table(toc_list)
-
-table = {'<table class="refsub" width="90%">'};
-
-for tocentry = toc_list
-  [ig ref] = fileparts(tocentry{:});
-  
-  switch get_fileext(tocentry{:})
-    case '.m'
-      fid = fopen(tocentry{:});  
-      mst = m2struct(char(fread(fid))');
-      fclose(fid);
-    case '.html'
-      docr = xmlread(tocentry{:});
-      title = docr.getElementsByTagName('title');
-      intro = docr.getElementsByTagName('introduction');
-      
-      mst(1).title = char(title.item(0).getFirstChild.getNodeValue());
-      mst(1).text = {char(intro.item(0).getFirstChild.getNodeValue)};
-  end
-  table = [table addItem( mst(1).title,ref,mst(1).text)];
-end
-
-table{end+1} = '</table>';
-
-
-function item = addItem(title,ref,text)
-% 
-if ~isempty(text)
-text = strcat(text{:});
-end
-
-item = strcat(' <tr><td width="250px"  valign="top"><a href="', ref,  '.html">' ,title, ...
-                           '</a></td><td valign="top">',text , '</td></tr>');
-
 
 
 
@@ -145,6 +106,5 @@ d2 = dir(f2);
 o = ~isempty(d1) && ~isempty(d2) && d1.datenum > d2.datenum;
 
 
-function extension = get_fileext(fname)
-extension = fname(find(fname == '.', 1, 'last'):end);
+
 

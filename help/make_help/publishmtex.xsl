@@ -90,8 +90,10 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
                 <xsl:when test="steptitle = 'Contents'">
                   <xsl:call-template name="contents">
                     <xsl:with-param name="body-cells" select="$body-cells"/>
-                  </xsl:call-template>
-                </xsl:when>  
+                  </xsl:call-template> 
+                </xsl:when>
+                
+               <!-- <xsl:when test="steptitle = 'HiddenCalculation'"/>-->
               
                 <xsl:when test="steptitle = 'Abstract'">
                   <xsl:call-template name="abstract">

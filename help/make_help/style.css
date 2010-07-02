@@ -19,6 +19,18 @@ a:hover {
 	color:#000066;
 } 
 
+
+a.blanklink {
+  color:#0000FF;
+  font-weight:normal;
+}
+
+a.toplink {
+  color:#0000FF;
+  font-weight:bold;
+  text-decoration:true;
+}
+
 h1 {
   color: #990000;
   font-size: xx-large;
