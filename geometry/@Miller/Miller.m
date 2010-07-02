@@ -35,6 +35,10 @@ elseif isa(varargin{1},'Miller')
   
 elseif isa(varargin{1},'vector3d')
   
+  if any(norm(varargin{1})) == 0
+    error('(0,0,0) is not a valid Miller index');
+  end
+  
   v = varargin{1};
   
 elseif isa(varargin{1},'double')

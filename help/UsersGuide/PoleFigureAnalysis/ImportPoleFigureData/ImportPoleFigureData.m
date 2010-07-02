@@ -49,6 +49,7 @@ import_wizard
 % * <loadPoleFigure_plf.html Queens Univ. PF Format files *.plf>
 % * <loadPoleFigure_popla.html popLA ASCII data format *.epf *.gpf>
 % * <loadPoleFigure_ptx.html Heilbronner *.ptx *.rpf> (<ptx_interface.html example>)
+% * <loadPoleFigure_slc.html *.slc>
 % * <loadPoleFigure_xrd.html 'Bruker XRD ASCII data format *.xrd *.ras>
 % * <loadPoleFigure_xrdml.html PANalytical XML data format *.xrdml> (<xrdml_interface.html example>)
 % * <loadPoleFigure_generic.html plain (theta,rho,intensity) text files>
