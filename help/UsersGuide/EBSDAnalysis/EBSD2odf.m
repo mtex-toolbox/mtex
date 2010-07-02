@@ -1,12 +1,11 @@
 %% ODF Estimation from EBSD data
-% This page describes how to use MTEX to estimate an ODF from single
-% orientation measurements.
+% How to estimate an ODF from single orientation measurements.
 %
 %% Open in Editor
 %  
 %% Contents
 %
-%%
+%
 % Starting point of any ODF estimation from EBSD data is a 
 % <EBSD_index.html EBSD> object, which here is imported by a
 % [[matlab:edit loadaachen.m, script file]]

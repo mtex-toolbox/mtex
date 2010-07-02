@@ -1,6 +1,8 @@
-EBSDAnalysisIntro
 ImportEBSDData
-GrainModelling
 ModifyEBSDData
-EBSDPlot tool_facecolor
-AnalyseEBSD
+EBSD2odf
+GrainReconstruction
+GrainStatistics
+MisorientationAnalysis
+OrientationPlots
+SpatialPlots

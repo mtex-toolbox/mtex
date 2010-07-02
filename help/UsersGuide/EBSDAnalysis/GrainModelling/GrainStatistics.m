@@ -1,37 +1,23 @@
 %% Grain Statistics
+% Access properties of grains to perfom statistics.
 %
 %% Open in Editor
 %
-%% Abstract
+%% Contents
+%
+%% 
 % Grains have several intrinsic properties, which can be used for
 % statistical, shape as well as for spatial analysis
 %
-%% Contents
-%
-%% Import of EBSD Data
-%
+%%
 % Let us first import some EBSD data and perform a regionalisation
 
-CS = {...
-  symmetry('m-3m'),... % crystal symmetry phase 1
-  symmetry('m-3m')};   % crystal symmetry phase 2
-SS = symmetry('-1');   % specimen symmetry
-
-% file name
-fname = [mtexDataPath '/aachen_ebsd/85_829grad_07_09_06.txt'];
-
-% import ebsd data
-ebsd = loadEBSD(fname,CS,SS,'interface','generic',...
-  'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'Mad' 'BC'},...
-  'Columns', [2 3 4 5 6 7 8 9],...
-  'ignorePhase', 0, 'Bunge');
-
-plotx2east
+loadaachen
 
 [grains ebsd] = segment2d(ebsd,'angle',12.5*degree)
 
 %% Grain-size Analysis
-% Since a grain is associated with a @polygon, we can determine properties
+% Since a grain is associated with a <polygon_index.html polygon>, we can determine properties
 % of the geometry
 
 ar = area(grains);

@@ -1,14 +1,10 @@
-%% Correct EBSD Data
+%% Modify EBSD Data
+% How to use MTEX to correct EBSD data for measurement errors.
 %
 %% Open in Editor
 %
-%% Abstract
-% This script shows how to use MTEX to correct EBSD data for measurement
-% errors.
-%
 %% Contents
 %
-%%
 % Let us first import some standard EBSD data with a [[matlab:edit loadaachen.m, script file]]
 
 loadaachen;
