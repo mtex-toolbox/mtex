@@ -7,6 +7,10 @@ function v = m2v(h,k,l,cs)
 %% Output
 %  v - @vector3d
 
+if any(h == 0 & k == 0 & l ==0)
+  error('(0,0,0) is not a valid Miller index');
+end
+
 a = get(cs,'axis');
 V  = dot(a(1),cross(a(2),a(3)));
 aa = cross(a(2),a(3)) ./ V;
