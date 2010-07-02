@@ -48,13 +48,13 @@ numcstr = size(constraits,1);
 numsteps = numel(steps);
 
 if numsteps < 1
-  steps = round(diff(linspace(1,defaultNum+1,numcstr)))
+  steps = round(diff(linspace(1,defaultNum+1,numcstr)));
 elseif numsteps == 1
-  steps = round(diff(linspace(1,steps+1,numcstr)))
+  steps = round(diff(linspace(1,steps+1,numcstr)));
 elseif numsteps > numcstr-1
-  steps = steps(1:numcstr-1)
+  steps = steps(1:numcstr-1);
 elseif numcstr-1 ~= numsteps
-  steps = round(diff(linspace(1,defaultNum+1,numcstr)))
+  steps = round(diff(linspace(1,defaultNum+1,numcstr)));
 end
 
 steps(1:end-1) = steps(1:end-1)+1;
