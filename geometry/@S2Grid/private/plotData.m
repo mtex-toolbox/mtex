@@ -12,6 +12,8 @@ end
 h = [];
 plottype = get_flag(varargin,{'CONTOUR','CONTOURF','SMOOTH','SCATTER','TEXTUREMAP','rgb'});
 
+set(gcf,'colormap',get_mtex_option('defaultColorMap','default'));
+
 %% round data for faster plotting
 
 % if check_option(varargin,{'contour','contourf','smooth'}) ...

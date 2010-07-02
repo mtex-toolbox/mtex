@@ -123,7 +123,6 @@ if ~ishold
     set(gcf,'units','pixel','position',get_option(varargin,'position'));
     varargin = delete_option(varargin,'position');
   end
-  set(gcf,'colormap',get_mtex_option('defaultColorMap','default'));
     
   %set(gcf,'Visible','off');
   %set(gcf,'toolbar','none');
