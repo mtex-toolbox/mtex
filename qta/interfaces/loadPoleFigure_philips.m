@@ -28,30 +28,34 @@ try
   
   % read psi (start stop step) and phi (start stop step)
   % and generate grid of specimen directions
-  d = textscan(fid,'%*s %f %f %f\n',2);
-
-  assert_grid(d{1}(1),d{3}(1),d{2}(1),d{1}(2),d{3}(2),d{2}(2),'degree');
-  theta = (d{1}(1):d{3}(1):d{2}(1))*degree;
-  rho = (d{1}(2):d{3}(2):d{2}(2))*degree; 
+  theta = textscan(fid,'%*s %f %f %f\n',1);
+  rho = textscan(fid,'%*s %f %f %f\n',1);
+  
+  assert_grid(theta{1},theta{3},theta{2},rho{1},rho{3},rho{2},'degree');
+  theta = (theta{1}:theta{3}:theta{2})*degree;
+  rho = (rho{1}:rho{3}:rho{2})*degree; 
   r = S2Grid('theta',theta,'rho',rho(1:end-1),'antipodal');
   
   % one free line
   assert(isempty(fgetl(fid)));
   
   % read hkl
-  h = string2Miller(fgetl(fid));
+  [h,ok] = string2Miller(fgetl(fid));  
+  if ~ok, h = string2Miller(fname);end;
+    
   c = ones(1,length(h));
   
   % skip the next 6 lines
-  textscan(fid,'%s',6,'delimiter','\n','whitespace','');
+  %textscan(fid,'%s',6,'delimiter','\n','whitespace','');
 
   % read intensities
-  d = fscanf(fid,'%e',[length(theta)+1,length(rho)]);
-  d = d(2:end,:);
-  
-  assert(all(size(d.')==size(r)));
+  %d = fscanf(fid,'%e',[length(theta)+1,length(rho)]);
   
   fclose(fid);
+  d = txt2mat(fname,'InfoLevel',0);
+  d = d.';
+  d = d(2:end,:);
+  assert(all(size(d.')==size(r)));
   pf = PoleFigure(h,r,d.',symmetry('cubic'),symmetry,'superposition',c,varargin{:}); 
 catch
   error('format Philips does not match file %s',fname);
