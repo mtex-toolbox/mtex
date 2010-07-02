@@ -88,6 +88,7 @@ end
 
 % write first commentline
 write_cell(script,{comment});
+write_cell(script,{'% ','%% ',['% view [[matlab:edit ' class_name '/' file_name ', *source* ]]' ]});
 
 % if no seperate syntax item exists
 if isempty(strmatch('%% Syntax',code)) 
