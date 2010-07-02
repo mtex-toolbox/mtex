@@ -8,6 +8,10 @@ html_dir =  fullfile(mtex_path,'help','html');
 ug_example_path = fullfile(mtex_path,'examples','UsersGuide');
 ug_files = get_ug_files(folder,{'*.m','*.html'});
 
+for pics = reshape(get_ug_files(folder,'*.png'),1,[])
+  trycopyfile(pics{:},html_dir);
+end
+
 % clean up all files before
 delete(fullfile(html_dir,'*.m'));
 
@@ -18,7 +22,6 @@ for k=1:numel(ug_files)
   [a above_topic] = fileparts(above_folder);
   
   html_file = fullfile(html_dir,[topic,'.html']);
-  
   if strcmpi(topic,above_topic) % special topic
     toc_list = {};    
     for tocentry = regexprep(file2cell(fullfile(above_folder,'toc')),'\s(\w*)','');
@@ -138,6 +141,7 @@ function o = is_newer(f1,f2)
 
 d1 = dir(f1);
 d2 = dir(f2);
+
 o = ~isempty(d1) && ~isempty(d2) && d1.datenum > d2.datenum;
 
 
