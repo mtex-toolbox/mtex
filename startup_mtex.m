@@ -40,9 +40,9 @@ set_mtex_option('architecture',computer('arch'));
 
 %read version from version file
 fid = fopen('VERSION','r');
-ver = fread(fid,'*char')';
+set_mtex_option(0,'version',char(fread(fid,'char')'));
 fclose(fid);
-set_mtex_option(0,'version',ver(1:end-1));
+
 
 
 %% init settings

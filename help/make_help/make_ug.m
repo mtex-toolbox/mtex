@@ -51,7 +51,7 @@ mfiles = dir( fullfile(html_dir,'*.m') );
 
 publish_files({mfiles.name},html_dir,...
   'stylesheet',fullfile(mtex_path,'help','make_help','publishmtex.xsl'),...
-  'out_dir',html_dir,'evalcode',1,'force',varargin{:}); 
+  'out_dir',html_dir,'evalcode',get_option(varargin,'evalcode',true),'force',varargin{:}); 
 
 delete(fullfile(html_dir,'*.m') );
 

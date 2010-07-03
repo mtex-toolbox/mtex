@@ -100,7 +100,7 @@ if check_option(varargin, {'classes','all'})
 
   files = dir(fullfile(current_path,'script_*.m'));
   publish_files({files.name},current_path,'out_dir',html_path,...
-    'evalcode',1,'stylesheet',fullfile(mtex_path,'help','make_help','publishmtex.xsl'),varargin{:});
+    'evalcode',true,'stylesheet',fullfile(mtex_path,'help','make_help','publishmtex.xsl'),varargin{:});
   delete(fullfile(current_path, 'script_*.m'));
 end
 
@@ -119,7 +119,7 @@ if check_option(varargin, {'mfiles','all'})
  files = dir(fullfile(html_path, 'script_*.m'));
  if ~isempty(files)
    publish_files({files.name},html_path,'out_dir',html_path,...
-     'stylesheet',fullfile(mtex_path,'help','make_help','publishmtex.xsl'),'waitbar',varargin{:});
+     'stylesheet',fullfile(mtex_path,'help','make_help','publishmtex.xsl'),'evalcode',false,'waitbar',varargin{:});
    delete(fullfile(html_path,'script_*.m'));
  end
  
@@ -128,7 +128,7 @@ end
 %% Make Getting Started
 
 if check_option(varargin,{'GettingStarted','all','all-'}), 
-  make_ug(fullfile(mtex_path,'help','GettingStarted'),varargin{:}); 
+  make_ug(fullfile(mtex_path,'help','GettingStarted'),'evalcode',false,varargin{:}); 
 end
 
 %% Make User Guide
@@ -139,7 +139,7 @@ end
 
 %% Make Release Notes
 if check_option(varargin,{'ReleaseNotes','all','all-'}), 
-  make_ug(fullfile(mtex_path,'help','ReleaseNotes'),varargin{:}); 
+  make_ug(fullfile(mtex_path,'help','ReleaseNotes'),'evalcode',false,varargin{:}); 
 end
 
 %% calculate examples
@@ -152,7 +152,7 @@ if check_option(varargin, {'examples','all'})
   current_path = fullfile(mtex_path,'examples');
   files = dir(fullfile(current_path ,'*.m'));
   publish_files({files.name},current_path,'stylesheet',fullfile(mtex_path,'help','make_help', 'example_style.xsl'),...
-    'out_dir',fullfile(current_path, 'html'),'evalcode',1,varargin{:});
+    'out_dir',fullfile(current_path, 'html'),'evalcode',true,varargin{:});
   copyfile(fullfile(current_path, 'html','*.html'),html_path);
   copyfile(fullfile(current_path, 'html','*.png'),html_path);
   
