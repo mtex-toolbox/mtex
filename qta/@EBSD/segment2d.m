@@ -136,50 +136,34 @@ nn = T3*T1'; %neighbourhoods of regions
 
 %% subfractions 
 
-inner = T1 & T3 ;
-[ix iy] = find(inner);
-[ix ndx] = sort(ix);
-cfr = unique(ix);
-cfr = sparse(1,cfr,1:length(cfr),1,length(nn));
-iy = iy(ndx);
+inner = T1 & T3;
+[ix iy] = find(inner');
 
+fract = cell(1,max(ids));
 if ~isempty(iy)
-  innerc = mat2cell(iy,histc(ix,unique(ix)),1);
+	pos = [0; find(diff(iy)); numel(iy)];
+  
+  for l=1:numel(pos)-1
+    ndx = pos(l)+1:pos(l+1);
 
-  %partners
-  [lx ly] = find(T2(iy,iy));
-  nx = [iy(lx) iy(ly)];
-  ll = sortrows(sort(nx,2));
-  ll = ll(1:2:end,:); % subractions
+    sx = ix(ndx);
+    [lx ly] = find(T2(sx,sx));
+    nx = [sx(lx) sx(ly)];
 
-
-  nl = size(ll,1);
-  lines = zeros(nl,2);
-
-  for k=1:nl
-    left = cells{ll(k,1)};
-    right = cells{ll(k,2)};
-    mm = ismember(left, right);
-    lines(k,:) = left(mm);  
+    lines = zeros(size(nx));
+    for k=1:size(nx,1)    
+      ax = sort(cells{nx(k,1)});
+      ay = sort(cells{nx(k,2)});
+      lines(k,:) = ax(ismembc(ax,ay));
+    end
+    
+    fr.xx = reshape(vert(lines,1),size(lines))';
+    fr.yy = reshape(vert(lines,2),size(lines))';
+    fr.pairs = reshape(nx,[],2);
+    
+    fract{l} = fr;
   end
-
-  xx = [vert(lines(:,1),1) vert(lines(:,2),1)];
-  yy = [vert(lines(:,1),2) vert(lines(:,2),2)];
-
-  nic = length(innerc);
-  fractions = cell(size(nic));
-
-  for k=1:nic
-    mm = ismember(ll,innerc{k});
-    mm = mm(:,1);
-    fr.xx = xx(mm,:)';
-    fr.yy = yy(mm,:)'; 
-    fr.pairs = m(ll(mm,:));
-      if numel(fr.pairs) <= 2, fr.pairs = fr.pairs'; end
-    fractions{k} = fr;
-  end
-else
-  fractions = cell(0);
+    
 end
                 
 %clean up
@@ -220,18 +204,17 @@ end
 nc = length(id);
 
 % neighbours
-[ix iy] = find(nn);
-pos = [0; find(diff(iy)); numel(iy)];
-if ~isempty(ix)
-  nn = cell(1,nc);
-  for l=1:nc
-    nn{l} = ix(pos(l)+1:pos(l+1));
+neigh = cell(1,nc);
+if ~isempty(nn)  
+  [ix iy] = find(nn);  
+  if ~isempty(iy)
+    pos = [0; find(diff(iy)); numel(iy)];
+    for l=1:numel(pos)-1
+      ndx = pos(l)+1:pos(l+1);
+      neigh{ iy(ndx(1)) } = ix(ndx);
+    end
   end
-else
-  nn = cell(1);
 end
-
-nfr = sparse(1,iy(pos(2:end)),1:numel(pos)-1,1,length(nn));
 
 vdisp(['  ebsd segmentation: '  num2str(toc(s)) ' sec'],varargin{:});
 
@@ -242,12 +225,6 @@ s = tic;
 ply = createpolygons(cells,id,vert);
 
 comment =  ['from ' ebsd(1).comment];
-
-
-neigh = cell(1,nc);
-neigh(find(nfr)) = nn;
-fract = cell(1,nc);
-fract(find(cfr)) = fractions;
 
 domean = cellfun('prodofsize',id) > 1;
 orientations(domean) = cellfun(@mean,orientations(domean),'uniformoutput',false);
