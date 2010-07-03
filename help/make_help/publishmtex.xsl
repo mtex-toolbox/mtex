@@ -44,41 +44,50 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
       </xsl:element>
     </head>
     
-    <body> 
+    <body>
       
-      <xsl:variable name="hasOpen" select="count(cell[steptitle = 'Open in Editor'])"/>
+      <a><xsl:attribute name="name">top_of_page</xsl:attribute></a>
+      <p><xsl:attribute name="style">font-size:1px;</xsl:attribute></p>
+      
+      <xsl:variable name="body-cells" select="cell[not(@style = 'overview')]"/>
+        
+      <xsl:variable name="hasContents"> 
+        <xsl:for-each select="$body-cells">
+          <xsl:if test="steptitle = 'Contents'"><xsl:value-of select="position()"/></xsl:if>
+        </xsl:for-each>
+      </xsl:variable>
+         
+      <xsl:variable name="sourceref">
+        <xsl:variable name="viewsourcecell" select="cell[steptitle = 'View Code']"/>
+        <xsl:for-each select="$viewsourcecell">     
+          <xsl:value-of select="text"/>   
+        </xsl:for-each>
+      </xsl:variable>
+        
+          
+      <xsl:variable name="hasOpen" select="count(cell[steptitle = 'Open in Editor'])"/>      
       <xsl:choose>      
         <xsl:when test="$hasOpen">
           <xsl:call-template name="openheader"/>              
         </xsl:when>    
         <xsl:otherwise>
-          <xsl:call-template name="header"/>
+          <xsl:call-template name="header">
+            <xsl:with-param name="sourceref" select="$sourceref"/>
+          </xsl:call-template>
         </xsl:otherwise>
       </xsl:choose>
       
       <div class="content">
-        <a><xsl:attribute name="name">top_of_page</xsl:attribute></a>        
-        <p><xsl:attribute name="style">font-size:1px;</xsl:attribute></p>
-        
+               
         <!-- Determine if the there should be an introduction section. -->
         <xsl:variable name="hasIntro" select="count(cell[@style = 'overview'])"/>        
-        
-
+                
         <!-- If there is an introduction, display it. -->
         <xsl:if test = "$hasIntro">
           <h1><xsl:value-of select="cell[1]/steptitle"/></h1>
           <introduction><xsl:apply-templates select="cell[1]/text"/></introduction>
         </xsl:if>
-      
-        <xsl:variable name="body-cells" select="cell[not(@style = 'overview')]"/>
-        
-        <xsl:variable name="hasContents"> 
-          <xsl:for-each select="$body-cells">
-            <xsl:if test="steptitle = 'Contents'"><xsl:value-of select="position()"/></xsl:if>
-          </xsl:for-each>
-        </xsl:variable>   
-           
-        
+             
         <!-- Loop over each cell -->
         <xsl:for-each select="$body-cells">
           <!-- Title of cell -->
@@ -102,6 +111,15 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
                 </xsl:when>          
               
                 <xsl:when test="steptitle = 'Open in Editor'"></xsl:when>
+                
+                <xsl:when test="steptitle = 'View Code'"></xsl:when>
+                     
+                <xsl:when test="steptitle = 'See also'">
+                  <h3 class="seealso"><xsl:value-of select="steptitle"/></h3>
+                  <p><xsl:call-template name="createseealso">
+                      <xsl:with-param name="str" select="text"/>
+                  </xsl:call-template></p>
+                </xsl:when>
                             
                 <xsl:otherwise>
                   
@@ -154,11 +172,18 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
 </xsl:template>
 
 <!-- Header -->
-<xsl:template name="header">  
+<xsl:template name="header">
+  <xsl:param name="sourceref"/>
   <a name="top_of_page"></a>
     <table class="nav" summary="Navigation aid" border="0" width="100%" cellpadding="0" cellspacing="0">
-      <tr><td valign="baseline"><b>MTEX</b> - A MATLAB Toolbox for Quantitative Texture Analysis</td><td valign="baseline" align="right"></td></tr>
-  </table>  
+      <tr><td valign="baseline"><b>MTEX</b> - A MATLAB Toolbox for Quantitative Texture Analysis</td>
+      <xsl:if test="string-length($sourceref) > 0">
+        <td valign="baseline" align="right">
+          <a>
+            <xsl:attribute name="href">matlab:edit <xsl:value-of select="$sourceref"/></xsl:attribute>
+            View Code</a></td>
+      </xsl:if></tr>
+  </table>
 </xsl:template>
 
 <!-- Header2 -->
@@ -177,11 +202,12 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
 
 <!-- Footer -->
 <xsl:template name="footer">
-<p style="font-size:1px;">&nbsp;</p>
-        <table class="footer" border="0" width="100%" cellpadding="0" cellspacing="0">
-          <tr ><td valign="baseline" align="right">
-          <xsl:value-of select="$mtexversion"/> helpfile</td><td valign="baseline" align="right"></td></tr>
-      </table>  
+  <p style="font-size:1px;">&nbsp;</p>
+  <table class="footer" border="0" width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+      <td valign="baseline" align="right"><xsl:value-of select="$mtexversion"/></td><td valign="baseline" align="right"></td>
+    </tr>
+  </table>  
 </xsl:template>
 
 
@@ -200,7 +226,7 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
     
       <xsl:for-each select="$body-cells">
          <xsl:if test="./steptitle">   
-           <xsl:if test="not(steptitle = 'Contents' or steptitle = 'Abstract' or steptitle = 'Open in Editor')"> 
+           <xsl:if test="not(steptitle = 'Contents' or steptitle = 'Abstract' or steptitle = 'See also' or steptitle = 'View Code' or steptitle = 'Open in Editor')"> 
              
             <tr ><td>
               <a><xsl:attribute name="href">#<xsl:value-of select="position()"/></xsl:attribute><xsl:apply-templates select="steptitle"/></a>
@@ -219,6 +245,57 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
       <xsl:apply-templates select="text"/>       
     </div></abstract>    
 </xsl:template>
+
+<xsl:template name="createseealso">
+   <xsl:param name="str"/>
+   <xsl:choose>
+    <xsl:when test="contains($str,' ')">
+      <xsl:call-template name="makelink">
+        <xsl:with-param name="ref" select="substring-before($str,' ')"/>
+      </xsl:call-template>,
+     
+      <xsl:call-template name="createseealso">
+        <xsl:with-param name="str" select="substring-after($str,' ')" />
+      </xsl:call-template>
+     </xsl:when>
+     <xsl:otherwise>
+      <xsl:call-template name="makelink">
+        <xsl:with-param name="ref" select="$str"/>
+      </xsl:call-template>     
+     </xsl:otherwise>
+   </xsl:choose>
+</xsl:template>
+
+<xsl:template name="makelink">
+  <xsl:param name="ref"/>
+   
+	<xsl:variable name="refpage">
+    <xsl:choose>
+      <xsl:when test="contains($ref,'/')">
+        <xsl:value-of select="concat(substring-before($ref,'/'),'_',substring-after($ref,'/'))"/>
+      </xsl:when>    
+      <xsl:otherwise>
+        <xsl:value-of select="$ref"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  
+	<xsl:variable name="refname">
+    <xsl:choose>
+      <xsl:when test="contains($ref,'_index')">
+          <xsl:value-of select="substring-before($ref,'_index')"/>
+      </xsl:when>    
+      <xsl:otherwise>
+        <xsl:value-of select="$ref"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+       
+  <a><xsl:attribute name="href"><xsl:value-of select="$refpage"/>.html</xsl:attribute>
+  <xsl:value-of select="$refname"/></a>
+</xsl:template>
+
+
 
 <!-- HTML Tags in text sections -->
 <xsl:template match="p">

@@ -56,7 +56,7 @@ fclose(fid);
 [path mfile] = fileparts(mfile);
 str = {tocItemOpen(mst(1).title,[mfile '.html'],varargin{:})}; 
 
-badKeyw = {'Abstract','Contents','Open in Editor'};
+badKeyw = {'Abstract','Contents','Open in Editor','See also','View Code'};
 
 refcells = ~cellfun('isempty',{mst.title});  
 for k=2:numel(refcells)

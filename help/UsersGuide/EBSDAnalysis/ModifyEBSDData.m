@@ -40,6 +40,8 @@ close all, plot(ebsd_rot)
 ebsd_flip = fliplr(ebsd_rot);
 close all, plot( ebsd_flip )
 
+%% See also
+% EBSD/rotate EBSD/fliplr EBSD/flipud EBSD/shift EBSD/affinetrans
 
 %% Restricting to a region of interest
 % If one is not interested in the whole data set but only in those
