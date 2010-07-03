@@ -40,8 +40,8 @@ syntax = strtrim(code{1}(10:end));
 comment = regexprep(code{2},'\s*%%?\s*','% ');
 
 % restrict code to the first comment block
-last_comment = find(~strncmp('%',{code{3:end}},1),1,'first');
-code = {code{3:last_comment+1}};
+last_comment = find(~strncmp('%',code(3:end),1),1,'first');
+code = code(3:last_comment+1);
 
 % where are the keywords?
 keywords_pos = strmatch('%%',code);
@@ -61,12 +61,12 @@ for l = getrange('%% Example',code,keywords_pos)
 end
 
 % markup See also links
-for l = getrange('%% See also',code,keywords_pos)
-  code{l} = regexprep(code{l},...
-    '([^\s/%]*)(/?)\<([^\s%]\w*)\>','[[$1_$3.html,$1$2$3]]');
-  code{l} = regexprep(code{l},...
-    '([[)_','$1');
-end
+% for l = getrange('%% See also',code,keywords_pos)
+%   code{l} = regexprep(code{l},...
+%     '([^\s/%]*)(/?)\<([^\s%]\w*)\>','[[$1_$3.html,$1$2$3]]');
+%   code{l} = regexprep(code{l},...
+%     '([[)_','$1');
+% end
 
 
 %% create script_file
@@ -88,7 +88,6 @@ end
 
 % write first commentline
 write_cell(script,{comment});
-write_cell(script,{'% ','%% ',['% view [[matlab:edit ' class_name '/' file_name ', *source* ]]' ]});
 
 % if no seperate syntax item exists
 if isempty(strmatch('%% Syntax',code)) 
@@ -99,15 +98,19 @@ end
 % if no seperate description item exists and
 % if there is any word before the first item
 if isempty(strmatch('%% Description',code)) && ...
-    ~isempty_cell(regexpi({code{1:first_item-1}},'\w'))
+    ~isempty_cell(regexpi(code(1:first_item-1),'\w'))
   
   % take all up to the first itemas description
-  write_cell(script,{'%% Description',code{1:first_item-1}});
+  write_cell(script,['%% Description',code(1:first_item-1)]);
   
 end
 
 % write remaining comments
-write_cell(script,{code{first_item:end}});
+write_cell(script,code(first_item:end));
+
+write_cell(script,{' ','%% View Code',['% ' class_name '/' file_name ]});
+
+
 fclose(script);
 
 % return specific part defines by keyword

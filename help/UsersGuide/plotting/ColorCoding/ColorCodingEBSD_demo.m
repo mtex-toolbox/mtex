@@ -9,6 +9,9 @@
 
 loadaachen
 
+%% See also
+% EBSD/plotspatial grain/plotgrains ebsdColorbar orientation2color
+
 %% IPDF Colorcoding
 % *IPDF*. 
 % the standard way of plotting EBSD data spatial is based on an inverse

@@ -46,7 +46,7 @@ end
 function str = m2subToc(ref,mst,varargin)
 
 str = {'<table>'};
-badKeyw = {'Abstract','Contents','Open in Editor'};
+badKeyw = {'Abstract','Contents','Open in Editor','See also','View Code'};
 
 refcells = ~cellfun('isempty',{mst.title});  
 for k=2:numel(refcells)

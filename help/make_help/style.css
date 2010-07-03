@@ -62,6 +62,18 @@ h3.ref {
   color: #990000;
 }
 
+h3 {
+  color: #990000;
+	font-size: medium;
+}
+
+h3.seealso {
+  margin-left:10px;
+  margin-bottom:-5px;
+	font-weight: bold;
+}
+
+
 li {
   padding:2px;
 }
