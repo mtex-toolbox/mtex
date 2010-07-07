@@ -16,35 +16,59 @@ function pf = loadPoleFigure_aachen(fname,varargin)
 fid = efopen(fname);
 
 ih = 1;
+dig = 4;
+col = 18;
+
 while ~feof(fid)
   
   try
-%% read comment lines
-
-    % one comment line
-    fgetl(fid);
+    
+    cfound = false;
+    % get comment line
+    while ~cfound
+            
+      comment = fgetl(fid);
+      
+      %check whether this is not a data line
+      if length(comment)==dig*col
+        comment = reshape(comment(1:dig*col),dig,col).';
+        cfound =  length(str2num(comment)) ~= col; %#ok<ST2NM>
+      else
+        cfound = true;
+      end
+    end
+    comment = strtrim(comment);
       
     % one line describing hkl and grid of specimen directions
-%  003 hxxxx  5.00 5.00 90.00    1    0  (12f6.0)
+    %  003 hxxxx  5.00 5.00 90.00    1    0  (12f6.0)
     l = fgetl(fid);
-    h = string2Miller(l(1:6));
+    h = string2Miller(l(1:5));
+    try
+      cs = symmetry(strtrim(l(6:10)),'silent');
+    catch %#ok<CTCH>
+      cs = symmetry('m-3m');
+    end
     dtheta = str2double(l(11:15));
     dphi   = str2double(l(16:20));
     maxtheta = str2double(l(21:25));
     iwin = str2double(l(26:30));
     isim = str2double(l(31:35));
     fmt= regexp(l(36:end),'\s*\((\d+)f(\d+)','tokens');
-    fmt = fmt{1};
-    col = str2double(fmt(1));
-    dig = str2double(fmt(2));
+    if length(fmt) == 1
+      fmt = fmt{1};
+      col = str2double(fmt(1));
+      dig = str2double(fmt(2));
+    end
 
+    
+    
     % next line contains multiplikator
-%  1000 .500 -112    0   0.   experimental data
+    %  1000 .500 -112    0   0.   experimental data
     l = fgetl(fid);
     fakt = str2double(l(1:6));
     
     assert(0.5 < dtheta && 20 > dtheta && 0.5 < dphi && 20 > dphi &&...
-        10 <= maxtheta && maxtheta <= 90 && col > 0 && dig > 0 && fakt > 0);
+        10 <= maxtheta && maxtheta <= 90 && fakt > 0 && col > 0 && dig > 0);
 
 %% generate specimen directions  
     if isim == 0
@@ -57,28 +81,28 @@ while ~feof(fid)
       error('Wrong value for "isim"');
     end
     rho   = (0:dphi:maxphi-dphi) * degree;
-    theta = (0:dtheta:maxtheta)*degree;
-    rho = repmat(rho.',1,length(theta));
-    theta = repmat(theta,size(rho,1),1);
-    r = S2Grid(sph2vec(theta,rho),'resolution',min(dtheta,dphi)*degree,'antipodal');
+    theta = ((1-iwin)*dtheta/2:dtheta:maxtheta)*degree;
+    
+    r = S2Grid('theta',theta,'rho',rho,'resolution',min(dtheta,dphi)*degree,'antipodal');
  
 %% read data
     
     d = [];
-    while length(d) < numel(r)
+    while length(d) < numel(r) && ~feof(fid)
       l = fgetl(fid);
-      if length(l)<dig*col, continue;end
+      if length(l)<dig*col, 
+        continue;
+      end
       l = reshape(l(1:dig*col),dig,col).';
-      d = [d;str2num(l)]; %#ok<ST2NM>
+      d = [d;str2num(l)]; %#ok<AGROW,ST2NM>
     end
-    %d = d * fakt;
     
 %% generate Polefigure    
-    pf(ih) = PoleFigure(h,r,d,symmetry('cubic'),symmetry,varargin{:});
+    pf(ih) = PoleFigure(h,r,d,cs,symmetry,varargin{:},'comment',comment); %#ok<AGROW>
     
     ih = ih +1;
     
-  catch
+  catch %#ok<CTCH>
     if ~exist('pf','var')
       error('format Aachen does not match file %s',fname);
     end

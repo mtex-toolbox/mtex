@@ -10,10 +10,14 @@ elseif ~isempty(inputname(1))
   h = [inputname(1), ' = ' h];
 end;
 
-s = [' ('];
-for i=1:length(pf)
- s = [s, pf(i).comment];
- if i~=length(pf), s = [s ', ']; end
+if all(equal(strvcat(pf.comment),1)) %#ok<VCAT>
+  s = [' (',pf(1).comment];
+else
+  s = ' (';
+  for i=1:length(pf)
+    s = [s, pf(i).comment]; %#ok<AGROW>
+    if i~=length(pf), s = [s ', ']; end %#ok<AGROW>
+  end
 end
 
 if length(s) > 60
