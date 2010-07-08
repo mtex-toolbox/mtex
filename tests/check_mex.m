@@ -10,7 +10,7 @@ y = linspace(0,39000,3000);
 
 tic
 for i = 1:100
-  ind = find2(x,y,50);
+  ind = find(x,y,50);
 end
 toc
 
@@ -25,12 +25,12 @@ toc
 
 %% check S2Grid/find
 
-x = S2Grid(500);
-plot(subGrid(x,find2(x,xvector,10*degree)));
-full(find2(x,xvector,10*degree))
+x = S2Grid('equispaced','points',500);
+plot(subGrid(x,find(x,xvector,10*degree)));
+full(find(x,xvector,10*degree))
 
-x = S2Grid(5000);
-y = vector3d(S2Grid(100));
+x = S2Grid('equispaced','points',5000);
+y = vector3d(S2Grid('equispaced','points',100));
 
 tic
 for i = 1:length(y)
@@ -40,7 +40,7 @@ toc
 
 tic
 for i = 1:100
-  find2(x,y,0.5);
+  find(x,y,0.5);
 end
 toc
 
@@ -54,19 +54,19 @@ x = SO3Grid(100000,cs);
 y = SO3Grid(100000,cs);
 
 tic
-distmatrix(x,y,5*degree);
+angle_outer(x,y,5*degree);
 toc
 
 tic
 find(x,quaternion(y),5*degree);
 toc
 
-find2(x,idquaternion,20*degree)
+find(x,idquaternion,20*degree)
 
 q = axis2quat(xvector+yvector,45*degree);
 q = idquaternion;
 
-sx = quaternion(subGrid(x,find2(x,q,10*degree)));
+sx = quaternion(subGrid(x,find(x,q,10*degree)));
 
 dist(cs,symmetry,q,sx) / degree
 

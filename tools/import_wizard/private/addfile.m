@@ -60,3 +60,9 @@ end
 %% store interface options
 setappdata(list_handle,'options',options);
 setappdata(list_handle,'interface',interface);
+
+try
+  handles = getappdata(gcf,'handles');
+  set(handles.interface,'string',['Interface: ' interface]);
+catch
+end

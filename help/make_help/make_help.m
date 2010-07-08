@@ -36,7 +36,7 @@ copyfile( fullfile(mtex_path,'help','make_help','*.css') , ...
 
 %% generate TOCs
 
-if nargin > 0 && ~check_option(varargin,'clear')
+if nargin > 0 && ~check_option(varargin,{'clear','notoc'})
   make_toc(varargin{:});
 end
 

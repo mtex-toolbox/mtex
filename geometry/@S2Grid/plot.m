@@ -90,7 +90,7 @@ if numel(data) == numel(S2G)
     data = reshape(data,size(S2G));
   
     % log plot?
-    if check_option(varargin,'logarithmic')
+    if check_option(varargin,{'log','logarithmic'})
       data = log10(data);
       data(imag(data) ~= 0 | isinf(data)) = nan;
     end

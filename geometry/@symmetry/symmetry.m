@@ -88,8 +88,10 @@ catch %#ok<*CTCH>
       return;
     catch
     end
-    help symmetry;
-    error('symmetry "%s" not found',name);
+    if ~check_option(varargin,'silent')
+      help symmetry;
+      error('symmetry "%s" not found',name);
+    end
   end
 end
 
