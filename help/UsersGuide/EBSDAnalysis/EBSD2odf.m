@@ -44,8 +44,9 @@ odf = calcODF(ebsd,'phase',1,'halfwidth',10*degree)
 psi = calcKernel(ebsd,'phase',1)
 
 %%
-% The above command fails, since the EBSD are spatial dependend. In this
-% case we have to estimate the optimal kernel halfwidth from reconstructed
+% The above example the EBSD measurements are spatial dependend and the
+% resulting halfwidth is to small. To avoid this problem we have to perfrom
+% grain reconstruction first and then to estimate the halfwidth from the
 % grains.
 
 % grains reconstruction

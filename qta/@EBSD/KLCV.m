@@ -46,20 +46,22 @@ for i = 1:cN
     
     % sum up
     c(i,k) = sum(log(sum(f,2)));
-    
+  
+    progress((i-1)*length(psi)+k,cN*length(psi),' estimate optimal kernel halfwidth: ');
   end
   
   %[cm,ci] = max(sum(c));
   %fprintf('%d ',ci);
-  progress(i,cN,' estimate optimal kernel halfwidth: ');
+  
   
   
 end
 %fprintf('\n');
 
 c = cumsum(c,1) ./ repmat(iN.',1,length(psi));
-[cm,ci] = max(c(end,:));
-psi = psi(ci);
+c = c(end,:);
+%[cm,ci] = max(c);
+%psi = psi(ci);
 
 return
 

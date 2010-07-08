@@ -216,7 +216,9 @@ if ~isempty(nn)
   end
 end
 
-vdisp(['  ebsd segmentation: '  num2str(toc(s)) ' sec'],varargin{:});
+if check_mtex_option('debug')
+  vdisp(['  ebsd segmentation: '  num2str(toc(s)) ' sec'],varargin{:});
+end
 
 
 %% retrieve polygons
@@ -257,9 +259,10 @@ grains = grain(gr,ply);
 
 
 
-
-vdisp(['  grain generation:  '  num2str(toc(s)) ' sec' ],varargin{:});
-vdisp(' ',varargin{:})
+if check_mtex_option('debug')
+  vdisp(['  grain generation:  '  num2str(toc(s)) ' sec' ],varargin{:});
+  vdisp(' ',varargin{:})
+end
 
 
 
