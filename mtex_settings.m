@@ -43,17 +43,22 @@ set_mtex_option('cif_path',fullfile(mtex_path,'cif'));
 % set_mtex_option('defaultColorMap',grayColorMap);
 
 % jet colormap begin with white
-% set_mtex_option('defaultColorMap',WhiteJetColorMap);
+set_mtex_option('defaultColorMap',WhiteJetColorMap);
 
 % MATLAB default color map
 % set_mtex_option('defaultColorMap','default');
 
-
-%% Turn of LaTex output
+%% Workaround for LaTex bug
 % comment out the following line if you have problems with displaying LaTex
 % symbols
 
 set_mtex_option('noLaTex');
+
+%% Workaround for NFFT bug
+% comment out the following line if MTEX is compiled againsed NFFT 3.1.3 or
+% earlier
+
+%set_mtex_option('nfft_bug');
 
 %% architecture 
 % this is usefull if the arcitecture is not automatically recognized by
