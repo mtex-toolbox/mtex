@@ -22,9 +22,10 @@ function odf = ODF(center,c,psi,CS,SS,varargin)
 %  UNIFORM - uniform @ODF
 %  RADIAL  - radially symetric @ODF
 %  FIBRE   - fibre symetric @ODF
+%  BINGHAM - Bingham distributed @ODF
 %
 %% See also
-%  uniformODF unimodalODF fibreODF
+%  uniformODF unimodalODF fibreODF BinghamODF FourierODF
 
 if (nargin == 0)
   odf.comment = [];

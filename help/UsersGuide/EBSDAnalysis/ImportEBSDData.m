@@ -39,13 +39,49 @@ import_wizard('EBSD');
 % 
 %% Supported Interfaces
 %
-% MTEX inlcudes interfaces to the EBSD data formates 
+% MTEX inlcudes interfaces to the EBSD data formates:
 %
-% * <loadEBSD_ang.html TSL singel orientation files *.ang>
-% * <loadEBSD_ctf.html HKL single orientations files *.ctf>
-% * <loadEBSD_xxx.html Oxford Crystal single orientations files *.csv>
-% * <loadEBSD_sor.html LaboTeX single orientations files *.SOR>
-% * <loadEBSD_generic.html .txt>
+% <html>
+%   <table class="refsub" width="90%">
+%  <tr>
+%    <td width="15" valign="top"></td>
+%    <td width="250px" valign="top">
+%      <a href="loadEBSD_ang.html" class="toplink">*.ang</a>
+%    </td>
+%    <td valign="top"> TSL single orientation files.</td>
+%  </tr>
+%  <tr>
+%    <td width="15" valign="top"></td>
+%    <td width="250px" valign="top">
+%      <a href="loadEBSD_csv.html" class="toplink">*.csv</a>
+%    </td>
+%    <td valign="top"> Oxford single orientation files.</td>
+%  </tr>
+%  <tr>
+%    <td width="15" valign="top"></td>
+%    <td width="250px" valign="top">
+%      <a href="loadEBSD_ctf.html" class="toplink">*.ctf</a>
+%    </td>
+%    <td valign="top"> HKL single orientation files.</td>
+%  </tr>
+%  <tr>
+%    <td width="15" valign="top"></td>
+%    <td width="250px" valign="top">
+%      <a href="loadEBSD_sor.html" class="toplink">*.sor</a>
+%    </td>
+%    <td valign="top"> LaboTEX single orientation files.</td>
+%  </tr>
+%  <tr>
+%    <td width="15" valign="top"></td>
+%    <td width="250px" valign="top">
+%      <a href="loadEBSD_generic.html" class="toplink">*.txt</a>
+%    </td>
+%    <td valign="top"> ASCII files with Euler angles as columns.</td>
+%  </tr>
+% </table>
+% </html>
+%
+%% The generic cnterface
 %
 % In the case of generic text files MTEX is unsure about the column
 % association in the data file. It will ask the user which colums

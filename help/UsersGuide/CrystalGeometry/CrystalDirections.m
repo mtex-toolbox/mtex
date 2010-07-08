@@ -13,7 +13,7 @@
 % described  by three or four values h, l, k (,m) and a 
 % [[symmetry_index.html,crystall symmetry]]. Essentially all operations
 % defined for the [[vector3d_index.html,vector3d]] class are also available
-% for Miller indece. Furthermore, You can ask for all crystallographically
+% for Miller indece. Furthermore, uou can ask for all crystallographically
 % equivalent crystal directions to one Miller indece.
 %
 %% Definition
@@ -33,14 +33,14 @@ m = Miller(zvector,cs)
 % projection as well as wheter to plot all equivalent directions can be
 % specified by options.
 
-plot(Miller(2,1,-3,1,cs))   % plot Miller indece
+plot(Miller(2,1,-3,1,cs),'Grid')   % plot Miller indece
 
 %%
 %
 % By providing the options *all* and *labeled* all symmetrically equivalent
 % crystal directions are plotted together with there correct Miller indice.
 
-plot(Miller(2,1,-3,1,cs),'all','labeled')   % plot Miller indece
+plot(Miller(2,1,-3,1,cs),'all','labeled','grid')   % plot Miller indece
 
 %% Symmetrically Equivalent Crystal Directions
 %
@@ -110,7 +110,7 @@ o = brassOrientation(cs)
 o * m
 
 %% 
-% By applying a [[symmetry_index.html,crystal symmetry class]] one obtains
+% By applying a <symmetry_index.html crystal symmetry> one obtains
 % the coordinates with respect to the specimen coordinate system of all
 % crystallographically equivalent specimen directions.  
 
