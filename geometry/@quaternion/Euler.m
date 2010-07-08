@@ -107,7 +107,11 @@ if nargout == 0
 elseif check_option(varargin,'nfft')
   
   alpha = fft_rho(alpha);
-  beta  = fft_theta(-beta);
+  if check_mtex_option('nfft_bug')
+    beta  = fft_theta(-beta);
+  else
+    beta  = fft_theta(beta);
+  end
   gamma = fft_rho(gamma);
   varargout{1} = 2*pi*[alpha(:),beta(:),gamma(:)].';
   
