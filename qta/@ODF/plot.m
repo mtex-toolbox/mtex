@@ -5,7 +5,7 @@ function plot(odf,varargin)
 
 if check_option(varargin,'fibre')
   fibre = get_option(varargin,'fibre');
-  plotfibre(odf,fibre{:},varargin{:});
+  plotfibre(odf,varargin{:});
 else
   plotodf(odf,varargin{:});
 end
