@@ -16,10 +16,23 @@ if isa(q1,'quaternion') && isa(q2,'quaternion')
      a1 = q1.a; b1 = q1.b; c1 = q1.c; d1 = q1.d;
      a2 = q2.a; b2 = q2.b; c2 = q2.c; d2 = q2.d;
      
+     %standart algorithm
      a = a1 .* a2 - b1 .* b2 - c1 .* c2 - d1 .* d2;
      b = a1 .* b2 + b1 .* a2 + c1 .* d2 - c2 .* d1;
      c = a1 .* c2 + c1 .* a2 + d1 .* b2 - d2 .* b1;
      d = a1 .* d2 + d1 .* a2 + b1 .* c2 - b2 .* c1;
+     
+     % fast algorithm which is not faster
+%      aa = (d1 + b1) .* (b2 + c2);
+%      cc = (a1 - c1) .* (a2 + d2);
+%      dd = (a1 + c1) .* (a2 - d2);
+%      bb = aa + cc + dd;
+%      qq = 0.5 * (bb + (d1 - b1) .* (b2 - c2));
+% 
+%      a = qq - aa + (d1 - c1) .* (c2 - d2);
+%      b = qq - bb + (b1 + a1) .* (b2 + a2);
+%      c = qq - cc + (a1 - b1) .* (c2 + d2);
+%      d = qq - dd + (d1 + c1) .* (a2 - b2);
      
      q.a = a; q.b = b; q.c = c; q.d = d;
 

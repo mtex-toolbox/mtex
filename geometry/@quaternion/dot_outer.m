@@ -10,10 +10,10 @@ function d = dot_outer(g1,g2)
 
 if ~isempty(g1) && ~isempty(g2)
 
-  a = g1.a(:) * g2.a(:).';
-  b = g1.b(:) * g2.b(:).';
-  c = g1.c(:) * g2.c(:).';
-  d = g1.d(:) * g2.d(:).';
+  a = times_outer(g1.a,g2.a);
+  b = times_outer(g1.b,g2.b);
+  c = times_outer(g1.c,g2.c);
+  d = times_outer(g1.d,g2.d);
 
   d = a + b + c + d;
 
