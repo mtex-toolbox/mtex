@@ -75,13 +75,17 @@ switch lower(name)
     
     A= (2*(0:L)+1) .* (0:L).^p .* (1:L+1).^p;
         
+  case 'ghost'
+    
+    A =  p.^(0:L);
+               
   otherwise
         
     A = [];
 
 end
 
-if length(A) > 11 && ~any(strcmpi(name,{'Fourier','bump','Sobolev'}))
+if length(A) > 11 && ~any(strcmpi(name,{'Fourier','bump','Sobolev','ghost'}))
   % prevent from instability effects
   epsilon = get_mtex_option('FFTAccuracy',1E-2);
   ind = find(A<=max(min([A,10*epsilon]),epsilon),1,'first');

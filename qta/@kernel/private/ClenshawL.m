@@ -1,4 +1,4 @@
-function s = ClenshawL(c,x);
+function s = ClenshawL(c,x)
 % Clenshaw-Algorithmus zum Aufsummieren von legendrepolynomen
 
 % x - Auswertungspunkte
@@ -6,8 +6,8 @@ function s = ClenshawL(c,x);
 
 % Initialisierung
 dn = repmat(c(end),size(x));
-d1 = repmat(0,size(x));
-d2 = repmat(0,size(x));
+d1 = zeros(size(x));
+d2 = zeros(size(x));
 
 for l = length(c)-2:-1:1
     

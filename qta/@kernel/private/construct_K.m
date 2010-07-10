@@ -59,8 +59,22 @@ switch lower(name)
       (2*p+3)*sin((2*p+1)*acos(co2))) ...
       ./ (4*sin(acos(co2).^3));
     
+   case 'ghost'
+     
+     if p > 0
+       
+       K = @(co2) (0.5./(1-2*sqrt(p)*co2+p) + ...
+         0.5./(1+2*sqrt(p)*co2+p));
+     
+     else
+       
+       K = @(co2) ((1+p)./(1+2*p-4*p*co2.^2+p.^2));
+       
+     end
   otherwise
-    K = [];
+    
+    K   = @(co2) ClenshawU(A,acos(co2)*2);
+    %K = [];
 
 end
 

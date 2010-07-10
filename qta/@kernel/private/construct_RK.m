@@ -34,9 +34,12 @@ switch lower(name)
   case 'bump'
     
     RK = @(dmatrix) Rbump(dmatrix,p);
+    
   otherwise    
 
-    RK = [];
+    RK  = @(dmatrix) ClenshawL(A,dmatrix);
+    
+    %RK = [];
     
 end
 
