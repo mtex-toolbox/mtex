@@ -1,4 +1,4 @@
-%% MTEX Installation Guide
+%% Installation Guide
 % Explains how to instal MTEX on you computer.
 %
 % 
