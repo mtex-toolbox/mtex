@@ -39,7 +39,7 @@ v = reshape(v,[],3);
 P = pdf(odf,h,r);
 
 nr = numel(r);
-nx = get_option(varargin,'Points',100);
+nx = fix(get_option(varargin,'Points',100));
 W = v(randi(nr,nx,1),:);
 
 eta = get_option(varargin,'eta',[0.1 0.02]);

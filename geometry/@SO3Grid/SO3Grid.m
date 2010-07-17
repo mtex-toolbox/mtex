@@ -56,7 +56,7 @@ if isa(points,'quaternion')
 
 elseif isa(points,'char') && any(strcmpi(points,{'random'}))
   
-  N = get_option(varargin,'points',1000);
+  N = fix(get_option(varargin,'points',1000));
   alpha = 2*pi*rand(N,1);
   beta  = acos(2*(rand(N,1)-0.5));
   gamma = 2*pi*rand(N,1);

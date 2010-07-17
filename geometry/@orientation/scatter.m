@@ -21,7 +21,7 @@ ss = get(o,'SS');
 
 %% subsample to reduce size
 if numel(o) > 2000 || check_option(varargin,'points')
-  points = get_option(varargin,'points',2000);
+  points = fix(get_option(varargin,'points',2000));
   disp(['plot ', int2str(points) ,' random orientations out of ', ...
     int2str(numel(o)),' given orientations']);
   o.rotation = o.rotation(discretesample(ones(1,numel(o)),fix(points)));
