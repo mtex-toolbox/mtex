@@ -150,7 +150,7 @@ elseif check_option(varargin,'plot') && exist('maxthetafun','var')
 %% random points
 elseif check_option(varargin,'random')
   
-  points = get_option(varargin,'points');
+  points = fix(get_option(varargin,'points'));
   
   G.res = 2*pi;
   G.theta = maxtheta;
@@ -220,7 +220,7 @@ else
   elseif check_option(varargin,'equispaced')
 
     if check_option(varargin,'points') % calculate resolution
-      ntheta = N2ntheta(get_option(varargin,'points'),maxtheta,maxrho);
+      ntheta = N2ntheta(fix(get_option(varargin,'points')),maxtheta,maxrho);
       res =  maxtheta / ntheta;
     else
       res = get_option(varargin,'RESOLUTION',2.5*degree);
