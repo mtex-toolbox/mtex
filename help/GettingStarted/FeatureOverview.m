@@ -1,4 +1,4 @@
-%% MTEX Feature Overview 
+%% Feature Overview 
 % Gives an overview over the central features of the MTEX toolbox.
 %
 %% Contents

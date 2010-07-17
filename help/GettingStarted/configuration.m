@@ -1,4 +1,4 @@
-%% MTEX Configuration and Troubleshooting
+%% Configuration and Troubleshooting
 % Explains how to globaly configure MTEX, i.e. how to set a default Euler angle
 % convention.
 %
@@ -33,12 +33,3 @@ plotpdf(odf,Miller(1,0,0),'resolution',5*degree,'contour');
 % contour lines. Options and flags to a function are allways optional and
 % can be passed in any order.
 %
-%
-%% I Have Crazy Characters in Some Plots 
-%
-% This indicates that your MATLAB installation has problems to interprete
-% LaTex. As a workaround uncomment the following line in 
-% [[matlab:edit mtex_settings.m,mtex_settings.m]].
-
-set_mtex_option('noLaTex');
-
