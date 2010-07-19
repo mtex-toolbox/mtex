@@ -44,7 +44,14 @@ end
 
 
 %% plot
-plot(o,'scatter',varargin{:});
+
+% center of the plot
+center = get_option(varargin,'center',idquaternion);
+varargin = delete_option(varargin,'center');
+q = project2FundamentalRegion(o,center);
+
+plot(quaternion(q),'scatter',varargin{:});
+
 
 %% store appdata
 setappdata(gcf,'CS',cs);
