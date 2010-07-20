@@ -74,9 +74,8 @@ switch lower(char(option))
     lg = 1;
   case 'bingham'
     lg = 1;
-    if isa(center,'double')
-      center = orientation(quaternion(center),CS,SS);
-    end
+    center = orientation(quaternion(center),CS,SS);
+    
     if ~isappr(abs(det(squeeze(double(center)))),1) %orthogonality check
        warning('center seems not to be orthogonal');
     end
