@@ -49,8 +49,7 @@ mod1 = orientation('Miller',[1,2,2],[2,2,1],cs,ss);
 psi = kernel('von Mises Fisher','HALFWIDTH',10*degree);
 odf = unimodalODF(mod1,cs,ss,psi)
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal',...
-  'position',[100   100   600   170])
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
 
 %%
 % For simplicity one can also ommit the kernel function. In this case the
@@ -87,7 +86,7 @@ ss   = symmetry('triclinic');    % specimen symmetry
 C = [1;reshape(eye(3),[],1);reshape(eye(5),[],1)]; % Fourier coefficients
 odf = FourierODF(C,cs,ss)
 
-plot(odf,'sections',6)
+plot(odf,'sections',6,'position',[139   262   762   268])
 
 %%
 
@@ -148,5 +147,5 @@ mod1 = orientation('Miller',[1,2,2],[2,2,1],cs,ss);
 odf =  0.73 * uniformODF(cs,ss,'comment','the SantaFe-sample ODF') ...
   + 0.27 * unimodalODF(mod1,cs,ss,psi)
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal',...
-  'position',[100   100   600   170])
+close all
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
