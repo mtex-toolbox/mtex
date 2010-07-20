@@ -4,7 +4,7 @@ if check_option(varargin,'colorrange','double')
   cr = get_option(varargin,'colorrange',[],'double');
   if cr(2)-cr(1) < 1e-15
     caxis([min(cr(1),0),max(cr(2),1)]);
-  else
+  elseif ~any(isnan(cr))
     caxis(cr);
   end
 end

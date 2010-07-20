@@ -1,4 +1,4 @@
-%% Configuration and Troubleshooting
+%% Configuration
 % Explains how to globaly configure MTEX, i.e. how to set a default Euler angle
 % convention.
 %
