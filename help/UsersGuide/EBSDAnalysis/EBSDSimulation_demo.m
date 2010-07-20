@@ -1,5 +1,6 @@
 %% EBSD Simulation
-% Simulate an arbitary number of individual orientations data from any ODF
+% How to simulate an arbitary number of individual orientations data from
+% any ODF. 
 %
 %% Open in Editor
 %
@@ -32,9 +33,15 @@ ebsd = simulateEBSD(fibre_odf,10000)
 
 %% ODF Estimation from EBSD Data
 %
-% From the 10000 individal orientations we can now estimate an ODF,
+% From the 10000 individal orientations we can now estimate an ODF. First
+% we determine the optimal kernel function
 
-odf = calcODF(ebsd)
+psi = calcKernel(ebsd)
+
+%%
+% and then we use thhis kernel function for kernel density estimation
+
+odf = calcODF(ebsd,'kernel',psi)
 
 %%
 % which can be plotted,
@@ -58,7 +65,8 @@ e = [];
 for i = 1:6
 
   ebsd = simulateEBSD(fibre_odf,10^i);
-  odf = calcODF(ebsd);
+  psi = calcKernel(ebsd);
+  odf = calcODF(ebsd,'kernel',psi);
   e(i) = calcerror(odf,fibre_odf,'resolution',2.5*degree);
 
 end

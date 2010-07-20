@@ -39,8 +39,12 @@ else
   fak = 1;
 end
 
-method = get_option(varargin,'method','KLCV');
+method = get_option(varargin,'method','naiv');
 switch method
+  
+  case 'naiv'
+    
+    c = 1;
   
   case 'LSCV'
     
