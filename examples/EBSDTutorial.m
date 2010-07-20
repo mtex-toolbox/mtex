@@ -30,13 +30,14 @@ plotx2east
 % First we make a spatial plot of the orientations of the crystals of phase
 % 1 using hkl colorcoding.
 
+figure(1)
 plot(ebsd,'colorcoding','hkl','phase',1)
 
 %%
 % The colorcoding can be interpreted by the collored (0,0,1) inverse pole
 % figure
 
-colorbar
+colorbar('position',[100 100 250 250])
 
 
 %% Grain reconstruction
@@ -48,7 +49,7 @@ colorbar
 %%
 % and plot them into our orientation plot
 
-hold on
+figure(1); hold on
 plotboundary(grains)
 
 %%
@@ -60,7 +61,7 @@ plot(grains,'colorcoding','hkl','phase',1)
 % Next we reconstruct an ODF from the EBSD data. Therefore, we first have
 % to fix a kenel function. This can be done by
 
-psi = calcKernel(grains)
+psi = calcKernel(grains,'phase',1)
 
 %%
 % Now the ODF is reconstructed by
