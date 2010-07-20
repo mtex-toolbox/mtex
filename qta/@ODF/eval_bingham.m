@@ -22,10 +22,10 @@ f = zeros(size(g));
 
 n = size(ASym,1);
 
-progress(0,n);
+%progress(0,n);
 for iA = 1:n
   
-  progress(iA,n);
+  %progress(iA,n);
   
   h = dot_outer(g,ASym(iA,:)).^2;  
   h = h * kappa;

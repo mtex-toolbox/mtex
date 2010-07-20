@@ -3,20 +3,23 @@
 % compare subGrid function with the max_angle option to SO3Grid
 %
 
-q = quaternion(SO3Grid(10000,symmetry,symmetry));
+q = quaternion(SO3Grid(100000,symmetry,symmetry));
+
+q = [q,-q];
 
 [alpha,beta,gamma] = Euler(q,'Bunge');
 
 qq = euler2quat(alpha,beta,gamma,'Bunge');
 
 e  = abs(dot(q,qq));
-if mean(e) < 0.9
+if mean(e) < 0.999
   hist(e);
   error('Error in euler - quaternion conversion');
 else
   disp('Euler <-> quaternion conversion is ok!')
 end
 
+return
 
 e = 0;
 for i = 1:length(q)

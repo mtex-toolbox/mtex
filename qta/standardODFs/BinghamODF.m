@@ -24,6 +24,10 @@ argin_check(A,{'double','quaternion'});
 argin_check(CS,'symmetry');
 argin_check(SS,'symmetry');
 
+if length(Kappa) < 4
+  Kappa = [Kappa(:);zeros(4-length(Kappa),1)];
+end
+
 odf = ODF(A,1,Kappa,CS,SS,'Bingham');
 
 % 

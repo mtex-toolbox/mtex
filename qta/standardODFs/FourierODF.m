@@ -23,7 +23,8 @@ if isa(C,'ODF')
   odf = set(odf,'center',[]);
   odf = set(odf,'c',1);
   odf = set(odf,'psi',[]);
-  odf = set_option(odf,'fourier');
+  odf = set(odf,'options',{{'fourier'}});
+  
 else
   error(nargchk(3,3,nargin));
   argin_check(C,'double');

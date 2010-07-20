@@ -35,21 +35,29 @@ end
 
 %% compute Matthies Euler angle
 
-alpha = atan2( qc .* qd - qa .* qb  ,  qb .* qd + qa .* qc );
-beta = acos(max(-1,min(1,-qb.^2 - qc.^2 + qd.^2 + qa.^2)));
-gamma = atan2( qc .* qd + qa .* qb  , -qb .* qd + qa .* qc );
+at1 = atan2(qd,qa);
+at2 = atan2(qb,qc);
+
+alpha = at1 - at2;
+beta = 2*atan2(sqrt(qb.^2+qc.^2),sqrt(qa.^2+qd.^2));
+gamma = at1 + at2;
+
+ind = isnull(beta);
+alpha(ind) = 2*asin(max(-1,min(1,ssign(qa(ind)).*qd(ind))));
+gamma(ind) = 0;
+
+ind = isnull(beta-pi);
+alpha(ind) =  2*asin(max(-1,min(1,ssign(qc(ind)).*qb(ind))));
+gamma(ind) = 0;
+
+%alpha = atan2( qc .* qd - qa .* qb  ,  qb .* qd + qa .* qc );
+%beta = acos(max(-1,min(1,-qb.^2 - qc.^2 + qd.^2 + qa.^2)));
+%gamma = atan2( qc .* qd + qa .* qb  , -qb .* qd + qa .* qc );
 
 % Bunges
 %  gamma = atan2( qb .* qd - qa .* qc ,   qc .* qd + qa .* qb );
 %  beta = acos(max(-1,min(1,-qb.^2 - qc.^2 + qd.^2 + qa.^2)));
 %  alpha = atan2( qb .* qd + qa .* qc  , -qc .* qd + qa .* qb );
-
-
-% if rotational axis equal to z
-ind = isnull(qb) & isnull(qc);
-alpha(ind) = 2*asin(max(-1,min(1,ssign(qa(ind)).*qd(ind))));
-beta(ind) = 0;
-gamma(ind) = 0;
 
 %% transform to right convention
 
@@ -69,7 +77,7 @@ switch convention
   case {'Bunge','ZXZ'}
 
     labels = {'phi1','Phi','phi2'};
-    if beta ~= 0
+    if ~isnull(beta)
       alpha = alpha + pi/2;
       gamma = gamma + 3*pi/2;
     end
