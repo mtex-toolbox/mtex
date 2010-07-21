@@ -17,7 +17,8 @@ function item = addItem(tocentry,title,text,mst)
 [ig2 ref2] = fileparts(ig);
 % 
 if ~isempty(text)
-text = strcat(text{:});
+  text = strcat(text(1:end-1),{' '});
+  text = [text{:}];
 end
 
 item = strcat(' <tr>',...
