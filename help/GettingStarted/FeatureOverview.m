@@ -22,7 +22,7 @@
 %
 % In MTEX it is very simple to define a model ODF as a
 % <uniformODF.html uniform ODFs>, a <unimodalODF.html unimodal ODFs>, a
-% <fibreODF.hml fibre ODFs>, a <BinghamODF.html Bingham distributed ODF>,
+% <fibreODF.hml fibre ODFs>, a <BinghamODF.html Bingham ODF>,
 % or any superposition of these components. Furthermore, the MTEX toolbox
 % allready contains some popular standard ODF as the <SantaFe.html SantaFe>
 % and the <mix2.html mix2> sample ODFs. How to work best with model ODFs in

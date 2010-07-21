@@ -1,6 +1,6 @@
 %% Model ODFs
 % Describes how to define model ODFs in MTEX, i.e., uniform ODFs, unimodal
-% ODFs, fibre ODFs, Bingham distributed ODFs and ODFs defined by its
+% ODFs, fibre ODFs, Bingham ODFs and ODFs defined by its
 % Fourier coefficients. 
 %
 %% Open in Editor
@@ -11,7 +11,7 @@
 %% Introduction
 %
 % MTEX provides a very simple way to define model ODFs, e.g. unimodal ODFs,
-% fibre ODF, Bingham distributed ODFs, or ODFs specified by Fourier
+% fibre ODF, Bingham ODFs, or ODFs specified by Fourier
 % coefficients. The central idea is that MTEX allows you to calculate with
 % ODFs as with ordinary number, i.e., you can multiply and ODF with a
 % certain number, you can add, subtract or rotate ODFs. Model ODFs may be
@@ -92,7 +92,7 @@ plot(odf,'sections',6,'position',[139   262   762   268])
 
 plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
 
-%% Bingham distributed ODFs
+%% Bingham ODFs
 %
 % The Bingham dsitribution is a parametric ODF distribution that allows for
 % many different kinds of ODF, e.g.
@@ -113,7 +113,11 @@ ss = symmetry('-1');
 %%
 % A Bingham unimodal ODF
 
-odf = BinghamODF([-10,-10,-10,10],quaternion(eye(4)),cs,ss)
+% a modal orientation
+mod = orientation('Euler',45*degree,0*degree,0*degree);
+
+% the corresponding Bingham ODF
+odf = BinghamODF(20,mod * quaternion(eye(4)),cs,ss)
 
 plot(odf,'sections',6,'silent','position',[100 100 600 300])
 

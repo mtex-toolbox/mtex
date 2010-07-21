@@ -179,13 +179,6 @@ import_wizard
 %    </td>
 %    <td valign="top"> Aachen ASCII pole figure format.</td>
 %  </tr>
-%  <tr>
-%    <td width="15" valign="top"></td>
-%    <td width="250px" valign="top">
-%      <a href="loadPoleFigure_aachen.html" class="toplink">*.*</a>
-%    </td>
-%    <td valign="top"> Aachen 2 pole figure format.</td>
-%  </tr>
 %   </table>
 % </html>
 %

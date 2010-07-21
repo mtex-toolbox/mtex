@@ -64,7 +64,7 @@
 %% Bingham Distribtution
 %
 % Implement Bingham parameter estimation from EBSD data and compute Fourier
-% coefficients of Bingham distributed ODFs.
+% coefficients of Bingham ODFs.
 %
 %% Joined Counts
 %

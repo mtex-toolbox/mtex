@@ -38,7 +38,7 @@ function [pf,options] = loadPoleFigure_generic(fname,varargin)
 %        'Columns',[1 2 3])
 %
 %% See also
-% interfacesPoleFigure_index munich_interface loadPoleFigure
+% interfacesPoleFigure_index loadPoleFigure
 
 
 % load data
