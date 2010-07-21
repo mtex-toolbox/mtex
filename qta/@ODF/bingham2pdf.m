@@ -14,39 +14,39 @@ else
   error('Either h or r should be a single direction!');
 end
 
-
 kappa = reshape(odf.psi,[],1);
 
-q1 = hr2quat(h,r);
-q2 = q1 .* axis2quat(h,pi);
-      
-ASym = quaternion(symmetrise(odf.center));
-
-sp = odf.c(1);
+% symmetrise h and r
+hSym = symmetrise(h,odf.CS,varargin{:});
+rSym = symmetrise(r,odf.SS);
 
 C = mhyper(odf.psi);
 
-n = size(ASym,1);
-progress(0,n);
-for iA = 1:n
-  
-  progress(iA,n);
+for ih = 1:size(hSym,1)
+  for ir = 1:size(rSym,1)
     
-  A1 = dot_outer(q1,ASym(iA,:));
-  A2 = dot_outer(q2,ASym(iA,:));
-      
-  a = (A1.^2 +  A2.^2) * kappa ./2;
-  b = (A1.^2 -  A2.^2) * kappa ./2;
-  c = (A1 .*  A2) * kappa;
+    q1 = hr2quat(hSym(ih,:),rSym(ir,:));
+    q2 = q1 .* axis2quat(hSym(ih,:),pi);
+    
+    A1 = dot_outer(q1,quaternion(odf.center));
+    A2 = dot_outer(q2,quaternion(odf.center));
+    
+    a = (A1.^2 +  A2.^2) * kappa ./2;
+    b = (A1.^2 -  A2.^2) * kappa ./2;
+    c = (A1 .*  A2) * kappa;
 
-  bc = sqrt(b.^2 + c.^2); 
-  if isfinite(C)
-    Zf = sp.* exp(a) ./ C .* besseli(0,bc)./ size(ASym,1);
-  else  	
-    Zf = sp.* call_extern('evalmhyper','INTERN',d,'EXTERN',kappa,a,bc)./ size(ASym,1);
+    bc = sqrt(b.^2 + c.^2);
+    if isfinite(C)
+      Zf = odf.c(1) * exp(a) ./ C .* besseli(0,bc);
+    else
+      Zf = odf.c(1) * call_extern('evalmhyper','INTERN',d,'EXTERN',kappa,a,bc);
+    end
+  
+    Z = Z + Zf;
+        
   end
-  
-  Z = Z + Zf;
-  
 end
-      
+
+Z = Z ./ size(hSym,1) ./ size(rSym,1);
+
+end
