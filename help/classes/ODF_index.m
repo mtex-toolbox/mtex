@@ -21,7 +21,7 @@
 %% Model ODFs
 %
 % MTEX provides a very simple way to define model ODFs, e.g. unimodal ODFs,
-% fibre ODF, Bingham distributed ODFs or ODFs specified by Fourier
+% fibre ODF, Bingham ODFs or ODFs specified by Fourier
 % coefficients. The central idea is that MTEX allows you to calculate with
 % ODF as with ordinary number. That is you can multiply and ODF with a
 % certain number, you can add, subtract or rotate ODFs. More precise

@@ -13,7 +13,7 @@ for id = 1:length(dirs)
   for pt = pattern
     files = dir(fullfile(dirs{id},pt{:}));
     if ~isempty(files)
-      ug_files =[ ug_files; strcat(dirs{id},filesep,{files.name}')];
+      ug_files =[ ug_files; strcat(dirs{id},filesep,{files.name}')]; %#ok<AGROW>
     end
   end
 end

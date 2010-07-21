@@ -21,7 +21,7 @@
 % *Other Enhangments*
 %
 % * automatic kernel selection in ODF estimation from EBSD data
-% * support for Bingham distributed model ODFs
+% * support for Bingham model ODFs
 % * esimation of Bingham parameters from EBSD data 
 % * faster and more accurate EBSD simulation
 % * faster grain reconstruction

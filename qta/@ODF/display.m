@@ -25,7 +25,7 @@ for i = 1:length(odf)
     disp(['    kernel: ',char(odf(i).psi)]);
     disp(['    center: ',char(odf(i).center{1}),'-',char(odf(i).center{2})]);
   elseif check_option(odf(i),'Bingham')
-    disp('  Bingham distributed portion:');
+    disp('  Bingham portion:');
     disp(['     kappa: ',xnum2str(odf(i).psi)]); 
   else
     disp('  Radially symmetric portion:');
