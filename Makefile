@@ -15,13 +15,10 @@ TARGET= glnxa64
 # please correct the following installation directories:
 #
 # path to FFTW, i.e. to lib/libfftw3.a
-#FFTWPATH = /usr
-FFTWPATH= /home/hielscher/coding/c
+FFTWPATH = /usr
 #
 # path to the NFFT, i.e. to /lib/libnfft3.a
-#NFFTPATH = /usr/local
-NFFTPATH= /home/hielscher/coding/c
-
+NFFTPATH = /usr
 #
 # matlab path
 MATLABPATH = /opt/matlab
@@ -29,7 +26,11 @@ MATLABPATH = /opt/matlab
 # compiler flags
 CFLAGS= -c -O3 -Wall -fomit-frame-pointer -fstrict-aliasing -ffast-math -mfpmath=sse,387 -mieee-fp -m3dnow -mmmx -msse -msse2
 LDFLAGS= -lm #-lpthread
-MEXFLAGS= -compatibleArrayDims#-largeArrayDims
+# MEX flags
+# for 32 bit systems set
+MEXFLAGS=-$(TARGET) -compatibleArrayDims
+# for 64 bit systems set
+#MEXFLAGS=-$(TARGET) -largeArrayDims
 #
 #--------------- end editable section ---------------------------------
 #
@@ -47,7 +48,7 @@ all: $(SUBDIRS)
 
 # rule for cleaning re-compilable files.
 clean:
-	# rm -f c/bin/*
+# rm -f c/bin/*
 	find . -name '*~' -or -name '*.log' -or -name '.directory' -or -name '*.o' -or -name '*.mex*'| xargs /bin/rm -rf
 
 # rule for installing as root
@@ -62,9 +63,9 @@ install:
 check:
 	echo "check installation"
 # comment the next line out if you have a intel/amd processor
-	c/bin/$(target)/pf2odf c/test/pf2odf.txt check
+	c/bin/$(TARGET)/pf2odf c/test/pf2odf.txt check
 # comment the next line out if you have a ibm power cpu
-#	c/bin/$(target)/pf2odf c/test/pf2odf_mac.txt check
+#	c/bin/$(TARGET)/pf2odf c/test/pf2odf_mac.txt check
 
 uninstall:
 	rm -f $(MATLABPATH)/toolbox/local/startup.m

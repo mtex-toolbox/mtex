@@ -32,7 +32,7 @@ LD=gcc
 RM = /bin/rm -f
 LN = /bin/ln
 CFLAGS = -o3 -c -Wall
-MYCFLAGS=$(CFLAGS) -I$(FFTWPATH)/include -I$(NFFTPATH)/include/nfft -I../include
+MYCFLAGS=$(CFLAGS) -I$(FFTWPATH)/include -I$(NFFTPATH)/include -I../include
 LDFLAGS=-lm #-lpthread
 
 # list of static libraris

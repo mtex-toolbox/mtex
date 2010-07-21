@@ -1,7 +1,7 @@
 #------ Pathes ---------------------------------------------------------------
 MATLABPATH ?= /opt/matlab
 TARGET ?= glnxa64
-MEXFLAGS ?= -compatibleArrayDims#-largeArrayDims
+MEXFLAGS ?= -compatibleArrayDims #-largeArrayDims
 
 # ----- NFFT library ---------------------------------------------------------
 
@@ -12,7 +12,7 @@ MTEX_MEX = S1Grid_find S1Grid_find_region S2Grid_find S2Grid_find_region SO3Grid
 all: $(MTEX_MEX)
 
 %: %.c $(MEX_TOOLS)
-	$(MATLABPATH)/bin/mex $(MEXFLAGS) -outdir $(TARGET) $< 
+	$(MATLABPATH)/bin/mex $(MEXFLAGS) -outdir $(TARGET) $<
 
 install:
 
