@@ -194,11 +194,11 @@ web('http://www.crystallography.net/search.html','-browser')
 function get_cs(wzrd)
 % write cs of ebsd / pf to page 
 
-handles = getappdata(wzrd,'handles');
-data = getappdata(wzrd,'data');
+handles = getappdata(gcf,'handles');
+data = getappdata(gcf,'data');
 
 
-cs_counter = getappdata(wzrd,'cs_count');
+cs_counter = getappdata(gcf,'cs_count');
 cs = get(data(cs_counter),'CS');
 
 % set page name
