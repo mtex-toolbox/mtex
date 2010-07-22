@@ -39,26 +39,31 @@ for i=1:length(files)
   close all
   if poptions.evalCode || check_option(varargin,'verbose'),disp(files{i});end
 
-  % publish
-  publish(files{i},poptions);
+  if ~check_option(varargin,'deadlinks')
+    
+    % publish
+    publish(files{i},poptions);
 
   
-  % format html file  
-  code = file2cell(out_file);
-  delete(out_file);
+    % format html file
+    code = file2cell(out_file);
+    delete(out_file);
 
-  % make links
-  code = regexprep(code, '\<([[)(.*?),(.*?)(\]\])\>','<a href="$2">$3</a>');
+    % make links
+    code = regexprep(code, '\<([[)(.*?),(.*?)(\]\])\>','<a href="$2">$3</a>');
   
-  % remove output "calculate: [......]"
-  code(strmatch('calculate: [',code)) = [];
-  code = regexprep(code, 'calculate: [.*','');
-  % insert true file name of mfile
-  code = regexprep(code, 'XXXX',strrep(files{i},'.m',''));
+    % remove output "calculate: [......]"
+    code(strmatch('calculate: [',code)) = [];
+    code = regexprep(code, 'calculate: [.*','');
+    % insert true file name of mfile
+    code = regexprep(code, 'XXXX',strrep(files{i},'.m',''));
 
+    % save  html file
+    cell2file(strrep(out_file,'script_',''),code);
+    
+  else % check for dead links
   
-  % check for dead links
-  if check_option(varargin,'deadlinks')
+    code = file2cell(strrep(out_file,'script_',''));
     links = regexp(code, '\<(?:href=")(\S*?.html)(?:")\>','tokens');
     links = links(~cellfun('isempty',links));
     for j = 1:length(links)
@@ -79,8 +84,7 @@ for i=1:length(files)
     end
   end
   
-  % save  html file
-  cell2file(strrep(out_file,'script_',''),code);
+ 
 
 end
 
