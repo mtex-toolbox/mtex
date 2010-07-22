@@ -1,4 +1,4 @@
-function [psi,c] = calcKernel(ebsd,varargin)
+function psi = calcKernel(ebsd,varargin)
 % compute an optimal kernel function ODF estimation
 %
 %% Input
@@ -33,7 +33,7 @@ psi = get_option(varargin,'kernel',psi);
 % if there are to many orientations -> subsampling
 maxSample = 5000;
 if sampleSize(ebsd) > maxSample
-  fak = (sampleSize(ebsd)/maxSample).^(2/7);
+  fak = (sampleSize(ebsd)/maxSample).^(1/7); % true is 2/7 but let us stay on the save side
   ebsd = subsample(ebsd,maxSample);
 else
   fak = 1;

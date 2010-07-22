@@ -1,4 +1,4 @@
-function [psi c] = calcKernel(grains,varargin)
+function psi = calcKernel(grains,varargin)
 % compute an optimal kernel function ODF estimation
 %
 %% Input
@@ -24,4 +24,4 @@ ebsd = EBSD(o,'options',opt);
   
 % compute kernel function
 varargin = delete_option(varargin,'Phase');
-[psi,c] = calcKernel(ebsd,varargin{:});
+psi = calcKernel(ebsd,varargin{:});
