@@ -119,5 +119,5 @@ plotFourier(odf,'bandwidth',32)
 %%
 % Finally, lets set back the default colormap.
 
-set_mtex_option('defaultColorMap','default');
+set_mtex_option('defaultColorMap',WhiteJetColorMap);
 

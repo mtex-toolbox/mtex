@@ -39,8 +39,12 @@ if nargin == 0
 elseif isa(varargin{1},'orientation')
         
   o = varargin{1};
-  if nargin > 1, o.CS = varargin{2};end
-  if nargin > 2, o.SS = varargin{3};end
+  if nargin > 1 && isa(varargin{2},'symmetry')
+    o.CS = varargin{2};
+    if nargin > 2 && isa(varargin{3},'symmetry')
+      o.SS = varargin{3};
+    end
+  end
   return;
 
 %% determine crystal and specimen symmetry

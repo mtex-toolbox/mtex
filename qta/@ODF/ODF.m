@@ -77,7 +77,7 @@ switch lower(char(option))
     center = orientation(quaternion(center),CS,SS);
     
     if ~isappr(abs(det(squeeze(double(center)))),1) %orthogonality check
-       warning('center seems not to be orthogonal');
+       warning('MTEX:BinghamODF','center seems not to be orthogonal');
     end
   otherwise
     if ~(isa(center,'quaternion') && isa(c,'double') && isa(psi,'kernel')...
