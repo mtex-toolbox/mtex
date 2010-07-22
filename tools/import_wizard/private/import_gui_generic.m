@@ -74,15 +74,12 @@ function plot_callback(varargin)
 page = getappdata(gcbf,'page');
 handles = getappdata(gcbf,'handles');
 
-if page == 1
-  
-  tab = getappdata(handles.tabs,'value');
-  
-  
-handles = getappdata(gcbf,'handles');
-pane = handles.datapane;
-t= find(strcmpi(get(pane,'visible'),'on'),1,'last');
-  
+if page == 1 && isempty(getappdata(gcbf,'data'))
+  %   tab = getappdata(handles.tabs,'value');
+  handles = getappdata(gcbf,'handles');
+  pane = handles.datapane;
+  t= find(strcmpi(get(pane,'visible'),'on'),1,'last');
+
   data = getappdata(handles.listbox(t),'data');
   if isempty(data)
     errordlg('Nothing to plot! Add files to import first!');
@@ -118,7 +115,13 @@ function finish_callback(varargin)
 
 handles = getappdata(gcbf,'handles');
 templates = getappdata(gcbf,'templates');
-lb = handles.listbox;
+
+if ~any(strcmpi('listbox',fieldnames(handles)))
+  lb = [];
+else
+  lb = handles.listbox;
+end
+
 
 data = getappdata(gcbf,'data');
 
