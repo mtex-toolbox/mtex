@@ -26,12 +26,12 @@ end
 
 % prepare kernels for testing
 for k = 1:10
-  psi(k) = kernel('de la Vallee Poussin','halfwidth',40*degree/2^(k/3)); %#ok<AGROW>
+  psi(k) = kernel('de la Vallee Poussin','halfwidth',30*degree/2^(k/3)); %#ok<AGROW>
 end
 psi = get_option(varargin,'kernel',psi);
 
 % if there are to many orientations -> subsampling
-maxSample = 10000;
+maxSample = 5000;
 if sampleSize(ebsd) > maxSample
   fak = (sampleSize(ebsd)/maxSample).^(2/7);
   ebsd = subsample(ebsd,maxSample);
@@ -39,16 +39,29 @@ else
   fak = 1;
 end
 
-method = get_option(varargin,'method','naiv');
+method = get_option(varargin,'method','KLCV');
 switch method
   
-  case 'naiv'
+  case 'RuleOfThumb'
     
-    c = 1;
+    % compute resolution of the orientations
+    ori = get(ebsd,'orientations');
+    if numel(ori) == 0
+      res = 2*pi;
+    else
+      d = angle_outer(ori,ori);
+      d(d<0.005) = pi;
+      res = quantile(min(d,[],2),0.9);
+    end
   
+    hw = max((res * 3)/2,2*degree);
+    psi = kernel('de la Vallee Poussin','halfwidth',hw);    
+    psi = kernel('de la Vallee Poussin',fak*get(psi,'kappa'));
+    
+    return
   case 'LSCV'
     
-    c = LSCV(ebsd,psi);
+    c = -LSCV(ebsd,psi);
     
   case 'KLCV'
     
@@ -56,7 +69,7 @@ switch method
     
   case 'BCV'
     
-    c = BCV(ebsd,psi);
+    c = -BCV(ebsd,psi);
     
   otherwise
     

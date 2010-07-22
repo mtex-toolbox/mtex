@@ -51,16 +51,17 @@ for i = 1:length(odf)
 
     ori(iodf==i) = quaternion(odf(i).center,ic) .* axis2quat(vector3d(axis),angle);
 
-%   elseif check_option(odf(i),'fibre')
-%     
-%     theta = randomSample(odf(i).psi,points,'fibre');
-%     angle = 2*pi*rand(points,1);
-%     
-%     r  = odf(i).center{2};
-%     q0 = hr2quat(odf(i).center{1},r);
-%         
-%     
-%     ori(iodf==i) =  axis2quat(orth(r),theta) .* axis2quat(r,angle) .* q0;
+  elseif check_option(odf(i),'fibre')
+     
+    theta = randomSample(odf(i).psi,points,'fibre');
+    rho   = 2*pi*rand(points,1);
+    angle = 2*pi*rand(points,1);
+    
+    h = odf(i).center{1};
+    r = odf(i).center{2};
+    q0 = hr2quat(h,r);
+    
+    ori(iodf==i) =  axis2quat(r,rho) .* axis2quat(orth(r),theta) .* axis2quat(r,angle) .* q0;
     
   else
 

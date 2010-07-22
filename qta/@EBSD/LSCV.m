@@ -24,11 +24,13 @@ w = w ./ sum(w(:));
 ebsd = set(ebsd,'weight',w);
 
 % compute Fourier coefficients
-L = 32;
+L = 25;
 odf_d = calcODF(ebsd,'kernel',kernel('Dirichlet',L),'Fourier',L,'silent');
 
 
 c = zeros(1,length(psi));
+
+progress(0,length(psi),'compute optimal kernel: ');
 
 for i = 1:length(psi)
   
@@ -49,7 +51,11 @@ for i = 1:length(psi)
   %  ( norm(Fourier(eodf,'l2-normalization'))^2 + norm(psi(i)) ) ...
   %  - sum(w.^2./(1-w).^2 .* eval(conv(eodf,psi(i)),o));
     
-  disp(c(i));
+  %disp(c(i));
+  progress(i,length(psi),'  compute optimal kernel: ');
+  
+  if i>1 && c(i)>c(i-1), break;end
   
 end
 
+progress(length(psi),length(psi),'  compute optimal kernel: ');
