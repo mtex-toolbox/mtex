@@ -7,7 +7,7 @@
 % diffration data. Once such an object has been created the data can be
 % <ModifyPoleFigures.html analyzed and processed> in many ways.
 % Furthermore, such a PoleFigure object is the starting point for
-% <odf_estimation.html PoleFigure to ODF estimation>.
+% <PoleFigure2odf.html PoleFigure to ODF estimation>.
 %
 %% Contents
 %

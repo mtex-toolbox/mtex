@@ -17,7 +17,7 @@ function plotDiff(odf1,odf2,varargin)
 %
 %% See also
 % S2Grid/plot PoleFigure/calcerror ODF/calcerror savefigure
-% plot_index Annotations_demo ColorCoding_demo PlotTypes_demo
+% Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo 
 
 if isa(odf2,'PoleFigure')

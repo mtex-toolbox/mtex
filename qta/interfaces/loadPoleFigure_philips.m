@@ -8,7 +8,7 @@ function pf = loadPoleFigure_philips(fname,varargin)
 % pf    - @PoleFigure
 %
 %% See also
-% interfacesPoleFigure_index philips_interface loadPoleFigure
+% ImportPoleFigureData philips_interface loadPoleFigure
 
 fid = efopen(fname);
   

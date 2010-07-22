@@ -8,7 +8,7 @@ function pf = loadPoleFigure_ptx(fname,varargin)
 %  pf    - @PoleFigure
 %
 %% See also
-% interfacesPoleFigure_index ptx_interface loadPoleFigure
+% ImportPoleFigureData ptx_interface loadPoleFigure
 
 
 fid = efopen(fname);

@@ -8,7 +8,7 @@ function pf = loadPoleFigure_frame(fname,varargin)
 %  pf    - @PoleFigure
 %
 %% See also
-% interfacesPoleFigure_index loadPoleFigure
+% ImportPoleFigureData loadPoleFigure
 
 
 try

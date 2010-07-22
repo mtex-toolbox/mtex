@@ -19,7 +19,7 @@ function plotodf(o,varargin)
 %  AXISANGLE
 %
 %% See also
-% S2Grid/plot savefigure plot_index Annotations_demo ColorCoding_demo PlotTypes_demo
+% S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo 
 
 varargin = set_default_option(varargin,...

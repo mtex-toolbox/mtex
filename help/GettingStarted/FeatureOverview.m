@@ -31,7 +31,7 @@
 %
 %% Import, Analyze and Visualize Diffraction Data
 %
-% Up to now MTEX allready supports a wide range of <interfacesPoleFigure_index.html
+% Up to now MTEX allready supports a wide range of <ImportPoleFigureData.html
 % pole figure formats>. Furthermore, there is a
 % <interface_generic.html generic interface> that allows to import pole
 % figure data that are stored in ASCII files in the theta - rho -
@@ -74,13 +74,13 @@
 % method for your presonal needs.
 %
 % A detailed description of the ODF reconstruction from pole figure data
-% can be found at <odf_estimation.html ODF Estimation>. The problem of
+% can be found at <PoleFigure2odf.html ODF Estimation>. The problem of
 % ghost effect is discussed in greater detail in <ghost_demo.html Ghost
 % Demo>.
 %
 % In order to recover an ODF from EBSD data the method <EBSD_calcODF.html
 % calcODF> has to be called. It computes a ODF to your EBSD data using
-% <EBSD2odf_estimation.html kernel density estimation>.
+% <EBSD2odf.html kernel density estimation>.
 %
 %% Calculate Texture Characteristics 
 %

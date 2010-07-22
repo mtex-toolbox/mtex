@@ -3,7 +3,7 @@ function [odf,alpha] = calcODF(pf,varargin)
 %
 % *calcODF* is one of the main function of the MTEX toolbox.
 % It estimates an ODF from given Polefigure intensities by 
-% <odf_estimation.html fitting an ODF that consists of a large number of unimodal ODFs to the data>.
+% <PoleFigure2odf.html fitting an ODF that consists of a large number of unimodal ODFs to the data>.
 % It does so by minimizing a least squares functional. The command
 % *calcODF* supports <ghost_demo.html automatic ghost correction> and 
 % <dubna_demo.html the zero range method>.
@@ -43,8 +43,8 @@ function [odf,alpha] = calcODF(pf,varargin)
 %  alpha  - scaling factors - calculated during reconstruction
 %
 %% See also
-% odf_estimation ODF_demo PoleFigureSimulation_demo 
-% loadPoleFigure interfacesPoleFigure_index examples_index 
+% PoleFigure2odf ODF_demo PoleFigureSimulation_demo 
+% loadPoleFigure ImportPoleFigureData examples_index 
 
 tic
 

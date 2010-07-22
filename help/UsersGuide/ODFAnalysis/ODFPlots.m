@@ -9,7 +9,7 @@
 % changing the projection or the colorcoding, by outlining certain 
 % orientations or directions, or simply by adding colorbars or legends to
 % plots. All these posibilities are described in the section
-% <plot_index.html Plotting>. 
+% <Plotting.html Plotting>. 
 %
 %% Contents
 %

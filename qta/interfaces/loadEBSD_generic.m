@@ -41,7 +41,7 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 %        'Columns',[1,2,3,5,6,7])
 %
 %% See also
-% interfacesEBSD_index loadEBSD ebsd_demo
+% ImportEBSDData loadEBSD ebsd_demo
 
 % get options
 cs = get_option(varargin,'cs',symmetry('m-3m'));

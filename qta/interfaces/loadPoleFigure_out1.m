@@ -11,7 +11,7 @@ function pf = loadPoleFigure_out1(fname,varargin)
 %  pf - vector of @PoleFigure
 %
 %% See also
-% interfacesPoleFigure_index loadPoleFigure
+% ImportPoleFigureData loadPoleFigure
 
 assert(strcmp(fname(end-2:end),'out'));
 

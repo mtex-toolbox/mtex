@@ -19,7 +19,7 @@ function plotpdf(odf,h,varargin)
 %  COMPLETE - plot entire (hemi)-sphere
 %
 %% See also
-% S2Grid/plot annotate savefigure plot_index Annotations_demo ColorCoding_demo PlotTypes_demo
+% S2Grid/plot annotate savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo 
 
 %% check input

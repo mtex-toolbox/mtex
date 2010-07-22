@@ -35,7 +35,7 @@ function  varargout = plot(S2G,varargin)
 %  LOGARITHMIC - log plot
 %
 %% See also
-% savefigure plot_index Annotations_demo ColorCoding_demo PlotTypes_demo
+% savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo 
 
 

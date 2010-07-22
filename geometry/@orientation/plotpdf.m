@@ -18,7 +18,7 @@ function plotpdf(o,h,varargin)
 %
 %% See also
 % EBSD/plotebsd S2Grid/plot savefigure
-% plot_index Annotations_demo ColorCoding_demo PlotTypes_demo
+% Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
 %% make new plot

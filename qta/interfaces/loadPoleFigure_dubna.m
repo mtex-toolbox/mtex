@@ -15,7 +15,7 @@ function pf = loadPoleFigure_dubna(fname,varargin)
 %  pf    - @PoleFigure
 %
 %% See also
-% loadPoleFigure dubna_interface dubna_demo interfacesPoleFigure_index
+% loadPoleFigure dubna_interface dubna_demo ImportPoleFigureData
 
 try
   d = load(fname);

@@ -3,7 +3,7 @@ function ebsd = EBSD(varargin)
 %
 % *EBSD* is the low level constructor for an *EBSD* object representing EBSD
 % data. For importing real world data you might want to use the predefined
-% [[interfacesEBSD_index.html,EBSD interfaces]]. You can also simulate EBSD data
+% [[ImportEBSDData.html,EBSD interfaces]]. You can also simulate EBSD data
 % from an ODF using [[ODF_simulateEBSD.html,simulateEBSD]].
 %
 %% Syntax
