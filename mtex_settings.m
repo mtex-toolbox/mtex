@@ -48,11 +48,16 @@ set_mtex_option('defaultColorMap',WhiteJetColorMap);
 % MATLAB default color map
 % set_mtex_option('defaultColorMap','default');
 
+%% Turn off Grain Selector
+% turning off the grain selector allows faster plotting
+
+% set_mtex_option('GrainSelector','off')
+
 %% Workaround for LaTex bug
 % comment out the following line if you have problems with displaying LaTex
 % symbols
 
-set_mtex_option('noLaTex');
+% set_mtex_option('noLaTex');
 
 %% Workaround for NFFT bug
 % comment out the following line if MTEX is compiled againsed NFFT 3.1.3 or
@@ -77,12 +82,6 @@ set_mtex_option('ITER_MAX',11);
 % on your system in kilobytes
 
 set_mtex_option('memory',getmem);
-
-%% Turn of LaTex output
-% comment out the following line if you have problems with displaying LaTex
-% symbols
-
-% set_mtex_option('noLaTex');
 
 %% FFT Accuracy 
 % change this value to have more accurate but slower computation when

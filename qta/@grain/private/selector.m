@@ -3,7 +3,9 @@ function selector( h, grains, p,lya )
 
 % convert to cells for layers
 
-
+if strcmpi(get_mtex_option('GrainSelector'),'off'), 
+  return; 
+end
 
 if nargin == 1
   
