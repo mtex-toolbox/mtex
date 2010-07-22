@@ -8,7 +8,7 @@ function pf = loadPoleFigure_juelich(fname,varargin)
 %  pf    - vector of @PoleFigure
 %
 %% See also
-% ImportPoleFigureData juelich_interface loadPoleFigure
+% ImportPoleFigureData loadPoleFigure
 
 % check second commentar line
 % alpha      beta intensity

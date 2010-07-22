@@ -8,10 +8,30 @@
 %
 %% 
 % Starting point of any ODF reconstruction is a 
-% <PoleFigure_index.html PoleFigure> object which can be load e.g. by
+% <PoleFigure_index.html PoleFigure> object which can be created e.g. by
 
-pf = loadPoleFigure([mtexDataPath,'/BearTex/Test_2.XPa']);
-plot(pf,'silent','position',[100 100 900 350])
+% specify scrystal and specimen symmetry
+cs = symmetry('-3m',[1.4,1.4,1.5]);
+ss = symmetry('triclinic');
+
+% specify file names
+fname = {...
+  [mtexDataPath '/dubna/Q(10-10)_amp.cnv'],...
+  [mtexDataPath '/dubna/Q(10-11)(01-11)_amp.cnv'],...
+  [mtexDataPath '/dubna/Q(11-22)_amp.cnv']};
+
+% specify crystal directions
+h = {Miller(1,0,-1,0,cs),[Miller(0,1,-1,1,cs),Miller(1,0,-1,1,cs)],Miller(1,1,-2,2,cs)};
+
+% specify structure coefficients
+c = {1,[0.52 ,1.23],1};
+
+% import pole figure data
+pf = loadPoleFigure(fname,h,cs,ss,'superposition',c)
+
+% plot pole figures
+figure('position',[359 450 749 249])
+plot(pf)
 
 
 %% ODF Estimation
@@ -24,17 +44,55 @@ plot(pf,'silent','position',[100 100 900 350])
 odf = calcODF(pf)
 
 %% 
+% There are a lot of options to the function <PoleFigure_calcODF.html
+% calcODF>. You can specify the discretization, the functional to minimize,
+% the number of iteration or regularization to be applied. Furthermore you
+% can specify ghost correction or the zero range method to be applied.
+% These options are discussed below.
+%
+%% 
 % You may want to verify that the pole figures are reproduced. Here is a
 % plot of the computed pole figures.
 
 plotpdf(odf,get(pf,'Miller'),'antipodal','silent')
 
-%%
-% You can give a lot of options to the function. You can specify the
-% discretization, the functional to minimize, the number of iteration or
-% regularization to be applied. Furthermore you can specify ghost 
-% correction or the zero range method to be applied. 
+
+%% Error analyis
 %
+% For a more quantitative description of the reconstruction quality one can
+% use the function <PoleFigure_calcerror.html calcerror> to compute the
+% fit between the reconstructed ODF and the measured pole figure
+% intensities. The following measured are available:
+%
+% * RP - error
+% * L1 - error
+% * L2 - error
+
+calcerror(pf,odf,'RP',1)
+
+%%
+% In order to recognize bad pole figure intensities it is often usfull to
+% plot difference pole figures between the normalized measured intensities
+% and the recalculated ODF. This can be done by the command
+% <PoleFigure_plotDiff.html PlotDiff>.
+
+plotDiff(pf,odf)
+
+%%
+% Assuming you have drived two ODFs from different pole figure measurements
+% or by ODF modelling. Then one can ask for the difference between both.
+% This difference is computet by the command <ODF_calcerror.html
+% calcerror>.
+
+% define a unimodal ODF with the same modal orienation
+odf_modell = unimodalODF(modalorientation(odf),cs,ss,'halfwidth',15*degree)
+
+% plot the pole figures
+plotpdf(odf_modell,h,'antipodal')
+
+% compute the difference
+calcerror(odf_modell,odf)
+
 %% Discretization
 %
 % In MTEX the ODF is approximated by a superposition of up to 10,000,000
@@ -69,7 +127,7 @@ plotpdf(odf,get(pf,'Miller'),'antipodal','silent')
 % documentation of <PoleFigure_zero_range.html zero_range> or <plot_zero_range.html
 % plot_zero_range>.
 
-odf = calcODF(pf,'zero_range','zr_bg',100)
+odf = calcODF(pf,'zero_range')
 plotpdf(odf,get(pf,'Miller'),'antipodal','silent')
 
 %% Ghost Corrections

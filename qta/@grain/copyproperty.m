@@ -2,7 +2,7 @@ function grains = copyproperty(grains, ebsd, f)
 % copy an abitrary property of the corresponding ebsd object
 %
 %% Syntax
-%  grains = copyproperty(grains,ebsd,@function_handle);
+%  grains = copyproperty(grains,ebsd,function_handle);
 %
 %% Input
 %  grains   - @grain

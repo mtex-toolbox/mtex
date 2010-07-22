@@ -14,7 +14,7 @@ function varargout = Euler(S3G,varargin)
 %  ZXZ, BUNGE - Bunge (phi1,Phi,phi2) convention %
 % 
 %% See also
-%
+% quaternion/Euler
 
 % set convention
 if check_option(varargin,{'Bunge','ZXZ'})

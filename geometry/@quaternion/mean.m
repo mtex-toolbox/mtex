@@ -13,6 +13,7 @@ function [q lambda V] = mean(q,varargin)
 %  V        -
 %
 %% See also
+% orientation/mean
 
 T = qq(q,varargin{:});
 [V lambda ] = eig(T);

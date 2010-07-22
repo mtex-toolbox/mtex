@@ -9,6 +9,7 @@ function varargout = plot(o,varargin)
 %  AXISANGLE - plot in axis / angle
 %
 %% See also
+% orientation/scatter Plotting
 
 %% two dimensional plot -> S2Grid/plot
 

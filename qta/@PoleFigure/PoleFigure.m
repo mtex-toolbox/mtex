@@ -15,7 +15,7 @@ function P = PoleFigure(h,r,data,CS,SS,varargin)
 %  BACKGROUND    - background intensities
 %
 %% See also
-% ImportPoleFigureData loadPoleFigure loadPoleFigure_txt
+% ImportPoleFigureData loadPoleFigure loadPoleFigure_generic
 
 if nargin == 0  
   P.comment = [];

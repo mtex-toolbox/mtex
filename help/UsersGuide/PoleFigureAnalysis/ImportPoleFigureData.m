@@ -119,7 +119,7 @@ import_wizard
 %  <tr>
 %    <td width="15" valign="top"></td>
 %    <td width="250px" valign="top">
-%      <a href="loadPoleFigure_out.html" class="toplink">*.out</a>
+%      <a href="loadPoleFigure_out1.html" class="toplink">*.out</a>
 %    </td>
 %    <td valign="top"> Graz ASCII pole figure format.</td>
 %  </tr>
@@ -231,7 +231,7 @@ plot(pf)
 %
 % The txt files may contain an arbitrary number of header lines, columns or
 % comments and the actual order of the columns may specified by options.
-% For an example importing such data see <generic_interface.html here>.
+% For an example importing such data see <loadPoleFigure_generic.html loadPoleFigure_generic>.
 %
 %
 %% Importing pole figure data from unknown formats

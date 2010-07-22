@@ -42,11 +42,12 @@ plot(grains)
 
 %%
 % The reconstructed grains are stored in the variable *grains* which is
-% actually a list of single [[grain_index.html,grain objects]] each which
-% can be adressed individually.
+% actually a list of single [[grain_index.html,grain objects]] each of which
+% can be adressed and plotted individually.
 
 grains(1)
-plot(grains([110 134 192 199]))
+
+plot(grains([128 201 250]))
 
 %% Grain properties 
 %
@@ -76,7 +77,7 @@ plot(large_grains)
 %% Connection between EBSD Data and a Grains
 %
 % The reconstrcuted grains are connected with its underlaying EBSD data by an
-% identification number. The command <ebsd_link.html link> allows to extract
+% identification number. The command <grain_link.html link> allows to extract
 % all individuell orientations out of an EBSD data set that correspond to a
 % certain list of grains
 

@@ -41,7 +41,7 @@
 %
 % <<odf2.png>>
 %
-% Have a look at the sections <ODFEstimation.html Texture Properties>  and
+% Have a look at the sections <ODFAnalysis.html ODF Analysis>  and
 % <ODFPlot.html ODF plots> for more information. 
 %
 

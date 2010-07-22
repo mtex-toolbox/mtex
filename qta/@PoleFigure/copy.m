@@ -15,7 +15,7 @@ function pf = copy(pf,condition)
 %  pf - @PoleFigure
 %
 %% See also
-% PoleFigure/getdata PoleFigure/delete PoleFigure/getr PoleFigure_index
+% PoleFigure/get PoleFigure/delete PoleFigure/set PoleFigure_index
 
 if isnumeric(condition),
   inds = false(sum(GridLength(pf)),1);

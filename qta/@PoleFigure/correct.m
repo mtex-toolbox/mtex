@@ -16,7 +16,7 @@ function pf = correct( pf, varargin )
 %  pf    - @PoleFigure
 %
 %% See also
-% xrdml_interface loadPoleFigure_xrdml
+%  ModifyPoleFigureData
 
 % Background correction
 bg = get_option(varargin,{'background','bg'});
