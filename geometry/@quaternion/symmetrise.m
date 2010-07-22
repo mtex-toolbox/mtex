@@ -10,6 +10,7 @@ function q = symmetrise(q,CS,SS,varargin)
 %  q - symmetrically equivalent orientations CS x SS x q
 %
 %% See also
+% CrystalSymmetries
 
 q = (q * CS).'; % CS x M
 if nargin>2 && length(SS)>1

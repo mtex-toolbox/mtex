@@ -6,7 +6,7 @@ function out = mtimes(a,b)
 %  out = a * v
 %
 %% Input
-%  a - @SO3rid
+%  a - @SO3Grid
 %  b - @quaternion 
 %  v - @vector3d
 %

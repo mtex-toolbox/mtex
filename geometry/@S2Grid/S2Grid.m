@@ -37,7 +37,7 @@ function G = S2Grid(varargin)
 %  S2Grid('equispaced','resolution',5*degree,'maxrho',pi)
 %
 %% See also
-%
+% vecto3d/vector3d
 
 %% extract options
 

@@ -16,7 +16,7 @@ function exportODF(odf,filename,varargin)
 %  ZXZ,BUNGE - Bunge (phi1,Phi,phi2) convention 
 %
 %% See also
-%
+% ODFImportExport
   
 
 %% open the file

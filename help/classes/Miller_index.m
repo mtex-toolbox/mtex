@@ -61,7 +61,7 @@ symmetrise(m)
 symmetrise(m,'antipodal')
 
 %%
-% The command <eq.html eq or ==> can be used to check whether
+% The command <vector3d_eq.html eq or ==> can be used to check whether
 % two crystal directions are symmetrically equivalent. Compare
 
 Miller(1,1,-2,0,cs) == Miller(-1,-1,2,0,cs)
@@ -75,7 +75,7 @@ eq(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'antipodal')
 %
 % The angle between two crystall directions m1 and m2 is defined as the
 % smallest angle between m1 and all symmetrically equivalent directions to
-% m2. This angle in radiand is calculated by the funtion <Miller_angle.html
+% m2. This angle in radiand is calculated by the funtion <vector3d_angle.html
 % angle> 
 
 angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs)) / degree

@@ -63,7 +63,7 @@ hold off
 
 %%
 % In order to restrict the ebsd data to the polygon we use the command
-% <ebsd_inpolygon.html inpolygon>.
+% <EBSD_inpolygon.html inpolygon>.
 
 % restrict
 ebsd = inpolygon(ebsd,p)

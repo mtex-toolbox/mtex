@@ -2,7 +2,7 @@
 %
 % There is a bundle of examples and tutorials available how to use the MTEX
 % toolbox to perform several tasks in texture analysis. See below for a
-% complete list
+% complete list.
 %
 % * <dubna_tutorial.html A Short Tutorial>
 % * <geometry_demo.html Crystal Geometry Demo>
@@ -11,6 +11,4 @@
 % * <ghost_demo.html Ghost Effect Demo>
 % * <dubna_demo.html Dubna demo>
 % * <SantaFe_demo.html SantaFe Demo>
-% * <plot_demo.html Plotting Demo>
-% * <mtex_demo.html MTEX Workshop 2007>
 %

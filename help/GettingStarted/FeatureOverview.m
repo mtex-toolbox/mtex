@@ -46,7 +46,7 @@
 %
 %% Import, Analyze and Visualize EBSD Data
 %
-% MTEX provides a <ebsd_interface.html generic interface> for EBSD
+% MTEX provides a <ImportEBSDData.html generic interface> for EBSD
 % data. This interface allows to extract orientations and phase informations
 % from almost arbitrary Ascii files. EBSD data may be used for
 % <EBSD2odf.html reconstruction>, Fourier coefficient estimation,

@@ -12,7 +12,7 @@ function modf = calcMODF(odf,varargin)
 %  modf - @ODF
 %
 %% See also
-%
+% EBSD/calcODF
 
 % compute Fourier coefficients 
 odf = calcFourier(odf,32);

@@ -192,7 +192,7 @@ inverse(rot)
 
 %% Plotting Rotations
 %
-% The [[rotation_plot.html,plot]] function allows you to visualize an
+% The <quaternion_plot.html plot> function allows you to visualize an
 % rotation by plotting how the standard basis x,y,z transforms under the
 % rotation.
 

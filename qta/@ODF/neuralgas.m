@@ -19,7 +19,7 @@ function S2G = neuralgas(odf,h,varargin)
 %  S2G = neuralgas(odf,Miller(1,0,0),'points',500,'epoches',25)
 %
 %% See also
-% S2Grid\refine
+% S2Grid/refine
 
 
 argin_check(odf,'ODF');
