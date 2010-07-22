@@ -7,7 +7,7 @@
 % been created the data can be <EBSDPlot.html plotted> and  
 % <ModifyEBSDData.html analyzed and processed> in many ways.
 % Furthermore, such an EBSD variable is the starting point for
-% <GrainModelling.html grain reconstruction> and <EBSD2ODF_estimation.html
+% <GrainModelling.html grain reconstruction> and <EBSD2odf.html
 % ODF estimation>.
 %
 %% Contents

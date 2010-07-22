@@ -222,7 +222,7 @@ for i = 1:length(check)
       if get(check(i),'value')
         set(h,'colormap',flipud(colormap('gray'))/1.2);
       else
-        set(h,'colormap',colormap('jet'));
+        set(h,'colormap',get_mtex_option('defaultColorMap'));
       end
     otherwise
       obj = findall(h,'tag',type);

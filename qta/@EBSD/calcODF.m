@@ -3,7 +3,7 @@ function odf = calcODF(ebsd,varargin)
 %
 % *calcODF* is one of the main function of the MTEX toolbox.
 % It estimates an ODF from given EBSD individual crystal orientations by 
-% <EBSD2odf_estimation.html kernel density estimation>. 
+% <EBSD2odf.html kernel density estimation>. 
 % The function *calcODF* has several options to control the halfwidth of
 % the kernel functions, the resolution, etc. Most important the estimated
 % ODF is affected by the *halfwidth* of the kernel function. If the
@@ -33,7 +33,7 @@ function odf = calcODF(ebsd,varargin)
 %  noFourier        - no Fourier method
 %
 %% See also
-% ebsd_demo EBSD2odf_estimation EBSDSimulation EBSD/loadEBSD ODF/simulateEBSD
+% ebsd_demo EBSD2odf EBSDSimulation EBSD/loadEBSD ODF/simulateEBSD
 
 vdisp(' performing kernel density estimation',varargin{:})
 

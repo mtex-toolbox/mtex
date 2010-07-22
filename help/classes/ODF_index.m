@@ -37,7 +37,7 @@
 % estimated ODFs and difference between model ODFs and estimated ODF. That
 % means any operation that is valid for model ODFs is valid for estimated
 % ODFs as well. More information how to estimate ODFs can be found in the
-% sections <EBSD2odf_estimation.html ODF estimation from EBSD data> and
+% sections <EBSD2odf.html ODF estimation from EBSD data> and
 % <odf_estimation.html ODF estimation from Pole Figure data>.
 %
 %% Analyzing ODFs

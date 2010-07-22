@@ -49,7 +49,7 @@
 % MTEX provides a <ebsd_interface.html generic interface> for EBSD
 % data. This interface allows to extract orientations and phase informations
 % from almost arbitrary Ascii files. EBSD data may be used for
-% <EBSD2odf_estimation.html reconstruction>, Fourier coefficient estimation,
+% <EBSD2odf.html reconstruction>, Fourier coefficient estimation,
 % etc. In fact all methods that are available for ODFs may be applied to
 % ODFs estimated from EBSD. In particular it is possible to compare ODFs
 % estimated from EBSD data with those estimated from pole figure data using
