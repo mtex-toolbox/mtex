@@ -21,6 +21,7 @@ else
   end
   
   try
+    disp('Calling external programm')
     kappa = call_extern('evalmhyper','intern',d,iter,'EXTERN',lambda);
   catch
     warning('only approximated solution of kappas')
