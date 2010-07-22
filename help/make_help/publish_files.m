@@ -37,9 +37,10 @@ for i=1:length(files)
   end
   
   close all
-  if poptions.evalCode || check_option(varargin,'verbose'),disp(files{i});end
-
+  
   if ~check_option(varargin,'deadlinks')
+    
+    if poptions.evalCode || check_option(varargin,'verbose'),disp(files{i});end
     
     % publish
     publish(files{i},poptions);
