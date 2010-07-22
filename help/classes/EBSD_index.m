@@ -82,7 +82,7 @@ hold off
 % The command [[EBSD_calcODF.html,calcODF]]  performs an ODF calculation
 % from EBSD data using kernel density estimation EBSD data. For a precise
 % explaination of the algorithm and the available options look
-% <EBSD2odf_estimation.html here>. 
+% <EBSD2odf.html here>. 
 
 odf = calcODF(ebsd,'halfwidth',10*degree)
 plotpdf(odf,Miller(1,0,0,cs),'antipodal')
