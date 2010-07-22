@@ -8,7 +8,7 @@ function ebsd = toebsd(grains)
 %  ebsd  - @EBSD
 %
 %% See also
-% ebsd/calcODF
+% EBSD/calcODF
 
 cxy = centroid(grains);
 ar = area(grains);

@@ -25,6 +25,6 @@ function [odf,interface,options] = loadODF(fname,varargin)
 %  odf - @ODF
 %
 %% See also
-% interfacesEBSD_index ebsd/calcODF ebsd_demo loadEBSD_generic
+% ImportEBSDData EBSD/calcODF ebsd_demo loadEBSD_generic
 
 [odf,interface,options] = loadData(fname,'ODF',varargin{:});

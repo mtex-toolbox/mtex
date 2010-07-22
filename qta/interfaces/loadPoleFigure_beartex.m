@@ -11,7 +11,7 @@ function pf = loadPoleFigure_beartex(fname,varargin)
 %  pf - vector of @PoleFigure
 %
 %% See also
-% interfacesPoleFigure_index beartex_interface loadPoleFigure
+% ImportPoleFigureData beartex_interface loadPoleFigure
 
 fid = efopen(fname);
 

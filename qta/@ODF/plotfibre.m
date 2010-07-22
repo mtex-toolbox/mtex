@@ -19,7 +19,7 @@ function [x,omega] = plotfibre(odf,h,r,varargin)
 %  plotfibre(SantaFe,Miller(1,1.2,1.6),vector3d(1.1,1.5,1.3))
 %
 %% See also
-% S2Grid/plot savefigure plot_index Annotations_demo ColorCoding_demo PlotTypes_demo
+% S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo 
 
 varargin = set_default_option(varargin,...

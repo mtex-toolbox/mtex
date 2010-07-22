@@ -8,7 +8,7 @@ function ebsd = loadEBSD_sor(fname,varargin)
 % ebsd    - @EBSD
 %
 %% See also
-% interfacesEBSD_index 
+% ImportEBSDData 
 
 % ensure right extension
 try

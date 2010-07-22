@@ -11,7 +11,7 @@ function pf = loadPoleFigure_ibm(fname,varargin)
 %  pf - vector of @PoleFigure
 %
 %% See also
-% interfacesPoleFigure_index loadPoleFigure
+% ImportPoleFigureData loadPoleFigure
 
 assertExt(fname,{'.ibm'});
 

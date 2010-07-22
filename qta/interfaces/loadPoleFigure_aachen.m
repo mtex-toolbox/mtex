@@ -11,7 +11,7 @@ function pf = loadPoleFigure_aachen(fname,varargin)
 %  pf - vector of @PoleFigure
 %
 %% See also
-% interfacesPoleFigure_index aachen_interface loadPoleFigure
+% ImportPoleFigureData aachen_interface loadPoleFigure
 
 fid = efopen(fname);
 

@@ -12,7 +12,7 @@ function ebsd = subsample(ebsd,points)
 %  ebsd    - @EBSD
 %
 %% See also
-% EBSD/delete EBSD/subGrid 
+% EBSD/delete 
 
 ss = sampleSize(ebsd);
 

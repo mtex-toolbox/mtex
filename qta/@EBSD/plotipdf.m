@@ -13,7 +13,7 @@ function plotipdf(ebsd,r,varargin)
 %  COMPLETE - plot entire (hemi)-sphere
 %
 %% See also
-% S2Grid/plot savefigure plot_index Annotations_demo ColorCoding_demo PlotTypes_demo
+% S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo 
 
 %% make new plot

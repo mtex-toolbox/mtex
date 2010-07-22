@@ -15,7 +15,7 @@ plot(pf,'silent','position',[100 100 900 350])
 
 
 %% ODF Estimation
-% See <interfacesPoleFigure_index.html interfaces> for more infomations how to import
+% See <ImportPoleFigureData.html interfaces> for more infomations how to import
 % pole figure data and to create a pole figure object. ODF estimation from
 % a pole figure object is done by the function 
 % <PoleFigure_calcODF.html calcODF>. The most simplest

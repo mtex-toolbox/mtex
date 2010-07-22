@@ -11,7 +11,7 @@ function pf = loadPoleFigure_xrdml(fname,varargin)
 %  pf    - @PoleFigure
 %
 %% See also
-% interfacesPoleFigure_index
+% ImportPoleFigureData
 
 try
   [fdir,fn,ext] = fileparts(fname);

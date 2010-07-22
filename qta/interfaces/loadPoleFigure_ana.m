@@ -11,7 +11,7 @@ function pf = loadPoleFigure_ana(fname,varargin)
 %  pf - vector of @PoleFigure
 %
 %% See also
-% interfacesPoleFigure_index loadPoleFigure
+% ImportPoleFigureData loadPoleFigure
 
 try
   fid = efopen(fname);

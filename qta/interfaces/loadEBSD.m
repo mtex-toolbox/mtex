@@ -25,6 +25,6 @@ function [ebsd,interface,options] = loadEBSD(fname,varargin)
 %  ebsd - @EBSD
 %
 %% See also
-% interfacesEBSD_index ebsd/calcODF ebsd_demo loadEBSD_generic
+% ImportEBSDData EBSD/calcODF ebsd_demo loadEBSD_generic
 
 [ebsd,interface,options] = loadData(fname,'EBSD',varargin{:});

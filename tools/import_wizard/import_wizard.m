@@ -8,7 +8,7 @@ function import_wizard( type, varargin )
 %  type - EBSD | PoleFigure
 %
 %% See also
-% interfacesPoleFigure_index interfacesEBSD_index
+% ImportPoleFigureData ImportEBSDData
 
 
 if nargin == 0,

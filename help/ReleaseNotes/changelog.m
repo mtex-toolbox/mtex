@@ -201,7 +201,7 @@
 %
 % *New Support of EBSD Data Analysis*
 %
-% * [[interfacesEBSD_index.html,Import]] EBSD data from arbitrary data formats.
+% * [[ImportEBSDData.html,Import]] EBSD data from arbitrary data formats.
 % * New class [[EBSD_index.html,EBSD]] to store and manipulate with EBSD
 % data.
 % * [[EBSD_plotpdf.html,Plot pole figures]] and inverse pole figures from

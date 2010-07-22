@@ -25,7 +25,7 @@ function [data,interface,options,idata] = loadData(fname,type,varargin)
 %  ebsd - @EBSD
 %
 %% See also
-% interfacesEBSD_index ebsd/calcODF ebsd_demo loadEBSD_generic
+% ImportEBSDData EBSD/calcODF ebsd_demo loadEBSD_generic
 
 %% process input arguments
 
