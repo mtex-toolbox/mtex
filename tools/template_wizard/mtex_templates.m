@@ -13,6 +13,9 @@ create_template_page(varargin{:});
 
 function create_template_page(varargin)
 
+%dirty
+run(fullfile(mtex_path,'help','make_help','make_mtex_version.m'));
+
 types = {'EBSD','ODF','PoleFigure'};
 pos = find_option(types,varargin);
 if pos > 0,types = types(pos);  end
