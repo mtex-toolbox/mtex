@@ -146,8 +146,8 @@ end
 if check_option(varargin, {'examples','all'})
  
   make_toc_demo;
-%   copyfile( fullfile(mtex_path,'help','make_help','*.css') , ...
-%     fullfile(mtex_path,'examples','html') );
+  copyfile( fullfile(mtex_path,'help','general','*.css') , ...
+    fullfile(mtex_path,'examples','html') );
 
   current_path = fullfile(mtex_path,'examples');
   files = dir(fullfile(current_path ,'*.m'));

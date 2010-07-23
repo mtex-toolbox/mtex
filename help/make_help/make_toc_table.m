@@ -103,6 +103,7 @@ item.td{3}.ATTRIBUTE.valign = 'top';
 
 item(2).td.ATTRIBUTE.width = '15';
 item(2).th.ATTRIBUTE.colspan=2;
+item(2).th.ATTRIBUTE.align='left';
 item(2).th.div = div;
 
 
