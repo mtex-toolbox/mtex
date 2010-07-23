@@ -118,14 +118,30 @@ set_mtex_option('logfile',[get_mtex_option('tempdir'),'output_',host(1:end-1),'_
 
 set_mtex_option('prefix_cmd','');
 
+% --- setting the priorty -----------------------
 % Sometimes it makes sense to run nice in front to lower the priority of
 % the calculations
+
+% on linux machines
 %set_mtex_option('prefix_cmd','nice -n 19 ');
-%
-% Sometimes it is also usefull to have the job running in a seperate xterm.
+
+% on windows machines
+%set_mtex_option('prefix_cmd','start /low /b /wait ');
+% 'start' runs any programm on windows, the option /low sets the process priorty,
+% option /b disables the console window, and the option /wait is required 
+% that matlab waits until calculations are done
+
+% --- open in external window -------------------
+% Sometimes it is also usefull to have the job running in a seperate console window.
+
+% on linux machines
 %set_mtex_option('prefix_cmd','/usr/X11R6/bin/xterm -iconic -e ');
 % The specified option -iconic cause xterm to open in the background.
 % The option -e is necassary to run a program in the terminal. 
+
+% on windows machines
+%set_mtex_option('prefix_cmd','start /wait ');
+
 
 %% commands to be executed after the external c program
 % this might be usefull when redirecting the output or close brackets
