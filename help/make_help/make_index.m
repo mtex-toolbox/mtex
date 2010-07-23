@@ -1,31 +1,20 @@
 function make_index(in_dir, out_file)
-% append function list to in_dir_index.html
+% append function list to in_dir
 
 % extract class name
 class_name = char(regexp(in_dir,'(?<=@)\w*(?=\w*)','match'));
 if ~isempty(class_name), class_name = [class_name,'_'];end
 
-% recreate contents file
-current_dir = pwd; cd(in_dir);
-makecontentsfile('.','force');
-cd(current_dir);
+functions = helpfunc2struct(in_dir);
 
-% read Contents file
-contents = file2cell(fullfile(in_dir,'Contents.m'));
-
-% make section 'Files' to be rearly a section
-
-% make links
-% contents = {contents{3:end}};
-% contents{1} = '%% *Complete function list*';
-% contents = regexprep(contents,'(?<=%\s*)(\w*)(?=\s*-\w*)',...
-%   ['[[' class_name '$1.html,$1]]']);
-
-contents =  [  '%% *Complete function list*',...
-               '% <html><table>',...
-               regexprep(contents(4:end),'%\s+(\w*)\s+-([\W\S]*)', ...
-                ['%  <tr><td width=200px><a href="' class_name '$1.html">$1</td><td> $2 </td></tr>']),...
-              '% </table></html>'];
+contents =  ['%% *Complete function list*',...
+             '% <html><table>',...
+      strcat('%  <tr>',...
+                  '<td width=200px>',...
+                    '<a href="', strcat(class_name, {functions.name}) ,'.html">',...
+                    {functions.name},'</td>',...
+                  '<td>', {functions.description},'</td></tr>'),...
+             '% </table></html>'];
 
 % append contents to out_file
 cell2file(out_file,contents,'a');

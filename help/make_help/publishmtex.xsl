@@ -26,7 +26,7 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
   </xsl:choose>
 </xsl:variable>
 
-<xsl:variable name="mtexversion">MTEX 3.0 beta 4</xsl:variable>
+<xsl:variable name="mtexversion" select="document('mtex_version.xml')//mtex/version"/>
 
 <xsl:template match="mscript">
   <html>
@@ -45,7 +45,6 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
     </head>
     
     <body>
-      
       <a><xsl:attribute name="name">top_of_page</xsl:attribute></a>
       <p><xsl:attribute name="style">font-size:1px;</xsl:attribute></p>
       
@@ -135,7 +134,7 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
                     </xsl:choose>
                   </xsl:variable>
                   <xsl:element name="{$headinglevel}">
-                    <xsl:value-of select="steptitle"/> 
+                    <xsl:apply-templates select="steptitle"/>
                     <xsl:if test="not(steptitle[@style = 'document'])">
                       <a><xsl:attribute name="name"><xsl:value-of select="position()"/></xsl:attribute></a>
                     </xsl:if>
@@ -154,6 +153,15 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
               <xsl:apply-templates select="mcodeoutput|img"/>
             </xsl:otherwise>
           </xsl:choose>
+          
+          
+          <xsl:if test="section">
+            <xsl:choose>
+              <xsl:when test="section > 0"><xsl:call-template name="backtosec"/></xsl:when>
+              <xsl:otherwise><xsl:call-template name="backtotop"/></xsl:otherwise>
+            </xsl:choose>           
+          </xsl:if>
+          
         </xsl:for-each>
         
         <!-- Contents of each cell -->
@@ -214,6 +222,14 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
 
 <xsl:template name="backtotop">  
   <p class="pagenavlink"><script language="Javascript">addTopOfPageButtons();</script><a href="#top_of_page">Back to Top</a></p>
+</xsl:template>
+
+
+<xsl:template name="backtosec">
+<p class="pagenavlink">
+  <script language="Javascript">updateSectionId("<xsl:value-of select="section"/>");</script>
+  <script language="Javascript">addTopOfSectionButtons();</script>
+  <a><xsl:attribute name="href">#<xsl:value-of select="section"/></xsl:attribute>Back to Top of Section</a></p>
 </xsl:template>
 
 
@@ -320,6 +336,7 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
+
 <xsl:template match="b">
   <b><xsl:apply-templates/></b>
 </xsl:template>
@@ -335,6 +352,27 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
     <xsl:apply-templates/>
   </a>
 </xsl:template>
+
+<xsl:template match="table">
+  <xsl:copy-of select="."/>
+</xsl:template>
+
+<xsl:template match="span">
+  <xsl:copy-of select="."/>
+</xsl:template>
+
+<xsl:template match="div">
+  <xsl:copy-of select="."/>
+</xsl:template>
+
+<xsl:template match="tr">
+  <tr><xsl:apply-templates/></tr>
+</xsl:template>
+<xsl:template match="td">
+  <td><xsl:apply-templates/></td>
+</xsl:template>
+
+
 <xsl:template match="html">
     <xsl:value-of select="@text" disable-output-escaping="yes"/>
 </xsl:template>

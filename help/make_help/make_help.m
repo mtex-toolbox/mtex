@@ -11,6 +11,8 @@ timing = tic;
 plotx2east;
 html_path = fullfile(mtex_path,'help','html');
 
+
+
 global mtex_progress;
 mtex_progress = 0;
 
@@ -27,35 +29,33 @@ set(0,'DefaultFigureColor','white');
 
 %% update version string
 
-generateversionnumber;
+make_mtex_version;
 
-%maintain style-sheet
-copyfile( fullfile(mtex_path,'help','make_help','*.css') , ...
-  fullfile(mtex_path,'help','html') );
+%% generate general help files
 
+tocopy(1).from = strcat('help',filesep,'general',filesep,...
+                                      {'*.gif','*.html','*.css','*.js'});
+tocopy(1).to   = '';
+
+tocopy(2).from = {'README','COPYING','VERSION'};
+tocopy(2).to   = '*.txt';
+
+copy_it = @(infile,to) cellfun( @(from) copyfile( ...
+  fullfile(mtex_path,from),regexprep(to,'*',from)), infile);
+
+arrayfun(@(x) copy_it(x.from,fullfile(html_path,x.to)), tocopy);
 
 %% generate TOCs
 
 if nargin > 0 && ~check_option(varargin,{'clear','notoc'})
-  make_toc(varargin{:});
+  make_toc;
 end
 
-%% generate general help files
+%% generate Function list
 
-% if check_option(varargin, {'general','all'})
-  locations = {...
-    {{'help' 'general' '*.gif'},    {'help' 'html'}},...    
-    {{'help' 'general' '*.html'},    {'help' 'html'}},...
-    {{'help' 'general' '*.js'},    {'help' 'html'}},...
-    {{'README'},                  {'help' 'html' 'README.txt'}},...
-    {{'COPYING'},                 {'help' 'html' 'COPYING.txt'}},...
-    {{'VERSION'},                 {'help' 'html' 'VERSION.txt'}}};
-  
-  copyfiles = @(a,b) copyfile( fullfile(mtex_path,a{:}) , fullfile(mtex_path,b{:}) );
-  
-  cellfun(@(pos) copyfiles(pos{1},pos{2}), locations);
-% end
-
+if check_option(varargin,{'FunctionsReference','all'})
+  make_funcref;
+end
 
 %% generate classes index files
 
@@ -145,9 +145,9 @@ end
 %% calculate examples
 if check_option(varargin, {'examples','all'})
  
-  
-  copyfile( fullfile(mtex_path,'help','make_help','*.css') , ...
-    fullfile(mtex_path,'examples','html') );
+  make_toc_demo;
+%   copyfile( fullfile(mtex_path,'help','make_help','*.css') , ...
+%     fullfile(mtex_path,'examples','html') );
 
   current_path = fullfile(mtex_path,'examples');
   files = dir(fullfile(current_path ,'*.m'));
@@ -185,3 +185,4 @@ function o = is_newer(f1,f2)
 d1 = dir(f1);
 d2 = dir(f2);
 o = ~isempty(d1) && ~isempty(d2) && d1.datenum > d2.datenum;
+
