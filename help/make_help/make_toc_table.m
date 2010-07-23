@@ -1,98 +1,114 @@
 function table = make_toc_table(toc_list)
-
-table = {'<table class="refsub" width="90%">'};
-
-for tocentry = reshape(toc_list,1,[])
-  mst = file2mst(tocentry{:});
-  table = [table addItem(tocentry{:},mst(1).title,mst(1).text,mst)];
-end
-
-table{end+1} = '</table>';
-
-
-
-function item = addItem(tocentry,title,text,mst)
-
-[ig ref] = fileparts(tocentry);
-[ig2 ref2] = fileparts(ig);
 % 
-if ~isempty(text)
-  text = strcat(text(1:end-1),{' '});
-  text = [text{:}];
+
+tabl.ATTRIBUTE.class = 'refsub';
+tabl.ATTRIBUTE.width = '90%';
+
+tr = [];
+for k=1:numel(toc_list)
+	mst = file2mst(toc_list{k});
+	tr = [tr makeItem(toc_list{k},mst(1).title,mst(1).text,mst)];
 end
 
-item = strcat(' <tr>',...
-    '<td width="15"  valign="top">',...
-    '<div align="center">',...
-    '<a href="#" onClick="return toggleexpander(''', ref, '_block'',''', ref, '_expandable_text'');">',...
-    '<img style="border:0;" id="', ref, '_expandable_text" src="arrow_right.gif">',...
-    '</a></div>',...
-    '</td><td width="250px"  valign="top"><a href="', ref,  '.html" class="toplink">' ,title, '</a></td>',...
-    '<td valign="top">',text , '</td></tr>');
-  
-if nargin > 3
-   item = [item,...
-      ['<tr><td width="15"  valign="top"></td><th colspan="2"><div style="display:none; background:#e7ebf7; padding-left:2ex;" id="', ref, '_block" class="expander">']];
-    
-  if strcmp(ref,ref2)
-    item = [item, toc2subToc(ig)];
-  else  
-    item = [item, m2subToc(ref,mst)];  
+html= createDom;
+struct2DOMnode(html, html.getDocumentElement, tr, 'tr');
+
+table = xmlwrite(html);
+table = table(40:end);
+
+table = regexp(table,'\n','split');
+
+
+function item = makeItem(file,title,text,mst)
+
+[above_folder ref] = fileparts(file);
+[ig2 ref2] = fileparts(above_folder);
+
+if ~isempty(text), text = strcat(text{:}); end
+
+a.ATTRIBUTE.href = '#';
+a.ATTRIBUTE.onClick =  ['return toggleexpander(''', ref, '_block'',''', ref, '_expandable_text'');'];
+img.ATTRIBUTE.style = 'border:0px';
+img.ATTRIBUTE.id = [ref, '_expandable_text'];
+img.ATTRIBUTE.src = 'arrow_right.gif';
+
+div.ATTRIBUTE.align = 'center';
+div.a = a;
+div.a.img = img;
+
+item.td{1}.ATTRIBUTE.width = 15;
+item.td{1}.ATTRIBUTE.valign= 'top';
+item.td{1}.div = div;
+
+td.ATTRIBUTE.valign = 'top';
+td.ATTRIBUTE.width = '250px';
+
+td.ATTRIBUTE.valign = 'top';
+td.a.ATTRIBUTE.onClick = ['return toggleexpander(''', ref, '_block'',''', ref, '_expandable_text'');'];
+td.a.ATTRIBUTE.onDblClick = ['document.location.href="' ref '.html"'];
+td.a.ATTRIBUTE.href = '#';
+%[ref, '_expandable_text'];
+td.a.ATTRIBUTE.class = 'toplink';
+td.a.CONTENT = title;
+
+
+div = [];
+div.ATTRIBUTE.style = 'display:none; background:#e7ebf7; padding-left:2ex;';
+div.ATTRIBUTE.id    = [ref, '_block'];
+div.ATTRIBUTE.class = 'expander';
+% div.CONTENT = text;
+
+
+
+
+tr = [];
+
+if ~strcmpi(ref,ref2)
+  titles = {mst(2:end).title};
+  rel = find(cellfun(@(x) ~isempty(x) && ~any(strcmpi(x,badKeyword)) ,titles));
+
+  for k=1:numel(rel)
+    a = [];
+    a.CONTENT = titles{ rel(k) };
+    a.ATTRIBUTE.href = [ ref '.html#' num2str(rel(k))];
+    a.ATTRIBUTE.style = 'font-weight:normal';
+    tr(k).td.a = a;
+    tr(k).td.ATTRIBUTE.align = 'left';
   end
-  item = [item, '</div></th></tr>'];
-% strvcat(item)
-end
-
-
-function str = m2subToc(ref,mst,varargin)
-
-str = {'<table>'};
-badKeyw = {'Abstract','Contents','Open in Editor','See also','View Code'};
-
-refcells = ~cellfun('isempty',{mst.title});  
-for k=2:numel(refcells)
-  if ~isempty(mst(k).title) && ~any(strcmpi(mst(k).title,badKeyw))
-    str{end+1} = ['<tr><td valign="top" align="left"><a href="', [ ref '.html#' num2str(k-1)],  '" class="blanklink">' ,mst(k).title, ...
-                           '</a></td></tr>'];
+else
+  ug_files = get_ug_files(fullfile(mtex_path,'help','UsersGuide'),{'*.m','*.html'});
+  toc_list = regexprep(file2cell(fullfile(above_folder,'toc')),'\s(\w*)','');
+  for k = 1:numel(toc_list);
+    ug_file = get_ug_filebytopic(ug_files,toc_list{k});
+    mst = file2mst(ug_file);
+    
+    a = [];
+    a.CONTENT = mst(1).title;
+    a.ATTRIBUTE.href = [toc_list{k}  '.html'];
+    a.ATTRIBUTE.style = 'font-weight:normal';
+    tr(k).td.a = a;
+    tr(k).td.ATTRIBUTE.align = 'left';     
   end
 end
-str{end+1} = '</table>';
 
-% strvcat(str)
+div.table.tr = tr;
+% div.table.ATTRIBUTE.class = 'contents';
 
 
-function str = toc2subToc(folder,toc_list)
+% td.table.tr{2}.td.div = div;
+item.td{2} = td;
+item.ATTRIBUTE.align ='left';
+item.td{3}.CONTENT = text;
+item.td{3}.ATTRIBUTE.valign = 'top';
 
-    
-top = regexprep(file2cell(fullfile(folder,'toc')),'\s(\w*)','');
-ug_files = get_ug_files(fullfile(mtex_path,'help'),{'*.m','*.html'});
-
-str = {'<table>'};
-for k=1:numel(top)
-  mst = file2mst(get_ug_filebytopic(ug_files,top{k}));
-  str{end+1} = ['<tr><td valign="top" align="left"><a href="', [ top{k} '.html'],  '" class="blanklink">' , mst(1).title, ...
-                           '</a></td></tr>'];                     
-end
-str{end+1} = '</table>';
+item(2).td.ATTRIBUTE.width = '15';
+item(2).th.ATTRIBUTE.colspan=2;
+item(2).th.div = div;
 
 
 
-function extension = get_fileext(fname)
-extension = fname(find(fname == '.', 1, 'last'):end);
-
-
-function mst = file2mst(file)
-
-switch get_fileext(file)
-	case '.m' 
-    fid = fopen(file);  
-    mst = m2struct(char(fread(fid))');
-    fclose(fid);
-  case '.html'
-    docr = xmlread(file);
-    title = docr.getElementsByTagName('title');
-    intro = docr.getElementsByTagName('introduction');
-      
-    mst(1).title = char(title.item(0).getFirstChild.getNodeValue());
-    mst(1).text = {char(intro.item(0).getFirstChild.getNodeValue)};
-end
+function html = createDom
+html = com.mathworks.xml.XMLUtils.createDocument('table');
+htmlt = html.getDocumentElement();
+htmlt.setAttribute('class','ref');
+htmlt.setAttribute('width','90%');
