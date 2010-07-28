@@ -21,6 +21,7 @@ function [odf,alpha] = calcODF(pf,varargin)
 %  NO_BACKGROUND    - pure L^2 minimization
 %  KERNEL           - the ansatz functions (default = de la Vallee Poussin)
 %  KERNELWIDTH      - halfwidth of the ansatz functions (default = 2/3 * resolution)
+%  HALFWIDTH        -     "      "  "    "        "
 %  RESOLUTION       - localization grid for the ansatz fucntions (default = 3/2 resolution(pf))
 %  BANDWIDTH        - bandwidth of the ansatz functions (default = max)
 %  ITER_MAX         - maximum number of iterations (default = 11)
@@ -60,7 +61,7 @@ if ~(CS == get(S3G,'CS') && SS == get(S3G,'SS'))
     qwarning('Symmetry of the Grid does not fit to the given Symmetrie');
 end
 
-kw = get_option(varargin,'KERNELWIDTH',get(S3G,'resolution'),'double');
+kw = get_option(varargin,{'HALFWIDTH','KERNELWIDTH'},get(S3G,'resolution'),'double');
 psi = get_option(varargin,'kernel',...
   kernel('de la Vallee Poussin','HALFWIDTH',kw),'kernel');
 
