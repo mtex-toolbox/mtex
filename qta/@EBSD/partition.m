@@ -40,8 +40,8 @@ for k=1:numel(ebsd)
       %presort
       o = ebsd(k).orientations(ndx);
 
-      if ~isempty(ebsd(k).xy), do_xy = true;
-        xy = ebsd(k).xy(ndx,:);
+      if ~isempty(ebsd(k).X), do_xy = true;
+        xy = ebsd(k).X(ndx,:);
       else do_xy = false; end
       
       
@@ -53,7 +53,7 @@ for k=1:numel(ebsd)
       for l=1:numel(pos)-1
         obj(aind(l)).orientations = op{l};
 
-        if do_xy, obj(aind(l)).xy = xy(pos(l)+1:pos(l+1),:); end
+        if do_xy, obj(aind(l)).X = xy(pos(l)+1:pos(l+1),:); end
         if do_options, obj(aind(l)).options = options(l); end        
       end
     else

@@ -25,6 +25,6 @@ else
 end
 
 for k = 1:length(ebsd)
-  xy = [ebsd(k).xy ones(length(ebsd(k).xy),1)] * T';
-  ebsd(k).xy = xy(:,1:2);
+  xy = [ebsd(k).X ones(length(ebsd(k).X),1)] * T';
+  ebsd(k).X = xy(:,1:2);
 end

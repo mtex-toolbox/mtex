@@ -74,7 +74,7 @@ end
 
 %% plot
 
-xy = get(ebsd,'xy');
+xy = get(ebsd,'X');
 % y = get(ebsd,'y');
 
 try %if ~check_option(varargin,'raster')
@@ -115,7 +115,7 @@ function txt = tooltip(empt,eventdata,ebsd) %#ok<INUSL>
 pos = get(eventdata,'Position');
 xp = pos(1); yp = pos(2);
 
-xy = vertcat(ebsd.xy);
+xy = vertcat(ebsd.X);
 [x y] = fixMTEXscreencoordinates(xy(:,1),xy(:,2));
 
 delta = prod(diff([min(xy);max(xy)]))./(size(xy,1)/2);

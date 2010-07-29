@@ -1,4 +1,4 @@
-function [grains ebsd] = segment2d(ebsd,varargin)
+function [grains ebsd] = segment3d(ebsd,varargin)
 % angle threshold segmentation of ebsd data 
 %
 %% Input
@@ -21,7 +21,7 @@ function [grains ebsd] = segment2d(ebsd,varargin)
 %  [grains ebsd] = segment2d(ebsd(1:2),'angle',[10 15]*degree,'augmentation','cube')
 %
 %% See also
-% grain/grain
+% grain/grain EBSD_segment2d
 
 %% segmentation
 % prepare data
@@ -44,7 +44,7 @@ if isempty(xy), error('no spatial data');end
 if numel(m) ~= numel(n)
   warning('mtex:GrainGeneration','spatially duplicated data points, perceed by erasing them')
   ind = ~ismember(1:sum(sampleSize(ebsd)),m);
-  [grains ebsd] = segment2d(delete(ebsd,ind),varargin{:});
+  [grains ebsd] = segment3d(delete(ebsd,ind),varargin{:});
   return
 end
 
@@ -67,7 +67,7 @@ phase = phase(m);
 
 %% grid neighbours
 
-[neighbours vert cells] = neighbour(xy, varargin{:});
+[neighbours vert cells tri] = neighbour(xy, varargin{:});
   [sm sn] = size(neighbours); %preserve size of sparse matrices
 [ix iy]= find(neighbours);
 
@@ -115,14 +115,16 @@ for i=1:numel(ebsd)
 end
 
 % disconnect regions
-regions = xor(angles,phases); 
-
+regions = xor(angles,phases);
 clear angles phases
 
 
 %% convert to tree graph
 
 ids = graph2ids(regions);
+
+
+%%
 
 
 %% retrieve neighbours
@@ -134,39 +136,108 @@ T3 = T1*T2;
 nn = T3*T1'; %neighbourhoods of regions
              %self reference if interior has not connected neighbours
 
+             
+             
 %% subfractions 
 
-inner = T1 & T3;
-[ix iy] = find(inner');
+% inner = T1 & T3 ;
+% [ix iy] = find(inner);
+% [ix ndx] = sort(ix);
+% cfr = unique(ix);
+% cfr = sparse(1,cfr,1:length(cfr),1,length(nn));
+% iy = iy(ndx);
+% 
+% if ~isempty(iy)
+%   innerc = mat2cell(iy,histc(ix,unique(ix)),1);
+% 
+%   %partners
+%   [lx ly] = find(T2(iy,iy));
+%   nx = [iy(lx) iy(ly)];
+%   ll = sortrows(sort(nx,2));
+%   ll = ll(1:2:end,:); % subractions
+% 
+% 
+%   nl = size(ll,1);
+%   lines = zeros(nl,2);
+% 
+%   for k=1:nl
+%     left = cells{ll(k,1)};
+%     right = cells{ll(k,2)};
+%     mm = ismember(left, right);
+%     lines(k,:) = left(mm);  
+%   end
+% 
+%   xx = [vert(lines(:,1),1) vert(lines(:,2),1)];
+%   yy = [vert(lines(:,1),2) vert(lines(:,2),2)];
+% 
+%   nic = length(innerc);
+%   fractions = cell(size(nic));
+% 
+%   for k=1:nic
+%     mm = ismember(ll,innerc{k});
+%     mm = mm(:,1);
+%     fr.xx = xx(mm,:)';
+%     fr.yy = yy(mm,:)'; 
+%     fr.pairs = m(ll(mm,:));
+%       if numel(fr.pairs) <= 2, fr.pairs = fr.pairs'; end
+%     fractions{k} = fr;
+%   end
+% else
+%   fractions = cell(0);
+% end
+%% subfractions 
 
-fract = cell(1,max(ids));
-if ~isempty(iy)
-	pos = [0; find(diff(iy)); numel(iy)];
-  
-  for l=1:numel(pos)-1
-    ndx = pos(l)+1:pos(l+1);
+inner = T1 & T3 ;
 
-    sx = ix(ndx);
-    [lx ly] = find(T2(sx,sx));
-    nx = [sx(lx) sx(ly)];
+if ~isempty(inner)
+  [ix iy] = find(inner');
+  pos = [0; find(diff(iy)) ; numel(iy)];
 
-    lines = zeros(size(nx));
-    for k=1:size(nx,1)    
-      ax = sort(cells{nx(k,1)});
-      ay = sort(cells{nx(k,2)});
-      lines(k,:) = ax(ismembc(ax,ay));
-    end
+  trisa = vertcat(tri{:});
+  [tris fo ind] = unique(sort(trisa,2),'rows');
+  ind = mat2cell(ind,cellfun('size',tri,1),1);
+
+   fraction = cell(1,max(ids));
+  for k=1:numel(pos)-1
+    ndx = pos(k)+1:pos(k+1);
+    gid = iy(ndx(1));
+    vid = ix(ndx);
+
+    [lx ly] = find(T2(vid,vid));
+
+    f = vid([lx ly]);
+
+    l = ind(f(:,1));
+    r = ind(f(:,2));
+
+    l = [l{:}];
+    r = [r{:}];
+
+    ll = repmat(1:size(l,2),6,1);
+
+    I = sparse(l,ll,1) &  sparse(r,ll,2);
+
+    [llx lly] = find(I);
+    [llx b c]= unique(llx);
+
+    subfaces = trisa(fo(llx),:);
+
+    [vfaces ig subfaces] = unique(subfaces);
+
+    frac.pair = m(f(b,:));
     
-    fr.xx = reshape(vert(lines,1),size(lines))';
-    fr.yy = reshape(vert(lines,2),size(lines))';
-    fr.pairs = reshape(nx,[],2);
+    p = struct(polytope);
+    p.Faces = reshape(subfaces,[],size(tris,2));
+    p.Vertices = vert(vfaces,:);
     
-    fract{l} = fr;
+    frac.P = polyeder(p);
+
+    fraction{gid} = frac;
+
   end
-    
 end
-                
-%clean up
+
+
 clear T1 T2 T3 regions angel_treshold
 
 
@@ -175,6 +246,7 @@ clear T1 T2 T3 regions angel_treshold
 ids = ids(n); %sort back
 phase = phase(n);
 cells = cells(n);
+tri = tri(n);
 
 %store grain id's into ebsd option field
 cids =  [0 cumsum(sampleSize(ebsd))];
@@ -204,29 +276,26 @@ end
 nc = length(id);
 
 % neighbours
+[ix iy] = find(nn);
+pos = [0; find(diff(iy)); numel(iy)];
 neigh = cell(1,nc);
-if ~isempty(nn)  
-  [ix iy] = find(nn);  
-  if ~isempty(iy)
-    pos = [0; find(diff(iy)); numel(iy)];
-    for l=1:numel(pos)-1
-      ndx = pos(l)+1:pos(l+1);
-      neigh{ iy(ndx(1)) } = ix(ndx);
-    end
-  end
+for l=1:numel(pos)-1
+  ndx = pos(l)+1:pos(l+1);
+  neigh{ iy(ndx(1)) } = ix(ndx);
 end
 
-if check_mtex_option('debug')
-  vdisp(['  ebsd segmentation: '  num2str(toc(s)) ' sec'],varargin{:});
-end
+vdisp(['  ebsd segmentation: '  num2str(toc(s)) ' sec'],varargin{:});
 
 
 %% retrieve polygons
 s = tic;
 
-ply = createpolygons(cells,id,vert);
+ply = createpolyeder(cells,id,vert,tri);
 
 comment =  ['from ' ebsd(1).comment];
+
+% fract = cell(1,nc);
+% fract(find(cfr)) = fractions;
 
 domean = cellfun('prodofsize',id) > 1;
 orientations(domean) = cellfun(@mean,orientations(domean),'uniformoutput',false);
@@ -248,21 +317,21 @@ end
 gr = struct('id',cid,...
        'cells',id,...
        'neighbour',neigh,...    %       'polygon',[],...
-       'checksum',cchek,...
-       'subfractions',fract,...       
+       'checksum',cchek,...   
+       'subfractions',fraction,...       
        'phase',phase_ebsd,...
        'orientation',orientations,...
        'properties',cprop,...
        'comment',ccom);
-
+     
+    
 grains = grain(gr,ply);
 
 
 
-if check_mtex_option('debug')
-  vdisp(['  grain generation:  '  num2str(toc(s)) ' sec' ],varargin{:});
-  vdisp(' ',varargin{:})
-end
+
+vdisp(['  grain generation:  '  num2str(toc(s)) ' sec' ],varargin{:});
+vdisp(' ',varargin{:})
 
 
 
@@ -288,36 +357,37 @@ for i = n:-1:1,
 end;
 
 
-function [F v c] = neighbour(xy,varargin)
+function [F v c tri] = neighbour(xy,varargin)
 % voronoi neighbours
 
-[v c] = spatialdecomposition(xy,'voronoi',varargin{:});
 
-il = cat(2,c{:});
-jl = zeros(1,length(il));
+[v c tri] = spatialdecomposition3d(xy,'unitcell',varargin{:});
+clear xy
+il = (cat(2,c{:}));
+jl = (zeros(1,length(il)));
 
 cl = cellfun('length',c);
 ccl = [ 0 ;cumsum(cl)];
 
 if ~check_option(varargin,'unitcell')
   %sort everything clockwise  
-  parts = [0:10000:numel(c)-1 numel(c)];
-  
-  f = false(size(c));
-  for l=1:numel(parts)-1
-    ind = parts(l)+1:parts(l+1);
-    cv = v( il( ccl(ind(1))+1:ccl(ind(end)+1) ),:);
-        
-    r = diff(cv);
-    r = r(1:end-1,1).*r(2:end,2)-r(2:end,1).*r(1:end-1,2);
-    r = r > 0;
-    
-    f( ind ) = r( ccl(ind)+1-ccl(ind(1)) );
-  end
-  
+%   parts = [0:10000:numel(c)-1 numel(c)];
+%   
+%   f = false(size(c));
+%   for l=1:numel(parts)-1
+%     ind = parts(l)+1:parts(l+1);
+%     cv = v( il( ccl(ind(1))+1:ccl(ind(end)+1) ),:);
+%         
+%     r = diff(cv);
+%     r = r(1:end-1,1).*r(2:end,2)-r(2:end,1).*r(1:end-1,2);
+%     r = r > 0;
+%     
+%     f( ind ) = r( ccl(ind)+1-ccl(ind(1)) );
+%   end
+%   
   for i=1:length(c)
     jl(ccl(i)+1:ccl(i+1)) = i;    
-    if f(i), l = c{i}; c{i} = l(end:-1:1); end
+%     if f(i), l = c{i}; c{i} = l(end:-1:1); end
   end
   
   clear cv parts ind r f cl
@@ -329,150 +399,58 @@ end
 
   % vertice map
 T = sparse(jl,il,1); 
-  clear jl il ccl
-T(:,1) = 0; %inf
+  clear jl il ccl cl
+T(:,1) = false; %inf
 
 %edges
 F = T * T';
   clear T;
 F = triu(F,1);
-F = F > 1;
+F = F > 3;
 
+function ply = createpolyeder(cells,regionids,verts,tri)
 
-function ply = createpolygons(cells,regionids,verts)
-
-rcells = cells([regionids{:}]);
-gl = [rcells{:}];
-
-  %shift indices
-indi = 1:length(gl);
-inds = indi+1;
-c1 = cellfun('length',rcells); 
-cr1 = cellfun('length',regionids);
-r1 = cumsum(c1);
-r2 = [1 ; r1+1];
-r2(end) =[];  
-inds(r1) = r2;
-gr = gl(inds); %partner pointel
-
-cc = [0; r1];
-cr = cumsum(cr1);
-
-clear rcells r1 r2 indi c1 inds
-
-% 
-nr = length(regionids);
 p = struct(polytope);
+nr = numel(regionids);
 ply = repmat(p,1,nr);
 
-f = (gl+gr).*gl.*gr; % try to make unique linel ids
-rid = [0;cc(cr+1)];
-for k=1:nr  
-  sel = rid(k)+1:rid(k+1);
+nnn = numel(regionids);
+
+cs = cellfun('prodofsize',regionids);
+
+cl = cellfun('size',tri,1);
+cl = [0;cumsum(cl)];
+
+tris = vertcat(tri{:});
+[tris f ind] = unique(sort(tris,2),'rows');
+ind = mat2cell(ind,cellfun('size',tri,1),1);
+
+% tic
+for k=1:nnn %pr
+%   progress(k,nnn)
   
-  if cr1(k)>1
-    ft = f(sel); % erase double edges
-    [ft nd] = sort(ft);
-    dell = find(diff(ft) == 0);
-    nd([dell dell+1]) = [];
-    sel = sel(nd);
-    gll = gl(sel);
-    grr = gr(sel);
-    
-    border = convert2border(gll, grr);
-    
-    psz = numel(border);
-    if psz == 1
-      
-      v = border{1};
-      xy = verts(v,:);
-      ply(k).Vertices = xy;
-      ply(k).VertexIds = v;
-      ply(k).Envelope = envelope(xy);
-      
-    else
-      
-      hply = repmat(p,1,psz);
-      
-      for l=1:psz
-        
-        v = border{l};
-        xy = verts(v,:);
-        hply(l).Vertices = xy;
-        hply(l).VertexIds = v;
-        hply(l).Envelope = envelope(xy);
-        
-      end
-      
-      hply = polytope(hply);
-      [ig ndx] = sort(area(hply),'descend');
-      ply(k) = hply(ndx(1));
-      ply(k).Holes = hply(ndx(2:end));
-      
-    end
-  else
-    
-    v = gl(sel);
-    v(end+1) = v(1);
-    xy = verts(v,:);
-    ply(k).Vertices = xy;
-    ply(k).VertexIds = v;
-    ply(k).Envelope = envelope(xy);
-    
-  end
+  ids = regionids{k};
+  c = cells(ids);
+  cv = [c{:}];  
+  tris = vertcat(tri{ids});
+  inds = vertcat(ind{ids});
+  
+  [ft nd] = sort(inds);
+	dell = find(diff(ft) == 0);
+	nd([dell dell+1]) = [];
+  faces = tris(nd,:);
+  sz = size(faces);
+  
+  [vfaces ig faces] = unique(faces);
+  
+  pt = p;
+  pt.Vertices = verts(vfaces,:);
+  pt.VertexIds = vfaces;
+  
+  pt.Faces = reshape(faces,sz);
+  pt.FacetIds = inds(nd) ;
+ 
+  ply(k) = pt;
+
 end
 ply = polytope(ply);
-
-
-
-function env = envelope(xy)
-
-env([1,3]) = min(xy);
-env([2,4]) = max(xy);    
-
-
-function border = convert2border(gl,gr)
-
-[gll a] = sort(gl);
-[grr b] = sort(gr);
-    
-nn = numel(gl);
-    
-sb = zeros(nn,1);
-v = sb;
-    
-sb(b) = a;    
-v(1) = a(1);
-    
-cc = 0;
-l = 2;
-lp = 1;
-    
-while true
-  np = sb(v(lp));
-      
-  if np > 0
-    v(l) = np;
-    sb(v(lp)) = -1;
-  else
-    cc(end+1) = lp;      
-    n = sb(sb>0);
-    if isempty(n)
-      break
-    else
-      v(l) = n(1);
-    end
-  end  
-      
-  lp = l;
-  l=l+1;      
-end
-
-nc = numel(cc)-1; 
-if nc > 1, border = cell(1,nc); end
-
-for k=1:nc
-  vt = gl(v(cc(k)+1:cc(k+1)));
-  border(k) = {vt};
-end  
-

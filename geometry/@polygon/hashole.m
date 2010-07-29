@@ -1,5 +1,5 @@
 function h = hashole(p)
-% returns whether a polygon has holes or not
+% returns whether a polygon has Holes or not
 %
 %% Input
 %  p - @grain / @polygon
@@ -9,4 +9,4 @@ function h = hashole(p)
 %
 
 p = polygon(p);
-h = ~cellfun('isempty',{p.holes});
+h = ~cellfun('isempty',{p.Holes});
