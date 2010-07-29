@@ -22,13 +22,15 @@ varargin = set_default_option(varargin,...
 property = lower(get_option(varargin,'property',[]));
 
 newMTEXplot;
-selector(gcf);
+if ispolygon(grains)
+  selector(gcf);
+end
 
 %%
 
 [phase uphase] = get(grains,'phase');
 
- p = polygon( grains );
+ p = polytope( grains );
  
 if ~check_option(varargin,'noBG') 
   h = plot(p,'color',[0.8 0.8 0.8],'nofix');
@@ -123,8 +125,9 @@ end
 fixMTEXplot
 set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
 
-selector(gcf,grains,p,h);
-
+if ispolygon(grains)
+  selector(gcf,grains,p,h);
+end
 
 if check_option(varargin,'colorcoding');
   setappdata(gcf,'CS',CS);

@@ -23,7 +23,7 @@ end
 p = polygon( p );
 x = polygon( p2 );
 
-xy = vertcat(x.xy);
+Vertices = vertcat(x.Vertices);
 
 if nargin < 3
   method = 'complete';
@@ -31,24 +31,24 @@ end
 
 switch lower(method)
   case 'complete'
-    ind = in_it(p,xy,@all);
+    ind = in_it(p,Vertices,@all);
   case {'centroids','centroid'}
-    pxy = centroid(p);
-    ind = inpolygon(pxy(:,1),pxy(:,2),xy(:,1),xy(:,2));
+    pVertices = centroid(p);
+    ind = inpolygon(pVertices(:,1),pVertices(:,2),Vertices(:,1),Vertices(:,2));
   case 'intersect'
-    ind = in_it(p,xy,@any);
+    ind = in_it(p,Vertices,@any);
 end
 
 ind = reshape(ind,size(p));
 
 
 
-function ind = in_it(p,xy,modifier)
+function ind = in_it(p,Vertices,modifier)
 
-np = cellfun('length',{p.xy});
-pxy = vertcat(p.xy);
+np = cellfun('length',{p.Vertices});
+pVertices = vertcat(p.Vertices);
     
-in = inpolygon(pxy(:,1),pxy(:,2),xy(:,1),xy(:,2));
+in = inpolygon(pVertices(:,1),pVertices(:,2),Vertices(:,1),Vertices(:,2));
 
 cs = [0 cumsum(np)];
 

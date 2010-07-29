@@ -76,14 +76,17 @@ switch vname
     for i = 1:length(obj)
       varargout{1}(i) = sum(numel(obj(i).orientations));
     end
-  case 'x'
+  case {'x','y','z','xy','xz','yz','xyz'}
+    fl = {1,2,3,[1,2],[1,3],[2,3],[1:3]};
+    fl = fl{strcmpi(vname,{'x','y','z','xy','xz','yz','xyz'})};
+    
     for i = 1:length(obj)
-      varargout{1} = [varargout{1};obj(i).xy(:,1)]; 
+      varargout{1} = [varargout{1};obj(i).X(:,fl)]; 
     end
-  case 'y'
-    for i = 1:length(obj)
-      varargout{1} = [varargout{1};obj(i).xy(:,2)]; 
-    end
+%   case 'y'
+%     for i = 1:length(obj)
+%       varargout{1} = [varargout{1};obj(i).X(:,2)]; 
+%     end
   case fields(obj(1).options)
      options = [obj.options];
      varargout{1} = vertcat(options.(vname));    

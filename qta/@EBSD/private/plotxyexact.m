@@ -1,4 +1,4 @@
-function plotxyexact(xy,d,varargin)
+function h = plotxyexact(xy,d,varargin)
 
 [v faces rind] = spatialdecomposition(xy,'plot',varargin{:});
 [v(:,1), v(:,2), lx,ly] = fixMTEXscreencoordinates(v(:,1),v(:,2),varargin{:});

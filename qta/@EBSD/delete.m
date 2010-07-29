@@ -23,7 +23,7 @@ end
 for i= 1:length(ebsd)
   ind = id(cs(i)+1:cs(i+1));
 	
-  if ~isempty(ebsd(i).xy), ebsd(i).xy(ind,:) = [];end
+  if ~isempty(ebsd(i).X), ebsd(i).X(ind,:) = [];end
 
   ebsd_fields = fields(ebsd(i).options);  
   for f = 1:length(ebsd_fields)

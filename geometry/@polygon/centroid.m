@@ -1,11 +1,11 @@
-function cxy = centroid( p ,varargin)
-% calculates the barycenter of the grain-polygon, without respect to holes
+function cVertices = centroid( p ,varargin)
+% calculates the barycenter of the grain-polygon, without respect to Holes
 %
 %% Input
 %  p - @grain / @polygon
 %
 %% Output
-%  cxy   - center [x y];
+%  cVertices   - center [x y];
 %
 %% Options
 %  HULL
@@ -14,20 +14,20 @@ function cxy = centroid( p ,varargin)
 p = polygon( p );
 
 nc = length(p);
-cxy = zeros(nc,2);
+cVertices = zeros(nc,2);
 
-%without respect to holes
-pxy = {p.xy};
+%without respect to Holes
+pVertices = {p.Vertices};
 
 for k=1:nc
-  xy = pxy{k};  
+  Vertices = pVertices{k};  
   
   sel = ':';
   if check_option(varargin,'hull')
-     sel = convhull(xy(:,1),xy(:,2));
+     sel = convhull(Vertices(:,1),Vertices(:,2));
   end  
-  x = xy(sel,1);
-  y = xy(sel,2);
+  x = Vertices(sel,1);
+  y = Vertices(sel,2);
 
   cr = x(1:end-1).*y(2:end)-x(2:end).*y(1:end-1);
 
@@ -36,5 +36,5 @@ for k=1:nc
   cx = sum((x(1:end-1)+x(2:end)).* cr) / (6*A);
   cy = sum((y(1:end-1)+y(2:end)).* cr) / (6*A);
   
-  cxy(k,:) =[cx cy];
+  cVertices(k,:) =[cx cy];
 end

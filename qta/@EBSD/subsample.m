@@ -24,7 +24,7 @@ for i = 1:length(ebsd)
   ind = discretesample(ss(i),ip);
   
   % subsample xy and phase
-  if ~isempty(ebsd(i).xy), ebsd(i).xy = ebsd(i).xy(ind); end
+  if ~isempty(ebsd(i).X), ebsd(i).X = ebsd(i).X(ind); end
     
   % subsample all other options
   ebsd_fields = fields(ebsd(i).options);

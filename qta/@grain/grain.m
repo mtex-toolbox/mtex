@@ -15,5 +15,6 @@ function [gr id] = grain(id,ply)
 
 
 superiorto('EBSD');
+
 gr = class(id,'grain',ply);
 

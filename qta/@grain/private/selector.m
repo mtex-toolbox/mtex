@@ -106,7 +106,7 @@ if nargin == 1
 else
   newlayer.grains = grains;
   newlayer.polygon = p;
-  newlayer.boxes   = get(p,'envelope');
+  newlayer.boxes   = get(p,'Envelope');
   newlayer.selected = false(size(grains));
   newlayer.selectioncolor = 'r';
   newlayer.handles = lya;
@@ -325,17 +325,17 @@ for k=1:length(candits)
   
   h = hashole(pl);
   if any(h)
-    hp = get(pl,'holes');
+    hp = get(pl,'Holes');
     
     
     for l=1:length(hp)
-      hxy = get(hp(l),'xy');
+      hxy = get(hp(l),'Vertices');
       inhole = inhole | inpolygon(xp,yp,hxy(:,1),hxy(:,2));
     end
   end
   
   if ~inhole
-    xy = get(pl,'xy');
+    xy = get(pl,'Vertices');
     isit(k) = inpolygon(xp,yp,xy(:,1),xy(:,2));
   end
 end
@@ -353,7 +353,7 @@ switch modus
     c = getappdata(gcf,'selectioncolor');     
         
     identdlg( grains(current) );
-    xy = get(p(current),'xy');
+    xy = get(p(current),'Vertices');
     [X Y] = fixMTEXscreencoordinates( xy(:,1), xy(:,2) ); 
     h = patch(X,Y,layer.selectioncolor); pause(0.1);
     delete(h); pause(0.1);
@@ -520,14 +520,16 @@ pos = get(gca,'CurrentPoint');
 
 disp(['on (x,y): ' num2str( pos(1,1:2))])
 
+p = polytope(grain);
+
   checksums = ['grain_id'  dec2hex(grain.checksum)];  
 disp(['  grain id: ' num2str(grain.id)])
 disp(['  from grainset: ' checksums ])
 disp('---------------------------------')
-disp(['  area:         ' num2str(area(grain))])
-disp(['  perimeter:    ' num2str(perimeter(grain))])
+disp(['  area:         ' num2str(area(p))])
+disp(['  perimeter:    ' num2str(perimeter(p))])
 yesno = {'no','yes'};
-disp(['  holes:        ' yesno{hashole(grain)+1}])
+disp(['  holes:        ' yesno{hashole(p)+1}])
 disp(['  subfractions: ' yesno{hassubfraction(grain)+1}])
 
 props = fields(grain.properties);

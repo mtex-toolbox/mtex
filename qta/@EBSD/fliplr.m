@@ -7,7 +7,7 @@ function ebsd = fliplr( ebsd )
 %% Output
 %  flipped ebsd - @EBSD
 
-m = max(vertcat(ebsd.xy));
+m = max(vertcat(ebsd.X));
 %ebsd = affinetrans(ebsd,[-1 0; 0 1],m);
 
 ebsd = affinetrans(ebsd,[],m);

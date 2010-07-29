@@ -1,5 +1,5 @@
 function  peri = hullperimeter(p)
-% returns the perimeter of grain polygon, without holes
+% returns the perimeter of grain polygon, without Holes
 %
 %% Input
 %  p - @grain / @polygon

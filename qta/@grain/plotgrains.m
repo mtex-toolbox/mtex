@@ -36,8 +36,10 @@ end
 %% get the polygons
 
 newMTEXplot;
-selector(gcf);
-% 
+
+if ispolygon(grains)
+  selector(gcf);
+end
 %%
 
 
@@ -81,11 +83,12 @@ if ~isempty(property)
   end
    
   
-  p = polygon(grains);
+  p = polytope(grains);
   h = plot( p ,'fill',d,varargin{:});
 
-  selector(gcf,grains,p,h);
-  
+  if ispolygon(grains)
+    selector(gcf,grains,p,h);
+  end
 elseif exist('ebsd','var') 
   
   if check_option(varargin,'misorientation')
@@ -99,8 +102,10 @@ else
   p = polygon(grains);
   h = plot( p , varargin{:});
 
-  selector(gcf,grains,p,h);
-  
+
+  if ispolygon(grains)
+    selector(gcf,grains,p,h);
+  end  
 end
 
 
