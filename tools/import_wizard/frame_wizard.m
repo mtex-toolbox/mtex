@@ -608,7 +608,7 @@ if ~isempty(sel)
             else
               dg = data{n,10};
             end
-            
+   
             dgamma = linspace(d(7),d(8), dg+1);
             pfdata(n).dgamma = -dgamma;
 
@@ -627,7 +627,8 @@ if ~isempty(sel)
     for n=1:numel(pfdata)
       if pfdata(n).process_current
         counts = cellfun(@(x,hi,lo) ...
-          sum(frame.A(x))./numel(x) -  (sum(frame.A(hi))./numel(hi) +  sum(frame.A(lo))./numel(lo))/2,...
+          sum(frame.A(x)... ./numel(x) ...
+          -  (sum(frame.A(hi))./numel(hi) +  sum(frame.A(lo))./numel(lo))/2),...
           pfdata(n).ind,pfdata(n).indhi,pfdata(n).indlo);
        
         pfdata(n).counts{end+1} = counts./frame.elapsed; % counts per second
@@ -864,7 +865,7 @@ if ischar(fname)
  s = reshape(s{:}',11,[])';
  
  s(:,1) = cellfun(@(x) logical(sscanf(x,'%d')),s(:,1),'Uniformoutput',false);
- s(:,2:9) = cellfun(@(x) sscanf(x,'%f'),s(:,2:9),'Uniformoutput',false);
+ s(:,2:10) = cellfun(@(x) sscanf(x,'%f'),s(:,2:10),'Uniformoutput',false);
  fclose(fid);
  set(handles.thetas,'Data',s);
 end
@@ -888,7 +889,6 @@ if ischar(fname)
   fid = fopen(fullfile(pathname,fname),'w');
   
   for k=1:numel(data)
-    class(data{k})
     switch class(data{k})
       case 'logical'
         fprintf(fid,' %d,',data{k});
