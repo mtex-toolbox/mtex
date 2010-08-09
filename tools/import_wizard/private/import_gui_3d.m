@@ -66,9 +66,9 @@ csz = cumsum(idata);
 for k=1:numel(idata)-1
   ndx = csz(k)+1:csz(k+1);
 	for l=1:numel(ndx)
-    xy = get(ebsd(ndx(l)),'X');
+    xy = get(ebsd(ndx(l)),'xy');
     xy(:,3) = Z(k);
-    ebsd(ndx(l)) = set(ebsd(ndx(l)),'X',xy);
+    ebsd(ndx(l)) = set(ebsd(ndx(l)),'xy',xy);
   end    
 end
 

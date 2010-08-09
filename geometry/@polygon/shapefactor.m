@@ -1,5 +1,5 @@
 function F = shapefactor( p )
-% calculates the shapefactor of the grain-polygon, without Holes
+% calculates the shapefactor of the grain-polygon, without holes
 %
 %% Input
 %  p - @grain / @polygon

@@ -1,13 +1,13 @@
-function cVertices = hullcentroid(p)
+function cxy = hullcentroid(p)
 % returns the centroid of convexhull
 %
 %% Input
 %  grains - @grain
 %
 %% Output
-%  cVertices   - location [x y]
+%  cxy   - location [x y]
 %
 %% See also
 % grain/centroid grain/principalcomponents
 
-cVertices = centroid(convhull(p));
+cxy = centroid(convhull(p));
