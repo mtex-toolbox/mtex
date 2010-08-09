@@ -34,7 +34,7 @@ if numel(thresholds) == 1 && numel(ebsd) > 1
 end
 
 
-xy = vertcat(ebsd.X);
+xy = vertcat(ebsd.xy);
 
 if isempty(xy), error('no spatial data');end
 
@@ -362,7 +362,7 @@ clear rcells r1 r2 indi c1 inds
 
 % 
 nr = length(regionids);
-p = struct(polytope);
+p = struct(polygon);
 ply = repmat(p,1,nr);
 
 f = (gl+gr).*gl.*gr; % try to make unique linel ids
@@ -386,9 +386,9 @@ for k=1:nr
       
       v = border{1};
       xy = verts(v,:);
-      ply(k).Vertices = xy;
-      ply(k).VertexIds = v;
-      ply(k).Envelope = envelope(xy);
+      ply(k).xy = xy;
+      ply(k).point_ids = v;
+      ply(k).envelope = envelope(xy);
       
     else
       
@@ -398,16 +398,18 @@ for k=1:nr
         
         v = border{l};
         xy = verts(v,:);
-        hply(l).Vertices = xy;
-        hply(l).VertexIds = v;
-        hply(l).Envelope = envelope(xy);
+        hply(l).xy = xy;
+        hply(l).point_ids = v;
+        hply(l).envelope = envelope(xy);
         
       end
       
-      hply = polytope(hply);
+      hply = polygon(hply);
+      
       [ig ndx] = sort(area(hply),'descend');
+      
       ply(k) = hply(ndx(1));
-      ply(k).Holes = hply(ndx(2:end));
+      ply(k).holes = hply(ndx(2:end));
       
     end
   else
@@ -415,13 +417,13 @@ for k=1:nr
     v = gl(sel);
     v(end+1) = v(1);
     xy = verts(v,:);
-    ply(k).Vertices = xy;
-    ply(k).VertexIds = v;
-    ply(k).Envelope = envelope(xy);
+    ply(k).xy = xy;
+    ply(k).point_ids = v;
+    ply(k).envelope = envelope(xy);
     
   end
 end
-ply = polytope(ply);
+ply = polygon(ply);
 
 
 

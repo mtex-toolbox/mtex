@@ -1,5 +1,5 @@
 function [cmp v]= principalcomponents(p,varargin)
-% returns the principalcomponents of grain polygon, without Holes
+% returns the principalcomponents of grain polygon, without holes
 %
 %% Input
 %  p - @grain / @polygon
@@ -28,20 +28,20 @@ if hull
 else
   c = centroid( p );
 end
-%without respect to Holes
+%without respect to holes
 
-pVertices = {p.Vertices};
+pxy = {p.xy};
 for k=1:nc
- Vertices = pVertices{k};
+ xy = pxy{k};
  
  if hull
-   Vertices = Vertices(convhull(Vertices(:,1),Vertices(:,2)),:);
+   xy = xy(convhull(xy(:,1),xy(:,2)),:);
  else
-   Vertices(end,:) = [];
+   xy(end,:) = [];
  end
  
- Vertices = Vertices - repmat(c(k,:),length(Vertices),1);  %centering
- covar = Vertices'*Vertices./(length(Vertices)-1);                         %cov                
+ xy = xy - repmat(c(k,:),length(xy),1);  %centering
+ covar = xy'*xy./(length(xy)-1);                         %cov                
                                   
  [u f] = eigs(covar);
  v(k,:) = diag(f)';

@@ -27,8 +27,8 @@ end
 for i=1:length(ebsd)
   idi = condition(cs(i)+1:cs(i+1));
  
- 	if ~isempty(ebsd(i).X)
-    ebsd(i).X = ebsd(i).X(idi,:);
+ 	if ~isempty(ebsd(i).xy)
+    ebsd(i).xy = ebsd(i).xy(idi,:);
   end
 
   ebsd_fields = fields(ebsd(i).options);  

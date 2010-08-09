@@ -17,7 +17,7 @@ if ~check_option(varargin,{'radians','radiant','radiand'})
   d = d ./ degree; 
 end
 
-if ~isempty(ebsd.X), d = [d,ebsd.X(:)]; end 
+if ~isempty(ebsd.xy), d = [d,ebsd.xy(:)]; end 
 if ~isempty(ebsd.phase), d = [d,ebsd.phase(:)]; end %#ok<NASGU>
 
 save(fname,'d','-ASCII','-single');

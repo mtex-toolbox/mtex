@@ -10,11 +10,11 @@ function [p v]= convhull(p,varargin)
 %
 
 p = polygon(p);
-pVertices = {p.Vertices};
+pxy = {p.xy};
 v = zeros(size(p));
 for k=1:length(p)
-  [ind v(k)]= convhulln(pVertices{k});
+  [ind v(k)]= convhulln(pxy{k});
   ind = ind([1:end 1],1);
-  p(k).Vertices = pVertices{k}(ind,:);
+  p(k).xy = pxy{k}(ind,:);
 end
 

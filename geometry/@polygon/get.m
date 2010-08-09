@@ -1,30 +1,30 @@
 function s = get(p,vname,varargin)
 % get some polygon properties
 
-switch lower(vname)
-  case 'vertices'
+switch vname
+  case 'xy'
     if check_option(varargin,'cell')
-      s = {p.Vertices};
+      s = {p.xy};
       return
     elseif check_option(varargin,'plot')
-      lVertices = cell(numel(p)*2,1);
-      lVertices(1:2:end) = {p.Vertices};
-      lVertices(2:2:end) = {[NaN NaN]};  
+      lxy = cell(numel(p)*2,1);
+      lxy(1:2:end) = {p.xy};
+      lxy(2:2:end) = {[NaN NaN]};  
     else
-      lVertices = {p.Vertices};
+      lxy = {p.xy};
     end
 
-    parts = [0:1000:length(lVertices)-1 length(lVertices)];    
+    parts = [0:1000:length(lxy)-1 length(lxy)];    
     s = cell(numel(parts)-1,1);
     for k=1:numel(parts)-1 % faster as at once      
-      s{k} = vertcat(lVertices{parts(k)+1:parts(k+1)});
+      s{k} = vertcat(lxy{parts(k)+1:parts(k+1)});
     end
     s = vertcat(s{:});
     
-  case {'holes'}    
-    s = polygon(horzcat(p(hashole(p)).Holes));
-  case {'vertexids'}
-    s = {p.VertexIds};
+  case {'holes'}
+    s = horzcat(p(hashole(p)).(vname));
+  case {'point_ids'}
+    s = {p.(vname)};
   otherwise
     s = vertcat(p.(vname));
 end

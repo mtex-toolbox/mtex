@@ -15,23 +15,23 @@ function bl = borderlength( p ,varargin)
 
 p = polygon( p );
 
-bordersize = @(Vertices) sum(sqrt(sum(diff(Vertices).^2,2)));
+bordersize = @(xy) sum(sqrt(sum(diff(xy).^2,2)));
 
 nc = length(p);
 bl = zeros(size(p));
 
-pVertices = {p.Vertices};
+pxy = {p.xy};
 if check_option(varargin,'count');  
-  bl = cellfun('length',pVertices);
+  bl = cellfun('length',pxy);
 else
   hole = hashole(p);
   for k=1:nc
-    Vertices = pVertices{k};
+    xy = pxy{k};
     
-    bl(k) = bordersize(Vertices);
+    bl(k) = bordersize(xy);
     
     if hole(k)
-      bl(k) = bl(k) + sum(borderlength(p(k).Holes));
+      bl(k) = bl(k) + sum(borderlength(p(k).holes));
     end
   end
 end

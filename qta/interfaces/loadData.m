@@ -90,9 +90,9 @@ if strcmpi(type,'EBSD') && check_option(varargin,'3d')
   for k=1:numel(idata)
     ndx = csz(k)+1:csz(k+1);
     for l=1:numel(ndx)
-      xy = get(data(ndx(l)),'X');
+      xy = get(data(ndx(l)),'xy');
       xy(:,3) = Z(k);
-      data(ndx(l)) = set(data(ndx(l)),'X',xy);
+      data(ndx(l)) = set(data(ndx(l)),'xy',xy);
     end    
   end
   data = union(data); 

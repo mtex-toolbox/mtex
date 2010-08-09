@@ -18,18 +18,17 @@ if check_option(varargin,'fill')
   c = get_option(varargin,'fill');
   if islogical(c), c = double(c); end  
   
-	if ~check_option(varargin,'noHoles')  
+	if ~check_option(varargin,'noholes')  
     hole = hashole(p);
-    tmp_ph = ([p(hole).Holes]);
-   
+    tmp_ph = [p(hole).holes];
     nl = numel(p); nlh = numel(tmp_ph);    
     p = [tmp_ph p ];
-
+    
     c(nlh+1:nl+nlh,:) = c;
-    c(1:nlh,:) = 1; 
+    c(1:nlh,:) = 1;    
   end
   
-  pl = cellfun('prodofsize',{p.Vertices});
+  pl = cellfun('prodofsize',{p.xy});
   A = area(p);
   
   ind = splitdata(pl,fix(log(length(pl))/2),'ascend');
@@ -54,23 +53,25 @@ elseif check_option(varargin,'pair')
     
     boundary = cell(1,npair);
 
-    VertexIds = get(p,'VertexIds');
-    pVertices = get(p,'Vertices','cell');
+    point_ids = get(p,'point_ids');
+    pxy = get(p,'xy','cell');
 
     for k=find(hashole(p))
-      pHoles = get(p(k),'Holes');
-      hVertexIds = get(pHoles,'vertexids');
-      VertexIds{k} = [VertexIds{k} hVertexIds{:}];
-      pVertices{k} = vertcat(pVertices{k},get(pHoles,'Vertices'));
+
+      pholes = get(p(k),'holes');
+
+      hpoint_ids = get(pholes,'point_ids');
+      point_ids{k} = [point_ids{k} hpoint_ids{:}];
+      pxy{k} = vertcat(pxy{k},get(pholes,'xy'));
     end
     
-    VertexIds = VertexIds(pair(:,1:2));
-    pVertices = pVertices( pair(:,2) );
+    point_ids = point_ids(pair(:,1:2));
+    pxy = pxy( pair(:,2) );
 
     for k=1:npair
 
-      b1 = VertexIds{k,1};
-      b2 = VertexIds{k,2};
+      b1 = point_ids{k,1};
+      b2 = point_ids{k,2};
       
       %	r = find(ismember(b2,b1));       
       
@@ -82,16 +83,16 @@ elseif check_option(varargin,'pair')
       pos = find(diff(r)>1);
       npos = numel(pos);
       
-      Vertices =  pVertices{ k };   
+      xy =  pxy{ k };   
       border = [];
       if npos > 0
         pos = [0 pos numel(r)];
         for j=1:npos
-          border = [border; Vertices(r(pos(j)+1:pos(j+1)),:)];
+          border = [border; xy(r(pos(j)+1:pos(j+1)),:)];
           border(end+1,:) = NaN;
         end
       else
-        border = Vertices(r,:);
+        border = xy(r,:);
         border(end+1,:) = NaN;
       end
     
@@ -99,16 +100,16 @@ elseif check_option(varargin,'pair')
 
     end
 
-    Vertices = vertcat(boundary{:});
+    xy = vertcat(boundary{:});
     
 
-    if ~isempty(Vertices)
+    if ~isempty(xy)
 
-      [Vertices(:,1), Vertices(:,2)] = fixMTEXscreencoordinates(Vertices(:,1), Vertices(:,2), varargin{:});
+      [xy(:,1), xy(:,2)] = fixMTEXscreencoordinates(xy(:,1), xy(:,2), varargin{:});
 
       if size(pair,2) == 2 % colorize monotone
 
-        h = line(Vertices(:,1),Vertices(:,2)); 
+        h = line(xy(:,1),xy(:,2)); 
 
       else % colorize colormap
 
@@ -117,14 +118,14 @@ elseif check_option(varargin,'pair')
         cs = cellfun('prodofsize',boundary)/2;
         csz = [0 cumsum(cs)];
 
-        c = ones(size(Vertices,1),size(d,2));
+        c = ones(size(xy,1),size(d,2));
         for k=1:size(pair,1)
           
           c( csz(k)+1:csz(k+1) , : ) = d( k*ones( cs( k ) ,1) ,:);      
 
         end
 
-        h = patch('Faces',1:size(Vertices,1),'Vertices',Vertices,'EdgeColor','flat',...
+        h = patch('Faces',1:size(xy,1),'Vertices',xy,'EdgeColor','flat',...
         'FaceVertexCData',c);
 
       end
@@ -133,14 +134,14 @@ elseif check_option(varargin,'pair')
   end
 else
   
-  if ~check_option(varargin,'noHoles')
-    p = [p [p(hashole(p)).Holes]];
+  if ~check_option(varargin,'noholes')
+    p = [p [p(hashole(p)).holes]];
   end
 % varargin
-  Vertices = get(p,'Vertices','plot');
+  xy = get(p,'xy','plot');
  
-  if ~isempty(Vertices)
-    [X,Y] = fixMTEXscreencoordinates(Vertices(:,1),Vertices(:,2),varargin{:});
+  if ~isempty(xy)
+    [X,Y] = fixMTEXscreencoordinates(xy(:,1),xy(:,2),varargin{:});
     h = line(X(:),Y(:));
   end
   % axis equal
@@ -163,9 +164,9 @@ if nargout > 0, handles = h; end
 
 function [faces vertices] = get_faces(p)
 
-vertices = vertcat(p.Vertices);
+vertices = vertcat(p.xy);
 
-cl = cellfun('length',{p.Vertices});
+cl = cellfun('length',{p.xy});
 rl = max(cl);
 crl = [0 cumsum(cl)];
 faces = NaN(numel(p),rl);

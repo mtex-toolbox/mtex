@@ -22,7 +22,7 @@ function ebsd = EBSD(varargin)
 if (nargin == 0)
   ebsd.comment = [];
   ebsd.orientations = orientation;
-  ebsd.X = [];
+  ebsd.xy = [];
   ebsd.phase = [];
   ebsd.options = struct;
   ebsd = class(ebsd,'EBSD');
@@ -36,7 +36,7 @@ end
 
 ebsd.comment = get_option(varargin,'comment',[]);
 ebsd.orientations = orientations;
-ebsd.X = get_option(varargin,'xy');
+ebsd.xy = get_option(varargin,'xy');
 ebsd.phase = get_option(varargin,'phase');
 ebsd.options = get_option(varargin,'options',struct);
 ebsd = class(ebsd,'EBSD');
