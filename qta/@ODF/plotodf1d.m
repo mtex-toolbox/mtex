@@ -15,7 +15,7 @@ function plotodf1d(odf,varargin)
 % SphericalProjection_demo 
 
 
-center = get_option(varargin,'CENTER',quaternion(1,0,0,0),'quaternion');
+center = get_option(varargin,'CENTER',quaternion(1,0,0,0),{'quaternion','rotation','orientation'});
 axes = get_option(varargin,'AXES',[xvector,yvector,zvector]);
 
 omega = linspace(-pi,pi,200);

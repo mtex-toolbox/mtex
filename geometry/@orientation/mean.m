@@ -1,8 +1,8 @@
 function [o lambda eigv kappa q]  = mean(o,varargin)
-% returns mean, kappas and sorted q of crystal symmetry euqal quaternions 
+% mean of a list of orientations, principle axes and moments of inertia
 %
 %% Syntax
-% [o kappa v q q_std]  = mean(o,varargin)
+% [m lambda V kappa q]  = mean(o)
 %
 %% Input
 %  o        - list of @orientation
@@ -11,11 +11,11 @@ function [o lambda eigv kappa q]  = mean(o,varargin)
 %  weights  - list of weights
 %
 %% Output
-%  mean   - mean orientation
-%  lambda - singular values
-%  eigv   - singular orientations
+%  m      - mean @orientation
+%  lambda - principle moments of inertia
+%  V      - principle axes of inertia (@orientation)
 %  kappa  - form parameters of bingham distribution
-%  q      - quaternions of fundamental region
+%  q      - crystallographic equivalent @quaternions projected to fundamental region
 %
 %% See also
 % BinghamODF
