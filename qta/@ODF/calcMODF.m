@@ -2,12 +2,14 @@ function modf = calcMODF(odf,varargin)
 % calculate the uncorrelated MODF from an ODF
 %
 %% Syntax  
+% modf = calcMODF(odf,'bandwidth',32)
 %
 %% Input
 %  odf  - @ODF
 %
 %% Options
-%
+% bandwidth - bandwidth for Fourier coefficients (default - 32)
+% 
 %% Output
 %  modf - @ODF
 %
@@ -15,7 +17,7 @@ function modf = calcMODF(odf,varargin)
 % EBSD/calcODF
 
 % compute Fourier coefficients 
-odf = calcFourier(odf,32);
+odf = calcFourier(odf,get_option(varargin,'bandwidth',32));
 L = bandwidth(odf);
 
 % sum up Fourier coefficients

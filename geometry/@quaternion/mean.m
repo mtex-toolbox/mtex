@@ -1,5 +1,5 @@
 function [q lambda V] = mean(q,varargin)
-% returns mean, kappas and sorted q of crystal symmetry euqal quaternions 
+% mean of a list of quaternions, principle axes and moments of inertia
 %
 %% Input
 %  q        - list of @quaternion
@@ -9,8 +9,8 @@ function [q lambda V] = mean(q,varargin)
 %
 %% Output
 %  mean     - mean orientation
-%  lambda   -
-%  V        -
+%  lambda   - principle moments of inertia
+%  V        - principle axes of inertia (@orientation)
 %
 %% See also
 % orientation/mean
