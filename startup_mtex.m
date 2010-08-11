@@ -114,10 +114,10 @@ if isempty(r) || any(strcmpi(r,{'Y',''}))
   
   disp(' ');
   disp('> Adding MTEX to the MATLAB search path.');
-  if isunix || ismac
-    install_mtex_linux;
-  else
+  if ispc
     install_mtex_windows;
+  else
+    install_mtex_linux;
   end
   
 end
