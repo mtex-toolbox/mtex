@@ -27,7 +27,7 @@ varargin = set_default_option(varargin,...
 
 omega = linspace(-pi,pi,199);
 
-center = get_option(varargin,'CENTER',hr2quat(h,r),'quaternion');
+center = get_option(varargin,'CENTER',hr2quat(h,r),{'quaternion','rotation','orientation'});
 
 fibre = axis2quat(r,omega) .* center;
 x = eval(odf,fibre,varargin{:});%#ok<EVLC>
