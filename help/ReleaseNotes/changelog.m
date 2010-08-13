@@ -2,11 +2,11 @@
 %
 %% Contents
 %
-%% MTEX 3.0 -
+%% MTEX 3.0 - 08/2010
 %
 % *Crystal Geometry*
 %
-% This release contains a completely redesigned crystal geometry engine which is
+% This release features a completely redesigned crystal geometry engine which is
 % thought to be much more intuitive and flexible. In particular, it
 % introduces two new classes <rotation_index.html rotation> and
 % <orientation_index.html orientation> which make it much more easier to
@@ -17,6 +17,9 @@
 % convention
 % * simple definition of fibres
 % * simple check whether two orientations are symmetrically equivalent
+%
+% As a consequence of this rewrite, some functions are not available anymore and 
+% scripts  written for MTEX 2.0 may not run with MTEX 3.0.
 %
 % *Other Enhangments*
 %
