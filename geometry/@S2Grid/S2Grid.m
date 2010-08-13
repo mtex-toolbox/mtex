@@ -114,6 +114,7 @@ elseif isa(varargin{1},'vector3d')
   end
   G.rho = S1Grid([],minrhoGrid,maxrhoGrid);
   Grid = vector3d(varargin{1});
+  Grid = Grid./norm(Grid);
   [theta,rho] = polar(Grid);
 
   if check_option(varargin,'antipodal')
