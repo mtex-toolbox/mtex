@@ -8,7 +8,8 @@ function varargout = get(pf,vname,varargin)
 %  h = get(pf,'h')               % crystal directions
 %  b = get(pf,'bg')              % background intensities
 %  c = get(pf,'c')               % superposition coefficients
-% 
+%  t = get(pf,'theta')           % polar angle of specimen directions
+%  r = get(pf,'rho')             % azimuthal angle of specimen directions
 %
 %% Input
 %  pf - @PoleFigure
@@ -21,7 +22,7 @@ function varargout = get(pf,vname,varargin)
 %  r - @vector3d
 %
 %% See also
-% PoleFigure/set
+% PoleFigure/set PoleFigure/copy PoleFigure/delete
 
 
 if nargin == 1
