@@ -15,7 +15,7 @@ function pf = set(pf,vname,value,varargin)
 %  pf - @PoleFigure
 %
 %% See also
-% PoleFigure/get
+% PoleFigure/get PoleFigure/delete PoleFigure/copy
 
 switch vname
   
