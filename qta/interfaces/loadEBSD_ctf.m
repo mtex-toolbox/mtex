@@ -27,7 +27,8 @@ for K = 1:nphase
   % load phase
   mpara = regexpsplit(hl{phase_line+K},'\t');
     
-  abc = sscanf( mpara{1},'%f;%f;%f'); % Lattice ABC
+  
+  abc = sscanf( strrep(mpara{1},',','.'),'%f;%f;%f'); % Lattice ABC
   abg = sscanf( mpara{2},'%f;%f;%f'); % Lattice alpha beta gamma
   
   % Phase name
