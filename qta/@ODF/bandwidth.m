@@ -9,4 +9,5 @@ for i = 1:length(odf)
   end
 end
 
-b = min(b(b>=0));
+b = min([0,b(b>=0)]);
+
