@@ -2,11 +2,12 @@ function modf = calcMODF(odf1,varargin)
 % calculate the uncorrelated MODF from one or two ODF
 %
 %% Syntax  
-% modf = calcMODF(odf,'bandwidth',32)
+% modf = calcMODF(odf)
 % modf = calcMODF(odf1,odf2,'bandwidth',32)
 %
 %% Input
 %  odf  - @ODF
+%  odf1, odf2 - @ODF
 %
 %% Options
 % bandwidth - bandwidth for Fourier coefficients (default - 32)
@@ -26,15 +27,6 @@ odf1 = calcFourier(odf1,L);
 odf1_hat = Fourier(odf1,'bandwidth',L);
 L = min(bandwidth(odf1),L);
 
-% % sum up Fourier coefficients
-% odf_hat = zeros(deg2dim(L+1),1);
-% 
-% for i = 1:length(odf)
-%   l = min(length(odf(i).c_hat),length(odf_hat));
-%   odf_hat(1:l) = odf_hat(1:l) + reshape(odf(i).c_hat(1:l),[],1);  
-% end
-% 
-
 %% second ODF
 if nargin > 1 && isa(varargin{1},'ODF')
   odf2 = calcFourier(varargin{1},L);
@@ -53,4 +45,4 @@ for l = 1:L
 end
 
 % construct MODF
-modf = FourierODF(odf_hat,get(odf1,'CS'),get(odf2,'CS'));
+modf = FourierODF(odf_hat,get(odf2,'CS'),get(odf1,'CS'));

@@ -46,7 +46,7 @@ if nargin <=2 || numel(SS) <= 1
 %% with specimen symmetry
 else 
   
-  % symetry elements
+  % symmetry elements
   qcs = quaternion(CS);
   qss = quaternion(SS);
   
