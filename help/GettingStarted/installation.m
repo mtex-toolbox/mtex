@@ -23,7 +23,7 @@
 % * extract MTEX to an arbitrary folder
 % * start MATLAB
 % * navigate to the MTEX folder
-% * type _startup___mtex_
+% * type 'startup_mtex'
 %
 %
 %% Installation for All Users
