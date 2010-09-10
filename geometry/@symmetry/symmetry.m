@@ -59,6 +59,10 @@ if nargin == 0
 end
 
 if isa(name,'symmetry'),  s = name;return;end
+if isa(name,'double')
+  LaueGroups =  {'C1','C2','D2','C4','D4','T','O','C3','D3','C6','D6'};
+  name = LaueGroups{name};
+end
 if ~isempty(varargin) && isa(varargin{1},'double')
   axis = varargin{1};
   varargin(1) = [];

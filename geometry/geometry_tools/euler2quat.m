@@ -27,22 +27,6 @@ function q = euler2quat(alpha,beta,gamma,varargin)
 % vec42quat hr2quat idquaternion 
 
 
-% if check_option(varargin,'BUNGE')
-%   b = -cos((alpha-gamma)./2) .* sin(beta./2);
-%   c = sin((alpha-gamma)./2) .* sin(beta./2);
-%   d = -sin((alpha+gamma)./2) .* cos(beta./2);
-%   a = cos((alpha+gamma)./2) .* cos(beta./2);
-% else
-%   b = -cos((alpha-gamma)./2) .* sin(beta./2);
-%   c = sin((alpha-gamma)./2) .* sin(beta./2);
-%   d = -sin((alpha+gamma)./2) .* cos(beta./2);
-%   a = cos((alpha+gamma)./2) .* cos(beta./2);
-% end
-% 
-% q = quaternion(a,b,c,d);
-% 
-% return
-
 %% transform to right convention
 
 conventions = {'nfft','ZYZ','ABG','Matthies','Roe','Kocks','Bunge','ZXZ','Canova'};
@@ -73,6 +57,9 @@ end
 
 %% construct quaternion
 
-q = axis2quat(zvector,alpha).*...
-  axis2quat(yvector,beta).*axis2quat(zvector,gamma);
+qalpha = quaternion(cos(alpha/2),0,0,sin(alpha/2));
+qbeta  = quaternion(cos(beta/2),0,sin(beta/2),0);
+qgamma = quaternion(cos(gamma/2),0,0,sin(gamma/2));
+
+q = qalpha .* qbeta .* qgamma;
 

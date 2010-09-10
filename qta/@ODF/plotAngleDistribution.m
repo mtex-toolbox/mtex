@@ -15,10 +15,10 @@ varargin = set_default_option(varargin,...
 %% make new plot
 newMTEXplot;
 
-%% plotting grid
-
-omega = linspace(0,pi);
+%%
+[f,omega] = angleDistribution(odf,varargin{:});
 
 
 %% plot
-plot(omega,AngleDistribution(odf,omega,varargin{:}));
+plot(omega/degree,max(0,f));
+xlabel('orientation angle in degree')

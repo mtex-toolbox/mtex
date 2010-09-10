@@ -24,7 +24,7 @@ newMTEXplot;
 
 %% plotting grid
 
-[maxtheta,maxrho,minrho] = getFundamentalRegionPF(odf(1).CS,varargin{:});
+[maxtheta,maxrho,minrho] = getFundamentalRegionPF(disjoint(odf(1).CS,odf(1).SS),varargin{:});
 h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
 
 
