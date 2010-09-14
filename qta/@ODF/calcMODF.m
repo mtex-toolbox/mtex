@@ -43,11 +43,17 @@ if check_option(varargin,'kernelMethod')
   c = c1 * c2.';
   psi = psi1 * psi2;
   
+  % remove small values
+  ind = c > 0.1/numel(c);
+  c = c(ind);
+  center = center(ind);
+  
+  
   % approximation
   if numel(c1)*numel(c2) > 10000 
   
-    warning('not yet implemented');
-    res = get_option(varargin,'resolution');
+    warning('not yet fully implemented');
+    res = get_option(varargin,'resolution',1.25*degree);
     S3G = SO3Grid(res,cs2,cs1);    
     
     % init variables
