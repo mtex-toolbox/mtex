@@ -13,14 +13,20 @@ if check_option(S2G.options,'INDEXED')
   rho = double([S2G.rho]);
   theta = reshape(theta,size(S2G));
   rho = reshape(rho,size(S2G));
+  
 else
   [theta,rho] = polar(S2G.vector3d);
 end
 
+% correct data
+ind = (rho < 0.0001) | (rho > 2.0001*pi);
+rho(ind) = mod(rho(ind),2*pi);
+
 if nargout == 0
-  disp('theta:');
-  disp(theta);
-  disp('rho:');
-  disp(rho);
-	theta = [];rho = [];
+  
+  d = [theta(:)/degree,rho(:)/degree];
+  disp('polar angles in degree')
+  cprintf(d,'-L','  ','-Lc',{'azimuth angle' 'polar angle'});
+  clear theta
+  clear rho
 end
