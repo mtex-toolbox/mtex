@@ -1,4 +1,4 @@
-function [x,omega] = angleDistribution(odf,omega,varargin)
+function [x,omega] = angleDistribution(odf,varargin)
 % 
 %
 %
