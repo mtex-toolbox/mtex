@@ -17,6 +17,7 @@ function x = axisDistribution(odf,h,varargin)
 
 % angle discretisation
 omega = linspace(-pi,pi,100);
+weight = sin(omega./2).^2 ./ length(omega);
 
 % define a grid for quadrature
 h = repmat(h(:),1,length(omega));
@@ -25,4 +26,4 @@ S3G = orientation('axis',h,'angle',omega,odf(1).CS,odf(1).SS);
 
 f = eval(odf,S3G,varargin{:});
 
-x = mean(f,2);
+x = 2 * f * weight(:);
