@@ -112,7 +112,8 @@ end
 
 % set correction flag for plotting pole figure data
 if ~check_option(S2G,'plot') && ...
-    check_option(varargin,{'CONTOUR','CONTOURF','SMOOTH','TEXTUREMAP','rgb'});
+    check_option(varargin,{'CONTOUR','CONTOURF','SMOOTH','TEXTUREMAP','rgb'}) ...
+    && isa(data,'double')
   if size(S2G,1) == 1 || size(S2G,2) == 1
     
     % interpolate
@@ -160,7 +161,7 @@ elseif check_option(varargin,{'north','south','antipodal'})
    
 elseif check_option(S2G,{'north','south','antipodal'})
   
-  hemisphere = extract_option(S2G.options,{'north','south','antipodal'});
+  hemisphere = extract_option(S2G,{'north','south','antipodal'});
 
 elseif max(theta(:)) > pi/2+0.001 
   

@@ -1,4 +1,4 @@
-function [h,k,l] = v2m(m,varargin)
+function hkl = v2m(m,varargin)
 % vector3d --> Miller-indece 
 %
 %% Syntax
@@ -28,7 +28,7 @@ mv = M \ v;
 mbr = selectMaxbyColumn(abs(mv));
 mv = mv * diag(1./mbr);
 
-
+hkl = zeros(numel(m),3);
 for im = 1:numel(m)
 
   mm = mv(:,im) * (1:20);
@@ -37,17 +37,15 @@ for im = 1:numel(m)
   j = find(e<10e-4,1,'first');
     
   if ~isempty(j)
-    h(im) = round(mm(1,j));
-    k(im) = round(mm(2,j));
-    l(im) = round(mm(3,j));
+    hkl(im,:) = round(mm(:,j));
   else
-    h(im) = mv(1,im);
-    k(im) = mv(2,im);
-    l(im) = mv(3,im);
+    hkl(im,:) = mv(:,im);    
   end
 
 end
 
-
-
+if any(strcmp(Laue(m.CS),{'-3','-3m','6/m','6/mmm'}))
+  
+  hkl = [hkl(:,1:2),-hkl(:,1)-hkl(:,2),hkl(:,3)];
+end
 

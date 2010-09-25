@@ -10,4 +10,4 @@ end
 
 s.vector3d = horzcat(v{:});
 s.res = min(cellfun(@(S2G) S2G.res,varargin));
-s.options = delete_option(s.options,'indexed');
+s = delete_option(s,'indexed');

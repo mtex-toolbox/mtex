@@ -5,37 +5,40 @@ function c = char(m,varargin)
 %  NO_SCOPES
 %  LATEX
 
-[h,k,l] = v2m(m);
-
 c = [];
 
 for i = 1:length(m)
+
+  if check_option(m,{'uvw','directions'}) || check_option(varargin,{'uvw','directions'})
   
-  if any(strcmp(Laue(m.CS),{'-3','-3m','6/m','6/mmm'}))
-    
-    s = [barchar(h(i),varargin{:}),barchar(k(i),varargin{:}),...
-      barchar(-h(i)-k(i),varargin{:}),barchar(l(i),varargin{:})];
-    
+    uvtw = v2d(subsref(m,i));
+
+    s = ['(',barchar(uvtw,varargin{:}),')'];
+
   else
     
-    s= [barchar(h(i),varargin{:}),barchar(k(i),...
-      varargin{:}),barchar(l(i),varargin{:})];
-  end
-  
-  if check_option(varargin, {'TEX','LATEX'})
-    s = ['\{',s,'\}'];
-  elseif ~check_option(varargin,'NO_SCOPES')
-    s = ['{',s,'}'];
-  end
+    hkl = v2m(subsref(m,i));
+
+    s = barchar(hkl,varargin{:});
     
+    if check_option(varargin, {'TEX','LATEX'})
+      s = ['\{',s,'\}']; %#ok<AGROW>
+    elseif ~check_option(varargin,'NO_SCOPES')
+      s = ['{',s,'}']; %#ok<AGROW>
+    end    
+  end
+
   c = strcat(c,s);
 end
 
 
 function s=barchar(i,varargin)
 
-if (i<0) && check_option(varargin,'latex')
-		s = ['\bar{',int2str(-i),'}'];
-else
-		s = int2str(i);
+s = '';
+for j = 1:length(i)
+  if (i(j)<0) && check_option(varargin,'latex')
+		s = [s,'\bar{',int2str(-i(j)),'}']; %#ok<AGROW>
+  else
+    s = [s,int2str(i(j))]; %#ok<AGROW>
+  end
 end

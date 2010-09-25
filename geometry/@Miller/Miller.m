@@ -3,12 +3,18 @@ function [m,er] = Miller(varargin)
 %
 %% Syntax
 % m = Miller(h,k,l,cs)
+% m = Miller(h,k,l,cs,'hkl')
+% m = Miller(h,k,l,cs,'pole')
 % m = Miller(h,k,i,l,cs)
-% m = Miller(v,cs)
+% m = Miller(u,v,w,cs,'uvw')
+% m = Miller(u,v,t,w,cs,'uvw')
+% m = Miller(u,v,w,cs,'direction')
+% m = Miller(x,cs)
 %
 %% Input
-%  h,k,l,i(optional) - double
-%  v  - @vector3d
+%  h,k,l,i(optional) - Miller indice of the plane normal
+%  u,v,w,t(optional) - Miller indice of a direction
+%  x  - @vector3d
 %  cs - crystal @symmetry
 %
 %% See also
@@ -16,23 +22,21 @@ function [m,er] = Miller(varargin)
 
 er = 0;
 
-% check for symmetry
-if nargin > 0 && isa(varargin{nargin},'symmetry')
-  m.CS = varargin{nargin};
-  varargin = varargin(1:end-1);
-else
-  m.CS = symmetry;
-end
+%% check for symmetry
+m.CS = getClass(varargin,'symmetry',symmetry);
 
+%% empty
 if nargin == 0
   
   v = vector3d;
 
+%% copy constructor
 elseif isa(varargin{1},'Miller')
   
   m = varargin{1};
   return
   
+%% vector3d  
 elseif isa(varargin{1},'vector3d')
   
   if any(norm(varargin{1})) == 0
@@ -41,24 +45,45 @@ elseif isa(varargin{1},'vector3d')
   
   v = varargin{1};
   
+%% hkl and uvw  
 elseif isa(varargin{1},'double')
   
-  for i = 2:length(varargin), argin_check(varargin{i},'double'); end
+  % get hkls and uvw from input
+  nparam = min([length(varargin),4,find(cellfun(@(x) ~isa(x,'double'),varargin),1)-1]);
   
-  if length(varargin) > 4 || length(varargin) < 3
-    error('wrong number of arguments!');
-  end
+  % check for right input
+  if nparam < 3, error('You need at least 3 Miller indice!');end
   
-  v = m2v(varargin{1},varargin{2},varargin{end},m.CS);
-  if length(varargin)==4 && varargin{1} + varargin{2} + varargin{3} ~= 0
+  % check fourth coefficient is right
+  if nparam==4 && varargin{1} + varargin{2} + varargin{3} ~= 0
     if nargout == 2
       er = 1;
+    elseif check_option(varargin,{'uvw','uvtw','direction'})
+      warning(['Convention u+v+t=0 violated! I assume t = ',int2str(-varargin{1} - varargin{2})]); %#ok<WNTAG>
     else
-      warning(['Convention h+k+i=0 violated! I assume i = ',int2str(-varargin{1} + varargin{2})]); %#ok<WNTAG>
+      warning(['Convention h+k+i=0 violated! I assume i = ',int2str(-varargin{1} - varargin{2})]); %#ok<WNTAG>
     end
   end
+  
+  if check_option(varargin,{'uvw','uvtw','direction'});
+    
+    if nparam==4
+      varargin{1} = varargin{1} - varargin{3};
+      varargin{2} = varargin{2} - varargin{3};
+    end
+    v = d2v(varargin{1},varargin{2},varargin{nparam},m.CS);
+    v = set_option(v,'uvw');
+    
+  else    
+    
+    v = m2v(varargin{1},varargin{2},varargin{nparam},m.CS);
+  
+  end  
+    
 end
+
+v = set_option(v,...
+  extract_option(varargin,{'north','south','antipodal'}));
 
 superiorto('vector3d');
 m = class(m,'Miller',v);
-

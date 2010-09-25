@@ -2,18 +2,27 @@ function display(m)
 % standard output
 
 disp(' ');
-disp([inputname(1) ' = ' doclink('Miller_index','Miller') ' (size: ' int2str(size(m)) ')']);
+disp([inputname(1) ' = ' doclink('Miller_index','Miller') ' (size: ' int2str(size(m)),...
+  '), ',char(option2str(check_option(m)))]);
 disp(['  symmetry: ',char(m.CS)]);
 
 if numel(m) < 20 && numel(m) > 0
-  
-  [h,k,l] = v2m(m);
-  
-  if any(strcmp(Laue(m.CS),{'-3','-3m','6/m','6/mmm'}))
-    d = [h(:),k(:),-h(:)-k(:),l(:)];
+
+  if check_option(m,'uvw')
+    
+    uvtw = v2d(m);
+    
+    if any(strcmp(Laue(m.CS),{'-3','-3m','6/m','6/mmm'}))
+      cprintf(uvtw.','-L','  ','-Lr',{'u' 'v' 't' 'w'});
+    else
+      cprintf(uvtw.','-L','  ','-Lr',{'u' 'v' 'w'});
+    end
+        
   else
-    d = [h(:),k(:),l(:)];
+    
+    hkl = v2m(m);
+  
+    cprintf(hkl.','-L','  ','-Lr',{'h' 'k' 'l' 'i'});
   end
-  cprintf(d.','-L','  ','-Lr',{'h' 'k' 'l' 'i'});
 end
 disp(' ');

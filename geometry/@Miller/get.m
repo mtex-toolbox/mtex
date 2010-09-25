@@ -3,25 +3,13 @@ function value = get(obj,vname)
 
 switch lower(vname)
 
-  case {'h','k','l','i'}
-   
-    [h,k,l] = v2m(obj);
+  case 'hkl'
     
-    switch lower(vname)
-      
-      case 'h'
-        value = h;
-      case 'k'
-        value = k;
-      case 'l'
-        value = l;
-      case 'i'
-        if any(strcmp(Laue(obj.CS),{'-3m','-3','6/m','6/mmm'}))
-          value = -h - k;
-        else
-          value = [];
-        end
-    end
+    value = v2m(obj);
+  
+  case 'uvw'
+    
+    value = v2d(obj);    
     
   otherwise
     

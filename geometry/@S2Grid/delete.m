@@ -19,7 +19,7 @@ end
 
 S2G.vector3d(points) = [];
 
-if check_option(S2G.options,'INDEXED')
+if check_option(S2G,'INDEXED')
 
   cs = [0 cumsum(GridLength(S2G.rho))];
   % update rho indexing
