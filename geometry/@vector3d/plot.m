@@ -16,4 +16,4 @@ if check_option(varargin,'labeled')
   if ~all(equal(c,2)), varargin = {'BackGroundColor','w',varargin{:}};end
 end
   
-plot(S2Grid(v),'grid',varargin{:});
+plot(S2Grid(v),'grid',v.options{:},varargin{:});

@@ -50,7 +50,7 @@ else
   [d2,th2,rh2] = selectMinbyColumn(d2,pi-theta,rho2);
 end
 
-if check_option(varargin,'antipodal')
+if check_option(varargin,'antipodal') || check_option(v,'antipodal')
   swap = false(numel(v),1);
 else
   swap = d1 > d2;

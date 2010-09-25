@@ -18,6 +18,6 @@ yy = v1.y .* v2.y;
 zz = v1.z .* v2.z;
 d = xx + yy + zz;
 
-if check_option(varargin,'antipodal')
+if check_option(varargin,'antipodal') || check_option(v1,'antipodal') || check_option(v2,'antipodal')
   d = abs(d);
 end

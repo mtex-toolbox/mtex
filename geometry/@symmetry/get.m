@@ -4,7 +4,7 @@ function value = get(obj,vname)
 switch vname
   case fields(obj)
     value = [obj.(vname)];
-  case {'aufstellung','alignment'}
+  case {'aufstellung','alignment','convention'}
     
     if any(strcmpi(obj.laue,{'3m','-3m'}))
       if vector3d(Miller(1,0,0,obj)) == -yvector

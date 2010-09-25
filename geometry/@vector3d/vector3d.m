@@ -9,6 +9,7 @@ if nargin == 0 %null-vector
   v.x = [];
   v.y = [];
   v.z = [];
+  v.options = {};
   v = class(v,'vector3d');
 elseif nargin ==1 
   if isa(x,'vector3d') % copy-constructor
@@ -20,6 +21,7 @@ elseif nargin ==1
     v.x = x(1,:);
     v.y = x(2,:);
     v.z = x(3,:);
+    v.options = {};
     v = class(v,'vector3d');
   else
     error('wrong type of argument');
@@ -30,7 +32,7 @@ elseif isa(x,'double')
   v.x = x;
   v.y = y;
   v.z = z;
-    
+  v.options = {};  
   v = class(v,'vector3d');
 elseif strcmp(x,'polar')
   v = sph2vec(y,z);
@@ -63,5 +65,4 @@ if check_option(varargin,'normalize')
   v = v ./ norm(v);
 end
 
-
-
+v = set_option(v,extract_option(varargin,{'antipodal'}));

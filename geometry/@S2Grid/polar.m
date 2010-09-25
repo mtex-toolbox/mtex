@@ -7,7 +7,7 @@ function [theta,rho] = polar(S2G,varargin)
 %% Output
 % [theta,rho] - double
 
-if check_option(S2G.options,'INDEXED')
+if check_option(S2G,'INDEXED')
   theta = double([S2G.theta]);
   theta = rep(theta,GridLength(S2G.rho));
   rho = double([S2G.rho]);

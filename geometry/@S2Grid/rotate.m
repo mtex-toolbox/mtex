@@ -9,4 +9,4 @@ function S2G = rotate(S2G,q)
 if isa(q,'double'), q = axis2quat(zvector,q);end
 
 S2G.vector3d = q*S2G.vector3d;
-S2G.options = delete_option(S2G.options,'INDEXED');
+S2G = delete_option(S2G,'INDEXED');

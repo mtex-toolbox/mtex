@@ -6,7 +6,7 @@ function [S2G r]= refine(S2G)
 %% Output
 %  S2G - @S2Grid with half the resolution
 
-if ~check_option(S2G.options,'INDEXED')
+if ~check_option(S2G,'INDEXED')
 %   , error('not supported for "not indexed" grids');end
   S2G.res = S2G.res / 2;
   

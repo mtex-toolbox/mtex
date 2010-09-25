@@ -40,7 +40,7 @@ else
   
   v = S * v;
 
-  if check_option(varargin,'antipodal')
+  if check_option(varargin,'antipodal') || check_option(v,'antipodal')
     v = [v;-v];
     if check_option(varargin,'plot')
       del = v.z<-1e-6;

@@ -95,8 +95,7 @@ if nargin == 0 || ...
   G.theta = S1Grid([],minthetaGrid,maxthetaGrid);
   G.rho = S1Grid([],minrhoGrid,maxrhoGrid);
   Grid = vector3d;
-  G.options = {};
-
+  
 %% copy constructor
 elseif isa(varargin{1},'S2Grid')
 
@@ -125,8 +124,7 @@ elseif isa(varargin{1},'vector3d')
   end
 
   Grid = Grid(theta<=maxthetaGrid+1e-06 & inside(rho,minrhoGrid,maxrhoGrid));
-  G.options = {};
-
+  
 %% plot grid with maxtheta function
 elseif check_option(varargin,'plot') && exist('maxthetafun','var')
 
@@ -146,8 +144,7 @@ elseif check_option(varargin,'plot') && exist('maxthetafun','var')
   theta = theta * diag(maxthetafun(rho(1,:))./maxtheta);
 
   Grid = sph2vec(theta,rho);
-  G.options = {};
-
+  
 %% random points
 elseif check_option(varargin,'random')
   
@@ -162,10 +159,7 @@ elseif check_option(varargin,'random')
   rho   = 2*pi*rand(points,1);
   
   Grid = sph2vec(theta,rho);
-  G.options = {};
-
-  
-  
+    
 %% all other idexed grids
 else
 
@@ -257,11 +251,11 @@ else
   end
 
   Grid = calcGrid(G.theta,G.rho);
-  G.options = {'INDEXED'};
+  Grid = set_option(Grid,'INDEXED');
 
 end
 
-G.options = set_option(G.options,...
+Grid = set_option(Grid,...
   extract_option(varargin,{'INDEXED','PLOT','north','south','antipodal'}));
 
 superiorto('vector3d');

@@ -8,4 +8,4 @@ function S2G = fliplr(S2G)
 S2G.rho = pi - S2G.rho;
 [theta,rho] = polar(S2G.vector3d);
 S2G.vector3d = vector3d('polar',theta,pi-rho);
-S2G.options = delete_option(S2G.options,'INDEXED');
+S2G = delete_option(S2G,'INDEXED');
