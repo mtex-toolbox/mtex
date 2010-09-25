@@ -41,8 +41,19 @@ if check_option(varargin,'correctContour')
   data = [data;data(1,:)];
 end
 
+%% Quiver plot
+if isa(data,'vector3d')
+  
+  [theta,rho] = polar(data);
+  [dx,dy] = projectData(theta,rho);
+  
+  dx = reshape(dx./10,size(X));
+  dy = reshape(dy./10,size(X));
+  
+  optiondraw(quiver(X,Y,dx,dy,0.5),varargin{:});
+  
 %% contour plot
-if any(strcmpi(plottype,'TEXTUREMAP')) 
+elseif any(strcmpi(plottype,'TEXTUREMAP'))
 
   set(gcf,'renderer','opengl');
   surface(X,Y,ones(size(X)),data,...
@@ -109,7 +120,6 @@ elseif any(strcmpi(plottype,'SMOOTH'))
     end
 
   end
-  
 %% scatter plots
 else 
   lastwarn('')
