@@ -68,31 +68,78 @@ elseif isa(points,'char') && any(strcmpi(points,{'random'}))
 %% regular grid
 elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
 
-  % determine parameterisation
-  if strcmpi(points,'plot') 
-    sectype= 'sigma'; % default for plot
-  elseif check_option(varargin,{'Bunge','ZXZ'})
-    sectype= 'phi1';  % default for Bunge
-  else
-    sectype= 'alpha'; % default for regular
-  end
-      
-  sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','axisangle'},sectype);
+  % default sectioning for plot grids
+  sectype = [];
+  if strcmpi(points,'plot'), sectype= 'sigma'; end
   
+  % check whether sectioning type is given explictely
+  sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','axisangle','omega','psi'},sectype);
+  
+  % if sectioning is given, it defines the Euler angle convention
+  switch lower(sectype)    
+    
+    case {'phi1','phi2'}
+      convention = 'Bunge';
+      
+    case {'alpha','gamma','sigma'}
+      convention = 'Matthies';
+    
+    case 'omega'
+      
+      convention = 'Canove';
+      
+    case 'psi'
+      
+      convention = 'Kocks';
+      
+    otherwise % determine convention
+      
+      % determine Euler angle parameterisation
+      convention = EulerAngleConvention(varargin{:});
+
+      switch convention
+    
+        case {'Matthies','nfft','ZYZ','ABG'}
+      
+          sectype = 'alpha';
+      
+        case 'Roe'
+    
+          sectype = 'Psi';
+      
+        case {'Bunge','ZXZ'}
+
+          sectype = 'phi1';
+          
+        case {'Kocks'}
+    
+          sectype = 'Psi';
+    
+        case {'Canova'}
+    
+          sectype = 'omega';
+            
+      end
+  end
+   
+  % get bounds
   [max_rho,max_theta,max_sec] = getFundamentalRegion(CS,SS,varargin{:});
   
-  if any(strcmp(sectype,{'alpha','phi1'}))
+  % make the sectioning variable to be the last one
+  if any(strcmp(sectype,{'alpha','phi1','Psi','omega'}))
     dummy = max_sec; max_sec = max_rho; max_rho = dummy;
   end
 
   % sections
-  nsec = get_option(varargin,'SECTIONS',round(max_sec/degree/5));
+  nsec = get_option(varargin,'SECTIONS',...
+    round(max_sec/get_option(varargin,'resolution',5*degree)));
   sec = linspace(0,max_sec,nsec+1); sec(end) = [];
   sec = get_option(varargin,sectype,sec,'double');
   nsec = length(sec);
   
+  % special case axis/angle
   if strcmpi(sectype,'axisangle')
-%     S2G = S2Grid('plot','maxtheta',max_theta,'maxrho',max_rho,'RESTRICT2MINMAX',varargin{:});
+  
     S2G = S2Grid('plot',varargin{:});
     
     for i=1:nsec
@@ -103,40 +150,36 @@ elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
     G.options = {'ZYZ'};
     G.resolution = get(S2G,'resolution');
     
-      if strcmpi(points,'plot')
-        varargout{1} = S2G;
-        varargout{2} = sec;
-      else
-        varargout{1} = G.alphabeta;
-      end
-  else
+    
+  else % parameterisation by Euler angles
 
-  S2G = S2Grid(points,'MAXTHETA',max_theta,'MAXRHO',max_rho,'RESTRICT2MINMAX',varargin{:});
-
-  % generate SO(3) plot grids
-  [theta,rho] = polar(S2G);
-  sec_angle = repmat(reshape(sec,[1,1,nsec]),[size(S2G),1]);
-  theta  = reshape(repmat(theta ,[1,1,nsec]),[size(S2G),nsec]);
-  rho = reshape(repmat(rho,[1,1,nsec]),[size(S2G),nsec]);
+    % no sectioning angles
+    S2G = S2Grid(points,'MAXTHETA',max_theta,'MAXRHO',max_rho,'RESTRICT2MINMAX',varargin{:});
+    [theta,rho] = polar(S2G);
+    
+    % build size(S2G) x nsec matrix of Euler angles
+    sec_angle = repmat(reshape(sec,[1,1,nsec]),[size(S2G),1]);
+    theta  = reshape(repmat(theta ,[1,1,nsec]),[size(S2G),nsec]);
+    rho = reshape(repmat(rho,[1,1,nsec]),[size(S2G),nsec]);
   
-  % set convention
-  switch lower(sectype)
-    case {'phi1','phi2'}
-      convention = 'ZXZ';
-    case {'alpha','gamma','sigma'}
-      convention = 'ZYZ';
+    % set order
+    switch lower(sectype)
+      case {'phi_1','alpha','phi1'}
+        [sec_angle,theta,rho] = deal(sec_angle,theta,rho);
+      case {'phi_2','gamma','phi2'}
+        [sec_angle,theta,rho] = deal(rho,theta,sec_angle);
+      case 'sigma'
+        [sec_angle,theta,rho] = deal(rho,theta,sec_angle-rho);
+    end
+    
+    % define grid
+    Grid = euler2quat(sec_angle,theta,rho,convention);
+  
+    % store gridding
+    G.alphabeta = [sec_angle(:),theta(:),rho(:)];
+    G.options = {convention};
+    G.resolution = get(S2G,'resolution');
   end
-
-  % set order   
-  switch lower(sectype)
-    case {'phi_1','alpha','phi1'}
-      [sec_angle,theta,rho] = deal(sec_angle,theta,rho);      
-    case {'phi_2','gamma','phi2'}
-      [sec_angle,theta,rho] = deal(rho,theta,sec_angle);
-    case 'sigma'
-      [sec_angle,theta,rho] = deal(rho,theta,sec_angle-rho);
-  end
-  Grid = euler2quat(sec_angle,theta,rho,convention);
   
   % extra output
   if strcmpi(points,'plot')
@@ -145,11 +188,7 @@ elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
   else
     varargout{1} = G.alphabeta;
   end
-  
-  G.alphabeta = [sec_angle(:),theta(:),rho(:)];      
-  G.options = {convention};
-  G.resolution = get(S2G,'resolution');
-  end
+    
 %% local Grid
 elseif maxangle < rotangle_max_z(CS)/4
   

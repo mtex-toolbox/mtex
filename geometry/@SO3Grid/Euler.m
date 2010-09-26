@@ -16,23 +16,32 @@ function varargout = Euler(S3G,varargin)
 %% See also
 % quaternion/Euler
 
-% set convention
-if check_option(varargin,{'Bunge','ZXZ'})
-  convention = 'ZXZ';
-elseif check_option(varargin,{'ABG','ZYZ'})
-  convention = 'ZYZ';
-else
-  convention = get_flag(get(S3G,'options'),{'ZXZ','ZYZ'},'none');
-end
+% get convention
+[convention,labels] = EulerAngleConvention(varargin{:});
+S3GOptions = get(S3G,'options');
+S3GConvention = EulerAngleConvention(S3GOptions);
 
-if isempty(S3G.center) && check_option(S3G,convention)
+if isempty(S3G.center) && checkEulerAngleConvention(S3GConvention,convention)
   
   if nargout == 3
     varargout{1} = vertcat(S3G.alphabeta(:,1));
     varargout{2} = vertcat(S3G.alphabeta(:,2));
     varargout{3} = vertcat(S3G.alphabeta(:,3));    
-  else
+    
+  elseif nargout == 1
+    
     varargout{1} = vertcat(S3G.alphabeta);
+    
+  else
+    
+    d = vertcat(S3G.alphabeta)/degree;
+    d(abs(d)<1e-10)=0;
+  
+    disp(' ');
+    disp(['  ' convention ' Euler angles in degree'])
+    cprintf(d,'-L','  ','-Lc',labels);
+    disp(' ');
+    
   end
     
 else
