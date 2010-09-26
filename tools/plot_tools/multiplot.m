@@ -33,11 +33,13 @@ function multiplot(x,y,nplots,varargin)
 minz = +inf; maxz = -inf;
 for i = 1:nplots
   Y{i} = y(i); %#ok<AGROW>
-  minz = min(minz,min(Y{i}(Y{i}>-inf)));
-  maxz = max(maxz,max(Y{i}(Y{i}<inf)));
-  if ~check_option(varargin,'silent') && check_option(varargin,'DISP')
-    s = get_option(varargin,'DISP');
-    disp(s(i,Y{i}));
+  if isa(Y{i},'double')
+    minz = min(minz,min(Y{i}(Y{i}>-inf)));
+    maxz = max(maxz,max(Y{i}(Y{i}<inf)));
+    if ~check_option(varargin,'silent') && check_option(varargin,'DISP')
+      s = get_option(varargin,'DISP');
+      disp(s(i,Y{i}));
+    end
   end
 end
 
@@ -130,7 +132,7 @@ if ~ishold
   % init statusbar
   try
     sb = statusbar('drawing plots ...');
-    set(sb.ProgressBar, 'Visible','on', 'Minimum',0, 'Maximum',nplots, 'Value',0, 'StringPainted','on');
+    set(sb.ProgressBar, 'Visible',true, 'Minimum',0, 'Maximum',nplots, 'Value',0, 'StringPainted','on');
   catch %#ok<*CTCH>
   end
 end
@@ -175,7 +177,8 @@ for i = 1:nplots
     catch
     end
     
-    if check_option(varargin,'MINMAX') && ~strcmp(get_option(varargin,'MINMAX'),'off')
+    if check_option(varargin,'MINMAX') && ...
+        ~strcmp(get_option(varargin,'MINMAX'),'off') && isa(Z,'double')
       anotation(a(i),min(Z(:)),max(Z(:)),maxz,fs{:});
     end
     if check_option(varargin,'ANOTATION')
