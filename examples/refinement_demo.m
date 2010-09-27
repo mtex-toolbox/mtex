@@ -29,7 +29,6 @@ figure, plotpdf(odf_true,h)
 %% Initial measure grid
 
 r = S2Grid('equispaced','resolution',15*degree,'maxtheta',90*degree);
-r = set(r,'options',{});
 
 figure
 plot(r,'markersize',12)
