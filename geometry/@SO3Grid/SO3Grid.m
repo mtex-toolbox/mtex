@@ -69,7 +69,7 @@ elseif isa(points,'char') && any(strcmpi(points,{'random'}))
 elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
 
   % default sectioning for plot grids
-  sectype = [];
+  sectype = 'unknown';
   if strcmpi(points,'plot'), sectype= 'sigma'; end
   
   % check whether sectioning type is given explictely

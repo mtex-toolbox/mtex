@@ -7,7 +7,7 @@ if strcmp(vname,'CS')
     % recompute representation in cartesian coordinates
     hkl = v2m(obj);
     obj.CS = value;
-    obj.vector3d = m2v(hkl(:,1),hkl(:,2),hkl(:,3),value);
+    obj.vector3d = reshape(m2v(hkl(:,1),hkl(:,2),hkl(:,3),value),size(obj));
   end
   
 else
