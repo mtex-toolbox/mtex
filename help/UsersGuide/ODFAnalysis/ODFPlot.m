@@ -19,7 +19,7 @@ odf = 0.7*unimodalODF(mod1,cs,ss) + 0.3*unimodalODF(mod2,cs,ss);
 set_mtex_option('defaultColorMap',LaboTeXColorMap);
 
 
-%% Plot Pole Figures
+%% Pole Figures
 % Plotting some pole figures of an <ODF_index.html ODF> is straight forward
 % using the <ODF_plotpdf.html plotpdf> command. The only mandatory
 % arguments are the ODF to be plotted and the <Miller_index.html Miller
@@ -36,7 +36,7 @@ plotpdf(odf,[Miller(1,0,-1,0),Miller(0,0,0,1)])
 plotpdf(odf,[Miller(1,0,-1,0),Miller(0,0,0,1)],'antipodal')
 
 
-%% Plot Inverse Pole Figures
+%% Inverse Pole Figures
 % Plotting inverse pole figures is analogously to plotting pole figures
 % with the only difference that you have to use the command
 % <ODF_plotipdf.html plotipdf> and you to specify specimen directions and
@@ -52,7 +52,7 @@ plotipdf(odf,[xvector,zvector],'antipodal')
 close; figure('position',[100,100,400,200])
 plotipdf(odf,[xvector,zvector],'antipodal','complete')
 
-%% Plot ODF Sections
+%% ODF Sections
 % 
 % Plotting an ODF in two dimensional sections through the orientation space
 % is done using the command <ODF_plotodf.html plot>.
@@ -89,7 +89,7 @@ plot(odf,'alpha','sections',12,...
 plot(odf,'alpha',[25 30 35]*degree,...
      'projection','plain','gray','contourf','FontSize',10,'silent')
    
-%% Plot ODF in 3D Euler Space
+%% 3D Euler Space
 % Instead of Sectioning one could plot the Euler Angles in 3D
 %
 % * contour3
@@ -99,7 +99,7 @@ plot(odf,'alpha',[25 30 35]*degree,...
 
 plot(odf,'sigma','surf3')
 
-%% Plot One Dimensional ODF Sections and Fibres
+%% One Dimensional ODF Sections and Fibres
 % In the case you have a simple ODF it might be helpfull to plot one
 % dimensional ODF sections.
 
@@ -110,11 +110,35 @@ plot(odf,'radially','LineWidth',2)
 
 plotfibre(odf,Miller(1,2,2),vector3d(2,1,1),'LineWidth',2);
 
-%% Plot Fourier Coefficients
+%% Fourier Coefficients
 % A last way to visualize an ODF is to plot its Fourier coefficients
 
 close all;
 plotFourier(odf,'bandwidth',32)
+
+%% Axis / Angle Distribution
+% Let us consider the uncorrelated missorientation ODF corresponding to our
+% model ODF.
+
+modf = calcMODF(odf)
+
+%%
+% Then we can plot the distribution of the rotation axes of this
+% missorienation ODF
+
+plotAxisDistribution(modf)
+
+%%
+% and the distribution of the missorientation angles and compare them to a
+% uniform ODF
+
+plotAngleDistribution(modf)
+hold all
+plotAngleDistribution(uniformODF(cs,cs))
+hold off
+legend('model ODF','uniform ODF')
+
+
 
 %%
 % Finally, lets set back the default colormap.
