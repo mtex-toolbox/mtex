@@ -30,6 +30,12 @@ set_mtex_option('polefigure_ext',...
 set_mtex_option('ebsd_ext',...
   {'.ebsd','.ctf','.ang','.hkl','.tsl'});
 
+%% Default save-mode for generated code snipped (import wizard)
+% set to true if generated import-script should be stored on disk by
+% default
+
+set_mtex_option('SaveToFile',false)
+
 %% Path to CIF files
 % modify this path if your CIF files are located at a different path
 set_mtex_option('cif_path',fullfile(mtex_path,'cif'));
