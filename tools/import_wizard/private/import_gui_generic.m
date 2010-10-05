@@ -189,7 +189,9 @@ elseif get(handles.radio_exp(2),'Value')
     str = [str generateCodeString(templatestr)];
   end
   
-  openuntitled(str);
+  [pname fname] = cellfun(@fileparts,fl{1},'uniformoutput',false);
+  strfname = [ fname{1} '_'  regexprep(templates{l},[type '_(\w+).m'],'$1')];
+  openuntitled(str,strfname);
 end
 
 close
