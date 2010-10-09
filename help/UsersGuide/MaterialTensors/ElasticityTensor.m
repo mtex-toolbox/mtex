@@ -12,45 +12,45 @@
 %% Import an Elasticity Tensor
 % Let us start by importing an elasticity tensor from a file.
 
-cs = symmetry('mmm');
-E = load('Olivine1997PC.mat');
+fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa')
 
-T = tensor(E.T,'name','elasticity',cs);
+cs = symmetry('mmm',[4.7646 10.2296 5.9942]);
 
-plot(T)
+E = loadTensor(fname,cs,'name','elasticity','interface','generic')
+
 
 %% Young's Modulus
 % Young's modulus is .... It is computed for a specific direction x by the
 % command <tensor/YoungsModulus.html YoungsModulus>.
 
 x = xvector;
-Y = YoungsModulus(T,x)
+Y = YoungsModulus(E,x)
 
 %%
 % It can be plotted by passing the option *YoungsModulus* to the
 % <tensor/plot.html plot> command.
 
-plot(T,'PlotType','YoungsModulus')
+plot(E,'PlotType','YoungsModulus')
 
 %% Linear Compressibility
 % The linear compressibility is ...
 % It is computed for a specific direction x by the
 % command <tensor/linearCompressibility.html linearCompressibility>.
 
-linearCompressibility(T,x)
+linearCompressibility(E,x)
 
 %%
 % It can be plotted by passing the option *linearCompressibility* to the
 % <tensor/plot.html plot> command.
 
-plot(T,'PlotType','linearCompressibility')
+plot(E,'PlotType','linearCompressibility')
 
 %% Cristoffel Tensor
 % The Cristoffel Tensor for a specific direction x is ....
 % It is computed for a specific direction x by the
 % command <tensor/CristoffelTensor.html YoungsModulus>.
 
-C = CristoffelTensor(T,x)
+C = CristoffelTensor(E,x)
 
 %% Elastic Wave Velocity
 % The Cristoffel tensor is the basis for computing the direction dependent
@@ -58,27 +58,26 @@ C = CristoffelTensor(T,x)
 % directions. In MTEX this is done by the command <tensor/velocity.html
 % velocity>
 
-[vp,vs1,vs2,pp,ps1,ps2] = velocity(T,S2,1)
+[vp,vs1,vs2,pp,ps1,ps2] = velocity(E,S2,1)
 
 %%
 % In order to visualize these quantities there are several posibilities.
 % Let us first plot the direction depended wave speed of the p-wave
 
-plot(T,'PlotType','vp')
+plot(E,'PlotType','vp')
 
 %%
 % Next we plot on the top of this plot the p-wave polarisation direction.
 
 hold on
-plot(T,'PlotType','pp','color','black')
+plot(E,'PlotType','pp','color','black')
 hold off
 
 %%
 % Finally we visuallize the s1 and s2-wave polarization together with its
 % speed difference.
 
-plot
 
-plot(T,'PlotType','ps1','resolution',10*degree,'ShowArrowHead','off','color','k')
+plot(E,'PlotType','ps1','resolution',10*degree,'ShowArrowHead','off','color','k')
 
 hold off
