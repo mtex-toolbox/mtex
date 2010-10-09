@@ -87,6 +87,14 @@ switch vname
 %     for i = 1:length(obj)
 %       varargout{1} = [varargout{1};obj(i).X(:,2)]; 
 %     end
+  case 'weight'
+    if isfield(obj.options, 'weight')
+      w = get(obj,'weight');
+      varargout{1} = w./sum(w(:));
+    else
+      sz = size(obj(1).orientations);
+      varargout{1} = ones(sz)./prod(sz);      
+    end
   case fields(obj(1).options)
      options = [obj.options];
      varargout{1} = vertcat(options.(vname));    
