@@ -47,7 +47,7 @@ end
 sym = {};
 if ~isempty(varargin) && checkClass(varargin{1},'symmetry')  
   cs = varargin{1};varargin = varargin(2:end);
-  if strcmpi(type,'ODF'), sym = {'cs',cs};;end  
+  if strcmpi(type,'ODF'), sym = {'cs',cs};end  
 end
 
 if ~isempty(varargin) && checkClass(varargin{1},'symmetry')
@@ -109,10 +109,18 @@ if ~isempty_cell(c),  data = set(data,'c',c);end
 %% set comment
 
 pos = cumsum([0,idata]);
-for i = 1:length(data)
-  [ps,fn,ext] = fileparts([fname{find(i>pos,1,'last')}]);
-  data(i) = set(data(i),'comment',...
-    get_option(varargin,'comment',[fn ext])); %#ok<AGROW>
+[ps,fn,ext] = fileparts([fname{find(i>pos,1,'last')}]);
+
+if strcmpi(type,'Tensor') % subsasgn, subsref
+  data = set(data,'comment',...
+     get_option(varargin,'comment',[fn ext]));  
+  data = set(data,'name',get_option(varargin,'name',''));
+  data = set(data,'units',get_option(varargin,'units',''));
+else  
+  for i = 1:length(data)
+    data(i) = set(data(i),'comment',...
+      get_option(varargin,'comment',[fn ext])); %#ok<AGROW>
+  end
 end
 
 %% rotate data
