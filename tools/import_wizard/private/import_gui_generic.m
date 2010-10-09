@@ -176,9 +176,11 @@ elseif get(handles.radio_exp(2),'Value')
       fl = {fn, lb(1)};
     case 'ODF'
       fl = {fn{6}, lb(6)};
+    case 'tensor'
+      fl = {fn{7}, lb(7)};
   end  
   
-	str = generateScript(type,fl{1},data,getappdata(fl{2},'interface'),...
+   	str = generateScript(type,fl{1},data,getappdata(fl{2},'interface'),...
     getappdata(fl{2},'options'), handles);
        
   str = generateCodeString(str);  

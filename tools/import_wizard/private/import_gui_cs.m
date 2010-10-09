@@ -198,14 +198,16 @@ handles = getappdata(gcf,'handles');
 data = getappdata(gcf,'data');
 
 
-cs_counter = getappdata(gcf,'cs_count');
-cs = get(data(cs_counter),'CS');
 
 % set page name
 if isa(data,'EBSD')
+  cs_counter = getappdata(gcf,'cs_count');
+  cs = get(data(cs_counter),'CS');
   phase = get(data(cs_counter),'phase');
   pagename = ['Set Crystal Geometry for Phase ' num2str(phase)];
   setappdata(handles.pages(3),'pagename',pagename );
+else
+  cs = get(data,'CS');
 end
 
 csname = strmatch(Laue(cs),symmetries);
