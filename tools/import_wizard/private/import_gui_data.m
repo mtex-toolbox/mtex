@@ -18,6 +18,8 @@ if check_option(varargin,'EBSD')
   select = 2;
 elseif check_option(varargin,'ODF')
   select = 3;
+elseif check_option(varargin,'tensor')
+  select = 4;
 else
   select = 1;
 end
@@ -29,7 +31,7 @@ handles.tabs = uitabpanel(...
   'position',[0,0,w-18,260],...
   'Margins',{[2,2,2,2],'pixels'},...
   'PanelBorderType','beveledout',...
-  'Title',{'Pole Figures','EBSD','ODF'},... %,'Background','Defocussing','Defocussing BG'},...
+  'Title',{'Pole Figures','EBSD','ODF','Tensor'},... %,'Background','Defocussing','Defocussing BG'},...
   'FrameBackgroundColor',get(gcf,'color'),...
   'PanelBackgroundColor',get(gcf,'color'),...
   'TitleForegroundColor',[0,0,0],...
@@ -100,7 +102,7 @@ handles.down = uicontrol(...
   'Position',[w-145 ph-250 25 25]);
 
 
-paneltypes = {'PoleFigure','PoleFigure','PoleFigure','PoleFigure','EBSD','ODF'};
+paneltypes = {'PoleFigure','PoleFigure','PoleFigure','PoleFigure','EBSD','ODF','Tensor'};
 
 for k = 1:length(handles.datapane)  
   handles.listbox(k) = uicontrol(...
@@ -156,8 +158,10 @@ elseif ~isempty(getappdata(handles.listbox(5),'data'))
   ebsd = getappdata(handles.listbox(5),'data');
   setappdata(gcbf,'data',ebsd);
   
-else  
-  setappdata(handles.listbox(6),'data',data);  
+elseif ~isempty(getappdata(handles.listbox(6),'data'))
+  setappdata(handles.listbox(6),'data',data); 
+else
+  setappdata(handles.listbox(7),'data',data);
 end
 
 function leave_callback(varargin)
@@ -168,8 +172,9 @@ lb = handles.listbox;
 pf = getappdata(lb(1),'data');
 ebsd = getappdata(lb(5),'data');
 odf = getappdata(lb(6),'data');
+tensor = getappdata(lb(7),'data');
 
-s = ~isempty(pf) + ~isempty(ebsd) + ~isempty(odf);
+s = ~isempty(pf) + ~isempty(ebsd) + ~isempty(odf) + ~isempty(tensor);
 if s == 0
   error('Add some data files to be imported!');
 elseif s > 1
@@ -210,6 +215,12 @@ elseif ~isempty(pf)
   handles.pages = handles.pf_pages;
   
   vname = 'pf';
+elseif ~isempty(tensor)
+  
+  setappdata(gcbf,'data',tensor);
+  handles.pages = handles.tensor_pages;
+  
+  vname = 'tensor';
 end
 
 setappdata(gcbf,'handles',handles);

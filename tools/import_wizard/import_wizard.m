@@ -14,7 +14,7 @@ function import_wizard( type, varargin )
 if nargin == 0,
   type = 'PoleFigure';
 elseif nargin > 0
-  assert( any(strcmpi(type,{'PoleFigure','EBSD','ODF'})),...
+  assert( any(strcmpi(type,{'PoleFigure','EBSD','ODF','tensor'})),...
     'Specifiy data file-type first: PoleFigure, EBSD or ODF')
 end
 
@@ -59,6 +59,7 @@ end
 handles.pf_pages = handles.pages([1:4 7]);
 handles.ebsd_pages = handles.pages([1 6 2 3 7]);
 handles.odf_pages = handles.pages([1:3 5 7]);
+handles.tensor_pages = handles.pages([1 2 7]);
 setappdata(h,'handles',handles);
 
 % activate first page
@@ -74,6 +75,8 @@ if nargin > 1
       lb = 5;
     case 'odf'
       lb = 6;
+    case 'tensor'
+      lb = 7;
   end
   
   for k=1:numel(varargin)

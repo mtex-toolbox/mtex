@@ -9,11 +9,13 @@ if isa(data,'EBSD')
 else
   cs = {get(data,'CS')};
 end
-ss = get(data,'SS');
 
 str = replaceToken(str,'{crystal symmetry}',export_CS_tostr(cs));
-str = replaceToken(str,'{specimen symmetry}',['symmetry(''',strrep(char(ss),'"',''), ''')']);
 
+if ~isa(data,'tensor')
+  ss = get(data,'SS');
+  str = replaceToken(str,'{specimen symmetry}',['symmetry(''',strrep(char(ss),'"',''), ''')']);
+end
 
 % plotting convention
 plotdir = cell2mat(get(handles.plot_dir,'value'))==1;
