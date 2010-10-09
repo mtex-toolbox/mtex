@@ -31,8 +31,8 @@ end
 if check_option(varargin,'reuss'), T = inv(T);end
 
 % extract orientations and wights
-SO3 = ebsd.orienations;
-weight = ebsd.weights;
+SO3 = get(ebsd,'orientations','checkPhase');
+weight = get(ebsd,'weight');
 
 % rotate tensor according to the grid
 T = rotate(T,SO3);
