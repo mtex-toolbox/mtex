@@ -22,30 +22,28 @@ while ~feof(fid)
 
   try
     
-    % read header
-	  
+    % read header	  
     % first line --> comments
-    comment = textscan(fid,'%s',1,'delimiter','\n','whitespace','');
-    comment = char(comment{1}{1});comment = comment(1:10);
-    
+    comment = fgetl(fid);    
     % second line
     s = fgetl(fid);
-    p = textscan(s,'%5c%5.1f%5.1f%5.1f%5.1f%2d%2d%2d%2d%2d%5d%5d%5c%5c');
+ 
+    p = @(k) s(5*k+1:5*k+5);
+    n = @(k) str2num(p(k));
+    m = @(k) str2num(s(26+(k*2:k*2+1)));
     
     % Miller indice
-    % [h,r] = string2Miller(fname);
-    % if ipf>1 || ~r, h = string2Miller(p{1});end
-    h = string2Miller(p{1});
+    h = string2Miller(p(0));
     
-    dtheta = p{2}; assert(dtheta > 0 && dtheta < 90);
-    mtheta = p{3}; assert(mtheta > 0 && mtheta <= 180);
-    drho = p{4}; assert(drho > 0 && drho < 90);
-    mrho = p{5}; assert(mrho > 0 && mrho <= 360);
-    shifttheta = p{6}; assert(shifttheta == 1 || shifttheta == 0);
-    shiftrho = p{7}; assert(abs(shiftrho) == 1 || shiftrho == 0);
-    iper = [p{8:10}]; assert(all(abs(iper)>0) && all(abs(iper)<4));
-    scaling = p{11}; assert(scaling>0);
-    bg = p{12};
+    dtheta = n(1); assert(dtheta > 0 && dtheta < 90);
+    mtheta = n(2); assert(mtheta > 0 && mtheta <= 180);
+    drho = n(3); assert(drho > 0 && drho < 90);
+    mrho = n(4); assert(mrho > 0 && mrho <= 360);
+    shifttheta = m(0); assert(shifttheta == 1 || shifttheta == 0);
+    shiftrho = m(1); assert(abs(shiftrho) == 1 || shiftrho == 0);
+    iper = [m(2) m(3) m(4)]; assert(all(abs(iper)>0) && all(abs(iper)<4));
+    scaling = n(7); assert(scaling>0);
+%     bg = n(8);
     
     % generate specimen directions
     theta = (dtheta*~shifttheta/2:dtheta:mtheta)*degree;
