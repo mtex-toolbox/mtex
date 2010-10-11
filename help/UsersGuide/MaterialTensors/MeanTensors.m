@@ -33,7 +33,12 @@ T = tensor(diag([10 3 1]),cs)
 % Especially for higher order tensors it is more convinient to import the
 % tensor entries from a file. This can be done by the command
 
-T = loadTensor('tensor.txt');
+fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
+
+cs = symmetry('mmm',[4.7646 10.2296 5.9942]);
+
+T = loadTensor(fname,cs,'name','elasticity','interface','generic')
+
 
 %% Visualization
 % The default plot for each tensor is its quadric, i.e. for each direction
@@ -55,14 +60,8 @@ r = rotation('Euler',45*degree,0*degree,0*degree)
 % Then the rotated tensor is given by
 
 Trot = rotate(T,r)
-plot(Trot)
 
 %% 
-
-
-
-
-
 plot(Trot);
 
 %%
@@ -73,13 +72,6 @@ TODF = calcTensor(odf,T)
 
 plot(TODF)
 
-%% load a Tensor
-
-E = load('Olivine1997PC.mat');
-
-T = tensor(E.T,'name','elasticity',cs);
-
-plot(T)
 
 %%
 
