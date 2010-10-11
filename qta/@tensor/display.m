@@ -11,14 +11,15 @@ elseif ~isempty(inputname(1))
   h = [inputname(1), ' = ' h];
 end;
 
-s = [h, ' (', 'size: ' int2str(size(T.M)), ')' ];
+ss = size(T.M);
+s = [h, ' (', 'size: ' int2str(ss), ')' ];
 disp(s)
 
 disp([ '  symmetry:  ' char(T.CS)])
 disp([ '      rank:  ' num2str( T.rank)] )
 disp(' ');
 
-if ndims(T.M) == T.rank
+if numel(T.M) == prod(ss(1:T.rank));
   if T.rank == 4
     disp('  tensor in Voigt matrix representation')
     cprintf(tensor42(T.M),'-L','  ');

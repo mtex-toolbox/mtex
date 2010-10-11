@@ -15,16 +15,5 @@ function out = linearCompressibility(E,v)
 % compute the complience
 S = inv(E);
 
-% take the mean along the diagonal
-M = S.M;
-S.M = zeros(3,3);
-S.rank = 2;
-for i = 1:3
-  for j = 1:3
-    S.M(i,j) = sum(diag(squeeze(M(i,j,:,:))));
-  end
-end
-
-
-% now compute the quadric
-out = quadric(S,v);
+% compute tensor product
+out = double(EinsteinSum(S,[-1 -2 -3 -3],v,-1,v,-2));
