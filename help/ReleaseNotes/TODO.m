@@ -25,6 +25,8 @@
 % second phase.
 %
 % *This requires a better find functionality in SO3Grid*
+% * allow volume computation for miss axes
+% * allow annotations in misaxes plot
 %
 %% Grain Boundary Analysis (Florian Bachmann)
 %
