@@ -64,7 +64,9 @@ C = CristoffelTensor(E,x)
 % In order to visualize these quantities there are several posibilities.
 % Let us first plot the direction depended wave speed of the p-wave
 
+set_mtex_option('defaultColorMap',LaboTexColorMap)
 plot(E,'PlotType','vp')
+
 
 %%
 % Next we plot on the top of this plot the p-wave polarisation direction.
@@ -80,4 +82,8 @@ hold off
 
 plot(E,'PlotType','ps1','resolution',10*degree,'ShowArrowHead','off','color','k')
 
-hold off
+
+
+%%
+
+set_mtex_option('defaultColorMap','default')

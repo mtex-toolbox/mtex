@@ -1,18 +1,16 @@
-function T = EinsteinSum(T1,dimT1,T2,dimT2)
+function T = EinsteinSum(T1,dimT1,T2,dimT2,varargin)
 % tensor multiplication according to Einstein summation
 %
 %% Description
-% This function multiplies a tensor with some rotation matrix or direction,
-% i.e., it computes T_ijkl M_jn, where the dimensions of j and n can be
-% specified.
+% This function computes a tensor product according to Einstein summation
 %
 %% Syntax
-% T = mtimesT(T1,[],T2,[])
+% C = mtimesT(E,[1 -1 2 -2],v,-1,v,-2) % 
 %
 %% Input
 %  T1,T2 - @tensor
-%  dimT1 -
-%  dimT2
+%  dimT1 - 
+%  dimT2 - 
 %
 %% Output
 %  T - @tensor
@@ -20,23 +18,37 @@ function T = EinsteinSum(T1,dimT1,T2,dimT2)
 %% See also
 %
 
+% convert input
+if nargin < 3
+  M2 = [];
+  dimT2 = [];
+elseif isa(T2,'double')
+  M2 = T2;
+elseif isa(T2,'tensor') 
+  M2 = T2.M;
+elseif isa(T2,'quaternion')
+  M2 = matrix(T2);
+elseif isa(T2,'vector3d')
+  M2 = double(T2);
+  M2 = permute(M2,[3 1 2]);
+end
+
 % check for equals negative values in dimT1
 [a,b] = findFirstDouble(dimT1);
 if ~isempty(a)
   T1.M = innerSum(T1.M,a,b);
   T1.rank = T1.rank - 2;
   dimT1([a,b]) = [];
-  T = EinsteinSum(T1,dimT1,T2,dimT2);
+  T = EinsteinSum(T1,dimT1,M2,dimT2,varargin{:});
   return
 end
 
 % check for equals negative values in dimT2
 [a,b] = findFirstDouble(dimT2);
 if ~isempty(a)
-  T2.M = innerSum(T2.M,a,b);
-  T2.rank = T2.rank - 2;
+  M2 = innerSum(M2,a,b);
   dimT2([a,b]) = [];
-  T = EinsteinSum(T1,dimT1,T2,dimT2);
+  T = EinsteinSum(T1,dimT1,M2,dimT2,varargin{:});
   return
 end
 
@@ -45,15 +57,24 @@ end
 
 if ~isempty(a)
   b = b - length(dimT1);
-  T1 = mtimesT(T1,a,T2,[b ndims(T2)+1]);
+  T1 = mtimesT(T1,a,M2,[b ndims(M2)+1]);
   dimT1(a) = [];
   dimT2(b) = [];
-  T = EinsteinSum(T1,[dimT1 dimT2]);
+  T = EinsteinSum(T1,[dimT1 dimT2],varargin{:});
   return
 end
 
 % reorder dimension
-order = size(T1.M);
+order = 1:ndims(T1.M);
+order(1:length(dimT1)) = dimT1;
+
+try
+  T1.M = permute(T1.M,order);
+catch
+  error(['Bad indice! Positive indice has to be a permutation of the numbers: ' num2str(1:ndims(T1.M))])
+end
+T = T1;
+T.name = [];
 
 
 end
@@ -61,13 +82,9 @@ end
 function [a,b] = findFirstDouble(x)
 
 d = bsxfun(@minus,x,x') == 0 & bsxfun(@times,x<0,x'<0);
-[a,b] = find(d,2);
+d = d & ~eye(size(d));
+[b,a] = find(d,1);
  
-if ~isempty(a)
-  b = a(2);
-  a = a(1);
-end
-
 end
 
 function M = innerSum(M,a,b)
@@ -92,8 +109,8 @@ M = sum(M(ind),1);
 % reorder and reshape back
 M = reshape(M,[1 1 s(3:end)]);
 M = ipermute(M,order);
-
-s = size(M);
+s(:) = 1;
+s(1:ndims(M)) = size(M);
 s([a b]) = [];
 M = reshape(M,s);
 

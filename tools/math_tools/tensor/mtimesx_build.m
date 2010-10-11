@@ -98,19 +98,19 @@ catch
     pc = ~isunix ;
 end
 
-if( ~pc )
-    disp('Non-PC auto build is not currently supported. You will have to');
-    disp('manually compile the mex routine. E.g., as follows:');
-    disp(' ');
-    disp('>> blas_lib = ''the_actual_path_and_name_of_your_systems_BLAS_library''');
-    disp('>> mex(''-DDEFINEUNIX'',''mtimesx.c'',blas_lib)');
-    disp(' ');
-    disp('or');
-    disp(' ');
-    disp('>> mex(''-DDEFINEUNIX'',''-largeArrayDims'',''mtimesx.c'',blas_lib)');
-    disp(' ');
-    error('Unable to compile mtimesx.c');
-end
+% if( ~pc )
+%     disp('Non-PC auto build is not currently supported. You will have to');
+%     disp('manually compile the mex routine. E.g., as follows:');
+%     disp(' ');
+%     disp('>> blas_lib = ''the_actual_path_and_name_of_your_systems_BLAS_library''');
+%     disp('>> mex(''-DDEFINEUNIX'',''mtimesx.c'',blas_lib)');
+%     disp(' ');
+%     disp('or');
+%     disp(' ');
+%     disp('>> mex(''-DDEFINEUNIX'',''-largeArrayDims'',''mtimesx.c'',blas_lib)');
+%     disp(' ');
+%     error('Unable to compile mtimesx.c');
+% end
 
 %\
 % Check to see that mtimesx.c source code is present
@@ -155,106 +155,116 @@ disp(['... Found file mtimesx_RealTimesReal.c in ' rname]);
 % Open the current mexopts.bat file
 %/
 
-mexopts = [prefdir '\mexopts.bat'];
-fid = fopen(mexopts);
-if( fid == -1 )
+if pc
+  
+  mexopts = [prefdir '\mexopts.bat'];
+  fid = fopen(mexopts);
+  if( fid == -1 )
     error('A C/C++ compiler has not been selected with mex -setup');
-end
-disp(['... Opened the mexopts.bat file in ' mexopts]);
+  end
+  disp(['... Opened the mexopts.bat file in ' mexopts]);
 
-%\
-% Check for the correct compiler selected.
-%/
+  %\
+  % Check for the correct compiler selected.
+  %/
 
-ok_cl = FALSE;
-ok_lcc = FALSE;
-while( TRUE )
+  ok_cl = FALSE;
+  ok_lcc = FALSE;
+  while( TRUE )
     tline = fgets(fid);
     if( isequal(tline,-1) )
-        break;
+      break;
     else
-        x = findstr(tline,'COMPILER=lcc');
-        if( ~isempty(x) )
-            disp('... lcc is the selected compiler');
-            ok_lcc = TRUE;
-            libdir = 'lcc';
-            break;
-        end
-        x = findstr(tline,'COMPILER=cl');
-        if( ~isempty(x) )
-            disp('... MS Visual C/C++ is the selected compiler');
-            ok_cl = TRUE;
-            libdir = 'microsoft';
-            break;
-        end
-        x = findstr(tline,'COMPILER=bcc32');
-        if( ~isempty(x) )
-            disp('... Borland C/C++ is the selected compiler');
-            disp('... Assuming that Borland will link with Microsoft libraries');
-            ok_cl = TRUE;
-            libdir = 'microsoft';
-            break;
-        end
-        x = findstr(tline,'COMPILER=icl');
-        if( ~isempty(x) )
-            disp('... Intel C/C++ is the selected compiler');
-            disp('... Assuming that Intel will link with Microsoft libraries');
-            ok_cl = TRUE;
-            libdir = 'microsoft';
-            break;
-        end
-        x = findstr(tline,'COMPILER=wc1386');
-        if( ~isempty(x) )
-            disp('... Watcom C/C++ is the selected compiler');
-            disp('... Assuming that Watcom will link with Microsoft libraries');
-            ok_cl = TRUE;
-            libdir = 'microsoft';
-            break;
-        end
-        x = findstr(tline,'COMPILER=gcc');
-        if( ~isempty(x) )
-            disp('... GCC C/C++ is the selected compiler');
-            disp('... Assuming that GCC will link with Microsoft libraries');
-            ok_cl = TRUE;
-            libdir = 'microsoft';
-            break;
-        end
+      x = findstr(tline,'COMPILER=lcc');
+      if( ~isempty(x) )
+        disp('... lcc is the selected compiler');
+        ok_lcc = TRUE;
+        libdir = 'lcc';
+        break;
+      end
+      x = findstr(tline,'COMPILER=cl');
+      if( ~isempty(x) )
+        disp('... MS Visual C/C++ is the selected compiler');
+        ok_cl = TRUE;
+        libdir = 'microsoft';
+        break;
+      end
+      x = findstr(tline,'COMPILER=bcc32');
+      if( ~isempty(x) )
+        disp('... Borland C/C++ is the selected compiler');
+        disp('... Assuming that Borland will link with Microsoft libraries');
+        ok_cl = TRUE;
+        libdir = 'microsoft';
+        break;
+      end
+      x = findstr(tline,'COMPILER=icl');
+      if( ~isempty(x) )
+        disp('... Intel C/C++ is the selected compiler');
+        disp('... Assuming that Intel will link with Microsoft libraries');
+        ok_cl = TRUE;
+        libdir = 'microsoft';
+        break;
+      end
+      x = findstr(tline,'COMPILER=wc1386');
+      if( ~isempty(x) )
+        disp('... Watcom C/C++ is the selected compiler');
+        disp('... Assuming that Watcom will link with Microsoft libraries');
+        ok_cl = TRUE;
+        libdir = 'microsoft';
+        break;
+      end
+      x = findstr(tline,'COMPILER=gcc');
+      if( ~isempty(x) )
+        disp('... GCC C/C++ is the selected compiler');
+        disp('... Assuming that GCC will link with Microsoft libraries');
+        ok_cl = TRUE;
+        libdir = 'microsoft';
+        break;
+      end
     end
-end
-fclose(fid);
+  end
+  fclose(fid);
 
-%\
-% MS Visual C/C++ or lcc compiler has not been selected
-%/
+  %\
+  % MS Visual C/C++ or lcc compiler has not been selected
+  %/
 
-if( ~(ok_cl | ok_lcc) )
+  if( ~(ok_cl | ok_lcc) )
     warning('... Supported C/C++ compiler has not been selected with mex -setup');
     warning('... Assuming that Selected Compiler will link with Microsoft libraries');
     warning('... Continuing at risk ...');
     libdir = 'microsoft';
+  end
 end
-
 %\
 % Construct full file name of libmwblas.lib and libmwlapack.lib. Note that
 % not all versions have both files. Earlier versions only had the lapack
 % file, which contained both blas and lapack routines.
 %/
 
-comp = computer;
-mext = mexext;
-lc = length(comp);
-lm = length(mext);
-cbits = comp(max(1:lc-1):lc);
-mbits = mext(max(1:lm-1):lm);
-if( isequal(cbits,'64') | isequal(mbits,'64') )
+if pc
+  comp = computer;
+  mext = mexext;
+  lc = length(comp);
+  lm = length(mext);
+  cbits = comp(max(1:lc-1):lc);
+  mbits = mext(max(1:lm-1):lm);
+  if( isequal(cbits,'64') || isequal(mbits,'64') )
     compdir = 'win64';
     largearraydims = '-largeArrayDims';
-else
+  else
     compdir = 'win32';
     largearraydims = '';
+  end
+
+  lib_blas = [matlabroot filesep 'extern' filesep 'lib' compdir '\' libdir '\libmwblas.lib'];
+else
+  
+  largearraydims = '-largeArrayDims';
+  lib_blas = [matlabroot filesep 'bin' filesep computer('arch') filesep 'libmwblas.so'];
+  
 end
 
-lib_blas = [matlabroot '\extern\lib\' compdir '\' libdir '\libmwblas.lib'];
 d = dir(lib_blas);
 if( isempty(d) )
     disp('... BLAS library file not found, so linking with the LAPACK library');

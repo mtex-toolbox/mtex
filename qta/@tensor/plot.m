@@ -47,23 +47,30 @@ switch plotType
     
   case 'pp'
 
-    S2 = S2Grid('equispaced','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX','antipodal',varargin{:});
+    S2 = S2Grid('equispaced','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',...
+      minrho,'RESTRICT2MINMAX','antipodal','resolution',10*degree,varargin{:});
     [vp,vs1,vs2,pp,ps1,ps2] = velocity(T,S2,1);
+    
+    varargin = [varargin,'MaxHeadSize',0];
     
     d = pp;
     
   case 'ps1'
     
-    S2 = S2Grid('equispaced','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX','antipodal',varargin{:});
+    S2 = S2Grid('equispaced','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',...
+      minrho,'RESTRICT2MINMAX','antipodal','resolution',10*degree,varargin{:});
     [vp,vs1,vs2,pp,ps1,ps2] = velocity(T,S2,1);
     
+    varargin = [varargin,'MaxHeadSize',0];
     d = ps1;
     
   case 'ps2'
     
-    S2 = S2Grid('equispaced','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX','antipodal',varargin{:});
+    S2 = S2Grid('equispaced','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',...
+      minrho,'RESTRICT2MINMAX','antipodal','resolution',10*degree,varargin{:});
     [vp,vs1,vs2,pp,ps1,ps2] = velocity(T,S2,1);
     
+    varargin = [varargin,'MaxHeadSize',0];
     d = ps2;
 end
     

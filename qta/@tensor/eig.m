@@ -1,6 +1,13 @@
 function [E,V] = eig(T)
+% compute the eigenvalues and eigenvectors of a tensor
 
-if rank(T) == 4, T.M = tensor42(T.M); end
-  %?? eigenvalues of 3 or 4 rank  tensors?
+switch rank(T)
 
-[E,V] = eig(T.M);
+  case 1
+  case 2
+    [E,V] = eig(T.M);
+  case 3
+  case 4
+    M = tensor42(T.M);
+    [E,V] = eig(M)
+end
