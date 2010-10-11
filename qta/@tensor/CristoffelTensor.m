@@ -19,8 +19,6 @@ d = double(v);
 
 % compute tensor products
 T = mtimesT(E,2,d,[3 4]);
-T = mtimesT(T,4,d,[3 4]);
-T.M = squeeze(T.M);
+T = mtimesT(T,3,d,[3 4]);
 
 T.name = 'Cristoffel';
-T.rank = 2;

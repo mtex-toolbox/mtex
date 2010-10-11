@@ -12,7 +12,7 @@
 %% Import an Elasticity Tensor
 % Let us start by importing an elasticity tensor from a file.
 
-fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa')
+fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
 
 cs = symmetry('mmm',[4.7646 10.2296 5.9942]);
 
@@ -58,7 +58,7 @@ C = CristoffelTensor(E,x)
 % directions. In MTEX this is done by the command <tensor/velocity.html
 % velocity>
 
-[vp,vs1,vs2,pp,ps1,ps2] = velocity(E,S2,1)
+[vp,vs1,vs2,pp,ps1,ps2] = velocity(E,xvector,1)
 
 %%
 % In order to visualize these quantities there are several posibilities.

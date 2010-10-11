@@ -48,13 +48,23 @@ T.M = mtimesx(M,T.M);
 
 % take the reshape back
 ss = size(T.M);
-T.M = reshape(T.M,[size(M,1) s(2:T.rank) ss(3:end)]);
+shape = [size(M,1) s(2:T.rank) ss(3:end)];
+shape = [shape,ones(1,2-length(shape))];
+T.M = reshape(T.M,shape);
 
 % take the reordering back
 iorder = 1:ndims(T.M);
 iorder(1:length(order)) = order;
-
 T.M = ipermute(T.M,iorder);
+
+% reshape to a rank - 1 tensor if necessary
+s = size(T.M);
+if size(M,1) == 1
+  T.rank = T.rank - 1;
+  if dimT <= length(s), s(dimT) = [];end
+end
+s = [s,ones(1,2-length(s))];
+T.M = reshape(T.M,s);
 
 end
 

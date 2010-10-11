@@ -1,4 +1,4 @@
-function s = size(v,varargin)
+function s = size(T,varargin)
 % overloads size
 
-s = size(v.x,varargin{:});
+s = size(T.M,varargin{:});
