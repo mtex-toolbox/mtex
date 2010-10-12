@@ -72,7 +72,7 @@ ebsd = inpolygon(ebsd,p)
 plot(ebsd)
 
 
-%% Detecting Inaccurate Orientation Measurements
+%% Remove Inaccurate Orientation Measurements
 %
 % *By MAD*
 %

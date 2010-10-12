@@ -36,13 +36,13 @@ for i = 1:numel(x)
   D = sqrt(diag(D)/rho);
 
   % the speeds
-  vp(i) = D(3);
+  vp(i) = D(1);
   vs1(i) = D(2);
-  vs2(i) = D(1);
+  vs2(i) = D(3);
   
   % the polarisation axes
-  pp(i) = vector3d(V(:,3));
+  pp(i) = vector3d(V(:,1));
   ps1(i) = vector3d(V(:,2));
-  ps2(i) = vector3d(V(:,1));
+  ps2(i) = vector3d(V(:,3));
   
 end

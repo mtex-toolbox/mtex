@@ -46,14 +46,14 @@ plotpdf(ebsd,h,'points',500,'antipodal')
 odf1 = calcODF(ebsd)
 odf2 = calcODF(ebsd,'halfwidth',5*degree)
 
-%% plot pole figures
+%% Plot pole figures
 
 close all;figure('position',[160   389   632   216])
 plotpdf(odf1,h,'antipodal')
 figure('position',[160   389   632   216])
 plotpdf(odf2,h,'antipodal')
 
-%% plot ODF
+%% Plot ODF
 
 close;figure('position',[46   300   702   300]);
 plotodf(odf2,'sections',9,'resolution',2*degree,...
