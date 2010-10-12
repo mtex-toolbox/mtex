@@ -52,10 +52,11 @@ else
   
   if q_ref.a==1
     d = dot_outer(qcs,qss);
-    ind = any(d==1);
-    qsym = qsym(~ind);    
+    ind = any(isappr(d,1),1);
+    ind(1) = false;
+    qsym = subsref(qss,~ind) * qcs;
   else
-   qsym = qss * reshape(q_ref .* qcs,1,[]);
+    qsym = qss * reshape(q_ref .* qcs,1,[]);
   end
   
   % compute all distances to the fundamental regions  
