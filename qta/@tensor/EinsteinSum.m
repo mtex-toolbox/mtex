@@ -57,9 +57,10 @@ end
 
 if ~isempty(a)
   b = b - length(dimT1);
-  T1 = mtimesT(T1,a,M2,[b ndims(M2)+1]);
+  T1 = mtimesT(T1,a,M2,[b ndims(M2)+1]);  
   dimT1(a) = [];
-  dimT2(b) = [];
+  dimT2(b) = [];  
+  T1.rank = T1.rank + length(dimT2);
   T = EinsteinSum(T1,[dimT1 dimT2],varargin{:});
   return
 end
