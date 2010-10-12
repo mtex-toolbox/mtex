@@ -1,16 +1,19 @@
-%% Tensor Arithmetics
-% how to work with the elasticity tensor
-
+%% The Elasticity Tensor
+% how to calculate the elasticity tensor
+%
 %% Open in Editor
 %
 %% Abstract
-%
+% MTEX offers a very simple way to compute elasticity properties of
+% materials. This includes Young's modulus, linear compressibility,
+% Cristoffel tensor, and elastic wave velocities.
 %
 %% Contents
 
 
 %% Import an Elasticity Tensor
-% Let us start by importing an elasticity tensor from a file.
+% Let us start by importing an elasticity tensor of a Olivin crystal in
+% normal orientation from a file. 
 
 fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
 
@@ -24,13 +27,14 @@ E = loadTensor(fname,cs,'name','elasticity','interface','generic')
 % command <tensor/YoungsModulus.html YoungsModulus>.
 
 x = xvector;
-Y = YoungsModulus(E,x)
+YoungsModulus(E,x)
 
 %%
 % It can be plotted by passing the option *YoungsModulus* to the
-% <tensor/plot.html plot> command.
+% <tensor/plot.html plot> command. 
 
-plot(E,'PlotType','YoungsModulus')
+set_mtex_option('defaultColorMap',seismicColorMap);
+plot(E,'PlotType','YoungsModulus','complete')
 
 %% Linear Compressibility
 % The linear compressibility is ...
@@ -43,7 +47,7 @@ linearCompressibility(E,x)
 % It can be plotted by passing the option *linearCompressibility* to the
 % <tensor/plot.html plot> command.
 
-plot(E,'PlotType','linearCompressibility')
+plot(E,'PlotType','linearCompressibility','complete')
 
 %% Cristoffel Tensor
 % The Cristoffel Tensor for a specific direction x is ....
@@ -64,26 +68,28 @@ C = CristoffelTensor(E,x)
 % In order to visualize these quantities there are several posibilities.
 % Let us first plot the direction depended wave speed of the p-wave
 
-set_mtex_option('defaultColorMap',LaboTexColorMap)
-plot(E,'PlotType','vp')
+plot(E,'PlotType','velocity','vp','complete')
 
 
 %%
 % Next we plot on the top of this plot the p-wave polarisation direction.
 
 hold on
-plot(E,'PlotType','pp','color','black')
+plot(E,'PlotType','velocity','pp','complete')
 hold off
 
 %%
-% Finally we visuallize the s1 and s2-wave polarization together with its
-% speed difference.
+% Finally we visuallize the speed difference between the s1 and s2 waves
+% together with the  fast sheer polarization.
 
+plot(E,'PlotType','velocity','vs1-vs2','complete')
 
-plot(E,'PlotType','ps1','resolution',10*degree,'ShowArrowHead','off','color','k')
-
+hold on
+plot(E,'PlotType','velocity','ps1','complete')
+hold off
 
 
 %%
+% set back default colormap
 
-set_mtex_option('defaultColorMap','default')
+set_mtex_option('defaultColorMap',WhiteJetColorMap)

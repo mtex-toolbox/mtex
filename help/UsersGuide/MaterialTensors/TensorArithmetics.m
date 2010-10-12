@@ -6,7 +6,7 @@
 %% Abstract
 % MTEX offers some basic functionality to calculate with tensors as they
 % occur in material sciense. It allows to define tensors of arbitrary rank,
-% e.g., stress, strain, elasticity or piezoelectric tensors, visuallize
+% e.g., stress, strain, elasticity or piezoelectric tensors, to visuallize
 % them and to perform various transformations.
 %
 %% Contents
@@ -19,27 +19,33 @@
 cs = symmetry('-1');
 
 %%
-% Next we define a two rank tensor by it matrix
+% Next we define a two rank tensor by its matrix
 
 M = [[10 3 0];[3 1 0];[0 0 1]];
 T = tensor(M,cs)
 
 %%
-% In case a two rank tensor is diagonal one can write
+% In the case the two rank tensor is diagonal the syntax simplifies to
 
 T = tensor(diag([10 3 1]),cs)
 
 %% Importing a Tensor from a File
 % Especially for higher order tensors it is more convinient to import the
-% tensor entries from a file. This can be done by the command
+% tensor entries from a file. As an example we load the following
+% elasticity tensor
 
-T = loadTensor('tensor.txt');
+fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
+
+cs = symmetry('mmm',[4.7646 10.2296 5.9942]);
+
+E = loadTensor(fname,cs,'name','elasticity')
+
 
 %% Visualization
 % The default plot for each tensor is its quadric, i.e. for each direction
 % x it is plotted Q(x) = T_ijkl x_i x_j x_k x_l
 
-plot(T)
+plot(E,'complete')
 
 %%
 % There are more specialized visuallition possibilities for specific
@@ -57,44 +63,34 @@ r = rotation('Euler',45*degree,0*degree,0*degree)
 Trot = rotate(T,r)
 plot(Trot)
 
-%% 
+%% The Inverse Tensor
+%
+% The inverse of a 2 rank tensor or a 4 rank elasticity tensor is computed
+% by the command <tensor_inv.html inv>
 
+S = inv(E)
 
+%% Tensor Products
+% In MTEX tensor products are specifies according to Einsteins summation
+% convention, i.e. a tensor product of the form T_ij = E_ijkl S_kl has to
+% be interpreted as a sum over the indice k and l. In MTEX this sum can be
+% computed using the command <tensor_EinsteinSum.html EinsteinSum>
 
+S = EinsteinSum(E,[-1 -2 1 2],S,[-1 -2])
 
+% here the negative numbers indicates the indices which are summend up.
+% Each pair of equal negative numbers correspondes to one sum. The
+% positive numbers indicate the order of the dimensions of the resulting
+% tensor. 
+%
+%%
+% Let us consider a second example. The linear compressibility in a certain
+% directiom v of a specimen can be computed from it mean elasticity tensor
+% E by the formula, c = S_ijkk v_i v_j where S is the complience, i.e. the
+% inverse of the elasticity tensor
 
-plot(Trot);
+v = xvector
+c = EinsteinSum(E,[-1 -2 -3 -3],v,-1,v,-1)
 
 %%
 
-odf = unimodalODF(rotation('Euler',45*degree,0,0),cs,symmetry);
-
-TODF = calcTensor(odf,T)
-
-plot(TODF)
-
-%% load a Tensor
-
-E = load('Olivine1997PC.mat');
-
-T = tensor(E.T,'name','elasticity',cs);
-
-plot(T)
-
-%%
-
-plot(rotate(T,rotation('Euler',0*degree,45*degree,0)),'PlotType','YoungsModulus')
-
-%%
-
-plot(rotate(T,rotation('Euler',0*degree,45*degree,0)),'PlotType','linearCompressibility')
-
-%%
-
-plot(T,'PlotType','vs1')
-
-hold on
-
-plot(T,'PlotType','ps1','resolution',10*degree,'ShowArrowHead','off','color','k')
-
-hold off

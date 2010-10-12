@@ -27,51 +27,17 @@ switch plotType
     
     d = linearCompressibility(T,S2);
   
-  case 'vp'
+  case 'velocity'
     
-    [vp,vs1,vs2,pp,ps1,ps2] = velocity(T,S2,1);
+    if check_option(varargin,{'pp','ps1','ps2'})
+      S2 = S2Grid('equispaced','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',...
+        minrho,'RESTRICT2MINMAX','antipodal','resolution',10*degree,varargin{:});
+      varargin = ['color','k','MaxHeadSize',0,varargin];
+    end
     
-    d = vp;
+    [vp,vs1,vs2,pp,ps1,ps2] = velocity(T,S2,1); %#ok<NASGU>
+    d = eval(get_option(varargin,'velocity','pp','char'));
     
-  case 'vs1'
-    
-    [vp,vs1,vs2,pp,ps1,ps2] = velocity(T,S2,1);
-    
-    d = vs1;
-    
-  case 'vs2'
-    
-    [vp,vs1,vs2,pp,ps1,ps2] = velocity(T,S2,1);
-    
-    d = vs2;
-    
-  case 'pp'
-
-    S2 = S2Grid('equispaced','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',...
-      minrho,'RESTRICT2MINMAX','antipodal','resolution',10*degree,varargin{:});
-    [vp,vs1,vs2,pp,ps1,ps2] = velocity(T,S2,1);
-    
-    varargin = [varargin,'MaxHeadSize',0];
-    
-    d = pp;
-    
-  case 'ps1'
-    
-    S2 = S2Grid('equispaced','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',...
-      minrho,'RESTRICT2MINMAX','antipodal','resolution',10*degree,varargin{:});
-    [vp,vs1,vs2,pp,ps1,ps2] = velocity(T,S2,1);
-    
-    varargin = [varargin,'MaxHeadSize',0];
-    d = ps1;
-    
-  case 'ps2'
-    
-    S2 = S2Grid('equispaced','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',...
-      minrho,'RESTRICT2MINMAX','antipodal','resolution',10*degree,varargin{:});
-    [vp,vs1,vs2,pp,ps1,ps2] = velocity(T,S2,1);
-    
-    varargin = [varargin,'MaxHeadSize',0];
-    d = ps2;
 end
     
 multiplot(@(i) S2,@(i) d,1,...

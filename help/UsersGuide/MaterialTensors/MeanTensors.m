@@ -1,6 +1,6 @@
-%% Tensor Arithmetics
-% how to calculate with tensors in MTEX
-
+%% Mean Material Tensors
+% how to calculate mean material tensors from ODF and EBSD data
+%
 %% Open in Editor
 %
 %% Abstract
