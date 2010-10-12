@@ -9,7 +9,7 @@ function generate_script(mfile, out_dir,varargin)
 
 % class name
 
-[path, file_name, ext, versn] = fileparts(mfile); %#ok<NASGU,NASGU>
+[path, file_name, ext] = fileparts(mfile); %#ok<NASGU,NASGU>
 class_name = char(regexp(path,'(?<=@)\w*','match'));
 
 % check whether update is needed
