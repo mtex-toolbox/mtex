@@ -53,18 +53,18 @@ end
 
 %% generate Function list
 
-if check_option(varargin,{'FunctionsReference','all'})
+if check_option(varargin,{'FunctionsReference','all','all-'})
   make_funcref;
 end
 
 %% generate classes index files
 
-if check_option(varargin, {'classes','all'})
+if check_option(varargin, {'classes','all','all-'})
    
   current_path = fullfile(mtex_path, 'help','classes');
 
   folders = {...
-    {'qta' '@ODF'},{'qta' '@PoleFigure'},{'qta' '@EBSD'},{'qta' '@kernel'},{'qta' '@grain'},...
+    {'qta' '@tensor'},{'qta' '@ODF'},{'qta' '@PoleFigure'},{'qta' '@EBSD'},{'qta' '@kernel'},{'qta' '@grain'},...
     {'qta' 'standardODFs'},...
     {'geometry' '@vector3d'},{'geometry' '@quaternion'},{'geometry' '@Miller'},...
     {'geometry' '@symmetry'},{'geometry' '@S1Grid'},{'geometry' '@S2Grid'},...
@@ -106,7 +106,7 @@ end
 
 %% generate help script files for all m files
 
-if check_option(varargin, {'mfiles','all'})
+if check_option(varargin, {'mfiles','all','all-'})
 
   folders = {'qta','geometry','plot','tools','statistic'};
 

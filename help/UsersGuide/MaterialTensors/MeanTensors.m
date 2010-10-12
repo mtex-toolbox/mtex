@@ -4,89 +4,54 @@
 %% Open in Editor
 %
 %% Abstract
-% MTEX offers some basic functionality to calculate with tensors as they
-% occur in material sciense. It allows to define tensors of arbitrary rank,
-% e.g., stress, strain, elasticity or piezoelectric tensors, visuallize
-% them and to perform various transformations.
+% MTEX offers several ways to compute mean material tensors from ODFs or EBSD data.
 %
 %% Contents
 
-%% Defining a Tensor
-%
-% A tensor is defined by its entries and a crystal symmetry. Let us
-% consider a simple example. First we define some crystal symmetry
-
-cs = symmetry('-1');
-
-%%
-% Next we define a two rank tensor by it matrix
-
-M = [[10 3 0];[3 1 0];[0 0 1]];
-T = tensor(M,cs)
-
-%%
-% In case a two rank tensor is diagonal one can write
-
-T = tensor(diag([10 3 1]),cs)
-
 %% Importing a Tensor from a File
-% Especially for higher order tensors it is more convinient to import the
-% tensor entries from a file. This can be done by the command
+% Lets start by importing an elasticity tensor:
 
 fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
 
 cs = symmetry('mmm',[4.7646 10.2296 5.9942]);
 
-T = loadTensor(fname,cs,'name','elasticity','interface','generic')
-
-
-%% Visualization
-% The default plot for each tensor is its quadric, i.e. for each direction
-% x it is plotted Q(x) = T_ijkl x_i x_j x_k x_l
-
-plot(T)
+E = loadTensor(fname,cs,'name','elasticity','interface','generic')
 
 %%
-% There are more specialized visuallition possibilities for specific
-% tensors, e.g., for the elasticity tensor.
+% and plot it using the seismic colormap
 
-%% Rotating a Tensor
-% Rotation a tensor is done by the command <tensor/rotate.html rotate>.
-% Lets define a rotation
+set_mtex_option('defaultColorMap',seismicColorMap);
+plot(E,'complete')
 
-r = rotation('Euler',45*degree,0*degree,0*degree)
-
-%%
-% Then the rotated tensor is given by
-
-Trot = rotate(T,r)
-
-%% 
-plot(Trot);
-
-%%
+%% Define a sample ODF
+% Next consider a simple unimodal ODF 
 
 odf = unimodalODF(rotation('Euler',45*degree,0,0),cs,symmetry);
 
-TODF = calcTensor(odf,T)
+plotpdf(odf,[Miller(1,0,0),Miller(0,0,1)])
+colormap(WhiteJetColorMap)
 
-plot(TODF)
+%% Compute the mean tensor from an ODF
+% Now we use this ODF to compute a mean tensor
 
-
-%%
-
-plot(rotate(T,rotation('Euler',0*degree,45*degree,0)),'PlotType','YoungsModulus')
-
-%%
-
-plot(rotate(T,rotation('Euler',0*degree,45*degree,0)),'PlotType','linearCompressibility')
+Emean = calcTensor(odf,E)
 
 %%
+% and plot it
 
-plot(T,'PlotType','vs1')
+plot(Emean,'complete')
 
-hold on
+%% Compute the mean tensor from EBSD data
+%
 
-plot(T,'PlotType','ps1','resolution',10*degree,'ShowArrowHead','off','color','k')
+ebsd = simulateEBSD(odf,5000)
 
-hold off
+Emean = calcTensor(ebsd,E)
+
+%%
+% and plot it
+
+plot(Emean,'complete')
+
+%% 
+set_mtex_option('defaultColorMap',WhiteJetColorMap);

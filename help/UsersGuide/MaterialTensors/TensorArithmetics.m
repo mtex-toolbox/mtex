@@ -25,7 +25,7 @@ M = [[10 3 0];[3 1 0];[0 0 1]];
 T = tensor(M,cs)
 
 %%
-% In the case the two rank tensor is diagonal the syntax simplifies to
+% In case the two rank tensor is diagonal the syntax simplifies to
 
 T = tensor(diag([10 3 1]),cs)
 
@@ -45,11 +45,13 @@ E = loadTensor(fname,cs,'name','elasticity')
 % The default plot for each tensor is its quadric, i.e. for each direction
 % x it is plotted Q(x) = T_ijkl x_i x_j x_k x_l
 
+set_mtex_option('defaultColorMap',seismicColorMap);
 plot(E,'complete')
 
 %%
 % There are more specialized visuallition possibilities for specific
-% tensors, e.g., for the elasticity tensor.
+% tensors, e.g., for the elasticity tensor. See section
+% <ElasticityTensor.html Elasticity Tensor>.
 
 %% Rotating a Tensor
 % Rotation a tensor is done by the command <tensor/rotate.html rotate>.
@@ -76,21 +78,23 @@ S = inv(E)
 % be interpreted as a sum over the indice k and l. In MTEX this sum can be
 % computed using the command <tensor_EinsteinSum.html EinsteinSum>
 
-S = EinsteinSum(E,[-1 -2 1 2],S,[-1 -2])
+S = EinsteinSum(E,[-1 -2 1 2],T,[-1 -2])
 
+%%
 % here the negative numbers indicates the indices which are summend up.
 % Each pair of equal negative numbers correspondes to one sum. The
 % positive numbers indicate the order of the dimensions of the resulting
-% tensor. 
+% tensor.
 %
-%%
 % Let us consider a second example. The linear compressibility in a certain
 % directiom v of a specimen can be computed from it mean elasticity tensor
 % E by the formula, c = S_ijkk v_i v_j where S is the complience, i.e. the
 % inverse of the elasticity tensor
 
-v = xvector
-c = EinsteinSum(E,[-1 -2 -3 -3],v,-1,v,-1)
+v = xvector;
+c = EinsteinSum(E,[-1 -2 -3 -3],v,-1,v,-2)
 
 %%
+% set back the default color map.
 
+set_mtex_option('defaultColorMap',WhiteJetColorMap)
