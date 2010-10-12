@@ -50,8 +50,16 @@ else
   qcs = quaternion(CS);
   qss = quaternion(SS);
   
-  % compute all distances to the fundamental regions
-  omegaSym = abs(dot_outer(qss * reshape(q_ref .* qcs,1,[]),q));
+  if q_ref.a==1
+    d = dot_outer(qcs,qss);
+    ind = any(d==1);
+    qsym = qsym(~ind);    
+  else
+   qsym = qss * reshape(q_ref .* qcs,1,[]);
+  end
+  
+  % compute all distances to the fundamental regions  
+  omegaSym = abs(dot_outer(qsym,q));
   
   % find fundamental region
   [omega,id] = max(omegaSym);
