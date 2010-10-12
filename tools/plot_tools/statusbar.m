@@ -228,7 +228,7 @@ function statusbarObj = setFigureStatus(hFig, deleteFlag, updateFlag, statusText
             if isempty(statusbarObj)
                statusbarObj = com.mathworks.mwswing.MJStatusBar;
                jProgressBar = javax.swing.JProgressBar;
-               set(jProgressBar, 'Visible',true);
+               set(jProgressBar, 'Visible',false);
                statusbarObj.add(jProgressBar,'West');  % Beware: East also works but doesn't resize automatically
                jRootPane.setStatusBar(statusbarObj);
             end
