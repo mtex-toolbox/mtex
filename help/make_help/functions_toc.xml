@@ -1,113 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
 <item name="Functions">
-   <description>Functions in MTEX</description>
-  <!-- ################################################################ -->
-  <item name="Geometry">
-    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-    <description>Geometry Classes for QTA</description>
-    
-    <item name="Rotations">
-      <description>Treating all kinds of rotations</description>
+  <description>Functions in MTEX</description>
 
-      <item name="Quaternions">
-        <description>Representation of rotations</description>
-        <folder>{mtex_path 'geometry' '@quaternion'}</folder>
-      </item>
-      <item name="Rotation">
-        <description>Generall rotations</description>
-        <folder>{mtex_path 'geometry' '@rotation'}</folder>
-      </item>
-      <item name="Crystal Symmetry">
-        <description>Space and Point Group</description>
-        <folder>{mtex_path 'geometry' '@symmetry'}</folder>
-      </item>
-      <item name="Orientations">
-        <description>Crystallographic equivalent rotations</description>
-        <folder>{mtex_path 'geometry' '@orientation'}</folder>
-      </item>
-      <item name="Orientation Space">
-        <description>Discretisation of Orientation Space</description>
-        <folder>{mtex_path 'geometry' '@SO3Grid'}</folder>
-      </item>
+  
+  <item name="Crystall Geometry Functions">
+    <description>Miller indice, rotations, orientations, symmetries</description>
+    <item name="Specimen Directions">
+      <description>class vector3d</description>
+      <folder>{mtex_path 'geometry' '@vector3d'}</folder>
     </item>
-    
-    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-    <item name="Directions">
-      <description>Vectors and Crystal Directions</description>
-      <item name="Vector">
-        <folder>{mtex_path 'geometry' '@vector3d'}</folder>
-      </item>
-      <item name="2D - Sphere">
-        <folder>{mtex_path 'geometry' '@S2Grid'}</folder>
-      </item>
-      <item name="Miller">
-        <folder>{mtex_path 'geometry' '@Miller'}</folder>
-      </item>     
+    <item name="Crystal Directions">
+      <description>class Miller</description>
+      <folder>{mtex_path 'geometry' '@Miller'}</folder>
     </item>
-    
-    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-    <item name="Miscellaneous">
-      <description>Additional geometry Classes</description>
-      <item name="1D - Sphere">
-        <folder>{mtex_path 'geometry' '@S1Grid'}</folder>
-      </item>
-      <item name="Polygons">
-        <description>Helper treating geometry of grains</description>
-        <folder>{mtex_path 'geometry' '@polygon'}</folder>
-      </item>
-      <item name="Helping">
-        <folder>{mtex_path 'geometry' 'geometry_tools'}</folder>
-      </item>     
+    <item name="Quaternions">
+      <description>class quaternion</description>
+      <folder>{mtex_path 'geometry' '@quaternion'}</folder>
     </item>
-    
+    <item name="Rotations">
+      <description>class rotation</description>
+      <folder>{mtex_path 'geometry' '@rotation'}</folder>
+    </item>
+    <item name="Crystal Orientations">
+      <description>class orientation</description>
+      <folder>{mtex_path 'geometry' '@orientation'}</folder>
+    </item>
+    <item name="Crystal ans Specimen Symmetries">
+      <description>class symmetry</description>
+      <folder>{mtex_path 'geometry' '@symmetry'}</folder>
+    </item>
+    <item name="Discretisation of 1 - Sphere">
+      <description>class S1Grid</description>
+      <folder>{mtex_path 'geometry' '@S1Grid'}</folder>
+      </item>
+    <item name="Discretisation of 2 - Sphere">
+      <description>class S2Grid</description>
+      <folder>{mtex_path 'geometry' '@S2Grid'}</folder>
+    </item>
+    <item name="Discretisation of the Orientation Space">
+      <description>class SO3Grid</description>
+    <description>Discretisation of Orientation Space</description>
+      <folder>{mtex_path 'geometry' '@SO3Grid'}</folder>
+    </item>
+    <item name="Polygons">
+      <description>class polygon</description>
+      <folder>{mtex_path 'geometry' '@polygon'}</folder>
+    </item>
+    <item name="miscellaneous functions">
+      <folder>{mtex_path 'geometry' 'geometry_tools'}</folder>
+    </item>         
   </item>
   
-  <!-- ################################################################ -->
+
   <item name="Quantitative Texture Analysis">
+    <description>Pole Figures, EBSD data, ODF Analysis</description>    
     
-    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-    <description>Classes required for QTA</description>    
-      <item name="Orientation Density">
-        <item name="ODF">
-          <description>Class implementing the Orientation Density Function</description>
-          <folder>{mtex_path 'qta' '@ODF'}</folder>
-        </item>
-        <item name="Standard ODFs">
-          <description>Predefined Orientation Density Functions</description>
-          <folder>{mtex_path 'qta' 'standardODFs'}</folder>
-        </item>
-        <item name="kernel">
-          <description>Radially symmetric functions on SO(3)</description>
-          <folder>{mtex_path 'qta' '@kernel'}</folder>
-        </item>
-      </item>
-      
-    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->   
-    <item name="Experimental Data">
-      <description>Data Structures for Experimental Data</description>
-      <item name="PoleFigure Data">
-       <description>Class for Polefigur data</description>
-        <folder>{mtex_path 'qta' '@PoleFigure'}</folder>
-      </item>
-      <item name="EBSD Data">
-        <description>Class for Electron Backscatter Diffraction Data</description>
-        <folder>{mtex_path 'qta' '@EBSD'}</folder>
-      </item>
-      <item name="Grains">
-        <description>Reconstructed Grains out of EBSD Data</description>
-        <folder>{mtex_path 'qta' '@grain'}</folder>
-      </item>
-      <item name="Importing experimental Data">
-        <description>Interfaces for PoleFigure/EBSD/ODF Data</description>
-        <folder>{mtex_path 'qta' 'interfaces'}</folder>
-      </item>   
+    <item name="Orientation Density Function">
+      <description>class ODF</description>
+      <folder>{mtex_path 'qta' '@ODF'}</folder>
     </item>
+    <item name="Standard ODFs">
+      <description>Predefined Orientation Density Functions</description>
+      <folder>{mtex_path 'qta' 'standardODFs'}</folder>
+    </item>
+      
+    <item name="Pole Figure Data">
+      <description>class PoleFigure</description>
+      <folder>{mtex_path 'qta' '@PoleFigure'}</folder>
+    </item>
+    <item name="Electron Backscatter Diffraction Data">
+      <description>class EBSD</description>
+      <folder>{mtex_path 'qta' '@EBSD'}</folder>
+    </item>
+   
+    <item name="Material Tensors">
+      <description>class tensor</description>
+      <folder>{mtex_path 'qta' '@tensor'}</folder>
+    </item>
+    
+    <item name="Grains">
+      <description>class grain</description>
+      <folder>{mtex_path 'qta' '@grain'}</folder>
+    </item>
+    
+    <item name="Import Functions">
+      <description>Interfaces for pole figure, EBSD, ODF data or tensors</description>
+      <folder>{mtex_path 'qta' 'interfaces'}</folder>
+    </item>   
+  
+    <item name="ODF Shapes">
+      <description>class kernel</description>
+      <folder>{mtex_path 'qta' '@kernel'}</folder>
+    </item>
+  
     
   </item>
   
   <!-- ################################################################ -->
-  <item name="Additional Functions">
+  <item name="Auxiliary Functions">
     <description>Helper functions making life easier</description>
+    
     <item name="Plotting">
         <folder>{mtex_path 'tools' 'plot_tools'}</folder>
     </item>
