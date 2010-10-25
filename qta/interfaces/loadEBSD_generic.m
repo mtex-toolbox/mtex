@@ -199,7 +199,11 @@ if isempty(phases) || sum(phase ~= 0) < 10
 end
 
 %
-if numel(cs) < length(phases), cs = repmat({cs{1}},1,length(phases));end
+if numel(cs) < length(phases)
+  cs = repmat({cs{1}},1,length(phases));
+elseif numel(cs) > length(phases)
+  phases = 1:numel(cs);
+end
 
 
 % load multiple phases
