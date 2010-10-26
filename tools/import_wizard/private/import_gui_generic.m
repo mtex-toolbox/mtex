@@ -169,7 +169,7 @@ elseif get(handles.radio_exp(2),'Value')
     case 'EBSD'
       fl = {fn{5}, lb(5)};
     case 'PoleFigure'
-      fn(2:3) = [];
+      %fn(2:3) = [];
       if all(cellfun('isempty',fn(2:end)))
         fn = fn{1};
       end   
@@ -191,8 +191,9 @@ elseif get(handles.radio_exp(2),'Value')
     str = [str generateCodeString(templatestr)];
   end
   
-  [pname fname] = cellfun(@fileparts,fl{1},'uniformoutput',false);
-  strfname = [ fname{1} '_'  regexprep(templates{l},[type '_(\w+).m'],'$1')];
+  while iscell(fl), fl = fl{1};end
+  [pname fname] = fileparts(fl);
+  strfname = [ fname '_'  regexprep(templates{l},[type '_(\w+).m'],'$1')];
   openuntitled(str,strfname);
 end
 
