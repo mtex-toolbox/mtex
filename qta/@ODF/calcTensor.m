@@ -30,16 +30,33 @@ end
 % for Reuss tensor invert tensor
 if check_option(varargin,'reuss'), T = inv(T);end
 
-% extract grid and values for numerical integration
-SO3 = extract_SO3grid(odf,varargin{:});
-weight = eval(odf,SO3,varargin{:}); %#ok<EVLC>
-weight = (weight ./ sum(weight(:)));
 
-% rotate tensor according to the grid
-T = rotate(T,SO3);
+if check_option(varargin,'Fourier') 
+  % use Fourier method
+  
+  % calc Fourier coefficient of odf  
+  odf_hat = Fourier(odf,'order', rank(T));
+  
+  % calc Fourier coefficients of the tensor
+  [F,T_hat] = Fourier(T);
+  
+  % mean Tensor is the product of both
+  T = EinsteinSum(T_hat,[1:rank(T) -1 -2],odf_hat',[-1 -2]);  
 
-% take the mean of the tensor according to the weight
-T = sum(weight .* T);
+else % use numerical integration
+  
+  % extract grid and values for numerical integration
+  SO3 = extract_SO3grid(odf,varargin{:});
+  weight = eval(odf,SO3,varargin{:}); %#ok<EVLC>
+  weight = (weight ./ sum(weight(:)));
 
+  % rotate tensor according to the grid
+  T = rotate(T,SO3);
+
+  % take the mean of the tensor according to the weight
+  T = sum(weight .* T);
+
+end
+  
 % for Reuss tensor invert back
 if check_option(varargin,'reuss'), T = inv(T);end
