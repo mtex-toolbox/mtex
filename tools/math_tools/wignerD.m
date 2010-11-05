@@ -18,14 +18,14 @@ function D = wignerD(g,varargin)
 % sphericalY
 
 argin_check(g,'quaternion');
-if ~check_option(varargin,{'degree','bandwidth'})
+if ~check_option(varargin,{'degree','bandwidth','order'})
   help wignerD
   error('No polynomial degree l specified');
 end
 
 g = Euler(g,'nfft');
 c = 1;
-l = get_option(varargin,{'degree','bandwidth'});
+l = get_option(varargin,{'degree','bandwidth','order'});
 L = max(l,3);
 A = ones(L+1,1);
 
@@ -35,7 +35,7 @@ D = call_extern('odf2fc','EXTERN',g,c,A);
 % extract result
 D = complex(D(1:2:end),D(2:2:end));
 
-if check_option(varargin,'degree')
+if check_option(varargin,{'order','degree'})
   D = reshape(D(deg2dim(l)+1:deg2dim(l+1)),2*l+1,2*l+1);
 end
 
