@@ -1,4 +1,4 @@
-function ebsd = loadEBSD_xxx(fname,varargin)
+function ebsd = loadEBSD_csv(fname,varargin)
 
 % read file header
 hl = file2cell(fname,200);
