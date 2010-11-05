@@ -34,15 +34,24 @@ if check_option(varargin,'reuss'), T = inv(T);end
 if check_option(varargin,'Fourier') 
   % use Fourier method
   
-  % calc Fourier coefficient of odf  
-  odf_hat = Fourier(odf,'order', rank(T));
+  MT = tensor(zeros([repmat(3,1,rank(T)) 1 1]));
+  for l = 0:rank(T)
   
-  % calc Fourier coefficients of the tensor
-  [F,T_hat] = Fourier(T);
+    % calc Fourier coefficient of odf
+    odf_hat = Fourier(odf,'order', l)./(2*l+1);
   
-  % mean Tensor is the product of both
-  T = EinsteinSum(T_hat,[1:rank(T) -1 -2],odf_hat',[-1 -2]);  
-
+    % calc Fourier coefficients of the tensor
+    [F,T_hat] = Fourier(T,'order',l);
+  
+    % mean Tensor is the product of both
+    if l == 0
+      MT = MT + T_hat .* odf_hat';
+    else
+      MT = MT + EinsteinSum(T_hat,[1:rank(T) -1 -2],conj(odf_hat),[-1 -2]);
+    end
+  end
+  T = MT;
+  
 else % use numerical integration
   
   % extract grid and values for numerical integration
