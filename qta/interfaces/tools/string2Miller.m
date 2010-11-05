@@ -5,7 +5,7 @@ r = 1;
 
 try
   % extract filename
-  s = s(max([1,1+strfind(s,'/')]):end);
+  s = s(max([1,1+strfind(s,filesep)]):end);
 
   % first try to extract 4 Miller indice
   e = regexp(fliplr(s),'([0123456]-? ?){4}','match');
