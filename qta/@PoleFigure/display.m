@@ -10,22 +10,24 @@ elseif ~isempty(inputname(1))
   h = [inputname(1), ' = ' h];
 end;
 
-if all(equal(strvcat(pf.comment),1)) %#ok<VCAT>
-  s = [' (',pf(1).comment];
-else
-  s = ' (';
-  for i=1:length(pf)
-    s = [s, pf(i).comment]; %#ok<AGROW>
-    if i~=length(pf), s = [s ', ']; end %#ok<AGROW>
+if ~isempty(char(pf.comment)) 
+  if all(equal(char(pf.comment),1)) 
+    s = [' (',pf(1).comment];
+  else
+    s = ' (';
+    for i=1:length(pf)
+      s = [s, pf(i).comment]; %#ok<AGROW>
+      if i~=length(pf), s = [s ', ']; end %#ok<AGROW>
+    end
   end
-end
 
-if length(s) > 60
- h = [h, s(1:60) '...'];
-else
-  h = [h,s];
+  if length(s) > 60
+    h = [h, s(1:60) '...'];
+  else
+    h = [h,s];
+  end
+  h = [h,')'];
 end
-h = [h,')'];
 
 disp(h);
 disp(['  symmetry: ' char(pf(1).CS) ' - ' char(pf(1).SS)]);

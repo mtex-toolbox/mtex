@@ -1,6 +1,8 @@
 function plot(T,varargin)
-% plot a tensor
-%
+% plot a tensor T
+% options - missing density (rho, not to be confused with RHOMAX,RHOMIN) for velocity plot
+% plotType = 'quadric','YoungsModulus','linearCompressibility','velocity' 
+% 
 %%
 %
 %
@@ -34,7 +36,7 @@ switch plotType
         minrho,'RESTRICT2MINMAX','antipodal','resolution',10*degree,varargin{:});
       varargin = ['color','k','MaxHeadSize',0,varargin];
     end
-    
+% *** need density rho here not one ! ****
     [vp,vs1,vs2,pp,ps1,ps2] = velocity(T,S2,1); %#ok<NASGU>
     d = eval(get_option(varargin,'velocity','pp','char'));
     

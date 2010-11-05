@@ -43,13 +43,13 @@ set_mtex_option('cif_path',fullfile(mtex_path,'cif'));
 %% Default ColorMap
 
 % LaboTeX color map 
-% set_mtex_option('defaultColorMap',LaboTeXColorMap);
-% 
+set_mtex_option('defaultColorMap',LaboTeXColorMap);
+ 
 % white to black color map 
 % set_mtex_option('defaultColorMap',grayColorMap);
 
 % jet colormap begin with white
-set_mtex_option('defaultColorMap',WhiteJetColorMap);
+% set_mtex_option('defaultColorMap',WhiteJetColorMap);
 
 % MATLAB default color map
 % set_mtex_option('defaultColorMap','default');

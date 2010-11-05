@@ -65,12 +65,20 @@ if ~isempty(a)
   return
 end
 
+% join matrix 1 and matrix 2
+if ~isempty(M2)
+  T1.M = squeeze(reshape(T1.M(:)*M2(:).',[size(T1.M),size(M2)]));
+  T1.rank = T1.rank + length(dimT2);
+  T = EinsteinSum(T1,[dimT1 dimT2],varargin{:});
+  return
+end
+
 % reorder dimension
 order = 1:ndims(T1.M);
 order(1:length(dimT1)) = dimT1;
 
 try
-  T1.M = permute(T1.M,order);
+  T1.M = ipermute(T1.M,order);
 catch
   error(['Bad indice! Positive indice has to be a permutation of the numbers: ' num2str(1:ndims(T1.M))])
 end
@@ -113,6 +121,7 @@ M = ipermute(M,order);
 s(:) = 1;
 s(1:ndims(M)) = size(M);
 s([a b]) = [];
+if numel(s) == 1, s(2) = 1;end
 M = reshape(M,s);
 
 end

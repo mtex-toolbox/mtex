@@ -6,7 +6,7 @@ function T = rotate(T,R)
 %
 %% Input
 %  T - @tensor
-%  R - @rotation or rotation matrix
+%  R - @rotation or rotation matrix or a list of them
 %
 %% Output
 %  T - rotated @tensor
