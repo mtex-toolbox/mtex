@@ -30,6 +30,7 @@ switch plotType
     d = linearCompressibility(T,S2);
   
   case 'velocity'
+
     
     if check_option(varargin,{'pp','ps1','ps2'})
       S2 = S2Grid('equispaced','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',...
@@ -41,7 +42,8 @@ switch plotType
     d = eval(get_option(varargin,'velocity','pp','char'));
     
 end
-    
+
+d = real(d);
 multiplot(@(i) S2,@(i) d,1,...
   'MINMAX','dynamicMarkerSize',...
   'antipodal','smooth',...
