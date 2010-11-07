@@ -1,4 +1,4 @@
-function [F T] = Fourier(T,varargin)
+function THat = Fourier(T,varargin)
 % compute the Fourier coefficients of the tensor
 %
 %% Description
@@ -10,45 +10,37 @@ function [F T] = Fourier(T,varargin)
 %  F - Fourier coefficients as an 2*rank+1 x 2*rank + 1 matrix
 %
 
-%% step one - multiply tensor with U 
 U = tensorU;
 
 l = get_option(varargin,'order',1);
 
-%% step two - compute tensor representations
+switch rank(T)
 
-%T = EinsteinSum()
-
-if rank(T) == 1
+  case 1
   
-  if l == 1
-    T = rotate(T,U.');
-    T = EinsteinSum(T,2,eye(3),[1 3]);
-  else
-    T.M(:) = 0;
-  end
+    if l == 1
+      THat = EinsteinSum(T,-1,conj(U),[-1 3],U,[1 2]);
+    else
+      THat = tensor(zeros(size(T)));
+    end
   
-elseif rank(T) == 2
+  case 2
+     
+    if l == 0
   
-  C = tensorClebschGordan;
-  
-  T = EinsteinSum(T,[-1 -2],U,[],U,[1])
-  
-  %T = EinsteinSum(T,[-1 -2],C,[-1 -2 3],C,[1 2 4]);
-  
-  
-  
-  return
+      CGU = EinsteinSum(ClebschGordanTensor(l),[-1 -2],U,[1 -1],U,[2 -2]);
+      CGUc = EinsteinSum(ClebschGordanTensor(l),[-1 -2],conj(U),[1 -1],conj(U),[2 -2]);
+    
+      THat = EinsteinSum(T,[-1 -2],CGUc,[-1 -2],CGU,[1 2]);
+    
+    else
+      % correct tensor CG
+      CGU = EinsteinSum(ClebschGordanTensor(l),[-1 -2 3],U,[1 -1],U,[2 -2]);
+      CGUc = EinsteinSum(ClebschGordanTensor(l),[-1 -2 3],conj(U),[1 -1],conj(U),[2 -2]);
+    
+      % sum everythink up
+      THat = EinsteinSum(T,[-1 -2],CGUc,[-1 -2 4],CGU,[1 2 3]);
+    end
+    
 end
 
-
-
-%% step three - multiply with tensor U'
-T.rank = T.rank - 2;
-T = rotate(T,conj(U));
-T.rank = T.rank + 2;
-
-
-F = T.M;
-
-end

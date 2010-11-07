@@ -41,13 +41,13 @@ if check_option(varargin,'Fourier')
     odf_hat = Fourier(odf,'order', l)./(2*l+1);
   
     % calc Fourier coefficients of the tensor
-    [F,T_hat] = Fourier(T,'order',l);
+    T_hat = Fourier(T,'order',l);
   
     % mean Tensor is the product of both
     if l == 0
-      MT = MT + T_hat .* odf_hat';
+      MT = MT + T_hat .* odf_hat;
     else
-      MT = MT + EinsteinSum(T_hat,[1:rank(T) -1 -2],conj(odf_hat),[-1 -2]);
+      MT = MT + EinsteinSum(T_hat,[1:rank(T) -1 -2],odf_hat,[-1 -2]);
     end
   end
   T = MT;

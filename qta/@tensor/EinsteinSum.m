@@ -121,8 +121,7 @@ M = ipermute(M,order);
 s(:) = 1;
 s(1:ndims(M)) = size(M);
 s([a b]) = [];
-if numel(s) == 1, s(2) = 1;end
-M = reshape(M,s);
+M = reshape(M,[s 1 1]);
 
 end
 
