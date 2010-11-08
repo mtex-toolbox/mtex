@@ -15,7 +15,7 @@ o = rotation('Euler',150*degree,40*degree,35*degree);
 
 odf = unimodalODF(o,symmetry,symmetry,'halfwidth',1*degree);
 
-T_odf = calcTensor(odf,T,'Fourier')
+T_odf = calcTensor(odf,T,'Fourier');
 
 %figure(2)
 %plot(T_odf)
