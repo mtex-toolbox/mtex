@@ -28,15 +28,15 @@ switch rank(T)
      
     if l == 0
   
-      CGU = EinsteinSum(ClebschGordanTensor(l),[-1 -2],U,[1 -1],U,[2 -2]);
-      CGUc = EinsteinSum(ClebschGordanTensor(l),[-1 -2],conj(U),[1 -1],conj(U),[2 -2]);
+      CGU = EinsteinSum(ClebschGordanTensor(1,1,l),[-1 -2],U,[1 -1],U,[2 -2]);
+      CGUc = EinsteinSum(ClebschGordanTensor(1,1,l),[-1 -2],conj(U),[1 -1],conj(U),[2 -2]);
     
       THat = EinsteinSum(T,[-1 -2],CGUc,[-1 -2],CGU,[1 2]);
     
     else
       % correct tensor CG
-      CGU = EinsteinSum(ClebschGordanTensor(l),[-1 -2 3],U,[1 -1],U,[2 -2]);
-      CGUc = EinsteinSum(ClebschGordanTensor(l),[-1 -2 3],conj(U),[1 -1],conj(U),[2 -2]);
+      CGU = EinsteinSum(ClebschGordanTensor(1,1,l),[-1 -2 3],U,[1 -1],U,[2 -2]);
+      CGUc = EinsteinSum(ClebschGordanTensor(1,1,l),[-1 -2 3],conj(U),[1 -1],conj(U),[2 -2]);
     
       % sum everythink up
       THat = EinsteinSum(T,[-1 -2],CGUc,[-1 -2 4],CGU,[1 2 3]);
