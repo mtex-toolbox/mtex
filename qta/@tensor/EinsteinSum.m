@@ -33,6 +33,10 @@ elseif isa(T2,'vector3d')
   M2 = permute(M2,[3 1 2]);
 end
 
+% compute size T2
+sT2 = ones(1,length(dimT2));
+sT2(1:ndims(M2)) = size(M2);
+
 % check for equals negative values in dimT1
 [a,b] = findFirstDouble(dimT1);
 if ~isempty(a)
@@ -67,14 +71,14 @@ end
 
 % join matrix 1 and matrix 2
 if ~isempty(M2)
-  T1.M = squeeze(reshape(T1.M(:)*M2(:).',[size(T1.M),size(M2)]));
+  T1.M = reshape(T1.M(:)*M2(:).',[size(T1),sT2]);
   T1.rank = T1.rank + length(dimT2);
   T = EinsteinSum(T1,[dimT1 dimT2],varargin{:});
   return
 end
 
 % reorder dimension
-order = 1:ndims(T1.M);
+order = 1:max(T1.rank,ndims(T1.M));
 order(1:length(dimT1)) = dimT1;
 
 try
@@ -99,13 +103,14 @@ end
 function M = innerSum(M,a,b)
 
 % make a,b the first two dimensions
-order = 1:ndims(M);
+order = 1:max([ndims(M) a b]);
 order([a b]) = [];
 order = [a b order];
 M = permute(M,order);
 
 % extract diagonal with respect to first two dimensions
-s = size(M);
+s = ones(1,max([a,b,ndims(M)]));
+s(1:ndims(M)) = size(M);
 d1 = 1:size(M,1);
 d1 = (d1 + size(M,1)*(d1-1));
 f = size(M,1)*size(M,2);

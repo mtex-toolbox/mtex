@@ -34,12 +34,13 @@ end
 
 % permute the first rank(T) dimensions of the tensor such that dimT becomes
 % the first dimension.
-order = 1:ndims(T.M);
+order = 1:max(T.rank,ndims(T.M));
 order(1:T.rank) = circshift(order(1:T.rank)',1-dimT)';
 T.M = permute(T.M,order);
 
 % squeeze the dimensions 2:rank(T) to a single dimension
-s = size(T.M);
+s = ones(1,T.rank);
+s(1:ndims(T.M)) = size(T.M);
 shape = [s(1),prod(s(2:T.rank)),s((T.rank+1):end)];
 T.M = reshape(T.M,shape);
 

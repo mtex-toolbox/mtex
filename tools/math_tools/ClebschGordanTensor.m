@@ -16,6 +16,6 @@ for j1=-m1:m1
   end
 end
 
-%CGT = tensor(cg,'rank',3);
-CGT = tensor(cg);
+CGT = tensor(cg,'rank',3);
+%CGT = tensor(cg);
 

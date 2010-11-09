@@ -7,7 +7,7 @@ if numel(T.M) == 36,
   T.M = tensor24(T.M);
 end
 
-r = find(size(T.M)-1,1,'last');
+r = max([1,find(size(T.M)-1,1,'last')]);
 T.rank    = get_option(varargin,'rank',r);
 
 args = find(cellfun(@(s) isa(s,'symmetry'),varargin,'uniformoutput',true));
