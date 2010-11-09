@@ -44,11 +44,8 @@ if check_option(varargin,'Fourier')
     T_hat = Fourier(T,'order',l);
   
     % mean Tensor is the product of both
-    if l == 0
-      MT = MT + T_hat .* odf_hat;
-    else
-      MT = MT + EinsteinSum(T_hat,[1:rank(T) -1 -2],odf_hat,[-1 -2]);
-    end
+    MT = MT + EinsteinSum(T_hat,[1:rank(T) -1 -2],odf_hat,[-1 -2]);
+    
   end
   T = MT;
   
