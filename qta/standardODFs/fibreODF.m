@@ -34,10 +34,20 @@ if check_option(varargin,'bingham') % Bingham distributed ODF
   
   kappa = get_option(varargin,'bingham',10);
   
-  if length(kappa) == 1, kappa = [kappa,0];end
+  if length(kappa) == 1,
+    kappa = [kappa, kappa 0 0];
+  elseif numel(kappa) < 4 
+    kappa = [kappa(1:2) 0 0];
+  end
   
-  q1 = normalize(idquaternion - quaternion(0,r) * quaternion(0,h));
-  q2 = normalize(quaternion(0,r) + quaternion(0,h));
+  h = normalize(h);
+  r = normalize(r);
+  
+  qr = quaternion(0,r);
+  qh = quaternion(0,h);
+  
+  q1 = idquaternion - qr*qh;
+  q2 = qr+qh;
   
   if isnull(norm(h-r))
     v1 = orth(h);
@@ -45,12 +55,17 @@ if check_option(varargin,'bingham') % Bingham distributed ODF
     q3 = quaternion(0,v1);
     q4 = quaternion(0,v2);
   else
-    q3 = normalize(idquaternion + quaternion(0,r) * quaternion(0,h));
-    q4 = normalize(quaternion(0,r) - quaternion(0,h));
+    q3 = idquaternion + qr*qh;
+    q4 = qr-qh;
   end
   
-  odf = BinghamODF([kappa(1) kappa(1) kappa(2) kappa(2)],[q1,q2,q3,q4],CS,SS);
+  A = normalize([q1,q2,q3,q4]);
+
+  if 4-sum(diag(dot_outer(A,A))) > 10^-10,  
+    warning('could not construct orthogonal rotations A, resulting Bingham Distribution may be inexact');
+  end
   
+  odf = BinghamODF(kappa,A,CS,SS);
   % reverse:
   %h_0 = q_1^* q_2
   %r_0 = q_2 q_1^*.
