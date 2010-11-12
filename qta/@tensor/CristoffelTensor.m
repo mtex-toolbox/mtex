@@ -1,20 +1,20 @@
-function C = CristoffelTensor(E,v)
+function E = CristoffelTensor(C,n)
 % Cristoffel tensor of an elasticity tensor for a given direction
 %
 %% Desription
-% Formular: C_jk = E_ijkl v_j v_l
+% Formular: E_jk = C_ijkl n_j n_l
 %
 %% Input
-%  E - elaticity @tensor
-%  v - list of @vector3d
+%  C - elatic stiffness @tensor
+%  x - list of @vector3d
 %
 %% Output
-%  C - Cristoffel @tensor
+%  E - Cristoffel @tensor
 %
 %% See also
 % tensor/quadric tensor/rotate
 
 % compute tensor products
-C = EinsteinSum(E,[1 -1 2 -2],v,-1,v,-2);
+E = EinsteinSum(C,[1 -1 2 -2],n,-1,n,-2);
 
 C.name = 'Cristoffel';

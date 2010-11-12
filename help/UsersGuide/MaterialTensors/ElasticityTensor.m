@@ -1,5 +1,5 @@
 %% The Elasticity Tensor
-% how to calculate the elasticity tensor
+% how to calculate the elasticity properties
 %
 %% Open in Editor
 %
@@ -12,14 +12,14 @@
 
 
 %% Import an Elasticity Tensor
-% Let us start by importing an elasticity tensor of a Olivin crystal in
-% normal orientation from a file. 
+% Let us start by importing the elastic stiffness tensor of an Olivin
+% crystal in reference orientation from a file. 
 
 fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
 
 cs = symmetry('mmm',[4.7646 10.2296 5.9942]);
 
-E = loadTensor(fname,cs,'name','elasticity','interface','generic')
+C = loadTensor(fname,cs,'name','stiffness','interface','generic')
 
 
 %% Young's Modulus
@@ -27,34 +27,34 @@ E = loadTensor(fname,cs,'name','elasticity','interface','generic')
 % command <tensor/YoungsModulus.html YoungsModulus>.
 
 x = xvector;
-YoungsModulus(E,x)
+E = YoungsModulus(C,x)
 
 %%
 % It can be plotted by passing the option *YoungsModulus* to the
 % <tensor/plot.html plot> command. 
 
 set_mtex_option('defaultColorMap',seismicColorMap);
-plot(E,'PlotType','YoungsModulus','complete')
+plot(C,'PlotType','YoungsModulus','complete')
 
 %% Linear Compressibility
 % The linear compressibility is ...
 % It is computed for a specific direction x by the
 % command <tensor/linearCompressibility.html linearCompressibility>.
 
-linearCompressibility(E,x)
+beta = linearCompressibility(C,x)
 
 %%
 % It can be plotted by passing the option *linearCompressibility* to the
 % <tensor/plot.html plot> command.
 
-plot(E,'PlotType','linearCompressibility','complete')
+plot(C,'PlotType','linearCompressibility','complete')
 
 %% Cristoffel Tensor
 % The Cristoffel Tensor for a specific direction x is ....
 % It is computed for a specific direction x by the
 % command <tensor/CristoffelTensor.html YoungsModulus>.
 
-C = CristoffelTensor(E,x)
+T = CristoffelTensor(C,x)
 
 %% Elastic Wave Velocity
 % The Cristoffel tensor is the basis for computing the direction dependent
@@ -62,30 +62,30 @@ C = CristoffelTensor(E,x)
 % directions. In MTEX this is done by the command <tensor/velocity.html
 % velocity>
 
-[vp,vs1,vs2,pp,ps1,ps2] = velocity(E,xvector,1)
+[vp,vs1,vs2,pp,ps1,ps2] = velocity(C,xvector,1)
 
 %%
 % In order to visualize these quantities there are several posibilities.
 % Let us first plot the direction depended wave speed of the p-wave
 
-plot(E,'PlotType','velocity','vp','complete')
+plot(C,'PlotType','velocity','vp','complete')
 
 
 %%
 % Next we plot on the top of this plot the p-wave polarisation direction.
 
 hold on
-plot(E,'PlotType','velocity','pp','complete')
+plot(C,'PlotType','velocity','pp','complete')
 hold off
 
 %%
 % Finally we visuallize the speed difference between the s1 and s2 waves
 % together with the  fast sheer polarization.
 
-plot(E,'PlotType','velocity','vs1-vs2','complete')
+plot(C,'PlotType','velocity','vs1-vs2','complete')
 
 hold on
-plot(E,'PlotType','velocity','ps1','complete')
+plot(C,'PlotType','velocity','ps1','complete')
 hold off
 
 

@@ -1,19 +1,19 @@
-function out = linearCompressibility(E,v)
+function beta = linearCompressibility(C,x)
 % computes the linear compressibility of an elasticity tensor
 %
 %% Description
-% formula: out = S_ijkk x_i x_j
+% formula: beta(x) = S_ijkk x_i x_j
 %
 %% Input
-%  E - elasticity @tensor
-%  v - list of @vector3d
+%  C - elastic stiffness @tensor
+%  x - list of @vector3d
 %
 %% Output
-%  out - linear compressibility in directions v
+%  beta - linear compressibility in directions v
 %
 
 % compute the complience
-S = inv(E);
+S = inv(C);
 
 % compute tensor product
-out = double(EinsteinSum(S,[-1 -2 -3 -3],v,-1,v,-2));
+beta = double(EinsteinSum(S,[-1 -2 -3 -3],x,-1,x,-2));
