@@ -1,9 +1,9 @@
-function [vp,vs1,vs2,pp,ps1,ps2] = velocity(E,x,rho)
+function [vp,vs1,vs2,pp,ps1,ps2] = velocity(C,x,rho)
 % computes the elastic wave velocity(km/s) from
 % the elastic stiffness Cijkl tensor and density (g/cm3)
 %
 %% Input
-% E   - elasticity stiffness tensor Cijkl (UNITS GPa) @tensor
+% C   - elasticity stiffness tensor Cijkl (UNITS GPa) @tensor
 % x   - list of propagation directions (@vector3d)
 % rho - material density (UNITS g/cm3)
 %
@@ -17,33 +17,41 @@ function [vp,vs1,vs2,pp,ps1,ps2] = velocity(E,x,rho)
 %
 
 % compute CristoffelTensor
-T = CristoffelTensor(E,x);
+E = CristoffelTensor(C,x);
 
 % from output
 vp = zeros(size(x));
 vs1 = zeros(size(x));
 vs2 = zeros(size(x));
-pp = repmat(vector3d,size(rho));
-ps1 = repmat(vector3d,size(rho));
-ps2 = repmat(vector3d,size(rho));
+pp = zeros(3,numel(x));
+ps1 = zeros(3,numel(x));
+ps2 = zeros(3,numel(x));
+
 
 % for each direction
 for i = 1:numel(x)
 
   % compute eigenvalues
-  [V,D] = eigs(T.M(:,:,i));
+  [V,D] = eig(E.M(:,:,i));
   
   % compute wavespeeds
   D = sqrt(diag(D)/rho);
+  
+  % and sort them
+  [D,ind] = sort(D);
 
   % the speeds
-  vp(i) = D(1);
+  vp(i) = D(3);
   vs1(i) = D(2);
-  vs2(i) = D(3);
+  vs2(i) = D(1);
   
   % the polarisation axes
-  pp(i) = vector3d(V(:,1));
-  ps1(i) = vector3d(V(:,2));
-  ps2(i) = vector3d(V(:,3));
+  pp(:,i) = V(:,ind(3));
+  ps1(:,i) = V(:,ind(2));
+  ps2(:,i) = V(:,ind(1));
 
 end
+
+pp = vector3d(pp);
+ps1 = vector3d(ps1);
+ps2 = vector3d(ps2);
