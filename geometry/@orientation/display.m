@@ -3,7 +3,14 @@ function display(o)
 
 disp(' ');
 disp([inputname(1) ' = ' doclink('orientation_index','orientation') ' (size: ' int2str(size(o)) ')']);
-disp(['  symmetry: ',char(o.CS),' - ',char(o.SS)]);
+
+if ~isempty(get(o.CS,'mineral'))
+  disp(['  mineral: ',get(o.CS,'mineral')]);
+end
+
+disp(['  crystal symmetry: ',get(o.CS,'name')]);
+disp(['  sample symmetry : ',get(o.SS,'name')]);
+
 
 if numel(o) < 30 && numel(o)>0
   

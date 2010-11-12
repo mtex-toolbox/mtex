@@ -13,7 +13,12 @@ if ~isempty(odf(1).comment), h = [h ' (' odf(1).comment ')']; end
 
 disp(h);
 
-disp(['  symmetry: ',char(odf(1).CS),' - ',char(odf(1).SS)]);
+if ~isempty(get(odf(1).CS,'mineral'))
+  disp(['  mineral: ',get(odf(1).CS,'mineral')]);
+end
+
+disp(['  crystal symmetry: ',get(odf(1).CS,'name')]);
+disp(['  sample symmetry : ',get(odf(1).SS,'name')]);
 disp(' ');
 for i = 1:length(odf)
   if check_option(odf(i),'UNIFORM')
