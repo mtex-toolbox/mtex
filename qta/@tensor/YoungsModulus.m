@@ -1,19 +1,21 @@
-function Y = YoungsModulus(E,v)
+function E = YoungsModulus(C,x)
 % Young's modulus for an elasticity tensor
 %
+%% Description
+%
+% formula: E = 1/(S_ijkl x_i x_j x_k x_l)
+%
 %% Input
-%  E - elasticity @tensor
-%  v - list of @vector3d
+%  C - elastic stiffness @tensor
+%  x - list of @vector3d
 %
 %% Output
-%  Y - Youngs modulus
+%  E - Youngs modulus
 %
 %% See also
 
-% inverse the Elasticity tensor
-S = inv(E);
-
+% compute the compliance tensor
+S = inv(C);
 
 % compute quadric
-Y = 1./quadric(S,v);
-
+E = 1./quadric(S,x);

@@ -9,19 +9,19 @@
 %% Contents
 
 %% Importing a Tensor from a File
-% Lets start by importing an elasticity tensor:
+% Lets start by importing an elastic stifness tensor:
 
 fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
 
 cs = symmetry('mmm',[4.7646 10.2296 5.9942]);
 
-E = loadTensor(fname,cs,'name','elasticity','interface','generic')
+C = loadTensor(fname,cs,'name','stiffness','interface','generic')
 
 %%
 % and plot it using the seismic colormap
 
 set_mtex_option('defaultColorMap',seismicColorMap);
-plot(E,'complete')
+plot(C,'complete')
 
 %% Define a sample ODF
 % Next consider a simple unimodal ODF 
@@ -29,29 +29,29 @@ plot(E,'complete')
 odf = unimodalODF(rotation('Euler',45*degree,0,0),cs,symmetry);
 
 plotpdf(odf,[Miller(1,0,0),Miller(0,0,1)])
-colormap(WhiteJetColorMap)
+colormap(LaboTexColorMap)
 
 %% Compute the mean tensor from an ODF
 % Now we use this ODF to compute a mean tensor
 
-Emean = calcTensor(odf,E)
+Cmean = calcTensor(odf,C)
 
 %%
 % and plot it
 
-plot(Emean,'complete')
+plot(Cmean,'complete')
 
 %% Compute the mean tensor from EBSD data
 %
 
 ebsd = simulateEBSD(odf,5000)
 
-Emean = calcTensor(ebsd,E)
+Cmean = calcTensor(ebsd,C)
 
 %%
 % and plot it
 
-plot(Emean,'complete')
+plot(Cmean,'complete')
 
 %% 
 set_mtex_option('defaultColorMap',WhiteJetColorMap);

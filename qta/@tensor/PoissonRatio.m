@@ -1,21 +1,21 @@
-function out = PoissonRatio(E,X,Y)
+function nu = PoissonRatio(C,x,y)
 % computes the Poisson ratio of an elasticity tensor
 %
 %% Description
-% formula: V = -S_ijkl X_i X_j Y_k Y_l / S_mnop X_m X_n X_o X_p 
+% formula: nu = -S_ijkl x_i x_j y_k y_l / S_mnop x_m x_n x_o x_p 
 %
 %% Input
-%  E - elasticity @tensor
-%  X - @vector3d
-%  Y - @vector3d
+%  C - elastic compliance @tensor
+%  x - @vector3d
+%  y - @vector3d
 %
 %% Output
-%  out - Poisson ratio in directions X qnd Y
+%  nu - Poisson ratio in directions x and y
 %
 
 % compute the complience
-S = inv(E);
+S = inv(C);
 
 % compute tensor product
-out = -double(EinsteinSum(S,[-1 -2 -3 -4],X,-1,X,-2,Y,-3,Y,-4)) ./ ...
-    double(EinsteinSum(S,[-1 -2 -3 -4],X,-1,X,-2,X,-3,X,-4));
+nu = -double(EinsteinSum(S,[-1 -2 -3 -4],x,-1,x,-2,y,-3,y,-4)) ./ ...
+    double(EinsteinSum(S,[-1 -2 -3 -4],x,-1,x,-2,x,-3,x,-4));

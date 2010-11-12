@@ -32,13 +32,13 @@ T = tensor(diag([10 3 1]),cs)
 %% Importing a Tensor from a File
 % Especially for higher order tensors it is more convinient to import the
 % tensor entries from a file. As an example we load the following
-% elasticity tensor
+% elastic stiffness tensor
 
 fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
 
 cs = symmetry('mmm',[4.7646 10.2296 5.9942]);
 
-E = loadTensor(fname,cs,'name','elasticity')
+C = loadTensor(fname,cs,'name','stiffness')
 
 
 %% Visualization
@@ -46,7 +46,7 @@ E = loadTensor(fname,cs,'name','elasticity')
 % x it is plotted Q(x) = T_ijkl x_i x_j x_k x_l
 
 set_mtex_option('defaultColorMap',seismicColorMap);
-plot(E,'complete')
+plot(C,'complete')
 
 %%
 % There are more specialized visuallition possibilities for specific
@@ -70,7 +70,7 @@ plot(Trot)
 % The inverse of a 2 rank tensor or a 4 rank elasticity tensor is computed
 % by the command <tensor_inv.html inv>
 
-S = inv(E)
+S = inv(C)
 
 %% Tensor Products
 % In MTEX tensor products are specifies according to Einsteins summation
@@ -78,7 +78,7 @@ S = inv(E)
 % be interpreted as a sum over the indice k and l. In MTEX this sum can be
 % computed using the command <tensor_EinsteinSum.html EinsteinSum>
 
-S = EinsteinSum(E,[-1 -2 1 2],T,[-1 -2])
+S = EinsteinSum(C,[-1 -2 1 2],T,[-1 -2])
 
 %%
 % here the negative numbers indicates the indices which are summend up.
@@ -92,7 +92,7 @@ S = EinsteinSum(E,[-1 -2 1 2],T,[-1 -2])
 % inverse of the elasticity tensor
 
 v = xvector;
-c = EinsteinSum(E,[-1 -2 -3 -3],v,-1,v,-2)
+c = EinsteinSum(C,[-1 -2 -3 -3],v,-1,v,-2)
 
 %%
 % set back the default color map.
