@@ -3,7 +3,7 @@ function display(T,varargin)
 
 disp(' ');
 h = doclink('tensor_index','tensor');
-if ~isempty(T.name), h = [T.name,' - ',h];end
+if ~isempty(T.name), h = [T.name,' ',h];end
 
 if check_option(varargin,'vname')
   h = [get_option(varargin,'vname'), ' = ' h];
@@ -15,8 +15,13 @@ ss = size(T);
 s = [h, ' (', 'size: ' int2str(ss), ')' ];
 disp(s)
 
-disp([ '  symmetry:  ' char(T.CS)])
-disp([ '      rank:  ' num2str( T.rank)] )
+if numel(T.CS) > 1 || ~all(1==norm(get(T.CS,'axis')))
+  disp([ '  mineral: ' char(T.CS,'verbose')])
+  disp([ '  rank   : ' num2str( T.rank)] )
+else
+  disp([ ' rank: ' num2str( T.rank)] )
+end
+
 disp(' ');
 
 %if max(abs(imag(T.M)))<1e-12, T.M = real(T.M);end

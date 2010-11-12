@@ -4,7 +4,8 @@ function display(m)
 disp(' ');
 disp([inputname(1) ' = ' doclink('Miller_index','Miller') ' (size: ' int2str(size(m)),...
   '), ',char(option2str(check_option(m)))]);
-disp(['  symmetry: ',char(m.CS)]);
+
+disp(['  mineral: ',char(m.CS,'verbose')]);
 
 if numel(m) < 20 && numel(m) > 0
 
