@@ -23,7 +23,8 @@ function T = calcTensor(ebsd,T,varargin)
 
 % Hill tensor is just the avarge of voigt and reuss tensor
 if check_option(varargin,'hill')
-  T = .5*(calcTensor(ebsd,T,'voigt') + calcTensor(ebsd,T,'reuss'));
+  varargin = delete_option(varargin,{'hill'});
+  T = .5*(calcTensor(ebsd,T,'voigt',varargin{:}) + calcTensor(ebsd,T,'reuss',varargin{:}));
   return
 end
 
@@ -31,7 +32,8 @@ end
 if check_option(varargin,'reuss'), T = inv(T);end
 
 % extract orientations and wights
-SO3 = get(ebsd,'orientations','checkPhase');
+[SO3,ind] = get(ebsd,'orientations','checkPhase',varargin{:});
+ebsd = ebsd(ind);
 weight = get(ebsd,'weight');
 
 % rotate tensor according to the grid
