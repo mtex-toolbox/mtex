@@ -26,8 +26,8 @@ function T = mtimesT(T,dimT,M,dimM)
 if nargin == 4
   % permute M such that the first dimension is the replacement dimension
   % dimM(2) and second dimension is the summation dimension dimM(1)
-  order = 1:ndims(M);
-  order(dimM(dimM<=ndims(M))) = [];
+  order = 1:max([dimM,ndims(M)]);
+  order(dimM) = [];
   order = [fliplr(dimM) order];
   M = permute(M,order);
 end

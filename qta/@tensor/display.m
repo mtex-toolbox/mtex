@@ -26,7 +26,8 @@ disp(' ');
 
 %if max(abs(imag(T.M)))<1e-12, T.M = real(T.M);end
 
-T.M = round(1e10*T.M)*1e-10;
+r = round(log(max(abs(T.M(:))))/log(10))+4;
+T.M = round(10^r*T.M).*10^(-r);
 
 if numel(T.M) == prod(ss(1:T.rank));
   if (T.rank == 4) && numel(T.M) == 3^4

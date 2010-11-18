@@ -19,4 +19,4 @@ function E = shearModulus(C,h,u)
 S = inv(C);
 
 % compute quadric
-E = 0.25./EinsteinSum(S,[-1 -2 -3 -4],h,-1,u,-2,h,-3,u,-4);
+E = 0.25./matrix(EinsteinSum(S,[-1 -2 -3 -4],h,-1,u,-2,h,-3,u,-4));
