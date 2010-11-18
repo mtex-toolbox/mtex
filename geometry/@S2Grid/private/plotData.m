@@ -52,16 +52,16 @@ if isa(data,'vector3d')
   dx = reshape(dx./10,size(X));
   dy = reshape(dy./10,size(X));
   
-  optiondraw(quiver(X,Y,dx,dy,0.25,'MaxHeadSize',mhs),varargin{:});
+  optiondraw(quiver(X,Y,dx,dy,0.125 * (1+(mhs~=0)) ,'MaxHeadSize',mhs),varargin{:});
   
   if mhs == 0 
-    [theta,rho] = polar(-data);
-    [dx,dy] = projectData(theta,rho,'antipodal');
+%    [theta,rho] = polar(-data);
+%    [dx,dy] = projectData(theta,rho,'antipodal');
+%  
+%    dx = reshape(dx./10,size(X));
+%    dy = reshape(dy./10,size(X));
   
-    dx = reshape(dx./10,size(X));
-    dy = reshape(dy./10,size(X));
-  
-    optiondraw(quiver(X,Y,dx,dy,0.25,'MaxHeadSize',0),varargin{:});
+    optiondraw(quiver(X,Y,-dx,-dy,0.125,'MaxHeadSize',0),varargin{:});
   end
 %% contour plot
 elseif any(strcmpi(plottype,'TEXTUREMAP'))

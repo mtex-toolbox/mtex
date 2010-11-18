@@ -73,7 +73,7 @@ M(1,1,1,1) = 1;
 T = tensor(M);
 
 %o = rotation('Euler',150*degree,40*degree,35*degree);
-o = rotation('Euler',0*degree,50*degree,0*degree);
+o = rotation('Euler',0*degree,0*degree,50*degree);
 
 rotate(T,o)
 figure(1)

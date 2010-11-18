@@ -84,6 +84,17 @@ for i = 1:length(ax)
         error('Only orientations and specimen directions can be anotated to pole figure plots');
       end
     
+    case 'tensor'
+      
+      if isa(obj,'vector3d')
+      
+        plot(obj,'Marker','s','MarkerFaceColor','k',...
+          'MarkerEdgeColor','w','Marker','s',varargin{:});
+      
+      else
+        error('Only crystal and specimen directions can be anotated to tensor plots');
+      end
+      
   %% inverse pole figure plot    
     case {'ipdf','hkl'}
         
