@@ -24,7 +24,6 @@ function varargout = get(obj,vname,varargin)
 % EBSD/set
 
 
-
 if nargin == 1
   vnames = get_obj_fields(obj(1),'options');
   if nargout, varargout{1} = vnames; else disp(vnames), end

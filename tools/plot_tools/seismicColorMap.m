@@ -4,7 +4,7 @@ function rgb = seismicColorMap(n)
 % Nico Sneeuw
 % Munich, 31/08/94
 
-if nargin == 0, n = size(get(gcf,'colormap'),1); end
+if nargin == 0, n = 128; end
 
 m    = ceil(n/3);
 top  = ones(m,1);
