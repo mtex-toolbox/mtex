@@ -15,7 +15,7 @@ function value = get(T,pName)
 
 
 switch pName
-  
+
   case fields(T)
     
     value = T.(pName);
