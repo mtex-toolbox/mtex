@@ -3,7 +3,7 @@ function display(T,varargin)
 
 disp(' ');
 h = doclink('tensor_index','tensor');
-if ~isempty(T.name), h = [T.name,' ',h];end
+if hasProperty(T,'name'), h = [get(T,'name'),' ',h];end
 
 if check_option(varargin,'vname')
   h = [get_option(varargin,'vname'), ' = ' h];
