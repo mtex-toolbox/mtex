@@ -4,6 +4,19 @@ function value = get(obj,vname)
 switch vname
   case fields(obj)
     value = [obj.(vname)];
+    
+  case 'axes*'
+    
+    abc = obj.axis;
+    V  = dot(abc(1),cross(abc(2),abc(3)));
+    value(1) = cross(abc(2),abc(3)) ./ V;
+    value(2) = cross(abc(3),abc(1)) ./ V;
+    value(3) = cross(abc(1),abc(2)) ./ V;
+    
+  case 'axes'
+    
+    value = obj.axis;
+    
   case {'aufstellung','alignment','convention'}
     
     if any(strcmpi(obj.laue,{'3m','-3m'}))
