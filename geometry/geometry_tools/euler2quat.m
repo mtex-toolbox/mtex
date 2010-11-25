@@ -32,22 +32,22 @@ function q = euler2quat(alpha,beta,gamma,varargin)
 conventions = {'nfft','ZYZ','ABG','Matthies','Roe','Kocks','Bunge','ZXZ','Canova'};
 convention = get_flag(varargin,conventions,get_mtex_option('EulerAngleConvention'));
 
-switch convention
+switch lower(convention)
   
-  case {'Matthies','nfft','ZYZ','ABG'}
+  case {'matthies','nfft','zyz','abg'}
 
-  case 'Roe'
+  case 'roe'
     
-  case {'Bunge','ZXZ'}  % Bunge -> Matthies
+  case {'bunge','zxz'}  % Bunge -> Matthies
 
     alpha = alpha - pi/2;
     gamma = gamma - 3*pi/2;
       
-  case {'Kocks'}        % Kocks -> Matthies
+  case {'kocks'}        % Kocks -> Matthies
 
     gamma = pi - gamma;
         
-  case {'Canova'}       % Canova -> Matthies
+  case {'canova'}       % Canova -> Matthies
     
     alpha = pi/2 - alpha;
     gamma = 3*pi/2 - gamma;

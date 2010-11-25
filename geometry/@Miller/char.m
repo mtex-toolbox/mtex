@@ -13,7 +13,7 @@ for i = 1:length(m)
   
     uvtw = v2d(subsref(m,i));
 
-    s = ['(',barchar(uvtw,varargin{:}),')'];
+    s = ['[',barchar(uvtw,varargin{:}),']'];
 
   else
     
@@ -21,10 +21,8 @@ for i = 1:length(m)
 
     s = barchar(hkl,varargin{:});
     
-    if check_option(varargin, {'TEX','LATEX'})
-      s = ['\{',s,'\}']; %#ok<AGROW>
-    elseif ~check_option(varargin,'NO_SCOPES')
-      s = ['{',s,'}']; %#ok<AGROW>
+    if ~check_option(varargin,'NO_SCOPES')
+      s = ['(',s,')']; %#ok<AGROW>
     end    
   end
 
