@@ -2,6 +2,8 @@ function display(T,varargin)
 % standard output
 
 disp(' ');
+
+% collect top line
 h = doclink('tensor_index','tensor');
 if hasProperty(T,'name'), h = [get(T,'name'),' ',h];end
 
@@ -13,26 +15,40 @@ end;
 
 ss = size(T);
 s = [h, ' (', 'size: ' int2str(ss), ')' ];
+
+% display top line
 disp(s)
 
+% collect tensor properties
+props = fieldnames(T.properties);
+props = props(~strcmp(props,'name'));
+C = cell(length(props),2);
+C(:,1) = strcat(props,':');
+C(:,2) = cellfun(@(prop) char(T.properties.(prop)),props,'UniformOutput',false);
+
+C(end+1,:) = {'rank:',num2str( T.rank)};
+
+% collect symmetry
 if numel(T.CS) > 1 || ~all(1==norm(get(T.CS,'axis')))
-  disp([ '  mineral: ' char(T.CS,'verbose')])
-  disp([ '  rank   : ' num2str( T.rank)] )
-else
-  disp([ ' rank: ' num2str( T.rank)] )
+  C(end+1,:) = {'mineral:',char(T.CS,'verbose')};
 end
+
+% display all properties
+cprintf(C,'-L','  ','-ic','F');
 
 disp(' ');
 
 %if max(abs(imag(T.M)))<1e-12, T.M = real(T.M);end
 
+% make numbers nice
 r = round(log(max(abs(T.M(:))))/log(10))+4;
 T.M = round(10^r*T.M).*10^(-r);
 
+% display tensor coefficients
 if numel(T.M) == prod(ss(1:T.rank));
   if (T.rank == 4) && numel(T.M) == 3^4
     disp('  tensor in Voigt matrix representation')
-    cprintf(tensor42(T.M),'-L','  ');
+    cprintf(tensor42(T.M),'-L','  ','-ic','F');
   elseif ndims(T.M) == 2
     cprintf(T.M,'-L','  ','-ic','F');
   end

@@ -2,7 +2,7 @@ function value = get(T,pName)
 % extract data from a tensor variable
 %
 %% Syntax
-%  d = get(T,'name')  % individuel orientations
+%  d = get(T,'mineral') 
 % 
 %% Input
 %  T     - @tensor
@@ -11,7 +11,7 @@ function value = get(T,pName)
 %% Output
 %
 %% See also
-% EBSD/set
+% tensor/set
 
 
 switch pName
