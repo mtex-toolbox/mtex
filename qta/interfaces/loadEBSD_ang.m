@@ -16,13 +16,16 @@ try
     lattice = sscanf(hl{pos+5},'# LatticeConstants %f %f %f %f %f %f');
     options = {};
     switch laue
-      %case {'-3m' '3n' '3' '2' '62' '6'}
-      %  options = {'a||y'};
+      case {'-3m' '32' '3' '62' '6'}
+        options = {'x||a'};
       case '2'
-        options = {'a||x'};
+        options = {'x||a*'};
         warning('MTEX:unsupportedSymmetry','symmetry not yet supported!')
+      case '1'
+        options = {'x||a'};
       case '20'
-        laue = '2';
+        laue = {'2'};
+        options = {'x||a'};
       otherwise
         if lattice(6) ~= 90
           options = {'a||x'};
