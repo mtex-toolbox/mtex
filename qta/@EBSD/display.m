@@ -34,7 +34,7 @@ for i = 1:length(ebsd)
   
   % mineral
   if ~isempty(get(CS,'mineral'))
-   matrix{i,3} = get(CS,'mineral'); %#ok<AGROW>
+   matrix{i,3} = char(get(CS,'mineral')); %#ok<AGROW>
   end    
   
   % orientations

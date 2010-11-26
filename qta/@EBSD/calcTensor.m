@@ -1,14 +1,15 @@
-function T = calcTensor(ebsd,T,varargin)
+function Tavarage = calcTensor(ebsd,varargin)
 % compute the mean tensor for an EBSD data set
 %
 %% Syntax
-% T = calcTensor(ebsd,T,'voigt')
-% T = calcTensor(ebsd,T,'reuss')
-% T = calcTensor(ebsd,T,'hill')
+% T = calcTensor(ebsd,T_phase1,T_phase2,'voigt')
+% T = calcTensor(ebsd,T_phase2,'reuss','phase',2)
+% T = calcTensor(ebsd,T_phase1,T_phase2,'hill')
 %
 %% Input
-%  ebsd - @EBSD
-%  T    - @tensor
+%  ebsd     - @EBSD
+%  T_phase1 - @tensor for phase 1
+%  T_phase1 - @tensor for phase 2
 %
 %% Output
 %  T    - @tensor
@@ -21,26 +22,54 @@ function T = calcTensor(ebsd,T,varargin)
 %% See also
 %
 
-% Hill tensor is just the avarge of voigt and reuss tensor
+% extract tensors and remove them from varargin
+Tind = cellfun(@(t) isa(t,'tensor'),varargin);
+T = varargin(Tind);
+varargin(Tind) = [];
+
+
+% Hill tensor is just the avarage of voigt and reuss tensor
 if check_option(varargin,'hill')
   varargin = delete_option(varargin,{'hill'});
-  T = .5*(calcTensor(ebsd,T,'voigt',varargin{:}) + calcTensor(ebsd,T,'reuss',varargin{:}));
+  Tavarage = .5*(calcTensor(ebsd,T{:},'voigt',varargin{:}) + calcTensor(ebsd,T{:},'reuss',varargin{:}));
   return
 end
 
 % for Reuss tensor invert tensor
-if check_option(varargin,'reuss'), T = inv(T);end
+if check_option(varargin,'reuss')
+  T = cellfun(@(t) inv(t),varargin,'uniformOutput',false);
+end
 
-% extract orientations and wights
-[SO3,ind] = get(ebsd,'orientations','checkPhase',varargin{:});
-ebsd = ebsd(ind);
-weight = get(ebsd,'weight');
+% restrict phases if necassary
+if check_option(varargin,'phase')
+  phases = get_option(varargin,'phase');
+  [SO3,ind] = get(ebsd,'orientations',varargin{:});
+  ebsd = ebsd(ind);
+else
+  phases = get(ebsd,'phase');
+end
 
-% rotate tensor according to the grid
-T = rotate(T,SO3);
+% initialize avarage tensor
+Tavarage = tensor(zeros(size(T{1})));
+sZ = sampleSize(ebsd);
 
-% take the mean of the tensor according to the weight
-T = sum(weight .* T);
+% cycle through phases and tensors
+for i = 1:min(length(T),length(ebsd))
+  
+  % extract orientations and wights
+  [SO3,ind] = get(ebsd,'orientations','phase',phases(i));
+  weight = get(ebsd(ind),'weight')*sum(sZ(ind))./sum(sZ);
+
+  % extract tensor
+  Tphase = T{i};
+
+  % rotate tensor according to the orientations
+  Tphase = rotate(Tphase,SO3);
+
+  % take the mean of the tensor times the weight
+  Tavarage = Tavarage + sum(weight .* Tphase);
+    
+end
 
 % for Reuss tensor invert back
-if check_option(varargin,'reuss'), T = inv(T);end
+if check_option(varargin,'reuss'), Tavarage = inv(Tavarage);end

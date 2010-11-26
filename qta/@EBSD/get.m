@@ -94,6 +94,10 @@ switch vname
       sz = size(obj(1).orientations);
       varargout{1} = ones(sz)./prod(sz);      
     end
+  case 'mineral'
+    
+    varargout = cellfun(@(x) get(get(x,'CS'),'mineral') ,{obj.orientations},'uniformoutput',false);    
+    
   case fields(obj(1).options)
      options = [obj.options];
      varargout{1} = vertcat(options.(vname));    

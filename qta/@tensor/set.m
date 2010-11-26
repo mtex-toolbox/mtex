@@ -17,6 +17,12 @@ function T = set(T,pName,pValue)
 
 switch pName
 
+  case 'CS'
+    
+    M = transformationMatrix(T.CS,pValue);
+    T = rotate(T,M);
+    T.CS = pValue;
+  
   case fields(T)
     
     T.(pName) = pValue;
