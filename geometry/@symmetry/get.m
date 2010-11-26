@@ -19,16 +19,22 @@ switch vname
     
   case {'aufstellung','alignment','convention'}
     
-    if any(strcmpi(obj.laue,{'3m','-3m'}))
-      if vector3d(Miller(1,0,0,obj)) == -yvector
-        value = 2;
-      else
-        value = 1;
+    if any(strcmp(obj.laue,{'-1','2/m','-3','-3m'}))
+      abc = normalize(obj.axis);
+      abcStar = normalize(get(obj,'axes*'));
+      
+      [y,x] = find(isappr(dot_outer([abc,abcStar],[xvector,yvector,zvector]),1));
+   
+      abcLabel = {'a','b','c','a*','b*','c*'};
+      xyzLabel = {'x','y','z'};
+   
+      value = cell(1,length(x));
+      for i = 1:length(x)
+        value{i} = [xyzLabel{x(i)} '||' abcLabel{y(i)}];
       end
     else
-      value = 1;
+      value = {};
     end
-        
   otherwise
     error('Unknown field in class symmetry!')
 end

@@ -1,16 +1,25 @@
-function saxis  = calcAxis(System,axis,angle,varargin)
-% calculate crystal axes
+function abc  = calcAxis(axisLength,angle,varargin)
+% calculate the axis a, b, c of the crystal coordinate system with respect
+% to the euclidean reference frame
+%
+%% Input
+%
+%
+%% Output
+%
 
-if axis(3) == 0, axis(3) = max(axis);end
-if axis(3) == 0, axis(3) = 1;end
+%% get axis length
+if axisLength(3) == 0, axisLength(3) = max(axisLength);end
+if axisLength(3) == 0, axisLength(3) = 1;end
 
-if axis(1) == 0, axis(1) = axis(2);end
-if axis(2) == 0, axis(2) = axis(1);end
-if axis(2) == 0, 
-  axis(2) = axis(3);
-  axis(1) = axis(3);
+if axisLength(1) == 0, axisLength(1) = axisLength(2);end
+if axisLength(2) == 0, axisLength(2) = axisLength(1);end
+if axisLength(2) == 0, 
+  axisLength(2) = axisLength(3);
+  axisLength(1) = axisLength(3);
 end
 
+%% get angles
 if angle(1) == 0
   if angle(2) == 0, angle(2) = pi/2;end
   angle(1) = pi - angle(2);
@@ -18,41 +27,85 @@ end
 if angle(2) == 0,  angle(2) = pi - angle(1);end
 if angle(3) == 0, angle(3) = pi/2;end
 
-switch System
-    
-  case {'monocline','triclinic','monoclinic','tricline'}
-    if check_option(varargin,'b||y')
-      saxis = xvector;
-      saxis(2) = cos(angle(3)) * xvector + sin(angle(3)) * yvector;
-      saxis(3) = cos(angle(2)) * xvector + ...
-        (cos(angle(1)) - cos(angle(2)) * cos(angle(3)))/sin(angle(3)) * yvector +...
-        sqrt(1+2*prod(cos(angle)) - sum(cos(angle).^2))/sin(angle(3)) * zvector;
-    else
-      saxis = xvector;
-      saxis(2) = cos(angle(3)) * xvector + sin(angle(3)) * yvector;
-      saxis(3) = cos(angle(2)) * xvector + ...
-        (cos(angle(1)) - cos(angle(2)) * cos(angle(3)))/sin(angle(3)) * yvector +...
-        sqrt(1+2*prod(cos(angle)) - sum(cos(angle).^2))/sin(angle(3)) * zvector;
-    end
-    saxis = axis .* saxis;
+%% start be defining a reference coordinate system
+% which uses the convention
+% * x || a
+% * z || c*
+a = xvector;
+b = cos(angle(3)) * xvector + sin(angle(3)) * yvector;
+c = cos(angle(2)) * xvector + ...
+  (cos(angle(1)) - cos(angle(2)) * cos(angle(3)))/sin(angle(3)) * yvector +...
+  sqrt(1+2*prod(cos(angle)) - sum(cos(angle).^2))/sin(angle(3)) * zvector;
 
-  case 'orthorhombic'
-    saxis = axis.*[xvector,yvector,zvector];
-  case 'tetragonal'
-    saxis = [axis(1)*xvector,axis(1)*yvector,axis(end)*zvector];
-  case {'trigonal','hexagonal'}
-    if check_option(varargin,'a||x')
-      saxis = [axis(1)*vector3d(cos(2*pi/3),-sin(2*pi/3),0),...
-        axis(1)*xvector,...
-        axis(end)*zvector];
-    elseif  check_option(varargin,'b||x')
-      saxis = [axis(1)*xvector,...
-        axis(1)*vector3d(cos(2*pi/6),sin(2*pi/6),0),...
-        axis(end)*zvector];
-    else % a||y
-      saxis = [axis(1)*vector3d(cos(pi/6),-sin(pi/6),0),...
-        axis(1)*yvector,axis(end)*zvector];
-    end
-  case 'cubic'
-    saxis = [xvector,yvector,zvector];
+%% compute a* b* c*
+
+astar = normalize(cross(b,c));
+bstar = normalize(cross(c,a));
+cstar = normalize(cross(a,b));
+
+
+%% extract alignment options
+% restrict to strings
+varargin = varargin(cellfun(@(s) ischar(s),varargin));
+
+% if nothing or only y is specified set z||c
+if ~any(arrayfun(@(a) ~isempty(strmatch([a '||'],varargin)),['x','z']))
+  varargin = {'z||c'};
 end
+
+% setup new x, y, z directions
+xyzNew = vector3d(zeros(3));
+axes = ['x','y','z'];
+for ia = 1:3
+
+  % extract alignment for this specific axis
+  alignment = varargin(strmatch([axes(ia) '||'],varargin));
+ 
+  switch lower(strrep(char(alignment),[axes(ia) '||'],''))
+ 
+    case 'a'
+      xyzNew(ia) = a;
+      if rem(ia,2) && norm(xyzNew(4-ia))<1e-6
+        xyzNew(4-ia) = cstar;
+      end
+    case 'b'
+      xyzNew(ia) = b;
+    case 'c'
+      xyzNew(ia) = c;
+      if rem(ia,2) && norm(xyzNew(4-ia))<1e-6
+        xyzNew(4-ia) = astar;
+      end
+    case 'a*'
+      xyzNew(ia) = astar;
+      if rem(ia,2) && norm(xyzNew(4-ia))<1e-6
+        xyzNew(4-ia) = c;
+      end
+    case 'b*'
+      xyzNew(ia) = bstar;
+    case 'c*'
+      xyzNew(ia) = cstar;
+      if rem(ia,2) && norm(xyzNew(4-ia))<1e-6
+        xyzNew(4-ia) = a;
+      end
+    case 'm'
+      xyzNew(ia) = m;
+  end
+end
+  
+% set any missing axis as the cross product of the two others
+for ia = 1:3
+  if norm(xyzNew(ia)) < 1e-6
+    xyzNew(ia) = cross(xyzNew(mod(ia,3)+1),xyzNew(mod(ia+1,3)+1));
+  end
+end
+
+% set up the transformation matrix
+M = reshape(double(normalize(xyzNew)),3,3);
+
+% check for orthogonality
+if norm(M^(-1) - M') > 1e-6
+  error('Bad alignment options! Non Euclidean reference frame!')
+end
+
+% now compute the new a, b, c axes
+abc = vector3d((M * reshape(double(normalize([a,b,c])),3,3).')) .* axisLength;
