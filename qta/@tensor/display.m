@@ -22,27 +22,28 @@ disp(s)
 % collect tensor properties
 props = fieldnames(T.properties);
 props = props(~strcmp(props,'name'));
-C = cell(length(props),2);
-C(:,1) = strcat(props,':');
-C(:,2) = cellfun(@(prop) char(T.properties.(prop)),props,'UniformOutput',false);
+propV = cellfun(@(prop) char(T.properties.(prop)),props,'UniformOutput',false);
 
-C(end+1,:) = {'rank:',num2str( T.rank)};
+% add rank
+props{end+1} = 'rank'; 
+propV{end+1} = T.rank;
 
 % collect symmetry
 if numel(T.CS) > 1 || ~all(1==norm(get(T.CS,'axis')))
-  C(end+1,:) = {'mineral:',char(T.CS,'verbose')};
+  props{end+1} = 'mineral'; 
+  propV{end+1} = char(T.CS,'verbose');
 end
 
 % display all properties
-cprintf(C,'-L','  ','-ic','F');
+cprintf(propV,'-L','  ','-ic','L','-la','L','-Lr',props,'-d',': ');
 
 disp(' ');
 
 %if max(abs(imag(T.M)))<1e-12, T.M = real(T.M);end
 
 % make numbers nice
-r = round(log(max(abs(T.M(:))))/log(10))+4;
-T.M = round(10^r*T.M).*10^(-r);
+r = round(log(max(abs(T.M(:))))/log(10))-4;
+T.M = round(10^(-r)*T.M).*10^(r);
 
 % display tensor coefficients
 if numel(T.M) == prod(ss(1:T.rank));
