@@ -4,7 +4,7 @@ function r = times(a,b)
 
 if isa(a,'orientation') && isa(b,'vector3d')
   
-  if isa(b,'Miller'), b = set(b,'CS',a.CS);end
+  if isa(b,'Miller'), b = ensureCS(a.CS,{b});end
   
   r = a.rotation .* vector3d(b);
    

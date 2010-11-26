@@ -32,3 +32,17 @@ switch pName
     T.properties.(pName) = pValue;
     
 end
+
+% check for change of reference frame
+% cs1 = symmetry('triclinic',[1 2 3],[70 80 120]*degree,'z||a*')
+% cs2 = symmetry('triclinic',[1 2 3],[70 80 120]*degree,'z||b','x||a*')
+% T1 = tensor(rand(3),cs1)
+% T2 = set(T1,'CS',cs2)
+% o1 = orientation('Euler',30*degree,50*degree,120*degree,cs1)
+% o2 = set(o1,'CS',cs2);
+% %now the next should result in the same tensors
+% rotate(T1,o1)
+% rotate(T1,o2)
+% 
+% rotate(T2,o2)
+% rotate(T2,o1)

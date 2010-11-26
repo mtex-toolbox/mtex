@@ -12,6 +12,12 @@ function T = rotate(T,R)
 %  T - rotated @tensor
 %
 
+% ensure that the rotations have the right reference frame
+if isa(R,'rotation')
+  R = ensureCS(T.CS,{R});
+  T.CS = get(R,'SS');
+end
+
 % convert rotation to 3 x 3 matrix - (3 x 3 x N) for many rotation
 if ~isnumeric(R), R = matrix(R); end
 
@@ -22,3 +28,4 @@ for d = 1:T.rank
   T = mtimesT(T,d,R); % tensor product
   
 end
+
