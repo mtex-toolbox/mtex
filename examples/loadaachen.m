@@ -2,8 +2,8 @@
 
 % crystal symmetry
 CS = {...
-  symmetry('m-3m'),...
-  symmetry('m-3m')};
+  symmetry('m-3m','mineral','Fe'),...
+  symmetry('m-3m','mineral','Mg')};
 
 % specimen symmetry
 SS = symmetry('-1');
