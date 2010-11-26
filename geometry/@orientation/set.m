@@ -11,10 +11,30 @@ if isa(vname,'CS') && ...
   obj.CS =  value;
   
   obj.quaternion = euler2quat(a,b,g,value);
-   
+  
+elseif strcmpi(vname,'CS') 
+  
+  axes = get(obj.CS,'axes');
+  
+  if ~all(axes == [xvector,yvector,zvector])
+  
+    warning('Changing the crystal symmetry changes the Euler angles!')
+  
+    M = transformationMatrix(obj.CS,value);
+    obj = obj * rotation('matrix',M^-1);
+  end
+  
+  obj.CS = value;
+  
 else
   if iscell(value), value = value{1}; end
   obj.(vname) = value;
 end
 
-
+% this is some testing code
+% cs1 = symmetry('triclinic',[1 2 3],[70 80 120]*degree,'z||a*')
+% cs2 = symmetry('triclinic',[1 2 3],[70 80 120]*degree,'z||b','x||a*')
+% o = orientation('Euler',30*degree,50*degree,120*degree,cs1)
+% o * Miller(1,0,0,cs1)
+% o2 = set(o,'CS',cs2)
+% o2 * Miller(1,0,0,cs2)

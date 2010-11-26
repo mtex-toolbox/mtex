@@ -7,8 +7,9 @@ disp([inputname(1) ' = ' doclink('orientation_index','orientation') ' (size: ' i
 if ~isempty(get(o.CS,'mineral'))
   disp(['  mineral: ',get(o.CS,'mineral')]);
 end
-
-disp(['  crystal symmetry: ',get(o.CS,'name')]);
+  
+convention = get(o.CS,'convention');
+disp(['  crystal symmetry: ', option2str([{get(o.CS,'name')},convention])]);
 disp(['  sample symmetry : ',get(o.SS,'name')]);
 
 

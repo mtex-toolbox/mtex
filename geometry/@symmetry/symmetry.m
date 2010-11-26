@@ -1,6 +1,7 @@
 function s = symmetry(name,varargin)
 % constructor
 %
+%
 %% Input
 %  name  - Schoenflies or International notation of the Laue group
 %  axis  = [a,b,c] -> length of the crystallographic axes
@@ -63,18 +64,6 @@ if isa(name,'double')
   LaueGroups =  {'C1','C2','D2','C4','D4','T','O','C3','D3','C6','D6'};
   name = LaueGroups{name};
 end
-if ~isempty(varargin) && isa(varargin{1},'double')
-  axis = varargin{1};
-  varargin(1) = [];
-else
-  axis = [1 1 1]; 
-end
-if ~isempty(varargin) && isa(varargin{1},'double')
-  angle = varargin{1};
-  varargin(1) = [];
-else
-  angle= [90 90 90] * degree;  
-end
 
 %% search for symmetry
 
@@ -99,10 +88,29 @@ catch %#ok<*CTCH>
   end
 end
 
+
+if ~isempty(varargin) && isa(varargin{1},'double')
+  axis = varargin{1};
+  varargin(1) = [];
+else
+  axis = [1 1 1]; 
+end
+if ~isempty(varargin) && isa(varargin{1},'double')
+  angle = varargin{1};
+  varargin(1) = [];
+elseif any(strcmp(sym.System,{'trigonal','hexagonal'}))
+  
+  angle= [90 90 120] * degree;
+    
+else
+  angle= [90 90 90] * degree;
+end
+
+
 %% set up symmetry
 s.name = name;
 s.laue = sym.Laue;
-s.axis = calcAxis(sym.System,axis,angle,varargin{:});
+s.axis = calcAxis(axis,angle,varargin{:});
 s.mineral = get_option(varargin,'mineral','');
 
 %superiorto('quaternion','SO3Grid','orientation');
