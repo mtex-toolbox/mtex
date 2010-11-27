@@ -28,7 +28,7 @@ argin_check(h,'Miller');
 argin_check(r,'vector3d');
 argin_check(CS,'symmetry');
 argin_check(SS,'symmetry');
-h = set(h,'CS',CS);
+h = ensureCS(CS,{h});
 
 if check_option(varargin,'bingham') % Bingham distributed ODF
   

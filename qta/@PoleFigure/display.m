@@ -30,7 +30,18 @@ if ~isempty(char(pf.comment))
 end
 
 disp(h);
-disp(['  symmetry: ' char(pf(1).CS) ' - ' char(pf(1).SS)]);
+
+disp(' ');
+
+if ~isempty(get(pf(1).CS,'mineral'))
+  disp(['  mineral: ',get(pf(1).CS,'mineral')]);
+end
+
+disp(['  crystal symmetry : ',get(pf(1).CS,'name'),' (',...
+  option2str([{get(pf(1).CS,'Laue')},get(pf(1).CS,'alignment')]) ')']);
+disp(['  specimen symmetry: ',get(pf(1).SS,'name')]);
+disp(' ');
+
 for i = 1:length(pf)
   disp(['  ',char(pf(i),'short')]);
 end

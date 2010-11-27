@@ -29,7 +29,7 @@ ss = o.SS;
 if newMTEXplot('ensureTag','pdf',...
     'ensureAppdata',{{'CS',cs},{'SS',ss}})
   argin_check(h,{'Miller'});
-  h = set(h,'CS',get(o,'CS'));
+  h = ensureCS(get(o,'CS'),{h});
 else
   h = getappdata(gcf,'h');
   options = getappdata(gcf,'options');

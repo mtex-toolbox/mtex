@@ -26,7 +26,7 @@ function odf = unimodalODF(mod,CS,SS,varargin)
 if nargin == 0, mod = orientation(idquaternion);end
 argin_check(mod,'quaternion');
 if ~isa(mod,'orientation'), mod = orientation(mod);end
-if nargin <= 1, CS = get(mod,'CS'); else mod = set(mod,'CS',CS); end
+if nargin <= 1, CS = get(mod,'CS'); else mod = ensureCS(CS,{mod}); end
 if nargin <= 2, SS = get(mod,'SS'); else mod = set(mod,'SS',SS); end
 argin_check(CS,'symmetry');
 argin_check(SS,'symmetry');
