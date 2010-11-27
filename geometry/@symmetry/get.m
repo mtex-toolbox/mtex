@@ -28,13 +28,15 @@ switch vname
       abcLabel = {'a','b','c','a*','b*','c*'};
       xyzLabel = {'x','y','z'};
    
-      value = cell(1,length(x));
-      for i = 1:length(x)
+      value = cell(1,min(3,length(x)));
+      for i = 1:min(3,length(x))
         value{i} = [xyzLabel{x(i)} '||' abcLabel{y(i)}];
       end
     else
       value = {};
     end
+  case 'Laue'
+    value = obj.laue;
   otherwise
     error('Unknown field in class symmetry!')
 end

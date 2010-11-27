@@ -306,7 +306,7 @@ if ~isempty(ebsd)
     [file path] = uigetfile('*.cpr','Select associated CPR Project-file');
     if file ~=0
       phases = cprproject_read(fullfile(path,file));
-      ebsd = set(ebsd,'CS',phases(get(ebsd,'phase')));  
+      ebsd = set(ebsd,'CS',phases(get(ebsd,'phase')),'noTrafo');  
       setappdata(lb(5),'data',ebsd);
       msgbox('Phases information successfully loaded!')
     end

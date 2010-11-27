@@ -217,7 +217,7 @@ for ip = 1:length(phases)
   end
   popt = structfun(@(x) x(ind),opt,'uniformOutput',false);
 
-  ebsd(ip) = EBSD(set(q(ind),'CS',cs(ip)),varargin{:},'xy',pxy,'phase',phases(ip),'options',popt); %#ok<AGROW>
+  ebsd(ip) = EBSD(set(q(ind),'CS',cs{ip}),varargin{:},'xy',pxy,'phase',phases(ip),'options',popt); %#ok<AGROW>
 end
 
 

@@ -16,7 +16,7 @@ elseif strcmpi(vname,'CS')
   
   axes = get(obj.CS,'axes');
   
-  if ~all(axes == [xvector,yvector,zvector])
+  if ~all(axes == [xvector,yvector,zvector]) && ~check_option(varargin,'noTrafo')
   
     warning('Changing the crystal symmetry changes the Euler angles!')
   
