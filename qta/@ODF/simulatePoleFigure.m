@@ -18,7 +18,7 @@ function pf = simulatePoleFigure(odf,h,r,varargin)
 % PoleFigure/scale PoleFigure/simulatePoleFigure PoleFigure/noisepf
 
 argin_check(h,{'Miller'});
-h = set(h,'CS',odf(1).CS);
+h = ensureCS(odf(1).CS,{h});
 argin_check(r,'vector3d');
 
 if check_option(varargin,'complete')

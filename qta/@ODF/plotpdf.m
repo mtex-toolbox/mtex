@@ -25,7 +25,7 @@ function plotpdf(odf,h,varargin)
 %% check input
 if iscell(h), h = [h{:}];end
 argin_check(h,'Miller');
-h = set(h,'CS',odf(1).CS);
+h = ensureCS(odf(1).CS,{h});
 
 % default options
 varargin = set_default_option(varargin,...

@@ -22,7 +22,7 @@ function v = fibrevolume(odf,h,r,radius,varargin)
 
 % check input
 argin_check(h,{'Miller','vector3d'});
-if isa(h,'Miller'), h = set(h,'CS',odf(1).CS);end
+if isa(h,'Miller'), h = ensureCS(odf(1).CS,{h});end
 argin_check(r,'vector3d');
 argin_check(radius,'double');
 
