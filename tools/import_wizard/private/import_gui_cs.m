@@ -2,6 +2,7 @@ function import_gui_cs(wzrd)
 % page for setting crystall geometry
 
 
+
 setappdata(wzrd,'cs_count',1);
 
 pos = get(wzrd,'Position');
@@ -66,23 +67,33 @@ handles.crystal = uicontrol(...
   'BackgroundColor',[1 1 1],...
   'FontName','monospaced',...
   'HorizontalAlignment','left',...
-  'Position',[105 95 225 20],...
+  'Position',[105 95 210 20],...
   'String',blanks(0),...
   'Style','popup',...
   'CallBack',@update_cs,...
   'String',symmetries,...
   'Value',1);
 
-handles.axis_alignment = uicontrol(...
+handles.axis_alignment1 = uicontrol(...
   'Parent',cs,...
   'BackgroundColor',[1 1 1],...
   'FontName','monospaced',...
   'HorizontalAlignment','left',...
-  'Position',[345 95 w-380 20],...
+  'Position',[330 95 60 20],...
   'String',blanks(0),...
   'Style','popup',...
-  'CallBack',@update_cs,...
-  'String',{'m parallel x','m parallel y'},...
+    'String',alignments,...
+  'Value',1);
+
+handles.axis_alignment2 = uicontrol(...
+  'Parent',cs,...
+  'BackgroundColor',[1 1 1],...
+  'FontName','monospaced',...
+  'HorizontalAlignment','left',...
+  'Position',[405 95 60 20],...
+  'String',blanks(0),...
+  'Style','popup',...
+  'String',alignments,...
   'Value',1);
 
 uicontrol(...
@@ -174,9 +185,9 @@ if fname ~= 0
     cs = cif2symmetry(name);
     set(handles.mineral,'string',shrink_name(name));
     if isa(data,'EBSD')
-      data(cs_counter) = set(data(cs_counter),'CS',cs);
+      data(cs_counter) = set(data(cs_counter),'CS',cs,'noTrafo');
     else
-      data = set(data,'CS',cs);
+      data = set(data,'CS',cs,'noTrafo');
     end
     setappdata(gcbf,'data',data);
     get_cs(gcbf);  
@@ -212,27 +223,21 @@ end
 
 csname = strmatch(Laue(cs),symmetries);
 set(handles.crystal,'value',csname(1));
- 
+
+% set alignment
+al = [get(cs,'alignment'),{'',''}]; 
+set(handles.axis_alignment1,'value',find(strcmp(alignments,al{1})));
+set(handles.axis_alignment2,'value',find(strcmp(alignments,al{2})));
+
 % set axes
 [c, angle] = get_axisangel(cs);
  
-if ~isempty(strmatch(Laue(cs),{'-3','-3m','-6','6/mmm'}))
-  set(handles.axis_alignment,'string',{'a parallel y','a parallel x'});
-  if vector3d(Miller(1,0,0,cs)) == -yvector
-    set(handles.axis_alignment,'value',2);
-  else
-    set(handles.axis_alignment,'value',1);
-  end
-else
-  set(handles.axis_alignment,'value',1);
-  set(handles.axis_alignment,'string',{''});
-end
-
 for k=1:3 
   set(handles.axis{k},'String',c(k)); 
   set(handles.angle{k},'String',angle{k});
 end
 
+% set whether axes and angles can be changed
 set([handles.axis{:} handles.angle{:}], 'Enable', 'on');
 
 if ~strcmp(Laue(cs),{'-1','2/m'})
@@ -243,41 +248,44 @@ if any(strcmp(Laue(cs),{'m-3m','m-3'})),
   set([handles.axis{:}], 'Enable', 'off');
 end
 
+% set mineral
 set(handles.mineral,'string',get(cs,'mineral'));
 
 
 function set_cs(wzrd)
 % set cs in object (pf/ebsd)
 
-handles = getappdata(wzrd,'handles');
-data = getappdata(wzrd,'data');
-cs_counter = getappdata(wzrd,'cs_count');
+try
+  handles = getappdata(wzrd,'handles');
+  data = getappdata(wzrd,'data');
+  cs_counter = getappdata(wzrd,'cs_count');
 
-cs = get(handles.crystal,'Value');
-cs = symmetries(cs);
-cs = strtrim(cs{1}(1:6));
+  cs = get(handles.crystal,'Value');
+  cs = symmetries(cs);
+  cs = strtrim(cs{1}(1:6));
  
-for k=1:3 
-  axis{k} =  str2double(get(handles.axis{k},'String')); %#ok<AGROW>
-  angle{k} =  str2double(get(handles.angle{k},'String')); %#ok<AGROW>
+  for k=1:3
+    axis{k} =  str2double(get(handles.axis{k},'String')); %#ok<AGROW>
+    angle{k} =  str2double(get(handles.angle{k},'String')); %#ok<AGROW>
+  end
+
+  mineral = get(handles.mineral,'string');
+
+  al1 = get(handles.axis_alignment1,'Value');
+  al2 = get(handles.axis_alignment2,'Value');
+  al = alignments;
+
+  cs = symmetry(cs,[axis{:}],[angle{:}]*degree,al{al1},al{al2},'mineral',mineral);
+
+  if isa(data,'EBSD')
+    data(cs_counter) = set(data(cs_counter),'CS',cs,'noTrafo');
+  else
+    data = set(data,'CS',cs,'noTrafo');
+  end
+
+  setappdata(wzrd,'data',data);
+catch
 end
-
-mineral = get(handles.mineral,'string');
-
-alignment = get(handles.axis_alignment,'Value');
-if alignment == 1
-  cs = symmetry(cs,[axis{:}],[angle{:}]*degree,'a||y','mineral',mineral);
-else
-  cs = symmetry(cs,[axis{:}],[angle{:}]*degree,'a||x','mineral',mineral);
-end
-
-if isa(data,'EBSD')
-  data(cs_counter) = set(data(cs_counter),'CS',cs);
-else
-  data = set(data,'CS',cs);
-end
-
-setappdata(wzrd,'data',data);
 
 function fname = shrink_name(fname)
 
@@ -288,3 +296,14 @@ if strcmp(pathname,get_mtex_option('cif_path'))
 else
   fname = fullfile(pathname,[name ext]);
 end
+
+function al = alignments 
+
+xyz = {'x','y','z'};
+abc = {'a','b','c','a*','b*','c*'};
+
+al = {};
+for ix = 1:3
+  al = [al cellfun(@(a) [xyz{ix},'||',a],abc,'UniformOutput',false)]; %#ok<AGROW>
+end
+al = [{''} al];

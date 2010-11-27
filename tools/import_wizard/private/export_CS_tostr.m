@@ -8,35 +8,27 @@ else
 end
 
 for i=1:numel(cs)
-  [c,angl] = get_axisangel(cs{i});
-  axis =  strcat(n2s(c));
-  angle =  strcat(n2s([angl{:}]),'*degree');
   
-  if ~isempty(strmatch(Laue(cs{i}),{'-3','-3m','-6','6/mmm'}))
-    if vector3d(Miller(1,0,0,cs{i})) == -yvector
-      options = ',''a||x''';
-    else
-      options = ',''a||y''';
-    end
-  else
-    options ='';
+  options = {};
+  [c,angle] = get_axisangel(cs{i});
+  
+  % for triclinic and monoclinic get angles
+  if strcmp(get(cs{i},'Laue'),{'-1','2/m'})
+    options = [options {[n2s([angle{:}]),'*degree']}]; %#ok<AGROW>
   end
+  
+  if ~strcmp(get(cs{i},'Laue'),{'m-3','m-3m'})
+    options = [options {c}]; %#ok<AGROW>
+  end
+
+  options = [options get(cs{i},'alignment')]; %#ok<AGROW>
 
   mineral = get(cs{i},'mineral');
   if ~isempty(mineral)
-    options = [options,',''mineral'',''',mineral,'''']; %#ok<AGROW>
+    options = [options,{'mineral',mineral}];  %#ok<AGROW>
   end
   
-  cs_t = strrep(char(cs{i}),'"','');
-
-  switch cs_t
-    case {'-1','2/m'}
-      t = strcat('symmetry(''', cs_t,''',', axis, ',' , angle, options,')');
-    case {'m-3','m-3m'}
-      t = strcat('symmetry(''', cs_t,'''',options,')');
-    otherwise
-      t = strcat('symmetry(''', cs_t,''',', axis,options,')');
-  end  
+  t = strcat('symmetry(''', get(cs{i},'name'),'''',option2str(options,'quoted'),')');
   
   if numel(cs) > 1
     str = [str; {t} ]; %#ok<AGROW>

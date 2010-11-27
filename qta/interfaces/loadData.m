@@ -101,8 +101,8 @@ end
 
 %% set crystal and specimen symmetry
 
-if exist('cs','var'), data = set(data,'CS',cs);end
-if exist('ss','var'), data = set(data,'SS',ss);end
+if exist('cs','var'), data = set(data,'CS',cs,'noTrafo');end
+if exist('ss','var'), data = set(data,'SS',ss,'noTrafo');end
 if exist('h','var'),  data = set(data,'h',h);end
 if ~isempty_cell(c),  data = set(data,'c',c);end
 

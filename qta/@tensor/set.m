@@ -18,9 +18,12 @@ function T = set(T,pName,pValue)
 switch pName
 
   case 'CS'
+
+    if ~check_option(varargin,'noTrafo')
+      M = transformationMatrix(T.CS,pValue);
+      T = rotate(T,M);
+    end
     
-    M = transformationMatrix(T.CS,pValue);
-    T = rotate(T,M);
     T.CS = pValue;
   
   case fields(T)
