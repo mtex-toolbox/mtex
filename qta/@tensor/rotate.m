@@ -13,7 +13,7 @@ function T = rotate(T,R)
 %
 
 % ensure that the rotations have the right reference frame
-if isa(R,'rotation')
+if isa(R,'orientation')
   R = ensureCS(T.CS,{R});
   T.CS = get(R,'SS');
 end
