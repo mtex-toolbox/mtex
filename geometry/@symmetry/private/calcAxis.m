@@ -108,4 +108,4 @@ if norm(M^(-1) - M') > 1e-6
 end
 
 % now compute the new a, b, c axes
-abc = vector3d((M * reshape(double(normalize([a,b,c])),3,3).')) .* axisLength;
+abc = vector3d((M * reshape(double(normalize([a,b,c])),3,3).')) .* axisLength(:).';

@@ -1,4 +1,4 @@
-function T = set(T,pName,pValue)
+function T = set(T,pName,pValue,varargin)
 % set properties of a tensor variable
 %
 %% Syntax
