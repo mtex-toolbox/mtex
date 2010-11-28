@@ -110,7 +110,7 @@ calcerror(pf_SantaFe,rec_corrected)
 %%
 % *Difference plot*
 
-plotDiff(pf,rec,'position',[100 100 900 300])
+plotDiff(pf_SantaFe,rec,'position',[100 100 900 300])
 
 
 %%
