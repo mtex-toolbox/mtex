@@ -193,7 +193,8 @@ elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
 elseif maxangle < rotangle_max_z(CS)/4
   
   if points > 1
-    res = maxangle / points^(1/3);
+    res = maxangle/(points/4)^(1/3);
+ %  res = maxangle / points^(1/3)
   else
     res = points;
   end
@@ -227,47 +228,35 @@ elseif maxangle < rotangle_max_z(CS)/4
   
 %% equidistribution  
 elseif isa(points,'double') && points > 0  % discretise euler space
-
-  % special case: cubic symmetry
-  if strcmp(Laue(CS),'m-3') && points > 1 
-    points = points*3;
-  elseif strcmp(Laue(CS),'m-3m') && points > 1
-    points = points*3/2;
-  end
   
   [maxalpha,maxbeta,maxgamma] = symmetry2Euler(CS,SS,'SO3Grid');
+  
+  maxgamma = maxgamma/2;
+  
   if ~check_option(varargin,'center')
-    maxgamma = min(maxgamma/2,maxangle);
-  else
-    maxgamma = maxgamma/2;
+    maxgamma = min(maxgamma,maxangle);    
   end
   
-  
-  if points >= 1  % number of points specified?
-    
+  if points >= 1  % number of points specified?     
+    switch Laue(CS)  % special case: cubic symmetry
+      case 'm-3'
+        points = 3*points;
+      case 'm-3m'
+        points = 2*points;
+    end   
     % calculate number of subdivisions for the angles alpha,beta,gamma
-    N = 1; res = maxbeta;
-    G.alphabeta = S2Grid('equispaced','resolution',res,...
-                         'MAXTHETA',maxbeta,'MINRHO',0,'MAXRHO',maxalpha,...
-                         no_center(res),'RESTRICT2MINMAX');
+    points = 2/(points/( maxbeta*maxgamma))^(1/3);
     
-    while round(2*N*maxgamma/maxbeta) * numel(G.alphabeta) < points 
-      N = fix((N + 1) * ...
-              (points / round(2*N*maxgamma/maxbeta) / numel(G.alphabeta)).^(0.2));
-      res = maxbeta / N;
-      G.alphabeta = S2Grid('equispaced','resolution',res,...
-                           'MAXTHETA',maxbeta,'MINRHO',0,'MAXRHO',maxalpha,...
-                           no_center(res),'RESTRICT2MINMAX');      
-    end        
-    ap2 = round(2 * maxgamma / res);
-
-  else  % resolution specified
-       
-    G.alphabeta = S2Grid('equispaced','RESOLUTION',points,...
-                         'MAXTHETA',maxbeta,'MINRHO',0,'MAXRHO',maxalpha,...
-                         no_center(points),'RESTRICT2MINMAX');    
-    ap2 = round(2*maxgamma/points);
+    if  maxangle < pi*2 && maxangle < maxbeta  
+      points = points*maxangle; % bug: does not work properly for all syms
+    end 
+    
   end
+ 
+  G.alphabeta = S2Grid('equispaced','RESOLUTION',points,...
+                        'MAXTHETA',maxbeta,'MINRHO',0,'MAXRHO',maxalpha,...
+                        no_center(points),'RESTRICT2MINMAX');  
+  ap2 = round(2*maxgamma/points);               
 
   [beta,alpha] = polar(G.alphabeta);
   
