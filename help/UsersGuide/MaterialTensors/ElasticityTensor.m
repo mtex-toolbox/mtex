@@ -17,9 +17,9 @@
 
 fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
 
-cs = symmetry('mmm',[4.7646 10.2296 5.9942]);
+cs = symmetry('mmm',[4.7646 10.2296 5.9942],'mineral','Olivin');
 
-C = loadTensor(fname,cs,'name','stiffness','interface','generic')
+C = loadTensor(fname,cs,'name','ellastic stiffness','unit','Pa','interface','generic')
 
 
 %% Young's Modulus

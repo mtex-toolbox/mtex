@@ -15,7 +15,7 @@ fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
 
 cs = symmetry('mmm',[4.7646 10.2296 5.9942]);
 
-C = loadTensor(fname,cs,'name','stiffness','interface','generic')
+C = loadTensor(fname,cs,'name','ellastic stiffness','interface','generic')
 
 %%
 % and plot it using the seismic colormap
@@ -29,7 +29,7 @@ plot(C,'complete')
 odf = unimodalODF(rotation('Euler',45*degree,0,0),cs,symmetry);
 
 plotpdf(odf,[Miller(1,0,0),Miller(0,0,1)])
-colormap(LaboTexColorMap)
+colormap(LaboTeXColorMap)
 
 %% Compute the mean tensor from an ODF
 % Now we use this ODF to compute a mean tensor
@@ -44,9 +44,10 @@ plot(Cmean,'complete')
 %% Compute the mean tensor from EBSD data
 %
 
-ebsd = simulateEBSD(odf,5000)
+%ebsd = simulateEBSD(odf,5000)
+%loadaachen
 
-Cmean = calcTensor(ebsd,C)
+Cmean = calcTensor(ebsd,C,C)
 
 %%
 % and plot it

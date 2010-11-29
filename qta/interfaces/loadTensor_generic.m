@@ -27,25 +27,21 @@ function [T,options] = loadTensor_generic(fname,varargin)
 %% See also
 % 
 
-% get options
-% cs = get_option(varargin,'cs',symmetry('-1'));
+% remove option "check"
+varargin = delete_option(varargin,'check');
 
 fid = efopen(fname,'r');
 while ~feof(fid)
   l = fgetl(fid);
   n = sscanf(l,'%f');
   if ~isempty(n)
-   T(:,end+1) =  n';
+    T(:,end+1) =  n';
   else
     T = [];
   end
 end
 fclose(fid);
 
-T = tensor(T);
+T = tensor(T,varargin{:});
 
 options = {};
-
-
-
-

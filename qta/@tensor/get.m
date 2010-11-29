@@ -23,5 +23,9 @@ switch pName
   case fields(T.properties)
   
     value = T.properties.(pName);
+
+  otherwise
+    
+    error('Unknown property!')
     
 end
