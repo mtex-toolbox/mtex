@@ -5,9 +5,9 @@ function h = hkl(h)
 % Miller\uvw
 
 if check_option(h,'uvw')
-  h = delete_option(h,'uvw')
+  h = delete_option(h,'uvw');
 end
 
 if ~check_option(h,'hkl')
-  h = set_option(h,'hkl')
+  h = set_option(h,'hkl');
 end
