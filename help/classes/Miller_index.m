@@ -103,8 +103,7 @@ vector3d(m)
 %
 % Given a crystal orientation
 
-cs = symmetry('cubic');
-o = brassOrientation(cs)
+o = orientation('Euler',20*degree,30*degree,40*degree,cs)
 
 %%
 % one can apply it to a crystal direction to find its coordinates with

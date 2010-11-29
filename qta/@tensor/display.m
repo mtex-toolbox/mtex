@@ -35,7 +35,7 @@ if numel(T.CS) > 1 || ~all(1==norm(get(T.CS,'axis')))
 end
 
 % display all properties
-cprintf(propV,'-L','  ','-ic','L','-la','L','-Lr',props,'-d',': ');
+cprintf(propV(:),'-L','  ','-ic','L','-la','L','-Lr',props,'-d',': ');
 
 disp(' ');
 

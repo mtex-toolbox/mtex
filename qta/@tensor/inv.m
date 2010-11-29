@@ -37,4 +37,17 @@ switch T.rank
     T.M = tensor24(M);
 end
 
-T = set(T,'name',['inverse ' get(T,'name')]);
+% change the name
+if hasProperty(T,'name')
+  name = get(T,'name');
+  if findstr(name,'stiffness')
+    T = set(T,'name',strrep(name,'stiffness','compliance'));
+  else
+    T = set(T,'name',['inverse ' name]);
+  end
+end
+
+% change the unit
+if hasProperty(T,'unit')
+  T = set(T,'unit',['1/' get(T,'unit')]);
+end

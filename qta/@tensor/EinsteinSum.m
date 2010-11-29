@@ -87,7 +87,7 @@ catch
   error(['Bad indice! Positive indice has to be a permutation of the numbers: ' num2str(1:ndims(T1.M))])
 end
 T = T1;
-T.properties.name = [];
+T = set(T,'name',[]);
 
 
 end
