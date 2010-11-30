@@ -50,7 +50,7 @@ function s = symmetry(name,varargin)
 %% get input
 
 if nargin == 0
-  s.name = '1';
+  s.name = 'triclinic';
   s.laue = '-1';
   s.axis =  [xvector,yvector,zvector];
   s.mineral = '';

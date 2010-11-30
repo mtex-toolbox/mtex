@@ -5,6 +5,17 @@ switch vname
   case fields(obj)
     value = [obj.(vname)];
     
+  case 'axesAngle'
+    
+    a = normalize(obj.axis);
+    value(1) = (acos(dot(a(1),a(3)))/ degree);
+    value(2) = (acos(dot(a(2),a(3)))/ degree);
+    value(3) = (acos(dot(a(1),a(2)))/ degree);
+    
+  case 'axesLength'
+    
+    value = norm(obj.axis);
+    
   case 'axes*'
     
     abc = obj.axis;
