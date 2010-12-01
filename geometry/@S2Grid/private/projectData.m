@@ -34,7 +34,9 @@ end
 
 %% restrict to plotable domain
 
-rho(~inside(rho,minrho,maxrho))= NaN;
+inrho = inside(rho,minrho,maxrho) | isnull(sin(theta));
+
+rho(~inrho)= NaN;
 
 if isa(maxtheta,'function_handle')
   theta(theta-1e-6 > maxtheta(rho)) = NaN;
