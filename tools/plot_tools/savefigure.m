@@ -21,7 +21,7 @@ if nargin == 0,
   fname = [pathstr,name];
 end
 
-[pathstr, name, ext, versn] = fileparts(fname);  %#ok<NASGU>
+[pathstr, name, ext] = fileparts(fname);
 
 ounits = get(gcf,'Units');
 set(gcf,'PaperPositionMode','auto');

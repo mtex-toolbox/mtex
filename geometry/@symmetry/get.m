@@ -33,10 +33,12 @@ switch vname
     if any(strcmp(obj.laue,{'-1','2/m','-3','-3m'}))
       abc = normalize(obj.axis);
       abcStar = normalize(get(obj,'axes*'));
+      [uabc,ind] = unique([abc,abcStar]);
       
-      [y,x] = find(isappr(dot_outer([abc,abcStar],[xvector,yvector,zvector]),1));
+      [y,x] = find(isappr(dot_outer(uabc,[xvector,yvector,zvector]),1));
    
       abcLabel = {'a','b','c','a*','b*','c*'};
+      abcLabel = abcLabel(ind);
       xyzLabel = {'x','y','z'};
    
       value = cell(1,min(3,length(x)));
