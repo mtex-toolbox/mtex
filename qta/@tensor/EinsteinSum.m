@@ -31,6 +31,11 @@ elseif isa(T2,'quaternion')
 elseif isa(T2,'vector3d')
   M2 = double(T2);
   M2 = permute(M2,[3 1 2]);
+else
+  varargin = [{T2,dimT2} varargin];
+  M2 = [];
+  dimT2 = [];
+  
 end
 
 % compute size T2
@@ -87,8 +92,16 @@ catch
   error(['Bad indice! Positive indice has to be a permutation of the numbers: ' num2str(1:ndims(T1.M))])
 end
 T = T1;
-T = set(T,'name',[]);
 
+% remove name and unit
+if hasProperty(T,'name'), T.properties = rmfield(T.properties,'name');end
+if hasProperty(T,'unit'), T.properties = rmfield(T.properties,'unit');end
+  
+% extract properties
+while ~isempty_cell(varargin)  
+  T.properties.(varargin{1}) = varargin{2};
+  varargin = varargin(3:end);
+end
 
 end
 

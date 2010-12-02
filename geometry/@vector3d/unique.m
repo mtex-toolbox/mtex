@@ -1,4 +1,4 @@
-function v = unique(v,varargin)
+function [v,ind] = unique(v,varargin)
 % disjoint list of vectors
 %
 %% Syntax
@@ -10,4 +10,4 @@ function v = unique(v,varargin)
 %% Output
 %  v - @vector3d
 
-v = cunion(v,@(a,b) eq(a,b,varargin{:}));
+[v,ind] = cunion(v,@(a,b) eq(a,b,varargin{:}));
