@@ -13,7 +13,7 @@ function s = symmetry(name,varargin)
 %% Supported Symmetries  
 %
 %  crystal system  Schoen-  Inter-    Laue     Rotational 
-%  flies    national  class    axis
+%                  flies    national  class    axis
 %  triclinic       C1       1         -1       1    
 %  triclinic       Ci       -1        -1       1    
 %  monoclinic      C2       2         2/m      2    
@@ -95,13 +95,11 @@ if ~isempty(varargin) && isa(varargin{1},'double')
 else
   axis = [1 1 1]; 
 end
-if ~isempty(varargin) && isa(varargin{1},'double')
+if ~isempty(varargin) && isa(varargin{1},'double') && any(strcmp(sym.Laue,{'-1','2/m'}))
   angle = varargin{1};
   varargin(1) = [];
 elseif any(strcmp(sym.System,{'trigonal','hexagonal'}))
-  
   angle= [90 90 120] * degree;
-    
 else
   angle= [90 90 90] * degree;
 end

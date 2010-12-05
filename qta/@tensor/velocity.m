@@ -17,7 +17,7 @@ function [vp,vs1,vs2,pp,ps1,ps2] = velocity(C,x,rho)
 %
 
 % compute CristoffelTensor
-E = CristoffelTensor(C,x);
+E = ChristoffelTensor(C,x);
 
 % from output
 vp = zeros(size(x));

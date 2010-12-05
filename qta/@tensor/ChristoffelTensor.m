@@ -1,5 +1,5 @@
-function E = CristoffelTensor(C,n)
-% Cristoffel tensor of an elasticity tensor for a given direction
+function E = ChristoffelTensor(C,n)
+% Christoffel tensor of an elasticity tensor for a given direction
 %
 %% Desription
 % Formular: E_jk = C_ijkl n_j n_l
@@ -9,7 +9,7 @@ function E = CristoffelTensor(C,n)
 %  x - list of @vector3d
 %
 %% Output
-%  E - Cristoffel @tensor
+%  E - Christoffel @tensor
 %
 %% See also
 % tensor/quadric tensor/rotate
