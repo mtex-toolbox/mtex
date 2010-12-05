@@ -255,37 +255,39 @@ set(handles.mineral,'string',get(cs,'mineral'));
 function set_cs(wzrd)
 % set cs in object (pf/ebsd)
 
-try
-  handles = getappdata(wzrd,'handles');
-  data = getappdata(wzrd,'data');
-  cs_counter = getappdata(wzrd,'cs_count');
+handles = getappdata(wzrd,'handles');
+data = getappdata(wzrd,'data');
+cs_counter = getappdata(wzrd,'cs_count');
 
-  cs = get(handles.crystal,'Value');
-  cs = symmetries(cs);
-  cs = strtrim(cs{1}(1:6));
+cs = get(handles.crystal,'Value');
+cs = symmetries(cs);
+cs = strtrim(cs{1}(1:6));
  
-  for k=1:3
-    axis{k} =  str2double(get(handles.axis{k},'String')); %#ok<AGROW>
-    angle{k} =  str2double(get(handles.angle{k},'String')); %#ok<AGROW>
-  end
-
-  mineral = get(handles.mineral,'string');
-
-  al1 = get(handles.axis_alignment1,'Value');
-  al2 = get(handles.axis_alignment2,'Value');
-  al = alignments;
-
-  cs = symmetry(cs,[axis{:}],[angle{:}]*degree,al{al1},al{al2},'mineral',mineral);
-
-  if isa(data,'EBSD')
-    data(cs_counter) = set(data(cs_counter),'CS',cs,'noTrafo');
-  else
-    data = set(data,'CS',cs,'noTrafo');
-  end
-
-  setappdata(wzrd,'data',data);
-catch
+for k=1:3
+  axis{k} =  str2double(get(handles.axis{k},'String')); %#ok<AGROW>
+  angle{k} =  str2double(get(handles.angle{k},'String')); %#ok<AGROW>
 end
+
+mineral = get(handles.mineral,'string');
+
+al1 = get(handles.axis_alignment1,'Value');
+al2 = get(handles.axis_alignment2,'Value');
+al = alignments;
+
+try
+  cs = symmetry(cs,[axis{:}],[angle{:}]*degree,al{al1},al{al2},'mineral',mineral);
+catch
+  cs = symmetry(cs,[axis{:}],[angle{:}]*degree,'mineral',mineral);
+end
+
+if isa(data,'EBSD')
+  data(cs_counter) = set(data(cs_counter),'CS',cs,'noTrafo');
+else
+  data = set(data,'CS',cs,'noTrafo');
+end
+
+setappdata(wzrd,'data',data);
+
 
 function fname = shrink_name(fname)
 
