@@ -140,7 +140,8 @@ m = get(data(ip),'Miller');
 
 hkil={'h','k','i','l'};
 for k=1:4
-  set(handles.miller{k}, 'String', int2str(get(m,hkil{k})));
+  v = get(m,hkil{k});
+  set(handles.miller{k}, 'String', int2str(v(:).'));
 end
 
 if ~any(strcmp(Laue(get(data,'CS')),{'-3m','-3','6/m','6/mmm'}))
