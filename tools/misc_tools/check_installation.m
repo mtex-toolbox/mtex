@@ -1,6 +1,7 @@
 function check_installation
+% check whether all binaries are working properly
 
-
+%% -------------- check tmp dir ------------------------------
 if strfind(get_mtex_option('tempdir',tempdir),' ')
   disp('--------------------------------------------------')
   disp('Warning: The path MTEX uses for temporary files');
@@ -13,9 +14,9 @@ end
 
 check_binaries;
 check_mex;
+check_mex_blas;
 
-
-%%------------ check for binaries --------------------------
+%% ------------ check for binaries --------------------------
 function check_binaries
 
 [th,rh] = polar(S2Grid('equispaced','points',10));
@@ -64,7 +65,7 @@ catch %#ok<*CTCH>
 end
 
 
-%%----------- check mex files ---------------------------
+%%    ----------- check mex files ---------------------------
 function check_mex
 
 % set mex/directory
@@ -115,7 +116,7 @@ end
 disp('> Trying now to recompile mex files.');
 opwd = pwd;
 cd(fullfile(mtex_path,'c','mex'));
-mex_install;
+mex_install(mtex_path,false);
 cd(opwd);    
     
 if fast_check_mex
@@ -136,12 +137,65 @@ else
   disp(' ');
 end
 
+
+%%    ----------- check mex blas files ---------------------------
+
+function check_mex_blas
+
+% set mex/directory
+mexpath = fullfile(mtex_path,'c','mex',get_mtex_option('architecture'));
+addpath(mexpath,0);
+
+% check for mex files
+if fast_check_mex_blas, return;end
+        
+disp('Checking mex files including blas library failed!');
+disp('--------------------------');
+
+disp('> Trying now to recompile mex files including blas library.');
+opwd = pwd;
+cd(fullfile(mtex_path,'c','mex'));
+mex_install(mtex_path,true);
+cd(opwd);    
+    
+if fast_check_mex_blas
+  disp('> Hurray - everythink works!')
+  disp(' ');
+else
+  disp('--------------------------------------------------')
+  disp('MTEX: Couldn''t get the mex files including blas working!');
+  disp('MTEX: Tensor arithmetics may not work!');
+  disp(' ');
+  disp('The original error message was:');
+  disp(' ');
+  e = lasterror;
+  disp(e.message);
+  
+  disp(' ');
+  disp('Contact author for help!');
+  disp('--------------------------------------------------')
+  disp(' ');
+end
+
+
+%% ----------------------------------------------------------------------
 function e = fast_check_mex
 
 e = 1;
 try
   S3G = SO3Grid(100,symmetry,symmetry);
   dot_outer(S3G,idquaternion,'epsilon',pi/10);
+catch
+  e = 0;  
+end
+
+%% -----------------------------------------------------------------------
+function e = fast_check_mex_blas
+
+e = 1;
+try
+  T = tensor(eye(3));
+  EinsteinSum(T,[-1 -2],T,[-1 -2]);
 catch
   e = 0;  
 end
