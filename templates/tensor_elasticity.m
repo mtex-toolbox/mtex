@@ -21,7 +21,7 @@ plot(E,'PlotType','linearCompressibility')
 
 %% Cristoffel Tensor
 
-C = CristoffelTensor(E,x)
+C = ChristoffelTensor(E,x)
 
 %% Elastic Wave Velocity
 

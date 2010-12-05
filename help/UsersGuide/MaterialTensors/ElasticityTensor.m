@@ -52,9 +52,9 @@ plot(C,'PlotType','linearCompressibility','complete')
 %% Cristoffel Tensor
 % The Cristoffel Tensor for a specific direction x is ....
 % It is computed for a specific direction x by the
-% command <tensor/CristoffelTensor.html YoungsModulus>.
+% command <tensor/ChristoffelTensor.html ChristoffelTensor>.
 
-T = CristoffelTensor(C,x)
+T = ChristoffelTensor(C,x)
 
 %% Elastic Wave Velocity
 % The Cristoffel tensor is the basis for computing the direction dependent
