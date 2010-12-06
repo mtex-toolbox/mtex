@@ -132,7 +132,7 @@ if ~ishold
   % init statusbar
   try
     sb = statusbar('drawing plots ...');
-    set(sb.ProgressBar, 'Visible',true, 'Minimum',0, 'Maximum',nplots, 'Value',0, 'StringPainted','on');
+    set(sb.ProgressBar, 'Visible',true, 'Minimum',0, 'Maximum',nplots, 'Value',0, 'StringPainted',true);
   catch %#ok<*CTCH>
   end
 end
