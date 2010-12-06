@@ -62,8 +62,10 @@ plot(grains,'phase',1,'colorcoding','hkl')
 
 
 colorbar
-hold on, plotipdf(grains,'phase',1,'points',500,...
+hold on
+plotipdf(grains,xvector,'phase',1,'points',500,...
   'markerSize',3,'marker','+','markerfacecolor','k','markeredgecolor','w')
+hold off
 set(gcf,'renderer','opengl')
 
 

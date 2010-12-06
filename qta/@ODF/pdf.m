@@ -18,12 +18,12 @@ function Z = pdf(odf,h,r,varargin)
 %% See also
 % ODF/plotpdf ODF/plotipdf ODF/simulatePoleFigure
 
-if isa(h,'S2Grid')
-  Z = zeros(numel(h),1);
-else
-  if isa(h,'Miller'), h = ensureCS(odf(1).CS,{h});end
+if numel(h) == 1
   Z = zeros(numel(r),1);
+else
+  Z = zeros(numel(h),1);
 end
+if isa(h,'Miller'), h = ensureCS(odf(1).CS,{h});end
 
 % superposition coefficients
 sp = get_option(varargin,'superposition',1);
