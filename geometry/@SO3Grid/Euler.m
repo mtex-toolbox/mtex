@@ -17,20 +17,41 @@ function varargout = Euler(S3G,varargin)
 % quaternion/Euler
 
 % get convention
-[convention,labels] = EulerAngleConvention(varargin{:});
+convention = EulerAngleConvention(varargin{:});
 S3GOptions = get(S3G,'options');
 S3GConvention = EulerAngleConvention(S3GOptions);
 
 if isempty(S3G.center) && checkEulerAngleConvention(S3GConvention,convention)
   
+  if isa(S3G.alphabeta,'double')
+    
+    alpha = S3G.alphabeta(:,1);
+    beta = S3G.alphabeta(:,2);
+    gamma = S3G.alphabeta(:,3);
+    
+  else
+       
+    [sbeta,salpha] = polar(S3G.alphabeta);
+    gamma = double(S3G.gamma);
+    igamma = cumsum([0,GridLength(S3G.gamma)]);
+    alpha = zeros(length(gamma),1);
+    beta = zeros(length(gamma),1);
+    for i = 1:length(salpha);
+      alpha(1+igamma(i):igamma(i+1)) = salpha(i);
+      beta(1+igamma(i):igamma(i+1)) = sbeta(i);
+    end
+  
+  end
+  
   if nargout == 3
-    varargout{1} = vertcat(S3G.alphabeta(:,1));
-    varargout{2} = vertcat(S3G.alphabeta(:,2));
-    varargout{3} = vertcat(S3G.alphabeta(:,3));    
+    
+    varargout{1} = alpha;
+    varargout{2} = beta;
+    varargout{3} = gamma;    
     
   elseif nargout == 1
     
-    varargout{1} = vertcat(S3G.alphabeta);
+    varargout{1} = [alpha(:),beta(:),gamma(:)];
     
   else
     
