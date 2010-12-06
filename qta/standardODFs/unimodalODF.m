@@ -29,6 +29,8 @@ argin_check(mod,'quaternion');
 if ~isa(mod,'orientation'), mod = orientation(mod);end
 if nargin <= 1, CS = get(mod,'CS'); else mod = ensureCS(CS,{mod}); end
 if nargin >2 && isa(varargin{1},'symmetry')
+  SS = varargin{1};
+  varargin = varargin(2:end);
   mod = set(mod,'SS',SS);
 else
   SS = get(mod,'SS');

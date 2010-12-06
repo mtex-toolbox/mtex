@@ -41,8 +41,8 @@ switch vname
       abcLabel = abcLabel(ind);
       xyzLabel = {'x','y','z'};
    
-      value = cell(1,min(3,length(x)));
-      for i = 1:min(3,length(x))
+      value = cell(1,length(x));
+      for i = 1:length(x)
         value{i} = [xyzLabel{x(i)} '||' abcLabel{y(i)}];
       end
     else
