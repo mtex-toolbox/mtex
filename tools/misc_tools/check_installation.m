@@ -38,7 +38,7 @@ try
   
 catch %#ok<*CTCH>
   
-  if ismac % maybe it is a 64 bit mac
+  if ismac && strcmp(get_mtex_option('architecture'),'maci') % maybe it is a 64 bit mac
     try
       set_mtex_option('architecture','maci64');
       f = call_extern('odf2pf','EXTERN',gh,r,c,Al);
@@ -195,7 +195,7 @@ function e = fast_check_mex_blas
 e = 1;
 try
   T = tensor(eye(3));
-  EinsteinSum(T,[-1 -2],T,[-1 -2]);
+  assert(~any(isnan(EinsteinSum(T,[-1 -2],T,[-1 -2]))));
 catch
   e = 0;  
 end
