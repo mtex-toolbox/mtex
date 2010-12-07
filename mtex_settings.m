@@ -63,7 +63,7 @@ set_mtex_option('defaultColorMap',WhiteJetColorMap);
 % comment out the following line if you have problems with displaying LaTex
 % symbols
 
-% set_mtex_option('noLaTex');
+set_mtex_option('noLaTex');
 
 %% Workaround for NFFT bug
 % comment out the following line if MTEX is compiled againsed NFFT 3.1.3 or

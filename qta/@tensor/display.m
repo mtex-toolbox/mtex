@@ -43,7 +43,9 @@ disp(' ');
 
 % make numbers nice
 r = round(log(max(abs(T.M(:))))/log(10))-4;
-T.M = round(10^(-r)*T.M).*10^(r);
+if ~isinf(r) && ~isnan(r)
+  T.M = round(10^(-r)*T.M).*10^(r);
+end
 
 % display tensor coefficients
 if numel(T.M) == prod(ss(1:T.rank));

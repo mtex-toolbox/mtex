@@ -97,6 +97,7 @@ else
 end
 if ~isempty(varargin) && isa(varargin{1},'double') && any(strcmp(sym.Laue,{'-1','2/m'}))
   angle = varargin{1};
+  if any(angle>2*pi), angle = angle * degree;end
   varargin(1) = [];
 elseif any(strcmp(sym.System,{'trigonal','hexagonal'}))
   angle= [90 90 120] * degree;
