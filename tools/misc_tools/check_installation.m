@@ -195,7 +195,7 @@ function e = fast_check_mex_blas
 e = 1;
 try
   T = tensor(eye(3));
-  assert(~any(isnan(EinsteinSum(T,[-1 -2],T,[-1 -2]))));
+  assert(~any(isnan(double(EinsteinSum(T,[-1 -2],T,[-1 -2])))));
 catch
   e = 0;  
 end
