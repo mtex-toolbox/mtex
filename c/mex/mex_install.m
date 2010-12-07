@@ -7,7 +7,7 @@ mexpath = fullfile(mtexpath,'c','mex');
 mexfile = @(file)fullfile(mexpath,file);
 
 %% check whether to set largeArrayDims option
-if nargin < 2 && newer_version(7.3)
+if nargin <= 2 && newer_version(7.3)
   if strfind(computer,'64')
     varargin = {'-largeArrayDims'};
   else
