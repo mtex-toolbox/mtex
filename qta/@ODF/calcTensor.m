@@ -1,10 +1,9 @@
-function T = calcTensor(odf,T,varargin)
-% compute the mean tensor for an ODF
+function [TVoigt, TReuss, THill] = calcTensor(odf,T,varargin)
+% compute the average tensor for an ODF
 %
 %% Syntax
-% T = calcTensor(ebsd,odf,'voigt')
-% T = calcTensor(ebsd,odf,'reuss')
-% T = calcTensor(ebsd,odf,'hill')
+% [TVoigt, TReuss, THill] = calcTensor(odf,T)
+% THill = calcTensor(odf,T,'Hill')
 %
 %% Input
 %  odf - @ODF
@@ -20,21 +19,21 @@ function T = calcTensor(odf,T,varargin)
 %
 %% See also
 %
-
-% Hill tensor is just the avarge of voigt and reuss tensor
-if check_option(varargin,'hill')
-  T = .5*(calcTensor(odf,T,'voigt') + calcTensor(odf,T,'reuss'));
-  return
-end
-
+ 
 % for Reuss tensor invert tensor
-if check_option(varargin,'reuss'), T = inv(T);end
+Tinv = inv(T);
 
+% init Voigt and Reuss averages
+TVoigt = tensor(zeros([repmat(3,1,rank(T)) 1 1]));
+TReuss = tensor(zeros([repmat(3,1,rank(T)) 1 1]));
 
+%% use Fourier method
 if check_option(varargin,'Fourier') 
-  % use Fourier method
+
+ 
+  % compute Fourier coefficients of the odf
+  odf = calcFourier(odf,rank(T));
   
-  MT = tensor(zeros([repmat(3,1,rank(T)) 1 1]));
   for l = 0:rank(T)
   
     % calc Fourier coefficient of odf
@@ -44,12 +43,16 @@ if check_option(varargin,'Fourier')
     T_hat = Fourier(T,'order',l);
   
     % mean Tensor is the product of both
-    MT = MT + EinsteinSum(T_hat,[1:rank(T) -1 -2],odf_hat,[-1 -2]);
+    TVoigt = TVoigt + EinsteinSum(T_hat,[1:rank(T) -1 -2],odf_hat,[-1 -2]);
+    
+    % same for Tinv
+    T_hat = Fourier(Tinv,'order',l);
+    TReuss = TReuss + EinsteinSum(T_hat,[1:rank(T) -1 -2],odf_hat,[-1 -2]);
     
   end
-  T = MT;
-  
-else % use numerical integration
+    
+%% use numerical integration  
+else 
   
   % extract grid and values for numerical integration
   SO3 = extract_SO3grid(odf,varargin{:});
@@ -60,9 +63,20 @@ else % use numerical integration
   T = rotate(T,SO3);
 
   % take the mean of the tensor according to the weight
-  T = sum(weight .* T);
+  TVoigt = sum(weight .* T);
+  
+  % same for Reuss
+  Tinv = rotate(Tinv,SO3);
+  TReuss = sum(weight .* Tinv);
 
 end
-  
+
 % for Reuss tensor invert back
-if check_option(varargin,'reuss'), T = inv(T);end
+TReuss = inv(TReuss);
+
+% Hill tensor is just the avarge of voigt and reuss tensor
+THill = 0.5*(TVoigt + TReuss);
+
+% if type is specified only return this type
+if check_option(varargin,'Reuss'), TVoigt = TReuss;end
+if check_option(varargin,'Hill'), TVoigt = THill;end
