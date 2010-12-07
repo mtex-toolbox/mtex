@@ -40,7 +40,8 @@ vdisp(' performing kernel density estimation',varargin{:})
 
 %% extract orientations and weights
 % extract orientations
-o = get(ebsd,'orientations','checkPhase',varargin{:});
+[o,ind] = get(ebsd,'orientations','checkPhase',varargin{:});
+ebsd = ebsd(ind);
 if numel(o) == 0, odf = ODF; return, end
 
 CS = get(ebsd(1).orientations,'CS');

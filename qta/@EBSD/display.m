@@ -32,6 +32,10 @@ for i = 1:length(ebsd)
   CS = get(ebsd(i).orientations,'CS');
   matrix{i,4} = get(CS,'name'); %#ok<AGROW>
   
+  % reference frame
+  CS = get(ebsd(i).orientations,'CS');
+  matrix{i,5} = option2str(get(CS,'alignment')); %#ok<AGROW>
+  
   % mineral
   if ~isempty(get(CS,'mineral'))
    matrix{i,3} = char(get(CS,'mineral')); %#ok<AGROW>
@@ -42,6 +46,8 @@ for i = 1:length(ebsd)
   
 end
 
-cprintf(matrix,'-L','  ','-Lc',{'phase' 'orientations' 'mineral'  'symmetry'},'-ic','F');
+cprintf(matrix,'-L','  ','-Lc',...
+  {'phase' 'orientations' 'mineral'  'symmetry' 'crystal reference frame'},...
+  '-ic','F');
 
 disp(' ');

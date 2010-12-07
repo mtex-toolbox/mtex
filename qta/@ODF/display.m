@@ -13,12 +13,23 @@ if ~isempty(odf(1).comment), h = [h ' (' odf(1).comment ')']; end
 
 disp(h);
 
-if ~isempty(get(odf(1).CS,'mineral'))
-  disp(['  mineral: ',get(odf(1).CS,'mineral')]);
+% collect tensor properties
+props = {'specimen symmetry','crystal symmetry'};
+propV = {get(odf(1).SS,'name'), get(odf(1).CS,'name')};
+al = get(odf(1).CS,'alignment');
+if ~isempty(al)
+  propV{2} = option2str([propV(2) option2str(al)]);
 end
 
-disp(['  crystal symmetry: ',get(odf(1).CS,'name')]);
-disp(['  sample symmetry : ',get(odf(1).SS,'name')]);
+if ~isempty(get(odf(1).CS,'mineral'))
+  props{end+1} = 'mineral'; 
+  propV{end+1} = get(odf(1).CS,'mineral');
+end
+
+% display all properties
+cprintf(propV(:),'-L','  ','-ic','L','-la','L','-Lr',props,'-d',': ');
+
+% display components
 disp(' ');
 for i = 1:length(odf)
   if check_option(odf(i),'UNIFORM')
