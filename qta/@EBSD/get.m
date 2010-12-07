@@ -43,7 +43,7 @@ switch vname
     
     if check_option(varargin,'phase')
       
-      ind = phase == get_option(varargin,'phase');
+      ind = any(bsxfun(@eq,phase,get_option(varargin,'phase').'));
       
     elseif numel(phases) > 1 && check_option(varargin,'CheckPhase')
       

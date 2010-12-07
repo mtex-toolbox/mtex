@@ -37,7 +37,7 @@ end
 
 % for Reuss tensor invert tensor
 if check_option(varargin,'reuss')
-  T = cellfun(@(t) inv(t),varargin,'uniformOutput',false);
+  T = cellfun(@(t) inv(t),T,'uniformOutput',false);
 end
 
 % restrict phases if necassary
