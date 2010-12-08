@@ -1,4 +1,4 @@
-function A = area(p)
+function A = area(p,varargin)
 % calculates the area of a polygon (with Holes)
 %
 %% Input
@@ -15,6 +15,9 @@ p = polygon(p); % could be a grain
 A = zeros(size(p));
 
 hole = hashole(p);
+if check_option(varargin,'noholes')
+  hole = false(size(p));
+end
 pVertices = {p.Vertices};
 
 for k=1:length(p)

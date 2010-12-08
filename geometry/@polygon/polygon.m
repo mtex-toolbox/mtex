@@ -8,7 +8,6 @@ function p = polygon(varargin)
 % % %  p = polygon(Vertices)
 % % %  p = polygon(x,y)
 % % %  p = polygon(polygon)
-% % %  p = polygon({[Vertices],[Vertices],[Vertices]})
 %
 %% Output
 %  p - @polygon
@@ -29,7 +28,23 @@ if nargin > 0
   elseif isa(p,'polygon')
     
     p = struct(p);
-     
+    
+  elseif isa(p,'double')
+    
+    if nargin == 1 && size(p,2) == 2
+      
+      p = polytope('Vertices',p);
+      
+    elseif nargin > 1 && isa(varargin{2},'double') && numel(p) == numel(varargin{2}) 
+      
+     p =  polytope('Vertices',[p(:) , varargin{2}(:)]);      
+      
+    else 
+      error('don''t know what to do')
+    end
+    
+    p = struct(p);
+    
   end
   
   if isfield(p,'polygon')
