@@ -5,8 +5,8 @@
  * Function:    mtimesx
  * Filename:    mtimesx.c
  * Programmer:  James Tursa
- * Version:     1.30
- * Date:        August 2, 2010
+ * Version:     1.40
+ * Date:        October 4, 2010
  * Copyright:   (c) 2009, 2010 by James Tursa, All Rights Reserved
  *
  *  This code uses the BSD License:
@@ -59,9 +59,6 @@
  * - Issue the following command at the MATLAB prompt.
  *   >> mex('mtimesx.c',lib_blas)
  *
- *   If you are on an older version of MATLAB then you may need to do this:
- *   >> mex('-DEFINEMWSIZE','-DEFINEMWSIGNEDINDEX','mtimesx.c',lib_blas)
- *
  *   And if you are on a linux machine then you may need to add the string
  *   '-DEFINEUNIX' to the mex command argument list.
  *
@@ -103,12 +100,13 @@
  *  MATLAB function, but some of these cases are slightly slower.
  *
  *  M = mtimesx returns a string with the current calculation mode. The string
- *      will either be 'MATLAB' or 'SPEED'.
+ *      will either be 'MATLAB' or 'SPEED' or one of the OMP modes.
  *
  *  M = mtimesx(mode) sets the calculation mode to mode. The mode variable
  *      must be either the string 'MATLAB' or the string 'SPEED'. The return
  *      variable M is the previous mode setting prior to setting the new mode.
- *      The mode is case insensitive (lower or upper case is OK).
+ *      The mode is case insensitive (lower or upper case is OK). You can also
+ *      set one of the OMP modes if you have compiled with an OpenMP compiler.
  *
  * Mode:
  *
@@ -126,6 +124,9 @@
  * be realized. This mode produces results that will sometimes differ slightly
  * from the same MATLAB operation, but the results will still be accurate.
  *
+ * The 'OMP' modes are basically the same as 'SPEED' mode except that some
+ * of the calculations are multi-threaded using OpenMP directives.
+ *
  * Examples:
  *
  *  C = mtimesx(A,B)         % performs the calculation C = A * B
@@ -141,8 +142,8 @@
  * exception is a sparse scalar times an nD full array. In that special case,
  * mtimesx will treat the sparse scalar as a full scalar and return a full nD result.
  *
- * Note: The ï¿½Nï¿½, ï¿½Tï¿½, and ï¿½Cï¿½ have the same meanings as the direct inputs to the BLAS
- * routines. The ï¿½Gï¿½ input has no direct BLAS counterpart, but was relatively easy to
+ * Note: The ‘N’, ‘T’, and ‘C’ have the same meanings as the direct inputs to the BLAS
+ * routines. The ‘G’ input has no direct BLAS counterpart, but was relatively easy to
  * implement in mtimesx and saves time (as opposed to computing conj(A) or conj(B)
  * explicitly before calling mtimesx).
  *
@@ -216,8 +217,17 @@
  * 2010/Feb/23 --> 1.20, Fixed bug for dgemv and sgemv calls
  * 2010/Aug/02 --> 1.30, Added (nD scalar) * (nD array) capability
  *                       Replaced buggy mxRealloc with custom routine
+ * 2010/Oct/04 --> 1.40, Added OpenMP support for custom code
+ *                       Expanded sparse * single and sparse * nD support
+ *                       Fixed (nD complex scalar)C * (nD array) bug
  *
  ****************************************************************************/
+
+/* OpenMP ------------------------------------------------------------- */
+
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 /* Includes ----------------------------------------------------------- */
 
@@ -225,20 +235,39 @@
 #include <stddef.h>
 #include <ctype.h>
 #include <math.h>
+#include <time.h>
 #include "mex.h"
 
 /* Macros ------------------------------------------------------------- */
 
-#ifdef DEFINEMWSIZE
-#define  mwSize    int
-#define  mwSize_t  size_t
-#define  mwIndex   int
+#ifndef MWSIZE_MAX
+#define  mwIndex        int
+#define  mwSignedIndex  int
+#define  mwSize         int
+#define  mwSize_t       size_t
 #else
-#define  mwSize_t  mwSize
+#define  mwSize_t       mwSize
 #endif
 
-#ifdef DEFINEMWSIGNEDINDEX
-#define  mwSignedIndex  int
+#define  METHOD_BLAS       0
+#define  METHOD_LOOPS      1
+#define  METHOD_LOOPS_OMP  2
+
+#define  MTIMESX_NOT_SET    0
+#define  MTIMESX_BLAS       1
+#define  MTIMESX_LOOPS      2
+#define  MTIMESX_LOOPS_OMP  3
+#define  MTIMESX_MATLAB     4
+#define  MTIMESX_SPEED      5
+#define  MTIMESX_SPEED_OMP  6
+
+#define  STRINGIZE(name)  #name
+#define  TOKENSTRING(name)  STRINGIZE(name)
+
+#define  DIRECTIVE_MAX  1000
+
+#ifndef  COMPILER
+#define  COMPILER  (unknown)
 #endif
 
 /* Prototypes --------------------------------------------------------- */
@@ -246,15 +275,79 @@
 mxArray *DoubleTimesDouble(mxArray *, char, mxArray *, char);
 mxArray *FloatTimesFloat(mxArray *, char, mxArray *, char);
 mxArray *mxCreateSharedDataCopy(const mxArray *pr);
-char mxArrayToTrans(mxArray *mx);
+char mxArrayToTrans(const mxArray *mx);
 void *myRealloc(void *vp, mwSize_t n);
 void mtimesx_logo(void);
+mxArray *modestring(int);
 
 /* Global Variables --------------------------------------------------- */
 
-int matlab = 1;
+int mtimesx_mode  = MTIMESX_MATLAB;
+int max_threads   = 0;
+int threads_used  = 0;
+int debug         = 0;
+int debug_message = 0;
 
-/*--------------------------------------------------------------------- */
+/* Functions ect for OpenMP implementations ------- */
+
+#ifdef _OPENMP
+
+#define  OPENMP_ENABLED   1.0
+
+/* Functions etc for non OpenMP implementations ----------------- */
+
+/* The omp_get_num_procs() function is courtesy of Dirk-Jan Kroon */
+/* and is based on his FEX submission maxNumCompThreads --------- */
+
+#else
+
+#define  OPENMP_ENABLED   0.0
+#define  omp_get_wtick()  0.0
+#define  omp_get_wtime()  ((double)clock()/((double)CLOCKS_PER_SEC))
+
+#if defined(_WIN32) || defined(_WIN64)
+
+#include <windows.h>
+int omp_get_num_procs( ) {
+    SYSTEM_INFO sysinfo;
+    GetSystemInfo(&sysinfo);
+    return sysinfo.dwNumberOfProcessors;
+}
+
+#elif MACOS
+
+#include <sys/param.h>
+#include <sys/sysctl.h>
+int omp_get_num_procs( ) {
+    int nm[2];
+    size_t len = 4;
+    uint32_t count;
+
+    nm[0] = CTL_HW; nm[1] = HW_AVAILCPU;
+    sysctl(nm, 2, &count, &len, NULL, 0);
+
+    if(count < 1) {
+        nm[1] = HW_NCPU;
+        sysctl(nm, 2, &count, &len, NULL, 0);
+        if(count < 1) { count = 1; }
+    }
+    return count;
+}
+#else
+
+#include <unistd.h>
+int omp_get_num_procs( ) {
+    return sysconf(_SC_NPROCESSORS_ONLN);
+}
+
+#endif
+
+#endif
+
+/*------------------------------------------------------------------------ */
+/*------------------------------------------------------------------------ */
+/*------------------------------------------------------------------------ */
+/*------------------------------------------------------------------------ */
 
 void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
 {
@@ -264,15 +357,16 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
     char *directive, *cp;
     char transstring[2] = "_";
     int unsupported = 0;
-    int k;
+    int i, j, k, got_directive, nrhs_old = nrhs;
+	int mtimesx_mode_new, max_threads_new,
+		already_set_mode, already_set_debug, already_set_threads;
+	mxArray *ans;
+	double threads;
 
 /*-------------------------------------------------------------------------
  * Check for proper number of inputs and outputs
  *------------------------------------------------------------------------- */
 
-    if( nrhs > 5 ) {
-        mexErrMsgTxt("Must have 0 - 5 inputs.");
-    }
     if( nlhs > 1 ) {
         mexErrMsgTxt("Must have at most 1 output.");
     }
@@ -282,51 +376,273 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
  *------------------------------------------------------------------------- */
 
     if( nrhs == 0 ) {
-        if( matlab ) {
-            plhs[0] = mxCreateString("MATLAB");
-        } else {
-            plhs[0] = mxCreateString("SPEED");
-        }
+		plhs[0] = modestring(mtimesx_mode);
         return;
     }
 
 /*-------------------------------------------------------------------------
- * Find out if last input is a directive
+ * Find out if any input is a directive
  *------------------------------------------------------------------------- */
 
-    if( mxIsChar(prhs[nrhs-1]) ) {
-        if( cp = directive = mxArrayToString(prhs[nrhs-1]) ) {
-            k = matlab;
+	i = 0;
+	mtimesx_mode_new    = MTIMESX_NOT_SET;
+	max_threads_new     = 0;
+	already_set_mode    = 0;
+	already_set_debug   = 0;
+	already_set_threads = 0;
+	while( i < nrhs ) {
+	if( mxIsChar(prhs[i]) ) {
+		if( mxGetNumberOfElements(prhs[i]) > DIRECTIVE_MAX ) {
+			mexErrMsgTxt("Unknown directive.");
+		} else if( cp = directive = mxArrayToString(prhs[i]) ) {
+			j = 0;
             while( *cp ) {
-                *cp = toupper( *cp );
+				if( *cp == '(' ) j++;
+				if( *cp == ')' ) j--;
+				if( j == 0 ) {
+                    *cp = toupper( *cp );
+				}
                 cp++;
             }
+			k = cp - directive;
+			got_directive = 1;
             if( strcmp(directive,"MATLAB") == 0 ) {
-                matlab = 1;
-                nrhs--;
+				if( already_set_mode ) {
+					mexErrMsgTxt("Cannot set mode twice in same call.");
+				}
+				already_set_mode = 1;
+                mtimesx_mode_new = MTIMESX_MATLAB;
             } else if( strcmp(directive,"SPEED") == 0 ) {
-                matlab = 0;
-                nrhs--;
+				if( already_set_mode ) {
+					mexErrMsgTxt("Cannot set mode twice in same call.");
+				}
+				already_set_mode = 1;
+                mtimesx_mode_new = MTIMESX_SPEED;
+            } else if( strcmp(directive,"BLAS") == 0 ) {
+				if( already_set_mode ) {
+					mexErrMsgTxt("Cannot set mode twice in same call.");
+				}
+				already_set_mode = 1;
+                mtimesx_mode_new = MTIMESX_BLAS;
+            } else if( strcmp(directive,"LOOPS") == 0 ) {
+				if( already_set_mode ) {
+					mexErrMsgTxt("Cannot set mode twice in same call.");
+				}
+				already_set_mode = 1;
+                mtimesx_mode_new = MTIMESX_LOOPS;
             } else if( strcmp(directive,"LOGO") == 0 ) {
+				if( nrhs_old > 1 ) {
+					mexErrMsgTxt("Cannot combine LOGO directive with other arguments.");
+				}
                 mtimesx_logo();
-                nrhs--;
+				return;
+            } else if( strcmp(directive,"HELP") == 0 ) {
+				if( nrhs_old > 1 ) {
+					mexErrMsgTxt("Cannot combine HELP directive with other arguments.");
+				}
+                mexEvalString("help mtimesx;");
+				return;
+            } else if( strcmp(directive,"DEBUG") == 0 ) {
+				if( already_set_debug ) {
+					mexErrMsgTxt("Cannot set DEBUG/NODEBUG twice in same call.");
+				}
+				already_set_debug = 1;
+                debug = 1;
+            } else if( strcmp(directive,"NODEBUG") == 0 ) {
+				if( already_set_debug ) {
+					mexErrMsgTxt("Cannot set DEBUG/NODEBUG twice in same call.");
+				}
+				already_set_debug = 1;
+                debug = 0;
+            } else if( strcmp(directive,"OMP_GET_NUM_PROCS") == 0 ||
+                       strcmp(directive,"OMP_GET_NUM_PROCS()") == 0 ) {
+				if( nrhs > 1 ) {
+					mexErrMsgTxt("Cannot combine OMP_GET_NUM_PROCS directive with other arguments.");
+				}
+				plhs[0] = mxCreateDoubleScalar(omp_get_num_procs());
+				return;
+            } else if( strcmp(directive,"OMP_GET_MAX_THREADS") == 0 ||
+                       strcmp(directive,"OMP_GET_MAX_THREADS()") == 0 ) {
+				if( nrhs > 1 ) {
+					mexErrMsgTxt("Cannot combine OMP_GET_MAX_THREADS directive with other arguments.");
+				}
+				plhs[0] = mxCreateDoubleScalar(max_threads);
+				return;
+            } else if( strcmp(directive,"OMP_GET_NUM_THREADS") == 0 ||
+                       strcmp(directive,"OMP_GET_NUM_THREADS") == 0 ) {
+				if( nrhs > 1 ) {
+					mexErrMsgTxt("Cannot combine OMP_GET_NUM_THREADS directive with other arguments.");
+				}
+				plhs[0] = mxCreateDoubleScalar(threads_used);
+				return;
+            } else if( strcmp(directive,"COMPILER") == 0 ) {
+				if( nrhs > 1 ) {
+					mexErrMsgTxt("Cannot combine COMPILER directive with other arguments.");
+				}
+				plhs[0] = mxCreateString(TOKENSTRING(COMPILER));
+				return;
+            } else if( strcmp(directive,"OPENMP") == 0 ) {
+				if( nrhs > 1 ) {
+					mexErrMsgTxt("Cannot combine OPENMP directive with other arguments.");
+				}
+				plhs[0] = mxCreateDoubleScalar(OPENMP_ENABLED);
+				return;
+            } else if( strcmp(directive,"SPEEDOMP") == 0 ) {
+				if( already_set_mode ) {
+					mexErrMsgTxt("Cannot set mode twice in same call.");
+				}
+				already_set_mode = 1;
+#ifdef _OPENMP
+                mtimesx_mode_new = MTIMESX_SPEED_OMP;
+				if( max_threads == 0 ) {
+ 				    max_threads_new = omp_get_num_procs();
+				}
+#else
+                mtimesx_mode_new = MTIMESX_SPEED;
+#endif
+            } else if( strcmp(directive,"LOOPSOMP") == 0 ) {
+				if( already_set_mode ) {
+					mexErrMsgTxt("Cannot set mode twice in same call.");
+				}
+				already_set_mode = 1;
+#ifdef _OPENMP
+                mtimesx_mode_new = MTIMESX_LOOPS_OMP;
+				if( max_threads == 0 ) {
+ 				    max_threads_new = omp_get_num_procs();
+				}
+#else
+                mtimesx_mode_new = MTIMESX_LOOPS;
+#endif
+            } else if( strcmp(directive,"OMP_GET_WTICK") == 0 ||
+                       strcmp(directive,"OMP_GET_WTICK()") == 0 ) {
+				if( nrhs > 1 ) {
+					mexErrMsgTxt("Cannot combine OMP_GET_WTICK directive with other arguments.");
+				}
+				plhs[0] = mxCreateDoubleScalar(omp_get_wtick());
+				return;
+            } else if( strcmp(directive,"OMP_GET_WTIME") == 0 ||
+                       strcmp(directive,"OMP_GET_WTIME()") == 0 ) {
+				if( nrhs > 1 ) {
+					mexErrMsgTxt("Cannot combine OMP_GET_WTIME directive with other arguments.");
+				}
+				plhs[0] = mxCreateDoubleScalar(omp_get_wtime());
+				return;
+            } else if( strcmp(directive,"OMP") == 0 ) {
+#ifdef _OPENMP
+				if( already_set_mode ) {
+					mexErrMsgTxt("Cannot set mode twice in same call.");
+				}
+				if( already_set_threads ) {
+					mexErrMsgTxt("Cannot set threads twice in same call.");
+				}
+				already_set_mode = 1;
+				already_set_threads = 1;
+				max_threads_new = omp_get_num_procs();
+                mtimesx_mode_new = MTIMESX_SPEED_OMP;
+#else
+				if( already_set_mode ) {
+					mexErrMsgTxt("Cannot set mode twice in same call.");
+				}
+				already_set_mode = 1;
+                mtimesx_mode_new = MTIMESX_SPEED;
+#endif
+            } else if( strcmp(directive,"OMP_SET_NUM_THREADS") == 0 ||
+                       strcmp(directive,"OMP_SET_MAX_THREADS") == 0 ) {
+				if( already_set_threads ) {
+					mexErrMsgTxt("Cannot set threads twice in same call.");
+				}
+				already_set_threads = 1;
+#ifdef _OPENMP
+				max_threads_new = omp_get_num_procs();
+#else
+				max_threads_new = -1;
+#endif
+			} else if( k > 20 && directive[19] == '(' ) {
+				directive[19] = '\0';
+				if( strcmp(directive,"OMP_SET_NUM_THREADS") == 0 ||
+				    strcmp(directive,"OMP_SET_MAX_THREADS") == 0 ) {
+				    if( already_set_threads ) {
+					    mexErrMsgTxt("Cannot set threads twice in same call.");
+				    }
+ 				    already_set_threads = 1;
+					directive[ 8] = 'N';
+					directive[ 9] = 'U';
+					directive[10] = 'M';
+ 				    directive[19] = '=';
+					cp = directive + 20;
+					j = 1;
+					while( *cp ) {
+						if( *cp == '(' ) {
+							j++;
+						} else if( *cp == ')' ) {
+							j--;
+							if( !j ) {
+								*cp = ';';
+								break;
+							}
+						}
+						cp++;
+					}
+					if( j ) {
+					    mexErrMsgTxt("Expression or statement is incorrect--possibly unbalanced (");
+					}
+					if( mexEvalString(directive) ) {
+						mexErrMsgTxt("Unable to evaluate expression for number of threads");
+					}
+					ans = mexGetVariablePtr("caller","OMP_SET_NUM_THREADS");
+					if( ans == NULL ) {
+						mexErrMsgTxt("Unable to evaluate expression for number of threads");
+					}
+					j = threads = mxGetScalar(ans);
+					mexEvalString("clear OMP_SET_NUM_THREADS;");
+					if( j < 1 || j != threads ) {
+						mexErrMsgTxt("Number of threads must be a positive integer.");
+					}
+					if( j > omp_get_num_procs() ) j = omp_get_num_procs();
+#ifdef _OPENMP
+				    max_threads_new = j;
+#else
+				    max_threads_new = -1;
+#endif
+				} else {
+					got_directive = 0;
+				}
+			} else {
+				got_directive = 0;
             }
             mxFree(directive);
         } else {
             mexErrMsgTxt("Error allocating memory for directive string");
         }
-        if( nrhs == 0 ) {
-            if( k ) {
-                plhs[0] = mxCreateString("MATLAB");
-            } else {
-                plhs[0] = mxCreateString("SPEED");
-            }
-            return;
-        }
+		if( got_directive ) {
+			for( j=i; j<nrhs-1; j++ ) {
+				prhs[j] = prhs[j+1];
+			}
+			nrhs--;
+		} else {
+			i++;
+		}
+	} else {
+		i++;
+	}
+    }
+	if( mtimesx_mode_new > 0 ) {
+		mtimesx_mode = mtimesx_mode_new;
+	}
+	if( max_threads_new > 0 ) {
+		max_threads = max_threads_new;
+	}
+    if( nrhs == 0 ) {
+		if( mtimesx_mode_new || !max_threads_new ) {
+   		    plhs[0] = modestring(mtimesx_mode);
+		} else {
+   		    plhs[0] = mxCreateDoubleScalar(max_threads);
+		}
+        return;
     }
 
     if( nrhs < 2 || nrhs > 4 ) {
-        mexErrMsgTxt("Must have 2 - 4 inputs for multiply function");
+        mexErrMsgTxt("Must have 2 - 4 non-directive inputs for multiply function");
     }
 
 /*-------------------------------------------------------------------------
@@ -388,6 +704,7 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
 
     if( mxIsDouble(Araw) ) {
         if( mxIsDouble(Braw) ) {
+			/*
             if( mxIsSparse(Araw) && !mxIsSparse(Braw)  &&
                 (mxGetNumberOfElements(Araw) != 1 || mxGetNumberOfDimensions(Braw) == 2) ) {
                 k = mexCallMATLAB(1, &B, 1, &Braw, "sparse");
@@ -401,9 +718,33 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
             } else {
                 plhs[0] = DoubleTimesDouble(Araw, transa, Braw, transb);
             }
+			*/
+            if( mxIsSparse(Araw) && !mxIsSparse(Braw)  &&
+                mxGetNumberOfElements(Araw) == 1 && mxGetNumberOfDimensions(Braw) == 2 ) {
+                k = mexCallMATLAB(1, &B, 1, &Braw, "sparse");
+                plhs[0] = DoubleTimesDouble(Araw, transa, B, transb);
+                mxDestroyArray(B);
+            } else if( !mxIsSparse(Araw) && mxIsSparse(Braw) &&
+                mxGetNumberOfElements(Braw) == 1 && mxGetNumberOfDimensions(Araw) == 2 ) {
+                k = mexCallMATLAB(1, &A, 1, &Araw, "sparse");
+                plhs[0] = DoubleTimesDouble(A, transa, Braw, transb);
+                mxDestroyArray(A);
+            } else {
+                plhs[0] = DoubleTimesDouble(Araw, transa, Braw, transb);
+            }
         } else if( mxIsSingle(Braw) ) {
             if( mxIsSparse(Araw) ) {
-                mexErrMsgTxt("Sparse single arrays are not supported.");
+				if( mxGetNumberOfElements(Araw) == 1 ) {
+	                k = mexCallMATLAB(1, &C, 1, &Araw, "full");
+	                k = mexCallMATLAB(1, &A, 1, &C, "single");
+					mxDestroyArray(C);
+	                plhs[0] = FloatTimesFloat(A, transa, Braw, transb);
+					mxDestroyArray(A);
+				} else {
+					k = mexCallMATLAB(1, &B, 1, &Braw, "double");
+				    plhs[0] = DoubleTimesDouble(Araw, transa, B, transb);
+			        mxDestroyArray(B);
+				}
             } else if( mxGetNumberOfElements(Araw) == 1 || mxGetNumberOfElements(Braw) == 1 ) {
                 k = mexCallMATLAB(1, &B, 1, &Braw, "double");
                 C = DoubleTimesDouble(Araw, transa, B, transb);
@@ -421,7 +762,17 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
     } else if( mxIsSingle(Araw) ) {
         if( mxIsDouble(Braw) ) {
             if( mxIsSparse(Braw) ) {
-                mexErrMsgTxt("Sparse single arrays are not supported.");
+				if( mxGetNumberOfElements(Braw) == 1 ) {
+	                k = mexCallMATLAB(1, &C, 1, &Braw, "full");
+	                k = mexCallMATLAB(1, &B, 1, &C, "single");
+					mxDestroyArray(C);
+	                plhs[0] = FloatTimesFloat(Araw, transa, B, transb);
+					mxDestroyArray(B);
+				} else {
+					k = mexCallMATLAB(1, &A, 1, &Araw, "double");
+				    plhs[0] = DoubleTimesDouble(A, transa, Braw, transb);
+			        mxDestroyArray(A);
+				}
             } else if( mxGetNumberOfElements(Araw) == 1 || mxGetNumberOfElements(Braw) == 1 ) {
                 k = mexCallMATLAB(1, &A, 1, &Araw, "double");
                 C = DoubleTimesDouble(A, transa, Braw, transb);
@@ -442,6 +793,9 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
         unsupported = 1;
     }
     if( unsupported ) {
+		if( debug ) {
+			mexPrintf("MTIMESX: Unsupported types ... calling MATLAB intrinsic function mtimes\n");
+		}
         rhs[0] = Araw;
         transstring[0] = transa;
         rhs[1] = mxCreateString(transstring);
@@ -451,6 +805,7 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
         k = mexCallMATLAB(1, plhs, 4, rhs, "mtimesx_sparse");
         mxDestroyArray(rhs[3]);
         mxDestroyArray(rhs[1]);
+		threads_used = 0;
     }
 
     return;
@@ -463,7 +818,7 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
  *
  *------------------------------------------------------------------------------- */
 
-char mxArrayToTrans(mxArray *mx)
+char mxArrayToTrans(const mxArray *mx)
 {
     mwSize n;
     char *cp;
@@ -535,7 +890,6 @@ mwIndex spcleanreal(mxArray *mx)
     }
     return jc[n];
 }
-
 
 /*-------------------------------------------------------------------------------
  *
@@ -629,7 +983,6 @@ void *myRealloc(void *vp, mwSize_t n)
  * Logo.
  *------------------------------------------------------------------------------- */
 
-
 void mtimesx_logo(void)
 {
     mxArray *rhs[9];
@@ -637,8 +990,10 @@ void mtimesx_logo(void)
     double r;
     mwSize i, j;
     
-    mexCallMATLAB(1, rhs, 0, NULL, "figure");
+    /* fh = figure */
+    mexCallMATLAB(1, rhs, 0, NULL,"figure");
     
+    /* set(fh, 'Color', [1 1 1]) */
     rhs[1] = mxCreateString("Color");
     rhs[2] = mxCreateDoubleMatrix(1, 3, mxREAL);
     x = mxGetPr(rhs[2]);
@@ -648,6 +1003,9 @@ void mtimesx_logo(void)
     mxDestroyArray(rhs[1]);
     mxDestroyArray(rhs[2]);
     
+	/* [X Y] = meshgrid(-8:0.0625:8); */
+    /* R = sqrt(X.^2 + Y.^2) + eps; */
+    /* Z = sin(R)./R; */
     rhs[0] = mxCreateDoubleMatrix(257, 257, mxREAL);
     rhs[1] = mxCreateDoubleMatrix(257, 257, mxREAL);
     rhs[2] = mxCreateDoubleMatrix(257, 257, mxREAL);
@@ -665,6 +1023,9 @@ void mtimesx_logo(void)
         }
     }
 
+    /* surf(X,Y,Z,'FaceColor','interp',... */
+	/* 'EdgeColor','none',... */
+	/* 'FaceLighting','phong') */
     rhs[3] = mxCreateString("FaceColor");
     rhs[4] = mxCreateString("interp");
     rhs[5] = mxCreateString("EdgeColor");
@@ -676,6 +1037,7 @@ void mtimesx_logo(void)
         mxDestroyArray(rhs[i]);
     }
     
+    /* daspect([5 5 1]) */
     rhs[0] = mxCreateDoubleMatrix(1, 3, mxREAL);
     x = mxGetPr(rhs[0]);
     x[0] = 5.0;
@@ -684,14 +1046,17 @@ void mtimesx_logo(void)
     mexCallMATLAB(0, NULL, 1, rhs, "daspect");
     mxDestroyArray(rhs[0]);
     
+	/* axis('tight') */
     rhs[0] = mxCreateString("tight");
     mexCallMATLAB(0, NULL, 1, rhs, "axis");
     mxDestroyArray(rhs[0]);
     
+	/* axis('off') */
     rhs[0] = mxCreateString("off");
     mexCallMATLAB(0, NULL, 1, rhs, "axis");
     mxDestroyArray(rhs[0]);
     
+	/* view([-50 30]) */
     rhs[0] = mxCreateDoubleMatrix(1, 2, mxREAL);
     x = mxGetPr(rhs[0]);
     x[0] = -50.0;
@@ -699,9 +1064,63 @@ void mtimesx_logo(void)
     mexCallMATLAB(0, NULL, 1, rhs, "view");
     mxDestroyArray(rhs[0]);
     
+	/* camlight('left') */
     rhs[0] = mxCreateString("left");
     mexCallMATLAB(0, NULL, 1, rhs, "camlight");
     mxDestroyArray(rhs[0]);
+}
+
+/*-------------------------------------------------------------------------------
+ * Construct mode string.
+ *------------------------------------------------------------------------------- */
+
+mxArray *modestring(int m)
+{
+
+	switch( m )
+	{
+	case MTIMESX_BLAS:
+        return mxCreateString("BLAS");
+	case MTIMESX_LOOPS:
+        return mxCreateString("LOOPS");
+	case MTIMESX_LOOPS_OMP:
+        return mxCreateString("LOOPSOMP");
+	case MTIMESX_MATLAB:
+        return mxCreateString("MATLAB");
+	case MTIMESX_SPEED:
+        return mxCreateString("SPEED");
+	case MTIMESX_SPEED_OMP:
+        return mxCreateString("SPEEDOMP");
+	}
+	return mxCreateString("");
+}
+
+/*-------------------------------------------------------------------------------
+ * Construct thread string.
+ *------------------------------------------------------------------------------- */
+
+mxArray *threadstring(int t)
+{
+	char ompstring[] = "OMP_SET_NUM_THREADS(___)";
+	int k;
+
+	if( t > 999 ) {
+		return mxCreateString("OMP_SET_NUM_THREADS");
+	} else {
+		k = 20;
+		if( max_threads > 99 ) {
+			ompstring[k++] = (t / 100) + '0';
+			t /= 10;
+		}
+		if( t > 9 ) {
+			ompstring[k++] = (t / 10) + '0';
+			t /= 10;
+		}
+		ompstring[k++] = t  + '0';
+		ompstring[k++] = ')';
+		ompstring[k  ] = '\0';
+		return mxCreateString(ompstring);
+	}
 }
 
 /*-------------------------------------------------------------------------
@@ -717,6 +1136,10 @@ void mtimesx_logo(void)
 #define  N1        &n1
 #define  M2        &m2
 #define  N2        &n2
+#define  AR        &ar
+#define  AI        &ai
+#define  BI        &bi
+#define  AIBI      &aibi
 #define  LDA       &lda
 #define  LDB       &ldb
 #define  LDC       &ldc
@@ -741,6 +1164,47 @@ void mtimesx_logo(void)
 #define  REALLOCTOL  1024
 
 /*-------------------------------------------------------------------------
+ * Number of elements in a dot product must be at least this much before
+ * the calculation will be multi-threaded even when OMP is enabled.
+ *------------------------------------------------------------------------- */
+
+#ifdef __LCC__
+#define  OMP_DOT_SMALL  182000
+#else
+#define  OMP_DOT_SMALL  126000
+#endif
+
+/*-------------------------------------------------------------------------
+ * Number of elements in the temporary dot product storage array. Used to
+ * ensure multi-threaded results are consistent from run to run. Prefer
+ * using this as opposed to using atomic or reduction methods which would
+ * not guarantee consistent results from run to run.
+ *------------------------------------------------------------------------- */
+
+#define  OMP_DOT_ARRAY_SIZE  256
+
+/*-------------------------------------------------------------------------
+ * Number of elements in a scalar product must be at least this much before
+ * the calculation will be multi-threaded even when OMP is enabled.
+ *------------------------------------------------------------------------- */
+
+#define  OMP_SCALAR_SMALL  100000
+
+/*-------------------------------------------------------------------------
+ * Number of elements in an outer product must be at least this much before
+ * the calculation will be multi-threaded even when OMP is enabled.
+ *------------------------------------------------------------------------- */
+
+#define  OMP_OUTER_SMALL  100000
+
+/*-------------------------------------------------------------------------
+ * Number of loops in special multiply cases must be at least this much
+ * before the calculation will be multi-threaded even when OMP is enabled.
+ *------------------------------------------------------------------------- */
+
+#define  OMP_SPECIAL_SMALL  1000
+
+/*-------------------------------------------------------------------------
  * Macros for the double * double function. All of the generic function
  * names and variable types in the file mtimesx_RealTimesReal.c are to be
  * replace with these names specific to the double type.
@@ -749,6 +1213,7 @@ void mtimesx_logo(void)
 #define  MatlabReturnType  mxDOUBLE_CLASS
 #define  RealTimesReal  DoubleTimesDouble
 #define  RealTimesScalar  DoubleTimesScalar
+#define  RealTimesScalarX DoubleTimesScalarX
 #define  AllRealZero  AllDoubleZero
 #define  RealKindEqP1P0TimesRealKindN  DoubleImagEqP1P0TimesDoubleImagN
 #define  RealKindEqP1P0TimesRealKindG  DoubleImagEqP1P0TimesDoubleImagG
@@ -799,20 +1264,26 @@ void mtimesx_logo(void)
 #define  RealKindEqPxPxTimesRealKindT  DoubleImagEqPxPxTimesDoubleImagT
 #define  RealKindEqPxPxTimesRealKindC  DoubleImagEqPxPxTimesDoubleImagC
 
-#ifdef DEFINEUNIX
-#define  xDOT      ddot_
-#define  xGER      dger_
-#define  xGEMV     dgemv_
-#define  xGEMM     dgemm_
-#define  xSYRK     dsyrk_
-#define  xSYR2K    dsyr2k_
-#else
+#if defined(_WIN32) || defined(_WIN64)
 #define  xDOT      ddot
-#define  xGER      dger
 #define  xGEMV     dgemv
 #define  xGEMM     dgemm
 #define  xSYRK     dsyrk
 #define  xSYR2K    dsyr2k
+#define  xAXPY     daxpy
+#define  xGER      dger
+#define  xSYR      dsyr
+#define  xSYR2     dsyr2
+#else
+#define  xDOT      ddot_
+#define  xGEMV     dgemv_
+#define  xGEMM     dgemm_
+#define  xSYRK     dsyrk_
+#define  xSYR2K    dsyr2k_
+#define  xAXPY     daxpy_
+#define  xGER      dger_
+#define  xSYR      dsyr_
+#define  xSYR2     dsyr2_
 #endif
 
 #define  xFILLPOS  dfillpos
@@ -823,8 +1294,11 @@ void mtimesx_logo(void)
 #define  RealKind              double
 #define  RealKindComplex       doublecomplex
 #define  RealKindDotProduct    doublecomplexdotproduct
+#define  RealKindDotProductX   doublecomplexdotproductx
 #define  RealKindOuterProduct  doublecomplexouterproduct
+#define  RealKindOuterProductX doublecomplexouterproductx
 #define  RealScalarTimesReal   doublescalartimesdouble
+#define  RealKindZZ            doubleZZ
 
 #include  "mtimesx_RealTimesReal.c"
 
@@ -835,6 +1309,7 @@ void mtimesx_logo(void)
 #undef  MatlabReturnType
 #undef  RealTimesReal
 #undef  RealTimesScalar
+#undef  RealTimesScalarX
 #undef  AllRealZero
 #undef  RealKindEqP1P0TimesRealKindN
 #undef  RealKindEqP1P0TimesRealKindG
@@ -885,11 +1360,14 @@ void mtimesx_logo(void)
 #undef  RealKindEqPxPxTimesRealKindT
 #undef  RealKindEqPxPxTimesRealKindC
 #undef  xDOT
-#undef  xGER
 #undef  xGEMV
 #undef  xGEMM
 #undef  xSYRK
 #undef  xSYR2K
+#undef  xAXPY
+#undef  xGER
+#undef  xSYR
+#undef  xSYR2
 #undef  xFILLPOS
 #undef  xFILLNEG
 #undef  zero
@@ -898,8 +1376,11 @@ void mtimesx_logo(void)
 #undef  RealKind
 #undef  RealKindComplex
 #undef  RealKindDotProduct
+#undef  RealKindDotProductX
 #undef  RealKindOuterProduct
+#undef  RealKindOuterProductX
 #undef  RealScalarTimesReal
+#undef  RealKindZZ
 
 /*-------------------------------------------------------------------------
  * Macros for the single * single function. All of the generic function
@@ -910,6 +1391,7 @@ void mtimesx_logo(void)
 #define  MatlabReturnType  mxSINGLE_CLASS
 #define  RealTimesReal  FloatTimesFloat
 #define  RealTimesScalar  FloatTimesScalar
+#define  RealTimesScalarX FloatTimesScalarX
 #define  AllRealZero  AllFloatZero
 #define  RealKindEqP1P0TimesRealKindN  FloatImagEqP1P0TimesFloatImagN
 #define  RealKindEqP1P0TimesRealKindG  FloatImagEqP1P0TimesFloatImagG
@@ -960,20 +1442,26 @@ void mtimesx_logo(void)
 #define  RealKindEqPxPxTimesRealKindT  FloatImagEqPxPxTimesFloatImagT
 #define  RealKindEqPxPxTimesRealKindC  FloatImagEqPxPxTimesFloatImagC
 
-#ifdef DEFINEUNIX
-#define  xDOT      sdot_
-#define  xGER      sger_
-#define  xGEMV     sgemv_
-#define  xGEMM     sgemm_
-#define  xSYRK     ssyrk_
-#define  xSYR2K    ssyr2k_
-#else
+#if defined(_WIN32) || defined(_WIN64)
 #define  xDOT      sdot
-#define  xGER      sger
 #define  xGEMV     sgemv
 #define  xGEMM     sgemm
 #define  xSYRK     ssyrk
 #define  xSYR2K    ssyr2k
+#define  xAXPY     saxpy
+#define  xGER      sger
+#define  xSYR      ssyr
+#define  xSYR2     ssyr2
+#else
+#define  xDOT      sdot_
+#define  xGEMV     sgemv_
+#define  xGEMM     sgemm_
+#define  xSYRK     ssyrk_
+#define  xSYR2K    ssyr2k_
+#define  xAXPY     saxpy_
+#define  xGER      sger_
+#define  xSYR      ssyr_
+#define  xSYR2     ssyr2_
 #endif
 
 #define  xFILLPOS  sfillpos
@@ -984,7 +1472,10 @@ void mtimesx_logo(void)
 #define  RealKind              float
 #define  RealKindComplex       floatcomplex
 #define  RealKindDotProduct    floatcomplexdotproduct
+#define  RealKindDotProductX   floatcomplexdotproductx
 #define  RealKindOuterProduct  floatcomplexouterproduct
+#define  RealKindOuterProductX floatcomplexouterproductx
 #define  RealScalarTimesReal   floatscalartimesfloat
+#define  RealKindZZ            floatZZ
 
 #include  "mtimesx_RealTimesReal.c"
