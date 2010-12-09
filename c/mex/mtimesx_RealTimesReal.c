@@ -4,8 +4,8 @@
  *
  * Filename:    mtimesx_RealTimesReal.c
  * Programmer:  James Tursa
- * Version:     1.30
- * Date:        August 2, 2010
+ * Version:     1.40
+ * Date:        October 4, 2010
  * Copyright:   (c) 2009, 2010 by James Tursa, All Rights Reserved
  *
  *  This code uses the BSD License:
@@ -43,6 +43,9 @@
  * 2010/Feb/23 --> 1.20, Fixed bug for dgemv and sgemv calls
  * 2010/Aug/02 --> 1.30, Added (nD scalar) * (nD array) capability
  *                       Replaced buggy mxRealloc with custom code
+ * 2010/Oct/04 --> 1.40, Added OpenMP support for custom code
+ *                       Expanded sparse * single and sparse * nD support
+ *                       Fixed (nD complex scalar)C * (nD array) bug.
  *
  ****************************************************************************/
 
@@ -154,11 +157,17 @@ void RealKindEqPxPxTimesRealKindT(RealKind *Cpr, RealKind *Cpi, RealKind ar, Rea
 void RealKindEqPxPxTimesRealKindC(RealKind *Cpr, RealKind *Cpi, RealKind ar, RealKind ai,
                                   RealKind *Bpr, RealKind *Bpi, mwSize m2, mwSize n2, mwSignedIndex p);
 void RealTimesScalar(RealKind *Cpr, RealKind *Cpi, RealKind *Bpr, RealKind *Bpi, char transb,
-                     mwSize m2, mwSize n2, RealKind ar, RealKind ai, mwSize n, mwSize p);
+                     mwSize m2, mwSize n2, RealKind ar, RealKind ai, mwSize n, mwSize p,int);
+void RealTimesScalarX(RealKind *Cpr, RealKind *Cpi, RealKind *Bpr, RealKind *Bpi, char transb,
+                     mwSize m2, mwSize n2, RealKind ar, RealKind ai, mwSize n, mwSize p, int);
 void xFILLPOS(RealKind *Cpr, mwSignedIndex n);
 void xFILLNEG(RealKind *Cpr, mwSignedIndex n);
 RealKind xDOT(mwSignedIndex *, RealKind *, mwSignedIndex *, RealKind *, mwSignedIndex *);
 void     xGER(mwSignedIndex *, mwSignedIndex *, RealKind *, RealKind *, mwSignedIndex *,
+              RealKind *, mwSignedIndex *, RealKind *, mwSignedIndex *);
+void     xSYR(char *, mwSignedIndex *, RealKind *, RealKind *, mwSignedIndex *,
+              RealKind *, mwSignedIndex *);
+void    xSYR2(char *, mwSignedIndex *, RealKind *, RealKind *, mwSignedIndex *,
               RealKind *, mwSignedIndex *, RealKind *, mwSignedIndex *);
 void    xGEMV(char *, mwSignedIndex *, mwSignedIndex *, RealKind *, RealKind *, mwSignedIndex *,
               RealKind *, mwSignedIndex *, RealKind *, RealKind *, mwSignedIndex *);
@@ -169,10 +178,15 @@ void    xSYRK(char *, char *, mwSignedIndex *, mwSignedIndex *, RealKind *, Real
               mwSignedIndex *, RealKind *, RealKind *, int*);
 void   xSYR2K(char *, char *, int*, mwSignedIndex *, RealKind *, RealKind *, mwSignedIndex *,
               RealKind *, mwSignedIndex *, RealKind *, RealKind *, mwSignedIndex *);
+void    xAXPY(mwSignedIndex *, RealKind *, RealKind *, mwSignedIndex *, RealKind *, mwSignedIndex *);
 struct RealKindComplex RealKindDotProduct(mwSignedIndex, RealKind *, RealKind *, RealKind,
-                                                         RealKind *, RealKind *, RealKind);
+                                                         RealKind *, RealKind *, RealKind, int);
+struct RealKindComplex RealKindDotProductX(mwSignedIndex, RealKind *, RealKind *, RealKind,
+                                                          RealKind *, RealKind *, RealKind, int);
 void RealKindOuterProduct(mwSignedIndex, mwSignedIndex, RealKind *, RealKind *, char,
-                          RealKind *, RealKind *, char, RealKind *, RealKind *);
+                          RealKind *, RealKind *, char, RealKind *, RealKind *, int);
+void RealKindOuterProductX(mwSignedIndex, mwSignedIndex, RealKind *, RealKind *, char,
+                          RealKind *, RealKind *, char, RealKind *, RealKind *, int);
 mxArray *RealScalarTimesReal(mxArray *, char, mwSize, mwSize, mxArray *, char, mwSize, mwSize);
 
 /*-------------------------------------------------------------------------------------
@@ -189,13 +203,13 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 
     mwSize m1, n1, m2, n2, Andim, Bndim, Cndim, Ap, Bp, Cp, ip, p, Asize, Bsize, Csize, ndim;
     mwSize Ablock, Bblock;
-    mwSize *Adims, *Bdims, *Cdims, *Adimz, *Bdimz, *Cdimz, *Cindx;
+    mwSize *Adims, *Bdims, *Cdims, *Adimz, *Bdimz, *Cindx;
     register mwSignedIndex i, j;
     mwSignedIndex m, n, k, l, lda, ldb, ldc;
     mxArray *C, *result, *rhs[4];
     RealKind *Apr, *Api, *Bpr, *Bpi, *Cpr, *Cpi, *Apr0, *Api0, *Bpr0, *Bpi0;
     RealKind *apr, *api, *bpr, *bpi, *cpr, *cpi;
-    RealKind ai, bi, alpha, sr, si;
+    RealKind ai, bi, sr, si, aibi;
     RealKind Apr11, Apr12, Apr13, Apr14, 
              Apr21, Apr22, Apr23, Apr24, 
              Apr31, Apr32, Apr33, Apr34,
@@ -212,16 +226,21 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
              Bpi21, Bpi22, Bpi23, Bpi24, 
              Bpi31, Bpi32, Bpi33, Bpi34,
              Bpi41, Bpi42, Bpi43, Bpi44;
-    char trans, ptransa, ptransb;
+    char ptransa, ptransb;
     char transstring[2] = "_";
     struct RealKindComplex z;
     int scalarmultiply;
+	int scalar_method, dot_method, outer_method;
+	int singleton_expansion;
+	int destroyA = 0, destroyB = 0;
 
 /*--------------------------------------------------------------------------------
  * Get sizes. Note that in the multi-dimensional case, mxGetN returns the product
  * of all of the dimension sizes 2 through end.
  *-------------------------------------------------------------------------------- */
 
+	debug_message = debug;
+	threads_used = 0;
     m1 = mxGetM(A);
     n1 = mxGetN(A);
     m2 = mxGetM(B);
@@ -237,6 +256,19 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
     Bpi0 = Bpi = mxGetImagData(B);
 
 /*--------------------------------------------------------------------------------
+ * Simplify transa & transb if appropriate.
+ *-------------------------------------------------------------------------------- */
+
+	if( !Api ) {
+		if( transa == 'C' ) transa = 'T';
+		if( transa == 'G' ) transa = 'N';
+	}
+	if( !Bpi ) {
+		if( transb == 'C' ) transb = 'T';
+		if( transb == 'G' ) transb = 'N';
+	}
+
+/*--------------------------------------------------------------------------------
  * Scalar expansion cases (custom sparse array code for these cases only).
  * If there is a inf or NaN in the scalar and the other variable is sparse,
  * then don't do the custom code because the sparse zeros will not remain
@@ -246,7 +278,10 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 
     scalarmultiply = 0;
     if( m1 == 1 && n1 == 1 ) {
-        scalarmultiply = 1;
+		if( debug ) {
+			mexPrintf("MTIMESX: (1 x 1) * (array)\n");
+		}
+		scalarmultiply = 1;
         if( mxIsSparse(B) ) {
             if( mxIsInf(*Apr) || mxIsNaN(*Apr) ) {
                 scalarmultiply = 0;
@@ -255,6 +290,9 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
             }
         }
     } else if( m2 == 1 && n2 == 1 ) {
+		if( debug ) {
+			mexPrintf("MTIMESX: (array) * (1 x 1)\n");
+		}
         scalarmultiply = 1;
         if( mxIsSparse(A) ) {
             if( mxIsInf(*Bpr) || mxIsNaN(*Bpr) ) {
@@ -266,7 +304,32 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
     }
     if( scalarmultiply ) {
         return RealScalarTimesReal(A, transa, m1, n1, B, transb, m2, n2);
-     }
+    }
+
+/*--------------------------------------------------------------------------------
+ * Multi-dimensional sparse matrix results are not supported in MATLAB, so we are
+ * forced to convert the sparse matrix to a full matrix for these cases. Just hope
+ * the memory isn't blown.
+ *-------------------------------------------------------------------------------- */
+
+	if( mxIsSparse(A) && mxGetNumberOfDimensions(B) > 2 ) {
+		k = mexCallMATLAB(1, rhs, 1, &A, "full");
+		A = rhs[0];
+	    m1 = mxGetM(A);
+		n1 = mxGetN(A);
+	    Apr0 = Apr = mxGetData(A);
+		Api0 = Api = mxGetImagData(A);
+		destroyA = 1;
+	}
+	if( mxIsSparse(B) && mxGetNumberOfDimensions(A) > 2 ) {
+		k = mexCallMATLAB(1, rhs, 1, &B, "full");
+		B = rhs[0];
+	    m2 = mxGetM(B);
+		n2 = mxGetN(B);
+	    Bpr0 = Bpr = mxGetData(B);
+		Bpi0 = Bpi = mxGetImagData(B);
+		destroyB = 1;
+	}
 
 /*--------------------------------------------------------------------------------
  * Generic sparse matrix or vector operations are not directly supported.
@@ -275,6 +338,9 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
  *-------------------------------------------------------------------------------- */
 
     if( mxIsSparse(A) || mxIsSparse(B) ) {
+		if( debug ) {
+			mexPrintf("MTIMESX: Unsupported sparse operation ... calling MATLAB intrinsic function mtimes\n");
+		}
         rhs[0] = A;
         transstring[0] = transa;
         rhs[1] = mxCreateString(transstring);
@@ -293,9 +359,9 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
  *------------------------------------------------------------------------------- */
 
     Andim = mxGetNumberOfDimensions(A);
-    Adims = mxGetDimensions(A);
+    Adims = (mwSize *) mxGetDimensions(A);
     Bndim = mxGetNumberOfDimensions(B);
-    Bdims = mxGetDimensions(B);
+    Bdims = (mwSize *) mxGetDimensions(B);
     m1 = Adims[0];
     n1 = Adims[1];
     m2 = Bdims[0];
@@ -324,12 +390,16 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
  *------------------------------------------------------------------------------- */
 
     if( (k != l) && (m*k != 1) && (l*n != 1) ) {
+		if( destroyA ) mxDestroyArray(A);
+		if( destroyB ) mxDestroyArray(B);
         mexErrMsgTxt("Inner matrix dimensions must agree.");
     }
 
     ndim = (Andim <= Bndim) ? Andim : Bndim;
     for( Cp=2; Cp<ndim; Cp++ ) {
         if( Adims[Cp] != Bdims[Cp] && Adims[Cp] != 1 && Bdims[Cp] != 1 ) {
+			if( destroyA ) mxDestroyArray(A);
+			if( destroyB ) mxDestroyArray(B);
             mexErrMsgTxt("Dimensions 3:end must agree or be 1 in ND case.");
         }
     }
@@ -385,13 +455,6 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
     }
 
 /*------------------------------------------------------------------------------
- * Set up conjugate factors
- *------------------------------------------------------------------------------ */
-
-    ai = ( transa == 'C' || transa == 'G' ) ? -one : one;
-    bi = ( transb == 'C' || transb == 'G' ) ? -one : one;
-
-/*------------------------------------------------------------------------------
  * Create output array
  *------------------------------------------------------------------------------ */
 
@@ -401,6 +464,8 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
         mxFree(Cdims);
         mxFree(Adimz);
         mxFree(Bdimz);
+		if( destroyA ) mxDestroyArray(A);
+		if( destroyB ) mxDestroyArray(B);
         return result;
     }
     if( mxIsComplex(A) || mxIsComplex(B) ) {
@@ -416,27 +481,1132 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
  * See if we can do a simple reshape to do the nD multiply all at once
  *---------------------------------------------------------------------------- */
 
-    if( Andim == 2 && (k == 1 || n == 1 || transb == 'N' || transb == 'G') ) {
+    if( Andim == 2 && Bndim > 2 && !scalarmultiply && (k == 1 || n == 1 || transb == 'N' || transb == 'G') ) {
+		if( debug_message ) {
+			mexPrintf("MTIMESX: Reshaping nD multiply as a single multiply\n");
+		}
         if( transb == 'T' ) transb = 'N';
         if( transb == 'C' ) transb = 'G';
         m2  = k;
         n2  = n * p;
         n   = n2;
-        ldb = m2;
         p   = 1;
+        ldb = m2;
     }
 
+    if( Bndim == 2 && Andim > 2 && !scalarmultiply && m == 1 ) {
+		if( debug_message ) {
+			mexPrintf("MTIMESX: Reshaping and reordering nD multiply as a single multiply\n");
+		}
+		apr = Apr; Apr = Bpr; Bpr = apr;
+		api = Api; Api = Bpi; Bpi = api;
+		ptransa = transa; transa = transb; transb = ptransa;
+		if( transa == 'N' ) {
+			transa = 'T';
+		} else if( transa == 'T' ) {
+			transa = 'N';
+		} else if( transa == 'G' ) {
+			transa = 'C';
+		} else {
+			transa = 'G';
+		}
+		if( transb == 'C' ) {
+			transb = 'G';
+		} else if( transb == 'T' ) {
+			transb = 'N';
+		}
+		m1  = m2;
+		n1  = n2;
+        m2  = k;
+        n2  = m * p;
+		if( transa == 'N' || transa == 'G' ) {
+			m = m1;
+		} else {
+			m = n1;
+		}
+		l   = k;
+        n   = n2;
+        p   = 1;
+		lda = m1;
+        ldb = k;
+		ldc = m;
+    }
+
+/*------------------------------------------------------------------------------
+ * Set up conjugate factors
+ *------------------------------------------------------------------------------ */
+
+    ai = ( transa == 'C' || transa == 'G' ) ? -one : one;
+    bi = ( transb == 'C' || transb == 'G' ) ? -one : one;
+	aibi = - ai * bi;
+
 /*----------------------------------------------------------------------------
- * Outer Loop to process all of the individual matrix multiplies
+ * Individual matrix block sizes
  *---------------------------------------------------------------------------- */
 
     Asize = m1 * n1;
     Bsize = m2 * n2;
     Csize = Cdims[0] * Cdims[1];
-    
+
+#ifdef _OPENMP
+
+/*----------------------------------------------------------------------------
+ * Check to see if singleton expansion is present
+ *---------------------------------------------------------------------------- */
+
+	singleton_expansion = 0;
+	for( i=2; i<Andim; i++ ) {
+		if( Adims[i] == 1 ) {
+			singleton_expansion = 1;
+			break;
+		}
+	}
+	if( !singleton_expansion ) {
+		for( i=2; i<Bndim; i++ ) {
+			if( Bdims[i] == 1 ) {
+				singleton_expansion = 1;
+				break;
+			}
+		}
+	}
+
+/*----------------------------------------------------------------------------
+ * Check to see if we can do a fast OpenMP inline (1x1)*(KxN) nD multiply
+ *---------------------------------------------------------------------------- */
+
+    if( (mtimesx_mode == MTIMESX_LOOPS_OMP || mtimesx_mode == MTIMESX_SPEED_OMP) && max_threads > 1 &&
+		scalarmultiply== 1 && p >= OMP_SPECIAL_SMALL && !singleton_expansion ) {
+		if( debug_message ) {
+			mexPrintf("MTIMESX: Performing %d individual multiplies\n",p);
+			mexPrintf("MTIMESX: OpenMP multi-threaded LOOPS\n");
+			mexPrintf("MTIMESX: (%d x %d) * (%d x %d)\n",m,k,l,n);
+		}
+		Ablock = Asize;
+		Bblock = Bsize;
+		Asize *= (Andim > 2);
+		Bsize *= (Bndim > 2);
+		omp_set_dynamic(1);
+#pragma omp parallel num_threads(max_threads)
+		{
+			RealKind sr_, si_;
+			RealKind *Apr_, *Bpr_, *Cpr_, *Api_, *Bpi_, *Cpi_;
+			mwSize ip_, p_, blocksize, offset;
+			int thread_num = omp_get_thread_num();
+			int num_threads = omp_get_num_threads();
+            #pragma omp master
+			{
+				threads_used = num_threads;
+			}
+			blocksize = p / num_threads;
+			offset = thread_num * blocksize;
+			if( thread_num == num_threads-1 ) {
+				p_ = p - offset;
+			} else {
+				p_ = blocksize;
+			}
+			Apr_ = Apr + offset * Asize;
+			Bpr_ = Bpr + offset * Bsize;
+			Cpr_ = Cpr + offset * Csize;
+			Api_ = (Api?Api+offset*Asize:NULL);
+			Bpi_ = (Bpi?Bpi+offset*Bsize:NULL);
+			Cpi_ = (Cpi?Cpi+offset*Csize:NULL);
+			for( ip_=0; ip_<p_; ip_++ ) {
+		        sr_ = *Apr_;
+				si_ = Api_ ? (transa=='N'||transa=='T'?*Api_:-*Api_) : zero;
+				RealTimesScalar(Cpr_, Cpi_, Bpr_, Bpi_, transb, m2, n2, sr_, si_, Bblock, 1, METHOD_LOOPS);
+				Apr_ += Asize;
+				Bpr_ += Bsize;
+				Cpr_ += Csize;
+				if( Api_ ) {
+					Api_ += Asize;
+				}
+				if( Bpi_ ) {
+					Bpi_ += Bsize;
+				}
+				if( Cpi_ ) {
+					Cpi_ += Csize;
+				}
+			}
+		}
+	    mxFree(Cindx);
+	    mxFree(Cdims);
+	    mxFree(Adimz);
+	    mxFree(Bdimz);
+        if( AllRealZero(Cpi, m*n*p) ) {
+            mxFree(Cpi);
+            mxSetImagData(C, NULL);
+        }
+		if( destroyA ) mxDestroyArray(A);
+		if( destroyB ) mxDestroyArray(B);
+		return result;
+	}
+
+/*----------------------------------------------------------------------------
+ * Check to see if we can do a fast OpenMP inline (MxK)*(1x1) nD multiply
+ *---------------------------------------------------------------------------- */
+
+    if( (mtimesx_mode == MTIMESX_LOOPS_OMP || mtimesx_mode == MTIMESX_SPEED_OMP) && max_threads > 1 &&
+		scalarmultiply== 2 && p >= OMP_SPECIAL_SMALL && !singleton_expansion ) {
+		if( debug_message ) {
+			mexPrintf("MTIMESX: Performing %d individual multiplies\n",p);
+			mexPrintf("MTIMESX: OpenMP multi-threaded LOOPS\n");
+			mexPrintf("MTIMESX: (%d x %d) * (%d x %d)\n",m,k,l,n);
+		}
+		Ablock = Asize;
+		Bblock = Bsize;
+		Asize *= (Andim > 2);
+		Bsize *= (Bndim > 2);
+		omp_set_dynamic(1);
+#pragma omp parallel num_threads(max_threads)
+		{
+			RealKind sr_, si_;
+			RealKind *Apr_, *Bpr_, *Cpr_, *Api_, *Bpi_, *Cpi_;
+			mwSize ip_, p_, blocksize, offset;
+			int thread_num = omp_get_thread_num();
+			int num_threads = omp_get_num_threads();
+            #pragma omp master
+			{
+				threads_used = num_threads;
+			}
+			blocksize = p / num_threads;
+			offset = thread_num * blocksize;
+			if( thread_num == num_threads-1 ) {
+				p_ = p - offset;
+			} else {
+				p_ = blocksize;
+			}
+			Apr_ = Apr + offset * Asize;
+			Bpr_ = Bpr + offset * Bsize;
+			Cpr_ = Cpr + offset * Csize;
+			Api_ = (Api?Api+offset*Asize:NULL);
+			Bpi_ = (Bpi?Bpi+offset*Bsize:NULL);
+			Cpi_ = (Cpi?Cpi+offset*Csize:NULL);
+			for( ip_=0; ip_<p_; ip_++ ) {
+		        sr_ = *Bpr_;
+				si_ = Bpi_ ? (transb=='N'||transb=='T'?*Bpi_:-*Bpi_) : zero;
+				RealTimesScalar(Cpr_, Cpi_, Apr_, Api_, transa, m1, n1, sr_, si_, Ablock, 1, METHOD_LOOPS);
+				Apr_ += Asize;
+				Bpr_ += Bsize;
+				Cpr_ += Csize;
+				if( Api_ ) {
+					Api_ += Asize;
+				}
+				if( Bpi_ ) {
+					Bpi_ += Bsize;
+				}
+				if( Cpi_ ) {
+					Cpi_ += Csize;
+				}
+			}
+		}
+	    mxFree(Cindx);
+	    mxFree(Cdims);
+	    mxFree(Adimz);
+	    mxFree(Bdimz);
+        if( AllRealZero(Cpi, m*n*p) ) {
+            mxFree(Cpi);
+            mxSetImagData(C, NULL);
+        }
+		if( destroyA ) mxDestroyArray(A);
+		if( destroyB ) mxDestroyArray(B);
+		return result;
+	}
+
+/*----------------------------------------------------------------------------
+ * Check to see if we can do a fast OpenMP inline (2x2)*(2x2) nD multiply
+ *---------------------------------------------------------------------------- */
+
+    if( (mtimesx_mode == MTIMESX_LOOPS_OMP || mtimesx_mode == MTIMESX_SPEED_OMP) && max_threads > 1 &&
+		m == 2 && k == 2 && n == 2 && p >= OMP_SPECIAL_SMALL && !singleton_expansion && !Cpi ) {
+		if( debug_message ) {
+			mexPrintf("MTIMESX: Performing %d individual multiplies\n",p);
+			mexPrintf("MTIMESX: OpenMP multi-threaded LOOPS (unrolled into inline multiplies)\n");
+			mexPrintf("MTIMESX: (%d x %d) * (%d x %d)\n",m,k,l,n);
+		}
+		Asize *= (Andim > 2);
+		Bsize *= (Bndim > 2);
+		omp_set_dynamic(1);
+#pragma omp parallel num_threads(max_threads)
+		{
+			RealKind *Apr_, *Bpr_, *Cpr_;
+			mwSize ip_, p_, blocksize, offset;
+			int thread_num = omp_get_thread_num();
+			int num_threads = omp_get_num_threads();
+            #pragma omp master
+			{
+				threads_used = num_threads;
+			}
+			blocksize = p / num_threads;
+			offset = thread_num * blocksize;
+			if( thread_num == num_threads-1 ) {
+				p_ = p - offset;
+			} else {
+				p_ = blocksize;
+			}
+			Apr_ = Apr + offset * Asize;
+			Bpr_ = Bpr + offset * Bsize;
+			Cpr_ = Cpr + offset * Csize;
+			if( transa == 'T' ) {
+				if( transb == 'T' ) {
+					for( ip_=0; ip_<p_; ip_++ ) {
+						Cpr_[0] = Apr_[0] * Bpr_[0] + Apr_[1] * Bpr_[2];
+						Cpr_[1] = Apr_[2] * Bpr_[0] + Apr_[3] * Bpr_[2];
+						Cpr_[2] = Apr_[0] * Bpr_[1] + Apr_[1] * Bpr_[3];
+						Cpr_[3] = Apr_[2] * Bpr_[1] + Apr_[3] * Bpr_[3];
+						Apr_ += Asize;
+						Bpr_ += Bsize;
+						Cpr_ += Csize;
+					}
+				} else {
+					for( ip_=0; ip_<p_; ip_++ ) {
+						Cpr_[0] = Apr_[0] * Bpr_[0] + Apr_[1] * Bpr_[1];
+						Cpr_[1] = Apr_[2] * Bpr_[0] + Apr_[3] * Bpr_[1];
+						Cpr_[2] = Apr_[0] * Bpr_[2] + Apr_[1] * Bpr_[3];
+						Cpr_[3] = Apr_[2] * Bpr_[2] + Apr_[3] * Bpr_[3];
+						Apr_ += Asize;
+						Bpr_ += Bsize;
+						Cpr_ += Csize;
+					}
+				}
+			} else {
+				if( transb == 'T' ) {
+					for( ip_=0; ip_<p_; ip_++ ) {
+						Cpr_[0] = Apr_[0] * Bpr_[0] + Apr_[2] * Bpr_[2];
+						Cpr_[1] = Apr_[1] * Bpr_[0] + Apr_[3] * Bpr_[2];
+						Cpr_[2] = Apr_[0] * Bpr_[1] + Apr_[2] * Bpr_[3];
+						Cpr_[3] = Apr_[1] * Bpr_[1] + Apr_[3] * Bpr_[3];
+						Apr_ += Asize;
+						Bpr_ += Bsize;
+						Cpr_ += Csize;
+					}
+				} else {
+					for( ip_=0; ip_<p_; ip_++ ) {
+						Cpr_[0] = Apr_[0] * Bpr_[0] + Apr_[2] * Bpr_[1];
+						Cpr_[1] = Apr_[1] * Bpr_[0] + Apr_[3] * Bpr_[1];
+						Cpr_[2] = Apr_[0] * Bpr_[2] + Apr_[2] * Bpr_[3];
+						Cpr_[3] = Apr_[1] * Bpr_[2] + Apr_[3] * Bpr_[3];
+						Apr_ += Asize;
+						Bpr_ += Bsize;
+						Cpr_ += Csize;
+					}
+				}
+			}
+		}
+	    mxFree(Cindx);
+	    mxFree(Cdims);
+	    mxFree(Adimz);
+	    mxFree(Bdimz);
+/*		
+        if( AllRealZero(Cpi, m*n*p) ) {
+            mxFree(Cpi);
+            mxSetImagData(C, NULL);
+        }
+*/
+		if( destroyA ) mxDestroyArray(A);
+		if( destroyB ) mxDestroyArray(B);
+		return result;
+	}
+
+/*----------------------------------------------------------------------------
+ * Check to see if we can do a fast OpenMP inline (2x2)*(2x1) nD multiply
+ *---------------------------------------------------------------------------- */
+
+    if( (mtimesx_mode == MTIMESX_LOOPS_OMP || mtimesx_mode == MTIMESX_SPEED_OMP) && max_threads > 1 &&
+		m == 2 && k == 2 && l == 2 && n == 1 && p >= OMP_SPECIAL_SMALL && !singleton_expansion && !Cpi ) {
+		if( debug_message ) {
+			mexPrintf("MTIMESX: Performing %d individual multiplies\n",p);
+			mexPrintf("MTIMESX: OpenMP multi-threaded LOOPS (unrolled into inline multiplies)\n");
+			mexPrintf("MTIMESX: (%d x %d) * (%d x %d)\n",m,k,l,n);
+		}
+		Asize *= (Andim > 2);
+		Bsize *= (Bndim > 2);
+		omp_set_dynamic(1);
+#pragma omp parallel num_threads(max_threads)
+		{
+			RealKind *Apr_, *Bpr_, *Cpr_;
+			mwSize ip_, p_, blocksize, offset;
+			int thread_num = omp_get_thread_num();
+			int num_threads = omp_get_num_threads();
+            #pragma omp master
+			{
+				threads_used = num_threads;
+			}
+			blocksize = p / num_threads;
+			offset = thread_num * blocksize;
+			if( thread_num == num_threads-1 ) {
+				p_ = p - offset;
+			} else {
+				p_ = blocksize;
+			}
+			Apr_ = Apr + offset * Asize;
+			Bpr_ = Bpr + offset * Bsize;
+			Cpr_ = Cpr + offset * Csize;
+			if( transa == 'T' ) {
+				for( ip_=0; ip_<p_; ip_++ ) {
+					Cpr_[0] = Apr_[0] * Bpr_[0] + Apr_[1] * Bpr_[1];
+					Cpr_[1] = Apr_[2] * Bpr_[0] + Apr_[3] * Bpr_[1];
+					Apr_ += Asize;
+					Bpr_ += Bsize;
+					Cpr_ += Csize;
+				}
+			} else {
+				for( ip_=0; ip_<p_; ip_++ ) {
+					Cpr_[0] = Apr_[0] * Bpr_[0] + Apr_[2] * Bpr_[1];
+					Cpr_[1] = Apr_[1] * Bpr_[0] + Apr_[3] * Bpr_[1];
+					Apr_ += Asize;
+					Bpr_ += Bsize;
+					Cpr_ += Csize;
+				}
+			}
+		}
+	    mxFree(Cindx);
+	    mxFree(Cdims);
+	    mxFree(Adimz);
+	    mxFree(Bdimz);
+/*		
+        if( AllRealZero(Cpi, m*n*p) ) {
+            mxFree(Cpi);
+            mxSetImagData(C, NULL);
+        }
+*/
+		if( destroyA ) mxDestroyArray(A);
+		if( destroyB ) mxDestroyArray(B);
+		return result;
+	}
+
+/*----------------------------------------------------------------------------
+ * Check to see if we can do a fast OpenMp inline (1x2)*(2x2) nD multiply
+ *---------------------------------------------------------------------------- */
+
+    if( (mtimesx_mode == MTIMESX_LOOPS_OMP || mtimesx_mode == MTIMESX_SPEED_OMP) && max_threads > 1 &&
+		m == 1 && k == 2 && n == 2 && p >= OMP_SPECIAL_SMALL && !singleton_expansion && !Cpi ) {
+		if( debug_message ) {
+			mexPrintf("MTIMESX: Performing %d individual multiplies\n",p);
+			mexPrintf("MTIMESX: OpenMP multi-threaded LOOPS (unrolled into inline multiplies)\n");
+			mexPrintf("MTIMESX: (%d x %d) * (%d x %d)\n",m,k,l,n);
+		}
+		Asize *= (Andim > 2);
+		Bsize *= (Bndim > 2);
+		omp_set_dynamic(1);
+#pragma omp parallel num_threads(max_threads)
+		{
+			RealKind *Apr_, *Bpr_, *Cpr_;
+			mwSize ip_, p_, blocksize, offset;
+			int thread_num = omp_get_thread_num();
+			int num_threads = omp_get_num_threads();
+            #pragma omp master
+			{
+				threads_used = num_threads;
+			}
+			blocksize = p / num_threads;
+			offset = thread_num * blocksize;
+			if( thread_num == num_threads-1 ) {
+				p_ = p - offset;
+			} else {
+				p_ = blocksize;
+			}
+			Apr_ = Apr + offset * Asize;
+			Bpr_ = Bpr + offset * Bsize;
+			Cpr_ = Cpr + offset * Csize;
+			if( transb == 'T' ) {
+				for( ip_=0; ip_<p_; ip_++ ) {
+					Cpr_[0] = Apr_[0] * Bpr_[0] + Apr_[1] * Bpr_[2];
+					Cpr_[1] = Apr_[0] * Bpr_[1] + Apr_[1] * Bpr_[3];
+					Apr_ += Asize;
+					Bpr_ += Bsize;
+					Cpr_ += Csize;
+				}
+			} else {
+				for( ip_=0; ip_<p_; ip_++ ) {
+					Cpr_[0] = Apr_[0] * Bpr_[0] + Apr_[1] * Bpr_[1];
+					Cpr_[1] = Apr_[0] * Bpr_[2] + Apr_[1] * Bpr_[3];
+					Apr_ += Asize;
+					Bpr_ += Bsize;
+					Cpr_ += Csize;
+				}
+			}
+		}
+	    mxFree(Cindx);
+	    mxFree(Cdims);
+	    mxFree(Adimz);
+	    mxFree(Bdimz);
+/*		
+        if( AllRealZero(Cpi, m*n*p) ) {
+            mxFree(Cpi);
+            mxSetImagData(C, NULL);
+        }
+*/
+		if( destroyA ) mxDestroyArray(A);
+		if( destroyB ) mxDestroyArray(B);
+		return result;
+	}
+
+/*----------------------------------------------------------------------------
+ * Check to see if we can do a fast OpenMP inline (3x3)*(3x3) nD multiply
+ *---------------------------------------------------------------------------- */
+
+    if( (mtimesx_mode == MTIMESX_LOOPS_OMP || mtimesx_mode == MTIMESX_SPEED_OMP) && max_threads > 1 &&
+		m == 3 && k == 3 && n == 3 && p >= OMP_SPECIAL_SMALL && !singleton_expansion && !Cpi ) {
+		if( debug_message ) {
+			mexPrintf("MTIMESX: Performing %d individual multiplies\n",p);
+			mexPrintf("MTIMESX: OpenMP multi-threaded LOOPS (unrolled into inline multiplies)\n");
+			mexPrintf("MTIMESX: (%d x %d) * (%d x %d)\n",m,k,l,n);
+		}
+		Asize *= (Andim > 2);
+		Bsize *= (Bndim > 2);
+		omp_set_dynamic(1);
+#pragma omp parallel num_threads(max_threads)
+		{
+			RealKind *Apr_, *Bpr_, *Cpr_;
+			mwSize ip_, p_, blocksize, offset;
+			int thread_num = omp_get_thread_num();
+			int num_threads = omp_get_num_threads();
+            #pragma omp master
+			{
+				threads_used = num_threads;
+			}
+			blocksize = p / num_threads;
+			offset = thread_num * blocksize;
+			if( thread_num == num_threads-1 ) {
+				p_ = p - offset;
+			} else {
+				p_ = blocksize;
+			}
+			Apr_ = Apr + offset * Asize;
+			Bpr_ = Bpr + offset * Bsize;
+			Cpr_ = Cpr + offset * Csize;
+			if( transa == 'T' ) {
+				if( transb == 'T' ) {
+					for( ip_=0; ip_<p_; ip_++ ) {
+						Cpr_[0] = Apr_[0] * Bpr_[0] + Apr_[1] * Bpr_[3] + Apr_[2] * Bpr_[6];
+						Cpr_[1] = Apr_[3] * Bpr_[0] + Apr_[4] * Bpr_[3] + Apr_[5] * Bpr_[6];
+						Cpr_[2] = Apr_[6] * Bpr_[0] + Apr_[7] * Bpr_[3] + Apr_[8] * Bpr_[6];
+						Cpr_[3] = Apr_[0] * Bpr_[1] + Apr_[1] * Bpr_[4] + Apr_[2] * Bpr_[7];
+						Cpr_[4] = Apr_[3] * Bpr_[1] + Apr_[4] * Bpr_[4] + Apr_[5] * Bpr_[7];
+						Cpr_[5] = Apr_[6] * Bpr_[1] + Apr_[7] * Bpr_[4] + Apr_[8] * Bpr_[7];
+						Cpr_[6] = Apr_[0] * Bpr_[2] + Apr_[1] * Bpr_[5] + Apr_[2] * Bpr_[8];
+						Cpr_[7] = Apr_[3] * Bpr_[2] + Apr_[4] * Bpr_[5] + Apr_[5] * Bpr_[8];
+						Cpr_[8] = Apr_[6] * Bpr_[2] + Apr_[7] * Bpr_[5] + Apr_[8] * Bpr_[8];
+						Apr_ += Asize;
+						Bpr_ += Bsize;
+						Cpr_ += Csize;
+					}
+				} else {
+					for( ip_=0; ip_<p_; ip_++ ) {
+						Cpr_[0] = Apr_[0] * Bpr_[0] + Apr_[1] * Bpr_[1] + Apr_[2] * Bpr_[2];
+						Cpr_[1] = Apr_[3] * Bpr_[0] + Apr_[4] * Bpr_[1] + Apr_[5] * Bpr_[2];
+						Cpr_[2] = Apr_[6] * Bpr_[0] + Apr_[7] * Bpr_[1] + Apr_[8] * Bpr_[2];
+						Cpr_[3] = Apr_[0] * Bpr_[3] + Apr_[1] * Bpr_[4] + Apr_[2] * Bpr_[5];
+						Cpr_[4] = Apr_[3] * Bpr_[3] + Apr_[4] * Bpr_[4] + Apr_[5] * Bpr_[5];
+						Cpr_[5] = Apr_[6] * Bpr_[3] + Apr_[7] * Bpr_[4] + Apr_[8] * Bpr_[5];
+						Cpr_[6] = Apr_[0] * Bpr_[6] + Apr_[1] * Bpr_[7] + Apr_[2] * Bpr_[8];
+						Cpr_[7] = Apr_[3] * Bpr_[6] + Apr_[4] * Bpr_[7] + Apr_[5] * Bpr_[8];
+						Cpr_[8] = Apr_[6] * Bpr_[6] + Apr_[7] * Bpr_[7] + Apr_[8] * Bpr_[8];
+						Apr_ += Asize;
+						Bpr_ += Bsize;
+						Cpr_ += Csize;
+					}
+				}
+			} else {
+				if( transb == 'T' ) {
+					for( ip_=0; ip_<p_; ip_++ ) {
+						Cpr_[0] = Apr_[0] * Bpr_[0] + Apr_[3] * Bpr_[3] + Apr_[6] * Bpr_[6];
+						Cpr_[1] = Apr_[1] * Bpr_[0] + Apr_[4] * Bpr_[3] + Apr_[7] * Bpr_[6];
+						Cpr_[2] = Apr_[2] * Bpr_[0] + Apr_[5] * Bpr_[3] + Apr_[8] * Bpr_[6];
+						Cpr_[3] = Apr_[0] * Bpr_[1] + Apr_[3] * Bpr_[4] + Apr_[6] * Bpr_[7];
+						Cpr_[4] = Apr_[1] * Bpr_[1] + Apr_[4] * Bpr_[4] + Apr_[7] * Bpr_[7];
+						Cpr_[5] = Apr_[2] * Bpr_[1] + Apr_[5] * Bpr_[4] + Apr_[8] * Bpr_[7];
+						Cpr_[6] = Apr_[0] * Bpr_[2] + Apr_[3] * Bpr_[5] + Apr_[6] * Bpr_[8];
+						Cpr_[7] = Apr_[1] * Bpr_[2] + Apr_[4] * Bpr_[5] + Apr_[7] * Bpr_[8];
+						Cpr_[8] = Apr_[2] * Bpr_[2] + Apr_[5] * Bpr_[5] + Apr_[8] * Bpr_[8];
+						Apr_ += Asize;
+						Bpr_ += Bsize;
+						Cpr_ += Csize;
+					}
+				} else {
+					for( ip_=0; ip_<p_; ip_++ ) {
+						Cpr_[0] = Apr_[0] * Bpr_[0] + Apr_[3] * Bpr_[1] + Apr_[6] * Bpr_[2];
+						Cpr_[1] = Apr_[1] * Bpr_[0] + Apr_[4] * Bpr_[1] + Apr_[7] * Bpr_[2];
+						Cpr_[2] = Apr_[2] * Bpr_[0] + Apr_[5] * Bpr_[1] + Apr_[8] * Bpr_[2];
+						Cpr_[3] = Apr_[0] * Bpr_[3] + Apr_[3] * Bpr_[4] + Apr_[6] * Bpr_[5];
+						Cpr_[4] = Apr_[1] * Bpr_[3] + Apr_[4] * Bpr_[4] + Apr_[7] * Bpr_[5];
+						Cpr_[5] = Apr_[2] * Bpr_[3] + Apr_[5] * Bpr_[4] + Apr_[8] * Bpr_[5];
+						Cpr_[6] = Apr_[0] * Bpr_[6] + Apr_[3] * Bpr_[7] + Apr_[6] * Bpr_[8];
+						Cpr_[7] = Apr_[1] * Bpr_[6] + Apr_[4] * Bpr_[7] + Apr_[7] * Bpr_[8];
+						Cpr_[8] = Apr_[2] * Bpr_[6] + Apr_[5] * Bpr_[7] + Apr_[8] * Bpr_[8];
+						Apr_ += Asize;
+						Bpr_ += Bsize;
+						Cpr_ += Csize;
+					}
+				}
+			}
+		}
+	    mxFree(Cindx);
+	    mxFree(Cdims);
+	    mxFree(Adimz);
+	    mxFree(Bdimz);
+/*		
+        if( AllRealZero(Cpi, m*n*p) ) {
+            mxFree(Cpi);
+            mxSetImagData(C, NULL);
+        }
+*/
+		if( destroyA ) mxDestroyArray(A);
+		if( destroyB ) mxDestroyArray(B);
+		return result;
+	}
+
+/*----------------------------------------------------------------------------
+ * Check to see if we can do a fast OpenMP inline (3x3)*(3x1) nD multiply
+ *---------------------------------------------------------------------------- */
+
+    if( (mtimesx_mode == MTIMESX_LOOPS_OMP || mtimesx_mode == MTIMESX_SPEED_OMP) && max_threads > 1 &&
+		m == 3 && k == 3 && l == 3 && n == 1 && p >= OMP_SPECIAL_SMALL && !singleton_expansion && !Cpi ) {
+		if( debug_message ) {
+			mexPrintf("MTIMESX: Performing %d individual multiplies\n",p);
+			mexPrintf("MTIMESX: OpenMP multi-threaded LOOPS (unrolled into inline multiplies)\n");
+			mexPrintf("MTIMESX: (%d x %d) * (%d x %d)\n",m,k,l,n);
+		}
+		Asize *= (Andim > 2);
+		Bsize *= (Bndim > 2);
+		omp_set_dynamic(1);
+#pragma omp parallel num_threads(max_threads)
+		{
+			RealKind *Apr_, *Bpr_, *Cpr_;
+			mwSize ip_, p_, blocksize, offset;
+			int thread_num = omp_get_thread_num();
+			int num_threads = omp_get_num_threads();
+            #pragma omp master
+			{
+				threads_used = num_threads;
+			}
+			blocksize = p / num_threads;
+			offset = thread_num * blocksize;
+			if( thread_num == num_threads-1 ) {
+				p_ = p - offset;
+			} else {
+				p_ = blocksize;
+			}
+			Apr_ = Apr + offset * Asize;
+			Bpr_ = Bpr + offset * Bsize;
+			Cpr_ = Cpr + offset * Csize;
+			if( transa == 'T' ) {
+				for( ip_=0; ip_<p_; ip_++ ) {
+					Cpr_[0] = Apr_[0] * Bpr_[0] + Apr_[1] * Bpr_[1] + Apr_[2] * Bpr_[2];
+					Cpr_[1] = Apr_[3] * Bpr_[0] + Apr_[4] * Bpr_[1] + Apr_[5] * Bpr_[2];
+					Cpr_[2] = Apr_[6] * Bpr_[0] + Apr_[7] * Bpr_[1] + Apr_[8] * Bpr_[2];
+					Apr_ += Asize;
+					Bpr_ += Bsize;
+					Cpr_ += Csize;
+				}
+			} else {
+				for( ip_=0; ip_<p_; ip_++ ) {
+					Cpr_[0] = Apr_[0] * Bpr_[0] + Apr_[3] * Bpr_[1] + Apr_[6] * Bpr_[2];
+					Cpr_[1] = Apr_[1] * Bpr_[0] + Apr_[4] * Bpr_[1] + Apr_[7] * Bpr_[2];
+					Cpr_[2] = Apr_[2] * Bpr_[0] + Apr_[5] * Bpr_[1] + Apr_[8] * Bpr_[2];
+					Apr_ += Asize;
+					Bpr_ += Bsize;
+					Cpr_ += Csize;
+				}
+			}
+		}
+	    mxFree(Cindx);
+	    mxFree(Cdims);
+	    mxFree(Adimz);
+	    mxFree(Bdimz);
+/*		
+        if( AllRealZero(Cpi, m*n*p) ) {
+            mxFree(Cpi);
+            mxSetImagData(C, NULL);
+        }
+*/
+		if( destroyA ) mxDestroyArray(A);
+		if( destroyB ) mxDestroyArray(B);
+		return result;
+	}
+
+/*----------------------------------------------------------------------------
+ * Check to see if we can do a fast OpenMp inline (1x3)*(3x3) nD multiply
+ *---------------------------------------------------------------------------- */
+
+    if( (mtimesx_mode == MTIMESX_LOOPS_OMP || mtimesx_mode == MTIMESX_SPEED_OMP) && max_threads > 1 &&
+		m == 1 && k == 3 && n == 3 && p >= OMP_SPECIAL_SMALL && !singleton_expansion && !Cpi ) {
+		if( debug_message ) {
+			mexPrintf("MTIMESX: Performing %d individual multiplies\n",p);
+			mexPrintf("MTIMESX: OpenMP multi-threaded LOOPS (unrolled into inline multiplies)\n");
+			mexPrintf("MTIMESX: (%d x %d) * (%d x %d)\n",m,k,l,n);
+		}
+		Asize *= (Andim > 2);
+		Bsize *= (Bndim > 2);
+		omp_set_dynamic(1);
+#pragma omp parallel num_threads(max_threads)
+		{
+			RealKind *Apr_, *Bpr_, *Cpr_;
+			mwSize ip_, p_, blocksize, offset;
+			int thread_num = omp_get_thread_num();
+			int num_threads = omp_get_num_threads();
+            #pragma omp master
+			{
+				threads_used = num_threads;
+			}
+			blocksize = p / num_threads;
+			offset = thread_num * blocksize;
+			if( thread_num == num_threads-1 ) {
+				p_ = p - offset;
+			} else {
+				p_ = blocksize;
+			}
+			Apr_ = Apr + offset * Asize;
+			Bpr_ = Bpr + offset * Bsize;
+			Cpr_ = Cpr + offset * Csize;
+			if( transb == 'T' ) {
+				for( ip_=0; ip_<p_; ip_++ ) {
+					Cpr_[0] = Apr_[0] * Bpr_[0] + Apr_[1] * Bpr_[3] + Apr_[2] * Bpr_[6];
+					Cpr_[1] = Apr_[0] * Bpr_[1] + Apr_[1] * Bpr_[4] + Apr_[2] * Bpr_[7];
+					Cpr_[2] = Apr_[0] * Bpr_[2] + Apr_[1] * Bpr_[5] + Apr_[2] * Bpr_[8];
+					Apr_ += Asize;
+					Bpr_ += Bsize;
+					Cpr_ += Csize;
+				}
+			} else {
+				for( ip_=0; ip_<p_; ip_++ ) {
+					Cpr_[0] = Apr_[0] * Bpr_[0] + Apr_[1] * Bpr_[1] + Apr_[2] * Bpr_[2];
+					Cpr_[1] = Apr_[0] * Bpr_[3] + Apr_[1] * Bpr_[4] + Apr_[2] * Bpr_[5];
+					Cpr_[2] = Apr_[0] * Bpr_[6] + Apr_[1] * Bpr_[7] + Apr_[2] * Bpr_[8];
+					Apr_ += Asize;
+					Bpr_ += Bsize;
+					Cpr_ += Csize;
+				}
+			}
+		}
+	    mxFree(Cindx);
+	    mxFree(Cdims);
+	    mxFree(Adimz);
+	    mxFree(Bdimz);
+/*		
+        if( AllRealZero(Cpi, m*n*p) ) {
+            mxFree(Cpi);
+            mxSetImagData(C, NULL);
+        }
+*/
+		if( destroyA ) mxDestroyArray(A);
+		if( destroyB ) mxDestroyArray(B);
+		return result;
+	}
+
+/*----------------------------------------------------------------------------
+ * Check to see if we can do a fast OpenMP inline (4x4)*(4x4) nD multiply
+ *---------------------------------------------------------------------------- */
+
+    if( (mtimesx_mode == MTIMESX_LOOPS_OMP || mtimesx_mode == MTIMESX_SPEED_OMP) && max_threads > 1 &&
+		m == 4 && k == 4 && n == 4 && p >= OMP_SPECIAL_SMALL && !singleton_expansion && !Cpi ) {
+		if( debug_message ) {
+			mexPrintf("MTIMESX: Performing %d individual multiplies\n",p);
+			mexPrintf("MTIMESX: OpenMP multi-threaded LOOPS (unrolled into inline multiplies)\n");
+			mexPrintf("MTIMESX: (%d x %d) * (%d x %d)\n",m,k,l,n);
+		}
+		Asize *= (Andim > 2);
+		Bsize *= (Bndim > 2);
+		omp_set_dynamic(1);
+#pragma omp parallel num_threads(max_threads)
+		{
+			RealKind *Apr_, *Bpr_, *Cpr_;
+			mwSize ip_, p_, blocksize, offset;
+			int thread_num = omp_get_thread_num();
+			int num_threads = omp_get_num_threads();
+            #pragma omp master
+			{
+				threads_used = num_threads;
+			}
+			blocksize = p / num_threads;
+			offset = thread_num * blocksize;
+			if( thread_num == num_threads-1 ) {
+				p_ = p - offset;
+			} else {
+				p_ = blocksize;
+			}
+			Apr_ = Apr + offset * Asize;
+			Bpr_ = Bpr + offset * Bsize;
+			Cpr_ = Cpr + offset * Csize;
+			if( transa == 'T' ) {
+				if( transb == 'T' ) {
+					for( ip_=0; ip_<p_; ip_++ ) {
+						Cpr_[0] = Apr_[ 0] * Bpr_[0] + Apr_[ 1] * Bpr_[4] + Apr_[ 2] * Bpr_[ 8] + Apr_[ 3] * Bpr_[12];
+						Cpr_[1] = Apr_[ 4] * Bpr_[0] + Apr_[ 5] * Bpr_[4] + Apr_[ 6] * Bpr_[ 8] + Apr_[ 7] * Bpr_[12];
+						Cpr_[2] = Apr_[ 8] * Bpr_[0] + Apr_[ 9] * Bpr_[4] + Apr_[10] * Bpr_[ 8] + Apr_[11] * Bpr_[12];
+						Cpr_[3] = Apr_[12] * Bpr_[0] + Apr_[13] * Bpr_[4] + Apr_[14] * Bpr_[ 8] + Apr_[15] * Bpr_[12];
+						Cpr_[4] = Apr_[ 0] * Bpr_[1] + Apr_[ 1] * Bpr_[5] + Apr_[ 2] * Bpr_[ 9] + Apr_[ 3] * Bpr_[13];
+						Cpr_[5] = Apr_[ 4] * Bpr_[1] + Apr_[ 5] * Bpr_[5] + Apr_[ 6] * Bpr_[ 9] + Apr_[ 7] * Bpr_[13];
+						Cpr_[6] = Apr_[ 8] * Bpr_[1] + Apr_[ 9] * Bpr_[5] + Apr_[10] * Bpr_[ 9] + Apr_[11] * Bpr_[13];
+						Cpr_[7] = Apr_[12] * Bpr_[1] + Apr_[13] * Bpr_[5] + Apr_[14] * Bpr_[ 9] + Apr_[15] * Bpr_[13];
+						Cpr_[8] = Apr_[ 0] * Bpr_[2] + Apr_[ 1] * Bpr_[6] + Apr_[ 2] * Bpr_[10] + Apr_[ 3] * Bpr_[14];
+						Cpr_[9] = Apr_[ 4] * Bpr_[2] + Apr_[ 5] * Bpr_[6] + Apr_[ 6] * Bpr_[10] + Apr_[ 7] * Bpr_[14];
+						Cpr_[10]= Apr_[ 8] * Bpr_[2] + Apr_[ 9] * Bpr_[6] + Apr_[10] * Bpr_[10] + Apr_[11] * Bpr_[14];
+						Cpr_[11]= Apr_[12] * Bpr_[2] + Apr_[13] * Bpr_[6] + Apr_[14] * Bpr_[10] + Apr_[15] * Bpr_[14];
+						Cpr_[12]= Apr_[ 0] * Bpr_[3] + Apr_[ 1] * Bpr_[7] + Apr_[ 2] * Bpr_[11] + Apr_[ 3] * Bpr_[15];
+						Cpr_[13]= Apr_[ 4] * Bpr_[3] + Apr_[ 5] * Bpr_[7] + Apr_[ 6] * Bpr_[11] + Apr_[ 7] * Bpr_[15];
+						Cpr_[14]= Apr_[ 8] * Bpr_[3] + Apr_[ 9] * Bpr_[7] + Apr_[10] * Bpr_[11] + Apr_[11] * Bpr_[15];
+						Cpr_[15]= Apr_[12] * Bpr_[3] + Apr_[13] * Bpr_[7] + Apr_[14] * Bpr_[11] + Apr_[15] * Bpr_[15];
+						Apr_ += Asize;
+						Bpr_ += Bsize;
+						Cpr_ += Csize;
+					}
+				} else {
+					for( ip_=0; ip_<p_; ip_++ ) {
+						Cpr_[0] = Apr_[ 0] * Bpr_[ 0] + Apr_[ 1] * Bpr_[ 1] + Apr_[ 2] * Bpr_[ 2] + Apr_[ 3] * Bpr_[ 3];
+						Cpr_[1] = Apr_[ 4] * Bpr_[ 0] + Apr_[ 5] * Bpr_[ 1] + Apr_[ 6] * Bpr_[ 2] + Apr_[ 7] * Bpr_[ 3];
+						Cpr_[2] = Apr_[ 8] * Bpr_[ 0] + Apr_[ 9] * Bpr_[ 1] + Apr_[10] * Bpr_[ 2] + Apr_[11] * Bpr_[ 3];
+						Cpr_[3] = Apr_[12] * Bpr_[ 0] + Apr_[13] * Bpr_[ 1] + Apr_[14] * Bpr_[ 2] + Apr_[15] * Bpr_[ 3];
+						Cpr_[4] = Apr_[ 0] * Bpr_[ 4] + Apr_[ 1] * Bpr_[ 5] + Apr_[ 2] * Bpr_[ 6] + Apr_[ 3] * Bpr_[ 7];
+						Cpr_[5] = Apr_[ 4] * Bpr_[ 4] + Apr_[ 5] * Bpr_[ 5] + Apr_[ 6] * Bpr_[ 6] + Apr_[ 7] * Bpr_[ 7];
+						Cpr_[6] = Apr_[ 8] * Bpr_[ 4] + Apr_[ 9] * Bpr_[ 5] + Apr_[10] * Bpr_[ 6] + Apr_[11] * Bpr_[ 7];
+						Cpr_[7] = Apr_[12] * Bpr_[ 4] + Apr_[13] * Bpr_[ 5] + Apr_[14] * Bpr_[ 6] + Apr_[15] * Bpr_[ 7];
+						Cpr_[8] = Apr_[ 0] * Bpr_[ 8] + Apr_[ 1] * Bpr_[ 9] + Apr_[ 2] * Bpr_[10] + Apr_[ 3] * Bpr_[11];
+						Cpr_[9] = Apr_[ 4] * Bpr_[ 8] + Apr_[ 5] * Bpr_[ 9] + Apr_[ 6] * Bpr_[10] + Apr_[ 7] * Bpr_[11];
+						Cpr_[10]= Apr_[ 8] * Bpr_[ 8] + Apr_[ 9] * Bpr_[ 9] + Apr_[10] * Bpr_[10] + Apr_[11] * Bpr_[11];
+						Cpr_[11]= Apr_[12] * Bpr_[ 8] + Apr_[13] * Bpr_[ 9] + Apr_[14] * Bpr_[10] + Apr_[15] * Bpr_[11];
+						Cpr_[12]= Apr_[ 0] * Bpr_[12] + Apr_[ 1] * Bpr_[13] + Apr_[ 2] * Bpr_[14] + Apr_[ 3] * Bpr_[15];
+						Cpr_[13]= Apr_[ 4] * Bpr_[12] + Apr_[ 5] * Bpr_[13] + Apr_[ 6] * Bpr_[14] + Apr_[ 7] * Bpr_[15];
+						Cpr_[14]= Apr_[ 8] * Bpr_[12] + Apr_[ 9] * Bpr_[13] + Apr_[10] * Bpr_[14] + Apr_[11] * Bpr_[15];
+						Cpr_[15]= Apr_[12] * Bpr_[12] + Apr_[13] * Bpr_[13] + Apr_[14] * Bpr_[14] + Apr_[15] * Bpr_[15];
+						Apr_ += Asize;
+						Bpr_ += Bsize;
+						Cpr_ += Csize;
+					}
+				}
+			} else {
+				if( transb == 'T' ) {
+					for( ip_=0; ip_<p_; ip_++ ) {
+						Cpr_[0] = Apr_[0] * Bpr_[0] + Apr_[4] * Bpr_[4] + Apr_[8] * Bpr_[8] + Apr_[12]* Bpr_[12];
+						Cpr_[1] = Apr_[1] * Bpr_[0] + Apr_[5] * Bpr_[4] + Apr_[9] * Bpr_[8] + Apr_[13]* Bpr_[12];
+						Cpr_[2] = Apr_[2] * Bpr_[0] + Apr_[6] * Bpr_[4] + Apr_[10]* Bpr_[8] + Apr_[14]* Bpr_[12];
+						Cpr_[3] = Apr_[3] * Bpr_[0] + Apr_[7] * Bpr_[4] + Apr_[11]* Bpr_[8] + Apr_[15]* Bpr_[12];
+						Cpr_[4] = Apr_[0] * Bpr_[1] + Apr_[4] * Bpr_[5] + Apr_[8] * Bpr_[9] + Apr_[12]* Bpr_[13];
+						Cpr_[5] = Apr_[1] * Bpr_[1] + Apr_[5] * Bpr_[5] + Apr_[9] * Bpr_[9] + Apr_[13]* Bpr_[13];
+						Cpr_[6] = Apr_[2] * Bpr_[1] + Apr_[6] * Bpr_[5] + Apr_[10]* Bpr_[9] + Apr_[14]* Bpr_[13];
+						Cpr_[7] = Apr_[3] * Bpr_[1] + Apr_[7] * Bpr_[5] + Apr_[11]* Bpr_[9] + Apr_[15]* Bpr_[13];
+						Cpr_[8] = Apr_[0] * Bpr_[2] + Apr_[4] * Bpr_[6] + Apr_[8] * Bpr_[10]+ Apr_[12]* Bpr_[14];
+						Cpr_[9] = Apr_[1] * Bpr_[2] + Apr_[5] * Bpr_[6] + Apr_[9] * Bpr_[10]+ Apr_[13]* Bpr_[14];
+						Cpr_[10]= Apr_[2] * Bpr_[2] + Apr_[6] * Bpr_[6] + Apr_[10]* Bpr_[10]+ Apr_[14]* Bpr_[14];
+						Cpr_[11]= Apr_[3] * Bpr_[2] + Apr_[7] * Bpr_[6] + Apr_[11]* Bpr_[10]+ Apr_[15]* Bpr_[14];
+						Cpr_[12]= Apr_[0] * Bpr_[3] + Apr_[4] * Bpr_[7] + Apr_[8] * Bpr_[11]+ Apr_[12]* Bpr_[15];
+						Cpr_[13]= Apr_[1] * Bpr_[3] + Apr_[5] * Bpr_[7] + Apr_[9] * Bpr_[11]+ Apr_[13]* Bpr_[15];
+						Cpr_[14]= Apr_[2] * Bpr_[3] + Apr_[6] * Bpr_[7] + Apr_[10]* Bpr_[11]+ Apr_[14]* Bpr_[15];
+						Cpr_[15]= Apr_[3] * Bpr_[3] + Apr_[7] * Bpr_[7] + Apr_[11]* Bpr_[11]+ Apr_[15]* Bpr_[15];
+						Apr_ += Asize;
+						Bpr_ += Bsize;
+						Cpr_ += Csize;
+					}
+				} else {
+					for( ip_=0; ip_<p_; ip_++ ) {
+						Cpr_[0] = Apr_[0] * Bpr_[0] + Apr_[4] * Bpr_[1] + Apr_[8] * Bpr_[2] + Apr_[12]* Bpr_[3];
+						Cpr_[1] = Apr_[1] * Bpr_[0] + Apr_[5] * Bpr_[1] + Apr_[9] * Bpr_[2] + Apr_[13]* Bpr_[3];
+						Cpr_[2] = Apr_[2] * Bpr_[0] + Apr_[6] * Bpr_[1] + Apr_[10]* Bpr_[2] + Apr_[14]* Bpr_[3];
+						Cpr_[3] = Apr_[3] * Bpr_[0] + Apr_[7] * Bpr_[1] + Apr_[11]* Bpr_[2] + Apr_[15]* Bpr_[3];
+						Cpr_[4] = Apr_[0] * Bpr_[4] + Apr_[4] * Bpr_[5] + Apr_[8] * Bpr_[6] + Apr_[12]* Bpr_[7];
+						Cpr_[5] = Apr_[1] * Bpr_[4] + Apr_[5] * Bpr_[5] + Apr_[9] * Bpr_[6] + Apr_[13]* Bpr_[7];
+						Cpr_[6] = Apr_[2] * Bpr_[4] + Apr_[6] * Bpr_[5] + Apr_[10]* Bpr_[6] + Apr_[14]* Bpr_[7];
+						Cpr_[7] = Apr_[3] * Bpr_[4] + Apr_[7] * Bpr_[5] + Apr_[11]* Bpr_[6] + Apr_[15]* Bpr_[7];
+						Cpr_[8] = Apr_[0] * Bpr_[8] + Apr_[4] * Bpr_[9] + Apr_[8] * Bpr_[10]+ Apr_[12]* Bpr_[11];
+						Cpr_[9] = Apr_[1] * Bpr_[8] + Apr_[5] * Bpr_[9] + Apr_[9] * Bpr_[10]+ Apr_[13]* Bpr_[11];
+						Cpr_[10]= Apr_[2] * Bpr_[8] + Apr_[6] * Bpr_[9] + Apr_[10]* Bpr_[10]+ Apr_[14]* Bpr_[11];
+						Cpr_[11]= Apr_[3] * Bpr_[8] + Apr_[7] * Bpr_[9] + Apr_[11]* Bpr_[10]+ Apr_[15]* Bpr_[11];
+						Cpr_[12]= Apr_[0] * Bpr_[12]+ Apr_[4] * Bpr_[13]+ Apr_[8] * Bpr_[14]+ Apr_[12]* Bpr_[15];
+						Cpr_[13]= Apr_[1] * Bpr_[12]+ Apr_[5] * Bpr_[13]+ Apr_[9] * Bpr_[14]+ Apr_[13]* Bpr_[15];
+						Cpr_[14]= Apr_[2] * Bpr_[12]+ Apr_[6] * Bpr_[13]+ Apr_[10]* Bpr_[14]+ Apr_[14]* Bpr_[15];
+						Cpr_[15]= Apr_[3] * Bpr_[12]+ Apr_[7] * Bpr_[13]+ Apr_[11]* Bpr_[14]+ Apr_[15]* Bpr_[15];
+						Apr_ += Asize;
+						Bpr_ += Bsize;
+						Cpr_ += Csize;
+					}
+				}
+			}
+		}
+	    mxFree(Cindx);
+	    mxFree(Cdims);
+	    mxFree(Adimz);
+	    mxFree(Bdimz);
+/*		
+        if( AllRealZero(Cpi, m*n*p) ) {
+            mxFree(Cpi);
+            mxSetImagData(C, NULL);
+        }
+*/
+		if( destroyA ) mxDestroyArray(A);
+		if( destroyB ) mxDestroyArray(B);
+		return result;
+	}
+
+/*----------------------------------------------------------------------------
+ * Check to see if we can do a fast OpenMP inline (4x4)*(4x1) nD multiply
+ *---------------------------------------------------------------------------- */
+
+    if( (mtimesx_mode == MTIMESX_LOOPS_OMP || mtimesx_mode == MTIMESX_SPEED_OMP) && max_threads > 1 &&
+		m == 4 && k == 4 && l == 4 && n == 1 && p >= OMP_SPECIAL_SMALL && !singleton_expansion && !Cpi ) {
+		if( debug_message ) {
+			mexPrintf("MTIMESX: Performing %d individual multiplies\n",p);
+			mexPrintf("MTIMESX: OpenMP multi-threaded LOOPS (unrolled into inline multiplies)\n");
+			mexPrintf("MTIMESX: (%d x %d) * (%d x %d)\n",m,k,l,n);
+		}
+		Asize *= (Andim > 2);
+		Bsize *= (Bndim > 2);
+		omp_set_dynamic(1);
+#pragma omp parallel num_threads(max_threads)
+		{
+			RealKind *Apr_, *Bpr_, *Cpr_;
+			mwSize ip_, p_, blocksize, offset;
+			int thread_num = omp_get_thread_num();
+			int num_threads = omp_get_num_threads();
+            #pragma omp master
+			{
+				threads_used = num_threads;
+			}
+			blocksize = p / num_threads;
+			offset = thread_num * blocksize;
+			if( thread_num == num_threads-1 ) {
+				p_ = p - offset;
+			} else {
+				p_ = blocksize;
+			}
+			Apr_ = Apr + offset * Asize;
+			Bpr_ = Bpr + offset * Bsize;
+			Cpr_ = Cpr + offset * Csize;
+			if( transa == 'T' ) {
+				for( ip_=0; ip_<p_; ip_++ ) {
+					Cpr_[0] = Apr_[ 0] * Bpr_[0] + Apr_[ 1] * Bpr_[1] + Apr_[ 2] * Bpr_[2] + Apr_[ 3] * Bpr_[3];
+					Cpr_[1] = Apr_[ 4] * Bpr_[0] + Apr_[ 5] * Bpr_[1] + Apr_[ 6] * Bpr_[2] + Apr_[ 7] * Bpr_[3];
+					Cpr_[2] = Apr_[ 8] * Bpr_[0] + Apr_[ 9] * Bpr_[1] + Apr_[10] * Bpr_[2] + Apr_[11] * Bpr_[3];
+					Cpr_[3] = Apr_[12] * Bpr_[0] + Apr_[13] * Bpr_[1] + Apr_[14] * Bpr_[2] + Apr_[15] * Bpr_[3];
+					Apr_ += Asize;
+					Bpr_ += Bsize;
+					Cpr_ += Csize;
+				}
+			} else {
+				for( ip_=0; ip_<p_; ip_++ ) {
+					Cpr_[0] = Apr_[0] * Bpr_[0] + Apr_[4] * Bpr_[1] + Apr_[ 8] * Bpr_[2] + Apr_[12] * Bpr_[3];
+					Cpr_[1] = Apr_[1] * Bpr_[0] + Apr_[5] * Bpr_[1] + Apr_[ 9] * Bpr_[2] + Apr_[13] * Bpr_[3];
+					Cpr_[2] = Apr_[2] * Bpr_[0] + Apr_[6] * Bpr_[1] + Apr_[10] * Bpr_[2] + Apr_[14] * Bpr_[3];
+					Cpr_[3] = Apr_[3] * Bpr_[0] + Apr_[7] * Bpr_[1] + Apr_[11] * Bpr_[2] + Apr_[15] * Bpr_[3];
+					Apr_ += Asize;
+					Bpr_ += Bsize;
+					Cpr_ += Csize;
+				}
+			}
+		}
+	    mxFree(Cindx);
+	    mxFree(Cdims);
+	    mxFree(Adimz);
+	    mxFree(Bdimz);
+/*		
+        if( AllRealZero(Cpi, m*n*p) ) {
+            mxFree(Cpi);
+            mxSetImagData(C, NULL);
+        }
+*/
+		if( destroyA ) mxDestroyArray(A);
+		if( destroyB ) mxDestroyArray(B);
+		return result;
+	}
+
+/*----------------------------------------------------------------------------
+ * Check to see if we can do a fast OpenMp inline (1x4)*(4x4) nD multiply
+ *---------------------------------------------------------------------------- */
+
+    if( (mtimesx_mode == MTIMESX_LOOPS_OMP || mtimesx_mode == MTIMESX_SPEED_OMP) && max_threads > 1 &&
+		m == 1 && k == 4 && n == 4 && p >= OMP_SPECIAL_SMALL && !singleton_expansion && !Cpi ) {
+		if( debug_message ) {
+			mexPrintf("MTIMESX: Performing %d individual multiplies\n",p);
+			mexPrintf("MTIMESX: OpenMP multi-threaded LOOPS (unrolled into inline multiplies)\n");
+			mexPrintf("MTIMESX: (%d x %d) * (%d x %d)\n",m,k,l,n);
+		}
+		Asize *= (Andim > 2);
+		Bsize *= (Bndim > 2);
+		omp_set_dynamic(1);
+#pragma omp parallel num_threads(max_threads)
+		{
+			RealKind *Apr_, *Bpr_, *Cpr_;
+			mwSize ip_, p_, blocksize, offset;
+			int thread_num = omp_get_thread_num();
+			int num_threads = omp_get_num_threads();
+            #pragma omp master
+			{
+				threads_used = num_threads;
+			}
+			blocksize = p / num_threads;
+			offset = thread_num * blocksize;
+			if( thread_num == num_threads-1 ) {
+				p_ = p - offset;
+			} else {
+				p_ = blocksize;
+			}
+			Apr_ = Apr + offset * Asize;
+			Bpr_ = Bpr + offset * Bsize;
+			Cpr_ = Cpr + offset * Csize;
+			if( transb == 'T' ) {
+				for( ip_=0; ip_<p_; ip_++ ) {
+					Cpr_[0] = Apr_[0] * Bpr_[0] + Apr_[1] * Bpr_[4] + Apr_[2] * Bpr_[ 8] + Apr_[3] * Bpr_[12];
+					Cpr_[1] = Apr_[0] * Bpr_[1] + Apr_[1] * Bpr_[5] + Apr_[2] * Bpr_[ 9] + Apr_[3] * Bpr_[13];
+					Cpr_[2] = Apr_[0] * Bpr_[2] + Apr_[1] * Bpr_[6] + Apr_[2] * Bpr_[10] + Apr_[3] * Bpr_[14];
+					Cpr_[3] = Apr_[0] * Bpr_[3] + Apr_[1] * Bpr_[7] + Apr_[2] * Bpr_[11] + Apr_[3] * Bpr_[15];
+					Apr_ += Asize;
+					Bpr_ += Bsize;
+					Cpr_ += Csize;
+				}
+			} else {
+				for( ip_=0; ip_<p_; ip_++ ) {
+					Cpr_[0] = Apr_[0] * Bpr_[ 0] + Apr_[1] * Bpr_[ 1] + Apr_[2] * Bpr_[ 2] + Apr_[3] * Bpr_[ 3];
+					Cpr_[1] = Apr_[0] * Bpr_[ 4] + Apr_[1] * Bpr_[ 5] + Apr_[2] * Bpr_[ 6] + Apr_[3] * Bpr_[ 7];
+					Cpr_[2] = Apr_[0] * Bpr_[ 8] + Apr_[1] * Bpr_[ 9] + Apr_[2] * Bpr_[10] + Apr_[3] * Bpr_[11];
+					Cpr_[3] = Apr_[0] * Bpr_[12] + Apr_[1] * Bpr_[13] + Apr_[2] * Bpr_[14] + Apr_[3] * Bpr_[15];
+					Apr_ += Asize;
+					Bpr_ += Bsize;
+					Cpr_ += Csize;
+				}
+			}
+		}
+	    mxFree(Cindx);
+	    mxFree(Cdims);
+	    mxFree(Adimz);
+	    mxFree(Bdimz);
+/*		
+        if( AllRealZero(Cpi, m*n*p) ) {
+            mxFree(Cpi);
+            mxSetImagData(C, NULL);
+        }
+*/
+		if( destroyA ) mxDestroyArray(A);
+		if( destroyB ) mxDestroyArray(B);
+		return result;
+	}
+
+#endif
+
+/*----------------------------------------------------------------------------
+ * Get dot product method to use.
+ *---------------------------------------------------------------------------- */
+
+	if( mtimesx_mode == MTIMESX_BLAS || mtimesx_mode == MTIMESX_MATLAB ) {
+		dot_method = METHOD_BLAS;
+	} else if( mtimesx_mode == MTIMESX_LOOPS ) {
+	    dot_method = METHOD_LOOPS;
+	} else if( mtimesx_mode == MTIMESX_LOOPS_OMP ) {
+	    dot_method = METHOD_LOOPS_OMP;
+	} else {
+#if !defined(_MSC_VER) || _MSC_VER < 1500  /* Version 2008, 9.0 */
+		if( (Apr != Bpr) && !Api && !Bpi ) {
+			dot_method = METHOD_BLAS;
+		} else if( mtimesx_mode == MTIMESX_SPEED_OMP && max_threads > 1 ) {
+#else
+		if( mtimesx_mode == MTIMESX_SPEED_OMP && max_threads > 1 ) {
+#endif
+		    if( Apr != Bpr ) {
+			    if( Api && Bpi ) {
+				    dot_method = METHOD_LOOPS_OMP;
+			    } else {
+				    dot_method = METHOD_LOOPS;
+			    }
+		    } else {
+			    if( Api && (ai * bi == -one) ) {
+				    dot_method = METHOD_BLAS;
+			    } else {
+				    dot_method = METHOD_LOOPS_OMP;
+			    }
+		    }
+		} else {
+#ifdef __LCC__
+			if( (Apr == Bpr && (!Api || (ai * bi == -one))) || omp_get_num_procs() > 2 ) {
+				dot_method = METHOD_BLAS;
+			} else {
+				dot_method = METHOD_LOOPS;
+			}
+#else
+			if( Apr == Bpr && (!Api || (ai * bi == -one)) ) {
+				dot_method = METHOD_BLAS;
+			} else {
+				dot_method = METHOD_LOOPS;
+			}
+#endif
+		}
+	}
+
+/*----------------------------------------------------------------------------
+ * Get outer product method to use.
+ *---------------------------------------------------------------------------- */
+
+	switch( mtimesx_mode )
+	{
+	case MTIMESX_BLAS:
+		outer_method = METHOD_BLAS;
+		break;
+	case MTIMESX_LOOPS:
+		outer_method = METHOD_LOOPS;
+		break;
+	case MTIMESX_LOOPS_OMP:
+		outer_method = METHOD_LOOPS_OMP;
+		break;
+	case MTIMESX_SPEED_OMP:
+		if( max_threads > 1 ) {
+		    outer_method = METHOD_LOOPS_OMP;
+			break;
+		}
+	case MTIMESX_MATLAB:
+	case MTIMESX_SPEED:
+#ifdef __LCC__
+		if( Api && Bpi && omp_get_num_procs() <= 2 ) {
+#else
+		if( (Apr == Bpr) || (Api && Bpi) ) {
+#endif
+			outer_method = METHOD_LOOPS;
+		} else {
+			outer_method = METHOD_BLAS;
+		}
+		break;
+	}
+
+/*----------------------------------------------------------------------------
+ * Get scalar product method to use.
+ *---------------------------------------------------------------------------- */
+
+	switch( mtimesx_mode )
+	{
+	case MTIMESX_BLAS:
+		scalar_method = METHOD_BLAS;
+		break;
+	case MTIMESX_LOOPS:
+		scalar_method = METHOD_LOOPS;
+		break;
+	case MTIMESX_LOOPS_OMP:
+		scalar_method = METHOD_LOOPS_OMP;
+		break;
+	case MTIMESX_SPEED_OMP:
+		if( max_threads > 1 ) {
+		    scalar_method = METHOD_LOOPS_OMP;
+			break;
+		}
+	case MTIMESX_MATLAB:
+	case MTIMESX_SPEED:
+		if( ai != zero && Bpi ) {
+			scalar_method = METHOD_LOOPS;
+		} else {
+			scalar_method = METHOD_BLAS;
+		}
+		break;
+	}
+
+/*----------------------------------------------------------------------------
+ * Outer Loop to process all of the individual matrix multiplies
+ *---------------------------------------------------------------------------- */
+
+	if( debug ) {
+		mexPrintf("MTIMESX: Performing %d individual multiplies\n",p);
+	}
+
     for( ip=0; ip<p; ip++ ) {
         ptransa = transa;  /* Restore the original transa and transb, because */
         ptransb = transb;  /* they might have been changed in previous iteration */
+		if( debug_message ) {
+			mexPrintf("MTIMESX: (%d x %d) * (%d x %d)\n",m,k,l,n);
+		}
 
 /*----------------------------------------------------------------------------
  * Scalar product (1 x 1) * (K x N)
@@ -444,8 +1614,8 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 
     if( scalarmultiply == 1 ) {
         sr = *Apr;
-        si = Api ? *Api : zero;
-        RealTimesScalar(Cpr, Cpi, Bpr, Bpi, transb, m2, n2, sr, si, Bsize, 1);
+		si = Api ? (transa=='N'||transa=='T'?*Api:-*Api) : zero;
+        RealTimesScalar(Cpr, Cpi, Bpr, Bpi, transb, m2, n2, sr, si, Bsize, 1, scalar_method);
 
 /*----------------------------------------------------------------------------
  * Scalar product (M x K) * (1 x 1)
@@ -453,52 +1623,53 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 
     } else if( scalarmultiply == 2 ) {
         sr = *Bpr;
-        si = Bpi ? *Bpi : zero;
-        RealTimesScalar(Cpr, Cpi, Apr, Api, transa, m1, n1, sr, si, Asize, 1);
-
-
+		si = Bpi ? (transb=='N'||transb=='T'?*Bpi:-*Bpi) : zero;
+        RealTimesScalar(Cpr, Cpi, Apr, Api, transa, m1, n1, sr, si, Asize, 1, scalar_method);
 
 /*---------------------------------------------------------------------------------
  * Small matrix times small matrix (M x K) * (K x N) use inline code. Only use this
  * method if running in the 'SPEED' mode and M, K, N are all <= 4.
  *--------------------------------------------------------------------------------- */
 
-    } else if( !matlab && m <= 4 && k <= 4 && n <= 4 ) {
-		
+    } else if( mtimesx_mode != MTIMESX_BLAS && mtimesx_mode != MTIMESX_MATLAB && m <= 4 && k <= 4 && n <= 4 ) {
+		if( debug_message ) {
+			mexPrintf("MTIMESX: LOOPS (unrolled into inline switch statements)\n");
+		}
+		/* Form B elements, taking size and transb into account */
 		switch( k ) {
 
-		case 1: 
+		case 1: /* (m x 1)*(1 x n) */
 			switch( n ) {
      		case 1:
 				mexErrMsgTxt("Internal Error (m x 1)*(1 x 1), contact author.");
 				break;
 
-    		case 2: 
+    		case 2: /* (m x 1)*(1 x 2) */
 				Bpr11 = Bpr[0]; Bpr12 = Bpr[1];
 				if( Bpi ) {
 					if( transb == 'N' || transb == 'T' ) {
 						Bpi11 = Bpi[0]; Bpi12 = Bpi[1];
-					} else { 
+					} else { /* transb == 'G' || transb == 'C' */
 						Bpi11 =-Bpi[0]; Bpi12 =-Bpi[1];
 					}
 				}
 				break;
-    		case 3: 
+    		case 3: /* (m x 1)*(1 x 3) */
 				Bpr11 = Bpr[0]; Bpr12 = Bpr[1]; Bpr13 = Bpr[2];
 				if( Bpi ) {
 					if( transb == 'N' || transb == 'T' ) {
 						Bpi11 = Bpi[0]; Bpi12 = Bpi[1]; Bpi13 = Bpi[2];
-					} else { 
+					} else { /* transb == 'G' || transb == 'C' */
 						Bpi11 =-Bpi[0]; Bpi12 =-Bpi[1]; Bpi13 =-Bpi[2];
 					}
 				}
 				break;
-    		case 4: 
+    		case 4: /* (m x 1)*(1 x 4) */
 				Bpr11 = Bpr[0]; Bpr12 = Bpr[1]; Bpr13 = Bpr[2]; Bpr14 = Bpr[3];
 				if( Bpi ) {
 					if( transb == 'N' || transb == 'T' ) {
 						Bpi11 = Bpi[0]; Bpi12 = Bpi[1]; Bpi13 = Bpi[2]; Bpi14 = Bpi[3];
-					} else { 
+					} else { /* transb == 'G' || transb == 'C' */
 						Bpi11 =-Bpi[0]; Bpi12 =-Bpi[1]; Bpi13 =-Bpi[2]; Bpi14 =-Bpi[3];
 					}
 				}
@@ -506,26 +1677,26 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 			}
 			break;
 
-		case 2: 
+		case 2: /* (m x 2)*(2 x n) */
 			switch( n ) {
-    		case 1: 
+    		case 1: /* (m x 2)*(2 x 1) */
 				Bpr11 = Bpr[0]; 
 				Bpr21 = Bpr[1];
 				if( Bpi ) {
 					if( transb == 'N' || transb == 'T' ) {
 						Bpi11 = Bpi[0]; 
 						Bpi21 = Bpi[1];
-					} else { 
+					} else { /* transb == 'G' || transb == 'C' */
 						Bpi11 =-Bpi[0];
 						Bpi21 =-Bpi[1];
 					}
 				}
 				break;
-    		case 2: 
+    		case 2: /* (m x 2)*(2 x 2) */
 				if( transb == 'N' || transb == 'G' ) {
    				    Bpr11 = Bpr[0]; Bpr12 = Bpr[2];
    				    Bpr21 = Bpr[1]; Bpr22 = Bpr[3];
-				} else { 
+				} else { /* transa == 'T' || transa == 'C' */
    				    Bpr11 = Bpr[0]; Bpr12 = Bpr[1];
    				    Bpr21 = Bpr[2]; Bpr22 = Bpr[3];
 				}
@@ -539,17 +1710,17 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 					} else if( transb == 'T' ) {
    				        Bpi11 = Bpi[0]; Bpi12 = Bpi[1];
    				        Bpi21 = Bpi[2]; Bpi22 = Bpi[3];
-					} else {
+					} else {/* transb == 'C' */
    				        Bpi11 =-Bpi[0]; Bpi12 =-Bpi[1];
    				        Bpi21 =-Bpi[2]; Bpi22 =-Bpi[3];
 					}
 				}
 				break;
-    		case 3: 
+    		case 3: /* (m x 2)*(2 x 3) */
 				if( transb == 'N' || transb == 'G' ) {
    				    Bpr11 = Bpr[0]; Bpr12 = Bpr[2]; Bpr13 = Bpr[4];
    				    Bpr21 = Bpr[1]; Bpr22 = Bpr[3]; Bpr23 = Bpr[5];
-				} else { 
+				} else { /* transa == 'T' || transa == 'C' */
    				    Bpr11 = Bpr[0]; Bpr12 = Bpr[1]; Bpr13 = Bpr[2];
    				    Bpr21 = Bpr[3]; Bpr22 = Bpr[4]; Bpr23 = Bpr[5];
 				}
@@ -563,17 +1734,17 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 					} else if( transb == 'T' ) {
    				        Bpi11 = Bpi[0]; Bpi12 = Bpi[1]; Bpi13 = Bpi[2];
    				        Bpi21 = Bpi[3]; Bpi22 = Bpi[4]; Bpi23 = Bpi[5];
-					} else {
+					} else {/* transb == 'C' */
    				        Bpi11 =-Bpi[0]; Bpi12 =-Bpi[1]; Bpi13 =-Bpi[2];
    				        Bpi21 =-Bpi[3]; Bpi22 =-Bpi[4]; Bpi23 =-Bpi[5];
 					}
 				}
 				break;
-    		case 4: 
+    		case 4: /* (m x 2)*(2 x 4) */
 				if( transb == 'N' || transb == 'G' ) {
    				    Bpr11 = Bpr[0]; Bpr12 = Bpr[2]; Bpr13 = Bpr[4]; Bpr14 = Bpr[6];
    				    Bpr21 = Bpr[1]; Bpr22 = Bpr[3]; Bpr23 = Bpr[5]; Bpr24 = Bpr[7];
-				} else {
+				} else { /* transa == 'T' || transa == 'C' */
    				    Bpr11 = Bpr[0]; Bpr12 = Bpr[1]; Bpr13 = Bpr[2]; Bpr14 = Bpr[3];
    				    Bpr21 = Bpr[4]; Bpr22 = Bpr[5]; Bpr23 = Bpr[6]; Bpr24 = Bpr[7];
 				}
@@ -587,7 +1758,7 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 					} else if( transb == 'T' ) {
    				        Bpi11 = Bpi[0]; Bpi12 = Bpi[1]; Bpi13 = Bpi[2]; Bpi14 = Bpi[3];
    				        Bpi21 = Bpi[4]; Bpi22 = Bpi[5]; Bpi23 = Bpi[6]; Bpi24 = Bpi[7];
-					} else {
+					} else {/* transb == 'C' */
    				        Bpi11 =-Bpi[0]; Bpi12 =-Bpi[1]; Bpi13 =-Bpi[2]; Bpi14 =-Bpi[3];
    				        Bpi21 =-Bpi[4]; Bpi22 =-Bpi[5]; Bpi23 =-Bpi[6]; Bpi24 =-Bpi[7];
 					}
@@ -596,9 +1767,9 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 			}
 			break;
 
-		case 3: 
+		case 3: /* (m x 3)*(3 x n) */
 			switch( n ) {
-    		case 1: 
+    		case 1: /* (m x 3)*(3 x 1) */
 				Bpr11 = Bpr[0]; 
 				Bpr21 = Bpr[1];
 				Bpr31 = Bpr[2];
@@ -607,19 +1778,19 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 						Bpi11 = Bpi[0]; 
 						Bpi21 = Bpi[1];
 						Bpi31 = Bpi[2];
-					} else { 
+					} else { /* transb == 'G' || transb == 'C' */
 						Bpi11 =-Bpi[0];
 						Bpi21 =-Bpi[1];
 						Bpi31 =-Bpi[2];
 					}
 				}
 				break;
-    		case 2: 
+    		case 2: /* (m x 3)*(3 x 2) */
 				if( transb == 'N' || transb == 'G' ) {
    				    Bpr11 = Bpr[0]; Bpr12 = Bpr[3];
    				    Bpr21 = Bpr[1]; Bpr22 = Bpr[4];
    				    Bpr31 = Bpr[2]; Bpr32 = Bpr[5];
-				} else { 
+				} else { /* transa == 'T' || transa == 'C' */
    				    Bpr11 = Bpr[0]; Bpr12 = Bpr[1];
    				    Bpr21 = Bpr[2]; Bpr22 = Bpr[3];
    				    Bpr31 = Bpr[4]; Bpr32 = Bpr[5];
@@ -637,19 +1808,19 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
    				        Bpi11 = Bpi[0]; Bpi12 = Bpi[1];
    				        Bpi21 = Bpi[2]; Bpi22 = Bpi[3];
    				        Bpi31 = Bpi[4]; Bpi32 = Bpi[5];
-					} else {
+					} else {/* transb == 'C' */
    				        Bpi11 =-Bpi[0]; Bpi12 =-Bpi[1];
    				        Bpi21 =-Bpi[2]; Bpi22 =-Bpi[3];
    				        Bpi31 =-Bpi[4]; Bpi32 =-Bpi[5];
 					}
 				}
 				break;
-    		case 3: 
+    		case 3: /* (m x 3)*(3 x 3) */
 				if( transb == 'N' || transb == 'G' ) {
    				    Bpr11 = Bpr[0]; Bpr12 = Bpr[3]; Bpr13 = Bpr[6];
    				    Bpr21 = Bpr[1]; Bpr22 = Bpr[4]; Bpr23 = Bpr[7];
    				    Bpr31 = Bpr[2]; Bpr32 = Bpr[5]; Bpr33 = Bpr[8];
-				} else { 
+				} else { /* transa == 'T' || transa == 'C' */
    				    Bpr11 = Bpr[0]; Bpr12 = Bpr[1]; Bpr13 = Bpr[2];
    				    Bpr21 = Bpr[3]; Bpr22 = Bpr[4]; Bpr23 = Bpr[5];
    				    Bpr31 = Bpr[6]; Bpr32 = Bpr[7]; Bpr33 = Bpr[8];
@@ -667,19 +1838,19 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
    				        Bpi11 = Bpi[0]; Bpi12 = Bpi[1]; Bpi13 = Bpi[2];
    				        Bpi21 = Bpi[3]; Bpi22 = Bpi[4]; Bpi23 = Bpi[5];
    				        Bpi31 = Bpi[6]; Bpi32 = Bpi[7]; Bpi33 = Bpi[8];
-					} else {
+					} else {/* transb == 'C' */
    				        Bpi11 =-Bpi[0]; Bpi12 =-Bpi[1]; Bpi13 =-Bpi[2];
    				        Bpi21 =-Bpi[3]; Bpi22 =-Bpi[4]; Bpi23 =-Bpi[5];
    				        Bpi31 =-Bpi[6]; Bpi32 =-Bpi[7]; Bpi33 =-Bpi[8];
 					}
 				}
 				break;
-    		case 4: 
+    		case 4: /* (m x 3)*(3 x 4) */
 				if( transb == 'N' || transb == 'G' ) {
    				    Bpr11 = Bpr[0]; Bpr12 = Bpr[3]; Bpr13 = Bpr[6]; Bpr14 = Bpr[9];
    				    Bpr21 = Bpr[1]; Bpr22 = Bpr[4]; Bpr23 = Bpr[7]; Bpr24 = Bpr[10];
    				    Bpr31 = Bpr[2]; Bpr32 = Bpr[5]; Bpr33 = Bpr[8]; Bpr34 = Bpr[11];
-				} else { 
+				} else { /* transa == 'T' || transa == 'C' */
    				    Bpr11 = Bpr[0]; Bpr12 = Bpr[1]; Bpr13 = Bpr[2]; Bpr14 = Bpr[3];
    				    Bpr21 = Bpr[4]; Bpr22 = Bpr[5]; Bpr23 = Bpr[6]; Bpr24 = Bpr[7];
    				    Bpr31 = Bpr[8]; Bpr32 = Bpr[9]; Bpr33 = Bpr[10];Bpr34 = Bpr[11];
@@ -697,7 +1868,7 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
    				        Bpi11 = Bpi[0]; Bpi12 = Bpi[1]; Bpi13 = Bpi[2]; Bpi14 = Bpi[3];
    				        Bpi21 = Bpi[4]; Bpi22 = Bpi[5]; Bpi23 = Bpi[6]; Bpi24 = Bpi[7];
    				        Bpi31 = Bpi[8]; Bpi32 = Bpi[9]; Bpi33 = Bpi[10];Bpi34 = Bpi[11];
-					} else {
+					} else {/* transb == 'C' */
    				        Bpi11 =-Bpi[0]; Bpi12 =-Bpi[1]; Bpi13 =-Bpi[2]; Bpi14 =-Bpi[3];
    				        Bpi21 =-Bpi[4]; Bpi22 =-Bpi[5]; Bpi23 =-Bpi[6]; Bpi24 =-Bpi[7];
    				        Bpi31 =-Bpi[8]; Bpi32 =-Bpi[9]; Bpi33 =-Bpi[10];Bpi34 =-Bpi[11];
@@ -707,9 +1878,9 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 			}
 			break;
 
-		case 4: 
+		case 4: /* (m x 4)*(4 x n) */
 			switch( n ) {
-    		case 1: 
+    		case 1: /* (m x 4)*(4 x 1) */
 				Bpr11 = Bpr[0]; 
 				Bpr21 = Bpr[1];
 				Bpr31 = Bpr[2];
@@ -720,7 +1891,7 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 						Bpi21 = Bpi[1];
 						Bpi31 = Bpi[2];
 						Bpi41 = Bpi[3];
-					} else { 
+					} else { /* transb == 'G' || transb == 'C' */
 						Bpi11 =-Bpi[0];
 						Bpi21 =-Bpi[1];
 						Bpi31 =-Bpi[2];
@@ -728,13 +1899,13 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 					}
 				}
 				break;
-    		case 2: 
+    		case 2: /* (m x 4)*(4 x 2) */
 				if( transb == 'N' || transb == 'G' ) {
    				    Bpr11 = Bpr[0]; Bpr12 = Bpr[4];
-              Bpr21 = Bpr[1]; Bpr22 = Bpr[5];
+   				    Bpr21 = Bpr[1]; Bpr22 = Bpr[5];
    				    Bpr31 = Bpr[2]; Bpr32 = Bpr[6];
    				    Bpr41 = Bpr[3]; Bpr42 = Bpr[7];
-				} else {
+				} else { /* transa == 'T' || transa == 'C' */
    				    Bpr11 = Bpr[0]; Bpr12 = Bpr[1];
    				    Bpr21 = Bpr[2]; Bpr22 = Bpr[3];
    				    Bpr31 = Bpr[4]; Bpr32 = Bpr[5];
@@ -756,7 +1927,7 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
    				        Bpi21 = Bpi[2]; Bpi22 = Bpi[3];
    				        Bpi31 = Bpi[4]; Bpi32 = Bpi[5];
    				        Bpi41 = Bpi[6]; Bpi42 = Bpi[7];
-					} else {
+					} else {/* transb == 'C' */
    				        Bpi11 =-Bpi[0]; Bpi12 =-Bpi[1];
    				        Bpi21 =-Bpi[2]; Bpi22 =-Bpi[3];
    				        Bpi31 =-Bpi[4]; Bpi32 =-Bpi[5];
@@ -764,13 +1935,13 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 					}
 				}
 				break;
-    		case 3: 
+    		case 3: /* (m x 4)*(4 x 3) */
 				if( transb == 'N' || transb == 'G' ) {
    				    Bpr11 = Bpr[0]; Bpr12 = Bpr[4]; Bpr13 = Bpr[8];
    				    Bpr21 = Bpr[1]; Bpr22 = Bpr[5]; Bpr23 = Bpr[9];
    				    Bpr31 = Bpr[2]; Bpr32 = Bpr[6]; Bpr33 = Bpr[10];
    				    Bpr41 = Bpr[3]; Bpr42 = Bpr[7]; Bpr43 = Bpr[11];
-				} else { 
+				} else { /* transa == 'T' || transa == 'C' */
    				    Bpr11 = Bpr[0]; Bpr12 = Bpr[1]; Bpr13 = Bpr[2];
    				    Bpr21 = Bpr[3]; Bpr22 = Bpr[4]; Bpr23 = Bpr[5];
    				    Bpr31 = Bpr[6]; Bpr32 = Bpr[7]; Bpr33 = Bpr[8];
@@ -792,7 +1963,7 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
    				        Bpi21 = Bpi[3]; Bpi22 = Bpi[4]; Bpi23 = Bpi[5];
    				        Bpi31 = Bpi[6]; Bpi32 = Bpi[7]; Bpi33 = Bpi[8];
    				        Bpi41 = Bpi[9]; Bpi42 = Bpi[10];Bpi43 = Bpi[11];
-					} else {
+					} else {/* transb == 'C' */
    				        Bpi11 =-Bpi[0]; Bpi12 =-Bpi[1]; Bpi13 =-Bpi[2];
    				        Bpi21 =-Bpi[3]; Bpi22 =-Bpi[4]; Bpi23 =-Bpi[5];
    				        Bpi31 =-Bpi[6]; Bpi32 =-Bpi[7]; Bpi33 =-Bpi[8];
@@ -800,13 +1971,13 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 					}
 				}
 				break;
-    		case 4: 
+    		case 4: /* (m x 4)*(4 x 4) */
 				if( transb == 'N' || transb == 'G' ) {
    				    Bpr11 = Bpr[0]; Bpr12 = Bpr[4]; Bpr13 = Bpr[8]; Bpr14 = Bpr[12];
    				    Bpr21 = Bpr[1]; Bpr22 = Bpr[5]; Bpr23 = Bpr[9]; Bpr24 = Bpr[13];
    				    Bpr31 = Bpr[2]; Bpr32 = Bpr[6]; Bpr33 = Bpr[10];Bpr34 = Bpr[14];
    				    Bpr41 = Bpr[3]; Bpr42 = Bpr[7]; Bpr43 = Bpr[11];Bpr44 = Bpr[15];
-				} else { 
+				} else { /* transa == 'T' || transa == 'C' */
    				    Bpr11 = Bpr[0]; Bpr12 = Bpr[1]; Bpr13 = Bpr[2]; Bpr14 = Bpr[3];
    				    Bpr21 = Bpr[4]; Bpr22 = Bpr[5]; Bpr23 = Bpr[6]; Bpr24 = Bpr[7];
    				    Bpr31 = Bpr[8]; Bpr32 = Bpr[9]; Bpr33 = Bpr[10];Bpr34 = Bpr[11];
@@ -828,7 +1999,7 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
    				        Bpi21 = Bpi[4]; Bpi22 = Bpi[5]; Bpi23 = Bpi[6]; Bpi24 = Bpi[7];
    				        Bpi31 = Bpi[8]; Bpi32 = Bpi[9]; Bpi33 = Bpi[10];Bpi34 = Bpi[11];
    				        Bpi41 = Bpi[12];Bpi42 = Bpi[13];Bpi43 = Bpi[14];Bpi44 = Bpi[15];
-					} else {
+					} else {/* transb == 'C' */
    				        Bpi11 =-Bpi[0]; Bpi12 =-Bpi[1]; Bpi13 =-Bpi[2]; Bpi14 =-Bpi[3];
    				        Bpi21 =-Bpi[4]; Bpi22 =-Bpi[5]; Bpi23 =-Bpi[6]; Bpi24 =-Bpi[7];
    				        Bpi31 =-Bpi[8]; Bpi32 =-Bpi[9]; Bpi33 =-Bpi[10];Bpi34 =-Bpi[11];
@@ -839,20 +2010,20 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 			}
 			break;
 		}
-		
+		/* Form A elements and do the multiply */
 		switch( m ) {
-		case 1: 
+		case 1: /* (1 x k)*(k x n) */
 			switch( k ) {
-     		case 1: 
+     		case 1: /* (1 x 1)*(1 x n) */
 				mexErrMsgTxt("Internal Error (1 x 1)*(1 x n), contact author.");
 				break;
 
-			case 2: 
+			case 2: /* (1 x 2)*(2 x n) */
 				Apr11 = Apr[0]; Apr12 = Apr[1];
 				if( Api ) {
 					if( transa == 'N' || transa == 'T' ) {
         				Api11 = Api[0]; Api12 = Api[1];
-					} else { 
+					} else { /* transa == 'G' || transa == 'C' */
         				Api11 =-Api[0]; Api12 =-Api[1];
 					}
 				}
@@ -917,12 +2088,12 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 				}
 				break;
 
-			case 3: 
+			case 3: /* (1 x 3)*(3 x n) */
 				Apr11 = Apr[0]; Apr12 = Apr[1]; Apr13 = Apr[2];
 				if( Api ) {
 					if( transa == 'N' || transa == 'T' ) {
         				Api11 = Api[0]; Api12 = Api[1]; Api13 = Api[2];
-					} else { 
+					} else { /* transa == 'G' || transa == 'C' */
         				Api11 =-Api[0]; Api12 =-Api[1]; Api13 =-Api[2];
 					}
 				}
@@ -987,12 +2158,12 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 				}
 				break;
 
-			case 4: 
+			case 4: /* (1 x 4)*(4 x n) */
 				Apr11 = Apr[0]; Apr12 = Apr[1]; Apr13 = Apr[2]; Apr14 = Apr[3];
 				if( Api ) {
 					if( transa == 'N' || transa == 'T' ) {
         				Api11 = Api[0]; Api12 = Api[1]; Api13 = Api[2]; Api14 = Api[3];
-					} else { 
+					} else { /* transa == 'G' || transa == 'C' */
         				Api11 =-Api[0]; Api12 =-Api[1]; Api13 =-Api[2]; Api14 =-Api[3];
 					}
 				}
@@ -1059,16 +2230,16 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 			}
 			break;
 
-		case 2: 
+		case 2: /* (2 x k)*(k x n) */
 			switch( k ) {
-     		case 1: 
+     		case 1: /* (2 x 1)*(1 x n) */
 				Apr11 = Apr[0];
 				Apr21 = Apr[1];
 				if( Api ) {
 					if( transa == 'N' || transa == 'T' ) {
         				Api11 = Api[0];
 						Api21 = Api[1];
-					} else { 
+					} else { /* transa == 'G' || transa == 'C' */
         				Api11 =-Api[0];
 						Api21 =-Api[1];
 					}
@@ -1162,11 +2333,11 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 				}
 				break;
 
-			case 2: 
+			case 2: /* (2 x 2)*(2 x n) */
 				if( transa == 'N' || transa == 'G' ) {
 				    Apr11 = Apr[0]; Apr12 = Apr[2];
   				    Apr21 = Apr[1]; Apr22 = Apr[3];
-				} else { 
+				} else { /* transa == 'T' || transa == 'C' */
 				    Apr11 = Apr[0]; Apr12 = Apr[1];
   				    Apr21 = Apr[2]; Apr22 = Apr[3];
 				}
@@ -1180,7 +2351,7 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
                     } else if( transa == 'C' ) {
                         Api11 = -Api[0]; Api12 = -Api[1];
                         Api21 = -Api[2]; Api22 = -Api[3];
-                    } else {
+                    } else {/* transa == 'G' */
                         Api11 = -Api[0]; Api12 = -Api[2];
                         Api21 = -Api[1]; Api22 = -Api[3];
                     }
@@ -1274,11 +2445,11 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 				}
 				break;
 
-			case 3: 
+			case 3: /* (2 x 3)*(3 x n) */
 				if( transa == 'N' || transa == 'G' ) {
 				    Apr11 = Apr[0]; Apr12 = Apr[2]; Apr13 = Apr[4];
   				    Apr21 = Apr[1]; Apr22 = Apr[3]; Apr23 = Apr[5];
-				} else { 
+				} else { /* transa == 'T' || transa == 'C' */
 				    Apr11 = Apr[0]; Apr12 = Apr[1]; Apr13 = Apr[2];
   				    Apr21 = Apr[3]; Apr22 = Apr[4]; Apr23 = Apr[5];
 				}
@@ -1292,7 +2463,7 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
                     } else if( transa == 'C' ) {
                         Api11 =-Api[0]; Api12 =-Api[1]; Api13 =-Api[2];
                         Api21 =-Api[3]; Api22 =-Api[4]; Api23 =-Api[5];
-                    } else {
+                    } else {/* transa == 'G' */
                         Api11 =-Api[0]; Api12 =-Api[2]; Api13 =-Api[4];
                         Api21 =-Api[1]; Api22 =-Api[3]; Api23 =-Api[5];
                     }
@@ -1386,11 +2557,11 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 				}
 				break;
 
-			case 4: 
+			case 4: /* (2 x 4)*(4 x n) */
 				if( transa == 'N' || transa == 'G' ) {
 				    Apr11 = Apr[0]; Apr12 = Apr[2]; Apr13 = Apr[4]; Apr14 = Apr[6];
 				    Apr21 = Apr[1]; Apr22 = Apr[3]; Apr23 = Apr[5]; Apr24 = Apr[7];
-				} else { 
+				} else { /* transa == 'T' || transa == 'C' */
 				    Apr11 = Apr[0]; Apr12 = Apr[1]; Apr13 = Apr[2]; Apr14 = Apr[3];
 				    Apr21 = Apr[4]; Apr22 = Apr[5]; Apr23 = Apr[6]; Apr24 = Apr[7];
 				}
@@ -1404,7 +2575,7 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 					} else if( transa == 'G' ) {
 				        Api11 =-Api[0]; Api12 =-Api[2]; Api13 =-Api[4]; Api14 =-Api[6];
 				        Api21 =-Api[1]; Api22 =-Api[3]; Api23 =-Api[5]; Api24 =-Api[7];
-				    } else { 
+				    } else { /* transa == 'C' */
 				        Api11 =-Api[0]; Api12 =-Api[1]; Api13 =-Api[2]; Api14 =-Api[3];
 				        Api21 =-Api[4]; Api22 =-Api[5]; Api23 =-Api[6]; Api24 =-Api[7];
 				    }
@@ -1500,9 +2671,9 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 			}
 			break;
 
-		case 3: 
+		case 3: /* (3 x k)*(k x n) */
 			switch( k ) {
-     		case 1: 
+     		case 1: /* (3 x 1)*(1 x n) */
 				Apr11 = Apr[0];
 				Apr21 = Apr[1];
 				Apr31 = Apr[2];
@@ -1511,7 +2682,7 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
         				Api11 = Api[0];
 						Api21 = Api[1];
 						Api31 = Api[2];
-					} else { 
+					} else { /* transa == 'G' || transa == 'C' */
         				Api11 =-Api[0];
 						Api21 =-Api[1];
 						Api31 =-Api[2];
@@ -1634,12 +2805,12 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 				}
 				break;
 
-			case 2: 
+			case 2: /* (3 x 2)*(2 x n) */
 				if( transa == 'N' || transa == 'G' ) {
 				    Apr11 = Apr[0]; Apr12 = Apr[3];
   				    Apr21 = Apr[1]; Apr22 = Apr[4];
   				    Apr31 = Apr[2]; Apr32 = Apr[5];
-				} else { 
+				} else { /* transa == 'T' || transa == 'C' */
 				    Apr11 = Apr[0]; Apr12 = Apr[1];
   				    Apr21 = Apr[2]; Apr22 = Apr[3];
   				    Apr31 = Apr[4]; Apr32 = Apr[5];
@@ -1657,7 +2828,7 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
                         Api11 = -Api[0]; Api12 = -Api[1];
                         Api21 = -Api[2]; Api22 = -Api[3];
                         Api31 = -Api[4]; Api32 = -Api[5];
-                    } else {
+                    } else {/* transa == 'G' */
                         Api11 = -Api[0]; Api12 = -Api[3];
                         Api21 = -Api[1]; Api22 = -Api[4];
                         Api31 = -Api[2]; Api32 = -Api[5];
@@ -1780,12 +2951,12 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 				}
 				break;
 
-			case 3: 
+			case 3: /* (3 x 3)*(3 x n) */
 				if( transa == 'N' || transa == 'G' ) {
 				    Apr11 = Apr[0]; Apr12 = Apr[3]; Apr13 = Apr[6];
   				    Apr21 = Apr[1]; Apr22 = Apr[4]; Apr23 = Apr[7];
   				    Apr31 = Apr[2]; Apr32 = Apr[5]; Apr33 = Apr[8];
-				} else { 
+				} else { /* transa == 'T' || transa == 'C' */
 				    Apr11 = Apr[0]; Apr12 = Apr[1]; Apr13 = Apr[2];
   				    Apr21 = Apr[3]; Apr22 = Apr[4]; Apr23 = Apr[5];
   				    Apr31 = Apr[6]; Apr32 = Apr[7]; Apr33 = Apr[8];
@@ -1803,7 +2974,7 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
                         Api11 =-Api[0]; Api12 =-Api[1]; Api13 =-Api[2];
                         Api21 =-Api[3]; Api22 =-Api[4]; Api23 =-Api[5];
                         Api31 =-Api[6]; Api32 =-Api[7]; Api33 =-Api[8];
-                    } else {
+                    } else {/* transa == 'G' */
                         Api11 =-Api[0]; Api12 =-Api[3]; Api13 =-Api[6];
                         Api21 =-Api[1]; Api22 =-Api[4]; Api23 =-Api[7];
                         Api31 =-Api[2]; Api32 =-Api[5]; Api33 =-Api[8];
@@ -1926,12 +3097,12 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 				}
 				break;
 
-			case 4: 
+			case 4: /* (3 x 4)*(4 x n) */
 				if( transa == 'N' || transa == 'G' ) {
 				    Apr11 = Apr[0]; Apr12 = Apr[3]; Apr13 = Apr[6]; Apr14 = Apr[9];
 				    Apr21 = Apr[1]; Apr22 = Apr[4]; Apr23 = Apr[7]; Apr24 = Apr[10];
 				    Apr31 = Apr[2]; Apr32 = Apr[5]; Apr33 = Apr[8]; Apr34 = Apr[11];
-				} else { 
+				} else { /* transa == 'T' || transa == 'C' */
 				    Apr11 = Apr[0]; Apr12 = Apr[1]; Apr13 = Apr[2]; Apr14 = Apr[3];
 				    Apr21 = Apr[4]; Apr22 = Apr[5]; Apr23 = Apr[6]; Apr24 = Apr[7];
 				    Apr31 = Apr[8]; Apr32 = Apr[9]; Apr33 = Apr[10];Apr34 = Apr[11];
@@ -1949,7 +3120,7 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 				        Api11 =-Api[0]; Api12 =-Api[3]; Api13 =-Api[6]; Api14 =-Api[9];
 				        Api21 =-Api[1]; Api22 =-Api[4]; Api23 =-Api[7]; Api24 =-Api[10];
 				        Api31 =-Api[2]; Api32 =-Api[5]; Api33 =-Api[8]; Api34 =-Api[11];
-				    } else { 
+				    } else { /* transa == 'C' */
 				        Api11 =-Api[0]; Api12 =-Api[1]; Api13 =-Api[2]; Api14 =-Api[3];
 				        Api21 =-Api[4]; Api22 =-Api[5]; Api23 =-Api[6]; Api24 =-Api[7];
 				        Api31 =-Api[8]; Api32 =-Api[9]; Api33 =-Api[10];Api34 =-Api[11];
@@ -2074,9 +3245,9 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 			}
 			break;
 
-		case 4: 
+		case 4: /* (4 x k)*(k x n) */
 			switch( k ) {
-     		case 1: 
+     		case 1: /* (4 x 1)*(1 x n) */
 				Apr11 = Apr[0];
 				Apr21 = Apr[1];
 				Apr31 = Apr[2];
@@ -2087,7 +3258,7 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 						Api21 = Api[1];
 						Api31 = Api[2];
 						Api41 = Api[3];
-					} else { 
+					} else { /* transa == 'G' || transa == 'C' */
         				Api11 =-Api[0];
 						Api21 =-Api[1];
 						Api31 =-Api[2];
@@ -2239,13 +3410,13 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 				}
 				break;
 
-			case 2: 
+			case 2: /* (4 x 2)*(2 x n) */
 				if( transa == 'N' || transa == 'G' ) {
 				    Apr11 = Apr[0]; Apr12 = Apr[4];
   				    Apr21 = Apr[1]; Apr22 = Apr[5];
   				    Apr31 = Apr[2]; Apr32 = Apr[6];
   				    Apr41 = Apr[3]; Apr42 = Apr[7];
-				} else { 
+				} else { /* transa == 'T' || transa == 'C' */
 				    Apr11 = Apr[0]; Apr12 = Apr[1];
   				    Apr21 = Apr[2]; Apr22 = Apr[3];
   				    Apr31 = Apr[4]; Apr32 = Apr[5];
@@ -2267,7 +3438,7 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
                         Api21 = -Api[2]; Api22 = -Api[3];
                         Api31 = -Api[4]; Api32 = -Api[5];
                         Api41 = -Api[6]; Api42 = -Api[7];
-                    } else {
+                    } else {/* transa == 'G' */
                         Api11 = -Api[0]; Api12 = -Api[4];
                         Api21 = -Api[1]; Api22 = -Api[5];
                         Api31 = -Api[2]; Api32 = -Api[6];
@@ -2419,13 +3590,13 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 				}
 				break;
 
-			case 3: 
+			case 3: /* (4 x 3)*(3 x n) */
 				if( transa == 'N' || transa == 'G' ) {
 				    Apr11 = Apr[0]; Apr12 = Apr[4]; Apr13 = Apr[8];
   				    Apr21 = Apr[1]; Apr22 = Apr[5]; Apr23 = Apr[9];
   				    Apr31 = Apr[2]; Apr32 = Apr[6]; Apr33 = Apr[10];
   				    Apr41 = Apr[3]; Apr42 = Apr[7]; Apr43 = Apr[11];
-				} else { 
+				} else { /* transa == 'T' || transa == 'C' */
 				    Apr11 = Apr[0]; Apr12 = Apr[1]; Apr13 = Apr[2];
   				    Apr21 = Apr[3]; Apr22 = Apr[4]; Apr23 = Apr[5];
   				    Apr31 = Apr[6]; Apr32 = Apr[7]; Apr33 = Apr[8];
@@ -2447,7 +3618,7 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
                         Api21 =-Api[3]; Api22 =-Api[4]; Api23 =-Api[5];
                         Api31 =-Api[6]; Api32 =-Api[7]; Api33 =-Api[8];
                         Api41 =-Api[9]; Api42 =-Api[10];Api43 =-Api[11];
-                    } else {
+                    } else {/* transa == 'G' */
                         Api11 =-Api[0]; Api12 =-Api[4]; Api13 =-Api[8];
                         Api21 =-Api[1]; Api22 =-Api[5]; Api23 =-Api[9];
                         Api31 =-Api[2]; Api32 =-Api[6]; Api33 =-Api[10];
@@ -2599,13 +3770,13 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 				}
 				break;
 
-			case 4: 
+			case 4: /* (4 x 4)*(4 x n) */
 				if( transa == 'N' || transa == 'G' ) {
 				    Apr11 = Apr[0]; Apr12 = Apr[4]; Apr13 = Apr[8]; Apr14 = Apr[12];
 				    Apr21 = Apr[1]; Apr22 = Apr[5]; Apr23 = Apr[9]; Apr24 = Apr[13];
 				    Apr31 = Apr[2]; Apr32 = Apr[6]; Apr33 = Apr[10];Apr34 = Apr[14];
 				    Apr41 = Apr[3]; Apr42 = Apr[7]; Apr43 = Apr[11];Apr44 = Apr[15];
-				} else { 
+				} else { /* transa == 'T' || transa == 'C' */
 				    Apr11 = Apr[0]; Apr12 = Apr[1]; Apr13 = Apr[2]; Apr14 = Apr[3];
 				    Apr21 = Apr[4]; Apr22 = Apr[5]; Apr23 = Apr[6]; Apr24 = Apr[7];
 				    Apr31 = Apr[8]; Apr32 = Apr[9]; Apr33 = Apr[10];Apr34 = Apr[11];
@@ -2627,7 +3798,7 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 				        Api21 =-Api[1]; Api22 =-Api[5]; Api23 =-Api[9]; Api24 =-Api[13];
 				        Api31 =-Api[2]; Api32 =-Api[6]; Api33 =-Api[10];Api34 =-Api[14];
 				        Api41 =-Api[3]; Api42 =-Api[7]; Api43 =-Api[11];Api44 =-Api[15];
-				    } else { 
+				    } else { /* transa == 'C' */
 				        Api11 =-Api[0]; Api12 =-Api[1]; Api13 =-Api[2]; Api14 =-Api[3];
 				        Api21 =-Api[4]; Api22 =-Api[5]; Api23 =-Api[6]; Api24 =-Api[7];
 				        Api31 =-Api[8]; Api32 =-Api[9]; Api33 =-Api[10];Api34 =-Api[11];
@@ -2787,9 +3958,9 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
  *---------------------------------------------------------------------------- */
 
     } else if( m == 1 && n == 1 ) {
-        z = RealKindDotProduct(k, Apr, Api, ai, Bpr, Bpi, bi);
+        z = RealKindDotProduct(k, Apr, Api, ai, Bpr, Bpi, bi, dot_method);
         *Cpr = z.r;
-        if( mxIsComplex(C) ) {
+        if( Cpi ) {
             *Cpi = z.i;
         }
 
@@ -2797,8 +3968,8 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
  * Vector outer product (M x 1) * (1 x N)
  *---------------------------------------------------------------------------- */
 
-    } else if( k == 1 && !matlab ) {
-        RealKindOuterProduct(m, n, Apr, Api, transa, Bpr, Bpi, transb, Cpr, Cpi);
+    } else if( k == 1 ) {
+        RealKindOuterProduct(m, n, Apr, Api, transa, Bpr, Bpi, transb, Cpr, Cpi, outer_method);
       
 /*----------------------------------------------------------------------------
  * Matrix times vector (M x K) * (K x 1)
@@ -2808,52 +3979,49 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 
 /*----------------------------------------------------------------------------
  * If the first matrix is not transposed, use calls to xGEMV. Also use this
- * method if running in the 'MATLAB' mode (indicated by matlab variable).
+ * method if running in the 'MATLAB' or 'BLAS' mode, or the number of processors
+ * is greater than 2.
  *---------------------------------------------------------------------------- */
 
-        if( transa == 'N' || transa == 'G' || matlab ) {
+        if( transa == 'N' || transa == 'G' || mtimesx_mode == MTIMESX_BLAS ||
+			mtimesx_mode == MTIMESX_MATLAB || omp_get_num_procs() > 2 ) {
+			if( debug_message ) {
+				mexPrintf("MTIMESX: BLAS calls to " TOKENSTRING(xGEMV) "\n");
+			}
             if( transa == 'G' ) ptransa = 'N';
             xGEMV(PTRANSA, M1, N1, ONE, Apr, LDA, Bpr, INCX, ZERO, Cpr, INCY);
-            if( mxIsComplex(B) ) {
-                alpha = bi;
-                xGEMV(PTRANSA, M1, N1, ALPHA, Apr, LDA, Bpi, INCX, ZERO, Cpi, INCY);
-                if( mxIsComplex(A) ) {                    /* (complex matrix) * (complex vector) */
-                    alpha = -ai * bi;
-                    xGEMV(PTRANSA, M1, N1, ALPHA, Api, LDA, Bpi, INCX,  ONE, Cpr, INCY);
-                    alpha = ai;
-                    xGEMV(PTRANSA, M1, N1, ALPHA, Api, LDA, Bpr, INCX,  ONE, Cpi, INCY);
+            if( Bpi ) {
+                xGEMV(PTRANSA, M1, N1, BI, Apr, LDA, Bpi, INCX, ZERO, Cpi, INCY);
+                if( Api ) {                               /* (complex matrix) * (complex vector) */
+                    xGEMV(PTRANSA, M1, N1, AIBI, Api, LDA, Bpi, INCX,  ONE, Cpr, INCY);
+                    xGEMV(PTRANSA, M1, N1, AI, Api, LDA, Bpr, INCX,  ONE, Cpi, INCY);
                 } else {                                  /* (real matrix) * (complex vector)
                      * already done */
                 }
             } else {
-                if( mxIsComplex(A) ) {                    /* (complex matrix) * (real vector) */
-                    alpha = ai;
-                    xGEMV(PTRANSA, M1, N1, ALPHA, Api, LDA, Bpr, INCX, ZERO, Cpi, INCY);
+                if( Api ) {                               /* (complex matrix) * (real vector) */
+                    xGEMV(PTRANSA, M1, N1, AI, Api, LDA, Bpr, INCX, ZERO, Cpi, INCY);
                 } else {                                  /* (real matrix) * (real vector)
                      * already done */
                 }
             }
 
-/* Alternate method ... doesn't match MATLAB exactly
+/* Alternate method ... doesn't match MATLAB exactly ... not up to date
  *
  *         if( transa == 'N' || transa == 'G' || matlab ) {
  *             if( transa == 'G' ) ptransa = 'N';
  *             xGEMV(PTRANSA, M1, N1, ONE, Apr, LDA, Bpr, INCX, ZERO, Cpr, INCY);
  *             if( mxIsComplex(A) ) {
- *                 alpha = ai;
- *                 xGEMV(PTRANSA, M1, N1, ALPHA, Api, LDA, Bpr, INCX, ZERO, Cpi, INCY);
+ *                 xGEMV(PTRANSA, M1, N1, AI, Api, LDA, Bpr, INCX, ZERO, Cpi, INCY);
  *                 if( mxIsComplex(B) ) {                    // (complex matrix) * (complex vector)
- *                     alpha = -ai * bi;
- *                     xGEMV(PTRANSA, M1, N1, ALPHA, Api, LDA, Bpi, INCX,  ONE, Cpr, INCY);
- *                     alpha = bi;
- *                     xGEMV(PTRANSA, M1, N1, ALPHA, Apr, LDA, Bpi, INCX,  ONE, Cpi, INCY);
+ *                     xGEMV(PTRANSA, M1, N1, AIBI, Api, LDA, Bpi, INCX,  ONE, Cpr, INCY);
+ *                     xGEMV(PTRANSA, M1, N1, BI, Apr, LDA, Bpi, INCX,  ONE, Cpi, INCY);
  *                 } else {                                  // (complex matrix) * (real vector)
  *                     // already done
  *                 }
  *             } else {
  *                 if( mxIsComplex(B) ) {                    // (real matrix) * (complex vector)
- *                     alpha = bi;
- *                     xGEMV(PTRANSA, M1, N1, ALPHA, Apr, LDA, Bpi, INCX, ZERO, Cpi, INCY);
+ *                     xGEMV(PTRANSA, M1, N1, BI, Apr, LDA, Bpi, INCX, ZERO, Cpi, INCY);
  *                 } else {                                  // (real matrix) * (real vector)
  *                     // already done
  *                 }
@@ -2867,25 +4035,25 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
         } else { /* transa == 'T' || transa == 'C' */
             apr = Apr;
             api = Api;
-            if( mxIsComplex(A) ) {
+            if( Api ) {
                 for( i=0; i<m; i++ ) {                   /* (complex matrix) * (vector) */
-                    z = RealKindDotProduct(k, apr, api, ai, Bpr, Bpi, bi);
+                    z = RealKindDotProduct(k, apr, api, ai, Bpr, Bpi, bi, dot_method);
                     Cpr[i] = z.r;
                     Cpi[i] = z.i;
                     apr += k;
                     api += k;
                 }
             } else {                                     /* (real matrix) * (complex vector) */
-                if( mxIsComplex(B) ) {
+                if( Bpi ) {
                     for( i=0; i<m; i++ ) {
-                        z = RealKindDotProduct(k, apr, Api, ai, Bpr, Bpi, bi);
+                        z = RealKindDotProduct(k, apr, Api, ai, Bpr, Bpi, bi, dot_method);
                         Cpr[i] = z.r;
                         Cpi[i] = z.i;
                         apr += k;
                     }
                 } else {                                 /* (real matrix) * (real vector) */
                     for( i=0; i<m; i++ ) {
-                        z = RealKindDotProduct(k, apr, Api, ai, Bpr, Bpi, bi);
+                        z = RealKindDotProduct(k, apr, Api, ai, Bpr, Bpi, bi, dot_method);
                         Cpr[i] = z.r;
                         apr += k;
                     }
@@ -2901,37 +4069,38 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
 
 /*----------------------------------------------------------------------------------------
  * If the second matrix is transposed, then use calls to xGEMV with the arguments reversed.
- * Also use this method if running in 'MATLAB' mode (indicated by matlab variable).
+ * Also use this method if running in 'MATLAB' or 'BLAS' mode, or the number of processors
+ * is greater than 2.
  *---------------------------------------------------------------------------------------- */
 
-        if( transb == 'C' || transb == 'T' || matlab ) {
+        if( transb == 'C' || transb == 'T' || mtimesx_mode == MTIMESX_BLAS ||
+			mtimesx_mode == MTIMESX_MATLAB || omp_get_num_procs() > 2 ) {
+			if( debug_message ) {
+				mexPrintf("MTIMESX: BLAS calls to " TOKENSTRING(xGEMV) "\n");
+			}
             if( transb == 'C' || transb == 'T' ) {
                 ptransb = 'N';
             } else {
                 ptransb = 'T';
             }
             xGEMV(PTRANSB, M2, N2, ONE, Bpr, LDB, Apr, INCX, ZERO, Cpr, INCY);
-            if( mxIsComplex(A) ) {
-                alpha = ai;
-                xGEMV(PTRANSB, M2, N2, ALPHA, Bpr, LDB, Api, INCX, ZERO, Cpi, INCY);
-                if( mxIsComplex(B) ) {                    /* (complex matrix) * (complex vector) */
-                    alpha = -ai * bi;
-                    xGEMV(PTRANSB, M2, N2, ALPHA, Bpi, LDB, Api, INCX,  ONE, Cpr, INCY);
-                    alpha = bi;
-                    xGEMV(PTRANSB, M2, N2, ALPHA, Bpi, LDB, Apr, INCX,  ONE, Cpi, INCY);
+            if( Api ) {
+                xGEMV(PTRANSB, M2, N2, AI, Bpr, LDB, Api, INCX, ZERO, Cpi, INCY);
+                if( Bpi ) {                               /* (complex matrix) * (complex vector) */
+                    xGEMV(PTRANSB, M2, N2, AIBI, Bpi, LDB, Api, INCX,  ONE, Cpr, INCY);
+                    xGEMV(PTRANSB, M2, N2, BI, Bpi, LDB, Apr, INCX,  ONE, Cpi, INCY);
                 } else {                                  /* (complex matrix) * (real vector)
                      * already done */
                 }
             } else {
-                if( mxIsComplex(B) ) {                    /* (real matrix) * (complex vector) */
-                    alpha = bi;
-                    xGEMV(PTRANSB, M2, N2, ALPHA, Bpi, LDB, Apr, INCX, ZERO, Cpi, INCY);
+                if( Bpi ) {                               /* (real matrix) * (complex vector) */
+                    xGEMV(PTRANSB, M2, N2, BI, Bpi, LDB, Apr, INCX, ZERO, Cpi, INCY);
                 } else {                                  /* (real matrix) * (real vector)
                      * already done */
                 }
             }
 
-/* Alternate method ... doesn't match MATLAB exactly
+/* Alternate method ... doesn't match MATLAB exactly ... not up to date
  *
  *         if( transb == 'C' || transb == 'T' || matlab ) {
  *             if( transb == 'C' || transb == 'T' ) {
@@ -2941,20 +4110,16 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
  *             }
  *             xGEMV(PTRANSB, M2, N2, ONE, Bpr, LDB, Apr, INCX, ZERO, Cpr, INCY);
  *             if( mxIsComplex(B) ) {
- *                 alpha = bi;
- *                 xGEMV(PTRANSB, M2, N2, ALPHA, Bpi, LDB, Apr, INCX, ZERO, Cpi, INCY);
+ *                 xGEMV(PTRANSB, M2, N2, BI, Bpi, LDB, Apr, INCX, ZERO, Cpi, INCY);
  *                 if( mxIsComplex(A) ) {                    // (complex matrix) * (complex vector)
- *                     alpha = -ai * bi;
- *                     xGEMV(PTRANSB, M2, N2, ALPHA, Bpi, LDB, Api, INCX,  ONE, Cpr, INCY);
- *                     alpha = ai;
- *                     xGEMV(PTRANSB, M2, N2, ALPHA, Bpr, LDB, Api, INCX,  ONE, Cpi, INCY);
+ *                     xGEMV(PTRANSB, M2, N2, AIBI, Bpi, LDB, Api, INCX,  ONE, Cpr, INCY);
+ *                     xGEMV(PTRANSB, M2, N2, AI, Bpr, LDB, Api, INCX,  ONE, Cpi, INCY);
  *                 } else {                                  // (real matrix) * (complex vector)
  *                     // already done
  *                 }
  *             } else {
  *                 if( mxIsComplex(A) ) {                    // (complex matrix) * (real vector)
- *                     alpha = ai;
- *                     xGEMV(PTRANSB, M2, N2, ALPHA, Bpr, LDB, Api, INCX, ZERO, Cpi, INCY);
+ *                     xGEMV(PTRANSB, M2, N2, AI, Bpr, LDB, Api, INCX, ZERO, Cpi, INCY);
  *                 } else {                                  // (real matrix) * (real vector)
  *                     // already done
  *                 }
@@ -2968,25 +4133,25 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
         } else {
             bpr = Bpr;
             bpi = Bpi;
-            if( mxIsComplex(B) ) {
+            if( Bpi ) {
                 for( i=0; i<n; i++ ) {
-                    z = RealKindDotProduct(k, Apr, Api, ai, bpr, bpi, bi);
+                    z = RealKindDotProduct(k, Apr, Api, ai, bpr, bpi, bi, dot_method);
                     Cpr[i] = z.r;
                     Cpi[i] = z.i;
                     bpr += k;
                     bpi += k;
                 }
             } else {                                     /* (complex vector) * (real matrix) */
-                if( mxIsComplex(A) ) {
+                if( Api ) {
                     for( i=0; i<n; i++ ) {
-                        z = RealKindDotProduct(k, Apr, Api, ai, bpr, Bpi, bi);
+                        z = RealKindDotProduct(k, Apr, Api, ai, bpr, Bpi, bi, dot_method);
                         Cpr[i] = z.r;
                         Cpi[i] = z.i;
                         bpr += k;
                     }
                 } else {                                 /* (real vector) * (real matrix) */
                     for( i=0; i<n; i++ ) {
-                        z = RealKindDotProduct(k, Apr, Api, ai, bpr, Bpi, bi);
+                        z = RealKindDotProduct(k, Apr, Api, ai, bpr, Bpi, bi, dot_method);
                         Cpr[i] = z.r;
                         bpr += k;
                     }
@@ -3000,10 +4165,11 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
  * contiguous column vectors. When the column size reaches about 8 then the memory
  * access efficiency of the BLAS routines increases and this custom method is no
  * longer faster. The number 8 is likely machine / implementation dependent. Only
- * use this method if running in the 'SPEED' mode.
+ * use this method if running in one of the 'SPEED' or 'LOOPS' type modes.
  *--------------------------------------------------------------------------------- */
 
-    } else if( !matlab && n < 7 && (transa == 'T' || transa == 'C') && (transb == 'N' || transb == 'G') ) {
+    } else if( !(mtimesx_mode == MTIMESX_BLAS || mtimesx_mode == MTIMESX_MATLAB) &&
+		       n < 7 && (transa == 'T' || transa == 'C') && (transb == 'N' || transb == 'G') ) {
         bpr = Bpr;
         bpi = Bpi;
         cpr = Cpr;
@@ -3012,7 +4178,7 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
             apr = Apr;
             api = Api;
             for( i=0; i<m; i++ ) {
-                z = RealKindDotProduct(k, apr, api, ai, bpr, bpi, bi);
+                z = RealKindDotProduct(k, apr, api, ai, bpr, bpi, bi, dot_method);
                 *cpr++ = z.r;
                 if( cpi ) *cpi++ = z.i;
                 apr += k;
@@ -3032,47 +4198,64 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
  * If Matrix product is actually the same matrix, use calls to the symmetric routines xSYRK and
  * xSYR2K where possible. These only work on the lower or upper triangle part of the matrix, so
  * we will have to fill out the other half manually, but even so this will be faster. Some of
- * these will not match MATLAB exactly, so only run them in the 'SPEED' mode.
+ * these will not match MATLAB exactly, so only run them in cases where matching is not required.
  *--------------------------------------------------------------------------------------------- */
 
-        if( A == B && ((transa == 'N' && transb == 'T') ||
-                       (transa == 'T' && transb == 'N')) ) {
+        if( Apr == Bpr && ((transa == 'N' && transb == 'T') ||
+                           (transa == 'T' && transb == 'N')) ) {
+			if( debug_message ) {
+				mexPrintf("MTIMESX: BLAS calls to " TOKENSTRING(xSYRK) " and " TOKENSTRING(xSYR2K) "\n");
+			}
             xSYRK(UPLO, TRANSA, N, K, ONE, Apr, LDA, ZERO, Cpr, LDC);
-            if( mxIsComplex(A) ) {
+            if( Api ) {
                 xSYRK(UPLO, TRANSA, N, K, MINUSONE, Api, LDA, ONE, Cpr, LDC);
                 xSYR2K(UPLO,TRANSA, N, K, ONE, Api, LDA, Apr, LDA, ZERO, Cpi, LDC);
                 xFILLPOS(Cpi, n);
             }
             xFILLPOS(Cpr, n);
 
-        } else if( A == B && (!matlab || (Api == NULL && Bpi == NULL)) &&
+        } else if( Apr == Bpr && (!(mtimesx_mode == MTIMESX_BLAS || mtimesx_mode == MTIMESX_MATLAB) ||
+			                 (!Api && !Bpi)) &&
                              ((transa == 'G' && transb == 'C') ||
                               (transa == 'C' && transb == 'G')) ) {
+			if( debug_message ) {
+				mexPrintf("MTIMESX: BLAS calls to " TOKENSTRING(xSYRK) " and " TOKENSTRING(xSYR2K) "\n");
+			}
             if( transa == 'G')  ptransa = 'N';
             xSYRK(UPLO, PTRANSA, N, K, ONE, Apr, LDA, ZERO, Cpr, LDC);
-            if( mxIsComplex(A) ) {
+            if( Api ) {
                 xSYRK(UPLO, PTRANSA, N, K, MINUSONE, Api, LDA, ONE, Cpr, LDC);
                 xSYR2K(UPLO,PTRANSA, N, K, MINUSONE, Apr, LDA, Api, LDA, ZERO, Cpi, LDC);
                 xFILLPOS(Cpi, n);
             }
             xFILLPOS(Cpr, n);
 
-        } else if( A == B && ((transa == 'N' && transb == 'C') ||
-                              (transa == 'T' && transb == 'G' && (!matlab || (Api == NULL && Bpi == NULL)))) ) {
+        } else if( Apr == Bpr && ((transa == 'N' && transb == 'C') ||
+                                  (transa == 'T' && transb == 'G' && 
+							  (!(mtimesx_mode == MTIMESX_BLAS || mtimesx_mode == MTIMESX_MATLAB) ||
+							  (!Api && !Bpi)))) ) {
+			if( debug_message ) {
+				mexPrintf("MTIMESX: BLAS calls to " TOKENSTRING(xSYRK) " and " TOKENSTRING(xGEMM) "\n");
+			}
             if( transb == 'G' ) ptransb = 'N';
             xSYRK(UPLO, TRANSA, N, K, ONE, Apr, LDA, ZERO, Cpr, LDC);
-            if( mxIsComplex(A) ) {
+            if( Api ) {
                 xSYRK(UPLO, TRANSA, N, K, ONE, Api, LDA, ONE, Cpr, LDC);
                 xGEMM(TRANSA, PTRANSB, M, N, K, ONE, Api, LDA, Apr, LDA, ZERO, Cpi, LDC);
                 xFILLNEG(Cpi, n);
             }
             xFILLPOS(Cpr, n);
 
-        } else if( A == B && ((transa == 'C' && transb == 'N') ||
-                              (transa == 'G' && transb == 'T' && (!matlab || (Api == NULL && Bpi == NULL)))) ) {
+        } else if( Apr == Bpr && ((transa == 'C' && transb == 'N') ||
+                                  (transa == 'G' && transb == 'T' &&
+							  (!(mtimesx_mode == MTIMESX_BLAS || mtimesx_mode == MTIMESX_MATLAB) ||
+							  (!Api && !Bpi)))) ) {
+			if( debug_message ) {
+				mexPrintf("MTIMESX: BLAS calls to " TOKENSTRING(xSYRK) " and " TOKENSTRING(xGEMM) "\n");
+			}
             if( transa == 'G' ) ptransa = 'N';
             xSYRK(UPLO, PTRANSA, N, K, ONE, Apr, LDA, ZERO, Cpr, LDC);
-            if( mxIsComplex(A) ) {
+            if( Api ) {
                 xSYRK(UPLO, PTRANSA, N, K, ONE, Api, LDA, ONE, Cpr, LDC);
                 xGEMM(PTRANSA, TRANSB, M, N, K, ONE, Apr, LDA, Api, LDA, ZERO, Cpi, LDC);
                 xFILLNEG(Cpi, n);
@@ -3084,50 +4267,45 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
  *------------------------------------------------------------------------------------------- */
 
         } else {
+			if( debug_message ) {
+				mexPrintf("MTIMESX: BLAS calls to " TOKENSTRING(xGEMM) "\n");
+			}
             if( transa == 'G' ) ptransa = 'N';
             if( transb == 'G' ) ptransb = 'N';
             xGEMM(PTRANSA, PTRANSB, M, N, K, ONE, Apr, LDA, Bpr, LDB, ZERO, Cpr, LDC);
-            if( mxIsComplex(B) ) {
-                alpha = bi;
-                xGEMM(PTRANSA, PTRANSB, M, N, K, ALPHA, Apr, LDA, Bpi, LDB, ZERO, Cpi, LDC);
-                if( mxIsComplex(A) ) {                    /* (complex matrix) * (complex matrix) */
-                    alpha = -ai * bi;
-                    xGEMM(PTRANSA, PTRANSB, M, N, K, ALPHA, Api, LDA, Bpi, LDB,  ONE, Cpr, LDC);
-                    alpha = ai;
-                    xGEMM(PTRANSA, PTRANSB, M, N, K, ALPHA, Api, LDA, Bpr, LDB,  ONE, Cpi, LDC);
+            if( Bpi ) {
+                xGEMM(PTRANSA, PTRANSB, M, N, K, BI, Apr, LDA, Bpi, LDB, ZERO, Cpi, LDC);
+                if( Api ) {                               /* (complex matrix) * (complex matrix) */
+                    xGEMM(PTRANSA, PTRANSB, M, N, K, AIBI, Api, LDA, Bpi, LDB,  ONE, Cpr, LDC);
+                    xGEMM(PTRANSA, PTRANSB, M, N, K, AI, Api, LDA, Bpr, LDB,  ONE, Cpi, LDC);
                 } else {                                  /* (real matrix) * (complex matrix)
                      * already done */
                 }
             } else {
-                if( mxIsComplex(A) ) {                    /* (complex matrix) * (real matrix) */
-                    alpha = ai;
-                    xGEMM(PTRANSA, PTRANSB, M, N, K, ALPHA, Api, LDA, Bpr, LDB, ZERO, Cpi, LDC);
+                if( Api ) {                               /* (complex matrix) * (real matrix) */
+                    xGEMM(PTRANSA, PTRANSB, M, N, K, AI, Api, LDA, Bpr, LDB, ZERO, Cpi, LDC);
                 } else {                                  /* (real matrix) * (real matrix)
                      * already done */
                 }
             }
 
-/* Alternate method ... doesn't match MATLAB exactly
+/* Alternate method ... doesn't match MATLAB exactly ... not up to date
  *
  *         } else {
  *             if( transa == 'G' ) ptransa = 'N';
  *             if( transb == 'G' ) ptransb = 'N';
  *             xGEMM(PTRANSA, PTRANSB, M, N, K, ONE, Apr, LDA, Bpr, LDB, ZERO, Cpr, LDC);
  *             if( mxIsComplex(A) ) {
- *                 alpha = ai;
- *                 xGEMM(PTRANSA, PTRANSB, M, N, K, ALPHA, Api, LDA, Bpr, LDB, ZERO, Cpi, LDC);
+ *                 xGEMM(PTRANSA, PTRANSB, M, N, K, AI, Api, LDA, Bpr, LDB, ZERO, Cpi, LDC);
  *                 if( mxIsComplex(B) ) {                    // (complex matrix) * (complex matrix)
- *                     alpha = -ai * bi;
- *                     xGEMM(PTRANSA, PTRANSB, M, N, K, ALPHA, Api, LDA, Bpi, LDB,  ONE, Cpr, LDC);
- *                     alpha = bi;
- *                     xGEMM(PTRANSA, PTRANSB, M, N, K, ALPHA, Apr, LDA, Bpi, LDB,  ONE, Cpi, LDC);
+ *                     xGEMM(PTRANSA, PTRANSB, M, N, K, AIBI, Api, LDA, Bpi, LDB,  ONE, Cpr, LDC);
+ *                     xGEMM(PTRANSA, PTRANSB, M, N, K, BI, Apr, LDA, Bpi, LDB,  ONE, Cpi, LDC);
  *                 } else {                                  // (complex matrix) * (real matrix)
  *                     // already done
  *                 }
  *             } else {
  *                 if( mxIsComplex(B) ) {                    // (real matrix) * (complex matrix)
- *                     alpha = bi;
- *                     xGEMM(PTRANSA, PTRANSB, M, N, K, ALPHA, Apr, LDA, Bpi, LDB, ZERO, Cpi, LDC);
+ *                     xGEMM(PTRANSA, PTRANSB, M, N, K, BI, Apr, LDA, Bpi, LDB, ZERO, Cpi, LDC);
  *                 } else {                                  // (real matrix) * (real matrix)
  *                     // already done
  *                 }
@@ -3160,7 +4338,7 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
         Cpr += Csize;
         if( Cpi ) Cpi += Csize;
     }
-
+	debug_message = 0;
     }
 
     mxFree(Cindx);
@@ -3182,6 +4360,8 @@ mxArray *RealTimesReal(mxArray *A, char transa, mxArray *B, char transb)
  * Done.
  *--------------------------------------------------------------------------------- */
 
+	if( destroyA ) mxDestroyArray(A);
+	if( destroyB ) mxDestroyArray(B);
     return result;
 
 }
@@ -4951,16 +6131,141 @@ void xFILLNEG(RealKind *Cpr, mwSignedIndex n)
  * duplicate the BLAS calls that MATLAB uses (slower since it accesses the variables twice).
  *------------------------------------------------------------------------------------------ */
 
+#ifdef _OPENMP
+
+/*------------------------------------------------------------------------------------------
+ * Interface for OpenMP enabled compiling.
+ *------------------------------------------------------------------------------------------ */
+
 struct RealKindComplex RealKindDotProduct(mwSignedIndex k,
                                           RealKind *Apr, RealKind *Api, RealKind ai,
-                                          RealKind *Bpr, RealKind *Bpi, RealKind bi)
+                                          RealKind *Bpr, RealKind *Bpi, RealKind bi,
+										  int dot_method)
+{
+    struct RealKindComplex RealKindZZ[OMP_DOT_ARRAY_SIZE];
+	struct RealKindComplex z;
+	struct RealKindComplex *zz;
+	int i, j, n;
+
+	if( dot_method != METHOD_LOOPS_OMP ||
+	    (mtimesx_mode == MTIMESX_SPEED_OMP && k < OMP_DOT_SMALL) ) {
+		if( debug_message ) {
+            if( dot_method == METHOD_BLAS ) {
+			    mexPrintf("MTIMESX: BLAS calls to " TOKENSTRING(xDOT) "\n");
+			} else {
+		        mexPrintf("MTIMESX: LOOPS dot product\n");
+			}
+			debug_message = 0;
+		}
+		z = RealKindDotProductX(k, Apr, Api, ai, Bpr, Bpi, bi, dot_method);
+	} else {
+		if( debug_message ) {
+			mexPrintf("MTIMESX: OpenMP multi-threaded LOOPS dot product\n");
+			debug_message = 0;
+		}
+		if( max_threads <= OMP_DOT_ARRAY_SIZE ) {
+			zz = RealKindZZ;
+		} else {
+			zz = mxMalloc(max_threads * sizeof(*zz));
+		}
+        omp_set_dynamic(1);
+        #pragma omp parallel num_threads(max_threads)
+		{
+			RealKind *Apr_, *Api_, *Bpr_, *Bpi_;
+			mwSize k_, blocksize, offset;
+			int thread_num = omp_get_thread_num();
+			int num_threads = omp_get_num_threads();
+            #pragma omp master
+			{
+				threads_used = num_threads;
+			}
+			blocksize = k / num_threads;
+			offset = thread_num * blocksize;
+			if( thread_num == num_threads-1 ) {
+				k_ = k - offset;
+			} else {
+				k_ = blocksize;
+			}
+			Apr_ = Apr + offset;
+			if( Api ) {
+				Api_ = Api + offset;
+			} else {
+				Api_ = NULL;
+			}
+			Bpr_ = Bpr + offset;
+			if( Bpi ) {
+				Bpi_ = Bpi + offset;
+			} else {
+				Bpi_ = NULL;
+			}
+			zz[thread_num] = RealKindDotProductX(k_, Apr_, Api_, ai, Bpr_, Bpi_, bi, dot_method);
+		}
+
+/* Combine thread results in a pre-determined order, so result with same inputs will be the */
+/* same regardless of the order in which the threads execute and complete. Use a binary     */
+/* reduction scheme to maintain accuracy.                                                   */
+
+		n = threads_used - 1;
+		while( n ) {
+			if( !(n & 1) ) {
+				zz[n-1].r += zz[n].r;
+				zz[n-1].i += zz[n].i;
+				n--;
+			}
+			for( i=0, j=0; i<n; i+=2, j++ ) {
+				zz[j].r = zz[i].r + zz[i+1].r;
+				zz[j].i = zz[i].i + zz[i+1].i;
+			}
+			n >>= 1;
+		}
+		z = zz[0];
+/*
+    	z.r = zero;
+		z.i = zero;
+		for( i=0; i<threads_used; i++ ) {
+			z.r += zz[i].r;
+			z.i += zz[i].i;
+		}
+
+*/
+		if( zz != RealKindZZ ) {
+			mxFree(zz);
+		}
+	}
+    return z;
+}
+
+struct RealKindComplex RealKindDotProductX(mwSignedIndex k,
+                                          RealKind *Apr, RealKind *Api, RealKind ai,
+                                          RealKind *Bpr, RealKind *Bpi, RealKind bi,
+										  int dot_method)
+
+#else
+
+/*------------------------------------------------------------------------------------------
+ * Interface for non-OpenMP enabled compiling.
+ *------------------------------------------------------------------------------------------ */
+
+struct RealKindComplex RealKindDotProduct(mwSignedIndex k,
+                                          RealKind *Apr, RealKind *Api, RealKind ai,
+                                          RealKind *Bpr, RealKind *Bpi, RealKind bi,
+										  int dot_method)
+
+#endif
+
 {
     register double sr = 0.0, si = 0.0;
     register mwSignedIndex i;
     struct RealKindComplex z;
     mwSignedIndex k10, inc = 1;
 
-    if( matlab || (!Api && !Bpi) || (Apr == Bpr && ai != bi) ) {
+    if( dot_method == METHOD_BLAS ) {
+#ifndef _OPENMP
+		if( debug_message ) {
+		    mexPrintf("MTIMESX: BLAS calls to " TOKENSTRING(xDOT) "\n");
+			debug_message = 0;
+		}
+#endif
         sr = xDOT( &k, Apr, &inc, Bpr, &inc );
         if( Api != NULL ) {
             if( Api != Bpi || ai == bi ) {
@@ -4982,6 +6287,12 @@ struct RealKindComplex RealKindDotProduct(mwSignedIndex k,
         return z;
     }
 
+#ifndef _OPENMP
+	if( debug_message ) {
+        mexPrintf("MTIMESX: LOOPS dot product\n");
+		debug_message = 0;
+	}
+#endif
     k10 = k % 10;
     if( Api != NULL ) {
         if( Bpi != NULL ) {                    /* (complex vector) dot (complex vector) */
@@ -5253,17 +6564,182 @@ struct RealKindComplex RealKindDotProduct(mwSignedIndex k,
  * conjugates and transposes to minimize the total number of operations involved.
  *---------------------------------------------------------------------------------------- */
 
+#ifdef _OPENMP
+
+/*------------------------------------------------------------------------------------------
+ * Interface for OpenMP enabled compiling.
+ *------------------------------------------------------------------------------------------ */
+
 void RealKindOuterProduct(mwSignedIndex m, mwSignedIndex n,
                           RealKind *Apr, RealKind *Api, char transa,
                           RealKind *Bpr, RealKind *Bpi, char transb,
-                          RealKind *Cpr, RealKind *Cpi)
+                          RealKind *Cpr, RealKind *Cpi, int outer_method)
+{
+	int t;
+	RealKind ai, bi;
+
+	t = max_threads;
+	if( n < t ) t = n;
+	if( outer_method != METHOD_LOOPS_OMP ||
+	    (mtimesx_mode == MTIMESX_SPEED_OMP && m*n < OMP_OUTER_SMALL) ) {
+		if( debug_message ) {
+            if( outer_method == METHOD_BLAS ) {
+				if( debug_message ) {
+		            if( Apr != Bpr || 1 ) {  /* Force calls to generic xGER instead of xSYR */
+		                mexPrintf("MTIMESX: BLAS calls to " TOKENSTRING(xGER) "\n");
+		            } else {
+			            if( Api ) {
+    		                ai = ( transa == 'G' || transa == 'C' ) ? -one : one;
+		                    bi = ( transb == 'G' || transb == 'C' ) ? -one : one;
+				            if( ai == bi ) {
+		                        mexPrintf("MTIMESX: BLAS calls to " TOKENSTRING(xSYR) " and " TOKENSTRING(xSYR2) "\n");
+				            } else {
+		                        mexPrintf("MTIMESX: BLAS calls to " TOKENSTRING(xSYR) " and " TOKENSTRING(xGER) "\n");
+				            }
+  			            } else {
+		                    mexPrintf("MTIMESX: BLAS calls to " TOKENSTRING(xSYR) "\n");
+			            }
+					}
+					debug_message = 0;
+		        }
+			} else {
+		        mexPrintf("MTIMESX: LOOPS outer product\n");
+			}
+			debug_message = 0;
+		}
+		RealKindOuterProductX(m, n, Apr, Api, transa, Bpr, Bpi, transb, Cpr, Cpi, outer_method);
+	} else {
+		if( debug_message ) {
+			mexPrintf("MTIMESX: OpenMP multi-threaded LOOPS outer product\n");
+			debug_message = 0;
+		}
+        omp_set_dynamic(1);
+        #pragma omp parallel num_threads(t)
+		{
+			RealKind *Bpr_, *Bpi_, *Cpr_, *Cpi_;
+			mwSize n_, blocksize, offset;
+			int thread_num = omp_get_thread_num();
+			int num_threads = omp_get_num_threads();
+            #pragma omp master
+			{
+				threads_used = num_threads;
+			}
+			blocksize = n / num_threads;
+			offset = thread_num * blocksize;
+			if( thread_num == num_threads-1 ) {
+				n_ = n - offset;
+			} else {
+				n_ = blocksize;
+			}
+			Bpr_ = Bpr + offset;
+			if( Bpi ) {
+				Bpi_ = Bpi + offset;
+			} else {
+				Bpi_ = NULL;
+			}
+			Cpr_ = Cpr + offset * m;
+			if( Cpi ) {
+				Cpi_ = Cpi + offset * m;
+			} else {
+				Cpi_ = NULL;
+			}
+			RealKindOuterProductX(m, n_, Apr, Api, transa, Bpr_, Bpi_, transb, Cpr_, Cpi_, outer_method);
+		}
+	}
+}
+
+void RealKindOuterProductX(mwSignedIndex m, mwSignedIndex n,
+                          RealKind *Apr, RealKind *Api, char transa,
+                          RealKind *Bpr, RealKind *Bpi, char transb,
+                          RealKind *Cpr, RealKind *Cpi, int outer_method)
+
+#else
+
+/*------------------------------------------------------------------------------------------
+ * Interface for non-OpenMP enabled compiling.
+ *------------------------------------------------------------------------------------------ */
+
+void RealKindOuterProduct(mwSignedIndex m, mwSignedIndex n,
+                          RealKind *Apr, RealKind *Api, char transa,
+                          RealKind *Bpr, RealKind *Bpi, char transb,
+                          RealKind *Cpr, RealKind *Cpi, int outer_method)
+
+#endif
+
 {
     register mwSignedIndex i, j;
     mwSignedIndex kk;
+	mwSignedIndex inc = 1;
+	RealKind One = one;
+	RealKind ai, bi, aibi;
+	char uplo = 'L';
 
-    kk = 0;
-    if( Api != NULL ) {
-        if( Bpi != NULL ) {
+	if( outer_method == METHOD_BLAS ) {
+		ai = ( transa == 'G' || transa == 'C' ) ? -one : one;
+		bi = ( transb == 'G' || transb == 'C' ) ? -one : one;
+		aibi = - ai * bi;
+		if( Apr != Bpr || 1 ) {  /* Force calls to generic xGER instead of xSYR */
+#ifndef _OPENMP
+		    if( debug_message ) {
+		        mexPrintf("MTIMESX: BLAS calls to " TOKENSTRING(xGER) "\n");
+			    debug_message = 0;
+		    }
+#endif
+		    xGER( M, N, ONE, Apr, INCX, Bpr, INCY, Cpr, M );
+            if( Api ) {
+        	    xGER( M, N, AI, Api, INCX, Bpr, INCY, Cpi, M );
+                if( Bpi ) {
+        		    xGER( M, N, AIBI, Api, INCX, Bpi, INCY, Cpr, M );
+        		    xGER( M, N, BI, Apr, INCX, Bpi, INCY, Cpi, M );
+			    }
+            } else if( Bpi ) {
+        	    xGER( M, N, BI, Apr, INCX, Bpi, INCY, Cpi, M );
+            }
+		} else {
+		    xSYR( UPLO, M, ONE, Apr, INCX, Cpr, M );
+			if( Api ) {
+		        xSYR( UPLO, M, AIBI, Api, INCX, Cpr, M );
+				if( ai == bi ) {
+#ifndef _OPENMP
+		            if( debug_message ) {
+		                mexPrintf("MTIMESX: BLAS calls to " TOKENSTRING(xSYR) " and " TOKENSTRING(xSYR2) "\n");
+			            debug_message = 0;
+		            }
+#endif
+		            xSYR2( UPLO, M, AI, Apr, INCX, Api, INCY, Cpi, M );
+                    xFILLPOS(Cpi, m);
+				} else {
+#ifndef _OPENMP
+		            if( debug_message ) {
+		                mexPrintf("MTIMESX: BLAS calls to " TOKENSTRING(xSYR) " and " TOKENSTRING(xGER) "\n");
+			            debug_message = 0;
+		            }
+#endif
+        		    xGER( M, N, BI, Apr, INCX, Api, INCY, Cpi, M );
+                    xFILLNEG(Cpi, m);
+				}
+#ifndef _OPENMP
+			} else {
+		        if( debug_message ) {
+		            mexPrintf("MTIMESX: BLAS calls to " TOKENSTRING(xSYR) "\n");
+			        debug_message = 0;
+		        }
+#endif
+			}
+            xFILLPOS(Cpr, m);
+		}
+		return;
+	}
+
+#ifndef _OPENMP
+	if( debug_message ) {
+        mexPrintf("MTIMESX: LOOPS outer product\n");
+		debug_message = 0;
+	}
+#endif
+	kk = 0;
+    if( Api ) {
+        if( Bpi ) {
             if( (transa == 'C' || transa == 'G') && (transb == 'C' || transb == 'G') ) {
                 for( j=0; j<n; j++ ) { /* (ar + bi*i)(C or G) * (br + bi*i)(C or G) */
                     for( i=0; i<m; i++ ) {
@@ -5317,7 +6793,7 @@ void RealKindOuterProduct(mwSignedIndex m, mwSignedIndex n,
             }
         }
     } else {
-        if( Bpi != NULL ) {
+        if( Bpi ) {
             if( transb == 'C' || transb == 'G' ) {
                 for( j=0; j<n; j++ ) { /* (ar)(N or T or C or G) * (br + bi*i)(C or G) */
                     for( i=0; i<m; i++ ) {
@@ -5354,7 +6830,7 @@ void RealKindOuterProduct(mwSignedIndex m, mwSignedIndex n,
 mxArray *RealScalarTimesReal(mxArray *A, char transa, mwSize m1, mwSize n1,
                              mxArray *B, char transb, mwSize m2, mwSize n2)
 {
-    mwSize nzmax, Bndim, Cndim, Cp, p, Bsize, Csize;
+    mwSize nzmax, Bndim, Cndim, Cp, p;
     mwSize *Bdims, *Cdims;
     mwSignedIndex mn, n, k;
     mxArray *C, *result, *Bt = NULL;
@@ -5363,9 +6839,14 @@ mxArray *RealScalarTimesReal(mxArray *A, char transa, mwSize m1, mwSize n1,
     char trans;
     mxComplexity complexflag;
     mwIndex *jc;
+	int scalar_method;
 /*----- */
     if( m2 == 1 && n2 == 1 ) {  /* Make sure scalar is A and array is B */
         if( m1 == 1 && n1 == 1 ) {  /* Check for scalar * scalar */
+			if( debug_message ) {
+				mexPrintf("MTIMESX: Inline (scalar * scalar) code\n");
+				debug_message = 0;
+			}
             Apr = mxGetData(A);
             ar = *Apr;
             Api = mxGetImagData(A);
@@ -5425,13 +6906,19 @@ mxArray *RealScalarTimesReal(mxArray *A, char transa, mwSize m1, mwSize n1,
     Bpr = mxGetData(B);
     Bpi = mxGetImagData(B);
     Bndim = mxGetNumberOfDimensions(B);
-    Bdims = mxGetDimensions(B);
+    Bdims = (mwSize *) mxGetDimensions(B);
 
     if( ar == one && ai == zero ) {
         if( transb == 'N' || (transb == 'G' && Bpi == NULL) ) {
+			if( debug_message ) {
+				mexPrintf("MTIMESX: Shared data copy\n");
+			}
             result = mxCreateSharedDataCopy(B);
             return result;
         } else if( (Bdims[0] == 1 || Bdims[1] == 1) && (transb == 'T' || (transb == 'C' && Bpi == NULL)) ) {
+						if( debug_message ) {
+				mexPrintf("MTIMESX: Shared data copy\n");
+			}
             result = mxCreateSharedDataCopy(B);
             Cdims = mxMalloc( Bndim * sizeof(*Cdims) );
             for( Cp=2; Cp<Bndim; Cp++) {
@@ -5451,6 +6938,9 @@ mxArray *RealScalarTimesReal(mxArray *A, char transa, mwSize m1, mwSize n1,
  *-------------------------------------------------------------------------------------- */
 
     if( (transb == 'T' || transb == 'C') && mxIsSparse(B) ) {
+		if( debug_message ) {
+			mexPrintf("MTIMESX: Callback to MATLAB to transpose a sparse matrix\n");
+		}
         mexCallMATLAB(1, &Bt, 1, &B, "transpose");
         B = Bt;
         transb = (transb == 'T') ? 'N' : 'G';
@@ -5533,10 +7023,50 @@ mxArray *RealScalarTimesReal(mxArray *A, char transa, mwSize m1, mwSize n1,
  *    } */
 
 /*------------------------------------------------------------------------------------------------
+ * If the matrix is really a vector, then there is no need to do an actual transpose. We can
+ * simply strip the transpose operation away and rely on the dimensions to do the transpose.
+ *------------------------------------------------------------------------------------------------ */
+
+    if( m2 ==1 || n2 == 1 ) {
+        if( transb == 'T' ) transb = 'N';
+        if( transb == 'C' ) transb = 'G';
+    }
+
+/*----------------------------------------------------------------------------
+ * Get scalar product method to use.
+ *---------------------------------------------------------------------------- */
+
+	switch( mtimesx_mode )
+	{
+	case MTIMESX_BLAS:
+		scalar_method = METHOD_BLAS;
+		break;
+	case MTIMESX_LOOPS:
+		scalar_method = METHOD_LOOPS;
+		break;
+	case MTIMESX_LOOPS_OMP:
+		scalar_method = METHOD_LOOPS_OMP;
+		break;
+	case MTIMESX_SPEED_OMP:
+		if( max_threads > 1 ) {
+		    scalar_method = METHOD_LOOPS_OMP;
+			break;
+		}
+	case MTIMESX_MATLAB:
+	case MTIMESX_SPEED:
+		if( ai != zero && Bpi ) {
+			scalar_method = METHOD_LOOPS;
+		} else {
+			scalar_method = METHOD_BLAS;
+		}
+		break;
+	}
+
+/*------------------------------------------------------------------------------------------------
  * Do the scalar multiply.
  *------------------------------------------------------------------------------------------------ */
 
-    RealTimesScalar(Cpr, Cpi, Bpr, Bpi, transb, m2, n2, ar, ai, n, p);
+    RealTimesScalar(Cpr, Cpi, Bpr, Bpi, transb, m2, n2, ar, ai, n, p, scalar_method);
 
 /*-------------------------------------------------------------------------------------------
  * If the imaginary part is all zero, then free it and set the pointer to NULL.
@@ -5557,6 +7087,9 @@ mxArray *RealScalarTimesReal(mxArray *A, char transa, mwSize m1, mwSize n1,
         k = spclean(C);
         if( k == 0 ) k = 1;
         if( nzmax - k > REALLOCTOL ) {
+			if( debug_message ) {
+				mexPrintf("MTIMESX: Reallocate sparse matrix\n");
+			}
             mxSetPr(C, myRealloc(Cpr, k * sizeof(RealKind)));
             mxSetIr(C, myRealloc(mxGetIr(C), k * sizeof(mwIndex)));
             if( Cpi != NULL ) {
@@ -5582,19 +7115,138 @@ mxArray *RealScalarTimesReal(mxArray *A, char transa, mwSize m1, mwSize n1,
  * Scalar times array slice.
  *------------------------------------------------------------------------------------------- */
 
+/*-------------------------------------------------------------------------------------------
+ * OpenMP interface.
+ *------------------------------------------------------------------------------------------- */
+
+#ifdef _OPENMP
+
 void RealTimesScalar(RealKind *Cpr, RealKind *Cpi, RealKind *Bpr, RealKind *Bpi, char transb,
-                     mwSize m2, mwSize n2, RealKind ar, RealKind ai, mwSize n, mwSize p)
+                     mwSize m2, mwSize n2, RealKind ar, RealKind ai, mwSize n, mwSize p,
+					 int scalar_method)
 {
+	mwSize q;
+
+	if( transb == 'N' || transb == 'G' ) {
+		q = n;
+	} else {
+		q = m2 * n2;
+	}
 
 /*------------------------------------------------------------------------------------------------
- * If the matrix is really a vector, then there is no need to do an actual transpose. We can
- * simply strip the transpose operation away and rely on the dimensions to do the transpose.
+ * For small sizes, don't bother with the OpenMP overhead unless forced.
  *------------------------------------------------------------------------------------------------ */
 
-    if( m2 ==1 || n2 == 1 ) {
-        if( transb == 'T' ) transb = 'N';
-        if( transb == 'C' ) transb = 'G';
-    }
+	if( scalar_method != METHOD_LOOPS_OMP ||
+	    (mtimesx_mode == MTIMESX_SPEED_OMP && q < OMP_SCALAR_SMALL) ) {
+		if( debug_message ) {
+	        if( scalar_method == METHOD_BLAS && (transb == 'N' || transb == 'G') ) {
+			    mexPrintf("MTIMESX: BLAS calls to " TOKENSTRING(xAXPY) "\n");
+			} else {
+			    mexPrintf("MTIMESX: LOOPS scalar multiply\n");
+			}
+			debug_message = 0;
+		}
+	    RealTimesScalarX(Cpr, Cpi, Bpr, Bpi, transb, m2, n2, ar, ai, n, p, scalar_method);
+	} else {
+		if( debug_message ) {
+			mexPrintf("MTIMESX: OpenMP multi-threaded LOOPS scalar multiply\n");
+			debug_message = 0;
+		}
+        omp_set_dynamic(1);
+        #pragma omp parallel num_threads(max_threads)
+		{
+			RealKind *Cpr_, *Cpi_, *Bpr_, *Bpi_;
+			mwSize n_, p_, blocksize, offset, f;
+			int thread_num = omp_get_thread_num();
+			int num_threads = omp_get_num_threads();
+            #pragma omp master
+			{
+				threads_used = num_threads;
+			}
+			if( transb == 'N' || transb == 'G' ) {
+			    blocksize = n / num_threads;
+			    offset = thread_num * blocksize;
+			    if( thread_num == num_threads-1 ) {
+				    n_ = n - offset;
+			    } else {
+				    n_ = blocksize;
+			    }
+				f = offset;
+			} else {
+			    blocksize = p / num_threads;
+			    offset = thread_num * blocksize;
+			    if( thread_num == num_threads-1 ) {
+				    p_ = p - offset;
+			    } else {
+				    p_ = blocksize;
+			    }
+				f = offset * m2 * n2;
+			}
+			Cpr_ = Cpr + f;
+			if( Cpi ) {
+			    Cpi_ = Cpi + f;
+			} else {
+			    Cpi_ = NULL;
+			}
+			Bpr_ = Bpr + f;
+			if( Bpi ) {
+			    Bpi_ = Bpi + f;
+			} else {
+			    Bpi_ = NULL;
+			}
+			RealTimesScalarX(Cpr_, Cpi_, Bpr_, Bpi_, transb, m2, n2, ar, ai, n_, p_, scalar_method);
+		}
+	}
+}
+
+void RealTimesScalarX(RealKind *Cpr, RealKind *Cpi, RealKind *Bpr, RealKind *Bpi, char transb,
+                      mwSize m2, mwSize n2, RealKind ar, RealKind ai, mwSize n, mwSize p,
+					  int scalar_method)
+
+#else
+
+/*-------------------------------------------------------------------------------------------
+ * Non-OpenMP interface.
+ *------------------------------------------------------------------------------------------- */
+
+void RealTimesScalar(RealKind *Cpr, RealKind *Cpi, RealKind *Bpr, RealKind *Bpi, char transb,
+                     mwSize m2, mwSize n2, RealKind ar, RealKind ai, mwSize n, mwSize p,
+					 int scalar_method)
+
+#endif
+
+{
+	mwSignedIndex inc = 1, k = n;
+
+/*------------------------------------------------------------------------------------------------
+ * If scalar multiply mode is BLAS mode and there is no actual transpose involved then do the
+ * BLAS calls now.
+ *------------------------------------------------------------------------------------------------ */
+
+	if( scalar_method == METHOD_BLAS && (transb == 'N' || transb == 'G') ) {
+#ifndef _OPENMP
+		if( debug_message ) {
+			mexPrintf("MTIMESX: BLAS calls to " TOKENSTRING(xAXPY) "\n");
+			debug_message = 0;
+		}
+#endif
+		xAXPY( K, AR, Bpr, INCX, Cpr, INCY );
+		if( Cpi ) {
+			if( ai != zero ) {
+				xAXPY( K, AI, Bpr, INCX, Cpi, INCY );
+				if( Bpi ) {
+					if( transb == 'N' ) ai = -ai;
+					xAXPY( K, AI, Bpi, INCX, Cpr, INCY );
+				}
+			}
+			if( Bpi ) {
+				if( transb == 'G' ) ar = -ar;
+				xAXPY( K, AR, Bpi, INCX, Cpi, INCY );
+			}
+		}
+		return;
+	}
 
 /*------------------------------------------------------------------------------------------------
  * Some specialized cases, no need to multiply by +1 or -1, we can program that directly into the
@@ -5603,6 +7255,12 @@ void RealTimesScalar(RealKind *Cpr, RealKind *Cpi, RealKind *Bpr, RealKind *Bpi,
  * present gets a proper result. So no special code for multiplying by zero.
  *------------------------------------------------------------------------------------------------ */
 
+#ifndef _OPENMP
+	if( debug_message ) {
+		mexPrintf("MTIMESX: LOOPS scalar multiply\n");
+		debug_message = 0;
+	}
+#endif
     if( ar == one ) {
         if( ai == one ) {
             if( transb == 'N' ) {
