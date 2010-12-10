@@ -2,7 +2,7 @@ function s = get(p,vname,varargin)
 % get some polygon properties
 
 switch lower(vname)
-  case 'vertices'
+  case {'xy','x','vertices'}
     if check_option(varargin,'cell')
       s = {p.Vertices};
       return
