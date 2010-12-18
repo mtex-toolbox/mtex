@@ -39,7 +39,7 @@ switch vname
    
       abcLabel = {'a','b','c','a*','b*','c*'};
       abcLabel = abcLabel(ind);
-      xyzLabel = {'x','y','z'};
+      xyzLabel = {'X','Y','Z'};
    
       value = cell(1,length(x));
       for i = 1:length(x)
