@@ -20,7 +20,7 @@ function w = K(kk,g1,g2,CS,SS,varargin)
 if check_option(varargin,'EXACT')
   epsilon = pi;
 else 
-  epsilon = get_option(varargin,'EPSILON',gethw(kk)*3);
+  epsilon = min(pi,get_option(varargin,'EPSILON',gethw(kk)*3));
 end
 
 % how to use sparse matrix representation 
