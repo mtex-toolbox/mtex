@@ -18,10 +18,10 @@ elseif strcmpi(vname,'CS')
   
   if ~all(axes == [xvector,yvector,zvector]) && ~check_option(varargin,'noTrafo')
   
-    warning('Changing the crystal symmetry changes the Euler angles!')
+    % warning('Changing the crystal symmetry changes the Euler angles!')
   
     M = transformationMatrix(obj.CS,value);
-    obj = obj * rotation('matrix',M^-1);
+    obj.rotation = obj.rotation * rotation('matrix',M^-1);
   end
   
   obj.CS = value;
