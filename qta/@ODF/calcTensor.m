@@ -27,8 +27,20 @@ Tinv = inv(T);
 TVoigt = tensor(zeros([repmat(3,1,rank(T)) 1 1]));
 TReuss = tensor(zeros([repmat(3,1,rank(T)) 1 1]));
 
+% determine method for average calculation
+
+method = extract_option(varargin,{'fourier','quadrature'});
+if isempty_cell(method)
+  if all(~strcmp(get(odf,'options'),'Bingham'))
+    method = 'fourier';
+  else
+    method = 'quadrature';
+  end
+end
+
+
 %% use Fourier method
-if check_option(varargin,'Fourier') 
+if strcmpi(char(method),'fourier')
 
  
   % compute Fourier coefficients of the odf
@@ -52,23 +64,28 @@ if check_option(varargin,'Fourier')
   end
     
 %% use numerical integration  
-else 
+elseif strcmpi(char(method),'quadrature') 
   
   % extract grid and values for numerical integration
-  SO3 = extract_SO3grid(odf,varargin{:});
-  weight = eval(odf,SO3,varargin{:}); %#ok<EVLC>
+  %SO3 = extract_SO3grid(odf,varargin{:});
+  S3G = SO3Grid(5*degree);
+  weight = eval(odf,S3G,varargin{:}); %#ok<EVLC>
   weight = (weight ./ sum(weight(:)));
 
   % rotate tensor according to the grid
-  T = rotate(T,SO3);
+  T = rotate(T,S3G);
 
   % take the mean of the tensor according to the weight
   TVoigt = sum(weight .* T);
   
   % same for Reuss
-  Tinv = rotate(Tinv,SO3);
+  Tinv = rotate(Tinv,S3G);
   TReuss = sum(weight .* Tinv);
 
+else 
+  
+  error('Unknown method!');
+  
 end
 
 % for Reuss tensor invert back
