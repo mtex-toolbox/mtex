@@ -44,6 +44,7 @@ if numel(T.M) == 36, T.M = tensor24(T.M); end
 % that is length grater then one
 r = max([1,find(size(T.M)-1,1,'last')]);
 T.rank    = get_option(varargin,'rank',r);
+varargin = delete_option(varargin,'rank');
 
 % extract symmetry
 args = find(cellfun(@(s) isa(s,'symmetry'),varargin,'uniformoutput',true));

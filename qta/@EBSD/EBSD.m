@@ -37,6 +37,6 @@ end
 ebsd.comment = get_option(varargin,'comment',[]);
 ebsd.orientations = orientations;
 ebsd.X = get_option(varargin,'xy');
-ebsd.phase = get_option(varargin,'phase');
+ebsd.phase = get_option(varargin,'phase',1);
 ebsd.options = get_option(varargin,'options',struct);
 ebsd = class(ebsd,'EBSD');

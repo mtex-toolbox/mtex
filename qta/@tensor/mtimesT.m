@@ -34,7 +34,7 @@ end
 
 % permute the first rank(T) dimensions of the tensor such that dimT becomes
 % the first dimension.
-order = 1:max(T.rank,ndims(T.M));
+order = 1:max([T.rank,ndims(T.M),dimT]);
 order(1:T.rank) = circshift(order(1:T.rank)',1-dimT)';
 T.M = permute(T.M,order);
 

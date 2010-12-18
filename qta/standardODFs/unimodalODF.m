@@ -45,4 +45,4 @@ else
   psi = kernel('de la Vallee Poussin','halfwidth',hw);
 end
 
-odf = ODF(mod,ones(size(mod)),psi,CS,SS);
+odf = ODF(mod,ones(size(mod))./numel(mod),psi,CS,SS);
