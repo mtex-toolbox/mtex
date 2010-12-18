@@ -22,7 +22,12 @@ ss = symmetry;
 Laue = {'-1','2/m','mmm','4/m','4/mmm',...
   '-3','-3m','6/m','6/mmm','m3','m3m'};
 
+% phases to be ignored
+ignorePhase = get_option(varargin,'ignorePhase',0);
+
 for K = 1:nphase
+  
+  if any(K==ignorePhase), continue;end
   
   % load phase
   mpara = regexpsplit(hl{phase_line+K},'\t');
@@ -43,3 +48,7 @@ end
 ebsd = loadEBSD_generic(fname,'cs',cs,'ss',ss,'bunge','degree',...
   'ColumnNames',{'Phase' 'X' 'Y' 'Bands' 'Error' 'Euler 1' 'Euler 2' 'Euler 3' 'MAD' 'BC' 'BS'}, ...
   'Columns',1:11,varargin{:});
+
+
+% x||a*, z||c 
+%

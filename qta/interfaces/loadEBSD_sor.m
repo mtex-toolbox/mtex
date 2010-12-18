@@ -50,7 +50,7 @@ try
   
   fclose(fid);
   
-  ebsd = loadEBSD_generic(fname,options{:});
+  ebsd = loadEBSD_generic(fname,'cs',cs,options{:});
   
 catch
   error('format LaboTeX .sor does not match file %s',fname);
