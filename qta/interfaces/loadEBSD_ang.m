@@ -5,10 +5,20 @@ hl = file2cell(fname,1000);
 
 phasePos = strmatch('# Phase',hl);
 
+% phases to be ignored
+ignorePhase = get_option(varargin,'ignorePhase',0);
+
 try
   for i = 1:length(phasePos)
     pos = phasePos(i);
+    
+    % load phase number
     phase = sscanf(hl{pos},'# Phase %u');
+    
+    % may be its to be ignored
+    if any(phase==ignorePhase), continue;end
+    
+    % load mineral data
     mineral = hl{pos+1}(15:end);
     mineral = strtrim(mineral);
     %mineral = sscanf(hl{pos+1},'# MaterialName %s %s %s');
