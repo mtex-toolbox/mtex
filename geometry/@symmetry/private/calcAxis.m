@@ -29,8 +29,8 @@ if angle(3) == 0, angle(3) = pi/2;end
 
 %% start be defining a reference coordinate system
 % which uses the convention
-% * x || a
-% * z || c*
+% * X || a
+% * Z || c*
 a = xvector;
 b = cos(angle(3)) * xvector + sin(angle(3)) * yvector;
 c = cos(angle(2)) * xvector + ...
@@ -48,14 +48,14 @@ cstar = normalize(cross(a,b));
 % restrict to strings
 varargin = varargin(cellfun(@(s) ischar(s),varargin));
 
-% if nothing or only y is specified set z||c
-if ~any(arrayfun(@(a) ~isempty(strmatch([a '||'],varargin)),['x','z']))
-  varargin = {'z||c'};
+% if nothing or only y is specified set Z||c
+if ~any(arrayfun(@(a) ~isempty(strmatch([a '||'],varargin)),['X','Z']))
+  varargin = [varargin,{'Z||c'}];
 end
 
 % setup new x, y, z directions
 xyzNew = vector3d(zeros(3));
-axes = ['x','y','z'];
+axes = ['X','Y','Z'];
 for ia = 1:3
 
   % extract alignment for this specific axis
@@ -65,26 +65,26 @@ for ia = 1:3
  
     case 'a'
       xyzNew(ia) = a;
-      if rem(ia,2) && norm(xyzNew(4-ia))<1e-6
+      if rem(ia,2) && norm(xyzNew(4-ia))<1e-6 && norm(xyzNew(2))<1e-6
         xyzNew(4-ia) = cstar;
       end
     case 'b'
       xyzNew(ia) = b;
     case 'c'
       xyzNew(ia) = c;
-      if rem(ia,2) && norm(xyzNew(4-ia))<1e-6
+      if rem(ia,2) && norm(xyzNew(4-ia))<1e-6 && norm(xyzNew(2))<1e-6
         xyzNew(4-ia) = astar;
       end
     case 'a*'
       xyzNew(ia) = astar;
-      if rem(ia,2) && norm(xyzNew(4-ia))<1e-6
+      if rem(ia,2) && norm(xyzNew(4-ia))<1e-6 && norm(xyzNew(2))<1e-6
         xyzNew(4-ia) = c;
       end
     case 'b*'
       xyzNew(ia) = bstar;
     case 'c*'
       xyzNew(ia) = cstar;
-      if rem(ia,2) && norm(xyzNew(4-ia))<1e-6
+      if rem(ia,2) && norm(xyzNew(4-ia))<1e-6 && norm(xyzNew(2))<1e-6
         xyzNew(4-ia) = a;
       end
     case 'm'

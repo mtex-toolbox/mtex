@@ -22,7 +22,7 @@
 % definition of a variable of type [[symmetry_index.html,symmetry]]
 
 cs = symmetry('triclinic',[5.29,9.18,9.42],[90.4,98.9,90.1]*degree,...
-  'x||a*','z||c','mineral','Talc');
+  'X||a*','Z||c','mineral','Talc');
 
 %%
 % Now a crystal direction can be defined either by its coordinates u, v,

@@ -32,8 +32,8 @@ else
 end
 
 % this is some testing code
-% cs1 = symmetry('triclinic',[1 2 3],[70 80 120]*degree,'z||a*')
-% cs2 = symmetry('triclinic',[1 2 3],[70 80 120]*degree,'z||b','x||a*')
+% cs1 = symmetry('triclinic',[1 2 3],[70 80 120]*degree,'Z||a*')
+% cs2 = symmetry('triclinic',[1 2 3],[70 80 120]*degree,'Z||b','X||a*')
 % o = orientation('Euler',30*degree,50*degree,120*degree,cs1)
 % o * Miller(1,0,0,cs1)
 % o2 = set(o,'CS',cs2)
