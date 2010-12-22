@@ -27,18 +27,18 @@ try
     options = {};
     switch laue
       case {'-3m' '32' '3' '62' '6'}
-        options = {'x||a'};
+        options = {'X||a'};
       case '2'
-        options = {'x||a*'};
+        options = {'X||a*'};
         warning('MTEX:unsupportedSymmetry','symmetry not yet supported!')
       case '1'
-        options = {'x||a'};
+        options = {'X||a'};
       case '20'
         laue = {'2'};
-        options = {'x||a'};
+        options = {'X||a'};
       otherwise
         if lattice(6) ~= 90
-          options = {'a||x'};
+          options = {'X||a'};
         end
     end
     

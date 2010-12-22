@@ -19,8 +19,8 @@ M = axes2^-1 * axes1;
 end
 
 % code for checking functionality
-% cs1 = symmetry('triclinic',[1 2 3],[70 80 120]*degree,'z||a*')
-% cs2 = symmetry('triclinic',[1 2 3],[70 80 120]*degree,'z||b','x||a*')
+% cs1 = symmetry('triclinic',[1 2 3],[70 80 120]*degree,'Z||a*')
+% cs2 = symmetry('triclinic',[1 2 3],[70 80 120]*degree,'Z||b','X||a*')
 % m1 = Miller(1,2,3,cs)
 % M*squeeze(double(m1))
 % m2 = Miller(1,2,3,cs2)

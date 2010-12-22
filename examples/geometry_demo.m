@@ -61,7 +61,7 @@ inverse(rot)
 %%
 % *Definition*
 S = symmetry('triclinic',[1.1 1.3 2.3],[80 110 120]*degree);
-CS = symmetry('-3m',[2,2,1],'a||x','mineral','iron');
+CS = symmetry('-3m',[2,2,1],'X||a','mineral','iron');
 SS = symmetry ('mmm');
 
 % load from a cif file

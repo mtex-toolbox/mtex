@@ -59,15 +59,15 @@ cs = symmetry('triclinic',[1,2.2,3.1],[80*degree,85*degree,95*degree]);
 % conventions are used. One distingueshes between the A and the B
 % configuration depending whether the a axis is aligned parallel to the x
 % axis or parralel to the y axis. In order to specify the concrete
-% configuration to be used one can pass either the option *a||x* or the
-% option *a||y*.
+% configuration to be used one can pass either the option *X||a* or the
+% option *Y||a*.
 
-cs = symmetry('-3m',[1.7,1.7,1.4],'a||x');
+cs = symmetry('-3m',[1.7,1.7,1.4],'X||a');
 plot(cs)
 
 %%
 
-cs = symmetry('-3m',[1.7,1.7,1.4],'a||y');
+cs = symmetry('-3m',[1.7,1.7,1.4],'Y||a');
 plot(cs)
 
 

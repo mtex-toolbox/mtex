@@ -301,7 +301,7 @@ end
 
 function al = alignments 
 
-xyz = {'x','y','z'};
+xyz = {'X','Y','Z'};
 abc = {'a','b','c','a*','b*','c*'};
 
 al = {};

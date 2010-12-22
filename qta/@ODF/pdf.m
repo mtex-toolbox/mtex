@@ -20,8 +20,10 @@ function Z = pdf(odf,h,r,varargin)
 
 if numel(h) == 1
   Z = zeros(numel(r),1);
-else
+elseif numel(r) == 1
   Z = zeros(numel(h),1);
+else
+  error('Either h or r must contain only a single value!')
 end
 if isa(h,'Miller'), h = ensureCS(odf(1).CS,{h});end
 
