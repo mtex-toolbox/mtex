@@ -77,6 +77,18 @@ end
 xy = get(ebsd,'X');
 % y = get(ebsd,'y');
 
+if check_option(varargin,'region')
+  region = get_option(varargin,'region');
+  ind = xy(:,1) > region(1) & xy(:,2) > region(2) ...
+    & xy(:,1) < region(3) & xy(:,2) < region(4);
+  xy = xy(ind,:);
+  if size(d,2) == 3
+    d = d(ind,:);
+  else
+    d = d(ind);
+  end
+end
+
 try %if ~check_option(varargin,'raster')
   plotxyexact(xy,d,varargin{:});
 catch
