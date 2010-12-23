@@ -48,8 +48,8 @@ cstar = normalize(cross(a,b));
 % restrict to strings
 varargin = varargin(cellfun(@(s) ischar(s),varargin));
 
-% if nothing or only y is specified set Z||c
-if ~any(arrayfun(@(a) ~isempty(strmatch([a '||'],varargin)),['X','Z']))
+% if nothing or only Y is specified set Z||c
+if ~any(cell2mat(regexpi(varargin,'[xz]\|\|')))
   varargin = [varargin,{'Z||c'}];
 end
 
@@ -59,9 +59,12 @@ axes = ['X','Y','Z'];
 for ia = 1:3
 
   % extract alignment for this specific axis
-  alignment = varargin(strmatch([axes(ia) '||'],varargin));
- 
-  switch lower(strrep(char(alignment),[axes(ia) '||'],''))
+  alignment = regexpi(varargin,[axes(ia) '\|\|(\w\*?)'],'tokens');
+  alignment = [alignment{:}];
+  alignment = char(alignment{:});
+  
+  
+  switch lower(alignment)
  
     case 'a'
       xyzNew(ia) = a;
