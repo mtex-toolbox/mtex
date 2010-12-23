@@ -14,13 +14,13 @@ set_mtex_option('defaultColorMap',seismicColorMap);
 %% Import EBSD Data
 % We start by importing some ebsd data of Glaucophane and Epidote.
 
-ebsd = loadEBSD([mtexDataPath '/EBSDData/Groix_A50_5_stitched.ctf'],...
+ebsd = loadEBSD([mtexDataPath '/EBSDData/data.ctf'],...
   'ignorePhase',[0 3 4])
 
 %%
 % Lets visualize the data
 
-plot(ebsd,'colorcoding','hkl')
+plot(ebsd,'colorcoding','hkl','region',[2000 0 3400 375])
 
 
 %% Data Correction
