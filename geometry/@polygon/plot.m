@@ -1,12 +1,23 @@
 function handles = plot(p,varargin)
 % function for plotting polygons, mainly use to visualize grains
+%
+%% Input
+%  p - @polygon
+%
+%% Output
+%  handles - handles to the plotted patches
+%
+%% Options
+%  fill   - fill color
+%  region - clipping region
+%
+%% See also
+% grain/plot
 
 
 %preparing canvas
 set(gcf,'renderer','zbuffer');
-if ~check_option(varargin,'nofix')
-  fixMTEXplot('noresize');
-end
+if ~check_option(varargin,'nofix'), fixMTEXplot('noresize');end
 
 %%
 [ig ig lx ly] = fixMTEXscreencoordinates(1,1,varargin{:});
@@ -14,6 +25,7 @@ end
 %faster
 xlabel(lx);ylabel(ly);
 
+%% get filling
 if check_option(varargin,'fill')
   c = get_option(varargin,'fill');
   if islogical(c), c = double(c); end  

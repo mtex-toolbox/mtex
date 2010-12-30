@@ -5,10 +5,10 @@ function p = polyeder(varargin)
 % in MTEX.
 %
 %% Syntax
-% % %  p = polyeder(xy)
-% % %  p = polyeder(x,y)
-% % %  p = polyeder(polyeder)
-% % %  p = polyeder({[xy],[xy],[xy]})
+%  p = polyeder(xy)
+%  p = polyeder(x,y)
+%  p = polyeder(polyeder)
+%  p = polyeder({[xy],[xy],[xy]})
 %
 %% Output
 %  p - @polyeder
