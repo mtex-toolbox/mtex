@@ -1,11 +1,11 @@
-function ind = inpolygon( p , p2, method)
-% check whether a polygon is in a given polygon
+function ind = inpolygon(p1,p2,method)
+% check whether the polygons p1 are inside the polygon p2
 %
 %% Syntax
-%  ind = inpolygon(polygon1 ,polygon2)
+%  ind = inpolygon(p1 ,p2)
 % 
 %% Input
-%  p   - @polygon
+%  p1  - @polygon
 %  p2  - @polygon
 %
 %% Option
@@ -15,34 +15,41 @@ function ind = inpolygon( p , p2, method)
 %  ind    - logical indexing
 %
 
-if isa(p,'EBSD')
-  ind = inpolygon(p,polygon(p2));
-  return
-end
+% ensure both argument are polygons
+p1 = polygon(p1);
+p2 = polygon(p2);
 
-p = polygon( p );
-x = polygon( p2 );
+% extract vertices
+Vertices = vertcat(p2.Vertices);
 
-Vertices = vertcat(x.Vertices);
+% complete is the default method
+if nargin < 3, method = 'complete';end
 
-if nargin < 3
-  method = 'complete';
-end
-
+% switch by method
 switch lower(method)
+  
   case 'complete'
-    ind = in_it(p,Vertices,@all);
+    
+    % all the vertices has to be inside the given polygon
+    ind = in_it(p1,Vertices,@all);
+  
   case {'centroids','centroid'}
-    pVertices = centroid(p);
+    
+    % the centroid has to be inside the given polygon    
+    pVertices = centroid(p1);
     ind = inpolygon(pVertices(:,1),pVertices(:,2),Vertices(:,1),Vertices(:,2));
+    
   case 'intersect'
-    ind = in_it(p,Vertices,@any);
+    
+    % at least one of the vertices has to be inside the given polygon
+    ind = in_it(p1,Vertices,@any);
 end
 
-ind = reshape(ind,size(p));
+% formate output
+ind = reshape(ind,size(p1));
 
 
-
+%% check whether a point is inside a polygon
 function ind = in_it(p,Vertices,modifier)
 
 np = cellfun('length',{p.Vertices});
