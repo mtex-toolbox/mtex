@@ -1,4 +1,4 @@
-function plotxy(xy,d,varargin)
+function h = plotxy(xy,d,varargin)
 % plot d along x and y
 
 

@@ -33,7 +33,7 @@ end
  p = polytope( grains );
  
 if ~check_option(varargin,'noBG') 
-  h = plot(p,'color',[0.8 0.8 0.8],'nofix');
+  h = plot(p,'color',[0.8 0.8 0.8],'nofix',varargin{:});
 else
   h = [];
 end
