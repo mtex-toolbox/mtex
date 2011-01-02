@@ -1,4 +1,4 @@
-function plotspatial(ebsd,varargin)
+function h = plotspatial(ebsd,varargin)
 % spatial EBSD plot
 %
 %% Syntax
@@ -24,47 +24,77 @@ function plotspatial(ebsd,varargin)
 %% See also
 % EBSD/plot
 
+% colormap for phase plot
+cmap = [0 0 1; 1 0 0; 0 1 0; 1 1 0; 1 0 1; 0 1 1];
+
+% which property to plot
+prop = lower(get_option(varargin,'property','orientation'));
+
+if strcmp(prop,'phase') && ~check_option(varargin,'FaceColor')
+  
+  % get all phases
+  phases = get(ebsd,'phase');
+
+  varargin = set_option(varargin,'property','none');
+  % plot all phases separately
+  washold = ishold;
+  hold all;
+  for i = 1:length(phases)    
+    plotspatial(ebsd,'phase',phases(i),varargin{:},'FaceColor',cmap(i,:));
+  end
+  if ~washold, hold off;end
+  
+  % add a legend
+  [minerals{1:length(phases)}] = get(ebsd,'mineral');    
+  legend(minerals);
+  
+  return
+end
+
+%restrict to a given phase
+if check_option(varargin,'phase') && ~strcmpi(prop,'phase') 
+	ebsd(~ismember([ebsd.phase],get_option(varargin,'phase'))) = [];
+end
+
 % default plot options
 varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
-
-prop = lower(get_option(varargin,'property','orientation'));
-
-if check_option(varargin,'phase') && ~strcmpi(prop,'phase') %restrict to a given phase
-	ebsd(~ismember([ebsd.phase],get_option(varargin,'phase'))) = [];
-end   
-
+% clear up figure
 newMTEXplot;
 
 %% compute colorcoding
 if isa(prop,'double')
   d = prop;
   prop = 'user';
+else % default value
+  d = [];
 end;
+
+
 
 switch prop
   case 'user'
   case 'orientation'    
     cc = lower(get_option(varargin,'colorcoding','ipdf'));
-    d = [];
     for i = 1:length(ebsd)
-      d = [d;orientation2color(ebsd(i).orientations,cc,varargin{:})];
+      d = [d;orientation2color(ebsd(i).orientations,cc,varargin{:})]; %#ok<AGROW>
     end    
+  case 'none'
   case 'phase'
-    d = [];
-    for i = 1:length(ebsd)
-      if numel(ebsd(i).phase == 1)
-        d = [d;ebsd(i).phase * ones(sampleSize(ebsd(i)),1)]; %#ok<AGROW>
-      elseif numel(ebsd(i).phase == 0)
-        d = [d;nan(sampleSize(ebsd(i)),1)]; %#ok<AGROW>
-      else
-        d = [d,ebsd.phase(:)]; %#ok<AGROW>
-      end
-    end
-    colormap(hsv(max(d)+1));
-%     co = get(gca,'colororder');
-%     colormap(co(1:length(ebsd),:));
+%     for i = 1:length(ebsd)
+%       if numel(ebsd(i).phase == 1)
+%         d = [d;ebsd(i).phase * ones(sampleSize(ebsd(i)),1)]; %#ok<AGROW>
+%       elseif numel(ebsd(i).phase == 0)
+%         d = [d;nan(sampleSize(ebsd(i)),1)]; %#ok<AGROW>
+%       else
+%         d = [d,ebsd(i).phase(:)]; %#ok<AGROW>
+%       end
+%     end
+%     %phases = unique(d);
+%     colormap(hsv(1+max(d)-min(d)));
+%     %co = get(gca,'colororder');
+%     %colormap(cmap(1:length(ebsd),:));
   case fields(ebsd(1).options)
     d = get(ebsd,prop);
   otherwise
@@ -84,15 +114,15 @@ if check_option(varargin,'region')
   xy = xy(ind,:);
   if size(d,2) == 3
     d = d(ind,:);
-  else
+  elseif ~isempty(d)
     d = d(ind);
   end
 end
 
 try %if ~check_option(varargin,'raster')
-  plotxyexact(xy,d,varargin{:});
-catch
-  plotxy(xy,d,varargin{:});
+  h = plotxyexact(xy,d,varargin{:});
+catch %#ok<CTCH>
+  h = plotxy(xy,d,varargin{:});
 end
 
 %dummy patch
@@ -155,4 +185,6 @@ else
   
   txt = 'no data';
 end
+
+
 
