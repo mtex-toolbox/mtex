@@ -53,41 +53,47 @@ if ~any(cell2mat(regexpi(varargin,'[xz]\|\|')))
   varargin = [varargin,{'Z||c'}];
 end
 
+% extract alignment for x, y, z directions
+axes = ['X','Y','Z'];
+alignment = cell(1,3);
+
+% extract alignment for each axis
+for ia = 1:3
+  
+  al = regexpi(varargin,[axes(ia) '\|\|(\w\*?)'],'tokens');
+  al = [al{:}];
+  alignment{ia} = char(al{:});    
+  
+end
+
 % setup new x, y, z directions
 xyzNew = vector3d(zeros(3));
-axes = ['X','Y','Z'];
 for ia = 1:3
-
-  % extract alignment for this specific axis
-  alignment = regexpi(varargin,[axes(ia) '\|\|(\w\*?)'],'tokens');
-  alignment = [alignment{:}];
-  alignment = char(alignment{:});
   
-  
-  switch lower(alignment)
+  switch lower(alignment{ia})
  
     case 'a'
       xyzNew(ia) = a;
-      if rem(ia,2) && norm(xyzNew(4-ia))<1e-6 && norm(xyzNew(2))<1e-6
+      if rem(ia,2) && isempty(alignment{4-ia}) && isempty(alignment{2})
         xyzNew(4-ia) = cstar;
       end
     case 'b'
       xyzNew(ia) = b;
     case 'c'
       xyzNew(ia) = c;
-      if rem(ia,2) && norm(xyzNew(4-ia))<1e-6 && norm(xyzNew(2))<1e-6
+      if rem(ia,2) && isempty(alignment{4-ia}) && isempty(alignment{2})
         xyzNew(4-ia) = astar;
       end
     case 'a*'
       xyzNew(ia) = astar;
-      if rem(ia,2) && norm(xyzNew(4-ia))<1e-6 && norm(xyzNew(2))<1e-6
+      if rem(ia,2) && isempty(alignment{4-ia}) && isempty(alignment{2})
         xyzNew(4-ia) = c;
       end
     case 'b*'
       xyzNew(ia) = bstar;
     case 'c*'
       xyzNew(ia) = cstar;
-      if rem(ia,2) && norm(xyzNew(4-ia))<1e-6 && norm(xyzNew(2))<1e-6
+      if rem(ia,2) && isempty(alignment{4-ia}) && isempty(alignment{2})
         xyzNew(4-ia) = a;
       end
     case 'm'
