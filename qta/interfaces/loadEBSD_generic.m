@@ -153,18 +153,22 @@ end
    
 if check_option(varargin,'passive rotation'), q = inverse(q); end
  
-%treat other options
+% assign spatial coordinates
 xy = [];
 if istype(names,{'x' 'y'}),
   xy = d(:,layoutcol(names,{'x' 'y'}));
-end
   
+  % compute unit cell
+  varargin = [varargin,'unitCell',calcUnitCell(xy,varargin{:})];  
+end
+
+% assign phase
 phase = [];
 if istype(names,{'Phase'}),
   phase = d(:,layoutcol(names,{'Phase'}));
 end
   
-%all other as options
+% assign all other as options
 opt = struct;
 opts = delete_option(names,  [euler quat {'Phase' 'x' 'y'}]);
 if ~isempty(opts)

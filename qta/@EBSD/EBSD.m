@@ -25,6 +25,7 @@ if (nargin == 0)
   ebsd.X = [];
   ebsd.phase = [];
   ebsd.options = struct;
+  ebsd.unitCell = [];
   ebsd = class(ebsd,'EBSD');
   return
 elseif isa(varargin{1},'EBSD')
@@ -39,4 +40,5 @@ ebsd.orientations = orientations;
 ebsd.X = get_option(varargin,'xy');
 ebsd.phase = get_option(varargin,'phase',1);
 ebsd.options = get_option(varargin,'options',struct);
+ebsd.unitCell = get_option(varargin,'unitCell',[]);
 ebsd = class(ebsd,'EBSD');

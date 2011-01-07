@@ -7,107 +7,93 @@ function unitCell = calcUnitCell(xy,varargin)
 %% Output
 %  unitCell - coordinates of the unit cell
 %
-%%
-
+%% Options
+%
+% GridType - [automatic, hexagonal, rectangular]
 
 % remove dublicates from the coordinates
 xy = unique(xy,'first','rows');
 
-% make live
-x = xy(:,1);
-y = xy(:,2);
-  
-%% estimate grid resolution
-dxy = get_option(varargin,'GridResolution',[]);
-if isempty(dxy), dxy =estimateGridResolution(x,y); end
+% first estimate of the grid resolution
+area = (max(xy(:,1))-min(xy(:,1)))*(max(xy(:,2))-min(xy(:,2)));
+dxy = sqrt(area / length(xy));
 
-%% Generate a Unit Cell
+% reduce data set
+xy = subSample(xy,10000);
 
-celltype = get_option(varargin,'GridType','automatic');
-cellrot = get_option(varargin,'GridRotation',0*degree);
-
-if ischar(celltype)
-  switch lower(celltype)
+try
+  % compute Voronoi decomposition
+  [v c] = voronoin(xy,{'Qz'});
+      
+  % compute the area of all Voronoi cells
+  areaf = @(x,y) abs(0.5.*sum(x(1:end-1).*y(2:end)-x(2:end).*y(1:end-1)));
+  areaf = cellfun(@(c1) areaf(v([c1 c1(1)],1),v([c1 c1(1)],2)),c);
     
-    % try to extract an unit cell
-    case 'automatic'
+  % the unit cell should be the Voronoi cell with the smalles area
+  [a ci] = min(areaf);
       
+  % compute vertices of the unit cell
+  unitCell = [v(c{ci},1) - xy(ci,1),v(c{ci},2) - xy(ci,2)];
 
-      
-      % compute Voronoi decomposition
-      [v c] = voronoin(xy,{'Qz'});
-      
-      % compute the area of all Voronoi cells
-      areaf = @(x,y) abs(0.5.*sum(x(1:end-1).*y(2:end)-x(2:end).*y(1:end-1)));
-      areaf = cellfun(@(c1) areaf(v([c1 c1(1)],1),v([c1 c1(1)],2)),c);
-      
-      % the unit cell should be the Voronoi cell with the smalles area
-      [a ci] = min(areaf);
-      
-      % compute vertices of the unit cell
-      ux = v(c{ci},1) - xy(ci,1);
-      uy = v(c{ci},2) - xy(ci,2);
-      
-      % check that the unit cell is correct
-      if mod(length(ux),2) || ~all(diff(diff(ux).^2 + diff(uy).^2) < dxy*10^-2)
-        warning('MTEX:plotspatial:UnitCell',['The automatic generation of a unit cell may have failed! \n',...
-          'Please specify more parameters!']);
-        [v c] = spatialdecomposition(xy,'GridType','tetragonal',varargin{:});
-        return
-      end
-
-    otherwise
-      switch lower(celltype)
-        case 'tetragonal'
-          c = unitcell(4,dxy,cellrot);
-        case 'hexagonal'
-          c = unitcell(6,dxy,cellrot);
-        case 'circle'
-          c = unitcell(16,dxy,cellrot);
-        otherwise
-          error('MTEX:plotspatial:UnitCell','Unknown option')
-      end
-      cx = real(c(:));
-      cy = imag(c(:));
+  % may be we are already done?
+  if ~check_option(varargin,{'rectangular','hexagonal'}) && ...
+      (length(unitCell) == 4 || length(unitCell) == 6) % only squares and hexagones are correct
+    return
   end
+
+  % second estimate of the grid resolution
+  dxy2 = min(sqrt(diff(cx).^2 + diff(cy).^2));
+  if 100*dxy2 > dxy, dxy = dxy2;end
+
+catch %#ok<CTCH>
+end
+  
+% get grid options
+dxy = get_option(varargin,'GridResolution',dxy);
+cellType = get_option(varargin,'GridType','rectangular');
+cellRot = get_option(varargin,'GridRotation',0*degree);
+
+% otherwise take a regular unit cell
+switch lower(cellType)
+    
+  case 'rectangular'
+    unitCell = regularPoly(4,dxy,cellRot);
+         
+  case 'hexagonal'
+    unitCell = regularPoly(6,dxy,cellRot);
+               
+  case 'circle'
+    unitCell = regularPoly(16,dxy,cellRot);
+
+  otherwise
+    
+    error('MTEX:plotspatial:UnitCell','Unknown unit cell type!')      
 end
 
 
-function regularPoly()
-% the vertices of a regular polygon with s vertices,
-% diamter d, rotated by rot
-unitcell = @(s,d,rot) exp(1i*(pi/s+rot:pi/(s/2):2*pi+rot))*1./sqrt((s/2))*d;
+%% a regular polygon with s vertices, diameter d, and rotation rot
+function unitCell = regularPoly(s,d,rot)
 
-function dxy = estimateGridResolution(x,y)
-
-rndsmp = [ (1:sum(1:length(x)<=100))'; unique(fix(1+rand(200,1)*(length(x)-1)))];
-
-xx = repmat(x(rndsmp),1,length(rndsmp));
-yy = repmat(y(rndsmp),1,length(rndsmp));
-dist = abs(sqrt((xx-xx').^2 + (yy-yy').^2));
-dxy = min(dist(dist>eps)); 
+c = exp(1i*(pi/s+rot:pi/(s/2):2*pi+rot))*1./sqrt((s/2))*d;
+unitCell = [real(c(:)),imag(c(:))];
 
 
-% % center of the region
-%       cx = (max(x)+min(x))/2;
-%       cy = (max(y)+min(y))/2;
-%       
-%       % find a centered sublattice 
-%       fc = 1;  sublattice = 0;
-%       kl = min(500,length(xy));
-%       
-%       while sum(sublattice) <  kl && fc <  2^10 % find 500 points (or less)
-%         sublattice = x > cx-fc*dxy & x < cx+fc*dxy & y > cy-fc*dxy & y < cy+fc*dxy;
-%         fc = fc*2;
-%       end
-%       
-%       % coordinates of this sublattice
-%       xy_s = [x(sublattice) y(sublattice)];
-%       
-%       if length(xy_s) < kl,
-%         warning('MTEX:plotspatial:UnitCell',['The automatic generation of a unit cell may have failed! \n',...
-%           'Please specify more parameters!']);
-%         [v c] = spatialdecomposition(xy,'GridType','tetragonal',varargin{:});
-%         return
-%       end
+%% find a quare subset of about N points
+function xy = subSample(xy,N)
 
+xminmax = [min(xy(:,1));max(xy(:,1))];
+yminmax = [min(xy(:,2));max(xy(:,2))];
+
+% shrink range until only N points are inside
+while length(xy) > N
+  
+  if diff(xminmax) > diff(yminmax)
+    xminmax = [3 1;1 3] * xminmax ./ 4;
+  else
+    yminmax = [3 1;1 3] * yminmax ./ 4;
+  end
+  
+  xy = xy(xy(:,1)>xminmax(1) & xy(:,1)<xminmax(2) & ... 
+    xy(:,2)>yminmax(1) & xy(:,2)<yminmax(2),:);
+  
+end
