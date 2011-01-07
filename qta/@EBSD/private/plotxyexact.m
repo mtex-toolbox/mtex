@@ -1,22 +1,22 @@
-function h = plotxyexact(xy,d,varargin)
+function h = plotxyexact(xy,d,unitCell,varargin)
 
-[v faces rind] = spatialdecomposition(xy,'plot',varargin{:});
+% generate patches
+[v faces] = generatePatches(xy,unitCell,varargin{:});
+
+% transfrom coordinates according to options
 [v(:,1), v(:,2), lx,ly] = fixMTEXscreencoordinates(v(:,1),v(:,2),varargin{:});
 
+% set color by VertexCData or by FaceColor
 if check_option(varargin,'FaceColor')
-  h = zeros(size(faces));
-  for k=1:numel(faces)
-    h(k)= patch('Vertices',v,'Faces',faces{k},'EdgeColor','none');
-  end
+  options = {};
 else
-  h = zeros(size(faces));
-  for k=1:numel(faces)
-    h(k)= patch('Vertices',v,'Faces',faces{k},'FaceVertexCData',d(rind{k},:),...
-      'FaceColor','flat','EdgeColor','none');
-  end
+  options = {'FaceVertexCData',d,'FaceColor','flat'};
 end
 
+% draw patches
+h = patch('Vertices',v,'Faces',faces,'EdgeColor','none',options{:});
 optiondraw(h,varargin{:});
 
+% cosmetics
 xlabel(lx); ylabel(ly);
 fixMTEXplot;

@@ -95,7 +95,7 @@ if strcmpi(type,'EBSD') && check_option(varargin,'3d')
       data(ndx(l)) = set(data(ndx(l)),'X',xy);
     end    
   end
-  data = union(data); 
+  data = union(data);  %#ok<LTARG>
 end
 
 

@@ -120,7 +120,7 @@ if check_option(varargin,'region')
 end
 
 try %if ~check_option(varargin,'raster')
-  h = plotxyexact(xy,d,varargin{:});
+  h = plotxyexact(xy,d,ebsd(1).unitCell,varargin{:});
 catch %#ok<CTCH>
   h = plotxy(xy,d,varargin{:});
 end
