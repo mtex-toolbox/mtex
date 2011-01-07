@@ -16,7 +16,7 @@ function handles = plot(p,varargin)
 
 
 %preparing canvas
-set(gcf,'renderer','zbuffer');
+%set(gcf,'renderer','zbuffer');
 if ~check_option(varargin,'nofix'), fixMTEXplot('noresize');end
 
 %%
@@ -55,6 +55,8 @@ if check_option(varargin,'fill')
     [vertices(:,1), vertices(:,2)] = fixMTEXscreencoordinates(vertices(:,1),vertices(:,2),varargin{:});
   
     h(k) = patch('Vertices',vertices,'Faces',faces,'FaceVertexCData',c(zorder,:),'FaceColor','flat');
+    optiondraw(h(k),varargin{:});
+    
   end
   
 elseif check_option(varargin,'pair')
