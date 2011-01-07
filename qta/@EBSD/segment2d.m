@@ -48,8 +48,8 @@ if numel(m) ~= numel(n)
   return
 end
 
-phase_ebsd = get(ebsd,'phase');
-phase_ebsd = mat2cell(phase_ebsd,ones(size(phase_ebsd)),1)';
+phaseEBSD = get(ebsd,'phase');
+phaseEBSD = mat2cell(phaseEBSD,ones(size(phaseEBSD)),1)';
 
 % generate long phase vector
 l = sampleSize(ebsd);
@@ -242,7 +242,7 @@ for i=1:numel(cchek)
   cchek{i} = checksum;
   ccom{i} = comment;
   cprop{i} = tstruc;
-  phase_ebsd{i} = phase(id{i}(1));
+  phase_ebsd{i} = phaseEBSD{phase(id{i}(1))};
 end 
 
 gr = struct('id',cid,...
