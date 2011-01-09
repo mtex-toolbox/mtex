@@ -54,6 +54,14 @@ set_mtex_option('defaultColorMap',WhiteJetColorMap);
 % MATLAB default color map
 % set_mtex_option('defaultColorMap','default');
 
+%% Default ColorMap for Phase Plots
+
+% set blue red yellow green 
+cmap = [0 0 1; 1 0 0; 0 1 0; 1 1 0; 1 0 1; 0 1 1;...
+  0.5 1 1; 1 0.5 1; 1 1 0.5;...
+  0.5 0.5 1; 0.5 1 0.5; 1 0.5 0.5];
+set_mtex_option('phaseColorMap',cmap);
+
 %% Turn off Grain Selector
 % turning off the grain selector allows faster plotting
 
