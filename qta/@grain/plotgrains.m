@@ -16,6 +16,42 @@ function plotgrains(grains,varargin)
 %% See also
 % grain/plot grain/plotellipse grain/plotsubfractions
 
+% restrict phase if necassary
+grains = copy(grains,varargin{:});
+
+% get property to plot
+property = get_option(varargin,'property','orientation');
+
+%% plot property phase 
+if strcmp(property,'phase') && ~check_option(varargin,'FaceColor')
+  
+  % colormap for phase plot
+  cmap = get_mtex_option('PhaseColorMap');
+  
+  % get all phases
+  grainPhases = get(grains,'phase');
+  [phases,ind] = unique(grainPhases);
+
+  varargin = set_option(varargin,'property','none');
+  % plot all phases separately
+  washold = ishold;
+  hold all;
+  for i = 1:length(phases)    
+    faceColor = cmap(1+mod(phases(i)-1,length(cmap)),:);
+    plotgrains(grains(grainPhases == phases(i)),varargin{:},'FaceColor',faceColor);
+  end
+  if ~washold, hold off;end
+  
+  % add a legend
+  [minerals{1:length(phases)}] = get(grains(ind),'mineral');    
+  legend(minerals);
+  
+  return
+end
+
+
+
+% maybe grains should be plotted together with its EBSD data
 if nargin>1 && isa(varargin{1},'EBSD')
   ebsd = varargin{1};
   varargin = varargin(2:end);
@@ -25,25 +61,14 @@ elseif nargin>1 && isa(grains,'EBSD') && isa(varargin{1},'grain')
   varargin = varargin(2:end);
 end
 
-% ishull = check_option(varargin,{'hull','convhull'});
-property = get_option(varargin,'property','orientation');
-  %treat varargin
-  
-if check_option(varargin,'phase') && ~strcmpi(property,'phase') %restrict to a given phase
-	grains(~ismember([grains.phase],get_option(varargin,'phase'))) = [];
-end   
-
-%% get the polygons
-
+% set up figure
 newMTEXplot;
+if ispolygon(grains), selector(gcf);end
 
-if ispolygon(grains)
-  selector(gcf);
-end
-%%
-
-
+%% what to plot
 if ~isempty(property)
+  
+  % orientation to color
   if strcmpi(property,'orientation')
     
     cc = lower(get_option(varargin,'colorcoding','ipdf'));
@@ -67,6 +92,10 @@ if ~isempty(property)
     setappdata(gcf,'colorcoding',cc);
     setappdata(gcf,'options',extract_option(varargin,'antipodal'));
     
+  elseif strcmpi(property,'none')
+        
+    d = [];
+  % property to color
   elseif any(strcmpi(property, fields(grains))) ||...
      any(strcmpi(property,fields(grains(1).properties)))
   
@@ -82,10 +111,16 @@ if ~isempty(property)
     
   end
    
-  
+  % extract the polytopes
   p = polytope(grains);
-  h = plot( p ,'fill',d,varargin{:});
-
+  
+  % plot them
+  if ~isempty(d)
+    h = plot( p ,'fill',d,varargin{:});
+  else
+    h = plot( p ,varargin{:});
+  end
+  
   if ispolygon(grains)
     selector(gcf,grains,p,h);
   end
@@ -107,33 +142,4 @@ else
     selector(gcf,grains,p,h);
   end  
 end
-
-
-
-function [faces vertices] = get_faces(cply)
-
-vertices = vertcat(cply.xy);
-faces = tofaces({cply.xy});
-
-
-function [faces vertices] = get_facesh(cply)
-
-hxy = [cply.hxy];
-vertices = vertcat(hxy{:});
-tmp = horzcat(hxy);
-vertices = vertcat(tmp{:});
-faces = tofaces(tmp);
-
-
-function faces = tofaces(c)
-
-cl = cellfun('length',c);
-rl = max(cl);
-crl = [0 cumsum(cl)];grains
-faces = NaN(numel(c),rl);
-for k = 1:numel(c)
-  faces(k,1:cl(k)) = (crl(k)+1):crl(k+1);
-end
-
-
 
