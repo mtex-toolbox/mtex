@@ -7,6 +7,8 @@ switch lower(vname)
     varargout{1} = obj.CS;
   case 'ss'
     varargout{1} = obj.SS;
+  case 'mineral'
+    varargout{1} = get(obj.CS,'mineral');
   otherwise
     try
       varargout{1} = get(obj.rotation,vname,varargin{:});
