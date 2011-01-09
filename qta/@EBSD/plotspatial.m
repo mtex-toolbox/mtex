@@ -24,13 +24,17 @@ function h = plotspatial(ebsd,varargin)
 %% See also
 % EBSD/plot
 
-% colormap for phase plot
-cmap = [0 0 1; 1 0 0; 0 1 0; 1 1 0; 1 0 1; 0 1 1];
-
 % which property to plot
 prop = lower(get_option(varargin,'property','orientation'));
 
+%% restrict to a given phase
+ebsd = copy(ebsd,varargin{:});
+
+%% plot property phase 
 if strcmp(prop,'phase') && ~check_option(varargin,'FaceColor')
+
+  % colormap for phase plot
+  cmap = get_mtex_option('PhaseColorMap');
   
   % get all phases
   phases = get(ebsd,'phase');
@@ -40,7 +44,8 @@ if strcmp(prop,'phase') && ~check_option(varargin,'FaceColor')
   washold = ishold;
   hold all;
   for i = 1:length(phases)    
-    plotspatial(ebsd,'phase',phases(i),varargin{:},'FaceColor',cmap(i,:));
+    faceColor = cmap(1+mod(phases(i)-1,length(cmap)),:);
+    plotspatial(ebsd,varargin{:},'FaceColor',faceColor,'phase',phases(i));
   end
   if ~washold, hold off;end
   
@@ -51,12 +56,7 @@ if strcmp(prop,'phase') && ~check_option(varargin,'FaceColor')
   return
 end
 
-%restrict to a given phase
-if check_option(varargin,'phase') && ~strcmpi(prop,'phase') 
-	ebsd(~ismember([ebsd.phase],get_option(varargin,'phase'))) = [];
-end
-
-% default plot options
+%% default plot options
 varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
@@ -71,8 +71,6 @@ else % default value
   d = [];
 end;
 
-
-
 switch prop
   case 'user'
   case 'orientation'    
@@ -82,19 +80,6 @@ switch prop
     end    
   case 'none'
   case 'phase'
-%     for i = 1:length(ebsd)
-%       if numel(ebsd(i).phase == 1)
-%         d = [d;ebsd(i).phase * ones(sampleSize(ebsd(i)),1)]; %#ok<AGROW>
-%       elseif numel(ebsd(i).phase == 0)
-%         d = [d;nan(sampleSize(ebsd(i)),1)]; %#ok<AGROW>
-%       else
-%         d = [d,ebsd(i).phase(:)]; %#ok<AGROW>
-%       end
-%     end
-%     %phases = unique(d);
-%     colormap(hsv(1+max(d)-min(d)));
-%     %co = get(gca,'colororder');
-%     %colormap(cmap(1:length(ebsd),:));
   case fields(ebsd(1).options)
     d = get(ebsd,prop);
   otherwise
@@ -104,9 +89,10 @@ end
 
 %% plot
 
+% get coordinates
 xy = get(ebsd,'X');
-% y = get(ebsd,'y');
 
+% restrict to a certain region
 if check_option(varargin,'region')
   region = get_option(varargin,'region');
   ind = xy(:,1) > region(1) & xy(:,2) > region(2) ...
@@ -125,10 +111,7 @@ catch %#ok<CTCH>
   h = plotxy(xy,d,varargin{:});
 end
 
-%dummy patch
-% [tx ty] = fixMTEXscreencoordinates(min(x), min(y),varargin{:});
-% patch('Vertices',[tx ty],'Faces',1,'FaceVertexCData',get(gca,'color'));
-
+% set appdata
 if strcmpi(prop,'orientation') %&& strcmpi(cc,'ipdf')
   [cs{1:length(ebsd)}] = get(ebsd,'CS');
   setappdata(gcf,'CS',cs)
@@ -143,7 +126,6 @@ fixMTEXscreencoordinates('axis'); %due to axis;
 set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
 
 %% set data cursor
-
 dcm_obj = datacursormode(gcf);
 set(dcm_obj,'SnapToDataVertex','off')
 set(dcm_obj,'UpdateFcn',{@tooltip,ebsd});
