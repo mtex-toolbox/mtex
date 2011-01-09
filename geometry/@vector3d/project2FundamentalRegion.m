@@ -16,11 +16,14 @@ function [v,swap,rot] = project2FundamentalRegion(v,sym,varargin)
 [q,rho_rot] = rotation_special(sym);
 
 if ~isempty(strmatch(Laue(sym),{'-3','-3m'})) && ...
-    vector3d(Miller(1,0,0,sym)) == -yvector
+    rho_rot > 0*degree
+    %vector3d(Miller(1,0,0,sym,'uvw')) == -yvector
   rot = 30*degree;
 else
   rot = 0;
 end
+
+
 
 % symmetrise
 sv = q * v;

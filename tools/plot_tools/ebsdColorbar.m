@@ -53,8 +53,8 @@ if any(strcmp(cc,{'ipdf','hkl'}))
   
   [maxtheta,maxrho,minrho,v] = getFundamentalRegionPF(cs,varargin{:});
   
-  maxrho = maxrho-minrho+eps;
-  minrho = 0; % rotate like canvas %TODO:flipud!
+  %maxrho = maxrho-minrho+eps;
+  %minrho = 0; % rotate like canvas %TODO:flipud!
   h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX','resolution',1*degree,varargin{:});
 
   if strcmp(cc,'ipdf')
