@@ -22,21 +22,32 @@ if ~check_option(varargin,'nofix'), fixMTEXplot('noresize');end
 %%
 [ig ig lx ly] = fixMTEXscreencoordinates(1,1,varargin{:});
 
-%faster
+% set direction of x and y axis
 xlabel(lx);ylabel(ly);
 
-%% get filling
-if check_option(varargin,'fill')
+%% plot filled polygons
+if check_option(varargin,'fill') || check_option(varargin,'FaceColor')
+  
+  % get filling
   c = get_option(varargin,'fill');
   if islogical(c), c = double(c); end  
   
-	if ~check_option(varargin,'noHoles')  
+  % add holes as polygons
+	if ~check_option(varargin,'noHoles') && ~check_option(varargin,'FaceColor')
+    
+    % take all polygons that have a hole
     hole = hashole(p);
+    
+    % make list of holes
     tmp_ph = ([p(hole).Holes]);
    
+    % update number of holes
     nl = numel(p); nlh = numel(tmp_ph);    
+    
+    % add add the holes to the list of polygons
     p = [tmp_ph p ];
 
+    % set fill to 1 for the holes ???
     c(nlh+1:nl+nlh,:) = c;
     c(1:nlh,:) = 1; 
   end
@@ -51,13 +62,24 @@ if check_option(varargin,'fill')
     [ignore zorder] = sort(A(ndx),'descend');    
     zorder = ndx(zorder);
     
-    [faces vertices] = get_faces( p( zorder ) );
+    [faces vertices] = get_faces(p(zorder));
     [vertices(:,1), vertices(:,2)] = fixMTEXscreencoordinates(vertices(:,1),vertices(:,2),varargin{:});
   
-    h(k) = patch('Vertices',vertices,'Faces',faces,'FaceVertexCData',c(zorder,:),'FaceColor','flat');
+    % additional arguments if color is given by indexing
+    if ~isempty(c)
+      CData = {'FaceVertexCData',c(zorder,:),'FaceColor','flat'};
+    else
+      CData = {};
+    end    
+    
+    % plot the patches
+    h(k) = patch('Vertices',vertices,'Faces',faces,CData{:});
     optiondraw(h(k),varargin{:});
     
   end
+  
+  % remove from legend for splitted patches
+   setLegend(h(2:end),'off');
   
 elseif check_option(varargin,'pair')
 %
