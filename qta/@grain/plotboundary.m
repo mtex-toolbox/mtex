@@ -32,7 +32,7 @@ end
 
  p = polytope( grains );
  
-if ~check_option(varargin,'noBG') 
+if ~check_option(varargin,'noBG') && isempty(property)
   h = plot(p,'color',[0.8 0.8 0.8],'nofix',varargin{:});
 else
   h = [];
@@ -90,12 +90,20 @@ elseif ~isempty(property)
       
       if isa(property,'quaternion')
         
-        epsilon = get_option(varargin,'delta',2*degree,'double');
+        epsilon = get_option(varargin,'delta',5*degree,'double');
 
         ind = any(find(om,property,epsilon),2);
         
         pair = pair(ind,:);
 
+      elseif isa(property,'vector3d')
+        
+        epsilon = get_option(varargin,'delta',5*degree,'double');
+
+        ind = any(reshape(angle(symmetrise(om)*property,property)<epsilon,[],numel(om)),1);
+        
+        pair = pair(ind,:);
+        
       elseif ~check_option(varargin,'colorcoding')
 
         d = angle( om )./degree;
@@ -117,7 +125,7 @@ elseif ~isempty(property)
   
 else 
   
-   optiondraw(h,varargin{:});
+  optiondraw(h,varargin{:});
   
 end
 
