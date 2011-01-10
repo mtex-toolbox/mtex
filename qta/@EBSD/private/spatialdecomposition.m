@@ -2,6 +2,8 @@ function [v c rind] = spatialdecomposition(xy,varargin)
 
 if check_option(varargin,'unitcell') || ~check_option(varargin,'voronoi')
   
+  % the vertices of a regular polygon with s vertices,
+  % diamter d, rotated by rot
   unitcell = @(s,d,rot) exp(1i*(pi/s+rot:pi/(s/2):2*pi+rot))*1./sqrt((s/2))*d;
 
   x = xy(:,1);
@@ -18,9 +20,11 @@ if check_option(varargin,'unitcell') || ~check_option(varargin,'voronoi')
 
   if ischar(celltype)
     switch lower(celltype) 
-      case 'automatic'  % try to extract an unit cell
-        cx = (max(x)-min(x))/2+min(x);
-        cy = (max(y)-min(y))/2+min(y);
+      
+      % try to extract an unit cell
+      case 'automatic'  
+        cx = (max(x)+min(x))/2;
+        cy = (max(y)+min(y))/2;
 
         fc = 1;  sublattice = 0;
         kl = min(500,length(xy));

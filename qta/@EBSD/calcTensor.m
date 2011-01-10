@@ -22,6 +22,10 @@ function [TVoigt, TReuss, THill] = calcTensor(ebsd,varargin)
 %% See also
 %
 
+% filter data
+ebsd = copy(ebsd,varargin{:});
+
+
 % extract tensors and remove them from varargin
 Tind = cellfun(@(t) isa(t,'tensor'),varargin);
 T = varargin(Tind);

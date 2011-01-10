@@ -42,7 +42,7 @@ for i = 1:length(ebsd)
   end    
   
   % orientations
-  matrix{i,2} = numel(ebsd(i).orientations); %#ok<AGROW>
+  matrix{i,2} = int2str(numel(ebsd(i).orientations)); %#ok<AGROW>
   
 end
 
