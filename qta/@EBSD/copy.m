@@ -82,3 +82,14 @@ if check_option(varargin,'phase')
   ebsd = ebsd(match);
   
 end
+
+%% filter by region
+if check_option(varargin,'region')
+  region = get_option(varargin,'region');
+  if isa(region,'double')
+    region = polygon([region(1) region(2);region(3) region(2);...
+      region(3) region(4); region(1) region(4); region(1) region(2)]);
+  end
+  
+  ebsd = inpolygon(ebsd,region);
+end
