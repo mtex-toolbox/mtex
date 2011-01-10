@@ -24,11 +24,12 @@ function h = plotspatial(ebsd,varargin)
 %% See also
 % EBSD/plot
 
+
+% restrict to a given phase or region
+ebsd = copy(ebsd,varargin{:});
+
 % which property to plot
 prop = lower(get_option(varargin,'property','orientation'));
-
-%% restrict to a given phase
-ebsd = copy(ebsd,varargin{:});
 
 %% plot property phase 
 if strcmp(prop,'phase') && ~check_option(varargin,'FaceColor')
@@ -91,19 +92,6 @@ end
 
 % get coordinates
 xy = get(ebsd,'X');
-
-% restrict to a certain region
-if check_option(varargin,'region')
-  region = get_option(varargin,'region');
-  ind = xy(:,1) > region(1) & xy(:,2) > region(2) ...
-    & xy(:,1) < region(3) & xy(:,2) < region(4);
-  xy = xy(ind,:);
-  if size(d,2) == 3
-    d = d(ind,:);
-  elseif ~isempty(d)
-    d = d(ind);
-  end
-end
 
 try %if ~check_option(varargin,'raster')
   h = plotxyexact(xy,d,ebsd(1).unitCell,varargin{:});
