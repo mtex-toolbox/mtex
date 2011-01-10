@@ -35,7 +35,19 @@ if nargin < 1
   'Select Data files');
   fname = [PathName,fname];
 end
-if ischar(fname), fname = {fname};end
+
+% read in directory if needed
+if ischar(fname)
+  if exist(fname,'dir')
+    pname = fname;
+  else
+    pname = fileparts(fname);
+  end
+  files = dir(fname);
+  files = files(~[files.isdir]);
+  assert(~isempty(files),'No file found!');
+  fname = strcat([pname filesep],{files.name});
+end
 
 % get crystal directions
 if ~isempty(varargin) && checkClass(varargin{1},'Miller') 
