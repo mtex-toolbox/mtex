@@ -13,8 +13,11 @@ function psi = calcKernel(ebsd,varargin)
 %% See also
 % EBSD/calcODF
 
-[o,ind] = get(ebsd,'orientations','checkPhase',varargin{:});
+% filter data
+ebsd = copy(ebsd,varargin{:});
 
+% get orientations
+[o,ind] = get(ebsd,'orientations','checkPhase');
 ebsd = ebsd(ind);
 
 if ~isempty(ebsd.X)
