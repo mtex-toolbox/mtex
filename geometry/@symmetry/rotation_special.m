@@ -30,7 +30,7 @@ else
       v = vector3d;
     case {'mmm','-3m','4/mmm','6/mmm'}
       q = cs.rotation(1);
-      v = vector3d(Miller(1,0,0,cs));
+      v = vector3d(Miller(1,0,0,cs,'uvw'));
     case {'-3','4/m','6/m'}
       q = cs.rotation(1);
       v = vector3d;

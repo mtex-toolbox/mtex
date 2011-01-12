@@ -26,6 +26,10 @@ if nargin > 1
         sym{l} = get(grains(id(l)).orientation,vname);
       end
       varargout{1} = sym;
+    case 'mineral'
+      
+      varargout = cellfun(@(x) get(x,'mineral') ,{grains.orientation},'uniformoutput',false);    
+            
     case 'phase'
       varargout{1} = [grains.phase];
       if nargout > 1
