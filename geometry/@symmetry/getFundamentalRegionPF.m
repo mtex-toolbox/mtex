@@ -34,7 +34,7 @@ else
     case '-3m'
       if check_option(varargin,'antipodal') && ...
         xor(isappr(rem(rotate,60*degree),0),...
-          isappr(norm(xvector - vector3d(Miller(1,0,0,cs))),0))
+          isappr(norm(xvector - vector3d(Miller(1,0,0,cs,'uvw'))),0))
         rotate = rotate - 30*degree;
       end
     case 'm-3m'

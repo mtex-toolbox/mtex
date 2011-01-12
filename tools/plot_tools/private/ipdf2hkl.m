@@ -6,10 +6,12 @@ function c = ipdf2hkl(h,cs,varargin)
 switch Laue(cs)
    case {'-1','2/m','-3'}
     %(:)
+    rot = 0;
   otherwise
     [h,pm,rot] = project2FundamentalRegion(vector3d(h),cs,varargin{:});  
 end
 [theta,rho] = polar(h(:));
+rho = rho - rot;
 
 switch Laue(cs)
   case {'-1'}
