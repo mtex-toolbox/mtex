@@ -31,13 +31,13 @@ rot = rotation;
 
 %% empty constructor
 if nargin == 0
-  
+
   o.CS = symmetry;
   o.SS = symmetry;
-    
+
 %% copy constructor
 elseif isa(varargin{1},'orientation')
-        
+
   o = varargin{1};
   if nargin > 1 && isa(varargin{2},'symmetry')
     o.CS = varargin{2};
@@ -49,7 +49,7 @@ elseif isa(varargin{1},'orientation')
 
 %% determine crystal and specimen symmetry
 else
-  
+
   args  = find(cellfun(@(s) isa(s,'symmetry'),varargin,'uniformoutput',true));
 
   if length(args) >= 1
@@ -63,25 +63,63 @@ else
   else
     o.SS = symmetry;
   end
-  
+
   if check_option(varargin,'Miller')
-    
+
     args = find_option(varargin,'Miller');
-    
+
     rot = rotation(Miller2quat(varargin{args+1},varargin{args+2},o.CS));
+
+  elseif isa(varargin{1},'char')
+
+    orientationList = {
+      {'Cube',0,0,0},...
+      {'CubeND22',22,0,0},...
+      {'CubeND45',45,0,0},...
+      {'CubeRD',0,22,0},...
+      {'Goss',0,45,0},...
+      {'Copper',90,30,45},...
+      {'Copper2',270,30,45},...
+      {'SR',53,35,63},...
+      {'SR2',233,35,63},...
+      {'SR3',307,35,27},...
+      {'SR4',127,35,27},...
+      {'Brass',35,45,0},...
+      {'Brass2',325,45,0},...
+      {'PLage',65,45,0},...
+      {'PLage2',295,45,0},...
+      {'QLage',65,20,0},...
+      {'QLage2',245,20,0},...
+      {'QLage3',115,160,0},...
+      {'QLage4',295,160,0},...
+      {'invGoss',90,45,0}};
+
+    found = cellfun(@(x) strcmpi(x{1},varargin{1}),orientationList);
   
-  elseif isa(varargin{1},'char') && exist([varargin{1},'Orientation'],'file')
+    if any(found)
     
-    o = eval([varargin{1},'Orientation(o.CS,o.SS)']);
-    return
-    
+      rot = rotation('Euler',orientationList{found}{2}*degree,...
+        orientationList{found}{3}*degree,...
+        orientationList{found}{4}*degree,'Bunge');
+      
+    elseif exist([varargin{1},'Orientation'],'file')
+
+      o = eval([varargin{1},'Orientation(o.CS,o.SS)']);
+      return
+
+    else
+
+      error('Unknown orientation!');
+
+    end
+
   else
     args  = ~cellfun(@(s) isa(s,'symmetry'),varargin,'uniformoutput',true);
-    
+
     rot = rotation(varargin{args});
-    
+
   end
-  
+
 end
 
 superiorto('quaternion','rotation','symmetry');
