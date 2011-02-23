@@ -42,7 +42,7 @@ C = loadTensor(fname,cs,'name','stiffness')
 
 
 %% Visualization
-% The default plot for each tensor is its quadric, i.e. for each direction
+% The default plot for each tensor is its directional magnitude, i.e. for each direction
 % x it is plotted Q(x) = T_ijkl x_i x_j x_k x_l
 
 set_mtex_option('defaultColorMap',seismicColorMap);
