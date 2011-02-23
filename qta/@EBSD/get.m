@@ -88,7 +88,7 @@ switch vname
 %     end
   case 'weight'
     if isfield(obj.options, 'weight')
-      w = get(obj,'weight');
+      w = obj.options.weight;
       varargout{1} = w./sum(w(:));
     else
       sz = size(obj(1).orientations);
