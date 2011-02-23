@@ -12,7 +12,7 @@ function E = ChristoffelTensor(C,n)
 %  E - Christoffel @tensor
 %
 %% See also
-% tensor/quadric tensor/rotate
+% tensor/directionalMagnitude tensor/rotate
 
 % compute tensor products
 E = EinsteinSum(C,[1 -1 2 -2],n,-1,n,-2);
