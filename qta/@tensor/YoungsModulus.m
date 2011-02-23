@@ -17,5 +17,5 @@ function E = YoungsModulus(C,x)
 % compute the compliance tensor
 S = inv(C);
 
-% compute quadric
-E = 1./quadric(S,x);
+% compute directional magnitude
+E = 1./directionalMagnitude(S,x);
