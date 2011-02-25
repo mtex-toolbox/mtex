@@ -15,6 +15,8 @@ function grains = copy(grains,varargin)
 %% See also
 % grain/get grain_index
 
+if nargin == 1, return;end
+
 
 %% if indexing use direct indexing
 if isa(varargin{1},'double') || isa(varargin{1},'logical'),   

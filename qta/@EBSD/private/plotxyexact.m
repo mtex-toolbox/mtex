@@ -1,5 +1,25 @@
 function h = plotxyexact(xy,d,unitCell,varargin)
 
+if check_option(varargin,'voronoi')
+  
+  [v faces rind] = spatialdecomposition(xy,'plot',varargin{:});
+  [v(:,1), v(:,2), lx,ly] = fixMTEXscreencoordinates(v(:,1),v(:,2),varargin{:});
+
+  h = zeros(size(faces));
+  for k=1:numel(faces)
+    h(k)= patch('Vertices',v,'Faces',faces{k},'FaceVertexCData',d(rind{k},:),...
+      'FaceColor','flat','EdgeColor','none');
+  end
+  
+  optiondraw(h,varargin{:});
+
+  xlabel(lx); ylabel(ly);
+  fixMTEXplot;
+
+  return
+  
+end
+
 % generate patches
 [v faces] = generatePatches(xy,unitCell,varargin{:});
 
