@@ -38,9 +38,9 @@ s.dz = NaN(length(s.xy),size(s.d,2));
 s.dy = NaN(length(s.xz),size(s.d,2));
 s.dx = NaN(length(s.yz),size(s.d,2));
 
-s.hz = plotxyexact(s.xy,s.dz,'voronoi',varargin{:});
-s.hy = plotxyexact(s.xz,s.dy,'voronoi',varargin{:});
-s.hx = plotxyexact(s.yz,s.dx,'voronoi',varargin{:});
+s.hz = plotxyexact(s.xy,s.dz,[],'voronoi',varargin{:});
+s.hy = plotxyexact(s.xz,s.dy,[],'voronoi',varargin{:});
+s.hx = plotxyexact(s.yz,s.dx,[],'voronoi',varargin{:});
 
 
 xyzt = get(s.hy,'Vertices');
