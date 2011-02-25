@@ -55,11 +55,11 @@ case {'jpg','jpeg'}
   flags = {'-r600','-djpeg'};  
   set(gcf,'renderer','zbuffer');
 case {'tiff'}
-  flags = {'-r600','-dtiff'};
+  flags = {'-r500','-dtiff'};
 case {'png'}
-  flags = {'-r600','-dpng'};
+  flags = {'-r500','-dpng'};
 case {'bmp'}
-  flags = {'-r600','-dbmp'};
+  flags = {'-r500','-dbmp'};
 otherwise
   saveas(gcf,fname);
   return
