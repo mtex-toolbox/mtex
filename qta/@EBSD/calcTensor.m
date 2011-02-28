@@ -25,7 +25,6 @@ function [TVoigt, TReuss, THill] = calcTensor(ebsd,varargin)
 % filter data
 ebsd = copy(ebsd,varargin{:});
 
-
 % extract tensors and remove them from varargin
 Tind = cellfun(@(t) isa(t,'tensor'),varargin);
 T = varargin(Tind);
@@ -34,15 +33,8 @@ varargin(Tind) = [];
 % for Reuss average invert tensor
 Tinv = cellfun(@(t) inv(t),T,'uniformOutput',false);
 
-
-% restrict phases if necassary
-if check_option(varargin,'phase')
-  phases = get_option(varargin,'phase');
-  [SO3,ind] = get(ebsd,'orientations',varargin{:});
-  ebsd = ebsd(ind);
-else
-  phases = get(ebsd,'phase');
-end
+% get phases
+phases = get(ebsd,'phase');
 
 % initialize avarage tensors
 TVoigt = tensor(zeros(size(T{1})));
