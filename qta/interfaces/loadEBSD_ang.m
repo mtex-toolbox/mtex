@@ -54,6 +54,19 @@ if check_option(varargin,'check'), return;end
 %number of header lines
 nh = find(strmatch('#',hl),1,'last');
 
-ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
+% get number of columns
+if isempty(sscanf(hl{nh+1},'%*f %*f %*f %*f %*f %*f %*f %*f %*f %*f %s\n'))
+  
+  ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
   'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Phase' 'SEM_signal' 'Fit'},...
   'Columns',1:10,varargin{:},'header',nh);
+
+else
+  % replace minearal names by numbers
+  replaceExpr = arrayfun(@(i) {get(cs{i},'mineral'),num2str(i)},1:length(cs),'UniformOutput',false);
+
+  ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
+    'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Fit' 'unknown1' 'unknown2' 'phase'},...
+    'Columns',1:11,varargin{:},'header',nh,'ReplaceExpr',replaceExpr);
+  
+end

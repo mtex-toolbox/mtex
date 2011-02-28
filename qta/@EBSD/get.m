@@ -70,17 +70,29 @@ switch vname
     for i = 1:length(obj)
       varargout{1} = [varargout{1};reshape(quaternion(obj(i).orientations),[],1)]; 
     end
+  case 'Euler'
+    q = get(obj,'quaternion');
+    [phi1,Phi,phi2] = get(q,'Euler',varargin{:});
+    varargout{1} = [phi1,Phi,phi2];
   case 'length'
     varargout{1} = zeros(1,length(obj));
     for i = 1:length(obj)
       varargout{1}(i) = sum(numel(obj(i).orientations));
     end
+  case 'phases'
+    
+    sz = cumsum([0,SampleSize(obj)]);
+    phases = zeros(sz(end),1);
+    for i = 1:length(obj)
+      phases(sz(i)+1:sz(i+1)) = obj(i).phase;
+    end
+    varargout{1} = phases;
   case {'x','y','z','xy','xz','yz','xyz'}
     fl = {1,2,3,[1,2],[1,3],[2,3],[1:3]};
     fl = fl{strcmpi(vname,{'x','y','z','xy','xz','yz','xyz'})};
     
     for i = 1:length(obj)
-      varargout{1} = [varargout{1};obj(i).X(:,fl)]; 
+      varargout{1} = [varargout{1};obj(i).X(:,fl(1:size(obj(i).X,2)))]; 
     end
 %   case 'y'
 %     for i = 1:length(obj)
@@ -88,7 +100,7 @@ switch vname
 %     end
   case 'weight'
     if isfield(obj.options, 'weight')
-      w = get(obj,'weight');
+      w = obj.options.weight;
       varargout{1} = w./sum(w(:));
     else
       sz = size(obj(1).orientations);

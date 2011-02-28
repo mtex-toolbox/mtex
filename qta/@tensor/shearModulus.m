@@ -18,5 +18,5 @@ function E = shearModulus(C,h,u)
 % compute the compliance tensor
 S = inv(C);
 
-% compute quadric
+% compute directional magnitude
 E = 0.25./matrix(EinsteinSum(S,[-1 -2 -3 -4],h,-1,u,-2,h,-3,u,-4));

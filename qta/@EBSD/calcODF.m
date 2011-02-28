@@ -37,6 +37,8 @@ function odf = calcODF(ebsd,varargin)
 
 vdisp(' performing kernel density estimation',varargin{:})
 
+% filter data
+ebsd = copy(ebsd,varargin{:});
 
 %% extract orientations and weights
 % extract orientations

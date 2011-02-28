@@ -17,6 +17,10 @@ omega = angle(c_sym * inverse(center));
 rq = Rodrigues(q); clear q;
 rc_sym = Rodrigues(c_sym); 
 
+% for the center = id case
+planes = [xvector,yvector,zvector];
+planeId = 1;
+
 % find rotation not part of the fundamental region
 ind = true(size(rq));
 for i = 2:numel(rc_sym)
@@ -24,8 +28,9 @@ for i = 2:numel(rc_sym)
   d = rc_sym(i)-rc_sym(1);
   if norm(d)<=1e-10 % find something that is orthogonal to rc_sym    
     if abs(getx(rc_sym(1)))<=1e-5
-      if isnull(gety(rc_sym(1))) && i > 2
-        d = yvector;
+      if isnull(gety(rc_sym(1))) && planeId < 3
+        d = planes(planeId);
+        planeId = planeId + 1;
       else
         d = xvector;
       end
