@@ -50,16 +50,16 @@ elseif isa(varargin{1},'orientation')
 %% determine crystal and specimen symmetry
 else
 
-  args  = find(cellfun(@(s) isa(s,'symmetry'),varargin,'uniformoutput',true));
+  args  = cellfun(@(s) isa(s,'symmetry'),varargin,'uniformoutput',true);
 
-  if length(args) >= 1
-    o.CS = varargin{args(1)};
+  if sum(args) >= 1
+    o.CS = varargin{find(args,1)};
   else
     o.CS = symmetry;
   end
 
-  if length(args) >= 2
-    o.SS = varargin{args(2)};
+  if sum(args) >= 2
+    o.SS = varargin{find(args,1,'last')};
   else
     o.SS = symmetry;
   end
@@ -72,6 +72,7 @@ else
 
   elseif isa(varargin{1},'char')
 
+    % some predefined orientations
     orientationList = {
       {'Cube',0,0,0},...
       {'CubeND22',22,0,0},...
@@ -102,18 +103,19 @@ else
         orientationList{found}{3}*degree,...
         orientationList{found}{4}*degree,'Bunge');
       
-    elseif exist([varargin{1},'Orientation'],'file')
+    elseif exist([varargin{1},'Orientation'],'file') 
+      % there is a file defining this specific orientation
 
       o = eval([varargin{1},'Orientation(o.CS,o.SS)']);
       return
 
-    else
-
-      error('Unknown orientation!');
-
+    else % define as rotation
+      
+      rot = rotation(varargin{~args});
+        
     end
 
-  else
+  else % define as rotation
     args  = ~cellfun(@(s) isa(s,'symmetry'),varargin,'uniformoutput',true);
 
     rot = rotation(varargin{args});
