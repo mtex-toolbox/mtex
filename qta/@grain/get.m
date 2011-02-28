@@ -32,6 +32,7 @@ if nargin > 1
             
     case 'phase'
       varargout{1} = [grains.phase];
+      %varargout{1} = arrayfun(@(x) x.phase,struct(grains));
       if nargout > 1
         [varargout{2}, varargout{3}] = unique(varargout{1},'first');
       end

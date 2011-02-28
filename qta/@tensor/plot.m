@@ -1,7 +1,14 @@
 function plot(T,varargin)
 % plot a tensor T
-% options - missing density (rho, not to be confused with RHOMAX,RHOMIN) for velocity plot
-% plotType = 'quadric','YoungsModulus','linearCompressibility','velocity' 
+%
+%% Input
+%  T - @tensor
+%
+%% Options
+% plotType - directionalMagnitude
+%            YoungsModulus
+%            linearCompressibility
+%            velocity' 
 % 
 %%
 %
@@ -13,13 +20,13 @@ function plot(T,varargin)
 S2 = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX','antipodal',varargin{:});
   
 % decide what to plot
-plotType = get_option(varargin,'PlotType','quadric');
+plotType = get_option(varargin,'PlotType','directionalMagnitude');
 
 switch plotType
   
-  case 'quadric'
+  case 'directionalMagnitude'
 
-    d = quadric(T,S2);
+    d = directionalMagnitude(T,S2);
     
   case 'YoungsModulus'
     

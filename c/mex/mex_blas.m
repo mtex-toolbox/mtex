@@ -20,12 +20,12 @@ if ispc
   
   pos = strcmp(compiler,char(myCompiler{1}));
   if any(pos)
-    libdir = libdir(pos);
+    libdir = libdir{pos};
   else
-    libdir = libdir(end);
+    libdir = libdir{end};
   end
   
-  lib_blas = [matlabroot filesep 'extern' filesep 'lib' computer('arch') '\' libdir '\libmwblas.lib'];
+  lib_blas = fullfile(matlabroot,'extern','lib',computer('arch'),libdir,'libmwblas.lib');
   
 elseif ismac
   

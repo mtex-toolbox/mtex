@@ -1,4 +1,4 @@
-function [A,ffn,num_header,sr_input_ca,hl,fpos] = txt2mat(varargin) %#ok<FNDEF>
+function [A,ffn,num_header,sr_input_ca,hl,fpos] = txt2mat(varargin) 
 
 % TXT2MAT read an ascii file and convert a data table to matrix
 %

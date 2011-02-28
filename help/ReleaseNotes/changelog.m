@@ -2,7 +2,31 @@
 %
 %% Contents
 %
-%% MTEX 3.0 -
+%% MTEX 3.1 - 03/2011
+%
+% *Tensor Arithmetics*
+% This release introduces tensor analysis into MTEX, this includes
+%
+% * import of tensors via the import wizard
+% * basic tensor operations: multiplication, rotation, inversion
+% * advanced visualization
+% * computation of avaraged tensors from EBSD data and ODFs
+% * computation of standard elasticity tensors like: Youngs modulus,
+% linear compressibility, Cristoffel tensor, elastic wave velocities
+%
+% *Other Enhangments*
+%
+% * support for different crystal reference frame conventions
+% * automatic conversion between different reference frames
+% * definition of crystal directions in direct and reciprocal space 
+% * more predefines orientations: Cube, CubeND22, CubeND45, CubeRD, Goss,
+% Copper, SR, Brass, PLage, QLage, ...
+% * improved EBSD and grain plots 
+% * new and improved interfaces
+% * many bug fixes
+% 
+%
+%% MTEX 3.0 - 10/2010
 %
 % *Crystal Geometry*
 %
