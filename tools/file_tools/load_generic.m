@@ -20,7 +20,7 @@ if ~check_option(varargin,'noascii')
   if strcmpi(fname(end-2:end),'csv')
     rc = {'\t, '};
   else
-    rc = {'\t ';',.'};
+    rc = {'\t ',',.'};
   end
   
   if check_option(varargin,'Columns')
