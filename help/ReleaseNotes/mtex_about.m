@@ -12,7 +12,7 @@
 %
 %  TU Chemnitz
 %  Fakultät für Mathematik
-%  Reichenhainer Str.39, Zimmer 710
+%  Reichenhainer Str.39, Zimmer 727
 %  D-09107 Chemnitz, GERMANY
 %
 %  personal homepage:
