@@ -32,7 +32,7 @@ if isa(varargin{1},'logical')
   
   % for each phase
   for i=1:length(ebsd)
-    idi = condition(cs(i)+1:cs(i+1));
+    idi = varargin{1}(cs(i)+1:cs(i+1));
     
     % filter spatial coordinates
     if ~isempty(ebsd(i).X)
