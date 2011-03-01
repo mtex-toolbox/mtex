@@ -137,7 +137,7 @@ else
   cmd = [get_mtex_option('prefix_cmd'),prg,'.exe ',mtex_tmppath,name,...
     '.txt',get_mtex_option('postfix_cmd')];
 end
-if check_option(varargin,'silent') && isunix, cmd = [cmd,' >>',get_mtex_option('logfile')]; end
+if check_option(varargin,'silent') && (isunix || ispc), cmd = [cmd,' >> ',get_mtex_option('logfile')]; end
 
 if check_mtex_option('debug_mode')
   disp('Stopped because of "debug_mode"');
