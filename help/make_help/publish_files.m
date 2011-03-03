@@ -3,11 +3,13 @@ function publish_files(files,in_dir,varargin)
 
 % set publishing options
 poptions.format = 'html';
-poptions.useNewFigure = false;
-if ~newer_version(7.6), poptions.stopOnError = false;end
 poptions.stylesheet = get_option(varargin,'Stylesheet','');
+poptions.outputDir = get_option(varargin,'out_dir',in_dir);
+% poptions.figureSnapMethod = 'entireFigureWindow';
+poptions.useNewFigure = true;
 poptions.evalCode = get_option(varargin,'evalCode',true);
-poptions.outputDir = get_option(varargin,'out_dir','.');
+if ~newer_version(7.6), poptions.stopOnError = false;end
+
 
 global mtex_progress;
 
@@ -51,7 +53,8 @@ for i=1:length(files)
     delete(out_file);
 
     % make links
-    code = regexprep(code, '\<([[)(.*?),(.*?)(\]\])\>','<a href="$2">$3</a>');
+%     code = regexprep(code, '\<.*([[)(.*?),(.*?)(\]\]).*\>','<a href="$2">$3</a>');
+    code = regexprep(code, '[[(.*?),(.*?)\]\]','<a href="$1">$2</a>');
   
     % remove output "calculate: [......]"
     code(strmatch('calculate: [',code)) = [];

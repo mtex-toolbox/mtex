@@ -4,13 +4,16 @@ function make_help(varargin)
 % 'topicpages'
 
 %% set global options
-
+recycle('off')
 timing = tic;
 
 % addpath(pwd);
 plotx2east;
-html_path = fullfile(mtex_path,'help','html');
 
+html_path = get_option(varargin,'html_path',fullfile(mtex_path,'help','html'));
+publish_style = get_option(varargin,'publish_style',fullfile(mtex_path,'help','make_help', 'publishmtex.xsl'));
+example_style = get_option(varargin,'example_style',fullfile(mtex_path,'help','make_help', 'example_style.xsl'));
+evalcode = get_option(varargin,'evalcode',true);
 
 
 global mtex_progress;
@@ -69,7 +72,7 @@ if check_option(varargin, {'classes','all','all-'})
     {'geometry' '@vector3d'},{'geometry' '@quaternion'},{'geometry' '@Miller'},...
     {'geometry' '@symmetry'},{'geometry' '@S1Grid'},{'geometry' '@S2Grid'},...
     {'geometry' '@rotation'},{'geometry' '@orientation'},...
-    {'geometry' '@polygon'},...
+    {'geometry' '@polygon'}, {'geometry' '@polyeder'}, {'geometry' '@polytope'},...
     {'geometry' '@SO3Grid'},{'geometry' 'geometry_tools'},...
     {'tools'},{'tools' 'dubna_tools'},{'tools' 'statistic_tools'},...
     {'tools' 'plot_tools'}};
@@ -100,7 +103,7 @@ if check_option(varargin, {'classes','all','all-'})
 
   files = dir(fullfile(current_path,'script_*.m'));
   publish_files({files.name},current_path,'out_dir',html_path,...
-    'evalcode',true,'stylesheet',fullfile(mtex_path,'help','make_help','publishmtex.xsl'),varargin{:});
+    'evalcode',evalcode,'stylesheet',publish_style,varargin{:});
   delete(fullfile(current_path, 'script_*.m'));
 end
 
@@ -119,7 +122,7 @@ if check_option(varargin, {'mfiles','all','all-'})
  files = dir(fullfile(html_path, 'script_*.m'));
  if ~isempty(files)
    publish_files({files.name},html_path,'out_dir',html_path,...
-     'stylesheet',fullfile(mtex_path,'help','make_help','publishmtex.xsl'),'evalcode',false,'waitbar',varargin{:});
+     'stylesheet',publish_style,'evalcode',false,'waitbar',varargin{:});
    delete(fullfile(html_path,'script_*.m'));
  end
  
@@ -151,8 +154,8 @@ if check_option(varargin, {'examples','all'})
 
   current_path = fullfile(mtex_path,'examples');
   files = dir(fullfile(current_path ,'*.m'));
-  publish_files({files.name},current_path,'stylesheet',fullfile(mtex_path,'help','make_help', 'example_style.xsl'),...
-    'out_dir',fullfile(current_path, 'html'),'evalcode',true,varargin{:});
+  publish_files({files.name},current_path,'stylesheet',example_style,...
+    'out_dir',fullfile(current_path, 'html'),'evalcode',evalcode,varargin{:});
   copyfile(fullfile(current_path, 'html','*.html'),html_path);
   copyfile(fullfile(current_path, 'html','*.png'),html_path);
   
@@ -168,16 +171,16 @@ set_mtex_option('generate_help',false);
 % rmpath(pwd);
 
 %% create searchable database
-
-system(['jar -cf ' fullfile(mtex_path,'help','mtex','help.jar') ' -C ' fullfile(mtex_path,'help','html') ' .']);
-
-builddocsearchdb(fullfile(mtex_path ,'help','html'));
-helpsearchpath = fullfile(mtex_path, 'help','html','helpsearch');
-if exist(helpsearchpath,'dir'),
-  e = rmdir(fullfile(mtex_path, 'help','mtex','helpsearch'),'s');
-  movefile(helpsearchpath, fullfile(mtex_path, 'help','mtex'),'f');
+if ~check_option(varargin,'dontpack')
+  system(['jar -cf ' fullfile(mtex_path,'help','mtex','help.jar') ' -C ' fullfile(mtex_path,'help','html') ' .']);
+  
+  builddocsearchdb(fullfile(mtex_path ,'help','html'));
+  helpsearchpath = fullfile(mtex_path, 'help','html','helpsearch');
+  if exist(helpsearchpath,'dir'),
+    e = rmdir(fullfile(mtex_path, 'help','mtex','helpsearch'),'s');
+    movefile(helpsearchpath, fullfile(mtex_path, 'help','mtex'),'f');
+  end
 end
-
 
 
 function o = is_newer(f1,f2)
