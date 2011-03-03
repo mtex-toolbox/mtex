@@ -14,9 +14,10 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
   <xsl:output method="html"
-    indent="yes" 
+    indent="yes"
     doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"/>
-  <xsl:strip-space elements="mwsh:code"/>
+<xsl:strip-space elements="mwsh:code"/>
+
 
 <xsl:variable name="title">
   <xsl:variable name="dTitle" select="//steptitle[@style='document']"/>
@@ -28,25 +29,20 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
 
 <xsl:variable name="mtexversion" select="document('mtex_version.xml')//mtex/version"/>
 
+
 <xsl:template match="mscript">
   <html>
     
     <!-- head -->
     <head>
       <title><xsl:value-of select="$title"/></title>
-      <xsl:element name="link">
-        <xsl:attribute name="rel">stylesheet</xsl:attribute>
-        <xsl:attribute name="href"><xsl:value-of select="../make_help" />style.css</xsl:attribute>
-      </xsl:element>
-      <xsl:element name="script">
-        <xsl:attribute name="language">JavaScript</xsl:attribute>
-        <xsl:attribute name="src">docscripts.js</xsl:attribute>
-      </xsl:element>
+      <link rel="stylesheet" href="style.css"><xsl:text> </xsl:text></link>
+      <script language="JavaScript" src="docscripts.js"><xsl:text> </xsl:text></script>
     </head>
     
     <body>
-      <a><xsl:attribute name="name">top_of_page</xsl:attribute></a>
-      <p><xsl:attribute name="style">font-size:1px;</xsl:attribute></p>
+     <a name="top_of_page"><xsl:text> </xsl:text></a>
+     <!-- <p><xsl:attribute name="style">font-size:1px;</xsl:attribute></p>-->
       
       <xsl:variable name="body-cells" select="cell[not(@style = 'overview')]"/>
         
@@ -136,7 +132,7 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
                   <xsl:element name="{$headinglevel}">
                     <xsl:apply-templates select="steptitle"/>
                     <xsl:if test="not(steptitle[@style = 'document'])">
-                      <a><xsl:attribute name="name"><xsl:value-of select="position()"/></xsl:attribute></a>
+                      <a><xsl:attribute name="name"><xsl:value-of select="position()"/></xsl:attribute><xsl:text> </xsl:text></a>
                     </xsl:if>
                   </xsl:element>      
                   
@@ -182,7 +178,7 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
 <!-- Header -->
 <xsl:template name="header">
   <xsl:param name="sourceref"/>
-  <a name="top_of_page"></a>
+    <div>
     <table class="nav" summary="Navigation aid" border="0" width="100%" cellpadding="0" cellspacing="0">
       <tr><td valign="baseline"><b>MTEX</b> - A MATLAB Toolbox for Quantitative Texture Analysis</td>
       <xsl:if test="string-length($sourceref) > 0">
@@ -192,6 +188,8 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
             View Code</a></td>
       </xsl:if></tr>
   </table>
+  <p style="font-size:1px;"></p>
+  </div>
 </xsl:template>
 
 <!-- Header2 -->
@@ -210,7 +208,7 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
 
 <!-- Footer -->
 <xsl:template name="footer">
-  <p style="font-size:1px;">&nbsp;</p>
+  <p style="font-size:1px;"> </p>
   <table class="footer" border="0" width="100%" cellpadding="0" cellspacing="0">
     <tr>
       <td valign="baseline" align="right"><xsl:value-of select="$mtexversion"/></td><td valign="baseline" align="right"></td>
@@ -238,7 +236,7 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
   <xsl:param name="body-cells"/>
  
   <div><table class="content">
-    <tr ><td class="header">On this page…</td></tr>  
+    <tr ><td class="header">On this page ...</td></tr>  
     
       <xsl:for-each select="$body-cells">
          <xsl:if test="./steptitle">   

@@ -12,4 +12,6 @@ if isempty(ug_file)
   end
 end
 
+if ~isempty(ug_file)
 ug_file = ug_file{:};
+end
