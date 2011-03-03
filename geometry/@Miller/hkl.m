@@ -2,7 +2,7 @@ function h = hkl(h)
 % change crystal direction convention to hkl coordinates if not done yet
 %
 %% See also
-% Miller\uvw
+% Miller/uvw
 
 if check_option(h,'uvw')
   h = delete_option(h,'uvw');

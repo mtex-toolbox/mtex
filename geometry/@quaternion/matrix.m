@@ -14,8 +14,7 @@ function mat = matrix(q)
 %  mat - vector of matrixes
 %
 %% See also
-%
-% mat2quat, Euler, axis2quat, hr2quat
+% mat2quat Euler axis2quat hr2quat
 
 q = q';
 q = reshape(q,[1 1 numel(q)]);

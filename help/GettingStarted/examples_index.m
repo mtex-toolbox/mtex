@@ -4,7 +4,7 @@
 % toolbox to perform several tasks in texture analysis. See below for a
 % complete list.
 %
-% * <dubna_tutorial.html A Short Tutorial>
+% * <dubna_demo.html A Short Tutorial>
 % * <geometry_demo.html Crystal Geometry Demo>
 % * <ODF_demo.html ODF Analysis Demo>
 % * <ebsd_demo.html EBSD Data Analysis Demo>

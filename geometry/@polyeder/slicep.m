@@ -1,7 +1,7 @@
 function [inp ofx] = slicep(p,sp,varargin)
 %
 %% Input
-%  p  - polytope
+%  p  - @polyeder
 %  sp - slicing plane
 %
 %%

@@ -5,7 +5,7 @@
 % Importing pole figure data in MTEX means to create a
 % <PoleFigure_index.html PoleFigure> object from data files containing
 % diffration data. Once such an object has been created the data can be
-% <ModifyPoleFigures.html analyzed and processed> in many ways.
+% <ModifyPoleFigureData.html analyzed and processed> in many ways.
 % Furthermore, such a PoleFigure object is the starting point for
 % <PoleFigure2odf.html PoleFigure to ODF estimation>.
 %
@@ -42,13 +42,6 @@ import_wizard
 %      <a href="loadPoleFigure_ana.html" class="toplink">*.ana</a>
 %    </td>
 %    <td valign="top"> EMSE ASCII pole figure format.</td>
-%  </tr>
-%  <tr>
-%    <td width="15" valign="top"></td>
-%    <td width="250px" valign="top">
-%      <a href="loadPoleFigure_frame.html" class="toplink">*.axs</a>
-%    </td>
-%    <td valign="top"> Bruker ASCII pole figure format.</td>
 %  </tr>
 %  <tr>
 %    <td width="15" valign="top"></td>

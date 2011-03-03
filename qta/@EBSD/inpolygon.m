@@ -14,7 +14,7 @@ function ebsd = inpolygon(ebsd,varargin)
 %  ebsd - @EBSD
 %
 %% See also
-% grain/inpolygon polygon/inpolygon
+% polygon/inpolygon
 
 % get xy coordinates
 XY = get(ebsd,'xy');
