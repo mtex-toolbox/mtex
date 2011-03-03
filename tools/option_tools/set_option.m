@@ -14,7 +14,7 @@ function out_list = set_option(option_list,option,varargin)
 %  out_list      - Cell Array
 %
 %% See also
-% check_option get_option clear_option
+% check_option get_option delete_option
 
 % delete previous options
 

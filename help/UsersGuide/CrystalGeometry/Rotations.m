@@ -182,8 +182,8 @@ inverse(rot)
 % There are methods to transform quaternion in almost any other
 % parameterization of rotations as they are:
 %
-% * <quaternion_Euler.html,Euler(rot)>   in Euler angle
-% * <quaternion_Rodrigues.html,Rodrigues(rot)>  in Rodrigues parameter
+% * <quaternion_Euler.html, Euler(rot)>   in Euler angle
+% * <quaternion_Rodrigues.html, Rodrigues(rot)>  in Rodrigues parameter
 %
 
 [alpha,beta,gamma] = Euler(rot,'Matthies')

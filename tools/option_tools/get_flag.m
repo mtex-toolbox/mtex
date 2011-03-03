@@ -15,7 +15,7 @@ function flag = get_flag(option_list,flag_list,default)
 %  flag         - string
 %
 %% See also
-% check_option set_option clear_option
+% check_option set_option delete_option
 
 if nargin <= 2, flag = [];else flag = default;end
 

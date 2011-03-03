@@ -14,6 +14,7 @@ function x = axisDistribution(odf,h,varargin)
 %  x   - values of the axis distribution
 %
 %% See also
+% ODF/angleDistribution 
 
 % angle discretisation
 omega = linspace(-pi,pi,100);

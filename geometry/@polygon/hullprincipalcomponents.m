@@ -9,7 +9,7 @@ function [cmp v]= hullprincipalcomponents(p)
 %  v     - length of axis
 %
 %% See also
-% polygon/principalcomponents polygon/plotellipse
+% polygon/principalcomponents grain/plotellipse
 %
 
 [cmp v] = principalcomponents(convhull(p));

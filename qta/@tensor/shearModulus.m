@@ -14,6 +14,7 @@ function E = shearModulus(C,h,u)
 %  E - shear modulus
 %
 %% See also
+% tensor/YoungsModulus tensor/volumeCompressibility tensor/ChristoffelTensor
 
 % compute the compliance tensor
 S = inv(C);

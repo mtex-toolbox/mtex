@@ -8,6 +8,6 @@ function cVertices = hullcentroid(p)
 %  cVertices   - location [x y]
 %
 %% See also
-% grain/centroid grain/principalcomponents
+% polygon/centroid polygon/principalcomponents
 
 cVertices = centroid(convhull(p));

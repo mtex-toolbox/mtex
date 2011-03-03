@@ -14,6 +14,7 @@ function [x,omega] = angleDistribution(odf,varargin)
 %  x   - values of the axis distribution
 %
 %% See also
+% ODF/axisDistribution mispdf
 
 % get resolution
 res = get_option(varargin,'resolution',2.5*degree);

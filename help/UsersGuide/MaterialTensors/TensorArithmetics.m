@@ -54,7 +54,7 @@ plot(C,'complete')
 % <ElasticityTensor.html Elasticity Tensor>.
 
 %% Rotating a Tensor
-% Rotation a tensor is done by the command <tensor/rotate.html rotate>.
+% Rotation a tensor is done by the command <tensor_rotate.html rotate>.
 % Lets define a rotation
 
 r = rotation('Euler',45*degree,0*degree,0*degree)

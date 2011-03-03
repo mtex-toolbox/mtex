@@ -10,7 +10,7 @@ function D = wignerD2(l, g)
 %  Y - (2l+1) x numel(theta,rho) matrix of function values
 %
 %% See also
-%
+% wignerD sphericalY
 
 r = vector3d(S2Grid('equispaced','resolution',1.5*degree));
 

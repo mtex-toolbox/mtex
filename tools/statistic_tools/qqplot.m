@@ -1,20 +1,20 @@
 function qqplot(o)
 % qqplot(SO3Grid(2.5*degree,symmetry('m-3m')))
 
-h = angle(o);
+[o,h] = project2FundamentalRegion(o,idquaternion);
+[pdf,omegas] = mispdf(get(o,'CS'));
 
-[pd degr ] = mispdf(get(o,'CS'));
-pd = cumsum(pd);
-pd = pd./pd(end);
+pdf = cumsum(pdf);
+pdf = pdf./pdf(end);
 
-degr(pd == 0) = [];
-pd(pd == 0) = [];
+omegas(pdf == 0) = [];
+pdf(pdf == 0) = [];
 
-n = hist(angle(o),degr*degree);
-nn = cumsum(n);
-nn = nn./nn(end);
+mof = hist(h,omegas)
+mof = cumsum(hist(h,omegas));
+mof = mof./mof(end);
 
-plot(pd,nn,'.-')
+plot(pdf,mof,'.')
 line([0 1],[0 1])
 
 axis equal tight 

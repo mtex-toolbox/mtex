@@ -9,7 +9,7 @@ function out = extract_argoption(option_list,option)
 %  out         - Cell Array
 %
 %% See also
-% get_option set_option clear_option
+% get_option set_option delete_option
 
 if ~iscell(option), option = {option};end
 

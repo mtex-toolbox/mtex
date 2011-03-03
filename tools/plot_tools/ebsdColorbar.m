@@ -12,7 +12,7 @@ function ebsdColorbar(varargin)
 %
 %
 %% See also
-%
+% orientation2color
 
 % input check
 if nargin >= 1 && isa(varargin{1},'symmetry')  

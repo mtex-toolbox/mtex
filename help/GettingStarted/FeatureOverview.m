@@ -8,9 +8,9 @@
 % In MTEX you can define arbitrary crystal and specimen symmetries with
 % arbitrary geometries using the class <symmetry_index.html
 % symmetry>. <Miller_index.html Miller indice> may be <Miller_plot.html
-% plotted> in various spherical projections, the <Miller_angle.html
+% plotted> in various spherical projections, the <vector3d_angle.html
 % angle> between two Miller indece can be computed or all
-% <Miller_symeq.html crystallographically equivalent directions> can be
+% <Miller_symmetrise.html crystallographically equivalent directions> can be
 % computed. Orientations can be specified in terms of different Euler angle
 % conventions, in terms of Rodrigues parameters, matrices or axis - angle
 % parametrization. Orientations can be applied to Miller indeces, ODFs,
@@ -33,7 +33,7 @@
 %
 % Up to now MTEX allready supports a wide range of <ImportPoleFigureData.html
 % pole figure formats>. Furthermore, there is a
-% <interface_generic.html generic interface> that allows to import pole
+% <loadPoleFigure_generic.html generic interface> that allows to import pole
 % figure data that are stored in ASCII files in the theta - rho -
 % intensity notation. 
 %
@@ -54,7 +54,7 @@
 % ODFs estimated from EBSD. In particular it is possible to compare ODFs
 % estimated from EBSD data with those estimated from pole figure data using
 % the command <ODF_calcerror.html calcerror>. Another usefull command in
-% MTEX is <EBSD_simulateEBSD.html simulateEBSD> which allows to simulate
+% MTEX is <ODF_simulateEBSD.html simulateEBSD> which allows to simulate
 % EBSD data for a given ODF.
 %
 % A practical guide to EBSD data analysis with MTEX can be found
@@ -103,7 +103,7 @@
 % There are also many <S2Grid_plot.html plotting options> to addapt the
 % plots to the specific standards of your journal. Plots may be
 % <savefigure.html saved> in any image format, e.g. as pdf, jpg, png,
-% eps, tiff, bmp. This is described in more detail in the <plot_demo.html
+% eps, tiff, bmp. This is described in more detail in the <Plotting.html
 % Plot Demo>.
 %
 %
