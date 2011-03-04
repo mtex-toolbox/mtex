@@ -56,6 +56,6 @@ plot(quaternion(q),'scatter',varargin{:});
 %% store appdata
 setappdata(gcf,'CS',cs);
 setappdata(gcf,'SS',ss);
-setappdata(gca,'center',get_option(varargin,'center'));
+setappdata(gca,'center',center);
 set(gcf,'Name',['Scatter plot of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
 set(gcf,'tag','ebsd_scatter');
