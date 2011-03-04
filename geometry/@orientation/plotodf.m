@@ -90,3 +90,4 @@ setappdata(gcf,'SectionType',sectype);
 setappdata(gcf,'CS',cs);
 setappdata(gcf,'SS',ss);
 set(gcf,'Name',[sectype ' sections of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
+set(gcf,'tag','odf')

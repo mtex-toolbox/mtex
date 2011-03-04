@@ -12,7 +12,7 @@ function [cmp v]= principalcomponents(p,varargin)
 %  HULL  - components of convex hull
 %
 %% See also
-% polygon/hullprincipalcomponents polygon/plotellipse
+% polygon/hullprincipalcomponents grain/plotellipse
 %
 
 p = polygon( p );
