@@ -34,7 +34,7 @@ varargin(Tind) = [];
 Tinv = cellfun(@(t) inv(t),T,'uniformOutput',false);
 
 % get phases
-phases = get(ebsd,'phase');
+phases = get_option(varargin,'phase',get(ebsd,'phase'));
 
 % initialize avarage tensors
 TVoigt = tensor(zeros(size(T{1})));

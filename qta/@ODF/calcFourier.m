@@ -16,7 +16,7 @@ function odf = calcFourier(odf,L,varargin)
 %  nodf - @ODF where Fourier coefficients are stored for further use 
 %
 %% See also
-% ODF/plotFourier ODF/Fourier WiegnerD FourierODF ODF/textureindex ODF/entropy ODF/eval 
+% ODF/plotFourier ODF/Fourier wignerD FourierODF ODF/textureindex ODF/entropy ODF/eval 
 %
 
 error(nargchk(2, 2, nargin));

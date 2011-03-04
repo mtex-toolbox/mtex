@@ -25,7 +25,7 @@ function [T,options] = loadTensor_generic(fname,varargin)
 %% Example
 %
 %% See also
-% 
+% loadData
 
 % remove option "check"
 varargin = delete_option(varargin,'check');
