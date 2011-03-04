@@ -15,7 +15,7 @@ function T = mtimesT(T,dimT,M,dimM)
 %  dT - dimension of T where the multiplication takes place
 %  dM - dimension of M where the multiplication takes place
 %  rM - dimension of M which replaces the multiplication dimension
-%  
+%
 %
 %% Output
 %  T - @tensor
@@ -45,8 +45,18 @@ shape = [s(1),prod(s(2:T.rank)),s((T.rank+1):end)];
 T.M = reshape(T.M,shape);
 
 % multiply T.M along the first dimension with the second dimension of M
-T.M = mtimesx(M,T.M);
+F = zeros(size(T.M,1),size(T.M,2),size(M,3));
+for k=1:size(M,3)
+  if size(T.M,3) == 1
+    F(:,:,k) = M(:,:,k)*T.M;
+  else
+    F(:,:,k) = M(:,:,k)*T.M(:,:,k);
+  end  
+end
+T.M = F;
+% T.M = mtimesx(M,T.M);
 
+% size(T.M)
 % take the reshape back
 ss = size(T.M);
 shape = [size(M,1) s(2:T.rank) ss(3:end)];
