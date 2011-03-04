@@ -88,6 +88,7 @@ plotDiff(pf,odf)
 odf_modell = unimodalODF(modalorientation(odf),cs,ss,'halfwidth',15*degree)
 
 % plot the pole figures
+close all;
 plotpdf(odf_modell,h,'antipodal')
 
 % compute the difference
