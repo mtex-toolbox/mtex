@@ -16,8 +16,8 @@ function plotellipse(grains,varargin)
 %  PrincipalBColor -  colorspec
 %
 %% See also
-% grain/plot grain/plotgrains grain/plotsubfractions
-% grain/principalcomponents  grain/hullprincipalcomponents
+% grain/plot grain/plotgrains grain/plotsubfractions 
+% polygon/principalcomponents polygon/hullprincipalcomponents
 %
 
 plotoptions = set_default_option(varargin,...

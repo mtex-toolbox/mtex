@@ -13,6 +13,7 @@ function E = YoungsModulus(C,x)
 %  E - Youngs modulus
 %
 %% See also
+% tensor/shearModulus tensor/volumeCompressibility tensor/ChristoffelTensor
 
 % compute the compliance tensor
 S = inv(C);

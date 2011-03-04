@@ -32,7 +32,7 @@ if isa(varargin{1},'logical')
   
   % for each phase
   for i=1:length(ebsd)
-    idi = condition(cs(i)+1:cs(i+1));
+    idi = varargin{1}(cs(i)+1:cs(i+1));
     
     % filter spatial coordinates
     if ~isempty(ebsd(i).X)
@@ -78,6 +78,21 @@ if check_option(varargin,'phase')
 
   end
   
+  % restrict to found phases
+  ebsd = ebsd(match);
+  
+end
+
+%% filter by region
+if check_option(varargin,'region')
+  region = get_option(varargin,'region');
+  if isa(region,'double')
+    region = polygon([region(1) region(2);region(3) region(2);...
+      region(3) region(4); region(1) region(4); region(1) region(2)]);
+  end
+  
+  ebsd = inpolygon(ebsd,region);
+end
   % restrict to found phases
   ebsd = ebsd(match);
   
