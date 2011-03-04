@@ -16,7 +16,6 @@ end
 
 check_binaries;
 check_mex;
-check_mex_blas;
 
 %% ------------ check for binaries --------------------------
 function check_binaries
@@ -137,44 +136,6 @@ end
 hline('-')
 
 
-%%    ----------- check mex blas files ---------------------------
-
-function check_mex_blas
-
-% set mex/directory
-mexpath = fullfile(mtex_path,'c','mex',get_mtex_option('architecture'));
-addpath(mexpath,0);
-
-% check for mex files
-if fast_check_mex_blas, return;end
-   
-hline('-')
-disp('Checking mex files including blas library failed!');
-
-
-disp('> Trying now to recompile mex files including blas library.');
-opwd = pwd;
-cd(fullfile(mtex_path,'c','mex'));
-mex_install(mtex_path,true);
-cd(opwd);    
-    
-if ~fast_check_mex_blas
-%   disp('> Hurray - everythink works!')
-% else
-  hline()
-  disp('  MTEX: Couldn''t get the mex files including blas working!');
-  disp('  MTEX: Tensor arithmetics may not work!');
-  disp('  ');
-  disp('  The original error message was:');
-  e = lasterror;
-  disp(['  ' e.message]);
-  
-  disp(' ');
-  disp('  Contact author for help!');
-  hline()
-end
-hline('-')
-
 %% ----------------------------------------------------------------------
 function e = fast_check_mex
 
@@ -187,15 +148,6 @@ catch
 end
 
 %% -----------------------------------------------------------------------
-function e = fast_check_mex_blas
-
-e = 1;
-try
-  T = tensor(eye(3));
-  assert(~any(isnan(double(EinsteinSum(T,[-1 -2],T,[-1 -2])))));
-catch
-  e = 0;  
-end
 
 
 function hline(st)
