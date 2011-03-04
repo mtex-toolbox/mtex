@@ -15,7 +15,7 @@ function [o lambda eigv kappa q]  = mean(o,varargin)
 %  lambda - principle moments of inertia
 %  V      - principle axes of inertia (@orientation)
 %  kappa  - form parameters of bingham distribution
-%  q      - crystallographic equivalent @quaternions projected to fundamental region
+%  q      - crystallographic equivalent @quaternion projected to fundamental region
 %
 %% See also
 % BinghamODF
