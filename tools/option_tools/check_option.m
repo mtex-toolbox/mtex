@@ -15,7 +15,7 @@ function out = check_option(option_list,option,varargin)
 %  out         - true / false
 %
 %% See also
-% get_option set_option clear_option find_option
+% get_option set_option find_option
 
 if isempty_cell(option_list)
   out = false;

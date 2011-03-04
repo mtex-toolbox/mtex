@@ -1,19 +1,30 @@
-function [prop radians]= mispdf(o)
+function [prop,radians,fun]= mispdf(o,varargin)
 % random misorientation and kernel density estimated
 %
 %% Input
-%  o  - @orientation | @ebsd | @cs
+%  o  - @orientation | @EBSD | @symmetry
 %
 %% Reference
 % A. Morawiec - Misorientation-Angle Distribution of Randomly Oriented
 % Symmetric Objects
 %
-%% 
+%% See also
+% ODF/angleDistribution 
 
-if isa(o,'ebsd') || isa(o,'orientation')
-  if isa(o,'ebsd')
-    o = get(o,'orientations');   
+if isa(o,'ebsd') || isa(o,'orientation') || isa(o,'grain')
+  if isa(o,'grain')
+   	o = misorientation(o);
   end
+  if isa(o,'ebsd')
+    for k=1:numel(o)
+      eb = get(o(k),'orientations');
+      subplot(numel(o),1,k), 
+        mispdf(eb,'color','b',varargin{:});
+        title([' Misorientation of Phase ' get(eb,'mineral') ])
+    end
+    return
+  end
+  
   CS = get(o,'CS');
   
   %% kernel density ?
@@ -22,10 +33,7 @@ if isa(o,'ebsd') || isa(o,'orientation')
   %gaussian kernel
   k = @(t) 1./sqrt(2*pi) .* exp(-1/2.*t.^2);
   
-  nn = length(omegas);
-  
-    
-  h = 1*degree; % bandwidth
+  h = get_option(varargin,'bandwidth',1*degree); % bandwidth
 
   nodes = 0:h/5:max_cs(CS);
   pf = zeros(size(nodes));
@@ -35,9 +43,9 @@ if isa(o,'ebsd') || isa(o,'orientation')
     pf(l) =  sum( k(  t(abs(t) < h*5)./h ) );     
   end
   pf = pf./trapz(nodes/degree,pf);
-
+ 
+  plot(nodes/degree,pf,'r-','linewidth',2)
   hold on
-  plot(nodes/degree,pf,'b')
 else
   CS = o;
 end
@@ -139,21 +147,16 @@ p = @(omega) n./(2*pi^2) .* sin(omega./2).^2 .* chi( tan(omega./2) );
 %% density
 % hold on
 
-w = @(omega) (pi/180).*p(omega*pi/180);
+w = @(omega) (pi/180).*p(omega)./quad(p,0,max_cs(CS));
 
-degrees = (0:1*degree/10:max_cs(CS))/degree; % discretisation
-
-
-% quadv(
-
-pd =  w(degrees);
-pd = pd./trapz(degrees, pd);
-
+omegas = 0:1*degree/10:max_cs(CS); % discretisation
 if nargout > 0
-  prop = pd;
-  radians = degrees;
+  prop = w(omegas);
+  radians = omegas;
+  fun = w;
 else
-  plot(degrees, pd,'g')
+  hh = plot(omegas/degree,w(omegas));
+  optiondraw(hh,varargin{:});
 end
 
 if exist('o','var')
