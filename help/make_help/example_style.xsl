@@ -26,22 +26,20 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
   </xsl:choose>
 </xsl:variable>
 
-<xsl:variable name="mtexversion">MTEX 3.0 beta 4</xsl:variable>
+<xsl:variable name="mtexversion" select="document('mtex_version.xml')//mtex/version"/>
 
 <xsl:template match="mscript">
 <html>
-
-  <!-- head -->
-  <head>
-    <title><xsl:value-of select="$title"/></title>
-    <xsl:element name="link">
-      <xsl:attribute name="rel">stylesheet</xsl:attribute>
-      <xsl:attribute name="href"><xsl:value-of select="../make_help" />style.css</xsl:attribute>
-    </xsl:element>
-  </head>
+   
+    <!-- head -->
+    <head>
+      <title><xsl:value-of select="$title"/></title>
+      <link rel="stylesheet" href="style.css"><xsl:text> </xsl:text></link>
+      <script language="JavaScript" src="docscripts.js"><xsl:text> </xsl:text></script>
+    </head>
 
   <body>
-    
+     <a name="top_of_page"><xsl:text> </xsl:text></a>
     <xsl:call-template name="openheader"/>  
 
     <div class="content">               
@@ -78,7 +76,7 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
               <a>
                 <xsl:attribute name="name">
                   <xsl:value-of select="position()"/>
-                </xsl:attribute>
+                </xsl:attribute><xsl:text> </xsl:text>
               </a>
             </xsl:if>
           </xsl:element>
@@ -128,7 +126,7 @@ $Revision: 1.1.6.14 $  $Date: 2006/11/29 21:50:11 $
   <xsl:param name="body-cells"/>
  
   <div><table class="content">
-    <tr ><td class="header">On this page…</td></tr>  
+    <tr ><td class="header">On this page ...</td></tr>  
     
       <xsl:for-each select="$body-cells">
          <xsl:if test="./steptitle">   

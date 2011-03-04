@@ -24,14 +24,14 @@ C = loadTensor(fname,cs,'name','ellastic stiffness','unit','Pa','interface','gen
 
 %% Young's Modulus
 % Young's modulus is .... It is computed for a specific direction x by the
-% command <tensor/YoungsModulus.html YoungsModulus>.
+% command <tensor_YoungsModulus.html YoungsModulus>.
 
 x = xvector;
 E = YoungsModulus(C,x)
 
 %%
 % It can be plotted by passing the option *YoungsModulus* to the
-% <tensor/plot.html plot> command. 
+% <tensor_plot.html plot> command. 
 
 set_mtex_option('defaultColorMap',seismicColorMap);
 plot(C,'PlotType','YoungsModulus','complete')
@@ -39,27 +39,27 @@ plot(C,'PlotType','YoungsModulus','complete')
 %% Linear Compressibility
 % The linear compressibility is ...
 % It is computed for a specific direction x by the
-% command <tensor/linearCompressibility.html linearCompressibility>.
+% command <tensor_linearCompressibility.html linearCompressibility>.
 
 beta = linearCompressibility(C,x)
 
 %%
 % It can be plotted by passing the option *linearCompressibility* to the
-% <tensor/plot.html plot> command.
+% <tensor_plot.html plot> command.
 
 plot(C,'PlotType','linearCompressibility','complete')
 
 %% Cristoffel Tensor
 % The Cristoffel Tensor for a specific direction x is ....
 % It is computed for a specific direction x by the
-% command <tensor/ChristoffelTensor.html ChristoffelTensor>.
+% command <tensor_ChristoffelTensor.html ChristoffelTensor>.
 
 T = ChristoffelTensor(C,x)
 
 %% Elastic Wave Velocity
 % The Cristoffel tensor is the basis for computing the direction dependent
 % wave velocities of the p, s1, and s2 wave, as well as of the polarisation
-% directions. In MTEX this is done by the command <tensor/velocity.html
+% directions. In MTEX this is done by the command <tensor_velocity.html
 % velocity>
 
 [vp,vs1,vs2,pp,ps1,ps2] = velocity(C,xvector,1)

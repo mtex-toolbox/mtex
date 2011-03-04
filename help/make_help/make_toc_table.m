@@ -16,6 +16,8 @@ struct2DOMnode(html, html.getDocumentElement, tr, 'tr');
 table = xmlwrite(html);
 table = table(40:end);
 
+table = regexprep(table,'\n( *)</a>','</a>');
+
 table = regexp(table,'\n','split');
 
 

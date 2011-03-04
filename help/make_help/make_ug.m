@@ -4,16 +4,21 @@ function make_ug(folder,varargin)
 %% options
 % TopicPages  - force topic page creation
 
-html_dir =  fullfile(mtex_path,'help','html');
 ug_example_path = fullfile(mtex_path,'examples','UsersGuide');
 ug_files = get_ug_files(folder,{'*.m','*.html'});
 
+
+
+html_path = get_option(varargin,'html_path',fullfile(mtex_path,'help','html'));
+publish_style = get_option(varargin,'publish_style',fullfile(mtex_path,'help','make_help','publishmtex.xsl'));
+evalcode = get_option(varargin,'evalcode',true);
+
 for pics = reshape(get_ug_files(folder,'*.png'),1,[])
-  trycopyfile(pics{:},html_dir);
+  trycopyfile(pics{:},html_path);
 end
 
 % clean up all files before
-delete(fullfile(html_dir,'*.m'));
+delete(fullfile(html_path,'*.m'));
 
 for k=1:numel(ug_files)
   ug_file = ug_files{k};
@@ -21,7 +26,7 @@ for k=1:numel(ug_files)
   [above_folder topic] = fileparts(ug_file);
   [a above_topic] = fileparts(above_folder);
   
-  html_file = fullfile(html_dir,[topic,'.html']);
+  html_file = fullfile(html_path,[topic,'.html']);
   if strcmpi(topic,above_topic) % special topic
     toc_list = {};    
     for tocentry = regexprep(file2cell(fullfile(above_folder,'toc')),'\s(\w*)','');
@@ -38,7 +43,7 @@ for k=1:numel(ug_files)
       make_topic_withtable( ug_file, toc_list);
     end
   elseif ~is_newer(html_file,ug_file) || check_option(varargin,'force')
-    trycopyfile(ug_file,html_dir);
+    trycopyfile(ug_file,html_path);
   end
   
   if is_openineditor(ug_file)
@@ -47,13 +52,13 @@ for k=1:numel(ug_files)
 end
 
 
-mfiles = dir( fullfile(html_dir,'*.m') );
+mfiles = dir( fullfile(html_path,'*.m') );
 
-publish_files({mfiles.name},html_dir,...
-  'stylesheet',fullfile(mtex_path,'help','make_help','publishmtex.xsl'),...
-  'out_dir',html_dir,'evalcode',get_option(varargin,'evalcode',true),'force',varargin{:}); 
+publish_files({mfiles.name},html_path,...
+  'stylesheet',publish_style,...
+  'out_dir',html_path,'evalcode',evalcode,'force',varargin{:}); 
 
-delete(fullfile(html_dir,'*.m') );
+delete(fullfile(html_path,'*.m') );
 
 
 
