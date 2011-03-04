@@ -88,6 +88,7 @@ plotDiff(pf,odf)
 odf_modell = unimodalODF(modalorientation(odf),cs,ss,'halfwidth',15*degree)
 
 % plot the pole figures
+close all;
 plotpdf(odf_modell,h,'antipodal')
 
 % compute the difference
@@ -137,7 +138,7 @@ plotpdf(odf,get(pf,'Miller'),'antipodal','silent')
 % called _ghost error_. It applies especially useful in the case of week 
 % ODFs. The classical example is the <SantaFe_demo.html SantaFe model
 % ODF>. An analysis of the approximation error under ghost correction can
-% be found <PoleFigureSimulation.html here>
+% be found <PoleFigureSimulation_demo.html here>
 %
 %% Theory
 %

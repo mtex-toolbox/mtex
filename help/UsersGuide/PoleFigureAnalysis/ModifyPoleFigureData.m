@@ -91,7 +91,7 @@ plot(pf)
 theta = get(pf,'theta');
 
 % and set some measurements to a large value 
-pf_outlier = set(pf,'intensities',600,...
+pf_outlier = set(pf,'intensities',3.5,...
   theta>35*degree & theta<40*degree)
 
 % now we an outlier in the center of both pole figures

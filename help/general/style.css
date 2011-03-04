@@ -191,13 +191,11 @@ table.summary {
 
 
 td.header { 
-  border:thin solid #666666; 
+  border:0px; 
   vertical-align:top;
-  padding:3px;
-  padding-left:5px;
-  padding-right:15px;
+  padding:0px;
   overflow:hidden; 
-  background: #F0F0F0;
+  background: #E0E0E0;
   font-weight: bold;
 }
 
@@ -206,7 +204,7 @@ table.content td {
   padding:4px;
   padding-left:15px;
   padding-right:15px;
-  overflow:hidden; 
+  overflow:hidden;
 }
 
 
