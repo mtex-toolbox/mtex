@@ -16,7 +16,7 @@ if isa(T1,'tensor') && isa(T2,'double')
   if numel(T2) > 1, T2 = reshape(T2,shape);end
      
   % multiply
-  T.M = mtimesx(T.M,T2);
+  T.M = mtimesxx(T.M,T2);
   
   % reshape tensor back
   T.M = reshape(T.M,s);
