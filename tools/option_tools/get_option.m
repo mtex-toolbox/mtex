@@ -16,7 +16,7 @@ function value = get_option(option_list,option,default,type)
 %  value         - option value
 %
 %% See also
-% check_option set_option clear_option
+% check_option set_option delete_option
 
 if nargin <= 2, value = [];else value = default;end
 if isempty(option_list), return;end

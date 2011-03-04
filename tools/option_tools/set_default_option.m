@@ -15,7 +15,7 @@ function out_list = set_default_option(option_list,preserve,option,varargin)
 %  out_list      - Cell Array
 %
 %% See also
-% check_option get_option clear_option
+% check_option get_option delete_option
 
 if nargin == 2
   out_list = [preserve,option_list];

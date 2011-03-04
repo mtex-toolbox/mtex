@@ -1,20 +1,21 @@
 function check_installation
 % check whether all binaries are working properly
 
+
+
 %% -------------- check tmp dir ------------------------------
 if strfind(get_mtex_option('tempdir',tempdir),' ')
-  disp('--------------------------------------------------')
+  hline()
   disp('Warning: The path MTEX uses for temporary files');
   disp(['  tempdir = ''' get_mtex_option('tempdir') '''']);
   disp('contains white spaces!');
   disp(['Please change this in your <a href="matlab:edit mtex_settings.m">' ...
     'mtex_settings.m</a>!']);
-  disp('--------------------------------------------------')
+  hline()
 end
 
 check_binaries;
 check_mex;
-check_mex_blas;
 
 %% ------------ check for binaries --------------------------
 function check_binaries
@@ -49,19 +50,18 @@ catch %#ok<*CTCH>
     end    
   end
   
-  disp('--------------------------------------------------');
-  disp('MTEX binary check failed!');  
+  hline()
+  disp('  MTEX binary check failed!');  
   disp(' ');
-  disp('The original error message was:');
-  disp(' ');
+  disp('  The original error message was:');
   e = lasterror; %#ok<*LERR>
-  disp(e.message); 
+  disp(['  ',e.message]); 
    
   disp(' ');
-  disp('Check the following options:');  
-  disp('* Compile the binaries yourself.');
-  disp('* Ask the maintainer for help!');
-  disp('--------------------------------------------------');
+  disp('  Check the following options:');  
+  disp(['  * ' doclink('compilation','Compile') ' the binaries yourself.']);
+  disp('  * Ask the maintainer for help!');
+  hline()
 end
 
 
@@ -75,8 +75,8 @@ addpath(mexpath,0);
 % check for mex files
 if fast_check_mex, return;end
         
+hline('-');
 disp('Checking mex files failed!');
-disp('--------------------------');
 
 % check old mex version
 if exist(fullfile(mexpath,'v7.1'),'dir')
@@ -94,14 +94,14 @@ if exist(fullfile(mexpath,'v7.1'),'dir')
       rmpath(fullfile(mexpath,'v7.1'));
       addpath(mexpath);
     catch
-      disp('--------------------------------------------------')
+      hline()
       disp('> Error while copying!')
       disp('> You should copy');
       disp(['  ' fullfile(mexpath,'v7.1')]);
       disp(' to ');
       disp(['  ', mexpath]);
       disp('> before starting the next session');
-      disp('--------------------------------------------------')
+      hline()
       disp(' ');
     end    
     return
@@ -119,63 +119,21 @@ cd(fullfile(mtex_path,'c','mex'));
 mex_install(mtex_path,false);
 cd(opwd);    
     
-if fast_check_mex
-  disp('> Hurray - everythink works!')
-  disp(' ');
-else
-  disp('--------------------------------------------------')
-  disp('MTEX: Couldn''t get the mex files working!');
-  disp(' ');
-  disp('The original error message was:');
-  disp(' ');
+if ~fast_check_mex
+%   disp('> Hurray - everythink works!')
+% else
+  hline()
+  disp('  MTEX: Couldn''t get the mex files working!');
+  disp('   ');
+  disp('  The original error message was:');
   e = lasterror;
-  disp(e.message);
+  disp(['  ' e.message]);
   
   disp(' ');
-  disp('Contact author for help!');
-  disp('--------------------------------------------------')
-  disp(' ');
+  disp('  Contact author for help!');
+  hline()
 end
-
-
-%%    ----------- check mex blas files ---------------------------
-
-function check_mex_blas
-
-% set mex/directory
-mexpath = fullfile(mtex_path,'c','mex',get_mtex_option('architecture'));
-addpath(mexpath,0);
-
-% check for mex files
-if fast_check_mex_blas, return;end
-        
-disp('Checking mex files including blas library failed!');
-disp('--------------------------');
-
-disp('> Trying now to recompile mex files including blas library.');
-opwd = pwd;
-cd(fullfile(mtex_path,'c','mex'));
-mex_install(mtex_path,true);
-cd(opwd);    
-    
-if fast_check_mex_blas
-  disp('> Hurray - everythink works!')
-  disp(' ');
-else
-  disp('--------------------------------------------------')
-  disp('MTEX: Couldn''t get the mex files including blas working!');
-  disp('MTEX: Tensor arithmetics may not work!');
-  disp(' ');
-  disp('The original error message was:');
-  disp(' ');
-  e = lasterror;
-  disp(e.message);
-  
-  disp(' ');
-  disp('Contact author for help!');
-  disp('--------------------------------------------------')
-  disp(' ');
-end
+hline('-')
 
 
 %% ----------------------------------------------------------------------
@@ -190,12 +148,8 @@ catch
 end
 
 %% -----------------------------------------------------------------------
-function e = fast_check_mex_blas
 
-e = 1;
-try
-  T = tensor(eye(3));
-  assert(~any(isnan(double(EinsteinSum(T,[-1 -2],T,[-1 -2])))));
-catch
-  e = 0;  
-end
+
+function hline(st)
+if nargin < 1, st = '*'; end
+disp(repmat(st,1,80));

@@ -10,7 +10,7 @@ function out = extract_option(option_list,option,types)
 %  out         - Cell Array
 %
 %% See also
-% get_option set_option clear_option
+% get_option set_option delete_option
 
 if ~iscell(option), option = {option};end
 if nargin > 2 && ~iscell(types), types = {types};end
