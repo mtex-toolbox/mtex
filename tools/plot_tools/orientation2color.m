@@ -14,7 +14,7 @@ model = {'bunge','angle','sigma','ihs','ipdf',...
 
 if nargin == 0, c = model; return; end
 
-switch coloring
+switch lower(coloring)
   case model(1)
     c = euler2rgb(o,varargin{:});
   case model(2)
