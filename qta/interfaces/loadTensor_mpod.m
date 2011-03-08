@@ -47,7 +47,7 @@ for Entry = entry(~cellfun('isempty',entry))
   index_ij = regexp(index_ij,[index,' (?<i>[0-9])(?<j>[0-9]) (?<value>[0-9.-]*)'],'names');
   index_ij = [index_ij{:}];
 
-  
+    
   M = [];
   for k=1:numel(index_ij)
     val = str2num(index_ij(k).value);
@@ -63,7 +63,8 @@ for Entry = entry(~cellfun('isempty',entry))
     end
   end
 
-  T{end+1} = tensor(M,cs,'propertyname',property,'unit','??');
+  M(M==0) = NaN; 
+  T{end+1} = symmetrise(tensor(M,cs,'propertyname',property,'unit','??')); %#ok<AGROW>
 end
 
 if numel(T) == 1
