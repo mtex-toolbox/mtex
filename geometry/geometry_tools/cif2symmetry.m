@@ -5,11 +5,16 @@ function [cs,mineral] = cif2symmetry(fname,varargin)
 
 if isempty(ext), ext = '.cif';end
 if isempty(pathstr) && ~exist([name,ext],'file')
-  pathstr = get_mtex_option('cif_path'); 
+  pathstr = get_mtex_option('cif_path');
 end
 
 % load file
-str = file2cell(fullfile(pathstr,[name ext]));
+if exist(fullfile(pathstr,[name ext]),'file')
+  str = file2cell(fullfile(pathstr,[name ext]));
+else
+  str = textscan(urlread(fname),'%s','whitespace','\r\n');
+  str = str{1};
+end
 
 try
   mineral = extract_token(str,'_chemical_name_mineral');

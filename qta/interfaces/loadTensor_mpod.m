@@ -75,6 +75,14 @@ end
 function [cs,mineral] = mpod2symmetry(str,varargin)
 % import crystal symmetry from cif file
 
+try
+  cod = sscanf(extract_token(str,'_cod_database_code'),'%s');
+  cs = cif2symmetry(['http://www.crystallography.net/cif/' cod '.cif']);
+  mineral = get(cs,'mineral');
+  return
+catch
+end
+
 % load file
 try
   mineral = extract_token(str,'_phase_name');
