@@ -1,13 +1,13 @@
 function  checkInterfaces
 
-files = dir([mtexDataPath filesep 'PoleFigureData']);
+files = dir([mtexDataPath filesep 'PoleFigure']);
 
 for i = 4:length(files)
   
   close all
   disp(files(i).name);
   try
-    pf = loadPoleFigure([mtexDataPath filesep 'PoleFigureData' filesep files(i).name]);
+    pf = loadPoleFigure(fullfile(mtexDataPath,'PoleFigure',files(i).name));
   catch
     disp(lasterr);
   end

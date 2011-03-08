@@ -16,7 +16,7 @@ SS = symmetry('-1');   % specimen symmetry
 %% import ebsd data
 
 % file name
-fname = [mtexDataPath '/aachen_ebsd/85_829grad_07_09_06.txt'];
+fname = fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt');
 
 ebsd = loadEBSD(fname,CS,SS,'interface','generic',...
   'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'Mad' 'BC'},...
