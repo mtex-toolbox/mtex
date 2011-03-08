@@ -1,5 +1,5 @@
 function [data,interface,options,idata] = loadData(fname,type,varargin)
-% import PoleFigure, EBSD, and ODF data 
+% import PoleFigure, EBSD, and ODF data
 %
 %% Description
 % *loadEBSD* is a high level method for importing EBSD data from external
@@ -32,7 +32,7 @@ function [data,interface,options,idata] = loadData(fname,type,varargin)
 % get file names
 if nargin < 1
   [fname,PathName] = uigetfile( '*.*',...
-  'Select Data files');
+    'Select Data files');
   fname = [PathName,fname];
 end
 
@@ -50,16 +50,16 @@ if ischar(fname)
 end
 
 % get crystal directions
-if ~isempty(varargin) && checkClass(varargin{1},'Miller') 
+if ~isempty(varargin) && checkClass(varargin{1},'Miller')
   h = vec2cell(varargin{1});
   varargin = varargin(2:end);
 end
 
 % get crystal and specimen symmetry
 sym = {};
-if ~isempty(varargin) && checkClass(varargin{1},'symmetry')  
+if ~isempty(varargin) && checkClass(varargin{1},'symmetry')
   cs = varargin{1};varargin = varargin(2:end);
-  if strcmpi(type,'ODF'), sym = {'cs',cs};end  
+  if strcmpi(type,'ODF'), sym = {'cs',cs};end
 end
 
 if ~isempty(varargin) && checkClass(varargin{1},'symmetry')
@@ -69,14 +69,13 @@ end
 
 %% determine interface
 
-if ~check_option(varargin,'interface')  
-  [interface,options] = check_interfaces(fname{1},type,varargin{:});  
+if ~check_option(varargin,'interface')
+  [interface,options] = check_interfaces(fname{1},type,varargin{:});
 else
-  interface = get_option(varargin,'interface');  
+  interface = get_option(varargin,'interface');
   options = delete_option(varargin,'interface',1);
 end
 
-data = []; idata = ones(1,length(fname));
 if isempty(interface), return; end
 
 %% import data
@@ -85,62 +84,52 @@ if isempty(interface), return; end
 c = get_option(options,'superposition');
 if isa(c,'double'), c = {c};end
 
-for i = 1:length(fname)  
-  newdata = feval(['load' type '_',char(interface)],fname{i},options{:},sym{:});
-  data = [data,newdata]; %#ok<AGROW>
-  idata(i) = length(newdata);
+for k = 1:numel(fname)
+  data{k} = feval(['load' type '_',char(interface)],fname{k},options{:},sym{:});
 end
 
+idata = cellfun('prodofsize',data);
+
+%% apply options
 
 if strcmpi(type,'EBSD') && check_option(varargin,'3d')
-  Z = get_option(varargin,'3d',[],'double');
-  
-  if isempty(Z), warning('Z-Values for each data layer are not specified!');
-    Z = 1:numel(idata); end
-  csz = [0 cumsum(idata)];
-  
-  for k=1:numel(idata)
-    ndx = csz(k)+1:csz(k+1);
-    for l=1:numel(ndx)
-      xy = get(data(ndx(l)),'X');
-      xy(:,3) = Z(k);
-      data(ndx(l)) = set(data(ndx(l)),'X',xy);
-    end    
+  Z = get_option(varargin,'3d',1:numel(data),'double');
+  for k=1:numel(data)
+    xy = get(data{k},'X');
+    xy(:,3) = Z(k);
+    data{k} = set(data{k},'X',xy);
   end
-  data = union(data);  %#ok<LTARG>
+  data = union(data{:});  %#ok<LTARG>
 end
 
 
-%% set crystal and specimen symmetry
 
-if exist('cs','var'), data = set(data,'CS',cs,'noTrafo');end
-if exist('ss','var'), data = set(data,'SS',ss,'noTrafo');end
-if exist('h','var'),  data = set(data,'h',h);end
-if ~isempty_cell(c),  data = set(data,'c',c);end
-
-%% set comment
-
-pos = cumsum([0,idata]);
-[ps,fn,ext] = fileparts([fname{find(i>pos,1,'last')}]);
-
-if strcmpi(type,'Tensor') % subsasgn, subsref
-  data = set(data,'comment',...
-     get_option(varargin,'comment',[fn ext]));  
-  data = set(data,'name',get_option(varargin,'name',''));
-  data = set(data,'units',get_option(varargin,'units',''));
-else  
-  for i = 1:length(data)
-    data(i) = set(data(i),'comment',...
-      get_option(varargin,'comment',[fn ext])); %#ok<AGROW>
-  end
+%% set crystal and specimen symmetry, specimen direction and comments
+if ~strcmpi(type,'tensor')
+  data = cellfun(@(d,f) set(d,'comment',ls(f)),data,fname,'UniformOutput',false);
+  data = [data{:}];
+  if exist('cs','var'), data = set(data,'CS',cs,'noTrafo');end
+  if exist('ss','var'), data = set(data,'SS',ss,'noTrafo');end
+  if exist('h','var'),  data = set(data,'h',h);end
+  if ~isempty_cell(c),  data = set(data,'c',c);end
+else
+  data = [data{:}];
+  if exist('cs','var'), data = cellfun(@(d) set(d,'CS',cs,'noTrafo'),data,'UniformOutput',false); end
+  if exist('ss','var'), data = cellfun(@(d) set(d,'SS',ss,'noTrafo'),data,'UniformOutput',false); end;
 end
+
 
 %% rotate data
 if check_option(varargin,'rotate')
   data = rotate(data,axis2quat(zvector,get_option(varargin,'rotate')));
 end
 
+
 function v = checkClass(var,className)
 
 if iscell(var) && ~isempty(var), var = var{1};end
 v = isa(var,className);
+
+
+
+

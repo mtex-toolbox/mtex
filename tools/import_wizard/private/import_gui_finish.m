@@ -112,6 +112,9 @@ function goto_callback(varargin)
 handles = getappdata(gcbf,'handles');
 data = getappdata(gcbf,'data');
 
+if isa(data,'cell')
+  data= data{1};
+end
 str = char(data);
 set(handles.preview,'String',str(:,1:min(end,80)));
 

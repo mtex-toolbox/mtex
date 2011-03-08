@@ -6,10 +6,16 @@ if check_option(varargin,'file')
   fnames = {[fnames,ext]};
   pathname = [pathname,filesep];
 else
+  dataPath = get_mtex_option('ImportWizardPath',str2func(['mtex' type 'Path']));
+  if isa(dataPath,'function_handle')
+    dataPath = feval(dataPath);
+  elseif strcmpi(dataPath,'workpath')
+    dataPath = getappdata(list_handle,'workpath');
+  end
+  
   [fnames,pathname] = uigetfile( mtexfilefilter(),...
     'Select Data files',...
-    'MultiSelect', 'on',getappdata(list_handle,'workpath'));
-
+    'MultiSelect', 'on',dataPath);
   if ~iscellstr(fnames)
     if fnames ~= 0
       fnames = {fnames};
@@ -18,6 +24,7 @@ else
     end
   end;
 end
+
 setappdata(list_handle,'workpath',pathname);
 
 
@@ -33,23 +40,26 @@ for i=1:length(fnames)
   else
     interf = {};
   end
-
-%% try to load one file
-
+  
+  %% try to load one file
+  
   try
-    [data interface options idata] = loadData(strcat(pathname,fnames(i)),type,interf{:},options{:});
+    [newData interface options idata] = loadData(strcat(pathname,fnames(i)),type,interf{:},options{:});
   catch %#ok<CTCH>
     errordlg(errortext);
     break;
   end
   
-  if ~isempty(data)
- 
+  if ~isempty(newData)
+    oldData = getappdata(list_handle,'data');
+    
+    assertCS(oldData,newData);
+    
     % store data
-    setappdata(list_handle,'data',[getappdata(list_handle,'data'),data]);
+    setappdata(list_handle,'data',[oldData,newData]);
     setappdata(list_handle,'idata',[getappdata(list_handle,'idata'),idata]);
     setappdata(list_handle,'filename',[getappdata(list_handle,'filename'),strcat(pathname,fnames(i))]);
-   
+    
     % update file list
     set(list_handle, 'String',path2filename(getappdata(list_handle,'filename')));
     set(list_handle,'Value',1);
@@ -65,4 +75,23 @@ try
   handles = getappdata(gcf,'handles');
   set(handles.interface,'string',['Interface: ' interface]);
 catch
+end
+
+
+function assertCS(oldData,newData)
+if iscell(oldData),
+  csO = get(oldData{1},'CS');
+else
+  csO = get(oldData,'CS');
+end
+if iscell(newData),
+  csN = get(newData{1},'CS');
+else
+  csN = get(oldData,'CS');
+end
+
+if ~isempty(csO) && ~isempty(csN),
+  if (csO ~= csN),
+    error('uuh! symmetry mismatch, I can''t handle this!');
+  end
 end

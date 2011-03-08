@@ -11,70 +11,94 @@ function [cs,mineral] = cif2symmetry(fname,varargin)
 %% See also
 % symmetry
 
-if isnumeric(fname)
-  fname = copyonline(fname);
-end
 
-[pathstr, name, ext] = fileparts(fname);
-
-if isempty(ext), ext = '.cif';end
-if isempty(pathstr) && ~exist([name,ext],'file')
-  pathstr = get_mtex_option('cif_path');
-end
-
-% load file
-if ~exist(fullfile(pathstr,[name ext]),'file')
-  fname = copyonline(fname);
+if ~iscell(fname)
+  if isnumeric(fname)
+    fname = copyonline(fname);
+  end
+  [pathstr, name, ext] = fileparts(fname);
+  
+  if isempty(ext), ext = '.cif';end
+  if isempty(pathstr) && ~exist([name,ext],'file')
+    pathstr = mtexCifPath;
+  end
+  
+  % load file
+  if ~exist(fullfile(pathstr,[name ext]),'file')
+    fname = copyonline(fname);
+  else
+    fname = fullfile(pathstr,[name ext]);
+  end
+  str = file2cell(fname);
 else
-  fname = fullfile(pathstr,[name ext]);
-end
-
-str = file2cell(fname);
-
-try
-  mineral = extract_token(str,'_chemical_name_mineral');
-catch
-  mineral = name;
+  str = fname;
+  name = '';
 end
 
 try
+  % get a name for it
+  mineral_names = {...
+    '_chemical_name_mineral',...
+    '_chemical_name_systematic',...
+    '_chemical_formula_structural',...
+    '_chemical_formula_sum'};
+  
+  for alias = mineral_names
+    mineral = extract_token(str,alias{:});
+    if ~isempty(mineral), break; end
+  end
   
   % find space group
-  space_group = extract_token(str,'_symmetry_space_group_name_H-M ');
+  group_aliases = {...
+    '_symmetry_space_group_name_H-M',...
+    '_symmetry_point_group_name_H-M',...
+    '_symmetry_cell_setting'};
+  for gp = group_aliases
+    group = extract_token(str,gp{:});
+    if ~isempty(group), break; end
+  end
   
   % find a,b,c
-  a = extract_token(str,'_cell_length_a');
-  b = extract_token(str,'_cell_length_b');
-  c = extract_token(str,'_cell_length_c');
+  axis = [extract_token(str,'_cell_length_a',true) ...
+    extract_token(str,'_cell_length_b',true) ...
+    extract_token(str,'_cell_length_c',true)];
   
   % find alpha, beta, gamma
-  alpha = extract_token(str,'_cell_angle_alpha');
-  beta = extract_token(str,'_cell_angle_beta');
-  gamma = extract_token(str,'_cell_angle_gamma');
+  angles = [extract_token(str,'_cell_angle_alpha',true) ...
+    extract_token(str,'_cell_angle_beta',true) ...
+    extract_token(str,'_cell_angle_gamma',true)];
   
-  cs = symmetry(space_group,[a,b,c],[alpha,beta,gamma]*degree,'mineral',mineral);
+  if numel(axis)<3,
+%     warning('crystallographic axis mismatch');    
+    axis = [1 1 1];
+  end
+  if numel(angles)<3,
+%     warning('crystallographic angles mismatch');
+    angles = [90 90 90];    
+  end
+  
+  cs = symmetry(group,axis,angles*degree,'mineral',mineral);
   
 catch
   error(['Error reading cif file', fname]);
-  
 end
 
-function t = extract_token(str,token)
+
+
+
+function t = extract_token(str,token,numeric)
 
 pos = strmatch(token,str);
-s = str(pos);
-
-
-s = regexp(s,[token '\s* (.*)'],'tokens');
-s = char(s{1}{1});
-if s(1) == ''''
-  t = s(2:end-1);
+if ~isempty(pos)
+  t = strtrim(regexprep(str{pos(1)},[token '|'''],''));
+  if ~isempty(t)
+    if nargin>2 && numeric
+      t = sscanf(t,'%f');
+    end
+  end
 else
-  t = sscanf(s,'%f');
-  if isempty(t), t = s;end
+  t = '';
 end
-
-
 
 function fname = copyonline(cod)
 
@@ -93,7 +117,7 @@ catch
   error('CIF-file not valid online')
 end
 
-fname = fullfile(get_mtex_option('cif_path'),[cod '.cif']);
+fname = fullfile(mtexCifPath,[cod '.cif']);
 
 fid = fopen(fname,'w');
 fwrite(fid,cif);
