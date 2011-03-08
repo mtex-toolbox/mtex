@@ -1,8 +1,8 @@
 function mtex_settings
 % initialize MTEX toolbox
-% 
+%
 % This file contains some global settings
-% to be set by the user. Please read carefully the predefined 
+% to be set by the user. Please read carefully the predefined
 % settings and correct them if you experience troubles.
 
 
@@ -23,7 +23,7 @@ plotx2north;
 set_mtex_option('EulerAngleConvention','Bunge');
 
 %% file extensions to be associated with MTEX
-% add here your pole figure and EBSD data file extensions 
+% add here your pole figure and EBSD data file extensions
 
 set_mtex_option('polefigure_ext',...
   {'.exp','.XPa','.cns','.cnv', '.ptx','.pf','.xrdml','.xrd','.epf','.plf','.nja','.gpf','.ras'});
@@ -36,16 +36,28 @@ set_mtex_option('ebsd_ext',...
 
 set_mtex_option('SaveToFile',false)
 
-%% Path to CIF files
-% modify this path if your CIF files are located at a different path
-set_mtex_option('cif_path',fullfile(mtex_path,'cif'));
+%% Default Path to data files
+% modify following pathes according to your needs, if your files are located at
+% different path
+
+set_mtex_option('CIFPath',       fullfile(mtexDataPath,'cif'));
+set_mtex_option('EBSDPath',      fullfile(mtexDataPath,'EBSD'));
+set_mtex_option('PoleFigurePath',fullfile(mtexDataPath,'PoleFigure'));
+set_mtex_option('ODFPath',       fullfile(mtexDataPath,'odf'));
+set_mtex_option('TensorPath',    fullfile(mtexDataPath,'tensor'));
+
+%% set default location to look for data with import wizard
+% if not activated, the paths are selected according to the above
+
+% set_mtex_option('ImportWizardPath','workpath')
+% set_mtex_option('ImportWizardPath',@cd)
 
 %% Default ColorMap
 
-% LaboTeX color map 
+% LaboTeX color map
 %set_mtex_option('defaultColorMap',LaboTeXColorMap);
- 
-% white to black color map 
+
+% white to black color map
 % set_mtex_option('defaultColorMap',grayColorMap);
 
 % jet colormap begin with white
@@ -56,7 +68,7 @@ set_mtex_option('defaultColorMap',WhiteJetColorMap);
 
 %% Default ColorMap for Phase Plots
 
-% set blue red yellow green 
+% set blue red yellow green
 cmap = [0 0 1; 1 0 0; 0 1 0; 1 1 0; 1 0 1; 0 1 1;...
   0.5 1 1; 1 0.5 1; 1 1 0.5;...
   0.5 0.5 1; 0.5 1 0.5; 1 0.5 0.5];
@@ -79,7 +91,7 @@ set_mtex_option('noLaTex');
 
 %set_mtex_option('nfft_bug');
 
-%% architecture 
+%% architecture
 % this is usefull if the arcitecture is not automatically recognized by
 % MTEX
 
@@ -91,13 +103,13 @@ set_mtex_option('noLaTex');
 
 set_mtex_option('ITER_MAX',11);
 
-%% available memory 
+%% available memory
 % change this value to specify the total amount of installed ram
 % on your system in kilobytes
 
 set_mtex_option('memory',getmem);
 
-%% FFT Accuracy 
+%% FFT Accuracy
 % change this value to have more accurate but slower computation when
 % involving FFT algorithms
 %
@@ -142,7 +154,7 @@ set_mtex_option('prefix_cmd','');
 % on windows machines
 %set_mtex_option('prefix_cmd','start /low /b /wait ');
 % 'start' runs any programm on windows, the option /low sets the process priorty,
-% option /b disables the console window, and the option /wait is required 
+% option /b disables the console window, and the option /wait is required
 % that matlab waits until calculations are done
 
 % --- open in external window -------------------
@@ -151,7 +163,7 @@ set_mtex_option('prefix_cmd','');
 % on linux machines
 %set_mtex_option('prefix_cmd','/usr/X11R6/bin/xterm -iconic -e ');
 % The specified option -iconic cause xterm to open in the background.
-% The option -e is necassary to run a program in the terminal. 
+% The option -e is necassary to run a program in the terminal.
 
 % on windows machines
 %set_mtex_option('prefix_cmd','start /wait ');
