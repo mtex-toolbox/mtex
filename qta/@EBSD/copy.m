@@ -1,13 +1,13 @@
 function ebsd = copy(ebsd,varargin)
 % copy selected points from EBSD data
 %
-%% Syntax  
+%% Syntax
 % ebsd  = copy(ebsd,condition)
 % ebsd  = copy(ebsd,get(ebsd,'phase')~=1)
 %
 %% Input
 %  ebsd      - @EBSD
-%  condition - index set 
+%  condition - index set
 %
 %% Output
 %  ebsd - @EBSD
@@ -21,7 +21,7 @@ smpsz = sampleSize(ebsd);
 cs = cumsum([0,smpsz]);
 
 %% if integer indexing convert to logical indexing
-if isa(varargin{1},'double'),  
+if isa(varargin{1},'double'),
   x = zeros(1,cs(end));
   x(varargin{1}) = 1;
   varargin{1} = logical(x);
@@ -38,7 +38,7 @@ if isa(varargin{1},'logical')
     if ~isempty(ebsd(i).X)
       ebsd(i).X = ebsd(i).X(idi,:);
     end
-
+    
     % filter properties
     ebsd_fields = fields(ebsd(i).options);
     for f = 1:length(ebsd_fields)
@@ -46,7 +46,7 @@ if isa(varargin{1},'logical')
         ebsd(i).options.(ebsd_fields{f}) = ebsd(i).options.(ebsd_fields{f})(idi,:);
       end
     end
-  
+    
     % filter orientations
     ebsd(i).orientations = ebsd(i).orientations(idi);
   end
@@ -59,14 +59,14 @@ varargin = delete_option(varargin,'property',1);
 if check_option(varargin,'phase')
   
   phase = get_option(varargin,'phase');
-
+  
   % filter by phase number
   if isa(phase,'double')
     
     % find matching phases
     match = ismember([ebsd.phase],phase);
-
-  % filter by mineral name
+    
+    % filter by mineral name
   elseif isa(phase,'char') || isa(phase,'cell')
     
     % extract mineral names
@@ -75,7 +75,7 @@ if check_option(varargin,'phase')
     
     % compare to given phase
     match = cellfun(@(str) any(strcmpi(phase,str)),phases);
-
+    
   end
   
   % restrict to found phases
@@ -93,18 +93,21 @@ if check_option(varargin,'region')
   
   ebsd = inpolygon(ebsd,region);
 end
-  % restrict to found phases
-  ebsd = ebsd(match);
-  
-end
+% restrict to found phases
+ebsd = ebsd(match);
 
-%% filter by region
-if check_option(varargin,'region')
-  region = get_option(varargin,'region');
-  if isa(region,'double')
-    region = polygon([region(1) region(2);region(3) region(2);...
-      region(3) region(4); region(1) region(4); region(1) region(2)]);
-  end
-  
-  ebsd = inpolygon(ebsd,region);
-end
+% end
+
+% %% filter by region
+% if check_option(varargin,'region')
+%   region = get_option(varargin,'region');
+%   if isa(region,'double')
+%     region = polygon([region(1) region(2);region(3) region(2);...
+%       region(3) region(4); region(1) region(4); region(1) region(2)]);
+%   end
+%   
+%   ebsd = inpolygon(ebsd,region);
+% end
+% % 
+
+
