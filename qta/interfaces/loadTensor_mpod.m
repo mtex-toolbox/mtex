@@ -3,7 +3,7 @@ function [T,interface,options] = loadTensor_mpod(fname,varargin)
 %
 %% Description
 % *loadTensor_mod* is a high level method for importing Tensor data from external
-% files. 
+% files.
 % [[http://www.materialproperties.org/data/, Material Properties Open Database]]
 %
 %% Syntax
@@ -13,11 +13,11 @@ function [T,interface,options] = loadTensor_mpod(fname,varargin)
 %  fname     - filename
 %  cs, ss    - crystal, specimen @symmetry (optional)
 %
-%% Example 
+%% Example
 % T = loadTensor_mpod('1000055.mpod')
 %
 %% See also
-% loadTensor 
+% loadTensor
 
 %% TODO
 %  * allow import of not ij indexed single properties e.g. _prop_heat_capacity_C
@@ -25,16 +25,14 @@ function [T,interface,options] = loadTensor_mpod(fname,varargin)
 %  * better symmetry import
 %
 
-% remove option "check"
-varargin = delete_option(varargin,'check');
-
-
 str = file2cell(fname);
 try
   cs = mpod2symmetry(str,varargin{:});
 catch
   cs = symmetry;
 end
+
+
 
 entry = regexp(str,'_prop_(?<property>\w*(?<=ij)(.*)) ''(?<index>\w*)''','names');
 T = {};
@@ -46,8 +44,8 @@ for Entry = entry(~cellfun('isempty',entry))
   index_ij = str(cellfun('prodofsize',pos)==1);
   index_ij = regexp(index_ij,[index,' (?<i>[0-9])(?<j>[0-9]) (?<value>[0-9.-]*)'],'names');
   index_ij = [index_ij{:}];
-
-    
+  
+  
   M = [];
   for k=1:numel(index_ij)
     val = str2num(index_ij(k).value);
@@ -56,14 +54,14 @@ for Entry = entry(~cellfun('isempty',entry))
   end
   
   if size(M,1) ~= size(M,2)
-%    	warning('don''t know what about assymmetric tensors')
+    %    	warning('don''t know what about assymmetric tensors')
     if any(size(M) >3)
       [i,j,v]=find(M);
-     	M = full(sparse(i,j,v,6,6));
+      M = full(sparse(i,j,v,6,6));
     end
   end
-
-  M(M==0) = NaN; 
+  
+  M(M==0) = NaN;
   T{end+1} = symmetrise(tensor(M,cs,'propertyname',property,'unit','??')); %#ok<AGROW>
 end
 
@@ -78,9 +76,13 @@ function [cs,mineral] = mpod2symmetry(str,varargin)
 
 try
   cod = sscanf(extract_token(str,'_cod_database_code'),'%s');
-  cs = cif2symmetry(['http://www.crystallography.net/cif/' cod '.cif']);
-  mineral = get(cs,'mineral');
-  return
+  if ~isempty(cod) && ~strcmpi(cod,'?')
+    % frist look up in mtex-cif directory
+    cs = cif2symmetry(cod);
+    mineral = get(cs,'mineral');
+    
+    return
+  end
 catch
 end
 
@@ -132,3 +134,5 @@ if ~isempty(s)
 else
   t = '';
 end
+
+
