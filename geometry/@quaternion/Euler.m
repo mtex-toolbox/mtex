@@ -64,17 +64,17 @@ gamma(ind) = 0;
 conventions = {'nfft','ZYZ','ABG','Matthies','Roe','Kocks','Bunge','ZXZ','Canova'};
 convention = get_flag(varargin,conventions,get_mtex_option('EulerAngleConvention'));
 
-switch convention
+switch lower(convention)
   
-  case {'Matthies','nfft','ZYZ','ABG'}
+  case {'matthies','nfft','zyz','abg'}
 
     labels = {'alpha','beta','gamma'};
     
-  case 'Roe'
+  case 'roe'
     
     labels = {'Psi','Theta','Phi'};
     
-  case {'Bunge','ZXZ'}
+  case {'bunge','zxz'}
 
     labels = {'phi1','Phi','phi2'};
     if ~isnull(beta)
@@ -82,14 +82,14 @@ switch convention
       gamma = gamma + 3*pi/2;
     end
     
-  case {'Kocks'}
+  case {'kocks'}
 
     labels = {'Psi','Theta','phi'};
     if beta ~= 0
       gamma = pi - gamma;
     end
     
-  case {'Canova'}
+  case {'canova'}
     
     labels = {'omega','Theta','phi'};
     if beta ~= 0
