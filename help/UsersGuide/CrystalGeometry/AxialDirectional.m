@@ -58,7 +58,7 @@ cs = symmetry('-3m',[1.4,1.4,1.5]);
 ss = symmetry('triclinic');
 
 % specify file names
-fname = {[mtexDataPath '/dubna/Q(10-10)_amp.cnv']};
+fname = {(fullfile(mtexDataPath,'PoleFigure','dubna','Q(10-10)_amp.cnv')};
 
 % specify crystal directions
 h = {Miller(1,0,-1,0,cs)};
@@ -128,7 +128,7 @@ figure(2);plotipdf(odf,yvector,'antipodal')
 cs = symmetry('m-3m');
 
 % file name
-fname = [mtexDataPath '/aachen_ebsd/85_829grad_07_09_06.txt'];
+fname = [mtexDataPath '/EBSD/85_829grad_07_09_06.txt'];
 
 % import data
 ebsd = loadEBSD(fname,cs,ss,'interface','generic',...

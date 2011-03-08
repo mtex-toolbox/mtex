@@ -100,7 +100,7 @@ CS = {...
 SS = symmetry('-1');   % specimen symmetry
 
 % file name
-fname = [mtexDataPath '/aachen_ebsd/85_829grad_07_09_06.txt'];
+fname = fullfile(mtexDataPath,'EBDS','85_829grad_07_09_06.txt');
 
 % import ebsd data
 ebsd = loadEBSD(fname,CS,SS,'interface','generic',...

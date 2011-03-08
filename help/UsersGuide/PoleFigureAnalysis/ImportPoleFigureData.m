@@ -188,8 +188,8 @@ ss = symmetry('triclinic');         % specimen symmetry
 
 % specify file names
 fnames = {...
-  [mtexDataPath '/dubna/Q(10-10)_amp.cnv'],...
-  [mtexDataPath '/dubna/Q(10-11)(01-11)_amp.cnv']};
+  fullfile(mtexDataPath,'PoleFigure','dubna','Q(10-10)_amp.cnv'),...
+  fullfile(mtexDataPath,'PoleFigure','dubna','Q(10-11)(01-11)_amp.cnv')};
 
 % specify crystal directions
 h = {Miller(1,0,-1,0,cs),[Miller(0,1,-1,1,cs),Miller(1,0,-1,1,cs)]};

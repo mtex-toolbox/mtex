@@ -17,7 +17,7 @@ CS = { symmetry('m-3m'), ...
 SS = symmetry('triclinic'); % specimen symmetry
 
 % file names
-fname = [mtexDataPath '/aachen_ebsd/85_829grad_07_09_06.txt'];
+fname = fullfile(mtexDataPath,'EBDS','85_829grad_07_09_06.txt');
 
 % load data
 ebsd = loadEBSD(fname,CS,SS,...

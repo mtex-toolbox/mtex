@@ -14,7 +14,7 @@ cs = symmetry('m-3m');
 ss = symmetry('-1');
 
 % specify file name
-fname = [mtexDataPath '/geesthacht/ST42-104-110.dat'];
+fname = fullfile(mtexDataPath,'PoleFigure','geesthacht','ST42-104-110.dat');
 
 % specify crystal directions
 h = { ...
