@@ -7,7 +7,7 @@ if ~exist(fname,'file'), error('File %s not found.',fname);end
 interfaces = dir([mtex_path '/qta/interfaces/load' type '_*.m']);
 interfaces = {interfaces.name};
 % do not use interfaces generic
-ind = cellfun(@isempty,strfind(interfaces,'generic'));
+ind = cellfun('isempty',strfind(interfaces,'generic'));
 interfaces = interfaces(ind);
 
 interface = {}; options = varargin;

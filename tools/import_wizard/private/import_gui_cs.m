@@ -177,7 +177,7 @@ cs_counter = getappdata(gcbf,'cs_count');
 
 name = get(handles.mineral,'string');
 
-[fname,pathName] = uigetfile(fullfile(get_mtex_option('cif_path') ,'*.cif'),'Select cif File');
+[fname,pathName] = uigetfile(fullfile(mtexCifPath,'*.cif'),'Select cif File');
 name = [pathName,fname];
 
 if fname ~= 0
@@ -208,7 +208,9 @@ function get_cs(wzrd)
 handles = getappdata(gcf,'handles');
 data = getappdata(gcf,'data');
 
-
+if isa(data,'cell')
+ data = data{1};
+end
 
 % set page name
 if isa(data,'EBSD')
@@ -280,11 +282,15 @@ catch
   cs = symmetry(cs,[axis{:}],[angle{:}]*degree,'mineral',mineral);
 end
 
-if isa(data,'EBSD')
+
+if isa(data,'cell')
+  data = cellfun(@(d) set(d,'CS',cs),data,'UniformOutput',false);
+elseif isa(data,'EBSD')
   data(cs_counter) = set(data(cs_counter),'CS',cs,'noTrafo');
 else
   data = set(data,'CS',cs,'noTrafo');
 end
+
 
 setappdata(wzrd,'data',data);
 
@@ -293,7 +299,7 @@ function fname = shrink_name(fname)
 
 [pathname, name, ext] = fileparts(fname);
 if strcmp(ext,'.cif'), ext = [];end
-if strcmp(pathname,get_mtex_option('cif_path'))
+if strcmp(pathname,mtexCifPath)
   fname = [name ext];
 else
   fname = fullfile(pathname,[name ext]);

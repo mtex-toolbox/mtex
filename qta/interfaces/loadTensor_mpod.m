@@ -15,6 +15,7 @@ function [T,interface,options] = loadTensor_mpod(fname,varargin)
 %
 %% Example
 % T = loadTensor_mpod('1000055.mpod')
+% T = loadTensor_mpod(1000055)        % download form MPOD
 %
 %% See also
 % loadTensor
@@ -23,14 +24,26 @@ function [T,interface,options] = loadTensor_mpod(fname,varargin)
 %  * allow import of not ij indexed single properties e.g. _prop_heat_capacity_C
 %  * respect multiple measured properties i.e _prop_conditions (_prop_conditions_temperature)
 %  * better symmetry import
-%
+%  * do it right for combined ijE,ijS notation (e.g. _prop_piezoelectric_*)
 
-str = file2cell(fname);
-try
-  cs = mpod2symmetry(str,varargin{:});
-catch
-  cs = symmetry;
+if isnumeric(fname)
+  fname = copyonline(fname);
 end
+[pathstr, name, ext] = fileparts(fname);
+if isempty(ext), ext = '.mpod';end
+if isempty(pathstr) && ~exist([name,ext],'file')
+  pathstr = mtexTensorPath;
+end
+
+% load file
+if ~exist(fullfile(pathstr,[name ext]),'file')
+  fname = copyonline(fname);
+else
+  fname = fullfile(pathstr,[name ext]);
+end
+str = file2cell(fname);
+
+cs = mpod2symmetry(str,varargin{:});
 
 
 
@@ -74,65 +87,41 @@ end
 function [cs,mineral] = mpod2symmetry(str,varargin)
 % import crystal symmetry from cif file
 
-try
-  cod = sscanf(extract_token(str,'_cod_database_code'),'%s');
-  if ~isempty(cod) && ~strcmpi(cod,'?')
-    % frist look up in mtex-cif directory
+pattern = '_cod_database_code';
+pos = strmatch(pattern,str);
+if ~isempty(pos)
+  cod = strtrim(regexprep(str{pos},pattern,''));
+  if  ~isempty(cod) && ~strcmpi(cod,'?')
     cs = cif2symmetry(cod);
-    mineral = get(cs,'mineral');
-    
     return
   end
-catch
 end
 
-% load file
-try
-  mineral = extract_token(str,'_phase_name');
-catch
-  mineral = name;
-end
+[cs,mineral] = cif2symmetry(str);
+
+
+function fname = copyonline(cod)
 
 try
-  point_group = extract_token(str,'_symmetry_point_group_name_H-M');
-  
-  % find a,b,c
-  a = sscanf(extract_token(str,'_cell_length_a'),'%f');
-  b = sscanf(extract_token(str,'_cell_length_b'),'%f');
-  c = sscanf(extract_token(str,'_cell_length_c'),'%f');
-  
-  
-  % find alpha, beta, gamma
-  alpha = sscanf(extract_token(str,'_cell_angle_alpha'),'%f');
-  beta = sscanf(extract_token(str,'_cell_angle_beta'),'%f');
-  gamma = sscanf(extract_token(str,'_cell_angle_gamma'),'%f');
-  
-  if isempty(b)
-    b = a;
+  if isnumeric(cod)
+    cod = num2str(cod);
   end
-  
-  if isempty([a b c])
-    cs = symmetry(point_group,'mineral',mineral);
-  elseif isempty([alpha beta gamma ])
-    cs = symmetry(point_group,[a,b,c],[alpha,beta,gamma]*degree,'mineral',mineral);
+  if ~isempty(str2num(cod))
+    disp('MPOD-File from Material Properties Open Database (MPOD)')
+    disp(['> download : http://www.materialproperties.org/datafiles/' cod '.mpod'])
+    cif = urlread(['http://www.materialproperties.org/datafiles/' cod '.mpod']);
   else
-    cs = symmetry(point_group,'mineral',mineral);
+    cif = urlread(cod);
   end
-  
-  
 catch
-  error(['Error reading cif file', fname]);
-  
+  error('MPOD-file not valid online')
 end
 
-function t = extract_token(str,token)
+fname = fullfile(mtexTensorPath,[cod '.mpod']);
 
-pos = strmatch(token,str);
-s = str(pos);
-if ~isempty(s)
-  t = char(regexp(s{1},['(?<=' token '\s).*'],'match'));
-else
-  t = '';
-end
+fid = fopen(fname,'w');
+fwrite(fid,cif);
+fclose(fid);
+disp(['> copied to: ' fname]);
 
 

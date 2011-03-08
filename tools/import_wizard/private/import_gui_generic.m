@@ -164,7 +164,12 @@ elseif get(handles.radio_exp(2),'Value')
   
   % extract file names
   fn = arrayfun(@(x) getappdata(x,'filename'),lb,'UniformOutput',false);
-    
+  
+  if strcmpi(type,'cell')
+    data = data{1};
+    type = 'tensor';
+  end
+  
   switch type
     case 'EBSD'
       fl = {fn{5}, lb(5)};
@@ -176,10 +181,9 @@ elseif get(handles.radio_exp(2),'Value')
       fl = {fn, lb(1)};
     case 'ODF'
       fl = {fn{6}, lb(6)};
-    case 'tensor'
+    case {'tensor'}
       fl = {fn{7}, lb(7)};
   end  
-  
    	str = generateScript(type,fl{1},data,getappdata(fl{2},'interface'),...
     getappdata(fl{2},'options'), handles);
        
@@ -231,6 +235,7 @@ try
   set_page(wzrd,page);
   
 catch  %#ok<*CTCH>
+%   rethrow(lasterror)
   errordlg(errortext);
 end
 
