@@ -74,7 +74,6 @@ for Entry = entry(~cellfun('isempty',entry))
     end
   end
   
-  M(M==0) = NaN;
   T{end+1} = symmetrise(tensor(M,cs,'propertyname',property,'unit','??')); %#ok<AGROW>
 end
 
