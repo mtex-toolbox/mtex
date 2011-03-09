@@ -13,8 +13,13 @@ if ~isempty(data)
     didata = [didata,1+cdata(index_selected(i)):cdata(index_selected(i)+1)]; %#ok<AGROW>
   end
   
-  % remove pole figure
-  data(didata) = [];
+  % remove data
+  if isa(data,'tensor')
+    data = [];
+  else
+    data(didata) = [];
+  end
+  if isempty(data), data = [];end
   idata(1+index_selected) = [];
     
   if iscellstr(filename)
