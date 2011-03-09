@@ -72,12 +72,16 @@ try
   sym = findsymmetry(name);
 catch %#ok<*CTCH>
   
+  if check_option(varargin,'noCIF')
+    error('symmetry "%s" not found',name);
+  end
+  
   % maybe it is a space group
   try
     sym = findsymmetry(hms2point(name));
   catch
     try % may be it is a cif file
-      s = cif2symmetry(name);
+      s = cif2symmetry(name,varargin{:});
       return;
     catch
     end

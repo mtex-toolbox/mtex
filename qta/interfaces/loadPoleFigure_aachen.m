@@ -44,7 +44,7 @@ while ~feof(fid)
     l = fgetl(fid);
     h = string2Miller(l(1:5));
     try
-      cs = symmetry(strtrim(l(6:10)),'silent');
+      cs = symmetry(strtrim(l(6:10)),'silent','noCIF');
     catch %#ok<CTCH>
       cs = symmetry('m-3m');
     end

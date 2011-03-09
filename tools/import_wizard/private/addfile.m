@@ -92,6 +92,6 @@ end
 
 if ~isempty(csO) && ~isempty(csN),
   if (csO ~= csN),
-    error('uuh! symmetry mismatch, I can''t handle this!');
+    error('Symmetry mismatch, I can''t handle this!');
   end
 end

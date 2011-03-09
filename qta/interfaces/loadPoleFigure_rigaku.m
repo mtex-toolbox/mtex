@@ -23,7 +23,7 @@ try
   % read out some stuff from the header
     
   % read the data
-  data = txt2mat(fname);
+  data = txt2mat(fname,'InfoLevel',0);
 
   % define specimen directions
   theta = (90 - data(:,1))*degree;
