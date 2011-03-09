@@ -1,16 +1,20 @@
 function C = mtimesxx(A,B)
 
-for k=1:4
-  szA(k) = size(A,k);
-  szB(k) = size(B,k);
-end
 
+[szA(1),szA(2),szA(3),szA(4)] = size(A);
+[szB(1),szB(2),szB(3),szB(4)] = size(B);
 sz = max(szA,szB);
 
-C = zeros(szA(1),szB(2),sz(3),sz(4));
-
-for k=1:sz(3)
+if ndims(B) < 3 || ndims(A) < 3
+  A = reshape(reshape(A,szA(1)*szA(2),[])',[],szA(2));
+  B = reshape(reshape(B,szB(1)*szB(2),[])',szB(1),[]);
+  C = A*B;
+  C = reshape(reshape(C,[],szA(1)*szB(2))',szA(1),szB(2),sz(3),sz(4));
+else
+  C = zeros(szA(1),szB(2),sz(3),sz(4));
   for l=1:sz(4)
-    C(:,:,k,l) = A(:,:, min(k,szA(3)), min(l,szA(4)))*B(:,:, min(k,szB(3)), min(l,szB(4)));
+    for k=1:sz(3)
+      C(:,:,k,l) = A(:,:,k,l)*B(:,:,k,l);
+    end
   end
 end
