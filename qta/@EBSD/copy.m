@@ -75,7 +75,8 @@ if check_option(varargin,'phase')
     
     % compare to given phase
     match = cellfun(@(str) any(strcmpi(phase,str)),phases);
-    
+  else
+    match = 1:length(ebsd);
   end
   
   % restrict to found phases
@@ -93,21 +94,3 @@ if check_option(varargin,'region')
   
   ebsd = inpolygon(ebsd,region);
 end
-% restrict to found phases
-ebsd = ebsd(match);
-
-% end
-
-% %% filter by region
-% if check_option(varargin,'region')
-%   region = get_option(varargin,'region');
-%   if isa(region,'double')
-%     region = polygon([region(1) region(2);region(3) region(2);...
-%       region(3) region(4); region(1) region(4); region(1) region(2)]);
-%   end
-%   
-%   ebsd = inpolygon(ebsd,region);
-% end
-% % 
-
-

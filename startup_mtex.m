@@ -5,7 +5,8 @@ function startup_mtex
 % this file. The startup options of MTEX can be edited in the file
 % mtex_settings.m in this directory.
 %
-
+% clc
+lasterr('') %reset all errors
 
 if  MATLABverLessThan('7.1')
   
@@ -15,9 +16,7 @@ if  MATLABverLessThan('7.1')
 end
 
 
-%% start MTEX
-disp('initialize MTEX ...');
-
+%%
 % path to this function to be considered as the root of the MTEX
 % installation 
 local_path = fileparts(mfilename('fullpath'));
@@ -27,9 +26,20 @@ local_path = fileparts(mfilename('fullpath'));
 
 install_mtex(local_path);
 
+%% initialize MTEX
+fprintf('initialize');
+
+%read version from version file
+fid = fopen('VERSION','r');
+MTEXversion = fgetl(fid);
+fclose(fid);
+fprintf([' ' MTEXversion '  ']);
+p();
+
 %% setup search path 
 
 setMTEXPath(local_path);
+p();
 
 %% set path to MTEX directories
 
@@ -37,23 +47,24 @@ set_mtex_option('mtex_path',local_path);
 set_mtex_option('mtex_data_path',fullfile(local_path,'data'));
 set_mtex_option('mtex_startup_dir',pwd);
 set_mtex_option('architecture',computer('arch'));
-
-%read version from version file
-fid = fopen('VERSION','r');
-set_mtex_option(0,'version',char(fread(fid,'char')'));
-fclose(fid);
-
+set_mtex_option('version',MTEXversion);
+p();
 
 
 %% init settings
 mtex_settings;
-
+p();
 
 %% check installation
 check_installation;
+p();
 
 %% finish
-disp([get_mtex_option('version') ' toolbox loaded'])
+if isempty(lasterr) % everything fine
+  fprintf(repmat('\b',1,length(MTEXversion)+18));
+end
+
+disp([MTEXversion ' toolbox loaded '])
 disp(' ');
 if isempty(javachk('desktop'))
   disp('Basic tasks:')
@@ -74,12 +85,13 @@ function install_mtex(local_path)
 % check wether local_path is in search path
 cellpath = regexp(path,['(.*?)\' pathsep],'tokens'); 
 cellpath = [cellpath{:}]; %cellpath = regexp(path, pathsep,'split');
-if any(strcmpi(local_path,cellpath)), return;end
+if any(strcmpi(local_path,cellpath)), return; end
 
 % if not yet installed
-disp(' ');
+disp(' ')
+hline('-')
 disp('MTEX is currently not installed.');
-disp('--------------------------------')
+
 
 % look for older version
 if any(strfind(path,'mtex'))
@@ -127,8 +139,8 @@ disp(' ');
 disp('MTEX is now running. However MTEX documentation might not be functional.');
 disp('In order to see the documentation restart MATLAB or click');
 disp('start->Desktop Tools->View Source Files->Refresh Start Button');
-disp('-----------------------------------------------------------------');
-disp(' ');
+hline('-')
+disp(' ')
 if isempty(javachk('jvm'))
   doc; pause(0.1);commandwindow;
 end
@@ -250,4 +262,16 @@ parts = sscanf(V, '%d.%d.%d')';
 if length(parts) < 3
   parts(3) = 0; % zero-fills to 3 elements
 end
+end
+
+function p()
+if isempty(lasterr)
+fprintf('\b.\r');
+end
+end
+
+
+function hline(st)
+if nargin < 1, st = '*'; end
+disp(repmat(st,1,80));
 end
