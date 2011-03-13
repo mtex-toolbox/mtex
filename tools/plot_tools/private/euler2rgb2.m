@@ -15,7 +15,8 @@ o = project2FundamentalRegion(S3G);
 
 c1 = mod( phi1, max_phi1);
 c2 = mod( Phi, max_Phi); 
-c3 = max_phi2 - 1/(max_phi2*2) * mod( phi2-max_phi2*2,max_phi2 ); %./(max_phi2*pi/2);
+%c3 = max_phi2 - 1/(max_phi2*2) * mod( phi2-max_phi2*2,max_phi2 ); %./(max_phi2*pi/2);
+c3 = mod( phi2, max_phi2); 
 
 c = hsv2rgb([c1(:)./max(c1),c2(:)./max(c2),c3(:)./max(c3)]);
 

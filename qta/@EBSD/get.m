@@ -92,7 +92,7 @@ switch vname
     fl = fl{strcmpi(vname,{'x','y','z','xy','xz','yz','xyz'})};
     
     for i = 1:length(obj)
-      varargout{1} = [varargout{1};obj(i).X(:,fl(1:size(obj(i).X,2)))]; 
+      varargout{1} = [varargout{1};obj(i).X(:,fl(fl <=size(obj(i).X,2)))]; 
     end
 %   case 'y'
 %     for i = 1:length(obj)
