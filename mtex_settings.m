@@ -83,7 +83,7 @@ set_mtex_option('phaseColorMap',cmap);
 % comment out the following line if you have problems with displaying LaTex
 % symbols
 
-set_mtex_option('noLaTex');
+% set_mtex_option('noLaTex');
 
 %% Workaround for NFFT bug
 % comment out the following line if MTEX is compiled againsed NFFT 3.1.3 or
@@ -137,6 +137,8 @@ set_mtex_option('degree_char',degree_char);
 
 [status,host] = unix('hostname');
 [status,user] = unix('whoami');
+
+if ispc,  user = regexprep(user,{host(1:end-1), filesep},''); end
 set_mtex_option('logfile',[get_mtex_option('tempdir'),'output_',host(1:end-1),'_',user(1:end-1),'.log']);
 
 
