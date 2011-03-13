@@ -59,6 +59,21 @@ if isappdata(gcf,'axes')
   varargin = {'peer',cax,varargin{:}};
 end
 
+%decide which colorbar to take
+cg = findall(gcf,'type','hggroup');
+
+if ~isempty(cg)
+
+  ll = get(cg,'LevelList');
+  if iscell(ll), ll = unique([ll{:}]);end
+  if length(ll) < 20
+    data = get(cg,'Zdata');
+    if iscell(data), data = cell2mat(data);end
+    cbarf(data,ll);
+    return
+  end
+end
+
 % locate default colorbar
 s = which('colorbar','-all');
 pathstr = fileparts(s{end});
@@ -72,3 +87,4 @@ else
 end
 
 cd(opwd);
+
