@@ -6,13 +6,13 @@ opts = struct(ebsd);
 checksum = ['grain_id', dec2hex(grains(1).checksum)];
  
 a = grains(1).checksum;
-b = [grains.checksum];
+b = get(grains,'checksum');
 
 if any(a ~= b)
 	error('operation with grain compositions not supported');
 elseif any(strcmpi( checksum, fields(opts(1).options)))
   ids = get(ebsd,checksum);
-  gids = [grains.id];
+  gids = get(grains,'id');
  	members_ebsd = ismember(ids,gids);
   if nargout > 1
     ids = ids(members_ebsd);

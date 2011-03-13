@@ -36,13 +36,13 @@ if check_option(varargin,'phase')
   if isa(phase,'double')
     
     % find matching phases
-    match = ismember([grains.phase],phase);
+    match = ismember(get(grains,'phase'),phase);
 
   % filter by mineral name
   elseif isa(phase,'char') || isa(phase,'cell')
     
     % find all phases
-    grainPhases = [grains.phase];
+    grainPhases = get(grains,'phase');
     [phases ind] = unique(grainPhases);
     
     % extract mineral names

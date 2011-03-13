@@ -63,7 +63,7 @@ end
 
 % set up figure
 newMTEXplot;
-if ispolygon(grains), selector(gcf);end
+% if ispolygon(grains), selector(gcf);end
 
 %% what to plot
 if ~isempty(property)
@@ -122,7 +122,7 @@ if ~isempty(property)
   end
   
   if ispolygon(grains)
-    selector(gcf,grains,p,h);
+%     selector(gcf,grains,p,h);
   end
 elseif exist('ebsd','var') 
   

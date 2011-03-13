@@ -10,7 +10,7 @@ function s = grainsize(grains,varargin)
 %% See also
 % polygon/area polygon/hullarea
 
-s = cellfun('prodofsize',{grains.cells});
+s = cellfun('prodofsize',get(grains,'cells'));
 
 
 

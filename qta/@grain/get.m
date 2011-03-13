@@ -60,7 +60,7 @@ if nargin > 1
         ind = true(size(grains));
         
       end
-      
+            
       varargout{1} = [grains(ind).orientation];
       
       if nargout > 1
@@ -93,7 +93,7 @@ p = strcmpi(field, fieldnames(struc));
 struc = struct2cell(struc);
 struc = squeeze(struc(p,:,:));
 
-if all(cellfun('prodofsize',struc) == 1)
+if ~isempty(struc) && all(cellfun('prodofsize',struc) == 1)
   
   if isnumeric(struc{end})    % the whole thing should be numeric, otherwise error
     
