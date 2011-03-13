@@ -50,7 +50,7 @@ if hasebsd
   options(find_type(options,'EBSD')) = [];
   
   [grains ebsd ids] = link(grains, ebsd);
-  [s ndx] = sort([grains.id]);
+  [s ndx] = sort(get(grains,'id'));
           
   if ~isempty(grains)        
     if isa(FUN,'function_handle')

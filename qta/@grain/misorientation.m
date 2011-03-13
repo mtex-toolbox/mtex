@@ -61,7 +61,7 @@ else % misorientation to neighbour grains
   for k=1:length(uphase)
     grains_phase = grains(phase == uphase(k));
 
-    o = get(grains_phase,'orientation');
+    o = get(grains_phase,'orientation','CheckPhase');
         
     if check_option(varargin,'random')
       
@@ -82,6 +82,10 @@ else % misorientation to neighbour grains
     % compute the misorientation 
     if check_option(varargin,'inverse')
       of = o(pair(:,1)) .\ o(pair(:,2));
+    elseif check_option(varargin,'angle') % only for debugging purpose
+      of = angle(o(pair(:,2)), o(pair(:,1)));
+      hist(of,180)
+      return
     else
       of = o(pair(:,2)) .\ o(pair(:,1));
     end
