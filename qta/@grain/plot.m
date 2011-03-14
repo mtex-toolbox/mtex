@@ -21,21 +21,21 @@ function plot(varargin)
 if check_option(varargin,'boundary')
   
   varargin = delete_option(varargin,'boundary',0);
-  plotboundary(varargin{:});
+  plotBoundary(varargin{:});
   
 % plot only subractions  
 elseif check_option(varargin,'subfractions')
   
   varargin = delete_option(varargin,'subfractions',0);
-  plotsubfractions(grains,varargin{:});
+  plotSubfractions(grains,varargin{:});
   
 % plot ellipse  
 elseif check_option(varargin,'ellipse')
   
   varargin = delete_option(varargin,'ellipse',0);
-  plotellipse(varargin{:}); 
+  plotEllipse(varargin{:}); 
   
 % default grain plot  
 else 
-  plotgrains(varargin{:});
+  plotGrains(varargin{:});
 end

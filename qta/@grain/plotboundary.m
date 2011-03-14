@@ -71,7 +71,7 @@ elseif ~isempty(property)
 
   CS = get(grains,'CS');
   
-  for ph=uphase
+  for ph=uphase(:).'
     %neighboured grains per phase
     ndx = phase == ph;
     grains_phase = grains(ndx);
