@@ -38,7 +38,7 @@ if strcmp(property,'phase') && ~check_option(varargin,'FaceColor')
   hold all;
   for i = 1:length(phases)    
     faceColor = cmap(1+mod(phases(i)-1,length(cmap)),:);
-    plotgrains(grains(grainPhases == phases(i)),varargin{:},'FaceColor',faceColor);
+    plotGrains(grains(grainPhases == phases(i)),varargin{:},'FaceColor',faceColor);
   end
   if ~washold, hold off;end
   
