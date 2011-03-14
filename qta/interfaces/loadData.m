@@ -107,12 +107,14 @@ end
 
 %% set crystal and specimen symmetry, specimen direction and comments
 if ~strcmpi(type,'tensor')
-  if iscell(data), data = [data{:}];end
-  for i = 1:length(data)
-    data(i) = set(data(i),'comment',ls(fname{i})); %#ok<AGROW>
+  if iscell(data), 
+    data = cellfun(@(d,f) set(d,'comment',ls(f)),data,fname,'UniformOutput',false);
+    data = [data{:}];
   end
-  %data = cellfun(@(d,f) set(d,'comment',ls(f)),data,fname,'UniformOutput',false);
-  
+  %for i = 1:length(data)
+  %  data(i) = set(data(i),'comment',ls(fname{i})); %#ok<AGROW>
+  %end
+    
   if exist('cs','var'), data = set(data,'CS',cs,'noTrafo');end
   if exist('ss','var'), data = set(data,'SS',ss,'noTrafo');end
   if exist('h','var'),  data = set(data,'h',h);end
