@@ -9,7 +9,7 @@ CS = {...
 SS = symmetry('-1');
 
 % specify file name
-fname = fullfile(mtexDataPath,'EBDS','85_829grad_07_09_06.txt');
+fname = fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt');
 
 
 % create an EBSD variable containing the data
