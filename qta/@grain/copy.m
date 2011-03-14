@@ -46,7 +46,7 @@ if check_option(varargin,'phase')
     [phases ind] = unique(grainPhases);
     
     % extract mineral names
-    CS = get(grains(ind),'CS');
+    CS = get(grains(ind),'CSCell');
     minerals = cellfun(@(cs) get(cs,'mineral'),CS,'uniformOutput',false);
     
     % compare to given phase

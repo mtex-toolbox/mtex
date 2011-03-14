@@ -179,7 +179,11 @@ if any(findall(allchild(h),'Label','Grains')), return, end;
 function layerSelChanged(e,h)
 
 layer = getcurrentlayer;
-state = get(layer.handles,'Visible');
+if isempty(layer)
+  state = 'off';
+else
+  state = get(layer.handles,'Visible');
+end
 if iscell(state), state = state{1};end
 setVisStatus(state);
 setappdata(gcf,'currentlayer', get(e,'ItemCount')-get(e,'SelectedIndex'))
@@ -191,7 +195,7 @@ f = findall(gcf,'Tag','MTEX.layervis');
 
 layer = getcurrentlayer;
 
-if ~isempty(layer.handles)
+if ~isempty(layer) && ~isempty(layer.handles)
   set(layer.handles,'Visible',state);
   set(f,'State',state);  
 end

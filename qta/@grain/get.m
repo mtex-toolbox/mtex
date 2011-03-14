@@ -18,21 +18,25 @@ function varargout = get(grains, vname, varargin)
 if nargin > 1
   %assert_property(grains,vname);
   switch vname
-    case {'CS','SS'}
+    case 'CS'
+      
+      varargout = get(grains,'CSCell');
+      
+    case 'CSCell'
       
       [phase,uphase,id] = get(grains,'phase');
       
       sym = cell(size(id));
       for l=1:length(id)
-        sym{l} = get(grains(id(l)).orientation,vname);
+        sym{l} = get(grains(id(l)).orientation,'CS');
       end
       varargout{1} = sym;
       
     case 'mineral'
       
-      CS = get(grains,'CS');
+      CS = get(grains,'CSCell');
       for k=1:numel(CS)
-        varargout{1}{k} = get(CS{k},'mineral');
+        varargout{k} = get(CS{k},'mineral');
       end
       
     case 'phase'
