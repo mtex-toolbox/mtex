@@ -6,6 +6,7 @@ function startup_mtex
 % mtex_settings.m in this directory.
 %
 % clc
+
 lasterr('') %reset all errors
 
 if  MATLABverLessThan('7.1')
@@ -18,7 +19,7 @@ end
 
 %%
 % path to this function to be considered as the root of the MTEX
-% installation 
+% installation
 local_path = fileparts(mfilename('fullpath'));
 
 
@@ -36,7 +37,7 @@ fclose(fid);
 fprintf([' ' MTEXversion '  ']);
 p();
 
-%% setup search path 
+%% setup search path
 
 setMTEXPath(local_path);
 p();
@@ -75,6 +76,7 @@ if isempty(javachk('desktop'))
   disp(' ');
 end
 
+
 end
 %% --------- private functions ----------------------
 
@@ -83,9 +85,11 @@ end
 function install_mtex(local_path)
 
 % check wether local_path is in search path
-cellpath = regexp(path,['(.*?)\' pathsep],'tokens'); 
+cellpath = regexp(path,['(.*?)\' pathsep],'tokens');
 cellpath = [cellpath{:}]; %cellpath = regexp(path, pathsep,'split');
 if any(strcmpi(local_path,cellpath)), return; end
+
+if ispref('mtex'), rmpref('mtex'); end
 
 % if not yet installed
 disp(' ')
@@ -99,7 +103,7 @@ if any(strfind(path,'mtex'))
   disp('I remove it from the current search path!');
   disp('You may need to restart MTEX!')
   
-  inst_dir = cellpath(~cellfun('isempty',strfind(cellpath,'mtex')));  
+  inst_dir = cellpath(~cellfun('isempty',strfind(cellpath,'mtex')));
   if ~isempty(inst_dir), rmpath(inst_dir{:}); end
 end
 
@@ -111,7 +115,7 @@ addpath(local_path);
 disp(' ');
 r= input('Do you want to permanently install MTEX? Y/N [Y]','s');
 if isempty(r) || any(strcmpi(r,{'Y',''}))
-
+  
   % check for old startup.m
   startup_file = fullfile(toolboxdir('local'),'startup.m');
   if exist(startup_file,'file')
@@ -133,7 +137,7 @@ if isempty(r) || any(strcmpi(r,{'Y',''}))
   end
   
 end
-  
+
 
 disp(' ');
 disp('MTEX is now running. However MTEX documentation might not be functional.');
@@ -150,7 +154,7 @@ end
 
 %% windows
 function install_mtex_windows
-  
+
 if ~savepath
   disp('> MTEX permanently added to MATLAB search path.');
 else
@@ -170,10 +174,10 @@ else
   
   % if it fails save to tmp dir and move
   savepath([tempdir 'pathdef.m']);
-
+  
   % move pathdef.m
   out = sudo(['mv ' tempdir '/pathdef.m ' toolboxdir('local')]);
-
+  
   if ~out
     disp(' ');
     disp('> Warning: The MATLAB search path could not be saved!');
@@ -197,7 +201,7 @@ disp(['>   ' c]);
 disp('> Please enter the password!');
 
 % is there sudo?
-if exist('/usr/bin/sudo','file') 
+if exist('/usr/bin/sudo','file')
   
   out = ~system(['sudo ' c]);
   
@@ -214,7 +218,7 @@ function setMTEXPath(local_path)
 
 
 % obligatory paths
-toadd = { {''}, ...
+pathes = { {''}, ...
   {'qta'}, {'qta' 'interfaces'},{'qta' 'interfaces' 'tools'},...
   {'qta' 'standardODFs'},{'qta' 'tools'},...
   {'geometry'},{'geometry' 'geometry_tools'},...
@@ -226,9 +230,8 @@ toadd = { {''}, ...
   {'examples'},{'examples' 'UsersGuide'},...
   {'tests'}};
 
-for k=1:length(toadd)
-  addpath(fullfile(local_path,toadd{k}{:}),0);
-end
+pathes = cellfun(@(p) fullfile(local_path,p{:}), pathes, 'uniformoutput', false);
+addpath(pathes{:},0);
 
 % compatibility path
 comp = dir(fullfile(local_path,'tools','compatibility','ver*'));
@@ -245,7 +248,7 @@ if MATLABverLessThan('7.3'), make_bsx_mex;end
 
 end
 
-%% check MATLAB version 
+%% check MATLAB version
 function result = MATLABverLessThan(verstr)
 
 MATLABver = ver('MATLAB');
@@ -266,7 +269,7 @@ end
 
 function p()
 if isempty(lasterr)
-fprintf('\b.\r');
+  fprintf('.');
 end
 end
 
