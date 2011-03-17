@@ -3,7 +3,7 @@ function [odf,r,v1,v2] = centerSpecimen(odf,center,varargin)
 %
 % centerSpecimen(odf,center) trys to find the normal vectors of orthorhombic
 % symmetry for the x mirror and y mirror plane and calculates an rotation needed
-% to rotate the odf back into these mirror planes. 
+% to rotate the odf back into these mirror planes.
 % the routine starts with an lookaround grid for a given center (default
 % xvector) to find a starting value for newton iteration.
 %
@@ -17,15 +17,18 @@ function [odf,r,v1,v2] = centerSpecimen(odf,center,varargin)
 %  v1,v2  - normal vector of the mirrorplans
 %
 %% Options
-%  'delta'    - stepsize for evaluating the gradient
-%  'itermax'  - maximum number of newton iterations (default 5)
-%  'SO3Grid'  - a @SO3Grid the @ODF is evaluatete on
-%  'maxpolar' - specifies the opening angle for the initial search grid around input center
-%  'res'      - specifies the resolution for the initial search grid
-%  'silent'   - dont verbose number of initial axes and the newton iteration
+%  'delta'      - stepsize for evaluating the gradient
+%  'itermax'    - maximum number of newton iterations (default 5)
+%  'SO3Grid'    - a @SO3Grid the @ODF is evaluatete on
+%  'maxpolar'   - specifies the opening angle for the initial search grid around input center
+%  'resolution' - specifies the resolution for the initial search grid
+%  'silent'     - dont verbose number of initial axes and the newton iteration
+%  'plot'       - plot objective function around center as axis distribution
+%
+%  'fourier'    - use fourier coefficents as objective function
 %
 %% Examples
-%   
+%
 %  Starting with an synthetic odf with orthorhombic symmetry
 %
 %       CS = symmetry('cubic')
@@ -33,38 +36,53 @@ function [odf,r,v1,v2] = centerSpecimen(odf,center,varargin)
 %       h = [Miller(0,0,1),Miller(0,0,1),Miller(0,0,1)];
 %       r = [ rotation('euler', 90*degree,35*degree,30*degree) ...
 %         rotation('euler', 90*degree,35*degree,0*degree)]
-% 
+%
 %       sr = SS*r;
 %       odf = unimodalODF(SO3Grid(sr(:),CS),CS);
-% 
+%
 %  we define a rotational displacement
 %
 %       r2 = rotation('euler', 6*degree,4*degree,0*degree)
 %       odf = rotate(odf,r2);
-% 
+%
 %       figure, plotpdf(odf,h,'antipodal');
-% 
+%
 %  and now retrive the rotation back
-% 
+%
 %       [odr,r,v1,v2] = centerSpecimen(odf);
 %       figure, plotpdf(odr,h,'antipodal')
 %
 %%
 %
 
+options.delta = get_option(varargin,'delta',0.5*degree);
 
-options.delta = get_option(varargin,'delta',0.1*degree);
-options.odf = set(odf,'SS',symmetry);
-options.SO3 = get_option(varargin,'SO3Grid',...
-  SO3Grid(5*degree,get(odf,'CS'),get(odf,'SS'),varargin{:}));
-options.y = eval(options.odf,options.SO3);
-options.resolution = get_option(varargin,'res',5*degree);
+if check_option(varargin,'Fourier')
+  if ~check_option(odf,'fourier')
+    L = get_option(varargin,{'bandwidth','L'},16);
+    odf = FourierODF(calcFourier(set(odf,'SS',symmetry),L));
+  end  
+  options.c_hat = odf.c_hat;
+else
+  options.odf = odf;
+  options.SO3 = get_option(varargin,'SO3Grid',...
+    SO3Grid(5*degree,get(odf,'CS'),get(odf,'SS'),varargin{:}));
+  options.y = eval(options.odf,options.SO3);
+end
+
+options.resolution = get_option(varargin,'resolution',5*degree);
 options.maxangle = get_option(varargin,'maxpolar',15*degree);
 options.verbose = ~check_option(varargin,'silent');
-options.itermax = get_option(varargin,'itermax',5); 
+options.itermax = get_option(varargin,'itermax',5);
+options.plot = check_option(varargin,'plot');
 
 if nargin < 2
   center = xvector;
+end
+
+if options.plot
+  initialSearch(center,options);
+  return
 end
 
 v1 = newton(initialSearch(center,options),options);
@@ -79,28 +97,35 @@ end
 
 function v_start = initialSearch(center, options)
 
-v = S2Grid('equispaced','resolution',options.resolution,'maxtheta',options.maxangle);
+if options.plot
+  v = S2Grid('plot','resolution',options.resolution,'maxtheta',options.maxangle);
+else
+  v = S2Grid('equispaced','resolution',options.resolution,'maxtheta',options.maxangle);
+end
+
 q = hr2quat(zvector,center);
-v = q*v;
+vc = q*v;
 
 if options.verbose
   fprintf(' looking at %d rotational axes\n', numel(v))
 end
 
-n = numel(v);
-val = zeros(size(v));
-global mtex_progress 
+n = numel(vc);
+val = zeros(size(vc));
+global mtex_progress
 mtex_progress = 1;
 progress(0,n);
-for k=1:numel(v)
+for k=1:numel(vc)
   progress(k,n);
-  val(k) = f(v(k),options);
+  val(k) = f(vc(k),options);
 end
 
-[valm,i] = min(val);
-v_start = vector3d(v(i));
-
-
+if options.plot
+  figure, plot(v,'data',val,'smooth');
+else
+  [valm,i] = min(val);
+  v_start = vector3d(vc(i));
+end
 
 function v = newton(v, options)
 
@@ -131,7 +156,7 @@ while fval > .01 && iter < options.itermax && abs(fval-oldfval) >.01
   
   if options.verbose
     fprintf(' defect at iteration %d: %f\n',iter, fval );
-  end 
+  end
 end
 
 v = sph2vec(p(1),p(2));
@@ -188,12 +213,32 @@ else
   r = axis2quat(v,pi);
 end
 
-odf = rotate(options.odf,r);
-yo = options.y;
-yr = eval(odf,options.SO3);
-
-y = sum((yo - yr).^2);
-
+if isfield(options,'c_hat')
+  D2 = options.c_hat;
+  L = dim2deg(numel(D2));
+  D1 = wignerD(r,'bandwidth',L);
+  
+  D3  = zeros(deg2dim(L+1),1);
+  
+  for l = 0:L
+    d2d = deg2dim(l)+1:deg2dim(l+1);
+    s = 2*l+1;
+    D3(d2d) = ...
+      reshape(D1(d2d),s,s) * ...
+      reshape(D2(d2d),s,s);
+  end
+  y = sum(abs(D3-D2).^2);
+  
+  % y = abs(sum(D3-D2));
+  % odf = FourierODF(D3-D2,get(options.SO3,'CS'),get(options.SO3,'CS'));
+  % y = sum((eval(odf,options.SO3)).^2);
+else
+  odf = rotate(options.odf,r);
+  yo = options.y;
+  yr = eval(odf,options.SO3);
+  
+  y = sum((yo - yr).^2);
+end
 
 
 
