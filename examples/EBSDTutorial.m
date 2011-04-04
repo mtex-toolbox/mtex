@@ -30,7 +30,7 @@ plotx2east
 % First we make a spatial plot of the orientations of the crystals of phase
 % 1 using hkl colorcoding.
 
-figure(1)
+figure('position',[100 100 800 350])
 plot(ebsd,'colorcoding','hkl','phase',1)
 
 %%
@@ -39,6 +39,7 @@ plot(ebsd,'colorcoding','hkl','phase',1)
 
 colorbar('position',[100 100 250 250])
 
+%%
 
 %% Grain reconstruction
 % Next we reconstruct the grains within our measurements.
@@ -49,12 +50,15 @@ colorbar('position',[100 100 250 250])
 %%
 % and plot them into our orientation plot
 
-figure(1); hold on
-plotboundary(grains)
+figure('position',[100 100 800 350])
+plot(ebsd,'colorcoding','hkl','phase',1)
+hold on
+plotboundary(grains,'linewidth',1.5)
 
 %%
 % One can also plot all the grains together with their mean orientation
 
+figure('position',[100 100 800 350])
 plot(grains,'colorcoding','hkl','phase',1)
 
 %% ODF estimation
