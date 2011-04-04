@@ -2,8 +2,8 @@ function ind = find(S1G,x,epsilon)
 % find close points
 %
 %% Syntax  
-% ind = find(S1G,x,epsilon) % find all points in distance epsilon
-% ind = find(S1G,x)         % find closest point
+% ind = find(S1G,x,epsilon) - find all points in distance epsilon
+% ind = find(S1G,x)         - find closest point
 %
 %% Input
 %  S1G     - @S1Grid

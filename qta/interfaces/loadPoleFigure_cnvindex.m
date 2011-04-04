@@ -6,8 +6,8 @@ function pf = loadPoleFigure_cnvindex(data,sfile,CS,SS,varargin)
 % pf = loadPoleFigure_cnvindex(data,sfile,CS,SS,varargin)
 %
 %% Input
-%  fname_i - i-th file name
-%  h_i     - indece to the i-th crystal direction in the structure file
+%  fname_i - i--th file name
+%  h_i     - indece to the i--th crystal direction in the structure file
 %  sfile  - structure file
 %  CS, SS - crystal, specimen @symmetry
 %

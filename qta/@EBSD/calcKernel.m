@@ -11,7 +11,7 @@ function psi = calcKernel(ebsd,varargin)
 %  phase   - specifies the phase (default is the first one)
 %
 %% See also
-% EBSD/calcODF
+% EBSD/calcODF EBSD/BCV EBSD/KLCV EBSD/LSCV
 
 % filter data
 ebsd = copy(ebsd,varargin{:});

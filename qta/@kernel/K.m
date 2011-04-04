@@ -1,7 +1,5 @@
 function w = K(kk,g1,g2,CS,SS,varargin)
 % evaluate kernel modulo symmetries
-%% Syntax
-% w = K(kk,g1,g2,CS,SS,<options>)
 %
 %% Input
 %  kk     - @kernel

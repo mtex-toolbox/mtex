@@ -8,8 +8,8 @@ function e = calcerror(pf,rec,varargin)
 % are calculated by the function PoleFigure/calcnormalization
 %
 %% Syntax
-%  e = calcerror(pf,pf2,options)
-%  e = calcerror(pf,rec,options)
+%  e = calcerror(pf,pf2,param) - compares two different @PoleFigures with same @S2Grid
+%  e = calcerror(pf,rec,param) - compares @PoleFigure with the Recalculated @ODF
 %
 %% Input
 %  pf,pf2 - @PoleFigure
@@ -18,10 +18,10 @@ function e = calcerror(pf,rec,varargin)
 %% Output
 %  e - error
 %
-%% Options
-%  RP - (default)
-%  l1 - l1 error
-%  l2 - l2 error
+%% Flags
+%  RP - (default) 
+%  l1 - L1 error
+%  l2 - L2 error
 %
 %% See also
 % ODF/calcerror PoleFigure/calcnormalization PoleFigure/scale

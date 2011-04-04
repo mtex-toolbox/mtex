@@ -11,8 +11,8 @@ function D = wignerD(g,varargin)
 %  g - single quaternion
 %
 %% Output
-%  Dl - (2l+1) x (2l+1) 
-%  D - (l*(2*l-1)*(2*l+1)/3) x 1
+%  Dl - $(2l+1) \times (2l+1)$
+%  D - $(l(2*l--1)(2*l+1)/3) \times 1$
 %
 %% See also
 % sphericalY
@@ -23,8 +23,8 @@ if ~check_option(varargin,{'degree','bandwidth','order'})
   error('No polynomial degree l specified');
 end
 
+c = 1./numel(g);
 g = Euler(g,'nfft');
-c = 1;
 l = get_option(varargin,{'degree','bandwidth','order'});
 L = max(l,3);
 A = ones(L+1,1);

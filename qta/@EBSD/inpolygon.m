@@ -2,8 +2,8 @@ function ebsd = inpolygon(ebsd,varargin)
 % select ebsd data by a given polygon
 %
 %% Syntax
-% ebsd = inpolygon(ebsd,polygon)
-% ebsd = inpolygon(ebsd,[x1 y1; x2 y2; x3 y3; x4 y4])
+% ebsd = inpolygon(ebsd,polygon) - cuts EBSD data to a @polygon region
+% ebsd = inpolygon(ebsd,[x1 y1; x2 y2; x3 y3; x4 y4]) - 
 %
 %% Input
 %  ebsd    - @EBSD

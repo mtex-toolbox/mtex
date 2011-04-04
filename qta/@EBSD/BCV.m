@@ -6,7 +6,7 @@ function c = BCV(ebsd,psi,varargin)
 %  psi  - @kernel
 %
 %% Output
-%  c
+%  c    - halfwidth
 %
 %% See also
 % EBSD/calcODF EBSD/calcKernel grain/calcKernel EBSD/LSCV

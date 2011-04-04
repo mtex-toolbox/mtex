@@ -1,4 +1,8 @@
 function ebsd = find(ebsd,q0,epsilon)
+% return a set of EBSD within an epsilon region around q0
+%
+%% See also
+% orientation/find
 
 
 for k=1:length(ebsd)

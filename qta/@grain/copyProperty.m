@@ -1,4 +1,4 @@
-function grains = copyproperty(grains, ebsd, f)
+function grains = copyProperty(grains, ebsd, f)
 % copy an abitrary property of the corresponding ebsd object
 %
 %% Syntax

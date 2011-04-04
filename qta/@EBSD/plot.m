@@ -1,13 +1,10 @@
 function plot(ebsd,varargin)
 % plots ebsd data 
 %
-%% Syntax
-% plot(ebsd,<options>)
-%
 %% Input
 %  ebsd - @EBSD
 %
-%% Options
+%% Flages
 %  SCATTER       - three dimensional scatter plot
 %  AXISANGLE     - axis angle projection
 %  RODRIGUES     - rodrigues parameterization

@@ -1,9 +1,9 @@
-function plotellipse(grains,varargin)
+function plotEllipse(grains,varargin)
 % plot ellipses of principalcomponents
 %
 %% Syntax
 %  plotellipse(grains)
-%  plotgrains(grains,'PropertyName',PropertyValue,...)
+%  plotGrains(grains,'PropertyName',PropertyValue,...)
 %
 %% Input
 %  grains - @grain
@@ -16,7 +16,7 @@ function plotellipse(grains,varargin)
 %  PrincipalBColor -  colorspec
 %
 %% See also
-% grain/plot grain/plotgrains grain/plotsubfractions 
+% grain/plot grain/plotGrains grain/plotSubfractions 
 % polygon/principalcomponents polygon/hullprincipalcomponents
 %
 

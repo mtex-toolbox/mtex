@@ -1,5 +1,6 @@
 function hn=arrow3(p1,p2,s,w,h,ip,alpha,beta)
 % ARROW3 (R13)
+%
 %  ARROW3(P1,P2) draws lines from P1 to P2 with directional arrowheads.
 %  P1 and P2 are either nx2 or nx3 matrices.  Each row of P1 is an
 %  initial point, and each row of P2 is a terminal point.

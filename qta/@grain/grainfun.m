@@ -15,14 +15,14 @@ function [g grains] = grainfun(FUN,grains,varargin)
 %
 %% Options
 %  UniformOutput - true/false
-%  Property      - write uniformed value to given propertyname of grain-object
+%  Property      - write uniformed value to given propertyname of grain--object
 %
 %% Example
-%  tindex = grainfun( @(x) textureindex(calcODF(x)), ...
-%             grains,ebsd,'UniformOutput',true);
+% tindex = grainfun( @(x) textureindex(calcODF(x)),grains,ebsd,'UniformOutput',true);
 %
-%  grains = calcODF(grains,ebsd);
-%  tindex = grainfun(@textureindex, grains,'ODF');
+% grains = calcODF(grains,ebsd);
+%
+% tindex = grainfun(@textureindex, grains,'ODF');
 %
 %% See also
 % 

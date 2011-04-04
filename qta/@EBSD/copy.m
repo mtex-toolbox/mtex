@@ -2,18 +2,21 @@ function ebsd = copy(ebsd,varargin)
 % copy selected points from EBSD data
 %
 %% Syntax
-% ebsd  = copy(ebsd,condition)
-% ebsd  = copy(ebsd,get(ebsd,'phase')~=1)
+% ebsd  = copy(ebsd,condition) - returns a copy of an EBSD object subset 
+%    specified by a |condition|, which
+%    may be logical or numeric subindecies. If logical, the input vector should
+%    have length of sum [[EBSD.sampleSize.html,sampleSize]] 
+% ebsd  = copy(ebsd,get(ebsd,'phase')~=1) - 
 %
 %% Input
-%  ebsd      - @EBSD
+%  ebsd      - @EBSD 
 %  condition - index set
 %
 %% Output
 %  ebsd - @EBSD
 %
 %% See also
-% EBSD/get EBSD/copy EBSD_index
+% EBSD/get EBSD/delete EBSD_index
 
 if nargin == 1, return;end
 

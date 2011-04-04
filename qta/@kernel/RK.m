@@ -1,7 +1,8 @@
 function f = RK(kk,g,h,r,c,CS,SS,varargin)
 % sum Radon trasformed kernel
+%
 %% Syntax
-%  f = RK(kk,g,h,r,c,CS,SS,varargin)
+%  f = RK(kk,g,h,r,c,CS,SS,varargin) - 
 %
 %% Input
 %  kk   - @kernel
@@ -12,17 +13,21 @@ function f = RK(kk,g,h,r,c,CS,SS,varargin)
 %  CS,SS- crystal, specimen @symmetry
 %
 %% Options
-%  antipodal     - antipodal Radon transform P(h,r) = (Rf(h,r) + Rf(-h,r))/2
+%  antipodal - antipodal Radon transform $P(h,r) = (\mathcal{R}f(h,r) + \mathcal{R}f(--h,r))/2$
 %  BANDWIDTH - bandwidth of ansatz functions
 %
 %% Output
-%  resulting matrix
-%  1.dim -> g
-%  2.dim -> r
+% matrix - 1. dim --> g, 2.dim --> r
 %
-% formulae:
-% * f_j = sum c_i RK(g_i,h,r_j)
-% * RK((h,r);g) = Sum A_l P_l(g*h . r)
+%% Remarks
+% formulae
+% 
+% $$ f_j = \sum_i c_i \mathcal{R}K(g_i,h,r_j)$$
+%
+% $$ \mathcal{R}K((h,r);g) = \sum_l A_l P_l(gh, r)$$
+%
+%% See also
+% kernel/k kernel/rkk
 
 g = quaternion(g);
 ng = numel(g);

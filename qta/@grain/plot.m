@@ -14,7 +14,7 @@ function plot(varargin)
 %  ELLIPSE       - ellipse plot
 %
 %% See also
-% grain/plotboundary grain/plotgrains grain/plotsubfractions
+% grain/plotBoundary grain/plotGrains grain/plotSubfractions
 %
 
 % plot only grain boundaries

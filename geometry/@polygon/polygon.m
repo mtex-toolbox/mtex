@@ -5,9 +5,9 @@ function p = polygon(varargin)
 % in MTEX.
 %
 %% Syntax
-% % %  p = polygon(Vertices)
-% % %  p = polygon(x,y)
-% % %  p = polygon(polygon)
+% p = polygon(Vertices) -
+% p = polygon(x,y) -
+% p = polygon(polygon) -
 %
 %% Output
 %  p - @polygon

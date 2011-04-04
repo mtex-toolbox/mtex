@@ -1,10 +1,10 @@
-function plotsubfractions(grains,varargin)
+function plotSubfractions(grains,varargin)
 % plot the grain boundaries
 %
 %% Syntax
-%  plotsubfractions(grains)
-%  plotsubfractions(grains,LineSpec,...)
-%  plotsubfractions(grains,'PropertyName',PropertyValue,...)
+%  plotSubfractions(grains)  -
+%  plotSubfractions(grains,LineSpec,...) -
+%  plotSubfractions(grains,'PropertyName',PropertyValue,...) -
 %
 %% Input
 %  grains - @grain
@@ -13,7 +13,7 @@ function plotsubfractions(grains,varargin)
 % grain/plot grain/plotellipse grain/plotgrains
 %
   
-b = hassubfraction(grains);
+b = hasSubfraction(grains);
 
 if any(b) 
   newMTEXplot;

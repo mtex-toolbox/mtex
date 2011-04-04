@@ -3,7 +3,7 @@ function T = mtimesT(T,dimT,M,dimM)
 %
 %% Description
 % This function multiplies a tensor with some rotation matrix or direction,
-% i.e., it computes T_ijkl M_jn, where the dimensions of j and n can be
+% i.e., it computes $T_{ijkl} M_{jn}$, where the dimensions of j and n can be
 % specified.
 %
 %% Syntax

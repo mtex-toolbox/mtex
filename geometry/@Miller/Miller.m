@@ -2,18 +2,18 @@ function [m,er] = Miller(varargin)
 % define a crystal direction by Miller indice
 %
 %% Syntax
-% m = Miller(h,k,l,cs)
-% m = Miller(h,k,l,cs,'hkl')
-% m = Miller(h,k,l,cs,'pole')
-% m = Miller(h,k,i,l,cs)
-% m = Miller('(hkl)',cs)
-% m = Miller(u,v,w,cs,'uvw')
-% m = Miller(u,v,t,w,cs,'uvw')
-% m = Miller(u,v,w,cs,'direction')
-% m = Miller('[uvw]',cs)
-% m = Miller('[uvw]\[uvw],cs)
-% m = Miller('(hkl)\(hkl),cs)
-% m = Miller(x,cs)
+% m = Miller(h,k,l,cs) -
+% m = Miller(h,k,l,cs,'hkl') -
+% m = Miller(h,k,l,cs,'pole') -
+% m = Miller(h,k,i,l,cs) -
+% m = Miller('(hkl)',cs) -
+% m = Miller(u,v,w,cs,'uvw') -
+% m = Miller(u,v,t,w,cs,'uvw') -
+% m = Miller(u,v,w,cs,'direction') -
+% m = Miller('[uvw]',cs) - 
+% m = Miller('[uvw]\[uvw],cs) -
+% m = Miller('(hkl)\(hkl),cs) - 
+% m = Miller(x,cs) - 
 %
 %
 %% Input

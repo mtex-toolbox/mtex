@@ -1,9 +1,11 @@
 function E = YoungsModulus(C,x)
 % Young's modulus for an elasticity tensor
 %
-%% Description
+%% Remarks
 %
-% formula: E = 1/(S_ijkl x_i x_j x_k x_l)
+% formula: 
+%
+% $$E = \frac{1}{S_{ijkl} x_i x_j x_k x_l}$$
 %
 %% Input
 %  C - elastic stiffness @tensor

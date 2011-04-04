@@ -6,8 +6,8 @@ function pf = calcerrorpf(pfmeas,pfcalc,varargin)
 % @PoleFigure.
 %
 %% Syntax
-% pf = calcerrorpf(pfmeas,pfcalc,<options>)
-% pf = calcerrorpf(pfmeas,odf,<options>)
+% pf = calcerrorpf(pfmeas,pfcalc,<options>) -
+% pf = calcerrorpf(pfmeas,odf,<options>)    -
 %
 %% Input
 %  pfmeas - meassured @PoleFigure 

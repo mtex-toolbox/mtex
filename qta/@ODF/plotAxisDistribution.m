@@ -9,7 +9,7 @@ function plotAxisDistribution(odf,varargin)
 %  
 %% Flags
 %  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
-%  COMPLETE  - plot entire (hemi)-sphere
+%  COMPLETE  - plot entire (hemi)--sphere
 %
 %% See also
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo

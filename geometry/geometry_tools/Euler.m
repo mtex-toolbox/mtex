@@ -8,8 +8,8 @@ function r = Euler(varargin)
 %
 %% Syntax
 %
-%  q = Euler(alpha,beta,gamma)
-%  q = Euler(phi1,Phi,phi2,'Bunge')
+%  q = Euler(alpha,beta,gamma) -
+%  q = Euler(phi1,Phi,phi2,'Bunge') -
 %
 %% Input
 %  alpha, beta, gamma - double

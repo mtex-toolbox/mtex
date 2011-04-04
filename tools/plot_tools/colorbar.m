@@ -69,7 +69,7 @@ if ~isempty(cg)
   if length(ll) < 20
     data = get(cg,'Zdata');
     if iscell(data), data = cell2mat(data);end
-    cbarf(data,ll);
+%     cbarf(data,ll);
     return
   end
 end

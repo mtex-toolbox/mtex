@@ -3,12 +3,16 @@ function w = UK(kern,co2)
 %
 %% Description
 % evaluates the odd part of the kernel by the formula
-% K(omega) = Sum(l) A_{2l+1} Tr T_{2l+1}(omega)
-% with Tr T_l(x) = [sin(x/2)+sin(x*l)]/sin(x/2)
+%
+% $$K(\omega) = \sum_l \mbox{A}_{2l+1} \mbox{Tr} \mbox{T}_{2l+1}(\omega)$$
+%
+% with
+% 
+% $$\mbox{Tr} \mbox{T}_l(x) =  \frac{sin(\frac{x}{2})+sin(xl)}{sin(\frac{x}{2})}$$
 %
 %% Input
 %  kern - @kernel
-%  co2  - cos(angle/2)
+%  co2  - $cos(\omega/2)$
 %
 %% Output
 %  w - value of the odd part of the kernel

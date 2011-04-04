@@ -5,13 +5,16 @@ function Z = RRK(kk,h1,r1,h2,r2,CS,SS,varargin)
 %% Input
 %  h1,r1 - crystal direction / specimen directions
 %  h2,r2 - list of crystal direction / specimen directions
-%  xray - (True/False) ob X-Ray Trafo (d.h. ï¿½ber +-h mitteln)
+%% Flags
+%  xray - (True/False) ob X--Ray Trafo (d.h. über +--h mitteln)
 %
 %% Output
-% Matrix der Dimension von h2 x r2:
+% Z - Matrix der Dimension von h2 x r2
 %
+%% Remarks
 % allgemeine Formel:
-% RRK(dr,dh) = Sum(g) Sum(l) A_l P_l(g*h1.h2)*P_l(dr)
+%
+% $$\mathcal{RR}K(dr,dh) = \sum_g \sum_l A_l P_l(gh_1,h_2)*P_l(dr)$$
 
 Z = zeros(numel(h2),numel(r2));
 

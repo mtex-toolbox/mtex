@@ -2,11 +2,17 @@ function w = GK(kk,co2)
 % calculate even part of the kernel
 %% Input
 %  kk  - @kernel
-%  co2 - cos(omega/2)
+%  co2 - $cos(\frac{\omega}{2})$
 %
+%% Remarks
 % formula
-% K(omega) = Sum(l) A_2l Tr T_2l(omega)
-% wobei gilt: Tr T_l(x) = [sin(x/2)+sin(x*l)]/sin(x/2)
+%
+% $$K(\omega) = \sum_l \mbox{A}_{2l} \mbox{Tr} \mbox{T}_{2l}(\omega)$$
+%
+% with
+%
+% $$\mbox{Tr} \mbox{T}_l(x) = \frac{sin(\frac{x}{2})+sin(x l)}{sin(\frac{x}{2})}$$
+%
 
 A = kk.A;
 A(2:2:end) = 0;

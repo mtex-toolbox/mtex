@@ -12,6 +12,5 @@ file = file([file.isdir] & ~strncmp({file.name},'.',1) ...
 
 % search subdirectories
 for k=1:length(file)
-  current = [root filesep file(k).name];
-  dirs = [dirs; getSubDirs(current)];
+  dirs = [dirs; getSubDirs(fullfile(root,file(k).name))];
 end

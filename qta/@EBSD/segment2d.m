@@ -10,15 +10,27 @@ function [grains ebsd] = segment2d(ebsd,varargin)
 %
 %% Options
 %  angle         - array of threshold angles per phase of mis/disorientation in radians
-%  augmentation  - 'cube'/ 'cubeI' / 'sphere'
-%  angletype     - misorientation (default) / disorientation 
+%  augmentation  - bounds the spatial domain
+%
+%    * |'cube'|
+%    * |'cubeI'| 
+%    * |'sphere'|
+%
+%  angletype     - 
+%   
+%    * |'misorientation'| (default) 
+%    * |'disorientation'| 
+%
 %  distance      - maximum distance allowed between neighboured measurments
 %
 %% Flags
 %  unitcell     - omit voronoi decomposition and treat a unitcell lattice
 %
 %% Example
-%  [grains ebsd] = segment2d(ebsd(1:2),'angle',[10 15]*degree,'augmentation','cube')
+%   loadaachen
+%   [grains ebsd] = segment2d(ebsd(1:2),'angle',[10 15]*degree,'augmentation','cube')
+%
+%   plot(grains)
 %
 %% See also
 % grain/grain
@@ -184,12 +196,14 @@ for k=1:numel(ebsd)
 	ide = ids(cids(k)+1:cids(k+1));
 	ebsd(k).options.(checksumid) = ide(:);
  
-	[ide ndx] = sort(ide(:));
-	pos = [0 ;find(diff(ide)); numel(ide)];
-	aind = ide(pos(1:end-1)+1);
-  
-  orientations(aind) = ...
-    partition(ebsd(k).orientations(ndx),pos);
+  if ~isempty(ide)
+    [ide ndx] = sort(ide(:));
+    pos = [0 ;find(diff(ide)); numel(ide)];
+    aind = ide(pos(1:end-1)+1);
+
+    orientations(aind) = ...
+      partition(ebsd(k).orientations(ndx),pos);
+  end
 end
 
 % cell ids

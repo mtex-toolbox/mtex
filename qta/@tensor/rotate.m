@@ -1,8 +1,10 @@
 function T = rotate(T,R)
 % rotate a tensor by a list of rotations
 %
-%% Description
-% Formula: T_rst = T_ijk R_ir R_js R_kt
+%% Remarks
+% Formula: 
+%
+% $$T_{rst} = T_{ijk} R_{ir} R_{js} R_{kt}$$
 %
 %% Input
 %  T - @tensor

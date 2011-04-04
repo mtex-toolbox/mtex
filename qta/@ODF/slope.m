@@ -1,5 +1,5 @@
 function Z = slope(odf,h,r,varargin)
-% || grad(r) ||
+% | grad(r) |
 
 d = 10e-5;
 

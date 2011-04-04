@@ -5,8 +5,8 @@ function [cs,mineral] = cif2symmetry(fname,varargin)
 % to download the file from [[http://www.crystallography.net/cif/,http://www.crystallography.net/cif/]]
 %
 %% Syntax
-% cif2symmetry('5000035.cif')
-% cif2symmetry(5000035)       % lookup online
+% cif2symmetry('5000035.cif') -
+% cif2symmetry(5000035)       - lookup online
 %
 %% See also
 % symmetry

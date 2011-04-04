@@ -17,52 +17,57 @@ function [odf,r,v1,v2] = centerSpecimen(odf,center,varargin)
 %  v1,v2  - normal vector of the mirrorplans
 %
 %% Options
-%  'delta'      - stepsize for evaluating the gradient
-%  'itermax'    - maximum number of newton iterations (default 5)
-%  'SO3Grid'    - a @SO3Grid the @ODF is evaluatete on
-%  'maxpolar'   - specifies the opening angle for the initial search grid around input center
-%  'resolution' - specifies the resolution for the initial search grid
-%  'silent'     - dont verbose number of initial axes and the newton iteration
-%  'plot'       - plot objective function around center as axis distribution
+%  delta      - stepsize for evaluating the gradient
+%  itermax    - maximum number of newton iterations (default 5)
+%  SO3Grid    - a @SO3Grid the @ODF is evaluatete on
+%  maxpolar   - specifies the opening angle for the initial search grid around input center
+%  resolution - specifies the resolution for the initial search grid
+%  silent     - dont verbose number of initial axes and the newton iteration
+%  plot        - plot objective function around center as axis distribution
 %
-%  'fourier'    - use fourier coefficents as objective function
+%  fourier    - use fourier coefficents as objective function
 %
 %% Examples
-%
-%  Starting with an synthetic odf with orthorhombic symmetry
+% Starting with an synthetic odf with orthorhombic symmetry
 %
 %       CS = symmetry('cubic')
 %       SS = symmetry('orthorhombic')
-%       h = [Miller(0,0,1),Miller(0,0,1),Miller(0,0,1)];
+%       h = [Miller(0,0,1),Miller(0,1,1),Miller(1,1,1)];
 %       r = [ rotation('euler', 90*degree,35*degree,30*degree) ...
 %         rotation('euler', 90*degree,35*degree,0*degree)]
 %
 %       sr = SS*r;
 %       odf = unimodalODF(SO3Grid(sr(:),CS),CS);
 %
-%  we define a rotational displacement
+% we define a rotational displacement
 %
 %       r2 = rotation('euler', 6*degree,4*degree,0*degree)
 %       odf = rotate(odf,r2);
 %
-%       figure, plotpdf(odf,h,'antipodal');
+%       plotpdf(odf,h,'antipodal');
 %
-%  and now retrive the rotation back
+% and now retrive the rotation back
 %
 %       [odr,r,v1,v2] = centerSpecimen(odf);
-%       figure, plotpdf(odr,h,'antipodal')
+%       plotpdf(odr,h,'antipodal')
 %
 %%
 %
 
 options.delta = get_option(varargin,'delta',0.5*degree);
 
+if nargin < 2
+  center = xvector;
+end
+
+
 if check_option(varargin,'Fourier')
   if ~check_option(odf,'fourier')
     L = get_option(varargin,{'bandwidth','L'},16);
     odf = FourierODF(calcFourier(set(odf,'SS',symmetry),L));
-  end  
-  options.c_hat = odf.c_hat;
+  end
+  options.odf = odf;
+  options.c_hat = Fourier(odf);
 else
   options.odf = odf;
   options.SO3 = get_option(varargin,'SO3Grid',...
@@ -76,9 +81,7 @@ options.verbose = ~check_option(varargin,'silent');
 options.itermax = get_option(varargin,'itermax',5);
 options.plot = check_option(varargin,'plot');
 
-if nargin < 2
-  center = xvector;
-end
+
 
 if options.plot
   initialSearch(center,options);
@@ -98,13 +101,14 @@ end
 function v_start = initialSearch(center, options)
 
 if options.plot
+  %   v = S2Grid('plot','resolution',options.resolution,'maxtheta',110*degree,'mintheta',80*degree)
   v = S2Grid('plot','resolution',options.resolution,'maxtheta',options.maxangle);
 else
   v = S2Grid('equispaced','resolution',options.resolution,'maxtheta',options.maxangle);
 end
 
 q = hr2quat(zvector,center);
-vc = q*v;
+vc = q*vector3d(v);
 
 if options.verbose
   fprintf(' looking at %d rotational axes\n', numel(v))
@@ -121,6 +125,7 @@ for k=1:numel(vc)
 end
 
 if options.plot
+  figure, imagesc(reshape(val,size(v)))
   figure, plot(v,'data',val,'smooth');
 else
   [valm,i] = min(val);
@@ -135,12 +140,13 @@ p = zeros(2,1);
 fval = f(p,options);
 
 if options.verbose
-  fprintf(' starting at %d\n', fval)
+  fprintf(' starting at %f\n', fval)
 end
 
 oldfval = 0;
 iter = 0;
-while fval > .01 && iter < options.itermax && abs(fval-oldfval) >.01
+
+while  iter < options.itermax  %&& (fval-oldfval) > 0
   oldfval = fval;
   iter = iter + 1;
   
@@ -213,6 +219,7 @@ else
   r = axis2quat(v,pi);
 end
 
+% y = textureindex(rotate(options.odf,r)-options.odf);
 if isfield(options,'c_hat')
   D2 = options.c_hat;
   L = dim2deg(numel(D2));

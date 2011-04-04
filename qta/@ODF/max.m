@@ -7,19 +7,20 @@ function [q val]= max(odf,varargin)
 %
 %% Output
 %  q - @orientation
+%  odf - @ODF
 %
 %% Options
 %  num         - number of maximas
-%  resolution  - search-grid resolution
+%  resolution  - search--grid resolution
 %  accuracy    - in radians
 %
 %% Example
-%  find the first five local maxima
-%  max(odf,5)
-%  max(odf,'num',5)
+%  find the local maxima of the [[SantaFe.html,SantaFe]] ODF
 %
-%% Output
-%  odf - @ODF
+%    qm = max(SantaFe)
+%    plotpdf(SantaFe,Miller(0,0,1))
+%    annotate(qm)
+%
 %
 %% See also
 % ODF/modalorientation

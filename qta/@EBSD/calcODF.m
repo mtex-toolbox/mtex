@@ -12,6 +12,8 @@ function odf = calcODF(ebsd,varargin)
 % ODF to choose this parameter right. Look at this
 % <EBSDSimulation_demo.html description> for exhausive discussion.
 %
+%% Syntax
+% calcODF(ebsd,...,param,var,...) - returns an @ODF calculated via kernel density estimation
 %
 %% Input
 %  ebsd - @EBSD
@@ -22,7 +24,7 @@ function odf = calcODF(ebsd,varargin)
 %% Options
 %  HALFWIDTH        - halfwidth of the kernel function 
 %  RESOLUTION       - resolution of the grid where the ODF is approximated
-%  KERNEL           - kernel function (default - de la Valee Poussin kernel)
+%  KERNEL           - kernel function (default -- de la Valee Poussin kernel)
 %  L/HARMONICDEGREE - (if Fourier) order up to which Fourier coefficients are calculated
 %
 %% Flags
@@ -33,7 +35,7 @@ function odf = calcODF(ebsd,varargin)
 %  noFourier        - no Fourier method
 %
 %% See also
-% ebsd_demo EBSD2odf EBSDSimulation_demo loadEBSD ODF/simulateEBSD
+% ebsd_demo EBSD2odf EBSDSimulation_demo loadEBSD ODF/simulateEBSD kernel/kernel
 
 vdisp(' performing kernel density estimation',varargin{:})
 

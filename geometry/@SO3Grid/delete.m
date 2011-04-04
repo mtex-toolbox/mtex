@@ -4,7 +4,7 @@ function S3G = delete(S3G,ind)
 %  SOG    - @SO3Grid
 %  indece - int32
 %% Output
-%  "not indexed" SO3Grid
+%   SO3Grid - "not indexed"
 
 index = 1:numel(S3G.orientation);
 index(ind) = [];

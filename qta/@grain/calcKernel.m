@@ -17,7 +17,7 @@ function psi = calcKernel(grains,varargin)
 [o ind] = get(grains,'orientation','CheckPhase',varargin{:});
   
 % define weights
-opt.weight = grainsize(grains(ind));
+opt.weight = grainSize(grains(ind));
 
 % construct weighted ebsd object
 ebsd = EBSD(o,'options',opt);

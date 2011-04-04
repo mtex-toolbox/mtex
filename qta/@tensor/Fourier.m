@@ -5,7 +5,8 @@ function THat = Fourier(T,varargin)
 %
 %% Input
 %  T - @tensor
-%
+%% Options
+% order - 
 %% Output
 %  F - Fourier coefficients as an 2*rank+1 x 2*rank + 1 matrix
 %

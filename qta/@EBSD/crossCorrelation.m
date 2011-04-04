@@ -1,6 +1,8 @@
 function [psi,c] = crossCorrelation(ebsd,varargin)
 % computes the cross correlation for the kernel density estimator
-
+%
+%% See also
+% EBSD/calcKernel
 
 for k = 1:15
   psi(k) = kernel('de la Vallee Poussin','halfwidth',40*degree/2^(k/4)); %#ok<AGROW>

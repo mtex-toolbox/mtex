@@ -534,7 +534,7 @@ disp(['  area:         ' num2str(area(p))])
 disp(['  perimeter:    ' num2str(perimeter(p))])
 yesno = {'no','yes'};
 disp(['  holes:        ' yesno{hashole(p)+1}])
-disp(['  subfractions: ' yesno{hassubfraction(grain)+1}])
+disp(['  subfractions: ' yesno{hasSubfraction(grain)+1}])
 
 props = fields(grain.properties);
 if ~isempty(props)
@@ -660,7 +660,7 @@ layer = getcurrentlayer;
 
 ih = ishold;
 if ~ih, hold on; end
-  plotgrains( layer.grains, 'color', layer.selectioncolor);
+  plotGrains( layer.grains, 'color', layer.selectioncolor);
 if ~ih, hold off; end
 
 

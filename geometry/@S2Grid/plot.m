@@ -3,9 +3,6 @@ function  varargout = plot(S2G,varargin)
 %
 % *S2G/plot* plots data on the sphere
 %
-%% Syntax
-%  plot(S2G,<options>)
-%
 %% Input
 %  S2G - @S2Grid
 %
@@ -15,7 +12,7 @@ function  varargout = plot(S2G,varargin)
 %  RANGE    - minimum and maximum for color coding [min,max]
 %  CONTOUR  - number of contour lines or list of contour lines
 %  CONTOURF - number of contour lines or list of contour lines
-%  ROTATE   - rotate plot about z-axis
+%  ROTATE   - rotate plot about z--axis
 %  FLIPUD   - FLIP plot upside down
 %  FLIPLR   - FLIP plot left to rigth
 %  PROJECTION - {EAREA}, EDIST, PLAIN
@@ -28,10 +25,10 @@ function  varargout = plot(S2G,varargin)
 %  SMOOTH      - interpolated plot 
 %  CONTOUR     - contour plot
 %  CONTOURF    - filled contour plot
-%  EAREA       - equal-area projection (default)
-%  EDIST       - equal-distance projection  
+%  EAREA       - equal--area projection (default)
+%  EDIST       - equal--distance projection  
 %  PLAIN       - no projection    
-%  GRAY        - colormap - gray 
+%  GRAY        - colormap -- gray 
 %  LOGARITHMIC - log plot
 %
 %% See also

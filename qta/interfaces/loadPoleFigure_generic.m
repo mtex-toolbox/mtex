@@ -18,9 +18,6 @@ function [pf,options] = loadPoleFigure_generic(fname,varargin)
 % options |ColumnNames| and |Columns|. Furthermore, the files can be contain any number of
 % header lines to be ignored using the option |HEADER|. 
 %
-%% Syntax
-%  pf   = loadPoleFiguretxt(fname,<options>)
-%
 %% Input
 %  fname - file name (text files only)
 %
@@ -33,7 +30,7 @@ function [pf,options] = loadPoleFigure_generic(fname,varargin)
 % 
 %% Example
 %
-%  pf = loadPoleFigure_generic('pf001.txt','HEADER',5,'degree',...
+%    pf = loadPoleFigure_generic('pf001.txt','HEADER',5,'degree',...
 %        'ColumnNames',{'polar angle','azimuth angle','intensity'},...
 %        'Columns',[1 2 3])
 %

@@ -26,8 +26,8 @@ if ~isempty(bg)
 end
 
 % Defocussing
-def = get_option(varargin,{'defocusing','def'});
-def_bg = get_option(varargin,{'defocusing background','defbg'});
+def = get_option(varargin,{'defocussing','defocusing','def'});
+def_bg = get_option(varargin,{'defocussing bg','defocussing background','defocusing background','defocusing bg','defbg'});
 
 if isempty(def), return;end % no Defocussing
 

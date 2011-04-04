@@ -8,18 +8,29 @@ function K = kernel(name,varargin)
 % coefficients. A @kernel object is needed when defining a @ODF.
 %
 %% Input
-%  kernel name - string
+% name - name of the kernel, supported kernels are:
 %
+%    * |'Laplace'|
+%    * |'Abel Poisson'|
+%    * |'de la Vallee Poussin'|
+%    * |'von Mises Fisher'|
+%    * |'fibre von Mises Fisher'|
+%    * |'Square Singularity'|
+%    * |'Gauss Weierstrass'|
+%    * |'local'|
+%    * |'Dirichlet'|
+%    * |'Sobolev'|
+%    * |'Fourier'|
+%    * |'bump'|
+%    * |'user'|
+%    * |'Jackson'|
+%    * |'ghost'|
+% 
 %% Options
 %  PARAMETER - kappa (double)
 %  HALFWIDTH - beta  (double)
 %  FOURIER   - AL    (double)
 %  BANDWIDTH - L     (int32)
-%
-% supported kernel:
-% Laplace, Abel Poisson, de la Vallee Poussin, von Mises Fisher,
-% fibre von Mises Fisher, Square Singularity, Gauss Weierstrass,
-% Dirichlet, local, Fourier, Sobolev, bump, user
 %
 %% See also
 % ODF_index kernel/gethw unimodalODF uniformODF

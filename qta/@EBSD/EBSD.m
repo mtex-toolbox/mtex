@@ -4,17 +4,21 @@ function ebsd = EBSD(varargin)
 % *EBSD* is the low level constructor for an *EBSD* object representing EBSD
 % data. For importing real world data you might want to use the predefined
 % [[ImportEBSDData.html,EBSD interfaces]]. You can also simulate EBSD data
-% from an ODF using [[ODF_simulateEBSD.html,simulateEBSD]].
+% from an ODF using [[ODF.simulateEBSD.html,simulateEBSD]].
 %
 %% Syntax
-%  ebsd = EBSD(orientations,CS,SS,<options>)
+%  ebsd = EBSD(orientations,CS,SS,...,param,val,...)
 %
 %% Input
 %  orientations - @orientation
 %  CS,SS        - crystal / specimen @symmetry
 %
 %% Options
-%  Comment - string
+%  Comment  - string
+%  phase    - specifing the phase of the EBSD object
+%  options  - struct with fields holding properties for each orientation
+%  xy       - spatial coordinates n x 2, where n is the number of input orientations 
+%  unitCell - for internal use
 %
 %% See also
 % ODF/simulateEBSD EBSD/calcODF loadEBSD
@@ -36,7 +40,7 @@ else
 end
 
 ebsd.comment = get_option(varargin,'comment',[]);
-ebsd.orientations = orientations;
+ebsd.orientations = orientations(:);
 ebsd.X = get_option(varargin,'xy');
 ebsd.phase = get_option(varargin,'phase',1);
 ebsd.options = get_option(varargin,'options',struct);

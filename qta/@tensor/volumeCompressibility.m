@@ -1,8 +1,10 @@
 function beta = volumeCompressibility(C)
 % computes the volume compressibility of an elasticity tensor
 %
-%% Description
-% formula: beta(x) = S_iikk
+%% Remarks
+% formula:
+%
+% $$\beta(x) = S_{iikk}$$
 %
 %% Input
 %  C - elastic stiffness @tensor
