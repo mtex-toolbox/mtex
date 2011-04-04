@@ -2,14 +2,14 @@ function varargout = get(pf,vname,varargin)
 % extract data from a Pole Figure object
 %
 %% Syntax
-%  d = get(pf,'intensities,'id)  % raw diffraction intensities
-%  s = get(pf,'CS')              % crystal symmetry
-%  r = get(pf,'r')               % specimen directions
-%  h = get(pf,'h')               % crystal directions
-%  b = get(pf,'bg')              % background intensities
-%  c = get(pf,'c')               % superposition coefficients
-%  t = get(pf,'theta')           % polar angle of specimen directions
-%  r = get(pf,'rho')             % azimuthal angle of specimen directions
+%  d = get(pf,'intensities,'id)  - raw diffraction intensities
+%  s = get(pf,'CS')              - crystal symmetry
+%  r = get(pf,'r')               - specimen directions
+%  h = get(pf,'h')               - crystal directions
+%  b = get(pf,'bg')              - background intensities
+%  c = get(pf,'c')               - superposition coefficients
+%  t = get(pf,'theta')           - polar angle of specimen directions
+%  r = get(pf,'rho')             - azimuthal angle of specimen directions
 %
 %% Input
 %  pf - @PoleFigure
