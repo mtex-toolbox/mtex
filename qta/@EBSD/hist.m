@@ -2,9 +2,9 @@ function [h bins] = hist(ebsd,varargin)
 % histogram plot of rotation angles of a fundamental region
 %
 %% Syntax
-%  hist(ebsd)
-%  hist(ebsd,q0)
-%  [n bins]= hist(ebsd,20)
+%  hist(ebsd) - 
+%  hist(ebsd,q0) - centers EBSD orientations around q0 @orientation
+%  [n bins]= hist(ebsd,20) - returns the counts n and the angular bins
 %
 %% Input
 %  ebsd     - @EBSD
@@ -15,7 +15,7 @@ function [h bins] = hist(ebsd,varargin)
 %  bins -  the bounds of each edge
 %
 %% Options
-%  n/bins - define custom bins
+%  n | bins - define custom bins
 %  
 %% See also
 % grain/misorientation

@@ -1,9 +1,6 @@
 function d = dot(m1,m2,varargin)
 % inner product between two Miller indece
 %
-%% Description
-%  
-%
 %% Syntax
 % a = dot(m1,m2)
 % a = dot(m1,m2,'antipodal')

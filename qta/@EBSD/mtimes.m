@@ -1,8 +1,11 @@
 function ebsd = mtimes(x,y)
 % rotating the ebsd data by a certain rotation 
 %
-% overload the * operator, i.e. one can now write g*@EBSD or @EBSD*v in
-% order to rotate EBSD data or the rotate a vector by EBSD data
+% overloads the * operator
+%
+%% Syntax
+% ebsd = g*EBSD - rotates the EBSD data by @orientation g
+% ebsd = EBSD*v - rotate a @vector3d v by EBSD data
 %
 %% See also
 % EBSD_index EBSD/rotate

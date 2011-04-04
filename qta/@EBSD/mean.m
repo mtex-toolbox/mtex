@@ -2,13 +2,13 @@ function varargout = mean( ebsd,varargin)
 % returns mean, kappas and eigenvector of ebsd object
 %
 %% Syntax
-% [m kappa v] = mean(ebsd)
+% [m kappa v kappa] = mean(ebsd) - 
 %
 %% Input
 %  ebsd      - @EBSD
 %
 %% Output
-%  m        - one equivalent mean orientation @quaternion
+%  m        - one equivalent mean @orientation
 %  lambda   - eigenvalues of orientation tensor
 %  v        - eigenvectors of orientation tensor
 %  kappa    - parameters of bingham distribution

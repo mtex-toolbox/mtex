@@ -2,7 +2,8 @@ function obj = partition(ebsd, id,varargin)
 % reorganize EBSD data into sets
 %
 %% Syntax
-%  g = partition(ebsd,id)
+%  ebsd_parts = partition(ebsd,id) - splits the EBSD into parts specified by an
+%  id--vector, mainly for internal usage (@grain)
 %
 %% Input
 %  ebsd  - @EBSD

@@ -11,7 +11,7 @@ function e = calcerror(odf1,odf2,varargin)
 %  S3G  - @SO3Grid of quadrature nodes (optional)
 %
 %% Options
-%  L0 - measure of the orientation space where |odf1 - odf2|>epsilon
+%  L0 - measure of the orientation space where $|odf1 -- odf2|>\epsilon|
 %  L1 - L^1 error (default)
 %  L2 - L^2 error
 %  RP - RP  error

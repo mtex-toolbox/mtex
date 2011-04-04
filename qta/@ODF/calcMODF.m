@@ -10,7 +10,7 @@ function modf = calcMODF(odf1,varargin)
 %  odf1, odf2 - @ODF
 %
 %% Options
-% bandwidth - bandwidth for Fourier coefficients (default - 32)
+% bandwidth - bandwidth for Fourier coefficients (default -- 32)
 % 
 %% Output
 %  modf - @ODF

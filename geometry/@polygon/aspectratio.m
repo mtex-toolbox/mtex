@@ -5,7 +5,7 @@ function asp = aspectratio(p,varargin)
 %  p - @grain / @polygon
 %
 %% Output
-%  asp   - aspect-ratio
+%  asp   - aspect--ratio
 %
 %% Flag
 %  HULL  - aspectratio of the convex hull

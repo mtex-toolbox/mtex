@@ -1,4 +1,4 @@
-function r = subfractionratio(grains)
+function r = subfractionRatio(grains)
 % returns the a ratio between subractions an borderlength
 %
 %% Input
@@ -8,6 +8,6 @@ function r = subfractionratio(grains)
 % r - ratio
 %
 
-b = find(hassubfraction(grains));
+b = find(hasSubfraction(grains));
 r = zeros(size(grains));
-r(b) = subfractionlength(grains(b))./perimeter(grains(b));
+r(b) = subfractionLength(grains(b))./perimeter(grains(b));

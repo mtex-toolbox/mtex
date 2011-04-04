@@ -11,7 +11,7 @@ function S2G = neuralgas(odf,h,varargin)
 %  maxtheta - max Theta of Grid
 %  Points  - number of Points
 %  epoches - number of Iterations
-%  eta     - 'learing-rate' as vector: [eta_start eta_stop], default [0.1 0.02]
+%  eta     - 'learing--rate' as vector: [eta_start eta_stop], default [0.1 0.02]
 %  lambda  - stimuli of 
 %  verbose - display points during optimisation
 %

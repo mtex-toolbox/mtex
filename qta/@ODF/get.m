@@ -2,11 +2,11 @@ function varargout = get(obj,vname,varargin)
 % extract data from an ODF object
 %
 %% Syntax
-%  s = get(odf,'CS')            % crystal symmetry
-%  w = get(odf,'weights')       % weights of the texture components
-%  k = get(odf,'kernel')        % get kernel of unimodal and fibre portions
-%  c = get(odf,'center')        % center of the components 
-%  y = get(odf,'kappa')         % Bingham coefficients
+%  s = get(odf,'CS')            - crystal symmetry
+%  w = get(odf,'weights')       - weights of the texture components
+%  k = get(odf,'kernel')        - get kernel of unimodal and fibre portions
+%  c = get(odf,'center')        - center of the components 
+%  y = get(odf,'kappa')         - Bingham coefficients
 % 
 %% Input
 %  odf - @ODF

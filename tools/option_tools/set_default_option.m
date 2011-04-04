@@ -2,8 +2,8 @@ function out_list = set_default_option(option_list,preserve,option,varargin)
 % set option in option list if not yet present
 %
 %% Syntax
-%  value = set_default_option(option_list,preserve,option,value)
-%  value = set_default_option(option_list,preserve,{option1,option2,option3})
+%  value = set_default_option(option_list,preserve,option,value) -
+%  value = set_default_option(option_list,preserve,{option1,option2,option3}) -
 %
 %% Input
 %  option_list   - Cell Array

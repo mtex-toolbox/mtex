@@ -14,7 +14,7 @@ function plotpdf(o,h,varargin)
 %
 %% Flags
 %  antipodal    - include [[AxialDirectional.html,antipodal symmetry]]
-%  COMPLETE - plot entire (hemi)-sphere
+%  COMPLETE - plot entire (hemi)--sphere
 %
 %% See also
 % EBSD/plotebsd S2Grid/plot savefigure

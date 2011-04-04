@@ -13,7 +13,7 @@ function odf = BinghamODF(Kappa,A,CS,SS,varargin)
 %  CS, SS - crystal, specimen @symmetry
 %
 %% Output
-%  odf -@ODF
+%  odf - @ODF
 %
 %% See also
 % ODF/ODF uniformODF unimodalODF fibreODF

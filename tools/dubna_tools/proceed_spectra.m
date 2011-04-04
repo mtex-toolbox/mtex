@@ -1,5 +1,4 @@
-function [sumdetector,sumphi,sumspectr,peaks,bgpeaks] = ...
-	proceed_spectra(spec,bg,range,peakpositions)
+function [sumdetector,sumphi,sumspectr,peaks,bgpeaks] = proceed_spectra(spec,bg,range,peakpositions)
 % procede Dubna spectra 
 %
 %% Input

@@ -1,4 +1,4 @@
-function l = subfractionlength(grains)
+function l = subfractionLength(grains)
 % returns the length of subfractions within a grain
 %
 %% Input
@@ -9,7 +9,7 @@ function l = subfractionlength(grains)
 %
 
 
-b = find(hassubfraction(grains));
+b = find(hasSubfraction(grains));
 frs = [grains(b).subfractions];
  
 l = zeros(size(grains));

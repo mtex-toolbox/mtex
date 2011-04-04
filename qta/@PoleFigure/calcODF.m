@@ -10,8 +10,6 @@ function [odf,alpha] = calcODF(pf,varargin)
 % The function *calcODF* has several options to control convergence,
 % resolution, smoothing, etc. See belov for a complete description.
 %
-%% Syntax
-%  [odf,alpha] = calcODF(pf,<options>)
 %
 %% Input
 %  pf - @PoleFigure 
@@ -20,8 +18,7 @@ function [odf,alpha] = calcODF(pf,varargin)
 %  BACKGROUND       - the background radiation (default = 1)
 %  NO_BACKGROUND    - pure L^2 minimization
 %  KERNEL           - the ansatz functions (default = de la Vallee Poussin)
-%  KERNELWIDTH      - halfwidth of the ansatz functions (default = 2/3 * resolution)
-%  HALFWIDTH        -     "      "  "    "        "
+%  KERNELWIDTH | HALFWIDTH - halfwidth of the ansatz functions (default = 2/3 * resolution)
 %  RESOLUTION       - localization grid for the ansatz fucntions (default = 3/2 resolution(pf))
 %  BANDWIDTH        - bandwidth of the ansatz functions (default = max)
 %  ITER_MAX         - maximum number of iterations (default = 11)
@@ -41,7 +38,7 @@ function [odf,alpha] = calcODF(pf,varargin)
 %
 %% Output
 %  odf    - reconstructed @ODF
-%  alpha  - scaling factors - calculated during reconstruction
+%  alpha  - scaling factors, calculated during reconstruction
 %
 %% See also
 % PoleFigure2odf ODF_demo PoleFigureSimulation_demo 

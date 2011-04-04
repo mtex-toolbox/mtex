@@ -1,4 +1,4 @@
-function plotgrains(grains,varargin)
+function plotGrains(grains,varargin)
 % plot the grain boundaries
 %
 %% Syntax
@@ -14,7 +14,7 @@ function plotgrains(grains,varargin)
 %  NOHOLES  -  plot grains without holes
 %
 %% See also
-% grain/plot grain/plotellipse grain/plotsubfractions
+% grain/plot grain/plotEllipse grain/plotSubfractions
 
 % restrict phase if necassary
 grains = copy(grains,varargin{:});

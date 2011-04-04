@@ -2,22 +2,25 @@ function PF = measurePoleFigure(odf,h,varargin)
 % simulate a polefigure measurement
 %
 %% Syntax
-%  pf = measurePoleFigure(odf,h,@S2Grid,...)
-%  pf = measurePoleFigure(odf,h,'integral','steps',30,'drho',5*degree,...)
-%  pf = measurePoleFigure(odf,h,'path',@vector3d,@vector3d,...)
+%  pf = measurePoleFigure(odf,h,@S2Grid,...) - 
+%  pf = measurePoleFigure(odf,h,'integral','steps',30,'drho',5*degree,...) -
+%  pf = measurePoleFigure(odf,h,'path',@vector3d,@vector3d,...) - 
 %
+%% Input
+% 
 %% Options
 %  S2Grid     - perform a point measure
 %  integral   - integrate over small circle while measuring
-%    mintheta/minrho - S2Grid parameter
-%    maxtheta/maxrho
-%    dtheta
-%    drho     - length of integral way
+%  mintheta/minrho - S2Grid parameter
+%  maxtheta/maxrho - 
+%  dtheta   - 
+%  drho     - length of integral way
 %  path       - integrate from A to B, where data is cummulated to B
-%    domega   - cummulate after a certain way
-%    dpoints  - fill the path A to B with d-points
-%    midpoint - cummulate to midpoint / else to endpoint of route
-%  steps      - number of measures
+%  domega   - cummulate after a certain way
+%  dpoints  - fill the path A to B with d--points
+%  midpoint - cummulate to midpoint / else to endpoint of route
+%  steps     - number of measures
+%
 
 
 npos = [find_type(varargin,'S2Grid') find_type(varargin,'vector3d')];

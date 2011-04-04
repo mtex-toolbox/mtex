@@ -14,11 +14,11 @@ function odf = fibreODF(h,r,CS,SS,varargin)
 %  h      - @Miller / @vector3d crystal direction
 %  r      - @vector3d specimen direction
 %  CS, SS - crystal, specimen @symmetry
-%  hw     - halfwidth of the kernel (default - 10°)
-%  kernel - @kernel function (default - de la Vallee Poussin)
+%  hw     - halfwidth of the kernel (default -- 10°)
+%  kernel - @kernel function (default -- de la Vallee Poussin)
 %
 %% Output
-%  odf -@ODF
+%  odf - @ODF
 %
 %% See also
 % ODF/ODF uniformODF unimodalODF

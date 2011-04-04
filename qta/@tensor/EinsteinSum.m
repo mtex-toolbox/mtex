@@ -5,7 +5,7 @@ function T = EinsteinSum(T1,dimT1,T2,dimT2,varargin)
 % This function computes a tensor product according to Einstein summation
 %
 %% Syntax
-% C = mtimesT(E,[1 -1 2 -2],v,-1,v,-2) % 
+% C = EinsteinSum(E,[1 --1 2 --2],v,--1,v,--2) - sumation against dimension ...
 %
 %% Input
 %  T1,T2 - @tensor

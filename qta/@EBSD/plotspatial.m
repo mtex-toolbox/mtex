@@ -1,25 +1,56 @@
 function h = plotspatial(ebsd,varargin)
 % spatial EBSD plot
 %
-%% Syntax
-% plotspatial(ebsd,'colocoding','ipdf')
-% plotspatial(ebsd,'property','error')
-%
 %% Input
 %  ebsd - @EBSD
 %
 %% Options
-%  property       - property used for coloring (default: orientation)
-%  colocoding     - how to convert orientation to color
-%  antipodal      - include [[AxialDirectional.html,antipodal symmetry]]
-%  GridType       - 'automatic' (default) / 'tetragonal' / 'hexagonal', or custom, requires flag 'unitcell'
-%  GridResolution - specify the dimension of a unit cell, requires flag 'unitcell'
-%  GridRotation   - rotation of a unit cell, requires flag 'unitcell'
+%  property       - property used for coloring (default: orientation), other properties may be
+%     |'phase'| for achieving a spatial phase map, or an properity field of the ebsd
+%     data set, e.g. |'bands'|, |'bc'|, |'mad'|.
+%
+%  colocoding     - [[orientation2color.html,colorize orientation]] according a colormap
+%
+%     after inverse PoleFigure
+%
+%     * |'ipdf'|
+%     * |'hkl'|
+%
+%    other color codings
+%
+%    * |'angle'|
+%    * |'bunge'|, |'bunge2'|, |'euler'|
+%    * |'sigma'|
+%    * |'rodrigues'|
+%
+%  antipodal      - include [[AxialDirectional.html,antipodal symmetry]] when 
+%     using inverse
+%     PoleFigure colorization
+%
+%  GridType       - requires param |'unitcell'|
+%
+%     * |'automatic'| (default)
+%     * |'tetragonal'|
+%     * |'hexagonal'|
+%
+%     or custom
+%
+%  GridResolution - specify the dimension of a unit cell, requires param |'unitcell'|
+%  GridRotation   - rotation of a unit cell, requires option |'unitcell'|
 %
 %% Flags
 %  unitcell - (default) plot spatial data by unit cells
 %  voronoi  - plot spatial data through a voronoi decomposition
 %  raster   - discretize on regular grid
+%% Example
+% plot a EBSD data set spatially with custom colorcoding
+%
+%   loadaachen
+%   plot(ebsd,'colorcoding','hkl')
+%
+%   plot(ebsd,'property','phase')
+%
+%   plot(ebsd,'property','mad')
 %
 %% See also
 % EBSD/plot
@@ -31,27 +62,27 @@ ebsd = copy(ebsd,varargin{:});
 % which property to plot
 prop = lower(get_option(varargin,'property','orientation'));
 
-%% plot property phase 
+%% plot property phase
 if strcmp(prop,'phase') && ~check_option(varargin,'FaceColor')
-
+  
   % colormap for phase plot
   cmap = get_mtex_option('PhaseColorMap');
   
   % get all phases
   phases = get(ebsd,'phase');
-
+  
   varargin = set_option(varargin,'property','none');
   % plot all phases separately
   washold = ishold;
   hold all;
-  for i = 1:length(phases)    
+  for i = 1:length(phases)
     faceColor = cmap(1+mod(phases(i)-1,length(cmap)),:);
     plotspatial(ebsd,varargin{:},'FaceColor',faceColor,'phase',phases(i));
   end
   if ~washold, hold off;end
   
   % add a legend
-  [minerals{1:length(phases)}] = get(ebsd,'mineral');    
+  [minerals{1:length(phases)}] = get(ebsd,'mineral');
   legend(minerals);
   
   return
@@ -74,11 +105,11 @@ end;
 
 switch prop
   case 'user'
-  case 'orientation'    
+  case 'orientation'
     cc = lower(get_option(varargin,'colorcoding','ipdf'));
     for i = 1:length(ebsd)
       d = [d;orientation2color(ebsd(i).orientations,cc,varargin{:})]; %#ok<AGROW>
-    end    
+    end
   case 'none'
   case 'phase'
   case fields(ebsd(1).options)
@@ -138,7 +169,7 @@ if ~isempty(candits)
   dist = sqrt( (xp-x(candits)).^2 + (yp-y(candits)).^2);
   [dist ind] = sort(dist);
   candits = candits(ind);
-
+  
   nd = candits(1);
   
   sz = sampleSize(ebsd);
@@ -148,9 +179,9 @@ if ~isempty(candits)
   o = ebsd(phase).orientations(pos);
   
   txt = {['Phase: ', num2str(ebsd(phase).phase), ' ' get(get(o,'CS'),'mineral'),'' ], ...
-         ['index:' num2str(pos)],...
-         [char(o)]};
- 
+    ['index:' num2str(pos)],...
+    [char(o)]};
+  
 else
   
   txt = 'no data';

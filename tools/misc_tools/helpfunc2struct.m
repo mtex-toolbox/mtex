@@ -1,7 +1,6 @@
 function s = helpfunc2struct(folder)
 
 [path fold] = fileparts(folder);
-
 helpStr = helpfunc(folder);
       
 tokens = regexp(helpStr,'([^\n]*)','tokens');

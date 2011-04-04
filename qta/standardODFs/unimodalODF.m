@@ -7,15 +7,15 @@ function odf = unimodalODF(mod,CS,varargin)
 % shape of the ODF is defined by a @kernel function.
 %
 %% Syntax
-%  odf = unimodalODF(mod,CS,'halfwidth',hw)
-%  odf = unimodalODF(mod,CS,SS,'halfwidth',hw)
-%  odf = unimodalODF(mod,CS,SS,kernel)
+%  odf = unimodalODF(mod,CS,'halfwidth',hw) - 
+%  odf = unimodalODF(mod,CS,SS,'halfwidth',hw) - with specimen symmetry
+%  odf = unimodalODF(mod,CS,SS,kernel) - with specified @kernel
 %
 %% Input
 %  mod    - @quaternion modal orientation
 %  CS, SS - crystal, specimen @symmetry
-%  hw     - halfwidth of the kernel (default - 10°)
-%  kernel - @kernel function (default - de la Vallee Poussin)
+%  hw     - halfwidth of the kernel (default -- 10°)
+%  kernel - @kernel function (default -- de la Vallee Poussin)
 %
 %
 %% Output

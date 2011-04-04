@@ -10,18 +10,24 @@ function [grains ebsd] = segment3d(ebsd,varargin)
 %
 %% Options
 %  angle         - array of threshold angles per phase of mis/disorientation in radians
-%  augmentation  - 'cube'/ 'cubeI' / 'sphere'
-%  angletype     - misorientation (default) / disorientation 
+%  augmentation  - bounds the spatial domain
+%
+%    * |'cube'|
+%    * |'cubeI'| 
+%    * |'sphere'|
+%
+%  angletype     - 
+%   
+%    * |'misorientation'| (default) 
+%    * |'disorientation'| 
+%
 %  distance      - maximum distance allowed between neighboured measurments
 %
 %% Flags
 %  unitcell     - omit voronoi decomposition and treat a unitcell lattice
 %
-%% Example
-%  [grains ebsd] = segment2d(ebsd(1:2),'angle',[10 15]*degree,'augmentation','cube')
-%
 %% See also
-% grain/grain EBSD_segment2d
+% grain/grain EBSD/segment2d
 
 %% segmentation
 % prepare data

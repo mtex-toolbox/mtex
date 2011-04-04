@@ -8,8 +8,8 @@ function q = euler2quat(alpha,beta,gamma,varargin)
 %
 %% Syntax
 %
-%  q = euler2quat(alpha,beta,gamma)
-%  q = euler2quat(phi1,Phi,phi2,'Bunge')
+%  q = euler2quat(alpha,beta,gamma) -
+%  q = euler2quat(phi1,Phi,phi2,'Bunge') -
 %
 %% Input
 %  alpha, beta, gamma - double

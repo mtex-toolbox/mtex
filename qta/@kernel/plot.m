@@ -3,8 +3,23 @@ function plot(kk,options,varargin)
 %% Input
 %  kk - @kernel
 %% Options
-%  symmetric - plot from -pi to pi
-%  K, RK, RADON, RRK, FOURIER, FOURIER_LOGLOG, EVEN, ODD, EVEN-ODD
+%  symmetric - plot from --pi to pi
+%  K | RK | RADON | RRK | FOURIER | FOURIER_LOGLOG | EVEN | ODD | EVEN_ODD - the kernel function
+%
+%% Example
+%  plot various parts of a kernel
+%
+%      psi = kernel('de la Vallee Poussin','halfwidth',10*degree)
+%
+%      figure('position',[100 100 600 200])
+%      subplot(1,2,1)
+%      plot(psi,'K')
+%      subplot(1,2,2)
+%      plot(psi,'EVEN')
+%      hold on,
+%      plot(psi,'ODD','color','r')
+%
+%
 
 %charorder =  ['*','o','+','s','^','d','x'];
 

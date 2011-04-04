@@ -11,12 +11,12 @@ function plotodf(ebsd,varargin)
 %  phase      - phase to be plotted
 %
 %% Flags
-%  SIGMA (default)
-%  ALPHA
-%  GAMMA      
-%  PHI1
-%  PHI2
-%  AXISANGLE
+%  SIGMA  - (default)
+%  ALPHA - 
+%  GAMMA  -   
+%  PHI1 - 
+%  PHI2 - 
+%  AXISANGLE - 
 %
 %% See also
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo

@@ -2,8 +2,8 @@ function out_list = set_option(option_list,option,varargin)
 % set option in option list
 %
 %% Syntax
-%  value = set_option(option_list,option,value)
-%  value = set_option(option_list,{option1,option2,option3})
+%  value = set_option(option_list,option,value) - 
+%  value = set_option(option_list,{option1,option2,option3}) -
 %
 %% Input
 %  option_list   - Cell Array

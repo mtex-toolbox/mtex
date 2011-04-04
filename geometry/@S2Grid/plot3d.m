@@ -20,10 +20,10 @@ function plot3d(S2G,varargin)
 %  DOTS        - single points (default) 
 %  SMOOTH      - interpolated plot 
 %  CONTOUR     - contour plot
-%  EAREA       - equal-area projection (default)
-%  EDIST       - equal-distance projection  
+%  EAREA       - equal--area projection (default)
+%  EDIST       - equal--distance projection  
 %  PLAIN       - no projection    
-%  GRAY        - colormap - gray 
+%  GRAY        - colormap -- gray 
 %  LOGARITHMIC - log plot
 %
 %% See also

@@ -9,7 +9,8 @@ function [ind,d] = find(SO3G,o,epsilon,varargin)
 %  nodes  - @quaternion
 %  radius - double
 %% Output
-%  [indece, distances]
+% indece - 
+% distances -
 %
 
 if ~check_option(SO3G,'indexed') || check_option(varargin,'exact')

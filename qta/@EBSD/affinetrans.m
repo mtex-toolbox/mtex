@@ -3,7 +3,10 @@ function ebsd = affinetrans(ebsd, A, b)
 %
 %% Input
 %  ebsd - @EBSD
-%  A    - transformation matrix or homogeneous coordinates
+%  A    - transformation matrix or homogeneous coordinates, e.g. 
+%
+%        [1 0;0 1]  or  [1 0 dy; 0 1 dx; 0 0 1 ]
+%   
 %  b    - shift term
 %
 %% Output

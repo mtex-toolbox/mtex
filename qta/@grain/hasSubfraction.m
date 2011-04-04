@@ -1,4 +1,4 @@
-function b = hassubfraction(grains)
+function b = hasSubfraction(grains)
 % checks whether given grains has subfractions
 %
 %% Input

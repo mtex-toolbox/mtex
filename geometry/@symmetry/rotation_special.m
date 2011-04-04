@@ -5,7 +5,7 @@ function [q,rho] = rotation_special(cs,varargin)
 %  cs - @symmetry
 %
 %% Output
-%  q   - symmetry elements other then rotation about the z-axis
+%  q   - symmetry elements other then rotation about the z--axis
 %  rho - position of the mirroring plane
 
 if nargout == 1

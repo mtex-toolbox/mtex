@@ -10,14 +10,28 @@ function varargout = get(grains, vname, varargin)
 %  id       - ids of selection
 %
 %% Example
-%  %return ids and ids-list of neighbours
-%  get(grains,'id')
-%  get(grains,'neighbour')
+%  return ids and ids-list of neighbours
+%   
+%    loadaachen
+%    [grains ebsd] = segment2d(ebsd);
+%
+%  bla
+%
+%    get(grains(1:2),'id')
+%
+%    get(grains(1:2),'neighbour')
 %
 
 if nargin > 1
   %assert_property(grains,vname);
   switch vname
+    case 'comment'
+      
+      varargout{1} = populate(grains,vname);
+      if numel( varargout{1}) == 1,
+        varargout{1} = varargout{1}{1};
+      end
+      
     case 'CS'
       
       varargout = get(grains,'CSCell');

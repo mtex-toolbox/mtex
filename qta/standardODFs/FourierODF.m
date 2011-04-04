@@ -8,7 +8,7 @@ function odf = FourierODF(C,CS,SS,varargin)
 %  odf = FourierODF(C,CS,SS)
 %
 %% Input
-%  C      - Fourier coefficients / C - coefficients
+%  C      - Fourier coefficients / C -- coefficients
 %  CS, SS - crystal, specimen @symmetry
 %
 %% Output

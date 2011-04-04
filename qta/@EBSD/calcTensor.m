@@ -2,22 +2,28 @@ function [TVoigt, TReuss, THill] = calcTensor(ebsd,varargin)
 % compute the average tensor for an EBSD data set
 %
 %% Syntax
-% [TVoigt, TReuss, THill] = calcTensor(ebsd,T_phase1,T_phase2)
-% [TVoigt, TReuss, THill] = calcTensor(ebsd,T_phase2,'phase',2)
-% THill = calcTensor(ebsd,T_phase1,T_phase2,'Hill')
+% [TVoigt, TReuss, THill] = calcTensor(ebsd,T_phase1,T_phase2,...) - returns 
+%    the Voigt--, Reuss-- and Hill-- @tensor, applies each tensor
+%    given in order of input to each phase
+%
+% [TVoigt, TReuss, THill] = calcTensor(ebsd,T_phase2,'phase',2) - returns the Voigt--, 
+%    Reuss-- and Hill-- @tensor, applies a tensor
+%    on a given phase
+%
+% THill = calcTensor(ebsd,T_phase1,T_phase2,'Hill') - returns the specified 
+%    @tensor, i.e. 'Hill' in case
 %
 %% Input
 %  ebsd     - @EBSD
-%  T_phase1 - @tensor for phase 1
-%  T_phase1 - @tensor for phase 2
+%  T_phaseN - @tensor for the N--th phase
 %
 %% Output
 %  T    - @tensor
 %
 %% Options
-%  voigt - voigt mean
-%  reuss - reuss mean
-%  hill  - hill mean
+%  Voigt - voigt mean
+%  Reuss - reuss mean
+%  Hill  - hill mean
 %
 %% See also
 %

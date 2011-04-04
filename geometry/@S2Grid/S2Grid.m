@@ -2,9 +2,9 @@ function G = S2Grid(varargin)
 % constructor
 %
 %% Syntax
-%  S2Grid(nodes)
-%  S2Grid('regular',<options>)
-%  S2Grid('equispaced',<options>)
+%  S2Grid(nodes,...param,val,...) - fills a Sphere with N--nodes
+%  S2Grid('regular',...)          - construct regular polar and azimuthal spacing
+%  S2Grid('equispaced',...)       - construct equispaced nodes
 %
 %% Input
 %  nodes           - @vector3d
@@ -31,10 +31,12 @@ function G = S2Grid(varargin)
 %  RESTRICT2MINMAX - restrict margins to min / max
 %
 %% Examples
+%   S2Grid('regular','points',[72 19])
 %
-%  S2Grid('regular','points',[72 19])
-%  S2Grid('regular','resolution',[5*degree 2.5*dgree])
-%  S2Grid('equispaced','resolution',5*degree,'maxrho',pi)
+%   S2Grid('regular','resolution',[5*degree 2.5*degree])
+%
+%   S2Grid('equispaced','resolution',5*degree,'maxrho',pi)
+%   plot(ans)
 %
 %% See also
 % vector3d/vector3d

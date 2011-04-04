@@ -2,12 +2,12 @@ function varargout = get(obj,vname,varargin)
 % extract data from a Pole Figure object
 %
 %% Syntax
-%  d = get(ebsd,'orientations')  % individuel orientations
-%  s = get(ebsd,'CS')            % crystal symmetry
-%  x = get(ebsd,'x')             % x coordinates
-%  y = get(ebsd,'y')             % y coordinates
-%  p = get(ebsd,'property')      % properties asociated with the orientations
-%  m = get(ebsd,'mad')           % MAD
+%  d = get(ebsd,'orientations')  - returns individuel orientations of the EBSD data
+%  s = get(ebsd,'CS')            - returns its crystal symmetry
+%  x = get(ebsd,'x')             - returns its spatial x coordinates
+%  y = get(ebsd,'y')             - returns its spatial y coordinates
+%  p = get(ebsd,'property')      - properties associated with the orientations
+%  m = get(ebsd,'mad')           - property field MAD, if MAD is a property
 % 
 %% Input
 %  ebsd - @EBSD

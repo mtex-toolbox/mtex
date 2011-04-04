@@ -10,9 +10,6 @@ function [data,interface,options,idata] = loadData(fname,type,varargin)
 % row the euler angles of a certain orientation see
 % [[loadEBSD_generic.html,loadEBSD_generic]] for additional options.
 %
-%% Syntax
-%  pf = loadEBSD(fname,cs,ss,<options>)
-%
 %% Input
 %  fname     - filename
 %  cs, ss    - crystal, specimen @symmetry (optional)
@@ -107,24 +104,37 @@ end
 
 %% set crystal and specimen symmetry, specimen direction and comments
 if ~strcmpi(type,'tensor')
-  if iscell(data), 
+  if iscell(data),
     data = cellfun(@(d,f) set(d,'comment',ls(f)),data,fname,'UniformOutput',false);
     data = [data{:}];
   end
   %for i = 1:length(data)
   %  data(i) = set(data(i),'comment',ls(fname{i})); %#ok<AGROW>
   %end
-    
+  
   if exist('cs','var'), data = set(data,'CS',cs,'noTrafo');end
   if exist('ss','var'), data = set(data,'SS',ss,'noTrafo');end
   if exist('h','var'),  data = set(data,'h',h);end
   if ~isempty_cell(c),  data = set(data,'c',c);end
 else
   data = [data{:}];
-  if exist('cs','var'), data = cellfun(@(d) set(d,'CS',cs,'noTrafo'),data,'UniformOutput',false); end
-  if exist('ss','var'), data = cellfun(@(d) set(d,'SS',ss,'noTrafo'),data,'UniformOutput',false); end;
+  
+  if exist('cs','var'),
+    if iscell(data)
+      data = cellfun(@(d) set(d,'CS',cs,'noTrafo'),data,'UniformOutput',false);
+    else
+      data = set(data,'CS',cs,'noTrafo');
+    end
+    if exist('ss','var'),
+      if iscell(data)
+        data = cellfun(@(d) set(d,'SS',ss,'noTrafo'),data,'UniformOutput',false);
+      else
+        data = set(data,'SS',ss,'noTrafo')
+      end;
+    end
+  end
+  
 end
-
 
 %% rotate data
 if check_option(varargin,'rotate')

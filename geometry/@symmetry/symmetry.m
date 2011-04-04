@@ -4,13 +4,14 @@ function s = symmetry(name,varargin)
 %
 %% Input
 %  name  - Schoenflies or International notation of the Laue group
-%  axis  = [a,b,c] -> length of the crystallographic axes
-%  angle = [alpha,beta,gamma] -> angle between the axes
+%  axis  - [a,b,c] --> length of the crystallographic axes
+%  angle - [alpha,beta,gamma] --> angle between the axes
 %
 %% Output
 %  s - @symmetry
 %
-%% Supported Symmetries  
+%% Remarks
+% Supported Symmetries  
 %
 %  crystal system  Schoen-  Inter-    Laue     Rotational 
 %                  flies    national  class    axis

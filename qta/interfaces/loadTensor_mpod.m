@@ -14,13 +14,16 @@ function [T,interface,options] = loadTensor_mpod(fname,varargin)
 %  cs, ss    - crystal, specimen @symmetry (optional)
 %
 %% Example
-% T = loadTensor_mpod('1000055.mpod')
-% T = loadTensor_mpod(1000055)        % download form MPOD
+% download form MPOD
+%    T = loadTensor_mpod(1000055)
+%    T = loadTensor_mpod('1000055.mpod')
 %
 %% See also
 % loadTensor
 
-%% TODO
+%% Remarks
+% TODO
+%
 %  * allow import of not ij indexed single properties e.g. _prop_heat_capacity_C
 %  * respect multiple measured properties i.e _prop_conditions (_prop_conditions_temperature)
 %  * better symmetry import

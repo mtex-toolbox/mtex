@@ -17,7 +17,7 @@ function t = norm(odf,varargin)
 %  bandwidth  - bandwidth used for Fourier calculation
 %
 %% See also
-% ODF/entropy ODF/volume ODF_index ODF/calcFourier
+% ODF/textureindex ODF/entropy ODF/volume ODF_index ODF/calcFourier
 
 t = norm(Fourier(odf,'l2-normalization',varargin{:}));
   

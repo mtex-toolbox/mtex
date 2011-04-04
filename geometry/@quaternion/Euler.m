@@ -5,9 +5,9 @@ function varargout = Euler(quat,varargin)
 % calculates the Euler angle for a rotation |q|
 %
 %% Syntax
-% [alpha,beta,gamma] = Euler(quat)
-% [phi1,Phi,phi2] = Euler(quat,'Bunge')
-% euler = Euler(quat,'Bunge')
+% [alpha,beta,gamma] = Euler(quat) - 
+% [phi1,Phi,phi2] = Euler(quat,'Bunge') -
+% euler = Euler(quat,'Bunge') -
 %
 %% Input
 %  quat - @quaternion

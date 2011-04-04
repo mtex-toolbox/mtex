@@ -6,9 +6,14 @@ function odf = ODF(center,c,psi,CS,SS,varargin)
 % unimodal and fibre symmetric components. 
 %
 %% Syntax
-% odf = ODF(center,weigths,kernel,CS,SS,<options>)
-% odf = ODF({h,r},weigths,kernel,CS,SS,'Fibre',<options>)
-% odf = ODF([A],[Lambda],[],CS,SS,'Bingham',<options>)
+% odf = ODF(center,weigths,kernel,CS,SS,...) - setup an ODF specified by center 
+%    @orientations, weights and an @kernel, see [[unimodalODF.html,unimodalODF]]
+%
+% odf = ODF({h,r},weigths,kernel,CS,SS,'Fibre',...) - constructs an [[fibreODF.html,fibre ODF]]
+%    by given specimen and crystal direction and a kernel.
+%
+% odf = ODF([A],[Lambda],[],CS,SS,'Bingham',...) - constructs an [[binghamODF.html,Bingham ODF]]
+%    with an orthogonal 4x4 matrix A and form parameters Lambda.
 %
 %% Input
 %  center  - @SO3Grid of modal orientations

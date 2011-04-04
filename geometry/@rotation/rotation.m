@@ -2,15 +2,15 @@ function rot = rotation(varargin)
 % defines an rotation
 %
 %% Syntax
-%  rot = rotation('Euler',phi1,Phi,phi2)
-%  rot = rotation('Euler',alpha,beta,gamma,'ZYZ')
-%  rot = rotation('axis,v,'angle',omega)
-%  rot = rotation('matrix',A)
-%  rot = rotation('map',u1,v1)
-%  rot = rotation('map',u1,v1,u2,v2)
-%  rot = rotation('fibre',u1,v1,'resolution',5*degree)
-%  rot = rotation('quaternion',a,b,c,d)
-%  rot = rotation(q)
+%  rot = rotation('Euler',phi1,Phi,phi2) -
+%  rot = rotation('Euler',alpha,beta,gamma,'ZYZ') -
+%  rot = rotation('axis,v,'angle',omega) -
+%  rot = rotation('matrix',A) -
+%  rot = rotation('map',u1,v1) -
+%  rot = rotation('map',u1,v1,u2,v2) -
+%  rot = rotation('fibre',u1,v1,'resolution',5*degree) -
+%  rot = rotation('quaternion',a,b,c,d) -
+%  rot = rotation(q) -
 %
 %% Input
 %  q         - @quaternion

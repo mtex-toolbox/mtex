@@ -1,9 +1,11 @@
 function E = shearModulus(C,h,u)
 % shear modulus for an elasticity tensor
 %
-%% Description
+%% Remarks
 %
-% formula: G = 1/(4 S_ijkl h_i u_j h_k u_l)
+% formula:
+%
+% $$G = \frac{1}{4 S_{ijkl} h_i u_j h_k u_l}$$
 %
 %% Input
 %  C - elastic stiffness @tensor

@@ -1,18 +1,22 @@
 function plotebsd(ebsd,varargin)
-% plots ebsd data
-%
-%% Syntax
-% plotebsd(ebsd,<options>)
+% scatter / pole point plot of ebsd data
 %
 %% Input
 %  ebsd - @EBSD
 %
 %% Options
+%  SCATTER | RODRIGUES - plot orientations in axis/angle or rodrigues
+%                        parametrization
 %  POINTS        - number of orientations to be plotted
 %  CENTER        - orientation center
 %
+%% Example
+% 
+%   loadaachen
+%   plotebsd(ebsd,'phase',1,'scatter')
+%
 %% See also
-% EBSD/plotpdf savefigure
+% EBSD/plotpdf EBSD/scatter savefigure
 
 if sum(sampleSize(ebsd)) > 2000 || check_option(varargin,'points')
   points = fix(get_option(varargin,'points',2000));

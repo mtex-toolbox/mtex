@@ -2,8 +2,8 @@ function ebsd = delete(ebsd,id)
 % delete points from EBSD data
 %
 %% Syntax  
-% ebsd  = delete(ebsd,id)
-% ebsd  = delete(ebsd,get(ebsd,'phase')~=1)
+% ebsd  = delete(ebsd,id) - like [[EBSD.copy.html,copy]], but opposite set
+% ebsd  = delete(ebsd,get(ebsd,'phase')~=1) - 
 %
 %% Input
 %  ebsd   - @EBSD

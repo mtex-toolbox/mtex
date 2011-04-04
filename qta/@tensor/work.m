@@ -7,7 +7,7 @@ plot(T)
 
 %%
 
-[F,T_hat] = Fourier(T);
+[T_hat] = Fourier(T,'order',1);
 
 %D = wignerD(idquaternion,'order',1);
 
