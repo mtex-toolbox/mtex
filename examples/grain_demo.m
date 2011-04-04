@@ -15,7 +15,7 @@ SS = symmetry('-1');   % specimen symmetry
 
 %% Import ebsd data
 
-fname = fullfile(mtexDataPath,'EBDS','85_829grad_07_09_06.txt');
+fname = fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt');
 
 ebsd = loadEBSD(fname,CS,SS,'interface','generic',...
   'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'MAD' 'BC'},...
@@ -43,7 +43,7 @@ plot(ebsd,'phase',1)
 % Plot grain-boundaries
 
 plotboundary(grains,'color',[0.25 0.1 0.5])
-hold on, plotsubfractions(grains,'color','red','linewidth',2)
+hold on, plotSubfractions(grains,'color','red','linewidth',2)
 
 %%
 % on application of this would be to take a look on the grainsize
@@ -51,7 +51,7 @@ hold on, plotsubfractions(grains,'color','red','linewidth',2)
 
 % make a expotential bin size
 x = fix(exp(.5:.5:7.5));
-figure, bar( hist(grainsize(grains5),x) );
+figure, bar( hist(grainSize(grains5),x) );
 
 
 %% Accessing geometric properties 
@@ -70,13 +70,13 @@ shapefactor(grains); paris(grains); %...
 
 coloring = get(grains,'phase');
 
-[J T q p] = joincount(grains,coloring);
+[J T q p] = joinCount(grains,coloring);
 
 %%
 % we can use also other coloring, for instance binary
 
-joincount(grains,hassubfraction(grains));
-joincount(grains,hashole(grains));
+joinCount(grains,hasSubfraction(grains));
+joinCount(grains,hashole(grains));
   % ...
 
 %% Multiple Access of EBSD data
@@ -86,7 +86,7 @@ joincount(grains,hashole(grains));
 %%
 % into several EBSD objects corresponding to our grains
 
-grainfun(@(ebsd_fun) ebsd_fun, grains(grainsize(grains) > 600), ebsd,'uniformoutput',true)
+grainfun(@(ebsd_fun) ebsd_fun, grains(grainSize(grains) > 600), ebsd,'uniformoutput',true)
 
 
 %% Multiple Access and ODF Estimation
@@ -101,7 +101,7 @@ hold on, plot(ply,'color','r','linewidth',2)
 
 %%
 % the five larges grains
-[a nd] = sort(grainsize(pgrains),'descend');
+[a nd] = sort(grainSize(pgrains),'descend');
 pgrains = pgrains(nd(1:5))
 
 %%
