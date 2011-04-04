@@ -76,7 +76,7 @@ symmetrise(m)
 symmetrise(m,'antipodal')
 
 %%
-% The command <vector3d.eq.html eq or ==> can be used to check whether
+% The command [[vector3d.eq.html,eq or ==]] can be used to check whether
 % two crystal directions are symmetrically equivalent. Compare
 
 Miller(1,1,-2,0,cs) == Miller(-1,-1,2,0,cs)

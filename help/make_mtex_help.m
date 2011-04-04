@@ -67,10 +67,6 @@ makeFunctionsReference(mtexHelpFiles,'FunctionReference','outputDir',outputDir)
 makeHelpToc(mtexHelpFiles,'doc','FunctionMainFile','FunctionReference','outputDir',outputDir)
 copyfile(fullfile(outputDir,'helptoc.xml'), docPath)
 
-%%
-
-makeHelpToc(mtexHelpFiles,'doc','FunctionMainFile','FunctionReference','outputDir',outputDir)
-copyfile(fullfile(outputDir,'helptoc.xml'), docPath)
 
 %% Publish Function Reference
 
@@ -80,17 +76,23 @@ publish(mtexFunctionFiles,'outputDir',outputDir,'tempDir',tempDir,'evalCode',tru
 
 publish(mtexExampleFiles,'outputDir',outputDir,'tempDir',tempDir,'evalCode',true,'force',false)
 
+
+%%
+
+makeDemoToc(mtexExampleFiles,'outputDir',outputDir)
+copyfile(fullfile(outputDir,'demos.xml'), fullfile(mtex_path,'examples'))
+
+
 %%
 
 src = struct(mtexExampleFiles);
-src = [src.sourceInfo];
+src = [src.sourceInfo]
 
 for k=1:numel(src)
   temp = docFile(getFiles(outputDir,[src(k).docName '*']));
   copy(temp,fullfile(mtex_path,'examples','html'))
 end
-copy(DocFile(getPublishGeneral),outputDir)
-
+copy(DocFile(getPublishGeneral),fullfile(mtex_path,'examples','html'))
 
 
 %% Publish Doc

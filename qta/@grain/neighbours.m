@@ -2,15 +2,10 @@ function grains = neighbours(grains, grains2)
 % identifiy neighbouring
 %
 %% Syntax
-%
-%  neighbours(grains) 
-%%
-% returns the number of neighboured grains
-%
-%  neighbours(grains1,grains2)
-%%
-% returns the neighbours of grain-set grains2 which are availible in
-% grain-set grains1
+% neighbours(grains) - returns the number of neighboured grains
+% neighbours(grains1,grains2) - returns the neighbours of grain--set
+%    grains2 which are availible in
+%    grain-set grains1
 %
 %
 %% Input

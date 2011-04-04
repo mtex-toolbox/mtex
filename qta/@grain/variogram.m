@@ -12,9 +12,9 @@ function varargout = variogram(grains, varargin)
 %
 %% Syntax
 %
-% variogram(grains,'property')  % plot
-% [yh h] = variogram(grains,...) 
-% [yh h n bins ystd] = variogram(grains,...)
+% variogram(grains,'property')  - plot
+% [yh h] = variogram(grains,...)  - 
+% [yh h n bins ystd] = variogram(grains,...) - 
 %
 
 xy = centroid(grains);
