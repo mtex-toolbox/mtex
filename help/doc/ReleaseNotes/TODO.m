@@ -63,7 +63,7 @@
 % Provide a function that is able to approximate an ODF by a small number
 % of simple components, i.e. unimodal components and fibres.
 %
-%% Bingham Distribtution
+%% Bingham Distribution
 %
 % Implement Bingham parameter estimation from EBSD data and compute Fourier
 % coefficients of Bingham ODFs.
