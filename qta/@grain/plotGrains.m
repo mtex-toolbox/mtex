@@ -105,7 +105,9 @@ if ~isempty(property)
       colormap(hsv(max(d)+1));
     end
     
-  elseif  isnumeric(property) && length(grains) == length(property) || islogical(property)
+  elseif  isnumeric(property) && ( ...
+      length(grains) == length(property) || islogical(property) || ...
+      numel(property) == 1)
     
     d = reshape(property,[],1);
     
