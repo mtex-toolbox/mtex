@@ -86,6 +86,10 @@ elseif isa(varargin{1},'double')
     if nparam==4
       varargin{1} = varargin{1} - varargin{3};
       varargin{2} = varargin{2} - varargin{3};
+    elseif  any(strcmp(Laue(m.CS),{'-3','-3m','6/m','6/mmm'}))
+      x = varargin{1}; y = varargin{2};
+      varargin{1} = 2*x + y;
+      varargin{2} = 2*y + x;      
     end
     v = d2v(varargin{1},varargin{2},varargin{nparam},m.CS);
     v = set_option(v,'uvw');
