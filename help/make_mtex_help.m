@@ -123,6 +123,8 @@ copyfile(fullfile(outputDir,'helpsearch'),fullfile(docPath,'helpsearch'))
 
 system(['jar -cf ' fullfile(docPath,'help.jar') ' -C ' outputDir ' .']);
 
+%% set back mtex options
 
+set_mtex_option('generate_help',false);
 
 
