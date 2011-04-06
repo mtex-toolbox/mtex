@@ -46,9 +46,9 @@ ind = isnull(beta);
 alpha(ind) = 2*asin(max(-1,min(1,ssign(qa(ind)).*qd(ind))));
 gamma(ind) = 0;
 
-ind = isnull(beta-pi);
-alpha(ind) =  2*asin(max(-1,min(1,ssign(qc(ind)).*qb(ind))));
-gamma(ind) = 0;
+%ind = isnull(beta-pi);
+%alpha(ind) =  2*asin(max(-1,min(1,ssign(qc(ind)).*qb(ind))));
+%gamma(ind) = 0;
 
 %alpha = atan2( qc .* qd - qa .* qb  ,  qb .* qd + qa .* qc );
 %beta = acos(max(-1,min(1,-qb.^2 - qc.^2 + qd.^2 + qa.^2)));
