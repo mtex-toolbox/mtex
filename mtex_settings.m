@@ -85,6 +85,9 @@ set_mtex_option('phaseColorMap',cmap);
 
 % set_mtex_option('noLaTex');
 
+% by default turn LaTeX off on Linux
+if ~ismac && ~ispc, set_mtex_option('noLaTex');end
+
 %% Workaround for NFFT bug
 % comment out the following line if MTEX is compiled againsed NFFT 3.1.3 or
 % earlier
