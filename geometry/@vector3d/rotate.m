@@ -1,4 +1,4 @@
-function r = rotate(v,q)
+function v = rotate(v,q)
 % rotate vector3d by quaternion
 %% Input
 %  v - @vector3d
@@ -6,10 +6,11 @@ function r = rotate(v,q)
 %% Output
 %  r = q v;
 
-r = reshape(q,[],1) * reshape(v,1,[]);
-
+[a,b,c,d] = double(q);
+[v.x,v.y,v.z] = quaternion_mtimes(a(:),b(:),c(:),d(:),v.x(:).',v.y(:).',v.z(:).');
+		
 if numel(v) == 1  
-  r = reshape(r,size(q));
+  v = reshape(v,size(q));
 elseif numel(q) == 1
-  r = reshape(r,size(v));
+  v = reshape(v,size(v));
 end

@@ -32,10 +32,8 @@ if isa(q1,'quaternion') && isa(q2,'quaternion')
   
 elseif isa(q1,'quaternion') && (isa(q2,'vector3d') || isa(q2,'Miller'))
 	
-	[x,y,z] = double(q2);
-  [nx,ny,nz] = quaternion_mtimes(q1.a(:),q1.b(:),q1.c(:),q1.d(:),x(:).',y(:).',z(:).');
-	q = vector3d(nx,ny,nz);
-	
+  q = rotate(q2,q1);  
+		
 elseif isa(q1,'quaternion') && isa(q2,'double') % einfache Zahl   
 	
   q.a = q1.a * q2;

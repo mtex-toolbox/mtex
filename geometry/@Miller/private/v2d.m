@@ -24,9 +24,9 @@ mv = M \ mdouble;
 
 if any(strcmp(Laue(m.CS),{'-3','-3m','6/m','6/mmm'}))
     
-  mv(4) = mv(3);
-  mv(3) = -(mv(1) + mv(2))/3;
-  [mv(1), mv(2)] = deal((2*mv(1)-mv(2))./3,(2*mv(2)-mv(1))./3);
+  mv(4,:) = mv(3,:);
+  mv(3,:) = -(mv(1,:) + mv(2,:))./3;
+  [mv(1,:), mv(2,:)] = deal((2*mv(1,:)-mv(2,:))./3,(2*mv(2,:)-mv(1,:))./3);
   
 end
 
@@ -35,7 +35,7 @@ end
 mbr = selectMaxbyColumn(abs(mv));
 mv = mv * diag(1./mbr);
 
-uvtw = zeros(numel(m),length(mv));
+uvtw = zeros(numel(m),size(mv,1));
 
 for im = 1:numel(m)
 

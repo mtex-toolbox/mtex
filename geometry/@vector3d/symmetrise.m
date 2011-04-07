@@ -20,7 +20,9 @@ if nargout == 2
   
   l = zeros(size(v));
   
-  Sv = vector3d;
+  Sv = v;
+  Sv.x = []; Sv.y = []; Sv.z = [];
+  
   for i=1:length(v)
 	
     h = S * subsref(v,i);
