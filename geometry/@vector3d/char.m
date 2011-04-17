@@ -10,17 +10,18 @@ if max(abs(v.z)) < 1e-14, v.z = zeros(size(v.z));end
 c = [];
 for i = 1:length(v.x)
   if check_option(varargin,{'LATEX','tex'})
-    iv = vec2int([v(i).x,v(i).y,v(i).z]);
+    iv = vec2int([v.x(i),v.y(i),v.z(i)]);
     if ~isempty(iv)
-      c = [c,'(',barchar(iv(1),varargin{:}),...
+      c = [c,' ',barchar(iv(1),varargin{:}),...
         barchar(iv(2),varargin{:}),...
-        barchar(iv(3),varargin{:}),')'];
+        barchar(iv(3),varargin{:})];
     end
   else
-    c = [c,'(',num2str(v.x(i)),',',num2str(v.y(i)),',',num2str(v.z(i)),')']; %#ok<AGROW>
+    c = [c,' ',num2str(v.x(i)),num2str(v.y(i)),num2str(v.z(i))]; %#ok<AGROW>
   end
 end
 
+if ~isempty(c), c(1)=[];end
 
 function iv = vec2int(v)
 
