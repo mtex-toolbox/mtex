@@ -51,7 +51,7 @@ end
 
 if check_option(varargin,'check'), return;end
 
-%number of header lines
+% number of header lines
 nh = find(strmatch('#',hl),1,'last');
 
 % get number of columns

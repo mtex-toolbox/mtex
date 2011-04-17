@@ -82,9 +82,22 @@ if isempty(interface), return; end
 c = get_option(options,'superposition');
 if isa(c,'double'), c = {c};end
 
-for k = 1:numel(fname)
-  data{k} = feval(['load' type '_',char(interface)],fname{k},options{:},sym{:});
+if numel(fname) <= 3
+  InfoLevel = 1;
+else
+  InfoLevel = 0;
+  hw = waitbar(0,'Loading data files.');
 end
+
+for k = 1:numel(fname)
+  if exist('hw','var')
+    waitbar(k/numel(fname),hw,['Loading data file ',fname{k}]);
+  end
+  
+  data{k} = feval(['load' type '_',char(interface)],...
+    fname{k},options{:},sym{:},'InfoLevel',InfoLevel);  
+end
+if exist('hw','var'), close(hw);end
 
 idata = cellfun('prodofsize',data);
 
