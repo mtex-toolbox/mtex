@@ -91,7 +91,8 @@ end
 
 for k = 1:numel(fname)
   if exist('hw','var')
-    waitbar(k/numel(fname),hw,['Loading data file ',fname{k}]);
+    [pp,fn,ext] = fileparts(fname{k});
+    waitbar(k/numel(fname),hw,['Loading data file ',[fn ext]]);
   end
   
   data{k} = feval(['load' type '_',char(interface)],...
