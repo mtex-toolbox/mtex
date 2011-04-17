@@ -10,6 +10,7 @@ else
 end    
 
 c = extract_option(varargin,'ReplaceExpr',[]);
+InfoLevel = get_option(varargin,'InfoLevel',1);
 options = {options{:},c{:}};
 
 d = [];
@@ -32,7 +33,7 @@ if ~check_option(varargin,'noascii')
       [d,ffn,nh,SR,header] = txt2mat(fname,options{2:end},...
         'RowRange',[1 1000],'InfoLevel',0,'ReplaceChar',rc);
     else
-      [d,ffn,nh,SR,header] = txt2mat(fname,options{2:end},'InfoLevel',1,'ReplaceChar',rc);
+      [d,ffn,nh,SR,header] = txt2mat(fname,options{2:end},'InfoLevel',InfoLevel,'ReplaceChar',rc);
     end
   catch %#ok<CTCH>
   end
