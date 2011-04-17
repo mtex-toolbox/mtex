@@ -1,32 +1,50 @@
-%% Import Script for EBSD Data
+%% Analysis of 3d EBSD data
+% Import, analysis, and visualization of 3d EBSD data
 %
-% This script was automatically created by the import wizard. You should
-% run the whoole script or parts of it in order to import your data. There
-% is no problem in making any chages to this scrip.
+%% Open in Editor
+%  
+%% Contents
+%
+%
+%% Import the 3d EBSD
+% Here we describe how to import a stack of 2d EBSD data an to combine them
+% to a 3D EBSD data set. Let us assume that the files are located in the
+% directory 
 
-%% Import the Data
+dirName = [mtexDataPath filesep 'EBSD' filesep '3dData'];
+
+%%
+% and let us assume that they are ordered such that the corresponding z -
+% values are given by the list
 
 % set up Z-Values
 Z = (0:58)*0.12;
 
+%%
+% then an 3d EBSD object is imported by the command
+
 % create an EBSD variable containing the data
-ebsd = loadEBSD('3d/S*','3d', Z)
+ebsd = loadEBSD(dirName,'3d', Z)
 
-
-%% Default template
-%% Visualize the Data
+%% Visualize the 3d EBSD data
+% Next we want to visualize these data. An interactive way to plot slices
+% through the specimen is provided by the command 
 
 slice3(ebsd)
 
 
-%% Detect grains
+%% 3d grain detection
+% Grain detection in 3d data in completely analog to the two dimensional
+% case. First we have to define a certain segmentation angle
 
-%segmentation angle
 segAngle = 10*degree;
+
+% Then the grains are reconstructed by the command <EBSD.calcGrains.html calcGrains>
 
 [grains ebsd] = calcGrains(ebsd,'angle',segAngle,'unitcell');
 
-%% plot large grains
+
+%% Working on grains
 
 largeGrains = grains ( grainSize ( grains )>100 & grainSize ( grains ) <5000);
 plot(largeGrains)
