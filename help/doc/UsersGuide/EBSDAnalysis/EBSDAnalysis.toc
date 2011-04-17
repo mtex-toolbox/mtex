@@ -6,3 +6,4 @@ GrainStatistics
 MisorientationAnalysis
 OrientationPlots
 SpatialPlots
+EBSD3dData
