@@ -140,9 +140,10 @@ set_mtex_option('degree_char',degree_char);
 
 [status,host] = unix('hostname');
 [status,user] = unix('whoami');
+host = host(isletter(host));
 
 if ispc,  user = regexprep(user,{host(1:end-1), filesep},''); end
-set_mtex_option('logfile',[get_mtex_option('tempdir'),'output_',host(1:end-1),'_',user(1:end-1),'.log']);
+set_mtex_option('logfile',[get_mtex_option('tempdir'),'output_',host(isletter(host)),'_',user(isletter(user)),'.log']);
 
 
 %% commands to be executed before the external c program
