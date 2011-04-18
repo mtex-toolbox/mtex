@@ -39,12 +39,35 @@ slice3(ebsd)
 
 segAngle = 10*degree;
 
-% Then the grains are reconstructed by the command <EBSD.calcGrains.html calcGrains>
+%%
+% Then the grains are reconstructed by the command <EBSD_calcGrains.html calcGrains>
 
 [grains ebsd] = calcGrains(ebsd,'angle',segAngle,'unitcell');
 
 
 %% Working on grains
+% The reconstructed can be threaded as in the two dimensional case. E.g.
+% one can single out individuall grains and plot them 
+
+plot(grains(583))
+axis tight
+set(gca,'CameraPosition',[140 -60 50])
+light
+
+%%
+% We can compute the grainSize of the grains, i.e. the number of
+% measurements contained in the grain
+
+grainSize(grains(583))
+
+%%
+% or the diameter
+
+diameter(grains(583))
+
+
+%% 
+% Finally, we may extract all grains that have a certain size and plot them
 
 largeGrains = grains ( grainSize ( grains )>100 & grainSize ( grains ) <5000);
 plot(largeGrains)
