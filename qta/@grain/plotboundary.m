@@ -10,7 +10,7 @@ function varargout = plotboundary(grains,varargin)
 %
 %% Options
 %  property       - phase, angle, @rotation, @orientation
-%  noBG           - omit plotting boundary when property is set 
+%  noBG           - omit plotting boundary when property is set
 %
 %% See also
 % grain/plot grain/plotgrains grain/misorientation
@@ -30,8 +30,8 @@ end
 
 [phase uphase] = get(grains,'phase');
 
- p = polytope( grains );
- 
+p = polytope( grains );
+
 if ~check_option(varargin,'noBG') && isempty(property)
   h = plot(p,'color',[0.8 0.8 0.8],'nofix',varargin{:});
 else
@@ -63,26 +63,26 @@ if strcmpi(property,'phase')
     
     pair(:,3) = code(sub2ind(size(code),d(:,1),d(:,2)));
     
-    h(end+1) = plot(p, 'pair', pair, varargin{:} );    
+    h(end+1) = plot(p, 'pair', pair, varargin{:} );
     
   end
   
 elseif ~isempty(property)
-
+  
   CS = get(grains,'CS');
   
   for ph=uphase(:).'
     %neighboured grains per phase
     ndx = phase == ph;
     grains_phase = grains(ndx);
-
+    
     pair = pairs(grains_phase);
     pair(pair(:,1) == pair(:,2),:) = []; % self reference
-
-    if ~isempty(pair)   
-
+    
+    if ~isempty(pair)
+      
       pair = unique(sort(pair,2),'rows');
-
+      
       % boundary angle
       o = get(grains_phase,'orientation');
       
@@ -91,47 +91,52 @@ elseif ~isempty(property)
       if isa(property,'quaternion')
         
         epsilon = get_option(varargin,'delta',5*degree,'double');
-
+        
         ind = any(find(om,property,epsilon),2);
         
         pair = pair(ind,:);
-
+        
       elseif isa(property,'vector3d')
         
         epsilon = get_option(varargin,'delta',5*degree,'double');
-
+        
         ind = any(reshape(angle(symmetrise(om)*property,property)<epsilon,[],numel(om)),1);
         
         pair = pair(ind,:);
         
+      elseif isnumeric(property)
+       
+        pair(:,3:3+size(property,2)-1) = property;        
+        
       elseif ~check_option(varargin,'colorcoding')
-
+        
         d = angle( om )./degree;
         pair(:,3) = d;
-
+        
       else
-
+        
         cc = get_option(varargin,'colorcoding');
-
+        
         d = orientation2color(om,cc,varargin{:});
         pair(:,3:5) = d;
-
+        
       end
       h = [h plot(p(ndx), 'pair', pair,'nofix', varargin{:} )];
       
     end
-
+    
   end
   
-else 
+else
   
   optiondraw(h,varargin{:});
   
 end
 
-
-fixMTEXplot
-set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
+if ispolygon(grains)
+  fixMTEXplot
+  set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
+end
 
 if ispolygon(grains)
   selector(gcf,grains,p,h);
@@ -139,10 +144,10 @@ end
 
 if check_option(varargin,'colorcoding');
   setappdata(gcf,'CS',CS);
-	setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d')); 
-	setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
-	setappdata(gcf,'colorcoding',cc);
-	setappdata(gcf,'options',extract_option(varargin,'antipodal'));
+  setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d'));
+  setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
+  setappdata(gcf,'colorcoding',cc);
+  setappdata(gcf,'options',extract_option(varargin,'antipodal'));
 end
 
 if nargout > 0
