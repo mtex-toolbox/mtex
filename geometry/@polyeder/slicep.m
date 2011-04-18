@@ -2,13 +2,16 @@ function [inp ofx] = slicep(p,sp,varargin)
 %
 %% Input
 %  p  - @polyeder
-%  sp - slicing plane
+%  sp - slicing plane in coordiantes [x0 x1 x2] defining a plane
 %
 %%
 %
 
-x0 = sp.Vertices(1,:);
-n = facenormal(sp.Vertices);
+% x0 = sp.Vertices(1,:);
+% n = facenormal(sp.Vertices);
+
+x0 = sp(1,:);
+n = facenormal(sp);
 
 if isa(p,'grain') && check_option(varargin,'subfractions')
   sub = get(p,'subfractions');
