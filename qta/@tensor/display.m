@@ -37,22 +37,20 @@ end
 % display all properties
 cprintf(propV(:),'-L','  ','-ic','L','-la','L','-Lr',props,'-d',': ');
 
+if numel(T.M) > prod(ss(1:T.rank)), return;end
+
+% display tensor coefficients
 disp(' ');
 
-%if max(abs(imag(T.M)))<1e-12, T.M = real(T.M);end
+if (T.rank == 4) && numel(T.M) == 3^4
+  disp('  tensor in Voigt matrix representation')
+  M = tensor42(T.M);
+else
+  M = T.M;
+end
 
 % make numbers nice
 r = round(log(max(abs(T.M(:))))/log(10))-4;
-if ~isinf(r) && ~isnan(r)
-  T.M = round(10^(-r)*T.M).*10^(r);
-end
+if ~isinf(r) && ~isnan(r), M = round(10^(-r)*M).*10^(r);end
 
-% display tensor coefficients
-if numel(T.M) == prod(ss(1:T.rank));
-  if (T.rank == 4) && numel(T.M) == 3^4
-    disp('  tensor in Voigt matrix representation')
-    cprintf(tensor42(T.M),'-L','  ','-ic','F');
-  elseif ndims(T.M) == 2
-    cprintf(T.M,'-L','  ','-ic','F');
-  end
-end
+cprintf(M,'-L','  ','-ic','F');
