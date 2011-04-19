@@ -41,7 +41,7 @@ if nargin > 0
 
   nd = find(~cellfun('isempty',{p.Holes}));
   for k=1:numel(nd)
-    p(nd(k)).Holes = polygon(p(nd(k)).Holes);
+    p(nd(k)).Holes = polyeder(p(nd(k)).Holes);
   end
   
   p = class(p,'polyeder');
