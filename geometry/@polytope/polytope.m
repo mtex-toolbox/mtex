@@ -1,8 +1,6 @@
 function p = polytope(varargin)
 
 
-% if nargin == 0
-
 p.Vertices = get_option(varargin,'Vertices',[]);  % vertex ids
 p.Faces = get_option(varargin,'Faces',[]);  % facet ids
 p.VertexIds = [];  % the points
@@ -29,8 +27,6 @@ if nargin > 0
     p = tp;
     
   else
-    
-   
     
   end
 end
