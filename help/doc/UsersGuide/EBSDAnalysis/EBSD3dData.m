@@ -42,8 +42,7 @@ segAngle = 10*degree;
 %%
 % Then the grains are reconstructed by the command <EBSD_calcGrains.html calcGrains>
 
-[grains ebsd] = calcGrains(ebsd,'angle',segAngle,'unitcell');
-
+[grains ebsd] = calcGrains(ebsd,'threshold',segAngle,'unitcell')
 
 %% Working on grains
 % The reconstructed can be threaded as in the two dimensional case. E.g.

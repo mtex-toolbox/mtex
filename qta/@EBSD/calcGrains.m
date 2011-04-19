@@ -12,9 +12,18 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 %  ebsd    - connected @EBSD data
 %
 %% Options
-%  angle         - array of threshold angles per phase of mis/disorientation in radians
-%  augmentation  - 'cube'/ 'cubeI' / 'sphere'
-%  angletype     - misorientation (default)
+%  threshold     - array of threshold angles per phase of mis/disorientation in radians
+%  augmentation  - bounds the spatial domain
+%
+%    * |'cube'|
+%    * |'cubeI'|
+%    * |'sphere'|
+%
+%  angletype     -
+%
+%    * |'misorientation'| (default)
+%    * |'disorientation'|
+%
 %  distance      - maximum distance allowed between neighboured measurments
 %
 %% Flags

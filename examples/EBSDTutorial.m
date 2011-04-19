@@ -45,7 +45,7 @@ colorbar('position',[100 100 250 250])
 % Next we reconstruct the grains within our measurements.
 %
 
-[grains ebsd] = segment2d(ebsd)
+[grains ebsd] = calcGrains(ebsd)
 
 %%
 % and plot them into our orientation plot

@@ -13,7 +13,7 @@ odf = calcODF(ebsd)
 %segmentation angle
 segAngle = 10*degree;
 
-[grains ebsd] = calcGrains(ebsd,'angle',segAngle);
+[grains ebsd] = calcGrains(ebsd,'threshold',segAngle);
 
 %% Orientation of Grains
 

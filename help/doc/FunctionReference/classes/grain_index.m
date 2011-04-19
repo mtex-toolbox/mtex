@@ -5,7 +5,7 @@
 %
 %% Description
 % A grain may be defined as a region, in which the misorientation
-% less thana choosen threshold. There is a function <EBSD.segment2d.html segmentation> 
+% less thana choosen threshold. There is a function <EBSD.calcGrains.html calcGrains> 
 % to regionalize spatial EBSD data into grains.
 %               
 % <<grain.png>>
@@ -30,7 +30,7 @@ plotx2east
 %% Grain Modelling
 % A brief introduction of <GrainModelling.html Grain Detection>
 
-[grains ebsd] = segment2d(ebsd, 'angle',12.5*degree)
+[grains ebsd] = calcGrains(ebsd,'threshold',12.5*degree)
 
 %% Plotting Grains
 % Grains are plotted using the <grain.plot.html plot> command. As EBSD
