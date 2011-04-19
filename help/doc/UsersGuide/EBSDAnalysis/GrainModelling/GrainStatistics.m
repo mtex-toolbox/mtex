@@ -14,7 +14,7 @@
 
 loadaachen
 
-[grains ebsd] = segment2d(ebsd,'angle',12.5*degree)
+[grains ebsd] = calcGrains(ebsd,'threshold',12.5*degree)
 
 %% Grain-size Analysis
 % Since a grain is associated with a <polygon_index.html polygon>, we can determine properties

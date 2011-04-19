@@ -102,9 +102,9 @@ plot(ebsd_corrected)
 % Sometimes measurements that belongs to grains consisting of only very
 % few measurements can be regarded as inaccurate. In order to detect such
 % measuremens we have first to reconstruct grains from the EBSD
-% measurements using the command <EBSD.segment2d.html segment2d>
+% measurements using the command <EBSD.calcGrains.html segment2d>
 
-[grains,ebsd_corrected] = segment2d(ebsd_corrected,10*degree)
+[grains,ebsd_corrected] = calcGrains(ebsd_corrected,'threshold',10*degree)
 
 %%
 % The histogram of the grainsize shows that there a lot of grains
@@ -127,7 +127,7 @@ plot(ebsd_corrected)
 %% 
 % Now reconstruct again grains in our reduced EBSD data set
 
-[grains_corrected,ebsd_corrected] = segment2d(ebsd_corrected,10*degree)
+[grains_corrected,ebsd_corrected] = calcGrains(ebsd_corrected,'threshold',10*degree)
 
 plot(grains_corrected)
 

@@ -18,7 +18,7 @@ loadaachen;
 %%
 % and model some grains
 
-[grains, ebsd] = segment2d(ebsd);
+[grains, ebsd] = calcGrains(ebsd);
 
 
 %% Coloring spatially orientation data 

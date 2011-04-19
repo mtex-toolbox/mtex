@@ -60,9 +60,9 @@ scatter(o,'phase 1','center',idquaternion)
 % commands are applicable onto those objects.
 
 %%
-% therefore let us first [[EBSD.segment2d.html,regionalize]] some EBSD Data
+% therefore let us first [[EBSD.calcGrains.html,regionalize]] some EBSD Data
 
-[grains ebsd] = segment2d(ebsd);
+[grains ebsd] = calcGrains(ebsd);
 
 %%
 % Since in generale EBSD data can have multiple *phases* (e.g. because of 

@@ -1,5 +1,5 @@
 function [grains ebsd] = segment3d(ebsd,varargin)
-% angle threshold segmentation of ebsd data 
+% neighour threshold segmentation of ebsd data 
 %
 %% Input
 %  ebsd   - @EBSD
@@ -9,7 +9,8 @@ function [grains ebsd] = segment3d(ebsd,varargin)
 %  ebsd    - connected @EBSD data
 %
 %% Options
-%  angle         - array of threshold angles per phase of mis/disorientation in radians
+%  threshold     - array of threshold angles per phase of mis/disorientation in radians
+%  property      - angle (default) or property of @EBSD data
 %  augmentation  - bounds the spatial domain
 %
 %    * |'cube'|
@@ -27,14 +28,14 @@ function [grains ebsd] = segment3d(ebsd,varargin)
 %  unitcell     - omit voronoi decomposition and treat a unitcell lattice
 %
 %% See also
-% grain/grain EBSD/segment2d
+% grain/grain EBSD/calcGrains EBSD/segment2d
 
 %% segmentation
 % prepare data
 
 s = tic;
 
-thresholds = get_option(varargin,'angle',15*degree);
+thresholds = get_option(varargin,{'threshold','angle'},15*degree);
 if numel(thresholds) == 1 && numel(ebsd) > 1
   thresholds = repmat(thresholds,size(ebsd));
 end
@@ -103,6 +104,8 @@ angles = sparse(sm,sn);
 zl = m(ix);
 zr = m(iy);
 
+prop = lower(get_option(varargin,'property','angle'));
+
 for i=1:numel(ebsd)
   %   restrict to correct phase
   ind = rl(i) < zl & zl <=  rl(i+1);
@@ -111,9 +114,15 @@ for i=1:numel(ebsd)
   mix = ix(ind); miy = iy(ind);
   
   %   compute distances
-  o1 = ebsd(i).orientations(zll);
-  o2 = ebsd(i).orientations(zrr);
-  omega = angle(o1,o2);
+  switch prop
+    case 'angle'
+      o1 = ebsd(i).orientations(zll);
+      o2 = ebsd(i).orientations(zrr);
+      omega = angle(o1,o2);
+    otherwise
+      p = get(ebsd(i),prop);
+      omega = abs( p(zll) - p(zrr) );
+  end
   
   ind = omega > thresholds(i);
   
@@ -290,7 +299,7 @@ for l=1:numel(pos)-1
   neigh{ iy(ndx(1)) } = ix(ndx);
 end
 
-vdisp(['  ebsd segmentation: '  num2str(toc(s)) ' sec'],varargin{:});
+% vdisp(['  ebsd segmentation: '  num2str(toc(s)) ' sec'],varargin{:});
 
 
 %% retrieve polygons
@@ -336,8 +345,8 @@ grains = grain(gr,ply);
 
 
 
-vdisp(['  grain generation:  '  num2str(toc(s)) ' sec' ],varargin{:});
-vdisp(' ',varargin{:})
+% vdisp(['  grain generation:  '  num2str(toc(s)) ' sec' ],varargin{:});
+% vdisp(' ',varargin{:})
 
 
 

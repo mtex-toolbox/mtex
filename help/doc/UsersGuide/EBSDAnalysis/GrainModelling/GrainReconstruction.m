@@ -18,11 +18,11 @@
 loadaachen;
 
 %% Grain Reconstruction
-% Grain reconstruction in MTEX is done via the command <EBSD.segment2d.html
-% segment2d>. As an optional argument the desired threshold angle for
+% Grain reconstruction in MTEX is done via the command <EBSD.calcGrains.html
+% calcGrains>. As an optional argument the desired threshold angle for
 % missorientations defining a grains boundary can be specified.
 
-[grains ebsd] = segment2d(ebsd,'angle',12.5*degree)
+[grains ebsd] = calcGrains(ebsd,'threshold',12.5*degree)
 
 %%
 % In order to verify the result let us plot the grain boundaries into the

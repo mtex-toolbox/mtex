@@ -50,7 +50,7 @@ psi = calcKernel(ebsd,'phase',1)
 % grains.
 
 % grains reconstruction
-[grains ebsd] = segment2d(ebsd);
+[grains ebsd] = calcGrains(ebsd);
 
 % correct for to small grains
 grains = grains(grainSize(grains)>5);

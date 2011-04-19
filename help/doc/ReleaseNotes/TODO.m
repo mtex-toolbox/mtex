@@ -38,11 +38,6 @@
 %
 % Detect polar, oblate and spherical grains.
 %
-%% 3D Grain Detection
-%
-% Implement a 3d version of the EBSD/segment2d function and update the
-% EBSD and Grain class accordingly.
-%
 %% Topological Grain Data Structure (Florian Bachmann)
 %
 % The function segment2d should provide a grain class that allows to

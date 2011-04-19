@@ -23,10 +23,10 @@
 loadaachen;
 
 %%
-% and <EBSD.segment2d.html regionalize> our investigation area into
+% and <EBSD.calcGrains.html regionalize> our investigation area into
 % grains
 
-[grains ebsd] = segment2d(ebsd,'angle',15*degree);
+[grains ebsd] = calcGrains(ebsd,'threshold',15*degree);
 
 
 %% Intergranular Misorientation
@@ -101,7 +101,7 @@ text(13.5,0.9,'threshold','rotation',-90)
 
 %% 
 % the <influence_demo.html influence> may be a criteria for the selection
-% of the misorientation threshold when <EBSD.segment2d.html segmenting>.
+% of the misorientation threshold when <EBSD.calcGrains.html segmenting>.
 
 %% 
 % The misorientation between neighboured grains could be visualised with the

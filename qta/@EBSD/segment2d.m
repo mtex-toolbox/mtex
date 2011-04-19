@@ -1,5 +1,5 @@
 function [grains ebsd] = segment2d(ebsd,varargin)
-% angle threshold segmentation of ebsd data 
+% neighbour threshold segmentation of ebsd data
 %
 %% Input
 %  ebsd   - @EBSD
@@ -9,17 +9,18 @@ function [grains ebsd] = segment2d(ebsd,varargin)
 %  ebsd    - connected @EBSD data
 %
 %% Options
-%  angle         - array of threshold angles per phase of mis/disorientation in radians
+%  threshold     - array of threshold angles per phase of mis/disorientation in radians
+%  property      - angle (default) or property of @EBSD data
 %  augmentation  - bounds the spatial domain
 %
 %    * |'cube'|
-%    * |'cubeI'| 
+%    * |'cubeI'|
 %    * |'sphere'|
 %
-%  angletype     - 
-%   
-%    * |'misorientation'| (default) 
-%    * |'disorientation'| 
+%  angletype     -
+%
+%    * |'misorientation'| (default)
+%    * |'disorientation'|
 %
 %  distance      - maximum distance allowed between neighboured measurments
 %
@@ -28,19 +29,21 @@ function [grains ebsd] = segment2d(ebsd,varargin)
 %
 %% Example
 %   loadaachen
-%   [grains ebsd] = segment2d(ebsd(1:2),'angle',[10 15]*degree,'augmentation','cube')
+%   [grains ebsd] = segment2d(ebsd(1:2),'threshold',[10 15]*degree)
 %
 %   plot(grains)
 %
+%   [grains ebsd] = segment2d(ebsd,'property','bc','threshold',5)
+%   plot(grains)
+%
 %% See also
-% grain/grain
+% grain/grain EBSD/calcGrains EBSD/segment3d
 
-%% segmentation
-% prepare data
+%% prepare data 
 
 s = tic;
 
-thresholds = get_option(varargin,'angle',15*degree);
+thresholds = get_option(varargin,{'threshold','angle'},15*degree);
 if numel(thresholds) == 1 && numel(ebsd) > 1
   thresholds = repmat(thresholds,size(ebsd));
 end
@@ -80,7 +83,7 @@ phase = phase(m);
 %% grid neighbours
 
 [neighbours vert cells] = neighbour(xy, varargin{:});
-  [sm sn] = size(neighbours); %preserve size of sparse matrices
+[sm sn] = size(neighbours); %preserve size of sparse matrices
 [ix iy]= find(neighbours);
 
 %% maximum distance between neighbours
@@ -109,6 +112,8 @@ angles = sparse(sm,sn);
 zl = m(ix);
 zr = m(iy);
 
+prop = lower(get_option(varargin,'property','angle'));
+
 for i=1:numel(ebsd)
   %   restrict to correct phase
   ind = rl(i) < zl & zl <=  rl(i+1);
@@ -117,17 +122,23 @@ for i=1:numel(ebsd)
   mix = ix(ind); miy = iy(ind);
   
   %   compute distances
-  o1 = ebsd(i).orientations(zll);
-  o2 = ebsd(i).orientations(zrr);
-  omega = angle(o1,o2);
+  switch prop
+    case 'angle'
+      o1 = ebsd(i).orientations(zll);
+      o2 = ebsd(i).orientations(zrr);
+      omega = angle(o1,o2);
+    otherwise
+      p = get(ebsd(i),prop);
+      omega = abs( p(zll) - p(zrr) );
+  end
   
-  ind = omega > thresholds(i);
+   ind = omega > thresholds(i);
   
   angles = angles + sparse(mix(ind),miy(ind),1,sm,sn);
 end
 
 % disconnect regions
-regions = xor(angles,phases); 
+regions = xor(angles,phases);
 
 clear angles phases
 
@@ -144,26 +155,26 @@ T2 = T2 + T2';
 T1 = sparse(ids,1:length(ids),1);
 T3 = T1*T2;
 nn = T3*T1'; %neighbourhoods of regions
-             %self reference if interior has not connected neighbours
+%self reference if interior has not connected neighbours
 
-%% subfractions 
+%% subfractions
 
 inner = T1 & T3;
 [ix iy] = find(inner');
 
 fract = cell(1,max(ids));
 if ~isempty(iy)
-	pos = [0; find(diff(iy)); numel(iy)];
+  pos = [0; find(diff(iy)); numel(iy)];
   
   for l=1:numel(pos)-1
     ndx = pos(l)+1:pos(l+1);
-
+    
     sx = ix(ndx);
     [lx ly] = find(T2(sx,sx));
     nx = [sx(lx) sx(ly)];
-
+    
     lines = zeros(size(nx));
-    for k=1:size(nx,1)    
+    for k=1:size(nx,1)
       ax = sort(cells{nx(k,1)});
       ay = sort(cells{nx(k,2)});
       lines(k,:) = ax(ismembc(ax,ay));
@@ -175,9 +186,9 @@ if ~isempty(iy)
     
     fract{l} = fr;
   end
-    
+  
 end
-                
+
 %clean up
 clear T1 T2 T3 regions angel_treshold
 
@@ -193,14 +204,14 @@ cids =  [0 cumsum(sampleSize(ebsd))];
 checksum =  fix(rand(1)*16^8); %randi(16^8);
 checksumid = [ 'grain_id' dec2hex(checksum)];
 for k=1:numel(ebsd)
-	ide = ids(cids(k)+1:cids(k+1));
-	ebsd(k).options.(checksumid) = ide(:);
- 
+  ide = ids(cids(k)+1:cids(k+1));
+  ebsd(k).options.(checksumid) = ide(:);
+  
   if ~isempty(ide)
     [ide ndx] = sort(ide(:));
     pos = [0 ;find(diff(ide)); numel(ide)];
     aind = ide(pos(1:end-1)+1);
-
+    
     orientations(aind) = ...
       partition(ebsd(k).orientations(ndx),pos);
   end
@@ -219,8 +230,8 @@ nc = length(id);
 
 % neighbours
 neigh = cell(1,nc);
-if ~isempty(nn)  
-  [ix iy] = find(nn);  
+if ~isempty(nn)
+  [ix iy] = find(nn);
   if ~isempty(iy)
     pos = [0; find(diff(iy)); numel(iy)];
     for l=1:numel(pos)-1
@@ -257,17 +268,17 @@ for i=1:numel(cchek)
   ccom{i} = comment;
   cprop{i} = tstruc;
   phase_ebsd{i} = phaseEBSD{phase(id{i}(1))};
-end 
+end
 
 gr = struct('id',cid,...
-       'cells',id,...
-       'neighbour',neigh,...    %       'polygon',[],...
-       'checksum',cchek,...
-       'subfractions',fract,...       
-       'phase',phase_ebsd,...
-       'orientation',orientations,...
-       'properties',cprop,...
-       'comment',ccom);
+  'cells',id,...
+  'neighbour',neigh,...    %       'polygon',[],...
+  'checksum',cchek,...
+  'subfractions',fract,...
+  'phase',phase_ebsd,...
+  'orientation',orientations,...
+  'properties',cprop,...
+  'comment',ccom);
 
 grains = grain(gr,ply);
 
@@ -293,12 +304,12 @@ isleaf = parent ~= 0;
 k = sum(~isleaf);
 %set id for each tree in forest
 for i = n:-1:1,
-  if isleaf(i)   
+  if isleaf(i)
     ids(i) = ids(parent(i));
   else
     ids(i) = k;
     k = k - 1;
-  end 
+  end
 end;
 
 
@@ -314,14 +325,14 @@ cl = cellfun('length',c);
 ccl = [ 0 ;cumsum(cl)];
 
 if ~check_option(varargin,'unitcell')
-  %sort everything clockwise  
+  %sort everything clockwise
   parts = [0:10000:numel(c)-1 numel(c)];
   
   f = false(size(c));
   for l=1:numel(parts)-1
     ind = parts(l)+1:parts(l+1);
     cv = v( il( ccl(ind(1))+1:ccl(ind(end)+1) ),:);
-        
+    
     r = diff(cv);
     r = r(1:end-1,1).*r(2:end,2)-r(2:end,1).*r(1:end-1,2);
     r = r > 0;
@@ -330,25 +341,25 @@ if ~check_option(varargin,'unitcell')
   end
   
   for i=1:length(c)
-    jl(ccl(i)+1:ccl(i+1)) = i;    
+    jl(ccl(i)+1:ccl(i+1)) = i;
     if f(i), l = c{i}; c{i} = l(end:-1:1); end
   end
   
   clear cv parts ind r f cl
-else  
+else
   for i=1:length(c)
     jl(ccl(i)+1:ccl(i+1)) = i;
   end
 end
 
-  % vertice map
-T = sparse(jl,il,1); 
-  clear jl il ccl
+% vertice map
+T = sparse(jl,il,1);
+clear jl il ccl
 T(:,1) = 0; %inf
 
 %edges
 F = T * T';
-  clear T;
+clear T;
 F = triu(F,1);
 F = F > 1;
 
@@ -358,14 +369,14 @@ function ply = createpolygons(cells,regionids,verts)
 rcells = cells([regionids{:}]);
 gl = [rcells{:}];
 
-  %shift indices
+%shift indices
 indi = 1:length(gl);
 inds = indi+1;
-c1 = cellfun('length',rcells); 
+c1 = cellfun('length',rcells);
 cr1 = cellfun('length',regionids);
 r1 = cumsum(c1);
 r2 = [1 ; r1+1];
-r2(end) =[];  
+r2(end) =[];
 inds(r1) = r2;
 gr = gl(inds); %partner pointel
 
@@ -374,14 +385,14 @@ cr = cumsum(cr1);
 
 clear rcells r1 r2 indi c1 inds
 
-% 
+%
 nr = length(regionids);
 p = struct(polytope);
 ply = repmat(p,1,nr);
 
 f = (gl+gr).*gl.*gr; % try to make unique linel ids
 rid = [0;cc(cr+1)];
-for k=1:nr  
+for k=1:nr
   sel = rid(k)+1:rid(k+1);
   
   if cr1(k)>1
@@ -442,51 +453,51 @@ ply = polytope(ply);
 function env = envelope(xy)
 
 env([1,3]) = min(xy);
-env([2,4]) = max(xy);    
+env([2,4]) = max(xy);
 
 
 function border = convert2border(gl,gr)
 
 [gll a] = sort(gl);
 [grr b] = sort(gr);
-    
+
 nn = numel(gl);
-    
+
 sb = zeros(nn,1);
 v = sb;
-    
-sb(b) = a;    
+
+sb(b) = a;
 v(1) = a(1);
-    
+
 cc = 0;
 l = 2;
 lp = 1;
-    
+
 while true
   np = sb(v(lp));
-      
+  
   if np > 0
     v(l) = np;
     sb(v(lp)) = -1;
   else
-    cc(end+1) = lp;      
+    cc(end+1) = lp;
     n = sb(sb>0);
     if isempty(n)
       break
     else
       v(l) = n(1);
     end
-  end  
-      
+  end
+  
   lp = l;
-  l=l+1;      
+  l=l+1;
 end
 
-nc = numel(cc)-1; 
+nc = numel(cc)-1;
 if nc > 1, border = cell(1,nc); end
 
 for k=1:nc
   vt = gl(v(cc(k)+1:cc(k+1)));
   border(k) = {vt};
-end  
+end
 
