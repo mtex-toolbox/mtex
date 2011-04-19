@@ -2,6 +2,26 @@
 %
 %% Contents
 %
+%%  MTEX 3.2 - 05/2011
+%
+% *3d EBSD Analysis*
+% This release for the first time supports 3d EBSD data. In particular,
+% MTEX is now able to
+%
+% * import 3d EBSD data from stacked files
+% * visualize 3d EBSD data by plotting interactive slices through the
+% specimen
+% * 3d grain detection
+% * topology of 3d grains, i.e. boundaries, neighbouring grains, etc.
+%
+% *Other Enhangments*
+%
+% * automatic centering of a specimen with repsect to its specimen symmetry
+% * download and import tensors from http://www.materialproperties.org/
+% * new interfaces for Rigaku, Siemens, and Bruker X-ray devices
+% * improved documentation
+% * many bug fixes
+%
 %% MTEX 3.1 - 03/2011
 %
 % *Tensor Arithmetics*
