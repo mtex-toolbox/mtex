@@ -72,11 +72,12 @@ uninstall:
 	rm -rf $(MATLABPATH)/toolbox/mtex
 
 # rule for making release
-RNAME = mtex-trunk
+RNAME = mtex-3.2beta1
 RDIR = ../..
 release:
 	rm -rf $(RDIR)/$(RNAME)*
 	cp -R . $(RDIR)/$(RNAME)
+	rm -rf $(RDIR)/$(RNAME)/help/tmp 
 	chmod -R a+rX $(RDIR)/$(RNAME)
 	find $(RDIR)/$(RNAME) -name .svn | xargs /bin/rm -rf
 	find $(RDIR)/$(RNAME) -name '*~' -or -name '*.log' -or -name '*.o' -or -name '*.orig' -or -name '.directory' | xargs /bin/rm -rf
