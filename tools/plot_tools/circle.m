@@ -11,8 +11,10 @@ function circle(n,omega,varargin)
 if nargin < 2
   
   omega  = 90*degree;
-  
-elseif isnumeric(omega)
+
+end
+
+if isnumeric(omega)
   
   c = axis2quat(n,(0:1:360)*degree)*axis2quat(orth(n),omega)*n;
   
