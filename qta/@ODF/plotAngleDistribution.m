@@ -20,5 +20,6 @@ newMTEXplot;
 
 
 %% plot
-plot(omega/degree,max(0,f),'.');
+bar(omega/degree,max(0,f));
+% xlim([0,max(omega)])
 xlabel('orientation angle in degree')
