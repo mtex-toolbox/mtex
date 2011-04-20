@@ -36,9 +36,11 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 % 
 %% Example
 %
-%    ebsd = loadEBSD('ebsd.txt',symmetry('cubic'),symmetry,'header',1,...
-%        'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'x' 'y' 'phase'},...
-%        'Columns',[1,2,3,5,6,7])
+%  fname = fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt');
+%
+%  ebsd = loadEBSD_generic(fname,CS,SS, 'ColumnNames', ...
+%    {'Index' 'Phase' 'x' 'y' 'Euler1' 'Euler2' 'Euler3' 'MAD' 'BC' 'BS'...
+%    'Bands' 'Error' 'ReliabilityIndex'}, 'Bunge', 'ignorePhase', 0);
 %
 %% See also
 % ImportEBSDData loadEBSD ebsd_demo
