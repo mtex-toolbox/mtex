@@ -17,7 +17,7 @@ if check_option(varargin,'grid'), v = 'on';else v = 'off';end
 dtheta = get_option(varargin,'grid_res',30*degree);
 theta = dtheta:dtheta:(pi/2-dtheta);
 
-arrayfun(@(t) circle(offset,0,t,varargin{:},'LineStyle',':',...
+arrayfun(@(t) circle(offset,0,t,'LineStyle',':',...
   'edgecolor',[0.4 0.4 0.4],'tag','grid','visible',v),theta);
 
 %% meridans
