@@ -28,7 +28,7 @@ mtexFunctionFiles = [...
 mtexExampleFiles = ...
   DocFile( getFiles(fullfile(mtex_path,'examples'),'*.m',false));
 mtexDocFiles = ...
-  DocFile( fullfile(mtex_path,'help','doc'));
+  DocFile( fullfile(mtex_path,'help','Documentation'));
 
 mtexHelpFiles = [mtexFunctionFiles mtexExampleFiles mtexDocFiles];
 
@@ -99,6 +99,8 @@ copy(DocFile(getPublishGeneral),fullfile(mtex_path,'examples','html'))
 
 publish(mtexDocFiles,'outputDir',outputDir,'tempDir',tempDir,'evalCode',true,'force',false)
 
+
+copy(mtexDocFiles,fullfile(mtex_path,'examples','UsersGuide'))
 
 %%
 
