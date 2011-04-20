@@ -28,11 +28,15 @@ mtexFunctionFiles = [...
 mtexExampleFiles = ...
   DocFile( getFiles(fullfile(mtex_path,'examples'),'*.m',false));
 mtexDocFiles = ...
-  DocFile( fullfile(mtex_path,'help','Documentation'));
+  DocFile( fullfile(mtex_path,'help','doc'));
 
 mtexHelpFiles = [mtexFunctionFiles mtexExampleFiles mtexDocFiles];
 
 mtexDocPictures = DocFile(getFiles(fullfile(mtex_path,'help','doc'),'*.png',true));
+
+mtexGeneralFiles = [DocFile(fullfile(mtex_path,'COPYING')) ...
+  DocFile(fullfile(mtex_path,'README')) ...
+  DocFile(fullfile(mtex_path,'VERSION'))];
 
 %%
 % 
@@ -52,6 +56,7 @@ tempDir = fullfile(mtex_path,'help','tmp');
 %%
 
 copy(mtexDocPictures,outputDir)
+copy(mtexGeneralFiles,outputDir)
 
 %% Copy productpage
 
@@ -64,9 +69,8 @@ makeFunctionsReference(mtexHelpFiles,'FunctionReference','outputDir',outputDir)
 
 %% make help toc
 
-makeHelpToc(mtexHelpFiles,'doc','FunctionMainFile','FunctionReference','outputDir',outputDir)
+makeHelpToc(mtexHelpFiles,'Documentation','FunctionMainFile','FunctionReference','outputDir',outputDir)
 copyfile(fullfile(outputDir,'helptoc.xml'), docPath)
-
 
 %% Publish Function Reference
 
@@ -98,8 +102,6 @@ copy(DocFile(getPublishGeneral),fullfile(mtex_path,'examples','html'))
 %% Publish Doc
 
 publish(mtexDocFiles,'outputDir',outputDir,'tempDir',tempDir,'evalCode',true,'force',false)
-
-
 copy(mtexDocFiles,fullfile(mtex_path,'examples','UsersGuide'))
 
 %%
