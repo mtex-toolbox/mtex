@@ -93,7 +93,7 @@ src = struct(mtexExampleFiles);
 src = [src.sourceInfo]
 
 for k=1:numel(src)
-  temp = docFile(getFiles(outputDir,[src(k).docName '*']));
+  temp = DocFile(getFiles(outputDir,[src(k).docName '*']));
   copy(temp,fullfile(mtex_path,'examples','html'))
 end
 copy(DocFile(getPublishGeneral),fullfile(mtex_path,'examples','html'))
