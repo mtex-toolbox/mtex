@@ -10,7 +10,7 @@ if check_option(varargin,'colorrange','double')
 end
 
 h = [];
-plottype = get_flag(varargin,{'CONTOUR','CONTOURF','SMOOTH','SCATTER','TEXTUREMAP','rgb'});
+plottype = get_flag(varargin,{'CONTOUR','CONTOURF','SMOOTH','SCATTER','TEXTUREMAP','rgb','LINE'});
 
 if ~check_option(varargin,'gray')
   set(gcf,'colormap',get_mtex_option('defaultColorMap','default'));
@@ -131,6 +131,34 @@ elseif any(strcmpi(plottype,'SMOOTH'))
     end
 
   end
+  
+%% line plot
+elseif any(strcmpi(plottype,{'LINE'}))
+
+  lastwarn('')
+  set(gcf,'Renderer','Painters');  
+
+  % get options
+  options = {};
+  
+  inBounds = find(abs(diff(X(:)))>.15 | abs(diff(Y(:)))>.15);
+  if ~isempty(inBounds)
+    inBounds = [0; inBounds; numel(X)];
+    for k=1:numel(inBounds)-1
+      if ~isempty(X)
+        ndBounds = inBounds(k)+1:inBounds(k+1);
+        h(k) = line('XData',X(ndBounds),'YData',Y(ndBounds));
+      end
+    end
+    
+  else
+    if ~isempty(X)
+      h = line('XData',X,'YData',Y);
+    end
+  end
+  optiondraw(h,varargin{:});
+  
+
 %% scatter plots
 else 
   lastwarn('')
