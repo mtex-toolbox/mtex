@@ -46,6 +46,20 @@ if nargin > 1
       end
       varargout{1} = sym;
       
+    case 'SS'
+      
+       varargout = get(grains,'SSCell');
+   
+    case 'SSCell'
+      
+      [phase,uphase,id] = get(grains,'phase');
+      
+      sym = cell(size(id));
+      for l=1:length(id)
+        sym{l} = get(grains(id(l)).orientation,'SS');
+      end
+      varargout{1} = sym;
+      
     case 'mineral'
       
       CS = get(grains,'CSCell');

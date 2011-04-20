@@ -76,7 +76,10 @@ else
   
   %maybe we want do access a property
   if numel(options)>0 && isa(options{1},'char')
-    try evar = get(grains,options{1}); options(1) = []; catch, end 
+    try 
+      evar = cellfun(@(x) get(x,options{1}),evar,'UniformOutput',false);
+      options{1} =[]; 
+    catch, end 
   end
   
   % odf warper
@@ -90,8 +93,8 @@ else
       res = get_option(varargin,'RESOLUTION',2.5*degree);
 
       [phase uphase] = get(grains,'phase');
-      CS = get(grains,'CS');
-      SS = get(grains,'SS');
+      CS = get(grains,'CSCell');
+      SS = get(grains,'SSCell');
       
       S3G = cell(size(uphase));
       for k=1:numel(uphase)      

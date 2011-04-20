@@ -4,8 +4,8 @@ function [theta,rho,r] = polar(v)
 %  v - @vector3d
 %% Output
 %  theta  - polar angle
-%  rho    - azimuthal angle
-%  radius
+%  rho    - azimuthal angle 
+%  r      - radius
 
 if nargout == 0
   hr = sqrt(v.x.^2 + v.y.^2 + v.z.^2);
