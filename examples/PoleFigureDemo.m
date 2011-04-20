@@ -4,6 +4,9 @@
 % This example demonstrates the most important MTEX tools for analysing
 % Pole Figure Data.
 
+
+%% Open in Editor
+%
 %% Import Pole Figures
 
 % specify crystal and specimen symmetry

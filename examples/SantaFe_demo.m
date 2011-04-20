@@ -3,6 +3,9 @@
 % Simulate a set of pole figures for the SantaFe standard ODF, estimate
 % an ODF and compare it to the inital SantaFe ODF.
 
+%% Open in Editor
+%
+
 %% Simulate pole figures
 
 % get crystal and specimen symmetry

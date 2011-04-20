@@ -1,5 +1,8 @@
 %% Sample Import of EBSD Data
 
+%% Open in Editor
+%
+
 % crystal symmetry
 CS = {...
   symmetry('m-3m','mineral','Fe'),...
