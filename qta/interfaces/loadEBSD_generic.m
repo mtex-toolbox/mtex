@@ -41,7 +41,7 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 %    SS = symmetry('triclinic');
 %    ebsd = loadEBSD_generic(fname,CS,SS, 'ColumnNames', ...
 %      {'Index' 'Phase' 'x' 'y' 'Euler1' 'Euler2' 'Euler3' 'MAD' 'BC' 'BS'...
-%      'Bands' 'Error' 'ReliabilityIndex'}, 'Bunge', 'ignorePhase', 0);
+%      'Bands' 'Error' 'ReliabilityIndex'}, 'Bunge', 'ignorePhase', 0)
 %
 %% See also
 % ImportEBSDData loadEBSD ebsd_demo
