@@ -9,12 +9,11 @@ function h = plotspatial(ebsd,varargin)
 %     |'phase'| for achieving a spatial phase map, or an properity field of the ebsd
 %     data set, e.g. |'bands'|, |'bc'|, |'mad'|.
 %
-%  colocoding     - [[orientation2color.html,colorize orientation]] according a colormap
+%  colocoding     - [[orientation2color.html,colorize orientation]] according a 
+%    colormap after inverse PoleFigure
 %
-%     after inverse PoleFigure
-%
-%     * |'ipdf'|
-%     * |'hkl'|
+%    * |'ipdf'|
+%    * |'hkl'|
 %
 %    other color codings
 %
@@ -29,11 +28,11 @@ function h = plotspatial(ebsd,varargin)
 %
 %  GridType       - requires param |'unitcell'|
 %
-%     * |'automatic'| (default)
-%     * |'tetragonal'|
-%     * |'hexagonal'|
+%    * |'automatic'| (default)
+%    * |'tetragonal'|
+%    * |'hexagonal'|
 %
-%     or custom
+%    or custom
 %
 %  GridResolution - specify the dimension of a unit cell, requires param |'unitcell'|
 %  GridRotation   - rotation of a unit cell, requires option |'unitcell'|
