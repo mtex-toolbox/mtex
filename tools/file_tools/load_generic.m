@@ -1,6 +1,10 @@
 function [d,options,header,c] = load_generic(fname,varargin)
 % load file using import data and txt2mat
 
+if ~exist(fname,'file')
+  error(['File ' fname ' not found!']);
+end
+
 % get options
 if check_option(varargin,'header')
   options{1} = get_option(varargin,'delimiter',' ');  
