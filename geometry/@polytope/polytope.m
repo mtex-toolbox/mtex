@@ -1,5 +1,5 @@
 function p = polytope(varargin)
-
+% constructor of the class polytope
 
 p.Vertices = get_option(varargin,'Vertices',[]);  % vertex ids
 p.Faces = get_option(varargin,'Faces',[]);  % facet ids
