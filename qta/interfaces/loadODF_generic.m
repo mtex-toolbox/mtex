@@ -36,9 +36,10 @@ function [odf,options] = loadODF_generic(fname,varargin)
 % 
 %% Example
 %
-%    odf = loadODF_generic('odf.txt','cs',symmetry('cubic'),'header',1,...
-%        'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'weight'},...
-%        'Columns',[1,2,3,5])
+%    fname = fullfile(mtexDataPath,'odf','odf.txt');
+%    odf = loadODF_generic(fname,'cs',symmetry('cubic'),'header',5,...
+%      'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'weight'},...
+%      'Columns',[1,2,3,4])
 %
 %% See also
 % import_wizard loadODF ODF_demo
@@ -128,8 +129,25 @@ if ischeck, odf = ODF;return;end
 
 
 % load single orientations
-if ~check_option(varargin,{'exact','resolution'}), varargin = [varargin,'exact'];end
-ebsd = EBSD(q,cs,ss,varargin{:});
+%if ~check_option(varargin,{'exact','resolution'}), varargin = [varargin,'exact'];end
+%ebsd = EBSD(q,cs,ss,varargin{:});
 
 % calc ODF
-odf = calcODF(ebsd,'weight',weight,'silent',varargin{:});
+%odf = calcODF(ebsd,'weight',weight,'silent',varargin{:});
+
+%
+disp('  Interpolating the ODF. This might take some time...')
+res = 3*degree;
+
+% interpolate
+S3G = SO3Grid(res,cs,ss);
+
+psi = kernel('de la Vallee Poussin','halfwidth',res);
+
+M = K(psi,S3G,q,cs,ss);
+
+MM = M * M';
+mw = M * weight;
+w = pcg(MM,mw,1e-2,30);
+
+odf = ODF(S3G,w,psi,cs,ss);

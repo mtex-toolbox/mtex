@@ -36,11 +36,12 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 % 
 %% Example
 %
-%  fname = fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt');
-%
-%  ebsd = loadEBSD_generic(fname,CS,SS, 'ColumnNames', ...
-%    {'Index' 'Phase' 'x' 'y' 'Euler1' 'Euler2' 'Euler3' 'MAD' 'BC' 'BS'...
-%    'Bands' 'Error' 'ReliabilityIndex'}, 'Bunge', 'ignorePhase', 0);
+%    fname = fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt');
+%    CS = symmetry('m-3m');
+%    SS = symmetry('triclinic');
+%    ebsd = loadEBSD_generic(fname,CS,SS, 'ColumnNames', ...
+%      {'Index' 'Phase' 'x' 'y' 'Euler1' 'Euler2' 'Euler3' 'MAD' 'BC' 'BS'...
+%      'Bands' 'Error' 'ReliabilityIndex'}, 'Bunge', 'ignorePhase', 0);
 %
 %% See also
 % ImportEBSDData loadEBSD ebsd_demo
