@@ -220,7 +220,7 @@ name = [pathName,fname];
 
 if fname ~= 0
   try
-    cs = cif2symmetry(name);
+    cs = loadCIF(name);
     set(handles.mineral,'string',shrink_name(name));
     if isa(data,'EBSD')
       data(cs_counter) = set(data(cs_counter),'CS',cs,'noTrafo');
