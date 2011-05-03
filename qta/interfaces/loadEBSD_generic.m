@@ -82,7 +82,7 @@ if check_option(varargin,'layout')
   
   if check_option(varargin,'xy')
     xy = get_option(varargin,'xy');
-    ColumnNames = [ColumnNames,{'x','y'}];
+    ColumnNames = [ColumnNames,{'x','y','z'}];
     Columns = [layout,xy];
     varargin = delete_option(varargin,'xy',1);
   end
@@ -158,8 +158,8 @@ if check_option(varargin,'passive rotation'), q = inverse(q); end
  
 % assign spatial coordinates
 xy = [];
-if istype(names,{'x' 'y'}),
-  xy = d(:,layoutcol(names,{'x' 'y'}));
+if istype(names,{'x' 'y','z'}),
+  xy = d(:,layoutcol(names,{'x' 'y' 'z'}));
   
   % compute unit cell
   varargin = [varargin,'unitCell',calcUnitCell(xy,varargin{:})];  
@@ -173,7 +173,7 @@ end
   
 % assign all other as options
 opt = struct;
-opts = delete_option(names,  [euler quat {'Phase' 'x' 'y'}]);
+opts = delete_option(names,  [euler quat {'Phase' 'x' 'y' 'z'}]);
 if ~isempty(opts)
   
   for i=1:length(opts),
