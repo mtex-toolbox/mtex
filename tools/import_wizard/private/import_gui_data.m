@@ -190,7 +190,7 @@ if ~isempty(ebsd)
     choice = questdlg({'More than one EBSD data set imported.',' Do you want to treat it as 3d data?'},'EBSD 3d');
     switch choice 
       case 'Yes'
-        setappdata(lb(5),'zvalues',1:numel(filename'));        
+        setappdata(lb(5),'zvalues',1:numel(filename));        
     end
   end
   
@@ -223,8 +223,8 @@ elseif ~isempty(tensor)
   vname = 'tensor';
 end
 
-setappdata(gcbf,'handles',handles);
 set(handles.workspace(1),'String',vname);
+setappdata(gcbf,'handles',handles);
 
 
 function addData(h,event,t) %#ok<INUSL>
