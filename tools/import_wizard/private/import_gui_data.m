@@ -166,7 +166,8 @@ end
 
 function leave_callback(varargin)
 
-handles = getappdata(gcbf,'handles');
+hfig = gcbf;
+handles = getappdata(hfig,'handles');
 lb = handles.listbox;
 
 pf = getappdata(lb(1),'data');
@@ -184,7 +185,7 @@ end
 if ~isempty(ebsd)
   
   filename = getappdata(lb(5),'filename');
-  setappdata(gcbf,'data',ebsd);  
+  setappdata(hfig,'data',ebsd);  
   setappdata(lb(5),'zvalues',[]);
   if numel(filename) > 1,
     choice = questdlg({'More than one EBSD data set imported.',' Do you want to treat it as 3d data?'},'EBSD 3d');
@@ -199,7 +200,7 @@ if ~isempty(ebsd)
   vname = 'ebsd';
 elseif ~isempty(odf)
   
-  setappdata(gcbf,'data',odf);
+  setappdata(hfig,'data',odf);
   handles.pages = handles.odf_pages;
   
   vname = 'odf';
@@ -211,20 +212,21 @@ elseif ~isempty(pf)
   def_bg = getappdata(lb(4),'data');
   pf = correct(pf,'bg',bg,'def',def,'defbg',def_bg);
 
-  setappdata(gcbf,'data',pf);
+  setappdata(hfig,'data',pf);
   handles.pages = handles.pf_pages;
   
   vname = 'pf';
 elseif ~isempty(tensor)
   
-  setappdata(gcbf,'data',tensor);
+  setappdata(hfig,'data',tensor);
   handles.pages = handles.tensor_pages;
   
   vname = 'tensor';
 end
 
 set(handles.workspace(1),'String',vname);
-setappdata(gcbf,'handles',handles);
+setappdata(hfig,'handles',handles);
+drawnow
 
 
 function addData(h,event,t) %#ok<INUSL>
