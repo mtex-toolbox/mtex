@@ -111,7 +111,7 @@ cols = cols(m);
 
 istype = @(in, a) all(cellfun(@(x) any(find(strcmpi(stripws(in),stripws(x)))),a));
 layoutcol = @(in, a) cols(cellfun(@(x) find(strcmpi(stripws(in),stripws(x))),a));
-   
+
 euler = lower({'Euler 1' 'Euler 2' 'Euler 3'});
 quat = lower({'Quat real' 'Quat i' 'Quat j' 'Quat k'});
       
@@ -158,7 +158,14 @@ if check_option(varargin,'passive rotation'), q = inverse(q); end
  
 % assign spatial coordinates
 xy = [];
-if istype(names,{'x' 'y','z'}),
+if istype(names,{'x' 'y'}),
+  xy = d(:,layoutcol(names,{'x' 'y'}));
+  
+  % compute unit cell
+  varargin = [varargin,'unitCell',calcUnitCell(xy,varargin{:})];  
+end
+
+if istype(names,{'x' 'y' 'z'}),
   xy = d(:,layoutcol(names,{'x' 'y' 'z'}));
   
   % compute unit cell

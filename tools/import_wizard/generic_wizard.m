@@ -29,7 +29,7 @@ if check_option(varargin,'type')
   type = get_option(varargin,'type');
   switch type
     case 'EBSD'
-      values = {'Ignore','Euler 1','Euler 2','Euler 3','x','y','Phase','Quat real','Quat i','Quat j','Quat k','Weight'};
+      values = {'Ignore','Euler 1','Euler 2','Euler 3','x','y','z','Phase','Quat real','Quat i','Quat j','Quat k','Weight'};
       mandatory = {values(2:4),values(8:11)};
     case 'PoleFigure'
       values = {'Ignore','Polar Angle','Azimuth Angle','Intensity','Background','x','y','z'};
