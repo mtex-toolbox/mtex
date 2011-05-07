@@ -219,7 +219,7 @@ list = regexprep([s2.m; s1.m], '\.m', '');
 
 ignoreFunctions = {'Contents','centroid','display','eq','get','grain','grainfun','calcODF','copyProperty','misorientation',...
   'hullcentroid','hullprincipalcomponents','joinCount','polygon','set','mean',...
-  'principalcomponents','plot','plotEllipse','plotGrains','plotSubfractions','toebsd','variogram'};
+  'principalcomponents','plot','plotEllipse','plotGrains','plotSubBoundary','toebsd','variogram'};
 
 list = list( ~cellfun(@(x) any(strcmpi(x, ignoreFunctions)), list) );
 

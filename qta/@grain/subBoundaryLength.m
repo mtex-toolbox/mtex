@@ -1,5 +1,5 @@
-function l = subfractionLength(grains)
-% returns the length of subfractions within a grain
+function l = subBoundaryLength(grains)
+% returns the length of sub grain boundaries within a grain
 %
 %% Input
 %  grains   - @grain
@@ -9,7 +9,7 @@ function l = subfractionLength(grains)
 %
 
 
-b = find(hasSubfraction(grains));
+b = find(hasSubBoundary(grains));
 frs = [grains(b).subfractions];
  
 l = zeros(size(grains));

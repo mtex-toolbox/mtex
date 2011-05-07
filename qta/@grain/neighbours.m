@@ -17,7 +17,7 @@ function grains = neighbours(grains, grains2)
 %
 %% Example
 %  %intersect two grainsets
-%  grains(grains(hasholes(grains)) == grains(hassubfraction(grains)))
+%  grains(grains(hasHoles(grains)) == grains(hasSubBoundary(grains)))
 %
 %% See also
 % grain/misorientation grain/plotboundary

@@ -9,7 +9,7 @@ function out = ne(grain1,grain2)
 %
 %% Example
 %  %intersect two grainsets
-%  grains(grains(hasholes(grains)) ~= grains(hassubfraction(grains)))
+%  grains(grains(hasHoles(grains)) ~= grains(hasSubBoundary(grains)))
 %
 
 out = ~eq(grain1,grain2);

@@ -1,19 +1,19 @@
-function plotSubfractions(grains,varargin)
+function plotSubBoundary(grains,varargin)
 % plot the grain boundaries
 %
 %% Syntax
-%  plotSubfractions(grains)  -
-%  plotSubfractions(grains,LineSpec,...) -
-%  plotSubfractions(grains,'PropertyName',PropertyValue,...) -
+%  plotSubBoundary(grains)  -
+%  plotSubBoundary(grains,LineSpec,...) -
+%  plotSubBoundary(grains,'PropertyName',PropertyValue,...) -
 %
 %% Input
 %  grains - @grain
 %
 %% See also
-% grain/plot grain/plotellipse grain/plotgrains
+% grain/plot grain/plotellipse grain/plotgrains grain/plotBoundary
 %
   
-b = hasSubfraction(grains);
+b = hasSubBoundary(grains);
 
 if any(b) 
   newMTEXplot;
@@ -39,7 +39,7 @@ if any(b)
     h = plot([sub.P],'fill');
   end
   
-  optiondraw(h,varargin{:})
+  optiondraw(h,varargin{:});
 else
   return
 end
