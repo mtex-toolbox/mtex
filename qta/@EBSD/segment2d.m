@@ -184,7 +184,7 @@ if ~isempty(iy)
     fr.yy = reshape(vert(lines,2),size(lines))';
     fr.pairs = reshape(nx,[],2);
     
-    fract{l} = fr;
+    fract{iy(ndx(1))} = fr;
   end
   
 end
