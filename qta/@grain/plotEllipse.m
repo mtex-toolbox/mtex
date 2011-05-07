@@ -16,7 +16,7 @@ function plotEllipse(grains,varargin)
 %  PrincipalBColor -  colorspec
 %
 %% See also
-% grain/plot grain/plotGrains grain/plotSubfractions 
+% grain/plot grain/plotGrains grain/plotSubBoundary
 % polygon/principalcomponents polygon/hullprincipalcomponents
 %
 

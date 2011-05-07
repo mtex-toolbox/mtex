@@ -8,8 +8,8 @@ function out = eq(grain1,grain2)
 %  out   - logical indexing
 %
 %% Example
-%  %intersect two grainsets
-%  grains(grains(hasholes(grains)) == grains(hassubfraction(grains)))
+%  %intersect two grain sets
+%  grains(grains(hasHoles(grains)) == grains(hasSubBoundary(grains)))
 %
 
 if isa(grain1,'grain') && isa(grain2,'grain') 

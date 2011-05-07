@@ -1,4 +1,4 @@
-function omega = subfractionAngle(grains,ebsd,varargin)
+function omega = subBoundaryAngle(grains,ebsd,varargin)
 % returns a mean angle between ebsd-grain neighbours
 %
 %% Input
@@ -24,7 +24,7 @@ else
   omega = zeros(size(grains));
 end
 
-b = find(hasSubfraction(grains));
+b = find(hasSubBoundary(grains));
 
 for k=1:length(ebsd)
   qe{k} = get(ebsd(k),'orientations');
