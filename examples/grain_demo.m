@@ -46,7 +46,7 @@ plot(ebsd,'phase',1)
 % Plot grain-boundaries
 
 plotboundary(grains,'color',[0.25 0.1 0.5])
-hold on, plotSubfractions(grains,'color','red','linewidth',2)
+hold on, plotSubBoundary(grains,'color','red','linewidth',2)
 
 %%
 % on application of this would be to take a look on the grainsize
@@ -78,7 +78,7 @@ coloring = get(grains,'phase');
 %%
 % we can use also other coloring, for instance binary
 
-joinCount(grains,hasSubfraction(grains));
+joinCount(grains,hasSubBoundary(grains));
 joinCount(grains,hashole(grains));
   % ...
 
