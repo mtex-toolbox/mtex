@@ -11,7 +11,6 @@ function [grains ebsd] = segment3d(ebsd,varargin)
 %% Options
 %  threshold     - array of threshold angles per phase of mis/disorientation in radians
 %  property      - angle (default) or property of @EBSD data
-%  augmentation  - bounds the spatial domain
 %
 %    * |'cube'|
 %    * |'cubeI'|
@@ -21,11 +20,6 @@ function [grains ebsd] = segment3d(ebsd,varargin)
 %
 %    * |'misorientation'| (default)
 %    * |'disorientation'|
-%
-%  distance      - maximum distance allowed between neighboured measurments
-%
-%% Flags
-%  unitcell     - omit voronoi decomposition and treat a unitcell lattice
 %
 %% See also
 % grain/grain EBSD/calcGrains EBSD/segment2d
@@ -41,76 +35,41 @@ if numel(thresholds) == 1 && numel(ebsd) > 1
 end
 
 
-xy = vertcat(ebsd.X);
-
-if isempty(xy), error('no spatial data');end
-
-% sort for voronoi
-[xy m n]  = unique(xy,'first','rows');
-
-if numel(m) ~= numel(n)
-  warning('mtex:GrainGeneration','spatially duplicated data points, perceed by erasing them')
-  ind = ~ismember(1:sum(sampleSize(ebsd)),m);
-  [grains ebsd] = segment3d(delete(ebsd,ind),varargin{:});
-  return
-end
-
-phase_ebsd = get(ebsd,'phase');
-phase_ebsd = mat2cell(phase_ebsd,ones(size(phase_ebsd)),1)';
-
-% generate long phase vector
 l = sampleSize(ebsd);
 rl = [ 0 cumsum(l)];
-phase = ones(1,sum(l));
-for i=1:numel(ebsd)
-  phase( rl(i)+(1:l(i)) ) = i;
-end
 
 
-phase = phase(m);
+X = vertcat(ebsd.X);
+
+if isempty(X), error('no spatial data');end
+
+% sort for voronoi
+% [xy m n]  = unique(xy,'first','rows');
+% if numel(m) ~= numel(n)
+%   warning('mtex:GrainGeneration','spatially duplicated data points, perceed by erasing them')
+%   ind = ~ismember(1:sum(sampleSize(ebsd)),m);
+%   [grains ebsd] = segment3d(delete(ebsd,ind),varargin{:});
+%   return
+% end
+
+phase = get(ebsd,'phases');
 
 
+[A,v,VD,VF,FD] = spatialdecomposition3d(X,'unitcell');
 
-%% grid neighbours
-
-[neighbours vert cells tri] = neighbour(xy, varargin{:});
-[sm sn] = size(neighbours); %preserve size of sparse matrices
-[ix iy]= find(neighbours);
-
-%% maximum distance between neighbours
-
-if check_option(varargin,'distance')
-  distance = sqrt(sum((xy(ix,:)-xy(iy,:)).^2,2));
-  distance = distance > get_option(varargin,'distance',max(distance),'double');
-  distance = sparse(ix,iy,distance,sm,sn);
-  distance = xor(distance,neighbours);
-  [ix iy]= find(distance);
-else
-  distance = neighbours;
-end
-
-
-%% disconnect by phase
-
-phases = sparse(ix,iy,phase(ix) ~= phase(iy),sm,sn);
-phases = xor(phases,distance);
-[ix iy]= find(phases);
-
-%% disconnect by missorientation
-
-angles = sparse(sm,sn);
-
-zl = m(ix);
-zr = m(iy);
+%%
 
 prop = lower(get_option(varargin,'property','angle'));
 
+angles = false(size(A,1),1);
 for i=1:numel(ebsd)
-  %   restrict to correct phase
-  ind = rl(i) < zl & zl <=  rl(i+1);
+ 
+  ind = all(phase(A) == ebsd(i).phase,2);
+    
+  zl = A(ind,1);
+  zr = A(ind,2);
   
-  zll = zl(ind)-rl(i); zrr = zr(ind)-rl(i);
-  mix = ix(ind); miy = iy(ind);
+  zll = zl-rl(i); zrr = zr-rl(i);
   
   %   compute distances
   switch prop
@@ -123,147 +82,81 @@ for i=1:numel(ebsd)
       omega = abs( p(zll) - p(zrr) );
   end
   
-  ind = omega > thresholds(i);
-  
-  angles = angles + sparse(mix(ind),miy(ind),1,sm,sn);
+  angles(ind) = omega <= thresholds(i);
 end
 
-% disconnect regions
-regions = xor(angles,phases);
-clear angles phases
+regions = angles;
 
+A = double(A); % because of sparse :/
+d = size(X,1);
 
-%% convert to tree graph
+                                    % adjacency of cells that have no common boundary
+Ap = sparse(A(regions,1),A(regions,2),1,d,d);
+                                    % adjacency of cells that have a boundary
+Am = sparse(A(~regions,1),A(~regions,2),1,d,d);
 
-ids = graph2ids(regions);
-
-
-%%
-
+ids = graph2ids(Ap+Ap');
 
 %% retrieve neighbours
 
-T2 = xor(regions,neighbours); %former neighbours
-T2 = T2 + T2';
-T1 = sparse(ids,1:length(ids),1);
-T3 = T1*T2;
-nn = T3*T1'; %neighbourhoods of regions
-%self reference if interior has not connected neighbours
+DG = sparse(1:numel(ids),ids,1);    % voxels incident to grains
+Ag = DG'*Am*DG;                     % adjacency of grains
+
+%% interior and exterior grain boundaries
+
+Aint = diag(any(Am*DG & DG,2))*Am;  % adjacency of 'interal' boundaries
+Aext = Am-Aint;                     % adjacency of 'external' boundaries
+
+FG = FD*DG;                         % faces incident to grain
+
+Dint = diag(diag(FD*Aint*FD'));     % select those faces that are 'interal'
+FG_int = Dint*FG;  
+                                     % select faces that are 'external'
+Dext = diag(diag(FD*Aext*FD') | diag(FD*FD' == 1)); 
+FG_ext = Dext*FG;
 
 
+%% generate polyeder for each grains
 
-%% subfractions
+fd = size(VF,2);
 
-% inner = T1 & T3 ;
-% [ix iy] = find(inner);
-% [ix ndx] = sort(ix);
-% cfr = unique(ix);
-% cfr = sparse(1,cfr,1:length(cfr),1,length(nn));
-% iy = iy(ndx);
-%
-% if ~isempty(iy)
-%   innerc = mat2cell(iy,histc(ix,unique(ix)),1);
-%
-%   %partners
-%   [lx ly] = find(T2(iy,iy));
-%   nx = [iy(lx) iy(ly)];
-%   ll = sortrows(sort(nx,2));
-%   ll = ll(1:2:end,:); % subractions
-%
-%
-%   nl = size(ll,1);
-%   lines = zeros(nl,2);
-%
-%   for k=1:nl
-%     left = cells{ll(k,1)};
-%     right = cells{ll(k,2)};
-%     mm = ismember(left, right);
-%     lines(k,:) = left(mm);
-%   end
-%
-%   xx = [vert(lines(:,1),1) vert(lines(:,2),1)];
-%   yy = [vert(lines(:,1),2) vert(lines(:,2),2)];
-%
-%   nic = length(innerc);
-%   fractions = cell(size(nic));
-%
-%   for k=1:nic
-%     mm = ismember(ll,innerc{k});
-%     mm = mm(:,1);
-%     fr.xx = xx(mm,:)';
-%     fr.yy = yy(mm,:)';
-%     fr.pairs = m(ll(mm,:));
-%       if numel(fr.pairs) <= 2, fr.pairs = fr.pairs'; end
-%     fractions{k} = fr;
-%   end
-% else
-%   fractions = cell(0);
-% end
-%% subfractions
+p = struct(polytope);
+nr = max(ids);
+ply = repmat(p,1,nr);
+pls = repmat(p,1,nr);
 
-inner = T1 & T3 ;
+for k=1:max(ids)
+  fe = find(FG_ext(:,k));  
+  [vertids b face] = unique(VF(fe,:));
+  
+  ph = p;
+  ph.Vertices =  v(vertids,:);
+  ph.VertexIds = vertids;
+  ph.Faces = reshape(face,[],fd);
+  ph.FacetIds = fe;
+  ply(k) = ph;
+  
+end
+ply = polytope(ply);
 
-fraction = {[]};
-if ~isempty(inner)
-  [ix iy] = find(inner');
-  if ~isempty(iy)
-    pos = [0; find(diff(iy)) ; numel(iy)];
-    
-    trisa = vertcat(tri{:});
-    [tris fo ind] = unique(sort(trisa,2),'rows');
-    ind = mat2cell(ind,cellfun('size',tri,1),1);
-    
-    fraction = cell(1,max(ids));
-    for k=1:numel(pos)-1
-      ndx = pos(k)+1:pos(k+1);
-      gid = iy(ndx(1));
-      vid = ix(ndx);
-      
-      [lx ly] = find(T2(vid,vid));
-      
-      f = vid([lx ly]);
-      
-      l = ind(f(:,1));
-      r = ind(f(:,2));
-      
-      l = [l{:}];
-      r = [r{:}];
-      
-      ll = repmat(1:size(l,2),6,1);
-      
-      I = sparse(l,ll,1) &  sparse(r,ll,2);
-      
-      [llx lly] = find(I);
-      [llx b c]= unique(llx);
-      
-      subfaces = trisa(fo(llx),:);
-      
-      [vfaces ig subfaces] = unique(subfaces);
-      
-      frac.pair = m(f(b,:));
-      
-      p = struct(polytope);
-      p.Faces = reshape(subfaces,[],size(tris,2));
-      p.Vertices = vert(vfaces,:);
-      
-      frac.P = polyeder(p);
-      
-      fraction{gid} = frac;
-      
-    end
-  end
+%% setup subgrain boundaries for each grains
+
+for k=1:max(ids)
+  fi = find(FG_int(:,k));
+  [vertids b face] = unique(VF(fi,:));
+  
+  ph = p;
+  ph.Vertices =  v(vertids,:);
+  ph.VertexIds = vertids;
+  ph.Faces = reshape(face,[],fd);
+  ph.FacetIds = fi;
+  
+  [i,j] = find(diag(DG(:,k))*Aint);  % subgrain boundaries slows everything down!
+  fraction(k).pairs = [i,j];
+  fraction(k).P = polyeder(ph); % because of plotting its a polytope
 end
 
-
-clear T1 T2 T3 regions angel_treshold
-
-
 %% conversion to cells
-
-ids = ids(n); %sort back
-phase = phase(n);
-cells = cells(n);
-tri = tri(n);
 
 %store grain id's into ebsd option field
 cids =  [0 cumsum(sampleSize(ebsd))];
@@ -293,7 +186,7 @@ end
 nc = length(id);
 
 % neighbours
-[ix iy] = find(nn);
+[ix iy] = find(Ag);
 pos = [0; find(diff(iy)); numel(iy)];
 neigh = cell(1,nc);
 for l=1:numel(pos)-1
@@ -305,9 +198,7 @@ end
 
 
 %% retrieve polygons
-s = tic;
-
-ply = createpolyeder(cells,id,vert,tri);
+% s = tic;
 
 comment =  ['from ' ebsd(1).comment];
 
@@ -373,139 +264,3 @@ for i = n:-1:1,
   end
 end;
 
-
-function [F v c tri] = neighbour(xy,varargin)
-% voronoi neighbours
-
-
-[v c tri] = spatialdecomposition3d(xy,'unitcell',varargin{:});
-clear xy
-il = (cat(2,c{:}));
-jl = (zeros(1,length(il)));
-
-cl = cellfun('length',c);
-ccl = [ 0 ;cumsum(cl)];
-
-if ~check_option(varargin,'unitcell')
-  %sort everything clockwise
-  %   parts = [0:10000:numel(c)-1 numel(c)];
-  %
-  %   f = false(size(c));
-  %   for l=1:numel(parts)-1
-  %     ind = parts(l)+1:parts(l+1);
-  %     cv = v( il( ccl(ind(1))+1:ccl(ind(end)+1) ),:);
-  %
-  %     r = diff(cv);
-  %     r = r(1:end-1,1).*r(2:end,2)-r(2:end,1).*r(1:end-1,2);
-  %     r = r > 0;
-  %
-  %     f( ind ) = r( ccl(ind)+1-ccl(ind(1)) );
-  %   end
-  %
-  for i=1:length(c)
-    jl(ccl(i)+1:ccl(i+1)) = i;
-    %     if f(i), l = c{i}; c{i} = l(end:-1:1); end
-  end
-  
-  clear cv parts ind r f cl
-else
-  for i=1:length(c)
-    jl(ccl(i)+1:ccl(i+1)) = i;
-  end
-end
-
-% vertice map
-T = sparse(jl,il,1);
-clear jl il ccl cl
-T(:,1) = false; %inf
-
-%edges
-F = T * T';
-clear T;
-F = triu(F,1);
-F = F > 3;
-
-function ply = createpolyeder(cells,regionids,verts,tri)
-
-p = struct(polytope);
-nr = numel(regionids);
-ply = repmat(p,1,nr);
-
-nnn = numel(regionids);
-
-cs = cellfun('prodofsize',regionids);
-
-cl = cellfun('size',tri,1);
-cl = [0;cumsum(cl)];
-
-tris = vertcat(tri{:});
-[tris f ind] = unique(sort(tris,2),'rows');
-ind = mat2cell(ind,cellfun('size',tri,1),1);
-
-
-% naaa = cellfun('prodofsize',regionids);
-% tic
-for k=1:nnn %pr
-  %   progress(k,nnn)
-  
-  ids = regionids{k};
-  c = cells(ids);
-  cv = [c{:}];
-  tris = vertcat(tri{ids});
-  inds = vertcat(ind{ids});
-  
-  [ft nd] = sort(inds);
-  dell = find(diff(ft) == 0);
-  nd([dell dell+1]) = [];
-  faces = tris(nd,:);
-  inds = inds(nd);
-  
-  sz = size(faces);
-  [vfaces ig facest] = unique(faces);
-  Faces = reshape(facest,sz);
-  Edges = [];
-  for l=1:sz(2)
-    if l == sz(2)
-      Edges = [Edges; Faces(:,l) Faces(:,1)];
-    else
-      Edges = [Edges; Faces(:,l) Faces(:,l+1)];
-    end
-  end
-  
-  s = max(Edges(:));
-  E = sparse(Edges(:,1),Edges(:,2),1,s,s);
-  E = E + E';
-  
-  ids = graph2ids(E);
-  uids = unique(ids);
-
-  if numel(uids) > 1
-    for l=1:numel(uids)
-      fndx = all(ismember(faces,vfaces(uids(l) == ids)),2);
-      [vfacesh ig facest] = unique(faces(fndx,:));
-      ph(l) = p;
-      ph(l).Vertices = verts(vfacesh,:);
-      ph(l).VertexIds = vfacesh;
-      ph(l).Faces = reshape(facest,[],sz(2));
-      ph(l).FacetIds = inds(fndx);
-      
-      [TRI,v(l)] = convhull(ph(l).Vertices);
-    end
-    [v ndx] = sort(v,'descend');
-    
-    ph = ph(ndx);
-    ply(k) = ph(1);
-    ply(k).Holes =  ph(2:end);
-  else
-    pt = p;
-    pt.Vertices = verts(vfaces,:);
-    pt.VertexIds = vfaces;
-    
-    pt.Faces = Faces;
-    pt.FacetIds = inds;
-    ply(k) = pt;
-  end
-  
-end
-
-ply = polytope(ply);

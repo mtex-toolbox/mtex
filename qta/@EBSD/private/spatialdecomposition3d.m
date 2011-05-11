@@ -1,7 +1,5 @@
-function [v c rind] = spatialdecomposition3d(xyz,varargin)
+function [A,v,VD,VF,FD] = spatialdecomposition3d(xyz,varargin)
 
-
-  
   
 if check_option(varargin,'unitcell') && ~check_option(varargin,'voronoi')
   
@@ -9,85 +7,76 @@ if check_option(varargin,'unitcell') && ~check_option(varargin,'voronoi')
   y = xyz(:,2);
   z = xyz(:,3);
   
-  %% estimate grid resolution  
+  % estimate grid resolution  
   dx = get_option(varargin,'dx',[]);
   dy = get_option(varargin,'dy',[]);
   dz = get_option(varargin,'dz',[]);
   if isempty(dx), [dx,dy,dz] = estimateGridResolution(x,y,z); end
   
-  %% Generate a Unit Cell
-  celltype = get_option(varargin,'GridType','tetragonal');
+  % generate a tetragonal unit cell  
+  n = numel(x);
   
-  if ischar(celltype)
-    switch lower(celltype)    
-      case 'tetragonal'
-        x1 = -dx/2;
-        x2 = dx/2;
-        y1 = -dy/2;
-        y2 = dy/2;
-        z1 = -dz/2;
-        z2 = dz/2;
-
-        tri = [ 1 5 6 2
-                2 6 7 3
-                7 8 4 3
-                8 5 1 4
-                5 8 7 6
-                2 3 4 1];
-
-        ccv = [ x1 y1 z1
-                x2 y1 z1
-                x2 y2 z1
-                x1 y2 z1
-                x1 y1 z2
-                x2 y1 z2
-                x2 y2 z2
-                x1 y2 z2];
-              
-      otherwise
-            error('MTEX:plotspatial:UnitCell','GridType currently not supported')
-    end
-  end
-
-  %% generate a surfaces
-  cx = ccv(:,1);
-  cy = ccv(:,2);
-  cz = ccv(:,3);
+  ix = uint32(x/dx);
+  iy = uint32(y/dy);
+  iz = uint32(z/dz);
   
-  nv = numel(x);
-  ncv = numel(cx);
+  lx = min(ix); ly = min(iy); lz = min(iz);  
+  ix = ix-lx+1; iy = iy-ly+1; iz = iz-lz+1;  % indexing of array
+  nx = max(ix); ny = max(iy); nz = max(iz);  % extend 
   
-  x1 = repmat(int16(x'/(dx/2)),ncv,1) + repmat(int16(cx/(dx/2)),1,nv);
-  y1 = repmat(int16(y'/(dy/2)),ncv,1) + repmat(int16(cy/(dy/2)),1,nv);
-  z1 = repmat(int16(z'/(dz/2)),ncv,1) + repmat(int16(cz/(dz/2)),1,nv);    
+  sz = uint32([nx,ny,nz]);
+  nZ = (nx+1)*(ny+1)*(nz+1);
         
-  [v m n] = uniquepoint(x1(:), y1(:), z1(:));
+  % new voxel coordinates
+  [vx,vy,vz] = ind2sub(sz+1,(1:nZ)');
+  v = [double(vx+lx-1)*dx-dx/2  double(vy+ly-1)*dy-dy/2 double(vz+lz-1)*dz-dz/2];
+  
+  % pointels incident to voxel
+  VD = s2i(sz+1,...
+    [ix [ix ix]+1 ix ix [ix ix]+1 ix],...
+    [iy iy [iy iy]+1 iy iy [iy iy]+1],...
+    [iz iz iz iz [iz iz iz iz]+1]);
+  
+  id = 1:n;  
+  id = [id(:) id(:)];
+  fx = [ix-1 ix+1];
+  rm = ~any(fx < 1 | fx > nx,2);
+  el = id(rm,:);                                                   % left pointel of edge
+  er = s2i(sz,fx(rm,:),[iy(rm,:) iy(rm,:)], [iz(rm,:) iz(rm,:)]);  % right pointel of edge 
+  
+  fy = [iy-1 iy+1];
+  rm = ~any(fy < 1 | fy > ny,2);
+  el = [el; id(rm,:)];
+  er = [er ;s2i(sz,[ix(rm,:) ix(rm,:)],fy(rm,:), [iz(rm,:) iz(rm,:)])];
+  
+  fz = [iz-1 iz+1];
+  rm = ~any(fz < 1 | fz > nz,2);
+  el = [el; id(rm,:)];
+  er = [er; s2i(sz,[ix(rm,:) ix(rm,:)],[iy(rm,:) iy(rm,:)],fz(rm,:))];
     
-  rind = cell(nv,1);
-	for k=1:nv
-    rind{k} = int32(n(tri + (k-1)*ncv));% new vertices
-  end
+  % adjacency of voxels
+  A = [el(:) er(:)];
+    
+  % surfels incident to voxel
+  FD = [s2i(sz+1,ix,iy,iz) s2i(sz+1,ix+1,iy,iz) ...
+    s2i(sz+1,ix,iy,iz)+2*n s2i(sz+1,ix,iy+1,iz)+2*n ...
+    s2i(sz+1,ix,iy,iz)+4*n s2i(sz+1,ix,iy,iz+1)+4*n];
   
-  v = double(v);  %convert back to double
-  v(:,1) = v(:,1) * (dx/2);
-  v(:,2) = v(:,2) * (dy/2);
-  v(:,3) = v(:,3) * (dz/2);
+  % pointels incident to facets
+  tri = [ ...
+    4 1 5 8
+    2 3 7 6
+    1 2 6 5
+    3 4 8 7
+    1 2 3 4
+    5 6 7 8];
   
-  c = reshape( n, ncv, nv)';
+  VF = zeros(max(FD(:)),4);
+  VF(FD,:) = reshape(VD(:,tri),[],4);
   
-  if ~check_option(varargin,'plot')
-    ct = cell(length(x),1);
-    for k=1:length(c)
-      ct{k} = c(k,:);
-    end 
-    c = ct;
-  else
-    rind = {1:size(c,1)};
-    c = {c};    
-  end
-  
-  
-  
+  % surfels as incidence matrix
+  FD = sparse(double(FD),double([id id id]),1);
+   
 else
   augmentation = get_option(varargin,'augmentation','cube');
   
@@ -225,21 +214,17 @@ ind = ndx(ind);
 xyz = [x(ind,:) y(ind,:)  z(ind,:)];
 
 
-function [dx,dy,dz] = estimateGridResolution(x,y,z)
 
-ux = unique(x);
-uy = unique(y);
-uz = unique(z);
+function ndx = s2i(sz,ix,iy,iz)
+% faster version of sub2ind
+ndx = 1 + (ix-1) + (iy-1)*sz(1) +(iz-1)*sz(1)*sz(2);
 
-[dx dy dz] = deal(min(diff(ux)),min(diff(uy)),min(diff(uz)));
 
-% 
-% rndsmp = [ (1:sum(1:length(x)<=100))'; unique(fix(1+rand(200,1)*(length(x)-1)))];
-% 
-% xx = repmat(x(rndsmp),1,length(rndsmp));
-% yy = repmat(y(rndsmp),1,length(rndsmp));
-% zz = repmat(z(rndsmp),1,length(rndsmp));
-% dist = abs(sqrt((xx-xx').^2 + (yy-yy').^2 + (zz-zz').^2));
-% dxy = min(dist(dist>eps)); 
 
+function varargout = estimateGridResolution(varargin)
+
+for k=1:numel(varargin)
+  dx = diff(varargin{k});
+  varargout{k} = min(dx(dx>0));
+end
 
