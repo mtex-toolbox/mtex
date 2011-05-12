@@ -1,7 +1,7 @@
 function [A,v,VF,FD] = spatialdecomposition3d(xyz,varargin)
 
 
-if check_option(varargin,'unitcell') && ~check_option(varargin,'voronoi')
+if ~check_option(varargin,'voronoi') %  check_option(varargin,'unitcell') && 
   
   x = xyz(:,1);
   y = xyz(:,2);
@@ -92,64 +92,50 @@ if check_option(varargin,'unitcell') && ~check_option(varargin,'voronoi')
 else
   augmentation = get_option(varargin,'augmentation','cube');
   
-  %% extrapolate dummy coordinates %dirty
+  % extrapolate dummy coordinates %dirty
   if ~check_option(varargin,'3d')
     switch lower(augmentation)
-      case 'cube'   
-        % get convex hull
-        K = convhulln(xyz);
-        I = eye(3);
+      case 'cube'
+        v = get_option(varargin,'dx',ceil(nthroot(size(xyz,1),3)));
+        a = min(xyz);
+        b = max(xyz);
+        d = (b-a)./v;
         
-        Z  = reshape(xyz(K,:),[],3,3);        
-        F = diff(Z,[],2);        
-        F = cross(F(:,1,:), F(:,2,:));
-        [F a b]= unique(squeeze(F),'rows');
+        dx = linspace(a(1),b(1),v);
+        dy = linspace(a(2),b(2),v);
+        dz = linspace(a(3),b(3),v);
         
-        dummy = [];
-                
-        for l=1:size(F,1)
-          v = F(l,:)'; 
-          H = I-2./(v'*v)* (v*v'); %householder matrix
-          
-          T = squeeze(Z(a(l),:,:));
-          
-          xy = xyz;
-          xy(:,1) = xyz(:,1) - T(1,1);
-          xy(:,2) = xyz(:,2) - T(1,2);
-          xy(:,3) = xyz(:,3) - T(1,3);
-          
-          v = v./norm(v);
-          
-          d = xy*v;
+        [x y] = meshgrid(dx,dy);        
+        z1 = [x(:) y(:)];
+        z2 = z1;
+        z1(:,3) = a(3)- d(3);
+        z2(:,3) = b(3)+ d(3);
         
-          dst = mean(diff(unique(d)));
-          del = d == 0 | d > dst*2.1;
-          
-          xy = xy(~del,:);
-          xy = xy*H;
-          
-          X =[];
-          X(:,1) = xy(:,1) + T(1,1);
-          X(:,2) = xy(:,2) + T(1,2);
-          X(:,3) = xy(:,3) + T(1,3);
-         
-          dummy =  [dummy; X];
-        end
+        [x z] = meshgrid(dx,dz);
+        y1(:,[1 3]) = [x(:) z(:)];
+        y2 = y1;
+        y1(:,2) = a(2)- d(2);
+        y2(:,2) = b(2)+ d(2);
+        
+        [y z] = meshgrid(dy,dz);
+        x1(:,2:3) = [y(:) z(:)];
+        x2 = x1;
+        x1(:,1) = a(1)- d(1);
+        x2(:,1) = b(1)+ d(1);
 
-         dummy = unique(dummy,'first','rows');
-
+        dummy = [x1; x2; y1; y2; z1; z2];
       case 'sphere'
-       dx = (max(xyz(:,1)) - min(xyz(:,1)));
-       dy = (max(xyz(:,2)) - min(xyz(:,2)));
-       dz = (max(xyz(:,3)) - min(xyz(:,3)));
+        dx = (max(xyz(:,1)) - min(xyz(:,1)));
+         dy = (max(xyz(:,2)) - min(xyz(:,2)));
+         dz = (max(xyz(:,3)) - min(xyz(:,3)));
 
-       [x y z] = sphere;
+         [x y z] = sphere;
 
-       dummy = [x(:).*dx+dx/2+min(xyz(:,1)) ...
-         y(:).*dy+dy/2+min(xyz(:,2)) ...
-         z(:).*dz+dz/2+min(xyz(:,3)) ];
+         dummy = [x(:).*dx+dx/2+min(xyz(:,1)) ...
+           y(:).*dy+dy/2+min(xyz(:,2)) ...
+           z(:).*dz+dz/2+min(xyz(:,3)) ];
 
-       dummy = unique(dummy,'rows');
+         dummy = unique(dummy,'rows');
       otherwise
         error('wrong augmentation option')
     end
@@ -167,63 +153,33 @@ else
      dummy = unique(dummy,'rows');
        
   end
-    
+  n = size(xyz,1);
   xyz = [xyz; dummy];
-%%  voronoi decomposition
-  qvoronoi(xyz)
-
-return
-
   [v c] = voronoin(xyz,{'Q7','Q8','Q5','Q3','Qz'});   %Qf {'Qf'} ,{'Q7'}
-  
   c(end-length(dummy)+1:end) = [];
   
-  if check_option(varargin,'plot')
-    cl = cellfun('prodofsize',c);
-    rind = splitdata(cl,3);
-    for k=1:numel(rind)
-      tind = rind{k};
-      faces = NaN(length(tind),max(cl(tind)));
-      for l = 1:length(tind)
-        faces(l,1:cl(tind(l))) = c{tind(l)};
-      end
-      fc{k} = faces;
-    end
-    c = fc;
+  FD = cell(numel(c),1); VF = FD; % preallocate  
+  for k=1:numel(c)
+    vertex = c{k}; s = [];
+    tri = convhulln(v(vertex,:));
+    s(1:size(tri,1),1) = k;
+    
+    VF{k} = vertex(tri);
+    FD{k} = s;
   end
+  
+  VF = vertcat(VF{:});
+  FD = vertcat(FD{:});
+  [VF b faceID] = unique(sort(VF,2),'rows');
+  FD = sparse(faceID(:),FD(:),1,max(faceID(:)),n);
+  
+  
+  A = triu(FD'*FD,1);
+  [i,j] = find(A|A');
+  A = [i,j];
   
 end
 
-
-
-function [xyz, ndx, pos] = uniquepoint(x,y,z,eps)
-
-if nargin > 3
-x = int32(x/eps);
-y = int32(y/eps);
-z = int32(z/eps);
-end
-
-    ndx = 1:int32(numel(x));
-    [ig,ind] = sort(x);
-    clear ig
-    ndx = ndx(ind);
-    clear ind
-    [ig,ind] = sort(y(ndx));
-    clear ig
-    ndx = ndx(ind);
-    clear ind
-    [ig,ind] = sort(z(ndx));
-    clear ig
-    ndx = ndx(ind);
-    clear ind
-%     
-ind = [true; diff(x(ndx)) | diff(y(ndx)) | diff(z(ndx))];
-% 
-pos = cumsum(ind);
-pos(ndx) = pos;
-ind = ndx(ind);
-xyz = [x(ind,:) y(ind,:)  z(ind,:)];
 
 
 
