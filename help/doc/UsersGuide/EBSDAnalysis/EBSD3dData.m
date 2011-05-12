@@ -44,13 +44,16 @@ segAngle = 10*degree;
 
 [grains ebsd] = calcGrains(ebsd,'threshold',segAngle,'unitcell')
 
+
 %% Working on grains
 % The reconstructed can be threaded as in the two dimensional case. E.g.
 % one can single out individuall grains and plot them 
 
-plot(grains(583))
-view([160 20])
+plot(grains(906),'FaceAlpha',0.3,'edgecolor','w','edgealpha',0.2)
+hold on
+plotSubBoundary(grains(906),'FaceColor','c')
 
+view([160 20])
 material([.8  .5 .1])
 axis tight
 grid on
@@ -58,17 +61,22 @@ grid on
 camlight('headlight')
 lighting phong
 
-
 %%
 % We can compute the grainSize of the grains, i.e. the number of
 % measurements contained in the grain
 
-grainSize(grains(583))
+grainSize(grains(906))
 
 %%
 % or the diameter
 
-diameter(grains(583))
+diameter(grains(906))
+
+
+%%
+% average misorientation angle on subgrain boundary
+
+subBoundaryAngle(grains(906),ebsd)/degree
 
 
 %% Visualize the 3d Grains
@@ -86,11 +94,12 @@ grid on
 camlight('headlight')
 lighting phong
 
+
 %%
 % Advanced investigation of grain boundaries: investigate the misorientation
 % angle to neighboured grains
 
-grain = largeGrains(19);
+grain = largeGrains(18);
 
 figure, hold on
 neighbouredGrains = neighbours(grains,grain);
@@ -101,9 +110,9 @@ for partnerGrain = neighbouredGrains
 end 
 colorbar
 
-plot(neighbouredGrains(1:end-3),'facealpha',0.1)
+% plot(neighbouredGrains(1:end-2),'facealpha',0.1)
 
-view([-25 30])
+view([140 30])
 material([.6  .6 .1])
 axis tight equal
 grid on

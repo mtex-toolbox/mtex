@@ -9,7 +9,7 @@ function omega = subBoundaryAngle(grains,ebsd,varargin)
 %  omega    - average angle
 %
 %% Flag
-%  complete - output all angles 
+%  complete - output all misorientations that occure along a subgrain boundary 
 %
 
 if nargin < 2
@@ -41,11 +41,10 @@ for k = b
   cs = get(qs,'CS');
   ss = get(qs,'SS');
       
-  omegas = angle(qs(pairs(:,1)),qs(pairs(:,2)));
-
+  q = qs(pairs(:,1)).\qs(pairs(:,2));
   if check_option(varargin,'complete')
-    omega{k} = omegas;
+    omega{k} = q;
   else
-    omega(k) = mean(omegas);
+    omega(k) = angle(mean(q));
   end
 end
