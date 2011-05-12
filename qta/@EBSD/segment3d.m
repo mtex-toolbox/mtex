@@ -55,7 +55,7 @@ if isempty(X), error('no spatial data');end
 phase = get(ebsd,'phases');
 
 
-[A,v,VD,VF,FD] = spatialdecomposition3d(X,'unitcell');
+[A,v,VF,FD] = spatialdecomposition3d(X,'unitcell');
 
 %%
 
@@ -93,10 +93,11 @@ d = size(X,1); % number of adjacent cells
 
                                     % adjacency of cells that have no common boundary
 Ap = sparse(A(regions,1),A(regions,2),1,d,d);
-ids = graph2ids(Ap+Ap');
+ids = graph2ids(Ap | Ap');
 clear Ap
                                     % adjacency of cells that have a boundary
 Am = sparse(A(~regions,1),A(~regions,2),1,d,d);
+Am = Am | Am';
 clear A regions
 
 
@@ -107,18 +108,18 @@ Ag = DG'*Am*DG;                     % adjacency of grains
 
 %% interior and exterior grain boundaries
 
-Aint = diag(any(Am*DG & DG,2))*Am;  % adjacency of 'interal' boundaries
+Aint = diag(any(Am*DG & DG,2))* double(Am);  % adjacency of 'interal' boundaries
 Aext = Am-Aint;                     % adjacency of 'external' boundaries
 
 FG = FD*DG;                         % faces incident to grain
 
-Dint = diag(diag(FD*Aint*FD'));     % select those faces that are 'interal'
+Dint = diag(diag(FD*Aint*FD')>1);   % select those faces that are 'interal'
 FG_int = Dint*FG;
-                                     % select faces that are 'external'
-Dext = diag(diag(FD*Aext*FD') | diag(FD*FD' == 1)); 
+                                    % select faces that are 'external'
+Dext = diag(diag(FD*Aext*FD') | sum(FD,2) == 1);
 FG_ext = Dext*FG;
 
-clear Aext Am FG FD Dint Dext
+clear Aext Am FD FG Dint Dext
 
 %% generate polyeder for each grains
 
@@ -131,7 +132,7 @@ ply = repmat(p,1,nr);
 
 for k=1:max(ids)
   fe = find(FG_ext(:,k));
-  [vertids b face] = unique(VF(fe,:));
+  [vertids,b,face] = unique(VF(fe,:));
   
   ph = p;
   ph.Vertices =  v(vertids,:);
@@ -147,28 +148,31 @@ clear FG_ext fe
 
 %% setup subgrain boundaries for each grains
 
-pls = repmat(p,1,nr);
-for k=1:max(ids)
+[i,j] = find(Aint);
+
+fraction = cell(1,nr);
+hasSubBoundary = find(any(FG_int));
+
+for k = hasSubBoundary
+
   fi = find(FG_int(:,k));
-  [vertids b face] = unique(VF(fi,:));
+  [vertids,b,face] = unique(VF(fi,:));
   
   ph = p;
   ph.Vertices =  v(vertids,:);
   ph.VertexIds = vertids;
   ph.Faces = reshape(face,[],fd);
-  ph.FacetIds = fi;
+  ph.FacetIds = fi;  
   
-%   l = find(DG(:,k));
-%   [i,j] = find(Aint(l,l)); % should be faster
+  f = find(DG(:,k));
+  s = ismembc(i,f) & ismembc(j,f);
   
-%   fraction(k).pairs = [l(i) l(j)];
-  pls(k) = ph; % because of plotting its a polytope
+  frac.pairs = [i(s),j(s)];
+  frac.P = polytope(ph); % because of plotting its a polytope
+  
+  fraction{k} = frac;
 end
 
-pls = polytope(pls);
-for k=1:max(ids)
-  fraction(k).P = pls(k);  
-end
 
 clear FG_int vertids face fi pls l i j b
 
