@@ -61,7 +61,7 @@ phase = get(ebsd,'phases');
 
 prop = lower(get_option(varargin,'property','angle'));
 
-angles = false(size(A,1),1);
+regions = false(size(A,1),1);
 for i=1:numel(ebsd)
  
   ind = all(phase(A) == ebsd(i).phase,2);
@@ -77,25 +77,28 @@ for i=1:numel(ebsd)
       o1 = ebsd(i).orientations(zll);
       o2 = ebsd(i).orientations(zrr);
       omega = angle(o1,o2);
+      clear o1 o2
     otherwise
       p = get(ebsd(i),prop);
       omega = abs( p(zll) - p(zrr) );
+      clear p
   end
   
-  angles(ind) = omega <= thresholds(i);
+  regions(ind) = omega <= thresholds(i);
 end
-
-regions = angles;
+clear ind zl zr zll zrr omega
 
 A = double(A); % because of sparse :/
-d = size(X,1);
+d = size(X,1); % number of adjacent cells
 
                                     % adjacency of cells that have no common boundary
 Ap = sparse(A(regions,1),A(regions,2),1,d,d);
+ids = graph2ids(Ap+Ap');
+clear Ap
                                     % adjacency of cells that have a boundary
 Am = sparse(A(~regions,1),A(~regions,2),1,d,d);
+clear A regions
 
-ids = graph2ids(Ap+Ap');
 
 %% retrieve neighbours
 
@@ -110,11 +113,12 @@ Aext = Am-Aint;                     % adjacency of 'external' boundaries
 FG = FD*DG;                         % faces incident to grain
 
 Dint = diag(diag(FD*Aint*FD'));     % select those faces that are 'interal'
-FG_int = Dint*FG;  
+FG_int = Dint*FG;
                                      % select faces that are 'external'
 Dext = diag(diag(FD*Aext*FD') | diag(FD*FD' == 1)); 
 FG_ext = Dext*FG;
 
+clear Aext Am FG FD Dint Dext
 
 %% generate polyeder for each grains
 
@@ -139,6 +143,8 @@ for k=1:max(ids)
 end
 ply = polytope(ply);
 
+clear FG_ext fe
+
 %% setup subgrain boundaries for each grains
 
 pls = repmat(p,1,nr);
@@ -152,10 +158,10 @@ for k=1:max(ids)
   ph.Faces = reshape(face,[],fd);
   ph.FacetIds = fi;
   
-  l = find(DG(:,k));
-  [i,j] = find(Aint(l,l));
+%   l = find(DG(:,k));
+%   [i,j] = find(Aint(l,l)); % should be faster
   
-  fraction(k).pairs = [l(i) l(j)];
+%   fraction(k).pairs = [l(i) l(j)];
   pls(k) = ph; % because of plotting its a polytope
 end
 
@@ -164,6 +170,7 @@ for k=1:max(ids)
   fraction(k).P = pls(k);  
 end
 
+clear FG_int vertids face fi pls l i j b
 
 %% conversion to cells
 
@@ -182,6 +189,8 @@ for k=1:numel(ebsd)
   orientations(aind) = ...
     partition(ebsd(k).orientations(ndx),pos);
 end
+
+clear cids ide
 
 % cell ids
 [ix iy] = sort(ids);
@@ -202,6 +211,8 @@ for l=1:numel(pos)-1
   ndx = pos(l)+1:pos(l+1);
   neigh{ iy(ndx(1)) } = ix(ndx);
 end
+
+clear Ag ix iy ndx
 
 % vdisp(['  ebsd segmentation: '  num2str(toc(s)) ' sec'],varargin{:});
 

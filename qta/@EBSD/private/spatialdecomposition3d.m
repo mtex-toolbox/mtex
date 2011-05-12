@@ -1,66 +1,77 @@
 function [A,v,VD,VF,FD] = spatialdecomposition3d(xyz,varargin)
 
-  
+
 if check_option(varargin,'unitcell') && ~check_option(varargin,'voronoi')
   
   x = xyz(:,1);
   y = xyz(:,2);
   z = xyz(:,3);
+  clear xyz
   
-  % estimate grid resolution  
+  % estimate grid resolution
   dx = get_option(varargin,'dx',[]);
   dy = get_option(varargin,'dy',[]);
   dz = get_option(varargin,'dz',[]);
   if isempty(dx), [dx,dy,dz] = estimateGridResolution(x,y,z); end
   
-  % generate a tetragonal unit cell  
+  % generate a tetragonal unit cell
   n = numel(x);
   
   ix = uint32(x/dx);
   iy = uint32(y/dy);
   iz = uint32(z/dz);
+  clear x y z
   
-  lx = min(ix); ly = min(iy); lz = min(iz);  
+  lx = min(ix); ly = min(iy); lz = min(iz);
   ix = ix-lx+1; iy = iy-ly+1; iz = iz-lz+1;  % indexing of array
-  nx = max(ix); ny = max(iy); nz = max(iz);  % extend 
+  nx = max(ix); ny = max(iy); nz = max(iz);  % extend
   
-  sz = uint32([nx,ny,nz]);
-  nZ = (nx+1)*(ny+1)*(nz+1);
-        
+  sz = [nx,ny,nz]; 
+  
   % new voxel coordinates
+  nZ = (nx+1)*(ny+1)*(nz+1);
   [vx,vy,vz] = ind2sub(sz+1,(1:nZ)');
-  v = [double(vx+lx-1)*dx-dx/2  double(vy+ly-1)*dy-dy/2 double(vz+lz-1)*dz-dz/2];
-  
-  % pointels incident to voxel
-  VD = s2i(sz+1,...
-    [ix [ix ix]+1 ix ix [ix ix]+1 ix],...
-    [iy iy [iy iy]+1 iy iy [iy iy]+1],...
-    [iz iz iz iz [iz iz iz iz]+1]);
-  
-  id = 1:n;  
-  id = [id(:) id(:)];
-  fx = [ix-1 ix+1];
-  rm = ~any(fx < 1 | fx > nx,2);
-  el = id(rm,:);                                                   % left pointel of edge
-  er = s2i(sz,fx(rm,:),[iy(rm,:) iy(rm,:)], [iz(rm,:) iz(rm,:)]);  % right pointel of edge 
-  
-  fy = [iy-1 iy+1];
-  rm = ~any(fy < 1 | fy > ny,2);
-  el = [el; id(rm,:)];
-  er = [er ;s2i(sz,[ix(rm,:) ix(rm,:)],fy(rm,:), [iz(rm,:) iz(rm,:)])];
-  
-  fz = [iz-1 iz+1];
-  rm = ~any(fz < 1 | fz > nz,2);
-  el = [el; id(rm,:)];
-  er = [er; s2i(sz,[ix(rm,:) ix(rm,:)],[iy(rm,:) iy(rm,:)],fz(rm,:))];
+  v = [double(vx+lx-1)*dx-dx/2,double(vy+ly-1)*dy-dy/2,double(vz+lz-1)*dz-dz/2];
+  clear vx vy vz dx dy dz lx ly lz
     
+  % pointels incident to voxel
+  ixn = ix+1; iyn = iy+1; izn = iz+1; % next voxel index
+  VD = [s2i(sz+1,ix,iy,iz)  s2i(sz+1,ixn,iy,iz)  s2i(sz+1,ixn,iyn,iz)  s2i(sz+1,ix,iyn,iz) ....
+    s2i(sz+1,ix,iy,izn) s2i(sz+1,ixn,iy,izn) s2i(sz+1,ixn,iyn,izn) s2i(sz+1,ix,iyn,izn)];
+
+  id = 1:n;
+  id = [id(:) id(:)];
+  
+  ixp = ix-1;  % previous voxel index
+  ex = [s2i(sz,ixp,iy,iz) s2i(sz,ixn,iy,iz)];
+  del = ixp < 1 | ixn > nx;
+  el = id(~del,:);    % left voxel of adjacency
+  er = ex(~del,:);    % right voxel of adjacency
+  clear ixp
+  
+  iyp = iy-1;
+  ex = [s2i(sz,ix,iyp,iz) s2i(sz,ix,iyn,iz)];
+  del = iyp < 1 | iyn > ny;
+  el = [el;id(~del,:)];
+  er = [er;ex(~del,:)];
+  clear iyp
+  
+  izp = iz-1;
+  ex = [s2i(sz,ix,iy,izp) s2i(sz,ix,iy,izn)];
+  del = izp < 1 | izn > nz;
+  el = [el;id(~del,:)];
+  er = [er;ex(~del,:)];
+  clear izp ex del
+  
   % adjacency of voxels
   A = [el(:) er(:)];
-    
+  clear el er 
+  
   % surfels incident to voxel
-  FD = [s2i(sz+1,ix,iy,iz) s2i(sz+1,ix+1,iy,iz) ...
-    s2i(sz+1,ix,iy,iz)+2*n s2i(sz+1,ix,iy+1,iz)+2*n ...
-    s2i(sz+1,ix,iy,iz)+4*n s2i(sz+1,ix,iy,iz+1)+4*n];
+  FD = [s2i(sz+1,ix,iy,iz) s2i(sz+1,ixn,iy,iz) ...
+    s2i(sz+1,ix,iy,iz)+2*n s2i(sz+1,ix,iyn,iz)+2*n ...
+    s2i(sz+1,ix,iy,iz)+4*n s2i(sz+1,ix,iy,izn)+4*n];
+  clear ix iy iz ixn iyn izn
   
   % pointels incident to facets
   tri = [ ...
@@ -76,7 +87,7 @@ if check_option(varargin,'unitcell') && ~check_option(varargin,'voronoi')
   
   % surfels as incidence matrix
   FD = sparse(double(FD),double([id id id]),1);
-   
+  
 else
   augmentation = get_option(varargin,'augmentation','cube');
   
