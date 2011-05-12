@@ -123,10 +123,10 @@ fd = size(VF,2);
 p = struct(polytope);
 nr = max(ids);
 ply = repmat(p,1,nr);
-pls = repmat(p,1,nr);
+
 
 for k=1:max(ids)
-  fe = find(FG_ext(:,k));  
+  fe = find(FG_ext(:,k));
   [vertids b face] = unique(VF(fe,:));
   
   ph = p;
@@ -141,6 +141,7 @@ ply = polytope(ply);
 
 %% setup subgrain boundaries for each grains
 
+pls = repmat(p,1,nr);
 for k=1:max(ids)
   fi = find(FG_int(:,k));
   [vertids b face] = unique(VF(fi,:));
@@ -151,10 +152,18 @@ for k=1:max(ids)
   ph.Faces = reshape(face,[],fd);
   ph.FacetIds = fi;
   
-  [i,j] = find(diag(DG(:,k))*Aint);  % subgrain boundaries slows everything down!
-  fraction(k).pairs = [i,j];
-  fraction(k).P = polyeder(ph); % because of plotting its a polytope
+  l = find(DG(:,k));
+  [i,j] = find(Aint(l,l));
+  
+  fraction(k).pairs = [l(i) l(j)];
+  pls(k) = ph; % because of plotting its a polytope
 end
+
+pls = polytope(pls);
+for k=1:max(ids)
+  fraction(k).P = pls(k);  
+end
+
 
 %% conversion to cells
 
