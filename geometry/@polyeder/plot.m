@@ -38,98 +38,73 @@ if check_option(varargin,{'fill'})
 elseif check_option(varargin,'pair')
   
   pair = get_option(varargin,'pair');
-  cdat = pair(:,3:end);  cdatsz = size(cdat,2);
-  pair = pair(:,1:2);
+  npair = size(pair,1);
+  
+  CData = pair(:,3:end);
+  if isempty(CData)
+    CData = zeros(npair,3);
+  end
+  
+  left = pair(:,1);
+  right = pair(:,2);
   
   if ~isempty(pair)
     
-    npair = size(pair,1);
+    V = cell(npair,1);
+    F = cell(npair,1);
+    C = cell(npair,1);
     
-    face_ids = get(p,'FacetIds');
-    face_ids = face_ids(pair);
-    p = p(pair);
+    Vertices = get(p,'Vertices');
+    Faces = get(p,'Faces');
+    FacetIds = get(p,'FacetIds');
     
-    vert = cell(size(p,1),1);
-    fac = cell(size(p,1),1);
-    c = cell(size(p,1),1);
-    bvert = {};
-    bfac = {};
-    
-    offset=0;
-    offset2=0;
+    offset = 0;
     for k=1:npair
+      isCommonFace = ismembc( FacetIds{left(k)},FacetIds{right(k)});
       
-      b1 = face_ids{k,1};
-      b2 = face_ids{k,2};
+      CommonFaces = Faces{left(k)}(isCommonFace,:);
+      [VertexId,n,FaceId] = unique(CommonFaces);
       
-      r = ismember(b1,b2);
+      nf = size(CommonFaces);
+      V{k} = Vertices{left(k)}(VertexId,:);
+      CommonFaces = reshape(FaceId+offset,nf);
+      F{k} = CommonFaces;
+      C{k} = repmat(CData(k,:),nf(1),1);
       
-      X = p(k,1).Vertices;
-      Faces = p(k,1).Faces(r,:);
-      
-      [v n id] = unique(Faces);
-      
-      vert{k} = X(v,:);
-      fac{k} = reshape(id,[], size(Faces,2))+offset;
-      
-      
-      offset = offset + size(vert{k},1);
-      for l=1:cdatsz
-        c{k}(1:size(fac{k},1),l) = cdat(k,l);
-      end
-      
-      
-      %///////////////////////// EdgeColor
-      if check_option(varargin,{'BoundaryColor','LineWidth'})
-        Edges = cell(size(Faces,2),1);
-        for nf=1:size(Faces,2)
-          if nf == size(Faces,2)
-            Edges{nf} = [Faces(:,nf) Faces(:,1)];
-          else
-            Edges{nf} = [Faces(:,nf) Faces(:,nf+1)];
-          end
+      offset = offset + size(V{k},1);      
+    end
+    
+    if check_option(varargin,'BoundaryColor')
+      E = cell(npair,1);
+      for k=1:npair
+        CommonFaces = F{k};
+        CommonFaces(:,end+1) = CommonFaces(:,1);
+        
+        Edges = [];
+        for l=1:nf(2)
+          Edges = [Edges; CommonFaces(:,l:l+1)];
         end
         
-        Edges = vertcat(Edges{:});
         [Ed2 nd] = sortrows(sort(Edges,2));
         Ed3 = all(Ed2(1:end-1,:) == Ed2(2:end,:),2);
-        
         del = ~([Ed3; false] | [false; Ed3]);
-        Edges = Edges(nd(del),:);
-        
-        if ~isempty(Edges)
-          border = convert2border(Edges(:,1),Edges(:,2));
-          
-          for bb=1:numel(border)
-            [v n id] = unique(border{bb});
-            bvert{end+1} = X(v,:);
-            bfac{end+1} = [id+offset2;-1];
-            offset2 = offset2 + size(bvert{end},1);
-          end
-        end
+        E{k} = Edges(nd(del),:);
       end
     end
     
-    if check_option(varargin,{'BoundaryColor','LineWidth'}) && ~isempty(bvert)
-      bvert = vertcat(bvert{:});
-      bfac = vertcat(bfac{:});
-      bfac(bfac == -1) = size(bvert,1)+1;
-      bvert(end+1,:) = NaN;
-      patch('vertices',bvert,'Faces',bfac','EdgeColor',get_option(varargin,'BoundaryColor','k'),'LineWidth',get_option(varargin,'LineWidth',2),'FaceColor','none');
-    end
-    %/////////////////////////
     
+    V = vertcat(V{:});
+    F = vertcat(F{:});
+    C = vertcat(C{:});    
     
-    fac = vertcat(fac{:});
-    vert = vertcat(vert{:});
-    c = vertcat(c{:});
+    h = patch('Vertices',V,'Faces',F,'FaceVertexCData',C,'FaceColor','flat','EdgeColor','none');
     
-    if ~isempty(c)
-      h = patch('Vertices',vert,'Faces',fac,...
-        'FaceVertexCData',c,'FaceColor','flat','EdgeColor','none');
-    else
-      h = patch('Vertices',vert,'Faces',fac,...
-        'FaceColor','r','EdgeColor','none');
+    if check_option(varargin,'BoundaryColor')
+      V(end+1,:) = NaN;
+      E = vertcat(E{:});
+      E(:,3) = size(V,1);
+      V = V(E',:);
+      patch('Vertices',V,'Faces',1:size(V,1),'EdgeColor',get_option(varargin,'BoundaryColor','k'),'LineWidth',get_option(varargin,'LineWidth',2),'FaceColor','none');
     end
   end
   
@@ -139,68 +114,6 @@ if exist('h','var'),
   optiondraw(h,varargin{:});
 else
   h = [];
-end
-
-
-
-
-function border = convert2border(gl,gr)
-
-[gll a] = sort(gl);
-[grr b] = sort(gr);
-
-nn = numel(gl);
-
-sb = zeros(nn,1);
-v = sb;
-
-sb(b) = a;
-v(1) = a(1);
-
-cc = 0;
-l = 2;
-lp = 1;
-
-while true
-  np = sb(v(lp));
-  
-  if np > 0
-    v(l) = np;
-    sb(v(lp)) = -1;
-  else
-    cc(end+1) = lp;
-    n = sb(sb>0);
-    if isempty(n)
-      break
-    else
-      v(l) = n(1);
-    end
-  end
-  
-  lp = l;
-  l=l+1;
-end
-
-nc = numel(cc)-1;
-if nc > 1, border = cell(1,nc); end
-
-for k=1:nc
-  vt = gl(v(cc(k)+1:cc(k+1)));
-  border(k) = {vt};
-end
-
-
-
-function [faces vertices] = get_faces(p)
-
-% vertices = horzcat(p{:});
-
-cl = cellfun('length',p);
-rl = max(cl);
-crl = [0 cumsum(cl)];
-faces = NaN(numel(p),rl);
-for k = 1:numel(p)
-  faces(k,1:cl(k)) = (crl(k)+1):crl(k+1);
 end
 
 
