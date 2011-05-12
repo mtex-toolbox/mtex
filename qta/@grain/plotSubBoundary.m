@@ -35,8 +35,8 @@ if any(b)
     fixMTEXplot;
   elseif ispolyeder(grains)
     
-    sub = [grains(b).subfractions];
-    h = plot([sub.P],'fill');
+    sub = [grains(b).subfractions];   
+    h = plot(polyeder([sub.P]),'fill');
   end
   
   optiondraw(h,varargin{:});

@@ -1,4 +1,4 @@
-function [A,v,VD,VF,FD] = spatialdecomposition3d(xyz,varargin)
+function [A,v,VF,FD] = spatialdecomposition3d(xyz,varargin)
 
 
 if check_option(varargin,'unitcell') && ~check_option(varargin,'voronoi')
@@ -36,9 +36,6 @@ if check_option(varargin,'unitcell') && ~check_option(varargin,'voronoi')
     
   % pointels incident to voxel
   ixn = ix+1; iyn = iy+1; izn = iz+1; % next voxel index
-  VD = [s2i(sz+1,ix,iy,iz)  s2i(sz+1,ixn,iy,iz)  s2i(sz+1,ixn,iyn,iz)  s2i(sz+1,ix,iyn,iz) ....
-    s2i(sz+1,ix,iy,izn) s2i(sz+1,ixn,iy,izn) s2i(sz+1,ixn,iyn,izn) s2i(sz+1,ix,iyn,izn)];
-
   id = 1:n;
   id = [id(:) id(:)];
   
@@ -67,6 +64,9 @@ if check_option(varargin,'unitcell') && ~check_option(varargin,'voronoi')
   A = [el(:) er(:)];
   clear el er 
   
+  % pointels incident to voxels
+  VD = [s2i(sz+1,ix,iy,iz)  s2i(sz+1,ixn,iy,iz)  s2i(sz+1,ixn,iyn,iz)  s2i(sz+1,ix,iyn,iz) ....
+    s2i(sz+1,ix,iy,izn) s2i(sz+1,ixn,iy,izn) s2i(sz+1,ixn,iyn,izn) s2i(sz+1,ix,iyn,izn)];
   % surfels incident to voxel
   FD = [s2i(sz+1,ix,iy,iz) s2i(sz+1,ixn,iy,iz) ...
     s2i(sz+1,ix,iy,iz)+2*n s2i(sz+1,ix,iyn,iz)+2*n ...
@@ -84,6 +84,7 @@ if check_option(varargin,'unitcell') && ~check_option(varargin,'voronoi')
   
   VF = zeros(max(FD(:)),4);
   VF(FD,:) = reshape(VD(:,tri),[],4);
+  clear VD
   
   % surfels as incidence matrix
   FD = sparse(double(FD),double([id id id]),1);
