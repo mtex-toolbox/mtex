@@ -5,12 +5,14 @@
 
 ebsd = simulateEBSD(SantaFe,500);
 
-X = randi(100,500,2);
+X = randi(20,500,2);
 
 ebsd = set(ebsd,'X',X);
-ebsd = fill(ebsd,[1 100 1 100],1)
+figure,plot( calcGrains(ebsd) )
 
-plot(ebsd)
+ebsd = fill(ebsd,[0 20 0 20],1)
+figure,plot( calcGrains(ebsd) )
+
 
 %% Generation of random 3d Data
 % some random orientations and spatial coordinates
@@ -31,6 +33,11 @@ ebsd(2) = EBSD(orientation(o),'xy',X,'phase',2);
 % computing grains we interpolate data by on a regular grid
 %
 
+[grains ebsd] = calcGrains(ebsd,'voronoi')
+plot(grains,'edgecolor','k')
+
+%%
+
 ebsd = fill(ebsd,[0 25 0 25 0 25],1)
 
 %%
@@ -42,8 +49,6 @@ ebsd = fill(ebsd,[0 25 0 25 0 25],1)
 %
 
 plot(grains)
-axis tight
-view(60,20)
 
 material dull
 lighting phong
@@ -55,11 +60,14 @@ grid on
 % plot a single phase
 
 plot(grains(get(grains,'phase') == 2))
-axis tight
-view(60,20)
 
 material dull
 lighting phong
 camlight('headlight')
 grid on
+
+
+%%
+
+
 

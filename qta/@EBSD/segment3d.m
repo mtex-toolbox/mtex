@@ -44,18 +44,23 @@ X = vertcat(ebsd.X);
 if isempty(X), error('no spatial data');end
 
 % sort for voronoi
-% [xy m n]  = unique(xy,'first','rows');
-% if numel(m) ~= numel(n)
-%   warning('mtex:GrainGeneration','spatially duplicated data points, perceed by erasing them')
-%   ind = ~ismember(1:sum(sampleSize(ebsd)),m);
-%   [grains ebsd] = segment3d(delete(ebsd,ind),varargin{:});
-%   return
-% end
+[Xt m n]  = unique(X(:,3:-1:1),'first','rows');
+X = X(m,:);
+
+if numel(m) ~= numel(n)
+  warning('mtex:GrainGeneration','spatially duplicated data points, perceed by erasing them')
+  ind = ~ismember(1:sum(sampleSize(ebsd)),m);
+  [grains ebsd] = segment3d(delete(ebsd,ind),varargin{:});
+  return
+end
 
 phase = get(ebsd,'phases');
 
+[A,v,VF,FD] = spatialdecomposition3d(X,'unitcell',varargin{:});
 
-[A,v,VF,FD] = spatialdecomposition3d(X,'unitcell');
+A = m(A);
+FD = FD(:,n);
+
 
 %%
 

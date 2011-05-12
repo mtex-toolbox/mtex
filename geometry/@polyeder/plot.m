@@ -116,4 +116,7 @@ else
   h = [];
 end
 
+axis equal tight
+grid on
+view([30,15])
 
