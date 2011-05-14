@@ -1,6 +1,12 @@
 function slice3(ebsd,varargin)
 % plot ebsd data as slices
 
+%% Options
+% slice  -  initial slice position in ebsd coordinates [x y z].
+%
+%% 
+%
+
 % make up new figure
 newMTEXplot;
 
@@ -68,15 +74,19 @@ xparam.i = ax(1);
 xparam.j = bx(1);
 xparam.d = dx;
 
+
+
 % handle callbacks
 set(sz,'Callback',{@sliceIt,hz,zparam,d});
 set(sy,'Callback',{@sliceIt,hy,yparam,d});
 set(sx,'Callback',{@sliceIt,hx,xparam,d});
 
+
+pos = get_option(varargin,'slice',mean([ax;bx]));
 % initial slice positions
-sliceIt(sz,[],hz,zparam,d);
-sliceIt(sy,[],hy,yparam,d);
-sliceIt(sx,[],hx,xparam,d);
+sliceIt(sz,[],hz,zparam,d,pos(3));
+sliceIt(sy,[],hy,yparam,d,pos(2));
+sliceIt(sx,[],hx,xparam,d,pos(1));
 
 axis equal tight
 grid on
@@ -84,9 +94,12 @@ view([30,15])
 
 
 
-function sliceIt(e,v,slicingPlane,planeParam,cdata)
+function sliceIt(e,v,slicingPlane,planeParam,cdata,pos)
 
-pos = planeParam.i+(planeParam.j-planeParam.i)*get(e,'value');
+if nargin < 6
+  pos = planeParam.i+(planeParam.j-planeParam.i)*get(e,'value'); 
+end
+
 stack = round(pos/planeParam.d)+1;
 
 % slicingPlane
