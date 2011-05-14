@@ -18,6 +18,7 @@ d = colorcode(ebsd,varargin{:});
 
 % setup slicing planes
 X = get(ebsd,'X');
+
 if ~issorted(X(:,[3 2 1]),'rows')
   [Xt,m] = unique(X(:,[3 2 1]),'first','rows');
   d = d(m,:);
@@ -32,13 +33,13 @@ ax = min(X); bx = max(X);
 voxels(1:2) = s;
 
 % y-slice
-[u,v] = meshgrid(ax(1):dx:bx(1),ax(3):dy:bx(3));
+[u,v] = meshgrid(ax(1):dx:bx(1),ax(3):dz:bx(3));
 [uv,Fy,ygrid,s] = spatialdecomposition3d([u(:) v(:)]);
 y = [uv(:,1),uv(:,3),uv(:,2)];
 voxels(3) = s(2);
 
 % x-slice
-[u,v] = meshgrid(ax(2):dx:bx(2),ax(3):dy:bx(3));
+[u,v] = meshgrid(ax(2):dy:bx(2),ax(3):dz:bx(3));
 [uv,Fx,xgrid] = spatialdecomposition3d([u(:) v(:)]);
 x = [uv(:,3),uv(:,1),uv(:,2)];
 
@@ -86,7 +87,7 @@ view([30,15])
 function sliceIt(e,v,slicingPlane,planeParam,cdata)
 
 pos = planeParam.i+(planeParam.j-planeParam.i)*get(e,'value');
-stack = uint32(pos/planeParam.d);
+stack = round(pos/planeParam.d)+1;
 
 % slicingPlane
 p = get(slicingPlane,'Vertices');
