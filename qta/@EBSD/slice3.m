@@ -3,7 +3,8 @@ function slice3(ebsd,varargin)
 
 % make up new figure
 newMTEXplot;
-addSlicer(varargin);
+
+[sx,sy,sz] = addSlicer(varargin);
 
 % x is allways east
 plotx2east
@@ -13,148 +14,155 @@ varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
 % compute colorcoding
-s.d = colorcode(ebsd,varargin{:});
+d = colorcode(ebsd,varargin{:});
 
-% get data
-s.xyz = get(ebsd,'X');
-assert(size(s.xyz,2) == 3,'data should be 3d');
-[s.x s.y s.z] = deal(s.xyz(:,1),s.xyz(:,2),s.xyz(:,3));
-
-% determine unit cells
-s.xx = unique(s.x);
-s.yy = unique(s.y);
-s.zz = unique(s.z);
-
-s.unitCellxy = [s.xx(1) s.yy(1);s.xx(2) s.yy(1);s.xx(2) s.yy(2);s.xx(1) s.yy(2);s.xx(1) s.yy(1)];
-s.unitCellyz = [s.yy(1) s.zz(1);s.yy(2) s.zz(1);s.yy(2) s.zz(2);s.yy(1) s.zz(2);s.yy(1) s.zz(1)];
-s.unitCellxz = [s.xx(1) s.zz(1);s.xx(2) s.zz(1);s.xx(2) s.zz(2);s.xx(1) s.zz(2);s.xx(1) s.zz(1)];
-
-% generate meshes for each slice
-[s.zxx s.zyy] = meshgrid(s.xx,s.yy);
-[s.yxx s.yzz] = meshgrid(s.xx,s.zz);
-[s.xyy s.xzz] = meshgrid(s.yy,s.zz);
-
-s.xy = [s.zxx(:) s.zyy(:)];
-s.xz = [s.yxx(:) s.yzz(:)];
-s.yz = [s.xyy(:) s.xzz(:)];
-
-% set empty color -> hide slices at beginning
-s.dz = NaN(length(s.xy),size(s.d,2));
-s.dy = NaN(length(s.xz),size(s.d,2));
-s.dx = NaN(length(s.yz),size(s.d,2));
-
-% plot slices
-s.hz = plotxyexact(s.xy,s.dz,s.unitCellxy,varargin{:});
-s.hy = plotxyexact(s.xz,s.dy,s.unitCellxz,varargin{:});
-s.hx = plotxyexact(s.yz,s.dx,s.unitCellyz,varargin{:});
-
-% 
-xyzt = get(s.hy,'Vertices');
-[xyzt(:,1),xyzt(:,3)] = deal(xyzt(:,1),xyzt(:,2));
-xyzt(:,2) = 0;
-set(s.hy,'Vertices',xyzt);
-
-
-xyzt = get(s.hx,'Vertices');
-[xyzt(:,2),xyzt(:,3)] = deal(xyzt(:,1),xyzt(:,2));
-xyzt(:,1) = 0;
-set(s.hx,'Vertices',xyzt);
-
-
-view(3)
-
-axis equal
-axis ([min(s.xx) max(s.xx) min(s.yy) max(s.yy) min(s.zz) max(s.zz)])
-
-% store slice data
-setappdata(gcf,'slicedata',s);
-
-% plot some initial slices
-sliceitX(s,1)
-sliceitY(s,1)
-sliceitZ(s,0)
-
-function sliceitZ(s,v)
-    
-%
-k = interp1(s.zz,1:numel(s.zz),(max(s.zz)-min(s.zz))*v+min(s.zz),'nearest');
-zslice = s.z == s.zz(k);
-
-%   s.zz(k)
-tx = s.xyz(zslice,1);
-ty = s.xyz(zslice,2);
-  
-ind = interp2(s.zxx,s.zyy,reshape(1:numel(s.zxx),size(s.zxx)),tx,ty,'nearest');
-    
-xyzt = get(s.hz,'Vertices');
-xyzt(:,3) = s.zz(k);
-set(s.hz,'Vertices',xyzt);
-
-% set data to the patch object
-s.dz(ind,:) = s.d(zslice,:);
-if size(s.dz,2) == 1
-  set(s.hz,'CData',s.dz)
-else
-  set(s.hz,'FaceVertexCData',s.dz);
+% setup slicing planes
+X = get(ebsd,'X');
+if ~issorted(X(:,[3 2 1]),'rows')
+  [Xt,m] = unique(X(:,[3 2 1]),'first','rows');
+  d = d(m,:);
 end
-  
-  
-function sliceitY(s,v)
-  
-k = interp1(s.yy,1:numel(s.yy),(max(s.yy)-min(s.yy))*v+min(s.yy),'nearest');
 
-yslice = s.y == s.yy(k);
-tx = s.xyz(yslice,1);
-tz = s.xyz(yslice,3);
- 
-ind = interp2(s.yxx,s.yzz,reshape(1:numel(s.yxx),size(s.yzz)),tx,tz,'nearest');
-  
-xyzt = get(s.hy,'Vertices');
-xyzt(:,2) = s.yy(k);
-set(s.hy,'Vertices',xyzt);
-%  s.yy(k)
-dod = isfinite(ind);
-fyslice = find(yslice);
-s.dy(ind(dod),:) = s.d(fyslice(dod),:);
- 
-if size(s.dy,2) == 1
-  set(s.hy,'CData',s.dy);
-else
-  set(s.hy,'FaceVertexCData',s.dy);
-end
-  
-  
-function sliceitX(s,v)
-  
-k = interp1(s.xx,1:numel(s.xx),(max(s.xx)-min(s.xx))*v+min(s.xx),'nearest');
-xslice = s.x == s.xx(k);
+[dx,dy,dz] = estimateGridResolution(X(:,1),X(:,2),X(:,3));
+ax = min(X); bx = max(X);
 
-ty = s.xyz(xslice,2);
-tz = s.xyz(xslice,3);
-    
-ind = interp2(s.xyy,s.xzz,reshape(1:numel(s.xyy),size(s.xyy)),ty,tz,'nearest');
-    
-xyzt = get(s.hx,'Vertices');
-xyzt(:,1) = s.xx(k);
-set(s.hx,'Vertices',xyzt);
-  
-dod = isfinite(ind);
-fxslice = find(xslice);
-s.dx(ind(dod),:) = s.d(fxslice(dod),:);
-if size(s.dx,2) == 1
-  set(s.hx,'CData',s.dx)
-else
-  set(s.hx,'FaceVertexCData',s.dx);
+% z-slice
+[u,v] = meshgrid(ax(1):dx:bx(1),ax(2):dy:bx(2));
+[z,Fz,zgrid,s] = spatialdecomposition3d([u(:) v(:)]);
+voxels(1:2) = s;
+
+% y-slice
+[u,v] = meshgrid(ax(1):dx:bx(1),ax(3):dy:bx(3));
+[uv,Fy,ygrid,s] = spatialdecomposition3d([u(:) v(:)]);
+y = [uv(:,1),uv(:,3),uv(:,2)];
+voxels(3) = s(2);
+
+% x-slice
+[u,v] = meshgrid(ax(2):dx:bx(2),ax(3):dy:bx(3));
+[uv,Fx,xgrid] = spatialdecomposition3d([u(:) v(:)]);
+x = [uv(:,3),uv(:,1),uv(:,2)];
+
+hz = patch('vertices',z,'faces',Fz,'edgecolor','none');
+hy = patch('vertices',y,'faces',Fy,'edgecolor','none');
+hx = patch('vertices',x,'faces',Fx,'edgecolor','none');
+
+zparam.plane = 3;
+zparam.grid = zgrid;
+zparam.dim = voxels;
+zparam.i = ax(3);
+zparam.j = bx(3);
+zparam.d = dz;
+
+yparam.plane = 2;
+yparam.grid = ygrid;
+yparam.dim = voxels;
+yparam.i = ax(2);
+yparam.j = bx(2);
+yparam.d = dy;
+
+xparam.plane = 1;
+xparam.grid = xgrid;
+xparam.dim = voxels;
+xparam.i = ax(1);
+xparam.j = bx(1);
+xparam.d = dx;
+
+% handle callbacks
+set(sz,'Callback',{@sliceIt,hz,zparam,d});
+set(sy,'Callback',{@sliceIt,hy,yparam,d});
+set(sx,'Callback',{@sliceIt,hx,xparam,d});
+
+% initial slice positions
+sliceIt(sz,[],hz,zparam,d);
+sliceIt(sy,[],hy,yparam,d);
+sliceIt(sx,[],hx,xparam,d);
+
+axis equal tight
+grid on
+view([30,15])
+
+
+
+function sliceIt(e,v,slicingPlane,planeParam,cdata)
+
+pos = planeParam.i+(planeParam.j-planeParam.i)*get(e,'value');
+stack = uint32(pos/planeParam.d);
+
+% slicingPlane
+p = get(slicingPlane,'Vertices');
+p(:,planeParam.plane) = pos;
+
+switch planeParam.plane
+  case 1
+    ndx = s2i3(planeParam.dim,stack,planeParam.grid(:,1),planeParam.grid(:,2));
+  case 2
+    ndx = s2i3(planeParam.dim,planeParam.grid(:,1),stack,planeParam.grid(:,2));
+  case 3
+    ndx = s2i3(planeParam.dim,planeParam.grid(:,1),planeParam.grid(:,2),stack);
 end
-  
+
+cdata = cdata(ndx,:);
+set(slicingPlane, 'Vertices',p);
+set(slicingPlane,'FaceVertexCData',cdata,'FaceColor','flat');
+
+
+function varargout = estimateGridResolution(varargin)
+
+for k=1:numel(varargin)
+  dx = diff(varargin{k});
+  varargout{k} = min(dx(dx>0));
+end
+
+function [uv,VF,grid,sz] = spatialdecomposition3d(uv,varargin)
+
+u = uv(:,1);
+v = uv(:,2);
+clear uv
+
+% estimate grid resolution
+du = get_option(varargin,'du',estimateGridResolution(u));
+dv = get_option(varargin,'dv',estimateGridResolution(v));
+
+% generate a tetragonal unit cell
+iu = uint32(u/du);
+iv = uint32(v/dv);
+clear u v
+
+lu = min(iu); lv = min(iv);
+iu = iu-lu+1; iv = iv-lv+1;  % indexing of array
+nu = max(iu); nv = max(iv);  % extend
+sz = [nu,nv];
+
+% new voxel coordinates
+[vu,vv] = ind2sub(sz+1,(1:(nu+1)*(nv+1))');
+uv = [double(vu+lu-1)*du-du/2,double(vv+lv-1)*dv-dv/2];
+uv(:,3) = 0;
+
+% % pointels incident to voxel
+iun = iu+1; ivn = iv+1; % next voxel index
+% pointels incident to voxels
+VF = [s2i(sz+1,iu,iv)  s2i(sz+1,iun,iv)  s2i(sz+1,iun,ivn)  s2i(sz+1,iu,ivn)];
+
+grid = [iu,iv];
+
+
+function ndx = s2i(sz,i,j)
+% faster version of sub2ind
+ndx = 1 + (i-1) + (j-1)*sz(1);
+
+
+function ndx = s2i3(sz,ix,iy,iz)
+% faster version of sub2ind
+ndx = 1 + (ix-1) + (iy-1)*sz(1) +(iz-1)*sz(1)*sz(2);
+
 
 function d = colorcode(ebsd,varargin)
 
 prop = lower(get_option(varargin,'property','orientation'));
 
 if check_option(varargin,'phase') && ~strcmpi(prop,'phase') %restrict to a given phase
-	ebsd(~ismember([ebsd.phase],get_option(varargin,'phase'))) = [];
-end   
+  ebsd(~ismember([ebsd.phase],get_option(varargin,'phase'))) = [];
+end
 
 % %% compute colorcoding
 if isa(prop,'double')
@@ -164,12 +172,12 @@ end;
 
 switch prop
   case 'user'
-  case 'orientation'    
+  case 'orientation'
     cc = lower(get_option(varargin,'colorcoding','ipdf'));
     d = [];
     for i = 1:length(ebsd)
       d = [d;orientation2color(ebsd(i).orientations,cc,varargin{:})];
-    end    
+    end
   case 'phase'
     d = [];
     for i = 1:length(ebsd)
@@ -182,8 +190,8 @@ switch prop
       end
     end
     colormap(hsv(max(d)+1));
-%     co = get(gca,'colororder');
-%     colormap(co(1:length(ebsd),:));
+    %     co = get(gca,'colororder');
+    %     colormap(co(1:length(ebsd),:));
   case fields(ebsd(1).options)
     d = get(ebsd,prop);
   otherwise
@@ -191,53 +199,50 @@ switch prop
 end
 
 
-function addSlicer(varargin)
-    slicetype = get_flag(varargin,{'x','y','z','xy','xz','yz','xyz'},'xyz');
-    
-    fpos = -10;
-    if ~isempty(strfind(slicetype,'z'))
-      fpos = fpos+20;
-      h2 = uicontrol(...
-        'Units','pixels',...
-        'BackgroundColor',[0.9 0.9 0.9],...   'Callback',{@sliceitz,x,y,z,Z},...
-        'Callback',{@(e,eb) sliceitZ(getappdata(gcbf,'slicedata'),get(e,'value'))},...
-        'Position',[fpos 10 16 120],...
-        'Style','slider',...
-        'Tag','z');
-       uicontrol('Position',[fpos 130 16 16],...
-        'String','z','Style','text');
-%       uibutton('Position',[fpos 130 16 20],'String',labelz,'Interpreter','tex')
-    end
+function  [sx,sy,sz] = addSlicer(varargin)
+slicetype = get_flag(varargin,{'x','y','z','xy','xz','yz','xyz'},'xyz');
 
-    if ~isempty(strfind(slicetype,'y'))
-      fpos = fpos+20;
-      h2 = uicontrol(...
-        'Units','pixels',...
-        'BackgroundColor',[0.9 0.9 0.9],...        'Callback',{@sliceity,x,y,z,Z},...
-         'Callback',{@(e,eb) sliceitY(getappdata(gcbf,'slicedata'),get(e,'value'))},...
-        'Position',[fpos 10 16 120],...
-        'Style','slider',...
-        'Tag','y');
-       uicontrol('Position',[fpos 130 16 16],...
-        'String','y','Style','text');
-%     uibutton('Position',[fpos 130 16 20],'String',labely,'Interpreter','tex')
+fpos = -10;
+if ~isempty(strfind(slicetype,'z'))
+  fpos = fpos+20;
+  sz = uicontrol(...
+    'Units','pixels',...
+    'BackgroundColor',[0.9 0.9 0.9],...   'Callback',{@sliceitz,x,y,z,Z},...        'Callback',{@(e,eb) sliceit(getappdata(gcbf,'slicedata'),get(e,'value'))},...
+    'Position',[fpos 10 16 120],...
+    'Style','slider',...
+    'Tag','z');
+  uicontrol('Position',[fpos 130 16 16],...
+    'String','z','Style','text');
+  %       uibutton('Position',[fpos 130 16 20],'String',labelz,'Interpreter','tex')
+end
 
-    end
-    
-    if ~isempty(strfind(slicetype,'x'))
-      fpos = fpos+20;
-      h2 = uicontrol(...
-        'Units','pixels',...
-        'BackgroundColor',[0.9 0.9 0.9],...  
-         'Callback',{@(e,eb) sliceitX(getappdata(gcbf,'slicedata'),get(e,'value'))},...
-        'Position',[fpos 10 16 120],...
-        'Style','slider',...
-        'Tag','x');
-      uicontrol('Position',[fpos 130 16 16],...
-        'String','x','Style','text');
-%       uibutton('Position',[fpos 130 16 20],'String',labelx,'Interpreter','tex')
+if ~isempty(strfind(slicetype,'y'))
+  fpos = fpos+20;
+  sy = uicontrol(...
+    'Units','pixels',...
+    'BackgroundColor',[0.9 0.9 0.9],...        'Callback',{@sliceity,x,y,z,Z},...         'Callback',{@(e,eb) sliceitY(getappdata(gcbf,'slicedata'),get(e,'value'))},...
+    'Position',[fpos 10 16 120],...
+    'Style','slider',...
+    'Tag','y');
+  uicontrol('Position',[fpos 130 16 16],...
+    'String','y','Style','text');
+  %     uibutton('Position',[fpos 130 16 20],'String',labely,'Interpreter','tex')
+  
+end
 
-    end
-    
-    set(gcf,'Toolbar','figure')
-    
+if ~isempty(strfind(slicetype,'x'))
+  fpos = fpos+20;
+  sx = uicontrol(...
+    'Units','pixels',...
+    'BackgroundColor',[0.9 0.9 0.9],...           'Callback',{@(e,eb) sliceitX(getappdata(gcbf,'slicedata'),get(e,'value'))},...
+    'Position',[fpos 10 16 120],...
+    'Style','slider',...
+    'Tag','x');
+  uicontrol('Position',[fpos 130 16 16],...
+    'String','x','Style','text');
+  %       uibutton('Position',[fpos 130 16 20],'String',labelx,'Interpreter','tex')
+  
+end
+
+set(gcf,'Toolbar','figure')
+

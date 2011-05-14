@@ -8,11 +8,11 @@ if ~check_option(varargin,'voronoi') %  check_option(varargin,'unitcell') &&
   z = xyz(:,3);
   clear xyz
   
+  
   % estimate grid resolution
-  dx = get_option(varargin,'dx',[]);
-  dy = get_option(varargin,'dy',[]);
-  dz = get_option(varargin,'dz',[]);
-  if isempty(dx), [dx,dy,dz] = estimateGridResolution(x,y,z); end
+  dx = get_option(varargin,'dx',estimateGridResolution(x));
+  dy = get_option(varargin,'dy',estimateGridResolution(y));
+  dz = get_option(varargin,'dz',estimateGridResolution(z));
   
   % generate a tetragonal unit cell
   n = numel(x);
@@ -20,6 +20,7 @@ if ~check_option(varargin,'voronoi') %  check_option(varargin,'unitcell') &&
   ix = uint32(x/dx);
   iy = uint32(y/dy);
   iz = uint32(z/dz);
+  
   clear x y z
   
   lx = min(ix); ly = min(iy); lz = min(iz);

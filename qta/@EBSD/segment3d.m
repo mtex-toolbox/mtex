@@ -44,7 +44,7 @@ X = vertcat(ebsd.X);
 if isempty(X), error('no spatial data');end
 
 % sort for voronoi
-[Xt m n]  = unique(X(:,3:-1:1),'first','rows');
+[Xt m n]  = unique(X(:,[3 2 1]),'first','rows');
 X = X(m,:);
 
 if numel(m) ~= numel(n)

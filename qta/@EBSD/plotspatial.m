@@ -54,9 +54,19 @@ function h = plotspatial(ebsd,varargin)
 %% See also
 % EBSD/plot
 
-
 % restrict to a given phase or region
 ebsd = copy(ebsd,varargin{:});
+
+
+% get coordinates
+xy = get(ebsd,'X');
+
+if ~isempty(xy) && size(xy,2) == 3
+  slice3(ebsd,varargin{:});
+  return
+end
+
+%%
 
 % which property to plot
 prop = lower(get_option(varargin,'property','orientation'));
@@ -119,9 +129,6 @@ end
 
 
 %% plot
-
-% get coordinates
-xy = get(ebsd,'X');
 
 try %if ~check_option(varargin,'raster')
   h = plotxyexact(xy,d,ebsd(1).unitCell,varargin{:});
