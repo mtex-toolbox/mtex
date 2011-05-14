@@ -1,5 +1,10 @@
-function pl = smooth(p)
-% smooth grain-set by edge attraction
+function pl = smooth(p,iter)
+% smooth grain-set by edge contraction
+
+if nargin <2 || isempty(iter)
+  iter = 1;
+end
+
 
 pl = polyeder(p);
 
@@ -30,26 +35,22 @@ for k=1:df
 end
 E = vertcat(E{:});
 
-
-Ve = reshape(V(E,:),[],2,3);
-
-mw = 0;
-while abs(mw-1) > 10^-5
-  dV = diff(Ve,1,2);
-  dist = exp(-sqrt(sum(dV.^2,3)));
-  w = exp(cat(3,dist,dist,dist).*dV);
-  
-  Ve = Ve + cat(2,w,-w); % shifting vertices
-  
-  mw = min(w(:));
-end
-
 uE = unique(E(:));
 d = histc(E(:),uE);
 fd = sparse(uE,1,d);
 
-for k=1:3
-  V(:,k) = full(sparse(E(:),1,Ve(:,:,k))./fd);
+for l=1:iter
+  Ve = reshape(V(E,:),[],2,3);
+  
+  dV = diff(Ve,1,2);
+  dist = exp(-sqrt(sum(dV.^2,3)));
+  w = cat(3,dist,dist,dist).*dV;
+  
+  Ve = Ve + cat(2,w,-w); % shifting vertices
+  
+  for k=1:3
+    V(:,k) = full(sparse(E(:),1,Ve(:,:,k))./fd);
+  end
 end
 
 for k=1:n

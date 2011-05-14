@@ -55,12 +55,10 @@ ls = size(V,1);
 
 for l=1:iter
   Ve = reshape(V(E,:),[],2,2);
-  
-  mw = 0;
   dV = diff(Ve,1,2);
   
   dist = exp(-sqrt(sum(dV.^2,3)));
-  w = (cat(3,dist,dist).*dV);
+  w = cat(3,dist,dist).*dV;
   
   Ve = Ve + cat(2,w,-w); % shifting vertices
     
