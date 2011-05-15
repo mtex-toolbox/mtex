@@ -18,25 +18,16 @@ b = hasSubBoundary(grains);
 if any(b) 
   newMTEXplot;
   
+  fractions = [grains(b).subfractions];
+  pl = [fractions.P];
+  
   if ispolygon(grains)
-    frs = [grains(b).subfractions];
-
-    X = [frs.xx];
-    Y = [frs.yy];
-
-    X = [X ; NaN(1,size(X,2))];
-    Y = [Y ; NaN(1,size(Y,2))];
-
-    [X,Y,lx,ly] = fixMTEXscreencoordinates(X,Y,varargin{:});
-
-    h = plot(X(:),Y(:),varargin{:});
-
-    xlabel(lx); ylabel(ly);  
-    fixMTEXplot;
-  elseif ispolyeder(grains)
+   
+    h = plot(polygon(pl),varargin{:});
     
-    sub = [grains(b).subfractions];   
-    h = plot(polyeder([sub.P]),'fill');
+  elseif ispolyeder(grains)
+     
+    h = plot(polyeder(pl),'FaceColor','r',varargin{:});
   end
   
   optiondraw(h,varargin{:});

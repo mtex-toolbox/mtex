@@ -25,6 +25,8 @@ if ~check_option(varargin,'nofix'), fixMTEXplot('noresize');end
 % set direction of x and y axis
 xlabel(lx);ylabel(ly);
 
+p = polygon(p);
+
 %% plot filled polygons
 if check_option(varargin,'fill') || check_option(varargin,'FaceColor')
   
@@ -187,6 +189,7 @@ if ~check_option(varargin,'nofix')
   set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
 end
 
+
 if exist('h','var'), 
   optiondraw(h,varargin{:});
 else
@@ -200,7 +203,6 @@ if nargout > 0, handles = h; end
 function [faces vertices] = get_faces(p)
 
 vertices = vertcat(p.Vertices);
-
 cl = cellfun('length',{p.Vertices});
 rl = max(cl);
 crl = [0 cumsum(cl)];

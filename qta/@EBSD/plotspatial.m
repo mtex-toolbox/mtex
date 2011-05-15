@@ -123,6 +123,11 @@ switch prop
   case 'phase'
   case fields(ebsd(1).options)
     d = get(ebsd,prop);
+  case 'angle'
+    d = [];
+    for i = 1:length(ebsd)
+      d = [d; angle(ebsd(i).orientations)/degree];
+    end    
   otherwise
     error('Unknown colorcoding!')
 end
