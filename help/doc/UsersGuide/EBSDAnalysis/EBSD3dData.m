@@ -50,7 +50,6 @@ segAngle = 10*degree;
 % single out individuall grains and plot them
 
 
-%%
 plot(grains(906),'facecolor','g','edgecolor',[0.8 0.8 0.8],'facealpha',0.3)
 hold on
 plotSubBoundary(grains(906),'FaceColor','c','boundarycolor','r','edgecolor',[0.8 0.8 0.8])
@@ -139,5 +138,18 @@ slice3( misorientation(grains,ebsd),'y',1.25,'property','angle',...
   'FaceAlpha',0.7)
 
 view([35 15])
+
+%%
+% show sliced surface of grains
+
+slice3(smooth_grains,'x',5,'margin',1,...
+  'FaceColor','k','FaceAlpha',0.3)
+
+hold on
+slice3(ebsd,'x',4.25)
+axis tight
+view(105,15)
+
+
 
 
