@@ -2,9 +2,11 @@ function h = plot(p,varargin)
 
 
 
-set(gcf,'renderer','opengl');
 
-if check_option(varargin,{'fill'})
+p = polyeder(p);
+
+
+if check_option(varargin,{'fill','FaceColor'})
   
   cdata = get_option(varargin,'fill');
   
@@ -34,6 +36,27 @@ if check_option(varargin,{'fill'})
   h = patch('Vertices',Vertices,'Faces',Faces,...
     'FaceVertexCData',cdat,'FaceColor','flat','EdgeColor','none');
   
+  if check_option(varargin,'BoundaryColor')    
+    Faces(:,end+1) = Faces(:,1);
+    
+    d = max(Faces(:));
+    E = sparse(d,d);
+    for k=1:size(Faces,2)-1
+      E = E + sparse(Faces(:,k),Faces(:,k+1),1,d,d);
+    end
+    [l,r] = find(triu(E+E' == 1,1)); % edges that occure only once
+    E = [l,r];
+    
+    
+    Vertices(end+1,:) = NaN;  % dummy
+    E(:,3) = size(Vertices,1);
+    Vertices = Vertices(E',:);
+    patch('Vertices',Vertices,...
+      'Faces',1:size(Vertices,1),...
+      'EdgeColor',get_option(varargin,'BoundaryColor','k'),...
+      'LineWidth',get_option(varargin,'LineWidth',2),'FaceColor','none');
+  end
+  
   axis equal
 elseif check_option(varargin,'pair')
   
@@ -60,7 +83,7 @@ elseif check_option(varargin,'pair')
     
     offset = 0;
     for k=1:npair
-      isCommonFace = ismembc( FacetIds{left(k)},FacetIds{right(k)});
+      isCommonFace = ismembc(FacetIds{left(k)}, sort(FacetIds{right(k)}));
       
       CommonFaces = Faces{left(k)}(isCommonFace,:);
       [VertexId,n,FaceId] = unique(CommonFaces);
@@ -71,7 +94,7 @@ elseif check_option(varargin,'pair')
       F{k} = CommonFaces;
       C{k} = repmat(CData(k,:),nf(1),1);
       
-      offset = offset + size(V{k},1);      
+      offset = offset + size(V{k},1);
     end
     
     if check_option(varargin,'BoundaryColor')
@@ -95,7 +118,7 @@ elseif check_option(varargin,'pair')
     
     V = vertcat(V{:});
     F = vertcat(F{:});
-    C = vertcat(C{:});    
+    C = vertcat(C{:});
     
     h = patch('Vertices',V,'Faces',F,'FaceVertexCData',C,'FaceColor','flat','EdgeColor','none');
     
