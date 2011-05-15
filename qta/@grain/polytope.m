@@ -9,15 +9,7 @@ function p = polytope(grains,varargin)
 %
 % p = grains.polygon;
 
-n = numel(grains);
-parts = [0:500:n-1 n];  % faster as at once
-% 
-p = cell(1,numel(parts)-1);
-for k=1:numel(parts)-1  
-	p{k} = horzcat(grains(parts(k)+1:parts(k+1)).polytope);
-end
-p = horzcat(p{:});
-
+p = get(grains,'polytope');
 if ispolygon(p)
   p = polygon(p);
 elseif ispolyeder(p)

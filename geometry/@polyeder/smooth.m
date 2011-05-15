@@ -8,6 +8,10 @@ end
 
 pl = polyeder(p);
 
+hpl = {pl.Holes};
+hs = cellfun('prodofsize',hpl);
+pl = [pl [hpl{:}]];
+
 n = numel(p);
 Vertices = get(pl,'Vertices');
 VertexIds = get(pl,'VertexIds');
@@ -57,8 +61,13 @@ for k=1:n
   pl(k).Vertices = V(VertexIds{k},:);
 end
 
-if isa(p,'grain')
-  pl = set(p,'polytope',polytope(struct(pl)));
+hpl = pl(n+1:end);
+cs = [0 cumsum(hs)];
+for k=1:numel(p)
+  spl = hpl(cs(k)+1:cs(k+1));
+  
+  if ~isempty(spl)
+    pl(k).Holes = spl;
+  end
 end
-
 

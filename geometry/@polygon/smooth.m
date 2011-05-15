@@ -17,9 +17,7 @@ pl = polygon(p);
 n = numel(pl);
 
 hpl = {pl.Holes};
-
 hs = cellfun('prodofsize',hpl);
-
 pl = [pl [hpl{:}]];
 
 
@@ -74,7 +72,6 @@ for k=1:numel(pl)
 end
 
 hpl = pl(n+1:end);
-
 cs = [0 cumsum(hs)];
 for k=1:numel(p)
   spl = hpl(cs(k)+1:cs(k+1));
@@ -84,6 +81,3 @@ for k=1:numel(p)
   end
 end
 
-if isa(p,'grain')
-  pl = set(p,'polytope',polytope(struct(pl(1:n))));
-end

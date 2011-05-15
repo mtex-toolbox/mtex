@@ -39,7 +39,7 @@ function [grains ebsd] = segment2d(ebsd,varargin)
 %% See also
 % grain/grain EBSD/calcGrains EBSD/segment3d
 
-%% prepare data 
+%% prepare data
 
 s = tic;
 
@@ -132,7 +132,7 @@ for i=1:numel(ebsd)
       omega = abs( p(zll) - p(zrr) );
   end
   
-   ind = omega > thresholds(i);
+  ind = omega > thresholds(i);
   
   angles = angles + sparse(mix(ind),miy(ind),1,sm,sn);
 end
@@ -157,40 +157,42 @@ T3 = T1*T2;
 nn = T3*T1'; %neighbourhoods of regions
 %self reference if interior has not connected neighbours
 
-%% subfractions
+%% subgrain boundaries
 
-inner = T1 & T3;
+inner = T1 & T3;           % vertices incident to a grain
 [ix iy] = find(inner');
+
+T2 = triu(T2,1);
 
 fract = cell(1,max(ids));
 if ~isempty(iy)
   pos = [0; find(diff(iy)); numel(iy)];
+  p = struct(polytope);
   
   for l=1:numel(pos)-1
     ndx = pos(l)+1:pos(l+1);
     
     sx = ix(ndx);
     [lx ly] = find(T2(sx,sx));
-    nx = [sx(lx) sx(ly)];
+    E = createSubBoundary(cells(sx(lx)),cells(sx(ly)));
     
-    lines = zeros(size(nx));
-    for k=1:size(nx,1)
-      ax = sort(cells{nx(k,1)});
-      ay = sort(cells{nx(k,2)});
-      lines(k,:) = ax(ismembc(ax,ay));
+    ply = repmat(p,1,numel(E));
+    
+    for k=1:numel(E)
+      ply(k).Vertices = vert(E{k},:);
+      ply(k).VertexIds = E{k};
     end
     
-    fr.xx = reshape(vert(lines,1),size(lines))';
-    fr.yy = reshape(vert(lines,2),size(lines))';
-    fr.pairs = reshape(nx,[],2);
-    
-    fract{iy(ndx(1))} = fr;
+    % m([sx(lx) sx(ly)])
+    frac.pairs = ([sx(lx) sx(ly)]);
+    frac.P = polytope(ply);
+    fract{iy(ndx(1))} = frac;
   end
   
 end
 
 %clean up
-clear T1 T2 T3 regions angel_treshold
+clear T1 T2 T3 regions angel_treshold inner
 
 
 %% conversion to cells
@@ -362,6 +364,37 @@ F = T * T';
 clear T;
 F = triu(F,1);
 F = F > 1;
+
+
+function E = createSubBoundary(left,right)
+% extract lines as an edge list
+
+E = {};
+for k=1:size(left,1)
+  el = left{k};
+  edge = el(ismembc(el,sort(right{k})));
+  
+  first = cellfun(@(x) x(1),E(:));
+  last = cellfun(@(x) x(end),E(:));
+  
+  a = [first == edge(2) last == edge(2) last == edge(1) first == edge(1)];
+  
+  if any(a(:))
+    [i,type] = find(a,1,'first');
+    switch type
+      case 1
+        E{i} = [edge(1) E{i}];
+      case 2
+        E{i}(end+1) = edge(1);
+      case 3
+        E{i}(end+1) = edge(2);
+      case 4
+        E{i} = [edge(2) E{i}];
+    end
+  else
+    E{end+1} = edge;
+  end
+end
 
 
 function ply = createpolygons(cells,regionids,verts)
