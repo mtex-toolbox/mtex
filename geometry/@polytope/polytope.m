@@ -14,21 +14,26 @@ plt = polyeder(p);
 if nargin > 0
   
   tp = varargin{1};
-      
-  if isa(tp,'polytope')
+  
+  if isa(tp,'polygon') || isa(tp,'polyeder')
+    
+    p = struct(tp);
+    
+  elseif isa(tp,'polytope')
     
     return
     
   elseif isa(tp,'struct')
-       
-    if isfield(tp,'polygon'), tp = rmfield(tp,'polygon'); end
-    if isfield(tp,'polyeder'), tp = rmfield(tp,'polyeder'); end
-  
+    
     p = tp;
     
   else
     
   end
+  
+  if isfield(p,'polygon'), p = rmfield(p,'polygon'); end
+  if isfield(p,'polyeder'), p = rmfield(p,'polyeder'); end
+  
 end
 
 p = class(p,'polytope',plg,plt);
