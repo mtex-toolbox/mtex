@@ -1,4 +1,4 @@
-function pl = smooth(p,iter,varargin)
+function pl = smooth(p,iter,mpower)
 % smooth grains by edge contraction
 %
 %% Options
@@ -10,6 +10,12 @@ function pl = smooth(p,iter,varargin)
 
 if nargin <2 || isempty(iter)
   iter = 1;
+end
+
+if nargin <3
+  mpower =  0;
+elseif mpower > 1
+  mpower = 1;
 end
 
 pl = polygon(p);
@@ -24,49 +30,78 @@ pl = [pl [hpl{:}]];
 Vertices = {pl.Vertices};
 VertexIds = {pl.VertexIds};
 
-
-
 nv = max(cellfun(@max,VertexIds));
 V = zeros(nv,2);
+l3 = [];
 for k=1:numel(pl)
-  V(VertexIds{k},:) = Vertices{k};
+  v = VertexIds{k};
+  vrt = Vertices{k};
+  V(v,:) = vrt;
+  if size(vrt,1) > 2
+  T = convhulln(Vertices{k});
+  
+  l3 = [l3 v(unique(T))];
+  end
 end
 
+i = [VertexIds{:}];
+%shift indices
+r1 = cumsum(cellfun('prodofsize',VertexIds));
+inds = 2:numel(i)+1;
+inds(r1) = [1 r1(1:end-1)+1];
+j = i(inds); %partner pointel
 
-E = cellfun(@(x) [x(1:end)' x([2:end 1])']  ,VertexIds(:),'uniformoutput',false);
-E = vertcat(E{:});
+nd = i == j;
+i(nd) = [];
+j(nd) = [];
+
+s = max(i);
+E = sparse(i,j,1,s,s);
+E = E+E'; % symmetrise
 
 
-ls = size(V,1);
+l1 = find(sum(triu(E,1),2)==1); % border
+l2 = find(sum(E,2) > 4);   % tri-junk
 
-% if check_option(varargin,'constrained')
-  u  = unique(E);
-  E = [E; ...
-    [u(:)+ls u(:)];
-    [u(:) u(:)+ls]]; % constrained
-  V = [V; V];
-% end
+i = [l1(:);l2(:);l3(:)];
 
 
-  uE = unique(E(:));
-  fd = sparse(uE,1,histc(E(:),uE));
+
+nn = size(V,1);
+V = [V;V(i,:)];
+t = nn+numel(i);
+
+nn2 = t-numel(l3);
+
+constraits = sparse(i,nn+1:t,1,t,t);
+constraits = constraits+constraits';
+
+[i,j] = find(E);
+E = sparse(i,j,1,t,t) + constraits;
+
+iszero = ~all(isnan(V),2);
+iszero(nn+1:end) = false;
 
 for l=1:iter
-  Ve = reshape(V(E,:),[],2,2);
-  dV = diff(Ve,1,2);
+
+  [i,j] = find(E);
   
-  dist = exp(-sqrt(sum(dV.^2,3)));
-  w = cat(3,dist,dist).*dV;
+  w = exp(-sqrt(sum((V(i,:)-V(j,:)).^2,2)));
   
-  Ve = Ve + cat(2,w,-w); % shifting vertices
-    
-  for k=1:2
-    T = full(sparse(E(:),1,Ve(:,:,k))./fd); 
-    V(1:ls,k) = T(1:ls);
-  end
+  w(i > nn | j > nn) = 1; % weight of constraits  
+  w(i > nn2 | j > nn2) = .25; % weight of convex hull constraits
+  
+  E = sparse(i,j,w.^(l.^mpower),t,t);
+  Vt = E*V;
+
+  m = sum(E,2);
+  m = m(iszero,:);
+  
+  V(iszero,:) = Vt(iszero,:)./[m m];
   
 end
-%
+
+
 for k=1:numel(pl)
   pl(k).Vertices = V(VertexIds{k},:);
 end
