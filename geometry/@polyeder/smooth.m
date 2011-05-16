@@ -1,8 +1,14 @@
-function pl = smooth(p,iter)
+function pl = smooth(p,iter,mpower)
 % smooth grain-set by edge contraction
 
 if nargin <2 || isempty(iter)
   iter = 1;
+end
+
+if nargin < 3
+  mpower = 0;
+elseif mpower > 1
+  mpower = 1;
 end
 
 
@@ -15,46 +21,42 @@ pl = [pl [hpl{:}]];
 n = numel(p);
 Vertices = get(pl,'Vertices');
 VertexIds = get(pl,'VertexIds');
-
 Faces = get(pl,'Faces');
-FacetIds = get(pl,'FacetIds');
 
 nv = max(cellfun(@max,VertexIds)); % number of vertices
-nf = max(cellfun(@max,FacetIds)); % number of faces
-df = max(cellfun('size',Faces,2)); % dim of faces
-
-V = zeros(nv,3);
-F = zeros(nf,df);
+V = NaN(nv,3);
+F = []; i = []; j=[];
 for k=1:n
   v = VertexIds{k};
   V(v,:) =  Vertices{k};
-  F(FacetIds{k},:) = v(Faces{k});
+  F = [F ; v(Faces{k})];
 end
 
-F = F(any(F ~= 0,2),:); % erase nans
 F(:,end+1) = F(:,1);
-
-for k=1:df
-  E{k} =  F(:,k:k+1);
+for k=1:size(F,2)-1
+  i = [i; F(:,k)];
+  j = [j; F(:,k+1)];
 end
-E = vertcat(E{:});
 
-uE = unique(E(:));
-d = histc(E(:),uE);
-fd = sparse(uE,1,d);
+s = max(i);
+E = sparse(i,j,1,s,s);
+E = E+E'; % symmetrise
+
+iszero = ~all(isnan(V),2);
 
 for l=1:iter
-  Ve = reshape(V(E,:),[],2,3);
   
-  dV = diff(Ve,1,2);
-  dist = exp(-sqrt(sum(dV.^2,3)));
-  w = cat(3,dist,dist,dist).*dV;
+  [i,j] = find(E);
+  w = exp(-sqrt(sum((V(i,:)-V(j,:)).^2,2)));
   
-  Ve = Ve + cat(2,w,-w); % shifting vertices
+  E = sparse(i,j,w.^(l.^mpower),s,s);
+  V = E*V;
   
-  for k=1:3
-    V(:,k) = full(sparse(E(:),1,Ve(:,:,k))./fd);
-  end
+  m = sum(E,2);
+  m = m(iszero,:);
+  
+  V(iszero,:) = V(iszero,:)./[m m m];
+  
 end
 
 for k=1:n

@@ -11,7 +11,6 @@ function slice3(ebsd,varargin)
 newMTEXplot;
 
 slicetype = get_flag(varargin,{'x','y','z','xy','xz','yz','xyz'},'xyz');
-
 [sl, plane] = addslicer(slicetype,varargin{:});
 
 % x is allways east
@@ -55,7 +54,7 @@ if any(plane==3)
   zparam.d = dz;
   
   set(sz,'callback',{@sliceit,h(end),zparam,d});
-  sliceit(sz,[],h(end),zparam,d,pos(plane==3));
+  sliceit(sz,[],h(end),zparam,d,pos(end));
 end
 
 % y-slice
@@ -74,8 +73,14 @@ if any(plane==2)
   yparam.j = bx(2);
   yparam.d = dy;
   
+  if any(strcmpi(slicetype,'x'))
+    pp = pos(2);
+  else
+    pp = pos(1);
+  end
+  
   set(sy,'callback',{@sliceit,h(end),yparam,d});
-  sliceit(sy,[],h(end),yparam,d,pos(plane==2));
+  sliceit(sy,[],h(end),yparam,d,pp);
 end
 
 % x-slice
@@ -96,15 +101,17 @@ if any(plane==1)
   xparam.d = dx;
   
   set(sx,'callback',{@sliceit,h(end),xparam,d});
-  sliceit(sx,[],h(end),xparam,d,pos(plane==1));
+  sliceit(sx,[],h(end),xparam,d,pos(1));
 end
 
 
 
 optiondraw(h,varargin{:});
 
-axis equal tight
+axis equal
 grid on
+b = [ax(:)';bx(:)'];
+axis(b(:)')
 view([30,15])
 
 
