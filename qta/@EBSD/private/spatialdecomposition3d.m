@@ -1,7 +1,7 @@
-function [A,v,VF,FD] = spatialdecomposition3d(xyz,varargin)
+function varargout = spatialdecomposition3d(xyz,varargin)
 
 
-if ~check_option(varargin,'voronoi') %  check_option(varargin,'unitcell') && 
+if ~check_option(varargin,'voronoi') && size(xyz,1) > 1 %  check_option(varargin,'unitcell') && 
   
   x = xyz(:,1);
   y = xyz(:,2);
@@ -19,23 +19,16 @@ if ~check_option(varargin,'voronoi') %  check_option(varargin,'unitcell') &&
   
   ix = uint32(x/dx);
   iy = uint32(y/dy);
-  iz = uint32(z/dz);
-  
+  iz = uint32(z/dz);  
   clear x y z
   
   lx = min(ix); ly = min(iy); lz = min(iz);
   ix = ix-lx+1; iy = iy-ly+1; iz = iz-lz+1;  % indexing of array
   nx = max(ix); ny = max(iy); nz = max(iz);  % extend
   
-  sz = [nx,ny,nz]; 
+  sz = [nx,ny,nz];
   
-  % new voxel coordinates
-  nZ = (nx+1)*(ny+1)*(nz+1);
-  [vx,vy,vz] = ind2sub(sz+1,(1:nZ)');
-  v = [double(vx+lx-1)*dx-dx/2,double(vy+ly-1)*dy-dy/2,double(vz+lz-1)*dz-dz/2];
-  clear vx vy vz dx dy dz lx ly lz
-    
-  % pointels incident to voxel
+    % pointels incident to voxel
   ixn = ix+1; iyn = iy+1; izn = iz+1; % next voxel index
   id = 1:n;
   id = [id(:) id(:)];
@@ -62,12 +55,57 @@ if ~check_option(varargin,'voronoi') %  check_option(varargin,'unitcell') &&
   clear izp ex del
   
   % adjacency of voxels
-  A = [el(:) er(:)];
+  varargout{1} = el(:);
+  varargout{2} = er(:);
   clear el er 
+  varargout{3} = sz;
+  varargout{4} = [dx dy dz];
+  varargout{5} = [lx ly lz];
   
+elseif ~check_option(varargin,'voronoi') 
+  
+  sz = xyz;
+  nx = sz(1);
+  ny = sz(2);
+  nz = sz(3);
+  
+  ind = varargin{1};
+  dz = varargin{2};
+  lz = double(varargin{3});
+  
+  % adding boundary voxels
+  [bx{1} by{1} bz{1}] = meshgrid(1:sz(1),1:sz(2),1);
+  [bx{2} by{2} bz{2}] = meshgrid(1:sz(1),1:sz(2),sz(3));
+  [bx{3} by{3} bz{3}] = meshgrid(1:sz(1),1,1:sz(3));
+  [bx{4} by{4} bz{4}] = meshgrid(1:sz(1),sz(2),1:sz(3));
+  [bx{5} by{5} bz{5}] = meshgrid(1,1:sz(2),1:sz(3));
+  [bx{6} by{6} bz{6}] = meshgrid(sz(1),1:sz(2),1:sz(3));
+  
+  bx = cellfun(@(x) x(:),bx,'uniformoutput',false);
+  by = cellfun(@(x) x(:),by,'uniformoutput',false);
+  bz = cellfun(@(x) x(:),bz,'uniformoutput',false);
+  bx = vertcat(bx{:});
+  by = vertcat(by{:});
+  bz = vertcat(bz{:});
+  
+  ind = unique([ind; double(s2i(sz,bx,by,bz))]);
+  
+  [ix,iy,iz] = ind2sub(sz,uint32(ind));
+     
+  ixn = ix+1; iyn = iy+1; izn = iz+1; % next voxel index
+  n = nx*ny*nz;
   % pointels incident to voxels
   VD = [s2i(sz+1,ix,iy,iz)  s2i(sz+1,ixn,iy,iz)  s2i(sz+1,ixn,iyn,iz)  s2i(sz+1,ix,iyn,iz) ....
     s2i(sz+1,ix,iy,izn) s2i(sz+1,ixn,iy,izn) s2i(sz+1,ixn,iyn,izn) s2i(sz+1,ix,iyn,izn)];
+  
+   % new voxel coordinates
+  vind = unique(VD(:));
+  [vx,vy,vz] = ind2sub(sz+1,vind);
+  varargout{1}(vind,:) = [double(vx+lz(1)-1)*dz(1)-dz(1)/2,...
+    double(vy+lz(2)-1)*dz(2)-dz(2)/2,...
+    double(vz+lz(3)-1)*dz(3)-dz(3)/2];
+  clear vx vy vz dx dy dz lx ly lz  
+  
   % surfels incident to voxel
   FD = [s2i(sz+1,ix,iy,iz) s2i(sz+1,ixn,iy,iz) ...
     s2i(sz+1,ix,iy,iz)+2*n s2i(sz+1,ix,iyn,iz)+2*n ...
@@ -83,12 +121,16 @@ if ~check_option(varargin,'voronoi') %  check_option(varargin,'unitcell') &&
     1 2 3 4
     5 6 7 8];
   
-  VF = zeros(max(FD(:)),4);
+  VF = zeros(max(FD(:)),4,'uint32');
   VF(FD,:) = reshape(VD(:,tri),[],4);
-  clear VD
+  varargout{2} = VF;
+  clear VD VF
+  
+  id = repmat(ind(:),1,6);
   
   % surfels as incidence matrix
-  FD = sparse(double(FD),double([id id id]),1);
+  varargout{3} = sparse(double(FD),id,1,double(max(FD(:))),double(n)); 
+ 
   
 else
   augmentation = get_option(varargin,'augmentation','cube');
@@ -174,11 +216,12 @@ else
   [VF b faceID] = unique(sort(VF,2),'rows');
   FD = sparse(faceID(:),FD(:),1,max(faceID(:)),n);
   
-  
   A = triu(FD'*FD,1);
-  [i,j] = find(A|A');
-  A = [i,j];
+  [varargout{1},varargout{2}] = find(A|A');
   
+  varargout{3} = v;
+  varargout{4} = VF;
+  varargout{5} = FD;  
 end
 
 

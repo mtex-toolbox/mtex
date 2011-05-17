@@ -82,7 +82,7 @@ switch vname
   case 'phases'
     
     sz = cumsum([0,sampleSize(obj)]);
-    phases = zeros(sz(end),1);
+    phases = zeros(sz(end),1,'uint8');
     for i = 1:length(obj)
       phases(sz(i)+1:sz(i+1)) = obj(i).phase;
     end
