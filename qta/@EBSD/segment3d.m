@@ -27,7 +27,7 @@ function [grains ebsd] = segment3d(ebsd,varargin)
 %% segmentation
 % prepare data
 
-s = tic;
+% s = tic;
 
 thresholds = get_option(varargin,{'threshold','angle'},15*degree);
 if numel(thresholds) == 1 && numel(ebsd) > 1
@@ -45,7 +45,10 @@ if isempty(X), error('no spatial data');end
 
 % sort for voronoi
 [Xt m n]  = unique(X(:,[3 2 1]),'first','rows');
+clear Xt
+
 X = X(m,:);
+d = size(X,1);                % number of adjacent cells
 
 if numel(m) ~= numel(n)
   warning('mtex:GrainGeneration','spatially duplicated data points, perceed by erasing them')
@@ -55,76 +58,98 @@ if numel(m) ~= numel(n)
 end
 
 phase = get(ebsd,'phases');
+[Al,Ar,sz,dz,lz] = spatialdecomposition3d(X,'unitcell',varargin{:});
+clear X n
+Al = m(Al);
+Ar = m(Ar);
 
-[A,v,VF,FD] = spatialdecomposition3d(X,'unitcell',varargin{:});
+clear m
 
-A = m(A);
-FD = FD(:,n);
 
 
 %%
 
 prop = lower(get_option(varargin,'property','angle'));
 
-regions = false(size(A,1),1);
+regions = false(size(Al));
+omega = false(size(Al));
 for i=1:numel(ebsd)
- 
-  ind = all(phase(A) == ebsd(i).phase,2);
-    
-  zl = A(ind,1);
-  zr = A(ind,2);
   
-  zll = zl-rl(i); zrr = zr-rl(i);
+  ind = phase(Al) == ebsd(i).phase & phase(Ar) == ebsd(i).phase;
+  
+  zll = Al(ind)-rl(i); zrr = Ar(ind)-rl(i);
   
   %   compute distances
   switch prop
     case 'angle'
-      o1 = ebsd(i).orientations(zll);
-      o2 = ebsd(i).orientations(zrr);
-      omega = angle(o1,o2);
-      clear o1 o2
+      o = ebsd(i).orientations;
+      
+      cind = [uint32(0:1000000:numel(zll)-1) numel(zll)]; % memory
+      for k=1:numel(cind)-1
+        aind = cind(k)+1:cind(k+1);
+        o1 = o(zll(aind));
+        o2 = o(zrr(aind));
+        omega(aind) = angle(o1,o2) <= thresholds(i);
+      end
+      
+      clear o1 o2 aind
     otherwise
       p = get(ebsd(i),prop);
-      omega = abs( p(zll) - p(zrr) );
+      omega = abs( p(zll) - p(zrr) ) <= thresholds(i);
       clear p
   end
   
-  regions(ind) = omega <= thresholds(i);
+  regions(ind) = omega(ind);
 end
-clear ind zl zr zll zrr omega
+clear ind zll zrr omega prop
 
-A = double(A); % because of sparse :/
-d = size(X,1); % number of adjacent cells
 
-                                    % adjacency of cells that have no common boundary
-Ap = sparse(A(regions,1),A(regions,2),1,d,d);
+
+% adjacency of cells that have no common boundary
+Ap = sparse(Al(regions),Ar(regions),true,d,d);
 ids = graph2ids(Ap | Ap');
 clear Ap
-                                    % adjacency of cells that have a boundary
-Am = sparse(A(~regions,1),A(~regions,2),1,d,d);
+% adjacency of cells that have a boundary
+Am = sparse(Al(~regions),Ar(~regions),true,d,d);
 Am = Am | Am';
-clear A regions
+clear Al Ar regions
 
 
 %% retrieve neighbours
 
-DG = sparse(1:numel(ids),ids,1);    % voxels incident to grains
+DG = sparse(1:numel(ids),double(ids),1);    % voxels incident to grains
 Ag = DG'*Am*DG;                     % adjacency of grains
 
 %% interior and exterior grain boundaries
 
-Aint = diag(any(Am*DG & DG,2))* double(Am);  % adjacency of 'interal' boundaries
+Aint = diag(double(any(Am*DG & DG,2))) * Am;  % adjacency of 'interal' boundaries
 Aext = Am-Aint;                     % adjacency of 'external' boundaries
+
+i = find(any(Am,2));
+clear Am
+
+% construct faces as needed
+if numel(sz) == 3
+  [v,VF,FD] = spatialdecomposition3d(sz,i,dz,lz);
+else
+  v = sz; clear sz
+  VF = dz; clear dz
+  FD = lz; clear lz
+end
+clear i sz dz lz
 
 FG = FD*DG;                         % faces incident to grain
 
+% background
 Dint = diag(diag(FD*Aint*FD')>1);   % select those faces that are 'interal'
-FG_int = Dint*FG;
+FG_int = logical(Dint*FG);
+clear Dint
                                     % select faces that are 'external'
 Dext = diag(diag(FD*Aext*FD') | sum(FD,2) == 1);
-FG_ext = Dext*FG;
+clear Aext
 
-clear Aext Am FD FG Dint Dext
+FG_ext = logical(Dext*FG);
+clear Dext FD FG
 
 %% generate polyeder for each grains
 
@@ -135,15 +160,16 @@ nr = max(ids);
 ply = repmat(p,1,nr);
 
 
-for k=1:max(ids)
+for k = 1:nr
+  
   fe = find(FG_ext(:,k));
   [vertids,b,face] = unique(VF(fe,:));
   
   ph = p;
   ph.Vertices =  v(vertids,:);
   ph.VertexIds = vertids;
-  ph.Faces = reshape(face,[],fd);
-  ph.FacetIds = fe;
+  ph.Faces = reshape(uint32(face),[],fd);
+  ph.FacetIds = uint32(fe);
   ply(k) = ph;
   
 end
@@ -154,32 +180,44 @@ clear FG_ext fe
 %% setup subgrain boundaries for each grains
 
 [i,j] = find(Aint);
+clear Aint
 
 fraction = cell(1,nr);
 hasSubBoundary = find(any(FG_int));
 
-for k = hasSubBoundary
 
+[vg,g] = find(DG(:,hasSubBoundary));
+clear DG
+FG_int = FG_int(:,hasSubBoundary);
+
+i = uint32(i);
+j = uint32(i);
+vg = uint32(vg);
+g = uint32(g);
+
+for k = 1:numel(hasSubBoundary)
+  
   fi = find(FG_int(:,k));
   [vertids,b,face] = unique(VF(fi,:));
   
   ph = p;
   ph.Vertices =  v(vertids,:);
   ph.VertexIds = vertids;
-  ph.Faces = reshape(face,[],fd);
-  ph.FacetIds = fi;  
+  ph.Faces = reshape(uint32(face),[],fd);
+  ph.FacetIds = uint32(fi);
   
-  f = find(DG(:,k));
-  s = ismembc(i,f) & ismembc(j,f);
+  vgk = vg(g==k);
+  s = ismembc(i,vgk) & ismembc(j,vgk);
   
   frac.pairs = [i(s),j(s)];
   frac.P = polytope(ph); % because of plotting its a polytope
   
-  fraction{k} = frac;
+  fraction{hasSubBoundary(k)} = frac;
 end
 
 
-clear FG_int vertids face fi pls l i j b
+clear VF v FG_int vertids face fi pls ph ...
+  l i j b vgk vg g frac s p fd hasSubBoundary
 
 %% conversion to cells
 
@@ -199,7 +237,7 @@ for k=1:numel(ebsd)
     partition(ebsd(k).orientations(ndx),pos);
 end
 
-clear cids ide
+clear aind cids ide checksumid ndx
 
 % cell ids
 [ix iy] = sort(ids);
@@ -209,11 +247,15 @@ for l=1:numel(pos)-1
   id{l} = iy(pos(l)+1:pos(l+1));
 end
 
+domean = cellfun('prodofsize',id) > 1;
+orientations(domean) = cellfun(@mean,orientations(domean),'uniformoutput',false);
+
 
 nc = length(id);
 
 % neighbours
 [ix iy] = find(Ag);
+clear Ag
 pos = [0; find(diff(iy)); numel(iy)];
 neigh = cell(1,nc);
 for l=1:numel(pos)-1
@@ -221,7 +263,7 @@ for l=1:numel(pos)-1
   neigh{ iy(ndx(1)) } = ix(ndx);
 end
 
-clear Ag ix iy ndx
+clear ix iy ndx
 
 % vdisp(['  ebsd segmentation: '  num2str(toc(s)) ' sec'],varargin{:});
 
@@ -230,12 +272,6 @@ clear Ag ix iy ndx
 % s = tic;
 
 comment =  ['from ' ebsd(1).comment];
-
-% fract = cell(1,nc);
-% fract(find(cfr)) = fractions;
-
-domean = cellfun('prodofsize',id) > 1;
-orientations(domean) = cellfun(@mean,orientations(domean),'uniformoutput',false);
 
 cid = cell(1,nc);
 cchek = cell(1,nc);
@@ -265,8 +301,6 @@ gr = struct('id',cid,...
 grains = grain(gr,ply);
 
 
-
-
 % vdisp(['  grain generation:  '  num2str(toc(s)) ' sec' ],varargin{:});
 % vdisp(' ',varargin{:})
 
@@ -279,7 +313,7 @@ function ids = graph2ids(A)
 [parent] = etree(A);
 
 n = length(parent);
-ids = zeros(1,n);
+ids = zeros(1,n,'uint32');
 isleaf = parent ~= 0;
 
 k = sum(~isleaf);
