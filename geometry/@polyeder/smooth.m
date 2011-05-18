@@ -1,16 +1,11 @@
-function pl = smooth(p,iter,mpower)
-% smooth grain-set by edge contraction
+function pl = smooth(p,iter,varargin)
+% constrait laplacian smoothing of grains 
+%
+
 
 if nargin <2 || isempty(iter)
   iter = 1;
 end
-
-if nargin < 3
-  mpower = 0;
-elseif mpower > 1
-  mpower = 1;
-end
-
 
 pl = polyeder(p);
 
@@ -23,14 +18,26 @@ Vertices = get(pl,'Vertices');
 VertexIds = get(pl,'VertexIds');
 Faces = get(pl,'Faces');
 
+hull = check_option(varargin,'hull');
+
 nv = max(cellfun(@max,VertexIds)); % number of vertices
 V = NaN(nv,3);
-F = []; i = []; j=[];
-for k=1:n
+F = []; i = []; j=[]; l1 = [];
+for k=1:n 
   v = VertexIds{k};
-  V(v,:) =  Vertices{k};
+  vrt = Vertices{k};
+  V(v,:) = vrt;
   F = [F ; v(Faces{k})];
+  
+  if hull
+    if size(vrt,1) > 2
+      T = convhulln(vrt);
+      l1 = [l1; v(unique(T(:)))];
+    end
+  end
 end
+
+F = double(F);
 
 F(:,end+1) = F(:,1);
 for k=1:size(F,2)-1
@@ -42,20 +49,50 @@ s = max(i);
 E = sparse(i,j,1,s,s);
 E = E+E'; % symmetrise
 
-iszero = ~all(isnan(V),2);
+l1 = [l1(:); find(any(triu(E,1)==2 | triu(E,1)>4,2))]; % border % tri-junk
 
+nn = size(V,1);
+V = [V;V(l1,:)];
+t = nn+numel(l1);
+
+constraits = sparse(double(l1),nn+1:t,1,t,t);
+constraits = constraits+constraits';
+
+[i,j] = find(E);
+E = sparse(i,j,1,t,t) + constraits;
+
+iszero = ~all(isnan(V),2);
+iszero(nn+1:end) = false;
+
+if check_option(varargin,{'second order','second_order','S'})
+  E2 = logical(E*E);
+  E2 = E2-diag(diag(E2)); % second order neighbour
+  E = E+E2;
+end
+
+weight = get_flag(varargin,{'gauss','expotential','exp'},'none');
+factor = get_option(varargin,weight,1);
 for l=1:iter
+  if ~strcmpi(weight,'none')
+    [i,j] = find(E);
+    d = sqrt(sum((V(i,:)-V(j,:)).^2,2)); % distance
+    
+    switch weight
+      case 'gauss'
+        w = exp(-(d/factor).^2);
+      case {'expotential','exp'}
+        w = factor*exp(-factor*d);
+    end
+    
+    E = sparse(i,j,w,t,t);
+  end
   
-  [i,j] = find(E);
-  w = exp(-sqrt(sum((V(i,:)-V(j,:)).^2,2)));
-  
-  E = sparse(i,j,w.^(l.^mpower),s,s);
-  V = E*V;
-  
+  Vt = E*V;
+
   m = sum(E,2);
   m = m(iszero,:);
   
-  V(iszero,:) = V(iszero,:)./[m m m];
+  V(iszero,:) = Vt(iszero,:)./[m m m];
   
 end
 
