@@ -1,21 +1,10 @@
-function pl = smooth(p,iter,mpower)
-% smooth grains by edge contraction
+function pl = smooth(p,iter,varargin)
+% constraint laplacian smoothing of grains 
 %
-%% Options
-% constrained  - 
-%
-%% See also 
-% polyeder/smooth
-%
+
 
 if nargin <2 || isempty(iter)
   iter = 1;
-end
-
-if nargin <3
-  mpower =  0;
-elseif mpower > 1
-  mpower = 1;
 end
 
 pl = polygon(p);
@@ -30,17 +19,22 @@ pl = [pl [hpl{:}]];
 Vertices = {pl.Vertices};
 VertexIds = {pl.VertexIds};
 
-nv = max(cellfun(@max,VertexIds));
-V = zeros(nv,2);
-l3 = [];
+hull = check_option(varargin,'hull');
+
+nv = max(cellfun(@max,VertexIds)); % number of vertices
+V = NaN(nv,2);
+F = []; i = []; j=[]; l1 = [];
 for k=1:numel(pl)
   v = VertexIds{k};
+  
   vrt = Vertices{k};
   V(v,:) = vrt;
-  if size(vrt,1) > 2
-  T = convhulln(Vertices{k});
   
-  l3 = [l3 v(unique(T))];
+  if hull
+    if size(vrt,1) > 2
+      T = convhulln(vrt);
+      l1 = [l1 v(unique(T(:)))];
+    end
   end
 end
 
@@ -60,20 +54,13 @@ E = sparse(i,j,1,s,s);
 E = E+E'; % symmetrise
 
 
-l1 = find(sum(triu(E,1),2)==1); % border
-l2 = find(sum(E,2) > 4);   % tri-junk
-
-i = [l1(:);l2(:);l3(:)];
-
-
+l1 = [l1(:); find(sum(triu(E,1),2)==1 | sum(E,2) > 4)]; % border % tri-junk
 
 nn = size(V,1);
-V = [V;V(i,:)];
-t = nn+numel(i);
+V = [V;V(l1,:)];
+t = nn+numel(l1);
 
-nn2 = t-numel(l3);
-
-constraits = sparse(i,nn+1:t,1,t,t);
+constraits = sparse(l1,nn+1:t,1,t,t);
 constraits = constraits+constraits';
 
 [i,j] = find(E);
@@ -82,16 +69,30 @@ E = sparse(i,j,1,t,t) + constraits;
 iszero = ~all(isnan(V),2);
 iszero(nn+1:end) = false;
 
-for l=1:iter
+if check_option(varargin,{'second order','second_order','S'})
+  E2 = logical(E*E); 
+  E2 = E2-diag(diag(E2)); % second order neighbour
+  E = E+E2;
+end
 
-  [i,j] = find(E);
+weight = get_flag(varargin,{'gauss','expotential','exp'},'none');
+
+for l=1:iter
+  if ~strcmpi(weight,'none')
+    [i,j] = find(E);
+    d = sqrt(sum((V(i,:)-V(j,:)).^2,2)); % distance
+    switch weight
+      case 'gauss'
+         v = std(d);
+         w = exp(-(d./v).^2);
+      case {'expotential','exp'}
+        lambda = 0.1;
+         w = lambda*exp(-lambda*d);
+    end
+    
+    E = sparse(i,j,w,t,t);
+  end
   
-  w = exp(-sqrt(sum((V(i,:)-V(j,:)).^2,2)));
-  
-  w(i > nn | j > nn) = 1; % weight of constraits  
-  w(i > nn2 | j > nn2) = .25; % weight of convex hull constraits
-  
-  E = sparse(i,j,w.^(l.^mpower),t,t);
   Vt = E*V;
 
   m = sum(E,2);
