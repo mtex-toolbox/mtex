@@ -12,7 +12,7 @@
 %%
 % Let us first import some EBSD data and perform a regionalisation
 
-loadaachen
+mtexdata aachen
 
 [grains ebsd] = calcGrains(ebsd,'threshold',12.5*degree)
 

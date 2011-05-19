@@ -53,21 +53,10 @@ angle(v1,v2,'antipodal') / degree
 % consequence of this fact is that MTEX plots pole figure data allways on
 % the upper hemisphere
 
-% crystal and specimen symmetry
-cs = symmetry('-3m',[1.4,1.4,1.5]);
-ss = symmetry('triclinic');
-
-% specify file names
-fname = {fullfile(mtexDataPath,'PoleFigure','dubna','Q(10-10)_amp.cnv')};
-
-% specify crystal directions
-h = {Miller(1,0,-1,0,cs)};
-
-% import pole figure data
-pf = loadPoleFigure(fname,h,cs,ss);
+mtexdata dubna
 
 % plot pole figure data
-plot(pf)
+plot(pf(1))
 
 %%
 % Moreover if you annotate a certain direction to pole figure data, it is
@@ -82,7 +71,7 @@ annotate(vector3d(1,0,-1),'labeled')
 % symmetry is in general not present.
 
 % some prefered orientation
-o = orientation('Euler',20*degree,30*degree,0,'ZYZ',cs,ss);
+o = orientation('Euler',20*degree,30*degree,0,'ZYZ',CS,symmetry);
 
 % define an unimodal ODF
 odf = unimodalODF(o);
@@ -115,7 +104,7 @@ plotipdf(odf,yvector,'antipodal','complete')
 
 figure(1); plotipdf(odf,yvector,'position',[100 100 400 200])
 
-figure(2);plotipdf(odf,yvector,'antipodal')
+figure(2);plotipdf(odf,yvector,'antipodal','position',[100 100 400 200])
 
 
 %% EBSD Colocoding
@@ -123,18 +112,7 @@ figure(2);plotipdf(odf,yvector,'antipodal')
 % Antipodal symmetry effects also the colocoding of ebsd plots. Lets first
 % import some data.
 
-% crystal symmetry
-% specify crystal and specimen symmetry
-cs = symmetry('m-3m');
-
-% file name
-fname = [mtexDataPath '/EBSD/85_829grad_07_09_06.txt'];
-
-% import data
-ebsd = loadEBSD(fname,cs,ss,'interface','generic',...
-  'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'Mad' 'BC'},...
-  'Columns', [2 3 4 5 6 7 8 9],...
-  'ignorePhase', [0 2], 'Bunge');
+mtexdata aachen
 
 %%
 % Now we plot these data with a colorcoding according to the inverse

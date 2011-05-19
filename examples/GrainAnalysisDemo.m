@@ -14,22 +14,9 @@
 %% Data import
 % plotting convention
 
+mtexdata mylonite
+
 plotx2east
-
-%%
-% crystal symmetry
-
-CS = {...
-  symmetry('-1',[8.169,12.851,7.1124],[93.63,116.4,89.46]*degree,'mineral','Andesina An28'),...
-  symmetry('-3m',[4.913,4.913,5.504],'mineral','Quartz-new'),...
-  symmetry('2/m',[5.339,9.249,20.196],[95.06,90,90]*degree,'mineral','Biotite'),...
-  symmetry('2/m',[8.5632,12.963,7.2099],[90,116.07,90]*degree,'mineral','Orthoclase')};
-
-%%
-% loading the data
-
-ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','P5629U1.txt'),CS, ...
-  'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3'})
 
 %% Phase map
 % Phase map of multi-phase rock specimen with Andesina (blue), Quartz (red),

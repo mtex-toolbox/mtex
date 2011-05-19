@@ -23,18 +23,8 @@ odf2 = fibreODF(Miller(0,0,1),xvector,cs,ss)
 
 %%
 % An ODF estimated from diffraction data:
-cs = symmetry('-3m',[1.4,1.4,1.5]);
-ss = symmetry('triclinic');
 
-fname = {...
-  fullfile(mtexDataPath,'PoleFigure','dubna','Q(10-10)_amp.cnv'),...
-  fullfile(mtexDataPath,'PoleFigure','dubna','Q(10-11)(01-11)_amp.cnv'),...
-  fullfile(mtexDataPath,'PoleFigure','dubna','Q(11-22)_amp.cnv')};
-h = {Miller(1,0,-1,0,cs),[Miller(0,1,-1,1,cs),Miller(1,0,-1,1,cs)],Miller(1,1,-2,2,cs)};
-c = {1,[0.52 ,1.23],1};
-
-pf = loadPoleFigure(fname,h,cs,ss,'superposition',c,...
-  'comment','Dubna Tutorial pole figures');
+mtexdata dubna
 
 odf3 = calcODF(pf,'resolution',5*degree,'iter_max',10)
 

@@ -12,7 +12,7 @@ function plotebsd(ebsd,varargin)
 %
 %% Example
 % 
-%   loadaachen
+%   mtexdata aachen
 %   plotebsd(ebsd,'phase',1,'scatter')
 %
 %% See also

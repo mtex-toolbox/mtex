@@ -10,24 +10,7 @@
 % Starting point of any ODF reconstruction is a 
 % <PoleFigure_index.html PoleFigure> object which can be created e.g. by
 
-% specify scrystal and specimen symmetry
-cs = symmetry('-3m',[1.4,1.4,1.5]);
-ss = symmetry('triclinic');
-
-% specify file names
-fname = {...
-  fullfile(mtexDataPath,'PoleFigure','dubna','Q(10-10)_amp.cnv'),...
-  fullfile(mtexDataPath,'PoleFigure','dubna','Q(10-11)(01-11)_amp.cnv'),...
-  fullfile(mtexDataPath,'PoleFigure','dubna','Q(11-22)_amp.cnv')};
-
-% specify crystal directions
-h = {Miller(1,0,-1,0,cs),[Miller(0,1,-1,1,cs),Miller(1,0,-1,1,cs)],Miller(1,1,-2,2,cs)};
-
-% specify structure coefficients
-c = {1,[0.52 ,1.23],1};
-
-% import pole figure data
-pf = loadPoleFigure(fname,h,cs,ss,'superposition',c)
+mtexdata dubna
 
 % plot pole figures
 figure('position',[359 450 749 249])
@@ -54,7 +37,7 @@ odf = calcODF(pf)
 % You may want to verify that the pole figures are reproduced. Here is a
 % plot of the computed pole figures.
 
-plotpdf(odf,get(pf,'Miller'),'antipodal','silent')
+plotpdf(odf,h,'antipodal','silent')
 
 
 %% Error analyis
@@ -85,7 +68,7 @@ plotDiff(pf,odf)
 % calcerror>.
 
 % define a unimodal ODF with the same modal orienation
-odf_modell = unimodalODF(modalorientation(odf),cs,ss,'halfwidth',15*degree)
+odf_modell = unimodalODF(modalorientation(odf),CS,symmetry,'halfwidth',15*degree)
 
 % plot the pole figures
 close all;
@@ -106,7 +89,7 @@ calcerror(odf_modell,odf)
 % Next an example how to change the default resolution:
 
 odf = calcODF(pf,'resolution',15*degree)
-plotpdf(odf,get(pf,'Miller'),'antipodal','silent')
+plotpdf(odf,h,'antipodal','silent')
 
 %%
 % Beside the resolution you can use the following options to change the
@@ -129,7 +112,7 @@ plotpdf(odf,get(pf,'Miller'),'antipodal','silent')
 % plot_zero_range>.
 
 odf = calcODF(pf,'zero_range')
-plotpdf(odf,get(pf,'Miller'),'antipodal','silent')
+plotpdf(odf,h,'antipodal','silent')
 
 %% Ghost Corrections
 %

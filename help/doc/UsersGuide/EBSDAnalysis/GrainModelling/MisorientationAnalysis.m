@@ -18,9 +18,9 @@
 % or the other way round depending on the point of view.
 
 %%
-% Let us first import some EBSD data by a [[matlab:edit loadaachen.m, script file]]
+% Let us first import some EBSD data by a [[matlab:edit mtexdata, script file]]
 
-loadaachen;
+mtexdata aachen
 
 %%
 % and <EBSD.calcGrains.html regionalize> our investigation area into

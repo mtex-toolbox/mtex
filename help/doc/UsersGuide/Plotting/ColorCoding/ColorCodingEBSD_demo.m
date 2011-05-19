@@ -7,7 +7,7 @@
 %
 % Let us first import some EBSD data by a [[matlab:edit loadaachen.m, script file]]
 
-loadaachen
+mtexdata aachen
 
 %% See also
 % EBSD/plotspatial grain/plotGrains ebsdColorbar orientation2color

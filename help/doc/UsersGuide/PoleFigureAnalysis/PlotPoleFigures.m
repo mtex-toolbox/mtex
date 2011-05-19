@@ -7,22 +7,9 @@
 %
 %% Import of Pole Figures
 %
-% Let us start by importing some pole figures.
+% Let us start by loading some pole figures.
 
-% crystal and specimen symmetry
-CS = symmetry('mmm');
-SS = symmetry('-1');
-
-% file names
-pname = fullfile(mtexDataPath,'PoleFigure','ptx');
-fname = {...
-  [pname '/gt9104.ptx'], ...
-  [pname '/gt9110.ptx'], ...
-  [pname '/gt9202.ptx'], ...
-  };
-
-% create a Pole Figure variable containing the data
-pf = loadPoleFigure(fname,CS,SS);
+mtexdata ptx
 
 %% Visualize the Data
 %

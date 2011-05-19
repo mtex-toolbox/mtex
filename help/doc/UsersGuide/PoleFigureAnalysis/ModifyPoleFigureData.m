@@ -7,25 +7,9 @@
 %
 %% Import diffraction data
 %
-% Let us import some data and plot them.
+% Let us load some data and plot them.
 
-% specify crystal and specimen symmetries
-cs = symmetry('m-3m');
-ss = symmetry('-1');
-
-% specify file name
-fname = fullfile(mtexDataPath,'PoleFigure','geesthacht','ST42-104-110.dat');
-
-% specify crystal directions
-h = { ...
-  Miller(1,0,4,cs), ...
-  Miller(1,0,4,cs), ...
-  Miller(1,1,0,cs), ...
-  Miller(1,1,0,cs), ...
-  };
-
-% import the data
-pf = loadPoleFigure(fname,h,cs,ss);
+mtexdata geesthacht
 
 % plot imported polefigure
 plot(pf)

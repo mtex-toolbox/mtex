@@ -13,9 +13,9 @@
 
 %%
 % Let us first import some standard EBSD data with a
-% [[matlab:edit loadaachen.m, script file]]
+% [[matlab:edit mtexdata, script file]]
 
-loadaachen;
+mtexdata aachen
 
 %% Grain Reconstruction
 % Grain reconstruction in MTEX is done via the command <EBSD.calcGrains.html

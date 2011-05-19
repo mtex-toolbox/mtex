@@ -12,10 +12,8 @@ function varargout = get(grains, vname, varargin)
 %% Example
 %  return ids and ids-list of neighbours
 %   
-%    loadaachen
+%    mtexdata aachen
 %    [grains ebsd] = segment2d(ebsd);
-%
-%  bla
 %
 %    get(grains(1:2),'id')
 %

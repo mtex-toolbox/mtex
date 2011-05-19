@@ -5,9 +5,11 @@
 %
 %% Contents
 %
-% Let us first import some standard EBSD data with a [[matlab:edit loadaachen.m, script file]]
 
-loadaachen;
+%%
+% Let us first import some standard EBSD data with a [[matlab:edit mtexdata, script file]]
+
+mtexdata aachen;
 
 %% 
 % and plot the raw data

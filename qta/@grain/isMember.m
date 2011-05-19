@@ -9,7 +9,7 @@ function b = isMember(grains,grains2)
 %% Example
 % return all grains which are not neighbour of a specific phase
 %    
-%    loadaachen;
+%    mtexdata aachen
 %    [grains,ebsd] = calcGrains(ebsd);
 % 
 %    gr1 = link(grains,ebsd(1));
