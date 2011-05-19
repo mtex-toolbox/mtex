@@ -8,9 +8,9 @@
 %
 % Starting point of any ODF estimation from EBSD data is a 
 % <EBSD_index.html EBSD> object, which here is imported by a
-% [[matlab:edit loadaachen.m, script file]]
+% [[matlab:edit mtexdata, script file]]
 
-loadaachen;
+mtexdata aachen
 
 %% ODF Estimation
 %

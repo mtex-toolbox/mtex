@@ -28,7 +28,7 @@ function [grains ebsd] = segment2d(ebsd,varargin)
 %  unitcell     - omit voronoi decomposition and treat a unitcell lattice
 %
 %% Example
-%   loadaachen
+%   mtexdata aachen
 %   [grains ebsd] = segment2d(ebsd(1:2),'threshold',[10 15]*degree)
 %
 %   plot(grains)

@@ -11,9 +11,9 @@
 %
 
 %% 
-% Let us first import some EBSD data with a [[matlab:edit loadaachen.m, script file]]
+% Let us first import some EBSD data with a [[matlab:edit mtexdata, script file]]
 
-loadaachen;
+mtexdata aachen
 
 %%
 % and model some grains

@@ -44,7 +44,7 @@ function h = plotspatial(ebsd,varargin)
 %% Example
 % plot a EBSD data set spatially with custom colorcoding
 %
-%   loadaachen
+%   mtexdata aachen
 %   plot(ebsd,'colorcoding','hkl')
 %
 %   plot(ebsd,'property','phase')
