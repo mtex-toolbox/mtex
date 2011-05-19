@@ -10,7 +10,7 @@ function grains = smooth(grains,iter,varargin)
 %
 %% Options
 % hull    - set also convex hull of polytope as constraits
-% exp | gauss  - use distance weight function
+% exp | gauss | umbrella - use distance weight function
 % second order | second_order | S  -  implies second order neighborhood of
 %     adjacent edges
 %
