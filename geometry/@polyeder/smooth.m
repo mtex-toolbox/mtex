@@ -30,9 +30,12 @@ for k=1:n
   F = [F ; v(Faces{k})];
   
   if hull
-    if size(vrt,1) > 2
+    if size(vrt,1) > 3
+      try
       T = convhulln(vrt);
       l1 = [l1; v(unique(T(:)))];
+      catch e
+      end
     end
   end
 end
@@ -70,7 +73,7 @@ if check_option(varargin,{'second order','second_order','S'})
   E = E+E2;
 end
 
-weight = get_flag(varargin,{'gauss','expotential','exp'},'none');
+weight = get_flag(varargin,{'gauss','expotential','exp','umbrella'},'none');
 factor = get_option(varargin,weight,1);
 for l=1:iter
   if ~strcmpi(weight,'none')
@@ -78,6 +81,9 @@ for l=1:iter
     d = sqrt(sum((V(i,:)-V(j,:)).^2,2)); % distance
     
     switch weight
+      case 'umbrella'
+        w = 1./(d);
+        w(d==0) = 1;
       case 'gauss'
         w = exp(-(d/factor).^2);
       case {'expotential','exp'}

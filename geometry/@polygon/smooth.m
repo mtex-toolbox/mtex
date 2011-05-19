@@ -75,13 +75,16 @@ if check_option(varargin,{'second order','second_order','S'})
   E = E+E2;
 end
 
-weight = get_flag(varargin,{'gauss','expotential','exp'},'none');
+weight = get_flag(varargin,{'gauss','expotential','exp','umbrella'},'none');
 
 for l=1:iter
   if ~strcmpi(weight,'none')
     [i,j] = find(E);
     d = sqrt(sum((V(i,:)-V(j,:)).^2,2)); % distance
     switch weight
+      case 'umbrella'
+        w = 1./(d);
+        w(d==0) = 1;
       case 'gauss'
          v = std(d);
          w = exp(-(d./v).^2);
@@ -92,7 +95,7 @@ for l=1:iter
     
     E = sparse(i,j,w,t,t);
   end
-  
+%   E = diag(sparse(1./sum(E,2)))*E;
   Vt = E*V;
 
   m = sum(E,2);

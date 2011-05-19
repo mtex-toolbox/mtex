@@ -38,6 +38,7 @@ if check_option(varargin,{'fill','FaceColor'})
   
   if check_option(varargin,'BoundaryColor')    
     Faces(:,end+1) = Faces(:,1);
+    Faces = double(Faces);
     
     d = max(Faces(:));
     E = sparse(d,d);
