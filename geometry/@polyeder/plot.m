@@ -80,11 +80,11 @@ elseif check_option(varargin,'pair')
     
     Vertices = get(p,'Vertices');
     Faces = get(p,'Faces');
-    FacetIds = get(p,'FacetIds');
-    
+    FacetIds = (get(p,'FacetIds'));
+ 
     offset = 0;
     for k=1:npair
-      isCommonFace = ismembc(FacetIds{left(k)}, sort(FacetIds{right(k)}));
+      isCommonFace = ismembc(abs(FacetIds{left(k)}), sort(abs(FacetIds{right(k)})));
       
       CommonFaces = Faces{left(k)}(isCommonFace,:);
       [VertexId,n,FaceId] = unique(CommonFaces);
