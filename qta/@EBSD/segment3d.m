@@ -48,7 +48,7 @@ if isempty(X), error('no spatial data');end
 clear Xt
 
 X = X(m,:);
-d = size(X,1);                % number of adjacent cells
+d = size(X,1);                % number of cells
 
 if numel(m) ~= numel(n)
   warning('mtex:GrainGeneration','spatially duplicated data points, perceed by erasing them')
@@ -89,7 +89,7 @@ for i=1:numel(ebsd)
         aind = cind(k)+1:cind(k+1);
         o1 = o(zll(aind));
         o2 = o(zrr(aind));
-        omega(aind) = angle(o1,o2) <= thresholds(i);
+        omega(aind+rl(i)) = angle(o1,o2) <= thresholds(i);
       end
       
       clear o1 o2 aind
@@ -122,34 +122,36 @@ Ag = DG'*Am*DG;                     % adjacency of grains
 
 %% interior and exterior grain boundaries
 
-Aint = diag(double(any(Am*DG & DG,2))) * Am;  % adjacency of 'interal' boundaries
-Aext = Am-Aint;                     % adjacency of 'external' boundaries
-
-i = find(any(Am,2));
-clear Am
-
 % construct faces as needed
 if numel(sz) == 3
-  [v,VF,FD] = spatialdecomposition3d(sz,i,dz,lz);
-else
+  i = find(any(Am,2));  % voxel that are incident to grain boudaries
+  [v,VF,FD,FDb] = spatialdecomposition3d(sz,uint32(i(:)),dz,lz);
+else % its voronoi decomposition
   v = sz; clear sz
   VF = dz; clear dz
   FD = lz; clear lz
+  FDb = sparse(size(FD));
 end
-clear i sz dz lz
+clear sz dz lz
 
-FG = FD*DG;                         % faces incident to grain
+sub = Am*DG & DG;                      % voxels that have a subgrain boundary 
+[i,j] = find( diag(any(sub,2))*double(Am) ); % all adjacence to those
+sub = any(sub(i,:) & sub(j,:),2);      % pairs in a grain
+Aint = sparse(i(sub),j(sub),1,d,d);
+                                       % select faces that are 'internal'
+[i,j] = find(triu(Aint,1));
+Dint = diag(any(FD(:,i) & FD(:,j),2)); % common faces
+FG_int = Dint*abs(FD)*DG;              % dismisses the orientation of the facet
 
-% background
-Dint = diag(diag(FD*Aint*FD')>1);   % select those faces that are 'interal'
-FG_int = logical(Dint*FG);
-clear Dint
-                                    % select faces that are 'external'
-Dext = diag(diag(FD*Aext*FD') | sum(FD,2) == 1);
+Aext = Am-Aint;                        % adjacent over grain boundray
+clear Am Dint
+                                    
+[i,j] = find(triu(Aext,1));            
+Dext = diag(any(FD(:,i) & FD(:,j),2)); % select faces that are 'external'
 clear Aext
 
-FG_ext = logical(Dext*FG);
-clear Dext FD FG
+FG_ext = Dext*FD*DG + FDb*DG;
+clear Dext FD FG FDb
 
 %% generate polyeder for each grains
 
@@ -162,14 +164,14 @@ ply = repmat(p,1,nr);
 
 for k = 1:nr
   
-  fe = find(FG_ext(:,k));
+  [fe,ig,forient] = find(FG_ext(:,k));
   [vertids,b,face] = unique(VF(fe,:));
   
   ph = p;
   ph.Vertices =  v(vertids,:);
   ph.VertexIds = vertids;
-  ph.Faces = reshape(uint32(face),[],fd);
-  ph.FacetIds = uint32(fe);
+  ph.Faces = reshape(int32(face),[],fd);
+  ph.FacetIds = int32(sign(forient).*fe);
   ply(k) = ph;
   
 end
@@ -197,14 +199,14 @@ g = uint32(g);
 
 for k = 1:numel(hasSubBoundary)
   
-  fi = find(FG_int(:,k));
+  [fi,ig,forient] = find(FG_int(:,k));
   [vertids,b,face] = unique(VF(fi,:));
   
   ph = p;
   ph.Vertices =  v(vertids,:);
   ph.VertexIds = vertids;
-  ph.Faces = reshape(uint32(face),[],fd);
-  ph.FacetIds = uint32(fi);
+  ph.Faces = reshape(int32(face),[],fd);
+  ph.FacetIds = int32(sign(forient).*fi);
   
   vgk = vg(g==k);
   s = ismembc(i,vgk) & ismembc(j,vgk);

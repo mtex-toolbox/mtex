@@ -65,40 +65,33 @@ if ~check_option(varargin,'voronoi') && size(xyz,1) > 1 %  check_option(varargin
 elseif ~check_option(varargin,'voronoi') 
   
   sz = xyz;
-  nx = sz(1);
-  ny = sz(2);
-  nz = sz(3);
+  
+  nd = prod(double(sz));
+  nf = prod(double(sz+1));
   
   ind = varargin{1};
   dz = varargin{2};
   lz = double(varargin{3});
   
-  % adding boundary voxels
-  [bx{1} by{1} bz{1}] = meshgrid(1:sz(1),1:sz(2),1);
-  [bx{2} by{2} bz{2}] = meshgrid(1:sz(1),1:sz(2),sz(3));
-  [bx{3} by{3} bz{3}] = meshgrid(1:sz(1),1,1:sz(3));
-  [bx{4} by{4} bz{4}] = meshgrid(1:sz(1),sz(2),1:sz(3));
-  [bx{5} by{5} bz{5}] = meshgrid(1,1:sz(2),1:sz(3));
-  [bx{6} by{6} bz{6}] = meshgrid(sz(1),1:sz(2),1:sz(3));
-  
-  bx = cellfun(@(x) x(:),bx,'uniformoutput',false);
-  by = cellfun(@(x) x(:),by,'uniformoutput',false);
-  bz = cellfun(@(x) x(:),bz,'uniformoutput',false);
-  bx = vertcat(bx{:});
-  by = vertcat(by{:});
-  bz = vertcat(bz{:});
-  
-  ind = unique([ind; double(s2i(sz,bx,by,bz))]);
-  
-  [ix,iy,iz] = ind2sub(sz,uint32(ind));
+  %  adding boundary voxels
+  [bind{1} bf{1}] = constr(sz,[0 0 0],0,nf);
+  [bind{2} bf{2}] = constr(sz,[1 0 0],0,nf);
+  [bind{3} bf{3}] = constr(sz,[0 0 0],2,nf);
+  [bind{4} bf{4}] = constr(sz,[0 1 0],2,nf);
+  [bind{5} bf{5}] = constr(sz,[0 0 0],4,nf);
+  [bind{6} bf{6}] = constr(sz,[0 0 1],4,nf);
+
+  aind = unique([uint32(ind); vertcat(bind{:})]);
+  [ix,iy,iz] = ind2sub(sz,aind);
+  clear bind
      
   ixn = ix+1; iyn = iy+1; izn = iz+1; % next voxel index
-  n = nx*ny*nz;
-  % pointels incident to voxels
-  VD = [s2i(sz+1,ix,iy,iz)  s2i(sz+1,ixn,iy,iz)  s2i(sz+1,ixn,iyn,iz)  s2i(sz+1,ix,iyn,iz) ....
-    s2i(sz+1,ix,iy,izn) s2i(sz+1,ixn,iy,izn) s2i(sz+1,ixn,iyn,izn) s2i(sz+1,ix,iyn,izn)];
   
-   % new voxel coordinates
+  % pointels incident to voxels
+  VD = [s2i(sz+1,ix,iy,iz) s2i(sz+1,ixn,iy,iz)  s2i(sz+1,ixn,iyn,iz)  s2i(sz+1,ix,iyn,iz) ....
+       s2i(sz+1,ix,iy,izn) s2i(sz+1,ixn,iy,izn) s2i(sz+1,ixn,iyn,izn) s2i(sz+1,ix,iyn,izn)];
+  
+  % new voxel coordinates
   vind = unique(VD(:));
   [vx,vy,vz] = ind2sub(sz+1,vind);
   varargout{1}(vind,:) = [double(vx+lz(1)-1)*dz(1)-dz(1)/2,...
@@ -108,29 +101,39 @@ elseif ~check_option(varargin,'voronoi')
   
   % surfels incident to voxel
   FD = [s2i(sz+1,ix,iy,iz) s2i(sz+1,ixn,iy,iz) ...
-    s2i(sz+1,ix,iy,iz)+2*n s2i(sz+1,ix,iyn,iz)+2*n ...
-    s2i(sz+1,ix,iy,iz)+4*n s2i(sz+1,ix,iy,izn)+4*n];
+    s2i(sz+1,ix,iy,iz)+2*nf s2i(sz+1,ix,iyn,iz)+2*nf ...
+    s2i(sz+1,ix,iy,iz)+4*nf s2i(sz+1,ix,iy,izn)+4*nf];
+  
   clear ix iy iz ixn iyn izn
   
   % pointels incident to facets
   tri = [ ...
-    4 1 5 8
+    8 5 1 4  %4 1 5 8
     2 3 7 6
-    1 2 6 5
+    5 6 2 1  %1 2 6 5
     3 4 8 7
-    1 2 3 4
+    1 2 3 4  %4 3 2 1
     5 6 7 8];
   
-  VF = zeros(max(FD(:)),4,'uint32');
+  VF = zeros(nf,4,'uint32');
   VF(FD,:) = reshape(VD(:,tri),[],4);
   varargout{2} = VF;
-  clear VD VF
+%   clear VD VF
   
-  id = repmat(ind(:),1,6);
-  
+  id = repmat(double(aind(:)),1,6);
   % surfels as incidence matrix
-  varargout{3} = sparse(double(FD),id,1,double(max(FD(:))),double(n)); 
- 
+   
+  FD = double(FD);
+  o = ones(size(FD));
+  o(:,1:2:6) = -1;
+  
+  FD = sparse(FD,id,o,6*nf,nd); 
+  varargout{3} = FD;
+  
+  bf = double(vertcat(bf{:}));
+  
+  [F,D,val] = find(FD(bf,:));
+  varargout{4} =  sparse(bf(F),D,val,6*nf,nd);
   
 else
   augmentation = get_option(varargin,'augmentation','cube');
@@ -224,8 +227,28 @@ else
   varargout{5} = FD;  
 end
 
+function [bind,bf] = constr(sz,s,d,n)
 
+dx = [1 sz(1)];
+dy = [1 sz(2)];
+dz = [1 sz(3)];
 
+switch d
+  case 0
+    dx(~any(s)+1) = dx(any(s)+1);
+  case 2
+    dy(~any(s)+1) = dy(any(s)+1);
+  case 4
+    dz(~any(s)+1) = dz(any(s)+1);
+end
+
+[bx by bz] = meshgrid(dx(1):dx(2),dy(1):dy(2),dz(1):dz(2));
+bind = s2i(sz,bx(:),by(:),bz(:));  
+
+[ix,iy,iz] = ind2sub(sz,bind);
+bf = s2i(sz+1,ix+s(1),iy+s(2),iz+s(3))+d*n;
+  
+  
 
 function ndx = s2i(sz,ix,iy,iz)
 % faster version of sub2ind
