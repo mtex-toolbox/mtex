@@ -1,4 +1,4 @@
-function handles = plot(p,varargin)
+function varargout = plot(p,varargin)
 % function for plotting polygons, mainly use to visualize grains
 %
 %% Input
@@ -16,7 +16,7 @@ function handles = plot(p,varargin)
 
 
 %preparing canvas
-%set(gcf,'renderer','zbuffer');
+set(gcf,'renderer','zbuffer');
 if ~check_option(varargin,'nofix'), fixMTEXplot('noresize');end
 
 %%
@@ -196,7 +196,7 @@ else
   h = [];  
 end
 
-if nargout > 0, handles = h; end
+if nargout > 0, varargout{1} = h; varargout{2:nargout} = []; end
 
 
 
