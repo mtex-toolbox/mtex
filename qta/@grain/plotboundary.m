@@ -33,9 +33,10 @@ end
 p = polytope( grains );
 
 if ~check_option(varargin,'noBG') && isempty(property)
-  h = plot(p,'color',[0.8 0.8 0.8],'nofix',varargin{:});
+  [h,po] = plot(p,'color',[0.8 0.8 0.8],'nofix',varargin{:});
 else
   h = [];
+  po = [];
 end
 
 if strcmpi(property,'phase')
@@ -63,8 +64,7 @@ if strcmpi(property,'phase')
     
     pair(:,3) = code(sub2ind(size(code),d(:,1),d(:,2)));
     
-    h(end+1) = plot(p, 'pair', pair, varargin{:} );
-    
+    [h(end+1),po(end+1)] = plot(p, 'pair', pair, varargin{:} );
   end
   
 elseif ~isempty(property)
@@ -121,7 +121,10 @@ elseif ~isempty(property)
         pair(:,3:5) = d;
         
       end
-      h = [h plot(p(ndx), 'pair', pair,'nofix', varargin{:} )];
+      [hn,pn] = plot(p(ndx), 'pair', pair,'nofix', varargin{:} );
+      
+      h = [h hn];
+      po = [po pn];
       
     end
     
@@ -153,3 +156,9 @@ end
 if nargout > 0
   varargout{1} = h;
 end
+
+if nargout > 1
+  varargout{2} = po;
+end
+
+

@@ -1,10 +1,9 @@
-function h = plot(p,varargin)
+function varargout = plot(p,varargin)
 
 
 
 
 p = polyeder(p);
-
 
 if check_option(varargin,{'fill','FaceColor'})
   
@@ -36,7 +35,13 @@ if check_option(varargin,{'fill','FaceColor'})
   h = patch('Vertices',Vertices,'Faces',Faces,...
     'FaceVertexCData',cdat,'FaceColor','flat','EdgeColor','none');
   
-  if check_option(varargin,'BoundaryColor')    
+  if nargout > 1
+    po = struct(polytope);
+    po.Vertices = Vertices;
+    po.Faces = Faces;
+  end
+  
+  if check_option(varargin,'BoundaryColor')
     Faces(:,end+1) = Faces(:,1);
     Faces = double(Faces);
     
@@ -48,12 +53,8 @@ if check_option(varargin,{'fill','FaceColor'})
     [l,r] = find(triu(E+E' == 1,1)); % edges that occure only once
     E = [l,r];
     
-    
-    Vertices(end+1,:) = NaN;  % dummy
-    E(:,3) = size(Vertices,1);
-    Vertices = Vertices(E',:);
     patch('Vertices',Vertices,...
-      'Faces',1:size(Vertices,1),...
+      'Faces',[l r l],...
       'EdgeColor',get_option(varargin,'BoundaryColor','k'),...
       'LineWidth',get_option(varargin,'LineWidth',2),'FaceColor','none');
   end
@@ -81,22 +82,42 @@ elseif check_option(varargin,'pair')
     Vertices = get(p,'Vertices');
     Faces = get(p,'Faces');
     FacetIds = (get(p,'FacetIds'));
- 
+    
     offset = 0;
+    
+    if nargout>1
+      po = struct(polytope);
+    end
+    
     for k=1:npair
       isCommonFace = ismembc(abs(FacetIds{left(k)}), sort(abs(FacetIds{right(k)})));
       
       CommonFaces = Faces{left(k)}(isCommonFace,:);
       [VertexId,n,FaceId] = unique(CommonFaces);
       
+      
+      ori = sign(FacetIds{left(k)}(isCommonFace));
+      
       nf = size(CommonFaces);
+      CommonFaces = reshape(FaceId,nf);
+      CommonFaces(ori<0,:) = CommonFaces(ori<0,end:-1:1);
+      
+      
       V{k} = Vertices{left(k)}(VertexId,:);
-      CommonFaces = reshape(FaceId+offset,nf);
-      F{k} = CommonFaces;
+      F{k} = CommonFaces+offset;
       C{k} = repmat(CData(k,:),nf(1),1);
       
+      
+      if nargout > 1
+        po(k).Vertices = V{k};
+        po(k).Faces = CommonFaces;
+      end
+      
       offset = offset + size(V{k},1);
+      
     end
+    
+    
     
     if check_option(varargin,'BoundaryColor')
       E = cell(npair,1);
@@ -115,7 +136,6 @@ elseif check_option(varargin,'pair')
         E{k} = Edges(nd(del),:);
       end
     end
-    
     
     V = vertcat(V{:});
     F = vertcat(F{:});
@@ -140,7 +160,24 @@ else
   h = [];
 end
 
+
+
+if nargout > 0
+  varargout{1} = h;
+end
+
+if nargout > 1
+  if exist('po','var')
+    varargout{2} = polyeder(po);
+  else
+    varargout{2} = [];
+  end
+  
+end
+
 axis equal tight
 grid on
-view([30,15])
+view(30,15)
+
+
 

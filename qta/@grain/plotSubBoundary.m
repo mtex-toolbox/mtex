@@ -1,4 +1,4 @@
-function plotSubBoundary(grains,varargin)
+function varargout = plotSubBoundary(grains,varargin)
 % plot the grain boundaries
 %
 %% Syntax
@@ -12,25 +12,32 @@ function plotSubBoundary(grains,varargin)
 %% See also
 % grain/plot grain/plotellipse grain/plotgrains grain/plotBoundary
 %
-  
+
 b = hasSubBoundary(grains);
 
-if any(b) 
+if any(b)
   newMTEXplot;
   
   fractions = [grains(b).subfractions];
   pl = [fractions.P];
   
   if ispolygon(grains)
-   
-    h = plot(polygon(pl),varargin{:});
+    
+    [h,po] = plot(polygon(pl),varargin{:});
     
   elseif ispolyeder(grains)
-     
-    h = plot(polyeder(pl),'FaceColor','r',varargin{:});
+    
+    [h,po] = plot(polyeder(pl),'FaceColor','r',varargin{:});
   end
   
   optiondraw(h,varargin{:});
+  
+  if nargout > 0
+    varargout{1} = h;
+  end
+  if nargout > 1
+    varargout{2} = po;
+  end
 else
   return
 end
