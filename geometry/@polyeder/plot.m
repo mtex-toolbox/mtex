@@ -5,12 +5,28 @@ function varargout = plot(p,varargin)
 
 p = polyeder(p);
 
+
+if check_option(varargin,'explode')
+  Vertices = vertcat(p.Vertices);
+  center = (max(Vertices)+min(Vertices))/2;
+  for k=1:numel(p)
+    pcenter = (max(p(k).Vertices)+min(p(k).Vertices))/2;
+    shift = (pcenter-center);
+    for l= 1:3
+      p(k).Vertices(:,l) = p(k).Vertices(:,l)+shift(l) ;
+    end
+  end
+end
+
+
 if check_option(varargin,{'fill','FaceColor'})
   
   cdata = get_option(varargin,'fill');
   
   cs = cellfun('size',{p.Faces},1);
   csz = cellfun('prodofsize',{p.Vertices})/3;
+  
+  
   Vertices = vertcat(p.Vertices);
   Faces = vertcat(p.Faces);
   
@@ -78,6 +94,7 @@ elseif check_option(varargin,'pair')
     V = cell(npair,1);
     F = cell(npair,1);
     C = cell(npair,1);
+    
     
     Vertices = get(p,'Vertices');
     Faces = get(p,'Faces');
