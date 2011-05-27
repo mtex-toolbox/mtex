@@ -97,6 +97,31 @@ if strcmp(prop,'phase') && ~check_option(varargin,'FaceColor')
   return
 end
 
+
+
+%% rotation axis as 'flow' field
+if any(strcmp(prop,{'flow','axis'}))
+  
+  for i = 1:numel(ebsd)
+    o = project2FundamentalRegion(ebsd(i).orientations);
+    a = axis(o);
+    w = angle(o);
+    
+    % convert axis as theta,rho
+    [s,rot] = polar(a);
+    n{i} = s.*exp(rot*1i);    
+  end
+  
+  n = vertcat(n{:});
+  h = quiver(xy(:,1),xy(:,2),real(n),imag(n));
+  optiondraw(h,varargin{:});
+  fixMTEXplot; 
+  
+  return
+end
+
+
+
 %% default plot options
 varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
