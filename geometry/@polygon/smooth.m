@@ -1,5 +1,5 @@
 function pl = smooth(p,iter,varargin)
-% constraint laplacian smoothing of grains 
+% constraint laplacian smoothing of grains
 %
 
 
@@ -32,8 +32,11 @@ for k=1:numel(pl)
   
   if hull
     if size(vrt,1) > 2
-      T = convhulln(vrt);
-      l1 = [l1 v(unique(T(:)))];
+      try
+        T = convhulln(vrt);
+        l1 = [l1 v(unique(T(:)))];
+      catch e
+      end
     end
   end
 end
@@ -70,15 +73,15 @@ iszero = ~all(isnan(V),2);
 iszero(nn+1:end) = false;
 
 if check_option(varargin,{'second order','second_order','S'})
-  E2 = logical(E*E); 
+  E2 = logical(E*E);
   E2 = E2-diag(diag(E2)); % second order neighbour
   E = E+E2;
 end
 
-weight = get_flag(varargin,{'gauss','expotential','exp','umbrella'},'none');
-
+weight = get_flag(varargin,{'gauss','expotential','exp','umbrella','rate'},'rate');
+lambda = get_option(varargin,weight,.5);
 for l=1:iter
-  if ~strcmpi(weight,'none')
+  if ~strcmpi(weight,'rate')
     [i,j] = find(E);
     d = sqrt(sum((V(i,:)-V(j,:)).^2,2)); % distance
     switch weight
@@ -86,22 +89,23 @@ for l=1:iter
         w = 1./(d);
         w(d==0) = 1;
       case 'gauss'
-         v = std(d);
-         w = exp(-(d./v).^2);
+        w = exp(-(d./lambda).^2);
       case {'expotential','exp'}
-        lambda = 0.1;
-         w = lambda*exp(-lambda*d);
+        w = lambda*exp(-lambda*d);
     end
     
     E = sparse(i,j,w,t,t);
   end
-%   E = diag(sparse(1./sum(E,2)))*E;
+  
+  
   Vt = E*V;
-
+  
   m = sum(E,2);
   m = m(iszero,:);
   
-  V(iszero,:) = Vt(iszero,:)./[m m];
+  dV = (V(iszero,:)-Vt(iszero,:)./[m m]);
+  
+  V(iszero,:) = V(iszero,:) - lambda*dV;
   
 end
 
