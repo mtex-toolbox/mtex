@@ -32,7 +32,7 @@ plot(ebsd,'phase',1)
 
 %% Segmentation
 
-[grains ebsd] = segment2d(ebsd)
+[grains ebsd] = calcGrains(ebsd)
 
 %%
 % we can see which segmentations are stored in the ebsd object indicated by
@@ -40,7 +40,7 @@ plot(ebsd,'phase',1)
 % different segmentations with one ebsd object, an we can define for each
 % phase a custom threshold
 
-[grains5 ebsd] = segment2d(ebsd,'angle',[10 5]*degree)
+[grains5 ebsd] = calcGrains(ebsd,'angle',[10 5]*degree)
 
 %% 
 % Plot grain-boundaries
