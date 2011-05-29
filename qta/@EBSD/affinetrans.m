@@ -28,14 +28,19 @@ else
   T(3,3) = 1;
 end
 
+% rotate the spatial data
 for k = 1:length(ebsd)
-  
-  % rotate the spatial data
+   
   xy = [ebsd(k).X ones(length(ebsd(k).X),1)] * T';
   ebsd(k).X = xy(:,1:2);
   
-  % rotate the unit cell
-  T(1:2,3) = 0; % no shift!
+end
+
+% rotate the unit cells
+T(1:2,3) = 0; % no shift!
+for k = 1:length(ebsd)
+    
   xy = [ebsd(k).unitCell ones(length(ebsd(k).unitCell),1)] * T';
   ebsd(k).unitCell = xy(:,1:2);
+  
 end
