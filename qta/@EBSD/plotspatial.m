@@ -9,7 +9,7 @@ function h = plotspatial(ebsd,varargin)
 %     |'phase'| for achieving a spatial phase map, or an properity field of the ebsd
 %     data set, e.g. |'bands'|, |'bc'|, |'mad'|.
 %
-%  colocoding     - [[orientation2color.html,colorize orientation]] according a 
+%  colocoding     - [[orientation2color.html,colorize orientation]] according a
 %    colormap after inverse PoleFigure
 %
 %    * |'ipdf'|
@@ -22,7 +22,7 @@ function h = plotspatial(ebsd,varargin)
 %    * |'sigma'|
 %    * |'rodrigues'|
 %
-%  antipodal      - include [[AxialDirectional.html,antipodal symmetry]] when 
+%  antipodal      - include [[AxialDirectional.html,antipodal symmetry]] when
 %     using inverse
 %     PoleFigure colorization
 %
@@ -98,36 +98,55 @@ if strcmp(prop,'phase') && ~check_option(varargin,'FaceColor')
 end
 
 
-
-%% rotation axis as 'flow' field
-if any(strcmp(prop,{'flow','axis'}))
-  
-  for i = 1:numel(ebsd)
-    o = project2FundamentalRegion(ebsd(i).orientations);
-    a = axis(o);
-    w = angle(o);
-    
-    % convert axis as theta,rho
-    [s,rot] = polar(a);
-    n{i} = s.*exp(rot*1i);    
-  end
-  
-  n = vertcat(n{:});
-  h = quiver(xy(:,1),xy(:,2),real(n),imag(n));
-  optiondraw(h,varargin{:});
-  fixMTEXplot; 
-  
-  return
-end
-
-
-
 %% default plot options
 varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
 % clear up figure
 newMTEXplot;
+
+
+%% rotation axis as 'flow' field
+if any(strcmp(prop,{'flow','axis','axisflow'}))
+  
+  for i = 1:numel(ebsd)
+    %     o = ebsd(i).orientations;
+    o = project2FundamentalRegion(ebsd(i).orientations,idquaternion);
+    
+    a = axis(o);
+    b = o*get_option(varargin,{'flow','axisflow'},zvector,'vector3d');
+    
+    % convert axis as theta,rho
+    [s,rot] = polar(a);
+    na{i} = s.*exp(rot*1i);
+    [s,rot] = polar(b);
+    nb{i} = s.*exp(rot*1i);
+  end
+  
+  na = vertcat(na{:});
+  nb = vertcat(nb{:});
+  
+  washold = ishold;
+  hold on
+  h = [];
+  if check_option(varargin,{'axis','axisflow'})
+    h(end+1) = quiver(xy(:,1),xy(:,2),real(na),imag(na),'k.');
+  end
+  if check_option(varargin,{'flow','axisflow'})
+    h(end+1) = quiver(xy(:,1),xy(:,2),real(nb),imag(nb),'b');
+  end
+  if ~washold, hold off; end
+  optiondraw(h,varargin{:});
+  
+  
+  fixMTEXscreencoordinates('axis'); %due to axis;
+  set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
+  fixMTEXplot;
+  
+  
+  return
+end
+
 
 %% compute colorcoding
 if isa(prop,'double')
@@ -152,7 +171,7 @@ switch prop
     d = [];
     for i = 1:length(ebsd)
       d = [d; angle(ebsd(i).orientations)/degree];
-    end    
+    end
   otherwise
     error('Unknown colorcoding!')
 end
