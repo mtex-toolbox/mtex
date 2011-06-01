@@ -391,14 +391,12 @@ function	res=CPRINTF_fh2fh(par,fh)
 % ********** THE WORST CASE SCENARIO! **********
 % - this construct needed due to an error in PUBLISH	!
 % - fh from an INI file contains a bad file pointer
-	try
-		fn=th.function;
+
+  		fn=th.function;
 		ix=find(fn=='@',1,'first');
 		fn=fn(ix:end);
 		res=par.s2f(fn);
-	catch	msg					%#ok
-		res=fh;
-	end
+
 	else
 		res=fh;
 	end
@@ -974,7 +972,7 @@ function	[par,opt]=CPRINTF_parse_option(par,varargin)
 		iopt={};
 		ix=strcmp(varargin,'-ini');
 	if	any(ix)
-	try
+
 		ix=find(ix,1,'last')+1;
 		fini=varargin{ix};
 		fout='';
@@ -985,25 +983,20 @@ function	[par,opt]=CPRINTF_parse_option(par,varargin)
 	end
 		[iopt,par]=CPRINTF_ini2opt(par,fini,fout);
 		iopt=CPRINTF_opt2cell(iopt);
-	catch	msg
-		error('%s> [%s] invalid ini file\n%s',par.magic,'-ini',msg.message);
-	end
+
 	end
 
 % - use option struct
 		oopt={};
 		ix=strcmp(varargin,'-opt');
 	if	any(ix)
-	try
 		ix=find(ix,1,'last')+1;
 	if	isstruct(varargin{ix})
 		oopt=varargin{ix};
 		oopt=CPRINTF_opt2cell(oopt);
 		varargin{ix}=true;
 	end
-	catch	msg
-		error('%s> [%s] argument missing or invalid structure\n%s',par.magic,'-opt',msg.message);
-	end
+
 	end
 
 % - command line
@@ -1146,11 +1139,9 @@ function	par=CPRINTF_parse_chkoption(par)
 	elseif	isa(par.opt.E,'function_handle')
 		par.opt.E=CPRINTF_fh2fh(par,par.opt.E);
 	end
-	try
+
 		par.opt.E({[]});
-	catch	msg
-		error('%s> [-E] bad format for empty cell content: %s',par.magic,msg.message);
-	end
+
 	end
 % - [-O]	must be function handle created in CPRINTF
 %		must return a char string
@@ -1160,11 +1151,9 @@ function	par=CPRINTF_parse_chkoption(par)
 	elseif	isa(par.opt.O,'function_handle')
 		par.opt.O=CPRINTF_fh2fh(par,par.opt.O);
 	end
-	try
+
 		par.opt.O(cell(1,1));
-	catch	msg
-		error('%s> [-O] bad format for other cell content: %s',par.magic,msg.message);
-	end
+
 	end
 % - [-fm]
 	if	par.hasopt.fm
@@ -1547,7 +1536,7 @@ function	[ctbl,par]=CPRINTF_cell2ascii(par,ctbl)
 	end
 
 	if	any(par.in)
-	try
+
 	for	i=1:size(par.fpar,1)
 	if	par.fpar{i,1}
 		sin=sum(par.in);
@@ -1561,9 +1550,7 @@ function	[ctbl,par]=CPRINTF_cell2ascii(par,ctbl)
 	end
 	end
 	end
-	catch	msg
-		error('%s> cell2ascii in %s: %s',par.magic,par.fpar{i,3},msg.message);
-	end
+
 	end
 
 % note to programmers: this should NEVER happen...
@@ -1596,14 +1583,12 @@ function	[ctbl,par]=CPRINTF_ascii2string(par,ctbl)
 
 % - note: for larger T, this is MUCH faster than
 %   sprintf(fmt,t{:});
-	try
+
 	for	i=1:par.pr
 		ctbl{i,1}=sprintf(par.fmt,ctbl{i,1:par.pc});
 		ctbl(i,2:par.pc)={[]};
 	end
-	catch	msg
-		error('%s> ascii2string: %s',par.magic,msg.message);
-	end
+
 		par.disp('CP| print     : %10s = %19.6f sec','done',etime(clock,t0));
 
 		ctbl=ctbl(:,1);
@@ -2381,7 +2366,7 @@ end
 %-------------------------------------------------------------------------------
 function	[res,par]=CPRINTF_readini(par,fini)
 
-	try
+
 		[fpat,frot]=fileparts(fini);
 	if	~isempty(fpat)
 		ocd=cd(fpat);
@@ -2390,8 +2375,6 @@ function	[res,par]=CPRINTF_readini(par,fini)
 	end
 		res=feval(frot);
 		cd(ocd);
-	catch	msg
-		error('%s> error running ini file %s\n%s',par.magic,fini,msg.message);
-	end
+
 end
 %-------------------------------------------------------------------------------
