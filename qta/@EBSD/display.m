@@ -10,7 +10,7 @@ elseif ~isempty(inputname(1))
   h = [inputname(1), ' = ' h];
 end;
 
-if ~isempty(ebsd(1).comment)
+if numel(ebsd)>0 && ~isempty(ebsd(1).comment)
   s = ebsd(1).comment;
   if length(s) > 60, s = [s(1:60) '...'];end
 
@@ -46,8 +46,10 @@ for i = 1:length(ebsd)
   
 end
 
-cprintf(matrix,'-L','  ','-Lc',...
-  {'phase' 'orientations' 'mineral'  'symmetry' 'crystal reference frame'},...
-  '-ic','F');
+if numel(ebsd)>0
+  cprintf(matrix,'-L','  ','-Lc',...
+    {'phase' 'orientations' 'mineral'  'symmetry' 'crystal reference frame'},...
+    '-ic','F');
+end
 
 disp(' ');

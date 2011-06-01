@@ -116,7 +116,7 @@ if exist(fullfile(mexpath,'v7.1'),'dir')
   rmpath(mexpath);
   addpath(fullfile(mexpath,'v7.1'));
   disp('> Trying now with older version.');
-  if fast_check_mex
+  if fast_check_mex(mexpath)
     disp('> Hurray - everythink works!')
     disp(' ');
     try
