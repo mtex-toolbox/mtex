@@ -1,5 +1,5 @@
-function [x,omega] = angleDistribution(odf,varargin)
-% 
+function [density,omega] = angleDistribution(odf,varargin)
+% compute the angle distribution of an ODF or an MDF 
 %
 %
 %% Input
@@ -8,7 +8,6 @@ function [x,omega] = angleDistribution(odf,varargin)
 %
 %% Flags
 %  EVEN       - calculate even portion only
-%  FOURIER    - use NFSOFT based algorithm
 %
 %% Output
 %  x   - values of the axis distribution
@@ -16,24 +15,30 @@ function [x,omega] = angleDistribution(odf,varargin)
 %% See also
 
 % get resolution
+points = get_option(varargin,'points',100000);
 res = get_option(varargin,'resolution',2.5*degree);
 
-% define a grid for quadrature
-S3G = SO3Grid(res,odf(1).CS,odf(1).SS);
-angles = angle(S3G);
+%% simluate EBSD data
+ebsd = simulateEBSD(odf,points,'resolution',res);
 
-% get omega
-omega = 0:2*res:max(angles);
-omega = get_option(varargin,'omega',omega);
+% compute angles
+angles = angle(get(ebsd,'orientations'));
 
-% bin rotational angles
-[n,bin] = histc(angles,omega);
+maxangle = max(angles);
 
-% evaluate ODF
-f = eval(odf,S3G,varargin{:});
 
-% sort to bins
-x = zeros(size(omega));
-for i=1:length(omega)
-  x(i) = sum(f(bin==i))./numel(S3G)*length(omega);
-end
+%% perform kernel density estimation
+
+[bandwidth,density,omega,cdf] = kde(angles,2^8,0,maxangle);
+
+
+% where to evaluate
+%omega = linspace(0,maxangle,100);
+
+% 
+%sigma = 20;
+%psi = @(a,b) exp(-(a-b).^2*sigma.^2);
+
+%
+%x = sum(bsxfun(psi,angles,omega));
+%x = x./sum(x)*numel(x);

@@ -78,7 +78,7 @@ for i = 1:length(odf)
     end
 
     r1 = discretesample(d,points);
-    r2 = discretesample(numel(S3G_local),points,1);
+    r2 = discretesample(numel(S3G_local),points);
 
     ori(iodf==i) = quaternion(S3G_global,r1) .* quaternion(S3G_local,r2);
 
