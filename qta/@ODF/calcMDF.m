@@ -1,9 +1,9 @@
-function modf = calcMODF(odf1,varargin)
-% calculate the uncorrelated MODF from one or two ODF
+function mdf = calcMDF(odf1,varargin)
+% calculate the uncorrelated misorientation distribution function (MDF) from one or two ODF
 %
 %% Syntax  
-% modf = calcMODF(odf)
-% modf = calcMODF(odf1,odf2,'bandwidth',32)
+% mdf = calcMDF(odf)
+% mdf = calcMDF(odf1,odf2,'bandwidth',32)
 %
 %% Input
 %  odf  - @ODF
@@ -13,7 +13,7 @@ function modf = calcMODF(odf1,varargin)
 % bandwidth - bandwidth for Fourier coefficients (default -- 32)
 % 
 %% Output
-%  modf - @ODF
+%  mdf - @ODF
 %
 %% See also
 % EBSD/calcODF
@@ -87,7 +87,7 @@ if check_option(varargin,'kernelMethod')
     
   end
   
-  modf = ODF(center,c,psi,get(odf2,'CS'),get(odf1,'CS'));
+  mdf = ODF(center,c,psi,get(odf2,'CS'),get(odf1,'CS'));
   
   %% Fourier method
 else 
@@ -107,14 +107,14 @@ else
     odf2_hat = odf1_hat;
   end
 
-  % compute Fourier coefficients of MODF
+  % compute Fourier coefficients of mdf
   odf_hat = [odf1_hat(1)*odf2_hat(1);zeros(deg2dim(L+1)-1,1)];
   for l = 1:L
     ind = deg2dim(l)+1:deg2dim(l+1);
     odf_hat(ind) = reshape(odf1_hat(ind),2*l+1,2*l+1)' * reshape(odf2_hat(ind),2*l+1,2*l+1) ./ (2*l+1);
   end
 
-  % construct MODF
-  modf = FourierODF(odf_hat,get(odf2,'CS'),get(odf1,'CS'));
+  % construct mdf
+  mdf = FourierODF(odf_hat,get(odf2,'CS'),get(odf1,'CS'));
     
 end
