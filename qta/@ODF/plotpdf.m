@@ -24,8 +24,15 @@ function plotpdf(odf,h,varargin)
 
 %% check input
 if iscell(h), h = [h{:}];end
-argin_check(h,'Miller');
-h = ensureCS(odf(1).CS,{h});
+
+% maybe we shall call plotipdf
+try
+  argin_check(h,'Miller');
+  h = ensureCS(odf(1).CS,{h});
+catch
+  plotipdf(odf,h,varargin);
+  return
+end
 
 % default options
 varargin = set_default_option(varargin,...

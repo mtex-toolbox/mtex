@@ -3,7 +3,17 @@ function display(odf,varargin)
 
 disp(' ');
 
-h = doclink('ODF_index','ODF');
+csss = {'sample symmetry ','crystal symmetry'};
+
+%% ODF / MDF
+disp(' ');
+if isCS(odf.SS) && isCS(odf.CS)
+  h = doclink('MDF_index','MDF');
+else
+  h = doclink('ODF_index','ODF');
+end
+
+%% variable name
 if check_option(varargin,'vname')
   h = [get_option(varargin,'vname'), ' = ' h];
 elseif ~isempty(inputname(1))
@@ -13,21 +23,9 @@ if ~isempty(odf(1).comment), h = [h ' (' odf(1).comment ')']; end
 
 disp(h);
 
-% collect tensor properties
-props = {'specimen symmetry','crystal symmetry'};
-propV = {get(odf(1).SS,'name'), get(odf(1).CS,'name')};
-al = get(odf(1).CS,'alignment');
-if ~isempty(al)
-  propV{2} = option2str([propV(2) option2str(al)]);
-end
-
-if ~isempty(get(odf(1).CS,'mineral'))
-  props{end+1} = 'mineral'; 
-  propV{end+1} = get(odf(1).CS,'mineral');
-end
-
-% display all properties
-cprintf(propV(:),'-L','  ','-ic','L','-la','L','-Lr',props,'-d',': ');
+%% display symmtries and minerals  
+disp(['  ' csss{isCS(odf.CS)+1} ': ', char(odf.CS,'verbose')]);
+disp(['  ' csss{isCS(odf.SS)+1} ': ',char(odf.SS,'verbose')]);
 
 % display components
 disp(' ');
