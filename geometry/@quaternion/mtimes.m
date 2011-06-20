@@ -41,7 +41,7 @@ if isa(q1,'quaternion') && isa(q2,'quaternion')
   
   %[a,b,c,d] = quaternion_mtimes_qq(q1.a,q1.b,q1.c,q1.d,q2.a,q2.b,q2.c,q2.d);
   
-elseif isa(q1,'quaternion') && (isa(q2,'vector3d') || isa(q2,'Miller'))
+elseif isa(q1,'quaternion') && isa(q2,'vector3d')
   
   q = rotate(q2,q1);
   

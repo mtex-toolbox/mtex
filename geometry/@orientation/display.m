@@ -1,16 +1,20 @@
 function display(o)
 % standart output
 
-disp(' ');
-disp([inputname(1) ' = ' doclink('orientation_index','orientation') ' (size: ' int2str(size(o)) ')']);
+csss = {'sample symmetry ','crystal symmetry'};
 
-if ~isempty(get(o.CS,'mineral'))
-  disp(['  mineral: ',get(o.CS,'mineral')]);
+disp(' ');
+if isCS(o.SS) && isCS(o.CS)
+  disp([inputname(1) ' = ' doclink('orientation_index','misorientation') ' (size: ' int2str(size(o)) ')']);
+elseif isCS(o.SS)
+  disp([inputname(1) ' = ' doclink('orientation_index','inverse orientation') ' (size: ' int2str(size(o)) ')']);
+  
+else
+  disp([inputname(1) ' = ' doclink('orientation_index','orientation') ' (size: ' int2str(size(o)) ')']);
 end
   
-convention = get(o.CS,'convention');
-disp(['  crystal symmetry: ', option2str([{get(o.CS,'name')},convention])]);
-disp(['  sample symmetry : ',get(o.SS,'name')]);
+disp(['  ' csss{isCS(o.CS)+1} ': ', char(o.CS,'verbose')]);
+disp(['  ' csss{isCS(o.SS)+1} ': ',char(o.SS,'verbose')]);
 
 
 if numel(o) < 30 && numel(o)>0
