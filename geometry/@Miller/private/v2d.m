@@ -47,7 +47,7 @@ for im = 1:numel(m)
   if ~isempty(j)
     uvtw(im,:) = round(mm(:,j).');
   else
-    uvtw(im,:) = mv(:,im).';    
+    uvtw(im,:) = round(mv(:,im).'*1000)/1000;
   end
 
 end
