@@ -39,7 +39,7 @@ for im = 1:numel(m)
   if ~isempty(j)
     hkl(im,:) = round(mm(:,j));
   else
-    hkl(im,:) = mv(:,im);    
+    hkl(im,:) = round(mv(:,im)*1000)/1000;
   end
 
 end
