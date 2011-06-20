@@ -108,7 +108,11 @@ switch vname
     end
   case 'mineral'
     
-    varargout = cellfun(@(x) get(x,'mineral') ,{obj.orientations},'uniformoutput',false);    
+    varargout = cellfun(@(x) get(x,'mineral') ,{obj.orientations},'uniformoutput',false);
+    
+  case 'minerals'
+    
+    varargout{1} = cellfun(@(x) get(x,'mineral') ,{obj.orientations},'uniformoutput',false);
     
   case fields(obj(1).options)
      options = [obj.options];
