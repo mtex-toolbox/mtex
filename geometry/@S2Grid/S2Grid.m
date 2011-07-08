@@ -12,21 +12,19 @@ function G = S2Grid(varargin)
 %% Options
 %  POINTS     - [nrho,ntheta] number of points to be generated
 %  RESOLUTION - resolution of a equispaced grid
-%  HEMISPHERE - { NORTH | SOUTH | BOTH | IDENTIFIED }
+%  HEMISPHERE - 'north', 'south', 'lower', 'uper', 'complete', 'sphere', 'identified'}
 %  THETA      - theta angle
 %  RHO        - rho angle
-%
-%% Flags
-%  REGULAR    - generate a regular grid
-%  EQUISPACED - generate equidistribution
-%  NORTH      - northern hemisphere
-%  SOUTH      - southern hemisphere
-%  ANTIPODAL  - include [[AxialDirectional.html,antipodal symmetry]]
-%  PLOT       - generate plotting grid
 %  MINRHO     - starting rho angle (default 0)
 %  MAXRHO     - maximum rho angle (default 2*pi)
 %  MINTHETA   - starting theta angle (default 0)
 %  MAXTHETA   - maximum theta angle (default pi)
+%
+%% Flags
+%  REGULAR    - generate a regular grid
+%  EQUISPACED - generate equidistribution
+%  ANTIPODAL  - include [[AxialDirectional.html,antipodal symmetry]]
+%  PLOT       - generate plotting grid
 %  NO_CENTER  - ommit point at center
 %  RESTRICT2MINMAX - restrict margins to min / max
 %
@@ -52,14 +50,14 @@ maxrho = get_option(varargin,'MAXRHO',maxrhoGrid);
 drho = maxrho - minrho;
 
 % theta range
-if check_option(varargin,'north')
+if check_option(varargin,{'north','upper'})
   minthetaGrid = 0;
-  if check_option(varargin,'south')
+  if check_option(varargin,{'south','lower'})
     maxthetaGrid = pi;
   else
     maxthetaGrid = pi/2;
   end
-elseif check_option(varargin,'south')
+elseif check_option(varargin,{'south','lower'})
   minthetaGrid = pi/2; maxthetaGrid = pi;
 elseif check_option(varargin,'antipodal')
   minthetaGrid = 0; maxthetaGrid = pi/2;
@@ -258,7 +256,7 @@ else
 end
 
 Grid = set_option(Grid,...
-  extract_option(varargin,{'INDEXED','PLOT','north','south','antipodal'}));
+  extract_option(varargin,{'INDEXED','PLOT','north','south','antipodal','lower','upper'}));
 
 superiorto('vector3d');
 G = class(G,'S2Grid',Grid);
