@@ -28,7 +28,7 @@ switch lower(name)
         
   	hw = p;
 
-  case {'user','jackson','sobolev','ghost'}
+  case {'user','sobolev','ghost'}
     
     hw = pi;
     
