@@ -26,8 +26,10 @@ function varargout = get(obj,vname,varargin)
 
 if nargin == 1
   vnames = get_obj_fields(obj(1),'options');
+  vnames = [vnames;{'data';'quaternion';'Euler';'mineral'}];
   if nargout, varargout{1} = vnames; else disp(vnames), end
-else
+  return
+end
 
 varargout{1} = [];
 switch vname
@@ -73,7 +75,11 @@ switch vname
   case 'Euler'
     q = get(obj,'quaternion');
     [phi1,Phi,phi2] = get(q,'Euler',varargin{:});
-    varargout{1} = [phi1,Phi,phi2];
+    if nargout <= 1
+      varargout{1} = [phi1,Phi,phi2];
+    else
+      varargout = {phi1,Phi,phi2};
+    end
   case 'length'
     varargout{1} = zeros(1,length(obj));
     for i = 1:length(obj)
@@ -124,4 +130,3 @@ switch vname
     error(['There is no ''' vname ''' property in the ''EBSD'' object'])
 end
 
-end
