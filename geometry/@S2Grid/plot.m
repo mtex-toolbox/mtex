@@ -152,13 +152,13 @@ elseif check_option(varargin,{'antipodal','plain'})
   
   hemisphere = 'antipodal';
   
-elseif check_option(varargin,{'north','south','antipodal'})
+elseif check_option(varargin,{'north','south','antipodal','lower','upper'})
   
-  hemisphere = extract_option(varargin,{'north','south','antipodal'});
+  hemisphere = extract_option(varargin,{'north','south','antipodal','lower','upper'});
    
-elseif check_option(S2G,{'north','south','antipodal'})
+elseif check_option(S2G,{'north','south','antipodal','lower','upper'})
   
-  hemisphere = extract_option(S2G,{'north','south','antipodal'});
+  hemisphere = extract_option(S2G,{'north','south','antipodal','lower','upper'});
 
 elseif max(theta(:)) > pi/2+0.001 
   
@@ -177,7 +177,7 @@ bounds = [0,0,0,0];
 
 %% Northern Hemisphere
 
-if any(strcmpi(hemisphere,'north')) || any(strcmpi(hemisphere,'antipodal'))
+if check_option(ensurecell(hemisphere),{'north','upper','antipodal'})
   
   if strcmp(hemisphere,'antipodal')
     south = theta > pi/2+0.001;
@@ -203,7 +203,7 @@ end
 
 %% Southern Hemisphere
 
-if any(strcmpi(hemisphere,'south'))
+if check_option(ensurecell(hemisphere),{'south','lower'})
   ind = theta >= pi/2-0.001;
   bounds = plotHemiSphere(pi-submatrix(theta,ind),submatrix(rho,ind),...
     submatrix(data,ind),bounds(3),'maxrho',max(getMax(S2G.rho)),varargin{:});
