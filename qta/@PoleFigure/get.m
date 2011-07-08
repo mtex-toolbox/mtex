@@ -27,8 +27,10 @@ function varargout = get(pf,vname,varargin)
 
 if nargin == 1
 	vnames = get_obj_fields(pf(1),'options');
+  vnames = [vnames;{'theta';'rho';'polar';'azimuth';'intensities';'Miller';'crystal directions';'resolution'}];
   if nargout, varargout{1} = vnames; else disp(vnames), end
-else
+  return
+end
 
 
 switch vname
@@ -92,4 +94,3 @@ switch vname
     error(['There is no ''' vname ''' property in the ''PoleFigure'' object'])
 end
 
-end
