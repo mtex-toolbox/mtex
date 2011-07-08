@@ -22,8 +22,10 @@ function varargout = get(obj,vname,varargin)
 
 if nargin == 1
 	vnames = get_obj_fields(obj(1));
+  vnames = [vnames;{'resolution';'weights';'kernel';'kappa'}];
   if nargout, varargout{1} = vnames; else disp(vnames), end
-else
+  return
+end
 
 
 switch vname
@@ -66,4 +68,3 @@ switch vname
     error(['There is no ''' vname ''' property in the ''ODF'' object'])
 end
 
-end
