@@ -31,12 +31,15 @@ if nargin == 1
   return
 end
 
-varargout{1} = [];
 switch vname
   case {'SS','CS'}
-     varargout = cellfun(@(x) get(x,(vname)) ,{obj.orientations},'uniformoutput',false);
+    
+    varargout = cellfun(@(x) get(x,(vname)) ,{obj.orientations},'uniformoutput',false);
+     
   case {'comment','options'}    
+    
     varargout = {obj.(vname)};    
+    
   case {'data','orientations','orientation'}   
     
     % extract phases
@@ -67,24 +70,35 @@ switch vname
     varargout{2} = ind;  
   case fields(obj)
     varargout{1} = vertcat(obj.(vname));    
+    
   case {'quaternions','quaternion'}
+    
     varargout{1} = quaternion();
     for i = 1:length(obj)
       varargout{1} = [varargout{1};reshape(quaternion(obj(i).orientations),[],1)]; 
     end
+    
   case 'Euler'
-    q = get(obj,'quaternion');
-    [phi1,Phi,phi2] = get(q,'Euler',varargin{:});
-    if nargout <= 1
-      varargout{1} = [phi1,Phi,phi2];
+    
+    % if only one phase
+    if length(obj) == 1 
+      
+      [varargout{1:nargout}] = Euler(obj.orientations,varargin{:});
+            
     else
-      varargout = {phi1,Phi,phi2};
+      
+      q = get(obj,'quaternion');
+      [varargout{1:nargout}] = Euler(q,varargin{:});
+      
     end
+    
   case 'length'
+    
     varargout{1} = zeros(1,length(obj));
     for i = 1:length(obj)
       varargout{1}(i) = sum(numel(obj(i).orientations));
     end
+    
   case 'phases'
     
     sz = cumsum([0,sampleSize(obj)]);
@@ -93,6 +107,7 @@ switch vname
       phases(sz(i)+1:sz(i+1)) = obj(i).phase;
     end
     varargout{1} = phases;
+
   case {'x','y','z','xy','xz','yz','xyz'}
     fl = {1,2,3,[1,2],[1,3],[2,3],[1:3]};
     fl = fl{strcmpi(vname,{'x','y','z','xy','xz','yz','xyz'})};
@@ -100,11 +115,9 @@ switch vname
     for i = 1:length(obj)
       varargout{1} = [varargout{1};obj(i).X(:,fl(fl <=size(obj(i).X,2)))]; 
     end
-%   case 'y'
-%     for i = 1:length(obj)
-%       varargout{1} = [varargout{1};obj(i).X(:,2)]; 
-%     end
+
   case 'weight'
+    
     if isfield(obj.options, 'weight')
       w = obj.options.weight;
       varargout{1} = w./sum(w(:));
@@ -112,6 +125,7 @@ switch vname
       sz = size(obj(1).orientations);
       varargout{1} = ones(sz)./prod(sz);      
     end
+    
   case 'mineral'
     
     varargout = cellfun(@(x) get(x,'mineral') ,{obj.orientations},'uniformoutput',false);
