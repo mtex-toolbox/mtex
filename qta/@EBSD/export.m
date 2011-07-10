@@ -18,6 +18,6 @@ if ~check_option(varargin,{'radians','radiant','radiand'})
 end
 
 if ~isempty(ebsd(1).X), d = [d,get(ebsd,'xyz')]; end 
-if ~isempty(ebsd(1).phase), d = [d,get(ebsd,'phases')]; end %#ok<NASGU>
+if ~isempty(ebsd(1).phase), d = [d,double(get(ebsd,'phases'))]; end %#ok<NASGU>
 
 save(fname,'d','-ASCII','-single');
