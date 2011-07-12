@@ -48,6 +48,7 @@ if check_option(varargin,'generic')
 
   % build up matrix to be exported
   d = Euler(S3G,varargin{:});
+  d = mod(d,2*pi);
   if ~check_option(varargin,'radians'), d = d./degree;end
 
   % convention
