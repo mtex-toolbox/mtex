@@ -1,10 +1,15 @@
 function Y = sphericalY(l, theta, rho)
 % spherical harmonics of degree l
 %
+%% Description
+% Y = sphericalY(l,theta,rho) return a vector Y = (Y_l^-l,...,Y_l^l) of the
+% spherical harmonics of degree l using the Condon-Shortley phase
+% convention
+%
 %% Input
 %  l     - degree
-%  theta - azimuth angle
-%  rho   - polar
+%  theta - polar angle
+%  rho   - azimuth angle
 %
 %% Output
 %  Y - (2l+1) x numel(theta,rho) matrix of function values
