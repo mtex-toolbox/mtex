@@ -7,8 +7,7 @@ end
 
 % get options
 if check_option(varargin,'header')
-  options{1} = get_option(varargin,'delimiter',' ');  
-  options{2} = get_option(varargin,'header');   
+  options{1} = get_option(varargin,'header');
 else
   options = {};  
 end    
@@ -34,10 +33,10 @@ if ~check_option(varargin,'noascii')
   % read data using txt2mat
   try
     if check_option(varargin,'check')
-      [d,ffn,nh,SR,header] = txt2mat(fname,options{2:end},...
+      [d,ffn,nh,SR,header] = txt2mat(fname,options{:},...
         'RowRange',[1 1000],'InfoLevel',0,'ReplaceChar',rc);
     else
-      [d,ffn,nh,SR,header] = txt2mat(fname,options{2:end},'InfoLevel',InfoLevel,'ReplaceChar',rc);
+      [d,ffn,nh,SR,header] = txt2mat(fname,options{:},'InfoLevel',InfoLevel,'ReplaceChar',rc);
     end
   catch %#ok<CTCH>
   end
@@ -52,7 +51,17 @@ end
 
 % read data using importdata
 try
+  
+  if check_option(varargin,'delimiter')
+    options{1} = get_option(varargin,'delimiter',' ');
+  end
+  
+  if check_option(varargin,'header')
+    options{2} = get_option(varargin,'header',0);  
+  end  
+  
   d = importdata(fname,options{:});
+      
 catch %#ok<CTCH>
 end
 
