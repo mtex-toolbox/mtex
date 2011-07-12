@@ -45,7 +45,7 @@ end
 
 %% symmetries and convert to Euler angle
 
-q = quaternion(symmetrise(o));
+q = symmetrise(o);
 
 switch lower(type)
   case {'phi_1','phi_2','phi1','phi2'}
