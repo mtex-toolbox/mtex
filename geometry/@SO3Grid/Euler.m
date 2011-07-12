@@ -19,7 +19,7 @@ function varargout = Euler(S3G,varargin)
 % get convention
 convention = EulerAngleConvention(varargin{:});
 S3GOptions = get(S3G,'options');
-S3GConvention = EulerAngleConvention(S3GOptions);
+S3GConvention = EulerAngleConvention(S3GOptions{:});
 
 if isempty(S3G.center) && checkEulerAngleConvention(S3GConvention,convention)
   
