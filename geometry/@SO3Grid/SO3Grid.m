@@ -294,7 +294,7 @@ elseif isa(points,'double') && points > 0  % discretise euler space
     
   end
   
-  G.options = {'indexed'};
+  G.options = {'indexed','ZYZ'};
     
 end
 
