@@ -29,10 +29,10 @@ end
 %% if they have to be nice
 
 % symmetrise
-o = symmetrise(o);
+osym = symmetrise(o);
 
 % compute Euler angles
-[phi1,Phi,phi2] = Euler(o.rotation,varargin{:});
+[phi1,Phi,phi2] = Euler(osym,varargin{:});
 
 % check for fundamental region
 [max_phi1,max_Phi,max_phi2] = getFundamentalRegion(o.CS,o.SS,varargin);
@@ -53,7 +53,7 @@ penalty(ind) = penalty(ind) + 10;
 % take the best Euler angles
 [d,i] = min(penalty);
 
-o = subsref(o,sub2ind(size(o),i,1:size(o,2)));
+osym = subsref(osym,sub2ind(size(osym),i,1:size(o,2)));
 
 % return result
-[varargout{1:nargout}] = Euler(o.rotation,varargin{:});
+[varargout{1:nargout}] = Euler(osym,varargin{:});
