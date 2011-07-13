@@ -9,10 +9,12 @@ switch lower(vname)
     varargout{1} = obj.SS;
   case 'mineral'
     varargout{1} = get(obj.CS,'mineral');
+  case 'euler'
+    [varargout{1:nargout}] = Euler(obj,varargin{:});
   otherwise
     try
       varargout{1} = get(obj.rotation,vname,varargin{:});
-    catch
+    catch %#ok<CTCH>
       error(['There is no ''' vname ''' property in the ''' class(obj) ''' object'])
     end
 end
