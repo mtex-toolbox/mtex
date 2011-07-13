@@ -51,9 +51,9 @@ ind = abs(round(phi1/degree)-phi1/degree) > 0.01 | ...
 penalty(ind) = penalty(ind) + 10;
 
 % take the best Euler angles
-[d,i] = min(penalty);
+[d,i] = min(penalty,[],1);
 
-osym = subsref(osym,sub2ind(size(osym),i,1:size(o,2)));
+osym = subsref(osym,sub2ind(size(osym),i,1:size(osym,2)));
 
 % return result
 [varargout{1:nargout}] = Euler(osym,varargin{:});

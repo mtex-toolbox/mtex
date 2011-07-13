@@ -34,7 +34,11 @@ elseif isa(a,'symmetry')
   
   r = b;
   r.rotation = quaternion(a) * b.rotation;
-  r.SS = symmetry;
+  if isCS(r.CS) || numel(r.CS)>1
+    r.SS = symmetry;
+  else
+    r = r.rotation;
+  end
   
 %% orientation times symmetry -> symmetrisation  
 elseif isa(b,'symmetry')
@@ -43,7 +47,11 @@ elseif isa(b,'symmetry')
   
   r = a;
   r.rotation = a.rotation * quaternion(b);
-  r.CS = symmetry;
+  if isCS(r.SS) || numel(r.SS)>1
+    r.CS = symmetry;
+  else
+    r = r.rotation;
+  end
   
 %% orientation times orientation  
 elseif isa(a,'quaternion') && isa(b,'quaternion')
