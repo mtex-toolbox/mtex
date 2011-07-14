@@ -16,7 +16,7 @@ if nargout == 1
       q = reshape(cs.rotation,[],2);
       q = q(1,:);
     case {'-3','4/m','6/m'}
-      q = cs.rotation(1);
+      q = cs.rotation(1);      
     case {'m-3','m-3m'}
       q = reshape(cs.rotation,[],6);
       q = q(1,:);
@@ -30,17 +30,19 @@ else
       v = vector3d;
     case {'mmm','-3m','4/mmm','6/mmm'}
       q = cs.rotation(1);
-      v = vector3d(Miller(1,0,0,cs,'uvw'));
+      v = Miller(1,0,0,cs,'uvw');
     case {'-3','4/m','6/m'}
       q = cs.rotation(1);
       v = vector3d;
-    case {'m-3','m-3m'}
+    case 'm-3'
+      q = Axis(vector3d(1,1,1),3);
+      v = vector3d;
+    case 'm-3m'
       q = Axis(vector3d(1,1,1),3);
       v = vector3d(1,1,0);
   end
   
-  [theta,rho] = polar(v);
-  rho = mod(rho,rotangle_max_z(cs));
+  rho = mod(get(v,'rho'),rotangle_max_z(cs));
   
   q = q(:);
 end

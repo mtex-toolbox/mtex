@@ -20,6 +20,8 @@ function varargout = get(obj,vname,varargin)
 %% See also
 % ODF/set
 
+
+%% no vname - return list of all fields
 if nargin == 1
 	vnames = get_obj_fields(obj(1));
   vnames = [vnames;{'resolution';'weights';'kernel';'kappa'}];
@@ -28,6 +30,7 @@ if nargin == 1
 end
 
 
+%% switch fieldnames
 switch vname
   case {'CS','SS','comment','options'}
     varargout{1} = obj(1).(vname);

@@ -4,7 +4,9 @@ function c = ipdf2rgb(h,cs,varargin)
 
 %% fundamental region
 
-[maxtheta,maxrho,minrho] = getFundamentalRegionPF(cs,varargin{:});
+varargin = delete_option(varargin,'complete');
+
+[maxtheta,maxrho,minrho] = getFundamentalRegionPF(cs,varargin{:}); %#ok<ASGLU>
 maxrho = maxrho - minrho;
 h = vector3d(h); h = h./norm(h);
 switch Laue(cs)
@@ -30,7 +32,6 @@ switch Laue(cs)
     end
     
     varargin = delete_option(varargin,'antipodal');
-    cs = symmetry('m-3m');
     constraints = [vector3d(1,-1,0),vector3d(-1,0,1),yvector,zvector];
     constraints = constraints ./ norm(constraints);
     center = sph2vec(pi/6,pi/8);
@@ -43,11 +44,24 @@ switch Laue(cs)
     center = sph2vec(pi/4,maxrho/4);
 end
 
-[sh,pm,rot] = project2FundamentalRegion(vector3d(h),cs,varargin{:});
+[sh,pm,rho_min] = project2FundamentalRegion(vector3d(h),cs,varargin{:});
+
+%% special case m-3
+
+if strcmp(Laue(cs),'m-3')
+  
+  [theta,rho] = polar(sh);
+  pm = rho > pi/4;
+  rho(pm) = pi/2 - rho(pm);
+  sh = vector3d('polar',theta,rho);
+  
+end
+
+
 
 % if the Fundamental region does not start at rho = 0
-constraints = axis2quat(zvector,rot) * constraints;
-center = axis2quat(zvector,rot) * center;
+constraints = axis2quat(zvector,rho_min) * constraints;
+center = axis2quat(zvector,rho_min) * center;
 
 
 %% compute angle

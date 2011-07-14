@@ -34,9 +34,11 @@ end
 
 %% restrict to plotable domain
 
-inrho = inside(rho,minrho,maxrho) | isnull(sin(theta));
+if ~check_option(varargin,'complete') && (maxrho-minrho<2*pi-1e-6)
+  inrho = inside(rho,minrho,maxrho) | isnull(sin(theta));
 
-rho(~inrho)= NaN;
+  rho(~inrho)= NaN;
+end
 
 if isa(maxtheta,'function_handle')
   theta(theta-1e-6 > maxtheta(rho)) = NaN;
