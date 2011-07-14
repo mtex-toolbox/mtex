@@ -1,44 +1,62 @@
-function value = get(obj,vname)
+function varargout = get(obj,vname)
 % get object variable
 
+%% no vname - return list of all fields
+if nargin == 1
+	vnames = get_obj_fields(obj(1));
+  vnames = [vnames;{'hkl';'h';'k';'l';'i';'rho';'theta';'polar';'x';'y';'z'}];
+  if nargout, varargout{1} = vnames; else disp(vnames), end
+  return
+end
+
+%% switch fieldnames
 switch lower(vname)
 
   case {'hkl','h','k','l','i'}
  
-    value = v2m(obj);
+    varargout{1} = v2m(obj);
    
     switch lower(vname)
         
-      case 'h', value = value(:,1);
-      case 'k', value = value(:,2);
-      case 'l', value = value(:,end);
+      case 'h', varargout{1} = varargout{1}(:,1);
+      case 'k', varargout{1} = varargout{1}(:,2);
+      case 'l', varargout{1} = varargout{1}(:,end);
       case 'i'
-        if size(value,2) == 4
-          value = value(:,3);
+        if size(varargout{1},2) == 4
+          varargout{1} = varargout{1}(:,3);
         else
-          value = [];
+          varargout{1} = [];
         end
     end
   
   case {'uvw','u','v','w','t'}
     
-    value = v2d(obj);
+    varargout{1} = v2d(obj);
     
     switch lower(vname)
     
-      case 'u', value = value(:,1);
-      case 'v', value = value(:,2);
-      case 'w', value = value(:,3);
+      case 'u', varargout{1} = varargout{1}(:,1);
+      case 'v', varargout{1} = varargout{1}(:,2);
+      case 'w', varargout{1} = varargout{1}(:,3);
       case 't'
-        if size(value,2) == 4
-          value = value(:,3);
+        if size(varargout{1},2) == 4
+          varargout{1} = varargout{1}(:,3);
         else
-          value = [];
+          varargout{1} = [];
         end
         
     end
+    
+  case 'cs'
+    
+    varargout{1} = obj.CS;
+    
   otherwise
     
-    value = obj.(vname);
+    try
+      [varargout{1:nargout}] = get(obj.vector3d,vname);
+    catch %#ok<CTCH>
+      error(['No such filed: ' vname])
+    end
     
 end

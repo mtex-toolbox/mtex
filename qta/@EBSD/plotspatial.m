@@ -59,7 +59,7 @@ ebsd = copy(ebsd,varargin{:});
 
 
 % get coordinates
-xy = get(ebsd,'X');
+xy = get(ebsd,'xyz');
 
 if ~isempty(xy) && size(xy,2) == 3
   slice3(ebsd,varargin{:});

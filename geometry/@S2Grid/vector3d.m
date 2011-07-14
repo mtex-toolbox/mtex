@@ -7,3 +7,5 @@ function v = vector3d(S2G,varargin)
 %  @vector3d
 
 v = S2G.vector3d(varargin{:});
+
+v = delete_option(v,'INDEXED');

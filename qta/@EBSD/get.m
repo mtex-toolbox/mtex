@@ -112,6 +112,7 @@ switch vname
     fl = {1,2,3,[1,2],[1,3],[2,3],[1:3]};
     fl = fl{strcmpi(vname,{'x','y','z','xy','xz','yz','xyz'})};
     
+    varargout{1} = [];
     for i = 1:length(obj)
       varargout{1} = [varargout{1};obj(i).X(:,fl(fl <=size(obj(i).X,2)))]; 
     end
