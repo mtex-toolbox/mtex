@@ -9,6 +9,7 @@ function c = orientation2color(o,coloring,varargin)
 %    SIGMA, RODRIGUES
 %    ANGLE
 
+
 model = {'bunge','angle','sigma','ihs','ipdf',...
     'rodrigues','rodriguesquat','rodriguesinverse','euler','bunge2','hkl'};
 

@@ -106,7 +106,7 @@ plot(odf,'sigma','surf3')
 plot(odf,'radially','LineWidth',2)
 
 %% 
-% actually on can specify the one dimensional ODF section along a fibre
+% More generaly, one can plot the ODF along a certain fibre
 
 plotfibre(odf,Miller(1,2,2),vector3d(2,1,1),'LineWidth',2);
 
@@ -120,7 +120,7 @@ plotFourier(odf,'bandwidth',32)
 % Let us consider the uncorrelated missorientation ODF corresponding to our
 % model ODF.
 
-modf = calcMODF(odf)
+mdf = calcMDF(odf)
 
 %%
 % Then we can plot the distribution of the rotation axes of this
@@ -132,7 +132,7 @@ plotAxisDistribution(modf)
 % and the distribution of the missorientation angles and compare them to a
 % uniform ODF
 
-plotAngleDistribution(modf)
+plotAngleDistribution(mdf)
 hold all
 plotAngleDistribution(uniformODF(cs,cs))
 hold off

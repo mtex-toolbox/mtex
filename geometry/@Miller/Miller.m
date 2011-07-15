@@ -44,7 +44,7 @@ elseif isa(varargin{1},'Miller')
 %% vector3d  
 elseif isa(varargin{1},'vector3d')
   
-  if any(norm(varargin{1})) == 0
+  if any(norm(varargin{1}) == 0)
     error('(0,0,0) is not a valid Miller index');
   end
   
