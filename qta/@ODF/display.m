@@ -5,9 +5,13 @@ disp(' ');
 
 csss = {'sample symmetry ','crystal symmetry'};
 
+% symmetries
+cs = odf(1).CS;
+ss = odf(1).SS;
+
 %% ODF / MDF
 disp(' ');
-if isCS(odf.SS) && isCS(odf.CS)
+if isCS(ss) && isCS(cs)
   h = doclink('MDF_index','MDF');
 else
   h = doclink('ODF_index','ODF');
@@ -24,8 +28,8 @@ if ~isempty(odf(1).comment), h = [h ' (' odf(1).comment ')']; end
 disp(h);
 
 %% display symmtries and minerals  
-disp(['  ' csss{isCS(odf.CS)+1} ': ', char(odf.CS,'verbose')]);
-disp(['  ' csss{isCS(odf.SS)+1} ': ',char(odf.SS,'verbose')]);
+disp(['  ' csss{isCS(cs)+1} ': ', char(cs,'verbose')]);
+disp(['  ' csss{isCS(ss)+1} ': ',char(ss,'verbose')]);
 
 % display components
 disp(' ');
