@@ -65,44 +65,44 @@ copy(productpage,outputDir)
 
 %% make function reference overview pages
 
-makeFunctionsReference(mtexHelpFiles,'FunctionReference','outputDir',outputDir)
+makeFunctionsReference(mtexHelpFiles,'FunctionReference','outputDir',outputDir);
 
 %% make help toc
 
-makeHelpToc(mtexHelpFiles,'Documentation','FunctionMainFile','FunctionReference','outputDir',outputDir)
-copyfile(fullfile(outputDir,'helptoc.xml'), docPath)
+makeHelpToc(mtexHelpFiles,'Documentation','FunctionMainFile','FunctionReference','outputDir',outputDir);
+copyfile(fullfile(outputDir,'helptoc.xml'), docPath);
 
 %% Publish Function Reference
 
-publish(mtexFunctionFiles,'outputDir',outputDir,'tempDir',tempDir,'evalCode',true,'force',false)
+publish(mtexFunctionFiles,'outputDir',outputDir,'tempDir',tempDir,'evalCode',true,'force',false);
 
 %% Publish Examples Reference
 
-publish(mtexExampleFiles,'outputDir',outputDir,'tempDir',tempDir,'evalCode',true,'force',false)
+publish(mtexExampleFiles,'outputDir',outputDir,'tempDir',tempDir,'evalCode',true,'force',false);
 
 
 %%
 
-makeDemoToc(mtexExampleFiles,'outputDir',outputDir)
-copyfile(fullfile(outputDir,'demos.xml'), fullfile(mtex_path,'examples'))
+makeDemoToc(mtexExampleFiles,'outputDir',outputDir);
+copyfile(fullfile(outputDir,'demos.xml'), fullfile(mtex_path,'examples'));
 
 
 %%
 
 src = struct(mtexExampleFiles);
-src = [src.sourceInfo]
+src = [src.sourceInfo];
 
 for k=1:numel(src)
   temp = DocFile(getFiles(outputDir,[src(k).docName '*']));
-  copy(temp,fullfile(mtex_path,'examples','html'))
+  copy(temp,fullfile(mtex_path,'examples','html'));
 end
-copy(DocFile(getPublishGeneral),fullfile(mtex_path,'examples','html'))
+copy(DocFile(getPublishGeneral),fullfile(mtex_path,'examples','html'));
 
 
 %% Publish Doc
 
-publish(mtexDocFiles,'outputDir',outputDir,'tempDir',tempDir,'evalCode',true,'force',false)
-copy(mtexDocFiles,fullfile(mtex_path,'examples','UsersGuide'))
+publish(mtexDocFiles,'outputDir',outputDir,'tempDir',tempDir,'evalCode',true,'force',false);
+copy(mtexDocFiles,fullfile(mtex_path,'examples','UsersGuide'));
 
 %%
 
@@ -114,13 +114,13 @@ view(mtexHelpFiles,options)
 
 %%
 
-deadlink(mtexDocFiles,outputDir)
+deadlink(mtexDocFiles,outputDir);
 
 %% Enable search in documentation 
 % (also F1 Help in recent matlab)
 
 builddocsearchdb(outputDir);
-copyfile(fullfile(outputDir,'helpsearch'),fullfile(docPath,'helpsearch'))
+copyfile(fullfile(outputDir,'helpsearch'),fullfile(docPath,'helpsearch'));
 
 
 %% Build the help.jar
