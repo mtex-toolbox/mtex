@@ -12,7 +12,8 @@ function ebsd = affinetrans(ebsd, A, b)
 %% Output
 %  transformed ebsd - @EBSD
 
-% set up transformation matrix
+
+%% set up transformation matrix
 if all(size(A) == [3 3])
   T = A;
 elseif nargin < 3
@@ -28,19 +29,19 @@ else
   T(3,3) = 1;
 end
 
-% rotate the spatial data
+%% rotate the spatial data
 for k = 1:length(ebsd)
-   
-  xy = [ebsd(k).X ones(length(ebsd(k).X),1)] * T';
-  ebsd(k).X = xy(:,1:2);
-  
+  if ~isempty(ebsd(k).X)
+    xy = [ebsd(k).X ones(length(ebsd(k).X),1)] * T';
+    ebsd(k).X = xy(:,1:2);
+  end
 end
 
 % rotate the unit cells
 T(1:2,3) = 0; % no shift!
 for k = 1:length(ebsd)
-    
-  xy = [ebsd(k).unitCell ones(length(ebsd(k).unitCell),1)] * T';
-  ebsd(k).unitCell = xy(:,1:2);
-  
+  if ~isempty(ebsd(k).unitCell)
+    xy = [ebsd(k).unitCell ones(length(ebsd(k).unitCell),1)] * T';
+    ebsd(k).unitCell = xy(:,1:2);
+  end
 end
