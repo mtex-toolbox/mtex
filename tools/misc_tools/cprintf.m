@@ -206,7 +206,8 @@ function	varargout=cprintf(varargin)
 
 % option table
 		F=false;
-		femp=@(x) sprintf('E(%s)',class(x));
+		%femp=@(x) sprintf('E(%s)',class(x));
+    femp=@(x) '';
 		finf=@(x) upper(sprintf('%+g',x));		% sign!
 		foth=@CPRINTF_other;
 

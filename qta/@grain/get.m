@@ -66,8 +66,9 @@ if nargin > 1
       end
       
     case 'phase'
-      
+
       varargout{1} = populate(grains,vname);
+              
       if nargout > 1
         [varargout{2}, varargout{3}] = unique(varargout{1},'first');
       end
@@ -145,7 +146,7 @@ if ~isempty(struc) && all(cellfun('prodofsize',struc) == 1)
   end
   
 else
-  out = struc;
+  out = [];
 end
 
 
