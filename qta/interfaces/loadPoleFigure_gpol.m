@@ -5,12 +5,15 @@ fid = fopen(fname);
 type =  readlinestr(fid,4);
 comment = readlinestr(fid,8);
 
+npixelb = {'uint8' 'uint16',[], 'uint32'};
+bytes = npixelb{readline(fid,40)};
+
 rows   = readline(fid,41);   %NROWS
 cols   = readline(fid,42);   %NCOLS
 
 % data
 fseek(fid, 96*80, 'bof');
-A = fread(fid,rows*cols,'uint8');
+A = fread(fid,rows*cols,bytes);
 
 count = [];
 index = [];
@@ -51,7 +54,7 @@ pf = PoleFigure(h,r,data,symmetry('cubic'),symmetry,'comment',comment);
 function data = readline(fid,line)
 
 fseek(fid,(line-1)*80+8,'bof');
-data = sscanf(char(fread(fid, 72, 'char')),'%f');
+data = sscanf(char(fread(fid, 72, 'char'))','%f');
 
 function data = readlinestr(fid,line)
 
