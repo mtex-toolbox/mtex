@@ -1,4 +1,4 @@
-function x = axisDistribution(odf,h,varargin)
+function x = calcAxisDistribution(odf,h,varargin)
 % compute the axis distribution of an ODF or MDF
 %
 %

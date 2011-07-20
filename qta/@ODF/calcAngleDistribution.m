@@ -1,4 +1,4 @@
-function [density,omega] = angleDistribution(odf,varargin)
+function [density,omega] = calcAngleDistribution(odf,varargin)
 % compute the angle distribution of an ODF or an MDF 
 %
 %

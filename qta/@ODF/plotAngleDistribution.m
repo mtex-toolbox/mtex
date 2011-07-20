@@ -16,7 +16,7 @@ varargin = set_default_option(varargin,...
 newMTEXplot;
 
 %%
-[f,omega] = angleDistribution(odf,varargin{:});
+[f,omega] = CalcAngleDistribution(odf,varargin{:});
 
 
 %% plot
