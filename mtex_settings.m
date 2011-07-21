@@ -49,8 +49,8 @@ set_mtex_option('TensorPath',    fullfile(mtexDataPath,'tensor'));
 %% set default location to look for data with import wizard
 % if not activated, the paths are selected according to the above
 
-% set_mtex_option('ImportWizardPath','workpath')
-set_mtex_option('ImportWizardPath',@cd)
+set_mtex_option('ImportWizardPath','workpath')
+%set_mtex_option('ImportWizardPath',@cd)
 
 %% Default ColorMap
 
