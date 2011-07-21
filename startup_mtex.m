@@ -65,7 +65,7 @@ if isempty(lasterr) % everything fine
   fprintf(repmat('\b',1,length(MTEXversion)+18));
 end
 
-disp([MTEXversion ' toolbox loaded '])
+disp(' done!')
 disp(' ');
 if isempty(javachk('desktop'))
   disp('Basic tasks:')
