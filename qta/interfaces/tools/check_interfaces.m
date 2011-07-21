@@ -41,10 +41,10 @@ if isempty(interface)
   try
     [d,options] = feval(['load' type '_generic'],fname,'check',varargin{:});
   catch %#ok<CTCH>
-    disp('The error was:')
-    disp(' ');
-    disp(lasterr); %#ok<LERR>
-    disp(' ');
+    %disp('The error was:')
+    %disp(' ');
+    %disp(lasterr); %#ok<LERR>
+    %disp(' ');
     error('Could not detect file format. Please contact one of the maintainers of MTEX and send him a copy of your data files.');
   end
     
