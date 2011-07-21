@@ -1,4 +1,4 @@
-function pf = loadPoleFigure_D5000(fname,varargin)
+function pf = loadPoleFigure_siemens(fname,varargin)
 % load D5000 data file
 %
 %% Syntax
