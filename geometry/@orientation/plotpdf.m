@@ -46,7 +46,7 @@ varargin = set_default_option(varargin,...
 if sum(numel(o))*length(cs)*length(ss) > 10000 || check_option(varargin,'points')
 
   points = fix(get_option(varargin,'points',10000/length(cs)/length(ss)));
-  disp(['plot ', int2str(points) ,' random orientations out of ', int2str(numel(o)),' given orientations']);
+  disp(['  plotting ', int2str(points) ,' random orientations out of ', int2str(numel(o)),' given orientations']);
   
   samples = discretesample(ones(1,numel(o)),points);
   o.rotation = o.rotation(samples);

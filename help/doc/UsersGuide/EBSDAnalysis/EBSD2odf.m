@@ -14,9 +14,14 @@ mtexdata aachen
 
 %% ODF Estimation
 %
+% These data consist of two phases, Iron and Magnesium. The ODF of the Iron
+% phase is computed by the command
+
+odf = calcODF(ebsd('Fe'))
+
 % The function <EBSD.calcODF.html calcODF> implements ODF estimation from
 % EBSD data in MTEX. The underlaying statistical method is called as kernel
-% density estimation, which can be interpreted as a generalized histogram.
+% density estimation, which can be seen as a generalized histogram.
 % To be more precise, let $\psi : SO(3) \to R$ be a radially symmetric,
 % unimodal model ODF. Then the kernel density estimator for the individual
 % orientation data $o_1,o_2,\ldots,o_M$ is defined as
@@ -24,12 +29,8 @@ mtexdata aachen
 % $$f(o) = \frac{1}{M} \sum_{i=1}^{M} \psi(o o_i^{-1})$$
 %
 % The choise of the model ODF $\psi$ and in particular its halfwidth has a
-% great impact in the resulting ODF. The following line computes the kernel
-% density estimator for the first phase with kernel halfwidth set to
-% 10*degree.
-%
-
-odf = calcODF(ebsd,'phase',1,'halfwidth',10*degree)
+% great impact in the resulting ODF. If no halfwidth was speciefied the
+% default halfwidth of 10 degree is selected.
 
 
 %% Automatic halfwidth selection
@@ -41,7 +42,7 @@ odf = calcODF(ebsd,'phase',1,'halfwidth',10*degree)
 % measurement per grain. 
 
 % try to compute an optimal kernel
-psi = calcKernel(ebsd,'phase',1)
+psi = calcKernel(ebsd('Fe'))
 
 %%
 % The above example the EBSD measurements are spatial dependend and the
@@ -59,7 +60,7 @@ grains = grains(grainSize(grains)>5);
 psi = calcKernel(grains,'phase',1)
 
 % compute the ODF with the kernel psi
-odf = calcODF(ebsd,'phase',1,'kernel',psi)
+odf = calcODF(ebsd('Fe'),'kernel',psi)
 
 
 %%
@@ -90,7 +91,7 @@ hw = [1*degree, 2*degree, 4*degree, 8*degree, 16*degree, 32*degree];
 for i = 1:length(hw)
   
   odf = calcODF(ebsd,'halfwidth',hw(i),'silent');
-  e(i) = calcerror(SantaFe, odf);
+  e(i) = calcError(SantaFe, odf);
   
 end
 
