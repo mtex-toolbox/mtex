@@ -38,7 +38,7 @@ rec2 = calcODF(pf,'ghost_correction')
 %% Error analysis
 
 % calculate RP error
-calcerror(rec2,SantaFe)
+calcError(rec2,SantaFe)
 
 % difference plot between meassured and recalculated pole figures
 close; figure('position',[100,100,800,300])

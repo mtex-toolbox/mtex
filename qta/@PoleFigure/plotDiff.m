@@ -16,8 +16,8 @@ function plotDiff(pfmeas,pfcalc,varargin)
 %  l2 - calculate mean square error
 %
 %% See also
-% S2Grid/plot PoleFigure/calcerror ODF/calcerror savefigure
+% S2Grid/plot PoleFigure/calcError ODF/calcError savefigure
 % Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo 
 
-plot(calcerrorpf(pfmeas,pfcalc,varargin{:}),varargin{:})
+plot(calcErrorPF(pfmeas,pfcalc,varargin{:}),varargin{:})

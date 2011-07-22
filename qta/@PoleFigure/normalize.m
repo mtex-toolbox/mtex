@@ -13,7 +13,7 @@ function pf = normalize(pf,odf)
 %  pf  - @PoleFigure
 %
 %% See also
-% PoleFigure/calcerror
+% PoleFigure/calcError
 
 %% no ODF given 
 if nargin == 1
@@ -26,7 +26,7 @@ else
     pf_odf(i) = simulatePoleFigure(odf,pf(i).h,pf(i).r,'superposition',pf(i).c); %#ok<AGROW>
   end
 
-  alpha = calcnormalization(pf,pf_odf);
+  alpha = calcNormalization(pf,pf_odf);
   
 end
 

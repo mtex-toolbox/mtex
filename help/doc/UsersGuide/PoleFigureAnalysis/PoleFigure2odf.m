@@ -43,7 +43,7 @@ plotpdf(odf,h,'antipodal','silent')
 %% Error analyis
 %
 % For a more quantitative description of the reconstruction quality one can
-% use the function <PoleFigure.calcerror.html calcerror> to compute the
+% use the function <PoleFigure.calcError.html calcError> to compute the
 % fit between the reconstructed ODF and the measured pole figure
 % intensities. The following measured are available:
 %
@@ -51,7 +51,7 @@ plotpdf(odf,h,'antipodal','silent')
 % * L1 - error
 % * L2 - error
 
-calcerror(pf,odf,'RP',1)
+calcError(pf,odf,'RP',1)
 
 %%
 % In order to recognize bad pole figure intensities it is often usfull to
@@ -64,8 +64,8 @@ plotDiff(pf,odf)
 %%
 % Assuming you have drived two ODFs from different pole figure measurements
 % or by ODF modelling. Then one can ask for the difference between both.
-% This difference is computet by the command <ODF.calcerror.html
-% calcerror>.
+% This difference is computet by the command <ODF.calcError.html
+% calcError>.
 
 % define a unimodal ODF with the same modal orienation
 odf_modell = unimodalODF(modalorientation(odf),CS,symmetry,'halfwidth',15*degree)
@@ -75,7 +75,7 @@ close all;
 plotpdf(odf_modell,h,'antipodal')
 
 % compute the difference
-calcerror(odf_modell,odf)
+calcError(odf_modell,odf)
 
 %% Discretization
 %

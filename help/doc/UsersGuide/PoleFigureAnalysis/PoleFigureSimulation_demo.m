@@ -86,7 +86,7 @@ plotodf(odf,'sections',6,'silent')
 %%
 % and compared to the original model ODF.
 
-calcerror(odf,model_odf,'resolution',5*degree)
+calcError(odf,model_odf,'resolution',5*degree)
 
 
 %% Exploration of the relationship between estimation error and number of single orientations
@@ -101,9 +101,9 @@ e = [];
 for i = 1:length(pf)
 
   odf = calcODF(pf(1:i),'silent');
-  e(i,1) = calcerror(odf,model_odf,'resolution',2.5*degree);
+  e(i,1) = calcError(odf,model_odf,'resolution',2.5*degree);
   odf = calcODF(pf(1:i),'ghost_correction','silent');
-  e(i,2) = calcerror(odf,model_odf,'resolution',2.5*degree);
+  e(i,2) = calcError(odf,model_odf,'resolution',2.5*degree);
 
 end
 

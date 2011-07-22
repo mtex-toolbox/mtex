@@ -27,7 +27,7 @@ disp(' ');
 disp('check reconstruction error: ')
 
 % calculate error
-if mean(calcerror(pf,rec,'RP',1)) < 0.1
+if mean(calcError(pf,rec,'RP',1)) < 0.1
   disp('')
   disp('everythink seems to be ok!');
   disp('');

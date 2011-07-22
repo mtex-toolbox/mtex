@@ -1,8 +1,8 @@
-function alpha = calcnormalization(pf1,pf2)
+function alpha = calcNormalization(pf1,pf2)
 % normalization of a meassured pole figure with respect to a second pole figure
 %
 %% Syntax
-%  alpha = calcnormalization(pf1,pf2)
+%  alpha = calcNormalization(pf1,pf2)
 %
 %% Input
 %  pf1,pf2 - @PoleFigure
@@ -11,7 +11,7 @@ function alpha = calcnormalization(pf1,pf2)
 %  alpha - [double] normalization coefficients
 %
 %% See also
-% PoleFigure/calcerror
+% PoleFigure/calcError
 
 for i = 1:length(pf1)
   d1 = max(0,getdata(pf1(i)));

@@ -15,7 +15,7 @@ function [I odf] = transinformation(odf1,odf2,varargin)
 %  resolution - resolution of the discretization
 %
 %% See also
-% ODF/entropy ODF/textureindex ODF/calcerror
+% ODF/entropy ODF/textureindex ODF/calcError
 
 
 S3G = extract_SO3grid(odf1,varargin{:});
