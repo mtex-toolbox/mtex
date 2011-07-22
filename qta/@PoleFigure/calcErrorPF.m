@@ -1,4 +1,4 @@
-function pf = calcerrorpf(pfmeas,pfcalc,varargin)
+function pf = calcErrorPF(pfmeas,pfcalc,varargin)
 % error polefigure between meassured and recalculated pole figures
 %
 % returns a @PoleFigure with valuess given as the difference between the
@@ -6,8 +6,8 @@ function pf = calcerrorpf(pfmeas,pfcalc,varargin)
 % @PoleFigure.
 %
 %% Syntax
-% pf = calcerrorpf(pfmeas,pfcalc,<options>) -
-% pf = calcerrorpf(pfmeas,odf,<options>)    -
+% pf = calcErrorPF(pfmeas,pfcalc,<options>) -
+% pf = calcErrorPF(pfmeas,odf,<options>)    -
 %
 %% Input
 %  pfmeas - meassured @PoleFigure 
@@ -23,7 +23,7 @@ function pf = calcerrorpf(pfmeas,pfcalc,varargin)
 %  pf - @PoleFigure 
 %
 %% See also
-%  PoleFigure/calcerror ODF/simulatePoleFigure
+%  PoleFigure/calcError ODF/simulatePoleFigure
 
 progress(0,length(pfmeas));
 for i = 1:length(pfmeas)
@@ -36,7 +36,7 @@ for i = 1:length(pfmeas)
   end
   
   % normalization
-  alpha = calcnormalization(pfmeas(i),pf(i));
+  alpha = calcNormalization(pfmeas(i),pf(i));
   
   d1 = getdata(pfmeas(i));
   d2 = getdata(pf(i))*alpha;

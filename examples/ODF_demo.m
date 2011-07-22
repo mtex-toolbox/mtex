@@ -69,7 +69,7 @@ plotpdf(odf,Miller(1,0,0))
 
 % *Texture Characteristics+
 
-calcerror(odf2,odf3,'L1')      % difference between ODFs
+calcError(odf2,odf3,'L1')      % difference between ODFs
 
 center = modalorientation(odf) % the modal orientation
 mean(odf)                      % the mean orientation

@@ -9,7 +9,7 @@ for i = 1:5
 
   odf = calcODF(ebsd);
 
-  e(i) = calcerror(odf,SantaFe,'resolution',2.5*degree);
+  e(i) = calcError(odf,SantaFe,'resolution',2.5*degree);
   
 end
 

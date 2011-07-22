@@ -1,15 +1,15 @@
-function e = calcerror(pf,rec,varargin)
+function e = calcError(pf,rec,varargin)
 % RP and mean square error
 %
-% *calcerror(pf,rec)* calculates reconstruction error between meassured 
+% *calcError(pf,rec)* calculates reconstruction error between meassured 
 % intensities and the recalcuated ODF or between two meassured pole 
 % figures. It can be specified whether the RP
 % error or the mean square error is calculated. The scaling coefficients
-% are calculated by the function PoleFigure/calcnormalization
+% are calculated by the function PoleFigure/calcNormalization
 %
 %% Syntax
-%  e = calcerror(pf,pf2,param) - compares two different @PoleFigures with same @S2Grid
-%  e = calcerror(pf,rec,param) - compares @PoleFigure with the Recalculated @ODF
+%  e = calcError(pf,pf2,param) - compares two different @PoleFigures with same @S2Grid
+%  e = calcError(pf,rec,param) - compares @PoleFigure with the Recalculated @ODF
 %
 %% Input
 %  pf,pf2 - @PoleFigure
@@ -24,12 +24,12 @@ function e = calcerror(pf,rec,varargin)
 %  l2 - L2 error
 %
 %% See also
-% ODF/calcerror PoleFigure/calcnormalization PoleFigure/scale
+% ODF/calcError PoleFigure/calcNormalization PoleFigure/scale
 
 argin_check(rec,{'ODF','PoleFigure'});
 
 % calc difference PoleFigure
-errorpf = calcerrorpf(pf,rec,varargin{:});
+errorpf = calcErrorPF(pf,rec,varargin{:});
 
 % calc error
 e = zeros(1,numel(pf));

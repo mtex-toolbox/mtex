@@ -52,7 +52,7 @@ plotodf(odf,'sections',6,'silent')
 %%
 % and compared to the original model ODF.
 
-calcerror(odf,fibre_odf,'resolution',5*degree)
+calcError(odf,fibre_odf,'resolution',5*degree)
 
 
 %% Exploration of the relationship between estimation error and number of single orientations
@@ -67,12 +67,12 @@ for i = 1:6
   ebsd = simulateEBSD(fibre_odf,10^i);
   psi = calcKernel(ebsd);
   odf = calcODF(ebsd,'kernel',psi);
-  e(i,1) = calcerror(odf,fibre_odf,'resolution',2.5*degree);
+  e(i,1) = calcError(odf,fibre_odf,'resolution',2.5*degree);
   
   ebsd = simulateEBSD(fibre_odf,10^i);
   psi = calcKernel(ebsd,'method','RuleOfThumb');
   odf = calcODF(ebsd,'kernel',psi);
-  e(i,2) = calcerror(odf,fibre_odf,'resolution',2.5*degree);  
+  e(i,2) = calcError(odf,fibre_odf,'resolution',2.5*degree);  
 
 end
 

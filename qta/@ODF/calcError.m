@@ -1,9 +1,9 @@
-function e = calcerror(odf1,odf2,varargin)
+function e = calcError(odf1,odf2,varargin)
 % calculate approximation error between two ODFs
 %
 %% Syntax
-%  e = calcerror(odf1,odf2)
-%  e = calcerror(odf,pf,'RP')
+%  e = calcError(odf1,odf2)
+%  e = calcError(odf,pf,'RP')
 %
 %% Input
 %  odf1, odf2 - @ODF
@@ -18,10 +18,10 @@ function e = calcerror(odf1,odf2,varargin)
 %  resolution - resolution used for calculation of the error
 %
 %% See also
-% PoleFigure/calcODF PoleFigure/calcerror 
+% PoleFigure/calcODF PoleFigure/calcError 
 
 %% compare with a pole figure
-if isa(odf2,'PoleFigure'), e = calcerror(odf2,odf1,varargin{:}); return;end
+if isa(odf2,'PoleFigure'), e = calcError(odf2,odf1,varargin{:}); return;end
 
 %% compare two odfs
 

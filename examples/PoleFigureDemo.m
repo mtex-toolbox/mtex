@@ -107,8 +107,8 @@ plotodf(rec,'sections',6)
 %% Error Analysis
 
 
-calcerror(pf_SantaFe,rec)
-calcerror(pf_SantaFe,rec_corrected)
+calcError(pf_SantaFe,rec)
+calcError(pf_SantaFe,rec_corrected)
 
 %%
 % *Difference plot*
@@ -119,8 +119,8 @@ plotDiff(pf_SantaFe,rec,'position',[100 100 900 300])
 %%
 % *ODF error*
 
-calcerror(SantaFe,rec)
-calcerror(SantaFe,rec_corrected)
+calcError(SantaFe,rec)
+calcError(SantaFe,rec_corrected)
 
 %% Exercises
 %

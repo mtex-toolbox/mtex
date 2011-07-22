@@ -50,21 +50,21 @@ rec_cor = calcODF(pf,'ghost_correction');
 
 %% 
 % without ghost correction:
-calcerror(pf,rec,'RP')
+calcError(pf,rec,'RP')
 
 %% 
 % with ghost correction:
-calcerror(pf,rec_cor,'RP')
+calcError(pf,rec_cor,'RP')
 
 %% Compare Reconstruction Errors
 
 %% 
 % without ghost correction:
-calcerror(rec,odf)
+calcError(rec,odf)
 
 %% 
 % with ghost correction:
-calcerror(rec_cor,odf)
+calcError(rec_cor,odf)
 
 
 %% Plot the ODFs
@@ -102,11 +102,11 @@ rec_cor = calcFourier(rec_cor,25);
 
 %% 
 % without ghost correction:
-calcerror(rec,odf,'Fourier','L2')
+calcError(rec,odf,'Fourier','L2')
 
 %% 
 % with ghost correction:
-calcerror(rec_cor,odf,'Fourier','L2')
+calcError(rec_cor,odf,'Fourier','L2')
 
 
 %% Plot Fourier Coefficients   

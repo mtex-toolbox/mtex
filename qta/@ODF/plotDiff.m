@@ -16,12 +16,12 @@ function plotDiff(odf1,odf2,varargin)
 %  l2 - calculate $|pf1--pf2|^2$ error (only for odf -- pole figure)
 %
 %% See also
-% S2Grid/plot PoleFigure/calcerror ODF/calcerror savefigure
+% S2Grid/plot PoleFigure/calcError ODF/calcError savefigure
 % Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo 
 
 if isa(odf2,'PoleFigure')
-  plot(calcerrorpf(odf2,odf1,varargin{:}),varargin{:})
+  plot(calcErrorPF(odf2,odf1,varargin{:}),varargin{:})
 else
   plotodf(odf1-odf2,varargin{:})
 end

@@ -2,7 +2,7 @@ function odf = diff(odf1,odf2,varargin)
 % calculate approximation difference between two ODFs
 %
 %% Syntax
-%  e = calcerror(odf1,odf2)
+%  odf = diff(odf1,odf2)
 %
 %% Input
 %  odf1, odf2 - @ODF
@@ -15,7 +15,7 @@ function odf = diff(odf1,odf2,varargin)
 %  Fourier    - return an Fourier ODF
 %
 %% See also
-% ODF/calcerror ODF/plotDiff
+% ODF/calcError ODF/plotDiff
 
 % discretisation
 S3G = extract_SO3grid(odf1,varargin{:});
