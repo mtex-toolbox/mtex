@@ -53,3 +53,12 @@ if numel(ebsd)>0
 end
 
 disp(' ');
+
+if sum(sampleSize(ebsd)) <= 20
+  fn = fields(ebsd(1).options);
+  d = zeros(sum(sampleSize(ebsd)),numel(fn));
+  for j = 1:numel(fn)
+    d(:,j) = ebsd.options.(fn{j});
+  end
+  cprintf(d,'-Lc',fn);
+end
