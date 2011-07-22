@@ -38,14 +38,14 @@ ghat_index = @(l,k) (l+1).^2 -l + k;
 
 for mplus = 0:2*L-2
   
-  ghat{mplus} = zeros(ghat_index(2*LMax,2*LMax),1);
+  ghat{mplus+1} = zeros(ghat_index(2*LMax,2*LMax),1);
   for L = 0:LMax
     for kplus = -2*L:2*L
       
       % sum over kminus
-      kminus = -2*LMax + abs(m):2: 2*LMax - abs(m);                  
+      kminus = -2*L + abs(kplus) :2: 2*L - abs(kplus);                  
       
-      ghat{mplus}(ghat_index(2*L,kplus)) = ...
+      ghat{mplus+1}(ghat_index(2*L,kplus)) = ...
         sum(hhat{L+1}((kplus-kminus)./2,(kplus+kminus)./2) .* ...
         exp(1i * pi * mplus .* kminus ./ M)); %#ok<*AGROW>
       
@@ -61,17 +61,18 @@ Mf = zeros(N+1,M,M);
 
 for mplus = 0:2*L-2
   
-  mminus = 
+  mm = min(mplus,2*M-2-mplus);
+  mminus = -mm:2:mm;
   
   theta = fft_theta(linspace(0,pi,N+1));
-  rho   = fft_rho();
-  r = [reshape(out_rho,1,[]);reshape(out_theta,1,[])];
+  rho   = fft_rho(mminus*pi./M);
+  r = [reshape(rho,1,[]);reshape(theta,1,[])];
 
   P_hat = [real(ghat(:)),-imag(ghat(:))].';
 
   out = call_extern('pdf2pf','EXTERN',r,P_hat);
   
-  g() = out;
+  g(:,1) = out;
   
 end
 
