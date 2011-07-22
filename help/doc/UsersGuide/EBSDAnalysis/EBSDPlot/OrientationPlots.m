@@ -4,9 +4,8 @@
 %% Open in Editor
 %
 %% 
-% This sections gives you an overview over the functionality MTEX offers to
-% visualize orientation data. Generally they are all
-% [[PlotTypes_demo.html#5, Scatter plots]] of [[SphericalProjection_demo.html,spherical projections]]
+% This sections gives an overview over the functionality MTEX offers to
+% visualize orientation data.
 %
 %% Contents
 %
@@ -17,88 +16,95 @@
 mtexdata aachen
 
 %%
-% and take the individual orientation measurements (IOM) of one phase
+% and select all individual orientations of the Iron phase
 
-o = get(ebsd,'orientations','phase',1)
+o = get(ebsd('Fe'),'orientations')
 
 
 %% Scatter Pole Figure Plot
-% First we would like to plot a scatter plot of IOMs in an pole point figure. 
-% This is done via the commands <orientation.plotpdf.html plotpdf>.
+% A scatter plot of these data within a specific pole figure can be
+% produced by the command <orientation.plotpdf.html plotpdf>.
 
 plotpdf(o,Miller(1,0,0))
 
 
 %% Scatter (Inverse) Pole Figure Plot
-% We also would like to plot a scatter plot IOMs in an (inverse)
-% pole point figure. This is done via the command 
-% <orientation.plotpdf.html plotipdf> respectively.
+% Accordingly, scatter plots in inverse pole figures are produced by the
+% command  <orientation.plotpdf.html plotipdf>.
 
 plotipdf(o,xvector)
 
 
 %% Scatter Plot in ODF Sections
-% In order to plot IOM data as a scatter plot in ODF sections one has to
-% use the command <orientation.plotodf.html plotodf>. In above examples the number
-% of plotted orientations was always automatically *antipodal* such that the
-% plot does not become to full. The number of randomly chosen orientations
-% can be explicetly specified by the option *points*.
+% For a scatter plot in sections of the orientation space the resposible 
+% command is <orientation.plotodf.html plotodf>. In above examples the number
+% of plotted orientations was chosen automatically such that the
+% plot does not become to full. This number of randomly chosen orientations
+% can be specified by the option *points*.
 
 close all;figure('position',[100 100 700 400])
-plotodf(o,'points',1000,'antipodal')
+plotodf(o,'points',1000)
 
 
 %% Scatter Plot in Axis Angle or Rodrigues Space
 % Another posibility is to plot the single orientations directly into the
-% orientation space - either in axis/angle parameterization or in Rodrigues
+% orientation space, i.e., either in axis/angle parameterization or in Rodrigues
 % parameterization.
-scatter(o,'phase 1','center',idquaternion)
+
+scatter(o,'center',idquaternion)
+
+%%
+% Here, the optional option 'center' speciefies the center of the unique
+% region in the orientation space.
 
 
 %% Orientation plots for EBSD and grains
 % Since EBSD and grain data involves single orientations above plotting
-% commands are applicable onto those objects.
+% commands are applicable for those objects as well.
 
 %%
-% therefore let us first [[EBSD.calcGrains.html,regionalize]] some EBSD Data
+% Let us consider some grains [[EBSD.calcGrains.html,detected]] from the
+% EBSD data
 
-[grains ebsd] = calcGrains(ebsd);
-
-%%
-% Since in generale EBSD data can have multiple *phases* (e.g. because of 
-% different crystal symmetry), we specify the one we would like to plot
-% explicitly. Furthermore we specify some additional plotting options
-
-plotipdf(ebsd,xvector,'phase',1,'complete','antipodal','points',100, 'MarkerSize',3);
+[grains,ebsd] = calcGrains(ebsd);
 
 %%
-% it also works for grains in the same way
+% Then the scatter plot of the individual orientations of the Iron phase in
+% the inverse pole figure is achieved by
 
-plotipdf(grains,xvector,'phase',1,'complete','antipodal','points',100, 'MarkerSize',3);
+plotipdf(ebsd('Fe'),xvector,'points',100, 'MarkerSize',3);
 
 %%
-% also some [[EBSD.get.html,EBSD properties]] or [[grain.get.html,grain
-% properties]] can be visualized
+% In the same way the mean orientations of grains can be visualized
+
+plotipdf(grains,xvector,'phase',1,'points',100, 'MarkerSize',3);
+
+%%
+% Once can also colorize the scatter points by certain [[EBSD.get.html,EBSD
+% properties]] or [[grain.get.html,grain properties]]
 
 close all;
-plotpdf(ebsd,[Miller(1,0,0),Miller(1,1,0)],'property','bc','phase',1,'antipodal','MarkerSize',3)
+plotpdf(ebsd('Fe'),[Miller(1,0,0),Miller(1,1,0)],'antipodal','MArkerSize',4,...
+  'property','mad')
 
 %%
 % or some abitrary data vector
 
 close all;figure('position',[100 100 500 500])
-plotodf(grains,'property',shapefactor(grains),'phase',1,'antipodal','sections',9,'MarkerSize',3);
+plotodf(grains,'phase',1,'antipodal','sections',9,'MarkerSize',3,...
+  'property',shapefactor(grains));
 
 %% 
-% However, one can supperpose two scatter plots using the commands *hold on*
+% Superposition of two scatter plots is achieved by the commands *hold on*
 % and *hold off*.
 
 close all
-plotipdf(ebsd,xvector,'MarkerSize',3,'phase',1,'complete','antipodal','points',100)
+plotipdf(ebsd('Fe'),xvector,'MarkerSize',3,'points',100)
 hold on
-plotipdf(ebsd,xvector,'MarkerSize',3,'phase',2,'MarkerColor','r','complete','points',100)
+plotipdf(ebsd('Mg'),xvector,'MarkerSize',3,'points',100,'MarkerColor','r')
 hold off
 
-
-
-
+%%
+% See also <PlotTypes_demo.html#5, Scatter plots> for more information
+% about scatter plot and <SphericalProjection_demo.html,spherical
+% projections>  for more information on spherical projections.

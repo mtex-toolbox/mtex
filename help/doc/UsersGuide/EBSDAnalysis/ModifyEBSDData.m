@@ -15,6 +15,29 @@ mtexdata aachen;
 % and plot the raw data
 close all,plot(ebsd)
 
+%%
+% These data consist of two phases, Iron and Magnesium. In order to to
+% plot the data with there phase one can use the command
+
+plot(ebsd,'property','phase')
+
+
+%% Selecting certain phases
+% In order to restrict the data to a certain phase the following syntax is
+% supported
+
+ebsd_Fe = ebsd('Fe')
+
+%%
+% In order to extract more then one phase, the mineral names has to be
+% grouped in curled parethesis. 
+
+ebsd({'Fe','Mg'})
+
+%%
+% As an example let us plot only all Magnesium data
+
+plot(ebsd('Mg'))
 
 %% Realign / Rotate the data
 %

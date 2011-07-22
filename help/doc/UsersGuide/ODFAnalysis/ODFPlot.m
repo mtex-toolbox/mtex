@@ -126,7 +126,7 @@ mdf = calcMDF(odf)
 % Then we can plot the distribution of the rotation axes of this
 % missorienation ODF
 
-plotAxisDistribution(modf)
+plotAxisDistribution(mdf)
 
 %%
 % and the distribution of the missorientation angles and compare them to a
