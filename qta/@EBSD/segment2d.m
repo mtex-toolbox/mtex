@@ -29,11 +29,8 @@ function [grains ebsd] = segment2d(ebsd,varargin)
 %
 %% Example
 %   mtexdata aachen
-%   [grains ebsd] = segment2d(ebsd(1:2),'threshold',[10 15]*degree)
+%   [grains ebsd] = segment2d(ebsd,'threshold',[10 15]*degree)
 %
-%   plot(grains)
-%
-%   [grains ebsd] = segment2d(ebsd,'property','bc','threshold',5)
 %   plot(grains)
 %
 %% See also

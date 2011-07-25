@@ -12,8 +12,8 @@ function b = isMember(grains,grains2)
 %    mtexdata aachen
 %    [grains,ebsd] = calcGrains(ebsd);
 % 
-%    gr1 = link(grains,ebsd(1));
-%    gr2 = link(grains,ebsd(2:end));
+%    gr1 = grains('Fe');
+%    gr2 = grains('Mg');
 %    ngr1 = gr1(~isMember(gr1,neighbours(gr1,gr2)))
 % 
 %    hold on

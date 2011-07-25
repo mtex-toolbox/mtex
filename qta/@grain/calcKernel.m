@@ -14,10 +14,10 @@ function psi = calcKernel(grains,varargin)
 % EBSD/calcODF
 
 % extract mean orientations
-[o ind] = get(grains,'orientation','CheckPhase',varargin{:});
+o = get(grains,'orientation');
   
 % define weights
-opt.weight = grainSize(grains(ind));
+opt.weight = grainSize(grains);
 
 % construct weighted ebsd object
 ebsd = EBSD(o,'options',opt);

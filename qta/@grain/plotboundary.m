@@ -22,9 +22,7 @@ varargin = set_default_option(varargin,...
 property = lower(get_option(varargin,'property',[]));
 
 newMTEXplot;
-if ispolygon(grains)
-  selector(gcf);
-end
+if ispolygon(grains), selector(gcf);end
 
 %%
 
@@ -39,32 +37,45 @@ else
   po = [];
 end
 
+%% colorize by phase
 if strcmpi(property,'phase')
   
   pair = pairs(grains);
-  pair(pair(:,1) == pair(:,2),:) = [];
+  
+  % remove subgrainboundaries
+  pair = pair(~equal(pair,2),:);  
   
   if ~isempty(pair)
     
+    % make unique and sorted
     pair = unique(sort(pair,2),'rows');
     
+    % number of phases
     np = length(uphase);
     
+    % all possible neighborhouds
     [i j] = find(triu(ones(np)));
+    
+    % enumerate phase / phase pairs
     code = full(sparse(i,j,1:length(i)));
     code = code + triu(code,1)';
     
+    % compute the phases of the pairs
     d = phase(pair);
-    ndx = diff(d,[],2) == 0; % delete same phase
-    pair(ndx,:) = [];
-    d(ndx,:) = [];
+    % and remove all pairs with same phase (why?)
+    %ndx = diff(d,[],2) == 0; 
+    %pair(ndx,:) = [];
+    %d(ndx,:) = [];
     
+    % compute colors
     c(uphase) = 1:length(uphase);
     d = c(d);
     
     pair(:,3) = code(sub2ind(size(code),d(:,1),d(:,2)));
     
-    [h(end+1),po(end+1)] = plot(p, 'pair', pair, varargin{:} );
+    %[h(end+1),po(end+1)] = plot(p, 'pair', pair, varargin{:} ); % does not
+    % work
+    h(end+1) = plot(p, 'pair', pair, varargin{:} );
   end
   
 elseif ~isempty(property)

@@ -65,6 +65,13 @@ if nargin > 1
         varargout{k} = get(CS{k},'mineral');
       end
       
+    case 'minerals'
+      
+      CS = get(grains,'CSCell');
+      for k=1:numel(CS)
+        varargout{1}{k} = get(CS{k},'mineral');
+      end
+      
     case 'phase'
 
       varargout{1} = populate(grains,vname);
@@ -74,30 +81,15 @@ if nargin > 1
       end
       
     case {'orientations','orientation'}
-      
-      if check_option(varargin,'phase')
-        
-        [phase uphase] = get(grains,'phase');
-        ind = phase == get_option(varargin,'phase',uphase(1));
-        
-      elseif check_option(varargin,'CheckPhase')
-        
-        [phase uphase] = get(grains,'phase');
-        warning('MTEX:MultiplePhases','This operatorion is only permitted for a single phase! I''m going to process only the first phase.');
-        ind = phase == uphase(1);
-        
-      else
-        
-        ind = true(size(grains));
-        
+          
+      if numel(unique([grains.phase])) > 1        
+        error('MTEX:MultiplePhases',['This operatorion is only permitted for a single phase!' ...
+        'See ' doclink('xx','xx')  ...
+        ' for how to restrict grains to a single phase.']);
       end
-            
-      varargout{1} = [grains(ind).orientation];
-      
-      if nargout > 1
-        varargout{2} = ind;
-      end
-      
+               
+      varargout{1} = [grains.orientation];
+
     case fields(grains)
       
       varargout{1} = populate(grains,vname);

@@ -231,15 +231,12 @@ if ~isempty(candits)
   
   nd = candits(1);
   
-  sz = sampleSize(ebsd);
-  csz = cumsum([0,sz]);
-  phase = find(nd>csz,1,'last');
-  pos = nd-csz(phase);
-  o = ebsd(phase).orientations(pos);
+  phase = ebsd.phases(nd);
+  o = orientation(ebsd.rotations(nd),ebsd.CS{phase},ebsd.SS);
   
-  txt = {['Phase: ', num2str(ebsd(phase).phase), ' ' get(get(o,'CS'),'mineral'),'' ], ...
+  txt = {['Phase: ', num2str(phase), ' ' get(ebsd.CS{phase},'mineral'),'' ], ...
     ['index:' num2str(pos)],...
-    [char(o)]};
+    char(o)};
   
 else
   

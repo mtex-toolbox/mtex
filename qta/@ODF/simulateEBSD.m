@@ -90,4 +90,4 @@ end
 comment = get_option(varargin,'comment',...
   ['EBSD data simulated from ',get(odf,'comment')]);
 
-ebsd = EBSD(ori,cs,ss,'comment',comment);
+ebsd = EBSD(ori,'CS',cs,'SS',ss,'comment',comment);

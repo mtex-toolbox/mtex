@@ -29,8 +29,8 @@ function [pf,options] = loadPoleFigure_generic(fname,varargin)
 %  HEADER            - number of header lines
 % 
 %% Example
-%
-%    pf = loadPoleFigure_generic('pf001.txt','HEADER',5,'degree',...
+%    fname = [mtexDataPath '/PoleFigure/nja/seifert-111.nja'];
+%    pf = loadPoleFigure_generic(fname,'HEADER',21,'degree',...
 %        'ColumnNames',{'polar angle','azimuth angle','intensity'},...
 %        'Columns',[1 2 3])
 %

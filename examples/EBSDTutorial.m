@@ -9,8 +9,8 @@
 
 % crystal symmetry
 CS = {...
-  symmetry('m-3m'),...
-  symmetry('m-3m')};
+  symmetry('m-3m','mineral','Fe'),...
+  symmetry('m-3m','mineral','Mg')};
 
 % specimen symmetry
 SS = symmetry('-1');
@@ -31,7 +31,7 @@ plotx2east
 % 1 using hkl colorcoding.
 
 figure('position',[100 100 800 350])
-plot(ebsd,'colorcoding','hkl','phase',1)
+plot(ebsd,'colorcoding','hkl')
 
 %%
 % The colorcoding can be interpreted by the collored (0,0,1) inverse pole
@@ -51,7 +51,7 @@ colorbar('position',[100 100 250 250])
 % and plot them into our orientation plot
 
 figure('position',[100 100 800 350])
-plot(ebsd,'colorcoding','hkl','phase',1)
+plot(ebsd,'colorcoding','hkl')
 hold on
 plotboundary(grains,'linewidth',1.5)
 
@@ -59,17 +59,17 @@ plotboundary(grains,'linewidth',1.5)
 % One can also plot all the grains together with their mean orientation
 
 figure('position',[100 100 800 350])
-plot(grains,'colorcoding','hkl','phase',1)
+plot(grains,'colorcoding','hkl')
 
 %% ODF estimation
 % Next we reconstruct an ODF from the EBSD data. Therefore, we first have
 % to fix a kenel function. This can be done by
 
-psi = calcKernel(grains,'phase',1)
+psi = calcKernel(grains('Fe'))
 
 %%
 % Now the ODF is reconstructed by
-odf = calcODF(ebsd,'phase',1,'kernel',psi)
+odf = calcODF(ebsd('Fe'),'kernel',psi)
 
 %%
 % Once an ODF is estimated all the functionallity MTEX offers for 
