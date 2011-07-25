@@ -44,17 +44,16 @@ ebsd = copy(ebsd,varargin{:});
 
 %% extract orientations and weights
 % extract orientations
-[o,ind] = get(ebsd,'orientations','checkPhase',varargin{:});
-ebsd = ebsd(ind);
+o = get(ebsd,'orientations');
 if numel(o) == 0, odf = ODF; return, end
 
-CS = get(ebsd(1).orientations,'CS');
-SS = get(ebsd(1).orientations,'SS');
+CS = get(o,'CS');
+SS = get(o,'SS');
 
 % extract weights
 if check_option(varargin,'weight')
   weight = get_option(varargin,'weight');
-elseif isfield(ebsd(1).options,'weight')
+elseif isfield(ebsd.options,'weight')
   % ignore nans
   %ebsd = delete(ebsd,isnan(get(ebsd,'weight')));
   weight = get(ebsd,'weight');  
@@ -102,7 +101,7 @@ vdisp([' kernel: ' char(k)],varargin{:});
 %% construct exact kernel density estimation estimation 
 
 odf = ODF(o,weight,k,CS,SS,...
-  'comment',['ODF estimated from ',ebsd(1).comment]);
+  'comment',['ODF estimated from ',ebsd.comment]);
 
 max_coef = 32;
 gridlen = numel(o)*length(CS);
@@ -193,7 +192,7 @@ d = d(del);
 %% generate ODF
 
 odf = ODF(S3G,d,k,CS,SS,...
-  'comment',['ODF estimated from ',ebsd(1).comment]);
+  'comment',['ODF estimated from ',ebsd.comment]);
 
 %% check wether kernel is to wide
 if check_option(varargin,'small_kernel') && hw > 2*get(S3G,'resolution')

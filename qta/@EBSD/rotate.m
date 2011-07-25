@@ -13,10 +13,10 @@ function ebsd = rotate(ebsd,q,varargin)
 
 if isa(q,'double'), q = axis2quat(zvector,q); end
 
-for i = 1:length(ebsd)  
-  ebsd(i).orientations = q * ebsd(i).orientations;
-end
+% rotate the orientations
+ebsd.rotations = q * ebsd.rotations;
 
+% rotate the spatial data
 if ~check_option(varargin,'keepXY')
   
   if isappr(dot(axis(q),zvector),1) 

@@ -214,9 +214,13 @@ end
 
 % set page name
 if isa(data,'EBSD')
+  
+  ph = unique(get(data,'phases'));
+  
   cs_counter = getappdata(gcf,'cs_count');
-  cs = get(data(cs_counter),'CS');
-  phase = get(data(cs_counter),'phase');
+  CS = get(data,'CSCell');
+  phase = ph(cs_counter);
+  cs = CS{phase};  
   pagename = ['Set Crystal Geometry for Phase ' num2str(phase)];
   setappdata(handles.pages(3),'pagename',pagename );
 else
@@ -259,7 +263,6 @@ function set_cs(wzrd)
 
 handles = getappdata(wzrd,'handles');
 data = getappdata(wzrd,'data');
-cs_counter = getappdata(wzrd,'cs_count');
 
 cs = get(handles.crystal,'Value');
 cs = symmetries(cs);
@@ -285,8 +288,13 @@ end
 
 if isa(data,'cell')
   data = cellfun(@(d) set(d,'CS',cs),data,'UniformOutput',false);
-elseif isa(data,'EBSD')
-  data(cs_counter) = set(data(cs_counter),'CS',cs,'noTrafo');
+elseif isa(data,'EBSD')  
+  cs_counter = getappdata(gcf,'cs_count');
+  CS = get(data,'CSCell');
+  ph = unique(get(data,'phases'));
+  phase = ph(cs_counter);
+  CS{phase} = cs;   
+  data = set(data,'CS',CS,'noTrafo');
 else
   data = set(data,'CS',cs,'noTrafo');
 end

@@ -5,5 +5,9 @@ function ext = extend(ebsd)
 % ext - extend as [xmin xmax ymin ymax zmin zmax]
 %
 
-X = get(ebsd,'X');
-ext = reshape([min(X);max(X)],1,[]);
+xyz = [];
+if isfield(ebsd.options,'x'), xyz = [xyz,ebsd.options,x];end
+if isfield(ebsd.options,'y'), xyz = [xyz,ebsd.options,y];end
+if isfield(ebsd.options,'z'), xyz = [xyz,ebsd.options,z];end
+
+ext = reshape([min(xyz);max(xyz)],1,[]);

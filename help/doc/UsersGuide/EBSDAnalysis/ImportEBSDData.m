@@ -1,6 +1,8 @@
 %% Import EBSD Data
 % How to import EBSD Data
 %
+%% Open in Editor
+%
 %%
 % Importing EBSD data into MTEX means to create a variable of type
 % <EBSD_index.html EBSD> from certain data files. Once such an variable has

@@ -43,41 +43,27 @@ function [grains ebsd] = segment2d(ebsd,varargin)
 
 s = tic;
 
+% the threshold angles
 thresholds = get_option(varargin,{'threshold','angle'},15*degree);
 if numel(thresholds) == 1 && numel(ebsd) > 1
   thresholds = repmat(thresholds,size(ebsd));
 end
 
 
-xy = vertcat(ebsd.X);
-
-if isempty(xy), error('no spatial data');end
+xy = [ebsd.options.x,ebsd.options.y];
 
 % sort for voronoi
 [xy m n]  = unique(xy,'first','rows');
 
 if numel(m) ~= numel(n)
   warning('mtex:GrainGeneration','spatially duplicated data points, perceed by erasing them')
-  ind = ~ismember(1:sum(sampleSize(ebsd)),m);
-  [grains ebsd] = segment2d(delete(ebsd,ind),varargin{:});
+  ind = ~ismember(1:numel(ebsd),m);
+  [grains ebsd] = segment2d(subsref(ebsd,~ind),varargin{:});
   return
 end
 
-phaseEBSD = get(ebsd,'phase');
-phaseEBSD = mat2cell(phaseEBSD,ones(size(phaseEBSD)),1)';
-
-% generate long phase vector
-l = sampleSize(ebsd);
-rl = [ 0 cumsum(l)];
-phase = ones(1,sum(l));
-for i=1:numel(ebsd)
-  phase( rl(i)+(1:l(i)) ) = i;
-end
-
-
-
-phase = phase(m);
-
+% sort ebsd accordingly
+ebsd = subsref(ebsd,m);
 
 
 %% grid neighbours
@@ -101,7 +87,7 @@ end
 
 %% disconnect by phase
 
-phases = sparse(ix,iy,phase(ix) ~= phase(iy),sm,sn);
+phases = sparse(ix,iy,ebsd.phases(ix) ~= ebsd.phases(iy),sm,sn);
 phases = xor(phases,distance);
 [ix iy]= find(phases);
 
@@ -109,32 +95,14 @@ phases = xor(phases,distance);
 
 angles = sparse(sm,sn);
 
-zl = m(ix);
-zr = m(iy);
-
-prop = lower(get_option(varargin,'property','angle'));
-
-for i=1:numel(ebsd)
-  %   restrict to correct phase
-  ind = rl(i) < zl & zl <=  rl(i+1);
+for p = unique(ebsd.phases).'
+     
+  o1 = orientation(ebsd.rotations(ix),ebsd.CS{p});
+  o2 = orientation(ebsd.rotations(iy),ebsd.CS{p});
+    
+  ind = angle(o1,o2) > thresholds(p);
   
-  zll = zl(ind)-rl(i); zrr = zr(ind)-rl(i);
-  mix = ix(ind); miy = iy(ind);
-  
-  %   compute distances
-  switch prop
-    case 'angle'
-      o1 = ebsd(i).orientations(zll);
-      o2 = ebsd(i).orientations(zrr);
-      omega = angle(o1,o2);
-    otherwise
-      p = get(ebsd(i),prop);
-      omega = abs( p(zll) - p(zrr) );
-  end
-  
-  ind = omega > thresholds(i);
-  
-  angles = angles + sparse(mix(ind),miy(ind),1,sm,sn);
+  angles = angles + sparse(ix(ind),iy(ind),1,sm,sn);
 end
 
 % disconnect regions
@@ -197,27 +165,8 @@ clear T1 T2 T3 regions angel_treshold inner
 
 %% conversion to cells
 
-ids = ids(n); %sort back
-phase = phase(n);
-cells = cells(n);
-
-%store grain id's into ebsd option field
-cids =  [0 cumsum(sampleSize(ebsd))];
-checksum =  fix(rand(1)*16^8); %randi(16^8);
-checksumid = [ 'grain_id' dec2hex(checksum)];
-for k=1:numel(ebsd)
-  ide = ids(cids(k)+1:cids(k+1));
-  ebsd(k).options.(checksumid) = ide(:);
-  
-  if ~isempty(ide)
-    [ide ndx] = sort(ide(:));
-    pos = [0 ;find(diff(ide)); numel(ide)];
-    aind = ide(pos(1:end-1)+1);
-    
-    orientations(aind) = ...
-      partition(ebsd(k).orientations(ndx),pos);
-  end
-end
+% store grain id's into ebsd option field
+ebsd.options.grain_id = ids(:);
 
 % cell ids
 [ix iy] = sort(ids);
@@ -253,31 +202,39 @@ s = tic;
 
 ply = createpolygons(cells,id,vert);
 
-comment =  ['from ' ebsd(1).comment];
+comment =  ['from ' ebsd.comment];
 
+
+%% compute mean orientations
+orientations = cellfun(@(ind) orientation(ebsd.rotations(ind),ebsd.CS{ebsd.phases(ind(1))},ebsd.SS),id,'uniformOutput',false);
 domean = cellfun('prodofsize',id) > 1;
 orientations(domean) = cellfun(@mean,orientations(domean),'uniformoutput',false);
 
+
+%% set up grains
 cid = cell(1,nc);
 cchek = cell(1,nc);
 ccom = cell(1,nc);
 cprop = cell(1,nc);
 phase_ebsd = cell(1,nc);
-tstruc = struct;
+
+% options to be copied to the grains
+options = rmfield(ebsd.options,{'x','y','grain_id'});
+  
 for i=1:numel(cchek)
+  
   cid{i} = i;
-  cchek{i} = checksum;
   ccom{i} = comment;
-  cprop{i} = tstruc;
-  phase_ebsd{i} = phaseEBSD{phase(id{i}(1))};
+  cprop{i} = structfun(@(x) mean(x(ids==i)), options,'UniformOutput',false);
+  phase_ebsd{i} = ebsd.phases(id{i}(1));
+  
 end
 
 gr = struct('id',cid,...
   'cells',id,...
   'neighbour',neigh,...    %       'polygon',[],...
-  'checksum',cchek,...
   'subfractions',fract,...
-  'phase',phase_ebsd,...
+  'phase',phase_ebsd,...'orientation', ,...
   'orientation',orientations,...
   'properties',cprop,...
   'comment',ccom);

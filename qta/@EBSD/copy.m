@@ -95,5 +95,5 @@ if check_option(varargin,'region')
       region(3) region(4); region(1) region(4); region(1) region(2)]);
   end
   
-  ebsd = inpolygon(ebsd,region);
+  ebsd = copy(ebsd,inpolygon(ebsd,region));
 end

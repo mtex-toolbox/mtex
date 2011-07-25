@@ -25,65 +25,55 @@ function varargout = get(obj,vname,varargin)
 
 
 if nargin == 1
-  vnames = get_obj_fields(obj(1),'options');
+  vnames = get_obj_fields(obj,'options');
   vnames = [vnames;{'data';'quaternion';'Euler';'mineral'}];
   if nargout, varargout{1} = vnames; else disp(vnames), end
   return
 end
 
 switch vname
-  case {'SS','CS'}
+  case 'CS'
     
-    varargout = cellfun(@(x) get(x,(vname)) ,{obj.orientations},'uniformoutput',false);
-     
-  case {'comment','options'}    
+    varargout = obj.CS;
     
-    varargout = {obj.(vname)};    
+  case 'CSCell'
+    
+    varargout{1} = obj.CS;
     
   case {'data','orientations','orientation'}   
     
-    % extract phases
-    phase = [obj.phase];
-    phases = unique(phase);
     
-    if check_option(varargin,'phase')
+    % check only a single phase is involved
+    if numel(unique(obj.phases)) > 1
       
-      ind = any(bsxfun(@eq,phase,get_option(varargin,'phase').'),1);
-      
-    elseif numel(phases) > 1 && check_option(varargin,'CheckPhase')
-      
-      warning('MTEX:MultiplePhases','This operatorion is only permitted for a single phase! I''m going to process only the first phase.');
-      ind = phase == phases(1);
+      error('MTEX:MultiplePhases',['This operatorion is only permitted for a single phase!' ...
+        'See ' doclink('xx','xx')  ...
+        ' for how to restrict EBSD data to a single phase.']);
+                
+    elseif numel(obj.phases) == 0
+    
+      varargout{1} = [];
       
     else
-      
-      ind = true(numel(obj),1);
+
+      varargout{1} = orientation(obj.rotations,obj.CS{obj.phases(1)});
       
     end
-    
-    [d dim]= max(size(obj(1).orientations));
-    if dim==1
-      varargout{1} = vertcat(obj(ind).orientations);
-    else
-      varargout{1} = horzcat(obj(ind).orientations);
-    end
-    varargout{2} = ind;  
+        
   case fields(obj)
-    varargout{1} = vertcat(obj.(vname));    
+    
+    varargout{1} = obj.(vname);
     
   case {'quaternions','quaternion'}
     
-    varargout{1} = quaternion();
-    for i = 1:length(obj)
-      varargout{1} = [varargout{1};reshape(quaternion(obj(i).orientations),[],1)]; 
-    end
+    varargout{1} = quaternion(obj.rotations);
     
   case 'Euler'
     
     % if only one phase
-    if length(obj) == 1 
+    if numel(unique(obj.phases)) == 1
       
-      [varargout{1:nargout}] = Euler(obj.orientations,varargin{:});
+      [varargout{1:nargout}] = Euler(get(obj,'orientations'),varargin{:});
             
     else
       
@@ -91,31 +81,15 @@ switch vname
       [varargout{1:nargout}] = Euler(q,varargin{:});
       
     end
-    
-  case 'length'
-    
-    varargout{1} = zeros(1,length(obj));
-    for i = 1:length(obj)
-      varargout{1}(i) = sum(numel(obj(i).orientations));
-    end
-    
-  case 'phases'
-    
-    sz = cumsum([0,sampleSize(obj)]);
-    phases = zeros(sz(end),1,'uint8');
-    for i = 1:length(obj)
-      phases(sz(i)+1:sz(i+1)) = obj(i).phase;
-    end
-    varargout{1} = phases;
-
+        
   case {'x','y','z','xy','xz','yz','xyz'}
-    fl = {1,2,3,[1,2],[1,3],[2,3],[1:3]};
-    fl = fl{strcmpi(vname,{'x','y','z','xy','xz','yz','xyz'})};
     
     varargout{1} = [];
-    for i = 1:length(obj)
-      varargout{1} = [varargout{1};obj(i).X(:,fl(fl <=size(obj(i).X,2)))]; 
-    end
+    for xyz = {'x','y','z'}
+      if any(strfind(vname,char(xyz))) && isfield(obj.options,xyz)
+        varargout{1} = [varargout{1},obj.options.(char(xyz))];
+      end
+    end    
 
   case 'weight'
     
@@ -123,24 +97,21 @@ switch vname
       w = obj.options.weight;
       varargout{1} = w./sum(w(:));
     else
-      sz = size(obj(1).orientations);
-      varargout{1} = ones(sz)./prod(sz);      
+      varargout{1} = ones(numel(obj),1)./numel(obj);
     end
     
   case 'mineral'
     
-    varargout = cellfun(@(x) get(x,'mineral') ,{obj.orientations},'uniformoutput',false);
+    varargout = cellfun(@(x) get(x,'mineral') ,obj.CS,'uniformoutput',false);
     
   case 'minerals'
     
-    varargout{1} = cellfun(@(x) get(x,'mineral') ,{obj.orientations},'uniformoutput',false);
+    varargout{1} = cellfun(@(x) get(x,'mineral') ,obj.CS,'uniformoutput',false);      
     
   case fields(obj(1).options)
-     options = [obj.options];
-     varargout{1} = vertcat(options.(vname));    
-%     for i = 1:length(obj)
-%       varargout{1} = [varargout{1};reshape(obj(i).options.(vname),[],1)]; %#ok<AGROW>
-%     end
+    
+     varargout{1} = obj.options.(vname);    
+
   otherwise
     error(['There is no ''' vname ''' property in the ''EBSD'' object'])
 end

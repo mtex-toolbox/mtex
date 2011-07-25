@@ -36,14 +36,20 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 %% segmentation
 % prepare data
 
-dim = size(ebsd(1).X,2);
-
-if dim == 3
+if isfield(ebsd.options,'x') && isfield(ebsd.options,'y')
+  
+  if isfield(ebsd.options,'z')
     
-  [grains, ebsd] = segment3d(ebsd,varargin{:});
+    [grains, ebsd] = segment3d(ebsd,varargin{:});
+  
+  else
+  
+  [grains, ebsd] = segment2d(ebsd,varargin{:});
+  
+  end
   
 else
   
-  [grains, ebsd] = segment2d(ebsd,varargin{:});
+  error('No spatial data, i.e. x, y coordinates1');
   
 end

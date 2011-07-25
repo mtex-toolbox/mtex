@@ -28,9 +28,6 @@ function [TVoigt, TReuss, THill] = calcTensor(ebsd,varargin)
 %% See also
 %
 
-% filter data
-ebsd = copy(ebsd,varargin{:});
-
 % extract tensors and remove them from varargin
 Tind = cellfun(@(t) isa(t,'tensor'),varargin);
 T = varargin(Tind);
@@ -40,25 +37,25 @@ varargin(Tind) = [];
 Tinv = cellfun(@(t) inv(t),T,'uniformOutput',false);
 
 % get phases
-phases = get_option(varargin,'phase',get(ebsd,'phase'));
+phases = get_option(varargin,'phase',unique(ebsd.phases));
 
 % initialize avarage tensors
 TVoigt = tensor(zeros(size(T{1})));
 TReuss = tensor(zeros(size(T{1})));
-sZ = sampleSize(ebsd);
 
 % cycle through phases and tensors
-for i = 1:min(length(T),length(ebsd))
+for p = unique(ebsd.phases)'
   
   % extract orientations and wights
-  [SO3,ind] = get(ebsd,'orientations','phase',phases(i));
-  weight = get(ebsd(ind),'weight')*sum(sZ(ind))./sum(sZ);
+  ind = ebsd.phases == p;
+  ori = get(ebsd(ind),'orientations');    
+  weight = get(ebsd(ind),'weight') * nnz(ind) ./ numel(ebsd);
 
   % take the mean of the rotated tensors times the weight
-  TVoigt = TVoigt + sum(weight .* rotate(T{i},SO3));
+  TVoigt = TVoigt + sum(weight .* rotate(T{p},ori));
   
   % take the mean of the rotated tensors times the weight
-  TReuss = TReuss + sum(weight .* rotate(Tinv{i},SO3));
+  TReuss = TReuss + sum(weight .* rotate(Tinv{p},ori));
     
 end
 

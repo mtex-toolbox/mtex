@@ -30,18 +30,15 @@ else
 end
 
 %% rotate the spatial data
-for k = 1:length(ebsd)
-  if ~isempty(ebsd(k).X)
-    xy = [ebsd(k).X ones(length(ebsd(k).X),1)] * T';
-    ebsd(k).X = xy(:,1:2);
-  end
+if isfield(ebsd.options,'x') && isfield(ebsd.options,'x')
+  xy = [ebsd.options.x, ebsd.options.y, ones(numel(ebsd),1)] * T';
+  ebsd.options.x = xy(:,1);
+  ebsd.options.y = xy(:,2);
 end
 
 % rotate the unit cells
 T(1:2,3) = 0; % no shift!
-for k = 1:length(ebsd)
-  if ~isempty(ebsd(k).unitCell)
-    xy = [ebsd(k).unitCell ones(length(ebsd(k).unitCell),1)] * T';
-    ebsd(k).unitCell = xy(:,1:2);
-  end
+if ~isempty(ebsd.unitCell)
+  xy = [ebsd.unitCell ones(length(ebsd.unitCell),1)] * T';
+  ebsd.unitCell = xy(:,1:2);
 end

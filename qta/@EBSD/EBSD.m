@@ -15,7 +15,7 @@ function ebsd = EBSD(varargin)
 %
 %% Options
 %  Comment  - string
-%  phase    - specifing the phase of the EBSD object
+%  phases   - specifing the phase of the EBSD object
 %  options  - struct with fields holding properties for each orientation
 %  xy       - spatial coordinates n x 2, where n is the number of input orientations 
 %  unitCell - for internal use
@@ -23,26 +23,29 @@ function ebsd = EBSD(varargin)
 %% See also
 % ODF/simulateEBSD EBSD/calcODF loadEBSD
 
-if (nargin == 0)
-  ebsd.comment = [];
-  ebsd.orientations = orientation;
-  ebsd.X = [];
-  ebsd.phase = [];
-  ebsd.options = struct;
-  ebsd.unitCell = [];
-  ebsd = class(ebsd,'EBSD');
-  return
-elseif isa(varargin{1},'EBSD')
+if nargin==1 && isa(varargin{1},'EBSD') % copy constructor
   ebsd = varargin{1};
   return
 else
-  orientations = orientation(varargin{:});
+  rotations = rotation(varargin{:});
 end
 
+ebsd.comment = [];
+
 ebsd.comment = get_option(varargin,'comment',[]);
-ebsd.orientations = orientations(:);
-ebsd.X = get_option(varargin,'xy');
-ebsd.phase = get_option(varargin,'phase',1);
+ebsd.rotations = rotations(:);
+ebsd.phases = get_option(varargin,'phases',[]);
+ebsd.SS = get_option(varargin,'SS',symmetry);
+
+% set up crystal symmetries
+CS = ensurecell(get_option(varargin,'CS',{}));
+if numel(CS) < max(ebsd.phases),
+  if isempty_cell(CS), CS = symmetry('cubic');end
+  CS = repmat(CS(1),1,max(ebsd.phases));
+end
+
+ebsd.CS = CS;
 ebsd.options = get_option(varargin,'options',struct);
 ebsd.unitCell = get_option(varargin,'unitCell',[]);
+
 ebsd = class(ebsd,'EBSD');

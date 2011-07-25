@@ -55,21 +55,18 @@ function h = plotspatial(ebsd,varargin)
 % EBSD/plot
 
 % restrict to a given phase or region
-ebsd = copy(ebsd,varargin{:});
+%ebsd = copy(ebsd,varargin{:});
 
-
-% get coordinates
-xy = get(ebsd,'xyz');
-
-if ~isempty(xy) && size(xy,2) == 3
+%% check for 3d data
+if isfield(ebsd.options,'z')
   slice3(ebsd,varargin{:});
   return
 end
 
-%%
-
-% which property to plot
+%% get options and coordinates
 prop = lower(get_option(varargin,'property','orientation'));
+x = ebsd.options.x;
+y = ebsd.options.y;
 
 %% plot property phase
 if strcmp(prop,'phase') && ~check_option(varargin,'FaceColor')
@@ -78,15 +75,17 @@ if strcmp(prop,'phase') && ~check_option(varargin,'FaceColor')
   cmap = get_mtex_option('PhaseColorMap');
   
   % get all phases
-  phases = get(ebsd,'phase');
+  phases = unique(ebsd.phases).';
   
   varargin = set_option(varargin,'property','none');
   % plot all phases separately
   washold = ishold;
   hold all;
-  for i = 1:length(phases)
-    faceColor = cmap(1+mod(phases(i)-1,length(cmap)),:);
-    plotspatial(ebsd,varargin{:},'FaceColor',faceColor,'phase',phases(i));
+  for p = phases
+    
+    faceColor = cmap(1+mod(p-1,length(cmap)),:);
+    plotspatial(subsref(ebsd,ebsd.phases == p),varargin{:},'FaceColor',faceColor);
+    
   end
   if ~washold, hold off;end
   
@@ -130,10 +129,10 @@ if any(strcmp(prop,{'flow','axis','axisflow'}))
   hold on
   h = [];
   if check_option(varargin,{'axis','axisflow'})
-    h(end+1) = quiver(xy(:,1),xy(:,2),real(na),imag(na),'k.');
+    h(end+1) = quiver(x,y,real(na),imag(na),'k.');
   end
   if check_option(varargin,{'flow','axisflow'})
-    h(end+1) = quiver(xy(:,1),xy(:,2),real(nb),imag(nb),'b');
+    h(end+1) = quiver(x,y,real(nb),imag(nb),'b');
   end
   if ~washold, hold off; end
   optiondraw(h,varargin{:});
@@ -160,9 +159,15 @@ switch prop
   case 'user'
   case 'orientation'
     cc = lower(get_option(varargin,'colorcoding','ipdf'));
-    for i = 1:length(ebsd)
-      d = [d;orientation2color(ebsd(i).orientations,cc,varargin{:})]; %#ok<AGROW>
+
+    d = ones(numel(ebsd),3);
+    for p = unique(ebsd.phases).'
+      if p == 0, continue;end
+      ind = ebsd.phases == p;
+      o = orientation(ebsd.rotations(ind),ebsd.CS{p},ebsd.SS);
+      d(ind,:) = orientation2color(o,cc,varargin{:});
     end
+
   case 'none'
   case 'phase'
   case fields(ebsd(1).options)
@@ -180,15 +185,14 @@ end
 %% plot
 
 try %if ~check_option(varargin,'raster')
-  h = plotxyexact(xy,d,ebsd(1).unitCell,varargin{:});
+  h = plotxyexact([x,y],d,ebsd.unitCell,varargin{:});
 catch %#ok<CTCH>
-  h = plotxy(xy,d,varargin{:});
+  h = plotxy([x,y],d,varargin{:});
 end
 
 % set appdata
 if strcmpi(prop,'orientation') %&& strcmpi(cc,'ipdf')
-  [cs{1:length(ebsd)}] = get(ebsd,'CS');
-  setappdata(gcf,'CS',cs)
+  setappdata(gcf,'CS',ebsd.CS)
   setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d'));
   setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
   setappdata(gcf,'colorcoding',cc);

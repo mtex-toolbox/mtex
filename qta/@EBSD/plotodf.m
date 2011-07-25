@@ -22,9 +22,9 @@ function plotodf(ebsd,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo 
 
-[o ind] = get(ebsd,'orientations','CheckPhase',varargin{:});
+o = get(ebsd,'orientations');
 
-varargin = set_option_property(ebsd(ind),varargin{:});
+varargin = set_option_property(ebsd,varargin{:});
 
 plotodf(o,...
   'FigureTitle',[inputname(1) ' (' get(ebsd,'comment') ')'],varargin{:});

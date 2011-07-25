@@ -16,9 +16,9 @@ function scatter(ebsd,varargin)
 %% See also
 % EBSD/plotpdf savefigure
 
-[o ind] = get(ebsd,'orientations','CheckPhase',varargin{:});
+o = get(ebsd,'orientations');
 
-varargin = set_option_property(ebsd(ind),varargin{:});
+varargin = set_option_property(ebsd,varargin{:});
 
 scatter(o,...
   'FigureTitle',[inputname(1) ' (' get(ebsd,'comment') ')'],varargin{:});
