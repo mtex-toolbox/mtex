@@ -3,6 +3,21 @@ function display(odf,varargin)
 
 disp(' ');
 
+%% variable name
+if check_option(varargin,'vname')
+  h = [get_option(varargin,'vname'), ' = '];
+elseif ~isempty(inputname(1))
+  h = [inputname(1), ' = '];
+else
+  h = [];
+end;
+
+if isempty(odf)
+  disp([h,doclink('ODF_index','ODF')]);
+  disp(' ');
+  return  
+end
+
 csss = {'sample symmetry ','crystal symmetry'};
 
 % symmetries
@@ -10,19 +25,13 @@ cs = odf(1).CS;
 ss = odf(1).SS;
 
 %% ODF / MDF
-disp(' ');
 if isCS(ss) && isCS(cs)
-  h = doclink('MDF_index','MDF');
+  h = [h, doclink('MDF_index','MDF')];
 else
-  h = doclink('ODF_index','ODF');
+  h = [h,doclink('ODF_index','ODF')];
 end
 
-%% variable name
-if check_option(varargin,'vname')
-  h = [get_option(varargin,'vname'), ' = ' h];
-elseif ~isempty(inputname(1))
-  h = [inputname(1), ' = ' h];
-end;
+
 if ~isempty(odf(1).comment), h = [h ' (' odf(1).comment ')']; end
 
 disp(h);

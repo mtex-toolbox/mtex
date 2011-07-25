@@ -12,15 +12,10 @@ function gr = grain(gr,ply)
 
 if nargin == 0
 
-  gr.id = [];
-  gr.cells = [];
-  gr.neighbour = [];
-  gr.checksum = [];
-  gr.subfractions = [];
-  gr.phase = [];
-  gr.orientation = orientation;
-  gr.properties = struct;
-  gr.comment = char;
+  gr = struct('id',{},'cells',{},'neighbour',{},'checksum',{},...
+  'subfractions',{},'phase',{},'orientation',{},'properties',{},...
+  'comment',{});
+  
   poly = polytope;
   
   gr = class(gr,'grain',poly);

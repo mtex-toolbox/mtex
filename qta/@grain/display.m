@@ -51,8 +51,10 @@ for i = 1:length(phases)
   
 end
 
-cprintf(matrix,'-L','  ','-Lc',...
-  {'phase' 'grains' 'mineral'  'symmetry' 'crystal reference frame'},...
-  '-ic','F');
+if ~isempty(grains)
+  cprintf(matrix,'-L','  ','-Lc',...
+    {'phase' 'grains' 'mineral'  'symmetry' 'crystal reference frame'},...
+    '-ic','F');
+end
 
 disp(' ');

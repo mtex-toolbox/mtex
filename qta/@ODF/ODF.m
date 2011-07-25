@@ -32,20 +32,18 @@ function odf = ODF(center,c,psi,CS,SS,varargin)
 %% See also
 %  uniformODF unimodalODF fibreODF BinghamODF FourierODF
 
-if (nargin == 0)
-  odf.comment = [];
-	odf.center = [];
-	odf.c = 1;
-  odf.c_hat = [];
-	odf.psi = [];
-	odf.CS = symmetry;
-	odf.SS = symmetry;
-  odf.options = {'uniform'};
+if nargin == 0
+  
+  odf = struct('comment',{},'center',{},'c',{},'c_hat',{},'psi',{},...
+    'CS',{},'SS',{},'options',{});  
 	odf = class(odf,'ODF');
 	return
+  
 elseif isa(center,'ODF')
+  
   odf = center;
   return
+  
 end
 
 % default values
