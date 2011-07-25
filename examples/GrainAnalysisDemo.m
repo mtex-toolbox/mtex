@@ -35,7 +35,7 @@ plot(region,'color','k','linewidth',2)
 %%
 % to which we restrict the data
 
-ebsd_region = copy(ebsd,'region',[19000 1500 23000 3000])
+ebsd_region = ebsd(inpolygon(ebsd,[19000 1500 23000 3000]))
 
 %% Recover grains
 % Next we reconstruct the grains (and grain boundareis in the region of interest

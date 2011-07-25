@@ -2,7 +2,7 @@ function ebsd = fill(ebsd,cube,dx)
 % extrapolate spatial EBSD data by nearest neighbour for tetragonal lattice
 %
 %% Input
-% ebsd  -  an @EBSD object
+% ebsd  -  @EBSD
 % cube  -  a cube with extends [xmin xmax ymin ymax zmin zmax]
 % dx    -  stepsize
 %

@@ -112,10 +112,10 @@ plot(ebsd_max_grain)
 mad = get(ebsd,'mad');
 
 % the EBSD data with bad MAD
-bad_ebsd = ebsd(mad>1.2)
+bad_ebsd = ebsd(mad > 1.2)
 
 % select grains containing data with bad MAD
-bad_grains = link(grains,bad_ebsd)
+bad_grains = grains(bad_ebsd)
 
 % plot them
 plot(bad_grains)

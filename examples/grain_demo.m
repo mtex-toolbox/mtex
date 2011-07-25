@@ -32,15 +32,13 @@ plot(ebsd,'phase',1)
 
 %% Segmentation
 
-[grains ebsd] = calcGrains(ebsd)
+[grains ebsd] = calcGrains(ebsd,'angle',10*degree)
 
 %%
-% we can see which segmentations are stored in the ebsd object indicated by
-% grain_idXXXXXXXX as option, so it is possible to treat several
-% different segmentations with one ebsd object, an we can define for each
-% phase a custom threshold
+% The reconstructed grains strongly depend on the specified threshold
+% angle. These angles can be specified seperatly for different phases.
 
-[grains5 ebsd] = calcGrains(ebsd,'angle',[10 5]*degree)
+[grains ebsd] = calcGrains(ebsd,'angle',[10 5]*degree)
 
 %% 
 % Plot grain-boundaries
@@ -54,14 +52,10 @@ hold on, plotSubBoundary(grains,'color','red','linewidth',2)
 
 % make a expotential bin size
 x = fix(exp(.5:.5:7.5));
-figure, bar( hist(grainSize(grains5),x) );
+figure, bar( hist(grainSize(grains),x) );
 
 
 %% Accessing geometric properties 
-
-p = polygon(grains)
-
-%%
 %
 area(grains); perimeter(grains);
 shapefactor(grains); paris(grains); %...

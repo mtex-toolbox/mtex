@@ -12,7 +12,7 @@ function c = LSCV(ebsd,psi,varargin)
 % EBSD/calcODF EBSD/calcKernel grain/calcKernel EBSD/BCV
 
 % extract data
-N = sampleSize(ebsd);
+N = numel(ebsd);
 o = get(ebsd,'orientations');
 try
   w = get(ebsd,'weight');

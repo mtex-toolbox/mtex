@@ -34,7 +34,7 @@ ebsd.comment = [];
 
 ebsd.comment = get_option(varargin,'comment',[]);
 ebsd.rotations = rotations(:);
-ebsd.phases = get_option(varargin,'phases',[]);
+ebsd.phases = get_option(varargin,'phases',ones(numel(ebsd.rotations),1));
 ebsd.SS = get_option(varargin,'SS',symmetry);
 
 % set up crystal symmetries
