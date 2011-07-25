@@ -145,8 +145,12 @@ if ~isempty(struc) && all(cellfun('prodofsize',struc) == 1)
     out(k) = struc{k};
   end
   
-else
+elseif iscell(struc) && (isempty_cell(struc) || isempty(struc{1}))
+  
   out = [];
+  
+else
+  out = struc;
 end
 
 

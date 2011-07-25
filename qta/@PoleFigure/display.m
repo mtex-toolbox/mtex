@@ -33,6 +33,9 @@ disp(h);
 
 disp(' ');
 
+if isempty(pf), return;end
+
+% display mineral name
 if ~isempty(get(pf(1).CS,'mineral'))
   disp(['  mineral: ',get(pf(1).CS,'mineral')]);
 end

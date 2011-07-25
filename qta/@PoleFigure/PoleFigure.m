@@ -18,16 +18,10 @@ function P = PoleFigure(h,r,data,CS,SS,varargin)
 % ImportPoleFigureData loadPoleFigure loadPoleFigure_generic
 
 if nargin == 0  
-  P.comment = [];
-  P.h = vector3d;
-  P.r = vector3d;
-  P.data = [];
-  P.bgdata = [];
-  P.CS = symmetry;
-  P.SS = symmetry;
-  P.c  = 1;
-  P.P_hat = [];
-  P.options = struct;
+  
+  P = struct('comment',{},'h',{},'r',{},'data',{},'bgdata',{},...
+    'CS',{},'SS',{},'c',{},'P_hat',{},'options',{});
+  
 else
   P.comment = get_option(varargin,'comment',[],'char');
   P.h = argin_check(h,{'vector3d','Miller'});
