@@ -46,13 +46,6 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 %% See also
 % ImportEBSDData loadEBSD ebsd_demo
 
-% get options
-cs = get_option(varargin,'cs',symmetry('m-3m'));
-ss = get_option(varargin,'ss',symmetry('-1'));
-
-
-if ~iscell(cs), cs = {cs}; end
-
 % load data
 [d,options,header,c] = load_generic(char(fname),varargin{:});
 
@@ -61,34 +54,6 @@ varargin = options;
 % no data found
 if size(d,1) < 1 || size(d,2) < 3
   error('Generic interface could not detect any numeric data in %s',fname);
-end
-
-% check for old version call
-if check_option(varargin,'layout')
-  
-  warning('MTEX:obsoleteSyntax',...
-    ['Option ''layout'' is obsolete. ' ...
-    'Use ''ColumnNames'' and ''Columns'' instead. '...
-    'You might also simply rerun the import wizzard.']);
-  layout = get_option(varargin,'layout');
-  varargin = delete_option(varargin,'layout',1);
-  ColumnNames = {'Euler 1','Euler 2','Euler 3'};
-  Columns = layout(1:3);
-  
-  if length(layout) == 4
-    ColumnNames = [ColumnNames,{'Phase'}];
-    Columns = layout;
-  end
-  
-  if check_option(varargin,'xy')
-    xy = get_option(varargin,'xy');
-    ColumnNames = [ColumnNames,{'x','y','z'}];
-    Columns = [layout,xy];
-    varargin = delete_option(varargin,'xy',1);
-  end
-  
-  
-  varargin = [varargin,{'ColumnNames',ColumnNames,'Columns',Columns}];
 end
 
 % no options given -> ask
@@ -110,7 +75,7 @@ assert(length(cols) == length(names), 'Length of ColumnNames and Columns differ'
 cols = cols(m);
 
 istype = @(in, a) all(cellfun(@(x) any(find(strcmpi(stripws(in),stripws(x)))),a));
-layoutcol = @(in, a) cols(cellfun(@(x) find(strcmpi(stripws(in),stripws(x))),a));
+layoutcol = @(in, a) cols(cell2mat(cellfun(@(x) find(strcmpi(stripws(in),stripws(x))),a,'uniformoutput',false)));
 
 euler = lower({'Euler 1' 'Euler 2' 'Euler 3'});
 quat = lower({'Quat real' 'Quat i' 'Quat j' 'Quat k'});
@@ -129,6 +94,28 @@ if istype(names,euler) % Euler angles specified
   ind = abs(d(:,layout(1))*dg-4*pi)<1e-3;
   d(ind,:) = [];
     
+  % assign phases
+  if istype(names,{'Phase'})
+    phases = d(:,layoutcol(names,{'Phase'}));
+    
+    % remove phases that should be ignored
+    ignorePhase = get_option(varargin,'ignorePhase',0);
+    
+    ind = ismember(phases,ignorePhase);
+    d(ind,:) = [];
+    phases(ind)=[];
+    
+  else
+    phases = ones(size(d,1),1);
+  end
+
+  if max(phases)>40
+    warning('MTEX:tomanyphases','Found more then 20 phases. I''m going to ignore them.');
+    phases = ones(size(d,1),1);
+  end
+
+  
+    
   % extract data
   alpha = d(:,layout(1))*dg;
   beta  = d(:,layout(2))*dg;
@@ -142,13 +129,14 @@ if istype(names,euler) % Euler angles specified
   end
     
   % transform to quaternions
-  q = orientation('Euler',alpha,beta,gamma,cs{1},ss,varargin{:});
+  noSymmetry = cellfun(@(x) ~isa(x,'symmetry'),varargin);
+  q = rotation('Euler',alpha,beta,gamma,varargin{noSymmetry});
   
 elseif istype(names,quat) % import quaternion
     
   layout = layoutcol(names,quat);
   d(any(isnan(d(:,layout)),2),:) = [];
-  q = orientation(quaternion(d(:,layout(1)),d(:,layout(2)),d(:,layout(3)),d(:,layout(4))));
+  q = rotation(quaternion(d(:,layout(1)),d(:,layout(2)),d(:,layout(3)),d(:,layout(4))));
   
 else
   error('You should at least specify three Euler angles or four quaternion components!');
@@ -156,31 +144,19 @@ end
    
 if check_option(varargin,'passive rotation'), q = inverse(q); end
  
-% assign spatial coordinates
-xy = [];
-if istype(names,{'x' 'y'}),
-  xy = d(:,layoutcol(names,{'x' 'y'}));
+
   
-  % compute unit cell
-  varargin = [varargin,'unitCell',calcUnitCell(xy,varargin{:})];  
+% compute unit cells
+if istype(names,{'x' 'y'})
+
+  varargin = [varargin,'unitCell',calcUnitCell(d(:,layoutcol(names,{'x' 'y' 'z'})),varargin{:})];  
+  
 end
 
-if istype(names,{'x' 'y' 'z'}),
-  xy = d(:,layoutcol(names,{'x' 'y' 'z'}));
-  
-  % compute unit cell
-  varargin = [varargin,'unitCell',calcUnitCell(xy,varargin{:})];  
-end
 
-% assign phase
-phase = [];
-if istype(names,{'Phase'}),
-  phase = d(:,layoutcol(names,{'Phase'}));
-end
-  
 % assign all other as options
 opt = struct;
-opts = delete_option(names,  [euler quat {'Phase' 'x' 'y' 'z'}]);
+opts = delete_option(names,  [euler quat {'Phase'}]);
 if ~isempty(opts)
   
   for i=1:length(opts),
@@ -192,47 +168,12 @@ if ~isempty(opts)
   opt = struct(opts_struct{:});
 end
 
-%% split according to phase
-
-phases = unique(phase);
-ignorePhase = get_option(varargin,'ignorePhase',0);
-phases(arrayfun(@(x) any(x == ignorePhase),phases)) = [];
-
-if length(phases)>20
-  warning('MTEX:tomanyphases','Found more then 20 phases. I''m going to ignore them.');
-  phases = [];
-end
 
 % return varargin as options
 options = varargin;
 
-% load single phase
-if isempty(phases) || sum(phase ~= 0) < 10
-  ebsd = EBSD(q,cs,ss,varargin{:},'xy',xy,'options',opt,'phase',1); 
-  return
-end
-
-%
-if numel(cs) < length(phases)
-  cs = repmat({cs{1}},1,length(phases));
-elseif numel(cs) > length(phases)
-  phases = 1:numel(cs);
-end
-
-
-% load multiple phases
-for ip = 1:length(phases)
-
-  ind = phase == phases(ip);
-  if isempty(xy)
-    pxy = [];
-  else
-    pxy = xy(ind,:);
-  end
-  popt = structfun(@(x) x(ind),opt,'uniformOutput',false);
-
-  ebsd(ip) = EBSD(set(q(ind),'CS',cs{ip},'noTrafo'),varargin{:},'xy',pxy,'phase',phases(ip),'options',popt); %#ok<AGROW>
-end
+% set up EBSD variable
+ebsd = EBSD(q,varargin{:},'phases',phases,'options',opt);
 
 
 function str = stripws(str)

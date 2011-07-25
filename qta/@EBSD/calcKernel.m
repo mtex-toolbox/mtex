@@ -13,14 +13,16 @@ function psi = calcKernel(ebsd,varargin)
 %% See also
 % EBSD/calcODF EBSD/BCV EBSD/KLCV EBSD/LSCV
 
-% filter data
-ebsd = copy(ebsd,varargin{:});
+% ensure single phase
+if numel(unique(ebsd.phases)) > 1
+      
+  error('MTEX:MultiplePhases',['This operatorion is only permitted for a single phase!' ...
+    'See ' doclink('xx','xx')  ...
+    ' for how to restrict EBSD data to a single phase.']);
+end
 
-% get orientations
-[o,ind] = get(ebsd,'orientations','checkPhase');
-ebsd = ebsd(ind);
-
-if ~isempty(ebsd.X)
+% ensure spatial independence
+if isfield(ebsd.options,'x')
   warning('MTEX:calcKernel',['Measurements seem to be spatially dependend.' ...
     ' Usually this results in to sharp kernel functions. You may want to'...
     ' restore grains first and then estimate the kernel from the grains.' ...
@@ -35,8 +37,8 @@ psi = get_option(varargin,'kernel',psi);
 
 % if there are to many orientations -> subsampling
 maxSample = 5000;
-if sampleSize(ebsd) > maxSample
-  fak = (sampleSize(ebsd)/maxSample).^(1/7); % true is 2/7 but let us stay on the save side
+if numel(ebsd) > maxSample
+  fak = (numel(ebsd)/maxSample).^(1/7); % true is 2/7 but let us stay on the save side
   ebsd = subsample(ebsd,maxSample);
 else
   fak = 1;

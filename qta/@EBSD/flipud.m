@@ -7,7 +7,8 @@ function ebsd = flipud(ebsd)
 %% Output
 %  flipped ebsd - @EBSD
 
-m = max(vertcat(ebsd.X));
+m(1) = max(ebsd.options.x);
+m(2) = max(ebsd.options.y);
 ebsd = affinetrans(ebsd,[],[0 -m(2)]);
 
 ebsd = rotate(ebsd,rotation('axis',xvector,'angle',pi));

@@ -76,17 +76,30 @@ plot(large_grains)
 
 %% Connection between EBSD Data and a Grains
 %
-% The reconstrcuted grains are connected with its underlaying EBSD data by an
-% identification number. The command <grain.link.html link> allows to extract
-% all individuell orientations out of an EBSD data set that correspond to a
-% certain list of grains
+% The reconstructed grains are connected with its underlaying EBSD data by an
+% grain id which is stored within the grains and the EBSD variable. 
+%
+% The following command extracts the grain id from a certain grain
 
-% the grain of maximum size
-max_grain = grains(grainSize(grains)==max(grainSize(grains)))
+id = get(grains(20),'id')
 
-% the corresponding EBSD data
-ebsd_max_grain = link(ebsd,max_grain)
+%%
+% Next we restrict our EBSD data to those measurements belonging to this
+% particular grain
+ebsd_grain = ebsd(get(ebsd,'grain_id') == id)
 
+%%
+% Let us apply this technique to determine the measurements within the
+% largest grain. This grain of maximum size can be determined by
+
+[max_size, id] = max(grainSize(grains));
+max_grain = grains(id)
+
+%%
+% The corresponding EBSD data may directly adressed by
+ebsd_max_grain = ebsd(max_grain)
+
+%%
 % plot the EBSD data for this grain
 plot(ebsd_max_grain)
 
@@ -99,7 +112,7 @@ plot(ebsd_max_grain)
 mad = get(ebsd,'mad');
 
 % the EBSD data with bad MAD
-bad_ebsd = copy(ebsd,mad>1.2)
+bad_ebsd = ebsd(mad>1.2)
 
 % select grains containing data with bad MAD
 bad_grains = link(grains,bad_ebsd)

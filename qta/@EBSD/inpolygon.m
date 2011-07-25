@@ -1,9 +1,9 @@
-function ebsd = inpolygon(ebsd,varargin)
-% select ebsd data by a given polygon
+function ind = inpolygon(ebsd,varargin)
+% checks which ebsd data are within given polygon
 %
 %% Syntax
-% ebsd = inpolygon(ebsd,polygon) - cuts EBSD data to a @polygon region
-% ebsd = inpolygon(ebsd,[x1 y1; x2 y2; x3 y3; x4 y4]) - 
+% ind = inpolygon(ebsd,polygon) - cuts EBSD data to a @polygon region
+% ind = inpolygon(ebsd,[x1 y1; x2 y2; x3 y3; x4 y4]) - 
 %
 %% Input
 %  ebsd    - @EBSD
@@ -11,7 +11,7 @@ function ebsd = inpolygon(ebsd,varargin)
 %  x1, y1  - vertices
 %
 %% Ouput
-%  ebsd - @EBSD
+%  ind - logical
 %
 %% See also
 % polygon/inpolygon
@@ -32,7 +32,5 @@ if ~isempty(XY)
     xy = get(p(k),'vertices');
     ind = ind | inpolygon(XY(:,1),XY(:,2),xy(:,1),xy(:,2));
   end
-
-  % remove data not inside the polygons
-  ebsd = delete(ebsd,~ind);
+  
 end

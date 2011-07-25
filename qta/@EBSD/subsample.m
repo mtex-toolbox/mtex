@@ -14,27 +14,8 @@ function ebsd = subsample(ebsd,points)
 %% See also
 % EBSD/delete 
 
-ss = sampleSize(ebsd);
+if points >= numel(ebsd), return;end
 
-if points >= sum(ss), return;end
+ind = discretesample(numel(ebsd),points);
 
-for i = 1:length(ebsd)
-  
-  ip = round(points * ss(i) / sum(ss(:)));
-  ind = discretesample(ss(i),ip);
-  
-  % subsample xy and phase
-  if ~isempty(ebsd(i).X), ebsd(i).X = ebsd(i).X(ind); end
-    
-  % subsample all other options
-  ebsd_fields = fields(ebsd(i).options);
-  for f = 1:length(ebsd_fields)
-    if numel(ebsd(i).options.(ebsd_fields{f})) == numel(ebsd(i).orientations)
-      ebsd(i).options.(ebsd_fields{f}) = ebsd(i).options.(ebsd_fields{f})(ind);
-    end
-  end
-  
-  % subsample orientations
-  ebsd(i).orientations = ebsd(i).orientations(ind);
-  
-end
+ebsd = subsref(ebsd,ind);

@@ -21,10 +21,9 @@ function plotpdf(ebsd,h,varargin)
 % Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-[o ind] = get(ebsd,'orientations','CheckPhase',varargin{:});
+o = get(ebsd,'orientations');
 
-varargin = set_option_property(ebsd(ind),varargin{:});
+varargin = set_option_property(ebsd,varargin{:});
 
 plotpdf(o,h,...
   'FigureTitle',[inputname(1) ' (' get(ebsd,'comment') ')'],varargin{:});
-

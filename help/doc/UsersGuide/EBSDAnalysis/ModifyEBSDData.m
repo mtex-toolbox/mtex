@@ -90,8 +90,11 @@ hold off
 % In order to restrict the ebsd data to the polygon we use the command
 % <EBSD.inpolygon.html inpolygon>.
 
-% restrict
-ebsd = inpolygon(ebsd,p)
+% find data within the polygon p
+ind = inpolygon(ebsd,p);
+
+% restrict the data set to these data
+ebsd = ebsd(ind)
 
 % plot
 plot(ebsd)
@@ -113,8 +116,8 @@ hist(mad)
 
 %%
 
-% eliminate all meassurements with MAD larger then one
-ebsd_corrected = delete(ebsd,mad>1)
+% take only those meassurements with MAD smaller then one
+ebsd_corrected = ebsd(mad<1)
 
 %%
 %
@@ -143,9 +146,9 @@ hist(grainSize(grains),50)
 large_grains = grains(grainSize(grains) >= 5)
 
 %%
-% and remove all orientation measurements not belonging to these grains
+% and remove all EBSD measurements not belonging to these grains
 
-ebsd_corrected = link(ebsd_corrected,large_grains)
+ebsd_corrected = ebsd_corrected(large_grains)
 
 plot(ebsd_corrected)
 

@@ -223,7 +223,7 @@ try
     if ~is3d && (page + delta == 2), delta = 2*delta; end
     
     c = getappdata(wzrd,'cs_count');
-    if ((page+delta == 4) && (c < numel(data))) || (( page+delta == 2 - ~is3d) && (c > 1))
+    if ((page+delta == 4) && (c < numel(unique(get(data,'phases'))))) || (( page+delta == 2 - ~is3d) && (c > 1))
         setappdata(wzrd,'cs_count',c+sign(delta));
         delta = 0;
     end

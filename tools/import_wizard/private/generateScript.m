@@ -5,7 +5,7 @@ str = file2cell(fullfile(mtex_path,'templates','import',['load' type 'template.m
 
 %% specify crystal and specimen symmetries
 if isa(data,'EBSD')
-  [cs{1:numel(data)}] = get(data,'CS');
+  cs = get(data,'CSCell');
 else
   cs = {get(data,'CS')};
 end

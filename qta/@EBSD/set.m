@@ -22,32 +22,24 @@ function obj = set(obj,vname,value,varargin)
 %% See also
 % EBSD/get
 
-if any(strcmp(vname,[fields(obj) ; 'CS';  'SS']))
-  for i = 1:numel(obj)
-
-    % is value is a cell spread it over all elements of obj
-    if iscell(value) && length(value) >= length(obj)
-      ivalue = value{i};
-    elseif iscell(value)
-      ivalue = value{1};
-    else
-      ivalue = value;
-    end   
-
-    if any(strcmp(vname,{'CS','SS'}))     
-      obj(i).orientations = set(obj(i).orientations,(vname),ivalue,varargin{:});
-    else
-      obj(i).(vname) = ivalue;
+if any(strcmp(vname,fields(obj)))
+    
+  if strcmp(vname,'CS')
+    value = ensurecell(value);
+    if max(obj.phases) > length(value)
+      error('The number of symmetries specified is less than the largest phase id.')
     end
-   end
-else
-  for k=1:numel(obj)
-    if iscell(value)
-      ivalue = value{k};
-    else
-      ivalue = value;
-    end
-    obj(k).options.(vname) = ivalue;  
   end
+  
+  obj.(vname) = value;
+
+elseif isfield(obj.options,vname)
+  
+  obj.options.(vname) = value;
+  
+else 
+  
+  error('MTEX:error',['Unknown option ' vname]);
+  
 end
 
