@@ -1,25 +1,31 @@
 function ebsd = subsasgn(ebsd,s,b)
 % overloads subsasgn
 
-if isa(b,'ebsd')
+if ~isa(ebsd,'EBSD')
+  ebsd = EBSD;
+  ebsd.CS = b.CS;
+  ebsd.SS = b.SS;
+end
+
+if isa(s,'double') || isa(s,'logical')
   
-  switch s.type
-    case '()'
-      
-      ebsd.options = structfun(@(x) subsasgn(x,s,b.options),ebsd.options,'UniformOutput',false);
-      ebsd.rotations = subsasgn(ebsd.rotations,s,b.phases);
-      ebsd.phases = subsasgn(ebsd.phases,s,b.phases);
-            
-    otherwise
-      error('Wrong indexing. Only ()-indexing is allowed for EBSD!');
+  ss.type = '()'; ss.subs{1} = s;
+  
+  if isempty(b)
+    ebsd.options = structfun(@(x) subsasgn(x,ss,[]),ebsd.options,'UniformOutput',false);
+    ebsd.rotations = subsasgn(ebsd.rotations,ss,[]);
+    ebsd.phases = subsasgn(ebsd.phases,ss,[]);
+  elseif isa(b,'EBSD')
+    ebsd.options = structfun(@(x) subsasgn(x,ss,b.options),ebsd.options,'UniformOutput',false);
+    ebsd.rotations = subsasgn(ebsd.rotations,ss,b.rotations);
+    ebsd.phases = subsasgn(ebsd.phases,ss,b.phases);
+  else
+    error('Right hand side should be of type EBSD.')
   end
-  
-elseif isempty(b)
-  ebsd.options = structfun(@(x) subsasgn(x,s,[]),ebsd.options,'UniformOutput',false);
-  ebsd.rotations = subsasgn(ebsd.rotations,s,[]);
-  ebsd.phases = subsasgn(ebsd.phases,s,[]);
-else
-  
-  error('Value must be of type EBSD!');
-  
+        
+elseif strcmp(s.type,'()')
+
+  ind = subsind(ebsd,s.subs);
+  ebsd = subsasgn(ebsd,ind,b);
+
 end

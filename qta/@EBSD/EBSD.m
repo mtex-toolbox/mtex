@@ -37,7 +37,7 @@ ebsd.rotations = rotations(:);
 ebsd.phases = get_option(varargin,'phases',ones(numel(ebsd.rotations),1));
 
 % take symmetry from orientations
-if isa(varargin{1},'orientation')
+if nargin >= 1 && isa(varargin{1},'orientation')
 
   ebsd.SS = get(varargin{1},'SS');
   ebsd.CS = {get(varargin{1},'CS')};
@@ -52,8 +52,8 @@ else
   end
   
   % set up crystal symmetries
-  if nargin >= 2 && (isa(varargin{2},'symmetry') && isCS(varargin{2}))...
-      || (isa(varargin{2},'cell') && isa(varargin{2}{1},'symmetry'))
+  if nargin >= 2 && ((isa(varargin{2},'symmetry') && isCS(varargin{2}))...
+      || (isa(varargin{2},'cell') && isa(varargin{2}{1},'symmetry')))
     CS = ensurecell(varargin{2});
   else
     CS = ensurecell(get_option(varargin,'CS',{}));
