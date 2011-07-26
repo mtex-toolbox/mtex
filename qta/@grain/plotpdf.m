@@ -1,7 +1,7 @@
 function plotpdf(grains,h,varargin)
 
 
-[o ind] = get(grains,'orientations','CheckPhase',varargin{:});
+o = get(grains,'orientations');
 
 varargin = set_option_property(grains(ind),varargin{:});
 

@@ -34,14 +34,15 @@ function o = orientation(varargin)
 % quaternion_index orientation_index
 
 
-% empty quaternion;
-rot = rotation;
+
 
 %% empty constructor
 if nargin == 0
 
   o.CS = symmetry;
   o.SS = symmetry;
+    
+  rot = rotation;
 
 %% copy constructor
 elseif isa(varargin{1},'orientation')
@@ -55,6 +56,21 @@ elseif isa(varargin{1},'orientation')
   end
   return;
 
+elseif isa(varargin{1},'quaternion') && ~isa(varargin{1},'symmetry')
+  
+  rot = rotation(varargin{1});
+  if nargin >= 2 
+    o.CS = varargin{2};
+  else
+    o.CS = symmetry;
+  end
+  
+  if nargin >= 3
+    o.SS = varargin{3};
+  else
+    o.SS = symmetry;
+  end
+  
 %% determine crystal and specimen symmetry
 else
 

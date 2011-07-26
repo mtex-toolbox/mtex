@@ -23,9 +23,11 @@ elseif ischar(s.subs{1}) || iscell(s.subs{1})
       
   minerals = get(grains,'minerals');
 
-  phases = find(cellfun(@(m) any(strcmpi(min,m)),minerals));
-          
-  ind = ismember([grains.phase],phases);
+  phases = false(1,length(minerals));
+  for i =1:length(min)
+    phases = phases | strncmpi(minerals,min{i},length(min{i}));
+  end             
+  ind = ismember([grains.phase],find(phases));
   
   grains = subsref(grains,ind);
 

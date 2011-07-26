@@ -22,10 +22,11 @@ elseif ischar(s.subs{1}) || iscell(s.subs{1})
   end
       
   minerals = get(ebsd,'minerals');
-
-  phases = find(cellfun(@(m) any(strcmpi(min,m)),minerals));
-          
-  ind = ismember(ebsd.phases,phases);
+  phases = false(1,length(minerals));
+  for i =1:length(min)
+    phases = phases | strncmpi(minerals,min{i},length(min{i}));
+  end     
+  ind = ismember(ebsd.phases,find(phases));
   
   ebsd = subsref(ebsd,ind);
 

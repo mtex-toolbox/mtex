@@ -17,7 +17,7 @@ mtexdata aachen
 % the standard way of plotting EBSD data spatial is based on an inverse
 % polfigure, looking onto the specime we see crystal directions
 
-plotspatial(ebsd,'phase',1)
+plotspatial(ebsd('Fe'))
 
 %%
 
@@ -29,19 +29,19 @@ colorbar(pos{:})
 % *HKL*. 
 % Another inverse Polefigure colorcoding
 
-close all; plotspatial(ebsd,'phase',1,'colorcoding','hkl')
+close all; plotspatial(ebsd('Fe'),'colorcoding','hkl')
 
 %%
 %
 colorbar(pos{:})
 
-odf = calcODF(ebsd,'phase',1,'silent');
+odf = calcODF(ebsd('Fe'),'silent');
 figure, plotipdf(odf,xvector,'antipodal','silent',pos{:})
 
 %%
 % We can change the default view onto the specime (xvector) by setting the option *r*
 
-close all, plotspatial(ebsd,'phase',1,'colorcoding','hkl','r',zvector)
+close all, plotspatial(ebsd('Fe'),'colorcoding','hkl','r',zvector)
 
 %%
 %

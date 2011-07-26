@@ -77,21 +77,21 @@ plotipdf(ebsd('Fe'),xvector,'points',100, 'MarkerSize',3);
 %%
 % In the same way the mean orientations of grains can be visualized
 
-plotipdf(grains,xvector,'phase',1,'points',100, 'MarkerSize',3);
+plotipdf(grains('Fe'),xvector,'points',100, 'MarkerSize',3);
 
 %%
 % Once can also colorize the scatter points by certain [[EBSD.get.html,EBSD
 % properties]] or [[grain.get.html,grain properties]]
 
 close all;
-plotpdf(ebsd('Fe'),[Miller(1,0,0),Miller(1,1,0)],'antipodal','MArkerSize',4,...
+plotpdf(ebsd('Fe'),[Miller(1,0,0),Miller(1,1,0)],'antipodal','MarkerSize',4,...
   'property','mad')
 
 %%
 % or some abitrary data vector
 
 close all;figure('position',[100 100 500 500])
-plotodf(grains,'phase',1,'antipodal','sections',9,'MarkerSize',3,...
+plotodf(grains('Fe'),'antipodal','sections',9,'MarkerSize',3,...
   'property',shapefactor(grains));
 
 %% 

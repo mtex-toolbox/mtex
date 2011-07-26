@@ -15,9 +15,9 @@ if isa(b,'ebsd')
   end
   
 elseif isempty(b)
-      ebsd.options = structfun(@(x) subsasgn(x,s,[]),ebsd.options,'UniformOutput',false);
-      ebsd.rotations = subsasgn(ebsd.rotations,s,[]);
-      ebsd.phases = subsasgn(ebsd.phases,s,[]);
+  ebsd.options = structfun(@(x) subsasgn(x,s,[]),ebsd.options,'UniformOutput',false);
+  ebsd.rotations = subsasgn(ebsd.rotations,s,[]);
+  ebsd.phases = subsasgn(ebsd.phases,s,[]);
 else
   
   error('Value must be of type EBSD!');

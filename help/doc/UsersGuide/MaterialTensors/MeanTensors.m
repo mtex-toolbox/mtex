@@ -33,7 +33,7 @@ MAD_MAXIMUM= 1.3;
 MAD = get(ebsd,'mad');
 
 % eliminate all meassurements with MAD larger than MAD_MAXIMUM
-ebsd = delete(ebsd,MAD>MAD_MAXIMUM)
+ebsd(MAD>MAD_MAXIMUM) = []
 
 %% Define Elastic Stiffness Tensors for Glaucophane and Epidote
 %
@@ -89,13 +89,13 @@ CEpidote = tensor(MEpidote,csEpidote)
 %% 
 % for a single phase the syntax is 
 
-[CVoigtEpidote,CReussEpidote,CHillEpidote] =  calcTensor(ebsd,CEpidote,'phase',2)
+[CVoigtEpidote,CReussEpidote,CHillEpidote] =  calcTensor(ebsd('Epidote'),CEpidote)
 
 
 %% ODF Estimation
 % Next we estimate an ODF for the Epidote phase
 
-odfEpidote = calcODF(ebsd,'phase',2,'halfwidth',10*degree)
+odfEpidote = calcODF(ebsd('Epidote'),'halfwidth',10*degree)
 
 
 %% The Average Tensor from an ODF

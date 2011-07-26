@@ -94,8 +94,8 @@ angles = sparse(sm,sn);
 
 for p = unique(ebsd.phases).'
      
-  o1 = orientation(ebsd.rotations(ix),ebsd.CS{p});
-  o2 = orientation(ebsd.rotations(iy),ebsd.CS{p});
+  o1 = orientation(ebsd.rotations(ix),ebsd.CS{p},ebsd.SS);
+  o2 = orientation(ebsd.rotations(iy),ebsd.CS{p},ebsd.SS);
     
   ind = angle(o1,o2) > thresholds(p);
   
@@ -203,30 +203,35 @@ comment =  ['from ' ebsd.comment];
 
 
 %% compute mean orientations
-orientations = cellfun(@(ind) orientation(ebsd.rotations(ind),ebsd.CS{ebsd.phases(ind(1))},ebsd.SS),id,'uniformOutput',false);
-domean = cellfun('prodofsize',id) > 1;
-orientations(domean) = cellfun(@mean,orientations(domean),'uniformoutput',false);
+%orientations = cellfun(@(ind) orientation(ebsd.rotations(ind),ebsd.CS{ebsd.phases(ind(1))},ebsd.SS),id,'uniformOutput',false);
+%domean = cellfun('prodofsize',id) > 1;
+%orientations(domean) = cellfun(@mean,orientations(domean),'uniformoutput',false);
 
+q = quaternion(ebsd.rotations);
+orientations = cellfun(@(ind) mean_CS(q(ind),...
+  ebsd.CS{ebsd.phases(ind(1))},ebsd.SS),id,'uniformOutput',false);
 
 %% set up grains
-cid = cell(1,nc);
-cchek = cell(1,nc);
-ccom = cell(1,nc);
-cprop = cell(1,nc);
-phase_ebsd = cell(1,nc);
+cid = num2cell(1:nc);            % id
 
-% options to be copied to the grains
+ccom = repmat({comment},1,nc);   % comment
+
+phase_ebsd = cellfun(...         % phase
+  @(i) ebsd.phases(i(1)), id, 'uniformoutput', false);
+
+% grain options
 options = rmfield(ebsd.options,{'x','y','grain_id'});
-  
-for i=1:numel(cchek)
-  
-  cid{i} = i;
-  ccom{i} = comment;
-  cprop{i} = structfun(@(x) mean(x(ids==i)), options,'UniformOutput',false);
-  phase_ebsd{i} = ebsd.phases(id{i}(1));
-  
+fn = fieldnames(options);
+if isempty(fn)
+  cprop = repmat({struct()},1,nc);
+else
+  %oArray = struct2array(options);
+  oArray = struct2cell(options); oArray = [oArray{:}];
+  cprop = arrayfun(@(i) ...
+    cell2struct(num2cell(mean(oArray(ids==i,:),1))',fn),1:nc);
 end
 
+% set up the grain
 gr = struct('id',cid,...
   'cells',id,...
   'neighbour',neigh,...    %       'polygon',[],...
@@ -235,11 +240,9 @@ gr = struct('id',cid,...
   'orientation',orientations,...
   'properties',cprop,...
   'comment',ccom);
-
 grains = grain(gr,ply);
 
-
-
+% verbose output
 if check_mtex_option('debug')
   vdisp(['  grain generation:  '  num2str(toc(s)) ' sec' ],varargin{:});
   vdisp(' ',varargin{:})

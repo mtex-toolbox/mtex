@@ -44,7 +44,7 @@ if nargin>1 && isa(ebsd,'EBSD')
 
 else
   if nargin>1, varargin = [{ebsd} varargin]; end
-  [o ind] = get(grains,'orientation','CheckPhase',varargin{:});
+  o = get(grains,'orientation');
   
   if check_option(varargin,'weight')
     weight = get_option(varargin,'weight',area(grains),'double');

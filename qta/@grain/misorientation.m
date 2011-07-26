@@ -61,7 +61,7 @@ else % misorientation to neighbour grains
   for k=1:length(uphase)
     grains_phase = grains(phase == uphase(k));
 
-    o = get(grains_phase,'orientation','CheckPhase');
+    o = get(grains_phase,'orientation');
         
     if check_option(varargin,'random')
       

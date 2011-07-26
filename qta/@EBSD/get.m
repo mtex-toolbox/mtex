@@ -56,7 +56,7 @@ switch vname
       
     else
 
-      varargout{1} = orientation(obj.rotations,obj.CS{obj.phases(1)});
+      varargout{1} = orientation(obj.rotations,obj.CS{obj.phases(1)},obj.SS);
       
     end
         
