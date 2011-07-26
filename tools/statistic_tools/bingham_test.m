@@ -17,7 +17,7 @@ function [T,p,v] = binham_test(o,varargin)
 test_fun = parseArgs(varargin{:});
 
 if isa(o,'EBSD')
-  o = get(o,'orientations','checkPhase',varargin{:});
+  o = get(o,'orientations');
   if strfind(test_fun,'chat')
     [kappa lambda Tv n] = c_hat(o);
   else

@@ -12,8 +12,8 @@
 
 % specify crystal and specimen symmetry
 CS = {...
-  symmetry('m-3m'),... % crystal symmetry phase 1
-  symmetry('m-3m')};   % crystal symmetry phase 2
+  symmetry('m-3m','mineral','Fe'),... % crystal symmetry phase 1
+  symmetry('m-3m','mineral','Mg')};   % crystal symmetry phase 2
 SS = symmetry('-1');   % specimen symmetry
 
 %% Import ebsd data
@@ -28,7 +28,7 @@ plotx2east
 
 %% Plot Spatial Data
 
-plot(ebsd,'phase',1)
+plot(ebsd('Fe'))
 
 %% Segmentation
 

@@ -35,16 +35,47 @@ ebsd.comment = [];
 ebsd.comment = get_option(varargin,'comment',[]);
 ebsd.rotations = rotations(:);
 ebsd.phases = get_option(varargin,'phases',ones(numel(ebsd.rotations),1));
-ebsd.SS = get_option(varargin,'SS',symmetry);
 
-% set up crystal symmetries
-CS = ensurecell(get_option(varargin,'CS',{}));
-if numel(CS) < max(ebsd.phases),
-  if isempty_cell(CS), CS = symmetry('cubic');end
-  CS = repmat(CS(1),1,max(ebsd.phases));
+% take symmetry from orientations
+if isa(varargin{1},'orientation')
+
+  ebsd.SS = get(varargin{1},'SS');
+  ebsd.CS = {get(varargin{1},'CS')};
+  
+else
+  
+  % specimen symmetry
+  if nargin >= 3 && isa(varargin{3},'symmetry') && ~isCS(varargin{3})
+    ebsd.SS = varargin{3};
+  else
+    ebsd.SS = get_option(varargin,'SS',symmetry);
+  end
+  
+  % set up crystal symmetries
+  if nargin >= 2 && (isa(varargin{2},'symmetry') && isCS(varargin{2}))...
+      || (isa(varargin{2},'cell') && isa(varargin{2}{1},'symmetry'))
+    CS = ensurecell(varargin{2});
+  else
+    CS = ensurecell(get_option(varargin,'CS',{}));
+  end
+
+  % spread crystal symmetries over phases
+  phases = unique(ebsd.phases);
+  if numel(CS) < max(phases)
+    if numel(CS) < numel(phases)
+      if isempty_cell(CS), CS = symmetry('cubic');end
+      CS = repmat(CS(1),1,max(ebsd.phases));
+    else
+      CSS(phases) = CS;
+      CS = CSS;
+    end
+  end
+  ebsd.CS = CS;
+  
 end
 
-ebsd.CS = CS;
+
+
 ebsd.options = get_option(varargin,'options',struct);
 ebsd.unitCell = get_option(varargin,'unitCell',[]);
 

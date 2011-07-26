@@ -15,7 +15,7 @@ function [chat T Tv n] = c_hat(varargin)
 
 
 if isa(varargin{1},'EBSD')
-  varargin{1} = get(varargin{1},'orientations','checkPhase',varargin{:});
+  varargin{1} = get(varargin{1},'orientations');
 end
 
 if isa(varargin{1},'orientation')

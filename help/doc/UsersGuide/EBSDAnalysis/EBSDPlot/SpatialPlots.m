@@ -26,7 +26,7 @@ mtexdata aachen
 % assign a color to each orientation and [[EBSD.plotspatial.html,plots]]
 % a map of these colors.
 
-plot(ebsd,'phase',1)
+plot(ebsd('Fe'))
 
 %%
 % The orientations are mapped to a color, by a
@@ -41,7 +41,7 @@ set(gcf,'Position',[100 100 400 200])
 % it as an option
 
 close all;
-plot(ebsd,'phase',1,'colorcoding','hkl')
+plot(ebsd('Fe'),'colorcoding','hkl')
 
 %%
 %
@@ -54,7 +54,7 @@ set(gcf,'Position',[100 100 230 200])
 % [[grain.plotgrains.html,plotting grains]]
 
 close all;
-plot(grains,'phase',1,'colorcoding','hkl')
+plot(grains('Fe'),'colorcoding','hkl')
 
 %%
 % In order to understand the colorcoding better one can plot the coloring 
@@ -63,7 +63,7 @@ plot(grains,'phase',1,'colorcoding','hkl')
 
 colorbar
 hold on
-plotipdf(grains,xvector,'phase',1,'points',500,...
+plotipdf(grains('Fe'),xvector,'points',500,...
   'markerSize',3,'marker','+','markerfacecolor','k','markeredgecolor','w')
 hold off
 set(gcf,'renderer','opengl')

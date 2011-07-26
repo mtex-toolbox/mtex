@@ -57,7 +57,7 @@ psi = calcKernel(ebsd('Fe'))
 grains = grains(grainSize(grains)>5);
 
 % compute optimal halfwidth from grains
-psi = calcKernel(grains,'phase',1)
+psi = calcKernel(grains('Fe'))
 
 % compute the ODF with the kernel psi
 odf = calcODF(ebsd('Fe'),'kernel',psi)

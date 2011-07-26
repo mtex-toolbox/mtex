@@ -6,7 +6,7 @@ function [TVoigt, TReuss, THill] = calcTensor(ebsd,varargin)
 %    the Voigt--, Reuss-- and Hill-- @tensor, applies each tensor
 %    given in order of input to each phase
 %
-% [TVoigt, TReuss, THill] = calcTensor(ebsd,T_phase2,'phase',2) - returns the Voigt--, 
+% [TVoigt, TReuss, THill] = calcTensor(ebsd('phase2'),T_phase2) - returns the Voigt--, 
 %    Reuss-- and Hill-- @tensor, applies a tensor
 %    on a given phase
 %
@@ -33,29 +33,38 @@ Tind = cellfun(@(t) isa(t,'tensor'),varargin);
 T = varargin(Tind);
 varargin(Tind) = [];
 
-% for Reuss average invert tensor
-Tinv = cellfun(@(t) inv(t),T,'uniformOutput',false);
-
-% get phases
-phases = get_option(varargin,'phase',unique(ebsd.phases));
-
 % initialize avarage tensors
 TVoigt = tensor(zeros(size(T{1})));
 TReuss = tensor(zeros(size(T{1})));
 
+% get phases and populate tensors
+phases = unique(ebsd.phases)';
+if numel(T) < max(phases) 
+  if numel(T) == numel(phases) 
+    TT(phases) = T;
+    T = TT;
+  elseif numel(T) == 1
+    T = repmat(T,numel(phases),1);
+  else
+    error('There are more phases then tensors');
+  end
+end
+
+
+
 % cycle through phases and tensors
-for p = unique(ebsd.phases)'
+for p = phases
   
   % extract orientations and wights
   ind = ebsd.phases == p;
-  ori = get(ebsd(ind),'orientations');    
-  weight = get(ebsd(ind),'weight') * nnz(ind) ./ numel(ebsd);
+  ori = get(subsref(ebsd,ind),'orientations');    
+  weight = get(subsref(ebsd,ind),'weight') * nnz(ind) ./ numel(ebsd);
 
   % take the mean of the rotated tensors times the weight
   TVoigt = TVoigt + sum(weight .* rotate(T{p},ori));
   
   % take the mean of the rotated tensors times the weight
-  TReuss = TReuss + sum(weight .* rotate(Tinv{p},ori));
+  TReuss = TReuss + sum(weight .* rotate(inv(T{p}),ori));
     
 end
 

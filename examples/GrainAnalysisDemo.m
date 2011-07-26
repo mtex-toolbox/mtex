@@ -30,12 +30,14 @@ plot(ebsd,'property','phase')
 
 legend off
 region = polygon([19000 1500; 23000 1500; 23000 3000; 19000 3000; 19000 1500]);
+hold on
 plot(region,'color','k','linewidth',2)
+hold off
 
 %%
 % to which we restrict the data
 
-ebsd_region = ebsd(inpolygon(ebsd,[19000 1500 23000 3000]))
+ebsd_region = ebsd(inpolygon(ebsd,region))
 
 %% Recover grains
 % Next we reconstruct the grains (and grain boundareis in the region of interest
@@ -59,9 +61,9 @@ hold off
 
 figure('position',[100 100 750 300]);
 hold all
-plot(grains,'property','phase','phase',[1 3 4],'FaceAlpha',0.2)
+plot(grains({'Andesina','Biotite','Orthoclase'}),'property','phase','FaceAlpha',0.2)
 plotboundary(grains,'color','black');
-plot(ebsd_region,'phase','Quartz-new','colorcoding','hkl','h',zvector)
+plot(ebsd_region('Quartz-new'),'colorcoding','hkl','h',zvector)
 legend off
 hold off
 % set(gcf,'renderer','zbuffer')
@@ -78,8 +80,8 @@ colorbar('Position',[825 100 300 300])
 
 figure('position',[100 100  750 300]);
 hold all
-plot(grains,'property','phase','phase',[1 3 4],'FaceAlpha',0.2)
-plot(grains,'phase','Quartz-new','colorcoding','hkl')
+plot(grains({'Andesina','Biotite','Orthoclase'}),'property','phase','FaceAlpha',0.2)
+plot(grains('Quartz-new'),'colorcoding','hkl')
 legend off
 hold off
 % set(gcf,'renderer','zbuffer')

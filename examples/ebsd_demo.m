@@ -46,8 +46,8 @@ plotpdf(ebsd('Fe'),h,'points',500,'antipodal')
 % then the ODF (compare plot of ODF1). If the halfwidth is chosen to wide
 % the estimated ODF becomes very smooth (ODF2).
 %
-odf1 = calcODF(ebsd)
-odf2 = calcODF(ebsd,'halfwidth',5*degree)
+odf1 = calcODF(ebsd('Fe'))
+odf2 = calcODF(ebsd('Fe'),'halfwidth',5*degree)
 
 %% Plot pole figures
 
@@ -77,7 +77,7 @@ F2 = Fourier(odf2,'order',4);
 % the help fo the Direchlet kernel. I.e.
 
 dirichlet = kernel('dirichlet',32);
-odf3 = calcODF(ebsd,'kernel',dirichlet);
+odf3 = calcODF(ebsd('Fe'),'kernel',dirichlet);
 F3 = Fourier(odf3,'order',4);
 
 %%
