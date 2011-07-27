@@ -1,11 +1,11 @@
-function obj = set(obj,vname,value,varargin)
+function ebsd = set(ebsd,vname,value,varargin)
 % set object variable to value
 %
 %% Syntax
-%  ebsd = get(ebsd,'vname',value)   - 
+%  ebsd = get(ebsd,'vname',value)   -
 %  ebsd = get(ebsd,'CS',symmetry)   - changes the crystal symmetry
-%  ebsd = get(ebsd,'newfield',value)  - adds |'newfield'| as an EBSD property, e.g. like MAD.. 
-% 
+%  ebsd = get(ebsd,'newfield',value)  - adds |'newfield'| as an EBSD property, e.g. like MAD..
+%
 %% Input
 %  ebsd - @EBSD
 %
@@ -22,24 +22,24 @@ function obj = set(obj,vname,value,varargin)
 %% See also
 % EBSD/get
 
-if any(strcmp(vname,fields(obj)))
-    
+if any(strcmp(vname,fields(ebsd)))
+
   if strcmp(vname,'CS')
     value = ensurecell(value);
-    if max(obj.phases) > length(value)
+    if max(ebsd.phase) > length(value)
       error('The number of symmetries specified is less than the largest phase id.')
     end
   end
-  
-  obj.(vname) = value;
 
-elseif isfield(obj.options,vname)
-  
-  obj.options.(vname) = value;
-  
-else 
-  
+  ebsd.(vname) = value;
+
+elseif isfield(ebsd.options,vname)
+
+  ebsd.options.(vname) = value;
+
+else
+
   error('MTEX:error',['Unknown option ' vname]);
-  
+
 end
 

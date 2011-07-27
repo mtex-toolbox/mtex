@@ -65,7 +65,7 @@ switch_page(gcbf,+1);
 
 
 function prev_callback(varargin)
-  
+
 switch_page(gcbf,-1);
 
 
@@ -83,19 +83,19 @@ if page == 1 && isempty(getappdata(gcbf,'data'))
   data = getappdata(handles.listbox(t),'data');
   if isempty(data)
     errordlg('Nothing to plot! Add files to import first!');
-    return;    
+    return;
   end
 else
   leavecallback = getappdata(handles.pages(page),'leave_callback');
   try
     leavecallback();
-  catch 
+  catch
     errordlg(errortext);
     return
   end
-    
+
   data = getappdata(gcbf,'data');
-  
+
 end
 
 scrsz = get(0,'ScreenSize');
@@ -132,44 +132,44 @@ type = class(data);
 handles = getappdata(gcbf,'handles');
 
 if get(handles.radio_exp(1),'Value')
-  
+
   vname = get(handles.workspace(1),'String');
-  if isempty(vname), 
+  if isempty(vname),
     errordlg('Enter name of workspace variable')
     return; end
-  
+
   switch type
     case 'PoleFigure'
       data = modifypf(gcbf,data);
   end
- 
+
   assignin('base',vname,data);
-  
-  
-  if isempty(javachk('desktop')) 
+
+
+  if isempty(javachk('desktop'))
     disp(' ');
     disp('generated variable: ');
     display(data,'vname',vname);
     disp(' ');
-    
+
     disp(['- <a href="matlab:plot(',vname,',''silent'')">Plot ' type ' Data</a>']);
     switch type
-      case {'EBSD','PoleFigure'}       
+      case {'EBSD','PoleFigure'}
         disp(['- <a href="matlab:odf = calcODF(',vname,')">Calculate ODF</a>']);
     end
     disp(' ');
   end
 
 elseif get(handles.radio_exp(2),'Value')
-  
+
   % extract file names
   fn = arrayfun(@(x) getappdata(x,'filename'),lb,'UniformOutput',false);
-  
+
   if strcmpi(type,'cell')
     data = data{1};
     type = 'tensor';
   end
-  
+
   switch type
     case 'EBSD'
       fl = {fn{5}, lb(5)};
@@ -177,24 +177,24 @@ elseif get(handles.radio_exp(2),'Value')
       %fn(2:3) = [];
       if all(cellfun('isempty',fn(2:end)))
         fn = fn{1};
-      end   
+      end
       fl = {fn, lb(1)};
     case 'ODF'
       fl = {fn{6}, lb(6)};
     case {'tensor'}
       fl = {fn{7}, lb(7)};
-  end  
+  end
    	str = generateScript(type,fl{1},data,getappdata(fl{2},'interface'),...
     getappdata(fl{2},'options'), handles);
-       
-  str = generateCodeString(str);  
-  
+
+  str = generateCodeString(str);
+
   sel = get(handles.template(1),'Value');
   for l = sel(sel <= numel(templates))
     templatestr = file2cell( fullfile(mtex_path,'templates',templates{l}));
     str = [str generateCodeString(templatestr)];
   end
-  
+
   while iscell(fl), fl = fl{1};end
   [pname fname] = fileparts(fl);
   strfname = [ fname '_'  regexprep(templates{l},[type '_(\w+).m'],'$1')];
@@ -213,27 +213,27 @@ page = getappdata(wzrd,'page');
 handles = getappdata(wzrd,'handles');
 
 try
-  
+
   feval( getappdata(handles.pages(page),'leave_callback') );
   handles = getappdata(wzrd,'handles');
-  
-  data = getappdata(wzrd,'data');  
+
+  data = getappdata(wzrd,'data');
   if isa(data,'EBSD')
-    is3d = ~isempty(getappdata(handles.listbox(5),'zvalues'));    
+    is3d = ~isempty(getappdata(handles.listbox(5),'zvalues'));
     if ~is3d && (page + delta == 2), delta = 2*delta; end
-    
+
     c = getappdata(wzrd,'cs_count');
-    if ((page+delta == 4) && (c < numel(unique(get(data,'phases'))))) || (( page+delta == 2 - ~is3d) && (c > 1))
+    if ((page+delta == 4) && (c < numel(get(data,'phases')))) || (( page+delta == 2 - ~is3d) && (c > 1))
         setappdata(wzrd,'cs_count',c+sign(delta));
         delta = 0;
     end
-  end 
-  
+  end
+
   page = page + delta;
-  
+
   feval( getappdata(handles.pages(page),'goto_callback') ) ;
   set_page(wzrd,page);
-  
+
 catch  %#ok<*CTCH>
 %   rethrow(lasterror)
   errordlg(errortext);

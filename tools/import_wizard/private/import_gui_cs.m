@@ -190,10 +190,10 @@ if fname ~= 0
       data = set(data,'CS',cs,'noTrafo');
     end
     setappdata(gcbf,'data',data);
-    get_cs(gcbf);  
+    get_cs(gcbf);
   catch %#ok<CTCH>
-    errordlg(errortext);  
-  end 
+    errordlg(errortext);
+  end
 end
 
 function searchWeb(varargin)
@@ -203,7 +203,7 @@ web('http://www.crystallography.net/search.html','-browser')
 %% ------------ Private Functions ---------------------------------
 
 function get_cs(wzrd)
-% write cs of ebsd / pf to page 
+% write cs of ebsd / pf to page
 
 handles = getappdata(gcf,'handles');
 data = getappdata(gcf,'data');
@@ -214,13 +214,13 @@ end
 
 % set page name
 if isa(data,'EBSD')
-  
+
   ph = unique(get(data,'phases'));
-  
+
   cs_counter = getappdata(gcf,'cs_count');
   CS = get(data,'CSCell');
   phase = ph(cs_counter);
-  cs = CS{phase};  
+  cs = CS{phase};
   pagename = ['Set Crystal Geometry for Phase ' num2str(phase)];
   setappdata(handles.pages(3),'pagename',pagename );
 else
@@ -231,15 +231,15 @@ csname = strmatch(Laue(cs),symmetries);
 set(handles.crystal,'value',csname(1));
 
 % set alignment
-al = [get(cs,'alignment'),{'',''}]; 
+al = [get(cs,'alignment'),{'',''}];
 set(handles.axis_alignment1,'value',find(strcmp(alignments,al{1})));
 set(handles.axis_alignment2,'value',find(strcmp(alignments,al{2})));
 
 % set axes
 [c, angle] = get_axisangel(cs);
- 
-for k=1:3 
-  set(handles.axis{k},'String',c(k)); 
+
+for k=1:3
+  set(handles.axis{k},'String',c(k));
   set(handles.angle{k},'String',angle{k});
 end
 
@@ -267,7 +267,7 @@ data = getappdata(wzrd,'data');
 cs = get(handles.crystal,'Value');
 cs = symmetries(cs);
 cs = strtrim(cs{1}(1:6));
- 
+
 for k=1:3
   axis{k} =  str2double(get(handles.axis{k},'String')); %#ok<AGROW>
   angle{k} =  str2double(get(handles.angle{k},'String')); %#ok<AGROW>
@@ -288,12 +288,12 @@ end
 
 if isa(data,'cell')
   data = cellfun(@(d) set(d,'CS',cs),data,'UniformOutput',false);
-elseif isa(data,'EBSD')  
+elseif isa(data,'EBSD')
   cs_counter = getappdata(gcf,'cs_count');
   CS = get(data,'CSCell');
-  ph = unique(get(data,'phases'));
+  ph = get(data,'phases');
   phase = ph(cs_counter);
-  CS{phase} = cs;   
+  CS{phase} = cs;
   data = set(data,'CS',CS,'noTrafo');
 else
   data = set(data,'CS',cs,'noTrafo');
@@ -313,7 +313,7 @@ else
   fname = fullfile(pathname,[name ext]);
 end
 
-function al = alignments 
+function al = alignments
 
 xyz = {'X','Y','Z'};
 abc = {'a','b','c','a*','b*','c*'};

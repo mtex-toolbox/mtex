@@ -57,7 +57,7 @@ if numel(m) ~= numel(n)
   return
 end
 
-phase = get(ebsd,'phases');
+phase = get(ebsd,'phase');
 [Al,Ar,sz,dz,lz] = spatialdecomposition3d(X,'unitcell',varargin{:});
 clear X n
 Al = m(Al);
@@ -74,16 +74,16 @@ prop = lower(get_option(varargin,'property','angle'));
 regions = false(size(Al));
 omega = false(size(Al));
 for i=1:numel(ebsd)
-  
+
   ind = phase(Al) == ebsd(i).phase & phase(Ar) == ebsd(i).phase;
-  
+
   zll = Al(ind)-rl(i); zrr = Ar(ind)-rl(i);
-  
+
   %   compute distances
   switch prop
     case 'angle'
       o = ebsd(i).orientations;
-      
+
       cind = [uint32(0:1000000:numel(zll)-1) numel(zll)]; % memory
       for k=1:numel(cind)-1
         aind = cind(k)+1:cind(k+1);
@@ -91,14 +91,14 @@ for i=1:numel(ebsd)
         o2 = o(zrr(aind));
         omega(aind+rl(i)) = angle(o1,o2) <= thresholds(i);
       end
-      
+
       clear o1 o2 aind
     otherwise
       p = get(ebsd(i),prop);
       omega = abs( p(zll) - p(zrr) ) <= thresholds(i);
       clear p
   end
-  
+
   regions(ind) = omega(ind);
 end
 clear ind zll zrr omega prop
@@ -134,7 +134,7 @@ else % its voronoi decomposition
 end
 clear sz dz lz
 
-sub = Am*DG & DG;                      % voxels that have a subgrain boundary 
+sub = Am*DG & DG;                      % voxels that have a subgrain boundary
 [i,j] = find( diag(any(sub,2))*double(Am) ); % all adjacence to those
 sub = any(sub(i,:) & sub(j,:),2);      % pairs in a grain
 Aint = sparse(i(sub),j(sub),1,d,d);
@@ -145,8 +145,8 @@ FG_int = Dint*abs(FD)*DG;              % dismisses the orientation of the facet
 
 Aext = Am-Aint;                        % adjacent over grain boundray
 clear Am Dint
-                                    
-[i,j] = find(triu(Aext,1));            
+
+[i,j] = find(triu(Aext,1));
 Dext = diag(any(FD(:,i) & FD(:,j),2)); % select faces that are 'external'
 clear Aext
 
@@ -163,17 +163,17 @@ ply = repmat(p,1,nr);
 
 
 for k = 1:nr
-  
+
   [fe,ig,forient] = find(FG_ext(:,k));
   [vertids,b,face] = unique(VF(fe,:));
-  
+
   ph = p;
   ph.Vertices =  v(vertids,:);
   ph.VertexIds = vertids;
   ph.Faces = reshape(int32(face),[],fd);
   ph.FacetIds = int32(sign(forient).*fe);
   ply(k) = ph;
-  
+
 end
 ply = polytope(ply);
 
@@ -198,22 +198,22 @@ vg = uint32(vg);
 g = uint32(g);
 
 for k = 1:numel(hasSubBoundary)
-  
+
   [fi,ig,forient] = find(FG_int(:,k));
   [vertids,b,face] = unique(VF(fi,:));
-  
+
   ph = p;
   ph.Vertices =  v(vertids,:);
   ph.VertexIds = vertids;
   ph.Faces = reshape(int32(face),[],fd);
   ph.FacetIds = int32(sign(forient).*fi);
-  
+
   vgk = vg(g==k);
   s = ismembc(i,vgk) & ismembc(j,vgk);
-  
+
   frac.pairs = [i(s),j(s)];
   frac.P = polytope(ph); % because of plotting its a polytope
-  
+
   fraction{hasSubBoundary(k)} = frac;
 end
 
@@ -230,11 +230,11 @@ checksumid = [ 'grain_id' dec2hex(checksum)];
 for k=1:numel(ebsd)
   ide = ids(cids(k)+1:cids(k+1));
   ebsd(k).options.(checksumid) = ide(:);
-  
+
   [ide ndx] = sort(ide(:));
   pos = [0 ;find(diff(ide)); numel(ide)];
   aind = ide(pos(1:end-1)+1);
-  
+
   orientations(aind) = ...
     partition(ebsd(k).orientations(ndx),pos);
 end

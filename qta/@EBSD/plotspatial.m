@@ -70,29 +70,29 @@ y = ebsd.options.y;
 
 %% plot property phase
 if strcmp(prop,'phase') && ~check_option(varargin,'FaceColor')
-  
+
   % colormap for phase plot
   cmap = get_mtex_option('PhaseColorMap');
-  
+
   % get all phases
-  phases = unique(ebsd.phases).';
-  
+  phases = unique(ebsd.phase).';
+
   varargin = set_option(varargin,'property','none');
   % plot all phases separately
   washold = ishold;
   hold all;
   for p = phases
-    
+
     faceColor = cmap(1+mod(p-1,length(cmap)),:);
-    plotspatial(subsref(ebsd,ebsd.phases == p),varargin{:},'FaceColor',faceColor);
-    
+    plotspatial(subsref(ebsd,ebsd.phase == p),varargin{:},'FaceColor',faceColor);
+
   end
   if ~washold, hold off;end
-  
+
   % add a legend
   [minerals{1:length(phases)}] = get(ebsd,'mineral');
   legend(minerals);
-  
+
   return
 end
 
@@ -107,24 +107,24 @@ newMTEXplot;
 
 %% rotation axis as 'flow' field
 if any(strcmp(prop,{'flow','axis','axisflow'}))
-  
+
   for i = 1:numel(ebsd)
     %     o = ebsd(i).orientations;
     o = project2FundamentalRegion(ebsd(i).orientations,idquaternion);
-    
+
     a = axis(o);
     b = o*get_option(varargin,{'flow','axisflow'},zvector,'vector3d');
-    
+
     % convert axis as theta,rho
     [s,rot] = polar(a);
     na{i} = s.*exp(rot*1i);
     [s,rot] = polar(b);
     nb{i} = s.*exp(rot*1i);
   end
-  
+
   na = vertcat(na{:});
   nb = vertcat(nb{:});
-  
+
   washold = ishold;
   hold on
   h = [];
@@ -136,13 +136,13 @@ if any(strcmp(prop,{'flow','axis','axisflow'}))
   end
   if ~washold, hold off; end
   optiondraw(h,varargin{:});
-  
-  
+
+
   fixMTEXscreencoordinates('axis'); %due to axis;
   set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
   fixMTEXplot;
-  
-  
+
+
   return
 end
 
@@ -161,9 +161,9 @@ switch prop
     cc = lower(get_option(varargin,'colorcoding','ipdf'));
 
     d = ones(numel(ebsd),3);
-    for p = unique(ebsd.phases).'
+    for p = unique(ebsd.phase).'
       if p == 0, continue;end
-      ind = ebsd.phases == p;
+      ind = ebsd.phase == p;
       o = orientation(ebsd.rotations(ind),ebsd.CS{p},ebsd.SS);
       d(ind,:) = orientation2color(o,cc,varargin{:});
     end
@@ -228,18 +228,18 @@ if ~isempty(candits)
   dist = sqrt( (xp-x(candits)).^2 + (yp-y(candits)).^2);
   [dist ind] = sort(dist);
   candits = candits(ind);
-  
+
   nd = candits(1);
-  
-  phase = ebsd.phases(nd);
+
+  phase = ebsd.phase(nd);
   o = orientation(ebsd.rotations(nd),ebsd.CS{phase},ebsd.SS);
-  
+
   txt = {['Phase: ', num2str(phase), ' ' get(ebsd.CS{phase},'mineral'),'' ], ...
     ['index:' num2str(pos)],...
     char(o)};
-  
+
 else
-  
+
   txt = 'no data';
 end
 
