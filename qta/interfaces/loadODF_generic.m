@@ -125,7 +125,7 @@ if check_option(varargin,'passive rotation'), q = inverse(q); end
  
 % return varargin as options
 options = varargin;
-if ischeck, odf = ODF;return;end
+if ischeck, odf = uniformODF(symmetry,symmetry);return;end
 
 
 % load single orientations
