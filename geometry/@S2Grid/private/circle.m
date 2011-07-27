@@ -8,7 +8,7 @@ if isappr(maxrho-minrho,2*pi)
   
   [dx,dy] = projectData(theta,minrho,varargin{:});
   r = norm([dx,dy]);
-  h = optiondraw(rectangle('Position',[x-r,y-r,2*r,2*r],'Curvature',[1,1]),varargin{:});
+  h = optiondraw(builtin('rectangle','Position',[x-r,y-r,2*r,2*r],'Curvature',[1,1]),varargin{:});
 else
   
   rho = linspace(minrho,maxrho,100);

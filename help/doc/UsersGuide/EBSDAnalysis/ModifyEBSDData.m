@@ -13,7 +13,7 @@ mtexdata aachen;
 
 %% 
 % and plot the raw data
-close all,plot(ebsd)
+plot(ebsd)
 
 %%
 % These data consist of two phases, Iron and Magnesium. In order to to
@@ -71,30 +71,36 @@ close all, plot( ebsd_flip )
 %% Restricting to a region of interest
 % If one is not interested in the whole data set but only in those
 % measurements inside a certain polygon, the restriction can be
-% constructed as follows. Lets start by defining a polygon.
+% constructed as follows. Lets start by defining a rectangle.
 
 
-% the polygon
-p = polygon([120 130; 120 100; 200 100; 200 130; 120 130]);
+% the region
+region = rectangle(120, 100, 200, 130);
 
 % plot the ebsd data
 plot(ebsd)
 
-% plot the polygon on top
+% plot the rectangle on top
 hold on
-plot(p,'color','r','linewidth',2)
+plot(region,'color','r','linewidth',2)
 hold off
 
 
 %%
-% In order to restrict the ebsd data to the polygon we use the command
-% <EBSD.inpolygon.html inpolygon>.
+% In order to restrict the ebsd data to the polygon we may use the command
+% <EBSD.inpolygon.html inpolygon> to find the ebsd inside the region
 
-% find data within the polygon p
-ind = inpolygon(ebsd,p);
+ind = inpolygon(ebsd,region);
 
-% restrict the data set to these data
-ebsd = ebsd(ind)
+%%
+% and use subindexing to restrict the data
+
+ebsd(ind)
+
+%%
+% However, it is much more convinient to use subindexing to restrict the
+% data to the rectangle
+ebsd = ebsd(region)
 
 % plot
 plot(ebsd)
