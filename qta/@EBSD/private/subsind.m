@@ -2,12 +2,7 @@ function ind = subsind(ebsd,subs)
 % subindexing of EBSD data
 %
 
-if isempty(subs)
-  ind = true(1,numel(ebsd));
-else
-  ind = false(1,numel(ebsd));
-end
-
+ind = true(1,numel(ebsd));
 
 for i = 1:length(subs)
 
@@ -20,19 +15,25 @@ for i = 1:length(subs)
     for j =1:length(min)
       phases = phases | strncmpi(minerals,min{j},length(min{j}));
     end
-    ind = ind | phases(ebsd.phase);
+    ind = ind & phases(ebsd.phase);
 
   elseif isa(subs{i},'grain')
 
-    ind = ind | ismember(ebsd.options.grain_id,get(subs{i},'id'))';
+    ind = ind & ismember(ebsd.options.grain_id,get(subs{i},'id'))';
 
   elseif isa(subs{i},'logical')
 
-    ind = subs{i};
+    ind = ind & reshape(subs{i},size(ind));
 
   elseif isnumeric(subs{i})
 
-    ind(subs{i}) = true;
-
+    iind = false(size(ind));
+    iind(subs{i}) = true;
+    ind = ind & iind;
+    
+  elseif isa(subs{i},'polygon')
+    
+    ind = ind & inpolygon(ebsd,subs{i})';
+    
   end
 end
