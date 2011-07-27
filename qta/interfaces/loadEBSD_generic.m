@@ -97,22 +97,22 @@ if istype(names,euler) % Euler angles specified
     
   % assign phases
   if istype(names,{'Phase'})
-    phases = d(:,layoutcol(names,{'Phase'}));
+    phase = d(:,layoutcol(names,{'Phase'}));
     
     % remove phases that should be ignored
     ignorePhase = get_option(varargin,'ignorePhase',0);
     
-    ind = ismember(phases,ignorePhase);
+    ind = ismember(phase,ignorePhase);
     d(ind,:) = [];
-    phases(ind)=[];
+    phase(ind)=[];
     
   else
-    phases = ones(size(d,1),1);
+    phase = ones(size(d,1),1);
   end
 
-  if max(phases)>40
+  if max(phase)>40
     warning('MTEX:tomanyphases','Found more then 20 phases. I''m going to ignore them.');
-    phases = ones(size(d,1),1);
+    phase = ones(size(d,1),1);
   end
 
   
@@ -174,7 +174,7 @@ end
 options = varargin;
 
 % set up EBSD variable
-ebsd = EBSD(q,varargin{:},'phases',phases,'options',opt);
+ebsd = EBSD(q,varargin{:},'phase',phase,'options',opt);
 
 
 function str = stripws(str)

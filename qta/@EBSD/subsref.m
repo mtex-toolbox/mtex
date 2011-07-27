@@ -8,11 +8,11 @@ function ebsd = subsref(ebsd,s)
 %
 
 if isa(s,'double') || isa(s,'logical')
-  
+
   ebsd.options = structfun(@(x) x(s),ebsd.options,'UniformOutput',false);
   ebsd.rotations = ebsd.rotations(s);
-  ebsd.phases = ebsd.phases(s);
-        
+  ebsd.phase = ebsd.phase(s);
+
 elseif strcmp(s.type,'()')
 
   ind = subsind(ebsd,s.subs);
@@ -21,4 +21,4 @@ elseif strcmp(s.type,'()')
 end
 
 
-  
+

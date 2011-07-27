@@ -84,28 +84,28 @@ end
 
 %% disconnect by phase
 
-phases = sparse(ix,iy,ebsd.phases(ix) ~= ebsd.phases(iy),sm,sn);
-phases = xor(phases,distance);
-[ix iy]= find(phases);
+phase = sparse(ix,iy,ebsd.phase(ix) ~= ebsd.phase(iy),sm,sn);
+phase = xor(phase,distance);
+[ix iy]= find(phase);
 
 %% disconnect by missorientation
 
 angles = sparse(sm,sn);
 
-for p = unique(ebsd.phases).'
-     
+for p = unique(ebsd.phase).'
+
   o1 = orientation(ebsd.rotations(ix),ebsd.CS{p},ebsd.SS);
   o2 = orientation(ebsd.rotations(iy),ebsd.CS{p},ebsd.SS);
-    
+
   ind = angle(o1,o2) > thresholds(p);
-  
+
   angles = angles + sparse(ix(ind),iy(ind),1,sm,sn);
 end
 
 % disconnect regions
-regions = xor(angles,phases);
+regions = xor(angles,phase);
 
-clear angles phases
+clear angles phase
 
 
 %% convert to tree graph
@@ -133,27 +133,27 @@ fract = cell(1,max(ids));
 if ~isempty(iy)
   pos = [0; find(diff(iy)); numel(iy)];
   p = struct(polytope);
-  
+
   for l=1:numel(pos)-1
     ndx = pos(l)+1:pos(l+1);
-    
+
     sx = ix(ndx);
     [lx ly] = find(T2(sx,sx));
     E = createSubBoundary(cells(sx(lx)),cells(sx(ly)));
-    
+
     ply = repmat(p,1,numel(E));
-    
+
     for k=1:numel(E)
       ply(k).Vertices = vert(E{k},:);
       ply(k).VertexIds = E{k};
     end
-    
+
     % m([sx(lx) sx(ly)])
     frac.pairs = ([sx(lx) sx(ly)]);
     frac.P = polytope(ply);
     fract{iy(ndx(1))} = frac;
   end
-  
+
 end
 
 %clean up
@@ -203,13 +203,13 @@ comment =  ['from ' ebsd.comment];
 
 
 %% compute mean orientations
-%orientations = cellfun(@(ind) orientation(ebsd.rotations(ind),ebsd.CS{ebsd.phases(ind(1))},ebsd.SS),id,'uniformOutput',false);
+%orientations = cellfun(@(ind) orientation(ebsd.rotations(ind),ebsd.CS{ebsd.phase(ind(1))},ebsd.SS),id,'uniformOutput',false);
 %domean = cellfun('prodofsize',id) > 1;
 %orientations(domean) = cellfun(@mean,orientations(domean),'uniformoutput',false);
 
 q = quaternion(ebsd.rotations);
 orientations = cellfun(@(ind) mean_CS(q(ind),...
-  ebsd.CS{ebsd.phases(ind(1))},ebsd.SS),id,'uniformOutput',false);
+  ebsd.CS{ebsd.phase(ind(1))},ebsd.SS),id,'uniformOutput',false);
 
 %% set up grains
 cid = num2cell(1:nc);            % id
@@ -217,7 +217,7 @@ cid = num2cell(1:nc);            % id
 ccom = repmat({comment},1,nc);   % comment
 
 phase_ebsd = cellfun(...         % phase
-  @(i) ebsd.phases(i(1)), id, 'uniformoutput', false);
+  @(i) ebsd.phase(i(1)), id, 'uniformoutput', false);
 
 % grain options
 options = rmfield(ebsd.options,{'x','y','grain_id'});
@@ -286,24 +286,24 @@ ccl = [ 0 ;cumsum(cl)];
 if ~check_option(varargin,'unitcell')
   %sort everything clockwise
   parts = [0:10000:numel(c)-1 numel(c)];
-  
+
   f = false(size(c));
   for l=1:numel(parts)-1
     ind = parts(l)+1:parts(l+1);
     cv = v( il( ccl(ind(1))+1:ccl(ind(end)+1) ),:);
-    
+
     r = diff(cv);
     r = r(1:end-1,1).*r(2:end,2)-r(2:end,1).*r(1:end-1,2);
     r = r > 0;
-    
+
     f( ind ) = r( ccl(ind)+1-ccl(ind(1)) );
   end
-  
+
   for i=1:length(c)
     jl(ccl(i)+1:ccl(i+1)) = i;
     if f(i), l = c{i}; c{i} = l(end:-1:1); end
   end
-  
+
   clear cv parts ind r f cl
 else
   for i=1:length(c)
@@ -330,12 +330,12 @@ E = {};
 for k=1:size(left,1)
   el = left{k};
   edge = el(ismembc(el,sort(right{k})));
-  
+
   first = cellfun(@(x) x(1),E(:));
   last = cellfun(@(x) x(end),E(:));
-  
+
   a = [first == edge(2) last == edge(2) last == edge(1) first == edge(1)];
-  
+
   if any(a(:))
     [i,type] = find(a,1,'first');
     switch type
@@ -384,7 +384,7 @@ f = (gl+gr).*gl.*gr; % try to make unique linel ids
 rid = [0;cc(cr+1)];
 for k=1:nr
   sel = rid(k)+1:rid(k+1);
-  
+
   if cr1(k)>1
     ft = f(sel); % erase double edges
     [ft nd] = sort(ft);
@@ -393,47 +393,47 @@ for k=1:nr
     sel = sel(nd);
     gll = gl(sel);
     grr = gr(sel);
-    
+
     border = convert2border(gll, grr);
-    
+
     psz = numel(border);
     if psz == 1
-      
+
       v = border{1};
       xy = verts(v,:);
       ply(k).Vertices = xy;
       ply(k).VertexIds = v;
       ply(k).Envelope = envelope(xy);
-      
+
     else
-      
+
       hply = repmat(p,1,psz);
-      
+
       for l=1:psz
-        
+
         v = border{l};
         xy = verts(v,:);
         hply(l).Vertices = xy;
         hply(l).VertexIds = v;
         hply(l).Envelope = envelope(xy);
-        
+
       end
-      
+
       hply = polytope(hply);
       [ig ndx] = sort(area(hply),'descend');
       ply(k) = hply(ndx(1));
       ply(k).Holes = hply(ndx(2:end));
-      
+
     end
   else
-    
+
     v = gl(sel);
     v(end+1) = v(1);
     xy = verts(v,:);
     ply(k).Vertices = xy;
     ply(k).VertexIds = v;
     ply(k).Envelope = envelope(xy);
-    
+
   end
 end
 ply = polytope(ply);
@@ -465,7 +465,7 @@ lp = 1;
 
 while true
   np = sb(v(lp));
-  
+
   if np > 0
     v(l) = np;
     sb(v(lp)) = -1;
@@ -478,7 +478,7 @@ while true
       v(l) = n(1);
     end
   end
-  
+
   lp = l;
   l=l+1;
 end

@@ -14,8 +14,8 @@ function psi = calcKernel(ebsd,varargin)
 % EBSD/calcODF EBSD/BCV EBSD/KLCV EBSD/LSCV
 
 % ensure single phase
-if numel(unique(ebsd.phases)) > 1
-      
+if numel(unique(ebsd.phase)) > 1
+
   error('MTEX:MultiplePhases',['This operatorion is only permitted for a single phase!' ...
     'See ' doclink('xx','xx')  ...
     ' for how to restrict EBSD data to a single phase.']);
@@ -46,9 +46,9 @@ end
 
 method = get_option(varargin,'method','KLCV');
 switch method
-  
+
   case 'RuleOfThumb'
-    
+
     % compute resolution of the orientations
     ori = get(ebsd,'orientations');
     if numel(ori) == 0
@@ -58,28 +58,28 @@ switch method
       d(d<0.005) = pi;
       res = quantile(min(d,[],2),0.9);
     end
-  
+
     hw = max((res * 3)/2,2*degree);
-    psi = kernel('de la Vallee Poussin','halfwidth',hw);    
+    psi = kernel('de la Vallee Poussin','halfwidth',hw);
     psi = kernel('de la Vallee Poussin',fak*get(psi,'kappa'));
-    
+
     return
   case 'LSCV'
-    
+
     c = -LSCV(ebsd,psi);
-    
+
   case 'KLCV'
-    
+
     c = KLCV(ebsd,psi);
-    
+
   case 'BCV'
-    
+
     c = -BCV(ebsd,psi);
-    
+
   otherwise
-    
+
     error('Unknown kernel selection method.');
-    
+
 end
 
 [cc,i] = max(c);
