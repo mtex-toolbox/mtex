@@ -18,7 +18,7 @@ function pf = loadPoleFigure_xrd(fname,varargin)
 rhoStartToken = {'*MEAS_SCAN_START "','*START		=  '};
 rhoStepToken = {'*MEAS_SCAN_STEP "','*STEP		=  '};
 rhoStopToken = {'*MEAS_SCAN_STOP "','*STOP		=  '};
-thetaToken = {'*MEAS_3DE_ALPHA_ANGLE "','*PF_AANGLE	='};
+thetaToken = {'*MEAS_3DE_ALPHA_ANGLE "','*PF_AANGLE	=  '};
 
 %% read header
 
