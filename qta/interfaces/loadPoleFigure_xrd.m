@@ -2,46 +2,64 @@ function pf = loadPoleFigure_xrd(fname,varargin)
 % import data fom aachen xrd file
 %
 %% Syntax
-% pf = loadPoleFigure_aachen_exp(fname,<options>)
+% pf = loadPoleFigure_xrd(fname,<options>)
 %
 %% Input
 %  fname  - filename
 %
 %% Output
-%  pf - vector of @PoleFigure
+%  pf - @PoleFigure
 %
 %% See also
-% ImportPoleFigureData loadPoleFigure_aachen loadPoleFigure
+% ImportPoleFigureData loadPoleFigure
 
 
+%% 
+rhoStartToken = {'*MEAS_SCAN_START "','*START		=  '};
+rhoStepToken = {'*MEAS_SCAN_STEP "','*STEP		=  '};
+rhoStopToken = {'*MEAS_SCAN_STOP "','*STOP		=  '};
+thetaToken = {'*MEAS_3DE_ALPHA_ANGLE "','*PF_AANGLE	='};
 
 %% read header
 
-h = file2cell(fname,1000);
+h = file2cell(fname);
 
-%search data for pole angles
+% look through different versions of the xrd format
+for i = 1:length(rhoStartToken)
+  
+  try
+    %search data for pole angles
+    rhoStart = readToken(h,rhoStartToken{i});
+    rhoStep = readToken(h,rhoStepToken{i});
+    rhoStop = readToken(h,rhoStopToken{i});
+    rho = (rhoStart(1):rhoStep(1):rhoStop(1))*degree;
+    theta = pi/2-readToken(h,thetaToken{i})*degree;
 
-rhoStart = readToken(h,'*MEAS_SCAN_START "');
-rhoStep = readToken(h,'*MEAS_SCAN_STEP "');
-rhoStop = readToken(h,'*MEAS_SCAN_STOP "');
+    r = S2Grid('regular','theta',theta,'rho',rho);
+  catch %#ok<CTCH>
+    continue
+  end
+  
+  if ~isempty(r), break;end
+end
 
-rho = (rhoStart:rhoStep:rhoStop)*degree;
-
-thetaStart = readToken(h,'*MEAS_3DE_ALPHA_START "');
-thetaStep = readToken(h,'*MEAS_3DE_ALPHA_STEP "');
-thetaStop = readToken(h,'*MEAS_3DE_ALPHA_STOP "');
-
-theta = (thetaStart:thetaStep:thetaStop)*degree;
-
-r = S2Grid('regular','theta',theta,'rho',rho);
-
+  
+assert(numel(r)>0);
 h = string2Miller(fname);
 
 %% read data
 
 fid = efopen(fname);
 
-d = textscan(fid,'%n %n %n','CommentStyle','*');
+d = cell2mat(textscan(fid,'%n','CommentStyle','*','Whitespace',' \n,',...
+  'MultipleDelimsAsOne',true));
+
+% if there are more then one value per direction take the second one 
+if numel(d) > numel(r)
+  
+  d = d(2:3:end);
+  
+end
 
 fclose(fid);
 
@@ -50,10 +68,14 @@ fclose(fid);
 cs = symmetry('cubic');
 ss = symmetry('-1');
 
-pf = PoleFigure(h,r,d{2},cs,ss);
+pf = PoleFigure(h,r,d,cs,ss);
 
 
 function value = readToken(str,token)
 
-l = strmatch(token,str);
-value = sscanf(str{l(1)},[token '%f']);
+l = strncmp(token,str,length(token));
+
+value = [];
+for k = find(l)
+  value = [value,sscanf(str{k},[token '%f'])]; %#ok<*AGROW>
+end
