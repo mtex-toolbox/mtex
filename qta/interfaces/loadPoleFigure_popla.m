@@ -54,15 +54,16 @@ while ~feof(fid)
     % TODO there are some data files that have 18 and some that have 19
     % colums - make interface working for those!
     d = [];
-    while length(d) < numel(r)
-      l = fgetl(fid);
+    l = fgetl(fid);
+    while ~isempty(l) %length(d) < numel(r)
       l = l(end-fix(numel(l)/4)*4+1:end);
       dd = str2num(reshape(l,4,[])');
-      d = [d;dd(1:18)]; 
+      d = [d;dd(1:18)];
+      l = fgetl(fid);
     end
 
     % restrict data to specified domain
-    d = reshape(d,size(r,1),[]);
+    d = reshape(d(1:numel(r)),size(r,1),[]);
     d = d(:,1:size(r,2));
 
     % generate Polefigure
