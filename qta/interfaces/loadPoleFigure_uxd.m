@@ -48,11 +48,17 @@ while ~feof(fid)
   % get specimen directions
   theta = str2double(readfield(header,'KHI'))*degree;
   assert(theta>=0 && theta<=90*degree);
-  rho = data{1}*degree;
-  r = [r;vector3d('polar',theta,rho)]; %#ok<AGROW>
-  
+    
   % append data
-  d = [d;data{2}]; %#ok<AGROW>
+  if all(isnan(data{2}))
+    d = [d;data{1}]; %#ok<AGROW>
+    rho = linspace(0,2*pi,numel(data{1})+1).';
+    rho(end)=[];
+  else
+    d = [d;data{2}]; %#ok<AGROW>
+    rho = data{1}*degree;    
+  end
+  r = [r;vector3d('polar',theta,rho)]; %#ok<AGROW>
     
 end
   
