@@ -34,22 +34,18 @@ if numel(thresholds) == 1 && numel(ebsd) > 1
   thresholds = repmat(thresholds,size(ebsd));
 end
 
+%l = sampleSize(ebsd);
+%rl = [ 0 cumsum(l)];
 
-l = sampleSize(ebsd);
-rl = [ 0 cumsum(l)];
-
-
-X = vertcat(ebsd.X);
+X = [ebsd.options.x,ebsd.options.y,ebsd.options.z];
 
 if isempty(X), error('no spatial data');end
 
 % sort for voronoi
-[Xt m n]  = unique(X(:,[3 2 1]),'first','rows');
+[Xt m n]  = unique(X(:,[3 2 1]),'first','rows'); %#ok<ASGLU>
 clear Xt
 
-X = X(m,:);
-d = size(X,1);                % number of cells
-
+% check for duplicated data points
 if numel(m) ~= numel(n)
   warning('mtex:GrainGeneration','spatially duplicated data points, perceed by erasing them')
   ind = ~ismember(1:sum(sampleSize(ebsd)),m);
@@ -57,60 +53,54 @@ if numel(m) ~= numel(n)
   return
 end
 
-phase = get(ebsd,'phase');
+% sort X
+X = X(m,:);
+
+% sort ebsd accordingly
+ebsd = subsref(ebsd,m);
+
+d = size(X,1);                % number of cells
+
+% decompose into unit cells
 [Al,Ar,sz,dz,lz] = spatialdecomposition3d(X,'unitcell',varargin{:});
-clear X n
-Al = m(Al);
-Ar = m(Ar);
-
-clear m
-
+clear X n m
 
 
 %%
 
-prop = lower(get_option(varargin,'property','angle'));
-
 regions = false(size(Al));
 omega = false(size(Al));
-for i=1:numel(ebsd)
 
-  ind = phase(Al) == ebsd(i).phase & phase(Ar) == ebsd(i).phase;
+phase = ebsd.phase;
 
-  zll = Al(ind)-rl(i); zrr = Ar(ind)-rl(i);
+for p = unique(phase).'
 
-  %   compute distances
-  switch prop
-    case 'angle'
-      o = ebsd(i).orientations;
+  ind = phase(Al) == p & phase(Ar) == p;
 
-      cind = [uint32(0:1000000:numel(zll)-1) numel(zll)]; % memory
-      for k=1:numel(cind)-1
-        aind = cind(k)+1:cind(k+1);
-        o1 = o(zll(aind));
-        o2 = o(zrr(aind));
-        omega(aind+rl(i)) = angle(o1,o2) <= thresholds(i);
-      end
-
-      clear o1 o2 aind
-    otherwise
-      p = get(ebsd(i),prop);
-      omega = abs( p(zll) - p(zrr) ) <= thresholds(i);
-      clear p
+  cind = [uint32(0:1000000:sum(ind)-1) sum(ind)]; % memory
+  for k=1:numel(cind)-1
+    aind = ind & cumsum(ind) > cind(k) & cumsum(ind) <= cind(k+1);
+    
+    o1 = orientation(ebsd.rotations(Al(aind)),ebsd.CS{p},ebsd.SS);
+    o2 = orientation(ebsd.rotations(Ar(aind)),ebsd.CS{p},ebsd.SS);
+    
+    omega(aind) = angle(o1,o2) <= thresholds(p);
   end
-
+  
+  clear o1 o2 aind
+  
   regions(ind) = omega(ind);
+  
 end
 clear ind zll zrr omega prop
 
 
-
 % adjacency of cells that have no common boundary
-Ap = sparse(Al(regions),Ar(regions),true,d,d);
+Ap = sparse(double(Al(regions)),double(Ar(regions)),true,d,d);
 ids = graph2ids(Ap | Ap');
 clear Ap
 % adjacency of cells that have a boundary
-Am = sparse(Al(~regions),Ar(~regions),true,d,d);
+Am = sparse(double(Al(~regions)),double(Ar(~regions)),true,d,d);
 Am = Am | Am';
 clear Al Ar regions
 
@@ -224,22 +214,9 @@ clear VF v FG_int vertids face fi pls ph ...
 %% conversion to cells
 
 %store grain id's into ebsd option field
-cids =  [0 cumsum(sampleSize(ebsd))];
-checksum =  fix(rand(1)*16^8); %randi(16^8);
-checksumid = [ 'grain_id' dec2hex(checksum)];
-for k=1:numel(ebsd)
-  ide = ids(cids(k)+1:cids(k+1));
-  ebsd(k).options.(checksumid) = ide(:);
+ebsd.options.grain_id = ids;
 
-  [ide ndx] = sort(ide(:));
-  pos = [0 ;find(diff(ide)); numel(ide)];
-  aind = ide(pos(1:end-1)+1);
-
-  orientations(aind) = ...
-    partition(ebsd(k).orientations(ndx),pos);
-end
-
-clear aind cids ide checksumid ndx
+clear cids  ndx
 
 % cell ids
 [ix iy] = sort(ids);
@@ -249,9 +226,10 @@ for l=1:numel(pos)-1
   id{l} = iy(pos(l)+1:pos(l+1));
 end
 
-domean = cellfun('prodofsize',id) > 1;
-orientations(domean) = cellfun(@mean,orientations(domean),'uniformoutput',false);
-
+% compute mean orientations
+q = quaternion(ebsd.rotations);
+orientations = cellfun(@(ind) mean_CS(q(ind),...
+  ebsd.CS{ebsd.phase(ind(1))},ebsd.SS),id,'uniformOutput',false);
 
 nc = length(id);
 
@@ -283,7 +261,6 @@ phase_ebsd = cell(1,nc);
 tstruc = struct;
 for i=1:numel(cchek)
   cid{i} = i;
-  cchek{i} = checksum;
   ccom{i} = comment;
   cprop{i} = tstruc;
   phase_ebsd{i} = phase(id{i}(1));

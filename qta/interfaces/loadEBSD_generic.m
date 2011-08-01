@@ -100,7 +100,7 @@ if istype(names,euler) % Euler angles specified
     phase = d(:,layoutcol(names,{'Phase'}));
     
     % remove phases that should be ignored
-    ignorePhase = get_option(varargin,'ignorePhase',0);
+    ignorePhase = get_option(varargin,'ignorePhase',[]);
     
     ind = ismember(phase,ignorePhase);
     d(ind,:) = [];

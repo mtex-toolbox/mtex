@@ -11,6 +11,12 @@ function unitCell = calcUnitCell(xy,varargin)
 %
 % GridType - [automatic, hexagonal, rectangular]
 
+% nothing to do -> skip
+if isempty(xy)
+  unitCell = [];
+  return;
+end
+
 % remove dublicates from the coordinates
 xy = unique(xy,'first','rows');
 

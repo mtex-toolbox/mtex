@@ -107,11 +107,9 @@ idata = cellfun('prodofsize',data);
 if strcmpi(type,'EBSD') && check_option(varargin,'3d')
   Z = get_option(varargin,'3d',1:numel(data),'double');
   for k=1:numel(data)
-    xy = get(data{k},'X');
-    xy(:,3) = Z(k);
-    data{k} = set(data{k},'X',xy);
+    data{k} = set(data{k},'z',repmat(Z(k),numel(data{k}),1)); %#ok<AGROW>
   end
-  data = union(data{:});
+  data = [data{:}];
 end
 
 

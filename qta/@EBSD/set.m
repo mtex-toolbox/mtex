@@ -38,8 +38,8 @@ elseif isfield(ebsd.options,vname)
   ebsd.options.(vname) = value;
 
 else
-
-  error('MTEX:error',['Unknown option ' vname]);
-
+  
+  ebsd.options.(vname) = value;
+  
 end
 

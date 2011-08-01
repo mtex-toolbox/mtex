@@ -36,6 +36,9 @@ ebsd.comment = get_option(varargin,'comment',[]);
 ebsd.rotations = rotations(:);
 ebsd.phase = get_option(varargin,'phase',ones(numel(ebsd.rotations),1));
 
+% if all phases are zero replace them by 1
+if all(ebsd.phase == 0), ebsd.phase = ones(numel(ebsd.rotations),1);end
+
 % take symmetry from orientations
 if nargin >= 1 && isa(varargin{1},'orientation')
 
