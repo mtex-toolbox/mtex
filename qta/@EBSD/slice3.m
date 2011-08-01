@@ -24,7 +24,7 @@ varargin = set_default_option(varargin,...
 d = colorcode(ebsd,varargin{:});
 
 % setup slicing planes
-X = get(ebsd,'X');
+X = [ebsd.options.x(:),ebsd.options.y(:),ebsd.options.z(:)];
 
 if ~issorted(X(:,[3 2 1]),'rows')
   [xt,m] = unique(X(:,[3 2 1]),'first','rows');
@@ -209,11 +209,18 @@ end;
 switch prop
   case 'user'
   case 'orientation'
+
     cc = lower(get_option(varargin,'colorcoding','ipdf'));
-    d = [];
-    for i = 1:length(ebsd)
-      d = [d;orientation2color(ebsd(i).orientations,cc,varargin{:})];
+    
+    d = ones(numel(ebsd),3);
+    for p = unique(ebsd.phase).'
+      if p == 0, continue;end
+      ind = ebsd.phase == p;
+      o = orientation(ebsd.rotations(ind),ebsd.CS{p},ebsd.SS);
+      d(ind,:) = orientation2color(o,cc,varargin{:});
     end
+    
+    
   case 'angle'
     d = [];
     for i = 1:length(ebsd)
