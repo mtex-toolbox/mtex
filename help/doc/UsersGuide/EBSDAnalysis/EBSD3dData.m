@@ -71,7 +71,7 @@ diameter(grains(906))
 %%
 % average misorientation angle on subgrain boundary
 
-subBoundaryAngle(grains(906),ebsd)/degree
+%subBoundaryAngle(grains(906),ebsd)/degree
 
 
 %% Visualize the 3d Grains
@@ -134,8 +134,8 @@ hold on,
 plotSubBoundary(smooth_grains(906),...
   'FaceColor','c','BoundaryColor','r','EdgeColor','k')
 
-slice3( misorientation(grains,ebsd),'y',1.25,'property','angle',...
-  'FaceAlpha',0.7)
+%slice3( misorientation(grains,ebsd),'y',1.25,'property','angle',...
+%  'FaceAlpha',0.7)
 
 view([35 15])
 
