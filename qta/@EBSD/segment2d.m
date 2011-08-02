@@ -242,6 +242,9 @@ gr = struct('id',cid,...
   'comment',ccom);
 grains = grain(gr,ply);
 
+% compute mis2mean
+ebsd = calcMis2Mean(ebsd,grains);
+
 % verbose output
 if check_mtex_option('debug')
   vdisp(['  grain generation:  '  num2str(toc(s)) ' sec' ],varargin{:});

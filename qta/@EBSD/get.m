@@ -60,6 +60,25 @@ switch vname
 
     end
 
+  case 'mis2mean'
+    
+    % check only a single phase is involved
+    if numel(unique(ebsd.phase)) > 1
+
+      error('MTEX:MultiplePhases',['This operatorion is only permitted for a single phase!' ...
+        'See ' doclink('xx','xx')  ...
+        ' for how to restrict EBSD data to a single phase.']);
+
+    elseif numel(ebsd.phase) == 0
+
+      varargout{1} = [];
+
+    else
+
+      varargout{1} = orientation(ebsd.options.mis2mean,ebsd.CS{ebsd.phase(1)},ebsd.CS{ebsd.phase(1)});
+
+    end
+    
   case 'phases'
 
     varargout{1} = unique(ebsd.phase)';
