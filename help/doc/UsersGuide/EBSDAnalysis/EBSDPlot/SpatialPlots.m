@@ -75,7 +75,7 @@ set(gcf,'renderer','opengl')
 % [[grain.plotboundary.html,plotboundary]] command.
 
 close all
-plotboundary(grains)
+plot(grains,'boundary')
 
 %%
 % The *hold on* and  *hold off* command allows us to plot various
@@ -117,11 +117,9 @@ close all
 plot(ebsd,'property','bc')
 
 %%
-% also modelled grains could be colored according to a property, by
-% [[grain.copyProperty.html,copying]] it form the corresponding EBSD
-% object.
+% the reconstructed grains contain the same properties as the initial EBSD
+% data and hence can be colored accordingly
 
-grains = copyproperty(grains,ebsd)
 plot(grains,'property','bc')
 
 %%
