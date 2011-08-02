@@ -1,53 +1,64 @@
 function d = dot(o1,o2)
 % compute minimum dot(o1,o2) modulo symmetry
 
+q1 = quaternion(o1);
+q2 = quaternion(o2);
 
-%% special cases
-
-if numel(o1) == 1
-  d = reshape(dot_outer(o1,o2),size(o2));
-  return
-elseif numel(o2) == 1
-  d = reshape(dot_outer(o1,o2),size(o1));
-  return
-end
-
-
-%% get symmetries
-if isa(o1,'orientation')
-  domega = rotangle_max_z(o1.CS);
-  qcs = quaternion(rotation_special(o1.CS));
-  qss = quaternion(o1.SS);
+if ~isa(o2,'orientation') % only one input associated with symmetry
+  
+  qcs = o1.CS;
+  qss = o1.SS;  
+  
+elseif ~isa(o1,'orientation')
+  
+  qcs = o2.CS;
+  qss = o2.SS; 
+  
 else
-  domega = rotangle_max_z(o2.CS);
-  qcs = quaternion(rotation_special(o2.CS));
-  qss = quaternion(o2.SS);
-end
-omega = 0:domega:2*pi-domega;
-
-
-%% no specimen symmetry
-d = dot_angle(o1,o2,omega);
-for i = 2:length(qcs)
-  ind = d < cos(domega/6);
-  if ~any(ind), break;end
-  d(ind) = max(d(ind),dot_angle(quaternion(o1,ind) * qcs(i),subsref(o2,ind),omega));
-end
-
-%% with specimen symmetry
-if length(qss) > 1
   
-  for j = 2:length(qss)
-
-    sq1 = qss(j) * quaternion(o1);
-    sdot = dot_angle(sq1,o2,omega);
-
-    for i = 2:length(qcs)
-      ind = sdot < cos(domega/6);
-      if ~any(ind), break;end
-      sdot(ind) = max(sdot(ind),dot_angle(sq1(ind)*qcs(i),subsref(o2,ind),omega));
-    end
-  
-    d = max(d,sdot);
+  if o1.SS ~= o2.SS  % check specimen symmetry
+    warning('MTEX:wrongSpecimenSymmetry','orientations have different specimen symmetry - check your sample!')
+    qss = (o1.SS'*o2.SS);
+    qss = unique(qss(:));
+  else
+    qss = o1.SS;
   end
+
+  if o1.CS ~= o2.CS % check crystal symmetry
+    qcs = (o1.CS'*o2.CS);
+    qcs = unique(qcs(:));
+  else
+    qcs = o1.CS;
+  end
+  
+end
+
+
+if numel(qss) == 1  % no specimen symmetry
+  
+  q = q1(:)'.*q2(:);
+  
+else % specimen symmetry 
+  
+  q = repmat(idquaternion,numel(qss),1)*q1';
+  q = q.*(qss*q2);
+  
+end
+
+
+if numel(qcs) == 1 % no crystal symmetry
+  
+  d = abs(get(q,'a'));
+  
+else  % crystal symmetry
+  
+  d = max(abs(dot_outer(q,qcs)),[],2);
+  
+end
+
+
+if numel(qss) > 1 % if there was specimen symmetry
+  
+  d = max(reshape(d,numel(qss),[]),[],1);
+  
 end
