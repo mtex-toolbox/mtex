@@ -16,8 +16,6 @@ if nargin < 2
   error('requires ebsd data')
 end
 
-assert_checksum(grains, ebsd);
-
 if check_option(varargin,'complete')
   omega = cell(size(grains));
 else

@@ -90,6 +90,11 @@ if nargin > 1
                
       varargout{1} = [grains.orientation];
 
+    case {'quaternion','quaternions'}
+                              
+      varargout{1} = quaternion([grains.orientation]);
+
+      
     case fields(grains)
       
       varargout{1} = populate(grains,vname);

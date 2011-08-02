@@ -157,15 +157,21 @@ end;
 
 switch prop
   case 'user'
-  case 'orientation'
+  case {'orientation','mis2mean'}
     cc = lower(get_option(varargin,'colorcoding','ipdf'));
 
     d = ones(numel(ebsd),3);
     for p = unique(ebsd.phase).'
       if p == 0, continue;end
       ind = ebsd.phase == p;
-      o = orientation(ebsd.rotations(ind),ebsd.CS{p},ebsd.SS);
-      d(ind,:) = orientation2color(o,cc,varargin{:});
+      if strcmpi(prop,'orientation')
+        o = orientation(ebsd.rotations(ind),ebsd.CS{p},ebsd.SS);
+        d(ind,:) = orientation2color(o,cc,varargin{:});
+      else
+        o = orientation(ebsd.options.mis2mean(ind),ebsd.CS{p},ebsd.CS{p});
+        d(ind,:) = orientation2color(o,cc,'r','auto',varargin{:});
+      end
+      
     end
 
   case 'none'

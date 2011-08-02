@@ -26,4 +26,3 @@ elseif nargin == 2
     
 end
 
-superiorto('EBSD');
