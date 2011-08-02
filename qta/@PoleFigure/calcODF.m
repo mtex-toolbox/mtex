@@ -162,12 +162,10 @@ vdisp(['required time: ',int2str(toc),'s'],varargin{:});
 % return ODF
 odf = 1/sum(c)*ODF(S3G,c,psi,CS,SS,'comment',comment);
 
-if ~check_option(varargin,'ghost_correction'), return;end
+if check_option(varargin,'noGhostCorrection'), return;end
 
 % ------------------ ghost correction -----------------------------------
 % -----------------------------------------------------------------------
-
-vdisp('ghost correction',varargin{:});
 
 % determine phon
 phon = 1;
@@ -175,12 +173,16 @@ for ip = 1:length(pf)
   phon = min(phon,quantile(max(0,get(pf(ip),'data')),0.01)./alpha(ip));
 end
 
-if phon > 0.05
+if phon > 0.99
+  odf = uniformODF(CS,SS);
+  return
+elseif phon > 0.1
+  vdisp('ghost correction',varargin{:});
   vdisp(['calculate with fixed background ',xnum2str(phon)],varargin{:});
 else
-  vdisp('No phon! No ghost correction possible!',varargin{:});
   return
 end
+
 
 % subtract from intensities
 P = [];

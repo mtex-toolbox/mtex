@@ -19,7 +19,11 @@ function pf = simulatePoleFigure(odf,h,r,varargin)
 
 argin_check(h,{'Miller'});
 h = ensureCS(odf(1).CS,{h});
-argin_check(r,'vector3d');
+if nargin >= 3
+  argin_check(r,'vector3d');
+else
+  r = S2Grid('regular','points',[72,19]);
+end
 
 if check_option(varargin,'complete')
   antipodal = 'complete';
