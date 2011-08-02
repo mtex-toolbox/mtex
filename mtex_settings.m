@@ -26,9 +26,12 @@ set_mtex_option('EulerAngleConvention','Bunge');
 % add here your pole figure and EBSD data file extensions
 
 set_mtex_option('polefigure_ext',...
-  {'.exp','.XPa','.cns','.cnv', '.ptx','.pf','.xrdml','.xrd','.epf','.plf','.nja','.gpf','.ras'});
+  {'.exp','.xpa','.xpe','.xpf','.axs','.uxd','.xrd','.ras','.asc',...
+  '.cns','.cnv','.ana','.dat','.out','.ibm','.jul','.epf','.ppf','.pow',...
+  '.xrdml','.gpf','.plf','.nja','.ptx','.rpf','.pwd','.slc'});
+
 set_mtex_option('ebsd_ext',...
-  {'.ebsd','.ctf','.ang','.hkl','.tsl'});
+  {'.ebsd','.ctf','.ang','.hkl','.tsl','.sor','.csv'});
 
 %% Default save-mode for generated code snipped (import wizard)
 % set to true if generated import-script should be stored on disk by
