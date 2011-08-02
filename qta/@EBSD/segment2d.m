@@ -219,19 +219,25 @@ ccom = repmat({comment},1,nc);   % comment
 phase_ebsd = cellfun(...         % phase
   @(i) ebsd.phase(i(1)), id, 'uniformoutput', false);
 
-% grain options
+%% compute mean grain options
+
+% remove non numeric options
 options = rmfield(ebsd.options,{'x','y','grain_id'});
+for fn = fieldnames(options)'
+  if ~isnumeric(options.(char(fn))), options = rmfield(options,fn);end
+end
+
+% compute the mean
 fn = fieldnames(options);
 if isempty(fn)
   cprop = repmat({struct()},1,nc);
 else
-  %oArray = struct2array(options);
   oArray = struct2cell(options); oArray = [oArray{:}];
   cprop = arrayfun(@(i) ...
-    cell2struct(num2cell(mean(oArray(ids==i,:),1))',fn),1:nc);
+    cell2struct(num2cell(mean(oArray(ids==i,:),1))',fn),1:nc,'uniformOutput',false);
 end
 
-% set up the grain
+%% set up the grain
 gr = struct('id',cid,...
   'cells',id,...
   'neighbour',neigh,...    %       'polygon',[],...
