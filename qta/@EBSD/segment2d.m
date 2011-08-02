@@ -92,14 +92,23 @@ phase = xor(phase,distance);
 
 angles = sparse(sm,sn);
 
+% for all phase
 for p = unique(ebsd.phase).'
 
-  o1 = orientation(ebsd.rotations(ix),ebsd.CS{p},ebsd.SS);
-  o2 = orientation(ebsd.rotations(iy),ebsd.CS{p},ebsd.SS);
+  % restrict to the right phase
+  indPhase = ebsd.phase == p;
+  indPhase = indPhase(ix) & indPhase(iy);
+  pix = ix(indPhase);
+  piy = iy(indPhase);
+  
+  % generate orientations
+  o1 = orientation(ebsd.rotations(pix),ebsd.CS{p},ebsd.SS);
+  o2 = orientation(ebsd.rotations(piy),ebsd.CS{p},ebsd.SS);
 
+  % check the missorientation
   ind = angle(o1,o2) > thresholds(p);
 
-  angles = angles + sparse(ix(ind),iy(ind),1,sm,sn);
+  angles = angles + sparse(pix(ind),piy(ind),1,sm,sn);
 end
 
 % disconnect regions
