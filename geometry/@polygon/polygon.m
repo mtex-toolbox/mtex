@@ -25,6 +25,16 @@ if nargin > 0
     p = polytope(p);
     return
     
+  elseif isa(p,'char')
+    
+    switch lower(p)
+      case 'rectangle'
+        p = polygon([varargin{2} varargin{3};varargin{4} varargin{3};...
+          varargin{4} varargin{5}; varargin{2} varargin{5}; varargin{2} varargin{3}]);  
+    end
+    
+    return
+    
   elseif isa(p,'polygon')
     
     p = struct(p);
