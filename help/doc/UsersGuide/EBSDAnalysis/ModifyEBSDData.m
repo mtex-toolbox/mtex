@@ -75,7 +75,7 @@ close all, plot( ebsd_flip )
 
 
 % the region
-region = rectangle(120, 100, 200, 130);
+region = polygon('rectangle',120, 100, 200, 130);
 
 % plot the ebsd data
 plot(ebsd)
