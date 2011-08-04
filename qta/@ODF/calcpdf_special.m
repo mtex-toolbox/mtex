@@ -13,7 +13,7 @@ function Mf = calcpdf_special(odf,M,N,varargin)
 
 %% step 0 - compute Fourier coefficients of the ODF -> fhat
 
-LMax = 8;
+LMax = 4;
 odf = calcFourier(odf,LMax);
 
   
@@ -36,7 +36,7 @@ end
 
 ghat_index = @(l,k) (l+1).^2 -l + k;
 
-for mplus = 0:2*L-2
+for mplus = 0:2*M-2
   
   ghat{mplus+1} = zeros(ghat_index(2*LMax,2*LMax),1);
   for L = 0:LMax
@@ -46,7 +46,9 @@ for mplus = 0:2*L-2
       kminus = -2*L + abs(kplus) :2: 2*L - abs(kplus);                  
       
       ghat{mplus+1}(ghat_index(2*L,kplus)) = ...
-        sum(hhat{L+1}((kplus-kminus)./2,(kplus+kminus)./2) .* ...
+        sum(hhat{L+1}(sub2ind([2*LMax+1,2*LMax+1],...
+        1+LMax+(kplus-kminus)./2,...
+        1+LMax+(kplus+kminus)./2)) .* ...
         exp(1i * pi * mplus .* kminus ./ M)); %#ok<*AGROW>
       
     end
@@ -57,22 +59,24 @@ end
 %% step 3 - compute Mf by spherical Fourier transforms
 
 % allocate output
-Mf = zeros(N+1,M,M);
+Mf = zeros(N,M,M);
 
-for mplus = 0:2*L-2
+for mplus = 0:2*M-2
   
   mm = min(mplus,2*M-2-mplus);
   mminus = -mm:2:mm;
   
-  theta = fft_theta(linspace(0,pi,N+1));
+  theta = fft_theta(linspace(0,pi,N));
   rho   = fft_rho(mminus*pi./M);
+  [theta,rho] = meshgrid(theta,rho);
   r = [reshape(rho,1,[]);reshape(theta,1,[])];
 
-  P_hat = [real(ghat(:)),-imag(ghat(:))].';
+  P_hat = [real(ghat{mplus+1}(:)),-imag(ghat{mplus+1}(:))].';
 
   out = call_extern('pdf2pf','EXTERN',r,P_hat);
   
-  g(:,1) = out;
+  Mf(:,...
+    sub2ind([M,M],1+(mplus+mminus)./2,1+(mplus-mminus)./2)) = out;
   
 end
 
