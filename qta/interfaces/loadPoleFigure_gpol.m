@@ -31,7 +31,7 @@ while ~feof(fid)
 end
 fclose(fid);
 
-A(index) = count;
+A(index+1) = count;
 A = (reshape(A,rows,cols))';
 
 [ix iy data] = find(A);
