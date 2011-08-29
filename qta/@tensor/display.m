@@ -42,15 +42,41 @@ if numel(T.M) > prod(ss(1:T.rank)), return;end
 % display tensor coefficients
 disp(' ');
 
-if (T.rank == 4) && numel(T.M) == 3^4
-  disp('  tensor in Voigt matrix representation')
-  M = tensor42(T.M);
+
+b = ceil(log10(1./max(abs(T.M(:)))))+1;
+
+if abs(b) > 1
+   s = ([' *10^',num2str(-b)]);
 else
+  s = '';
+end
+
+if (T.rank == 4) && numel(T.M) == 3^4
+  disp(['  tensor in Voigt matrix representation:' s])
+  M = (tensor42(T.M));
+elseif (T.rank == 3) && numel(T.M) == 3^3
+  disp(['  tensor in compact matrix form:' s])
+  M = tensor32(T.M);
+else
+  disp(s)
   M = T.M;
 end
 
-% make numbers nice
+%make numbers nice
 r = round(log(max(abs(T.M(:))))/log(10))-4;
 if ~isinf(r) && ~isnan(r), M = round(10^(-r)*M).*10^(r);end
 
-cprintf(M,'-L','  ','-ic','F');
+
+if abs(b) > 1
+  M = M*10^b;
+  M(abs(M)<eps) = 0;
+end
+
+cprintf(M,'-L',' ','-ic','|F');
+
+  
+
+
+
+
+

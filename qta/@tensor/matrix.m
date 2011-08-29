@@ -3,7 +3,7 @@ function m= matrix(T,varargin)
 %
 %% Syntax
 % m = matrix(T)
-% m = matrix('voigt')
+% m = matrix(T,'voigt')
 %
 %% Input
 %  T - @tensor
@@ -17,8 +17,15 @@ function m= matrix(T,varargin)
 %% See also
 %
 
-if T.rank == 4 && check_option(varargin,'voigt')
-  m = tensor42(T.M);
-else
-  m = T.M;
+if check_option(varargin,{'compact','voigt'})
+  switch  T.rank
+    case 4
+      m = tensor42(T.M);
+    case 3
+      m = tensor32(T.M);      
+  end
+  return
 end
+
+m= T.M;
+

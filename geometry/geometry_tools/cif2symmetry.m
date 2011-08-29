@@ -104,8 +104,14 @@ function fname = copyonline(cod)
 
 try
   if isnumeric(cod)
-    cod = num2str(cod);
+    cod = num2str(cod);    
   end
+  
+  fname = fullfile(mtexCifPath,[cod '.cif']);
+  if exist(fname,'file')
+    return
+  end
+    
   if ~isempty(str2num(cod))
     disp('CIF-File from Crystallography Open Database')
     disp(['> download : http://www.crystallography.net/cif/' cod '.cif'])
@@ -114,6 +120,7 @@ try
     cif = urlread(cod);
   end
 catch
+  disp('> unluckily failed to find cif-file')
   error('CIF-file not valid online')
 end
 
