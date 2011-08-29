@@ -65,6 +65,20 @@ r = rotation('Euler',45*degree,0*degree,0*degree)
 Trot = rotate(T,r)
 plot(Trot)
 
+
+%%
+% Here is another example from Nye (Physical Properties of Crystals,
+% p.120-121) for a third-rank tensor
+
+P = [ 0 0 0 .17 0   0;
+      0 0 0 0   .17 0;
+      0 0 0 0   0   5.17]*10^-11;
+
+T = tensor(P,'rank',3,'propertyname','piezoelectric modulus')
+
+r = rotation('axis',zvector,'angle',-45*degree);
+T = rotate(T,r)
+
 %% The Inverse Tensor
 %
 % The inverse of a 2 rank tensor or a 4 rank elasticity tensor is computed
@@ -98,3 +112,5 @@ c = EinsteinSum(C,[-1 -2 -3 -3],v,-1,v,-2)
 % set back the default color map.
 
 set_mtex_option('defaultColorMap',WhiteJetColorMap)
+
+

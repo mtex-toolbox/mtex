@@ -5,7 +5,7 @@ function T = tensor(M,varargin)
 % For importing real world data you might want to use the *import_wizard*.
 %
 %% Syntax
-%  ebsd = EBSD(M,CS,'name',name,'unit',unit,'propertyname',property)
+%  T = tensor(M,CS,'name',name,'unit',unit,'propertyname',property)
 %
 %% Input
 %  M  - matrix of tensor entries
@@ -38,7 +38,11 @@ disp(' ');
 end
 
 % transform from voigt matrix representation to ordinary rank four tensor
-if numel(T.M) == 36, T.M = tensor24(T.M); end
+if numel(T.M) == 36, 
+    T.M = tensor24(T.M);
+elseif numel(T.M) == 18, 
+    T.M = tensor23(T.M);
+end
 
 % compute the rank of the tensor by finding the last dimension
 % that is length grater then one

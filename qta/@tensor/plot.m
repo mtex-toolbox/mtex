@@ -8,35 +8,62 @@ function plot(T,varargin)
 % plotType - directionalMagnitude
 %            YoungsModulus
 %            linearCompressibility
-%            velocity' 
-% 
+%            velocity'
+% 3d - plot surface of plotType instead of spherical projection
+% section - plot a section 
+%            -- @vector3d - of given plane normal
+%
 %%
 %
 %
 
-
-% define a plotting grid
-[maxtheta,maxrho,minrho] = getFundamentalRegionPF(T.CS,'antipodal',varargin{:});
-S2 = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX','antipodal',varargin{:});
+if check_option(varargin,'section')
+  omega = linspace(-pi,pi,361);
   
+  n = get_option(varargin,'section',zvector,{'cell','vector3d'});
+  
+  if iscell(n)
+    if numel(n)>1
+      eta = n{2};
+    else
+      eta = pi/2;
+    end
+    n = n{1};
+  elseif isa(n,'vector3d')
+    eta = pi/2;
+  end
+  
+  S2 = axis2quat(n,omega)*axis2quat(orth(n),eta)*n;
+elseif check_option(varargin,'3d')
+  
+  [x y z] = sphere(90);
+  S2 = vector3d(x,y,z);
+%   S2 = S2Grid('regular','resolution',120varargin{:});
+  
+else
+  % define a plotting grid
+  [maxtheta,maxrho,minrho] = getFundamentalRegionPF(T.CS,varargin{:});
+  S2 = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX','antipodal',varargin{:});
+  
+end
 % decide what to plot
 plotType = get_option(varargin,'PlotType','directionalMagnitude');
 
-switch plotType
+switch lower(plotType)
   
-  case 'directionalMagnitude'
-
+  case 'directionalmagnitude'
+    
     d = directionalMagnitude(T,S2);
     
-  case 'YoungsModulus'
+  case 'youngsmodulus'
     
     d = YoungsModulus(T,S2);
     
-  case 'linearCompressibility'
+  case 'linearcompressibility'
     
     d = linearCompressibility(T,S2);
-
-  case 'shearModulus'
+    
+  case 'shearmodulus'
     
     if check_option(varargin,'h')
       
@@ -46,11 +73,11 @@ switch plotType
     else
       
       label = get_option(varargin,'u',xvector);
-      d = @(i) shearModulus(T,S2,label(i));        
-            
+      d = @(i) shearModulus(T,S2,label(i));
+      
     end
     
-  case 'PoissonRatio'
+  case 'poissonratio'
     
     if check_option(varargin,'x')
       
@@ -60,8 +87,8 @@ switch plotType
     else
       
       label = get_option(varargin,'y',xvector);
-      d = @(i) PoissonRatio(T,S2,label(i));        
-            
+      d = @(i) PoissonRatio(T,S2,label(i));
+      
     end
     
   case 'velocity'
@@ -71,7 +98,7 @@ switch plotType
         minrho,'RESTRICT2MINMAX','resolution',10*degree,'no_center','antipodal',varargin{:});
       varargin = ['color','k','MaxHeadSize',0,varargin];
     end
-
+    
     rho = get_option(varargin,'density',1);
     [vp,vs1,vs2,pp,ps1,ps2] = velocity(T,S2,rho); %#ok<NASGU>
     d = eval(get_option(varargin,'velocity','pp','char'));
@@ -83,15 +110,41 @@ end
 
 if isa(d,'double') && ~isreal(d), d = real(d);end
 
-if isa(d,'function_handle')
-  multiplot(@(i) S2,@(i) d(i),length(label),...
-    'MINMAX','contourf',...
-    'ANOTATION',@(i) label(i),...
-    varargin{:});
+
+if check_option(varargin,'section')
+  
+  xx = d(:).*cos(omega(:));
+  yy = d(:).*sin(omega(:));
+  
+  h = plot(xx,yy);
+  axis equal
+  optiondraw(h,varargin{:});
+
+elseif check_option(varargin,'3d')
+  
+  [x,y,z] = double(d.*S2);
+  
+  h = surf(x,y,z);
+  set(h,'CData',d)
+  axis equal
+  optiondraw(h,varargin{:});
+
+  
 else
-  multiplot(@(i) S2,@(i) d,1,...
-    'MINMAX','contourf',...
-    varargin{:});
+  
+  if isa(d,'function_handle')
+    multiplot(@(i) S2,@(i) d(i),length(label),...
+      'MINMAX','contourf',...
+      'ANOTATION',@(i) label(i),...
+      varargin{:});
+  else
+    multiplot(@(i) S2,@(i) d,1,...
+      'MINMAX','contourf',...
+      varargin{:});
+  end
+  
 end
+
 set(gcf,'tag','tensor');
+
 %plot(S2,'data',d,'antipodal','smooth',varargin{:});

@@ -19,8 +19,7 @@ fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
 
 cs = symmetry('mmm',[4.7646 10.2296 5.9942],'mineral','Olivin');
 
-C = loadTensor(fname,cs,'name','ellastic stiffness','unit','Pa','interface','generic')
-
+C = loadTensor(fname,cs,'propertyname','elastic stiffness','unit','Pa','interface','generic')
 
 %% Young's Modulus
 % Young's modulus is .... It is computed for a specific direction x by the
