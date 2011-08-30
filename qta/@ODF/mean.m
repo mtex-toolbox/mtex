@@ -13,3 +13,4 @@ function [m kappa v] = mean(odf,varargin)
 
 S3G = extract_SO3grid(odf,varargin);
 [m kappa v] = mean(S3G,'weights',eval(odf,S3G)); %#ok<EVLC>
+m = orientation(m);
