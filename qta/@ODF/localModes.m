@@ -1,5 +1,5 @@
-function [q val]= max(odf,varargin)
-% heuristic to find local maxima
+function [q]= localModes(odf,varargin)
+% heuristic to find local modal orientations
 %
 %% Input
 %  odf - @ODF 
