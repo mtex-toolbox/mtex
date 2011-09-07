@@ -43,7 +43,7 @@ while ~feof(fid)
     shiftrho = m(1); assert(abs(shiftrho) == 1 || shiftrho == 0);
     iper = [m(2) m(3) m(4)]; assert(all(abs(iper)>0) && all(abs(iper)<4));
     scaling = n(7); assert(scaling>0);
-%     bg = n(8);
+    bg = n(8);
     
     % generate specimen directions
     theta = (dtheta*~shifttheta/2:dtheta:mtheta)*degree;
@@ -56,18 +56,20 @@ while ~feof(fid)
     d = [];
     l = fgetl(fid);
     while ~isempty(l) %length(d) < numel(r)
-      l = l(end-fix(numel(l)/4)*4+1:end);
-      dd = str2num(reshape(l,4,[])');
-      d = [d;dd(1:18)];
+      l = l(1+mod(numel(l),4):end);
+      data = str2num(reshape(l,4,[])');
+      d = [d; scaling*data(1:18)];
+      if numel(data)>18  % then there is bg      
+        d(end-numel(rho)+1:end) = d(end-numel(rho)+1:end)-bg*data(19);
+      end
       l = fgetl(fid);
     end
 
     % restrict data to specified domain
-    d = reshape(d(1:numel(r)),size(r,1),[]);
-    d = d(:,1:size(r,2));
+    d = reshape(d(1:numel(r)),size(r));
 
     % generate Polefigure
-    pf(ipf) = PoleFigure(h,r,double(d)*double(scaling),symmetry('cubic'),symmetry,'comment',comment,varargin{:}); %#ok<AGROW>
+    pf(ipf) = PoleFigure(h,r,double(d),symmetry('cubic'),symmetry,'comment',comment,varargin{:}); %#ok<AGROW>
   
     ipf = ipf+1;
   catch %#ok<CTCH>
