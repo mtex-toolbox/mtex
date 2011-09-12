@@ -45,7 +45,7 @@ disp(' ');
 
 b = ceil(log10(1./max(abs(T.M(:)))))+1;
 
-if abs(b) > 1
+if isfinite(b) && abs(b) > 1
    s = ([' *10^',num2str(-b)]);
 else
   s = '';
@@ -67,7 +67,7 @@ r = round(log(max(abs(T.M(:))))/log(10))-4;
 if ~isinf(r) && ~isnan(r), M = round(10^(-r)*M).*10^(r);end
 
 
-if abs(b) > 1
+if isfinite(b) && abs(b) > 1
   M = M*10^b;
   M(abs(M)<eps) = 0;
 end
