@@ -1,4 +1,4 @@
-function s = size(ebsd,varargin)
+function varargout = size(ebsd,varargin)
 % overloads size
 
-s = size(ebsd.rotations,varargin{:});
+[varargout{1:nargout}] = size(ebsd.rotations,varargin{:});
