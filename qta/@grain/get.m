@@ -101,8 +101,8 @@ if nargin > 1
       
     case fields(grains(1).properties)
       
-      p = populate(grains,'properties');
-      varargout{1} =  populate(p,vname);
+      p = [grains.properties];
+      varargout{1} = [p.(vname)];
       
     otherwise
       error(['There is no ''' vname ''' property in the ''grain'' object'])
