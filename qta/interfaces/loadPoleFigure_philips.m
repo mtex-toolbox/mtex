@@ -1,5 +1,5 @@
 function pf = loadPoleFigure_philips(fname,varargin)
-% load philips *.txt file 
+% load philips *.txt file
 %
 %% Input
 % fname - file name
@@ -11,9 +11,9 @@ function pf = loadPoleFigure_philips(fname,varargin)
 % ImportPoleFigureData loadPoleFigure
 
 fid = efopen(fname);
-  
-try
 
+try
+  
   % read header
   
   % skip the first 17 lines
@@ -33,30 +33,31 @@ try
   
   assert_grid(theta{1},theta{3},theta{2},rho{1},rho{3},rho{2},'degree');
   theta = (theta{1}:theta{3}:theta{2})*degree;
-  rho = (rho{1}:rho{3}:rho{2})*degree; 
+  rho = (rho{1}:rho{3}:rho{2})*degree;
   r = S2Grid('theta',theta,'rho',rho(1:end-1),'antipodal');
   
   % one free line
   assert(isempty(fgetl(fid)));
   
   % read hkl
-  [h,ok] = string2Miller(fgetl(fid));  
+  [h,ok] = string2Miller(fgetl(fid));
   if ~ok, h = string2Miller(fname);end;
-    
+  
   c = ones(1,length(h));
   
   % skip the next 6 lines
   %textscan(fid,'%s',6,'delimiter','\n','whitespace','');
-
+  
   % read intensities
   %d = fscanf(fid,'%e',[length(theta)+1,length(rho)]);
   
-  fclose(fid);
   d = txt2mat(fname,'InfoLevel',0);
   d = d.';
   d = d(2:end,:);
   assert(all(size(d.')==size(r)));
-  pf = PoleFigure(h,r,d.',symmetry('cubic'),symmetry,'superposition',c,varargin{:}); 
+  pf = PoleFigure(h,r,d.',symmetry('cubic'),symmetry,'superposition',c,varargin{:});
 catch
-  error('format Philips does not match file %s',fname);
+  interfaceError(fname,fid);
 end
+
+fclose(fid);

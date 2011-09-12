@@ -42,7 +42,7 @@ try
   
 catch
   if ~exist('pf','var')
-    error('format Rikagu does not match file %s',fname);
+    interfaceError(fname);
   end
 end
 

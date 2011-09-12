@@ -14,13 +14,19 @@ function pf = loadPoleFigure_xrd(fname,varargin)
 % ImportPoleFigureData loadPoleFigure
 
 
-%% 
+%%
 rhoStartToken = {'*MEAS_SCAN_START "','*START		=  '};
 rhoStepToken = {'*MEAS_SCAN_STEP "','*STEP		=  '};
 rhoStopToken = {'*MEAS_SCAN_STOP "','*STOP		=  '};
 thetaToken = {'*MEAS_3DE_ALPHA_ANGLE "','*PF_AANGLE	=  '};
 
 %% read header
+
+h = file2cell(fname,1);
+
+if isempty(strmatch(h,'*RAS_DATA_START'))
+  interfaceError(fname);
+end
 
 h = file2cell(fname);
 
@@ -34,7 +40,7 @@ for i = 1:length(rhoStartToken)
     rhoStop = readToken(h,rhoStopToken{i});
     rho = (rhoStart(1):rhoStep(1):rhoStop(1))*degree;
     theta = pi/2-readToken(h,thetaToken{i})*degree;
-
+    
     r = S2Grid('regular','theta',theta,'rho',rho);
   catch %#ok<CTCH>
     continue
@@ -43,7 +49,7 @@ for i = 1:length(rhoStartToken)
   if ~isempty(r), break;end
 end
 
-  
+
 assert(numel(r)>0);
 h = string2Miller(fname);
 
@@ -54,7 +60,7 @@ fid = efopen(fname);
 d = cell2mat(textscan(fid,'%n','CommentStyle','*','Whitespace',' \n,',...
   'MultipleDelimsAsOne',true));
 
-% if there are more then one value per direction take the second one 
+% if there are more then one value per direction take the second one
 if numel(d) > numel(r)
   
   d = d(2:3:end);

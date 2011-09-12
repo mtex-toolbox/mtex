@@ -1,5 +1,5 @@
 function pf = loadPoleFigure_xrdml(fname,varargin)
-% load xrdMeasurement (xrdml) file 
+% load xrdMeasurement (xrdml) file
 %
 %% Syntax
 % pf = loadPoleFigure_xrdml(fname,<options>)
@@ -13,12 +13,12 @@ function pf = loadPoleFigure_xrdml(fname,varargin)
 %% See also
 % ImportPoleFigureData
 
+assertExtension(fname,'.xml','.xrdml');
+
 try
-  [fdir,fn,ext] = fileparts(fname);
-  assert(any(strcmpi(ext,{'.xml','.xrdml'})));
   doc = xmlread(fname);
 catch
-  error('file not found or format xrdml does not match file %s',fname);
+  interfaceError(fname);
 end
 
 xRoot = doc.getDocumentElement;
@@ -37,7 +37,7 @@ if strcmp(xRoot.getTagName,'xrdMeasurements')
     
     %read current measurement
     xrdMeasurement = nodelist.item(i);
-    scan = xrdMeasurement.getElementsByTagName('scan');  
+    scan = xrdMeasurement.getElementsByTagName('scan');
     
     %read hkl from first entry
     try
@@ -53,7 +53,7 @@ if strcmp(xRoot.getTagName,'xrdMeasurements')
     end
     
     step_axis = xrdMeasurement.getAttribute('measurementStepAxis');
-
+    
     %loop over all scan-data sets
     for ii=0:scan.getLength-1
       
@@ -63,8 +63,8 @@ if strcmp(xRoot.getTagName,'xrdMeasurements')
       
       %get start and stop position
       pos = scan.item(ii).getElementsByTagName('positions');
-      rot_start = scan.item(ii).getElementsByTagName('startPosition').item(0); 
-            
+      rot_start = scan.item(ii).getElementsByTagName('startPosition').item(0);
+      
       %check units
       if strcmp(rot_start.getParentNode.getAttribute('unit'),'deg')
         isrho_deg=degree;
@@ -74,7 +74,7 @@ if strcmp(xRoot.getTagName,'xrdMeasurements')
       
       start = isrho_deg * str2num(rot_start.getFirstChild.getNodeValue);
       stop = isrho_deg * str2num(scan.item(ii).getElementsByTagName('endPosition').item(0).getFirstChild.getNodeValue);
-     
+      
       %get theta
       for k=0:pos.getLength-1
         if strcmp(pos.item(k).getAttribute('axis'), char(step_axis))
@@ -83,7 +83,7 @@ if strcmp(xRoot.getTagName,'xrdMeasurements')
           if strcmp(pos.item(k).getAttribute('unit'),'deg')
             istheta_deg=degree;
           else
-            istheta_deg=1; 
+            istheta_deg=1;
           end;
           
           %get theta
@@ -95,7 +95,7 @@ if strcmp(xRoot.getTagName,'xrdMeasurements')
       
       %get rho, mode="Continuous"
       current_rho = [current_rho,linspace(start,stop,length(val))];
-
+      
     end
     
     %setup sphere
@@ -107,7 +107,7 @@ if strcmp(xRoot.getTagName,'xrdMeasurements')
   end
   
 else
-  error('Format XRDML does not match file %s.',fname);
+  interfaceError(fname);
 end
 
 

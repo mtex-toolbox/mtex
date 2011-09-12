@@ -22,20 +22,20 @@ try
   % skip next lines
   fgetl(fid);
   fgetl(fid);
-
+  
   % crystal symmetry
   s = fgetl(fid);
   c = sscanf(s,'%d%f%f%f%f%f%f');
   spacegroup =  {'C1','C2','D2','C4','D4','T','O','C3','D3','C6','D6'};
   cs = symmetry(spacegroup{c(1)},c(2:4),c(5:7)*degree);
-
+  
   % number of pole figures
   s = fgetl(fid);
   npf = sscanf(s,'%d');
-
+  
   % skip one line
   s = fgetl(fid);
-
+  
   % hr information
   for n = 1:npf
     s = fgetl(fid);
@@ -45,21 +45,21 @@ try
     r{n} = S2Grid('theta',theta,'rho',rho,'antipodal'); %#ok<AGROW>
     h{n} = Miller(hr(9),hr(10),hr(11),cs); %#ok<AGROW>
   end
-
+  
   for n = 1:npf
     
     % read data
     d = textscan(fid,'%f',numel(r{n}));
     d = reshape(double(d{1}),size(r{n}));
-
+    
     % construct pole figure object
     pf(n) = PoleFigure(h{n},r{n},d,cs,symmetry,'comment',comment,varargin{:}); %#ok<AGROW>
-   
+    
   end
-
-
+  
+  
 catch %#ok<CTCH>
-  error('Format LaboTEX does not match file %s',fname);
+  interfaceError(fname,fid);
 end
 
 fclose(fid);

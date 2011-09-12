@@ -104,7 +104,7 @@ while ~feof(fid)
     
   catch %#ok<CTCH>
     if ~exist('pf','var')
-      error('format Aachen does not match file %s',fname);
+      interfaceError(fname,fid);
     end
   end
 end

@@ -11,12 +11,8 @@ function pf = loadPoleFigure_slc(fname,varargin)
 % ImportPoleFigureData loadPoleFigure
 
 % ensure right extension
-try
-  [fdir,fn,ext] = fileparts(fname); %#ok<ASGLU>
-  assert(any(strcmpi(ext,{'.slc'})));
-catch %#ok<CTCH>
-  error('Format slc does not match file %s',fname);
-end
+
+assertExtension(fname,'.slc');
 
 try
   
@@ -25,17 +21,17 @@ try
     'ReplaceRegExpr',{{'FRAME0.',''}});
   
   % set up specimen directions
-  rho = A(:,1)*10*degree;  
+  rho = A(:,1)*10*degree;
   theta = linspace(90*degree,-90*degree,size(A,2)-1);
   r = S2Grid('theta',theta,'rho',rho,'antipodal');
   
   A = A(:,2:end);
-   
-  h = string2Miller(fname);    
+  
+  h = string2Miller(fname);
   c = ones(1,length(h));
   
   
-  pf = PoleFigure(h,r,A,symmetry('cubic'),symmetry,'superposition',c,varargin{:}); 
+  pf = PoleFigure(h,r,A,symmetry('cubic'),symmetry,'superposition',c,varargin{:});
 catch
-  error('format slc does not match file %s',fname);
+  interfaceError(fname);
 end
