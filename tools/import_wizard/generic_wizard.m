@@ -30,7 +30,7 @@ if check_option(varargin,'type')
   switch type
     case 'EBSD'
       values = {'Ignore','Euler 1','Euler 2','Euler 3','x','y','z','Phase','Quat real','Quat i','Quat j','Quat k','Weight'};
-      mandatory = {values(2:4),values(8:11)};
+      mandatory = {values(2:4),values(9:12)};
     case 'PoleFigure'
       values = {'Ignore','Polar Angle','Azimuth Angle','Intensity','Background','x','y','z'};
       mandatory = {values(2:4)};
@@ -52,7 +52,7 @@ if ~newversion,  v0 = {}; else  v0 = {'v0'}; end
 w = 466;
 tb = 250+10*newversion; %table size
 
-h = tb+310 + 60 * any(strcmp(type,{'EBSD','ODF'})); 
+h = tb+310 + 60 * any(strcmp(type,{'EBSD','ODF'}));
 dw = 10;
 cw = (w-3*dw)/4;
 
@@ -79,7 +79,7 @@ uicontrol('Parent',htp,'Style','Text','Position',[dw,h-120,w-2*dw,50],...
   'HorizontalAlignment','left',...
   'string',['The data format could not automatically detected. ',...
   'However the following ', ...
- ' data matrix was extracted from the file.']);
+  ' data matrix was extracted from the file.']);
 
 if ~isempty(colums) && length(colums) == y
   colnames = colums;
@@ -98,7 +98,7 @@ uicontrol('Parent',htp,'Style','Text','Position',[dw,h-(tb+120+25),w-2*dw,20],..
 
 cdata = guessColNames(values,size(data,2),colums);
 
-mtable = uitable(v0{:},'Parent',htp,'Data',cdata,'ColumnNames',colnames,'Position',[ dw-1 h-(tb+200) w-2*dw 60],'rowheight',20); 
+mtable = uitable(v0{:},'Parent',htp,'Data',cdata,'ColumnNames',colnames,'Position',[ dw-1 h-(tb+200) w-2*dw 60],'rowheight',20);
 
 try
   mtable.getTable.setShowHorizontalLines(0);
@@ -120,19 +120,19 @@ if strcmp(type,'PoleFigure')
     'Position',[dw dw 80 15],'Parent',chk_angle,'HandleVisibility','off');
   rad_box = uicontrol('Style','Radio','String','Radians',...
     'Position',[dw+cw dw 80 15],'Parent',chk_angle,'HandleVisibility','off');
-
+  
 else
-
+  
   % Euler Angles
   chk_angle = uibuttongroup('Parent',htp,'title','Euler Angles','units','pixels',...
     'position',[dw h-(tb+260) 4*cw+dw 45]);
- 
+  
   euler_convention = uicontrol('Style', 'popup',...
     'String', ['Bunge (phi1 Phi phi2) ZXZ|',...
     'Matthies (alpha,beta,gamma) ZYZ|',...
     'Roe (Psi,Theta,Phi)|Kocks (Psi,Theta,phi)|Canova (omega,Theta,phi)|',...
     'Quaternion'],...
-    'Position',[dw 5 2*cw-dw 23],'Parent',chk_angle,'HandleVisibility','off');  
+    'Position',[dw 5 2*cw-dw 23],'Parent',chk_angle,'HandleVisibility','off');
   
   uicontrol('Style','Radio','String','Degree',...
     'Position',[2*cw+2*dw dw 80 15],'Parent',chk_angle,'HandleVisibility','off');
@@ -152,12 +152,12 @@ else
   
   h3 = uibuttongroup('Parent',htp,'title','Rotation','units','pixels',...
     'position',[2*cw+2*dw h-tb-320 cw*2 46]);
- 
+  
   uicontrol('Style','Radio','String','Active',...
     'Position',[dw dw 80 15],'Parent',h3,'HandleVisibility','off');
   passive_box = uicontrol('Style','Radio','String','Passive',...
     'Position',[dw+cw dw 80 15],'Parent',h3,'HandleVisibility','off');
-      
+  
 end
 
 if ~isempty(header)
@@ -174,40 +174,34 @@ uicontrol('Parent',htp,'Style','PushButton','String','Cancel ','Position',[w-2*7
 %% -------- retun statement ----------------------------------------------
 
 while ishandle(htp)
-
+  
   options = {};
   uiwait(htp);
   
   if ishandle(htp)
-
+    
     % get column association
     if verLessThan('matlab','7.4')
       data = cellstr(char(get(mtable,'data')));
     else
       data = cellstr(char(mtable.getData));
     end
-
+    
     ind = find(~strcmpi(data,'Ignore'));
     options = {'ColumnNames',data(ind)};
     if length(ind) < length(data)
       options = [options,{'Columns',ind}]; %#ok<AGROW>
     end
-
-    % check for mandatory columnnames
-    for i = 1:length(mandatory)
-      pass = true;
-      for j = 1:length(mandatory{i})
-        if sum(strcmp(stripws(data(ind)),stripws(mandatory{i}{j}))) ~= 1
-          pass = false;
-          break
-        end
-      end
     
-      if pass, break;end      
-    end
-    if ~pass
+    % check for mandatory columnnames
+    i = 1 + (~strcmp(type,'PoleFigure') && ...
+      (get(euler_convention,'value') > 5));
+    
+    if sum(ismember(stripws(data),...
+        stripws(mandatory{i}))) ~= numel(mandatory{i})
+      
       errordlg(['Not all of the mandatory columnnames ',...
-        sprintf('%s, ', mandatory{1}{:}) 'has been specified!'],...
+        sprintf('%s, ', mandatory{i}{:}) ' have been specified!'],...
         'Error in generic wizzard','modal');
       continue;
     end
@@ -216,7 +210,7 @@ while ishandle(htp)
     if get(rad_box,'value'), options = [{'RADIANS'},options];end %#ok<AGROW>
     
     if ~strcmp(type,'PoleFigure')
-    
+      
       % Eule angle convention
       conventions = {'Bunge','Matthies','Roe','Kocks','Canova','Quaternion'};
       options = [options,conventions(get(euler_convention,'value'))]; %#ok<AGROW>
@@ -242,14 +236,13 @@ end
 
 
 
-
 %% Callbacks
 
 function showFileHeader(x,y,header) %#ok<INUSL>
 
 h = figure('MenuBar','none',...
- 'Name','Header Preview',...
- 'NumberTitle','off');
+  'Name','Header Preview',...
+  'NumberTitle','off');
 
 uicontrol(...
   'Parent',h,...
