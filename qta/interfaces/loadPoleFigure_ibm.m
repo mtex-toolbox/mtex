@@ -13,7 +13,7 @@ function pf = loadPoleFigure_ibm(fname,varargin)
 %% See also
 % ImportPoleFigureData loadPoleFigure
 
-assertExt(fname,{'.ibm'});
+assertExtension(fname,'.ibm');
 
 fid = efopen(fname);
 
@@ -27,7 +27,7 @@ try
   fgetl(fid);
   
   while ~feof(fid)
-
+    
     s = fgetl(fid);
     p = textscan(s,'%s %s %s %s');
     h = string2Miller(char(p{1}));
@@ -48,12 +48,10 @@ try
     
   end
   
-  catch %#ok<CTCH>
-    if ~exist('pf','var')
-      error('format Popla does not match file %s',fname);
-    end  
+catch %#ok<CTCH>
+  if ~exist('pf','var')
+    interfaceError(fname,fid);
+  end
 end
-
-
 
 fclose(fid);

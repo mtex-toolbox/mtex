@@ -20,12 +20,12 @@ function pf = loadPoleFigure_dubna(fname,varargin)
 try
   d = load(fname);
 catch
-  error('file not found or format DUBNA does not match file %s',fname);
+  interfaceError(fname);
 end
 
 if ~isa(d,'double') || mod(numel(d),72)~=0 ||...
     numel(d)<3*72 || numel(d)>40*72
-  error('format DUBNA does not match file %s',fname);
+  interfaceError(fname);
 end
   
 d = reshape(d.',72,[]);

@@ -12,44 +12,48 @@ function pf = loadPoleFigure_siemens(fname,varargin)
 %
 %% See also
 % loadPoleFigure ImportPoleFigureData
-  
+
 fid = fopen(fname,'r');
 d = [];
 p = 0;
 
-while ~feof(fid)
-  line = fgetl(fid);
-  
-  % new pole figure section
-  if strfind(line,'*Pole figure:')
-    p = p+1;
-    h(p) = string2Miller(line(14:end));
-    d{p} = [];
-    theta{p} = []; 
+try
+  while ~feof(fid)
+    line = fgetl(fid);
     
-  % new theta angle  
-  elseif strfind(line,'*Khi')
-    theta{p} = [theta{p} sscanf(line(7:end),'%f')]; %#ok<*AGROW>
-    bg = [];
-
-  % new background line  
-  elseif strfind(line,'background')
-    bg = [bg sscanf(line(end-8:end),'%8f')];
-    if numel(bg)>1
-      bg = mean(bg);
+    % new pole figure section
+    if strfind(line,'*Pole figure:')
+      p = p+1;
+      h(p) = string2Miller(line(14:end));
+      d{p} = [];
+      theta{p} = [];
+      
+      % new theta angle
+    elseif strfind(line,'*Khi')
+      theta{p} = [theta{p} sscanf(line(7:end),'%f')]; %#ok<*AGROW>
+      bg = [];
+      
+      % new background line
+    elseif strfind(line,'background')
+      bg = [bg sscanf(line(end-8:end),'%8f')];
+      if numel(bg)>1
+        bg = mean(bg);
+      end
+      
+    elseif strfind(line,'*')
+      %other information
+      
+      
+    else % load intensities
+      
+      dd = cell2mat(textscan(line,'%n'));
+      if ~isempty(bg), dd = dd - bg; end
+      d{p} = [d{p},dd];
     end
     
-  elseif strfind(line,'*')
-    %other information
-    
-    
-  else % load intensities
-    
-    dd = cell2mat(textscan(line,'%n'));
-    if ~isempty(bg), dd = dd - bg; end
-    d{p} = [d{p},dd];
   end
-  
+catch
+  interfaceError(fname,fid);
 end
 fclose(fid);
 

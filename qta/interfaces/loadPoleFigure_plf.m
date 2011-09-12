@@ -1,5 +1,5 @@
 function pf = loadPoleFigure_plf(fname,varargin)
-% load plf file 
+% load plf file
 %
 %% Syntax
 % pf = loadPoleFigure_plf(fname,<options>)
@@ -11,33 +11,29 @@ function pf = loadPoleFigure_plf(fname,varargin)
 %  pf    - @PoleFigure
 %
 
-try
-  [fdir,fn,ext] = fileparts(fname);
-  assert(any(strcmpi(ext,{'.plf'})));
-  fid = efopen(fname);
-catch
-  error('file not found or format PLF does not match file %s',fname);
-end
+assertExtension(fname,'.plf');
+
+fid = fopen(fname,'r');
 
 try
   ip = 1;
   while ~feof(fid)
     hkl = fgetl(fid);
     h = string2Miller(hkl(1:4));
-
+    
     d = textscan(fid,'%f','delimiter','\n');
-        fgetl(fid); %skip stars  
+    fgetl(fid); %skip stars
     d = d{:};
     d(isnan(d)) = [];
     
-    r =  S2Grid('Regular','Points',[90 17],'MINTHETA',0,'MAXTHETA',80*degree); 
-   
+    r =  S2Grid('Regular','Points',[90 17],'MINTHETA',0,'MAXTHETA',80*degree);
+    
     pf(ip) = PoleFigure(h,r,d,symmetry('cubic'),symmetry('triclinic'));
-    ip = 1 + ip;    
-  end  
+    ip = 1 + ip;
+  end
 catch
   if ~exist('pf','var')
-    error('format PLF does not match file %s',fname);
+    interfaceError(fname,fid);
   end
 end
 
