@@ -72,7 +72,7 @@ set(gcf,'renderer','opengl')
 %% Visualising Grain Boundaries
 % Plotting grain boundaries may be a usefull task, e.g. marking special
 % grain boundaries, generally this is done by the 
-% [[grain.plotboundary.html,plotboundary]] command.
+% [[grain.plotBoundary.html,plotBoundary]] command.
 
 close all
 plot(grains,'boundary')
@@ -84,27 +84,27 @@ plot(grains,'boundary')
 
 grains_selection = grains( grainSize(grains) == 1) ;
 hold on
-plotboundary(grains_selection,'color','r','linewidth',2)
+plotBoundary(grains_selection,'color','r','linewidth',2)
 
 %%
 % by specifing a *property* we can mark special boundaries, e.g phase
 % boundaries
 
 close all
-plotboundary(grains,'property','phase')
+plotBoundary(grains,'property','phase')
 colormap(hsv)
 
 %%
 % or visualise the misorientation between neighboured grains of the same
 % phase
 
-plotboundary(grains,'property','colorcoding','hkl')
+plotBoundary(grains,'property','colorcoding','hkl')
 
 %%
 % or mark really special misorientations between neighbours
 
 rot = rotation('axis',vector3d(1,1,1),'angle',60*degree);
-plotboundary(grains,'property',rot)
+plotBoundary(grains,'property',rot)
 
 
 %% Coloring other properties

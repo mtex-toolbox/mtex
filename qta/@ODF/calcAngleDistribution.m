@@ -19,7 +19,7 @@ points = get_option(varargin,'points',100000);
 res = get_option(varargin,'resolution',2.5*degree);
 
 %% simluate EBSD data
-ebsd = simulateEBSD(odf,points,'resolution',res);
+ebsd = calcEBSD(odf,points,'resolution',res);
 
 % compute angles
 angles = angle(get(ebsd,'orientations'));
@@ -31,6 +31,7 @@ maxangle = max(angles);
 
 [bandwidth,density,omega,cdf] = kde(angles,2^8,0,maxangle);
 
+density = density ./ mean(density) * pi ./ maxangle;
 
 % where to evaluate
 %omega = linspace(0,maxangle,100);

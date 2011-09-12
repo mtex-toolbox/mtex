@@ -51,7 +51,7 @@ ebsd_region = ebsd(inpolygon(ebsd,region))
 figure('position',[100 100  750 300]);
 hold all
 plot(ebsd_region,'property','phase')
-plotboundary(grains,'color','k')
+plotBoundary(grains,'color','k')
 hold off
 % set(gcf,'renderer','zbuffer')
 
@@ -62,7 +62,7 @@ hold off
 figure('position',[100 100 750 300]);
 hold all
 plot(grains({'Andesina','Biotite','Orthoclase'}),'property','phase','FaceAlpha',0.2)
-plotboundary(grains,'color','black');
+plotBoundary(grains,'color','black');
 plot(ebsd_region('Quartz-new'),'colorcoding','hkl','h',zvector)
 legend off
 hold off
@@ -94,7 +94,7 @@ hold off
 figure('position',[100 100  750 300]);
 hold all
 plot(grains,'property','phase','FaceAlpha',0.4)
-plotboundary(grains,'property',Miller(0,0,1),'linewidth',2,'color','red')
+plotBoundary(grains,'property',Miller(0,0,1),'linewidth',2,'color','red')
 hold off
 % set(gcf,'renderer','zbuffer')
 

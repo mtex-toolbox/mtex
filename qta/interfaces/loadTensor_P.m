@@ -1,4 +1,4 @@
-function [T,options] = loadTensor_p(fname,varargin)
+function [T,options] = loadTensor_P(fname,varargin)
 % load a Tensor from a file
 %
 %% Description 
@@ -31,7 +31,7 @@ function [T,options] = loadTensor_p(fname,varargin)
 varargin = delete_option(varargin,'check');
 
 [path,name,ext] = fileparts(fname);
-if ~strcmpi(ext,'.P'), return, end
+if ~strcmpi(ext,'.P'), interfaceError(fname), end
 
 A = file2cell(fname);
 N = cellfun(@(x) sscanf(x,'%7f'),A,'uniformoutput',false);
@@ -40,7 +40,9 @@ M = [N{end-2:end}]';
 
 T = tensor(M,'rank',3,varargin{:});
 
+if numel(T) == 0
+  interfaceError(fname);
+end
+
 options = {};
-
-
 

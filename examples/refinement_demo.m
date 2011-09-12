@@ -60,11 +60,11 @@ for k=1:nsteps
     odf_recalc = calcODF(pf_measured,'silent');
 
     % in order to minimize the modelling error
-    pf_recalcerror  = calcerrorpf(pf_measured,odf_recalc,'l1','silent');  
+    pf_recalcerror  = calcErrorPF(pf_measured,odf_recalc,'l1','silent');  
     odf_recalcerror = calcODF(pf_recalcerror,'silent');
     
     % the error we don't know actually
-    fprintf('  error true -- estimated odf   : %f\n', calcerror(odf_true,odf_recalc)) 
+    fprintf('  error true -- estimated odf   : %f\n', calcError(odf_true,odf_recalc)) 
     
     % refine the grid for every polefigure
     for l=1:length(h)   
@@ -89,7 +89,7 @@ end
 
 % final model
 odf_recalc = calcODF(pf_measured,'zero_range','silent');
-fprintf('  error true -- estimated odf   : %f\n', calcerror(odf_true,odf_recalc)) 
+fprintf('  error true -- estimated odf   : %f\n', calcError(odf_true,odf_recalc)) 
 
 
 %% Measured Polefigure
@@ -108,10 +108,10 @@ end
 odf_measuredfull = calcODF(pf_simulated,'zero_range','silent');
 
 fprintf('  error true -- estimated odf on dense grid  : %f\n',...
-  calcerror(odf_true,odf_measuredfull)) 
+  calcError(odf_true,odf_measuredfull)) 
 
 fprintf('  error sparse -- dense gird                 : %f\n',...
-  calcerror(odf_recalc,odf_measuredfull)) 
+  calcError(odf_recalc,odf_measuredfull)) 
 
 
 %%

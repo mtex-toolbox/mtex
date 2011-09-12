@@ -17,7 +17,7 @@ function [q]= localModes(odf,varargin)
 %% Example
 %  find the local maxima of the [[SantaFe.html,SantaFe]] ODF
 %
-%    qm = max(SantaFe)
+%    qm = localModes(SantaFe)
 %    plotpdf(SantaFe,Miller(0,0,1))
 %    annotate(qm)
 %

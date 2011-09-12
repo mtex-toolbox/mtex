@@ -12,7 +12,7 @@ function varargout = export(p, fname, color, ocupacy)
 %
 % export individual grainboundaries
 % 
-% [~,boundary] = plotboundary(grains,'property','angle')
+% [~,boundary] = plotBoundary(grains,'property','angle')
 % model = export(boundary,'boundary.mesh',[0 1 0],0.6)
 % [~,subboundary] = plotSubBoundary(grains)
 % model2 = export(boundary,'subboundary.mesh',[1 0 0],0.8)

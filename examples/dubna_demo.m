@@ -66,7 +66,7 @@ odf = calcODF(pf_corrected,'background',10,'zero_range')
 %% Error analysis
 
 % calc RP1 error
-calcerror(pf_corrected,odf,'RP',1)
+calcError(pf_corrected,odf,'RP',1)
 
 % difference plot
 plotDiff(pf,odf)

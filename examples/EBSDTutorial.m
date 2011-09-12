@@ -53,7 +53,7 @@ colorbar('position',[100 100 250 250])
 figure('position',[100 100 800 350])
 plot(ebsd,'colorcoding','hkl')
 hold on
-plotboundary(grains,'linewidth',1.5)
+plotBoundary(grains,'linewidth',1.5)
 
 %%
 % One can also plot all the grains together with their mean orientation

@@ -110,7 +110,7 @@ figure, hold on
 
 for partnerGrain = neighbouredGrains
   if partnerGrain ~= grain
-   plotboundary([grain partnerGrain],'property','angle','FaceAlpha',1,'BoundaryColor','k');
+   plotBoundary([grain partnerGrain],'property','angle','FaceAlpha',1,'BoundaryColor','k');
   end
 end 
 colorbar

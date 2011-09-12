@@ -68,9 +68,9 @@ figure, plotpdf(bodf,h,'antipodal','position',[100 100 900 300],'contourf',8,'si
 %% 
 % error analysis 
 
-fprintf('            l2-norm: %f\n',calcerror(bodf,odf,'L2'))
-fprintf('            l1-norm: %f\n',calcerror(bodf,odf,'L1'))
-fprintf('relative percentage: %f\n',calcerror(bodf,odf,'RP'))
+fprintf('            l2-norm: %f\n',calcError(bodf,odf,'L2'))
+fprintf('            l1-norm: %f\n',calcError(bodf,odf,'L1'))
+fprintf('relative percentage: %f\n',calcError(bodf,odf,'RP'))
 
 plotDiff(bodf,odf,'sections',9,'silent');
 

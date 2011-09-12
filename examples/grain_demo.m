@@ -43,7 +43,7 @@ plot(ebsd('Fe'))
 %% 
 % Plot grain-boundaries
 
-plotboundary(grains,'color',[0.25 0.1 0.5])
+plotBoundary(grains,'color',[0.25 0.1 0.5])
 hold on, plotSubBoundary(grains,'color','red','linewidth',2)
 
 %%

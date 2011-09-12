@@ -77,6 +77,8 @@ try
     angles = [90 90 90];    
   end
   
+  assert(~isempty(group));
+      
   cs = symmetry(group,axis,angles*degree,'mineral',mineral);
   
 catch

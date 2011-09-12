@@ -20,7 +20,7 @@ function grains = neighbours(grains, grains2)
 %  grains(grains(hasHoles(grains)) == grains(hasSubBoundary(grains)))
 %
 %% See also
-% grain/misorientation grain/plotboundary
+% grain/misorientation grain/plotBoundary
 
 % return the neighbours of given grains in an grainset with self references
 % or the number of neighbours per grain in a given set

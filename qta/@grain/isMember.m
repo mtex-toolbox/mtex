@@ -20,7 +20,7 @@ function b = isMember(grains,grains2)
 %    plot(gr1,'property',0)
 %    plot(gr2,'property',1)
 %    plot(ngr1,'property',2)
-%    plotboundary(grains)
+%    plotBoundary(grains)
 %    hold off
 %    colormap(prism)
 %    legend('gr1','gr2','ngr1')
