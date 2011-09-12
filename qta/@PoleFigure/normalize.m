@@ -23,7 +23,7 @@ if nargin == 1
 %% ODF given
 else
   for i = 1:length(pf)
-    pf_odf(i) = simulatePoleFigure(odf,pf(i).h,pf(i).r,'superposition',pf(i).c); %#ok<AGROW>
+    pf_odf(i) = calcPoleFigure(odf,pf(i).h,pf(i).r,'superposition',pf(i).c); %#ok<AGROW>
   end
 
   alpha = calcNormalization(pf,pf_odf);

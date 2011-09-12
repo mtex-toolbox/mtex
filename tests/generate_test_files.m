@@ -13,7 +13,7 @@ r = S2Grid('equispaced','resolution',5*degree,'hemisphere');
 odf = unimodalODF(idquaternion,cs,ss);
 
 % pole figures
-pf = simulatePoleFigure(odf,h,r) %#ok<NOPRT>
+pf = calcPoleFigure(odf,h,r) %#ok<NOPRT>
 
 % debug mode
 set_mtex_option('debug_mode');

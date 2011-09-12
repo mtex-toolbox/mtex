@@ -55,9 +55,9 @@ r = S2Grid('regular','resolution',5*degree);
 
 %%
 % Now the pole figures can be simulated using the command
-% <ODF.simulatePoleFigure.html simulatePoleFigure>. 
+% <ODF.calcPoleFigure.html calcPoleFigure>. 
 
-pf = simulatePoleFigure(model_odf,h,r)
+pf = calcPoleFigure(model_odf,h,r)
 
 %%
 % Add some noise to the data. Here assume that the mean intensity is 1000.

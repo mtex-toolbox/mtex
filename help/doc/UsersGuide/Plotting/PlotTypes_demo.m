@@ -12,7 +12,7 @@
 
 cs = symmetry('-3m'); ss = symmetry('-1');
 odf = fibreODF(Miller(1,1,0),zvector,cs,ss)
-pf = simulatePoleFigure(odf,Miller(1,0,0),S2Grid('equispaced','antipodal'));
+pf = calcPoleFigure(odf,Miller(1,0,0),S2Grid('equispaced','antipodal'));
 
 %% Scatter Plots
 % Three dimensional vectors, Miller indices, spherical grids are plotted as

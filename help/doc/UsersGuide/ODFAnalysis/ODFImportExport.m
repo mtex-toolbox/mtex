@@ -39,7 +39,7 @@ plotodf(model_odf,'sections',6,'silent')
 fname = [mtexDataPath '/odf/odf.txt'];
 
 % export the ODF
-exportODF(model_odf,fname,'Bunge')
+export(model_odf,fname,'Bunge')
 
 
 %% Export as an generic ASCII file
@@ -53,18 +53,18 @@ exportODF(model_odf,fname,'Bunge')
 fname = [mtexDataPath '/odf/odf.txt'];
 
 % export the ODF
-exportODF(model_odf,fname,'Bunge','generic')
+export(model_odf,fname,'Bunge','generic')
 
 %%
 % Other Euler angle conventions or other resolutions can by specified by
-% options to <ODF.exportODF.html exportODF>. Even more control you have,
+% options to <ODF.export.html export>. Even more control you have,
 % if you specify the grid in the orientation space directly.
 
 % define a equispaced grid in orientation space with resolution of 5 degree
 S3G = SO3Grid(5 * degree,cs,ss);
 
 % export the ODF by values at these locations
-exportODF(model_odf,fname,S3G,'Bunge','generic')
+export(model_odf,fname,S3G,'Bunge','generic')
 
 
 %% Import ODF Data using the import wizard

@@ -95,9 +95,9 @@ plotpdf(odf,Miller(1,0,0,cs),'antipodal')
 % an <EBSDSimulation_demo.html example> demostrating how to determine the
 % number of individuel orientation measurements to estimate the ODF up to a
 % given error. The MTEX command to simulate EBSD data is
-% <ODF.simulateEBSD.html simulateEBSD>, e.g.
+% <ODF.calcEBSD.html calcEBSD>, e.g.
 
-ebsd = simulateEBSD(unimodalODF(idquaternion,cs,ss),500)
+ebsd = calcEBSD(unimodalODF(idquaternion,cs,ss),500)
 plotpdf(ebsd,Miller(1,0,0),'antipodal','MarkerSize',3)
 
 %% Demo

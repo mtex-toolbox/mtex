@@ -27,8 +27,8 @@ hold off
 % lets simualted some EBSD data
 cs = symmetry('-3m'); ss = symmetry('triclinic');
 odf = unimodalODF(orientation('euler',0,0,0,cs,ss));
-ebsd = simulateEBSD(odf,100);
-ebsd_rotated = simulateEBSD(rotate(odf,rotation('Euler',60*degree,60*degree,0*degree)),100);
+ebsd = calcEBSD(odf,100);
+ebsd_rotated = calcEBSD(rotate(odf,rotation('Euler',60*degree,60*degree,0*degree)),100);
 
 %%
 % plot them as a scatter plot in axis / angle parametrized orientation

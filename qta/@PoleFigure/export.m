@@ -1,5 +1,5 @@
-function save(pf,filename,varargin)
-% save pole figure in an ASCII file
+function export(pf,filename,varargin)
+% export pole figure in an ASCII file
 %
 % the pole figure data for each crystal direction are stored in a seperate 
 % ASCII file. The ASCII file contains three columns - |theta| - |rho| -

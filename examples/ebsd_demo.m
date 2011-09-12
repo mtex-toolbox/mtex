@@ -95,7 +95,7 @@ hold off
 CS = symmetry('trigonal');
 fibre_odf = 0.5*uniformODF(CS,SS) + 0.5*fibreODF(Miller(0,0,0,1),zvector,CS,SS);
 plotodf(fibre_odf,'sections',6,'silent')
-ebsd = simulateEBSD(fibre_odf,10000)
+ebsd = calcEBSD(fibre_odf,10000)
 
 %%
 % Estimate an ODF from the simulated EBSD data

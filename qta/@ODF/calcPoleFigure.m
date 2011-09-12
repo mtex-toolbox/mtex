@@ -1,7 +1,7 @@
-function pf = simulatePoleFigure(odf,h,r,varargin)
-% simulate pole figures for an ODF
+function pf = calcPoleFigure(odf,h,r,varargin)
+% simulate pole figures from an ODF
 %
-% *simulatePoleFigure* allows to simulate diffraction counts given an ODF.
+% *calcPoleFigure* allows to simulate diffraction counts given an ODF.
 % Setting the option SUPERPOSITION one can deside wether to to simulate a
 % bunch of single PoleFigures or one superposed PoleFigire.
 %
@@ -15,7 +15,7 @@ function pf = simulatePoleFigure(odf,h,r,varargin)
 %  SUPERPOSITION - [double] superposition weights
 %
 %% See also
-% PoleFigure/scale PoleFigure/simulatePoleFigure PoleFigure/noisepf
+% PoleFigure/scale PoleFigure/calcPoleFigure PoleFigure/noisepf
 
 argin_check(h,{'Miller'});
 h = ensureCS(odf(1).CS,{h});
