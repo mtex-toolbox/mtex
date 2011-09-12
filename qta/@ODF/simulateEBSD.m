@@ -76,7 +76,9 @@ for i = 1:length(odf)
       S3G_global = SO3Grid(res,cs,ss);
       d = eval(odf,S3G_global); %#ok<EVLC>
     end
-
+    
+    d(d<0) = 0;
+    
     r1 = discretesample(d,points);
     r2 = discretesample(numel(S3G_local),points,'XX');
 
