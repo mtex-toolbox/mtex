@@ -11,7 +11,7 @@ if nargin == 0 %null-vector
   v.z = [];
   v.options = {};
   v = class(v,'vector3d');
-elseif nargin ==1 
+elseif nargin ==1
   if isa(x,'vector3d') % copy-constructor
     v = x;
   elseif isa(x,'double')
@@ -28,11 +28,11 @@ elseif nargin ==1
   end
 elseif nargin == 2 %
   error('for spherical koordinates use sph2vec');
-elseif isa(x,'double')
+elseif isnumeric(x)
   v.x = x;
   v.y = y;
   v.z = z;
-  v.options = {};  
+  v.options = {};
   v = class(v,'vector3d');
 elseif strcmp(x,'polar')
   v = sph2vec(y,z);
@@ -54,15 +54,17 @@ if numel(v.x) ~= numel(v.y) || (numel(v.x) ~= numel(v.z))
   if numel(v.x) == 1, v.x = repmat(v.x,s);end
   if numel(v.y) == 1, v.y = repmat(v.y,s);end
   if numel(v.z) == 1, v.z = repmat(v.z,s);end
-
+  
   % check again
   if numel(v.x) ~= numel(v.y) || (numel(v.x) ~= numel(v.z))
     error('MTEX:Vector3d','Coordinates have different size.');
   end
 end
-  
-if check_option(varargin,'normalize')
-  v = v ./ norm(v);
-end
 
-v = set_option(v,extract_option(varargin,{'antipodal'}));
+if nargin > 3  
+  if check_option(varargin,'normalize')
+    v = v ./ norm(v);
+  end
+  
+  v = set_option(v,extract_option(varargin,{'antipodal'}));
+end
