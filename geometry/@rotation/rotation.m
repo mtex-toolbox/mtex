@@ -68,6 +68,9 @@ switch class(varargin{1})
 
       case 'fibre'
         quat = fibre2quat(varargin{2:end});
+        
+      case 'random'
+        quat = randq(varargin{2:end});
 
       otherwise
         error('Unknown type of rotation!')

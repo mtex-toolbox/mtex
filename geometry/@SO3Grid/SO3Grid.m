@@ -57,13 +57,8 @@ if isa(points,'quaternion')
 elseif isa(points,'char') && any(strcmpi(points,{'random'}))
   
   N = fix(get_option(varargin,'points',1000));
-  alpha = 2*pi*rand(N,1);
-  beta  = acos(2*(rand(N,1)-0.5));
-  gamma = 2*pi*rand(N,1);
-  
-  Grid = orientation('Euler',alpha,beta,gamma,CS,SS);
+  Grid = randq(N);
   G.resolution = ori2res(Grid);
-  
   
 %% regular grid
 elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
