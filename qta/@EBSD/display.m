@@ -61,7 +61,11 @@ if numel(ebsd) <= 20
   fn = fields(ebsd.options);
   d = zeros(sum(numel(ebsd)),numel(fn));
   for j = 1:numel(fn)
-    d(:,j) = vertcat(ebsd.options.(fn{j}));
+    if isnumeric(ebsd.options.(fn{j}))
+      d(:,j) = vertcat(ebsd.options.(fn{j}));
+    elseif isa(ebsd.options.(fn{j}),'quaternion')
+      d(:,j) = angle(ebsd.options.(fn{j})) / degree;
+    end
   end
   cprintf(d,'-Lc',fn);
 end

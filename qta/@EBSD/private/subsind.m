@@ -15,7 +15,7 @@ for i = 1:length(subs)
     for j =1:length(min)
       phases = phases | strncmpi(minerals,min{j},length(min{j}));
     end
-    ind = ind & phases(ebsd.phase);
+    ind = ind & phases(ebsd.phase(:).');
 
   elseif isa(subs{i},'grain')
 
