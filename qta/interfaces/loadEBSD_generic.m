@@ -1,7 +1,7 @@
 function [ebsd,options] = loadEBSD_generic(fname,varargin)
 % load pole figure data from (alpha,beta,gamma) files
 %
-%% Description 
+%% Description
 %
 % *loadEBSD_txt* is a generic function that reads any txt or exel files of
 % diffraction intensities that are of the following format
@@ -25,7 +25,7 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 %  fname - file name (text files only)
 %
 %% Options
-%  ColumnNames       - names of the colums to be imported, mandatory are euler 1, euler 2, euler 3 
+%  ColumnNames       - names of the colums to be imported, mandatory are euler 1, euler 2, euler 3
 %  Columns           - postions of the columns to be imported
 %  RADIANS           - treat input in radiand
 %  DELIMITER         - delimiter between numbers
@@ -33,7 +33,7 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 %  BUNGE             - [phi1 Phi phi2] Euler angle in Bunge convention (default)
 %  ABG               - [alpha beta gamma] Euler angle in Mathies convention
 %
-% 
+%
 %% Example
 %
 %    fname = fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt');
@@ -63,7 +63,7 @@ if ~check_option(varargin,'ColumnNames')
   options = generic_wizard('data',d(1:end<101,:),'type','EBSD','header',header,'colums',c);
   if isempty(options), ebsd = []; return; end
   varargin = [options,varargin];
-
+  
 end
 
 names = lower(get_option(varargin,'ColumnNames'));
@@ -80,77 +80,82 @@ layoutcol = @(in, a) cols(cell2mat(cellfun(@(x) find(strcmpi(stripws(in),stripws
 
 euler = lower({'Euler 1' 'Euler 2' 'Euler 3'});
 quat = lower({'Quat real' 'Quat i' 'Quat j' 'Quat k'});
-      
+
 if istype(names,euler) % Euler angles specified
-    
+  
   layout = layoutcol(names,euler);
-    
+  
   %extract options
   dg = degree + (1-degree)*check_option(varargin,{'radians','radiant','radiand'});
-    
+  
   % eliminate nans
   d(any(isnan(d(:,layout)),2),:) = [];
   
   % eliminate rows where angle is 4*pi
   ind = abs(d(:,layout(1))*dg-4*pi)<1e-3;
   d(ind,:) = [];
-    
-  % assign phases
-  if istype(names,{'Phase'})
-    phase = d(:,layoutcol(names,{'Phase'}));
-    
-    % remove phases that should be ignored
-    ignorePhase = get_option(varargin,'ignorePhase',[]);
-    
-    ind = ismember(phase,ignorePhase);
-    d(ind,:) = [];
-    phase(ind)=[];
-    
-  else
-    phase = ones(size(d,1),1);
-  end
-
-  if max(phase)>40
-    warning('MTEX:tomanyphases','Found more then 20 phases. I''m going to ignore them.');
-    phase = ones(size(d,1),1);
-  end
-
   
-    
   % extract data
   alpha = d(:,layout(1))*dg;
   beta  = d(:,layout(2))*dg;
   gamma = d(:,layout(3))*dg;
-
+  
   assert(all(beta >=0 & beta <= pi & alpha >= -2*pi & alpha <= 4*pi & gamma > -2*pi & gamma<4*pi));
   
   % check for choosing
-  if max(alpha) < 10*degree
+  if max([alpha(:);beta(:);gamma(:)]) < 10*degree
     warndlg('The imported Euler angles appears to be quit small, maybe your data are in radians and not in degree as you specified?');
   end
-    
+  
   % transform to quaternions
   noSymmetry = cellfun(@(x) ~isa(x,'symmetry'),varargin);
   q = rotation('Euler',alpha,beta,gamma,varargin{noSymmetry});
   
 elseif istype(names,quat) % import quaternion
-    
+  
   layout = layoutcol(names,quat);
   d(any(isnan(d(:,layout)),2),:) = [];
+  
   q = rotation(quaternion(d(:,layout(1)),d(:,layout(2)),d(:,layout(3)),d(:,layout(4))));
   
 else
-  error('You should at least specify three Euler angles or four quaternion components!');
-end
-   
-if check_option(varargin,'passive rotation'), q = inverse(q); end
- 
-
   
+  error('You should at least specify three Euler angles or four quaternion components!');
+  
+end
+
+% assign phases
+if istype(names,{'Phase'})
+  
+  phase = d(:,layoutcol(names,{'Phase'}));
+  
+  % remove phases that should be ignored
+  ignorePhase = get_option(varargin,'ignorePhase',[]);
+  
+  ind = ismember(phase,ignorePhase);
+  d(ind,:) = [];
+  phase(ind)=[];
+  
+else
+  
+  phase = ones(size(d,1),1);
+  
+end
+
+if max(phase)>40
+  
+  warning('MTEX:tomanyphases','Found more then 20 phases. I''m going to ignore them.');
+  phase = ones(size(d,1),1);
+  
+end
+
+if check_option(varargin,{'passive','passive rotation'}), q = inverse(q); end
+
+
 % compute unit cells
 if istype(names,{'x' 'y'})
-
-  varargin = [varargin,'unitCell',calcUnitCell(d(:,layoutcol(names,{'x' 'y' 'z'})),varargin{:})];  
+  
+  varargin = [varargin,'unitCell',calcUnitCell(d(:,layoutcol(names,{'x' 'y' 'z'})),varargin{:})];
   
 end
 
@@ -174,7 +179,7 @@ end
 options = varargin;
 
 % set up EBSD variable
-ebsd = EBSD(q,varargin{:},'phase',phase,'options',opt);
+ebsd = EBSD(q,symmetry('cubic'),symmetry,varargin{:},'phase',phase,'options',opt);
 
 
 function str = stripws(str)
