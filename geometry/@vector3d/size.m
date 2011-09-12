@@ -1,4 +1,4 @@
-function s = size(v,varargin)
+function varargout = size(v,varargin)
 % overloads size
 
-s = size(v.x,varargin{:});
+[varargout{1:nargout}] = size(v.x,varargin{:});
