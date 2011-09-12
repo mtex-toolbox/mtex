@@ -135,7 +135,9 @@ if numel(T) == 1
   T = T{1};
 end
 
-
+if numel(T) == 0
+  interfaceError(fname);
+end
 
 function [cs,mineral] = mpod2symmetry(str,varargin)
 % import crystal symmetry from cif file
@@ -150,7 +152,10 @@ if ~isempty(pos)
   end
 end
 
-[cs,mineral] = cif2symmetry(str);
+try
+  [cs,mineral] = cif2symmetry(str);
+catch
+end
 
 
 

@@ -3,11 +3,15 @@
 
 %% Generation of random 2d Data
 
-ebsd = calcEBSD(SantaFe,500);
+ebsd = calcEBSD(SantaFe,100);
 
-X = randi(20,500,2);
+xy = randi(20,100,2);
 
-ebsd = set(ebsd,'X',X);
+ebsd = set(ebsd,'x',xy(:,1));
+ebsd = set(ebsd,'y',xy(:,2));
+ebsd = set(ebsd,'phase',ones(100,1));
+
+
 figure,plot( calcGrains(ebsd) )
 
 ebsd = fill(ebsd,[0 20 0 20],1)

@@ -30,7 +30,7 @@ mtexdata aachen
 
 plot(ebsd)
 hold on
-plotboundary(grains)
+plotBoundary(grains)
 hold off
 
 %% 

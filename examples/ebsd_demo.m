@@ -109,7 +109,7 @@ plotodf(odf,'sections',6,'silent')
 
 %%
 % calculate estimation error
-calcerror(odf,fibre_odf,'resolution',5*degree)
+calcError(odf,fibre_odf,'resolution',5*degree)
 
 %%
 % For a more exhausive example see the

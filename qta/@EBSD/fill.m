@@ -11,7 +11,7 @@ function ebsd = fill(ebsd,cube,dx)
 %
 
 
-X = get(ebsd,'X');
+X = [get(ebsd,'x'),get(ebsd,'y')];
 if numel(dx) == 1
   dx(1:3) = dx;
 end

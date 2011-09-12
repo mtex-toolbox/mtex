@@ -1,12 +1,12 @@
-function varargout = plotboundary(grains,varargin)
+function varargout = plotBoundary(grains,varargin)
 % plot grain boundaries
 %
 %% Syntax
-%  plotboundary(grains)
-%  plotboundary(grains,'LineSpec',...)
-%  plotboundary(grains,'property',...)
-%  plotboundary(grains,'property',@rotation)
-%  plotboundary(grains,'property','colorcoding',...)
+%  plotBoundary(grains)
+%  plotBoundary(grains,'LineSpec',...)
+%  plotBoundary(grains,'property',...)
+%  plotBoundary(grains,'property',@rotation)
+%  plotBoundary(grains,'property','colorcoding',...)
 %
 %% Options
 %  property       - phase, angle, @rotation, @orientation

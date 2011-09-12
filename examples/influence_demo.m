@@ -26,7 +26,7 @@ for k=1:numel(angles)
   grains = calcGrains(ebsd,'angle', angles(k)*degree,'silent');
   
   % compute grain size
-  gz(:,k) = histc(GrainSize(grains),sizes);
+  gz(:,k) = histc(grainSize(grains),sizes);
   
 end
 

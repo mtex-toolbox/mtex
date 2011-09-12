@@ -49,7 +49,7 @@ hist(ebsd_mis_m,30)
 
 close all;
 plotspatial(ebsd_mis_m,'r',vector3d('polar',pi/6,pi/8))
-hold on, plotboundary(grains)
+hold on, plotBoundary(grains)
 
 
 %%
@@ -105,10 +105,10 @@ text(13.5,0.9,'threshold','rotation',-90)
 
 %% 
 % The misorientation between neighboured grains could be visualised with the
-% <SpatialPlots.html#12 plotboundary> command
+% <SpatialPlots.html#12 plotBoundary> command
 
 close all;
-plotboundary(grains,'property','colorcoding','hkl')
+plotBoundary(grains,'property','colorcoding','hkl')
 
 %%
 % As spoken to above we have calculated a new ebsd object holding the
@@ -130,7 +130,7 @@ annotate( CSL(3) )
 
 close all;
 grain_selection = find(grains,CSL(3),2*degree,'misorientation')
-plotboundary(grain_selection,'property',CSL(3))
+plotBoundary(grain_selection,'property',CSL(3))
 
 %%
 % and so we can take a look on (a not after volume portion weighted) the ODF
