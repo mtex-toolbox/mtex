@@ -2,8 +2,9 @@ function v = volume(odf,center,radius,varargin)
 % ratio of orientations with a certain orientation
 %
 %% Description
-% returns the ratio of mass of the odf with that is close to 
-% one of the orientations as radius
+% The function 'volume' returns the ratio of an orientation that is close
+% to an orientation (center) by a misorientation tolerance (radius) to the
+% volume of the entire odf.
 %
 %% Syntax
 %  v = volume(odf,center,radius,<options>)
