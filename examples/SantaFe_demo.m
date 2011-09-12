@@ -19,7 +19,7 @@ h = [Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(1,1,1,cs),Miller(2,1,1,cs)];
 r = S2Grid('equispaced','resolution',5*degree,'antipodal');
 
 % pole figures
-pf = simulatePoleFigure(SantaFe,h,r);
+pf = calcPoleFigure(SantaFe,h,r);
 
 % add some noise
 pf = noisepf(pf,100);

@@ -47,7 +47,7 @@ for k=1:nsteps
   
   % perform for every PoleFigure a measurement
   for l=1:length(h)
-    pf_simulated(l) = simulatePoleFigure(odf_true,h(l),r{l});
+    pf_simulated(l) = calcPoleFigure(odf_true,h(l),r{l});
   end
     
   % merge the new measurements with old ones
@@ -73,7 +73,7 @@ for k=1:nsteps
       [newS2G r_new] = refine(  r_new );
             
       % selection of points of interest
-      pf_sim(l) = simulatePoleFigure(odf_recalc, h(l),  S2Grid(r_new));
+      pf_sim(l) = calcPoleFigure(odf_recalc, h(l),  S2Grid(r_new));
       pf_sim(l) = quantile(pf_sim(l),0.15);
       
       Z = slope(odf_recalcerror, h(l), r_new);
@@ -102,7 +102,7 @@ plot(pf_measured,'silent');
 
 r = S2Grid('equispaced','resolution',get(pf_measured,'resolution'));
 for l=1:length(h)
-  pf_simulated(l) = simulatePoleFigure(odf_true,h(l),r);
+  pf_simulated(l) = calcPoleFigure(odf_true,h(l),r);
 end
 
 odf_measuredfull = calcODF(pf_simulated,'zero_range','silent');

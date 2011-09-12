@@ -93,8 +93,8 @@ plotpdf(odf,h,'antipodal','position',[100 100 800 300])
 % usefull to analyze the stability of the ODF estimation process. There is
 % an <PoleFigureSimulation_demo.html example> demostrating how to determine the
 % number of pole figures to estimate the ODF up to a given error. The MTEX
-% command to simulate pole figure is <ODF.simulatePoleFigure.html
-% simulatePoleFigure>, e.g.
+% command to simulate pole figure is <ODF.calcPoleFigure.html
+% calcPoleFigure>, e.g.
 
-pf = simulatePoleFigure(SantaFe,Miller(1,0,0),S2Grid('regular'))
+pf = calcPoleFigure(SantaFe,Miller(1,0,0),S2Grid('regular'))
 plot(pf)

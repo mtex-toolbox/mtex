@@ -1,11 +1,11 @@
-%% MTEX check simulateEBSD and calcODF
+%% MTEX check calcEBSD and calcODF
 % check for the dependency between the number of sample
 % orientations and the error between the estimated and the 
 % true ODF
 
 for i = 1:5
 
-  ebsd = simulateEBSD(SantaFe,10^i);
+  ebsd = calcEBSD(SantaFe,10^i);
 
   odf = calcODF(ebsd);
 

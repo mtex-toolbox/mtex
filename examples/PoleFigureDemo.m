@@ -86,8 +86,8 @@ r = S2Grid('regular','antipodal')
 h = [Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)];
 
 %%
-% simulate EBSD pole figure data
-pf_SantaFe = simulatePoleFigure(SantaFe,h,r);
+% simulate pole figure data
+pf_SantaFe = calcPoleFigure(SantaFe,h,r);
 
 %%
 % estimate an ODF

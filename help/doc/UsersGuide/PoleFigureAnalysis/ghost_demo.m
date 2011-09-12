@@ -37,7 +37,7 @@ odf = 0.9*uniformODF(cs,ss) + ...
 % 
 r = S2Grid('equispaced','resolution',5*degree,'antipodal');
 h = [Miller(1,0,0),Miller(0,1,0),Miller(0,0,1)];
-pf = simulatePoleFigure(odf,h,r);
+pf = calcPoleFigure(odf,h,r);
 
 %% ODF Estimation
 % without ghost correction:

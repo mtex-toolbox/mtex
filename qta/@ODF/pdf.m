@@ -16,7 +16,7 @@ function Z = pdf(odf,h,r,varargin)
 %  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
 %
 %% See also
-% ODF/plotpdf ODF/plotipdf ODF/simulatePoleFigure
+% ODF/plotpdf ODF/plotipdf ODF/calcPoleFigure
 
 if numel(h) == 1
   Z = zeros(numel(r),1);

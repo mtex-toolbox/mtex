@@ -78,7 +78,7 @@ plotpdf(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],'antipodal','silent','po
 %
 % Lets start with a model ODF and simulate some EBSD data.
 
-ebsd = simulateEBSD(SantaFe,10000)
+ebsd = calcEBSD(SantaFe,10000)
 
 %%
 % Next we define a list of kernel halfwidth ,

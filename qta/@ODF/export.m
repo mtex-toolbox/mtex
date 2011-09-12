@@ -1,10 +1,10 @@
-function exportODF(odf,filename,varargin)
+function export(odf,filename,varargin)
 % export an ODF to an ASCII file
 %
 %% Syntax
-% exportODF(odf,'file.txt',S3G)
-% exportODF(odf,'file.txt',regular,'resolution',2.5*degree)
-% exportODF(odf,'file.txt',regular,'resolution',2.5*degree)
+% export(odf,'file.txt',S3G)
+% export(odf,'file.txt',regular,'resolution',2.5*degree)
+% export(odf,'file.txt',regular,'resolution',2.5*degree)
 %
 %% Input
 %  odf      - ODF to be exported

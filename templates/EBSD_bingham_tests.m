@@ -72,7 +72,7 @@ legend('spherical','prolatnes','oblatnes')
 %% Simulation
 
 for resolutions = [5 2.5 1.5] *degree
-  ebsd_sim = simulateEBSD(odf_model,nto,'resolution',resolutions);
+  ebsd_sim = calcEBSD(odf_model,nto,'resolution',resolutions);
 
   [q_mean_sim lambda_sim EV_sim kappa_sim] = mean(ebsd_sim);
   

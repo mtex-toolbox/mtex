@@ -54,7 +54,7 @@
 % ODFs estimated from EBSD. In particular it is possible to compare ODFs
 % estimated from EBSD data with those estimated from pole figure data using
 % the command <ODF.calcError.html calcError>. Another usefull command in
-% MTEX is <ODF.simulateEBSD.html simulateEBSD> which allows to simulate
+% MTEX is <ODF.calcEBSD.html calcEBSD> which allows to simulate
 % EBSD data for a given ODF.
 %
 % A practical guide to EBSD data analysis with MTEX can be found

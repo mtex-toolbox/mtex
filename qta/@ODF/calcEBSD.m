@@ -1,8 +1,8 @@
-function ebsd = simulateEBSD(odf,points,varargin)
+function ebsd = calcEBSD(odf,points,varargin)
 % simulate EBSD data from ODF
 %
 %% Syntax
-%  ebsd = simulateEBSD(odf,points)
+%  ebsd = calcEBSD(odf,points)
 %
 %% Input
 %  odf    - @ODF
@@ -13,7 +13,7 @@ function ebsd = simulateEBSD(odf,points,varargin)
 %
 %
 %% See Also
-% ODF_simulatePoleFigure
+% ODF_calcPoleFigure
 
 % get input
 argin_check(points,'double');

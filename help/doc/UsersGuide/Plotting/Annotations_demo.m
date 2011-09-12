@@ -82,7 +82,7 @@ annotate(mod2,...
 %%
 % or EBSD scatter plots
 
-ebsd = simulateEBSD(odf,200);
+ebsd = calcEBSD(odf,200);
 scatter(ebsd,'center',mod1);
 annotate(mod1,...
   'MarkerSize',10,'MarkerEdgeColor','r','MarkerFaceColor','r')

@@ -16,7 +16,7 @@ function pdfn = noisepf(pdf,fak,background,varargin)
 %  NONNEGATIV -> force data to be non negative
 %
 %% See also
-% ODF/simulatePoleFigure
+% ODF/calcPoleFigure
 
 if nargin == 2, background = 0;end
 if numel(fak) == 1, fak = repmat(fak,numel(pdf),1);end

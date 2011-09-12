@@ -29,7 +29,7 @@ plotodf(fibre_odf,'sections',6,'silent')
 %
 % This ODF we use now to simulate 10000 individual orientations.
 
-ebsd = simulateEBSD(fibre_odf,10000)
+ebsd = calcEBSD(fibre_odf,10000)
 
 %% ODF Estimation from EBSD Data
 %
@@ -64,12 +64,12 @@ calcError(odf,fibre_odf,'resolution',5*degree)
 e = [];
 for i = 1:6
 
-  ebsd = simulateEBSD(fibre_odf,10^i);
+  ebsd = calcEBSD(fibre_odf,10^i);
   psi = calcKernel(ebsd);
   odf = calcODF(ebsd,'kernel',psi);
   e(i,1) = calcError(odf,fibre_odf,'resolution',2.5*degree);
   
-  ebsd = simulateEBSD(fibre_odf,10^i);
+  ebsd = calcEBSD(fibre_odf,10^i);
   psi = calcKernel(ebsd,'method','RuleOfThumb');
   odf = calcODF(ebsd,'kernel',psi);
   e(i,2) = calcError(odf,fibre_odf,'resolution',2.5*degree);  

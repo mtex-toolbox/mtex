@@ -23,14 +23,14 @@ function pf = calcErrorPF(pfmeas,pfcalc,varargin)
 %  pf - @PoleFigure 
 %
 %% See also
-%  PoleFigure/calcError ODF/simulatePoleFigure
+%  PoleFigure/calcError ODF/calcPoleFigure
 
 progress(0,length(pfmeas));
 for i = 1:length(pfmeas)
   
   % evaluate ODF if neccesary
   if isa(pfcalc,'ODF')
-    pf(i) = simulatePoleFigure(pfcalc,pfmeas(i).h,pfmeas(i).r,'superposition',pfmeas(i).c); %#ok<AGROW>
+    pf(i) = calcPoleFigure(pfcalc,pfmeas(i).h,pfmeas(i).r,'superposition',pfmeas(i).c); %#ok<AGROW>
   else
     pf(i) = pfcalc(i); %#ok<AGROW>
   end

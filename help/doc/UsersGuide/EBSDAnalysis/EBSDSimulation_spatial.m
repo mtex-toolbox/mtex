@@ -3,7 +3,7 @@
 
 %% Generation of random 2d Data
 
-ebsd = simulateEBSD(SantaFe,500);
+ebsd = calcEBSD(SantaFe,500);
 
 X = randi(20,500,2);
 

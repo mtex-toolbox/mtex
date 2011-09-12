@@ -253,7 +253,7 @@
 % * [[EBSD.calcODF.html,Recover]] ODFs from EBSD data via kernel density
 % estimation.
 % * [[EBSD.calcODF.html,Estimate]] Fourier coefficients from EBSD data.
-% * [[ODF.simulateEBSD.html,Simulate]] EBSD data from ODFs.
+% * [[ODF.calcEBSD.html,Simulate]] EBSD data from ODFs.
 % * [[EBSD.export.html,Export]] EBSD data.
 %
 % *New Functions*

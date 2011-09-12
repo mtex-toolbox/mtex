@@ -35,7 +35,7 @@ function odf = calcODF(ebsd,varargin)
 %  noFourier        - no Fourier method
 %
 %% See also
-% ebsd_demo EBSD2odf EBSDSimulation_demo loadEBSD ODF/simulateEBSD kernel/kernel
+% ebsd_demo EBSD2odf EBSDSimulation_demo loadEBSD ODF/calcEBSD kernel/kernel
 
 vdisp(' performing kernel density estimation',varargin{:})
 
