@@ -55,18 +55,20 @@ else
   end
 
   % set up crystal symmetries
-  if nargin >= 2 && ((isa(varargin{2},'symmetry') && isCS(varargin{2}))...
+  if check_option(varargin,'cs')
+    CS = ensurecell(get_option(varargin,'CS',{}));
+  elseif nargin >= 2 && ((isa(varargin{2},'symmetry') && isCS(varargin{2}))...
       || (isa(varargin{2},'cell') && isa(varargin{2}{1},'symmetry')))
     CS = ensurecell(varargin{2});
   else
-    CS = ensurecell(get_option(varargin,'CS',{}));
+    CS = {};
   end
 
   % spread crystal symmetries over phases
   phases = unique(ebsd.phase);
   if numel(CS) < max(phases)
     if numel(CS) < numel(phases)
-      if isempty_cell(CS), CS = symmetry('cubic');end
+      if isempty_cell(CS), CS = {symmetry('cubic')};end
       CS = repmat(CS(1),1,max(ebsd.phase));
     else
       CSS(phases) = CS;

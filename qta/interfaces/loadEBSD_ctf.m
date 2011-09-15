@@ -47,7 +47,7 @@ end
 
 ebsd = loadEBSD_generic(fname,'cs',cs,'ss',ss,'bunge','degree',...
   'ColumnNames',{'Phase' 'X' 'Y' 'Bands' 'Error' 'Euler 1' 'Euler 2' 'Euler 3' 'MAD' 'BC' 'BS'}, ...
-  'Columns',1:11,varargin{:});
+  'Columns',1:11,'IgnorePhase',0,varargin{:});
 
 
 % x||a*, z||c 

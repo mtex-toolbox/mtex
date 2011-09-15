@@ -135,6 +135,7 @@ if istype(names,{'Phase'})
   ind = ismember(phase,ignorePhase);
   d(ind,:) = [];
   phase(ind)=[];
+  q(ind) = [];
   
 else
   
