@@ -1,36 +1,34 @@
 %% Misorientation Analysis
-% Analyse interior misorientation and misorientation between neighboured grains.
+% How to analyse misorientations.
 %
 %% Open in Editor
 %
 %% Contents
 %
-%% 
-% Beside the influence of the choosen high-angle theshold (see <influence_demo.html demo>)
-% on misorientation there are manifold ways to explain boundary and intergranular grain
-% properties and its texture.
-%%
-% One could explain misorientation as the orientation needed to rotate
-% $g_i$ uppon $g_j$ modulo crystal symmetry, 
+%% Definition
 %
-% $$ g_{mis}(g_i,g_j) = \left(g_i*G_{Laue}\right)^{-1} * \left(g_j *G_{Laue}\right)  $$
+% In MTEX the misorientation between two orientations x, y is defined as 
 %
-% or the other way round depending on the point of view.
+% $$ mis(x,y) = x^{-1} * y  $$
+%
+% In te case of EBSD data missorientations between neighbouring grains,
+% within grains and between random measurments are of interest.
 
-%%
+%% The sample data set
 % Let us first import some EBSD data by a [[matlab:edit mtexdata, script file]]
 
 mtexdata aachen
 
 %%
-% and <EBSD.calcGrains.html regionalize> our investigation area into
-% grains
+% and <EBSD.calcGrains.html reconstruct> the grains by
 
 [grains ebsd] = calcGrains(ebsd,'threshold',15*degree);
 
 
 %% Intergranular Misorientation
-% Let us inspect the <grain.misorientation.html misorientation> from
+% The intergranular misorientation is already automaticaly computed  
+
+the Let us inspect the <grain.calcMis2Mean.html misorientation> from
 % the assigned <EBSD.mean.html mean orientation> of each grain to its corresponding ebsd
 % data
 

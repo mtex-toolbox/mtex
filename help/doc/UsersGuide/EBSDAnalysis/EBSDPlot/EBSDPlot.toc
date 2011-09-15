@@ -1,2 +1,0 @@
-OrientationPlots
-SpatialPlots

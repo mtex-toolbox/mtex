@@ -83,7 +83,7 @@ import_wizard('EBSD');
 % </table>
 % </html>
 %
-%% The generic cnterface
+%% The generic interface
 %
 % In the case of generic text files MTEX is unsure about the column
 % association in the data file. It will ask the user which colums
