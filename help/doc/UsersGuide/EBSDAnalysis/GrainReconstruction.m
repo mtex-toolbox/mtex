@@ -105,8 +105,9 @@ plot(ebsd_max_grain)
 
 %%
 % The other way round one may also ask for the list of all grains that
-% contain certain EBSD data. Again the command <grain.link.html link>
-% establishes this connection.
+% contain certain EBSD data. In the following example we extract all BESD
+% data with a bad MAD value and ask for all grains containing those
+% measurements.
 
 % get MAD
 mad = get(ebsd,'mad');
