@@ -12,7 +12,7 @@
 
 import_wizard('tensor'); 
 
-%% The generic cnterface
+%% The generic interface
 
 
 fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
