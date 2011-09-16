@@ -148,9 +148,13 @@ if isappdata(gcf,'hemisphere'),
     
   hemisphere = getappdata(gcf,'hemisphere');
   
-elseif check_option(varargin,{'antipodal','plain'})
+elseif check_option(varargin,'antipodal')
   
   hemisphere = 'antipodal';
+  
+elseif check_option(varargin,'plain')
+  
+  hemisphere = 'north';
   
 elseif check_option(varargin,{'north','south','antipodal','lower','upper'})
   
@@ -183,6 +187,8 @@ if check_option(ensurecell(hemisphere),{'north','upper','antipodal'})
     south = theta > pi/2+0.001;
     rho(south) = rho(south) + pi;
     theta(south) = pi - theta(south);
+    ind = true(size(theta));
+  elseif check_option(varargin,'plain')
     ind = true(size(theta));
   else
     ind = (theta <= pi/2+0.001) | isnan(theta);
