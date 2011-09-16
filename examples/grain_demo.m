@@ -40,7 +40,7 @@ plot(ebsd('Fe'))
 
 [grains ebsd] = calcGrains(ebsd,'angle',[10 5]*degree)
 
-%% 
+%%
 % Plot grain-boundaries
 
 plotBoundary(grains,'color',[0.25 0.1 0.5])
@@ -55,73 +55,9 @@ x = fix(exp(.5:.5:7.5));
 figure, bar( hist(grainSize(grains),x) );
 
 
-%% Accessing geometric properties 
+%% Accessing geometric properties
 %
 area(grains); perimeter(grains);
 shapefactor(grains); paris(grains); %...
 
-
-%% Spatial Relation - Join Counts
-% find out which phases depends on other phases and how
-% therefor we can iterate over all grains access its ebsd data
-
-coloring = get(grains,'phase');
-
-[J T q p] = joinCount(grains,coloring);
-
-%%
-% we can use also other coloring, for instance binary
-
-joinCount(grains,hasSubBoundary(grains));
-joinCount(grains,hashole(grains));
-  % ...
-
-%% Multiple Access of EBSD data
-% there is a routine grainfun to allow iterative access
-% we can split our EBSD data
-
-%%
-% into several EBSD objects corresponding to our grains
-
-%grainfun(@(ebsd_fun) ebsd_fun, grains(grainSize(grains) > 600), ebsd,'uniformoutput',true)
-
-
-%% Multiple Access and ODF Estimation
-% calculate all ODFs of grains, since this takes quite long we restrict the
-% selected grains to a region of interest
-
-%ply = polygon([90 90;140 90;140 140; 90 140; 90 90]);
-%pgrains = grains( inpolygon( grains, ply,'centroids') )
-
-%figure, plot(pgrains)
-%hold on, plot(ply,'color','r','linewidth',2)
-
-%%
-% the five larges grains
-%[a nd] = sort(grainSize(pgrains),'descend');
-%pgrains = pgrains(nd(1:5))
-
-%%
-% and now the ODF with respect to its origial ebsd-data
-
-%kern = kernel('de la Vallee Poussin','halfwidth',5*degree);
-%pgrains = calcODF(pgrains,ebsd,'kernel',kern,'exact')
-
-%%
-% the ODF of individual grains are stored as a property, alternativ we can
-% specify the property name, if we want to treat several ODFs
-
-%%
-% let us calculate the misorentation to mean followed by an ODF estimation
-
-%ebsd_mis = misorientation(grains,ebsd);
-%pgrains = calcODF(pgrains,ebsd_mis,'kernel',kern,'property','ODF_mis','exact')
-
-%%
-% now we can work with grainfun by specifiying the property-field 'ODF' and
-% applying an function on it, e.g we want to calculate the textureindex of
-% each grain
-
-%tindex = grainfun(@textureindex, pgrains,'ODF','resolution',5*degree)
-%tindex_mis = grainfun(@textureindex, pgrains,'ODF_mis','resolution',5*degree)
 
