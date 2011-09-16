@@ -18,38 +18,29 @@ end
 
 %% generate regular grid and interpolate
 
-c = 1:size(X,1);
-dim = size(X,2);
+% setup interpolation object
+F = TriScatteredInterp(X,(1:size(X,1)).','nearest');
 
-if dim  == 2
+% interpolate
+if size(X,2)  == 2
   [xi,yi] = meshgrid(cube(1):dx(1):cube(2),cube(3):dx(2):cube(4));
-  ci = interp2(X(:,1),X(:,2),c,xi,yi,'nearest')
+  ebsd.options.x = xi(:);
+  ebsd.options.y = yi(:);
+  ci = fix(F(xi,yi));
 else
   [xi,yi,zi] = meshgrid(cube(1):dx(1):cube(2),cube(3):dx(2):cube(4),cube(5):dx(3):cube(6));
-  ci = interp3(X(:,1),X(:,2),X(:,3),c,xi,yi,zi,'nearest')
+  ebsd.options.x = xi(:);
+  ebsd.options.y = yi(:);
+  ebsd.options.z = zi(:);
+  ci = fix(F(xi,yi,zi));
 end
 
 %% fill ebsd variable
-smpsz = sampleSize(ebsd);
-cs = cumsum([0,smpsz]);
 
-for l=1:numel(ebsd)
-  nd = cs(l) < Z & Z <= cs(l+1);
-  Zt = Z(nd,:)-cs(l);
-  
-  ebsd(l).X = [ebsd(l).X; Xt(nd,:)];
-  ebsd(l).orientations = [ebsd(l).orientations; ebsd(l).orientations(Zt)];
-  
-  ebsd_fields = fields(ebsd(l).options);
-  for f = 1:length(ebsd_fields)
-    if numel(ebsd(l).options.(ebsd_fields{f})) == smpsz(l)
-      ebsd(l).options.(ebsd_fields{f}) = [ebsd(l).options.(ebsd_fields{f}); ...
-        ebsd(l).options.(ebsd_fields{f})(Zt,:)];
-    end
-  end
+ebsd.rotations = ebsd.rotations(ci);
+ebsd.phase = ebsd.phase(ci);
+
+for fn = fieldnames(ebsd.options).'
+  if any(strcmp(char(fn),{'x','y','z'})), continue;end
+  ebsd.options.(char(fn)) = ebsd.options.(char(fn))(ci);
 end
-
-
-function vprogress(k,n)
-if n > 100, progress(k,n), end
-
