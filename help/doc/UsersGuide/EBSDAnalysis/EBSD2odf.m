@@ -19,6 +19,7 @@ mtexdata aachen
 
 odf = calcODF(ebsd('Fe'))
 
+%%
 % The function <EBSD.calcODF.html calcODF> implements ODF estimation from
 % EBSD data in MTEX. The underlaying statistical method is called as kernel
 % density estimation, which can be seen as a generalized histogram.
