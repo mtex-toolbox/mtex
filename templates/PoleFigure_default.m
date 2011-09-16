@@ -1,11 +1,13 @@
 %% Default template
-%% Visualize Data
+
+%% Visualize the raw 
+
 % plot of the raw data
 plot(pf)
 
-%% ODF estimatio
+%% ODF estimation
 
-% estimate some ODF
+% estimate an ODF
 odf = calcODF(pf)
 
 %% Plot Caclulated Pole Figures

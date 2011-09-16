@@ -11,13 +11,33 @@ maxrho = maxrho - minrho;
 h = vector3d(h); h = h./norm(h);
 switch Laue(cs)
   
-  case {'-1','2/m','-3','4/m','6/m'}
+  case {'-1','-3','4/m','6/m'}
     if check_option(varargin,'antipodal')
       h(getz(h)<0) = -h(getz(h)<0);
     end
     [theta,rho] = polar(h(:));
     rho = mod(rho,maxrho)./maxrho;
-    pm = theta(:) >= pi/2;    
+    if max(theta(:)) < pi / 3
+      theta = theta./max(theta(:))*pi/2;
+    end
+    pm = theta(:) >= pi/2;
+    if any(pm), c(pm,:) = hsv2rgb([rho(pm),ones(sum(pm),1),2-theta(pm)./pi*2]); end
+    if any(~pm), c(~pm,:) = hsv2rgb([rho(~pm),theta(~pm)./pi*2,ones(sum(~pm),1)]); end
+    c = reshape(c,[size(h),3]);
+    return
+  case '2/m'
+    if check_option(varargin,'antipodal')
+      h(gety(h)<0) = -h(gety(h)<0);
+    end
+    
+    rho = atan2(getx(h),getz(h));
+    theta = acos(gety(h));
+    
+    rho = mod(rho,maxrho)./maxrho;
+    if max(theta(:)) < pi / 3
+      theta = theta./max(theta(:))*pi/2;
+    end
+    pm = theta(:) >= pi/2;
     if any(pm), c(pm,:) = hsv2rgb([rho(pm),ones(sum(pm),1),2-theta(pm)./pi*2]); end
     if any(~pm), c(~pm,:) = hsv2rgb([rho(~pm),theta(~pm)./pi*2,ones(sum(~pm),1)]); end
     c = reshape(c,[size(h),3]);
@@ -84,6 +104,11 @@ cc = cc ./ norm(cc);
 if check_option(varargin,'radius') % linear interpolation to the radius
   
   radius = get_option(varargin,'radius',1);
+  dh(:,:) = 1-min(1,angle(sh,center)./radius);
+
+elseif max(angle(sh,center)) < 10*degree
+  
+  radius = max(angle(sh,center));
   dh(:,:) = 1-min(1,angle(sh,center)./radius);
   
 else % linear interpolation to the boundaries

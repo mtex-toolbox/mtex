@@ -602,7 +602,7 @@ if ~isempty(odf_pos) && ~check_option(varargin,'ebsd')
 
   if ok
     if sel2 > length(odf_pos)
-      obj = link(ebsd,grains1);
+      obj = ebsd(grains1);
     else
       obj = [ props.(propnames{odf_pos(sel2)}) ];
     end
@@ -612,7 +612,7 @@ else
   if isempty(ebsd)
    ebsd = updateEBSD;
   end
-  obj = link(ebsd,grains1);
+  obj = ebsd(grains1);
 end
 
 %--------------------------------------------------------------------------

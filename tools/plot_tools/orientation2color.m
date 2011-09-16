@@ -19,7 +19,7 @@ switch lower(coloring)
   case model(1)
     c = euler2rgb(o,varargin{:});
   case model(2)
-    c = angle(quaternion(o)).';
+    c = angle(o).';
     c = 1-repmat(( c-min(c) )./ (max(c)-min(c)),1,3);
   case model(3)
     c = sigma2rgb(o,varargin{:});
