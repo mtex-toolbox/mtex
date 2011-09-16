@@ -21,13 +21,24 @@ elseif ischar(s.subs{1}) || iscell(s.subs{1})
     min = s.subs;
   end
 
+  % which minerals to select
   minerals = get(grains,'minerals');
-
+ 
   phases = false(1,length(minerals));
   for i =1:length(min)
     phases = phases | strncmpi(minerals,min{i},length(min{i}));
   end
-  ind = phases([grains.phase]);
+  
+  % make ordering right
+  gphases = [grains.phase];
+  uphases = unique(gphases);
+    
+  loosephases = false(1,max(uphases));
+  loosephases(uphases) = phases;
+  
+  
+  % select grains
+  ind = loosephases(gphases);
 
   grains = subsref(grains,ind);
 
