@@ -6,11 +6,10 @@
 ebsd = calcEBSD(SantaFe,100);
 
 xy = randi(20,100,2);
+xy = unique(xy,'rows');
 
 ebsd = set(ebsd,'x',xy(:,1));
 ebsd = set(ebsd,'y',xy(:,2));
-ebsd = set(ebsd,'phase',ones(100,1));
-
 
 figure,plot( calcGrains(ebsd) )
 
@@ -25,24 +24,23 @@ CS = symmetry('cubic');
 SS = symmetry;
 
 X = randi(25,50,3);
-o = SO3Grid('random',CS,SS,'points',size(X,1));
-ebsd(1) = EBSD(orientation(o),'xy',X,'phase',1);
+X = unique(X,'rows');
+options.x = X(:,1);
+options.y = X(:,2);
+options.z = X(:,3);
 
-X = randi(25,20,3);
 o = SO3Grid('random',CS,SS,'points',size(X,1));
-ebsd(2) = EBSD(orientation(o),'xy',X,'phase',2);
+
+ebsd = EBSD(orientation(o),'options',options);
 
 %%
 % currently the voronoi decomposition in 3d is not supported, so before
 % computing grains we interpolate data by on a regular grid
 %
 
-[grains ebsd] = calcGrains(ebsd,'voronoi')
-plot(grains,'edgecolor','k')
-
-%%
-
 ebsd = fill(ebsd,[0 25 0 25 0 25],1)
+
+plot(ebsd)
 
 %%
 % 
@@ -59,19 +57,6 @@ lighting phong
 camlight('headlight')
 grid on
 
-
-%%
-% plot a single phase
-
-plot(grains(get(grains,'phase') == 2))
-
-material dull
-lighting phong
-camlight('headlight')
-grid on
-
-
-%%
 
 
 
