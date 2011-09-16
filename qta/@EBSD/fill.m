@@ -10,46 +10,26 @@ function ebsd = fill(ebsd,cube,dx)
 % fill(ebsd,extend(ebsd),.6)
 %
 
-
-X = [get(ebsd,'x'),get(ebsd,'y')];
+%% extract spatial coordinates
+X = get(ebsd,'xyz');
 if numel(dx) == 1
   dx(1:3) = dx;
 end
 
+%% generate regular grid and interpolate
+
+c = 1:size(X,1);
 dim = size(X,2);
+
 if dim  == 2
-  [x,y] = meshgrid(cube(1):dx(1):cube(2),cube(3):dx(2):cube(4));
-  Xt = [x(:) y(:)];
+  [xi,yi] = meshgrid(cube(1):dx(1):cube(2),cube(3):dx(2):cube(4));
+  ci = interp2(X(:,1),X(:,2),c,xi,yi,'nearest')
 else
-  [x,y,z] = meshgrid(cube(1):dx(1):cube(2),cube(3):dx(2):cube(4),cube(5):dx(3):cube(6));
-  Xt = [x(:) y(:) z(:)];
+  [xi,yi,zi] = meshgrid(cube(1):dx(1):cube(2),cube(3):dx(2):cube(4),cube(5):dx(3):cube(6));
+  ci = interp3(X(:,1),X(:,2),X(:,3),c,xi,yi,zi,'nearest')
 end
 
-Xt(ismember(Xt,X,'rows'),:) = []; % dont process points allready exist
-
-if size(Xt,1) == 0, return; end
-
-Zbuffer = Inf(size(Xt,1),1);
-Z = zeros(size(Xt,1),1);
-sx = size(X,1);
-
-vprogress(0,sx);
-for k=1:sx
-  vprogress(k,sx);
-  
-  % compute distances
-  d = zeros(size(Xt,1),1);
-  for a=1:dim
-    d = d + (X(k,a) - Xt(:,a)).^2;
-  end
-  d = sqrt(d);
-  
-  nd = d<Zbuffer;
-  Zbuffer(nd) = d(nd);
-  Z(nd) = k;
-end
-
-% copy data
+%% fill ebsd variable
 smpsz = sampleSize(ebsd);
 cs = cumsum([0,smpsz]);
 
