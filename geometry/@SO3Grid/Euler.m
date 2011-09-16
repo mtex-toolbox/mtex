@@ -17,7 +17,7 @@ function varargout = Euler(S3G,varargin)
 % quaternion/Euler
 
 % get convention
-convention = EulerAngleConvention(varargin{:});
+[convention,labels] = EulerAngleConvention(varargin{:});
 S3GOptions = get(S3G,'options');
 S3GConvention = EulerAngleConvention(S3GOptions{:});
 
