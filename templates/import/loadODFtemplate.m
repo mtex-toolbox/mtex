@@ -29,6 +29,6 @@ fname = {file names};
 psi = kernel({kernel name},'halfwidth',{halfwidth});
 
 % create an EBSD variable containing the data
-odf = loadODF(fname,CS,SS,'kernel',psi,'resolution',{resolution},'interface',{interface} ...
-  ,{options});
+odf = loadODF(fname,CS,SS,{method},'kernel',psi,'resolution',{resolution},...
+  'interface',{interface},{options});
 

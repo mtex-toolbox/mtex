@@ -2,13 +2,10 @@ function [data,interface,options,idata] = loadData(fname,type,varargin)
 % import PoleFigure, EBSD, and ODF data
 %
 %% Description
-% *loadEBSD* is a high level method for importing EBSD data from external
-% files. It autodetects the format of the file. As parameters the method
-% requires a filename and the crystal and specimen @symmetry. Furthermore,
-% you can specify a comment to be associated with the data. In the case of
-% generic ascii files each of which consist of a table containing in each
-% row the euler angles of a certain orientation see
-% [[loadEBSD_generic.html,loadEBSD_generic]] for additional options.
+% *loadData* is a low level method for importing EBSD, PoleFigure, ODF and
+% Tensor data from external files. It autodetects the format of the file.
+% As parameters the method requires a filename and the crystal and specimen
+% @symmetry. 
 %
 %% Input
 %  fname     - filename
@@ -158,7 +155,4 @@ function v = checkClass(var,className)
 
 if iscell(var) && ~isempty(var), var = var{1};end
 v = isa(var,className);
-
-
-
 

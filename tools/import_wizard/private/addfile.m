@@ -62,7 +62,21 @@ for i=1:length(fnames)
     
     % update file list
     set(list_handle, 'String',path2filename(getappdata(list_handle,'filename')));
-    set(list_handle,'Value',1);
+    set(list_handle, 'Value',1);
+    
+    handles = getappdata(gcf,'handles');
+    if isa(newData,'ODF')
+      if check_option(newData,'interp')
+        set(handles.method(1),'value',1);
+        set(handles.method(2),'value',0);
+      else
+        set(handles.method(1),'value',0);
+        set(handles.method(2),'value',1);
+      end
+    end
+
+    
+    
     drawnow; pause(0.01);
   end
 end

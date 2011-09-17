@@ -88,13 +88,19 @@ if isa(data,'ODF')
   hw = get(psi,'halfwidth');
   str = replaceToken(str,'{kernel name}',['''' kname '''']);
   str = replaceToken(str,'{halfwidth}',[xnum2str(hw/degree) '*degree']);
+  methods = {'''interp''','''density'''};
+  str = replaceToken(str,'{method}',methods{1+get(handles.method(2),'value')});
+  
   
   if get(handles.exact,'value')
-    str = replaceToken(str,'{resolution}',[get(handles.approx,'string') '*degree']);
+    str = replaceToken(str,'{resolution}',...
+      [get(handles.approx,'string') '*degree']);
   else
     str = replaceToken(str,...
-      '''resolution'',{resolution}','''exact''');
-  end  
+      '''resolution'',{resolution}','');
+  end
+  
+  
 end
 
 
