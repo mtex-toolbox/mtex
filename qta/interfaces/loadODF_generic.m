@@ -127,27 +127,44 @@ if check_option(varargin,'passive rotation'), q = inverse(q); end
 options = varargin;
 if ischeck, odf = uniformODF(symmetry,symmetry);return;end
 
+if numel(unique(weight)) > 1
+  defaultMethod = 'interp';
+else
+  defaultMethod = 'density';
+end
 
-% load single orientations
-%if ~check_option(varargin,{'exact','resolution'}), varargin = [varargin,'exact'];end
-%ebsd = EBSD(q,cs,ss,varargin{:});
+method = get_flag(varargin,{'interp','density'},defaultMethod);
 
-% calc ODF
-%odf = calcODF(ebsd,'weight',weight,'silent',varargin{:});
+switch method
+  
+  case 'density'
 
-%
-disp('  Interpolating the ODF. This might take some time...')
-res = 3*degree;
+    % load single orientations
+    if ~check_option(varargin,{'exact','resolution'}), varargin = [varargin,'exact'];end
+    ebsd = EBSD(q,cs,ss,varargin{:});
+    
+    % calc ODF
+    odf = calcODF(ebsd,'weight',weight,'silent',varargin{:});    
+    
+  case 'interp'
+  
+    disp('  Interpolating the ODF. This might take some time...')
+    res = 3*degree;
+  
+    % interpolate
+    S3G = SO3Grid(res,cs,ss);
 
-% interpolate
-S3G = SO3Grid(res,cs,ss);
+    psi = kernel('de la Vallee Poussin','halfwidth',res);
 
-psi = kernel('de la Vallee Poussin','halfwidth',res);
+    M = K(psi,S3G,q,cs,ss);
 
-M = K(psi,S3G,q,cs,ss);
+    MM = M * M';
+    mw = M * weight;
+    w = pcg(MM,mw,1e-2,30);
+    %sum(w)
+    odf = ODF(S3G,w./sum(w),psi,cs,ss);
+    
+end
 
-MM = M * M';
-mw = M * weight;
-w = pcg(MM,mw,1e-2,30);
-
-odf = ODF(S3G,w,psi,cs,ss);
+% store method
+odf = set_option(odf,method);
