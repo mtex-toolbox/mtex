@@ -17,7 +17,7 @@ function odf_hat = Fourier(odf,varargin)
 %  B    - maximum order of Fourier coefficients to be returned
 %
 %% Options
-%  l2--normalized - used L^2 normalization
+%  l2--normalization - used L^2 normalization
 %
 %% Output
 %  odf_hat - Fourier coefficient -- complex (2L+1)x(2L+1) matrix
