@@ -50,6 +50,55 @@ switch vname
     end
   case 'Laue'
     value = obj.laue;
+
+  case 'nfold'
+    
+    switch obj.laue
+      
+      case {'-1'}
+    
+        value = 1; 
+               
+      case {'mmm','2/m'}
+
+        value = 2;
+        
+      case {'-3m','-3','m-3'}
+        
+        value = 3;
+        
+      case {'6/mmm','6/m'}
+        
+        value = 6;
+        
+      otherwise
+        
+        value = 4;
+      
+    end
+    
+  case 'maxOmega'
+    
+    switch obj.laue
+      
+      case {'-1','2/m','-3','4/m','6/m'}
+    
+        value = pi; 
+               
+      case {'mmm','-3m','4/mmm','6/mmm'}
+
+        value = 2*atan(sqrt(1.0+2.0*tan(pi / 2 / get(obj,'nfold'))^2));
+        
+      case 'm-3'
+        
+        value = pi/2;
+    
+      case 'm-3m'
+
+        value = 2*atan((sqrt(2) - 1)*sqrt(5-2*sqrt(2)));
+      
+    end
+    
   otherwise
     error('Unknown field in class symmetry!')
 end
