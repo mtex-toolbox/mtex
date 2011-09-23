@@ -25,4 +25,4 @@ function [m,ori]= max(odf,varargin)
 
 ori = localModes(odf,varargin{:});
 
-m = eval(odf,ori);
+m = eval(odf,ori); %#ok<EVLC>
