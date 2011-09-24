@@ -7,7 +7,7 @@ odf = unimodalODF(idquaternion,cs,ss,'halfwidth',1.5*degree);
 
 %%
 
-q = modalorientation(odf)
+q = calcModes(odf)
 
 %%
 v = [];
@@ -48,7 +48,7 @@ plot(r/degree,reshape(v,size(v,1),[]));
 
 %r = linspace(0,100*degree,20);
 %for i = 1:length(r)
-%  v(i,1) = volume(odf,modalorientation(odf),r(i));
+%  v(i,1) = volume(odf,calcModes(odf),r(i));
 %  v(i,2) = volume(uniformODF(cs,ss),idquaternion,r(i)); 
 %end
 

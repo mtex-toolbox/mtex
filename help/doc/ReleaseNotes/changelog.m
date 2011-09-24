@@ -5,6 +5,7 @@
 %%  MTEX 3.2 - 05/2011
 %
 % *3d EBSD Analysis*
+%
 % This release for the first time supports 3d EBSD data. In particular,
 % MTEX is now able to
 %
@@ -14,11 +15,42 @@
 % * 3d grain detection
 % * topology of 3d grains, i.e. boundaries, neighbouring grains, etc.
 %
+% *Misorientation Analysis*
+%
+% * computation of the uncorrelated misorientation distribution (MDF) for one
+% or two ODFs
+% * computation of the theoretical angle distribution of an ODF or MDF
+% * computation of the misorienation to mean for EBSD data
+%
+% *New Syntax for EBSD and grain variables*
+%
+% EBSD and grain variables can now be indexed by phase, region or grain /
+% ebsd variables. Let us assume we have a two phase ebsd variable
+% containing 'Fe' and 'Mg' then can restrict our dataset to the Fe -
+% phase only be writting
+%
+% ebsd('Fe')
+%
+% The same works with grains and also with more than one phase. Please
+% have a look into the documentation for information how to index ebsd
+% and grain variables.
+%
+% Accordingly the following syntax is now depreciated.
+%
+% calcODF(ebsd,'phase',2)
+%
+% It should be replaced by
+%
+% calcODF(ebsd('Fe'))
+%
+%
 % *Other Enhangments*
 %
+% * better import and export of pole figures, odfs and EBSD data
 % * automatic centering of a specimen with repsect to its specimen symmetry
 % * download and import tensors from http://www.materialproperties.org/
-% * new interfaces for Rigaku, Siemens, and Bruker X-ray devices
+% * new interfaces for Rigaku, Siemens, Bruker and many other X-ray devices and formats
+% * support for rank three tensors, i.e, for piezo electricity tensors
 % * improved documentation
 % * many bug fixes
 %
@@ -38,13 +70,13 @@
 %
 % * support for different crystal reference frame conventions
 % * automatic conversion between different reference frames
-% * definition of crystal directions in direct and reciprocal space 
+% * definition of crystal directions in direct and reciprocal space
 % * more predefines orientations: Cube, CubeND22, CubeND45, CubeRD, Goss,
 % Copper, SR, Brass, PLage, QLage, ...
-% * improved EBSD and grain plots 
+% * improved EBSD and grain plots
 % * new and improved interfaces
 % * many bug fixes
-% 
+%
 %
 %% MTEX 3.0 - 10/2010
 %
@@ -66,7 +98,7 @@
 %
 % * automatic kernel selection in ODF estimation from EBSD data
 % * support for Bingham model ODFs
-% * esimation of Bingham parameters from EBSD data 
+% * esimation of Bingham parameters from EBSD data
 % * faster and more accurate EBSD simulation
 % * faster grain reconstruction
 % * improved documentation

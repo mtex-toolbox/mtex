@@ -26,6 +26,15 @@ function q = euler2quat(alpha,beta,gamma,varargin)
 % quaternion_index quaternion/quaternion axis2quat Miller2quat 
 % vec42quat hr2quat idquaternion 
 
+%% maybe euler angles are given as a matrix
+if nargin == 1 && size(alpha,2)==3 
+  
+  gamma = alpha(:,3);
+  beta = alpha(:,2);
+  alpha = alpha(:,1);
+  
+end
+
 
 %% transform to right convention
 

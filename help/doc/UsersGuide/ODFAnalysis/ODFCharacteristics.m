@@ -33,12 +33,12 @@ odf3 = calcODF(pf,'resolution',5*degree,'iter_max',10)
 % The modal orientation of an ODF is the crystallographic prefered
 % orientation of the texture. It is characterized as the maximum of the
 % ODF. In MTEX it can be computed by the command 
-% [[ODF.modalorientation.html,modalorientation]]
+% <ODF.calcModes.html,calcModes>
 
 %%
 % Determine the modalorientation as an
-% [[quaternion_index.html,quaternion]]:
-center = modalorientation(odf3)
+% >orientation_index.html,orientation>:
+center = calcModes(odf3)
 
 %% 
 % Lets mark this prefered orientation in the pole figures
@@ -74,7 +74,7 @@ entropy(odf2)
 %%
 % The relative volume of crystals with missorientation maximum 30 degree
 % from the modal orientation:
-volume(odf3,modalorientation(odf3),30*degree)  
+volume(odf3,calcModes(odf3),30*degree)  
 
 %%
 % The relative volume of crystals with missorientation maximum 20 degree

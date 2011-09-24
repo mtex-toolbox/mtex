@@ -90,8 +90,8 @@ plot(odf,'sections',18,'silent')
 
 odfrotated = rotate(odf,axis2quat(xvector,45*degree));
 plot(odfrotated,'sections',6);
-annotate(modalorientation(odfrotated),'marker','d');
+annotate(calcModes(odfrotated),'marker','d');
 
 %% volume analysis
 
-volume(odf,modalorientation(odf),20*degree)
+volume(odf,calcModes(odf),20*degree)

@@ -22,7 +22,7 @@ annotate([q1,q2,q3,q])
 
 %%
 
-q = modalOrientation(odf)
+q = calcModes(odf)
 
 %%
 figure(2)
