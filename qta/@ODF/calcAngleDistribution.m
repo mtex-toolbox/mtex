@@ -15,11 +15,15 @@ function [density,omega] = calcAngleDistribution(odf,varargin)
 %% See also
 
 
-% get resolution
-points = get_option(varargin,'points',100000);
-res = get_option(varargin,'resolution',2.5*degree);
 
-if check_option(varargin,'integration')
+if ~check_option(varargin,'fast')
+
+  % get resolution
+  res = get_option(varargin,'resolution',0.5*degree);
+  
+  % initialize evaluation grid
+  S3G = quaternion;
+  iS3G = 0;
   
   % the angle distribution of the uniformODF
   [density,omega] = angleDistribution(get(odf,'CS'));
@@ -33,19 +37,35 @@ if check_option(varargin,'integration')
     o = axis2quat(S2G,omega(k));
     
     % and select those
-    angle = abs(dot_outer(o,get(odf,'CS')));
-    maxAngle = max(angle,[],2); 
-        
-    % the angel frequency
-    %sum(angle(:,1)>maxAngle-0.0001)
-    if any(angle(:,1)>maxAngle-0.0001)
-      density(k) = density(k) * mean(eval(odf,o(angle(:,1)>maxAngle-0.0001)));  %#ok<EVLC>
+    rotAngle = abs(dot_outer(o,get(odf,'CS')));
+    maxAngle = max(rotAngle,[],2); 
+    o = o(rotAngle(:,1)>maxAngle-0.0001);
+    
+    % store these orientations
+    S3G = [S3G,o]; %#ok<AGROW>
+    iS3G(k+1) = numel(S3G); %#ok<AGROW>
+    
+  end
+  
+  % evaluate the ODF at the grid
+  f = eval(odf,S3G); %#ok<EVLC>
+  
+  % integrate
+  for k = 1:numel(omega)    
+    if iS3G(k)<iS3G(k+1)
+      density(k) = density(k) * mean(f(iS3G(k)+1:iS3G(k+1)));
     end
   end
   
 else
       
 
+  % get resolution
+  points = get_option(varargin,'points',100000);
+  
+  % get resolution
+  res = get_option(varargin,'resolution',2.5*degree);
+  
   %% simluate EBSD data
   ebsd = calcEBSD(odf,points,'resolution',res);
 
@@ -57,7 +77,7 @@ else
 
   %% perform kernel density estimation
 
-  [bandwidth,density,omega,cdf] = kde(angles,2^8,0,maxangle);
+  [bandwidth,density,omega] = kde(angles,2^8,0,maxangle); %#ok<ASGLU>
 
   density = density ./ mean(density) * pi ./ maxangle;
   
