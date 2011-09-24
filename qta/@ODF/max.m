@@ -21,8 +21,6 @@ function [m,ori]= max(odf,varargin)
 %
 %
 %% See also
-% ODF/modalorientation
+% ODF/calcModes
 
-ori = localModes(odf,varargin{:});
-
-m = eval(odf,ori); %#ok<EVLC>
+[ori,m] = calcModes(odf,varargin{:});

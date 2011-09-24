@@ -85,7 +85,7 @@
 %% Calculate Texture Characteristics 
 %
 % MTEX offers to compute a wide range of texture characteristics like
-% <ODF.modalorientation.html modal orientation>, <ODF.entropy.html entropy>,
+% <ODF.calcModes.html modal orientation>, <ODF.entropy.html entropy>,
 % <ODF.textureindex.html texture index>, or <ODF.volume.html volume portion>
 % to be computed for any model ODF or any recoverd ODF. You can also
 % calculate the Fourier coefficients useing the command <ODF.Fourier.html

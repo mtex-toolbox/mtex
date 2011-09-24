@@ -71,7 +71,7 @@ plotpdf(odf,Miller(1,0,0))
 
 calcError(odf2,odf3,'L1')      % difference between ODFs
 
-center = modalorientation(odf) % the modal orientation
+[maxODF,centerODF] = max(odf)  % the modal orientation
 mean(odf)                      % the mean orientation
 max(odf)
 
@@ -146,7 +146,7 @@ odf = 0.5 * fibreODF(Miller(0,0,0,1),yvector,cs,ss) + ...
 %%
 % f) What is the modal orientation of the ODF?
 
-mod = modalorientation(odf)
+mod = calcModes(odf)
 
 
 %%

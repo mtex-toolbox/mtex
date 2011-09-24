@@ -68,7 +68,7 @@ plotDiff(pf,odf)
 % calcError>.
 
 % define a unimodal ODF with the same modal orienation
-odf_modell = unimodalODF(modalorientation(odf),CS,symmetry,'halfwidth',15*degree)
+odf_modell = unimodalODF(calcModes(odf),CS,symmetry,'halfwidth',15*degree)
 
 % plot the pole figures
 close all;
