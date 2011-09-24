@@ -75,7 +75,7 @@ calcError(odf2,odf3,'L1')      % difference between ODFs
 mean(odf)                      % the mean orientation
 max(odf)
 
-volume(odf,center,5*degree)    % the volume of a ball
+volume(odf,centerODF,5*degree)    % the volume of a ball
 fibrevolume(odf2,h,r,5*degree) % the volume of a fibre
 
 textureindex(odf)         % the texture index
