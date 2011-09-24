@@ -8,7 +8,7 @@ varargin = delete_option(varargin,'complete');
 
 [maxtheta,maxrho,minrho] = getFundamentalRegionPF(cs,varargin{:}); %#ok<ASGLU>
 maxrho = maxrho - minrho;
-h = vector3d(h); h = h./norm(h);
+h = vector3d(h(:)); h = h./norm(h);
 switch Laue(cs)
   
   case {'-1','-3','4/m','6/m'}
