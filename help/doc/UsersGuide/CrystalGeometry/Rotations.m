@@ -8,8 +8,8 @@
 %
 %% Description
 %
-% Rotations are represented in MTEX by the class *rotation* which is an
-% inheritant of the class <quaternion_index.html quaternion> and allow to
+% Rotations are represented in MTEX by the class *rotation* which is 
+% inherited from the class <quaternion_index.html quaternion> and allow to
 % work with rotations as with matrixes in MTEX. 
 %
 %% Euler Angle Conventions
@@ -49,7 +49,7 @@ o = rotation('Euler',30*degree,50*degree,10*degree,'Roe')
 %% 
 % *Changing the Default Euler Angle Convention*
 %
-% The default euler angle convention can be changed by the command
+% The default Euler angle convention can be changed by the command
 % <set_mtex_option.html set_mtex_option>, for a permanent change the
 % <matlab:edit('mtex_settings.m') mtex_settings> should be edited. Compare
 
@@ -64,31 +64,31 @@ o
 % 
 % *The axis angle parametrisation*
 %
-% A very simple posibility to specify a rotation is to specify the 
-% rotational axis and the rotational angle.
+% A very simple possibility to specify a rotation is to specify the 
+% rotation axis and the rotation angle.
 
 o = rotation('axis',xvector,'angle',30*degree)
 
 %%
 % *Four vectors defining a rotation*
 %
-% Given four vectors u1, v1, u2, v2 there is a unique rotations q such that
+% Given four vectors u1, v1, u2, v2 there is a unique rotation q such that
 % q u1 = v1 and q u2 = v2.
 
 o = rotation('map',xvector,yvector,zvector,zvector)
 
 %%
-% If only two vectors are specified the rotation with the smalles angle is
-% returned that maps the first vector onto the second one.
+% If only two vectors are specified, then the rotation with the smaller angle is
+% returned and gives the rotation from first vector onto the second one.
 
 o = rotation('map',xvector,yvector)
 
 %%
 % *A fibre of rotations*
 %
-% The set of all rotations that rotate a certaion vector u onto a certain 
+% The set of all rotations that rotate a certain vector u onto a certain 
 % vector v define a fibre in the rotation space. A discretisation of such
-% an fibre is defined by
+% a fibre is defined by
 
 u = xvector;
 v = yvector;
@@ -191,7 +191,7 @@ inverse(rot)
 
 %% Plotting Rotations
 %
-% The <quaternion.plot.html plot> function allows you to visualize an
+% The <quaternion.plot.html plot> function allows you to visualize a
 % rotation by plotting how the standard basis x,y,z transforms under the
 % rotation.
 

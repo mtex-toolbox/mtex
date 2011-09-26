@@ -10,14 +10,14 @@
 % Crystal directions are represented in MTEX by variables of type
 % <Miller_index.html Miller> which represent a direction with respect to the
 % crystal coordinate system a, b, c. Alternatively, a crystal direction may
-% also be defined in reciprocel space, i.e. with respect to the axes a*, b*,
-% c*. Essentially all operations defined for general directions, i.e. for
+% also be defined in the reciprocal space, i.e. with respect to the axes a*, b*,
+% c*. Essentially all the operations defined for general directions, i.e. for
 % variables of type [[vector3d_index.html,vector3d]] are also available for
-% Miller indece.
+% Miller indices.
 %
 %% Definition
 %
-% Since crystal directions are alway subject to a certain crystal
+% Since crystal directions are always subject to a certain crystal
 % reference frame, the starting for any crystal direction is the
 % definition of a variable of type [[symmetry_index.html,symmetry]]
 
@@ -31,7 +31,7 @@ cs = symmetry('triclinic',[5.29,9.18,9.42],[90.4,98.9,90.1]*degree,...
 m = Miller(1,0,1,cs,'uvw')
 
 %%
-% or in reciprocle space, by its coordinates h, k, l with respect to axis
+% or in the reciprocal space, by its coordinates h, k, l with respect to axis
 % a*, b*, c*
 
 m = Miller(1,0,1,cs,'hkl')
@@ -44,14 +44,14 @@ cs = symmetry('quartz.cif')
 m = Miller(2,1,-3,1,cs,'hkl')
 
 
-%% Plotting Miller indece
+%% Plotting Miller indices
 %
-% Miller indece are plotted as spherical projections. The specific
-% projection as well as wheter to plot all equivalent directions can be
+% Miller indices are plotted as spherical projections. The specific
+% projection as well as whether to plot all equivalent directions can be
 % specified by options.
 
 figure,
-plot(m,'Grid')   % plot Miller indece
+plot(m,'Grid')   % plot Miller indice
 
 %%
 %
@@ -59,7 +59,7 @@ plot(m,'Grid')   % plot Miller indece
 % crystal directions are plotted together with there correct Miller indice.
 
 figure,
-plot(m,cs,'all','labeled','grid')   % plot Miller indece
+plot(m,cs,'all','labeled','grid')   % plot Miller indice
 
 %% Symmetrically Equivalent Crystal Directions
 %
@@ -70,7 +70,7 @@ plot(m,cs,'all','labeled','grid')   % plot Miller indece
 symmetrise(m)
 
 %%
-% As allways the keyword <AxialDirectional.html antipodal> adds antipodal symmetry to this
+% As always the keyword <AxialDirectional.html antipodal> adds antipodal symmetry to this
 % computation
 
 symmetrise(m,'antipodal')
@@ -88,20 +88,20 @@ eq(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'antipodal')
 
 %% Angles
 %
-% The angle between two crystall directions m1 and m2 is defined as the
+% The angle between two crystal directions m1 and m2 is defined as the
 % smallest angle between m1 and all symmetrically equivalent directions to
-% m2. This angle in radiand is calculated by the funtion <vector3d.angle.html
+% m2. This angle is in radians and it is calculated by the funtion <vector3d_angle.html
 % angle>
 
 angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs)) / degree
 
 %%
-% As allways the keyword <AxialDirectional.html antipodal> adds antipodal symmetry to this
+% As always the keyword <AxialDirectional.html antipodal> adds antipodal symmetry to this
 % computation
 
 angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'antipodal') / degree
 
-%% Conversations
+%% Conversions
 %
 % Converting a crystal direction which is represented by its coordinates
 % with respect to the crystal coordinate system a, b, c into a

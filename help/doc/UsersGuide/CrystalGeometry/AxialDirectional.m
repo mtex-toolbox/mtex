@@ -9,7 +9,7 @@
 %% Directions vs. Axes
 %
 % In MTEX it is possible to consider three dimensional vectors either as
-% directions or as axes. The key option to distinguesh between both
+% directions or as axes. The key option to distinguish between both
 % interpretations is *antipodal*.
 %
 % By default the pair of vectors
@@ -24,20 +24,20 @@ close all; figure('position',[100 100 400 300])
 plot([v1,v2],'label',{'v_1','v_2'})
 
 %%
-% occurs either on the upper or on the lower hemisphere. In order to treat
-% these vectors as axes, i.e. in order to assume antipodal symmetry one
+% these vectors will appear either on the upper or on the lower hemisphere. In order to treat
+% these vectors as axes, i.e. in order to assume antipodal symmetry - one
 % has to use the keyword *antipodal*.
 
 plot([v1,v2],'label',{'v_1','v_2'},'antipodal')
 
 %%
 % Now the direction v_2 is identified with the direction -v_2 which
-% plots at the upper hemispher.
+% plots at the upper hemisphere.
 
 %% The Angle between Directions and Axes
 %
-% Another example, where it matters whether antipdal symmetry is assumed
-% or not is the angle between two vectors. In the absence of antipdal
+% Another example, where it matters whether antipodal symmetry is assumed
+% or not is the angle between two vectors. In the absence of antipodal
 % geometry we have
 
 angle(v1,v2) / degree
@@ -49,8 +49,8 @@ angle(v1,v2,'antipodal') / degree
 
 %% Antipodal Symmetry in Experimental Pole Figures
 %
-% Due to Friedels law experimental pole figures allways provide antipodal symmetry. One
-% consequence of this fact is that MTEX plots pole figure data allways on
+% Due to Friedel's law experimental pole figures always provide antipodal symmetry. One
+% consequence of this fact is that MTEX plots pole figure data always on
 % the upper hemisphere
 
 mtexdata dubna
@@ -71,7 +71,7 @@ annotate(vector3d(1,0,-1),'labeled')
 % symmetry is in general not present.
 
 % some prefered orientation
-o = orientation('Euler',20*degree,30*degree,0,'ZYZ',CS,symmetry);
+o = orientation('Euler',20*degree,30*degree,0,'ZYZ',CS);
 
 % define an unimodal ODF
 odf = unimodalODF(o);
@@ -85,9 +85,9 @@ plotpdf(odf,Miller(1,2,2),'position',[100 100 400 200])
 
 plotpdf(odf,Miller(1,2,2),'antipodal')
 
-%% Antipodal Symmetry in inverse Pole Figures
+%% Antipodal Symmetry in Inverse Pole Figures
 %
-% The same reasoning as above holds true for inverse pole figures. I we
+% The same reasoning as above holds true for inverse pole figures. If we
 % look at complete, inverse pole figures they do not posses antipodal symmetry
 % in general
 
@@ -109,7 +109,7 @@ figure(2);plotipdf(odf,yvector,'antipodal','position',[100 100 400 200])
 
 %% EBSD Colocoding
 %
-% Antipodal symmetry effects also the colocoding of ebsd plots. Lets first
+% Antipodal symmetry effects also the colocoding of ebsd plots. Let's first
 % import some data.
 
 mtexdata aachen
