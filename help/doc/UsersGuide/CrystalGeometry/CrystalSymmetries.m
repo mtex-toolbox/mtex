@@ -32,7 +32,7 @@ cs = symmetry('O');
 %
 % If not the name of a Laue group was specified but the name of a point
 % group or a space group MTEX auomatically determines the corresponding
-% Laue group and assignes it to the variable.
+% Laue group and assigns it to the variable.
 
 cs = symmetry('Td');
 
@@ -47,18 +47,18 @@ cs = symmetry('quartz.cif')
 %% The Crystal Coordinate System
 %
 % In the case of cubic crystal symmetry the crystal coordinate system
-% is allready well defined. However, especialy in the case of low order
+% is already well defined. However, especially in the case of low order
 % crystal symmetry the crystal coordinate system has to be specified by the
-% length of the axis and the angle between the axis. 
+% length of the axes and the angle between the axes. 
 
 cs = symmetry('triclinic',[1,2.2,3.1],[80*degree,85*degree,95*degree]);
 
 %% A and B Configurations
 %
 % In the case of trigonal and hexagonal crystal symmetries different
-% conventions are used. One distingueshes between the A and the B
+% conventions are used. One distinguishes between the A and the B
 % configuration depending whether the a axis is aligned parallel to the x
-% axis or parralel to the y axis. In order to specify the concrete
+% axis or parallel to the y axis. In order to specify the concrete
 % configuration to be used one can pass either the option *X||a* or the
 % option *Y||a*.
 
@@ -73,7 +73,7 @@ plot(cs)
 
 %% Calculations
 %
-% applaying the specimen symmetry from the left and the crystal symmetry from the 
+% applying the specimen symmetry from the left and the crystal symmetry from the 
 % right onto a [[orientation_index.html,orientation]] results in a vector
 % containing all crystallographically equivalent orientations.
 
