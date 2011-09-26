@@ -17,7 +17,7 @@ function spf = simulatePoleFigure(pf,odf,varargin)
 progress(0,length(pf));
 for i = 1:length(pf)
     
-  spf(i) = simulatePoleFigure(odf,pf(i).h,pf(i).r,...
+  spf(i) = calcPoleFigure(odf,pf(i).h,pf(i).r,...
     'superposition',pf(i).c,varargin{:});
   progress(i,length(pf));
   
