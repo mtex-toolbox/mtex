@@ -23,7 +23,12 @@ if numel(m) < 20 && numel(m) > 0
     
     hkl = v2m(m);
   
-    cprintf(hkl.','-L','  ','-Lr',{'h' 'k' 'l' 'i'});
+    if any(strcmp(Laue(m.CS),{'-3','-3m','6/m','6/mmm'}))
+      cprintf(hkl.','-L','  ','-Lr',{'h' 'k' 'i' 'l'});
+    else
+      cprintf(hkl.','-L','  ','-Lr',{'h' 'k' 'l'});
+    end
+    
   end
 end
 disp(' ');
