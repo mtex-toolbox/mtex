@@ -123,15 +123,17 @@ elseif check_option(varargin,'nfft')
   gamma = fft_rho(gamma);
   varargout{1} = 2*pi*[alpha(:),beta(:),gamma(:)].';
   
-elseif nargout == 1
+elseif nargout <= 2
   
   varargout{1} = [alpha(:),beta(:),gamma(:)];
+  varargout{2} = labels;
   
 else
   
   varargout{1} = alpha;
   varargout{2} = beta;
   varargout{3} = gamma;
+  varargout{4} = labels;
   
 end
 
