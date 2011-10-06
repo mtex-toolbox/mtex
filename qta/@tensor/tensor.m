@@ -19,34 +19,51 @@ function T = tensor(M,varargin)
 %% See also
 % ODF/calcTensor EBSD/calcTensor
 
-% get the tensor entries
-T.M = M;
-T.properties = struct;
+% conversion from vector3d
+if isa(M,'vector3d')
+  
+  T.M = shiftdim(double(M),ndims(M));
+  r = 1;
 
-% consider the case of a row vector, which is most probably a 1-rank tensor
-if ndims(T.M)==2 && size(T.M,1)==1 && size(T.M,2) > 1 && ...
-  ~check_option(varargin,'rank')
-  
-disp(' ');
-  warning(['I guess you want to define a rank one tensor. ' ...
-    'However, a rank one tensor is always a column vector, but ' ...
-    'you specified a row vector. ',...
-    'I''m going to transpose you vector.']);
-  
-  T.M = T.M.';
-  
-end
+% conversion from quaternion
+elseif isa(M,'quaternion')
 
-% transform from voigt matrix representation to ordinary rank four tensor
-if numel(T.M) == 36, 
+  T.M = matrix(M);
+  r = 2;
+  
+else
+
+  % get the tensor entries
+  T.M = M;
+
+  % consider the case of a row vector, which is most probably a 1-rank tensor
+  if ndims(T.M)==2 && size(T.M,1)==1 && size(T.M,2) > 1 && ...
+      ~check_option(varargin,'rank')
+  
+    disp(' ');
+    warning(['I guess you want to define a rank one tensor. ' ...
+      'However, a rank one tensor is always a column vector, but ' ...
+      'you specified a row vector. ',...
+      'I''m going to transpose you vector.']);
+  
+    T.M = T.M.';
+  
+  end
+
+  % transform from voigt matrix representation to ordinary rank four tensor
+  if numel(T.M) == 36,
     T.M = tensor24(T.M);
-elseif numel(T.M) == 18, 
+  elseif numel(T.M) == 18,
     T.M = tensor23(T.M);
-end
+  end
 
-% compute the rank of the tensor by finding the last dimension
-% that is length grater then one
-r = max([1,find(size(T.M)-1,1,'last')]);
+  % compute the rank of the tensor by finding the last dimension
+  % that is length grater then one
+  r = max([1,find(size(T.M)-1,1,'last')]);
+  
+end
+  
+T.properties = struct;
 T.rank    = get_option(varargin,'rank',r);
 varargin = delete_option(varargin,'rank');
 
