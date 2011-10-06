@@ -3,12 +3,12 @@
 %% Open in Editor
 %
 %% Abstract
-% EBSD Data analysis is not yet complete in MTEX. However most main
+% EBSD Data analysis is not yet complete in MTEX. However most of the main
 % functionalities are already implemented. First of all one can estimate an
 % ODF from EBSD data. This is explained in detail in the section
 % <EBSD2odf.html EBSD estimation from EBSD data>. Further
-% posibilities are to compute volume fractions directly from EBSD data,
-% compute the mean orientation and to estimate the Fourier coefficients.
+% possibilities include the calculation of volume fractions directly from EBSD data, 
+% calculations of the mean orientation and estimation of the Fourier coefficients. 
 %
 %% Contents
 %
@@ -32,7 +32,7 @@ plot(ebsd('Fe'))
 
 %% Mean Orientation
 %
-% Next we are going to determine the mean orientation of the first phase
+% The next step is to determine the mean orientation of the first phase
 
 m = mean(ebsd('Fe'));
 
@@ -43,6 +43,6 @@ annotate(m,'Marker','s','MarkerFaceColor','red')
 
 %% Volume
 %
-% Lets next compute the volume close to the mean orientation.
+% Now lets estimate the the volume close to the mean orientation.
 
 volume(ebsd('Fe'),m,10*degree)
