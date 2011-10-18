@@ -74,6 +74,6 @@ end
 
 function field = readfield(h,pattern)
 
-field = h{2}(strcmp(h{1},pattern));
+field = h{2}(strncmp(h{1},pattern,length(pattern)));
 
 end
