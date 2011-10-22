@@ -2,7 +2,7 @@
 %
 %% Contents
 %
-%%  MTEX 3.2 - 05/2011
+%%  MTEX 3.2 - 09/2011
 %
 % *3d EBSD Analysis*
 %
