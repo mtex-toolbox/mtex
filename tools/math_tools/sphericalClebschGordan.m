@@ -1,5 +1,36 @@
 function cg = sphericalClebschGordan(l,L)
 
+% maybe the tensors are stored in a global variable
+global sphericalCG;
+
+try
+  cg = sphericalCG{l+1,L+1};
+  assert(~isempty(cg));
+  return;
+catch
+end
+
+% maybe the tensors are stored in a file
+fname1 = [mtexDataPath '/../tmp/ClebschGordan.mat'];
+if exist(fname1,'file') && isempty(sphericalCG)
+  load(fname1,'sphericalCG');  
+  try
+    cg = sphericalCG{l+1,L+1};
+    assert(~isempty(cg));
+    return  
+  catch
+  end  
+end
+
+% maybe data are stored in a small file
+fname = [mtexDataPath '/../tmp/ClebschGordan',int2str(l),'_',int2str(L),'.mat'];
+if exist(fname,'file') 
+  load(fname,'cg');
+  sphericalCG{l+1,L+1} = cg;
+  save(fname1,'sphericalCG');
+  return  
+end
+
 % correction matrix
 A = zeros(2*l+1,2*l+1);
 [x,y] = find(~A);
@@ -18,6 +49,10 @@ for m1 = -l:l
 end
 
 cg = flipud(cg);
+
+%save(fname,'cg');
+sphericalCG{l+1,L+1} = cg;
+%save(fname1,'sphericalCG');
 
 return
 
