@@ -1,4 +1,4 @@
-function [ind,d] = find(S2G,v,epsilon,varargin)
+function varargout = find(S2G,v,varargin)
 % return index of all points in a epsilon neighborhood of a vector
 %
 %% Syntax  
@@ -16,49 +16,52 @@ function [ind,d] = find(S2G,v,epsilon,varargin)
 %% Output
 %  ind     - int32        
 
-if check_option(S2G,'INDEXED') && ~check_option(varargin,'direct')
+%% if points are not indexed
+if ~check_option(S2G,'INDEXED') || ~check_option(varargin,'direct')
   
-  d = [];
-  if check_option(S2G,'antipodal'), v = [v(:),-v(:)]; end
-
-  [ytheta,yrho,iytheta,prho,rhomin] = getdata(S2G);
-  yrho = yrho - rhomin;
-  [xtheta,xrho] = polar(v);
-  xrho = xrho - rhomin;
-
-  if nargin == 2
-    ind = S2Grid_find(ytheta,int32(iytheta),...
-      yrho,prho,xtheta,xrho);
-    
-    if check_option(S2G,'antipodal')    
-      ind = reshape(ind,[],2);
-%      for i = 1:size(ind,1)
-%        d = abs(dot(S2G.Grid(ind(i,:)),v(i)));
-%        if d(1) < d(2), ind2(i) = ind(i,2);else ind2(i) = ind(i,1);end
-%      end                 
-      
-      d = abs(dot(S2G(ind),v));
-      ind2 = d == repmat(max(d,[],2),1,2);
-      ind2(all(ind2,2),2) = false;
-      ind = ind(ind2);
-      d = d(ind2);
-   
-    end
-  else
-    ind = S2Grid_find_region(ytheta,int32(iytheta),...
-      yrho,prho,xtheta,xrho,epsilon);
-    
-    if check_option(S2G,'antipodal')    
-      ind = ind(:,1:size(v,1)) | ind(:,size(v,1) + 1:end);
-    end
-  end
-else % not indexed points
-
-  d = dot_outer(S2G,v);
+  [varargout{1:nargout}] = find(S2G.vector3d,v,varargin{:});
+  return
   
-  if nargin >= 3
-    ind = d > cos(epsilon);
-  else   
-    [d,ind] = max(d,[],1);
-  end
 end
+  
+%% use indexing for fast finding of points
+d = [];
+if check_option(S2G,'antipodal'), v = [v(:),-v(:)]; end
+
+% compute polar coordinats
+[ytheta,yrho,iytheta,prho,rhomin] = getdata(S2G);
+yrho = yrho - rhomin;
+[xtheta,xrho] = polar(v);
+xrho = xrho - rhomin;
+
+% find closest points
+if nargin == 2
+  
+  ind = S2Grid_find(ytheta,int32(iytheta),yrho,prho,xtheta,xrho);
+    
+  if check_option(S2G,'antipodal')
+    ind = reshape(ind,[],2);
+        
+    d = abs(dot(S2G(ind),v));
+    ind2 = d == repmat(max(d,[],2),1,2);
+    ind2(all(ind2,2),2) = false;
+    ind = ind(ind2);
+    d = d(ind2);
+    
+  end
+  
+% find epsilon region
+else
+  
+  ind = S2Grid_find_region(ytheta,int32(iytheta),...
+    yrho,prho,xtheta,xrho,varargin{1});
+  
+  if check_option(S2G,'antipodal')
+    ind = ind(:,1:size(v,1)) | ind(:,size(v,1) + 1:end);
+  end
+  
+end
+
+% assign return values
+varargout{1} = ind;
+varargout{2} = d;

@@ -21,7 +21,7 @@ for i = 2:length(pf1)
   end
     
   if all(pf(j).h == pf1(i).h)
-    pf(j).r = union(pf(j).r,pf1(i).r); %#ok<AGROW>
+    pf(j).r = [pf(j).r,pf1(i).r]; %#ok<AGROW>
     pf(j).data = [reshape(pf(j).data,1,[]),reshape(pf1(i).data,1,[])]; %#ok<AGROW>
   else
     pf(length(pf)+1) = pf1(i); %#ok<AGROW>

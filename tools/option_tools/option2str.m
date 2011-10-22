@@ -29,7 +29,11 @@ end
 function s = double2quotedstr(d)
 
 if ischar(d)
-  s = ['''',d,''''];
+  if strfind(d,'*degree')
+    s = d;
+  else
+    s = ['''',d,''''];
+  end
 elseif isa(d,'cell')  
    s = strcat(' ''',d,'''');
    s = ['{',s{:},'}'];

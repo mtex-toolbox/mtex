@@ -14,7 +14,7 @@
 % crystal coordinate system. 
 %
 %%
-% The class <orientation.orientation.html *orientation*> is an inheritant of the class <rotation_index.html
+% The class <orientation.orientation.html *orientation*> is inherited from the class <rotation_index.html
 % *rotation*> and allow to work with orientation in MTEX.
 %
 %% Defining a Crystal Orientation
@@ -33,17 +33,19 @@ ss = symmetry('orthorhombic');
 %
 % *The Bunge Euler Angle Convention*
 %
-% Here an arbitrary rotation is determined by three consecutive rotations,
-% the first about the z-axis, the second about the y-axis, and the third
-% again about the z-axis. Hence, one needs three angles two define an
-% orientation by Euler angles. 
+% Here an arbitrary rotation is determined by three consecutive rotations
+% in the sample reference frame. The first is about the z-axis, the second about the y-axis, 
+% and the third again about the z-axis. Hence, one needs three angles to define an
+% orientation by Euler angles. In the literature these angles are known as
+% "triplet of Euler angles" or simply "Euler angles" and you can find many
+% definitions for them according to different authours.
 
 o = orientation('Euler',30*degree,50*degree,10*degree,cs,ss)
 
 %%
 % *The Matthies Euler Angle Convention*
 %
-% In contrast to the Bunge conventionen here the three rotations are taken
+% In contrast to the Bunge convention here the three rotations are taken
 % about the z-axis, the y-axis, and the z-axis.
 
 o = orientation('Euler',30*degree,50*degree,10*degree,'ZYZ',cs,ss)
@@ -51,7 +53,7 @@ o = orientation('Euler',30*degree,50*degree,10*degree,'ZYZ',cs,ss)
 %%
 % *The axis angle parametrisation*
 %
-% Another posibility to specify an rotation is the give its rotational axis
+% Another possibility to specify an rotation is the give its rotational axis
 % and its rotational angle.
 
 o = orientation('axis',xvector,'angle',30*degree,cs,ss)
@@ -130,7 +132,7 @@ o1 = rot * o
 
 %%
 % Then the class of rotations crystallographically equivalent to o can be
-% computed in two way. Either by using the command <orientation.symmetrise.html
+% computed in two ways. Either by using the command <orientation.symmetrise.html
 % symmetrise> 
 
 symmetrise(o)
@@ -140,17 +142,17 @@ symmetrise(o)
 
 ss * o * cs
 
-%% Caclulating Missorientations
+%% Calculating Misorientations
 %
 % Let cs and ss be crystal and specimen symmetry and o1 and o2 two crystal
-% orientations. Then one can ask for the missorientation between both
-% orientations. This missorientation can be calculated by the function
+% orientations. Then one can ask for the misorientation between both
+% orientations. This misorientation can be calculated by the function
 % <orientation.angle.html angle>.
 
 angle(o,o1) / degree
 
 %%
-% This missorientation angle is in general smaller then the missorientation
+% This misorientation angle is in general smaller then the misorientation
 % without crystal symmetry which can be computed via
 
 angle(rotation(o),rotation(o1)) /degree
@@ -158,16 +160,19 @@ angle(rotation(o),rotation(o1)) /degree
 %% Calculating with Orientations and Rotations
 %
 % Beside the standard linear algebra operations there are also the
-% following functions available in MTEX. Then rotational angle and the axis
-% of rotation can be computed via then commands
+% following functions available in MTEX:
+
 % <quaternion.angle.html angle(o)> and
 % <quaternion.axis.html axis(o)> 
+
+% Then rotational angle and the axis of rotation
+% can be computed via then commands
 
 angle(o1)/degree
 
 axis(o1)
 %%
-% The inverse orientation to o you get from the command
+% To obtain the inverse orientation to o, one can use the command
 % <quaternion.inverse.html inverse(q)>
 
 inverse(o1)
@@ -186,7 +191,7 @@ inverse(o1)
 
 %% Plotting Orientations
 % 
-% The [[orientation.plot.html,plot]] function allows you to visualize an 
+% The [[orientation.plot.html,plot]] function allows you to visualize a 
 % quaternion by plotting how the standard basis x,y,z transforms under the
 % rotation.
 

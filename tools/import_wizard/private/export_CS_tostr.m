@@ -12,14 +12,17 @@ for i=1:numel(cs)
   options = {};
   [c,angle] = get_axisangel(cs{i});
   
+  % for non cubic symmetries
+  if ~any(strcmp(get(cs{i},'Laue'),{'m-3','m-3m'}))
+    options = [options {c}]; %#ok<AGROW>
+  end
+  
   % for triclinic and monoclinic get angles
-  if strcmp(get(cs{i},'Laue'),{'-1','2/m'})
+  if any(strcmp(get(cs{i},'Laue'),{'-1','2/m'}))
     options = [options {[n2s([angle{:}]),'*degree']}]; %#ok<AGROW>
   end
   
-  if ~strcmp(get(cs{i},'Laue'),{'m-3','m-3m'})
-    options = [options {c}]; %#ok<AGROW>
-  end
+  
 
   options = [options get(cs{i},'alignment')]; %#ok<AGROW>
 

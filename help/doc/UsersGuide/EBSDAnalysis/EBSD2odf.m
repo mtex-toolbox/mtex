@@ -6,7 +6,7 @@
 %% Contents
 %
 %
-% Starting point of any ODF estimation from EBSD data is a 
+% The starting point of any ODF estimation from EBSD data is the
 % <EBSD_index.html EBSD> object, which here is imported by a
 % [[matlab:edit mtexdata, script file]]
 
@@ -14,14 +14,14 @@ mtexdata aachen
 
 %% ODF Estimation
 %
-% These data consist of two phases, Iron and Magnesium. The ODF of the Iron
+% These EBSD dataset consist of two phases, Iron and Magnesium. The ODF of the Iron
 % phase is computed by the command
 
 odf = calcODF(ebsd('Fe'))
 
 %%
-% The function <EBSD.calcODF.html calcODF> implements ODF estimation from
-% EBSD data in MTEX. The underlaying statistical method is called as kernel
+% The function <EBSD.calcODF.html calcODF> implements the ODF estimation from
+% EBSD data in MTEX. The underlying statistical method is called kernel
 % density estimation, which can be seen as a generalized histogram.
 % To be more precise, let $\psi : SO(3) \to R$ be a radially symmetric,
 % unimodal model ODF. Then the kernel density estimator for the individual
@@ -29,26 +29,25 @@ odf = calcODF(ebsd('Fe'))
 %
 % $$f(o) = \frac{1}{M} \sum_{i=1}^{M} \psi(o o_i^{-1})$$
 %
-% The choise of the model ODF $\psi$ and in particular its halfwidth has a
-% great impact in the resulting ODF. If no halfwidth was speciefied the
+% The choice of the model ODF $\psi$ and in particular its halfwidth has a
+% great impact in the resulting ODF. If no halfwidth is specified the
 % default halfwidth of 10 degree is selected.
 
 
 %% Automatic halfwidth selection
 %
 % MTEX includes an automatic halfwidth selection algorithm which is called
-% by the command <EBSD.calcKernel.html calcKernel>. A neccesary condition
-% that this algorithm works is that the ebsd data are spatialy independend,
-% as it is the case for very rough EBSD meassurements, i.e. only one
-% measurement per grain. 
+% by the command <EBSD.calcKernel.html calcKernel>. To work properly, this algorithm 
+% needs spatially independent EBSD data as in the case of this dataset of very rough 
+% EBSD measurements (only one measurement per grain). 
 
 % try to compute an optimal kernel
 psi = calcKernel(ebsd('Fe'))
 
 %%
-% The above example the EBSD measurements are spatial dependend and the
-% resulting halfwidth is to small. To avoid this problem we have to perfrom
-% grain reconstruction first and then to estimate the halfwidth from the
+% In the above example the EBSD measurements are spatial dependend and the
+% resulting halfwidth is too small. To avoid this problem we have to perform
+% grain reconstruction first and then estimate the halfwidth from the
 % grains.
 
 % grains reconstruction
@@ -65,7 +64,7 @@ odf = calcODF(ebsd('Fe'),'kernel',psi)
 
 
 %%
-% Once an ODF is estimated all the functionallity MTEX offers for 
+% Once an ODF is estimated all the functionality MTEX offers for 
 % <ODFCalculations.html ODF analysis> and <ODFPlot.html ODF visualisation> is available. 
 
 plotpdf(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],'antipodal','silent','position',[10 10 600 200])
@@ -73,9 +72,9 @@ plotpdf(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],'antipodal','silent','po
 
 %% Effect of halfwidth selection
 %
-% As mentioned above a propper halfwidth selection is crucial for ODF
+% As mentioned above a proper halfwidth selection is crucial for ODF
 % estimation. The following simple numerical experiment illustrates the
-% dependency between the kernel halfwidth and the estimation error.
+% dependency between the kernel halfwidth and the estimated error.
 %
 % Lets start with a model ODF and simulate some EBSD data.
 
@@ -97,9 +96,10 @@ for i = 1:length(hw)
 end
 
 %%
-% After visualizing the estimation error with observe that the estimation
-% error is large if the halfwidth is chosen to small or to large. In this
-% specific example the optimal halfwidth seems to be about 4 degree
+% After visualizing the estimation error we observe that its value is large 
+% either if we choose a very small or a very large halfwidth.
+% In this specific example the optimal halfwidth seems to be about 4
+% degree.
 
 plot(hw/degree,e)
 xlabel('halfwidth in degree')

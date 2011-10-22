@@ -14,6 +14,7 @@ if isa(b,'vector3d')
       v.x = subsasgn(v.x,s,b.x);
       v.y = subsasgn(v.y,s,b.y);
       v.z = subsasgn(v.z,s,b.z);
+      v.options = b.options;
     otherwise
       error('Wrong indexing. Only ()-indexing is allowed for vector3d!');
   end
