@@ -11,6 +11,10 @@ elseif isnumeric(v2)
   v.x = v1.x + v2;
   v.y = v1.y + v2;
   v.z = v1.z + v2;
+elseif isa(v2,'S2Grid')
+  v = v1 + vector3d(v2);
+elseif isa(v1,'S2Grid')
+  v = vector3d(v1) + v2;
 else
   try % omit another if
     v = v1;

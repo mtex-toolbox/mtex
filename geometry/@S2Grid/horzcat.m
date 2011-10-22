@@ -1,5 +1,5 @@
 function s = horzcat(varargin)
-% overloads [v1,v2,v3..]
+% overloads [v1,v2,v3,...]
 
 s = varargin{1};
 

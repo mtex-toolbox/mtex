@@ -20,7 +20,7 @@ dirName = [mtexDataPath filesep 'EBSD' filesep '3dData'];
 Z = (0:58)*0.12;
 
 %%
-% then an 3d EBSD object is imported by the command
+% then a 3d EBSD object is imported by the command
 
 % create an EBSD variable containing the data
 ebsd = loadEBSD(dirName,'3d', Z)
@@ -46,9 +46,8 @@ segAngle = 10*degree;
 
 
 %% Working on grains
-% The reconstructed can be threaded as in the two dimensional case. E.g. one can
-% single out individuall grains and plot them
-
+% The reconstructed grains can be treated as in the two dimensional case. For example, 
+% one can single out individual grains and plot them
 
 plot(grains(906),'facecolor','g','edgecolor',[0.8 0.8 0.8],'facealpha',0.3)
 hold on
@@ -57,8 +56,8 @@ plotSubBoundary(grains(906),'FaceColor','c','boundarycolor','r','edgecolor',[0.8
 view([160 20])
 
 %%
-% We can compute the grainSize of the grains, i.e. the number of measurements
-% contained in the grain
+% We can compute the grain size of the grains, i.e. the number of measurements
+% contained in one grain
 
 grainSize(grains(906))
 
@@ -75,7 +74,7 @@ diameter(grains(906))
 
 
 %% Visualize the 3d Grains
-% Finally, we may extract all grains that have a certain size and plot them
+% Finally, we may extract all the grains that have a certain size and plot them
 
 largeGrains = grains ( grainSize ( grains )>100 & grainSize ( grains ) <5000);
 plot(largeGrains)
@@ -95,16 +94,16 @@ lighting phong
 smooth_grains = smooth(grains,10);
 
 %%
-% Advanced investigation of grain boundaries: investigate the misorientation
-% angle to neighboured grains
-% herefor, we select first a large grains and all its neighbors 
+% Advanced investigation of grain boundaries:
+% to investigate the misorientation angle between two neighbour grains
+% we select first a large grain and all of its neighbors 
 
 grain = smooth_grains(smooth_grains == largeGrains(18));
 neighbouredGrains = neighbours(smooth_grains,grain)
 
 %%
 % plotting the common boundary needs selection of a partner grain, otherwise
-% all grain boundaries to a set of neigbored grains would be figured
+% all grain boundaries of a set of neighbour crystals will be considered
 
 figure, hold on
 

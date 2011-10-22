@@ -7,14 +7,13 @@ function [S2G r]= refine(S2G)
 %  S2G - @S2Grid with half the resolution
 
 if ~check_option(S2G,'INDEXED')
-%   , error('not supported for "not indexed" grids');end
+
   S2G.res = S2G.res / 2;
   
   v = [S2G.vector3d(:); -zvector];
   d = squeeze(double(v));
   
   tri = convhulln(d);
-%   tri = tri(~any(tri  > numel(S2G.vector3d),2),:);
   
   r = sum(vector3d(v(tri)),2);
   r = r./norm(r);
@@ -26,6 +25,7 @@ if ~check_option(S2G,'INDEXED')
   S2G.vector3d = [v; r(:)];
 
 else
+  
   S2G.res = S2G.res / 2;
   S2G.theta = refine(S2G.theta);
   for i=1:length(S2G.rho)  
