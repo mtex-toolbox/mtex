@@ -11,3 +11,5 @@ function [v,ind] = unique(v,varargin)
 %  v - @vector3d
 
 [v,ind] = cunion(v,@(a,b) eq(a,b,varargin{:}));
+
+v = delete_option(v,'INDEXED');
