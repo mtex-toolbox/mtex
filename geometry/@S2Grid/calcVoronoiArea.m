@@ -15,65 +15,54 @@ if antipodal
   S2G = delete_option(S2G,'antipodal');
 end
 
-%% compute the Delaunay triangulation.
-[face,vertices,S2G] = calcDelaunay(S2G);
+S2G = reshape(vector3d(S2G),[],1);
+[x,y,z] = double(S2G);
+faces = convhulln([x(:) y(:) z(:)]); % delauny triangulation on sphere
 
-%% sort triangles
-p1 = face(1,:);
-p2 = face(2,:);
-p3 = face(3,:);
+% voronoi-vertices
+v = normalize(cross(S2G(faces(:,3))-S2G(faces(:,1)),S2G(faces(:,2))-S2G(faces(:,1))));
 
-d1 = S2G.vector3d(p1);
-d2 = S2G.vector3d(p2);
-d3 = S2G.vector3d(p3);
+% the triangulation may have some defects, i.e. interior faces;
+del = angle(v,-zvector) > eps; 
+faces = faces(del,:);
+v = v(del,:);
 
-d12 = d1 + d2; d12 = d12 ./ norm(d12);
-d23 = d2 + d3; d23 = d23 ./ norm(d23);
-d31 = d3 + d1; d31 = d31 ./ norm(d31);
-    
-%%  Compute orientation and area of the 6 subtriangles.
-o1a = vertices2Orientation(d1,vertices,d31);
-a1a = vertices2Area(d1,vertices,d31);
+% voronoi-vertices around generators
+[center vertices] = sort(faces(:));
+S2Gc = S2G(center);
+vert = repmat(v,3,1);
+vert = vert(vertices);
 
-o1b = vertices2Orientation(d1,d12,vertices);
-a1b = vertices2Area(d1,d12,vertices);
+% init an pointer set
+vl = zeros(numel(vert),1); vr = zeros(numel(vert),1);
+cs = [0; find(diff(center)); numel(center)];
 
-o2a = vertices2Orientation(d2,vertices,d12);
-a2a = vertices2Area(d2,vertices,d12);
+% the azimut of a voronoi-vertex relativ to its generator
+[t,azimuth] = polar(cross(S2Gc-vert,zvector));
+for k=1:numel(cs)-1
+  nd = cs(k)+1:cs(k+1);
+  % sort vertices clockwise around generator
+  [a,ndx] = sort(azimuth(nd));
+  vl(nd) = nd(ndx);
+  vr(nd) = nd(ndx([2:end 1])); % pointer to the next vertex
+end
 
-o2b = vertices2Orientation(d2,d23,vertices);
-a2b = vertices2Area(d2,d23,vertices);
+% spherical-triangles around the generator
+va = S2Gc;
+vb = vert(vl);
+vc = vert(vr);
 
-o3a = vertices2Orientation(d3,vertices,d23);
-a3a = vertices2Area(d3,vertices,d23);
+% some points may be identical, if the voronoi-diagram is degenerated
+nd = angle(vb,vc) > eps;
+area(nd) = vertices2Area(va(nd),vb(nd),vc(nd));
+area(any(imag(area(:)),2)) = 0; % some areas are sometimes corrupted?
 
-o3b = vertices2Orientation(d3,d31,vertices);
-a3b = vertices2Area(d3,d31,vertices);
+% accumulate areas of spherical triangles around generator
+area = full(sparse(center,1,area,numel(S2G),1)); 
 
-%%  Contribute to the Voronoi areas.
-
-area = full(sum(sparse([p1 p2 p3],1:(numel(p1)+numel(p2)+numel(p2)),...
-  [o1a .* a1a + o1b .* a1b;...
-  o2a .* a2a + o2b .* a2b;...
-  o3a .* a3a + o3b .* a3b]),2));
-
-
-%%
 if antipodal
   area = sum(reshape(area,[],2),2);
 end
-
-%% compute orientation of a spherical triangle
-function o = vertices2Orientation ( a, b, c )
-
-%  Centroid.
-cd = ( a + b + c ) ./ 3.0;
-
-%  Cross product ( C - B ) x ( A - B );
-cp = cross(c-b,a-b);
-  
-%  Compare the directions.
-o = 1 - 2 * (dot(cp,cd) < 0);
 
 %% compute are of a spherical triangle given its vertices
 function area = vertices2Area (v1,v2,v3)
