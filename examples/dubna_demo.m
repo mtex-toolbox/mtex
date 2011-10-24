@@ -45,6 +45,7 @@ hist(pf)
 
 pf_corrected = delete(pf,get(pf,'theta') >= 70*degree &...
   get(pf,'theta') <= 75*degree);
+pf_corrected = unique(pf_corrected);
 
 plot(pf_corrected)
 
