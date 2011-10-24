@@ -1,4 +1,4 @@
-function [ad,omega] = angleDistribution(cs,omega)
+function [ad,omega] = angleDistribution(cs,omega,varargin)
 % compute the angle distribution of a uniform ODF for a crystal symmetry
 %
 %% Input
@@ -10,7 +10,7 @@ function [ad,omega] = angleDistribution(cs,omega)
 % omega - angles
 
 if nargin < 2
-  omega = linspace(0,get(cs,'maxOmega'),100);
+  omega = linspace(0,get(cs,'maxOmega'),300);
 else
   % restrict omega
   omega = omega(omega < get(cs,'maxOmega'));
