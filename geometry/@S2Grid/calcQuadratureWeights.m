@@ -27,8 +27,18 @@ if numel(S2G) == numel(utheta) * numel(urho) && min(utheta) == 0
         
 else
       
-  w = calcVoronoiArea(S2G)./4./pi;
-          
+  % compute weights as the area of the voronoi cells
+  w = nan;
+  i = 1;
+  while i< 10 && (any(isnan(w)) || any(imag(w)))
+    w = calcVoronoiArea(S2G)./4./pi;
+    i = i+1;
+  end
+    
+  % dont allow weights to become to large
+  m = quantile(w(:),0.8);
+  w(w>m) = 1 * max(w(w<=m));
+  
 end
 
-if any(isnan(w)), w = 1./numel(S2G);end
+if any(isnan(w)) || any(imag(w)), w = 1./numel(S2G);end
