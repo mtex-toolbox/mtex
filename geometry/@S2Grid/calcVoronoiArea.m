@@ -1,4 +1,4 @@
-function area = calcVoronoiArea(S2G)
+function area = calcVoronoiArea(S2G,varargin)
 % compute the area of the Voronoi decomposition
 %
 %% Input
@@ -7,6 +7,8 @@ function area = calcVoronoiArea(S2G)
 %% Output
 %  area - area of the corresponding Voronoi cells
 %
+%% Options
+% incomplete -
 
 %% in case of antipodal symmetry - add antipodal points
 antipodal = check_option(S2G,'antipodal');
@@ -23,10 +25,11 @@ faces = convhulln([x(:) y(:) z(:)]); % delauny triangulation on sphere
 v = normalize(cross(S2G(faces(:,3))-S2G(faces(:,1)),S2G(faces(:,2))-S2G(faces(:,1))));
 
 % the triangulation may have some defects, i.e. interior faces;
-del = angle(v,-zvector) > eps; 
-faces = faces(del,:);
-v = v(del,:);
-
+if check_option(varargin,'incomplete')
+  del = angle(v,-zvector) > eps;
+  faces = faces(del,:);
+  v = v(del,:);
+end
 % voronoi-vertices around generators
 [center vertices] = sort(faces(:));
 S2Gc = S2G(center);
@@ -38,7 +41,8 @@ vl = zeros(numel(vert),1); vr = zeros(numel(vert),1);
 cs = [0; find(diff(center)); numel(center)];
 
 % the azimut of a voronoi-vertex relativ to its generator
-[t,azimuth] = polar(cross(S2Gc-vert,zvector));
+[t,azimuth] = polar(hr2quat(S2Gc,zvector).*cross(S2Gc,vert));
+
 for k=1:numel(cs)-1
   nd = cs(k)+1:cs(k+1);
   % sort vertices clockwise around generator
@@ -58,7 +62,7 @@ area(nd) = vertices2Area(va(nd),vb(nd),vc(nd));
 area(any(imag(area(:)),2)) = 0; % some areas are sometimes corrupted?
 
 % accumulate areas of spherical triangles around generator
-area = full(sparse(center,1,area,numel(S2G),1)); 
+area = full(sparse(center,1,area(:),numel(S2G),1));
 
 if antipodal
   area = sum(reshape(area,[],2),2);
@@ -76,7 +80,7 @@ function area = vertices2Area (v1,v2,v3)
 %  Get the area.
 area = angles2Area(a,b,c);
 
-%% compute 
+%% compute
 function [a,b,c] = sides2Angles(as,bs,cs)
 
 asu = as;
@@ -108,7 +112,7 @@ area = a + b + c - pi;
 %% compute sides of a spherical triangle given its angles
 function [as,bs,cs] = vertices2Sides(v1,v2,v3)
 %
-  
+
 as = angle(v2,v3);
 bs = angle(v3,v1);
 cs = angle(v1,v2);
