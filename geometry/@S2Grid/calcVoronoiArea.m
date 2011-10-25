@@ -30,29 +30,27 @@ if check_option(varargin,'incomplete')
   faces = faces(del,:);
   v = v(del,:);
 end
+
 % voronoi-vertices around generators
 [center vertices] = sort(faces(:));
 S2Gc = S2G(center);
 vert = repmat(v,3,1);
 vert = vert(vertices);
 
-% init an pointer set
-vl = zeros(numel(vert),1); vr = zeros(numel(vert),1);
-cs = [0; find(diff(center)); numel(center)];
+% the azimuth of a voronoi-vertex relativ to its generator
+[ignore,azimuth] = polar(hr2quat(S2Gc,zvector).*cross(S2Gc,vert));
 
-% the azimut of a voronoi-vertex relativ to its generator
-[t,azimuth] = polar(hr2quat(S2Gc,zvector).*cross(S2Gc,vert));
+% sort the vertices clockwise around with respect to its center
+[ignore,left] = sortrows([center azimuth]);
 
-for k=1:numel(cs)-1
-  nd = cs(k)+1:cs(k+1);
-  % sort vertices clockwise around generator
-  [a,ndx] = sort(azimuth(nd));
-  vl(nd) = nd(ndx);
-  vr(nd) = nd(ndx([2:end 1])); % pointer to the next vertex
-end
+% pointer to the next vertex around center
+last = [find(diff(center));numel(center)]; % cumulative indizes
+shift = 2:numel(center)+1;         % that is the shift
+shift(last) = [0;last(1:end-1)]+1; % and the last gets the first
+right = left(shift);
 
 % spherical-triangles (va -- vb -- vc) around the generator (va)
-va = S2Gc;   vb = vert(vl);    vc = vert(vr);
+va = S2Gc;   vb = vert(left);    vc = vert(right);
 
 % calculate the area for each triangle around generator (va)
 area = vertices2Area(va,vb,vc);
@@ -68,9 +66,9 @@ end
 function area = vertices2Area (va,vb,vc)
 
 % planes (great circles) spanned by the spherical triangle
-n_ab = (cross(va,vb));
-n_bc = (cross(vb,vc));
-n_ca = (cross(vc,va));
+n_ab = cross(va,vb);
+n_bc = cross(vb,vc);
+n_ca = cross(vc,va);
 
 l2n_ab = norm(n_ab);
 l2n_bc = norm(n_bc);
