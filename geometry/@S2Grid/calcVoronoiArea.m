@@ -51,71 +51,46 @@ for k=1:numel(cs)-1
   vr(nd) = nd(ndx([2:end 1])); % pointer to the next vertex
 end
 
-% spherical-triangles around the generator
-va = S2Gc;
-vb = vert(vl);
-vc = vert(vr);
+% spherical-triangles (va -- vb -- vc) around the generator (va)
+va = S2Gc;   vb = vert(vl);    vc = vert(vr);
 
-% some points may be identical, if the voronoi-diagram is degenerated
-nd = angle(vb,vc) > eps;
-area(nd) = vertices2Area(va(nd),vb(nd),vc(nd));
-area(any(imag(area(:)),2)) = 0; % some areas are sometimes corrupted?
+% calculate the area for each triangle around generator (va)
+area = vertices2Area(va,vb,vc);
 
 % accumulate areas of spherical triangles around generator
-area = full(sparse(center,1,area(:),numel(S2G),1));
+area = full(sparse(center,1,area,numel(S2G),1));
 
 if antipodal
   area = sum(reshape(area,[],2),2);
 end
 
 %% compute are of a spherical triangle given its vertices
-function area = vertices2Area (v1,v2,v3)
+function area = vertices2Area (va,vb,vc)
 
-%  Compute the lengths of the sides of the spherical triangle.
-[as,bs,cs] = vertices2Sides(v1,v2,v3);
+% planes (great circles) spanned by the spherical triangle
+n_ab = (cross(va,vb));
+n_bc = (cross(vb,vc));
+n_ca = (cross(vc,va));
 
-%  Get the spherical angles.
-[a,b,c] = sides2Angles(as,bs,cs);
+l2n_ab = norm(n_ab);
+l2n_bc = norm(n_bc);
+l2n_ca = norm(n_ca);
 
-%  Get the area.
-area = angles2Area(a,b,c);
+% if any cross product is to small, there is almost no area between the great
+% circles
+eps = 10^-10;
+nd = ~(l2n_ab < eps | l2n_bc < eps | l2n_ca < eps);
 
-%% compute
-function [a,b,c] = sides2Angles(as,bs,cs)
+% normalize the plane normal vector
+n_ab = n_ab(nd)./l2n_ab(nd);
+n_bc = n_bc(nd)./l2n_bc(nd);
+n_ca = n_ca(nd)./l2n_ca(nd);
 
-asu = as;
-bsu = bs;
-csu = cs;
-ssu = ( asu + bsu + csu ) ./ 2.0;
-
-tan_a2 = sqrt ( ( sin ( ssu - bsu ) .* sin ( ssu - csu ) ) ./ ...
-  ( sin ( ssu ) .* sin ( ssu - asu )     ) );
-
-a = 2.0 * atan ( tan_a2 );
-
-tan_b2 = sqrt ( ( sin ( ssu - asu ) .* sin ( ssu - csu ) ) ./ ...
-  ( sin ( ssu ) .* sin ( ssu - bsu )     ) );
-
-b = 2.0 * atan ( tan_b2 );
-
-tan_c2 = sqrt ( ( sin ( ssu - asu ) .* sin ( ssu - bsu ) ) ./ ...
-  ( sin ( ssu ) .* sin ( ssu - csu )     ) );
-
-c = 2.0 * atan ( tan_c2 );
-
-%% compute area of a spherical triangle given its angles
-function area = angles2Area (a,b,c)
-
-%  Apply Girard's formula.
-area = a + b + c - pi;
-
-%% compute sides of a spherical triangle given its angles
-function [as,bs,cs] = vertices2Sides(v1,v2,v3)
-%
-
-as = angle(v2,v3);
-bs = angle(v3,v1);
-cs = angle(v1,v2);
-
+% Girard's formula. A+B+C-pi, with angles  A,B,C between the great circles
+area = zeros(size(nd));
+area(nd) = ...
+  acos(dot(n_ab,-n_bc))+...
+  acos(dot(n_bc,-n_ca))+...
+  acos(dot(n_ca,-n_ab))- pi;
 
 
