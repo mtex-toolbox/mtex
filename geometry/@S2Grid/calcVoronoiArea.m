@@ -1,4 +1,4 @@
-function area = calcVoronoiArea(S2G,varargin)
+function [area,centroids] = calcVoronoiArea(S2G,varargin)
 % compute the area of the Voronoi decomposition
 %
 %% Input
@@ -6,89 +6,56 @@ function area = calcVoronoiArea(S2G,varargin)
 %
 %% Output
 %  area - area of the corresponding Voronoi cells
+%  centroids - centroid of the voronoi cell
 %
 %% Options
 % incomplete -
 
 %% in case of antipodal symmetry - add antipodal points
+
 antipodal = check_option(S2G,'antipodal');
 if antipodal
-  S2G = [S2G,-S2G];
+  S2G = [S2G(:);-S2G(:)];
   S2G = delete_option(S2G,'antipodal');
 end
 
-S2G = reshape(vector3d(S2G),[],1);
-[x,y,z] = double(S2G);
-faces = convhulln([x(:) y(:) z(:)]); % delauny triangulation on sphere
+S2G = reshape(S2G,[],1);
+[V,C] = calcVoronoi(S2G);
 
-% voronoi-vertices
-v = normalize(cross(S2G(faces(:,3))-S2G(faces(:,1)),S2G(faces(:,2))-S2G(faces(:,1))));
+nd = ~cellfun('isempty',C);
+S2G = S2G.vector3d(nd);
 
-% the triangulation may have some defects, i.e. interior faces;
-if check_option(varargin,'incomplete')
-  del = angle(v,-zvector) > eps;
-  faces = faces(del,:);
-  v = v(del,:);
-end
+last = cumsum(cellfun('prodofsize',C(nd)));
 
-% voronoi-vertices around generators
-[center vertices] = sort(faces(:));
-S2Gc = S2G(center);
-vert = repmat(v,3,1);
-vert = vert(vertices);
-
-% the azimuth of a voronoi-vertex relativ to its generator
-[ignore,azimuth] = polar(hr2quat(S2Gc,zvector).*cross(S2Gc,vert));
-
-% sort the vertices clockwise around with respect to its center
-[ignore,left] = sortrows([center azimuth]);
-
-% pointer to the next vertex around center
-last = [find(diff(center));numel(center)]; % cumulative indizes
-shift = 2:numel(center)+1;         % that is the shift
+left = [C{nd}];
+shift = 2:last(end)+1;             % that is the shift
 shift(last) = [0;last(1:end-1)]+1; % and the last gets the first
 right = left(shift);
 
-% spherical-triangles (va -- vb -- vc) around the generator (va)
-va = S2Gc;   vb = vert(left);    vc = vert(right);
+center = cumsum([1 diff(shift)>1]);
+
+va = S2G(center);
+vb = V(left);
+vc = V(right);    % next vertex around
 
 % calculate the area for each triangle around generator (va)
-area = vertices2Area(va,vb,vc);
+A = real(sphericalTriangleArea(va,vb,vc));
+
+if nargout>1
+  [x,y,z]= double(A.*(va+vb+vc));
+  x = full(sparse(center,1,x,numel(S2G),1));
+  y = full(sparse(center,1,y,numel(S2G),1));
+  z = full(sparse(center,1,z,numel(S2G),1));
+  centroids = (vector3d(x,y,z));
+end
 
 % accumulate areas of spherical triangles around generator
-area = full(sparse(center,1,area,numel(S2G),1));
+A = full(sparse(center,1,A,numel(S2G),1));
+
+area = zeros(size(nd));
+area(nd) = A(1:nnz(nd));
 
 if antipodal
   area = sum(reshape(area,[],2),2);
 end
-
-%% compute are of a spherical triangle given its vertices
-function area = vertices2Area (va,vb,vc)
-
-% planes (great circles) spanned by the spherical triangle
-n_ab = cross(va,vb);
-n_bc = cross(vb,vc);
-n_ca = cross(vc,va);
-
-l2n_ab = norm(n_ab);
-l2n_bc = norm(n_bc);
-l2n_ca = norm(n_ca);
-
-% if any cross product is to small, there is almost no area between the great
-% circles
-eps = 10^-10;
-nd = ~(l2n_ab < eps | l2n_bc < eps | l2n_ca < eps);
-
-% normalize the plane normal vector
-n_ab = n_ab(nd)./l2n_ab(nd);
-n_bc = n_bc(nd)./l2n_bc(nd);
-n_ca = n_ca(nd)./l2n_ca(nd);
-
-% Girard's formula. A+B+C-pi, with angles  A,B,C between the great circles
-area = zeros(size(nd));
-area(nd) = ...
-  acos(dot(n_ab,-n_bc))+...
-  acos(dot(n_bc,-n_ca))+...
-  acos(dot(n_ca,-n_ab))- pi;
-
 
