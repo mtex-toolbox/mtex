@@ -1,17 +1,10 @@
-function [pf_unique,pf_dublicated] = unique(pf)
+function pf = unique(pf)
 % remove dublicated points in a polefigure
 
-
 for ip = 1:numel(pf)
-  
-  [x,y,z] = double(pf(ip).r);
-  tri = convhulln([x(:),y(:), z(:)]);
-  
-  [ndx] = unique(tri);
-  
-  pf_unique(ip) = copy(pf(ip),ndx);
-  pf_dublicated(ip) = delete(pf(ip),ndx);
-  
+      
+  [r,ndx] = unique(pf(ip).r); %#ok<ASGLU>
+    
+  pf(ip) = copy(pf(ip),ndx);
+    
 end
-
-
