@@ -77,25 +77,25 @@ switch lower(convention)
   case {'bunge','zxz'}
 
     labels = {'phi1','Phi','phi2'};
-    if ~isnull(beta)
-      alpha = alpha + pi/2;
-      gamma = gamma + 3*pi/2;
-    end
+    
+    ind = ~isnull(beta);
+    alpha(ind) = alpha(ind) + pi/2;
+    gamma(ind) = gamma(ind) + 3*pi/2;
+    
     
   case {'kocks'}
 
     labels = {'Psi','Theta','phi'};
-    if beta ~= 0
-      gamma = pi - gamma;
-    end
+    ind = ~isnull(beta);
+    gamma(ind) = pi - gamma(ind);
+    
     
   case {'canova'}
     
     labels = {'omega','Theta','phi'};
-    if beta ~= 0
-      alpha = pi/2 - alpha;
-      gamma = 3*pi/2 - gamma;
-    end
+    ind = ~isnull(beta);
+    alpha(ind) = pi/2 - alpha(ind);
+    gamma(ind) = 3*pi/2 - gamma(ind);
     
 end
 
