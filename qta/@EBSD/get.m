@@ -114,7 +114,7 @@ switch vname
       end
     end
 
-  case 'weight'
+  case {'weight','weights'}
 
     if isfield(ebsd.options, 'weight')
       w = ebsd.options.weight;

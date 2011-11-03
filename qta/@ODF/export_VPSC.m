@@ -2,7 +2,7 @@ function export_VPSC(odf,filename,varargin)
 % export an ODF to the VPSC format
 %
 %% Syntax
-% export_VPSC(odf,'file.txt','points',)
+% export_VPSC(odf,'file.txt','points',points)
 %
 %% Input
 %  odf      - ODF to be exported
