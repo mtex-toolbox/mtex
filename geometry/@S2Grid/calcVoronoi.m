@@ -35,7 +35,7 @@ vert = vert(vertices);
 [ignore,azimuth] = polar(hr2quat(S2G,zvector).*cross(S2G,vert));
 
 % sort the vertices clockwise around with respect to its center
-[ignore,left] = sortrows([center azimuth]);
+[ignore,left] = sortrows([center azimuth]); %#ok<*ASGLU>
 
 left = mod(vertices(left)'-1,numel(V))+1;
 
