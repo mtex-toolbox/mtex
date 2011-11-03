@@ -54,7 +54,7 @@ else
   if numel(T.M) == 36,
     T.M = tensor24(T.M);
   elseif numel(T.M) == 18,
-    T.M = tensor23(T.M);
+    T.M = tensor23(T.M,check_option(varargin,'doubleconvention'));
   end
 
   % compute the rank of the tensor by finding the last dimension
@@ -75,6 +75,14 @@ if ~isempty(args)
 else
   T.CS = symmetry;
 end
+
+%
+if check_option(varargin,'doubleconvention')
+  T.properties.doubleconvention = 'true';
+end
+
+
+varargin = delete_option(varargin,{'doubleconvention','singleconvention','InfoLevel'});
 
 % extract properties
 while ~isempty_cell(varargin)  

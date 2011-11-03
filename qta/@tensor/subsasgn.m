@@ -6,9 +6,9 @@ if T.rank == 4
   M = subsasgn(M,s,b);
   T.M = tensor24(M);
 elseif T.rank == 3
-  M = tensor32(T.M);
+  M = tensor32(T.M,isfield(T,'doubleconvention'));
   M = subsasgn(M,s,b);
-  T.M = tensor23(M);
+  T.M = tensor23(M,isfield(T,'doubleconvention'));
 else
   T.M = subsasgn(T.M,s,b);
 end

@@ -1,9 +1,16 @@
-function M = tensor32(A)
+function M = tensor32(A,doubleconvention)
 
 %b = [1 5 9 6 3 2];
 %A = bsxfun(@plus,(0:2)'*9,b);
 %M = M(A);
 %M(:,4:end) = M(:,4:end)*2;
+
+if nargin ==2 && doubleconvention
+  fac = 1;
+else
+  fac = 2;
+end
+  
 
 M = zeros(3,6);
 for i=1:3
@@ -16,7 +23,7 @@ for i=1:3
         n = 9-k-j;
       end
       
-      M(i,n) = M(i,n) + A(i,j,k);
+      M(i,n) = M(i,n) + A(i,j,k)./fac;
     end
   end
 end
