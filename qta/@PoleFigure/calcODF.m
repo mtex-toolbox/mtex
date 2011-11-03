@@ -106,11 +106,14 @@ clear rtheta;clear rrho;
 
 % ----------------------- WHEIGHTS ----------------------------------
 
-
-w = [];
-for i = 1:numel(pf)
-  ww = calcQuadratureWeights(pf(i).r);
-  w = [w;ww(:)]; %#ok<AGROW>
+if check_option(varargin,'NoQuadratureWeights')
+  w = 1;
+else
+  w = [];
+  for i = 1:numel(pf)
+    ww = calcQuadratureWeights(pf(i).r);
+    w = [w;ww(:)]; %#ok<AGROW>
+  end
 end
 
 if isfield(pf(1).options,'background') && ...
