@@ -27,18 +27,27 @@ if numel(S2G) == numel(utheta) * numel(urho) && min(utheta) == 0
         
 else
       
+  % remove duplicated points
+  [uS2G,m,n] = unique(S2G);
+  
   % compute weights as the area of the voronoi cells
-  w = nan;
-  i = 1;
-  while i< 10 && (any(isnan(w)) || any(imag(w)))
-    w = calcVoronoiArea(S2G)./4./pi;
-    i = i+1;
-  end
-    
+  w = calcVoronoiArea(uS2G)./4./pi;
+
+  % compute weights
+  o = histc(n,1:numel(m));
+  w = w./o;
+  
+  % redistribute weights
+  w = w(n);
+  
+  
+  
+  
   % dont allow weights to become to large
-  m = quantile(w(:),0.8);
-  w(w>m) = 1 * max(w(w<=m));
+  wmax = 2*quantile(w(:),0.8);
+  w(w>wmax) = 1 * max(w(w<=wmax));
   
 end
 
-if any(isnan(w)) || any(imag(w)), w = 1./numel(S2G);end
+if any(isnan(w(:))) || any(imag(w(:))), w = 1./numel(S2G);end
+
