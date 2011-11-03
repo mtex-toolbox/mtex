@@ -97,6 +97,13 @@ T = T1;
 if hasProperty(T,'name'), T.properties = rmfield(T.properties,'name');end
 if hasProperty(T,'unit'), T.properties = rmfield(T.properties,'unit');end
   
+if check_option(varargin,'doubleconvention')
+  T.properties.doubleconvention = 'true';
+end
+
+
+varargin = delete_option(varargin,{'doubleconvention','singleconvention','InfoLevel'});
+
 % extract properties
 while ~isempty_cell(varargin)  
   T.properties.(varargin{1}) = varargin{2};
