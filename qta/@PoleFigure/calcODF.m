@@ -105,12 +105,23 @@ clear rtheta;clear rrho;
 
 
 % ----------------------- WHEIGHTS ----------------------------------
+
+if check_option(varargin,'NoQuadratureWeights')
+  w = 1;
+else
+  w = [];
+  for i = 1:numel(pf)
+    ww = calcQuadratureWeights(pf(i).r);
+    w = [w;ww(:)]; %#ok<AGROW>
+  end
+end
+
 if isfield(pf(1).options,'background') && ...
     ~check_option(varargin,'NO_BACKGROUND')
-  w = sqrt(1./sqrt(max(P+get(pf,'background'),0.0001)));
+  w = w.*sqrt(1./sqrt(max(P+get(pf,'background'),0.0001)));
   varargin = set_option(varargin,'BACKGROUND');
 elseif ~check_option(varargin,'NO_BACKGROUND') 
-  w = sqrt(1./sqrt(max(P+get_option(varargin,'BACKGROUND',10),0.0001)));
+  w = w.*sqrt(1./sqrt(max(P+get_option(varargin,'BACKGROUND',10),0.0001)));
   varargin = set_option(varargin,'BACKGROUND');
 else
   w = [];

@@ -16,4 +16,5 @@ if numel(v1)>1 && numel(v2)>1 && any(size(v2)~=size(v1))
   return
 end
 
-b = isnull(angle(v1,v2,varargin{:}));
+b = isnull(dot(v1,v2,varargin{:})-1);
+%b = isnull(norm(v1-v2));
