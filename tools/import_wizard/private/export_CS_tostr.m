@@ -10,28 +10,33 @@ end
 for i=1:numel(cs)
   
   options = {};
-  [c,angle] = get_axisangel(cs{i});
+  if isempty(cs{i})
+    
+    t = 'symmetry()';
+    
+  else
+      
+    [c,angle] = get_axisangel(cs{i});
+    
+    % for non cubic symmetries
+    if ~any(strcmp(get(cs{i},'Laue'),{'m-3','m-3m'}))
+      options = [options {c}]; %#ok<AGROW>
+    end
   
-  % for non cubic symmetries
-  if ~any(strcmp(get(cs{i},'Laue'),{'m-3','m-3m'}))
-    options = [options {c}]; %#ok<AGROW>
+    % for triclinic and monoclinic get angles
+    if any(strcmp(get(cs{i},'Laue'),{'-1','2/m'}))
+      options = [options {[n2s([angle{:}]),'*degree']}]; %#ok<AGROW>
+    end
+    
+    options = [options get(cs{i},'alignment')]; %#ok<AGROW>
+    
+    mineral = get(cs{i},'mineral');
+    if ~isempty(mineral)
+      options = [options,{'mineral',mineral}];  %#ok<AGROW>
+    end
+  
+    t = strcat('symmetry(''', get(cs{i},'name'),'''',option2str(options,'quoted'),')');
   end
-  
-  % for triclinic and monoclinic get angles
-  if any(strcmp(get(cs{i},'Laue'),{'-1','2/m'}))
-    options = [options {[n2s([angle{:}]),'*degree']}]; %#ok<AGROW>
-  end
-  
-  
-
-  options = [options get(cs{i},'alignment')]; %#ok<AGROW>
-
-  mineral = get(cs{i},'mineral');
-  if ~isempty(mineral)
-    options = [options,{'mineral',mineral}];  %#ok<AGROW>
-  end
-  
-  t = strcat('symmetry(''', get(cs{i},'name'),'''',option2str(options,'quoted'),')');
   
   if numel(cs) > 1
     str = [str; {t} ]; %#ok<AGROW>
