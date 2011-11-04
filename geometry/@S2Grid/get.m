@@ -5,8 +5,13 @@ switch vname
   case {'resolution','res'}
     
     if obj.res >= 2*pi-0.001 && numel(obj)>4
-      a = calcVoronoiArea(obj);
-      value = sqrt(mean(a));
+      try
+        a = calcVoronoiArea(obj);
+        value = sqrt(mean(a));
+        assert(value>0);
+      catch
+        value = obj.res;
+      end
     else
       value = obj.res;
     end
