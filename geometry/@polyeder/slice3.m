@@ -23,6 +23,10 @@ csz = cellfun('size',{p.Vertices},1);
 Vertices = vertcat(p.Vertices);
 Faces = vertcat(p.Faces);
 
+s = sign(vertcat(p.FacetIds))<0;
+Faces(s,:) = Faces(s,end:-1:1);
+
+
 css = [0 cumsum(cs)];
 csz = [0 cumsum(csz)];
 
@@ -170,6 +174,16 @@ if ~isempty(property)
     %     setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
     %     setappdata(gcf,'colorcoding',cc);
     %     setappdata(gcf,'options',extract_option(varargin,'antipodal'));
+  elseif  isnumeric(property)
+    
+    d = property;
+%     d = reshape(property,[],1); 
+    
+  elseif  isnumeric(property) && ( ...
+      length(grains) == length(property) || islogical(property) || ...
+      numel(property) == 1)
+    
+    d = reshape(property,[],1);
     
   elseif strcmpi(property,'none')
     
@@ -183,13 +197,7 @@ if ~isempty(property)
     if strcmpi(property,'phase')
       colormap(hsv(max(d)+1));
     end
-    
-  elseif  isnumeric(property) && ( ...
-      length(grains) == length(property) || islogical(property) || ...
-      numel(property) == 1)
-    
-    d = reshape(property,[],1);
-    
+ 
   end
   
 end
