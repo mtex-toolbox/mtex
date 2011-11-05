@@ -9,7 +9,7 @@
 %% Description 
 % 
 % The following mindmap might give a basic idea about EBSD data
-% analyis in MTEX, with the ability of <GrainModelling.html grain
+% analyis in MTEX, with the ability of <GrainReconstruction.html grain
 % modelling> for spatial data, it offers varios way of interpreting
 % individual orientation measurements, i.e. in terms of quantifying
 % macro-,micro- and  mesotexture.

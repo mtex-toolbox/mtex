@@ -15,14 +15,14 @@
 
 %% Modelling Grains
 %
-% *<GrainModelling.html Grains>*  are a basic concept for spatially indexed EBSD Data.
+% *<GrainReconstruction.html Grains>*  are a basic concept for spatially indexed EBSD Data.
 % With grain modelling comes up the possebility getting more information out of EBSD Data
 % - e.g. fabric analysis, characterisation of misorientation
 %
 
 %% Analyzing EBSD Data
 %
-% *<EBSDPlot.html Visualizing EBSD Data>* is a central to understand
+% *<OrientationPlots.html Visualizing EBSD Data>* is a central to understand
 % a specimen. The most naive way is plotting of the individual orientations as 
 % pole point plots or spatially indexed in some map with colorcoded orientations. 
 % Moreover one gets with grains the possibility to take a closer look on grain
