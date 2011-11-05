@@ -15,7 +15,7 @@ function annotate(varargin)
 %% See also
 % Miller/plot vector3d/plot
 
-%% get axes 
+%% get axes
 
 if nargin == 0 || isempty(varargin{1}), return; end
 
@@ -31,7 +31,7 @@ else
 end
 
 
-%% get obj and some data 
+%% get obj and some data
 obj = varargin{1};
 varargin(1) = [];
 
@@ -45,15 +45,20 @@ if ~isempty(o), varargin = {o{:},varargin{:}};end
 if isa(obj,'quaternion')
   
   if length(obj) > 1 % split if more then one orientation
-    for i = 1:length(obj), annotate(obj(i),varargin{:});end    
+    for i = 1:length(obj), annotate(obj(i),varargin{:});end
     return;
   end
   
-  if isappdata(gcf,'sections') 
+  if isappdata(gcf,'sections')
+    
+    if strcmpi(getappdata(gcf,'SectionType'),'omega')
+      varargin = set_default_option(varargin,{getappdata(gcf,'h')});
+    end
+    
     % precalculate projection if plotted to sections
     S2G = project2ODFsection(orientation(obj,cs,ss),...
       getappdata(gcf,'SectionType'),getappdata(gcf,'sections'),varargin{:});
-  end  
+  end
 end
 
 
@@ -63,78 +68,78 @@ for i = 1:length(ax)
   
   washold = ishold;
   hold all;
-    
-  switch get(gcf,'tag')
   
-%% pole figure plot
-    case 'pdf' 
+  switch get(gcf,'tag')
     
-      h = getappdata(gca,'h');
-        
-      if isa(obj,'quaternion')
+    %% pole figure plot
+    case 'pdf'
       
+      h = getappdata(gca,'h');
+      
+      if isa(obj,'quaternion')
+        
         plot(ss*quaternion(obj)*symmetrise(h,varargin{:}),'MarkerEdgeColor','w',varargin{:});
         
       elseif isa(obj,'vector3d')
-      
+        
         plot(obj,'Marker','s','MarkerFaceColor','k',...
           'MarkerEdgeColor','w','Marker','s',varargin{:});
-      
+        
       else
         error('Only orientations and specimen directions can be anotated to pole figure plots');
       end
-    
+      
     case 'tensor'
       
       if isa(obj,'vector3d')
-      
+        
         plot(obj,'Marker','s','MarkerFaceColor','k',...
           'MarkerEdgeColor','w','Marker','s',varargin{:});
-      
+        
       else
         error('Only crystal and specimen directions can be anotated to tensor plots');
       end
       
-  %% inverse pole figure plot    
+      %% inverse pole figure plot
     case {'ipdf','hkl'}
-        
+      
       r = getappdata(gca,'r');
       if isempty(r), r = getappdata(gcf,'r');end
-    
+      
       if isa(obj,'quaternion')
         sr = inverse(obj)*symmetrise(r./norm(r),ss,varargin{:});
         plot(cs*sr(:).','MarkerEdgeColor','w',varargin{:});
       elseif isa(obj,'Miller')
-      
+        
         obj = ensureCS(cs,{obj});
         plot(obj,'all','MarkerEdgeColor','w','Marker','s',varargin{:});
-      
+        
       else
         error('Only orientations and Miller indece can be anotated to inverse pole figure plots');
       end
-    
-  %% ODF sections plot
+      
+      %% ODF sections plot
     case 'odf'
-   
+      
       if isa(obj,'quaternion')
         plot(S2G{i},varargin{:});
       else
         error('Only orientations can be anotated to ODF section plots');
       end
-    
-  %% EBSD 3d scatter plot
+      
+      %% EBSD 3d scatter plot
     case  'ebsd_scatter'
-   
+      
       if isa(obj,'quaternion')
         S3G = SO3Grid(obj,cs,ss);
         plot(S3G,'center',getappdata(gca,'center'),varargin{:});
       else
         error('Only orientations can be anotated to EBSD scatter plots');
       end
-    
-  
-    otherwise % not supported -> skip        
-    
+      
+      
+    otherwise % not supported -> skip
+      
   end
   if ~washold, hold off;end
 end

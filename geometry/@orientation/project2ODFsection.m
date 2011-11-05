@@ -10,7 +10,7 @@ function [S2G, data]= project2ODFsection(o,type,sec,varargin)
 %  S2G  - vector of @S2Grid
 %
 %% Options
-%  tolerance - 
+%  tolerance -
 
 %% get input
 
@@ -28,7 +28,7 @@ S2G = repcell(S2Grid(vector3d,varargin{:}),numel(sec),1);
 if strcmpi(type,'axisangle')
   
   for i=1:numel(sec)
-    ind(:,i) = angle(o)-tol < sec(i) & sec(i) < angle(o)+tol;    
+    ind(:,i) = angle(o)-tol < sec(i) & sec(i) < angle(o)+tol;
     S2G{i} = S2Grid(axis(subsref(o,ind(:,i))));
   end
   
@@ -40,7 +40,7 @@ if strcmpi(type,'axisangle')
       data = repcell([],size(sec));
     end
   end
-	return
+  return
 end
 
 %% symmetries and convert to Euler angle
@@ -50,8 +50,16 @@ q = symmetrise(o);
 switch lower(type)
   case {'phi_1','phi_2','phi1','phi2'}
     convention = 'Bunge';
-  case {'alpha','gamma','sigma'}
-    convention = 'ABG';   
+  case {'alpha','gamma','sigma','omega'}
+    convention = 'ABG';
+end
+
+if strcmpi(type,'omega')
+  hpos = find_type(varargin,'Miller');
+  if hpos > 0, h = varargin{hpos}(1);
+  else h = Miller(0,0,1,get(o,'CS')); end
+  [alpha,beta] = polar(h);
+  q = q*euler2quat(beta,alpha,0,'ABG');
 end
 
 [e1,e2,e3] = Euler(q,convention);
@@ -63,7 +71,7 @@ switch lower(type)
   case {'phi_2','gamma','phi2'}
     sec_angle = e3;
     rho = e1;
-  case 'sigma'
+  case {'sigma','omega'}
     sec_angle = e1 + e3;
     rho = e1;
 end
@@ -107,7 +115,7 @@ if nargout > 1 && check_option(varargin,'data')
   dat = get_option(varargin,'data');
   if ~isempty(dat)
     dat = repmat(dat,numel(o.CS),numel(o.SS));
-  
+    
     dat = dat(ind);
     for i = 1:size(sec,2)
       data{i} = dat(ind2(:,i));
