@@ -6,10 +6,10 @@
 %%
 % Importing EBSD data into MTEX means to create a variable of type
 % <EBSD_index.html EBSD> from certain data files. Once such an variable has
-% been created the data can be <EBSDPlot.html plotted> and  
+% been created the data can be <OrientationPlots.html plotted> and  
 % <ModifyEBSDData.html analyzed and processed> in many ways.
 % Furthermore, such an EBSD variable is the starting point for
-% <GrainModelling.html grain reconstruction> and <EBSD2odf.html
+% <GrainReconstruction.html grain reconstruction> and <EBSD2odf.html
 % ODF estimation>.
 %
 %% Contents
