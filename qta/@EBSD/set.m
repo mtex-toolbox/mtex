@@ -23,20 +23,28 @@ function ebsd = set(ebsd,vname,value,varargin)
 % EBSD/get
 
 if any(strcmp(vname,fields(ebsd)))
-
+  
   if strcmp(vname,'CS')
     value = ensurecell(value);
     if max(ebsd.phase) > length(value)
       error('The number of symmetries specified is less than the largest phase id.')
     end
   end
-
+  
   ebsd.(vname) = value;
-
+  
 elseif isfield(ebsd.options,vname)
-
-  ebsd.options.(vname) = value;
-
+  
+  if isempty(value)
+    
+    ebsd.options = rmfield( ebsd.options,vname);
+    
+  else    
+    
+    ebsd.options.(vname) = value;
+    
+  end
+  
 else
   
   ebsd.options.(vname) = value;
