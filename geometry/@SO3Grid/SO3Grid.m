@@ -7,8 +7,8 @@ function [G,varargout] = SO3Grid(points,CS,SS,varargin)
 %  S3G = SO3Grid(resolution,CS,SS)
 %
 %% Input
-%  points     - number of nodes 
-%  nodes      - @quaternion 
+%  points     - number of nodes
+%  nodes      - @quaternion
 %  resolution - double
 %  CS, SS     - @symmetry groups
 %
@@ -41,45 +41,47 @@ G.center  = [];
 Grid = orientation(rotation,CS,SS);
 
 %% SO3rid defined by a set quaternions
-if isa(points,'quaternion')    
-	
+if isa(points,'quaternion')
+  
   points = points  ./ norm(points);
   Grid = points;
-    
+  
   if numel(points) < 2
     G.resolution = 2*pi;
   elseif check_option(varargin,'resolution')
     G.resolution = get_option(varargin,'resolution');
   else
     G.resolution = ori2res(orientation(Grid,CS,SS));
-  end 
-
+  end
+  
 elseif isa(points,'char') && any(strcmpi(points,{'random'}))
   
   N = fix(get_option(varargin,'points',1000));
   Grid = randq(N);
   G.resolution = ori2res(Grid);
   
-%% regular grid
+  %% regular grid
 elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
-
+  
   % default sectioning for plot grids
   sectype = 'unknown';
   if strcmpi(points,'plot'), sectype= 'sigma'; end
   
   % check whether sectioning type is given explictely
-  sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','axisangle','omega','psi'},sectype);
+  sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','axisangle','omega','omega2','psi'},sectype);
   
   % if sectioning is given, it defines the Euler angle convention
-  switch lower(sectype)    
+  switch lower(sectype)
     
     case {'phi1','phi2'}
+      
       convention = 'Bunge';
       
-    case {'alpha','gamma','sigma'}
+    case {'alpha','gamma','sigma','omega'}
+      
       convention = 'Matthies';
-    
-    case 'omega'
+      
+    case 'omega2'
       
       convention = 'Canove';
       
@@ -87,44 +89,48 @@ elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
       
       convention = 'Kocks';
       
+    case 'axisangle'
+      
     otherwise % determine convention
       
       % determine Euler angle parameterisation
       convention = EulerAngleConvention(varargin{:});
-
+      
       switch convention
-    
+        
         case {'Matthies','nfft','ZYZ','ABG'}
-      
+          
           sectype = 'alpha';
-      
+          
         case 'Roe'
-    
+          
           sectype = 'Psi';
-      
+          
         case {'Bunge','ZXZ'}
-
+          
           sectype = 'phi1';
           
         case {'Kocks'}
-    
+          
           sectype = 'Psi';
-    
+          
         case {'Canova'}
-    
+          
           sectype = 'omega';
-            
+          
       end
   end
-   
+  
   % get bounds
   [max_rho,max_theta,max_sec] = getFundamentalRegion(CS,SS,varargin{:});
   
   % make the sectioning variable to be the last one
-  if any(strcmp(sectype,{'alpha','phi1','Psi','omega'}))
+  if any(strcmpi(sectype,{'alpha','phi1','Psi'}))
     dummy = max_sec; max_sec = max_rho; max_rho = dummy;
+  elseif strcmpi(sectype,'omega')
+    max_sec = 2*pi;
   end
-
+  
   % sections
   nsec = get_option(varargin,'SECTIONS',...
     round(max_sec/get_option(varargin,'resolution',5*degree)));
@@ -134,8 +140,8 @@ elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
   
   % special case axis/angle
   if strcmpi(sectype,'axisangle')
-  
-    S2G = S2Grid('plot',varargin{:});
+    
+    S2G = S2Grid('plot','north',varargin{:});
     
     for i=1:nsec
       Grid(:,:,i) = axis2quat(S2G,sec(i));
@@ -145,9 +151,8 @@ elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
     G.options = {'ZYZ'};
     G.resolution = get(S2G,'resolution');
     
-    
   else % parameterisation by Euler angles
-
+    
     % no sectioning angles
     S2G = S2Grid(points,'MAXTHETA',max_theta,'MAXRHO',max_rho,'RESTRICT2MINMAX',varargin{:});
     [theta,rho] = polar(S2G);
@@ -156,22 +161,30 @@ elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
     sec_angle = repmat(reshape(sec,[1,1,nsec]),[size(S2G),1]);
     theta  = reshape(repmat(theta ,[1,1,nsec]),[size(S2G),nsec]);
     rho = reshape(repmat(rho,[1,1,nsec]),[size(S2G),nsec]);
-  
+    
     % set order
     switch lower(sectype)
       case {'phi_1','alpha','phi1'}
         [sec_angle,theta,rho] = deal(sec_angle,theta,rho);
       case {'phi_2','gamma','phi2'}
         [sec_angle,theta,rho] = deal(rho,theta,sec_angle);
-      case 'sigma'
+      case {'sigma','omega'}
         [sec_angle,theta,rho] = deal(rho,theta,sec_angle-rho);
     end
     
     % define grid
     Grid = euler2quat(sec_angle,theta,rho,convention);
-  
-    % store gridding
-    G.alphabeta = [sec_angle(:),theta(:),rho(:)];
+    
+    if strcmpi(sectype,'omega')
+      hpos = find_type(varargin,'Miller');
+      if hpos > 0, h = varargin{hpos}(1);
+      else h = Miller(0,0,1,CS); end      
+      [alpha,beta] = polar(h);
+      Grid = Grid.*inverse(euler2quat(beta,alpha,0,convention));
+    end
+    
+    % store gridding, @TODO: check when its required 
+    G.alphabeta = [];  %[sec_angle(:),theta(:),rho(:)];
     G.options = {convention};
     G.resolution = get(S2G,'resolution');
   end
@@ -183,19 +196,19 @@ elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
   else
     varargout{1} = G.alphabeta;
   end
-    
-%% local Grid
+  
+  %% local Grid
 elseif maxangle < rotangle_max_z(CS)/4
   
   if points > 1
     res = maxangle/(points/4)^(1/3);
- %  res = maxangle / points^(1/3)
+    %  res = maxangle / points^(1/3)
   else
     res = points;
   end
   
   rot_angle = res/2:res:maxangle;
-
+  
   % construct complete grid
   q = quaternion();
   for i = 1:length(rot_angle)
@@ -205,7 +218,7 @@ elseif maxangle < rotangle_max_z(CS)/4
     q = [q,axis2quat(vector3d(rotax),rot_angle(i))]; %#ok<AGROW>
   end
   
-  G.resolution = res;  
+  G.resolution = res;
   
   % restrict to fundamental region - specimen symmetry only
   center = get_option(varargin,'center',idquaternion);
@@ -214,14 +227,14 @@ elseif maxangle < rotangle_max_z(CS)/4
   
   for i = 1:length(center)
     cq = center(i) .* q(:);
-    if numel(SS) > 1      
+    if numel(SS) > 1
       ind = fundamental_region2(cq,center(i),CS,SS);
       cq = cq(ind);
     end
     Grid = [Grid;orientation(cq,CS,SS)]; %#ok<AGROW>
   end
   
-%% equidistribution  
+  %% equidistribution
 elseif isa(points,'double') && points > 0  % discretise euler space
   
   [maxalpha,maxbeta,maxgamma] = symmetry2Euler(CS,SS,'SO3Grid');
@@ -229,30 +242,30 @@ elseif isa(points,'double') && points > 0  % discretise euler space
   maxgamma = maxgamma/2;
   
   if ~check_option(varargin,'center')
-    maxgamma = min(maxgamma,maxangle);    
+    maxgamma = min(maxgamma,maxangle);
   end
   
-  if points >= 1  % number of points specified?     
+  if points >= 1  % number of points specified?
     switch Laue(CS)  % special case: cubic symmetry
       case 'm-3'
         points = 3*points;
       case 'm-3m'
         points = 2*points;
-    end   
+    end
     % calculate number of subdivisions for the angles alpha,beta,gamma
     points = 2/(points/( maxbeta*maxgamma))^(1/3);
     
-    if  maxangle < pi*2 && maxangle < maxbeta  
+    if  maxangle < pi*2 && maxangle < maxbeta
       points = points*maxangle; % bug: does not work properly for all syms
-    end 
+    end
     
   end
- 
+  
   G.alphabeta = S2Grid('equispaced','RESOLUTION',points,...
-                        'MAXTHETA',maxbeta,'MINRHO',0,'MAXRHO',maxalpha,...
-                        no_center(points),'RESTRICT2MINMAX');  
-  ap2 = round(2*maxgamma/points);               
-
+    'MAXTHETA',maxbeta,'MINRHO',0,'MAXRHO',maxalpha,...
+    no_center(points),'RESTRICT2MINMAX');
+  ap2 = round(2*maxgamma/points);
+  
   [beta,alpha] = polar(G.alphabeta);
   
   % calculate gamma shift
@@ -261,23 +274,23 @@ elseif isa(points,'double') && points > 0  % discretise euler space
   dgamma = atan2(im,re);
   dgamma = repmat(reshape(dgamma,1,[]),ap2,1);
   gamma = -maxgamma + (0:ap2-1) * 2 * maxgamma / ap2;
-
+  
   % arrange alpha, beta, gamma
   gamma  = dgamma+repmat(gamma.',1,numel(G.alphabeta));
   alpha = repmat(reshape(alpha,1,[]),ap2,1);
   beta  = repmat(reshape(beta,1,[]),ap2,1);
- 
+  
   G.gamma = S1Grid(gamma,-maxgamma+dgamma(1,:),...
-                   maxgamma+dgamma(1,:),'periodic','matrix');
-	  
+    maxgamma+dgamma(1,:),'periodic','matrix');
+  
   Grid = euler2quat(alpha,beta,gamma,'ZYZ');
   Grid = reshape(Grid,[],1);
-	
+  
   G.resolution = 2 * maxgamma / ap2;
-	
+  
   % eliminiate 3 fold symmetry axis of cubic symmetries
   ind = fundamental_region(Grid,CS,symmetry());
-
+  
   if nnz(ind) ~= 0
     % eliminate those rotations
     Grid(ind) = [];
@@ -290,7 +303,7 @@ elseif isa(points,'double') && points > 0  % discretise euler space
   end
   
   G.options = {'indexed','ZYZ'};
-    
+  
 end
 
 superiorto('quaternion','orientation');
