@@ -137,6 +137,8 @@ if istype(names,{'Phase'})
   phase(ind)=[];
   q(ind) = [];
   
+  [ig,ig,phase] = unique(phase);
+  
 else
   
   phase = ones(size(d,1),1);
