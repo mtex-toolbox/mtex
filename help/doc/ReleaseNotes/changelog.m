@@ -9,6 +9,7 @@
 % * export EBSD data with all properties
 % * improved ODF calculation from pole figures by using quadrature weights for the pole figure grid
 % * implemented spherical Voronoi decomposition and computation of spherical quadrature weights
+% * plot odf-space in omega-sections, i.e. generalization of sigma-sections
 %
 % *Bug Fixes*
 % * S2Grid behaves more like vector3d
