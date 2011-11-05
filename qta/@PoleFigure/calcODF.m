@@ -15,19 +15,19 @@ function [odf,alpha] = calcODF(pf,varargin)
 %  pf - @PoleFigure 
 % 
 %% Options
-%  BACKGROUND       - the background radiation (default = 1)
-%  NO_BACKGROUND    - pure L^2 minimization
-%  KERNEL           - the ansatz functions (default = de la Vallee Poussin)
+%  BACKGROUND        - the background radiation (default = 1)
+%  NO_BACKGROUND     - pure L^2 minimization
+%  KERNEL            - the ansatz functions (default = de la Vallee Poussin)
 %  KERNELWIDTH | HALFWIDTH - halfwidth of the ansatz functions (default = 2/3 * resolution)
-%  RESOLUTION       - localization grid for the ansatz fucntions (default = 3/2 resolution(pf))
-%  BANDWIDTH        - bandwidth of the ansatz functions (default = max)
-%  ITER_MAX         - maximum number of iterations (default = 11)
-%  ITER_MIN         - minimum number of iterations (default = 5)
-%  REGULARIZATION   - weighting coefficient lambda (default = 0)
-%  ODF_SAVE         - save ODF simultanously 
-%  C0               - initial guess (default = [1 1 1 1 ... 1])
-%  ZERO_RANGE       - apply zero range method (default = )
-%  GHOST_CORRECTION - apply ghost correction (default = )
+%  RESOLUTION        - localization grid for the ansatz fucntions (default = 3/2 resolution(pf))
+%  BANDWIDTH         - bandwidth of the ansatz functions (default = max)
+%  ITER_MAX          - maximum number of iterations (default = 11)
+%  ITER_MIN          - minimum number of iterations (default = 5)
+%  REGULARIZATION    - weighting coefficient lambda (default = 0)
+%  ODF_SAVE          - save ODF simultanously 
+%  C0                - initial guess (default = [1 1 1 1 ... 1])
+%  ZERO_RANGE        - apply zero range method (default = )
+%  NOGHOSTCORRECTION - omit ghost correction
 %
 %% Flags
 %  ENSURE_DESCENT - stop iteration whenever no procress if observed
@@ -198,7 +198,7 @@ end
 % subtract from intensities
 P = [];
 for ip = 1:length(pf)
-  P = [P,get(pf(ip),'data')-alpha(ip)*phon]; %#ok<AGROW>
+  P = [P;reshape(get(pf(ip),'data'),[],1)-alpha(ip)*phon]; %#ok<AGROW>
 end
 P = max(0,P); %no negative values !
 
