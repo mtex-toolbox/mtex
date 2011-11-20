@@ -15,12 +15,12 @@ n = numel(v);
 
 if ~check_option(varargin,'direct')
   A = VoronoiAdjacency(v);
-
+  
   % add second and third order voronoi-neighbours;
   A = A + A*A + A*A*A;
-
+  
   weight   = movingTime(A,v,varargin{:});
-
+  
   mst      = MinimumSpanningTree(weight);
   matching = MinimumWeightMatching(v,weight,mst,varargin{:});
   tour     = EulerCycle(n,[mst;matching]);
@@ -34,7 +34,7 @@ end
 if ~check_option(varargin,'noTwoOpt')
   A = sparse(edgeList(:,1),edgeList(:,2),1,n,n);
   A = A+A'>0;
-
+  
   weight   = movingTime(ones(size(A)),v,varargin{:});
   tsp      = twoOpt(tsp,weight);
 end
@@ -48,7 +48,7 @@ if nargout>0
 end
 
 if nargout>1
-  weight   = movingTime(sparse(tsp(1:end-1),tsp(2:end),1,n,n),v,varargin{:});
+  weight   = movingTime(sparse(tsp(1:end-1),tsp(2:end),1,n,n),v);
   time     = full(sum(weight(:)));
   varargout{2} = time;
 end
@@ -59,7 +59,14 @@ end
 %% sub-function part
 function t = movingTime(A,v,varargin)
 
-[i,j] = find(triu(A,1));
+if size(A,2) > 2
+  [i,j] = find(triu(A,1));
+  n = size(A,1);
+else
+  i = A(:,1);
+  j = A(:,2);
+  n = max(A(:));
+end
 
 if check_option(varargin,{'manhatten','polar'})
   
@@ -69,13 +76,15 @@ if check_option(varargin,{'manhatten','polar'})
   t = abs(angle(exp(1i*thetai)./exp(1i*thetaj))) + ...
     abs(angle(exp(1i*rhoi)./exp(1i*rhoj)));
   
+elseif check_option(varargin,{'dot'})
+  
+  t = 1-dot(v(i),v(j)).^2;
 else
   
   t = angle(v(i),v(j));
-  
 end
 
-t = sparse(i,j,t,size(A,1),size(A,2));
+t = sparse(i,j,t,n,n);
 t = t+t';
 
 
@@ -286,24 +295,41 @@ function tour = twoOpt(tour,weight)
 weight = full(weight); % faster indexing
 
 n = size(weight,1);
-sub = @(k,l) (l(:)-1)*n + k(:);
-[i,j] = find(triu(weight,1));
+sub = @(k,l) (l-1).*n + k;
 
-gain=Inf;
-
-while abs(gain) > 0.01
+bestgain = Inf;
+while abs(bestgain) > 1e-10
+  bestgain = Inf;
   
-  % edge        % next edge
-  a = tour(i);  an = tour(i+1);
-  b = tour(j);  bn = tour(j+1);  
+  time = weight(sub(tour(1:end-1),tour(2:end)));
+  [time,ndx] = sort(time,'descend');
+  ndx(ndx > n-1) = [];
   
- [gain ndx] = min(...
-   weight(sub(b,a )) + weight(sub(bn,an)) -...
-   weight(sub(b,bn)) - weight(sub(a ,an)) ); 
-  
-  if abs(gain)>1e-6
-    tour(i(ndx)+1:j(ndx)) = tour(j(ndx):-1:i(ndx)+1);
+  for  i=ndx(1:n/2+1).'
+    % edge        % next edge
+    a = tour(i);  an = tour(i+1);
+    
+    j = [1:i-1 i+2:n];
+    b = tour(j);  bn = tour(j+1);
+    
+    gain = weight(b,a) + weight(bn,an) - weight(a,an) - weight(sub(b,bn));
+    [gain nd] = min(gain);
+    
+    if gain < bestgain
+      bestgain = gain;
+      besti = i;
+      bestj = j(nd);
+    end
+    
   end
- 
+  
+  if abs(bestgain) > 1e-10
+    if besti< bestj
+      tour(besti+1:bestj) = tour(bestj:-1:besti+1);
+    else
+      tour(bestj+1:besti) = tour(besti:-1:bestj+1);
+    end
+  end
+  
 end
 
