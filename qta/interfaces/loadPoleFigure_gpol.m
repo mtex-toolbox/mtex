@@ -3,55 +3,50 @@ function pf = loadPoleFigure_gpol(fname,varargin)
 fid = fopen(fname);
 
 try
-  type =  readlinestr(fid,4);
+  type    = readlinestr(fid,4);
   comment = readlinestr(fid,8);
   
-  npixelb = {'uint8' 'uint16',[], 'uint32'};
-  bytes = npixelb{readline(fid,40)};
+  bytes   = 8*readline(fid,40);
   
-  rows   = readline(fid,41);   %NROWS
-  cols   = readline(fid,42);   %NCOLS
+  rows    = readline(fid,41);   %NROWS
+  cols    = readline(fid,42);   %NCOLS
   
   % data
-  fseek(fid, 96*80, 'bof');
-  A = fread(fid,rows*cols,bytes);
+  fseek(fid, (96*80), 'bof');
+  A = fread(fid,rows*cols,['uint' num2str(bytes)]);
+  n = nnz(A == 2^bytes-1);      % number of overflow table elements
   
-  count = [];
-  index = [];
-  
-  while ~feof(fid)
-    c = sscanf(char(fread(fid,9,'char'))','%d');
-    i = sscanf(char(fread(fid,7,'char'))','%d');
-    
-    if ~isempty(c) && ~isempty(i)
-      count(end+1)=c;
-      index(end+1)=i;
-    else
-      break
-    end
+  overflow = fread(fid,'char')';  
+  s2n = @(p) sscanf(char(overflow(p)),'%d');
+  intensity = zeros(n,1);  position  = zeros(n,1);
+
+  for k=1:n
+    intensity(k) = s2n( (k-1)*16 + (1:9)   );
+    position(k)  = s2n( (k-1)*16 + (10:16) ) + 1;
   end
+  
 catch
  	interfaceError(fname,fid);
 end
 fclose(fid);
 
-A(index+1) = count;
-A = (reshape(A,rows,cols))';
+d = A(position) == 2^bytes-1;
+A(position(d)) = intensity(d);
 
-[ix iy data] = find(A);
-ix = (ix-size(A,2)/2);
-iy = (iy-size(A,2)/2);
+[ix iy data] = find(reshape(A,rows,cols));
+ix = (ix-cols/2-.5);
+iy = (iy-rows/2-.5);
 
-rho = atan2(iy,ix);                            % beta
+rho = -atan2(iy,ix);                          % beta
 if strfind(lower(type),'stereo')
-  theta = 2*atan(ix/(size(A,2)/2).*sec(rho));  %alpha
-else
+  theta = 2*atan(sqrt(ix.^2+iy.^2)./(rows/2-1));
+else  % other projections
   
 end
 
-h  = string2Miller(fname);
 r = S2Grid(vector3d('polar',theta,rho)); % fix 'RESOLUTION'
 
+h  = string2Miller(fname);
 pf = PoleFigure(h,r,data,symmetry('cubic'),symmetry,'comment',comment);
 
 
