@@ -32,7 +32,7 @@ prop = lower(get_option(varargin,'property','none'));
 
 switch prop
   case 'angle'
-
+    
     sel = find(sum(I_FD,2) == 2);
     [d,i] = find(I_FD(sel,:)');
     
@@ -40,7 +40,9 @@ switch prop
     i = reshape(sel(i),2,[]);
     i = i(1,:);
     
-    phase = get(grains.EBSD,'phase');
+    ndx = any(grains.I_DG,2);
+    phase(ndx) = get(grains.EBSD,'phase');
+    
     phase = phase(pairs);
     del = diff(phase)~=0;
     
@@ -48,15 +50,14 @@ switch prop
     pairs(:,del) = [];
     i(del) = [];
     
-    r = get(grains.EBSD,'rotations');
+    r(ndx) = get(grains.EBSD,'rotations');
     cs = get(grains.EBSD,'CSCell');
-    ss = get(grains.EBSD,'SS');    
+    ss = get(grains.EBSD,'SS');
     
     uphase = unique(phase);
     prop = zeros(size(i));
     for k=1:numel(uphase)
       sel = phase == uphase(k);
-      
       o = orientation(r(reshape(pairs(sel),2,[])),cs{uphase(k)},ss);
       prop( sel(1,:)) =  angle(o(1,:),o(2,:))./degree;
     end
@@ -73,16 +74,16 @@ switch prop
       F = 1:size(V,1);
       
       options.EdgeColor = 'flat';
-    
+      
     elseif isa(grains,'Grain3d')
       
       options.FaceColor = 'flat';
-
+      
       
     end
     
     options.FaceVertexCData = prop(:);
-        
+    
   otherwise
     
     [i,d] = find(I_FD);
@@ -101,11 +102,14 @@ switch prop
     
 end
 
-h = patch('Vertices',V,'Faces',F,options);
+if isempty(F)
+  warning('no Boundary to plot');
+else
+  h = patch('Vertices',V,'Faces',F,options);
+  fixMTEXplot;
+  set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
+  optiondraw(h,varargin{:});
+end
 
-
-fixMTEXplot;
-set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
-optiondraw(h,varargin{:});
 
 
