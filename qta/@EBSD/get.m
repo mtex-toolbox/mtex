@@ -24,19 +24,20 @@ function varargout = get(ebsd,vname,varargin)
 % EBSD/set
 
 
+properties = get_obj_fields(ebsd);
+options    = get_obj_fields(ebsd.options);
 if nargin == 1
-  vnames = get_obj_fields(ebsd,'options');
-  vnames = [vnames;{'data';'quaternion';'Euler';'mineral'}];
+  vnames = [properties;{'data';'quaternion';'orientations';'Euler';'mineral';'minerals'}];
   if nargout, varargout{1} = vnames; else disp(vnames), end
   return
 end
 
-switch vname
-  case 'CS'
+switch lower(vname)
+  case 'cs'
 
     varargout = ebsd.CS;
 
-  case 'CSCell'
+  case 'cscell'
 
     varargout{1} = ebsd.CS;
 
@@ -83,15 +84,19 @@ switch vname
 
     varargout{1} = unique(ebsd.phase)';
 
-  case fields(ebsd)
+  case lower(properties)
 
-    varargout{1} = ebsd.(vname);
+    varargout{1} = ebsd.(properties{find_option(properties,vname)});
+  
+  case lower(options)
+
+    varargout{1} = ebsd.options.(options{find_option(options,vname)});
 
   case {'quaternions','quaternion'}
 
     varargout{1} = quaternion(ebsd.rotations);
 
-  case 'Euler'
+  case 'euler'
 
     % if only one phase
     if numel(unique(ebsd.phase)) == 1
@@ -105,15 +110,17 @@ switch vname
 
     end
 
-  case {'x','y','z','xy','xz','yz','xyz'}
-
+  case {'xy','xz','yz','xyz'}
+    
     varargout{1} = [];
-    for xyz = {'x','y','z'}
-      if any(strfind(vname,char(xyz))) && isfield(ebsd.options,xyz)
-        varargout{1} = [varargout{1},ebsd.options.(char(xyz))];
+    
+    xyz = num2cell(lower(vname));
+    if all(isfield(ebsd.options,xyz))
+      for k = 1:numel(xyz)
+        varargout{1} = [varargout{1},ebsd.options.(xyz{k})];
       end
     end
-
+    
   case 'weight'
 
     if isfield(ebsd.options, 'weight')
@@ -130,10 +137,6 @@ switch vname
   case 'minerals'
 
     varargout{1} = cellfun(@(x) get(x,'mineral') ,ebsd.CS,'uniformoutput',false);
-
-  case fields(ebsd.options)
-
-     varargout{1} = ebsd.options.(vname);
 
   otherwise
     error(['There is no ''' vname ''' property in the ''EBSD'' object'])
