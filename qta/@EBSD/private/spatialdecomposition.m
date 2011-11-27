@@ -1,4 +1,4 @@
-function [v c] = spatialdecomposition(X,unitCell,varargin)
+function [v,c] = spatialdecomposition(X,unitCell,varargin)
 
 if isempty(unitCell)
   unitCell = calcUnitCell(X);
@@ -91,7 +91,7 @@ radius = mean(sqrt(sum(unitCell.^2,2)));
 edgeLength = sqrt(sum(diff(boundingX).^2,2));
 
 % fill each line segment with nodes every 20 points (in average)
-nto = fix(edgeLength/(20*2*radius));
+nto = fix((edgeLength>0)*4); fix(edgeLength*(2*radius));
 
 cs = cumsum([1; 1 + nto]);
 boundingX(cs,:) = boundingX;
