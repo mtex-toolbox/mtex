@@ -64,6 +64,10 @@ else
   
   % find fundamental region
   [omega,id] = max(omegaSym);
+  
+  % compute angle
+  omega = reshape(2*acos(min(1,omega)),size(q));
+  
   if all(id==1), return;end
   
   % project to fundamental region
@@ -72,6 +76,4 @@ else
   [idss,idcs] = ind2sub([numel(qss),numel(qcs)],id);
   q = reshape(subsref(qss,idss),size(q)) .* q .* reshape(subsref(qcs,idcs),size(q));
   
-  % compute angle
-  omega = reshape(2*acos(min(1,omega)),size(q));
 end
