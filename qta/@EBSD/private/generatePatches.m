@@ -15,7 +15,9 @@ y = bsxfun(@plus,xy(:,2),unitCell(:,2).');
 
 % remove equal points
 eps = min(sqrt(diff(unitCell(:,1)).^2 + diff(unitCell(:,2)).^2))/10;
-[v,m,n] = unique(fix([x(:)-min(x(:)) y(:)-min(y(:))]./eps),'rows');
+[v,m,n] = unique(round([x(:)-min(x(:)) y(:)-min(y(:))]./eps),'rows');
+% [v,m,n] = unique(fix([x(:) y(:)]./eps),'rows');
+
 v = [x(m) y(m)];
 
 % set faces
