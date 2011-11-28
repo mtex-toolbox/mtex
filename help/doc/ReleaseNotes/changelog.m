@@ -2,7 +2,27 @@
 %
 %% Contents
 %
-%%  MTEX 3.2 - 09/2011
+%% MTEX 3.2.1
+%
+% *New Features*
+% * Import and Export to VPSC
+% * export EBSD data with all properties
+% * improved ODF calculation from pole figures by using quadrature weights for the pole figure grid
+% * implemented spherical Voronoi decomposition and computation of spherical quadrature weights
+% * plot odf-space in omega-sections, i.e. generalization of sigma-sections
+%
+% *Bug Fixes*
+% * S2Grid behaves more like vector3d
+% * vector3d/eq takes antipodal symmetry into account
+% * Euler angle conversion was sometimes wrong
+% * tensors multipliaction was sometimes wrong
+% * rank 3 tensors get options 'doubleConvention' and 'singleConvention' for the conversion into the Voigt matrix representation
+% * documentation fixes
+% * Miller('[100]') gives not the correct result
+% * import wizard now generates correct CS definition
+% * import filter for uxd files should now work more reliable
+%
+%% MTEX 3.2 - 05/2011
 %
 % *3d EBSD Analysis*
 %

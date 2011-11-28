@@ -39,7 +39,7 @@ plot(ebsd)
 segAngle = 10*degree;
 
 %%
-% Then the grains are reconstructed by the command <EBSD_calcGrains.html
+% Then the grains are reconstructed by the command <EBSD.calcGrains.html
 % calcGrains>
 
 [grains ebsd] = calcGrains(ebsd,'threshold',segAngle,'unitcell')

@@ -12,6 +12,7 @@ function plotodf(o,varargin)
 %
 %% Flags
 %  SIGMA (default) -
+%  OMEGA - sections along crystal directions @Miller 
 %  ALPHA -
 %  GAMMA -
 %  PHI1 -
@@ -50,17 +51,23 @@ if ishold && isappdata(gcf,'sections') && ...
   sectype = getappdata(gcf,'SectionType');
   sec = getappdata(gcf,'sections');
   
+  if strcmpi(sectype,'omega')
+    varargin = set_default_option(varargin,{getappdata(gcf,'h')});
+  end
+  
 else
   
   rmallappdata(gcf);
   hold off;
-  sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','axisangle'},'sigma');
+  sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','omega','axisangle'},'sigma');
 
   % get fundamental plotting region
   [max_rho,max_theta,max_sec] = getFundamentalRegion(cs,ss,varargin{:});
 
   if any(strcmp(sectype,{'alpha','phi1'}))
     dummy = max_sec; max_sec = max_rho; max_rho = dummy;
+  elseif strcmpi(sectype,'omega')
+    max_sec = 2*pi;
   end
   
   nsec = get_option(varargin,'SECTIONS',round(max_sec/degree/5));
@@ -91,3 +98,9 @@ setappdata(gcf,'CS',cs);
 setappdata(gcf,'SS',ss);
 set(gcf,'Name',[sectype ' sections of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
 set(gcf,'tag','odf')
+
+if strcmpi(sectype,'omega') && ~isempty(find_type(varargin,'Miller'))
+  h = varargin{find_type(varargin,'Miller')};
+  setappdata(gcf,'h',h);
+end
+

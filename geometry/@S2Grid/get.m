@@ -4,9 +4,14 @@ function value = get(obj,vname)
 switch vname
   case {'resolution','res'}
     
-    if obj.res >= 2*pi-0.001 && numel(obj)>1
-      a = calcVoronoiArea(obj);
-      value = sqrt(mean(a));
+    if obj.res >= 2*pi-0.001 && numel(obj)>4
+      try
+        a = calcVoronoiArea(obj);
+        value = sqrt(mean(a));
+        assert(value>0);
+      catch
+        value = obj.res;
+      end
     else
       value = obj.res;
     end

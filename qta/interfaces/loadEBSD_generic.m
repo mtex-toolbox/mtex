@@ -76,7 +76,7 @@ assert(length(cols) == length(names), 'Length of ColumnNames and Columns differ'
 cols = cols(m);
 
 istype = @(in, a) all(cellfun(@(x) any(find(strcmpi(stripws(in),stripws(x)))),a));
-layoutcol = @(in, a) cols(cell2mat(cellfun(@(x) find(strcmpi(stripws(in),stripws(x))),a,'uniformoutput',false)));
+layoutcol = @(in, a) cols(cell2mat(cellfun(@(x) find(strcmpi(stripws(in(:)),stripws(x))),a(:),'uniformoutput',false)));
 
 euler = lower({'Euler 1' 'Euler 2' 'Euler 3'});
 quat = lower({'Quat real' 'Quat i' 'Quat j' 'Quat k'});
@@ -136,6 +136,8 @@ if istype(names,{'Phase'})
   d(ind,:) = [];
   phase(ind)=[];
   q(ind) = [];
+  
+  [ig,ig,phase] = unique(phase);
   
 else
   

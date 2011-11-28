@@ -22,7 +22,7 @@ if check_option(varargin,{'compact','voigt'})
     case 4
       m = tensor42(T.M);
     case 3
-      m = tensor32(T.M);      
+      m = tensor32(T.M,isfield(T,'doubleconvention'));      
   end
   return
 end

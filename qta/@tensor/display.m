@@ -56,7 +56,7 @@ if (T.rank == 4) && numel(T.M) == 3^4
   M = (tensor42(T.M));
 elseif (T.rank == 3) && numel(T.M) == 3^3
   disp(['  tensor in compact matrix form:' s])
-  M = tensor32(T.M);
+  M = tensor32(T.M,isfield(T,'doubleconvention'));
 else
   disp(s)
   M = T.M;

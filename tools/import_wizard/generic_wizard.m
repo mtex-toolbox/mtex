@@ -96,7 +96,12 @@ uicontrol('Parent',htp,'Style','Text','Position',[dw,h-(tb+120+25),w-2*dw,20],..
   'HorizontalAlignment','left',...
   'String','Please specify for each column how it should be interpreted!');
 
+% strip non literal characters from columnames
+colums = regexprep(colums,'\W','');
+
 cdata = guessColNames(values,size(data,2),colums);
+
+
 
 mtable = uitable(v0{:},'Parent',htp,'Data',cdata,'ColumnNames',colnames,'Position',[ dw-1 h-(tb+200) w-2*dw 60],'rowheight',20);
 
