@@ -90,7 +90,7 @@ eq(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'antipodal')
 %
 % The angle between two crystal directions m1 and m2 is defined as the
 % smallest angle between m1 and all symmetrically equivalent directions to
-% m2. This angle is in radians and it is calculated by the funtion <vector3d_angle.html
+% m2. This angle is in radians and it is calculated by the funtion <vector3d.angle.html
 % angle>
 
 angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs)) / degree

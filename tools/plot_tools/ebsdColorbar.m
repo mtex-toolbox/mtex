@@ -90,7 +90,10 @@ else
        'xlabel',labelx,'ylabel',labely,...  
        'equal','margin',0,varargin{:}); %#ok<*EVLC>
      
-	type = '';
+     
+  setappdata(gcf,'sections',sec);
+  setappdata(gcf,'SectionType',sectype);  
+	type = 'odf';
 end
 
 set(gcf,'tag',type);

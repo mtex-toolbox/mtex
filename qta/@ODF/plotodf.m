@@ -14,6 +14,7 @@ function plotodf(odf,varargin)
 %
 %% Flags
 %  SIGMA (default)
+%  OMEGA - sections along crystal directions @Miller 
 %  ALPHA
 %  GAMMA      
 %  PHI1
@@ -46,7 +47,7 @@ Z = eval(odf,orientation(S3G),varargin{:});
 clear S3G;
 
 %% ------------------------- plot -----------------------------------------
-sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','axisangle'},'sigma');
+sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','omega','axisangle'},'sigma');
 [symbol,labelx,labely] = sectionLabels(sectype);
 
 fprintf(['\nPlotting ODF as ',sectype,' sections, range: ',...
@@ -77,9 +78,15 @@ end
 
 name = inputname(1);
 if isempty(name), name = odf(1).comment;end
-set(gcf,'Name',['ODF "',name,'"']);
+set(gcf,'Name',['ODF ' sectype '-sections "',name,'"']);
 setappdata(gcf,'sections',sec);
 setappdata(gcf,'SectionType',sectype);
 setappdata(gcf,'CS',odf(1).CS);
 setappdata(gcf,'SS',odf(1).SS);
 set(gcf,'tag','odf')
+
+
+if strcmpi(sectype,'omega') && ~isempty(find_type(varargin,'Miller'))
+  h = varargin{find_type(varargin,'Miller')};
+  setappdata(gcf,'h',h);
+end

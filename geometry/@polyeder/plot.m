@@ -29,6 +29,8 @@ if check_option(varargin,{'fill','FaceColor'})
   
   Vertices = vertcat(p.Vertices);
   Faces = vertcat(p.Faces);
+  s = sign(vertcat(p.FacetIds))<0;
+  Faces(s,:) = Faces(s,end:-1:1);
   
   css = [0 cumsum(cs)];
   csz = [0 cumsum(csz)];
@@ -117,7 +119,7 @@ elseif check_option(varargin,'pair')
       
       nf = size(CommonFaces);
       CommonFaces = reshape(FaceId,nf);
-      CommonFaces(ori<0,:) = CommonFaces(ori<0,end:-1:1);
+%       CommonFaces(ori<0,:) = CommonFaces(ori<0,end:-1:1);
       
       
       V{k} = Vertices{left(k)}(VertexId,:);

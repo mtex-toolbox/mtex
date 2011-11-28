@@ -73,7 +73,7 @@ if any(plane==2)
   yparam.j = bx(2);
   yparam.d = dy;
   
-  if any(strcmpi(slicetype,'x'))
+  if any(strfind(slicetype,'x'))
     pp = pos(2);
   else
     pp = pos(1);
@@ -122,7 +122,10 @@ if nargin < 6
   pos = planeparam.i+(planeparam.j-planeparam.i)*get(e,'value');
 end
 
-stack = round(pos/planeparam.d)+1;
+
+% planeparam
+
+stack = round((pos-planeparam.i)/planeparam.d)+1;
 
 % slicingplane
 p = get(slicingplane,'vertices');
@@ -179,6 +182,9 @@ iun = iu+1; ivn = iv+1; % next voxel index
 % pointels incident to voxels
 vf = [s2i(sz+1,iu,iv)  s2i(sz+1,iun,iv)  s2i(sz+1,iun,ivn)  s2i(sz+1,iu,ivn)];
 
+
+% vf = [ s2i(sz+1,iu,ivn) s2i(sz+1,iun,ivn)  s2i(sz+1,iun,iv) s2i(sz+1,iu,iv)];
+
 grid = [iu,iv];
 
 
@@ -224,7 +230,7 @@ switch prop
   case 'angle'
     d = [];
     for i = 1:length(ebsd)
-      d = [d; angle(ebsd(i).orientations)/degree];
+      d = [d; angle(ebsd.options.mis2mean)/degree];
     end
   case 'phase'
     d = [];

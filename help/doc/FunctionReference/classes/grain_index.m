@@ -28,7 +28,7 @@ ebsd = loadEBSD(fname,CS,SS,...
 plotx2east
                
 %% Grain Modelling
-% A brief introduction of <GrainModelling.html Grain Detection>
+% A brief introduction of <GrainReconstruction.html Grain Detection>
 
 [grains ebsd] = calcGrains(ebsd,'threshold',12.5*degree)
 

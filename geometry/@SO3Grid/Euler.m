@@ -21,8 +21,8 @@ function varargout = Euler(S3G,varargin)
 S3GOptions = get(S3G,'options');
 S3GConvention = EulerAngleConvention(S3GOptions{:});
 
-if isempty(S3G.center) && checkEulerAngleConvention(S3GConvention,convention)
-  
+if isempty(S3G.center) && ~isempty(S3G.alphabeta) && checkEulerAngleConvention(S3GConvention,convention)
+
   if isa(S3G.alphabeta,'double')
     
     alpha = S3G.alphabeta(:,1);

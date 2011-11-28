@@ -15,19 +15,19 @@ function [odf,alpha] = calcODF(pf,varargin)
 %  pf - @PoleFigure 
 % 
 %% Options
-%  BACKGROUND       - the background radiation (default = 1)
-%  NO_BACKGROUND    - pure L^2 minimization
-%  KERNEL           - the ansatz functions (default = de la Vallee Poussin)
+%  BACKGROUND        - the background radiation (default = 1)
+%  NO_BACKGROUND     - pure L^2 minimization
+%  KERNEL            - the ansatz functions (default = de la Vallee Poussin)
 %  KERNELWIDTH | HALFWIDTH - halfwidth of the ansatz functions (default = 2/3 * resolution)
-%  RESOLUTION       - localization grid for the ansatz fucntions (default = 3/2 resolution(pf))
-%  BANDWIDTH        - bandwidth of the ansatz functions (default = max)
-%  ITER_MAX         - maximum number of iterations (default = 11)
-%  ITER_MIN         - minimum number of iterations (default = 5)
-%  REGULARIZATION   - weighting coefficient lambda (default = 0)
-%  ODF_SAVE         - save ODF simultanously 
-%  C0               - initial guess (default = [1 1 1 1 ... 1])
-%  ZERO_RANGE       - apply zero range method (default = )
-%  GHOST_CORRECTION - apply ghost correction (default = )
+%  RESOLUTION        - localization grid for the ansatz fucntions (default = 3/2 resolution(pf))
+%  BANDWIDTH         - bandwidth of the ansatz functions (default = max)
+%  ITER_MAX          - maximum number of iterations (default = 11)
+%  ITER_MIN          - minimum number of iterations (default = 5)
+%  REGULARIZATION    - weighting coefficient lambda (default = 0)
+%  ODF_SAVE          - save ODF simultanously 
+%  C0                - initial guess (default = [1 1 1 1 ... 1])
+%  ZERO_RANGE        - apply zero range method (default = )
+%  NOGHOSTCORRECTION - omit ghost correction
 %
 %% Flags
 %  ENSURE_DESCENT - stop iteration whenever no procress if observed
@@ -51,7 +51,7 @@ vdisp('------ MTEX -- PDF to ODF inversion ------------------',varargin{:})
 %% ------------------- get input--------------------------------------------
 CS = pf(1).CS; SS = pf(1).SS;
 
-S3G = get_option(varargin,'RESOLUTION',get(pf,'resolution')*3/2,{'double','SO3Grid'});
+S3G = get_option(varargin,'RESOLUTION',get(pf,'resolution'),{'double','SO3Grid'});
 if ~isa(S3G,'SO3Grid'), S3G = SO3Grid(S3G,CS,SS); end
 if check_option(varargin,'zero_range'), S3G = zero_range(pf,S3G,varargin{:});end
 if ~(CS == get(S3G,'CS') && SS == get(S3G,'SS'))
@@ -63,8 +63,8 @@ psi = get_option(varargin,'kernel',...
   kernel('de la Vallee Poussin','HALFWIDTH',kw),'kernel');
 
 iter_max = int32(get_option(varargin,'ITER_MAX',...
-  get_mtex_option('ITER_MAX',11,'double'),'double'));
-iter_min = int32(get_option(varargin,'ITER_MIN',iter_max/4,'double'));
+  get_mtex_option('ITER_MAX',20,'double'),'double'));
+iter_min = int32(get_option(varargin,'ITER_MIN',10,'double'));
 
 c0 = get_option(varargin,'C0',...
 	1/sum(numel(S3G))*ones(sum(numel(S3G)),1));
@@ -116,16 +116,8 @@ else
   end
 end
 
-if isfield(pf(1).options,'background') && ...
-    ~check_option(varargin,'NO_BACKGROUND')
-  w = w.*sqrt(1./sqrt(max(P+get(pf,'background'),0.0001)));
-  varargin = set_option(varargin,'BACKGROUND');
-elseif ~check_option(varargin,'NO_BACKGROUND') 
-  w = w.*sqrt(1./sqrt(max(P+get_option(varargin,'BACKGROUND',10),0.0001)));
-  varargin = set_option(varargin,'BACKGROUND');
-else
-  w = [];
-end
+
+w = sqrt(w);
 
 % ------------------- REGULARIZATION -----------------------------------
 if check_option(varargin,'REGULARISATION')
@@ -198,7 +190,7 @@ end
 % subtract from intensities
 P = [];
 for ip = 1:length(pf)
-  P = [P,get(pf(ip),'data')-alpha(ip)*phon]; %#ok<AGROW>
+  P = [P;reshape(get(pf(ip),'data'),[],1)-alpha(ip)*phon]; %#ok<AGROW>
 end
 P = max(0,P); %no negative values !
 
