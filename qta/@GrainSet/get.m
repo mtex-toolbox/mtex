@@ -43,10 +43,25 @@ switch lower(vname)
     %     varargout{1} = orientation(inverse(o) .* m,get(grains,'CS'),get(grains,'CS'));
     %
     
+  case 'i_vg'
+    
+    % vertices incident to a grain V x G
+    [i,j,v] = find(grains.F);
+    I_VF = sparse(v,i,1,size(grains.V,1),size(grains.I_FDext,1));
+    I_VG = I_VF * (grains.I_FDext|grains.I_FDsub) * grains.I_DG;
+    
+    varargout{1} = I_VG>0;
+    
+  case 'i_vf'
+    
+    % vertices incident to a grain V x G
+    [i,j,v] = find(grains.F);
+    I_VF = sparse(v,i,1,size(grains.V,1),size(grains.I_FDext,1));    
+    varargout{1} = I_VF>0;
+    
   case lower(properties)
     
     varargout{1} = grains.(properties{find_option(properties,vname)});
-    
         
   case lower(options)
     
