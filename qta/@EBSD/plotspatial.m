@@ -1,4 +1,4 @@
-function h = plotspatial(ebsd,varargin)
+function varargout = plotspatial(ebsd,varargin)
 % spatial EBSD plot
 %
 %% Input
@@ -215,7 +215,7 @@ set(dcm_obj,'SnapToDataVertex','off')
 set(dcm_obj,'UpdateFcn',{@tooltip,ebsd});
 
 if check_option(varargin,'cursor'), datacursormode on;end
-
+if nargout>0, varargout{1}=h; end
 
 %% Tooltip function
 function txt = tooltip(empt,eventdata,ebsd) %#ok<INUSL>
@@ -223,26 +223,23 @@ function txt = tooltip(empt,eventdata,ebsd) %#ok<INUSL>
 pos = get(eventdata,'Position');
 xp = pos(1); yp = pos(2);
 
-xy = vertcat(ebsd.X);
-[x y] = fixMTEXscreencoordinates(xy(:,1),xy(:,2));
+[x y] = fixMTEXscreencoordinates(ebsd.options.x,ebsd.options.y);
 
-delta = prod(diff([min(xy);max(xy)]))./(size(xy,1)/2);
+delta = 1.5*mean(sqrt(sum(diff(ebsd.unitCell).^2,2)));
 
 candits = find(~(xp-delta > x | xp+delta < x | yp-delta > y | yp+delta < y));
 
 if ~isempty(candits)
+  
   dist = sqrt( (xp-x(candits)).^2 + (yp-y(candits)).^2);
-  [dist ind] = sort(dist);
+  [dist ind] = min(dist);
   candits = candits(ind);
 
-  nd = candits(1);
+  phase = ebsd.phase(candits);
+  o = orientation(ebsd.rotations(candits),ebsd.CS{phase},ebsd.SS);
 
-  phase = ebsd.phase(nd);
-  o = orientation(ebsd.rotations(nd),ebsd.CS{phase},ebsd.SS);
-
-  txt = {['Phase: ', num2str(phase), ' ' get(ebsd.CS{phase},'mineral'),'' ], ...
-    ['index:' num2str(pos)],...
-    char(o)};
+  txt = {['Phase: ', get(ebsd.CS{phase},'mineral'),'' ], ...
+    ['Orientation: ' char(o)]};
 
 else
 
