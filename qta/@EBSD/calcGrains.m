@@ -198,7 +198,7 @@ switch dim
     I_FDext = EdgeOrientation(I_FDext,F,x_V,x_D);
     I_FDsub = EdgeOrientation(I_FDsub,F,x_V,x_D);
     
-    b = BoundaryFaceOrder(D,F,I_FDext*I_DG,full(sum(I_DG,1)));
+    b = BoundaryFaceOrder(D,F,I_FDext,I_DG);
 end
 
 %% mean orientation and phase
@@ -267,14 +267,17 @@ e2d = complex(x_V(E(e,2),1) - x_D(d,1), x_V(E(e,2),2) - x_D(d,2));
 I_ED = sparse(e,d,sign(angle(e1d./e2d)),size(I_ED,1),size(I_ED,2));
 
 
-function b = BoundaryFaceOrder(D,F,I_FG,grainSize)
+function b = BoundaryFaceOrder(D,F,I_FD,I_DG)
 
+
+I_FG = I_FD*I_DG;
 [i,d,s] = find(I_FG);
 
 b = cell(max(d),1);
 
-onePixelGrain = grainSize==1;
-b(onePixelGrain) = D(onePixelGrain);
+onePixelGrain = full(sum(I_DG,1)) == 1;
+[id,jg] = find(I_DG(:,onePixelGrain));
+b(onePixelGrain) = D(id);
 % close single cells
 b(onePixelGrain) = cellfun(@(x) [x x(1)],  b(onePixelGrain),...
   'UniformOutput',false);
