@@ -41,4 +41,4 @@ else
 end
   
 pf = PoleFigure(h,r,d,symmetry('cubic'),symmetry,...
-  'superposition',c,varargin{:}); %#ok<AGROW>
+  'superposition',c,varargin{:});
