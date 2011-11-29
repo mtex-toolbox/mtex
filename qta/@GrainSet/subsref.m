@@ -20,9 +20,9 @@ if isa(s,'double') || isa(s,'logical')
   grains.A_G  = grains.A_G*D;
   
   grains.meanRotation = grains.meanRotation(s);
-  grains.phase = grains.phase(s);
-  %   grains.F =  grains.F(s);
-  
+  grains.phase = grains.phase(s);  
+  grains.options = structfun(@(x) x(s),grains.options,'UniformOutput',false);
+ 
   D = double(diag(any(grains.I_DG,2)));
   
   grains.A_D = grains.A_D*D;
@@ -40,7 +40,6 @@ if isa(s,'double') || isa(s,'logical')
   D = sparse(v,1,1,size(grains.V,1),1)>0;
   grains.V(~D,:) = 0;
   
-  grains.options = structfun(@(x) x(s),grains.options,'UniformOutput',false);
   
 elseif strcmp(s.type,'()')
   
