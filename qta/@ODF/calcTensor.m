@@ -21,7 +21,7 @@ function [TVoigt, TReuss, THill] = calcTensor(odf,T,varargin)
 %
  
 % for Reuss tensor invert tensor
-Tinv = inv(T);
+if get(T,'rank') ~= 3, Tinv = inv(T);end
 
 % init Voigt and Reuss averages
 TVoigt = tensor(zeros([repmat(3,1,rank(T)) 1 1]));
@@ -58,17 +58,19 @@ if strcmpi(char(method),'fourier')
     TVoigt = TVoigt + EinsteinSum(T_hat,[1:rank(T) -1 -2],odf_hat,[-1 -2]);
     
     % same for Tinv
-    T_hat = Fourier(Tinv,'order',l);
-    TReuss = TReuss + EinsteinSum(T_hat,[1:rank(T) -1 -2],odf_hat,[-1 -2]);
+    if exist('Tinv','var'), 
+      T_hat = Fourier(Tinv,'order',l);
+      TReuss = TReuss + EinsteinSum(T_hat,[1:rank(T) -1 -2],odf_hat,[-1 -2]);
+    end
     
   end
     
 %% use numerical integration  
 elseif strcmpi(char(method),'quadrature') 
   
-  % extract grid and values for numerical integration
-  %SO3 = extract_SO3grid(odf,varargin{:});
-  S3G = SO3Grid(5*degree);
+  % evaluate ODF at an equispaced grid
+  res = get_option(varargin,'resolution');
+  S3G = SO3Grid(res,odf.CS,odf.SS);
   weight = eval(odf,S3G,varargin{:}); %#ok<EVLC>
   weight = (weight ./ sum(weight(:)));
 
@@ -79,8 +81,10 @@ elseif strcmpi(char(method),'quadrature')
   TVoigt = sum(weight .* T);
   
   % same for Reuss
-  Tinv = rotate(Tinv,S3G);
-  TReuss = sum(weight .* Tinv);
+  if exist('Tinv','var')
+    Tinv = rotate(Tinv,S3G);
+    TReuss = sum(weight .* Tinv);
+  end
 
 else 
   
@@ -88,11 +92,13 @@ else
   
 end
 
-% for Reuss tensor invert back
-TReuss = inv(TReuss);
-
-% Hill tensor is just the avarge of voigt and reuss tensor
-THill = 0.5*(TVoigt + TReuss);
+if exist('Tinv','var'), 
+  % for Reuss tensor invert back
+  TReuss = inv(TReuss);
+  
+  % Hill tensor is just the avarge of voigt and reuss tensor
+  THill = 0.5*(TVoigt + TReuss);
+end
 
 % if type is specified only return this type
 if check_option(varargin,'Reuss'), TVoigt = TReuss;end
