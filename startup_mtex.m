@@ -1,4 +1,4 @@
-function startup_mtex
+function startup_mtex(branch)
 % init MTEX session
 %
 % This is the startup file for MTEX. In general it is not necessary to edit
@@ -6,6 +6,32 @@ function startup_mtex
 % mtex_settings.m in this directory.
 %
 % clc
+
+% only switch branch
+if nargin == 1
+  
+  path = get_mtex_option('mtex_path');
+  
+  cd(path);
+  
+  if strcmpi(path(end-4:end),'trunk')
+    cd('..');
+  else
+    cd('../..');
+  end
+  
+  if strcmp(branch(end-4:end),'trunk')
+    cd trunk
+  else
+    cd(['branches' filesep branch]);
+  end
+  
+  startup_mtex
+  return
+  
+end
+
+%%
 
 lasterr('') %reset all errors
 
