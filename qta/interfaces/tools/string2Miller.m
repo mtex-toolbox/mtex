@@ -35,7 +35,7 @@ if isempty(e), m = []; return, end
 m = Miller;
 for i = 1:length(e)
   try
-    m(end+1) = Miller(e{i});
+    m(end+1) = Miller(fliplr(e{i}));
   catch, end
 end
 
