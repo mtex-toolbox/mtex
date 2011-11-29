@@ -137,7 +137,7 @@ if istype(names,{'Phase'})
   phase(ind)=[];
   q(ind) = [];
   
-  [ig,ig,phase] = unique(phase);
+  %[ig,ig,phase] = unique(phase);
   
 else
   
