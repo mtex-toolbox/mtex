@@ -17,10 +17,10 @@ switch vname
     end
     
   case 'theta'
-    [theta,rho] = polar(obj);
+    [theta,rho] = polar(obj); %#ok<NASGU>
     value = theta;
   case 'rho'
-    [theta,rho] = polar(obj);
+    [theta,rho] = polar(obj); %#ok<*ASGLU>
     value = rho;
   case fields(obj)
     value = [obj.(vname)];
