@@ -74,8 +74,10 @@ if any(strcmp(cc,{'ipdf','hkl'}))
   type = 'ipdf';
 else
   [S3G,S2G,sec] = SO3Grid('plot',cs,symmetry,varargin{:});
-
-  d = reshape(orientation2color(S3G,cc,varargin{:}),[size(S3G),3]);
+  
+  [s1,s2,s3] = size(S3G);
+  
+  d = reshape(orientation2color(S3G,cc,varargin{:}),[s1,s2,s3,3]);
   
 	sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma'},'sigma');
     [symbol,labelx,labely] = sectionLabels(sectype);   
