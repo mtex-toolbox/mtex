@@ -89,8 +89,9 @@ plot(odf,'sections',18,'silent')
 %% rotate ODF back
 
 odfrotated = rotate(odf,axis2quat(xvector,45*degree));
-plot(odfrotated,'sections',6);
-annotate(calcModes(odfrotated),'marker','d');
+plot(odfrotated,'sections',8);
+annotate(calcModes(odfrotated),'marker','o',...
+  'MarkerFaceColor','none','MarkerEdgeColor','k');
 
 %% volume analysis
 
