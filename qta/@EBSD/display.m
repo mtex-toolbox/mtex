@@ -23,22 +23,24 @@ if numel(ebsd)>0 && ~isempty(fields(ebsd.options))
   disp(['  properties: ',option2str(fields(ebsd.options))]);
 end
 
-phases = unique(ebsd.phase).';
-for ip = 1:length(phases)
 
-  p = phases(ip);
+% ebsd.phaseMap
+matrix = cell(numel(ebsd.phaseMap),5);
+for ip = 1:numel(ebsd.phaseMap)
+
+  p = ebsd.phaseMap(ip);
 
   % phase
   matrix{ip,1} = num2str(p); %#ok<*AGROW>
 
   % orientations
-  matrix{ip,2} = int2str(nnz(ebsd.phase == p));
+  matrix{ip,2} = int2str(nnz(ebsd.phase == ip));
 
   % abort in special cases
-  if p == 0 || isempty(ebsd.CS{p}), continue;end
+  if p < 1 || isempty(ebsd.CS{p}), continue;end
 
   % mineral
-  CS = ebsd.CS{p};
+  CS = ebsd.CS{ip};
   matrix{ip,3} = char(get(CS,'mineral'));
 
   % symmetry

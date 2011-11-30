@@ -161,14 +161,14 @@ switch prop
     cc = lower(get_option(varargin,'colorcoding','ipdf'));
 
     d = ones(numel(ebsd),3);
-    for p = unique(ebsd.phase).'
-      if p == 0, continue;end
-      ind = ebsd.phase == p;
+    for ip = 1:numel(ebsd.phaseMap)
+      if ebsd.phaseMap(ip) <= 0, continue;end
+      ind = ebsd.phase == ip;
       if strcmpi(prop,'orientation')
-        o = orientation(ebsd.rotations(ind),ebsd.CS{p},ebsd.SS);
+        o = orientation(ebsd.rotations(ind),ebsd.CS{ip},ebsd.SS);
         d(ind,:) = orientation2color(o,cc,varargin{:});
       else
-        o = orientation(ebsd.options.mis2mean(ind),ebsd.CS{p},ebsd.CS{p});
+        o = orientation(ebsd.options.mis2mean(ind),ebsd.CS{ip},ebsd.CS{p});
         d(ind,:) = orientation2color(o,cc,'r','auto',varargin{:});
       end
       
