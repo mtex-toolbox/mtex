@@ -28,34 +28,34 @@ end
 
 
 CS = get(grains.EBSD,'CSCell');
+phaseMap = get(grains.EBSD,'phaseMap');
 
-phases = unique(grains.phase).';
+matrix = cell(numel(phaseMap),6);
+for ip = 1:numel(phaseMap)
 
-for ip = 1:numel(phases)
-
-  p = phases(ip);
+  p = phaseMap(ip);
 
   % phase
   matrix{ip,1} = num2str(p); %#ok<*AGROW>
 
   % grains
-  matrix{ip,2} = int2str(nnz(grains.phase == p));
+  matrix{ip,2} = int2str(nnz(grains.phase == ip));
   
   % orientations
-  matrix{ip,3} = int2str(nnz(get(grains.EBSD,'phase')==p));
+  matrix{ip,3} = int2str(nnz(get(grains.EBSD,'phase')==ip));
 
   
   % abort in special cases
-  if p == 0 || isempty(CS{p}), continue;end
+  if p == 0 || isempty(CS{ip}), continue;end
 
   % mineral
-  matrix{ip,4} = char(get(CS{p},'mineral'));
+  matrix{ip,4} = char(get(CS{ip},'mineral'));
 
   % symmetry
-  matrix{ip,5} = get(CS{p},'name');
+  matrix{ip,5} = get(CS{ip},'name');
 
   % reference frame
-  matrix{ip,6} = option2str(get(CS{p},'alignment'));
+  matrix{ip,6} = option2str(get(CS{ip},'alignment'));
 
 end
 
