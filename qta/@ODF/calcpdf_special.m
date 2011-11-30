@@ -1,4 +1,4 @@
-function Mf = calcpdf_special5(odf,LMax,varargin)
+function Mf = calcpdf_special(odf,LMax,varargin)
 % compute the pdf for h = (theta,rhoh), r = (theta,rhor)
 %
 %% Input
