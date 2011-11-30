@@ -116,26 +116,28 @@ end
 
 criterion = false(size(Dl));
 
-phase = ebsd.phase;
-
-for p = unique(phase).'
+for p = 1:numel(ebsd.phaseMap)
   
   % neighboured cells Dl and Dr have the same phase
-  ndx = phase(Dl) == p & phase(Dr) == p;
+  ndx = ebsd.phase(Dl) == p & ebsd.phase(Dr) == p;
   
   % now check whether the have a misorientation heigher or lower than a
   % threshold
+  criterion(ndx) = true;
   
-  % due to memory we split the computation
-  csndx = [uint32(0:1000000:sum(ndx)-1) sum(ndx)];
-  for k=1:numel(csndx)-1
-    andx = ndx & cumsum(ndx) > csndx(k) & cumsum(ndx) <= csndx(k+1);
+  if ebsd.phaseMap(p) > 0
     
-    o_Dl = orientation(ebsd.rotations(Dl(andx)),ebsd.CS{p},ebsd.SS);
-    o_Dr = orientation(ebsd.rotations(Dr(andx)),ebsd.CS{p},ebsd.SS);
-    
-    criterion(andx) = dot(o_Dl,o_Dr) > cos(thresholds(p)/2);
-    
+    % due to memory we split the computation
+    csndx = [uint32(0:1000000:sum(ndx)-1) sum(ndx)];
+    for k=1:numel(csndx)-1
+      andx = ndx & cumsum(ndx) > csndx(k) & cumsum(ndx) <= csndx(k+1);
+      
+      o_Dl = orientation(ebsd.rotations(Dl(andx)),ebsd.CS{p},ebsd.SS);
+      o_Dr = orientation(ebsd.rotations(Dr(andx)),ebsd.CS{p},ebsd.SS);
+      
+      criterion(andx) = dot(o_Dl,o_Dr) > cos(thresholds(p)/2);
+      
+    end
   end
   
 end
@@ -208,7 +210,7 @@ end
 cc = full(sum(I_DG>0,1));
 cs = [0 cumsum(cc)];
 
-phase        = phase(i(cs(2:end)));
+phase        = ebsd.phase(i(cs(2:end)));
 q            = quaternion(ebsd.rotations);
 meanRotation = q(i(cs(2:end)));
 
