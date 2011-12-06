@@ -116,28 +116,29 @@ end
 
 criterion = false(size(Dl));
 
+notIndexed = isNotIndexed(ebsd);
+
 for p = 1:numel(ebsd.phaseMap)
   
   % neighboured cells Dl and Dr have the same phase
   ndx = ebsd.phase(Dl) == p & ebsd.phase(Dr) == p;
-  
-  % now check whether the have a misorientation heigher or lower than a
-  % threshold
   criterion(ndx) = true;
   
-  if ebsd.phaseMap(p) > 0
+  % check, whether they are indexed
+  ndx = ndx & ~notIndexed(Dl) & ~notIndexed(Dr);
+
+  % now check whether the have a misorientation heigher or lower than a
+  % threshold  
+  
+  % due to memory we split the computation
+  csndx = [uint32(0:1000000:sum(ndx)-1) sum(ndx)];
+  for k=1:numel(csndx)-1
+    andx = ndx & cumsum(ndx) > csndx(k) & cumsum(ndx) <= csndx(k+1);
     
-    % due to memory we split the computation
-    csndx = [uint32(0:1000000:sum(ndx)-1) sum(ndx)];
-    for k=1:numel(csndx)-1
-      andx = ndx & cumsum(ndx) > csndx(k) & cumsum(ndx) <= csndx(k+1);
-      
-      o_Dl = orientation(ebsd.rotations(Dl(andx)),ebsd.CS{p},ebsd.SS);
-      o_Dr = orientation(ebsd.rotations(Dr(andx)),ebsd.CS{p},ebsd.SS);
-      
-      criterion(andx) = dot(o_Dl,o_Dr) > cos(thresholds(p)/2);
-      
-    end
+    o_Dl = orientation(ebsd.rotations(Dl(andx)),ebsd.CS{p},ebsd.SS);
+    o_Dr = orientation(ebsd.rotations(Dr(andx)),ebsd.CS{p},ebsd.SS);
+    
+    criterion(andx) = dot(o_Dl,o_Dr) > cos(thresholds(p)/2);    
   end
   
 end

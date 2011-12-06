@@ -42,7 +42,7 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 %    SS = symmetry('triclinic');
 %    ebsd = loadEBSD_generic(fname,'CS',CS,'SS',SS, 'ColumnNames', ...
 %      {'Index' 'Phase' 'x' 'y' 'Euler1' 'Euler2' 'Euler3' 'MAD' 'BC' 'BS'...
-%      'Bands' 'Error' 'ReliabilityIndex'}, 'Bunge', 'ignorePhase', 0)
+%      'Bands' 'Error' 'ReliabilityIndex'}, 'Bunge', 'notIndexed', 0)
 %
 %% See also
 % ImportEBSDData loadEBSD ebsd_demo
@@ -128,14 +128,6 @@ end
 if istype(names,{'Phase'})
   
   phase = d(:,layoutcol(names,{'Phase'}));
-  
-  % remove phases that should be ignored
-  ignorePhase = get_option(varargin,'ignorePhase',[]);
-  
-  ind = ismember(phase,ignorePhase);
-  d(ind,:) = [];
-  phase(ind)=[];
-  q(ind) = [];
   
 else
   
