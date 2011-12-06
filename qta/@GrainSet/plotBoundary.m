@@ -31,7 +31,7 @@ xlabel(lx);ylabel(ly);
 prop = lower(get_option(varargin,'property','none'));
 
 switch prop
-  case 'angle'
+  case {'angle','misorientationangle','misorientation'}
     
     sel = find(sum(I_FD,2) == 2);
     [d,i] = find(I_FD(sel,:)');
@@ -40,26 +40,33 @@ switch prop
     i = reshape(sel(i),2,[]);
     i = i(1,:);
     
+    CS = get(grains,'CSCell');
+    SS = get(grains,'SS');
+    phaseMap = get(grains,'phaseMap');
+    
     ndx = any(grains.I_DG,2);
-    phase(ndx) = get(grains.EBSD,'phase');
+    r(ndx)       = get(grains.EBSD,'rotations');    
+    phase(ndx)   = get(grains.EBSD,'phase');
+    notIndexed(ndx) = ~isNotIndexed(grains.EBSD);
     
     phase = phase(pairs);
-    del = diff(phase)~=0;
+    notIndexed = notIndexed(pairs);
+    
+    del = diff(phase)~=0 | any(~notIndexed);
     
     phase(:,del) = [];
     pairs(:,del) = [];
-    i(del) = [];
+    i(del) = [];    
     
-    r(ndx) = get(grains.EBSD,'rotations');
-    cs = get(grains.EBSD,'CSCell');
-    ss = get(grains.EBSD,'SS');
-    
-    uphase = unique(phase);
     prop = zeros(size(i));
-    for k=1:numel(uphase)
-      sel = phase == uphase(k);
-      o = orientation(r(reshape(pairs(sel),2,[])),cs{uphase(k)},ss);
-      prop( sel(1,:)) =  angle(o(1,:),o(2,:))./degree;
+    for k=1:numel(phaseMap)
+      
+      sel = phase == phaseMap(k);
+      if any(sel(:))
+        o = orientation(r(reshape(pairs(sel),2,[])),CS{k},SS);
+        prop( sel(1,:)) =  angle(o(1,:),o(2,:))./degree;
+      end
+      
     end
     
     F = F(i,:);
