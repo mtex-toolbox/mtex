@@ -59,6 +59,11 @@ switch lower(vname)
     I_VF = sparse(v,i,1,size(grains.V,1),size(grains.I_FDext,1));    
     varargout{1} = I_VF>0;
     
+  case 'phase'
+    
+    phaseMap = get(grains,'phaseMap');
+    varargout{1} = phaseMap(grains.phase);
+    
   case lower(properties)
     
     varargout{1} = grains.(properties{find_option(properties,vname)});

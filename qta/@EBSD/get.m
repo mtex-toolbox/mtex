@@ -82,7 +82,11 @@ switch lower(vname)
     
   case 'phases'
     
-    varargout{1} = unique(ebsd.phase)';
+    varargout{1} = ebsd.phaseMap;
+    
+  case 'phase' 
+    
+    varargout{1} = ebsd.phaseMap(ebsd.phase);
     
   case lower(properties)
     
@@ -139,7 +143,7 @@ switch lower(vname)
     
     isCS = cellfun('isclass',ebsd.CS,'symmetry');
     varargout{1}(isCS) = cellfun(@(x) get(x,'mineral') ,ebsd.CS(isCS),'uniformoutput',false);
-    varargout{1}(~isCS) = {'ignorePhase'};
+    varargout{1}(~isCS) = ebsd.CS(~isCS);
     
   otherwise
     error(['There is no ''' vname ''' property in the ''EBSD'' object'])

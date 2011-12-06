@@ -28,20 +28,23 @@ end
 matrix = cell(numel(ebsd.phaseMap),5);
 for ip = 1:numel(ebsd.phaseMap)
 
-  p = ebsd.phaseMap(ip);
-
   % phase
-  matrix{ip,1} = num2str(p); %#ok<*AGROW>
+  matrix{ip,1} = num2str(ebsd.phaseMap(ip)); %#ok<*AGROW>
 
   % orientations
   matrix{ip,2} = int2str(nnz(ebsd.phase == ip));
 
-  % abort in special cases
-  if p < 1 || isempty(ebsd.CS{p}), continue;end
-
-  % mineral
+    % mineral
   CS = ebsd.CS{ip};
-  matrix{ip,3} = char(get(CS,'mineral'));
+  % abort in special cases
+  if isempty(CS), 
+    continue
+  elseif ischar(CS)
+    matrix{ip,3} = CS;  
+    continue
+  else
+    matrix{ip,3} = char(get(CS,'mineral'));
+  end
 
   % symmetry
   matrix{ip,4} = get(CS,'name');
