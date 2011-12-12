@@ -76,7 +76,7 @@ X = cell(1,nphase); d = cell(1,nphase);
 for k=1:nphase
   iP = ebsd.phase==k;
   X{k} = x_D(iP,:);
-  [d{k},property] = calcColorCode(subsref(ebsd,iP),varargin{:});
+  [d{k},property] = calcColorCode(ebsd,iP,varargin{:});
 end
 
 %% default plot options

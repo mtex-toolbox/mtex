@@ -25,7 +25,7 @@ varargin = set_default_option(varargin,...
 d = [];
 for k=1:numel(ebsd.phaseMap)
   iP = ebsd.phase==k;  
-  [d(iP,:),property] = calcColorCode(subsref(ebsd,iP),varargin{:});
+  [d(iP,:),property] = calcColorCode(ebsd,iP,varargin{:});
 end
 
 % setup slicing planes
