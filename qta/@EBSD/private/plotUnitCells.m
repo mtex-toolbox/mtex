@@ -5,7 +5,7 @@ if ~isempty(unitCell)
   
   [unitCell(:,1), unitCell(:,2)] = fixMTEXscreencoordinates(unitCell(:,1),unitCell(:,2),varargin{:});
   
-  type = get_flag(varargin,{'unitcell','voronoi','points','measurements'},'unitcell');
+  type = get_flag(varargin,{'unitcell','points','measurements'},'unitcell');
   
 else
   
@@ -24,16 +24,6 @@ switch lower(type)
     
     % generate patches
     [obj.Vertices obj.Faces] = generateUnitCells(xy,unitCell,varargin{:});
-    
-  case 'voronoi'
-    
-    [obj.Vertices,faces]     = spatialdecomposition(xy,unitCell,varargin{:});
-    
-    p = cellfun('prodofsize',faces);
-    obj.Faces = NaN(numel(faces),max(p));
-    for k=1:numel(faces)
-      obj.Faces(k,1:p(k)) = faces{k};
-    end
     
   case {'points','measurements'}
     

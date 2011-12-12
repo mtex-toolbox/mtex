@@ -21,7 +21,12 @@ varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
 % compute colorcoding
-d = colorcode(ebsd,varargin{:});
+
+d = [];
+for k=1:numel(ebsd.phaseMap)
+  iP = ebsd.phase==k;  
+  [d(iP,:),property] = calcColorCode(subsref(ebsd,iP),varargin{:});
+end
 
 % setup slicing planes
 X = [ebsd.options.x(:),ebsd.options.y(:),ebsd.options.z(:)];
@@ -196,61 +201,6 @@ ndx = 1 + (i-1) + (j-1)*sz(1);
 function ndx = s2i3(sz,ix,iy,iz)
 % faster version of sub2ind
 ndx = 1 + (ix-1) + (iy-1)*sz(1) +(iz-1)*sz(1)*sz(2);
-
-
-function d = colorcode(ebsd,varargin)
-
-prop = lower(get_option(varargin,'property','orientation'));
-
-if check_option(varargin,'phase') && ~strcmpi(prop,'phase') %restrict to a given phase
-  ebsd(~ismember([ebsd.phase],get_option(varargin,'phase'))) = [];
-end
-
-% %% compute colorcoding
-if isa(prop,'double')
-  d = prop;
-  prop = 'user';
-end;
-
-switch prop
-  case 'user'
-  case 'orientation'
-
-    cc = lower(get_option(varargin,'colorcoding','ipdf'));
-    
-    d = ones(numel(ebsd),3);
-    for p = unique(ebsd.phase).'
-      if p == 0, continue;end
-      ind = ebsd.phase == p;
-      o = orientation(ebsd.rotations(ind),ebsd.CS{p},ebsd.SS);
-      d(ind,:) = orientation2color(o,cc,varargin{:});
-    end
-    
-    
-  case 'angle'
-    d = [];
-    for i = 1:length(ebsd)
-      d = [d; angle(ebsd.options.mis2mean)/degree];
-    end
-  case 'phase'
-    d = [];
-    for i = 1:length(ebsd)
-      if numel(ebsd(i).phase == 1)
-        d = [d;ebsd(i).phase * ones(samplesize(ebsd(i)),1)]; %#ok<agrow>
-      elseif numel(ebsd(i).phase == 0)
-        d = [d;nan(samplesize(ebsd(i)),1)]; %#ok<agrow>
-      else
-        d = [d,ebsd.phase(:)]; %#ok<agrow>
-      end
-    end
-    colormap(hsv(max(d)+1));
-    %     co = get(gca,'colororder');
-    %     colormap(co(1:length(ebsd),:));
-  case fields(ebsd(1).options)
-    d = get(ebsd,prop);
-  otherwise
-    error('unknown colorcoding!')
-end
 
 
 function  [sz,plane] = addslicer(slicetype,varargin)
