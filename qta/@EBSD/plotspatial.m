@@ -73,7 +73,7 @@ x_D = [ebsd.options.x ebsd.options.y];
 nphase = numel(ebsd.phaseMap);
 X = cell(1,nphase); d = cell(1,nphase);
 
-for k=1:numel(ebsd.phaseMap)
+for k=1:nphase
   iP = ebsd.phase==k;
   X{k} = x_D(iP,:);
   [d{k},property] = calcColorCode(subsref(ebsd,iP),varargin{:});
@@ -89,7 +89,7 @@ newMTEXplot;
 
 isPhase = find(~cellfun('isempty',X));
 
-for k = 1:numel(isPhase)
+for k=1:numel(isPhase)
   h(k) = plotUnitCells(X{isPhase(k)},d{isPhase(k)},ebsd.unitCell,varargin{:});
 end
 
@@ -104,8 +104,8 @@ if strcmpi(property,'phase'),
   % phase colormap
   set(gca,'CLim',[min(ebsd.phaseMap) max(ebsd.phaseMap)]);
   colormap(hsv(numel(ebsd.phaseMap)));
-
-  legend('show');  
+  
+  legend('show');
 end
 
 % set appdata
@@ -119,7 +119,7 @@ end
 set(gcf,'tag','ebsd_spatial');
 setappdata(gcf,'options',extract_option(varargin,'antipodal'));
 
-% 
+%
 fixMTEXscreencoordinates('axis'); %due to axis;
 set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
 
@@ -154,63 +154,13 @@ if ~isempty(candits)
   
   minerals = get(ebsd,'minerals');
   minerals{phase}
-  txt{1} = ['Phase: ', minerals{phase},'' ]; 
+  txt{1} = ['Phase: ', minerals{phase},'' ];
   
   if ~ischar(ebsd.CS{phase}), ...
-    txt{2} = ['Orientation: ' char(o)];
+      txt{2} = ['Orientation: ' char(o)];
   end
   
-else  
+else
   txt = 'no data';
 end
-
-
-function [d,prop] = calcColorCode(ebsd,varargin)
-
-prop = get_option(varargin,'property','orientation',{'char','double'});
-
-if isa(prop,'char')
-  switch lower(prop)
-    case {'orientation','mis2mean'}
-      
-      o = get(ebsd,'orientations');
-            
-      if strcmpi(prop,'mis2mean')
-        varargin = [varargin,'r','auto'];
-      end
-      
-      if ischar(get(o,'CS')) || isempty(o)
-        d = NaN(numel(ebsd),1);
-      else
-        d = orientation2color(o,lower(get_option(varargin,'colorcoding','ipdf')),varargin{:});
-      end
-      
-    case 'phase'
-      
-      d = ebsd.phaseMap(ebsd.phase);
-      
-    case fields(ebsd(1).options)
-      
-      d = get(ebsd,prop);
-      
-    case 'angle'
-      
-      d = angle(ebsd.rotations)/degree;
-      
-    otherwise
-      
-      error('Unknown colorcoding!')
-      
-  end
-else
-  prop = 'user';
-end
-
-if any(size(d)==1) && numel(ebsd) > 1
-  d = d(:);
-end
-
-
-
-
 
