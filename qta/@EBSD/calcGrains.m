@@ -126,9 +126,9 @@ for p = 1:numel(ebsd.phaseMap)
   
   % check, whether they are indexed
   ndx = ndx & ~notIndexed(Dl) & ~notIndexed(Dr);
-
+  
   % now check whether the have a misorientation heigher or lower than a
-  % threshold  
+  % threshold
   
   % due to memory we split the computation
   csndx = [uint32(0:1000000:sum(ndx)-1) sum(ndx)];
@@ -138,7 +138,7 @@ for p = 1:numel(ebsd.phaseMap)
     o_Dl = orientation(ebsd.rotations(Dl(andx)),ebsd.CS{p},ebsd.SS);
     o_Dr = orientation(ebsd.rotations(Dr(andx)),ebsd.CS{p},ebsd.SS);
     
-    criterion(andx) = dot(o_Dl,o_Dr) > cos(thresholds(p)/2);    
+    criterion(andx) = dot(o_Dl,o_Dr) > cos(thresholds(p)/2);
   end
   
 end
@@ -202,6 +202,7 @@ switch dim
     I_FDsub = EdgeOrientation(I_FDsub,F,x_V,x_D);
     
     b = BoundaryFaceOrder(D,F,I_FDext,I_DG);
+    
 end
 
 %% mean orientation and phase
@@ -296,4 +297,17 @@ for k=find(~onePixelGrain)
   b{k} = EulerCycles(E1(:,1),E1(:,2));
   
 end
+
+for k=find(cellfun('isclass',b(:)','cell'))
+  boundary = b{k};
+  [ignore,order] = sort(cellfun('prodofsize', boundary),'descend');
+  b{k} = boundary(order);
+end
+
+
+
+
+
+
+
 
