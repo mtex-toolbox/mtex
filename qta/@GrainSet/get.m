@@ -4,8 +4,10 @@ function varargout = get(grains,vname)
 properties = get_obj_fields(grains,'GrainSet');
 options    = fieldnames(grains.options);
 
-if nargin < 2
-  vname = 'error';
+if nargin == 1
+  vnames = [properties;options;{'mean';'meanorientation';'orientations';'mineral';'minerals'}];
+  if nargout, varargout{1} = vnames; else disp(vnames), end
+  return
 end
 
 switch lower(vname)
