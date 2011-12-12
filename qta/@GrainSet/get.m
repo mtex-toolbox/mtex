@@ -25,7 +25,8 @@ switch lower(vname)
       
     else
       
-      varargout{1} = orientation(grains.meanRotation,get(grains,'CS'),get(grains,'SS'));
+      CS = get(grains,'CSCell');
+      varargout{1} = orientation(grains.meanRotation,CS{grains.phase(1)},get(grains,'SS'));
       
     end
     
