@@ -7,7 +7,7 @@ end
 if check_option(varargin,'unitCell')
   
   % compute the vertices
-  [v,faces] = generatePatches(X,unitCell,varargin{:});
+  [v,faces] = generateUnitCells(X,unitCell,varargin{:});
  
   c = cell(size(X,1),1);
   for k=1:size(X,1)  

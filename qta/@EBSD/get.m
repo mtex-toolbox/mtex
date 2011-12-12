@@ -27,7 +27,7 @@ function varargout = get(ebsd,vname,varargin)
 properties = get_obj_fields(ebsd);
 options    = get_obj_fields(ebsd.options);
 if nargin == 1
-  vnames = [properties;{'data';'quaternion';'orientations';'Euler';'mineral';'minerals'}];
+  vnames = [properties;options;{'data';'quaternion';'orientations';'Euler';'mineral';'minerals'}];
   if nargout, varargout{1} = vnames; else disp(vnames), end
   return
 end
