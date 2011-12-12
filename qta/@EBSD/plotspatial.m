@@ -57,6 +57,7 @@ function varargout = plotspatial(ebsd,varargin)
 % restrict to a given phase or region
 %ebsd = copy(ebsd,varargin{:});
 
+if ~numel(ebsd), return, end
 
 %% check for 3d data
 if isfield(ebsd.options,'z')
@@ -78,7 +79,6 @@ for k=1:numel(ebsd.phaseMap)
   [d{k},property] = calcColorCode(subsref(ebsd,iP),varargin{:});
 end
 
-
 %% default plot options
 
 varargin = set_default_option(varargin,...
@@ -98,12 +98,14 @@ fixMTEXplot;
 % make legend
 minerals = get(ebsd,'minerals');
 legend(h,minerals(isPhase));
+legend('off')
 
 if strcmpi(property,'phase'),
   % phase colormap
-  colormap(hsv(numel(h)));
-else
-  legend('off');
+  set(gca,'CLim',[min(ebsd.phaseMap) max(ebsd.phaseMap)]);
+  colormap(hsv(numel(ebsd.phaseMap)));
+
+  legend('show');  
 end
 
 % set appdata
