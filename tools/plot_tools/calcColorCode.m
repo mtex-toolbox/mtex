@@ -23,7 +23,7 @@ if isa(prop,'char')
       
     case 'angle'
       
-      d = angle(grains.rotations)/degree;
+      d = angle(get(obj,'orientations'))/degree;
       
     otherwise
       
