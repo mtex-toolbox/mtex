@@ -12,3 +12,7 @@ syntax: glob
 *~
 c/bin/*
 VERSION
+*.asv
+*.mat
+*.orig
+*.rej
