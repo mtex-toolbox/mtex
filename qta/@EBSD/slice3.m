@@ -22,6 +22,10 @@ varargin = set_default_option(varargin,...
 
 % compute colorcoding
 
+if isa(ebsd,'Grain3d')
+  ebsd = get(ebsd,'EBSD');
+end
+
 d = [];
 for k=1:numel(ebsd.phaseMap)
   iP = ebsd.phase==k;  
