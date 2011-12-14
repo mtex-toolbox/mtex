@@ -122,7 +122,7 @@ if check_option(varargin,'section')
 
 elseif check_option(varargin,'3d')
   
-  [x,y,z] = double(d.*S2);
+  [x,y,z] = double(abs(d).*S2);
   
   h = surf(x,y,z);
   set(h,'CData',d)
