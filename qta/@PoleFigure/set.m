@@ -52,7 +52,7 @@ switch vname
       if iscell(value) && length(value) == length(pf)
         ivalue = value{i};
       elseif iscell(value)
-        ivalue = value{1};
+        ivalue = value{i};
       else
         ivalue = value;
       end
