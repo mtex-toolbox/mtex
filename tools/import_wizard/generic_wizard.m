@@ -96,10 +96,9 @@ uicontrol('Parent',htp,'Style','Text','Position',[dw,h-(tb+120+25),w-2*dw,20],..
   'HorizontalAlignment','left',...
   'String','Please specify for each column how it should be interpreted!');
 
-% strip non literal characters from columnames
-colums = regexprep(colums,'\W','');
 
-cdata = guessColNames(values,size(data,2),colums);
+% strip non literal characters from columnames
+cdata = guessColNames(values,size(data,2),colnames);
 
 
 
@@ -129,7 +128,7 @@ if strcmp(type,'PoleFigure')
 else
   
   % Euler Angles
-  chk_angle = uibuttongroup('Parent',htp,'title','Euler Angles','units','pixels',...
+  chk_angle = uibuttongroup('Parent',htp,'title','Convention of Rotation','units','pixels',...
     'position',[dw h-(tb+260) 4*cw+dw 45]);
   
   euler_convention = uicontrol('Style', 'popup',...
@@ -143,18 +142,7 @@ else
     'Position',[2*cw+2*dw dw 80 15],'Parent',chk_angle,'HandleVisibility','off');
   rad_box = uicontrol('Style','Radio','String','Radians',...
     'Position',[2*dw+3*cw dw 80 15],'Parent',chk_angle,'HandleVisibility','off');
-  
-  
-  if strcmp(type,'EBSD')
-    h3 = uipanel('Parent',htp,'title','Ignore Phase(s)','units','pixels',...
-      'position',[dw h-tb-320 cw*2 46]);
-    phaseopt = uicontrol('Style','Edit',...
-      'BackgroundColor',[1 1 1],...
-      'HorizontalAlignment','left',...
-      'String','0' ,...
-      'Position',[dw 5 cw*2-2*dw 23],'Parent',h3,'HandleVisibility','off');
-  end
-  
+    
   h3 = uibuttongroup('Parent',htp,'title','Rotation','units','pixels',...
     'position',[2*cw+2*dw h-tb-320 cw*2 46]);
   
@@ -223,14 +211,7 @@ while ishandle(htp)
       % active / pasive rotation
       if get(passive_box,'value')
         options = [options,{'passive rotation'}]; %#ok<AGROW>
-      end
-      
-      if strcmp(type,'EBSD')
-        phase = str2num(get(phaseopt,'string')); %#ok<ST2NM>
-        if ~isempty(phase)
-          options = [options,{'ignorePhase',phase}]; %#ok<AGROW>
-        end
-      end
+      end      
       
     end
     
@@ -265,50 +246,28 @@ uicontrol(...
 
 function cdata = guessColNames(values,l,colnames)
 
-if length(colnames) == l
-  cdata = colnames;
-else
-  cdata = repmat(values(1),1,l);
+val = regexprep(lower(values),'\W','');
+colnames = regexprep(lower(colnames),'\W','');
+
+cdata = colnames;
+cdata(cellfun('isempty',cdata)) = values(1);
+
+for k=1:numel(colnames)
+  iscdata = ismember(val,colnames{k});
+  if any(iscdata), cdata(k) = values(iscdata);  end
 end
 
-if isempty(colnames), return;end
-
-for i = 1:length(values)
-  ind = strmatch(lower(values(i)),lower(colnames));
-  if ~isempty(ind), cdata(ind(1)) = values(i); end
+eulerConvention = {{'alpha','beta','gamma'} ,{'phi1','phi','phi2'}};
+for k=1:numel(eulerConvention)  
+  ind = find(ismember(cdata,eulerConvention{k}));  
+  if numel(ind) > 2, cdata(ind(1:3)) = values(2:4);  end  
 end
 
 % volume
 ind = strmatch('volume',lower(colnames));
 if length(ind) == 1,cdata{ind} = 'weight';end
 
-% Euler Angle
-ind = regexp(lower(colnames),'phi|Euler');
-ind = find(~cellfun('isempty',ind));
 
-if length(ind)==3
-  cdata{ind(1)} = 'Euler 1';
-  cdata{ind(2)} = 'Euler 2';
-  cdata{ind(3)} = 'Euler 3';
-end
-
-if ~isempty(strmatch('alpha',lower(colnames))) && ...
-    ~isempty(strmatch('beta',lower(colnames))) && ...
-    ~isempty(strmatch('gamma',lower(colnames)))
-  
-  cdata{strmatch('alpha',lower(colnames))}='Euler 1';
-  cdata{strmatch('beta',lower(colnames))}='Euler 2';
-  cdata{strmatch('gamma',lower(colnames))}='Euler 3';
-end
-
-if ~isempty(strmatch('phi1',lower(colnames))) && ...
-    ~isempty(strmatch('phi2',lower(colnames),'exact')) && ...
-    ~isempty(strmatch('phi',lower(colnames)))
-  
-  cdata{strmatch('phi1',lower(colnames))}='Euler 1';
-  cdata{strmatch('phi',lower(colnames),'exact')}='Euler 2';
-  cdata{strmatch('phi2',lower(colnames))}='Euler 3';
-end
 
 function str = stripws(str)
 
