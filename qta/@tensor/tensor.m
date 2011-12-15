@@ -93,3 +93,16 @@ end
 % setup tensor
 superiorto('quaternion','rotation','orientation')
 T = class(T,'tensor');
+
+check_symmetry(T)
+
+
+function check_symmetry(T)
+
+rot = rotation(T.CS);
+
+for i = 2:length(rot)
+  
+  assert(T == rotate(T,rot(i)),'Tensor does not pose the right symmetry');
+  
+end

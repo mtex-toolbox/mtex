@@ -24,8 +24,9 @@ function [TVoigt, TReuss, THill] = calcTensor(odf,T,varargin)
 if get(T,'rank') ~= 3, Tinv = inv(T);end
 
 % init Voigt and Reuss averages
-TVoigt = tensor(zeros([repmat(3,1,rank(T)) 1 1]));
-TReuss = tensor(zeros([repmat(3,1,rank(T)) 1 1]));
+TVoigt = set(T,'M',zeros([repmat(3,1,rank(T)) 1 1]));
+TVoigt = set(TVoigt,'CS',symmetry);
+TReuss = TVoigt;
 
 % determine method for average calculation
 
@@ -42,9 +43,11 @@ end
 %% use Fourier method
 if strcmpi(char(method),'fourier')
 
- 
   % compute Fourier coefficients of the odf
   odf = calcFourier(odf,rank(T));
+  
+  % force the tensor to have the same reference frame as the ODF
+  T = set(T,'CS',odf.CS);
   
   for l = 0:rank(T)
   
@@ -69,8 +72,10 @@ if strcmpi(char(method),'fourier')
 elseif strcmpi(char(method),'quadrature') 
   
   % evaluate ODF at an equispaced grid
-  res = get_option(varargin,'resolution');
+  res = get_option(varargin,'resolution',5*degree);
   S3G = SO3Grid(res,odf.CS,odf.SS);
+  %S3G = SO3Grid(res);
+  %S3G = set(S3G,'CS',odf.CS);
   weight = eval(odf,S3G,varargin{:}); %#ok<EVLC>
   weight = (weight ./ sum(weight(:)));
 
