@@ -153,6 +153,17 @@ end
 
 function v = checkClass(var,className)
 
-if iscell(var) && ~isempty(var), var = var{1};end
-v = isa(var,className);
+if iscell(var) && ~isempty(var), 
+  v = any(cellfun('isclass',var,className));
+else
+  v = isa(var,className);
+end
+
+
+
+
+
+
+
+
 
