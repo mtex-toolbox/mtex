@@ -16,3 +16,4 @@ VERSION
 *.mat
 *.orig
 *.rej
+help/mtex/demos\.xml
