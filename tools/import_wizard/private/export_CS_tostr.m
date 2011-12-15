@@ -14,6 +14,10 @@ for i=1:numel(cs)
     
     t = 'symmetry()';
     
+  elseif ischar(cs{i});
+    
+    t = ['''' cs{i} ''''];
+    
   else
       
     [c,angle] = get_axisangel(cs{i});

@@ -27,7 +27,8 @@ if any(strcmp(vname,fields(ebsd)))
   if strcmp(vname,'CS')
     notIndexedPhase = ebsd.phaseMap(cellfun('isclass',ebsd.CS,'char'));
     notIndexed = ismember(ebsd.phaseMap,notIndexedPhase);
-    if numel(value) == nnz(ebsd.phaseMap) || numel(value) == 1
+    if numel(value) == numel(ebsd.phaseMap)
+    elseif (numel(value) == nnz(~notIndexedPhase) || numel(value) == 1)
       value(~notIndexed) = value;
       value(notIndexed) = {'not indexed'};
     else
