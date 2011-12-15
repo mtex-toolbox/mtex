@@ -1,0 +1,16 @@
+help/mtex/demos\.xml
+help/mtex/helpsearch
+help/mtex/helptoc\.xml
+help/mtex/help\.jar
+c/mex/glnx86
+c/mex/glnxa64
+c/mex/maci
+c/mex/maci64
+c/mex/win32
+c/mex/win64
+c/bin/glnx86
+c/bin/glnxa64
+c/bin/maci
+c/bin/maci64
+c/bin/win32
+c/bin/win64
