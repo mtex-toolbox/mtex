@@ -74,6 +74,11 @@ end
 
 function field = readfield(h,pattern)
 
-field = h{2}(strncmp(h{1},pattern,length(pattern)));
+ind = strncmp(h{1},pattern,length(pattern));
+if nnz(ind) > 1
+  ind = strcmp(h{1},pattern);
+end
+
+field = h{2}(ind);
 
 end
