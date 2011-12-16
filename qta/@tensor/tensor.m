@@ -94,7 +94,9 @@ end
 superiorto('quaternion','rotation','orientation')
 T = class(T,'tensor');
 
-check_symmetry(T)
+if ~check_option(varargin,'noCheck')
+  check_symmetry(T)
+end
 
 
 function check_symmetry(T)
@@ -103,6 +105,8 @@ rot = rotation(T.CS);
 
 for i = 2:length(rot)
   
-  assert(T == rotate(T,rot(i)),'Tensor does not pose the right symmetry');
-  
+  if T ~= rotate(T,rot(i))
+    warning('MTEX:tensor','Tensor does not pose the right symmetry');
+    return;
+  end  
 end
