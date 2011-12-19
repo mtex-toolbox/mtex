@@ -154,7 +154,7 @@ res = get_option(varargin,'resolution',max(0.75*degree,hw / 2));
 
 
 %% generate grid
-S3G = extract_SO3grid(ebsd,varargin{:},'resolution',res);
+S3G = extract_SO3grid(odf,varargin{:},'resolution',res);
 vdisp([' approximation grid: ' char(S3G)],varargin{:});
 
 %% restrict single orientations to this grid
