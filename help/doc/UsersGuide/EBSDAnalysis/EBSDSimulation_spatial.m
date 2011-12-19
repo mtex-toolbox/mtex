@@ -43,9 +43,8 @@ ebsd = fill(ebsd,[0 25 0 25 0 25],1)
 plot(ebsd)
 
 %%
-% 
 
-[ grains ebsd] = calcGrains(ebsd);
+grains = calcGrains(ebsd);
 
 %%
 %

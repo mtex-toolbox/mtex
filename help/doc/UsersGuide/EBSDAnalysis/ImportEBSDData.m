@@ -97,6 +97,7 @@ import_wizard('EBSD');
 
 % specify crystal and specimen symmetry
 CS = {...
+  'notIndexed',...
   symmetry('m-3m'),... % crystal symmetry phase 1
   symmetry('m-3m')};   % crystal symmetry phase 2
 SS = symmetry('-1');   % specimen symmetry
@@ -107,9 +108,9 @@ fname = fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt');
 % import ebsd data
 ebsd = loadEBSD(fname,CS,SS,'interface','generic',...
   'ColumnNames', { 'id' 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'Mad' 'BC'},...
-  'ignorePhase', 0, 'Bunge');
+  'Bunge');
 
-plot(ebsd,'phase',1)
+plot(ebsd,'property','phase')
 
 
 %% Writing your own interface

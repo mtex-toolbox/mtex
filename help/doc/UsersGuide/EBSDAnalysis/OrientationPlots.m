@@ -66,7 +66,7 @@ scatter(o,'center',idquaternion)
 % Let us consider some grains [[EBSD.calcGrains.html,detected]] from the
 % EBSD data
 
-[grains,ebsd] = calcGrains(ebsd);
+grains = calcGrains(ebsd);
 
 %%
 % Then the scatter plot of the individual orientations of the Iron phase in
@@ -92,7 +92,7 @@ plotpdf(ebsd('Fe'),[Miller(1,0,0),Miller(1,1,0)],'antipodal','MarkerSize',4,...
 
 close all;figure('position',[100 100 500 500])
 plotodf(grains('Fe'),'antipodal','sections',9,'MarkerSize',3,...
-  'property',shapefactor(grains));
+  'property',shapefactor(grains('Fe')));
 
 %% 
 % Superposition of two scatter plots is achieved by the commands *hold on*
