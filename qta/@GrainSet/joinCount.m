@@ -16,7 +16,7 @@ function [J T q p] = joinCount(grains,coloring,varargin)
 %
 
 
-pair = pairs(grains);
+[n,pair] = neighbors(grains);
 pair(pair(:,1) == pair(:,2),:) = []; % delete self reference
 
 [c m color] = unique(coloring);
