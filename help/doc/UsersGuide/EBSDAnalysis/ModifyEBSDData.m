@@ -138,7 +138,7 @@ plot(ebsd_corrected)
 % measuremens we have first to reconstruct grains from the EBSD
 % measurements using the command <EBSD.calcGrains.html segment2d>
 
-[grains,ebsd_corrected] = calcGrains(ebsd_corrected,'threshold',10*degree)
+grains = calcGrains(ebsd_corrected,'threshold',10*degree)
 
 %%
 % The histogram of the grainsize shows that there a lot of grains
@@ -161,7 +161,7 @@ plot(ebsd_corrected)
 %% 
 % Now reconstruct again grains in our reduced EBSD data set
 
-[grains_corrected,ebsd_corrected] = calcGrains(ebsd_corrected,'threshold',10*degree)
+grains_corrected = calcGrains(ebsd_corrected,'threshold',10*degree)
 
 plot(grains_corrected)
 

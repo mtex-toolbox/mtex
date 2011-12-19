@@ -18,7 +18,7 @@ mtexdata aachen
 %%
 % and model some grains
 
-[grains, ebsd] = calcGrains(ebsd);
+grains = calcGrains(ebsd);
 
 
 %% Coloring spatially orientation data 
@@ -60,11 +60,10 @@ plot(grains('Fe'),'colorcoding','hkl')
 % In order to understand the colorcoding better one can plot the coloring 
 % of the corresponding inverse pole figure and the orientations together
 
-
 colorbar
 hold on
 plotipdf(grains('Fe'),xvector,'points',500,...
-  'markerSize',3,'marker','+','markerfacecolor','k','markeredgecolor','w')
+  'markerSize',3,'marker','+','markerfacecolor','k','markeredgecolor','')
 hold off
 set(gcf,'renderer','opengl')
 
@@ -75,7 +74,7 @@ set(gcf,'renderer','opengl')
 % [[grain.plotBoundary.html,plotBoundary]] command.
 
 close all
-plot(grains,'boundary')
+plot(grains,'boundary','color','k')
 
 %%
 % The *hold on* and  *hold off* command allows us to plot various
@@ -92,13 +91,13 @@ plotBoundary(grains_selection,'color','r','linewidth',2)
 
 close all
 plotBoundary(grains,'property','phase')
-colormap(hsv)
 
 %%
 % or visualise the misorientation between neighboured grains of the same
 % phase
 
-plotBoundary(grains,'property','colorcoding','hkl')
+plotBoundary(grains,'property','misorientation','colorcoding','hkl',...
+  'linewidth',2)
 
 %%
 % or mark really special misorientations between neighbours
@@ -115,12 +114,13 @@ plotBoundary(grains,'property',rot)
 
 close all
 plot(ebsd,'property','bc')
+colormap gray
 
 %%
 % the reconstructed grains contain the same properties as the initial EBSD
 % data and hence can be colored accordingly
 
-plot(grains,'property','bc')
+plotspatial(grains(grainSize(grains)>15),'property','bc')
 
 %%
 % futhermore as property a data vector can be given

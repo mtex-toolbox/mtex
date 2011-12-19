@@ -14,10 +14,10 @@ try
     error('MTEX:MultiplePhases',['The EBSD set is Empty! ' ...
       'Please see ' doclink('xx','xx') ' for restrict a EBSD data to a single phase.']);
     
-  elseif any(isNotIndexed(ebsd))
-    
-     error('MTEX:MultiplePhases',['The EBSD data contains only non-indexed orientations! ' ...
-      'Please see ' doclink('xx','xx') ' for restrict EBSD data to a single phase.']);
+%   elseif any(isNotIndexed(ebsd))
+%     
+%      error('MTEX:MultiplePhases',['The EBSD data contains only non-indexed orientations! ' ...
+%       'Please see ' doclink('xx','xx') ' for restrict EBSD data to a single phase.']);
     
   end
   
