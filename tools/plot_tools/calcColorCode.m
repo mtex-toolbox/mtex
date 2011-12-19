@@ -4,7 +4,11 @@ prop = get_option(varargin,'property','orientation',{'char','double'});
 
 obj = obj(subset);
 
-if isa(prop,'char')
+if numel(obj) == 0  % empty object
+  
+  d = [];
+  
+elseif isa(prop,'char')
   switch lower(prop)
     case {'orientation','mis2mean'}
       
