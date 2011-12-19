@@ -51,8 +51,8 @@ if nargout < 1
   plotBoundary(grains,'facealpha',0.2);
   
   % center = cell(numel(grains));
-  ax1 = cell(numel(grains));
-  ax2 = cell(numel(grains));
+  ax1 = cell(numel(grains),1);
+  ax2 = cell(numel(grains),1);
   
   for k=1:numel(grains)
     v = ev(:,:,k)*ew(:,:,k);
@@ -65,9 +65,12 @@ if nargout < 1
   ax1 = vertcat(ax1{:});
   ax2 = vertcat(ax2{:});
   
+  [ax1(:,1),ax1(:,2)] =  fixMTEXscreencoordinates(ax1(:,1),ax1(:,2),varargin{:});
+  [ax2(:,1),ax2(:,2)] =  fixMTEXscreencoordinates(ax2(:,1),ax2(:,2),varargin{:});
+  
   fac = [1:size(c,1); size(c,1)+1:2*size(c,1)]';
   h(1) = patch('vertices', [ax1(1:dim:size(ax1,1),:); ax2(1:dim:size(ax1,1),:)],'faces',fac,'edgecolor','b','facecolor','none');
-  h(2) = patch('vertices', [ax2(2:dim:size(ax1,1),:);ax1(2:dim:size(ax1,1),:)],'faces',fac,'edgecolor','g','facecolor','none');
+  h(2) = patch('vertices', [ax2(2:dim:size(ax1,1),:); ax1(2:dim:size(ax1,1),:)],'faces',fac,'edgecolor','g','facecolor','none');
   
   if dim == 3
     h(3) = patch('vertices', [ax2(3:dim:size(ax1,1),:);ax1(3:dim:size(ax1,1),:)],'faces',fac,'edgecolor','r','facecolor','none');
