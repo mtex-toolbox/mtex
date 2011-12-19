@@ -57,10 +57,15 @@ install_mtex(local_path);
 fprintf('initialize');
 
 %read version from version file
-fid = fopen('VERSION','r');
-MTEXversion = fgetl(fid);
-fclose(fid);
-fprintf([' ' MTEXversion '  ']);
+try
+  fid = fopen('VERSION','r');
+  MTEXversion = fgetl(fid);
+  fclose(fid);
+  fprintf([' ' MTEXversion '  ']);
+catch
+  MTEXversion = 'MTEX';
+end
+
 p();
 
 %% setup search path
