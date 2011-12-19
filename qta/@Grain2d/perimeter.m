@@ -17,7 +17,8 @@ F = full(get(grains,'F'));
 I_FDext = get(grains,'I_FDext');
 I_DG = get(grains,'I_DG');
 
-[f,g] = find(I_FDext*double(I_DG));
+
+[f,g] = find(I_FDext*double(I_DG(:,any(I_DG))));
 
 l = F(f,:);
 edgeLength = sqrt(sum((V(l(:,1),:) - V(l(:,2),:)).^2,2));
