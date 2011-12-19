@@ -12,6 +12,9 @@ if check_option(varargin,{'withoutBoundary'})
   
   [d,i] = find(I_FD(sum(I_FD,2) == 2,any(grains.I_DG,2))');  
   A_D(sub2ind(size(A_D),d(1:2:end),d(2:2:end))) = 0;  
+elseif check_option(varargin,'mis2mean')  
+  mo = get(grains.EBSd,'mis2mean');
+  return
 end
 
 o = get(grains.EBSD,'orientations');
