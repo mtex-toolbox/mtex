@@ -32,12 +32,16 @@ if check_option(varargin,'allAngles')
   f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
   
 else
-  
-  omega2 = angle(S3G);
+    
   if check_option(varargin,'largestAngle')
-    ind = abs(omega) >= omega2 - 0.01;
-  else % smalles angle - default
-    ind = abs(omega) <= omega2 + 0.01;
+    omega2 = angle(S3G);
+    ind = abs(omega) >= omega2 - 0.00001;
+  else % smallest angle - default
+    %omega2 = angle(S3G);
+    %ind = abs(omega) <= omega2 + 0.00001;
+    
+    ind = checkFundamentalRegion(S3G,'onlyAngle');
+    
   end
   
   [i,j] = find(ind);
