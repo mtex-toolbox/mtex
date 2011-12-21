@@ -29,14 +29,31 @@ for p = 1:length(places)
   for f = 1:length(files)
     if exist(mexfile(files{f}),'file')      
       disp(['... compile ',files{f}]);
-      try
-        if blas
-          mex_blas(mexfile(files{f}),varargin{:},'-outdir',mexfile(get_mtex_option('architecture')));
-        else
-          mex(varargin{:},'-outdir',mexfile(get_mtex_option('architecture')),mexfile(files{f}));
+      if isOctave()
+        if ~exist(mexfile(get_mtex_option('architecture')),'dir')
+          mkdir(mexfile(get_mtex_option('architecture')));
         end
-      catch %#ok<CTCH>
-        disp(['Compiling ' mexfile(files{f}) ' failed!']);
+        [dout, nout, eout] = fileparts (files{f});
+outfile = fullfile (mexfile(get_mtex_option('architecture')), [nout, '.', mexext()]);
+        try
+          if blas
+            mex_blas(mexfile(files{f}),varargin{:},'-o', outfile);
+          else
+            mex(varargin{:},'-o',outfile,mexfile(files{f}));
+          end
+        catch %#ok<CTCH>
+          disp(['Compiling ' mexfile(files{f}) ' failed!']);
+        end
+      else
+        try
+          if blas
+            mex_blas(mexfile(files{f}),varargin{:},'-outdir',mexfile(get_mtex_option('architecture')));
+          else
+            mex(varargin{:},'-outdir',mexfile(get_mtex_option('architecture')),mexfile(files{f}));
+          end
+        catch %#ok<CTCH>
+          disp(['Compiling ' mexfile(files{f}) ' failed!']);
+        end
       end
     end
   end

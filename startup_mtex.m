@@ -35,7 +35,7 @@ end
 
 lasterr('') %reset all errors
 
-if  MATLABverLessThan('7.1')
+if (~isOctave() && MATLABverLessThan('7.1'))
   
   error(['MTEX can not be installed because your MATLAB version ',version,...
     ' is outdated and not longer supported by MTEX. The oldest MATLAB ',...
@@ -98,7 +98,7 @@ end
 
 disp(' done!')
 disp(' ');
-if isempty(javachk('desktop'))
+if (~isOctave() && isempty(javachk('desktop')))
   disp('Basic tasks:')
   disp('- <a href="matlab:doc mtex">Show MTEX documentation</a>')
   disp('- <a href="matlab:import_wizard(''PoleFigure'')">Import pole figure data</a>')
@@ -138,7 +138,7 @@ if any(strfind(path,'mtex'))
   if ~isempty(inst_dir), rmpath(inst_dir{:}); end
 end
 
-if  MATLABverLessThan('7.8')
+if (~isOctave() && MATLABverLessThan('7.8'))
   cd('..'); % leave current directory for some unknown reason
 end
 addpath(local_path);
@@ -176,7 +176,7 @@ disp('In order to see the documentation restart MATLAB or click');
 disp('start->Desktop Tools->View Source Files->Refresh Start Button');
 hline('-')
 disp(' ')
-if isempty(javachk('jvm'))
+if (~isOctave() && isempty(javachk('jvm')))
   doc; pause(0.1);commandwindow;
 end
 
@@ -265,7 +265,11 @@ pathes = cellfun(@(p) fullfile(local_path,p{:}), pathes, 'uniformoutput', false)
 addpath(pathes{:},0);
 
 % compatibility path
-comp = dir(fullfile(local_path,'tools','compatibility','ver*'));
+if isOctave()
+  comp = dir(fullfile(local_path,'tools','compatibility','octave','ver*'));
+else
+  comp = dir(fullfile(local_path,'tools','compatibility','ver*'));
+end
 
 for k=1:length(comp)
   if MATLABverLessThan(comp(k).name(4:end))
@@ -273,7 +277,7 @@ for k=1:length(comp)
   end
 end
 
-if MATLABverLessThan('7.3'), make_bsx_mex;end
+if (~isOctave() && MATLABverLessThan('7.3')), make_bsx_mex;end
 
 %addpath_recurse(fullfile(local_path,'help','UsersGuide'));
 
@@ -308,4 +312,9 @@ end
 function hline(st)
 if nargin < 1, st = '*'; end
 disp(repmat(st,1,80));
+end
+
+function result = isOctave ()
+  persistent is_octave = exist ('OCTAVE_VERSION');
+  result = is_octave;
 end
