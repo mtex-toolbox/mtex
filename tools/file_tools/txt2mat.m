@@ -479,10 +479,15 @@ function [A,ffn,num_header,sr_input_ca,hl,fpos] = txt2mat(varargin)
 spuint   = uint8(32);   % Space (= ascii whitespace limit) as uint8
 
 % find out matlab version as a decimal, up to the second dot:
-v = ver('matlab');
-vs= v.Version;
-vsDotPos = [strfind(vs,'.'), Inf, Inf];
-vn= str2double(vs(1:min(numel(vs),vsDotPos(2)-1)));
+if (isOctave ())
+  vn = 7;  %% use the "modern" Matlab constructs in this function.
+else
+  v = ver('matlab');
+  vs= v.Version;
+  vsDotPos = [strfind(vs,'.'), Inf, Inf];
+  vn= str2double(vs(1:min(numel(vs),vsDotPos(2)-1)));
+end
+
 
 %% Get input arguments
 
