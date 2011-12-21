@@ -30,17 +30,21 @@ S3G = orientation('axis',h,'angle',omega,odf(1).CS,odf(1).SS);
 if check_option(varargin,'allAngles')
   
   f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
-  
+  w = 1;
+ 
 else
     
   if check_option(varargin,'largestAngle')
     omega2 = angle(S3G);
     ind = abs(omega) >= omega2 - 0.00001;
+    
+    w = 1;
   else % smallest angle - default
     %omega2 = angle(S3G);
     %ind = abs(omega) <= omega2 + 0.00001;
     
     ind = checkFundamentalRegion(S3G,'onlyAngle');
+    w = numel(union(odf.CS,odf.SS));
     
   end
   
@@ -51,5 +55,5 @@ else
   
 end
 
-x = 2 * f * weight(:);
-x = x./mean(x);
+x = 2 * f * weight(:) * w;
+%x = x./mean(x);
