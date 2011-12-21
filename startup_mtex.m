@@ -266,13 +266,14 @@ addpath(pathes{:},0);
 
 % compatibility path
 if isOctave()
+  addpath(genpath(fullfile(local_path,'tools','compatibility','octave')),0);
   comp = dir(fullfile(local_path,'tools','compatibility','octave','ver*'));
 else
   comp = dir(fullfile(local_path,'tools','compatibility','ver*'));
 end
-
 for k=1:length(comp)
-  if MATLABverLessThan(comp(k).name(4:end))
+  if (isOctave() && OCTAVEverLessThan(comp(k).name(4:end))) ...
+     || MATLABverLessThan(comp(k).name(4:end))
     addpath(genpath(fullfile(local_path,'tools','compatibility',comp(k).name)),0);
   end
 end
@@ -289,6 +290,16 @@ function result = MATLABverLessThan(verstr)
 MATLABver = ver('MATLAB');
 
 toolboxParts = getParts(MATLABver(1).Version);
+verParts = getParts(verstr);
+
+result = (sign(toolboxParts - verParts) * [1; .1; .01]) < 0;
+
+end
+
+%% check Octave version 
+function result = OctaveverLessThan(verstr)
+
+toolboxParts = getParts(version ());
 verParts = getParts(verstr);
 
 result = (sign(toolboxParts - verParts) * [1; .1; .01]) < 0;
