@@ -1,4 +1,4 @@
-function  [maxTheta,maxRho,minRho,v] = getFundamentalRegionPF(cs,varargin)
+function  [maxTheta,maxRho,minRho,v,N] = getFundamentalRegionPF(cs,varargin)
 % get the fundamental region for (inverse) pole figure
 %
 %% Input
@@ -61,6 +61,39 @@ rotate = get_option(varargin,'rotate',0);
 
 minRho = mod(minRho + rotate + maxRho/2,maxRho) - rotate - maxRho/2;
 maxRho = maxRho + minRho;
+
+%% describe Fundamental region by normal to planes
+
+switch Laue(cs)
+
+  case 'm-3m' %ok
+    
+    if check_option(varargin,'antipodal')
+      N = [vector3d(1,-1,0),vector3d(-1,0,1),yvector,zvector];
+    else
+      N = [vector3d(1,-1,0),vector3d(0,-1,1),yvector,zvector];
+    end
+    
+  case 'm-3' %ok
+        
+    if check_option(varargin,'antipodal')
+      N = [vector3d(0,-1,1),vector3d(-1,0,1),xvector,yvector,zvector];
+    else
+      N = [vector3d(0,-1,1),vector3d(-1,0,1),vector3d(1,0,1),yvector,zvector];
+    end
+    
+  otherwise
+  
+    N = vector3d;
+    if maxRho-minRho < 2*pi - 0.001
+      N = axis2quat(zvector,[minRho,maxRho]) .* [yvector,-yvector];    
+    end  
+      
+    if maxTheta < pi
+      N = [N,zvector];
+    end
+    
+end
 
 end
 
