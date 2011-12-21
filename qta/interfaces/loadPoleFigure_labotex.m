@@ -21,7 +21,8 @@ try
   comment = fgetl(fid);
   % skip next lines
   fgetl(fid);
-  fgetl(fid);
+  s = fgetl(fid);
+  assert(strncmpi('Structure Code',s,14));
   
   % crystal symmetry
   s = fgetl(fid);

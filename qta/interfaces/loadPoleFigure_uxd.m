@@ -23,11 +23,10 @@ try
   h = [];
   npf = 1;
   
-  
   while ~feof(fid)
     
     % read header
-    header = textscan(fid,'_%s %q','Delimiter','=','CommentStyle',';');
+    header = textscan(fid,'_%s %q%*s%*s','Delimiter','=','CommentStyle',';');
     
     % read data
     data = textscan(fid,'%f %f');
