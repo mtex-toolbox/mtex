@@ -13,6 +13,17 @@ function plot(m,varargin)
 %% See also
 % vector3d/plot
 
+if numel(m) > 20
+  
+  if check_option(varargin,'ALL')  
+    m = symmetrise(m,'plot',varargin{:});
+  end
+  
+  plot(m.vector3d);
+  
+  return
+end
+
 % store hold status
 washold = ishold;
 label = ensurecell(get_option(varargin,'label'),numel(m));
