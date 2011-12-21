@@ -79,8 +79,8 @@ release:
 	cp -R . $(RDIR)/$(RNAME)
 	rm -rf $(RDIR)/$(RNAME)/help/tmp 
 	chmod -R a+rX $(RDIR)/$(RNAME)
-	rm -rf $(RDIR)/.hg
-	rm -rd $(RDIR)/.hg*
+	rm -rf $(RDIR)/$(RNAME)/.hg
+	rm -rd $(RDIR)/$(RNAME)/.hg*
 	find $(RDIR)/$(RNAME) -name '*~' -or -name '*.log' -or -name '*.o' -or -name '*.orig' -or -name '.directory' -or -name '*.mat' | xargs /bin/rm -rf
 	rm -f $(RDIR)/$(RNAME)/c/nsoft/test_nfsoft_adjoint
 	rm -rf $(RDIR)/$(RNAME)/help/html
