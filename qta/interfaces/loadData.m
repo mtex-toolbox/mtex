@@ -51,16 +51,20 @@ if ~isempty(varargin) && checkClass(varargin{1},'Miller')
 end
 
 % get crystal and specimen symmetry
+posCS = find(cellfun(@(x) checkClass(x,'symmetry'),varargin),2);
+
 sym = {};
-if ~isempty(varargin) && checkClass(varargin{1},'symmetry')
-  cs = varargin{1};varargin = varargin(2:end);
+if ~isempty(posCS)
+  cs = varargin{posCS(1)};
   if strcmpi(type,'ODF'), sym = {'cs',cs};end
 end
 
-if ~isempty(varargin) && checkClass(varargin{1},'symmetry')
-  ss = varargin{1};varargin = {varargin{2:end}};
+if numel(posCS) ==2
+  ss = varargin{posCS(2)};
   if strcmpi(type,'ODF'), sym = [sym,'ss',{ss}];end
 end
+
+varargin(posCS) = [];
 
 %% determine interface
 
