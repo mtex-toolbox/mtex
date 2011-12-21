@@ -52,5 +52,9 @@ for i = 1:numel(rc_sym)
 end
 
 if ~check_option(varargin,'onlyAngle')
-  disjoint(ori.CS,ori.SS)
+  sym = disjoint(ori.CS,ori.SS);
+  
+  h = Miller(vector3d(rq),sym);
+  
+  ind = ind & checkFundamentalRegion(h);
 end
