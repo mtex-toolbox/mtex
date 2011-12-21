@@ -129,8 +129,12 @@ set_mtex_option('tempdir',tempdir);
 % MTEX sometimes experences problems when printing the degree character
 % reenter the degree character here in this case
 
-degree_char = native2unicode([194 176],'UTF-8');
-%degree_char = '°';
+if isOctave()
+  degree_char = '°';
+else
+  degree_char = native2unicode([194 176],'UTF-8');
+  %degree_char = '°';
+end
 set_mtex_option('degree_char',degree_char);
 
 %% debugging
