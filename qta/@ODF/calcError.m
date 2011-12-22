@@ -12,9 +12,9 @@ function e = calcError(odf1,odf2,varargin)
 %
 %% Options
 %  L0 - measure of the orientation space where $|odf1 -- odf2|>\epsilon|
-%  L1 - L^1 error (default)
+%  L1 - L^1 error 
 %  L2 - L^2 error
-%  RP - RP  error
+%  RP - RP  error (default)
 %  resolution - resolution used for calculation of the error
 %
 %% See also

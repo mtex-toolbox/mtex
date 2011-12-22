@@ -8,10 +8,13 @@ function circle(n,omega,varargin)
 %% Options
 %
 
-if nargin < 2
-  
-  omega  = 90*degree;
+if nargin < 2, omega  = 90*degree; end
 
+if numel(n)>1
+  for i = 1:numel(n);
+    circle(n(i),omega,varargin{:});
+  end
+  return
 end
 
 if isnumeric(omega)

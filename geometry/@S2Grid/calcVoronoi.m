@@ -8,9 +8,6 @@ function [V,C] = calcVoronoi(S2G,varargin)
 %  V - list of Voronoi-Vertices
 %  C - cell array of Voronoi-Vertices per generator
 %
-%% Options
-% incomplete
-%
 %% See also
 % voronoin
 
@@ -18,7 +15,7 @@ n = numel(S2G);
 S2G = reshape(vector3d(S2G),[],1);
 
 [x,y,z] = double(S2G);
-faces = convhulln([x(:) y(:) z(:)]); % delauny triangulation on sphere
+faces = convhulln([x(:) y(:) z(:)],{'Qt','Pp','QJ'}); % delauny triangulation on sphere
 
 % voronoi-vertices
 V = normalize(cross(S2G(faces(:,3))-S2G(faces(:,1)),S2G(faces(:,2))-S2G(faces(:,1))));

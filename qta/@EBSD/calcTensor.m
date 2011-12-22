@@ -34,8 +34,10 @@ T = varargin(Tind);
 varargin(Tind) = [];
 
 % initialize avarage tensors
-TVoigt = tensor(zeros(size(T{1})));
-TReuss = tensor(zeros(size(T{1})));
+TVoigt = set(T{1},'M',zeros(size(T{1})));
+TVoigt = set(TVoigt,'CS',symmetry);
+TReuss = TVoigt;
+
 
 % get phases and populate tensors
 phases = unique(ebsd.phase)';

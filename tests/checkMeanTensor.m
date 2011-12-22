@@ -46,13 +46,17 @@ assert(norm(matrix(T_odf)-matrix(rotate(T,o)))<1e-3,'Error checking two rank ten
 
 %% define a rank 3 tensor and rotate it
 
-T = tensor(rand([3 3 3]));
+Md =[[-2.30   2.30    0      0.67    0        0  ];...
+  [     0      0    0       0    -0.67     4.60];...
+  [     0      0    0       0      0        0 ]];
+
+T = tensor(Md);
 
 o = rotation('Euler',150*degree,40*degree,35*degree);
 
 %rotate(T,o)
-%figure(1)
-%plot(rotate(T,o))
+figure(1)
+plot(rotate(T,o))
 
 %% do the same by an ODF
 
@@ -61,10 +65,22 @@ odf = unimodalODF(o,symmetry,symmetry,'halfwidth',1*degree);
 
 T_odf = calcTensor(odf,T,'Fourier');
 
-%figure(2)
-%plot(T_odf)
+figure(2)
+plot(T_odf)
 
-assert(mean(abs(reshape(matrix(T_odf-rotate(T,o)),[],1)))<1e-3,'Error checking third rank tensor!')
+assert(mean(abs(reshape(matrix(T_odf-rotate(T,o)),[],1)))<2e-3,'Error checking third rank tensor!')
+
+%% do the same by an ODF with quadrature
+
+odf = unimodalODF(o,symmetry,symmetry,'halfwidth',2*degree);
+
+
+T_odf_q = calcTensor(odf,T,'quadrature');
+
+figure(3)
+plot(T_odf_q)
+
+assert(mean(abs(reshape(matrix(T_odf_q-rotate(T,o)),[],1)))<2e-3,'Error checking third rank tensor!')
 
 %% define a rank 4 tensor and rotate it
 

@@ -100,7 +100,7 @@ switch lower(plotType)
     end
     
     rho = get_option(varargin,'density',1);
-    [vp,vs1,vs2,pp,ps1,ps2] = velocity(T,S2,rho); %#ok<NASGU>
+    [vp,vs1,vs2,pp,ps1,ps2] = velocity(T,S2,rho); %#ok<ASGLU,NASGU>
     d = eval(get_option(varargin,'velocity','pp','char'));
     
   otherwise

@@ -84,6 +84,14 @@ end
 
 varargin = delete_option(varargin,{'doubleconvention','singleconvention','InfoLevel'});
 
+%
+if check_option(varargin,'doubleconvention')
+  T.properties.doubleconvention = 'true';
+end
+
+
+varargin = delete_option(varargin,{'doubleconvention','singleconvention','InfoLevel'});
+
 % extract properties
 while ~isempty_cell(varargin)  
   T.properties.(varargin{1}) = varargin{2};
@@ -93,3 +101,20 @@ end
 % setup tensor
 superiorto('quaternion','rotation','orientation')
 T = class(T,'tensor');
+
+if ~check_option(varargin,'noCheck')
+  check_symmetry(T)
+end
+
+
+function check_symmetry(T)
+
+rot = rotation(T.CS);
+
+for i = 2:length(rot)
+  
+  if T ~= rotate(T,rot(i))
+    warning('MTEX:tensor','Tensor does not pose the right symmetry');
+    return;
+  end  
+end

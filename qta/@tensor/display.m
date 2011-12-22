@@ -13,11 +13,13 @@ elseif ~isempty(inputname(1))
   h = [inputname(1), ' = ' h];
 end;
 
-ss = size(T);
-s = [h, ' (', 'size: ' int2str(ss), ')' ];
+if ndims(T.M)>T.rank
+  ss = size(T.M);
+  h = [h, ' (', 'size: ' int2str(ss(T.rank+1:end)), ')' ];
+end
 
 % display top line
-disp(s)
+disp(h)
 
 % collect tensor properties
 props = fieldnames(T.properties);
@@ -26,7 +28,7 @@ propV = cellfun(@(prop) char(T.properties.(prop)),props,'UniformOutput',false);
 
 % add rank
 props{end+1} = 'rank'; 
-propV{end+1} = T.rank;
+propV{end+1} = [num2str(T.rank),' (' strrep(int2str(size(T)),'  ',' x ') ')'];
 
 % collect symmetry
 if numel(T.CS) > 1 || ~all(1==norm(get(T.CS,'axis')))
@@ -37,7 +39,7 @@ end
 % display all properties
 cprintf(propV(:),'-L','  ','-ic','L','-la','L','-Lr',props,'-d',': ');
 
-if numel(T.M) > prod(ss(1:T.rank)), return;end
+if ndims(T.M)>T.rank, return;end
 
 % display tensor coefficients
 disp(' ');
@@ -56,7 +58,7 @@ if (T.rank == 4) && numel(T.M) == 3^4
   M = (tensor42(T.M));
 elseif (T.rank == 3) && numel(T.M) == 3^3
   disp(['  tensor in compact matrix form:' s])
-  M = tensor32(T.M,isfield(T,'doubleconvention'));
+  M = tensor32(T.M,isfield(T.properties,'doubleconvention'));
 else
   disp(s)
   M = T.M;

@@ -123,12 +123,13 @@ setappdata(gcf,'options',extract_option(varargin,'antipodal'));
 fixMTEXscreencoordinates('axis'); %due to axis;
 set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
 
-%% set data cursor
-dcm_obj = datacursormode(gcf);
-set(dcm_obj,'SnapToDataVertex','off')
-set(dcm_obj,'UpdateFcn',{@tooltip,ebsd});
+if ~isOctave()
+  %% set data cursor
+  dcm_obj = datacursormode(gcf);
+  set(dcm_obj,'SnapToDataVertex','off')
+  set(dcm_obj,'UpdateFcn',{@tooltip,ebsd});
 
-if check_option(varargin,'cursor'), datacursormode on;end
+  if check_option(varargin,'cursor'), datacursormode on;end
 if nargout>0, varargout{1}=h; end
 
 %% Tooltip function

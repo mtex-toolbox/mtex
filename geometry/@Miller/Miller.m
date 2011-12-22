@@ -48,7 +48,7 @@ elseif isa(varargin{1},'vector3d')
     error('(0,0,0) is not a valid Miller index');
   end
   
-  v = varargin{1};
+  v = vector3d(varargin{1});
   
 elseif isa(varargin{1},'char')
   
