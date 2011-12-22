@@ -8,15 +8,13 @@ function [odf,alpha] = calcODF(pf,varargin)
 % *calcODF* supports <ghost_demo.html automatic ghost correction> and 
 % <dubna_demo.html the zero range method>.
 % The function *calcODF* has several options to control convergence,
-% resolution, smoothing, etc. See belov for a complete description.
+% resolution, smoothing, etc. See below for a complete description.
 %
 %
 %% Input
 %  pf - @PoleFigure 
 % 
 %% Options
-%  BACKGROUND        - the background radiation (default = 1)
-%  NO_BACKGROUND     - pure L^2 minimization
 %  KERNEL            - the ansatz functions (default = de la Vallee Poussin)
 %  KERNELWIDTH | HALFWIDTH - halfwidth of the ansatz functions (default = 2/3 * resolution)
 %  RESOLUTION        - localization grid for the ansatz fucntions (default = 3/2 resolution(pf))
@@ -26,10 +24,10 @@ function [odf,alpha] = calcODF(pf,varargin)
 %  REGULARIZATION    - weighting coefficient lambda (default = 0)
 %  ODF_SAVE          - save ODF simultanously 
 %  C0                - initial guess (default = [1 1 1 1 ... 1])
-%  ZERO_RANGE        - apply zero range method (default = )
-%  NOGHOSTCORRECTION - omit ghost correction
 %
 %% Flags
+%  ZERO_RANGE        - apply zero range method (default = )
+%  NOGHOSTCORRECTION - omit ghost correction
 %  ENSURE_DESCENT - stop iteration whenever no procress if observed
 %  FORCE_ITER_MAX - allway go until ITER_MAX
 %  RP_VALUES      - calculate RP values during iteration
@@ -63,7 +61,7 @@ psi = get_option(varargin,'kernel',...
   kernel('de la Vallee Poussin','HALFWIDTH',kw),'kernel');
 
 iter_max = int32(get_option(varargin,'ITER_MAX',...
-  get_mtex_option('ITER_MAX',20,'double'),'double'));
+  get_mtex_option('ITER_MAX',15,'double'),'double'));
 iter_min = int32(get_option(varargin,'ITER_MIN',10,'double'));
 
 c0 = get_option(varargin,'C0',...
@@ -104,20 +102,26 @@ r = [reshape(rrho,1,[]);reshape(rtheta,1,[])]/2/pi;
 clear rtheta;clear rrho;
 
 
-% ----------------------- WHEIGHTS ----------------------------------
+%% ---------- normalize very different polefigures --------------------
+mm = max(max(pf));
 
-if check_option(varargin,'NoQuadratureWeights')
-  w = 1;
-else
-  w = [];
+for i = 1:numel(pf)
+  
+  if mm > 5*max(pf(i)), pf(i) = pf(i) * mm/5/max(pf(i));end
+  
+end
+
+%% ----------------------- WHEIGHTS ----------------------------------
+
+% compute quadrature weights
+w = [];
+if ~check_option(varargin,'NoQuadratureWeights')
   for i = 1:numel(pf)
     ww = calcQuadratureWeights(pf(i).r);
     w = [w;ww(:)]; %#ok<AGROW>
   end
+  varargin = set_option(varargin,'WEIGHTS');
 end
-
-
-w = sqrt(w);
 
 % ------------------- REGULARIZATION -----------------------------------
 if check_option(varargin,'REGULARISATION')
@@ -128,7 +132,7 @@ else
   RM = [];
 end
 
-% --------------------- ODF testing ----------------------------------
+%% --------------------- ODF testing ----------------------------------
 orig = get_option(varargin,'ODF_TEST',[]);
 test_S3G = get_option(varargin,'TEST_GRID',S3G);
 if isempty(orig)
@@ -143,12 +147,12 @@ else
   evaldata = eval(orig,test_S3G,'EXACT'); %#ok<*GTARG>
 end
 
-% --------------------- CALCULATE FLAGS ---------------------------------
-CW_flags = {{'BACKGROUND',0},{'REGULARISATION',1},...
+%% --------------------- CALCULATE FLAGS ---------------------------------
+CW_flags = {{'WEIGHTS',0},{'REGULARISATION',1},...
   {'SAVE_ODF',5},{'RP_VALUES',6},{'FORCE_ITER_MAX',7},{'ODF_TEST',8}};
 flags = calc_flags(varargin,CW_flags);
 
-% -------------------- call c-routine -----------------------------------
+%% -------------------- call c-routine -----------------------------------
 % -----------------------------------------------------------------------
 
 vdisp('Call c-routine',varargin{:});

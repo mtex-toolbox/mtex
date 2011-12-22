@@ -21,6 +21,9 @@ h = vector3d(h);
 h = h./norm(h);
 r = r./norm(r);
 
+h = delete_option(h,'antipodal');
+r = delete_option(r,'antipodal');
+
 n = cross(h,r);
 
 ind = isnull(n);

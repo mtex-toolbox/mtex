@@ -6,9 +6,9 @@ function M = tensor32(A,doubleconvention)
 %M(:,4:end) = M(:,4:end)*2;
 
 if nargin ==2 && doubleconvention
-  fac = 1;
-else
   fac = 2;
+else
+  fac = 1;
 end
   
 
@@ -23,7 +23,9 @@ for i=1:3
         n = 9-k-j;
       end
       
-      M(i,n) = M(i,n) + A(i,j,k)./fac;
+      M(i,n) = A(i,j,k);
+      if j ~= k, M(i,n) = fac * M(i,n);end
+      
     end
   end
 end

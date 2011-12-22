@@ -27,9 +27,9 @@ if ~check_option(varargin,'noascii')
     rc = {'\t ',',.'};
   end
   
-  if check_option(varargin,'Columns')
-    options =  [options,{'NumColumns',max(get_option(varargin,'Columns'))}];
-  end
+  %if check_option(varargin,'Columns')
+  %  options =  [options,{'NumColumns',max(get_option(varargin,'Columns'))}];
+  %end
   % read data using txt2mat
   try
     if check_option(varargin,'check')

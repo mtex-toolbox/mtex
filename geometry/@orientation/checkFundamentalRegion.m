@@ -1,4 +1,4 @@
-function ind = checkFundamentalRegion(ori,varargin)
+function [ind,boundary] = checkFundamentalRegion(ori,varargin)
 % checks whether a orientation sits within the fundamental region
 %
 %% Input
@@ -10,41 +10,51 @@ function ind = checkFundamentalRegion(ori,varargin)
 %% Output
 %  ind    - indices of those orientations that are within the Fundamental region
 
-% symmetrise
-center = get_option(varargin,'center',idquaternion);
-c_sym = ori.SS *  quaternion(center) * ori.CS;
-omega = angle(c_sym * inverse(center));
-[omega,c_sym] = selectMinbyRow(omega,c_sym);
+% take the product of crystal and specimen symmetries
+%qSS = quaternion(ori.SS);
+%qCS = quaternion(ori.CS);
+c_sym = quaternion(ori.CS * ori.SS);
+
+% compute rotational axes and angles
+axes = get(c_sym(2:end),'axis');
+angles = get(c_sym(2:end),'angle');
+angles = min(angles,2*pi-angles);
+
+ind = angles < 1e-6;
+angles(ind) = [];
+axes(ind) = [];
+
+% compute for each axes the minimum rotational angle
+c_sym = quaternion;
+while numel(axes)>0
+  ind = dot(axes,axes(1),'antipodal') >= 1 - 1e-9;
+  angle = min(angles(ind));
+  
+  c_sym = [c_sym,axis2quat(axes(1),angle/2)]; %#ok<AGROW>
+  
+  axes(ind) = [];
+  angles(ind) = [];
+end
 
 % convert to rodrigues space
-rq = Rodrigues(ori); clear ori;
+rq = Rodrigues(ori);
 rc_sym = Rodrigues(c_sym); 
 
-% to remeber perpendicular planes for specimen symmetry case
-oldD = vector3d;
-
-% find rotation not part of the fundamental region
+% find rotations in the fundamental region
 ind = true(size(rq));
-for i = 2:numel(rc_sym)
-  
-  d = rc_sym(i)-rc_sym(1);
-  if norm(d)<=1e-10 % find something that is orthogonal to rc_sym    
-  
-    if length(oldD)==0
-      d = orth(rc_sym(1));
-    elseif length(oldD) == 1
-      d = cross(oldD,rc_sym(1));
-      if norm(d)<1e-5, d = orth(oldD);end
-    else
-      continue
-    end
-    oldD = [oldD,d]; %#ok<AGROW>
-    nd = 0;
-  else
-    nd = norm(d).^2 /2;
-  end
-  
-  ind = ind & dot(rq-rc_sym(1),d) <= nd;
+for i = 1:numel(rc_sym)
+    
+  d = rc_sym(i);
+  nd = norm(d).^2;
+    
+  ind = ind & abs(dot(rq,d)) <= nd + 0.000001;
   
 end
 
+if ~check_option(varargin,'onlyAngle')
+  sym = disjoint(ori.CS,ori.SS);
+  
+  h = Miller(vector3d(rq),sym);
+  
+  ind = ind & checkFundamentalRegion(h);
+end

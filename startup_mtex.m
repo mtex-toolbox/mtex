@@ -1,4 +1,4 @@
-function startup_mtex
+function startup_mtex(branch)
 % init MTEX session
 %
 % This is the startup file for MTEX. In general it is not necessary to edit
@@ -7,9 +7,35 @@ function startup_mtex
 %
 % clc
 
+% only switch branch
+if nargin == 1
+  
+  path = get_mtex_option('mtex_path');
+  
+  cd(path);
+  
+  if strcmpi(path(end-4:end),'trunk')
+    cd('..');
+  else
+    cd('../..');
+  end
+  
+  if strcmp(branch(end-4:end),'trunk')
+    cd trunk
+  else
+    cd(['branches' filesep branch]);
+  end
+  
+  startup_mtex
+  return
+  
+end
+
+%%
+
 lasterr('') %reset all errors
 
-if  MATLABverLessThan('7.1')
+if (~isOctave() && MATLABverLessThan('7.1'))
   
   error(['MTEX can not be installed because your MATLAB version ',version,...
     ' is outdated and not longer supported by MTEX. The oldest MATLAB ',...
@@ -31,10 +57,15 @@ install_mtex(local_path);
 fprintf('initialize');
 
 %read version from version file
-fid = fopen('VERSION','r');
-MTEXversion = fgetl(fid);
-fclose(fid);
-fprintf([' ' MTEXversion '  ']);
+try
+  fid = fopen('VERSION','r');
+  MTEXversion = fgetl(fid);
+  fclose(fid);
+  fprintf([' ' MTEXversion '  ']);
+catch
+  MTEXversion = 'MTEX';
+end
+
 p();
 
 %% setup search path
@@ -67,7 +98,9 @@ end
 
 disp(' done!')
 
-MTEXmenu;
+if ~isOctave() && isempty(javachk('desktop'))
+  MTEXmenu;
+end
 
 
 end
@@ -100,7 +133,7 @@ if any(strfind(path,'mtex'))
   if ~isempty(inst_dir), rmpath(inst_dir{:}); end
 end
 
-if  MATLABverLessThan('7.8')
+if (~isOctave() && MATLABverLessThan('7.8'))
   cd('..'); % leave current directory for some unknown reason
 end
 addpath(local_path);
@@ -138,7 +171,7 @@ disp('In order to see the documentation restart MATLAB or click');
 disp('start->Desktop Tools->View Source Files->Refresh Start Button');
 hline('-')
 disp(' ')
-if isempty(javachk('jvm'))
+if (~isOctave() && isempty(javachk('jvm')))
   doc; pause(0.1);commandwindow;
 end
 
@@ -227,15 +260,20 @@ pathes = cellfun(@(p) fullfile(local_path,p{:}), pathes, 'uniformoutput', false)
 addpath(pathes{:},0);
 
 % compatibility path
-comp = dir(fullfile(local_path,'tools','compatibility','ver*'));
-
+if isOctave()
+  addpath(genpath(fullfile(local_path,'tools','compatibility','octave')),0);
+  comp = dir(fullfile(local_path,'tools','compatibility','octave','ver*'));
+else
+  comp = dir(fullfile(local_path,'tools','compatibility','ver*'));
+end
 for k=1:length(comp)
-  if MATLABverLessThan(comp(k).name(4:end))
+  if (isOctave() && OCTAVEverLessThan(comp(k).name(4:end))) ...
+     || MATLABverLessThan(comp(k).name(4:end))
     addpath(genpath(fullfile(local_path,'tools','compatibility',comp(k).name)),0);
   end
 end
 
-if MATLABverLessThan('7.3'), make_bsx_mex;end
+if (~isOctave() && MATLABverLessThan('7.3')), make_bsx_mex;end
 
 %addpath_recurse(fullfile(local_path,'help','UsersGuide'));
 
@@ -247,6 +285,16 @@ function result = MATLABverLessThan(verstr)
 MATLABver = ver('MATLAB');
 
 toolboxParts = getParts(MATLABver(1).Version);
+verParts = getParts(verstr);
+
+result = (sign(toolboxParts - verParts) * [1; .1; .01]) < 0;
+
+end
+
+%% check Octave version 
+function result = OctaveverLessThan(verstr)
+
+toolboxParts = getParts(version ());
 verParts = getParts(verstr);
 
 result = (sign(toolboxParts - verParts) * [1; .1; .01]) < 0;
@@ -270,4 +318,10 @@ end
 function hline(st)
 if nargin < 1, st = '*'; end
 disp(repmat(st,1,80));
+end
+
+function result = isOctave ()
+  persistent is_octave;
+  is_octave = exist ('OCTAVE_VERSION');
+  result = is_octave;
 end

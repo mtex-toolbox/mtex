@@ -526,9 +526,7 @@ disp(['on (x,y): ' num2str( pos(1,1:2))])
 
 p = polytope(grain);
 
-  checksums = ['grain_id'  dec2hex(grain.checksum)];  
 disp(['  grain id: ' num2str(grain.id)])
-disp(['  from grainset: ' checksums ])
 disp('---------------------------------')
 disp(['  area:         ' num2str(area(p))])
 disp(['  perimeter:    ' num2str(perimeter(p))])

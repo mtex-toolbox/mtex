@@ -49,7 +49,7 @@ all: $(SUBDIRS)
 # rule for cleaning re-compilable files.
 clean:
 # rm -f c/bin/*
-	find . -name '*~' -or -name '*.log' -or -name '.directory' -or -name '*.o' -or -name '*.mex*'| xargs /bin/rm -rf
+	find . -name '*~' -or -name '*.log' -or -name '.directory' -or -name '*.o' -or -name '*.mex*' | xargs /bin/rm -rf
 
 # rule for installing as root
 install:
@@ -79,8 +79,9 @@ release:
 	cp -R . $(RDIR)/$(RNAME)
 	rm -rf $(RDIR)/$(RNAME)/help/tmp 
 	chmod -R a+rX $(RDIR)/$(RNAME)
-	find $(RDIR)/$(RNAME) -name .svn | xargs /bin/rm -rf
-	find $(RDIR)/$(RNAME) -name '*~' -or -name '*.log' -or -name '*.o' -or -name '*.orig' -or -name '.directory' | xargs /bin/rm -rf
+	rm -rf $(RDIR)/$(RNAME)/.hg
+	rm -rd $(RDIR)/$(RNAME)/.hg*
+	find $(RDIR)/$(RNAME) -name '*~' -or -name '*.log' -or -name '*.o' -or -name '*.orig' -or -name '.directory' -or -name '*.mat' | xargs /bin/rm -rf
 	rm -f $(RDIR)/$(RNAME)/c/nsoft/test_nfsoft_adjoint
 	rm -rf $(RDIR)/$(RNAME)/help/html
 

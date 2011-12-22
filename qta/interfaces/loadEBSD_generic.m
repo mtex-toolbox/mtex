@@ -129,6 +129,8 @@ if istype(names,{'Phase'})
   
   phase = d(:,layoutcol(names,{'Phase'}));
   
+  
+  %[ig,ig,phase] = unique(phase);
 else
   
   phase = ones(size(d,1),1);
