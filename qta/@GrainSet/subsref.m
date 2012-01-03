@@ -36,7 +36,7 @@ if isa(s,'double') || isa(s,'logical')
   D = any(grains.I_FDext | grains.I_FDsub,2);
   grains.F(~D,:) = 0;
   
-  [i,j,v] = find(grains.F);
+  [i,j,v] = find(double(grains.F));
   D = sparse(v,1,1,size(grains.V,1),1)>0;
   grains.V(~D,:) = 0;
   

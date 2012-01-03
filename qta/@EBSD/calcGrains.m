@@ -233,13 +233,12 @@ grainSet.A_G      = logical(A_G);
 grainSet.meanRotation = meanRotation;
 % grain.rotations    = ebsd.rotations;
 grainSet.phase        = phase;
-
 %
-grainSet.I_FDext  = logical(I_FDext);
-grainSet.I_FDsub  = logical(I_FDsub);
+grainSet.I_FDext  = I_FDext;
+grainSet.I_FDsub  = I_FDsub;
 % model.I_VE     = logical(I_VE);
-grainSet.F        = sparse(double(F));
-grainSet.V        = sparse(x_V);
+grainSet.F        = F;
+grainSet.V        = x_V;
 grainSet.options  = struct;
 
 [g,d] = find(I_DG');

@@ -49,8 +49,8 @@ switch lower(vname)
   case 'i_vg'
     
     % vertices incident to a grain V x G
-    [i,j,v] = find(grains.F);
-    I_VF = sparse(v,i,1,size(grains.V,1),size(grains.I_FDext,1));
+    [i,j,v] = find(double(grains.F));
+    I_VF = sparse(v,i,1,double(size(grains.V,1)),double(size(grains.I_FDext,1)));
     I_VG = I_VF * (grains.I_FDext|grains.I_FDsub) * grains.I_DG;
     
     varargout{1} = I_VG>0;
@@ -58,7 +58,7 @@ switch lower(vname)
   case 'i_vf'
     
     % vertices incident to a grain V x G
-    [i,j,v] = find(grains.F);
+    [i,j,v] = find(double(grains.F));
     I_VF = sparse(v,i,1,size(grains.V,1),size(grains.I_FDext,1));    
     varargout{1} = I_VF>0;
     

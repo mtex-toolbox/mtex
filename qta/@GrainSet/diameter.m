@@ -2,7 +2,7 @@ function [d] = diameter(grains)
 
 
 
-V = full(grains.V);
+V = grains.V;
 dim = size(V,2);
 
 I_VG = get(grains,'I_VG');
