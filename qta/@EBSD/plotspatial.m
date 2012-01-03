@@ -102,7 +102,7 @@ legend('off')
 
 if strcmpi(property,'phase'),
   % phase colormap
-  set(gca,'CLim',[min(ebsd.phaseMap) max(ebsd.phaseMap)]);
+  set(gca,'CLim',[min(ebsd.phaseMap) max(ebsd.phaseMap)+1]);
   colormap(hsv(numel(ebsd.phaseMap)));
   
   legend('show');
@@ -130,6 +130,7 @@ if ~isOctave()
   set(dcm_obj,'UpdateFcn',{@tooltip,ebsd});
 
   if check_option(varargin,'cursor'), datacursormode on;end
+end
 if nargout>0, varargout{1}=h; end
 
 %% Tooltip function
@@ -154,7 +155,6 @@ if ~isempty(candits)
   o = orientation(ebsd.rotations(candits),ebsd.CS{phase},ebsd.SS);
   
   minerals = get(ebsd,'minerals');
-  minerals{phase}
   txt{1} = ['Phase: ', minerals{phase},'' ];
   
   if ~ischar(ebsd.CS{phase}), ...

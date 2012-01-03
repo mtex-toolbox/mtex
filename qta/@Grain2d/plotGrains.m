@@ -17,6 +17,7 @@ for k=1:nphase
   
   [d{k},property] = calcColorCode(grains,iP,varargin{:});
 end
+isPhase = find(~cellfun('isempty',X));
 
 boundaryEdgeOrder = vertcat(X{:});
 d = vertcat(d{:});
@@ -30,15 +31,38 @@ xlabel(lx);ylabel(ly);
 
 
 h = plotFaces(boundaryEdgeOrder,V,d,varargin{:});
-
-% legend(h)
-% remove from legend for splitted patches
-% setLegend(h(2:end),'off');
-%
-
 fixMTEXplot;
+
+
+% make legend
+
+if strcmpi(property,'phase'),
+  % phase colormap
+  minerals = get(grains,'minerals');
+  phaseMap = phaseMap(isPhase);  
+  for k=1:numel(phaseMap)
+    lg(k) = patch('vertices',[0 0],'faces',[1 1],'FaceVertexCData',phaseMap(k),'facecolor','flat')
+  end  
+  set(gca,'CLim',[min(d) max(d)+1]);
+  colormap(hsv(numel(phaseMap)));  
+  legend(lg,minerals(isPhase));
+end
+
+% set appdata
+if strcmpi(property,'orientation') %&& strcmpi(cc,'ipdf')
+  setappdata(gcf,'CS',CS)
+  setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d'));
+  setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
+  setappdata(gcf,'colorcoding',lower(get_option(varargin,'colorcoding','ipdf')));
+end
+
+set(gcf,'tag','ebsd_spatial');
+setappdata(gcf,'options',extract_option(varargin,'antipodal'));
+
+%
+fixMTEXscreencoordinates('axis'); %due to axis;
 set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
-optiondraw(h,varargin{:});
+
 
 
 
