@@ -21,7 +21,8 @@ end
 xy = unique(xy,'first','rows');
 
 if size(xy,2) == 3  
-  unitCell = [calcUnitCell(xy(:,[1 2]), varargin{:});
+  unitCell = [calcUnitCell(xy(:,[1 2]), varargin{:});...
+    calcUnitCell(xy(:,[1 3]), varargin{:}); ...
     calcUnitCell(xy(:,[2 3]), varargin{:})];
   return
 end

@@ -103,7 +103,7 @@ switch dim
     
   case 3
     
-    [Dl,Dr,sz,dz,lz] = spatialdecomposition3d(x_D,'unitcell',varargin{:});
+    [Dl,Dr,sz,dz,lz] = spatialdecomposition3d(x_D,ebsd.unitCell,varargin{:});
     
     % adjacent cells, D x D
     A_D = sparse(double(Dl),double(Dr),1,d,d);
@@ -176,21 +176,25 @@ switch dim
     % construct faces as needed
     if numel(sz) == 3
       i = find(any(A_Db,2));  % voxel that are incident to grain boudaries
-      [x_V,F,I_FD] = spatialdecomposition3d(sz,uint32(i(:)),dz,lz);
+      [x_V,F,I_FD,I_FDbg] = spatialdecomposition3d(sz,uint32(i(:)),dz,lz);
     else % its voronoi decomposition
       v = sz; clear sz
       F = dz; clear dz
       I_FD  = lz; clear lz;
+      
+      D_Fbg = sum(abs(I_FD),2)==1;
+      I_FDbg = D_Fbg * I_FD;
     end
 end
 
 [ix,iy] = find(A_Db_ext);
-D_Fext  = diag(sum(I_FD(:,ix) & I_FD(:,iy),2)>0);
-D_Fbg   = diag(sum(abs(I_FD),2)==1);
-I_FDext = (D_Fext+D_Fbg)*I_FD;
+D_Fext  = diag(sum(abs(I_FD(:,ix)) & abs(I_FD(:,iy)),2)>0);
+
+D_Fbg = diag(any(I_FDbg,2));
+I_FDext = (D_Fext| D_Fbg)*I_FD;
 
 [ix,iy] = find(A_Db_int);
-D_Fsub  = diag(sum(I_FD(:,ix) & I_FD(:,iy),2)>0);
+D_Fsub  = diag(sum(abs(I_FD(:,ix)) & abs(I_FD(:,iy)),2)>0);
 I_FDsub = D_Fsub*I_FD;
 
 
@@ -242,7 +246,7 @@ grainSet.V        = x_V;
 grainSet.options  = struct;
 
 [g,d] = find(I_DG');
-ebsd.options.mis2mean = inverse(ebsd.rotations(d)).* meanRotation(g);
+ebsd.options.mis2mean = inverse(ebsd.rotations(d)).* reshape(meanRotation(g),[],1);
 
 switch dim
   case 2
