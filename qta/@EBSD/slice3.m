@@ -113,6 +113,11 @@ grid on
 view([30,15])
 
 
+if size(d,2) == 1
+  set(gca,'CLim',[min(d) max(d)]);
+end
+
+
 % make legend
 
 if strcmpi(property,'phase'),
@@ -184,7 +189,7 @@ fpos = -10;
 
 if strcmpi(get(gcf,'tag'),'ebsd_slice3')
   hSliders = findall(gcf,'Style','slider');
-  fpos = max(cellfun(@(x) x(1),get(hSliders,'position')))+10;
+  fpos = max(cellfun(@(x) x(1),ensurecell(get(hSliders,'position'))))+10;
 else
   fpos = -10;
 end
