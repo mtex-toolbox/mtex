@@ -2,7 +2,7 @@ function plotGrains(grains,varargin)
 
 
 
-V = full(get(grains,'V'));
+V = get(grains,'V');
 boundaryEdgeOrder = get(grains,'boundaryEdgeOrder');
 
 phaseMap = get(grains,'phaseMap');
