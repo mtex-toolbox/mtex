@@ -1,70 +1,46 @@
-function varargout = spatialdecomposition3d(xyz,varargin)
+function varargout = spatialdecomposition3d(x_D,varargin)
 
 
-if ~check_option(varargin,'voronoi') && size(xyz,1) > 1 %  check_option(varargin,'unitcell') && 
+if ~check_option(varargin,'voronoi') && size(x_D,1) > 1 %  check_option(varargin,'unitcell') &&
   
-  x = xyz(:,1);
-  y = xyz(:,2);
-  z = xyz(:,3);
-  clear xyz
+  unitCell = varargin{1};
   
+  dX = abs(2*unitCell([1 13 17]));
   
-  % estimate grid resolution
-  dx = get_option(varargin,'dx',estimateGridResolution(x));
-  dy = get_option(varargin,'dy',estimateGridResolution(y));
-  dz = get_option(varargin,'dz',estimateGridResolution(z));
+  % grid coordinates
+  iX = round(bsxfun(@rdivide,x_D,dX));
+  iX = 1+bsxfun(@minus,iX,min(iX));
+  
+  sz = max(iX);  %extend, number of voxels in each direction
   
   % generate a tetragonal unit cell
-  n = numel(x);
-  
-  ix = uint32(x/dx);
-  iy = uint32(y/dy);
-  iz = uint32(z/dz);  
-  clear x y z
-  
-  lx = min(ix); ly = min(iy); lz = min(iz);
-  ix = ix-lx+1; iy = iy-ly+1; iz = iz-lz+1;  % indexing of array
-  nx = max(ix); ny = max(iy); nz = max(iz);  % extend
-  
-  sz = [nx,ny,nz];
-  
-    % pointels incident to voxel
-  ixn = ix+1; iyn = iy+1; izn = iz+1; % next voxel index
-  id = 1:n;
+  id = s2i(sz,iX);
   id = [id(:) id(:)];
   
-  ixp = ix-1;  % previous voxel index
-  ex = [s2i(sz,ixp,iy,iz) s2i(sz,ixn,iy,iz)];
-  del = ixp < 1 | ixn > nx;
-  el = id(~del,:);    % left voxel of adjacency
-  er = ex(~del,:);    % right voxel of adjacency
-  clear ixp
-  
-  iyp = iy-1;
-  ex = [s2i(sz,ix,iyp,iz) s2i(sz,ix,iyn,iz)];
-  del = iyp < 1 | iyn > ny;
-  el = [el;id(~del,:)];
-  er = [er;ex(~del,:)];
-  clear iyp
-  
-  izp = iz-1;
-  ex = [s2i(sz,ix,iy,izp) s2i(sz,ix,iy,izn)];
-  del = izp < 1 | izn > nz;
-  el = [el;id(~del,:)];
-  er = [er;ex(~del,:)];
-  clear izp ex del
+  el = []; er = [];
+  for dim=1:3
+    nX = iX;    pX = iX;
+    nX(:,dim) = nX(:,dim)+1;
+    pX(:,dim) = pX(:,dim)-1;
+    
+    ex = [s2i(sz,nX) s2i(sz,pX)];
+    
+    del = pX(:,dim) < 1 | nX(:,dim) > sz(dim);
+    el = [el;id(~del,:)];
+    er = [er;ex(~del,:)];    
+  end
   
   % adjacency of voxels
   varargout{1} = el(:);
   varargout{2} = er(:);
-  clear el er 
+  clear el er
   varargout{3} = sz;
-  varargout{4} = [dx dy dz];
-  varargout{5} = [lx ly lz];
+  varargout{4} = dX;
+  varargout{5} = [0 0 0];
   
-elseif ~check_option(varargin,'voronoi') 
+elseif ~check_option(varargin,'voronoi')
   
-  sz = xyz;
+  sz = x_D;
   
   nd = prod(double(sz));
   nf = prod(double(sz+1));
@@ -80,16 +56,16 @@ elseif ~check_option(varargin,'voronoi')
   [bind{4} bf{4}] = constr(sz,[0 1 0],2,nf);
   [bind{5} bf{5}] = constr(sz,[0 0 0],4,nf);
   [bind{6} bf{6}] = constr(sz,[0 0 1],4,nf);
-
+  
   aind = unique([uint32(ind); vertcat(bind{:})]);
   [ix,iy,iz] = ind2sub(sz,aind);
   clear bind
-     
+  
   ixn = ix+1; iyn = iy+1; izn = iz+1; % next voxel index
   
   % pointels incident to voxels
   VD = [s2i(sz+1,ix,iy,iz) s2i(sz+1,ixn,iy,iz)  s2i(sz+1,ixn,iyn,iz)  s2i(sz+1,ix,iyn,iz) ....
-       s2i(sz+1,ix,iy,izn) s2i(sz+1,ixn,iy,izn) s2i(sz+1,ixn,iyn,izn) s2i(sz+1,ix,iyn,izn)];
+    s2i(sz+1,ix,iy,izn) s2i(sz+1,ixn,iy,izn) s2i(sz+1,ixn,iyn,izn) s2i(sz+1,ix,iyn,izn)];
   
   % new voxel coordinates
   vind = unique(VD(:));
@@ -97,7 +73,7 @@ elseif ~check_option(varargin,'voronoi')
   varargout{1}(vind,:) = [double(vx+lz(1)-1)*dz(1)-dz(1)/2,...
     double(vy+lz(2)-1)*dz(2)-dz(2)/2,...
     double(vz+lz(3)-1)*dz(3)-dz(3)/2];
-  clear vx vy vz dx dy dz lx ly lz  
+  clear vx vy vz dx dy dz lx ly lz
   
   % surfels incident to voxel
   FD = [s2i(sz+1,ix,iy,iz) s2i(sz+1,ixn,iy,iz) ...
@@ -118,16 +94,16 @@ elseif ~check_option(varargin,'voronoi')
   VF = zeros(nf,4,'uint32');
   VF(FD,:) = reshape(VD(:,tri),[],4);
   varargout{2} = VF;
-%   clear VD VF
+  %   clear VD VF
   
   id = repmat(double(aind(:)),1,6);
   % surfels as incidence matrix
-   
+  
   FD = double(FD);
   o = ones(size(FD));
   o(:,1:2:6) = -1;
   
-  FD = sparse(FD,id,o,6*nf,nd); 
+  FD = sparse(FD,id,o,6*nf,nd);
   varargout{3} = FD;
   
   bf = double(vertcat(bf{:}));
@@ -142,16 +118,16 @@ else
   if ~check_option(varargin,'3d')
     switch lower(augmentation)
       case 'cube'
-        v = get_option(varargin,'dx',ceil(nthroot(size(xyz,1),3)));
-        a = min(xyz);
-        b = max(xyz);
+        v = get_option(varargin,'dx',ceil(nthroot(size(x_D,1),3)));
+        a = min(x_D);
+        b = max(x_D);
         d = (b-a)./v;
         
         dx = linspace(a(1),b(1),v);
         dy = linspace(a(2),b(2),v);
         dz = linspace(a(3),b(3),v);
         
-        [x y] = meshgrid(dx,dy);        
+        [x y] = meshgrid(dx,dy);
         z1 = [x(:) y(:)];
         z2 = z1;
         z1(:,3) = a(3)- d(3);
@@ -168,43 +144,43 @@ else
         x2 = x1;
         x1(:,1) = a(1)- d(1);
         x2(:,1) = b(1)+ d(1);
-
+        
         dummy = [x1; x2; y1; y2; z1; z2];
       case 'sphere'
-        dx = (max(xyz(:,1)) - min(xyz(:,1)));
-         dy = (max(xyz(:,2)) - min(xyz(:,2)));
-         dz = (max(xyz(:,3)) - min(xyz(:,3)));
-
-         [x y z] = sphere;
-
-         dummy = [x(:).*dx+dx/2+min(xyz(:,1)) ...
-           y(:).*dy+dy/2+min(xyz(:,2)) ...
-           z(:).*dz+dz/2+min(xyz(:,3)) ];
-
-         dummy = unique(dummy,'rows');
+        dx = (max(x_D(:,1)) - min(x_D(:,1)));
+        dy = (max(x_D(:,2)) - min(x_D(:,2)));
+        dz = (max(x_D(:,3)) - min(x_D(:,3)));
+        
+        [x y z] = sphere;
+        
+        dummy = [x(:).*dx+dx/2+min(x_D(:,1)) ...
+          y(:).*dy+dy/2+min(x_D(:,2)) ...
+          z(:).*dz+dz/2+min(x_D(:,3)) ];
+        
+        dummy = unique(dummy,'rows');
       otherwise
         error('wrong augmentation option')
     end
   else
-     dx = (max(xy(:,1)) - min(xy(:,1)));
-     dy = (max(xy(:,2)) - min(xy(:,2)));
-     dz = (max(xy(:,3)) - min(xy(:,3)));
-     
-     [x y z] = sphere;
-     
-     dummy = [x(:).*dx+dx/2 ...
-       y(:).*dy+dy/2 ...
-       z(:).*dz+dz/2 ];
-     
-     dummy = unique(dummy,'rows');
-       
+    dx = (max(xy(:,1)) - min(xy(:,1)));
+    dy = (max(xy(:,2)) - min(xy(:,2)));
+    dz = (max(xy(:,3)) - min(xy(:,3)));
+    
+    [x y z] = sphere;
+    
+    dummy = [x(:).*dx+dx/2 ...
+      y(:).*dy+dy/2 ...
+      z(:).*dz+dz/2 ];
+    
+    dummy = unique(dummy,'rows');
+    
   end
-  n = size(xyz,1);
-  xyz = [xyz; dummy];
-  [v c] = voronoin(xyz,{'Q7','Q8','Q5','Q3','Qz'});   %Qf {'Qf'} ,{'Q7'}
+  n = size(x_D,1);
+  x_D = [x_D; dummy];
+  [v c] = voronoin(x_D,{'Q7','Q8','Q5','Q3','Qz'});   %Qf {'Qf'} ,{'Q7'}
   c(end-length(dummy)+1:end) = [];
   
-  FD = cell(numel(c),1); VF = FD; % preallocate  
+  FD = cell(numel(c),1); VF = FD; % preallocate
   for k=1:numel(c)
     vertex = c{k}; s = [];
     tri = convhulln(v(vertex,:));
@@ -224,7 +200,7 @@ else
   
   varargout{3} = v;
   varargout{4} = VF;
-  varargout{5} = FD;  
+  varargout{5} = FD;
 end
 
 function [bind,bf] = constr(sz,s,d,n)
@@ -243,23 +219,19 @@ switch d
 end
 
 [bx by bz] = meshgrid(dx(1):dx(2),dy(1):dy(2),dz(1):dz(2));
-bind = s2i(sz,bx(:),by(:),bz(:));  
+bind = s2i(sz,bx(:),by(:),bz(:));
 
 [ix,iy,iz] = ind2sub(sz,bind);
 bf = s2i(sz+1,ix+s(1),iy+s(2),iz+s(3))+d*n;
-  
-  
+
+
 
 function ndx = s2i(sz,ix,iy,iz)
 % faster version of sub2ind
-ndx = 1 + (ix-1) + (iy-1)*sz(1) +(iz-1)*sz(1)*sz(2);
-
-
-
-function varargout = estimateGridResolution(varargin)
-
-for k=1:numel(varargin)
-  dx = diff(varargin{k});
-  varargout{k} = min(dx(dx>0));
+if nargin == 4
+  ndx = 1 + (ix-1) + (iy-1)*sz(1) +(iz-1)*sz(1)*sz(2);
+elseif nargin == 2 && size(ix,2) == 3
+  ndx = 1 + (ix(:,1)-1) + (ix(:,2)-1)*sz(1) +(ix(:,3)-1)*sz(1)*sz(2);
 end
+
 
