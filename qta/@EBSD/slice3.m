@@ -1,4 +1,4 @@
-function slice3(ebsd,varargin)
+function varargout = slice3(ebsd,varargin)
 % plot ebsd data as slices
 
 %% options
@@ -29,7 +29,7 @@ varargin = set_default_option(varargin,...
 X = [ebsd.options.x(:) ebsd.options.y(:) ebsd.options.z(:)];
 Xmin = min(X); Xmax = max(X);
 
-dX = abs(2*ebsd.unitCell([1 9 13]));
+dX = abs(2*ebsd.unitCell([1 13 17]));
 
 % grid coordinates
 iX = round(bsxfun(@rdivide,X,dX));
@@ -58,7 +58,7 @@ if any(sliceType == 'x')
   n = n+1;
   % patch object
   [x,y,z] = meshgrid(0,g(2),g(3));
-  [obj(n).Vertices(:,[2 3]) obj(n).Faces] = generateUnitCells([y(:) z(:)],ebsd.unitCell(5:end,:),varargin{:});
+  [obj(n).Vertices(:,[2 3]) obj(n).Faces] = generateUnitCells([y(:) z(:)],ebsd.unitCell(9:end,:),varargin{:});
   % color&pos-fun
   [xi,yi,zi] = meshgrid(0,1:sz(2),1:sz(3));
   plane(n).fun = @(p) d(s2i3(sz,interp(p,sz(1)),yi,zi),:);
@@ -70,7 +70,7 @@ if any(sliceType == 'y')
   n = n+1;
   % patch object
   [x,y,z] = meshgrid(g(1),0,g(3));
-  [obj(n).Vertices(:,[1 3]) obj(n).Faces] = generateUnitCells([x(:) z(:)],ebsd.unitCell(5:end,:),varargin{:});
+  [obj(n).Vertices(:,[1 3]) obj(n).Faces] = generateUnitCells([x(:) z(:)],ebsd.unitCell(5:8,:),varargin{:});
   % color&pos-fun
   [xi,yi,zi] = meshgrid(1:sz(1),0,1:sz(3));
   plane(n).fun = @(p) d(s2i3(sz,xi,interp(p,sz(2)),zi),:);
@@ -145,6 +145,10 @@ end
 set(gcf,'tag','ebsd_slice3');
 setappdata(gcf,'options',extract_option(varargin,'antipodal'));
 
+
+if nargout > 0 
+  varargout{1} = hSlicer;
+end
 
 
 function sliceIt(ev,v,hSlicer,plane)

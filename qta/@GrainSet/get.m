@@ -62,6 +62,11 @@ switch lower(vname)
     I_VF = sparse(v,i,1,size(grains.V,1),size(grains.I_FDext,1));    
     varargout{1} = I_VF>0;
     
+  case 'i_fg'
+    
+    I_FD = grains.I_FDext | grains.I_FDsub;
+    varargout{1} = I_FD*double(grains.I_DG);    
+    
   case 'phase'
     
     phaseMap = get(grains,'phaseMap');
