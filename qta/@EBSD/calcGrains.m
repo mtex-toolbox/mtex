@@ -172,6 +172,8 @@ A_Db_ext = A_Db - A_Db_int;                        % adjacent over grain boundra
 
 % now do
 switch dim
+  case 2
+    I_FDbg = diag(sum(I_FD,2)==1)*I_FD;
   case 3
     % construct faces as needed
     if numel(sz) == 3
