@@ -27,3 +27,8 @@ else
   
 end
 
+if get_mtex_option('mtexMethodsAdvise',true)
+  disp(['    <a href="matlab:docmethods(' inputname(1) ')">Methods</a>'])
+  disp(' ')
+end
+

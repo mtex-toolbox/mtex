@@ -48,4 +48,9 @@ disp(' ');
 for i = 1:length(pf)
   disp(['  ',char(pf(i),'short')]);
 end
+
+if get_mtex_option('mtexMethodsAdvise',true)
+  disp(' ')
+  disp(['    <a href="matlab:docmethods(' inputname(1) ')">Methods</a>'])
+end
 disp(' ');

@@ -52,5 +52,9 @@ end
 % display all properties
 cprintf(propV(:),'-L','  ','-ic','L','-la','L','-Lr',props,'-d',': ');
 
+if get_mtex_option('mtexMethodsAdvise',true)
+  disp(' ')
+  disp(['    <a href="matlab:docmethods(' inputname(1) ')">Methods</a>'])
+end
 disp(' ');
 
