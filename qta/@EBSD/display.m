@@ -19,8 +19,9 @@ end
 
 disp(h)
 
+
 if numel(ebsd)>0 && ~isempty(fields(ebsd.options))
-  disp(['  properties: ',option2str(fields(ebsd.options))]);
+  disp(['  Properties: ',option2str(fields(ebsd.options))]);
 end
 
 
@@ -56,10 +57,14 @@ end
 
 if numel(ebsd)>0
   cprintf(matrix,'-L','  ','-Lc',...
-    {'phase' 'orientations' 'mineral'  'symmetry' 'crystal reference frame'},...
+    {'Phase' 'Orientations' 'Mineral'  'Symmetry' 'Crystal reference frame'},...
     '-ic','F');
 end
 
+if get_mtex_option('mtexMethodsAdvise',true)
+  disp(' ')
+  disp(['    <a href="matlab:docmethods(' inputname(1) ')">Methods</a>'])
+end
 disp(' ');
 
 if numel(ebsd) <= 20

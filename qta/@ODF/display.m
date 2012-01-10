@@ -15,7 +15,7 @@ end;
 if isempty(odf)
   disp([h,doclink('ODF_index','ODF')]);
   disp(' ');
-  return  
+  return
 end
 
 csss = {'sample symmetry ','crystal symmetry'};
@@ -36,7 +36,7 @@ if ~isempty(odf(1).comment), h = [h ' (' odf(1).comment ')']; end
 
 disp(h);
 
-%% display symmtries and minerals  
+%% display symmtries and minerals
 disp(['  ' csss{isCS(cs)+1} ': ', char(cs,'verbose')]);
 disp(['  ' csss{isCS(ss)+1} ': ',char(ss,'verbose')]);
 
@@ -44,16 +44,16 @@ disp(['  ' csss{isCS(ss)+1} ': ',char(ss,'verbose')]);
 disp(' ');
 for i = 1:length(odf)
   if check_option(odf(i),'UNIFORM')
-    disp('  Uniform portion:');    
+    disp('  Uniform portion:');
   elseif check_option(odf(i),'Fourier')
-    disp('  Portion specified by Fourier coefficients:');    
+    disp('  Portion specified by Fourier coefficients:');
   elseif check_option(odf(i),'FIBRE')
     disp('  Fibre symmetric portion:');
     disp(['    kernel: ',char(odf(i).psi)]);
     disp(['    center: ',char(odf(i).center{1}),'-',char(odf(i).center{2})]);
   elseif check_option(odf(i),'Bingham')
     disp('  Bingham portion:');
-    disp(['     kappa: ',xnum2str(odf(i).psi)]); 
+    disp(['     kappa: ',xnum2str(odf(i).psi)]);
   else
     disp('  Radially symmetric portion:');
     disp(['    kernel: ',char(odf(i).psi)]);
@@ -63,5 +63,11 @@ for i = 1:length(odf)
     disp(['    degree: ',int2str(dim2deg(length(odf(i).c_hat)))]);
   end
   disp(['    weight: ',num2str(sum(odf(i).c(:)))]);
+  
+  if get_mtex_option('mtexMethodsAdvise',true)
+    disp(' ')
+    disp(['    <a href="matlab:docmethods(' inputname(1) ')">Methods</a>'])
+  end
+  
   disp(' ');
 end

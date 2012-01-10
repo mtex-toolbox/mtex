@@ -22,7 +22,7 @@ disp(h)
 
 properties = fields(grains.options);
 if any(grains) && ~isempty(properties)
-  disp(['  properties: ',option2str(properties)]);
+  disp(['  Properties: ',option2str(properties)]);
 end
 
 CS        = get(grains,'CSCell');
@@ -35,7 +35,7 @@ for ip = 1:numel(phaseMap)
   
   % phase
   matrix{ip,1} = num2str(phaseMap(ip)); %#ok<*AGROW>
-
+  
   % grains
   matrix{ip,2} = int2str(nnz(grains.phase == ip));
   
@@ -52,7 +52,7 @@ for ip = 1:numel(phaseMap)
   else
     % mineral
     matrix{ip,4} = char(get(CS{ip},'mineral'));
-  end 
+  end
   
   % symmetry
   matrix{ip,5} = get(CS{ip},'name');
@@ -64,12 +64,16 @@ end
 
 if any(grains)
   cprintf(matrix,'-L','  ','-Lc',...
-    {'phase' 'grains' 'orientations' 'mineral'  'symmetry' 'crystal reference frame'},...
+    {'Phase' 'Grains' 'Orientations' 'Mineral'  'Symmetry' 'Crystal reference frame'},...
     '-ic','F');
 else
   disp('  GrainSet is empty!')
 end
 
+if get_mtex_option('mtexMethodsAdvise',true)
+  disp(' ')
+  disp(['    <a href="matlab:docmethods(' inputname(1) ')">Methods</a>'])
+end
 disp(' ');
 
 % if numel(grains) <= 20
