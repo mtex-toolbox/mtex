@@ -19,18 +19,16 @@ for k=1:nphase
 end
 isPhase = find(~cellfun('isempty',X));
 
-boundaryEdgeOrder = vertcat(X{:});
-d = vertcat(d{:});
-
 
 newMTEXplot;
+boundaryEdgeOrder = vertcat(X{:});
 [V(:,1),V(:,2),lx,ly] = fixMTEXscreencoordinates(V(:,1),V(:,2),varargin{:});
 
 % set direction of x and y axis
 xlabel(lx);ylabel(ly);
 
 
-h = plotFaces(boundaryEdgeOrder,V,d,varargin{:});
+h = plotFaces(boundaryEdgeOrder,V,vertcat(d{:}),varargin{:});
 fixMTEXplot;
 
 
@@ -38,19 +36,19 @@ fixMTEXplot;
 
 if strcmpi(property,'phase'),
   % phase colormap
+  lg = [];
+  for k=1:numel(d)
+    if ~isempty(d{k})
+    	lg = [lg patch('vertices',[0 0],'faces',[1 1],'FaceColor',d{k}(1,:))];
+    end
+  end
   minerals = get(grains,'minerals');
-  phaseMap = phaseMap(isPhase);  
-  for k=1:numel(phaseMap)
-    lg(k) = patch('vertices',[0 0],'faces',[1 1],'FaceVertexCData',phaseMap(k),'facecolor','flat')
-  end  
-  set(gca,'CLim',[min(d) max(d)+1]);
-  colormap(hsv(numel(phaseMap)));  
   legend(lg,minerals(isPhase));
 end
 
 % set appdata
 if strcmpi(property,'orientation') %&& strcmpi(cc,'ipdf')
-  setappdata(gcf,'CS',CS)
+  setappdata(gcf,'CS', get(grains,'CSCell'))
   setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d'));
   setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
   setappdata(gcf,'colorcoding',lower(get_option(varargin,'colorcoding','ipdf')));

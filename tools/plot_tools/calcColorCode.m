@@ -21,6 +21,15 @@ elseif isa(prop,'char')
         d = orientation2color(o,lower(get_option(varargin,'colorcoding','ipdf')),varargin{:});
       end
       
+    case 'phase'
+      
+      cmap = get_mtex_option('phaseColorMap');
+      
+      phase = get(obj,'phase');     
+
+      d = ones(numel(phase),3);
+      d(phase>0,:)   = cmap(phase(phase>0),:); 
+      
     case lower(get(obj))
       
       d = get(obj,prop);
