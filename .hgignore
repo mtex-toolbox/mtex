@@ -17,3 +17,5 @@ VERSION
 *.orig
 *.rej
 help/mtex/demos\.xml
+help/html/*
+help/tmp/*
