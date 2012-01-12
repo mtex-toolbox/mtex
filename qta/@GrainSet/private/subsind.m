@@ -8,14 +8,13 @@ for i = 1:length(subs)
 
   if ischar(subs{i}) || iscellstr(subs{i})
 
-    min = ensurecell(subs{i});
-
-    minerals = get(grains,'minerals');
+    miner = ensurecell(subs{i});
+    minerals = get(ebsd,'minerals');
     phases = false(1,numel(minerals));
-    for j =1:length(min)
-      phases = phases | strncmpi(minerals,min{j},length(min{j}));
-    end
     
+    for k=1:numel(miner)
+      phases = phases | ~cellfun('isempty',regexpi(minerals,miner{k}));
+    end 
     ind = ind & phases(grains.phase(:).');
 
 %   elseif isa(subs{i},'grain')
