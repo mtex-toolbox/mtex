@@ -9,7 +9,7 @@ for i = 1:length(subs)
   if ischar(subs{i}) || iscellstr(subs{i})
 
     miner = ensurecell(subs{i});
-    minerals = get(ebsd,'minerals');
+    minerals = get(grains,'minerals');
     phases = false(1,numel(minerals));
     
     for k=1:numel(miner)
@@ -23,7 +23,9 @@ for i = 1:length(subs)
 
   elseif isa(subs{i},'logical')
 
-    ind = ind & reshape(subs{i},size(ind));
+    sub = any(subs{i}, find(size(subs{i}')==max(size(ind))));
+    
+    ind = ind & reshape(sub,size(ind));
 
   elseif isnumeric(subs{i})
 
