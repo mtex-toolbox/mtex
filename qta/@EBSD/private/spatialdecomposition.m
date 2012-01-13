@@ -80,9 +80,9 @@ if ischar(augmentation)
       
   end
   
-elseif isa(augmentation,'polygon')
+elseif isa(augmentation,'double')
   
-  boundingX = get(augmentation,'X');
+  boundingX = augmentation;
   
 end
 
