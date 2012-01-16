@@ -61,11 +61,7 @@ if numel(ebsd)>0
     '-ic','F');
 end
 
-if get_mtex_option('mtexMethodsAdvise',true)
-  disp(' ')
-  disp(['    <a href="matlab:docmethods(' inputname(1) ')">Methods</a>'])
-end
-disp(' ');
+disp(docmethods(inputname(1)));
 
 if numel(ebsd) <= 20
   fn = fields(ebsd.options);
