@@ -19,8 +19,8 @@ switch lower(coloring)
   case model(1)
     c = euler2rgb(o,varargin{:});
   case model(2)
-    c = angle(o).';
-    c = 1-repmat(( c-min(c) )./ (max(c)-min(c)),1,3);
+    c = angle(o(:))./degree;
+%     c = 1-repmat(( c-min(c) )./ (max(c)-min(c)),1,3);
   case model(3)
     c = sigma2rgb(o,varargin{:});
   case model(4)
@@ -59,4 +59,6 @@ switch lower(coloring)
     error('Unknown Colorcoding')
 end
 
-c = reshape(c,[],3);
+if 3*numel(c) == numel(o)
+  c = reshape(c,[],3);
+end
