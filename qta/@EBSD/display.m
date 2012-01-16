@@ -59,11 +59,13 @@ if numel(ebsd)>0
   cprintf(matrix,'-L','  ','-Lc',...
     {'Phase' 'Orientations' 'Mineral'  'Symmetry' 'Crystal reference frame'},...
     '-ic','F');
+else
+  disp('  EBSD is empty!')
 end
 
 disp(docmethods(inputname(1)));
 
-if numel(ebsd) <= 20
+if 0 < numel(ebsd) && numel(ebsd) <= 20
   fn = fields(ebsd.options);
   d = zeros(sum(numel(ebsd)),numel(fn));
   for j = 1:numel(fn)

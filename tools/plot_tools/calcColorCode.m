@@ -2,7 +2,12 @@ function [d,prop] = calcColorCode(obj,subset,varargin)
 
 prop = get_option(varargin,'property','orientation',{'char','double'});
 
-obj = obj(subset);
+if isempty(subset) || (numel(subset) == 1 && subset == 0)
+  d = [];
+  return
+else
+  obj = obj(subset);
+end
 
 if numel(obj) == 0  % empty object
   
