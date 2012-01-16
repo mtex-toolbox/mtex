@@ -1,11 +1,11 @@
 function varargout = docmethods(obj)
 
 
-if nargout > 0
+if nargout > 0 && ischar(obj)
   
-  if ischar(obj) && evalin('base',['exist(''' obj ''',''var'')']) && ...
+  if evalin('base',['exist(''' obj ''',''var'')']) && ...
       get_mtex_option('mtexMethodsAdvise',true) && ...
-      ~get_mtex_option('generate_help')
+      ~get_mtex_option('generate_help',false)
     
     varargout{1} = [sprintf('\n') '    <a href="matlab:docmethods(' obj ')">Methods</a>' sprintf('\n')];
     
