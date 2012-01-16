@@ -9,23 +9,18 @@ function [grains ebsd] = segment2d(ebsd,varargin)
 %  ebsd    - connected @EBSD data
 %
 %% Options
-%  threshold     - array of threshold angles per phase of mis/disorientation in radians
-%  property      - angle (default) or property of @EBSD data
-%  augmentation  - bounds the spatial domain
+%  threshold|angle - array of threshold angles per phase of mis/disorientation in radians
+%  property        - angle (default) or property of @EBSD data
+%  augmentation    - bounding of the spatial domain
 %
-%    * |'cube'|
-%    * |'cubeI'|
-%    * |'sphere'|
+%    * |'cube'| 
+%    * |'hull'|  
 %
-%  angletype     -
 %
-%    * |'misorientation'| (default)
-%    * |'disorientation'|
-%
-%  distance      - maximum distance allowed between neighboured measurments
+%  distance        - maximum distance allowed between neighboured measurments
 %
 %% Flags
-%  unitcell     - omit voronoi decomposition and treat a unitcell lattice
+%  unitCell     - omit voronoi decomposition and treat a unitcell lattice
 %
 %% Example
 %   mtexdata aachen
@@ -65,7 +60,7 @@ ebsd = subsref(ebsd,m);
 
 %% grid neighbours
 
-[neighbours vert cells] = neighbour(xy, varargin{:});
+[neighbours vert cells] = neighbour(xy,ebsd.unitCell , varargin{:});
 [sm sn] = size(neighbours); %preserve size of sparse matrices
 [ix iy]= find(neighbours);
 
@@ -80,6 +75,7 @@ if check_option(varargin,'distance')
 else
   distance = neighbours;
 end
+
 
 
 %% disconnect by phase
@@ -290,15 +286,15 @@ for i = n:-1:1,
 end;
 
 
-function [F v c] = neighbour(xy,varargin)
+function [F v c] = neighbour(xy,unitCell,varargin)
 % voronoi neighbours
 
-[v c] = spatialdecomposition(xy,'voronoi',varargin{:});
+[v c] = spatialdecomposition(xy,unitCell,varargin{:});
 
 il = cat(2,c{:});
 jl = zeros(1,length(il));
 
-cl = cellfun('length',c);
+cl = cellfun('prodofsize',c);
 ccl = [ 0 ;cumsum(cl)];
 
 if ~check_option(varargin,'unitcell')
@@ -332,7 +328,6 @@ end
 % vertice map
 T = sparse(jl,il,1);
 clear jl il ccl
-T(:,1) = 0; %inf
 
 %edges
 F = T * T';

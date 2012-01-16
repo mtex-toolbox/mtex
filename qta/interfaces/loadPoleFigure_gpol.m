@@ -33,13 +33,13 @@ fclose(fid);
 d = A(position) == 2^bytes-1;
 A(position(d)) = intensity(d);
 
-[ix iy data] = find(reshape(A,rows,cols)');
-ix = (ix-cols/2);
-iy = (iy-rows/2);
+[ix iy data] = find(reshape(A,rows,cols));
+ix = (ix-cols/2-.5);
+iy = (iy-rows/2-.5);
 
-rho = atan2(iy,ix)+pi;                            % beta
+rho = -atan2(iy,ix);                          % beta
 if strfind(lower(type),'stereo')
-  theta = 2*atan(sqrt(ix.^2+iy.^2)./(rows/2));
+  theta = 2*atan(sqrt(ix.^2+iy.^2)./(rows/2-1));
 else  % other projections
   
 end

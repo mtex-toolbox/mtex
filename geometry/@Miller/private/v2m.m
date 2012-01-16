@@ -28,16 +28,21 @@ mv = M \ v;
 mbr = selectMaxbyColumn(abs(mv));
 mv = mv * diag(1./mbr);
 
+tol = get_option(varargin,'tolerance',1*degree);
+maxHKL = get_option(varargin,'maxHKL',9);
+
 hkl = zeros(numel(m),3);
 for im = 1:numel(m)
 
-  mm = mv(:,im) * (1:20);
-  e = sum(abs(mm-round(mm)));
+  mm = mv(:,im) * (1:maxHKL);
+  rm = round(mm);
+  e = sum(mm ./ repmat(sqrt(sum(mm.^2,1)),3,1) .* rm ./ repmat(sqrt(sum(rm.^2,1)),3,1));
     
-  j = find(e<10e-4,1,'first');
-    
-  if ~isempty(j)
-    hkl(im,:) = round(mm(:,j));
+  e = round(e*1e7);
+  [e,j] = sort(e,'descend');
+      
+  if e(1) > 1e7*cos(tol)
+    hkl(im,:) = round(mm(:,j(1)));
   else
     hkl(im,:) = round(mv(:,im)*1000)/1000;
   end

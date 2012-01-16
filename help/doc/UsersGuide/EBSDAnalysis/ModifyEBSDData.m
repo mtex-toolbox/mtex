@@ -138,7 +138,7 @@ plot(ebsd_corrected)
 % measuremens we have first to reconstruct grains from the EBSD
 % measurements using the command <EBSD.calcGrains.html segment2d>
 
-[grains,ebsd_corrected] = calcGrains(ebsd_corrected,'threshold',10*degree)
+grains = calcGrains(ebsd_corrected,'threshold',10*degree)
 
 %%
 % The histogram of the grainsize shows that there a lot of grains
@@ -149,21 +149,31 @@ hist(grainSize(grains),50)
 %%
 % Lets find all grains containing at least 5 measurements
 
-large_grains = grains(grainSize(grains) >= 5)
+large_grains = grains(grainSize(grains) >= 5 )
 
 %%
-% and remove all EBSD measurements not belonging to these grains
+% It is also possible to select different grains by size and phase.
+% e.g. not indexed grains with more than 20 measurments, iron grains with
+% more than 5 measurments and at last all magnesium grains by the following
 
-ebsd_corrected = ebsd_corrected(large_grains)
+large_grains = grains( ...
+  (grains('notIndexed') & grainSize(grains)>=20) |...
+  (grains('fe') & grainSize(grains)>=5 ) | grains('mg'))
 
-plot(ebsd_corrected)
+
+%%
+% we can access the EBSD measurements belonging to these large grains by
+
+ebsd_corrected = get(large_grains,'EBSD')
+
+plot(ebsd_corrected,'property','phase')
 
 %% 
 % Now reconstruct again grains in our reduced EBSD data set
 
-[grains_corrected,ebsd_corrected] = calcGrains(ebsd_corrected,'threshold',10*degree)
+grains_corrected = calcGrains(ebsd_corrected,'threshold',10*degree)
 
-plot(grains_corrected)
+plot(grains_corrected,'property','phase')
 
 %%
 % we observe that there are no small grains anymore

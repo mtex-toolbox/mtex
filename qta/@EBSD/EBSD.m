@@ -23,6 +23,7 @@ function ebsd = EBSD(varargin)
 %% See also
 % ODF/calcEBSD EBSD/calcODF loadEBSD
 
+
 if nargin==1 && isa(varargin{1},'EBSD') % copy constructor
   ebsd = varargin{1};
   return
@@ -34,52 +35,51 @@ ebsd.comment = [];
 
 ebsd.comment = get_option(varargin,'comment',[]);
 ebsd.rotations = rotations(:);
-ebsd.phase = get_option(varargin,'phase',ones(numel(ebsd.rotations),1));
+[ebsd.phaseMap,ignore,ebsd.phase] =  unique(...
+  get_option(varargin,'phase',ones(numel(ebsd.rotations),1))...
+  );
+
 
 % if all phases are zero replace them by 1
 if all(ebsd.phase == 0), ebsd.phase = ones(numel(ebsd.rotations),1);end
 
 % take symmetry from orientations
 if nargin >= 1 && isa(varargin{1},'orientation')
-
+  
   ebsd.SS = get(varargin{1},'SS');
   ebsd.CS = {get(varargin{1},'CS')};
-
+  
 else
-
+  
   % specimen symmetry
   if nargin >= 3 && isa(varargin{3},'symmetry') && ~isCS(varargin{3})
     ebsd.SS = varargin{3};
   else
     ebsd.SS = get_option(varargin,'SS',symmetry);
   end
-
+  
   % set up crystal symmetries
   if check_option(varargin,'cs')
     CS = ensurecell(get_option(varargin,'CS',{}));
   elseif nargin >= 2 && ((isa(varargin{2},'symmetry') && isCS(varargin{2}))...
-      || (isa(varargin{2},'cell') && isa(varargin{2}{1},'symmetry')))
+      || (isa(varargin{2},'cell') && any(cellfun('isclass',varargin{2},'symmetry'))))
     CS = ensurecell(varargin{2});
   else
     CS = {};
   end
-
-  % spread crystal symmetries over phases
-  phases = unique(ebsd.phase);
-  if numel(CS) < max(phases)
-    if numel(CS) < numel(phases)
-      if isempty_cell(CS), CS = {symmetry('cubic')};end
-      CS = repmat(CS(1),1,max(ebsd.phase));
-    else
-      CSS(phases) = CS;
-      CS = CSS;
-    end
+  
+  notIndexedPhase = get_option(varargin,{'ignorePhase','notIndexed'},[]);
+  notIndexed = ismember(ebsd.phaseMap,notIndexedPhase);
+  if numel(CS) == nnz(ebsd.phaseMap) || numel(CS) == 1
+    CS(~notIndexed) = CS;
+    CS(notIndexed) = {'not indexed'};
+  else
+    error('symmetry mismatch')
   end
+  
   ebsd.CS = CS;
-
+  
 end
-
-
 
 ebsd.options = get_option(varargin,'options',struct);
 ebsd.unitCell = get_option(varargin,'unitCell',[]);

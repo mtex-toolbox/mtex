@@ -17,9 +17,13 @@ for i = 1:length(m)
 
   else
     
-    hkl = v2m(subsref(m,i));
-
-    s = barchar(hkl,varargin{:});
+    hkl = v2m(subsref(m,i),varargin{:});
+    
+    if all(round(hkl)==hkl)
+      s = barchar(hkl,varargin{:});
+    else
+      s = '---';
+    end
     
     if ~check_option(varargin,'NO_SCOPES')
       s = ['(',s,')']; %#ok<AGROW>

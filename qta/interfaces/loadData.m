@@ -111,9 +111,8 @@ if strcmpi(type,'EBSD') && check_option(varargin,'3d')
     data{k} = set(data{k},'z',repmat(Z(k),numel(data{k}),1)); %#ok<AGROW>
   end
   data = [data{:}];
+  data = set(data,'unitCell',calcUnitCell(get(data,'xyz'),varargin{:}));
 end
-
-
 
 %% set crystal and specimen symmetry, specimen direction and comments
 if ~strcmpi(type,'tensor')
@@ -157,6 +156,17 @@ end
 
 function v = checkClass(var,className)
 
-if iscell(var) && ~isempty(var), var = var{1};end
-v = isa(var,className);
+if iscell(var) && ~isempty(var), 
+  v = any(cellfun('isclass',var,className));
+else
+  v = isa(var,className);
+end
+
+
+
+
+
+
+
+
 

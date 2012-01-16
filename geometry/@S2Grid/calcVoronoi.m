@@ -5,8 +5,8 @@ function [V,C] = calcVoronoi(S2G,varargin)
 %  S2G - @S2Grid
 %
 %% Output
-%  V - list of Voronoi Vertices
-%  C - cell array of Voronoi Vertices per generator
+%  V - list of Voronoi--Vertices
+%  C - cell array of Voronoi--Vertices per generator
 %
 %% See also
 % voronoin

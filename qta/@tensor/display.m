@@ -76,6 +76,12 @@ end
 
 cprintf(M,'-L',' ','-ic','|F');
 
+
+if get_mtex_option('mtexMethodsAdvise',true)
+  disp(' ')
+  disp(['    <a href="matlab:docmethods(' inputname(1) ')">Methods</a>'])
+end
+disp(' ')
   
 
 

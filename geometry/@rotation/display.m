@@ -11,5 +11,10 @@ if numel(rot) < 30 && numel(rot)>0
 else
   
   disp(' ');
+  
+end
 
+if get_mtex_option('mtexMethodsAdvise',true)
+  disp(['    <a href="matlab:docmethods(' inputname(1) ')">Methods</a>'])
+  disp(' ')
 end

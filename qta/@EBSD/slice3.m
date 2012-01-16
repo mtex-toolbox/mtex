@@ -1,4 +1,4 @@
-function slice3(ebsd,varargin)
+function varargout = slice3(ebsd,varargin)
 % plot ebsd data as slices
 
 %% options
@@ -10,8 +10,13 @@ function slice3(ebsd,varargin)
 % make up new figure
 newMTEXplot;
 
-slicetype = get_flag(varargin,{'x','y','z','xy','xz','yz','xyz'},'xyz');
-[sl, plane] = addslicer(slicetype,varargin{:});
+sliceType = get_flag(varargin,{'x','y','z','xy','xz','yz','xyz'},'xyz');
+slicePos  = get_option(varargin,sliceType,[.5 .5 .5],'double');
+hSlicer   = addSlicer(sliceType,varargin{:});
+
+if numel(slicePos)<=numel(sliceType)
+  slicePos(1:numel(sliceType)) = slicePos(1);
+end
 
 % x is allways east
 % plotx2east
@@ -20,177 +25,140 @@ slicetype = get_flag(varargin,{'x','y','z','xy','xz','yz','xyz'},'xyz');
 varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
+% get pixels
+X = [ebsd.options.x(:) ebsd.options.y(:) ebsd.options.z(:)];
+Xmin = min(X); Xmax = max(X);
+
+dX = abs(2*ebsd.unitCell([1 13 17]));
+
+% grid coordinates
+iX = round(bsxfun(@rdivide,X,dX));
+iX = 1+bsxfun(@minus,iX,min(iX));
+
+sz = max(iX);
+
 % compute colorcoding
-d = colorcode(ebsd,varargin{:});
-
-% setup slicing planes
-X = [ebsd.options.x(:),ebsd.options.y(:),ebsd.options.z(:)];
-
-if ~issorted(X(:,[3 2 1]),'rows')
-  [xt,m] = unique(X(:,[3 2 1]),'first','rows');
-  d = d(m,:);
+d = [];
+for k=1:numel(ebsd.phaseMap)
+  iP = ebsd.phase==k;
+  [d(iP,:),property] = calcColorCode(ebsd,iP,varargin{:});
 end
 
-[dx,dy,dz] = estimateGridResolution(X(:,1),X(:,2),X(:,3));
-ax = min(X); bx = max(X);
-voxels = round((bx-ax)./[dx dy dz])+1;
- 
-pos = get_option(varargin,slicetype,mean([ax;bx]));
+% fill colorcoding upon grid
+l = sparse(s2i3(sz,iX(:,1),iX(:,2),iX(:,3)),1,true,prod(sz),1);
+d(l,:) = d;
+d(~l,:)= NaN;
 
-h = [];
-% z-slice
-if any(plane==3)
-  sz = sl(plane==3);
-  
-  [u,v] = meshgrid(ax(1):dx:bx(1),ax(2):dy:bx(2));
-  [z,fz,zgrid,s] = spatialdecomposition3d([u(:) v(:)]);
- 
-  h(end+1) = patch('vertices',z,'faces',fz,'edgecolor','none');
-  zparam.plane = 3;
-  zparam.grid = zgrid;
-  zparam.dim = voxels;
-  zparam.i = ax(3);
-  zparam.j = bx(3);
-  zparam.d = dz;
-  
-  set(sz,'callback',{@sliceit,h(end),zparam,d});
-  sliceit(sz,[],h(end),zparam,d,pos(end));
+% construct slicing planes
+g = @(i) linspace(Xmin(i),Xmax(i),sz(i));
+
+obj = struct; plane = struct; n = 0;
+
+if any(sliceType == 'x')
+  n = n+1;
+  % patch object
+  [x,y,z] = meshgrid(0,g(2),g(3));
+  [obj(n).Vertices(:,[2 3]) obj(n).Faces] = generateUnitCells([y(:) z(:)],ebsd.unitCell(9:end,:),varargin{:});
+  % color&pos-fun
+  [xi,yi,zi] = meshgrid(0,1:sz(2),1:sz(3));
+  plane(n).fun = @(p) d(s2i3(sz,interp(p,sz(1)),yi,zi),:);
+  plane(n).pos = @(p) interlim(p,Xmin(1)-dX(1)./2,Xmax(1)+dX(1)./2);
+  plane(n).dim = 1;
 end
 
-% y-slice
-if any(plane==2)
-  sy = sl(plane==2);
-  
-  [u,v] = meshgrid(ax(1):dx:bx(1),ax(3):dz:bx(3));
-  [uv,fy,ygrid,s] = spatialdecomposition3d([u(:) v(:)]);
-  y = [uv(:,1),uv(:,3),uv(:,2)];
-  
-  h(end+1) = patch('vertices',y,'faces',fy,'edgecolor','none');  
-  yparam.plane = 2;
-  yparam.grid = ygrid;
-  yparam.dim = voxels;
-  yparam.i = ax(2);
-  yparam.j = bx(2);
-  yparam.d = dy;
-  
-  if any(strfind(slicetype,'x'))
-    pp = pos(2);
-  else
-    pp = pos(1);
-  end
-  
-  set(sy,'callback',{@sliceit,h(end),yparam,d});
-  sliceit(sy,[],h(end),yparam,d,pp);
+if any(sliceType == 'y')
+  n = n+1;
+  % patch object
+  [x,y,z] = meshgrid(g(1),0,g(3));
+  [obj(n).Vertices(:,[1 3]) obj(n).Faces] = generateUnitCells([x(:) z(:)],ebsd.unitCell(5:8,:),varargin{:});
+  % color&pos-fun
+  [xi,yi,zi] = meshgrid(1:sz(1),0,1:sz(3));
+  plane(n).fun = @(p) d(s2i3(sz,xi,interp(p,sz(2)),zi),:);
+  plane(n).pos = @(p) interlim(p,Xmin(2)-dX(2)./2,Xmax(2)+dX(2)./2);
+  plane(n).dim = 2;
 end
 
-% x-slice
-if any(plane==1)
-  sx = sl(plane==1);
-  
-  [u,v] = meshgrid(ax(2):dy:bx(2),ax(3):dz:bx(3));
-  [uv,fx,xgrid] = spatialdecomposition3d([u(:) v(:)]);
-  x = [uv(:,3),uv(:,1),uv(:,2)];
+if any(sliceType == 'z')
+  n = n+1;
+  % patch object
+  [x,y,z] = meshgrid(g(1),g(2),0);
+  [obj(n).Vertices(:,1:2)   obj(n).Faces] = generateUnitCells([x(:) y(:)],ebsd.unitCell(1:4,:),varargin{:});
+  % color&pos-fun
+  [xi yi] = meshgrid(1:sz(1),1:sz(2));
+  plane(n).fun = @(p) d(s2i3(sz,xi,yi,interp(p,sz(3))),:);
+  plane(n).pos = @(p) interlim(p,Xmin(3)-dX(3)./2,Xmax(3)+dX(3)./2);
+  plane(n).dim = 3;
+end
 
-  h(end+1) = patch('vertices',x,'faces',fx,'edgecolor','none');
 
-  xparam.plane = 1;
-  xparam.grid = xgrid;
-  xparam.dim = voxels;
-  xparam.i = ax(1);
-  xparam.j = bx(1);
-  xparam.d = dx;
+for k=1:numel(obj)
+  obj(k).FaceColor = 'flat';
+  obj(k).EdgeColor = 'none';
+  h(k) = patch(obj(k));
   
-  set(sx,'callback',{@sliceit,h(end),xparam,d});
-  sliceit(sx,[],h(end),xparam,d,pos(1));
+  set(hSlicer(k),...
+    'value',slicePos(k),...
+    'callback',{@sliceIt,h(k),plane(k)});
+  
+  sliceIt(hSlicer(k),[],h(k),plane(k))
 end
 
 
 
 optiondraw(h,varargin{:});
-
 axis equal
+axlim = [Xmin(:)-dX(:)./2 Xmax(:)+dX(:)./2]';
+axis (axlim(:))
 grid on
-b = [ax(:)';bx(:)'];
-axis(b(:)')
 view([30,15])
 
 
-
-function sliceit(e,v,slicingplane,planeparam,cdata,pos)
-
-if nargin < 6
-  pos = planeparam.i+(planeparam.j-planeparam.i)*get(e,'value');
+if size(d,2) == 1
+  set(gca,'CLim',[min(d) max(d)]);
 end
 
 
-% planeparam
+% make legend
 
-stack = round((pos-planeparam.i)/planeparam.d)+1;
-
-% slicingplane
-p = get(slicingplane,'vertices');
-p(:,planeparam.plane) = pos;
-
-switch planeparam.plane
-  case 1
-    ndx = s2i3(planeparam.dim,stack,planeparam.grid(:,1),planeparam.grid(:,2));
-  case 2
-    ndx = s2i3(planeparam.dim,planeparam.grid(:,1),stack,planeparam.grid(:,2));
-  case 3
-    ndx = s2i3(planeparam.dim,planeparam.grid(:,1),planeparam.grid(:,2),stack);
+if strcmpi(property,'phase'),
+  % phase colormap
+  minerals = get(ebsd,'minerals');
+  
+  isPhase = ismember(unique(d),ebsd.phaseMap);
+  phaseMap = ebsd.phaseMap;
+  for k=1:numel(phaseMap)
+    lg(k) = patch('vertices',[0 0],'faces',[1 1],'FaceVertexCData',phaseMap(k),'facecolor','flat')
+  end
+  set(gca,'CLim',[min(d) max(d)+1]);
+  colormap(hsv(numel(phaseMap)));
+  legend(lg,minerals(isPhase),'Location','NorthEast');
 end
 
-cdata = cdata(ndx,:);
-set(slicingplane, 'vertices',p);
-set(slicingplane,'facevertexcdata',cdata,'facecolor','flat');
-
-
-function varargout = estimateGridResolution(varargin)
-
-for k=1:numel(varargin)
-  dx = diff(varargin{k});
-  varargout{k} = min(dx(dx>0));
+% set appdata
+if strcmpi(property,'orientation') %&& strcmpi(cc,'ipdf')
+  setappdata(gcf,'CS',ebsd.CS)
+  setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d'));
+  setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
+  setappdata(gcf,'colorcoding',lower(get_option(varargin,'colorcoding','ipdf')));
 end
 
-function [uv,vf,grid,sz] = spatialdecomposition3d(uv,varargin)
-
-u = uv(:,1);
-v = uv(:,2);
-clear uv
-
-% estimate grid resolution
-du = get_option(varargin,'du',estimateGridResolution(u));
-dv = get_option(varargin,'dv',estimateGridResolution(v));
-
-% generate a tetragonal unit cell
-iu = uint32(u/du);
-iv = uint32(v/dv);
-clear u v
-
-lu = min(iu); lv = min(iv);
-iu = iu-lu+1; iv = iv-lv+1;  % indexing of array
-nu = max(iu); nv = max(iv);  % extend
-sz = [nu,nv];
-
-% new voxel coordinates
-[vu,vv] = ind2sub(sz+1,(1:(nu+1)*(nv+1))');
-uv = [double(vu+lu-1)*du-du/2,double(vv+lv-1)*dv-dv/2];
-uv(:,3) = 0;
-
-% % pointels incident to voxel
-iun = iu+1; ivn = iv+1; % next voxel index
-% pointels incident to voxels
-vf = [s2i(sz+1,iu,iv)  s2i(sz+1,iun,iv)  s2i(sz+1,iun,ivn)  s2i(sz+1,iu,ivn)];
+set(gcf,'tag','ebsd_slice3');
+setappdata(gcf,'options',extract_option(varargin,'antipodal'));
 
 
-% vf = [ s2i(sz+1,iu,ivn) s2i(sz+1,iun,ivn)  s2i(sz+1,iun,iv) s2i(sz+1,iu,iv)];
+if nargout > 0 
+  varargout{1} = hSlicer;
+end
 
-grid = [iu,iv];
 
+function sliceIt(ev,v,hSlicer,plane)
 
-function ndx = s2i(sz,i,j)
-% faster version of sub2ind
-ndx = 1 + (i-1) + (j-1)*sz(1);
+p = get(ev,'value');
+z = get(hSlicer,'Vertices');
+
+z(:,plane.dim) = plane.pos(p);
+set(hSlicer,'Vertices',z);
+set(hSlicer,'FaceVertexCData',plane.fun(p));
 
 
 function ndx = s2i3(sz,ix,iy,iz)
@@ -198,116 +166,54 @@ function ndx = s2i3(sz,ix,iy,iz)
 ndx = 1 + (ix-1) + (iy-1)*sz(1) +(iz-1)*sz(1)*sz(2);
 
 
-function d = colorcode(ebsd,varargin)
+function y = interp(x,sz)
 
-prop = lower(get_option(varargin,'property','orientation'));
-
-if check_option(varargin,'phase') && ~strcmpi(prop,'phase') %restrict to a given phase
-  ebsd(~ismember([ebsd.phase],get_option(varargin,'phase'))) = [];
+if x <= 0
+  y = ones(size(sz));
+elseif x > 1
+  y = sz;
+else
+  y = ceil(x.*sz);
 end
 
-% %% compute colorcoding
-if isa(prop,'double')
-  d = prop;
-  prop = 'user';
-end;
+function y = interlim(x,xmin,xmax)
 
-switch prop
-  case 'user'
-  case 'orientation'
-
-    cc = lower(get_option(varargin,'colorcoding','ipdf'));
-    
-    d = ones(numel(ebsd),3);
-    for p = unique(ebsd.phase).'
-      if p == 0, continue;end
-      ind = ebsd.phase == p;
-      o = orientation(ebsd.rotations(ind),ebsd.CS{p},ebsd.SS);
-      d(ind,:) = orientation2color(o,cc,varargin{:});
-    end
-    
-    
-  case 'angle'
-    d = [];
-    for i = 1:length(ebsd)
-      d = [d; angle(ebsd.options.mis2mean)/degree];
-    end
-  case 'phase'
-    d = [];
-    for i = 1:length(ebsd)
-      if numel(ebsd(i).phase == 1)
-        d = [d;ebsd(i).phase * ones(samplesize(ebsd(i)),1)]; %#ok<agrow>
-      elseif numel(ebsd(i).phase == 0)
-        d = [d;nan(samplesize(ebsd(i)),1)]; %#ok<agrow>
-      else
-        d = [d,ebsd.phase(:)]; %#ok<agrow>
-      end
-    end
-    colormap(hsv(max(d)+1));
-    %     co = get(gca,'colororder');
-    %     colormap(co(1:length(ebsd),:));
-  case fields(ebsd(1).options)
-    d = get(ebsd,prop);
-  otherwise
-    error('unknown colorcoding!')
+if x<=0
+  y = xmin;
+elseif x>1
+  y = xmax;
+else
+  y = x.*(xmax-xmin)+xmin;
 end
 
 
-function  [sz,plane] = addslicer(slicetype,varargin)
+function  hSlicer = addSlicer(sliceType,varargin)
 
 fpos = -10;
-sz = [];
-plane = [];
-if ~isempty(strfind(slicetype,'z'))
+
+if strcmpi(get(gcf,'tag'),'ebsd_slice3')
+  hSliders = findall(gcf,'Style','slider');
+  fpos = max(cellfun(@(x) x(1),ensurecell(get(hSliders,'position'))))+10;
+else
+  fpos = -10;
+end
+
+for k=1:numel(sliceType)
+  
   fpos = fpos+20;
   
-  plane(end+1) = 3;
-  
-  sz(end+1) = uicontrol(...
+  hSlicer(k) = uicontrol(...
     'units','pixels',...
     'backgroundcolor',[0.9 0.9 0.9],...   'callback',{@sliceitz,x,y,z,z},...        'callback',{@(e,eb) sliceit(getappdata(gcbf,'slicedata'),get(e,'value'))},...
     'position',[fpos 10 16 120],...
-    'style','slider',...
-    'tag','z');
+    'style','slider');
   uicontrol('position',[fpos 130 16 16],...
-    'string','z','style','text');
-  %       uibutton('position',[fpos 130 16 20],'string',labelz,'interpreter','tex')
-end
-
-if ~isempty(strfind(slicetype,'y'))
-  fpos = fpos+20;
-  
-  
-  plane(end+1) = 2;
-  
-  sz(end+1) = uicontrol(...
-    'units','pixels',...
-    'backgroundcolor',[0.9 0.9 0.9],...        'callback',{@sliceity,x,y,z,z},...         'callback',{@(e,eb) sliceity(getappdata(gcbf,'slicedata'),get(e,'value'))},...
-    'position',[fpos 10 16 120],...
-    'style','slider',...
-    'tag','y');
-  uicontrol('position',[fpos 130 16 16],...
-    'string','y','style','text');
-  %     uibutton('position',[fpos 130 16 20],'string',labely,'interpreter','tex')
-  
-end
-
-if ~isempty(strfind(slicetype,'x'))
-  fpos = fpos+20;
-  
-  plane(end+1) = 1;
-  
-  sz(end+1) = uicontrol(...
-    'units','pixels',...
-    'backgroundcolor',[0.9 0.9 0.9],...           'callback',{@(e,eb) sliceitx(getappdata(gcbf,'slicedata'),get(e,'value'))},...
-    'position',[fpos 10 16 120],...
-    'style','slider',...
-    'tag','x');
-  uicontrol('position',[fpos 130 16 16],...
-    'string','x','style','text');
-  %       uibutton('position',[fpos 130 16 20],'string',labelx,'interpreter','tex')
+    'string',sliceType(k),'style','text');
   
 end
 
 set(gcf,'toolbar','figure')
+
+
+
 

@@ -25,8 +25,13 @@ function ebsd = set(ebsd,vname,value,varargin)
 if any(strcmp(vname,fields(ebsd)))
   
   if strcmp(vname,'CS')
-    value = ensurecell(value);
-    if max(ebsd.phase) > length(value)
+    notIndexedPhase = ebsd.phaseMap(cellfun('isclass',ebsd.CS,'char'));
+    notIndexed = ismember(ebsd.phaseMap,notIndexedPhase);
+    if numel(value) == numel(ebsd.phaseMap)
+    elseif (numel(value) == nnz(~notIndexedPhase) || numel(value) == 1)
+      value(~notIndexed) = value;
+      value(notIndexed) = {'not indexed'};
+    else
       error('The number of symmetries specified is less than the largest phase id.')
     end
   end
@@ -39,7 +44,7 @@ elseif isfield(ebsd.options,vname)
     
     ebsd.options = rmfield( ebsd.options,vname);
     
-  else    
+  else
     
     ebsd.options.(vname) = value;
     

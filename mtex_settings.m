@@ -77,6 +77,11 @@ cmap = [0 0 1; 1 0 0; 0 1 0; 1 1 0; 1 0 1; 0 1 1;...
   0.5 0.5 1; 0.5 1 0.5; 1 0.5 0.5];
 set_mtex_option('phaseColorMap',cmap);
 
+
+%%
+
+set_mtex_option('mtexMethodsAdvise',true)
+
 %% Turn off Grain Selector
 % turning off the grain selector allows faster plotting
 

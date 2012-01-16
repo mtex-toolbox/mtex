@@ -24,7 +24,7 @@ mtexdata aachen
 %%
 % and <EBSD.calcGrains.html reconstruct> the grains by
 
-[grains ebsd] = calcGrains(ebsd,'threshold',5*degree);
+grains = calcGrains(ebsd,'threshold',5*degree);
 
 
 %% Intergranular misorientations
@@ -34,7 +34,7 @@ mtexdata aachen
 % <ebsd_get.html,get>.
 
 % get the misorientations to mean
-mori = get(ebsd('Fe'),'mis2mean')
+mori = get(grains('Fe'),'mis2mean')
 
 % plot a histogram of the angle
 hist(angle(mori)/degree)
@@ -43,7 +43,9 @@ xlabel('Misorientation angle in degree')
 %%
 % The visualization of the misorientation can be done by
 
-plot(ebsd,'property','mis2mean')
+plotspatial(grains,'property','mis2mean')
+hold on
+plotBoundary(grains,'edgecolor','k')
 
 
 %% Boundary misorientations

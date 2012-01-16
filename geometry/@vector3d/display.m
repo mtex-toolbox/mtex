@@ -13,4 +13,9 @@ if check_option(varargin,'all') || (numel(v) < 20 && numel(v)>0)
   cprintf(d,'-L','  ','-Lc',{'x' 'y' 'z'});
 end
 
+
+if get_mtex_option('mtexMethodsAdvise',true)
+  disp(' ')
+  disp(['    <a href="matlab:docmethods(' inputname(1) ')">Methods</a>'])
+end
 disp(' ');
