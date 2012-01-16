@@ -12,9 +12,4 @@ if numel(q) < 30 && numel(q)>0
   cprintf(d,'-L','  ','-Lc',{'a' 'b' 'c' 'd'});
 end
 
-
-if get_mtex_option('mtexMethodsAdvise',true)
-  disp(' ')
-  disp(['    <a href="matlab:docmethods(' inputname(1) ')">Methods</a>'])
-end
-disp(' ');
+disp(docmethods(inputname(1)))

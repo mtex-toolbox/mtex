@@ -17,18 +17,14 @@ disp(['  ' csss{isCS(o.CS)+1} ': ', char(o.CS,'verbose')]);
 disp(['  ' csss{isCS(o.SS)+1} ': ',char(o.SS,'verbose')]);
 
 
+s = docmethods(inputname(1));
+
+
 if numel(o) < 30 && numel(o)>0
   
   Euler(o);
-  
-else
-
-  disp(' ');
+  s = s(2:end);
   
 end
 
-if get_mtex_option('mtexMethodsAdvise',true)
-  disp(['    <a href="matlab:docmethods(' inputname(1) ')">Methods</a>'])
-  disp(' ')
-end
-
+disp(s);

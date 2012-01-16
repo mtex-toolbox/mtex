@@ -32,9 +32,5 @@ if numel(m) < 20 && numel(m) > 0
   end
 end
 
-disp(' ');
-if get_mtex_option('mtexMethodsAdvise',true)
-  disp(['    <a href="matlab:docmethods(' inputname(1) ')">Methods</a>'])
-  disp(' ')
-end
+disp(docmethods(inputname(1)));
 

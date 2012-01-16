@@ -1,34 +1,52 @@
-function docmethods(obj)
+function varargout = docmethods(obj)
 
 
-[fun in] = methods(obj,'-full');
-
-if ischar(obj)
-  classname = obj;
-else
-  classname = class(obj);
-end
-
-for k=1:numel(fun)
-  fun{k} = regexpsplit(fun{k},'  % Inherited from ');
-  if numel(fun{k}) < 2, fun{k}{2} = classname;  end
-end
-
-f  = cellfun(@(x) x{1},fun,'UniformOutput',false);
-[ig,ndx] = sort(lower(f));
-f = f(ndx);
-c  = cellfun(@(x) x{2},fun(ndx),'UniformOutput',false);
-ds = cellfun(@(f,c) doclink([c '/' f],f),f,c,'UniformOutput',false);
-
-isInherited = ~strcmpi(c,classname);
-disp( formatedOutput(classname,ds(~isInherited),f(~isInherited)) );
-
-if any(isInherited)
-  c = unique(c(isInherited));
-  for k=1:numel(c)
-    disp(['     Inherited from class <a href="matlab:docmethods(''' c{k} ''')">' c{k} '</a>']);
+if nargout > 0
+  
+  if ischar(obj) && evalin('base',['exist(''' obj ''',''var'')']) && ...
+      get_mtex_option('mtexMethodsAdvise',true) && ...
+      ~get_mtex_option('generate_help')
+    
+    varargout{1} = [sprintf('\n') '    <a href="matlab:docmethods(' obj ')">Methods</a>' sprintf('\n')];
+    
+  else
+    
+    varargout{1} = ' ';
+    
   end
-  disp(' ')
+  
+else
+  
+  [fun in] = methods(obj,'-full');
+  
+  if ischar(obj)
+    classname = obj;
+  else
+    classname = class(obj);
+  end
+  
+  for k=1:numel(fun)
+    fun{k} = regexpsplit(fun{k},'  % Inherited from ');
+    if numel(fun{k}) < 2, fun{k}{2} = classname;  end
+  end
+  
+  f  = cellfun(@(x) x{1},fun,'UniformOutput',false);
+  [ig,ndx] = sort(lower(f));
+  f = f(ndx);
+  c  = cellfun(@(x) x{2},fun(ndx),'UniformOutput',false);
+  ds = cellfun(@(f,c) doclink([c '/' f],f),f,c,'UniformOutput',false);
+  
+  isInherited = ~strcmpi(c,classname);
+  disp( formatedOutput(classname,ds(~isInherited),f(~isInherited)) );
+  
+  if any(isInherited)
+    c = unique(c(isInherited));
+    for k=1:numel(c)
+      disp(['     Inherited from class <a href="matlab:docmethods(''' c{k} ''')">' c{k} '</a>']);
+    end
+    disp(' ')
+  end
+  
 end
 
 function s = formatedOutput(cl,ds,s)

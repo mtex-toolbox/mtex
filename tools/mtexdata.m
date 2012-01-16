@@ -68,17 +68,16 @@ if any(ndx) && isempty(dir(file))
 end
 
 S = load(file);
-
-disp([ upper(list(ndx).name) ' data loaded in variables']);
 fld = fields(S);
 for k=1:numel(fld)
   assignin('base',fld{k},S.(fld{k}));
 end
 
-disp(fld)
-evalin('base',fld{end});
-
-
+if ~get_mtex_option('generate_help')
+  disp([ upper(list(ndx).name) ' data loaded in variables']);
+  disp(fld)
+  evalin('base',fld{end});
+end
 
 
 function data = listmtexdata

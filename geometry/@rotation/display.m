@@ -4,17 +4,13 @@ function display(rot,varargin)
 disp(' ');
 disp([inputname(1) ' = ' doclink('rotation_index','rotation') ' (size: ' int2str(size(rot)) ')']);
 
+s = docmethods(inputname(1));
+
 if numel(rot) < 30 && numel(rot)>0
   
   Euler(rot);
-  
-else
-  
-  disp(' ');
+  s = s(2:end);
   
 end
 
-if get_mtex_option('mtexMethodsAdvise',true)
-  disp(['    <a href="matlab:docmethods(' inputname(1) ')">Methods</a>'])
-  disp(' ')
-end
+disp(s);

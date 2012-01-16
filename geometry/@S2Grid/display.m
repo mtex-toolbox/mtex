@@ -14,11 +14,7 @@ if numel(S2G) < 20 && numel(S2G)>0
   cprintf(d,'-L','  ','-Lc',{'x' 'y' 'z'});
 end
 
-disp(' ');
-if get_mtex_option('mtexMethodsAdvise',true)
-  disp(['    <a href="matlab:docmethods(' inputname(1) ')">Methods</a>'])
-  disp(' ')
-end
+disp(docmethods(inputname(1)));
 
 
 
