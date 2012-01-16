@@ -24,7 +24,7 @@ for i = 1:length(subs)
     
   elseif isa(subs{i},'logical')
     
-    sub = any(subs{i}, find(size(subs{i}')==max(size(ind))));
+    sub = any(subs{i}, find(size(subs{i}')==max(size(ind)),1));
     
     ind = ind & reshape(sub,size(ind));
     

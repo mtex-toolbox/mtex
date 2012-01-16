@@ -23,12 +23,16 @@ for i = 1:length(subs)
 
   elseif isa(subs{i},'logical')
 
-    sub = any(subs{i}, find(size(subs{i}')==max(size(ind))));
+    sub = any(subs{i}, find(size(subs{i}')==max(size(ind)),1));
     
     ind = ind & reshape(sub,size(ind));
 
   elseif isnumeric(subs{i})
-
+    
+    if any(subs{i} <= 0 || subs{i} > numel(grains))
+      error('Out of range; index must be a positive integer or logical.')
+    end
+    
     iind = false(size(ind));
     iind(subs{i}) = true;
     ind = ind & iind;
