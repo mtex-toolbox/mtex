@@ -8,7 +8,15 @@ function psi = calcKernel(ebsd,varargin)
 %  psi    - @kernel
 %
 %% Options
-%  phase   - specifies the phase (default is the first one)
+% method  - select a halfwidth by
+%
+%    * |'RuleOfThumb'| 
+%
+%    or via cross valiadation method:
+%
+%    * |'LSCV'| -- least squares cross valiadation
+%    * |'KLCV'| -- Kullback Leibler cross validation
+%    * |'BCV'| -- biased cross validation
 %
 %% See also
 % EBSD/calcODF EBSD/BCV EBSD/KLCV EBSD/LSCV

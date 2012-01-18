@@ -2,9 +2,9 @@ function ebsd = subsref(ebsd,s)
 % indexing of EBSD data
 %
 %% Syntax:
-%  ebsd('Fe')        % returns data of phase Fe
-%  ebsd({'Fe','Mg'}) % returns data of phase Fe and Mg
-%  ebsd(grain)       % returns data of the grains grain
+%  ebsd('Fe')        - returns data of phase Fe
+%  ebsd({'Fe','Mg'}) - returns data of phase Fe and Mg
+%  ebsd(1:end)       - returns data 
 %
 
 if isa(s,'double') || isa(s,'logical')

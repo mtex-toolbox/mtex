@@ -5,11 +5,11 @@ function varargout = plotspatial(ebsd,varargin)
 %  ebsd - @EBSD
 %
 %% Options
-%  property       - property used for coloring (default: orientation), other properties may be
+%  property - property used for coloring (default: orientation), other properties may be
 %     |'phase'| for achieving a spatial phase map, or an properity field of the ebsd
 %     data set, e.g. |'bands'|, |'bc'|, |'mad'|.
 %
-%  colocoding     - [[orientation2color.html,colorize orientation]] according a
+%  colocoding - [[orientation2color.html,colorize orientation]] according a
 %    colormap after inverse PoleFigure
 %
 %    * |'ipdf'|
@@ -26,21 +26,8 @@ function varargout = plotspatial(ebsd,varargin)
 %     using inverse
 %     PoleFigure colorization
 %
-%  GridType       - requires param |'unitcell'|
-%
-%    * |'automatic'| (default)
-%    * |'tetragonal'|
-%    * |'hexagonal'|
-%
-%    or custom
-%
-%  GridResolution - specify the dimension of a unit cell, requires param |'unitcell'|
-%  GridRotation   - rotation of a unit cell, requires option |'unitcell'|
-%
 %% Flags
-%  unitcell - (default) plot spatial data by unit cells
-%  voronoi  - plot spatial data through a voronoi decomposition
-%  raster   - discretize on regular grid
+%  points   - plot dots instead of unitcells
 %% Example
 % plot a EBSD data set spatially with custom colorcoding
 %
@@ -84,8 +71,13 @@ end
 varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
+varargin = set_default_option(varargin,...
+  {'name', [property ' plot of ' inputname(1) ' (' ebsd.comment ')']});
+
 % clear up figure
-newMTEXplot;
+newMTEXplot('renderer','opengl',varargin{:});
+
+%%
 
 isPhase = find(~cellfun('isempty',X));
 
@@ -93,18 +85,12 @@ for k=1:numel(isPhase)
   h(k) = plotUnitCells(X{isPhase(k)},d{isPhase(k)},ebsd.unitCell,varargin{:});
 end
 
-fixMTEXplot;
-
 % make legend
 minerals = get(ebsd,'minerals');
 legend(h,minerals(isPhase));
 legend('off')
 
-if strcmpi(property,'phase'),
-  % phase colormap
-  set(gca,'CLim',[min(ebsd.phaseMap) max(ebsd.phaseMap)+1]);
-  colormap(hsv(numel(ebsd.phaseMap)));
-  
+if strcmpi(property,'phase'),  
   legend('show');
 end
 
@@ -119,9 +105,13 @@ end
 set(gcf,'tag','ebsd_spatial');
 setappdata(gcf,'options',extract_option(varargin,'antipodal'));
 
-%
+
+
 fixMTEXscreencoordinates('axis'); %due to axis;
-set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
+
+axis equal tight
+fixMTEXplot(gca,varargin{:});
+
 
 if ~isOctave()
   %% set data cursor
@@ -137,28 +127,18 @@ if nargout>0, varargout{1}=h; end
 function txt = tooltip(empt,eventdata,ebsd) %#ok<INUSL>
 
 pos = get(eventdata,'Position');
-xp = pos(1); yp = pos(2);
+[xx,yy] = fixMTEXscreencoordinates(pos(1),pos(2));
 
-[x y] = fixMTEXscreencoordinates(ebsd.options.x,ebsd.options.y);
+[sub,map] = findByLocation(ebsd,[xx yy]);
 
-delta = 1.5*mean(sqrt(sum(diff(ebsd.unitCell).^2,2)));
-
-candits = find(~(xp-delta > x | xp+delta < x | yp-delta > y | yp+delta < y));
-
-if ~isempty(candits)
+if numel(sub)>0 
   
-  dist = sqrt( (xp-x(candits)).^2 + (yp-y(candits)).^2);
-  [dist ind] = min(dist);
-  candits = candits(ind);
-  
-  phase = ebsd.phase(candits);
-  o = orientation(ebsd.rotations(candits),ebsd.CS{phase},ebsd.SS);
-  
-  minerals = get(ebsd,'minerals');
-  txt{1} = ['Phase: ', minerals{phase},'' ];
-  
-  if ~ischar(ebsd.CS{phase}), ...
-      txt{2} = ['Orientation: ' char(o)];
+  minerals = get(sub,'minerals');  
+ 
+  txt{1} = ['#'  num2str(find(map))];
+  txt{2} = ['Phase: ', minerals{sub.phase}];
+  if ~isNotIndexed(sub)
+    txt{3} = ['Orientation: ' char(sub.rotations)];
   end
   
 else

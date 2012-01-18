@@ -1,11 +1,16 @@
 function varargout = slice3(ebsd,varargin)
-% plot ebsd data as slices
+% slice through 3d EBSD data
+%
+% for colorcoding plee see [[EBSD.plotspatial.html,plotspatial]]
+%
+%% Input
+% ebsd - @EBSD
+%% Flags
+% x|y|z|xy|xyz - specifiy a slicing plane
+% dontFill - do not colorize the interior of a grain
+%% See also
+% Grain3d/slice3 EBSD/plotspatial
 
-%% options
-% slice  -  initial slice position in ebsd coordinates [x y z].
-%
-%%
-%
 
 % make up new figure
 newMTEXplot;

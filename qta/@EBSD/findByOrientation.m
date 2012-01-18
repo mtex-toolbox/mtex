@@ -1,9 +1,16 @@
 function ebsd = findByOrientation(ebsd,q0,epsilon)
-% return a set of EBSD within an epsilon region around q0
+% select grains by orientation
+%
+%% Input
+% ebsd - @EBSD
+% q0 - @quaternion | @rotation | @orientation 
+% epsilon - searching radius
+%
+%% Output
+% ebsd - @EBSD
 %
 %% See also
-% orientation/find
-
+% EBSD/findByLocation GrainSet/findByOrientation
 
 
 o = get(ebsd,'orientations');
