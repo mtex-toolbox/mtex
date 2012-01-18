@@ -1,4 +1,11 @@
 function grains = subsref(grains,s)
+% access subsets of a GrainSet
+%
+%% Syntax
+% grains( 1:10 )          - returns the 10 first grains of a GrainSet
+% grains( ~grains('fe') ) - returns all grains not of the particular phase.
+%                           logical array with size of the complete
+%                           GrainSet
 
 
 if isa(s,'double') || isa(s,'logical')

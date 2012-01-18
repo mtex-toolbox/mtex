@@ -1,3 +1,4 @@
 function a = any( grains )
+% test if grains are in the GrainSet
 
-a = full(any(any(grains.I_DG,1)));
+a = any(logical(grains))

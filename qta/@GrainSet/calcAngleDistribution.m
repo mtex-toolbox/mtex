@@ -1,5 +1,18 @@
 function [density,omega] = calcAngleDistribution(grains,varargin)
-
+% calculate angle distribution
+%
+%% Input
+% grains - @GrainSet
+%% Flags
+% boundary - calculate the misorientation angle at grain boundaries
+%% Output
+% density - the density, such that 
+%
+%    $$\int f(\omega) d\omega = \pi$$
+%
+% omega  - intervals of density
+%% See also
+% GrainSet/calcBoundaryMisorientation GrainSet/plotAngleDistribution
 
 if check_option(varargin,{'boundary','misorientation'})
   m = calcBoundaryMisorientation(grains,varargin{:});

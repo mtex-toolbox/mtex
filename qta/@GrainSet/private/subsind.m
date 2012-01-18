@@ -29,7 +29,7 @@ for i = 1:length(subs)
 
   elseif isnumeric(subs{i})
     
-    if any(subs{i} <= 0 || subs{i} > numel(grains))
+    if any(subs{i} <= 0 | subs{i} > numel(grains))
       error('Out of range; index must be a positive integer or logical.')
     end
     

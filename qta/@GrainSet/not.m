@@ -1,3 +1,12 @@
-function b = not(grains)
+function l = not(grains)
+% overloads not operator
+%
+%% Output
+% l - logical array, where |true| indicates that the grain is not in the
+%    GrainSet.
+%
+%% See also
+% GrainSet/logical GrainSet/and GrainSet/or
 
-b = reshape(full(~any(grains.I_DG,1)),[],1);
+
+l = ~logical(grains);

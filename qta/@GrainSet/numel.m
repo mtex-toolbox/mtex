@@ -1,4 +1,4 @@
 function e = numel(grains,varargin)
-% number of elements
+% number of grains
 
 e = numel(grains.meanRotation,varargin{:});
