@@ -1,6 +1,22 @@
 function plotGrains(grains,varargin)
-
-
+% colorize grains
+%
+%% Input
+%  grains  - @Grain3d
+%% Options
+%  property - colorize a grains by given property, variants are:
+% 
+%    * |'phase'| -- make a phase map.
+%
+%    * |'orientation'| -- colorize a grain after its orientaiton
+%
+%            plot(grains,'property','orientation',...
+%              'colorcoding','ipdf');
+%
+%  PatchProperty - see documentation of patch objects for manipulating the
+%                 apperance, e.g. 'EdgeColor'
+%% See also
+% Grain2d/plotGrains
 
 newMTEXplot;
 
@@ -36,7 +52,6 @@ if isempty(obj.Faces)
 else
   h = optiondraw(patch(obj),varargin{:});
   fixMTEXplot;
-  set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
   optiondraw(h,varargin{:});
 end
 
