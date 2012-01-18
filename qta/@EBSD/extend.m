@@ -6,8 +6,8 @@ function ext = extend(ebsd)
 %
 
 xyz = [];
-if isfield(ebsd.options,'x'), xyz = [xyz,ebsd.options,x];end
-if isfield(ebsd.options,'y'), xyz = [xyz,ebsd.options,y];end
-if isfield(ebsd.options,'z'), xyz = [xyz,ebsd.options,z];end
+if isfield(ebsd.options,'x'), xyz = [xyz,ebsd.options.x];end
+if isfield(ebsd.options,'y'), xyz = [xyz,ebsd.options.y];end
+if isfield(ebsd.options,'z'), xyz = [xyz,ebsd.options.z];end
 
 ext = reshape([min(xyz);max(xyz)],1,[]);
