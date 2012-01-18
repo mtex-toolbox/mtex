@@ -1,5 +1,29 @@
 function plotGrains(grains,varargin)
-
+% colorize grains
+%
+%% Syntax
+% plotGrains(grains,'property','orientation') - 
+% plotGrains(grains,'property',get(grains,'phase')) -
+%
+%% Input
+%  grains  - @Grain2d
+%
+%% Options
+%  property - colorize a grains by given property, variants are:
+% 
+%    * |'phase'| -- make a phase map.
+%
+%    * |'orientation'| -- colorize a grain after its orientaiton
+%
+%            plot(grains,'property','orientation',...
+%              'colorcoding','ipdf');
+%
+%    * numeric array with length of number of grains.
+%
+%  PatchProperty - see documentation of patch objects for manipulating the
+%                 apperance, e.g. 'EdgeColor'
+%% See also
+% Grain3d/plotGrains
 
 
 V = get(grains,'V');
@@ -17,20 +41,32 @@ for k=1:nphase
   
   [d{k},property] = calcColorCode(grains,iP,varargin{:});
 end
+
+
 isPhase = find(~cellfun('isempty',X));
 
-
-newMTEXplot;
 boundaryEdgeOrder = vertcat(X{:});
 [V(:,1),V(:,2),lx,ly] = fixMTEXscreencoordinates(V(:,1),V(:,2),varargin{:});
+
+
+
+%% default plot options
+
+varargin = set_default_option(varargin,...
+  get_mtex_option('default_plot_options'));
+
+varargin = set_default_option(varargin,...
+  {'name', [property ' plot of ' inputname(1) ' (' get(grains,'comment') ')']});
+
+
+% clear up figure
+newMTEXplot('renderer','opengl',varargin{:});
 
 % set direction of x and y axis
 xlabel(lx);ylabel(ly);
 
-
+%%
 h = plotFaces(boundaryEdgeOrder,V,vertcat(d{:}),varargin{:});
-fixMTEXplot;
-
 
 % make legend
 
@@ -39,7 +75,7 @@ if strcmpi(property,'phase'),
   lg = [];
   for k=1:numel(d)
     if ~isempty(d{k})
-    	lg = [lg patch('vertices',[0 0],'faces',[1 1],'FaceColor',d{k}(1,:))];
+    	lg = [lg patch('vertices',min(V),'faces',[1 1],'FaceColor',d{k}(1,:))];
     end
   end
   minerals = get(grains,'minerals');
@@ -57,14 +93,13 @@ end
 set(gcf,'tag','ebsd_spatial');
 setappdata(gcf,'options',extract_option(varargin,'antipodal'));
 
-%
 fixMTEXscreencoordinates('axis'); %due to axis;
-set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
+
+axis equal tight
+fixMTEXplot(varargin{:});
 
 
-
-
-function h =plotFaces(boundaryEdgeOrder,V,d,varargin)
+function h = plotFaces(boundaryEdgeOrder,V,d,varargin)
 
 % add holes as polygons
 hole = cellfun('isclass',boundaryEdgeOrder,'cell');

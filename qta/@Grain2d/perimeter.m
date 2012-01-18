@@ -2,7 +2,7 @@ function  peri = perimeter(grains)
 % calculates the perimeter of the grain-polygon, with Holes
 %
 %% Input
-%  p - @grain / @polygon
+%  p - @GrainSet
 %
 %% Output
 %  peri    - perimeter

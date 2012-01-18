@@ -1,14 +1,14 @@
-function c = centroid( grains ,varargin)
-% calculates the barycenter of the grain-polygon, without respect to Holes
+function c = centroid(grains)
+% calculates the barycenter of the grain-polygon, with respect to its holes
 %
 %% Input
-%  p - @grain / @polygon
+%  p - @Grain2d
 %
 %% Output
 %  c   - centroid [x y];
 %
-%% Options
-%
+%% See also
+% Grain3d/centroid
 
 V = full(get(grains,'V'));
 F = get(grains,'boundaryEdgeOrder');
