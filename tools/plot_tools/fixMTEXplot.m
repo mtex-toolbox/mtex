@@ -8,8 +8,12 @@ function fixMTEXplot(varargin)
 
 warning('off','MATLAB:hg:patch:RGBColorDataNotSupported')
 
-ax  = gca;
-fig = gcf;
+ax = gca;
+fig = get(ax,'parent');
+
+if ~strcmpi(get(fig,'type'),'figure')
+  varargin = set_default_option(varargin,'noresize');
+end
 
 old_fig_units = get(fig,'units');
 old_ax_units = get(ax,'units');
@@ -52,8 +56,9 @@ else
 end
 grid on
 
-
 fig_pos = get(fig,'position');
+
+
 d = get_option(varargin,'border',get_mtex_option('border',5));
 
 a(1) = diff(lim(1:2));
@@ -67,17 +72,12 @@ lx = 0; ly = 0;
 if strcmp(get(ax,'Visible'),'on'), ly = 35; lx = 55; end
 
 if ~check_option(varargin,'noresize')
-  set(gcf,'position',[fig_pos(1:2) 50+a(1)+2*d 42+a(2)+2*d]);
+  set(fig,'position',[fig_pos(1:2) 50+a(1)+2*d 42+a(2)+2*d]);
 end
 
-pos = get(gcf,'position');
-if all(pos(3:4)-50-d > 0)
-  set(ax,'position',[lx+2+d ly+2+d pos(3)-2-lx-2*d pos(4)-ly-2-2*d]);
+if all(fig_pos(3:4)-d > 0)
+  set(ax,'position',[lx+2+d ly+2+d fig_pos(3)-2-lx-2*d fig_pos(4)-ly-2-2*d]);
 end
-
-set(gcf,'units','normalized');
-set(ax,'units','normalized');
-
 
 % try to extend zoom to hole figure
 % axis fill
@@ -96,8 +96,9 @@ set(fig,'units',old_fig_units);
 set(ax,'units',old_ax_units);
 
 warning('on','MATLAB:hg:patch:RGBColorDataNotSupported')
-if isempty(get(fig,'ResizeFcn'))
-  set(fig,'ResizeFcn',{@fixMTEXplot,'noresize',varargin{:}});
+if isempty(get(gcf,'ResizeFcn'))
+  set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize',varargin{:}});
+  fixMTEXplot(ax,'noresize');
 end
 
 
