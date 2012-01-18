@@ -48,7 +48,14 @@ end
 
 
 ndx = strmatch(name,{list.name});
-file = fullfile(mtexDataPath,[ lower(list(ndx).name) '.mat']);
+
+if any(ndx)
+  file = fullfile(mtexDataPath,[ lower(list(ndx).name) '.mat']);
+else
+  warning('mtex:missingData','data not found, please choose one listed below')
+  mtexdata
+  return
+end
 
 if any(ndx) && isempty(dir(file))
   
@@ -61,7 +68,7 @@ if any(ndx) && isempty(dir(file))
     case 'pf'
       
       [CS,h,pf] = feval(['mtexdata_' list(ndx).name]);
-      save(file,'CS','h','pf');     
+      save(file,'CS','h','pf');
       
   end
   
@@ -97,13 +104,13 @@ CS = symmetry('-3m',[1.4 1.4 1.5]);
 SS = symmetry;
 fname = {...
   fullfile(mtexDataPath,'PoleFigure','dubna','Q(02-21)_amp.cnv'),...
-  fullfile(mtexDataPath,'PoleFigure','dubna','Q(10-10)_amp.cnv'),... 
+  fullfile(mtexDataPath,'PoleFigure','dubna','Q(10-10)_amp.cnv'),...
   fullfile(mtexDataPath,'PoleFigure','dubna','Q(10-11)(01-11)_amp.cnv'),...
   fullfile(mtexDataPath,'PoleFigure','dubna','Q(10-12)_amp.cnv'),...
   fullfile(mtexDataPath,'PoleFigure','dubna','Q(11-20)_amp.cnv'),...
   fullfile(mtexDataPath,'PoleFigure','dubna','Q(11-21)_amp.cnv'),...
   fullfile(mtexDataPath,'PoleFigure','dubna','Q(11-22)_amp.cnv')};
-  
+
 h = {...
   Miller(0,2,-2,1,CS),...
   Miller(1,0,-1,0,CS),...
