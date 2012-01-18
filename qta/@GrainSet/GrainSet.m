@@ -14,7 +14,7 @@ function gr = GrainSet(grainStruct,ebsd)
 % ebsd - @EBSD
 %
 %% See also
-% EBSD/calcGrains
+% EBSD/calcGrains Grain3d/Grain3d Grain2d/Grain2d
 
 if nargin == 0
   grainStruct.comment = '';
