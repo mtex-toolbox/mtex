@@ -1,4 +1,22 @@
 function [m,weights] = calcBoundaryMisorientation(grains,varargin)
+% calculate misorientation at grain boundaries
+%
+%% Input 
+% grains - @GrainSet
+%% Flags
+% subboundary - only consider grain boundaries within a grain
+% external - only consider grain boundaries closing a grain
+%
+%% Output
+% m - @orientation, such that
+%
+%    $$m = (g{_i}^{--1}*CS^{--1}) * (CS *\circ g_j)$$
+%
+%   for two neighbored orientations $g_i, g_j$ with crystal @symmetry $CS$ of 
+%   the same phase located on a grain boundary.
+%
+%% See also
+% GrainSet/calcMisorientation GrainSet/plotAngleDistribution
 
 
 checkSinglePhase(grains);

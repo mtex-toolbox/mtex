@@ -1,5 +1,39 @@
 function varargout = get(grains,vname)
-
+% return property of a GrainSet
+%
+%% Input
+% grains - @GrainSet
+%
+%% Syntax
+%  o = get(grains,'meanOrientation') - returns the mean orientation of grains
+%  o = get(grains,'orientations')    - returns individual orientations of the 
+%                                      EBSD data from which grains were
+%                                      constructed.
+%  m = get(grains,'mis2mean')        - returns the misorientation of the
+%                                      EBSD data to the mean orientation of
+%                                      each grain.
+%  p = get(grains,'phase')           - returns the phase index of grains
+%  A = get(grains,'A_D')             - returns the adjacency matrix of neighbored
+%                                      EBSD measurments.
+%  I = get(grains,'I_DG')            - returns the incidence matrix ebsd measurement
+%                                      incident to grain.
+%  s = get(grains,'CS')              - returns the first indexed crystal symmetry
+%                                      of the grains.
+%  p = get(grains,'mad')             - returns the MAD property of the EBSD data, if MAD is a 
+%                                      property of EBSD data from which the
+%                                      grains were constructed.
+%
+%% Input
+%  grains - @GrainSet
+%
+%% Output
+%  o,m - @orientation
+%  s - @symmetry
+%  A,I - sparse matrix
+%  p - double
+%
+%% See also
+% EBSD/set
 
 properties = get_obj_fields(grains,'GrainSet');
 options    = fieldnames(grains.options);

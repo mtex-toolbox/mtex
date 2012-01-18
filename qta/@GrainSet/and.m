@@ -1,13 +1,18 @@
-function a = and(grains,expr)
+function l = and(grains,expr)
+% logical and to compare a GrainSet with some other set, in particular
+% for selecting grains.
+%
+%% Output
+% l - logical array, where the position of |true| indicates that the grain
+%    is in the complete GrainSet and valid for left |and| right side expression
+%
+%% Examples
+%  grains('fe') & grainSize(grains) > 10
+%  grains(grains('fe') & grainSize(grains) > 10)
+%% See also
+% GrainSet/or GrainSet/not GrainSet/logical
 
+if isa(grains,'GrainSet'), grains = logical(grains); end
+if isa(expr,'GrainSet'),  expr = logical(expr); end
 
-
-if isa(grains,'GrainSet')
-  grains = full(any(grains.I_DG,1));
-end
-
-if isa(expr,'GrainSet')
-  expr = full(any(expr.I_DG,1));  
-end
-
-a = grains(:) & expr(:);
+l = grains(:) & expr(:);

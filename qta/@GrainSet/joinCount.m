@@ -1,9 +1,11 @@
 function [J T q p] = joinCount(grains,coloring,varargin)
 % returns the a joins-count between neighbour coloring
 %
+%% Syntax
+%  [J,T,q,p] = joinCount(grains,coloring)
 %% Input
-%  grains   - @grain
-%  coloring - list corresponding to grains with its color
+%  grains   - @GrainSet
+%  coloring - double list of color corresponding to the grains
 %
 %% Output
 %  J - join count matrice
@@ -12,7 +14,9 @@ function [J T q p] = joinCount(grains,coloring,varargin)
 %  p - esitmated
 %
 %% Example
-% [J Jt q p] = joincount(grains,get(grains,'phase'))
+% join count of phase transitions
+% 
+%  [J,T,q,p] = joincount(grains,get(grains,'phase'))
 %
 
 

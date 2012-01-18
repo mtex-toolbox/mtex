@@ -1,5 +1,20 @@
 function gr = GrainSet(grainStruct,ebsd)
-
+% construct
+%
+% *GrainSet* represents grain objects. a *GrainSet* can be constructed from
+% spatially indexed @EBSD data by the routine [[EBSD.calcGrains.html,
+% calcGrains]]. in particular
+%
+%   grains = calcGrains(ebsd)
+%
+% constructs such a *GrainSet*.
+%
+%% Input
+% grainStruct - defining necessary incidence and adjaceny matrices
+% ebsd - @EBSD
+%
+%% See also
+% EBSD/calcGrains
 
 if nargin == 0
   grainStruct.comment = '';

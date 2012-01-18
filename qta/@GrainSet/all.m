@@ -1,4 +1,5 @@
 function a = all( grains )
+% test if all grains of a GrainSet are in use by the object
 
 
-a = full(all(any(grains.I_DG,1)));
+a = all(logical(grains));

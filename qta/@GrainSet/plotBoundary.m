@@ -1,8 +1,42 @@
 function plotBoundary(grains,varargin)
-
-
-
-newMTEXplot;
+% colorize grain boundaries
+%
+%% Input
+%  grains  - @Grain2d | @Grain3d
+%% Options
+%  property - colorize a special grain boundary property, variants are:
+%
+%    * |'phase'| -- boundaries between different phases
+% 
+%    * |'phaseTransition'|  -- colorize boundaries according to phase change
+%                   (same phase, different phase).
+%    * |'angle'| -- misorientation angle between two neighboured ebsd
+%            measurements on the boundary.
+%    * |'misorientation'| -- calculate the misorientation on the grain boundary
+%            between two ebsd measurements and [[orientation2color.html,colorize]] 
+%            it after a choosen colorcoding, i.e.
+%
+%            plot(grains,'property','misorientation',...
+%              'colorcoding','ipdf')
+%       
+%    *  @quaternion | @rotation | @orientation -- plot grain boundaries with
+%            a specified misorientation
+%
+%            plot(grains,'property',...
+%               rotation('axis',zvector,'angle',60*degree))
+%
+%    *  @Miller | @vector3d -- plot grain boundaries such as specified
+%            crystallographic face are parallel. use with option 'delta'
+%
+%  delta - specify a searching radius for special grain boundary
+%            (default 5 degrees), if a orientation or crystallographic face
+%            is specified.
+%
+%% Flags
+% subboundary - only plot boundaries within a grain which do not match the grain boundary
+%         criterion
+% extern - only plot grain--boundaries to other grains.
+%
 
 obj.Vertices = full(grains.V);
 obj.Faces    = full(grains.F);
@@ -26,13 +60,14 @@ else
 end
 
 % set direction of x and y axis
-xlabel(lx);ylabel(ly);
 property = lower(get_option(varargin,'property','none'));
 
 if ~ischar(property)
   propval  = property;
   property = class(property);
 end
+
+%%
 
 if strcmpi(property,'none') % default case
   
@@ -131,7 +166,7 @@ else
         end
       end
       
-      if islogical(val)        
+      if islogical(val)
         f(~prop) = [];
         prop = zeros(nnz(prop),3);
       end
@@ -161,11 +196,31 @@ end
 
 if isempty(obj.Faces)
   warning('no Boundary to plot');
-else
-  h = optiondraw(patch(obj),varargin{:});
-  fixMTEXplot;
-  set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize'});
+  return
 end
 
+
+isString = cellfun('isclass',varargin,'char');
+varargin(isString) = regexprep(varargin(isString),'\<c\olor','EdgeColor');
+
+
+%%
+
+varargin = set_default_option(varargin,...
+  get_mtex_option('default_plot_options'));
+
+varargin = set_default_option(varargin,...
+  {'name', [property ' plot of ' inputname(1) ' (' grains.comment ')']});
+
+% clear up figure
+newMTEXplot('renderer','opengl',varargin{:});
+xlabel(lx);ylabel(ly);
+
+h = optiondraw(patch(obj),varargin{:});
+
+fixMTEXscreencoordinates('axis'); %due to axis;
+
+axis equal tight
+fixMTEXplot(varargin{:});
 
 

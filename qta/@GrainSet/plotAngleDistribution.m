@@ -1,5 +1,13 @@
 function plotAngleDistribution( grains, varargin )
-
+% plot the angle distribution
+%
+%% Input
+% grains - @GrainSet
+%% Flags
+% boundary - calculate the misorientation angle at grain boundaries
+%% See also
+% GrainSet/calcAngleDistribution
+%
 
 varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));

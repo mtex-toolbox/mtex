@@ -1,5 +1,5 @@
 function sz = grainSize(grains)
-
+% returns the number of measurments per grain
 
 
 sz = sum(grains.I_DG,1);

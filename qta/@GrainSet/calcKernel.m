@@ -1,17 +1,17 @@
 function psi = calcKernel(grains,varargin)
-% compute an optimal kernel function ODF estimation
+% compute an optimal kernel function for ODF estimation (with mean orientation of
+% grains)
+%
+% for options, please see [[EBSD.calcKernel.html, calcKernel]].
 %
 %% Input
-%  grains - @grain
+%  grains - @GrainSet
 %
 %% Output
 %  psi    - @kernel
 %
-%% Options
-%  phase   - specifies the phase (default is the first one)
-%
 %% See also
-% EBSD/calcODF
+% EBSD/calcKernel EBSD/calcODF
 
 % extract mean orientations
 o = get(grains,'orientation');
@@ -23,5 +23,4 @@ opt.weight = grainSize(grains);
 ebsd = EBSD(o,'options',opt);
   
 % compute kernel function
-varargin = delete_option(varargin,'Phase');
 psi = calcKernel(ebsd,varargin{:});

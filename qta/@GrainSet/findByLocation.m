@@ -1,5 +1,22 @@
 function grains = findByLocation( grains, xy )
-
+% select a grain by spatial coordinates
+%
+%% Input
+% grains - @GrainSet
+% xy - list of [x(:) y(:)] coordinates, respectively [x(:) y(:) z(:)]
+%
+%% Output
+% grains - @GrainSet
+%
+%% Example 
+%  plotx2east
+%  plot(grains)
+%  p = ginput(1)
+%  g = findByLocation(grains,p);
+%  hold on, plotBoundary(g,'color','r','lineWidth',2)
+%
+%% See also
+% EBSD/findByLocation GrainSet/findByOrientation
 
 I_VG = get(grains,'I_VG');
 

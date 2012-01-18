@@ -1,5 +1,6 @@
 function [d] = diameter(grains)
-
+% diameter of a grain (longest distance between any two vertices of a grain
+% boundary)
 
 
 V = grains.V;
