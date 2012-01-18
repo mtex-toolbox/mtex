@@ -1,6 +1,10 @@
 function n = normal(grains)
 % face normal of polyeder
-
+%
+%% Input
+% grains - @Grain3d
+%% Output
+% n - normal of faces of the grain boundary
 
 n = cell(size(grains,1),1);
 

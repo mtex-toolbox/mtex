@@ -1,11 +1,17 @@
 function slice3(grains,varargin)
-% slice through polytope,  TODO
+% slice through 3d Grains
 %
-%% Option
-% margin -  around slicing plane
-%
-%%
-%
+%% Input
+% grains - @Grain3d
+%% Options
+% color - changes the boundary color
+% linewidth - changes the width of grain boundary
+% PatchProperty - see documentation of patch objects.
+%% Flags
+% x|y|z|xy|xyz - specifiy a slicing plane
+% dontFill - do not colorize the interior of a grain
+%% See also
+% EBSD/slice3
 
 % make up new figure
 newMTEXplot;
@@ -17,26 +23,28 @@ newMTEXplot;
 phaseMap = get(grains,'phaseMap');
 phase = get(grains,'phase');
 
-
-nphase = numel(phaseMap);
-X = cell(1,nphase);
-for k=1:nphase
-  iP =  phase == phaseMap(k);
-  [d{k},property] = calcColorCode(grains,iP,varargin{:});
-end
-isPhase = find(~cellfun('isempty',d));
-d = vertcat(d{:});
-
-I_DG = get(grains,'I_DG');
-[ig,id] = find(I_DG(:,any(I_DG,1))');
-d = d(ig,:);
-
-
-hSlicer = slice3(get(grains,'EBSD'),'property',d,varargin{:});
-
 sliceType = get_flag(varargin,{'x','y','z','xy','xz','yz','xyz'},'xyz');
 slicePos  = get_option(varargin,sliceType,[.5 .5 .5],'double');
-% hSlicer   = addSlicer(sliceType,varargin{:});
+
+if ~check_option(varargin,'dontFill')
+  nphase = numel(phaseMap);
+  X = cell(1,nphase);
+  for k=1:nphase
+    iP =  phase == phaseMap(k);
+    [d{k},property] = calcColorCode(grains,iP,varargin{:});
+  end
+  isPhase = find(~cellfun('isempty',d));
+  d = vertcat(d{:});
+  
+  I_DG = get(grains,'I_DG');
+  [ig,id] = find(I_DG(:,any(I_DG,1))');
+  d = d(ig,:);
+  
+  hSlicer = slice3(get(grains,'EBSD'),'property',d,varargin{:});
+else
+  hSlicer  = addSlicer(sliceType,varargin{:})
+end
+
 
 if numel(slicePos)<=numel(sliceType)
   slicePos(1:numel(sliceType)) = slicePos(1);
@@ -135,7 +143,7 @@ p = get(ev,'value');
 obj = plane.fun(p);
 set(plane.h,obj);
 
-if nargin > 3
+if nargin > 3 && ~isempty(callBack)  
   feval(callBack{1},ev,[],callBack{2:end});
 end
 

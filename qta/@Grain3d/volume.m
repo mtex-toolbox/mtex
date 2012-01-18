@@ -2,12 +2,10 @@ function vol = volume( grains )
 % calculates the volume of a polyeder
 %
 %% Input
-%  p - @polyeder / @grain
+%  p - @Grain3d
 %
 %% Output
-%  V  - volume of polyeder
-%
-% working rigth only if all triangles/quadrilateral have same orientation!
+%  V  - volume of polyeder, working right only if all triangles/quadrilateral have same orientation!
 %
 
 n = cell(size(grains,1),1);

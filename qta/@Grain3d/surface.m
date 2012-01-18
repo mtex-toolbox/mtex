@@ -1,7 +1,6 @@
  function surf = surface(grains)
-% calculates the area of the surface
+% calculates the surface of grains
 %
-
 
 n = normal(grains);
 
