@@ -1,6 +1,13 @@
 function p = equivalentperimeter(grains)
 % returns the equivalent perimeter of grain-polygon
 %
+% defined as
+%
+% $$ p = 2 \pi ER $$,
+%
+% where $ER$ is the [[Grain2d.equivalentradius.html,equivalent radius]] of
+% a grain
+%
 %% Input
 %  grains - @Grain2d
 %

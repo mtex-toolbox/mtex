@@ -5,7 +5,7 @@ function A = area(grains,varargin)
 %  grains - @Grain2d
 %
 %% Output
-%  A  - area of polygon
+%  A  - double list with area of polygon
 %
 %% See also
 %
