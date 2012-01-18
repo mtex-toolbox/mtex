@@ -1,9 +1,17 @@
 function varargout = spatialProfile(ebsd,lineX,varargin)
 % selects property values on a given line segment
-
-% Syntax
+% 
+%% Syntax
+% spatialProfile(ebsd,lineX,'property',...) - plots a profile
+% [p,dist] = spatialProfile(ebsd,lineX,'property',...) - returns a sorted
+%      list |p|, where p a property and a distance |dist| to begin of line segment 
+%% Input
+% ebsd - @EBSD
+% lineX - list of spatial coordinates |[x(:) y(:)]| of if 3d |[x(:) y(:) z(:)]|, 
+%    where $x_i,x_{i+1}$ defines a line segment
+%% Options
+% property - by default orientation, otherwise a property field.
 %
-
 %% Example
 %
 %  plot(ebsd)

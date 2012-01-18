@@ -1,5 +1,5 @@
 function plot(ebsd,varargin)
-% plots ebsd data 
+% bypasses ebsd plotting functions 
 %
 %% Input
 %  ebsd - @EBSD

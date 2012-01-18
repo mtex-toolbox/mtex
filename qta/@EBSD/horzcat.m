@@ -1,5 +1,9 @@
 function ebsd = horzcat(varargin)
 % overloads [ebsd1,ebsd2,ebsd3..]
+%
+%% Syntax 
+% [ebsd(1) ebsd(2)]
+% 
 
 varargin(cellfun('isempty',varargin)) = [];
 

@@ -1,4 +1,23 @@
 function [ebsd,map] = findByLocation( ebsd, xy )
+% select EBSD data by spatial coordinates
+%
+%% Input
+% ebsd - @EBSD
+% xy - list of [x(:) y(:)] coordinates, respectively [x(:) y(:) z(:)]
+%
+%% Output
+% ebsd - @EBSD subset
+%
+%% Example 
+%  plotx2east
+%  plot(ebsd)
+%  p = ginput(1)
+%  g = findByLocation(ebsd,p)
+%
+%% See also
+% EBSD/findByLocation GrainSet/findByOrientation
+
+
 
 if all(isfield(ebsd.options,{'x','y','z'}))
   x_D = get(ebsd,'xyz');

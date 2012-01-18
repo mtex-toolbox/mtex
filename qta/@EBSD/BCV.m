@@ -1,10 +1,9 @@
-function c = BCV(ebsd,psi,varargin)
+function c = BCV(ebsd,psi)
 % biased cross validation
 %
 %% Input
 %  ebsd - @EBSD
 %  psi  - @kernel
-%
 %% Output
 %  c    - halfwidth
 %
