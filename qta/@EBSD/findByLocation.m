@@ -1,4 +1,4 @@
-function ebsd = findByLocation( ebsd, xy )
+function [ebsd,map] = findByLocation( ebsd, xy )
 
 if all(isfield(ebsd.options,{'x','y','z'}))
   x_D = get(ebsd,'xyz');
@@ -23,7 +23,8 @@ for k=1:size(xy,1)
   
 end
 
-ebsd = subsref(ebsd,any(nd,2))
+map = any(nd,2);
+ebsd = subsref(ebsd,map);
 
 
 
