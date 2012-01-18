@@ -17,13 +17,14 @@ elseif isa(prop,'char')
   switch lower(prop)
     case {'orientation','mis2mean'}
       
-      o = get(obj,prop);
+      o = get(obj,prop);      
       
+      prop = lower(get_option(varargin,'colorcoding','ipdf'));
       if ischar(get(o,'CS')) || isempty(o)
         d = ones(numel(obj),3);  % ;NaN(numel(obj),3);
       else
         if strcmpi(prop,'mis2mean'), varargin = [varargin 'r','auto']; end
-        d = orientation2color(o,lower(get_option(varargin,'colorcoding','ipdf')),varargin{:});
+        d = orientation2color(o,prop,varargin{:});
       end
       
     case 'phase'

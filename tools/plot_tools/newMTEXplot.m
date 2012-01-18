@@ -64,3 +64,10 @@ end
 if ~isempty(get_option(varargin,'FigureTitle'))
   set(gcf,'Name',get_option(varargin,'FigureTitle'));
 end
+
+old_units = get(gcf,'units');
+set(gcf,'units','pixel');
+optiondraw(gcf,varargin{:});
+set(gcf,'units',old_units);
+
+
