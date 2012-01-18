@@ -39,23 +39,29 @@ p = propVal(1);
 dim = size(lineX,2);
 for k=1:size(lineX,1)-1
   % setup transformation matrix
+  % line from A to B
   dX = lineX(k+1,:)-lineX(k,:);
   
   [s,b,D] = svd(dX./norm(dX));
   
-  D(dim+1,dim+1) = -1;
+  % if s is negative, shift into B, else shift into A
+  D(dim+1,dim+1) = 1;
   D(:,end) =  [-lineX(k+double(s<0),:) 1] * D';
   
   % homogen linear tranformation´
   x_DX = x_D*D';
   
-  
-  s =  sqrt(sum(x_DX(:,2:end-1).^2,2)) <= radius &  ... distance to line
+  sel =  sqrt(sum(x_DX(:,2:end-1).^2,2)) <= radius &  ... distance to line
     0 <= x_DX(:,1) & x_DX(:,1) <= norm(dX); % length of line segment
   
   % append to the list
-  [t ndx] = sort(x_DX(s,1));
-  ptemp = propVal(s);
+  t = x_DX(sel,1);
+  
+  % if we start with the B, reverse the distance
+  if double(s<0), t = max(t)-t; end
+  
+  [t ndx] = sort(t);
+  ptemp = propVal(sel);
   p = [p; ptemp(ndx)];
   dist = [dist; dist(end)+t];
   
