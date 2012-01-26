@@ -219,9 +219,16 @@ phase        = ebsd.phase(i(cs(2:end)));
 q            = quaternion(ebsd.rotations);
 meanRotation = q(i(cs(2:end)));
 
-for k = find( cc > 1)
-  ndx = i(cs(k)+1:cs(k+1));
-  meanRotation(k) = mean_CS(q(ndx),ebsd.CS{phase(k)},ebsd.SS);
+edx = cell(numel(cc),1);
+for k = find( cc > 1 )
+ edx{k} = i(cs(k)+1:cs(k+1));
+end
+
+emptyedx = cellfun('isempty',edx);
+qcedx(~emptyedx) = partition(q,edx(~emptyedx));
+
+for k = find( cc > 1 )
+  meanRotation(k) = mean_CS(qcedx{k},ebsd.CS{phase(k)},ebsd.SS);
 end
 
 %%
