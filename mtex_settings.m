@@ -142,6 +142,11 @@ else
 end
 set_mtex_option('degree_char',degree_char);
 
+%%
+
+   set_mtex_option('TSPSolverPath',fullfile(mtex_path,'c','TSPSolver'))
+
+
 %% debugging
 % comment out to turn on debugging
 
