@@ -68,16 +68,24 @@ else
     CS = {};
   end
   
+  phaseMap = get_option(varargin,'phaseMap',0:numel(CS)-1);
+  
+  CS(~ismember(phaseMap,ebsd.phaseMap)) = [];
+  
   notIndexedPhase = get_option(varargin,{'ignorePhase','notIndexed'},[]);
   notIndexed = ismember(ebsd.phaseMap,notIndexedPhase);
-  if numel(CS) == nnz(ebsd.phaseMap) || numel(CS) == 1
-    CS(~notIndexed) = CS;
-    CS(notIndexed) = {'not indexed'};
+  C(1:numel(ebsd.phaseMap)) = {'notIndexed'};
+  if numel(CS) == numel(notIndexed)
+    C = CS;
+  elseif numel(CS) == nnz(~notIndexed)
+    C(~notIndexed) = CS;  
+  elseif numel(CS) == nnz(ebsd.phaseMap) || numel(CS) == 1
+    C(~notIndexed) = CS;   
   else
     error('symmetry mismatch')
   end
   
-  ebsd.CS = CS;
+  ebsd.CS = C;
   
 end
 
