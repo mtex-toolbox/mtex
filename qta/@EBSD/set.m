@@ -22,13 +22,16 @@ function ebsd = set(ebsd,vname,value,varargin)
 %% See also
 % EBSD/get
 
+
 if any(strcmp(vname,fields(ebsd)))
   
   if strcmp(vname,'CS')
+    value = ensurecell(value);
     notIndexedPhase = ebsd.phaseMap(cellfun('isclass',ebsd.CS,'char'));
     notIndexed = ismember(ebsd.phaseMap,notIndexedPhase);
+    
     if numel(value) == numel(ebsd.phaseMap)
-    elseif (numel(value) == nnz(~notIndexedPhase) || numel(value) == 1)
+    elseif (nnz(~notIndexed) == numel(value)) || numel(value) == 1
       value(~notIndexed) = value;
       value(notIndexed) = {'not indexed'};
     else
