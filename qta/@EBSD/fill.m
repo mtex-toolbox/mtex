@@ -37,10 +37,18 @@ end
 
 %% fill ebsd variable
 
-ebsd.rotations = ebsd.rotations(ci);
-ebsd.phase = ebsd.phase(ci);
+ebsd.rotations = reshape(ebsd.rotations(ci),[],1);
+ebsd.phase = reshape(ebsd.phase(ci),[],1);
 
 for fn = fieldnames(ebsd.options).'
   if any(strcmp(char(fn),{'x','y','z'})), continue;end
   ebsd.options.(char(fn)) = ebsd.options.(char(fn))(ci);
 end
+
+X = [ebsd.options.x(:),ebsd.options.y(:)];
+if isfield(ebsd.options,'z')
+  X = [X ebsd.options.z(:)];
+end
+
+ebsd.unitCell = calcUnitCell(X);
+
