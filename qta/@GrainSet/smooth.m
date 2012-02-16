@@ -12,7 +12,7 @@ V = grains.V;
 FD = grains.I_FDext | grains.I_FDsub;
 F = grains.F(any(FD,2),:);
 
-[i,j,f] = find(F);
+[i,j,f] = find(double(F));
 I_VF = sparse(f,reshape(i,[],size(F,2)),1,size(V,1),size(F,1));
 
 % adjacent vertices

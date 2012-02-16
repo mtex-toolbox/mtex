@@ -71,11 +71,15 @@ h = plotFaces(boundaryEdgeOrder,V,vertcat(d{:}),varargin{:});
 % make legend
 
 if strcmpi(property,'phase'),
+  
+  dummyV = min(V(get(grains,'F'),:)); 
+  
   % phase colormap
   lg = [];
   for k=1:numel(d)
     if ~isempty(d{k})
-    	lg = [lg patch('vertices',min(V),'faces',[1 1],'FaceColor',d{k}(1,:))];
+     
+    	lg = [lg patch('vertices',dummyV,'faces',[1 1],'FaceColor',d{k}(1,:))];
     end
   end
   minerals = get(grains,'minerals');
