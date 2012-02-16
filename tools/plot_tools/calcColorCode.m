@@ -27,6 +27,8 @@ elseif isa(prop,'char')
         d = orientation2color(o,prop,varargin{:});
       end
       
+      prop = ['orientation.prop'];
+      
     case 'phase'
       
       cmap = get_mtex_option('phaseColorMap');
