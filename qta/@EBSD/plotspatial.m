@@ -94,8 +94,9 @@ if strcmpi(property,'phase'),
   legend('show');
 end
 
+
 % set appdata
-if strcmpi(property,'orientation') %&& strcmpi(cc,'ipdf')
+if strncmpi(property,'orientation',11)
   setappdata(gcf,'CS',ebsd.CS)
   setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d'));
   setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
