@@ -34,9 +34,9 @@ for i = 1:length(subs)
     iind(subs{i}) = true;
     ind = ind & iind;
     
-  elseif isa(subs{i},'polygon')
+%   elseif isa(subs{i},'polygon')
     
-    ind = ind & inpolygon(ebsd,subs{i})';
+%     ind = ind & inpolygon(ebsd,subs{i})';
     
   end
 end
