@@ -39,7 +39,6 @@ ebsd.rotations = rotations(:);
   get_option(varargin,'phase',ones(numel(ebsd.rotations),1))...
   );
 
-
 % if all phases are zero replace them by 1
 if all(ebsd.phase == 0), ebsd.phase = ones(numel(ebsd.rotations),1);end
 
@@ -65,26 +64,20 @@ else
       || (isa(varargin{2},'cell') && any(cellfun('isclass',varargin{2},'symmetry'))))
     CS = ensurecell(varargin{2});
   else
-    CS = {};
+    CS = {symmetry(1,'mineral','unkown')};
   end
   
-  phaseMap = get_option(varargin,'phaseMap',0:numel(CS)-1);
-  
-  CS(~ismember(phaseMap,ebsd.phaseMap)) = [];
-  
-  notIndexedPhase = get_option(varargin,{'ignorePhase','notIndexed'},[]);
-  notIndexed = ismember(ebsd.phaseMap,notIndexedPhase);
-  C(1:numel(ebsd.phaseMap)) = {'notIndexed'};
-  if numel(CS) == numel(notIndexed)
+  if max(ebsd.phaseMap) < numel(CS)
+    C = CS(ebsd.phaseMap+1);   
+  elseif numel(ebsd.phaseMap)>1 && numel(CS) == 1
+    C = repmat(CS,numel(ebsd.phaseMap),1);
+  elseif numel(ebsd.phaseMap) == numel(CS)
     C = CS;
-  elseif numel(CS) == nnz(~notIndexed)
-    C(~notIndexed) = CS;  
-  elseif numel(CS) == nnz(ebsd.phaseMap) || numel(CS) == 1
-    C(~notIndexed) = CS;   
   else
     error('symmetry mismatch')
   end
   
+
   ebsd.CS = C;
   
 end

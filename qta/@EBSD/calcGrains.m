@@ -221,14 +221,16 @@ meanRotation = q(i(cs(2:end)));
 
 edx = cell(numel(cc),1);
 for k = find( cc > 1 )
- edx{k} = i(cs(k)+1:cs(k+1));
+  edx{k} = i(cs(k)+1:cs(k+1));
 end
 
 emptyedx = cellfun('isempty',edx);
 qcedx(~emptyedx) = partition(q,edx(~emptyedx));
 
 for k = find( cc > 1 )
-  meanRotation(k) = mean_CS(qcedx{k},ebsd.CS{phase(k)},ebsd.SS);
+  if ~ischar(ebsd.CS{phase(k)})
+    meanRotation(k) = mean_CS(qcedx{k},ebsd.CS{phase(k)},ebsd.SS);
+  end
 end
 
 %%
