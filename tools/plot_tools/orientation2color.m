@@ -59,6 +59,6 @@ switch lower(coloring)
     error('Unknown Colorcoding')
 end
 
-if 3*numel(c) == numel(o)
+if 3*numel(o) == numel(c)
   c = reshape(c,[],3);
 end
