@@ -198,7 +198,13 @@ if ~ishold
   setappdata(gcf,'marginy',get_option(varargin,{'marginy','margin'},get_mtex_option({'marginy','margin'},0),'double'));
   % invisible axes for adding a colorbar
   d = axes('visible','off','position',[0 0 1 1],...
-    'tag','colorbaraxis','HandleVisibility','callback');
+    'tag','colorbaraxis');
+  
+  ch = get(gcf,'children');  
+  
+  set(gcf,'children',[ch(ch ~= d);ch(ch == d)]);
+  set(d,'HandleVisibility','callback');
+  
   setappdata(gcf,'colorbaraxis',d);
 else 
   d = getappdata(gcf,'colorbaraxis');
