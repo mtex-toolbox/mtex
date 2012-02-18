@@ -64,7 +64,12 @@ else
   
   % find fundamental region
   [omega,id] = max(omegaSym);
-  if all(id==1), return;end
+  
+  % if the quaternion was already the right one
+  if all(id==1) 
+    omega = reshape(2*acos(min(1,omega)),size(q));
+    return;
+  end
   
   % project to fundamental region
   qcs = reshape(inverse(qcs),1,[]);
