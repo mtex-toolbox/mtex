@@ -50,49 +50,20 @@ Dl = Dl(use); Dr = Dr(use);
 phase = phase(Dl);
 f = f(use);
 
-%% find and delete adjacencies 
+%% find and delete adjacencies
 
 epsilon = get_option(varargin,{'deltaAngle','angle','delta'},5*degree,'double');
 
 for p=1:numel(phaseMap)
   currentPhase = phase == phaseMap(p);
   if any(currentPhase)
-        
+    
     o_Dl = orientation(r(Dl(currentPhase)),CS{p},SS);
     o_Dr = orientation(r(Dr(currentPhase)),CS{p},SS);
     
     m  = o_Dl.\o_Dr; % misorientation
-        
-    switch property
-      
-      case 'double'
-        
-        val = angle(m(:));
-        
-        if numel(propval) == 2   % interval
-          
-          val = min(propval) <= val & val <= max(propval);
-          
-        else
-          val = abs(propval-val)<= epsilon;
-          
-        end
-        
-      case {'quaternion','rotation','orientation','SO3Grid'}
-        
-        val = any(find(m,propval,epsilon),2);
-        
-      case {'Miller','vector3d'}
-        
-        val = any(reshape(angle(symmetrise(m)*propval,propval)<epsilon,[],numel(mo)),1)';
-        
-      otherwise
-        
-        error('unknown property')
-       
-    end
     
-    prop(currentPhase,:) = val;
+    prop(currentPhase,:) = doMerge(m,property,propval,epsilon);
     
   end
 end
@@ -105,12 +76,12 @@ I_FD(f,:) = 0; % delete incidence
 
 I_FD = double(I_FD);
 % new boundaries
-A_Db = I_FD'*I_FD;
-A_Db = (A_Db -diag(diag(A_Db)));
-A_Db = A_Db | A_Db';
+A_Db = I_FD'*I_FD & grains.A_D;
 
 A_Do = grains.A_D - A_Db; % internal adjacencies
-ids = connectedComponents(A_Do);
+ids = connectedComponents(A_Do|A_Do');
+
+A_Db = A_Db|A_Db';
 
 %% retrieve neighbours
 
@@ -118,7 +89,7 @@ I_DG = sparse(1:numel(ids),double(ids),1);  % voxels incident to grains
 A_G = I_DG'*A_Db*I_DG;                      % adjacency of grains
 
 % Parent x Childs
-I_PC = I_DG'*grains.I_DG>0; % determine which cells were merged;
+I_PC = double(I_DG'*grains.I_DG>0); % determine which cells were merged;
 
 grains.I_DG = I_DG;
 grains.A_G = A_G;
@@ -235,17 +206,35 @@ end
 b = b(:);
 
 
+function val = doMerge(m,property,propval,epsilon)
 
 
-
-
-
-
-
-
-
-
-
-
-
+switch property
+  
+  case 'double'
+    
+    val = angle(m(:));
+    
+    if numel(propval) == 2   % interval
+      
+      val = min(propval) <= val & val <= max(propval);
+      
+    else
+      val = abs(propval-val)<= epsilon;
+      
+    end
+    
+  case {'quaternion','rotation','orientation','SO3Grid'}
+    
+    val = any(find(m,propval,epsilon),2);
+    
+  case {'Miller','vector3d'}
+    
+    val = any(reshape(angle(symmetrise(m)*propval,propval)<epsilon,[],numel(mo)),1)';
+    
+  otherwise
+    
+    error('unknown property')
+    
+end
 
