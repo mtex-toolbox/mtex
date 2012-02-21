@@ -118,9 +118,6 @@ switch lower(vname)
     
     varargout{1} = grains.EBSD;
     
-  case 'mineral'
-    
-    varargout = cellfun(@(x) get(x,'mineral') ,get(grains.EBSD,'CSCell'),'uniformoutput',false);
     
     % overload from EBSD data
   case [lower(get(grains.EBSD));'cscell'; 'weight']

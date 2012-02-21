@@ -2,7 +2,7 @@ function plotGrains(grains,varargin)
 % colorize grains
 %
 %% Syntax
-% plotGrains(grains,'property','orientation') - 
+% plotGrains(grains,'property','orientation') -
 % plotGrains(grains,'property',get(grains,'phase')) -
 %
 %% Input
@@ -10,7 +10,7 @@ function plotGrains(grains,varargin)
 %
 %% Options
 %  property - colorize a grains by given property, variants are:
-% 
+%
 %    * |'phase'| -- make a phase map.
 %
 %    * |'orientation'| -- colorize a grain after its orientaiton
@@ -25,29 +25,25 @@ function plotGrains(grains,varargin)
 %% See also
 % Grain3d/plotGrains
 
-
 V = get(grains,'V');
 boundaryEdgeOrder = get(grains,'boundaryEdgeOrder');
 
 phaseMap = get(grains,'phaseMap');
-phase = get(grains,'phase');
-
+phase    = get(grains,'phase');
 
 nphase = numel(phaseMap);
 X = cell(1,nphase);
 for k=1:nphase
-  iP =  phase == phaseMap(k);
+  iP   = phase == phaseMap(k);
   X{k} = boundaryEdgeOrder(iP);
   
   [d{k},property] = calcColorCode(grains,iP,varargin{:});
 end
 
-
 isPhase = find(~cellfun('isempty',X));
 
 boundaryEdgeOrder = vertcat(X{:});
 [V(:,1),V(:,2),lx,ly] = fixMTEXscreencoordinates(V(:,1),V(:,2),varargin{:});
-
 
 
 %% default plot options
@@ -72,14 +68,14 @@ h = plotFaces(boundaryEdgeOrder,V,vertcat(d{:}),varargin{:});
 
 if strcmpi(property,'phase'),
   
-  dummyV = min(V(get(grains,'F'),:)); 
+  dummyV = min(V(get(grains,'F'),:));
   
   % phase colormap
   lg = [];
   for k=1:numel(d)
     if ~isempty(d{k})
-     
-    	lg = [lg patch('vertices',dummyV,'faces',[1 1],'FaceColor',d{k}(1,:))];
+      
+      lg = [lg patch('vertices',dummyV,'faces',[1 1],'FaceColor',d{k}(1,:))];
     end
   end
   minerals = get(grains,'minerals');
@@ -87,7 +83,7 @@ if strcmpi(property,'phase'),
 end
 
 % set appdata
-if strcmpi(property,'orientation') %&& strcmpi(cc,'ipdf')
+if strncmpi(property,'orientation',11) %&& strcmpi(cc,'ipdf')
   setappdata(gcf,'CS', get(grains,'CSCell'))
   setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d'));
   setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
@@ -108,52 +104,48 @@ function h = plotFaces(boundaryEdgeOrder,V,d,varargin)
 % add holes as polygons
 hole = cellfun('isclass',boundaryEdgeOrder,'cell');
 
-holeEdgeOrder = cellfun(@(x) x(2:end),boundaryEdgeOrder(hole),'UniformOutput',false);
-holeEdgeOrder = [holeEdgeOrder{:}];
-boundaryEdgeOrder(hole) = cellfun(@(x) x{1},boundaryEdgeOrder(hole),'UniformOutput',false);
+% split into holes an bounding
+holeEdgeOrder = ...
+  cellfun(@(x) x(2:end),boundaryEdgeOrder(hole),'UniformOutput',false);
+boundaryEdgeOrder(hole) = ...
+  cellfun(@(x) x{1},boundaryEdgeOrder(hole),'UniformOutput',false);
 
-% add add the holes to the list of polygons
-ply = [holeEdgeOrder(:); boundaryEdgeOrder(:)];
+Polygons = [boundaryEdgeOrder(:)' holeEdgeOrder{:}];
 
-d(numel(holeEdgeOrder)+(1:end),:) = d;
-d(1:numel(holeEdgeOrder),:) = 1;
+d(numel(boundaryEdgeOrder)+1:numel(Polygons),: ) = 1;
 
-A = cellArea(V,ply);
+A = cellArea(V,Polygons);
 
-plyNumVertices = cellfun('prodofsize',ply);
-
-ind = splitdata(plyNumVertices,...
-  fix(log(max(plyNumVertices))/2),'ascend');
+numParts = fix(log(max(cellfun('prodofsize',Polygons)))/2);
+Parts = splitdata(A,numParts,'ascend');
 
 obj.FaceColor = 'flat';
 
-for k=length(ind):-1:1
-  ndx = ind{k};
-  [ignore zorder] = sort(A(ndx),'ascend');
-  zorder = ndx(zorder);
-   
-  faces = ply(zorder);
-  faces = [faces{:}];
+for p=numel(Parts):-1:1
+  zOrder = Parts{p}(end:-1:1); % reverse
   
-  v = sparse(faces,1,1,size(V,1),1);
-  obj.Vertices = V(v>0,:);
-    
-  v = cumsum(full(v)>0);
-  faces = nonzeros(v(faces));
+  obj.FaceVertexCData = d(zOrder,:);
   
-  plyNumZVertices = plyNumVertices(zorder);
-
-  obj.Faces  = NaN(numel(zorder),max(plyNumZVertices));
+  Faces = Polygons(zOrder);
+  s     = cellfun('prodofsize',Faces);
+  cs    = [0 cumsum(s)];
   
-  cs = [0;cumsum(plyNumZVertices)];
-  for f=1:numel(zorder)
-    obj.Faces (f,1:plyNumZVertices(f))= faces(cs(f)+1:cs(f+1));
+  % reduce face-vertex indices to required
+  Faces = [Faces{:}];
+  vert  = sparse(Faces,1,1,size(V,1),1);
+  obj.Vertices = V(vert>0,:);
+  
+  vert  = cumsum(full(vert)>0);
+  Faces = nonzeros(vert(Faces));
+  
+  % fill the faces-edge list for patch
+  obj.Faces = NaN(numel(s),max(s));
+  for k=1:numel(s)
+    obj.Faces(k,1:s(k)) = Faces( cs(k)+1:cs(k+1) );
   end
   
-  obj.FaceVertexCData = d(zorder,:);
-  
   % plot the patches
-  h(k) = optiondraw(patch(obj),varargin{:});
+  h(p) = optiondraw(patch(obj),varargin{:});
   
 end
 

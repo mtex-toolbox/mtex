@@ -21,6 +21,8 @@ else
 end
 
 [dns,omega] = angleDistribution(get(m,'CS'));
+omega = linspace(0,max(omega),min(50,max(5,numel(m)/20)));
+omega = get_option(varargin,'omega');
 
 density = histc(angle(m),omega);
 density = pi*density./mean(density);
