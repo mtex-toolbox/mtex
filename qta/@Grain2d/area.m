@@ -17,8 +17,10 @@ isc = cellfun('isclass',F,'cell');
 
 A = zeros(numel(grains),1);
 
+if any(isc)
 A(isc) = cellfun(@(x) 2*max(x) -sum(x),...
   mat2cell(cellArea(V, [F{isc}]),cellfun('prodofsize',F(isc))));
+end
 
 A(~isc) = cellArea(V,F(~isc));
 
