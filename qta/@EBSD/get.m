@@ -128,8 +128,15 @@ switch lower(vname)
     
   case 'mineral'
     
+    ph = unique(ebsd.phase);
+    if numel(ph) > 1
+      error('There is more then one phase! Use get(...,''minerals'') instead.');
+    end
+        
     isCS = cellfun('isclass',ebsd.CS,'symmetry');
-    varargout = cellfun(@(x) get(x,'mineral') ,ebsd.CS(isCS),'uniformoutput',false);
+    minerals(isCS) = cellfun(@(x) get(x,'mineral') ,ebsd.CS(isCS),'uniformoutput',false);
+    minerals(~isCS) = ebsd.CS(~isCS);
+    varargout{1} = minerals{ph};
     
   case 'minerals'
     
