@@ -17,27 +17,12 @@ if check_option(varargin,'unitCell')
 else
   
   dummyCoordinates = calcAugmentation(X,unitCell,varargin{:});
- 
-  [v,c] = voronoin([X;dummyCoordinates],{'Q5','Q6','Q7','Q8'}); 
+
+  [v,c] = voronoin([X;dummyCoordinates],{'Q5','Q6'}); 
 
   c = c(1:size(X,1));
   
 end
-
-
-function [xy, ndx, pos] = uniquepoint(xy,eps)
-
-txy = fix(xy/eps);
-
-%
-[txy ndx]= sortrows(txy);
-
-ind = [true ; any(diff(txy),2)];
-
-pos = cumsum(ind);
-pos(ndx) = pos;
-%
-xy = xy(ndx(ind),:);
 
 
 function dummyCoordinates = calcAugmentation(X,unitCell,varargin)
