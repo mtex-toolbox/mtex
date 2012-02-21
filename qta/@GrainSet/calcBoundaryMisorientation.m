@@ -1,4 +1,4 @@
-function [m,weights] = calcBoundaryMisorientation(grains,varargin)
+function mori = calcBoundaryMisorientation(grains1,varargin)
 % calculate misorientation at grain boundaries
 %
 %% Input 
@@ -18,31 +18,51 @@ function [m,weights] = calcBoundaryMisorientation(grains,varargin)
 %% See also
 % GrainSet/calcMisorientation GrainSet/plotAngleDistribution
 
-
-checkSinglePhase(grains);
-
-if check_option(varargin,{'sub','subboundary','internal','intern'})
-  I_FD = grains.I_FDsub;
-elseif  check_option(varargin,{'external','ext','extern'})
-  I_FD = grains.I_FDext;
-else % otherwise select all boundaries
-  I_FD = grains.I_FDext | grains.I_FDsub;
+% check whether another grain set is present
+ind = cellfun(@(c) isa(c,'GrainSet'),varargin);
+if any(ind)
+  grains2 = varargin{find(ind,1)};
+else
+  grains2 = grains1;
 end
 
-[d,i] = find(I_FD(sum(I_FD,2) == 2,any(grains.I_DG,2))');
+checkSinglePhase(grains1);
+checkSinglePhase(grains2);
 
-if numel(d) >0
+if check_option(varargin,{'sub','subboundary','internal','intern'})
+  I_FD1 = grains1.I_FDsub;
+  I_FD2 = grains2.I_FDsub;
+elseif  check_option(varargin,{'external','ext','extern'})
+  I_FD1 = grains1.I_FDext;
+  I_FD2 = grains2.I_FDext;
+else % otherwise select all boundaries
+  I_FD1 = grains1.I_FDext | grains1.I_FDsub;
+  I_FD2 = grains2.I_FDext | grains2.I_FDsub;
+end
+
+if any(ind) && numel(grains1) ~= numel(grains2)
+  [Dl,dummy] = find(I_FD1(sum(I_FD1,2) >= 1 & sum(I_FD2,2) >= 1,...
+    any(grains1.I_DG,2))'); %#ok<NASGU>
+
+  [Dr,dummy] = find(I_FD2(sum(I_FD1,2) >= 1 & sum(I_FD2,2) >= 1,...
+    any(grains2.I_DG,2))'); %#ok<NASGU>
+else
+  [D,dummy] = find(I_FD1(sum(I_FD1,2) == 2,any(grains1.I_DG,2))'); %#ok<NASGU>
+  Dl = D(1:2:end);
+  Dr = D(2:2:end);
+end
   
-  Dl = d(1:2:end);
-  Dr = d(2:2:end);
   
-  o = get(grains.EBSD,'orientations');
-  m = o(Dl).\o(Dr);
+if numel(Dl) >0
+    
+  ol = get(grains1.EBSD,'orientations');
+  or = get(grains2.EBSD,'orientations');
+  mori = ol(Dl).\or(Dr);
   
 else
   
-  warning('selected phase does not contain any boundaries')
-  m = orientation;
+  warning('selected phase does not contain any boundaries') %#ok<WNTAG>
+  mori = orientation;
   
 end
 
