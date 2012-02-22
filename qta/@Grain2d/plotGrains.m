@@ -1,0 +1,173 @@
+function plotGrains(grains,varargin)
+% colorize grains
+%
+%% Syntax
+% plotGrains(grains,'property','orientation') -
+% plotGrains(grains,'property',get(grains,'phase')) -
+%
+%% Input
+%  grains  - @Grain2d
+%
+%% Options
+%  property - colorize a grains by given property, variants are:
+%
+%    * |'phase'| -- make a phase map.
+%
+%    * |'orientation'| -- colorize a grain after its orientaiton
+%
+%            plot(grains,'property','orientation',...
+%              'colorcoding','ipdf');
+%
+%    * numeric array with length of number of grains.
+%
+%  PatchProperty - see documentation of patch objects for manipulating the
+%                 apperance, e.g. 'EdgeColor'
+%% See also
+% Grain3d/plotGrains
+
+V = get(grains,'V');
+boundaryEdgeOrder = get(grains,'boundaryEdgeOrder');
+
+phaseMap = get(grains,'phaseMap');
+phase    = get(grains,'phase');
+
+nphase = numel(phaseMap);
+X = cell(1,nphase);
+for k=1:nphase
+  iP   = phase == phaseMap(k);
+  X{k} = boundaryEdgeOrder(iP);
+  
+  [d{k},property] = calcColorCode(grains,iP,varargin{:});
+end
+
+isPhase = find(~cellfun('isempty',X));
+
+boundaryEdgeOrder = vertcat(X{:});
+[V(:,1),V(:,2),lx,ly] = fixMTEXscreencoordinates(V(:,1),V(:,2),varargin{:});
+
+
+%% default plot options
+
+varargin = set_default_option(varargin,...
+  get_mtex_option('default_plot_options'));
+
+varargin = set_default_option(varargin,...
+  {'name', [property ' plot of ' inputname(1) ' (' get(grains,'comment') ')']});
+
+
+% clear up figure
+newMTEXplot('renderer','opengl',varargin{:});
+
+% set direction of x and y axis
+xlabel(lx);ylabel(ly);
+
+%%
+h = plotFaces(boundaryEdgeOrder,V,vertcat(d{:}),varargin{:});
+
+% make legend
+
+if strcmpi(property,'phase'),
+  
+  dummyV = min(V(get(grains,'F'),:));
+  
+  % phase colormap
+  lg = [];
+  for k=1:numel(d)
+    if ~isempty(d{k})
+      
+      lg = [lg patch('vertices',dummyV,'faces',[1 1],'FaceColor',d{k}(1,:))];
+    end
+  end
+  minerals = get(grains,'minerals');
+  legend(lg,minerals(isPhase));
+end
+
+% set appdata
+if strncmpi(property,'orientation',11) %&& strcmpi(cc,'ipdf')
+  setappdata(gcf,'CS', get(grains,'CSCell'))
+  setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d'));
+  setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
+  setappdata(gcf,'colorcoding',lower(get_option(varargin,'colorcoding','ipdf')));
+end
+
+set(gcf,'tag','ebsd_spatial');
+setappdata(gcf,'options',extract_option(varargin,'antipodal'));
+
+fixMTEXscreencoordinates('axis'); %due to axis;
+
+axis equal tight
+fixMTEXplot(varargin{:});
+
+
+function h = plotFaces(boundaryEdgeOrder,V,d,varargin)
+
+% add holes as polygons
+hole = cellfun('isclass',boundaryEdgeOrder,'cell');
+
+% split into holes an bounding
+holeEdgeOrder = ...
+  cellfun(@(x) x(2:end),boundaryEdgeOrder(hole),'UniformOutput',false);
+boundaryEdgeOrder(hole) = ...
+  cellfun(@(x) x{1},boundaryEdgeOrder(hole),'UniformOutput',false);
+
+Polygons = [boundaryEdgeOrder(:)' holeEdgeOrder{:}];
+
+d(numel(boundaryEdgeOrder)+1:numel(Polygons),: ) = 1;
+
+A = cellArea(V,Polygons);
+
+numParts = fix(log(max(cellfun('prodofsize',Polygons)))/2);
+Parts = splitdata(A,numParts,'ascend');
+
+obj.FaceColor = 'flat';
+
+for p=numel(Parts):-1:1
+  zOrder = Parts{p}(end:-1:1); % reverse
+  
+  obj.FaceVertexCData = d(zOrder,:);
+  
+  Faces = Polygons(zOrder);
+  s     = cellfun('prodofsize',Faces);
+  cs    = [0 cumsum(s)];
+  
+  % reduce face-vertex indices to required
+  Faces = [Faces{:}];
+  vert  = sparse(Faces,1,1,size(V,1),1);
+  obj.Vertices = V(vert>0,:);
+  
+  vert  = cumsum(full(vert)>0);
+  Faces = nonzeros(vert(Faces));
+  
+  % fill the faces-edge list for patch
+  obj.Faces = NaN(numel(s),max(s));
+  for k=1:numel(s)
+    obj.Faces(k,1:s(k)) = Faces( cs(k)+1:cs(k+1) );
+  end
+  
+  % plot the patches
+  h(p) = optiondraw(patch(obj),varargin{:});
+  
+end
+
+
+
+
+function A = cellArea(V,D)
+
+D = D(:);
+A = zeros(size(D));
+
+faceOrder = [D{:}];
+
+x = V(faceOrder,1);
+y = V(faceOrder,2);
+
+dF = full(x(1:end-1).*y(2:end)-x(2:end).*y(1:end-1));
+
+cs = [0; cumsum(cellfun('prodofsize',D))];
+for k=1:numel(D)
+  ndx = cs(k)+1:cs(k+1)-1;
+  A(k) = abs(sum(dF(ndx))*0.5);
+end
+
+
