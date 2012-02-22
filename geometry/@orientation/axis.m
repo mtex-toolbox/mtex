@@ -11,3 +11,8 @@ function a = axis(o)
 
 o = project2FundamentalRegion(o);
 a = axis(o.rotation);
+
+S = disjoint(o.CS,o.SS);
+if numel(S) > 1
+  a = Miller(a,S);
+end
