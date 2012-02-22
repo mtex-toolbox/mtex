@@ -67,7 +67,7 @@ else
     CS = {symmetry(1,'mineral','unkown')};
   end
   
-  if max([0,ebsd.phaseMap]) < numel(CS)
+  if max([0;ebsd.phaseMap(:)]) < numel(CS)
     C = CS(ebsd.phaseMap+1);   
   elseif numel(ebsd.phaseMap)>1 && numel(CS) == 1
     C = repmat(CS,numel(ebsd.phaseMap),1);
