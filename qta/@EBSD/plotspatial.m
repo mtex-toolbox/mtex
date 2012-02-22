@@ -104,7 +104,8 @@ if strncmpi(property,'orientation',11)
 end
 
 set(gcf,'tag','ebsd_spatial');
-setappdata(gcf,'options',extract_option(varargin,'antipodal'));
+setappdata(gcf,'options',[extract_option(varargin,'antipodal'),...
+  varargin]);
 
 
 

@@ -54,7 +54,7 @@ newMTEXplot;
 varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
-if any(strcmp(cc,{'ipdf','hkl'}))
+if any(strcmp(cc,{'ipdf','hkl','customipdf'}))
   % hkl is antipodal
   if strcmp(cc,'hkl'),  varargin = {'antipodal',varargin{:}}; end
   
@@ -68,11 +68,13 @@ if any(strcmp(cc,{'ipdf','hkl'}))
     d = ipdf2rgb(h,cs,varargin{:});
   elseif strcmp(cc,'hkl')
     d = ipdf2hkl(h,cs,varargin{:});
+  elseif strcmp(cc,'customipdf')
+    d = ipdf2custom(h,cs,varargin{:});
   end
   
   d = reshape(d,[size(h),3]);
   
-  multiplot(@(i) h,@(i) d,1,'rgb',varargin{:});
+  multiplot(@(i) h,@(i) d,1,'rgb','ANOTATION',r,varargin{:});
   
   type = 'ipdf';
 else
