@@ -18,6 +18,7 @@ function mori = calcBoundaryMisorientation(grains1,varargin)
 %% See also
 % GrainSet/calcMisorientation GrainSet/plotAngleDistribution
 
+%% get input
 % check whether another grain set is present
 ind = cellfun(@(c) isa(c,'GrainSet'),varargin);
 if any(ind)
@@ -29,6 +30,7 @@ end
 checkSinglePhase(grains1);
 checkSinglePhase(grains2);
 
+%% select the right boundaries
 if check_option(varargin,{'sub','subboundary','internal','intern'})
   I_FD1 = grains1.I_FDsub;
   I_FD2 = grains2.I_FDsub;
@@ -40,6 +42,7 @@ else % otherwise select all boundaries
   I_FD2 = grains2.I_FDext | grains2.I_FDsub;
 end
 
+%% find adjacent voronoi cells
 if any(ind) && numel(grains1) ~= numel(grains2)
   [Dl,dummy] = find(I_FD1(sum(I_FD1,2) >= 1 & sum(I_FD2,2) >= 1,...
     any(grains1.I_DG,2))'); %#ok<NASGU>
@@ -52,7 +55,10 @@ else
   Dr = D(2:2:end);
 end
   
+%% compute length of the common boundary of the adjacent vornoi cells
+% TODO
   
+%% compute misorienations
 if numel(Dl) >0
     
   ol = get(grains1.EBSD,'orientations');
