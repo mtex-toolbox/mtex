@@ -13,7 +13,7 @@ else
 end;
 
 if isempty(odf)
-  disp([h,doclink('ODF_index','ODF')]);
+  disp([h doclink('ODF_index','ODF') ' ' docmethods(inputname(1))]);
   disp(' ');
   return
 end
@@ -31,10 +31,11 @@ else
   h = [h,doclink('ODF_index','ODF')];
 end
 
+disp([h ' ' docmethods(inputname(1))]);
 
-if ~isempty(odf(1).comment), h = [h ' (' odf(1).comment ')']; end
-
-disp(h);
+if ~isempty(odf(1).comment)
+  disp(['  comment: ' odf(1).comment]);
+end
 
 %% display symmtries and minerals
 disp(['  ' csss{isCS(cs)+1} ': ', char(cs,'verbose')]);
@@ -63,11 +64,6 @@ for i = 1:length(odf)
     disp(['    degree: ',int2str(dim2deg(length(odf(i).c_hat)))]);
   end
   disp(['    weight: ',num2str(sum(odf(i).c(:)))]);
-  
-  if get_mtex_option('mtexMethodsAdvise',true)
-    disp(' ')
-    disp(['    <a href="matlab:docmethods(' inputname(1) ')">Methods</a>'])
-  end
   
   disp(' ');
 end

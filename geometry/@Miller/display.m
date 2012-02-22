@@ -2,10 +2,21 @@ function display(m)
 % standard output
 
 disp(' ');
-disp([inputname(1) ' = ' doclink('Miller_index','Miller') ' (size: ' int2str(size(m)),...
-  '), ',char(option2str(check_option(m)))]);
+disp([inputname(1) ' = ' doclink('Miller_index','Miller') ...
+  ' ' docmethods(inputname(1))]);
 
-disp(['  mineral: ',char(m.CS,'verbose')]);
+disp(['  size: ' size2str(m)]);
+
+o = char(option2str(check_option(m)));
+if ~isempty(o)
+  disp(['  options: ' o]);
+end
+
+if ~isempty(get(m.CS,'mineral'))
+  disp(['  mineral: ',char(m.CS,'verbose')]);
+else
+  disp(['  symmetry: ',char(m.CS,'verbose')]);
+end
 
 if numel(m) < 20 && numel(m) > 0
 
@@ -31,6 +42,3 @@ if numel(m) < 20 && numel(m) > 0
     
   end
 end
-
-disp(docmethods(inputname(1)));
-

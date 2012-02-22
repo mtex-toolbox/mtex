@@ -10,15 +10,12 @@ elseif ~isempty(inputname(1))
   h = [inputname(1), ' = ' h];
 end;
 
-if numel(ebsd)>0 && ~isempty(ebsd.comment)
-  s = ebsd.comment;
-  if length(s) > 60, s = [s(1:60) '...'];end
+disp([h ' ' docmethods(inputname(1))])
 
-  h = [h,' (',s,')'];
+% show comment
+if ~isempty(ebsd.comment)
+  disp(['  Comment: ' ebsd.comment(1:end-1)]);  
 end
-
-disp(h)
-
 
 if numel(ebsd)>0 && ~isempty(fields(ebsd.options))
   disp(['  Properties: ',option2str(fields(ebsd.options))]);
@@ -63,7 +60,7 @@ else
   disp('  EBSD is empty!')
 end
 
-disp(docmethods(inputname(1)));
+disp(' ');
 
 if 0 < numel(ebsd) && numel(ebsd) <= 20
   fn = fields(ebsd.options);

@@ -7,7 +7,8 @@ if nargout > 0 && ischar(obj)
       get_mtex_option('mtexMethodsAdvise',true) && ...
       ~get_mtex_option('generate_help',false)
     
-    varargout{1} = [sprintf('\n') '    <a href="matlab:docmethods(' obj ')">Methods</a>' sprintf('\n')];
+    varargout{1} = ['(<a href="matlab:docmethods(' obj ')">show methods</a>',...
+      ', <a href="matlab:plot(' obj ')">plot</a>)'];
     
   else
     
