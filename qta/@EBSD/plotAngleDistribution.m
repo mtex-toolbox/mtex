@@ -37,7 +37,11 @@ for j = 1:length(CS)
   end
 end
 
-omega = linspace(0,maxomega,20);
+if check_option(varargin,'smooth')
+  omega = linspace(0,maxomega,100);
+else
+  omega = linspace(0,maxomega,20);
+end
 
 %% compute angle distributions
 
@@ -48,13 +52,18 @@ for i = 1:numel(ph1)
   ebsd1 = subsref(ebsd,phases == ph1(i));
   ebsd2 = subsref(ebsd,phases == ph2(i));
   f(:,i) = calcAngleDistribution(ebsd1,ebsd2,'omega',omega,varargin{:});
+  f(:,i) = 100*f(:,i) ./ sum(f(:,i));
   
   lg{i} = [get(ebsd1,'mineral') ' - ' get(ebsd2,'mineral')]; %#ok<AGROW>
 end
 
 %% plot
 
-optiondraw(bar(omega/degree,max(0,f)),'BarWidth',1.5,varargin{:});
+if check_option(varargin,'smooth')
+  optiondraw(plot(omega/degree,5*max(0,f)),'LineWidth',2,varargin{:});
+else
+  optiondraw(bar(omega/degree,f),'BarWidth',1.5,varargin{:});
+end
 
 xlabel('misorientation angle in degree')
 xlim([0,max(omega)/degree])
