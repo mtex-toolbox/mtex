@@ -11,15 +11,14 @@ elseif ~isempty(inputname(1))
   h = [inputname(1), ' = ' h];
 end;
 
+disp([h ' ' docmethods(inputname(1))])
+
+% show comment
 if ~isempty(grains.comment)
-  s = grains.comment;
-  if length(s) > 60, s = [s(1:60) '...'];end
-  
-  h = [h,' (',s,')'];
+  disp(['  Comment: ' grains.comment(1:end-1)]);  
 end
 
-disp(h)
-
+% show properties
 properties = fields(grains.options);
 if any(grains) && ~isempty(properties)
   disp(['  Properties: ',option2str(properties)]);
@@ -70,7 +69,7 @@ else
   disp('  GrainSet is empty!')
 end
 
-disp(docmethods(inputname(1)));
+disp(' ');
 
 % if numel(grains) <= 20
 %   fn = fields(grains.options);
