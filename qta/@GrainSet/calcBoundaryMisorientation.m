@@ -58,6 +58,15 @@ end
 %% compute length of the common boundary of the adjacent vornoi cells
 % TODO
   
+%% subsample
+
+if check_option(varargin,'SampleSize')
+  sampleSize = get_option(varargin,'SampleSize');
+  ind = discretesample(numel(Dl),sampleSize);
+  Dl = Dl(ind);
+  Dr = Dr(ind);
+end
+
 %% compute misorienations
 if numel(Dl) >0
     
