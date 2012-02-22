@@ -19,7 +19,7 @@ if numel(m) > 20
     m = symmetrise(m,'plot',varargin{:});
   end
   
-  plot(m.vector3d);
+  plot(m.vector3d,varargin{:});
   
   return
 end
