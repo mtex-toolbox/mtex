@@ -8,9 +8,22 @@ function plot(grains,varargin)
 %% See also
 % GrainSet/plotBoundary Grain2d/plotGrains Grain3d/plotGrains
 
+EBSDProperties = get(get(grains,'ebsd'),'propertyNames');
 
+% plot boundary
 if check_option(varargin,'boundary')
+  
   plotBoundary(grains,varargin{:})
+  
+% plot EBSD data  
+elseif check_option(varargin,'property') && ...
+  any(strcmpi(EBSDProperties,get_option(varargin,'property')))
+
+  plotspatial(grains,varargin{:});
+  
+% plot filled grains
 else
-  plotGrains(grains,varargin{:})
+  
+  plotGrains(grains,varargin{:});
+  
 end
