@@ -43,7 +43,7 @@ else % otherwise select all boundaries
 end
 
 %% find adjacent voronoi cells
-if any(ind) && numel(grains1) ~= numel(grains2)
+if any(ind) && grains1 ~= grains2
   [Dl,dummy] = find(I_FD1(sum(I_FD1,2) >= 1 & sum(I_FD2,2) >= 1,...
     any(grains1.I_DG,2))'); %#ok<NASGU>
 
@@ -62,9 +62,11 @@ end
 
 if check_option(varargin,'SampleSize')
   sampleSize = get_option(varargin,'SampleSize');
-  ind = discretesample(numel(Dl),sampleSize);
-  Dl = Dl(ind);
-  Dr = Dr(ind);
+  if sampleSize < numel(Dl)
+    ind = discretesample(numel(Dl),sampleSize);
+    Dl = Dl(ind);
+    Dr = Dr(ind);
+  end
 end
 
 %% compute misorienations
