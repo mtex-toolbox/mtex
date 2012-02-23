@@ -15,15 +15,21 @@ disp([h ' ' docmethods(inputname(1))])
 
 % show comment
 if ~isempty(grains.comment)
-  disp(['  Comment: ' grains.comment(1:end-1)]);  
+  disp(['  comment: ' grains.comment(1:end-1)]);  
 end
 
 % show properties
 properties = fields(grains.options);
 if any(grains) && ~isempty(properties)
-  disp(['  Properties: ',option2str(properties)]);
+  disp(['  grain properties: ',option2str(properties)]);
 end
 
+% show ebsd properties
+if numel(get(grains,'ebsd'))>0
+  disp(['  EBSD properties: ',option2str(get(get(grains,'ebsd'),'propertyNames'))]);
+end
+
+%
 CS        = get(grains,'CSCell');
 phaseMap  = get(grains,'phaseMap');
 ebsdPhase = get(grains.EBSD,'phase');
