@@ -6,6 +6,10 @@ function plotAngleDistribution( ebsd, varargin )
 %
 %% Flags
 %
+%  ODF, MDF     - compute the uncorrelated angle distribution from the MDF
+%  uncorrelated - compute the uncorrelated angle distribution from the EBSD
+%  data
+%
 %% See also
 % EBSD/calcAngleDistribution
 %
@@ -23,7 +27,7 @@ ph = unique(phases(phases>0));
 for j = 1:numel(ph)
   obj{ph(j)} = subsref(ebsd,phases == ph(j)); %#ok<AGROW>
   mineral{ph(j)} = get(obj{ph(j)},'mineral'); %#ok<AGROW>
-  if check_option(varargin,'smooth')
+  if check_option(varargin,{'ODF','MDF'})
     obj{ph(j)} = calcODF(obj{ph(j)},'Fourier','halfwidth',10*degree,varargin{:}); %#ok<AGROW>
   end
 end
@@ -45,7 +49,7 @@ for j = 1:length(CS)
   end
 end
 
-if check_option(varargin,'smooth')
+if check_option(varargin,{'ODF','MDF'})
   omega = linspace(0,maxomega,50);
 else
   omega = linspace(0,maxomega,20);
@@ -65,7 +69,7 @@ end
 
 %% plot
 
-if check_option(varargin,'smooth')
+if check_option(varargin,{'ODF','MDF'})
   optiondraw(plot(omega/degree,2.5*max(0,f)),'LineWidth',2,varargin{:});
 else
   optiondraw(bar(omega/degree,f),'BarWidth',1.5,varargin{:});
