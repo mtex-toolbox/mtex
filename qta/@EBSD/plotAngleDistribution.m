@@ -20,6 +20,14 @@ newMTEXplot;
 phases = get(ebsd,'phase');
 ph = unique(phases(phases>0));
 
+for j = 1:numel(ph)
+  obj{ph(j)} = subsref(ebsd,phases == ph(j)); %#ok<AGROW>
+  mineral{ph(j)} = get(obj{ph(j)},'mineral'); %#ok<AGROW>
+  if check_option(varargin,'smooth')
+    obj{ph(j)} = calcODF(obj{ph(j)},'Fourier','halfwidth',10*degree,varargin{:}); %#ok<AGROW>
+  end
+end
+
 % all combinations of phases
 [ph1,ph2] = meshgrid(ph);
 ph1 = ph1(tril(ones(size(ph1)))>0);
@@ -38,7 +46,7 @@ for j = 1:length(CS)
 end
 
 if check_option(varargin,'smooth')
-  omega = linspace(0,maxomega,100);
+  omega = linspace(0,maxomega,50);
 else
   omega = linspace(0,maxomega,20);
 end
@@ -49,18 +57,16 @@ f = zeros(numel(omega),numel(ph1));
 
 for i = 1:numel(ph1)
   
-  ebsd1 = subsref(ebsd,phases == ph1(i));
-  ebsd2 = subsref(ebsd,phases == ph2(i));
-  f(:,i) = calcAngleDistribution(ebsd1,ebsd2,'omega',omega,varargin{:});
+  f(:,i) = calcAngleDistribution(obj{ph1(i)},obj{ph2(i)},'omega',omega,varargin{:});
   f(:,i) = 100*f(:,i) ./ sum(f(:,i));
   
-  lg{i} = [get(ebsd1,'mineral') ' - ' get(ebsd2,'mineral')]; %#ok<AGROW>
+  lg{i} = [mineral{ph1(i)} ' - ' mineral{ph2(i)}]; %#ok<AGROW>
 end
 
 %% plot
 
 if check_option(varargin,'smooth')
-  optiondraw(plot(omega/degree,5*max(0,f)),'LineWidth',2,varargin{:});
+  optiondraw(plot(omega/degree,2.5*max(0,f)),'LineWidth',2,varargin{:});
 else
   optiondraw(bar(omega/degree,f),'BarWidth',1.5,varargin{:});
 end
