@@ -25,16 +25,8 @@ newMTEXplot;
 
 axes = symmetrise(calcAxisDistribution(ebsd,'SampleSize',10000,varargin{:}));
 
-if check_option(varargin,{'smooth','contour','contourf'})
-
-  calcS2DF(axes,varargin{:});
+plot(axes,varargin{:});
   
-else
-  
-  plot(axes,varargin{:});
-  
-end
-
 %% set tags
 
 set(gcf,'tag','AxisDistribution');
