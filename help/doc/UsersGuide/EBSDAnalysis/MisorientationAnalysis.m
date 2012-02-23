@@ -43,9 +43,9 @@ xlabel('Misorientation angles in degree')
 %%
 % The visualization of the misorientation can be done by
 
-plotspatial(grains,'property','mis2mean')
+plot(grains,'property','mis2mean')
 hold on
-plotBoundary(grains,'edgecolor','k')
+plotBoundary(grains,'edgecolor','k','linewidth',0.5)
 hold off
 
 %% Boundary misorientations
