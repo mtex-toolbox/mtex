@@ -5,7 +5,12 @@ csss = {'sample symmetry ','crystal symmetry'};
 
 disp(' ');
 s = [inputname(1) ' = '];
-if isCS(o.SS) && isCS(o.CS)
+if ~isa(o.SS,'symmetry') || ~isa(o.CS,'symmetry')
+  s = [s 'invalid misorientation'];
+  disp(s);
+  disp(['  size: ' size2str(o)]);
+  return
+elseif isCS(o.SS) && isCS(o.CS)
   s = [s doclink('orientation_index','misorientation')];
 elseif isCS(o.SS)
   s = [s doclink('orientation_index','inverse orientation')];  
