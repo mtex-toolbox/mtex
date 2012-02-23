@@ -22,7 +22,7 @@
 mtexdata aachen
 
 %%
-% and <EBSD.calcGrains.html reconstruct> the grains by
+% and <EBSD.calcGrains.html reconstruct> grains by
 
 grains = calcGrains(ebsd,'threshold',5*degree);
 
@@ -36,9 +36,9 @@ grains = calcGrains(ebsd,'threshold',5*degree);
 % get the misorientations to mean
 mori = get(grains('Fe'),'mis2mean')
 
-% plot a histogram of the angle
+% plot a histogram of the misorientation angles
 hist(angle(mori)/degree)
-xlabel('Misorientation angle in degree')
+xlabel('Misorientation angles in degree')
 
 %%
 % The visualization of the misorientation can be done by
@@ -46,9 +46,85 @@ xlabel('Misorientation angle in degree')
 plotspatial(grains,'property','mis2mean')
 hold on
 plotBoundary(grains,'edgecolor','k')
-
+hold off
 
 %% Boundary misorientations
-% Not yet implemented!
+% The misorientation between adjacent grains can be computed by the command
+% <GrainSet_calcMisorientation.html>
 
+calcMisorientation(grains(5),grains(6))
 
+%%
+% In order to visuallize the the misorientation between any two adjacent
+% grains there are two possibilities in MTEX.
+%
+% * plot the angle distribution for all phase combinations
+% * plot the axis distribution for all phase combinations
+%
+%% The angle distribution
+%
+% The following command plot the angle distribution of all misorientations
+% grouped according to phase trasistions.
+
+plotAngleDistribution(grains)
+
+%%
+% The above angle distribtions can be compared with the uncorrelated angle
+% distributions. The uncorrelated angle distributions can be obtained in
+% two ways. First one can do the following
+%
+% # estimate an ODF for each phase
+% # compute for any phase transistion an MDF
+% # compute the continous angle distribution of the MDFs
+%
+% All these steps are performed by the single command
+
+hold on
+plotAngleDistribution(grains,'ODF')
+hold off
+
+%%
+% Another possibility is to compute an uncorrelated angle distribution from
+% the EBSD data set by taking only those pairs of measurements into account
+% that are sufficently far from each other. The uncorrelated angle
+% distribution is plotted by
+
+plotAngleDistribution(grains,'uncorrelated')
+
+%%
+% In order to consider only a specific phase transistion one can use the
+% syntax
+
+plotAngleDistribution(grains('Fe'),grains('Mg'),'uncorrelated')
+
+%% The axis distribution
+% 
+% Lets start here with the uncorrelated axis distribution which depends
+% only on the underlying ODFs. 
+
+plotAxisDistribution(grains('Fe'),...
+  'uncorrelated','contourf','antipodal')
+
+colorbar
+
+%%
+% We may plot the axes of the boundary misorientations directly into this
+% plot
+
+hold on
+plotAxisDistribution(grains('Fe'),'antipodal','SampleSize',100,...
+  'MarkerSize',4,'MarkerFaceColor','none','MarkerEdgeColor','red','gray')
+hold off
+
+%%
+% However, this might serve only for a qualitative comparison. For a better
+% comparison we plot the axis distribiution of the boundary misorientations
+% also as a density plot.
+
+plotAxisDistribution(grains('Fe'),'antipodal','contourf')
+
+colorbar
+
+%%
+% This shows a much stronger preferences of the (1,1,1) axis in comparison
+% to the uncorrelated distribution.
