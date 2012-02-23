@@ -184,7 +184,7 @@ elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
     end
     
     % store gridding, @TODO: check when its required 
-    G.alphabeta = [];  %[sec_angle(:),theta(:),rho(:)];
+    G.alphabeta = [sec_angle(:),theta(:),rho(:)];
     G.options = {convention};
     G.resolution = get(S2G,'resolution');
   end
