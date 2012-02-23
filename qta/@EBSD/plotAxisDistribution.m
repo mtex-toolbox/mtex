@@ -23,9 +23,9 @@ newMTEXplot;
 
 %% calc axis distribution
 
-axes = symmetrise(calcAxisDistribution(ebsd,'SampleSize',10000,varargin{:}));
+axes = calcAxisDistribution(ebsd,'SampleSize',10000,varargin{:});
 
-plot(axes,varargin{:});
+plot(axes,'all',varargin{:});
   
 %% set tags
 
