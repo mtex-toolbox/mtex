@@ -21,9 +21,19 @@ varargin = set_default_option(varargin,...
 %% make new plot
 newMTEXplot;
 
-%% 
+%% calc axis distribution
 
-plot(calcAxisDistribution(ebsd,'SampleSize',1000,varargin{:}),varargin{:},'all');
+axes = symmetrise(calcAxisDistribution(ebsd,'SampleSize',10000,varargin{:}));
+
+if check_option(varargin,{'smooth','contour','contourf'})
+
+  calcS2DF(axes,varargin{:});
+  
+else
+  
+  plot(axes,varargin{:});
+  
+end
 
 %% set tags
 
