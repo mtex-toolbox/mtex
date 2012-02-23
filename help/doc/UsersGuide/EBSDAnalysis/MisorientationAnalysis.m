@@ -102,6 +102,7 @@ plotAngleDistribution(grains('Fe'),grains('Mg'),'uncorrelated')
 % Lets start here with the uncorrelated axis distribution which depends
 % only on the underlying ODFs. 
 
+figure('position',[100.0000 100.8000 450 300]);
 plotAxisDistribution(grains('Fe'),...
   'uncorrelated','contourf','antipodal')
 
