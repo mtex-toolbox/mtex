@@ -144,6 +144,14 @@ switch lower(vname)
     varargout{1}(isCS) = cellfun(@(x) get(x,'mineral') ,ebsd.CS(isCS),'uniformoutput',false);
     varargout{1}(~isCS) = ebsd.CS(~isCS);
     
+  case 'properties'
+    
+    varargout{1} = ebsd.options;
+    
+  case 'propertynames'
+    
+    varargout{1} = fieldnames(ebsd.options);
+    
   otherwise
     error(['There is no ''' vname ''' property in the ''EBSD'' object'])
 end
