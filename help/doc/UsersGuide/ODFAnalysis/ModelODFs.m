@@ -116,7 +116,7 @@ plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
 %
 % The Bingham quaternion distribution  
 %
-% $$f(g; A,\kappa) = \frac{1}{_1F_1(\frac{1}{2};2;\kappa)} \exp( g^T U^T K U g), g \in S^3$$ 
+% $$f(g; A,\kappa) = \frac{1}{_1F_1(\frac{1}{2};2;\kappa)} \exp( g^T U^T K U g),\quad g \in S^3$$ 
 %
 % has a (4x4)-orthogonal matrix $U$ and shape parameters $K$ as
 % argument. The (4x4) matrix can be interpreted as 4 orthogonal
