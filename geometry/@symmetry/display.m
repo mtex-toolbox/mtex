@@ -5,7 +5,7 @@ function display(s)
 if isempty(s.mineral) && length(s)<=4 && all(s.axis == [xvector,yvector,zvector])
   
   disp(' ');
-  disp([inputname(1) ' = ' s.name ' specimen ' doclink('symmetry_index','symmetry') ' (size: ' int2str(numel(s)) ')']);
+  disp([inputname(1) ' = ' s.name ' specimen ' doclink('symmetry_index','symmetry') ' ' docmethods(inputname(1))]);
   disp(' ');
   
   return
@@ -13,7 +13,7 @@ end
 
 
 disp(' ');
-disp([inputname(1) ' = crystal ' doclink('symmetry_index','symmetry') ' (size: ' int2str(numel(s)) ')']);
+disp([inputname(1) ' = crystal ' doclink('symmetry_index','symmetry') ' ' docmethods(inputname(1))]);
 
 disp(' ');
 
@@ -52,7 +52,7 @@ end
 % display all properties
 cprintf(propV(:),'-L','  ','-ic','L','-la','L','-Lr',props,'-d',': ');
 
-disp(docmethods(inputname(1)));
+disp(' ');
 
 
 
