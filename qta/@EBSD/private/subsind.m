@@ -5,7 +5,7 @@ function ind = subsind(ebsd,subs)
 ind = true(1,numel(ebsd));
 
 for i = 1:length(subs)
-  
+    
   if ischar(subs{i}) || iscellstr(subs{i})
     
     miner = ensurecell(subs{i});
@@ -16,6 +16,17 @@ for i = 1:length(subs)
       phases = phases | ~cellfun('isempty',regexpi(minerals,miner{k}));
     end 
     
+    ind = ind & phases(ebsd.phase(:).');
+
+  elseif isa(subs{i},'symmetry')
+    
+    phases = false(1,numel(ebsd.CS));
+    for k=1:numel(ebsd.CS)
+      if isa(ebsd.CS{k},'symmetry') && ebsd.CS{k} == subs{i} && ...
+          (isempty(get(subs{i},'mineral')) || strcmp(get(ebsd.CS{k},'mineral'),get(subs{i},'mineral')))
+        phases(k) = true;
+      end
+    end 
     ind = ind & phases(ebsd.phase(:).');
     
   elseif isa(subs{i},'grain')
