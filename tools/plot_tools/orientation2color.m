@@ -1,4 +1,4 @@
-function c = orientation2color(o,coloring,varargin)
+function [c,options] = orientation2color(o,coloring,varargin)
 % convert orientation to color
 %
 %% Input
@@ -10,8 +10,22 @@ function c = orientation2color(o,coloring,varargin)
 %    ANGLE
 
 
-model = {'bunge','angle','sigma','ihs','ipdf',...
-    'rodrigues','rodriguesquat','rodriguesinverse','euler','bunge2','hkl','customipdf'};
+model = {...
+  'bunge',...
+  'angle',...
+  'sigma',...
+  'ihs',...
+  'ipdf',...
+  'rodrigues',...
+  'rodriguesquat',...
+  'rodriguesinverse',...
+  'euler',...
+  'bunge2',...
+  'hkl',...
+  'h',...
+  'orientations'};
+
+options = {};
 
 if nargin == 0, c = model; return; end
 
@@ -20,7 +34,7 @@ switch lower(coloring)
     c = euler2rgb(o,varargin{:});
   case model(2)
     c = angle(o(:))./degree;
-%     c = 1-repmat(( c-min(c) )./ (max(c)-min(c)),1,3);
+    %     c = 1-repmat(( c-min(c) )./ (max(c)-min(c)),1,3);
   case model(3)
     c = sigma2rgb(o,varargin{:});
   case model(4)
@@ -28,7 +42,8 @@ switch lower(coloring)
     c = rgb2hsv(c);
   case model([5 11 12]) % colorcoding according according to ipdf
     if isa(o,'orientation')
-      h = quat2ipdf(o,varargin{:});
+      [h,r] = quat2ipdf(o,varargin{:});
+      options(1:2) = {'r',r};
       cs = get(o,'CS');
     else
       cs = get_option(varargin,'cs');
@@ -41,7 +56,7 @@ switch lower(coloring)
       case model(11)
         c = ipdf2hkl(vector3d(h),cs,varargin{:});
       case model(12)
-        c = ipdf2custom(vector3d(h),cs,varargin{:});
+        c = ipdf2custom(vector3d(h),cs,options{:},varargin{:});
     end
   case model(6:8)
     switch coloring
@@ -57,6 +72,8 @@ switch lower(coloring)
     c = euler2rgb2(o,varargin{:});
   case model(10)
     c = euler2rgb3(o,varargin{:});
+  case model(13)
+    c = orientation2custom(o,varargin{:});    
   otherwise
     error('Unknown Colorcoding')
 end
