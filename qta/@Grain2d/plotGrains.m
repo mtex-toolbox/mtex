@@ -31,16 +31,21 @@ boundaryEdgeOrder = get(grains,'boundaryEdgeOrder');
 phaseMap = get(grains,'phaseMap');
 phase    = get(grains,'phase');
 
-nphase = numel(phaseMap);
-X = cell(1,nphase);
-for k=1:nphase
-  iP   = phase == phaseMap(k);
-  X{k} = boundaryEdgeOrder(iP);
-  
-  [d{k},property] = calcColorCode(grains,iP,varargin{:});
-end
+% seperate measurements per phase
+numberOfPhases = numel(phaseMap);
+X = cell(1,numberOfPhases);
+d = cell(1,numberOfPhases);
 
-isPhase = find(~cellfun('isempty',X));
+isPhase = false(numberOfPhases,1);
+for k=1:numberOfPhases
+  currentPhase = phase==phaseMap(k);
+  isPhase(k)   = any(currentPhase);
+  
+  if isPhase(k)
+    X{k} = boundaryEdgeOrder(currentPhase);
+    [d{k},property,opts] = calcColorCode(grains,currentPhase,varargin{:});
+  end
+end
 
 boundaryEdgeOrder = vertcat(X{:});
 [V(:,1),V(:,2),lx,ly] = fixMTEXscreencoordinates(V(:,1),V(:,2),varargin{:});
@@ -82,21 +87,25 @@ if strcmpi(property,'phase'),
   legend(lg,minerals(isPhase));
 end
 
+
 % set appdata
-if strncmpi(property,'orientation',11) %&& strcmpi(cc,'ipdf')
-  setappdata(gcf,'CS', get(grains,'CSCell'))
-  setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d'));
+if strncmpi(property,'orientation',11)
+  CS = get(grains,'CSCell');
+  setappdata(gcf,'CS',CS(isPhase));
+  setappdata(gcf,'r',get_option(opts,'r',xvector));
   setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
-  setappdata(gcf,'colorcoding',lower(get_option(varargin,'colorcoding','ipdf')));
+  setappdata(gcf,'colorcoding',property(13:end));
 end
 
 set(gcf,'tag','ebsd_spatial');
-setappdata(gcf,'options',extract_option(varargin,'antipodal'));
+setappdata(gcf,'options',[extract_option(varargin,'antipodal'),...
+  opts varargin]);
 
 fixMTEXscreencoordinates('axis'); %due to axis;
 
 axis equal tight
-fixMTEXplot(varargin{:});
+fixMTEXplot(gca,varargin{:});
+
 
 
 function h = plotFaces(boundaryEdgeOrder,V,d,varargin)
@@ -142,6 +151,18 @@ for p=numel(Parts):-1:1
   obj.Faces = NaN(numel(s),max(s));
   for k=1:numel(s)
     obj.Faces(k,1:s(k)) = Faces( cs(k)+1:cs(k+1) );
+  end  
+  
+  if check_option(varargin,{'transparent','translucent'})
+    s = get_option(varargin,{'transparent','translucent'},1,'double');
+    dg = obj.FaceVertexCData;
+    if size(d,2) == 3 % rgb
+      obj.FaceVertexAlphaData = s.*(1-min(dg,[],2));
+    else
+      obj.FaceVertexAlphaData = s.*dg./max(dg);
+    end
+    obj.AlphaDataMapping = 'none';
+    obj.FaceAlpha = 'flat';
   end
   
   % plot the patches

@@ -35,7 +35,6 @@ else
     varargin = set_default_option(varargin,[],'rotate',getappdata(gcf,'rotate'));
   end
   
-  
   for i = 1:length(cs)
     if isa(cs{i},'symmetry')
       ebsdColorbar(cs{i},varargin{:},...
@@ -54,7 +53,7 @@ newMTEXplot;
 varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
-if any(strcmp(cc,{'ipdf','hkl','customipdf'}))
+if any(strcmp(cc,{'ipdf','hkl','h'}))
   % hkl is antipodal
   if strcmp(cc,'hkl'),  varargin = {'antipodal',varargin{:}}; end
   
@@ -68,7 +67,7 @@ if any(strcmp(cc,{'ipdf','hkl','customipdf'}))
     d = ipdf2rgb(h,cs,varargin{:});
   elseif strcmp(cc,'hkl')
     d = ipdf2hkl(h,cs,varargin{:});
-  elseif strcmp(cc,'customipdf')
+  elseif strcmp(cc,'h')
     d = ipdf2custom(h,cs,varargin{:});
   end
   
@@ -81,7 +80,7 @@ else
   [S3G,S2G,sec] = SO3Grid('plot',cs,symmetry,varargin{:});
   
   [s1,s2,s3] = size(S3G);
-  
+    
   d = reshape(orientation2color(S3G,cc,varargin{:}),[s1,s2,s3,3]);
   
   sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma'},'sigma');
@@ -112,7 +111,7 @@ setappdata(gcf,'r',r);
 setappdata(gcf,'options',extract_option(varargin,'antipodal'));
 
 %% annotate crystal directions
-if any(strcmp(cc,{'ipdf','hkl'}))
+if any(strcmp(cc,{'ipdf','hkl','h'}))
   annotate(v,'MarkerFaceColor','k','labeled','all');
 end
 set(gcf,'renderer','opengl');
