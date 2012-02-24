@@ -1,4 +1,4 @@
-%% ODF Characteristics
+%% Characterizing ODFs
 % Explains how to analyze ODFs, i.e. how to compute modal orientations,
 % texture index, volume portions, Fourier coefficients and pole figures.
 %
