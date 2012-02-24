@@ -25,7 +25,7 @@ function [modes, values] = calcModes(odf,varargin)
 % ODF/max
 
 % find multiple modes
-if isnumeric(varargin{1})
+if nargin > 1 && isnumeric(varargin{1})
   [modes, values] = findMultipleModes(odf,varargin{:});
   return
 end
