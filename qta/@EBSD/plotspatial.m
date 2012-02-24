@@ -57,13 +57,19 @@ end
 x_D = [ebsd.options.x ebsd.options.y];
 
 % seperate measurements per phase
-nphase = numel(ebsd.phaseMap);
-X = cell(1,nphase); d = cell(1,nphase);
+numberOfPhases = numel(ebsd.phaseMap);
+X = cell(1,numberOfPhases);
+d = cell(1,numberOfPhases);
 
-for k=1:nphase
-  iP = ebsd.phase==k;
-  X{k} = x_D(iP,:);
-  [d{k},property] = calcColorCode(ebsd,iP,varargin{:});
+isPhase = false(numberOfPhases,1);
+for k=1:numberOfPhases
+  currentPhase = ebsd.phase==k;
+  isPhase(k)   = any(currentPhase);
+  
+  if isPhase(k)
+    [d{k},property,opts] = calcColorCode(ebsd,currentPhase,varargin{:});
+    X{k} = x_D(currentPhase,:);
+  end
 end
 
 %% default plot options
@@ -79,10 +85,9 @@ newMTEXplot('renderer','opengl',varargin{:});
 
 %%
 
-isPhase = find(~cellfun('isempty',X));
-
-for k=1:numel(isPhase)
-  h(k) = plotUnitCells(X{isPhase(k)},d{isPhase(k)},ebsd.unitCell,varargin{:});
+selectedPhases = find(isPhase);
+for p=1:numel(selectedPhases)
+  h(p) = plotUnitCells(X{selectedPhases(p)},d{selectedPhases(p)},ebsd.unitCell,varargin{:});
 end
 
 % make legend
@@ -90,24 +95,21 @@ minerals = get(ebsd,'minerals');
 legend(h,minerals(isPhase));
 legend('off')
 
-if strcmpi(property,'phase'),  
+if strcmpi(property,'phase'),
   legend('show');
 end
 
-
 % set appdata
 if strncmpi(property,'orientation',11)
-  setappdata(gcf,'CS',ebsd.CS)
-  setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d'));
+  setappdata(gcf,'CS',ebsd.CS(isPhase));
+  setappdata(gcf,'r',get_option(opts,'r',xvector));
   setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
-  setappdata(gcf,'colorcoding',lower(get_option(varargin,'colorcoding','ipdf')));
+  setappdata(gcf,'colorcoding',property(13:end));
 end
 
 set(gcf,'tag','ebsd_spatial');
 setappdata(gcf,'options',[extract_option(varargin,'antipodal'),...
-  varargin]);
-
-
+  opts varargin]);
 
 fixMTEXscreencoordinates('axis'); %due to axis;
 
@@ -120,7 +122,7 @@ if ~isOctave()
   dcm_obj = datacursormode(gcf);
   set(dcm_obj,'SnapToDataVertex','off')
   set(dcm_obj,'UpdateFcn',{@tooltip,ebsd});
-
+  
   if check_option(varargin,'cursor'), datacursormode on;end
 end
 if nargout>0, varargout{1}=h; end
@@ -133,10 +135,10 @@ pos = get(eventdata,'Position');
 
 [sub,map] = findByLocation(ebsd,[xx yy]);
 
-if numel(sub)>0 
+if numel(sub)>0
   
-  minerals = get(sub,'minerals');  
- 
+  minerals = get(sub,'minerals');
+  
   txt{1} = ['#'  num2str(find(map))];
   txt{2} = ['Phase: ', minerals{sub.phase}];
   if ~isNotIndexed(sub)
