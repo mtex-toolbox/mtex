@@ -1,50 +1,50 @@
 %% Modify EBSD Data
-% How to use MTEX to correct EBSD data for measurement errors.
+% How to correct EBSD data for measurement errors.
 %
 %% Open in Editor
 %
 %% Contents
 %
-
 %%
-% Let us first import some standard EBSD data with a [[matlab:edit mtexdata, script file]]
+% First, let us import some example <mtexdata.html EBSD data> and plot
+% the raw data
 
 mtexdata aachen;
-
-%% 
-% and plot the raw data
 plot(ebsd)
 
 %%
-% These data consist of two phases, Iron and Magnesium. In order to to
-% plot the data with there phase one can use the command
+% These data consist of two indexed phases, _Iron_ and _Magnesium_ and not
+% indexed data called phase _not Indexed_. They can be visualized by a
+% spatial phase plot
 
 plot(ebsd,'property','phase')
 
-
 %% Selecting certain phases
-% In order to restrict the data to a certain phase the following syntax is
-% supported
+% In order to restrict the data to a certain phase, the data is indexed by
+% its mineral name with the following syntax
 
 ebsd_Fe = ebsd('Fe')
 
 %%
-% In order to extract more then one phase, the mineral names has to be
-% grouped in curled parethesis. 
+% In order to extract a couple of phases, the mineral names have to be
+% grouped in curled parethesis.
 
 ebsd({'Fe','Mg'})
 
 %%
-% As an example let us plot only all Magnesium data
+% As an example, let us plot only all not indexed data
 
-plot(ebsd('Mg'))
+plot(ebsd('notIndexed'),'facecolor','r')
 
+%% See also
+% EBSD/subsref EBSD/subsasgn
+%
 %% Realign / Rotate the data
 %
 % Sometimes its required to realign the EBSD data, e.g. by rotating,
-% shifting or flipping them. This is done by the commands 
-% <EBSD.rotate.html rotate>, <EBSD.fliplr.html fliplr>, <EBSD.flipud.html
-% flipud> and <EBSD.shift.html shift>.
+% shifting or flipping. This is done by the commands <EBSD.rotate.html
+% rotate>, <EBSD.fliplr.html fliplr>, <EBSD.flipud.html flipud> and
+% <EBSD.shift.html shift>.
 
 % define a rotation
 rot = rotation('axis',zvector,'angle',5*degree);
@@ -60,7 +60,7 @@ close all, plot(ebsd_rot)
 % data, i.e. the x, y values, but also the crystal orientations are rotated
 % accordingly. This is true as well for the flipping commands
 % <EBSD.rotate.html rotate> and <EBSD.fliplr.html fliplr>. Observe, how not
-% only the picture is flipped but also the color of the grains chages!
+% only the picture is flipped but also the color changes!
 
 ebsd_flip = fliplr(ebsd_rot);
 close all, plot( ebsd_flip )
@@ -70,51 +70,54 @@ close all, plot( ebsd_flip )
 
 %% Restricting to a region of interest
 % If one is not interested in the whole data set but only in those
-% measurements inside a certain polygon, the restriction can be
-% constructed as follows. Lets start by defining a rectangle.
+% measurements inside a certain polygon, the restriction can be constructed
+% as follows:
 
+%%
+% First define a region
 
-% the region
-region = polygon('rectangle',120, 100, 200, 130);
+region = [120 100;
+          200 100;
+          200 130; 
+          120 130;
+          120 100];
 
-% plot the ebsd data
+%%
+% plot the ebsd data together with the region of interest
+
 plot(ebsd)
-
-% plot the rectangle on top
-hold on
-plot(region,'color','r','linewidth',2)
-hold off
-
+line(region(:,1),region(:,2),'color','r','linewidth',2)
 
 %%
 % In order to restrict the ebsd data to the polygon we may use the command
-% <EBSD.inpolygon.html inpolygon> to find the ebsd inside the region
+% <EBSD.inpolygon.html inpolygon> to locate all EBSD data inside the region
 
-ind = inpolygon(ebsd,region);
+in_region = inpolygon(ebsd,region);
 
 %%
 % and use subindexing to restrict the data
 
-ebsd(ind)
+ebsd = ebsd( in_region )
 
 %%
-% However, it is much more convinient to use subindexing to restrict the
-% data to the rectangle
-ebsd = ebsd(region)
-
 % plot
-plot(ebsd)
 
+plot(ebsd)
 
 %% Remove Inaccurate Orientation Measurements
 %
 % *By MAD*
 %
 % Most EBSD measurements contain quantities indicating inaccurate
-% measurements. Here we will use the MAD value to identify and eliminate
+% measurements. 
+
+plot(ebsd,'property','mad')
+
+%%
+% Here we will use the MAD value to identify and eliminate
 % inaccurate measurements.
 
-% extract the quantity mad 
+% extract the quantity mad
 mad = get(ebsd,'mad');
 
 % plot a histogram
@@ -127,16 +130,16 @@ ebsd_corrected = ebsd(mad<1)
 
 %%
 %
-plot(ebsd_corrected)
 
+plot(ebsd_corrected)
 
 %% 
 % *By grain size*
 %
-% Sometimes measurements that belongs to grains consisting of only very
-% few measurements can be regarded as inaccurate. In order to detect such
-% measuremens we have first to reconstruct grains from the EBSD
-% measurements using the command <EBSD.calcGrains.html segment2d>
+% Sometimes measurements belonging to grains with very few measurements can
+% be regarded as inaccurate. In order to detect such measuremens we have
+% first to reconstruct grains from the EBSD measurements using the command
+% <EBSD.calcGrains.html calcGrains>
 
 grains = calcGrains(ebsd_corrected,'threshold',10*degree)
 
@@ -149,17 +152,18 @@ hist(grainSize(grains),50)
 %%
 % Lets find all grains containing at least 5 measurements
 
-large_grains = grains(grainSize(grains) >= 5 )
+large_grains = grains( grainSize(grains) >= 5 )
 
 %%
-% It is also possible to select different grains by size and phase.
-% e.g. not indexed grains with more than 20 measurments, iron grains with
-% more than 5 measurments and at last all magnesium grains by the following
+% It is also possible to select different grains by size and phase. E.g.
+% not indexed grains with more than 20 measurments, which can be considered
+% as large missing areas, then iron grains with more
+% than 5 measurments and at last all magnesium grains by the following.
 
 large_grains = grains( ...
   (grains('notIndexed') & grainSize(grains)>=20) |...
-  (grains('fe') & grainSize(grains)>=5 ) | grains('mg'))
-
+  (grains('fe') & grainSize(grains)>=5 ) | ...
+   grains('mg'))
 
 %%
 % we can access the EBSD measurements belonging to these large grains by
