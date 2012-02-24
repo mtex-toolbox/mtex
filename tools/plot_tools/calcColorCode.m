@@ -1,9 +1,10 @@
-function [d,prop] = calcColorCode(obj,subset,varargin)
+function [d,prop,opts] = calcColorCode(obj,subset,varargin)
 
 prop = get_option(varargin,'property','orientation',{'char','double'});
+opts = {};
 
 if isempty(subset) || (numel(subset) == 1 && subset == 0)
-  d = [];
+  d = []; 
   return
 else
   obj = obj(subset);
@@ -24,7 +25,7 @@ elseif isa(prop,'char')
         d = ones(numel(obj),3);  % ;NaN(numel(obj),3);
       else
         if strcmpi(prop,'mis2mean'), varargin = [varargin 'r','auto']; end
-        d = orientation2color(o,colorcoding,varargin{:});
+        [d,opts] = orientation2color(o,colorcoding,varargin{:});
       end
       
       prop = ['orientation.' colorcoding];

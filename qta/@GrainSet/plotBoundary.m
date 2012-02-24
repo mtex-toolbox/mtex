@@ -85,7 +85,7 @@ if strcmpi(property,'none') % default case
     
   elseif isa(grains,'Grain2d')
     
-    obj.EdgeColor = 'r';
+    obj.EdgeColor = 'k';
     obj.FaceColor = 'none';
     
   end
@@ -106,30 +106,44 @@ else
   Dl = d(1:2:end); Dr = d(2:2:end);
   
   % delete adjacenies between different phase and not indexed measurements
-  f = sel(i(1:2:end));
-  use = phase(Dl) == phase(Dr) & isIndexed(Dl) & isIndexed(Dr);
+  f = sel(i(1:2:end));  
   
-  Dl = Dl(use); Dr = Dr(use);
-  phase = phase(Dl);
-  f = f(use);
-  
-  % find and delete adjacencies
-  epsilon = get_option(varargin,{'deltaAngle','angle','delta'},5*degree,'double');
-  
-  for p=1:numel(phaseMap)
-    currentPhase = phase == phaseMap(p);
-    if any(currentPhase)
-      
-      o_Dl = orientation(r(Dl(currentPhase)),CS{p},SS);
-      o_Dr = orientation(r(Dr(currentPhase)),CS{p},SS);
-      
-      m  = o_Dl.\o_Dr; % misorientation
-      
-      prop(currentPhase,:) = calcBoundaryColorCode(m,...
-        property,propval,epsilon,varargin{:});
-      
+  if any(strcmpi(property,{'phase','phaseboundary'}))
+    
+    prop = phase(Dl) ~= phase(Dr);
+    
+  elseif strcmpi(property,'phasetransition')
+    
+    nph = numel(phaseMap);
+    p = sort([phase(Dl),phase(Dr)],2);
+    [ignor,ignor,prop] = unique(sub2ind([nph nph],p(:,1),p(:,2)));
+ 
+  else
+    
+    use = phase(Dl) == phase(Dr) & isIndexed(Dl) & isIndexed(Dr);
+    
+    Dl = Dl(use); Dr = Dr(use);
+    f = f(use);
+    phase = phase(Dl);
+    
+    % find and delete adjacencies
+    epsilon = get_option(varargin,{'deltaAngle','angle','delta'},5*degree,'double');
+    
+    for p=1:numel(phaseMap)
+      currentPhase = phase == phaseMap(p);
+      if any(currentPhase)
+        
+        o_Dl = orientation(r(Dl(currentPhase)),CS{p},SS);
+        o_Dr = orientation(r(Dr(currentPhase)),CS{p},SS);
+        
+        m  = o_Dl.\o_Dr; % misorientation
+        
+        prop(currentPhase,:) = calcBoundaryColorCode(m,...
+          property,propval,epsilon,varargin{:});
+        
+      end
     end
-  end  
+  end
   
   if islogical(prop)
     f(~prop) = [];
@@ -138,7 +152,7 @@ else
     del = any(~isfinite(prop),2);
     f(del) = [];
     prop(del,:) = [];
-  end  
+  end
   
   obj.Faces = obj.Faces(f,:);
   
@@ -222,23 +236,23 @@ switch lower(property)
     
     val = any(find(m,propval,epsilon),2);
     
-    %   case {'csl'}
-    %
-    %     ax = axis(m(:));
-    %     om = angle(m(:));
-    %     h = Miller(ax,get(m,'CS'));
-    %     hkl = get(h,'hkl');
-    %     rm = any(abs(rem(hkl,1))> 10^-5,2);
-    %     hkl = abs(round(hkl(~rm,:)));
-    %     mm = round( sqrt( sum(hkl.^2,2) )./tan(om(~rm)/2));
-    %     N = sum(mod([hkl mm],2),2);
-    %     alpha = N;
-    %     alpha(mod(N,2) == true) = 1;
-    %     sigma = sum([hkl mm].^2,2)./alpha;
-    %     sigma(sigma>100 | sigma <3) = NaN;
-    %     val = NaN(size(m(:)));
-    %     val(~rm) = sigma;
-    %
+  case {'csl'}
+    
+    ax = axis(m(:));
+    om = angle(m(:));
+    h = Miller(ax,get(m,'CS'));
+    hkl = get(h,'hkl');
+    rm = any(abs(rem(hkl,1))> 10^-5,2);
+    hkl = abs(round(hkl(~rm,:)));
+    mm = round( sqrt( sum(hkl.^2,2) )./tan(om(~rm)/2));
+    N = sum(mod([hkl mm],2),2);
+    alpha = N;
+    alpha(mod(N,2) == true) = 1;
+    sigma = sum([hkl mm].^2,2)./alpha;
+    sigma(sigma>10 | sigma <3) = NaN;
+    val = NaN(size(m(:)));
+    val(~rm) = sigma;
+    
   case {'miller','vector3d','cell'}
     % special rotation, such that m*h_1 = h_2,
     
