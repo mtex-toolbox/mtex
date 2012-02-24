@@ -29,9 +29,8 @@ plot(ebsd,'property','phase')
 % the box is indicating a region of interest (RoI).
 
 legend off
-region = polygon([19000 1500; 23000 1500; 23000 3000; 19000 3000; 19000 1500]);
-hold on
-plot(region,'color','k','linewidth',2)
+region = [19000 1500; 23000 1500; 23000 3000; 19000 3000; 19000 1500];
+line(region(:,1),region(:,2),'color','k','linewidth',2)
 hold off
 
 %%
@@ -42,7 +41,7 @@ ebsd_region = ebsd(inpolygon(ebsd,region))
 %% Recover grains
 % Next we reconstruct the grains (and grain boundareis in the region of interest
 
-[grains ebsd_region] = calcGrains(ebsd_region,'angle',15*degree)
+grains = calcGrains(ebsd_region,'angle',15*degree)
 
 %% Plot grain boundaries and phase
 % (RoI) Detailed phase map with measurement locations and reconstructed grain
