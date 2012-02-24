@@ -8,28 +8,44 @@ function c = char(m,varargin)
 c = [];
 
 for i = 1:length(m)
-
-  if check_option(m,{'uvw','directions'}) || check_option(varargin,{'uvw','directions'})
   
-    uvtw = v2d(subsref(m,i));
-
-    s = ['[',barchar(uvtw,varargin{:}),']'];
-
+  if check_option(m,{'uvw','directions'}) || ...
+      check_option(varargin,{'uvw','directions'})
+    
+    h = v2d(subsref(m,i));
+    
+    if check_option(varargin,{'tex','latex'})
+      leftBracket = '\left\langle ';
+      rightBracket = '\right\rangle';
+    else
+      leftBracket = '<';
+      rightBracket = '>';
+    end
+    
   else
     
-    hkl = v2m(subsref(m,i),varargin{:});
+    h = v2m(subsref(m,i),varargin{:});
+    if check_option(varargin,{'tex','latex'})
+      leftBracket = '\{';
+      rightBracket = '\}';
+    else
+      leftBracket = '{';
+      rightBracket = '}';
+    end
     
-    if all(round(hkl)==hkl)
-      s = barchar(hkl,varargin{:});
+    if all(round(h)==h)
+      s = barchar(h,varargin{:});
     else
       s = '---';
     end
     
     if ~check_option(varargin,'NO_SCOPES')
-      s = ['(',s,')']; %#ok<AGROW>
-    end    
+      s = ['\{',s,'\}']; %#ok<AGROW>
+    end
   end
-
+  
+  s = [leftBracket barchar(h,varargin{:}) rightBracket];
+  
   c = strcat(c,s);
 end
 
@@ -39,8 +55,23 @@ function s=barchar(i,varargin)
 s = '';
 for j = 1:length(i)
   if (i(j)<0) && check_option(varargin,'latex')
-		s = [s,'\bar{',int2str(-i(j)),'}']; %#ok<AGROW>
+    s = [s,'\bar{',int2str(-i(j)),'}']; %#ok<AGROW>
   else
     s = [s,int2str(i(j))]; %#ok<AGROW>
   end
 end
+
+function [l,r] = localBrackets(b,varargin)
+
+l = b(1); r = b(2);
+if check_option(varargin,{'tex','latex'})
+  l = ['\' l]; r = ['\' r];
+end
+
+
+
+
+
+
+
+
