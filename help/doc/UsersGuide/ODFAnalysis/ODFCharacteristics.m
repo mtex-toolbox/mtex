@@ -69,7 +69,7 @@ entropy(odf2)
 % close to a given orientation is computed by the command
 % [[ODF.volume.html,volume]] and the relative volume of crystals having a 
 % orientation close to a given fibre is computed by the command
-% [[ODF.fibrevolume.html,fibrevolume]]
+% [[ODF.fibreVolume.html,fibreVolume]]
 
 %%
 % The relative volume of crystals with missorientation maximum 30 degree
@@ -79,7 +79,7 @@ volume(odf3,calcModes(odf3),30*degree)
 %%
 % The relative volume of crystals with missorientation maximum 20 degree
 % from the prefered fibre:
-fibrevolume(odf2,Miller(0,0,1),xvector,20*degree)  
+fibreVolume(odf2,Miller(0,0,1),xvector,20*degree)  
 
 
 %% Fourier Coefficients

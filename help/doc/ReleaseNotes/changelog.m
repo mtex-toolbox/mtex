@@ -310,7 +310,7 @@
 %
 % *New Functions*
 %
-% * [[ODF.fibrevolume.html,fibrevolume]] calculates the
+% * [[ODF.fibreVolume.html,fibreVolume]] calculates the
 % volume fraction within a fibre.
 % * [[ODF.plotFourier.html,plotFourier]] plots the Fourier
 % coefficients of an ODF.
