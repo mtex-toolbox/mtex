@@ -1,15 +1,38 @@
-%% ToDo List
+%% Roadmap
 %
 %% Contents
 %
-%% Assigned to MTEX 3.1
+%% Assigned to Next Minor Release
 %
-%% Computation of Material Properties
+% *Kernel Density Estimation*
 %
-% Compute various macroscopic material properties for EBSD data and ODFs.
-%
+% Improve automatic optimal kernel detection from EBSD data
 
-%% EBSD Statistics
+%% Planned for Next Minor Release
+%
+% *Grain Boundary Analysis* (Florian Bachmann)
+%
+% * Compute grain boundary planes.
+% * Analyze and visualize the distribution of grain boundary planes.
+% * Classify twist / tild grain boundaries.
+% 
+% *Plotting*: support datacursor for spherical projections, (pole figures,
+% inverse pole figure, odf plots) to get coordinate (and function value)
+%
+%% Assigned to Next Major Release
+%
+% *Robust Mean Computation*
+%
+% Find and implement an algorithm that finds under certain conditions the
+% true mean orientation for a given set of orientations!
+%
+% *Bingham Distribution*
+%
+% compute Fouriercoefficients of Bingham ODFs.
+%
+%% Future
+%
+% *EBSD Statistics*
 %
 % Implement results of K. G. v.d. Boogaart dissertation. i.e. allow MTEX to
 % answer the following questions:
@@ -17,28 +40,62 @@
 % * is a EBSD data set a random sample of a certain ODF
 % * are two EBSD data sets random sample of the same ODF
 %
-%% Misorientation Analysis
+% *Misorientation Analysis*
 %
 % Allow to compute an misorientation ODF from EBSD data. Therefore, a new
 % class MODF is needed which differs from an ordinary ODF by the fact
 % that the specimen symmetry is replaced by the crystal symmetry of the
 % second phase.
 %
-% *This requires a better find functionality in SO3Grid*
+% This requires a better find functionality in SO3Grid
+%
 % * allow volume computation for miss axes
 % * allow annotations in misaxes plot
 %
-%% Grain Boundary Analysis (Florian Bachmann)
+% *ODF Analysis*
 %
-% * Compute grain boundary planes.
-% * Analyze and visualize the distribution of grain boundary planes.
-% * Classify twist / tild grain boundaries.
+% Provide a function that is able to approximate an ODF by a small number
+% of simple components, i.e. unimodal components and fibres.
 %
-%% Single Grain Analysis
+% *Joined Counts*
 %
-% Detect polar, oblate and spherical grains.
+% Incorporate the results of Müller.
 %
-%% Topological Grain Data Structure (Florian Bachmann)
+% *Grain Simulation*
+%
+% Allow to simulate grains under certain assumptions. To be used for
+% joined counts statistics and ODF -> MODF analysis.
+%
+% *Voronoi Decomposition of the Orientation Space*
+%
+% Use the Rodriguez representation to compute an Voronoi neighborhood
+% graph of a set of orientations. This can be used for faster searching
+% in SO3Grids and for the decomposition of ODFs into components.
+%
+% *New Class Fibre*
+%
+% Implement a new class fibre, which can be used for any computations
+% involving fibres.
+%
+% *Minor Improvements*
+%
+% * EBSD colorcoding
+% * fix crystal coordinate system for symmetry 2/m
+% * improve template files
+% * say explicetly in generic wizard which columns has to
+% be specified
+% * implement grain/rotate, grain/flipud, grain/fliplr
+% * better ODF import / export
+% * add kernel names by Matthies
+%
+%% Supported/Implemented since MTEX 3.3
+%
+% *Single Grain Analysis*
+%
+% * Detect polar, oblate and spherical grains.
+% * Profiles thourgh grains
+%
+% *Topological Grain Data Structure* (Florian Bachmann)
 %
 % The function segment2d should provide a grain class that allows to
 % answer questions like:
@@ -49,53 +106,15 @@
 % Therefore not only the neigbouring grains has to be stored in the grain
 % object but also the line segment representing the grain boundary.
 %
-%% Kernel Density Estimation
+%% Supported/Implemented since MTEX 3.1
 %
-% Improve automatic optimal kernel detection from EBSD data
+% *Computation of Material Properties*
 %
-%% ODF Analysis
+% Compute various macroscopic material properties for EBSD data and ODFs.
 %
-% Provide a function that is able to approximate an ODF by a small number
-% of simple components, i.e. unimodal components and fibres.
+%% Supported/Implemented since MTEX 3.*
 %
-%% Bingham Distribution
+% *Bingham Distribution*
 %
-% Implement Bingham parameter estimation from EBSD data and compute Fourier
-% coefficients of Bingham ODFs.
-%
-%% Joined Counts
-%
-% Incorporate the results of Müller.
-%
-%% Grain Simulation
-%
-% Allow to simulate grains under certain assumptions. To be used for
-% joined counts statistics and ODF -> MODF analysis.
-%
-%% Voronoi Decomposition of the Orientation Space
-%
-% Use the Rodriguez representation to compute an Voronoi neighborhood
-% graph of a set of orientations. This can be used for faster searching
-% in SO3Grids and for the decomposition of ODFs into components.
-%
-%% Robust Mean Computation
-%
-% Find and implement an algorithm that finds under certain conditions the
-% true mean orientation for a given set of orientations!
-%
-%% New Class Fibre
-%
-% Implement a new class fibre, which can be used for any computations
-% involving fibres.
-%
-%% Minor Improvements
-%
-% * EBSD colorcoding
-% * fix crystal coordinate system for symmetry 2/m
-% * improve template files
-% * say explicetly in generic wizard which columns has to
-% be specified
-% * implement grain/rotate, grain/flipud, grain/fliplr
-% * better ODF import / export
-% * add kernel names by Matthies
+% Implement Bingham parameter estimation from EBSD data 
 %
