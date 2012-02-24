@@ -1,4 +1,4 @@
-function v = fibrevolume(odf,h,r,radius,varargin)
+function v = fibreVolume(odf,h,r,radius,varargin)
 % ratio of orientations with a certain orientation
 %
 %% Description
@@ -6,7 +6,7 @@ function v = fibrevolume(odf,h,r,radius,varargin)
 % distance from a given fibre
 %
 %% Syntax
-%  v = fibrevolume(odf,h,r,radius,<options>)
+%  v = fibreVolume(odf,h,r,radius,<options>)
 %
 %% Input
 %  odf    - @ODF
@@ -27,7 +27,7 @@ argin_check(r,'vector3d');
 argin_check(radius,'double');
 
 if ~strcmp(Laue(odf(1).SS),'-1')
-  error('Only triclinic specimen symmetry is supported for fibrevolume');
+  error('Only triclinic specimen symmetry is supported for fibreVolume');
 end
 
 % get resolution

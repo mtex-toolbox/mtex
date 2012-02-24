@@ -76,7 +76,7 @@ mean(odf)                      % the mean orientation
 max(odf)
 
 volume(odf,centerODF,5*degree)    % the volume of a ball
-fibrevolume(odf2,h,r,5*degree) % the volume of a fibre
+fibreVolume(odf2,h,r,5*degree) % the volume of a fibre
 
 textureindex(odf)         % the texture index
 entropy(odf)              % the entropy
