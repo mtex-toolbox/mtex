@@ -220,6 +220,7 @@ switch property
       val = min(propval) <= val & val <= max(propval);
       
     else
+      
       val = abs(propval-val)<= epsilon;
       
     end
@@ -228,13 +229,40 @@ switch property
     
     val = any(find(m,propval,epsilon),2);
     
-  case {'Miller','vector3d'}
+  case 'vector3d'
     
-    val = any(reshape(angle(symmetrise(m)*propval,propval)<epsilon,[],numel(mo)),1)';
+    val = angle(axis(m),propval) < epsilon;
+    
+  case {'miller','cell'}
+    % special rotation, such that m*h_1 = h_2,
+    
+    if strcmp(property,'cell'),
+      h = [propval{[1 end]}];
+    else
+      h = propval;
+    end
+    
+    if isa(h,'Miller')
+      h = ensureCS(get(m,'CS'),ensurecell(h));
+    end
+    
+    h = ensurecell(h);
+    
+    gr = symmetrise(vector3d(h{end}),get(m,'CS'));
+    gh = symmetrise(vector3d(h{1}),get(m,'CS'));
+    
+    p = quaternion(m(:))*gh;
+    if numel(h) > 1
+      p =  [p quaternion(inverse(m(:)))*gh];
+    end
+    
+    val =  false(size(m(:)));
+    for l=1:numel(gr)
+      val = val | min(angle(p,gr(l)),[],2) < epsilon;
+    end
     
   otherwise
     
     error('unknown property')
     
 end
-

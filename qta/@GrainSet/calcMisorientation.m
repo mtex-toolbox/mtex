@@ -29,7 +29,7 @@ if check_option(varargin,'mis2mean')
   
 elseif check_option(varargin,'uncorrelated')
   
-  mori = calcMisorientation(get(grains,'ebsd'),varargin{:});
+  mori = calcMisorientation(grains.EBSD,varargin{:});
   
 else
   
