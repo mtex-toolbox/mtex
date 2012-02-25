@@ -48,6 +48,12 @@ cstar = normalize(cross(a,b));
 % restrict to strings
 varargin = varargin(cellfun(@(s) ischar(s),varargin));
 
+% which arguments should be flipped
+flipthem = ~cellfun('isempty',regexpi(varargin,'\|\|[xyz]'));
+
+% now flip them
+varargin(flipthem) = cellfun(@(a) [a(end:-1:end-2) a(1:end-3)],varargin(flipthem),'UniformOutput',false);
+
 % if nothing or only Y is specified set Z||c
 if ~any(cell2mat(regexpi(varargin,'[xz]\|\|')))
   varargin = [varargin,{'Z||c'}];

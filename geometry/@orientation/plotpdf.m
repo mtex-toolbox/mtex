@@ -2,11 +2,11 @@ function plotpdf(o,h,varargin)
 % plot pole figures
 %
 %% Syntax
-% plotpdf(ebsd,[h1,..,hN],<options>)
+% plotpdf(ori,[h1,..,hN],<options>)
 %
 %% Input
-%  ebsd - @EBSD
-%  h    - @Miller crystallographic directions
+%  ori - @orientation
+%  h   - @Miller crystallographic directions
 %
 %% Options
 %  SUPERPOSITION - plot superposed pole figures
@@ -17,7 +17,7 @@ function plotpdf(o,h,varargin)
 %  COMPLETE - plot entire (hemi)--sphere
 %
 %% See also
-% EBSD/plotebsd S2Grid/plot savefigure
+% orientation/plotipdf S2Grid/plot savefigure
 % Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
