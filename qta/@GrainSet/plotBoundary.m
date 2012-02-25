@@ -232,8 +232,6 @@ switch lower(property)
     
   case {'quaternion','rotation','orientation','so3grid'}
     
-    epsilon = get_option(varargin,'delta',5*degree,'double');
-    
     val = any(find(m,propval,epsilon),2);
     
   case {'csl'}
@@ -253,10 +251,12 @@ switch lower(property)
     val = NaN(size(m(:)));
     val(~rm) = sigma;
     
-  case {'miller','vector3d','cell'}
-    % special rotation, such that m*h_1 = h_2,
+  case 'vector3d'
     
-    epsilon = get_option(varargin,'delta',5*degree,'double');
+    val = angle(axis(m),propval) < epsilon;
+    
+  case {'miller','cell'}
+    % special rotation, such that m*h_1 = h_2,
     
     if strcmp(property,'cell'),
       h = [propval{[1 end]}];

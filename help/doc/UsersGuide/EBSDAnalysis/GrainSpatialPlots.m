@@ -218,5 +218,14 @@ hold on
 plotBoundary(grains,'property',{Miller(1,1,1),Miller(0,0,1)},'delta',2*degree,...
   'color','g','linewidth',1.5)
 
+%%
+% *misorientation axis*
+
+plotBoundary(grains)
+hold on
+plotBoundary(grains,'property',vector3d(1,1,1),'delte',2*degree,...
+  'color','b','linewidth',1.5)
+
+
 
 
