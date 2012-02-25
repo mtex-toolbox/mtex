@@ -22,7 +22,7 @@ mtexdata aachen
 % calcGrains>. As an optional argument the desired threshold angle for
 % missorientations defining a grains boundary can be specified.
 
-[grains ebsd] = calcGrains(ebsd,'threshold',12.5*degree)
+grains = calcGrains(ebsd,'threshold',12.5*degree)
 
 %%
 % In order to verify the result let us plot the grain boundaries into the
@@ -47,7 +47,7 @@ plot(grains)
 
 grains(1)
 
-plot(grains([128 201 250]))
+plot(grains([1181 2588]))
 
 %% Grain properties 
 %
@@ -81,12 +81,9 @@ plot(large_grains)
 %
 % The following command extracts the grain id from a certain grain
 
-id = get(grains(20),'id')
+ebsd_grain = get(grains(2588), 'EBSD')
 
-%%
-% Next we restrict our EBSD data to those measurements belonging to this
-% particular grain
-ebsd_grain = ebsd(get(ebsd,'grain_id') == id)
+plot(ebsd_grain)
 
 %%
 % Let us apply this technique to determine the measurements within the
@@ -97,7 +94,7 @@ max_grain = grains(id)
 
 %%
 % The corresponding EBSD data may directly adressed by
-ebsd_max_grain = ebsd(max_grain)
+ebsd_max_grain = get(max_grain,'EBSD')
 
 %%
 % plot the EBSD data for this grain
@@ -113,10 +110,15 @@ plot(ebsd_max_grain)
 mad = get(ebsd,'mad');
 
 % the EBSD data with bad MAD
-bad_ebsd = ebsd(mad > 1.2)
+bad_ebsd = ebsd(mad > 1)
 
 % select grains containing data with bad MAD
 bad_grains = grains(bad_ebsd)
 
+
 % plot them
 plot(bad_grains)
+
+
+
+

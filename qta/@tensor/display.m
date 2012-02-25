@@ -76,9 +76,5 @@ end
 
 cprintf(M,'-L',' ','-ic','|F');
 
+disp(docmethods(inputname(1)))
   
-
-
-
-
-

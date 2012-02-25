@@ -14,7 +14,7 @@
 
 mtexdata aachen
 
-[grains ebsd] = calcGrains(ebsd,'threshold',12.5*degree)
+grains = calcGrains(ebsd,'threshold',12.5*degree)
 
 %% Grain-size Analysis
 % Since a grain is associated with a <polygon_index.html polygon>, we can determine properties

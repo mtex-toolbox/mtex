@@ -2,12 +2,12 @@ function ebsd = fill(ebsd,cube,dx)
 % extrapolate spatial EBSD data by nearest neighbour for tetragonal lattice
 %
 %% Input
-% ebsd  -  @EBSD
-% cube  -  a cube with extends [xmin xmax ymin ymax zmin zmax]
-% dx    -  stepsize
+% ebsd - @EBSD
+% cube - a cube with extends [xmin xmax ymin ymax zmin zmax]
+% dx   - stepsize
 %
 %% Example
-% fill(ebsd,extend(ebsd),.6)
+%  ebsd_filled = fill(ebsd,extend(ebsd),.6)
 %
 
 %% extract spatial coordinates
@@ -37,10 +37,18 @@ end
 
 %% fill ebsd variable
 
-ebsd.rotations = ebsd.rotations(ci);
-ebsd.phase = ebsd.phase(ci);
+ebsd.rotations = reshape(ebsd.rotations(ci),[],1);
+ebsd.phase = reshape(ebsd.phase(ci),[],1);
 
 for fn = fieldnames(ebsd.options).'
   if any(strcmp(char(fn),{'x','y','z'})), continue;end
   ebsd.options.(char(fn)) = ebsd.options.(char(fn))(ci);
 end
+
+X = [ebsd.options.x(:),ebsd.options.y(:)];
+if isfield(ebsd.options,'z')
+  X = [X ebsd.options.z(:)];
+end
+
+ebsd.unitCell = calcUnitCell(X);
+

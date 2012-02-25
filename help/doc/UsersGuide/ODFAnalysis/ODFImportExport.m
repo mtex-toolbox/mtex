@@ -1,4 +1,4 @@
-%% Import and Export of ODF Data
+%% Importing and Exporting ODF Data
 % Read and write ODFs to a Data file
 %
 %% Open in Editor 
@@ -50,7 +50,7 @@ export(model_odf,fname,'Bunge')
 % value of the ODF at this specific position.
 
 % the filename
-fname = [mtexDataPath '/odf/odf.txt'];
+fname = fullfile(mtexDataPath, 'odf', 'odf.txt');
 
 % export the ODF
 export(model_odf,fname,'Bunge','generic')

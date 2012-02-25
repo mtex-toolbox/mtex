@@ -78,3 +78,27 @@ setappdata(gcf,'CS',cs);
 setappdata(gcf,'options',extract_option(varargin,'antipodal'));
 set(gcf,'Name',['Inverse Pole figures of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
 set(gcf,'Tag','ipdf');
+
+
+%% set data cursor
+dcm_obj = datacursormode(gcf);
+set(dcm_obj,'SnapToDataVertex','off')
+set(dcm_obj,'UpdateFcn',{@tooltip});
+
+datacursormode on;
+
+
+%% Tooltip function
+function txt = tooltip(empt,eventdata) %#ok<INUSL>
+
+pos = get(eventdata,'Position');
+xp = pos(1); yp = pos(2);
+
+rho = atan2(yp,xp);
+rqr = xp^2 + yp^2;
+theta = acos(1-rqr/2);
+
+m = Miller(vector3d('polar',theta,rho),getappdata(gcf,'CS'));
+
+txt = char(m,'tolerance',3*degree);
+

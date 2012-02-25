@@ -1,3 +1,5 @@
+%% TODO
+
 %% Analysis of 3d EBSD data
 % Import, analysis, and visualization of 3d EBSD data
 %
@@ -42,7 +44,7 @@ segAngle = 10*degree;
 % Then the grains are reconstructed by the command <EBSD.calcGrains.html
 % calcGrains>
 
-[grains ebsd] = calcGrains(ebsd,'threshold',segAngle,'unitcell')
+grains = calcGrains(ebsd,'threshold',segAngle)
 
 
 %% Working on grains
@@ -51,7 +53,7 @@ segAngle = 10*degree;
 
 plot(grains(906),'facecolor','g','edgecolor',[0.8 0.8 0.8],'facealpha',0.3)
 hold on
-plotSubBoundary(grains(906),'FaceColor','c','boundarycolor','r','edgecolor',[0.8 0.8 0.8])
+plotBoundary(grains(906),'internal','FaceColor','c','boundarycolor','r','edgecolor',[0.8 0.8 0.8])
 
 view([160 20])
 
@@ -94,43 +96,13 @@ lighting phong
 smooth_grains = smooth(grains,10);
 
 %%
-% Advanced investigation of grain boundaries:
-% to investigate the misorientation angle between two neighbour grains
-% we select first a large grain and all of its neighbors 
-
-grain = smooth_grains(smooth_grains == largeGrains(18));
-neighbouredGrains = neighbours(smooth_grains,grain)
-
-%%
-% plotting the common boundary needs selection of a partner grain, otherwise
-% all grain boundaries of a set of neighbour crystals will be considered
-
-figure, hold on
-
-for partnerGrain = neighbouredGrains
-  if partnerGrain ~= grain
-   plotBoundary([grain partnerGrain],'property','angle','FaceAlpha',1,'BoundaryColor','k');
-  end
-end 
-colorbar
-
-plot(neighbouredGrains(1:end-2),'facealpha',0.1,'edgecolor','k')
-
-view([150 20])
-material dull
-
-camlight('headlight')
-lighting phong
-
-
-%%
 % observer intergranular misorientation
 
 plot(smooth_grains(906),...
   'FaceColor','g','EdgeColor',[0.7 0.7 0.7],'FaceAlpha',0.05)
 
 hold on, 
-plotSubBoundary(smooth_grains(906),...
+plotBoundary(smooth_grains(906),'internal',...
   'FaceColor','c','BoundaryColor','r','EdgeColor','k')
 
 %slice3( misorientation(grains,ebsd),'y',1.25,'property','angle',...

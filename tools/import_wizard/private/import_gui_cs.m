@@ -52,22 +52,39 @@ uicontrol(...
 
 cs = uibuttongroup('title','Crystal Coordinate System',...
   'Parent',this_page,...
-  'units','pixels','position',[0 ph-260 w-20 150]);
+  'units','pixels','position',[0 ph-260 w-20 160],...
+  'SelectionChangeFcn',@update_cs);
+
+handles.csframe = cs;
+
+handles.indexed(1) = uicontrol(...
+  'Parent',cs,...
+  'String','Indexed',...
+  'Style','radio',...
+  'Position',[10 115 150 15],...
+  'Visible','off');
+
+handles.indexed(2) = uicontrol(...
+  'Parent',cs,...
+  'String','Not Indexed',...
+  'Style','radio',...
+  'Position',[95 115 150 15],...
+  'Visible','off');
 
 uicontrol(...
- 'Parent',cs,...
+  'Parent',cs,...
   'String','Laue Group',...
   'HitTest','off',...
   'Style','text',...
   'HorizontalAlignment','left',...
-  'Position',[10 95 100 15]);
+  'Position',[10 85 80 15]);
 
 handles.crystal = uicontrol(...
   'Parent',cs,...
   'BackgroundColor',[1 1 1],...
   'FontName','monospaced',...
   'HorizontalAlignment','left',...
-  'Position',[95 95 180 20],...
+  'Position',[95 85 180 20],...
   'String',blanks(0),...
   'Style','popup',...
   'CallBack',@update_cs,...
@@ -79,7 +96,7 @@ handles.axis_alignment1 = uicontrol(...
   'BackgroundColor',[1 1 1],...
   'FontName','monospaced',...
   'HorizontalAlignment','left',...
-  'Position',[290 95 80 20],...
+  'Position',[290 85 80 20],...
   'String',blanks(0),...
   'Style','popup',...
   'String',alignments,...
@@ -90,7 +107,7 @@ handles.axis_alignment2 = uicontrol(...
   'BackgroundColor',[1 1 1],...
   'FontName','monospaced',...
   'HorizontalAlignment','left',...
-  'Position',[385 95 80 20],...
+  'Position',[385 85 80 20],...
   'String',blanks(0),...
   'Style','popup',...
   'String',alignments,...
@@ -102,14 +119,14 @@ uicontrol(...
   'HitTest','off',...
   'Style','text',...
   'HorizontalAlignment','left',...
-  'Position',[10 55 100 15]);
+  'Position',[10 50 100 15]);
 uicontrol(...
   'Parent',cs,...
   'String','Axis Angle',...
   'HitTest','off',...
   'Style','text',...
   'HorizontalAlignment','left',...
-  'Position',[10 20 100 15]);
+  'Position',[10 15 100 15]);
 
 axis = {'a','b','c'};
 angle=  {'alpha', 'beta', 'gamma'};
@@ -120,20 +137,20 @@ for k=1:3
     'HitTest','off',...
     'Style','text',...
     'HorizontalAlignment','right',...
-    'Position',[130+120*(k-1) 55 30 15]);
+    'Position',[130+120*(k-1) 50 30 15]);
   uicontrol(...
     'Parent',cs,...
     'String',angle{k},...
     'HitTest','off',...
     'Style','text',...
     'HorizontalAlignment','right',...
-    'Position',[110+120*(k-1) 20 50 15]);
+    'Position',[110+120*(k-1) 15 50 15]);
   handles.axis{k} = uicontrol(...
     'Parent',cs,...
     'BackgroundColor',[1 1 1],...
     'FontName','monospaced',...
     'HorizontalAlignment','left',...
-    'Position',[165+120*(k-1) 50 60 25],...
+    'Position',[165+120*(k-1) 45 60 25],...
     'String',blanks(0),...
     'Style','edit');
   handles.angle{k} = uicontrol(...
@@ -141,7 +158,7 @@ for k=1:3
     'BackgroundColor',[1 1 1],...
     'FontName','monospaced',...
     'HorizontalAlignment','left',...
-    'Position',[165+120*(k-1) 15 60 25],...
+    'Position',[165+120*(k-1) 10 60 25],...
     'String',blanks(0),...
     'Style','edit');
 end
@@ -155,10 +172,31 @@ setappdata(wzrd,'handles',handles);
 
 function goto_callback(varargin)
 
+handles = getappdata(gcf,'handles');
+
+if isa(getappdata(gcf,'data'),'EBSD')
+  set(handles.indexed,'visible','on');
+else
+  set(handles.indexed,'visible','off');
+  pos = get(gcf,'Position'); w = pos(3);
+  set(handles.csframe,'Position',[0 40 w-20 130]);
+end
+
 get_cs(gcbf);
 
 
 function leave_callback(varargin)
+
+handles = getappdata(gcf,'handles');
+
+if isa(getappdata(gcf,'data'),'EBSD')
+  set(handles.indexed,'visible','on');
+else
+  set(handles.indexed,'visible','off');
+  pos = get(gcf,'Position');
+  w = pos(3);
+  set(handles.csframe,'Position',[0 10 w-20 160]);
+end
 
 set_cs(gcbf);
 
@@ -209,53 +247,68 @@ handles = getappdata(gcf,'handles');
 data = getappdata(gcf,'data');
 
 if isa(data,'cell')
- data = data{1};
+  data = data{1};
 end
 
 % set page name
 if isa(data,'EBSD')
-
-  ph = unique(get(data,'phases'));
-
+  phase = get(data,'phaseMap');
   cs_counter = getappdata(gcf,'cs_count');
   CS = get(data,'CSCell');
-  phase = ph(cs_counter);
-  cs = CS{phase};
-  pagename = ['Set Crystal Geometry for Phase ' num2str(phase)];
+  cs = CS{cs_counter};
+  pagename = ['Set Crystal Geometry for Phase ' num2str(phase(cs_counter))];
   setappdata(handles.pages(3),'pagename',pagename );
 else
   cs = get(data,'CS');
 end
 
-csname = strmatch(Laue(cs),symmetries);
-set(handles.crystal,'value',csname(1));
+Childs = get(handles.csframe,'Children');
 
-% set alignment
-al = [get(cs,'alignment'),{'',''}];
-set(handles.axis_alignment1,'value',find(strcmp(alignments,al{1})));
-set(handles.axis_alignment2,'value',find(strcmp(alignments,al{2})));
-
-% set axes
-[c, angle] = get_axisangel(cs);
-
-for k=1:3
-  set(handles.axis{k},'String',c(k));
-  set(handles.angle{k},'String',angle{k});
+if ischar(cs)
+  
+  set(handles.indexed(1),'Value',0);
+  set(handles.indexed(2),'Value',1);
+  
+  set(Childs(1:end-2),'Enable','off');
+  
+  set(handles.mineral,'string',cs);
+  
+else
+  
+  set(handles.indexed(1),'Value',1);
+  set(handles.indexed(2),'Value',0);
+  
+  csname = strmatch(Laue(cs),symmetries);
+  set(handles.crystal,'value',csname(1));
+  
+  set(Childs(1:end-2),'Enable','on');
+  
+  % set alignment
+  al = [get(cs,'alignment'),{'',''}];
+  set(handles.axis_alignment1,'value',find(strcmp(alignments,al{1})));
+  set(handles.axis_alignment2,'value',find(strcmp(alignments,al{2})));
+  
+  % set axes
+  [c, angle] = get_axisangel(cs);
+  
+  for k=1:3
+    set(handles.axis{k},'String',c(k));
+    set(handles.angle{k},'String',angle{k});
+  end
+  
+  % set whether axes and angles can be changed
+  set([handles.axis{:} handles.angle{:}], 'Enable', 'on');
+  
+  if ~strcmp(Laue(cs),{'-1','2/m'})
+    set([handles.angle{:}], 'Enable', 'off');
+  end
+  
+  if any(strcmp(Laue(cs),{'m-3m','m-3'})),
+    set([handles.axis{:}], 'Enable', 'off');
+  end
+  % set mineral
+  set(handles.mineral,'string',get(cs,'mineral'));
 end
-
-% set whether axes and angles can be changed
-set([handles.axis{:} handles.angle{:}], 'Enable', 'on');
-
-if ~strcmp(Laue(cs),{'-1','2/m'})
-  set([handles.angle{:}], 'Enable', 'off');
-end
-
-if any(strcmp(Laue(cs),{'m-3m','m-3'})),
-  set([handles.axis{:}], 'Enable', 'off');
-end
-
-% set mineral
-set(handles.mineral,'string',get(cs,'mineral'));
 
 
 function set_cs(wzrd)
@@ -269,7 +322,7 @@ cs = symmetries(cs);
 cs = strtrim(cs{1}(1:6));
 
 for k=1:3
-  axis{k} =  str2double(get(handles.axis{k},'String')); %#ok<AGROW>
+  axis{k}  =  str2double(get(handles.axis{k},'String')); %#ok<AGROW>
   angle{k} =  str2double(get(handles.angle{k},'String')); %#ok<AGROW>
 end
 
@@ -291,16 +344,27 @@ if isa(data,'cell')
 elseif isa(data,'EBSD')
   cs_counter = getappdata(gcf,'cs_count');
   CS = get(data,'CSCell');
-  ph = get(data,'phases');
-  phase = ph(cs_counter);
-  CS{phase} = cs;
+  
+  if get(handles.indexed(1),'Value')
+    CS{cs_counter} = cs;
+  else
+    mineral = get(handles.mineral,'String');
+    
+    if ~isempty(mineral)
+      CS{cs_counter} = mineral;
+    else
+      CS{cs_counter} = 'notIndexed';
+    end
+  end
+  
   data = set(data,'CS',CS,'noTrafo');
 else
   data = set(data,'CS',cs,'noTrafo');
 end
 
-
 setappdata(wzrd,'data',data);
+
+
 
 
 function fname = shrink_name(fname)

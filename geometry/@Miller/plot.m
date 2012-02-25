@@ -13,13 +13,29 @@ function plot(m,varargin)
 %% See also
 % vector3d/plot
 
+if check_option(varargin,{'smooth','contourf','contour'})
+  
+  o = extract_option(m,'antipodal');
+    
+  [maxtheta,maxrho,minrho] = getFundamentalRegionPF(m.CS,o{:},varargin{:});  
+  out = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,...
+    'RESTRICT2MINMAX',o{:},varargin{:});
+
+  x = symmetrise(m,'skipAntipodal');
+  kde = kernelDensityEstimation(x,out,varargin{:});
+  
+  plot(out,'data',kde,varargin{:});
+  return
+end
+
+
 if numel(m) > 20
   
   if check_option(varargin,'ALL')  
     m = symmetrise(m,'plot',varargin{:});
   end
   
-  plot(m.vector3d);
+  plot(m.vector3d,varargin{:});
   
   return
 end

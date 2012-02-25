@@ -1,4 +1,4 @@
-%% Import and Export of Data
+%% Importing and Exporting Data into MTEX
 % How to import and to export Pole Figure Data, EBSD Data and ODFs
 %
 %% Introduction

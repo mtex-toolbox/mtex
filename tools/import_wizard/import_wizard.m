@@ -32,7 +32,7 @@ if get_mtex_option('generate_help')
   setappdata(h,'page',1);
   set_page(h,1);
   drawnow;
-  pause(2);
+  snapnow;
   return
 end
 

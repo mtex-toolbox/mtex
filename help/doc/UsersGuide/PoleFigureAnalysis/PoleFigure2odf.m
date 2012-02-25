@@ -12,15 +12,16 @@
 
 mtexdata dubna
 
+%%
+% See <ImportPoleFigureData.html interfaces> for more infomations how to import
+% pole figure data and to create a pole figure object. 
+
 % plot pole figures
-figure('position',[359 450 749 249])
-plot(pf)
+plot(pf,'position',[100 100 560 290])
 
 
 %% ODF Estimation
-% See <ImportPoleFigureData.html interfaces> for more infomations how to import
-% pole figure data and to create a pole figure object. ODF estimation from
-% a pole figure object is done by the function 
+% ODF estimation from a pole figure object is done by the function 
 % <PoleFigure.calcODF.html calcODF>. The most simplest
 % syntax is
 
@@ -68,14 +69,15 @@ plotDiff(pf,odf)
 % calcError>.
 
 % define a unimodal ODF with the same modal orienation
-odf_modell = unimodalODF(calcModes(odf),CS,symmetry,'halfwidth',15*degree)
+odf_model = unimodalODF(calcModes(odf),...
+  CS,symmetry,'halfwidth',15*degree)
 
 % plot the pole figures
 close all;
-plotpdf(odf_modell,h,'antipodal')
+plotpdf(odf_model,h,'antipodal')
 
 % compute the difference
-calcError(odf_modell,odf)
+calcError(odf_model,odf)
 
 %% Discretization
 %
