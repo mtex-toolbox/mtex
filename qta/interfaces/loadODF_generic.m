@@ -149,12 +149,12 @@ switch method
   case 'interp'
   
     disp('  Interpolating the ODF. This might take some time...')
-    res = 3*degree;
+    res = get_option(varargin,'resolution',3*degree);
   
     % interpolate
     S3G = SO3Grid(res,cs,ss);
 
-    psi = kernel('de la Vallee Poussin','halfwidth',res);
+    psi = kernel('de la Vallee Poussin','halfwidth',1.5*res);
 
     M = K(psi,S3G,q,cs,ss);
 
