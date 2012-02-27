@@ -2,6 +2,17 @@
 %
 %% Contents
 %
+%% MTEX 3.2.3
+% 
+% *bugfix release*
+%
+% * allow zooming for multiplot objects again; change the z-order of axes
+% * symmetries allows now options a | | x additional to x | | a
+% * fix http://code.google.com/p/mtex/issues/detail?id=35
+% * fix http://code.google.com/p/mtex/issues/detail?id=38
+% * fix http://code.google.com/p/mtex/issues/detail?id=28
+% * fix export odf
+
 %% MTEX 3.2.1
 %
 % *New Features*
