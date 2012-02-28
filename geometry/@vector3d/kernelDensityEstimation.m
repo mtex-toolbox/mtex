@@ -13,6 +13,11 @@ function kde = kernelDensityEstimation(v,out,varargin)
 
 %% parse some input 
 
+if numel(v)==0
+  kde = zeros(size(out));
+  return
+end
+
 hw = get_option(varargin,'halfwidth',10*degree);
 psi = get_option(varargin,'kernel',kernel('de la vallee','halfwidth',hw));
 c = get_option(varargin,'weights',ones(numel(v),1));
