@@ -31,10 +31,7 @@ thresholds = get_option(varargin,{'angle','threshold'},15*degree,'double');
 if ~check_option(varargin,'keepNotIndexed')
   disp('  I''m removing all not indexed phases. The option "keepNotIndexed" keeps them.');
   
-  CSCell = get(ebsd,'CSCell');
-  ommit = find(cellfun('isclass',CSCell,'char'));
-  
-  ebsd = subsref(ebsd,~ismember(ebsd.phase,ommit));
+  ebsd = subsref(ebsd,~isNotIndexed(ebsd));
   
 end
 
