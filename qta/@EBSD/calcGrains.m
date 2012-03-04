@@ -170,9 +170,9 @@ A_G = I_DG'*A_Db*I_DG;                     % adjacency of grains
 
 %% interior and exterior grain boundaries
 
-sub = A_Db * I_DG & I_DG;                      % voxels that have a subgrain boundary
-[i,j] = find( diag(any(sub,2))*double(A_Db) ); % all adjacence to those
-sub = any(sub(i,:) & sub(j,:),2);              % pairs in a grain
+sub = (A_Db * I_DG & I_DG)';                      % voxels that have a subgrain boundary
+[i,j] = find( diag(any(sub,1))*double(A_Db) ); % all adjacence to those
+sub = any(sub(:,i) & sub(:,j),1);              % pairs in a grain
 
 A_Db_int = sparse(i(sub),j(sub),1,d,d);
 A_Db_ext = A_Db - A_Db_int;                        % adjacent over grain boundray
@@ -201,7 +201,7 @@ end
 [ix,iy] = find(A_Db_ext);
 D_Fext  = diag(sum(abs(I_FD(:,ix)) & abs(I_FD(:,iy)),2)>0);
 
-D_Fbg = diag(any(I_FDbg,2));
+D_Fbg   = diag(any(I_FDbg,2));
 I_FDext = (D_Fext| D_Fbg)*I_FD;
 
 [ix,iy] = find(A_Db_int);
@@ -222,28 +222,31 @@ end
 
 %% mean orientation and phase
 
-[i,j] = find(I_DG);
+[d,g] = find(I_DG);
 
-cc = full(sum(I_DG>0,1));
-cs = [0 cumsum(cc)];
+grainSize     = full(sum(I_DG>0,1));
+grainRange    = [0 cumsum(grainSize)];
+firstD        = d(grainRange(2:end));
+phase         = ebsd.phase(firstD);
+q             = quaternion(ebsd.rotations);
+meanRotation  = q(firstD);
 
-phase        = ebsd.phase(i(cs(2:end)));
-q            = quaternion(ebsd.rotations);
-meanRotation = q(i(cs(2:end)));
+indexedPhases = ~cellfun('isclass',ebsd.CS(:),'char');
+doMeanCalc    = find(grainSize(:)>1 & indexedPhases(phase));
 
-edx = cell(numel(cc),1);
-for k = find( cc > 1 )
-  edx{k} = i(cs(k)+1:cs(k+1));
+cellMean      = cell(size(doMeanCalc));
+for k = 1:numel(doMeanCalc)
+  cellMean{k} = d(grainRange(doMeanCalc(k))+1:grainRange(doMeanCalc(k)+1));
 end
+cellMean = partition(q,cellMean);
 
-emptyedx = cellfun('isempty',edx);
-qcedx(~emptyedx) = partition(q,edx(~emptyedx));
-
-for k = find( cc > 1 )
-  if ~ischar(ebsd.CS{phase(k)})
-    meanRotation(k) = mean_CS(qcedx{k},ebsd.CS{phase(k)},ebsd.SS);
-  end
+for k=1:numel(doMeanCalc)
+  qMean = project2FundamentalRegion(cellMean{k}, ...
+    ebsd.CS{phase(doMeanCalc(k))},ebsd.SS,meanRotation(doMeanCalc(k)));
+  cellMean{k} = mean(qMean);
 end
+meanRotation(doMeanCalc) = [cellMean{:}];
+
 
 %%
 
@@ -257,7 +260,7 @@ grainSet.I_DG     = logical(I_DG);
 grainSet.A_G      = logical(A_G);
 grainSet.meanRotation = meanRotation;
 % grain.rotations    = ebsd.rotations;
-grainSet.phase        = phase;
+grainSet.phase    = phase;
 %
 grainSet.I_FDext  = I_FDext;
 grainSet.I_FDsub  = I_FDsub;
@@ -307,8 +310,13 @@ onePixelGrain = full(sum(I_DG,1)) == 1;
 [id,jg] = find(I_DG(:,onePixelGrain));
 b(onePixelGrain) = D(id);
 % close single cells
-b(onePixelGrain) = cellfun(@(x) [x x(1)],  b(onePixelGrain),...
-  'UniformOutput',false);
+
+for k = find(onePixelGrain)
+  b{k} = [b{k} b{k}(1)];
+end
+% b(onePixelGrain) = cellfun(@(x) [x x(1)],  b(onePixelGrain),...
+%   'UniformOutput',false);
+
 
 cs = [0 cumsum(full(sum(I_FG~=0,1)))];
 for k=find(~onePixelGrain)
@@ -327,11 +335,4 @@ for k=find(cellfun('isclass',b(:)','cell'))
   [ignore,order] = sort(cellfun('prodofsize', boundary),'descend');
   b{k} = boundary(order);
 end
-
-
-
-
-
-
-
 
