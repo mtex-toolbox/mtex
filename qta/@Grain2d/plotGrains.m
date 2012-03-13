@@ -73,7 +73,10 @@ h = plotFaces(boundaryEdgeOrder,V,vertcat(d{:}),varargin{:});
 
 if strcmpi(property,'phase'),
   
-  dummyV = min(V(get(grains,'F'),:));
+  F = get(grains,'F');
+  F(any(F==0,2),:) = [];
+  
+  dummyV = min(V(F,:));
   
   % phase colormap
   lg = [];
