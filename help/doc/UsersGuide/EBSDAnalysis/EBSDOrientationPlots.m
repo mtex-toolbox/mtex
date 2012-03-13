@@ -81,7 +81,7 @@ plotipdf(grains('Fe'),xvector,'points',100, 'MarkerSize',3);
 
 %%
 % Once can also colorize the scatter points by certain [[EBSD.get.html,EBSD
-% properties]] or [[grain.get.html,grain properties]]
+% properties]] or [[GrainSet.get.html,grain properties]]
 
 close all;
 plotpdf(ebsd('Fe'),[Miller(1,0,0),Miller(1,1,0)],'antipodal','MarkerSize',4,...

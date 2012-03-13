@@ -1,11 +1,7 @@
-ImportEBSDData
-ModifyEBSDData
+ImportEBSDData file_new
+EBSDModifyData
 EBSD2odf
-GrainReconstruction
-GrainStatistics
-MisorientationAnalysis
-OrientationPlots
-SpatialPlots
-EBSD3dData
+EBSDOrientationPlots
+EBSDSpatialPlots
 EBSDSimulation_demo
 EBSDSimulation_spatial

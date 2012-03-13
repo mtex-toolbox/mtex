@@ -1,17 +1,13 @@
-%% Working with Grains
+%% Merging Grains
 % 
 %% Open in Editor
 %
 %% Contents
 %
 %%
-%
+% Let us start with some reconstructed grains
 
 mtexdata aachen
-
-%% 
-% get some grains
-
 grains = calcGrains(ebsd,'angle',2*degree)
 
 
@@ -27,7 +23,7 @@ grains = calcGrains(ebsd,'angle',2*degree)
 merged_grains
 
 %%
-% the next output argument |I_PC| is an incidence matrix betreen parent
+% the seconed output argument |I_PC| is an incidence matrix betreen parent
 % grains and child grains. i.e. a row indicates child, and a colum his
 % parent, if there is an entry.
 
@@ -44,32 +40,34 @@ I_PC(1000,:)
 % referres to the grain nr. of the |grains| object.
 
 parent = merged_grains(1000);
-plot(parent)
+close, plot(parent)
 
 %%
 % So, we can select the childs by
 
 childs = grains(find(I_PC(1000,:)))
 
-plot(childs)
+close, plot(childs)
 
 %%
 % With the selected child grains, we can easily do some grain statistics
 
-area(childs)./area(parent)
-
-perimeter(childs)./perimeter(parent)
+area(childs)'./area(parent)
 
 %%
-% the two populations are close together
+% Or compute the length of the common boundary
 
-close 
-plotpdf(get(childs(1),'EBSD'),Miller(1,1,1),'marker','x','markersize',5,'antipodal')
-hold on
-plotpdf(get(childs(2),'EBSD'),Miller(1,1,1),'marker','x','markersize',5,'antipodal')
+(sum(perimeter(childs)) - perimeter(parent))/2
 
 %%
-% since a row of a matrix has a 1 if a merged grain has a child, we can
+% the two populations of the EBSD of the neighbored grains are close
+% together
+
+close,   plotpdf(get(childs(1),'EBSD'),Miller(1,1,1),'marker','x','markersize',5,'antipodal')
+hold on, plotpdf(get(childs(2),'EBSD'),Miller(1,1,1),'marker','x','markersize',5,'antipodal')
+
+%%
+% Since a row of a matrix has a 1 if a merged grain has a child, we can
 % just sum up the row entries and get the child count. moreover 
 
 histc(full(sum(I_PC,2)),1:12)'
@@ -93,41 +91,50 @@ I_PC2 * I_PC;
 
 %%
 % of the incidence matrices would show us, which merged grains are the
-% grandparents of the grains. hence we have 
+% grandparents of the grains. Now we are going to plot it
 
-histc(full(sum(I_PC2*I_PC,2)),1:12)'
+close,   plot(merged_grains_20,'property',double(sum(I_PC2,2)>1),'translucent',.3)
+hold on, plot(merged_grains,   'property',double(sum(I_PC,2)>1),'translucent',.3)
+hold on,   plotBoundary(grains,'color',[.7 .7 .7])
 
-%% another
-% see here some 
+%% Merging grains with special boundaries
+% We can also merge grains with a special grain boundary relation, this
+% might be useful, if we want to arrange our grains logically in a hierarchy
 
 [merged_grains,I_PC] = merge(grains,CSL(3));
 
 %%
-% also it is 
+% Some grains show, that they form a complex, i.e. there are some merges
+
+histc(full(sum(I_PC,2)),1:12)'
+
+%%
+% Let us just select such a merged parent grain and its childs
+
+% identify the index of merged grains
+% find(sum(I_PC,2)>1)
 
 parent = merged_grains(1064)
-childs = grains (find(I_PC(1064,:)))
+childs = grains(find(I_PC(1064,:)))
 
 %%
-% menno
+% We can inspect the orientations
 
-close
-plot(childs(3),'facecolor','m')
-hold on
-plot(childs(2),'facecolor','b')
-hold on
-plot(childs(1),'facecolor','g')
+close,   plotpdf(get(childs(1),'EBSD'),Miller(0,0,1),...
+  'markercolor','g','marker','x','markersize',2,'antipodal')
+hold on, plotpdf(get(childs(2),'EBSD'),Miller(0,0,1),...
+  'markercolor','b','marker','x','markersize',2)
+hold on, plotpdf(get(childs(3),'EBSD'),Miller(0,0,1),...
+  'markercolor','m','marker','x','markersize',2)
 
-hold on,
-plotBoundary(childs,'property',CSL(3),'linewidth',3,'color','r')
+%%
+% or plot them spatially together with their special boundary
+
+close,   plot(childs(3),'facecolor','m')
+hold on, plot(childs(2),'facecolor','b')
+hold on, plot(childs(1),'facecolor','g')
+
+hold on, plotBoundary(childs,'property',CSL(3),...
+  'linewidth',3,'color','r')
+hold on, plotBoundary(parent,'linewidth',2,'color','k')
 axis tight
-
-%%
-% really amazing
-
-close 
-plotpdf(get(childs(1),'EBSD'),Miller(0,0,1),'markercolor','g','marker','x','markersize',2)
-hold on, 
-plotpdf(get(childs(2),'EBSD'),Miller(0,0,1),'markercolor','b','marker','x','markersize',2)
-hold on, 
-plotpdf(get(childs(3),'EBSD'),Miller(0,0,1),'markercolor','m','marker','x','markersize',2)

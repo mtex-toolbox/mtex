@@ -43,14 +43,12 @@ xlabel('Misorientation angles in degree')
 %%
 % The visualization of the misorientation can be done by
 
-plot(grains,'property','mis2mean')
-hold on
-plotBoundary(grains,'edgecolor','k','linewidth',0.5)
-hold off
+close,   plot(grains,'property','mis2mean')
+hold on, plotBoundary(grains,'edgecolor','k','linewidth',0.5)
 
 %% Boundary misorientations
 % The misorientation between adjacent grains can be computed by the command
-% <GrainSet_calcMisorientation.html>
+% <GrainSet.calcMisorientation.html>
 
 calcMisorientation(grains(5),grains(6))
 
@@ -66,7 +64,7 @@ calcMisorientation(grains(5),grains(6))
 % The following command plot the angle distribution of all misorientations
 % grouped according to phase trasistions.
 
-plotAngleDistribution(grains)
+close, plotAngleDistribution(grains)
 
 %%
 % The above angle distribtions can be compared with the uncorrelated angle
@@ -79,9 +77,7 @@ plotAngleDistribution(grains)
 %
 % All these steps are performed by the single command
 
-hold on
-plotAngleDistribution(grains,'ODF')
-hold off
+hold on, plotAngleDistribution(grains,'ODF')
 
 %%
 % Another possibility is to compute an uncorrelated angle distribution from
@@ -89,13 +85,13 @@ hold off
 % that are sufficently far from each other. The uncorrelated angle
 % distribution is plotted by
 
-plotAngleDistribution(grains,'uncorrelated')
+close, plotAngleDistribution(grains,'uncorrelated')
 
 %%
 % In order to consider only a specific phase transistion one can use the
 % syntax
 
-plotAngleDistribution(grains('Fe'),grains('Mg'),'uncorrelated')
+close, plotAngleDistribution(grains('Fe'),grains('Mg'),'uncorrelated')
 
 %% The axis distribution
 % 
@@ -122,7 +118,7 @@ hold off
 % comparison we plot the axis distribiution of the boundary misorientations
 % also as a density plot.
 
-plotAxisDistribution(grains('Fe'),'antipodal','contourf')
+close, plotAxisDistribution(grains('Fe'),'antipodal','contourf')
 
 colorbar
 

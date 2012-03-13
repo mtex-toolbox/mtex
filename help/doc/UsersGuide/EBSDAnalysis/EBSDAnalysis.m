@@ -5,7 +5,7 @@
 %
 %%
 % EBSD Data is stored in the class <EBSD_index.html EBSD> and in the latter
-% the class <grain_index.html grain> holds modelled grains.
+% the class <GrainSet_index.html grain> holds modelled grains.
 % The following mindmap may induce an general idea analysing EBSD Data with
 % MTEX.
 %

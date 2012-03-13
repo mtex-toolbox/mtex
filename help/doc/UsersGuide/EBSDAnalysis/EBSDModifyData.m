@@ -17,7 +17,7 @@ plot(ebsd)
 % indexed data called phase _not Indexed_. They can be visualized by a
 % spatial phase plot
 
-plot(ebsd,'property','phase')
+close, plot(ebsd,'property','phase')
 
 %% Selecting certain phases
 % In order to restrict the data to a certain phase, the data is indexed by
@@ -34,7 +34,7 @@ ebsd({'Fe','Mg'})
 %%
 % As an example, let us plot only all not indexed data
 
-plot(ebsd('notIndexed'),'facecolor','r')
+close, plot(ebsd('notIndexed'),'facecolor','r')
 
 %% See also
 % EBSD/subsref EBSD/subsasgn
@@ -53,7 +53,7 @@ rot = rotation('axis',zvector,'angle',5*degree);
 ebsd_rot = rotate(ebsd,rot);
 
 % plot the rotated EBSD data
-close all, plot(ebsd_rot)
+close, plot(ebsd_rot)
 
 %%
 % It should be stressed, that the rotation does not only effect the spatial
@@ -63,7 +63,7 @@ close all, plot(ebsd_rot)
 % only the picture is flipped but also the color changes!
 
 ebsd_flip = fliplr(ebsd_rot);
-close all, plot( ebsd_flip )
+close, plot( ebsd_flip )
 
 %% See also
 % EBSD/rotate EBSD/fliplr EBSD/flipud EBSD/shift EBSD/affinetrans
@@ -85,7 +85,7 @@ region = [120 100;
 %%
 % plot the ebsd data together with the region of interest
 
-plot(ebsd)
+close, plot(ebsd)
 line(region(:,1),region(:,2),'color','r','linewidth',2)
 
 %%
@@ -102,7 +102,7 @@ ebsd = ebsd( in_region )
 %%
 % plot
 
-plot(ebsd)
+close, plot(ebsd)
 
 %% Remove Inaccurate Orientation Measurements
 %
@@ -111,7 +111,7 @@ plot(ebsd)
 % Most EBSD measurements contain quantities indicating inaccurate
 % measurements. 
 
-plot(ebsd,'property','mad')
+close, plot(ebsd,'property','mad')
 
 %%
 % Here we will use the MAD value to identify and eliminate
@@ -121,7 +121,7 @@ plot(ebsd,'property','mad')
 mad = get(ebsd,'mad');
 
 % plot a histogram
-hist(mad)
+close, hist(mad)
 
 %%
 
@@ -131,57 +131,7 @@ ebsd_corrected = ebsd(mad<1)
 %%
 %
 
-plot(ebsd_corrected)
+close, plot(ebsd_corrected)
 
-%% 
-% *By grain size*
-%
-% Sometimes measurements belonging to grains with very few measurements can
-% be regarded as inaccurate. In order to detect such measuremens we have
-% first to reconstruct grains from the EBSD measurements using the command
-% <EBSD.calcGrains.html calcGrains>
-
-grains = calcGrains(ebsd_corrected,'threshold',10*degree)
-
-%%
-% The histogram of the grainsize shows that there a lot of grains
-% consisting only of very few measurements.
-
-hist(grainSize(grains),50)
-
-%%
-% Lets find all grains containing at least 5 measurements
-
-large_grains = grains( grainSize(grains) >= 5 )
-
-%%
-% It is also possible to select different grains by size and phase. E.g.
-% not indexed grains with more than 20 measurments, which can be considered
-% as large missing areas, then iron grains with more
-% than 5 measurments and at last all magnesium grains by the following.
-
-large_grains = grains( ...
-  (grains('notIndexed') & grainSize(grains)>=20) |...
-  (grains('fe') & grainSize(grains)>=5 ) | ...
-   grains('mg'))
-
-%%
-% we can access the EBSD measurements belonging to these large grains by
-
-ebsd_corrected = get(large_grains,'EBSD')
-
-plot(ebsd_corrected,'property','phase')
-
-%% 
-% Now reconstruct again grains in our reduced EBSD data set
-
-grains_corrected = calcGrains(ebsd_corrected,'threshold',10*degree)
-
-plot(grains_corrected,'property','phase')
-
-%%
-% we observe that there are no small grains anymore
-
-hist(grainSize(grains_corrected),50)
 
 

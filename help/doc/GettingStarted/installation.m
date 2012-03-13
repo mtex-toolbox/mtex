@@ -10,7 +10,7 @@
 %
 %% MATLAB 
 %
-% Since MTEX is a MATLAB toolbox <http://www.mathworks.com MATLAB> 
+% Since MTEX is a MATLAB toolbox, <http://www.mathworks.com MATLAB> 
 % has to be installed in order to use MTEX. So far the MTEX toolbox 
 % has been tested with MATLAB versions 7.1 and higher. No additional addons
 % or packages are necessary.

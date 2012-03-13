@@ -4,10 +4,10 @@
 %
 %% Introduction
 % MTEX is shiped with precompiled binaries for Mac, Windows, and Linux, 32
-% and 64. However, if these binaries are for some reason not compatible wit
-% your system, you have compile them by hand. Compiling MTEX is
-% not that easy and you are encouraged to contact the author if you have
-% any problems.
+% and 64. However, if these binaries are for some reason not compatible
+% with your system, you have to compile them by hand. Compiling MTEX is not
+% that easy and you are encouraged to contact the author if you have any
+% problems.
 % 
 %% Prerequisits
 % 
