@@ -1,4 +1,4 @@
-%% EBSD Simulation
+%% Simulating EBSD data
 % How to simulate an arbitary number of individual orientations data from
 % any ODF. 
 %
@@ -65,11 +65,11 @@ e = [];
 for i = 1:6
 
   ebsd = calcEBSD(fibre_odf,10^i);
+  
   psi = calcKernel(ebsd);
   odf = calcODF(ebsd,'kernel',psi);
   e(i,1) = calcError(odf,fibre_odf,'resolution',2.5*degree);
   
-  ebsd = calcEBSD(fibre_odf,10^i);
   psi = calcKernel(ebsd,'method','RuleOfThumb');
   odf = calcODF(ebsd,'kernel',psi);
   e(i,2) = calcError(odf,fibre_odf,'resolution',2.5*degree);  

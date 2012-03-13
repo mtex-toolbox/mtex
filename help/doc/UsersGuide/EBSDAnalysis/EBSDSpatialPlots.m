@@ -36,9 +36,7 @@ colorbar('Position',[100 100 400 200])
 % The [[orientation2color.html, colorcoding]] could be specified by an
 % option
 
-close all;
-figure
-plot(ebsd('Fe'),'colorcoding','hkl')
+close all, plot(ebsd('Fe'),'colorcoding','hkl')
 
 %%
 
@@ -49,13 +47,11 @@ colorbar('Position',[100 100 300 300])
 % one needs. This can be done in two ways, either to color a certain fibre,
 % or a certain orientation.
 
-%%
-% *coloring certain fibres*
-%
+%% SUB: Coloring certain fibres
 % To color a fibre, one has to specify the crystal direction *h* together
 % with its rgb color and the specimen direction *r*, which should be marked.
 
-close all;
+close all, 
 plot(ebsd('Fe'),'colorcoding',...
   'h',{Miller(1,1,1),[0 0 1]},...
   'r',zvector,...
@@ -77,6 +73,7 @@ set(gcf,'renderer','zbuffer')
 
 vol = fibreVolume(ebsd('fe'),Miller(1,1,1),zvector,15*degree)
 
+close all;
 plotipdf(ebsd('fe'),zvector,'markercolor','k','marker','x')
 set(gcf,'renderer','opengl')
 
@@ -101,9 +98,7 @@ plot(ebsd('Fe'),'colorcoding',...
 
 colorbar('position',[100 100 300 300])
 
-%%
-% *coloring certain orientations*
-%
+%% SUB: Coloring certain orientations
 % For some reason, we are interested to locate some special orientation,
 % suppose the mode of the ODF somewhere in our spatial
 
@@ -113,6 +108,7 @@ mode = orientation('euler',90*degree,50*degree,45*degree,'ABG')
 %%
 % We can to this similiar to the coloring of fibres, namely
 
+close all;
 plot(ebsd('Fe'),'colorcoding',...
   'orientations',{mode,[0 0 1]},...
   'halfwidth',10*degree)
@@ -136,13 +132,13 @@ plot(odf,'sections',9,'antipodal','silent')
 
 %% Coloring properties
 %
-% *phase map*
+%% SUB: Phase map
 %
 
+close all;
 plot(ebsd,'property','phase')
 
-%%
-% *other properties*
+%% SUB: Other properties
 %
 % Often the individual orientation measurements come along with some other
 % properties, maybe something called background contrast, stored in our
@@ -172,6 +168,7 @@ colormap(grayColorMap)
 % |'translucent'| requires the renderer of the figure to be set to
 % |'opengl'|.
 
+close all;
 plot(ebsd,'property','bc')
 colormap(grayColorMap)
 
@@ -183,6 +180,7 @@ plot(ebsd('fe'),'colorcoding',...
 %%
 % another example
 
+close all;
 plot(ebsd,'property','bc')
 colormap(grayColorMap)
 

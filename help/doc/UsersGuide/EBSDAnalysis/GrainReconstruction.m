@@ -5,120 +5,204 @@
 %
 %% Contents
 %
-%% 
+%%
 % Reconstructing grains and grain boundaries is one of the central problems
 % when analyzing EBSD data. It is instrumental for ODF estimation from EBSD
 % data as well as <MisorientationAnalysis.html misorientation analysis>.
 %
 
-%%
-% Let us first import some standard EBSD data with a
-% [[matlab:edit mtexdata, script file]]
+%% Grain Reconstruction
+% Let us first import some standard EBSD data with a [[matlab:edit
+% mtexdata, script file]]
 
 mtexdata aachen
 
-%% Grain Reconstruction
-% Grain reconstruction in MTEX is done via the command <EBSD.calcGrains.html
-% calcGrains>. As an optional argument the desired threshold angle for
-% missorientations defining a grains boundary can be specified.
+%%
+% Grain reconstruction in MTEX is done via the command
+% <EBSD.calcGrains.html calcGrains>. As an optional argument the desired
+% threshold angle for misorientation defining a grains boundary can be
+% specified.
 
-grains = calcGrains(ebsd,'threshold',12.5*degree)
+grains = calcGrains(ebsd,'threshold',2.5*degree)
 
 %%
-% In order to verify the result let us plot the grain boundaries into the
-% spatial EBSD plot.
+% The reconstructed grains are stored in the variable *grains* which
+% describes the EBSD data by <GrainSet_index.html incidence and adjacency
+% matrices>. In order to verify the result let us plot the grain boundaries
+% into the spatial EBSD plot.
 
 plot(ebsd)
 hold on
 plotBoundary(grains)
 hold off
 
-%% 
+%%
 % When plotting the grains directly the associated color is defined by the
 % mean orientation within each grain.
 
-plot(grains)
-
+close, plot(grains)
 
 %%
-% The reconstructed grains are stored in the variable *grains* which is
-% actually a list of single [[grain_index.html,grain objects]] each of which
-% can be adressed and plotted individually.
+% The capabilities <GrainSpatialPlots.html plotting grains> are a key for
+% understanding the specimen.
+%
+%% Computing grain properties
+% There are a couple of properties that can be computed for each indiviual
+% grain, e.g. perimeter, diameter, area,  grainSize (no. of measurements)
+% which can be simply calculated by the commands
+
+perimeter(grains);
+diameter(grains);
+area(grains);
+grainSize(grains);
+
+%%
+% As an example let us explore the relation between the grain area coverage
+% over the specimen. first, we sort the area of grain in ascending order
+
+A = sort(area(grains));
+
+%%
+% then, we can plot the probability to access a random grain from the
+% GrainSet which is smaller than a certain area
+
+close, semilogx(A,(1:numel(A))./numel(A))
+set(gca,'xtick',5*10.^(-2:2)) % adjust the ticks
+grid on
+xlabel('area'),ylabel('cumulative percentage')
+
+%%
+% alternatively, we can plot the area fraction, i.e. the probability to
+% pick spatially a grain less than a certain area.
+
+close, semilogx(A,cumsum(A)./sum(A))
+set(gca,'xtick',5*10.^(-2:2)) % adjust the ticks
+grid on
+xlabel('area'),ylabel('cumulative area fraction')
+
+%% Accessing individual grains
+% Individual grains can be accessed by indexing, where the index refers to
+% the n-th grain.
 
 grains(1)
-
-plot(grains([1181 2588]))
-
-%% Grain properties 
-%
-% There is a long list of properties that can be computed for
-% each indiviual grain, e.g.
-%
-% * perimeter
-% * grain size
-% * borderlength
-%
-% As an example lets plot an histogram of the grain sizes.
-
-x = fix(exp(0.5:.5:7.5));
-figure, bar(hist(grainSize(grains),x) );
-
+close, plot(grains([327 1065]))
 
 %%
-% One can also use these properties to select specific grains. E.g. to
-% select all grains with perimeter larger then 150 we have to write
+% Selecting a single phase works like previously done with the EBSD data.
 
-peri = perimeter(grains);
-
-large_grains = grains(peri > 150)
-
-plot(large_grains)
-
-%% Connection between EBSD Data and a Grains
-%
-% The reconstructed grains are connected with its underlaying EBSD data by an
-% grain id which is stored within the grains and the EBSD variable. 
-%
-% The following command extracts the grain id from a certain grain
-
-ebsd_grain = get(grains(2588), 'EBSD')
-
-plot(ebsd_grain)
+selected_grains = grains('Fe')
 
 %%
-% Let us apply this technique to determine the measurements within the
-% largest grain. This grain of maximum size can be determined by
+% Moreover, grains allow logical indexing
 
-[max_size, id] = max(grainSize(grains));
-max_grain = grains(id)
+selected_grains = grains(grainSize(grains) > 10)
 
 %%
-% The corresponding EBSD data may directly adressed by
-ebsd_max_grain = get(max_grain,'EBSD')
+% Logical indexing allows more complex queries, e.g. selecting grains with
+% at least 10 measurements within one phase
+
+selected_grains = grains(grainSize(grains) >= 10 & grains('mg'))
 
 %%
-% plot the EBSD data for this grain
-plot(ebsd_max_grain)
+% One can also use these selected grains for further queries.
+
+large_grains = grains( perimeter(grains) > 150  | selected_grains )
+
+close, plot(large_grains)
 
 %%
-% The other way round one may also ask for the list of all grains that
-% contain certain EBSD data. In the following example we extract all BESD
-% data with a bad MAD value and ask for all grains containing those
-% measurements.
+% Also, one can select grains by its spatial location
 
-% get MAD
-mad = get(ebsd,'mad');
+grains_by_xy = findByLocation(grains,[146  137])
 
-% the EBSD data with bad MAD
-bad_ebsd = ebsd(mad > 1)
+close, plot(grains_by_xy)
+hold on, plot(146,137,'marker','d','markerfacecolor','r','markersize',10)
 
-% select grains containing data with bad MAD
-bad_grains = grains(bad_ebsd)
+%%
+% or by a specific orientation.
 
+grains_by_orientation = findByOrientation(grains('fe'),idquaternion, 10*degree)
 
-% plot them
-plot(bad_grains)
+close, plot(grains_by_orientation)
 
+%% Correcting poor grains
+% Sometimes measurements belonging to grains with very few measurements can
+% be regarded as inaccurate. In order to detect such measuremens we have
+% first to reconstruct grains from the EBSD measurements using the command
+% <EBSD.calcGrains.html calcGrains>. This time, we explicitely keep the not
+% indexed measurements by the flag *keepNotIndexed*
+
+grains = calcGrains(ebsd,'angle',5*degree,'keepNotIndexed')
+
+close, plot(grains)
+
+%%
+% The histogram of the grainsize shows a lot of grains consisting only of
+% very few measurements.
+
+p = histc(grainSize(grains),1:5)'./numel(grains)
+sum(p)
+
+%%
+% and we calculate the area fraction for small grains.
+
+A = area(grains);
+sum(A(grainSize(grains)<=5))/ sum(A)
+
+%%
+% grains with less than 5 measurements make up >80% of the constructed
+% grains but cover only 13% of the specimen, i.e. there might be some
+% corruption of the data present, which we are going to eliminate.
+%%
+% Next, let us take a closer look, how the small grains are distributed
+% over the phases
+
+p = [sum(grainSize(grains('notIndexed')) <= 5) ...
+  sum(grainSize(grains('Fe')) <= 5) ...
+  sum(grainSize(grains('Mg')) <= 5)]./numel(grains)
+
+%%
+% It is possible to select different grains by size and phase. E.g. not
+% indexed grains with more than 20 measurments, which can be considered as
+% large areas of missing data and which should not be assigned to any
+% conventional grain. We further consider iron grains with less than 5
+% measurments as not suitable.
+
+large_grains = grains( ...
+  (grains('notIndexed') & grainSize(grains)>=20) |...
+  (grains('fe') & grainSize(grains)>=5 ) | ...
+  grains('mg'))
+
+close, plotBoundary(large_grains)
+hold on,
+plot(grains(~large_grains),'facecolor','r')
+
+%%
+% Indeed, there are a lot of small not indexed grains, mostly located at
+% grain boundaries. Next, we use the EBSD data of the computed grain set to
+% do the reconstruction again.
+
+grains_corrected = calcGrains(large_grains,'keepNotIndexed','angle',5*degree)
+
+close, plot(grains_corrected,'property','phase')
+
+%%
+% Now, let us compare the grain size the both distribution, between the
+% uncorreted and corrected GrainSet.
+
+Auncorr = sort(area(grains));
+Acorr   = sort(area(grains_corrected));
+
+%%
+% As the following plots indicate, the small grains are now assigned to
+% larger grains
+
+close,   semilogx(Auncorr,cumsum(Auncorr)/sum(Auncorr),'b')
+hold on, semilogx(Acorr,cumsum(Acorr)/sum(Acorr),'r')
+set(gca,'xtick',5*10.^(-2:2)) % adjust the ticks
+grid on
+legend('uncorrected','corrected')
+xlabel('area'), ylabel('cumulative area fraction')
 
 
 
