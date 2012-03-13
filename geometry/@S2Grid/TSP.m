@@ -31,7 +31,7 @@ weight   = dist(A,v,varargin{:});
 switch lower(method)
   case 'direct'
     
-    tour = [1:n 1];
+    tour = [1:n 1];   
     
   case '2opt'
     
@@ -106,19 +106,11 @@ switch lower(metric)
     d_chi = abs(angle(exp(1i*theta(i))./exp(1i*theta(j))))/degree;
     d_phi = abs(angle(exp(1i*rho(i))./exp(1i*rho(j))))/degree;
     
-    s_chi = get_option(varargin,{'ChiSpeed','SpeedChi'},[1 0]);
-    if numel(s_chi)>1
-      d_chi = d_chi*s_chi(1) + s_chi(2);
-    else
-      d_chi = d_chi*s_chi(1);
-    end
+    p_chi = get_option(varargin,{'ChiSpeed','SpeedChi'},[1 0]);
+    d_chi = polyval(p_chi,d_chi);
     
-    s_phi = get_option(varargin,{'PhiSpeed','SpeedPhi'},[1 0]);
-    if numel(s_phi)>1
-      d_phi = d_phi*s_phi(1) + s_phi(2);
-    else
-      d_phi = d_phi*s_phi(1);
-    end
+    p_phi = get_option(varargin,{'PhiSpeed','SpeedPhi'},[1 0]);
+    d_phi = polyval(p_phi,d_phi);
     
     t = max(d_chi,d_phi);
     
