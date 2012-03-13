@@ -77,12 +77,20 @@ else
     error('symmetry mismatch')
   end
   
-
   ebsd.CS = C;
   
 end
+
 
 ebsd.options = get_option(varargin,'options',struct);
 ebsd.unitCell = get_option(varargin,'unitCell',[]);
 
 ebsd = class(ebsd,'EBSD');
+
+
+if check_option(varargin,'ignorePhase')
+  
+  del = ismember(ebsd.phaseMap(ebsd.phase),get_option(varargin,'ignorePhase',[]));
+  ebsd = subsref(ebsd,~del);
+  
+end
