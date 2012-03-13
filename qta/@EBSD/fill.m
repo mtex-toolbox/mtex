@@ -11,7 +11,15 @@ function ebsd = fill(ebsd,cube,dx)
 %
 
 %% extract spatial coordinates
-X = get(ebsd,'xyz');
+
+dim = nnz(isfield(ebsd.options,{'x','y','z'}));
+
+if dim == 2
+  X = get(ebsd,'xy');  
+elseif dim == 3
+  X = get(ebsd,'xyz');
+end
+
 if numel(dx) == 1
   dx(1:3) = dx;
 end
@@ -22,12 +30,12 @@ end
 F = TriScatteredInterp(X,(1:size(X,1)).','nearest');
 
 % interpolate
-if size(X,2)  == 2
+if dim  == 2
   [xi,yi] = meshgrid(cube(1):dx(1):cube(2),cube(3):dx(2):cube(4));
   ebsd.options.x = xi(:);
   ebsd.options.y = yi(:);
   ci = fix(F(xi,yi));
-else
+elseif dim == 3
   [xi,yi,zi] = meshgrid(cube(1):dx(1):cube(2),cube(3):dx(2):cube(4),cube(5):dx(3):cube(6));
   ebsd.options.x = xi(:);
   ebsd.options.y = yi(:);
