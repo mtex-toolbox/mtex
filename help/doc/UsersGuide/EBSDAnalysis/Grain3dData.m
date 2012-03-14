@@ -51,7 +51,7 @@ grains = calcGrains(ebsd,'threshold',segAngle)
 % one can single out individual grains and plot them
 
 close,   plot(grains(906),'facecolor','g','edgecolor',[0.8 0.8 0.8],...
-  'facealpha',0.1,'edgealpha',0.1)
+  'facealpha',0.1)
 hold on, plotBoundary(grains(906),'internal',...
   'FaceColor','r','edgecolor',[0.8 0.8 0.8])
 set(gcf,'position',[100 100 500 400])
