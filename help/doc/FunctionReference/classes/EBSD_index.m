@@ -31,7 +31,7 @@ import_wizard('ebsd')
 % wizard looks a follows.
 
 
-cs = symmetry('m-3m');      % crystal symmetry
+cs = symmetry('m-3m','mineral','fe');      % crystal symmetry
 ss = symmetry('triclinic'); % specimen symmetry
 
 % file names
@@ -41,7 +41,7 @@ fname = fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt');
 ebsd = loadEBSD(fname,cs,ss,... 
                 'interface','generic','Bunge','ignorePhase',[0 2],...
                  'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3'},...
-                 'Columns', [2 3 4 5 6 7]);
+                 'Columns', [2 3 4 5 6 7])
 
 %% Plotting EBSD Data
 %
@@ -84,7 +84,7 @@ hold off
 % explaination of the algorithm and the available options look
 % <EBSD2odf.html here>. 
 
-odf = calcODF(ebsd,'halfwidth',10*degree)
+odf = calcODF(ebsd('fe'),'halfwidth',10*degree)
 plotpdf(odf,Miller(1,0,0,cs),'antipodal')
 
 
@@ -103,5 +103,5 @@ plotpdf(ebsd,Miller(1,0,0),'antipodal','MarkerSize',3)
 %% Demo
 %
 % For a more exausive description of the EBSD class have a look at the 
-% <ebsd_demo.html EBSD demo<!
+% <ebsd_demo.html EBSD demo>!
 % 

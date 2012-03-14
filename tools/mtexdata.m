@@ -48,7 +48,14 @@ end
 
 
 ndx = strmatch(name,{list.name});
-file = fullfile(mtexDataPath,[ lower(list(ndx).name) '.mat']);
+
+if any(ndx)
+  file = fullfile(mtexDataPath,[ lower(list(ndx).name) '.mat']);
+else
+  warning('mtex:missingData','data not found, please choose one listed below')
+  mtexdata
+  return
+end
 
 if any(ndx) && isempty(dir(file))
   
@@ -61,24 +68,23 @@ if any(ndx) && isempty(dir(file))
     case 'pf'
       
       [CS,h,pf] = feval(['mtexdata_' list(ndx).name]);
-      save(file,'CS','h','pf');     
+      save(file,'CS','h','pf');
       
   end
   
 end
 
 S = load(file);
-
-disp([ upper(list(ndx).name) ' data loaded in variables']);
 fld = fields(S);
 for k=1:numel(fld)
   assignin('base',fld{k},S.(fld{k}));
 end
 
-disp(fld)
-evalin('base',fld{end});
-
-
+if ~get_mtex_option('generate_help')
+  disp([ upper(list(ndx).name) ' data loaded in variables']);
+  disp(fld)
+  evalin('base',fld{end});
+end
 
 
 function data = listmtexdata
@@ -97,16 +103,24 @@ function [CS,h,pf] = mtexdata_dubna
 CS = symmetry('-3m',[1.4 1.4 1.5]);
 SS = symmetry;
 fname = {...
+  fullfile(mtexDataPath,'PoleFigure','dubna','Q(02-21)_amp.cnv'),...
   fullfile(mtexDataPath,'PoleFigure','dubna','Q(10-10)_amp.cnv'),...
   fullfile(mtexDataPath,'PoleFigure','dubna','Q(10-11)(01-11)_amp.cnv'),...
+  fullfile(mtexDataPath,'PoleFigure','dubna','Q(10-12)_amp.cnv'),...
+  fullfile(mtexDataPath,'PoleFigure','dubna','Q(11-20)_amp.cnv'),...
+  fullfile(mtexDataPath,'PoleFigure','dubna','Q(11-21)_amp.cnv'),...
   fullfile(mtexDataPath,'PoleFigure','dubna','Q(11-22)_amp.cnv')};
 
 h = {...
+  Miller(0,2,-2,1,CS),...
   Miller(1,0,-1,0,CS),...
   [Miller(0,1,-1,1,CS),Miller(1,0,-1,1,CS)],... % superposed pole figures
+  Miller(1,0,-1,2,CS),...
+  Miller(1,1,-2,0,CS),...
+  Miller(1,1,-2,1,CS),...
   Miller(1,1,-2,2,CS)};
 
-c = {1,[0.52 ,1.23],1};
+c = {1,1,[0.52 ,1.23],1,1,1,1};
 
 pf = loadPoleFigure(fname,h,CS,SS,'interface','dubna','superposition',c);
 
@@ -145,13 +159,14 @@ h = get(pf,'h');
 % ----------------------------------------------------------------- EBSD data --
 function [CS,ebsd] = mtexdata_aachen
 CS = {...
+  'notIndexed',...
   symmetry('m-3m','mineral','Fe'),...
   symmetry('m-3m','mineral','Mg')};
 
 ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt'),CS,symmetry,...
   'interface','generic' , ...
   'ColumnNames', { 'Index' 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'MAD' 'BC' 'BS' 'Bands' 'Error' 'ReliabilityIndex'},...
-  'Bunge', 'ignorePhase', 0);
+  'Bunge');
 
 function [CS,ebsd] = mtexdata_3d
 

@@ -20,6 +20,13 @@ end
 % remove dublicates from the coordinates
 xy = unique(xy,'first','rows');
 
+if size(xy,2) == 3  
+  unitCell = [calcUnitCell(xy(:,[1 2]), varargin{:});...
+    calcUnitCell(xy(:,[1 3]), varargin{:}); ...
+    calcUnitCell(xy(:,[2 3]), varargin{:})];
+  return
+end
+
 % first estimate of the grid resolution
 area = (max(xy(:,1))-min(xy(:,1)))*(max(xy(:,2))-min(xy(:,2)));
 dxy = sqrt(area / length(xy));
@@ -27,33 +34,34 @@ dxy = sqrt(area / length(xy));
 % reduce data set
 xy = subSample(xy,10000);
 
+
 try
   % compute Voronoi decomposition
   [v c] = voronoin(xy,{'Qz'});
-      
+  
   % compute the area of all Voronoi cells
   areaf = @(x,y) abs(0.5.*sum(x(1:end-1).*y(2:end)-x(2:end).*y(1:end-1)));
   areaf = cellfun(@(c1) areaf(v([c1 c1(1)],1),v([c1 c1(1)],2)),c);
-    
+  
   % the unit cell should be the Voronoi cell with the smalles area
   [a ci] = min(areaf);
-      
+  
   % compute vertices of the unit cell
   unitCell = [v(c{ci},1) - xy(ci,1),v(c{ci},2) - xy(ci,2)];
-
+  
   % may be we are already done?
   if ~check_option(varargin,{'rectangular','hexagonal'}) && ...
       (length(unitCell) == 4 || length(unitCell) == 6) % only squares and hexagones are correct
     return
   end
-
+  
   % second estimate of the grid resolution
   dxy2 = min(sqrt(diff(cx).^2 + diff(cy).^2));
   if 100*dxy2 > dxy, dxy = dxy2;end
-
+  
 catch %#ok<CTCH>
 end
-  
+
 % get grid options
 dxy = get_option(varargin,'GridResolution',dxy);
 cellType = get_option(varargin,'GridType','rectangular');
@@ -61,19 +69,19 @@ cellRot = get_option(varargin,'GridRotation',0*degree);
 
 % otherwise take a regular unit cell
 switch lower(cellType)
-    
+  
   case 'rectangular'
     unitCell = regularPoly(4,dxy,cellRot);
-         
+    
   case 'hexagonal'
     unitCell = regularPoly(6,dxy,cellRot);
-               
+    
   case 'circle'
     unitCell = regularPoly(16,dxy,cellRot);
-
+    
   otherwise
     
-    error('MTEX:plotspatial:UnitCell','Unknown unit cell type!')      
+    error('MTEX:plotspatial:UnitCell','Unknown unit cell type!')
 end
 
 
@@ -99,7 +107,7 @@ while length(xy) > N
     yminmax = [3 1;1 3] * yminmax ./ 4;
   end
   
-  xy = xy(xy(:,1)>xminmax(1) & xy(:,1)<xminmax(2) & ... 
+  xy = xy(xy(:,1)>xminmax(1) & xy(:,1)<xminmax(2) & ...
     xy(:,2)>yminmax(1) & xy(:,2)<yminmax(2),:);
   
 end

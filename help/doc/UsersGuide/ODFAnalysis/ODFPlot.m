@@ -1,4 +1,4 @@
-%% Visualising ODFs
+%% Visualizing ODFs
 % Explains all possibilities to visualize ODfs, i.e. pole figure plots,
 % inverse pole figure plots, ODF sections, fibre sections.
 %

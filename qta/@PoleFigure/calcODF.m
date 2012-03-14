@@ -123,26 +123,7 @@ if ~check_option(varargin,'NoQuadratureWeights')
   varargin = set_option(varargin,'WEIGHTS');
 end
 
-% get backgound
-% if isfield(pf(1).options,'background')
-%   bg = get(pf,'background');
-% else
-%   bg = get_option(varargin,'BACKGROUND',0);
-% end
-%   
-% 
-% compute weights
-% if ~check_option(varargin,'NO_BACKGROUND')
-%   
-%   w = w ./ max(sqrt( P+bg) , 0.01);
-%   varargin = set_option(varargin,'WEIGHTS');
-% 
-% end
-
-w = sqrt(w);
-
-
-%% ------------------- REGULARIZATION -----------------------------------
+% ------------------- REGULARIZATION -----------------------------------
 if check_option(varargin,'REGULARISATION')
   lambda = get_option(varargin,'REGULARISATION',0.1);
   RM = sum(lP) / length(c0) * lambda * RegMatrix(psi,S3G);

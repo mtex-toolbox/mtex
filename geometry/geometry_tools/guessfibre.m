@@ -29,7 +29,7 @@ if isa(g1,'ODF')
   v = zeros(size(CS));
   for k=1:numel(CS)  % check every symmetry element  since ambiguity
     [h,r] = guessfibre(qmax(1),qmax(2)*CS(k),varargin{:});
-    v(k) = fibrevolume(g1,Miller(h,CS),r,10*degree,'resolution',5*degree,varargin{:});
+    v(k) = fibreVolume(g1,Miller(h,CS),r,10*degree,'resolution',5*degree,varargin{:});
   end
   % and take the one with maximum volumn
   [v l] = max(v);
