@@ -2,7 +2,7 @@
 %
 %% Contents
 %
-%% MTEX 3.3.0 - 02/2012
+%% MTEX 3.3.0 - 03/2012
 %
 % *Grains: change of internal representation*
 %
@@ -38,6 +38,18 @@
 % By default, |calcGrains| does also use the |'not Indexed'| phase.
 %
 % * create custemized orientation colormaps
+%
+%
+%% MTEX 3.2.3 - 03/2012
+% 
+% *bugfix release*
+%
+% * allow zooming for multiplot objects again; change the z-order of axes
+% * symmetries allows now options a | | x additional to x | | a
+% * fix http://code.google.com/p/mtex/issues/detail?id=35
+% * fix http://code.google.com/p/mtex/issues/detail?id=38
+% * fix http://code.google.com/p/mtex/issues/detail?id=28
+% * fix export odf
 %
 %% MTEX 3.2.1 - 11/2011
 %

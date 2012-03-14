@@ -16,6 +16,14 @@ function varargout = Euler(S3G,varargin)
 %% See also
 % quaternion/Euler
 
+
+if ~isa(S3G,'SO3Grid')
+  ind = cellfun(@(x) isa(x,'SO3Grid'),varargin);
+  varargin = varargin(~ind);
+  [varargout{1:nargout}] = Euler(quaternion(S3G),varargin{:});
+  return
+end
+
 % get convention
 [convention,labels] = EulerAngleConvention(varargin{:});
 S3GOptions = get(S3G,'options');
