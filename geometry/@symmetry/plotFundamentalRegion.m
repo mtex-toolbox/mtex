@@ -6,7 +6,7 @@ function plotFundamentalRegion(CS,varargin)
 %
 %% Options
 % zone -  1..n, plot only a specific fundamental region 
-% center - @ plot
+% center - @quaternion
 %
 %% See also
 % odf\plotodf orientation\plotodf
