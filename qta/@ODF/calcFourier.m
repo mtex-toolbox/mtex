@@ -20,7 +20,7 @@ function odf = calcFourier(odf,L,varargin)
 %
 
 error(nargchk(2, 2, nargin));
-L = max(L,4);
+L = max(L,1);
 
 for i = 1:length(odf)
   
@@ -35,7 +35,7 @@ for i = 1:length(odf)
     elseif check_option(odf(i),'FIBRE') % ***** fibre symmetric portion *****
     
       A = getA(odf(i).psi);
-      A = A(1:min(max(4,L+1),length(A)));
+      A = A(1:min(L+1,length(A)));
             
       % symmetrize
       h = odf(i).CS * vector3d(odf(i).center{1});
@@ -84,7 +84,7 @@ for i = 1:length(odf)
       
       % export Chebyshev coefficients
       A = getA(odf(i).psi);
-      A = A(1:min(max(4,L+1),length(A)));
+      A = A(1:min(max(2,L+1),length(A)));
         
       % init Fourier coefficients
       odf(i).c_hat = zeros(deg2dim(length(A)),1);
