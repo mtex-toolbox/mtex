@@ -14,7 +14,6 @@
 % orientation.
 %
 
-
 %% Define an Model ODF
 %
 % Let us first define a superposition of model ODFs.
@@ -31,29 +30,18 @@ model_odf = 0.5*uniformODF(cs,ss) + ...
   0.3*unimodalODF(mod2,cs,ss,'halfwidth',25*degree);
 plotodf(model_odf,'sections',6,'silent')
 
-%% Export an ODF to an MTEX ASCII File
-% By default the ODF is exported to an ASCII file which contains
-% descriptions of all componets of the ODF in a human readable fassion. 
-
-% the filename
-fname = [mtexDataPath '/odf/odf.txt'];
-
-% export the ODF
-export(model_odf,fname,'Bunge')
-
-
 %% Export as an generic ASCII file
 %
-% The generic ASCII format consists of a large table with four
-% columns, where first three column describe the Euler angles of a regular
-% 5° grid in the orientation space and the fourth column contains the
-% value of the ODF at this specific position.
+% By default and ODF is exported in an ASCII file which consists of a large
+% table with four columns, where the first three column describe the Euler
+% angles of a regular 5° grid in the orientation space and the fourth
+% column contains the value of the ODF at this specific position.
 
 % the filename
 fname = fullfile(mtexDataPath, 'odf', 'odf.txt');
 
 % export the ODF
-export(model_odf,fname,'Bunge','generic')
+export(model_odf,fname,'Bunge')
 
 %%
 % Other Euler angle conventions or other resolutions can by specified by
@@ -66,6 +54,22 @@ S3G = SO3Grid(5 * degree,cs,ss);
 % export the ODF by values at these locations
 export(model_odf,fname,S3G,'Bunge','generic')
 
+
+
+%% Export an ODF to an MTEX ASCII File
+% Using the options *MTEX* the ODF is exported to an ASCII file which contains
+% descriptions of all componets of the ODF in a human readable fassion.
+% This format can be imported by MTEX without loss.
+
+% the filename
+fname = [mtexDataPath '/odf/odf.txt'];
+
+% export the ODF
+export(model_odf,fname,'Bunge','MTEX')
+
+%%  Export to VPSC format
+%
+% TODO!!!
 
 %% Import ODF Data using the import wizard
 %
@@ -95,13 +99,12 @@ ss = symmetry('triclinic');
 % the file name
 fname = [mtexDataPath '/odf/odf.txt'];
 
-% the halfwidth of the bell shaped functions to be placed at every
-% stored orientation
-halfwidth = 10*degree;
+% the resolution used for the reconstruction of the ODF
+res = 10*degree;
 
 % load the data
-odf = loadODF(fname,cs,ss,'halfwidth',halfwidth,'Bunge',...
+odf = loadODF(fname,cs,ss,'resolution',res,'Bunge',...
   'ColumnNames',{'Euler 1','Euler 2','Euler 3','weight'});
 
 % plot data
-%plotodf(odf,'sections',6,'silent')
+plotodf(odf,'sections',6,'silent')
