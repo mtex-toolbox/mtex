@@ -13,7 +13,7 @@ function ebsd = set(ebsd,vname,value,varargin)
 %  phase - phase to consider
 %  CS | SS - modify @symmetry
 %  X - change spatial coordinates
-%  orientations - set @orientations. Not recommend, should use the
+%  orientations - set @orientation. Not recommend, should use the
 %  [[EBSD.EBSD.html,EBSD]] constructor
 %
 %% Output

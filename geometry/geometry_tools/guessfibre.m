@@ -3,7 +3,7 @@ function [h,r,v] = guessfibre(g1,g2,varargin)
 % of g_1*h = g_2*h -> (g_2^-1)*g_1* h = h -> R*h = (lambda)*h
 %
 %% Input
-%  g1 - @rotation, @odf
+%  g1 - @rotation, @ODF
 %  g2 - @rotation
 %
 %% Output

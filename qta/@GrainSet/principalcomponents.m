@@ -2,7 +2,7 @@ function [ev,ew]= principalcomponents(grains,varargin)
 % returns the principalcomponents of grain polygon, without Holes
 %
 %% Input
-%  p - @grain / @polygon
+%  grains - @GrainSet
 %
 %% Output
 %  cmp   - angle of components as complex

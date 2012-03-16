@@ -38,6 +38,15 @@ mtexGeneralFiles = [DocFile(fullfile(mtex_path,'COPYING')) ...
   DocFile(fullfile(mtex_path,'README')) ...
   DocFile(fullfile(mtex_path,'VERSION'))];
 
+
+%%
+
+
+docPath = fullfile(mtex_path,'help','mtex');
+outputDir = fullfile(mtex_path,'help','html');
+tempDir = fullfile(mtex_path,'help','tmp');
+
+
 %%
 % 
 
@@ -46,12 +55,6 @@ makeToolboxXML('name','MTEX',...
   'versionname',get_mtex_option('version'),...
   'procuctpage','mtex_product_page.html')
 
-%%
-
-
-docPath = fullfile(mtex_path,'help','mtex');
-outputDir = fullfile(mtex_path,'help','html');
-tempDir = fullfile(mtex_path,'help','tmp');
 
 %%
 
@@ -111,6 +114,11 @@ options.publishSettings.outputDir = outputDir;
 options.tempDir = tempDir;
 
 view(mtexHelpFiles,options)
+
+
+%%
+
+view(mtexExampleFiles,outputDir);
 
 %%
 
