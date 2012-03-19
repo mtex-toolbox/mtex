@@ -10,6 +10,7 @@
 % As usual, let us first import some EBSD data construct some grains
 
 mtexdata aachen
+plotx2east
 grains = calcGrains(ebsd,'angle',2*degree)
 
 %%

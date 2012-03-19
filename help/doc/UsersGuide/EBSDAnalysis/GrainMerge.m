@@ -8,6 +8,7 @@
 % Let us start with some reconstructed grains
 
 mtexdata aachen
+plotx2east
 grains = calcGrains(ebsd,'angle',2*degree)
 
 
