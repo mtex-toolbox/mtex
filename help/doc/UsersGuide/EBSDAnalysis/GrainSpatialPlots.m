@@ -10,6 +10,7 @@
 % spatial maps. Therefor, let us first reconstruct some grains
 
 mtexdata aachen
+plotx2east
 grains = calcGrains(ebsd,'threshold',2*degree)
 
 %% Plotting grains and combined plots

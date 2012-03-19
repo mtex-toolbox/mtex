@@ -16,6 +16,7 @@
 % mtexdata, script file]]
 
 mtexdata aachen
+plotx2east
 
 %%
 % Grain reconstruction in MTEX is done via the command

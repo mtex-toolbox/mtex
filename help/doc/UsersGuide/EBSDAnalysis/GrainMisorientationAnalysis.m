@@ -20,6 +20,7 @@
 % Let us first import some EBSD data by a [[matlab:edit mtexdata, script file]]
 
 mtexdata aachen
+plotx2east
 
 %%
 % and <EBSD.calcGrains.html reconstruct> grains by
