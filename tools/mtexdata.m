@@ -170,7 +170,7 @@ ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt'),CS,symme
 
 function [CS,ebsd] = mtexdata_3d
 
-ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','3dData','*.ang'),'3d', (0:58)*0.12);
+ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','3dData','*.ANG'),'3d', (0:58)*0.12);
 CS = get(ebsd,'CS');
 
 function [CS,ebsd] = mtexdata_mylonite
