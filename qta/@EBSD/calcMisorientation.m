@@ -1,4 +1,4 @@
-function mori = calcMisorientation(ebsd1,varargin)
+function [mori,weights] = calcMisorientation(ebsd1,varargin)
 % calculate uncorelated misorientations between two ebsd phases
 %
 %% Input 
@@ -64,3 +64,6 @@ o1 = get(ebsd1,'orientations');
 o2 = get(ebsd2,'orientations');
 
 mori = o1(i1) .\ o2(i2);
+
+% compute weights
+weights = ones(size(mori)) ./ numel(mori);
