@@ -6,6 +6,7 @@
 %
 %% Contents
 %
+
 %% Computing a misorientation distribution function from EBSD data
 % 
 % Lets import some EBSD data and reconstruct the grains.
@@ -83,8 +84,8 @@ hold off
 
 %%
 % For computing the exact values see the commands
-% <ODF_calcAngleDistribution.html,calcAngleDistribution(mdf)> and
-% <EBSD_calcAngleDistribution.html,calcAngleDistribution(grains)>.
+% <ODF_calcAngleDistribution.html calcAngleDistribution(mdf)> and
+% <EBSD_calcAngleDistribution.html calcAngleDistribution(grains)>.
  
 %% SUB: Axis distribution
 %
@@ -101,5 +102,5 @@ plotAxisDistribution(mdf)
 
 %%
 % For computing the exact values see the commands
-% <ODF_calcAxisDistribution.html,calcAxisDistribution(mdf)> and
-% <EBSD_calcAxisDistribution.html,calcAxisDistribution(grains)>.
+% <ODF_calcAxisDistribution.html calcAxisDistribution(mdf)> and
+% <EBSD_calcAxisDistribution.html calcAxisDistribution(grains)>.
