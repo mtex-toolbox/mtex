@@ -1,4 +1,4 @@
-function mori = calcMisorientation(grains,varargin)
+function [mori,weights] = calcMisorientation(grains,varargin)
 % calculate misorientation for any two neighbored measurments of the same
 % phase
 %
@@ -37,3 +37,5 @@ else
   
 end
 
+% compute weights --> TODO
+weights = ones(size(mori)) ./ numel(mori);
