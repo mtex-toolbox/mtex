@@ -177,7 +177,7 @@ for iter = 1:maxiter
   dind = ceil(numel(ori) / maxiter);
   sind = 1+(iter-1)*dind:min(numel(ori),iter*dind);
       
-  ind = find(S3G,ori(sind));
+  ind = find(S3G,subsref(ori,sind));
   for i = 1:length(ind) % TODO -> make it faster
     d(ind(i)) = d(ind(i)) + weight(sind(i));
   end
