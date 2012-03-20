@@ -13,18 +13,20 @@ elseif ~isempty(inputname(1))
   h = [inputname(1), ' = ' h];
 end;
 
-if ndims(T.M)>T.rank
-  ss = size(T.M);
-  h = [h, ' (', 'size: ' int2str(ss(T.rank+1:end)), ')' ];
-end
-
 % display top line
-disp(h)
+disp([h ' ' docmethods(inputname(1))])
 
 % collect tensor properties
 props = fieldnames(T.properties);
 props = props(~strcmp(props,'name'));
 propV = cellfun(@(prop) char(T.properties.(prop)),props,'UniformOutput',false);
+
+% add size if greater one
+if ndims(T.M)>T.rank
+  ss = size(T.M);
+  props = ['size';props];
+  propV = [int2str(ss(T.rank+1:end));propV];
+end
 
 % add rank
 props{end+1} = 'rank'; 
@@ -75,6 +77,3 @@ if isfinite(b) && abs(b) > 1
 end
 
 cprintf(M,'-L',' ','-ic','|F');
-
-disp(docmethods(inputname(1)))
-  
