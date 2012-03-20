@@ -64,7 +64,7 @@ plot(P,'section',xvector)
 fname = fullfile(mtexDataPath,'tensor', 'Tongue_Quartzite_Bunge_Euler');
 
 ebsd = loadEBSD(fname,CS,'interface','generic' ...
-  , 'ColumnNames', { 'Euler 1' 'Euler 2' 'Euler 3'}, 'Bunge', 'active rotation', 'ignorePhase', 1)
+  , 'ColumnNames', { 'Euler 1' 'Euler 2' 'Euler 3'}, 'Bunge', 'active rotation')
 
 %%
 % The figure on p.1184 of the publication
