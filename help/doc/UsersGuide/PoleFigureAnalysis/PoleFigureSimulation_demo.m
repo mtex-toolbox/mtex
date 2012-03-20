@@ -100,9 +100,9 @@ calcError(odf,model_odf,'resolution',5*degree)
 e = [];
 for i = 1:length(pf)
 
-  odf = calcODF(pf(1:i),'silent');
+  odf = calcODF(pf(1:i),'silent','NoGhostCorrection');
   e(i,1) = calcError(odf,model_odf,'resolution',2.5*degree);
-  odf = calcODF(pf(1:i),'ghost_correction','silent');
+  odf = calcODF(pf(1:i),'silent');
   e(i,2) = calcError(odf,model_odf,'resolution',2.5*degree);
 
 end

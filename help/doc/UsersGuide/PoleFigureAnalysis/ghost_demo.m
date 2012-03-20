@@ -41,10 +41,10 @@ pf = calcPoleFigure(odf,h,r);
 
 %% ODF Estimation
 % without ghost correction:
-rec = calcODF(pf);
+rec = calcODF(pf,'noGhostCorrection');
 %%
 % with ghost correction:
-rec_cor = calcODF(pf,'ghost_correction');
+rec_cor = calcODF(pf);
 
 %% Compare RP Errors
 

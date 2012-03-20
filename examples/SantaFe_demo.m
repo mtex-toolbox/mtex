@@ -28,30 +28,31 @@ pf = noisepf(pf,100);
 close; figure('position',[100,100,800,300])
 plot(pf)
 
-%% ODF Estimation
-
-rec = calcODF(pf)
 
 %% ODF Estimation with Ghost Correction
-rec2 = calcODF(pf,'ghost_correction')
+rec = calcODF(pf)
+
+%% ODF Estimation without Ghost Correction
+
+rec2 = calcODF(pf,'NoGhostCorrection')
 
 %% Error analysis
 
 % calculate RP error
-calcError(rec2,SantaFe)
+calcError(rec,SantaFe)
 
 % difference plot between meassured and recalculated pole figures
 close; figure('position',[100,100,800,300])
-plotDiff(pf,rec2)
+plotDiff(pf,rec)
  
 %% Plot estimated pole figures
 
-plotpdf(rec2,get(pf,'Miller'),'antipodal')
+plotpdf(rec,get(pf,'Miller'),'antipodal')
 
 %% Plot estimated ODF (Ghost Corrected)
 
 close; figure('position',[46 171 752 486]);
-plot(rec2,'alpha','sections',18,'resolution',5*degree,...
+plot(rec,'alpha','sections',18,'resolution',5*degree,...
      'projection','plain','gray','contourf','FontSize',10,'silent')
 
 
@@ -70,12 +71,12 @@ plotFourier(SantaFe,'bandwidth',32)
 % keep plot for adding the next plots
 hold all
 
-% Without ghost correction:
+% With ghost correction:
 plotFourier(rec,'bandwidth',32)
 
-% With ghost correction:
+% Without ghost correction:
 plotFourier(rec2,'bandwidth',32)
 
-legend({'true ODF','without ghost correction','with ghost correction'})
+legend({'true ODF','with ghost correction','without ghost correction'})
 % next plot command overwrites plot
 hold off
