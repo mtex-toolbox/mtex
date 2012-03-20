@@ -39,7 +39,7 @@ ebsd = calcEBSD(fibre_odf,10000)
 psi = calcKernel(ebsd)
 
 %%
-% and then we use thhis kernel function for kernel density estimation
+% and then we use this kernel function for kernel density estimation
 
 odf = calcODF(ebsd,'kernel',psi)
 

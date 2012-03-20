@@ -90,25 +90,23 @@ h = [Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)];
 pf_SantaFe = calcPoleFigure(SantaFe,h,r);
 
 %%
-% estimate an ODF
-rec = calcODF(pf_SantaFe,'RESOLUTION',10*degree,...
- 'background',10,'iter_max',6)
+% estimate an ODF with ghost correction
+rec = calcODF(pf_SantaFe,'RESOLUTION',10*degree,'background',10)
 
 plotodf(rec,'sections',6)
 
 %%
-%
-rec_corrected = calcODF(pf_SantaFe,'RESOLUTION',10*degree,...
- 'background',10,'iter_max',6,'ghost_correction')
+% without ghost correction
+rec_ng = calcODF(pf_SantaFe,'RESOLUTION',10*degree,'background',10,'NoGhostCorrection')
 
-plotodf(rec,'sections',6)
+plotodf(rec_ng,'sections',6)
 
 
 %% Error Analysis
 
 
 calcError(pf_SantaFe,rec)
-calcError(pf_SantaFe,rec_corrected)
+calcError(pf_SantaFe,rec_ng)
 
 %%
 % *Difference plot*
@@ -120,7 +118,7 @@ plotDiff(pf_SantaFe,rec,'position',[100 100 900 300])
 % *ODF error*
 
 calcError(SantaFe,rec)
-calcError(SantaFe,rec_corrected)
+calcError(SantaFe,rec_ng)
 
 %% Exercises
 %
