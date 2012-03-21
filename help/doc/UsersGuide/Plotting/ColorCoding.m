@@ -2,7 +2,7 @@
 %
 %% Open in Editor
 %
-%% Abstract
+%%
 % A central issue when interpreting plots is to have a consistent color
 % coding among all plots. In MTEX this can be achieved in two ways. If the 
 % the minimum and maximum value is known then one can 

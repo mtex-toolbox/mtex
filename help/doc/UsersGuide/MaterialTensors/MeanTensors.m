@@ -1,13 +1,13 @@
 %% Average Material Tensors
 % how to calculate average material tensors from ODF and EBSD data
+%%
+% MTEX offers several ways to compute average material tensors from ODFs or EBSD data.
 %
 %% Open in Editor
 %
-%% Abstract
-% MTEX offers several ways to compute average material tensors from ODFs or EBSD data.
-%
 %% Contents
-
+%
+%%
 % set up a nice colormap
 set_mtex_option('defaultColorMap',seismicColorMap);
 

@@ -1,16 +1,15 @@
 %% Tensor Arithmetics
 % how to calculate with tensors in MTEX
-
-%% Open in Editor
-%
-%% Abstract
+%% 
 % MTEX offers some basic functionality to calculate with tensors as they
 % occur in material sciense. It allows to define tensors of arbitrary rank,
 % e.g., stress, strain, elasticity or piezoelectric tensors, to visuallize
 % them and to perform various transformations.
 %
+%% Open in Editor
+%
 %% Contents
-
+%
 %% Defining a Tensor
 %
 % A tensor is defined by its entries and a crystal symmetry. Let us

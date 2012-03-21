@@ -2,8 +2,7 @@
 %
 %% Open in Editor
 %
-
-%% Abstract
+%% 
 % In this section the basic plotting commands for ODFs are described. MTEX 
 % offers a lot of possibilities the customize the resulting plots, e.g. by
 % changing the projection or the colorcoding, by outlining certain 
