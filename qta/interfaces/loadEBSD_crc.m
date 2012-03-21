@@ -112,6 +112,8 @@ for k=1:numel(lineBreaks)-1
     [name,value] = strtok(line,'=');
     value = deblank(value(2:end));
     
+    name = regexprep(name,' ','');
+    
     numval = sscanf(value,'%f');
     if ~isempty(numval)
       cpr(count).contents.(lower(name)) = numval;
