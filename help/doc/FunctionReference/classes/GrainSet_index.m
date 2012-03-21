@@ -1,8 +1,7 @@
-%% Grains (The Class [[GrainSet_index.html,GrainSet]])
-%
+%% Grains (The Class @GrainSet)
 % class representing *grains* of spatially indexed individual orientations
 %
-%% Description
+%% Class Description
 % A grain based analysis starts with <GrainReconstruction.html constructing
 % grains>. We define a grain  as a region, in which the misorientation of
 % neighbored measurements is less than a given threshold.

@@ -1,11 +1,9 @@
-%% Quaternions (The Class [[quaternion_index.html,quaternion]])
-%
-%% Abstract
+%% Quaternions (The Class @quaternion)
 % class representing orientations
 %
 %% Contents
 %
-%% Description
+%% Class Description
 %
 % The class quaternion allows to work with rotations in MTEX,
 % as they occur e.g. as crystal orientation or symmetries. Quaternions may
@@ -13,7 +11,7 @@
 % which means rotating the vector or may by multiplied with another 
 % quaternion which means to concatenate both rotations. 
 %
-%% Defining three dimensional vectors
+%% SUB: Defining three dimensional vectors
 %
 % The standard way is to define a quaternion q is to give its coordinates
 % (a,b,c,d). However making use of one of the following conversion methods
@@ -31,7 +29,7 @@
 % Using the brackets |q = [q1,q2]| two quaternions can be concatened. Now each
 % single quaternion is accesable via |q(1)| and |q(2)|.
 
-%% Calculating with three dimensional vectors
+%% SUB: Calculating with three dimensional vectors
 %
 % Beside the standard linear algebra operations there are also the
 % following functions available in MTEX.
@@ -40,7 +38,7 @@
 %  [[quaternion.axis.html,axis]](q);  % rotational axis 
 %  [[quaternion.inverse.html,inverse]](q);  % inverse rotation 
 %
-%% Conversion
+%% SUB: Conversion
 %
 % There are methods to transform quaternion in almost any other
 % parameterization of rotations as they are:
@@ -48,7 +46,7 @@
 %  [[quaternion.Euler.html,Euler]](q)     % in Euler angle
 %  [[quaternion.Rodrigues.html,Rodrigues]](q) % in Rodrigues parameter
 %
-%% Plotting quaternions
+%% SUB: Plotting quaternions
 % 
 % The [[quaternion.plot.html,plot]] function allows you to visualize an 
 % quaternion by plotting how the standard basis x,y,z transforms under the

@@ -1,16 +1,14 @@
 %% Rotations
 % Explains how to define rotations and how to switch between different Euler
 % angle conventions.
+%%
+% Rotations are represented in MTEX by the class *@rotation* which is 
+% inherited from the class <quaternion_index.html quaternion> and allow to
+% work with rotations as with matrixes in MTEX. 
 %
 %% Open in Editor
 %
 %% Contents
-%
-%% Description
-%
-% Rotations are represented in MTEX by the class *rotation* which is 
-% inherited from the class <quaternion_index.html quaternion> and allow to
-% work with rotations as with matrixes in MTEX. 
 %
 %% Euler Angle Conventions
 %

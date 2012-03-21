@@ -1,4 +1,5 @@
 %% Merging Grains
+% Reorganize grains by special boundary types. 
 % 
 %% Open in Editor
 %
