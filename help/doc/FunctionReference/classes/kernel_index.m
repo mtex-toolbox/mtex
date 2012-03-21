@@ -1,16 +1,15 @@
-%% ODF Shapes (The class [[kernel_index.html,kernel]]) 
+%% ODF Shapes (The class @kernel) 
 % standard distributions on SO(3)
 %
 %% Contents
 %
-%% Description
-%
+%% Class Description 
 % The class *kernel* is needed in MTEX to define the specific form of
 % unimodal and fibre symmetric ODFs. It has to be passed as an argument
 % when calling the methods [[uniformODF.html,uniformODF]] and
 % [[fibreODF.html,fibreODF]]. 
 %
-%% Defining a kernel function
+%% SUB: Defining a kernel function
 %
 % A kernel is defined by specifying its name and its free parameter.
 % Alternatively one can also specify the halfwidth of the kernel. Below you
@@ -27,7 +26,7 @@ demok(8) = kernel('Dirichlet',3);
 %demok(4) = kernel('local',0.85);
 
 
-%% Plotting the kernel
+%% SUB: Plotting the kernel
 %
 % Using the plot command you can plot the kernel as a function on SO(3) as
 % well as the corresponding PDF, or its Fourier coefficients

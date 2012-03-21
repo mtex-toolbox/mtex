@@ -1,6 +1,4 @@
-%% Crystal and Specimen Symmetries (The Class [[symmetry_index.html,symmetry]])
-%
-%% Abstract
+%% Crystal and Specimen Symmetries (The Class @symmetry)
 % This section describes the class *symmetry* and gives an overview how to
 % deal with crystal symmetries in MTEX.
 %
@@ -8,7 +6,7 @@
 %
 %% Contents
 %
-%% Description
+%% Class Description
 %
 % Crystal symmetries are a sets of rotations and mirroring operations that
 % leave the lattice of a crystal invariant. They form so called groups
@@ -20,7 +18,7 @@
 % groups are supported by MTEX. More precisely, in MTEX a Laue group is
 % represented by a variable of the class *symmetry*.
 %
-%% Defining a Crystal Symmetry 
+%% SUB: Defining a Crystal Symmetry 
 %
 % MTEX supportes the *Schoenflies* notation on Laue groups as well as the
 % *international* notation. In the case of non cubic crystal symmetry the
@@ -58,7 +56,7 @@ cs = symmetry('Td')
 cs = symmetry('quartz.cif')
 
 
-%% The Crystal Coordinate System
+%% SUB: The Crystal Coordinate System
 %
 % In the case of cubic crystal symmetry the crystal coordinate system
 % is allready well defined. However, especialy in the case of low order

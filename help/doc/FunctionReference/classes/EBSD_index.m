@@ -1,12 +1,10 @@
-%% Electron Backscatter Diffraction Data (The Class [[EBSD_index.html,EBSD]])
-%
-%% Abstract
+%% Electron Backscatter Diffraction Data (The Class @EBSD)
 % This sections describes the class *EBSD* and gives an overview over the
 % functionality MTEX offers to analyze EBSD data.
 %
 %% Contents
 %
-%% Description 
+%% Class Description 
 % 
 % The following mindmap might give a basic idea about EBSD data
 % analyis in MTEX, with the ability of <GrainReconstruction.html grain
@@ -16,7 +14,7 @@
 %
 % <<grain.png>>
 %
-%% Import of EBSD Data
+%% SUB: Import of EBSD Data
 %
 % The most comfortable way to import EBSD data into MTEX is to use
 % the import wizard, which can be started by the command
@@ -43,7 +41,7 @@ ebsd = loadEBSD(fname,cs,ss,...
                  'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3'},...
                  'Columns', [2 3 4 5 6 7])
 
-%% Plotting EBSD Data
+%% SUB: Plotting EBSD Data
 %
 % EBSD data are plotted using the [[EBSD.plot.html,plot]] command.
 % It assigns a color to each orientation and plots a map of these colors.
@@ -63,7 +61,7 @@ plotipdf(ebsd,xvector,'markerSize',3,'points',500,'marker','o','markerfacecolor'
 set(gcf,'renderer','opengl')
 hold off
 
-%% Modify EBSD Data
+%% SUB: Modify EBSD Data
 %
 % MTEX offers a lot of operations to analyze and manipulate EBSD data, e.g.
 %
@@ -77,7 +75,7 @@ hold off
 % An exhausive introduction how to analyze and modify EBSD data can be found
 % <ModifyEBSDData.html here>
 
-%% Calculate an ODF from EBSD Data
+%% SUB: Calculate an ODF from EBSD Data
 %
 % The command [[EBSD.calcODF.html,calcODF]]  performs an ODF calculation
 % from EBSD data using kernel density estimation EBSD data. For a precise
@@ -88,7 +86,7 @@ odf = calcODF(ebsd('fe'),'halfwidth',10*degree)
 plotpdf(odf,Miller(1,0,0,cs),'antipodal')
 
 
-%% Simulate EBSD Data
+%% SUB: Simulate EBSD Data
 %
 % Simulating EBSD data from a given ODF has been proven to be
 % usefull to analyze the stability of the ODF estimation process. There is
@@ -100,7 +98,7 @@ plotpdf(odf,Miller(1,0,0,cs),'antipodal')
 ebsd = calcEBSD(unimodalODF(idquaternion,cs,ss),500)
 plotpdf(ebsd,Miller(1,0,0),'antipodal','MarkerSize',3)
 
-%% Demo
+%% SUB: Demo
 %
 % For a more exausive description of the EBSD class have a look at the 
 % <ebsd_demo.html EBSD demo>!

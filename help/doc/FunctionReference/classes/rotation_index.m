@@ -1,19 +1,16 @@
-%% Rotations (The Class [[rotation_index.html,rotation]])
-% Rotations in MTEX
+%% Rotations (The Class @rotation)
+% This section describes the class  <rotation.rotation.html *rotation*> and 
+% gives an overview on how to work with rotations in MTEX.
 %
 %% Open in Editor
 %
 %% Contents
 %
-%%
-% This section describes the class  <rotation.rotation.html *rotation*> and 
-% gives an overview on how to work with rotations in MTEX.
-%
-%%
+%% Class Description
 % The class *rotation* is an inheritant of the class <quaternion_index.html
 % *quaternion*> and allow to work with rotations as with matrixes in MTEX.
 %
-%% Euler Angle Conventions
+%% SUB: Euler Angle Conventions
 %
 % There are several ways to specify a rotation in MTEX. A
 % well known possibility are the so called *Euler angles*. In texture
@@ -61,7 +58,7 @@ o
 set_mtex_option('EulerAngleConvention','Bunge')
 o
 
-%% Other Ways of Defining a Rotation
+%% SUB: Other Ways of Defining a Rotation
 % 
 % *The axis angle parametrisation*
 %
@@ -118,7 +115,7 @@ q = quaternion(1,0,0,0)
 o = rotation(q)
 
 
-%% Calculating with Rotations
+%% SUB: Calculating with Rotations
 %
 % *Rotating Vectors*
 %
@@ -178,7 +175,7 @@ angle(rot1,rot2)/degree
 
 inverse(rot)
 
-%% Conversion into Euler Angles and Rodrigues Parametrisation
+%% SUB: Conversion into Euler Angles and Rodrigues Parametrisation
 %
 % There are methods to transform quaternion in almost any other
 % parameterization of rotations as they are:
@@ -190,7 +187,7 @@ inverse(rot)
 [alpha,beta,gamma] = Euler(rot,'Matthies')
 
 
-%% Plotting Rotations
+%% SUB: Plotting Rotations
 %
 % The <quaternion.plot.html plot> function allows you to visualize an
 % rotation by plotting how the standard basis x,y,z transforms under the

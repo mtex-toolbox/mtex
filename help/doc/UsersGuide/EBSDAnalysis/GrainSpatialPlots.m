@@ -1,4 +1,5 @@
 %% Plotting grains and grain boundaries
+% Overview about colorizing grains and (special) grain boundaries 
 %
 %% Open in Editor
 %

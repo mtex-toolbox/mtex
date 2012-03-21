@@ -1,18 +1,16 @@
-%% Discretisation of 2 - Sphere (The Class [[S2Grid_index.html,S2Grid]])
-%
-%% Abstract
+%% Discretisation of 2 - Sphere (The Class @S2Grid)
 % represents a grid of nodes on the sphere 
 %
 %% Contents
 %
-%% Description
+%% Class Description
 % The class *S2Grid* is used in MTEX to store the set of specimen
 % directions organized in a [[PoleFigure_index.html,pole figure]]. Of 
 % central importance is also the plotting method of this class since it is 
 % used by almost all other plotting methods in MTEX to perform spherical 
 % plots. 
 %
-%% Defining a S2Grid
+%% SUB: Defining a S2Grid
 %
 % There are various ways to define a S2Grid. Next you find some exaples.
 % For a detailed description of possible specifications look for the
@@ -33,7 +31,7 @@ S2G = S2Grid('theta',linspace(0,2*pi,72),...
 % restrictes grids
 S2G = S2Grid('equispaced','points',100,'MAXTHETA',75*degree);  % specifiy maximum theta angle
 
-%% Plots
+%% SUB: Plots
 
 set(gcf,'position',[100,100,200,200])
 plot(S2Grid('equispaced','points',100,'antipodal'))  % plot grid of nodes

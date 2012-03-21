@@ -1,5 +1,7 @@
 %% 3d EBSD and Grains
-
+% Demonstrates the 3d capabilities, i.e. slicing ebsd and grains, plotting
+% 3d grains
+%
 %% Analysis of 3d EBSD data
 % Import, analysis, and visualization of 3d EBSD data
 %

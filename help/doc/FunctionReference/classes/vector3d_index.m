@@ -1,6 +1,4 @@
-%% Specimen Directions (The Class [[vector3d_index.html,vector3d]])
-%
-%% Abstract
+%% Specimen Directions (The Class @vector3d)
 % This section describes the class *vector3d* and gives an overview how to
 % deal with specimen directions in MTEX.
 %
@@ -8,14 +6,13 @@
 %
 %% Contents
 %
-%% Description
-%
+%% Class Description 
 % Specimen directions are three dimensional vectors in the Euclidean space
 % represented by coordinates with respect to a outer specimen coordinate
 % system x, y, z. Im MTEX Specimen directions are represented by variables
 % of the class *vector3d*. 
 %
-%% Defining Specimen Directions
+%% SUB: Defining Specimen Directions
 %
 % The standard way to define a specimen directions is by its coordinates. 
 
@@ -39,7 +36,7 @@ v = vector3d('polar',polar_angle,azimuth_angle);
 v = xvector + 2*yvector; 
 
 
-%% Calculating with Specimen Directions
+%% SUB: Calculating with Specimen Directions
 %
 % As we have seen in the last example. One can calculate with specimen
 % directions as with ordinary number. Moreover, all basic vector operation as 
@@ -80,7 +77,7 @@ w = w + v;
 
 w = w ./ norm(w)
 
-%% Plotting three dimensionl vectors
+%% SUB: Plotting three dimensionl vectors
 % 
 % The [[vector3d.plot.html,plot]] function allows you to visualize an 
 % arbitrary number of specimen directions in a spherical projection

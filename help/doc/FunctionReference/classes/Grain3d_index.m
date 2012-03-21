@@ -1,5 +1,4 @@
 %% 3d Grains (The Class [[Grain3d_index.html,Grain3d]])
-%
 % class representing *3d Grains*. inherits methods of @GrainSet
 %
 
