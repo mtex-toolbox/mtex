@@ -73,7 +73,7 @@ hold off
 % * compute an ODF
 %
 % An exhausive introduction how to analyze and modify EBSD data can be found
-% <ModifyEBSDData.html here>
+% <EBSDModifyData.html here>
 
 %% SUB: Calculate an ODF from EBSD Data
 %
