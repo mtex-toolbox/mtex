@@ -17,7 +17,7 @@
 % - e.g. fabric analysis, characterisation of misorientation
 %
 %%
-% *<OrientationPlots.html Visualizing EBSD Data>* is a central to understand
+% *<EBSDOrientationPlots.html Visualizing EBSD Data>* is a central to understand
 % a specimen. The most naive way is plotting of the individual orientations as 
 % pole point plots or spatially indexed in some map with colorcoded orientations. 
 % Moreover one gets with grains the possibility to take a closer look on grain

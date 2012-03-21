@@ -8,7 +8,7 @@
 %%
 % Reconstructing grains and grain boundaries is one of the central problems
 % when analyzing EBSD data. It is instrumental for ODF estimation from EBSD
-% data as well as <MisorientationAnalysis.html misorientation analysis>.
+% data as well as <GrainMisorientationAnalysis.html misorientation analysis>.
 %
 
 %% Grain Reconstruction

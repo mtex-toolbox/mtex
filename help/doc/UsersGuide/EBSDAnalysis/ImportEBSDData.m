@@ -8,8 +8,8 @@
 %%
 % Importing EBSD data into MTEX is mainly done by creating a instance of
 % the class @EBSD from an EBSD data file. Once such an @EBSD object has
-% been created, the data can be futher <ModifyEBSDData.html manipulated>,
-% <OrientationPlots.html visualized> and <EBSD2odf.html analyzed>, or
+% been created, the data can be futher <EBSDModifyData.html manipulated>,
+% <EBSDOrientationPlots.html visualized> and <EBSD2odf.html analyzed>, or
 % further be generalized by means of <GrainReconstruction.html grain
 % reconstruction> with the help of its class [[EBSD_index.html#12,methods]].
 %
