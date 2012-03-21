@@ -1,8 +1,6 @@
 function map = WhiteJetColorMap(n)
 
-if nargin <1
-  n  = 100
-end
+if nargin <1, n  = 100; end
 
 n  =  round([15 40 25 13 7]./100*n);
 
