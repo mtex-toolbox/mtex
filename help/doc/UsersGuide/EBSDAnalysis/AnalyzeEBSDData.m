@@ -2,7 +2,7 @@
 %
 %% Open in Editor
 %
-%% Abstract
+%% 
 % EBSD Data analysis is not yet complete in MTEX. However most of the main
 % functionalities are already implemented. First of all one can estimate an
 % ODF from EBSD data. This is explained in detail in the section

@@ -1,11 +1,10 @@
 %% The Piezoelectricity Tensor
 % how to work with piezoelectricity
-
-%% Open in Editor
-%
-%% Abstract
+%% 
 % This m-file mainly demonstrates how to illustrate the directional
 % magnitude of a tensor with mtex
+%
+%% Open in Editor
 %
 %% Contents
 %

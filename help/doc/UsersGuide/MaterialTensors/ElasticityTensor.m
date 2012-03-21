@@ -1,16 +1,15 @@
 %% The Elasticity Tensor
 % how to calculate the elasticity properties
 %
-%% Open in Editor
-%
-%% Abstract
+%% 
 % MTEX offers a very simple way to compute elasticity properties of
 % materials. This includes Young's modulus, linear compressibility,
 % Cristoffel tensor, and elastic wave velocities.
 %
+%% Open in Editor
+%
 %% Contents
-
-
+%
 %% Import an Elasticity Tensor
 % Let us start by importing the elastic stiffness tensor of an Olivin
 % crystal in reference orientation from a file. 

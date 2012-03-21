@@ -1,8 +1,8 @@
 %% Orientation Density Functions
-%
-%% Abstract
 % This example demonstrates the most important MTEX tools for analysing
-% ODFs. All described commands can be applied to model ODFs constructed via
+% ODFs.
+%%
+% All described commands can be applied to model ODFs constructed via
 % [[uniformODF.html, uniformODF]], [[unimodalODF.html, unimodalODF]],
 % or [[fibreODF.html, fibreODF]] and to all estimated ODF calculated
 % from [[PoleFigure_calcODF.html, pole figures]] or
