@@ -24,7 +24,7 @@ I_VF = get(grains,'I_VF');
 [vertex,face]=  find(I_VF);
 halfDist = sqrt(sum((V(F(face,1),:) - V(F(face,2),:)).^2,2))/2;
 I_VFweight = sqrt(sparse(vertex,face,halfDist,size(I_VF,1),size(I_VF,2)));
-I_VGweight = I_VFweight * grains.I_FDext * grains.I_DG;
+I_VGweight = I_VFweight * abs(grains.I_FDext) * grains.I_DG;
 
 
 [v,g,weight] = find(I_VGweight);
@@ -41,10 +41,12 @@ for k=1:numel(grains)
   Vg = bsxfun(@minus,V(v(ndx),:), c(k,:));
   Vg = bsxfun(@times,Vg, weight(ndx));
   
+
   % pca
   [ev(:,:,k)  ew(:,:,k)] = svd(Vg'*Vg);
   ew(:,:,k)  = nthroot(dim*sqrt(dim).*ew(:,:,k),dim)./(nthroot(size(Vg,1),dim));
 end
+
 
 
 if nargout < 1
