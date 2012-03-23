@@ -65,6 +65,7 @@ x_D = x_D(m,:);
 
 % sort ebsd accordingly
 ebsd = subsref(ebsd,m);
+clear m
 
 % get the location x of voronoi-generators D
 [d,dim] = size(x_D);
@@ -105,7 +106,7 @@ switch dim
     
     [Dl,Dr] = find(A_D);  % list of cells
     
-    clear I_VD iv id ie p indx ivn
+    clear I_VD iv id ie p b indx ivn
     
   case 3
     
@@ -113,6 +114,8 @@ switch dim
     
     % adjacent cells, D x D
     A_D = sparse(double(Dl),double(Dr),1,d,d);
+    
+    clear x_D
     
 end
 
@@ -146,7 +149,8 @@ for p = 1:numel(ebsd.phaseMap)
     
     criterion(andx) = dot(o_Dl,o_Dr) > cos(thresholds(p)/2);
   end
-  
+    
+  clear o_Dl o_Dr ndx csndx andx
 end
 
 %%
@@ -155,15 +159,17 @@ end
 A_Do = sparse(double(Dl(criterion)),double(Dr(criterion)),true,d,d);
 A_Do = A_Do | A_Do';
 
-ids = connectedComponents(A_Do);
-
 A_Db = sparse(double(Dl(~criterion)),double(Dr(~criterion)),true,d,d);
 A_Db = A_Db | A_Db';
 
+clear Dl Dr criterion notIndexed p k
+
 %% retrieve neighbours
 
-I_DG = sparse(1:numel(ids),double(ids),1);    % voxels incident to grains
+I_DG = sparse(1:d,double(connectedComponents(A_Do)),1);    % voxels incident to grains
 A_G = I_DG'*A_Db*I_DG;                     % adjacency of grains
+
+clear A_Do
 
 %% interior and exterior grain boundaries
 
@@ -174,6 +180,8 @@ sub = any(sub(:,i) & sub(:,j),1);              % pairs in a grain
 A_Db_int = sparse(i(sub),j(sub),1,d,d);
 A_Db_ext = A_Db - A_Db_int;                        % adjacent over grain boundray
 
+clear A_Db sub i j
+
 %% create incidence graphs
 
 % now do
@@ -183,7 +191,7 @@ switch dim
   case 3
     % construct faces as needed
     if numel(sz) == 3
-      i = find(any(A_Db,2));  % voxel that are incident to grain boudaries
+      i = find(any(A_Db_int,2) | any(A_Db_ext,2));  % voxel that are incident to grain boudaries
       [x_V,F,I_FD,I_FDbg] = spatialdecomposition3d(sz,uint32(i(:)),dz,lz);
     else % its voronoi decomposition
       v = sz; clear sz
@@ -195,16 +203,21 @@ switch dim
     end
 end
 
+D_Fbg   = diag(any(I_FDbg,2));
+clear I_FDbg
+
 [ix,iy] = find(A_Db_ext);
+clear A_Db_ext
 D_Fext  = diag(sum(abs(I_FD(:,ix)) & abs(I_FD(:,iy)),2)>0);
 
-D_Fbg   = diag(any(I_FDbg,2));
 I_FDext = (D_Fext| D_Fbg)*I_FD;
+clear D_Fext D_Fbg I_FDbg
 
 [ix,iy] = find(A_Db_int);
+clear A_Db_int
 D_Fsub  = diag(sum(abs(I_FD(:,ix)) & abs(I_FD(:,iy)),2)>0);
 I_FDsub = D_Fsub*I_FD;
-
+clear I_FD I_FDbg D_Fsub ix iy
 
 %% sort edges of boundary when 2d case
 
@@ -214,6 +227,8 @@ switch dim
     I_FDsub = EdgeOrientation(I_FDsub,F,x_V,x_D);
     
     b = BoundaryFaceOrder(D,F,I_FDext,I_DG);
+    
+    clear x_D D
     
 end
 
@@ -243,6 +258,8 @@ for k=1:numel(doMeanCalc)
   cellMean{k} = mean(qMean);
 end
 meanRotation(doMeanCalc) = [cellMean{:}];
+
+clear grainSize grainRange indexedPhases doMeanCalc cellMean q g qMean
 
 
 %%
