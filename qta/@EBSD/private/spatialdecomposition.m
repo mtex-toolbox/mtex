@@ -31,7 +31,7 @@ function dummyCoordinates = calcAugmentation(X,unitCell,varargin)
 dummyCoordinates = [];
 
 % specify a bounding polyogn
-augmentation = get_option(varargin,'Augmentation','cube',{'char','polygon'});
+augmentation = get_option(varargin,'Augmentation','hull',{'char','double'});
 
 if ischar(augmentation)
   
