@@ -1,32 +1,38 @@
 function ebsd = loadEBSD_osc(fname,varargin)
 %
 
-[path,file,ext]= filparts(fname);
 
+[path,file,ext]= fileparts(fname);
 
 if strncmp(ext,'.osc',4)
+  try
+    
+    [data,Xstep,Ystep] = Osc2Ang( fname );
+    ignore = all(data(:,1:3) >= 2*pi,2);
+    data = data(~ignore,:);
+    
+    data = double(data);
+    q = euler2quat(data(:,1),data(:,2),data(:,3),'bunge');
+    
+    phase = data(:,8);
+    opt.x = data(:,4);
+    opt.y = data(:,5);
+    opt.iq = data(:,6);
+    opt.ci = data(:,7);
+    opt.sem_signal =  data(:,9);
+    opt.fit = data(:,10);
+    
+    unitCell = [ Xstep/2 -Ystep/2;  Xstep/2  Ystep/2;  -Xstep/2  Ystep/2;  -Xstep/2 -Ystep/2];
+    
+    ebsd = EBSD(q,symmetry('cubic'),symmetry,'phase',phase,'unitCell',unitCell,'options',opt);
+  catch
+    interfaceError(fname)
+  end
   
-  
-  [data,Xstep,Ystep] = Osc2Ang( fname );
-  ignore = all(data(:,1:3) >= 2*pi,2);
-  data = data(~ignore,:);
-  
-  data = double(data);
-  q = euler2quat(data(:,1),data(:,2),data(:,3),'bunge');
-  
-  phase = data(:,8);
-  opt.x = data(:,4);
-  opt.y = data(:,5);
-  opt.iq = data(:,6);
-  opt.ci = data(:,7);
-  opt.sem_signal =  data(:,9);
-  opt.fit = data(:,10);
-  
-  unitCell = [ Xstep/2 -Ystep/2;  Xstep/2  Ystep/2;  -Xstep/2  Ystep/2;  -Xstep/2 -Ystep/2];
-  
-  ebsd = EBSD(q,symmetry('cubic'),symmetry,'phase',phase,'unitCell',unitCell,'options',opt);
-  
+else
+  interfaceError(fname)
 end
+
 %% taken from ANYSTITCH
 %
 % A.L. PILCHAK, A.R. SHIVELEY, J.S. TILEY, and D.L. BALLARD,

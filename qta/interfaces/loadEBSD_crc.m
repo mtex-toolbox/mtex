@@ -6,15 +6,18 @@ function ebsd = loadEBSD_crc(fname,varargin)
 cpr_file = fullfile(path,[file '.cpr']);
 crc_file = fullfile(path,[file '.crc']);
 
-if exist(cpr_file,'file') == 2 && exist(crc_file,'file') == 2
-  [cs,N,x,y,unitCell] = localReadCPR(cpr_file);
-  [phase,q,opts] = localReadCRC(crc_file,N);
-  opts.x = x;
-  opts.y = y;
+try
+  if exist(cpr_file,'file') == 2 && exist(crc_file,'file') == 2
+    [cs,N,x,y,unitCell] = localReadCPR(cpr_file);
+    [phase,q,opts] = localReadCRC(crc_file,N);
+    opts.x = x;
+    opts.y = y;
+  end
+  
+  ebsd = EBSD(q,cs,symmetry,'phase',phase(:),'unitCell',unitCell,'options',opts);
+catch
+  interfaceError(fname);
 end
-
-ebsd = EBSD(q,cs,symmetry,'phase',phase(:),'unitCell',unitCell,'options',opts);
-
 end
 
 
@@ -28,13 +31,13 @@ fclose(fid);
 data   = reshape(data,[],N);
 
 phase  = double(data(1,:));
-euler1 = typecast(reshape(data( 2:5 ,:),[],1),'single');
-euler2 = typecast(reshape(data( 6:9 ,:),[],1),'single');
-euler3 = typecast(reshape(data(10:13,:),[],1),'single');
+euler1 = double(typecast(reshape(data( 2:5 ,:),[],1),'single'));
+euler2 = double(typecast(reshape(data( 6:9 ,:),[],1),'single'));
+euler3 = double(typecast(reshape(data(10:13,:),[],1),'single'));
 
 q = euler2quat(euler1,euler2,euler3);
 
-opt.ri         = typecast(reshape(data(14:17,:),[],1),'single');
+opt.ri         = double(typecast(reshape(data(14:17,:),[],1),'single'));
 opt.mad        = double(data(18,:)');
 opt.bc         = double(data(19,:)');
 opt.bs         = double(data(20,:)');
@@ -87,7 +90,7 @@ for k=0:phasecount
     phase = p(phasek).contents;
     cs{k+1} = localPhase2CS(phase);
   else
-%     cs{k+1} = symmetry;
+    %     cs{k+1} = symmetry;
     cs{k+1} = 'not Indexed';
   end
 end
@@ -155,9 +158,9 @@ if ~isempty(xsize) && ~isempty(ysize);
   unitCell = [ ...
     ystep/2  xstep/2
     ystep/2 -xstep/2
-   -ystep/2 -xstep/2
-   -ystep/2 xstep/2];
-%   unitCell = calcUnitCell([x y])
+    -ystep/2 -xstep/2
+    -ystep/2 xstep/2];
+  %   unitCell = calcUnitCell([x y])
 else
   x = []; y = []; unitCell = [];
 end
@@ -207,10 +210,10 @@ if isfield(phase,'spacegroup')
     206,  'm-3';
     214,  '432';
     220, '-43m';
-    230, 'm-3m';};  
+    230, 'm-3m';};
   
-  ndx = nnz([list{:,1}] < group);  
-  group = list{ndx+1,2}; 
+  ndx = nnz([list{:,1}] < group);
+  group = list{ndx+1,2};
   
 elseif isfield(phase,'lauegroup')
   group = phase.lauegroup;
