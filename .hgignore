@@ -16,6 +16,7 @@ VERSION
 *.mat
 *.orig
 *.rej
+*.o
 help/mtex/demos\.xml
 help/html/*
 help/tmp/*
