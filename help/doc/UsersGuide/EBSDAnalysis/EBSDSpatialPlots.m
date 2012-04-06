@@ -27,8 +27,9 @@ plot(ebsd('Fe'))
 % <ColorCodingEBSD_demo.html colorcoding>. A standard way to color
 % orientations is to assign each fibre $g*h=r$ a chromatic value, where the
 % specimen direction $r$ is fixed. Then the map can be interpreted as
-% colored inverse pole figure, where a certain crystal face is associated
-% with a specified color.
+% colored inverse pole figure, where a certain crystallographic form (plane, axis)
+% is associated with a specified color in relation to the crystal reference
+% frame.
 
 colorbar('Position',[100 100 400 200])
 
@@ -43,7 +44,7 @@ close all, plot(ebsd('Fe'),'colorcoding','hkl')
 colorbar('Position',[100 100 300 300])
 
 %% Customizing the color
-% In some cases, it might be usefull to color certain orientations after
+% In some cases, it might be useful to color certain orientations after
 % one needs. This can be done in two ways, either to color a certain fibre,
 % or a certain orientation.
 
@@ -59,8 +60,8 @@ plot(ebsd('Fe'),'colorcoding',...
 
 %%
 % the option |halfwidth| controls half of the intensity of the color at a
-% given distance. Here we choosed the (111)[001] fibre to be drawn in blue,
-% and at 7.5 degree, the blue should be only lighter.
+% given distance. Here we have chosen the (111)[001] fibre to be drawn in blue,
+% and at 7.5 degrees, where the blue should be only lighter.
 
 colorbar('Position',[100 100 400 200])
 
@@ -99,14 +100,15 @@ plot(ebsd('Fe'),'colorcoding',...
 colorbar('position',[100 100 300 300])
 
 %% SUB: Coloring certain orientations
-% For some reason, we are interested to locate some special orientation,
-% suppose the mode of the ODF somewhere in our spatial
-
+% We might be interested to locate some special orientation in our orientation map. 
+% Suppose the mode of the ODF somewhere in our spatial distribution of
+% grains (the orientation map).
 
 mode = orientation('euler',90*degree,50*degree,45*degree,'ABG')
 
 %%
-% We can to this similiar to the coloring of fibres, namely
+% The definition of colors for certain orientations is carried out similarly as 
+% in the case of fibres
 
 close all;
 plot(ebsd('Fe'),'colorcoding',...
@@ -163,7 +165,7 @@ plot(ebsd('Fe'),'property', p1)
 colormap(grayColorMap)
 
 %% Combining different plots
-% Combining different plots may either be done by plotting only subsets of
+% Combining different plots can be done either by plotting only subsets of
 % the ebsd data, or via the option |'translucent'|. Note that the option
 % |'translucent'| requires the renderer of the figure to be set to
 % |'opengl'|.

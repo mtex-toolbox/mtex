@@ -1,6 +1,12 @@
 function varargout = docmethods(obj)
 
+% for octave skip this
+if isOctave
+  varargout{1} = '';
+  return;
+end
 
+%
 if nargout > 0 && ischar(obj)
   
   if evalin('base',['exist(''' obj ''',''var'')']) && ...

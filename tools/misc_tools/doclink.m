@@ -1,5 +1,10 @@
 function linkText = doclink(fname,lname)
 
+% on Octave skip this
+if isOctave
+  linkText = lname;
+  return;
+end
 
 
 if exist('helpPopup','file')>0

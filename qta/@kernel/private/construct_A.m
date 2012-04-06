@@ -78,14 +78,39 @@ switch lower(name)
   case 'ghost'
     
     A =  p.^(0:L);
-               
+
+    
+  case 'summability'
+    
+    L = p;
+    A = zeros(1,L+1);
+    N = fix(3*L/ 2);
+    
+    M = fix(L/2);
+
+    A = zeros(N+M+1,1);
+    for n = 0:N
+      for m = 0:M
+    
+    
+        for j= abs(m-n):(m+n)
+      
+          A(j+1) = A(j+1) + (2*n+1)* (2*m+1);
+      
+        end
+    
+      end
+    end
+
+    A = A ./ A(1);
+    
   otherwise
         
     A = [];
 
 end
 
-if length(A) > 11 && ~any(strcmpi(name,{'Fourier','bump','Sobolev','ghost'}))
+if length(A) > 11 && ~any(strcmpi(name,{'Fourier','bump','Sobolev','ghost','summability'}))
   % prevent from instability effects
   epsilon = get_mtex_option('FFTAccuracy',1E-2);
   ind = find(A<=max(min([A,10*epsilon]),epsilon),1,'first');
