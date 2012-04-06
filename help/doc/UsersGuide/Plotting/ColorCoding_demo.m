@@ -7,7 +7,7 @@
 % A central issue when interpreting plots is to have a consistent color
 % coding among all plots. In MTEX this can be achieved in two ways. If the 
 % the minimum and maximum value is known then one can 
-% specify the colorrange directly using the options *colorrange* or
+% specify the color range directly using the options *colorrange* or
 % *contourf*, or the command <setcolorrange.html setcolorrange> is used
 % which allows to set the color range afterwards. 
 %
@@ -18,7 +18,7 @@
 %
 % Let us first define some model ODF_index.html ODFs> to be plotted later
 % on.
-
+                 
 cs = symmetry('-3m'); ss = symmetry('-1');
 odf = fibreODF(Miller(1,1,0),zvector,cs,ss)
 pf = calcPoleFigure(odf,[Miller(1,0,0),Miller(1,1,1)],...
@@ -32,7 +32,7 @@ pf = calcPoleFigure(odf,[Miller(1,0,0),Miller(1,1,1)],...
 plot(pf)
 
 %%
-% However, sometimes more simple colormaps are prefered, like the LaboTeX
+% However, sometimes more simple colormaps are preffered, like the LaboTeX
 % colormap
 
 colormap(LaboTeXColorMap)
@@ -51,9 +51,9 @@ set_mtex_option('defaultColorMap',LaboTeXColorMap);
 
 %% Tight Colorcoding
 %
-% When <PoleFigure.plot.html plot> is called without option the colorcoding
-% of each plot is choosen *tight* to the range of the data independently
-% from the other plots, i.e., in each subplot the largest value is assigned
+% When <PoleFigure.plot.html plot> is called without any other option,
+% the chosen color coding is the one called  *tight*, which ranges the data independently
+% from the other plots, i.e., for each subplot the largest value is assigned
 % to the maximum color and the smallest value is assigned to the minimum
 % color from the colormap.
 
@@ -63,8 +63,8 @@ plot(pf)
 
 %% Equal Colorcoding
 %
-% The *tight* colorcoding makes it hard to compare two pole figures. If you
-% want to have one colorcoding for all plots within one figure use the
+% The *tight* colorcoding makes the reading and comparison between pole figures hard.
+% If you want to have one colorcoding for all plots within one figure use the
 % option *colorrange* to *equal*.
 
 plot(pf,'colorrange','equal')
@@ -85,7 +85,7 @@ plotpdf(.5*odf+.5*uniformODF(cs,ss),[Miller(1,0,0),Miller(1,1,1)],...
 
 %% Setting the Contour Levels
 %
-% In the case of contor plots you can also specify the *contour levels*
+% In the case of contoured plots you can also specify the *contour levels*
 % directly
 
 close all
@@ -93,7 +93,7 @@ plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],...
   'contourf',0:1:5,'antipodal')
 
 
-%% Modifying the Colorrange After Plotting
+%% Modifying the Color range After Plotting
 %
 % The color range of the figures can also be adjusted afterwards using the
 % command <setcolorrange.html setcolorrange>
@@ -103,7 +103,7 @@ setcolorrange([0.38,3.9])
 
 %% 
 % The command <setcolorrange.html setcolorrange> also allows to set an
-% equal colorcoding to all open figures.
+% equal color coding to all open figures.
 
 figure(1)
 plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal')

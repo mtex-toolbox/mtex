@@ -13,9 +13,9 @@ mtexdata aachen;
 plot(ebsd)
 
 %%
-% These data consist of two indexed phases, _Iron_ and _Magnesium_ and not
-% indexed data called phase _not Indexed_. They can be visualized by a
-% spatial phase plot
+% These data consist of two indexed phases, _Iron_ and _Magnesium_ : The not
+% indexed data is called phase _not Indexed_. They can be visualized by a
+% spatial phase plot (also called orientation map)
 
 close, plot(ebsd,'property','phase')
 
@@ -41,9 +41,10 @@ close, plot(ebsd('notIndexed'),'facecolor','r')
 %
 %% Realign / Rotate the data
 %
-% Sometimes its required to realign the EBSD data, e.g. by rotating,
-% shifting or flipping. This is done by the commands <EBSD.rotate.html
-% rotate>, <EBSD.fliplr.html fliplr>, <EBSD.flipud.html flipud> and
+% Sometimes it is necessary to realing the EBSD data to the correct position in the external reference frame, or to 
+% change the external reference frame from one to the other. Rotations in
+% MTEX can be done by rotating, shifting or flipping. This is done by the 
+% commands <EBSD.rotate.html rotate>, <EBSD.fliplr.html fliplr>, <EBSD.flipud.html flipud> and
 % <EBSD.shift.html shift>.
 
 % define a rotation
@@ -56,11 +57,13 @@ ebsd_rot = rotate(ebsd,rot);
 close, plot(ebsd_rot)
 
 %%
-% It should be stressed, that the rotation does not only effect the spatial
+% It should be stressed that any sort of rotation on EBSD DATASETS does not only effect the spatial
 % data, i.e. the x, y values, but also the crystal orientations are rotated
 % accordingly. This is true as well for the flipping commands
-% <EBSD.rotate.html rotate> and <EBSD.fliplr.html fliplr>. Observe, how not
-% only the picture is flipped but also the color changes!
+% <EBSD.rotate.html rotate> and <EBSD.fliplr.html fliplr>. A good test is
+% to rotate a given dataset in different ways and make plots for different
+% rotations. You will see that not only the picture is flipped/shifted/rotated but also the
+% color of the grain changes!
 
 ebsd_flip = fliplr(ebsd_rot);
 close, plot( ebsd_flip )
@@ -106,27 +109,44 @@ close, plot(ebsd)
 
 %% Remove Inaccurate Orientation Measurements
 %
-% *By MAD*
+% *By MAD (mean angular deviation)* in the case of Oxford Channel programs, or *by
+% CI (Confidence Index)* in the case of OIM-TSL programs
 %
 % Most EBSD measurements contain quantities indicating inaccurate
 % measurements. 
 
 close, plot(ebsd,'property','mad')
 
+% or
+
+close, plot(ebsd,'property','CI')
+
 %%
-% Here we will use the MAD value to identify and eliminate
+% Here we will use the MAD or CI value to identify and eliminate
 % inaccurate measurements.
 
-% extract the quantity mad
+% extract the quantity mad 
 mad = get(ebsd,'mad');
+
+%or
+% % extract the quantity ci 
+ci = get(ebsd,'ci');
 
 % plot a histogram
 close, hist(mad)
 
+%or
+% plot a histogram
+close, hist(ci)
+
+
 %%
 
-% take only those meassurements with MAD smaller then one
+% take only those measurements with MAD smaller then one
 ebsd_corrected = ebsd(mad<1)
+
+% take only those measurements with CI higher then 0.1 or 0.2
+ebsd_corrected = ebsd(ci>0.1 )
 
 %%
 %

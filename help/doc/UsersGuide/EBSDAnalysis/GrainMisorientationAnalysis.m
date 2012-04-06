@@ -11,8 +11,8 @@
 %
 % $$ mis(x,y) = x^{-1} * y  $$
 %
-% In te case of EBSD data intergranular misorientations, misorientations
-% between neighbouring grains, and missorientations between random
+% In the case of EBSD data, intergranular misorientations, misorientations
+% between neighbouring grains, and misorientations between random
 % measurments are of interest.
 
 
@@ -29,9 +29,9 @@ grains = calcGrains(ebsd,'threshold',5*degree);
 
 
 %% Intergranular misorientations
-% The intergranular misorientation is automaticaly computed while
+% The intergranular misorientation is automatically computed while
 % reconstructing the grain structure. It is stored as the property
-% *mis2mean* within the ebsd variable and can be accesed by the command
+% *mis2mean* within the ebsd variable and can be accessed by the command
 % <ebsd_get.html,get>.
 
 % get the misorientations to mean
@@ -54,7 +54,7 @@ hold on, plotBoundary(grains,'edgecolor','k','linewidth',0.5)
 calcMisorientation(grains(5),grains(6))
 
 %%
-% In order to visuallize the the misorientation between any two adjacent
+% In order to visualize the the misorientation between any two adjacent
 % grains there are two possibilities in MTEX.
 %
 % * plot the angle distribution for all phase combinations
@@ -68,13 +68,14 @@ calcMisorientation(grains(5),grains(6))
 close, plotAngleDistribution(grains)
 
 %%
-% The above angle distribtions can be compared with the uncorrelated angle
+% The above angle distributions can be compared with the uncorrelated angle
 % distributions. The uncorrelated angle distributions can be obtained in
 % two ways. First one can do the following
 %
 % # estimate an ODF for each phase
-% # compute for any phase transistion an MDF
-% # compute the continous angle distribution of the MDFs
+% # compute for any phase transition a misorientation distribution function
+% (MDF)
+% # compute the continuous angle distribution of the MDFs
 %
 % All these steps are performed by the single command
 
@@ -82,8 +83,8 @@ hold on, plotAngleDistribution(grains,'ODF')
 
 %%
 % Another possibility is to compute an uncorrelated angle distribution from
-% the EBSD data set by taking only those pairs of measurements into account
-% that are sufficently far from each other. The uncorrelated angle
+% the EBSD data set by taking only into account those pairs of measurements 
+% that are sufficently far from each other (uncorrelated points). The uncorrelated angle
 % distribution is plotted by
 
 close, plotAngleDistribution(grains,'uncorrelated')
@@ -96,7 +97,7 @@ close, plotAngleDistribution(grains('Fe'),grains('Mg'),'uncorrelated')
 
 %% The axis distribution
 % 
-% Lets start here with the uncorrelated axis distribution which depends
+% Let's start here with the uncorrelated axis distribution, which depends
 % only on the underlying ODFs. 
 
 figure('position',[100.0000 100.8000 450 300]);
@@ -124,5 +125,5 @@ close, plotAxisDistribution(grains('Fe'),'antipodal','contourf')
 colorbar
 
 %%
-% This shows a much stronger preferences of the (1,1,1) axis in comparison
+% This shows a much stronger preference of the (1,1,1) axis in comparison
 % to the uncorrelated distribution.
