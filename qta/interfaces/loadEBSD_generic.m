@@ -48,6 +48,7 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 %% See also
 % ImportEBSDData loadEBSD ebsd_demo
 
+try
 % load data
 [d,options,header,c] = load_generic(char(fname),varargin{:});
 
@@ -177,6 +178,9 @@ options = varargin;
 % set up EBSD variable
 ebsd = EBSD(q,symmetry('cubic'),symmetry,varargin{:},'phase',phase,'options',opt);
 
+catch
+  interfaceError(fname)
+end
 
 function str = stripws(str)
 

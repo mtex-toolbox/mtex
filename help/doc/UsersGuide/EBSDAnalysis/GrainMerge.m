@@ -15,7 +15,7 @@ grains = calcGrains(ebsd,'angle',2*degree)
 
 %% Merging Grains
 % <GrainSet.merge.html merge>, here we merge grains with misorientation
-% angle between 0 and 15 degree.
+% angle between 0 and 15 degrees.
 
 [merged_grains,I_PC] = merge(grains,[0 15]*degree);
 
@@ -25,8 +25,8 @@ grains = calcGrains(ebsd,'angle',2*degree)
 merged_grains
 
 %%
-% the seconed output argument |I_PC| is an incidence matrix betreen parent
-% grains and child grains. i.e. a row indicates child, and a colum his
+% the second output argument |I_PC| is an incidence matrix between parent
+% grains and child grains. i.e. a row indicates child, and a column his
 % parent, if there is an entry.
 
 spy(I_PC)
@@ -39,13 +39,13 @@ I_PC(1000,:)
 
 %%
 % would say, the parent grain nr. 1000 has 2 childs, where the index
-% referres to the grain nr. of the |grains| object.
+% refers to the grain nr. of the |grains| object.
 
 parent = merged_grains(1000);
 close, plot(parent)
 
 %%
-% So, we can select the childs by
+% So, we can select the child grains by
 
 childs = grains(find(I_PC(1000,:)))
 
@@ -62,7 +62,7 @@ area(childs)'./area(parent)
 (sum(perimeter(childs)) - perimeter(parent))/2
 
 %%
-% the two populations of the EBSD of the neighbored grains are close
+% the two populations of the EBSD of the neighbour grains are close
 % together
 
 close,   plotpdf(get(childs(1),'EBSD'),Miller(1,1,1),'marker','x','markersize',5,'antipodal')
@@ -75,8 +75,8 @@ hold on, plotpdf(get(childs(2),'EBSD'),Miller(1,1,1),'marker','x','markersize',5
 histc(full(sum(I_PC,2)),1:12)'
 
 %%
-% shows the number of childs in total, i.e. how many grains were merged how
-% often. first entry indicates, that there was no merge; the second entry,
+% shows the number of child grains in total, i.e. how many grains were merged and how
+% often. The first entry indicates that there was no merge; the second entry,
 % that there two grains merged, and so on.
 %
 %%
@@ -101,17 +101,18 @@ hold on,   plotBoundary(grains,'color',[.7 .7 .7])
 
 %% Merging grains with special boundaries
 % We can also merge grains with a special grain boundary relation, this
-% might be useful, if we want to arrange our grains logically in a hierarchy
+% might be useful if we want to arrange our grains logically in a certain hierarchy
 
 [merged_grains,I_PC] = merge(grains,CSL(3));
 
 %%
-% Some grains show, that they form a complex, i.e. there are some merges
+% Some grains show that they form a complex interaction, i.e. there are some merges
+% and some do not merge
 
 histc(full(sum(I_PC,2)),1:12)'
 
 %%
-% Let us just select such a merged parent grain and its childs
+% Let us just select such a merged parent grain and its child grains
 
 % identify the index of merged grains
 % find(sum(I_PC,2)>1)

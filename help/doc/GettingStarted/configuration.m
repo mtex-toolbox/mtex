@@ -1,5 +1,5 @@
 %% Configuration
-% Explains how to globaly configure MTEX, i.e. how to set a default Euler angle
+% Explains how to globally configure MTEX, i.e. how to set a default Euler angle
 % convention.
 %
 %% Global Configuration
@@ -22,7 +22,7 @@
 %
 % Many functions provided by MTEX can be customized by options. A option
 % is passed to a method as a string parameter followed by a value. For
-% example allmost all ploting methods support the option |RESOLUTION|
+% example, almost all ploting methods support the option |RESOLUTION|
 % followed by a double value specifying the resolution
 
 plotpdf(odf,Miller(1,0,0),'resolution',5*degree,'contour');

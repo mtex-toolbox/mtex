@@ -11,7 +11,7 @@
 %
 %
 %% Import the 3d EBSD
-% Here we describe how to import a stack of 2d EBSD data an to combine them to a
+% Here we describe how to import a stack of 2d EBSD maps an to combine them to a
 % 3D EBSD data set. Let us assume that the files are located in the directory
 
 dirName = [mtexDataPath filesep 'EBSD' filesep '3dData'];
