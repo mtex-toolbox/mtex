@@ -173,19 +173,29 @@ function lookup_mineral(varargin)
 
 handles = getappdata(gcbf,'handles');
 data = getappdata(gcbf,'data');
-cs_counter = getappdata(gcbf,'cs_count');
 
 name = get(handles.mineral,'string');
 
-[fname,pathName] = uigetfile(fullfile(mtexCifPath,'*.cif'),'Select cif File');
-name = [pathName,fname];
+try
+  cif2symmetry(name);
+catch   %#ok<CTCH>
+  [fname,pathName] = uigetfile(fullfile(mtexCifPath,'*.cif'),'Select cif File');
+  name = [pathName,fname];
+end
 
-if fname ~= 0
+if name ~= 0
   try
     cs = cif2symmetry(name);
     set(handles.mineral,'string',shrink_name(name));
     if isa(data,'EBSD')
-      data(cs_counter) = set(data(cs_counter),'CS',cs,'noTrafo');
+      
+       ph = unique(get(data,'phases'));
+       cs_counter = getappdata(gcf,'cs_count');
+       csCell = get(data,'CSCell');
+       phase = ph(cs_counter);
+       csCell{phase} = cs;
+      
+      data = set(data,'CS',csCell,'noTrafo');
     else
       data = set(data,'CS',cs,'noTrafo');
     end
