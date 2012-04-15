@@ -269,22 +269,22 @@ grainSet.comment  = ebsd.comment;
 %  sprintf(['%3.1f' mtexdegchar ', '],thresholds/degree)];
 %grainSet.comment(end-1:end) = [];
 
-grainSet.A_D      = logical(A_D);
-grainSet.I_DG     = logical(I_DG);
-grainSet.A_G      = logical(A_G);
-grainSet.meanRotation = meanRotation;
+grainSet.A_D      = logical(A_D);   clear A_D;
+grainSet.I_DG     = logical(I_DG);  clear I_DG;
+grainSet.A_G      = logical(A_G);   clear A_G;
+grainSet.meanRotation = meanRotation;  clear meanRotation;
 % grain.rotations    = ebsd.rotations;
-grainSet.phase    = phase;
+grainSet.phase    = phase;          clear phase;
 %
-grainSet.I_FDext  = I_FDext;
-grainSet.I_FDsub  = I_FDsub;
+grainSet.I_FDext  = I_FDext;        clear I_FDext;
+grainSet.I_FDsub  = I_FDsub;        clear I_FDsub;
 % model.I_VE     = logical(I_VE);
-grainSet.F        = F;
-grainSet.V        = x_V;
+grainSet.F        = F;              clear F;
+grainSet.V        = x_V;            clear x_V;
 grainSet.options  = struct;
 
-[g,d] = find(I_DG');
-ebsd.options.mis2mean = inverse(ebsd.rotations(d)).* reshape(meanRotation(g),[],1);
+[g,d] = find(grainSet.I_DG'); clear I_DG;
+ebsd.options.mis2mean = inverse(ebsd.rotations(d)).* reshape(grainSet.meanRotation(g),[],1);
 
 switch dim
   case 2
