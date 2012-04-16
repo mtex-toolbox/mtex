@@ -1,15 +1,40 @@
 function varargout = TSP(S2,varargin)
-% traveling salesman problem on the 2 dimensional unit-sphere with
-% christophides algorithm
+% traveling salesman problem on the 2 dimensional unit-sphere
 %
-%% flags
-% direct  
-% 2opt
-% christophides|chris
-% christophides2opt|chris2opt
-% linkern
-% concorde
-% lkh
+%% Remarks
+% Option xxx2opt invokes lin-kerninghan heuristics. If no further breadth
+% is specified it uses the default breadth of [1].
+%% Syntax 
+%  TSP(S2,'metric','goniometer','chispeed',[1/2.55 4.5],'phispeed',[1/9.45 4.5]) - applies  goniometer metric
+%  TSP(S2,'method','christophides2opt') - is the default method
+%  TSP(S2,'method','christophides2opt',[4 3 3 2]) - sets the breadth of the
+%    2opt search tree for the lin kerninghan heuristics.
+%
+%% Input
+%  S2  - @S2Grid
+%% Options
+%  Method  - Selects a heuristics or external solver
+%
+%    * |'direct'| --
+%    * |'2opt'| -- two opt heuristics
+%    * |'dmst'| -- double minimum spanning tree heuristics
+%    * |'dmst2opt'| -- double minimum spanning tree heuristics + 2opt improvement
+%    * |'dmstdouble'| -- invokes the 2opt improvement before and after the short cut
+%    * |'christophides'|,|'chris'| -- christophides heuristics
+%    * |'christophides2opt'|, |'chris2opt'| -- christophides heuristics + 2opt improvement
+%    * |'chrisdoubleopt'| -- invokes the 2opt improvement before and after the short cut
+%    * |'insertion'| -- insertion heuristics.
+%    * |'insertion2opt'| -- insertion heuristics + 2opt improvement
+%    * |'linkern'| -- invoke external solver
+%    * |'concorde'| -- invoke external solver
+%    * |'lkh'| -- invoke external solver
+%  Metric - sets the spherical metric
+%
+%    * |'manhatten'| -- manhatten distance on sphere.
+%    * |'goniometer'| -- maximum polar angle, requires |'PhiSpeed'| and
+%                        |'ChiSpeed'|.
+%    * |'angle'|  -- normal spherical distance.
+%  MaxTime - aborts 2-- or n--opt after given seconds if specified.
 %
 %%
 %
@@ -27,16 +52,31 @@ else
 end
 
 weight   = dist(A,v,varargin{:});
+weight   = full(weight);
+
+varargin = set_default_option(varargin,{'v',v});
 
 switch lower(method)
   case 'direct'
     
-    tour = [1:n 1];   
+    tour = [1:n 1];
+    
+  case 'insertion'
+    
+    tour = insertionHeuristics(weight,varargin{:});
+    %     tour = twoOpt(tour,weight,varargin{:});
+    
+  case 'insertion2opt'
+    
+    tour = insertionHeuristics(weight,varargin{:});
+    breadth = get_option(varargin,'insertion2opt',1,'double');
+    tour = LinKern(weight,tour,breadth,varargin{:});
     
   case '2opt'
     
     tour = [1:n 1];
-    tour = twoOpt(tour,weight,varargin{:});
+    breadth = get_option(varargin,'2opt',1,'double');
+    tour = LinKern(weight,tour,breadth,varargin{:});
     
   case {'christophides','chris'}
     
@@ -45,8 +85,50 @@ switch lower(method)
   case {'christophides2opt','chris2opt'}
     
     tour = ChristophidesHeuristics(weight,varargin{:});
-    tour = twoOpt(tour,weight,varargin{:});
-
+    breadth   = get_option(varargin,{'christophides2opt','chris2opt'},1,'double');
+    tour = LinKern(weight,tour,breadth,varargin{:});
+    
+  case {'linkerninghan'}
+    
+    tour = ChristophidesHeuristics(weight,varargin{:});
+    breath = get_option(varargin,'linkerninghan',[4 3 3 2]);
+    tour = LinKern(weight,tour,breath,varargin{:});
+    
+  case {'dmst'}
+    
+    mst      = MinimumSpanningTree(weight);
+    tour     = EulerCycle([mst;mst]);
+    tour     = EulerToHamiltonian(tour);
+    
+  case {'dmst2opt'}
+    
+    mst      = MinimumSpanningTree(weight);
+    tour     = EulerCycle([mst;mst]);
+    tour     = EulerToHamiltonian(tour);
+    breadth   = get_option(varargin,'dmst2opt',1,'double');
+    tour     = LinKern(weight,tour,breadth,varargin{:});
+    
+  case {'dmstdouble'}
+    
+    mst      = MinimumSpanningTree(weight);
+    tour     = EulerCycle([mst;mst]);
+    breadth   = get_option(varargin,'dmstdouble',1,'double');
+    tour     = LinKern(weight,tour,breadth,varargin{:});
+    tour     = EulerToHamiltonian(tour);
+    tour     = LinKern(weight,tour,breadth,varargin{:});
+    
+  case {'chrisdoubleopt','christophidesdoubleopt'}
+    
+    mst      = MinimumSpanningTree(weight);
+    matching = MinimumWeightMatching(weight,mst);
+    
+    tour     = EulerCycle([mst;matching]);
+    breadth   = get_option(varargin,'chrisdoubleopt',1,'double');
+    
+    tour     = LinKern(weight,tour,breadth,varargin{:});
+    tour     = EulerToHamiltonian(tour);
+    tour     = LinKern(weight,tour,breadth,varargin{:});
+    
   otherwise
     
     tour = runTSPexternal(method,weight,varargin{:});
@@ -58,9 +140,10 @@ tour = tour(:);
 if nargout<1
   
   time = sum(dist([tour(1:end-1) tour(2:end)],v,varargin{:}));
-   figure,
-  plot(v(tour),'line','color','b',varargin{:})
+  figure,
+  line(v(tour),'color','b',varargin{:})
   title(num2str(time))
+  
 end
 
 if nargout>0
@@ -96,15 +179,14 @@ switch lower(metric)
     
     [theta,rho] = polar(v);
     
-    t = abs(angle(exp(1i*theta(i))./exp(1i*theta(j)))) + ...
-      abs(angle(exp(1i*rho(i))./exp(1i*rho(j))));
+    t = acos(cos(theta(i)-theta(j))) + acos(cos(rho(i)-rho(j)));
     
   case 'goniometer'
     
     [theta,rho] = polar(v);
     
-    d_chi = abs(angle(exp(1i*theta(i))./exp(1i*theta(j))))/degree;
-    d_phi = abs(angle(exp(1i*rho(i))./exp(1i*rho(j))))/degree;
+    d_chi = acos(cos(theta(i)-theta(j)))/degree;
+    d_phi = acos(cos(rho(i)-rho(j)))/degree;
     
     p_chi = get_option(varargin,{'ChiSpeed','SpeedChi'},[1 0]);
     d_chi = polyval(p_chi,d_chi);
@@ -157,6 +239,7 @@ function tour = ChristophidesHeuristics(weight,varargin)
 
 mst      = MinimumSpanningTree(weight);
 matching = MinimumWeightMatching(weight,mst);
+
 tour     = EulerCycle([mst;matching]);
 tour     = EulerToHamiltonian(tour);
 
@@ -217,17 +300,17 @@ A = A+A'>0;
 weight(A>0) = Inf; % remove already existing edges
 
 % reduce weight matrix to odd nodes only
-weight = weight(isOdd,isOdd);
+weight2 = weight(isOdd,isOdd);
 
 % sort the entries as ascending edge list [i,j]
-[i,j,w] = find(triu(weight,1));
+[i,j,w] = find(triu(weight2,1));
 [w, ndx] = sort(w);
 
 edges = [i(ndx),j(ndx)];
-% edges = edges(ndx,:);
+edges = edges(ndx,:);
 
 % number of edges we have to process
-n = size(weight,1)/2;
+n = size(weight2,1)/2;
 % edge list pointer
 matching = zeros(n,2);
 
@@ -244,6 +327,91 @@ end
 
 % get the old position of the nodes
 matching = oddPos(matching);
+
+
+function tour = LinKern(weight,tour,stack,varargin)
+
+
+maxTime = get_option(varargin,'maxtime',Inf);
+s = tic;
+
+a = -Inf;
+
+while a < 0 && toc(s) < maxTime
+  [gains,tours] = LinMove(weight,tour,stack);
+  
+  [a i] = min(gains);
+  tour = tours(i,:);
+end
+
+
+function [gain,tours] = LinMove(weight,tour,stack,g)
+
+if nargin < 4
+  g = 0;
+end
+
+[tours gain] = TwoMove(weight,tour,stack(1));
+
+gain = gain+g;
+stack(1) = [];
+
+if ~isempty(stack)
+  leaves = cell(size(gain));
+  for k=1:size(tours,1)
+    [leaves{k} toursk{k}] = LinMove(weight,tours(k,:),stack,gain(k));
+  end
+  
+  [a i]  =  cellfun(@min,leaves);
+  toursk =  cellfun(@(x,i) x(i,:),toursk,num2cell(i)','UniformOutput',false);
+  
+  tours2 = vertcat(toursk{:});
+  
+  i = a < gain;
+  gain(i) = a(i);
+  tours(i,:) = tours2(i,:);
+  %   gain = min(gain,a);
+end
+
+
+function [tours,bestgain] = TwoMove(weight,tour,depth)
+
+% n = max(tour(:))
+n = numel(tour(:))-1;
+tours = repmat(tour(:)',depth,1);
+A = weight(tour(1:end-1),tour(2:end));
+dA = diag(A); % diagonal entries are no the tour length (a,a+1) , (b,b+1)
+
+%   % ab-aan;
+AB = bsxfun(@minus,A,dA);
+AB = AB(1:n-1,1:n-1);
+% anbn-bbn
+CD = bsxfun(@minus,A(:,2:end),dA(2:end)');
+CD(1,:) =[];
+gain = AB+CD;
+
+% the upper triangle contains the gain.
+gain = triu(gain,1);
+
+if depth == 1
+  [bestgain,pos] = min(gain(:));
+else
+  [bestgain,pos] = sort(gain(:));
+end
+
+pos = pos(1:depth);
+bestgain = bestgain(1:depth);
+
+[besti,bestj] = ind2sub(size(gain),pos);
+
+for k = 1:depth
+  if besti(k) < bestj(k)
+    tours(k,1+(besti(k):bestj(k))) = tours(k,1+(bestj(k):-1:besti(k)));
+  else
+    %  disp('?')
+  end
+  
+end
 
 
 function tour = EulerCycle(edgeList)
@@ -313,59 +481,36 @@ tour = nn(tour);
 
 function hamiltonianPath = EulerToHamiltonian(tour)
 
-n = max(tour(:));
-visitedNode = false(n,1);
-hamiltonianPath = zeros(n+1,1);
 
-index=1;
-for i=1:numel(tour)
-  if ~visitedNode(tour(i))
-    hamiltonianPath(index) = tour(i);
-    visitedNode(tour(i)) = true;
-    
-    index=index+1;
-  end
-end
+[a b] = unique(tour,'first');
 
-hamiltonianPath(end) = hamiltonianPath(1);
+hamiltonianPath = zeros(size(tour));
+hamiltonianPath(b) = a;
+hamiltonianPath(hamiltonianPath == 0) = [];
+hamiltonianPath(end+1) = hamiltonianPath(1);
+
+function tour = insertionHeuristics(weight,varargin)
 
 
-function tour = twoOpt(tour,weight,varargin)
+W = full(weight);
+W(W==0) = inf;
+tour = [1 1];
 
-weight = full(weight); % faster indexing
-% weight(weight==0) = Inf;
-% n = size(weight,1);
-n = numel(tour)-1;
-maxTime = get_option(varargin,'maxtime',Inf);
-s = tic;
+n = size(W,1);
+candit = 2:n;
 
-if numel(tour)< 3, return; end
-
-while toc(s) < maxTime
-  A = weight(tour(1:end-1),tour(2:end));
+while ~isempty(candit)
   
-  dA = diag(A); % diagonal entries are no the tour length (a,a+1) , (b,b+1)
+  %   W1 = W(tour(1:end-1),candit);
+  W2 = W(tour(end-1),candit);
+  Wf = (W2);
   
-  %   % ab-aan;
-  AB = bsxfun(@minus,A,dA);
-  AB = AB(1:n-1,1:n-1);
-  % anbn-bbn
-  CD = bsxfun(@minus,A(:,2:end),dA(2:end)');
-  CD(1,:) =[];
-  gain = AB+CD;
+  [a i] = min(Wf(:));
+  [a i] = ind2sub(size(Wf),i);
+  tour = [tour(1:end-1) candit(i) tour(end)];
   
-  % the upper triangle contains the gain.
-  gain = triu(gain,1);
-  
-  [bestgain,pos] = min(gain(:));
-  
-  [besti,bestj] = ind2sub(size(gain),pos);
-  
-  if besti < bestj
-    tour(1+(besti:bestj)) = tour(1+(bestj:-1:besti));
-  end
-  if bestgain >= 0, break; end
-  
+  %   tour = [tour(1:a) candit(i) tour(a+1:end)];
+  candit(i) = [];
 end
 
 
