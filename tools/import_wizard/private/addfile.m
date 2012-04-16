@@ -45,8 +45,8 @@ for i=1:length(fnames)
   
   try
     [newData interface options idata] = loadData(strcat(pathname,fnames(i)),type,interf{:},options{:});
-  catch %#ok<CTCH>
-    errordlg(errortext);
+  catch e %#ok<CTCH>
+    errordlg(e.message);
     break;
   end
   
