@@ -16,6 +16,22 @@ switch vname
       value = obj.res;
     end
     
+  case 'minrho'
+    value = min(getMin(obj.rho));
+  case 'maxrho'
+    value = max(getMax(obj.rho));
+  case 'mintheta'    
+    m = obj.theta;
+    if isa(m,'function_handle')
+      value = 0;
+    else
+      value = min(getMin(m));
+    end    
+  case 'maxtheta'    
+    value = obj.theta;
+    if ~isa(value,'function_handle')
+      value = max(getMax(value));
+    end    
   case 'theta'
     [theta,rho] = polar(obj); %#ok<NASGU>
     value = theta;

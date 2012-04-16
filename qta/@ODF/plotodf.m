@@ -1,7 +1,7 @@
 function plotodf(odf,varargin)
 % plot odf
 %
-% Plots the ODF as various sections which can be controled by options. 
+% Plots the ODF as various sections which can be controled by options.
 %
 %% Input
 %  odf - @ODF
@@ -14,9 +14,9 @@ function plotodf(odf,varargin)
 %
 %% Flags
 %  SIGMA (default)
-%  OMEGA - sections along crystal directions @Miller 
+%  OMEGA - sections along crystal directions @Miller
 %  ALPHA
-%  GAMMA      
+%  GAMMA
 %  PHI1
 %  PHI2
 %  RADIALLY
@@ -24,16 +24,16 @@ function plotodf(odf,varargin)
 %
 %% See also
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
-% SphericalProjection_demo 
+% SphericalProjection_demo
 
 varargin = set_default_option(varargin,...
   get_mtex_option('default_plot_options'));
 
 %% -------- one - dimensional plot ---------------------------------------
-if check_option(varargin,'RADIALLY')   
+if check_option(varargin,'RADIALLY')
   plotodf1d(odf,varargin{:});
   return
-end  
+end
 
 %% two dimensional sections
 
@@ -54,26 +54,32 @@ fprintf(['\nPlotting ODF as ',sectype,' sections, range: ',...
   xnum2str(min(sec)/degree),mtexdegchar,' - ',xnum2str(max(sec)/degree),mtexdegchar,'\n']);
 
 if check_option(varargin,{'contour3','surf3','slice3'})
-
+  
   [xlim ylim] = polar(S2G);
   
   v = get_option(varargin,{'surf3','contour3'},10,'double');
   contour3s(xlim(1,:)./degree,ylim(:,1)'./degree,sec./degree,Z,v,varargin{:},...
     'xlabel',labely,'ylabel',labelx,'zlabel',symbol);
-    
-else
   
-  multiplot(@(i) S2G,...
-    @(i) Z(:,:,i),...
-    length(sec),...
-    'DISP',@(i,Z) [' ',symbol(2:end),' = ',xnum2str(sec(i)/degree),mtexdegchar,' ',...
-    ' Max: ',xnum2str(max(Z(:))),...
-    ' Min: ',xnum2str(min(Z(:)))],...
-    'ANOTATION',@(i) [int2str(sec(i)*180/pi),'^\circ'],...
-    'MINMAX','SMOOTH','TIGHT',...
-    'xlabel',labelx,'ylabel',labely,...
-    'colorrange','equal','margin',0,varargin{:}); %#ok<*EVLC>
-
+else
+  %
+  multiplot2(numel(sec),...
+    S2G,  @(i) Z(:,:,i),...    'DISP',@(i,Z) [' ',symbol(2:end),' = ',xnum2str(sec(i)/degree),mtexdegchar,' ',...    ' Max: ',xnum2str(max(Z(:))),...    ' Min: ',xnum2str(min(Z(:)))],...
+    'smooth',...
+    'TR',@(i) [int2str(sec(i)*180/pi),'^\circ'],...    'colorrange','equal','margin',0,
+    varargin{:}); %#ok<*EVLC>
+  
+  %   multiplot(@(i) S2G,...
+  %     @(i) Z(:,:,i),...
+  %     length(sec),...
+  %     'DISP',@(i,Z) [' ',symbol(2:end),' = ',xnum2str(sec(i)/degree),mtexdegchar,' ',...
+  %     ' Max: ',xnum2str(max(Z(:))),...
+  %     ' Min: ',xnum2str(min(Z(:)))],...
+  %     'ANOTATION',@(i) [int2str(sec(i)*180/pi),'^\circ'],...
+  %     'MINMAX','SMOOTH','TIGHT',...
+  %     'xlabel',labelx,'ylabel',labely,...
+  %     'colorrange','equal','margin',0,varargin{:}); %#ok<*EVLC>
+  
 end
 
 name = inputname(1);
