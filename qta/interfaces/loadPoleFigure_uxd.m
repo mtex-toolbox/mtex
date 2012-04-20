@@ -62,12 +62,15 @@ try
     r = [r;vector3d('polar',theta,rho)]; %#ok<AGROW>
     
   end
+  
+  % append last pole figure
+  pf(npf) = PoleFigure(Miller(1,0,0),S2Grid(r),d,symmetry('m-3m'),symmetry,'comment',comment);
+  
 catch
   interfaceError(fname,fid);
 end
-fclose(fid);
 
-pf = [pf,PoleFigure(Miller(1,0,0),S2Grid(r),d,symmetry('m-3m'),symmetry,'comment',comment)];
+fclose(fid);
 
 end
 
