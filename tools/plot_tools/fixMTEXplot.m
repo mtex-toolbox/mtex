@@ -26,40 +26,40 @@ set(ax,'TickDir','out',...
   'Layer','top')
 
 % axis(ax,'equal');
-% 
+%
 % if check_option(varargin,{'x','y'})
-%   
+%
 %   X = get_option(varargin,'x');
 %   Y = get_option(varargin,'y');
 %   lim = [min(X) max(X) min(Y) max(Y)];
-%   
+%
 %   if isappdata(fig,'extend')
 %     ex = getappdata(fig,'extend');
 %     xmi = min(lim,ex);
 %     xma = max(lim,ex);
 %     lim = [xmi(1) xma(2) xmi(3) xma(4)];
 %   end
-%   
+%
 %   setappdata(fig,'extend',lim);
 %   axis (ax,lim);
-%   
+%
 % else
 if ~isappdata(fig,'extend')
-  
+
   lim = [get(ax,'xlim') get(ax,'ylim')];
   setappdata(fig,'extend',lim);
-  
+
 else
-  
+
   lim = getappdata(fig,'extend');
-  
+
 end
 grid on
 
 fig_pos = get(fig,'position');
 
 
-d = get_option(varargin,'border',get_mtex_option('border',5));
+d = get_option(varargin,'border',getpref('mtex','border'));
 
 a(1) = diff(lim(1:2));
 a(2) = diff(lim(3:4));
@@ -83,7 +83,7 @@ end
 % axis fill
 try
   h = zoom(fig);
-  
+
   if isempty(get(h,'ActionPostCallback'))
     set(h,'ActionPostCallback',@(e,v) resizeCanvas(e,v,fig,ax));
   end
@@ -133,13 +133,13 @@ dy = diff(cx(3:4));
 
 %% resize ylim
 if ay_r < ey_r
-  
+
   % new ylim = xlim * are_ratio
   dy = dx * ax_r - dy;
-  
+
   % extend xlim to both sides
   y = cx(3:4) + [-1 1] * dy./2;
-  
+
   % may be a shift is necessary
   if y(1) < ex(3)
     y(2) = min(ex(4),y(2)+ex(3)-y(1));
@@ -148,18 +148,18 @@ if ay_r < ey_r
     y(1) = max(ex(3),y(1)+ex(4)-y(2));
     y(2) = ex(4);
   end
-  
+
   % set the new limit
   ylim(ax,y)
-  
+
   %% resize xlim
 else
   % new xlim = ylim * are_ratio
   dx = dy * ay_r - dx;
-  
+
   % extend xlim to both sides
   x = cx(1:2) + [-1 1] * dx./2;
-  
+
   % may be a shift is necessary
   if x(1) < ex(1)
     x(2) = min(ex(2),x(2)+ex(1)-x(1));
@@ -168,7 +168,7 @@ else
     x(1) = max(ex(1),x(1)+ex(2)-x(2));
     x(2) = ex(2);
   end
-  
+
   % set the new limit
   xlim(ax,x);
 end

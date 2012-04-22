@@ -50,13 +50,13 @@ else % otherwise select all boundaries
 end
 
 if isa(grains,'Grain2d')
-  
+
   [obj.Vertices(:,1),obj.Vertices(:,2),lx,ly] = fixMTEXscreencoordinates(obj.Vertices(:,1),obj.Vertices(:,2),varargin{:});
-  
+
 else
-  
+
   [ig,ig,lx,ly] = fixMTEXscreencoordinates([],[],varargin{:});
-  
+
 end
 
 % set direction of x and y axis
@@ -74,77 +74,77 @@ end
 %%
 
 if strcmpi(property,'none') % default case
-  
+
   [i,d] = find(I_FD);
   obj.Faces = obj.Faces(i,:);
-  
+
   if isa(grains,'Grain3d')
-    
+
     obj.EdgeColor = 'k';
     obj.FaceColor = 'r';
-    
+
   elseif isa(grains,'Grain2d')
-    
+
     obj.EdgeColor = 'k';
     obj.FaceColor = 'none';
-    
+
   end
-  
+
 else
-  
+
   phase = get(grains.EBSD,'phase');
   phaseMap = get(grains.EBSD,'phaseMap');
-  
+
   CS = get(grains,'CSCell');
   SS = get(grains,'SS');
   r         = get(grains.EBSD,'quaternion');
   phase     = get(grains.EBSD,'phase');
   isIndexed = ~isNotIndexed(grains.EBSD);
-  
+
   sel = find(sum(I_FD,2) == 2);
   [d,i] = find(I_FD(sel,any(grains.I_DG,2))');
   Dl = d(1:2:end); Dr = d(2:2:end);
-  
+
   % delete adjacenies between different phase and not indexed measurements
-  f = sel(i(1:2:end));  
-  
+  f = sel(i(1:2:end));
+
   if any(strcmpi(property,{'phase','phaseboundary'}))
-    
+
     prop = phase(Dl) ~= phase(Dr);
-    
+
   elseif strcmpi(property,'phasetransition')
-    
+
     nph = numel(phaseMap);
     p = sort([phase(Dl),phase(Dr)],2);
     [ignor,ignor,prop] = unique(sub2ind([nph nph],p(:,1),p(:,2)));
- 
+
   else
-    
+
     use = phase(Dl) == phase(Dr) & isIndexed(Dl) & isIndexed(Dr);
-    
+
     Dl = Dl(use); Dr = Dr(use);
     f = f(use);
     phase = phase(Dl);
-    
+
     % find and delete adjacencies
     epsilon = get_option(varargin,{'deltaAngle','angle','delta'},5*degree,'double');
-    
+
     for p=1:numel(phaseMap)
       currentPhase = phase == phaseMap(p);
       if any(currentPhase)
-        
+
         o_Dl = orientation(r(Dl(currentPhase)),CS{p},SS);
         o_Dr = orientation(r(Dr(currentPhase)),CS{p},SS);
-        
+
         m  = o_Dl.\o_Dr; % misorientation
-        
+
         prop(currentPhase,:) = calcBoundaryColorCode(m,...
           property,propval,epsilon,varargin{:});
-        
+
       end
     end
   end
-  
+
   if islogical(prop)
     f(~prop) = [];
     prop = zeros(nnz(prop),3);
@@ -153,26 +153,26 @@ else
     f(del) = [];
     prop(del,:) = [];
   end
-  
+
   obj.Faces = obj.Faces(f,:);
-  
+
   if isa(grains,'Grain2d') % 2-dimensional case
-    
+
     obj.Faces(:,3) = size(obj.Vertices,1)+1;
     obj.Vertices(end+1,:) = NaN;
     obj.Vertices = obj.Vertices(obj.Faces',:);
     obj.Faces = 1:size(obj.Vertices,1);
-    
+
     prop = reshape(repmat(prop,1,3)',size(prop,2),[])';
     obj.EdgeColor = 'flat';
     obj.FaceColor = 'none';
-    
+
   elseif isa(grains,'Grain3d')
-    
+
     obj.FaceColor = 'flat';
-    
+
   end
-  
+
   obj.FaceVertexCData = prop;
 end
 
@@ -190,7 +190,7 @@ varargin(isString) = regexprep(varargin(isString),'\<c\olor','EdgeColor');
 %%
 
 varargin = set_default_option(varargin,...
-  get_mtex_option('default_plot_options'));
+  getpref('mtex','defaultPlotOptions'));
 
 varargin = set_default_option(varargin,...
   {'name', [property ' plot of ' inputname(1) ' (' grains.comment ')']});
@@ -211,31 +211,31 @@ fixMTEXplot(varargin{:});
 function val = calcBoundaryColorCode(m,property,propval,epsilon,varargin)
 
 switch lower(property)
-  
+
   case 'angle'
-    
+
     val = angle(m(:))/degree;
-    
+
   case 'double'
-    
+
     m = angle(m(:));
     val = false(size(m));
-    
+
     val(min(propval) <= m(:) & m(:) <= max(propval)) = true;
-    
-    
+
+
   case 'misorientation'
-    
+
     cc = get_option(varargin,'colorcoding','ipdf');
-    
+
     val = orientation2color(m(:),cc,varargin{:});
-    
+
   case {'quaternion','rotation','orientation','so3grid'}
-    
+
     val = any(find(m,propval,epsilon),2);
-    
+
   case {'csl'}
-    
+
     ax = axis(m(:));
     om = angle(m(:));
     h = Miller(ax,get(m,'CS'));
@@ -250,41 +250,41 @@ switch lower(property)
     sigma(sigma>10 | sigma <3) = NaN;
     val = NaN(size(m(:)));
     val(~rm) = sigma;
-    
+
   case 'vector3d'
-    
+
     val = angle(axis(m),propval) < epsilon;
-    
+
   case {'miller','cell'}
     % special rotation, such that m*h_1 = h_2,
-    
+
     if strcmp(property,'cell'),
       h = [propval{[1 end]}];
     else
       h = propval;
     end
-    
+
     if isa(h,'Miller')
       h = ensureCS(get(m,'CS'),ensurecell(h));
     end
-    
+
     h = ensurecell(h);
-    
+
     gr = symmetrise(vector3d(h{end}),get(m,'CS'));
     gh = symmetrise(vector3d(h{1}),get(m,'CS'));
-    
+
     p = quaternion(m(:))*gh;
     if numel(h) > 1
       p =  [p quaternion(inverse(m(:)))*gh];
     end
-    
+
     val =  false(size(m(:)));
     for l=1:numel(gr)
       val = val | min(angle(p,gr(l)),[],2) < epsilon;
     end
-    
+
     %  val = any(reshape(angle(symmetrise(m)*pval(1),pval(end))<epsilon,[],numel(m)),1)';
-    
+
 end
 
 

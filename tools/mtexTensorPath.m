@@ -1,20 +1,20 @@
 function p = mtexTensorPath
 % returns the default path to tensor-files
 %
-%% Syntax 
-% mtexTensorPath - 
-% get_mtex_option('TensorPath') - long form of mtexTensorPath
-% set_mtex_option('TensorPath',path) - change the path to Tensor files 
+%% Syntax
+% mtexTensorPath -
+% getpref('mtex','TensorPath') - long form of mtexTensorPath
+% setpref('mtex','TensorPath',path) - change the path to Tensor files
 %
 %% See also
 % mtexDataPath mtexCifPath mtexEBSDPath mtexPoleFigurePath mtexODFPath
-% mtexTensorPath get_mtex_option set_mtex_option
+% mtexTensorPath
 
 
-mtex_data_path = get_mtex_option('TensorPath');
+DataPath = getpref('mtex','TensorPath');
 
-if exist(mtex_data_path,'dir')
-  p = mtex_data_path;
+if exist(DataPath,'dir')
+  p = DataPath;
 else
   error('Data package not installed!');
 end

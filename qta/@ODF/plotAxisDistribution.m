@@ -6,18 +6,18 @@ function plotAxisDistribution(odf,varargin)
 %
 %% Options
 %  RESOLUTION - resolution of the plots
-%  
+%
 %% Flags
 %  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
 %  COMPLETE  - plot entire (hemi)--sphere
 %
 %% See also
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
-% SphericalProjection_demo 
+% SphericalProjection_demo
 
 
 varargin = set_default_option(varargin,...
-  get_mtex_option('default_plot_options'));
+  getpref('mtex','defaultPlotOptions'));
 
 %% make new plot
 newMTEXplot;
@@ -29,7 +29,7 @@ h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2
 
 
 %% plot
-multiplot(@(i) h,@(i) pos(calcAxisDistribution(odf,h,varargin{:})),1,...  
+multiplot(@(i) h,@(i) pos(calcAxisDistribution(odf,h,varargin{:})),1,...
   'MINMAX','SMOOTH',varargin{:});
 
 setappdata(gcf,'CS',odf(1).CS);

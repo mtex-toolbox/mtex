@@ -15,7 +15,7 @@ function plotAngleDistribution( ebsd, varargin )
 %
 
 varargin = set_default_option(varargin,...
-  get_mtex_option('default_plot_options'));
+  getpref('mtex','defaultPlotOptions'));
 
 %% make new plot
 newMTEXplot;
@@ -76,25 +76,25 @@ end
 f = zeros(numel(omega),numel(ph1));
 
 for i = 1:numel(ph1)
-  
+
   f(:,i) = calcAngleDistribution(obj{ph1(i)},obj{ph2(i)},'omega',omega,varargin{:});
   f(:,i) = 100*f(:,i) ./ sum(f(:,i));
-  
+
   lg{i} = [mineral{ph1(i)} ' - ' mineral{ph2(i)}]; %#ok<AGROW>
 end
 
 %% plot
 
 if check_option(varargin,{'ODF','MDF'})
-  
+
   p = findobj(gca,'Type','patch');
-    
+
   if ~isempty(p)
-    faktor = size(f,1) / size(get(p(1),'faces'),1);    
+    faktor = size(f,1) / size(get(p(1),'faces'),1);
   else
     faktor = size(f,1);
   end
-  
+
   optiondraw(plot(omega/degree,faktor * max(0,f)),'LineWidth',2,varargin{:});
 else
   optiondraw(bar(omega/degree,f),'BarWidth',1.5,varargin{:});

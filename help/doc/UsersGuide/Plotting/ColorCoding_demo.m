@@ -3,13 +3,13 @@
 %
 %% Open in Editor
 %
-%% 
+%%
 % A central issue when interpreting plots is to have a consistent color
-% coding among all plots. In MTEX this can be achieved in two ways. If the 
-% the minimum and maximum value is known then one can 
+% coding among all plots. In MTEX this can be achieved in two ways. If the
+% the minimum and maximum value is known then one can
 % specify the color range directly using the options *colorrange* or
 % *contourf*, or the command <setcolorrange.html setcolorrange> is used
-% which allows to set the color range afterwards. 
+% which allows to set the color range afterwards.
 %
 %% Contents
 %
@@ -18,7 +18,7 @@
 %
 % Let us first define some model ODF_index.html ODFs> to be plotted later
 % on.
-                 
+
 cs = symmetry('-3m'); ss = symmetry('-1');
 odf = fibreODF(Miller(1,1,0),zvector,cs,ss)
 pf = calcPoleFigure(odf,[Miller(1,0,0),Miller(1,1,1)],...
@@ -46,7 +46,7 @@ colormap(grayColorMap)
 % One can set a default colormap adding the following command to
 % the configuration file mtex_settings.m
 
-set_mtex_option('defaultColorMap',LaboTeXColorMap);
+setpref('mtex','defaultColorMap',LaboTeXColorMap);
 
 
 %% Tight Colorcoding
@@ -101,7 +101,7 @@ plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],...
 setcolorrange([0.38,3.9])
 
 
-%% 
+%%
 % The command <setcolorrange.html setcolorrange> also allows to set an
 % equal color coding to all open figures.
 
@@ -126,5 +126,5 @@ colorbar
 %%
 % Finally, lets set back the default colormap.
 
-set_mtex_option('defaultColorMap',WhiteJetColorMap);
+setpref('mtex','defaultColorMap',WhiteJetColorMap);
 

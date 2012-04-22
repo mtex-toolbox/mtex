@@ -8,44 +8,44 @@ end
 
 %
 if nargout > 0 && ischar(obj)
-  
+
   if evalin('base',['exist(''' obj ''',''var'')']) && ...
-      get_mtex_option('mtexMethodsAdvise',true) && ...
-      ~get_mtex_option('generate_help',false)
-    
+      getpref('mtex','mtexMethodsAdvise',true) && ...
+      ~getpref('mtex','generatingHelpMode')
+
     varargout{1} = ['(<a href="matlab:docmethods(' obj ')">show methods</a>',...
       ', <a href="matlab:plot(' obj ')">plot</a>)'];
-    
+
   else
-    
+
     varargout{1} = ' ';
-    
+
   end
-  
+
 else
-  
+
   [fun in] = methods(obj,'-full');
-  
+
   if ischar(obj)
     classname = obj;
   else
     classname = class(obj);
   end
-  
+
   for k=1:numel(fun)
     fun{k} = regexpsplit(fun{k},'  % Inherited from ');
     if numel(fun{k}) < 2, fun{k}{2} = classname;  end
   end
-  
+
   f  = cellfun(@(x) x{1},fun,'UniformOutput',false);
   [ig,ndx] = sort(lower(f));
   f = f(ndx);
   c  = cellfun(@(x) x{2},fun(ndx),'UniformOutput',false);
   ds = cellfun(@(f,c) doclink([c '/' f],f),f,c,'UniformOutput',false);
-  
+
   isInherited = ~strcmpi(c,classname);
   disp( formatedOutput(classname,ds(~isInherited),f(~isInherited)) );
-  
+
   if any(isInherited)
     c = unique(c(isInherited));
     for k=1:numel(c)
@@ -53,7 +53,7 @@ else
     end
     disp(' ')
   end
-  
+
 end
 
 function s = formatedOutput(cl,ds,s)

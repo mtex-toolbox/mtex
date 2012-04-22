@@ -40,7 +40,7 @@ isPhase = false(numberOfPhases,1);
 for k=1:numberOfPhases
   currentPhase = phase==phaseMap(k);
   isPhase(k)   = any(currentPhase);
-  
+
   if isPhase(k)
     X{k} = boundaryEdgeOrder(currentPhase);
     [d{k},property,opts] = calcColorCode(grains,currentPhase,varargin{:});
@@ -54,7 +54,7 @@ boundaryEdgeOrder = vertcat(X{:});
 %% default plot options
 
 varargin = set_default_option(varargin,...
-  get_mtex_option('default_plot_options'));
+  getpref('mtex','defaultPlotOptions'));
 
 varargin = set_default_option(varargin,...
   {'name', [property ' plot of ' inputname(1) ' (' get(grains,'comment') ')']});
@@ -72,17 +72,17 @@ h = plotFaces(boundaryEdgeOrder,V,vertcat(d{:}),varargin{:});
 % make legend
 
 if strcmpi(property,'phase'),
-  
+
   F = get(grains,'F');
   F(any(F==0,2),:) = [];
-  
+
   dummyV = min(V(F,:));
-  
+
   % phase colormap
   lg = [];
   for k=1:numel(d)
     if ~isempty(d{k})
-      
+
       lg = [lg patch('vertices',dummyV,'faces',[1 1],'FaceColor',d{k}(1,:))];
     end
   end
@@ -135,27 +135,27 @@ obj.FaceColor = 'flat';
 
 for p=numel(Parts):-1:1
   zOrder = Parts{p}(end:-1:1); % reverse
-  
+
   obj.FaceVertexCData = d(zOrder,:);
-  
+
   Faces = Polygons(zOrder);
   s     = cellfun('prodofsize',Faces);
   cs    = [0 cumsum(s)];
-  
+
   % reduce face-vertex indices to required
   Faces = [Faces{:}];
   vert  = sparse(Faces,1,1,size(V,1),1);
   obj.Vertices = V(vert>0,:);
-  
+
   vert  = cumsum(full(vert)>0);
   Faces = nonzeros(vert(Faces));
-  
+
   % fill the faces-edge list for patch
   obj.Faces = NaN(numel(s),max(s));
   for k=1:numel(s)
     obj.Faces(k,1:s(k)) = Faces( cs(k)+1:cs(k+1) );
-  end  
-  
+  end
+
   if check_option(varargin,{'transparent','translucent'})
     s = get_option(varargin,{'transparent','translucent'},1,'double');
     dg = obj.FaceVertexCData;
@@ -167,10 +167,10 @@ for p=numel(Parts):-1:1
     obj.AlphaDataMapping = 'none';
     obj.FaceAlpha = 'flat';
   end
-  
+
   % plot the patches
   h(p) = optiondraw(patch(obj),varargin{:});
-  
+
 end
 
 

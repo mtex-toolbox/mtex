@@ -7,27 +7,27 @@ function plotipdf(odf,r,varargin)
 %
 %% Options
 %  RESOLUTION - resolution of the plots
-%  
+%
 %% Flags
 %  antipodal    - include [[AxialDirectional.html,antipodal symmetry]]
 %  COMPLETE - plot entire (hemi)--sphere
 %
 %% See also
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
-% SphericalProjection_demo 
+% SphericalProjection_demo
 
 argin_check(r,{'vector3d'});
 varargin = set_default_option(varargin,...
-  get_mtex_option('default_plot_options'));
+  getpref('mtex','defaultPlotOptions'));
 
 %% make new plot
 newMTEXplot;
 
 %% plotting grid
-if check_option(varargin,'3d') 
-  h = S2Grid('PLOT',varargin{:});  
+if check_option(varargin,'3d')
+  h = S2Grid('PLOT',varargin{:});
 else
-  [maxtheta,maxrho,minrho] = getFundamentalRegionPF(odf(1).CS,varargin{:});  
+  [maxtheta,maxrho,minrho] = getFundamentalRegionPF(odf(1).CS,varargin{:});
   h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
 end
 

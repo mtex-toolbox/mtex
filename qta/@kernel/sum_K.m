@@ -7,18 +7,18 @@ function s = sum_K(kk,g1,g2,CS,SS,c,varargin)
 %  kk     - @kernel
 %  g1, g2 - @quaternion(s)
 %  CS, SS - crystal , specimen @symmetry
-%  c      - double 
+%  c      - double
 %
 %% Options
-%  EXACT - 
-%  EPSILON - 
+%  EXACT -
+%  EPSILON -
 %
 %% general formula:
 %
 % $$s(g1_i) = sum_j c_j K(g1_i,g2_j) $$
 
 
-% how to index grid representation 
+% how to index grid representation
 if isa(g1,'SO3Grid') && check_option(g1,'indexed'),
   lg1 = numel(g1);
 else
@@ -37,35 +37,35 @@ if along
 else
   g1 = quaternion(g1);
   num = numel(g1);
-end  
-    
+end
+
 % init variables
 s = zeros(size(quaternion(g1)));
 iter = 0; numiter = 1; ind = 1; %for first run
 
-while iter <= numiter  
+while iter <= numiter
   if iter > 0,% split
     ind = 1 + (1+(iter-1)*diter:min(num-1,iter*diter));
     if isempty(ind), return; end
   end
-  
+
   %eval the kernel
-  if along 
+  if along
     M = K(kk,g1,g2(ind),CS,SS,'nocubictrifoldaxis',varargin{:});
-    s = s + reshape(full(M * reshape(c(ind),[],1)),size(s));  
-  else    
+    s = s + reshape(full(M * reshape(c(ind),[],1)),size(s));
+  else
     M = K(kk,g1(ind),g2,CS,SS,'nocubictrifoldaxis',varargin{:});
     s(ind) = s(ind) + reshape(full(M * c(:)),size(s(ind)));
-  end 
-  
+  end
+
   if num == 1
-    return  
-  elseif iter == 0, % iterate due to memory restrictions?    
-    numiter = ceil( max(1,nnz(M))*num / get_mtex_option('memory',300 * 1024) );
+    return
+  elseif iter == 0, % iterate due to memory restrictions?
+    numiter = ceil( max(1,nnz(M))*num / getpref('mtex','memory',300 * 1024) );
     diter = ceil(num / numiter);
   end
-  
+
   if numiter > 1 && ~check_option(varargin,'silent'), progress(iter,numiter); end
-  
+
   iter = iter + 1;
 end
