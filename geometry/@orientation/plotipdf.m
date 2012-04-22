@@ -7,14 +7,14 @@ function plotipdf(o,r,varargin)
 %
 %% Options
 %  RESOLUTION - resolution of the plots
-%  
+%
 %% Flags
 %  antipodal    - include [[AxialDirectional.html,antipodal symmetry]]
 %  COMPLETE - plot entire (hemi)--sphere
 %
 %% See also
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
-% SphericalProjection_demo 
+% SphericalProjection_demo
 
 %% make new plot
 
@@ -38,17 +38,17 @@ data = get_option(varargin,'property',[]);
 
 %% get options
 varargin = set_default_option(varargin,...
-  get_mtex_option('default_plot_options'));
+  getpref('mtex','defaultPlotOptions'));
 
-if numel(o)*length(cs)*length(ss) > 100000 || check_option(varargin,'points')  
-  points = fix(get_option(varargin,'points',100000/length(cs)/length(ss)));  
+if numel(o)*length(cs)*length(ss) > 100000 || check_option(varargin,'points')
+  points = fix(get_option(varargin,'points',100000/length(cs)/length(ss)));
   disp(['  plotting ', int2str(points) ,' random orientations out of ', int2str(numel(o)),' given orientations']);
-  
+
   samples = discretesample(ones(1,numel(o)),points);
   o.rotation = o.rotation(samples);
   if ~isempty(data),
     data = data(samples); end
- 
+
 end
 
 %% plotting grid
@@ -59,7 +59,7 @@ Sh = @(i) S2Grid(h(i),'MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTR
 
 if ~isempty(data)
   data = repmat(data,numel(o.CS),1);
-  Dh  = @(i) (reshape(double(h(i)),[],3));  
+  Dh  = @(i) (reshape(double(h(i)),[],3));
   DSh = @(i) (reshape(double(Sh(i)),[],3));
   datar = @(i)  data(ismember(DSh(i),Dh(i),'rows'));
 else

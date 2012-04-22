@@ -2,7 +2,7 @@ function odf = calcODF(ori,varargin)
 % calculate ODF from individuel orientations via kernel density estimation
 %
 % *calcODF* is one of the core function of the MTEX toolbox.
-% It estimates an ODF from a set of individual crystal orientations by 
+% It estimates an ODF from a set of individual crystal orientations by
 % [[EBSD2odf.html kernel,density estimation]].
 %
 % The function *calcODF* has several options to control the halfwidth of
@@ -15,8 +15,8 @@ function odf = calcODF(ori,varargin)
 % [[EBSDSimulation_demo.html, description]] for exhausive discussion.
 %
 %% Syntax
-% calcODF(ori,...,param,var,...) 
-% calcODF(ebsd,...,param,var,...) 
+% calcODF(ori,...,param,var,...)
+% calcODF(ebsd,...,param,var,...)
 %
 %% Input
 %  ori  - @orientation
@@ -26,7 +26,7 @@ function odf = calcODF(ori,varargin)
 %  odf - @ODF
 %
 %% Options
-%  HALFWIDTH        - halfwidth of the kernel function 
+%  HALFWIDTH        - halfwidth of the kernel function
 %  RESOLUTION       - resolution of the grid where the ODF is approximated
 %  KERNEL           - kernel function (default -- de la Valee Poussin kernel)
 %  L/HARMONICDEGREE - (if Fourier) order up to which Fourier coefficients are calculated
@@ -74,15 +74,15 @@ vdisp(' performing kernel density estimation',varargin{:})
 %% construct kernel for kernel density estimation
 % get halfwidth and kernel
 if check_option(varargin,'kernel')
-  
+
   k = get_option(varargin,'kernel');
-  
-elseif check_option(varargin,'halfwidth','double') 
-  
+
+elseif check_option(varargin,'halfwidth','double')
+
   k = kernel('de la Vallee Poussin',varargin{:});
-  
+
 else
-    
+
   if ~check_option(varargin,'silent')
     disp(' ')
     warning('MTEX:nokernel',['No kernel halfwidth has been specified!' ...
@@ -90,9 +90,9 @@ else
       doclink('EBSD2odf','automatic optimal kernel detection'),'.\n ']);
     disp(' ')
   end
-  
+
   k = kernel('de la Vallee Poussin','halfwidth',10*degree,varargin{:});
-  
+
 end
 
 % result
@@ -100,7 +100,7 @@ hw = gethw(k);
 vdisp([' kernel: ' char(k)],varargin{:});
 
 
-%% construct exact kernel density estimation estimation 
+%% construct exact kernel density estimation estimation
 
 odf = ODF(ori,weight,k,CS,SS);
 
@@ -114,7 +114,7 @@ if ~check_option(varargin,{'exact','noFourier'}) && ...
     strcmpi(get(k,'name'),'dirichlet') || ...
     (gridlen > 200 && bandwidth(k) < max_coef))
   vdisp(' construct Fourier odf',varargin{:});
-  
+
   L = get_option(varargin,{'L','HarmonicDegree'},min(max(10,bandwidth(k)),max_coef),'double');
   if bandwidth(k) > L,
     warning('MTEX:EBSD:calcODF',['Estimation of ODF might become vaque,' ...
@@ -123,11 +123,11 @@ if ~check_option(varargin,{'exact','noFourier'}) && ...
   end
   odf = calcFourier(odf,get_option(varargin,'Fourier',L,'double'));
   odf = FourierODF(odf);
-  
+
   return
 elseif check_option(varargin,'exact') || gridlen < 2000
 %% exact ODF
-  vdisp(' construct exact odf',varargin{:}); 
+  vdisp(' construct exact odf',varargin{:});
   return
 end
 
@@ -138,19 +138,19 @@ end
 res = get_option(varargin,'resolution',max(0.75*degree,hw / 2));
 
 % %% first approximation
-% 
+%
 % % generate approximation grid
 % [maxalpha,maxbeta,maxgamma] = getFundamentalRegion(ebsd.CS,ebsd.SS);
 % nalpha = round(2*maxalpha/res);
 % nbeta = round(2*pi/res);
 % ngamma = round(4*pi/res);
-% 
+%
 % % approximate
 % [alpha,beta,gamma] = Euler(quaternion(ebsd.orientations));
 % ialpha = 1+round(nalpha * mod(alpha,maxalpha) ./ maxalpha);
 % ibeta = 1+round(nbeta * beta ./ maxbeta);
 % igamma = 1+round(ngamma * gamma ./ maxgamma);
-% 
+%
 % ind = ialpha + nalpha * (ibeta + nbeta * igamma);
 % c = histc(ind,1:nalpha*nbeta*ngamma);
 
@@ -167,16 +167,16 @@ d = zeros(1,numel(S3G));
 % iterate due to memory restrictions?
 maxiter = ceil(length(CS)*...
   length(SS)*numel(ori) /...
-  get_mtex_option('memory',300 * 1024));
+  getpref('mtex','memory',300 * 1024));
 if maxiter > 1, progress(0,maxiter);end
 
 for iter = 1:maxiter
-   
+
   if maxiter > 1, progress(iter,maxiter); end
-   
+
   dind = ceil(numel(ori) / maxiter);
   sind = 1+(iter-1)*dind:min(numel(ori),iter*dind);
-      
+
   ind = find(S3G,subsref(ori,sind));
   for i = 1:length(ind) % TODO -> make it faster
     d(ind(i)) = d(ind(i)) + weight(sind(i));
@@ -196,7 +196,7 @@ odf = ODF(S3G,d,k,CS,SS);
 
 %% check wether kernel is to wide
 if check_option(varargin,'small_kernel') && hw > 2*get(S3G,'resolution')
-  
+
   hw = 2/3*get(S3G,'resolution');
   k = kernel('de la Vallee Poussin','halfwidth',hw);
   vdisp([' recalculate ODF for kernel: ',char(k)],varargin{:});

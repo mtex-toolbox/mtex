@@ -4,10 +4,10 @@ function check_installation
 
 
 %% -------------- check tmp dir ------------------------------
-if strfind(get_mtex_option('tempdir',tempdir),' ')
+if strfind(getpref('mtex','tempdir',tempdir),' ')
   hline()
   disp('Warning: The path MTEX uses for temporary files');
-  disp(['  tempdir = ''' get_mtex_option('tempdir') '''']);
+  disp(['  tempdir = ''' getpref('mtex','tempdir') '''']);
   disp('contains white spaces!');
   disp(['Please change this in your <a href="matlab:edit mtex_settings.m">' ...
     'mtex_settings.m</a>!']);
@@ -35,34 +35,34 @@ c = ones(size(th));
 Al = ones(size(th));
 
 try
-  
+
   f = call_extern('odf2pf','EXTERN',gh,r,c,Al);
   assert(any(f));
-  
+
   setpref('mtex','binaries',true);
-  
+
 catch %#ok<*CTCH>
-  
+
   setpref('mtex','binaries',false);
-  
-  if ismac && strcmp(get_mtex_option('architecture'),'maci') % maybe it is a 64 bit mac
+
+  if ismac && strcmp(getpref('mtex','architecture'),'maci') % maybe it is a 64 bit mac
     try
-      set_mtex_option('architecture','maci64');
+      setpref('mtex','architecture','maci64');
       f = call_extern('odf2pf','EXTERN',gh,r,c,Al);
       assert(any(f));
       return
     catch
-      set_mtex_option('architecture','maci');
+      setpref('mtex','architecture','maci');
     end
   end
-  
+
   hline()
   disp('  MTEX binary check failed!');
   disp(' ');
   disp('  The original error message was:');
   e = lasterror; %#ok<*LERR>
   disp(['  ',e.message]);
-  
+
   disp(' ');
   disp('  Check the following options:');
   disp(['  * ' doclink('compilation','Compile') ' the binaries yourself.']);
@@ -76,13 +76,13 @@ function e = fast_check_binaries
 e = false;
 
 if ispc, mtex_ext = '.exe';else mtex_ext = '';end
-binariespath = fullfile(mtex_path,'c','bin',get_mtex_option('architecture'));
+binariespath = fullfile(mtex_path,'c','bin',getpref('mtex','architecture'));
 binaries = {'pf2odf','pdf2pf','odf2pf','odf2fc','fc2odf'};
 
 % check for existence
 for k=1:numel(binaries)
   prg = fullfile(binariespath,binaries{k});
-  if ~exist([prg mtex_ext],'file'), 
+  if ~exist([prg mtex_ext],'file'),
     warning(['missing binary ' binaries{k} mtex_ext])
     return; end
 end
@@ -100,7 +100,7 @@ end
 function check_mex
 
 % set mex/directory
-mexpath = fullfile(mtex_path,'c','mex',get_mtex_option('architecture'));
+mexpath = fullfile(mtex_path,'c','mex',getpref('mtex','architecture'));
 addpath(mexpath,0);
 
 % check for mex files
@@ -111,7 +111,7 @@ disp('Checking mex files failed!');
 
 % check old mex version
 if exist(fullfile(mexpath,'v7.1'),'dir')
-  
+
   % change path
   rmpath(mexpath);
   addpath(fullfile(mexpath,'v7.1'));
@@ -159,7 +159,7 @@ if ~fast_check_mex(mexpath)
   disp('  The original error message was:');
   e = lasterror;
   disp(['  ' e.message]);
-  
+
   disp(' ');
   disp('  Contact author for help!');
   hline()

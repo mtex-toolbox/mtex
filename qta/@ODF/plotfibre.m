@@ -1,7 +1,7 @@
 function [x,omega] = plotfibre(odf,h,r,varargin)
 % plot odf
 %
-% Plots the ODF as various sections which can be controled by options. 
+% Plots the ODF as various sections which can be controled by options.
 %
 %% Syntax
 %  plotfibre(odf,h,r);
@@ -20,10 +20,10 @@ function [x,omega] = plotfibre(odf,h,r,varargin)
 %
 %% See also
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
-% SphericalProjection_demo 
+% SphericalProjection_demo
 
 varargin = set_default_option(varargin,...
-  get_mtex_option('default_plot_options'));
+  getpref('mtex','defaultPlotOptions'));
 
 omega = linspace(-pi,pi,199);
 
@@ -32,5 +32,5 @@ center = get_option(varargin,'CENTER',hr2quat(h,r),{'quaternion','rotation','ori
 fibre = axis2quat(r,omega) .* center;
 x = eval(odf,fibre,varargin{:});%#ok<EVLC>
 
-optionplot(omega,x,varargin{:}); 
+optionplot(omega,x,varargin{:});
 xlim([-pi pi]); xlabel('omega')

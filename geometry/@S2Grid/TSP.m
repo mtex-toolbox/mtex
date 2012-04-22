@@ -4,7 +4,7 @@ function varargout = TSP(S2,varargin)
 %% Remarks
 % Option xxx2opt invokes lin-kerninghan heuristics. If no further breadth
 % is specified it uses the default breadth of [1].
-%% Syntax 
+%% Syntax
 %  TSP(S2,'metric','goniometer','chispeed',[1/2.55 4.5],'phispeed',[1/9.45 4.5]) - applies  goniometer metric
 %  TSP(S2,'method','christophides2opt') - is the default method
 %  TSP(S2,'method','christophides2opt',[4 3 3 2]) - sets the breadth of the
@@ -58,92 +58,92 @@ varargin = set_default_option(varargin,{'v',v});
 
 switch lower(method)
   case 'direct'
-    
+
     tour = [1:n 1];
-    
+
   case 'insertion'
-    
+
     tour = insertionHeuristics(weight,varargin{:});
     %     tour = twoOpt(tour,weight,varargin{:});
-    
+
   case 'insertion2opt'
-    
+
     tour = insertionHeuristics(weight,varargin{:});
     breadth = get_option(varargin,'insertion2opt',1,'double');
     tour = LinKern(weight,tour,breadth,varargin{:});
-    
+
   case '2opt'
-    
+
     tour = [1:n 1];
     breadth = get_option(varargin,'2opt',1,'double');
     tour = LinKern(weight,tour,breadth,varargin{:});
-    
+
   case {'christophides','chris'}
-    
+
     tour = ChristophidesHeuristics(weight,varargin{:});
-    
+
   case {'christophides2opt','chris2opt'}
-    
+
     tour = ChristophidesHeuristics(weight,varargin{:});
     breadth   = get_option(varargin,{'christophides2opt','chris2opt'},1,'double');
     tour = LinKern(weight,tour,breadth,varargin{:});
-    
+
   case {'linkerninghan'}
-    
+
     tour = ChristophidesHeuristics(weight,varargin{:});
     breath = get_option(varargin,'linkerninghan',[4 3 3 2]);
     tour = LinKern(weight,tour,breath,varargin{:});
-    
+
   case {'dmst'}
-    
+
     mst      = MinimumSpanningTree(weight);
     tour     = EulerCycle([mst;mst]);
     tour     = EulerToHamiltonian(tour);
-    
+
   case {'dmst2opt'}
-    
+
     mst      = MinimumSpanningTree(weight);
     tour     = EulerCycle([mst;mst]);
     tour     = EulerToHamiltonian(tour);
     breadth   = get_option(varargin,'dmst2opt',1,'double');
     tour     = LinKern(weight,tour,breadth,varargin{:});
-    
+
   case {'dmstdouble'}
-    
+
     mst      = MinimumSpanningTree(weight);
     tour     = EulerCycle([mst;mst]);
     breadth   = get_option(varargin,'dmstdouble',1,'double');
     tour     = LinKern(weight,tour,breadth,varargin{:});
     tour     = EulerToHamiltonian(tour);
     tour     = LinKern(weight,tour,breadth,varargin{:});
-    
+
   case {'chrisdoubleopt','christophidesdoubleopt'}
-    
+
     mst      = MinimumSpanningTree(weight);
     matching = MinimumWeightMatching(weight,mst);
-    
+
     tour     = EulerCycle([mst;matching]);
     breadth   = get_option(varargin,'chrisdoubleopt',1,'double');
-    
+
     tour     = LinKern(weight,tour,breadth,varargin{:});
     tour     = EulerToHamiltonian(tour);
     tour     = LinKern(weight,tour,breadth,varargin{:});
-    
+
   otherwise
-    
+
     tour = runTSPexternal(method,weight,varargin{:});
-    
+
 end
 
 tour = tour(:);
 
 if nargout<1
-  
+
   time = sum(dist([tour(1:end-1) tour(2:end)],v,varargin{:}));
   figure,
   line(v(tour),'color','b',varargin{:})
   title(num2str(time))
-  
+
 end
 
 if nargout>0
@@ -176,38 +176,38 @@ metric = get_option(varargin,{'metric','metrics'},'angle');
 
 switch lower(metric)
   case {'manhatten','polar'}
-    
+
     [theta,rho] = polar(v);
-    
+
     t = acos(cos(theta(i)-theta(j))) + acos(cos(rho(i)-rho(j)));
-    
+
   case 'goniometer'
-    
+
     [theta,rho] = polar(v);
-    
+
     d_chi = acos(cos(theta(i)-theta(j)))/degree;
     d_phi = acos(cos(rho(i)-rho(j)))/degree;
-    
+
     p_chi = get_option(varargin,{'ChiSpeed','SpeedChi'},[1 0]);
     d_chi = polyval(p_chi,d_chi);
-    
+
     p_phi = get_option(varargin,{'PhiSpeed','SpeedPhi'},[1 0]);
     d_phi = polyval(p_phi,d_phi);
-    
+
     t = max(d_chi,d_phi);
-    
+
   case 'dot'
-    
+
     t = 1-dot(v(i),v(j)).^2;
-    
+
   case 'angle'
-    
+
     t = angle(v(i),v(j));
-    
+
   otherwise
-    
+
     error('mtex:TSP','unknown metric')
-    
+
 end
 
 if size(A,2) > 2
@@ -262,21 +262,21 @@ d(nd) = weight(nd,1);
 mst = zeros(n-1,2);
 
 for k=2:n
-  
+
   posInTree = find(~inTree);
   [ignore,pos] = min(d(posInTree));
   pos = posInTree(pos);
-  
+
   mst(k-1,1) = lastPos(pos);
   mst(k-1,2) = pos;
-  
+
   inTree(pos) = true;
-  
+
   nd = d > weight(:,pos) & weight(:,pos) ~= 0 ;
-  
+
   d(nd) = weight(nd,pos);
   lastPos(nd) = pos;
-  
+
 end
 
 
@@ -317,12 +317,12 @@ matching = zeros(n,2);
 for k= 1:n
   % the first entries is the edge with the minimum moving time
   matching(k,:) = edges(1,:);
-  
+
   % delete edges with nodes i or j
   del = any(edges == matching(k,1) | edges == matching(k,2),2);
-  
+
   edges(del,:) = [];
-  
+
 end
 
 % get the old position of the nodes
@@ -339,7 +339,7 @@ a = -Inf;
 
 while a < 0 && toc(s) < maxTime
   [gains,tours] = LinMove(weight,tour,stack);
-  
+
   [a i] = min(gains);
   tour = tours(i,:);
 end
@@ -361,12 +361,12 @@ if ~isempty(stack)
   for k=1:size(tours,1)
     [leaves{k} toursk{k}] = LinMove(weight,tours(k,:),stack,gain(k));
   end
-  
+
   [a i]  =  cellfun(@min,leaves);
   toursk =  cellfun(@(x,i) x(i,:),toursk,num2cell(i)','UniformOutput',false);
-  
+
   tours2 = vertcat(toursk{:});
-  
+
   i = a < gain;
   gain(i) = a(i);
   tours(i,:) = tours2(i,:);
@@ -410,7 +410,7 @@ for k = 1:depth
   else
     %  disp('?')
   end
-  
+
 end
 
 
@@ -447,31 +447,31 @@ nextEdge = 0;
 
 tour = zeros(n,1);
 while top>0
-  
+
   i = stack(top);
-  
+
   if degree(i)>0
-    
+
     top = top+1;
-    
+
     j = edgeList{i}(degree(i));
-    
+
     edgeList{j} ...
       (edgeList{j} == i) = [];
-    
+
     stack(top) = j;
     degree(i) = degree(i)-1;
     degree(j) = degree(j)-1;
-    
+
   else
-    
+
     top = top-1;
-    
+
     nextEdge = nextEdge+1;
     tour(nextEdge) = (i);
-    
+
   end
-  
+
 end
 
 nn = [];
@@ -500,15 +500,15 @@ n = size(W,1);
 candit = 2:n;
 
 while ~isempty(candit)
-  
+
   %   W1 = W(tour(1:end-1),candit);
   W2 = W(tour(end-1),candit);
   Wf = (W2);
-  
+
   [a i] = min(Wf(:));
   [a i] = ind2sub(size(Wf),i);
   tour = [tour(1:end-1) candit(i) tour(end)];
-  
+
   %   tour = [tour(1:a) candit(i) tour(a+1:end)];
   candit(i) = [];
 end
@@ -519,7 +519,7 @@ function tour = runTSPexternal(method,weight,varargin)
 tsp_file = createTSPLIB95file(weight);
 sol_file = [tsp_file(1:end-4) '.sol'];
 
-cmd = fullfile(get_mtex_option('TSPSolverPath'),method);
+cmd = fullfile(getpref('mtex','TSPSolverPath'),method);
 
 options = get_option(varargin,method,{},'cell');
 
@@ -527,33 +527,33 @@ switch lower(method)
   case 'lkh'
     problem_file = [tsp_file(1:end-4) '.problem'];
     fid = fopen(problem_file,'w');
-    
+
     fprintf(fid,'PROBLEM_FILE = %s\n',tsp_file);
     fprintf(fid,'OUTPUT_TOUR_FILE = %s\n',sol_file);
     for k=1:numel(options)
       fprintf(fid,'%s \r\n',options{k});
     end
-    
+
     fclose(fid);
     cmd = [cmd ' ' problem_file ];
   case {'linkern','concorde'}
-    
+
     if ispc  % cygwin
       sol_file1 = regexprep(sol_file,'\\','/');
       tsp_file1 = regexprep(tsp_file,'\\','/');
-      
+
       sol_file1 = regexprep(sol_file1,'(\w(?=:)):|','/cygdrive/$1');
       tsp_file1 = regexprep(tsp_file1,'(\w(?=:)):','/cygdrive/$1');
     else
       sol_file1 = sol_file;
       tsp_file1 = tsp_file;
     end
-    
-    
+
+
     options = strcat(options,{' '});
-    
+
     cmd = [cmd ' -o ' sol_file1 ' ' options{:}  tsp_file1 ' '];
-    
+
 end
 
 if check_option(varargin,'silent')
@@ -567,20 +567,20 @@ end
 fid = fopen(sol_file,'r');
 switch lower(method)
   case 'lkh'
-    
+
     tour = textscan(fid,'%d','HeaderLines',6);
     tour = tour{1}([1:end-1 1]);
-    
+
   case 'concorde'
-    
+
     tour = textscan(fid, '%d');
     tour = tour{1}([2:end 2])+1;
-    
+
   case 'linkern'
-    
+
     tour = textscan(fid,'%d','HeaderLines',1);
     tour = tour{1}([1:3:end 1])+1;
-    
+
 end
 fclose(fid);
 
@@ -596,7 +596,7 @@ function [fname] = createTSPLIB95file(weight)
 
 
 t = full(round(weight*10000));
-fname = [tempname(get_mtex_option('tempdir')) '.tsp'];
+fname = [tempname(getpref('mtex','tempdir')) '.tsp'];
 
 fid = fopen(fname,'w');
 

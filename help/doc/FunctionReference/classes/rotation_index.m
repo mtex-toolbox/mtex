@@ -1,5 +1,5 @@
 %% Rotations (The Class @rotation)
-% This section describes the class  <rotation.rotation.html *rotation*> and 
+% This section describes the class  <rotation.rotation.html *rotation*> and
 % gives an overview on how to work with rotations in MTEX.
 %
 %% Open in Editor
@@ -44,25 +44,25 @@ o = rotation('Euler',30*degree,50*degree,10*degree)
 o = rotation('Euler',30*degree,50*degree,10*degree,'Roe')
 
 
-%% 
+%%
 % *Changing the Default Euler Angle Convention*
 %
 % The default euler angle convention can be changed by the command
-% <set_mtex_option.html set_mtex_option>, for a permanent change the
+% *setpref*, for a permanent change the
 % <matlab:edit('mtex_settings.m') mtex_settings> should be edited. Compare
 
-set_mtex_option('EulerAngleConvention','Roe')
+setpref('mtex','EulerAngleConvention','Roe')
 o
 
 %%
-set_mtex_option('EulerAngleConvention','Bunge')
+setpref('mtex','EulerAngleConvention','Bunge')
 o
 
 %% SUB: Other Ways of Defining a Rotation
-% 
+%
 % *The axis angle parametrisation*
 %
-% A very simple posibility to specify a rotation is to specify the 
+% A very simple posibility to specify a rotation is to specify the
 % rotational axis and the rotational angle.
 
 o = rotation('axis',xvector,'angle',30*degree)
@@ -84,7 +84,7 @@ o = rotation('map',xvector,yvector)
 %%
 % *A fibre of rotations*
 %
-% The set of all rotations that rotate a certaion vector u onto a certain 
+% The set of all rotations that rotate a certaion vector u onto a certain
 % vector v define a fibre in the rotation space. A discretisation of such
 % an fibre is defined by
 
@@ -160,7 +160,7 @@ angle(rot)/degree
 axis(rot)
 
 %%
-% If two rotations are specifies the command 
+% If two rotations are specifies the command
 % <quaternion.angle.html angle(rot1,rot2)> computes the rotational angle
 % between both rotations
 

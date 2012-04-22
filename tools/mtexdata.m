@@ -23,27 +23,27 @@ function mtexdata(name)
 list = listmtexdata;
 
 if nargin < 1
-  
+
   disp('available loading routines for mtex sample data');
   cprintf({'TYPE', list.type; 'NAME',list.name}');
   return
-  
+
 elseif strcmpi(name,'clear')
-  
+
   files = dir(fullfile(mtexDataPath,'*.mat'));
   for k=1:numel(files)
     fullfile(mtexDataPath,[files(k).name]);
     delete(fullfile(mtexDataPath,[files(k).name]));
   end
   return
-  
+
 elseif strcmpi(name,'all')
-  
+
   for files = list
     mtexdata(files.name)
   end
   return
-  
+
 end
 
 
@@ -58,20 +58,20 @@ else
 end
 
 if any(ndx) && isempty(dir(file))
-  
+
   switch list(ndx).type
     case 'ebsd'
-      
+
       [CS,ebsd] = feval(['mtexdata_' list(ndx).name]);
       save(file,'CS','ebsd');
-      
+
     case 'pf'
-      
+
       [CS,h,pf] = feval(['mtexdata_' list(ndx).name]);
       save(file,'CS','h','pf');
-      
+
   end
-  
+
 end
 
 S = load(file);
@@ -80,7 +80,7 @@ for k=1:numel(fld)
   assignin('base',fld{k},S.(fld{k}));
 end
 
-if ~get_mtex_option('generate_help')
+if ~getpref('mtex','generatingHelpMode')
   disp([ upper(list(ndx).name) ' data loaded in variables']);
   disp(fld)
   evalin('base',fld{end});

@@ -1,6 +1,6 @@
 %% Tensor Arithmetics
 % how to calculate with tensors in MTEX
-%% 
+%%
 % MTEX offers some basic functionality to calculate with tensors as they
 % occur in material sciense. It allows to define tensors of arbitrary rank,
 % e.g., stress, strain, elasticity or piezoelectric tensors, to visuallize
@@ -44,7 +44,7 @@ C = loadTensor(fname,cs,'name','stiffness')
 % The default plot for each tensor is its directional magnitude, i.e. for each direction
 % x it is plotted Q(x) = T_ijkl x_i x_j x_k x_l
 
-set_mtex_option('defaultColorMap',seismicColorMap);
+setpref('mtex','defaultColorMap',seismicColorMap);
 plot(C,'complete')
 
 %%
@@ -110,6 +110,6 @@ c = EinsteinSum(C,[-1 -2 -3 -3],v,-1,v,-2)
 %%
 % set back the default color map.
 
-set_mtex_option('defaultColorMap',WhiteJetColorMap)
+setpref('mtex','defaultColorMap',WhiteJetColorMap)
 
 

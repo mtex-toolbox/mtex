@@ -2,18 +2,18 @@ function [odf,alpha] = calcODF(pf,varargin)
 % PDF to ODF inversion
 %
 % *calcODF* is one of the main function of the MTEX toolbox.
-% It estimates an ODF from given Polefigure intensities by 
+% It estimates an ODF from given Polefigure intensities by
 % <PoleFigure2odf.html fitting an ODF that consists of a large number of unimodal ODFs to the data>.
 % It does so by minimizing a least squares functional. The command
-% *calcODF* supports <ghost_demo.html automatic ghost correction> and 
+% *calcODF* supports <ghost_demo.html automatic ghost correction> and
 % <dubna_demo.html the zero range method>.
 % The function *calcODF* has several options to control convergence,
 % resolution, smoothing, etc. See below for a complete description.
 %
 %
 %% Input
-%  pf - @PoleFigure 
-% 
+%  pf - @PoleFigure
+%
 %% Options
 %  KERNEL            - the ansatz functions (default = de la Vallee Poussin)
 %  KERNELWIDTH | HALFWIDTH - halfwidth of the ansatz functions (default = 2/3 * resolution)
@@ -22,7 +22,7 @@ function [odf,alpha] = calcODF(pf,varargin)
 %  ITER_MAX          - maximum number of iterations (default = 11)
 %  ITER_MIN          - minimum number of iterations (default = 5)
 %  REGULARIZATION    - weighting coefficient lambda (default = 0)
-%  ODF_SAVE          - save ODF simultanously 
+%  ODF_SAVE          - save ODF simultanously
 %  C0                - initial guess (default = [1 1 1 1 ... 1])
 %
 %% Flags
@@ -39,8 +39,8 @@ function [odf,alpha] = calcODF(pf,varargin)
 %  alpha  - scaling factors, calculated during reconstruction
 %
 %% See also
-% PoleFigure2odf ODF_demo PoleFigureSimulation_demo 
-% loadPoleFigure ImportPoleFigureData examples_index 
+% PoleFigure2odf ODF_demo PoleFigureSimulation_demo
+% loadPoleFigure ImportPoleFigureData examples_index
 
 tic
 
@@ -61,7 +61,7 @@ psi = get_option(varargin,'kernel',...
   kernel('de la Vallee Poussin','HALFWIDTH',kw),'kernel');
 
 iter_max = int32(get_option(varargin,'ITER_MAX',...
-  get_mtex_option('ITER_MAX',15,'double'),'double'));
+  getpref('mtex','ITER_MAX',15,'double'),'double'));
 iter_min = int32(get_option(varargin,'ITER_MIN',10,'double'));
 
 c0 = get_option(varargin,'C0',...
@@ -80,7 +80,7 @@ clear ghtheta; clear ghrho;
 % extract kernel Fourier coefficents
 A = getA(psi);
 if check_option(get(pf(1),'r'),'antipodal')
-  A(2:2:end) = 0; 
+  A(2:2:end) = 0;
 else
   warning('MTEX:missingFlag','Flag HEMISPHERE not set in PoleFigure data!');
 end;
@@ -90,7 +90,7 @@ A = A(1:bw);
 % detect superposed pole figures
 lh = int32(zeros(1,length(pf)));
 for i=1:length(pf)
-	lh(i) = int32(length(get(pf(i),'h'))*length(CS)*length(SS));	
+	lh(i) = int32(length(get(pf(i),'h'))*length(CS)*length(SS));
 end
 refl = get(pf,'c');
 
@@ -106,9 +106,9 @@ clear rtheta;clear rrho;
 mm = max(max(pf));
 
 for i = 1:numel(pf)
-  
+
   if mm > 5*max(pf(i)), pf(i) = pf(i) * mm/5/max(pf(i));end
-  
+
 end
 
 %% ----------------------- WHEIGHTS ----------------------------------
