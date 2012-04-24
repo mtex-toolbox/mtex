@@ -51,13 +51,15 @@ try
   
   % may be we are already done?
   if ~check_option(varargin,{'rectangular','hexagonal'}) && ...
-      (length(unitCell) == 4 || length(unitCell) == 6) % only squares and hexagones are correct
+      (length(unitCell) == 4 || length(unitCell) == 6) && ...  % only squares and hexagones are correct
+       (dxy^2)  < a; % probably correct cell, otherwise generate a generic cell
     return
   end
   
   % second estimate of the grid resolution
   dxy2 = min(sqrt(diff(cx).^2 + diff(cy).^2));
   if 100*dxy2 > dxy, dxy = dxy2;end
+  
   
 catch %#ok<CTCH>
 end
