@@ -14,6 +14,12 @@ function plotAngleDistribution( ebsd, varargin )
 % EBSD/calcAngleDistribution
 %
 
+if nargin>1 && isscalar(varargin{1})
+  bins =  varargin{1};
+else
+  bins = 20;
+end
+
 varargin = set_default_option(varargin,...
   getpref('mtex','defaultPlotOptions'));
 
@@ -65,10 +71,12 @@ for j = 1:length(CS)
   end
 end
 
+
+
 if check_option(varargin,{'ODF','MDF'})
-  omega = linspace(0,maxomega,50);
+  omega = linspace(0,maxomega,bins);
 else
-  omega = linspace(0,maxomega,20);
+  omega = linspace(0,maxomega,bins);
 end
 
 %% compute angle distributions
@@ -104,4 +112,4 @@ xlabel('misorientation angle in degree')
 xlim([0,max(omega)/degree])
 ylabel('percent')
 
-legend(lg{:})
+legend(lg{:},'Location','northwest')
