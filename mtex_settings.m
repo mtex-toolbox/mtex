@@ -105,8 +105,8 @@ setpref('mtex','LaTex',ismac || ispc);
 % comment out the following line if MTEX is compiled againsed NFFT 3.1.3 or
 % earlier
 
-setpref('mtex','nfft_bug',false);
-%setpref('mtex','nfft_bug',true);
+% setpref('mtex','nfft_bug',false);
+% setpref('mtex','nfft_bug',true);
 
 %% architecture
 % this is usefull if the arcitecture is not automatically recognized by
