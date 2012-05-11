@@ -211,19 +211,29 @@ function lookup_mineral(varargin)
 
 handles = getappdata(gcbf,'handles');
 data = getappdata(gcbf,'data');
-cs_counter = getappdata(gcbf,'cs_count');
 
 name = get(handles.mineral,'string');
 
-[fname,pathName] = uigetfile(fullfile(mtexCifPath,'*.cif'),'Select cif File');
-name = [pathName,fname];
+try
+  cif2symmetry(name);
+catch   %#ok<CTCH>
+  [fname,pathName] = uigetfile(fullfile(mtexCifPath,'*.cif'),'Select cif File');
+  name = [pathName,fname];
+end
 
-if fname ~= 0
+if name ~= 0
   try
     cs = loadCIF(name);
     set(handles.mineral,'string',shrink_name(name));
     if isa(data,'EBSD')
-      data(cs_counter) = set(data(cs_counter),'CS',cs,'noTrafo');
+      
+       ph = unique(get(data,'phases'));
+       cs_counter = getappdata(gcf,'cs_count');
+       csCell = get(data,'CSCell');
+       phase = ph(cs_counter);
+       csCell{phase} = cs;
+      
+      data = set(data,'CS',csCell,'noTrafo');
     else
       data = set(data,'CS',cs,'noTrafo');
     end
@@ -332,10 +342,14 @@ al1 = get(handles.axis_alignment1,'Value');
 al2 = get(handles.axis_alignment2,'Value');
 al = alignments;
 
-try
-  cs = symmetry(cs,[axis{:}],[angle{:}]*degree,al{al1},al{al2},'mineral',mineral);
-catch
-  cs = symmetry(cs,[axis{:}],[angle{:}]*degree,'mineral',mineral);
+if any(strfind(lower(mineral),'indexed')) && any(strfind(lower(mineral),'not'))
+  cs = 'not indexed';
+else
+  try
+    cs = symmetry(cs,[axis{:}],[angle{:}]*degree,al{al1},al{al2},'mineral',mineral);
+  catch
+    cs = symmetry(cs,[axis{:}],[angle{:}]*degree,'mineral',mineral);
+  end
 end
 
 
