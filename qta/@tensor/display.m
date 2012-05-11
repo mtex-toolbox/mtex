@@ -22,7 +22,7 @@ props = props(~strcmp(props,'name'));
 propV = cellfun(@(prop) char(T.properties.(prop)),props,'UniformOutput',false);
 
 % add size if greater one
-if ndims(T.M)>T.rank
+if sum(size(T.M)>1) > T.rank
   ss = size(T.M);
   props = ['size';props];
   propV = [int2str(ss(T.rank+1:end));propV];
@@ -41,7 +41,7 @@ end
 % display all properties
 cprintf(propV(:),'-L','  ','-ic','L','-la','L','-Lr',props,'-d',': ');
 
-if ndims(T.M)>T.rank, return;end
+if sum(size(T.M)>1) > T.rank, return;end
 
 % display tensor coefficients
 disp(' ');
