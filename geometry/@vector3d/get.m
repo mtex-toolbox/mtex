@@ -1,6 +1,22 @@
 function varargout = get(obj,vname)
 % get object variable
-
+%
+%% Syntax
+%   get(v,'x')
+%   get(v,'y')
+%   get(v,'z')
+%   get(v,'polar')
+%   get(v,'polar angle')
+%   get(v,'azimuth')
+%   get(v,'latitude')
+%
+%% Input
+%  v - @vector3d
+%
+%% Ouput
+%
+%% See also:
+%
 
 %% no vname - return list of all fields
 if nargin == 1
@@ -25,15 +41,20 @@ switch lower(vname)
     
     varargout{1} = obj.z;
     
-  case 'rho'
+  case {'rho','azimuth','longitude'}
     
     [theta,rho] = polar(obj); %#ok<ASGLU>
     varargout{1} = rho;
     
-  case 'theta'
-    
+  case {'theta','polar angle','colatitude'}
+          
     theta = polar(obj);
     varargout{1} = theta;
+    
+  case 'latitude'
+    
+    theta = polar(obj);
+    varargout{1} = pi/2 - theta;
     
   case 'polar'
     
