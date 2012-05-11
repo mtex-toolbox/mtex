@@ -3,7 +3,7 @@ function check_installation
 
 
 
-%% -------------- check tmp dir ------------------------------
+% check tmp dir 
 if strfind(getpref('mtex','tempdir',tempdir),' ')
   hline()
   disp('Warning: The path MTEX uses for temporary files');
@@ -14,8 +14,22 @@ if strfind(getpref('mtex','tempdir',tempdir),' ')
   hline()
 end
 
+% check binaries
 check_binaries;
+
+% check mex binaries
 check_mex;
+
+% check for nfft bug
+setpref('mtex','nfft_bug',0);
+try
+  setpref('mtex','nfft_bug',~checkNfftBug);
+catch
+  
+end
+
+
+end
 
 %% ------------ check for binaries --------------------------
 function check_binaries
@@ -70,6 +84,7 @@ catch %#ok<*CTCH>
   hline()
 end
 
+end
 
 function e = fast_check_binaries
 
@@ -94,7 +109,7 @@ if ispref('mtex','binaries')
   end
 end
 
-
+end
 
 %%    ----------- check mex files ---------------------------
 function check_mex
@@ -165,9 +180,10 @@ if ~fast_check_mex(mexpath)
   hline()
 end
 hline('-')
-
+end
 
 %% ----------------------------------------------------------------------
+
 function e = fast_check_mex(mexpath)
 
 e = false;
@@ -202,10 +218,57 @@ catch
 end
 
 setpref('mtex','mex',e);
+end
+
+%% --------------------------------------------------------------
+
+function out = checkNfftBug
+
+  % set bandwidth
+  L = 2;
+
+  % set an orientation
+  q = axis2quat(xvector+yvector,25*degree);
+
+  % set a direction
+  h = vector3d(1,2,3);
+
+  % convert to export parameters
+  g = Euler(q,'nfft');
+
+  % set parameters
+  c = 1;
+  A = ones(1,L+1);
+
+  % run NFSOFT
+  D = call_extern('odf2fc','EXTERN',g,c,A); % conjugate(D)
+
+  % extract result
+  D = complex(D(1:2:end),D(2:2:end));
+
+  l = 1;
+  
+  % rotate spherical harmonics manualy
+  Y = sphericalY(l,h).'; % -> Y
+  gY = sphericalY(l,q*h).'; % -> rotated Y
+  
+  % rotate spherical harmonics by matrix D
+  D3 = reshape(D(2:10),3,3);
+  
+  TY = D3 * Y;
+  
+  % check whether spherical Y are totated correctly by D
+  out = sqrt(norm(TY - gY)) < 0.001;
+  
+end
+
 
 %% -----------------------------------------------------------------------
 
 
 function hline(st)
+
 if nargin < 1, st = '*'; end
 disp(repmat(st,1,80));
+
+end
