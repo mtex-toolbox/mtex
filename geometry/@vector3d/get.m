@@ -12,7 +12,19 @@ end
 
 %% switch fieldnames
 switch lower(vname)
-
+  
+  case {'resolution','res'}
+    
+    varargout{1} = 2*pi; % default to 2*pi
+    
+    if numel(obj)>4
+      try %#ok<TRYNC>
+        a = calcVoronoiArea(obj);
+        assert(sqrt(mean(a))>0);
+        varargout{1} = sqrt(mean(a));
+      end
+    end
+    
   case 'x'
     
     varargout{1} = obj.x;
