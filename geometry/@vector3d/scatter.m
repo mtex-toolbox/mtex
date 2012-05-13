@@ -1,4 +1,4 @@
-function varargout = scatter( v, varargin )
+function varargout = scatter(v,varargin)
 %
 %% Syntax
 %   scatter(v)              %
@@ -16,7 +16,7 @@ function varargout = scatter( v, varargin )
 %  MarkerEdgeColor   - 
 %  MarkerColor       - shortcut for the above two
 %  MarkerSize        - size of the markers in pixel
-%  DynamicMarkerSize - same as above but scales when plot is resized
+%  DynamicMarkerSize - scale marker size when plot is resized
 %
 %% Output
 %
@@ -31,13 +31,12 @@ function varargout = scatter( v, varargin )
 projection = plotOptions(ax,v,varargin{:});
 
 % project data
-[x,y,hemi,p] = project(v,projection); %#ok<ASGLU>
-x = x(:); y = y(:);
+[x,y] = project(v,projection);
 
 % default arguments
 patchArgs = {'Parent',ax,...
-    'vertices',[x(p) y(p)],...
-    'faces',1:nnz(p),...
+    'vertices',[x(:) y(:)],...
+    'faces',1:numel(x),...
     'facecolor','none',...
     'edgecolor','none',...
     'marker','o',...
@@ -46,7 +45,7 @@ patchArgs = {'Parent',ax,...
 % markerSize
 res = get(v,'resolution');
 res = get_option(varargin,'scatter_resolution',res);
-MarkerSize  = get_option(varargin,{'MarkerSize','dynamicMarkerSize'},min(8,50*res));
+MarkerSize  = get_option(varargin,'MarkerSize',min(8,50*res));
 patchArgs = [patchArgs,{'MarkerSize',MarkerSize}];
 
 % dynamic markersize
