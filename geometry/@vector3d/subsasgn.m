@@ -8,7 +8,17 @@ if isempty(v)
   v.z = [];
 end
 
+  
+if isnumeric(s) || islogical(s)
+  v.x(s) = b.x;
+  v.y(s) = b.y;
+  v.z(s) = b.z;
+  v.options = b.options;
+  return;
+end
+
 if isa(b,'vector3d')
+  
   switch s.type
     case '()'
       v.x = subsasgn(v.x,s,b.x);

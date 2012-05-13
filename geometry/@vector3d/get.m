@@ -19,7 +19,7 @@ switch lower(vname)
     
     if numel(obj)>4
       try %#ok<TRYNC>
-        a = calcVoronoiArea(obj);
+        a = calcVoronoiArea(S2Grid(obj));
         assert(sqrt(mean(a))>0);
         varargout{1} = sqrt(mean(a));
       end

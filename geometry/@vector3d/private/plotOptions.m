@@ -1,80 +1,117 @@
 function projection = plotOptions(ax,v,varargin)
 
-
+% get stored options
 opts = getappdata(ax);
 
+% some basic settings
 set(ax,'dataaspectratio',[1 1 1]);
 
-if isfield(opts,'projection')
-  
+% if there is already a spherical plot
+if isfield(opts,'projection') 
   projection = opts.projection;
-  
-else
-  
-  projection.type       = get_option(varargin,'projection','earea');
-  
-  if isa(v,'S2Grid') &&  get(v,'maxtheta')  <= pi/2
-  
-    hemisphere = 'north';
-  
-  elseif check_option(v.options,{'north','south','antipodal','lower','upper'})
-    
-    hemisphere = extract_option(v,{'north','south','antipodal','lower','upper'});
-    
-  elseif check_option(varargin,'antipodal')
-    
-    hemisphere = 'antipodal';
-    
-  elseif check_option(varargin,'plain')
-    
-    hemisphere = {'north','south'};
-    
-  elseif check_option(varargin,{'north','south','antipodal','lower','upper'})
-    
-    hemisphere = extract_option(varargin,{'north','south','antipodal','lower','upper'});
-    
-  else
-    
-    hemisphere = 'both';
-    
-  end
-  
-  projection.hemisphere = hemisphere;
-  
-  if isa(v,'S2Grid')
-    projection.mintheta   = get_option(varargin,'mintheta',get(v,'mintheta'));
-    
-    mth = get(v,'maxtheta');
-    if check_option(ensurecell(projection.hemisphere),{'both','north','south'})
-      mth = pi/2;
-    end
-    projection.maxtheta   = get_option(varargin,'maxtheta',mth);
-    projection.minrho     = get_option(varargin,'minrho',get(v,'minrho'));
-    projection.maxrho     = get_option(varargin,'maxrho',get(v,'maxrho'));
-  else
-    projection.mintheta   = get_option(varargin,'mintheta',0);
-    projection.maxtheta   = get_option(varargin,'maxtheta',pi/2);
-    projection.minrho     = get_option(varargin,'minrho',0);
-    projection.maxrho     = get_option(varargin,'maxrho',2*pi);
-  end
-  
-  if strcmpi(projection.type,'plain')    
-    if check_option(ensurecell(projection.hemisphere),{'south','both'})
-      projection.maxtheta = pi;
-    end
-  end
-    
-  
-  if isa(projection.maxtheta,'function_handle')
-    projection.hemisphere = 'north';
-  end
-   
-  plotOptions = get_mtex_option('default_Plot_Options');
-
-  projection.flipud = check_option([varargin plotOptions],'flipud');
-  projection.fliplr = check_option([varargin plotOptions],'fliplr');
-  projection.drho = get_option(varargin,'rotate',get_option(plotOptions,'rotate',0));
-  
-  setappdata(ax,'projection',projection)
+  return;  
 end
 
+% type of projection - default is earea
+projection.type = get_option(varargin,'projection','earea');
+
+% check for antipodal symmetry
+projection.antipodal = check_option(varargin,'antipodal') || check_option(v,'antipodal');
+
+%% for S2Grid take the stored values 
+if isa(v,'S2Grid')
+
+  [minTheta, maxTheta, minRho, maxRho] = get(v,'bounds');
+  
+else % otherwise default is the entire sphere / half sphere
+  
+  minTheta = 0;
+  maxTheta = pi / (1+projection.antipodal);
+  minRho = 0;
+  maxRho = 2*pi;
+  
+end
+
+%% restrict to northern hemisphere if possible
+if max(reshape(get(v,'theta'),[],1)) < pi/2 + 0.001 && ...
+    isnumeric(maxTheta) && maxTheta > pi/2
+
+  maxTheta = pi/2;
+  
+end
+
+%% get values from direct options
+minTheta = get_option(varargin,'minTheta',minTheta);
+maxTheta = get_option(varargin,'maxTheta',maxTheta);
+minRho   = get_option(varargin,'minRho',minRho);
+maxRho   = get_option(varargin,'maxRho',maxRho);
+    
+%% get values from meta options
+if check_option(varargin,'complete')
+  minRho = 0; maxRho = 2*pi;
+  minTheta = 0; maxTheta = pi;
+end
+
+if check_option(varargin,'north') && isnumeric(maxTheta) && maxTheta > pi/2
+  maxTheta = pi/2;  
+end
+
+if check_option(varargin,'south') && isnumeric(maxTheta) && ...
+    maxTheta > pi/2+0.001  
+  minTheta = pi/2;
+end
+
+%% read default plot options
+plotOptions = get_mtex_option('default_Plot_Options');
+
+projection.minTheta = minTheta;
+projection.minRho = minRho;
+projection.maxTheta = maxTheta;
+projection.maxRho = maxRho;
+projection.flipud = check_option([varargin plotOptions],'flipud');
+projection.fliplr = check_option([varargin plotOptions],'fliplr');
+projection.drho = get_option(varargin,'rotate',get_option(plotOptions,'rotate',0));
+  
+%% compute boundary box and offset
+
+projection.offset = 0;
+  
+% go through all boundary points of the plot
+dgrid = 1*degree;
+dgrid = pi/round((pi)/dgrid);
+  
+if maxRho > minRho
+  rho = minRho:dgrid:(maxRho-dgrid);
+else
+  rho = mod(minRho:dgrid:(maxRho+2*pi-dgrid),2*pi);
+end
+if maxRho ~= 2*pi, rho(1) = [];end
+  
+if isnumeric(maxTheta)
+  
+  if maxTheta > pi/2
+    theta = pi/2;
+  else
+    theta = maxTheta;
+  end
+else
+  theta = maxTheta(rho);
+end
+
+% project the,
+[x,y] = project( [sph2vec(0,rho) sph2vec(theta,rho)],projection);
+
+% set offset
+if isnumeric(maxTheta) && maxTheta > pi/2-1e-6 && ...
+    minTheta < pi/2-1e-6 && ~strcmp(projection.type,'plain')
+
+  % this is only needed if two hemispheres have to be plotted
+  projection.offset = max(x)-min(x);
+  
+end
+
+% set bounding box
+projection.bounds = [min(x(:)),min(y(:)),max(x(:))+projection.offset,max(y(:))];
+
+%% store data
+setappdata(ax,'projection',projection)

@@ -1,42 +1,55 @@
-function [X,Y,hemi,p] = project(v,projection,varargin)
+function [X,Y] = project(v,projection,varargin)
+% perform spherical projection and restriction to plotable domain
 
 
-
-
-[theta,rho] = polar(v);
-
-if all(strcmpi(projection.hemisphere,'north'))
-  %   hemi = true(size(theta));
-  hemi = theta <= pi/2;
-elseif all(strcmpi(projection.hemisphere,'south'))
-%     hemi = false(size(theta));
-  hemi = theta < pi/2;
+% determine which are on the southern hemisphere
+if check_option(varargin,'equator2south')
+  south = v.z < 1e-6;
 else
-  hemi = theta <= pi /2;
+  south = v.z < -1e-6;
 end
 
-if ~strcmpi(projection.hemisphere,'plain') 
-  theta(~hemi) = pi-theta(~hemi);
+% for antipodal symmetry project all to northern hemisphere
+if projection.antipodal && ~(isnumeric(projection.maxTheta) && projection.maxTheta == pi)
+  v = subsasgn(v,south,-vector3d(subsref(v,south)));
+  south = false(size(v));
 end
+
+% compute polar angles
+[theta,rho] = polar(v);
 
 
 %% restrict to plotable domain
-if ~check_option(varargin,'complete') && (projection.maxrho-projection.minrho<2*pi-1e-6)
-  inrho = inside(rho,projection.minrho,projection.maxrho) | isnull(sin(theta));
+
+% check for azimuth angle
+if projection.maxRho - projection.minRho < 2*pi-1e-6  
+  inRho = inside(rho,projection.minRho,projection.maxRho) | isnull(sin(theta));  
+  rho(~inRho) = NaN;
+end
+
+% check for polar angle
+if isa(projection.maxTheta,'function_handle')
+  theta(theta-1e-6 > projection.maxTheta(rho)) = NaN;
+else
+  theta(theta-1e-6 > projection.maxTheta) = NaN;
+  theta(theta+1e-6 < projection.minTheta) = NaN;
+end
+
+%% flip points on the southern hemisphere
+
+if ~strcmp(projection.type,'plain')
+  rho(v.z < -1e-6) = rho(v.z < -1e-6) + pi;
+end
+
   
-  rho(~inrho)= NaN;
-end
+%% modify polar coordinates according to the alignment of the specimen
+%% coordinate system
 
-if isa(projection.maxtheta,'function_handle')
-  theta(theta-1e-6 > projection.maxtheta(rho)) = NaN;
-end
-
-%% modify polar coordinates
 if projection.drho ~= 0 && ~strcmpi(projection.type,'plain')
   rho = rho + projection.drho;
 end
 
-if strcmpi(projection.type,'plain') % do this somehow better
+if strcmpi(projection.type,'plain')
   if projection.flipud, theta = -theta; end
   if projection.fliplr, rho =  -rho; end
 else
@@ -44,7 +57,7 @@ else
   if projection.fliplr, rho = pi-rho; end
 end
 
-%% project data
+%% compute spherical projection
 switch lower(projection.type)
   
   case 'plain'
@@ -62,6 +75,7 @@ switch lower(projection.type)
   case 'edist' % equal distance
     
     [X,Y] = edistProj(theta,rho);
+    
   case {'earea','schmidt'} % equal area
     
     [X,Y] = SchmidtProj(theta,rho);
@@ -76,39 +90,20 @@ switch lower(projection.type)
     
 end
 
-% compute bounding box
-if check_option(ensurecell(projection.hemisphere),{'both','south','lower'}) && ~strcmpi(projection.type,'plain')
-  
-  dgrid = 1*degree;
-  dgrid = pi/round((pi)/dgrid);
-  
-  p = projection;
-  if p.maxrho > p.minrho
-    rho = p.minrho:dgrid:(p.maxrho-dgrid);
-  else
-    rho = mod(p.minrho:dgrid:(p.maxrho+2*pi-dgrid),2*pi);
-  end
-  if p.maxrho ~= 2*pi, rho(1) = [];end
-  
-  p.hemisphere = 'north';
-  [x,y] = project( [sph2vec(0,rho) sph2vec(pi/2,rho)],p);
-  offset = max(x)-min(x);
-  
-  X(~hemi) = X(~hemi) + offset;
+%% points on the southern hemisphere should be shifted to the left
+if projection.minTheta == 0 && ~strcmp(projection.type,'plain')
+  X(south) = X(south) + projection.offset;
 end
-
+  
+% format output
 X = reshape(X,size(v));
 Y = reshape(Y,size(v));
 
 
-p = hemi & check_option(ensurecell(projection.hemisphere),{'both','north','upper','antipodal'});
-p(~hemi) = ~hemi(~hemi) & check_option(ensurecell(projection.hemisphere),{'both','south','lower','antipodal'});
+function ind = inside(rho,minRho,maxRho)
 
-
-function ind = inside(rho,minrho,maxrho)
-
-minr = mod(minrho+1e-6,2*pi)-3e-6;
-maxr = mod(maxrho-1e-6,2*pi)+3e-6;
+minr = mod(minRho+1e-6,2*pi)-3e-6;
+maxr = mod(maxRho-1e-6,2*pi)+3e-6;
 if minr < maxr
   ind = ~(mod(rho-1e-6,2*pi) < minr | mod(rho+1e-6,2*pi) > maxr);
 else

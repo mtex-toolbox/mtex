@@ -151,10 +151,9 @@ elseif check_option(varargin,'random')
   points = fix(get_option(varargin,'points'));
   
   G.res = 2*pi;
-  G.theta = maxtheta;
+  G.theta = S1Grid([],minthetaGrid,maxthetaGrid);
   G.rho = S1Grid([],minrhoGrid,maxrhoGrid);
 
-  
   theta = acos(2*(rand(points,1)-0.5));
   rho   = 2*pi*rand(points,1);
   
