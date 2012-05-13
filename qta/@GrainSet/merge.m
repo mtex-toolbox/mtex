@@ -7,6 +7,7 @@ function [grains,I_PC] = merge( grains, propval, varargin )
 %
 %% Options
 % delta - searching radius in radians
+% TripleJunctionCondition - merge only if criterion @rotation is satisfied by triple junction grains
 %
 %% Output
 % grains - @GrainSet
@@ -52,7 +53,10 @@ f = f(use);
 
 %% find and delete adjacencies
 
-epsilon = get_option(varargin,{'deltaAngle','angle','delta'},5*degree,'double');
+epsilon = get_option(varargin,{'deltaAngle','angle','delta'},2*degree,'double');
+
+
+triplet = get_option(varargin,{'TripleJunction','TripleJunctions','TripleJunctionCondition'},[]);
 
 for p=1:numel(phaseMap)
   currentPhase = phase == phaseMap(p);
@@ -65,12 +69,52 @@ for p=1:numel(phaseMap)
     
     prop(currentPhase,:) = doMerge(m,property,propval,epsilon);
     
+    if ~isempty(triplet)
+      propTriplet(currentPhase,:) = doMerge(m,'rotation',triplet,epsilon);
+    end    
   end
 end
 
-f(~prop) = [];
-I_FD(f,:) = 0; % delete incidence
 
+if ~isempty(triplet)
+  [nf,nd] = size(I_FD); 
+    
+  % boundary criterion meet at neighbored measurements not part of the current 
+  propTriplet(prop) = 0;
+  
+  % faces incident to measurements satisfying the merge criterion
+  I_FDprop = sparse(f(prop),Dl(prop),1,nf,nd) | ...
+    sparse(f(prop),Dr(prop),1,nf,nd);
+  
+  % faces incident to measurements satisfying the triple junction criterion  
+  I_FDtrip = sparse(f(propTriplet),Dl(propTriplet),1,nf,nd) | ...
+    sparse(f(propTriplet),Dr(propTriplet),1,nf,nd);
+ 
+  % adjacent grains which should be merged
+  I_FGprop = I_FDprop*double(grains.I_DG);
+  A_Gprop  = I_FGprop'*I_FGprop;
+  A_Gprop  = A_Gprop - diag(diag(A_Gprop));
+  
+  % adjacent grains satisfying the junction criterion
+  I_FGtrip = I_FDtrip*double(grains.I_DG);
+  A_Gtrip  = I_FGtrip'*I_FGtrip;
+  A_Gtrip  = A_Gtrip - diag(diag(A_Gtrip));  
+  
+ 
+  [Gl,Gr] = find(A_Gprop);
+  
+  % check if neighbored grains that should be merged have a common grain,
+  % that satisfies the triple junction criterion
+  [Gm,Gp] = find(A_Gtrip(:,Gl) & A_Gtrip(:,Gr));
+  
+  % now find all faces belonging between grains Gl and Gr
+  mergeFaces = any(I_FGprop(:,Gl(Gp)) & I_FGprop(:,Gr(Gp)),2);
+  I_FD(mergeFaces,:) = 0;
+
+else
+  f(~prop) = [];
+  I_FD(f,:) = 0; % delete incidence
+end
 
 %% Resegment   (see calcGrains)
 
