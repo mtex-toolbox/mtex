@@ -73,8 +73,8 @@ if any(strcmp(cc,{'ipdf','hkl','h'}))
   
   d = reshape(d,[size(h),3]);
   
-  multiplot(@(i) h,@(i) d,1,'rgb','ANOTATION',r,varargin{:});
-  
+  surf(h,d,'TR',r);
+    
   type = 'ipdf';
 else
   [S3G,S2G,sec] = SO3Grid('plot',cs,symmetry,varargin{:});

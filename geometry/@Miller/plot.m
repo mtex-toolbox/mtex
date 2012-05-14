@@ -68,7 +68,7 @@ for i = 1:numel(m)
   end
   
   % plot
-  plot(S2Grid(mm),options{:},varargin{:});
+  plot(vector3d(mm),options{:},varargin{:});
   
   hold all
 end
