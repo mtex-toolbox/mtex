@@ -67,40 +67,42 @@ for p=1:numel(phaseMap)
     
     m  = o_Dl.\o_Dr; % misorientation
     
-    prop(currentPhase,:) = doMerge(m,property,propval,epsilon);
+    dm = doMerge(m,property,propval,epsilon);
+    prop(currentPhase,:) = dm;
     
     if ~isempty(triplet)
-      propTriplet(currentPhase,:) = doMerge(m,'rotation',triplet,epsilon);
-    end    
+      dm(~dm) = doMerge(m(~dm),class(triplet),triplet,epsilon);
+      trip(currentPhase,:) = dm;
+    end
   end
 end
 
 
 if ~isempty(triplet)
-  [nf,nd] = size(I_FD); 
-    
-  % boundary criterion meet at neighbored measurements not part of the current 
-  propTriplet(prop) = 0;
+  [nf,nd] = size(I_FD);
+  
+  % boundary criterion meet at neighbored measurements not part of the current
+  trip(prop) = 0;
   
   % faces incident to measurements satisfying the merge criterion
   I_FDprop = sparse(f(prop),Dl(prop),1,nf,nd) | ...
     sparse(f(prop),Dr(prop),1,nf,nd);
   
-  % faces incident to measurements satisfying the triple junction criterion  
-  I_FDtrip = sparse(f(propTriplet),Dl(propTriplet),1,nf,nd) | ...
-    sparse(f(propTriplet),Dr(propTriplet),1,nf,nd);
- 
+  % faces incident to measurements satisfying the triple junction criterion
+  I_FDtrip = sparse(f(trip),Dl(trip),1,nf,nd) | ...
+    sparse(f(trip),Dr(trip),1,nf,nd);
+  
   % adjacent grains which should be merged
   I_FGprop = I_FDprop*double(grains.I_DG);
   A_Gprop  = I_FGprop'*I_FGprop;
-  A_Gprop  = A_Gprop - diag(diag(A_Gprop));
+  A_Gprop  = A_Gprop - diag(diag(A_Gprop)); % no self reference
   
   % adjacent grains satisfying the junction criterion
   I_FGtrip = I_FDtrip*double(grains.I_DG);
   A_Gtrip  = I_FGtrip'*I_FGtrip;
-  A_Gtrip  = A_Gtrip - diag(diag(A_Gtrip));  
+  A_Gtrip  = A_Gtrip - diag(diag(A_Gtrip)); % no self reference
   
- 
+  % pairs of adjacent grains
   [Gl,Gr] = find(A_Gprop);
   
   % check if neighbored grains that should be merged have a common grain,
@@ -109,11 +111,15 @@ if ~isempty(triplet)
   
   % now find all faces belonging between grains Gl and Gr
   mergeFaces = any(I_FGprop(:,Gl(Gp)) & I_FGprop(:,Gr(Gp)),2);
+  
+  % delete incidence
   I_FD(mergeFaces,:) = 0;
-
+  
 else
-  f(~prop) = [];
-  I_FD(f,:) = 0; % delete incidence
+  
+  % delete incidence
+  I_FD(f(prop),:) = 0;
+  
 end
 
 %% Resegment   (see calcGrains)
@@ -136,7 +142,7 @@ A_G = I_DG'*A_Db*I_DG;                      % adjacency of grains
 I_PC = double(I_DG'*grains.I_DG>0); % determine which cells were merged;
 
 grains.I_DG = I_DG;
-grains.A_G = A_G;
+grains.A_G = A_G > 0;
 
 %% interior and exterior grain boundaries
 
@@ -189,35 +195,35 @@ grains.phase = phase;
 
 unchanged = sum(I_PC,2)==1;  % unchanged
 
-[i,oldval] = find(I_PC(unchanged,:));
-meanRotation(unchanged) = grains.meanRotation(oldval);
-changedI_DG = I_DG(:,~unchanged);
-[i,j] = find(changedI_DG);
-
-cc = full(sum(changedI_DG,1));
-cs = [0 cumsum(cc)];
-
-
-for k=1:numel(cc)
-  edx{k} = i(cs(k)+1:cs(k+1));
-end
-qcedx = partition(r,edx);
-
-changed = find(~unchanged);
-for k=1:numel(cc)
-  c = changed(k);
-  if ~ischar(CS{phase(k)})
-    meanRotation(c) = mean_CS(qcedx{k},CS{phase(c)},SS);
+if any(~unchanged) % some of the were merged
+  [i,oldval] = find(I_PC(unchanged,:));
+  meanRotation(unchanged) = grains.meanRotation(oldval);
+  changedI_DG = I_DG(:,~unchanged);
+  [i,j] = find(changedI_DG);
+  
+  cc = full(sum(changedI_DG,1));
+  cs = [0 cumsum(cc)];  
+  
+  for k=1:numel(cc)
+    edx{k} = i(cs(k)+1:cs(k+1));
   end
+  qcedx = partition(r,edx);
+  
+  changed = find(~unchanged);
+  for k=1:numel(cc)
+    c = changed(k);
+    if ~ischar(CS{phase(k)})
+      meanRotation(c) = mean_CS(qcedx{k},CS{phase(c)},SS);
+    end
+  end
+  
+  grains.meanRotation = meanRotation;
+  
+  [g,d] = find(I_DG');
+  mis2mean = inverse(r(d)).* reshape(meanRotation(g),[],1);
+  
+  grains.EBSD = set(grains.EBSD,'mis2mean',mis2mean);
 end
-
-grains.meanRotation = meanRotation;
-
-[g,d] = find(I_DG');
-mis2mean = inverse(r(d)).* reshape(meanRotation(g),[],1);
-
-grains.EBSD = set(grains.EBSD,'mis2mean',mis2mean);
-
 
 
 function b = BoundaryFaceOrder(I_PC,boundaries,F,I_FD,I_DG)
