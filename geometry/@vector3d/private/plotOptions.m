@@ -102,8 +102,8 @@ end
 [x,y] = project( [sph2vec(0,rho) sph2vec(theta,rho)],projection);
 
 % set offset
-if isnumeric(maxTheta) && maxTheta > pi/2-1e-6 && ...
-    minTheta < pi/2-1e-6 && ~strcmp(projection.type,'plain')
+if isnumeric(maxTheta) && maxTheta > pi/2+1e-6 && ...
+    minTheta < pi/2+1e-6 && ~strcmp(projection.type,'plain')
 
   % this is only needed if two hemispheres have to be plotted
   projection.offset = max(x)-min(x);
