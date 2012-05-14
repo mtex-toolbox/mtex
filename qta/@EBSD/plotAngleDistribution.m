@@ -14,48 +14,57 @@ function plotAngleDistribution( ebsd, varargin )
 % EBSD/calcAngleDistribution
 %
 
-if nargin>1 && isscalar(varargin{1})
-  bins =  varargin{1};
-else
-  bins = 20;
-end
-
-varargin = set_default_option(varargin,...
-  getpref('mtex','defaultPlotOptions'));
-
-%% make new plot
-newMTEXplot;
-
 %% get phases
 
 ind = cellfun(@(c) isa(c,'EBSD'),varargin);
 if any(ind)
   ebsd2 = varargin{find(ind,1)};
+  varargin = varargin(~ind);
 else
   ebsd2 = ebsd;
 end
 
+
+if nargin>1 && isscalar(varargin{1})
+  bins = varargin{1};
+else
+  bins = 20;
+end
+
+%% make new plot
+
+
+varargin = set_default_option(varargin,...
+  getpref('mtex','defaultPlotOptions'));
+
+newMTEXplot;
+
+%%
+
+ebsd  = subsref(ebsd,~isNotIndexed(ebsd));
+ebsd2 = subsref(ebsd2,~isNotIndexed(ebsd2));
+
 phases1 = get(ebsd,'phase');
-ph1 = unique(phases1(phases1>0));
+ph1 = unique(phases1);
 
 phases2 = get(ebsd2,'phase');
-ph2 = unique(phases2(phases2>0));
+ph2 = unique(phases2);
 
-ph = unique([ph1,ph2]);
+[ph phpos] = unique([ph1,ph2],'first');
 for j = 1:numel(ph)
   if ismember(ph(j),ph1)
-    obj{ph(j)} = subsref(ebsd,phases1 == ph(j)); %#ok<AGROW>
+    obj{phpos(j)} = subsref(ebsd,phases1 == ph(j)); %#ok<AGROW>
   else
-    obj{ph(j)} = subsref(ebsd2,phases2 == ph(j)); %#ok<AGROW>
+    obj{phpos(j)} = subsref(ebsd2,phases2 == ph(j)); %#ok<AGROW>
   end
-  mineral{ph(j)} = get(obj{ph(j)},'mineral'); %#ok<AGROW>
+  mineral{phpos(j)} = get(obj{phpos(j)},'mineral'); %#ok<AGROW>
   if check_option(varargin,{'ODF','MDF'})
-    obj{ph(j)} = calcODF(obj{ph(j)},'Fourier','halfwidth',10*degree,varargin{:}); %#ok<AGROW>
+    obj{phpos(j)} = calcODF(obj{phpos(j)},'Fourier','halfwidth',10*degree,varargin{:}); %#ok<AGROW>
   end
 end
 
 % all combinations of phases
-[ph1,ph2] = meshgrid(ph1,ph2);
+[ph1,ph2] = meshgrid(phpos(ismember(ph,ph1)),phpos(ismember(ph,ph2)));
 ph1 = ph1(tril(ones(size(ph1)))>0);
 ph2 = ph2(tril(ones(size(ph2)))>0);
 
