@@ -3,7 +3,7 @@ function plotpdf(odf,h,varargin)
 %
 %% Syntax
 % plotpdf(odf,[h1,..,hN],<options>)
-% plotpdf(odf,[h1,..,hN],'superposition',[c1,..,cN],<options>)
+% plotpdf(odf,{h1,..,hN},'superposition',{c1,..,cN},<options>)
 %
 %% Input
 %  odf - @ODF
@@ -23,15 +23,26 @@ function plotpdf(odf,h,varargin)
 % SphericalProjection_demo 
 
 %% check input
-if iscell(h), h = [h{:}];end
 
-% maybe we shall call plotipdf
+% convert to cell
+if ~iscell(h), h = vec2cell(h);end
+
+% ensure crystal symmetry
 try
-  argin_check(h,'Miller');
-  h = ensureCS(odf(1).CS,{h});
-catch
+  argin_check([h{:}],'Miller');
+  for i = 1:length(h)
+    h{i} = ensureCS(odf(1).CS,h(i));
+  end
+catch %#ok<CTCH>
   plotipdf(odf,h,varargin);
   return
+end
+
+% superposition coefficients
+if check_option(varargin,'superposition')
+  c = get_option(varargin,'superposition');
+else
+  c = num2cell(ones(size(h)));
 end
 
 % default options
@@ -43,67 +54,18 @@ varargin = set_default_option(varargin,...
 newMTEXplot;
 
 %% plotting grid
-if check_option(varargin,'3d')
-  r = S2Grid('PLOT',varargin{:});
-else
-  [maxtheta,maxrho,minrho] = getFundamentalRegionPF(odf(1).SS,varargin{:});
-  r = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
-end
-
+[maxtheta,maxrho,minrho] = getFundamentalRegionPF(odf(1).SS,varargin{:});
+r = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
 
 %% plot
 vdisp(' ',varargin{:});
 vdisp('Plotting pole density functions:',varargin{:})
-if check_option(varargin,'superposition')
-  multiplot(@(i) r,@(i) max(0,pdf(odf,h,r,varargin{:})),1,...
-    'DISP',@(i,Z) [' h=',char(h),...
-    ' Max: ',num2str(max(Z(:))),...
-    ' Min: ',num2str(min(Z(:)))],...
-    'ANOTATION',@(i) h,...
-    'MINMAX','SMOOTH',...
-    'appdata',@(i) {{'h',h}},...
-    varargin{:});
-elseif check_option(varargin,'slope')
-  multiplot(@(i) r,@(i) pos(slope(odf,h(i),r,varargin{:})),length(h),...
-    'DISP',@(i,Z) [' PDF h=',char(h(i)),...
-    ' Max: ',num2str(max(Z(:))),...
-    ' Min: ',num2str(min(Z(:)))],...
-    'ANOTATION',@(i) h(i),...
-    'MINMAX','SMOOTH',...
-    'appdata',@(i) {{'h',h(i)}},...
-    varargin{:});  
-else
-%   multiplot(@(i) r,@(i) pos(pdf(odf,h(i),r,varargin{:})),length(h),...
-%     'DISP',@(i,Z) [' PDF h=',char(h(i)),...
-%     ' Max: ',num2str(max(Z(:))),...
-%     ' Min: ',num2str(min(Z(:)))],...
-%     'ANOTATION',@(i) h(i),...
-%     'MINMAX','SMOOTH',...
-%     'appdata',@(i) {{'h',h(i)}},...
-%     varargin{:});  
-%   
   
-  multiplot2(numel(h),...
-    r,...
-    @(i) pos(pdf(odf,h(i),r,varargin{:})),...
-    'smooth',...
-    'TR',@(i) h(i),...
-    varargin{:});
-    
-  
-  
-%   
-%   @(i) r,@(i) pos(pdf(odf,h(i),r,varargin{:})),length(h),...
-%     'DISP',@(i,Z) [' PDF h=',char(h(i)),...
-%     ' Max: ',num2str(max(Z(:))),...
-%     ' Min: ',num2str(min(Z(:)))],...
-%     'ANOTATION',@(i) h(i),...
-%     'MINMAX','SMOOTH',...
-%     'appdata',@(i) {{'h',h(i)}},...
-%     varargin{:});  
-  
-end
+multiplot2(numel(h),...
+  r,@(i) ensureNonNeg(pdf(odf,h{i},r,varargin{:},'superposition',c{i})),...
+  'smooth','TR',@(i) h{i},varargin{:});
 
+%% finalize plot
 setappdata(gcf,'h',h);
 setappdata(gcf,'CS',odf(1).CS);
 setappdata(gcf,'SS',odf(1).SS);
@@ -111,7 +73,3 @@ set(gcf,'tag','pdf');
 name = inputname(1);
 if isempty(name), name = odf(1).comment;end
 set(gcf,'Name',['Pole figures of "',name,'"']);
-
-function d = pos(d)
-
-if min(d(:)) > -1e-5, d = max(d,0);end

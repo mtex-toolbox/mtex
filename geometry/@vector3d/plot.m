@@ -13,6 +13,9 @@ function varargout = plot(v,varargin)
 %  contourf - plot point cloud as filled contours
 %  contour  - plot point cloud as contours
 
+% where to plot
+[ax,v,varargin] = getAxHandle(v,varargin{:});
+
 % extract plot type
 plotType = extract_option(varargin,{'smooth','scatter','text','contour','contourf','quiver'});
 if isempty_cell(plotType)
@@ -35,28 +38,28 @@ switch plotType
 
   case 'scatter'
   
-    [varargout(1:nargout)] = scatter(v,varargin{:});
+    [varargout(1:nargout)] = scatter(ax,v,varargin{:});
     
-  case 'smmoth'
+  case 'smooth'
     
-    [varargout(1:nargout)] = smooth(v,varargin{:});
+    [varargout(1:nargout)] = smooth(ax,v,varargin{:});
     
   case 'contourf'
     
-    [varargout(1:nargout)] = contourf(v,varargin{:});
+    [varargout(1:nargout)] = contourf(ax,v,varargin{:});
     
   case 'contour'
     
-    [varargout(1:nargout)] = contour(v,varargin{:});
+    [varargout(1:nargout)] = contour(ax,v,varargin{:});
     
   case 'quiver'
     
-    [varargout(1:nargout)] = quiver(v,varargin{:});
+    [varargout(1:nargout)] = quiver(ax,v,varargin{:});
     
 end
 
 if check_option(varargin,{'text','label'})
   hold all
-  [varargout(1:nargout)] = text(v,get_option(varargin,{'text','label'}),varargin{:});
+  [varargout(1:nargout)] = text(ax,v,get_option(varargin,{'text','label'}),varargin{:});
   hold off
 end
