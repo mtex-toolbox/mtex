@@ -57,7 +57,7 @@ end
 annotations = {};
 
 %% colorcoding according to the first argument
-if numel(varargin) > 0 && isnumeric(varargin{1})
+if numel(varargin) > 0 && isnumeric(varargin{1}) && ~isempty(varargin{1})
   
   % extract colorcoding
   cdata = varargin{1};
@@ -69,7 +69,7 @@ if numel(varargin) > 0 && isnumeric(varargin{1})
     
   % draw patches
   h = optiondraw(patch(patchArgs{:},...
-    'facevertexcdata',cdata(p),...
+    'facevertexcdata',cdata,...
     'markerfacecolor','flat',...
     'markeredgecolor','flat'),varargin{2:end});
   
