@@ -46,31 +46,25 @@ if numel(o)*length(cs)*length(ss) > 100000 || check_option(varargin,'points')
   
   samples = discretesample(ones(1,numel(o)),points);
   o.rotation = o.rotation(samples);
-  if ~isempty(data),
-    data = data(samples); end
+  if ~isempty(data), data = data(samples); end
  
 end
 
-%% plotting grid
 
+%% symmetrise directions and data
 h = @(i) reshape(inverse(quaternion(o * cs)),[],1) * symmetrise(r(i),ss);
-[maxtheta,maxrho,minrho] = getFundamentalRegionPF(cs,varargin{:});
-Sh = @(i) S2Grid(h(i),'MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
+[maxTheta,maxRho,minRho] = getFundamentalRegionPF(cs,varargin{:});
 
-if ~isempty(data)
-  data = repmat(data,numel(o.CS),1);
-  Dh  = @(i) (reshape(double(h(i)),[],3));  
-  DSh = @(i) (reshape(double(Sh(i)),[],3));
-  datar = @(i)  data(ismember(DSh(i),Dh(i),'rows'));
-else
-  datar = @(i)[];
-end
+data = repmat(data,numel(o.CS),1);
+  
 
 %% plot
-multiplot(@(i) Sh(i), datar ,length(r),...
-  'ANOTATION',@(i) r(i),...
-  'appdata',@(i) {{'r',r(i)}},...
-  'dynamicMarkerSize', varargin{:});
+multiplot(numel(r),@(i) h(i),data,...
+  'scatter','dynamicMarkerSize',...
+  'TR',@(i) char(r(i),'LaTex'),...
+  'minRho',minRho,'maxRho',maxRho,'maxTheta',maxTheta,...
+  varargin{:});
+
 
 setappdata(gcf,'r',r);
 setappdata(gcf,'SS',ss);

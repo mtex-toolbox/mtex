@@ -50,8 +50,7 @@ if sum(numel(o))*length(cs)*length(ss) > 10000 || check_option(varargin,'points'
   
   samples = discretesample(ones(1,numel(o)),points);
   o.rotation = o.rotation(samples);
-  if ~isempty(data),
-    data = data(samples);  end
+  if ~isempty(data), data = data(samples); end
   
 end
 
@@ -63,9 +62,9 @@ r = @(i) reshape(ss * o * symmetrise(h(i)),[],1);
 
 [maxTheta,maxRho,minRho] = getFundamentalRegionPF(ss,varargin{:});
 
-multiplot(numel(r),r,...
+multiplot(numel(r),r,data,...
   'scatter','dynamicMarkerSize',...
-  'TR',@(i) h(i),...
+  'TR',@(i) char(h(i),'LaTex'),...
   'minRho',minRho,'maxRho',maxRho,'maxTheta',maxTheta,...
   varargin{:});
 
