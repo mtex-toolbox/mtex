@@ -48,8 +48,6 @@ for k=1:numberOfPhases
 end
 
 boundaryEdgeOrder = vertcat(X{:});
-[V(:,1),V(:,2),lx,ly] = fixMTEXscreencoordinates(V(:,1),V(:,2),varargin{:});
-
 
 %% default plot options
 
@@ -59,11 +57,15 @@ varargin = set_default_option(varargin,...
 varargin = set_default_option(varargin,...
   {'name', [property ' plot of ' inputname(1) ' (' get(grains,'comment') ')']});
 
+%%
 
 % clear up figure
 newMTEXplot('renderer','opengl',varargin{:});
 
 % set direction of x and y axis
+
+[V(:,1),V(:,2),lx,ly] = fixMTEXscreencoordinates(V(:,1),V(:,2),varargin{:});
+
 xlabel(lx);ylabel(ly);
 
 %%
