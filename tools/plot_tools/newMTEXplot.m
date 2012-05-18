@@ -67,6 +67,9 @@ end
 
 old_units = get(gcf,'units');
 set(gcf,'units','pixel');
+
+varargin = delete_option(varargin,'color',1);
+
 optiondraw(gcf,varargin{:});
 set(gcf,'units',old_units);
 

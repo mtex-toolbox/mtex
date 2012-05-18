@@ -1,126 +1,70 @@
-function [grains,I_PC] = merge( grains, propval, varargin )
-% merg grains by boundary criterion
+function [grains,I_PC] = merge(grains, property, varargin)
+% merge grains with special boundary
+%
+% The function merges grains where the special boundary is determined by
+% the function <GrainSet.specialBoundary.html specialBoundary>
 %
 %% Input
 % grains  - @GrainSet
-% propval - double | @quaternion | @rotation | @orientation | @Miller
+% property - colorize a special grain boundary property, variants are:
+%
+%    * double -- a single number for which the misorientation  angle is lower or
+%            an interval [a b]
+%
+%    *  @quaternion | @rotation | @orientation -- plot grain boundaries with
+%            a specified misorientation
+%
+%            plot(grains,'property',...
+%               rotation('axis',zvector,'angle',60*degree))
+%
+%    *  @Miller -- plot grain boundaries such as specified
+%            crystallographic face are parallel. use with option 'delta'
+%
+%    *  @vector3d -- axis of misorientation
 %
 %% Options
-% delta - searching radius in radians
-% TripleJunctionCondition - merge only if criterion @rotation is satisfied by triple junction grains
+%  delta - specify a searching radius for special grain boundary
+%            (default 5 degrees), if a orientation or crystallographic face
+%            is specified.
+%
+%  ExclusiveGrains - a subset of grains of the given grainset marked in a
+%    logical Nx1 array
+%
+%  ExclusiveNeighborhoods - an adjacency matrix of neighbored grains or a
+%    Nx2 array indexing the neigborhoods
+%
+%  TripleJunction - return faces between two adjacent grains satisfying the
+%    input property, if there is a triple junction with a thrid grain,
+%    satisfying the property specified after TripleJunction.
+%
+%  ThirdCommonGrain - return faces between two adjacent grains satisfying the
+%    input property, if there is a third commongrain, satisfying the
+%    property specified after ThirdCommonGrain.
 %
 %% Output
 % grains - @GrainSet
 % I_PC   - incidence matrix with Parents x Childs
 %
 %% Syntax
-%  g = merge(grains,[0 10]*degree) - merges grains whos misorientation angle lies between 0 and 10 degrees
-%  g = merge(grains,CSL(3))        - merges grains with special boundary CSL3
+% [g,I_PC] = merge(grains,property,...,param,val,...) - merges neighbored grains
+%   whos common boundary satisfies |property| and returns also an matrix
+%   parents vs. childs
+%
+% g = merge(grains,[0 10]*degree) - merges grains whos misorientation angle
+%  lies between 0 and 10 degrees
+%
+% g = merge(grains,CSL(3))        - merges grains with special boundary CSL3
 %
 %% See also
-% calcGrains
+% EBSD/calcGrains GrainSet/specialBoundary
 
-property = class(propval);
+%% Determine the boundaries, which should be merged
 
-%% properties of ebsd
+f = specialBoundary(grains,property,varargin{:},'PhaseRestricted');
 
-phase = get(grains.EBSD,'phase');
-phaseMap = get(grains,'phaseMap');
-
-CS = get(grains,'CSCell');
-SS = get(grains,'SS');
-r         = get(grains.EBSD,'quaternion');
-phase     = get(grains.EBSD,'phase');
-isIndexed = ~isNotIndexed(grains.EBSD);
-
-%% adjacent cells on grain boundary
-
+% delete faces that satisfy the criterion
 I_FD = grains.I_FDext | grains.I_FDsub;
-
-sel = find(sum(I_FD,2) == 2);
-[d,i] = find(I_FD(sel,any(grains.I_DG,2))');
-Dl = d(1:2:end); Dr = d(2:2:end);
-
-%% restrict to possible merge candidates, i.e same phase and indexed
-% delete adjacenies between different phase and not indexed measurements
-
-f = sel(i(1:2:end));
-use = phase(Dl) == phase(Dr) & isIndexed(Dl) & isIndexed(Dr);
-
-Dl = Dl(use); Dr = Dr(use);
-phase = phase(Dl);
-f = f(use);
-
-%% find and delete adjacencies
-
-epsilon = get_option(varargin,{'deltaAngle','angle','delta'},2*degree,'double');
-
-
-triplet = get_option(varargin,{'TripleJunction','TripleJunctions','TripleJunctionCondition'},[]);
-
-for p=1:numel(phaseMap)
-  currentPhase = phase == phaseMap(p);
-  if any(currentPhase)
-    
-    o_Dl = orientation(r(Dl(currentPhase)),CS{p},SS);
-    o_Dr = orientation(r(Dr(currentPhase)),CS{p},SS);
-    
-    m  = o_Dl.\o_Dr; % misorientation
-    
-    dm = doMerge(m,property,propval,epsilon);
-    prop(currentPhase,:) = dm;
-    
-    if ~isempty(triplet)
-      dm(~dm) = doMerge(m(~dm),class(triplet),triplet,epsilon);
-      trip(currentPhase,:) = dm;
-    end
-  end
-end
-
-
-if ~isempty(triplet)
-  [nf,nd] = size(I_FD);
-  
-  % boundary criterion meet at neighbored measurements not part of the current
-  trip(prop) = 0;
-  
-  % faces incident to measurements satisfying the merge criterion
-  I_FDprop = sparse(f(prop),Dl(prop),1,nf,nd) | ...
-    sparse(f(prop),Dr(prop),1,nf,nd);
-  
-  % faces incident to measurements satisfying the triple junction criterion
-  I_FDtrip = sparse(f(trip),Dl(trip),1,nf,nd) | ...
-    sparse(f(trip),Dr(trip),1,nf,nd);
-  
-  % adjacent grains which should be merged
-  I_FGprop = I_FDprop*double(grains.I_DG);
-  A_Gprop  = I_FGprop'*I_FGprop;
-  A_Gprop  = A_Gprop - diag(diag(A_Gprop)); % no self reference
-  
-  % adjacent grains satisfying the junction criterion
-  I_FGtrip = I_FDtrip*double(grains.I_DG);
-  A_Gtrip  = I_FGtrip'*I_FGtrip;
-  A_Gtrip  = A_Gtrip - diag(diag(A_Gtrip)); % no self reference
-  
-  % pairs of adjacent grains
-  [Gl,Gr] = find(A_Gprop);
-  
-  % check if neighbored grains that should be merged have a common grain,
-  % that satisfies the triple junction criterion
-  [Gm,Gp] = find(A_Gtrip(:,Gl) & A_Gtrip(:,Gr));
-  
-  % now find all faces belonging between grains Gl and Gr
-  mergeFaces = any(I_FGprop(:,Gl(Gp)) & I_FGprop(:,Gr(Gp)),2);
-  
-  % delete incidence
-  I_FD(mergeFaces,:) = 0;
-  
-else
-  
-  % delete incidence
-  I_FD(f(prop),:) = 0;
-  
-end
+I_FD(f,:) = false;
 
 %% Resegment   (see calcGrains)
 
@@ -187,7 +131,6 @@ end
 %% update phase
 
 [parent,child] = find(I_PC);
-clear phase
 phase(parent) = grains.phase(child);
 grains.phase = phase;
 
@@ -195,7 +138,12 @@ grains.phase = phase;
 
 unchanged = sum(I_PC,2)==1;  % unchanged
 
-if any(~unchanged) % some of the were merged
+if any(~unchanged) % some of the were merged  
+  
+  CS = get(grains,'CSCell');
+  SS = get(grains,'SS');
+  r  = get(grains.EBSD,'quaternion');
+
   [i,oldval] = find(I_PC(unchanged,:));
   meanRotation(unchanged) = grains.meanRotation(oldval);
   changedI_DG = I_DG(:,~unchanged);
@@ -255,64 +203,3 @@ end
 
 b = b(:);
 
-
-function val = doMerge(m,property,propval,epsilon)
-
-
-switch property
-  
-  case 'double'
-    
-    val = angle(m(:));
-    
-    if numel(propval) == 2   % interval
-      
-      val = min(propval) <= val & val <= max(propval);
-      
-    else
-      
-      val = abs(propval-val)<= epsilon;
-      
-    end
-    
-  case {'quaternion','rotation','orientation','SO3Grid'}
-    
-    val = any(find(m,propval,epsilon),2);
-    
-  case 'vector3d'
-    
-    val = angle(axis(m),propval) < epsilon;
-    
-  case {'miller','cell'}
-    % special rotation, such that m*h_1 = h_2,
-    
-    if strcmp(property,'cell'),
-      h = [propval{[1 end]}];
-    else
-      h = propval;
-    end
-    
-    if isa(h,'Miller')
-      h = ensureCS(get(m,'CS'),ensurecell(h));
-    end
-    
-    h = ensurecell(h);
-    
-    gr = symmetrise(vector3d(h{end}),get(m,'CS'));
-    gh = symmetrise(vector3d(h{1}),get(m,'CS'));
-    
-    p = quaternion(m(:))*gh;
-    if numel(h) > 1
-      p =  [p quaternion(inverse(m(:)))*gh];
-    end
-    
-    val =  false(size(m(:)));
-    for l=1:numel(gr)
-      val = val | min(angle(p,gr(l)),[],2) < epsilon;
-    end
-    
-  otherwise
-    
-    error('unknown property')
-    
-end
