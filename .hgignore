@@ -1,0 +1,19 @@
+relre:help/mtex/helpsearch
+relre:help/mtex/tmp
+relre:help/mtex/html
+relre:help/mtex/demos.xml
+relre:examples/html
+relre:examples/demos.xml
+relre:examples/UsersGuide
+relre:help/mtex/help.jar
+relre:help/mtex/helptoc.xml
+
+syntax: glob
+*.mex*
+*~
+c/bin/*
+VERSION
+*.asv
+*.mat
+*.orig
+*.rej
