@@ -60,7 +60,7 @@ end
 % no options given -> ask
 if ~check_option(varargin,'ColumnNames')
   
-  options = generic_wizard('data',d(1:end<101,:),'type','ODF','header',header,'colums',c);
+  options = generic_wizard('data',d(1:end<101,:),'type','ODF','header',header,'columns',c);
   if isempty(options), odf = []; return; end
   varargin = [options,varargin];
 

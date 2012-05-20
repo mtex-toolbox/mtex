@@ -177,6 +177,7 @@ data = getappdata(gcbf,'data');
 name = get(handles.mineral,'string');
 
 try
+  assert(~isempty(name));
   cif2symmetry(name);
 catch   %#ok<CTCH>
   [fname,pathName] = uigetfile(fullfile(mtexCifPath,'*.cif'),'Select cif File');

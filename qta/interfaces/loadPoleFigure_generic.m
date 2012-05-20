@@ -65,7 +65,7 @@ end
 % no options given -> ask
 if ~check_option(varargin,'ColumnNames')
   
-  options = generic_wizard('data',d,'type','PoleFigure','header',header,'colums',colums);
+  options = generic_wizard('data',d,'type','PoleFigure','header',header,'columns',colums);
   if isempty(options), pf = []; return; end 
   varargin = [options,varargin];
 
