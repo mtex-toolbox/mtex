@@ -35,6 +35,10 @@ if nargin == 1 && size(alpha,2)==3
   
 end
 
+%% may forgotten * degree
+if any([alpha(:);beta(:);gamma(:)] > 9)
+  warning('Some Euler angles appears to be quite large. Maybe you forgot ''* degree'' to switch from degree to radians.');
+end
 
 %% transform to right convention
 
