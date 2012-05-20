@@ -19,6 +19,11 @@ function q = axis2quat(x,y,z,omega)
 %  quaternion/quaternion euler2quat Miller2quat vec42quat hr2quat idquaternion 
 
 if nargin == 4
+  
+  if any(omega(:) > 9)
+    warning('The rotation angle appears to be quite large. Maybe you forgot ''* degree'' to switch from degree to radians.');
+  end
+  
   l = sqrt(x.^2+y.^2+z.^2); % normalization
   a = cos(omega/2);
   b = sin(omega/2).*x ./ l;
@@ -26,6 +31,11 @@ if nargin == 4
   d = sin(omega/2).*z ./ l;
   q = quaternion(a,b,c,d);
 elseif isa(x,'vector3d')
+  
+  if any(y(:) > 9)
+    warning('The rotation angle appears to be quite large. Maybe you forgot ''* degree'' to switch from degree to radians.');
+  end
+  
   x = x ./norm(x);
   q = quaternion(cos(y/2),sin(y/2).* x);
 else
