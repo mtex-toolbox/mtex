@@ -1,7 +1,7 @@
 function h = optiondraw(h,varargin)
 % plot y against x using the options in varargin
 %
-if isempty(h), return; end
+if isempty(h) || isempty(varargin), return; end
 
 options = get_mtex_option('default_plot_options');
 options = {options{:},varargin{:}};
