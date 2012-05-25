@@ -38,28 +38,28 @@ switch plotType
 
   case 'scatter'
   
-    [varargout(1:nargout)] = scatter(ax,v,varargin{:});
+    [varargout{1:nargout}] = scatter(ax,v,varargin{:});
     
   case 'smooth'
     
-    [varargout(1:nargout)] = smooth(ax,v,varargin{:});
+    [varargout{1:nargout}] = smooth(ax,v,varargin{:});
     
   case 'contourf'
     
-    [varargout(1:nargout)] = contourf(ax,v,varargin{:});
+    [varargout{1:nargout}] = contourf(ax,v,varargin{:});
     
   case 'contour'
     
-    [varargout(1:nargout)] = contour(ax,v,varargin{:});
+    [varargout{1:nargout}] = contour(ax,v,varargin{:});
     
   case 'quiver'
     
-    [varargout(1:nargout)] = quiver(ax,v,varargin{:});
+    [varargout{1:nargout}] = quiver(ax,v,varargin{:});
     
 end
 
 if check_option(varargin,{'text','label'})
   hold all
-  [varargout(1:nargout)] = text(ax,v,get_option(varargin,{'text','label'}),varargin{:});
+  [varargout{1:nargout}] = text(ax,v,get_option(varargin,{'text','label'}),varargin{:});
   hold off
 end

@@ -77,7 +77,9 @@ if ~check_option(v,'plot')
   
 end
 
-% no grid -> interpolate
+%% 
+
+cdata = scaleData(cdata,varargin);
 
 
 %% draw contours
@@ -86,8 +88,8 @@ if strcmpi(projection.type,'plain') % plain plot
   
   [xu,yu] = project(v,projection);
   
-  w = reshape(w,size(xu));
-  [CM,h(end+1)] = contourf(ax,xu,yu,w,contours); %#ok<ASGLU>
+  cdata = reshape(cdata,size(xu));
+  [CM,h(end+1)] = contourf(ax,xu,yu,cdata,contours); %#ok<ASGLU>
 
 
 else % spherical plot  
