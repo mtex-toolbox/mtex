@@ -117,5 +117,16 @@ projection.bounds = [min(x(:)),min(y(:)),max(x(:))+projection.offset,max(y(:))];
 set(ax,'XLim',[projection.bounds(1)-1e-4,projection.bounds(3)+1e-4]);
 set(ax,'YLim',[projection.bounds(2)-1e-4,projection.bounds(4)+1e-4]);
 
+% set caxis according to colorrange
+if check_option(varargin,'colorrange','double')
+  cr = get_option(varargin,'colorrange',[],'double');
+  if cr(2)-cr(1) < 1e-15
+    caxis(ax,[min(cr(1),0),max(cr(2),1)]);
+  elseif ~any(isnan(cr))
+    caxis(ax,cr);
+  end
+end
+
+
 %% store data
 setappdata(ax,'projection',projection)
