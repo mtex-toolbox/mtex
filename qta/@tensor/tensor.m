@@ -19,6 +19,8 @@ function T = tensor(M,varargin)
 %% See also
 % ODF/calcTensor EBSD/calcTensor
 
+doubleConvention = check_option(varargin,'doubleConvention');
+
 % conversion from vector3d
 if isa(M,'vector3d')
   
@@ -52,9 +54,9 @@ else
 
   % transform from voigt matrix representation to ordinary rank four tensor
   if numel(T.M) == 36,
-    T.M = tensor24(T.M);
+    T.M = tensor24(T.M,doubleConvention);
   elseif numel(T.M) == 18,
-    T.M = tensor23(T.M,check_option(varargin,'doubleconvention'));
+    T.M = tensor23(T.M,doubleConvention);
   end
 
   % compute the rank of the tensor by finding the last dimension
@@ -65,6 +67,7 @@ end
   
 T.properties = struct;
 T.rank    = get_option(varargin,'rank',r);
+T.doubleConvention = doubleConvention;
 varargin = delete_option(varargin,'rank');
 
 % extract symmetry
@@ -75,12 +78,6 @@ if ~isempty(args)
 else
   T.CS = symmetry;
 end
-
-%
-if check_option(varargin,'doubleconvention')
-  T.properties.doubleconvention = 'true';
-end
-
 
 varargin = delete_option(varargin,{'doubleconvention','singleconvention','InfoLevel'});
 

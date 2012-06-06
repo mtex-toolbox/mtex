@@ -30,6 +30,12 @@ propV = cellfun(@(prop) char(T.properties.(prop)),props,'UniformOutput',false);
 props{end+1} = 'rank'; 
 propV{end+1} = [num2str(T.rank),' (' strrep(int2str(size(T)),'  ',' x ') ')'];
 
+% add double convention
+if T.doubleConvention
+  props{end+1} = 'doubleConvention';
+  propV{end+1} = 'true';
+end
+
 % collect symmetry
 if numel(T.CS) > 1 || ~all(1==norm(get(T.CS,'axis')))
   props{end+1} = 'mineral'; 
@@ -55,10 +61,10 @@ end
 
 if (T.rank == 4) && numel(T.M) == 3^4
   disp(['  tensor in Voigt matrix representation:' s])
-  M = (tensor42(T.M));
+  M = (tensor42(T.M,T.doubleConvention));
 elseif (T.rank == 3) && numel(T.M) == 3^3
   disp(['  tensor in compact matrix form:' s])
-  M = tensor32(T.M,isfield(T.properties,'doubleconvention'));
+  M = tensor32(T.M,T.doubleConvention);
 else
   disp(s)
   M = T.M;
