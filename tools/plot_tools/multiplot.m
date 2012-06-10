@@ -28,21 +28,62 @@ function multiplot(nplots,varargin)
 %% See also
 % S2Grid/plot savefigure   
 
+%% prepare plot
+
 % generate some invisible axes
 for k=1:nplots, a(k) = axes('visible','off'); end %#ok<AGROW>
 
-%     
+
+%% extract data
+if nargin>=2 && isa(varargin{2},'function_handle')
+  data = cell(nplots,1);
+  for k = 1:nplots
+    data{k} = feval(varargin{2},k);
+  end
+  varargin(2) = []; %remove argument
+
+  % for equal colorcoding determine min and max of data 
+  if check_option(varargin,'colorRange',[],'equal')
+    minData = nanmin(cellfun(@(x) nanmin(x(:)),data));
+    maxData = nanmax(cellfun(@(x) nanmax(x(:)),data));
+    
+    % set colorcoding explicitly 
+    varargin = set_option(varargin,'colorRange',[minData maxData]);
+  end  
+else
+  data = [];
+end
+
+%% make plots
 efun = find(cellfun('isclass',varargin,'function_handle'));
 nfun = numel(efun);
 
-% make plots
 for k=1:nplots
   targin = varargin;
   for kfun = 1:nfun
     targin{efun(kfun)} = feval(varargin{efun(kfun)},k);
   end
+  
+  % reinsert data
+  if ~isempty(data), targin = {targin{1},data{k},targin{2:end}};end
+  
   plot(a(k),targin{:});
 end
+
+%% invisible axes for adding a colorbar
+if ~isappdata(gcf,'colorbaraxis')
+  d = axes('visible','off','position',[0 0 1 1],...
+    'tag','colorbaraxis');
+  
+  ch = get(gcf,'children');
+  
+  set(gcf,'children',[ch(ch ~= d);ch(ch == d)]);
+  set(d,'HandleVisibility','callback');
+  
+  setappdata(gcf,'colorbaraxis',d);
+end
+
+%% post process figure
 
 % make axes visible
 for k=1:nplots, set(a(k),'visible','on'); end

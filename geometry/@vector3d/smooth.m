@@ -16,11 +16,8 @@ function varargout = smooth(v,varargin)
 % where to plot
 [ax,v,varargin] = getAxHandle(v,varargin{:});
 
-% extract plot options
-projection = plotOptions(ax,v,varargin{:});
-
-% number of contour lines
-contours = get_option(varargin,'contours',50);
+% extract projection
+projection = getProjection(ax,v,varargin{:});
 
 % initalize handles
 h = [];
@@ -77,10 +74,22 @@ if ~check_option(v,'plot')
   
 end
 
-%% 
 
-cdata = scaleData(cdata,varargin);
+%% scale the data
 
+[cdata,colorRange] = scaleData(cdata,varargin{:});
+if ~any(isnan(colorRange)), caxis(ax,colorRange);end
+
+
+%% compute contour lines
+
+% number of contour lines
+contours = get_option(varargin,'contours',50);
+
+% specify contourlines explicetly
+if length(contours) == 1
+  contours = linspace(colorRange(1),colorRange(2),contours);
+end
 
 %% draw contours
 
@@ -134,6 +143,9 @@ optiondraw(h,'LineStyle','none',varargin{:});
 optiondraw(h,'Fill','on',varargin{:});
 
 %% finalize the plot
+
+% adjust caxis according to colorRange
+if ~any(isnan(colorRange)), caxis(ax,colorRange); end
 
 % plot polar grid
 plotGrid(ax,projection,varargin{:});
