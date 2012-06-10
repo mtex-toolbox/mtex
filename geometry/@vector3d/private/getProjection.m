@@ -1,25 +1,10 @@
-function [projection,colorRange] = plotOptions(ax,v,varargin)
+function projection = getProjection(ax,v,varargin)
 
 % get stored options
 opts = getappdata(ax);
 
 % some basic settings
 set(ax,'dataaspectratio',[1 1 1]);
-
-%% color range
-
-% set caxis according to colorrange
-if check_option(varargin,'colorrange','double')
-  colorRange = get_option(varargin,'colorrange',[],'double');
-  if colorRange(2)-colorRange(1) < 1e-15
-    caxis(ax,[min(colorRange(1),0),max(colorRange(2),1)]);
-  elseif ~any(isnan(colorRange))
-    caxis(ax,colorRange);
-  end
-end
-
-
-%% projection
 
 % if there is already a stored projection use this one
 if isfield(opts,'projection') 

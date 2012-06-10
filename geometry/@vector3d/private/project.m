@@ -105,9 +105,9 @@ function ind = inside(rho,minRho,maxRho)
 minr = mod(minRho+1e-6,2*pi)-3e-6;
 maxr = mod(maxRho-1e-6,2*pi)+3e-6;
 if minr < maxr
-  ind = ~(mod(rho+1e-6,2*pi) < minr | mod(rho-1e-6,2*pi) > maxr);
+  ind = mod(rho-1e-6,2*pi) > minr & mod(rho-1e-6,2*pi) < maxr;
 else
-  ind = ~(mod(rho-1e-6,2*pi) < minr & mod(rho+1e-6,2*pi) > maxr);
+  ind = ~(mod(rho+1e-6,2*pi) > maxr & mod(rho-1e-6,2*pi) < minr);
 end
 
 % inside mean, there is a value of k such that 
