@@ -80,7 +80,7 @@ colorbar('Position',[825 100 300 300])
 figure('position',[100 100  750 300]);
 hold all
 plot(grains({'Andesina','Biotite','Orthoclase'}),'property','phase','FaceAlpha',0.2)
-plot(grains('Quartz-new'),'colorcoding','hkl')
+plot(grains('Quartz'),'colorcoding','hkl')
 legend off
 hold off
 % set(gcf,'renderer','zbuffer')
@@ -93,7 +93,7 @@ hold off
 figure('position',[100 100  750 300]);
 hold all
 plot(grains,'property','phase','FaceAlpha',0.4)
-plotBoundary(grains,'property',Miller(0,0,1),'linewidth',2,'color','red')
+plotBoundary(grains,'property',Miller(0,0,1),'linewidth',2,'linecolor','red')
 hold off
 % set(gcf,'renderer','zbuffer')
 
