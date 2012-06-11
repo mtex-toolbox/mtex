@@ -119,7 +119,7 @@ close, plot(ebsd,'property','mad')
 
 % or
 
-close, plot(ebsd,'property','CI')
+close, plot(ebsd,'property','bc')
 
 %%
 % Here we will use the MAD or CI value to identify and eliminate
@@ -130,14 +130,14 @@ mad = get(ebsd,'mad');
 
 %or
 % % extract the quantity ci 
-ci = get(ebsd,'ci');
+bc = get(ebsd,'bc');
 
 % plot a histogram
 close, hist(mad)
 
 %or
 % plot a histogram
-close, hist(ci)
+close, hist(bc)
 
 
 %%
@@ -146,7 +146,7 @@ close, hist(ci)
 ebsd_corrected = ebsd(mad<1)
 
 % take only those measurements with CI higher then 0.1 or 0.2
-ebsd_corrected = ebsd(ci>0.1 )
+ebsd_corrected = ebsd(bc>0.1 )
 
 %%
 %
