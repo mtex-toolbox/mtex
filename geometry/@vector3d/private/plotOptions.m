@@ -77,7 +77,7 @@ if check_option(varargin,'south') && isnumeric(maxTheta) && ...
 end
 
 %% read default plot options
-plotOptions = get_mtex_option('default_Plot_Options');
+plotOptions = getpref('mtex','defaultPlotOptions');
 
 projection.minTheta = minTheta;
 projection.minRho = minRho;

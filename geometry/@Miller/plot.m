@@ -13,6 +13,7 @@ function plot(m,varargin)
 %% See also
 % vector3d/plot
 
+%% kernel density estimation
 if check_option(varargin,{'smooth','contourf','contour'})
   
   o = extract_option(m,'antipodal');
@@ -28,7 +29,7 @@ if check_option(varargin,{'smooth','contourf','contour'})
   return
 end
 
-
+%% if there are to much points - plot them as vector3d
 if numel(m) > 20
   
   if check_option(varargin,{'ALL','symmetrised'})  
@@ -39,6 +40,8 @@ if numel(m) > 20
   
   return
 end
+
+%% if there only a few points plots them with different colors
 
 % store hold status
 washold = ishold;
