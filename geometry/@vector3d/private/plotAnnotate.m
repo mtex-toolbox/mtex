@@ -16,10 +16,10 @@ if isempty(t)
   t = structfun(@(x) st2char(x), t,'UniformOutput',false);
   
   m = 0.005;
-  if check_mtex_option('noLaTex')
-    b = 0;
-  else
+  if strcmpi(getpref('mtex','textInterpreter'),'LaTex')
     b = 0.015;
+  else
+    b = 0;
   end
   
   TL = text(0+m,1-b,t.TL,'parent',ax,'units','normalized');
@@ -34,13 +34,9 @@ if isempty(t)
   set([TR BR],'HorizontalAlignment','right');
   
   t.h = [TL TR BL BR];
-  if check_mtex_option('noLaTex')
-    set(t.h,'interpreter','tex');
-  else
-    set(t.h,'interpreter','latex');
-  end
-  
-  opts = get_mtex_option('default_plot_options');
+  set(t.h,'interpreter',getpref('mtex','textInterpreter'));
+    
+  opts = getpref('mtex','defaultPlotOptions');
   
   optiondraw(t.h,varargin{:},opts{:},'FontName','times');
   
@@ -67,13 +63,9 @@ function s = st2char(t)
 
 if isa(t,'Miller') || isa(t,'vector3d')
   for i = 1:length(t)
-    if isOctave()
-      s{i} =  char(subsref(t,i));
-    elseif check_mtex_option('noLaTex')
-      s{i} = char(subsref(t,i),'Tex');
-    else
-      s{i} = ['$' char(subsref(t,i),'LaTex') '$'];
-    end
+    
+    s{i} = char(subsref(t,i),getpref('mtex','textInterpreter')); %#ok<AGROW>
+        
   end
 else
   if iscell(t)
@@ -83,7 +75,7 @@ else
   else
     s = t;
   end
-  if ~check_mtex_option('noLaTex')
+  if strcmpi(getpref('mtex','textInterpreter'),'LaTex')
     if ~iscell(s) && ~isempty(regexp(s,'[\\\^_]','ONCE'))
       s = ['$' s '$'];
     end
