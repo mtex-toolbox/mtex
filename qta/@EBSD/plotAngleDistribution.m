@@ -14,42 +14,57 @@ function plotAngleDistribution( ebsd, varargin )
 % EBSD/calcAngleDistribution
 %
 
-varargin = set_default_option(varargin,...
-  get_mtex_option('default_plot_options'));
-
-%% make new plot
-newMTEXplot;
-
 %% get phases
 
 ind = cellfun(@(c) isa(c,'EBSD'),varargin);
 if any(ind)
   ebsd2 = varargin{find(ind,1)};
+  varargin = varargin(~ind);
 else
   ebsd2 = ebsd;
 end
 
+
+if nargin>1 && isscalar(varargin{1})
+  bins = varargin{1};
+else
+  bins = 20;
+end
+
+%% make new plot
+
+
+varargin = set_default_option(varargin,...
+  getpref('mtex','defaultPlotOptions'));
+
+newMTEXplot;
+
+%%
+
+ebsd  = subsref(ebsd,~isNotIndexed(ebsd));
+ebsd2 = subsref(ebsd2,~isNotIndexed(ebsd2));
+
 phases1 = get(ebsd,'phase');
-ph1 = unique(phases1(phases1>0));
+ph1 = unique(phases1);
 
 phases2 = get(ebsd2,'phase');
-ph2 = unique(phases2(phases2>0));
+ph2 = unique(phases2);
 
-ph = unique([ph1,ph2]);
+[ph phpos] = unique([ph1,ph2],'first');
 for j = 1:numel(ph)
   if ismember(ph(j),ph1)
-    obj{ph(j)} = subsref(ebsd,phases1 == ph(j)); %#ok<AGROW>
+    obj{phpos(j)} = subsref(ebsd,phases1 == ph(j)); %#ok<AGROW>
   else
-    obj{ph(j)} = subsref(ebsd2,phases2 == ph(j)); %#ok<AGROW>
+    obj{phpos(j)} = subsref(ebsd2,phases2 == ph(j)); %#ok<AGROW>
   end
-  mineral{ph(j)} = get(obj{ph(j)},'mineral'); %#ok<AGROW>
+  mineral{phpos(j)} = get(obj{phpos(j)},'mineral'); %#ok<AGROW>
   if check_option(varargin,{'ODF','MDF'})
-    obj{ph(j)} = calcODF(obj{ph(j)},'Fourier','halfwidth',10*degree,varargin{:}); %#ok<AGROW>
+    obj{phpos(j)} = calcODF(obj{phpos(j)},'Fourier','halfwidth',10*degree,varargin{:}); %#ok<AGROW>
   end
 end
 
 % all combinations of phases
-[ph1,ph2] = meshgrid(ph1,ph2);
+[ph1,ph2] = meshgrid(phpos(ismember(ph,ph1)),phpos(ismember(ph,ph2)));
 ph1 = ph1(tril(ones(size(ph1)))>0);
 ph2 = ph2(tril(ones(size(ph2)))>0);
 
@@ -65,10 +80,12 @@ for j = 1:length(CS)
   end
 end
 
+
+
 if check_option(varargin,{'ODF','MDF'})
-  omega = linspace(0,maxomega,50);
+  omega = linspace(0,maxomega,bins);
 else
-  omega = linspace(0,maxomega,20);
+  omega = linspace(0,maxomega,bins);
 end
 
 %% compute angle distributions
@@ -76,25 +93,25 @@ end
 f = zeros(numel(omega),numel(ph1));
 
 for i = 1:numel(ph1)
-  
+
   f(:,i) = calcAngleDistribution(obj{ph1(i)},obj{ph2(i)},'omega',omega,varargin{:});
   f(:,i) = 100*f(:,i) ./ sum(f(:,i));
-  
+
   lg{i} = [mineral{ph1(i)} ' - ' mineral{ph2(i)}]; %#ok<AGROW>
 end
 
 %% plot
 
 if check_option(varargin,{'ODF','MDF'})
-  
+
   p = findobj(gca,'Type','patch');
-    
+
   if ~isempty(p)
-    faktor = size(f,1) / size(get(p(1),'faces'),1);    
+    faktor = size(f,1) / size(get(p(1),'faces'),1);
   else
     faktor = size(f,1);
   end
-  
+
   optiondraw(plot(omega/degree,faktor * max(0,f)),'LineWidth',2,varargin{:});
 else
   optiondraw(bar(omega/degree,f),'BarWidth',1.5,varargin{:});
@@ -104,4 +121,4 @@ xlabel('misorientation angle in degree')
 xlim([0,max(omega)/degree])
 ylabel('percent')
 
-legend(lg{:})
+legend(lg{:},'Location','northwest')

@@ -23,12 +23,12 @@ packList = {};
 for currentDir=getSubDirs(mtex_path)
   files = dir(currentDir{:});
   relPath = relativePath(currentDir{:});
-  
+
   for l = find(~[files.isdir])
-    file = fullfile(relPath,files(l).name);    
+    file = fullfile(relPath,files(l).name);
     if isValid(file)
       packList{end+1} = file;
-    end   
+    end
   end
 end
 
@@ -50,7 +50,7 @@ if fid>0
 end
 % end
 
-verRev = strtrim(regexprep(lower(get_mtex_option('version')),'mtex',''));
+verRev = strtrim(regexprep(lower(getpref('mtex','version')),'mtex',''));
 if rev > 0
   verRev = [verRev '.' num2str(rev)];
 end

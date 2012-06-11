@@ -6,12 +6,12 @@ close all
 
 %%
 
-plotx2east 
+plotx2east
 
 global mtex_progress;
 mtex_progress = 0;
 
-set_mtex_option('generate_help',true);
+setpref('mtex','generatingHelpMode',true);
 set(0,'FormatSpacing','compact')
 
 c = get(0,'DefaultFigureColor');
@@ -19,7 +19,7 @@ set(0,'DefaultFigureColor','white');
 
 
 %% DocFiles
-% 
+%
 
 mtexFunctionFiles = [...
   DocFile( fullfile(mtex_path,'qta')) ...
@@ -48,11 +48,11 @@ tempDir = fullfile(mtex_path,'help','tmp');
 
 
 %%
-% 
+%
 
 makeToolboxXML('name','MTEX',...
   'fullname','<b>MTEX</b> - A MATLAB Toolbox for Quantitative Texture Analysis',...
-  'versionname',get_mtex_option('version'),...
+  'versionname',getpref('mtex','version'),...
   'procuctpage','mtex_product_page.html')
 
 
@@ -124,7 +124,7 @@ view(mtexExampleFiles,outputDir);
 
 deadlink(mtexDocFiles,outputDir);
 
-%% Enable search in documentation 
+%% Enable search in documentation
 % (also F1 Help in recent matlab)
 
 builddocsearchdb(outputDir);
@@ -137,6 +137,6 @@ system(['jar -cf ' fullfile(docPath,'help.jar') ' -C ' outputDir ' .']);
 
 %% set back mtex options
 
-set_mtex_option('generate_help',false);
+setpref('mtex','generatingHelpMode',false);
 
 

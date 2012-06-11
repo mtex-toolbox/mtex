@@ -23,17 +23,19 @@ function wigner = Wigner3j( j123, m123 )
 j1 = j123(1); j2 = j123(2); j3 = j123(3);
 m1 = m123(1); m2 = m123(2); m3 = m123(3);
 
+wigner = 0;
+
 % Input error checking
 if any( j123 < 0 )
-    error( 'The j must be non-negative' )
+  return;
 elseif any( rem( [j123, m123], 0.5 ) )
-    error( 'All arguments must be integers or half-integers' );
+  return;
 elseif any( rem( (j123 - m123), 1 ) | ( abs( m123 ) > j123 ) )
-    error( 'j123 and m123 do not match' );
+  return;
 elseif ( j3 > (j1 + j2) ) || ( j3 < abs(j1 - j2) )
-    error( 'j3 is out of bounds' );
+  return;
 elseif m1 + m2 + m3 ~= 0
-    error( 'm3 does not match m1 + m2' );
+  return;
 end
 
 % Simple common case

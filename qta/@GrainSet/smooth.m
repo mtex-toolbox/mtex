@@ -17,6 +17,7 @@ I_VF = sparse(f,reshape(i,[],size(F,2)),1,size(V,1),size(F,1));
 
 % adjacent vertices
 A_V = I_VF*I_VF';
+t = size(A_V,1);
 
 if isa(grains,'Grain2d')
   A_V = double(A_V == 1);
@@ -61,6 +62,10 @@ for l=1:iter
   m = sum(A_V,2);
   
   dV = V(isNotZero,:)-bsxfun(@rdivide,Vt(isNotZero,:),m(isNotZero,:));
+  
+  isZero = any(~isfinite(dV),2);
+  dV(isZero,:) = 0;
+  
   V(isNotZero,:) = V(isNotZero,:) - lambda*dV;
   
 end

@@ -3,12 +3,12 @@ function h = optiondraw(h,varargin)
 %
 if isempty(h) || isempty(varargin), return; end
 
-options = get_mtex_option('default_plot_options');
+options = getpref('mtex','defaultPlotOptions');
 options = {options{:},varargin{:}};
 
 % extract prefix masked options
 if check_option(varargin,'prefix')
-  
+
   prefix = get_option(varargin,'prefix');
   options = delete_option(options,'prefix',1);
 
@@ -21,7 +21,7 @@ if check_option(varargin,'prefix')
       options(i) = [];
     end
   end
- 
+
 end
 
 % extract options

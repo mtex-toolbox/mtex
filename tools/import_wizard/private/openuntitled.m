@@ -5,7 +5,7 @@ if ~isempty(err)
   local_display_mcode(str,'cmdwindow');  %??
 end
 
-if ~get_mtex_option('SaveToFile',false)
+if ~getpref('mtex','SaveToFile')
   try
     EditorServices = com.mathworks.mlservices.MLEditorServices;
     if ~verLessThan('matlab','7.11')
@@ -14,7 +14,7 @@ if ~get_mtex_option('SaveToFile',false)
       EditorServices.newDocument(str,true);
     end
   catch %#ok<CTCH>
-    set_mtex_option('SaveToFile',true);
+    setpref('mtex','SaveToFile',true);
     openuntitled( str, fname );
   end
 else

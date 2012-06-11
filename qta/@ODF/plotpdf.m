@@ -11,7 +11,7 @@ function plotpdf(odf,h,varargin)
 %  c   - structure coefficients
 %
 %% Options
-%  RESOLUTION    - resolution of the plots 
+%  RESOLUTION    - resolution of the plots
 %  SUPERPOSITION - plot superposed pole figures
 %
 %% Flags
@@ -20,7 +20,7 @@ function plotpdf(odf,h,varargin)
 %
 %% See also
 % S2Grid/plot annotate savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
-% SphericalProjection_demo 
+% SphericalProjection_demo
 
 %% check input
 
@@ -47,7 +47,7 @@ end
 
 % default options
 varargin = set_default_option(varargin,...
-  get_mtex_option('default_plot_options'));
+  getpref('mtex','defaultPlotOptions'));
 
 
 %% make new plot

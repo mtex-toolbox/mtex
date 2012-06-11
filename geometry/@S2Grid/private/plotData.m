@@ -13,7 +13,7 @@ h = [];
 plottype = get_flag(varargin,{'CONTOUR','CONTOURF','SMOOTH','SCATTER','TEXTUREMAP','rgb','LINE'});
 
 if ~check_option(varargin,'gray')
-  set(gcf,'colormap',get_mtex_option('defaultColorMap','default'));
+  set(gcf,'colormap',getpref('mtex','defaultColorMap','default'));
 end
 
 %% round data for faster plotting
@@ -35,7 +35,7 @@ end
 
 %%
 
-if check_option(varargin,'correctContour')  
+if check_option(varargin,'correctContour')
   X = [X;X(1,:)];
   Y = [Y;Y(1,:)];
   data = [data;data(1,:)];
@@ -43,24 +43,24 @@ end
 
 %% Quiver plot
 if isa(data,'vector3d')
-  
+
   mhs = get_option(varargin,'MaxHeadSize',0.2);
-  
+
   [theta,rho] = polar(data);
   [dx,dy] = projectData(theta,rho,'antipodal');
-  
+
   dx = reshape(dx./10,size(X));
   dy = reshape(dy./10,size(X));
-  
+
   optiondraw(quiver(X,Y,dx,dy,0.125 * (1+(mhs~=0)) ,'MaxHeadSize',mhs),varargin{:});
-  
-  if mhs == 0 
+
+  if mhs == 0
 %    [theta,rho] = polar(-data);
 %    [dx,dy] = projectData(theta,rho,'antipodal');
-%  
+%
 %    dx = reshape(dx./10,size(X));
 %    dy = reshape(dy./10,size(X));
-  
+
     optiondraw(quiver(X,Y,-dx,-dy,0.125,'MaxHeadSize',0),varargin{:});
   end
 %% contour plot
@@ -73,22 +73,22 @@ elseif any(strcmpi(plottype,'TEXTUREMAP'))
 
 %% rgb plot
 elseif any(strcmpi(plottype,'rgb'))
-  
+
   set(gcf,'renderer','zBuffer');
   surf(X,Y,zeros(size(X)),real(data))
   shading interp
-       
-  
+
+
 %% contour plot
-elseif any(strcmpi(plottype,{'CONTOUR','CONTOURF'})) 
+elseif any(strcmpi(plottype,{'CONTOUR','CONTOURF'}))
 
   set(gcf,'Renderer','painters');
   contours = get_option(varargin,{'contourf','contour'},{},'double');
   if ~isempty(contours), contours = {contours};end
-  
+
   opt = {};
   if check_option(varargin,'CONTOURF') % filled contour plot
-  
+
     if numel(unique(data)) == 1
       fill(X,Y,data,'LineStyle','none');
     else
@@ -104,7 +104,7 @@ elseif any(strcmpi(plottype,{'CONTOUR','CONTOURF'}))
 
 %% smooth plot
 elseif any(strcmpi(plottype,'SMOOTH'))
-  
+
   if check_option(varargin,'interp')   % interpolated
 
     h = pcolor(X,Y,data);
@@ -118,9 +118,9 @@ elseif any(strcmpi(plottype,'SMOOTH'))
     else
       set(gcf,'Renderer','painters');
     end
-        
-  else  
-    
+
+  else
+
     set(gcf,'Renderer','painters');
     if isappr(min(data(:)),max(data(:))) % empty plot
       ind = convhull(X,Y);
@@ -131,16 +131,16 @@ elseif any(strcmpi(plottype,'SMOOTH'))
     end
 
   end
-  
+
 %% line plot
 elseif any(strcmpi(plottype,{'LINE'}))
 
   lastwarn('')
-  set(gcf,'Renderer','Painters');  
+  set(gcf,'Renderer','Painters');
 
   % get options
   options = {};
-  
+
   inBounds = find(abs(diff(X(:)))>.15 | abs(diff(Y(:)))>.15);
   if ~isempty(inBounds)
     inBounds = [0; inBounds; numel(X)];
@@ -150,23 +150,23 @@ elseif any(strcmpi(plottype,{'LINE'}))
         h(k) = line('XData',X(ndBounds),'YData',Y(ndBounds));
       end
     end
-    
+
   else
     if ~isempty(X)
       h = line('XData',X,'YData',Y);
     end
   end
   optiondraw(h,varargin{:});
-  
+
 
 %% scatter plots
-else 
+else
   lastwarn('')
-  set(gcf,'Renderer','Painters');  
+  set(gcf,'Renderer','Painters');
 
   % get options
   options = {};
-  
+
   % restrict to plotted region
   if check_option(varargin,'annotate')
     x = get(gca,'xlim');
@@ -180,18 +180,18 @@ else
   % Marker Size
   res = get_option(varargin,'scatter_resolution',10*degree);
   defaultMarkerSize = min(8,max(1,50*res));
-  
+
   if check_option(varargin,'dynamicMarkerSize')
     options = {'tag','scatterplot','UserData',get_option(varargin,'MarkerSize',min(8,50*res))/50};
   end
 
   if ~isempty(data) && isa(data,'double') % data colored markers
-    
+
     range = get_option(varargin,'colorrange',...
       [min(data(data>-inf)),max(data(data<inf))],'double');
-    
+
     in_range = data >= range(1) & data <= range(2);
-    
+
     % draw out of range markers
     if any(~in_range)
       h(2) = patch(X(~in_range),Y(~in_range),1,...
@@ -204,8 +204,8 @@ else
       X = X(in_range);
       Y = Y(in_range);
       data = data(in_range);
-    end    
-    
+    end
+
   else
 
     if ~isempty(data) % labels plot
@@ -227,10 +227,10 @@ else
 %      set(cax,'visible','off');
 %    end
   end
-    
+
   MFC = get_option(varargin,{'MarkerFaceColor','MarkerColor'},'flat');
   MEC = get_option(varargin,{'MarkerEdgeColor','MarkerColor'},MFC);
-  
+
   % draw markers
   if ~isempty(X)
     h(1) = patch(X,Y,data,...
@@ -254,7 +254,7 @@ else
         options{:});
     end
 
-  end  
+  end
 end
 
 % control legend entry

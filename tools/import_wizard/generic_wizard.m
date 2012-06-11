@@ -23,7 +23,7 @@ else
 end
 
 header = get_option(varargin,'header',[]);
-colums = get_option(varargin,'colums',[]);
+columns = get_option(varargin,'columns',[]);
 
 if check_option(varargin,'type')
   type = get_option(varargin,'type');
@@ -81,8 +81,8 @@ uicontrol('Parent',htp,'Style','Text','Position',[dw,h-120,w-2*dw,50],...
   'However the following ', ...
   ' data matrix was extracted from the file.']);
 
-if ~isempty(colums) && length(colums) == y
-  colnames = colums;
+if ~isempty(columns) && length(columns) == y
+  colnames = columns;
 else
   for k=1:y, colnames{k} = ['Column ' int2str(k)]; end; %#ok<AGROW>
 end
@@ -95,6 +95,9 @@ uitable(v0{:},'Parent',htp,'Data',data(1:end<101,:),...
 uicontrol('Parent',htp,'Style','Text','Position',[dw,h-(tb+120+25),w-2*dw,20],...
   'HorizontalAlignment','left',...
   'String','Please specify for each column how it should be interpreted!');
+
+% strip non literal characters from columnames
+colnames = regexprep(colnames,'\W','');
 
 % guess columnames
 cdata = guessColNames(values,size(data,2),colnames);
@@ -126,7 +129,7 @@ if strcmp(type,'PoleFigure')
 else
   
   % Euler Angles
-  chk_angle = uibuttongroup('Parent',htp,'title','Convention of Rotation','units','pixels',...
+  chk_angle = uibuttongroup('Parent',htp,'title','Euler Angles','units','pixels',...
     'position',[dw h-(tb+260) 4*cw+dw 45]);
   
   euler_convention = uicontrol('Style', 'popup',...

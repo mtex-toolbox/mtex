@@ -10,12 +10,18 @@ varargin(cellfun('isempty',varargin)) = [];
 ebsd = varargin{1};
 
 for i = 2:length(varargin)
-
+    
   for fn = fieldnames(ebsd.options)'
     cfn = char(fn);
     ebsd.options.(cfn) = vertcat(ebsd.options.(cfn),varargin{i}.options.(cfn));
   end
+  ebsd.phaseMap = vertcat(ebsd.phaseMap,varargin{i}.phaseMap);
+  ebsd.CS = horzcat(ebsd.CS,varargin{i}.CS);
   ebsd.rotations = vertcat(ebsd.rotations,varargin{i}.rotations);
   ebsd.phase =  vertcat(ebsd.phase,varargin{i}.phase);
 
 end
+
+[ebsd.phaseMap b] = unique(ebsd.phaseMap);
+ebsd.CS = ebsd.CS(b);
+

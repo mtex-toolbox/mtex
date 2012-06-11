@@ -135,7 +135,7 @@ catch %#ok<*CTCH>
     sym = findsymmetry(hms2point(name));
   catch
     try % may be it is a cif file
-      s = cif2symmetry(name,varargin{:});
+      s = loadCIF(name,varargin{:});
       return;
     catch
     end

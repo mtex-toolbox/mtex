@@ -6,13 +6,13 @@ if check_option(varargin,'file')
   fnames = {[fnames,ext]};
   pathname = [pathname,filesep];
 else
-  dataPath = get_mtex_option('ImportWizardPath',str2func(['mtex' type 'Path']));
+  dataPath = getpref('mtex','ImportWizardPath');
   if isa(dataPath,'function_handle')
     dataPath = feval(dataPath);
   elseif strcmpi(dataPath,'workpath')
     dataPath = getappdata(list_handle,'workpath');
   end
-  
+
   [fnames,pathname] = uigetfile( mtexfilefilter(),...
     'Select Data files',...
     'MultiSelect', 'on',dataPath);
@@ -34,36 +34,36 @@ interface = getappdata(list_handle,'interface');
 pause(0.1);
 
 for i=1:length(fnames)
-  
+
   if ~isempty(interface)
     interf = {'interface',interface};
   else
     interf = {};
   end
-  
+
   %% try to load one file
-  
+
   try
     [newData interface options idata] = loadData(strcat(pathname,fnames(i)),type,interf{:},options{:});
   catch e %#ok<CTCH>
     errordlg(e.message);
     break;
   end
-  
+
   if ~isempty(newData)
     oldData = getappdata(list_handle,'data');
-    
+
     assertCS(oldData,newData);
-    
+
     % store data
     setappdata(list_handle,'data',[oldData,newData]);
     setappdata(list_handle,'idata',[getappdata(list_handle,'idata'),idata]);
     setappdata(list_handle,'filename',[getappdata(list_handle,'filename'),strcat(pathname,fnames(i))]);
-    
+
     % update file list
     set(list_handle, 'String',path2filename(getappdata(list_handle,'filename')));
     set(list_handle, 'Value',1);
-    
+
     handles = getappdata(gcf,'handles');
     if isa(newData,'ODF')
       if check_option(newData,'interp')
@@ -75,8 +75,8 @@ for i=1:length(fnames)
       end
     end
 
-    
-    
+
+
     drawnow; pause(0.01);
   end
 end
