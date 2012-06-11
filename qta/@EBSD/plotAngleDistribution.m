@@ -25,7 +25,7 @@ else
 end
 
 
-if nargin>1 && isscalar(varargin{1})
+if numel(varargin)>1 && isscalar(varargin{1})
   bins = varargin{1};
 else
   bins = 20;
