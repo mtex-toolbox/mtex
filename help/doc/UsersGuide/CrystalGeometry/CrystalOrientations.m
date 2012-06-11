@@ -161,7 +161,7 @@ angle(rotation(o),rotation(o1)) /degree
 %
 % Beside the standard linear algebra operations there are also the
 % following functions available in MTEX:
-
+% 
 % <quaternion.angle.html angle(o)> and
 % <quaternion.axis.html axis(o)> 
 
