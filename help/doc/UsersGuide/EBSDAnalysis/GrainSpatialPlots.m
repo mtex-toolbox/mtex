@@ -76,7 +76,7 @@ colormap(gray)
 
 grains_selection = grains( grainSize(grains) == 1) ;
 
-hold on, plotBoundary(grains_selection,'color','r','linewidth',2)
+hold on, plotBoundary(grains_selection,'linecolor','r','linewidth',2)
 
 %% Visualizing special grain boundaries
 % Most interesting is a closer look at special grain boundaries. This can
@@ -87,7 +87,7 @@ hold on, plotBoundary(grains_selection,'color','r','linewidth',2)
 % interest.
 
 close,   plot(grains,'translucent',.3)
-hold on, plotBoundary(grains,'property','phase','color','r','linewidth',1.5)
+hold on, plotBoundary(grains,'property','phase','linecolor','r','linewidth',1.5)
 
 
 %%
@@ -102,7 +102,7 @@ close, plotBoundary(grains,'property','phasetransition')
 % are somehow conneted by a lattice rotation within a grain.
 
 close,   plotBoundary(grains,'external')
-hold on, plotBoundary(grains,'internal','color','r','linewidth',2)
+hold on, plotBoundary(grains,'internal','linecolor','r','linewidth',2)
 
 %%
 % We also want to see the rotation within the grain.
@@ -126,15 +126,17 @@ hold on, plotBoundary(grains,'property','misorientation','colorcoding','hkl','r'
 
 %% SUB: Classifing special boundaries
 % Actually, it might be more informative, if we classify the grain
-% boundaries after some special property.
+% boundaries after some special property. This is done by the command
+% <GrainSet.specialBoundary.html specialBoundary>, which will be invoked
+% by the plotting routine.
 %%
 % We can mark grain boundaries after its misorientation angle is in a
 % certain range
 
-plotBoundary(grains,'color','k')
-hold on, plotBoundary(grains,'property',[10 15]*degree,'color','b','linewidth',2)
-hold on, plotBoundary(grains,'property',[ 5 10]*degree ,'color','g','linewidth',2)
-hold on, plotBoundary(grains,'property',[ 2  5]*degree  ,'color','r','linewidth',2)
+close, plotBoundary(grains,'linecolor','k')
+hold on, plotBoundary(grains,'property',[10 15]*degree,'linecolor','b','linewidth',2)
+hold on, plotBoundary(grains,'property',[ 5 10]*degree,'linecolor','g','linewidth',2)
+hold on, plotBoundary(grains,'property',[ 2  5]*degree,'linecolor','r','linewidth',2)
 
 legend('>15^\circ',...
   '10^\circ-15^\circ',...
@@ -144,24 +146,28 @@ legend('>15^\circ',...
 %%
 % Or we mark the rotation axis of the misorientation.
 
-plotBoundary(grains)
+close, plotBoundary(grains)
 hold on
-plotBoundary(grains,'property',vector3d(1,1,1),'delte',2*degree,...
-  'color','b','linewidth',1.5)
+plotBoundary(grains,'property',vector3d(1,1,1),'delta',2*degree,...
+  'linecolor','b','linewidth',1.5)
 
 legend('>2^\circ',...
   '[111]')
 
 %% 
-% Or we mark a special rotation between neighboured grains.
+% Or we mark a special rotation between neighboured grains. If a
+% linecolor is not specified, then the boundary is colorcoded after its angular
+% difference to the given rotation.
 
 rot = rotation('axis',vector3d(1,1,1),'angle',60*degree);
 
 close,   plotBoundary(grains)
-hold on, plotBoundary(grains,'property',rot,'color','b','linewidth',2)
+hold on, plotBoundary(grains,'property',rot,'linewidth',1.5)
+% hold on, plotBoundary(grains,'property',rot,'linecolor','b','linewidth',1)
 
 legend('>2^\circ',...
   '60^\circ/[001]')
+colorbar
 
 %%
 % In the same manner, we can classify after predefined special rotations,
@@ -172,13 +178,13 @@ legend('>2^\circ',...
 
 close ,  plotBoundary(grains,'color','k')
 hold on, plotBoundary(grains,'property',CSL(3),'delta',2*degree,...
-  'color','b','linewidth',2)
+  'linecolor','b','linewidth',2)
 hold on, plotBoundary(grains,'property',CSL(5),'delta',4*degree,...
-  'color','m','linewidth',2)
+  'linecolor','m','linewidth',2)
 hold on, plotBoundary(grains,'property',CSL(7),'delta',4*degree,...
-  'color','g','linewidth',2)
+  'linecolor','g','linewidth',2)
 hold on, plotBoundary(grains,'property',CSL(11),'delta',4*degree,...
-  'color','r','linewidth',2)
+  'linecolor','r','linewidth',2)
 
 legend('>2^\circ',...
   '\Sigma 3',...
@@ -198,18 +204,11 @@ legend('>2^\circ',...
 
 close, plotBoundary(grains)
 hold on, plotBoundary(grains,'property',Miller(1,1,1),'delta',2*degree,...
-  'color','r','linewidth',1.5)
+  'linecolor','r','linewidth',1.5)
 hold on, plotBoundary(grains,'property',Miller(0,0,1),'delta',2*degree,...
-  'color','b','linewidth',1.5)
+  'linecolor','b','linewidth',1.5)
 
 legend('>2^\circ',...
   '\{111\}',...
   '\{001\}')
-
-%%
-% more tilt
-
-close,   plotBoundary(grains)
-hold on, plotBoundary(grains,'property',{Miller(1,1,1),Miller(0,0,1)},'delta',2*degree,...
-  'color','g','linewidth',1.5)
 

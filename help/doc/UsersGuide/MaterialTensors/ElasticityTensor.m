@@ -86,7 +86,7 @@ plot(C,'PlotType','velocity','pp','complete')
 hold off
 
 %%
-Finally we visualize the speed difference between the s1 and s2 waves
+% Finally we visualize the speed difference between the s1 and s2 waves
 % together with the  fast shear-wave polarization.
 
 plot(C,'PlotType','velocity','vs1-vs2','complete')
