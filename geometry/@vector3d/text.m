@@ -1,4 +1,4 @@
-function varargout = text(v,strings,varargin)
+function varargout = text(v,varargin)
 %
 %% Syntax
 %   scatter(v,s)  %
@@ -19,11 +19,9 @@ function varargout = text(v,strings,varargin)
 [ax,v,varargin] = getAxHandle(v,varargin{:});
 h = [];
 
-% extract plot options
-projection = plotOptions(ax,v,varargin{:});
-
-% project data
-[x,y] = project(v,projection);
+% extract text
+strings = varargin{1};
+varargin = varargin(2:end);
 
 % ensure cell as input
 strings = ensurecell(strings);
@@ -31,9 +29,18 @@ if numel(v)>1 && numel(strings)==1
   strings = repmat(strings,numel(v),1);
 end
 
+% extract plot options
+projection = plotOptions(ax,v,varargin{:});
+
+% project data
+[x,y] = project(v,projection);
+
+
 %% print labels
 for i = 1:numel(strings)
-  h(end+1) = smarttext(x(i),y(i),strings{i},projection.bounds,'Margin',0.1,varargin{2:end}); %#ok<AGROW>
+  s = strings{i};
+  if ~ischar(s), s = char(s,getpref('mtex','textInterpreter'));end
+  h(end+1) = smarttext(x(i),y(i),s,projection.bounds,'Margin',0.1,varargin{2:end}); %#ok<AGROW>
 end
 
 %% finalize the plot
