@@ -36,10 +36,10 @@ plotodf(model_odf,'sections',6,'silent')
 % descriptions of all componets of the ODF in a human readable fassion. 
 
 % the filename
-fname = [mtexDataPath '/odf/odf.txt'];
+fname = [mtexDataPath '/ODF/odf.mtex'];
 
 % export the ODF
-export(model_odf,fname,'Bunge')
+export(model_odf,fname,'interface','mtex')
 
 
 %% Export as an generic ASCII file
@@ -50,10 +50,10 @@ export(model_odf,fname,'Bunge')
 % value of the ODF at this specific position.
 
 % the filename
-fname = [mtexDataPath '/odf/odf.txt'];
+fname = [mtexDataPath '/ODF/odf.txt'];
 
 % export the ODF
-export(model_odf,fname,'Bunge','generic')
+export(model_odf,fname,'Bunge','interface','generic')
 
 %%
 % Other Euler angle conventions or other resolutions can by specified by
@@ -61,10 +61,10 @@ export(model_odf,fname,'Bunge','generic')
 % if you specify the grid in the orientation space directly.
 
 % define a equispaced grid in orientation space with resolution of 5 degree
-S3G = SO3Grid(5 * degree,cs,ss);
+S3G = SO3Grid(10 * degree,cs,ss);
 
 % export the ODF by values at these locations
-export(model_odf,fname,S3G,'Bunge','generic')
+export(model_odf,fname,S3G,'interface','generic')
 
 
 %% Import ODF Data using the import wizard
@@ -93,15 +93,14 @@ cs = symmetry('orthorhombic');
 ss = symmetry('triclinic');
 
 % the file name
-fname = [mtexDataPath '/odf/odf.txt'];
+fname = [mtexDataPath '/ODF/odf.txt'];
 
-% the halfwidth of the bell shaped functions to be placed at every
-% stored orientation
-halfwidth = 10*degree;
+% the resolution of the ODF to be interpolated
+res = 10*degree;
 
 % load the data
-odf = loadODF(fname,cs,ss,'halfwidth',halfwidth,'Bunge',...
+odf = loadODF(fname,cs,ss,'resolution',res,'Bunge',...
   'ColumnNames',{'Euler 1','Euler 2','Euler 3','weight'});
 
 % plot data
-%plotodf(odf,'sections',6,'silent')
+plotodf(odf,'sections',6,'silent')
