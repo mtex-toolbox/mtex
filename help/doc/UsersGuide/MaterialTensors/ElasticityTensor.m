@@ -1,7 +1,7 @@
 %% The Elasticity Tensor
 % how to calculate and plot the elasticity properties
 %
-%% 
+%%
 % MTEX offers a very simple way to compute elasticity properties of
 % materials. This includes Young's modulus, linear compressibility,
 % Cristoffel tensor, and elastic wave velocities.
@@ -12,7 +12,7 @@
 %
 %% Import an Elasticity Tensor
 % Let us start by importing the elastic stiffness tensor of an Olivine
-% crystal in reference orientation from a file. 
+% crystal in reference orientation from a file.
 
 fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
 
@@ -29,9 +29,9 @@ E = YoungsModulus(C,x)
 
 %%
 % It can be plotted by passing the option *YoungsModulus* to the
-% <tensor.plot.html plot> command. 
+% <tensor.plot.html plot> command.
 
-set_mtex_option('defaultColorMap',seismicColorMap);
+setpref('mtex','defaultColorMap',seismicColorMap);
 plot(C,'PlotType','YoungsModulus','complete')
 
 %% Linear Compressibility
@@ -99,4 +99,4 @@ hold off
 %%
 % set back default colormap
 
-set_mtex_option('defaultColorMap',WhiteJetColorMap)
+setpref('mtex','defaultColorMap',WhiteJetColorMap)

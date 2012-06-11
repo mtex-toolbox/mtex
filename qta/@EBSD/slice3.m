@@ -28,7 +28,7 @@ end
 
 % default plot options
 varargin = set_default_option(varargin,...
-  get_mtex_option('default_plot_options'));
+  getpref('mtex','defaultPlotOptions'));
 
 % get pixels
 X = [ebsd.options.x(:) ebsd.options.y(:) ebsd.options.z(:)];
@@ -100,11 +100,11 @@ for k=1:numel(obj)
   obj(k).FaceColor = 'flat';
   obj(k).EdgeColor = 'none';
   h(k) = patch(obj(k));
-  
+
   set(hSlicer(k),...
     'value',slicePos(k),...
     'callback',{@sliceIt,h(k),plane(k)});
-  
+
   sliceIt(hSlicer(k),[],h(k),plane(k))
 end
 
@@ -128,7 +128,7 @@ end
 if strcmpi(property,'phase'),
   % phase colormap
   minerals = get(ebsd,'minerals');
-  
+
   isPhase = ismember(unique(d),ebsd.phaseMap);
   phaseMap = ebsd.phaseMap;
   for k=1:numel(phaseMap)
@@ -151,7 +151,7 @@ set(gcf,'tag','ebsd_slice3');
 setappdata(gcf,'options',extract_option(varargin,'antipodal'));
 
 
-if nargout > 0 
+if nargout > 0
   varargout{1} = hSlicer;
 end
 
@@ -204,9 +204,9 @@ else
 end
 
 for k=1:numel(sliceType)
-  
+
   fpos = fpos+20;
-  
+
   hSlicer(k) = uicontrol(...
     'units','pixels',...
     'backgroundcolor',[0.9 0.9 0.9],...   'callback',{@sliceitz,x,y,z,z},...        'callback',{@(e,eb) sliceit(getappdata(gcbf,'slicedata'),get(e,'value'))},...
@@ -214,7 +214,7 @@ for k=1:numel(sliceType)
     'style','slider');
   uicontrol('position',[fpos 130 16 16],...
     'string',sliceType(k),'style','text');
-  
+
 end
 
 set(gcf,'toolbar','figure')

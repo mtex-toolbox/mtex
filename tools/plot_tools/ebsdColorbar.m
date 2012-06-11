@@ -23,23 +23,23 @@ if nargin >= 1 && isa(varargin{1},'symmetry')
 else
   cs = getappdata(gcf,'CS');
   if ~iscell(cs), cs = {cs};end
-  
+
   r = getappdata(gcf,'r');
   o = getappdata(gcf,'options');
   varargin = {o{:},varargin{:}};
   cc = get_option(varargin,'colorcoding',getappdata(gcf,'colorcoding'));
   ccenter = getappdata(gcf,'colorcenter');
   if ~isempty(ccenter), varargin = {'colorcenter',ccenter,varargin{:}}; end
-  
+
   if isappdata(gcf,'rotate')
     varargin = set_default_option(varargin,[],'rotate',getappdata(gcf,'rotate'));
   end
-  
+
   for i = 1:length(cs)
     if isa(cs{i},'symmetry')
       ebsdColorbar(cs{i},varargin{:},...
         'r',r,'colorcoding',cc);
-      
+
       set(gcf,'Name',[ '[' cc '] Colorcoding for phase ',get(cs{i},'mineral')]);
     end
   end
@@ -51,18 +51,18 @@ newMTEXplot;
 
 % get default options
 varargin = set_default_option(varargin,...
-  get_mtex_option('default_plot_options'));
+  getpref('mtex','defaultPlotOptions'));
 
 if any(strcmp(cc,{'ipdf','hkl','h'}))
   % hkl is antipodal
   if strcmp(cc,'hkl'),  varargin = {'antipodal',varargin{:}}; end
-  
+
   [maxtheta,maxrho,minrho,v] = getFundamentalRegionPF(cs,varargin{:});
-  
+
   %maxrho = maxrho-minrho+eps;
   %minrho = 0; % rotate like canvas %TODO:flipud!
   h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX','resolution',1*degree,varargin{:});
-  
+
   if strcmp(cc,'ipdf')
     d = ipdf2rgb(h,cs,varargin{:});
   elseif strcmp(cc,'hkl')
@@ -70,33 +70,33 @@ if any(strcmp(cc,{'ipdf','hkl','h'}))
   elseif strcmp(cc,'h')
     d = ipdf2custom(h,cs,varargin{:});
   end
-  
+
   d = reshape(d,[size(h),3]);
-  
+
   surf(h,d,'TR',r);
-    
+
   type = 'ipdf';
 else
   [S3G,S2G,sec] = SO3Grid('plot',cs,symmetry,varargin{:});
-  
+
   [s1,s2,s3] = size(S3G);
-    
+
   d = reshape(orientation2color(S3G,cc,varargin{:}),[s1,s2,s3,3]);
-  
+
   sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma'},'sigma');
   [symbol,labelx,labely] = sectionLabels(sectype);
-  
+
   fprintf(['\nplot ',sectype,' sections, range: ',...
     xnum2str(min(sec)/degree),mtexdegchar,' - ',xnum2str(max(sec)/degree),mtexdegchar,'\n']);
-  
+
   multiplot(@(i) S2G,...
     @(i) reshape(d(:,:,i,:), [size(d(:,:,i,:),1),size(d(:,:,i,:),2),3]),...
     length(sec),'rgb',...
     'ANOTATION',@(i) [symbol,'=',int2str(sec(i)*180/pi),'^\circ'],...  'MINMAX','SMOOTH','TIGHT',...
     'xlabel',labelx,'ylabel',labely,...
     'equal','margin',0,varargin{:}); %#ok<*EVLC>
-  
-  
+
+
   setappdata(gcf,'sections',sec);
   setappdata(gcf,'SectionType',sectype);
   type = 'odf';

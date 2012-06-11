@@ -6,11 +6,11 @@ function plotAngleDistribution(odf,varargin)
 %
 %% Options
 %  RESOLUTION - resolution of the plots
-%  
+%
 
 
 varargin = set_default_option(varargin,...
-  get_mtex_option('default_plot_options'));
+  getpref('mtex','defaultPlotOptions'));
 
 %% make new plot
 newMTEXplot;

@@ -147,13 +147,13 @@ pos = strmatch(pattern,str);
 if ~isempty(pos)
   cod = strtrim(regexprep(str{pos},pattern,''));
   if  ~isempty(cod) && ~strcmpi(cod,'?')
-    cs = cif2symmetry(cod);
+    cs = loadCIF(cod);
     return
   end
 end
 
 try
-  [cs,mineral] = cif2symmetry(str);
+  [cs,mineral] = loadCIF(str);
 catch
 end
 

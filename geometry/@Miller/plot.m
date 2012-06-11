@@ -31,7 +31,7 @@ end
 
 if numel(m) > 20
   
-  if check_option(varargin,'ALL')  
+  if check_option(varargin,{'ALL','symmetrised'})  
     m = symmetrise(m,'plot',varargin{:});
   end
   
@@ -52,7 +52,7 @@ end
 for i = 1:numel(m)
 
   % all symmetrically equivalent?
-  if check_option(varargin,'ALL')  
+  if check_option(varargin,{'ALL','symmetrised'})  
     mm = symmetrise(subsref(m,i),'plot',varargin{:});
   else
     mm = subsref(m,i);

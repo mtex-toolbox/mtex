@@ -27,7 +27,7 @@ function plotodf(odf,varargin)
 % SphericalProjection_demo
 
 varargin = set_default_option(varargin,...
-  get_mtex_option('default_plot_options'));
+  getpref('mtex','defaultPlotOptions'));
 
 %% -------- one - dimensional plot ---------------------------------------
 if check_option(varargin,'RADIALLY')
@@ -56,11 +56,11 @@ fprintf(['\nPlotting ODF as ',sectype,' sections, range: ',...
 if check_option(varargin,{'contour3','surf3','slice3'})
   
   [xlim ylim] = polar(S2G);
-  
+
   v = get_option(varargin,{'surf3','contour3'},10,'double');
   contour3s(xlim(1,:)./degree,ylim(:,1)'./degree,sec./degree,Z,v,varargin{:},...
     'xlabel',labely,'ylabel',labelx,'zlabel',symbol);
-  
+
 else
   %
   multiplot(numel(sec),...
@@ -68,7 +68,7 @@ else
     'smooth',...
     'TR',@(i) [int2str(sec(i)*180/pi),'^\circ'],'colorrange','equal',...%'margin',0,...
     varargin{:}); %#ok<*EVLC>
-  
+
   %   multiplot(@(i) S2G,...
   %     @(i) Z(:,:,i),...
   %     length(sec),...

@@ -65,7 +65,7 @@ isPhase = false(numberOfPhases,1);
 for k=1:numberOfPhases
   currentPhase = ebsd.phase==k;
   isPhase(k)   = any(currentPhase);
-  
+
   if isPhase(k)
     [d{k},property,opts] = calcColorCode(ebsd,currentPhase,varargin{:});
     X{k} = x_D(currentPhase,:);
@@ -75,7 +75,7 @@ end
 %% default plot options
 
 varargin = set_default_option(varargin,...
-  get_mtex_option('default_plot_options'));
+  getpref('mtex','defaultPlotOptions'));
 
 varargin = set_default_option(varargin,...
   {'name', [property ' plot of ' inputname(1) ' (' ebsd.comment ')']});
@@ -122,7 +122,7 @@ if ~isOctave()
   dcm_obj = datacursormode(gcf);
   set(dcm_obj,'SnapToDataVertex','off')
   set(dcm_obj,'UpdateFcn',{@tooltip,ebsd});
-  
+
   if check_option(varargin,'cursor'), datacursormode on;end
 end
 if nargout>0, varargout{1}=h; end
@@ -136,15 +136,15 @@ pos = get(eventdata,'Position');
 [sub,map] = findByLocation(ebsd,[xx yy]);
 
 if numel(sub)>0
-  
+
   minerals = get(sub,'minerals');
-  
+
   txt{1} = ['#'  num2str(find(map))];
   txt{2} = ['Phase: ', minerals{sub.phase}];
   if ~isNotIndexed(sub)
     txt{3} = ['Orientation: ' char(sub.rotations)];
   end
-  
+
 else
   txt = 'no data';
 end

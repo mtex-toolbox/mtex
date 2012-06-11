@@ -3,12 +3,12 @@ function uiimport(varargin)
 
 if nargin && ischar(varargin{1})
   [pathstr, name, ext] = fileparts(varargin{1});
-  if any(strcmpi(get_mtex_option('polefigure_ext',{},'cell'),ext))
+  if any(strcmpi(getpref('mtex','poleFigureExtensions'),ext))
     import_wizard('PoleFigure',varargin{:});
-  elseif any(strcmpi(get_mtex_option('EBSD_ext',{},'cell'),ext))
-    import_wizard('EBSD',varargin{:});      
+  elseif any(strcmpi(getpref('mtex','EBSDExtensions'),ext))
+    import_wizard('EBSD',varargin{:});
   else
-    old_uiimport(varargin{:});      
+    old_uiimport(varargin{:});
   end
 else
   old_uiimport(varargin{:});

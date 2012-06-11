@@ -10,8 +10,14 @@ try
   if exist(cpr_file,'file') == 2 && exist(crc_file,'file') == 2
     [cs,N,x,y,unitCell] = localReadCPR(cpr_file);
     [phase,q,opts] = localReadCRC(crc_file,N);
-    opts.x = x;
-    opts.y = y;
+    
+    if ~isempty(x)
+      opts.x = x;
+    end
+    
+    if ~isempty(y)
+      opts.y = y;      
+    end
   end
   
   ebsd = EBSD(q,cs,symmetry,'phase',phase(:),'unitCell',unitCell,'options',opts);
@@ -162,6 +168,7 @@ if ~isempty(xsize) && ~isempty(ysize);
     -ystep/2 xstep/2];
   %   unitCell = calcUnitCell([x y])
 else
+  N = job.noofpoints;
   x = []; y = []; unitCell = [];
 end
 end

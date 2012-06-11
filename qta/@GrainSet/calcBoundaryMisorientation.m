@@ -32,11 +32,11 @@ checkSinglePhase(grains2);
 
 %% select the right boundaries
 if check_option(varargin,{'sub','subboundary','internal','intern'})
-  I_FD1 = grains1.I_FDsub;
-  I_FD2 = grains2.I_FDsub;
+  I_FD1 = logical(grains1.I_FDsub);
+  I_FD2 = logical(grains2.I_FDsub);
 elseif  check_option(varargin,{'external','ext','extern'})
-  I_FD1 = grains1.I_FDext;
-  I_FD2 = grains2.I_FDext;
+  I_FD1 = logical(grains1.I_FDext);
+  I_FD2 = logical(grains2.I_FDext);
 else % otherwise select all boundaries
   I_FD1 = grains1.I_FDext | grains1.I_FDsub;
   I_FD2 = grains2.I_FDext | grains2.I_FDsub;

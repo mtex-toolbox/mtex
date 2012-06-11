@@ -1,29 +1,48 @@
-function  peri = perimeter(grains)
-% calculates the perimeter of the grain-polygon, with Holes
+function  peri = perimeter(grains,varargin)
+% calculates the perimeter of a grain, with Holes
 %
 %% Input
-%  p - @GrainSet
+%  p - @GrainSet 
+%  property - if specified, returns only the length of
+%    boundary satisfying a <GrainSet.specialBoundary.html specialBoundary>
 %
+%% Options
+% options - please see <GrainSet.specialBoundary.html specialBoundary>
 %% Output
 %  peri    - perimeter
 %
+%% Syntax
+% p = perimeter(grains) - 
+%
+% p = perimeter(grains,10*degree) - returns the length of low angle
+%   boundaries per grain
+%
+% p = perimeter(grains,CSL(3)) - returns the length of special boundaries
+%   per grains
+%
+% p = perimeter(grains,property,...,param,val,...) -
+%
 %% See also
-% polygon/equivalentperimeter polygon/borderlength
+% Grain2d/equivalentperimeter
 
+
+I_FD = abs(get(grains,'I_FDext'));
+I_DG = get(grains,'I_DG');
+I_FG = I_FD*I_DG;
+
+f = specialBoundary(grains,varargin{:},[],'ext');
+
+[i,g] = find(I_FG(f,any(I_DG)));
+f = f(i);
 
 V = full(get(grains,'V'));
 F = full(get(grains,'F'));
 
-I_FDext = get(grains,'I_FDext');
-I_DG = get(grains,'I_DG');
+F = F(f,:);
+edgeLength = sqrt(sum((V(F(:,1),:) - V(F(:,2),:)).^2,2));
 
+peri = full(sparse(g,1,edgeLength,numel(grains),1));
 
-[f,g] = find(I_FDext*double(I_DG(:,any(I_DG))));
-
-l = F(f,:);
-edgeLength = sqrt(sum((V(l(:,1),:) - V(l(:,2),:)).^2,2));
-
-peri = full(sparse(g,1,edgeLength));
 
 
 

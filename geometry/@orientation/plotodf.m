@@ -12,7 +12,7 @@ function plotodf(o,varargin)
 %
 %% Flags
 %  SIGMA (default) -
-%  OMEGA - sections along crystal directions @Miller 
+%  OMEGA - sections along crystal directions @Miller
 %  ALPHA -
 %  GAMMA -
 %  PHI1 -
@@ -21,10 +21,10 @@ function plotodf(o,varargin)
 %
 %% See also
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
-% SphericalProjection_demo 
+% SphericalProjection_demo
 
 varargin = set_default_option(varargin,...
-  get_mtex_option('default_plot_options'));
+  getpref('mtex','defaultPlotOptions'));
 
 cs = o.CS;
 ss = o.SS;
@@ -37,7 +37,7 @@ if ~check_option(varargin,'all') && numel(o) > 2000 || check_option(varargin,'po
   points = fix(get_option(varargin,'points',2000));
   disp(['  plotting ', int2str(points) ,' random orientations out of ', ...
     int2str(numel(o)),' given orientations']);
-  
+
   samples = discretesample(ones(1,numel(o)),points);
   o.rotation = o.rotation(samples);
   if ~isempty(data)
@@ -47,16 +47,16 @@ end
 % reuse plot
 if ishold && isappdata(gcf,'sections') && ...
     getappdata(gcf,'CS') == cs && getappdata(gcf,'SS') == ss
-  
+
   sectype = getappdata(gcf,'SectionType');
   sec = getappdata(gcf,'sections');
-  
+
   if strcmpi(sectype,'omega')
     varargin = set_default_option(varargin,{getappdata(gcf,'h')});
   end
-  
+
 else
-  
+
   rmallappdata(gcf);
   hold off;
   sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','omega','axisangle'},'sigma');
@@ -69,13 +69,13 @@ else
   elseif strcmpi(sectype,'omega')
     max_sec = 2*pi;
   end
-  
+
   nsec = get_option(varargin,'SECTIONS',round(max_sec/degree/5));
   sec = linspace(0,max_sec,nsec+1); sec(end) = [];
   sec = get_option(varargin,sectype,sec,'double');
 
   varargin = [varargin,'maxrho',max_rho,'maxtheta',max_theta];
-  
+
 end
 
 [symbol,labelx,labely] = sectionLabels(sectype);
