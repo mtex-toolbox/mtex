@@ -5,7 +5,7 @@ function c = char(m,varargin)
 %  NO_SCOPES
 %  LATEX
 
-c = [];
+c = cell(numel(m),1);
 
 for i = 1:length(m)
   
@@ -45,8 +45,15 @@ for i = 1:length(m)
   end
   
   s = [leftBracket barchar(h,varargin{:}) rightBracket];
+  if check_option(varargin,'LaTeX')
+    s = ['$' s '$'];
+  end
   
-  c = strcat(c,s);
+  c{i} = s;
+end
+
+if ~check_option(varargin,'cell')
+  c = strcat(c{:});
 end
 
 

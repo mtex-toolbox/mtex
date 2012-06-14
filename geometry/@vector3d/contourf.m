@@ -2,7 +2,7 @@ function varargout = contourf( v, varargin )
 
 
 % where to plot
-ax = getAxHandle(v,varargin{:});
+[ax,v,varargin] = getAxHandle(v,varargin{:});
 
 hold(ax,'all');
 

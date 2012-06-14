@@ -22,7 +22,7 @@ function varargout = quiver(v, d, varargin )
 [ax,v,varargin] = getAxHandle(v,varargin{:});
 
 % extract plot options
-projection = plotOptions(ax,v,varargin{:});
+projection = getProjection(ax,v,varargin{:});
 
 % project data
 [x,y,hemi,p] = project(v,projection); %#ok<ASGLU>

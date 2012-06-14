@@ -23,15 +23,6 @@ if isempty_cell(plotType)
 else
   plotType = plotType{end};
 end
-
-% special option -> labeled
-if check_option(varargin,'labeled')
-  s = cell(1,numel(v));
-  for i = 1:numel(v), s{i} = subsref(v,i); end
-  varargin = [{'label'},{s},varargin];
-  c = colormap;
-  if ~all(equal(c,2)), varargin = {'BackGroundColor','w',varargin{:}};end
-end
   
 % call plotting routine according to type
 switch plotType
@@ -58,7 +49,7 @@ switch plotType
     
 end
 
-if check_option(varargin,{'text','label'})
+if check_option(varargin,{'text','label','labeled'})
   hold all
   [varargout{1:nargout}] = text(ax,v,get_option(varargin,{'text','label'}),varargin{:});
   hold off
