@@ -23,14 +23,26 @@ h = [];
 strings = varargin{1};
 varargin = varargin(2:end);
 
-% ensure cell as input
-strings = ensurecell(strings);
-if numel(v)>1 && numel(strings)==1
-  strings = repmat(strings,numel(v),1);
+% special option -> labeled
+if check_option(varargin,'labeled')
+  
+  strings = cell(1,numel(v));
+  for i = 1:numel(v), strings{i} = char(subsref(v,i),getpref('mtex','textInterpreter')); end
+    
+  c = colormap;
+  if ~all(equal(c,2)), varargin = [{'BackGroundColor','w'},varargin];end
+  
+else % ensure cell as input
+  
+  strings = ensurecell(strings);
+  if numel(v)>1 && numel(strings)==1
+    strings = repmat(strings,numel(v),1);
+  end
+  
 end
 
 % extract plot options
-projection = plotOptions(ax,v,varargin{:});
+projection = getProjection(ax,v,varargin{:});
 
 % project data
 [x,y] = project(v,projection);

@@ -12,7 +12,7 @@ if ~isappdata(ax,'grid') % there is not grid yet
   optiondraw(grid.ticks,'fontsize',8,'FontName','times','visible','off');
   
   set(ax,'box','on','XTick',[],'YTick',[]);
-  axis(ax,'equal','tight');
+  %axis(ax,'equal');
   
   setappdata(ax,'grid',grid);
   
@@ -109,10 +109,11 @@ else % polar grid
     h = [h arrayfun(@(t) circ(ax,projection,x,y,t),theta)];
     
     % draw meridians
-    [hm tm] = arrayfun(@(t) merid(ax,projection,x,y,t),rho);
-    
-    h = [h hm];
-    t = [t tm];
+    if isnumeric(projection.maxTheta) && projection.maxTheta > pi/2-1e-6
+      [hm tm] = arrayfun(@(t) merid(ax,projection,x,y,t),rho);
+      h = [h hm];
+      t = [t tm];    
+    end
   end
   
   % plot grid in southern hemisphere
@@ -152,13 +153,16 @@ X = x+X; Y = y+Y;
 
 if strcmpi(projection.type,'plain'),
   x = X;
-  options = {'HorizontalAlignment','center','VerticalAlignment','bottom',varargin{:}};
+  options = [{'HorizontalAlignment','center','VerticalAlignment','bottom'},varargin];
 else
-  options = {'HorizontalAlignment',ha{r},'VerticalAlignment',va{r},varargin{:}};
+  options = [{'HorizontalAlignment',ha{r},'VerticalAlignment',va{r}},varargin];
 end
-% gird
+
+% grid
 h = line([x X],[y Y],'parent',ax,'handlevisibility','off');
 
+%plot tick markers
+% TODO
 %   if check_mtex_option('noLaTex')
 s = [xnum2str(rho/degree) mtexdegchar];
 t = optiondraw(text(X,Y,s,'parent',ax,'interpreter','tex','handlevisibility','off'),options{:});
@@ -166,8 +170,6 @@ t = optiondraw(text(X,Y,s,'parent',ax,'interpreter','tex','handlevisibility','of
 %     s = ['$' xnum2str(rho(k)/degree) '^\circ$'];
 %     t(k) = optiondraw(text(X,Y,s,'interpreter','latex'),options{:});
 %   end
-
-
 
 
 function h = circ(ax,projection,x,y,theta,varargin)

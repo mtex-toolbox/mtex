@@ -28,7 +28,7 @@ function varargout = scatter(v,varargin)
 [ax,v,varargin] = getAxHandle(v,varargin{:});
 
 % extract plot options
-projection = plotOptions(ax,v,varargin{:});
+projection = getProjection(ax,v,varargin{:});
 
 % project data
 [x,y] = project(v,projection);
@@ -59,7 +59,7 @@ annotations = {};
 %% colorcoding according to the first argument
 if numel(varargin) > 0 && isnumeric(varargin{1}) && ~isempty(varargin{1})
   
-  % extract colorcoding
+  % extract colorpatchArgs{3:end}coding
   cdata = varargin{1};
   if numel(cdata) == numel(v)
     cdata = reshape(cdata,[],1);
@@ -107,8 +107,9 @@ plotAnnotate(ax,annotations,varargin{:})
 
 % set resize function for dynamic marker sizes
 if check_option(varargin,'dynamicMarkerSize')
+  setappdata(gcf,'dynamicMarkerSize',@resizeScatter);
   if isempty(get(gcf,'resizeFcn'))
-    set(gcf,'resizeFcn',{@resizeScatter});
+    set(gcf,'resizeFcn',@callResizeScatter);
   end
 end
 
@@ -122,7 +123,7 @@ else
 end
 
 %% ---------------------------------------------------------------
-function resizeScatter(fig, evt, a)
+function resizeScatter(fig, varargin)
 
 % scale scatterplots
 u = findobj(fig,'Tag','dynamicMarkerSize');
@@ -133,13 +134,22 @@ p = get(u(1),'parent');
 unit = get(p,'unit');
 set(p,'unit','pixel')
 pos = get(p,'position');
-l = min([pos(4)-pos(2),pos(3)-pos(1)]);
+l = min([pos(3),pos(4)]);
 
 for i = 1:length(u)
   d = get(u(i),'UserData');
   o = get(u(i),'MarkerSize');
-  n = l/350 * d;
+  %n = l/350 * d;
+  n = l/250 * d;
   if abs((o-n)/o) > 0.1, set(u(i),'MarkerSize',n);end
 end
 
 set(p,'unit',unit);
+
+%% --------------------------------------------------------
+function callResizeScatter(fig, varargin)
+
+if isappdata(fig,'dynamicMarkerSize')
+  RS = getappdata(fig,'dynamicMarkerSize');
+  RS(fig, varargin{:});
+end

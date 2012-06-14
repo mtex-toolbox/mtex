@@ -124,7 +124,7 @@ legend('to reference orientation','to neighbour')
 % We can also observe the rotation axis, here we colorize after the
 % distance
 
-close, plot(axis(o),'markersize',3,'antipodal','data',dist)
+close, plot(axis(o),dist,'markersize',3,'antipodal')
 
 
 

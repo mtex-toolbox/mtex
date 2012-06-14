@@ -18,14 +18,12 @@ function plotipdf(odf,r,varargin)
 
 argin_check(r,{'vector3d'});
 
-  getpref('mtex','defaultPlotOptions'));
-
 %% make new plot
 newMTEXplot;
 
 % default options
 varargin = set_default_option(varargin,...
-  get_mtex_option('default_plot_options'));
+  getpref('mtex','defaultPlotOptions'));
 
 %% plotting grid
 [maxtheta,maxrho,minrho] = getFundamentalRegionPF(odf(1).CS,varargin{:});
@@ -35,12 +33,9 @@ h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2
 disp(' ');
 disp('Plotting inverse pole density function:')
 
-multiplot(numel(r),...
-  h,...
+multiplot(numel(r), h,...
   @(i) ensureNonNeg(pdf(odf,h,r(i)./norm(r(i)),varargin{:})),...
-   'smooth',...
-  'TR',@(i) r(i),...
-  varargin{:});
+  'smooth','TR',@(i) r(i),varargin{:});
 
 %% finalize plot
 setappdata(gcf,'r',r);

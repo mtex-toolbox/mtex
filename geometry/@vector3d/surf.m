@@ -17,7 +17,7 @@ function varargout = surf(v,varargin)
 [ax,v,varargin] = getAxHandle(v,varargin{:});
 
 % extract plot options
-projection = plotOptions(ax,v,varargin{:});
+projection = getProjection(ax,v,varargin{:});
 
 % initalize handles
 h = [];

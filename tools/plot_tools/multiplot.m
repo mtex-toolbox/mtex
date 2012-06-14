@@ -33,6 +33,8 @@ function multiplot(nplots,varargin)
 % generate some invisible axes
 for k=1:nplots, a(k) = axes('visible','off'); end %#ok<AGROW>
 
+% 
+varargin = delete_option(varargin,'position');
 
 %% extract data
 if nargin>=2 && isa(varargin{2},'function_handle')
@@ -149,6 +151,12 @@ for i = 1:length(u)
 end
 
 set(fig,'Units',old_units);
+
+% call resize dynamic maker sizes
+if isappdata(fig,'dynamicMarkerSize')
+  RS = getappdata(fig,'dynamicMarkerSize');
+  RS(fig);
+end
 
 end
 
