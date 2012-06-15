@@ -33,6 +33,9 @@ projection = getProjection(ax,v,varargin{:});
 % project data
 [x,y] = project(v,projection);
 
+% check that there is something left to plot
+if all(isnan(x) | isnan(y)), return;end
+
 % default arguments
 patchArgs = {'Parent',ax,...
     'vertices',[x(:) y(:)],...
@@ -49,7 +52,8 @@ MarkerSize  = get_option(varargin,'MarkerSize',min(8,50*res));
 patchArgs = [patchArgs,{'MarkerSize',MarkerSize}];
 
 % dynamic markersize
-if check_option(varargin,'dynamicMarkerSize')
+if check_option(varargin,'dynamicMarkerSize') || ...
+    (~check_option(varargin,'MarkerSize') && numel(v)>20)
   patchArgs = [patchArgs {'tag','dynamicMarkerSize','UserData',MarkerSize}];
 end
 
@@ -86,12 +90,12 @@ else
     mfc = get_option(varargin,'MarkerColor','none');
     mfc = get_option(varargin,'MarkerFaceColor',mfc);
   else % cycle through colors
-    [ls,mfc] = nextstyle(gca,true,true,~ishold); %#ok<ASGLU>
+    [ls,mfc] = nextstyle(ax,true,true,~ishold); %#ok<ASGLU>
   end
   mec = get_option(varargin,'MarkerEdgeColor',mfc);
   
   % draw patches
-  h = optiondraw(patch(patchArgs{3:end},...
+  h = optiondraw(patch(patchArgs{:},...
     'MarkerFaceColor',mfc,...
     'MarkerEdgeColor',mec),varargin{:});
 
@@ -117,7 +121,7 @@ end
 if nargout > 0
   varargout{1} = ax;
   varargout{2} = h;
-else
+elseif ~isappdata(gcf,'multiplotAxes')
   m = 0.025;
   set(ax,'units','normalized','position',[0+m 0+m 1-2*m 1-2*m]);
 end

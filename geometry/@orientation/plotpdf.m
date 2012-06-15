@@ -29,7 +29,7 @@ ss = o.SS;
 if newMTEXplot('ensureTag','pdf',...
     'ensureAppdata',{{'CS',cs},{'SS',ss}})
   argin_check(h,{'Miller'});
-  h = ensureCS(get(o,'CS'),{h});
+  h = ensurecell(ensureCS(get(o,'CS'),{h}));
 else
   h = getappdata(gcf,'h');
   options = getappdata(gcf,'options');
@@ -58,13 +58,12 @@ end
 %% plot
 
 % compute specimen directions
-r = @(i) reshape(ss * o * symmetrise(h(i)),[],1);
+r = @(i) reshape(ss * o * symmetrise(h{i}),[],1);
 
 [maxTheta,maxRho,minRho] = getFundamentalRegionPF(ss,varargin{:});
 
-multiplot(numel(r),r,data,...
-  'scatter','dynamicMarkerSize',...
-  'TR',@(i) char(h(i),getpref('mtex','textInterpreter')),...
+multiplot(numel(h),r,data,...
+  'scatter','TR',@(i) char(h{i},getpref('mtex','textInterpreter')),...
   'minRho',minRho,'maxRho',maxRho,'maxTheta',maxTheta,...
   varargin{:});
 

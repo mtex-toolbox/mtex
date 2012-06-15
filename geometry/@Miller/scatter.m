@@ -16,8 +16,7 @@ function varargout = scatter(m,varargin)
 %% preprocess input
 
 % get axis hande
-[ax,m,varargin] = getAxHandle(m,varargin{:}); %#ok<ASGLU>
-
+[ax,m,varargin] = getAxHandle(m,varargin{:});
 
 % extract data
 if numel(varargin) > 0 && isnumeric(varargin{1}) && ~isempty(varargin{1})
@@ -57,7 +56,7 @@ if size(m,1) > 20 || ~isempty(cdata)
   if ~isempty(cdata), varargin=[{cdata},varargin];end
   
   % plot them all with the same color
-  [varargout{1:nargout}] = scatter(m.vector3d,varargin{:});
+  [varargout{1:nargout}] = scatter(ax,m.vector3d,varargin{:});
     
 else % if there are only a few points plots them with different colors
 
@@ -76,7 +75,7 @@ else % if there are only a few points plots them with different colors
 
   % plot
   for i = 1:size(m,2)
-    scatter(unique(m.vector3d(:,i)),varargin{:});
+    scatter(ax,unique(m.vector3d(:,i)),varargin{:});
   end
 
   % revert old hold status

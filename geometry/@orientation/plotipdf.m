@@ -24,13 +24,13 @@ ss = o.SS;
 if newMTEXplot('ensureTag','ipdf',...
     'ensureAppdata',{{'CS',cs},{'SS',ss}})
   argin_check(r,{'vector3d'});
+  annotations  = {'TR',@(i) char(r(i),getpref('mtex','textInterpreter'))};
 else
   if ~isa(r,'vector3d')
-    varargin = {r,varargin{:}};
+    varargin = [{r},varargin];
   end
   r = getappdata(gcf,'r');
-  options = getappdata(gcf,'options');
-  if ~isempty(options), varargin = {options{:},varargin{:}};end
+  annotations  = {};
 end
 
 %% colorcoding
@@ -54,9 +54,8 @@ end
 %% plot
 multiplot(numel(r),...
   @(i) inverse(o(:)) * symmetrise(r(i),ss),data,...
-  'scatter','dynamicMarkerSize','FundamentalRegion',...
-  'TR',@(i) char(r(i),'LaTex'),...
-  varargin{:});
+  'scatter','FundamentalRegion',...
+  annotations{:},varargin{:});
 
 
 setappdata(gcf,'r',r);

@@ -147,6 +147,9 @@ optiondraw(h,'Fill','on',varargin{:});
 % adjust caxis according to colorRange
 if ~any(isnan(colorRange)), caxis(ax,colorRange); end
 
+% colormap
+colormap(ax,getpref('mtex','defaultColorMap'));
+
 % plot polar grid
 plotGrid(ax,projection,varargin{:});
 
