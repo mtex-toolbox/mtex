@@ -31,13 +31,19 @@ function multiplot(nplots,varargin)
 %% prepare plot
 
 % generate some invisible axes
-for k=1:nplots, a(k) = axes('visible','off'); end %#ok<AGROW>
+if isappdata(gcf,'multiplotAxes')
+  a = getappdata(gcf,'multiplotAxes');
+  nplots = numel(a);
+else
+  for k=1:nplots, a(k) = axes('visible','off'); end %#ok<AGROW>
+  setappdata(gcf,'multiplotAxes',a);  
+end
 
-% 
+% set figure options
 varargin = delete_option(varargin,'position');
 
 %% extract data
-if nargin>=2 && isa(varargin{2},'function_handle')
+if nargin>=3 && isa(varargin{2},'function_handle')
   data = cell(nplots,1);
   for k = 1:nplots
     data{k} = feval(varargin{2},k);
@@ -96,6 +102,7 @@ setappdata(gcf,'autofit','on');
 setappdata(gcf,'border',10);
 setappdata(gcf,'marginx',0);
 setappdata(gcf,'marginy',0);
+
 figResize(gcf,[],a);
 
  

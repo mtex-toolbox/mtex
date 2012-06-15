@@ -52,7 +52,7 @@ projection = getProjection(ax,v,varargin{:});
 for i = 1:numel(strings)
   s = strings{i};
   if ~ischar(s), s = char(s,getpref('mtex','textInterpreter'));end
-  h(end+1) = smarttext(x(i),y(i),s,projection.bounds,'Margin',0.1,varargin{2:end}); %#ok<AGROW>
+  h(end+1) = smarttext(x(i),y(i),s,projection.bounds,'Margin',0.1,'parent',ax,varargin{2:end}); %#ok<AGROW>
 end
 
 %% finalize the plot

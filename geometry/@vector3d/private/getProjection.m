@@ -115,8 +115,8 @@ projection.bounds = [min(x(:)),min(y(:)),max(x(:))+projection.offset,max(y(:))];
 
 % set bounds to axes
 set(ax,'DataAspectRatio',[1 1 1],...
-  'XLim',[projection.bounds(1)-1e-4,projection.bounds(3)+1e-4],...
-  'YLim',[projection.bounds(2)-1e-4,projection.bounds(4)+1e-4]);
+  'XLim',[projection.bounds(1)-1e-2,projection.bounds(3)+2e-2],...
+  'YLim',[projection.bounds(2)-1e-2,projection.bounds(4)+2e-2]);
 
 
 %% store data
