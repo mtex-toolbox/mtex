@@ -149,7 +149,11 @@ optiondraw(h,'Fill','on',varargin{:});
 if ~any(isnan(colorRange)), caxis(ax,colorRange); end
 
 % colormap
-colormap(ax,getpref('mtex','defaultColorMap'));
+if check_option(varargin,'gray')
+ colormap(ax,grayColorMap);
+else
+  colormap(ax,getpref('mtex','defaultColorMap'));
+end
 
 % plot polar grid
 plotGrid(ax,projection,varargin{:});
