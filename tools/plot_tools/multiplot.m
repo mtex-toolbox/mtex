@@ -34,7 +34,10 @@ function multiplot(nplots,varargin)
 if isappdata(gcf,'multiplotAxes')
   a = getappdata(gcf,'multiplotAxes');
   nplots = numel(a);
-else
+elseif ~isempty(findobj(gcf,'type','axes'))
+  a = findobj(gcf,'type','axes');
+  setappdata(gcf,'multiplotAxes',a);  
+else  
   for k=1:nplots, a(k) = axes('visible','off'); end %#ok<AGROW>
   setappdata(gcf,'multiplotAxes',a);  
 end
@@ -91,13 +94,14 @@ if ~isappdata(gcf,'colorbaraxis')
   setappdata(gcf,'colorbaraxis',d);
 end
 
+% set correct colorrange for colorbar axis
+if check_option(varargin,{'logarithmic','log'})
+  set(d,'ZScale','log');
+end
+
 %% post process figure
 
-% make axes visible
-for k=1:nplots, set(a(k),'visible','on'); end
-
 set(gcf,'ResizeFcn',@(src,evt) figResize(src,evt,a));
-%set(gcf,'Position',get(gcf,'Position'));
 setappdata(gcf,'autofit','on');
 setappdata(gcf,'border',10);
 setappdata(gcf,'marginx',0);
@@ -105,7 +109,22 @@ setappdata(gcf,'marginy',0);
 
 figResize(gcf,[],a);
 
- 
+if ~check_option(varargin,'uncropped')
+  set(gcf,'Units','pixels');
+  pos = get(gcf,'Position');
+  si = get(gcf,'UserData');
+  pos([3,4]) = si;
+  set(gcf,'Position',pos);
+end
+
+set(gcf,'color',[1 1 1],'nextplot','replace');
+
+% make axes visible
+set(a,'Visible','on');
+
+
+
+
 end
 %% ================== private functions =========================
 
