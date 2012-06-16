@@ -77,7 +77,7 @@ end
 
 %% scale the data
 
-[cdata,colorRange] = scaleData(cdata,varargin{:});
+[cdata,colorRange,minData,maxData] = scaleData(cdata,varargin{:});
 if ~any(isnan(colorRange)), caxis(ax,colorRange);end
 
 
@@ -122,7 +122,8 @@ else % spherical plot
   end
   
   % plot lower hemisphere
-  if isnumeric(projection.maxTheta) && projection.maxTheta > pi/2 + 1e-4
+  if isnumeric(projection.maxTheta) && projection.maxTheta > pi/2 + 1e-4 ...
+      && any(v.z(:) < -1e-4);
     
     % split data according to upper and lower hemisphere
     ind = v.z < 1e-5;
@@ -154,7 +155,7 @@ colormap(ax,getpref('mtex','defaultColorMap'));
 plotGrid(ax,projection,varargin{:});
 
 % add annotations
-opts = {'BL',{'Min:',xnum2str(min(cdata(:)))},'TL',{'Max:',xnum2str(max(cdata(:)))}};
+opts = {'BL',{'Min:',xnum2str(minData)},'TL',{'Max:',xnum2str(maxData)}};
 
 plotAnnotate(ax,opts{:},varargin{:})
 
