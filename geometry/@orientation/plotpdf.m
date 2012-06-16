@@ -58,7 +58,11 @@ end
 %% plot
 
 % compute specimen directions
-r = @(i) reshape(ss * o * symmetrise(h{i}),[],1);
+sh = @(i) symmetrise(h{i});
+r = @(i) reshape(ss * o * sh(i),[],1);
+
+% symmetrise data
+data = @(i) repmat(data(:),[numel(ss) numel(sh(i))]);
 
 [maxTheta,maxRho,minRho] = getFundamentalRegionPF(ss,varargin{:});
 

@@ -30,15 +30,17 @@ function multiplot(nplots,varargin)
 
 %% prepare plot
 
+% get existing axes
+a = findobj(gcf,'type','axes');
+
 % generate some invisible axes
 if isappdata(gcf,'multiplotAxes')
   a = getappdata(gcf,'multiplotAxes');
   nplots = numel(a);
-elseif ~isempty(findobj(gcf,'type','axes'))
-  a = findobj(gcf,'type','axes');
+elseif isempty(nplots) || numel(a) == nplots  
   setappdata(gcf,'multiplotAxes',a);  
-else  
-  for k=1:nplots, a(k) = axes('visible','off'); end %#ok<AGROW>
+else
+  for k=numel(a)+1:nplots, a(k) = axes('visible','off'); end
   setappdata(gcf,'multiplotAxes',a);  
 end
 
