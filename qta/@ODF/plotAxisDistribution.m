@@ -29,8 +29,7 @@ h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2
 
 
 %% plot
-multiplot(1,@(i) h,@(i) pos(calcAxisDistribution(odf,h,varargin{:})),...
-  'SMOOTH',varargin{:});
+smooth(h,pos(calcAxisDistribution(odf,h,varargin{:})),varargin{:});
 
 setappdata(gcf,'CS',odf(1).CS);
 setappdata(gcf,'SS',odf(1).SS);

@@ -63,7 +63,7 @@ vdisp('Plotting pole density functions:',varargin{:})
   
 multiplot(numel(h),...
   r,@(i) ensureNonNeg(pdf(odf,h{i},r,varargin{:},'superposition',c{i})),...
-  'smooth','TR',@(i) char(h{i},getpref('mtex','textInterpreter')),varargin{:});
+  'smooth','TR',@(i) h{i},varargin{:});
 
 %% finalize plot
 setappdata(gcf,'h',h);

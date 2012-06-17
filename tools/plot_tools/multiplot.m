@@ -45,7 +45,11 @@ else
 end
 
 % set figure options
-varargin = delete_option(varargin,'position');
+if check_option(varargin,'position')
+  set(gcf,'position',get_option(varargin,'position'));
+  varargin = delete_option(varargin,'position');
+end
+
 
 %% extract data
 if nargin>=3 && isa(varargin{2},'function_handle')
