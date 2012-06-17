@@ -23,7 +23,12 @@ if isempty_cell(plotType)
 else
   plotType = plotType{end};
 end
-  
+
+% if data is vector3d type is quiver
+if ~isempty(varargin) && isa(varargin{1},'vector3d')
+  plotType = 'quiver';
+end
+
 % call plotting routine according to type
 switch plotType
 

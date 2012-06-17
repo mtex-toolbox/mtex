@@ -25,13 +25,13 @@ function varargout = quiver(v, d, varargin )
 projection = getProjection(ax,v,varargin{:});
 
 % project data
-[x,y,hemi,p] = project(v,projection); %#ok<ASGLU>
+[x,y] = project(v,projection);
 x = x(:); y = y(:);
 
 %% make the quiver plot
 
 mhs = get_option(varargin,'MaxHeadSize',0.9);
-arrowSize = get_option(varargin,'arrowSize',0.2);
+arrowSize = get_option(varargin,'arrowSize',0.03);
 
 [dx,dy] = project(d,projection);
   
