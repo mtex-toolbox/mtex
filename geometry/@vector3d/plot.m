@@ -13,6 +13,9 @@ function varargout = plot(v,varargin)
 %  contourf - plot point cloud as filled contours
 %  contour  - plot point cloud as contours
 
+% new plot if needed
+if ~ishandle(v), newMTEXplot;end
+
 % where to plot
 [ax,v,varargin] = getAxHandle(v,varargin{:});
 
@@ -30,7 +33,7 @@ if ~isempty(varargin) && isa(varargin{1},'vector3d')
 end
 
 % call plotting routine according to type
-switch plotType
+switch lower(plotType)
 
   case 'scatter'
   

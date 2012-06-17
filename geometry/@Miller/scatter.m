@@ -15,6 +15,9 @@ function varargout = scatter(m,varargin)
 
 %% preprocess input
 
+% new figure if needed
+if ~ishandle(m), newMTEXplot;end
+
 % get axis hande
 [ax,m,varargin] = getAxHandle(m,varargin{:});
 
