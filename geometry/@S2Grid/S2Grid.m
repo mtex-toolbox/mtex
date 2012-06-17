@@ -50,19 +50,18 @@ maxrho = get_option(varargin,'MAXRHO',maxrhoGrid);
 drho = maxrho - minrho;
 
 % theta range
-if check_option(varargin,{'north','upper'})
-  minthetaGrid = 0;
-  if check_option(varargin,{'south','lower'})
-    maxthetaGrid = pi;
-  else
-    maxthetaGrid = pi/2;
-  end
-elseif check_option(varargin,{'south','lower'})
-  minthetaGrid = pi/2; maxthetaGrid = pi;
-elseif check_option(varargin,'antipodal')
-  minthetaGrid = 0; maxthetaGrid = pi/2;
+if check_option(varargin,'south')
+  minthetaGrid = pi/2;
+  maxthetaGrid = pi;
 else
-  minthetaGrid = 0; maxthetaGrid = pi;
+  minthetaGrid = 0;
+  
+  if check_option(varargin,'antipodal') && ...
+      (~check_option(varargin,'complete') ||check_option(varargin,'north'))
+    maxthetaGrid = pi/2;
+  else
+    maxthetaGrid = pi;
+  end
 end
 
 mintheta = max(get_option(varargin,'MINTHETA',minthetaGrid), ...
