@@ -102,9 +102,13 @@ plotipdf(odf,yvector,'antipodal','complete')
 % Notice how MTEX, automatically reduces the fundamental region of inverse
 % pole figures in the case that antipodal symmetry is present.
 
-figure(1); plotipdf(odf,yvector,'position',[100 100 400 200])
+close all
+figure(1)
+plotipdf(odf,yvector,'position',[100 100 400 200])
 
-figure(2);plotipdf(odf,yvector,'antipodal','position',[100 100 400 200])
+
+figure(2)
+plotipdf(odf,yvector,'antipodal','position',[100 100 400 200])
 
 
 %% EBSD Colocoding
@@ -119,12 +123,12 @@ mtexdata aachen
 % (1,0,0) pole figure. Here no antipodal symmetry is present.
 
 close all
-plot(ebsd)
+plot(ebsd('fe'))
 colorbar
 
 %%
 % Compare to the result when antipodal symmetry is introduced.
 
-
-plot(ebsd,'antipodal')
+close all
+plot(ebsd('fe'),'antipodal')
 colorbar
