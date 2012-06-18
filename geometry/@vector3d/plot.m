@@ -20,12 +20,14 @@ if ~ishandle(v), newMTEXplot;end
 [ax,v,varargin] = getAxHandle(v,varargin{:});
 
 % extract plot type
-plotType = extract_option(varargin,{'smooth','scatter','text','contour','contourf','quiver'});
+plotTypes = {'smooth','scatter','text','contour','contourf','quiver','line','plane','circle'};
+plotType = extract_option(varargin,plotTypes);
 if isempty_cell(plotType)
   plotType = 'scatter';
 else
   plotType = plotType{end};
 end
+varargin = delete_option(varargin,plotTypes);
 
 % if data is vector3d type is quiver
 if ~isempty(varargin) && isa(varargin{1},'vector3d')
@@ -55,10 +57,23 @@ switch lower(plotType)
     
     [varargout{1:nargout}] = quiver(ax,v,varargin{:});
     
+  case 'line'
+    
+    [varargout{1:nargout}] = line(ax,v,varargin{:});
+    
+  case 'circle'
+    
+    [varargout{1:nargout}] = circle(ax,v,varargin{:});
+    
+  case 'plane'
+    
+    [varargout{1:nargout}] = circle(ax,v,90*degree,varargin{:});
+    
 end
 
 if check_option(varargin,{'text','label','labeled'})
+  washold = ishold;
   hold all
   [varargout{1:nargout}] = text(ax,v,get_option(varargin,{'text','label'}),varargin{:});
-  hold off
+  if ~washold, hold off;end
 end

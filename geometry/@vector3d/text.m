@@ -64,7 +64,4 @@ plotGrid(ax,projection,varargin{:});
 if nargout > 0
   varargout{1} = ax;
   varargout{2} = h;
-else
-  m = 0.025;
-  set(ax,'units','normalized','position',[0+m 0+m 1-2*m 1-2*m]);
 end

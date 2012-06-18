@@ -28,8 +28,13 @@ ss = o.SS;
 
 if newMTEXplot('ensureTag','pdf',...
     'ensureAppdata',{{'CS',cs},{'SS',ss}})
-  argin_check(h,{'Miller'});
-  h = ensurecell(ensureCS(get(o,'CS'),{h}));
+  
+  % convert to cell
+  if ~iscell(h), h = vec2cell(h);end 
+  argin_check([h{:}],{'Miller'});  
+  for i = 1:length(h)
+    h{i} = ensureCS(get(o,'CS'),h(i));
+  end  
 else
   h = getappdata(gcf,'h');
   options = getappdata(gcf,'options');
@@ -67,7 +72,7 @@ data = @(i) repmat(data(:),[numel(ss) numel(sh(i))]);
 [maxTheta,maxRho,minRho] = getFundamentalRegionPF(ss,varargin{:});
 
 multiplot(numel(h),r,data,...
-  'scatter','TR',@(i) char(h{i},getpref('mtex','textInterpreter')),...
+  'scatter','TR',@(i) h{i},...
   'minRho',minRho,'maxRho',maxRho,'maxTheta',maxTheta,...
   varargin{:});
 

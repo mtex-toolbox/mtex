@@ -5,8 +5,13 @@ if ishandle(v)
   
   if isa(handle(v),'axes')
     ax = v;
-  else
+  else % new plot
+    
     ax = gca;
+    
+    m = 0.025;
+    set(ax,'units','normalized','position',[0+m 0+m 1-2*m 1-2*m]);
+    
   end
   
   v = varargin{1};

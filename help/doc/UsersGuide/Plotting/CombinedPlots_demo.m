@@ -65,6 +65,7 @@ hh = legend({'EBSD 1','EBSD 2'},'units','normalized','position',[0.022 0.9 0.1 0
 %%
 % and, of course, you can do the same with ODF plots:
 
+figure('position',[100 100 700 300]);
 plotodf(odf,'gray','sections',8)
 hold all
 plotodf(ebsd,'MarkerSize',8,'MarkerColor','b','MarkerEdgeColor','w')
@@ -81,8 +82,8 @@ close all;
 plotipdf(odf,xvector,'gray');
 
 hold all % keep plot
-plot(Miller(1,1,-2,0,cs),'all')
-plot(Miller(0,1,-1,0,cs),'all')
-plot(Miller(0,1,-1,1,cs),'all')
+plot(Miller(1,1,-2,0,cs),'symmetrise')
+plot(Miller(0,1,-1,0,cs),'symmetrise')
+plot(Miller(0,1,-1,1,cs),'symmetrise')
 hold off % next plot command deletes all plots
 set(gcf,'position',[100,100,300,220]);

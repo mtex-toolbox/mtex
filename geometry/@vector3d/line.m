@@ -1,11 +1,13 @@
-function varargout = line( v, varargin )
+function varargout = line(v, varargin )
+
+% where to plot
+[ax,v,varargin] = getAxHandle(v,varargin{:});
 
 
+[h p] = scatter(ax,reshape(v,[],1),varargin{:});
 
-
-[h p] = scatter(reshape(v,[],1),varargin{:});
-
-p = optiondraw(p,'edgecolor','k');
+p = optiondraw(p,'edgecolor',get_option(varargin,'color','k'),...
+  'Marker','none');
 
 if nargout>0
   varargout{1} = h;
