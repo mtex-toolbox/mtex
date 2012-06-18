@@ -101,6 +101,7 @@ annotate(mod2,...
 plotFourier(odf)
 hold all
 plotFourier(fibreODF(Miller(1,0,0),zvector,cs,ss))
+hold off
 
 legend({'Fibre ODF','Unimodal ODF'})
 

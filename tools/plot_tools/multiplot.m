@@ -37,11 +37,8 @@ a = findobj(gcf,'type','axes');
 if isappdata(gcf,'multiplotAxes')
   a = getappdata(gcf,'multiplotAxes');
   nplots = numel(a);
-elseif isempty(nplots) || numel(a) == nplots  
-  setappdata(gcf,'multiplotAxes',a);  
-else
+elseif ~isempty(nplots) && numel(a) ~= nplots  
   for k=numel(a)+1:nplots, a(k) = axes('visible','off'); end
-  setappdata(gcf,'multiplotAxes',a);  
 end
 
 % set figure options
@@ -49,7 +46,6 @@ if check_option(varargin,'position')
   set(gcf,'position',get_option(varargin,'position'));
   varargin = delete_option(varargin,'position');
 end
-
 
 %% extract data
 if nargin>=3 && isa(varargin{2},'function_handle')
@@ -108,27 +104,30 @@ end
 %% post process figure
 
 set(gcf,'ResizeFcn',@(src,evt) figResize(src,evt,a));
-setappdata(gcf,'autofit','on');
-setappdata(gcf,'border',10);
-setappdata(gcf,'marginx',0);
-setappdata(gcf,'marginy',0);
 
-figResize(gcf,[],a);
+if ~isappdata(gcf,'multiplotAxes')
+  
+  setappdata(gcf,'multiplotAxes',a);  
+  setappdata(gcf,'autofit',get_option(varargin,'autofit','on'));
+  setappdata(gcf,'border',get_option(varargin,'border',10));
+  setappdata(gcf,'marginx',get_option(varargin,'marginx',0));
+  setappdata(gcf,'marginy',get_option(varargin,'marginy',0));
 
-if ~check_option(varargin,'uncropped')
-  set(gcf,'Units','pixels');
-  pos = get(gcf,'Position');
-  si = get(gcf,'UserData');
-  pos([3,4]) = si;
-  set(gcf,'Position',pos);
+  figResize(gcf,[],a);
+
+  if ~check_option(varargin,'uncropped')
+    set(gcf,'Units','pixels');
+    pos = get(gcf,'Position');
+    si = get(gcf,'UserData');
+    pos([3,4]) = si;
+    set(gcf,'Position',pos);
+  end
 end
 
 set(gcf,'color',[1 1 1],'nextplot','replace');
 
 % make axes visible
 set(a,'Visible','on');
-
-
 
 
 end

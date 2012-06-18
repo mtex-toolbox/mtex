@@ -23,8 +23,8 @@ projection = getProjection(ax,v,varargin{:});
 h = [];
 
 % why should I do this?
-hfig = get(ax,'parent');
-set(hfig,'color',[1 1 1]);
+%hfig = get(ax,'parent');
+%set(hfig,'color',[1 1 1]);
 
 %% extract colors
 
@@ -98,7 +98,7 @@ if strcmpi(projection.type,'plain') % plain plot
   [xu,yu] = project(v,projection);
   
   cdata = reshape(cdata,size(xu));
-  [CM,h(end+1)] = contourf(ax,xu,yu,cdata,contours); %#ok<ASGLU>
+  h = [h,betterContourf(ax,xu,yu,cdata,contours,varargin{:})];
 
 
 else % spherical plot  
@@ -117,7 +117,7 @@ else % spherical plot
     [xu,yu] = project(v_upper,projection);
     
     % plot filled contours
-    [~,h(end+1)] = contourf(ax,xu,yu,data_upper,contours);
+    h = [h,betterContourf(ax,xu,yu,data_upper,contours,varargin{:})];
     
   end
   
@@ -132,7 +132,7 @@ else % spherical plot
     
     % plot filled contours
     [xl,yl] = project(v_lower,projection,'equator2south');
-    [CM,h(end+1)] = contourf(ax,xl,yl,data_lower,contours); %#ok<ASGLU>
+    h = [h,betterContourf(ax,xl,yl,data_lower,contours,varargin{:})];
     
   end
   
@@ -168,3 +168,12 @@ if nargout > 0
   varargout{1} = h;
 end
 
+function h = betterContourf(ax,X,Y,data,contours,varargin)
+
+h = [];
+
+if numel(unique(data)) > 1
+  [CM,h] = contourf(ax,X,Y,data,contours); %#ok<ASGLU>
+elseif ~check_option(varargin,'fill',[],'off')  
+  h = fill(X,Y,data,'LineStyle','none','parent',ax);
+end

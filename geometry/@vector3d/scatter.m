@@ -34,7 +34,13 @@ projection = getProjection(ax,v,varargin{:});
 [x,y] = project(v,projection);
 
 % check that there is something left to plot
-if all(isnan(x) | isnan(y)), return;end
+if all(isnan(x) | isnan(y))
+  if nargout > 0
+    varargout{1} = [];
+    varargout{2} = [];
+  end
+  return;
+end
 
 % default arguments
 patchArgs = {'Parent',ax,...
@@ -121,9 +127,6 @@ end
 if nargout > 0
   varargout{1} = ax;
   varargout{2} = h;
-elseif ~isappdata(gcf,'multiplotAxes')
-  m = 0.025;
-  set(ax,'units','normalized','position',[0+m 0+m 1-2*m 1-2*m]);
 end
 
 %% ---------------------------------------------------------------
