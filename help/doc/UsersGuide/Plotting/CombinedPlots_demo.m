@@ -65,6 +65,7 @@ hh = legend({'EBSD 1','EBSD 2'},'units','normalized','position',[0.022 0.9 0.1 0
 %%
 % and, of course, you can do the same with ODF plots:
 
+close all;
 figure('position',[100 100 700 300]);
 plotodf(odf,'gray','sections',8)
 hold all
@@ -78,12 +79,10 @@ hold off
 % Next we are going to add some Miller indices to an inverse pole figure
 % plot.
 
-close all;
 plotipdf(odf,xvector,'gray');
 
 hold all % keep plot
-plot(Miller(1,1,-2,0,cs),'symmetrise')
-plot(Miller(0,1,-1,0,cs),'symmetrise')
-plot(Miller(0,1,-1,1,cs),'symmetrise')
+plot(Miller(1,1,-2,0,cs),'symmetrised','labeled')
+plot(Miller(0,1,-1,0,cs),'symmetrised','labeled')
+plot(Miller(0,1,-1,1,cs),'symmetrised','labeled')
 hold off % next plot command deletes all plots
-set(gcf,'position',[100,100,300,220]);
