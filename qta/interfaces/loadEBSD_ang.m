@@ -7,7 +7,7 @@ try
   phasePos = strmatch('# Phase',hl);
   
   % phases to be ignored
-  ignorePhase = get_option(varargin,'ignorePhase',0);
+  ignorePhase = get_option(varargin,'ignorePhase',[]);
   
   try
     for i = 1:length(phasePos)
