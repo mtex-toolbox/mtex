@@ -14,7 +14,10 @@ function [density,omega] = calcAngleDistribution(odf,varargin)
 %
 %% See also
 
-
+if nargin > 1 && isa(varargin{1},'ODF')
+  odf = calcMDF(odf,varargin{1});
+  varargin(1) = [];
+end
 
 if ~check_option(varargin,'fast')
 
