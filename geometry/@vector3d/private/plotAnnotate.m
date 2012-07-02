@@ -61,7 +61,8 @@ setappdata(ax,'annotation',t);
 
 function s = st2char(t)
 
-if isa(t,'Miller') || isa(t,'vector3d')
+if isa(t,'cell') && numel(t) == 1, t = t{1};end
+if isa(t,'vector3d')
   for i = 1:length(t)
     
     s{i} = char(subsref(t,i),getpref('mtex','textInterpreter')); %#ok<AGROW>
