@@ -92,7 +92,7 @@ if strcmpi(projection.type,'plain')
 else % polar grid
   
   % plot grid in northern hemisphere
-  if projection.minTheta == 0
+  if projection.minTheta < pi/2-1e-3
     
     % center point
     [x,y] = project(zvector,projection);

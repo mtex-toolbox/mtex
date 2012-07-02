@@ -55,7 +55,7 @@ switch get(gcf,'tag')
     end
     
     %% inverse pole figure plot
-    case {'ipdf','hkl'}
+    case {'ipdf','hkl','AxisDistribution'}
       
       if isa(obj,'quaternion')
         

@@ -69,9 +69,9 @@ if ~check_option(v,'plot')
     v = myPlotGrid;
     clear myPlotGrid;
     cdata = reshape(cdata,size(v));
-    
+  elseif ~strcmp(projection.type,'plain')
+    varargin = set_option(varargin,'correctContour');
   end
-  
 end
 
 
@@ -173,6 +173,14 @@ function h = betterContourf(ax,X,Y,data,contours,varargin)
 h = [];
 
 if numel(unique(data)) > 1
+  
+  % contour correction
+  if check_option(varargin,'correctContour')
+    X = [X;X(1,:)];
+    Y = [Y;Y(1,:)];
+    data = [data;data(1,:)];
+  end
+  
   [CM,h] = contourf(ax,X,Y,data,contours); %#ok<ASGLU>
 elseif ~check_option(varargin,'fill',[],'off')  
   h = fill(X,Y,data,'LineStyle','none','parent',ax);

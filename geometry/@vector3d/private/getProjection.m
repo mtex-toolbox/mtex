@@ -89,10 +89,10 @@ if maxRho ~= 2*pi, rho(1) = [];end
   
 if isnumeric(maxTheta)
   
-  if maxTheta > pi/2
-    theta = pi/2;
+  if strcmp(projection.type,'plain') || maxTheta < pi/2
+    theta = maxTheta;    
   else
-    theta = maxTheta;
+    theta = pi/2;
   end
 else
   theta = maxTheta(rho);

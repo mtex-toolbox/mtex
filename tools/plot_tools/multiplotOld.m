@@ -33,7 +33,7 @@ function multiplot(x,y,nplots,varargin)
 minz = +inf; maxz = -inf;
 for i = 1:nplots
   Y{i} = y(i); %#ok<AGROW>
-  if isa(Y{i},'double')
+  if isa(Y{i},'double') && ~isempty(Y{i})
     minz = min(minz,min(Y{i}(Y{i}>-inf)));
     maxz = max(maxz,max(Y{i}(Y{i}<inf)));
     if ~check_option(varargin,'silent') && check_option(varargin,'DISP')

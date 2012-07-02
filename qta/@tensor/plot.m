@@ -17,6 +17,8 @@ function plot(T,varargin)
 %
 %
 
+newMTEXplot;
+
 if check_option(varargin,'section')
   omega = linspace(-pi,pi,361);
   
