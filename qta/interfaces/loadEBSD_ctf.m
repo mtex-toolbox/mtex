@@ -24,7 +24,7 @@ try
     '-3','-3m','6/m','6/mmm','m3','m3m'};
   
   % phases to be ignored
-  ignorePhase = get_option(varargin,'ignorePhase',0);
+  ignorePhase = get_option(varargin,'ignorePhase',[]);
   
   for K = 0:nphase
     
