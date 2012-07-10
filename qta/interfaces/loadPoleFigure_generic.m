@@ -39,7 +39,7 @@ function [pf,options] = loadPoleFigure_generic(fname,varargin)
 
 
 % load data
-[d,varargin,header,colums] = load_generic(fname,varargin{:});
+[d,varargin,header,columns] = load_generic(fname,varargin{:});
 
 % no data found
 if size(d,1) < 10 || size(d,2) < 3 || size(d,2) > 15
@@ -65,7 +65,7 @@ end
 % no options given -> ask
 if ~check_option(varargin,'ColumnNames')
   
-  options = generic_wizard('data',d,'type','PoleFigure','header',header,'columns',colums);
+  options = generic_wizard('data',d,'type','PoleFigure','header',header,'columns',columns);
   if isempty(options), pf = []; return; end 
   varargin = [options,varargin];
 
@@ -104,9 +104,13 @@ if istype(names,sphcoord)
     warndlg('The imported polar angles appears to be quit small, maybe your data are in radians and not in degree as you specified?');
   end
   
+  if max(abs(rh)) > 15
+    warndlg('The imported polar angles appears to be quit large, maybe your data are in degree and not in radians as you specified?');
+  end
+  
   if all(th<=0), th = -th;end  
-  assert(all(th>=0 & th <= pi) && ...
-    all(rh>=-360) && all(rh<=720),'Polar coordinates out of range!');
+  assert(all(th>=-1e-3 & th <= pi+1e-3) && ...
+    all(rh>=-2*pi-1e-3) && all(rh<=4*pi+1e-3),'Polar coordinates out of range!');
 
   % specimen directions
   r = S2Grid(sph2vec(th,rh),'antipodal');
