@@ -63,6 +63,7 @@ if nargin == 0
   s.laue = '-1';
   s.axis =  [xvector,yvector,zvector];
   s.mineral = '';
+  s.color = '';
   %superiorto('quaternion','SO3Grid','orientation');
   s = class(s,'symmetry',rotation(idquaternion));
   return
@@ -169,6 +170,7 @@ s.name = name;
 s.laue = sym.Laue;
 s.axis = calcAxis(axis,angle,varargin{:});
 s.mineral = get_option(varargin,'mineral','');
+s.color = get_option(varargin,'color','');
 
 %superiorto('quaternion','SO3Grid','orientation');
 s = class(s,'symmetry',rotation(calcQuat(s.laue,s.axis)));

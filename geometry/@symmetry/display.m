@@ -25,6 +25,12 @@ if ~isempty(s.mineral)
   propV{end+1} = s.mineral;
 end
 
+if ~isempty(s.color)
+  props{end+1} = 'color'; 
+  propV{end+1} = s.color;
+end
+
+
 % add symmetry
 props{end+1} = 'symmetry'; 
 propV{end+1} = [s.name ' (' s.laue ')'];
