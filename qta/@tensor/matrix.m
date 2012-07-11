@@ -20,9 +20,9 @@ function m= matrix(T,varargin)
 if check_option(varargin,{'compact','voigt'})
   switch  T.rank
     case 4
-      m = tensor42(T.M);
+      m = tensor42(T.M,T.doubleConvention);
     case 3
-      m = tensor32(T.M,isfield(T.properties,'doubleconvention'));      
+      m = tensor32(T.M,T.doubleConvention);
   end
   return
 end

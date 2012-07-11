@@ -60,7 +60,7 @@ end
 % no options given -> ask
 if ~check_option(varargin,'ColumnNames')
   
-  options = generic_wizard('data',d(1:end<101,:),'type','ODF','header',header,'colums',c);
+  options = generic_wizard('data',d(1:end<101,:),'type','ODF','header',header,'columns',c);
   if isempty(options), odf = []; return; end
   varargin = [options,varargin];
 
@@ -100,7 +100,8 @@ if istype(names,euler) % Euler angles specified
   gamma = d(:,layout(3))*dg;
   weight = d(:,layout(4));
 
-  assert(all(beta >=0 & beta <= pi & alpha >= -2*pi & alpha <= 4*pi & gamma > -2*pi & gamma<4*pi));
+  assert(all(beta >=-1e-3 & beta <= pi+1e-3 & alpha >= -2*pi-1e-3 &...
+    alpha <= 4*pi+1e-3 & gamma > -2*pi-1e-3 & gamma<4*pi+1e-3));
   
   % check for choosing
   if ~ischeck && max(alpha) < 10*degree
