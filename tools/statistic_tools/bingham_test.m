@@ -2,7 +2,7 @@ function [T,p,v] = binham_test(o,varargin)
 % bingham test for spherical/prolat/oblat case
 %
 %% Input
-%  o      - @orientation / @EBSD / @grain
+%  o      - @orientation / @EBSD / @GrainSet
 %
 %% Options
 %  spherical - test case

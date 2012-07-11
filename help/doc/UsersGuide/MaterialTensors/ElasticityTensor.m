@@ -1,19 +1,18 @@
 %% The Elasticity Tensor
-% how to calculate the elasticity properties
+% how to calculate and plot the elasticity properties
 %
-%% Open in Editor
-%
-%% Abstract
+%%
 % MTEX offers a very simple way to compute elasticity properties of
 % materials. This includes Young's modulus, linear compressibility,
 % Cristoffel tensor, and elastic wave velocities.
 %
+%% Open in Editor
+%
 %% Contents
-
-
+%
 %% Import an Elasticity Tensor
-% Let us start by importing the elastic stiffness tensor of an Olivin
-% crystal in reference orientation from a file. 
+% Let us start by importing the elastic stiffness tensor of an Olivine
+% crystal in reference orientation from a file.
 
 fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
 
@@ -22,21 +21,23 @@ cs = symmetry('mmm',[4.7646 10.2296 5.9942],'mineral','Olivin');
 C = loadTensor(fname,cs,'propertyname','elastic stiffness','unit','Pa','interface','generic')
 
 %% Young's Modulus
-% Young's modulus is .... It is computed for a specific direction x by the
-% command <tensor.YoungsModulus.html YoungsModulus>.
+% Young's modulus is also known as the tensile modulus and measures the stiffness of elastic materials
+% It is computed for a specific direction x by the command <tensor.YoungsModulus.html YoungsModulus>.
 
 x = xvector;
 E = YoungsModulus(C,x)
 
 %%
 % It can be plotted by passing the option *YoungsModulus* to the
-% <tensor.plot.html plot> command. 
+% <tensor.plot.html plot> command.
 
-set_mtex_option('defaultColorMap',seismicColorMap);
+setpref('mtex','defaultColorMap',seismicColorMap);
 plot(C,'PlotType','YoungsModulus','complete')
 
 %% Linear Compressibility
-% The linear compressibility is ...
+% The linear compressibility is the deformation of an arbitrarily shaped
+% specimen caused by increase in hydrostatic pressure and can be described
+% by a second rank tensor.
 % It is computed for a specific direction x by the
 % command <tensor.linearCompressibility.html linearCompressibility>.
 
@@ -48,15 +49,22 @@ beta = linearCompressibility(C,x)
 
 plot(C,'PlotType','linearCompressibility','complete')
 
-%% Cristoffel Tensor
-% The Cristoffel Tensor for a specific direction x is ....
+%% Christoffel Tensor
+% The Christoffel Tensor is symmetric because of the symmetry of the
+% elastic constants. The eigenvalues of the 3x3 Christoffel tensor are
+% three positive values of the wave moduli which corresponds to \rho Vp^2 ,
+% \rho Vs1^2 and \rho Vs2^2 of the plane waves propagating in the direction n.
+% The three eigenvectors of this tensor are then the polatiration
+% directions of the three waves. Because the Christoffel tensor is
+% symmetric, the polarization vectors are poerpendicular ro each other.
+
 % It is computed for a specific direction x by the
 % command <tensor.ChristoffelTensor.html ChristoffelTensor>.
 
 T = ChristoffelTensor(C,x)
 
 %% Elastic Wave Velocity
-% The Cristoffel tensor is the basis for computing the direction dependent
+% The Christoffel tensor is the basis for computing the direction dependent
 % wave velocities of the p, s1, and s2 wave, as well as of the polarisation
 % directions. In MTEX this is done by the command <tensor.velocity.html
 % velocity>
@@ -65,7 +73,7 @@ T = ChristoffelTensor(C,x)
 
 %%
 % In order to visualize these quantities there are several posibilities.
-% Let us first plot the direction depended wave speed of the p-wave
+% Let us first plot the direction dependend wave speed of the p-wave
 
 plot(C,'PlotType','velocity','vp','complete')
 
@@ -78,8 +86,8 @@ plot(C,'PlotType','velocity','pp','complete')
 hold off
 
 %%
-% Finally we visuallize the speed difference between the s1 and s2 waves
-% together with the  fast sheer polarization.
+% Finally we visualize the speed difference between the s1 and s2 waves
+% together with the  fast shear-wave polarization.
 
 plot(C,'PlotType','velocity','vs1-vs2','complete')
 
@@ -91,4 +99,4 @@ hold off
 %%
 % set back default colormap
 
-set_mtex_option('defaultColorMap',WhiteJetColorMap)
+setpref('mtex','defaultColorMap',WhiteJetColorMap)

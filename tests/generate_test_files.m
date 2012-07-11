@@ -16,12 +16,12 @@ odf = unimodalODF(idquaternion,cs,ss);
 pf = calcPoleFigure(odf,h,r) %#ok<NOPRT>
 
 % debug mode
-set_mtex_option('debug_mode');
+setpref('mtex','debugMode');
 
-set_mtex_option('tempdir',fullfile(mtex_path,'c','test'));
+setpref('mtex','tempdir',fullfile(mtex_path,'c','test'));
 
 % generate files
 disp('Press Strg-C to generate test files!')
 calcODF(pf)
 
-delete_mtex_option('debug_mode');
+deletepref('mtex','debugMode');

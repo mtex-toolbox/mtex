@@ -5,11 +5,11 @@
 
 ebsd = calcEBSD(SantaFe,100);
 
-xy = randi(20,100,2);
+xy = randi(20,150,2);
 xy = unique(xy,'rows');
 
-ebsd = set(ebsd,'x',xy(:,1));
-ebsd = set(ebsd,'y',xy(:,2));
+ebsd = set(ebsd,'x',xy(1:100,1));
+ebsd = set(ebsd,'y',xy(1:100,2));
 
 figure,plot( calcGrains(ebsd) )
 
@@ -43,20 +43,20 @@ ebsd = fill(ebsd,[0 25 0 25 0 25],1)
 plot(ebsd)
 
 %%
-% 
 
-[ grains ebsd] = calcGrains(ebsd);
+grains = calcGrains(ebsd);
 
 %%
 %
 
 plot(grains)
 
+view(3)
+
 material dull
 lighting phong
 camlight('headlight')
 grid on
-
 
 
 

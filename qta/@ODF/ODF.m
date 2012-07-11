@@ -7,7 +7,7 @@ function odf = ODF(center,c,psi,CS,SS,varargin)
 %
 %% Syntax
 % odf = ODF(center,weigths,kernel,CS,SS,...) - setup an ODF specified by center 
-%    @orientations, weights and an @kernel, see [[unimodalODF.html,unimodalODF]]
+%    @orientation, weights and an @kernel, see [[unimodalODF.html,unimodalODF]]
 %
 % odf = ODF({h,r},weigths,kernel,CS,SS,'Fibre',...) - constructs an [[fibreODF.html,fibre ODF]]
 %    by given specimen and crystal direction and a kernel.

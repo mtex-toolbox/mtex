@@ -14,7 +14,10 @@ function [density,omega] = calcAngleDistribution(odf,varargin)
 %
 %% See also
 
-
+if nargin > 1 && isa(varargin{1},'ODF')
+  odf = calcMDF(odf,varargin{1});
+  varargin(1) = [];
+end
 
 if ~check_option(varargin,'fast')
 
@@ -26,7 +29,15 @@ if ~check_option(varargin,'fast')
   iS3G = 0;
   
   % the angle distribution of the uniformODF
-  [density,omega] = angleDistribution(get(odf,'CS'));
+  if check_option(varargin,'omega')
+    omega = get_option(varargin,'omega',[]);
+    density = zeros(size(omega));
+    d = angleDistribution(get(odf,'CS'),omega);
+    density(1:numel(d)) = d;
+  else
+    [density,omega] = angleDistribution(get(odf,'CS'));
+  end
+  
 
   % for all angles
   for k=1:numel(omega)  

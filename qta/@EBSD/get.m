@@ -24,117 +24,134 @@ function varargout = get(ebsd,vname,varargin)
 % EBSD/set
 
 
+properties = get_obj_fields(ebsd);
+options    = get_obj_fields(ebsd.options);
 if nargin == 1
-  vnames = get_obj_fields(ebsd,'options');
-  vnames = [vnames;{'data';'quaternion';'Euler';'mineral'}];
+  vnames = [properties;options;{'data';'quaternion';'orientations';'Euler';'mineral';'minerals'}];
   if nargout, varargout{1} = vnames; else disp(vnames), end
   return
 end
 
-switch vname
-  case 'CS'
-
-    varargout = ebsd.CS;
-
-  case 'CSCell'
-
-    varargout{1} = ebsd.CS;
-
-  case {'data','orientations','orientation'}
-
-
-    % check only a single phase is involved
-    if numel(unique(ebsd.phase)) > 1
-
-      error('MTEX:MultiplePhases',['This operatorion is only permitted for a single phase!' ...
-        'See ' doclink('xx','xx')  ...
-        ' for how to restrict EBSD data to a single phase.']);
-
-    elseif numel(ebsd.phase) == 0
-
+switch lower(vname)
+  case 'cs'
+    
+    if numel(ebsd.phase)==0 
       varargout{1} = [];
-
-    else
-
-      varargout{1} = orientation(ebsd.rotations,ebsd.CS{ebsd.phase(1)},ebsd.SS);
-
+      return
     end
-
+    
+    varargout = ebsd.CS(ebsd.phase(1));
+    
+  case 'cscell'
+    
+    varargout{1} = ebsd.CS;
+    
+  case {'data','orientations','orientation'}
+    
+    
+    checkSinglePhase(ebsd);
+      
+    varargout{1} = orientation(ebsd.rotations,ebsd.CS{ebsd.phase(1)},ebsd.SS);
+     
   case 'mis2mean'
     
     % check only a single phase is involved
     if numel(unique(ebsd.phase)) > 1
-
+      
       error('MTEX:MultiplePhases',['This operatorion is only permitted for a single phase!' ...
         'See ' doclink('xx','xx')  ...
         ' for how to restrict EBSD data to a single phase.']);
-
+      
     elseif numel(ebsd.phase) == 0
-
+      
       varargout{1} = [];
-
+      
     else
-
+      
       varargout{1} = orientation(ebsd.options.mis2mean,ebsd.CS{ebsd.phase(1)},ebsd.CS{ebsd.phase(1)});
-
+      
     end
     
   case 'phases'
-
-    varargout{1} = unique(ebsd.phase)';
-
-  case fields(ebsd)
-
-    varargout{1} = ebsd.(vname);
-
+    
+    varargout{1} = ebsd.phaseMap;
+    
+  case 'phase' 
+    
+    varargout{1} = ebsd.phaseMap(ebsd.phase);
+    
+  case lower(properties)
+    
+    varargout{1} = ebsd.(properties{find_option(properties,vname)});
+    
+  case lower(options)
+    
+    varargout{1} = ebsd.options.(options{find_option(options,vname)});
+    
   case {'quaternions','quaternion'}
-
+    
     varargout{1} = quaternion(ebsd.rotations);
-
-  case 'Euler'
-
+    
+  case 'euler'
+    
     % if only one phase
     if numel(unique(ebsd.phase)) == 1
-
+      
       [varargout{1:nargout}] = Euler(get(ebsd,'orientations'),varargin{:});
-
+      
     else
-
+      
       q = get(ebsd,'quaternion');
       [varargout{1:nargout}] = Euler(q,varargin{:});
-
+      
     end
-
-  case {'x','y','z','xy','xz','yz','xyz'}
-
+    
+  case {'xy','xz','yz','xyz'}
+    
     varargout{1} = [];
-    for xyz = {'x','y','z'}
-      if any(strfind(vname,char(xyz))) && isfield(ebsd.options,xyz)
-        varargout{1} = [varargout{1},ebsd.options.(char(xyz))];
+    
+    xyz = num2cell(lower(vname));
+    if all(isfield(ebsd.options,xyz))
+      for k = 1:numel(xyz)
+        varargout{1} = [varargout{1},ebsd.options.(xyz{k})];
       end
     end
-
+    
   case {'weight','weights'}
-
+    
     if isfield(ebsd.options, 'weight')
       w = ebsd.options.weight;
       varargout{1} = w./sum(w(:));
     else
       varargout{1} = ones(numel(ebsd),1)./numel(ebsd);
     end
-
+    
   case 'mineral'
-
-    varargout = cellfun(@(x) get(x,'mineral') ,ebsd.CS,'uniformoutput',false);
-
+    
+    ph = unique(ebsd.phase);
+    if numel(ph) > 1
+      error('There is more then one phase! Use get(...,''minerals'') instead.');
+    end
+        
+    isCS = cellfun('isclass',ebsd.CS,'symmetry');
+    minerals(isCS) = cellfun(@(x) get(x,'mineral') ,ebsd.CS(isCS),'uniformoutput',false);
+    minerals(~isCS) = ebsd.CS(~isCS);
+    varargout{1} = minerals{ph};
+    
   case 'minerals'
-
-    varargout{1} = cellfun(@(x) get(x,'mineral') ,ebsd.CS,'uniformoutput',false);
-
-  case fields(ebsd.options)
-
-     varargout{1} = ebsd.options.(vname);
-
+    
+    isCS = cellfun('isclass',ebsd.CS,'symmetry');
+    varargout{1}(isCS) = cellfun(@(x) get(x,'mineral') ,ebsd.CS(isCS),'uniformoutput',false);
+    varargout{1}(~isCS) = ebsd.CS(~isCS);
+    
+  case 'properties'
+    
+    varargout{1} = ebsd.options;
+    
+  case 'propertynames'
+    
+    varargout{1} = fieldnames(ebsd.options);
+    
   otherwise
     error(['There is no ''' vname ''' property in the ''EBSD'' object'])
 end

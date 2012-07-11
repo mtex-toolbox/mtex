@@ -21,19 +21,19 @@ function  varargout = plot(S2G,varargin)
 %  NORTH       - plot only points on the north hemisphere (default)
 %  SOUTH       - plot only points on the southern hemisphere
 %  antipodal      - include [[AxialDirectional.html,antipodal symmetry]]
-%  DOTS        - single points (default) 
-%  SMOOTH      - interpolated plot 
+%  DOTS        - single points (default)
+%  SMOOTH      - interpolated plot
 %  CONTOUR     - contour plot
 %  CONTOURF    - filled contour plot
 %  EAREA       - equal--area projection (default)
-%  EDIST       - equal--distance projection  
-%  PLAIN       - no projection    
-%  GRAY        - colormap -- gray 
+%  EDIST       - equal--distance projection
+%  PLAIN       - no projection
+%  GRAY        - colormap -- gray
 %  LOGARITHMIC - log plot
 %
 %% See also
 % savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
-% SphericalProjection_demo 
+% SphericalProjection_demo
 
 
 % 3d plot is extern
@@ -67,11 +67,11 @@ end
 
 hold all
 
-%%  GET OPTIONS 
+%%  GET OPTIONS
 
 % default plot options
 varargin = set_default_option(varargin,...
-  get_mtex_option('default_plot_options'));
+  getpref('mtex','defaultPlotOptions'));
 
 % S2Resolution
 if numel(S2G)>100 || get(S2G,'resolution') < 10 *degree
@@ -81,29 +81,29 @@ end
 % extract data
 data = get_option(varargin,'DATA',[]);
 if numel(data) == numel(S2G)
-  
+
   if isnumeric(data)
-    
+
     data = reshape(data,size(S2G));
-  
+
     % log plot?
     if check_option(varargin,{'log','logarithmic'})
       data = log10(data);
       data(imag(data) ~= 0 | isinf(data)) = nan;
     end
-  
+
     varargin = [{'colorrange',[min(data(:)),max(data(:))]},varargin];
   end
 elseif ndims(data) == 3 && all(size(data) == [size(S2G),3])
-  
+
 elseif check_option(varargin,'label')
-  
+
   data = ensurecell(get_option(varargin,'label'),size(S2G));
-  
+
 else
-  
+
   data = [];
-  
+
 end
 
 
@@ -112,20 +112,20 @@ if ~check_option(S2G,'plot') && ...
     check_option(varargin,{'CONTOUR','CONTOURF','SMOOTH','TEXTUREMAP','rgb'}) ...
     && isa(data,'double')
   if size(S2G,1) == 1 || size(S2G,2) == 1
-    
+
     % interpolate
     mintheta = getMin(S2G.theta);
     maxtheta = getMax(S2G.theta);
     res = max(2.5*degree,get(S2G,'resolution'));
     newS2G = S2Grid('plot','resolution',res,...
       'mintheta',mintheta,'maxtheta',maxtheta,'restrict2minmax',varargin{:});
-    
+
     [ind,d] = find(S2G,vector3d(newS2G));
     data = data(ind);
     data(d < cos(2*res)) = nan;
     S2G = newS2G;
     data = reshape(data,size(S2G));
-    
+
   else
     varargin = [varargin,'correctContour'];
   end
@@ -144,45 +144,45 @@ if check_option(varargin,'GRAY'),colormap(flipud(colormap('gray'))/1.1);end
 
 %% Which Hemispheres to Plot
 
-if isappdata(gcf,'hemisphere'), 
-    
+if isappdata(gcf,'hemisphere'),
+
   hemisphere = getappdata(gcf,'hemisphere');
-  
+
 elseif check_option(varargin,'antipodal')
-  
+
   hemisphere = 'antipodal';
-  
+
 elseif check_option(varargin,'plain')
-  
+
   hemisphere = 'north';
-  
+
 elseif check_option(varargin,{'north','south','antipodal','lower','upper'})
-  
+
   hemisphere = extract_option(varargin,{'north','south','antipodal','lower','upper'});
-   
+
 elseif check_option(S2G,{'north','south','antipodal','lower','upper'})
-  
+
   hemisphere = extract_option(S2G,{'north','south','antipodal','lower','upper'});
 
-elseif max(theta(:)) > pi/2+0.001 
-  
+elseif max(theta(:)) > pi/2+0.001
+
   hemisphere = {'north','south'};
-  
+
 else
-  
+
   hemisphere = 'north';
 
 end
 
 setappdata(gcf,'hemisphere',hemisphere);
-  
+
 bounds = [0,0,0,0];
 
 
 %% Northern Hemisphere
 
 if check_option(ensurecell(hemisphere),{'north','upper','antipodal'})
-  
+
   if strcmp(hemisphere,'antipodal')
     south = theta > pi/2+0.001;
     rho(south) = rho(south) + pi;
@@ -193,7 +193,7 @@ if check_option(ensurecell(hemisphere),{'north','upper','antipodal'})
   else
     ind = (theta <= pi/2+0.001) | isnan(theta);
   end
-  
+
   if isa(S2G.theta,'S1Grid')
     maxtheta = min([pi/2,max(getMax(S2G.theta)),get_option(varargin,'maxtheta',pi/2)]);
   elseif isa(S2G.theta,'function_handle')
@@ -201,7 +201,7 @@ if check_option(ensurecell(hemisphere),{'north','upper','antipodal'})
   else
     maxtheta = min(pi/2,get_option(varargin,'maxtheta',pi/2));
   end
-    
+
   bounds = plotHemiSphere(submatrix(theta,ind),submatrix(rho,ind),...
     submatrix(data,ind),0,'minrho',min(getMin(S2G.rho)),'maxrho',...
     max(getMax(S2G.rho)),varargin{:},'maxtheta',maxtheta);
@@ -239,7 +239,7 @@ if ~check_option(varargin,{'axis','annotate'})
   fpos = get(gcf,'position');
 
   f = (f+0.1)/1.1;
-  
+
   b = min(fpos(3) / f,fpos(4));
   set(gcf,'position',[fpos(1:2),b*f,b]);
   set(gcf,'Color',[1 1 1]);
@@ -262,11 +262,11 @@ if ~isempty(X), plotData(X+offset,Y,data,box,varargin{:});end
 
 % bounding box
 if ~check_option(varargin,'annotate')
-  
+
   switch lower(getappdata(gcf,'projection'))
     case 'plain'
       plotPlainGrid(theta,rho,varargin{:});
-    otherwise  
+    otherwise
       polarGrid(offset,varargin{:});
   end
 end

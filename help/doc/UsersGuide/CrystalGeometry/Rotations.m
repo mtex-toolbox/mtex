@@ -1,16 +1,14 @@
 %% Rotations
 % Explains how to define rotations and how to switch between different Euler
 % angle conventions.
+%%
+% Rotations are represented in MTEX by the class *@rotation* which is
+% inherited from the class <quaternion_index.html quaternion> and allow to
+% work with rotations as with matrixes in MTEX.
 %
 %% Open in Editor
 %
 %% Contents
-%
-%% Description
-%
-% Rotations are represented in MTEX by the class *rotation* which is 
-% inherited from the class <quaternion_index.html quaternion> and allow to
-% work with rotations as with matrixes in MTEX. 
 %
 %% Euler Angle Conventions
 %
@@ -46,25 +44,25 @@ o = rotation('Euler',30*degree,50*degree,10*degree)
 o = rotation('Euler',30*degree,50*degree,10*degree,'Roe')
 
 
-%% 
+%%
 % *Changing the Default Euler Angle Convention*
 %
 % The default Euler angle convention can be changed by the command
-% <set_mtex_option.html set_mtex_option>, for a permanent change the
+% *setpref*, for a permanent change the
 % <matlab:edit('mtex_settings.m') mtex_settings> should be edited. Compare
 
-set_mtex_option('EulerAngleConvention','Roe')
+setpref('mtex','EulerAngleConvention','Roe')
 o
 
 %%
-set_mtex_option('EulerAngleConvention','Bunge')
+setpref('mtex','EulerAngleConvention','Bunge')
 o
 
 %% Other Ways of Defining a Rotation
-% 
+%
 % *The axis angle parametrisation*
 %
-% A very simple possibility to specify a rotation is to specify the 
+% A very simple possibility to specify a rotation is to specify the
 % rotation axis and the rotation angle.
 
 o = rotation('axis',xvector,'angle',30*degree)
@@ -86,7 +84,7 @@ o = rotation('map',xvector,yvector)
 %%
 % *A fibre of rotations*
 %
-% The set of all rotations that rotate a certain vector u onto a certain 
+% The set of all rotations that rotate a certain vector u onto a certain
 % vector v define a fibre in the rotation space. A discretisation of such
 % a fibre is defined by
 
@@ -162,7 +160,7 @@ angle(rot)/degree
 axis(rot)
 
 %%
-% If two rotations are specifies the command 
+% If two rotations are specifies the command
 % <quaternion.angle.html angle(rot1,rot2)> computes the rotational angle
 % between both rotations
 

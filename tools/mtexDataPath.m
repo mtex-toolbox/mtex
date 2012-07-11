@@ -1,19 +1,19 @@
 function p = mtexDataPath
 % returns the default path to mtex sample data
 %
-%% Syntax 
-% mtexDataPath - 
-% get_mtex_option('mtex_data_path') - long form of mtexDataPath
-% set_mtex_option('mtex_data_path',path) - change the path to mtex data
+%% Syntax
+% mtexDataPath -
+% getpref('mtex','DataPath') - long form of mtexDataPath
+% setpref('mtex','DataPath',path) - change the path to mtex data
 %
 %% See also
 % mtexDataPath mtexCifPath mtexEBSDPath mtexPoleFigurePath mtexODFPath
-% mtexTensorPath get_mtex_option set_mtex_option
+% mtexTensorPath
 
-mtex_data_path = get_mtex_option('mtex_data_path');
+DataPath = getpref('mtex','DataPath');
 
-if exist(mtex_data_path,'dir')
-  p = mtex_data_path;
+if exist(DataPath,'dir')
+  p = DataPath;
 else
   error('Data package not installed!');
 end

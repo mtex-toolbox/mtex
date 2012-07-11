@@ -12,6 +12,7 @@
 
 % specify crystal and specimen symmetry
 CS = {...
+  'Not Indexed',...
   symmetry('m-3m','mineral','Fe'),... % crystal symmetry phase 1
   symmetry('m-3m','mineral','Mg')};   % crystal symmetry phase 2
 SS = symmetry('-1');   % specimen symmetry

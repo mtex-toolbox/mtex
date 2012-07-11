@@ -10,44 +10,54 @@
 
 %% Introduction
 %
-% MTEX provides a very simple way to define model ODFs, e.g. unimodal ODFs,
-% fibre ODF, Bingham ODFs, or ODFs specified by Fourier
-% coefficients. The central idea is that MTEX allows you to calculate with
-% ODFs as with ordinary number, i.e., you can multiply and ODF with a
-% certain number, you can add, subtract or rotate ODFs. Model ODFs may be
-% used as references for ODFs estimated from pole figure data or EBSD data
-% and are
+% MTEX provides a very simple way to define model ODFs. Generally, there are
+% five types to descripe an ODF in MTEX:
+% 
+% * uniform ODF
+% * unimodal ODF
+% * fibre ODF
+% * Bingham ODF
+% * Fourier ODF
+%
+% The central idea is that MTEX allows you to calculate mixture models, by
+% adding and subtracting arbitary ODFs. Model ODFs may be used as
+% references for ODFs estimated from pole figure data or EBSD data and are
 % instrumental for <PoleFigureSimulation_demo.html pole figure simulations>
 % and <EBSDSimulation_demo.html sinle orientation simulations>. These
 % relationships are visualized in the following chart.
-%
 %
 % <<odf.png>>
 
 %% The Uniform ODF
 %
-% The most simplest case of a model ODF is the uniform ODF which is
-% everywhere identical to one.
-% In order to define a uniform ODF one needs only to specify its crystal
-% and specimen symmetry and to use the command
-% [[uniformODF.html,uniformODF]].
+% The most simplest case of a model ODF is the uniform ODF
+%
+% $$f(g) = 1,\quad  g \in SO(3),$$
+%
+% which is everywhere identical to one. In order to define a uniform ODF
+% one needs only to specify its crystal and specimen symmetry and to use
+% the command [[uniformODF.html,uniformODF]].
 
 cs = symmetry('cubic');
 ss = symmetry('orthorhombic');
 odf = uniformODF(cs,ss)
 
-
 %% Unimodal ODFs
+% An unimodal ODF
 %
-% In order to define a unimodal ODF one needs
+% $$f(g; x) = \psi (\angle(g,x)),\quad g \in SO(3),$$
+%
+% is specified by a <kernel_index.html radially symmetrial function> $\psi$
+% centered at a modal <orientation_index.html orientation>, $x\in SO(3)$
+% and. In order to define a unimodal ODF one needs
 %
 % * a preferred <orientation_index.html orientation> mod1
 % * a <kernel_index.html kernel> function *psi* defining the shape
 % * the crystal and specimen <symmetry_index.html symmetry>
 
-mod1 = orientation('Miller',[1,2,2],[2,2,1],cs,ss);
+x = orientation('Miller',[1,2,2],[2,2,1],cs,ss);
 psi = kernel('von Mises Fisher','HALFWIDTH',10*degree);
-odf = unimodalODF(mod1,cs,ss,psi)
+odf = unimodalODF(x,cs,ss,psi)
 
 plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
 
@@ -57,17 +67,27 @@ plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
 
 
 %% Fibre ODFs
+% A fibre is a rotation mapping a <Miller_index.html crystal direction> $h
+% \in S^2$ onto a <vector3d_index.html specimen direction> $r \in S^2$,
+% i.e.
 %
-% In order to define a fibre ODF one needs
+% $$g*h = r.$$
+%
+% A fibre ODF may be writte as
+%
+% $$f(g; h,r) = \psi(\angle(g*h,r)),\quad g \in SO(3),$$
+%
+% with an arbitary <kernel_index.html radially symmetrial
+% function> $\psi$. In order to define a fibre ODF one needs
 %
 % * a <Miller_index.html crystal direction> *h0*
 % * a <vector3d_index.html specimen direction> *r0*
 % * a <kernel_index.html kernel> function *psi* defining the shape
 % * the crystal and specimen <symmetry_index.html symmetry>
 
-h0 = Miller(0,0,1);
-r0 = xvector;
-odf = fibreODF(h0,r0,cs,ss,psi)
+h = Miller(0,0,1);
+r = xvector;
+odf = fibreODF(h,r,cs,ss,psi)
 
 plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
 
@@ -94,8 +114,14 @@ plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
 
 %% Bingham ODFs
 %
-% The Bingham dsitribution is a parametric ODF distribution that allows for
-% many different kinds of ODF, e.g.
+% The Bingham quaternion distribution  
+%
+% $$f(g; A,\kappa) = \frac{1}{_1F_1(\frac{1}{2};2;\kappa)} \exp( g^T U^T K U g),\quad g \in S^3$$ 
+%
+% has a (4x4)-orthogonal matrix $U$ and shape parameters $K$ as
+% argument. The (4x4) matrix can be interpreted as 4 orthogonal
+% <quaternion_index.html quaternions> $u_{1,..,4}$, where the
+% $k_{1,..,4}$ allow different shapes, e.g.
 %
 % * unimodal ODFs
 % * fibre ODF
@@ -111,7 +137,7 @@ cs = symmetry('-3m');
 ss = symmetry('-1');
 
 %%
-% A Bingham unimodal ODF
+% *Bingham unimodal ODF*
 
 % a modal orientation
 mod = orientation('Euler',45*degree,0*degree,0*degree);
@@ -122,24 +148,21 @@ odf = BinghamODF(20,mod * quaternion(eye(4)),cs,ss)
 plot(odf,'sections',6,'silent','position',[100 100 600 300])
 
 %%
-% A Bingham fibre ODF
+% *Bingham fibre ODF*
 
 odf = BinghamODF([-10,-10,10,10],quaternion(eye(4)),cs,ss)
 
 plot(odf,'sections',6,'silent')
 
 %%
-% A Bingham spherical ODF
+% *Bingham spherical ODF*
 
 odf = BinghamODF([-10,10,10,10],quaternion(eye(4)),cs,ss)
 
 plot(odf,'sections',6,'silent');
 
-
-%%
-%% Combining MODEL ODFs
-%
-% All the above can be arbitrily rotated and combinend. For instance, the
+%% Combining model ODFs
+% All the above can be arbitrarily rotated and combinend. For instance, the
 % classical Santafe example can be defined by commands
 
 cs = symmetry('cubic');

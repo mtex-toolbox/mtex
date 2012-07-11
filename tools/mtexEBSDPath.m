@@ -1,19 +1,19 @@
 function p = mtexEBSDPath
 % returns the default path to EBSD data files
 %
-%% Syntax 
-% mtexEBSDPath - 
-% get_mtex_option('EBSDPath') - long form of mtexEBSDPath
-% set_mtex_option('EBSDPath',path) - change the path to EBSD files 
+%% Syntax
+% mtexEBSDPath -
+% getpref('mtex','EBSDPath') - long form of mtexEBSDPath
+% setpref('mtex','EBSDPath',path) - change the path to EBSD files
 %
 %% See also
 % mtexDataPath mtexCifPath mtexEBSDPath mtexPoleFigurePath mtexODFPath
-% mtexTensorPath get_mtex_option set_mtex_option
+% mtexTensorPath
 
-mtex_data_path = get_mtex_option('EBSDPath');
+DataPath = getpref('mtex','EBSDPath');
 
-if exist(mtex_data_path,'dir')
-  p = mtex_data_path;
+if exist(DataPath,'dir')
+  p = DataPath;
 else
   error('Data package not installed!');
 end

@@ -1,4 +1,4 @@
-function h = quat2ipdf(ori,varargin)
+function [h,r] = quat2ipdf(ori,varargin)
 
 % get specimen direction
 if isa(ori,'orientation') && strcmpi(get_option(varargin,'r',''),'auto')

@@ -1,12 +1,10 @@
-%% Pole Figure Data (The Class [[PoleFigure_index.html,PoleFigure]])
-%
-%% Abstract
+%% Pole Figure Data (The Class @PoleFigure)
 % This section describes the class *PoleFigure* and gives an overview over
 % the functionality MTEX offers to analyze pole figure data.
 % 
 %% Contents
 %
-%% Description
+%% Class Description
 %
 % The general workflow to deal with pole figure data in MTEX is as follows.
 %
@@ -16,7 +14,7 @@
 % * Compute an ODF from the pole figure data
 %
 %
-%% Import pole figure data
+%% SUB: Import pole figure data
 %
 % The most comfortable way to import pole figure data into MTEX is to use
 % the import wizard, which can be started by the command
@@ -55,7 +53,7 @@ pf = loadPoleFigure(fname,h,cs,ss,'superposition',c)
 % After running the script the variable *pf* is created which contains all
 % information about the pole figure data. 
 
-%% Plot pole figure data
+%% SUB: Plot pole figure data
 %
 % Pole figures are plotted using the [[PoleFigure.plot.html,plot]] command.
 % It plottes a singe colored dot for any data point contained in the pole
@@ -66,7 +64,7 @@ pf = loadPoleFigure(fname,h,cs,ss,'superposition',c)
 figure
 plot(pf,'position',[100 100 600 300])
 
-%% Manipulate pole digure data
+%% SUB: Manipulate pole digure data
 %
 % MTEX offers a large collection of operations to analyze and manipulate pole 
 % figure data, e.g.
@@ -82,12 +80,12 @@ plot(pf,'position',[100 100 600 300])
 % As an example, if one wants to set all negative intensities to zero one
 % can issue the command
 
-polar = get(pf,'polar');
-pf = delete(pf,polar >= 74*degree & polar <= 81*degree);
+polar_angle = get(pf,'polar');
+pf = delete(pf,polar_angle >= 74*degree & polar_angle <= 81*degree);
 plot(pf)
 
 
-%% Calculate an ODF from pole digure data
+%% SUB: Calculate an ODF from pole digure data
 %
 % Calculating an ODF from pole figure data can be done using the command
 % <PoleFigure.calcODF.html calcODF>. A precise decription of the underlying
@@ -98,7 +96,7 @@ odf = calcODF(pf,'zero_range','silent')
 plotpdf(odf,h,'antipodal','position',[100 100 800 300])
 
 
-%% Simulate pole figure data
+%% SUB: Simulate pole figure data
 %
 % Simulating pole figure data from a given ODF has been proven to be
 % usefull to analyze the stability of the ODF estimation process. There is

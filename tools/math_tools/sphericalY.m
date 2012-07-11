@@ -1,4 +1,4 @@
-function Y = sphericalY(l, theta, rho)
+function Y = sphericalY(l, theta, rho,varargin)
 % spherical harmonics of degree l
 %
 %% Description
@@ -19,16 +19,41 @@ function Y = sphericalY(l, theta, rho)
 
 if isa(theta,'vector3d'), [theta,rho] = polar(theta); end
 
-% calculate assoziated legendre functions
-L = reshape(legendre(l,cos(theta(:))).',numel(theta),l+1); % nodes x order
+% try NFSFT version
+if check_option(varargin,'nfsft') && l > 0
+  
+  % precomputation for nfsft
+  nfsft_precompute(l,1000);
+  plan = nfsft_init_advanced(l,1,NFSFT_NORMALIZED);
 
-% right normalization
-w = sqrt(factorial(l-abs(0:l))./factorial(l+abs(0:l)));
-L = L * diag(w);       
+  nfsft_set_x(plan,[rho;theta]);
+  
+  % node-dependent precomputation
+  nfsft_precompute_x(plan);
+  
+  % Set Fourier coefficients.
+  nfsft_set_f(plan,1);
+
+  % transform
+  nfsft_adjoint(plan);
+  
+  % store results
+  Y = nfsft_get_f_hat_linear(plan);
+  Y = Y((end-2*l):end)';
+  
+  nfsft_finalize(plan);
+  
+  return
+end
+
+
+
+% calculate assoziated legendre functions
+L = sqrt(2/(2*l+1))*reshape(legendre(l,cos(theta(:)),'norm').',numel(theta),l+1); % nodes x order
 
 % expand to negative order
 if l>0
-  L = [fliplr(L(:,2:end)),L]*diag((-1).^(-l:l));
+  L = [fliplr(L(:,2:end)),L];
 end
 
 % calcualte spherical harmonics

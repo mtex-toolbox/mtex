@@ -19,7 +19,7 @@ function plotipdf(ebsd,r,varargin)
 %% make new plot
 
 
-o = get(ebsd,'orientations');
+o = get(ebsd,'orientation');
 
 varargin = set_option_property(ebsd,varargin{:});
 

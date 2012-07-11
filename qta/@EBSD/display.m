@@ -10,36 +10,39 @@ elseif ~isempty(inputname(1))
   h = [inputname(1), ' = ' h];
 end;
 
-if numel(ebsd)>0 && ~isempty(ebsd.comment)
-  s = ebsd.comment;
-  if length(s) > 60, s = [s(1:60) '...'];end
+disp([h ' ' docmethods(inputname(1))])
 
-  h = [h,' (',s,')'];
+% show comment
+if ~isempty(ebsd.comment)
+  disp(['  Comment: ' ebsd.comment(1:end-1)]);  
 end
-
-disp(h)
 
 if numel(ebsd)>0 && ~isempty(fields(ebsd.options))
-  disp(['  properties: ',option2str(fields(ebsd.options))]);
+  disp(['  Properties: ',option2str(fields(ebsd.options))]);
 end
 
-phases = unique(ebsd.phase).';
-for ip = 1:length(phases)
 
-  p = phases(ip);
+% ebsd.phaseMap
+matrix = cell(numel(ebsd.phaseMap),5);
+for ip = 1:numel(ebsd.phaseMap)
 
   % phase
-  matrix{ip,1} = num2str(p); %#ok<*AGROW>
+  matrix{ip,1} = num2str(ebsd.phaseMap(ip)); %#ok<*AGROW>
 
   % orientations
-  matrix{ip,2} = int2str(nnz(ebsd.phase == p));
+  matrix{ip,2} = int2str(nnz(ebsd.phase == ip));
 
+    % mineral
+  CS = ebsd.CS{ip};
   % abort in special cases
-  if p == 0 || isempty(ebsd.CS{p}), continue;end
-
-  % mineral
-  CS = ebsd.CS{p};
-  matrix{ip,3} = char(get(CS,'mineral'));
+  if isempty(CS), 
+    continue
+  elseif ischar(CS)
+    matrix{ip,3} = CS;  
+    continue
+  else
+    matrix{ip,3} = char(get(CS,'mineral'));
+  end
 
   % symmetry
   matrix{ip,4} = get(CS,'name');
@@ -51,13 +54,15 @@ end
 
 if numel(ebsd)>0
   cprintf(matrix,'-L','  ','-Lc',...
-    {'phase' 'orientations' 'mineral'  'symmetry' 'crystal reference frame'},...
+    {'Phase' 'Orientations' 'Mineral'  'Symmetry' 'Crystal reference frame'},...
     '-ic','F');
+else
+  disp('  EBSD is empty!')
 end
 
 disp(' ');
 
-if numel(ebsd) <= 20
+if 0 < numel(ebsd) && numel(ebsd) <= 20
   fn = fields(ebsd.options);
   d = zeros(sum(numel(ebsd)),numel(fn));
   for j = 1:numel(fn)

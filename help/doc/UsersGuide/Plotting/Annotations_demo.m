@@ -21,7 +21,7 @@ odf = 0.7*unimodalODF(mod1,cs,ss) + 0.3*unimodalODF(mod2,cs,ss);
 %
 % Adding a colorbar is simply done by clicking the corresponding button in
 % the figure toolbar or using the command <colorbar.html colorbar>. Note
-% that the colorrange is automaticaly set to *equal* when adding a colorbar
+% that the color range is automatically set to *equal* when adding a colorbar
 % to a figure with  more then one plot (see. <ColorCoding_demo.html Color Coding>).
 
 plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal','gray')
@@ -30,7 +30,7 @@ colorbar
 
 %%
 % Executing the command <colorbar.html colorbar> twice deletes the colorbar.
-% You can also have a horzontal colorbar at the bottom of the figur using
+% You can also have a horizontal colorbar at the bottom of the figure using
 % the option *south*.
 
 colorbar           % delete vertical colorbar
@@ -38,8 +38,8 @@ colorbar('south')  % add horizontal colorbar
 
 %% Adding Specimen and Crystal Directions
 %
-% Pole figure and inverse pole figures are much more readable if there are
-% included specimen or crystal directions. Using the MTEX command 
+% Pole figures and inverse pole figures are much more readable if they
+% include specimen or crystal directions. Using the MTEX command 
 % <annotate.html annotate> one can easily add <vector3d_index.html specimen
 % coordinate axes> to a pole figure plot.
 
@@ -57,7 +57,7 @@ set(gcf,'position',[139 258 672 266])
 
 %% Adding Preferred Orientations
 %
-% One can also mark specifc orientations in pole figure, inverse pole
+% One can also mark specific orientations in the pole figures or in the inverse pole
 % figures
 
 plotipdf(odf,[xvector,zvector],'gray','antipodal','marginx',10,'minmax','off')
@@ -70,7 +70,7 @@ annotate(mod2,...
     'label','B','color','w')
 
 %%
-% or ODF plots
+% also ODF plots
 
 plot(odf,'sections',12,'gray','position',[100,100,500,380])
 annotate(mod1,...
@@ -92,7 +92,7 @@ annotate(mod2,...
 
 %% Adding a Legend
 %
-% If you have multiple data in one plot then it makes sence to add a legend
+% If you have multiple data in one plot then it makes sense to add a legend
 % saying which color / symbol correspond to which data set. 
 %
 % The following example compares the Fourier coefficients of the fibre ODF
@@ -107,9 +107,9 @@ legend({'Fibre ODF','Unimodal ODF'})
 %% Adding a Spherical Grid
 %
 % Sometimes it is usefull to have a spherical grid in your plot to make the
-% projection easier to understand. For this reason there are the option
-% *grid*, which enables the grid and the option *grid_res*, which allows to
-% specifiy the spacing of the grid lines.
+% projection easier to understand or if you need to know some angular relationships. 
+% For this reason there is the option *grid*, which enables the grid and the 
+% option *grid_res*, which allows to specifiy the spacing of the grid lines.
 
 plotpdf(odf,[Miller(1,0,0),Miller(0,0,1)],'grid','grid_res',15*degree,...
   'gray','antipodal');

@@ -1,19 +1,19 @@
 function p = mtexPoleFigurePath
 % returns the default path to PoleFigure data files
 %
-%% Syntax 
-% mtexPoleFigurePath - 
-% get_mtex_option('PoleFigurePath') - long form of mtexPoleFigurePath
-% set_mtex_option('PoleFigurePath',path) - change the path to Pole Figure files 
+%% Syntax
+% mtexPoleFigurePath -
+% getpref('mtex','PoleFigurePath') - long form of mtexPoleFigurePath
+% setpref('mtex','PoleFigurePath',path) - change the path to Pole Figure files
 %
 %% See also
 % mtexDataPath mtexCifPath mtexEBSDPath mtexPoleFigurePath mtexODFPath
-% mtexTensorPath get_mtex_option set_mtex_option
+% mtexTensorPath
 
-mtex_data_path = get_mtex_option('PoleFigurePath');
+DataPath = getpref('mtex','PoleFigurePath');
 
-if exist(mtex_data_path,'dir')
-  p = mtex_data_path;
+if exist(DataPath,'dir')
+  p = DataPath;
 else
   error('Data package not installed!');
 end

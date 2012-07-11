@@ -1,6 +1,4 @@
-%% Crystal Directions (The Class [[Miller_index.html,Miller]])
-%
-%% Abstract
+%% Crystal Directions (The Class @Miller)
 % This section describes the class *Miller* and gives an overview how to
 % deal with crystal directions in MTEX.
 %
@@ -8,18 +6,16 @@
 %
 %% Contents
 %
-%% Description
-%
-% Crystal directions are represented in MTEX by the variables of the 
-% class <Miller_index.html Miller> which in turn represent a direction with
-% respect to the crystal coordinate system.  
-% described  by three or four values h, l, k (,m) and a 
+%% Class Description
+% Crystal directions are represented in MTEX by the variables of the class
+% *Miller* which in turn represent a direction with respect to the crystal
+% coordinate system. described  by three or four values h, l, k (,m) and a
 % [[symmetry_index.html,crystall symmetry]]. Essentially all operations
-% defined for the [[vector3d_index.html,vector3d]] class are also available
-% for Miller indece. Furthermore, You can ask for all crystallographically
-% equivalent crystal directions to one Miller indece.
+% defined for the @vector3d class are also available for Miller indece.
+% Furthermore, You can ask for all crystallographically equivalent crystal
+% directions to one Miller indece.
 %
-%% Definition
+%% SUB: Defining Miller indices
 %
 % Miller indice are definded by three coordinates h, k, l 
 % (four in the case of trigonal or hecagonal crystal symmetry) and by the
@@ -30,7 +26,7 @@ cs = symmetry('trigonal');
 m = Miller(1,0,-1,1,cs)
 m = Miller(zvector,cs)
 
-%% Plotting Miller indece
+%% SUB: Plotting Miller indece
 %
 % Miller indece are plotted as spherical projections. The specific
 % projection as well as wheter to plot all equivalent directions can be
@@ -45,7 +41,7 @@ plot(Miller(2,1,-3,1,cs))   % plot Miller indece
 
 plot(Miller(2,1,-3,1,cs),'all','labeled')   % plot Miller indece
 
-%% Symmetrically Equivalent Crystal Directions
+%% SUB: Symmetrically Equivalent Crystal Directions
 %
 % A simple way to compute all symmetrically equivalent
 % directions to a given crystal direction is provided by the command
@@ -71,9 +67,9 @@ Miller(1,1,-2,0,cs) == Miller(-1,-1,2,0,cs)
 
 eq(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'antipodal')
 
-%% Angles
+%% SUB: Angle between directions
 %
-% The angle between two crystall directions m1 and m2 is defined as the
+% The angle between two crystal directions m1 and m2 is defined as the
 % smallest angle between m1 and all symmetrically equivalent directions to
 % m2. This angle in radiand is calculated by the funtion <vector3d.angle.html
 % angle> 
@@ -86,7 +82,7 @@ angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs)) / degree
 
 angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'antipodal') / degree
 
-%% Conversations
+%% SUB: Conversions
 %
 % Converting Miller indice into a three dimensional vector is straight
 % forward using the command <Miller.vector3d.html vectord3d>.
@@ -99,7 +95,7 @@ vector3d(m)
 
 [theta,rho] = polar(m)
 
-%% Calculations
+%% SUB: Calculations
 %
 % Given a crystal orientation
 

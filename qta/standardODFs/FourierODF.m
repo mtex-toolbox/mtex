@@ -19,12 +19,15 @@ function odf = FourierODF(C,CS,SS,varargin)
 
 if isa(C,'ODF')
   
-  odf = C;
+  odf = C(1);
   odf = set(odf,'center',[]);
   odf = set(odf,'c',1);
   odf = set(odf,'psi',[]);
   odf = set(odf,'options',{{'fourier'}});
   
+  for i = 2:numel(C)
+    odf = set(odf,'c_hat',get(odf,'c_hat') + get(C(i),'c_hat'));
+  end
 else
   error(nargchk(3,3,nargin));
   argin_check(C,'double');

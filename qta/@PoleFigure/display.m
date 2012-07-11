@@ -10,28 +10,22 @@ elseif ~isempty(inputname(1))
   h = [inputname(1), ' = ' h];
 end;
 
+
+disp([h ' ' docmethods(inputname(1))]);
+
 if ~isempty(char(pf.comment)) 
   if all(equal(char(pf.comment),1)) 
-    s = [' (',pf(1).comment];
+    s = pf(1).comment;
   else
-    s = ' (';
+    s = '';
     for i=1:length(pf)
       s = [s, pf(i).comment]; %#ok<AGROW>
       if i~=length(pf), s = [s ', ']; end %#ok<AGROW>
     end
   end
-
-  if length(s) > 60
-    h = [h, s(1:60) '...'];
-  else
-    h = [h,s];
-  end
-  h = [h,')'];
+  disp(['  comment: ' s(1:min(60,end))]);
 end
 
-disp(h);
-
-disp(' ');
 
 if isempty(pf), return;end
 
@@ -48,4 +42,5 @@ disp(' ');
 for i = 1:length(pf)
   disp(['  ',char(pf(i),'short')]);
 end
-disp(' ');
+
+

@@ -1,5 +1,6 @@
 function ebsd = loadEBSD_csv(fname,varargin)
 
+try
 % read file header
 hl = file2cell(fname,200);
 
@@ -51,3 +52,8 @@ if check_option(varargin,'check'), return;end
 ebsd = loadEBSD_generic(fname,'bunge','radiant',...
   'ColumnNames',[{'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y'} columnNames],...
   'Columns',[angles,xy,columns],varargin{:},'header',nh);
+
+
+catch
+  interfaceError(fname)
+end

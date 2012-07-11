@@ -3,19 +3,33 @@ function check_installation
 
 
 
-%% -------------- check tmp dir ------------------------------
-if strfind(get_mtex_option('tempdir',tempdir),' ')
+% check tmp dir 
+if strfind(getpref('mtex','tempdir',tempdir),' ')
   hline()
   disp('Warning: The path MTEX uses for temporary files');
-  disp(['  tempdir = ''' get_mtex_option('tempdir') '''']);
+  disp(['  tempdir = ''' getpref('mtex','tempdir') '''']);
   disp('contains white spaces!');
   disp(['Please change this in your <a href="matlab:edit mtex_settings.m">' ...
     'mtex_settings.m</a>!']);
   hline()
 end
 
+% check binaries
 check_binaries;
+
+% check mex binaries
 check_mex;
+
+% check for nfft bug
+setpref('mtex','nfft_bug',0);
+try
+  setpref('mtex','nfft_bug',~checkNfftBug);
+catch
+  
+end
+
+
+end
 
 %% ------------ check for binaries --------------------------
 function check_binaries
@@ -35,34 +49,34 @@ c = ones(size(th));
 Al = ones(size(th));
 
 try
-  
+
   f = call_extern('odf2pf','EXTERN',gh,r,c,Al);
   assert(any(f));
-  
+
   setpref('mtex','binaries',true);
-  
+
 catch %#ok<*CTCH>
-  
+
   setpref('mtex','binaries',false);
-  
-  if ismac && strcmp(get_mtex_option('architecture'),'maci') % maybe it is a 64 bit mac
+
+  if ismac && strcmp(getpref('mtex','architecture'),'maci') % maybe it is a 64 bit mac
     try
-      set_mtex_option('architecture','maci64');
+      setpref('mtex','architecture','maci64');
       f = call_extern('odf2pf','EXTERN',gh,r,c,Al);
       assert(any(f));
       return
     catch
-      set_mtex_option('architecture','maci');
+      setpref('mtex','architecture','maci');
     end
   end
-  
+
   hline()
   disp('  MTEX binary check failed!');
   disp(' ');
   disp('  The original error message was:');
   e = lasterror; %#ok<*LERR>
   disp(['  ',e.message]);
-  
+
   disp(' ');
   disp('  Check the following options:');
   disp(['  * ' doclink('compilation','Compile') ' the binaries yourself.']);
@@ -70,19 +84,20 @@ catch %#ok<*CTCH>
   hline()
 end
 
+end
 
 function e = fast_check_binaries
 
 e = false;
 
 if ispc, mtex_ext = '.exe';else mtex_ext = '';end
-binariespath = fullfile(mtex_path,'c','bin',get_mtex_option('architecture'));
+binariespath = fullfile(mtex_path,'c','bin',getpref('mtex','architecture'));
 binaries = {'pf2odf','pdf2pf','odf2pf','odf2fc','fc2odf'};
 
 % check for existence
 for k=1:numel(binaries)
   prg = fullfile(binariespath,binaries{k});
-  if ~exist([prg mtex_ext],'file'), 
+  if ~exist([prg mtex_ext],'file'),
     warning(['missing binary ' binaries{k} mtex_ext])
     return; end
 end
@@ -94,13 +109,13 @@ if ispref('mtex','binaries')
   end
 end
 
-
+end
 
 %%    ----------- check mex files ---------------------------
 function check_mex
 
 % set mex/directory
-mexpath = fullfile(mtex_path,'c','mex',get_mtex_option('architecture'));
+mexpath = fullfile(mtex_path,'c','mex',getpref('mtex','architecture'));
 addpath(mexpath,0);
 
 % check for mex files
@@ -111,7 +126,7 @@ disp('Checking mex files failed!');
 
 % check old mex version
 if exist(fullfile(mexpath,'v7.1'),'dir')
-  
+
   % change path
   rmpath(mexpath);
   addpath(fullfile(mexpath,'v7.1'));
@@ -159,15 +174,16 @@ if ~fast_check_mex(mexpath)
   disp('  The original error message was:');
   e = lasterror;
   disp(['  ' e.message]);
-  
+
   disp(' ');
   disp('  Contact author for help!');
   hline()
 end
 hline('-')
-
+end
 
 %% ----------------------------------------------------------------------
+
 function e = fast_check_mex(mexpath)
 
 e = false;
@@ -202,10 +218,57 @@ catch
 end
 
 setpref('mtex','mex',e);
+end
+
+%% --------------------------------------------------------------
+
+function out = checkNfftBug
+
+  % set bandwidth
+  L = 2;
+
+  % set an orientation
+  q = axis2quat(xvector+yvector,25*degree);
+
+  % set a direction
+  h = vector3d(1,2,3);
+
+  % convert to export parameters
+  g = Euler(q,'nfft');
+
+  % set parameters
+  c = 1;
+  A = ones(1,L+1);
+
+  % run NFSOFT
+  D = call_extern('odf2fc','EXTERN',g,c,A); % conjugate(D)
+
+  % extract result
+  D = complex(D(1:2:end),D(2:2:end));
+
+  l = 1;
+  
+  % rotate spherical harmonics manualy
+  Y = sphericalY(l,h).'; % -> Y
+  gY = sphericalY(l,q*h).'; % -> rotated Y
+  
+  % rotate spherical harmonics by matrix D
+  D3 = reshape(D(2:10),3,3);
+  
+  TY = D3 * Y;
+  
+  % check whether spherical Y are totated correctly by D
+  out = sqrt(norm(TY - gY)) < 0.001;
+  
+end
+
 
 %% -----------------------------------------------------------------------
 
 
 function hline(st)
+
 if nargin < 1, st = '*'; end
 disp(repmat(st,1,80));
+
+end

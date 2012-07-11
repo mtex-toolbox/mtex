@@ -49,8 +49,8 @@ clear g;
 
 
 % NFSFT-based algorithm
-if numel(in) > 50 && numel(out) > 50 && ~isempty(c) && ...
-    ~isempty(getA(kk)) && ~check_option(varargin,'exact')
+if check_option(varargin,'fourier') || (numel(in) > 50 && numel(out) > 50 && ~isempty(c) && ...
+    ~isempty(getA(kk)) && ~check_option(varargin,'exact'))
 		
 	% transform in polar coordinates
 	[in_theta,in_rho] = polar(in);

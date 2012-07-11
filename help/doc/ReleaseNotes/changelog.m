@@ -2,7 +2,45 @@
 %
 %% Contents
 %
-%% MTEX 3.2.3
+%% MTEX 3.3.0 - 03/2012
+%
+% *Grains: change of internal representation*
+%
+% Reimplementation of the whole *grain* part:
+%
+% * The classes @grain, @polygon, @polyeder do not exist any longer. The
+% functionality of the classes is mainly replaced by the classes @GrainSet,
+% @Grain2d and @Grain3d
+% * The class @GrainSet explicitely stores @EBSD. To access @EBSD data
+% within a single grain or a set of grains use
+%
+%  get(grains,'EBSD')
+%
+% * the grain selector tool for spatial grain plots was removed,
+% nevertheless, grains still can be [[GrainSingleAnalysis.html,selected spatially]].
+% * scripts using the old grain engine may not work properly, for more
+% details of the functionalities and functioning of the @GrainSet please
+% see the documention.
+% * new functionalities: merge grains with certain boundary.
+%
+% *EBSD*
+%
+% * Behavior of the |'ignorePhase'| changed. Now it is called in general
+% |'not indexed'| and the not indexed data [[ImportEBSDData.html,is
+% imported generally]]. If the crystal symmetry of an @EBSD phase is set to a
+% string value, it will be treated as not indexed. e.g. mark the first
+% phase as |'not indexed'|
+% 
+%  CS = {'not indexed',...
+%        symmetry('cubic','mineral','Fe'),...
+%        symmetry('cubic','mineral','Mg')};
+%
+% By default, |calcGrains| does also use the |'not Indexed'| phase.
+%
+% * create custemized orientation colormaps
+%
+%
+%% MTEX 3.2.3 - 03/2012
 % 
 % *bugfix release*
 %
@@ -12,22 +50,27 @@
 % * fix http://code.google.com/p/mtex/issues/detail?id=38
 % * fix http://code.google.com/p/mtex/issues/detail?id=28
 % * fix export odf
-
-%% MTEX 3.2.1
+%
+%% MTEX 3.2.1 - 11/2011
 %
 % *New Features*
+%
 % * Import and Export to VPSC
 % * export EBSD data with all properties
-% * improved ODF calculation from pole figures by using quadrature weights for the pole figure grid
-% * implemented spherical Voronoi decomposition and computation of spherical quadrature weights
+% * improved ODF calculation from pole figures by using quadrature weights
+% for the pole figure grid
+% * implemented spherical Voronoi decomposition and computation of
+% spherical quadrature weights
 % * plot odf-space in omega-sections, i.e. generalization of sigma-sections
 %
 % *Bug Fixes*
+%
 % * S2Grid behaves more like vector3d
 % * vector3d/eq takes antipodal symmetry into account
 % * Euler angle conversion was sometimes wrong
 % * tensors multipliaction was sometimes wrong
-% * rank 3 tensors get options 'doubleConvention' and 'singleConvention' for the conversion into the Voigt matrix representation
+% * rank 3 tensors get options 'doubleConvention' and 'singleConvention'
+% for the conversion into the Voigt matrix representation
 % * documentation fixes
 % * Miller('[100]') gives not the correct result
 % * import wizard now generates correct CS definition
@@ -48,8 +91,8 @@
 %
 % *Misorientation Analysis*
 %
-% * computation of the uncorrelated misorientation distribution (MDF) for one
-% or two ODFs
+% * computation of the uncorrelated misorientation distribution (MDF) for
+% one or two ODFs
 % * computation of the theoretical angle distribution of an ODF or MDF
 % * computation of the misorienation to mean for EBSD data
 %
@@ -57,22 +100,22 @@
 %
 % EBSD and grain variables can now be indexed by phase, region or grain /
 % ebsd variables. Let us assume we have a two phase ebsd variable
-% containing 'Fe' and 'Mg' then can restrict our dataset to the Fe -
-% phase only be writting
+% containing 'Fe' and 'Mg' then can restrict our dataset to the Fe - phase
+% only be writting
 %
-% ebsd('Fe')
+%  ebsd('Fe')
 %
-% The same works with grains and also with more than one phase. Please
-% have a look into the documentation for information how to index ebsd
-% and grain variables.
+% The same works with grains and also with more than one phase. Please have
+% a look into the documentation for information how to index ebsd and grain
+% variables.
 %
 % Accordingly the following syntax is now depreciated.
 %
-% calcODF(ebsd,'phase',2)
+%  calcODF(ebsd,'phase',2)
 %
 % It should be replaced by
 %
-% calcODF(ebsd('Fe'))
+%  calcODF(ebsd('Fe'))
 %
 %
 % *Other Enhangments*
@@ -80,22 +123,23 @@
 % * better import and export of pole figures, odfs and EBSD data
 % * automatic centering of a specimen with repsect to its specimen symmetry
 % * download and import tensors from http://www.materialproperties.org/
-% * new interfaces for Rigaku, Siemens, Bruker and many other X-ray devices and formats
+% * new interfaces for Rigaku, Siemens, Bruker and many other X-ray devices
+% and formats
 % * support for rank three tensors, i.e, for piezo electricity tensors
 % * improved documentation
 % * many bug fixes
 %
 %% MTEX 3.1 - 03/2011
 %
-% *Tensor Arithmetics*
-% This release introduces tensor analysis into MTEX, this includes
+% *Tensor Arithmetics* This release introduces tensor analysis into MTEX,
+% this includes
 %
 % * import of tensors via the import wizard
 % * basic tensor operations: multiplication, rotation, inversion
 % * advanced visualization
 % * computation of avaraged tensors from EBSD data and ODFs
-% * computation of standard elasticity tensors like: Youngs modulus,
-% linear compressibility, Cristoffel tensor, elastic wave velocities
+% * computation of standard elasticity tensors like: Youngs modulus, linear
+% compressibility, Cristoffel tensor, elastic wave velocities
 %
 % *Other Enhangments*
 %
@@ -113,9 +157,9 @@
 %
 % *Crystal Geometry*
 %
-% This release contains a completely redesigned crystal geometry engine which is
-% thought to be much more intuitive and flexible. In particular, it
-% introduces two new classes <rotation_index.html rotation> and
+% This release contains a completely redesigned crystal geometry engine
+% which is thought to be much more intuitive and flexible. In particular,
+% it introduces two new classes <rotation_index.html rotation> and
 % <orientation_index.html orientation> which make it much more easier to
 % work with crystal orientations. Resulting features are
 %
@@ -141,10 +185,10 @@
 %
 % *Grain Analysis for EBSD Data*
 %
-% MTEX is now able to partition spatial EBSD data into grains. This
-% allows for the computation of various grain characteristics, as well as
-% the computation and visualization of the grain boundaries and
-% neighborhood relationships. Main features are:
+% MTEX is now able to partition spatial EBSD data into grains. This allows
+% for the computation of various grain characteristics, as well as the
+% computation and visualization of the grain boundaries and neighborhood
+% relationships. Main features are:
 %
 % * Grains statistics (area, diameter, mean orientation, ...)
 % * Missorientation analysis
@@ -155,8 +199,8 @@
 % *Visualization Improvements*
 %
 % * ODF fibre plot
-% * support for different x-axis alignment - <plotx2north.html  plotx2north>,
-% <plotx2east.html plotx2east>
+% * support for different x-axis alignment - <plotx2north.html
+% plotx2north>, <plotx2east.html plotx2east>
 % * plot EBSD data with respect to arbitrary properties
 % * plot zero regions of ODFs and pole figures white
 % * pole figure contour plots
@@ -168,13 +212,13 @@
 % * rotate EBSD data
 % * Pole figure normalization
 % * improved interfaces and import wizard
-% * speed improvement of several side-functions as well as core-functions of
-% @quaternions and spherical grids.
+% * speed improvement of several side-functions as well as core-functions
+% of @quaternions and spherical grids.
 %
 % *Incompatible Changes to Previous Versions*
 %
-% * The flags *reduced* and *axial* have been replaced by the flag <AxialDirectional.html
-% antipodal>
+% * The flags *reduced* and *axial* have been replaced by the flag
+% <AxialDirectional.html antipodal>
 %
 %% MTEX 1.2 - 05/2009
 %
@@ -249,14 +293,14 @@
 %
 % * MTEX ships now with an automated installer and binaries for Windows,
 % Linux, and Mac OSX. This makes it in unnecessary to install any
-% additional library and to compile the toolbox. (Thanks to F. Bachmann,
-% C. Randau, and F. Wobbe)
+% additional library and to compile the toolbox. (Thanks to F. Bachmann, C.
+% Randau, and F. Wobbe)
 %
 % *New ODF Class*
 %
-% * The new function <FourierODF.html FourierODF> provides an easy way to define ODFs via
-% their Fourier coefficients. In particular MTEX allows now to calculate with
-% those ODFs in the same manner as with any other ODFs.
+% * The new function <FourierODF.html FourierODF> provides an easy way to
+% define ODFs via their Fourier coefficients. In particular MTEX allows now
+% to calculate with those ODFs in the same manner as with any other ODFs.
 %
 % *New Interfaces*
 %
@@ -280,11 +324,11 @@
 %
 % *Improved Documentation*
 %
-% MTEX comes now with over 500 help pages explaining the mathematical concepts,
-% the philisophy behing MTEX and the syntax and usage of all 300 functions
-% available in MTEX. Furthermore, you find numerous examples and tutorials on
-% ODF estimation, data import, calculation of texture characteristics, ODF and
-% pole figure plotting, etc.
+% MTEX comes now with over 500 help pages explaining the mathematical
+% concepts, the philisophy behing MTEX and the syntax and usage of all 300
+% functions available in MTEX. Furthermore, you find numerous examples and
+% tutorials on ODF estimation, data import, calculation of texture
+% characteristics, ODF and pole figure plotting, etc.
 %
 % *Bug Fixes*
 %
@@ -298,13 +342,12 @@
 %
 % *Speed Improvments*
 %
-% * ODF reconstruction and PDF calculation is about *10 times faster* now (thanks
-% to the new NFFT 4.0 library)
-% * ODF plotting and the
-% calculation of [[ODF.volume.html,volume fractions]], the
-% [[ODF.textureindex.html,texture index]], the [[ODF.entropy.html,entropy]]
-% and [[ODF.calcFourier.html,Fourier coefficients]] is about *100 times
-% faster*
+% * ODF reconstruction and PDF calculation is about *10 times faster* now
+% (thanks to the new NFFT 4.0 library)
+% * ODF plotting and the calculation of [[ODF.volume.html,volume
+% fractions]], the [[ODF.textureindex.html,texture index]], the
+% [[ODF.entropy.html,entropy]] and [[ODF.calcFourier.html,Fourier
+% coefficients]] is about *100 times faster*
 %
 % *New Support of EBSD Data Analysis*
 %
@@ -321,7 +364,7 @@
 %
 % *New Functions*
 %
-% * [[ODF.fibrevolume.html,fibrevolume]] calculates the
+% * [[ODF.fibreVolume.html,fibreVolume]] calculates the
 % volume fraction within a fibre.
 % * [[ODF.plotFourier.html,plotFourier]] plots the Fourier
 % coefficients of an ODF.
@@ -329,8 +372,8 @@
 % option *colorrange* allow for consistent color coding for arbitrary
 % plots.
 % * A *colorbar* can be added to any plots.
-% * [[mat2quat.html,mat2quat]] and [[quaternion.quat2mat.html,quat2mat]] convert rotation matrices to quaternions and vice
-% versa.
+% * [[mat2quat.html,mat2quat]] and [[quaternion.quat2mat.html,quat2mat]]
+% convert rotation matrices to quaternions and vice versa.
 %
 % *Incompatible Changes With Previous Releases*
 %
@@ -349,18 +392,18 @@
 % Fouriercoefficents of an arbitrary ODF
 % * new option |ghost correction| in function
 % [[PoleFigure.calcODF.html,calcODF]]
-% * new option |zero range| in function
-% [[PoleFigure.calcODF.html,calcODF]]
+% * new option |zero range| in function [[PoleFigure.calcODF.html,calcODF]]
 % * new function [[loadEBSD]] to import EBSD data
 % * simplified syntax for the import of diffraction data
 % * new import wizard for pole figure data
-% * support of triclinic crystal [[symmetry_index.html,symmetry]]
-% with arbitrary angles between the axes
+% * support of triclinic crystal [[symmetry_index.html,symmetry]] with
+% arbitrary angles between the axes
 % * default plotting options may now be specified in mtex_settings.m
 % * new plot option _3d_ for a three dimensional spherical plot of pole
 % figures
 % * contour levels may be specified explicitely in all plot functions
-% [[ODF.plotodf.html,plotodf]],[[ODF.plotpdf.html,plotpdf]] and [[ODF.plotipdf.html,plotipdf]]
+% [[ODF.plotodf.html,plotodf]],[[ODF.plotpdf.html,plotpdf]] and
+% [[ODF.plotipdf.html,plotipdf]]
 % * new plot option _logarithmic_
 % * many bugfixes
 %
