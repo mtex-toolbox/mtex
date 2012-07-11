@@ -63,10 +63,10 @@ for p = phases
   weight = get(subsref(ebsd,ind),'weight') * nnz(ind) ./ numel(ebsd);
 
   % take the mean of the rotated tensors times the weight
-  TVoigt = TVoigt + sum(weight .* rotate(T{p},ori));
+  TVoigt = sum(weight .* rotate(T{p},ori)) + TVoigt;
 
   % take the mean of the rotated tensors times the weight
-  TReuss = TReuss + sum(weight .* rotate(inv(T{p}),ori));
+  TReuss = sum(weight .* rotate(inv(T{p}),ori)) + TReuss;
 
 end
 
