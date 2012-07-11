@@ -98,7 +98,7 @@ if hasProperty(T,'name'), T.properties = rmfield(T.properties,'name');end
 if hasProperty(T,'unit'), T.properties = rmfield(T.properties,'unit');end
   
 if check_option(varargin,'doubleconvention')
-  T.properties.doubleconvention = 'true';
+  T.doubleConvention = true;
 end
 
 

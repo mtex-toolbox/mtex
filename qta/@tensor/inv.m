@@ -23,18 +23,16 @@ switch T.rank
     % check for symmetry
 
     % convert to a matrix
-    M = tensor42(T.M);
+    M = tensor42(T.M,T.doubleConvention);
 
     % invert the matrix
-    M = inv(M);
+    M = inv(M);   
 
-    % make some corrections
-    w = 1./(1+((1:6)>3));
-    w = w.' * w;
-    M = M .* w;
-
+    %
+    T.doubleConvention = ~T.doubleConvention;
+    
     % convert to back a 4 rank tensor
-    T.M = tensor24(M);
+    T.M = tensor24(M,T.doubleConvention);
 end
 
 % change the name
