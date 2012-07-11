@@ -24,13 +24,13 @@ ss = o.SS;
 if newMTEXplot('ensureTag','ipdf',...
     'ensureAppdata',{{'CS',cs},{'SS',ss}})
   argin_check(r,{'vector3d'});
+  annotations  = {'TR',@(i) char(r(i),getpref('mtex','textInterpreter'))};
 else
   if ~isa(r,'vector3d')
-    varargin = {r,varargin{:}};
+    varargin = [{r},varargin];
   end
   r = getappdata(gcf,'r');
-  options = getappdata(gcf,'options');
-  if ~isempty(options), varargin = {options{:},varargin{:}};end
+  annotations  = {};
 end
 
 %% colorcoding
@@ -46,31 +46,17 @@ if numel(o)*length(cs)*length(ss) > 100000 || check_option(varargin,'points')
 
   samples = discretesample(ones(1,numel(o)),points);
   o.rotation = o.rotation(samples);
-  if ~isempty(data),
-    data = data(samples); end
+  if ~isempty(data), data = data(samples); end
 
 end
 
-%% plotting grid
-
-h = @(i) reshape(inverse(quaternion(o * cs)),[],1) * symmetrise(r(i),ss);
-[maxtheta,maxrho,minrho] = getFundamentalRegionPF(cs,varargin{:});
-Sh = @(i) S2Grid(h(i),'MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
-
-if ~isempty(data)
-  data = repmat(data,numel(o.CS),1);
-  Dh  = @(i) (reshape(double(h(i)),[],3));
-  DSh = @(i) (reshape(double(Sh(i)),[],3));
-  datar = @(i)  data(ismember(DSh(i),Dh(i),'rows'));
-else
-  datar = @(i)[];
-end
-
+  
 %% plot
-multiplot(@(i) Sh(i), datar ,length(r),...
-  'ANOTATION',@(i) r(i),...
-  'appdata',@(i) {{'r',r(i)}},...
-  'dynamicMarkerSize', varargin{:});
+multiplot(numel(r),...
+  @(i) inverse(o(:)) * symmetrise(r(i),ss),data,...
+  'scatter','FundamentalRegion',...
+  annotations{:},varargin{:});
+
 
 setappdata(gcf,'r',r);
 setappdata(gcf,'SS',ss);

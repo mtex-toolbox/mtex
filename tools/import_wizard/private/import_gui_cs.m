@@ -1,8 +1,6 @@
 function import_gui_cs(wzrd)
 % page for setting crystall geometry
 
-
-
 setappdata(wzrd,'cs_count',1);
 
 pos = get(wzrd,'Position');
@@ -19,29 +17,69 @@ set(this_page,'visible','off');
 
 mineral = uibuttongroup('title','Mineral',...
   'Parent',this_page,...
-  'units','pixels','position',[0 ph - 85 w-20 75]);
+  'units','pixels','position',[0 ph - 120 w-20 115],...
+  'SelectionChangeFcn',@update_cs);
 
+
+handles.indexed(1) = uicontrol(...
+  'Parent',mineral,...
+  'String','Indexed',...
+  'Style','radio',...
+  'Position',[10 75 150 15]);
+
+handles.indexed(2) = uicontrol(...
+  'Parent',mineral,...
+  'String','Not Indexed',...
+  'Style','radio',...
+  'Position',[95 75 150 15]);
+
+
+uicontrol(...
+  'Parent',mineral,...
+  'String','mineral name',...
+  'HitTest','off',...
+  'Style','text',...
+  'HorizontalAlignment','left',...
+  'Position',[10 45 100 15]);
 
 
 handles.mineral = uicontrol(...
   'Style','edit',...
   'Parent',mineral,...
   'BackgroundColor',[1 1 1],...
-  'Position',[10 20 w-240 20],...
+  'Position',[110 45 180 20],...
   'HorizontalAlignment','left',...
   'string','');
 
 uicontrol(...
   'Parent',mineral,...
-  'String','Load Cif File',...
-  'CallBack',@lookup_mineral,...
-  'Position',[w-220 17 100 25]);
+  'String','plotting color',...
+  'HitTest','off',...
+  'Style','text',...
+  'HorizontalAlignment','left',...
+  'Position',[10 15 130 15]);
+
+handles.color = uicontrol(...
+  'Parent',mineral,...
+  'BackgroundColor',[1 1 1],...
+  'FontName','monospaced',...
+  'HorizontalAlignment','left',...
+  'Position',[110 15 180 20],...
+  'String',blanks(0),...
+  'Style','popup',...
+  'CallBack',@update_cs,...
+  'String',getpref('mtex','EBSDColorNames'),...
+  'Value',1);
+
+
 
 uicontrol(...
   'Parent',mineral,...
-  'String','Search Web',...
-  'CallBack',@searchWeb,...
-  'Position',[w-110 17 80 25]);
+  'String','Load Cif File',...
+  'CallBack',@lookup_mineral,...
+  'Position',[350 37 100 25]);
+
+
 
 
 % uicontrol(...
@@ -52,24 +90,10 @@ uicontrol(...
 
 cs = uibuttongroup('title','Crystal Coordinate System',...
   'Parent',this_page,...
-  'units','pixels','position',[0 ph-260 w-20 160],...
+  'units','pixels','position',[0 ph-269 w-20 135],...
   'SelectionChangeFcn',@update_cs);
 
 handles.csframe = cs;
-
-handles.indexed(1) = uicontrol(...
-  'Parent',cs,...
-  'String','Indexed',...
-  'Style','radio',...
-  'Position',[10 115 150 15],...
-  'Visible','off');
-
-handles.indexed(2) = uicontrol(...
-  'Parent',cs,...
-  'String','Not Indexed',...
-  'Style','radio',...
-  'Position',[95 115 150 15],...
-  'Visible','off');
 
 uicontrol(...
   'Parent',cs,...
@@ -175,11 +199,9 @@ function goto_callback(varargin)
 handles = getappdata(gcf,'handles');
 
 if isa(getappdata(gcf,'data'),'EBSD')
-  set(handles.indexed,'visible','on');
+  set(handles.indexed,'enable','on');
 else
-  set(handles.indexed,'visible','off');
-  pos = get(gcf,'Position'); w = pos(3);
-  set(handles.csframe,'Position',[0 40 w-20 130]);
+  set(handles.indexed,'enable','off');  
 end
 
 get_cs(gcbf);
@@ -190,12 +212,9 @@ function leave_callback(varargin)
 handles = getappdata(gcf,'handles');
 
 if isa(getappdata(gcf,'data'),'EBSD')
-  set(handles.indexed,'visible','on');
+  set(handles.indexed,'enable','on');
 else
-  set(handles.indexed,'visible','off');
-  pos = get(gcf,'Position');
-  w = pos(3);
-  set(handles.csframe,'Position',[0 10 w-20 160]);
+  set(handles.indexed,'enable','off');  
 end
 
 set_cs(gcbf);
@@ -245,9 +264,6 @@ if name ~= 0
   end
 end
 
-function searchWeb(varargin)
-
-web('http://www.crystallography.net/search.html','-browser')
 
 %% ------------ Private Functions ---------------------------------
 
@@ -280,7 +296,9 @@ if ischar(cs)
   set(handles.indexed(1),'Value',0);
   set(handles.indexed(2),'Value',1);
   
-  set(Childs(1:end-2),'Enable','off');
+  set(Childs,'Enable','off');
+  set(handles.mineral,'Enable','off');
+  set(handles.color,'Enable','off');
   
   set(handles.mineral,'string',cs);
   
@@ -292,7 +310,13 @@ else
   csname = strmatch(Laue(cs),symmetries);
   set(handles.crystal,'value',csname(1));
   
-  set(Childs(1:end-2),'Enable','on');
+  color = get(cs,'color');
+  color = strmatch(color,getpref('mtex','EBSDColorNames'));
+  set(handles.color,'value',color(1));
+  
+  set(Childs,'Enable','on');
+  set(handles.mineral,'Enable','on');
+  set(handles.color,'Enable','on');
   
   % set alignment
   al = [get(cs,'alignment'),{'',''}];
@@ -328,58 +352,54 @@ function set_cs(wzrd)
 handles = getappdata(wzrd,'handles');
 data = getappdata(wzrd,'data');
 
-cs = get(handles.crystal,'Value');
-cs = symmetries(cs);
-cs = strtrim(cs{1}(1:6));
 
-for k=1:3
-  axis{k}  =  str2double(get(handles.axis{k},'String')); %#ok<AGROW>
-  angle{k} =  str2double(get(handles.angle{k},'String')); %#ok<AGROW>
-end
+% if not indexed
+if isa(data,'EBSD') && get(handles.indexed(2),'Value')% ||...
+%    any(strfind(lower(mineral),'indexed')) && any(strfind(lower(mineral),'not')))
 
-mineral = get(handles.mineral,'string');
-
-al1 = get(handles.axis_alignment1,'Value');
-al2 = get(handles.axis_alignment2,'Value');
-al = alignments;
-
-if any(strfind(lower(mineral),'indexed')) && any(strfind(lower(mineral),'not'))
   cs = 'not indexed';
-else
+
+else % indexed data
+  
+  cs = get(handles.crystal,'Value');
+  cs = symmetries(cs);
+  cs = strtrim(cs{1}(1:6));
+
+  for k=1:3
+    axis{k}  =  str2double(get(handles.axis{k},'String')); %#ok<AGROW>
+    angle{k} =  str2double(get(handles.angle{k},'String')); %#ok<AGROW>
+  end
+
+  mineral = get(handles.mineral,'string');
+
+  al1 = get(handles.axis_alignment1,'Value');
+  al2 = get(handles.axis_alignment2,'Value');
+  al = alignments;
+
+  co = getpref('mtex','EBSDColorNames');
+  co = co{get(handles.color,'Value')};
   try
-    cs = symmetry(cs,[axis{:}],[angle{:}]*degree,al{al1},al{al2},'mineral',mineral);
-  catch
-    cs = symmetry(cs,[axis{:}],[angle{:}]*degree,'mineral',mineral);
+    cs = symmetry(cs,[axis{:}],[angle{:}]*degree,al{al1},al{al2},...
+      'mineral',mineral,'color',co);
+  catch %#ok<CTCH>
+    cs = symmetry(cs,[axis{:}],[angle{:}]*degree,'mineral',mineral,'color',co);
   end
 end
-
+  
+if isa(data,'EBSD') 
+  cs_counter = getappdata(gcf,'cs_count');
+  CS = get(data,'CSCell');  
+  CS{cs_counter} = cs;
+  cs = CS;
+end
 
 if isa(data,'cell')
   data = cellfun(@(d) set(d,'CS',cs),data,'UniformOutput',false);
-elseif isa(data,'EBSD')
-  cs_counter = getappdata(gcf,'cs_count');
-  CS = get(data,'CSCell');
-  
-  if get(handles.indexed(1),'Value')
-    CS{cs_counter} = cs;
-  else
-    mineral = get(handles.mineral,'String');
-    
-    if ~isempty(mineral)
-      CS{cs_counter} = mineral;
-    else
-      CS{cs_counter} = 'notIndexed';
-    end
-  end
-  
-  data = set(data,'CS',CS,'noTrafo');
 else
   data = set(data,'CS',cs,'noTrafo');
 end
 
 setappdata(wzrd,'data',data);
-
-
 
 
 function fname = shrink_name(fname)
@@ -402,3 +422,7 @@ for ix = 1:3
   al = [al cellfun(@(a) [xyz{ix},'||',a],abc,'UniformOutput',false)]; %#ok<AGROW>
 end
 al = [{''} al];
+
+function co = colorOrder
+
+co = {'','none','blue','green','red','cyan','magenta','yellow','white','black'};

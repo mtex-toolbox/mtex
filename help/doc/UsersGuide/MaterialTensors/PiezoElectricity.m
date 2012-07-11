@@ -76,5 +76,6 @@ colorbar
 %%
 %
 
-plot(Pm,'north','south')
+close all
+plot(Pm,'complete')
 colorbar
