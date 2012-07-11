@@ -66,13 +66,13 @@ plotpdf(odf,Miller(1,1,0),'antipodal')
 plotx2north
 
 plotpdf(odf,Miller(1,0,0),'antipodal')
-annotate([xvector,yvector,zvector],'data',{'X','Y','Z'},'backgroundcolor','w');
+annotate([xvector,yvector,zvector],{'X','Y','Z'},'backgroundcolor','w');
 
 %%
 plotx2east
 
 plotpdf(odf,Miller(1,0,0),'antipodal')
-annotate([xvector,yvector,zvector],'data',{'X','Y','Z'},'backgroundcolor','w');
+annotate([xvector,yvector,zvector],{'X','Y','Z'},'backgroundcolor','w');
 
 
 %% Equal Area Projection (Schmidt Projection)

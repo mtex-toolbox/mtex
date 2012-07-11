@@ -22,6 +22,18 @@ setpref('mtex','border',10);
 setpref('mtex','marginX',0);
 setpref('mtex','marginY',0);
 
+% colors for EBSD phase plotting
+EBSDColorNames = {'light blue','light green','light red',...
+  'cyan','magenta','yellow',...
+  'blue','green','red',...
+  'dark blue','dark green','dark red'};
+EBSDColors = {[0.5 0.5 1],[0.5 1 0.5],[1 0.5 0.5],...
+  [0 1 1],[1 0 1],[1 1 0],...
+  [0 0 1],[0 1 0],[1 0 0],...
+  [0 0 0.3],[0 0.3 0],[0.3 0 0]};
+
+setpref('mtex','EBSDColorNames',EBSDColorNames);
+setpref('mtex','EBSDColors',EBSDColors);
 %% Euler angle convention
 % default Euler angle convention
 
@@ -93,13 +105,17 @@ setpref('mtex','mtexMethodsAdvise',true)
 % setpref('mtex','GrainSelector',false)
 
 %% Workaround for LaTex bug
-% comment out the following line if you have problems with displaying LaTex
+% change the following to "Tex" if you have problems with displaying LaTex
 % symbols
 
-% setpref('mtex','LaTex',false);
-
-% by default turn LaTeX off on Linux
-setpref('mtex','LaTex',ismac || ispc);
+% by default turn LaTeX on only on Windows or Mac
+if isOctave
+  setpref('mtex','textInterpreter','none');
+elseif ismac || ispc
+  setpref('mtex','textInterpreter','LaTeX');
+else
+  setpref('mtex','textInterpreter','TeX');
+end
 
 %% Workaround for NFFT bug
 % comment out the following line if MTEX is compiled againsed NFFT 3.1.3 or

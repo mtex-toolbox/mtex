@@ -15,5 +15,5 @@ function ind = checkFundamentalRegion(m,varargin)
 
 [h1,h2,h3,h4,N] = getFundamentalRegionPF(m.CS,varargin{:}); %#ok<*ASGLU>
 
-ind = all(dot_outer(m.vector3d,N) >= 0,2);
+ind = all(dot_outer(m.vector3d,N) >= -1e-6,2);
 
