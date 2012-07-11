@@ -22,7 +22,7 @@ function plotodf(ebsd,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo 
 
-o = get(ebsd,'orientations');
+o = get(ebsd,'orientation');
 
 varargin = set_option_property(ebsd,varargin{:});
 

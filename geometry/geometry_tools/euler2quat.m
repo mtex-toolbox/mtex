@@ -3,7 +3,7 @@ function q = euler2quat(alpha,beta,gamma,varargin)
 %
 %% Description
 % The method *euler2quat* defines a [[quaternion_index.html,rotation]]
-% by Euler angles. You can choose whether to use the Bunge (phi,psi,phi2) 
+% by Euler angles. You can choose whether to use the Bunge (phi,psi,phi2)
 % convention or the Matthies (alpha,beta,gamma) convention.
 %
 %% Syntax
@@ -20,19 +20,19 @@ function q = euler2quat(alpha,beta,gamma,varargin)
 %
 %% Options
 %  ABG, ZYZ   - Matthies (alpha, beta, gamma) convention (default)
-%  BUNGE, ZXZ - Bunge (phi1,Phi,phi2) convention 
+%  BUNGE, ZXZ - Bunge (phi1,Phi,phi2) convention
 %
 %% See also
-% quaternion_index quaternion/quaternion axis2quat Miller2quat 
-% vec42quat hr2quat idquaternion 
+% quaternion_index quaternion/quaternion axis2quat Miller2quat
+% vec42quat hr2quat idquaternion
 
 %% maybe euler angles are given as a matrix
-if nargin == 1 && size(alpha,2)==3 
-  
+if nargin == 1 && size(alpha,2)==3
+
   gamma = alpha(:,3);
   beta = alpha(:,2);
   alpha = alpha(:,1);
-  
+
 end
 
 %% may forgotten * degree
@@ -43,28 +43,28 @@ end
 %% transform to right convention
 
 conventions = {'nfft','ZYZ','ABG','Matthies','Roe','Kocks','Bunge','ZXZ','Canova'};
-convention = get_flag(varargin,conventions,get_mtex_option('EulerAngleConvention'));
+convention = get_flag(varargin,conventions,getpref('mtex','EulerAngleConvention'));
 
 switch lower(convention)
-  
+
   case {'matthies','nfft','zyz','abg'}
 
   case 'roe'
-    
+
   case {'bunge','zxz'}  % Bunge -> Matthies
 
     alpha = alpha - pi/2;
     gamma = gamma - 3*pi/2;
-      
+
   case {'kocks'}        % Kocks -> Matthies
 
     gamma = pi - gamma;
-        
+
   case {'canova'}       % Canova -> Matthies
-    
+
     alpha = pi/2 - alpha;
     gamma = 3*pi/2 - gamma;
-        
+
 end
 
 

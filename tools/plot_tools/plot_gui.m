@@ -204,7 +204,7 @@ for i = 1:length(check)
       set(obj,'XGrid',oo,'YGrid',oo);
       obj = findall(h,'tag','grid');
       set(obj,'visible',oo);
-      
+
     case 'ticks'
       obj = findall(h,'tag','ticks');
       set(obj,'visible',oo);
@@ -222,13 +222,13 @@ for i = 1:length(check)
       if get(check(i),'value')
         set(h,'colormap',flipud(colormap('gray'))/1.2);
       else
-        set(h,'colormap',get_mtex_option('defaultColorMap'));
+        set(h,'colormap',getpref('mtex','defaultColorMap'));
       end
     otherwise
       obj = findall(h,'tag',type);
       set(obj,'visible',oo);
   end
-  
+
 end
 
 %% FontSize
@@ -241,7 +241,7 @@ set(o,'FontSize',str2double(get(handles.FontSize,'string')));
 setappdata(h,'marginx',str2double(get(handles.max,'string')));
 setappdata(h,'marginy',str2double(get(handles.may,'string')));
 setappdata(h,'border',str2double(get(handles.mao,'string')));
-  
+
 rsf = get(h,'ResizeFcn');
 if ~isempty(rsf), rsf(h,[]);end
 

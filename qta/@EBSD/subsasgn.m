@@ -11,16 +11,36 @@ if isa(s,'double') || isa(s,'logical')
 
   ss.type = '()'; ss.subs{1} = s;
 
-  if isempty(b)
+  if isempty(b) % remove measurements
+    
     ebsd.options = structfun(@(x) subsasgn(x,ss,[]),ebsd.options,'UniformOutput',false);
     ebsd.rotations = subsasgn(ebsd.rotations,ss,[]);
     ebsd.phase = subsasgn(ebsd.phase,ss,[]);
-  elseif isa(b,'EBSD')
+    
+  elseif isa(b,'char') % assign a new phase
+    
+    minerals = get(ebsd,'minerals');
+    ind = strcmp(b,minerals);
+    if any(ind)
+      newphase = find(ind,1);
+    else
+      newphase = numel(ebsd.phaseMap)+1;
+      ebsd.phaseMap(newphase) = 0;
+      ebsd.CS{newphase} = b;      
+    end
+    
+    ebsd.phase = subsasgn(ebsd.phase,ss,newphase);
+    
+  elseif isa(b,'EBSD') % copy measurements
+    
     ebsd.options = structfun(@(x) subsasgn(x,ss,b.options),ebsd.options,'UniformOutput',false);
     ebsd.rotations = subsasgn(ebsd.rotations,ss,b.rotations);
     ebsd.phase = subsasgn(ebsd.phase,ss,b.phase);
+    
   else
-    error('Right hand side should be of type EBSD.')
+    
+    error('Right hand side should be of type EBSD or character.')
+    
   end
 
 elseif strcmp(s.type,'()')

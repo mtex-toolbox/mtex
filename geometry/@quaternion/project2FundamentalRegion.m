@@ -65,11 +65,10 @@ else
   % find fundamental region
   [omega,id] = max(omegaSym);
   
-  % if the quaternion was already the right one
-  if all(id==1) 
-    omega = reshape(2*acos(min(1,omega)),size(q));
-    return;
-  end
+  % compute angle
+  omega = reshape(2*acos(min(1,omega)),size(q));
+  
+  if all(id==1), return;end
   
   % project to fundamental region
   qcs = reshape(inverse(qcs),1,[]);
@@ -77,6 +76,4 @@ else
   [idss,idcs] = ind2sub([numel(qss),numel(qcs)],id);
   q = reshape(subsref(qss,idss),size(q)) .* q .* reshape(subsref(qcs,idcs),size(q));
   
-  % compute angle
-  omega = reshape(2*acos(min(1,omega)),size(q));
 end

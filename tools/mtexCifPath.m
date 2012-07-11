@@ -1,19 +1,19 @@
 function p = mtexCifPath
 % returns the default path to crystallographic information files (CIF)
 %
-%% Syntax 
-% mtexCifPath - 
-% get_mtex_option('CIFPath') - long form of mtexCifPath
-% set_mtex_option('CIFPath',path) - change the path to CIF files 
+%% Syntax
+% mtexCifPath -
+% getpref('mtex','CIFPath') - long form of mtexCifPath
+% setpref('mtex','CIFPath',path) - change the path to CIF files
 %
 %% See also
 % mtexDataPath mtexCifPath mtexEBSDPath mtexPoleFigurePath mtexODFPath
-% mtexTensorPath get_mtex_option set_mtex_option
+% mtexTensorPath
 
-mtex_data_path = get_mtex_option('CIFPath');
+DataPath = getpref('mtex','CIFPath');
 
-if exist(mtex_data_path,'dir')
-  p = mtex_data_path;
+if exist(DataPath,'dir')
+  p = DataPath;
 else
   error('Data package not installed!');
 end

@@ -1,7 +1,7 @@
 function mdf = calcMDF(odf1,varargin)
 % calculate the uncorrelated misorientation distribution function (MDF) from one or two ODF
 %
-%% Syntax  
+%% Syntax
 % mdf = calcMDF(odf)
 % mdf = calcMDF(odf1,odf2,'bandwidth',32)
 %
@@ -11,7 +11,7 @@ function mdf = calcMDF(odf1,varargin)
 %
 %% Options
 % bandwidth - bandwidth for Fourier coefficients (default -- 32)
-% 
+%
 %% Output
 %  mdf - @ODF
 %
@@ -22,7 +22,7 @@ function mdf = calcMDF(odf1,varargin)
 
 if nargin > 1 && isa(varargin{1},'ODF')
   odf2 = varargin{1};
-else  
+else
   odf2 = odf1;
 end
 cs1 = get(odf1,'CS');
@@ -38,39 +38,39 @@ if check_option(varargin,'kernelMethod')
   psi2 = get(odf2,'psi');
   c1 = get(odf1,'c');
   c2 = get(odf2,'c');
-  
+
   center = inverse(center1) * center2.';
   c = c1 * c2.';
   psi = psi1 * psi2;
-  
+
   % remove small values
   ind = c > 0.1/numel(c);
   c = c(ind);
   center = center(ind);
-  
-  
+
+
   % approximation
-  if numel(c1)*numel(c2) > 10000 
-  
+  if numel(c1)*numel(c2) > 10000
+
     warning('not yet fully implemented');
     res = get_option(varargin,'resolution',1.25*degree);
-    S3G = SO3Grid(res,cs2,cs1);    
-    
+    S3G = SO3Grid(res,cs2,cs1);
+
     % init variables
     d = zeros(1,numel(S3G));
 
     % iterate due to memory restrictions?
     maxiter = ceil(length(cs1) * length(cs2) * numel(center) /...
-      get_mtex_option('memory',300 * 1024));
+      getpref('mtex','memory',300 * 1024));
     if maxiter > 1, progress(0,maxiter);end
-    
+
     for iter = 1:maxiter
-   
+
       if maxiter > 1, progress(iter,maxiter); end
-   
+
       dind = ceil(numel(center) / maxiter);
       sind = 1+(iter-1)*dind:min(numel(center),iter*dind);
-      
+
       ind = find(S3G,center(sind));
       for i = 1:length(ind) % TODO -> make it faster
         d(ind(i)) = d(ind(i)) + c(sind(i));
@@ -84,13 +84,13 @@ if check_option(varargin,'kernelMethod')
     center = subGrid(S3G,del);
     c = d(del);
 
-    
+
   end
-  
+
   mdf = ODF(center,c,psi,get(odf2,'CS'),get(odf1,'CS'));
-  
+
   %% Fourier method
-else 
+else
   % first ODF
   L = get_option(varargin,'bandwidth',32);
   odf1 = calcFourier(odf1,L);
@@ -116,5 +116,5 @@ else
 
   % construct mdf
   mdf = FourierODF(odf_hat,get(odf2,'CS'),get(odf1,'CS'));
-    
+
 end

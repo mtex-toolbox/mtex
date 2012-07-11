@@ -6,11 +6,11 @@ function plotAngleDistribution(odf,varargin)
 %
 %% Options
 %  RESOLUTION - resolution of the plots
-%  
+%
 
 
 varargin = set_default_option(varargin,...
-  get_mtex_option('default_plot_options'));
+  getpref('mtex','defaultPlotOptions'));
 
 %% make new plot
 newMTEXplot;
@@ -22,5 +22,16 @@ newMTEXplot;
 %% plot
 %bar(omega/degree,max(0,f));
 % xlim([0,max(omega)])
-optionplot(omega/degree,max(0,f),varargin{:});
+
+p = findobj(gca,'Type','patch');
+
+if ~isempty(p)
+  faktor = 100 / mean(f) / size(get(p(1),'faces'),1);
+else
+  faktor = 1;
+end
+
+  optiondraw(plot(omega/degree,faktor * max(0,f)),'LineWidth',2,varargin{:});
+
+optionplot(omega/degree,faktor * max(0,f),varargin{:});
 xlabel('orientation angle in degree')

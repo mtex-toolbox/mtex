@@ -9,26 +9,26 @@ function startup_mtex(branch)
 
 % only switch branch
 if nargin == 1
-  
-  path = get_mtex_option('mtex_path');
-  
+
+  path = getpref('mtex','mtexPath');
+
   cd(path);
-  
+
   if strcmpi(path(end-4:end),'trunk')
     cd('..');
   else
     cd('../..');
   end
-  
+
   if strcmp(branch(end-4:end),'trunk')
     cd trunk
   else
     cd(['branches' filesep branch]);
   end
-  
+
   startup_mtex
   return
-  
+
 end
 
 %%
@@ -36,7 +36,7 @@ end
 lasterr('') %reset all errors
 
 if (~isOctave() && MATLABverLessThan('7.1'))
-  
+
   error(['MTEX can not be installed because your MATLAB version ',version,...
     ' is outdated and not longer supported by MTEX. The oldest MATLAB ',...
     'version MTEX has been tested on is 7.1.']);
@@ -75,11 +75,11 @@ p();
 
 %% set path to MTEX directories
 
-set_mtex_option('mtex_path',local_path);
-set_mtex_option('mtex_data_path',fullfile(local_path,'data'));
-set_mtex_option('mtex_startup_dir',pwd);
-set_mtex_option('architecture',computer('arch'));
-set_mtex_option('version',MTEXversion);
+setpref('mtex','mtexPath',local_path);
+setpref('mtex','DataPath',fullfile(local_path,'data'));
+setpref('mtex','architecture',computer('arch'));
+setpref('mtex','version',MTEXversion);
+setpref('mtex','generatingHelpMode',false);
 p();
 
 
@@ -97,14 +97,9 @@ if isempty(lasterr) % everything fine
 end
 
 disp(' done!')
-disp(' ');
-if (~isOctave() && isempty(javachk('desktop')))
-  disp('Basic tasks:')
-  disp('- <a href="matlab:doc mtex">Show MTEX documentation</a>')
-  disp('- <a href="matlab:import_wizard(''PoleFigure'')">Import pole figure data</a>')
-  disp('- <a href="matlab:import_wizard(''EBSD'')">Import EBSD data</a>')
-  disp('- <a href="matlab:import_wizard(''ODF'')">Import ODF data</a>')
-  disp(' ');
+
+if ~isOctave() && isempty(javachk('desktop'))
+  MTEXmenu;
 end
 
 
@@ -133,7 +128,7 @@ if any(strfind(path,'mtex'))
   disp('I found an older version of MTEX!');
   disp('I remove it from the current search path!');
   disp('You may need to restart MTEX!')
-  
+
   inst_dir = cellpath(~cellfun('isempty',strfind(cellpath,'mtex')));
   if ~isempty(inst_dir), rmpath(inst_dir{:}); end
 end
@@ -146,7 +141,7 @@ addpath(local_path);
 disp(' ');
 r= input('Do you want to permanently install MTEX? Y/N [Y]','s');
 if isempty(r) || any(strcmpi(r,{'Y',''}))
-  
+
   % check for old startup.m
   startup_file = fullfile(toolboxdir('local'),'startup.m');
   if exist(startup_file,'file')
@@ -158,7 +153,7 @@ if isempty(r) || any(strcmpi(r,{'Y',''}))
       sudo(['rm ' startup_file])
     end
   end
-  
+
   disp(' ');
   disp('> Adding MTEX to the MATLAB search path.');
   if ispc
@@ -166,7 +161,7 @@ if isempty(r) || any(strcmpi(r,{'Y',''}))
   else
     install_mtex_linux;
   end
-  
+
 end
 
 
@@ -202,13 +197,13 @@ function out = install_mtex_linux
 if ~savepath % try to save the normal way
   disp('> MTEX permanently added to MATLAB search path.');
 else
-  
+
   % if it fails save to tmp dir and move
   savepath([tempdir 'pathdef.m']);
-  
+
   % move pathdef.m
   out = sudo(['mv ' tempdir '/pathdef.m ' toolboxdir('local')]);
-  
+
   if ~out
     disp(' ');
     disp('> Warning: The MATLAB search path could not be saved!');
@@ -233,13 +228,13 @@ disp('> Please enter the password!');
 
 % is there sudo?
 if exist('/usr/bin/sudo','file')
-  
+
   out = ~system(['sudo ' c]);
-  
+
 else % use su
-  
+
   out = ~system(['su -c ' c]);
-  
+
 end
 
 end
@@ -255,7 +250,7 @@ pathes = { {''}, ...
   {'geometry'},{'geometry' 'geometry_tools'},...
   {'tools'},{'tools' 'dubna_tools'}, {'tools' 'file_tools'},{'tools' 'option_tools'},...
   {'tools' 'import_wizard'},{'tools' 'plot_tools'},{'tools' 'statistic_tools'},...
-  {'tools' 'misc_tools'},{'tools' 'math_tools'},{'tools' 'compatibility'},...
+  {'tools' 'misc_tools'},{'tools' 'math_tools'},{'tools' 'graph_tools'},{'tools' 'compatibility'},...
   {'tools' 'template_wizard'},...
   {'help','doc','FunctionReference','classes'},...
   {'examples'},{'examples' 'UsersGuide'},...
@@ -296,7 +291,7 @@ result = (sign(toolboxParts - verParts) * [1; .1; .01]) < 0;
 
 end
 
-%% check Octave version 
+%% check Octave version
 function result = OctaveverLessThan(verstr)
 
 toolboxParts = getParts(version ());

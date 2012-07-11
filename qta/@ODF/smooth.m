@@ -20,14 +20,14 @@ end
 hw = get(psi,'halfwidth');
 
 for iodf = 1:length(odf)
-  
+
   %% Uniform portion
   if check_option(odf(iodf),'uniform')
-  
-  
+
+
   %% Fourier portion
   elseif check_option(odf(iodf),'Fourier')
-    
+
     A = get(psi,'A');
     L = min(bandwidth(odf),find(A,1,'last')-1);
 
@@ -35,22 +35,22 @@ for iodf = 1:length(odf)
     for l = 0:L
       odf(iodf).c_hat(deg2dim(l)+1:deg2dim(l+1)) = odf(iodf).c_hat(deg2dim(l)+1:deg2dim(l+1)) * A(l+1);
     end
-    
+
   elseif check_option(odf(iodf),'fibre')
-    
+
     psi_old = odf(iodf).psi;
     odf(iodf).psi = kernel(get(psi_old,'name'),'halfwidth',hw + get(psi_old,'halfwidth'));
-    
+
   elseif check_option(odf(iodf),'Bingham')
-    
+
     odf(iodf).psi = odf(iodf).psi./2;
-    
+
   %% unimodal portion
   else
-    
+
     % generate grid
     S3G = SO3Grid(hw,odf(1).CS,odf(1).SS);
-    
+
     % restrict single orientations to this grid
 
     % init variables
@@ -59,16 +59,16 @@ for iodf = 1:length(odf)
 
     % iterate due to memory restrictions?
     maxiter = ceil(numel(odf(1).CS)*numel(odf(1).SS)*numel(g) /...
-      get_mtex_option('memory',300 * 1024));
+      getpref('mtex','memory',300 * 1024));
     if maxiter > 1, progress(0,maxiter);end
 
     for iter = 1:maxiter
-   
+
       if maxiter > 1, progress(iter,maxiter); end
-   
+
       dind = ceil(numel(g) / maxiter);
       sind = 1+(iter-1)*dind:min(numel(g),iter*dind);
-      
+
       ind = find(S3G,g(sind));
       for i = 1:length(ind)
         d(ind(i)) = d(ind(i)) + odf(iodf).c(sind(i));
@@ -76,7 +76,7 @@ for iodf = 1:length(odf)
 
     end
     d = d ./ sum(odf(iodf).c);
-    
+
     % eliminate spare rotations in grid
     S3G = subGrid(S3G,d ~= 0);
     d = d(d~=0);
@@ -85,6 +85,6 @@ for iodf = 1:length(odf)
     odf(iodf).c = d;
     psi_old = odf(iodf).psi;
     odf(iodf).psi = kernel(get(psi_old,'name'),'halfwidth',hw + get(psi_old,'halfwidth'));
-        
-  end  
+
+  end
 end

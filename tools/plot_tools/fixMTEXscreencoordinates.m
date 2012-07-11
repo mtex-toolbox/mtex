@@ -5,7 +5,7 @@ function [x y lx ly] = fixMTEXscreencoordinates(x,y,varargin)
 %
 
 plotoptions = set_default_option(varargin,...
-  get_mtex_option('default_plot_options'));
+  getpref('mtex','defaultPlotOptions'));
 
 dx = xvector; dy = yvector;
 if appDataOption(plotoptions,'flipud',false), dy = -dy; end
@@ -14,10 +14,10 @@ rot = appDataOption(plotoptions,'rotate',0);
 dx = axis2quat(zvector,rot) * dx;
 dy = axis2quat(zvector,rot) * dy;
 lx = 'x'; ly = 'y';
-  
+
 if isappr(dot(dx,xvector),0) && ~strcmpi(x,'axis')
  % [dx,dy] = swap(dx,dy);
-  [x,y] = swap(x,y);  
+  [x,y] = swap(x,y);
   [lx,ly] = swap(lx,ly);
 end
 

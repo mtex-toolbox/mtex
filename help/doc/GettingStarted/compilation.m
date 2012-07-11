@@ -1,15 +1,15 @@
 %% Compiling MTEX
-% Explains how to compile MTEX on MAC, Linux, and Windows systems. This
-% should not be necassary in most cases.
+% Explains how to compile MTEX on Mac, Linux, and Windows systems. This
+% should not be necessary in most cases.
 %
 %% Introduction
-% MTEX is shiped with precompiled binaries for Mac, Windows, and Linux, 32
-% and 64. However, if these binaries are for some reason not compatible wit
-% your system, you have compile them by hand. Compiling MTEX is
-% not that easy and you are encouraged to contact the author if you have
-% any problems.
+% MTEX is shipped with precompiled binaries for Mac OSX, Windows, and Linux, 32
+% and 64-bits. However, if these binaries are for some reason not compatible
+% with your system, you have to compile them by hand. Compiling MTEX is not
+% that easy and you are encouraged to contact the author if you have any
+% problem.
 % 
-%% Prerequisits
+%% Pre-requisits
 % 
 % *Compiler*
 %
@@ -23,7 +23,7 @@
 % *FFTW*
 %
 % The FFTW is one of the most popular fast Fourier transform libraries. For
-% Linux and MACOSX precompiled packages are available through your favorite
+% Linux and Mac OSX pre-compiled packages are available through your favorite
 % package manager. The package is called fftw3 or similar. You will also
 % need to install  the header (developer) files. Alternatively you can
 % download the latest source directly from <http://www.fftw.org> and
@@ -53,7 +53,7 @@
 %
 %% Checking Your Installation
 %
-% Before starting MATLAB you can check whether the C programs where
+% Before starting MATLAB you can check whether the C programs were
 % compiled successfully by typing
 %
 % * |make check|

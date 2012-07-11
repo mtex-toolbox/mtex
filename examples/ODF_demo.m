@@ -1,8 +1,8 @@
 %% Orientation Density Functions
-%
-%% Abstract
 % This example demonstrates the most important MTEX tools for analysing
-% ODFs. All described commands can be applied to model ODFs constructed via
+% ODFs.
+%%
+% All described commands can be applied to model ODFs constructed via
 % [[uniformODF.html, uniformODF]], [[unimodalODF.html, unimodalODF]],
 % or [[fibreODF.html, fibreODF]] and to all estimated ODF calculated
 % from [[PoleFigure_calcODF.html, pole figures]] or
@@ -76,7 +76,7 @@ mean(odf)                      % the mean orientation
 max(odf)
 
 volume(odf,centerODF,5*degree)    % the volume of a ball
-fibrevolume(odf2,h,r,5*degree) % the volume of a fibre
+fibreVolume(odf2,h,r,5*degree) % the volume of a fibre
 
 textureindex(odf)         % the texture index
 entropy(odf)              % the entropy

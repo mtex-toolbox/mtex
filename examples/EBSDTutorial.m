@@ -9,6 +9,7 @@
 
 % crystal symmetry
 CS = {...
+  'Not Indexed',...
   symmetry('m-3m','mineral','Fe'),...
   symmetry('m-3m','mineral','Mg')};
 
@@ -21,7 +22,9 @@ fname = fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt');
 
 % create an EBSD variable containing the data
 ebsd = loadEBSD(fname,CS,SS,'interface','generic' ...
-  , 'ColumnNames', { 'Index' 'Phase' 'x' 'y' 'Euler1' 'Euler2' 'Euler3' 'MAD' 'BC' 'BS' 'Bands' 'Error' 'ReliabilityIndex'}, 'Bunge', 'ignorePhase', 0);
+  , 'ColumnNames', ...
+  { 'Index' 'Phase' 'x' 'y' 'Euler1' 'Euler2' 'Euler3' 'MAD' 'BC' 'BS' 'Bands' 'Error' 'ReliabilityIndex'}, ...
+  'Bunge', 'ignorePhase', 0);
 
 % plotting convention
 plotx2east
@@ -45,7 +48,7 @@ colorbar('position',[100 100 250 250])
 % Next we reconstruct the grains within our measurements.
 %
 
-[grains ebsd] = calcGrains(ebsd)
+grains = calcGrains(ebsd)
 
 %%
 % and plot them into our orientation plot
@@ -76,6 +79,7 @@ odf = calcODF(ebsd('Fe'),'kernel',psi)
 % <ODFCalculations.html ODF analysis> and <ODFPlot.html ODF visualisation>
 % is available.
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],'antipodal','silent','position',[10 10 600 200])
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],...
+  'antipodal','silent','position',[100 100 600 200])
 
 

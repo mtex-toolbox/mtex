@@ -3,12 +3,21 @@ function [ output_args ] = interfaceError( fname,fid )
 
 [st] = dbstack(1);
 i = find(strncmp('load',{st.name},4),1,'first');
-interface = regexp(lower(st(i).name),'(?<=[a-z]*_)\w*','match');
+name = st(i).name;
 
-try
-  fclose(fid); 
-catch
+type = regexp(name,'(?<=load)(\w*)(?=_)','match');
+interface = regexp(lower(name),'(?<=[a-z]*_)\w*','match');
+
+if nargin > 1
+  try
+    fclose(fid);
+  catch
+  end
 end
 
-error('mtex:wrongInterface',...
-  ['File not found or format ' upper(interface{1}) ' does not match the data\n file: ' fname]);
+
+fname = regexprep(fname,'\','/');
+
+e = MException('mtex:wrongInterface',...
+  ['File not found or ' type{1} ' format ''' upper(interface{1}) ''' does not match the data\n file: ''' fname '''']);
+throwAsCaller(e);

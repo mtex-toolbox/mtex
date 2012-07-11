@@ -1,11 +1,10 @@
 %% The Piezoelectricity Tensor
 % how to work with piezoelectricity
-
-%% Open in Editor
-%
-%% Abstract
+%% 
 % This m-file mainly demonstrates how to illustrate the directional
 % magnitude of a tensor with mtex
+%
+%% Open in Editor
 %
 %% Contents
 %
@@ -17,7 +16,7 @@ CS = symmetry('-3m', [4.916 4.916 5.4054], 'X||a*', 'Z||c', 'mineral', 'Quartz')
 
 fname = fullfile(mtexDataPath,'tensor', 'Single_RH_quartz_poly.P');
 
-P = loadTensor(fname,CS,'propertyname','piecoelectricity','unit','C/N','interface','P')
+P = loadTensor(fname,CS,'propertyname','piecoelectricity','unit','C/N','interface','P','DoubleConvention')
 
 %% Plotting the magnitude surface
 % The default plot of the magnitude, which indicates, in which direction we
@@ -64,7 +63,7 @@ plot(P,'section',xvector)
 fname = fullfile(mtexDataPath,'tensor', 'Tongue_Quartzite_Bunge_Euler');
 
 ebsd = loadEBSD(fname,CS,'interface','generic' ...
-  , 'ColumnNames', { 'Euler 1' 'Euler 2' 'Euler 3'}, 'Bunge', 'active rotation', 'ignorePhase', 1)
+  , 'ColumnNames', { 'Euler 1' 'Euler 2' 'Euler 3'}, 'Bunge', 'active rotation')
 
 %%
 % The figure on p.1184 of the publication

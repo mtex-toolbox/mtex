@@ -4,8 +4,8 @@ function ebsd = mtimes(x,y)
 % overloads the * operator
 %
 %% Syntax
-% ebsd = g*EBSD - rotates the EBSD data by @orientation g
-% ebsd = EBSD*v - rotate a @vector3d v by EBSD data
+% ebsd = g*@EBSD - rotates the EBSD data by @orientation g
+% ebsd = @EBSD*v - rotate a @vector3d v by EBSD data
 %
 %% See also
 % EBSD_index EBSD/rotate

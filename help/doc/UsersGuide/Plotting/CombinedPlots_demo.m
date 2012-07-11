@@ -1,6 +1,6 @@
 %% Combinded Plots
 % Explains how to combine several plots, e.g. plotting on the
-% top of an inverse pole figure some important crystall directions. 
+% top of an inverse pole figure some important crystal directions. 
 %
 %% Open in Editor
 %
@@ -10,7 +10,7 @@
 %% General Principle
 % In order to tell MATLAB to plot one plot right on the top of an older
 % plot one has to use the commands [[matlab:doc hold,hold all]] and
-% [[matlab:doc hold,hold off]]. Let demostrate this at a simple example.
+% [[matlab:doc hold,hold off]]. Let's demostrate this using a simple example.
 
 plot([2 2])
 
@@ -24,7 +24,7 @@ hold off
 % First we want to show up two different EBSD data sets in one plot
 
 %%
-% lets simualted some EBSD data
+% let's simulate some EBSD data
 cs = symmetry('-3m'); ss = symmetry('triclinic');
 odf = unimodalODF(orientation('euler',0,0,0,cs,ss));
 ebsd = calcEBSD(odf,100);
@@ -50,7 +50,7 @@ plotpdf(ebsd_rotated,h,'MarkerSize',4);
 hold off % next plot command deletes all plots
 
 
-%% Combine Smooth ODF Plots with EBSD Data Scatter Plots
+%% Combine countoured pole figures (smooth ODF plots) with EBSD Data Scatter Plots
 % You can also combine a contour plot of a model ODF with a scatter plot of single
 % orientations.
 
@@ -73,8 +73,8 @@ plotodf(ebsd_rotated,'MarkerSize',8,'MarkerColor','r','MarkerEdgeColor','k');
 hold off
 
 
-%% Add Miller Indece to a Inverse Pole Figure Plot
-% Next we are going to add some Miller indece to an inverse pole figure
+%% Add Miller Indices to an Inverse Pole Figure Plot
+% Next we are going to add some Miller indices to an inverse pole figure
 % plot.
 
 close all;

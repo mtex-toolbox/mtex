@@ -1,6 +1,12 @@
 function [psi,c] = crossCorrelation(ebsd,varargin)
 % computes the cross correlation for the kernel density estimator
 %
+%% Input
+% ebsd - @EBSD
+%% Options
+% kernel - a user defined @kernel
+% SamplingSize - 
+% PartitionSize - 
 %% See also
 % EBSD/calcKernel
 

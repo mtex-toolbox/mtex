@@ -13,26 +13,26 @@ function varargout = plot(q,varargin)
 
 %% two dimensional plot -> S2Grid/plot
 
-if ~(ishold && strcmp(get(gca,'tag'),'ebsd_raster')) && ...  
-  ~check_option(varargin,{'scatter','rodrigues','axisangle'}) 
+if ~(ishold && strcmp(get(gca,'tag'),'ebsd_raster')) && ...
+  ~check_option(varargin,{'scatter','rodrigues','axisangle'})
 
   if numel(q) == 1
-  
+
     v = [xvector,yvector,zvector];
     plot(q*v,'label',...
       {char(v(1),'Latex'),char(v(2),'Latex'),char(v(3),'Latex')},...
       varargin{:});
-  
+
   else
-  
+
     v = [xvector,yvector,zvector];
-  
+
     for i = 1:numel(v)
 
       plot(S2Grid(q.*v(i)),varargin{:});
       hold all
     end
-  
+
     hold off
   end
   return
@@ -56,23 +56,23 @@ if ~check_option(varargin,{'MarkerColor','MarkerFaceColor','DATA','MarkerEdgeCol
   varargin = {'MarkerEdgeColor',c,varargin{:}};
 end
 
-%%  GET OPTIONS 
+%%  GET OPTIONS
 
 % default plot options
 varargin = set_default_option(varargin,...
-  get_mtex_option('default_plot_options'));
+  getpref('mtex','defaultPlotOptions'));
 
 % COLORMAP
 if check_option(varargin,'GRAY'),colormap(flipud(colormap('gray'))/1.2);end
 
 %% Projection
 
-if isappdata(gcf,'projection')  
+if isappdata(gcf,'projection')
   projection = getappdata(gcf,'projection');
-elseif check_option(varargin,{'rodrigues'})  
+elseif check_option(varargin,{'rodrigues'})
   projection = 'rodrigues';
 else
-  projection = 'axisangle';  
+  projection = 'axisangle';
 end
 setappdata(gcf,'projection',projection);
 set(gca,'tag','ebsd_raster');

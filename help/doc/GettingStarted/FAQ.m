@@ -9,9 +9,9 @@
 %% I have crazy characters in my plots. What can I do?
 %
 % This indicates that your MATLAB installation has problems to interprete
-% LaTex. As a workaround uncomment the following line in 
+% LaTex. As a workaround switch off LaTex by uncommenting the following line in
 % [[matlab:edit mtex_settings.m,mtex_settings.m]].
 
-set_mtex_option('noLaTex');
+setpref('mtex','LaTex',false);
 
 %%

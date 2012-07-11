@@ -41,18 +41,18 @@ data = get_option(varargin,'property',[]);
 
 %% get options
 varargin = set_default_option(varargin,...
-  get_mtex_option('default_plot_options'));
+  getpref('mtex','defaultPlotOptions'));
 
 if sum(numel(o))*length(cs)*length(ss) > 10000 || check_option(varargin,'points')
 
   points = fix(get_option(varargin,'points',10000/length(cs)/length(ss)));
   disp(['  plotting ', int2str(points) ,' random orientations out of ', int2str(numel(o)),' given orientations']);
-  
+
   samples = discretesample(ones(1,numel(o)),points);
   o.rotation = o.rotation(samples);
   if ~isempty(data),
     data = data(samples);  end
-  
+
 end
 
 
@@ -69,7 +69,7 @@ else
   Sr = @(i) S2Grid(r(i),'MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
 
   Dr = @(i) repmat(reshape(data,1,[]),numel(symmetrise(h(i))),1);
-  
+
   multiplot(@(i) Sr(i),...
     @(i) Dr(i),length(h),...
     'ANOTATION',@(i) h(i),'dynamicMarkerSize',...

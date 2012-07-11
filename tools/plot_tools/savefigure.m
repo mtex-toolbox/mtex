@@ -65,4 +65,11 @@ otherwise
   return
 end
 
-print(fname,flags{:},varargin{:});
+printOptions = delete_option(varargin,'crop');
+print(fname,flags{:},printOptions{:});
+
+if check_option(varargin,'crop')
+  
+  unix(['pdfcrop' ' ' fname ' ' fname]);
+  
+end

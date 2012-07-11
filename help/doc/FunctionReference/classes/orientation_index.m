@@ -1,14 +1,10 @@
-%% Crystal Orientations (The Class [[orientation_index.html,orientation]])
-%
-%% Abstract
+%% Crystal Orientations (The Class @orientation)
 % This sections describes the class *orientation* and gives an overview how
 % to work with crystal orientation in MTEX.
 %
 %% Open in Editor
 %
-%% Contents
-%
-%% Description
+%% Class Description
 %
 % In texture analysis crystal orientations are used to describe the
 % alignment of the crystals within the specimen. A crystal orientation is
@@ -21,7 +17,7 @@
 % function that is defined for a rotation is also available for
 % a orientation.
 %
-%% Defining a Crystal Orientation
+%% SUB: Defining a Crystal Orientation
 %
 % In order to define a crystal orientation one has to define crystal and
 % specimen symmetry first.
@@ -80,7 +76,7 @@ o = orientation('Miller',[1 0 0],[0 1 1],cs,ss)
 
 o = orientation('goss',cs,ss)
 
-%% Rotating Crystal Directions onto Specimen Directions
+%% SUB: Rotating Crystal Directions onto Specimen Directions
 %
 % Let
 
@@ -103,7 +99,7 @@ r = o * h
 
 o \ r
 
-%% Concatenating Rotations
+%% SUB: Concatenating Rotations
 %
 % Let
 
@@ -131,7 +127,7 @@ symmetrise(o)
 
 ss * o * cs
 
-%% Caclulating Missorientations
+%% SUB: Caclulating Missorientations
 %
 % Let cs and ss be crystal and specimen symmetry and o1 and o2 two crystal
 % orientations. Then one can ask for the missorientation between both
@@ -146,7 +142,7 @@ angle(o,o1) / degree
 
 angle(rotation(o),rotation(o1)) /degree
 
-%% Calculating with Orientations and Rotations
+%% SUB: Calculating with Orientations and Rotations
 %
 % Beside the standard linear algebra operations there are also the
 % following functions available in MTEX. Then rotational angle and the axis
@@ -163,7 +159,7 @@ axis(o1)
 
 inverse(o1)
 
-%% Conversion into Euler Angles and Rodrigues Parametrisation
+%% SUB: Conversion into Euler Angles and Rodrigues Parametrisation
 %
 % There are methods to transform quaternion in almost any other
 % parameterization of rotations as they are:
@@ -175,7 +171,7 @@ inverse(o1)
 [phi1,Phi,phi2] = Euler(o)
 
 
-%% Plotting Orientations
+%% SUB: Plotting Orientations
 %
 % The [[orientation.plot.html,plot]] function allows you to visualize an
 % quaternion by plotting how the standard basis x,y,z transforms under the
