@@ -108,6 +108,10 @@ if istype(names,sphcoord)
     warndlg('The imported polar angles appears to be quit large, maybe your data are in degree and not in radians as you specified?');
   end
   
+  if max(abs(rh)) > 15
+    warndlg('The imported polar angles appears to be quit large, maybe your data are in degree and not in radians as you specified?');
+  end
+  
   if all(th<=0), th = -th;end  
   assert(all(th>=-1e-3 & th <= pi+1e-3) && ...
     all(rh>=-2*pi-1e-3) && all(rh<=4*pi+1e-3),'Polar coordinates out of range!');
