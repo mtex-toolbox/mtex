@@ -26,7 +26,8 @@ if get(T,'rank') ~= 3, Tinv = inv(T);end
 % init Voigt and Reuss averages
 TVoigt = set(T,'M',zeros([repmat(3,1,rank(T)) 1 1]));
 TVoigt = set(TVoigt,'CS',symmetry);
-TReuss = TVoigt;
+TReuss = set(Tinv,'M',zeros([repmat(3,1,rank(T)) 1 1]));
+TReuss = set(TReuss,'CS',symmetry);
 
 % determine method for average calculation
 
@@ -58,12 +59,12 @@ if strcmpi(char(method),'fourier')
     T_hat = Fourier(T,'order',l);
   
     % mean Tensor is the product of both
-    TVoigt = TVoigt + EinsteinSum(T_hat,[1:rank(T) -1 -2],odf_hat,[-1 -2]);
+    TVoigt = EinsteinSum(T_hat,[1:rank(T) -1 -2],odf_hat,[-1 -2]) + TVoigt;
     
     % same for Tinv
     if exist('Tinv','var'), 
       T_hat = Fourier(Tinv,'order',l);
-      TReuss = TReuss + EinsteinSum(T_hat,[1:rank(T) -1 -2],odf_hat,[-1 -2]);
+      TReuss = EinsteinSum(T_hat,[1:rank(T) -1 -2],odf_hat,[-1 -2]) + TReuss;
     end
     
   end
