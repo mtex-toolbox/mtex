@@ -1,8 +1,4 @@
-%% Import Script for EBSD Data
-%
-% This script was automatically created by the import wizard. You should
-% run the whoole script or parts of it in order to import your data. There
-% is no problem in making any chages to this scrip.
+%% Test for calcKAM2
 
 %% Specify Crystal and Specimen Symmetries
 
@@ -18,7 +14,7 @@ plotx2east
 %% Specify File Names
 
 % path to files
-pname = '/home/ppinard/documents/workspace/matlabdev/mtex/data/EBSD/';
+pname = [getpref('mtex','mtexPath') '/data/EBSD/'];
 
 % which files to be imported
 fname = {...
@@ -36,7 +32,7 @@ ebsd = loadEBSD(fname,CS,SS,'interface','ctf' ...
 
 %% Visualize the Data
 
-plot(ebsd)
+plot(ebsd, 'property', 'phase')
 
 
 %% Detect grains
