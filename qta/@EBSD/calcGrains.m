@@ -283,8 +283,33 @@ grainSet.F        = F;              clear F;
 grainSet.V        = x_V;            clear x_V;
 grainSet.options  = struct;
 
+%% Grain average value of EBSD properties
+
+[i,j] = find(grainSet.I_DG);
+
+cc = full(sum(grainSet.I_DG>0,1));
+cs = [0 cumsum(cc)];
+
+fields = fieldnames(ebsd.options);
+
+for n = 1:length(fields)
+  values = ebsd.options.(fields{n});
+  meanValues = values(i(cs(2:end)));
+
+  for k = find( cc > 1)
+    ndx = i(cs(k)+1:cs(k+1));
+    meanValues(k) = mean(values(ndx));
+  end
+  
+  grainSet.options.(strcat('mean_', fields{n})) = meanValues;
+end
+
+%% Mean misorientation
+
 [g,d] = find(grainSet.I_DG'); clear I_DG;
 ebsd.options.mis2mean = inverse(ebsd.rotations(d)).* reshape(grainSet.meanRotation(g),[],1);
+
+%% Boundary edge order
 
 switch dim
   case 2
