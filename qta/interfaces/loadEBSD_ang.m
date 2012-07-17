@@ -1,4 +1,20 @@
 function ebsd = loadEBSD_ang(fname,varargin)
+% read TSL *.ang file
+%
+%% Syntax
+%   ebsd = loadEBSD_ang(fname,'convertSpatial2EulerReferenceFrame')
+%   ebsd = loadEBSD_ang(fname,'convertEuler2SpatialReferenceFrame')
+%
+%% Input
+%  fname - file name
+%
+%% Flags
+%  convertSpatial2EulerReferenceFrame - change x and y values such that
+%  spatial and Euler reference frame coincide, i.e., rotate them by 180
+%  degree
+%  convertEuler2SpatialReferenceFrame -  - change the Euler angles such that
+%  spatial and Euler reference frame coincide, i.e., rotate them by 180
+%  degree
 
 try
   % read file header
@@ -74,3 +90,11 @@ try
 catch
   interfaceError(fname);
 end
+
+% change reference frame
+if check_option(varargin,'convertSpatial2EulerReferenceFrame')
+  ebsd = rotate(ebsd,rotation('axis',xvector+yvector,'angle',180*degree),'keepEuler');
+elseif check_option(varargin,'convertSpatial2EulerReferenceFrame')
+  ebsd = rotate(ebsd,rotation('axis',xvector+yvector,'angle',180*degree),'keepXY');
+end
+  
