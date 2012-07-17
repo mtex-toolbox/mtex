@@ -2,14 +2,14 @@ function plotFundamentalRegion(CS,varargin)
 % plots fundamental in odf-space
 %
 %% Input
-% CS - @symmetry
+%  CS - @symmetry
 %
 %% Options
-% zone -  1..n, plot only a specific fundamental region 
-% center - @ plot
+%  zone -  1..n, plot only a specific fundamental region 
+%  center - @ plot
 %
 %% See also
-% odf\plotodf orientation\plotodf
+% odf/plotodf orientation/plotodf
 
 sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','axisangle','omega'},'sigma');
 

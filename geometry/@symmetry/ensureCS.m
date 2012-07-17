@@ -13,7 +13,7 @@ axesNew = reshape(double(get(csNew,'axes')),3,3);
 M = axesOld^(-1) * axesNew;
 
 % if compatible transform to new reference frame
-if strcmp(csNew.laue,csOld.laue) && norm(M^-1-M')<10^-2
+if strcmp(csNew.laue,csOld.laue) && norm(M^-1-M')<5*10^-2
   obj = set(obj,'CS',csNew);
   return
 end
