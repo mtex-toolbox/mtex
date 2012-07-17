@@ -12,6 +12,7 @@
 
 % specify crystal and specimen symmetry
 CS = {...
+  'not Indexed',...
   symmetry('m-3m','mineral','Fe'),... % crystal symmetry phase 1
   symmetry('m-3m','mineral','Mg')};   % crystal symmetry phase 2
 SS = symmetry('-1');   % specimen symmetry
@@ -32,19 +33,19 @@ plot(ebsd('Fe'))
 
 %% Segmentation
 
-[grains ebsd] = calcGrains(ebsd,'angle',10*degree)
+grains = calcGrains(ebsd,'angle',10*degree)
 
 %%
 % The reconstructed grains strongly depend on the specified threshold
 % angle. These angles can be specified seperatly for different phases.
 
-[grains ebsd] = calcGrains(ebsd,'angle',[10 5]*degree)
+grains = calcGrains(ebsd,'angle',[0 10 5]*degree)
 
 %%
 % Plot grain-boundaries
 
 plotBoundary(grains,'color',[0.25 0.1 0.5])
-hold on, plotSubBoundary(grains,'color','red','linewidth',2)
+hold on, plotBoundary(grains,'internal','color','red','linewidth',2)
 
 %%
 % on application of this would be to take a look on the grainsize
@@ -58,6 +59,6 @@ figure, bar( hist(grainSize(grains),x) );
 %% Accessing geometric properties
 %
 area(grains); perimeter(grains);
-shapefactor(grains); paris(grains); %...
+shapefactor(grains); 
 
 

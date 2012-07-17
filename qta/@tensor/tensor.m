@@ -81,6 +81,14 @@ end
 
 varargin = delete_option(varargin,{'doubleconvention','singleconvention','InfoLevel'});
 
+%
+if check_option(varargin,'doubleconvention')
+  T.properties.doubleconvention = 'true';
+end
+
+
+varargin = delete_option(varargin,{'doubleconvention','singleconvention','InfoLevel'});
+
 % extract properties
 while ~isempty_cell(varargin)  
   T.properties.(varargin{1}) = varargin{2};

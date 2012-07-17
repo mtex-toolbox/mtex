@@ -2,11 +2,11 @@
 %
 %% Open in Editor
 %
-%% Abstract
+%%
 % A central issue when interpreting plots is to have a consistent color
 % coding among all plots. In MTEX this can be achieved in two ways. If the 
-% the minimum and maximum value is known then one can 
-% specify the colorrange directly using the options *colorrange* or
+% the minimum and maximum value are known then one can 
+% specify the color range directly using the options *colorrange* or
 % *contourf*, or the command <setcolorrange.html setcolorrange> is used
 % which allows to set the color range afterwards. 
 %
@@ -26,9 +26,11 @@ pf = calcPoleFigure(odf,[Miller(1,0,0),Miller(1,1,1)],...
 
 %% Tight Colorcoding
 %
-% When <PoleFigure.plot.html plot> is called without option the colorcoding
-% of each plot is choosen *tight* to the range of the data independently
-% from the other plots.
+% When <PoleFigure.plot.html plot> is called without any colorcoding option, 
+% the plots are constructed using the  *tight* option to the range of the data 
+% independently from the other plots. This means that different pole
+% figures may have different color coding and in principle cannot be
+% compared to each other.
 
 close all
 plot(pf)
@@ -36,8 +38,8 @@ plot(pf)
 
 %% Equal Colorcoding
 %
-% The *tight* colorcoding makes it hard to compare two pole figures. If you
-% want to have one colorcoding for all plots within one figure use the
+% The *tight* colorcoding can make the reading and comparison of two pole figures 
+% a bit hard. If you want to have one colorcoding for all plots within one figure use the
 % option *colorrange* to *equal*.
 
 plot(pf,'colorrange','equal')
@@ -58,7 +60,7 @@ plotpdf(.5*odf+.5*uniformODF(cs,ss),[Miller(1,0,0),Miller(1,1,1)],...
 
 %% Setting the Contour Levels
 %
-% In the case of contor plots you can also specify the *contour levels*
+% In the case of contour plots you can also specify the *contour levels*
 % directly
 
 close all
@@ -97,9 +99,9 @@ setcolorrange([0.01 12]);
 colorbar
 
 
-%% Monochrome Plots
+%% Monochromatic Plots
 %
-% Monochrome plots are obtained by the option *gray*.
+% Monochromatic plots are obtained by the option *gray*.
 
 plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal','gray')
 

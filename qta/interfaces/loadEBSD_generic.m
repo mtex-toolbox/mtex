@@ -37,16 +37,18 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 %% Example
 %
 %    fname = fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt');
-%    CS = {symmetry('m-3m','mineral','Fe'),...
+%    CS = {'not indexed',...
+%          symmetry('m-3m','mineral','Fe'),...
 %          symmetry('m-3m','mineral','Mg')};
 %    SS = symmetry('triclinic');
 %    ebsd = loadEBSD_generic(fname,'CS',CS,'SS',SS, 'ColumnNames', ...
 %      {'Index' 'Phase' 'x' 'y' 'Euler1' 'Euler2' 'Euler3' 'MAD' 'BC' 'BS'...
-%      'Bands' 'Error' 'ReliabilityIndex'}, 'Bunge', 'ignorePhase', 0)
+%      'Bands' 'Error' 'ReliabilityIndex'}, 'Bunge')
 %
 %% See also
 % ImportEBSDData loadEBSD ebsd_demo
 
+try
 % load data
 [d,options,header,c] = load_generic(char(fname),varargin{:});
 
@@ -129,16 +131,8 @@ if istype(names,{'Phase'})
   
   phase = d(:,layoutcol(names,{'Phase'}));
   
-  % remove phases that should be ignored
-  ignorePhase = get_option(varargin,'ignorePhase',[]);
-  
-  ind = ismember(phase,ignorePhase);
-  d(ind,:) = [];
-  phase(ind)=[];
-  q(ind) = [];
   
   %[ig,ig,phase] = unique(phase);
-  
 else
   
   phase = ones(size(d,1),1);
@@ -184,6 +178,9 @@ options = varargin;
 % set up EBSD variable
 ebsd = EBSD(q,symmetry('cubic'),symmetry,varargin{:},'phase',phase,'options',opt);
 
+catch
+  interfaceError(fname)
+end
 
 function str = stripws(str)
 

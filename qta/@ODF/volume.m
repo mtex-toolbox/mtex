@@ -18,7 +18,7 @@ function v = volume(odf,center,radius,varargin)
 %  resolution - resolution of discretization
 %
 %% See also
-% ODF/fibrevolume ODF/entropy ODF/textureindex
+% ODF/fibreVolume ODF/entropy ODF/textureindex
 
 % check input
 argin_check(center,'quaternion');

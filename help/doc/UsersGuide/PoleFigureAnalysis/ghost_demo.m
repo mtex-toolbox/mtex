@@ -8,19 +8,19 @@
 %
 %% Introduction
 %
-% A general problem in estimating an ODF from pole figure data is the fact,
+% A general problem in estimating an ODF from pole figure data is the fact
 % that the odd order Fourier coefficients of the ODF are not present
 % anymore in the pole figure data and therefore it is difficult to estimate
 % them. Artefacts in the estimated ODF that are due to underestimated odd
-% order Fourier coefficients are called *ghost effect*. It is known that
+% order Fourier coefficients are called *ghost effects*. It is known that
 % for sharp textures the ghost effect is relatively small due to the strict
-% nonnegativity condition. For weak textures, however, the ghost effect
+% non-negativity condition. For weak textures, however, the ghost effect
 % might be remarkable. For those cases *MTEX* provides the option 
 % *ghost_ correction* which tries to determine the uniform portion of the
 % unknown ODF and to transform the unknown weak ODF into a sharp ODF by
-% substracting this uniform portion. This is allmost the approach Matthies
+% substracting this uniform portion. This is almost the approach Matthies
 % proposed in his book (He called the uniform portion *phon*).
-% In this section we are going to demonstarte the power of ghost correction
+% In this section we are going to demonstrate the power of ghost correction
 % at a simple, synthetic example.
 
 %% Construct Model ODF
@@ -112,7 +112,7 @@ calcError(rec_cor,odf,'Fourier','L2')
 %% Plot Fourier Coefficients   
 %
 % Plotting the Fourier coefficients of the recalculated ODFs show that the
-% Fourier coefficients with ghost correction oszillates much more the the
+% Fourier coefficients with ghost correction oscillates much more the
 % Fourier coefficients with ghost correction
 
 %%

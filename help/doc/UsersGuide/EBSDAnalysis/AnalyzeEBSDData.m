@@ -2,7 +2,7 @@
 %
 %% Open in Editor
 %
-%% Abstract
+%% 
 % EBSD Data analysis is not yet complete in MTEX. However most of the main
 % functionalities are already implemented. First of all one can estimate an
 % ODF from EBSD data. This is explained in detail in the section
@@ -18,6 +18,7 @@
 %
 
 cs = {...
+  'notIndexed',...
   symmetry('m-3m','mineral','Fe'),... % crystal symmetry phase 1
   symmetry('m-3m','mineral','Mg')};   % crystal symmetry phase 2
 
@@ -26,7 +27,7 @@ ss = symmetry('triclinic');
 ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt'),cs,ss,... 
                 'interface','generic','Bunge',...
                  'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3'},...
-                 'Columns', [2 3 4 5 6 7],'ignorePhase',0);
+                 'Columns', [2 3 4 5 6 7]);
 
 plot(ebsd('Fe'))
 

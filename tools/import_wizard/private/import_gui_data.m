@@ -39,7 +39,7 @@ handles.tabs = uitabpanel(...
 
 panels = getappdata(handles.tabs,'panels');
 
-if select == 1 || ~check_mtex_option('generate_help')
+if select == 1 || ~getpref('mtex','generatingHelpMode')
   handles.tabs_pf = uitabpanel(...
     'Parent',panels(1),...
     'Style','popup',...
@@ -53,36 +53,38 @@ if select == 1 || ~check_mtex_option('generate_help')
     'PanelBackgroundColor',get(gcf,'color'),...
     'TitleForegroundColor',[0,0,0],...
     'selectedItem',1);
-  
+
   handles.datapane = [getappdata(handles.tabs_pf,'panels') panels(2:end)];
-  
+
 else
 
   handles.datapane = panels(1:end);
-  
+
 end
 
+
+if  select == 2 || ~getpref('mtex','generatingHelpMode')
 handles.importcpr = uicontrol(...
   'Parent',panels(2),...
   'String','Import Project-Settings',...
   'TooltipString','imports phase information from a project file (*.cpr)',...
   'CallBack',{@importProjectSettings},...
   'Position',[w-145 ph-150 115 25]);
-
+end
 
 handles.add = uicontrol(...
   'Parent',this_page,...
   'cdata',icon('add'),...
   'TooltipString','add data file',...
   'Callback',{@addData},...
-  'Position',[w-145 ph-80 25 25]);
-  
+  'Position',[w-145 ph-90 25 25]);
+
 handles.del = uicontrol(...
   'Parent',this_page,...
   'cdata',icon('delete'),...
   'TooltipString','remove data file',...
   'CallBack',{@delData},...
-  'Position',[w-145 ph-110 25 25]);
+  'Position',[w-145 ph-120 25 25]);
 
 
 handles.up = uicontrol(...
@@ -93,7 +95,7 @@ handles.up = uicontrol(...
   'CallBack',{@shiftData,+1},...
   'Position',[w-145 ph-220 25 25]);
 
-handles.down = uicontrol(... 
+handles.down = uicontrol(...
   'cdata',icon('down'),...
   'TooltipString','move data file downwards',...
   'style','pushbutton',...
@@ -104,7 +106,7 @@ handles.down = uicontrol(...
 
 paneltypes = {'PoleFigure','PoleFigure','PoleFigure','PoleFigure','EBSD','ODF','Tensor'};
 
-for k = 1:length(handles.datapane)  
+for k = 1:length(handles.datapane)
   handles.listbox(k) = uicontrol(...
     'Parent',handles.datapane(k),...
     'BackgroundColor',[1 1 1],...
@@ -118,7 +120,7 @@ for k = 1:length(handles.datapane)
     'Value',1);
 end
 
-if select == 1 || ~check_mtex_option('generate_help')
+if select == 1 && ~getpref('mtex','generatingHelpMode')
   for k=5:6
     set(handles.listbox(k),'Position',[9 10 w-165 ph-65])
   end
@@ -146,20 +148,20 @@ data = getappdata(gcbf,'data');
 handles = getappdata(gcbf,'handles');
 
 if ~isempty(getappdata(handles.listbox(1),'data'))
-  
-  % for pole figures take care not to change the data  
+
+  % for pole figures take care not to change the data
   pf = getappdata(handles.listbox(1),'data');
   d = get(pf,'intensities');
   data = set(data,'intensities',d);
   setappdata(handles.listbox(1),'data',data);
 
 elseif ~isempty(getappdata(handles.listbox(5),'data'))
-  
+
   ebsd = getappdata(handles.listbox(5),'data');
   setappdata(gcbf,'data',ebsd);
-  
+
 elseif ~isempty(getappdata(handles.listbox(6),'data'))
-  setappdata(handles.listbox(6),'data',data); 
+  setappdata(handles.listbox(6),'data',data);
 else
   setappdata(handles.listbox(7),'data',data);
 end
@@ -183,29 +185,29 @@ elseif s > 1
 end
 
 if ~isempty(ebsd)
-  
+
   filename = getappdata(lb(5),'filename');
-  setappdata(hfig,'data',ebsd);  
+  setappdata(hfig,'data',ebsd);
   setappdata(lb(5),'zvalues',[]);
   if numel(filename) > 1,
     choice = questdlg({'More than one EBSD data set imported.',' Do you want to treat it as 3d data?'},'EBSD 3d');
-    switch choice 
+    switch choice
       case 'Yes'
-        setappdata(lb(5),'zvalues',1:numel(filename));        
+        setappdata(lb(5),'zvalues',1:numel(filename));
     end
   end
-  
+
   handles.pages = handles.ebsd_pages;
-  
+
   vname = 'ebsd';
 elseif ~isempty(odf)
-  
+
   setappdata(hfig,'data',odf);
   handles.pages = handles.odf_pages;
-  
+
   vname = 'odf';
-elseif ~isempty(pf) 
-  
+elseif ~isempty(pf)
+
   % pole figure correction
   bg = getappdata(lb(2),'data');
   def = getappdata(lb(3),'data');
@@ -214,13 +216,13 @@ elseif ~isempty(pf)
 
   setappdata(hfig,'data',pf);
   handles.pages = handles.pf_pages;
-  
+
   vname = 'pf';
 elseif ~isempty(tensor)
-  
+
   setappdata(hfig,'data',tensor);
   handles.pages = handles.tensor_pages;
-  
+
   vname = 'tensor';
 end
 
@@ -259,7 +261,7 @@ filename = getappdata(lb,'filename');
 if ~isempty(data)
   pos = get(lb,'Value');
   pp = 1:numel(filename);
-    
+
   if pos(1) > 1 && drc > 0 % up
     for k=pos
       tpp = pp;
@@ -275,24 +277,24 @@ if ~isempty(data)
   else
     return
   end
-    
+
   csz = cumsum(idata);
   sp = cell(numel(data),1);
   for k=1:numel(idata)-1;
     sp{k} = csz(k)+1:csz(k+1);
   end
   sp = [sp{pp}];
- 
+
   setappdata(lb,'data',data(sp));
   tidata = idata(2:end);
   idata(2:end) = tidata(pp);
   setappdata(lb,'idata',idata);
   setappdata(lb,'filename',filename(pp));
-  
+
   str = get(lb,'String');
   set(lb,'String',str(pp));
   set(lb,'Value',pos-drc);
- 
+
 end
 
 
@@ -303,12 +305,12 @@ lb = handles.listbox;
 ebsd = getappdata(lb(5),'data');
 
 
-if ~isempty(ebsd) 
+if ~isempty(ebsd)
   try
     [file path] = uigetfile('*.cpr','Select associated CPR Project-file');
     if file ~=0
       phases = cprproject_read(fullfile(path,file));
-      ebsd = set(ebsd,'CS',phases(get(ebsd,'phase')),'noTrafo');  
+      ebsd = set(ebsd,'CS',phases(get(ebsd,'phase')),'noTrafo');
       setappdata(lb(5),'data',ebsd);
       msgbox('Phases information successfully loaded!')
     end

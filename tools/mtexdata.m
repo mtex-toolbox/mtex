@@ -23,62 +23,68 @@ function mtexdata(name)
 list = listmtexdata;
 
 if nargin < 1
-  
+
   disp('available loading routines for mtex sample data');
   cprintf({'TYPE', list.type; 'NAME',list.name}');
   return
-  
+
 elseif strcmpi(name,'clear')
-  
+
   files = dir(fullfile(mtexDataPath,'*.mat'));
   for k=1:numel(files)
     fullfile(mtexDataPath,[files(k).name]);
     delete(fullfile(mtexDataPath,[files(k).name]));
   end
   return
-  
+
 elseif strcmpi(name,'all')
-  
+
   for files = list
     mtexdata(files.name)
   end
   return
-  
+
 end
 
 
 ndx = strmatch(name,{list.name});
-file = fullfile(mtexDataPath,[ lower(list(ndx).name) '.mat']);
+
+if any(ndx)
+  file = fullfile(mtexDataPath,[ lower(list(ndx).name) '.mat']);
+else
+  warning('mtex:missingData','data not found, please choose one listed below')
+  mtexdata
+  return
+end
 
 if any(ndx) && isempty(dir(file))
-  
+
   switch list(ndx).type
     case 'ebsd'
-      
+
       [CS,ebsd] = feval(['mtexdata_' list(ndx).name]);
       save(file,'CS','ebsd');
-      
+
     case 'pf'
-      
+
       [CS,h,pf] = feval(['mtexdata_' list(ndx).name]);
-      save(file,'CS','h','pf');     
-      
+      save(file,'CS','h','pf');
+
   end
-  
+
 end
 
 S = load(file);
-
-disp([ upper(list(ndx).name) ' data loaded in variables']);
 fld = fields(S);
 for k=1:numel(fld)
   assignin('base',fld{k},S.(fld{k}));
 end
 
-disp(fld)
-evalin('base',fld{end});
-
-
+if ~getpref('mtex','generatingHelpMode')
+  disp([ upper(list(ndx).name) ' data loaded in variables']);
+  disp(fld)
+  evalin('base',fld{end});
+end
 
 
 function data = listmtexdata
@@ -97,16 +103,24 @@ function [CS,h,pf] = mtexdata_dubna
 CS = symmetry('-3m',[1.4 1.4 1.5]);
 SS = symmetry;
 fname = {...
+  fullfile(mtexDataPath,'PoleFigure','dubna','Q(02-21)_amp.cnv'),...
   fullfile(mtexDataPath,'PoleFigure','dubna','Q(10-10)_amp.cnv'),...
   fullfile(mtexDataPath,'PoleFigure','dubna','Q(10-11)(01-11)_amp.cnv'),...
+  fullfile(mtexDataPath,'PoleFigure','dubna','Q(10-12)_amp.cnv'),...
+  fullfile(mtexDataPath,'PoleFigure','dubna','Q(11-20)_amp.cnv'),...
+  fullfile(mtexDataPath,'PoleFigure','dubna','Q(11-21)_amp.cnv'),...
   fullfile(mtexDataPath,'PoleFigure','dubna','Q(11-22)_amp.cnv')};
 
 h = {...
+  Miller(0,2,-2,1,CS),...
   Miller(1,0,-1,0,CS),...
   [Miller(0,1,-1,1,CS),Miller(1,0,-1,1,CS)],... % superposed pole figures
+  Miller(1,0,-1,2,CS),...
+  Miller(1,1,-2,0,CS),...
+  Miller(1,1,-2,1,CS),...
   Miller(1,1,-2,2,CS)};
 
-c = {1,[0.52 ,1.23],1};
+c = {1,1,[0.52 ,1.23],1,1,1,1};
 
 pf = loadPoleFigure(fname,h,CS,SS,'interface','dubna','superposition',c);
 
@@ -145,24 +159,25 @@ h = get(pf,'h');
 % ----------------------------------------------------------------- EBSD data --
 function [CS,ebsd] = mtexdata_aachen
 CS = {...
+  'notIndexed',...
   symmetry('m-3m','mineral','Fe'),...
   symmetry('m-3m','mineral','Mg')};
 
 ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt'),CS,symmetry,...
   'interface','generic' , ...
   'ColumnNames', { 'Index' 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'MAD' 'BC' 'BS' 'Bands' 'Error' 'ReliabilityIndex'},...
-  'Bunge', 'ignorePhase', 0);
+  'Bunge');
 
 function [CS,ebsd] = mtexdata_3d
 
-ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','3dData','*.ang'),'3d', (0:58)*0.12);
+ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','3dData','*.ANG'),'3d', (0:58)*0.12);
 CS = get(ebsd,'CS');
 
 function [CS,ebsd] = mtexdata_mylonite
 
 CS = {...
-  symmetry('-1',[8.169,12.851,7.1124],[93.63,116.4,89.46]*degree,'mineral','Andesina An28'),...
-  symmetry('-3m',[4.913,4.913,5.504],'mineral','Quartz-new'),...
+  symmetry('-1',[8.169,12.851,7.1124],[93.63,116.4,89.46]*degree,'mineral','Andesina'),...
+  symmetry('-3m',[4.913,4.913,5.504],'mineral','Quartz'),...
   symmetry('2/m',[5.339,9.249,20.196],[95.06,90,90]*degree,'mineral','Biotite'),...
   symmetry('2/m',[8.5632,12.963,7.2099],[90,116.07,90]*degree,'mineral','Orthoclase')};
 

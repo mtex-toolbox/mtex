@@ -1,24 +1,17 @@
-%% Orientation Density Functions (The Class [[ODF_index.html,ODF]])
-%
-
-%% Abstract
+%% Orientation Density Functions (The Class @ODF)
 % This sections describes the class *ODF* and gives an overview how to work
 % with orientation density functions in MTEX.
-% 
-%% Contents
-% 
 %
-%% Description
-%
+%% Class Description
 % ODFs are at the very heart of MTEX. Almost any computation in MTEX can be
 % done by estimating ODFs from various data, analyzing modell ODFs,
 % simulating experimental data from ODFs, or calculating any texture
-% characteristics from an ODF. The following mindmap may give you an
-% idea what is possible in MTEX.
+% characteristics from an ODF. The following mindmap may give you an idea
+% what is possible in MTEX.
 %
 % <<odf.png>>
-%
-%% Model ODFs
+% 
+%% SUB: Model ODFs
 %
 % MTEX provides a very simple way to define model ODFs, e.g. unimodal ODFs,
 % fibre ODF, Bingham ODFs or ODFs specified by Fourier
@@ -30,7 +23,7 @@
 %
 
 
-%% Estimating ODFs from EBSD Data or Pole Figure Data
+%% SUB: Estimating ODFs from EBSD Data or Pole Figure Data
 %
 % The second natural way how ODFs occurs in MTEX is by estimating them from
 % EBSD or pole figure data. It should be stressed that for MTEX there is no
@@ -40,7 +33,7 @@
 % sections <EBSD2odf.html ODF estimation from EBSD data> and
 % <PoleFigure2odf.html ODF estimation from Pole Figure data>.
 %
-%% Analyzing ODFs
+%% SUB: Analyzing ODFs
 %
 % MTEX provides a lot of tool to make analyzing and interpreting ODFs as
 % simple as possible. The tools may be split into two groups - texture

@@ -1,4 +1,4 @@
-%% Import Tensor Data
+%% Importing Tensor Data
 % How to import Tensor Data
 %
 

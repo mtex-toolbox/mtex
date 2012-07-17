@@ -2,19 +2,27 @@ function s = char(ebsd)
 % ebsd -> char
 
 s = [];
-for p = unique(ebsd.phase)'
-
+for p = 1:numel(ebsd.phaseMap)
+  
   ss = [];
-  ss = [ss, 'phase ',num2str(p) ': ']; %#ok<AGROW>
-
+  ss = [ss, 'phase ',num2str(ebsd.phaseMap(p)) ' ']; %#ok<AGROW>
+  
   CS = ebsd.CS{p};
-  if ~isempty(get(CS,'mineral'))
-    ss = [ss, get(CS,'mineral') ', ']; %#ok<AGROW>
+  if ischar(CS)
+    ss = [ss, '(not Indexed): ' CS ', ']; %#ok<AGROW>
+  else
+    
+    if ~isempty(get(CS,'mineral'))
+      ss = [ss, '(' get(CS,'mineral') '): '];
+    else
+      ss = [ss, ': '];
+    end
+    
+    ss = [ss 'symmetry ' Laue(CS) ', ']; %#ok<AGROW>
   end
-
-  ss = [ss, num2str(nnz(ebsd.phase == p)),' orientations, '];    %#ok<AGROW>
-
-  ss = [ss,'symmetry: ',Laue(CS)];     %#ok<AGROW>
-
+  
+  ss = [ss, num2str(nnz(ebsd.phase == p)),' orientations '];    %#ok<AGROW>
+  
+  
   s = strvcat(s,ss); %#ok<VCAT>
 end

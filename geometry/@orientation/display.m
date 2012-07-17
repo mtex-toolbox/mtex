@@ -4,26 +4,26 @@ function display(o)
 csss = {'sample symmetry ','crystal symmetry'};
 
 disp(' ');
-if isCS(o.SS) && isCS(o.CS)
-  disp([inputname(1) ' = ' doclink('orientation_index','misorientation') ' (size: ' int2str(size(o)) ')']);
+s = [inputname(1) ' = '];
+if ~isa(o.SS,'symmetry') || ~isa(o.CS,'symmetry')
+  s = [s 'invalid misorientation'];
+  disp(s);
+  disp(['  size: ' size2str(o)]);
+  return
+elseif isCS(o.SS) && isCS(o.CS)
+  s = [s doclink('orientation_index','misorientation')];
 elseif isCS(o.SS)
-  disp([inputname(1) ' = ' doclink('orientation_index','inverse orientation') ' (size: ' int2str(size(o)) ')']);
-  
+  s = [s doclink('orientation_index','inverse orientation')];  
 else
-  disp([inputname(1) ' = ' doclink('orientation_index','orientation') ' (size: ' int2str(size(o)) ')']);
+  s = [s doclink('orientation_index','orientation')];
 end
   
+disp([s ' ' docmethods(inputname(1))]);
+
+disp(['  size: ' size2str(o)]);
 disp(['  ' csss{isCS(o.CS)+1} ': ', char(o.CS,'verbose')]);
 disp(['  ' csss{isCS(o.SS)+1} ': ',char(o.SS,'verbose')]);
 
+if numel(o) < 30 && numel(o)>0, Euler(o);end
 
-if numel(o) < 30 && numel(o)>0
-  
-  Euler(o);
-  
-else
-
-  disp(' ');
-  
-end
-
+disp(' ')

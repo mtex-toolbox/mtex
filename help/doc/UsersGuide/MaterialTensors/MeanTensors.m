@@ -1,15 +1,15 @@
 %% Average Material Tensors
 % how to calculate average material tensors from ODF and EBSD data
+%%
+% MTEX offers several ways to compute average material tensors from ODFs or EBSD data.
 %
 %% Open in Editor
 %
-%% Abstract
-% MTEX offers several ways to compute average material tensors from ODFs or EBSD data.
-%
 %% Contents
-
+%
+%%
 % set up a nice colormap
-set_mtex_option('defaultColorMap',seismicColorMap);
+setpref('mtex','defaultColorMap',seismicColorMap);
 
 %% Import EBSD Data
 % We start by importing some ebsd data of Glaucophane and Epidote.
@@ -73,7 +73,7 @@ MEpidote =....
   [   0.00     0.00     0.00    39.10      0.00    -2.30];...
   [  -6.50   -10.40   -20.00     0.00     43.40     0.00];...
   [   0.00     0.00     0.00    -2.30      0.00    79.50]];
-  
+
 % define the reference frame
 csEpidote= symmetry('2/m',[8.8877,5.6275,10.1517],...
   [90.00,115.383,90.00]*degree,'X||a*','Z||c','mineral','Epidote');
@@ -86,8 +86,8 @@ CEpidote = tensor(MEpidote,csEpidote)
 
 [CVoigt,CReuss,CHill] =  calcTensor(ebsd,CGlaucophane,CEpidote)
 
-%% 
-% for a single phase the syntax is 
+%%
+% for a single phase the syntax is
 
 [CVoigtEpidote,CReussEpidote,CHillEpidote] =  calcTensor(ebsd('Epidote'),CEpidote)
 
@@ -105,5 +105,5 @@ odfEpidote = calcODF(ebsd('Epidote'),'halfwidth',10*degree)
   calcTensor(odfEpidote,CEpidote)
 
 % set back the colormap
-set_mtex_option('defaultColorMap',WhiteJetColorMap);
+setpref('mtex','defaultColorMap',WhiteJetColorMap);
 

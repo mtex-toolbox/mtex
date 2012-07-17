@@ -51,7 +51,7 @@ psi = calcKernel(ebsd('Fe'))
 % grains.
 
 % grains reconstruction
-[grains ebsd] = calcGrains(ebsd);
+grains = calcGrains(ebsd);
 
 % correct for to small grains
 grains = grains(grainSize(grains)>5);

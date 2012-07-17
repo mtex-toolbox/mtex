@@ -1,4 +1,4 @@
-%% Model ODFs and ODF Estimation
+%% Estimating and Simulating ODFs
 % How to define Model ODFs and recover ODFs from Pole Figure Data or EBSD Data
 % 
 %%

@@ -1,5 +1,5 @@
-%% EBSD Simulation
-% How to simulate an arbitary number of individual orientations data from
+%% Simulating EBSD data
+% How to simulate an arbitrary number of individual orientations data from
 % any ODF. 
 %
 %% Open in Editor
@@ -7,12 +7,12 @@
 %% Contents
 %
 %% 
-% MTEX allows to to simulate an arbitary number of EBSD data from any ODF.
-% This is quit helpfull if you want to analyse the EBSD to ODF estimation
+% MTEX allows one to simulate an arbitary number of EBSD data from any ODF.
+% This is quite helpful if you want to analyse the EBSD to ODF estimation
 % routine.
 %
 %% 
-% *Define an Model ODF*
+% *Define a Model ODF*
 %
 % Let us first define a simple fibre symmetric ODF.
 
@@ -33,7 +33,7 @@ ebsd = calcEBSD(fibre_odf,10000)
 
 %% ODF Estimation from EBSD Data
 %
-% From the 10000 individal orientations we can now estimate an ODF. First
+% From the 10000 individual orientations we can now estimate an ODF. First
 % we determine the optimal kernel function
 
 psi = calcKernel(ebsd)
@@ -65,11 +65,11 @@ e = [];
 for i = 1:6
 
   ebsd = calcEBSD(fibre_odf,10^i);
+  
   psi = calcKernel(ebsd);
   odf = calcODF(ebsd,'kernel',psi);
   e(i,1) = calcError(odf,fibre_odf,'resolution',2.5*degree);
   
-  ebsd = calcEBSD(fibre_odf,10^i);
   psi = calcKernel(ebsd,'method','RuleOfThumb');
   odf = calcODF(ebsd,'kernel',psi);
   e(i,2) = calcError(odf,fibre_odf,'resolution',2.5*degree);  

@@ -8,7 +8,7 @@ function e = calcError(pf,rec,varargin)
 % are calculated by the function PoleFigure/calcNormalization
 %
 %% Syntax
-%  e = calcError(pf,pf2,param) - compares two different @PoleFigures with same @S2Grid
+%  e = calcError(pf,pf2,param) - compares two different @PoleFigure with same @S2Grid
 %  e = calcError(pf,rec,param) - compares @PoleFigure with the Recalculated @ODF
 %
 %% Input

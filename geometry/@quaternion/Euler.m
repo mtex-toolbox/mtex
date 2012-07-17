@@ -5,7 +5,7 @@ function varargout = Euler(quat,varargin)
 % calculates the Euler angle for a rotation |q|
 %
 %% Syntax
-% [alpha,beta,gamma] = Euler(quat) - 
+% [alpha,beta,gamma] = Euler(quat) -
 % [phi1,Phi,phi2] = Euler(quat,'Bunge') -
 % euler = Euler(quat,'Bunge') -
 %
@@ -62,79 +62,79 @@ gamma(ind) = 0;
 %% transform to right convention
 
 conventions = {'nfft','ZYZ','ABG','Matthies','Roe','Kocks','Bunge','ZXZ','Canova'};
-convention = get_flag(varargin,conventions,get_mtex_option('EulerAngleConvention'));
+convention = get_flag(varargin,conventions,getpref('mtex','EulerAngleConvention'));
 
 switch lower(convention)
-  
+
   case {'matthies','nfft','zyz','abg'}
 
     labels = {'alpha','beta','gamma'};
-    
+
   case 'roe'
-    
+
     labels = {'Psi','Theta','Phi'};
-    
+
   case {'bunge','zxz'}
 
     labels = {'phi1','Phi','phi2'};
-    
+
     ind = ~isnull(beta);
     alpha(ind) = alpha(ind) + pi/2;
     gamma(ind) = gamma(ind) + 3*pi/2;
-    
-    
+
+
   case {'kocks'}
 
     labels = {'Psi','Theta','phi'};
     ind = ~isnull(beta);
     gamma(ind) = pi - gamma(ind);
-    
-    
+
+
   case {'canova'}
-    
+
     labels = {'omega','Theta','phi'};
     ind = ~isnull(beta);
     alpha(ind) = pi/2 - alpha(ind);
     gamma(ind) = 3*pi/2 - gamma(ind);
-    
+
 end
 
 alpha = mod(alpha,2*pi);
 gamma = mod(gamma,2*pi);
 
 if nargout == 0
-  
+
   d = [alpha(:) beta(:) gamma(:)]/degree;
   d(abs(d)<1e-10)=0;
-  
+
   disp(' ');
   disp(['  ' convention ' Euler angles in degree'])
   cprintf(d,'-L','  ','-Lc',labels);
   disp(' ');
-  
+
 elseif check_option(varargin,'nfft')
-  
+
   alpha = fft_rho(alpha);
-  if check_mtex_option('nfft_bug')
+  if getpref('mtex','nfft_bug')
     beta  = fft_theta(-beta);
   else
     beta  = fft_theta(beta);
   end
   gamma = fft_rho(gamma);
   varargout{1} = 2*pi*[alpha(:),beta(:),gamma(:)].';
-  
+
 elseif nargout <= 2
-  
+
   varargout{1} = [alpha(:),beta(:),gamma(:)];
   varargout{2} = labels;
-  
+
 else
-  
+
   varargout{1} = alpha;
   varargout{2} = beta;
   varargout{3} = gamma;
   varargout{4} = labels;
-  
+
 end
 
 function y = ssign(x)

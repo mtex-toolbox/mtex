@@ -11,7 +11,7 @@ function plotpdf(odf,h,varargin)
 %  c   - structure coefficients
 %
 %% Options
-%  RESOLUTION    - resolution of the plots 
+%  RESOLUTION    - resolution of the plots
 %  SUPERPOSITION - plot superposed pole figures
 %
 %% Flags
@@ -20,7 +20,7 @@ function plotpdf(odf,h,varargin)
 %
 %% See also
 % S2Grid/plot annotate savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
-% SphericalProjection_demo 
+% SphericalProjection_demo
 
 %% check input
 if iscell(h), h = [h{:}];end
@@ -36,7 +36,7 @@ end
 
 % default options
 varargin = set_default_option(varargin,...
-  get_mtex_option('default_plot_options'));
+  getpref('mtex','defaultPlotOptions'));
 
 
 %% make new plot
@@ -71,7 +71,7 @@ elseif check_option(varargin,'slope')
     'ANOTATION',@(i) h(i),...
     'MINMAX','SMOOTH',...
     'appdata',@(i) {{'h',h(i)}},...
-    varargin{:});  
+    varargin{:});
 else
   multiplot(@(i) r,@(i) pos(pdf(odf,h(i),r,varargin{:})),length(h),...
     'DISP',@(i,Z) [' PDF h=',char(h(i)),...
@@ -80,7 +80,7 @@ else
     'ANOTATION',@(i) h(i),...
     'MINMAX','SMOOTH',...
     'appdata',@(i) {{'h',h(i)}},...
-    varargin{:});  
+    varargin{:});
 end
 
 setappdata(gcf,'h',h);

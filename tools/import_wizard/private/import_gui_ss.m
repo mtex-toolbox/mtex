@@ -108,7 +108,7 @@ uicontrol(...
  'Position',[125 20 50 20]);
 
 
-handles.plot_dir(3) = uicontrol(...  
+handles.plot_dir(3) = uicontrol(...
   'Parent',plotg,...
   'Style','radio',...
   'String','',...
@@ -199,22 +199,22 @@ function goto_callback(varargin)
 get_ss(gcbf);
 handles = getappdata(gcbf,'handles');
 
-plot_options = get_mtex_option('default_plot_options');
+plot_options = getpref('mtex','defaultPlotOptions');
 value = get_option(plot_options,'rotate',0);
- 
+
 direction = 1+mod(round(2*(value) / pi),4);
-   
+
 set(handles.plot_dir(direction),'value',1);
 % set(handles.plot_dir(1:4 ~= direction),'value',0);
 
-% plot_options = get_mtex_option('default_plot_options');
+% plot_options = getpref('mtex','defaultPlotOptions');
 % if check_option(plot_options,'rotate')
 %   set(handles.plot_rotate,'value',1);
 %   set(handles.plot_rotateAngle,'string',int2str(get_option(plot_options,'rotate',0)/degree));
 % else
 %   set(handles.plot_rotate,'value',0);
 % end
-% 
+%
 % if check_option(plot_options,'fliplr'), set(handles.plot_fliplr,'value',1);end
 % if check_option(plot_options,'flipud'), set(handles.plot_flipud,'value',1);end
 
@@ -226,12 +226,12 @@ function leave_callback(varargin)
 set_ss(gcbf);
 handles = getappdata(gcbf,'handles');
 
-plot_options = get_mtex_option('default_plot_options');
+plot_options = getpref('mtex','defaultPlotOptions');
 plot_options = set_option(plot_options,'rotate',...
      (find(cell2mat(get(handles.plot_dir,'value')))-1)*pi/2);
-set_mtex_option('default_plot_options',plot_options);
+setpref('mtex','defaultPlotOptions',plot_options);
 
-% plot_options = get_mtex_option('default_plot_options');
+% plot_options = getpref('mtex','defaultPlotOptions');
 % if get(handles.plot_rotate,'value')
 %   plot_options = set_option(plot_options,'rotate',...
 %     str2double(get(handles.plot_rotateAngle,'string'))*degree);
@@ -249,9 +249,9 @@ set_mtex_option('default_plot_options',plot_options);
 % else
 %   plot_options = delete_option(plot_options,'fliplr',0);
 % end
-% 
-% 
-% set_mtex_option('default_plot_options',plot_options);
+%
+%
+% setpref('mtex','defaultPlotOptions',plot_options);
 %set(appdata.data,'comment',get(handles.comment,'String'));
 
 
@@ -284,35 +284,35 @@ ss = get(data,'SS');
 % set specimen symmetry
 ssname = strmatch(Laue(ss),symmetries);
 set(handles.specime,'value',ssname(1));
- 
- 
+
+
 %% ----------------------------------------------------------
 
 % nv = uibuttongroup('title','Negative Values',...
 %   'Parent',this_page,...
 %   'units','pixels','position',[0 ph-210 380 100]);
-% 
+%
 % uicontrol(...
 %   'Parent',nv,...
 %   'Style','radi',...
 %   'String','keep negative values',...
 %   'Value',1,...
 %   'position',[10 60 160 20]);
-% 
+%
 % handles.dnv = uicontrol(...
 %   'Parent',nv,...
 %   'Style','radi',...
 %   'String','delete negative values',...
 %   'Value',0,...
 %   'position',[10 35 160 20]);
-% 
+%
 % handles.setnv = uicontrol(...
 %   'Parent',nv,...
 %   'Style','radi',...
 %   'String','set negative values to',...
 %   'Value',0,...
 %   'position',[10 10 160 20]);
-% 
+%
 % handles.rnv = uicontrol(...
 %   'Parent',nv,...
 %   'BackgroundColor',[1 1 1],...
@@ -321,12 +321,12 @@ set(handles.specime,'value',ssname(1));
 %   'Position',[190 8 80 25],...
 %   'String','0',...
 %   'Style','edit');
-% 
-% 
+%
+%
 % co = uibuttongroup('title','Comment',...
 %   'Parent',this_page,...
 %   'units','pixels','position',[0 0 380 54]);
-% 
+%
 % handles.comment = uicontrol(...
 %   'Parent',co,...
 %   'BackgroundColor',[1 1 1],...

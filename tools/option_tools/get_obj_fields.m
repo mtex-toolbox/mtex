@@ -3,7 +3,9 @@ function varargout = get_obj_fields(obj,varargin)
 
 vnames = fieldnames(obj);
 for k=1:numel(varargin)
-  vnames = [vnames; fieldnames(struct(obj).(varargin{k}))];
+  if isfield(struct(obj),varargin{k})
+    vnames = [vnames; fieldnames(struct(obj).(varargin{k}))];
+  end
 end
 
 if nargout > 0, 

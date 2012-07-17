@@ -3,11 +3,15 @@ function [ad,omega] = angleDistribution(cs,omega,varargin)
 %
 %% Input
 % cs - crystal @symmetry
-% omega - angles
+% omega - angle
 %
 %% Ouput
 % ad - angle distribution
 % omega - angles
+%
+%% Options
+% angle|threshold - distribution with the angles within  a threshold
+%
 
 if nargin < 2
   omega = linspace(0,get(cs,'maxOmega'),300);
@@ -97,6 +101,13 @@ end
 ad = 2 * numel(cs) * xchi .* sin(omega ./ 2).^2;
 %ad = ad ./ mean(ad);
 ad(ad<0) = 0;
+
+ang = get_option(varargin,{'angle','threshold'},[]);
+if ~isempty(ang)
+  ad(omega<ang)= 0;
+  ad = pi*ad./mean(ad);
+end
+
 
 end
 

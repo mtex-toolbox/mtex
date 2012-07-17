@@ -1,4 +1,4 @@
-function c = LSCV(ebsd,psi,varargin)
+function c = LSCV(ebsd,psi)
 % least squares cross valiadation
 %
 %% Input

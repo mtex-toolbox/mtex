@@ -14,10 +14,10 @@
 
 mtexdata aachen
 
-[grains ebsd] = calcGrains(ebsd,'threshold',12.5*degree)
+grains = calcGrains(ebsd,'threshold',12.5*degree)
 
 %% Grain-size Analysis
-% Since a grain is associated with a <polygon_index.html polygon>, we can determine properties
+% Since a grain is associated with a polygon, we can determine properties
 % of the geometry
 
 ar = area(grains);
@@ -31,12 +31,13 @@ bar( hist(ar,bins) )
 
 %%
 % thera are various functions treating the geometry, respectively the shape
-% e.g. [[polygon.perimeter.html,perimeter]], [[polygon.equivalentradius.html,equivalentradius]],  
-% [[polygon.equivalentperimeter.html,equivalentperimeter]], [[polygon.aspectratio.html,aspectratio]], [[polygon.shapefactor.html,shapefactor]] or concerning the
-% convex hull of a grain [[polygon.hullarea.html,hullarea]], 
-% [[polygon.paris.html,paris]], [[polygon.deltaarea.html,deltaarea]], so
-% there are many ways to analyze its relation to geometry.
+% e.g. <Grain2d.perimeter.html perimeter>, <GrainSet.diameter.html
+% diameter>, <Grain2d.equivalentradius.html equivalentradius>,
+% <Grain2d.equivalentperimeter.html equivalentperimeter>,
+% <Grain2d.aspectratio.html aspectratio>, <Grain2d.shapefactor.html
+% shapefactor>, so there are many ways to analyze its relation to geometry.
 %
+
 sf = shapefactor(grains);
 as = aspectratio(grains);
 

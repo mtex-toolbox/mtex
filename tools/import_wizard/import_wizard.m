@@ -27,12 +27,12 @@ import_gui_generic(h);
 import_gui_data(h,type);
 
 % for help generation only
-if get_mtex_option('generate_help')
+if getpref('mtex','generatingHelpMode')
   % activate first page
   setappdata(h,'page',1);
   set_page(h,1);
   drawnow;
-  pause(2);
+  snapnow;
   return
 end
 
@@ -78,10 +78,10 @@ if nargin > 1
     case 'tensor'
       lb = 7;
   end
-  
+
   for k=1:numel(varargin)
     addfile(handles.listbox(lb),type,'file',varargin{k});
   end
-  
+
 end
 

@@ -13,7 +13,7 @@ function ebsd = set(ebsd,vname,value,varargin)
 %  phase - phase to consider
 %  CS | SS - modify @symmetry
 %  X - change spatial coordinates
-%  orientations - set @orientations. Not recommend, should use the
+%  orientations - set @orientation. Not recommend, should use the
 %  [[EBSD.EBSD.html,EBSD]] constructor
 %
 %% Output
@@ -22,11 +22,19 @@ function ebsd = set(ebsd,vname,value,varargin)
 %% See also
 % EBSD/get
 
+
 if any(strcmp(vname,fields(ebsd)))
   
   if strcmp(vname,'CS')
     value = ensurecell(value);
-    if max(ebsd.phase) > length(value)
+    notIndexedPhase = ebsd.phaseMap(cellfun('isclass',ebsd.CS,'char'));
+    notIndexed = ismember(ebsd.phaseMap,notIndexedPhase);
+    
+    if numel(value) == numel(ebsd.phaseMap)
+    elseif (nnz(~notIndexed) == numel(value)) || numel(value) == 1
+      value(~notIndexed) = value;
+      value(notIndexed) = {'not indexed'};
+    else
       error('The number of symmetries specified is less than the largest phase id.')
     end
   end
@@ -39,7 +47,7 @@ elseif isfield(ebsd.options,vname)
     
     ebsd.options = rmfield( ebsd.options,vname);
     
-  else    
+  else
     
     ebsd.options.(vname) = value;
     

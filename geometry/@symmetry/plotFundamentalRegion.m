@@ -6,7 +6,7 @@ function plotFundamentalRegion(CS,varargin)
 %
 %% Options
 %  zone -  1..n, plot only a specific fundamental region 
-%  center - @ plot
+% center - @quaternion
 %
 %% See also
 % odf/plotodf orientation/plotodf
@@ -19,20 +19,20 @@ qcenter = quaternion(get_option(varargin,'center',idquaternion))*CS;
 [S3G,S2,sec] = SO3Grid('plot',CS,symmetry,varargin{:});
 
 % specifiy which fundamental zone is at an orientation
-[d,zone] = max(abs(dot_outer(quaternion(S3G),qcenter)),[],2);
+[d,zone] = max(round(1000*abs(dot_outer(quaternion(S3G),qcenter))),[],2);
+
+[dummy1,dummy2,zone] = unique(zone);
 zone = reshape(zone,size(S3G));
 
 if check_option(varargin,'zone')
   z = get_option(varargin,'zone');
-  uzone = unique(zone);
-  zone = double(zone==uzone(z));
+  zone = double(zone==z);
 end
 
 % plot all fundamental zones around center together
 multiplot(@(i) S2,@(i) zone(:,:,i),numel(sec),...
   'ANOTATION',@(i) [int2str(sec(i)*180/pi),'^\circ'],...
-  'SMOOTH','TIGHT',...
-   'colorrange','equal','margin',0,...
+  'TIGHT','margin',0,'contourf',[-0.01,(1:numel(dummy1))-0.01],...
   varargin{:});
 
 %setup some plot properties
