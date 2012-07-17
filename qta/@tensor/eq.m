@@ -18,4 +18,4 @@ if size(M1,2) == 1, M1 = repmat(M1,1,size(M2,2));end
 if size(M2,2) == 1, M2 = repmat(M2,1,size(M1,2));end
   
 % check colmnwise
-b = all(isnull(M1 - M2),1);
+b = all(abs(M1 - M2)<1e-5,1);
