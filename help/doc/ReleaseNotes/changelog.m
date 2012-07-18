@@ -2,7 +2,17 @@
 %
 %% Contents
 %
-%% MTEX 3.3.0 - 03/2012
+%% MTEX 3.3.1 - 07/2012
+%
+% *bugfix release*
+%
+% * fix: single/double convention get sometimes wrong with tensors
+% * fix: tensor checks did not respect rounding errors
+% * fix: ingorePhase default is now none
+% * fix: calcAngleDistribution works with ODF option
+% * fix: respect rounding errors when importing pole figures and ODFs
+%
+%% MTEX 3.3.0 - 06/2012
 %
 % *Grains: change of internal representation*
 %
@@ -39,6 +49,11 @@
 %
 % * create custemized orientation colormaps
 %
+% *Other*
+%
+% * the comand |set_mtex_option| is obsolete. Use the matlab command 
+% |setpref('mtex',...)| instead. Additionally, one can now see all options 
+% by the command |getpref('mtex')|
 %
 %% MTEX 3.2.3 - 03/2012
 % 
