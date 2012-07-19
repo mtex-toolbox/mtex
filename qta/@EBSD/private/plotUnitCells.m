@@ -32,7 +32,7 @@ if check_option(varargin,{'transparent','translucent'})
 end
 obj.FaceColor = 'flat';
 obj.EdgeColor = 'none';
-
+obj.HitTest = 'off'; % Improve speed of ginput(...)
 
 switch lower(type)
   case 'unitcell'
