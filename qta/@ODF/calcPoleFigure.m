@@ -26,23 +26,25 @@ function pf = calcPoleFigure(odf,h,varargin)
 
 % check for antipodal symmetry
 if ~check_option(varargin,'complete')
-  varargin = [{'antipodal'},varargin];
+  varargin = [varargin,{'antipodal'}];
 end
 
 % get crystal and specimen directions
 argin_check(h,{'Miller'});
 h = ensureCS(odf(1).CS,{h});
+
 if nargin >= 3 && isa(varargin{1},'vector3d')
   r = varargin{1};
+  varargin(1) = [];
 else
   r = S2Grid('regular',varargin{:});
 end
-
 
 comment = get_option(varargin,'comment',...
     ['Pole figures simulated from ',get(odf,'comment')]);
 
 c = get_option(varargin,'SUPERPOSITION',1);
+varargin = delete_option(varargin,'SUPERPOSITION');
 c = c ./ sum(c);
 
 %% construct pole figures
