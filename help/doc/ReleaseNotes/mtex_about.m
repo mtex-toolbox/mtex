@@ -3,12 +3,11 @@
 %
 %% Authors
 %
-% <html>
-% The MTEX toolbox is developed and maintained by <br> <br>
-% Dr. Ralf Hielscher
-% <a href="mailto:Ralf.Hielscher@mathematik.tu-chemnitz.de">Ralf.Hielscher@mathematik.tu-chemnitz.de</a>
-% </html>
+% The MTEX toolbox is developed and maintained by 
 %
+%
+%  Dr. Ralf Hielscher
+%  [[mailto:Ralf.Hielscher@mathematik.tu-chemnitz.de,Ralf.Hielscher@mathematik.tu-chemnitz.de]]
 %
 %  TU Chemnitz
 %  Fakultät für Mathematik
@@ -21,11 +20,12 @@
 % and
 %
 %  Florian Bachmann
+%  [[mailto:fl.bachmann@googlemail.com,fl.bachmann@googlemail.com]]
 %
 %  TU Bergakademie Freiberg
-%  Institut für Geomathematik und Geoinformatik
-%  Bernhard-von-Cotta-Str. 2
-%  D-09599 Freiberg, Germany
+%  Institute of Geophysics and Geoinformatics
+%  Gustav-Zeuner-Str. 12 
+%  D-09596 Freiberg, GERMANY
 %
 %% Website
 %
