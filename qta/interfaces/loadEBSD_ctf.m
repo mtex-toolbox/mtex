@@ -12,7 +12,7 @@ function ebsd = loadEBSD_ctf(fname,varargin)
 %  convertSpatial2EulerReferenceFrame - change x and y values such that
 %  spatial and Euler reference frame coincide, i.e., rotate them by 180
 %  degree
-%  convertEuler2SpatialReferenceFrame -  - change the Euler angles such that
+%  convertEuler2SpatialReferenceFrame - change the Euler angles such that
 %  spatial and Euler reference frame coincide, i.e., rotate them by 180
 %  degree
 
