@@ -30,6 +30,15 @@ if isa(C,'ODF')
   end
 else
   error(nargchk(3,3,nargin));
+   
+  if isa(C,'cell')
+    CC = [];
+    for l = 0:length(C)-1
+      CC = [CC;C{l+1}(:) * sqrt(2*l+1)]; %#ok<AGROW>                                                                           
+    end                                                                                                                        
+    C = CC;                                                                                                                    
+  end
+  
   argin_check(C,'double');
   argin_check(CS,'symmetry');
   argin_check(SS,'symmetry');
