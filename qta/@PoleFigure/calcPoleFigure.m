@@ -1,4 +1,4 @@
-function spf = simulatePoleFigure(pf,odf,varargin)
+function spf = calcPoleFigure(pf,odf,varargin)
 % simulate pole figure
 %
 %% Syntax
