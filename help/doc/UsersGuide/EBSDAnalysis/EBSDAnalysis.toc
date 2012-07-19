@@ -1,0 +1,7 @@
+ImportEBSDData file_new
+EBSDModifyData
+EBSD2odf
+EBSDOrientationPlots
+EBSDSpatialPlots
+EBSDSimulation_demo
+EBSDSimulation_spatial
