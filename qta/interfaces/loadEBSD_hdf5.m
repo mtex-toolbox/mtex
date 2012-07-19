@@ -19,6 +19,7 @@ for i = 1:numel(info.Datasets)
   location = ['/ebsd/cs/' num2str(i)];
   cs{i} = loadSymmetry(fname, location);
 end
+cs = cs';
 
 ss = loadSymmetry(fname, '/ebsd/ss');
 
