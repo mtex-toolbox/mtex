@@ -1,30 +1,33 @@
-function [ kam angles ] = calcKAM2(grains, neighbors, max_angle, varargin)
+function [ kam angles ] = calcKAM2(grains, neighbors, maxAngle, varargin)
 % intergranular average misorientation angle per orientation
 %
 %% Input
-% grains    - @GrainSet of only one phase
+% grains    - @GrainSet
 % neighbors - number of neighbors to consider in the kernel
-% max_angle - maximum misorientation angle (in radians)
+% maxAngle - maximum misorientation angle (in radians)
 %
 %% Flags
 % area      -  average all points inside the kernel (default)
 % perimeter -  average only points along the perimeter of the kernel
 %
 
-if numel(unique(grains.phase)) > 1
-    error('MTEX:MultiplePhases',...
-          ['This operatorion is only permitted for a single phase!' ...
-           'See ' doclink('xx','xx')  ...
-           ' for how to restrict EBSD data to a single phase.']);
-end
-
 if neighbors <= 0
   error('MTEX:ValueError',...
         'The number of neighbors in the kernel must be greater than 0');
 end
 
+if maxAngle <= 0
+  error('MTEX:ValueError',...
+        'The maximum angle must be greater than 0');
+end
+
 % Extract orientations and positions of voronois
-orientations = get(grains, 'orientations'); 
+CS = get(grains, 'CSCell');
+SS = get(grains, 'SS');
+r = get(grains.EBSD, 'quaternion');
+phaseMap = get(grains, 'phaseMap');
+phase = get(grains.EBSD, 'phase');
+isIndexed = ~isNotIndexed(grains.EBSD);
 
 % Readjust indexes of A_D to the restrained set of voronois included 
 % in the given grain set. This adjustment must be performed before 
@@ -54,17 +57,33 @@ end
 % Pairs of adjacent voronois
 [Dl Dr] = find(A_D);
 
-% Calculate misorientation angle
-angles_array = angle(orientations(Dl), orientations(Dr));
+% Delete adjacenies between different phase and not indexed measurements
+use = phase(Dl) == phase(Dr) & isIndexed(Dl) & isIndexed(Dr);
+Dl = Dl(use); Dr = Dr(use);
+phase = phase(Dl);
+
+% Calculate misorientation angles
+prop = []; zeros(size(Dl));
+for p=1:numel(phaseMap)
+  currentPhase = phase == phaseMap(p);
+  if any(currentPhase)
+    o_Dl = orientation(r(Dl(currentPhase)), CS{p}, SS);
+    o_Dr = orientation(r(Dr(currentPhase)), CS{p}, SS);
+    
+    m  = o_Dl .\ o_Dr; % Misorientation
+    prop(currentPhase, :) = angle(m); %#ok<AGROW>
+  end
+end
 
 % Remove angles greater than the maximum angle
-angles_array = angles_array .* (angles_array < max_angle);
+prop(prop > maxAngle) = 0.0;
 
 % Create sparse matrix
-angles = sparse(Dl, Dr, angles_array, n, n);
+angles = sparse(Dl, Dr, prop, n, n);
 
 % Calculate KAM
 kam = full(sum(angles, 2) ./ sum(angles > 0, 2));
+kam(isnan(kam)) = maxAngle;
 
 end
 
