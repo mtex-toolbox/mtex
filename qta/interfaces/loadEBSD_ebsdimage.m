@@ -49,8 +49,8 @@ for i = 1:length(splits)
   properties(key) = value;
 end
 
-dx = typecast(sscanf(properties('calibration.dx'), '%lu'), 'double');
-dy = typecast(sscanf(properties('calibration.dy'), '%lu'), 'double');
+dx = typecast(sscanf(properties('calibration.dx'), '%lu'), 'double')
+dy = typecast(sscanf(properties('calibration.dy'), '%lu'), 'double')
 
 if strcmp(properties('calibration.origin.set'), 'true')
   x0 = typecast(sscanf(properties('calibration.x0'), '%lu'), 'double');
@@ -85,15 +85,15 @@ index = 1;
 for j = 0:height-1
   for i = 0:width-1
     if flipx
-      xs(index) = i; %x0 - dx * i;
+      xs(index) = i*dx; %x0 - dx * i;
     else
-      xs(index) = i; %x0 + dx * i;
+      xs(index) = i*dx; %x0 + dx * i;
     end
     
     if flipy
-      ys(index) = j; %y0 - dy * j;
+      ys(index) = j*dy; %y0 - dy * j;
     else
-      ys(index) = j; %y0 + dy * j;
+      ys(index) = j*dy; %y0 + dy * j;
     end
     
     index = index + 1;
