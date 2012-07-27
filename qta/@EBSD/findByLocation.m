@@ -1,4 +1,4 @@
-function [ebsd,map] = findByLocation( ebsd, xy )
+function [ebsd,nd] = findByLocation( ebsd, xy )
 % select EBSD data by spatial coordinates
 %
 %% Input
