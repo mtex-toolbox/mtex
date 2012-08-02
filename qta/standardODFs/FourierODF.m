@@ -25,9 +25,18 @@ if isa(C,'ODF')
   odf = set(odf,'psi',[]);
   odf = set(odf,'options',{{'fourier'}});
   
-  for i = 2:numel(C)
-    odf = set(odf,'c_hat',get(odf,'c_hat') + get(C(i),'c_hat'));
+  for i=1:numel(C)
+    L(i) = bandwidth(C(i));
+    n(i) = sum((2*(0:L(i))+1).^2);
   end
+  
+  Chat = zeros(max(n),1);  
+  for i=1:numel(C)
+    Chat(1:n(i)) =  Chat(1:n(i)) + get(C(i),'c_hat');
+  end
+  
+  odf = set(odf,'c_hat',Chat);
+  
 else
   error(nargchk(3,3,nargin));
   
