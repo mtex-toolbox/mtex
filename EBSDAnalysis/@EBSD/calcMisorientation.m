@@ -29,7 +29,7 @@ checkSinglePhase(ebsd2);
 
 % --------- determine minimum distance ----------------------
 
-%exteact coordinates
+%extract coordinates
 X1 = ebsd1.prop.x;
 Y1 = ebsd1.prop.y;
 X2 = ebsd2.prop.x;
