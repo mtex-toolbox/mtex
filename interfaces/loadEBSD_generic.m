@@ -32,6 +32,7 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 %  HEADER            - number of header lines
 %  BUNGE             - [phi1 Phi phi2] Euler angle in Bunge convention (default)
 %  ABG               - [alpha beta gamma] Euler angle in Mathies convention
+%  PASSIVE           - 
 %
 %
 % Example
@@ -47,6 +48,8 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 %
 % See also
 % ImportEBSDData loadEBSD ebsd_demo
+
+max_num_phases = 40;
 
 try
   % load data
@@ -80,6 +83,19 @@ try
     
     phase = loader.getColumnData('Phase');
     
+  % In some software, selecting/partitioning data points is done by setting
+  % the phase value to -1. All phase values must be positive integers in
+  % mtex. To fix this, add a 'dummy' phase to contain the excluded points.
+  if any(phase < 0)
+      loc = check_option(varargin, 'cs');
+      tmp=varargin{loc+1};
+      assignin('base','tmp2',tmp)
+      phase(phase < 0) = max(phase)+1;
+      tmp{length(tmp)+1} = symmetry('1', 'mineral', 'Excluded points');
+      assignin('base','tmp3',tmp)
+      varargin{loc+1} = tmp(:);      
+      clear tmp
+  end  
     %[ig,ig,phase] = unique(phase);
   else
     
@@ -87,9 +103,10 @@ try
     
   end
   
-  if max(phase)>40
+if max(phase)>max_num_phases
     
-    warning('MTEX:tomanyphases','Found more then 20 phases. I''m going to ignore them.');
+  warning('MTEX:toomanyphases', ...
+      ['Found more than ' num2str(max_num_phases) '. I''m going to ignore them all.']);
     phase = ones(size(d,1),1);
     
   end
