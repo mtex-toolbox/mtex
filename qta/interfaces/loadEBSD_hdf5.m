@@ -47,9 +47,15 @@ end
 
 function sym = loadSymmetry(fname, location)
   name = h5readatt(fname, location, 'name');
-  axesLength = h5readatt(fname, location, 'axes');
-  axesAngle = h5readatt(fname, location, 'angles');
-  mineral = h5readatt(fname, location, 'mineral');
   
-  sym = symmetry(name, axesLength, axesAngle, 'mineral', mineral);
+  info = h5info(fname, location);
+  if numel(info.Attributes) == 1
+    sym = name;
+  else
+    axesLength = h5readatt(fname, location, 'axes');
+    axesAngle = h5readatt(fname, location, 'angles');
+    mineral = h5readatt(fname, location, 'mineral');
+
+    sym = symmetry(name, axesLength, axesAngle, 'mineral', mineral);
+  end
 end

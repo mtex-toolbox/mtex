@@ -80,17 +80,21 @@ end
 function saveSymmetry(fname, location, symmetry) 
   h5create(fname, location, [1 1]);
   
-  name = get(symmetry, 'name');
-  h5writeatt(fname, location, 'name', name);
-  
-  axes = get(symmetry, 'axesLength');
-  h5writeatt(fname, location, 'axes', axes);
-  
-  angles = get(symmetry, 'axesAngle');
-  h5writeatt(fname, location, 'angles', angles);
-  
-  mineral = get(symmetry, 'mineral');
-  h5writeatt(fname, location, 'mineral', mineral);
+  if isa(symmetry, 'symmetry')
+    name = get(symmetry, 'name');
+    h5writeatt(fname, location, 'name', name);
+
+    axes = get(symmetry, 'axesLength');
+    h5writeatt(fname, location, 'axes', axes);
+
+    angles = get(symmetry, 'axesAngle');
+    h5writeatt(fname, location, 'angles', angles);
+
+    mineral = get(symmetry, 'mineral');
+    h5writeatt(fname, location, 'mineral', mineral);
+  else
+    h5writeatt(fname, location, 'name', symmetry);
+  end
   
   %TODO: Check if other variables in symmetry must be saved as well
 end
