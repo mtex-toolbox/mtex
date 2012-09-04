@@ -9,6 +9,8 @@ try
   % phases to be ignored
   ignorePhase = get_option(varargin,'ignorePhase',[]);
   
+  cs{1} = 'notIndexed';
+  
   try
     for i = 1:length(phasePos)
       pos = phasePos(i);
@@ -43,7 +45,7 @@ try
           end
       end
       
-      cs{phase} = symmetry(laue,lattice(1:3)',lattice(4:6)'*degree,'mineral',mineral,options{:}); %#ok<AGROW>
+      cs{phase+1} = symmetry(laue,lattice(1:3)',lattice(4:6)'*degree,'mineral',mineral,options{:}); %#ok<AGROW>
     end
     assert(~isempty(cs));
   catch %#ok<CTCH>
