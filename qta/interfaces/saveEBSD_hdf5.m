@@ -67,6 +67,9 @@ h5write(fname, location, unitCell);
 fields = fieldnames(get(ebsd, 'options'));
 for i = 1:numel(fields)
     name = fields{i};
+    if strcmp(name, 'mis2mean')
+      continue
+    end
     data = get(ebsd, name);
     
     location = ['/ebsd/options/', name];
