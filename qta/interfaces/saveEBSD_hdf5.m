@@ -11,6 +11,10 @@ if exist(fname, 'file') == 2
   delete(fname);
 end
 
+%% Save header
+h5create(fname, '/mtex', [1 1]);
+h5writeatt(fname, '/mtex', 'version', getpref('mtex', 'version'));
+
 %% Save rotations
 rotations = get(ebsd, 'rotations');
 
