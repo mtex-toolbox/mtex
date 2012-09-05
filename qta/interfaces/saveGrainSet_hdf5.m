@@ -19,33 +19,13 @@ g = struct(struct(grains).GrainSet);
 saveEBSD_hdf5(g.EBSD, fname);
 
 %% Save matrices
-% A_D
-location = '/grains/a_d';
-saveSparse(fname, location, g.A_D);
-
-% I_DG
-location = '/grains/i_dg';
-saveSparse(fname, location, g.I_DG);
-
-% A_G
-location = '/grains/a_g';
-saveSparse(fname, location, g.A_G);
-
-% I_FDext
-location = '/grains/i_fdext';
-saveSparse(fname, location, g.I_FDext);
-
-% I_FDsub
-location = '/grains/i_fdsub';
-saveSparse(fname, location, g.I_FDsub);
-
-% F
-location = '/grains/f';
-saveSparse(fname, location, g.F);
-
-% V
-location = '/grains/v';
-saveSparse(fname, location, g.V);
+saveSparse(fname, '/grains/a_d', g.A_D);
+saveSparse(fname, '/grains/i_dg', g.I_DG);
+saveSparse(fname, '/grains/a_g', g.A_G);
+saveSparse(fname, '/grains/i_fdext', g.I_FDext);
+saveSparse(fname, '/grains/i_fdsub', g.I_FDsub);
+saveSparse(fname, '/grains/f', g.F);
+saveSparse(fname, '/grains/v', g.V);
 
 %% Save mean rotations
 meanrotations = g.meanRotation;
