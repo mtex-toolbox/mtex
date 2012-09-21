@@ -1,4 +1,4 @@
-function A = construct_A(name,p,L)
+function [A,p] = construct_A(name,p,L)
 
 A = ones(1,L+1);
 
@@ -60,6 +60,7 @@ switch lower(name)
 
   case 'dirichlet'
 
+    if ~isnumeric(p), p = L;end
     A =  ones(1,round(p+1)).*(2*(0:round(p))+1);
 
   case 'fourier'
