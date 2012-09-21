@@ -41,7 +41,7 @@ else
   [ig,ndx] = sort(lower(f));
   f = f(ndx);
   c  = cellfun(@(x) x{2},fun(ndx),'UniformOutput',false);
-  ds = cellfun(@(f,c) doclink([c '/' f],f),f,c,'UniformOutput',false);
+  ds = cellfun(@(f,c) doclink([c '.' f],f),f,c,'UniformOutput',false);
 
   isInherited = ~strcmpi(c,classname);
   disp( formatedOutput(classname,ds(~isInherited),f(~isInherited)) );

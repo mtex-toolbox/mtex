@@ -87,7 +87,8 @@ if strcmp(xRoot.getTagName,'xrdMeasurements')
           end;
           
           %get theta
-          theta = str2num(pos.item(k).getElementsByTagName('commonPosition').item(0).getFirstChild.getNodeValue);
+          theta = pos.item(k).getElementsByTagName('commonPosition').item(0).getFirstChild.getNodeValue;
+          if ischar(theta), theta = str2num(theta);end
           current_theta = [ current_theta; ...
             repmat(istheta_deg*theta,length(val),1)]; %pi/2-
         end
