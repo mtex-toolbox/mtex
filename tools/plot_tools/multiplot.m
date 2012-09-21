@@ -78,7 +78,7 @@ for k=1:nplots
   end
   
   % reinsert data
-  if ~isempty(data), targin = {targin{1},data{k},targin{2:end}};end
+  if ~isempty(data) && ~isempty(data{k}), targin = {targin{1},data{k},targin{2:end}};end
   
   plot(a(k),targin{:});
 end
