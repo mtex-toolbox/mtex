@@ -71,7 +71,7 @@ elseif isa(varargin{1},'double')
   if nparam < 3, error('You need at least 3 Miller indice!');end
   
   % check fourth coefficient is right
-  if nparam==4 && varargin{1} + varargin{2} + varargin{3} ~= 0
+  if nparam==4 && all(varargin{1} + varargin{2} + varargin{3} ~= 0)
     if nargout == 2
       er = 1;
     elseif check_option(varargin,{'uvw','uvtw','direction'})
