@@ -2,8 +2,8 @@ function ebsd = loadEBSD_ctf(fname,varargin)
 % read HKL *.ctf file
 %
 %% Syntax
-%   ebsd = loadEBSD_ang(fname,'convertSpatial2EulerReferenceFrame')
-%   ebsd = loadEBSD_ang(fname,'convertEuler2SpatialReferenceFrame')
+%   ebsd = loadEBSD_ctf(fname,'convertSpatial2EulerReferenceFrame')
+%   ebsd = loadEBSD_ctf(fname,'convertEuler2SpatialReferenceFrame')
 %
 %% Input
 %  fname - file name
