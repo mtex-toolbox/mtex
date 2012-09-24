@@ -174,6 +174,13 @@ h = [];
 
 if numel(unique(data)) > 1
   
+  % workauround for a MATLAB Bug
+  if mean(X(:,1)) > mean(X(:,end))
+    X = fliplr(X);
+    Y = fliplr(Y);
+    data = flipdim(data,2);
+  end
+  
   % contour correction
   if check_option(varargin,'correctContour')
     X = [X;X(1,:)];

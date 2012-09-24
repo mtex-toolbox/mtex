@@ -52,26 +52,33 @@ if check_option(varargin,'complete')
   minTheta = 0; maxTheta = pi;
 end
 
+if strcmpi('outofPlane',getpref('mtex','zAxisDirection'))
+  if check_option(varargin,'upper'), varargin = set_option(varargin,'north');end
+  if check_option(varargin,'lower'), varargin = set_option(varargin,'south');end
+else
+  if check_option(varargin,'upper'), varargin = set_option(varargin,'south');end
+  if check_option(varargin,'lower'), varargin = set_option(varargin,'north');end
+end
+
+  
 if check_option(varargin,'north') && isnumeric(maxTheta) && maxTheta > pi/2
   maxTheta = pi/2;  
 end
 
 if check_option(varargin,'south') && isnumeric(maxTheta) && ...
-    maxTheta > pi/2+0.001  
+    maxTheta > pi/2+0.001
   minTheta = pi/2;
 end
 
 %% read default plot options
-plotOptions = getpref('mtex','defaultPlotOptions');
-
 projection.minTheta = minTheta;
 projection.minRho = minRho;
 projection.maxTheta = maxTheta;
 projection.maxRho = maxRho;
-projection.flipud = check_option([varargin plotOptions],'flipud');
-projection.fliplr = check_option([varargin plotOptions],'fliplr');
-projection.drho = get_option(varargin,'rotate',get_option(plotOptions,'rotate',0));
-  
+projection.xAxis = getpref('mtex','xAxisDirection');
+projection.zAxis = getpref('mtex','zAxisDirection');
+
+
 %% compute boundary box and offset
 
 projection.offset = 0;
@@ -103,7 +110,7 @@ end
 
 % set offset
 if isnumeric(maxTheta) && maxTheta > pi/2+1e-6 && ...
-    minTheta < pi/2+1e-6 && ~strcmp(projection.type,'plain')
+    minTheta < pi/2-1e-6 && ~strcmp(projection.type,'plain')
 
   % this is only needed if two hemispheres have to be plotted
   projection.offset = max(x)-min(x);
