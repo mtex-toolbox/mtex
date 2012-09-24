@@ -63,9 +63,6 @@ function grid = plotPolarGrid(ax,projection,varargin)
 dgrid = get_option(varargin,'grid_res',30*degree);
 dgrid = pi/round((pi)/dgrid);
 
-% discretize theta
-theta = dgrid:dgrid:(pi/2-dgrid);
-
 % discretize rho
 if projection.maxRho > projection.minRho
   rho = projection.minRho:dgrid:(projection.maxRho-dgrid);
@@ -106,6 +103,7 @@ else % polar grid
     hb = [hb circ(ax,projection,x,y,maxTheta,'boundary')];
     
     % draw small circles
+    theta = dgrid:dgrid:(pi/2-dgrid);
     h = [h arrayfun(@(t) circ(ax,projection,x,y,t),theta)];
     
     % draw meridians
@@ -121,14 +119,14 @@ else % polar grid
     
     % draw outer circ
     [x,y] = project(-zvector,projection);
-    hb = [hb circ(ax,projection,x,y,pi/2,'boundary')];
+    hb = [hb circ(ax,projection,x,y,pi/2,'boundary','equator2south')];
     
-    %,'equator2south'
     % draw small circles
+    theta = pi/2+dgrid:dgrid:(pi-dgrid);
     h = [h arrayfun(@(t) circ(ax,projection,x,y,t),theta)];
     
     % draw meridians
-    [hm tm] = arrayfun(@(t) merid(ax,projection,x,y,t),rho);
+    [hm tm] = arrayfun(@(t) merid(ax,projection,x,y,t,'equator2south'),rho);
     
     h = [h hm];
     t = [t tm];
@@ -148,8 +146,6 @@ function [h t] = merid(ax,projection,x,y,rho,varargin)
 va = {'middle','bottom','middle','top'};
 ha = {'left','center','right','center'};
 r = mod(round(atan2(Y(1,:),X(1,:))/pi*2),4)+1;
-
-X = x+X; Y = y+Y;
 
 if strcmpi(projection.type,'plain'),
   x = X;
@@ -192,9 +188,13 @@ if check_option(varargin,'boundary') ...
     && ~isappr(projection.maxRho-projection.minRho,2*pi) ...
     && ~strcmpi(projection.type,'plain')
   rho = [0,rho,0];
-  theta = [0,theta,0];
+  if check_option(varargin,'equator2south')
+    theta = [pi,theta,pi];
+  else
+    theta = [0,theta,0];
+  end
 end
 
 [dx,dy] = project(sph2vec(theta,rho),projection,varargin{:});
 
-h = line(x+dx,y+dy,'parent',ax,'handlevisibility','off');
+h = line(dx,dy,'parent',ax,'handlevisibility','off');

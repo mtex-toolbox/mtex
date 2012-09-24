@@ -13,9 +13,11 @@ function mtex_settings
 % here you can define default plott options
 
 default_plot_options = {'FontSize',13};
-%default_plot_options = {'antipodal'};
 setpref('mtex','defaultPlotOptions',default_plot_options);
-plotx2north;
+
+% default plotting of the coordinate axes
+setpref('mtex','xAxisDirection','north');
+setpref('mtex','zAxisDirection','outOfPlane');
 
 % default spacing between muliple plots
 setpref('mtex','border',10);
@@ -111,10 +113,8 @@ setpref('mtex','mtexMethodsAdvise',true)
 % by default turn LaTeX on only on Windows or Mac
 if isOctave
   setpref('mtex','textInterpreter','none');
-elseif ismac || ispc
-  setpref('mtex','textInterpreter','LaTeX');
 else
-  setpref('mtex','textInterpreter','TeX');
+  setpref('mtex','textInterpreter','LaTeX');
 end
 
 %% Workaround for NFFT bug

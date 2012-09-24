@@ -2,12 +2,14 @@ function [X,Y] = project(v,projection,varargin)
 % perform spherical projection and restriction to plotable domain
 
 
-% determine which are on the southern hemisphere
+% determine which points are on the southern hemisphere
 if check_option(varargin,'equator2south')
-  south = v.z < 1e-6;
+  eps = 1e-6;
 else
-  south = v.z < -1e-6;
+  eps = -1e-6;
 end
+south = v.z < eps;
+
 
 % for antipodal symmetry project all to northern hemisphere
 if projection.antipodal && ~(isnumeric(projection.maxTheta) && projection.maxTheta == pi)
@@ -35,27 +37,15 @@ else
   theta(theta+1e-6 < projection.minTheta) = NaN;
 end
 
-%% flip points on the southern hemisphere
-
-if ~strcmp(projection.type,'plain')
-  rho(v.z < -1e-6) = rho(v.z < -1e-6) + pi;
-end
-
   
 %% modify polar coordinates according to the alignment of the specimen
 %% coordinate system
 
-if projection.drho ~= 0 && ~strcmpi(projection.type,'plain')
-  rho = rho + projection.drho;
+if ~strcmpi(projection.type,'plain')
+  if strcmpi(projection.zAxis,'intoPlane'), rho = 2*pi-rho;end    
+  rho = rho + (NWSE(projection.xAxis)-1)*pi/2;
 end
 
-if strcmpi(projection.type,'plain')
-  if projection.flipud, theta = -theta; end
-  if projection.fliplr, rho =  -rho; end
-else
-  if projection.flipud, rho = 2*pi-rho; end
-  if projection.fliplr, rho = pi-rho; end
-end
 
 %% compute spherical projection
 switch lower(projection.type)
@@ -90,9 +80,13 @@ switch lower(projection.type)
     
 end
 
-%% points on the southern hemisphere should be shifted to the left
+%% points on the southern hemisphere should be shifted to the left / right
 if projection.minTheta == 0 && ~strcmp(projection.type,'plain')
-  X(south) = X(south) + projection.offset;
+  if strcmp(projection.zAxis,'outOfPlane')
+    X(south) = X(south) + projection.offset;
+  else
+    X(~south) = X(~south) + projection.offset;
+  end
 end
   
 % format output

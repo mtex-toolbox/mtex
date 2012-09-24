@@ -13,7 +13,8 @@ CS = {crystal symmetry};
 SS = {specimen symmetry};
 
 % plotting convention
-{plotting convention}
+setpref('mtex','xAxisDirection',{xAxisDirection});
+setpref('mtex','zAxisDirection',{zAxisDirection});
 
 %% Specify File Names
 
