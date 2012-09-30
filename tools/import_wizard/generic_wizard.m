@@ -33,7 +33,7 @@ if check_option(varargin,'type')
       mandatory = {values(2:4),values(9:12)};
     case 'PoleFigure'
       values = {'Ignore','Polar Angle','Azimuth Angle','Intensity','Background','x','y','z'};
-      mandatory = {values(2:4)};
+      mandatory = {values(2:4),values([4,6:8])};     
     case 'ODF'
       values = {'Ignore','Euler 1','Euler 2','Euler 3','Quat real','Quat i','Quat j','Quat k','Weight'};
       mandatory = {values([2:4,9]),values(5:9)};
@@ -187,13 +187,9 @@ while ishandle(htp)
       options = [options,{'Columns',ind}]; %#ok<AGROW>
     end
     
-    % check for mandatory columnnames
-    i = 1 + (~strcmp(type,'PoleFigure') && ...
-      (get(euler_convention,'value') > 5));
-    
-    if sum(ismember(stripws(lower(data)),...
-        stripws(lower(mandatory{i})))) ~= numel(mandatory{i})
-      
+    % check for mandatory columnnames    
+    if all(cellfun(@(cond) sum(ismember(stripws(lower(data)),...
+        stripws(lower(cond)))) ~= numel(cond),mandatory))      
       errordlg(['Not all of the mandatory columnnames ',...
         sprintf('%s, ', mandatory{i}{:}) ' have been specified!'],...
         'Error in generic wizzard','modal');
