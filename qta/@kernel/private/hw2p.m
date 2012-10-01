@@ -23,7 +23,7 @@ switch lower(name)
 
 		p = cos(hw);
     
-  case 'bump '
+  case 'bump'
     
     p = hw;
     
