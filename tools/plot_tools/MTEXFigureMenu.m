@@ -85,42 +85,21 @@ end
 % X Axis Direction
 function setXAxisDirection(obj,event) %#ok<INUSD>
 
+
 uncheck = findobj(gcf,'parent',get(obj,'parent'));
 set(uncheck,'checked','off');
 set(obj,'checked','on');
+xAxis = get(obj,'label');
 
 % for all axes
 ax = findobj(gcf,'type','axes');
 for a = 1:numel(ax)
 
-  prop = getappdata(ax(a),'projection');
-  
-  if isempty(prop), continue;end
-  xOld = NWSE(prop.xAxis);
-  xNew = NWSE(get(obj,'label'));
+  if ~isappdata(ax(a),'projection'), continue;end  
+  setCamera(ax(a),'xAxisDirection',xAxis);
     
-  upVector = double(rotation('axis',zvector,'angle',(xNew-xOld)*pi/2)*yvector);
-  
-  cp = get(ax(a),'cameraPosition');
-  ct = get(ax(a),'CameraTarget');
-
-  if strcmpi(prop.zAxis,'intoPlane')
-    
-    cp(3) = -abs(cp(3));
-    upVector = -upVector;
-    
-  else
-    
-    cp(3) = abs(cp(3));
-    
-  end
-  set(ax(a),'cameraUpVector',upVector);
-  set(ax(a),'cameraPosition',cp);
-  set(ax(a),'CameraTarget',ct);
 end
-
 end
-
 
 % Z Axis Direction
 function setZAxisDirection(obj,event) %#ok<INUSD>
@@ -128,17 +107,15 @@ function setZAxisDirection(obj,event) %#ok<INUSD>
 uncheck = findobj(gcf,'parent',get(obj,'parent'));
 set(uncheck,'checked','off');
 set(obj,'checked','on');
+zAxis = get(obj,'label');
+zAxis(zAxis==' ')=[];
 
 % for all axes
 ax = findobj(gcf,'type','axes');
 for a = 1:numel(ax)
 
-  prop = getappdata(ax(a),'projection');
-  if isempty(prop), continue;end
-    
-  if ~strcmpi(prop.zAxis,get(obj,'label'))    
-    set(ax(a),'cameraPosition',-get(ax(a),'cameraPosition'));
-  end
+  if ~isappdata(ax(a),'projection'), continue;end  
+  setCamera(ax(a),'zAxisDirection',zAxis);
   
 end
 
