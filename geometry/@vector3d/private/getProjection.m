@@ -115,6 +115,9 @@ if isnumeric(maxTheta) && maxTheta > pi/2+1e-6 && ...
   % this is only needed if two hemispheres have to be plotted
   projection.offset = max(x)-min(x);
   
+  if strcmp(projection.zAxis,'outOfPlane')
+    %projection.offset = -projection.offset;
+  end
 end
 
 % set bounding box
@@ -125,6 +128,8 @@ set(ax,'DataAspectRatio',[1 1 1],...
   'XLim',[projection.bounds(1)-1e-2,projection.bounds(3)+2e-2],...
   'YLim',[projection.bounds(2)-1e-2,projection.bounds(4)+2e-2]);
 
-
 %% store data
 setappdata(ax,'projection',projection)
+
+%% set view point
+setCamera(ax);
