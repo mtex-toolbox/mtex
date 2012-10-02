@@ -37,15 +37,6 @@ else
   theta(theta+1e-6 < projection.minTheta) = NaN;
 end
 
-  
-%% modify polar coordinates according to the alignment of the specimen
-%% coordinate system
-
-if ~strcmpi(projection.type,'plain')
-  if strcmpi(projection.zAxis,'intoPlane'), rho = 2*pi-rho;end    
-  rho = rho + (NWSE(projection.xAxis)-1)*pi/2;
-end
-
 
 %% compute spherical projection
 switch lower(projection.type)
