@@ -140,7 +140,7 @@ else
       'TR',@(i) label(i),...
       varargin{:});
   else
-    multiplot(1,@(i) S2,@(i) d,'contourf',varargin{:});
+    contourf(S2,d,varargin{:});    
   end
   
 end
