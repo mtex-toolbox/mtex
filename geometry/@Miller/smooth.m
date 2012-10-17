@@ -26,4 +26,4 @@ x = symmetrise(m,'skipAntipodal');
 kde = kernelDensityEstimation(x,out,varargin{:});
 
 % use vector3d/smooth for output
-[varargout{1:nargout}] = smooth(ax,out,kde,varargin{:});
+[varargout{1:nargout}] = smooth(ax{:},out,kde,varargin{:});

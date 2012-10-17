@@ -1,20 +1,12 @@
 function [ax,v,varargin] = getAxHandle(v,varargin)
-
+% seperate axis handle from input
 
 if ishandle(v)
-  
-  if isa(handle(v),'axes')
-    ax = v;
-  else
-    ax = gca;
-  end
-  
+  ax = {v};
   v = varargin{1};
   varargin(1) = [];
-  
 else
-  
-  ax = gca;
-  
+  ax = {};
 end
+
 

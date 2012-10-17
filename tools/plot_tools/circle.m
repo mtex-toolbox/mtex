@@ -21,7 +21,7 @@ end
 % if there is more then one circle - cycle through them
 if numel(n)>1
   for i = 1:numel(n);
-    h(i) = circle(n(i),omega,varargin{:});
+    h(i) = circle(n(i),omega,varargin{:}); %#ok<AGROW>
   end
   return
 end
@@ -45,10 +45,10 @@ elseif ~isnumeric(omega)
 end
 
 % plot circles
-holdState = ishold;
+holdState = getHoldState;
 
 if ~holdState, hold on, end
 
-h = plot(ax,c,'line',varargin{:});
+h = plot(ax{:},c,'line',varargin{:});
 
-if ~holdState, hold off, end
+hold(ax{:},holdState);

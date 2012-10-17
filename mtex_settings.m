@@ -20,9 +20,8 @@ setpref('mtex','xAxisDirection','north');
 setpref('mtex','zAxisDirection','outOfPlane');
 
 % default spacing between muliple plots
-setpref('mtex','border',10);
-setpref('mtex','marginX',0);
-setpref('mtex','marginY',0);
+setpref('mtex','outerPlotSpacing',30);
+setpref('mtex','innerPlotSpacing',20);
 
 % colors for EBSD phase plotting
 EBSDColorNames = {'light blue','light green','light red',...

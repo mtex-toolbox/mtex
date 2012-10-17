@@ -211,7 +211,8 @@ else
     if ~isempty(data) % labels plot
 
       for i = 1:numel(data)
-        smarttext(X(i),Y(i),data{i},bounds,'Margin',0.1,varargin{:});
+        mtex_text(X(i),Y(i),data{i},'Margin',0.1,'HorizontalAlignment','center','VerticalAlignment','cap',...
+          'addMarkerSpacing',varargin{:});
       end
     end
 

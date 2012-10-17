@@ -13,7 +13,7 @@ function newFigure = newMTEXplot(varargin)
 
 
 %% check hold state
-newFigure = ~ishold ||  check_option(varargin,'newFigure');
+newFigure = strcmp(getHoldState,'off') ||  check_option(varargin,'newFigure');
 
 %% check tag
 if ~newFigure && check_option(varargin,'ensureTag') && ...
@@ -47,6 +47,7 @@ figure(clf);
 rmallappdata(gcf);
 
 iconMTEX(gcf);
+MTEXFigureMenu;
 
 % set tag
 if check_option(varargin,'ensureTag','char')

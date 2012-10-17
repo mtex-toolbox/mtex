@@ -14,10 +14,11 @@ function varargout = smooth(v,varargin)
 %% get input
 
 % where to plot
-[ax,v,varargin] = getAxHandle(v,varargin{:});
+[ax,v,varargin] = splitNorthSouth(v,varargin{:},'smooth');
+if isempty(ax), return;end
 
 % extract projection
-projection = getProjection(ax,v,varargin{:});
+[projection,extend] = getProjection(ax,v,varargin{:});
 
 % initalize handles
 h = [];
@@ -37,10 +38,10 @@ else % no color given -> do kernel density estimation
   
   
   out = S2Grid('plot',...
-    'minTheta',projection.minTheta,...
-    'maxTheta',projection.maxTheta,...
-    'minRho',projection.minRho,...
-    'maxRho',projection.maxRho);
+    'minTheta',extend.minTheta,...
+    'maxTheta',extend.maxTheta,...
+    'minRho',extend.minRho,...
+    'maxRho',extend.maxRho);
   
   cdata = kernelDensityEstimation(v(:),out,'halfwidth',5*degree,varargin{:});
   v = out;
@@ -95,7 +96,7 @@ end
 
 if strcmpi(projection.type,'plain') % plain plot
   
-  [xu,yu] = project(v,projection);
+  [xu,yu] = project(v,projection,extend);
   
   cdata = reshape(cdata,size(xu));
   h = [h,betterContourf(ax,xu,yu,cdata,contours,varargin{:})];
@@ -106,7 +107,7 @@ else % spherical plot
   hold(ax,'on')
     
   % plot upper hemisphere
-  if projection.minTheta < pi/2-0.0001 
+  if extend.minTheta < pi/2-0.0001 
   
     % split data according to upper and lower hemisphere
     ind = v.z > -1e-5;
@@ -114,7 +115,7 @@ else % spherical plot
     data_upper = reshape(submatrix(cdata,ind),size(v_upper));
     
     % project data
-    [xu,yu] = project(v_upper,projection);
+    [xu,yu] = project(v_upper,projection,extend);
     
     % plot filled contours
     h = [h,betterContourf(ax,xu,yu,data_upper,contours,varargin{:})];
@@ -122,7 +123,7 @@ else % spherical plot
   end
   
   % plot lower hemisphere
-  if isnumeric(projection.maxTheta) && projection.maxTheta > pi/2 + 1e-4 ...
+  if isnumeric(extend.maxTheta) && extend.maxTheta > pi/2 + 1e-4 ...
       && any(v.z(:) < -1e-4);
     
     % split data according to upper and lower hemisphere
@@ -131,7 +132,7 @@ else % spherical plot
     data_lower = reshape(submatrix(cdata,ind),size(v_lower));
     
     % plot filled contours
-    [xl,yl] = project(v_lower,projection,'equator2south');
+    [xl,yl] = project(v_lower,projection,extend);
     h = [h,betterContourf(ax,xl,yl,data_lower,contours,varargin{:})];
     
   end
@@ -156,7 +157,7 @@ else
 end
 
 % plot polar grid
-plotGrid(ax,projection,varargin{:});
+plotGrid(ax,projection,extend,varargin{:});
 
 % add annotations
 opts = {'BL',{'Min:',xnum2str(minData)},'TL',{'Max:',xnum2str(maxData)}};
@@ -175,11 +176,11 @@ h = [];
 if numel(unique(data)) > 1
   
   % workauround for a MATLAB Bug
-  if mean(X(:,1)) > mean(X(:,end))
-    X = fliplr(X);
-    Y = fliplr(Y);
-    data = flipdim(data,2);
-  end
+  %if mean(X(:,1)) > mean(X(:,end))
+  %  X = fliplr(X);
+  %  Y = fliplr(Y);
+  %  data = flipdim(data,2);
+  %end
   
   % contour correction
   if check_option(varargin,'correctContour')

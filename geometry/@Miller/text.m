@@ -30,7 +30,8 @@ if check_option(varargin,{'all','symmetrised','fundamentalRegion'})
   if ~isempty(strings)
     strings = strings(rep(1:numel(strings),l));
   end
-  
+  varargin = [varargin,{'removeAntipodal'}];
+
 end
   
 
@@ -40,4 +41,4 @@ end
 
 varargin = delete_option(varargin,'labeled');
 
-[varargout{1:nargout}] = text(ax,m.vector3d,strings,varargin{:});
+[varargout{1:nargout}] = text(ax{:},m.vector3d,strings,varargin{:});

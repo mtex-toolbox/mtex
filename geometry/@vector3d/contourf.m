@@ -1,8 +1,22 @@
 function varargout = contourf( v, varargin )
-
+% spherical filled contour plot
+%
+%% Syntax
+%   contourf(v,data)
+%
+%% Input
+%  v - @vector3d
+%  data - double
+%
+%% Options
+%  contours - number of contours
+%
+%% See also
+% vector3d/plot vector3d/contour
 
 % where to plot
-[ax,v,varargin] = getAxHandle(v,varargin{:});
+[ax,v,varargin] = splitNorthSouth(v,varargin{:},'surf');
+if isempty(ax), return;end
 
 hold(ax,'all');
 

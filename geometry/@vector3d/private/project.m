@@ -1,20 +1,13 @@
-function [X,Y] = project(v,projection,varargin)
+function [X,Y] = project(v,projection,extend,varargin)
 % perform spherical projection and restriction to plotable domain
 
-
-% determine which points are on the southern hemisphere
-if check_option(varargin,'equator2south')
-  eps = 1e-6;
-else
-  eps = -1e-6;
-end
-south = v.z < eps;
-
-
-% for antipodal symmetry project all to northern hemisphere
-if projection.antipodal && ~(isnumeric(projection.maxTheta) && projection.maxTheta == pi)
-  v = subsasgn(v,south,-vector3d(subsref(v,south)));
-  south = false(size(v));
+%% for antipodal symmetry project all to northern hemisphere
+if projection.antipodal  ...
+    && ~(isnumeric(extend.maxTheta) && extend.maxTheta == pi) ...
+    && ~check_option(varargin,'removeAntipodal')
+    
+  v = subsasgn(v,v.z < -1e-6,-vector3d(subsref(v,v.z < -1e-6)));
+  
 end
 
 % compute polar angles
@@ -24,17 +17,17 @@ end
 %% restrict to plotable domain
 
 % check for azimuth angle
-if projection.maxRho - projection.minRho < 2*pi-1e-6  
-  inRho = inside(rho,projection.minRho,projection.maxRho) | isnull(sin(theta));  
+if extend.maxRho - extend.minRho < 2*pi-1e-6  
+  inRho = inside(rho,extend.minRho,extend.maxRho) | isnull(sin(theta));  
   rho(~inRho) = NaN;
 end
 
 % check for polar angle
-if isa(projection.maxTheta,'function_handle')
-  theta(theta-1e-6 > projection.maxTheta(rho)) = NaN;
+if isa(extend.maxTheta,'function_handle')
+  theta(theta-1e-6 > extend.maxTheta(rho)) = NaN;
 else
-  theta(theta-1e-6 > projection.maxTheta) = NaN;
-  theta(theta+1e-6 < projection.minTheta) = NaN;
+  theta(theta-1e-6 > extend.maxTheta) = NaN;
+  theta(theta+1e-6 < extend.minTheta) = NaN;
 end
 
 
@@ -71,15 +64,6 @@ switch lower(projection.type)
     
 end
 
-%% points on the southern hemisphere should be shifted to the left / right
-if projection.minTheta == 0 && ~strcmp(projection.type,'plain')
-  if strcmp(projection.zAxis,'outOfPlane')
-    X(south) = X(south) + projection.offset;
-  else
-    X(~south) = X(~south) + projection.offset;
-  end
-end
-  
 % format output
 X = reshape(X,size(v));
 Y = reshape(Y,size(v));

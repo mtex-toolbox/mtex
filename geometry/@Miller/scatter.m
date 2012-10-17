@@ -33,7 +33,8 @@ end
 if check_option(varargin,{'ALL','symmetrised','FundamentalRegion'})
   
   % first dimension cs - second dimension m
-  m = symmetrise(m,'plot',varargin{:});
+  m = symmetrise(m,varargin{:});
+  varargin = [varargin,{'removeAntipodal'}];
   
   % symmetrise data
   if ~isempty(cdata)
@@ -53,34 +54,25 @@ end
   
 %% plot
 
-if size(m,1) > 20 || ~isempty(cdata)
+if size(m,2) > 20 || ~isempty(cdata)
 
   % write back cdata
   if ~isempty(cdata), varargin=[{cdata},varargin];end
   
   % plot them all with the same color
-  [varargout{1:nargout}] = scatter(ax,m.vector3d,varargin{:});
+  [varargout{1:nargout}] = scatter(ax{:},m.vector3d,varargin{:});
     
 else % if there are only a few points plots them with different colors
 
   % store hold status
-  washold = ishold;
-  hold all
-
-  % determine plotting region
-  z = get(m,'z');
-  if any(z(:)<-1e-6)
-    varargin = [{'maxTheta',pi},varargin];
-  end
-  if any(z(:)>1e-6)
-    varargin = [{'minTheta',0},varargin];
-  end
+  washold = getHoldState(ax{:});
 
   % plot
+  hold all
   for i = 1:size(m,2)
-    scatter(ax,unique(m.vector3d(:,i)),varargin{:});
+    scatter(ax{:},unique(m.vector3d(:,i)),varargin{:});
   end
 
   % revert old hold status
-  if ~washold, hold off;end
+  hold(ax{:},washold); 
 end

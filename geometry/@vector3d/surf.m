@@ -14,10 +14,11 @@ function varargout = surf(v,varargin)
 %% get input
 
 % where to plot
-[ax,v,varargin] = getAxHandle(v,varargin{:});
+[ax,v,varargin] = splitNorthSouth(v,varargin{:},'surf');
+if isempty(ax), return;end
 
 % extract plot options
-projection = getProjection(ax,v,varargin{:});
+[projection,extend] = getProjection(ax,v,varargin{:});
 
 % initalize handles
 h = [];
@@ -37,7 +38,7 @@ shading interp
 
 if strcmpi(projection.type,'plain') % plain plot
   
-  [xu,yu] = project(v,projection);
+  [xu,yu] = project(v,projection,extend);
   
   w = reshape(w,size(xu));
   [CM,h(end+1)] = contourf(ax,xu,yu,w,contours); %#ok<ASGLU>
@@ -48,7 +49,7 @@ else % spherical plot
   hold(ax,'on')
     
   % plot upper hemisphere
-  if projection.minTheta < pi/2-0.0001 
+  if extend.minTheta < pi/2-0.0001 
   
     % split data according to upper and lower hemisphere
     ind = v.z > -1e-5;
@@ -56,7 +57,7 @@ else % spherical plot
     data_upper = reshape(submatrix(cdata,ind),[size(v_upper) 3]);
     
     % project data
-    [xu,yu] = project(v_upper,projection);
+    [xu,yu] = project(v_upper,projection,extend);
     
     % plot surface
     h(end+1) = surf(ax,xu,yu,zeros(size(xu)),real(data_upper));
@@ -64,7 +65,7 @@ else % spherical plot
   end
   
   % plot lower hemisphere
-  if isnumeric(projection.maxTheta) && projection.maxTheta > pi/2 + 1e-4
+  if isnumeric(extend.maxTheta) && extend.maxTheta > pi/2 + 1e-4
     
     % split data according to upper and lower hemisphere
     ind = v.z < 1e-5;
@@ -72,7 +73,7 @@ else % spherical plot
     data_lower = reshape(submatrix(cdata,ind),[size(v_lower) 3]);
     
     % plot surface
-    [xl,yl] = project(v_lower,projection,'equator2south');
+    [xl,yl] = project(v_lower,projection,extend);
     h(end+1) = surf(ax,xl,yl,zeros(size(xl)),real(data_lower));
   end
   
@@ -86,7 +87,7 @@ optiondraw(h,'Fill','on',varargin{:});
 %% finalize the plot
 
 % plot polar grid
-plotGrid(ax,projection,varargin{:});
+plotGrid(ax,projection,extend,varargin{:});
 
 % plot annotations
 plotAnnotate(ax,varargin{:})
