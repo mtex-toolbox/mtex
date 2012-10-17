@@ -15,7 +15,7 @@ function varargout = contourf( v, varargin )
 % vector3d/plot vector3d/contour
 
 % where to plot
-[ax,v,varargin] = splitNorthSouth(v,varargin{:},'surf');
+[ax,v,varargin] = splitNorthSouth(v,varargin{:},'contourf');
 if isempty(ax), return;end
 
 hold(ax,'all');
