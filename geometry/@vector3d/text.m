@@ -16,7 +16,8 @@ function varargout = text(v,varargin)
 %% plot prepertations
 
 % where to plot
-[ax,v,varargin] = getAxHandle(v,varargin{:});
+[ax,v,varargin] = splitNorthSouth(v,varargin{:},'text');
+if isempty(ax), return;end
 h = [];
 
 % extract text
@@ -42,23 +43,26 @@ else % ensure cell as input
 end
 
 % extract plot options
-projection = getProjection(ax,v,varargin{:});
+[projection,extend] = getProjection(ax,v,varargin{:});
 
 % project data
-[x,y] = project(v,projection);
+[x,y] = project(v,projection,extend,varargin{:});
 
 
 %% print labels
 for i = 1:numel(strings)
   s = strings{i};
   if ~ischar(s), s = char(s,getpref('mtex','textInterpreter'));end
-  h(end+1) = smarttext(x(i),y(i),s,projection.bounds,'Margin',0.1,'parent',ax,varargin{2:end}); %#ok<AGROW>
+  h(end+1) = mtex_text(x(i),y(i),s,'parent',ax,...
+    'HorizontalAlignment','center','VerticalAlignment','middle',...
+    'tag','addMarkerSpacing','UserData',[x(i),y(i)],...
+    'margin',0.001,varargin{2:end});  %#ok<AGROW>
 end
 
 %% finalize the plot
 
 % plot a spherical grid
-plotGrid(ax,projection,varargin{:});
+plotGrid(ax,projection,extend,varargin{:});
 
 % output
 if nargout > 0

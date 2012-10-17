@@ -31,11 +31,11 @@ set(gca ,'units','pixels');
 
 % get figrure position
 fig_pos = get(gcf,'position');
-d = get_option(varargin,'border',getpref('mtex','border'));
+d = get_option(varargin,'outerPlotSpacing',getpref('mtex','outerPlotSpacing'));
 figxy = fig_pos(3:4) -42 - 2*d;
 
 % correct for cameraposition
-if find(get(gca,'CameraUpVector'))
+if find(get(gca,'CameraUpVector'))==1
   dxylim = fliplr(dxylim);
 end
 
@@ -109,7 +109,8 @@ cx = [xlim(ax) ylim(ax)];
 dx = diff(cx(1:2));
 dy = diff(cx(3:4));
 
-if find(get(gca,'CameraUpVector'))
+% correct for xAxisDirection
+if find(get(gca,'CameraUpVector'))==1
   [ax_r,ay_r] = deal(ay_r,ax_r);
 end
 

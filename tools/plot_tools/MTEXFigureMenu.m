@@ -99,10 +99,14 @@ for a = 1:numel(ax)
   setCamera(ax(a),'xAxisDirection',xAxis);
     
 end
+
+fn = get(gcf,'ResizeFcn');
+fn(gcf,event);
+
 end
 
 % Z Axis Direction
-function setZAxisDirection(obj,event) %#ok<INUSD>
+function setZAxisDirection(obj,event)
 
 uncheck = findobj(gcf,'parent',get(obj,'parent'));
 set(uncheck,'checked','off');
@@ -118,6 +122,9 @@ for a = 1:numel(ax)
   setCamera(ax(a),'zAxisDirection',zAxis);
   
 end
+
+fn = get(gcf,'ResizeFcn');
+fn(gcf,event);
 
 end
 

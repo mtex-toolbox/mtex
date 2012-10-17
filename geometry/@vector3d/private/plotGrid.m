@@ -1,11 +1,10 @@
-function plotGrid( ax, projection ,varargin)
+function plotGrid(ax, projection, extend, varargin)
 % plot Polar Grid
-
 
 if ~isappdata(ax,'grid') % there is not grid yet
   
   % generate grid
-  grid = plotPolarGrid(ax,projection, varargin{:});
+  grid = plotPolarGrid(ax,projection,extend,varargin{:});
   
   optiondraw(grid.boundary,'color','k');
   optiondraw(grid.grid,'visible','on','linestyle',':','color',[.4 .4 .4]);
@@ -56,7 +55,7 @@ end
 
 
 %% -------------------------------------------------------------------
-function grid = plotPolarGrid(ax,projection,varargin)
+function grid = plotPolarGrid(ax,projection,extend,varargin)
 % generate grid for axes ax
 
 % stepsize
@@ -64,12 +63,12 @@ dgrid = get_option(varargin,'grid_res',30*degree);
 dgrid = pi/round((pi)/dgrid);
 
 % discretize rho
-if projection.maxRho > projection.minRho
-  rho = projection.minRho:dgrid:(projection.maxRho-dgrid);
+if extend.maxRho > extend.minRho
+  rho = extend.minRho:dgrid:(extend.maxRho-dgrid);
 else
-  rho = mod(projection.minRho:dgrid:(projection.maxRho+2*pi-dgrid),2*pi);
+  rho = mod(extend.minRho:dgrid:(extend.maxRho+2*pi-dgrid),2*pi);
 end
-if projection.maxRho ~= 2*pi, rho(1) = [];end
+if extend.maxRho ~= 2*pi, rho(1) = [];end
 
 % initalize handles for grid
 hb = []; h = []; t = [];
@@ -77,60 +76,44 @@ hb = []; h = []; t = [];
 % plain grid
 if strcmpi(projection.type,'plain')
   
-  [x,y] = project(zvector,projection);
+  [x,y] = project(zvector,projection,extend);
   
 %   h = [h arrayfun(@(t) circ(ax,projection,x,y,t),pi)];
 
-  [hm tm] = arrayfun(@(t) merid(ax,projection,x,y,t),rho);   
+  [hm,tm] = arrayfun(@(t) merid(ax,projection,extend,x,y,t),rho);   
   h = [h hm];
   t = [t tm];
   
   
 else % polar grid
   
-  % plot grid in northern hemisphere
-  if projection.minTheta < pi/2-1e-3
-    
-    % center point
-    [x,y] = project(zvector,projection);
-    
-    % draw outer circ
-    if isnumeric(projection.maxTheta)
-      maxTheta = min(projection.maxTheta,pi/2);
-    else
-      maxTheta = projection.maxTheta;
-    end
-    hb = [hb circ(ax,projection,x,y,maxTheta,'boundary')];
-    
-    % draw small circles
+  % northern hemisphere
+  if extend.minTheta < pi/2-1e-3
+    center = zvector;
+    maxTheta = extend.maxTheta;
+    minTheta = 0;
     theta = dgrid:dgrid:(pi/2-dgrid);
-    h = [h arrayfun(@(t) circ(ax,projection,x,y,t),theta)];
-    
-    % draw meridians
-    if isnumeric(projection.maxTheta) && projection.maxTheta > pi/2-1e-6
-      [hm tm] = arrayfun(@(t) merid(ax,projection,x,y,t),rho);
-      h = [h hm];
-      t = [t tm];    
-    end
+  else % southern hemisphere
+    center = -zvector;
+    maxTheta = extend.minTheta;
+    minTheta = pi;
+    theta = pi/2+(dgrid:dgrid:(pi/2-dgrid));
   end
   
-  % plot grid in southern hemisphere
-  if isnumeric(projection.maxTheta) && projection.maxTheta > pi/2 + 1e-6
+  % center point
+  [x,y] = project(center,projection,extend);
     
-    % draw outer circ
-    [x,y] = project(-zvector,projection);
-    hb = [hb circ(ax,projection,x,y,pi/2,'boundary','equator2south')];
+  % draw outer circ
+  hb = [hb circ(ax,projection,extend,minTheta,maxTheta,'boundary')];
+  
+  % draw small circles
+  h = [h arrayfun(@(t) circ(ax,projection,extend,minTheta,t),theta)];
     
-    % draw small circles
-    theta = pi/2+dgrid:dgrid:(pi-dgrid);
-    h = [h arrayfun(@(t) circ(ax,projection,x,y,t),theta)];
-    
-    % draw meridians
-    [hm tm] = arrayfun(@(t) merid(ax,projection,x,y,t,'equator2south'),rho);
-    
-    h = [h hm];
-    t = [t tm];
-  end
+  % draw meridians
+  [hm,tm] = arrayfun(@(t) merid(ax,projection,extend,x,y,t),rho);
+  h = [h hm];
+  t = [t tm];
+      
 end
 
 grid.boundary = hb;
@@ -138,9 +121,9 @@ grid.grid     = h;
 grid.ticks    = t;
 
 
-function [h t] = merid(ax,projection,x,y,rho,varargin)
+function [h,t] = merid(ax,projection,extend,x,y,rho,varargin)
 
-[X,Y] = project(sph2vec(pi/2,rho),projection,varargin{:});
+[X,Y] = project(sph2vec(pi/2,rho),projection,extend,varargin{:});
 
 % vertical/horizontal alignment
 va = {'middle','bottom','middle','top'};
@@ -168,15 +151,10 @@ t = optiondraw(text(X,Y,s,'parent',ax,'interpreter','tex','handlevisibility','of
 %   end
 
 
-function h = circ(ax,projection,x,y,theta,varargin)
+function h = circ(ax,projection,extend,theta0,theta,varargin)
 
-% if isappr(projection.maxRho-projection.minRho,2*pi)
-%   r = project(sph2vec(theta,0),projection);
-%   h = optiondraw(builtin('rectangle','Position',[x-r,y-r,2*r,2*r],'Curvature',[1,1]),varargin{:});
-% else
-
-n   = abs(projection.maxRho-projection.minRho)/(.5*degree);
-rho = linspace(projection.minRho,projection.maxRho,n);
+n   = abs(extend.maxRho-extend.minRho)/(.5*degree);
+rho = linspace(extend.minRho,extend.maxRho,n);
 
 if isa(theta,'function_handle')
   theta = theta(rho);
@@ -185,16 +163,12 @@ else
 end
 
 if check_option(varargin,'boundary') ...
-    && ~isappr(projection.maxRho-projection.minRho,2*pi) ...
+    && ~isappr(extend.maxRho-extend.minRho,2*pi) ...
     && ~strcmpi(projection.type,'plain')
   rho = [0,rho,0];
-  if check_option(varargin,'equator2south')
-    theta = [pi,theta,pi];
-  else
-    theta = [0,theta,0];
-  end
+  theta = [theta0,theta,theta0];
 end
 
-[dx,dy] = project(sph2vec(theta,rho),projection,varargin{:});
+[dx,dy] = project(sph2vec(theta,rho),projection,extend,varargin{:});
 
 h = line(dx,dy,'parent',ax,'handlevisibility','off');

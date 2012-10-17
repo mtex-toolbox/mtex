@@ -19,13 +19,14 @@ function varargout = quiver(v, d, varargin )
 %% plot prepertations
 
 % where to plot
-[ax,v,varargin] = getAxHandle(v,varargin{:});
+[ax,v,varargin] = splitNorthSouth(v,varargin{:},'quiver');
+if isempty(ax), return;end
 
 % extract plot options
-projection = getProjection(ax,v,varargin{:});
+[projection,extend] = getProjection(ax,v,varargin{:});
 
 % project data
-[x,y] = project(v,projection);
+[x,y] = project(v,projection,extend);
 x = x(:); y = y(:);
 
 %% make the quiver plot
@@ -33,7 +34,7 @@ x = x(:); y = y(:);
 mhs = get_option(varargin,'MaxHeadSize',0.9);
 arrowSize = get_option(varargin,'arrowSize',0.03);
 
-[dx,dy] = project(d,projection);
+[dx,dy] = project(d,projection,extend);
   
 dx = reshape(abs(arrowSize)*dx,size(x));
 dy = reshape(abs(arrowSize)*dy,size(x));
@@ -53,7 +54,7 @@ end
 %% finalize the plot
 
 % plot a spherical grid
-plotGrid(ax,projection,varargin{:});
+plotGrid(ax,projection,extend,varargin{:});
 
 % add annotations
 plotAnnotate(ax,varargin{:})

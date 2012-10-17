@@ -77,7 +77,7 @@ else
     s = t;
   end
   if strcmpi(getpref('mtex','textInterpreter'),'LaTex')
-    if ~iscell(s) && ~isempty(regexp(s,'[\\\^_]','ONCE'))
+    if ~iscell(s) && ~isempty(regexp(s,'[\\\^_]','ONCE')) && s(1)~='$'
       s = ['$' s '$'];
     end
   end

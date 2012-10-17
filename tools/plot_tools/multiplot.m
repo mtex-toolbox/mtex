@@ -1,4 +1,4 @@
-function multiplot(nplots,varargin)
+function a = multiplot(nplots,varargin)
 % plot multiple graphs
 %
 %% Syntax
@@ -30,16 +30,32 @@ function multiplot(nplots,varargin)
 
 %% prepare plot
 
+washold = getHoldState;
+
 % get existing axes
 a = findobj(gcf,'type','axes');
+ma = getappdata(gcf,'multiplotAxes');
 
-% generate some invisible axes
-if isappdata(gcf,'multiplotAxes')
-  a = getappdata(gcf,'multiplotAxes');
+
+% get axes from former multiplot
+if ~strcmp(washold,'off') && ~isempty(ma) && all(numel(ma) == nplots) && ...
+    all(ishandle(ma))
+  a = ma;
+  nplots = numel(a); 
+  
+% make normal axes multiplot axes  
+elseif ishold && ~isempty(a) && all(nplots == numel(a)) && ...
+    all(ishandle(a))
   nplots = numel(a);
-elseif ~isempty(nplots) && numel(a) ~= nplots  
-  for k=numel(a)+1:nplots, a(k) = axes('visible','off'); end
+  
+else % make new axes
+  rmallappdata
+  for k=1:numel(a), cla(a(k));end
+  for k=numel(a)+1:nplots, a(k) = axes('visible','off'); end %#ok<LAXES> 
 end
+
+% distribute hold state over all axes
+for k=1:nplots, hold(a(k),washold); end
 
 % set figure options
 if check_option(varargin,'position')
@@ -74,7 +90,7 @@ nfun = numel(efun);
 for k=1:nplots
   targin = varargin;
   for kfun = 1:nfun
-    targin{efun(kfun)} = feval(varargin{efun(kfun)},k);
+    targin{efun(kfun)} = varargin{efun(kfun)}(k);
   end
   
   % reinsert data
@@ -107,12 +123,11 @@ set(gcf,'ResizeFcn',@(src,evt) figResize(src,evt,a));
 
 if ~isappdata(gcf,'multiplotAxes')
   
-  setappdata(gcf,'multiplotAxes',a);  
+  setappdata(gcf,'multiplotAxes',a);
   setappdata(gcf,'autofit',get_option(varargin,'autofit','on'));
-  setappdata(gcf,'border',get_option(varargin,'border',10));
-  setappdata(gcf,'marginx',get_option(varargin,'marginx',0));
-  setappdata(gcf,'marginy',get_option(varargin,'marginy',0));
-
+  setappdata(gcf,'border',get_option(varargin,'outerPlotSpacing',getpref('mtex','outerPlotSpacing')));
+  setappdata(gcf,'margin',get_option(varargin,'innerPlotSpacing',getpref('mtex','innerPlotSpacing')));
+  
   figResize(gcf,[],a);
 
   if ~check_option(varargin,'uncropped')
@@ -124,7 +139,7 @@ if ~isappdata(gcf,'multiplotAxes')
   end
 end
 
-set(gcf,'color',[1 1 1],'nextplot','replace');
+set(gcf,'color',[1 1 1],'nextPlot','replace');
 
 % make axes visible
 set(a,'Visible','on');
@@ -143,26 +158,29 @@ if strcmp(getappdata(fig,'autofit'),'on')
 
   figpos = get(fig,'Position');
   
-  marginx = getappdata(fig,'marginx');
-  marginy = getappdata(fig,'marginy');
+  margin = getappdata(fig,'margin');
   border = getappdata(fig,'border');
 
 
   figpos(4) = figpos(4)-2*border;
   figpos(3) = figpos(3)-2*border;
   dxdy = get(a(1),'PlotBoxAspectRatio');
+  % correct for xAxisDirection
+  if find(get(gca,'CameraUpVector'))==1
+    dxdy(1:2) = fliplr(dxdy(1:2));
+  end
   dxdy = dxdy(2)/dxdy(1);
-  [nx,ny,l] = bestfit(figpos(3),figpos(4),dxdy,length(a),marginx,marginy);
-  set(fig,'UserData',[nx*l+2*border+(nx-1)*marginx,...
-    ny*l*dxdy+2*border+(ny-1)*marginy]);
+  [nx,ny,l] = bestfit(figpos(3),figpos(4),dxdy,length(a),margin,margin);
+  set(fig,'UserData',[nx*l+2*border+(nx-1)*margin,...
+    ny*l*dxdy+2*border+(ny-1)*margin]);
   setappdata(fig,'length',l); 
  
   l = ceil(l);
   ldxdy = ceil(l*dxdy); 
   for i = 1:length(a)
     [px,py] = ind2sub([nx ny],i);
-    apos = [1+border+(px-1)*(l+marginx),...
-      1+border+figpos(4)-py*ldxdy-(py-1)*(marginy-1),...
+    apos = [1+border+(px-1)*(l+margin),...
+      1+border+figpos(4)-py*ldxdy-(py-1)*(margin-1),...
       l,ldxdy];
     set(a(i),'Units','pixels','Position',apos);
   end
