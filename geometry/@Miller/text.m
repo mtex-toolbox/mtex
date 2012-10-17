@@ -26,7 +26,7 @@ if numel(strings)==1, strings = repcell(strings{1},numel(m),1);end
 % symmetrise
 if check_option(varargin,{'all','symmetrised','fundamentalRegion'})
   
-  [m,l] = symmetrise(m,varargin{:});
+  [m,l] = symmetrise(m,varargin{:},'keepAntipodal');
   if ~isempty(strings)
     strings = strings(rep(1:numel(strings),l));
   end
