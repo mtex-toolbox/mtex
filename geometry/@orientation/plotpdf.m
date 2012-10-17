@@ -70,6 +70,7 @@ r = @(i) reshape(ss * o * sh(i),[],1);
 data = @(i) repmat(data(:),[numel(ss) numel(sh(i))]);
 
 [maxTheta,maxRho,minRho] = getFundamentalRegionPF(ss,varargin{:});
+if isnumeric(maxTheta), maxTheta = min(maxTheta,pi/2);end
 
 multiplot(numel(h),r,data,...
   'scatter','TR',@(i) h(i),...

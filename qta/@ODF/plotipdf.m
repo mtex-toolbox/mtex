@@ -27,6 +27,7 @@ varargin = set_default_option(varargin,...
 
 %% plotting grid
 [maxtheta,maxrho,minrho] = getFundamentalRegionPF(odf(1).CS,varargin{:});
+if isnumeric(maxtheta), maxtheta = min(maxtheta,pi/2);end
 h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
 
 %% plot
