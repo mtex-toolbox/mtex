@@ -131,6 +131,9 @@ if any(strfind(path,'mtex'))
 
   inst_dir = cellpath(~cellfun('isempty',strfind(cellpath,'mtex')));
   if ~isempty(inst_dir), rmpath(inst_dir{:}); end
+  close all
+  clear classes
+  local_path = fileparts(mfilename('fullpath'));
 end
 
 if (~isOctave() && MATLABverLessThan('7.8'))
