@@ -9,6 +9,10 @@
 % crystal symmetry
 CS = {crystal symmetry};
 
+% plotting convention
+setpref('mtex','xAxisDirection',{xAxisDirection});
+setpref('mtex','zAxisDirection',{zAxisDirection});
+
 %% Specify File Names
 
 % path to files

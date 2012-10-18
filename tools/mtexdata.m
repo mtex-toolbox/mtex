@@ -1,4 +1,4 @@
-function mtexdata(name)
+function mtexdata(name,varargin)
 % load of data provided with mtex and often used in documentation
 %
 %% Syntax
@@ -67,8 +67,8 @@ if any(ndx) && isempty(dir(file))
 
     case 'pf'
 
-      [CS,h,pf] = feval(['mtexdata_' list(ndx).name]);
-      save(file,'CS','h','pf');
+      [CS,h,pf,c] = feval(['mtexdata_' list(ndx).name]);
+      save(file,'CS','h','pf','c');
 
   end
 
@@ -98,7 +98,7 @@ data(cellfun('isempty',{data.name})) = [];
 
 
 % ----------------------------------------------------------- PoleFigure data --
-function [CS,h,pf] = mtexdata_dubna
+function [CS,h,pf,c] = mtexdata_dubna
 
 CS = symmetry('-3m',[1.4 1.4 1.5]);
 SS = symmetry;
@@ -124,7 +124,7 @@ c = {1,1,[0.52 ,1.23],1,1,1,1};
 
 pf = loadPoleFigure(fname,h,CS,SS,'interface','dubna','superposition',c);
 
-function [CS,h,pf] = mtexdata_geesthacht
+function [CS,h,pf,c] = mtexdata_geesthacht
 
 CS = symmetry('m-3m');
 SS = symmetry('-1');
@@ -138,10 +138,12 @@ h = { ...
   Miller(1,1,0,CS), ...
   };
 
+c = ones(size(h));
+
 pf = loadPoleFigure(fname,h,CS,SS);
 
 
-function   [CS,h,pf] = mtexdata_ptx
+function   [CS,h,pf,c] = mtexdata_ptx
 
 CS = symmetry('mmm');
 SS = symmetry('-1');
@@ -155,13 +157,14 @@ fname = {...
 
 pf = loadPoleFigure(fname,CS,SS);
 h = get(pf,'h');
+c = ones(size(h));
 
 % ----------------------------------------------------------------- EBSD data --
 function [CS,ebsd] = mtexdata_aachen
 CS = {...
   'notIndexed',...
-  symmetry('m-3m','mineral','Fe'),...
-  symmetry('m-3m','mineral','Mg')};
+  symmetry('m-3m','mineral','Fe','color','light blue'),...
+  symmetry('m-3m','mineral','Mg','color','light red')};
 
 ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt'),CS,symmetry,...
   'interface','generic' , ...

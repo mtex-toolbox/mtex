@@ -24,7 +24,7 @@ odf = 0.7*unimodalODF(mod1,cs,ss) + 0.3*unimodalODF(mod2,cs,ss);
 % that the color range is automatically set to *equal* when adding a colorbar
 % to a figure with  more then one plot (see. <ColorCoding_demo.html Color Coding>).
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal','gray')
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal')
 colorbar
 
 
@@ -67,7 +67,7 @@ annotate(mod1,...
 
 annotate(mod2,...
     'marker','s','MarkerSize',6,'MarkerFaceColor','g',...
-    'label','B','color','w')
+    'label','B')
 
 %%
 % also ODF plots
@@ -101,6 +101,7 @@ annotate(mod2,...
 plotFourier(odf)
 hold all
 plotFourier(fibreODF(Miller(1,0,0),zvector,cs,ss))
+hold off
 
 legend({'Fibre ODF','Unimodal ODF'})
 

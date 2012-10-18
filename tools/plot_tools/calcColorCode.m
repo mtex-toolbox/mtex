@@ -32,13 +32,35 @@ elseif isa(prop,'char')
 
     case 'phase'
 
-      cmap = getpref('mtex','phaseColorMap');
+      cmap = getpref('mtex','EBSDColors');
+      colorNames = getpref('mtex','EBSDColorNames');
 
       phase = get(obj,'phase');
-
+      phases = get(obj,'phases');
+            
+      cs =get(obj,'CSCell');
       d = ones(numel(phase),3);
-      d(phase>0,:)   = cmap(phase(phase>0),:);
-
+      
+      for i = 1:numel(phases)
+        
+        ph = phases(i);
+        if ~ischar(cs{i})
+        
+          if isempty(get(cs{i},'color'))
+            
+            index = i;
+            
+          else
+            
+            index = strmatch(get(cs{i},'color'),colorNames);
+            
+          end
+          d(phase==ph,1) = cmap{index}(1);
+          d(phase==ph,2) = cmap{index}(2);
+          d(phase==ph,3) = cmap{index}(3);
+        end
+      end
+      
     case lower(get(obj))
 
       d = get(obj,prop);

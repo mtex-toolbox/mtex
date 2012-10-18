@@ -18,9 +18,13 @@ if ~isa(data,'tensor')
 end
 
 % plotting convention
-plotdir = cell2mat(get(handles.plot_dir,'value'))==1;
-plotdir = get(handles.plot_dir(plotdir),'string');
-str = replaceToken(str,'{plotting convention}',['plotx2' lower(plotdir)]);
+direction = find(cell2mat(get(handles.xyz,'value')));
+
+xaxis = 1 + mod(direction-1,4);
+zaxis = 1 + (direction > 4);
+
+str = replaceToken(str,'{xAxisDirection}',['''' NWSE(xaxis) '''']);
+str = replaceToken(str,'{zAxisDirection}',['''' UpDown(zaxis) '''']);
 
 
 %% specify the file names
@@ -104,8 +108,20 @@ if isa(data,'ODF')
 end
 
 
-%% EBSD 3d
+%% EBSD
 if isa(data,'EBSD')
+  
+  % first indexed phase
+  firstPhase = find(~cellfun('ischar',cs),1);
+  minerals = get(data,'minerals');
+  
+  if ~isempty(minerals{firstPhase})
+    replaceToken(str,'{phase}',['''' minerals{find(ind,1)} '''']);
+  else
+    replaceToken(str,'{phase}',[]);
+  end
+  
+  % EBSD 3d
   Z = getappdata(handles.listbox(5),'zvalues');
   if ~isempty(Z), 
     str = replaceToken(str,'{Z-values}',['[' num2str(Z) ']']);
@@ -122,12 +138,12 @@ str = replaceToken(str,'{interface}',['''' interface '''']);
 
 optionstr = option2str(options,'quoted');
 
-if exist('Z','var') && ~isempty(Z), optionstr = [optionstr ', ''3d'', Z']; end
-if get(handles.rotate,'value')
-  optionstr = [optionstr, ', ''rotate'', ',get(handles.rotateAngle,'string') '*degree'];
-end
-if get(handles.flipud,'value'), optionstr = [optionstr, ', ''flipud''']; end
-if get(handles.fliplr,'value'), optionstr = [optionstr, ', ''fliplr''']; end
+%if exist('Z','var') && ~isempty(Z), optionstr = [optionstr ', ''3d'', Z']; end
+%if get(handles.rotate,'value')
+%  optionstr = [optionstr, ', ''rotate'', ',get(handles.rotateAngle,'string') '*degree'];
+%end
+%if get(handles.flipud,'value'), optionstr = [optionstr, ', ''flipud''']; end
+%if get(handles.fliplr,'value'), optionstr = [optionstr, ', ''fliplr''']; end
 str = replaceToken(str,',{options}',optionstr);
 
 

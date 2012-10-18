@@ -4,7 +4,7 @@ function addfile(list_handle,type,varargin)
 if check_option(varargin,'file')
   [pathname, fnames, ext] = fileparts(get_option(varargin,'file'));
   fnames = {[fnames,ext]};
-  pathname = [pathname,filesep];
+  if ~isempty(pathname), pathname = [pathname,filesep];end
 else
   dataPath = getpref('mtex','ImportWizardPath');
   if isa(dataPath,'function_handle')

@@ -28,8 +28,13 @@ ss = o.SS;
 
 if newMTEXplot('ensureTag','pdf',...
     'ensureAppdata',{{'CS',cs},{'SS',ss}})
-  argin_check(h,{'Miller'});
-  h = ensureCS(get(o,'CS'),{h});
+  
+  % convert to cell
+  if ~iscell(h), h = vec2cell(h);end 
+  argin_check([h{:}],{'Miller'});  
+  for i = 1:length(h)
+    h{i} = ensureCS(get(o,'CS'),h(i));
+  end  
 else
   h = getappdata(gcf,'h');
   options = getappdata(gcf,'options');
@@ -50,32 +55,27 @@ if sum(numel(o))*length(cs)*length(ss) > 10000 || check_option(varargin,'points'
 
   samples = discretesample(ones(1,numel(o)),points);
   o.rotation = o.rotation(samples);
-  if ~isempty(data),
-    data = data(samples);  end
+  if ~isempty(data), data = data(samples); end
 
 end
 
 
 %% plot
-if check_option(varargin,'superposition')
-  multiplot(@(i) reshape(ss * o * cs * h,[],1),@(i) [],1,...
-    'ANOTATION',@(i) h,'dynamicMarkerSize',...
-    'appdata',@(i) {{'h',h}},...
-    varargin{:});
-else
-  r = @(i) reshape(ss * o * symmetrise(h(i)),[],1);
 
-  [maxtheta,maxrho,minrho] = getFundamentalRegionPF(ss,varargin{:});
-  Sr = @(i) S2Grid(r(i),'MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
+% compute specimen directions
+sh = @(i) symmetrise(h{i});
+r = @(i) reshape(ss * o * sh(i),[],1);
 
-  Dr = @(i) repmat(reshape(data,1,[]),numel(symmetrise(h(i))),1);
+% symmetrise data
+data = @(i) repmat(data(:),[numel(ss) numel(sh(i))]);
 
-  multiplot(@(i) Sr(i),...
-    @(i) Dr(i),length(h),...
-    'ANOTATION',@(i) h(i),'dynamicMarkerSize',...
-    'appdata',@(i) {{'h',h(i)}},...
-    varargin{:});
-end
+[maxTheta,maxRho,minRho] = getFundamentalRegionPF(ss,varargin{:});
+if isnumeric(maxTheta), maxTheta = min(maxTheta,pi/2);end
+
+multiplot(numel(h),r,data,...
+  'scatter','TR',@(i) h(i),...
+  'minRho',minRho,'maxRho',maxRho,'maxTheta',maxTheta,...
+  varargin{:});
 
 setappdata(gcf,'h',h);
 setappdata(gcf,'SS',ss);
