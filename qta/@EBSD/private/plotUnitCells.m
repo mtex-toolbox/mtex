@@ -3,8 +3,6 @@ function h = plotUnitCells(xy,d,unitCell,varargin)
 
 if ~isempty(unitCell)
   
-  [unitCell(:,1), unitCell(:,2)] = fixMTEXscreencoordinates(unitCell(:,1),unitCell(:,2),varargin{:});
-  
   type = get_flag(varargin,{'unitcell','points','measurements'},'unitcell');
   
 else
@@ -13,7 +11,8 @@ else
   
 end
 
-[xy(:,1), xy(:,2), lx, ly]     = fixMTEXscreencoordinates(xy(:,1),xy(:,2),varargin{:});
+lx = 'x'; ly = 'y';
+
 
 obj.FaceVertexCData = d;
 

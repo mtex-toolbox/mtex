@@ -1,4 +1,4 @@
-function multiplot(x,y,nplots,varargin)
+function a = multiplot(nplots,varargin)
 % plot multiple graphs
 %
 %% Syntax
@@ -16,267 +16,139 @@ function multiplot(x,y,nplots,varargin)
 %  [cmin cmax] - minimum and maximum value for color coding
 %  fontsize    - fontsize used for anotations
 %  string      - some anotation to be added to the plot
-%  marginx     -
+%  marginx     - 
 %  marginy     -
 %  border      -
-%  MINMAX      - display minimum and maximum
+%  MINMAX      - display minimum and maximum 
 %
 %% Flags
 %  uncroppped  - do not resize window for a cropped plot
 %  SILENT      - no output
 %
 %% See also
-% S2Grid/plot savefigure
+% S2Grid/plot savefigure   
+
+%% prepare plot
+
+washold = getHoldState;
+
+% get existing axes
+a = findobj(gcf,'type','axes');
+ma = getappdata(gcf,'multiplotAxes');
 
 
-%% calculate data
-minz = +inf; maxz = -inf;
-for i = 1:nplots
-  Y{i} = y(i); %#ok<AGROW>
-  if isa(Y{i},'double')
-    minz = min(minz,min(Y{i}(Y{i}>-inf)));
-    maxz = max(maxz,max(Y{i}(Y{i}<inf)));
-    if ~check_option(varargin,'silent') && check_option(varargin,'DISP')
-      s = get_option(varargin,'DISP');
-      disp(s(i,Y{i}));
-    end
-  end
+% get axes from former multiplot
+if ~strcmp(washold,'off') && ~isempty(ma) && all(numel(ma) == nplots) && ...
+    all(ishandle(ma))
+  a = ma;
+  nplots = numel(a); 
+  
+% make normal axes multiplot axes  
+elseif ishold && ~isempty(a) && all(nplots == numel(a)) && ...
+    all(ishandle(a))
+  nplots = numel(a);
+  
+else % make new axes
+  rmallappdata
+  for k=1:numel(a), cla(a(k));end
+  for k=numel(a)+1:nplots, a(k) = axes('visible','off'); end %#ok<LAXES> 
 end
 
-%% contour levels and colorcoding
+% distribute hold state over all axes
+for k=1:nplots, hold(a(k),washold); end
 
-colorrange = [];
+% set figure options
+if check_option(varargin,'position')
+  set(gcf,'position',get_option(varargin,'position'));
+  varargin = delete_option(varargin,'position');
+end
 
-% contour levels specified ?
-ncontour = get_option(varargin,{'contour','contourf'},10,'double');
-if length(ncontour) >= 2, colorrange = [min(ncontour) max(ncontour)];end
+%% extract data
+if nargin>=3 && isa(varargin{2},'function_handle')
+  data = cell(nplots,1);
+  for k = 1:nplots
+    data{k} = feval(varargin{2},k);
+  end
+  varargin(2) = []; %remove argument
 
-% option colorrange set ?
-if strcmpi(get_option(varargin,'colorrange'),'equal')
-  colorrange = [minz,maxz];
+  % for equal colorcoding determine min and max of data 
+  if check_option(varargin,'colorRange',[],'equal')
+    minData = nanmin(cellfun(@(x) nanmin(x(:)),data));
+    maxData = nanmax(cellfun(@(x) nanmax(x(:)),data));
+    
+    % set colorcoding explicitly 
+    varargin = set_option(varargin,'colorRange',[minData maxData]);
+  end  
 else
-  colorrange = get_option(varargin,'colorrange',colorrange,'double');
+  data = [];
 end
 
-if length(colorrange) == 2
+%% make plots
+efun = find(cellfun('isclass',varargin,'function_handle'));
+nfun = numel(efun);
 
-  if check_option(varargin,'logarithmic')
-    colorrange = log(colorrange) / log(10);
+for k=1:nplots
+  targin = varargin;
+  for kfun = 1:nfun
+    targin{efun(kfun)} = varargin{efun(kfun)}(k);
   end
-
-  % set range for colorcoding
-  varargin = set_option(varargin,'colorrange',colorrange);
-
-  % expand contour levels
-  if length(ncontour) == 1, ncontour = linspace(colorrange(1),colorrange(2),ncontour);end
-
-  if check_option(varargin,'contour')
-    varargin = set_option(varargin,'contour',ncontour);
-  elseif check_option(varargin,'contourf')
-    varargin = set_option(varargin,'contourf',ncontour);
-  end
-
+  
+  % reinsert data
+  if ~isempty(data) && ~isempty(data{k}), targin = {targin{1},data{k},targin{2:end}};end
+  
+  plot(a(k),targin{:});
 end
 
-
-
-
-%% 3d plot
-
-if check_option(varargin,'3d')
-
-  for i = 1:nplots
-
-    figure
-    Z = Y{i};
-    X = x(i);
-    plot(X,'DATA',Z,varargin{:});
-    axis off;
-    set(gca,'Tag','3d');
-    try
-      h = rotate3d;
-      set(h,'ActionPostCallback',@mypostcallback);
-      set(h,'Enable','on');
-    catch
-    end
-
-  end
-
-  return
-end
-
-
-%% 2d plot
-
-if ishold
-
-  if isappdata(gcf,'axes') && length(findobj(gcf,'type','axes')) >= length(getappdata(gcf,'axes'))
-    a = getappdata(gcf,'axes');
-  else
-    hold off;
-  end
-end
-
-% clear figure
-if ~ishold
-  clf('reset');
-  figure(clf);
-  if check_option(varargin,'position')
-    set(gcf,'units','pixel','position',get_option(varargin,'position'));
-    varargin = delete_option(varargin,'position');
-  end
-
-  %set(gcf,'Visible','off');
-  %set(gcf,'toolbar','none');
-
-  % init statusbar
-  try
-    sb = statusbar('drawing plots ...');
-    set(sb.ProgressBar, 'Visible',true, 'Minimum',0, 'Maximum',nplots, 'Value',0, 'StringPainted',true);
-  catch %#ok<*CTCH>
-  end
-end
-
-%% for all axes
-for i = 1:nplots
-
-  % new axis
-  if ~ishold
-    a(i) = axes;
-    set(a(i),'Visible','off')
-  else
-    axes(a(i));
-    hold all;
-  end
-
-  % set axes appdata
-  if check_option(varargin,'appdata')
-    ad = get_option(varargin,'appdata');
-    ad = ad(i);
-    for iad = 1:length(ad)
-      setappdata(a(i),ad{iad}{1},ad{iad}{2});
-    end
-  end
-
-  % compute
-  Z = Y{i};
-  X = x(i);
-
-  % plot
-  if ~isempty(Z)
-      plot(X,'DATA',Z,'axis',a(i),varargin{:});
-  else
-     plot(X,'axis',a(i),varargin{:});
-  end
-
-  if ~ishold
-
-    fs = extract_argoption(varargin,'fontsize');
-    try
-      set(sb.ProgressBar,'Value',i);
-    catch
-    end
-
-    if check_option(varargin,'MINMAX') && ...
-        ~strcmp(get_option(varargin,'MINMAX'),'off') && isa(Z,'double')
-      anotation(a(i),min(Z(:)),max(Z(:)),maxz,fs{:});
-    end
-    if check_option(varargin,'ANOTATION')
-      s = get_option(varargin,'ANOTATION');
-      mtex_text(0.98,0.99,s(i),...
-        'HorizontalAlignment','Right','VerticalAlignment','top',...
-        'FontName','times',fs{:},...
-        'units','normalized','position',[0.98,0.99]);
-    end
-  end
-end
-
-if ~ishold
-  setappdata(gcf,'axes',a);
-  setappdata(gcf,'border',get_option(varargin,'border',getpref('mtex','border')));
-  setappdata(gcf,'marginx',get_option(varargin,{'marginX','margin'},getpref('mtex','marginX'),'double'));
-  setappdata(gcf,'marginy',get_option(varargin,{'marginY','margin'},getpref('mtex','marginY'),'double'));
-  % invisible axes for adding a colorbar
+%% invisible axes for adding a colorbar
+if ~isappdata(gcf,'colorbaraxis')
   d = axes('visible','off','position',[0 0 1 1],...
     'tag','colorbaraxis');
-
+  
   ch = get(gcf,'children');
-
+  
   set(gcf,'children',[ch(ch ~= d);ch(ch == d)]);
   set(d,'HandleVisibility','callback');
-
+  
   setappdata(gcf,'colorbaraxis',d);
-else
-  d = getappdata(gcf,'colorbaraxis');
 end
 
-if length(colorrange) ~= 2, colorrange = caxis; end
-
-if colorrange(1) < colorrange(2)
-  if check_option(varargin,'logarithmic')
-    set(d,'ZScale','log');
-    colorrange = 10.^colorrange;
-  end
-  set(d,'clim',colorrange);
-else
-  set(d,'clim',[0 2]);
+% set correct colorrange for colorbar axis
+if check_option(varargin,{'logarithmic','log'})
+  set(d,'ZScale','log');
 end
 
-if ~ishold
+%% post process figure
 
-  % clear statusbar
-  try
-    statusbar;
-  catch
-  end;
+set(gcf,'ResizeFcn',@(src,evt) figResize(src,evt,a));
 
-  set(gcf,'ResizeFcn',@(src,evt) figResize(src,evt,a));
-  %set(gcf,'Position',get(gcf,'Position'));
-  setappdata(gcf,'autofit','on');
+if ~isappdata(gcf,'multiplotAxes')
+  
+  setappdata(gcf,'multiplotAxes',a);
+  setappdata(gcf,'autofit',get_option(varargin,'autofit','on'));
+  setappdata(gcf,'border',get_option(varargin,'outerPlotSpacing',getpref('mtex','outerPlotSpacing')));
+  setappdata(gcf,'margin',get_option(varargin,'innerPlotSpacing',getpref('mtex','innerPlotSpacing')));
+  
   figResize(gcf,[],a);
+
   if ~check_option(varargin,'uncropped')
     set(gcf,'Units','pixels');
     pos = get(gcf,'Position');
     si = get(gcf,'UserData');
     pos([3,4]) = si;
     set(gcf,'Position',pos);
-  else
-    set(gcf,'Position',get(gcf,'Position'));
   end
-
-  set(gcf,'color',[1 1 1],'nextplot','replace');
-  set(a,'Visible','on');
-else
-  scalescatterplots(gcf);
-  set(gcf,'nextplot','replace');
 end
 
-end
+set(gcf,'color',[1 1 1],'nextPlot','replace');
 
+% make axes visible
+set(a,'Visible','on');
+
+
+end
 %% ================== private functions =========================
 
-
-%% disp anotation in subfigures
-function anotation(a,mini,maxi,ref,varargin)
-mini = xnum2str(mini,ref/10);
-maxi = xnum2str(maxi,ref);
-
-set(a,'units','points');
-apos = get(a,'Position');
-
-optiondraw(text(1,3,{'min:',mini},'FontName','times','Interpreter','tex',...
-  'HorizontalAlignment','Left','VerticalAlignment','bottom',...
-  'units','points','tag','minmax'),varargin{:});
-
-optiondraw(text(apos(3)-1,3,{'max:',maxi},'FontName','times','Interpreter','tex',...
-  'HorizontalAlignment','Right','VerticalAlignment','bottom',...
-  'units','points','Tag','minmax'),varargin{:});
-
-end
-
 %% resize figure and reorder subfigs
-
-
 function figResize(fig,evt,a) %#ok<INUSL,INUSL>
 
 old_units = get(fig,'Units');
@@ -285,67 +157,59 @@ set(fig,'Units','pixels');
 if strcmp(getappdata(fig,'autofit'),'on')
 
   figpos = get(fig,'Position');
-
-  marginx = getappdata(fig,'marginx');
-  marginy = getappdata(fig,'marginy');
+  
+  margin = getappdata(fig,'margin');
   border = getappdata(fig,'border');
 
 
   figpos(4) = figpos(4)-2*border;
   figpos(3) = figpos(3)-2*border;
   dxdy = get(a(1),'PlotBoxAspectRatio');
+  % correct for xAxisDirection
+  if find(get(gca,'CameraUpVector'))==1
+    dxdy(1:2) = fliplr(dxdy(1:2));
+  end
   dxdy = dxdy(2)/dxdy(1);
-  [nx,ny,l] = bestfit(figpos(3),figpos(4),dxdy,length(a),marginx,marginy);
-  set(fig,'UserData',[nx*l+2*border+(nx-1)*marginx,...
-    ny*l*dxdy+2*border+(ny-1)*marginy]);
-  setappdata(fig,'length',l);
-
+  [nx,ny,l] = bestfit(figpos(3),figpos(4),dxdy,length(a),margin,margin);
+  set(fig,'UserData',[nx*l+2*border+(nx-1)*margin,...
+    ny*l*dxdy+2*border+(ny-1)*margin]);
+  setappdata(fig,'length',l); 
+ 
   l = ceil(l);
-  ldxdy = ceil(l*dxdy);
+  ldxdy = ceil(l*dxdy); 
   for i = 1:length(a)
     [px,py] = ind2sub([nx ny],i);
-    apos = [1+border+(px-1)*(l+marginx),...
-      1+border+figpos(4)-py*ldxdy-(py-1)*(marginy-1),...
+    apos = [1+border+(px-1)*(l+margin),...
+      1+border+figpos(4)-py*ldxdy-(py-1)*(margin-1),...
       l,ldxdy];
     set(a(i),'Units','pixels','Position',apos);
   end
-
+  
   % resize colorbaraxis
   set(getappdata(fig,'colorbaraxis'),'units','pixel','position',[border,border,figpos(3:4)]);
 end
-
-scalescatterplots(fig);
-
+  
 % set position of labels
 u = findobj(fig,'Tag','minmax','HorizontalAlignment','Right');
 for i = 1:length(u)
-
+ 
  a = get(u(i),'parent');
  set(a,'units','points');
  apos = get(a,'Position');
  set(u(i),'Units','points','Position',[apos(3)-1,3]);
 end
 
-
-
 set(fig,'Units',old_units);
 
-
-end
-
-function scalescatterplots(x)
-
-% scale scatterplots
-u = findobj(x,'Tag','scatterplot');
-l = getappdata(x,'length');
-for i = 1:length(u)
-  d = get(u(i),'UserData');
-  o = get(u(i),'MarkerSize');
-  n = l*d/5;
-  if abs((o-n)/o) > 0.1, set(u(i),'MarkerSize',n);end
+% call resize dynamic maker sizes
+if isappdata(fig,'dynamicMarkerSize')
+  RS = getappdata(fig,'dynamicMarkerSize');
+  RS(fig);
 end
 
 end
+
+
 
 %% determine best alignment of subfigures
 function [bx,by,l] = bestfit(dx,dy,dxdy,n,marginx,marginy)
@@ -367,25 +231,4 @@ for ny=2:n
     by = ny;
   end
 end
-end
-
-
-
-%% Callbacks for syncing 3d rotations
-
-function mypostcallback(obj,evd) %#ok<INUSL>
-
-cVA = get(evd.Axes,'cameraViewAngle');
-cP = get(evd.Axes,'cameraPosition');
-cT = get(evd.Axes,'cameraTarget');
-cUV = get(evd.Axes,'cameraUpVector');
-
-a = findobj('Tag','3d');
-for i = 1:length(a)
-  set(a(i),'cameraViewAngle',cVA);
-  set(a(i),'cameraPosition',cP);
-  set(a(i),'cameraTarget',cT);
-  set(a(i),'cameraUpVector',cUV);
-end
-
 end

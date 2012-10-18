@@ -64,7 +64,7 @@ plot(ebsd('Fe'),'colorcoding',...
 % and at 7.5 degrees, where the blue should be only lighter.
 
 colorbar('Position',[100 100 400 200])
-
+hold on
 circle(Miller(1,1,1),15*degree,'linewidth',2)
 set(gcf,'renderer','zbuffer')
 
@@ -76,7 +76,6 @@ vol = fibreVolume(ebsd('fe'),Miller(1,1,1),zvector,15*degree)
 
 close all;
 plotipdf(ebsd('fe'),zvector,'markercolor','k','marker','x')
-set(gcf,'renderer','opengl')
 
 %%
 % we can easily extend the colorcoding
@@ -187,6 +186,4 @@ plot(ebsd,'property','bc')
 colormap(grayColorMap)
 
 hold on, plot(ebsd,'translucent',0.25)
-
-
 

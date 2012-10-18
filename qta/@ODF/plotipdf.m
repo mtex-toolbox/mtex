@@ -17,31 +17,28 @@ function plotipdf(odf,r,varargin)
 % SphericalProjection_demo
 
 argin_check(r,{'vector3d'});
-varargin = set_default_option(varargin,...
-  getpref('mtex','defaultPlotOptions'));
 
 %% make new plot
 newMTEXplot;
 
+% default options
+varargin = set_default_option(varargin,...
+  getpref('mtex','defaultPlotOptions'));
+
 %% plotting grid
-if check_option(varargin,'3d')
-  h = S2Grid('PLOT',varargin{:});
-else
-  [maxtheta,maxrho,minrho] = getFundamentalRegionPF(odf(1).CS,varargin{:});
-  h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
-end
+[maxtheta,maxrho,minrho] = getFundamentalRegionPF(odf(1).CS,varargin{:});
+if isnumeric(maxtheta), maxtheta = min(maxtheta,pi/2);end
+h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
 
 %% plot
 disp(' ');
 disp('Plotting inverse pole density function:')
-multiplot(@(i) h,@(i) pos(pdf(odf,h,r(i)./norm(r(i)),varargin{:})),length(r),...
-  'DISP',@(i,Z) [' r=',char(r(i)),' Max: ',num2str(max(Z(:))),...
-  ' Min: ',num2str(min(Z(:)))],...
-  'ANOTATION',@(i) r(i),...
-  'appdata',@(i) {{'r',r(i)}},...
-  'MINMAX','SMOOTH',...
-  varargin{:});
 
+multiplot(numel(r), h,...
+  @(i) ensureNonNeg(pdf(odf,h,r(i)./norm(r(i)),varargin{:})),...
+  'smooth','TR',@(i) r(i),varargin{:});
+
+%% finalize plot
 setappdata(gcf,'r',r);
 setappdata(gcf,'CS',odf(1).CS);
 setappdata(gcf,'SS',odf(1).SS);
@@ -50,7 +47,3 @@ setappdata(gcf,'options',extract_option(varargin,'antipodal'));
 name = inputname(1);
 if isempty(name), name = odf(1).comment;end
 set(gcf,'Name',['Inverse Pole Figures of ',name]);
-
-function d = pos(d)
-
-if min(d(:)) > -1e-5, d = max(d,0);end

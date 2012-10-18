@@ -72,12 +72,12 @@ grains = calcGrains(ebsd);
 % Then the scatter plot of the individual orientations of the Iron phase in
 % the inverse pole figure is achieved by
 
-plotipdf(ebsd('Fe'),xvector,'points',100, 'MarkerSize',3);
+plotipdf(ebsd('Fe'),xvector,'points',1000, 'MarkerSize',5);
 
 %%
 % In the same way the mean orientations of grains can be visualized
 
-plotipdf(grains('Fe'),xvector,'points',100, 'MarkerSize',3);
+plotipdf(grains('Fe'),xvector,'points',500, 'MarkerSize',5);
 
 %%
 % Once can also use different colors on the scatter points by certain [[EBSD.get.html,EBSD
@@ -99,9 +99,9 @@ plotodf(grains('Fe'),'antipodal','sections',9,'MarkerSize',3,...
 % and *hold off*.
 
 close all
-plotipdf(ebsd('Fe'),xvector,'MarkerSize',3,'points',100)
+plotipdf(ebsd('Fe'),xvector,'MarkerSize',5,'points',100)
 hold on
-plotipdf(ebsd('Mg'),xvector,'MarkerSize',3,'points',100,'MarkerColor','r')
+plotipdf(ebsd('Mg'),xvector,'MarkerSize',5,'points',100,'MarkerColor','r')
 hold off
 
 %%
