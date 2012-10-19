@@ -17,7 +17,7 @@ mtexdata dubna
 % pole figure data and to create a pole figure object. 
 
 % plot pole figures
-plot(pf,'position',[100 100 560 290])
+plot(pf,'position',[100 100 900 500])
 
 
 %% ODF Estimation
@@ -73,7 +73,6 @@ odf_model = unimodalODF(calcModes(odf),...
   CS,symmetry,'halfwidth',15*degree)
 
 % plot the pole figures
-close all;
 plotpdf(odf_model,h,'antipodal','superposition',c)
 
 % compute the difference
