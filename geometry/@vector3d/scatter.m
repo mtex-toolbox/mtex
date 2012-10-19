@@ -114,7 +114,7 @@ end
 plotGrid(ax,projection,extend,varargin{:});
 
 % add annotations
-plotAnnotate(ax,annotations,varargin{:})
+plotAnnotate(ax,annotations{:},varargin{:})
 
 % set resize function for dynamic marker sizes
 %if check_option(varargin,'dynamicMarkerSize')
