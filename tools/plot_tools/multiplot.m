@@ -2,10 +2,10 @@ function a = multiplot(nplots,varargin)
 % plot multiple graphs
 %
 %% Syntax
-%  multiplot(x,y,nplots,'FONTSIZE',fontsize)
-%  multiplot(x,y,nplots,'COLORCODING','equal')
-%  multiplot(x,y,nplots,'COLORCODING',[cmin cmax])
-%  multiplot(x,y,nplots,'ANOTATION',string)
+%   multiplot(nplots,@(i) coordinates(i),@(i) data(i))
+%   multiplot(nplots,,data,'COLORCODING','equal','FONTSIZE',fontsize)
+%   multiplot(nplots,'COLORCODING',[cmin cmax])
+%   multiplot(nplots,'ANOTATION',string)
 %
 %% Input
 %  x      - grid (@S1Grid, @S2Grid, @SO3Grid)
@@ -16,14 +16,11 @@ function a = multiplot(nplots,varargin)
 %  [cmin cmax] - minimum and maximum value for color coding
 %  fontsize    - fontsize used for anotations
 %  string      - some anotation to be added to the plot
-%  marginx     - 
-%  marginy     -
-%  border      -
-%  MINMAX      - display minimum and maximum 
+%  outerPlotSpacing -
+%  innerPlotSpacing -
 %
 %% Flags
-%  uncroppped  - do not resize window for a cropped plot
-%  SILENT      - no output
+%  silent - no output
 %
 %% See also
 % S2Grid/plot savefigure   
@@ -51,7 +48,7 @@ elseif ishold && ~isempty(a) && all(nplots == numel(a)) && ...
 else % make new axes
   rmallappdata
   for k=1:numel(a), cla(a(k));end
-  for k=numel(a)+1:nplots, a(k) = axes('visible','off'); end %#ok<LAXES> 
+  for k=numel(a)+1:nplots, a(k) = axes('visible','off'); end
 end
 
 % distribute hold state over all axes
@@ -59,9 +56,18 @@ for k=1:nplots, hold(a(k),washold); end
 
 % set figure options
 if check_option(varargin,'position')
-  set(gcf,'position',get_option(varargin,'position'));
+  position = get_option(varargin,'position');
   varargin = delete_option(varargin,'position');
+else % determine optimal size
+  screenExtend = get(0,'MonitorPositions');
+  [bx,by,l] = bestfit(screenExtend(3),screenExtend(4),1,nplots,30,30);
+  l = min(l,300);
+  bx = bx*l;
+  by = by*l;
+  position = [(screenExtend(3)-bx)/2,(screenExtend(4)-by)/2,bx,by];
 end
+set(gcf,'position',position);
+
 
 %% extract data
 if nargin>=3 && isa(varargin{2},'function_handle')
@@ -125,8 +131,8 @@ if ~isappdata(gcf,'multiplotAxes')
   
   setappdata(gcf,'multiplotAxes',a);
   setappdata(gcf,'autofit',get_option(varargin,'autofit','on'));
-  setappdata(gcf,'border',get_option(varargin,'outerPlotSpacing',getpref('mtex','outerPlotSpacing')));
-  setappdata(gcf,'margin',get_option(varargin,'innerPlotSpacing',getpref('mtex','innerPlotSpacing')));
+  setappdata(gcf,'outerPlotSpacing',get_option(varargin,'outerPlotSpacing',getpref('mtex','outerPlotSpacing')));
+  setappdata(gcf,'innerPlotSpacing',get_option(varargin,'innerPlotSpacing',getpref('mtex','innerPlotSpacing')));
   
   figResize(gcf,[],a);
 
@@ -158,35 +164,35 @@ if strcmp(getappdata(fig,'autofit'),'on')
 
   figpos = get(fig,'Position');
   
-  margin = getappdata(fig,'margin');
-  border = getappdata(fig,'border');
+  innerPlotSpacing = getappdata(fig,'innerPlotSpacing');
+  outerPlotSpacing = getappdata(fig,'outerPlotSpacing');
 
 
-  figpos(4) = figpos(4)-2*border;
-  figpos(3) = figpos(3)-2*border;
+  figpos(4) = figpos(4)-2*outerPlotSpacing;
+  figpos(3) = figpos(3)-2*outerPlotSpacing;
   dxdy = get(a(1),'PlotBoxAspectRatio');
   % correct for xAxisDirection
   if find(get(gca,'CameraUpVector'))==1
     dxdy(1:2) = fliplr(dxdy(1:2));
   end
   dxdy = dxdy(2)/dxdy(1);
-  [nx,ny,l] = bestfit(figpos(3),figpos(4),dxdy,length(a),margin,margin);
-  set(fig,'UserData',[nx*l+2*border+(nx-1)*margin,...
-    ny*l*dxdy+2*border+(ny-1)*margin]);
+  [nx,ny,l] = bestfit(figpos(3),figpos(4),dxdy,length(a),innerPlotSpacing,innerPlotSpacing);
+  set(fig,'UserData',[nx*l+2*outerPlotSpacing+(nx-1)*innerPlotSpacing,...
+    ny*l*dxdy+2*outerPlotSpacing+(ny-1)*innerPlotSpacing]);
   setappdata(fig,'length',l); 
  
   l = ceil(l);
   ldxdy = ceil(l*dxdy); 
   for i = 1:length(a)
     [px,py] = ind2sub([nx ny],i);
-    apos = [1+border+(px-1)*(l+margin),...
-      1+border+figpos(4)-py*ldxdy-(py-1)*(margin-1),...
+    apos = [1+outerPlotSpacing+(px-1)*(l+innerPlotSpacing),...
+      1+outerPlotSpacing+figpos(4)-py*ldxdy-(py-1)*(innerPlotSpacing-1),...
       l,ldxdy];
     set(a(i),'Units','pixels','Position',apos);
   end
   
   % resize colorbaraxis
-  set(getappdata(fig,'colorbaraxis'),'units','pixel','position',[border,border,figpos(3:4)]);
+  set(getappdata(fig,'colorbaraxis'),'units','pixel','position',[outerPlotSpacing,outerPlotSpacing,figpos(3:4)]);
 end
   
 % set position of labels
