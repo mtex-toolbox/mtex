@@ -21,7 +21,7 @@ function plotDiff(odf1,odf2,varargin)
 % SphericalProjection_demo 
 
 if isa(odf2,'PoleFigure')
-  plot(calcErrorPF(odf2,odf1,varargin{:}),varargin{:})
+  plot(calcErrorPF(odf2,odf1,varargin{:}),'colorrange','equal',varargin{:})
 else
   plotodf(odf1-odf2,varargin{:})
 end
