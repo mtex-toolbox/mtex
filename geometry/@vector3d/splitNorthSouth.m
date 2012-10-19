@@ -35,10 +35,13 @@ extend = getPlotRegion(v,varargin{:});
 % hemisphere names
 upperlower = {'north','south'};
 
-% if two hemispheres - split plot
-if isnumeric(extend.maxTheta) && ...
-    extend.maxTheta > pi/2 + 1e-3 && extend.minTheta < pi/2 - 1e-3
+% for plain projection do not split
+if check_option(varargin,'plain')
+  v = multiplot(1,v,varargin{:});
   
+elseif isnumeric(extend.maxTheta) && ...
+    extend.maxTheta > pi/2 + 1e-3 && extend.minTheta < pi/2 - 1e-3
+  % if two hemispheres - split plot
   
   minTheta = {0,pi/2};
   maxTheta = {pi/2,pi};
