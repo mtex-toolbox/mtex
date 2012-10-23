@@ -31,7 +31,7 @@ E = YoungsModulus(C,x)
 % It can be plotted by passing the option *YoungsModulus* to the
 % <tensor.plot.html plot> command.
 
-setpref('mtex','defaultColorMap',seismicColorMap);
+setpref('mtex','defaultColorMap',blue2redColorMap);
 plot(C,'PlotType','YoungsModulus','complete','north')
 
 %% Linear Compressibility
