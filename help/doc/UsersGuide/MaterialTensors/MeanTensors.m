@@ -9,7 +9,7 @@
 %
 %%
 % set up a nice colormap
-setpref('mtex','defaultColorMap',seismicColorMap);
+setpref('mtex','defaultColorMap',blue2redColorMap);
 
 %% Import EBSD Data
 % We start by importing some ebsd data of Glaucophane and Epidote.

@@ -2,7 +2,7 @@ function MTEXFigureMenu(varargin)
 
 m = uimenu('label','MTEX');
 
-uimenu(m,'label','Export','callback',@Export);
+uimenu(m,'label','Export Image','callback',@Export);
 cm = uimenu(m,'label','Colormap');
 
 % Colormap submenu
@@ -29,6 +29,11 @@ zdirection = uimenu(m,'label','Z axis direction');
 uimenu(zdirection,'label','Out of plane','callback',@setZAxisDirection,'checked','on');
 uimenu(zdirection,'label','Into plane','callback',@setZAxisDirection);
 
+%% spacing
+
+uimenu(m,'label','Set Inner Margin','callback',{@setMargin,'inner'});
+uimenu(m,'label','Set Outer Margin','callback',{@setMargin,'outer'});  
+
 %% annotations
 uimenu(m,'label','Show grid','checked','on');
 uimenu(m,'label','Show ticks','checked','off');
@@ -52,7 +57,7 @@ end
 
 function [cm,cmd] = getColormaps
 
-fnd = dir([mtex_path filesep 'tools' filesep 'plot_tools' filesep '*ColorMap.m']);
+fnd = dir([mtex_path filesep 'tools' filesep 'colormaps' filesep '*ColorMap.m']);
 
 % remove extension to create command
 cmd = cellfun(@(x) x(1:end-2),{fnd.name},'UniformOutput',false);
@@ -62,15 +67,16 @@ cm = cellfun(@(x) x(1:end-8),cmd,'UniformOutput',false);
 
 end
 
-%% Callbacks
+%% -------------- Callbacks ---------------------------
 
+%% export
 function Export(obj,event) %#ok<INUSD>
 
 savefigure;
 
 end
 
-% FontSize
+%% FontSize
 function setFontSize(obj,event,fs) %#ok<INUSL>
 
 uncheck = findobj(gcf,'parent',get(obj,'parent'));
@@ -82,8 +88,8 @@ set(obj,'checked','on');
 
 end
 
-% X Axis Direction
-function setXAxisDirection(obj,event) %#ok<INUSD>
+%% X Axis Direction
+function setXAxisDirection(obj,event)
 
 
 uncheck = findobj(gcf,'parent',get(obj,'parent'));
@@ -105,7 +111,7 @@ fn(gcf,event);
 
 end
 
-% Z Axis Direction
+%% Z Axis Direction
 function setZAxisDirection(obj,event)
 
 uncheck = findobj(gcf,'parent',get(obj,'parent'));
@@ -128,8 +134,26 @@ fn(gcf,event);
 
 end
 
+%% Margins
+function setMargin(obj,event,type) %#ok<INUSL>
 
-% Color coding
+[h,fig] = gcbo; %#ok<ASGLU>
+m = getappdata(fig,[type 'PlotSpacing']);
+
+prompt = {['Enter ' type ' margin :']};
+dlg_title = 'Set Margin';
+num_lines = 1;
+m = str2double(inputdlg(prompt,dlg_title,num_lines,{num2str(m)}));
+
+setappdata(gcf,[type 'PlotSpacing'],m);
+
+resizeFcn = get(fig,'resizeFcn');
+resizeFcn(fig,event);
+
+end
+
+
+%% Color coding
 function setColorCoding(obj,event) %#ok<INUSD>
 
 uncheck = findobj(gcf,'parent',get(obj,'parent'));
