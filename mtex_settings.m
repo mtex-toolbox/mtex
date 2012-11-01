@@ -79,7 +79,7 @@ setpref('mtex','ImportWizardPath','workpath')
 %setpref('mtex','defaultColorMap',LaboTeXColorMap);
 
 % white to black color map
-% setpref('mtex','defaultColorMap',grayColorMap);
+% setpref('mtex','defaultColorMap','white2blackColorMap');
 
 % jet colormap begin with white
 setpref('mtex','defaultColorMap',WhiteJetColorMap);

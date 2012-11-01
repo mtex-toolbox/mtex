@@ -81,13 +81,15 @@ plot(odf,'sections',12,'silent')
 
 close; figure('position',[46 171 752 486]);
 plot(odf,'alpha','sections',12,...
-     'projection','plain','gray','contourf','FontSize',10,'silent')
+  'projection','plain','contourf','FontSize',10,'silent')
+mtexColorMap white2black
 
 %%
 %One can also specify the sectioning angles direct
 
 plot(odf,'alpha',[25 30 35]*degree,...
-     'projection','plain','gray','contourf','FontSize',10,'silent')
+  'projection','plain','contourf','FontSize',10,'silent')
+mtexColorMap white2black
 
 %% 3D Euler Space
 % Instead of Sectioning one could plot the Euler Angles in 3D

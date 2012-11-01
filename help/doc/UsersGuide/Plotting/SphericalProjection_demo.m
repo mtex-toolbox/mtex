@@ -113,7 +113,8 @@ plot(cs,'projection','eangle','antipodal','grid_res',15*degree)
 
 close; figure('position',[46 171 752 486]);
 plotodf(SantaFe,'alpha','sections',18,'resolution',5*degree,...
-  'projection','plain','gray','contourf','FontSize',10,'silent')
+  'projection','plain','contourf','FontSize',10,'silent')
+mtexColorMap white2black
 
 
 %% Three Dimensional Plots

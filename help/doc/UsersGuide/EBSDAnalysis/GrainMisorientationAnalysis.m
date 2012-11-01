@@ -112,7 +112,8 @@ colorbar
 
 hold on
 plotAxisDistribution(grains('Fe'),'antipodal','SampleSize',100,...
-  'MarkerSize',4,'MarkerFaceColor','none','MarkerEdgeColor','red','gray')
+  'MarkerSize',4,'MarkerFaceColor','none','MarkerEdgeColor','red')
+mtexColorMap white2black
 hold off
 
 %%
