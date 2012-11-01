@@ -56,15 +56,6 @@ if ~check_option(varargin,{'MarkerColor','MarkerFaceColor','DATA','MarkerEdgeCol
   varargin = {'MarkerEdgeColor',c,varargin{:}};
 end
 
-%%  GET OPTIONS
-
-% default plot options
-varargin = set_default_option(varargin,...
-  getpref('mtex','defaultPlotOptions'));
-
-% COLORMAP
-if check_option(varargin,'GRAY'),colormap(flipud(colormap('gray'))/1.2);end
-
 %% Projection
 
 if isappdata(gcf,'projection')

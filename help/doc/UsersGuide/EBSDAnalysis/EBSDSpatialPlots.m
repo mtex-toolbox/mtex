@@ -148,7 +148,7 @@ plot(ebsd,'property','phase')
 
 close all
 plot(ebsd,'property','bc')
-colormap gray
+mtexColorMap white2black
 
 %%
 % the property could also be a Nx1 or an Nx3-vector containing the color
@@ -161,7 +161,7 @@ plot(ebsd('Fe'),'property', p1)
 %% 
 % if the size is just Nx1, the color can be adjusted with
 
-colormap(grayColorMap)
+mtexColorMap white2black
 
 %% Combining different plots
 % Combining different plots can be done either by plotting only subsets of
@@ -171,7 +171,7 @@ colormap(grayColorMap)
 
 close all;
 plot(ebsd,'property','bc')
-colormap(grayColorMap)
+mtexColorMap white2black
 
 hold on
 plot(ebsd('fe'),'colorcoding',...
@@ -183,7 +183,7 @@ plot(ebsd('fe'),'colorcoding',...
 
 close all;
 plot(ebsd,'property','bc')
-colormap(grayColorMap)
+mtexColorMap white2black
 
 hold on, plot(ebsd,'translucent',0.25)
 

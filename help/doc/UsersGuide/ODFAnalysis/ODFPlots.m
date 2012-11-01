@@ -80,8 +80,8 @@ plot(odf,'sections',12,'position',[100 100 450 350],'silent')
 % achieved by
 
 plot(SantaFe,'alpha','sections',9,...
-  'projection','plain','gray','contourf','silent')
-
+  'projection','plain','contourf','silent')
+mtexColorMap white2black
 
 %% Radial ODF Plots
 %
