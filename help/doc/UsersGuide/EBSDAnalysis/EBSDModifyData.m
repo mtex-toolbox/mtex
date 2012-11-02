@@ -57,13 +57,13 @@ ebsd_rot = rotate(ebsd,rot);
 close, plot(ebsd_rot)
 
 %%
-% It should be stressed that any sort of rotation on EBSD DATASETS does not only effect the spatial
-% data, i.e. the x, y values, but also the crystal orientations are rotated
-% accordingly. This is true as well for the flipping commands
-% <EBSD.rotate.html rotate> and <EBSD.fliplr.html fliplr>. A good test is
-% to rotate a given dataset in different ways and make plots for different
-% rotations. You will see that not only the picture is flipped/shifted/rotated but also the
-% color of the grain changes!
+% It should be stressed that any sort of rotation on EBSD DATASETS does not
+% only effect the spatial data, i.e. the x, y values, but also the crystal
+% orientations are rotated accordingly. This is true as well for the
+% flipping commands <EBSD.rotate.html rotate> and <EBSD.fliplr.html
+% fliplr>. A good test is to rotate a given dataset in different ways and
+% make plots for different rotations. You will see that not only the
+% picture is flipped/shifted/rotated but also the color of the grain changes!
 
 ebsd_flip = fliplr(ebsd_rot);
 close, plot( ebsd_flip )
@@ -100,7 +100,13 @@ in_region = inpolygon(ebsd,region);
 %%
 % and use subindexing to restrict the data
 
-ebsd = ebsd( in_region )
+ebsd( in_region )
+
+%%
+% For regions that are rectangles it is sufficient to call *inpolygon* with
+% the arguments [xmin ymin xmax ymax]
+
+ebsd = ebsd(inpolygon(ebsd,[120 100 200 130]))
 
 %%
 % plot
