@@ -1,20 +1,10 @@
 function extend = getPlotRegion(v,varargin)
 % returns plotting region in polar coordiantes
   
-%% default values
+%% default values from the vectors to plot
 
-% for S2Grid take the stored values 
-if isa(v,'S2Grid')
+[minTheta, maxTheta,minRho,maxRho] = get(v,'bounds',varargin{:});
 
-  [minTheta, maxTheta,minRho,maxRho] = get(v,'bounds');
-  
-else % otherwise default is the entire sphere
-  
-  minTheta = 0;
-  maxTheta = pi;
-  minRho = 0;
-  maxRho = 2*pi;
-end
 
 %% get values from direct options
 

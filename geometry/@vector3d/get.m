@@ -1,4 +1,4 @@
-function varargout = get(obj,vname)
+function varargout = get(obj,vname,varargin)
 % get object variable
 %
 %% Syntax
@@ -29,11 +29,20 @@ end
 %% switch fieldnames
 switch lower(vname)
   
+  case 'bounds'
+    
+    varargout{1} =  0;    % minTheta
+    varargout{2} =  pi;   % maxTheta
+    varargout{3} =  0;    % minRho
+    varargout{4} =  2*pi; % maxRho
+   
   case {'resolution','res'}
     
     varargout{1} = 2*pi; % default to 2*pi
     
-    if numel(obj)>4
+    if numel(obj)>50000
+      varargout{1} = sqrt(4*pi/numel(obj));
+    elseif numel(obj)>4
       try %#ok<TRYNC>
         a = calcVoronoiArea(S2Grid(obj));
         assert(sqrt(mean(a))>0);
