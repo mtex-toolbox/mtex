@@ -49,8 +49,9 @@ for i = 1:length(pfmeas)
     d = abs(d1(ind)-d2(ind))./d2(ind);
     pfcalc(i).r = delete(pfcalc(i).r,~ind);
   else
-    epsilon = get_option(varargin,'epsilon',1,'double');
-    d = abs(d1-d2)./min(d1+epsilon*alpha,d2+epsilon*alpha);
+    epsilon = get_option(varargin,'epsilon',0.5,'double');
+    d = abs(d1-d2)./max(d1+epsilon*alpha,d2+epsilon*alpha);
+    %d = abs(d1-d2)./(d1+epsilon*alpha);
   end
   pfcalc(i).data = d;
   progress(i,length(pfmeas));
