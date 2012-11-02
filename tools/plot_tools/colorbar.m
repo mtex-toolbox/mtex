@@ -47,7 +47,7 @@ if isappdata(gcf,'colorbaraxis')
   set(gcf,'Units',ounits);
 
   % check whether colorrange has to be set equal
-  ax = getappdata(gcf,'multiplotAxes');
+  ax = [getappdata(gcf,'multiplotAxes'),getappdata(gcf,'colorbaraxis')];
 
   cl = get(ax,'clim');
   if iscell(cl), cl = cell2mat(cl);end
