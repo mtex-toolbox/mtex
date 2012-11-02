@@ -12,6 +12,15 @@ if ishandle(v)
   varargin(1) = [];
   if ~isappdata(ax,'extend')
     extend = getPlotRegion(v,varargin{:});
+    
+    if isnumeric(extend.maxTheta) && ...
+        extend.maxTheta > pi/2 + 1e-3 && extend.minTheta < pi/2 - 1e-3 && ...
+        ~check_option(varargin,'plain')
+      
+      warning(['You can only plot one hemisphere in an axis. ' ...
+        ' Consider restricting by using one of the options ''north'', ''south'', ''upper'', or, ''lower''!']);
+      
+    end
     setappdata(ax,'extend',extend);
   end
   return
