@@ -39,7 +39,8 @@ for i = 1:length(h)
   h{i} = ensureCS(odf(1).CS,h(i));
 end
 
-if nargin >= 3 && isa(varargin{1},'vector3d')
+if nargin >= 3 && (isa(varargin{1},'vector3d') || ...
+    (iscell(varargin{1}) && ~isempty(varargin{1}) && isa(varargin{1}{1},'vector3d')))
   r = ensurecell(varargin{1});
   varargin(1) = [];
 else
