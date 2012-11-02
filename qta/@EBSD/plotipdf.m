@@ -18,10 +18,11 @@ function plotipdf(ebsd,r,varargin)
 
 %% make new plot
 
+[ax,ebsd,r,varargin] = getAxHandle(ebsd,r,varargin{:});
 
 o = get(ebsd,'orientation');
 
 varargin = set_option_property(ebsd,varargin{:});
 
-plotipdf(o,r,...
+plotipdf(ax{:},o,r,...
   'FigureTitle',[inputname(1) ' (' get(ebsd,'comment') ')'],varargin{:});

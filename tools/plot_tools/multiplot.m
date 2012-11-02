@@ -25,6 +25,19 @@ function a = multiplot(nplots,varargin)
 %% See also
 % S2Grid/plot savefigure   
 
+%% if axes are alrady given plot into it and skip the rest
+if ~isempty(nplots) && all(ishandle(nplots)) && strcmp(get(nplots(1),'type'),'axes')
+  
+  varargin(1) = [];
+  efun = find(cellfun('isclass',varargin,'function_handle'));
+  for kfun = 1:numel(efun)
+    varargin{efun(kfun)} = varargin{efun(kfun)}(1);
+  end
+    
+  plot(nplots,varargin{:});
+  return;
+end
+
 %% prepare plot
 
 washold = getHoldState;

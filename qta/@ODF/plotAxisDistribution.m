@@ -15,12 +15,10 @@ function plotAxisDistribution(odf,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-
-varargin = set_default_option(varargin,...
-  getpref('mtex','defaultPlotOptions'));
-
 %% make new plot
-newMTEXplot;
+
+[ax,odf,varargin] = getAxHandle(odf,varargin{:});
+if isempty(ax), newMTEXplot;end
 
 %% plotting grid
 
@@ -29,11 +27,13 @@ h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2
 
 
 %% plot
-smooth(h,pos(calcAxisDistribution(odf,h,varargin{:})),varargin{:});
+smooth(ax{:},h,pos(calcAxisDistribution(odf,h,varargin{:})),varargin{:});
 
-setappdata(gcf,'CS',odf(1).CS);
-setappdata(gcf,'SS',odf(1).SS);
-set(gcf,'tag','AxisDistribution');
+if isempty(ax)
+  setappdata(gcf,'CS',odf(1).CS);
+  setappdata(gcf,'SS',odf(1).SS);
+  set(gcf,'tag','AxisDistribution');
+end
 setappdata(gcf,'options',extract_option(varargin,'antipodal'));
 name = inputname(1);
 if isempty(name), name = odf(1).comment;end

@@ -17,7 +17,9 @@ function plot(T,varargin)
 %
 %
 
-newMTEXplot;
+[ax,T,varargin] = getAxHandle(T,varargin{:});
+
+if isempty(ax), newMTEXplot;end
 
 if check_option(varargin,'section')
   omega = linspace(-pi,pi,361);
@@ -118,7 +120,7 @@ if check_option(varargin,'section')
   xx = d(:).*cos(omega(:));
   yy = d(:).*sin(omega(:));
   
-  h = plot(xx,yy);
+  h = plot(ax{:},xx,yy);
   axis equal
   optiondraw(h,varargin{:});
 
@@ -126,7 +128,7 @@ elseif check_option(varargin,'3d')
   
   [x,y,z] = double(abs(d).*S2);
   
-  h = surf(x,y,z);
+  h = surf(ax{:},x,y,z);
   set(h,'CData',d)
   axis equal
   optiondraw(h,varargin{:});
@@ -135,16 +137,18 @@ elseif check_option(varargin,'3d')
 else
   
   if isa(d,'function_handle')
-    multiplot(numel(label),@(i) S2,@(i) d(i),...
+    multiplot(ax{:},numel(label),@(i) S2,@(i) d(i),...
       'contourf',...
       'TR',@(i) label(i),...
       varargin{:});
   else
-    contourf(S2,d,varargin{:});    
+    contourf(ax{:},S2,d,varargin{:});    
   end
   
 end
 
-set(gcf,'tag','tensor');
+if isempty(ax)
+  set(gcf,'tag','tensor');
+end
 
 %plot(S2,'data',d,'antipodal','smooth',varargin{:});

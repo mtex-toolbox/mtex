@@ -21,9 +21,11 @@ function plotpdf(ebsd,h,varargin)
 % Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
+[ax,ebsd,h,varargin] = getAxHandle(ebsd,h,varargin{:});
+
 o = get(ebsd,'orientation');
 
 varargin = set_option_property(ebsd,varargin{:});
 
-plotpdf(o,h,...
+plotpdf(ax{:},o,h,...
   'FigureTitle',[inputname(1) ' (' get(ebsd,'comment') ')'],varargin{:});

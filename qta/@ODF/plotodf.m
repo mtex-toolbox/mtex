@@ -26,8 +26,7 @@ function plotodf(odf,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-varargin = set_default_option(varargin,...
-  getpref('mtex','defaultPlotOptions'));
+
 
 %% -------- one - dimensional plot ---------------------------------------
 if check_option(varargin,'RADIALLY')
@@ -37,8 +36,11 @@ end
 
 %% two dimensional sections
 
+% where to plot
+[ax,odf,varargin] = getAxHandle(odf,varargin{:});
+
 % make new plot
-newMTEXplot;
+if isempty(ax), newMTEXplot;end
 
 % generate grids
 [S3G,S2G,sec] = SO3Grid('plot',odf(1).CS,odf(1).SS,varargin{:});
@@ -69,30 +71,21 @@ else
     'TR',@(i) [int2str(sec(i)*180/pi),'^\circ'],'colorrange','equal',...
     'innerPlotSpacing',0,varargin{:}); %#ok<*EVLC>
 
-  %   multiplot(@(i) S2G,...
-  %     @(i) Z(:,:,i),...
-  %     length(sec),...
-  %     'DISP',@(i,Z) [' ',symbol(2:end),' = ',xnum2str(sec(i)/degree),mtexdegchar,' ',...
-  %     ' Max: ',xnum2str(max(Z(:))),...
-  %     ' Min: ',xnum2str(min(Z(:)))],...
-  %     'ANOTATION',@(i) [int2str(sec(i)*180/pi),'^\circ'],...
-  %     'MINMAX','SMOOTH','TIGHT',...
-  %     'xlabel',labelx,'ylabel',labely,...
-  %     'colorrange','equal','margin',0,varargin{:}); %#ok<*EVLC>
-  
 end
 
-name = inputname(1);
-if isempty(name), name = odf(1).comment;end
-set(gcf,'Name',['ODF ' sectype '-sections "',name,'"']);
-setappdata(gcf,'sections',sec);
-setappdata(gcf,'SectionType',sectype);
-setappdata(gcf,'CS',odf(1).CS);
-setappdata(gcf,'SS',odf(1).SS);
-set(gcf,'tag','odf')
+if isempty(ax),
+  name = inputname(1);
+  if isempty(name), name = odf(1).comment;end
+  set(gcf,'Name',['ODF ' sectype '-sections "',name,'"']);
+  setappdata(gcf,'sections',sec);
+  setappdata(gcf,'SectionType',sectype);
+  setappdata(gcf,'CS',odf(1).CS);
+  setappdata(gcf,'SS',odf(1).SS);
+  set(gcf,'tag','odf')
 
 
-if strcmpi(sectype,'omega') && ~isempty(find_type(varargin,'Miller'))
-  h = varargin{find_type(varargin,'Miller')};
-  setappdata(gcf,'h',h);
+  if strcmpi(sectype,'omega') && ~isempty(find_type(varargin,'Miller'))
+    h = varargin{find_type(varargin,'Miller')};
+    setappdata(gcf,'h',h);
+  end
 end

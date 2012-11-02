@@ -16,14 +16,12 @@ function plotipdf(odf,r,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-argin_check(r,{'vector3d'});
 
 %% make new plot
-newMTEXplot;
+[ax,odf,r,varargin] = getAxHandle(odf,r,varargin{:});
+if isempty(ax), newMTEXplot;end
 
-% default options
-varargin = set_default_option(varargin,...
-  getpref('mtex','defaultPlotOptions'));
+argin_check(r,{'vector3d'});
 
 %% plotting grid
 [maxtheta,maxrho,minrho] = getFundamentalRegionPF(odf(1).CS,varargin{:});
@@ -34,16 +32,18 @@ h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2
 disp(' ');
 disp('Plotting inverse pole density function:')
 
-multiplot(numel(r), h,...
+multiplot(ax{:},numel(r), h,...
   @(i) ensureNonNeg(pdf(odf,h,r(i)./norm(r(i)),varargin{:})),...
   'smooth','TR',@(i) r(i),varargin{:});
 
 %% finalize plot
-setappdata(gcf,'r',r);
-setappdata(gcf,'CS',odf(1).CS);
-setappdata(gcf,'SS',odf(1).SS);
-set(gcf,'tag','ipdf');
-setappdata(gcf,'options',extract_option(varargin,'antipodal'));
-name = inputname(1);
-if isempty(name), name = odf(1).comment;end
-set(gcf,'Name',['Inverse Pole Figures of ',name]);
+if isempty(ax)
+  setappdata(gcf,'r',r);
+  setappdata(gcf,'CS',odf(1).CS);
+  setappdata(gcf,'SS',odf(1).SS);
+  set(gcf,'tag','ipdf');
+  setappdata(gcf,'options',extract_option(varargin,'antipodal'));
+  name = inputname(1);
+  if isempty(name), name = odf(1).comment;end
+  set(gcf,'Name',['Inverse Pole Figures of ',name]);
+end
