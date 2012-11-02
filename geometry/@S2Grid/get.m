@@ -1,4 +1,4 @@
-function varargout = get(obj,vname)
+function varargout = get(obj,vname,varargin)
 % get object variable
 
 switch lower(vname)

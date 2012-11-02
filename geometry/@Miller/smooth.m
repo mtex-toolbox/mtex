@@ -12,12 +12,10 @@ function varargout = smooth(m,varargin)
 % get axis hande
 [ax,m,varargin] = getAxHandle(m,varargin{:});
 
-o = extract_option(m,'antipodal');
-
 % define plotting grid
-[maxtheta,maxrho,minrho] = getFundamentalRegionPF(m.CS,o{:},varargin{:});
-out = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,...
-  'RESTRICT2MINMAX',o{:},varargin{:});
+[minTheta,maxTheta,minRho,maxRho] = get(m,'bounds',varargin{:}); %#ok<ASGLU>
+out = S2Grid('PLOT','MAXTHETA',maxTheta,'MAXRHO',maxRho,'MINRHO',minRho,...
+  'RESTRICT2MINMAX',varargin{:});
 
 % symmetrise data
 x = symmetrise(m,'skipAntipodal');

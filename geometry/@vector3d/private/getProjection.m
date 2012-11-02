@@ -33,11 +33,10 @@ dgrid = 1*degree;
 dgrid = pi/round((pi)/dgrid);
   
 if maxRho > minRho
-  rho = minRho:dgrid:(maxRho-dgrid);
+  rho = minRho:dgrid:maxRho;
 else
-  rho = mod(minRho:dgrid:(maxRho+2*pi-dgrid),2*pi);
+  rho = mod(minRho:dgrid:maxRho+2*pi,2*pi);
 end
-if maxRho ~= 2*pi, rho(1) = [];end
   
 if isnumeric(maxTheta)
   
