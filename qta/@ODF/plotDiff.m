@@ -20,8 +20,11 @@ function plotDiff(odf1,odf2,varargin)
 % Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo 
 
+% where to plot
+[ax,odf1,odf2,varargin] = getAxHandle(odf1,odf2,varargin{:});
+
 if isa(odf2,'PoleFigure')
-  plot(calcErrorPF(odf2,odf1,varargin{:}),'colorrange','equal',varargin{:})
+  plot(ax{:},calcErrorPF(odf2,odf1,varargin{:}),'colorrange','equal',varargin{:})
 else
-  plotodf(odf1-odf2,varargin{:})
+  plotodf(ax{:},odf1-odf2,varargin{:})
 end

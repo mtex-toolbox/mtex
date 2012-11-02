@@ -20,4 +20,6 @@ function plotDiff(pfmeas,pfcalc,varargin)
 % Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo 
 
-plot(calcErrorPF(pfmeas,pfcalc,varargin{:}),varargin{:})
+[ax,pfmeas,pfcalc,varargin] = getAxHandle(pfmeas,pfcalc,varargin{:});
+
+plot(ax{:},calcErrorPF(pfmeas,pfcalc,varargin{:}),varargin{:})

@@ -22,6 +22,9 @@ function plotpdf(odf,h,varargin)
 % S2Grid/plot annotate savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
+%% where to plot
+[ax,odf,h,varargin] = getAxHandle(odf,h,varargin{:});
+
 %% check input
 
 % convert to cell
@@ -34,7 +37,7 @@ try
     h{i} = ensureCS(odf(1).CS,h(i));
   end
 catch %#ok<CTCH>
-  plotipdf(odf,h,varargin);
+  plotipdf(ax{:},odf,h,varargin);
   return
 end
 
@@ -45,13 +48,8 @@ else
   c = num2cell(ones(size(h)));
 end
 
-% default options
-varargin = set_default_option(varargin,...
-  getpref('mtex','defaultPlotOptions'));
-
-
 %% make new plot
-newMTEXplot;
+if isempty(ax), newMTEXplot;end
 
 %% plotting grid
 [maxtheta,maxrho,minrho] = getFundamentalRegionPF(odf(1).SS,varargin{:});
@@ -62,15 +60,18 @@ r = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2
 vdisp(' ',varargin{:});
 vdisp('Plotting pole density functions:',varargin{:})
   
-multiplot(numel(h),...
+multiplot(ax{:},numel(h),...
   r,@(i) ensureNonNeg(pdf(odf,h{i},r,varargin{:},'superposition',c{i})),...
   'smooth','TR',@(i) h{i},varargin{:});
 
 %% finalize plot
-setappdata(gcf,'h',h);
-setappdata(gcf,'CS',odf(1).CS);
-setappdata(gcf,'SS',odf(1).SS);
-set(gcf,'tag','pdf');
-name = inputname(1);
-if isempty(name), name = odf(1).comment;end
-set(gcf,'Name',['Pole figures of "',name,'"']);
+
+if isempty(ax)
+  setappdata(gcf,'h',h);
+  setappdata(gcf,'CS',odf(1).CS);
+  setappdata(gcf,'SS',odf(1).SS);
+  set(gcf,'tag','pdf');
+  name = inputname(1);
+  if isempty(name), name = odf(1).comment;end
+  set(gcf,'Name',['Pole figures of "',name,'"']);
+end

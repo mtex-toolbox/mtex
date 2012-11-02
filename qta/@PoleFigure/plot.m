@@ -14,8 +14,11 @@ function plot(pf,varargin)
 % SphericalProjection_demo 
 
 %% new plot
-newMTEXplot('ensureTag','pdf','ensureAppdata',...
+[ax,pf,varargin] = getAxHandle(pf,varargin{:});
+if isempty(ax),
+  newMTEXplot('ensureTag','pdf','ensureAppdata',...
     {{'CS',pf(1).CS},{'SS',pf(1).SS},{'h',get(pf,'h')}});
+end
 
 field = lower(get_option(varargin,'colorcoding',[]));
 if isfield(pf(1).options,field)
@@ -35,12 +38,14 @@ end
 vdisp(' ',varargin{:});
 vdisp('Plotting pole figures:',varargin{:})
 
-multiplot(numel(pf),@(i) pf(i).r,pfunc,'TR',@(i) pf(i).h,...
+multiplot(ax{:},numel(pf),@(i) pf(i).r,pfunc,'TR',@(i) pf(i).h,...
   'dynamicMarkerSize',...
   varargin{:});
 
-setappdata(gcf,'h',get(pf,'h'));
-setappdata(gcf,'SS',pf(1).SS);
-setappdata(gcf,'CS',pf(1).CS);
-set(gcf,'Name',['Pole Figures of Specimen ',inputname(1)]);
-set(gcf,'Tag','pdf');
+if isempty(ax)
+  setappdata(gcf,'h',get(pf,'h'));
+  setappdata(gcf,'SS',pf(1).SS);
+  setappdata(gcf,'CS',pf(1).CS);
+  set(gcf,'Name',['Pole Figures of Specimen ',inputname(1)]);
+  set(gcf,'Tag','pdf');
+end
