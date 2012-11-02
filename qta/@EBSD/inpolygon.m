@@ -18,6 +18,14 @@ function ind = inpolygon(ebsd,xy)
 % get xy coordinates
 XY = get(ebsd,'xy');
 
+% shortcut for simple rectangles
+if numel(xy)==4
+  
+  corners = [1 2; 3 2; 3 4; 1 4; 1 2];
+  xy = xy(corners);
+  
+end
+
 if ~isempty(XY)
   %  check for inside
   ind = inpolygon(XY(:,1),XY(:,2),xy(:,1),xy(:,2));
