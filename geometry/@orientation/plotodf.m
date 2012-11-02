@@ -23,8 +23,9 @@ function plotodf(o,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-varargin = set_default_option(varargin,...
-  getpref('mtex','defaultPlotOptions'));
+% where to plot
+[ax,o,varargin] = getAxHandle(o,varargin{:});
+if isempty(ax), newMTEXplot;end
 
 cs = o.CS;
 ss = o.SS;
@@ -87,21 +88,23 @@ end
 S2G = arrayfun(@(i) set(S2G{i},'res',get(S2G{1},'resolution')),1:numel(S2G),'uniformoutput',false);
 
 %% ------------------------- plot -----------------------------------------
-multiplot(nsec,@(i) S2G{i},@(i) data{i},...
+multiplot(ax{:},nsec,@(i) S2G{i},@(i) data{i},...
   'TR',@(i) [int2str(sec(i)*180/pi),'^\circ'],...
   'xlabel',labelx,'ylabel',labely,...
-  'dynamicMarkerSize',...
+  'innerPlotSpacing',0,'dynamicMarkerSize',...
   varargin{:});
 
-setappdata(gcf,'sections',sec);
-setappdata(gcf,'SectionType',sectype);
-setappdata(gcf,'CS',cs);
-setappdata(gcf,'SS',ss);
-set(gcf,'Name',[sectype ' sections of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
-set(gcf,'tag','odf')
+if isempty(ax)
+  setappdata(gcf,'sections',sec);
+  setappdata(gcf,'SectionType',sectype);
+  setappdata(gcf,'CS',cs);
+  setappdata(gcf,'SS',ss);
+  set(gcf,'Name',[sectype ' sections of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
+  set(gcf,'tag','odf')
 
-if strcmpi(sectype,'omega') && ~isempty(find_type(varargin,'Miller'))
-  h = varargin{find_type(varargin,'Miller')};
-  setappdata(gcf,'h',h);
+  if strcmpi(sectype,'omega') && ~isempty(find_type(varargin,'Miller'))
+    h = varargin{find_type(varargin,'Miller')};
+    setappdata(gcf,'h',h);
+  end
 end
 
