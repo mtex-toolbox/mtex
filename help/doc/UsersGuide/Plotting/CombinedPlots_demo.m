@@ -66,8 +66,6 @@ hh = legend({'EBSD 1','EBSD 2'},'units','normalized','position',[0.022 0.9 0.1 0
 %%
 % and, of course, you can do the same with ODF plots:
 
-close all;
-figure('position',[100 100 700 300]);
 plotodf(odf,'sections',8,'contourf')
 mtexColorMap white2black
 hold all
@@ -107,20 +105,20 @@ odf = calcODF(pf)
 figure('position',[50 50 1200 500])
 
 % set position 1 in a 1x3 matrix as the current plotting position
-subplot(1,3,1)
+axesPos = subplot(1,3,1)
 
 % plot pole figure 1 at this position
-plot(gca,pf(1))
+plot(axesPos,pf(1))
 
 % set position 2 in a 1x3 matrix as the current plotting position
-subplot(1,3,2)
+axesPos = subplot(1,3,2)
 
 % plot the recalculated pole figure at this position
-plotpdf(gca,odf,h{1},'antipodal')
+plotpdf(axesPos,odf,h{1},'antipodal')
 
 % set position 3 in a 1x3 matrix as the current plotting position
-subplot(1,3,3)
+axesPos = subplot(1,3,3)
 
 % plot the difference pole figure at this position
-plotDiff(gca,odf,pf(1))
+plotDiff(axesPos,odf,pf(1))
 

@@ -193,7 +193,6 @@ inverse(rot)
 % rotation by plotting how the standard basis x,y,z transforms under the
 % rotation.
 
-cla reset;set(gcf,'position',[43   362   400   300])
 plot(rot)
 
 

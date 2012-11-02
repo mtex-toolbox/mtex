@@ -111,7 +111,6 @@ plot(cs,'projection','eangle','antipodal','grid_res',15*degree)
 % *Plain* means that the polar angles theta / rho are plotted in a simple
 % rectangular plot. This projection is often chosen for ODF plots, e.g.
 
-close; figure('position',[46 171 752 486]);
 plotodf(SantaFe,'alpha','sections',18,'resolution',5*degree,...
   'projection','plain','contourf','FontSize',10,'silent')
 mtexColorMap white2black
@@ -122,7 +121,6 @@ mtexColorMap white2black
 % MTEX also offers a three dimensional plot of pole figures which even
 % might be rotated freely in space
 
-close all;
 plotpdf(odf,Miller(1,0,0),'3d')
 
 

@@ -100,9 +100,7 @@ close, plotAngleDistribution(grains('Fe'),grains('Mg'),'uncorrelated')
 % Let's start here with the uncorrelated axis distribution, which depends
 % only on the underlying ODFs. 
 
-figure('position',[100.0000 100.8000 450 300]);
-plotAxisDistribution(grains('Fe'),...
-  'uncorrelated','contourf','antipodal')
+plotAxisDistribution(grains('Fe'),'uncorrelated','contourf','antipodal')
 
 colorbar
 
@@ -114,6 +112,7 @@ hold on
 plotAxisDistribution(grains('Fe'),'antipodal','SampleSize',100,...
   'MarkerSize',4,'MarkerFaceColor','none','MarkerEdgeColor','red')
 mtexColorMap white2black
+colorbar, colorbar % to make the positioning of the colorbar right
 hold off
 
 %%
@@ -121,7 +120,7 @@ hold off
 % comparison we plot the axis distribiution of the boundary misorientations
 % also as a density plot.
 
-close, plotAxisDistribution(grains('Fe'),'antipodal','contourf')
+plotAxisDistribution(grains('Fe'),'antipodal','contourf')
 
 colorbar
 
