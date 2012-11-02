@@ -85,5 +85,4 @@ ss * orientation('euler',0,0,pi/4,cs,ss) * cs  % all crystallographically equiva
 % Symmetries are visualized by plotting their main axes and the
 % corresponding equivalent directions
 
-close; figure('position',[50,50,300,300])
 plot(cs,'antipodal')

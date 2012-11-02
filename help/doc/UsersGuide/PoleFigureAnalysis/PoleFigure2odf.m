@@ -17,7 +17,7 @@ mtexdata dubna
 % pole figure data and to create a pole figure object. 
 
 % plot pole figures
-plot(pf,'position',[100 100 900 500])
+plot(pf)
 
 
 %% ODF Estimation

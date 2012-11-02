@@ -31,7 +31,7 @@ plot(ebsd('Fe'))
 % is associated with a specified color in relation to the crystal reference
 % frame.
 
-colorbar('Position',[100 100 400 200])
+colorbar
 
 %%
 % The [[orientation2color.html, colorcoding]] could be specified by an
@@ -41,7 +41,7 @@ close all, plot(ebsd('Fe'),'colorcoding','hkl')
 
 %%
 
-colorbar('Position',[100 100 300 300])
+colorbar
 
 %% Customizing the color
 % In some cases, it might be useful to color certain orientations after
@@ -63,7 +63,7 @@ plot(ebsd('Fe'),'colorcoding',...
 % given distance. Here we have chosen the (111)[001] fibre to be drawn in blue,
 % and at 7.5 degrees, where the blue should be only lighter.
 
-colorbar('Position',[100 100 400 200])
+colorbar
 hold on
 circle(Miller(1,1,1),15*degree,'linewidth',2)
 set(gcf,'renderer','zbuffer')
@@ -96,7 +96,7 @@ plot(ebsd('Fe'),'colorcoding',...
 
 %%
 
-colorbar('position',[100 100 300 300])
+colorbar
 
 %% SUB: Coloring certain orientations
 % We might be interested to locate some special orientation in our orientation map. 

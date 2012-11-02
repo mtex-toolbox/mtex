@@ -25,7 +25,6 @@ setpref('mtex','defaultColorMap',LaboTeXColorMap);
 % arguments are the ODF to be plotted and the <Miller_index.html Miller
 % indice> of the crystal directions you want to have pole figures for.
 
-close; figure('position',[100,100,800,200])
 plotpdf(odf,[Miller(1,0,-1,0),Miller(0,0,0,1)])
 
 %%
@@ -49,7 +48,6 @@ plotipdf(odf,[xvector,zvector],'antipodal')
 % the crystal symmetry. In order to plot the complete inverse pole figure
 % you have to use the option *complete*.
 
-close; figure('position',[100,100,400,200])
 plotipdf(odf,[xvector,zvector],'antipodal','complete')
 
 %% ODF Sections
@@ -57,7 +55,6 @@ plotipdf(odf,[xvector,zvector],'antipodal','complete')
 % Plotting an ODF in two dimensional sections through the orientation space
 % is done using the command <ODF.plotodf.html plot>.
 
-close; figure('position',[46 171 752 486]);
 plot(odf,'sections',12,'silent')
 
 %%
@@ -79,7 +76,6 @@ plot(odf,'sections',12,'silent')
 % Adapting <SphericalProjection_demo.html spherical projection> and
 % <ColorCoding_demo.html color coding> one can produce any standard ODF plot.
 
-close; figure('position',[46 171 752 486]);
 plot(odf,'alpha','sections',12,...
   'projection','plain','contourf','FontSize',10,'silent')
 mtexColorMap white2black

@@ -53,7 +53,6 @@ annotate([xvector,yvector,zvector],'label',{'x','y','z'},...
 plotipdf(odf,[xvector,zvector],'antipodal','marginx',10,'minmax','off')
 mtexColorMap white2black
 annotate([Miller(1,0,0),Miller(1,1,0),Miller(0,0,1),Miller(2,-1,0)],'all','labeled')
-set(gcf,'position',[139 258 672 266])
 
 
 %% Adding Preferred Orientations
@@ -74,7 +73,7 @@ annotate(mod2,...
 %%
 % also ODF plots
 
-plot(odf,'sections',12,'position',[100,100,500,380])
+plot(odf,'sections',12)
 mtexColorMap white2black
 annotate(mod1,...
     'MarkerSize',15,'MarkerEdgeColor','r','MarkerFaceColor','none')

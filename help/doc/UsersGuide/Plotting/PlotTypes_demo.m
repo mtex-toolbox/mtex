@@ -22,7 +22,6 @@ pf = calcPoleFigure(odf,Miller(1,0,0),S2Grid('equispaced','antipodal'));
 %
 % |Marker|, |MarkerSize|, |MarkerFaceColor|, |MarkerEdgeColor|
 
-close all; figure('position',[50 50 200 200])
 plot(zvector,'Marker','p','MarkerSize',15,'MarkerFaceColor','red','MarkerEdgeColor','black')
 
 %%
@@ -39,9 +38,7 @@ plot([Miller(1,1,1),Miller(-1,1,1)],...
 % A scatter plot is also used to draw raw pole figure data. In this case
 % each datapoint is represented by a single dot colored accordingly to the intensity.
 
-close all;figure('position',[50 50 250 250])
 plot(pf)
-
 
 
 %% Contour Plots

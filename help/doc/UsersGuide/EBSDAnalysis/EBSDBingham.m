@@ -42,7 +42,7 @@ odf = BinghamODF(kappa,U,symmetry,symmetry)
 %
 
 h = [Miller(0,0,1) Miller(1,0,0) Miller(1,1,1)];
-plotpdf(odf,h,'antipodal','position',[100 100 600 400],'silent');
+plotpdf(odf,h,'antipodal','silent');
 
 
 % plot(odf,'sections',10)
@@ -54,14 +54,14 @@ odf_spherical = unimodalODF(idquaternion,symmetry,symmetry,'halfwidth',20*degree
 %%
 %
 
-close,plotpdf(odf_spherical,h,'antipodal','position',[100 100 600 300],'silent')
+plotpdf(odf_spherical,h,'antipodal','silent')
 
 %%
 % Next we simulate individual orientations from this odf, in a scattered
 % axis/angle plot in which the simulated data looks like a sphere
 
 ebsd_spherical = calcEBSD(odf_spherical,1000);
-close, scatter(ebsd_spherical)
+scatter(ebsd_spherical)
 
 %%
 % From this simulated ebsd data, we can estimate the parameters of the bingham
@@ -91,7 +91,7 @@ odf_spherical = BinghamODF(kappa,U,symmetry,symmetry)
 %%
 %
 
-close, plotpdf(odf_spherical,h,'antipodal','position',[100 100 600 300],'silent')
+plotpdf(odf_spherical,h,'antipodal','silent')
 
 %% Prolate case and fibre distribution
 % The prolate case correspondes to a fibre.
@@ -102,14 +102,14 @@ odf_prolate = fibreODF(Miller(0,0,1),zvector,...
 %%
 %
 
-close, plotpdf(odf_prolate,h,'north','position',[100 100 600 300],'silent')
+plotpdf(odf_prolate,h,'north','silent')
 
 %%
 % As before, we generate some random orientations from an model odf. The
 % shape in a axis/angle scatter plot reminds of a cigar
 
 ebsd_prolate = calcEBSD(odf_prolate,1000);
-close, scatter(ebsd_prolate)
+scatter(ebsd_prolate)
 
 %%
 % We estimate the parameters of the bingham distribution
@@ -136,7 +136,7 @@ odf_prolate = BinghamODF(kappa,U,symmetry,symmetry)
 %%
 %
 
-close, plotpdf(odf_prolate,h,'antipodal','position',[100 100 600 300],'silent')
+plotpdf(odf_prolate,h,'antipodal','silent')
 
 %% Oblate case
 % The oblate case of the bingham distribution has no direct counterpart in
@@ -147,13 +147,13 @@ odf_oblate = BinghamODF([50 50 50 0],eye(4),symmetry,symmetry)
 %%
 %
 
-close, plotpdf(odf_oblate,h,'antipodal','position',[100 100 600 300],'silent')
+plotpdf(odf_oblate,h,'antipodal','silent')
 
 %%
 % The oblate cases in axis/angle space reminds on a disk 
 
 ebsd_oblate = calcEBSD(odf_oblate,1000);
-close, scatter(ebsd_oblate)
+scatter(ebsd_oblate)
 
 %%
 % We estimate the parameters again
@@ -179,6 +179,6 @@ odf_oblate = BinghamODF(kappa, U,symmetry,symmetry)
 %%
 %
 
-close, plotpdf(odf_oblate,h,'antipodal','position',[100 100 600 300],'silent')
+plotpdf(odf_oblate,h,'antipodal','silent')
 
 
