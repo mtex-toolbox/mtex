@@ -71,15 +71,18 @@ for k=1:nplots, hold(a(k),washold); end
 if check_option(varargin,'position')
   position = get_option(varargin,'position');
   varargin = delete_option(varargin,'position');
-else % determine optimal size
+  set(gcf,'position',position);
+elseif strcmp(washold,'off')
+  % determine optimal size
   screenExtend = get(0,'MonitorPositions');
   [bx,by,l] = bestfit(screenExtend(3),screenExtend(4),1,nplots,30,30);
   l = min(l,300);
   bx = bx*l;
   by = by*l;
   position = [(screenExtend(3)-bx)/2,(screenExtend(4)-by)/2,bx,by];
+  set(gcf,'position',position);
 end
-set(gcf,'position',position);
+
 
 
 %% extract data
