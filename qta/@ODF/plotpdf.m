@@ -24,6 +24,7 @@ function plotpdf(odf,h,varargin)
 
 %% where to plot
 [ax,odf,h,varargin] = getAxHandle(odf,h,varargin{:});
+if isempty(ax), newMTEXplot;end
 
 %% check input
 
@@ -48,18 +49,13 @@ else
   c = num2cell(ones(size(h)));
 end
 
-%% make new plot
-if isempty(ax), newMTEXplot;end
-
 %% plotting grid
+
 [maxtheta,maxrho,minrho] = getFundamentalRegionPF(odf(1).SS,varargin{:});
-if isnumeric(maxtheta), maxtheta = min(maxtheta,pi/2);end
 r = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
 
 %% plot
-vdisp(' ',varargin{:});
-vdisp('Plotting pole density functions:',varargin{:})
-  
+
 multiplot(ax{:},numel(h),...
   r,@(i) ensureNonNeg(pdf(odf,h{i},r,varargin{:},'superposition',c{i})),...
   'smooth','TR',@(i) h{i},varargin{:});
