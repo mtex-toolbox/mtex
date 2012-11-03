@@ -16,9 +16,10 @@ if ishandle(v)
     if isnumeric(extend.maxTheta) && ...
         extend.maxTheta > pi/2 + 1e-3 && extend.minTheta < pi/2 - 1e-3 && ...
         ~check_option(varargin,'plain')
-      
-      warning(['You can only plot one hemisphere in an axis. ' ...
-        ' Consider restricting by using one of the options ''north'', ''south'', ''upper'', or, ''lower''!']);
+
+      extend.maxTheta = pi/2;  
+%      warning(['You can only plot one hemisphere in an axis. ' ...
+%        ' Consider restricting by using one of the options ''north'', ''south'', ''upper'', or, ''lower''!']);
       
     end
     setappdata(ax,'extend',extend);

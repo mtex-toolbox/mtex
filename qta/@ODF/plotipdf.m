@@ -16,7 +16,6 @@ function plotipdf(odf,r,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-
 %% make new plot
 [ax,odf,r,varargin] = getAxHandle(odf,r,varargin{:});
 if isempty(ax), newMTEXplot;end
@@ -25,7 +24,6 @@ argin_check(r,{'vector3d'});
 
 %% plotting grid
 [maxtheta,maxrho,minrho] = getFundamentalRegionPF(odf(1).CS,varargin{:});
-if isnumeric(maxtheta), maxtheta = min(maxtheta,pi/2);end
 h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
 
 %% plot
