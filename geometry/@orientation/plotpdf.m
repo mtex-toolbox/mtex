@@ -21,12 +21,15 @@ function plotpdf(o,h,varargin)
 % Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-%% make new plot
+%% where to plot
+
+[ax,o,h,varargin] = getAxHandle(o,h,varargin{:});
 
 cs = o.CS;
 ss = o.SS;
 
-if newMTEXplot('ensureTag','pdf',...
+% for a new plot 
+if ~isempty(ax) || newMTEXplot('ensureTag','pdf',...
     'ensureAppdata',{{'CS',cs},{'SS',ss}})
   
   % convert to cell
@@ -44,9 +47,7 @@ end
 %% colorcoding
 data = get_option(varargin,'property',[]);
 
-%% get options
-varargin = set_default_option(varargin,...
-  getpref('mtex','defaultPlotOptions'));
+%% subsample if needed 
 
 if sum(numel(o))*length(cs)*length(ss) > 10000 || check_option(varargin,'points')
 
@@ -56,7 +57,6 @@ if sum(numel(o))*length(cs)*length(ss) > 10000 || check_option(varargin,'points'
   samples = discretesample(ones(1,numel(o)),points);
   o.rotation = o.rotation(samples);
   if ~isempty(data), data = data(samples); end
-
 end
 
 
@@ -70,16 +70,17 @@ r = @(i) reshape(ss * o * sh(i),[],1);
 data = @(i) repmat(data(:),[numel(ss) numel(sh(i))]);
 
 [maxTheta,maxRho,minRho] = getFundamentalRegionPF(ss,varargin{:});
-if isnumeric(maxTheta), maxTheta = min(maxTheta,pi/2);end
 
-multiplot(numel(h),r,data,...
+multiplot(ax{:},numel(h),r,data,...
   'scatter','TR',@(i) h(i),...
   'minRho',minRho,'maxRho',maxRho,'maxTheta',maxTheta,...
   varargin{:});
 
-setappdata(gcf,'h',h);
-setappdata(gcf,'SS',ss);
-setappdata(gcf,'CS',cs);
-setappdata(gcf,'options',extract_option(varargin,'antipodal'));
-set(gcf,'Name',['Pole figures of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
-set(gcf,'Tag','pdf');
+if isempty(ax)
+  setappdata(gcf,'h',h);
+  setappdata(gcf,'SS',ss);
+  setappdata(gcf,'CS',cs);
+  setappdata(gcf,'options',extract_option(varargin,'antipodal'));
+  set(gcf,'Name',['Pole figures of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
+  set(gcf,'Tag','pdf');
+end

@@ -16,12 +16,13 @@ function plotipdf(o,r,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-%% make new plot
+%% where to plot
+[ax,o,r,varargin] = getAxHandle(o,r,varargin{:});
 
 cs = o.CS;
 ss = o.SS;
 
-if newMTEXplot('ensureTag','ipdf',...
+if ~isempty(ax) || newMTEXplot('ensureTag','ipdf',...
     'ensureAppdata',{{'CS',cs},{'SS',ss}})
   argin_check(r,{'vector3d'});
   annotations  = {'TR',@(i) char(r(i),getpref('mtex','textInterpreter'))};
@@ -36,9 +37,7 @@ end
 %% colorcoding
 data = get_option(varargin,'property',[]);
 
-%% get options
-varargin = set_default_option(varargin,...
-  getpref('mtex','defaultPlotOptions'));
+%% subsample if needed 
 
 if numel(o)*length(cs)*length(ss) > 100000 || check_option(varargin,'points')
   points = fix(get_option(varargin,'points',100000/length(cs)/length(ss)));
@@ -52,26 +51,27 @@ end
 
   
 %% plot
-multiplot(numel(r),...
+multiplot(ax{:},numel(r),...
   @(i) inverse(o(:)) * symmetrise(r(i),ss),data,...
   'scatter','FundamentalRegion',...
   annotations{:},varargin{:});
 
+if isempty(ax)
+  setappdata(gcf,'r',r);
+  setappdata(gcf,'SS',ss);
+  setappdata(gcf,'CS',cs);
+  setappdata(gcf,'options',extract_option(varargin,'antipodal'));
+  set(gcf,'Name',['Inverse Pole figures of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
+  set(gcf,'Tag','ipdf');
 
-setappdata(gcf,'r',r);
-setappdata(gcf,'SS',ss);
-setappdata(gcf,'CS',cs);
-setappdata(gcf,'options',extract_option(varargin,'antipodal'));
-set(gcf,'Name',['Inverse Pole figures of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
-set(gcf,'Tag','ipdf');
 
+  %% set data cursor
+  dcm_obj = datacursormode(gcf);
+  set(dcm_obj,'SnapToDataVertex','off')
+  set(dcm_obj,'UpdateFcn',{@tooltip});
 
-%% set data cursor
-dcm_obj = datacursormode(gcf);
-set(dcm_obj,'SnapToDataVertex','off')
-set(dcm_obj,'UpdateFcn',{@tooltip});
-
-datacursormode on;
+  datacursormode on;
+end
 
 
 %% Tooltip function
