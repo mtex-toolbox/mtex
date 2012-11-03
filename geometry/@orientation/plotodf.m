@@ -23,17 +23,17 @@ function plotodf(o,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-% where to plot
+%% where to plot
 [ax,o,varargin] = getAxHandle(o,varargin{:});
 if isempty(ax), newMTEXplot;end
 
 cs = o.CS;
 ss = o.SS;
 
-% colorcoding
+%% colorcoding
 data = get_option(varargin,'property',[]);
 
-% subsample to reduce size
+%% subsample to reduce size
 if ~check_option(varargin,'all') && numel(o) > 2000 || check_option(varargin,'points')
   points = fix(get_option(varargin,'points',2000));
   disp(['  plotting ', int2str(points) ,' random orientations out of ', ...
@@ -45,7 +45,7 @@ if ~check_option(varargin,'all') && numel(o) > 2000 || check_option(varargin,'po
     data = data(samples); end
 end
 
-% reuse plot
+%% reuse plot
 if ishold && isappdata(gcf,'sections') && ...
     getappdata(gcf,'CS') == cs && getappdata(gcf,'SS') == ss
 
