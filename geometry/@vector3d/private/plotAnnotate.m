@@ -8,10 +8,10 @@ function plotAnnotate( ax, varargin )
 t = getappdata(ax,'annotation');
 
 if isempty(t)
-  t.TL = get_option(varargin,{'TopLeft','TL'},'');
-  t.TR = get_option(varargin,{'TopRight','TR'},'');
-  t.BL = get_option(varargin,{'BottomLeft','BL'},'');
-  t.BR = get_option(varargin,{'BottomRight','BR'},'');
+  t.TL = get_option(varargin,{'TopLeft','TL'},' ');
+  t.TR = get_option(varargin,{'TopRight','TR'},' ');
+  t.BL = get_option(varargin,{'BottomLeft','BL'},' ');
+  t.BR = get_option(varargin,{'BottomRight','BR'},' ');
   
   t = structfun(@(x) st2char(x), t,'UniformOutput',false);
   
@@ -34,13 +34,12 @@ if isempty(t)
   set([TR BR],'HorizontalAlignment','right');
   
   t.h = [TL TR BL BR];
-  set(t.h,'interpreter',getpref('mtex','textInterpreter'));
-    
   opts = getpref('mtex','defaultPlotOptions');
+  optiondraw(t.h,varargin{:},opts{:},...
+    'FontName','times',...
+    'interpreter',getpref('mtex','textInterpreter','latex'));
   
-  optiondraw(t.h,varargin{:},opts{:},'FontName','times');
-  
-else  
+else
   t.TL = get_option(varargin,{'TopLeft','TL'},t.TL);
   t.TR = get_option(varargin,{'TopRight','TR'},t.TR);
   t.BL = get_option(varargin,{'BottomLeft','BL'},t.BL);
@@ -52,7 +51,7 @@ else
   set(t.h(1),'String',t.TL);
   set(t.h(2),'String',t.TR);
   set(t.h(3),'String',t.BL);
-  set(t.h(4),'String',t.BR);  
+  set(t.h(4),'String',t.BR);
 end
 
 setappdata(ax,'annotation',t);
@@ -66,7 +65,7 @@ if isa(t,'vector3d')
   for i = 1:length(t)
     
     s{i} = char(subsref(t,i),getpref('mtex','textInterpreter')); %#ok<AGROW>
-        
+    
   end
 else
   if iscell(t)
