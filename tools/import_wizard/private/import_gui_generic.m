@@ -140,7 +140,7 @@ if get(handles.radio_exp(1),'Value')
 
   switch type
     case 'PoleFigure'
-      data = modifypf(gcbf,data);
+%      data = modifypf(gcbf,data);
   end
 
   assignin('base',vname,data);
@@ -276,9 +276,9 @@ if get(handles.rotate,'value')
   pf = rotate(pf,str2num(get(handles.rotateAngle,'string'))*degree); %#ok<ST2NM>
 end
 
-if get(handles.flipud,'value'), pf = flipud(pf);end
+%if get(handles.flipud,'value'), pf = flipud(pf);end
 
-if get(handles.fliplr,'value'), pf = fliplr(pf);end
+%if get(handles.fliplr,'value'), pf = fliplr(pf);end
 
 function odf = modifyodf(wzrd,odf)
 % Modify ODF before exporting or plotting
