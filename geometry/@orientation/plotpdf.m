@@ -67,7 +67,7 @@ sh = @(i) symmetrise(h{i});
 r = @(i) reshape(ss * o * sh(i),[],1);
 
 % symmetrise data
-data = @(i) repmat(data(:),[numel(ss) numel(sh(i))]);
+data = @(i) repmat(data(:).',[numel(ss) numel(sh(i))]);
 
 [maxTheta,maxRho,minRho] = getFundamentalRegionPF(ss,varargin{:});
 

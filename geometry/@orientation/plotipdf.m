@@ -49,6 +49,7 @@ if numel(o)*length(cs)*length(ss) > 100000 || check_option(varargin,'points')
 
 end
 
+data = @(i) repmat(data(:),1,numel(symmetrise(r(i),ss)));
   
 %% plot
 multiplot(ax{:},numel(r),...
