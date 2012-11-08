@@ -96,53 +96,33 @@ end
 
 if strcmpi(projection.type,'plain') % plain plot
   
-  [xu,yu] = project(v,projection,extend);
+  [x,y] = project(v,projection,extend);
   
-  cdata = reshape(cdata,size(xu));
-  h = [h,betterContourf(ax,xu,yu,cdata,contours,varargin{:})];
+  cdata = reshape(cdata,size(x));
+  h = [h,betterContourf(ax,x,y,cdata,contours,varargin{:})];
 
 
 else % spherical plot  
   
   hold(ax,'on')
     
-  % plot upper hemisphere
-  if extend.minTheta < pi/2-0.0001 
-  
-    % split data according to upper and lower hemisphere
-    ind = v.z > -1e-5;
-    v_upper = submatrix(v,ind);
-    data_upper = reshape(submatrix(cdata,ind),size(v_upper));
+  % project data
+  [x,y] = project(v,projection,extend);
     
-    % project data
-    [xu,yu] = project(v_upper,projection,extend);
+  % extract non nan data
+  ind = ~isnan(x);
+  x = submatrix(x,ind);
+  y = submatrix(y,ind);
+  data = reshape(submatrix(cdata,ind),size(x));
     
-    % plot filled contours
-    h = [h,betterContourf(ax,xu,yu,data_upper,contours,varargin{:})];
-    
-  end
-  
-  % plot lower hemisphere
-  if isnumeric(extend.maxTheta) && extend.maxTheta > pi/2 + 1e-4 ...
-      && any(v.z(:) < -1e-4);
-    
-    % split data according to upper and lower hemisphere
-    ind = v.z < 1e-5;
-    v_lower = submatrix(v,ind);
-    data_lower = reshape(submatrix(cdata,ind),size(v_lower));
-    
-    % plot filled contours
-    [xl,yl] = project(v_lower,projection,extend);
-    h = [h,betterContourf(ax,xl,yl,data_lower,contours,varargin{:})];
-    
-  end
+  % plot contours
+  h = [h,betterContourf(ax,x,y,data,contours,varargin{:})];
   
   hold(ax,'off')
 end
 
 % set styles
-optiondraw(h,'LineStyle','none',varargin{:});
-optiondraw(h,'Fill','on',varargin{:});
+optiondraw(h,'LineStyle','none','Fill','on',varargin{:});
 
 %% finalize the plot
 
