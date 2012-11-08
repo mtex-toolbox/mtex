@@ -1,4 +1,4 @@
-function varargout = contourf( v, varargin )
+function varargout = contourf( v, data, varargin )
 % spherical filled contour plot
 %
 %% Syntax
@@ -15,17 +15,13 @@ function varargout = contourf( v, varargin )
 % vector3d/plot vector3d/contour
 
 % where to plot
-[ax,v,varargin] = splitNorthSouth(v,varargin{:},'contourf');
+[ax,v,data,varargin] = splitNorthSouth(v,data,varargin{:},'contourf');
 if isempty(ax), return;end
 
 hold(ax,'all');
 
-% number of contour lines
-cl = get_option(varargin,'contours',10);
-
-
-h1 = smooth(ax,v,varargin{:},'contours',cl,'LineStyle','none','fill','on');
-h2 = smooth(ax,v,varargin{:},'contours',cl,'LineStyle','-','LineColor','k','fill','off');
+h1 = smooth(ax,v,data,'contours',10,'LineStyle','none','fill','on',varargin{:});
+h2 = smooth(ax,v,data,'contours',10,'LineStyle','-','LineColor','k','fill','off',varargin{:});
 
 hold off
 

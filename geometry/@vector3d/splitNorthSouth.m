@@ -1,4 +1,4 @@
-function [ax,v,varargin] = splitNorthSouth(v,varargin)
+function [ax,v,varargout] = splitNorthSouth(v,varargin)
 % split plot in north and south plot
 %
 % 1: axis given -> no extend stored -> compute extend -> finish
@@ -24,48 +24,47 @@ if ishandle(v)
     end
     setappdata(ax,'extend',extend);
   end
-  return
-end
-
+  
 %% case 2: axis is hold and has extend
-
-if ~newMTEXplot && isappdata(gca,'extend')
+elseif ~newMTEXplot && isappdata(gca,'extend')
   
   v = multiplot([],v,varargin{:});
         
   ax = {};
-  return
-end
 
 %% case 3: create new axes  
-   
-% get polar plot region
-extend = getPlotRegion(v,varargin{:});
-  
-% hemisphere names
-upperlower = {'north','south'};
-
-% for plain projection do not split
-if check_option(varargin,'plain')
-  v = multiplot(1,v,varargin{:});
-  
-elseif isnumeric(extend.maxTheta) && ...
-    extend.maxTheta > pi/2 + 1e-3 && extend.minTheta < pi/2 - 1e-3
-  % if two hemispheres - split plot
-  
-  minTheta = {0,pi/2};
-  maxTheta = {pi/2,pi};
-  
-  v = multiplot(2,v,varargin{:},...
-    'TR',@(i) upperlower{i},...
-    'minTheta',@(i) minTheta{i},'maxTheta',@(i) maxTheta{i});
-  
 else
   
-    v = multiplot(1,v,varargin{:},...
-    'TR',@(i) upperlower{1+(extend.minTheta > pi/2 - 1e-3)});
+  % get polar plot region
+  extend = getPlotRegion(v,varargin{:});
   
-end
+  % hemisphere names
+  upperlower = {'north','south'};
+
+  % for plain projection do not split
+  if check_option(varargin,'plain')
+    v = multiplot(1,v,varargin{:});
   
-ax = {};
+  elseif isnumeric(extend.maxTheta) && ...
+      extend.maxTheta > pi/2 + 1e-3 && extend.minTheta < pi/2 - 1e-3
+    % if two hemispheres - split plot
+  
+    minTheta = {0,pi/2};
+    maxTheta = {pi/2,pi};
+  
+    v = multiplot(2,v,varargin{:},...
+      'TR',@(i) upperlower{i},...
+      'minTheta',@(i) minTheta{i},'maxTheta',@(i) maxTheta{i});
     
+  else
+  
+    v = multiplot(1,v,varargin{:},...
+      'TR',@(i) upperlower{1+(extend.minTheta > pi/2 - 1e-3)});
+  
+  end
+  
+  ax = {};
+end
+
+varargout(1:nargout-3) = varargin(1:nargout-3);
+varargout{nargout-2} = varargin(nargout-2:end);
