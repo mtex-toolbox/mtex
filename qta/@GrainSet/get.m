@@ -130,8 +130,7 @@ switch lower(vname)
     
   otherwise
     
-    if nargout, varargout{1} = properties; else disp(properties), end
-    return
+    error(['Unknown Property "' vname '" in class GrainSet']);
     
 end
 
