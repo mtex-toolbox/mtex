@@ -68,8 +68,8 @@ else
   [maxtheta,maxrho,minrho] = getFundamentalRegionPF(ss,varargin{:});
   Sr = @(i) S2Grid(r(i),'MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
 
-  Dr = @(i) repmat(reshape(data,1,[]),numel(symmetrise(h(i))),1);
-
+  Dr = @(i) repmat(data(:).',1,numel(symmetrise(h(i))));
+  
   multiplot(@(i) Sr(i),...
     @(i) Dr(i),length(h),...
     'ANOTATION',@(i) h(i),'dynamicMarkerSize',...

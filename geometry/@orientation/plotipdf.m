@@ -58,10 +58,10 @@ h = @(i) reshape(inverse(quaternion(o * cs)),[],1) * symmetrise(r(i),ss);
 Sh = @(i) S2Grid(h(i),'MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
 
 if ~isempty(data)
-  data = repmat(data,numel(o.CS),1);
+  data = repmat(data,1,numel(o.CS));
   Dh  = @(i) (reshape(double(h(i)),[],3));
   DSh = @(i) (reshape(double(Sh(i)),[],3));
-  datar = @(i)  data(ismember(DSh(i),Dh(i),'rows'));
+  datar = @(i) data(ismember(round(1000*DSh(i)),round(1000*Dh(i)),'rows'));
 else
   datar = @(i)[];
 end
