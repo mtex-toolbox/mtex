@@ -1,4 +1,4 @@
-function varargout = contour( v, varargin )
+function varargout = contour(v,data,varargin )
 % spherical contour plot
 %
 %% Syntax
@@ -14,5 +14,10 @@ function varargout = contour( v, varargin )
 %% See also
 % vector3d/plot vector3d/contourf
 
-[varargout{1:nargout}] = smooth(v,varargin{:},'contours',10,...
-  'LineStyle','-','LineColor','auto','fill','off');
+% where to plot
+[ax,v,data,varargin] = splitNorthSouth(v,data,varargin{:},'contour');
+if isempty(ax), return;end
+
+% plot
+[varargout{1:nargout}] = smooth(ax,v,data,'contours',10,...
+  'LineStyle','-','LineColor','auto','fill','off',varargin{:});
