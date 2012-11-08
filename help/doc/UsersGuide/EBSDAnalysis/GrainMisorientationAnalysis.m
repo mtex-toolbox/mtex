@@ -101,7 +101,6 @@ close, plotAngleDistribution(grains('Fe'),grains('Mg'),'uncorrelated')
 % only on the underlying ODFs. 
 
 plotAxisDistribution(grains('Fe'),'uncorrelated','contourf','antipodal')
-
 colorbar
 
 %%
@@ -112,7 +111,6 @@ hold on
 plotAxisDistribution(grains('Fe'),'antipodal','SampleSize',100,...
   'MarkerSize',4,'MarkerFaceColor','none','MarkerEdgeColor','red')
 mtexColorMap white2black
-colorbar, colorbar % to make the positioning of the colorbar right
 hold off
 
 %%
@@ -121,7 +119,6 @@ hold off
 % also as a density plot.
 
 plotAxisDistribution(grains('Fe'),'antipodal','contourf')
-
 colorbar
 
 %%
