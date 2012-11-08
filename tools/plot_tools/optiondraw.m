@@ -25,7 +25,7 @@ if check_option(varargin,'prefix')
 end
 
 % extract options
-options = extract_argoption(options,fieldnames(get(h)));
+options = extract_argoption(options,fieldnames(handle(h)));
 
 % set options
 if ~isempty(options), set(h,options{:});end
