@@ -32,12 +32,13 @@ if isempty(t)
   set([BL BR],'VerticalAlignment','bottom');
   set([TL BL],'HorizontalAlignment','left');
   set([TR BR],'HorizontalAlignment','right');
-  
   t.h = [TL TR BL BR];
-  opts = getpref('mtex','defaultPlotOptions');
-  optiondraw(t.h,varargin{:},opts{:},...
-    'FontName','times',...
+  
+  set(t.h,'FontName','times',...
     'interpreter',getpref('mtex','textInterpreter','latex'));
+  
+  opts = getpref('mtex','defaultPlotOptions');
+  optiondraw(t.h,varargin{:},opts{:});
   
 else
   t.TL = get_option(varargin,{'TopLeft','TL'},t.TL);
