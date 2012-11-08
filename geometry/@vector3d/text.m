@@ -31,7 +31,7 @@ if check_option(varargin,'labeled')
   for i = 1:numel(v), strings{i} = char(subsref(v,i),getpref('mtex','textInterpreter')); end
     
   c = colormap;
-  if ~all(equal(c,2)), varargin = [{'BackGroundColor','w'},varargin];end
+  %if ~all(equal(c,2)), varargin = [{'BackGroundColor','w'},varargin];end
   
 else % ensure cell as input
   

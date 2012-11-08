@@ -26,7 +26,7 @@ hold all;
 
 % get default style
 defaultAnnotationStyle = {'marker','s','MarkerEdgeColor','w',...
-  'MarkerFaceColor','k','BackgroundColor','w'};
+  'MarkerFaceColor','k'};
 
 % extract object to annotate
 obj = varargin{1};

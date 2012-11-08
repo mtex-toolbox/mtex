@@ -36,9 +36,7 @@ if isempty(t)
   t.h = [TL TR BL BR];
   set(t.h,'interpreter',getpref('mtex','textInterpreter'));
     
-  opts = getpref('mtex','defaultPlotOptions');
-  
-  optiondraw(t.h,varargin{:},opts{:},'FontName','times');
+  optiondraw(t.h,'FontName','times','FontSize',13,varargin{:});
   
 else  
   t.TL = get_option(varargin,{'TopLeft','TL'},t.TL);
