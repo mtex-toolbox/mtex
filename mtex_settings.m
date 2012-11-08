@@ -12,9 +12,6 @@ function mtex_settings
 %% default global plotting options
 % here you can define default plott options
 
-default_plot_options = {'FontSize',13};
-setpref('mtex','defaultPlotOptions',default_plot_options);
-
 % default plotting of the coordinate axes
 setpref('mtex','xAxisDirection','north');
 setpref('mtex','zAxisDirection','outOfPlane');

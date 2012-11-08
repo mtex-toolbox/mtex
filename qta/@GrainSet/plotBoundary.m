@@ -109,10 +109,6 @@ else
   
 end
 
-
-varargin = set_default_option(varargin,...
-  getpref('mtex','defaultPlotOptions'));
-
 h = optiondraw(patch(obj),varargin{:});
 
 axis equal tight

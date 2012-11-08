@@ -52,9 +52,6 @@ boundaryEdgeOrder = vertcat(X{:});
 %% default plot options
 
 varargin = set_default_option(varargin,...
-  getpref('mtex','defaultPlotOptions'));
-
-varargin = set_default_option(varargin,...
   {'name', [property ' plot of ' inputname(1) ' (' get(grains,'comment') ')']});
 
 %%

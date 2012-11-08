@@ -49,10 +49,6 @@ end
 figure
 newMTEXplot;
 
-% get default options
-varargin = set_default_option(varargin,...
-  getpref('mtex','defaultPlotOptions'));
-
 if any(strcmp(cc,{'ipdf','hkl','h'}))
   % hkl is antipodal
   if strcmp(cc,'hkl'),  varargin = {'antipodal',varargin{:}}; end
