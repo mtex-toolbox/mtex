@@ -2,6 +2,41 @@
 %
 %% Contents
 %
+%% MTEX 3.4.0 - 12/2012
+%
+% *New plotting engine*
+%
+% MTEX 3.4 features a completely rewritten plotting engine. New features
+% includes
+%
+% * The alignment of the axes in the plot is now described by the options
+% |xAxisDirection| which can be |north|, |west|, |south|, or |east|, and
+% |zAxisDirection| which can be |outOfPlane| or |intoPlane|.
+% * The alignment of the axes can be changed interactively using the new
+% MTEX menu which is located in the menubar of each figure.
+% * northern and southern hemisphere are now separate axes that can be
+% stacked arbitrarily and are marked as north and south.
+% * Arbitary plots can be combined in one figure.
+% * One can now arbitrarily switch between scatter, contour and smooth
+% plots for any data.
+% obsolete options: |fliplr|, |flipud|, |gray|, 
+% 
+% *Colormap handling*
+% User defined colormap can now be stored in the folder |colormaps|, e.g.
+% as |red2blueColorMap.m| and can set by
+%   mtexColorMap red2blue
+% or interactively from the MTEX menu.
+%
+% *EBSD data*
+% * It is now possible to store a color within the variable describing a
+%  certain mineral. This makes phase plots of EBSD data and grains more
+%  consistent and customizable.
+%   CS = symmetry('cubic','mineral','Mg','color','red')
+% * Better rule of thumb for the kernel width when computing an ODF from
+% individual orientations via kernel density estimation.
+% * inpolygon can be called as
+%   inpolygon(ebsd,[xmin ymin xmax ymax])
+%
 %% MTEX 3.3.1 - 07/2012
 %
 % *bugfix release*
@@ -24,7 +59,7 @@
 % * The class @GrainSet explicitely stores @EBSD. To access @EBSD data
 % within a single grain or a set of grains use
 %
-%  get(grains,'EBSD')
+%   get(grains,'EBSD')
 %
 % * the grain selector tool for spatial grain plots was removed,
 % nevertheless, grains still can be [[GrainSingleAnalysis.html,selected spatially]].
@@ -41,9 +76,9 @@
 % string value, it will be treated as not indexed. e.g. mark the first
 % phase as |'not indexed'|
 % 
-%  CS = {'not indexed',...
-%        symmetry('cubic','mineral','Fe'),...
-%        symmetry('cubic','mineral','Mg')};
+%   CS = {'not indexed',...
+%         symmetry('cubic','mineral','Fe'),...
+%         symmetry('cubic','mineral','Mg')};
 %
 % By default, |calcGrains| does also use the |'not Indexed'| phase.
 %
