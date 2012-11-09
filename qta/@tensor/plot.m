@@ -46,8 +46,9 @@ elseif check_option(varargin,'3d')
   
 else
   % define a plotting grid
-  [maxtheta,maxrho,minrho] = getFundamentalRegionPF(T.CS,varargin{:});
-  S2 = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX','antipodal',varargin{:});
+  [minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(T.CS,'antipodal',varargin{:});
+  S2 = S2Grid('PLOT','minTheta',minTheta,'maxTheta',maxTheta,...
+    'minRho',minRho,'maxRho',maxRho,'RESTRICT2MINMAX','antipodal',varargin{:});
   
 end
 % decide what to plot
@@ -98,8 +99,9 @@ switch lower(plotType)
   case 'velocity'
     
     if check_option(varargin,{'pp','ps1','ps2'})
-      S2 = S2Grid('equispaced','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',...
-        minrho,'RESTRICT2MINMAX','resolution',10*degree,'no_center','antipodal',varargin{:});
+      S2 = S2Grid('equispaced','minTheta',...
+        minTheta,'maxTheta',maxTheta,'maxRho',maxRho,'minRho',...
+        minRho,'RESTRICT2MINMAX','resolution',10*degree,'no_center','antipodal',varargin{:});
       varargin = ['color','k','MaxHeadSize',0,varargin];
     end
     

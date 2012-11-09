@@ -46,8 +46,8 @@ end
 if check_option(varargin,'fundamentalRegion') && ~check_option(varargin,'complete')
   
   % get fundamental region
-  [maxTheta,maxRho,minRho] = getFundamentalRegionPF(m.CS,varargin{:});
-  varargin = [{'minRho',minRho,'maxRho',maxRho,'maxTheta',maxTheta},varargin];
+  [minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(m.CS,varargin{:});
+  varargin = [{'minRho',minRho,'maxRho',maxRho,'minTheta',minTheta,'maxTheta',maxTheta},varargin];
 
 end
 

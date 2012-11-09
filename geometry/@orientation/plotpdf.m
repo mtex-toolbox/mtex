@@ -69,11 +69,11 @@ r = @(i) reshape(ss * o * sh(i),[],1);
 % symmetrise data
 data = @(i) repmat(data(:).',[numel(ss) numel(sh(i))]);
 
-[maxTheta,maxRho,minRho] = getFundamentalRegionPF(ss,varargin{:});
+[minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(ss,'restrict2Hemisphere',varargin{:});
 
 multiplot(ax{:},numel(h),r,data,...
   'scatter','TR',@(i) h(i),...
-  'minRho',minRho,'maxRho',maxRho,'maxTheta',maxTheta,...
+  'minRho',minRho,'maxRho',maxRho,'minTheta',minTheta,'maxTheta',maxTheta,...
   varargin{:});
 
 if isempty(ax)
