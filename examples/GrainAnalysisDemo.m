@@ -26,12 +26,11 @@ figure('position',[100 100  750 300]);
 plot(ebsd,'property','phase')
 
 %% Restrict to the region of interest (RoI)
-% the box is indicating a region of interest (RoI).
+% the box is given by [xmin ymin xmax-xmin ymax-ymin] and indicates a
+% region of interest (RoI).
 
-legend off
-region = [19000 1500; 23000 1500; 23000 3000; 19000 3000; 19000 1500];
-line(region(:,1),region(:,2),'color','k','linewidth',2)
-hold off
+region = [19000 1500 4000 1500];
+rectangle('position',region,'edgecolor','r','linewidth',2)
 
 %%
 % to which we restrict the data
@@ -65,7 +64,6 @@ plotBoundary(grains,'color','black');
 plot(ebsd_region('Quartz-new'),'colorcoding','hkl','h',zvector)
 legend off
 hold off
-% set(gcf,'renderer','zbuffer')
 
 %%
 % colored according to the false color map of its inverse polefigure
@@ -83,7 +81,7 @@ plot(grains({'Andesina','Biotite','Orthoclase'}),'property','phase','FaceAlpha',
 plot(grains('Quartz'),'colorcoding','hkl')
 legend off
 hold off
-% set(gcf,'renderer','zbuffer')
+
 
 
 %% Highlight specific boundaries
@@ -95,5 +93,5 @@ hold all
 plot(grains,'property','phase','FaceAlpha',0.4)
 plotBoundary(grains,'property',Miller(0,0,1),'linewidth',2,'linecolor','red')
 hold off
-% set(gcf,'renderer','zbuffer')
+
 
