@@ -51,8 +51,9 @@ end
 
 %% plotting grid
 
-[maxtheta,maxrho,minrho] = getFundamentalRegionPF(odf(1).SS,varargin{:});
-r = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
+[minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(odf(1).SS,'restrict2Hemisphere',varargin{:});
+r = S2Grid('PLOT','minTheta',minTheta,'maxTheta',maxTheta,...
+  'maxRho',maxRho,'minRho',minRho,'RESTRICT2MINMAX',varargin{:});
 
 %% plot
 

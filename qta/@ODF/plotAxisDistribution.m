@@ -22,8 +22,9 @@ if isempty(ax), newMTEXplot;end
 
 %% plotting grid
 
-[maxtheta,maxrho,minrho] = getFundamentalRegionPF(disjoint(odf(1).CS,odf(1).SS),'antipodal',varargin{:});
-h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX','antipodal',varargin{:});
+[minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(disjoint(odf(1).CS,odf(1).SS),'antipodal',varargin{:});
+h = S2Grid('PLOT','minTheta',minTheta,'maxTheta',maxTheta,...
+  'maxRho',maxRho,'minRho',minRho,'RESTRICT2MINMAX','antipodal',varargin{:});
 
 
 %% plot

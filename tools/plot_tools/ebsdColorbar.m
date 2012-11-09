@@ -53,11 +53,12 @@ if any(strcmp(cc,{'ipdf','hkl','h'}))
   % hkl is antipodal
   if strcmp(cc,'hkl'),  varargin = {'antipodal',varargin{:}}; end
 
-  [maxtheta,maxrho,minrho,v] = getFundamentalRegionPF(cs,varargin{:});
+  [minTheta,maxTheta,minRho,maxRho,v] = getFundamentalRegionPF(cs,varargin{:});
 
   %maxrho = maxrho-minrho+eps;
-  %minrho = 0; % rotate like canvas %TODO:flipud!
-  h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX','resolution',1*degree,varargin{:});
+  %minrho = 0; % rotate like canvas
+  h = S2Grid('PLOT','minTheta',minTheta,'maxTheta',maxTheta,...
+    'minRho',minRho,'maxRho',maxRho,'RESTRICT2MINMAX','resolution',1*degree,varargin{:});
 
   if strcmp(cc,'ipdf')
     d = ipdf2rgb(h,cs,varargin{:});

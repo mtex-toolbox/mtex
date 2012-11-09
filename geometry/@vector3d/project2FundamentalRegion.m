@@ -20,7 +20,7 @@ function [v,swap,minRho] = project2FundamentalRegion(v,sym,varargin)
 % q       - rotations not about the z -axis
 % rho_rot - position of the mirroring plane
 
-[maxTheta,maxRho,minRho] = getFundamentalRegionPF(sym,varargin{:}); %#ok<ASGLU>
+[minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(sym,varargin{:}); %#ok<ASGLU>
 
 %% symmetrise
 sv = q * v;

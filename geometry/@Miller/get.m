@@ -56,8 +56,8 @@ switch lower(vname)
     if check_option(varargin,'fundamentalRegion') && ~check_option(varargin,'complete')
   
       % get fundamental region
-      [maxTheta,maxRho,minRho] = getFundamentalRegionPF(obj.CS,varargin{:});
-      varargout{1} = 0;
+      [minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(obj.CS,varargin{:});
+      varargout{1} = minTheta;
       varargout{2} = maxTheta;
       varargout{3} = minRho;
       varargout{4} = maxRho;

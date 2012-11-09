@@ -23,8 +23,9 @@ if isempty(ax), newMTEXplot;end
 argin_check(r,{'vector3d'});
 
 %% plotting grid
-[maxtheta,maxrho,minrho] = getFundamentalRegionPF(odf(1).CS,varargin{:});
-h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
+[minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(odf(1).CS,'restrict2Hemisphere',varargin{:});
+
+h = S2Grid('PLOT','minTheta',minTheta,'MAXTHETA',maxTheta,'MAXRHO',maxRho,'MINRHO',minRho,'RESTRICT2MINMAX',varargin{:});
 
 %% plot
 disp(' ');
