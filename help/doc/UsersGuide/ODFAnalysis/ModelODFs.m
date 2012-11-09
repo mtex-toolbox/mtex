@@ -107,6 +107,7 @@ C = [1;reshape(eye(3),[],1);reshape(eye(5),[],1)]; % Fourier coefficients
 odf = FourierODF(C,cs,ss)
 
 plot(odf,'sections',6,'alpha','projection','plain')
+mtexColorMap white2black
 
 %%
 

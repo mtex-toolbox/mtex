@@ -1,4 +1,5 @@
 ImportEBSDData file_new
+AligningEBSDData
 EBSDModifyData
 EBSD2odf
 EBSDOrientationPlots
