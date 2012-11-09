@@ -20,9 +20,6 @@ if isempty(ax), return;end
 % extract projection
 [projection,extend] = getProjection(ax,v,varargin{:});
 
-% initalize handles
-h = [];
-
 % why should I do this?
 %hfig = get(ax,'parent');
 %set(hfig,'color',[1 1 1]);
@@ -94,32 +91,21 @@ end
 
 %% draw contours
 
-if strcmpi(projection.type,'plain') % plain plot
-  
-  [x,y] = project(v,projection,extend);
-  
-  cdata = reshape(cdata,size(x));
-  h = [h,betterContourf(ax,x,y,cdata,contours,varargin{:})];
-
-
-else % spherical plot  
-  
-  hold(ax,'on')
+hold(ax,'on')
     
-  % project data
-  [x,y] = project(v,projection,extend);
+% project data
+[x,y] = project(v,projection,extend,'removeAntipodal');
     
-  % extract non nan data
-  ind = ~isnan(x);
-  x = submatrix(x,ind);
-  y = submatrix(y,ind);
-  data = reshape(submatrix(cdata,ind),size(x));
+% extract non nan data
+ind = ~isnan(x);
+x = submatrix(x,ind);
+y = submatrix(y,ind);
+data = reshape(submatrix(cdata,ind),size(x));
     
-  % plot contours
-  h = [h,betterContourf(ax,x,y,data,contours,varargin{:})];
+% plot contours
+h = betterContourf(ax,x,y,data,contours,varargin{:});
   
-  hold(ax,'off')
-end
+hold(ax,'off')
 
 % set styles
 optiondraw(h,'LineStyle','none','Fill','on',varargin{:});

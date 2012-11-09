@@ -20,9 +20,6 @@ if isempty(ax), return;end
 % extract plot options
 [projection,extend] = getProjection(ax,v,varargin{:});
 
-% initalize handles
-h = [];
-
 % why should I do this?
 hfig = get(ax,'parent');
 set(hfig,'color',[1 1 1]);
@@ -35,54 +32,25 @@ shading interp
 
 %% draw surface
 
-
-if strcmpi(projection.type,'plain') % plain plot
-  
-  [xu,yu] = project(v,projection,extend);
-  
-  w = reshape(w,size(xu));
-  [CM,h(end+1)] = contourf(ax,xu,yu,w,contours); %#ok<ASGLU>
-
-
-else % spherical plot  
-  
-  hold(ax,'on')
+hold(ax,'on')
     
-  % plot upper hemisphere
-  if extend.minTheta < pi/2-0.0001 
-  
-    % split data according to upper and lower hemisphere
-    ind = v.z > -1e-5;
-    v_upper = submatrix(v,ind);
-    data_upper = reshape(submatrix(cdata,ind),[size(v_upper) 3]);
+% project data
+[x,y] = project(v,projection,extend,'removeAntipodal');
     
-    % project data
-    [xu,yu] = project(v_upper,projection,extend);
+% extract non nan data
+ind = ~isnan(x);
+x = submatrix(x,ind);
+y = submatrix(y,ind);
+data = reshape(submatrix(cdata,ind),[size(x) 3]);
+     
+% plot surface
+h = surf(ax,x,y,zeros(size(x)),real(data));
     
-    % plot surface
-    h(end+1) = surf(ax,xu,yu,zeros(size(xu)),real(data_upper));
-    
-  end
-  
-  % plot lower hemisphere
-  if isnumeric(extend.maxTheta) && extend.maxTheta > pi/2 + 1e-4
-    
-    % split data according to upper and lower hemisphere
-    ind = v.z < 1e-5;
-    v_lower = submatrix(v,ind);
-    data_lower = reshape(submatrix(cdata,ind),[size(v_lower) 3]);
-    
-    % plot surface
-    [xl,yl] = project(v_lower,projection,extend);
-    h(end+1) = surf(ax,xl,yl,zeros(size(xl)),real(data_lower));
-  end
-  
-  hold(ax,'off')
-end
+hold(ax,'off')
 
 % set styles
-optiondraw(h,'LineStyle','none',varargin{:});
-optiondraw(h,'Fill','on',varargin{:});
+optiondraw(h,'LineStyle','none','Fill','on',varargin{:});
+
 
 %% finalize the plot
 
