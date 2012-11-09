@@ -20,7 +20,7 @@ ebsd = loadEBSD([mtexDataPath '/EBSD/data.ctf'],...
 %%
 % Lets visualize a subset of the data
 
-plot(ebsd(inpolygon(ebsd,[2000 0 3400 375])),'colorcoding','hkl')
+plot(ebsd(inpolygon(ebsd,[2000 0 1400 375])),'colorcoding','hkl')
 
 
 %% Data Correction
