@@ -37,8 +37,7 @@ if isempty(t)
   set(t.h,'FontName','times','FontSize',13,...
     'interpreter',getpref('mtex','textInterpreter','latex'));
   
-  opts = getpref('mtex','defaultPlotOptions');
-  optiondraw(t.h,varargin{:},opts{:});
+  optiondraw(t.h,varargin{:});
   
 else
   t.TL = get_option(varargin,{'TopLeft','TL'},t.TL);
