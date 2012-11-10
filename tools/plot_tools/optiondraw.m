@@ -22,7 +22,7 @@ if isempty(h) || isempty(varargin), return; end
 % end
 
 % extract options
-options = extract_argoption(varargin,fieldnames(get(h)));
+options = extract_argoption(varargin,fieldnames(handle(h)));
 
 % set options
 if ~isempty(options), set(h,options{:});end
