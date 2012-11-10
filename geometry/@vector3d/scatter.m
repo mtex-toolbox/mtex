@@ -24,6 +24,7 @@ function varargout = scatter(v,varargin)
 
 %% plot preperations
 
+
 % where to plot
 [ax,v,varargin] = splitNorthSouth(v,varargin{:},'scatter');
 if isempty(ax), return;end
@@ -116,12 +117,19 @@ plotGrid(ax,projection,extend,varargin{:});
 % add annotations
 plotAnnotate(ax,annotations{:},varargin{:})
 
+
 % set resize function for dynamic marker sizes
-%if check_option(varargin,'dynamicMarkerSize')
-  setappdata(gcf,'dynamicMarkerSize',@resizeScatter);
-  if isempty(get(gcf,'resizeFcn'))
-    set(gcf,'resizeFcn',@callResizeScatter);
-  end
+hfig = handle(gcf);
+hListener(1) = handle.listener(hfig, findprop(hfig, 'Position'), ...
+  'PropertyPostSet', {@localResizeScatterCallback,gcf});
+% save listener, otherwise  callback may die
+setappdata(hfig, 'dynamicMarkerSizeListener', hListener);
+
+% %if check_option(varargin,'dynamicMarkerSize')
+%   setappdata(gcf,'dynamicMarkerSize',@resizeScatter);
+%   if isempty(get(gcf,'resizeFcn'))
+%     set(gcf,'resizeFcn',@callResizeScatter);
+%   end
 %end
 
 % output
@@ -130,8 +138,10 @@ if nargout > 0
   varargout{2} = h;
 end
 
-%% ---------------------------------------------------------------
-function resizeScatter(fig, varargin)
+
+
+function localResizeScatterCallback(h,e,fig)
+% get(fig,'position')
 
 %% adjust label positions
 t = findobj(fig,'Tag','addMarkerSpacing');
@@ -183,10 +193,3 @@ end
 
 set(p,'unit',unit);
 
-%% --------------------------------------------------------
-function callResizeScatter(fig, varargin)
-
-if isappdata(fig,'dynamicMarkerSize')
-  RS = getappdata(fig,'dynamicMarkerSize');
-  RS(fig, varargin{:});
-end
