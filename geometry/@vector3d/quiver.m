@@ -19,7 +19,7 @@ function varargout = quiver(v, d, varargin )
 %% plot prepertations
 
 % where to plot
-[ax,v,varargin] = splitNorthSouth(v,varargin{:},'quiver');
+[ax,v,d,varargin] = splitNorthSouth(v,d,varargin{:},'quiver');
 if isempty(ax), return;end
 
 % extract plot options
@@ -34,7 +34,11 @@ x = x(:); y = y(:);
 mhs = get_option(varargin,'MaxHeadSize',0.9);
 arrowSize = get_option(varargin,'arrowSize',0.03);
 
-[dx,dy] = project(d,projection,extend);
+dextend.minTheta = 0;
+dextend.maxTheta = pi;
+dextend.minRho = 0;
+dextend.maxRho = 2*pi;
+[dx,dy] = project(d,projection,dextend,'removeAntipodal');
   
 dx = reshape(abs(arrowSize)*dx,size(x));
 dy = reshape(abs(arrowSize)*dy,size(x));
@@ -43,12 +47,12 @@ if ~check_option(varargin,'autoArrowSize')
   arrowSize = 0;
 end
   
-optiondraw(quiver(x,y,dx,dy,arrowSize,'MaxHeadSize',mhs),varargin{:});
+optiondraw(quiver(ax,x,y,dx,dy,arrowSize,'MaxHeadSize',mhs),varargin{:});
   
 if mhs == 0 % no head -> extend into opposite direction
-  hold on
-  optiondraw(quiver(x,y,-dx,-dy,arrowSize,'MaxHeadSize',0),varargin{:});
-  hold off
+  hold(ax,'on')
+  optiondraw(quiver(ax,x,y,-dx,-dy,arrowSize,'MaxHeadSize',0),varargin{:});
+  hold(ax,'off')
 end
 
 %% finalize the plot
