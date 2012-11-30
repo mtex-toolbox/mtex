@@ -1,13 +1,14 @@
 function [X,Y] = project(v,projection,extend,varargin)
 % perform spherical projection and restriction to plotable domain
 
-%% for antipodal symmetry project all to northern hemisphere
-if projection.antipodal  ...
-    && ~(isnumeric(extend.maxTheta) && extend.maxTheta == pi) ...
-    && ~check_option(varargin,'removeAntipodal')
-    
-  v = subsasgn(v,v.z < -1e-6,-vector3d(subsref(v,v.z < -1e-6)));
+%% for antipodal symmetry project all to current hemisphere
+if projection.antipodal && ~check_option(varargin,'removeAntipodal')
   
+  if ~(isnumeric(extend.maxTheta) && extend.maxTheta == pi) 
+    v = subsasgn(v,v.z < -1e-6,-vector3d(subsref(v,v.z < -1e-6)));
+  elseif isappr(extend.minTheta,pi/2)
+    v = subsasgn(v,v.z > 1e-6,-vector3d(subsref(v,v.z > 1e-6)));
+  end  
 end
 
 % compute polar angles
