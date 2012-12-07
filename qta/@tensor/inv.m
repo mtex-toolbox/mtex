@@ -24,10 +24,12 @@ switch T.rank
 
     % convert to a matrix
     M = tensor42(T.M,T.doubleConvention);
-
+        
     % invert the matrix
-    M = inv(M);   
-
+    for l = 1:size(M,3)
+      M(:,:,l) = inv(M(:,:,l));
+    end
+        
     %
     T.doubleConvention = ~T.doubleConvention;
     
