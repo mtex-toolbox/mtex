@@ -67,6 +67,11 @@ if strcmpi(char(method),'fourier')
       TReuss = EinsteinSum(T_hat,[1:rank(T) -1 -2],odf_hat,[-1 -2]) + TReuss;
     end
     
+    % ensure tensors to be real valued
+    if isreal(double(T))
+      TVoigt = real(TVoigt);
+      TReuss = real(TReuss);
+    end
   end
     
 %% use numerical integration  
