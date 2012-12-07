@@ -18,7 +18,7 @@ function T = EinsteinSum(T1,dimT1,T2,dimT2,varargin)
 %% See also
 %
 
-% convert input
+%% convert input
 if nargin < 3
   M2 = [];
   dimT2 = [];
@@ -38,11 +38,28 @@ else
   
 end
 
-% compute size T2
-sT2 = ones(1,length(dimT2));
+% compute size T1 and T2
+sT1 = ones(1,length(dimT1));
+sT1(1:ndims(T1.M)) = size(T1.M);
+
+rank2 = numel(dimT2);
+sT2 = ones(1,rank2);
 sT2(1:ndims(M2)) = size(M2);
 
-% check for equals negative values in dimT1
+% overhead
+l1 = max(1,prod(sT1(T1.rank+1:end)));
+l2 = max(1,prod(sT2(rank2+1:end)));
+if l1==1
+  ll = l2;
+elseif l2 == 1
+  ll = l1;
+elseif l1 == l2
+  ll = l1;
+else
+  error('Length of the tensors does not fit.');
+end
+
+%% check for equals negative values in dimT1
 [a,b] = findFirstDouble(dimT1);
 if ~isempty(a)
   T1.M = innerSum(T1.M,a,b);
@@ -52,7 +69,7 @@ if ~isempty(a)
   return
 end
 
-% check for equals negative values in dimT2
+%% check for equals negative values in dimT2
 [a,b] = findFirstDouble(dimT2);
 if ~isempty(a)
   M2 = innerSum(M2,a,b);
@@ -61,28 +78,29 @@ if ~isempty(a)
   return
 end
 
-% check for equals negative values in dimT1 and dimT2
-[a,b] = findFirstDouble([dimT1,dimT2]);
-
-if ~isempty(a)
-  b = b - length(dimT1);
-  T1 = mtimesT(T1,a,M2,[b length(sT2)+1]);
-  dimT1(a) = [];
-  dimT2(b) = [];  
-  T1.rank = T1.rank + length(dimT2);
-  T = EinsteinSum(T1,[dimT1 dimT2],varargin{:});
-  return
-end
-
-% join matrix 1 and matrix 2
+%% join matrix 1 and matrix 2
 if ~isempty(M2)
-  T1.M = reshape(T1.M(:)*M2(:).',[size(T1),sT2]);
-  T1.rank = T1.rank + length(dimT2);
+  
+  % expand T1.M and T2.M such that they fit
+  M1 = reshape(T1.M,prod(sT1(1:T1.rank)),1,[]);
+  M2 = reshape(M2,1,prod(sT2(1:rank2)),[]);
+  
+  % expand T1.M and T2.M such that they fit
+  T1.M = repmat(M1,[1 size(M2,2) ll/l1]) .* ...
+    repmat(M2,[size(M1,1) 1 ll/l2]);
+  
+  % combine matrices
+  T1.M =reshape(T1.M,[sT1(1:T1.rank),sT2(1:rank2),ll]);
+      
+  % combine rank
+  T1.rank = T1.rank + rank2;
+  
+  % continue computation
   T = EinsteinSum(T1,[dimT1 dimT2],varargin{:});
   return
 end
 
-% reorder dimension
+%% reorder dimension
 order = 1:max(T1.rank,ndims(T1.M));
 order(1:length(dimT1)) = dimT1;
 
@@ -93,7 +111,7 @@ catch
 end
 T = T1;
 
-% remove name and unit
+%% remove name and unit
 if hasProperty(T,'name'), T.properties = rmfield(T.properties,'name');end
 if hasProperty(T,'unit'), T.properties = rmfield(T.properties,'unit');end
   
@@ -104,13 +122,15 @@ end
 
 varargin = delete_option(varargin,{'doubleconvention','singleconvention','InfoLevel'});
 
-% extract properties
+%% extract properties
 while ~isempty_cell(varargin)  
   T.properties.(varargin{1}) = varargin{2};
   varargin = varargin(3:end);
 end
 
 end
+
+%% ------------- private functions -----------------------
 
 function [a,b] = findFirstDouble(x)
 
@@ -120,6 +140,7 @@ d = d & ~eye(size(d));
  
 end
 
+%% 
 function M = innerSum(M,a,b)
 
 % make a,b the first two dimensions
