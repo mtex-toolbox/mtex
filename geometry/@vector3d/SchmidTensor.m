@@ -8,14 +8,33 @@ function m = SchmidTensor(n,b,varargin)
 %% Output
 %  m - Schmid tensor
 %
+%% Options
+%
+%  generalized - 
+%  symmetric - default
+%  antisymmetric -
+%
 %%
 %
 
-n = tensor(n);
-b = tensor(b);
+tn = tensor(n);
+tb = tensor(b);
 
-m = 0.5*(EinsteinSum(n,1,b,2) + EinsteinSum(n,2,b,1));
+if check_option(varargin,'generalized')
+  
+  m = EinsteinSum(tn,1,tb,2);
+  
+elseif check_option(varargin,'antisymmetric')
+  
+  m = 0.5*(EinsteinSum(tn,1,tb,2) - EinsteinSum(tn,2,tb,1));
+  
+else
+  
+  m = 0.5*(EinsteinSum(tn,1,tb,2) + EinsteinSum(tn,2,tb,1));
+  
+end
 
+if isa(n,'Miller'), m = set(m,'CS',get(n,'CS')); end
 
 end
 
