@@ -7,6 +7,7 @@ function plotipdf(o,r,varargin)
 %
 %% Options
 %  RESOLUTION - resolution of the plots
+%  property   - user defined colorcoding
 %
 %% Flags
 %  antipodal    - include [[AxialDirectional.html,antipodal symmetry]]
