@@ -37,8 +37,6 @@ if isempty(t)
   set(t.h,'FontName','times','FontSize',13,...
     'interpreter',getpref('mtex','textInterpreter','latex'));
   
-  optiondraw(t.h,varargin{:});
-  
 else
   t.TL = get_option(varargin,{'TopLeft','TL'},t.TL);
   t.TR = get_option(varargin,{'TopRight','TR'},t.TR);
