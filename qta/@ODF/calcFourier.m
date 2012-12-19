@@ -20,7 +20,7 @@ function odf = calcFourier(odf,L,varargin)
 %
 
 error(nargchk(2, 2, nargin));
-L = max(L,1);
+L = max(L,4);
 
 for i = 1:length(odf)
   
