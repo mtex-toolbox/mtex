@@ -118,9 +118,9 @@ if any(strcmpi(local_path,cellpath)), return; end
 if ispref('mtex'), rmpref('mtex'); end
 
 % if not yet installed
-disp(' ')
-hline('-')
-disp('MTEX is currently not installed.');
+%disp(' ')
+%hline('-')
+%disp('MTEX is currently not installed.');
 
 
 % look for older version
@@ -141,42 +141,42 @@ if (~isOctave() && MATLABverLessThan('7.8'))
 end
 addpath(local_path);
 
-disp(' ');
-r= input('Do you want to permanently install MTEX? Y/N [Y]','s');
-if isempty(r) || any(strcmpi(r,{'Y',''}))
+%disp(' ');
+%r= input('Do you want to permanently install MTEX? Y/N [Y]','s');
+% if isempty(r) || any(strcmpi(r,{'Y',''}))
+% 
+%   %check for old startup.m
+%   startup_file = fullfile(toolboxdir('local'),'startup.m');
+%   if exist(startup_file,'file')
+%     disp(['> There is an old file startup.m in ' toolboxdir('local')]);
+%     disp('> I''m going to remove it!');
+%     if ispc
+%       delete(startup_file);
+%     else
+%       sudo(['rm ' startup_file])
+%     end
+%   end
+% 
+%   disp(' ');
+%   disp('> Adding MTEX to the MATLAB search path.');
+%   if ispc
+%     install_mtex_windows;
+%   else
+%     install_mtex_linux;
+%   end
+% 
+% end
 
-  % check for old startup.m
-  startup_file = fullfile(toolboxdir('local'),'startup.m');
-  if exist(startup_file,'file')
-    disp(['> There is an old file startup.m in ' toolboxdir('local')]);
-    disp('> I''m going to remove it!');
-    if ispc
-      delete(startup_file);
-    else
-      sudo(['rm ' startup_file])
-    end
-  end
 
-  disp(' ');
-  disp('> Adding MTEX to the MATLAB search path.');
-  if ispc
-    install_mtex_windows;
-  else
-    install_mtex_linux;
-  end
-
-end
-
-
-disp(' ');
-disp('MTEX is now running. However MTEX documentation might not be functional.');
-disp('In order to see the documentation restart MATLAB or click');
-disp('start->Desktop Tools->View Source Files->Refresh Start Button');
-hline('-')
-disp(' ')
-if (~isOctave() && isempty(javachk('jvm')))
-  doc; pause(0.1);commandwindow;
-end
+%disp(' ');
+%disp('MTEX is now running. However MTEX documentation might not be functional.');
+%disp('In order to see the documentation restart MATLAB or click');
+%disp('start->Desktop Tools->View Source Files->Refresh Start Button');
+%hline('-')
+%disp(' ')
+%if (~isOctave() && isempty(javachk('jvm')))
+%  doc; pause(0.1);commandwindow;
+%end
 
 
 end
