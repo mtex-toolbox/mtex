@@ -112,13 +112,13 @@ end
 if isa(data,'EBSD')
   
   % first indexed phase
-  firstPhase = find(~cellfun('ischar',cs),1);
+  firstPhase = find(~cellfun(@ischar ,cs),1);
   minerals = get(data,'minerals');
   
   if ~isempty(minerals{firstPhase})
-    replaceToken(str,'{phase}',['''' minerals{find(ind,1)} '''']);
+    replaceToken(str,'{phase}',['''' minerals{firstPhase} '''']);
   else
-    replaceToken(str,'{phase}',[]);
+    replaceToken(str,'{phase}','');
   end
   
   % EBSD 3d
