@@ -12,7 +12,7 @@ else
   options = {};  
 end    
 
-c = extract_option(varargin,'ReplaceExpr',[]);
+c = extract_option(varargin,'ReplaceExpr','char');
 InfoLevel = get_option(varargin,'InfoLevel',1);
 options = {options{:},c{:}};
 
