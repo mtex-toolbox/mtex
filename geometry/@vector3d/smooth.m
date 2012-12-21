@@ -57,8 +57,22 @@ if ~check_option(v,'plot')
     theta = polar(v);
     res = max(2.5*degree,get(v,'resolution'));
     
+    minTheta = min(theta);
+    maxTheta = max(theta);
+    if minTheta < 1*degree, minTheta = 0;end
+    if abs(maxTheta-pi/2)<1*degree, maxTheta = pi/2;end
+    if abs(maxTheta-pi)<1*degree, maxTheta = pi;end
+    extend.minTheta = max(extend.minTheta,minTheta);
+    if isnumeric(extend.maxTheta)
+      extend.maxTheta = min(extend.maxTheta,maxTheta);
+    end    
+        
     myPlotGrid = S2Grid('plot','resolution',res,...
-      'mintheta',min(theta),'maxtheta',max(theta),'restrict2minmax',varargin{:});
+      'minTheta',extend.minTheta,...
+      'maxTheta',extend.maxTheta,...
+      'minRho',extend.minRho,...
+      'maxRho',extend.maxRho,...
+      'restrict2minmax',varargin{:});
     
     % interpolate on the plotting grid
     [ind,d] = find(v,vector3d(myPlotGrid)); % nearest neighbour interpolation

@@ -12,16 +12,20 @@ function varargout = smooth(m,varargin)
 % get axis hande
 [ax,m,varargin] = getAxHandle(m,varargin{:});
 
-% define plotting grid
-[minTheta,maxTheta,minRho,maxRho] = get(m,'bounds',varargin{:}); %#ok<ASGLU>
-out = S2Grid('PLOT','MAXTHETA',maxTheta,'MAXRHO',maxRho,'MINRHO',minRho,...
-  'RESTRICT2MINMAX',varargin{:});
+% symmetrise points
+x = vector3d(symmetrise(m,'skipAntipodal'));
 
 % symmetrise data
-x = symmetrise(m,'skipAntipodal');
-
-% perform kernel density estimation
-kde = kernelDensityEstimation(x,out,varargin{:});
+if ~isempty(varargin) && isnumeric(varargin{1})
+  varargin{1} = repmat(varargin{1}(:).',size(x,1),1);
+end
+    
+% get plotting region
+[minTheta,maxTheta,minRho,maxRho] = get(m,'bounds',varargin{:}); %#ok<ASGLU>
 
 % use vector3d/smooth for output
-[varargout{1:nargout}] = smooth(ax{:},out,kde,varargin{:});
+[varargout{1:nargout}] = smooth(ax{:},x(:),varargin{:},...
+  'minTheta',minTheta,...
+  'maxTheta',maxTheta,...
+  'minRho',minRho,...
+  'maxRho',maxRho);
