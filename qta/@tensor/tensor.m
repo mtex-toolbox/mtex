@@ -21,8 +21,13 @@ function T = tensor(M,varargin)
 
 doubleConvention = check_option(varargin,'doubleConvention');
 
+if isa(M,'tensor')
+  
+  T = M;
+  return
+
 % conversion from vector3d
-if isa(M,'vector3d')
+elseif isa(M,'vector3d')
   
   T.M = shiftdim(double(M),ndims(M));
   r = 1;

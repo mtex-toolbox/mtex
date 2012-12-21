@@ -23,14 +23,13 @@ propV = cellfun(@(prop) char(T.properties.(prop)),props,'UniformOutput',false);
 
 % add size if greater one
 if sum(size(T.M)>1) > T.rank
-  ss = size(T.M);
   props = ['size';props];
-  propV = [int2str(ss(T.rank+1:end));propV];
+  propV = [size2str(T);propV];
 end
 
 % add rank
 props{end+1} = 'rank'; 
-propV{end+1} = [num2str(T.rank),' (' strrep(int2str(size(T)),'  ',' x ') ')'];
+propV{end+1} = [num2str(T.rank),' (' strrep(int2str(tensorSize(T)),'  ',' x ') ')'];
 
 % add double convention
 if T.doubleConvention
