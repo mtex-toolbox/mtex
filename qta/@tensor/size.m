@@ -1,8 +1,20 @@
-function s = size(T,varargin)
+function varargout = size(T,dim)
 % overloads size
 
-ss = size(T.M,varargin{:});
-ss = ss(1:min(end,T.rank));
+s = size(T.M);
+s = s(T.rank+1:end);
 
-s = ones(1,T.rank);
-s(1:length(ss)) = ss;
+if nargin == 1
+  s = ones(1,2);
+  s(1:length(s)) = s;
+elseif dim > numel(s)
+  s = 1;
+else
+  s = s(dim);
+end
+
+if nargout > 1
+  varargout = num2cell(s);
+else
+  varargout{1} = s;
+end

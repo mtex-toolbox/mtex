@@ -103,6 +103,9 @@ switch lower(plotType)
         minTheta,'maxTheta',maxTheta,'maxRho',maxRho,'minRho',...
         minRho,'RESTRICT2MINMAX','resolution',10*degree,'no_center','antipodal',varargin{:});
       varargin = ['color','k','MaxHeadSize',0,varargin];
+      if check_option(varargin,'complete')
+        varargin = [varargin,{'removeAntipodal'}];
+      end
     end
     
     rho = get_option(varargin,'density',1);
@@ -143,8 +146,10 @@ else
       'contourf',...
       'TR',@(i) label(i),...
       varargin{:});
+  elseif isa(d,'vector3d')
+    quiver(ax{:},S2,d,varargin{:});
   else
-    contourf(ax{:},S2,d,varargin{:});    
+    contourf(ax{:},S2,d,varargin{:});
   end
   
 end
