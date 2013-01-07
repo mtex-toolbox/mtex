@@ -40,8 +40,12 @@ end
 % change the name
 if hasProperty(T,'name')
   name = get(T,'name');
-  if findstr(name,'stiffness')
+  if any(strfind(name,'stiffness'))
     T = set(T,'name',strrep(name,'stiffness','compliance'));
+  elseif any(strfind(name,'compliance'))
+    T = set(T,'name',strrep(name,'compliance','stiffness'));
+  elseif any(strfind(name,'inverse'))
+    T = set(T,'name',strrep(name,'inverse ',''));
   else
     T = set(T,'name',['inverse ' name]);
   end
@@ -49,5 +53,18 @@ end
 
 % change the unit
 if hasProperty(T,'unit')
-  T = set(T,'unit',['1/' get(T,'unit')]);
+  unit = get(T,'unit');
+  slash = strfind(unit,'/');
+  if ~isempty(slash)
+    a = strtrim(strrep(unit(1:slash-1),'1',''));
+    b = strtrim(unit(slash+1:end));
+    if isempty(a)
+      unit = b;
+    else
+      unit = [b ' / ' a];
+    end    
+  else
+    unit = ['1 / ' strtrim(unit)];
+  end
+  T = set(T,'unit',unit);
 end
