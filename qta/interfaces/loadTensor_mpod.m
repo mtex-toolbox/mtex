@@ -96,7 +96,8 @@ for Entry = entry(~cellfun('isempty',entry))
     
     [u,s] = units(index);
     
-    T{end+1,1} = s*symmetrise(tensor(M,cs,'rank',rank,'propertyname',[property ' ' index],'unit',u)); %#ok<AGROW>
+    %T{end+1,1} = s*symmetrise(tensor(M,cs,'rank',rank,'propertyname',[property ' ' index],'unit',u)); %#ok<AGROW>
+    T{end+1,1} = s*tensor(M,cs,'rank',rank,'propertyname',[property ' ' index],'unit',u); %#ok<AGROW>
     
   end
 end

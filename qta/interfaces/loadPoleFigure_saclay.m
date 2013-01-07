@@ -38,4 +38,4 @@ end
 r = S2Grid('regular','points',size(d),'antipodal','maxTheta',maxTheta);
 
   
-pf = PoleFigure(h,r,d,symmetry('cubic'),symmetry,varargin{:});
+pf = PoleFigure(h,r,d,varargin{:});

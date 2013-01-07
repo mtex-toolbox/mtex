@@ -24,6 +24,6 @@ try
   pf = loadPoleFigure_generic(fname,'HEADER',2,'ascii',...
     'ColumnNames', {'Polar Angle' 'Azimuth Angle' 'Intensity'}, 'Columns', [1 2 3],...
     'degree',varargin{:});
-catch
+catch %#ok<CTCH>
   interfaceError(fname,fid);
 end

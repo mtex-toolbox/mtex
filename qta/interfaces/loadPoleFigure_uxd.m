@@ -64,7 +64,7 @@ try
   end
   
   % append last pole figure
-  pf(npf) = PoleFigure(string2Miller(fname),S2Grid(r),d,symmetry('m-3m'),symmetry,'comment',comment);
+  pf(npf) = PoleFigure(string2Miller(fname),S2Grid(r),d,'comment',comment,varargin{:});
   
 catch
   interfaceError(fname,fid);

@@ -28,7 +28,7 @@ try
     
     r =  S2Grid('Regular','Points',[90 17],'MINTHETA',0,'MAXTHETA',80*degree);
     
-    pf(ip) = PoleFigure(h,r,d,symmetry('cubic'),symmetry('triclinic'));
+    pf(ip) = PoleFigure(h,r,d,varargin{:});
     ip = 1 + ip;
   end
 catch
