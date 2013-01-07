@@ -74,7 +74,7 @@ fclose(fid);
 cs = symmetry('cubic');
 ss = symmetry('-1');
 
-pf = PoleFigure(h,r,d,cs,ss);
+pf = PoleFigure(h,r,d,varargin{:});
 
 
 function value = readToken(str,token)

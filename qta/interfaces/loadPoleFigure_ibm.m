@@ -39,7 +39,7 @@ try
     r = S2Grid('regular','points',size(d));
     
     % generate Polefigure
-    pf(ipf) = PoleFigure(h,r,double(d),symmetry('cubic'),symmetry,'comment',comment,varargin{:}); %#ok<AGROW>
+    pf(ipf) = PoleFigure(h,r,double(d),'comment',comment,varargin{:}); %#ok<AGROW>
     %comment = [];
     ipf = ipf+1;
     fgetl(fid);

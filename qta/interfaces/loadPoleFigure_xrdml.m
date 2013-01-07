@@ -29,7 +29,7 @@ if strcmp(char(root.getTagName()),'xrdMeasurements')
   
   for k=1:xrdMeasurment.getLength
     
-    pf(k) = localParseMeasurement(xrdMeasurment.item(k-1));
+    pf(k) = localParseMeasurement(xrdMeasurment.item(k-1),varargin{:});
     
   end
   
@@ -41,7 +41,7 @@ end
 
 
 
-function pf = localParseMeasurement(measurement)
+function pf = localParseMeasurement(measurement,varargin)
 
 % measurement.getElementsByTagName('comment');
 scan = measurement.getElementsByTagName('scan');
@@ -63,7 +63,7 @@ r = S2Grid(vertcat(data.r));
 hkl = unique(vertcat(data.h),'rows');
 h = Miller(hkl(:,1),hkl(:,2),hkl(:,3));
 
-pf = PoleFigure(h,r,d,symmetry('cubic'),symmetry);
+pf = PoleFigure(h,r,d,varargin{:});
 
 
 function data = localParseScan(scan)
