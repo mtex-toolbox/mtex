@@ -12,7 +12,7 @@ function THat = Fourier(T,varargin)
 %
 
 l = get_option(varargin,'order',1);
-THat = tensor(zeros([repmat(3,1,T.rank) 2*l+1 2*l+1]),'rank',T.rank+2);
+THat = tensor(zeros([repmat(3,1,T.rank) 2*l+1 2*l+1]),'rank',T.rank+2,'noCheck');
 
 U = tensorU;
 
