@@ -17,7 +17,7 @@ for i = 4:length(files)
   try    
     [~,interface] = loadPoleFigure(fullfile(mtexDataPath,'PoleFigure',files(i).name));    
     disp([files(i).name, repmat(' ',1,20-length(files(i).name)), ' - ', interface]);
-    interfaces = interfaces(cellfun('isempty',strfind(interfaces,interface)));
+    interfaces(strcmpi(interfaces,['loadPoleFigure_' interface '.m'])) = [];
   catch
     disp([files(i).name, repmat(' ',1,20-length(files(i).name)), ' - FAILED']);
     %disp(lasterr);
