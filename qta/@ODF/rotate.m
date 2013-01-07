@@ -1,4 +1,4 @@
-function odf = rotate(odf,q)
+function odf = rotate(odf,q,varargin)
 % rotate ODF
 %
 %% Input
