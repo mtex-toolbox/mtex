@@ -119,11 +119,11 @@ plotAnnotate(ax,annotations{:},varargin{:})
 
 
 % set resize function for dynamic marker sizes
-hfig = handle(gcf);
-hListener(1) = handle.listener(hfig, findprop(hfig, 'Position'), ...
-  'PropertyPostSet', {@localResizeScatterCallback,gcf});
+hax = handle(ax);
+hListener(1) = handle.listener(hax, findprop(hax, 'Position'), ...
+  'PropertyPostSet', {@localResizeScatterCallback,ax});
 % save listener, otherwise  callback may die
-setappdata(hfig, 'dynamicMarkerSizeListener', hListener);
+setappdata(hax, 'dynamicMarkerSizeListener', hListener);
 
 % %if check_option(varargin,'dynamicMarkerSize')
 %   setappdata(gcf,'dynamicMarkerSize',@resizeScatter);
@@ -140,14 +140,16 @@ end
 
 
 
-function localResizeScatterCallback(h,e,fig)
+function localResizeScatterCallback(h,e,hax)
 % get(fig,'position')
 
+hax = handle(hax);
+
 %% adjust label positions
-t = findobj(fig,'Tag','addMarkerSpacing');
+t = findobj(hax,'Tag','addMarkerSpacing');
 
 % get markerSize
-markerSize = get(findobj('type','patch'),'MarkerSize');
+markerSize = get(findobj(hax,'type','patch'),'MarkerSize');
 if isempty(markerSize)
   markerSize = 0;
 elseif iscell(markerSize)
@@ -163,7 +165,12 @@ for it = 1:numel(t)
   set(t(it),'unit','data','position',[xy,0]);
   set(t(it),'unit','pixels');
   xy = get(t(it),'position');
-  extend = get(t(it),'extent');
+  if isappdata(t(it),'extent')
+    extend = getappdata(t(it),'extent');
+  else
+    extend = get(t(it),'extent');
+    setappdata(t(it),'extent',extend);
+  end
   margin = get(t(it),'margin');
   xy(2) = xy(2) - extend(4)/2 - margin - markerSize/2 + 2;
   if isnumeric(get(t(it),'BackgroundColor')), xy(2) = xy(2) - 5;end
@@ -173,7 +180,7 @@ for it = 1:numel(t)
 end
 
 %% scale scatterplots
-u = findobj(fig,'Tag','dynamicMarkerSize');
+u = findobj(hax,'Tag','dynamicMarkerSize');
 
 if isempty(u), return;end
 
