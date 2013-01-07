@@ -20,18 +20,10 @@ setpref('mtex','zAxisDirection','outOfPlane');
 setpref('mtex','outerPlotSpacing',30);
 setpref('mtex','innerPlotSpacing',20);
 
-% colors for EBSD phase plotting
-EBSDColorNames = {'light blue','light green','light red',...
-  'cyan','magenta','yellow',...
-  'blue','green','red',...
-  'dark blue','dark green','dark red'};
-EBSDColors = {[0.5 0.5 1],[0.5 1 0.5],[1 0.5 0.5],...
-  [0 1 1],[1 0 1],[1 1 0],...
-  [0 0 1],[0 1 0],[1 0 0],...
-  [0 0 0.3],[0 0.3 0],[0.3 0 0]};
+% default fontsize
+setpref('mtex','FontSize',13);
 
-setpref('mtex','EBSDColorNames',EBSDColorNames);
-setpref('mtex','EBSDColors',EBSDColors);
+
 %% Euler angle convention
 % default Euler angle convention
 
@@ -83,6 +75,23 @@ setpref('mtex','defaultColorMap',WhiteJetColorMap);
 
 % MATLAB default color map
 % setpref('mtex','defaultColorMap','default');
+
+%% EBSD Phase Colors
+
+% colors for EBSD phase plotting
+EBSDColorNames = {'light blue','light green','light red',...
+  'cyan','magenta','yellow',...
+  'blue','green','red',...
+  'dark blue','dark green','dark red'};
+
+EBSDColors = {[0.5 0.5 1],[0.5 1 0.5],[1 0.5 0.5],...
+  [0 1 1],[1 0 1],[1 1 0],...
+  [0 0 1],[0 1 0],[1 0 0],...
+  [0 0 0.3],[0 0.3 0],[0.3 0 0]};
+
+setpref('mtex','EBSDColorNames',EBSDColorNames);
+setpref('mtex','EBSDColors',EBSDColors);
+
 
 %% Default ColorMap for Phase Plots
 
