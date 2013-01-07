@@ -14,7 +14,20 @@ cs = symmetry('-3m'); ss = symmetry('-1');
 odf = fibreODF(Miller(1,1,0),zvector,cs,ss)
 pf = calcPoleFigure(odf,Miller(1,0,0),S2Grid('equispaced','antipodal'));
 
+%%
+% and simulate some EBSD data
+ebsd = calcEBSD(odf,100)
+
 %% Scatter Plots
+% In a scatter plots indivudal points are plotted. This plot is usually
+% applied when individual orientations or pole figure measurements are
+% vizualized.
+%%
+% 
+
+scatter(ebsd)
+
+%%
 % Three dimensional vectors, Miller indices, spherical grids are plotted as
 % single markers in a spherical projection. The shape, size and color of
 % the markers can be adjusted using the following parameters (see also

@@ -10,8 +10,8 @@ function m = SchmidTensor(n,b,varargin)
 %
 %% Options
 %
-%  generalized - 
-%  symmetric - default
+%  generalized   - 
+%  symmetric     - default
 %  antisymmetric -
 %
 %%
