@@ -338,9 +338,6 @@ else
     set([handles.angle{:}], 'Enable', 'off');
   end
   
-  if any(strcmp(Laue(cs),{'m-3m','m-3'})),
-    set([handles.axis{:}], 'Enable', 'off');
-  end
   % set mineral
   set(handles.mineral,'string',get(cs,'mineral'));
 end
