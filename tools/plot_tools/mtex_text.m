@@ -4,6 +4,7 @@ function h = mtex_text(x,y,t,varargin)
 if isempty(t), return;end
 
 interpreter = getpref('mtex','textInterpreter');
+fs = getpref('mtex','FontSize');
 
 if isa(t,'vector3d') 
   s = char(t,interpreter,'cell');
@@ -21,5 +22,5 @@ else
   
 end
 
-h = optiondraw(text(x,y,s,'interpreter',interpreter),varargin{:});
+h = optiondraw(text(x,y,s,'interpreter',interpreter),'FontSize',fs,varargin{:});
 
