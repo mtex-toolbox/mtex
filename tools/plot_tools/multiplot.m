@@ -14,7 +14,6 @@ function a = multiplot(nplots,varargin)
 %
 %% Options
 %  [cmin cmax] - minimum and maximum value for color coding
-%  fontsize    - fontsize used for anotations
 %  string      - some anotation to be added to the plot
 %  outerPlotSpacing -
 %  innerPlotSpacing -
