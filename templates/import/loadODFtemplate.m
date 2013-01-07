@@ -33,3 +33,7 @@ psi = kernel({kernel name},'halfwidth',{halfwidth});
 odf = loadODF(fname,CS,SS,{method},'kernel',psi,'resolution',{resolution},...
   'interface',{interface},{options});
 
+%% Correct Data
+
+rot = rotation('Euler',{phi1},{Phi},{phi2});
+odf = rotate(odf,rot);

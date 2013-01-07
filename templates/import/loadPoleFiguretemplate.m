@@ -60,3 +60,5 @@ pf_defbg = loadPoleFigure(fname_defbg,h,CS,SS,{structural coefficients},'interfa
 % correct data
 pf = correct(pf,{corrections});
 
+rot = rotation('Euler',{phi1},{Phi},{phi2});
+pf = rotate(pf,rot,{rotationOption});

@@ -34,8 +34,7 @@ Z = {Z-values};
 ebsd = loadEBSD(fname,CS,SS,'interface',{interface} ...
   ,{options});
 
+%% Correct Data
 
-
-
-
-
+rot = rotation('Euler',{phi1},{Phi},{phi2});
+ebsd = rotate(ebsd,rot,{rotationOption});

@@ -98,23 +98,27 @@ else
 
 end
 
-scrsz = get(0,'ScreenSize');
-figure('Position',[scrsz(3)/8 scrsz(4)/8 6*scrsz(3)/8 6*scrsz(4)/8]);
+figure;
+data = modifyData(gcbf,data);
 
 switch class(data)
   case 'EBSD'
-    plot_EBSD(gcbf,data);
+    plot(data,'silent');
   case 'PoleFigure'
-    plot_pf(gcbf,data);
+    plot(data,'silent');
+    annotate([xvector,yvector,zvector],...
+      'labeled','Backgroundcolor','w','Marker','s',...
+      'MarkerFaceColor','k','MarkerEdgeColor','w');
   case 'ODF'
-    plot_ODF(gcbf,data);
+    cs = get(data,'CS');
+    h = unique([Miller(1,0,0,cs),Miller(0,1,0,cs),Miller(0,0,1,cs),Miller(1,1,0),Miller(2,1,0)]);
+    plotpdf(data,h(1:min(3,end)),'antipodal','silent');
 end
 
 
 function finish_callback(varargin)
 
 handles = getappdata(gcbf,'handles');
-templates = getappdata(gcbf,'templates');
 
 if ~any(strcmpi('listbox',fieldnames(handles)))
   lb = [];
@@ -136,13 +140,10 @@ if get(handles.radio_exp(1),'Value')
   vname = get(handles.workspace(1),'String');
   if isempty(vname),
     errordlg('Enter name of workspace variable')
-    return; end
-
-  switch type
-    case 'PoleFigure'
-%      data = modifypf(gcbf,data);
+    return; 
   end
 
+  data = modifyData(gcbf,data);
   assignin('base',vname,data);
 
 
@@ -184,21 +185,10 @@ elseif get(handles.radio_exp(2),'Value')
     case {'tensor'}
       fl = {fn{7}, lb(7)};
   end
-   	str = generateScript(type,fl{1},data,getappdata(fl{2},'interface'),...
+  str = generateScript(type,fl{1},data,getappdata(fl{2},'interface'),...
     getappdata(fl{2},'options'), handles);
 
-  str = generateCodeString(str);
-
-  sel = get(handles.template(1),'Value');
-  for l = sel(sel <= numel(templates))
-    templatestr = file2cell( fullfile(mtex_path,'templates',templates{l}));
-    str = [str generateCodeString(templatestr)];
-  end
-
-  while iscell(fl), fl = fl{1};end
-  [pname fname] = fileparts(fl);
-  strfname = [ fname '_'  regexprep(templates{l},[type '_(\w+).m'],'$1')];
-  openuntitled(str,strfname);
+  openuntitled(generateCodeString(str));
 end
 
 close
@@ -248,44 +238,14 @@ for n = 1:length(strCells)
 end
 
 
-function plot_ODF(wzrd,odf) %#ok<INUSL>
-
-cs = get(odf,'CS');
-h = unique([Miller(1,0,0,cs),Miller(0,1,0,cs),Miller(0,0,1,cs),Miller(1,1,0),Miller(2,1,0)]);
-plotpdf(odf,h(1:min(3,end)),'antipodal','silent');
-
-function plot_EBSD(wzrd,ebsd)  %#ok<INUSL>
-
-plot(ebsd);
-
-
-function plot_pf(wzrd,pf)
-
-pf = modifypf(wzrd,pf);
-plot(pf,'silent');
-annotate([xvector,yvector,zvector],...
-  'labeled','Backgroundcolor','w','Marker','s',...
-  'MarkerFaceColor','k','MarkerEdgeColor','w');
-
-
-function pf = modifypf(wzrd,pf)
-% Modify ODF before exporting or plotting
-
-handles = getappdata(wzrd,'handles');
-if get(handles.rotate,'value')
-  pf = rotate(pf,str2num(get(handles.rotateAngle,'string'))*degree); %#ok<ST2NM>
-end
-
-%if get(handles.flipud,'value'), pf = flipud(pf);end
-
-%if get(handles.fliplr,'value'), pf = fliplr(pf);end
-
-function odf = modifyodf(wzrd,odf)
+function data = modifyData(wzrd,data)
 % Modify ODF before exporting or plotting
 
 handles = getappdata(wzrd,'handles');
 
+rot = rotation('Euler',str2double(get(handles.rotateAngle,'string'))'*degree);
 
+options = {'','keepXY','keepEuler'};
 
-
+data = rotate(data,rot,options{cell2mat(get(handles.euler2spatial,'value'))>0});
 

@@ -73,6 +73,28 @@ for i=1:length(fnames)
         set(handles.method(1),'value',0);
         set(handles.method(2),'value',1);
       end
+    elseif isa(newData,'EBSD')
+      switch interface
+        case 'ang'
+          set(handles.rotateAngle(1),'string','90')
+          set(handles.rotateAngle(2),'string','180')
+          set(handles.rotateAngle(3),'string','0')
+          set(handles.euler2spatial,'value',0);
+          set(handles.euler2spatial(3),'value',1);
+          set(handles.ssText,'string',...
+            ['Warning: The ang format usually uses different conventions for '...
+            'the spatial and the Euler angle reference frame. The default rotation corrects for this']);
+        case 'ctf'
+          set(handles.rotateAngle(1),'string','180')
+          set(handles.rotateAngle(2),'string','0')
+          set(handles.rotateAngle(3),'string','0')
+          set(handles.euler2spatial,'value',0);
+          set(handles.euler2spatial(3),'value',1);
+          set(handles.ssText,'string',...
+            ['Warning: ' ...
+            'The ctf format usually uses different conventions for '...
+            'the spatial and the Euler angle reference frame. The default rotation corrects for this.']);
+      end
     end
 
 
