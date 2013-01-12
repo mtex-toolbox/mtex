@@ -31,19 +31,15 @@ try
     % if everything is correct return with no error
     return
   end
-  
-  % set default values for the crystal and specimen symmetry
-  cs = get_option(varargin,'CS',symmetry('cubic'));
-  ss = get_option(varargin,'SS',symmetry('-1'));
-  
+     
   % compute orientations
   d = permute(d,[2,1,3]);
   %d = flipdim(d,1);
   d = flipdim(d,2);
-  ori = orientation('matrix',d,cs,ss);
+  ori = rotation('matrix',d);
   
   % set up EBSD object
-  ebsd = EBSD(ori);
+  ebsd = EBSD(ori,varargin{:});
   
 catch %#ok<CTCH>
   interfaceError(fname)  
