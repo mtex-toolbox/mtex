@@ -7,7 +7,7 @@ if ~isappdata(ax,'grid') % there is not grid yet
   grid = plotPolarGrid(ax,projection,extend,varargin{:});
   
   optiondraw(grid.boundary,'color','k');
-  optiondraw(grid.grid,'visible','on','linestyle',':','color',[.4 .4 .4]);
+  optiondraw(grid.grid,'visible','off','linestyle',':','color',[.4 .4 .4]);
   optiondraw(grid.ticks,'fontsize',8,'FontName','times','visible','off');
   
   set(ax,'box','on','XTick',[],'YTick',[]);

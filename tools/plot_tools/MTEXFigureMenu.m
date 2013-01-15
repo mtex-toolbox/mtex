@@ -1,7 +1,14 @@
 function MTEXFigureMenu(varargin)
 
+% create a menu MTEX
 m = uimenu('label','MTEX');
 
+% make it second position
+mnchlds = allchild(gcf);
+p = findall(mnchlds,'Tag','figMenuFile');
+mnchlds = [mnchlds(2:find(p == mnchlds)-1) ; mnchlds(1) ; p]; % permutate positions
+set(gcf,'Children',mnchlds)
+  
 uimenu(m,'label','Export Image','callback',@Export);
 cm = uimenu(m,'label','Colormap');
 
@@ -35,8 +42,9 @@ uimenu(m,'label','Set Inner Margin','callback',{@setMargin,'inner'});
 uimenu(m,'label','Set Outer Margin','callback',{@setMargin,'outer'});  
 
 %% annotations
-uimenu(m,'label','Show grid','checked','on');
-uimenu(m,'label','Show ticks','checked','off');
+
+uimenu(m,'label','Show grid','checked','off','callback',{@setVisible,'grid'});
+uimenu(m,'label','Show ticks','checked','off','callback',{@setVisible,'ticks'});
 
 %% fontsize
 
@@ -52,6 +60,7 @@ uimenu(fs,'label','17 points','callback',{@setFontSize,17});
 uimenu(fs,'label','18 points','callback',{@setFontSize,18});
 uimenu(fs,'label','19 points','callback',{@setFontSize,19});
 uimenu(fs,'label','20 points','callback',{@setFontSize,20});
+
 
 end
 
@@ -87,6 +96,31 @@ set(o,'FontSize',fs);
 set(obj,'checked','on');
 
 end
+
+
+%% Grid Visibility
+function setVisible(obj,event,element)
+
+if strcmp(get(obj,'checked'),'on')
+  onoff = 'off';
+else
+  onoff = 'on';
+end
+
+set(obj,'checked',onoff);
+
+% for all axes
+ax = findobj(gcf,'type','axes');
+for a = 1:numel(ax)
+
+  if ~isappdata(ax(a),'grid'), continue;end
+  grid = getappdata(ax(a),'grid');
+  set(grid.(element),'visible',onoff);
+      
+end
+
+end
+
 
 %% X Axis Direction
 function setXAxisDirection(obj,event)
