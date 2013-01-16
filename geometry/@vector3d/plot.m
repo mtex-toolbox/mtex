@@ -20,7 +20,7 @@ function varargout = plot(v,varargin)
 
 
 %% extract plot type
-plotTypes = {'smooth','scatter','text','contour','contourf','quiver','line','plane','circle','surf'};
+plotTypes = {'smooth','scatter','text','contour','contourf','quiver','line','plane','circle','surf','pcolor'};
 plotType = extract_option(varargin,plotTypes);
 if isempty_cell(plotType)
   plotType = 'scatter';
@@ -62,6 +62,10 @@ switch lower(plotType)
   case 'contour'
     
     [varargout{1:nargout}] = contour(ax{:},v,varargin{:});
+    
+  case 'pcolor'
+    
+    [varargout{1:nargout}] = pcolor(ax{:},v,varargin{:});
     
   case 'quiver'
     
