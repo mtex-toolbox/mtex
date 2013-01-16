@@ -56,7 +56,7 @@ if check_option(varargin,'south')
 else
   minthetaGrid = 0;
   
-  if check_option(varargin,'antipodal') && ...
+  if check_option(varargin,{'antipodal','north'}) && ...
       (~check_option(varargin,'complete') ||check_option(varargin,'north'))
     maxthetaGrid = pi/2;
   else
