@@ -184,5 +184,5 @@ if numel(unique(data)) > 1
   
   
 elseif ~check_option(varargin,'fill',[],'off')  
-  h = fill(ax,X,Y,data,'LineStyle','none','parent',ax);
+  h = fill(X,Y,data,'LineStyle','none','parent',ax);
 end
