@@ -21,8 +21,13 @@ function T = tensor(M,varargin)
 
 doubleConvention = check_option(varargin,'doubleConvention');
 
+if isa(M,'tensor')
+  
+  T = M;
+  return
+
 % conversion from vector3d
-if isa(M,'vector3d')
+elseif isa(M,'vector3d')
   
   T.M = shiftdim(double(M),ndims(M));
   r = 1;
@@ -87,31 +92,76 @@ if check_option(varargin,'doubleconvention')
 end
 
 
-varargin = delete_option(varargin,{'doubleconvention','singleconvention','InfoLevel'});
+options = delete_option(varargin,{'doubleconvention','singleconvention','InfoLevel','noCheck'});
 
 % extract properties
-while ~isempty_cell(varargin)  
-  T.properties.(varargin{1}) = varargin{2};
-  varargin = varargin(3:end);
+while ~isempty_cell(options)  
+  T.properties.(options{1}) = options{2};
+  options = options(3:end);
 end
 
 % setup tensor
 superiorto('quaternion','rotation','orientation')
 T = class(T,'tensor');
 
-if ~check_option(varargin,'noCheck')
-  check_symmetry(T)
+if ~check_option(varargin,'noCheck') && ~check_symmetry(T)
+  T = symmetrise(T);
 end
 
+%%
 
-function check_symmetry(T)
+function T = symmetrise(T)
+% symmetrise a tensor according to its crystal symmetry
 
-rot = rotation(T.CS);
+M_old = T.M;
 
-for i = 2:length(rot)
-  
-  if T ~= rotate(T,rot(i))
-    warning('MTEX:tensor','Tensor does not pose the right symmetry');
-    return;
-  end  
+% make symmetric if neccasarry
+% rank 2 and 4  only
+if T.rank == 4 || T.rank == 2  
+  if T.rank == 4, T.M = tensor42(T.M,T.doubleConvention);end
+    
+  % if only a tridiagonal matrix is given -> symmetrise
+  if all(all(0 == triu(T.M,1))) || all(all(0 == tril(T.M,-1)))
+    T.M = triu(T.M) + triu(T.M,1).' + tril(T.M,-1) + tril(T.M,-1).';
+  end
+  if T.rank == 4, T.M = tensor24(T.M,T.doubleConvention);end
 end
+
+% make all missing values imaginary
+T.M(T.M==0) = 1i;
+
+% rotate according to symmetry
+T = rotate(T,T.CS);
+
+% set all entries that contain missing values to NaN
+T.M(~isnull(imag(T.M))) = NaN;
+
+% take the mean 
+T.M = nanmean(T.M,T.rank+1);
+
+% check whether something has changed 
+if any(abs(T.M(:)-M_old(:))./max(abs(M_old(:)))>1e-6 & ~isnull(M_old(:)))
+  warning('MTEX:tensor','Tensor does not pose the right symmetry');
+end
+
+% NaN values become zero again
+T.M(isnan(T.M)) = 0;
+
+
+
+
+
+ %%
+ function out = check_symmetry(T)
+ 
+ out = true;
+ rot = rotation(T.CS);
+ 
+ for i = 2:length(rot)
+   
+   if T ~= rotate(T,rot(i))
+     %warning('MTEX:tensor','Tensor does not pose the right symmetry');
+     out = false;
+     return;
+   end
+ end

@@ -20,14 +20,18 @@ function [TVoigt, TReuss, THill] = calcTensor(odf,T,varargin)
 %% See also
 %
  
-% for Reuss tensor invert tensor
-if get(T,'rank') ~= 3, Tinv = inv(T);end
+
 
 % init Voigt and Reuss averages
 TVoigt = set(T,'M',zeros([repmat(3,1,rank(T)) 1 1]));
 TVoigt = set(TVoigt,'CS',symmetry);
-TReuss = set(Tinv,'M',zeros([repmat(3,1,rank(T)) 1 1]));
-TReuss = set(TReuss,'CS',symmetry);
+
+% for Reuss tensor invert tensor
+if get(T,'rank') ~= 3 && nargout > 1
+  Tinv = inv(T);
+  TReuss = set(Tinv,'M',zeros([repmat(3,1,rank(T)) 1 1]));  
+  TReuss = set(TReuss,'CS',symmetry);
+end
 
 % determine method for average calculation
 
@@ -65,12 +69,12 @@ if strcmpi(char(method),'fourier')
     if exist('Tinv','var'), 
       T_hat = Fourier(Tinv,'order',l);
       TReuss = EinsteinSum(T_hat,[1:rank(T) -1 -2],odf_hat,[-1 -2]) + TReuss;
+      if isreal(double(T)), TReuss = real(TReuss);end
     end
     
     % ensure tensors to be real valued
     if isreal(double(T))
       TVoigt = real(TVoigt);
-      TReuss = real(TReuss);
     end
   end
     

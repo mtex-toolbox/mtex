@@ -3,27 +3,12 @@ function T = times(T1,T2)
 
 if isa(T1,'tensor') && isa(T2,'double')
   
-  % copy argument
-  T = T1;
-  r = T.rank;
-  s = size(T.M);
-  
-  % reshape tensor
-  T.M = reshape(T.M,[prod(s(1:r)) 1 prod(s(r+1:end))]);
-  
-  % reshape the scalar field
-  shape = [1 1,prod(s(r+1:end))];
-  if numel(T2) > 1, T2 = reshape(T2,shape);end
-     
-  % multiply
-  T.M = mtimesxx(T.M,T2);
-  
-  % reshape tensor back
-  T.M = reshape(T.M,s);
+  T = EinsteinSum(T1,1:T1.rank,T2,[]);
   
 elseif isa(T2,'tensor') && isa(T1,'double')
   
   T = times(T2,T1);
+  
 elseif isa(T2,'tensor') && isa(T2,'tensor')
   
   if rank(T1) < rank(T2)
