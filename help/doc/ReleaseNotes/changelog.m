@@ -1,8 +1,6 @@
 %% MTEX Changelog
 %
-%% Contents
-%
-%% MTEX 3.4.0 - 12/2012
+%% MTEX 3.4.0 - 01/2013
 %
 % *New plotting engine*
 %
@@ -19,23 +17,91 @@
 % * Arbitary plots can be combined in one figure.
 % * One can now arbitrarily switch between scatter, contour and smooth
 % plots for any data.
-% obsolete options: |fliplr|, |flipud|, |gray|, 
+% * obsolete options: |fliplr|, |flipud|, |gray|, 
 % 
 % *Colormap handling*
-% User defined colormap can now be stored in the folder |colormaps|, e.g.
-% as |red2blueColorMap.m| and can set by
+%
+% * User defined colormap can now be stored in the folder |colormaps|, e.g.
+% as |red2blueColorMap.m| and can set interactively from the MTEX menu or
+% by the command
+%
 %   mtexColorMap red2blue
-% or interactively from the MTEX menu.
+%
+% *ODF*
+%
+% * the computation of more then one maximum is back. Use the command
+%
+%   [modes, values] = calcModes(odf,n)
 %
 % *EBSD data*
+%
+% * MTEX is now aware about inconsistent coordinate system used in CTF and
+% HKL EBSD files for Euler angles and spatial coordinates. The user can now
+% convert either the spatial coordinates or the Euler angles such that they
+% become consistent. This can be easily done by the import wizard or via
+% the commands
+%
+%   % convert spatial coordinates to Euler angle coordinate system
+%   loadEBSD('filename','convertSpatial2EulerReferenceFrame')
+%
+%   % convert Euler angles to spatial coordinate system
+%   loadEBSD('filename','convertEuler2SpatialReferenceFrame')
+%
 % * It is now possible to store a color within the variable describing a
 %  certain mineral. This makes phase plots of EBSD data and grains more
 %  consistent and customizable.
+%
 %   CS = symmetry('cubic','mineral','Mg','color','red')
+%
 % * Better rule of thumb for the kernel width when computing an ODF from
 % individual orientations via kernel density estimation.
 % * inpolygon can be called as
+%
 %   inpolygon(ebsd,[xmin ymin xmax ymax])
+%
+% *Tensors*
+%
+% * new command to compute the Schmid tensor
+%
+%   R = SchmidTensor(m,n)
+%
+% * new command to compute Schmid factor and active slip system
+%
+%   [tauMax,mActive,nActive,tau,ind] = calcShearStress(stressTensor,m,n,'symmetrise')
+%
+% * it is now possible to define a tensor only by its relevant entries.
+% Missing entries are filled such that the symmetry properties are
+% satisfied.
+%
+% * faster, more stable tensor implementation
+% * new syntax in tensor indexing to be compatible with other MTEX classes.
+% For a 4 rank thensor |C| we have now
+%
+%   % extract entry 1,1,1,1 in tensor notation
+%   C{1,1,1,1}
+%
+%   % extract entry 1,1 in Voigt notation
+%   C{1,1}
+% 
+% For a list of tensors |C| we have
+%
+%   % extract the first tensor
+%   C(1)
+%
+% *Import / Export*
+%
+% * command to export orientations
+%
+%   export(ori,'fname')
+%
+% * command to import vector3d
+%
+%  v   = loadvector3d_generic('fname','ColumnNames',{'x','y','z'})
+%  v   = loadvector3d_generic('fname','ColumnNames',{'latitude','longitude'})
+%
+% * new interface for DRex
+% * new interface for Rigaku
+% * new interface for Saclay
 %
 %% MTEX 3.3.1 - 07/2012
 %
