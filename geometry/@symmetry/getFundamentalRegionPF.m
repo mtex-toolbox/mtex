@@ -9,6 +9,7 @@ function  [minTheta,maxTheta,minRho,maxRho,v,N] = getFundamentalRegionPF(cs,vara
 %  maxRho   -
 %  minRho   - starting rho
 %  v        - some nice Miller indice
+%  N        - 
 %
 %% Options
 %  antipodal      - include [[AxialDirectional.html,antipodal symmetry]]
@@ -141,6 +142,8 @@ end
 
 end
 
+%% --------------- private functions -----------------------
+
 function maxTheta = maxThetam3(rho)
 
 maxTheta = pi/2 * ones(size(rho));
@@ -152,3 +155,4 @@ ind = rho>pi*3/4;
 maxTheta(ind) = pi- atan2(cos(pi/4),sin(pi/4)*cos(rho(ind)));
 
 end
+

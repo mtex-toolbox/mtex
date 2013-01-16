@@ -139,7 +139,7 @@ if nargout > 0
 end
 
 
-
+%% -----------------------------------------------
 function localResizeScatterCallback(h,e,hax)
 % get(fig,'position')
 
