@@ -64,6 +64,7 @@ tau = double(EinsteinSum(R,[-1,-2],sigma,[-1,-2],'name','Schmid factor'));
 
 % vizualize the Schmid factors
 contourf(r,tau)
+colorbar
 
 %% Finding the active slip system
 % With slip direction m and slip plane n also all crystallographic
@@ -104,10 +105,10 @@ tau = double(EinsteinSum(RSym,[-1,-2],sigmaRot,[-1,-2],'name','Schmid factor'))'
 %%
 % we observe that the Schmid factor is always between -0.5 and 0.5. The
 % largest value indicates the active slip system. In the above case this
-% would be the slip system 12
+% would be the slip system 4
 
-mSym(12)
-nSym(12)
+mSym(4)
+nSym(4)
 
 %% Finding the active slip system
 % All the above steps for finding the active slip system, i.e., 
@@ -136,13 +137,14 @@ sigma
 
 % pot the maximum Schmidt factor
 contourf(r,tauMax);
+colorbar
 
 %%
 
 % plot the index of the active slip system
 pcolor(r,ind);
 
-colormap black2whiteColorMap
+mtexColorMap black2white
 
 %%
 % We can even visualize the active slip system
@@ -161,9 +163,3 @@ quiver(r,mActive,'ArrowSize',0.2,'LineWidth',2,'Color','r');
 % plot active slip direction in green
 quiver(r,nActive,'ArrowSize',0.2,'LineWidth',2,'Color','g');
 hold off
-
-%% Visualize active slip plane and splip directions
-%
-% Next we want to analyze the active slip plane and slip direction in
-% the precense of simple shear stress. To this end we define for all
-% plotting directions a corresponding stress tensor.
