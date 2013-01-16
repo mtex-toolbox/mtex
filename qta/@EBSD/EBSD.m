@@ -87,7 +87,7 @@ ebsd.unitCell = get_option(varargin,'unitCell',[]);
 
 ebsd = class(ebsd,'EBSD');
 
-% remove ignore phases
+%% remove ignore phases
 if check_option(varargin,'ignorePhase')
   
   del = ismember(ebsd.phaseMap(ebsd.phase),get_option(varargin,'ignorePhase',[]));
@@ -95,7 +95,7 @@ if check_option(varargin,'ignorePhase')
   
 end
 
-% apply colors
+%% apply colors
 colorOrder = getpref('mtex','EBSDColorNames');
 nc = numel(colorOrder);
 c = 1;
