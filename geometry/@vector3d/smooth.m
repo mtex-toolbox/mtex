@@ -165,7 +165,24 @@ if numel(unique(data)) > 1
     data = [data;data(1,:)];
   end
   
-  [CM,h] = contourf(ax,X,Y,data,contours); %#ok<ASGLU>
+  if check_option(varargin,'pcolor')
+    h = pcolor(ax,X,Y,data);
+    if numel(data) >= 500
+     if length(unique(data))<50
+       shading flat;
+     else
+       shading interp;
+       set(gcf,'Renderer','zBuffer');
+     end
+    else
+      set(gcf,'Renderer','painters');
+    end
+  else
+    [CM,h] = contourf(ax,X,Y,data,contours); %#ok<ASGLU>
+  end
+  
+  
+  
 elseif ~check_option(varargin,'fill',[],'off')  
-  h = fill(X,Y,data,'LineStyle','none','parent',ax);
+  h = fill(ax,X,Y,data,'LineStyle','none','parent',ax);
 end
