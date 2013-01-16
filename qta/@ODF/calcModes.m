@@ -1,6 +1,10 @@
 function [modes, values] = calcModes(odf,varargin)
 % heuristic to find modal orientations
 %
+%% Syntax
+%
+%   [modes, values] = calcModes(odf,n)
+%
 %% Input
 %  odf - @ODF 
 %  n   - number of modes
