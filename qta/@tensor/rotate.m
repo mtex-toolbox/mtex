@@ -4,7 +4,7 @@ function T = rotate(T,R)
 %% Remarks
 % Formula: 
 %
-% $$T_{rst} = T_{ijk} R_{ir} R_{js} R_{kt}$$
+% $$T_{rst} = T_{ijk} R_{ri} R_{sj} R_{tk}$$
 %
 %% Input
 %  T - @tensor
@@ -23,12 +23,14 @@ end
 % convert rotation to 3 x 3 matrix - (3 x 3 x N) for many rotation
 if ~isnumeric(R), R = matrix(R); end
 
-
 % mulitply the tensor with respect to every dimension with the rotation
 % matrix
 for d = 1:T.rank
-
-  T = mtimesT(T,d,R); % tensor product
   
+  ind = 1:T.rank;
+  ind(d) = -d;
+  T = EinsteinSum(T,ind,R,[d -d]);
+      
 end
+
 
