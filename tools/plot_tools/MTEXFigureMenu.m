@@ -26,13 +26,19 @@ uimenu(cc,'label','Tight','callback',@setColorCoding,'checked','on');
 
 
 %% axis alignment
-xdirection = uimenu(m,'label','X axis direction');
+xlabel = get_option(varargin,'xlabel','X');
+zlabel = get_option(varargin,'zlabel','Z');
+
+xlabel = regexprep(xlabel,'[$_\\]','');
+xlabel = regexprep(xlabel,'var','');
+
+xdirection = uimenu(m,'label',[xlabel ' axis direction']);
 uimenu(xdirection,'label','East','callback',@setXAxisDirection);
 uimenu(xdirection,'label','North','callback',@setXAxisDirection,'checked','on');
 uimenu(xdirection,'label','West','callback',@setXAxisDirection);
 uimenu(xdirection,'label','South','callback',@setXAxisDirection);
 
-zdirection = uimenu(m,'label','Z axis direction');
+zdirection = uimenu(m,'label',[zlabel ' axis direction']);
 uimenu(zdirection,'label','Out of plane','callback',@setZAxisDirection,'checked','on');
 uimenu(zdirection,'label','Into plane','callback',@setZAxisDirection);
 
@@ -141,7 +147,9 @@ for a = 1:numel(ax)
 end
 
 fn = get(gcf,'ResizeFcn');
-fn(gcf,event);
+if ~isempty(fn)
+  fn(gcf,event);
+end
 
 end
 

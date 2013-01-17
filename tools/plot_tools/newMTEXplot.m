@@ -27,7 +27,7 @@ ad = get_option(varargin,'ensureAppdata');
 if ~newFigure
   try
     for i = 1:length(ad)
-      if ~(getappdata(gcf,ad{i}{1}) == ad{i}{2})
+      if ~isappdata(gcf,ad{i}{1}) || ~all(getappdata(gcf,ad{i}{1}) == ad{i}{2})
         newFigure = true;
         warning('MTEX:newFigure','Plot properties not compatible to previous plot! I''going to create a new figure.');
         break
@@ -47,7 +47,7 @@ figure(clf);
 rmallappdata(gcf);
 
 iconMTEX(gcf);
-MTEXFigureMenu;
+MTEXFigureMenu(varargin{:});
 
 % set tag
 if check_option(varargin,'ensureTag','char')
