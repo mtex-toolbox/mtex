@@ -9,7 +9,7 @@
 %
 %%
 % set up a nice colormap
-setpref('mtex','defaultColorMap',seismicColorMap);
+setpref('mtex','defaultColorMap',blue2redColorMap);
 
 %% Import EBSD Data
 % We start by importing some ebsd data of Glaucophane and Epidote.
@@ -18,9 +18,9 @@ ebsd = loadEBSD([mtexDataPath '/EBSD/data.ctf'],...
   'ignorePhase',[0 3 4])
 
 %%
-% Lets visualize the data
+% Lets visualize a subset of the data
 
-plot(ebsd,'colorcoding','hkl','region',[2000 0 3400 375])
+plot(ebsd(inpolygon(ebsd,[2000 0 1400 375])),'colorcoding','hkl')
 
 
 %% Data Correction

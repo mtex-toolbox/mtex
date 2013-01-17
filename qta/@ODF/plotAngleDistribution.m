@@ -9,11 +9,9 @@ function plotAngleDistribution(odf,varargin)
 %
 
 
-varargin = set_default_option(varargin,...
-  getpref('mtex','defaultPlotOptions'));
-
 %% make new plot
-newMTEXplot;
+[ax,odf,varargin] = getAxHandle(odf,varargin{:});
+if isempty(ax), newMTEXplot;end
 
 %%
 [f,omega] = calcAngleDistribution(odf,varargin{:});
@@ -31,7 +29,7 @@ else
   faktor = 1;
 end
 
-  optiondraw(plot(omega/degree,faktor * max(0,f)),'LineWidth',2,varargin{:});
+optiondraw(plot(ax{:},omega/degree,faktor * max(0,f)),'LineWidth',2,varargin{:});
 
 optionplot(omega/degree,faktor * max(0,f),varargin{:});
-xlabel('orientation angle in degree')
+xlabel(ax{:},'orientation angle in degree')

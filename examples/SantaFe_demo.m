@@ -53,14 +53,16 @@ plotpdf(rec,get(pf,'Miller'),'antipodal')
 
 close; figure('position',[46 171 752 486]);
 plot(rec,'alpha','sections',18,'resolution',5*degree,...
-     'projection','plain','gray','contourf','FontSize',10,'silent')
+  'projection','plain','contourf','FontSize',10,'silent')
+mtexColorMap white2black
 
 
 %% Plot odf
 
 close; figure('position',[46 171 752 486]);
 plot(SantaFe,'alpha','sections',18,...
-     'projection','plain','gray','contourf','FontSize',10,'silent')
+  'projection','plain','contourf','FontSize',10,'silent')
+mtexColorMap white2black
    
 %% Plot Fourier Coefficients
 

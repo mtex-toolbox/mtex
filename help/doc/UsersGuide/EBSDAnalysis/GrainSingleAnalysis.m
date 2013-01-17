@@ -54,14 +54,13 @@ close, plotspatial(grain_selected,'property','mis2mean')
 % only plots the mean orientation of grains. Thus, for these commands, we
 % have to explicitely specify the underlaying EBSD data.
 
-close, plotpdf(ebsd_selected,...
-  [Miller(0,0,1),Miller(0,1,1),Miller(1,1,1)],'antipodal',...
-  'position',[100 100 600 300])
+plotpdf(ebsd_selected,...
+  [Miller(0,0,1),Miller(0,1,1),Miller(1,1,1)],'antipodal')
 
 %%
 %
 
-close, scatter(grain_selected)
+scatter(grain_selected)
 
 %%
 % Testing on the distribution shows a gentle prolatness, nevertheless we
@@ -124,7 +123,7 @@ legend('to reference orientation','to neighbour')
 % We can also observe the rotation axis, here we colorize after the
 % distance
 
-close, plot(axis(o),'markersize',3,'antipodal','data',dist)
+close, plot(axis(o),dist,'markersize',3,'antipodal')
 
 
 

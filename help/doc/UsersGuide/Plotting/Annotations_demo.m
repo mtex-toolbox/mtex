@@ -24,7 +24,7 @@ odf = 0.7*unimodalODF(mod1,cs,ss) + 0.3*unimodalODF(mod2,cs,ss);
 % that the color range is automatically set to *equal* when adding a colorbar
 % to a figure with  more then one plot (see. <ColorCoding_demo.html Color Coding>).
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal','gray')
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal')
 colorbar
 
 
@@ -50,9 +50,9 @@ annotate([xvector,yvector,zvector],'label',{'x','y','z'},...
 % The command <annotate.html annotate> allows also to plot
 % <Miller_index.html crystal directions> to inverse pole figures.
 
-plotipdf(odf,[xvector,zvector],'gray','antipodal','marginx',10,'minmax','off')
+plotipdf(odf,[xvector,zvector],'antipodal','marginx',10,'minmax','off')
+mtexColorMap white2black
 annotate([Miller(1,0,0),Miller(1,1,0),Miller(0,0,1),Miller(2,-1,0)],'all','labeled')
-set(gcf,'position',[139 258 672 266])
 
 
 %% Adding Preferred Orientations
@@ -60,19 +60,21 @@ set(gcf,'position',[139 258 672 266])
 % One can also mark specific orientations in the pole figures or in the inverse pole
 % figures
 
-plotipdf(odf,[xvector,zvector],'gray','antipodal','marginx',10,'minmax','off')
+plotipdf(odf,[xvector,zvector],'antipodal','marginx',10,'minmax','off')
+mtexColorMap white2black
 annotate(mod1,...
     'marker','s','MarkerSize',6,'MarkerFaceColor','r',...
     'label','A','color','w')
 
 annotate(mod2,...
     'marker','s','MarkerSize',6,'MarkerFaceColor','g',...
-    'label','B','color','w')
+    'label','B')
 
 %%
 % also ODF plots
 
-plot(odf,'sections',12,'gray','position',[100,100,500,380])
+plot(odf,'sections',12)
+mtexColorMap white2black
 annotate(mod1,...
     'MarkerSize',15,'MarkerEdgeColor','r','MarkerFaceColor','none')
 
@@ -101,6 +103,7 @@ annotate(mod2,...
 plotFourier(odf)
 hold all
 plotFourier(fibreODF(Miller(1,0,0),zvector,cs,ss))
+hold off
 
 legend({'Fibre ODF','Unimodal ODF'})
 
@@ -111,5 +114,5 @@ legend({'Fibre ODF','Unimodal ODF'})
 % For this reason there is the option *grid*, which enables the grid and the 
 % option *grid_res*, which allows to specifiy the spacing of the grid lines.
 
-plotpdf(odf,[Miller(1,0,0),Miller(0,0,1)],'grid','grid_res',15*degree,...
-  'gray','antipodal');
+plotpdf(odf,[Miller(1,0,0),Miller(0,0,1)],'grid','grid_res',15*degree,'antipodal');
+mtexColorMap white2black

@@ -64,18 +64,9 @@ varargin = set_default_option(varargin,...
   {'name', [char(get_option(varargin,'property')) ' boundary plot of ' inputname(1) ' (' grains.comment ')']});
 
 newMTEXplot('renderer','opengl',varargin{:});
+setCamera(varargin{:});
 
-if isa(grains,'Grain2d')
-  
-  [obj.Vertices(:,1),obj.Vertices(:,2),lx,ly] = fixMTEXscreencoordinates(obj.Vertices(:,1),obj.Vertices(:,2),varargin{:});
-  
-else
-  
-  [ig,ig,lx,ly] = fixMTEXscreencoordinates([],[],varargin{:});
-  
-end
-
-xlabel(lx);ylabel(ly);
+xlabel('x');ylabel('y');
 
 if islogical(dist) || check_option(varargin,{'linecolor','edgecolor','facecolor'})
     
@@ -118,13 +109,7 @@ else
   
 end
 
-
-varargin = set_default_option(varargin,...
-  getpref('mtex','defaultPlotOptions'));
-
 h = optiondraw(patch(obj),varargin{:});
-
-fixMTEXscreencoordinates('axis'); %due to axis;
 
 axis equal tight
 fixMTEXplot(varargin{:});

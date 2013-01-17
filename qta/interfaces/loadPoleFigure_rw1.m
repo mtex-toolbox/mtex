@@ -39,7 +39,7 @@ try
     'rho',(2.5:5:360)*degree,'maxtheta',80*degree);
   
   % pf = PoleFigure(Miller(1,1,1),r,data,symmetry('cubic'),symmetry);
-  pf = PoleFigure(h,r,data.^2/500,symmetry('cubic'),symmetry);
+  pf = PoleFigure(h,r,data.^2/500,varargin{:});
   
 catch 
   interfaceError(fname,fid);

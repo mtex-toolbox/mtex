@@ -7,6 +7,11 @@ function K = kernel(name,varargin)
 % A second posibility is to define the kernel by its Fourier 
 % coefficients. A @kernel object is needed when defining a @ODF.
 %
+%% Syntax
+%   psi = kernel('de la Vallee Poussin',20) % by parameter
+%   psi = kernel('de la Vallee Poussin','halfwidth',10*degree) % by halfwidth
+%   psi = kernel('Dirichlet','bandwidth',10*degree) % by bandwidth
+%
 %% Input
 % name - name of the kernel, supported kernels are:
 %
@@ -102,7 +107,7 @@ end
 L = get_option(varargin,'BANDWIDTH',100*(1+9*~strcmpi(name,'bump')));
 
 K.name = name;
-K.A = construct_A(name,p,L);
+[K.A,p] = construct_A(name,p,L);
 K.p1 = p;
 K.K = construct_K(name,p,K.A);
 K.RK = construct_RK(name,p,K.A);

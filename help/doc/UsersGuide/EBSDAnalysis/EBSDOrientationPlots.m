@@ -42,7 +42,6 @@ plotipdf(o,xvector)
 % plots not to become too crowed with points. The number of randomly chosen orientations
 % can be specified by the option *points*.
 
-close all;figure('position',[100 100 700 400])
 plotodf(o,'points',1000)
 
 
@@ -72,25 +71,23 @@ grains = calcGrains(ebsd);
 % Then the scatter plot of the individual orientations of the Iron phase in
 % the inverse pole figure is achieved by
 
-plotipdf(ebsd('Fe'),xvector,'points',100, 'MarkerSize',3);
+plotipdf(ebsd('Fe'),xvector,'points',1000, 'MarkerSize',3);
 
 %%
 % In the same way the mean orientations of grains can be visualized
 
-plotipdf(grains('Fe'),xvector,'points',100, 'MarkerSize',3);
+plotipdf(grains('Fe'),xvector,'points',500, 'MarkerSize',3);
 
 %%
 % Once can also use different colors on the scatter points by certain [[EBSD.get.html,EBSD
 % properties]] or [[GrainSet.get.html,grain properties]]
 
-close all;
 plotpdf(ebsd('Fe'),[Miller(1,0,0),Miller(1,1,0)],'antipodal','MarkerSize',4,...
   'property','mad')
 
 %%
 % or some arbitrary data vector
 
-close all;figure('position',[100 100 500 500])
 plotodf(grains('Fe'),'antipodal','sections',9,'MarkerSize',3,...
   'property',shapefactor(grains('Fe')));
 
@@ -98,10 +95,9 @@ plotodf(grains('Fe'),'antipodal','sections',9,'MarkerSize',3,...
 % Superposition of two scatter plots is achieved by the commands *hold on*
 % and *hold off*.
 
-close all
-plotipdf(ebsd('Fe'),xvector,'MarkerSize',3,'points',100)
+plotipdf(ebsd('Fe'),xvector,'MarkerSize',5,'points',100)
 hold on
-plotipdf(ebsd('Mg'),xvector,'MarkerSize',3,'points',100,'MarkerColor','r')
+plotipdf(ebsd('Mg'),xvector,'MarkerSize',5,'points',100,'MarkerColor','r')
 hold off
 
 %%

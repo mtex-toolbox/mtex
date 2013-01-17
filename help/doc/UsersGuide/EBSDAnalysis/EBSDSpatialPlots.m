@@ -31,7 +31,7 @@ plot(ebsd('Fe'))
 % is associated with a specified color in relation to the crystal reference
 % frame.
 
-colorbar('Position',[100 100 400 200])
+colorbar
 
 %%
 % The [[orientation2color.html, colorcoding]] could be specified by an
@@ -41,7 +41,7 @@ close all, plot(ebsd('Fe'),'colorcoding','hkl')
 
 %%
 
-colorbar('Position',[100 100 300 300])
+colorbar
 
 %% Customizing the color
 % In some cases, it might be useful to color certain orientations after
@@ -63,8 +63,8 @@ plot(ebsd('Fe'),'colorcoding',...
 % given distance. Here we have chosen the (111)[001] fibre to be drawn in blue,
 % and at 7.5 degrees, where the blue should be only lighter.
 
-colorbar('Position',[100 100 400 200])
-
+colorbar
+hold on
 circle(Miller(1,1,1),15*degree,'linewidth',2)
 set(gcf,'renderer','zbuffer')
 
@@ -76,7 +76,6 @@ vol = fibreVolume(ebsd('fe'),Miller(1,1,1),zvector,15*degree)
 
 close all;
 plotipdf(ebsd('fe'),zvector,'markercolor','k','marker','x')
-set(gcf,'renderer','opengl')
 
 %%
 % we can easily extend the colorcoding
@@ -97,7 +96,7 @@ plot(ebsd('Fe'),'colorcoding',...
 
 %%
 
-colorbar('position',[100 100 300 300])
+colorbar
 
 %% SUB: Coloring certain orientations
 % We might be interested to locate some special orientation in our orientation map. 
@@ -149,7 +148,7 @@ plot(ebsd,'property','phase')
 
 close all
 plot(ebsd,'property','bc')
-colormap gray
+mtexColorMap white2black
 
 %%
 % the property could also be a Nx1 or an Nx3-vector containing the color
@@ -162,7 +161,7 @@ plot(ebsd('Fe'),'property', p1)
 %% 
 % if the size is just Nx1, the color can be adjusted with
 
-colormap(grayColorMap)
+mtexColorMap white2black
 
 %% Combining different plots
 % Combining different plots can be done either by plotting only subsets of
@@ -172,7 +171,7 @@ colormap(grayColorMap)
 
 close all;
 plot(ebsd,'property','bc')
-colormap(grayColorMap)
+mtexColorMap white2black
 
 hold on
 plot(ebsd('fe'),'colorcoding',...
@@ -184,9 +183,7 @@ plot(ebsd('fe'),'colorcoding',...
 
 close all;
 plot(ebsd,'property','bc')
-colormap(grayColorMap)
+mtexColorMap white2black
 
 hold on, plot(ebsd,'translucent',0.25)
-
-
 

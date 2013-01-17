@@ -99,9 +99,10 @@ setcolorrange([0.01 12]);
 colorbar
 
 
-%% Monochromatic Plots
+%% Changing the Colormap
 %
-% Monochromatic plots are obtained by the option *gray*.
+% The colormap can be changed by the command mtexColorMap, e.g., in order
+% to set a white to black colormap one has the commands
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal','gray')
-
+plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal')
+mtexColorMap white2black

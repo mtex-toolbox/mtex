@@ -34,7 +34,7 @@ end
 % rotate the spatial data
 if ~check_option(varargin,'keepXY')
   
-  if isappr(dot(axis(q),zvector),1) 
+  if isappr(abs(dot(axis(q),zvector)),1) 
     % rotation about z
     
     omega = dot(axis(q),zvector) * angle(q);

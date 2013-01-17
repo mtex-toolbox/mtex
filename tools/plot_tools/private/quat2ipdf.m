@@ -22,9 +22,9 @@ if isa(ori,'orientation') && strcmpi(get_option(varargin,'r',''),'auto')
       
     otherwise
       
-      [maxtheta,maxrho,minrho] = getFundamentalRegionPF(cs,varargin{:});
-      maxrho = maxrho - minrho;
-      r = sph2vec(pi/4,maxrho/4);
+      [minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(cs,varargin{:});
+      maxRho = maxRho - minRho;
+      r = sph2vec(pi/4,maxRho/4);
       
   end   
   

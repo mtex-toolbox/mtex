@@ -35,12 +35,14 @@ plot(pf)
 % However, sometimes more simple colormaps are preffered, like the LaboTeX
 % colormap
 
-colormap(LaboTeXColorMap)
+mtexColorMap LaboTeX
+
 
 %%
 % or a gray scale colormap.
 
-colormap(grayColorMap)
+mtexColorMap white2black
+
 
 %%
 % One can set a default colormap adding the following command to

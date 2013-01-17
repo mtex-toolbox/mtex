@@ -75,11 +75,11 @@ import_wizard('EBSD');
 % specify how to align the x-axis in plots
 plotx2east
 
-% specify crystal and specimen symmetry
+% specify the different phases
 CS = {...
   'notIndexed',...
-  symmetry('m-3m'),... % crystal symmetry phase 1
-  symmetry('m-3m')};   % crystal symmetry phase 2
+  symmetry('m-3m','mineral','Fe','color','light blue'),...
+  symmetry('m-3m','mineral','Mg','color','light red')};  
 SS = symmetry('-1');   % specimen symmetry
 
 % file name

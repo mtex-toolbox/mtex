@@ -1,5 +1,5 @@
-function rgb = seismicColorMap(n)
-% seismic(n) creates a colormap, ranging from dark blue via white to dark red.
+function rgb = blue2redColorMap(n)
+% creates a colormap, ranging from dark blue via white to dark red.
 %
 % Nico Sneeuw
 % Munich, 31/08/94

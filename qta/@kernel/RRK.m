@@ -6,7 +6,7 @@ function Z = RRK(kk,h1,r1,h2,r2,CS,SS,varargin)
 %  h1,r1 - crystal direction / specimen directions
 %  h2,r2 - list of crystal direction / specimen directions
 %% Flags
-%  xray - (True/False) ob X--Ray Trafo (d.h. über +--h mitteln)
+%  antipodal - 
 %
 %% Output
 % Z - Matrix der Dimension von h2 x r2

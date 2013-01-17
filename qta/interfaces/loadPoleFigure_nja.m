@@ -25,7 +25,7 @@ try
   h = string2Miller(regexprep([comment{1}{19:21}], '[A-Z=\s]', '', 'ignorecase'));
   r = S2Grid(sph2vec(th,rh),'antipodal');
   
-  pf = PoleFigure(h,r,d,symmetry('cubic'),symmetry,'BACKGROUND',bg,varargin{:});
+  pf = PoleFigure(h,r,d,'BACKGROUND',bg,varargin{:});
 catch
   interfaceError(fname);
 end

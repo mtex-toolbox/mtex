@@ -18,9 +18,13 @@ if ~isa(data,'tensor')
 end
 
 % plotting convention
-plotdir = cell2mat(get(handles.plot_dir,'value'))==1;
-plotdir = get(handles.plot_dir(plotdir),'string');
-str = replaceToken(str,'{plotting convention}',['plotx2' lower(plotdir)]);
+direction = find(cell2mat(get(handles.xyz,'value')));
+
+xaxis = 1 + mod(direction-1,4);
+zaxis = 1 + (direction > 4);
+
+str = replaceToken(str,'{xAxisDirection}',['''' NWSE(xaxis) '''']);
+str = replaceToken(str,'{zAxisDirection}',['''' UpDown(zaxis) '''']);
 
 
 %% specify the file names
@@ -104,8 +108,20 @@ if isa(data,'ODF')
 end
 
 
-%% EBSD 3d
+%% EBSD
 if isa(data,'EBSD')
+  
+  % first indexed phase
+  firstPhase = find(~cellfun(@ischar ,cs),1);
+  minerals = get(data,'minerals');
+  
+  if ~isempty(minerals{firstPhase})
+    replaceToken(str,'{phase}',['''' minerals{firstPhase} '''']);
+  else
+    replaceToken(str,'{phase}','');
+  end
+  
+  % EBSD 3d
   Z = getappdata(handles.listbox(5),'zvalues');
   if ~isempty(Z), 
     str = replaceToken(str,'{Z-values}',['[' num2str(Z) ']']);
@@ -122,12 +138,15 @@ str = replaceToken(str,'{interface}',['''' interface '''']);
 
 optionstr = option2str(options,'quoted');
 
-if exist('Z','var') && ~isempty(Z), optionstr = [optionstr ', ''3d'', Z']; end
-if get(handles.rotate,'value')
-  optionstr = [optionstr, ', ''rotate'', ',get(handles.rotateAngle,'string') '*degree'];
-end
-if get(handles.flipud,'value'), optionstr = [optionstr, ', ''flipud''']; end
-if get(handles.fliplr,'value'), optionstr = [optionstr, ', ''fliplr''']; end
+%if exist('Z','var') && ~isempty(Z), optionstr = [optionstr ', ''3d'', Z'];
+%end
+
+
+%if get(handles.rotate,'value')
+%  optionstr = [optionstr, ', ''rotate'', ',get(handles.rotateAngle,'string') '*degree'];
+%end
+%if get(handles.flipud,'value'), optionstr = [optionstr, ', ''flipud''']; end
+%if get(handles.fliplr,'value'), optionstr = [optionstr, ', ''fliplr''']; end
 str = replaceToken(str,',{options}',optionstr);
 
 
@@ -159,12 +178,29 @@ end
 ws = cellfun('isempty',str);
 str( find(ws(1:end-2)+ws(2:end-1)+ws(3:end)>2) ) = [];
 
+%% rotate data
 
+rot = rotation('Euler',str2double(get(handles.rotateAngle,'string'))'*degree);
+rotationOptions = {'',',''keepXY''',',''keepEuler'''};
 
+if isnull(angle(rot))
+  str = replaceToken(str,'%% Correct Data','');
+  str = replaceToken(str,'rot = rotation(''Euler'',{phi1},{Phi},{phi2});','');
+  str = replaceToken(str,'ebsd = rotate(ebsd,rot,{rotationOption});','');
+  str = replaceToken(str,'pf = rotate(pf,rot,{rotationOption});','');
+  str = replaceToken(str,'odf = rotate(odf,rot,{rotationOption});','');
+else
+  str = replaceToken(str,'{phi1}',[get(handles.rotateAngle(1),'string'),'*degree']);
+  str = replaceToken(str,'{Phi}',[get(handles.rotateAngle(2),'string'),'*degree']);
+  str = replaceToken(str,'{phi2}',[get(handles.rotateAngle(3),'string'),'*degree']);
+  str = replaceToken(str,',{rotationOption}',rotationOptions{cell2mat(get(handles.euler2spatial,'value'))>0});
+end
+
+%% ---------------- private functions -------------------------
 function str = replaceToken(str,token,repstr)
 
 if ~iscell(repstr) || length(repstr) <= 1
-  str = regexprep(str,token,repstr);
+  str = strrep(str,token,repstr);
 else
   pos = strfind(str,token);
   line = find(~cellfun('isempty',pos),1);

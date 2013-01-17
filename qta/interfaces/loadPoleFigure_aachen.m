@@ -98,7 +98,7 @@ while ~feof(fid)
     end
     
 %% generate Polefigure    
-    pf(ih) = PoleFigure(h,r,d,cs,symmetry,varargin{:},'comment',comment); %#ok<AGROW>
+    pf(ih) = PoleFigure(h,r,d,cs,varargin{:},'comment',comment); %#ok<AGROW>
     
     ih = ih +1;
     

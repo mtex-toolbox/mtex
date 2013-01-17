@@ -126,7 +126,7 @@ end
 
 if options.plot
   figure, imagesc(reshape(val,size(v)))
-  figure, plot(v,'data',val,'smooth');
+  figure, plot(v,val,'smooth');
 else
   [valm,i] = min(val);
   v_start = vector3d(vc(i));

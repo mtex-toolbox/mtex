@@ -58,7 +58,6 @@ plot(ebsd,'antipodal')
 colorbar
 hold on
 plotipdf(ebsd,xvector,'markerSize',3,'points',500,'marker','o','markerfacecolor','none','markeredgecolor','k')
-set(gcf,'renderer','opengl')
 hold off
 
 %% SUB: Modify EBSD Data

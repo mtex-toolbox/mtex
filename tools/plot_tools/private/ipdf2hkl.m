@@ -9,7 +9,7 @@ function c = ipdf2hkl(h,cs,varargin)
 rho = rho - rho_min;
 
 % get the bounds of the fundamental region
-[maxTheta,maxRho] = getFundamentalRegionPF(cs,'antipodal');
+[minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(cs,'antipodal');
 
 
 %% special case Laue -1
