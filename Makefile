@@ -72,7 +72,7 @@ uninstall:
 	rm -rf $(MATLABPATH)/toolbox/mtex
 
 # rule for making release
-RNAME = mtex-3.3.1
+RNAME = mtex-3.3.2
 RDIR = ../..
 release:
 	rm -rf $(RDIR)/$(RNAME)*

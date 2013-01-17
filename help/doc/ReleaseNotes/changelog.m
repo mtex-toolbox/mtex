@@ -1,6 +1,21 @@
 %% MTEX Changelog
 %
 %% Contents
+
+%% MTEX 3.3.2 - 01/2013
+%
+% *bugfix release*
+%
+% * fix: better startup when using different MTEX versions
+% * fix: backport of the tensor fixes from MTEX 3.4
+% * fix: http://code.google.com/p/mtex/issues/detail?id=82
+% * fix: http://code.google.com/p/mtex/issues/detail?id=76
+% * fix: http://code.google.com/p/mtex/issues/detail?id=48
+% * fix: http://code.google.com/p/mtex/issues/detail?id=71
+% * fix: http://code.google.com/p/mtex/issues/detail?id=70
+% * fix: http://code.google.com/p/mtex/issues/detail?id=69
+% * fix: http://code.google.com/p/mtex/issues/detail?id=65
+% * fix: http://code.google.com/p/mtex/issues/detail?id=68
 %
 %% MTEX 3.3.1 - 07/2012
 %
