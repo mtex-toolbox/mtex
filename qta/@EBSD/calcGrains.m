@@ -144,8 +144,8 @@ for p = 1:numel(ebsd.phaseMap)
   for k=1:numel(csndx)-1
     andx = ndx & cumsum(ndx) > csndx(k) & cumsum(ndx) <= csndx(k+1);
     
-    o_Dl = orientation(ebsd.rotations(Dl(andx)),ebsd.CS{p},ebsd.SS);
-    o_Dr = orientation(ebsd.rotations(Dr(andx)),ebsd.CS{p},ebsd.SS);
+    o_Dl = orientation(ebsd.rotations(Dl(andx)),ebsd.CS{p});
+    o_Dr = orientation(ebsd.rotations(Dr(andx)),ebsd.CS{p});
     
     criterion(andx) = dot(o_Dl,o_Dr) > cos(thresholds(p)/2);
   end
@@ -254,7 +254,7 @@ cellMean = partition(q,cellMean);
 
 for k=1:numel(doMeanCalc)
   qMean = project2FundamentalRegion(cellMean{k}, ...
-    ebsd.CS{phase(doMeanCalc(k))},ebsd.SS,meanRotation(doMeanCalc(k)));
+    ebsd.CS{phase(doMeanCalc(k))},[],meanRotation(doMeanCalc(k)));
   cellMean{k} = mean(qMean);
 end
 meanRotation(doMeanCalc) = [cellMean{:}];
