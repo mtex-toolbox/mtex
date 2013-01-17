@@ -25,7 +25,6 @@ function plotodf(o,varargin)
 
 %% where to plot
 [ax,o,varargin] = getAxHandle(o,varargin{:});
-if isempty(ax), newMTEXplot;end
 
 cs = o.CS;
 ss = o.SS;
@@ -45,42 +44,43 @@ if ~check_option(varargin,'all') && numel(o) > 2000 || check_option(varargin,'po
     data = data(samples); end
 end
 
-%% reuse plot
-if ishold && isappdata(gcf,'sections') && ...
-    getappdata(gcf,'CS') == cs && getappdata(gcf,'SS') == ss
+%% determine section type
 
-  sectype = getappdata(gcf,'SectionType');
-  sec = getappdata(gcf,'sections');
-  nsec = numel(sec);
+sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','omega','axisangle'},'phi2');
+[symbol,labelx,labely] = sectionLabels(sectype);
 
+% get fundamental plotting region
+[max_rho,max_theta,max_sec] = getFundamentalRegion(cs,ss,varargin{:});
+
+if any(strcmp(sectype,{'alpha','phi1'}))
+  dummy = max_sec; max_sec = max_rho; max_rho = dummy;
+elseif strcmpi(sectype,'omega')
+  max_sec = 2*pi;
+end
+
+nsec = get_option(varargin,'SECTIONS',round(max_sec/degree/5));
+sec = linspace(0,max_sec,nsec+1); sec(end) = [];
+sec = get_option(varargin,sectype,sec,'double');
+
+%% maybe I should reuse a plot
+if isempty(ax) && ~newMTEXplot('ensureappdata',...
+    {{'sections',[]},{'CS',cs},{'SS',ss}},...
+    'xlabel',labelx,'ylabel',labely)
+  
+    sectype = getappdata(gcf,'SectionType');
+    sec = getappdata(gcf,'sections');
+    nsec = numel(sec);
+    
   if strcmpi(sectype,'omega')
     varargin = set_default_option(varargin,{getappdata(gcf,'h')});
   end
-
+     
 else
-
-  rmallappdata(gcf);
-  hold off;
-  sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','omega','axisangle'},'sigma');
-
-  % get fundamental plotting region
-  [max_rho,max_theta,max_sec] = getFundamentalRegion(cs,ss,varargin{:});
-
-  if any(strcmp(sectype,{'alpha','phi1'}))
-    dummy = max_sec; max_sec = max_rho; max_rho = dummy;
-  elseif strcmpi(sectype,'omega')
-    max_sec = 2*pi;
-  end
-
-  nsec = get_option(varargin,'SECTIONS',round(max_sec/degree/5));
-  sec = linspace(0,max_sec,nsec+1); sec(end) = [];
-  sec = get_option(varargin,sectype,sec,'double');
-
-  varargin = [varargin,'maxrho',max_rho,'maxtheta',max_theta];
-
+  
+  varargin = [varargin,'maxrho',max_rho,'maxtheta',max_theta];  
+  
 end
 
-[symbol,labelx,labely] = sectionLabels(sectype);
 
 %% generate plots
 
@@ -91,8 +91,9 @@ S2G = arrayfun(@(i) set(S2G{i},'res',get(S2G{1},'resolution')),1:numel(S2G),'uni
 multiplot(ax{:},nsec,@(i) S2G{i},@(i) data{i},...
   'TR',@(i) [int2str(sec(i)*180/pi),'^\circ'],...
   'xlabel',labelx,'ylabel',labely,...
-  'innerPlotSpacing',0,'dynamicMarkerSize',...
-  varargin{:});
+  'dynamicMarkerSize','projection','plain',...
+  'innerPlotSpacing',35,'outerPlotSpacing',35,...
+  'xAxisDirection','east','zAxisDirection','intoPlane',varargin{:}); %#ok<*EVLC>
 
 if isempty(ax)
   setappdata(gcf,'sections',sec);

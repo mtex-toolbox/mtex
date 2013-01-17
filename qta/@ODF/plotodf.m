@@ -39,9 +39,6 @@ end
 % where to plot
 [ax,odf,varargin] = getAxHandle(odf,varargin{:});
 
-% make new plot
-if isempty(ax), newMTEXplot;end
-
 % generate grids
 [S3G,S2G,sec] = SO3Grid('plot',odf(1).CS,odf(1).SS,varargin{:});
 
@@ -49,11 +46,14 @@ Z = eval(odf,orientation(S3G),varargin{:});
 clear S3G;
 
 %% ------------------------- plot -----------------------------------------
-sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','omega','axisangle'},'sigma');
+sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','omega','axisangle'},'phi2');
 [symbol,labelx,labely] = sectionLabels(sectype);
 
 fprintf(['\nPlotting ODF as ',sectype,' sections, range: ',...
   xnum2str(min(sec)/degree),mtexdegchar,' - ',xnum2str(max(sec)/degree),mtexdegchar,'\n']);
+
+% make new plot
+if isempty(ax), newMTEXplot('xlabel',labelx,'ylabel',labely);end
 
 if check_option(varargin,{'contour3','surf3','slice3'})
   
@@ -67,10 +67,11 @@ else
   %
   multiplot(numel(sec),...
     S2G,  @(i) Z(:,:,i),...    'DISP',@(i,Z) [' ',symbol(2:end),' = ',xnum2str(sec(i)/degree),mtexdegchar,' ',...    ' Max: ',xnum2str(max(Z(:))),...    ' Min: ',xnum2str(min(Z(:)))],...
-    'smooth',...
-    'TR',@(i) [int2str(sec(i)*180/pi),'^\circ'],'colorrange','equal',...
-    'innerPlotSpacing',0,varargin{:}); %#ok<*EVLC>
-
+    'smooth','TR',@(i) [int2str(sec(i)*180/pi),'^\circ'],...
+    'xlabel',labelx,'ylabel',labely,...
+    'innerPlotSpacing',35,'outerPlotSpacing',35,...
+    'colorrange','equal','projection','plain',...
+    'xAxisDirection','east','zAxisDirection','intoPlane',varargin{:}); %#ok<*EVLC>
 end
 
 if isempty(ax),
