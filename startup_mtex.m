@@ -125,12 +125,15 @@ disp('MTEX is currently not installed.');
 
 % look for older version
 if any(strfind(path,'mtex'))
-  disp('I found an older version of MTEX!');
-  disp('I remove it from the current search path!');
-  disp('You may need to restart MTEX!')
-
+  disp('I found an older version of MTEX and remove it from the current search path!');
+  disp('The documentation might not be functional.');
+  
+  close all
+  evalin('base','clear classes')
+  
   inst_dir = cellpath(~cellfun('isempty',strfind(cellpath,'mtex')));
   if ~isempty(inst_dir), rmpath(inst_dir{:}); end
+  local_path = fileparts(mfilename('fullpath'));
 end
 
 if (~isOctave() && MATLABverLessThan('7.8'))
