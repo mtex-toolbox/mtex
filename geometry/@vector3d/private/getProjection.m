@@ -17,8 +17,8 @@ projection.type = get_option(varargin,'projection','earea');
 projection.antipodal = check_option(varargin,'antipodal') || check_option(v,'antipodal');
 
 %% read default plot options
-projection.xAxis = getpref('mtex','xAxisDirection');
-projection.zAxis = getpref('mtex','zAxisDirection');
+projection.xAxis = get_option(varargin,'xAxisDirection',getpref('mtex','xAxisDirection'));
+projection.zAxis = get_option(varargin,'zAxisDirection',getpref('mtex','zAxisDirection'));
 
 
 %% compute boundary box
@@ -56,9 +56,11 @@ end
 projection.bounds = [min(x(:)),min(y(:)),max(x(:)),max(y(:))];
 
 % set bounds to axes
+delta = min(projection.bounds(3:4)-projection.bounds(1:2))*0.02;
+
 set(ax,'DataAspectRatio',[1 1 1],...
-  'XLim',[projection.bounds(1)-1e-2,projection.bounds(3)+2e-2],...
-  'YLim',[projection.bounds(2)-1e-2,projection.bounds(4)+2e-2]);
+  'XLim',[projection.bounds(1)-delta,projection.bounds(3)+delta],...
+  'YLim',[projection.bounds(2)-delta,projection.bounds(4)+delta]);
 
 %% store data
 setappdata(ax,'projection',projection)
