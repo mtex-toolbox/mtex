@@ -14,15 +14,17 @@ function plot(ebsd,varargin)
 %% See also
 % EBSD/scatter EBSD/plotspatial EBSD/plotpdf savefigure
 
+% where to plot
+[ax,ebsd,varargin] = getAxHandle(ebsd,varargin{:});
 
 % determine plot type
 if check_option(varargin,{'scatter','axisangle','rodrigues'})
-  scatter(ebsd,varargin{:});
+  scatter(ax{:},ebsd,varargin{:});
 elseif check_option(varargin,{'sections','sigma','phi1','phi2','alpha','gamma'})
-  plotodf(ebsd,varargin{:});
+  plotodf(ax{:},ebsd,varargin{:});
 elseif isfield(ebsd.options,'x') && isfield(ebsd.options,'y')
-  plotspatial(ebsd,varargin{:});
+  plotspatial(ax{:},ebsd,varargin{:});
 else
   h = [Miller(0,0,1),Miller(1,1,0),Miller(1,1,1)];
-  plotpdf(ebsd,h,varargin{:});
+  plotpdf(ax{:},ebsd,h,varargin{:});
 end

@@ -2,9 +2,9 @@ function ebsd = set(ebsd,vname,value,varargin)
 % set object variable to value
 %
 %% Syntax
-%  ebsd = get(ebsd,'vname',value)   -
-%  ebsd = get(ebsd,'CS',symmetry)   - changes the crystal symmetry
-%  ebsd = get(ebsd,'newfield',value)  - adds |'newfield'| as an EBSD property, e.g. like MAD..
+%  ebsd = set(ebsd,'vname',value)   -
+%  ebsd = set(ebsd,'CS',symmetry)   - changes the crystal symmetry
+%  ebsd = set(ebsd,'newfield',value)  - adds |'newfield'| as an EBSD property, e.g. like MAD..
 %
 %% Input
 %  ebsd - @EBSD

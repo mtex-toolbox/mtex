@@ -18,17 +18,19 @@ function Z = pdf(odf,h,r,varargin)
 %% See also
 % ODF/plotpdf ODF/plotipdf ODF/calcPoleFigure
 
-if numel(h) == 1
+% superposition coefficients
+sp = get_option(varargin,'superposition',1);
+
+if numel(h) == numel(sp)
   Z = zeros(numel(r),1);
-elseif numel(r) == 1
+elseif numel(r) == numel(sp)
   Z = zeros(numel(h),1);
 else
   error('Either h or r must contain only a single value!')
 end
 if isa(h,'Miller'), h = ensureCS(odf(1).CS,{h});end
 
-% superposition coefficients
-sp = get_option(varargin,'superposition',1);
+
 
 for s = 1:length(sp)
 

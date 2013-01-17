@@ -23,7 +23,6 @@ function plot3d(S2G,varargin)
 %  EAREA       - equal--area projection (default)
 %  EDIST       - equal--distance projection  
 %  PLAIN       - no projection    
-%  GRAY        - colormap -- gray 
 %  LOGARITHMIC - log plot
 %
 %% See also
@@ -40,9 +39,6 @@ if check_option(varargin,'logarithmic')
   data = log(data);
   data(imag(data) ~= 0) = -inf;
 end
-
-% COLORMAP
-if check_option(varargin,'GRAY'),colormap(flipud(colormap('gray'))/1.2);end
 
 %% 3d plot
 sphere3d(data.',-pi,pi,-pi/2,pi/2,10,1.5,'surf','spline',.001);

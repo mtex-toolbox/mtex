@@ -67,7 +67,7 @@ try
     
   end
   
-  pf = PoleFigure( h,S2Grid(r,'antipodal'),I,symmetry('cubic'),symmetry);
+  pf = PoleFigure( h,S2Grid(r,'antipodal'),I,varargin{:});
 catch
   interfaceError(fname);
 end

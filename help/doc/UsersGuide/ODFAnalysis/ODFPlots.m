@@ -30,7 +30,7 @@ odf = 0.1 * unimodalODF(mod1,cs,ss) ...
 
 h = [Miller(1,0,-1,0,cs),Miller(0,0,0,1,cs),...
   Miller(1,1,-2,1,cs),Miller(1,1,-2,3,cs)];
-plotpdf(odf,h,'position',[100 100 600 300])
+plotpdf(odf,h)
 
 %%
 % One recognizes that for each crystal direction the northern and the
@@ -49,7 +49,7 @@ plotpdf(odf,h,'antipodal')
 % command <ODF.plotipdf.html plotipdf>. 
 
 r = [vector3d(1,0,0),vector3d(0,0,1)];
-plotipdf(odf,r,'position',[100 100 600 300])
+plotipdf(odf,r)
 
 %%
 % Due to the trigonal crystal symmetry not a complete sphere is plotted but
@@ -72,7 +72,7 @@ plotipdf(odf,r,'complete')
 % The default section type is *sigma sections* since it does not introduce 
 % distortions into the orientation space.
 
-plot(odf,'sections',12,'position',[100 100 450 350],'silent')
+plot(odf,'sections',12,'silent')
 
 %%
 % In order to specify a different section type one simpy adds the
@@ -80,8 +80,8 @@ plot(odf,'sections',12,'position',[100 100 450 350],'silent')
 % achieved by
 
 plot(SantaFe,'alpha','sections',9,...
-  'projection','plain','gray','contourf','silent')
-
+  'projection','plain','contourf','silent')
+mtexColorMap white2black
 
 %% Radial ODF Plots
 %

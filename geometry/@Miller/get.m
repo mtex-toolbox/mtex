@@ -1,4 +1,4 @@
-function varargout = get(obj,vname)
+function varargout = get(obj,vname,varargin)
 % get object variable
 
 %% no vname - return list of all fields
@@ -50,7 +50,24 @@ switch lower(vname)
   case 'cs'
     
     varargout{1} = obj.CS;
+   
+  case {'bounds','fundamentalregion'}
     
+    if check_option(varargin,'fundamentalRegion') && ~check_option(varargin,'complete')
+  
+      % get fundamental region
+      [minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(obj.CS,varargin{:});
+      varargout{1} = minTheta;
+      varargout{2} = maxTheta;
+      varargout{3} = minRho;
+      varargout{4} = maxRho;
+      
+    else
+      
+      [varargout{1:nargout}] = get(obj.vector3d,vname,varargin{:});
+            
+    end
+
   otherwise
     
     try

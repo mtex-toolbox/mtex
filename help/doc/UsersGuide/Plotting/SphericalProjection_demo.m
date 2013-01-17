@@ -66,13 +66,13 @@ plotpdf(odf,Miller(1,1,0),'antipodal')
 plotx2north
 
 plotpdf(odf,Miller(1,0,0),'antipodal')
-annotate([xvector,yvector,zvector],'data',{'X','Y','Z'},'backgroundcolor','w');
+annotate([xvector,yvector,zvector],'label',{'X','Y','Z'},'backgroundcolor','w');
 
 %%
 plotx2east
 
 plotpdf(odf,Miller(1,0,0),'antipodal')
-annotate([xvector,yvector,zvector],'data',{'X','Y','Z'},'backgroundcolor','w');
+annotate([xvector,yvector,zvector],'label',{'X','Y','Z'},'backgroundcolor','w');
 
 
 %% Equal Area Projection (Schmidt Projection)
@@ -111,9 +111,9 @@ plot(cs,'projection','eangle','antipodal','grid_res',15*degree)
 % *Plain* means that the polar angles theta / rho are plotted in a simple
 % rectangular plot. This projection is often chosen for ODF plots, e.g.
 
-close; figure('position',[46 171 752 486]);
 plotodf(SantaFe,'alpha','sections',18,'resolution',5*degree,...
-  'projection','plain','gray','contourf','FontSize',10,'silent')
+  'projection','plain','contourf','FontSize',10,'silent')
+mtexColorMap white2black
 
 
 %% Three Dimensional Plots
@@ -121,7 +121,6 @@ plotodf(SantaFe,'alpha','sections',18,'resolution',5*degree,...
 % MTEX also offers a three dimensional plot of pole figures which even
 % might be rotated freely in space
 
-close all;
 plotpdf(odf,Miller(1,0,0),'3d')
 
 

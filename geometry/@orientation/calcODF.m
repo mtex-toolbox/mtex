@@ -83,15 +83,25 @@ elseif check_option(varargin,'halfwidth','double')
 
 else
 
-  if ~check_option(varargin,'silent')
-    disp(' ')
-    warning('MTEX:nokernel',['No kernel halfwidth has been specified!' ...
-      ' I''m going to use the default 10 degree kernel. You may be interested in '...
-      doclink('EBSD2odf','automatic optimal kernel detection'),'.\n ']);
-    disp(' ')
+  if ~check_option(varargin,'spatialDependent')
+    %hw = 5 * ( numel(CS) * numel(SS) * numel(ori))^(-1/3); % magic rule
+    %hw = min(hw,45*degree);
+    kappa = (numel(CS) * numel(SS) * numel(ori))^(2/7) * 3; % magic rule
+    k = kernel('de la Vallee Poussin',kappa,varargin{:});
+  else
+    hw = 10*degree;
+    k = kernel('de la Vallee Poussin','halfwidth',hw,varargin{:});
   end
+    
+%   if ~check_option(varargin,'silent')
+%     disp(' ')
+%     warning('MTEX:nokernel',['No kernel halfwidth has been specified!' ...
+%       ' I''m going to use the default 10 degree kernel. You may be interested in '...
+%       doclink('EBSD2odf','automatic optimal kernel detection'),'.\n ']);
+%     disp(' ')
+%   end
 
-  k = kernel('de la Vallee Poussin','halfwidth',10*degree,varargin{:});
+  
 
 end
 

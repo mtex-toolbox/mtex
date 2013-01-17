@@ -15,12 +15,12 @@ function [pf,interface,options,ipf] = loadPoleFigure(fname,varargin)
 %
 %
 %% Syntax
-% pf = loadPoleFigure(fname,cs,ss,<options>)
+%   pf = loadPoleFigure(fname)
 %
-% fnames = {fname1,...,fnameN}
-% h = {h1,..,hN}
-% c = {c1,..,cN}
-% pf = loadPoleFigure(fnames,h,cs,ss,'superposition',c,<options>)
+%   fnames = {fname1,...,fnameN}  % define filename(s)
+%   h = {h1,..,hN}                % define crystal directions
+%   c = {c1,..,cN}                % define structure coefficients
+%   pf = loadPoleFigure(fnames,h,cs,ss,'superposition',c)
 %
 %% Input
 %  fname     - filename(s)

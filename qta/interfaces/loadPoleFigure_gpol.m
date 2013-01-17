@@ -47,7 +47,7 @@ end
 r = S2Grid(vector3d('polar',theta,rho)); % fix 'RESOLUTION'
 
 h  = string2Miller(fname);
-pf = PoleFigure(h,r,data,symmetry('cubic'),symmetry,'comment',comment);
+pf = PoleFigure(h,r,data,'comment',comment,varargin{:});
 
 
 function data = readline(fid,line)

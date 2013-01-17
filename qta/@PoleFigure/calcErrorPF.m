@@ -1,4 +1,4 @@
-function pf = calcErrorPF(pfmeas,pfcalc,varargin)
+function pfcalc = calcErrorPF(pfmeas,pfcalc,varargin)
 % error polefigure between meassured and recalculated pole figures
 %
 % returns a @PoleFigure with valuess given as the difference between the
@@ -25,21 +25,19 @@ function pf = calcErrorPF(pfmeas,pfcalc,varargin)
 %% See also
 %  PoleFigure/calcError ODF/calcPoleFigure
 
+% evaluate ODF if neccesary
+if isa(pfcalc,'ODF')
+  pfcalc = calcPoleFigure(pfcalc,{pfmeas.h},{pfmeas.r},'superposition',{pfmeas.c});
+end
+
 progress(0,length(pfmeas));
 for i = 1:length(pfmeas)
   
-  % evaluate ODF if neccesary
-  if isa(pfcalc,'ODF')
-    pf(i) = calcPoleFigure(pfcalc,pfmeas(i).h,pfmeas(i).r,'superposition',pfmeas(i).c); %#ok<AGROW>
-  else
-    pf(i) = pfcalc(i); %#ok<AGROW>
-  end
-  
   % normalization
-  alpha = calcNormalization(pfmeas(i),pf(i));
+  alpha = calcNormalization(pfmeas(i),pfcalc(i));
   
   d1 = getdata(pfmeas(i));
-  d2 = getdata(pf(i))*alpha;
+  d2 = getdata(pfcalc(i))*alpha;
   
   if check_option(varargin,'l1')    
     d = abs(d1-d2);    
@@ -49,11 +47,12 @@ for i = 1:length(pfmeas)
     epsilon = get_option(varargin,'RP',1,'double');
     ind = d2 > epsilon*alpha;
     d = abs(d1(ind)-d2(ind))./d2(ind);
-    pf(i).r = delete(pf(i).r,~ind); %#ok<AGROW>
+    pfcalc(i).r = delete(pfcalc(i).r,~ind);
   else
-    epsilon = get_option(varargin,'epsilon',1,'double');
-    d = abs(d1-d2)./min(d1+epsilon*alpha,d2+epsilon*alpha);
+    epsilon = get_option(varargin,'epsilon',0.5,'double');
+    d = abs(d1-d2)./max(d1+epsilon*alpha,d2+epsilon*alpha);
+    %d = abs(d1-d2)./(d1+epsilon*alpha);
   end
-  pf(i).data = d; %#ok<AGROW>
+  pfcalc(i).data = d;
   progress(i,length(pfmeas));
 end

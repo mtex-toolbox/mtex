@@ -1,4 +1,4 @@
-function circle(n,omega,varargin)
+function h = circle(n,varargin)
 % annotated a circle
 %
 %% Input
@@ -8,15 +8,28 @@ function circle(n,omega,varargin)
 %% Options
 %
 
-if nargin < 2, omega  = 90*degree; end
+% where to plot
+[ax,n,varargin] = getAxHandle(n,varargin{:});
 
+% extract radius
+if numel(varargin) >= 1 && isnumeric(varargin{1})
+  omega = varargin{1};
+else
+  omega  = 90*degree; 
+end
+
+% if there is more then one circle - cycle through them
+h = [];
 if numel(n)>1
-  for i = 1:numel(n);
-    circle(n(i),omega,varargin{:});
+  hold on
+  for i = 1:numel(n);    
+    h = [h,circle(ax{:},n(i),omega,varargin{:})]; %#ok<AGROW>
   end
+
   return
 end
 
+% generate circles
 if isnumeric(omega)
   
   c = axis2quat(n,(0:1:360)*degree)*axis2quat(orth(n),omega)*n;
@@ -34,11 +47,11 @@ elseif ~isnumeric(omega)
   
 end
 
-
-holdState = ishold;
+% plot circles
+holdState = getHoldState;
 
 if ~holdState, hold on, end
 
-plot(c,'line',varargin{:})
+h = plot(ax{:},c,'line',varargin{:});
 
-if ~holdState, hold off, end
+hold(ax{:},holdState);

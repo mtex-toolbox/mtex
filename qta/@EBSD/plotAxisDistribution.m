@@ -15,22 +15,22 @@ function plotAxisDistribution(ebsd,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-varargin = set_default_option(varargin,...
-  getpref('mtex','defaultPlotOptions'));
-
-%% make new plot
-newMTEXplot;
+% where to plot
+[ax,ebsd,varargin] = getAxHandle(ebsd,varargin{:});
+if isempty(ax), newMTEXplot;end
 
 %% calc axis distribution
 
 axes = calcAxisDistribution(ebsd,'SampleSize',10000,varargin{:});
 
-plot(axes,'all',varargin{:});
+plot(ax{:},axes,'all','FundamentalRegion',varargin{:});
 
 %% set tags
 
-set(gcf,'tag','AxisDistribution');
-name = inputname(1);
-if isempty(name), name = ebsd.comment;end
-set(gcf,'Name',['Axis Distribution of ',name]);
+if isempty(ax)
+  set(gcf,'tag','AxisDistribution');
+  name = inputname(1);
+  if isempty(name), name = ebsd.comment;end
+  set(gcf,'Name',['Axis Distribution of ',name]);
+end
 

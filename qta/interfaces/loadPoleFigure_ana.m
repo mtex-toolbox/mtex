@@ -49,7 +49,7 @@ try
   d = d{1};
   assert(N == numel(d));
   
-  pf = PoleFigure(h,r,d,symmetry('m-3m'),symmetry,'comment',comment);
+  pf = PoleFigure(h,r,d,'comment',comment,varargin{:});
   
 catch %#ok<CTCH>
   interfaceError(fname,fid);

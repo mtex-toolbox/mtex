@@ -38,7 +38,7 @@ try
   d = data(:,3);
   
   % set uo the pole figure
-  pf = PoleFigure(h,r,d,symmetry('cubic'),symmetry);
+  pf = PoleFigure(h,r,d,varargin{:});
   
 catch
   if ~exist('pf','var')

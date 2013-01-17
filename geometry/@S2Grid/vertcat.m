@@ -4,10 +4,20 @@ function s = vertcat(varargin)
 s = varargin{1};
 
 v = cell(size(varargin));
+res = 2*pi;
 for k=1:numel(varargin)
-  v{k} = reshape(varargin{k}.vector3d,[],1);
+  if isa(varargin{k},'S2Grid'),res = min(res,varargin{k}.res);end
+  v{k} = vector3d(varargin{k});
 end
 
-s.vector3d = vertcat(v{:});
-s.res = min(cellfun(@(S2G) S2G.res,varargin));
+try
+  s.vector3d = vertcat(v{:});
+catch %#ok<CTCH>
+  for k=1:numel(varargin)
+    v{k} = reshape(v{k},[],1);
+  end
+  s.vector3d = vertcat(v{:});
+end
+
+s.res = res;
 s = delete_option(s,'indexed');

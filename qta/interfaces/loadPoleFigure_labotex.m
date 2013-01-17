@@ -54,7 +54,7 @@ try
     d = reshape(double(d{1}),size(r{n}));
     
     % construct pole figure object
-    pf(n) = PoleFigure(h{n},r{n},d,cs,symmetry,'comment',comment,varargin{:}); %#ok<AGROW>
+    pf(n) = PoleFigure(h{n},r{n},d,cs,'comment',comment,varargin{:}); %#ok<AGROW>
     
   end
   

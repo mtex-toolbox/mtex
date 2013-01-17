@@ -16,5 +16,8 @@ function alpha = calcNormalization(pf1,pf2)
 for i = 1:length(pf1)
   d1 = max(0,getdata(pf1(i)));
   d2 = max(0,getdata(pf2(i)));
-  alpha(i) = sum(d1(:))/sum(d2(:)); %#ok<AGROW>
+  
+  w = calcQuadratureWeights(pf1(i).r);
+  
+  alpha(i) = sum(w(:)'*d1(:) / (w(:)'*d2(:))); %#ok<AGROW>
 end

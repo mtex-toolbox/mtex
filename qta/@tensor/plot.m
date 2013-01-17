@@ -17,6 +17,10 @@ function plot(T,varargin)
 %
 %
 
+[ax,T,varargin] = getAxHandle(T,varargin{:});
+
+if isempty(ax), newMTEXplot;end
+
 if check_option(varargin,'section')
   omega = linspace(-pi,pi,361);
   
@@ -42,8 +46,9 @@ elseif check_option(varargin,'3d')
   
 else
   % define a plotting grid
-  [maxtheta,maxrho,minrho] = getFundamentalRegionPF(T.CS,varargin{:});
-  S2 = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX','antipodal',varargin{:});
+  [minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(T.CS,'antipodal',varargin{:});
+  S2 = S2Grid('PLOT','minTheta',minTheta,'maxTheta',maxTheta,...
+    'minRho',minRho,'maxRho',maxRho,'RESTRICT2MINMAX','antipodal',varargin{:});
   
 end
 % decide what to plot
@@ -94,9 +99,13 @@ switch lower(plotType)
   case 'velocity'
     
     if check_option(varargin,{'pp','ps1','ps2'})
-      S2 = S2Grid('equispaced','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',...
-        minrho,'RESTRICT2MINMAX','resolution',10*degree,'no_center','antipodal',varargin{:});
+      S2 = S2Grid('equispaced','minTheta',...
+        minTheta,'maxTheta',maxTheta,'maxRho',maxRho,'minRho',...
+        minRho,'RESTRICT2MINMAX','resolution',10*degree,'no_center','antipodal',varargin{:});
       varargin = ['color','k','MaxHeadSize',0,varargin];
+      if check_option(varargin,'complete')
+        varargin = [varargin,{'removeAntipodal'}];
+      end
     end
     
     rho = get_option(varargin,'density',1);
@@ -116,7 +125,7 @@ if check_option(varargin,'section')
   xx = d(:).*cos(omega(:));
   yy = d(:).*sin(omega(:));
   
-  h = plot(xx,yy);
+  h = plot(ax{:},xx,yy);
   axis equal
   optiondraw(h,varargin{:});
 
@@ -124,7 +133,7 @@ elseif check_option(varargin,'3d')
   
   [x,y,z] = double(abs(d).*S2);
   
-  h = surf(x,y,z);
+  h = surf(ax{:},x,y,z);
   set(h,'CData',d)
   axis equal
   optiondraw(h,varargin{:});
@@ -133,18 +142,20 @@ elseif check_option(varargin,'3d')
 else
   
   if isa(d,'function_handle')
-    multiplot(@(i) S2,@(i) d(i),length(label),...
-      'MINMAX','contourf',...
-      'ANOTATION',@(i) label(i),...
+    multiplot(ax{:},numel(label),@(i) S2,@(i) d(i),...
+      'contourf',...
+      'TR',@(i) label(i),...
       varargin{:});
+  elseif isa(d,'vector3d')
+    quiver(ax{:},S2,d,varargin{:});
   else
-    multiplot(@(i) S2,@(i) d,1,...
-      'MINMAX','contourf',...
-      varargin{:});
+    contourf(ax{:},S2,d,varargin{:});
   end
   
 end
 
-set(gcf,'tag','tensor');
+if isempty(ax)
+  set(gcf,'tag','tensor');
+end
 
 %plot(S2,'data',d,'antipodal','smooth',varargin{:});
