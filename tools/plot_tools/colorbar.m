@@ -3,8 +3,13 @@ function cb = colorbar(varargin)
 
 %% EBSD plot?
 if isappdata(gcf,'colorcoding')
-  ebsdColorbar(varargin{:});
-  return
+  h = findobj(gcf,'type','patch');
+  for n = 1:numel(h)
+    if size(get(h(n),'FaceVertexCData'),2) == 3
+      ebsdColorbar(varargin{:});
+      return
+    end
+  end
 end
 
 if isappdata(gcf,'axes')
