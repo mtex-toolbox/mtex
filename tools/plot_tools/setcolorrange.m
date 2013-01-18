@@ -31,7 +31,7 @@ else
 end
 
 % find all axes
-ax = findall(fig,'type','axes','tag','S2Grid');
+ax = getappdata(fig,'multiplotAxes');
 if isempty(ax), return; end
 
 %% find color range
@@ -53,7 +53,7 @@ elseif length(varargin)>=1 && isa(varargin{1},'double') &&...
     length(varargin{1})==2  
   
   p = varargin{1};  
-  ax = getappdata(gcf,'colorbaraxis');
+  ax = getappdata(fig,'colorbaraxis');
   if strcmp(get(ax,'zscale'),'log'), p = log10(p);end
   
   
@@ -72,10 +72,10 @@ end
 
 if exist('p','var')
   % find all axes including hidden
-  ax = findall(fig,'type','axes','tag','S2Grid');
+  ax = getappdata(fig,'multiplotAxes');
   for i = 1:length(ax),	caxis(ax(i),p);end
 
-  ax = getappdata(gcf,'colorbaraxis');
+  ax = getappdata(fig,'colorbaraxis');
   if strcmp(get(ax,'zscale'),'log')
     caxis(ax,10.^p);
   else

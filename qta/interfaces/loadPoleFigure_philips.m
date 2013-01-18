@@ -43,8 +43,6 @@ try
   [h,ok] = string2Miller(fgetl(fid));
   if ~ok, h = string2Miller(fname);end;
   
-  c = ones(1,length(h));
-  
   % skip the next 6 lines
   %textscan(fid,'%s',6,'delimiter','\n','whitespace','');
   
@@ -55,7 +53,7 @@ try
   d = d.';
   d = d(2:end,:);
   assert(all(size(d.')==size(r)));
-  pf = PoleFigure(h,r,d.',symmetry('cubic'),symmetry,'superposition',c,varargin{:});
+  pf = PoleFigure(h,r,d.',varargin{:});
 catch
   interfaceError(fname,fid);
 end

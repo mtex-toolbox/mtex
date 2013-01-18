@@ -12,7 +12,7 @@ if isappdata(gcf,'colorcoding')
   end
 end
 
-if isappdata(gcf,'axes')
+if isappdata(gcf,'colorbaraxis')
   cax = getappdata(gcf,'colorbaraxis');
 
   
@@ -51,10 +51,8 @@ if isappdata(gcf,'axes')
   set(gcf,'Position',fpos);
   set(gcf,'Units',ounits);
 
-
-  
   % check whether colorrange has to be set equal
-  ax = findall(gcf,'type','axes','tag','S2Grid');
+  ax = [getappdata(gcf,'multiplotAxes'),getappdata(gcf,'colorbaraxis')];
 
   cl = get(ax,'clim');
   if iscell(cl), cl = cell2mat(cl);end
@@ -65,7 +63,7 @@ if isappdata(gcf,'axes')
 end
 
 %decide which colorbar to take
-cg = findall(gcf,'type','hggroup');
+% cg = findall(gcf,'type','hggroup');
 
 % if ~isempty(cg)
 % 

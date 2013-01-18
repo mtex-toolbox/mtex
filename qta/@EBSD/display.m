@@ -44,17 +44,20 @@ for ip = 1:numel(ebsd.phaseMap)
     matrix{ip,3} = char(get(CS,'mineral'));
   end
 
+  % color
+  matrix{ip,4} = char(get(CS,'color'));
+  
   % symmetry
-  matrix{ip,4} = get(CS,'name');
+  matrix{ip,5} = get(CS,'name');
 
   % reference frame
-  matrix{ip,5} = option2str(get(CS,'alignment'));
+  matrix{ip,6} = option2str(get(CS,'alignment'));
 
 end
 
 if numel(ebsd)>0
   cprintf(matrix,'-L','  ','-Lc',...
-    {'Phase' 'Orientations' 'Mineral'  'Symmetry' 'Crystal reference frame'},...
+    {'Phase' 'Orientations' 'Mineral' 'Color' 'Symmetry' 'Crystal reference frame'},...
     '-ic','F');
 else
   disp('  EBSD is empty!')

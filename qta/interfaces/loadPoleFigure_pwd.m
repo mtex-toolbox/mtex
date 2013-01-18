@@ -57,5 +57,5 @@ d = def-defbg;
 for p=1:numel(h)
   th = theta(p,:);
   r = S2Grid(sph2vec(th,zeros(size(th))));
-  pf(p) = PoleFigure(h(p),r,d(p,:),symmetry('cubic'),symmetry);
+  pf(p) = PoleFigure(h(p),r,d(p,:),varargin{:});
 end

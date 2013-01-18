@@ -16,41 +16,33 @@ function plotipdf(odf,r,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-argin_check(r,{'vector3d'});
-varargin = set_default_option(varargin,...
-  getpref('mtex','defaultPlotOptions'));
-
 %% make new plot
-newMTEXplot;
+[ax,odf,r,varargin] = getAxHandle(odf,r,varargin{:});
+if isempty(ax), newMTEXplot;end
+
+argin_check(r,{'vector3d'});
 
 %% plotting grid
-if check_option(varargin,'3d')
-  h = S2Grid('PLOT',varargin{:});
-else
-  [maxtheta,maxrho,minrho] = getFundamentalRegionPF(odf(1).CS,varargin{:});
-  h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
-end
+[minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(odf(1).CS,'restrict2Hemisphere',varargin{:});
+
+h = S2Grid('PLOT','minTheta',minTheta,'MAXTHETA',maxTheta,'MAXRHO',maxRho,'MINRHO',minRho,'RESTRICT2MINMAX',varargin{:});
 
 %% plot
 disp(' ');
 disp('Plotting inverse pole density function:')
-multiplot(@(i) h,@(i) pos(pdf(odf,h,r(i)./norm(r(i)),varargin{:})),length(r),...
-  'DISP',@(i,Z) [' r=',char(r(i)),' Max: ',num2str(max(Z(:))),...
-  ' Min: ',num2str(min(Z(:)))],...
-  'ANOTATION',@(i) r(i),...
-  'appdata',@(i) {{'r',r(i)}},...
-  'MINMAX','SMOOTH',...
-  varargin{:});
 
-setappdata(gcf,'r',r);
-setappdata(gcf,'CS',odf(1).CS);
-setappdata(gcf,'SS',odf(1).SS);
-set(gcf,'tag','ipdf');
-setappdata(gcf,'options',extract_option(varargin,'antipodal'));
-name = inputname(1);
-if isempty(name), name = odf(1).comment;end
-set(gcf,'Name',['Inverse Pole Figures of ',name]);
+multiplot(ax{:},numel(r), h,...
+  @(i) ensureNonNeg(pdf(odf,h,r(i)./norm(r(i)),varargin{:})),...
+  'smooth','TR',@(i) r(i),varargin{:});
 
-function d = pos(d)
-
-if min(d(:)) > -1e-5, d = max(d,0);end
+%% finalize plot
+if isempty(ax)
+  setappdata(gcf,'r',r);
+  setappdata(gcf,'CS',odf(1).CS);
+  setappdata(gcf,'SS',odf(1).SS);
+  set(gcf,'tag','ipdf');
+  setappdata(gcf,'options',extract_option(varargin,'antipodal'));
+  name = inputname(1);
+  if isempty(name), name = odf(1).comment;end
+  set(gcf,'Name',['Inverse Pole Figures of ',name]);
+end

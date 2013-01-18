@@ -7,6 +7,7 @@ function plotipdf(o,r,varargin)
 %
 %% Options
 %  RESOLUTION - resolution of the plots
+%  property   - user defined colorcoding
 %
 %% Flags
 %  antipodal    - include [[AxialDirectional.html,antipodal symmetry]]
@@ -16,29 +17,28 @@ function plotipdf(o,r,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-%% make new plot
+%% where to plot
+[ax,o,r,varargin] = getAxHandle(o,r,varargin{:});
 
 cs = o.CS;
 ss = o.SS;
 
-if newMTEXplot('ensureTag','ipdf',...
+if ~isempty(ax) || newMTEXplot('ensureTag','ipdf',...
     'ensureAppdata',{{'CS',cs},{'SS',ss}})
   argin_check(r,{'vector3d'});
+  annotations  = {'TR',@(i) char(r(i),getpref('mtex','textInterpreter'))};
 else
   if ~isa(r,'vector3d')
-    varargin = {r,varargin{:}};
+    varargin = [{r},varargin];
   end
   r = getappdata(gcf,'r');
-  options = getappdata(gcf,'options');
-  if ~isempty(options), varargin = {options{:},varargin{:}};end
+  annotations  = {};
 end
 
 %% colorcoding
 data = get_option(varargin,'property',[]);
 
-%% get options
-varargin = set_default_option(varargin,...
-  getpref('mtex','defaultPlotOptions'));
+%% subsample if needed 
 
 if numel(o)*length(cs)*length(ss) > 100000 || check_option(varargin,'points')
   points = fix(get_option(varargin,'points',100000/length(cs)/length(ss)));
@@ -46,46 +46,34 @@ if numel(o)*length(cs)*length(ss) > 100000 || check_option(varargin,'points')
 
   samples = discretesample(ones(1,numel(o)),points);
   o.rotation = o.rotation(samples);
-  if ~isempty(data),
-    data = data(samples); end
+  if ~isempty(data), data = data(samples); end
 
 end
 
-%% plotting grid
-
-h = @(i) reshape(inverse(quaternion(o * cs)),[],1) * symmetrise(r(i),ss);
-[maxtheta,maxrho,minrho] = getFundamentalRegionPF(cs,varargin{:});
-Sh = @(i) S2Grid(h(i),'MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX',varargin{:});
-
-if ~isempty(data)
-  data = repmat(data,1,numel(o.CS));
-  Dh  = @(i) (reshape(double(h(i)),[],3));
-  DSh = @(i) (reshape(double(Sh(i)),[],3));
-  datar = @(i) data(ismember(round(1000*DSh(i)),round(1000*Dh(i)),'rows'));
-else
-  datar = @(i)[];
-end
-
+data = @(i) repmat(data(:),1,numel(symmetrise(r(i),ss)));
+  
 %% plot
-multiplot(@(i) Sh(i), datar ,length(r),...
-  'ANOTATION',@(i) r(i),...
-  'appdata',@(i) {{'r',r(i)}},...
-  'dynamicMarkerSize', varargin{:});
+multiplot(ax{:},numel(r),...
+  @(i) inverse(o(:)) * symmetrise(r(i),ss),data,...
+  'scatter','FundamentalRegion',...
+  annotations{:},varargin{:});
 
-setappdata(gcf,'r',r);
-setappdata(gcf,'SS',ss);
-setappdata(gcf,'CS',cs);
-setappdata(gcf,'options',extract_option(varargin,'antipodal'));
-set(gcf,'Name',['Inverse Pole figures of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
-set(gcf,'Tag','ipdf');
+if isempty(ax)
+  setappdata(gcf,'r',r);
+  setappdata(gcf,'SS',ss);
+  setappdata(gcf,'CS',cs);
+  setappdata(gcf,'options',extract_option(varargin,'antipodal'));
+  set(gcf,'Name',['Inverse Pole figures of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
+  set(gcf,'Tag','ipdf');
 
 
-%% set data cursor
-dcm_obj = datacursormode(gcf);
-set(dcm_obj,'SnapToDataVertex','off')
-set(dcm_obj,'UpdateFcn',{@tooltip});
+  %% set data cursor
+  dcm_obj = datacursormode(gcf);
+  set(dcm_obj,'SnapToDataVertex','off')
+  set(dcm_obj,'UpdateFcn',{@tooltip});
 
-datacursormode on;
+  datacursormode on;
+end
 
 
 %% Tooltip function

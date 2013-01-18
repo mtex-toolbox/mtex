@@ -94,7 +94,8 @@ plotipdf(odf,[xvector,zvector])
 % *Plotting an ODF*
 
 close all
-plot(SantaFe,'alpha','sections',6,'projection','plain','gray','contourf')
+plot(SantaFe,'alpha','sections',6,'projection','plain','contourf')
+mtexColorMap white2black
 
 %% Exercises
 %
@@ -153,7 +154,8 @@ mod = calcModes(odf)
 % g) Plot the ODF in sigma and phi2 - sections. How many fibre do
 % you observe?
 
-close all;plot(odf,'sections',6,'gray')
+close all;plot(odf,'sections',6)
+mtexColorMap white2black
 annotate(mod,'MarkerColor','r','Marker','s')
 
 %%

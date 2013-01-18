@@ -1,4 +1,4 @@
-function [pf,options] = loadPoleFigure_generic(fname,varargin)
+function [pf,varargin] = loadPoleFigure_generic(fname,varargin)
 % load pole figure data from (theta,rho,intensity) files
 %
 %% Description 
@@ -42,25 +42,40 @@ function [pf,options] = loadPoleFigure_generic(fname,varargin)
 [d,varargin,header,columns] = load_generic(fname,varargin{:});
 
 % no data found
-if size(d,1) < 10 || size(d,2) < 3 || size(d,2) > 15
+if size(d,1) < 10 || size(d,2) < 3
   error('Generic interface could not detect any numeric data in %s',fname);
 end
 
-% check for old version call
-if check_option(varargin,'layout')
+%% assume one big data block containing only intensities
+if size(d,2)>15 || ...
+    (~isempty(varargin) && isa(varargin{1},'vector3d') && size(varargin{1}) == size(d))
+
+  % determine specimen directions
+  if ~(~isempty(varargin) && isa(varargin{1},'vector3d') && size(varargin{1}) == size(d))
+
+    r = S2Grid('regular','points',size(d),'antipodal',varargin{:});
+    
+    if ~check_option(varargin,'maxtheta')
+      warning(['No grid of specimen directions was specified' ...
+        ' I''m going to use a regular grid with ' size2str(d) ' points.' ...
+        'You may use the option ''maxTheta'' to control the maximum polar angle. ' ...
+        'Have a look at for more details.']); %#ok<WNTAG>
+    end
   
-  warning('MTEX:obsoleteSyntax',...
-    ['Option ''layout'' is obsolete. ' ...
-    'Use ''ColumnNames'' and ''Columns'' instead. '...
-    'You might also simply rerun the import wizzard.']);
-  layout = get_option(varargin,'layout');
-  varargin = delete_option(varargin,'layout',1);
-  ColumnNames = {'Polar Angle','Azimuth Angle','Intensity'};
-  Columns = layout(1:3);
+  else   
+    r = varargin{1};
+  end
   
-  varargin = [varargin,{'ColumnNames',ColumnNames,'Columns',Columns}];
+  % crystal direction
+  h = string2Miller(fname);
+  
+  pf = PoleFigure(h,r,d,symmetry('cubic'),symmetry);
+  
+  return
+  
 end
 
+%% assume columns of data
 
 % no options given -> ask
 if ~check_option(varargin,'ColumnNames')
@@ -152,5 +167,4 @@ if ~isempty(opts)
   opt = struct(opts_struct{:});
 end
   
-pf = PoleFigure(h,r,v,symmetry('cubic'),symmetry,'options',opt);
-options = varargin;
+pf = PoleFigure(h,r,v,'options',opt,varargin{:});

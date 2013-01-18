@@ -24,6 +24,7 @@ for i = 1:length(v.x)
 end
 
 if ~isempty(c), c(1)=[];end
+if ~isempty(c) && check_option(varargin,{'LaTeX'}), c = ['$' c '$'];end
 
 function iv = vec2int(v)
 

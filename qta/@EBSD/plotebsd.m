@@ -18,6 +18,8 @@ function plotebsd(ebsd,varargin)
 %% See also
 % EBSD/plotpdf EBSD/scatter savefigure
 
+[ax,ebsd,varargin] = getAxHandle(ebsd,varargin{:});
+
 if numel(ebsd) > 2000 || check_option(varargin,'points')
   points = fix(get_option(varargin,'points',2000));
   disp(['plot ', int2str(points) ,' random orientations out of ', ...
@@ -31,4 +33,4 @@ if ~check_option(varargin,'center')
   varargin = {varargin{:},'center',mean(ebsd)};
 end
 
-plot(get(ebsd,'orientations'),varargin{:});
+plot(ax{:},get(ebsd,'orientations'),varargin{:});

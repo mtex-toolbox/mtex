@@ -70,7 +70,7 @@ try
       d = reshape(d(1:numel(r)),size(r));
       
       % generate Polefigure
-      pf(ipf) = PoleFigure(h,r,double(d),symmetry('cubic'),symmetry,'comment',comment,varargin{:}); %#ok<AGROW>
+      pf(ipf) = PoleFigure(h,r,double(d),'comment',comment,varargin{:}); %#ok<AGROW>
       
       ipf = ipf+1;
     catch %#ok<CTCH>

@@ -17,7 +17,7 @@ mtexdata dubna
 % pole figure data and to create a pole figure object. 
 
 % plot pole figures
-plot(pf,'position',[100 100 560 290])
+plot(pf)
 
 
 %% ODF Estimation
@@ -38,7 +38,7 @@ odf = calcODF(pf)
 % You may want to verify that the pole figures are reproduced. Here is a
 % plot of the computed pole figures.
 
-plotpdf(odf,h,'antipodal','silent')
+plotpdf(odf,h,'antipodal','silent','superposition',c)
 
 
 %% Error analyis
@@ -73,8 +73,7 @@ odf_model = unimodalODF(calcModes(odf),...
   CS,symmetry,'halfwidth',15*degree)
 
 % plot the pole figures
-close all;
-plotpdf(odf_model,h,'antipodal')
+plotpdf(odf_model,h,'antipodal','superposition',c)
 
 % compute the difference
 calcError(odf_model,odf)
@@ -91,7 +90,7 @@ calcError(odf_model,odf)
 % Next an example how to change the default resolution:
 
 odf = calcODF(pf,'resolution',15*degree)
-plotpdf(odf,h,'antipodal','silent')
+plotpdf(odf,h,'antipodal','silent','superposition',c)
 
 %%
 % Beside the resolution you can use the following options to change the
@@ -114,7 +113,7 @@ plotpdf(odf,h,'antipodal','silent')
 % plot_zero_range>.
 
 odf = calcODF(pf,'zero_range')
-plotpdf(odf,h,'antipodal','silent')
+plotpdf(odf,h,'antipodal','silent','superposition',c)
 
 %% Ghost Corrections
 %

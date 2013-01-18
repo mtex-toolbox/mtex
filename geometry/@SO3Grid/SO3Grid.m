@@ -306,7 +306,7 @@ elseif isa(points,'double') && points > 0  % discretise euler space
   
 end
 
-superiorto('quaternion','orientation');
+superiorto('quaternion','rotation','orientation');
 G = class(G,'SO3Grid',orientation(Grid,CS,SS));
 
 if check_option(G,'indexed') && check_option(varargin,'MAX_ANGLE')

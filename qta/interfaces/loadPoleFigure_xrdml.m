@@ -21,95 +21,139 @@ catch
   interfaceError(fname);
 end
 
-xRoot = doc.getDocumentElement;
+root = doc.getDocumentElement();
 
-if strcmp(xRoot.getTagName,'xrdMeasurements')
+if strcmp(char(root.getTagName()),'xrdMeasurements')
   
-  %begin import
-  nodelist = xRoot.getElementsByTagName('xrdMeasurement');
+  xrdMeasurment = root.getElementsByTagName('xrdMeasurement');
   
-  %loop over pole figures
-  for i=0:nodelist.getLength-1
+  for k=1:xrdMeasurment.getLength
     
-    d=[];
-    current_theta = [];
-    current_rho = [];
-    
-    %read current measurement
-    xrdMeasurement = nodelist.item(i);
-    scan = xrdMeasurement.getElementsByTagName('scan');
-    
-    %read hkl from first entry
-    try
-      hkl_node = scan.item(0).getElementsByTagName('hkl').item(0).getChildNodes;
-      hkl = 'hkl';
-      for k=1:3
-        h(k) = str2num(hkl_node.getElementsByTagName(...
-          hkl(k)).item(0).getFirstChild.getNodeValue);
-      end
-      h = Miller(h(1),h(2),h(3));
-    catch
-      h = string2Miller(fname);
-    end
-    
-    step_axis = xrdMeasurement.getAttribute('measurementStepAxis');
-    
-    %loop over all scan-data sets
-    for ii=0:scan.getLength-1
-      
-      val = str2num(scan.item(ii).getElementsByTagName('intensities').item(0).getFirstChild.getNodeValue);
-      time = str2num(scan.item(ii).getElementsByTagName('commonCountingTime').item(0).getFirstChild.getNodeValue);
-      d = [d,val/time];
-      
-      %get start and stop position
-      pos = scan.item(ii).getElementsByTagName('positions');
-      rot_start = scan.item(ii).getElementsByTagName('startPosition').item(0);
-      
-      %check units
-      if strcmp(rot_start.getParentNode.getAttribute('unit'),'deg')
-        isrho_deg=degree;
-      else
-        isrho_deg=1;
-      end;
-      
-      start = isrho_deg * str2num(rot_start.getFirstChild.getNodeValue);
-      stop = isrho_deg * str2num(scan.item(ii).getElementsByTagName('endPosition').item(0).getFirstChild.getNodeValue);
-      
-      %get theta
-      for k=0:pos.getLength-1
-        if strcmp(pos.item(k).getAttribute('axis'), char(step_axis))
-          
-          %check units
-          if strcmp(pos.item(k).getAttribute('unit'),'deg')
-            istheta_deg=degree;
-          else
-            istheta_deg=1;
-          end;
-          
-          %get theta
-          theta = pos.item(k).getElementsByTagName('commonPosition').item(0).getFirstChild.getNodeValue;
-          if ischar(theta), theta = str2num(theta);end
-          current_theta = [ current_theta; ...
-            repmat(istheta_deg*theta,length(val),1)]; %pi/2-
-        end
-      end
-      
-      %get rho, mode="Continuous"
-      current_rho = [current_rho,linspace(start,stop,length(val))];
-      
-    end
-    
-    %setup sphere
-    r = S2Grid(sph2vec(current_theta(:), current_rho(:)),'antipodal');
-    
-    %add polefigure
-    pf(i+1) = PoleFigure(h,r,d,symmetry('cubic'),symmetry,varargin{:});
+    pf(k) = localParseMeasurement(xrdMeasurment.item(k-1),varargin{:});
     
   end
   
 else
+  
   interfaceError(fname);
+  
 end
 
 
 
+function pf = localParseMeasurement(measurement,varargin)
+
+% measurement.getElementsByTagName('comment');
+scan = measurement.getElementsByTagName('scan');
+
+q = quaternion;
+for k=1:scan.getLength()
+  
+  data(k) = localParseScan( scan.item(k-1) );
+  
+end
+
+if numel(unique([data.position_2Theta]))>1
+  warning('data may be corrupted, I recognized different 2Theta angles for one measurement')
+end
+
+d = vertcat(data.intensities);
+r = S2Grid(vertcat(data.r));
+
+hkl = unique(vertcat(data.h),'rows');
+h = Miller(hkl(:,1),hkl(:,2),hkl(:,3));
+
+pf = PoleFigure(h,r,d,varargin{:});
+
+
+function data = localParseScan(scan)
+
+% header = scan.getElementsByTagName('header');
+dataPoints = scan.getElementsByTagName('dataPoints').item(0);
+
+data = localParsePositions( dataPoints );
+
+data.commonCountingTime = str2num(...
+  dataPoints.getElementsByTagName('commonCountingTime').item(0).getFirstChild.getNodeValue);
+
+data.intensities = str2num(...
+  dataPoints.getElementsByTagName('intensities').item(0).getFirstChild.getNodeValue).';
+
+% normalize against measurment time
+data.intensities = data.intensities./data.commonCountingTime;
+
+data.h = localParseReflection( scan );
+data.r = localConvertScanToSpecimenDirection(data);
+
+
+function hkl = localParseReflection(scan)
+
+reflection = scan.getElementsByTagName('reflection').item(0);
+
+if ~isempty(reflection)
+  h = str2num(reflection.getElementsByTagName('h').item(0).getFirstChild.getNodeValue);
+  k = str2num(reflection.getElementsByTagName('k').item(0).getFirstChild.getNodeValue);
+  l = str2num(reflection.getElementsByTagName('l').item(0).getFirstChild.getNodeValue);
+  hkl = [h k l];
+else
+  hkl = [0,0,1];
+end
+
+
+function r = localConvertScanToSpecimenDirection(data)
+
+n = numel(data.intensities);
+
+theta2 = linspace(data.position_2Theta(1),data.position_2Theta(end),n);
+omega  = linspace(data.position_Omega(1),data.position_Omega(end),n);
+psi    = linspace(data.position_Psi(1),data.position_Psi(end),n);
+phi    = linspace(data.position_Phi(1),data.position_Phi(end),n);
+
+if strcmpi(data.position_2Theta_unit,'deg'),
+  theta2= theta2*degree; end
+if strcmpi(data.position_Omega_unit,'deg'),
+  omega= omega*degree; end
+if strcmpi(data.position_Psi_unit,'deg'),
+  psi = psi*degree; end
+if strcmpi(data.position_Phi_unit,'deg'),
+  phi= phi*degree; end
+
+
+q = axis2quat(zvector,phi) .* ...
+  axis2quat(yvector,psi)   .* ...
+  axis2quat(xvector,omega) .* ...
+  axis2quat(xvector,(pi-theta2)/2);
+
+r = q*yvector;
+
+
+function pos = localParsePositions(dataPoints)
+
+positions = dataPoints.getElementsByTagName('positions');
+
+for k = 1:positions.getLength()
+  position = positions.item(k-1);
+  
+  ax   = ['position_' char(position.getAttribute('axis'))];
+  unit = char(position.getAttribute('unit'));
+  
+  commonPosition = position.getElementsByTagName('commonPosition').item(0);
+  
+  if ~isempty(commonPosition)
+    
+    val = str2num(commonPosition.getFirstChild.getNodeValue);
+    
+  else
+    startPosition  = position.getElementsByTagName('startPosition').item(0);
+    endPosition   = position.getElementsByTagName('endPosition').item(0);
+    
+    if ~isempty(startPosition) && ~isempty(endPosition)
+      val = [str2num(startPosition.getFirstChild.getNodeValue) ...
+        str2num(endPosition.getFirstChild.getNodeValue)];
+    end
+  end
+  
+  pos.(ax) = val;
+  pos.([ax '_unit']) = unit;
+  
+end
