@@ -8,6 +8,7 @@
 %
 % * fix: better startup when using different MTEX versions
 % * fix: backport of the tensor fixes from MTEX 3.4
+% * fix: show normal colorbar in ebsd plot if scalar property is plotted
 % * fix: http://code.google.com/p/mtex/issues/detail?id=82
 % * fix: http://code.google.com/p/mtex/issues/detail?id=76
 % * fix: http://code.google.com/p/mtex/issues/detail?id=48
