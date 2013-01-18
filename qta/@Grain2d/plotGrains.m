@@ -52,21 +52,16 @@ boundaryEdgeOrder = vertcat(X{:});
 %% default plot options
 
 varargin = set_default_option(varargin,...
-  getpref('mtex','defaultPlotOptions'));
-
-varargin = set_default_option(varargin,...
   {'name', [property ' plot of ' inputname(1) ' (' get(grains,'comment') ')']});
 
 %%
 
 % clear up figure
 newMTEXplot('renderer','opengl',varargin{:});
+setCamera(varargin{:});
 
 % set direction of x and y axis
-
-[V(:,1),V(:,2),lx,ly] = fixMTEXscreencoordinates(V(:,1),V(:,2),varargin{:});
-
-xlabel(lx);ylabel(ly);
+xlabel('x');ylabel('y');
 
 %%
 h = plotFaces(boundaryEdgeOrder,V,vertcat(d{:}),varargin{:});
@@ -105,8 +100,6 @@ end
 set(gcf,'tag','ebsd_spatial');
 setappdata(gcf,'options',[extract_option(varargin,'antipodal'),...
   opts varargin]);
-
-fixMTEXscreencoordinates('axis'); %due to axis;
 
 axis equal tight
 fixMTEXplot(gca,varargin{:});

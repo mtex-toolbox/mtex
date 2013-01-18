@@ -38,6 +38,11 @@ for i=1:numel(cs)
     if ~isempty(mineral)
       options = [options,{'mineral',mineral}];  %#ok<AGROW>
     end
+    
+    color = get(cs{i},'color');
+    if ~isempty(color)
+      options = [options,{'color',color}];  %#ok<AGROW>
+    end
   
     t = strcat('symmetry(''', get(cs{i},'name'),'''',option2str(options,'quoted'),')');
   end

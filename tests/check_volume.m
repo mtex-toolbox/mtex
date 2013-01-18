@@ -70,8 +70,8 @@ for i = 1:numel(rv)
 end
 fprintf('\n');
 figure(1)
-plot(r,'data',d1./d1(1),'smooth')
+plot(r,d1./d1(1),'smooth')
 figure(2)
-plot(r,'data',d2./d2(1),'smooth')
+plot(r,d2./d2(1),'smooth')
 colorbar
 %%

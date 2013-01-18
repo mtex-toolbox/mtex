@@ -10,7 +10,7 @@ if ~isa(o.SS,'symmetry') || ~isa(o.CS,'symmetry')
   disp(s);
   disp(['  size: ' size2str(o)]);
   return
-elseif isCS(o.SS) && isCS(o.CS)
+elseif isMisorientation(o)
   s = [s doclink('orientation_index','misorientation')];
 elseif isCS(o.SS)
   s = [s doclink('orientation_index','inverse orientation')];  

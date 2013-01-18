@@ -15,7 +15,6 @@ function [ev,ew]= principalcomponents(grains,varargin)
 % polygon/hullprincipalcomponents grain/plotEllipse
 %
 
-
 V = full(grains.V);
 F = full(grains.F);
 dim = size(V,2);
@@ -65,10 +64,7 @@ if nargout < 1
   end
   
   ax1 = vertcat(ax1{:});
-  ax2 = vertcat(ax2{:});
-  
-  [ax1(:,1),ax1(:,2)] =  fixMTEXscreencoordinates(ax1(:,1),ax1(:,2),varargin{:});
-  [ax2(:,1),ax2(:,2)] =  fixMTEXscreencoordinates(ax2(:,1),ax2(:,2),varargin{:});
+  ax2 = vertcat(ax2{:});  
   
   fac = [1:size(c,1); size(c,1)+1:2*size(c,1)]';
   h(1) = patch('vertices', [ax1(1:dim:size(ax1,1),:); ax2(1:dim:size(ax1,1),:)],'faces',fac,'edgecolor','b','facecolor','none');

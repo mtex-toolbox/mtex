@@ -15,12 +15,13 @@ o = rotation('Euler',150*degree,40*degree,35*degree);
 
 odf = unimodalODF(o,symmetry,symmetry,'halfwidth',1*degree);
 
-T_odf = calcTensor(odf,T,'Fourier');
+T_odf_f = calcTensor(odf,T,'Fourier');
+T_odf_q = calcTensor(odf,T,'quadrature');
 
 %figure(2)
 %plot(T_odf)
 
-assert(norm(matrix(T_odf)-matrix(rotate(T,o)))<1e-3,'Error checking two rank tensor!')
+assert(norm(matrix(T_odf_f)-matrix(rotate(T,o)))<1e-3,'Error checking one rank tensor!')
 
 %% define a rank 2 tensor and rotate it
 

@@ -1,4 +1,4 @@
-function P = PoleFigure(h,r,data,CS,SS,varargin)
+function P = PoleFigure(h,r,data,varargin)
 % constructor 
 %
 % *PoleFigure* is the low level constructor. For importing real world data
@@ -28,8 +28,10 @@ else
   P.r = argin_check(r,{'vector3d','S2Grid'});
   P.data = argin_check(data,{'double','int'});
   P.bgdata = get_option(varargin,'BACKGROUND',[],'double');
-  P.CS = argin_check(CS,'symmetry');
-  P.SS = argin_check(SS,'symmetry');
+  
+  [P.CS,varargin] = get_class(varargin,'symmetry',symmetry('cubic'));
+  [P.SS,varargin] = get_class(varargin,'symmetry',symmetry('orthorhombic'));
+  
   P.c = reshape(get_option(varargin,'SUPERPOSITION',ones(1,length(h)),'double'),1,[]);
   P.c= P.c ./sum(P.c);
   P.P_hat = [];
@@ -42,5 +44,14 @@ else
   assert(numel(P.data) == numel(P.r),'Number of diffraction intensitites is not equal to the number of specimen directions!');
   
 end
-superiorto('quaternion');
 P = class(P,'PoleFigure');
+
+function [obj,options] = get_class(options,class,default)
+
+pos = find(cellfun(@(x) isa(x,class),options),1);
+if isempty(pos)
+  obj = default;
+else
+  obj = options{pos};
+  options(pos) = [];
+end

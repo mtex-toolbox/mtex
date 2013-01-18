@@ -14,6 +14,10 @@ function plotAngleDistribution( ebsd, varargin )
 % EBSD/calcAngleDistribution
 %
 
+% where to plot
+[ax,ebsd,varargin] = getAxHandle(ebsd,varargin{:});
+if isempty(ax), newMTEXplot;end
+
 %% get phases
 
 ind = cellfun(@(c) isa(c,'EBSD'),varargin);
@@ -31,13 +35,6 @@ else
   bins = 20;
 end
 
-%% make new plot
-
-
-varargin = set_default_option(varargin,...
-  getpref('mtex','defaultPlotOptions'));
-
-newMTEXplot;
 
 %%
 
@@ -80,8 +77,6 @@ for j = 1:length(CS)
   end
 end
 
-
-
 if check_option(varargin,{'ODF','MDF'})
   omega = linspace(0,maxomega,bins);
 else
@@ -112,9 +107,9 @@ if check_option(varargin,{'ODF','MDF'})
     faktor = size(f,1);
   end
 
-  optiondraw(plot(omega/degree,faktor * max(0,f)),'LineWidth',2,varargin{:});
+  optiondraw(plot(ax{:},omega/degree,faktor * max(0,f)),'LineWidth',2,varargin{:});
 else
-  optiondraw(bar(omega/degree,f),'BarWidth',1.5,varargin{:});
+  optiondraw(bar(ax{:},omega/degree,f),'BarWidth',1.5,varargin{:});
 end
 
 xlabel('misorientation angle in degree')

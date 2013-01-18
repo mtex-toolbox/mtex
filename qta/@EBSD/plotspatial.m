@@ -75,13 +75,11 @@ end
 %% default plot options
 
 varargin = set_default_option(varargin,...
-  getpref('mtex','defaultPlotOptions'));
-
-varargin = set_default_option(varargin,...
   {'name', [property ' plot of ' inputname(1) ' (' ebsd.comment ')']});
 
 % clear up figure
 newMTEXplot('renderer','opengl',varargin{:});
+setCamera(varargin{:});
 
 %%
 
@@ -111,8 +109,6 @@ set(gcf,'tag','ebsd_spatial');
 setappdata(gcf,'options',[extract_option(varargin,'antipodal'),...
   opts varargin]);
 
-fixMTEXscreencoordinates('axis'); %due to axis;
-
 axis equal tight
 fixMTEXplot(gca,varargin{:});
 
@@ -131,9 +127,8 @@ if nargout>0, varargout{1}=h; end
 function txt = tooltip(empt,eventdata,ebsd) %#ok<INUSL>
 
 pos = get(eventdata,'Position');
-[xx,yy] = fixMTEXscreencoordinates(pos(1),pos(2));
 
-[sub,map] = findByLocation(ebsd,[xx yy]);
+[sub,map] = findByLocation(ebsd,[pos(1) pos(2)]);
 
 if numel(sub)>0
 

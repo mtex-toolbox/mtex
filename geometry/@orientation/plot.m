@@ -11,29 +11,23 @@ function varargout = plot(o,varargin)
 %% See also
 % orientation/scatter Plotting
 
-%% two dimensional plot -> S2Grid/plot
+newMTEXplot;
 
-if ~(ishold && strcmp(get(gca,'tag'),'ebsd_raster')) && ...  
-  ~check_option(varargin,{'scatter','rodrigues','axisangle'}) 
+if ~(ishold && strcmp(get(gca,'tag'),'ebsd_raster')) && ...
+    ~check_option(varargin,{'scatter','rodrigues','axisangle'})
 
-  if numel(o) == 1
-  
+  washold = ishold;
+  hold all
+  for i = 1:numel(o)
+    
     h = [Miller(1,0,0),Miller(0,1,0),Miller(0,0,1)];
-    plot(o * h,'label',...
-      {char(h(1),'Latex'),char(h(2),'Latex'),char(h(3),'Latex')},...
+    plot(subsref(o,i) * h,'label',...
+      char(h,getpref('mtex','textInterpreter'),'cell'),...
       varargin{:});
-  
-  else % plot as pdfs
-  
-    h = [Miller(1,0,0),Miller(0,1,0),Miller(0,0,1)];
-      
-    multiplot(@(i) S2Grid(o .* h(i)),@(i) [],numel(h),...
-      'ANOTATION',@(i) h(i),...
-      'appdata',@(i) {{'h',h}},'north','south',...
-      varargin{:});
-     
   end
   
+  if ~washold, hold off;end
+    
 else % scatter plot
   
   scatter(o,varargin{:});

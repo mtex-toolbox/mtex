@@ -1,4 +1,4 @@
-function pf = rotate(pf,q)
+function pf = rotate(pf,q,varargin)
 % rotates pole figures by a certain rotation
 %
 %% Syntax  

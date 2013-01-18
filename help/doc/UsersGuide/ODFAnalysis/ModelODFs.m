@@ -106,7 +106,8 @@ ss   = symmetry('triclinic');    % specimen symmetry
 C = [1;reshape(eye(3),[],1);reshape(eye(5),[],1)]; % Fourier coefficients
 odf = FourierODF(C,cs,ss)
 
-plot(odf,'sections',6,'position',[139   262   762   268])
+plot(odf,'sections',6,'alpha','projection','plain')
+mtexColorMap white2black
 
 %%
 
@@ -145,7 +146,7 @@ mod = orientation('Euler',45*degree,0*degree,0*degree);
 % the corresponding Bingham ODF
 odf = BinghamODF(20,mod * quaternion(eye(4)),cs,ss)
 
-plot(odf,'sections',6,'silent','position',[100 100 600 300])
+plot(odf,'sections',6,'silent')
 
 %%
 % *Bingham fibre ODF*

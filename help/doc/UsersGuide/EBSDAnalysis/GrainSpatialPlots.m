@@ -37,7 +37,7 @@ close, plot(grains,'colorcoding','h',{Miller(1,1,1),[0 0 1]},'r',zvector)
 % transparency with the option *translucent*.
 
 close, plot(ebsd,'property','mad')
-colormap(gray)
+mtexColorMap white2black
 
 hold on, plot(grains,'property','phase','translucent',0.4)
 
@@ -69,7 +69,7 @@ close, plotBoundary(grains)
 % on command, so we can plot various information together
 
 hold on, plot(ebsd,'property','bc')
-colormap(gray)
+mtexColorMap white2black
 
 %%
 % e.g. we want also to see all one pixel grains

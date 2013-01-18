@@ -315,8 +315,10 @@ if ~isempty(ebsd)
       msgbox('Phases information successfully loaded!')
     end
   catch
-    errordlg('failed to import Project file')
+    errordlg('Failed to import Project file')
   end
+else
+  errordlg('Import the corresponding data file first.')
 end
 
 

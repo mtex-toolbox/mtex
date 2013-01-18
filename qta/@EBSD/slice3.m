@@ -26,10 +26,6 @@ end
 % x is allways east
 % plotx2east
 
-% default plot options
-varargin = set_default_option(varargin,...
-  getpref('mtex','defaultPlotOptions'));
-
 % get pixels
 X = [ebsd.options.x(:) ebsd.options.y(:) ebsd.options.z(:)];
 Xmin = min(X); Xmax = max(X);

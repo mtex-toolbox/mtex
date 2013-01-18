@@ -26,10 +26,15 @@ if nargout == 2
   for i=1:length(v)
 	
     h = S * subsref(v,i);
+    if check_option(varargin,'antipodal') && check_option(varargin,'keepAntipodal')
+      h = [h;-h]; %#ok<AGROW>
+    end
     u = subsref(v,i);
     for j = 2:length(h)
-      if ~any(isnull(norm(u-subsref(h,j))))...
-          && ~(check_option(varargin,'antipodal') && any(isnull(norm(u+subsref(h,j)))))
+      if ~any(isnull(norm(u-subsref(h,j)))) ...
+          && ~(~check_option(varargin,'keepAntipodal') ...
+          && check_option(varargin,'antipodal') ...
+          && any(isnull(norm(u+subsref(h,j)))))
         u = [u,subsref(h,j)]; %#ok<AGROW>
       end
     end

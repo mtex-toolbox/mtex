@@ -49,19 +49,16 @@ end
 figure
 newMTEXplot;
 
-% get default options
-varargin = set_default_option(varargin,...
-  getpref('mtex','defaultPlotOptions'));
-
 if any(strcmp(cc,{'ipdf','hkl','h'}))
   % hkl is antipodal
   if strcmp(cc,'hkl'),  varargin = {'antipodal',varargin{:}}; end
 
-  [maxtheta,maxrho,minrho,v] = getFundamentalRegionPF(cs,varargin{:});
+  [minTheta,maxTheta,minRho,maxRho,v] = getFundamentalRegionPF(cs,varargin{:});
 
   %maxrho = maxrho-minrho+eps;
-  %minrho = 0; % rotate like canvas %TODO:flipud!
-  h = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,'RESTRICT2MINMAX','resolution',1*degree,varargin{:});
+  %minrho = 0; % rotate like canvas
+  h = S2Grid('PLOT','minTheta',minTheta,'maxTheta',maxTheta,...
+    'minRho',minRho,'maxRho',maxRho,'RESTRICT2MINMAX','resolution',1*degree,varargin{:});
 
   if strcmp(cc,'ipdf')
     d = ipdf2rgb(h,cs,varargin{:});
@@ -73,7 +70,7 @@ if any(strcmp(cc,{'ipdf','hkl','h'}))
 
   d = reshape(d,[size(h),3]);
 
-  multiplot(@(i) h,@(i) d,1,'rgb','ANOTATION',r,varargin{:});
+  surf(h,d,'TR',r);
 
   type = 'ipdf';
 else
@@ -89,12 +86,12 @@ else
   fprintf(['\nplot ',sectype,' sections, range: ',...
     xnum2str(min(sec)/degree),mtexdegchar,' - ',xnum2str(max(sec)/degree),mtexdegchar,'\n']);
 
-  multiplot(@(i) S2G,...
+  multiplot(length(sec),@(i) S2G,...
     @(i) reshape(d(:,:,i,:), [size(d(:,:,i,:),1),size(d(:,:,i,:),2),3]),...
-    length(sec),'rgb',...
-    'ANOTATION',@(i) [symbol,'=',int2str(sec(i)*180/pi),'^\circ'],...  'MINMAX','SMOOTH','TIGHT',...
+    'surf',...
+    'TR',@(i) [symbol,'=',int2str(sec(i)*180/pi),'^\circ'],...  'MINMAX','SMOOTH','TIGHT',...
     'xlabel',labelx,'ylabel',labely,...
-    'equal','margin',0,varargin{:}); %#ok<*EVLC>
+    'equal',varargin{:}); %#ok<*EVLC>
 
 
   setappdata(gcf,'sections',sec);
@@ -114,5 +111,5 @@ setappdata(gcf,'options',extract_option(varargin,'antipodal'));
 if any(strcmp(cc,{'ipdf','hkl','h'}))
   annotate(v,'MarkerFaceColor','k','labeled','all');
 end
-set(gcf,'renderer','opengl');
+set(gcf,'renderer','zBuffer');
 

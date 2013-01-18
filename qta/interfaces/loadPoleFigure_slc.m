@@ -28,10 +28,8 @@ try
   A = A(:,2:end);
   
   h = string2Miller(fname);
-  c = ones(1,length(h));
   
-  
-  pf = PoleFigure(h,r,A,symmetry('cubic'),symmetry,'superposition',c,varargin{:});
+  pf = PoleFigure(h,r,A,varargin{:});
 catch
   interfaceError(fname);
 end

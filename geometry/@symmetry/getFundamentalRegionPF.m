@@ -1,4 +1,4 @@
-function  [maxTheta,maxRho,minRho,v,N] = getFundamentalRegionPF(cs,varargin)
+function  [minTheta,maxTheta,minRho,maxRho,v,N] = getFundamentalRegionPF(cs,varargin)
 % get the fundamental region for (inverse) pole figure
 %
 %% Input
@@ -9,13 +9,16 @@ function  [maxTheta,maxRho,minRho,v,N] = getFundamentalRegionPF(cs,varargin)
 %  maxRho   -
 %  minRho   - starting rho
 %  v        - some nice Miller indice
+%  N        - 
 %
 %% Options
 %  antipodal      - include [[AxialDirectional.html,antipodal symmetry]]
 %
 %
 
+%% default values from the symmetry
 
+minTheta = 0;
 maxRho = rotangle_max_z(cs);
 minRho = 0;
 if check_option(varargin,'antipodal') && rotangle_max_y(cs)/2 < pi
@@ -50,17 +53,59 @@ switch Laue(cs)
   otherwise
 end
 
+%%
+
 if check_option(varargin,'complete')
+  minRho = 0;
   maxRho = 2*pi;
+  minTheta = 0;
   maxTheta = pi;
   v = [];
 end
 
-% find a position in the first quadrant, i.e. minRho + rotate should be
-rotate = get_option(varargin,'rotate',0);
 
-minRho = mod(minRho + rotate + maxRho/2,maxRho) - rotate - maxRho/2;
-maxRho = maxRho + minRho;
+%% get values from direct options
+
+minTheta = get_option(varargin,'minTheta',minTheta);
+maxTheta = get_option(varargin,'maxTheta',maxTheta);
+minRho   = get_option(varargin,'minRho',minRho);
+maxRho   = get_option(varargin,'maxRho',maxRho);
+    
+%% restrict using meta options north, south, upper, lower
+
+if strcmpi('outofPlane',getpref('mtex','zAxisDirection'))
+  if check_option(varargin,'upper'), varargin = set_option(varargin,'north');end
+  if check_option(varargin,'lower'), varargin = set_option(varargin,'south');end
+else
+  if check_option(varargin,'upper'), varargin = set_option(varargin,'south');end
+  if check_option(varargin,'lower'), varargin = set_option(varargin,'north');end
+end
+
+  
+if check_option(varargin,'north') && isnumeric(maxTheta) && maxTheta > pi/2
+  maxTheta = pi/2;  
+end
+
+if check_option(varargin,'south') && isnumeric(maxTheta) && ...
+    maxTheta > pi/2+0.001
+  minTheta = pi/2;
+end
+
+if check_option(varargin,'restrict2Hemisphere') ...
+    && isnumeric(maxTheta) && maxTheta>pi/2
+  maxTheta = pi/2;
+  
+end
+
+
+%% TODO
+% find a position in the first quadrant, i.e. minRho + rotate should be
+%rotate = get_option(varargin,'rotate',0);
+
+%minRho = mod(minRho + rotate + maxRho/2,maxRho) - rotate - maxRho/2;
+%maxRho = maxRho + minRho;
+
+
 
 %% describe Fundamental region by normal to planes
 
@@ -97,6 +142,8 @@ end
 
 end
 
+%% --------------- private functions -----------------------
+
 function maxTheta = maxThetam3(rho)
 
 maxTheta = pi/2 * ones(size(rho));
@@ -108,3 +155,4 @@ ind = rho>pi*3/4;
 maxTheta(ind) = pi- atan2(cos(pi/4),sin(pi/4)*cos(rho(ind)));
 
 end
+

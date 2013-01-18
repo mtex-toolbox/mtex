@@ -40,7 +40,7 @@ try
   % guess crystal direction
   h = string2Miller(fname);
   
-  pf = PoleFigure(Miller(1,0,0),r,d,symmetry('cubic'),symmetry);
+  pf = PoleFigure(Miller(1,0,0),r,d,varargin{:});
   
 catch
   

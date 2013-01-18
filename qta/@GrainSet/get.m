@@ -106,6 +106,10 @@ switch lower(vname)
     phaseMap = get(grains,'phaseMap');
     varargout{1} = phaseMap(grains.phase);
     
+  case 'phases'
+    
+    varargout{1} = get(grains,'phaseMap');
+    
   case lower(properties)
     
     varargout{1} = grains.(properties{find_option(properties,vname)});
@@ -126,8 +130,7 @@ switch lower(vname)
     
   otherwise
     
-    if nargout, varargout{1} = properties; else disp(properties), end
-    return
+    error(['Unknown Property "' vname '" in class GrainSet']);
     
 end
 

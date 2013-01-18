@@ -22,9 +22,11 @@ function [x,omega] = plotfibre(odf,h,r,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-varargin = set_default_option(varargin,...
-  getpref('mtex','defaultPlotOptions'));
+%% where to plot
+[ax,odf,varargin] = getAxHandle(odf,varargin{:});
+if isempty(ax), newMTEXplot;end
 
+%%
 omega = linspace(-pi,pi,199);
 
 center = get_option(varargin,'CENTER',hr2quat(h,r),{'quaternion','rotation','orientation'});
@@ -32,5 +34,5 @@ center = get_option(varargin,'CENTER',hr2quat(h,r),{'quaternion','rotation','ori
 fibre = axis2quat(r,omega) .* center;
 x = eval(odf,fibre,varargin{:});%#ok<EVLC>
 
-optionplot(omega,x,varargin{:});
+optionplot(ax{:},omega,x,varargin{:});
 xlim([-pi pi]); xlabel('omega')

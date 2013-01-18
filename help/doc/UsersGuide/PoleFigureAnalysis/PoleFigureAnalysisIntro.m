@@ -52,8 +52,7 @@ pf = loadPoleFigure(fname,h,cs,ss,'superposition',c)
 % plotted in MTEX. Have a look at the <Plotting.html plotting section> for
 % more informations.
 
-figure
-plot(pf,'position',[100 100 600 300])
+plot(pf)
 
 %% Modify Pole Figure Data
 %
@@ -84,7 +83,7 @@ plot(pf)
 % <PoleFigure2odf.html here>
 
 odf = calcODF(pf,'zero_range','silent')
-plotpdf(odf,h,'antipodal','position',[100 100 800 300])
+plotpdf(odf,h,'antipodal','superposition',c)
 
 
 %% Simulate Pole Figure Data

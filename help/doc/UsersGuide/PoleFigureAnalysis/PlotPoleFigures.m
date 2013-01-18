@@ -17,7 +17,7 @@ mtexdata ptx
 % measurement position of a pole figure an coloring it corresponding to
 % the measured intensity.
 
-plot(pf,'position',[100 100 600 300])
+plot(pf)
 
 %%
 % MTEX tries to guess the right size of circle in order to produce a
