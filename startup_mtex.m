@@ -1,37 +1,13 @@
-function startup_mtex(branch)
+function startup_mtex(varargin)
 % init MTEX session
 %
 % This is the startup file for MTEX. In general it is not necessary to edit
 % this file. The startup options of MTEX can be edited in the file
 % mtex_settings.m in this directory.
 %
-% clc
 
-% only switch branch
-if nargin == 1
 
-  path = getpref('mtex','mtexPath');
-
-  cd(path);
-
-  if strcmpi(path(end-4:end),'trunk')
-    cd('..');
-  else
-    cd('../..');
-  end
-
-  if strcmp(branch(end-4:end),'trunk')
-    cd trunk
-  else
-    cd(['branches' filesep branch]);
-  end
-
-  startup_mtex
-  return
-
-end
-
-%%
+%% Check MATLAB version
 
 lasterr('') %reset all errors
 
@@ -51,7 +27,7 @@ local_path = fileparts(mfilename('fullpath'));
 
 %% needs installation ?
 
-install_mtex(local_path);
+do_install(local_path);
 
 %% initialize MTEX
 fprintf('initialize');
@@ -98,7 +74,7 @@ end
 
 disp(' done!')
 
-if ~isOctave() && isempty(javachk('desktop'))
+if ~isOctave() && isempty(javachk('desktop')) && ~check_option(varargin,'noMenu')
   MTEXmenu;
 end
 
@@ -108,26 +84,25 @@ end
 
 
 %% mtext installation
-function install_mtex(local_path)
+function do_install(local_path)
 
 % check wether local_path is in search path
 cellpath = regexp(path,['(.*?)\' pathsep],'tokens');
 cellpath = [cellpath{:}]; %cellpath = regexp(path, pathsep,'split');
-if any(strcmpi(local_path,cellpath)), return; end
-
 if ispref('mtex'), rmpref('mtex'); end
+if any(strcmpi(local_path,cellpath))
+  setpref('mtex','isInstalled',true);
+  return; 
+else
+  setpref('mtex','isInstalled',false);
+end
 
-% if not yet installed
-%disp(' ')
-%hline('-')
-%disp('MTEX is currently not installed.');
 
 
 % look for older version
 if any(strfind(path,'mtex'))
   disp('I found an older version of MTEX and remove it from the current search path!');
-  disp('The documentation might not be functional.');
-  
+    
   close all
   evalin('base','clear classes')
   
@@ -141,110 +116,10 @@ if (~isOctave() && MATLABverLessThan('7.8'))
 end
 addpath(local_path);
 
-%disp(' ');
-%r= input('Do you want to permanently install MTEX? Y/N [Y]','s');
-% if isempty(r) || any(strcmpi(r,{'Y',''}))
-% 
-%   %check for old startup.m
-%   startup_file = fullfile(toolboxdir('local'),'startup.m');
-%   if exist(startup_file,'file')
-%     disp(['> There is an old file startup.m in ' toolboxdir('local')]);
-%     disp('> I''m going to remove it!');
-%     if ispc
-%       delete(startup_file);
-%     else
-%       sudo(['rm ' startup_file])
-%     end
-%   end
-% 
-%   disp(' ');
-%   disp('> Adding MTEX to the MATLAB search path.');
-%   if ispc
-%     install_mtex_windows;
-%   else
-%     install_mtex_linux;
-%   end
-% 
-% end
-
-
-%disp(' ');
-%disp('MTEX is now running. However MTEX documentation might not be functional.');
-%disp('In order to see the documentation restart MATLAB or click');
-%disp('start->Desktop Tools->View Source Files->Refresh Start Button');
-%hline('-')
-%disp(' ')
-%if (~isOctave() && isempty(javachk('jvm')))
-%  doc; pause(0.1);commandwindow;
-%end
-
-
-end
-
-%% windows
-function install_mtex_windows
-
-if ~savepath
-  disp('> MTEX permanently added to MATLAB search path.');
-else
-  disp(' ');
-  disp('> Warning: The MATLAB search path could not be saved!');
-  disp('> Save the search path manually using the MATLAB menu File -> Set Path.');
-end
-
-end
-
-%% Linux
-function out = install_mtex_linux
-
-if ~savepath % try to save the normal way
-  disp('> MTEX permanently added to MATLAB search path.');
-else
-
-  % if it fails save to tmp dir and move
-  savepath([tempdir 'pathdef.m']);
-
-  % move pathdef.m
-  out = sudo(['mv ' tempdir '/pathdef.m ' toolboxdir('local')]);
-
-  if ~out
-    disp(' ');
-    disp('> Warning: The MATLAB search path could not be saved!');
-    disp('> In order to complete the installation you have to move the file');
-    disp(['   ' tempdir '/pathdef.m']);
-    disp('    to');
-    disp(['   ' toolboxdir('local')]);
-  else
-    disp('> MTEX permanently added to MATLAB search path.');
-  end
-end
-
-end
-
-
-%% sudo for linux
-function out = sudo(c)
-
-disp('> I need root privelegs to perform the following command');
-disp(['>   ' c]);
-disp('> Please enter the password!');
-
-% is there sudo?
-if exist('/usr/bin/sudo','file')
-
-  out = ~system(['sudo ' c]);
-
-else % use su
-
-  out = ~system(['su -c ' c]);
-
-end
-
 end
 
 %% set MTEX search path
 function setMTEXPath(local_path)
-
 
 % obligatory paths
 pathes = { {''}, ...
@@ -315,12 +190,6 @@ function p()
 if isempty(lasterr)
   fprintf('.');
 end
-end
-
-
-function hline(st)
-if nargin < 1, st = '*'; end
-disp(repmat(st,1,80));
 end
 
 function result = isOctave ()
