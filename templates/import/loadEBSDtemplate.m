@@ -13,8 +13,8 @@ CS = {crystal symmetry};
 SS = {specimen symmetry};
 
 % plotting convention
-setpref('mtex','xAxisDirection',{xAxisDirection});
-setpref('mtex','zAxisDirection',{zAxisDirection});
+setMTEXpref('xAxisDirection',{xAxisDirection});
+setMTEXpref('zAxisDirection',{zAxisDirection});
 
 %% Specify File Names
 

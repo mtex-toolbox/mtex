@@ -54,7 +54,7 @@ if isempty(S3G.center) && ~isempty(S3G.alphabeta) && checkEulerAngleConvention(S
   if check_option(varargin,'nfft')
 
     alpha = fft_rho(alpha);
-    if getpref('mtex','nfft_bug')
+    if getMTEXpref('nfft_bug')
       beta  = fft_theta(-beta);
     else
       beta  = fft_theta(beta);

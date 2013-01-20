@@ -61,7 +61,7 @@ if check_option(varargin,'kernelMethod')
 
     % iterate due to memory restrictions?
     maxiter = ceil(length(cs1) * length(cs2) * numel(center) /...
-      getpref('mtex','memory',300 * 1024));
+      getMTEXpref('memory',300 * 1024));
     if maxiter > 1, progress(0,maxiter);end
 
     for iter = 1:maxiter

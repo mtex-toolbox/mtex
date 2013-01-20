@@ -12,7 +12,7 @@ end
 h = [];
 plottype = get_flag(varargin,{'CONTOUR','CONTOURF','SMOOTH','SCATTER','TEXTUREMAP','rgb','LINE'});
 
-set(gcf,'colormap',getpref('mtex','defaultColorMap','default'));
+set(gcf,'colormap',getMTEXpref('defaultColorMap','default'));
 
 
 %% round data for faster plotting
@@ -259,4 +259,3 @@ end
 
 % control legend entry
 setLegend(h,'off');
-

@@ -116,7 +116,7 @@ for j = 1:8
   handles.xyz(j) = uicontrol(...
     'parent',plotg,...
     'style','togglebutton',...
-    'cdata',loadpng([imageNames{j} '.png']),...    
+    'cdata',loadpng([imageNames{j} '.png']),...
     'Position',[5+(j-1)*59 5 54 54]);
 end
 
@@ -140,12 +140,12 @@ setappdata(wzrd,'handles',handles);
 
 function goto_callback(varargin)
 
-% set specimen symmetry 
+% set specimen symmetry
 get_ss(gcbf);
 
 % set xyz convention
-xaxis = NWSE(getpref('mtex','xAxisDirection'));
-zaxis = UpDown(getpref('mtex','zAxisDirection'));
+xaxis = NWSE(getMTEXpref('xAxisDirection'));
+zaxis = UpDown(getMTEXpref('zAxisDirection'));
 direction = xaxis + 4*(zaxis-1);
 
 handles = getappdata(gcbf,'handles');
@@ -153,10 +153,10 @@ set(handles.xyz(direction),'value',1);
 set(handles.xyz(1:8 ~= direction),'value',0);
 
 if isa(getappdata(gcf,'data'),'EBSD')
-  set(handles.euler2spatial,'visible','on');  
+  set(handles.euler2spatial,'visible','on');
   set([handles.specime,handles.specimeText],'visible','off');
 else
-  set(handles.euler2spatial,'visible','off');  
+  set(handles.euler2spatial,'visible','off');
   set([handles.specime,handles.specimeText],'visible','on');
 end
 
@@ -173,8 +173,8 @@ direction = find(cell2mat(get(handles.xyz,'value')));
 xaxis = 1 + mod(direction-1,4);
 zaxis = 1 + (direction > 4);
 
-setpref('mtex','xAxisDirection',NWSE(xaxis));
-setpref('mtex','zAxisDirection',UpDown(zaxis));
+setMTEXpref('xAxisDirection',NWSE(xaxis));
+setMTEXpref('zAxisDirection',UpDown(zaxis));
 
 
 function updateAxes(varargin)
@@ -187,18 +187,18 @@ direction = find(cell2mat(get(handles.xyz,'value')));
 xaxis = 1 + mod(direction-1,4);
 zaxis = 1 + (direction > 4);
 
-setpref('mtex','xAxisDirection',NWSE(xaxis));
-setpref('mtex','zAxisDirection',UpDown(zaxis));
+setMTEXpref('xAxisDirection',NWSE(xaxis));
+setMTEXpref('zAxisDirection',UpDown(zaxis));
 
 % for all axes
 ax = findobj(0,'type','axes');
 fax = [];
 for a = 1:numel(ax)
 
-  if ~isappdata(ax(a),'projection'), continue;end  
+  if ~isappdata(ax(a),'projection'), continue;end
   setCamera(ax(a),'xAxisDirection',NWSE(xaxis),'zAxisDirection',UpDown(zaxis));
   fax = [fax,ax(a)]; %#ok<AGROW>
-  
+
 end
 
 %
@@ -303,4 +303,3 @@ alpha = double(alpha);
 alpha(alpha==0) = NaN;
 cdata = repmat(alpha,[1,1,3]);
 cdata = 1-(cdata+150)./(255+150);
-

@@ -13,8 +13,8 @@ CS = {crystal symmetry};
 SS = {specimen symmetry};
 
 % plotting convention
-setpref('mtex','xAxisDirection',{xAxisDirection});
-setpref('mtex','zAxisDirection',{zAxisDirection});
+setMTEXpref('xAxisDirection',{xAxisDirection});
+setMTEXpref('zAxisDirection',{zAxisDirection});
 
 %% Specify File Names
 
@@ -24,7 +24,7 @@ pname = {path to files};
 % which files to be imported
 fname = {file names};
 
-% background 
+% background
 pname = {path to bg files};
 fname_bg = {bg file names};
 

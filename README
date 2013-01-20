@@ -30,19 +30,22 @@ COPYING		information about redistributing MTEX
 data (dir)      some sample data sets
 examples (dir)  simple examples for using MTEX
 geometry (dir)  geometry tools
-help (dir)	user and developer documentation
+help (dir)	    user and developer documentation
 info.xml        used by MATLAB
+istall_mtex     install MTEX for permanent use
 INSTALL         installation instructions
 MAKEFILE        contains the compiling options !! to be edited by the advanced user !!
 mtex_settings   contains the configuration of MTEX !! to be edited by the user !!
 qta (dir)       core scripts for working with ODFs, EBSD data, and PDFs
+templates (dir) template file for importing EBSD and pole figure data
 README          this file
-startup.m       installation routine automticaly called by MATLAB if the
+startup.m       initialization routine automticaly called by MATLAB if the
                 toolbox is contained in the search path of MATLAB
-startup_mtex    installation routine for MTEX - called manualy or by startup.m
-startup_root    used for the root installation
-tests (dir)     a self test
+startup_mtex    initialization routine for MTEX - to be called at the
+                beginning of each MTEX session
+tests (dir)     some self tests
 tools           auxilary tools
+unistall_mtex   remove MTEX from the search path (permanently)
 
 
 Feedback

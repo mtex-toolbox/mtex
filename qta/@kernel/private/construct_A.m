@@ -113,7 +113,7 @@ end
 
 if length(A) > 11 && ~any(strcmpi(name,{'Fourier','bump','Sobolev','ghost','summability'}))
   % prevent from instability effects
-  epsilon = getpref('mtex','FFTAccuracy',1E-2);
+  epsilon = getMTEXpref('FFTAccuracy',1E-2);
   ind = find(A<=max(min([A,10*epsilon]),epsilon),1,'first');
   A = A(1:min([ind,length(A)]));
 end

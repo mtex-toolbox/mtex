@@ -16,7 +16,7 @@ odf = 0.7*unimodalODF(mod1,cs,ss) + 0.3*unimodalODF(mod2,cs,ss);
 
 %%
 % and lets switch to the LaboTex colormap
-setpref('mtex','defaultColorMap',LaboTeXColorMap);
+setMTEXpref('defaultColorMap',LaboTeXColorMap);
 
 
 %% Pole Figures
@@ -141,5 +141,4 @@ legend('model ODF','uniform ODF')
 %%
 % Finally, lets set back the default colormap.
 
-setpref('mtex','defaultColorMap',WhiteJetColorMap);
-
+setMTEXpref('defaultColorMap',WhiteJetColorMap);

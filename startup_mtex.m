@@ -51,11 +51,11 @@ p();
 
 %% set path to MTEX directories
 
-setpref('mtex','mtexPath',local_path);
-setpref('mtex','DataPath',fullfile(local_path,'data'));
-setpref('mtex','architecture',computer('arch'));
-setpref('mtex','version',MTEXversion);
-setpref('mtex','generatingHelpMode',false);
+setMTEXpref('mtexPath',local_path);
+setMTEXpref('DataPath',fullfile(local_path,'data'));
+setMTEXpref('architecture',computer('arch'));
+setMTEXpref('version',MTEXversion);
+setMTEXpref('generatingHelpMode',false);
 p();
 
 
@@ -83,18 +83,18 @@ end
 %% --------- private functions ----------------------
 
 
-%% mtext installation
+%% mtex installation
 function do_install(local_path)
 
 % check wether local_path is in search path
 cellpath = regexp(path,['(.*?)\' pathsep],'tokens');
 cellpath = [cellpath{:}]; %cellpath = regexp(path, pathsep,'split');
-if ispref('mtex'), rmpref('mtex'); end
+if isappdata(0,'mtex'), rmappdata(0,'mtex'); end
 if any(strcmpi(local_path,cellpath))
-  setpref('mtex','isInstalled',true);
-  return; 
+  setappdata(0,'MTEXInstalled',true);
+  return;
 else
-  setpref('mtex','isInstalled',false);
+  setappdata(0,'MTEXInstalled',false);
 end
 
 
@@ -102,10 +102,10 @@ end
 % look for older version
 if any(strfind(path,'mtex'))
   disp('I found an older version of MTEX and remove it from the current search path!');
-    
+
   close all
   evalin('base','clear classes')
-  
+
   inst_dir = cellpath(~cellfun('isempty',strfind(cellpath,'mtex')));
   if ~isempty(inst_dir), rmpath(inst_dir{:}); end
   local_path = fileparts(mfilename('fullpath'));

@@ -3,14 +3,14 @@ function p = mtexPoleFigurePath
 %
 %% Syntax
 % mtexPoleFigurePath -
-% getpref('mtex','PoleFigurePath') - long form of mtexPoleFigurePath
-% setpref('mtex','PoleFigurePath',path) - change the path to Pole Figure files
+% getMTEXpref('PoleFigurePath') - long form of mtexPoleFigurePath
+% setMTEXpref('PoleFigurePath',path) - change the path to Pole Figure files
 %
 %% See also
 % mtexDataPath mtexCifPath mtexEBSDPath mtexPoleFigurePath mtexODFPath
 % mtexTensorPath
 
-DataPath = getpref('mtex','PoleFigurePath');
+DataPath = getMTEXpref('PoleFigurePath');
 
 if exist(DataPath,'dir')
   p = DataPath;

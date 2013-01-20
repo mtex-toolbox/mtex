@@ -17,8 +17,8 @@
 % * Arbitary plots can be combined in one figure.
 % * One can now arbitrarily switch between scatter, contour and smooth
 % plots for any data.
-% * obsolete options: |fliplr|, |flipud|, |gray|, 
-% 
+% * obsolete options: |fliplr|, |flipud|, |gray|,
+%
 % *Colormap handling*
 %
 % * User defined colormap can now be stored in the folder |colormaps|, e.g.
@@ -82,7 +82,7 @@
 %
 %   % extract entry 1,1 in Voigt notation
 %   C{1,1}
-% 
+%
 % For a list of tensors |C| we have
 %
 %   % extract the first tensor
@@ -157,7 +157,7 @@
 % imported generally]]. If the crystal symmetry of an @EBSD phase is set to a
 % string value, it will be treated as not indexed. e.g. mark the first
 % phase as |'not indexed'|
-% 
+%
 %   CS = {'not indexed',...
 %         symmetry('cubic','mineral','Fe'),...
 %         symmetry('cubic','mineral','Mg')};
@@ -168,12 +168,12 @@
 %
 % *Other*
 %
-% * the comand |set_mtex_option| is obsolete. Use the matlab command 
-% |setpref('mtex',...)| instead. Additionally, one can now see all options 
+% * the comand |set_mtex_option| is obsolete. Use the matlab command
+% |setMTEXpref(...)| instead. Additionally, one can now see all options
 % by the command |getpref('mtex')|
 %
 %% MTEX 3.2.3 - 03/2012
-% 
+%
 % *bugfix release*
 %
 % * allow zooming for multiplot objects again; change the z-order of axes

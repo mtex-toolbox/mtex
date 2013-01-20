@@ -80,7 +80,7 @@ for k=1:numel(fld)
   assignin('base',fld{k},S.(fld{k}));
 end
 
-if ~getpref('mtex','generatingHelpMode')
+if ~getMTEXpref('generatingHelpMode')
   disp([ upper(list(ndx).name) ' data loaded in variables']);
   disp(fld)
   evalin('base',fld{end});
@@ -191,4 +191,3 @@ function [CS,ebsd] = mtexdata_epidote
 
 ebsd = loadEBSD([mtexDataPath '/EBSD/data.ctf'],'ignorePhase',[0 3 4]);
 CS = get(ebsd,'CS');
-

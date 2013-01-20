@@ -31,7 +31,7 @@ set(gca ,'units','pixels');
 
 % get figrure position
 fig_pos = get(gcf,'position');
-d = get_option(varargin,'outerPlotSpacing',getpref('mtex','outerPlotSpacing'));
+d = get_option(varargin,'outerPlotSpacing',getMTEXpref('outerPlotSpacing'));
 figxy = fig_pos(3:4) -42 - 2*d;
 
 % correct for cameraposition

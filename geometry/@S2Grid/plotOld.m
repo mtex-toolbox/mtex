@@ -71,7 +71,7 @@ hold all
 
 % default plot options
 varargin = set_default_option(varargin,...
-  getpref('mtex','defaultPlotOptions'));
+  getMTEXpref('defaultPlotOptions'));
 
 % S2Resolution
 if numel(S2G)>100 || get(S2G,'resolution') < 10 *degree

@@ -26,7 +26,7 @@ ss = o.SS;
 if ~isempty(ax) || newMTEXplot('ensureTag','ipdf',...
     'ensureAppdata',{{'CS',cs},{'SS',ss}})
   argin_check(r,{'vector3d'});
-  annotations  = {'TR',@(i) char(r(i),getpref('mtex','textInterpreter'))};
+  annotations  = {'TR',@(i) char(r(i),getMTEXpref('textInterpreter'))};
 else
   if ~isa(r,'vector3d')
     varargin = [{r},varargin];
@@ -38,7 +38,7 @@ end
 %% colorcoding
 data = get_option(varargin,'property',[]);
 
-%% subsample if needed 
+%% subsample if needed
 
 if numel(o)*length(cs)*length(ss) > 100000 || check_option(varargin,'points')
   points = fix(get_option(varargin,'points',100000/length(cs)/length(ss)));
@@ -51,7 +51,7 @@ if numel(o)*length(cs)*length(ss) > 100000 || check_option(varargin,'points')
 end
 
 data = @(i) repmat(data(:),1,numel(symmetrise(r(i),ss)));
-  
+
 %% plot
 multiplot(ax{:},numel(r),...
   @(i) inverse(o(:)) * symmetrise(r(i),ss),data,...
@@ -89,4 +89,3 @@ theta = acos(1-rqr/2);
 m = Miller(vector3d('polar',theta,rho),getappdata(gcf,'CS'));
 
 txt = char(m,'tolerance',3*degree);
-
