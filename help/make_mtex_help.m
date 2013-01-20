@@ -11,7 +11,7 @@ plotx2east
 global mtex_progress;
 mtex_progress = 0;
 
-setpref('mtex','generatingHelpMode',true);
+setMTEXpref('generatingHelpMode',true);
 set(0,'FormatSpacing','compact')
 
 c = get(0,'DefaultFigureColor');
@@ -52,7 +52,7 @@ tempDir = fullfile(mtex_path,'help','tmp');
 
 makeToolboxXML('name','MTEX',...
   'fullname','<b>MTEX</b> - A MATLAB Toolbox for Quantitative Texture Analysis',...
-  'versionname',getpref('mtex','version'),...
+  'versionname',getMTEXpref('version'),...
   'procuctpage','mtex_product_page.html')
 
 
@@ -137,6 +137,4 @@ system(['jar -cf ' fullfile(docPath,'help.jar') ' -C ' outputDir ' .']);
 
 %% set back mtex options
 
-setpref('mtex','generatingHelpMode',false);
-
-
+setMTEXpref('generatingHelpMode',false);

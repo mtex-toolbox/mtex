@@ -43,7 +43,7 @@ end
 %% transform to right convention
 
 conventions = {'nfft','ZYZ','ABG','Matthies','Roe','Kocks','Bunge','ZXZ','Canova'};
-convention = get_flag(varargin,conventions,getpref('mtex','EulerAngleConvention'));
+convention = get_flag(varargin,conventions,getMTEXpref('EulerAngleConvention'));
 
 switch lower(convention)
 
@@ -75,4 +75,3 @@ qbeta  = quaternion(cos(beta/2),0,sin(beta/2),0);
 qgamma = quaternion(cos(gamma/2),0,0,sin(gamma/2));
 
 q = qalpha .* qbeta .* qgamma;
-

@@ -10,8 +10,8 @@
 CS = {crystal symmetry};
 
 % plotting convention
-setpref('mtex','xAxisDirection',{xAxisDirection});
-setpref('mtex','zAxisDirection',{zAxisDirection});
+setMTEXpref('xAxisDirection',{xAxisDirection});
+setMTEXpref('zAxisDirection',{zAxisDirection});
 
 %% Specify File Names
 
@@ -25,4 +25,3 @@ fname = {file names};
 
 % create a Tensor variable containing the data
 tensor = loadTensor(fname,CS,'interface',{interface},{options});
-

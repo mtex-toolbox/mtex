@@ -222,7 +222,7 @@ for i = 1:length(check)
       if get(check(i),'value')
         set(h,'colormap',flipud(colormap('gray'))/1.2);
       else
-        set(h,'colormap',getpref('mtex','defaultColorMap'));
+        set(h,'colormap',getMTEXpref('defaultColorMap'));
       end
     otherwise
       obj = findall(h,'tag',type);
@@ -246,4 +246,3 @@ rsf = get(h,'ResizeFcn');
 if ~isempty(rsf), rsf(h,[]);end
 
 figure(h);
-

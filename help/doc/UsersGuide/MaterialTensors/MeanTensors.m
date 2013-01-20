@@ -9,7 +9,7 @@
 %
 %%
 % set up a nice colormap
-setpref('mtex','defaultColorMap',blue2redColorMap);
+setMTEXpref('defaultColorMap',blue2redColorMap);
 
 %% Import EBSD Data
 % We start by importing some ebsd data of Glaucophane and Epidote.
@@ -105,5 +105,4 @@ odfEpidote = calcODF(ebsd('Epidote'),'halfwidth',10*degree)
   calcTensor(odfEpidote,CEpidote)
 
 % set back the colormap
-setpref('mtex','defaultColorMap',WhiteJetColorMap);
-
+setMTEXpref('defaultColorMap',WhiteJetColorMap);

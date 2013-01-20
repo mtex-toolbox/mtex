@@ -27,7 +27,7 @@ import_gui_generic(h);
 import_gui_data(h,type);
 
 % for help generation only
-if getpref('mtex','generatingHelpMode')
+if getMTEXpref('generatingHelpMode')
   % activate first page
   setappdata(h,'page',1);
   set_page(h,1);
@@ -84,4 +84,3 @@ if nargin > 1
   end
 
 end
-

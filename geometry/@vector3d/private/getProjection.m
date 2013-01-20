@@ -5,9 +5,9 @@ opts = getappdata(ax);
 extend = opts.extend;
 
 % if there is already a stored projection use this one
-if isfield(opts,'projection') 
+if isfield(opts,'projection')
   projection = opts.projection;
-  return;  
+  return;
 end
 
 % type of projection - default is earea
@@ -17,8 +17,8 @@ projection.type = get_option(varargin,'projection','earea');
 projection.antipodal = check_option(varargin,'antipodal') || check_option(v,'antipodal');
 
 %% read default plot options
-projection.xAxis = get_option(varargin,'xAxisDirection',getpref('mtex','xAxisDirection'));
-projection.zAxis = get_option(varargin,'zAxisDirection',getpref('mtex','zAxisDirection'));
+projection.xAxis = get_option(varargin,'xAxisDirection',getMTEXpref('xAxisDirection'));
+projection.zAxis = get_option(varargin,'zAxisDirection',getMTEXpref('zAxisDirection'));
 
 
 %% compute boundary box
@@ -31,17 +31,17 @@ maxTheta = extend.maxTheta;
 % go through all boundary points of the plot
 dgrid = 1*degree;
 dgrid = pi/round((pi)/dgrid);
-  
+
 if maxRho > minRho
   rho = minRho:dgrid:maxRho;
 else
   rho = mod(minRho:dgrid:maxRho+2*pi,2*pi);
 end
-  
+
 if isnumeric(maxTheta)
-  
+
   if strcmp(projection.type,'plain') || maxTheta < pi/2
-    theta = maxTheta;    
+    theta = maxTheta;
   else
     theta = pi/2;
   end

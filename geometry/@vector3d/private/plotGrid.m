@@ -2,36 +2,36 @@ function plotGrid(ax, projection, extend, varargin)
 % plot Polar Grid
 
 if ~isappdata(ax,'grid') % there is not grid yet
-  
+
   % generate grid
   if strcmpi(projection.type,'plain')
     grid = plotPlainGrid(ax,projection,extend,varargin{:});
     set(ax,'box','on');
   else
     grid = plotPolarGrid(ax,projection,extend,varargin{:});
-    
+
     % hide grid
     optiondraw(grid.boundary,'color','k');
     optiondraw(grid.grid,'visible','off','linestyle',':','color',[.4 .4 .4]);
     optiondraw(grid.ticks,'fontsize',8,'FontName','times','visible','off');
-  
+
     set(ax,'box','on','XTick',[],'YTick',[]);
   end
-  
+
   setappdata(ax,'grid',grid);
-  
+
 else % bring grid into front again
-  
+
   grid = getappdata(ax,'grid');
   if ~isempty(grid)
     childs = get(ax,'children');
     s = structfun(@(x) ismember(childs,x),grid,'uniformoutput',false);
-  
+
     isgrid = s.boundary | s.grid | s.ticks;
-  
+
     set(ax,'Children',[childs(isgrid); childs(~isgrid)]);
   end
-  
+
 end
 return
 
@@ -63,19 +63,19 @@ end
 
 %%
 function g = plotPlainGrid(ax,projection,extend,varargin)
-  
+
   dgrid = get_option(varargin,'grid_res',30*degree);
 
   set(ax,'XTick',round((extend.minRho:dgrid:extend.maxRho)/degree))
   set(ax,'YTick',round((extend.minTheta:dgrid:extend.maxTheta)/degree))
-  
-  interpreter = getpref('mtex','textInterpreter');
-  
+
+  interpreter = getMTEXpref('textInterpreter');
+
   xlabel(ax,get_option(varargin,'xlabel','rho'),'interpreter',interpreter,'FontSize',12);
   ylabel(ax,get_option(varargin,'ylabel','theta'),'interpreter',interpreter,'FontSize',12);
 
   g = [];
-  
+
 end
 
 %% -------------------------------------------------------------------
@@ -109,21 +109,21 @@ else % southern hemisphere
   minTheta = pi;
   theta = pi/2+(dgrid:dgrid:(pi/2-dgrid));
 end
-  
+
 % center point
 [x,y] = project(center,projection,extend);
-    
+
 % draw outer circ
 hb = [hb circ(ax,projection,extend,minTheta,maxTheta,'boundary')];
-  
+
 % draw small circles
 h = [h arrayfun(@(t) circ(ax,projection,extend,minTheta,t),theta)];
-    
+
 % draw meridians
 [hm,tm] = arrayfun(@(t) merid(ax,projection,extend,x,y,t),rho);
 h = [h hm];
 t = [t tm];
-      
+
 grid.boundary = hb;
 grid.grid     = h;
 grid.ticks    = t;

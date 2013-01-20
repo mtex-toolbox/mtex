@@ -7,6 +7,7 @@ end
 
 if ~savepath
   disp('> MTEX installation complete.');
+  setappdata(0,'MTEXInstalled',true);
 else
   disp(' ');
   disp('> Warning: The MATLAB search path could not be saved!');

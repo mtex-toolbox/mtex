@@ -3,14 +3,14 @@ function p = mtexCifPath
 %
 %% Syntax
 % mtexCifPath -
-% getpref('mtex','CIFPath') - long form of mtexCifPath
-% setpref('mtex','CIFPath',path) - change the path to CIF files
+% getMTEXpref('CIFPath') - long form of mtexCifPath
+% setMTEXpref('CIFPath',path) - change the path to CIF files
 %
 %% See also
 % mtexDataPath mtexCifPath mtexEBSDPath mtexPoleFigurePath mtexODFPath
 % mtexTensorPath
 
-DataPath = getpref('mtex','CIFPath');
+DataPath = getMTEXpref('CIFPath');
 
 if exist(DataPath,'dir')
   p = DataPath;

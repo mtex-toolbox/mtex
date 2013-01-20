@@ -61,7 +61,7 @@ while iter <= numiter
   if num == 1
     return
   elseif iter == 0, % iterate due to memory restrictions?
-    numiter = ceil( max(1,nnz(M))*num / getpref('mtex','memory',300 * 1024) );
+    numiter = ceil( max(1,nnz(M))*num / getMTEXpref('memory',300 * 1024) );
     diter = ceil(num / numiter);
   end
 

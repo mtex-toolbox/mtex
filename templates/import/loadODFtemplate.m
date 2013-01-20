@@ -13,8 +13,8 @@ CS = {crystal symmetry};
 SS = {specimen symmetry};
 
 % plotting convention
-setpref('mtex','xAxisDirection',{xAxisDirection});
-setpref('mtex','zAxisDirection',{zAxisDirection});
+setMTEXpref('xAxisDirection',{xAxisDirection});
+setMTEXpref('zAxisDirection',{zAxisDirection});
 
 %% Specify File Names
 
@@ -26,7 +26,7 @@ fname = {file names};
 
 %% Import the Data
 
-% specify kernel 
+% specify kernel
 psi = kernel({kernel name},'halfwidth',{halfwidth});
 
 % create an EBSD variable containing the data

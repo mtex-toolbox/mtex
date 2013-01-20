@@ -39,7 +39,7 @@ handles.tabs = uitabpanel(...
 
 panels = getappdata(handles.tabs,'panels');
 
-if select == 1 || ~getpref('mtex','generatingHelpMode')
+if select == 1 || ~getMTEXpref('generatingHelpMode')
   handles.tabs_pf = uitabpanel(...
     'Parent',panels(1),...
     'Style','popup',...
@@ -63,7 +63,7 @@ else
 end
 
 
-if  select == 2 || ~getpref('mtex','generatingHelpMode')
+if  select == 2 || ~getMTEXpref('generatingHelpMode')
 handles.importcpr = uicontrol(...
   'Parent',panels(2),...
   'String','Import Project-Settings',...
@@ -120,7 +120,7 @@ for k = 1:length(handles.datapane)
     'Value',1);
 end
 
-if select == 1 && ~getpref('mtex','generatingHelpMode')
+if select == 1 && ~getMTEXpref('generatingHelpMode')
   for k=5:6
     set(handles.listbox(k),'Position',[9 10 w-165 ph-65])
   end

@@ -6,7 +6,7 @@ if check_option(varargin,'file')
   fnames = {[fnames,ext]};
   if ~isempty(pathname), pathname = [pathname,filesep];end
 else
-  dataPath = getpref('mtex','ImportWizardPath');
+  dataPath = getMTEXpref('ImportWizardPath');
   if isa(dataPath,'function_handle')
     dataPath = feval(dataPath);
   elseif strcmpi(dataPath,'workpath')

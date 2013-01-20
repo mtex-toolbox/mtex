@@ -68,7 +68,7 @@ handles.color = uicontrol(...
   'String',blanks(0),...
   'Style','popup',...
   'CallBack',@update_cs,...
-  'String',getpref('mtex','EBSDColorNames'),...
+  'String',getMTEXpref('EBSDColorNames'),...
   'Value',1);
 
 
@@ -201,7 +201,7 @@ handles = getappdata(gcf,'handles');
 if isa(getappdata(gcf,'data'),'EBSD')
   set(handles.indexed,'enable','on');
 else
-  set(handles.indexed,'enable','off');  
+  set(handles.indexed,'enable','off');
 end
 
 get_cs(gcbf);
@@ -214,7 +214,7 @@ handles = getappdata(gcf,'handles');
 if isa(getappdata(gcf,'data'),'EBSD')
   set(handles.indexed,'enable','on');
 else
-  set(handles.indexed,'enable','off');  
+  set(handles.indexed,'enable','off');
 end
 
 set_cs(gcbf);
@@ -246,13 +246,13 @@ if name ~= 0
     cs = loadCIF(name);
     set(handles.mineral,'string',shrink_name(name));
     if isa(data,'EBSD')
-      
+
        ph = unique(get(data,'phases'));
        cs_counter = getappdata(gcf,'cs_count');
        csCell = get(data,'CSCell');
        phase = ph(cs_counter);
        csCell{phase} = cs;
-      
+
       data = set(data,'CS',csCell,'noTrafo');
     else
       data = set(data,'CS',cs,'noTrafo');
@@ -292,52 +292,52 @@ end
 Childs = get(handles.csframe,'Children');
 
 if ischar(cs)
-  
+
   set(handles.indexed(1),'Value',0);
   set(handles.indexed(2),'Value',1);
-  
+
   set(Childs,'Enable','off');
   set(handles.mineral,'Enable','off');
   set(handles.color,'Enable','off');
-  
+
   set(handles.mineral,'string',cs);
-  
+
 else
-  
+
   set(handles.indexed(1),'Value',1);
   set(handles.indexed(2),'Value',0);
-  
+
   csname = strmatch(Laue(cs),symmetries);
   set(handles.crystal,'value',csname(1));
-  
+
   color = get(cs,'color');
-  color = strmatch(color,getpref('mtex','EBSDColorNames'));
+  color = strmatch(color,getMTEXpref('EBSDColorNames'));
   set(handles.color,'value',color(1));
-  
+
   set(Childs,'Enable','on');
   set(handles.mineral,'Enable','on');
   set(handles.color,'Enable','on');
-  
+
   % set alignment
   al = [get(cs,'alignment'),{'',''}];
   set(handles.axis_alignment1,'value',find(strcmp(alignments,al{1})));
   set(handles.axis_alignment2,'value',find(strcmp(alignments,al{2})));
-  
+
   % set axes
   [c, angle] = get_axisangel(cs);
-  
+
   for k=1:3
     set(handles.axis{k},'String',c(k));
     set(handles.angle{k},'String',angle{k});
   end
-  
+
   % set whether axes and angles can be changed
   set([handles.axis{:} handles.angle{:}], 'Enable', 'on');
-  
+
   if ~strcmp(Laue(cs),{'-1','2/m'})
     set([handles.angle{:}], 'Enable', 'off');
   end
-  
+
   % set mineral
   set(handles.mineral,'string',get(cs,'mineral'));
 end
@@ -357,7 +357,7 @@ if isa(data,'EBSD') && get(handles.indexed(2),'Value')% ||...
   cs = 'not indexed';
 
 else % indexed data
-  
+
   cs = get(handles.crystal,'Value');
   cs = symmetries(cs);
   cs = strtrim(cs{1}(1:6));
@@ -373,7 +373,7 @@ else % indexed data
   al2 = get(handles.axis_alignment2,'Value');
   al = alignments;
 
-  co = getpref('mtex','EBSDColorNames');
+  co = getMTEXpref('EBSDColorNames');
   co = co{get(handles.color,'Value')};
   try
     cs = symmetry(cs,[axis{:}],[angle{:}]*degree,al{al1},al{al2},...
@@ -382,10 +382,10 @@ else % indexed data
     cs = symmetry(cs,[axis{:}],[angle{:}]*degree,'mineral',mineral,'color',co);
   end
 end
-  
-if isa(data,'EBSD') 
+
+if isa(data,'EBSD')
   cs_counter = getappdata(gcf,'cs_count');
-  CS = get(data,'CSCell');  
+  CS = get(data,'CSCell');
   CS{cs_counter} = cs;
   cs = CS;
 end
