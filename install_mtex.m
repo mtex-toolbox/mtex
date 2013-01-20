@@ -1,12 +1,21 @@
 function install_mtex
 % install mtex for future sessions
 
-if ~ispref('mtex')
+% get search path
+cellpath = regexp(path,['(.*?)\' pathsep],'tokens');
+cellpath = [cellpath{:}];
+
+% get local path
+local_path = fileparts(mfilename('fullpath'));
+
+% check wether local_path is in search path
+if ~any(strcmpi(local_path,cellpath))
   startup_mtex('noMenu')
 end
 
 if ~savepath
-  disp('> MTEX installation complete.');
+  disp(' ');
+  disp('MTEX installation complete.');
   setappdata(0,'MTEXInstalled',true);
 else
   disp(' ');
