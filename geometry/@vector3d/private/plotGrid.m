@@ -12,7 +12,13 @@ if ~isappdata(ax,'grid') % there is not grid yet
 
     % hide grid
     optiondraw(grid.boundary,'color','k');
-    optiondraw(grid.grid,'visible','off','linestyle',':','color',[.4 .4 .4]);
+    
+    if check_option(varargin,'grid') && ~strcmp(get_option(varargin,'grid'),'off')
+      vis = 'on';
+    else
+      vis = 'off';
+    end
+    optiondraw(grid.grid,'visible',vis,'linestyle',':','color',[.4 .4 .4]);
     optiondraw(grid.ticks,'fontsize',8,'FontName','times','visible','off');
 
     set(ax,'box','on','XTick',[],'YTick',[]);
