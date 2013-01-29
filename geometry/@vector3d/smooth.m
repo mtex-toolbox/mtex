@@ -136,9 +136,11 @@ colormap(ax,getMTEXpref('defaultColorMap'));
 plotGrid(ax,projection,extend,varargin{:});
 
 % add annotations
-opts = {'BL',{'Min:',xnum2str(minData)},'TL',{'Max:',xnum2str(maxData)}};
+if ~strcmpi(get_option(varargin,'minmax'),'off')
+  varargin = [{'BL',{'Min:',xnum2str(minData,0.2)},'TL',{'Max:',xnum2str(maxData,0.2)}} varargin];
+end
 
-plotAnnotate(ax,opts{:},varargin{:})
+plotAnnotate(ax,varargin{:})
 
 % output
 if nargout > 0
