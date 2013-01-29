@@ -49,8 +49,14 @@ uimenu(m,'label','Set Outer Margin','callback',{@setMargin,'outer'});
 
 %% annotations
 
-uimenu(m,'label','Show grid','checked','off','callback',{@setVisible,'grid'});
-uimenu(m,'label','Show ticks','checked','off','callback',{@setVisible,'ticks'});
+an = uimenu(m,'label','Anotations');
+uimenu(an,'label','Show min/max','checked','on','callback',{@setVisible,'minmax'});
+uimenu(an,'label','Show labels','checked','on','callback',{@setVisible,'labels'});
+uimenu(an,'label','Show ticks','checked','off','callback',{@setVisible,'ticks'});
+uimenu(an,'label','Show grid','checked','off','callback',{@setVisible,'grid'});
+
+
+
 
 %% fontsize
 
@@ -119,13 +125,30 @@ set(obj,'checked',onoff);
 ax = findobj(gcf,'type','axes');
 for a = 1:numel(ax)
 
-  if ~isappdata(ax(a),'grid'), continue;end
-  grid = getappdata(ax(a),'grid');
-  set(grid.(element),'visible',onoff);
-      
+  switch element
+    case 'minmax'
+      if ~isappdata(ax(a),'annotation'), continue;end
+      an = getappdata(ax(a),'annotation');
+      set(an.h([1,3]),'visible',onoff);
+  
+    case 'labels'
+      la = [get(ax(a),'xlabel'),get(ax(a),'ylabel')];
+      set(la,'visible',onoff);
+          
+    otherwise
+    
+    if ~isappdata(ax(a),'grid'), continue;end
+    grid = getappdata(ax(a),'grid');
+    if isempty(grid)
+      set(ax(a),'XGrid',onoff,'YGrid',onoff);
+    else
+      set(grid.(element),'visible',onoff);
+    end
+  end  
 end
 
 end
+
 
 
 %% X Axis Direction
