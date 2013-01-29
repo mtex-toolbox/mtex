@@ -72,12 +72,17 @@ Y = reshape(Y,size(v));
 
 function ind = inside(rho,minRho,maxRho)
 
-minr = mod(minRho+1e-6,2*pi)-3e-6;
-maxr = mod(maxRho-1e-6,2*pi)+3e-6;
-if minr < maxr
-  ind = mod(rho-1e-6,2*pi) > minr & mod(rho+1e-6,2*pi) < maxr;
+minr = mod(minRho+1e-6,2*pi)-3e-6; % in [-2e-6,2*pi-3e-6]
+maxr = mod(maxRho-1e-6,2*pi)+3e-6; % in [2e-6,2*pi+3e-6]
+
+if minr < 0
+  rho = mod(rho+1e-6,2*pi);
 else
-  ind = ~(mod(rho+1e-6,2*pi) > maxr & mod(rho-1e-6,2*pi) < minr);
+  rho = mod(rho-1e-6,2*pi);
 end
 
-% inside mean, there is a value of k such that 
+if minr < maxr
+  ind = rho > minr & rho < maxr;
+else
+  ind = rho > minr | rho < maxr;
+end
