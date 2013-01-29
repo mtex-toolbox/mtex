@@ -40,7 +40,8 @@ switch lower(projection.type)
     
     if isa(v,'S2Grid'),  X = rho;
     else   X = mod(rho,2*pi);  end    
-    Y = theta;
+    Y = theta ./ degree;
+    X = X ./ degree;
     %     axis ij;
     
   case {'stereo','eangle'} % equal angle
