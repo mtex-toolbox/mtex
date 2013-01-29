@@ -63,6 +63,10 @@ if check_option(varargin,'complete')
   v = [];
 end
 
+%%
+
+v = set(v,'CS',cs);
+v = unique(v,varargin{:});
 
 %% get values from direct options
 
