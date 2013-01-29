@@ -30,11 +30,7 @@ else
   cc = get_option(varargin,'colorcoding',getappdata(gcf,'colorcoding'));
   ccenter = getappdata(gcf,'colorcenter');
   if ~isempty(ccenter), varargin = {'colorcenter',ccenter,varargin{:}}; end
-
-  if isappdata(gcf,'rotate')
-    varargin = set_default_option(varargin,[],'rotate',getappdata(gcf,'rotate'));
-  end
-
+  
   for i = 1:length(cs)
     if isa(cs{i},'symmetry')
       ebsdColorbar(cs{i},varargin{:},...
