@@ -77,8 +77,8 @@ function g = plotPlainGrid(ax,projection,extend,varargin)
 
   interpreter = getMTEXpref('textInterpreter');
 
-  xlabel(ax,get_option(varargin,'xlabel','rho'),'interpreter',interpreter,'FontSize',12);
-  ylabel(ax,get_option(varargin,'ylabel','theta'),'interpreter',interpreter,'FontSize',12);
+  xlabel(ax,get_option(varargin,'xlabel','rho'),'interpreter',interpreter,'FontSize',12,'VerticalAlignment','bottom');
+  ylabel(ax,get_option(varargin,'ylabel','theta'),'interpreter',interpreter,'FontSize',12,'VerticalAlignment','top');
 
   g = [];
 
