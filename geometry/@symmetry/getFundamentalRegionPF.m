@@ -69,6 +69,7 @@ end
 minTheta = get_option(varargin,'minTheta',minTheta);
 maxTheta = get_option(varargin,'maxTheta',maxTheta);
 minRho   = get_option(varargin,'minRho',minRho);
+if check_option(varargin,'minRho'), maxRho = maxRho + minRho;end
 maxRho   = get_option(varargin,'maxRho',maxRho);
 
 %% restrict using meta options north, south, upper, lower
@@ -101,10 +102,6 @@ end
 %% TODO
 % find a position in the first quadrant, i.e. minRho + rotate should be
 %rotate = get_option(varargin,'rotate',0);
-
-%minRho = mod(minRho + rotate + maxRho/2,maxRho) - rotate - maxRho/2;
-%maxRho = maxRho + minRho;
-
 
 
 %% describe Fundamental region by normal to planes
