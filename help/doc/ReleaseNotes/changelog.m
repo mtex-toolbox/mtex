@@ -9,14 +9,26 @@
 %
 % * The alignment of the axes in the plot is now described by the options
 % |xAxisDirection| which can be |north|, |west|, |south|, or |east|, and
-% |zAxisDirection| which can be |outOfPlane| or |intoPlane|.
+% |zAxisDirection| which can be |outOfPlane| or |intoPlane|. Accordinly,
+% there are now the commands
+%
+%   plotzOutOfPlane, plotzIntoPlane
+%
 % * The alignment of the axes can be changed interactively using the new
 % MTEX menu which is located in the menubar of each figure.
 % * northern and southern hemisphere are now separate axes that can be
 % stacked arbitrarily and are marked as north and south.
-% * Arbitary plots can be combined in one figure.
+% * Arbitary plots can be combined in one figure. The syntax is
+%
+%   ax = subplot(2,2,1)
+%   plot(ax,xvector)
+%
 % * One can now arbitrarily switch between scatter, contour and smooth
-% plots for any data.
+% plots for any data. E.g. instead of a scatter plot the following command
+% generates now a filled contour plot
+%
+%   plotpdf(ebsd,Miller(1,0,0),'contourf')
+%
 % * obsolete options: |fliplr|, |flipud|, |gray|,
 %
 % *Colormap handling*
@@ -29,7 +41,10 @@
 %
 % *ODF*
 %
-% * the computation of more then one maximum is back. Use the command
+% * The default ODF plot are now phi2 sections with plain projection and (0,0)
+% beeing at the top left corner. This can be changed interactivly in the
+% new MTEX menu.
+% * The computation of more then one maximum is back. Use the command
 %
 %   [modes, values] = calcModes(odf,n)
 %
@@ -83,7 +98,7 @@
 %   % extract entry 1,1 in Voigt notation
 %   C{1,1}
 %
-% For a list of tensors |C| we have
+% * For a list of tensors |C| we have
 %
 %   % extract the first tensor
 %   C(1)
@@ -96,12 +111,24 @@
 %
 % * command to import vector3d
 %
-%  v   = loadvector3d_generic('fname','ColumnNames',{'x','y','z'})
-%  v   = loadvector3d_generic('fname','ColumnNames',{'latitude','longitude'})
+%   v   = loadvector3d_generic('fname','ColumnNames',{'x','y','z'})
+%   v   = loadvector3d_generic('fname','ColumnNames',{'latitude','longitude'})
 %
 % * new interface for DRex
 % * new interface for Rigaku
 % * new interface for Saclay
+%
+% *General*
+%
+% * improved instalation / uninstalation
+% * new setting system 
+%
+%   setpref('mtex','propertyName','propertyValue')
+%
+% has been replaced by
+%
+%   setMTEXpref('propertyName','propertyValue')
+%
 %
 %% MTEX 3.3.2 - 01/2013
 %
