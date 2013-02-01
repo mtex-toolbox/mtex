@@ -37,6 +37,8 @@ if check_option(varargin,'symmetrise')
   m = m(r);
   n = n(c);
   
+else
+  assert(numel(m)==numel(n),'Number of planes and directions must be the same.');
 end
 
 tau = zeros(numel(m),numel(sigma));
@@ -49,7 +51,11 @@ for i = 1:numel(m)
   
 end
 
-[tauMax,ind] = max(abs(tau));
+if numel(m)>1
+  [tauMax,ind] = max(abs(tau));
 
-m = m(ind);
-n = n(ind);
+  m = m(ind);
+  n = n(ind);
+else
+  tauMax = tau;
+end
