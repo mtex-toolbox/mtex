@@ -42,53 +42,52 @@ plotpdf(odf,[Miller(1,0,-1,0),Miller(0,0,0,1)],'antipodal')
 % not crystal directions.
 
 plotipdf(odf,[xvector,zvector],'antipodal')
+annotate(Miller(1,0,0),'labeled')
 
 %%
-% By default MTEX alway plots only the Fundamental region with respect to
+% By default MTEX alway plots only the fundamental region with respect to
 % the crystal symmetry. In order to plot the complete inverse pole figure
 % you have to use the option *complete*.
 
 plotipdf(odf,[xvector,zvector],'antipodal','complete')
+
+%%
+% By default MTEX always plot the fundamental region starting with azimuth
+% angle rho = 0. Esspecially, if the x axis is plotted to north it might be
+% desireable to plot the fundamental region starting with some negative
+% value. To this end there is the option *minRho*.
+
+plotx2north
+plotipdf(odf,[xvector,zvector],'antipodal','minRho',-90*degree)
+annotate(Miller(1,0,0),'labeled')
+plotx2east
 
 %% ODF Sections
 %
 % Plotting an ODF in two dimensional sections through the orientation space
 % is done using the command <ODF.plotodf.html plot>.
 
-plot(odf,'sections',12,'silent')
+plot(odf,'sections',6,'silent')
 
 %%
-% By default ODFs are plotted in sigma sections. One can plot ODF
+% By default ODFs are plotted in phi2 sections. One can plot ODF
 % sections along any of the Euler angles
 %
-% * SIGMA (alpha+gamma)
+% * PHI2 (default)
+% * PHI1 
 % * ALPHA
 % * GAMMA
-% * PHI1
-% * PHI2
+% * SIGMA (alpha+gamma)
 %
 %%
-% It is also possible to section along the rotation angle of a rotation axis
-%
-% * axisangle
-%
-%%
-% Adapting <SphericalProjection_demo.html spherical projection> and
-% <ColorCoding_demo.html color coding> one can produce any standard ODF plot.
+% One can also specify the sectioning angles phi2 direct
 
-plot(odf,'alpha','sections',12,...
-  'projection','plain','contourf','FontSize',10,'silent')
-mtexColorMap white2black
-
-%%
-%One can also specify the sectioning angles direct
-
-plot(odf,'alpha',[25 30 35]*degree,...
-  'projection','plain','contourf','FontSize',10,'silent')
+plot(odf,'phi2',[25 30 35]*degree,'contourf','silent')
 mtexColorMap white2black
 
 %% 3D Euler Space
-% Instead of Sectioning one could plot the Euler Angles in 3D
+% Instead of sectioning one could plot the Euler Angles in 3D by using one
+% of the options
 %
 % * contour3
 % * surf3
@@ -97,14 +96,8 @@ mtexColorMap white2black
 
 plot(odf,'sigma','surf3')
 
-%% One Dimensional ODF Sections and Fibres
-% In the case you have a simple ODF it might be helpfull to plot one
-% dimensional ODF sections.
-
-plot(odf,'radially','LineWidth',2)
-
-%%
-% More generaly, one can plot the ODF along a certain fibre
+%% Plotting the ODF along a fibre
+% For plotting the ODF along a certain fibre we have the command
 
 plotfibre(odf,Miller(1,2,2),vector3d(2,1,1),'LineWidth',2);
 
