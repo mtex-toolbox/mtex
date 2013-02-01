@@ -1,25 +1,25 @@
 function [ebsd,options] = loadEBSD_generic(fname,varargin)
-% load pole figure data from (alpha,beta,gamma) files
+% load ebsd data from generic text files
 %
 %% Description
 %
-% *loadEBSD_txt* is a generic function that reads any txt or exel files of
-% diffraction intensities that are of the following format
+% *loadEBSD_generic* loads individual orientations and phase information
+% from text or exel files that have a column oriented format as
 %
-%  alpha_1 beta_1 gamma_1 phase_1
-%  alpha_2 beta_2 gamma_2 phase_2
-%  alpha_3 beta_3 gamma_3 phase_3
+%  phi1_1 Phi_1 phi2_1 phase_1
+%  phi1_2 Phi_2 phi2_2 phase_2
+%  phi1_3 Phi_3 phi2_3 phase_3
 %  .      .       .       .
 %  .      .       .       .
 %  .      .       .       .
-%  alpha_M beta_M gamma_M phase_m
+%  phi1_M Phi_M phi2_M phase_m
 %
 % The assoziation of the columns as Euler angles, phase informationl, etc.
 % is specified by the options |ColumnNames| and |Columns|. The files can be
 % contain any number of header lines.
 %
 %% Syntax
-%  pf   = loadEBSD_txt(fname,<options>)
+%   pf   = loadEBSD_generic(fname,'ColumnNames',{'Euler1','Euler2','Euler3'})
 %
 %% Input
 %  fname - file name (text files only)
@@ -36,14 +36,14 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 %
 %% Example
 %
-%    fname = fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt');
-%    CS = {'not indexed',...
+%   fname = fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt');
+%   CS = {'not indexed',...
 %          symmetry('m-3m','mineral','Fe'),...
 %          symmetry('m-3m','mineral','Mg')};
-%    SS = symmetry('triclinic');
-%    ebsd = loadEBSD_generic(fname,'CS',CS,'SS',SS, 'ColumnNames', ...
-%      {'Index' 'Phase' 'x' 'y' 'Euler1' 'Euler2' 'Euler3' 'MAD' 'BC' 'BS'...
-%      'Bands' 'Error' 'ReliabilityIndex'}, 'Bunge')
+%   SS = symmetry('triclinic');
+%   ebsd = loadEBSD_generic(fname,'CS',CS,'SS',SS, 'ColumnNames', ...
+%     {'Index' 'Phase' 'x' 'y' 'Euler1' 'Euler2' 'Euler3' 'MAD' 'BC' 'BS'...
+%     'Bands' 'Error' 'ReliabilityIndex'}, 'Bunge')
 %
 %% See also
 % ImportEBSDData loadEBSD ebsd_demo
