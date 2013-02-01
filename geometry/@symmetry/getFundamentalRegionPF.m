@@ -61,12 +61,10 @@ if check_option(varargin,'complete')
   minTheta = 0;
   maxTheta = pi;
   v = [];
+else
+  v = set(v,'CS',cs);
+  v = unique(v,varargin{:});
 end
-
-%%
-
-v = set(v,'CS',cs);
-v = unique(v,varargin{:});
 
 %% get values from direct options
 
