@@ -26,12 +26,10 @@ switch lower(name)
     for l=0:L, A(l+1) = (2*l+1)*A(l+1); end
 
   case 'von mises fisher'
-
-    for i=1:L
-      A(i+1) = (besseli(i,p)-besseli(i+1,p))/(besseli(0,p)-besseli(1,p));
-    end
-
-
+    
+    b = besseli(0:L+1,p);
+    A(2:end) = diff(b(2:end)) ./ (b(2)-b(1));
+    
   case 'fibre von mises fisher'
 
     for i=1:L
