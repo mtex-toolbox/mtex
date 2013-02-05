@@ -70,7 +70,8 @@ elseif isa(a,'quaternion') && isa(b,'quaternion')
       
     else
       
-      if length(r.CS) > 1
+      if length(r.CS) > 1 && ...
+          ~all(any(isappr(abs(dot_outer(b * r.CS * b^-1,r.CS)),1)))
         warning('MTEX:Orientation','Symmetry lost!');
         r.CS = symmetry;
       end
@@ -78,7 +79,8 @@ elseif isa(a,'quaternion') && isa(b,'quaternion')
   else
     r = b;
     b = b.rotation;
-    if length(r.SS) > 1
+    if length(r.SS) > 1 && ...
+        ~all(any(isappr(abs(dot_outer(a * r.SS * a^-1,r.SS)),1)))
       warning('MTEX:Orientation','Symmetry lost!');
       r.SS = symmetry;
     end
