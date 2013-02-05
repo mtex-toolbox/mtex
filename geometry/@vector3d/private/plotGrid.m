@@ -34,8 +34,9 @@ else % bring grid into front again
     s = structfun(@(x) ismember(childs,x),grid,'uniformoutput',false);
 
     isgrid = s.boundary | s.grid | s.ticks;
+    istext = strcmp(get(childs,'type'),'text');
 
-    set(ax,'Children',[childs(isgrid); childs(~isgrid)]);
+    set(ax,'Children',[childs(istext); childs(isgrid); childs(~isgrid & ~istext)]);
   end
 
 end
