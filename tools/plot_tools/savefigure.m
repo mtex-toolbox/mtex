@@ -13,6 +13,37 @@ function savefigure(fname,varargin)
 %  filename - string
 %  
 
+
+% try to switch to painters mode
+if ~strcmpi(get(gcf,'renderer'),'painters')
+
+  ax = findall(gcf,'type','axes');
+  for iax = 1:numel(ax)
+   
+    childs = findobj(ax(iax),'-property','CData');
+    
+    CData = get(childs,'CData');
+    
+    combined = cat(1,CData{:});
+    if size(combined,3) == 1, continue;end
+    
+    % convert to index data
+    [data, map] = rgb2ind(combined, 128);
+
+    pos = 1;
+    for ind = 1:numel(CData)
+  
+      s = size(CData{ind},1);
+      set(childs(ind),'CData',double(data(pos:pos+s-1)));
+      pos = pos + s;
+    end
+  end
+  colormap(map);
+  set(gcf,'renderer','painters')
+end
+
+ 
+
 if nargin == 0, 
   [name,pathstr] = uiputfile({'*.pdf;*.eps;*.ill','Vector Image File'; ...
     '*.jpg;*.tif;*.png;*.gif;*.bmp;*pgm;*.ppm','Bitmap Image Files';...
@@ -65,8 +96,14 @@ otherwise
   return
 end
 
-printOptions = delete_option(varargin,'crop');
+printOptions = delete_option(varargin,{'crop','pdf'});
 print(fname,flags{:},printOptions{:});
+
+if check_option(varargin,'pdf')
+  unix(['epstopdf' ' ' fname]);
+  fname = strrep(fname,'eps','pdf');
+  unix(['pdfcrop' ' ' fname ' ' fname]);
+end
 
 if check_option(varargin,'crop')
   
