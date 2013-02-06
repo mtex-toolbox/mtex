@@ -30,7 +30,7 @@ else % bring grid into front again
 
   grid = getappdata(ax,'grid');
   if ~isempty(grid)
-    childs = get(ax,'children');
+    childs = allchild(ax);
     s = structfun(@(x) ismember(childs,x),grid,'uniformoutput',false);
 
     isgrid = s.boundary | s.grid | s.ticks;

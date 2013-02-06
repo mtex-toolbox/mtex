@@ -48,6 +48,8 @@ end
 % project data
 [x,y] = project(v,projection,extend,varargin{:});
 
+% plot a spherical grid
+plotGrid(ax,projection,extend,varargin{:});
 
 %% print labels
 for i = 1:numel(strings)
@@ -60,9 +62,6 @@ for i = 1:numel(strings)
 end
 
 %% finalize the plot
-
-% plot a spherical grid
-plotGrid(ax,projection,extend,varargin{:});
 
 % output
 if nargout > 0
