@@ -9,7 +9,7 @@ set(gca,'TickDir','out',...
   'YMinorTick','on',...
   'Layer','top');
 
-grid on
+grid off
 
 %% compute optimal figure size
 
