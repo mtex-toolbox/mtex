@@ -1,6 +1,8 @@
 %% build help with the DocHelp Toolbox
 %
 
+% !find doc/UsersGuide -exec touch {} \;
+
 clear
 close all
 
