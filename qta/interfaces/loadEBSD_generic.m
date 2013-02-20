@@ -81,17 +81,24 @@ istype = @(in, a) all(cellfun(@(x) any(find(strcmpi(stripws(in),stripws(x)))),a)
 layoutcol = @(in, a) cols(cell2mat(cellfun(@(x) find(strcmpi(stripws(in(:)),stripws(x))),a(:),'uniformoutput',false)));
 
 euler = lower({'Euler 1' 'Euler 2' 'Euler 3'});
+bunge = lower({'Phi1' 'Phi' 'Phi2'});
 quat = lower({'Quat real' 'Quat i' 'Quat j' 'Quat k'});
 
-if istype(names,euler) % Euler angles specified
+if istype(names,euler) || istype(names,bunge) % Euler angles specified
   
-  layout = layoutcol(names,euler);
+  if istype(names,euler)
+    layout = layoutcol(names,euler);
+  else
+    layout = layoutcol(names,bunge);
+  end
   
   %extract options
   dg = degree + (1-degree)*check_option(varargin,{'radians','radiant','radiand'});
   
   % eliminate nans
-  d(any(isnan(d(:,layout)),2),:) = [];
+  if ~check_option(varargin,'keepNaN')
+    d(any(isnan(d(:,layout)),2),:) = [];
+  end
   
   % eliminate rows where angle is 4*pi
   ind = abs(d(:,layout(1))*dg-4*pi)<1e-3;
@@ -102,7 +109,10 @@ if istype(names,euler) % Euler angles specified
   beta  = d(:,layout(2))*dg;
   gamma = d(:,layout(3))*dg;
   
-  assert(all(beta >=0 & beta <= pi & alpha >= -2*pi & alpha <= 4*pi & gamma > -2*pi & gamma<4*pi));
+  assert(all((beta >=0 & beta <= pi &...
+    alpha >= -2*pi & alpha <= 4*pi &...
+    gamma > -2*pi & gamma<4*pi) | ...
+    isnan(alpha)));
   
   % check for choosing
   if max([alpha(:);beta(:);gamma(:)]) < 10*degree
@@ -176,7 +186,7 @@ end
 options = varargin;
 
 % set up EBSD variable
-ebsd = EBSD(q,symmetry('cubic'),symmetry,varargin{:},'phase',phase,'options',opt);
+ebsd = EBSD(q,varargin{:},'phase',phase,'options',opt);
 
 catch
   interfaceError(fname)
