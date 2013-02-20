@@ -35,7 +35,7 @@ else
   annotations  = {};
 end
 
-%% colorcoding
+%% colorcoding 1
 data = get_option(varargin,'property',[]);
 
 %% subsample if needed
@@ -49,6 +49,14 @@ if numel(o)*length(cs)*length(ss) > 100000 || check_option(varargin,'points')
   if ~isempty(data), data = data(samples); end
 
 end
+
+%% colorcoding 2
+if check_option(varargin,'colorcoding')
+  colorcoding = lower(get_option(varargin,'colorcoding','angle'));
+  data = orientation2color(o,colorcoding,varargin{:});
+end
+
+%%
 
 data = @(i) repmat(data(:),1,numel(symmetrise(r(i),ss)));
 

@@ -44,7 +44,7 @@ else
   if ~isempty(options), varargin = {options{:},varargin{:}};end
 end
 
-%% colorcoding
+%% colorcoding 1
 data = get_option(varargin,'property',[]);
 
 %% subsample if needed 
@@ -60,6 +60,12 @@ if ~check_option(varargin,'all') && ...
   samples = discretesample(ones(1,numel(o)),points);
   o.rotation = o.rotation(samples);
   if ~isempty(data), data = data(samples); end
+end
+
+%% colorcoding 2
+if check_option(varargin,'colorcoding')
+  colorcoding = lower(get_option(varargin,'colorcoding','angle'));
+  data = orientation2color(o,colorcoding,varargin{:});
 end
 
 
