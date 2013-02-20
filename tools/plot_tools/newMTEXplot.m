@@ -43,7 +43,6 @@ if ~newFigure, return;end
 
 %% new figure
 clf('reset');
-figure(clf);
 rmallappdata(gcf);
 
 iconMTEX(gcf);
