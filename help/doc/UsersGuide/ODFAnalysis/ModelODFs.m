@@ -106,8 +106,8 @@ ss   = symmetry('triclinic');    % specimen symmetry
 C = [1;reshape(eye(3),[],1);reshape(eye(5),[],1)]; % Fourier coefficients
 odf = FourierODF(C,cs,ss)
 
-plot(odf,'sections',6,'alpha','projection','plain')
-mtexColorMap white2black
+plot(odf,'sections',6,'silent','sigma')
+mtexColorMap LaboTeX
 
 %%
 
@@ -146,21 +146,22 @@ mod = orientation('Euler',45*degree,0*degree,0*degree);
 % the corresponding Bingham ODF
 odf = BinghamODF(20,mod * quaternion(eye(4)),cs,ss)
 
-plot(odf,'sections',6,'silent')
+plot(odf,'sections',6,'silent','contourf','sigma')
 
 %%
 % *Bingham fibre ODF*
 
 odf = BinghamODF([-10,-10,10,10],quaternion(eye(4)),cs,ss)
 
-plot(odf,'sections',6,'silent')
+plot(odf,'sections',6,'silent','sigma')
 
 %%
 % *Bingham spherical ODF*
 
+
 odf = BinghamODF([-10,10,10,10],quaternion(eye(4)),cs,ss)
 
-plot(odf,'sections',6,'silent');
+plot(odf,'sections',6,'silent','sigma');
 
 %% Combining model ODFs
 % All the above can be arbitrarily rotated and combinend. For instance, the
