@@ -10,9 +10,13 @@
 % Let us first define some model ODFs to be plotted later on.
 
 cs = symmetry('-3m'); ss = symmetry('-1');
-mod1 = orientation('euler',30*degree,40*degree,10*degree,'ZYZ');
-mod2 = orientation('euler',10*degree,80*degree,70*degree,'ZYZ');
-odf = 0.7*unimodalODF(mod1,cs,ss) + 0.3*unimodalODF(mod2,cs,ss);
+mod1 = orientation('euler',90*degree,40*degree,110*degree,'ZYZ');
+mod2 = orientation('euler',50*degree,30*degree,-30*degree,'ZYZ');
+
+odf = 0.2*unimodalODF(mod1,cs,ss) ...
+  + 0.3*unimodalODF(mod2,cs,ss) ...
+  + 0.5*fibreODF(Miller(0,0,1),vector3d(1,0,0),cs,ss,'halfwidth',10*degree);
+  
 
 %%
 % and lets switch to the LaboTex colormap
@@ -65,25 +69,48 @@ plotx2east
 %% ODF Sections
 %
 % Plotting an ODF in two dimensional sections through the orientation space
-% is done using the command <ODF.plotodf.html plot>.
+% is done using the command <ODF.plotodf.html plot>. By default the
+% sections are at constant angles phi2. The number of sections can be
+% specified by an option
 
 plot(odf,'sections',6,'silent')
 
 %%
-% By default ODFs are plotted in phi2 sections. One can plot ODF
-% sections along any of the Euler angles
+% One can also specify the phi2 angles of the sections explicitly
+
+plot(odf,'phi2',[25 30 35 40]*degree,'contourf','silent')
+
+
+%%
+% Beside the standard phi2 sections MTEX supports also sections according
+% to all other Euler angles. 
 %
 % * PHI2 (default)
 % * PHI1 
-% * ALPHA
-% * GAMMA
+% * ALPHA (Matthies Euler angles)
+% * GAMMA (Matthies Euler angles)
 % * SIGMA (alpha+gamma)
 %
 %%
-% One can also specify the sectioning angles phi2 direct
+% In this context the authors of MTEX recommends the sigma sections as they
+% provide a much less distorted representation of the orientation space.
+% They can be seen as the (001) pole figure splitted according to rotations
+% about the (001) axis. Lets have a look at the 001 pole figure
 
-plot(odf,'phi2',[25 30 35]*degree,'contourf','silent')
-mtexColorMap white2black
+plotpdf(odf,Miller(0,0,0,1))
+
+%%
+% We observe three spots. Two in the center and one at 100. When splitting
+% the pole figure, i.e. plotting the odf as sigma sections
+
+plot(odf,'sections',6,'silent','sigma')
+
+%%
+% we can clearly distinguish the two spots in the middle indicating two
+% radial symmetric portions. On the other hand the spots at 001 appear in
+% every section indicating a fibre at position [001](100). Knowing that
+% sigma sections are nothing else then the splitted 001 pole figure they
+% are much more simple to interprete then ussual phi2 sections.
 
 %% 3D Euler Space
 % Instead of sectioning one could plot the Euler Angles in 3D by using one
@@ -94,7 +121,7 @@ mtexColorMap white2black
 % * slice3
 %
 
-plot(odf,'sigma','surf3')
+plot(odf,'surf3')
 
 %% Plotting the ODF along a fibre
 % For plotting the ODF along a certain fibre we have the command

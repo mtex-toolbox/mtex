@@ -26,7 +26,7 @@ model_odf = 0.5*uniformODF(cs,ss) + ...
 %%
 %
 
-plotodf(model_odf,'sections',6,'silent')
+plot(model_odf,'sections',6,'silent','sigma')
 
 
 %% Simulate Pole Figure Data
@@ -80,7 +80,7 @@ odf = calcODF(pf)
 %%
 % which can be plotted,
 
-plotodf(odf,'sections',6,'silent')
+plot(odf,'sections',6,'silent','sigma')
 
 
 %%

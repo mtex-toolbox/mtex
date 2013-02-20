@@ -49,19 +49,26 @@ clear S3G;
 sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','omega','axisangle'},'phi2');
 [symbol,labelx,labely] = sectionLabels(sectype);
 
+if ~strcmpi(sectype,'sigma')
+  varargin = [{'projection','plain',...
+    'xAxisDirection','east','zAxisDirection','intoPlane',},varargin];
+end
+
 fprintf(['\nPlotting ODF as ',sectype,' sections, range: ',...
   xnum2str(min(sec)/degree),mtexdegchar,' - ',xnum2str(max(sec)/degree),mtexdegchar,'\n']);
 
 % make new plot
 if isempty(ax), newMTEXplot('xlabel',labelx,'ylabel',labely);end
 
+
+%% plot
 if check_option(varargin,{'contour3','surf3','slice3'})
   
   [xlim ylim] = polar(S2G);
 
   v = get_option(varargin,{'surf3','contour3'},10,'double');
   contour3s(xlim(1,:)./degree,ylim(:,1)'./degree,sec./degree,Z,v,varargin{:},...
-    'xlabel',labely,'ylabel',labelx,'zlabel',symbol);
+    'xlabel',labely,'ylabel',labelx,'zlabel',['$' symbol '$']);
 
 else
   %
@@ -70,10 +77,10 @@ else
     'smooth','TR',@(i) [int2str(sec(i)*180/pi),'^\circ'],...
     'xlabel',labelx,'ylabel',labely,...
     'innerPlotSpacing',35,'outerPlotSpacing',35,...
-    'colorrange','equal','projection','plain',...
-    'xAxisDirection','east','zAxisDirection','intoPlane',varargin{:}); %#ok<*EVLC>
+    'colorrange','equal',varargin{:}); %#ok<*EVLC>
 end
 
+%% finalize plot
 if isempty(ax),
   name = inputname(1);
   if isempty(name), name = odf(1).comment;end

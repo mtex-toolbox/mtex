@@ -14,14 +14,14 @@ function contour3s(x,y,z,Z,v,varargin)
 % plot(SantaFe,'sigma','surf3')
 
 
- nrm = max(Z(:));
- if numel(v) == 1, v = linspace(0,nrm,v); end
+nrm = max(Z(:));
+if numel(v) == 1, v = linspace(0,nrm,v); end
  
 labelx = get_option(varargin,'xlabel','x');
 labely = get_option(varargin,'ylabel','y');
 labelz = get_option(varargin,'zlabel','z');
 
- if check_option(varargin,'contour3')
+if check_option(varargin,'contour3')
    
   slicetype = get_flag(varargin,{'x','y','z','xy','xz','yz','xyz'},'z');
   
@@ -33,7 +33,7 @@ labelz = get_option(varargin,'zlabel','z');
       C(3,:) = z(i);
       T = [T C];
     end
-  end  
+  end
   Tp1 = size(T,2);
   
   % contour slice in X-dir
@@ -81,7 +81,7 @@ labelz = get_option(varargin,'zlabel','z');
   alpha(~isfinite(alpha)) = 0;
    
   h = patch('Faces',1:size(lines,1),'Vertices',lines,'EdgeColor','flat',...
-       'FaceVertexCData',c,'EdgeAlpha','flat','FaceVertexAlphaData',alpha);
+    'FaceVertexCData',c,'EdgeAlpha','flat','FaceVertexAlphaData',alpha);
 
 elseif check_option(varargin,{'surf3','slice3'})
   if check_option(varargin,'surf3')
@@ -144,17 +144,21 @@ elseif check_option(varargin,{'surf3','slice3'})
   end
 
 
-end 
+end
        
-  set(gcf,'renderer','opengl')
+set(gcf,'renderer','opengl')
   
-  axis equal
-  axis ([min(x(:)) max(x(:)) min(y(:)) max(y(:))  min(z(:)) max(z(:))])
-  grid on
+axis equal
+axis ([min(x(:)) max(x(:)) min(y(:)) max(y(:))  min(z(:)) max(z(:))])
+grid on
   
-  xlabel(labelx);  ylabel(labely);  zlabel(labelz);
-  
-  
+xlabel(labelx,'interpreter','LaTeX');
+ylabel(labely,'interpreter','LaTeX');
+zlabel(labelz,'interpreter','LaTeX');
+
+end
+
+%%  
 function sliceitz(e,c,x,y,z,Z)
 
 fx = get(e,'Value');
@@ -171,7 +175,9 @@ hold off
 
 setappdata(gcbo,'slicingz',h);  
 
+end
 
+%%
 function sliceity(e,c,x,y,z,Z)
 
 fx = get(e,'Value');
@@ -188,7 +194,9 @@ hold off
 
 setappdata(gcbo,'slicingy',h);  
 
+end
 
+%%
 function sliceitx(e,c,x,y,z,Z)
 
 fx = get(e,'Value');
@@ -206,3 +214,5 @@ set(h,'EdgeColor','none');
 hold off
 
 setappdata(gcbo,'slicingx',h);  
+
+end
