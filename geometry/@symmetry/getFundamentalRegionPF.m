@@ -63,7 +63,8 @@ if check_option(varargin,'complete')
   v = [];
 else
   v = set(v,'CS',cs);
-  v = unique(v,varargin{:});
+  opt = extract_option(varargin,'antipodal');
+  v = unique(v,opt{:});
 end
 
 %% get values from direct options
