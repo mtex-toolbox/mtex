@@ -81,9 +81,9 @@ else % calculate matrix
   f = zeros(numel(out),size(in,1));
     
   % take mean along all symmetries
-  for is = 1:length(SS)*lh   
+  for is = 1:length(SS)*lh
 		dmatrix = dot_outer(out,in(:,is));    
-  	f = f + kk.RK(dmatrix);
+    f = f + kk.RK(dmatrix);
 		if check_option(varargin,'antipodal'), f = f + kk.RK(-dmatrix);end		
   end
   
