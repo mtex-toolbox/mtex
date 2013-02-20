@@ -14,36 +14,6 @@ function savefigure(fname,varargin)
 %  
 
 
-% try to switch to painters mode
-if ~strcmpi(get(gcf,'renderer'),'painters')
-
-  ax = findall(gcf,'type','axes');
-  for iax = 1:numel(ax)
-   
-    childs = findobj(ax(iax),'-property','CData');
-    
-    CData = get(childs,'CData');
-    
-    combined = cat(1,CData{:});
-    if size(combined,3) == 1, continue;end
-    
-    % convert to index data
-    [data, map] = rgb2ind(combined, 128);
-
-    pos = 1;
-    for ind = 1:numel(CData)
-  
-      s = size(CData{ind},1);
-      set(childs(ind),'CData',double(data(pos:pos+s-1)));
-      pos = pos + s;
-    end
-  end
-  colormap(map);
-  set(gcf,'renderer','painters')
-end
-
- 
-
 if nargin == 0, 
   [name,pathstr] = uiputfile({'*.pdf;*.eps;*.ill','Vector Image File'; ...
     '*.jpg;*.tif;*.png;*.gif;*.bmp;*pgm;*.ppm','Bitmap Image Files';...
@@ -53,6 +23,66 @@ if nargin == 0,
 end
 
 [pathstr, name, ext] = fileparts(fname);
+
+%%
+
+cmaplength = 1024;
+globmap = [];
+
+
+% try to switch to painters mode
+if any(strcmpi(ext,{'.eps','.pdf'})) && ~strcmpi(get(gcf,'renderer'),'painters')
+
+  ax = findall(gcf,'type','axes');
+  for iax = 1:numel(ax)
+   
+    childs = findobj(ax(iax),'-property','CData');
+    
+    if isempty(childs), continue;end
+    
+    CData = get(childs,'CData');
+    
+    CData = ensurecell(CData);
+    
+    % ensure all data have the same size
+    dim2 = cellfun(@(x) size(x,3),CData);
+
+    if numel(unique(dim2)) > 1
+      for k = 1:numel(CData)
+        CData{k} = repmat(CData{k},[1,1,max(dim2)/dim2(k)]);
+      end
+    end
+    
+    %
+    combined = cat(1,CData{:});
+    
+    if size(combined,3) == 1, continue;end
+    
+    % convert to index data
+    [data, map] = rgb2ind(combined, cmaplength);
+    
+    % shift data to fit globmap
+    data = data + (iax-1)*cmaplength;
+    globmap = [globmap;map]; %#ok<AGROW>
+
+    pos = 1;
+    for ind = 1:numel(CData)
+  
+      s = size(CData{ind});
+      set(childs(ind),'CData',...
+        reshape(double(data(pos:pos+prod(s(1:2))-1)),s(1:2)));
+      pos = pos + prod(s(1:2));
+    end    
+  end  
+  
+  %set new colormap
+  set(gcf,'colormap',globmap);
+  setcolorrange('equal');
+  set(gcf,'renderer','painters')
+end
+
+ 
+%%
 
 ounits = get(gcf,'Units');
 set(gcf,'PaperPositionMode','auto');
