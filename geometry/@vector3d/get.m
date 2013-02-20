@@ -46,7 +46,7 @@ switch lower(vname)
       try %#ok<TRYNC>
         a = calcVoronoiArea(S2Grid(obj));
         assert(sqrt(mean(a))>0);
-        varargout{1} = sqrt(mean(a));
+        varargout{1} = median(sqrt(a));
       end
     end
     
