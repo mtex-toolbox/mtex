@@ -86,7 +86,7 @@ if ~getMTEXpref('generatingHelpMode')
   evalin('base',fld{end});
 end
 
-
+%%
 function data = listmtexdata
 
 fid = fopen([mfilename('fullpath') '.m'],'r');
@@ -97,7 +97,7 @@ data = regexp(A,'function(.*?)(?<type>(ebsd|pf))(.*?)mtexdata_(?<name>\w*)','nam
 data(cellfun('isempty',{data.name})) = [];
 
 
-% ----------------------------------------------------------- PoleFigure data --
+%% ----------------------------------------------------------- PoleFigure data --
 function [CS,h,pf,c] = mtexdata_dubna
 
 CS = symmetry('-3m',[1.4 1.4 1.5]);
@@ -124,6 +124,7 @@ c = {1,1,[0.52 ,1.23],1,1,1,1};
 
 pf = loadPoleFigure(fname,h,CS,SS,'interface','dubna','superposition',c);
 
+%%
 function [CS,h,pf,c] = mtexdata_geesthacht
 
 CS = symmetry('m-3m');
@@ -142,7 +143,7 @@ c = ones(size(h));
 
 pf = loadPoleFigure(fname,h,CS,SS);
 
-
+%%
 function   [CS,h,pf,c] = mtexdata_ptx
 
 CS = symmetry('mmm');
@@ -159,7 +160,7 @@ pf = loadPoleFigure(fname,CS,SS);
 h = get(pf,'h');
 c = ones(size(h));
 
-% ----------------------------------------------------------------- EBSD data --
+%% ----------------------------------------------------------------- EBSD data --
 function [CS,ebsd] = mtexdata_aachen
 CS = {...
   'notIndexed',...
@@ -171,11 +172,23 @@ ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt'),CS,symme
   'ColumnNames', { 'Index' 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'MAD' 'BC' 'BS' 'Bands' 'Error' 'ReliabilityIndex'},...
   'Bunge');
 
+%%
+function [CS,ebsd] = mtexdata_sharp
+
+CS = {...
+  'notIndexed',...
+  symmetry('-3m',[5,5,17],'mineral','calcite','color','light blue')};
+
+ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','sharp.txt'),'CS',CS,...
+  'ColumnNames', {'Euler 1' 'Euler 2' 'Euler 3' 'Phase' 'x' 'y' },'Bunge');
+
+%%
 function [CS,ebsd] = mtexdata_3d
 
 ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','3dData','*.ANG'),'3d', (0:58)*0.12);
 CS = get(ebsd,'CS');
 
+%%
 function [CS,ebsd] = mtexdata_mylonite
 
 CS = {...
@@ -187,6 +200,7 @@ CS = {...
 ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','P5629U1.txt'),CS, ...
   'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3'});
 
+%%
 function [CS,ebsd] = mtexdata_epidote
 
 ebsd = loadEBSD([mtexDataPath '/EBSD/data.ctf'],'ignorePhase',[0 3 4]);
