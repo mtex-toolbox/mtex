@@ -38,8 +38,11 @@ switch lower(projection.type)
   case 'plain'
     %     X = rho;
     
-    if isa(v,'S2Grid'),  X = rho;
-    else   X = mod(rho,2*pi);  end    
+    if isa(v,'S2Grid')
+      X = rho;
+    else
+      X = mod(rho,2*pi);
+    end
     Y = theta ./ degree;
     X = X ./ degree;
     %     axis ij;
