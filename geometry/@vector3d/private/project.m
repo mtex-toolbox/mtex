@@ -41,7 +41,7 @@ if strcmpi(projection.type,'plain')
     X = mod(rho,2*pi);
   end
   X = reshape(X,size(v))./ degree;
-  Y = reshape(Y,size(v))./ degree;
+  Y = reshape(theta,size(v))./ degree;
    
   return
 end
