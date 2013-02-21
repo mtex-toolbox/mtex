@@ -43,6 +43,7 @@ if all(isnan(x) | isnan(y))
   if nargout > 0
     varargout{1} = [];
     varargout{2} = [];
+    h = [];
   end
 else
 
