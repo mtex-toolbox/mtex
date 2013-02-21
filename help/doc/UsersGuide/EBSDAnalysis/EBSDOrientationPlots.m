@@ -42,7 +42,7 @@ plotipdf(o,xvector)
 % plots not to become too crowed with points. The number of randomly chosen orientations
 % can be specified by the option *points*.
 
-plotodf(o,'points',1000)
+plotodf(o,'points',1000,'sigma')
 
 
 %% Scatter Plot in Axis Angle or Rodrigues Space
@@ -89,7 +89,7 @@ plotpdf(ebsd('Fe'),[Miller(1,0,0),Miller(1,1,0)],'antipodal','MarkerSize',4,...
 % or some arbitrary data vector
 
 plotodf(grains('Fe'),'antipodal','sections',9,'MarkerSize',3,...
-  'property',shapefactor(grains('Fe')));
+  'property',shapefactor(grains('Fe')),'sigma');
 
 %% 
 % Superposition of two scatter plots is achieved by the commands *hold on*
