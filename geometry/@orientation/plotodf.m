@@ -72,8 +72,9 @@ sec = get_option(varargin,sectype,sec,'double');
 
 %% maybe I should reuse a plot
 if isempty(ax) && ~newMTEXplot('ensureappdata',...
-    {{'sections',[]},{'CS',cs},{'SS',ss}},...
-    'xlabel',labelx,'ylabel',labely)
+    {{'sections',[]},{'CS',cs},{'SS',ss}})
+  
+  %'xlabel',labelx,'ylabel',labely
   
     sectype = getappdata(gcf,'SectionType');
     sec = getappdata(gcf,'sections');

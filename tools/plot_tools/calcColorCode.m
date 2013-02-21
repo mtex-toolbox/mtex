@@ -16,20 +16,28 @@ if numel(obj) == 0  % empty object
 
 elseif isa(prop,'char')
   switch lower(prop)
-    case {'orientation','mis2mean'}
-
-      o = get(obj,prop);
+    case {'orientation','mis2mean','orientations'}
 
       colorcoding = lower(get_option(varargin,'colorcoding','ipdf'));
-      if ischar(get(o,'CS')) || isempty(o)
-        d = ones(numel(obj),3);  % ;NaN(numel(obj),3);
+      
+      try
+        o = get(obj,prop);
+      catch %#ok<CTCH>
+        o = [];
+      end
+      
+      if ischar(get(obj,'CS')) || isempty(obj)
+        d = NaN(numel(obj),1);
       else
+              
         if strcmpi(prop,'mis2mean'), varargin = [varargin 'r','auto']; end
         [d,opts] = orientation2color(o,colorcoding,varargin{:});
+      
       end
 
       prop = ['orientation.' colorcoding];
-
+        
+            
     case 'phase'
 
       cmap = getMTEXpref('EBSDColors');
