@@ -1,5 +1,5 @@
-function c = orientation2custom(o, varargin)
-
+function rgb = orientation2custom(o, varargin)
+% description !!!
 
 
 centers = get_option(varargin,'orientations',{idquaternion,[1 0 0]});
@@ -7,7 +7,8 @@ centers = get_option(varargin,'orientations',{idquaternion,[1 0 0]});
 psi  = kernel('de la vallee','halfwidth',get_option(varargin,'halfwidth',10*degree));
 
 s = size(o);
-Color = ones([s,3]);
+rgb = ones([s,3]);
+
 for k=1:2:numel(centers)
   
   center = centers{k};
@@ -19,12 +20,5 @@ for k=1:2:numel(centers)
   cdata(:,2) = w.*cdata(:,2);
   cdata = reshape(hsv2rgb(cdata),[s,3]);
   
-  Color = Color.*cdata;
+  rgb = rgb.*cdata;
 end
-
-c = Color;
-
-
-
-
-

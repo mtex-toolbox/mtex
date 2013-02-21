@@ -1,8 +1,19 @@
-function c = ipdf2hkl(h,cs,varargin)
+function [rgb,options] = ipdf2hkl(o,varargin)
 % converts orientations to rgb values
 
-%its antipodal
+%% convert to Miller
+if isa(o,'orientation')
+  h = quat2ipdf(o,varargin{:});
+  cs = get(o,'CS');
+else
+  h = o;
+  cs = varargin{1};
+end
 
+
+%%
+
+%its antipodal
 % project to fundamental region
 [h,pm,rho_min] = project2FundamentalRegion(vector3d(h),cs,varargin{:},'antipodal');   %#ok<ASGLU>
 [theta,rho] = polar(h(:));
@@ -27,7 +38,7 @@ if strcmp(Laue(cs),'-1')
   b = (1-ntheta) .*  (maxrho-abs(brho))/maxrho;
   
   r(r<0) = 0; g(g<0) = 0; b(b<0) = 0;
-  c = [r(:) g(:) b(:)];
+  rgb = [r(:) g(:) b(:)];
   return
 end
   
@@ -42,6 +53,6 @@ r = (1-theta./maxTheta);
 g = theta./maxTheta .* (maxRho - rho) ./ maxRho;
 b = theta./maxTheta .* rho ./ maxRho;   
 
-c = [r(:) g(:) b(:)];    
+rgb = [r(:) g(:) b(:)];    
     
-return
+options = varargin;
