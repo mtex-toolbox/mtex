@@ -44,15 +44,6 @@ if any(strcmpi(ext,{'.eps','.pdf'})) && ~strcmpi(get(gcf,'renderer'),'painters')
     
     CData = ensurecell(CData);
     
-    % ensure all data have the same size
-    dim2 = cellfun(@(x) size(x,3),CData);
-
-    if numel(unique(dim2)) > 1
-      for k = 1:numel(CData)
-        CData{k} = repmat(CData{k},[1,1,max(dim2)/dim2(k)]);
-      end
-    end
-    
     %
     combined = cat(1,CData{:});
     
