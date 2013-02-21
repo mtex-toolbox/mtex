@@ -49,6 +49,18 @@ end
 
 boundaryEdgeOrder = vertcat(X{:});
 
+%% ensure all data have the same size
+dim2 = cellfun(@(x) size(x,2),d);
+
+if numel(unique(dim2)) > 1
+  for k = 1:numel(d)
+    if dim2(k)>0
+      d{k} = repmat(d{k},[1,max(dim2)/dim2(k)]);
+    end
+  end
+end
+
+
 %% default plot options
 
 varargin = set_default_option(varargin,...

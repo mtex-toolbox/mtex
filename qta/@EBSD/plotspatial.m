@@ -72,6 +72,18 @@ for k=1:numberOfPhases
   end
 end
 
+%% ensure all data have the same size
+dim2 = cellfun(@(x) size(x,2),d);
+
+if numel(unique(dim2)) > 1
+  for k = 1:numel(d)
+    if dim2(k)>0
+      d{k} = repmat(d{k},[1,max(dim2)/dim2(k)]);
+    end
+  end
+end
+
+
 %% default plot options
 
 varargin = set_default_option(varargin,...
@@ -89,13 +101,11 @@ for p=1:numel(selectedPhases)
 end
 
 % make legend
-minerals = get(ebsd,'minerals');
-legend(h,minerals(isPhase));
-legend('off')
-
-if strcmpi(property,'phase'),
-  legend('show');
+if strcmpi(property,'phase')
+  minerals = get(ebsd,'minerals');
+  legend(h,minerals(isPhase));
 end
+
 
 % set appdata
 if strncmpi(property,'orientation',11)
@@ -137,7 +147,7 @@ if numel(sub)>0
   txt{1} = ['#'  num2str(find(map))];
   txt{2} = ['Phase: ', minerals{sub.phase}];
   if ~isNotIndexed(sub)
-    txt{3} = ['Orientation: ' char(sub.rotations)];
+    txt{3} = ['Orientation: ' char(sub.rotations,'nodegree')];
   end
 
 else
