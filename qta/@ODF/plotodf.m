@@ -49,9 +49,12 @@ clear S3G;
 sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','omega','axisangle'},'phi2');
 [symbol,labelx,labely] = sectionLabels(sectype);
 
-if ~strcmpi(sectype,'sigma')
+if strcmpi(sectype,'sigma')  
+  varargin = [{'innerPlotSpacing',10},varargin];
+else
   varargin = [{'projection','plain',...
-    'xAxisDirection','east','zAxisDirection','intoPlane',},varargin];
+    'xAxisDirection','east','zAxisDirection','intoPlane',...
+    'innerPlotSpacing',35,'outerPlotSpacing',35},varargin];
 end
 
 fprintf(['\nPlotting ODF as ',sectype,' sections, range: ',...
@@ -76,7 +79,6 @@ else
     S2G,  @(i) Z(:,:,i),...    'DISP',@(i,Z) [' ',symbol(2:end),' = ',xnum2str(sec(i)/degree),mtexdegchar,' ',...    ' Max: ',xnum2str(max(Z(:))),...    ' Min: ',xnum2str(min(Z(:)))],...
     'smooth','TR',@(i) [int2str(sec(i)*180/pi),'^\circ'],...
     'xlabel',labelx,'ylabel',labely,...
-    'innerPlotSpacing',35,'outerPlotSpacing',35,...
     'colorrange','equal',varargin{:}); %#ok<*EVLC>
 end
 
@@ -96,4 +98,58 @@ if isempty(ax),
     h = varargin{find_type(varargin,'Miller')};
     setappdata(gcf,'h',h);
   end
+
+  %% set data cursor
+  dcm_obj = datacursormode(gcf);
+  set(dcm_obj,'SnapToDataVertex','off')
+  set(dcm_obj,'UpdateFcn',{@tooltip});
+
+  datacursormode on;
 end
+
+
+%% Tooltip function
+function txt = tooltip(empt,eventdata) %#ok<INUSL>
+
+
+
+ax = get(get(eventdata,'Target'),'Parent');
+all_ax = getappdata(gcf,'multiplotAxes');
+sec = getappdata(gcf,'sections');
+iax = ax == all_ax;
+
+projection = getappdata(ax,'projection');
+
+pos = get(eventdata,'Position');
+[theta,rho] = projectInv(pos(1),pos(2),projection.type);
+
+switch getappdata(gcf,'SectionType')
+  case 'phi1'
+    euler1 = sec(iax);
+    euler2 = theta;
+    euler3 = rho;
+    convention = 'Bunge';
+  case 'phi2'
+    euler3 = sec(iax);
+    euler2 = theta;
+    euler1 = rho;
+    convention = 'Bunge';
+  case 'alpha'
+    euler3 = sec(iax);
+    euler2 = theta;
+    euler1 = rho;
+    convention = 'Matthies';
+  case 'sigma'
+    euler1 = rho;
+    euler2 = theta;
+    euler3 = sec(iax) - rho;
+    convention = 'Matthies';
+  otherwise
+    error('unknown sectioning!')
+end
+
+o = orientation('Euler',euler1,euler2,euler3,convention,...
+  getappdata(gcf,'CS'),getappdata(gcf,'SS'));
+
+txt = char(o,'nodegree');
+

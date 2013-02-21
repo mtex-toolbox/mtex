@@ -49,9 +49,12 @@ end
 sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','omega','axisangle'},'phi2');
 [symbol,labelx,labely] = sectionLabels(sectype);
 
-if ~strcmpi(sectype,'sigma')
+if strcmpi(sectype,'sigma')
+  varargin = [{'innerPlotSpacing',10},varargin];
+else
   varargin = [{'projection','plain',...
-    'xAxisDirection','east','zAxisDirection','intoPlane',},varargin];
+    'xAxisDirection','east','zAxisDirection','intoPlane',...
+    'innerPlotSpacing',35,'outerPlotSpacing',35},varargin];
 end
 
 % get fundamental plotting region
@@ -95,8 +98,7 @@ S2G = arrayfun(@(i) set(S2G{i},'res',get(S2G{1},'resolution')),1:numel(S2G),'uni
 %% ------------------------- plot -----------------------------------------
 multiplot(ax{:},nsec,@(i) S2G{i},@(i) data{i},...
   'TR',@(i) [int2str(sec(i)*180/pi),'^\circ'],...
-  'xlabel',labelx,'ylabel',labely,'dynamicMarkerSize',...
-  'innerPlotSpacing',35,'outerPlotSpacing',35,varargin{:}); %#ok<*EVLC>
+  'xlabel',labelx,'ylabel',labely,'dynamicMarkerSize',varargin{:}); %#ok<*EVLC>
 
 if isempty(ax)
   setappdata(gcf,'sections',sec);
