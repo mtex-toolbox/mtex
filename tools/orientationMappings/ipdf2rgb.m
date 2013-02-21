@@ -1,8 +1,21 @@
-function c = ipdf2rgb(h,cs,varargin)
+function [rgb,options] = ipdf2rgb(o,varargin)
 % converts orientations to rgb values
 
+%options = [{'r',r},options];
 
-%% fundamental region
+%% convert to Miller
+if isa(o,'orientation')
+  [h,r] = quat2ipdf(o,varargin{:});
+  options = {'r',r};
+  cs = get(o,'CS');
+else
+  h = o;
+  cs = varargin{1};
+  options = {};
+end
+
+
+%% colorize fundamental region
 
 varargin = delete_option(varargin,'complete');
 
@@ -23,7 +36,7 @@ switch Laue(cs)
     pm = theta(:) >= pi/2;
     if any(pm), c(pm,:) = hsv2rgb([rho(pm),ones(sum(pm),1),2-theta(pm)./pi*2]); end
     if any(~pm), c(~pm,:) = hsv2rgb([rho(~pm),theta(~pm)./pi*2,ones(sum(~pm),1)]); end
-    c = reshape(c,[size(h),3]);
+    rgb = reshape(c,[size(h),3]);
     return
   case '2/m'
     if check_option(varargin,'antipodal')
@@ -40,7 +53,7 @@ switch Laue(cs)
     pm = theta(:) >= pi/2;
     if any(pm), c(pm,:) = hsv2rgb([rho(pm),ones(sum(pm),1),2-theta(pm)./pi*2]); end
     if any(~pm), c(~pm,:) = hsv2rgb([rho(~pm),theta(~pm)./pi*2,ones(sum(~pm),1)]); end
-    c = reshape(c,[size(h),3]);
+    rgb = reshape(c,[size(h),3]);
     return
   case 'm-3m'
     constraints = [vector3d(1,-1,0),vector3d(-1,0,1),yvector,zvector];
@@ -64,7 +77,7 @@ switch Laue(cs)
     center = sph2vec(pi/4,maxRho/4);
 end
 
-[sh,pm,rho_min] = project2FundamentalRegion(vector3d(h),cs,varargin{:});
+[sh,pm,rho_min] = project2FundamentalRegion(vector3d(h),{cs},varargin{:});
 
 %% special case m-3
 
@@ -76,8 +89,6 @@ if strcmp(Laue(cs),'m-3')
   sh = vector3d('polar',theta,rho);
   
 end
-
-
 
 % if the Fundamental region does not start at rho = 0
 constraints = axis2quat(zvector,rho_min) * constraints;
@@ -97,19 +108,23 @@ omega = omega(:);
 
 % center
 center = get_option(varargin,'colorcenter',center);
-center = project2FundamentalRegion(center./ norm(center),cs,varargin{:});
+center = project2FundamentalRegion(center./ norm(center),{cs},varargin{:});
 cc = cross(sh,center);
 cc = cc ./ norm(cc);
+
+options = [{'colorcenter',center},options];
 
 if check_option(varargin,'radius') % linear interpolation to the radius
   
   radius = get_option(varargin,'radius',1);
   dh(:,:) = 1-min(1,angle(sh,center)./radius);
+  options = [options,{'radius',radius}];
 
-elseif max(angle(sh,center)) < 10*degree
+elseif quantile(angle(sh,center),0.9) < 10*degree
   
-  radius = max(angle(sh,center));
+  radius = quantile(angle(sh,center),0.9);
   dh(:,:) = 1-min(1,angle(sh,center)./radius);
+  options = [options,{'radius',radius}];
   
 else % linear interpolation to the boundaries
   
@@ -132,8 +147,8 @@ dh = dh(:);
 
 
 %% compute colors
-c = zeros(numel(h),3);
-if any(pm), c(pm,:) = hsv2rgb([omega(pm)./2./pi,ones(sum(pm),1),1-dh(pm)]);end
-if ~all(pm), c(~pm,:) = hsv2rgb([omega(~pm)./2./pi,1-dh(~pm),ones(sum(~pm),1)]);end
+rgb = zeros(numel(h),3);
+if any(pm), rgb(pm,:) = hsv2rgb([omega(pm)./2./pi,ones(sum(pm),1),1-dh(pm)]);end
+if ~all(pm), rgb(~pm,:) = hsv2rgb([omega(~pm)./2./pi,1-dh(~pm),ones(sum(~pm),1)]);end
 %c = reshape(c,[size(h),3]);
 
