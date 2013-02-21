@@ -127,7 +127,8 @@ if ~isappdata(gcf,'colorbaraxis')
 
   % bring invisible axis in back
   ch = allchild(gcf);
-  set(gcf,'children',[ch(ch ~= d);ch(ch == d)]);
+  ch = [ch(ch ~= d);ch(ch == d)];
+  set(gcf,'children',ch,'currentAxes',ch(1));
   set(d,'HandleVisibility','callback');
 
   setappdata(gcf,'colorbaraxis',d);
