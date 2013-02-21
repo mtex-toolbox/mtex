@@ -140,12 +140,3 @@ ebsdColorbar(symmetry('6/mmm'),'colorcoding','hkl')
 ebsdColorbar(symmetry('m-3m'))
 ebsdColorbar(symmetry('m-3m'),'colorcoding','hkl')
 
-
-%% Other Colorcodes
-% there are many other ways to  <orientation2color.html, colorize>
-% orientations
-
-close all, plot(ebsd,'colorcoding','bunge')
-close, plot(ebsd,'colorcoding','bunge2')
-close, plot(ebsd,'colorcoding','ihs')
-close, plot(ebsd,'colorcoding','euler')

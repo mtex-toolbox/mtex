@@ -64,21 +64,28 @@ calcError(odf,fibre_odf,'resolution',5*degree)
 e = [];
 for i = 1:6
 
-  ebsd = calcEBSD(fibre_odf,10^i);
+  ebsd = calcEBSD(fibre_odf,10^i,'silent');
   
-  psi = calcKernel(ebsd);
-  odf = calcODF(ebsd,'kernel',psi);
+  psi1 = calcKernel(ebsd,'SamplingSize',10000,'silent');
+  odf = calcODF(ebsd,'kernel',psi1,'silent');
   e(i,1) = calcError(odf,fibre_odf,'resolution',2.5*degree);
   
-  psi = calcKernel(ebsd,'method','RuleOfThumb');
-  odf = calcODF(ebsd,'kernel',psi);
+  psi2 = calcKernel(ebsd,'method','RuleOfThumb','silent');
+  odf = calcODF(ebsd,'kernel',psi2,'silent');
   e(i,2) = calcError(odf,fibre_odf,'resolution',2.5*degree);  
 
+  disp(['Rule of thumb: ' int2str(get(psi2,'halfwidth')/degree) mtexdegchar ...
+    'Kullback Leibler cross validation: ' int2str(get(psi1,'halfwidth')/degree) mtexdegchar]);
+  
 end
+
 
 %% 
 % Plot the error in dependency of the number of single orientations.
 
 close all;
 semilogx(10.^(1:length(e)),e)
-
+legend('Default','RuleOfThumb')
+xlabel('Number of orientations')
+ylabel('Estimation Error')
+title('Error between original fibre ODF model and simulated ebsd','FontWeight','bold')
