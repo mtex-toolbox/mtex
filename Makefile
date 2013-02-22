@@ -18,7 +18,7 @@ TARGET= glnxa64
 FFTWPATH = /usr
 #
 # path to the NFFT, i.e. to /lib/libnfft3.a
-NFFTPATH = /usr
+NFFTPATH = /usr/local
 #
 # matlab path
 MATLABPATH = /opt/matlab
@@ -28,9 +28,9 @@ CFLAGS= -c -O3 -Wall -fomit-frame-pointer -fstrict-aliasing -ffast-math -mfpmath
 LDFLAGS= -lm #-lpthread
 # MEX flags
 # for 32 bit systems set
-MEXFLAGS=-$(TARGET) -compatibleArrayDims
+#MEXFLAGS=-$(TARGET) -compatibleArrayDims
 # for 64 bit systems set
-#MEXFLAGS=-$(TARGET) -largeArrayDims
+MEXFLAGS=-$(TARGET) -largeArrayDims
 #
 #--------------- end editable section ---------------------------------
 #
@@ -51,14 +51,6 @@ clean:
 # rm -f c/bin/*
 	find . -name '*~' -or -name '*.log' -or -name '.directory' -or -name '*.o' -or -name '*.mex*' | xargs /bin/rm -rf
 
-# rule for installing as root
-install:
-	rm -rf $(MATLABPATH)/toolbox/mtex/*.*
-	cp -f startup_root.m  $(MATLABPATH)/toolbox/local/startup.m
-	mkdir -p $(MATLABPATH)/toolbox/mtex
-	cp -rf * $(MATLABPATH)/toolbox/mtex/
-	echo "installation complete"
-
 # rule for checking installation
 check:
 	echo "check installation"
@@ -67,12 +59,8 @@ check:
 # comment the next line out if you have a ibm power cpu
 #	c/bin/$(TARGET)/pf2odf c/test/pf2odf_mac.txt check
 
-uninstall:
-	rm -f $(MATLABPATH)/toolbox/local/startup.m
-	rm -rf $(MATLABPATH)/toolbox/mtex
-
 # rule for making release
-RNAME = mtex-3.4beta2
+RNAME = mtex-3.4beta3
 RDIR = ../..
 release:
 	rm -rf $(RDIR)/$(RNAME)*
