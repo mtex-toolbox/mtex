@@ -14,21 +14,18 @@ function pf = loadPoleFigure_xrd(fname,varargin)
 % ImportPoleFigureData loadPoleFigure
 
 
-%%
-rhoStartToken = {'*MEAS_SCAN_START "','*START		=  '};
-rhoStepToken = {'*MEAS_SCAN_STEP "','*STEP		=  '};
-rhoStopToken = {'*MEAS_SCAN_STOP "','*STOP		=  '};
-thetaToken = {'*MEAS_3DE_ALPHA_ANGLE "','*PF_AANGLE	=  '};
+% tokens
+rhoStartToken = {'*MEAS_SCAN_START\s*"(\S*)"','*START\s*=\s*(\S*)'};
+rhoStepToken = {'*MEAS_SCAN_STEP\s*"(\S*)"','*STEP\s*=\s*(\S*)'};
+rhoStopToken = {'*MEAS_SCAN_STOP\s*"(\S*)"','*STOP\s*=\s*(\S*)'};
+thetaToken = {'*MEAS_3DE_ALPHA_ANGLE\s*"(\S*)"','*PF_AANGLE\s*=\s*(\S*)'};
 
-%% read header
-
-h = file2cell(fname,1);
-
-if isempty(strmatch(h,'*RAS_DATA_START'))
-  interfaceError(fname);
+% read file
+if check_option(varargin,'check')
+  h = file2cell(fname,1000);
+else
+  h = file2cell(fname);
 end
-
-h = file2cell(fname);
 
 % look through different versions of the xrd format
 for i = 1:length(rhoStartToken)
@@ -49,8 +46,9 @@ for i = 1:length(rhoStartToken)
   if ~isempty(r), break;end
 end
 
-
 assert(numel(r)>0);
+if check_option(varargin,'check'), return;end
+
 h = string2Miller(fname);
 
 %% read data
@@ -70,18 +68,11 @@ end
 fclose(fid);
 
 %% define Pole Figure
-
-cs = symmetry('cubic');
-ss = symmetry('-1');
-
 pf = PoleFigure(h,r,d,varargin{:});
 
 
 function value = readToken(str,token)
 
-l = strncmp(token,str,length(token));
-
-value = [];
-for k = find(l)
-  value = [value,sscanf(str{k},[token '%f'])]; %#ok<*AGROW>
-end
+str = regexp(str,token,'tokens');
+str = str(~cellfun('isempty',str));
+value = cellfun(@(c) str2double(c{1}{1}),str);
