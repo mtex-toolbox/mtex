@@ -1,8 +1,8 @@
 function [data,colorRange,minData,maxData] = scaleData(data,varargin)
 
 % min and max
-minData = nanmin(data(:));
-maxData = nanmax(data(:));
+minData = min(data(~isnan(data) & ~isinf(data)));
+maxData = max(data(~isnan(data) & ~isinf(data)));
 
 % log plot?
 if check_option(varargin,{'log','logarithmic'})
@@ -11,7 +11,9 @@ if check_option(varargin,{'log','logarithmic'})
 end
 
 % get colorrange from data
-colorRange = [nanmin(data(:)),nanmax(data(:))];
+colorRange = [minData,maxData];
+minData = nanmin(data(:));
+maxData = nanmax(data(:));
 
 % from options
 if check_option(varargin,'colorRange','double')
