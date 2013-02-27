@@ -35,9 +35,10 @@ ebsd.comment = [];
 
 ebsd.comment = get_option(varargin,'comment',[]);
 ebsd.rotations = rotations(:);
+
 [ebsd.phaseMap,ignore,ebsd.phase] =  unique(...
-  get_option(varargin,'phase',ones(numel(ebsd.rotations),1))...
-  );
+  get_option(varargin,'phase',ones(numel(ebsd.rotations),1)));
+ebsd.phaseMap(isnan(ebsd.phaseMap)) = 0;
 
 % if all phases are zero replace them by 1
 if all(ebsd.phase == 0), ebsd.phase = ones(numel(ebsd.rotations),1);end
