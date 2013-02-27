@@ -111,8 +111,8 @@
 %
 % * command to import vector3d
 %
-%   v   = loadvector3d_generic('fname','ColumnNames',{'x','y','z'})
-%   v   = loadvector3d_generic('fname','ColumnNames',{'latitude','longitude'})
+%   v = loadVector3d('fname','ColumnNames',{'x','y','z'})
+%   v = loadVector3d('fname','ColumnNames',{'latitude','longitude'})
 %
 % * new interface for DRex
 % * new interface for Rigaku

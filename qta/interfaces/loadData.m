@@ -16,7 +16,7 @@ function [data,interface,options,idata] = loadData(fname,type,varargin)
 %  comment    - comment to be associated with the data
 %
 %% Output
-%  ebsd - @EBSD
+%  data - @EBSD, @PoleFigure, @ODF, @tensor, @vector3d, @orientation
 %
 %% See also
 % ImportEBSDData EBSD/calcODF ebsd_demo loadEBSD_generic
@@ -115,7 +115,7 @@ if strcmpi(type,'EBSD') && check_option(varargin,'3d')
 end
 
 %% set crystal and specimen symmetry, specimen direction and comments
-if ~strcmpi(type,'tensor')
+if ~any(strcmpi(type,{'tensor','vector3d'}))
   if iscell(data),
     data = cellfun(@(d,f) set(d,'comment',ls(f)),data,fname,'UniformOutput',false);
     data = [data{:}];

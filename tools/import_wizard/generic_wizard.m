@@ -4,13 +4,13 @@ function [options] = generic_wizard(varargin)
 %% Input
 %  data   - input data
 %  header - header of data file
-%  type   - data type ('EBSD','PoleFigure','ODF')
+%  type   - data type ('EBSD','PoleFigure','ODF','vector3d')
 %
 %% Output
 %  options - list of potions to be past to loadEBSD_generic or loadPoleFigure_generic
 %
 %% See also
-% loadEBSD_generic loadPoleFigure_generic
+% loadEBSD_generic loadPoleFigure_generic loadVector3d_generic
 
 %% -------- parameter overload -------------------------------------------
 
@@ -37,6 +37,9 @@ if check_option(varargin,'type')
     case 'ODF'
       values = {'Ignore','Euler 1','Euler 2','Euler 3','Quat real','Quat i','Quat j','Quat k','Weight'};
       mandatory = {values([2:4,9]),values(5:9)};
+    case 'vector3d'
+      values = {'Ignore','Polar Angle','Azimuth','x','y','z'};
+      mandatory = {values(2:3),values(4:6)};     
     otherwise
       disp('wrong option');
       return
@@ -117,7 +120,7 @@ catch %#ok<CTCH>
 end
 
 %% checkboxes
-if strcmp(type,'PoleFigure')
+if strcmp(type,'PoleFigure') || strcmp(type,'vector3d')
   chk_angle = uibuttongroup('Parent',htp,'title','Angle Convention','units','pixels',...
     'position',[dw h-(tb+260) cw*2 45]);
   
@@ -199,7 +202,7 @@ while ishandle(htp)
     % degree / radians
     if get(rad_box,'value'), options = [{'RADIANS'},options];end %#ok<AGROW>
     
-    if ~strcmp(type,'PoleFigure')
+    if ~any(strcmp(type,{'PoleFigure','vector3d'}))
       
       % Eule angle convention
       conventions = {'Bunge','Matthies','Roe','Kocks','Canova','Quaternion'};
