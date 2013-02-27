@@ -6,7 +6,7 @@ hl = file2cell(fname,200);
 
 %number of header lines
 nh = find(strmatch('#',hl),1,'last');
-hl =   {hl{1:nh}};
+hl =   hl(1:nh);
 
 % check that the header fits the format:
 %# Column 1-3: phi1, PHI, phi2 (orientation of point in radians)

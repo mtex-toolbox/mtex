@@ -22,8 +22,11 @@ try
     s = fgetl(fid);
   end
     
-  bunge = fgetl(fid);
-  colNames = fgetl(fid);
+  while ~strncmp(s,'Point',5)
+    s = fgetl(fid);
+    hl = hl + 1;
+  end
+  colNames = s;
   fclose(fid);
 
   if check_option(varargin,'check'); return;end
@@ -33,7 +36,7 @@ try
   colNames = strrep(colNames{1},'Crystal ID','phase');
   
   % read data via generic interface
-  ebsd = loadEBSD_generic(fname,cs,'header',hl+4,'noascii','delimiter',',',...
+  ebsd = loadEBSD_generic(fname,cs,'header',hl+3,'delimiter',',',...
     'ColumnNames',colNames,'bunge',varargin{:},'keepNaN');
 
 catch

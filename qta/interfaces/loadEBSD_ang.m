@@ -60,6 +60,7 @@ try
       end
       
       cs{phase} = symmetry(laue,lattice(1:3)',lattice(4:6)'*degree,'mineral',mineral,options{:}); %#ok<AGROW>
+      ReplaceExpr{i} = {mineral,int2str(i)};
     end
     assert(~isempty(cs));
   catch %#ok<CTCH>
@@ -70,6 +71,11 @@ try
   
   % number of header lines
   nh = find(strmatch('#',hl),1,'last');
+  
+  % mineral name to phase number conversion needed?
+  if numel(sscanf(hl{end},'%f')) < 11
+    varargin = [{'ReplaceExpr',ReplaceExpr},varargin];
+  end
   
   % get number of columns
   if isempty(sscanf(hl{nh+1},'%*f %*f %*f %*f %*f %*f %*f %*f %*f %*f %s\n'))

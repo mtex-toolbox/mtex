@@ -1,7 +1,7 @@
 function ebsd = loadEBSD_crc(fname,varargin)
+% interface for Oxford Chanel 5 crc and cpr EBSD data files
 
-
-[path,file,ext] = fileparts(fname);
+[path,file] = fileparts(fname);
 
 cpr_file = fullfile(path,[file '.cpr']);
 crc_file = fullfile(path,[file '.crc']);
@@ -11,22 +11,17 @@ try
     [cs,N,x,y,unitCell] = localReadCPR(cpr_file);
     [phase,q,opts] = localReadCRC(crc_file,N);
     
-    if ~isempty(x)
-      opts.x = x;
-    end
-    
-    if ~isempty(y)
-      opts.y = y;      
-    end
+    if ~isempty(x), opts.x = x;end    
+    if ~isempty(y), opts.y = y;end
   end
   
-  ebsd = EBSD(q,cs,symmetry,'phase',phase(:),'unitCell',unitCell,'options',opts);
-catch
+  ebsd = EBSD(q,cs,'phase',phase(:),'unitCell',unitCell,'options',opts);
+catch %#ok<CTCH>
   interfaceError(fname);
 end
 end
 
-
+%%
 function [phase,q,opt] = localReadCRC(crc_file,N)
 
 fid = fopen(crc_file,'rb');
@@ -63,7 +58,7 @@ end
 
 end
 
-
+%%
 function [cs,N,x,y,unitCell] = localReadCPR(fname)
 
 fid = fopen(fname);
@@ -103,7 +98,7 @@ end
 
 end
 
-
+%%
 function cpr = localParseCPRContent(text)
 
 lineBreaks = [0 regexp(text,char(10))];
@@ -135,7 +130,7 @@ end
 
 end
 
-
+%%
 function [N,x,y,unitCell] = localJob2XY(job)
 
 if isfield(job,'left') && isfield(job,'top')
@@ -173,7 +168,7 @@ else
 end
 end
 
-
+%%
 function cs = localPhase2CS(phase)
 
 if isfield(phase,'structurename')
@@ -244,8 +239,4 @@ end
 
 cs = symmetry(group,axes,angles,'mineral',mineral);
 end
-
-
-
-
 
