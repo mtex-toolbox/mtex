@@ -38,7 +38,7 @@ setMTEXpref('poleFigureExtensions',...
   '.xrdml','.gpf','.plf','.nja','.ptx','.rpf','.pwd','.slc'});
 
 setMTEXpref('EBSDExtensions',...
-  {'.ebsd','.ctf','.ang','.hkl','.tsl','.sor','.csv'});
+  {'.ebsd','.ctf','.ang','.hkl','.tsl','.sor','.csv','.crc'});
 
 %% Default save-mode for generated code snipped (import wizard)
 % set to true if generated import-script should be stored on disk by
