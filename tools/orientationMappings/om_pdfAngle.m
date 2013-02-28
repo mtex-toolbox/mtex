@@ -6,7 +6,7 @@ function [c,options] = om_pdfAngle(o,varargin)
 if isa(o,'orientation')
   % get pole figure vector
   h = get_option(varargin,'h',Miller(0,0,1));
-  h = ensureCS(get(o,'CS'),{h});
+  h = ensureCS(get(o,'CS'),ensurecell(h));
 
   % symmetrise and rotate
   r = o * symmetrise(h,varargin{:});  
@@ -38,4 +38,4 @@ switch lower(get_option(varargin,'angle','rho'))
 end
 
 c = min(c,[],2);
-options = {};
+options = varargin;
