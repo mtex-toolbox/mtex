@@ -16,26 +16,23 @@ function ebsdColorbar(varargin)
 
 %% input check
 if nargin >= 1 && isa(varargin{1},'symmetry')
+  
   cs = varargin{1};
   varargin = varargin(2:end);
-  cc = get_option(varargin,'colorcoding','ipdf');
+  cc = get_option(varargin,'colorcoding','ipdfHSV');
   r = get_option(varargin,'r',xvector);
   
 else
   
   cs = getappdata(gcf,'CS');
   if ~iscell(cs), cs = {cs};end
-
-  r = getappdata(gcf,'r');
-  o = getappdata(gcf,'options');
-  varargin = [o,varargin];
-  cc = get_option(varargin,'colorcoding',getappdata(gcf,'colorcoding'));
-  ccenter = getappdata(gcf,'colorcenter');
-  if ~isempty(ccenter), varargin = [{'colorcenter',ccenter},varargin]; end
+  CCOptions = getappdata(gcf,'CCOptions');
   
   for i = 1:length(cs)
     if isa(cs{i},'symmetry')
-      ebsdColorbar(cs{i},varargin{:},'r',r,'colorcoding',cc);
+            
+      cc = getappdata(gcf,'colorcoding');           
+      ebsdColorbar(cs{i},CCOptions{i}{:},varargin{:},'colorcoding',cc);
 
       set(gcf,'Name',[ '[' cc '] Colorcoding for phase ',get(cs{i},'mineral')]);
     end
@@ -49,7 +46,7 @@ end
 figure
 newMTEXplot;
 
-if any(strcmp(cc,{'ipdf','hkl','h'})) && ~check_option(varargin,'orientationSpace')
+if strncmp(cc,'ipdf',3) && ~check_option(varargin,'orientationSpace')
   
   type = 'ipdf';
   ipdfColorbar(cs,cc,varargin{:});
@@ -80,24 +77,23 @@ end
 function ipdfColorbar(cs,cc,varargin)
 
 % hkl is antipodal
-if strcmp(cc,'hkl'),  varargin = [{'antipodal'},varargin]; end
+if strcmp(cc,'ipdfHKL'),  varargin = [{'antipodal'},varargin]; end
 
 [minTheta,maxTheta,minRho,maxRho,v] = getFundamentalRegionPF(cs,varargin{:});
 
 h = S2Grid('PLOT','minTheta',minTheta,'maxTheta',maxTheta,...
   'minRho',minRho,'maxRho',maxRho,'RESTRICT2MINMAX','resolution',1*degree,varargin{:});
 
-if strcmp(cc,'ipdf')
-  d = ipdf2rgb(h,cs,varargin{:});
-elseif strcmp(cc,'hkl')
-  d = ipdf2hkl(h,cs,varargin{:});
-elseif strcmp(cc,'h')
-  d = ipdf2custom(h,cs,varargin{:});
+
+d = orientation2color(h,cc,cs,varargin{:});
+
+if numel(d) == 3*numel(h)
+  d = reshape(d,[size(h),3]);
+  surf(h,d);
+else
+  contourf(h,d);
 end
 
-d = reshape(d,[size(h),3]);
-
-surf(h,d);
 %title(['r = ' char(r,'tex')])
   
 % annotate crystal directions

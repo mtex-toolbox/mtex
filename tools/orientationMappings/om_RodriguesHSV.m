@@ -1,4 +1,4 @@
-function c = rodrigues2rgb(o,varargin)
+function [c,options] = om_RodriguesHSV(o,varargin)
 % converts orientations to rgb values
 
 % 
@@ -87,6 +87,7 @@ S = a(:) .* (1-abs(2*dh-1)) ./ (1-abs(2*L-1));
 
 [h,s,v] = hsl2hsv(omega./2./pi,S,L);
 c = hsv2rgb(h,s,v);
+options = varargin;
 
 return
 
@@ -102,9 +103,9 @@ surf(v,c)
 
 %%
 
-ebsdColorbar(symmetry(1),'colorcoding','rodrigues','sections',12,'resolution',1*degree,'north')
-%ebsdColorbar(symmetry(3),'colorcoding','rodrigues','sections',12,'resolution',1*degree,'south')
+ebsdColorbar(symmetry(1),'colorcoding','RodriguesHSV','sections',12,'resolution',1*degree,'north')
+%ebsdColorbar(symmetry(3),'colorcoding','RodriguesHSV','sections',12,'resolution',1*degree,'south')
 
 %%
 
-ebsdColorbar(symmetry('-1'),'colorcoding','rodrigues','sections',12,'phi1','projection','plain')
+ebsdColorbar(symmetry('-1'),'colorcoding','RodriguesHSV','sections',12,'phi1','projection','plain')

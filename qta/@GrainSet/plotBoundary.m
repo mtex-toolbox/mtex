@@ -20,7 +20,7 @@ function plotBoundary(grains,varargin)
 %            it after a choosen colorcoding, i.e.
 %
 %            plot(grains,'property','misorientation',...
-%              'colorcoding','ipdf')
+%              'colorcoding','ipdfHSV')
 %
 %    *  @quaternion | @rotation | @orientation -- plot grain boundaries with
 %            a specified misorientation

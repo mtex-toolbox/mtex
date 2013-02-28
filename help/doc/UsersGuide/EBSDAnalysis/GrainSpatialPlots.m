@@ -32,7 +32,8 @@ plot(grains,'property','phase')
 % spatially locate the grains with certain orientation.
 
 close all
-plot(grains,'colorcoding','h',{Miller(1,1,1),[0 0 1]},'r',zvector)
+plot(grains,'colorcoding','ipdfCenter',{Miller(1,1,1),[0 0 1]},...
+  'r',zvector)
 
 %%
 % With the *hold on* command, one can combine several plots, e.g. let us
@@ -138,8 +139,8 @@ colorbar
 close all
 plotBoundary(grains)
 hold on
-plotBoundary(grains,'property','misorientation','colorcoding','hkl','r',vector3d(1,1,1),...
-  'linewidth',1.5)
+plotBoundary(grains,'property','misorientation',...
+  'colorcoding','ipdfHKL','r',vector3d(1,1,1),'linewidth',1.5)
 
 %% SUB: Classifing special boundaries
 % Actually, it might be more informative, if we classify the grain

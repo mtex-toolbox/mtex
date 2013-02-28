@@ -1,4 +1,4 @@
-function c = pdfangle(o,varargin)
+function [c,options] = om_pdfAngle(o,varargin)
 % converts orientations to rgb values by polar angles (theta, rho)
 
 %% compute pole figure vectors
@@ -38,3 +38,4 @@ switch lower(get_option(varargin,'angle','rho'))
 end
 
 c = min(c,[],2);
+options = {};

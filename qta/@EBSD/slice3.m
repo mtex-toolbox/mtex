@@ -140,7 +140,7 @@ if strcmpi(property,'orientation') %&& strcmpi(cc,'ipdf')
   setappdata(gcf,'CS',ebsd.CS)
   setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d'));
   setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
-  setappdata(gcf,'colorcoding',lower(get_option(varargin,'colorcoding','ipdf')));
+  setappdata(gcf,'colorcoding',lower(get_option(varargin,'colorcoding','ipdfHSV')));
 end
 
 set(gcf,'tag','ebsd_slice3');

@@ -1,4 +1,4 @@
-function rgb = euler2rgb(o,varargin)
+function [rgb,options] = om_BungeRGB(o,varargin)
 % Euler angles are mapped to rgb values
 %
 
@@ -26,3 +26,4 @@ Phi = mod(Phi,maxPhi) ./ maxPhi;
 phi2 = mod(phi2,maxphi2) ./ maxphi2;
 
 rgb = [phi1(:),Phi(:),phi2(:)];
+options = {};
