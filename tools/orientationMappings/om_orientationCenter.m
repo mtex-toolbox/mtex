@@ -23,4 +23,4 @@ for k=1:2:numel(centers)
   rgb = rgb.*cdata;
 end
 
-options = [];
+options = varargin;

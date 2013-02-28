@@ -61,7 +61,7 @@ figure('position',[100 100 750 300]);
 hold all
 plot(grains({'Andesina','Biotite','Orthoclase'}),'property','phase','FaceAlpha',0.2)
 plotBoundary(grains,'color','black');
-plot(ebsd_region('Quartz-new'),'colorcoding','ipdfHKL','h',zvector)
+plot(ebsd_region('Quartz-new'),'colorcoding','ipdfHKL','r',zvector)
 legend off
 hold off
 

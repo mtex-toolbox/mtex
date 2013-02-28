@@ -31,8 +31,9 @@ else
   for i = 1:length(cs)
     if isa(cs{i},'symmetry')
             
-      cc = getappdata(gcf,'colorcoding');           
-      ebsdColorbar(cs{i},CCOptions{i}{:},varargin{:},'colorcoding',cc);
+      cc = getappdata(gcf,'colorcoding');
+      options = ensurecell(CCOptions{i});
+      ebsdColorbar(cs{i},options{:},varargin{:},'colorcoding',cc);
 
       set(gcf,'Name',[ '[' cc '] Colorcoding for phase ',get(cs{i},'mineral')]);
     end

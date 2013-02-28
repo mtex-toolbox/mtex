@@ -110,7 +110,7 @@ end
 % set appdata
 if strncmpi(property,'orientation',11)
   setappdata(gcf,'CS',ebsd.CS(isPhase));
-  setappdata(gcf,'CCOptions',opts);
+  setappdata(gcf,'CCOptions',opts(isPhase));
   setappdata(gcf,'colorcoding',property(13:end));
 end
 

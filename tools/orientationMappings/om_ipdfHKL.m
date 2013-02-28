@@ -10,6 +10,7 @@ else
   cs = varargin{1};
 end
 
+options = varargin;
 
 %%
 
@@ -55,4 +56,3 @@ b = theta./maxTheta .* rho ./ maxRho;
 
 rgb = [r(:) g(:) b(:)];    
     
-options = varargin;
