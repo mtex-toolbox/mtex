@@ -65,7 +65,7 @@ colorbar
 % *HKL*. 
 % Another inverse Pole figure color code
 
-close all; plot(ebsd('Fe'),'colorcoding','hkl')
+close all; plot(ebsd('Fe'),'colorcoding','ipdfHKL')
 
 %%
 %
@@ -77,7 +77,7 @@ figure, plotipdf(odf,xvector,'antipodal','silent')
 %%
 % We can change the default view onto the specimen (xvector) by setting the option *r*
 
-close all, plot(ebsd('Fe'),'colorcoding','hkl','r',zvector)
+close all, plot(ebsd('Fe'),'colorcoding','ipdfHKL','r',zvector)
 
 %%
 %
@@ -93,50 +93,50 @@ close all
 %% 
 % *triclinic symmetry*
 ebsdColorbar(symmetry('-1'))
-ebsdColorbar(symmetry('-1'),'colorcoding','hkl')
+ebsdColorbar(symmetry('-1'),'colorcoding','ipdfHKL')
 
 %%
 % *monoclinic symmetry*
 ebsdColorbar(symmetry('2/m'))
-ebsdColorbar(symmetry('2/m'),'colorcoding','hkl')
+ebsdColorbar(symmetry('2/m'),'colorcoding','ipdfHKL')
 
 %%
 % *orthorhombic symmetry*
 ebsdColorbar(symmetry('mmm'))
-ebsdColorbar(symmetry('mmm'),'colorcoding','hkl')
+ebsdColorbar(symmetry('mmm'),'colorcoding','ipdfHKL')
 
 %%
 % *tetragonal symmetry*
 ebsdColorbar(symmetry('4/m'))
-ebsdColorbar(symmetry('4/m'),'colorcoding','hkl')
+ebsdColorbar(symmetry('4/m'),'colorcoding','ipdfHKL')
 
 %% 
 % *trigonal symmetry*
 ebsdColorbar(symmetry('-3'))
-ebsdColorbar(symmetry('-3'),'colorcoding','hkl')
+ebsdColorbar(symmetry('-3'),'colorcoding','ipdfHKL')
 
 %%
 %
 ebsdColorbar(symmetry('-3m'))
-ebsdColorbar(symmetry('-3m'),'colorcoding','hkl')
+ebsdColorbar(symmetry('-3m'),'colorcoding','ipdfHKL')
 
 %%
 %
 ebsdColorbar(symmetry('4/mmm'))
-ebsdColorbar(symmetry('4/mmm'),'colorcoding','hkl')
+ebsdColorbar(symmetry('4/mmm'),'colorcoding','ipdfHKL')
 
 %% 
 % *hexagonal symmetry*
 ebsdColorbar(symmetry('6/m'))
-ebsdColorbar(symmetry('6/m'),'colorcoding','hkl')
+ebsdColorbar(symmetry('6/m'),'colorcoding','ipdfHKL')
 
 %%
 %
 ebsdColorbar(symmetry('6/mmm'))
-ebsdColorbar(symmetry('6/mmm'),'colorcoding','hkl')
+ebsdColorbar(symmetry('6/mmm'),'colorcoding','ipdfHKL')
 
 %% 
 % *cubic symmetry*
 ebsdColorbar(symmetry('m-3m'))
-ebsdColorbar(symmetry('m-3m'),'colorcoding','hkl')
+ebsdColorbar(symmetry('m-3m'),'colorcoding','ipdfHKL')
 

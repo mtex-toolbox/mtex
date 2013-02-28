@@ -18,7 +18,7 @@ elseif isa(prop,'char')
   switch lower(prop)
     case {'orientation','mis2mean','orientations'}
 
-      colorcoding = lower(get_option(varargin,'colorcoding','ipdf'));
+      colorcoding = lower(get_option(varargin,'colorcoding','ipdfHSV'));
       
       try
         o = get(obj,prop);

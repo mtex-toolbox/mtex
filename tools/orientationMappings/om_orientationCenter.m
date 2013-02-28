@@ -1,8 +1,8 @@
-function rgb = orientation2custom(o, varargin)
+function [rgb,options] = om_orientationCenter(o, varargin)
 % description !!!
 
 
-centers = get_option(varargin,'orientations',{idquaternion,[1 0 0]});
+centers = get_option(varargin,'orientationCenter',{idquaternion,[1 0 0]});
 
 psi  = kernel('de la vallee','halfwidth',get_option(varargin,'halfwidth',10*degree));
 
@@ -22,3 +22,5 @@ for k=1:2:numel(centers)
   
   rgb = rgb.*cdata;
 end
+
+options = [];

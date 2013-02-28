@@ -1,4 +1,4 @@
-function [rgb,options] = ipdf2hkl(o,varargin)
+function [rgb,options] = om_ipdfHKL(o,varargin)
 % converts orientations to rgb values
 
 %% convert to Miller

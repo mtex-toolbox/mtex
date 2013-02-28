@@ -1,4 +1,4 @@
-function c = ipdfangle(o,varargin)
+function [c,options] = om_ipdfAngle(o,varargin)
 % colorize by azimuth or polar angle of inverse pole figure vectors
 
 %% convert to Miller
@@ -35,6 +35,7 @@ switch lower(get_option(varargin,'angle','rho'))
     
 end
 
+options = varargin;
 c = reshape(c,size(h))./degree;
 [~,col] = min(abs(c-min(abs(c(:,1)))));
 c = c(sub2ind(size(c),col,1:size(c,2)));

@@ -1,4 +1,4 @@
-function [rgb,options] = ipdf2custom(o,varargin)
+function [rgb,options] = om_ipdfCenter(o,varargin)
 % converts orientations to rgb values
 % description missing
 
@@ -12,7 +12,7 @@ else
 end
 
 %%
-markers = get_option(varargin,{'h'},{Miller(1,1,1),[1 0 0]},'cell');
+markers = get_option(varargin,{'ipdfCenter'},{Miller(1,1,1),[1 0 0]},'cell');
 
 psi =  kernel('de la vallee','halfwidth',get_option(varargin,'halfwidth',10*degree));
 
