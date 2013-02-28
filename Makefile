@@ -60,7 +60,7 @@ check:
 #	c/bin/$(TARGET)/pf2odf c/test/pf2odf_mac.txt check
 
 # rule for making release
-RNAME = mtex-3.4beta3
+RNAME = mtex-3.4beta4
 RDIR = ../..
 release:
 	rm -rf $(RDIR)/$(RNAME)*
