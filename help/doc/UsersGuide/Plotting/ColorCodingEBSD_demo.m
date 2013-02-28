@@ -44,7 +44,7 @@ mtexdata aachen
 % plot shows how the colorcoding covers the whole orientation space. The
 % singularities of this representation are quite obvious.
 
-ebsdColorbar(symmetry('-1'),'colorcoding','Bunge','sections',6,'phi1')
+ebsdColorbar(symmetry('-1'),'colorcoding','BungeRGB','sections',6,'phi1')
 
 
 %% Colorcoding according to inverse pole figure 

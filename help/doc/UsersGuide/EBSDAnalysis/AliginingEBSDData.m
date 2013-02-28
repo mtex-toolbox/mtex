@@ -111,3 +111,7 @@ plotpdf(ebsd_rot('Fe'),Miller(1,2,3),'contourf','points',10000)
 % In the first case the spatial data are changed such that the Euler angles
 % referene frame coincides with the spatial reference frame and in the
 % second case the Euler angles are altered to get coincidence.
+%%
+
+% revert z-axis convention
+plotzOutOfPlane;
