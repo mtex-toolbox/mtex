@@ -64,6 +64,7 @@ multiplot(ax{:},numel(h),...
 %% finalize plot
 
 if isempty(ax)
+  setappdata(gcf,'odf',odf);
   setappdata(gcf,'h',h);
   setappdata(gcf,'CS',odf(1).CS);
   setappdata(gcf,'SS',odf(1).SS);
@@ -71,4 +72,85 @@ if isempty(ax)
   name = inputname(1);
   if isempty(name), name = odf(1).comment;end
   set(gcf,'Name',['Pole figures of "',name,'"']);
+
+  %% set data cursor
+  dcm_obj = datacursormode(gcf);
+  set(dcm_obj,'SnapToDataVertex','off')
+  set(dcm_obj,'UpdateFcn',{@tooltip});
+  datacursormode on;
 end
+
+end
+
+%% Tooltip function
+function txt = tooltip(varargin)
+
+% 
+dcm_obj = datacursormode(gcf);
+
+hcmenu = dcm_obj.CurrentDataCursor.uiContextMenu;
+if numel(get(hcmenu,'children'))<10
+  uimenu(hcmenu, 'Label', 'Mark Equivalent Modes', 'Callback', @markEquivalent);
+  uimenu(hcmenu, 'Label', 'Plot Fibre', 'Callback', @plotFibre);
+  mcolor = uimenu(hcmenu, 'Label', 'Marker color', 'Callback', @display);
+  msize = uimenu(hcmenu, 'Label', 'Marker size', 'Callback', @display);
+  mshape = uimenu(hcmenu, 'Label', 'Marker shape', 'Callback', @display);
+end
+
+%
+[r,h] = currentVector;
+odf = getappdata(gcf,'odf');
+txt = char(currentVector);
+
+end
+
+%%
+function plotFibre(varargin)
+
+[r,h] = currentVector;
+
+odf = getappdata(gcf,'odf');
+
+figure
+plotfibre(odf,h,r);
+
+end
+
+%%
+function markEquivalent(varargin)
+
+[r,h] = currentVector;
+
+odf = getappdata(gcf,'odf');
+
+fibre = orientation('fibre',h,r,get(odf,'CS'),get(odf,'SS'));
+f = eval(odf,fibre); %#ok<EVLC>
+
+[v,p] = max(f); %#ok<ASGLU>
+
+annotate(fibre(p));
+
+end
+
+
+function [r,h] = currentVector
+
+dcm_obj = datacursormode(gcf);
+pos = dcm_obj.CurrentDataCursor.getCursorInfo.Position;
+ax = dcm_obj.CurrentDataCursor.getCursorInfo.Target.parent;
+
+all_ax = getappdata(gcf,'multiplotAxes');
+iax = ax == all_ax;
+
+projection = getappdata(ax,'projection');
+
+[theta,rho] = projectInv(pos(1),pos(2),projection.type);
+r = vector3d('polar',theta,rho);
+
+h = getappdata(gcf,'h');
+h = h{iax};
+
+end
+
+
+
