@@ -14,11 +14,15 @@ TARGET= glnxa64
 #
 # please correct the following installation directories:
 #
-# path to FFTW, i.e. to lib/libfftw3.a
-FFTWPATH = /usr
+# path to FFTW, i.e. to libfftw3.a
+FFTW_LIB_PATH = /usr/lib/x86_64-linux-gnu/
+# path to FFTW header file, i.e., to fftw3.h
+FFTW_H_PATH = /usr/include/
 #
-# path to the NFFT, i.e. to /lib/libnfft3.a
-NFFTPATH = /usr/local
+# path to NFFT, i.e. to libnfft3.a
+NFFT_LIB_PATH = /usr/local/lib
+# path the NFFT header file, i.e., to nfft.h
+NFFT_H_PATH = /usr/local/include/
 #
 # matlab path
 MATLABPATH = /opt/matlab
@@ -38,26 +42,22 @@ MEXFLAGS=-$(TARGET) -largeArrayDims
 BPATH = c/bin/$(TARGET)/
 SUBDIRS = c/kernel.dir c/test.dir c/mex.dir
 
+
 # top-level rule, to compile everything.
 all: $(SUBDIRS)
 
+
 # descent into subdirectories
 %.dir:
-	$(MAKE) -e CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" NFFTPATH=$(NFFTPATH) FFTWPATH=$(FFTWPATH) MATLABPATH=$(MATLABPATH) MEXFLAGS="$(MEXFLAGS)" TARGET="$(TARGET)" -C $*
+	$(MAKE) -e CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" NFFT_LIB_PATH=$(NFFT_LIB_PATH) NFFT_H_PATH=$(NFFT_H_PATH) FFTW_LIB_PATH=$(FFTW_LIB_PATH) FFTW_H_PATH=$(FFTW_H_PATH) MATLABPATH=$(MATLABPATH) MEXFLAGS="$(MEXFLAGS)" TARGET="$(TARGET)" -C $*
 	$(MAKE) TARGET="$(TARGET)" install -C $*
+
 
 # rule for cleaning re-compilable files.
 clean:
 # rm -f c/bin/*
 	find . -name '*~' -or -name '*.log' -or -name '.directory' -or -name '*.o' -or -name '*.mex*' | xargs /bin/rm -rf
 
-# rule for checking installation
-check:
-	echo "check installation"
-# comment the next line out if you have a intel/amd processor
-	c/bin/$(TARGET)/pf2odf c/test/pf2odf.txt check
-# comment the next line out if you have a ibm power cpu
-#	c/bin/$(TARGET)/pf2odf c/test/pf2odf_mac.txt check
 
 # rule for making release
 RNAME = mtex-3.4beta4
@@ -65,7 +65,7 @@ RDIR = ../..
 release:
 	rm -rf $(RDIR)/$(RNAME)*
 	cp -R . $(RDIR)/$(RNAME)
-	rm -rf $(RDIR)/$(RNAME)/help/tmp 
+	rm -rf $(RDIR)/$(RNAME)/help/tmp
 	chmod -R a+rX $(RDIR)/$(RNAME)
 	rm -rf $(RDIR)/$(RNAME)/.hg
 	rm -rf $(RDIR)/$(RNAME)/.hg*
