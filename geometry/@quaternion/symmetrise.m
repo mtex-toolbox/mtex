@@ -1,4 +1,4 @@
-function q = symmetrise(q,CS,SS,varargin)
+function varargout = symmetrise(q,CS,SS,varargin)
 % symmetrcially equivalent orientations
 %
 %% Input
@@ -12,6 +12,17 @@ function q = symmetrise(q,CS,SS,varargin)
 %% See also
 % CrystalSymmetries
 
+%% !!!!!! very bad workaround !!!!!!!!
+% somtimes this function gets called although first argument is vector3d
+if isa(q,'vector3d')
+  varargin = [{CS,SS},varargin];
+  isMiller = cellfun(@(x) isa(x,'Miller'),varargin);
+  varargin(isMiller) = [];
+  [varargout{1:nargout}] = symmetrise(q,varargin{:});
+  return
+end  
+
+%%  
 q = (q * CS).'; % CS x M
 if nargin>2 && length(SS)>1
   q = SS * q;     % SS x (CS X M)
@@ -20,4 +31,4 @@ else
   lSS = 1;
 end
 
-q = reshape(q,length(CS) * lSS,[]); % (CSxSS) x M
+varargout{1} = reshape(q,length(CS) * lSS,[]); % (CSxSS) x M
