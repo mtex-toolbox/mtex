@@ -1,4 +1,4 @@
-function odf = unimodalODF(mod,CS,varargin)
+function odf = unimodalODF(mod,varargin)
 % define a unimodal ODF
 %
 %% Description
@@ -7,9 +7,11 @@ function odf = unimodalODF(mod,CS,varargin)
 % shape of the ODF is defined by a @kernel function.
 %
 %% Syntax
-%  odf = unimodalODF(mod,CS,'halfwidth',hw) - 
-%  odf = unimodalODF(mod,CS,SS,'halfwidth',hw) - with specimen symmetry
-%  odf = unimodalODF(mod,CS,SS,kernel) - with specified @kernel
+%   mod = orientation('Euler',phi1,Phi,phi2,CS,SS)
+%   odf = unimodalODF(mod) % default halfwidth 10 degree 
+%   odf = unimodalODF(mod,'halfwidth',15*degree) % specify halfwidth
+%   odf = unimodalODF(mod,CS,SS)  % specify crystal and specimen symmetry
+%   odf = unimodalODF(mod,kernel) % specify @kernel shape 
 %
 %% Input
 %  mod    - @quaternion modal orientation
@@ -27,7 +29,13 @@ function odf = unimodalODF(mod,CS,varargin)
 if nargin == 0, mod = orientation(idquaternion);end
 argin_check(mod,'quaternion');
 if ~isa(mod,'orientation'), mod = orientation(mod);end
-if nargin <= 1, CS = get(mod,'CS'); else mod = ensureCS(CS,{mod}); end
+if nargin > 1 && isa(varargin{1},'symmetry')
+  CS = varargin{1};
+  varargin = varargin(2:end);
+  mod = ensureCS(CS,{mod});
+else
+  CS = get(mod,'CS');
+end
 if nargin >2 && isa(varargin{1},'symmetry')
   SS = varargin{1};
   varargin = varargin(2:end);
