@@ -103,24 +103,53 @@ if isempty(ax),
   dcm_obj = datacursormode(gcf);
   set(dcm_obj,'SnapToDataVertex','off')
   set(dcm_obj,'UpdateFcn',{@tooltip});
-
+  %menu = get(dcm_obj,'UIContextMenu');
   datacursormode on;
 end
 
+end
 
 %% Tooltip function
-function txt = tooltip(empt,eventdata) %#ok<INUSL>
+function txt = tooltip(varargin)
+
+% 
+dcm_obj = datacursormode(gcf);
+
+hcmenu = dcm_obj.CurrentDataCursor.uiContextMenu;
+if numel(get(hcmenu,'children'))<10
+  uimenu(hcmenu, 'Label', 'Mark equivalent orientations', 'Callback', @markEquivalent);
+  mcolor = uimenu(hcmenu, 'Label', 'Marker color', 'Callback', @display);
+  msize = uimenu(hcmenu, 'Label', 'Marker size', 'Callback', @display);
+  mshape = uimenu(hcmenu, 'Label', 'Marker shape', 'Callback', @display);
+end
+
+%
+txt = char(currentOrientation,'nodegree');
+
+end
+
+%%
+function markEquivalent(varargin)
+
+ori = currentOrientation;
+
+annotate(ori);
+
+end
 
 
+function ori = currentOrientation
+s
+dcm_obj = datacursormode(gcf);
+pos = dcm_obj.CurrentDataCursor.getCursorInfo.Position;
+ax = dcm_obj.CurrentDataCursor.getCursorInfo.Target.parent;
 
-ax = get(get(eventdata,'Target'),'Parent');
 all_ax = getappdata(gcf,'multiplotAxes');
 sec = getappdata(gcf,'sections');
 iax = ax == all_ax;
 
 projection = getappdata(ax,'projection');
 
-pos = get(eventdata,'Position');
 [theta,rho] = projectInv(pos(1),pos(2),projection.type);
 
 switch getappdata(gcf,'SectionType')
@@ -148,8 +177,7 @@ switch getappdata(gcf,'SectionType')
     error('unknown sectioning!')
 end
 
-o = orientation('Euler',euler1,euler2,euler3,convention,...
+ori = orientation('Euler',euler1,euler2,euler3,convention,...
   getappdata(gcf,'CS'),getappdata(gcf,'SS'));
 
-txt = char(o,'nodegree');
-
+end
