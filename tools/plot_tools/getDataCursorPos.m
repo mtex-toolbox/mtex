@@ -8,15 +8,23 @@ dcm_obj = datacursormode(fig);
 pos = dcm_obj.CurrentDataCursor.getCursorInfo.Position;
 
 % get value
-xd = get(dcm_obj.CurrentDataCursor.getCursorInfo.Target,'xdata');
-yd = get(dcm_obj.CurrentDataCursor.getCursorInfo.Target,'ydata');
-zd = get(dcm_obj.CurrentDataCursor.getCursorInfo.Target,'zdata');
+target = dcm_obj.CurrentDataCursor.getCursorInfo.Target;
+xd = get(target,'xdata');
+yd = get(target,'ydata');
+zd = get(target,'zdata');
+if isempty(zd)
+  zd = get(target,'CData');
+end
 
-value = zd(pos(1) == xd & pos(2) == yd);
-value = value(1);
+if numel(zd) == numel(xd)
+  value = zd(pos(1) == xd & pos(2) == yd);
+  value = value(1);
+else
+  value = [];
+end
 
 % convert pos to vector3d for spherical plots
-ax = dcm_obj.CurrentDataCursor.getCursorInfo.Target.parent;
+ax = target.parent;
 
 % extract position in multiplot axes
 if isappdata(fig,'multiplotAxes')
@@ -27,10 +35,13 @@ else
 end
 
 % for spherical plots convert to polar coordinates
-if isappdata(ax,'projection')
-  projection = getappdata(ax,'projection');
-  [theta,rho] = projectInv(pos(1),pos(2),projection.type);
-  pos = [theta,rho];
-end
+if ~isappdata(ax,'projection'), return;end
+projection = getappdata(ax,'projection');
+
+if ~isfield(projection,'type'), return;end
+  
+[theta,rho] = projectInv(pos(1),pos(2),projection.type);
+pos = [theta,rho];
 
 end
+
