@@ -124,7 +124,9 @@ if numel(get(hcmenu,'children'))<10
 end
 
 %
-txt = char(currentOrientation,'nodegree');
+[ori,v] = currentOrientation;
+
+txt = [xnum2str(v) ' at ' char(ori,'nodegree')];
 
 end
 
@@ -138,40 +140,31 @@ annotate(ori);
 end
 
 
-function ori = currentOrientation
-s
-dcm_obj = datacursormode(gcf);
-pos = dcm_obj.CurrentDataCursor.getCursorInfo.Position;
-ax = dcm_obj.CurrentDataCursor.getCursorInfo.Target.parent;
+function [ori,value] = currentOrientation
 
-all_ax = getappdata(gcf,'multiplotAxes');
+[pos,value,ax,iax] = getDataCursorPos(gcf); %#ok<ASGLU>
 sec = getappdata(gcf,'sections');
-iax = ax == all_ax;
-
-projection = getappdata(ax,'projection');
-
-[theta,rho] = projectInv(pos(1),pos(2),projection.type);
 
 switch getappdata(gcf,'SectionType')
   case 'phi1'
     euler1 = sec(iax);
-    euler2 = theta;
-    euler3 = rho;
+    euler2 = pos(1);
+    euler3 = pos(2);
     convention = 'Bunge';
   case 'phi2'
     euler3 = sec(iax);
-    euler2 = theta;
-    euler1 = rho;
+    euler2 = pos(1);
+    euler1 = pos(2);
     convention = 'Bunge';
   case 'alpha'
     euler3 = sec(iax);
-    euler2 = theta;
-    euler1 = rho;
+    euler2 = pos(1);
+    euler1 = pos(2);
     convention = 'Matthies';
   case 'sigma'
-    euler1 = rho;
-    euler2 = theta;
-    euler3 = sec(iax) - rho;
+    euler1 = pos(2);
+    euler2 = pos(1);
+    euler3 = sec(iax) - pos(2);
     convention = 'Matthies';
   otherwise
     error('unknown sectioning!')

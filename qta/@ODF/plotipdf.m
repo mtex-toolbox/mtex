@@ -55,17 +55,31 @@ if isempty(ax)
   datacursormode on;
 end
 
+end
 
 %% Tooltip function
-function txt = tooltip(empt,eventdata) %#ok<INUSL>
+function txt = tooltip(varargin)
 
-pos = get(eventdata,'Position');
-xp = pos(1); yp = pos(2);
+[r,h,value] = currentVector; %#ok<ASGLU>
 
-rho = atan2(yp,xp);
-rqr = xp^2 + yp^2;
-theta = acos(1-rqr/2);
+txt = [xnum2str(value) ' at ' char(h,'tolerance',3*degree)];
 
-m = Miller(vector3d('polar',theta,rho),getappdata(gcf,'CS'));
+end
 
-txt = char(m,'tolerance',3*degree);
+function [r,h,value] = currentVector
+
+[pos,value,ax,iax] = getDataCursorPos(gcf);
+
+CS = getappdata(gcf,'CS');
+h = Miller(vector3d('polar',pos(1),pos(2)),CS);
+
+r = getappdata(gcf,'r');
+r = r(iax);
+
+projection = getappdata(ax,'projection');
+
+if projection.antipodal
+  r = set_option(r,'antipodal');
+end
+
+end
