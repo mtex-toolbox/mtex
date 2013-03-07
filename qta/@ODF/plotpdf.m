@@ -98,9 +98,9 @@ if numel(get(hcmenu,'children'))<10
 end
 
 %
-[r,h] = currentVector;
-odf = getappdata(gcf,'odf');
-txt = char(currentVector);
+[r,h,v] = currentVector;
+[th,rh] = polar(r);
+txt = [xnum2str(v) ' at (' int2str(th/degree) ',' int2str(rh/degree) ')'];
 
 end
 
@@ -133,22 +133,20 @@ annotate(fibre(p));
 end
 
 
-function [r,h] = currentVector
+function [r,h,value] = currentVector
 
-dcm_obj = datacursormode(gcf);
-pos = dcm_obj.CurrentDataCursor.getCursorInfo.Position;
-ax = dcm_obj.CurrentDataCursor.getCursorInfo.Target.parent;
+[pos,value,ax,iax] = getDataCursorPos(gcf);
 
-all_ax = getappdata(gcf,'multiplotAxes');
-iax = ax == all_ax;
-
-projection = getappdata(ax,'projection');
-
-[theta,rho] = projectInv(pos(1),pos(2),projection.type);
-r = vector3d('polar',theta,rho);
+r = vector3d('polar',pos(1),pos(2));
 
 h = getappdata(gcf,'h');
 h = h{iax};
+
+projection = getappdata(ax,'projection');
+
+if projection.antipodal
+  h = set_option(h,'antipodal');
+end
 
 end
 
