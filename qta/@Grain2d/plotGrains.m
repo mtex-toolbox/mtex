@@ -116,8 +116,46 @@ setappdata(gcf,'options',[extract_option(varargin,'antipodal'),...
 axis equal tight
 fixMTEXplot(gca,varargin{:});
 
+%% set data cursor
+if ~isOctave()
+  
+  dcm_obj = datacursormode(gcf);
+  set(dcm_obj,'SnapToDataVertex','off')
+  set(dcm_obj,'UpdateFcn',{@tooltip,grains});
+
+  datacursormode on;
+end
+
+%% Tooltip function
+function txt = tooltip(empt,eventdata,grains) %#ok<INUSL>
 
 
+[pos,value] = getDataCursorPos(gcf);
+try
+  sub = findByLocation(grains,[pos(1) pos(2)]);
+catch
+  sub = [];
+end
+
+if numel(sub)>0
+
+  [ebsd_id,grain_id] = find(get(sub,'I_DG')); %#ok<ASGLU>
+  minerals = get(sub,'minerals');
+
+  txt{1} = ['Grain: '  num2str(unique(grain_id))];
+  txt{2} = ['Phase: ', minerals{get(sub,'phaseMap') == get(sub,'phase')}];
+  if ~isNotIndexed(sub)
+    txt{3} = ['Orientation: ' char(get(sub,'orientation'),'nodegree')];
+  end
+  if ~isempty(value)
+    txt{3} = ['Value: ' xnum2str(value)];
+  end
+else
+  txt = 'no data';
+end
+
+
+%%
 function h = plotFaces(boundaryEdgeOrder,V,d,varargin)
 
 % add holes as polygons
