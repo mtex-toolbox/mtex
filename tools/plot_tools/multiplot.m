@@ -74,6 +74,7 @@ if check_option(varargin,'position')
 elseif strcmp(washold,'off')
   % determine optimal size
   screenExtend = get(0,'MonitorPositions');
+  screenExtend = screenExtend(1,:); % consider only the first monitor
   [bx,by,l] = bestfit(screenExtend(3),screenExtend(4),1,nplots,30,30);
   l = min(l,300);
   bx = bx*l;
