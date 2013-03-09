@@ -83,7 +83,7 @@ elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
       
     case 'omega2'
       
-      convention = 'Canove';
+      convention = 'Canova';
       
     case 'psi'
       
