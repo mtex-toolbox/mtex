@@ -62,7 +62,7 @@ end
 function [cs,N,x,y,unitCell] = localReadCPR(fname)
 
 fid = fopen(fname);
-text = fread(fid,1024*1024,'*char')';
+text = fread(fid,'*char')';
 fclose(fid);
 
 p = localParseCPRContent(text);
@@ -112,7 +112,7 @@ for k=1:numel(lineBreaks)-1
     count = count+1;
     cpr(count).title = lower(line(regexp(line,'[\w*]')));
     cpr(count).contents = struct;
-  else
+  elseif numel(line)>1
     [name,value] = strtok(line,'=');
     value = deblank(value(2:end));
     
