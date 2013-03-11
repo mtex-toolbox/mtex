@@ -84,7 +84,7 @@ colormap(cmap);
 % using the option sharp MTEX automatically tries to focus on the main
 % component in the orientation space and to increase there the contrast
 
-plot(ebsd,'sharp','antipodal')
+plot(ebsd,'sharp')
 
 
 %%
