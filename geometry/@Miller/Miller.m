@@ -105,5 +105,4 @@ end
 v = set_option(v,...
   extract_option(varargin,{'north','south','antipodal'}));
 
-superiorto('vector3d');
 m = class(m,'Miller',v);
