@@ -43,14 +43,14 @@ end
 
 
 % add axis angle
-if any(strcmp(s.laue,{'-1','2/m','-3m','-3'}))
+if any(strcmp(s.laue,{'-1','2/m'}))
   props{end+1} = 'alpha, beta, gamma';
   angles = get(s,'axesAngle');
   propV{end+1} = [num2str(angles(1)) '°, ' num2str(angles(2)) '°, ' num2str(angles(3)) '°'];
 end
 
 % add reference frame
-if any(strcmp(s.laue,{'-1','2/m','-3m','-3'}))
+if any(strcmp(s.laue,{'-1','2/m','-3m','-3','6/m','6/mmm'}))
   props{end+1} = 'reference frame'; 
   propV{end+1} = option2str(get(s,'convention'));    
 end
