@@ -8,6 +8,10 @@ close all
 
 %%
 
+mtexdata clear
+
+%%
+
 plotx2east
 
 global mtex_progress;
