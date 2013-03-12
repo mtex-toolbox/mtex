@@ -155,7 +155,8 @@ switch method
     % interpolate
     S3G = SO3Grid(res,cs,ss);
 
-    psi = kernel('de la Vallee Poussin','halfwidth',1.5*res);
+    % get kernel
+    psi = get_option(varargin,'kernel',kernel('de la Vallee Poussin','halfwidth',res));
 
     M = K(psi,S3G,q,cs,ss);
 
