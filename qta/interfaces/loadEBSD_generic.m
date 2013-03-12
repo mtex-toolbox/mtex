@@ -50,9 +50,12 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 
 try
 % load data
-[d,options,header,c] = load_generic(char(fname),varargin{:});
-
-varargin = options;
+if ~isnumeric(fname)
+  [d,options,header,c] = load_generic(char(fname),varargin{:});
+  varargin = options;
+else
+  d = fname;
+end
 
 % no data found
 if size(d,1) < 1 || size(d,2) < 3
