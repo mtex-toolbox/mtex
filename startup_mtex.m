@@ -70,9 +70,11 @@ p();
 %% finish
 if isempty(lasterr) % everything fine
   fprintf(repmat('\b',1,length(MTEXversion)+18));
+else
+  disp(' done!')
 end
 
-disp(' done!')
+
 
 if ~isOctave() && isempty(javachk('desktop')) && ~check_option(varargin,'noMenu')
   MTEXmenu;
