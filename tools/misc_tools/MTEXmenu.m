@@ -3,7 +3,12 @@ function MTEXmenu
 
 disp(' ');
 if isempty(javachk('desktop'))
-  disp(['  <strong>' getMTEXpref('version') '</strong>'  ...
+  if verLessThan('matlab','7.13')
+    s = getMTEXpref('version');
+  else
+    s = ['<strong>' getMTEXpref('version') '</strong>'];
+  end
+  disp(['  ' s  ...
     ' (<a href="matlab:MTEXdoc(''mtex'')">show documentation</a>)'])
   disp('  <a href="matlab:import_wizard(''PoleFigure'')">Import pole figure data</a>')
   disp('  <a href="matlab:import_wizard(''EBSD'')">Import EBSD data</a>')
