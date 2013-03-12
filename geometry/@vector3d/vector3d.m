@@ -1,5 +1,9 @@
 function v = vector3d(x,y,z,varargin)
 % Constructor
+%
+%% Syntax
+%   v = vector3d(x,y,z)
+%
 %% Input
 %  x,y,z - cart. coordinates
 %  v     - @vector3d

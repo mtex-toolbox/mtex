@@ -23,10 +23,10 @@ in this directory.
 
 Directory structure
 -------------------
-AUTHORS		information about the authors of MTEX
+AUTHORS		      information about the authors of MTEX
 c (dir)         source code for core library routines
-ChangeLog	a short version history
-COPYING		information about redistributing MTEX
+ChangeLog	      a short version history
+COPYING		      information about redistributing MTEX
 data (dir)      some sample data sets
 examples (dir)  simple examples for using MTEX
 geometry (dir)  geometry tools
