@@ -3,18 +3,21 @@ function MTEXmenu
 
 disp(' ');
 if isempty(javachk('desktop'))
-  disp('Basic tasks:')
-  disp('- <a href="matlab:MTEXdoc(''mtex'')">Show MTEX documentation</a>')
-  disp('- <a href="matlab:import_wizard(''PoleFigure'')">Import pole figure data</a>')
-  disp('- <a href="matlab:import_wizard(''EBSD'')">Import EBSD data</a>')
-  disp('- <a href="matlab:import_wizard(''ODF'')">Import ODF data</a>')
-
+  disp(['  <strong>' getMTEXpref('version') '</strong>'  ...
+    ' (<a href="matlab:MTEXdoc(''mtex'')">show documentation</a>)'])
+  disp('  <a href="matlab:import_wizard(''PoleFigure'')">Import pole figure data</a>')
+  disp('  <a href="matlab:import_wizard(''EBSD'')">Import EBSD data</a>')
+  disp('  <a href="matlab:import_wizard(''ODF'')">Import ODF data</a>')
+  disp(' ');
+  
   if isappdata(0,'MTEXInstalled') && getappdata(0,'MTEXInstalled')
-    disp('- <a href="matlab:uninstall_mtex">Uninstall MTEX</a>')
+    disp('  <a href="matlab:uninstall_mtex">Uninstall MTEX</a>')
+    disp(' ');
   else
-    disp('- <a href="matlab:install_mtex">Install MTEX for future sessions</a>')
+    disp('  <a href="matlab:install_mtex">Install MTEX for future sessions</a>')
+    disp(' ');
   end
 
-  disp(' ');
+  
 
 end
