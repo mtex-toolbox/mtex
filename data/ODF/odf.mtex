@@ -1,0 +1,35 @@
+% MTEX ODF
+% 
+% crystal symmetry: "orthorhombic"
+% specimen symmetry: "triclinic"
+%
+%% uniform component
+% weight: 0.50000
+%
+%% fibre component
+% weight: 0.05000
+% kernel: de la Vallee Poussin, hw = 10°
+% fibre h: (100)
+% fibre r: 100
+%
+%% fibre component
+% weight: 0.05000
+% kernel: de la Vallee Poussin, hw = 10°
+% fibre h: (010)
+% fibre r: 010
+%
+%% fibre component
+% weight: 0.05000
+% kernel: de la Vallee Poussin, hw = 10°
+% fibre h: (001)
+% fibre r: 001
+%
+%% radial component:
+% kernel: de la Vallee Poussin, hw = 15°
+% alpha   beta    gamma   weight
+0.00000 45.00000 0.00000 0.05000
+%
+%% radial component:
+% kernel: de la Vallee Poussin, hw = 25°
+% alpha   beta    gamma   weight
+90.00000 65.00000 90.00000 0.30000
