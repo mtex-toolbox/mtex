@@ -31,7 +31,7 @@ hold(ax,'all');
 h1 = smooth(ax,v,data{:},'contours',10,'LineStyle','none','fill','on',varargin{:});
 h2 = smooth(ax,v,data{:},'contours',10,'LineStyle','-','LineColor','k','fill','off',varargin{:});
 
-hold off
+hold(ax,'off');
 
 % output
 if nargout > 0

@@ -98,7 +98,7 @@ else
       mfc = get_option(varargin,'MarkerColor','none');
       mfc = get_option(varargin,'MarkerFaceColor',mfc);
     else % cycle through colors
-      [ls,mfc] = nextstyle(ax,true,true,~ishold); %#ok<ASGLU>
+      [ls,mfc] = nextstyle(ax,true,true,~ishold(ax)); %#ok<ASGLU>
     end
     mec = get_option(varargin,'MarkerEdgeColor',mfc);
   
