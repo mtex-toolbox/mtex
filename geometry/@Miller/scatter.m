@@ -68,7 +68,7 @@ else % if there are only a few points plots them with different colors
   washold = getHoldState(ax{:});
 
   % plot
-  hold all
+  hold(ax{:},'all');
   for i = 1:size(m,2)
     scatter(ax{:},unique(m.vector3d(:,i)),varargin{:});
   end

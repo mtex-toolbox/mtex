@@ -93,7 +93,7 @@ end
 
 if check_option(labelopt,{'text','label','labeled'})
   washold = getHoldState(ax{:});
-  hold all
+  hold(ax{:},'all');
   text(ax{:},v,get_option(labelopt,{'text','label'}),labelopt{:});
   hold(ax{:},washold);
   
