@@ -15,33 +15,47 @@ function pf = loadPoleFigure_rigaku_txt(fname,varargin)
 
 fid = efopen(fname);
 
-try
-  % first line comment
-  comments  = textscan(fid,'%s\t%s',7,'delimiter','\n\t','MultipleDelimsAsOne',true);
-  [p,comment] = fileparts(fname);
-  
+try 
   ntheta = 0;
   rho = [];
   d = [];
   
+  fid = efopen(fname);
+    
   while ~feof(fid)
-    
+  
     % read header
-    header = textscan(fid,'%s\t%s',11,'delimiter','\n\t','MultipleDelimsAsOne',true);
-    
-    rhoMin = str2double(readfield(header,'Start'));
-    rhoMax = str2double(readfield(header,'Stop'));
-    rhoStep = str2double(readfield(header,'Step'));
+    while ~feof(fid)
+      
+      s = textscan(fid,'%s %s %*[^\n]',1,'delimiter','\t ,;','MultipleDelimsAsOne',1);      
+          
+      if isempty(s), continue;end
+      if ~isnan(str2double(s{1})), break;end
+      switch lower(char(s{1}))
+        case 'start'
+          rhoMin = str2double(char(s{2}));
+        case 'stop'
+          rhoMax = str2double(char(s{2}));
+        case 'step'
+          rhoStep = str2double(char(s{2}));
+      end
+    end
+  
+    % verify header
     assert(~isempty(rhoMin) && ~isempty(rhoMax) && ~isempty(rhoStep));
-    %rho = linspace(rhoMin,rhoMax,fix((rhoMax-rhoMin)/rhoStep));
+    
+    numData = 1 + fix((rhoMax-rhoMin)/rhoStep);
     
     % read data
-    data = textscan(fid,'%f\t%f',1+fix((rhoMax-rhoMin)/rhoStep));
-    
+    data = textscan(fid,'%f %f %*[^\n]',numData-1,'delimiter','\t ,;','MultipleDelimsAsOne',1);
+    % do not forget the last line from the header
+    data{1} = [str2double(s{1});data{1}];
+    data{2} = [str2double(s{2});data{2}];
+        
     % new theta angle
     ntheta = ntheta + 1;
     nrho(ntheta) = numel(data{1}); %#ok<AGROW>
-    
+      
     % get specimen directions
     rho = [rho;data{1} * degree]; %#ok<AGROW>
     
@@ -50,12 +64,12 @@ try
     
   end
   
-  theta = linspace(0,80*degree,ntheta);
+  theta = (ntheta-1:-1:0) .* rhoStep .* degree;
   theta = rep(theta,nrho)';
   r = vector3d('polar',theta,rho); 
   
   % append last pole figure
-  pf = PoleFigure(string2Miller(fname),S2Grid(r),d,'comment',comment,varargin{:});
+  pf = PoleFigure(string2Miller(fname),S2Grid(r),d,varargin{:});
   
 catch
   interfaceError(fname,fid);
@@ -65,13 +79,3 @@ fclose(fid);
 
 end
 
-function field = readfield(h,pattern)
-
-ind = strncmp(h{1},pattern,length(pattern));
-if nnz(ind) > 1
-  ind = strcmp(h{1},pattern);
-end
-
-field = h{2}(ind);
-
-end
