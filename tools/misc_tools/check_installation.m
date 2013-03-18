@@ -103,7 +103,7 @@ for k=1:numel(binaries)
   end
 end
 
-if getpref('mtex','binaries')
+if getMTEXpref('mtex','binaries')
   e = true;
   return
 end
