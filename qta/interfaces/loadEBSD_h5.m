@@ -7,21 +7,24 @@ if ~exist(fname,'file')
 end
 
 
-groups = locFindEBSDGroups(fname);
+ginfo = locFindEBSDGroups(fname);
 
-
-if numel(groups) > 1
+if numel(ginfo) > 1
   
-  if check_option(varargin,groups)
+  if check_option(varargin,{ginfo.Name})
     
-    groups = extract_option(varargin,groups);
+    for k=numel(ginfo):-1:1
+      if ~any(strcmp(ginfo(k).Name,varargin))
+        ginfo(k) = [];
+      end
+    end
     
   else
     
-    [sel,ok] = listdlg('ListString',groups,'ListSize',[400 300]);
+    [sel,ok] = listdlg('ListString',{ginfo.Name},'ListSize',[400 300]);
     
     if ok
-      groups = groups(sel);
+      ginfo = ginfo(sel);
     else
       return
     end
@@ -34,64 +37,74 @@ if check_option(varargin,'check')
 end
 
 
-for k = 1:numel(groups)
-  kGroup = groups{k};
-  
+for k = 1:numel(ginfo)
+  kGroup = ginfo(k);
   
   CS = locReadh5Phase(fname,kGroup);
   
-  kGroupInfo = h5info(fname,kGroup);
-  kGroupData = {kGroupInfo.Datasets.Name};
-  
-  if check_option(kGroupData,'Orientations')
-    oinfo = h5info(fname,[kGroup '/Orientations']);
-    opts =[{oinfo.Attributes.Name};{oinfo.Attributes.Value}];
-    
-    data = h5read(fname,[kGroup '/Orientations'])';
-    data = mat2cell(data,size(data,1),ones(1,size(data,2)));
-    
-    q = rotation(get_option(opts,'Parameterization','Euler'),...
-      data{:},get_option(opts,'Convention','ZXZ'));
-  end
-  
-  if check_option(kGroupData,'PhaseIndex')
-    
-    phaseIndex = double(h5read(fname,[kGroup '/PhaseIndex']));
-    
-  end
+  kGroupData = kGroup.Datasets;
   
   props = struct;
+  options = {};
   
-  if check_option(kGroupData,'SpatialCoordinates')
-    
-    xyinfo = h5info(fname,[kGroup '/SpatialCoordinates']);
-    options = [{xyinfo.Attributes.Name};{xyinfo.Attributes.Value}];
-    
-    xy = double(h5read(fname,[kGroup '/SpatialCoordinates/']))';
-    
-    if size(xy,2) >= 2
-      props.x = xy(:,1);
-      props.y = xy(:,2);
+  for j=1:numel(kGroupData)
+    switch kGroupData(j).Name
+      case 'Orientations'
+        
+        opts =[{kGroupData(j).Attributes.Name};{kGroupData(j).Attributes.Value}];
+        
+        data = h5read(fname,[kGroup.Name '/Orientations'])';
+        data = mat2cell(data,size(data,1),ones(1,size(data,2)));
+        
+        q = rotation(get_option(opts,'Parameterization','Euler'),...
+          data{:},get_option(opts,'Convention','ZXZ'));
+        
+      case 'PhaseIndex'
+        
+        phaseIndex = double(h5read(fname,[kGroup.Name '/PhaseIndex']))';
+        
+      case 'SpatialCoordinates'
+        
+        options = [{kGroupData(j).Attributes.Name};{kGroupData(j).Attributes.Value}];
+        
+        xy = double(h5read(fname,[kGroup.Name '/SpatialCoordinates']))';
+        
+        if size(xy,2) >= 2
+          props.x = xy(:,1);
+          props.y = xy(:,2);
+        end
+        
+        if size(xy,2) == 3
+          props.z = xy(:,3);
+        end
+        
+      otherwise
+        
     end
     
-    if size(xy,2) == 3
-      props.z = xy(:,3);
-    end
-    
-  else
-    options = {};
   end
   
-  kGroupSub = {kGroupInfo.Groups.Name};
+  kSubGroup = kGroup.Groups;
   
-  if check_option(kGroupSub,[kGroup '/Properties'])
-    propinfo = h5info(fname,[kGroup '/Properties']);
-    fn = {propinfo.Datasets.Name};
-    
-    for j=1:numel(fn)
-      props.(fn{j}) = double(h5read(fname,[kGroup '/Properties/' fn{j}]))';
+  for j=1:numel(kSubGroup)
+    switch kSubGroup(j).Name
+      case [kGroup.Name '/Phase']
+        
+      case [kGroup.Name '/Properties']
+        kSubGroupData = kSubGroup(j).Datasets;
+        
+        for l=1:numel(kSubGroupData)
+          kField = kSubGroupData(l).Name;
+          props.(kField) = double(h5read(fname,[kGroup.Name '/Properties/' kField]))';
+        end
+        
+      otherwise
+        
+        
     end
+    
   end
+  
   
   ebsd{k} = EBSD(q,CS,'phase',phaseIndex,'options',props,options{:});
   
@@ -100,15 +113,21 @@ end
 ebsd = [ebsd{:}];
 
 
-function groups = locFindEBSDGroups(fname)
+function [ginfo] = locFindEBSDGroups(fname)
 
 info = h5info(fname,'/');
 
+ginfo = struct('Name',{},...
+  'Groups',{},...
+  'Datasets',{},...
+  'Datatypes',{},...
+  'Links',{},...
+  'Attributes',{});
 
-groups = locGr(fname, info,{});
+ginfo = locGr(fname, info,ginfo);
 
 
-function grps = locGr(fname,group,grps)
+function [ginfo] = locGr(fname,group,ginfo)
 
 if ~isempty(group)
   
@@ -116,10 +135,11 @@ if ~isempty(group)
     attr  = group(k).Attributes;
     
     if ~isempty(attr) && check_option({attr.Value},'EBSD')
-        grps{end+1} = group(k).Name;
+      ginfo(end+1) = group(k);
+      
     end
     
-    grps = locGr(fname,group(k).Groups,grps);
+    [ginfo] = locGr(fname,group(k).Groups,ginfo);
   end
 end
 
@@ -127,11 +147,14 @@ end
 
 function CS = locReadh5Phase(fname,group)
 
-ph_info = h5info(fname,[group '/Phase']);
 
-data = ph_info.Datasets;
+phaseGroup = group.Groups(strcmp([group.Name '/Phase'],{group.Groups.Name}));
+
+
+data = phaseGroup.Datasets;
 
 for k=1:numel(data)
+  
   attr = [{data(k).Attributes.Name}; {data(k).Attributes.Value}];
   
   
