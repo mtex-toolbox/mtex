@@ -28,6 +28,11 @@ end
 
 % get pixels
 X = [ebsd.options.x(:) ebsd.options.y(:) ebsd.options.z(:)];
+
+
+[a,ndx] = sortrows(X(:,[3 2 1]));
+
+
 Xmin = min(X); Xmax = max(X);
 
 dX = abs(2*ebsd.unitCell([1 13 17]));
@@ -44,6 +49,8 @@ for k=1:numel(ebsd.phaseMap)
   iP = ebsd.phase==k;
   [d(iP,:),property] = calcColorCode(ebsd,iP,varargin{:});
 end
+
+d = d(ndx,:);
 
 % fill colorcoding upon grid
 l = sparse(s2i3(sz,iX(:,1),iX(:,2),iX(:,3)),1,true,prod(sz),1);
