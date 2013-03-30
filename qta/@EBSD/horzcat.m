@@ -9,7 +9,7 @@ varargin(cellfun('isempty',varargin)) = [];
 
 ebsd = varargin{1};
 
-for k=1:nargin
+for k=1:numel(varargin)
   s(k) = struct(varargin{k});
 end
 
