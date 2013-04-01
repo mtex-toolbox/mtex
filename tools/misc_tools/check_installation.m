@@ -103,7 +103,7 @@ for k=1:numel(binaries)
   end
 end
 
-if getpref('mtex','binaries')
+if ispref('mtex') && getpref('mtex','binaries')
   e = true;
   return
 end
@@ -201,7 +201,7 @@ for k=1:numel(mex)
   end
 end
 
-if ispref('mtex','mex')
+if ispref('mtex') && ispref('mtex','mex')
   if getpref('mtex','mex')
     e = true;
     return
