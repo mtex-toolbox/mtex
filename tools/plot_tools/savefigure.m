@@ -24,52 +24,14 @@ end
 
 [pathstr, name, ext] = fileparts(fname);
 
-%%
-
-cmaplength = 1024;
-globmap = [];
-
-
 % try to switch to painters mode
 if any(strcmpi(ext,{'.eps','.pdf'})) && ~strcmpi(get(gcf,'renderer'),'painters')
 
-  ax = findall(gcf,'type','axes');
-  for iax = 1:numel(ax)
-   
-    childs = findobj(ax(iax),'-property','CData');
-    
-    if isempty(childs), continue;end
-    
-    CData = get(childs,'CData');
-    
-    CData = ensurecell(CData);
-    
-    %
-    combined = cat(1,CData{:});
-    
-    if size(combined,3) == 1, continue;end
-    
-    % convert to index data
-    [data, map] = rgb2ind(combined, cmaplength);
-    
-    % shift data to fit globmap
-    data = data + (iax-1)*cmaplength;
-    globmap = [globmap;map]; %#ok<AGROW>
-
-    pos = 1;
-    for ind = 1:numel(CData)
-  
-      s = size(CData{ind});
-      set(childs(ind),'CData',...
-        reshape(double(data(pos:pos+prod(s(1:2))-1)),s(1:2)));
-      pos = pos + prod(s(1:2));
-    end    
+  try
+    convertFigureRGB2ind;
+    set(gcf,'renderer','painters');    
+  catch    
   end  
-  
-  %set new colormap
-  set(gcf,'colormap',globmap);
-  setcolorrange('equal');
-  set(gcf,'renderer','painters')
 end
 
  
@@ -91,6 +53,18 @@ set(gcf,'Units','centimeters');
 pos = get(gcf,'PaperPosition');
 set(gcf,'PaperUnits','centimeters','PaperSize',[pos(3),pos(4)]);
 set(gcf,'Units',ounits);
+
+%% Try to use export fig
+
+try
+  r = get(0, 'ScreenPixelsPerInch');
+  export_fig(gcf,fname,['-r' num2str(1.5*r)]);
+catch
+end
+
+%%
+
+if exist(fname,'file'), return;end
 
 switch lower(ext(2:end))
 
@@ -130,4 +104,58 @@ if check_option(varargin,'crop')
   
   unix(['pdfcrop' ' ' fname ' ' fname]);
   
+end
+
+end
+
+%%
+
+function convertFigureRGB2ind
+
+cmaplength = 1024;
+globmap = [];
+
+ax = findall(gcf,'type','axes');
+
+for iax = 1:numel(ax)
+  
+  childs = findobj(ax(iax),'-property','CData');
+    
+  if isempty(childs), continue;end
+    
+  CData = get(childs,'CData');
+  
+  CData = ensurecell(CData);
+  
+  % take only RGB values
+  ind = cellfun(@(x) size(x,3)==3,CData);
+  childs = childs(ind);
+  CData = CData(ind)
+  
+  % cat Data into one vector
+  combined = cat(1,CData{:});
+  
+  if size(combined,3) == 1, continue;end
+  
+  % convert to index data
+  [data, map] = rgb2ind(combined, cmaplength);
+  
+  % shift data to fit globmap
+  data = data + (iax-1)*cmaplength;
+  globmap = [globmap;map]; %#ok<AGROW>
+  
+  pos = 1;
+  for ind = 1:numel(CData)
+    
+    s = size(CData{ind});
+    set(childs(ind),'CData',...
+      reshape(double(data(pos:pos+prod(s(1:2))-1)),s(1:2)));
+    pos = pos + prod(s(1:2));
+  end
+end
+
+%set new colormap
+set(gcf,'colormap',globmap);
+setcolorrange('equal');
+
 end
