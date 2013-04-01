@@ -186,7 +186,7 @@ plotx2north;
 close all
 %
 % set colour map to seismic color map : blue2redColorMap
-setpref('mtex','defaultColorMap',blue2redColorMap)
+setMTEXpref('defaultColorMap',blue2redColorMap)
 % color bar width and height
 wcb = 0.008;
 hcb = 0.215;
@@ -432,7 +432,7 @@ savefigure('Plot_Olivine_Single_Crystal_seismic_analysis.pdf');
 %
 %
 % reset colour map to default for MTEX 
-setpref('mtex','defaultColorMap',WhiteJetColorMap);
+setMTEXpref('defaultColorMap',WhiteJetColorMap);
 %
 disp(' ')
 disp(' Script has successfully terminated')
