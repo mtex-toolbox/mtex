@@ -13,7 +13,7 @@ function savefigure(fname,varargin)
 %  filename - string
 %  
 
-
+% no file name given select from dialog
 if nargin == 0, 
   [name,pathstr] = uiputfile({'*.pdf;*.eps;*.ill','Vector Image File'; ...
     '*.jpg;*.tif;*.png;*.gif;*.bmp;*pgm;*.ppm','Bitmap Image Files';...
@@ -22,11 +22,12 @@ if nargin == 0,
   fname = [pathstr,name];
 end
 
-[pathstr, name, ext] = fileparts(fname);
+% seperate extension
+[~, ~, ext] = fileparts(fname);
 
-% try to switch to painters mode
+% try to switch to painters mode for vector formats
+% by converting RGB graphics to indexed graphics
 if any(strcmpi(ext,{'.eps','.pdf'})) && ~strcmpi(get(gcf,'renderer'),'painters')
-
   try
     convertFigureRGB2ind;
     set(gcf,'renderer','painters');    
@@ -34,9 +35,17 @@ if any(strcmpi(ext,{'.eps','.pdf'})) && ~strcmpi(get(gcf,'renderer'),'painters')
   end  
 end
 
- 
-%%
+% for bitmap formats try to use export fig
+if ~(ismac || ispc) || all(~strcmpi(ext,{'.eps','.pdf'}))
+  try
+    export_fig(gcf,fname,'-m1.5');
+    %export_fig(gcf,fname);
+    if exist(fname,'file'), return;end
+  catch
+  end
+end
 
+% resize figure to look good
 ounits = get(gcf,'Units');
 set(gcf,'PaperPositionMode','auto');
 set(gcf,'Units','pixels');
@@ -46,25 +55,12 @@ si = get(gcf,'UserData');
 if (length(si) == 2) && isempty(findall(gcf,'tag','Colorbar'))
   pos([3,4]) = si;
 	set(gcf,'Position',pos);
-%	annotation('rectangle',[0 0 1 1]);
 end
 
 set(gcf,'Units','centimeters');
 pos = get(gcf,'PaperPosition');
 set(gcf,'PaperUnits','centimeters','PaperSize',[pos(3),pos(4)]);
 set(gcf,'Units',ounits);
-
-%% Try to use export fig
-
-try
-  r = get(0, 'ScreenPixelsPerInch');
-  export_fig(gcf,fname,['-r' num2str(1.5*r)]);
-catch
-end
-
-%%
-
-if exist(fname,'file'), return;end
 
 switch lower(ext(2:end))
 
@@ -108,7 +104,7 @@ end
 
 end
 
-%%
+%% ------------------------------------------------------------------
 
 function convertFigureRGB2ind
 
@@ -158,4 +154,27 @@ end
 set(gcf,'colormap',globmap);
 setcolorrange('equal');
 
+end
+
+%%
+
+function convertAxisLabel2text
+
+ax = findall(gcf,'type','axes');
+
+for iax = 1:numel(ax)
+  
+  xLabel = get(ax(iax),'XTickLabel');
+  x = get(ax(iax),'XTick');
+  if ~isempty(xLabel) && ~isempty(x)
+    y = ylim(ax(iax));
+    text(ax(iax),x,repmat(y(1),size(x)),...
+      'FontName',get(ax(iax),'FontName'),...
+      'FontAngle',get(ax(iax),'FontAngle'),...
+      'FontWeight',get(ax(iax),'FontWeight'),...
+      'interpreter','tex');
+    set(ax(iax),'XTickLabel',[]);
+  end    
+end
+  
 end
