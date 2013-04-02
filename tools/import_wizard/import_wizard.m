@@ -1,86 +1,121 @@
-function import_wizard( type, varargin )
-% import data from known formats
-%
-%% Input
-%  file_name - files to be imported
-%
-%% Options
-%  type - EBSD | PoleFigure
-%
-%% See also
-% ImportPoleFigureData ImportEBSDData ODFImportExport ImportTensorData
+function import_wizard( varargin )
 
 
-if nargin == 0,
-  type = 'PoleFigure';
-elseif nargin > 0
-  assert( any(strcmpi(type,{'PoleFigure','EBSD','ODF','tensor'})),...
-    'Specifiy data file-type first: PoleFigure, EBSD or ODF')
+if check_option(varargin,'EBSD')
+  select = 2;
+elseif check_option(varargin,'ODF')
+  select = 3;
+elseif check_option(varargin,'tensor')
+  select = 4;
+else
+  select = 1;
 end
 
-% mainframe
-h = import_gui_empty('width',500,varargin{:});
-iconMTEX(h);
+api.presetDataImport    = select;
+api.isPublishMode       = getMTEXpref('generatingHelpMode');
 
-% add pages
-import_gui_generic(h);
-import_gui_data(h,type);
-
-% for help generation only
-if getMTEXpref('generatingHelpMode')
-  % activate first page
-  setappdata(h,'page',1);
-  set_page(h,1);
-  drawnow;
-  snapnow;
+if check_option(varargin,'test')
+  test_wizard_export(api,varargin{:});
   return
 end
 
-% remaining pages
-import_gui_cs(h);
-import_gui_ss(h);
-import_gui_miller(h);
-import_gui_kernel(h);
-import_gui_3d(h);
-import_gui_finish(h);
 
 
-% init global variable appdata
-handles = getappdata(h,'handles');
-for i = 1:length(handles.listbox)
-  setappdata(handles.listbox(i),'workpath',cd);
-  setappdata(handles.listbox(i),'filename',[]);
-  setappdata(handles.listbox(i),'interface','');
-  setappdata(handles.listbox(i),'options',{});
-  setappdata(handles.listbox(i),'data',[]);
-  setappdata(handles.listbox(i),'idata',0);
+api = WizardDataApi(api);
+api = WizardEmptyGUIApi(api);
+api = WizardProgressApi(api,@pageImportData);
+api.initProgressApi();
+
+
+
+
+function test_wizard_export(api,varargin)
+
+
+api = WizardDataApi(api);
+
+%% testcases
+
+switch lower(get_option(varargin,'test',''))
+  case '3d'
+    
+    api.loadDataFiles(1,fullfile(mtexDataPath,'EBSD','3dData','S00.ang'))
+    api.loadDataFiles(1,fullfile(mtexDataPath,'EBSD','3dData','S01.ang'))
+    api.loadDataFiles(1,fullfile(mtexDataPath,'EBSD','3dData','S02.ang'))
+    api.Export.setOptEBSD('is3d',true);
+    api.Export.setOptEBSD('Z',num2cell(1:3));
+    
+  case 'ebsd'
+    
+    api.loadDataFiles(1,fullfile(mtexDataPath,'EBSD','data.ctf'))
+    
+  case 'odf'
+    
+    api.loadDataFiles(2,fullfile(mtexDataPath,'ODF','odf.mtex'))
+    
+  case 'pf'
+    
+    api.loadDataFiles(4,fullfile(mtexDataPath,'PoleFigure','dubna','Q(10-11)(01-11)_amp.cnv'));
+    api.loadDataFiles(4,fullfile(mtexDataPath,'PoleFigure','dubna','Q(02-21)_amp.cnv'));
+    api.loadDataFiles(4,fullfile(mtexDataPath,'PoleFigure','dubna','Q(11-20)_amp.cnv'));
+    
+    
+    data = api.getData();
+    
+    data{1} = set(data{1},'CS',symmetry('trigonal'));
+    
+    api.setData(data);
+    
+  case 'bg'
+    
+    api.loadDataFiles(4,fullfile(mtexDataPath,'PoleFigure','dubna','Q(02-21)_amp.cnv'));
+    api.loadDataFiles(5,fullfile(mtexDataPath,'PoleFigure','dubna','Q(11-20)_amp.cnv'));
+    
+  case 'def'
+    
+    api.loadDataFiles(4,fullfile(mtexDataPath,'PoleFigure','dubna','Q(02-21)_amp.cnv'));
+    api.loadDataFiles(5,fullfile(mtexDataPath,'PoleFigure','dubna','Q(11-20)_amp.cnv'));
+    api.loadDataFiles(6,fullfile(mtexDataPath,'PoleFigure','dubna','Q(02-21)_amp.cnv'));
+    api.loadDataFiles(7,fullfile(mtexDataPath,'PoleFigure','dubna','Q(11-20)_amp.cnv'));
+  
+  case 'lcp'
+    
+    api.loadDataFiles(4,fullfile(mtexDataPath,'PoleFigure','BearTex','Test_2.XPa'));
+ api.loadDataFiles(4,fullfile(mtexDataPath,'PoleFigure','beartex.XPa'));
+ 
+    
+  otherwise
+    
+    api.loadDataFiles(4,fullfile(mtexDataPath,'PoleFigure','dubna','Q(02-21)_amp.cnv'));
+    
+    api = WizardEmptyGUIApi(api);
+    api = WizardProgressApi(api,@pageImportData);
+    api.initProgressApi();
+
+    for j = 1:7
+      pause(.5)
+      api.nextCallback();
+      snapnow;
+    end
+    
+    close(api.hFigure);
+    
+    return
+    % end
+    
+    % api = WizardProgressApi(api,@(a) pageCS(a,3));
+    % api = WizardProgressApi(api,@pageKernel);
+    % api = WizardProgressApi(api,@page3dEBSD);
+    % api = WizardProgressApi(api,@pageFinish);
+    
 end
 
-handles.pf_pages = handles.pages([1:4 7]);
-handles.ebsd_pages = handles.pages([1 6 2 3 7]);
-handles.odf_pages = handles.pages([1:3 5 7]);
-handles.tensor_pages = handles.pages([1 2 7]);
-setappdata(h,'handles',handles);
 
-% activate first page
-setappdata(h,'page',1);
-set_page(h,1);
+WizardFinish(api)
 
-% load first data?
-if nargin > 1
-	switch lower(type)
-    case 'polefigure'
-      lb = 1;
-    case 'ebsd'
-      lb = 5;
-    case 'odf'
-      lb = 6;
-    case 'tensor'
-      lb = 7;
-  end
+% api = WizardProgressApi(api,@(a) pageCS(a,3));
+% api = WizardProgressApi(api,@pageKernel);
+% api = WizardProgressApi(api,@page3dEBSD);
+% api = WizardProgressApi(api,@pageFinish);
 
-  for k=1:numel(varargin)
-    addfile(handles.listbox(lb),type,'file',varargin{k});
-  end
 
-end
