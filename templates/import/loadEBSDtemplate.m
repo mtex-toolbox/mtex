@@ -31,8 +31,7 @@ Z = {Z-values};
 %% Import the Data
 
 % create an EBSD variable containing the data
-ebsd = loadEBSD(fname,CS,SS,'interface',{interface} ...
-  ,{options});
+ebsd = loadEBSD(fname,CS,SS,'interface',{interface},{Z},{options});
 
 %% Correct Data
 

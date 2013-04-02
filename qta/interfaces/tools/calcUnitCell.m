@@ -20,7 +20,7 @@ end
 % remove dublicates from the coordinates
 xy = unique(xy,'first','rows');
 
-if size(xy,2) == 3  
+if size(xy,2) == 3
   unitCell = [calcUnitCell(xy(:,[1 2]), varargin{:});...
     calcUnitCell(xy(:,[1 3]), varargin{:}); ...
     calcUnitCell(xy(:,[2 3]), varargin{:})];
@@ -48,11 +48,8 @@ try
   
   % compute vertices of the unit cell
   unitCell = [v(c{ci},1) - xy(ci,1),v(c{ci},2) - xy(ci,2)];
-  
-  % may be we are already done?
-  if ~check_option(varargin,{'rectangular','hexagonal'}) && ...
-      (length(unitCell) == 4 || length(unitCell) == 6) && ...  % only squares and hexagones are correct
-       (dxy^2)  < a; % probably correct cell, otherwise generate a generic cell
+    
+  if isRegularPoly(unitCell,dxy,varargin)
     return
   end
   
@@ -73,12 +70,15 @@ cellRot = get_option(varargin,'GridRotation',0*degree);
 switch lower(cellType)
   
   case 'rectangular'
+    
     unitCell = regularPoly(4,dxy,cellRot);
     
   case 'hexagonal'
+    
     unitCell = regularPoly(6,dxy,cellRot);
     
   case 'circle'
+    
     unitCell = regularPoly(16,dxy,cellRot);
     
   otherwise
@@ -87,11 +87,28 @@ switch lower(cellType)
 end
 
 
+
 %% a regular polygon with s vertices, diameter d, and rotation rot
 function unitCell = regularPoly(s,d,rot)
 
-c = exp(1i*(pi/s+rot:pi/(s/2):2*pi+rot))*1./sqrt((s/2))*d;
+c = exp(1i*((pi/s:pi/(s/2):2*pi)+rot))*d./sqrt((s/2));
 unitCell = [real(c(:)),imag(c(:))];
+
+
+function isRegular = isRegularPoly(unitCell,dxy,varargin)
+
+sideLength = sqrt(sum((unitCell).^2,2));
+sides      = numel(sideLength);
+
+uC = complex(unitCell(:,1),unitCell(:,2));
+nC = uC([2:end 1]);
+
+enclosingAngle = uC./nC;
+enclosingAngle = complex(abs(real(enclosingAngle)),...
+  abs(imag(enclosingAngle)));
+
+isRegular = any(sides == [4 6]) && ... % norm(sideLength - mean(sideLength))*dxy < 1e-5 && ...
+  norm(enclosingAngle - mean(enclosingAngle))*dxy < 1e-5;
 
 
 %% find a quare subset of about N points
