@@ -37,9 +37,11 @@ pname = {path to defbg files};
 fname_defbg = {defbg file names};
 
 
-%% Specify Miller Idice
+%% Specify Miller Indice
 
 h = {Miller};
+
+%% Specifiy Structural Coefficients for Superposed Pole Figures
 
 c = {structural coefficients};
 
@@ -59,6 +61,8 @@ pf_defbg = loadPoleFigure(fname_defbg,h,CS,SS,{structural coefficients},'interfa
 
 % correct data
 pf = correct(pf,{corrections});
+
+%% Correct Data
 
 rot = rotation('Euler',{phi1},{Phi},{phi2});
 pf = rotate(pf,rot,{rotationOption});

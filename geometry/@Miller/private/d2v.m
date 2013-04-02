@@ -13,5 +13,6 @@ end
 
 a = get(cs,'axis');
 
+% direct space
 vv = u * a(1) + v * a(2) + w * a(3);
-vv = vv ./ norm(vv);
+% vv = vv ./ norm(vv);
