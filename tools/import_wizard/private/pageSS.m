@@ -115,8 +115,7 @@ set(gui.hRotAngle        ,'Callback',@localUpdateAxes)
     fig = unique(fig);
     for f = 1:numel(fig)
       fn = get(fig(f),'ResizeFcn');
-      figure(fig(f));
-      feval(fn{:});
+      feval(fn,fig(f),[]);
     end
     
     localUpdateGUI();
