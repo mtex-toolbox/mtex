@@ -53,7 +53,7 @@ setMTEXpref('SaveToFile',false)
 setMTEXpref('CIFPath',       fullfile(mtexDataPath,'cif'));
 setMTEXpref('EBSDPath',      fullfile(mtexDataPath,'EBSD'));
 setMTEXpref('PoleFigurePath',fullfile(mtexDataPath,'PoleFigure'));
-setMTEXpref('ODFPath',       fullfile(mtexDataPath,'odf'));
+setMTEXpref('ODFPath',       fullfile(mtexDataPath,'ODF'));
 setMTEXpref('TensorPath',    fullfile(mtexDataPath,'tensor'));
 
 %% set default location to look for data with import wizard
