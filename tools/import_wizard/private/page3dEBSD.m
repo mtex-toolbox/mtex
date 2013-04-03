@@ -14,7 +14,8 @@ api.setLeavePageCallback(@leavePage);
 api.setGotoPageCallback(@gotoPage);
 
 % set(gui.h3dRadio,'Callback',@localUpdate3d)
-set(gui.h3dGroup,'SelectionChangeFcn',@localUpdate3d)
+set(gui.h3dGroup  ,'SelectionChangeFcn',@localUpdate3d)
+set(gui.hUpdate   ,'Callback'          ,@localUpdate3d)
 % set(gui.hTable,'DataChangedCallback',@localUpdate3d)
 
 
@@ -49,6 +50,24 @@ set(gui.h3dGroup,'SelectionChangeFcn',@localUpdate3d)
     
     setEBSD('Z',Z);
     
+    data = api.getData();
+    
+    if getEBSD('is3d')
+      
+      data(:) = cellfun(@(x,z) set(x,'z',z*ones(numel(x),1)),data(:),Z(:),'UniformOutput',false);
+      unitCell = calcUnitCell(get([data{:}],'xyz'));
+      
+    else
+      
+      data(:) = cellfun(@(x) set(x,'z',[]),data(:),'UniformOutput',false);
+      unitCell = calcUnitCell(get([data{:}],'xy'));
+      
+    end
+    
+    data = cellfun(@(x) set(x,'unitCell',unitCell),data,'UniformOutput',false);
+
+    api.setData(data);    
+    
     localUpdateGUI();
     
   end
@@ -67,8 +86,11 @@ set(gui.h3dGroup,'SelectionChangeFcn',@localUpdate3d)
       Z = num2cell(1:numel(files));
     end
     
-    set(gui.hTable,'data',[fnames(:),Z(:)]);
-    set(gui.hTable,'Visible',getEBSD('is3d'));
+    state = {'off','on'};
+    
+    set(gui.hTable,  'data',[fnames(:),Z(:)]);
+    set(gui.hTable,  'Visible',getEBSD('is3d'));
+    set(gui.hUpdate, 'Visible',state{1+getEBSD('is3d')});
         
   end
 
@@ -80,6 +102,7 @@ set(gui.h3dGroup,'SelectionChangeFcn',@localUpdate3d)
     w    = api.Spacings.PageWidth;
     m    = api.Spacings.Margin;
     bH   = api.Spacings.ButtonHeight;
+    bW   = api.Spacings.ButtonWidth;
     
     
     group3d = uibuttongroup(...
@@ -102,6 +125,12 @@ set(gui.h3dGroup,'SelectionChangeFcn',@localUpdate3d)
       'Value',0,...
       'position',[m h-m-2.5*bH w-2*m bH]);
     
+    update = uicontrol(...
+      'Parent',group3d,...
+      'style','pushbutton',...
+      'String','Update Table',...
+      'Position',[w-bW-m h-m-2.5*bH bW bH]);
+    
     if ~verLessThan('matlab','7.6'),  v0 = {}; else  v0 = {'v0'}; end
     
     cdata =  {'Z-Layer Data Source','Z-Value'};
@@ -115,6 +144,7 @@ set(gui.h3dGroup,'SelectionChangeFcn',@localUpdate3d)
     gui.h3dGroup = group3d;
     gui.h3dRadio = is3d;
     gui.hTable   = table;
+    gui.hUpdate  = update;
     
   end
 
