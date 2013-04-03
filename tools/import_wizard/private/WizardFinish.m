@@ -412,14 +412,16 @@ end
     function str = getZValues()
       
       if getEBSD('is3d')
-        Z = getEBSD('Z');
         
-        Z = cellstr(strcat(cellfun(@num2str,Z(:)),',...'));
+        Z = getEBSD('Z');
+        Z = strcat(cellfun(@num2str,Z(:),'UniformOutput',false),',...');
         Z(end) = {[Z{end}(1:end-4) ' ]']};
         str = [{'['}; Z(:)];
         
       else
+        
         str = '';
+        
       end
       
     end
