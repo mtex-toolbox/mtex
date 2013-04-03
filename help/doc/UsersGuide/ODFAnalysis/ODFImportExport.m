@@ -37,7 +37,7 @@ plot(model_odf,'sections',6,'silent')
 % variabe odf as any other MATLAB variabel. 
 
 % the filename
-fname = fullfile(mtexDataPath, 'odf', 'odf.mat');
+fname = fullfile(mtexDataPath, 'ODF', 'odf.mat');
 save(fname,'model_odf')
 
 %%
@@ -55,7 +55,7 @@ load(fname)
 % column contains the value of the ODF at this specific position.
 
 % the filename
-fname = fullfile(mtexDataPath, 'odf', 'odf.txt');
+fname = fullfile(mtexDataPath, 'ODF', 'odf.txt');
 
 % export the ODF
 export(model_odf,fname,'Bunge')

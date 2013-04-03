@@ -36,7 +36,7 @@ function [odf,options] = loadODF_generic(fname,varargin)
 % 
 %% Example
 %
-%    fname = fullfile(mtexDataPath,'odf','odf.txt');
+%    fname = fullfile(mtexDataPath,'ODF','odf.txt');
 %    odf = loadODF_generic(fname,'cs',symmetry('cubic'),'header',5,...
 %      'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'weight'},...
 %      'Columns',[1,2,3,4])
