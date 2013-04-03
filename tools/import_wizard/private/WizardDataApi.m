@@ -7,9 +7,13 @@ api.setFiles              = @setFiles;
 api.getFiles              = @getFiles;
 api.setData               = @setData;
 api.getData               = @getData;
+api.getDataTransformed    = @getDataTransformed;
 api.hasData               = @hasData;
 api.clearAllData          = @clearData;
 api.getDataType           = @getDataType;
+api.setWorkpath           = @setWorkpath;
+api.getWorkpath           = @getWorkpath;
+
 
 % data export api
 api.Export.setWorkspaceName      = @setVarname;
@@ -148,6 +152,19 @@ api.clearAllData();
     
   end
 
+
+  function setWorkpath(path)
+    
+    Options.workpath = path;
+    
+  end
+
+  function path = getWorkpath()
+    
+    path = Options.workpath;
+    
+  end
+
   function f = getFiles(slot)
     
     if nargin < 1
@@ -196,6 +213,83 @@ api.clearAllData();
     
   end
 
+
+  function data = getDataTransformed()
+    
+    slot = getDataType();
+    data = Data(slot);
+    
+    slotAlias = {'EBSD','ODF','Tensor','PoleFigure',...
+      'Background','Defoccusing','DefoccusingBackground'};
+    
+    dataAlias = slotAlias(slot);
+    
+    switch dataAlias{1}
+      case slotAlias{1}
+        data = applyZValues(data);
+      case slotAlias{4}
+        data = applyPFCorrection(data,dataAlias);
+      otherwise
+        data = [data.obj{:}]; % maybe tensors don't like that
+    end
+    
+    data = applyRotation(data);
+    
+    
+    function data = applyRotation(data)
+      
+      rotOpts = {'','keepXY','keepEuler','keepEuler','keepXY'};
+      
+      if getSS('rotOption') > 3
+        switch api.Export.getInterface()
+          case 'ang'
+            rot = rotation('axis',xvector+yvector,'angle',180*degree);
+          case 'ctf'
+            rot = rotation('axis',xvector,'angle',180*degree);
+        end
+      else
+        rot = getSS('rotate');
+      end
+      
+      data = rotate(data,rot,rotOpts{getSS('rotOption')});
+      
+    end
+    
+    function data = applyZValues(data)
+      
+      data = data.obj;
+      
+      if getEBSD('is3d')
+        
+        data(:) = cellfun(@(x,z) set(x,'z',z*ones(numel(x),1)),...
+          data(:),getEBSD('Z'),'UniformOutput',false);
+        
+      end
+      
+      X = {'xy','xyz'};
+      data = [data{:}];
+      data = set(data,'unitCell',...
+        calcUnitCell(get(data, X{1+getEBSD('is3d')})));
+      
+    end
+    
+    function data = applyPFCorrection(data,alias)
+      
+      for k=1:numel(data)
+        data(k).obj = [data(k).obj{:}];
+      end
+      
+      try
+        ndata  = [alias(2:end);{data(2:end).obj}];
+        data = correct(data(1).obj,ndata{:});
+      catch e
+        errordlg(e.message)
+      end
+      
+    end
+    
+  end
+
   function type = getDataType()
     
     type = find(~cellfun('isempty',{Data.obj}));
@@ -213,6 +307,7 @@ api.clearAllData();
     Data        = struct;
     Data.files  = {};
     Data.obj    = {};
+    
     % copy seven
     Data(1:7)   = Data;
     
@@ -225,6 +320,8 @@ api.clearAllData();
     
     xaxis = NWSE(getMTEXpref('xAxisDirection'));
     zaxis = UpDown(getMTEXpref('zAxisDirection'));
+    
+    Options.workpath     = getMTEXpref('ImportWizardPath');
     
     Options.SS.direction = xaxis + 4*(zaxis-1);
     Options.SS.rotate    = rotation('Euler',0,0,0,'ZXZ');
@@ -268,6 +365,8 @@ api.clearAllData();
         newFiles{offset+k} = files{k};
         [newData{offset+k},interface,options] = ...
           feval(['load' datatype],files(k),interf{:},options{:});
+        
+        assertCS(newData);
       end
     catch e
       errordlg(e.message);
@@ -280,32 +379,58 @@ api.clearAllData();
     setFiles(newFiles,type);
     setData (newData,type);
     
+    setDataDefaultOptions();
     
-    switch datatype
-      case 'ODF'
-        if check_option(options,'interp')
-          setODF('method',false);
-        else
-          setODF('method',true);
+    function assertCS(data)
+      
+      if isa(data{1},'EBSD')
+        CS = {};  map = [];
+        for j=1:numel(data)
+          CS  = [CS get(data{j},'CSCell')];
+          map = [map;get(data{j},'phaseMap')];
         end
-      case 'EBSD'
-        switch interface
-          case 'ang'
-            setSS('rotate',rotation('euler',90*degree,180*degree,0*degree,'ZXZ'));
-            setSS('rotOption',3);
-            setSS('text',['Warning: ' ...
-              'The ang format usually uses different conventions for '...
-              'the spatial and the Euler angle reference frame. ' ...
-              'The default rotation corrects for this']);
-          case 'ctf'
-            setSS('rotate',rotation('euler',180*degree,0*degree,0*degree,'ZXZ'));
-            setSS('rotOption',3);
-            setSS('text',['Warning: ' ...
-              'The ctf format usually uses different conventions for '...
-              'the spatial and the Euler angle reference frame. ' ...
-              'The default rotation corrects for this.']);
+        
+        [map,b,c] = unique(map);
+        for j=1:max(c)
+          mapCS = CS(c == j);
+          for l=1:numel(mapCS)-1
+            if mapCS{l} ~= mapCS{l+1}
+              error('Symmetry mismatch in the EBSD phasemap, I won''t do that!');
+            end
+          end
         end
+        
+      else
+        
+        for l=1:numel(data)-1
+          CS1 = get(data{l},'CS');
+          CS2 = get(data{l+1},'CS');
+          if CS1 ~= CS2
+            error('Symmetry mismatch in the EBSD phasemap, I won''t do that!');
+          end
+        end
+        
+      end
+      
     end
+    
+    function setDataDefaultOptions()
+      
+      switch datatype
+        case 'ODF'
+          if check_option(options,'interp')
+            setODF('method',false);
+          else
+            setODF('method',true);
+          end
+        case 'EBSD'
+          switch interface
+            case {'ang','ctf'}
+              setSS('rotOption',5);
+          end
+      end
+    end
+    
   end
 
 
