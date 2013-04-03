@@ -16,6 +16,8 @@ function ebsd = loadEBSD_ctf(fname,varargin)
 %  spatial and Euler reference frame coincide, i.e., rotate them by 180
 %  degree
 
+ebsd = EBSD;
+
 try
   % read file header
   hl = file2cell(fname,100);
