@@ -100,7 +100,7 @@ end
 % change reference frame
 if check_option(varargin,'convertSpatial2EulerReferenceFrame')
   ebsd = rotate(ebsd,rotation('axis',xvector+yvector,'angle',180*degree),'keepEuler');
-elseif check_option(varargin,'convertSpatial2EulerReferenceFrame')
+elseif check_option(varargin,'convertEuler2SpatialReferenceFrame')
   ebsd = rotate(ebsd,rotation('axis',xvector+yvector,'angle',180*degree),'keepXY');
 end
   

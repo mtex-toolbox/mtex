@@ -46,10 +46,10 @@ api.Progress.enableFinish(false);
     set(api.hPanel,'visible','off');
     
     progressApi.currentPage(api);
-try
-    progressApi.gotoPageCallback();
-catch
-end
+    try
+      progressApi.gotoPageCallback();
+    catch
+    end
     set(api.hPanel,'visible','on');
     
   end
@@ -100,17 +100,16 @@ end
 
   function localPlotDataCallback(varargin)
     
-    slot = api.getDataType();
-    data = api.getData(slot(1));
+    data = api.getDataTransformed();
     
     figure
-    plot([data{:}],'silent');
+    plot(data,'silent');
     
   end
 
   function localFinishCallback(varargin)
     
-    WizardFinish(api);    
+    WizardFinish(api);
     
     close(api.hFigure);
     
@@ -157,7 +156,7 @@ end
       'BorderType','line',...
       'BorderWidth',1,...
       'units','pixel',...
-      'parent',parent,...      
+      'parent',parent,...
       'HighlightColor',[0 0 0],...
       'Position',[m pH w-2*m 1]);
     
