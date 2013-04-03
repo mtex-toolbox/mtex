@@ -118,14 +118,20 @@ set(gui.hDown ,'CallBack',{@localShiftData,+1})
       
     end
     
+    dataPath = api.getWorkpath();
+    if isa(dataPath,'function_handle')
+      dataPath = feval(dataPath);
+    end
+    
     [files,path] = uigetfile( '*.*',...
       'Select Data files',...
-      'MultiSelect', 'on',mtexDataPath);
+      'MultiSelect', 'on',dataPath);
     
     if isnumeric(files)
       return
     end
     
+    api.setWorkpath(path);    
     api.loadDataFiles(type,strcat({path},ensurecell(files)));
     
     localUpdateLists();

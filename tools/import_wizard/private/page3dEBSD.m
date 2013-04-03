@@ -50,24 +50,6 @@ set(gui.hUpdate   ,'Callback'          ,@localUpdate3d)
     
     setEBSD('Z',Z);
     
-    data = api.getData();
-    
-    if getEBSD('is3d')
-      
-      data(:) = cellfun(@(x,z) set(x,'z',z*ones(numel(x),1)),data(:),Z(:),'UniformOutput',false);
-      unitCell = calcUnitCell(get([data{:}],'xyz'));
-      
-    else
-      
-      data(:) = cellfun(@(x) set(x,'z',[]),data(:),'UniformOutput',false);
-      unitCell = calcUnitCell(get([data{:}],'xy'));
-      
-    end
-    
-    data = cellfun(@(x) set(x,'unitCell',unitCell),data,'UniformOutput',false);
-
-    api.setData(data);    
-    
     localUpdateGUI();
     
   end
@@ -124,7 +106,7 @@ set(gui.hUpdate   ,'Callback'          ,@localUpdate3d)
       'String',' Each data file is a serial section',...
       'Value',0,...
       'position',[m h-m-2.5*bH w-2*m bH]);
-    
+          
     update = uicontrol(...
       'Parent',group3d,...
       'style','pushbutton',...
