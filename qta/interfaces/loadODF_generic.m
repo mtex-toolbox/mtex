@@ -44,6 +44,8 @@ function [odf,options] = loadODF_generic(fname,varargin)
 %% See also
 % import_wizard loadODF ODF_demo
 
+odf = ODF;
+
 % get options
 ischeck = check_option(varargin,'check');
 cs = get_option(varargin,'cs',symmetry('m-3m'));

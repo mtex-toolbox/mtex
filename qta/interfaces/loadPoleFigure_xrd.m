@@ -13,6 +13,7 @@ function pf = loadPoleFigure_xrd(fname,varargin)
 %% See also
 % ImportPoleFigureData loadPoleFigure
 
+pf = PoleFigure;
 
 % tokens
 rhoStartToken = {'*MEAS_SCAN_START\s*"(\S*)"','*START\s*=\s*(\S*)'};
