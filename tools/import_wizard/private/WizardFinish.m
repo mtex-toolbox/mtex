@@ -1,41 +1,14 @@
 function WizardFinish( api )
 
-if api.Export.getGenerateScriptFile()
+if ~api.Export.getGenerateScriptFile()
   
-  generateScript();
+  assignin('base',api.Export.getWorkspaceName(),api.getDataTransformed());
   
 else
   
-  generateWorkspaceVariable();
+  generateScript();
   
 end
-
-  function generateWorkspaceVariable()
-    
-    slots = api.getDataType();
-    
-    for k=1:7
-      d = api.getData(k);
-      slotData{k} = [d{:}];
-      slotFiles{k} = api.getFiles(k);
-    end
-    
-    if any(slots >= 4) % polefigure data to be corrected
-      try
-        data = correct(slotData{4},...
-          'Background',slotData{5},...
-          'Defoccusing',slotData{6},...
-          'DefoccusingBackground',slotData{7});
-      catch
-        data = slotData{4};
-      end
-    else
-      data = slotData{slots(1)};
-    end
-    
-    assignin('base',api.Export.getWorkspaceName(),data);
-    
-  end
 
   function generateScript()
     
@@ -175,7 +148,7 @@ end
       end
       
     end
-       
+    
     function lines = getLines(markup,offset)
       
       lineBreaks = [0 strfind(str,sprintf('\n')) numel(str)];
@@ -194,7 +167,7 @@ end
       end
       
     end
-      
+    
     function str = loadTemplate(dataType)
       
       %load template file
@@ -413,12 +386,14 @@ end
       
       if getEBSD('is3d')
         
+        
         Z = getEBSD('Z');
         Z = strcat(cellfun(@num2str,Z(:),'UniformOutput',false),',...');
         Z(end) = {[Z{end}(1:end-4) ' ]']};
         str = [{'['}; Z(:)];
         
       else
+        
         
         str = '';
         
@@ -432,6 +407,7 @@ end
         str = '''3d'',Z';
       else
         str = '';
+        
       end
       
     end
@@ -484,23 +460,23 @@ end
     
     function str = getMiller()
       
-      str = {'{ ...'};      
+      str = {'{ ...'};
       eps = 10e4;
       
       for k = 1:length(data)
-        h = get(data(k),'h');        
+        h = get(data(k),'h');
         
         hkl = round(get(h,'hkl')*eps)./eps;
-
+        
         sh = strcat('Miller(',num2str(hkl,'%d,'),'CS)');
-    
+        
         if size(sh,1) > 1
           sh = strcat(sh,', ');
           sh = reshape(sh',1,[]);
-          sh = ['[' sh(1:end-1) ']'];          
+          sh = ['[' sh(1:end-1) ']'];
         end
         
-        str = [str [sh ',...']];        
+        str = [str [sh ',...']];
       end
       str = [ str '}'];
       
@@ -539,24 +515,30 @@ end
     
     function str = getInterface()
       
-      str = ['''interface'',''' getInterf() ''''];
+      str = ['''' getInterf() ''''];
       
     end
     
     function str = getInterfaceOptions()
       
-      str = option2str(getInterfOpts(),'quoted');
-      if ~isempty(str)
-        str(1:2) = [];
-        str = {'...' ; str };
+      ssInterfaceOpt = {'','','','convertSpatial2EulerReferenceFrame',...
+        'convertEuler2SpatialReferenceFrame'};
+      
+      str = option2str([ssInterfaceOpt(getSS('rotOption')) getInterfOpts()],'quoted');
+
+      if numel(str)>4
+        str = {'...' ; str(3:end) };
+      else
+        str = '';
       end
       
     end
     
     function str = getEulerRot()
       
+      
       rot = getSS('rotate');
-      if ~isnull(angle(rot))
+      if getSS('rotOption') < 4 && ~isnull(angle(rot)) 
         [p(1) p(2) p(3)] = Euler(rot,'ZXZ');
         str = [strrep(xnum2str(p/degree),' ','*degree,') '*degree'];
       else
@@ -580,6 +562,5 @@ end
     end
     
   end
-
 
 end
