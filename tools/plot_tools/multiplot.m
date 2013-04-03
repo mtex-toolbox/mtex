@@ -189,7 +189,7 @@ if strcmp(getappdata(fig,'autofit'),'on')
   figpos(3) = figpos(3)-2*outerPlotSpacing;
   dxdy = get(a(1),'PlotBoxAspectRatio');
   % correct for xAxisDirection
-  if find(get(gca,'CameraUpVector'))==1
+  if find(get(a(1),'CameraUpVector'))==1
     dxdy(1:2) = fliplr(dxdy(1:2));
   end
   dxdy = dxdy(2)/dxdy(1);
