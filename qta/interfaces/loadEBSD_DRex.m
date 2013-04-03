@@ -1,5 +1,7 @@
 function ebsd = loadEBSD_DRex(fname,varargin)
 
+ebsd = EBSD;
+
 if ~exist(fname,'file')
   error(['File ' fname ' not found!']);
 end

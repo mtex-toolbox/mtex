@@ -1,5 +1,7 @@
 function ebsd = loadEBSD_csv(fname,varargin)
 
+ebsd = EBSD;
+
 try
 % read file header
 fl = file2cell(fname,200);

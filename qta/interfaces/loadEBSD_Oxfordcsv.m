@@ -1,5 +1,7 @@
 function ebsd = loadEBSD_Oxfordcsv(fname,varargin)
 
+ebsd = EBSD;
+
 try
 
   % read header
