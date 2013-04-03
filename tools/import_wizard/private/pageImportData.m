@@ -66,37 +66,33 @@ set(gui.hDown ,'CallBack',{@localShiftData,+1})
     
   end
 
-  function localShiftData(source,event,shift)
+  function localShiftData(source,event,offset)
     
     activePanels = get(gui.dataPanels,'visible');
     type = find(strcmpi(activePanels,'on'),1,'first');
     
     hList     = gui.lists(type);
     
-    shiftEntry = get(hList,'Value');
+    shiftEntry = sort(get(hList,'Value'));
     
     data  = api.getData(type);
     files = api.getFiles(type);
     
     if ~isempty(data)
-      newPos = shiftEntry+shift;
+      % calc permutation
+      shiftEntry(shiftEntry+offset > numel(data) | ...
+        shiftEntry+offset < 1) =  [];
+      if offset > 0, shiftEntry = fliplr(shiftEntry); end
       
-      r = 0 < newPos & newPos <= numel(data);
+      perm = 1:numel(data);
+      for s=shiftEntry
+        perm([s s+offset]) = perm([s+offset s]);
+      end
       
-      newPos     = newPos(r);
-      shiftEntry = shiftEntry(r);
+      api.setData(data(perm),type);
+      api.setFiles(files(perm),type);
       
-      tempdata          = data(newPos);
-      tempfiles         = files(newPos);
-      data(newPos)      = data(shiftEntry);
-      files(newPos)     = files(shiftEntry);
-      data(shiftEntry)  = tempdata;
-      files(shiftEntry) = tempfiles;      
-      
-      api.setData(data,type);
-      api.setFiles(files,type);
-      
-      set(hList,'Value',newPos)
+      set(hList,'Value',shiftEntry+offset);
       
       localUpdateLists();
     end
@@ -128,7 +124,7 @@ set(gui.hDown ,'CallBack',{@localShiftData,+1})
     
     if isnumeric(files)
       return
-    end    
+    end
     
     api.loadDataFiles(type,strcat({path},ensurecell(files)));
     
@@ -164,9 +160,9 @@ set(gui.hDown ,'CallBack',{@localShiftData,+1})
     api.Progress.enablePlot(api.hasData());
     api.Progress.enableFinish(api.hasData());
     
-     
+    
     interf = api.Export.getInterface();
-  
+    
     if ~isempty(interf)
       interf = ['Interface: ' interf];
     else
