@@ -2,7 +2,7 @@
 %
 % This script was automatically created by the import wizard. You should
 % run the whoole script or parts of it in order to import your data. There
-% is no problem in making any chages to this scrip.
+% is no problem in making any changes to this script.
 
 %% Specify Crystal and Specimen Symmetries
 
