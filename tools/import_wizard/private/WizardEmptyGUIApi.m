@@ -7,8 +7,9 @@ name = get_option(varargin,'name','Import Wizard','char');
 
 Spacings.FontSizeTitle       =   14;
 Spacings.FontSizeDescription =   10;
+Spacings.FontSize            =    9;
 
-Spacings.ButtonWidth         =   80;
+Spacings.ButtonWidth         =   85;
 Spacings.ButtonHeight        =   30;
 
 Spacings.Margin              =    8;

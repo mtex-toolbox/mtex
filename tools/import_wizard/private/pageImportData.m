@@ -131,7 +131,7 @@ set(gui.hDown ,'CallBack',{@localShiftData,+1})
       return
     end
     
-    api.setWorkpath(path);    
+    api.setWorkpath(path);
     api.loadDataFiles(type,strcat({path},ensurecell(files)));
     
     localUpdateLists();
@@ -170,7 +170,7 @@ set(gui.hDown ,'CallBack',{@localShiftData,+1})
     interf = api.Export.getInterface();
     
     if ~isempty(interf)
-      interf = ['Interface: ' interf];
+      interf = ['Interface: ' interf '  '];
     else
       interf = '';
     end
@@ -188,6 +188,7 @@ set(gui.hDown ,'CallBack',{@localShiftData,+1})
     
     bw   = api.Spacings.ButtonHeight;
     m    = api.Spacings.Margin;
+    fs   = api.Spacings.FontSize;
     % subWidth = w-;
     
     modes = {'Pole Figures','EBSD','ODF','Tensor'};
@@ -275,6 +276,7 @@ set(gui.hDown ,'CallBack',{@localShiftData,+1})
       'Parent',page,...
       'Style','text',...
       'Position',[w-200-m h-21 200 16],...
+      'FontSize',fs,...
       'HorizontalAlignment','right',...
       'String','interface');
     
@@ -291,6 +293,7 @@ set(gui.hDown ,'CallBack',{@localShiftData,+1})
           'BackgroundColor',[1 1 1],...
           'FontName','monospaced',...
           'HorizontalAlignment','left',...
+          'FontSize',fs,...
           'Max',2,...
           'Position',[m m w-3*m-bw h-lh],...
           'String',blanks(0),...
