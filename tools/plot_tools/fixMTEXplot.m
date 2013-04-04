@@ -2,7 +2,7 @@ function fixMTEXplot(varargin)
 % remove boundary from the figure and handle zoom
 %
 
-if nargin > 0 && ishghandle(gca,'axes')
+if nargin > 0 && any(ishghandle(varargin{1},'axes'))
   ax = varargin{1};
   varargin{1} = [];
 else
