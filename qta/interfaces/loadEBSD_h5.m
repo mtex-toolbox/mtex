@@ -11,16 +11,16 @@ ginfo = locFindEBSDGroups(fname);
 
 if numel(ginfo) > 1
   
-  if check_option(varargin,{ginfo.Name})
-    
-    for k=numel(ginfo):-1:1
-      if ~any(strcmp(ginfo(k).Name,varargin))
-        ginfo(k) = [];
-      end
-    end
-    
-  else
-    
+  groupNames = {ginfo.Name};
+  
+  patternMatch = false(size(groupNames));
+  for k=1:numel(varargin)    
+    if ischar(varargin{k})
+      patternMatch = patternMatch | strncmpi(groupNames,varargin{k},numel(varargin{k}));
+    end    
+  end
+  
+  if nnz(patternMatch) == 0
     [sel,ok] = listdlg('ListString',{ginfo.Name},'ListSize',[400 300]);
     
     if ok
@@ -28,6 +28,8 @@ if numel(ginfo) > 1
     else
       return
     end
+  else
+    ginfo = ginfo(patternMatch);
   end
 end
 
@@ -106,11 +108,13 @@ for k = 1:numel(ginfo)
   end
   
   
-  ebsd{k} = EBSD(q,CS,'phase',phaseIndex,'options',props,options{:});
+  ebsd{k} = EBSD(q,CS,'phase',phaseIndex,'options',props,'comment',kGroup.Name,options{:});
   
 end
 
-ebsd = [ebsd{:}];
+if ~check_option(varargin,'cellEBSD')
+  ebsd = [ebsd{:}];
+end
 
 
 function [ginfo] = locFindEBSDGroups(fname)
