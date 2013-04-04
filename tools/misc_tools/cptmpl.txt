@@ -1,0 +1,8 @@
+a test FO for CPRINTF file routines
+FO   : cptmpl.txt
+created: <DATE>
+-----------------------------------
+% output $1
+$MARK$
+% output $2
+$MARK$
