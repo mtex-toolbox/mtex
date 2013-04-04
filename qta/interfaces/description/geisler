@@ -1,0 +1,39 @@
+Sehr geehrter Prof. Schaeben,
+
+bei dem Datenformat handelt es sich um die Messdateien, wie sie bei einer
+Messung mit einen Philips X'Pert 108 Texturgoniometer von der
+Philips-eigenen Messsoftware ausgegeben werden. Ich hänge Ihnen einen
+Messdatensatz an.
+Bei normalen theta-2theta scans gibt es auch Exportoptionen als z.B. *.csv
+u.a. in diesem Programm. Meiner Ansicht nach trifft dies jedoch nicht für
+die Polfigur-Messungen zu, es sei denn, man exportiert jeden phi-Kreis
+extra. Im Falle von Problemen könnte ich dies jedoch nochmals überprüfen.
+
+Mit freundlichen Grüßen
+
+David Geißler
+
+P.S.: Der Messdatensatz ist eine Texturmessung mit den Polfiguren: {111},
+{200}/{100}, {220}/{110}. *.rw1 sind die Messdaten, die *.cor - sind die
+Untergrundmessungen mit 2theta = +/- 5° je nach Lage neben dem Maximum.
+P.P.S.: Können Sie mir sagen, wann die Rechnung für die Workshop-Teilnahme
+bei mir eingeht, da Ihrerseits die Zusicherung der günstigeren
+Teilnahmegebühren, ja an eine Überweisung bis 31.01.2007 gebunden ist. Oder
+reicht Ihnen hierfür die Voranmeldung?
+
+-----Ursprüngliche Nachricht-----
+Von: Helmut Schaeben [mailto:schaeben@geo.tu-freiberg.de]
+Gesendet: Montag, 22. Januar 2007 08:59
+An: Geißler, David
+Betreff: texturanalyse
+
+
+Sehr geehrter Herr Geißler,
+
+vielen dank für ihre anmeldung. Das datenformat data format: Philips
+X\'Pert 108 - *.rw1 müssen sie uns erläutern und die erläuterungen am
+besten mit einem beispiel datensatz ergänzen, damit wir das interface
+programmieren können.
+
+Mit freundlichen grüßen
+Helmut Schaeben
