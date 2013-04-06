@@ -47,9 +47,14 @@ localUpdateTableHeaders()
       required = codes(k).fields(codes(k).mandatory);
       for l=1:numel(required)
         matches = ~cellfun('isempty',strfind(lower(name),lower(required{l})));
-        if any(matches)
+        if any(matches)          
           matchcount(k) = matchcount(k) +1;
-          colNames{k}(matches)  = required(l);
+          
+          %if there multiple matches take the one with the fewest chracters
+          [tmp,pos] = min(cellfun('size',name(matches),2));
+          ind = find(matches);
+          
+          colNames{k}(ind(pos))  = required(l);
         end
       end
     end
