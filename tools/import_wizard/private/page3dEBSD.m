@@ -118,7 +118,7 @@ set(gui.hUpdate   ,'Callback'          ,@localUpdate3d)
       'String','Update Table',...
       'Position',[w-bW-m h-m-2.5*bH bW bH]);
     
-    if ~verLessThan('matlab','7.6'),  v0 = {}; else  v0 = {'v0'}; end
+    if verLessThan('matlab','7.6'),  v0 = {}; else  v0 = {'v0'}; end
     
     cdata =  {'Z-Layer Data Source','Z-Value'};
     
