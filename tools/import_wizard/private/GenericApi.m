@@ -217,13 +217,7 @@ localUpdateTableHeaders()
     
     colNames = cell(get(gui.hHeaderTable,'data'));
     del = cellfun('isempty',colNames) | strcmpi(colNames,'ignore');
-    
-    if any(strcmpi(api.Type,{'EBSD','ODF'}))
-      colNames = regexprep(colNames,'phi1|alpha|phi|omega|Psi','Euler 1');
-      colNames = regexprep(colNames,'Phi|beta|Theta','Euler 2');
-      colNames = regexprep(colNames,'phi2|gamma|Phi|phi','Euler 3');
-    end
-    
+            
     options = {'ColumnNames',colNames(~del)};
     if any(del)
       options = [options,'Columns', {find(~del)}];
