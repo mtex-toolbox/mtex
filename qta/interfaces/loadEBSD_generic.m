@@ -83,17 +83,19 @@ cols = cols(m);
 istype = @(in, a) all(cellfun(@(x) any(find(strcmpi(stripws(in),stripws(x)))),a));
 layoutcol = @(in, a) cols(cell2mat(cellfun(@(x) find(strcmpi(stripws(in(:)),stripws(x))),a(:),'uniformoutput',false)));
 
-euler = lower({'Euler 1' 'Euler 2' 'Euler 3'});
-bunge = lower({'Phi1' 'Phi' 'Phi2'});
-quat = lower({'Quat real' 'Quat i' 'Quat j' 'Quat k'});
+eulerNames = {{'euler 1' 'euler 2' 'euler 3'},... % generic
+  {'phi1' 'phi' 'phi2'},...                  % Bunge
+  {'alpha' 'beta' 'gamma'},...               % Matthies
+  {'psi' 'theta' 'phi'},...                  % Kocks / Roe
+  {'omega' 'theta' 'phi'}};                  % Canova
 
-if istype(names,euler) || istype(names,bunge) % Euler angles specified
+quatNames = lower({'Quat real' 'Quat i' 'Quat j' 'Quat k'});
+
+isEuler = cellfun(@(x) istype(names,x),eulerNames);
+
+if any(isEuler) % Euler angles specified
   
-  if istype(names,euler)
-    layout = layoutcol(names,euler);
-  else
-    layout = layoutcol(names,bunge);
-  end
+  layout = layoutcol(names,eulerNames{isEuler});
   
   %extract options
   dg = degree + (1-degree)*check_option(varargin,{'radians','radiant','radiand'});
@@ -126,9 +128,9 @@ if istype(names,euler) || istype(names,bunge) % Euler angles specified
   noSymmetry = cellfun(@(x) ~isa(x,'symmetry'),varargin);
   q = rotation('Euler',alpha,beta,gamma,varargin{noSymmetry});
   
-elseif istype(names,quat) % import quaternion
+elseif istype(names,quatNames) % import quaternion
   
-  layout = layoutcol(names,quat);
+  layout = layoutcol(names,quatNames);
   d(any(isnan(d(:,layout)),2),:) = [];
   
   q = rotation(quaternion(d(:,layout(1)),d(:,layout(2)),d(:,layout(3)),d(:,layout(4))));
@@ -172,7 +174,7 @@ end
 
 % assign all other as options
 opt = struct;
-opts = delete_option(names,  [euler quat {'Phase'}]);
+opts = delete_option(names,  [eulerNames{:} quatNames {'Phase'}]);
 if ~isempty(opts)
   
   for i=1:length(opts),
