@@ -527,7 +527,7 @@ end
       str = option2str([ssInterfaceOpt(getSS('rotOption')) getInterfOpts()],'quoted');
 
       if numel(str)>4
-        str = {'...' ; str(3:end) };
+        str = {'...' ; regexprep(str,', '''', ','')};
       else
         str = '';
       end
