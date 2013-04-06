@@ -7,7 +7,7 @@ name = get_option(varargin,'name','Import Wizard','char');
 
 Spacings.FontSizeTitle       =   14;
 Spacings.FontSizeDescription =   10;
-Spacings.FontSize            =    10;
+Spacings.FontSize            =    9;
 
 Spacings.ButtonWidth         =   85;
 Spacings.ButtonHeight        =   30;
@@ -15,7 +15,7 @@ Spacings.ButtonHeight        =   30;
 Spacings.Margin              =    8;
 
 Spacings.TopHeight           =   75;
-Spacings.PageHeight          =  275;
+Spacings.PageHeight          =  get_option(varargin,'PageHeight',275);
 Spacings.BottomHeight        =  Spacings.ButtonHeight+3*Spacings.Margin;
 
 Spacings.Width   = 500;
