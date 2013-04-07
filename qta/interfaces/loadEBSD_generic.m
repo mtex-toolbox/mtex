@@ -49,150 +49,65 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 % ImportEBSDData loadEBSD ebsd_demo
 
 try
-% load data
-if ~isnumeric(fname)
-  [d,options,header,c] = load_generic(char(fname),varargin{:});
-  varargin = options;
-else
-  d = fname;
-end
-
-% no data found
-if size(d,1) < 1 || size(d,2) < 3
-  error('Generic interface could not detect any numeric data in %s',fname);
-end
-
-% no options given -> ask
-if ~check_option(varargin,'ColumnNames')
-  
-  options = generic_wizard('data',d(1:end<101,:),'type','EBSD','header',header,'columns',c);
-  if isempty(options), ebsd = []; return; end
-  varargin = [options,varargin];
-  
-end
-
-names = lower(get_option(varargin,'ColumnNames'));
-cols = get_option(varargin,'Columns',1:length(names));
-
-
-assert(length(cols) == length(names), 'Length of ColumnNames and Columns differ');
-
-[names m] = unique(names);
-cols = cols(m);
-
-istype = @(in, a) all(cellfun(@(x) any(find(strcmpi(stripws(in),stripws(x)))),a));
-layoutcol = @(in, a) cols(cell2mat(cellfun(@(x) find(strcmpi(stripws(in(:)),stripws(x))),a(:),'uniformoutput',false)));
-
-eulerNames = {{'euler 1' 'euler 2' 'euler 3'},... % generic
-  {'phi1' 'phi' 'phi2'},...                  % Bunge
-  {'alpha' 'beta' 'gamma'},...               % Matthies
-  {'psi' 'theta' 'phi'},...                  % Kocks / Roe
-  {'omega' 'theta' 'phi'}};                  % Canova
-
-quatNames = lower({'Quat real' 'Quat i' 'Quat j' 'Quat k'});
-
-isEuler = cellfun(@(x) istype(names,x),eulerNames);
-
-if any(isEuler) % Euler angles specified
-  
-  layout = layoutcol(names,eulerNames{isEuler});
-  
-  %extract options
-  dg = degree + (1-degree)*check_option(varargin,{'radians','radiant','radiand'});
-  
-  % eliminate nans
-  if ~check_option(varargin,'keepNaN')
-    d(any(isnan(d(:,layout)),2),:) = [];
+  % load data
+  if ~isnumeric(fname)
+    [d,options,header,c] = load_generic(char(fname),varargin{:});
+    varargin = options;
+  else
+    d = fname;
   end
   
-  % eliminate rows where angle is 4*pi
-  ind = abs(d(:,layout(1))*dg-4*pi)<1e-3;
-  d(ind,:) = [];
-  
-  % extract data
-  alpha = d(:,layout(1))*dg;
-  beta  = d(:,layout(2))*dg;
-  gamma = d(:,layout(3))*dg;
-  
-  assert(all((beta >=0 & beta <= pi &...
-    alpha >= -2*pi & alpha <= 4*pi &...
-    gamma > -2*pi & gamma<4*pi) | ...
-    isnan(alpha)));
-  
-  % check for choosing
-  if max([alpha(:);beta(:);gamma(:)]) < 10*degree
-    warndlg('The imported Euler angles appears to be quit small, maybe your data are in radians and not in degree as you specified?');
+  % no data found
+  if size(d,1) < 1 || size(d,2) < 3
+    error('Generic interface could not detect any numeric data in %s',fname);
   end
   
-  % transform to quaternions
-  noSymmetry = cellfun(@(x) ~isa(x,'symmetry'),varargin);
-  q = rotation('Euler',alpha,beta,gamma,varargin{noSymmetry});
-  
-elseif istype(names,quatNames) % import quaternion
-  
-  layout = layoutcol(names,quatNames);
-  d(any(isnan(d(:,layout)),2),:) = [];
-  
-  q = rotation(quaternion(d(:,layout(1)),d(:,layout(2)),d(:,layout(3)),d(:,layout(4))));
-  
-else
-  
-  error('You should at least specify three Euler angles or four quaternion components!');
-  
-end
-
-% assign phases
-if istype(names,{'Phase'})
-  
-  phase = d(:,layoutcol(names,{'Phase'}));
-  
-  
-  %[ig,ig,phase] = unique(phase);
-else
-  
-  phase = ones(size(d,1),1);
-  
-end
-
-if max(phase)>40
-  
-  warning('MTEX:tomanyphases','Found more then 20 phases. I''m going to ignore them.');
-  phase = ones(size(d,1),1);
-  
-end
-
-if check_option(varargin,{'passive','passive rotation'}), q = inverse(q); end
-
-
-% compute unit cells
-if istype(names,{'x' 'y'})
-  
-  varargin = [varargin,'unitCell',calcUnitCell(d(:,layoutcol(names,{'x' 'y' 'z'})),varargin{:})];
-  
-end
-
-
-% assign all other as options
-opt = struct;
-opts = delete_option(names,  [eulerNames{:} quatNames {'Phase'}]);
-if ~isempty(opts)
-  
-  for i=1:length(opts),
-    if layoutcol(names,opts(i)) <= size(d,2)
-      opts_struct{i} = [strrep(opts{i},' ','') {d(:,layoutcol(names,opts(i)))}]; %#ok<AGROW>
-    end
+  % no options given -> ask
+  if ~check_option(varargin,'ColumnNames')
+    
+    options = generic_wizard('data',d(1:end<101,:),'type','EBSD','header',header,'columns',c);
+    if isempty(options), ebsd = []; return; end
+    varargin = [options,varargin];
+    
   end
-  opts_struct = [opts_struct{:}];
-  opt = struct(opts_struct{:});
-end
-
-
-% return varargin as options
-options = varargin;
-
-% set up EBSD variable
-ebsd = EBSD(q,varargin{:},'phase',phase,'options',opt);
-
+  
+  loader = loadHelper(d,varargin{:});
+  
+  q      = loader.getRotations();
+  
+  % assign phases
+  if loader.hasColumn('Phase')
+    
+    phase = loader.getColumnData('Phase');
+    
+    %[ig,ig,phase] = unique(phase);
+  else
+    
+    phase = ones(numel(q),1);
+    
+  end
+  
+  if max(phase)>40
+    
+    warning('MTEX:tomanyphases','Found more then 20 phases. I''m going to ignore them.');
+    phase = ones(size(d,1),1);
+    
+  end
+  
+  % compute unit cells
+  if loader.hasColumn({'x' 'y'})
+    
+    varargin = [varargin,'unitCell',....
+      calcUnitCell(loader.getColumnData({'x' 'y' 'z'}),varargin{:})];
+    
+  end
+  
+  % return varargin as options
+  opt = loader.getOptions('ignoreColumns','Phase');
+  
+  % set up EBSD variable
+  ebsd = EBSD(q,varargin{:},'phase',phase,'options',opt);
+  
 catch
   interfaceError(fname)
 end
