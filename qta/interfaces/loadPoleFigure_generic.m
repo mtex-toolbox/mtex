@@ -86,85 +86,21 @@ if ~check_option(varargin,'ColumnNames')
 
 end
 
-% get data
-names = lower(get_option(varargin,'ColumnNames'));
-cols = get_option(varargin,'Columns',1:length(names));
+loader = loadHelper(d,varargin{:});
 
+r      = S2Grid(loader.getVector3d(),'antipodal');
 
-assert(length(cols) == length(names), 'Length of ColumnNames and Columns differ');
+I      = loader.getColumnData('Intensity');
 
-[names m] = unique(names);
-cols = cols(m);
-
-istype = @(in, a) all(cellfun(@(x) any(find(strcmpi(in,x))),a));
-layoutcol = @(in, a) cols(cellfun(@(x) find(strcmpi(in,x)),a));
-sphcoord = lower({'Polar Angle','Azimuth Angle','Intensity'});
-euclidcoord = lower({'x','y','z','Intensity'});
-
-if istype(names,sphcoord)
-  
-  layout = layoutcol(names,sphcoord);
-  
-  % eliminate nans
-  d(any(isnan(d(:,layout)),2),:) = [];
-  
-  %extract options
-  dg = degree + (1-degree)*check_option(varargin,{'RADIAND','radiant','radians'});
-  
-  th = d(:,layout(1))*dg;
-  rh = d(:,layout(2))*dg;
-  
-  
-  if max(rh) < 10*degree
-    warndlg('The imported polar angles appears to be quit small, maybe your data are in radians and not in degree as you specified?');
-  end
-  
-  if max(abs(rh)) > 15
-    warndlg('The imported polar angles appears to be quit large, maybe your data are in degree and not in radians as you specified?');
-  end
-  
-  if max(abs(rh)) > 15
-    warndlg('The imported polar angles appears to be quit large, maybe your data are in degree and not in radians as you specified?');
-  end
-  
-  if all(th<=0), th = -th;end  
-  assert(all(th>=-1e-3 & th <= pi+1e-3) && ...
-    all(rh>=-2*pi-1e-3) && all(rh<=4*pi+1e-3),'Polar coordinates out of range!');
-
-  % specimen directions
-  r = S2Grid(sph2vec(th,rh),'antipodal');
-
-elseif istype(names,euclidcoord)
-  
-  layout = layoutcol(names,euclidcoord);
-  
-  % eliminate nans
-  d(any(isnan(d(:,layout)),2),:) = [];
-  
-  % specimen directions
-  r = S2Grid(vector3d(d(:,layout(1:3)).'),'antipodal');
-  
-else
-  error('MTEX:MISSINGDATA',...
-    'You should at least specify the columns of the spherical coordinates and the intensities!');
-end
+opt    = loader.getOptions('ignoreColumns','Intensity');
 
 % intensities
-v = d(:,layout(end));
-assert(length(v)>=5,'To few data points');
+assert(numel(I)>=5,'To few data points'); %???
 
 % crystal direction
 h = string2Miller(fname);
-  
-%all other as options
-opt = struct;
-opts = delete_option(names,  sphcoord);
-if ~isempty(opts)
-  for i=1:length(opts),
-    opts_struct{i} = [opts{i} {d(:,layoutcol(names,opts(i)))}]; %#ok<AGROW>
-  end
-  opts_struct = [opts_struct{:}];
-  opt = struct(opts_struct{:});
-end
-  
-pf = PoleFigure(h,r,v,'options',opt,varargin{:});
+
+pf = PoleFigure(h,r,I,'options',opt,varargin{:});
+
+
+

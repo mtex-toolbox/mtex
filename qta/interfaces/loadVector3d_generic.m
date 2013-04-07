@@ -48,64 +48,10 @@ if ~check_option(varargin,'ColumnNames')
   
 end
 
-names = lower(get_option(varargin,'ColumnNames'));
-cols = get_option(varargin,'Columns',1:length(names));
 
+loader = loadHelper(d,varargin{:});
 
-assert(length(cols) == length(names), 'Length of ColumnNames and Columns differ');
-
-[names m] = unique(names);
-cols = cols(m);
-
-istype = @(in, a) all(cellfun(@(x) any(find(strcmpi(stripws(in),stripws(x)))),a));
-layoutcol = @(in, a) cols(cell2mat(cellfun(@(x) find(strcmpi(stripws(in(:)),stripws(x))),a(:),'uniformoutput',false)));
-
-cart = lower({'x' 'y' 'z'});
-polarAngle = {'polar angle','lattitude','collatitude'};
-azimuth = lower({'longitude','azimuth'});
-  
-% polar coordinates
-if check_option(names,polarAngle) && check_option(names,azimuth)
-  
-  %extract options
-  dg = degree + (1-degree)*check_option(varargin,{'radians','radiant','radiand'});
-    
-  % polar angle
-  pos = cols(cellfun(@(x) any(strcmpi(x,polarAngle)),names));
-    
-  theta = d(:,pos)*dg;
-  
-  if check_option(names,'lattitude')
-    theta = pi/2 - theta;
-  end
-  
-  % azimuth
-  pos = cols(cellfun(@(x) any(strcmpi(x,azimuth)),names));
-  rho  = d(:,pos)*dg;
-  
-  % check for correctness
-  assert(all(theta >=0 & theta <= pi & rho >= -2*pi & rho <= 4*pi));
-  
-  % check for choosing
-  if max(abs([theta(:);rho(:)])) < 10*degree
-    warndlg('The imported Euler angles appears to be quit small, maybe your data are in radians and not in degree as you specified?');
-  end
-  
-  v = vector3d('polar',theta,rho);
-  
-  % cartesian coordinates specified
-elseif istype(names,cart)
-  
-  layout = layoutcol(names,cart);
-  d(any(isnan(d(:,layout)),2),:) = [];
-  
-  v = vector3d(d(:,layout(1)),d(:,layout(2)),d(:,layout(3)));
-  
-else
-  
-  error('You should at least specify thwo polar angles or three coordinates!');
-  
-end
+v      = loader.getVector3d();
   
 
 

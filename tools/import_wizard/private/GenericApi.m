@@ -204,7 +204,7 @@ localUpdateTableHeaders()
         man  = false;
       otherwise
         opts = {};
-        man = {};
+        man = logical([]);
     end
     
     fields = cellfun(@(x,y)[{'ignore'} x y],fields,repmat({opts},numel(fields),1),...
