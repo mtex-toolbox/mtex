@@ -1,119 +1,124 @@
 function [ebsd,groups] = loadEBSD_h5(fname,varargin)
 
 
-
-if ~exist(fname,'file')
-  error(['File ' fname ' not found!']);
-end
-
-
-ginfo = locFindEBSDGroups(fname);
-
-if numel(ginfo) > 1
+try
   
-  groupNames = {ginfo.Name};
-  
-  patternMatch = false(size(groupNames));
-  for k=1:numel(varargin)    
-    if ischar(varargin{k})
-      patternMatch = patternMatch | strncmpi(groupNames,varargin{k},numel(varargin{k}));
-    end    
+  if ~exist(fname,'file')
+    error(['File ' fname ' not found!']);
   end
   
-  if nnz(patternMatch) == 0
-    [sel,ok] = listdlg('ListString',{ginfo.Name},'ListSize',[400 300]);
+  
+  ginfo = locFindEBSDGroups(fname);
+  
+  if numel(ginfo) > 1
     
-    if ok
-      ginfo = ginfo(sel);
+    groupNames = {ginfo.Name};
+    
+    patternMatch = false(size(groupNames));
+    for k=1:numel(varargin)
+      if ischar(varargin{k})
+        patternMatch = patternMatch | strncmpi(groupNames,varargin{k},numel(varargin{k}));
+      end
+    end
+    
+    if nnz(patternMatch) == 0
+      [sel,ok] = listdlg('ListString',{ginfo.Name},'ListSize',[400 300]);
+      
+      if ok
+        ginfo = ginfo(sel);
+      else
+        return
+      end
     else
-      return
+      ginfo = ginfo(patternMatch);
     end
-  else
-    ginfo = ginfo(patternMatch);
   end
-end
-
-if check_option(varargin,'check')
-  ebsd = EBSD;
-  return
-end
-
-
-for k = 1:numel(ginfo)
-  kGroup = ginfo(k);
   
-  CS = locReadh5Phase(fname,kGroup);
+  if check_option(varargin,'check')
+    ebsd = EBSD;
+    groups = {ginfo.Name};
+    return
+  end
   
-  kGroupData = kGroup.Datasets;
   
-  props = struct;
-  options = {};
-  
-  for j=1:numel(kGroupData)
-    switch kGroupData(j).Name
-      case 'Orientations'
-        
-        opts =[{kGroupData(j).Attributes.Name};{kGroupData(j).Attributes.Value}];
-        
-        data = h5read(fname,[kGroup.Name '/Orientations'])';
-        data = mat2cell(data,size(data,1),ones(1,size(data,2)));
-        
-        q = rotation(get_option(opts,'Parameterization','Euler'),...
-          data{:},get_option(opts,'Convention','ZXZ'));
-        
-      case 'PhaseIndex'
-        
-        phaseIndex = double(h5read(fname,[kGroup.Name '/PhaseIndex']))';
-        
-      case 'SpatialCoordinates'
-        
-        options = [{kGroupData(j).Attributes.Name};{kGroupData(j).Attributes.Value}];
-        
-        xy = double(h5read(fname,[kGroup.Name '/SpatialCoordinates']))';
-        
-        if size(xy,2) >= 2
-          props.x = xy(:,1);
-          props.y = xy(:,2);
-        end
-        
-        if size(xy,2) == 3
-          props.z = xy(:,3);
-        end
-        
-      otherwise
-        
+  for k = 1:numel(ginfo)
+    kGroup = ginfo(k);
+    
+    CS = locReadh5Phase(fname,kGroup);
+    
+    kGroupData = kGroup.Datasets;
+    
+    props = struct;
+    options = {};
+    
+    for j=1:numel(kGroupData)
+      switch kGroupData(j).Name
+        case 'Orientations'
+          
+          opts =[{kGroupData(j).Attributes.Name};{kGroupData(j).Attributes.Value}];
+          
+          data = h5read(fname,[kGroup.Name '/Orientations'])';
+          data = mat2cell(data,size(data,1),ones(1,size(data,2)));
+          
+          q = rotation(get_option(opts,'Parameterization','Euler'),...
+            data{:},get_option(opts,'Convention','ZXZ'));
+          
+        case 'PhaseIndex'
+          
+          phaseIndex = double(h5read(fname,[kGroup.Name '/PhaseIndex']))';
+          
+        case 'SpatialCoordinates'
+          
+          options = [{kGroupData(j).Attributes.Name};{kGroupData(j).Attributes.Value}];
+          
+          xy = double(h5read(fname,[kGroup.Name '/SpatialCoordinates']))';
+          
+          if size(xy,2) >= 2
+            props.x = xy(:,1);
+            props.y = xy(:,2);
+          end
+          
+          if size(xy,2) == 3
+            props.z = xy(:,3);
+          end
+          
+        otherwise
+          
+      end
+      
     end
+    
+    kSubGroup = kGroup.Groups;
+    
+    for j=1:numel(kSubGroup)
+      switch kSubGroup(j).Name
+        case [kGroup.Name '/Phase']
+          
+        case [kGroup.Name '/Properties']
+          kSubGroupData = kSubGroup(j).Datasets;
+          
+          for l=1:numel(kSubGroupData)
+            kField = kSubGroupData(l).Name;
+            props.(kField) = double(h5read(fname,[kGroup.Name '/Properties/' kField]))';
+          end
+          
+        otherwise
+          
+          
+      end
+      
+    end
+    
+    ebsd{k} = EBSD(q,CS,'phase',phaseIndex,'options',props,'comment',kGroup.Name,options{:});
     
   end
   
-  kSubGroup = kGroup.Groups;
-  
-  for j=1:numel(kSubGroup)
-    switch kSubGroup(j).Name
-      case [kGroup.Name '/Phase']
-        
-      case [kGroup.Name '/Properties']
-        kSubGroupData = kSubGroup(j).Datasets;
-        
-        for l=1:numel(kSubGroupData)
-          kField = kSubGroupData(l).Name;
-          props.(kField) = double(h5read(fname,[kGroup.Name '/Properties/' kField]))';
-        end
-        
-      otherwise
-        
-        
-    end
-    
+  if ~check_option(varargin,'cellEBSD')
+    ebsd = [ebsd{:}];
   end
   
-  
-  ebsd{k} = EBSD(q,CS,'phase',phaseIndex,'options',props,'comment',kGroup.Name,options{:});
-  
-end
-
-if ~check_option(varargin,'cellEBSD')
-  ebsd = [ebsd{:}];
+catch
+  interfaceError(fname)
 end
 
 
