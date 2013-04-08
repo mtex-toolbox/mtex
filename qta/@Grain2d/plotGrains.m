@@ -78,10 +78,14 @@ xlabel('x');ylabel('y');
 %%
 h = plotFaces(boundaryEdgeOrder,V,vertcat(d{:}),varargin{:});
 
+% remove them from legend
+arrayfun(@(x) set(get(get(x,'Annotation'),'LegendInformation'),...
+    'IconDisplayStyle','off'),h);
+
 % make legend
 
 if strcmpi(property,'phase'),
-
+  
   F = get(grains,'F');
   F(any(F==0,2),:) = [];
 
@@ -96,7 +100,7 @@ if strcmpi(property,'phase'),
     end
   end
   minerals = get(grains,'minerals');
-  legend(lg,minerals(isPhase));
+  legend(lg,minerals(isPhase),'location','NorthEast');
 end
 
 
