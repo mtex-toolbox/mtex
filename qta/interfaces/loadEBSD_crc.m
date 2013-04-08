@@ -1,242 +1,212 @@
 function ebsd = loadEBSD_crc(fname,varargin)
 % interface for Oxford Chanel 5 crc and cpr EBSD data files
 
-[path,file] = fileparts(fname);
-
-cpr_file = fullfile(path,[file '.cpr']);
-crc_file = fullfile(path,[file '.crc']);
-
 try
-  if exist(cpr_file,'file') == 2 && exist(crc_file,'file') == 2
-    [cs,N,x,y,unitCell] = localReadCPR(cpr_file);
-    [phase,q,opts] = localReadCRC(crc_file,N);
-    
-    if ~isempty(x), opts.x = x;end    
-    if ~isempty(y), opts.y = y;end
+  assertExt(fname,{'.cpr','.crc'})
+  
+  [path,file] = fileparts(fname);
+  cprFile = fullfile(path,[file '.cpr']);
+  crcFile = fullfile(path,[file '.crc']);
+  
+  cpr = localCPRParser(cprFile);
+  
+  CS  = getCS(cpr);
+  param = getJobParam(cpr);
+  
+  if check_option(varargin,'check')
+    return
   end
   
-  ebsd = EBSD(q,cs,'phase',phase(:),'unitCell',unitCell,'options',opts);
+  loader  = localCRCLoader(crcFile,param);
+  
+  q       = loader.getRotations();
+  phases  = loader.getColumnData('Phase');
+  options = loader.getOptions('ignoreColumns','phase');
+  
+  uphases = unique(phases);
+  CS = CS(uphases(uphases>0));
+  if any(uphases == 0)
+    CS = ['notIndexed',CS];
+  end
+  
+  ebsd = EBSD( q,...
+    'CS',      CS,...
+    'phase',   phases,...
+    'unitCell',param.unitCell,...
+    'options', options);
+  
 catch %#ok<CTCH>
   interfaceError(fname);
 end
+
+
+  function CS = getCS(cpr)
+    
+    for p=1:cpr.phases.count
+      phase = cpr.(['phase' num2str(p)]);
+      
+      if isfield(phase,'spacegroup')
+        Laue = {'spacegroup',phase.spacegroup};
+      else
+        LaueGroups =  {'C1','C2','D2','C4','D4','C3','D3','C6','D6','T','O'};
+        Laue = LaueGroups(phase.lauegroup);
+      end
+      
+      CS{p} = symmetry(Laue{:},...
+        [phase.a phase.b phase.c],...
+        [phase.alpha phase.beta phase.gamma]*degree,...
+        'mineral',phase.structurename);
+    end
+  end
+
+  function param = getJobParam(cpr)
+    
+    job = cpr.job;
+    
+    param = struct('cells',false,...
+      'unitCell',[],...
+      'm',[],'n',[],... % number of datatyped cols x rows
+      'x',[],'y',[],...
+      'ColumnNames',{{'Phase'}},...
+      'ColumnType',1 );
+    
+    % cpr
+    if isfield(job,'xcells') && isfield(job,'ycells')
+      % implicit coordinates
+      param.cells = true;
+      
+      % create some coordinates
+      [y,x] = meshgrid(0:job.ycells-1,0:job.xcells-1);
+      if isfield(job,'griddistx') && isfield(job,'griddisty')
+        x = x*job.griddistx;
+        y = y*job.griddisty;
+        
+        param.unitCell = [...
+          job.griddistx   job.griddisty;
+          -job.griddistx   job.griddisty;
+          -job.griddistx  -job.griddisty;
+          job.griddistx  -job.griddisty;]/2;
+      end
+      
+      % if isfield(job,'left') && isfield(job,'top')
+      %   x = x-job.left, y = y-job.top %?? -------------not sure what it means
+      % end
+      %
+      
+      param.n = cpr.job.xcells*cpr.job.ycells;
+      param.x = x(:);
+      param.y = y(:);
+    elseif isfield(job,'noofpoints')
+      % explicit coordinates
+      param.n = job.noofpoints;
+    else
+      % there are no markup in the cpr so it could be some factory value?
+      param.m = 29;
+    end
+    
+    
+    % default numbere field position, looks in the cpr like the can switch
+    % order; unclear why
+    ColumnNames = {
+      'X'                  % 1    4 bytes
+      'Y'                  % 2       "
+      'phi1'               % 3       "
+      'Phi'                % 4       "
+      'phi2'               % 5       "
+      'MAD'                % 6       "
+      'BC'                 % 7    1 byte
+      'BS'                 % 8       "
+      'Unknown'            % 9       "
+      'Bands'              % 10      "
+      'Error'              % 11      "
+      'ReliabilityIndex'   % 12      "
+      };
+    dataType    = [4*ones(6,1);ones(5,1);4];
+    
+    for k=1:cpr.fields.count
+      order = cpr.fields.(['field' num2str(k)]);
+      
+      if order <= 12
+        param.ColumnNames{k+1} = ColumnNames{order};
+        param.ColumnType(k+1) = dataType(order);
+      else
+        param.ColumnNames{k+1} = ['Unknown' num2str(order)];
+        param.ColumnType(k+1) = 4;
+      end
+      
+    end
+    
+  end
+
 end
 
-%%
-function [phase,q,opt] = localReadCRC(crc_file,N)
 
-fid = fopen(crc_file,'rb');
+function loader = localCRCLoader(crcFile,params)
+
+fid = fopen(crcFile,'rb');
 data = fread(fid,'*uint8');
 fclose(fid);
 
 % make a table
-data   = reshape(data,[],N);
+if isempty(params.n)
+  n = numel(data)./params.m;
+else
+  n = params.n;
+end
 
-phase  = double(data(1,:));
-euler1 = double(typecast(reshape(data( 2:5 ,:),[],1),'single'));
-euler2 = double(typecast(reshape(data( 6:9 ,:),[],1),'single'));
-euler3 = double(typecast(reshape(data(10:13,:),[],1),'single'));
+data = reshape(data,[],n);
+type = params.ColumnType;
+ndx  = cumsum([0 type]);
 
-q = euler2quat(euler1,euler2,euler3);
+d(type==4,:) = reshape(double(typecast(...
+  reshape(data(bsxfun(@plus,ndx(type==4),(1:4)'),:),[],1),'single')),[],n);
+d(type~=4,:) = double(data(1+ndx(type~=4),:));
 
-opt.ri         = double(typecast(reshape(data(14:17,:),[],1),'single'));
-opt.mad        = double(data(18,:)');
-opt.bc         = double(data(19,:)');
-opt.bs         = double(data(20,:)');
-opt.bands      = double(data(21,:)');
-opt.unknown6   = double(data(22,:)');
-opt.unknown7   = double(data(23,:)');
-opt.unknown8   = double(data(24,:)');
-opt.unknown9   = double(data(25,:)'); % indexed or not?
-
-% if there are more columns. read float
-for k=26:4:size(data,1)
+if params.cells
+  % append implicite coordinates
   
-  opt.(['add' num2str((k-22)/4)]) = ...
-    typecast(reshape(data(k:k+3,:),[],1),'single');
+  d(end+1,:) = params.x;
+  d(end+1,:) = params.y;
+  
+  params.ColumnNames = [params.ColumnNames 'x','y'];
   
 end
 
+loader = loadHelper(d','ColumnNames',params.ColumnNames,'Radians');
+
 end
 
-%%
-function [cs,N,x,y,unitCell] = localReadCPR(fname)
+function cpr = localCPRParser(cprFile)
 
-fid = fopen(fname);
-text = fread(fid,'*char')';
+fid = fopen(cprFile,'rb');
+str = transpose(fread(fid,'*char','l'));
 fclose(fid);
 
-p = localParseCPRContent(text);
-
-job = strcmp({p.title},'job');
-if any(job)
-  job = p(job).contents;
-  [N,x,y,unitCell] = localJob2XY(job);
-end
-
-phases = strncmp({p.title},'phases',6);
-if any(phases)
-  phases = p(phases).contents;
-  
-  if isfield(phases,'count')
-    phasecount = phases.count;
-  else
-    phasecount = [];
-  end
-end
-
-for k=0:phasecount
-  phasek = strncmp({p.title},['phase' num2str(k)] ,6);
-  
-  if any(phasek)
-    phase = p(phasek).contents;
-    cs{k+1} = localPhase2CS(phase);
-  else
-    %     cs{k+1} = symmetry;
-    cs{k+1} = 'not Indexed';
-  end
-end
-
-end
-
-%%
-function cpr = localParseCPRContent(text)
-
-lineBreaks = [0 regexp(text,char(10))];
-
-count = 0;
 cpr = struct;
+lineBreaks = [0 strfind(str,sprintf('\n')) numel(str)];
 for k=1:numel(lineBreaks)-1
-  line = text(lineBreaks(k)+1:lineBreaks(k+1)-1);
+  
+  line = strtrim(str(lineBreaks(k)+1:lineBreaks(k+1)-1));
   
   if strncmp(line,'[',1)
-    count = count+1;
-    cpr(count).title = lower(line(regexp(line,'[\w*]')));
-    cpr(count).contents = struct;
-  elseif numel(line)>1
-    [name,value] = strtok(line,'=');
+    Title = lower(strrep(line(2:end-1),' ',''));
+  elseif ~isempty(line)
+    [field,value] = strtok(line,'=');
+    
+    field = lower(strrep(field,' ',''));
     value = deblank(value(2:end));
+    numericValue = str2double(value);
     
-    name = regexprep(name,' ','');
-    
-    numval = sscanf(value,'%f');
-    if ~isempty(numval)
-      cpr(count).contents.(lower(name)) = numval;
+    if isnan(numericValue)
+      cpr.(Title).(field) = value;
     else
-      cpr(count).contents.(lower(name)) = value;
+      cpr.(Title).(field) = numericValue;
     end
+    
   end
   
 end
 
 end
 
-%%
-function [N,x,y,unitCell] = localJob2XY(job)
-
-if isfield(job,'left') && isfield(job,'top')
-  xshift = job.left; yshift = job.top; %?? -------------not sure what it means
-else
-  xshift = 0; yshift = 0;
-end
-
-if isfield(job,'xcells') && isfield(job,'ycells')
-  xsize = job.xcells; ysize = job.ycells;
-  N = xsize*ysize;
-else
-  xsize = []; ysize = [];
-  N = 0;
-end
-
-if isfield(job,'griddistx') && isfield(job,'griddistx')
-  xstep = job.griddistx; ystep = job.griddistx;
-else
-  xstep = 1; ystep = 1;
-end
-
-if ~isempty(xsize) && ~isempty(ysize);
-  [x,y] = meshgrid((0:ysize-1)*ystep-yshift,(0:xsize-1)*xstep-xshift);
-  x = x(:); y = y(:);
-  unitCell = [ ...
-    ystep/2  xstep/2
-    ystep/2 -xstep/2
-    -ystep/2 -xstep/2
-    -ystep/2 xstep/2];
-  %   unitCell = calcUnitCell([x y])
-else
-  N = job.noofpoints;
-  x = []; y = []; unitCell = [];
-end
-end
-
-%%
-function cs = localPhase2CS(phase)
-
-if isfield(phase,'structurename')
-  mineral = phase.structurename;
-else
-  mineral = ['phase' num2str(k)];
-end
-
-if isfield(phase,'spacegroup')
-  group = phase.spacegroup;
-  
-  list = {...
-    1,      '1';
-    2,     '-1';
-    5,      '2';
-    9,      'm';
-    15,   '2/m';
-    24,   '222';
-    46,   'mm2';
-    74,   'mmm';
-    80,     '4';
-    82,    '-4';
-    88,   '4/m';
-    98,   '422';
-    110,'4/mmm';
-    122, '-42m';
-    142,'4/mmm';
-    146,    '3';
-    148,   '-3';
-    155,   '32';
-    161,   '3m';
-    167,  '-3m';
-    173,    '6';
-    174,   '-6';
-    176,  '6/m';
-    182,  '622';
-    186,  '6mm';
-    190, '-6m2';
-    194,'6/mmm';
-    199,   '23';
-    206,  'm-3';
-    214,  '432';
-    220, '-43m';
-    230, 'm-3m';};
-  
-  ndx = nnz([list{:,1}] < group);
-  group = list{ndx+1,2};
-  
-elseif isfield(phase,'lauegroup')
-  group = phase.lauegroup;
-end
-
-if isfield(phase,'a') && ...
-    isfield(phase,'b') && ...
-    isfield(phase,'c')
-  axes = [phase.a phase.b phase.c];
-else
-  axes = [1 1 1];
-end
-
-if isfield(phase,'alpha') && ...
-    isfield(phase,'beta') && ...
-    isfield(phase,'gamma')
-  angles = [phase.alpha phase.beta phase.gamma]*degree;
-else
-  angles = [pi/2 pi/2 pi/2];
-end
-
-cs = symmetry(group,axes,angles,'mineral',mineral);
-end
 
