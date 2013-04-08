@@ -151,7 +151,8 @@ grid.Xmax     = Xmax;
 grid.dX       = dX;
 % grid.Voxels   = sz;
 
-dG       = @(i) Xmin(i)-dX(i)/2:dX(i):Xmax(i)+dX(i)/2;
+% dG       = @(i) (Xmin(i)-dX(i)/2):dX(i):(Xmax(i)+dX(i)/2);
+dG       = @(i) linspace(Xmin(i)-dX(i)/2,Xmax(i)+dX(i)/2,sz(i)+1);
 
 % surf coordiantes
 grid.meshSliceByDim = @(dim1,dim2) meshgrid(dG(dim1),dG(dim2),1);
