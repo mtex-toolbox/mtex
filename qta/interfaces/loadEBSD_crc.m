@@ -14,6 +14,7 @@ try
   param = getJobParam(cpr);
   
   if check_option(varargin,'check')
+    ebsd = EBSD;
     return
   end
   
