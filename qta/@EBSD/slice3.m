@@ -62,6 +62,10 @@ set(gcf,'tag','ebsd_slice3');
 set(gcf,'toolbar','figure')
 
 
+if nargout > 0
+  varargout{1} = [api.Slicer.hSlider];
+end
+
 function opts = parseArgs(varargin)
 
 c = varargin(cellfun('isclass',varargin,'char'));
@@ -154,8 +158,7 @@ grid.meshSliceByDim = @(dim1,dim2) meshgrid(dG(dim1),dG(dim2),1);
 % surf indices
 grid.meshVoxelByDim = @(dim1,dim2) meshgrid(1:sz(dim1),1:sz(dim2));
 
-
-iX = @(p,d) interPos(p,dX(d),sz(d));
+iX = @(p,d) interPos(p,Xmax(d),Xmin(d),dX(d),sz(d));
 pX = @(p,d) interLim(p,Xmin(d)-dX(d)./2,Xmax(d)+dX(d)./2);
 
 % dimension  % percentage
@@ -210,18 +213,21 @@ hLabel  = uicontrol('position',[sliderPosX 130 16 16],...
   'style','text');
 
 dim = find(strcmp(lower(sliceType),{'x','y','z'}));
+step = 1/(((api.Grid.Xmax(dim)-api.Grid.Xmin(dim))./api.Grid.dX(dim))+2);
+
+if ~isfinite(slicePos)
+  slicePos = (api.Grid.Xmax(dim)+api.Grid.Xmin(dim))/2;
+end
+
 set(hSlider,...
-  'Min',api.Grid.Xmin(dim),...
-  'Max',api.Grid.Xmax(dim),...
-  'SliderStep',[api.Grid.dX(dim)*.05 .1]);
+  'Min',api.Grid.Xmin(dim)-api.Grid.dX(dim)/2,...
+  'Max',api.Grid.Xmax(dim)+api.Grid.dX(dim)/2,...
+  'Value',slicePos,...
+  'SliderStep',[step .1]);
 
 Slicer = feval(['localAdd' upper(sliceType) 'Slice'],api);
 Slicer.hSlider = hSlider;
 Slicer.hLabel  = hLabel;
-
-if ~isfinite(slicePos)
-  slicePos = (api.Grid.Xmax(dim)-api.Grid.Xmin(dim))/2;
-end
 
 localAddSliceCallback(Slicer,slicePos);
 
@@ -301,13 +307,13 @@ Slicer.hSurf = surf(...
   'Visible','off');
 
 
-function y = interPos(x,dx,sz)
+function y = interPos(x,xmax,xmin,dx,sz)
 
-y = round(1 + x./dx);
+y = floor(1+(x+dx/2-xmin)./(xmax-xmin+dx)*sz);
 
-if y < 1
+if (y < 1)
   y = 1;
-elseif y > sz
+elseif (y > sz)
   y = sz;
 end
 
