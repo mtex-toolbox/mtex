@@ -117,7 +117,7 @@ end
 %% set crystal and specimen symmetry, specimen direction and comments
 if ~any(strcmpi(type,{'tensor','vector3d'}))
   if iscell(data),
-    data = cellfun(@(d,f) set(d,'comment',ls(f)),data,fname,'UniformOutput',false);
+    data = cellfun(@(d,f) set(d,'comment',strtrim(ls(f))),data,fname,'UniformOutput',false);
     data = [data{:}];
   end
   %for i = 1:length(data)
