@@ -132,6 +132,7 @@ set(gui.hDown ,'CallBack',{@localShiftData,+1})
     end
     
     api.setWorkpath(path);
+    drawnow; pause(0.1);
     api.loadDataFiles(type,strcat({path},ensurecell(files)));
     
     localUpdateLists();
