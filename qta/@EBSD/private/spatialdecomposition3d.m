@@ -8,8 +8,11 @@ if ~check_option(varargin,'voronoi') && size(x_D,1) > 1 %  check_option(varargin
   dX = abs(2*unitCell([1 13 17]));
   
   % grid coordinates
-  iX = round(bsxfun(@rdivide,x_D,dX));
-  iX = 1+bsxfun(@minus,iX,min(iX));
+  
+  
+  iX = bsxfun(@minus,x_D,min(x_D));
+  iX = 1+round(bsxfun(@rdivide,iX,dX));
+
   
   sz = max(iX);  %extend, number of voxels in each direction
   
@@ -36,7 +39,7 @@ if ~check_option(varargin,'voronoi') && size(x_D,1) > 1 %  check_option(varargin
   clear el er
   varargout{3} = sz;
   varargout{4} = dX;
-  varargout{5} = [0 0 0];
+  varargout{5} = min(x_D);
   
 elseif ~check_option(varargin,'voronoi')
   
@@ -48,6 +51,7 @@ elseif ~check_option(varargin,'voronoi')
   ind = varargin{1};
   dz = varargin{2};
   lz = double(varargin{3});
+  
   
   %  adding boundary voxels
   [bind{1} bf{1}] = constr(sz,[0 0 0],0,nf);
@@ -70,9 +74,9 @@ elseif ~check_option(varargin,'voronoi')
   % new voxel coordinates
   vind = unique(VD(:));
   [vx,vy,vz] = ind2sub(sz+1,vind);
-  varargout{1}(vind,:) = [double(vx+lz(1)-1)*dz(1)-dz(1)/2,...
-    double(vy+lz(2)-1)*dz(2)-dz(2)/2,...
-    double(vz+lz(3)-1)*dz(3)-dz(3)/2];
+  varargout{1}(vind,:) = [double(vx-1)*dz(1)-dz(1)/2+lz(1),...
+    double(vy-1)*dz(2)-dz(2)/2+lz(2),...
+    double(vz-1)*dz(3)-dz(3)/2+lz(3)];
   clear vx vy vz dx dy dz lx ly lz
   
   % surfels incident to voxel
