@@ -103,7 +103,7 @@ end
 % make legend
 if strcmpi(property,'phase')
   minerals = get(ebsd,'minerals');
-  legend(h,minerals(isPhase));
+  legend(h,minerals(isPhase),'location','NorthEast');
 end
 
 
