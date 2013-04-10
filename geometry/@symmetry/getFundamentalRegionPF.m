@@ -29,7 +29,7 @@ v = [Miller(1,0,0),Miller(1,1,0),Miller(0,1,0),Miller(-1,2,0),Miller(0,0,1)];
 
 switch Laue(cs)
   case '-3m'
-    minRho = -get(Miller(1,0,-1,0,cs),'rho');
+    minRho = -mod(get(Miller(1,0,-1,0,cs),'rho'),120*degree);
   case 'm-3m'
     if check_option(varargin,'antipodal')
       maxRho = pi/4;
@@ -72,7 +72,7 @@ end
 minTheta = get_option(varargin,'minTheta',minTheta);
 maxTheta = get_option(varargin,'maxTheta',maxTheta);
 minRho   = get_option(varargin,'minRho',minRho);
-if check_option(varargin,'minRho'), maxRho = maxRho + minRho;end
+maxRho = maxRho + minRho;
 maxRho   = get_option(varargin,'maxRho',maxRho);
 
 %% restrict using meta options north, south, upper, lower
