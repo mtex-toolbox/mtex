@@ -40,15 +40,20 @@ if check_option(varargin,'section')
   S2 = axis2quat(n,omega)*axis2quat(orth(n),eta)*n;
 elseif check_option(varargin,'3d')
   
-  [x y z] = sphere(90);
+  [x,y,z] = sphere(90);
   S2 = vector3d(x,y,z);
 %   S2 = S2Grid('regular','resolution',120varargin{:});
   
 else
   % define a plotting grid
-  [minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(T.CS,'antipodal',varargin{:});
+  
+  if iseven(T.rank)
+    varargin = [varargin,'antipodal'];
+  end 
+  
+  [minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(T.CS,varargin{:});
   S2 = S2Grid('PLOT','minTheta',minTheta,'maxTheta',maxTheta,...
-    'minRho',minRho,'maxRho',maxRho,'RESTRICT2MINMAX','antipodal',varargin{:});
+    'minRho',minRho,'maxRho',maxRho,'RESTRICT2MINMAX',varargin{:});
   
 end
 % decide what to plot
