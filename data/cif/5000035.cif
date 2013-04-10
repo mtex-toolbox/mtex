@@ -1,0 +1,72 @@
+#------------------------------------------------------------------------------
+#$Date: 2012-02-28 12:14:52 +0000 (Tue, 28 Feb 2012) $
+#$Revision: 35911 $
+#$URL: file:///home/coder/svn-repositories/cod/cif/5/00/00/5000035.cif $
+#------------------------------------------------------------------------------
+#
+# This file is available in the Crystallography Open Database (COD),
+# http://www.crystallography.net/
+#
+# All data on this site have been placed in the public domain by the
+# contributors.
+#
+data_5000035
+_chemical_name_systematic          'Silicon oxide'
+_chemical_name_mineral             'Quartz'
+_chemical_formula_structural       'Si O2'
+_chemical_formula_sum              'O2 Si'
+_publ_section_title
+;
+Crystal structures of quartz and magnesium germanate by profile
+analysis of synchrotron-radiation high-resolution powder data.
+;
+loop_
+_publ_author_name
+  'Will, G'
+  'Bellotto, M'
+  'Parrish, W'
+  'Hart, M'
+_journal_name_full                 'Journal of Applied Crystallography'
+_journal_volume                    21
+_journal_year                      1988
+_journal_page_first                182
+_journal_page_last                 191
+_cell_length_a                     4.91239(4)
+_cell_length_b                     4.91239(4)
+_cell_length_c                     5.40385(7)
+_cell_angle_alpha                  90
+_cell_angle_beta                   90
+_cell_angle_gamma                  120
+_cell_volume                       112.9
+_cell_formula_units_Z              3
+_symmetry_space_group_name_H-M     'P 32 2 1'
+_symmetry_Int_Tables_number        154
+_symmetry_cell_setting             trigonal
+loop_
+_symmetry_equiv_pos_as_xyz
+  'x,y,z'
+  '-y,x-y,2/3+z'
+  'y-x,-x,1/3+z'
+  'y,x,-z'
+  'x-y,-y,1/3-z'
+  '-x,y-x,2/3-z'
+loop_
+_atom_type_symbol
+_atom_type_oxidation_number
+  Si4+   4.000
+  O2-   -2.000
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_symmetry_multiplicity
+_atom_site_Wyckoff_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+_atom_site_occupancy
+_atom_site_attached_hydrogens
+_atom_site_calc_flag
+  Si1   Si4+   3 a 0.4701(4) 0. 0.6667 1.  0 d
+  O1    O2-    6 c 0.4139(7) 0.2674(7) 0.7856(6) 1.  0 d
+_refine_ls_R_factor_all            0.022
+_cod_database_code 5000035
