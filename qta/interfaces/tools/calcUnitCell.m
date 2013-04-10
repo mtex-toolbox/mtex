@@ -108,7 +108,7 @@ enclosingAngle = complex(abs(real(enclosingAngle)),...
   abs(imag(enclosingAngle)));
 
 isRegular = any(sides == [4 6]) && ... % norm(sideLength - mean(sideLength))*dxy < 1e-5 && ...
-  norm(enclosingAngle - mean(enclosingAngle))*dxy < 1e-5;
+  norm(enclosingAngle - mean(enclosingAngle)) < 0.05*degree;
 
 
 %% find a quare subset of about N points
