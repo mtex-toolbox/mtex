@@ -159,7 +159,7 @@ else
   elseif isa(d,'vector3d')
     quiver(ax{:},S2,d,varargin{:});
   else
-    contourf(ax{:},S2,d,varargin{:});
+    plot(ax{:},S2,d,'contourf',varargin{:});
   end
   
 end
