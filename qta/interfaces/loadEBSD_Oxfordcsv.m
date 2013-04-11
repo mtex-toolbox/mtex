@@ -39,7 +39,7 @@ try
   
   % read data via generic interface
   ebsd = loadEBSD_generic(fname,cs,'header',hl+3,'delimiter',',',...
-    'ColumnNames',colNames,'bunge',varargin{:},'keepNaN');
+    'ColumnNames',colNames,'bunge','passive',varargin{:},'keepNaN');
 
 catch
   interfaceError(fname)
