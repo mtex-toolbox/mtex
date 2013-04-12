@@ -94,7 +94,8 @@ if nargin>=3 && isa(varargin{2},'function_handle')
   varargin(2) = []; %remove argument
 
   % for equal colorcoding determine min and max of data
-  if check_option(varargin,'colorRange',[],'equal')
+  contours = get_option(varargin,{'contourf','contour'},[],'double');
+  if isempty(contours) && check_option(varargin,'colorRange',[],'equal')
     minData = nanmin(cellfun(@(x) nanmin(x(:)),data));
     maxData = nanmax(cellfun(@(x) nanmax(x(:)),data));
 
