@@ -16,7 +16,16 @@ minData = nanmin(data(:));
 maxData = nanmax(data(:));
 
 % from options
-if check_option(varargin,'colorRange','double')
+if check_option(varargin,{'contourf','contour'},'double')
+  
+  contours = get_option(varargin,{'contourf','contour'},[],'double');
+  colorRange = [contours(1),contours(end)];
+  
+  if check_option(varargin,{'log','logarithmic'})
+    colorRange = log10(colorRange);
+  end
+  
+elseif check_option(varargin,'colorRange','double')
   
   colorRange = get_option(varargin,'colorrange',[],'double');
 
