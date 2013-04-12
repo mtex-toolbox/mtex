@@ -1,6 +1,18 @@
 %% MTEX Changelog
 %
-%% MTEX 3.4.0 - 01/2013
+%% MTEX 3.4.1 - 04/2013
+%
+% *bugfix release*
+%
+% * much improved graphics export to png and jpg files
+% * improved import wizard
+% * Miller(2,0,0) is now different from Miller(1,0,0)
+% * new EBSD interfaces h5, Bruker, Dream3d
+% * various speedups
+% * fix: startup error http://code.google.com/p/mtex/issues/detail?id=99
+% * fix: Rigaku csv interface
+%
+%% MTEX 3.4.0 - 03/2013
 %
 % *New plotting engine*
 %
@@ -121,7 +133,7 @@
 % *General*
 %
 % * improved instalation / uninstalation
-% * new setting system 
+% * new setting system
 %
 %   setpref('mtex','propertyName','propertyValue')
 %
