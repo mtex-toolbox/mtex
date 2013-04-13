@@ -114,7 +114,7 @@ cs = symmetry('cubic');
 ss = symmetry('triclinic');
 
 % the file name
-fname = [mtexDataPath '/odf/odf.txt'];
+fname = [mtexDataPath '/ODF/odf.txt'];
 
 % the resolution used for the reconstruction of the ODF
 res = 10*degree;
