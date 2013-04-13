@@ -40,8 +40,8 @@ mtexHelpFiles = [mtexFunctionFiles mtexExampleFiles mtexDocFiles];
 
 mtexDocPictures = DocFile(getFiles(fullfile(mtex_path,'help','doc'),'*.png',true));
 
-mtexGeneralFiles = [DocFile(fullfile(mtex_path,'COPYING')) ...
-  DocFile(fullfile(mtex_path,'README')) ...
+mtexGeneralFiles = [DocFile(fullfile(mtex_path,'COPYING.txt')) ...
+  DocFile(fullfile(mtex_path,'README.txt')) ...
   DocFile(fullfile(mtex_path,'VERSION'))];
 
 
@@ -49,7 +49,7 @@ mtexGeneralFiles = [DocFile(fullfile(mtex_path,'COPYING')) ...
 
 
 docPath = fullfile(mtex_path,'help','mtex');
-outputDir = fullfile(mtex_path,'help','html');
+outputDir = fullfile(mtex_path,'help','mtex');
 tempDir = fullfile(mtex_path,'help','tmp');
 
 
@@ -79,7 +79,7 @@ makeFunctionsReference(mtexHelpFiles,'FunctionReference','outputDir',outputDir);
 %% make help toc
 
 makeHelpToc(mtexHelpFiles,'Documentation','FunctionMainFile','FunctionReference','outputDir',outputDir);
-copyfile(fullfile(outputDir,'helptoc.xml'), docPath);
+%copyfile(fullfile(outputDir,'helptoc.xml'), docPath);
 
 %% Publish Function Reference
 
@@ -134,12 +134,12 @@ deadlink(mtexDocFiles,outputDir);
 % (also F1 Help in recent matlab)
 
 builddocsearchdb(outputDir);
-copyfile(fullfile(outputDir,'helpsearch'),fullfile(docPath,'helpsearch'));
+%copyfile(fullfile(outputDir,'helpsearch'),fullfile(docPath,'helpsearch'));
 
 
 %% Build the help.jar
 
-system(['jar -cf ' fullfile(docPath,'help.jar') ' -C ' outputDir ' .']);
+%system(['jar -cf ' fullfile(docPath,'help.jar') ' -C ' outputDir ' .']);
 
 %% set back mtex options
 
