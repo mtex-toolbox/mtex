@@ -79,7 +79,7 @@ export(model_odf,fname,S3G,'Bunge','generic')
 % This format can be imported by MTEX without loss.
 
 % the filename
-fname = [mtexDataPath '/odf/odf.mtex'];
+fname = [mtexDataPath '/ODF/odf.mtex'];
 
 % export the ODF
 export(model_odf,fname,'Bunge','MTEX')

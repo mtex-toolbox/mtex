@@ -39,13 +39,6 @@ plot(pf,'MarkerSize',5)
 plot(pf,'contourf')
 
 %%
-% Sometimes, it is desirable to draw all regions below or equal to zero
-% white. This can be done using the command <setcolorrange.html setcolorrange>.
-
-setcolorrange('zero2white');
-
-
-%%
 % When drawing a colorbar next to the pole figure plots it is necessary
 % to have the same color coding in all plots. This can be done as following
 
