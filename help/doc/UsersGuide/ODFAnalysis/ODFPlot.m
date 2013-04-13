@@ -62,7 +62,10 @@ plotipdf(odf,[xvector,zvector],'antipodal','complete')
 % value. To this end there is the option *minRho*.
 
 plotx2north
-plotipdf(odf,[xvector,zvector],'antipodal','minRho',-90*degree)
+plotipdf(odf,[xvector,zvector],'antipodal')
+annotate(Miller(1,0,0),'labeled')
+figure
+plotipdf(odf,[xvector,zvector],'antipodal','minRho',-60*degree)
 annotate(Miller(1,0,0),'labeled')
 plotx2east
 
