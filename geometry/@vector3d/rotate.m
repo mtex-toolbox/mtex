@@ -20,8 +20,16 @@ v.x = (a.^2+b.^2-c.^2-d.^2)*x + 2*( (a.*c+b.*d)*z + (b.*c-a.*d)*y );
 v.y = (a.^2-b.^2+c.^2-d.^2)*y + 2*( (a.*d+b.*c)*x + (c.*d-a.*b)*z );
 v.z = (a.^2-b.^2-c.^2+d.^2)*z + 2*( (a.*b+c.*d)*y + (b.*d-a.*c)*x );
 
-% [v.x,v.y,v.z] = quaternion_mtimes(a(:),b(:),c(:),d(:),x(:).',y(:).',z(:).');
+% apply inversion if needed
+if isa(q,'rotation')
+  ind = isImpropper(q);
+  v.x(ind,:) = -v.x(ind,:);
+  v.y(ind,:) = -v.y(ind,:);
+  v.z(ind,:) = -v.z(ind,:);
+end
 
+% normal result is numel(q) x numel(v)
+% special cases are when numel(q) == 1 or numel(v)==1
 if numel(v) == 1
   v = reshape(v,size(q));
 elseif numel(q) == 1
