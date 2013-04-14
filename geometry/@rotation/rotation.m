@@ -24,14 +24,17 @@ function rot = rotation(varargin)
 %% See also
 % quaternion_index orientation_index
 
-%% empty constructor
+rot.inversion = [];
+
+% empty constructor
 if nargin == 0
 
   quat = quaternion; % empty quaternion;
   superiorto('quaternion','symmetry');
-  rot = class(struct([]),'rotation',quat);
+  rot = class(rot,'rotation',quat);
   return
 end
+
 
 switch class(varargin{1})
 
@@ -41,7 +44,7 @@ switch class(varargin{1})
 
   case 'quaternion'
     quat = varargin{1};
-
+    
   case 'char'
 
     switch lower(varargin{1})
@@ -68,6 +71,16 @@ switch class(varargin{1})
 
       case 'fibre'
         quat = fibre2quat(varargin{2:end});
+
+      case 'inversion'
+        
+        quat = idquaternion;
+        rot.inversion = -1;
+        
+      case {'mirroring','reflection'}
+        
+        quat = axis2quat(varargin{2},pi);
+        rot.inversion = -ones(size(quat));
         
       case 'random'
         quat = randq(varargin{2:end});
@@ -81,4 +94,4 @@ switch class(varargin{1})
 end
 
 superiorto('quaternion','symmetry');
-rot = class(struct([]),'rotation',quat);
+rot = class(rot,'rotation',quat);
