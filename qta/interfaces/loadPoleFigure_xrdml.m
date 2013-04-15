@@ -104,20 +104,25 @@ function r = localConvertScanToSpecimenDirection(data)
 
 n = numel(data.intensities);
 
+if isfield(data,'position_Psi')
+  x = 'Psi';
+else
+  x = 'Chi';
+end
+
 theta2 = linspace(data.position_2Theta(1),data.position_2Theta(end),n);
 omega  = linspace(data.position_Omega(1),data.position_Omega(end),n);
-psi    = linspace(data.position_Psi(1),data.position_Psi(end),n);
+psi    = linspace(data.(['position_' x])(1),data.(['position_' x])(end),n);
 phi    = linspace(data.position_Phi(1),data.position_Phi(end),n);
 
 if strcmpi(data.position_2Theta_unit,'deg'),
   theta2= theta2*degree; end
 if strcmpi(data.position_Omega_unit,'deg'),
   omega= omega*degree; end
-if strcmpi(data.position_Psi_unit,'deg'),
+if strcmpi(data.(['position_' x '_unit']),'deg'),
   psi = psi*degree; end
 if strcmpi(data.position_Phi_unit,'deg'),
   phi= phi*degree; end
-
 
 q = axis2quat(zvector,phi) .* ...
   axis2quat(yvector,psi)   .* ...
