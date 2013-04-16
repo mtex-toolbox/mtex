@@ -1,31 +1,20 @@
 function r = mtimes(a,b)
-% rotation times vector3d and rotation times rotation
+% r = a * b
 
-if isnumeric(a)
-  
-  if a == -1
-    
-    r = -b;
-    
-  elseif a ~= 1
-    
-    error([class(a) ' * ' class(b) ' is not defined!']);
-    
-  end
-      
-elseif isnumeric(b)
-  
-  if b == -1
-    
-    r = -a;
-    
-  elseif b ~= 1
-    
-    error([class(a) ' * ' class(b) ' is not defined!']);
-    
-  end
-  
-elseif isa(b,'vector3d')
+% multiplication with -1 -> inversion
+if isnumeric(a) && all(abs(a(:))==1)
+  tmp = rotation(idquaternion(size(a)));
+  tmp(a==-1) = -tmp(a==-1);
+  a = tmp;
+end  
+
+if isnumeric(b) && all(abs(b(:))==1)
+  tmp = rotation(idquaternion(size(b)));
+  tmp(b==-1) = -tmp(b==-1);
+  b = tmp;
+end  
+
+if isa(b,'vector3d')
   
   % apply rotation
   r = rotate(b,a);
