@@ -1,48 +1,41 @@
 function r = mtimes(a,b)
 % rotation times vector3d and rotation times rotation
 
-if isa(a,'rotation')
+if isnumeric(a)
+  
+  if a == -1
+    
+    r = -b;
+    
+  elseif a ~= 1
+    
+    error([class(a) ' * ' class(b) ' is not defined!']);
+    
+  end
+      
+elseif isnumeric(b)
+  
+  if b == -1
+    
+    r = -a;
+    
+  elseif b ~= 1
+    
+    error([class(a) ' * ' class(b) ' is not defined!']);
+    
+  end
+  
+elseif isa(b,'vector3d')
+  
+  % apply rotation
+  r = rotate(b,a);
+    
+elseif isa(b,'quaternion')
   
   a = rotation(a);
-  
-  if isa(b,'rotation')
+  b = rotation(b);
     
-    r = a;
-    r.quaternion = a.quaternion * b.quaternion;
-    if ~(isempty(a.inversion) && isempty(b.inversion))
-      
-      if isempty(a.inversion), a.inversion = ones(size(a.quaternion)); end
-      if isempty(b.inversion), b.inversion = ones(size(b.quaternion)); end
-      
-      r.inversion = a.inversion(:) * b.inversion(:).';
-      
-    end
-        
-  elseif isa(b,'quaternion')
+  r = mtimes@quaternion(a,b);
+  r.i = bsxfun(@xor,a.i(:),b.i(:).');
     
-    r = a;
-    r.quaternion = a.quaternion * b;
-    
-  elseif isa(b,'vector3d')
-    
-    r = rotate(b,a);
-        
-  else
-    
-    error('Type mismatch!')
-    
-  end
-  
-else
-  
-  if isa(a,'quaternion')
-    
-    r = rotation(b);
-    r.quaternion = a * b.quaternion;
-            
-  else
-    
-    error('Type mismatch!')
-    
-  end
 end

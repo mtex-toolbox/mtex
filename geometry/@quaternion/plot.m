@@ -29,7 +29,7 @@ if ~(ishold(gca) && strcmp(get(gca,'tag'),'ebsd_raster')) && ...
 
     for i = 1:numel(v)
 
-      plot(S2Grid(q.*v(i)),varargin{:});
+      plot(q.*v(i),varargin{:});
       hold(gca,'all')
     end
 
