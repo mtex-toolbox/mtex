@@ -3,11 +3,13 @@ function r = times(a,b)
 
 if isnumeric(a)
   
-  if a == -1
+  r = b;
+  
+  if all(abs(a(:))==1)
+  
+    r.i = xor(r.i,a==-1); 
     
-    r = -b;
-    
-  elseif a ~= 1
+  else
     
     error([class(a) ' * ' class(b) ' is not defined!']);
     
@@ -15,11 +17,13 @@ if isnumeric(a)
       
 elseif isnumeric(b)
   
-  if b == -1
+  r = a;
+  
+  if all(abs(b(:))==1)
+  
+    r.i = xor(r.i,b==-1);
     
-    r = -a;
-    
-  elseif b ~= 1
+  else
     
     error([class(a) ' * ' class(b) ' is not defined!']);
     

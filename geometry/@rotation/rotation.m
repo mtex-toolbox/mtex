@@ -103,7 +103,7 @@ classdef rotation < quaternion
       end
    
       [rot.a,rot.b,rot.c,rot.d] = double(quat);
-      if isempty(rot.i), rot.i = false(size(quat.a));end
+      if isempty(rot.i), rot.i = false(size(quat));end
    
     end
   end

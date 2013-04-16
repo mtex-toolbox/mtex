@@ -155,7 +155,9 @@ classdef symmetry < rotation
       s.color = get_option(varargin,'color','');
       
       % compute symmetry operations
-      [s.a, s.b, s.c, s.d] = double(calcQuat(s.laue,s.axis,sym.Inversion));
+      r = calcQuat(s.laue,s.axis,sym.Inversion);
+      [s.a, s.b, s.c, s.d] = double(r);
+      s.i = isImpropper(r);
             
     end
   end
