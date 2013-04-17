@@ -22,7 +22,7 @@ v.z = (a.^2-b.^2-c.^2+d.^2)*z + 2*( (a.*b+c.*d)*y + (b.*d-a.*c)*x );
 
 % apply inversion if needed
 if isa(q,'rotation')
-  ind = isImpropper(q);
+  ind = isImproper(q);
   v.x(ind,:) = -v.x(ind,:);
   v.y(ind,:) = -v.y(ind,:);
   v.z(ind,:) = -v.z(ind,:);
