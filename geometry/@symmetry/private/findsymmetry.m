@@ -3,7 +3,7 @@ function sym = findsymmetry(name)
 
 % import list of point groups
 sl = SymList;
-names = {sl.Schoen;sl.Inter;sl.Rot;sl.System};
+names = {sl.Schoen;sl.Inter;sl.System};
 
 % search for point group
 match = any(strcmp(name,names.'),2);

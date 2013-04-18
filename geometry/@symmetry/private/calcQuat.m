@@ -9,7 +9,7 @@ maxis = axis(1);
 % compute rotations
 switch Laue
 case '-1'     
-    rot = {quaternion(1,0,0,0)};
+    rot = {rotation('Euler',0,0,0)};
 case '2/m'    
     rot = {Axis(axis(2),2)};
 case 'mmm'    
