@@ -20,7 +20,7 @@ function varargout = plot(v,varargin)
 
 
 %% extract plot type
-plotTypes = {'contour','contourf','smooth','scatter','text','quiver','line','plane','circle','surf','pcolor'};
+plotTypes = {'contour','contourf','smooth','scatter','text','quiver','line','plane','circle','surf','pcolor','custom'};
 plotType = extract_option(varargin,plotTypes);
 if isempty_cell(plotType)
   plotType = 'scatter';
@@ -86,6 +86,10 @@ switch lower(plotType)
   case 'text'
     
     [varargout{1:nargout}] = text(ax{:},v,varargin{:});
+    
+  case 'custom'
+      
+    [varargout{1:nargout}] = plotCustom(ax{:},v,varargin{:});
     
 end
 
