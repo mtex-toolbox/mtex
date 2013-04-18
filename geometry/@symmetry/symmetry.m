@@ -59,9 +59,9 @@ classdef symmetry < rotation
   properties
 
     specimenSymmetry = false;
-    name = 'triclinic';
-    laue = '1';
-    axis =  [xvector,yvector,zvector];
+    pointGroup = 'triclinic';
+    laueGroup  = '1';
+    axis = [xvector,yvector,zvector];
     mineral = '';
     color = '';
     
@@ -148,16 +148,16 @@ classdef symmetry < rotation
       
       
       % set up symmetry
-      s.name = pGroup;
-      s.laue = sym.Laue;
+      s.pointGroup = pGroup;
+      s.laueGroup = sym.Laue;
       
       s.mineral = get_option(varargin,'mineral','');
       s.color = get_option(varargin,'color','');
       
       % compute symmetry operations
-      r = calcQuat(s.laue,s.axis,sym.Inversion);
+      r = calcQuat(s.laueGroup,s.axis,sym.Inversion);
       [s.a, s.b, s.c, s.d] = double(r);
-      s.i = isImpropper(r);
+      s.i = isImproper(r);
             
     end
   end
