@@ -2,13 +2,15 @@ function r = mtimes(a,b)
 % r = a * b
 
 % multiplication with -1 -> inversion
-if isnumeric(a) && all(abs(a(:))==1)
+if isnumeric(a) 
+  assert(all(abs(a(:))==1),'Rotations can be multiplied only by 1 or -1');
   tmp = rotation(idquaternion(size(a)));
   tmp(a==-1) = -tmp(a==-1);
   a = tmp;
 end  
 
-if isnumeric(b) && all(abs(b(:))==1)
+if isnumeric(b)
+  assert(all(abs(b(:))==1),'Rotations can be multiplied only by 1 or -1');
   tmp = rotation(idquaternion(size(b)));
   tmp(b==-1) = -tmp(b==-1);
   b = tmp;

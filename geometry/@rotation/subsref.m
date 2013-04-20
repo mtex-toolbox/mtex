@@ -10,16 +10,22 @@ if isa(s,'double') || isa(s,'logical')
   r.i = r.i(s);
   varargout{1} = r;
   
-elseif isstruct(s)
+else
   
   switch s(1).type
     case '()'      
-      r.a = subsref(r.a,s);
-      r.b = subsref(r.b,s);
-      r.c = subsref(r.c,s);
-      r.d = subsref(r.d,s);
-      r.i = subsref(r.i,s);
-      varargout{1} = r;
+      r.a = subsref(r.a,s(1));
+      r.b = subsref(r.b,s(1));
+      r.c = subsref(r.c,s(1));
+      r.d = subsref(r.d,s(1));
+      r.i = subsref(r.i,s(1));
+      
+      if numel(s)>1
+        [varargout{1:nargout}] = builtin('subsref',r,s(2:end));
+      else
+        varargout{1} = r;
+      end
+      
     case '.'
       [varargout{1:nargout}] = builtin('subsref',r,s);
   end

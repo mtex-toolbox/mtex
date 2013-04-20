@@ -1,4 +1,5 @@
 function o = ctranspose(o)
+% inverse of a orientation
 
-o.rotation = ctranspose(o.rotation);
+o = ctranspose@rotation(o);
 [o.CS,o.SS] =  deal(o.SS,o.CS);

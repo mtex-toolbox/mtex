@@ -10,25 +10,29 @@ if isempty(r)
   r.i = [];
 end
 
-if isa(b,'quaternion')
+switch s(1).type
   
-  b = rotation(b);
-  switch s.type
-    case '()'
-      r.a = subsasgn(r.a,s,b.a);
-      r.b = subsasgn(r.b,s,b.b);
-      r.c = subsasgn(r.c,s,b.c);
-      r.d = subsasgn(r.d,s,b.d);
-      r.i = subsasgn(r.i,s,b.i);
-    otherwise
-      error('Wrong indexing. Only ()-indexing is allowed for quaternion!');
-  end
-elseif isempty(b)
-  r.a = subsasgn(r.a,s,[]);
-  r.b = subsasgn(r.b,s,[]);
-  r.c = subsasgn(r.c,s,[]);
-  r.d = subsasgn(r.d,s,[]);
-  r.i = subsasgn(r.i,s,[]);
-else
-  error('Value must be of type quaternion!');
+  case '()'
+      
+    if numel(s)>1, b =  builtin('subsasgn',subsref(r,s(1)),s(2:end),b); end
+      
+    if isempty(b)
+      r.a = subsasgn(r.a,s(1),[]);
+      r.b = subsasgn(r.b,s(1),[]);
+      r.c = subsasgn(r.c,s(1),[]);
+      r.d = subsasgn(r.d,s(1),[]);
+      r.i = subsasgn(r.i,s(1),[]);
+    else
+      r.a = subsasgn(r.a,s(1),b.a);
+      r.b = subsasgn(r.b,s(1),b.b);
+      r.c = subsasgn(r.c,s(1),b.c);
+      r.d = subsasgn(r.d,s(1),b.d);
+      r.i = subsasgn(r.i,s(1),b.d);
+    end
+  otherwise
+      
+    r =  builtin('subsasgn',r,s,b);
+      
+end
+
 end

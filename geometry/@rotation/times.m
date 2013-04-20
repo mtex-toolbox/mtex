@@ -1,33 +1,19 @@
 function r = times(a,b)
 % r = a .* b
 
-if isnumeric(a)
+if isnumeric(a) 
+
+  % multiplication with -1 -> inversion
+  assert(all(abs(a(:))==1),'Rotations can be multiplied only by 1 or -1');
+  r = b; 
+  r.i = xor(r.i,a==-1);
   
-  r = b;
-  
-  if all(abs(a(:))==1)
-  
-    r.i = xor(r.i,a==-1); 
-    
-  else
-    
-    error([class(a) ' * ' class(b) ' is not defined!']);
-    
-  end
-      
 elseif isnumeric(b)
   
+  % multiplication with -1 -> inversion
+  assert(all(abs(b(:))==1),'Rotations can be multiplied only by 1 or -1');
   r = a;
-  
-  if all(abs(b(:))==1)
-  
-    r.i = xor(r.i,b==-1);
-    
-  else
-    
-    error([class(a) ' * ' class(b) ' is not defined!']);
-    
-  end
+  r.i = xor(r.i,b==-1);
   
 elseif isa(a,'rotation') && isa(b,'vector3d')
   
