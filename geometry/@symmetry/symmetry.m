@@ -58,9 +58,9 @@ classdef symmetry < rotation
   
   properties
 
-    specimenSymmetry = false;
+    isCS = false; % is crystal symmetry
     pointGroup = 'triclinic';
-    laueGroup  = '1';
+    laueGroup  = '-1';
     axis = [xvector,yvector,zvector];
     mineral = '';
     color = '';
@@ -158,7 +158,16 @@ classdef symmetry < rotation
       r = calcQuat(s.laueGroup,s.axis,sym.Inversion);
       [s.a, s.b, s.c, s.d] = double(r);
       s.i = isImproper(r);
-            
+      
+      % decide crystal / specimen symmetry
+      if check_option(varargin,'specimen')
+        s.isCS = false;
+      elseif check_option(varargin,'crystal')
+        s.isCS = true;
+      else
+        s.isCS = ~(numel(s.a)<=4 && all(isnull(norm(s.axis-[xvector,yvector,zvector]))));
+      end
+      
     end
   end
 end
