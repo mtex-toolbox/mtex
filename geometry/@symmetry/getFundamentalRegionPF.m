@@ -90,13 +90,13 @@ if check_option(varargin,'north') && isnumeric(maxTheta) && maxTheta > pi/2
   maxTheta = pi/2;
 end
 
-if check_option(varargin,'south') && isnumeric(maxTheta) && ...
-    maxTheta > pi/2+0.001
+if check_option(varargin,'south') && isnumeric(maxTheta) && maxTheta > pi/2+0.001
+  
   minTheta = pi/2;
-end
 
-if check_option(varargin,'restrict2Hemisphere') ...
+elseif check_option(varargin,'restrict2Hemisphere') ...
     && isnumeric(maxTheta) && maxTheta>pi/2
+  
   maxTheta = pi/2;
 
 end
