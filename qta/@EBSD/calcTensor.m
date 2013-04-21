@@ -11,7 +11,10 @@ function [TVoigt, TReuss, THill] = calcTensor(ebsd,varargin)
 %    on a given phase
 %
 % THill = calcTensor(ebsd,T_phase1,T_phase2,'Hill') - returns the specified
-%    @tensor, i.e. 'Hill' in case
+%    @tensor, i.e. 'Hill' in this case
+%
+% TVoigt = calcTensor(ebsd,T_phase1,T_phase2,'geometricMean') - use
+% geometric mean instead of arithmetric one
 %
 %% Input
 %  ebsd     - @EBSD
@@ -35,9 +38,9 @@ varargin(Tind) = [];
 
 % initialize avarage tensors
 TVoigt = set(T{1},'M',zeros(size(T{1})));
-TVoigt = set(TVoigt,'CS',symmetry,'noTrafo');
+TVoigt = set(TVoigt,'CS',symmetry);
 TReuss = TVoigt;
-
+TGeo = TVoigt;
 
 % get phases and populate tensors
 phases = unique(ebsd.phase)';
@@ -61,17 +64,34 @@ for p = phases
   ind = ebsd.phase == p;
   ori = get(subsref(ebsd,ind),'orientations');
   weight = get(subsref(ebsd,ind),'weight') * nnz(ind) ./ numel(ebsd);
+  
+  rotT = rotate(T{p},ori);
+  rotInvT = rotate(inv(T{p}),ori);
+  
+  % for the geometric mean take the matrix logarithm before summing up
+  if check_option(varargin,'geometricMean')
+    
+    rotT = logm(rotT);
+    rotInvT = logm(rotInvT);
+    
+  end
+        
+  % take the mean of the rotated tensors times the weight
+  TVoigt = sum(weight .* rotT) + TVoigt;
 
   % take the mean of the rotated tensors times the weight
-  TVoigt = sum(weight .* rotate(T{p},ori)) + TVoigt;
-
-  % take the mean of the rotated tensors times the weight
-  TReuss = sum(weight .* rotate(inv(T{p}),ori)) + TReuss;
-
+  TReuss = sum(weight .* rotInvT) + TReuss;
+  
 end
 
 % for Reuss tensor invert back
 TReuss = inv(TReuss);
+
+% for the geometric mean take matrix exponential to go back
+if check_option(varargin,'geometricMean')
+  TVoigt = expm(TVoigt);
+  TReuss = expm(TReuss);
+end
 
 % Hill is simply the mean of Voigt and Reuss averages
 THill = 0.5*(TReuss + TVoigt);
