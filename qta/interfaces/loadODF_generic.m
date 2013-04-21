@@ -72,13 +72,12 @@ loader = loadHelper(d,varargin{:});
 
 q      = loader.getRotations();
 
+% get weight
 weight = loader.getColumnData('weight');
 
-if isempty(weight)
-  error('You should specify the weight column!');
-end
+% if no weight given - set to one
+if isempty(weight), weight = ones(size(q)); end
    
-
 % return varargin as options
 options = varargin;
 if ischeck, odf = uniformODF(symmetry,symmetry);return;end
