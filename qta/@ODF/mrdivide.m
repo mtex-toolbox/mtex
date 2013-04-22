@@ -11,6 +11,5 @@ argin_check(odf,'ODF');
 argin_check(s,'double');
 
 for i = 1:length(odf)
-  odf(i).c_hat = odf(i).c_hat ./ s;
-  odf(i).c = odf(i).c ./ s;
+  odf(i).weight = odf(i).weight ./ s;
 end

@@ -144,7 +144,7 @@ ss = symmetry('-1');
 mod = orientation('Euler',45*degree,0*degree,0*degree);
 
 % the corresponding Bingham ODF
-odf = BinghamODF(20,mod * quaternion(eye(4)),cs,ss)
+odf = BinghamODF(20,mod,cs,ss)
 
 plot(odf,'sections',6,'silent','contourf','sigma')
 

@@ -3,3 +3,4 @@ function d = deg2dim(l)
 
 d = l*(2*l-1)*(2*l+1)/3;
 
+end

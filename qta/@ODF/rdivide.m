@@ -12,7 +12,6 @@ argin_check(s,'double');
 
 if length(s) == 1, s = repmat(s,size(odf));end
 
-for i = 1:length(odf)
-  odf(i).c_hat = odf(i).c_hat ./ s(i);
-  odf(i).c = odf(i).c ./ s(i);
+for i = 1:numel(odf)
+  odf(i).weight = odf(i).weight ./ s(i);
 end

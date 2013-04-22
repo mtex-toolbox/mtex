@@ -1,4 +1,4 @@
-function [I odf] = transinformation(odf1,odf2,varargin)
+function [I, odf] = transinformation(odf1,odf2,varargin)
 % information dependence of two odfs
 %
 % defined as:
