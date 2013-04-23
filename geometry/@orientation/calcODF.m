@@ -112,7 +112,7 @@ vdisp([' kernel: ' char(k)],varargin{:});
 
 %% construct exact kernel density estimation estimation
 
-odf = ODF(ori,weight,k,CS,SS);
+odf = unimodalODF(ori,k,CS,SS,'weights',weight);
 
 max_coef = 32;
 gridlen = numel(ori)*length(CS)*length(SS);
@@ -202,7 +202,7 @@ d = d(del);
 
 %% generate ODF
 
-odf = ODF(S3G,d,k,CS,SS);
+odf = unimodalODF(S3G,k,CS,SS,'weights',d);
 
 %% check wether kernel is to wide
 if check_option(varargin,'small_kernel') && hw > 2*get(S3G,'resolution')
@@ -211,5 +211,5 @@ if check_option(varargin,'small_kernel') && hw > 2*get(S3G,'resolution')
   k = kernel('de la Vallee Poussin','halfwidth',hw);
   vdisp([' recalculate ODF for kernel: ',char(k)],varargin{:});
   d = eval(odf,S3G); %#ok<EVLC>
-  odf = ODF(S3G,d./sum(d),k,CS,SS);
+  odf = unimodalODF(S3G,k,CS,SS,'weights',d./sum(d));
 end

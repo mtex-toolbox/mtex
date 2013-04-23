@@ -167,7 +167,7 @@ comment = get_option(varargin,'comment',...
 vdisp(['required time: ',int2str(toc),'s'],varargin{:});
 
 % return ODF
-odf = 1/sum(c)*ODF(S3G,c,psi,CS,SS,'comment',comment);
+odf = 1/sum(c)*unimodalODF(S3G,psi,CS,SS,'weights',c,'comment',comment);
 
 if check_option(varargin,'noGhostCorrection'), return;end
 
@@ -208,7 +208,7 @@ c0 = (1-phon)/numel(S3G)*ones(numel(S3G),1);
 
 % return ODF
 odf(1) = phon * uniformODF(CS,SS,'comment',comment);
-odf(1+(phon>0)) = (1-phon)/sum(c)*ODF(S3G,c,psi,CS,SS,'comment',comment);
+odf(1+(phon>0)) = (1-phon)/sum(c)*ODF(S3G,psi,CS,SS,'weights',c,'comment',comment);
 
 end
 

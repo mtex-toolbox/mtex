@@ -13,9 +13,6 @@ function plotFourier(odf,varargin)
 
 L = get_option(varargin,'bandwidth',bandwidth(odf));
 
-if L > bandwidth(odf), odf = calcFourier(odf,L); end
-if L == 0, L = 32;end
-
 odf_hat = Fourier(odf,'bandwidth',L,'l2-normalization');
 
 for l = 0:L
