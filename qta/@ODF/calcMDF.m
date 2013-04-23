@@ -87,7 +87,7 @@ if check_option(varargin,'kernelMethod')
 
   end
 
-  mdf = ODF(center,c,psi,get(odf2,'CS'),get(odf1,'CS'));
+  mdf = unimodalODF(center,psi,get(odf2,'CS'),get(odf1,'CS'),'weights',c);
 
   %% Fourier method
 else

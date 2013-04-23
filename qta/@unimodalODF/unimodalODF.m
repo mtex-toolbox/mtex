@@ -12,6 +12,7 @@ classdef unimodalODF < ODF
 %   odf = unimodalODF(mod,'halfwidth',15*degree) % specify halfwidth
 %   odf = unimodalODF(mod,CS,SS)  % specify crystal and specimen symmetry
 %   odf = unimodalODF(mod,kernel) % specify @kernel shape 
+%   odf = unimodalODF(mod,'weights',weights) % specify weights for each component
 %
 %% Input
 %  mod    - @quaternion modal orientation
