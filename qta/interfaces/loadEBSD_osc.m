@@ -12,19 +12,28 @@ try
   end
   
   [data,Xstep,Ystep] = oscData( fname );
+  unitCell = {};  
   
-  loader = loadHelper(data,...
-    'ColumnNames',{'phi1','Phi','phi2','x','y','ImageQuality','ConfidenceIndex','Phase','SemSignal','Fit'},...
-    'Radians');
-  
-  % grid info should contain the grid type .. todo
-  unitCell = [ Xstep/2 -Ystep/2;  Xstep/2  Ystep/2;  -Xstep/2  Ystep/2;  -Xstep/2 -Ystep/2];
+  % there seems to exist different formats
+  if numel(unique(data(:,8)))<12
+    loader = loadHelper(data,...
+      'ColumnNames',{'phi1','Phi','phi2','x','y','ImageQuality','ConfidenceIndex','Phase','SemSignal','Fit'},...
+      'Radians');
+        
+    % grid info should contain the grid type .. todo
+    % unitCell = {'unitCell',[ Xstep/2 -Ystep/2;  Xstep/2  Ystep/2;  -Xstep/2  Ystep/2;  -Xstep/2 -Ystep/2]};
+  else
+    % here we are not sure about correct naming of the columns
+    loader = loadHelper(data,...
+      'ColumnNames',{'Fit','phi1','Phi','phi2','x','y','ImageQuality','ConfidenceIndex','Phase','SemSignal'},...
+      'Radians');
+  end
   
   ebsd = EBSD( loader.getRotations(),...
     'cs',      CS,...
     'phase',   loader.getColumnData('phase'),...
     'options', loader.getOptions('ignoreColumns','phase'),...
-    'unitCell',unitCell);
+    unitCell{:});
   
 catch
   interfaceError(fname)
@@ -330,8 +339,10 @@ for k=1:numel(phaseStart)-1
       laueGroup = {'2'};
       options = {'X||a'};
     otherwise
-      if lattice(6) ~= 90
+      if any(round(axAngle(3)/degree) ~= 90)
         options = {'X||a'};
+      else
+        options = {};
       end
   end
   
