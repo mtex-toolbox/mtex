@@ -46,7 +46,8 @@ tic
 
 vdisp('------ MTEX -- PDF to ODF inversion ------------------',varargin{:})
 
-%% ------------------- get input--------------------------------------------
+% ------------------- get input--------------------------------------------
+
 CS = pf(1).CS; SS = pf(1).SS;
 
 % generate discretization of orientation space
@@ -70,8 +71,7 @@ c0 = get_option(varargin,'C0',...
 	1/sum(numel(S3G))*ones(sum(numel(S3G)),1));
 
 
-%% ----------------- prepare for calling calcODF.c -------------------------
-%% -------------------------------------------------------------------------
+% ----------------- prepare for calling calcODF.c -------------------------
 
 % calculate gh
 gh = symmetrise(S3G).' * get(pf,'h'); % S3G x SS x CS x h
@@ -104,7 +104,7 @@ r = [reshape(rrho,1,[]);reshape(rtheta,1,[])]/2/pi;
 clear rtheta;clear rrho;
 
 
-%% ---------- normalize very different polefigures --------------------
+% ---------- normalize very different polefigures --------------------
 mm = max(max(pf));
 
 for i = 1:numel(pf)
@@ -112,8 +112,6 @@ for i = 1:numel(pf)
   if mm > 5*max(pf(i)), pf(i) = pf(i) * mm/5/max(pf(i));end
 
 end
-
-%% ----------------------- WHEIGHTS ----------------------------------
 
 % compute quadrature weights
 w = [];
@@ -134,7 +132,7 @@ else
   RM = [];
 end
 
-%% --------------------- ODF testing ----------------------------------
+% --------------------- ODF testing ----------------------------------
 orig = get_option(varargin,'ODF_TEST',[]);
 test_S3G = get_option(varargin,'TEST_GRID',S3G);
 if isempty(orig)
@@ -149,18 +147,13 @@ else
   evaldata = eval(orig,test_S3G,'EXACT'); %#ok<*GTARG>
 end
 
-%% --------------------- CALCULATE FLAGS ---------------------------------
+% --------------------- CALCULATE FLAGS ---------------------------------
 CW_flags = {{'WEIGHTS',0},{'REGULARISATION',1},...
   {'SAVE_ODF',5},{'RP_VALUES',6},{'FORCE_ITER_MAX',7},{'ODF_TEST',8}};
 flags = calc_flags(varargin,CW_flags);
 
-%% -------------------- call c-routine -----------------------------------
-% -----------------------------------------------------------------------
-
+% -------------------- call c-routine -----------------------------------
 vdisp('Call c-routine',varargin{:});
-
-comment = get_option(varargin,'comment',...
-  ['ODF recalculated from ',get(pf,'comment')]);
 
 [c,alpha] = call_extern('pf2odf',...
   'INTERN',lP,lh,refl,iter_max,iter_min,flags,...
@@ -169,12 +162,11 @@ comment = get_option(varargin,'comment',...
 vdisp(['required time: ',int2str(toc),'s'],varargin{:});
 
 % return ODF
-odf = 1/sum(c)*unimodalODF(S3G,psi,CS,SS,'weights',c,'comment',comment);
+odf = 1/sum(c)*unimodalODF(S3G,psi,CS,SS,'weights',c);
 
 if check_option(varargin,'noGhostCorrection'), return;end
 
 % ------------------ ghost correction -----------------------------------
-% -----------------------------------------------------------------------
 
 % determine phon
 phon = 1;
@@ -209,8 +201,8 @@ c0 = (1-phon)/numel(S3G)*ones(numel(S3G),1);
   char(extract_option(varargin,'silent')));
 
 % return ODF
-odf(1) = phon * uniformODF(CS,SS,'comment',comment);
-odf(1+(phon>0)) = (1-phon)/sum(c)*ODF(S3G,psi,CS,SS,'weights',c,'comment',comment);
+odf(1) = phon * uniformODF(CS,SS);
+odf(1+(phon>0)) = (1-phon)/sum(c)*unimodalODF(S3G,psi,CS,SS,'weights',c);
 
 end
 

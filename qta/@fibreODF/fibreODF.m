@@ -75,6 +75,7 @@ classdef fibreODF < ODF
     Z = doPDF(odf,h,r,varargin)
     odf = doRotate(odf,q,varargin)
     f_hat = doFourier(odf,L,varargin)
+    ori = discreteSample(odf,npoints,varargin)
     doDisplay(odf)
   end    
   
