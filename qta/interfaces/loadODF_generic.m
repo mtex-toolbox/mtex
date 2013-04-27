@@ -108,7 +108,7 @@ switch method
     res = get_option(varargin,'resolution',3*degree);
   
     % interpolate
-    S3G = SO3Grid(res,cs,ss);
+    S3G = equispacedSO3Grid(cs,ss,'resolution',res);
 
     % get kernel
     psi = get_option(varargin,'kernel',kernel('de la Vallee Poussin','halfwidth',res));

@@ -16,7 +16,7 @@ sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','axisangle','
 qcenter = quaternion(get_option(varargin,'center',idquaternion))*CS;
 
 % define a plotting grid
-[S3G,S2,sec] = SO3Grid('plot',CS,symmetry,varargin{:});
+[S3G,S2,sec] = regularSO3Grid(CS,symmetry,varargin{:});
 
 % specifiy which fundamental zone is at an orientation
 [d,zone] = max(round(1000*abs(dot_outer(quaternion(S3G),qcenter))),[],2);

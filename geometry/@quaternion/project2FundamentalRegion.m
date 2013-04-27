@@ -13,7 +13,6 @@ function [q,omega] = project2FundamentalRegion(q,CS,SS,q_ref)
 
 %% get quaternions
 if nargin <= 3, q_ref = idquaternion;end
-q = quaternion(q);
 
 %% no specimen symmetry
 if nargin <=2 || numel(SS) <= 1 

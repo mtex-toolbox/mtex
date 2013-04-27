@@ -66,7 +66,7 @@ export(model_odf,fname,'Bunge')
 % if you specify the grid in the orientation space directly.
 
 % define a equispaced grid in orientation space with resolution of 5 degree
-S3G = SO3Grid(5 * degree,cs,ss);
+S3G = equispacedSO3Grid(cs,ss,'resolution',5*degree);
 
 % export the ODF by values at these locations
 export(model_odf,fname,S3G,'Bunge','generic')

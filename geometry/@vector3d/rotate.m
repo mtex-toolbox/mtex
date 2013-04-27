@@ -11,6 +11,7 @@ function v = rotate(v,q)
 %% Output
 %  r = q * v;
 
+
 % bring the coefficient into the right shape
 [a,b,c,d] = double(q(:));
 [x,y,z] = deal(v.x(:).',v.y(:).',v.z(:).');
@@ -22,7 +23,7 @@ v.z = (a.^2-b.^2-c.^2+d.^2)*z + 2*( (a.*b+c.*d)*y + (b.*d-a.*c)*x );
 
 % apply inversion if needed
 if isa(q,'rotation')
-  ind = isImpropper(q);
+  ind = isImproper(q);
   v.x(ind,:) = -v.x(ind,:);
   v.y(ind,:) = -v.y(ind,:);
   v.z(ind,:) = -v.z(ind,:);
@@ -36,5 +37,16 @@ elseif numel(q) == 1
   v = reshape(v,size(v));
 end
 
-% convert to vector3d
-v = vector3d(v);
+% if output has symmetry set it to Miller
+if isa(q,'orientation') && isCS(q.SS)
+   
+   v = Miller(v,q.SS);
+  
+else % convert to vector3d
+
+  v = vector3d(v);
+  
+end
+
+
+

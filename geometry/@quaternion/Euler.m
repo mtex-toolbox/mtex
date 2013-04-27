@@ -108,7 +108,7 @@ if nargout == 0
   d(abs(d)<1e-10)=0;
 
   if isa(quat,'rotation')
-    i = isImpropper(quat);
+    i = isImproper(quat);
     d = [d,i(:)];
     labels = [labels,{'Inv.'}];
   end
