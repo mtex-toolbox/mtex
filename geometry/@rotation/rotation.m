@@ -92,7 +92,7 @@ classdef rotation < quaternion
         
             case 'random'
            
-              quat = randq(varargin{2:end});
+              quat = randq(get_option(varargin,'points',1));
 
             otherwise
               error('Unknown type of rotation!')

@@ -51,7 +51,7 @@ for i = 1:length(odf)
     
     case 'FOURIER'
     
-      S3G = SO3Grid(res,odf(1).CS,odf(1).SS);
+      S3G = equispacedSO3Grid(odf(1).CS,odf(1).SS,'resolution',res);
           
     case'FIBRE' % fibre symmetric portion
      
@@ -61,7 +61,7 @@ for i = 1:length(odf)
     case 'Bingham'
    
       ori = [ori;orientation(odf(i).center(:),odf(1).CS,odf(1).SS)]; %#ok<AGROW>
-      S3G = SO3Grid(res,odf(1).CS,odf(1).SS);
+      S3G = equispacedSO3Grid(odf(1).CS,odf(1).SS,'resolution',res);
        
     otherwise % radially symmetric portion
       
@@ -83,7 +83,8 @@ g0 = S3G(f>=quantile(f,-20));
 while res > targetRes
 
   % new grid
-  S3G = [g0(:);orientation(SO3Grid(res/4,odf(1).CS,odf(1).SS,'max_angle',res,'center',g0))];
+  S3G = [g0(:);...
+    localSO3Grid(odf(1).CS,odf(1).SS,'max_angle',res,'center',g0,'resolution',res/4)];
     
   % evaluate ODF
   f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
@@ -155,7 +156,7 @@ for k=1:numel(q)
   res2 = res/2;
   while res2 > accuracy
     res2 = res2/2;
-    S3G = SO3Grid(res2,odf(1).CS,odf(1).SS,'center',q(k),'max_angle',res2*4);
+    S3G = localSO3Grid(res2,odf(1).CS,odf(1).SS,'center',q(k),'max_angle',res2*4);
     f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
     
     [mo ndx] = max(f);

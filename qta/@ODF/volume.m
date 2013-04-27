@@ -71,7 +71,8 @@ function [v,S3G] = slowVolume(odf,center,radius,res,S3G,varargin)
 
 % discretisation
 if nargin < 5 || isempty(S3G)
-  S3G = SO3Grid(res,odf(1).CS,odf(1).SS,'MAX_ANGLE',radius,'center',center,varargin{:});
+  S3G = equispacedSO3Grid(odf(1).CS,odf(1).SS,...
+    'MAX_ANGLE',radius,'center',center,'resolution',res,varargin{:});
 end
 
 % estimate volume portion of odf space

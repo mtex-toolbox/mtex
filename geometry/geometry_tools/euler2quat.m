@@ -70,8 +70,10 @@ end
 
 %% construct quaternion
 
-qalpha = quaternion(cos(alpha/2),0,0,sin(alpha/2));
-qbeta  = quaternion(cos(beta/2),0,sin(beta/2),0);
-qgamma = quaternion(cos(gamma/2),0,0,sin(gamma/2));
+zero = zeros(size(alpha));
+
+qalpha = quaternion(cos(alpha/2),zero,zero,sin(alpha/2));
+qbeta  = quaternion(cos(beta/2),zero,sin(beta/2),zero);
+qgamma = quaternion(cos(gamma/2),zero,zero,sin(gamma/2));
 
 q = qalpha .* qbeta .* qgamma;

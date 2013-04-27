@@ -67,7 +67,8 @@ methods
       
       case 'orientation'
 
-        o = varargin{1};
+        o.CS = varargin{1}.CS;
+        o.SS = varargin{1}.SS;
         
       case 'char'
   
