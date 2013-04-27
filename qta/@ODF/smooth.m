@@ -49,7 +49,7 @@ for iodf = 1:length(odf)
   else
 
     % generate grid
-    S3G = SO3Grid(hw,odf(1).CS,odf(1).SS);
+    S3G = equispacedSO3Grid(odf(1).CS,odf(1).SS,'resolution',hw);
 
     % restrict single orientations to this grid
 

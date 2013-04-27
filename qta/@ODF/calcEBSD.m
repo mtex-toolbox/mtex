@@ -28,7 +28,7 @@ else
   iodf = discretesample(get(odf,'weights'), points);
 end
 
-ori = repmat(orientation(cs,ss),points,1);
+ori = repmat(orientation(idquaternion,cs,ss),points,1);
 
 for i = 1:length(odf)
 
@@ -36,7 +36,7 @@ for i = 1:length(odf)
 
   if check_option(odf(i),'UNIFORM') % uniform portion
 
-    ori(iodf==i) = SO3Grid('random',cs,ss,'points',points);
+    ori(iodf==i) = orientation('random',cs,ss,'points',points);
 
   elseif check_option(odf(i),'unimodal') 
     
@@ -66,14 +66,14 @@ for i = 1:length(odf)
   else
 
     % some local grid
-    S3G_local = SO3Grid(res/5,cs,ss,'max_angle',res);
+    S3G_local = localSO3Grid(cs,ss,'max_angle',res,'resolution',res/5);
 
     % the global grid
     if check_option(varargin,'precompute_d')
       S3G_global = get_option(varargin,'S3G');
       d = get_option(varargin,'precompute_d',[]);
     else
-      S3G_global = SO3Grid(res,cs,ss);
+      S3G_global = equispacedSO3Grid(cs,ss,'resolution',res);
       d = eval(odf,S3G_global); %#ok<EVLC>
     end
     

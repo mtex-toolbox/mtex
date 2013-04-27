@@ -49,17 +49,19 @@ vdisp('------ MTEX -- PDF to ODF inversion ------------------',varargin{:})
 %% ------------------- get input--------------------------------------------
 CS = pf(1).CS; SS = pf(1).SS;
 
-S3G = get_option(varargin,'RESOLUTION',get(pf,'resolution'),{'double','SO3Grid'});
-if ~isa(S3G,'SO3Grid'), S3G = SO3Grid(S3G,CS,SS); end
-if check_option(varargin,'zero_range'), S3G = zero_range(pf,S3G,varargin{:});end
-if ~(CS == get(S3G,'CS') && SS == get(S3G,'SS'))
-    qwarning('Symmetry of the Grid does not fit to the given Symmetrie');
-end
+% generate discretization of orientation space
+res = get_option(varargin,'resolution',get(pf,'resolution'));
+S3G = equispacedSO3Grid(CS,SS,'resolution',res);
 
+% zero range method
+if check_option(varargin,'zero_range'), S3G = zero_range(pf,S3G,varargin{:});end
+
+% get kernel
 kw = get_option(varargin,{'HALFWIDTH','KERNELWIDTH'},get(S3G,'resolution'),'double');
 psi = get_option(varargin,'kernel',...
   kernel('de la Vallee Poussin','HALFWIDTH',kw),'kernel');
 
+% get other options
 iter_max = int32(get_option(varargin,'ITER_MAX',...
   getMTEXpref('ITER_MAX',15),'double'));
 iter_min = int32(get_option(varargin,'ITER_MIN',10,'double'));

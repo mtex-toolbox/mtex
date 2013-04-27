@@ -83,9 +83,7 @@ elseif strcmpi(char(method),'quadrature')
   
   % evaluate ODF at an equispaced grid
   res = get_option(varargin,'resolution',5*degree);
-  S3G = SO3Grid(res,odf.CS,odf.SS);
-  %S3G = SO3Grid(res);
-  %S3G = set(S3G,'CS',odf.CS);
+  S3G = equispacedSO3Grid(odf.CS,odf.SS,'resolution',res/4;  
   weight = eval(odf,S3G,varargin{:}); %#ok<EVLC>
   weight = (weight ./ sum(weight(:)));
 

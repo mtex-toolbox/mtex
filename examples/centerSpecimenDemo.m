@@ -46,7 +46,7 @@ c = c./sum(c(:)); % adjust weight to 1
 % the model
 
 psi = kernel('de la vallee','halfwidth',12*degree);
-odf = ODF(SO3Grid(o(:),CS),c(:),psi,CS,symmetry)
+odf = ODF(o(:),CS,c(:),psi,CS,symmetry)
 
 %%
 %
