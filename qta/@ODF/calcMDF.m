@@ -54,7 +54,7 @@ if check_option(varargin,'kernelMethod')
 
     warning('not yet fully implemented');
     res = get_option(varargin,'resolution',1.25*degree);
-    S3G = SO3Grid(res,cs2,cs1);
+    S3G = equispacedSO3Grid(cs2,cs1,'resolution',res);
 
     % init variables
     d = zeros(1,numel(S3G));

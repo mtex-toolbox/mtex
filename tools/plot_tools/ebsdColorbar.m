@@ -108,7 +108,7 @@ end
 function odfColorbar(cs,cc,varargin)
 
   
-[S3G,S2G,sec] = SO3Grid('plot',cs,symmetry,varargin{:});
+[S3G,S2G,sec] = regularSO3Grid(cs,symmetry,varargin{:});
 
 [s1,s2,s3] = size(S3G);
 

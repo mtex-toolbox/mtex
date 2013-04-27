@@ -23,11 +23,12 @@ switch s(1).type
       r.d = subsasgn(r.d,s(1),[]);
       r.i = subsasgn(r.i,s(1),[]);
     else
+      b = rotation(b);
       r.a = subsasgn(r.a,s(1),b.a);
       r.b = subsasgn(r.b,s(1),b.b);
       r.c = subsasgn(r.c,s(1),b.c);
       r.d = subsasgn(r.d,s(1),b.d);
-      r.i = subsasgn(r.i,s(1),b.d);
+      r.i = subsasgn(r.i,s(1),b.i);
     end
   otherwise
       
