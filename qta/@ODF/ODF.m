@@ -33,6 +33,10 @@ classdef ODF < matlab.mixin.Heterogeneous
     %odf = doRotate(odf,q,varargin)
   end
   
+  methods(Access=protected)
+    ori = discreteSample(odf,npoints,varargin)
+  end
+  
   methods(Sealed)
 
     [density,omega] = calcAngleDistribution(odf,varargin)
