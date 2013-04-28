@@ -4,7 +4,7 @@ function ebsd = loadEBSD_osc(fname,varargin)
 ebsd = EBSD;
 
 try
-
+  
   CS = oscHeader(fname);
   
   if check_option(varargin,'check')
@@ -12,28 +12,32 @@ try
   end
   
   [data,Xstep,Ystep] = oscData( fname );
-  unitCell = {};  
   
-  % there seems to exist different formats
-  if numel(unique(data(:,8)))<12
-    loader = loadHelper(data,...
-      'ColumnNames',{'phi1','Phi','phi2','x','y','ImageQuality','ConfidenceIndex','Phase','SemSignal','Fit'},...
-      'Radians');
-        
-    % grid info should contain the grid type .. todo
-    % unitCell = {'unitCell',[ Xstep/2 -Ystep/2;  Xstep/2  Ystep/2;  -Xstep/2  Ystep/2;  -Xstep/2 -Ystep/2]};
+  loader = loadHelper(data,...
+    'ColumnNames',{'phi1','Phi','phi2','x','y','ImageQuality','ConfidenceIndex','Phase','SemSignal','Fit'},...
+    'Radians');
+  
+  if Xstep ~= Ystep % probably hexagonal
+    unitCell = [...
+      -Xstep/2   -Ystep/3;
+      -Xstep/2    Ystep/3;
+      0         2*Ystep/3;
+      Xstep/2     Ystep/3;
+      Xstep/2    -Ystep/3;
+      0        -2*Ystep/3];
   else
-    % here we are not sure about correct naming of the columns
-    loader = loadHelper(data,...
-      'ColumnNames',{'Fit','phi1','Phi','phi2','x','y','ImageQuality','ConfidenceIndex','Phase','SemSignal'},...
-      'Radians');
+    unitCell = [...
+      Xstep/2 -Ystep/2;
+      Xstep/2  Ystep/2;
+      -Xstep/2  Ystep/2;
+      -Xstep/2 -Ystep/2];
   end
   
   ebsd = EBSD( loader.getRotations(),...
     'cs',      CS,...
     'phase',   loader.getColumnData('phase'),...
     'options', loader.getOptions('ignoreColumns','phase'),...
-    unitCell{:});
+    'unitCell',unitCell);
   
 catch
   interfaceError(fname)
@@ -133,7 +137,7 @@ function [data, Xstep, Ystep] = oscData( file )
 
 % look for a certain pattern
 startBytes = hex2dec({'B9','0B','EF','FF','02','00','00','00'});
-stopBytes  = hex2dec({'B9','0B','EF','FF','40','00','00','00'});
+% stopBytes  = hex2dec({'B9','0B','EF','FF','40','00','00','00'});
 
 
 % open fild
@@ -147,28 +151,30 @@ ny = header(6);
 %}
 n  = header(7);
 
-% default start pos
-startPos = 6100;
+% default start pos?
+startPos = 0; %6100;
 
 bufferLength = 2^15;
 fseek(fid,startPos,-1);
 startData = fread(fid, bufferLength, '*uint8', 'l');
 startPos  = startPos + strfind(startData',startBytes') - 1;
 
-fseek(fid,startPos,-1);
-data = double(fread(fid,n*10+4,'single','l'));
-fclose(fid);
+fseek(fid,startPos+8,-1);
+
+% there different osc file versions, one does have some count of data
+% another proceeds with x/ystep
+dn = double(fread(fid,1,'uint32','l'));
+if round(((dn/4-2)/10) /n ) ~= 1
+  fseek(fid,startPos+8,-1);
+end
 
 % Collect the values for Xstep and Ystep, from the .osc file
-Xstep = data(3);
-Ystep = data(4);
-
-% Delete the first four data points because they are no longer used
-data(1:4) = [];
+Xstep = double(fread(fid,1,'single','l'));
+Ystep = double(fread(fid,1,'single','l'));
 
 % Break the data up into an array that resembles the .ang
 % file format being sure to transpose
-data = reshape(data,10,n)';
+data = reshape(double(fread(fid,n*10,'single','l')),10,n)';
 
 
 % many thanks to adam shiveley
@@ -211,17 +217,19 @@ function CS = oscHeader(file)
 % buffer some chars... hopefully enough
 bufferLength = 2^16;
 
-fid=fopen(file,'rb');
-data = transpose(fread( fid,bufferLength,'*uint8','l' ));
+fid  = fopen(file,'rb');
+data = transpose(fread( fid,bufferLength,'*uint8',0,'l' ));
 fclose(fid);
 
 % do when loading the data
+
 %{
-d =  typecast(data(17:28)','uint32');
-nx = d(1);
-ny = d(2);
-n  = d(3);
+d =  typecast(data(1:32),'uint32');
+nx = d(5)
+ny = d(6)
+n  = d(7)
 %}
+
 
 % we down need the following in mtex
 %{
@@ -249,25 +257,36 @@ z_star = calibration(3);
 working_distance = calibration(4);
 %}
 
-
 headerStart  = hex2dec({'B9','0B','EF','FF','01','00','00','00'})';
 headerStop   = hex2dec({'B9','0B','EF','FF','02','00','00','00'})';
 
 headerStart  = strfind(data,headerStart);
 headerStop   = strfind(data,headerStop)-1;
 
-headerBytes = data(headerStart:headerStop);
+headerBytes = data(headerStart+8:headerStop);
 
-% would need a multiface osc data to check this
-phaseStartByBytes = hex2dec({'00','00','80','3F','01','00','00','00'})';
+if typecast(headerBytes(1:4),'single') == 1
+  nPhase = typecast(headerBytes(5:8),'uint32');
+  headerBytes = headerBytes(9:end);
+else
+  % startPosData = typecast(headerBytes(1:4),'uint32')?
+  % startPosData == headerStart+numel(headerBytes)+21
+  nPhase = typecast(headerBytes(9:12),'uint32');
+  headerBytes = headerBytes(13:end);
+end
 
-phaseStart = strfind(headerBytes,phaseStartByBytes);
-phaseStart = [phaseStart;numel(headerBytes)];
+CS = cell(nPhase,1);
 
-for k=1:numel(phaseStart)-1
+for k = 1:nPhase
+  
+  %   startOffset = find(headerBytes(p(k)+1:end) > 1,1,'first');
+  
+  %   phaseBytes = headerBytes( p(k)+startOffset : p(k+1) );
+  
+  % char(phaseBytes(1:10))
+  phaseBytes = headerBytes;
   
   % bytes used to describe one phase
-  phaseBytes = headerBytes(phaseStart(k)+8:phaseStart(k+1));
   % offset relative to phaseBytes
   % [1:256]   for phase
   % [257:260] for symmetrygroup
@@ -282,49 +301,25 @@ for k=1:numel(phaseStart)-1
   
   laueGroup = num2str(typecast(phaseBytes(257:260),'int32'));
   
-  startByteCell = 261;
-  cellBytes = phaseBytes(startByteCell:startByteCell+6*4-1);
+  cellBytes = phaseBytes(261:284);
   axLength  = double(typecast(cellBytes(1:12),'single'));
   axAngle   = double(typecast(cellBytes(13:end),'single'))*degree;
+  numHKL    = typecast(phaseBytes(285:288),'int32');
   
-  %{
   % hklFamilies
-  startByteHKL = startByteCell+6*4;
-  numHKL       = typecast(phaseBytes(startByteHKL:startByteHKL+3),'int32');
+  %   hkls      = typecast(phaseBytes(289:(289+3*4*numHKL-1)),'int32');
+  %   hkls      = reshape(hkls,3,[])';
   
-  stopByteHKL  = startByteHKL+3*(numHKL)*4-1+4;
+  if nPhase > 1 % look out for the next phase start
+    
+    formularMarkEnd = [repmat(hex2dec({'01','00','00','00'}),20,1)
+      hex2dec({'02','00','00','00','FF','FF','FF','FF'})]';
+    p =  [strfind(phaseBytes,formularMarkEnd) + numel(formularMarkEnd)];
+    nextPhaseStart = p(1)+4*numHKL+20;
+    
+    headerBytes = headerBytes(nextPhaseStart:end);
+  end
   
-  hkls = typecast(phaseBytes((startByteHKL+4:stopByteHKL)),'int32');
-  hkls = reshape(hkls,3,[])';
-  
-  % is this a bug in the hkl software when exporing *.ang?
-  % hkls((1:numel(hkls))>127) = hkls(127);
-  %}
-  
-  %{
-  startByteFormula = stopByteHKL+1;
-  stopByteFormula = startByteFormula+...
-    find(phaseBytes(startByteFormula:startByteFormula+100)==0,1,'first')-2;
-  formula = char(phaseBytes(startByteFormula:stopByteFormula));
-  
-  
-  phaseBytes(startByteFormula:startByteFormula+79);
-  
-  startByteOther = startByteFormula+80;
-  
-  otherBytes = phaseBytes(startByteOther:end);
-  
-   % 5th ang row
-  hklrow = typecast(otherBytes(12*numHKL+1:16*numHKL),'int32')';
-  % structure factor
-  hklrow = typecast(otherBytes(16*numHKL+1:20*numHKL),'single')';
-  
-  
-  % what are the other bytes?
-  hklrow = typecast(otherBytes( 4*numHKL+1: 8*numHKL),'int32')';
-  hklrow = typecast(otherBytes( 8*numHKL+1:12*numHKL),'int32')';
-  hklrow = typecast(otherBytes(20*numHKL+1:24*numHKL),'int32')';
-  %}
   
   % maybe from ang convention? should ask the vendor ...
   switch laueGroup
@@ -339,15 +334,15 @@ for k=1:numel(phaseStart)-1
       laueGroup = {'2'};
       options = {'X||a'};
     otherwise
-      if any(round(axAngle(3)/degree) ~= 90)
+      if any(axAngle ~= pi/2)
         options = {'X||a'};
       else
-        options = {};
+        options = {''};
       end
   end
   
   CS{k} = symmetry(laueGroup,axLength,axAngle,'mineral',phaseName,options{:});
-
+  
 end
 
 
