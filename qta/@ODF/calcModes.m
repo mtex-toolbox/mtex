@@ -84,7 +84,7 @@ while res > targetRes
 
   % new grid
   S3G = [g0(:);...
-    localSO3Grid(odf(1).CS,odf(1).SS,'max_angle',res,'center',g0,'resolution',res/4)];
+    localOrientationGrid(odf(1).CS,odf(1).SS,res,'center',g0,'resolution',res/4)];
     
   % evaluate ODF
   f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
@@ -117,7 +117,7 @@ f = f(del);
 S3Gs = subGrid(S3G,del);
 T = find(S3Gs,qa,res*1.5);
 
-[f ndx] = sort(f,'descend');
+[f, ndx] = sort(f,'descend');
 qa = qa(ndx);
 
 T = T(ndx,:);
@@ -130,7 +130,7 @@ nn = numel(f);
 ls = false(1,nn);
 ids = false(1,nn);
 
-[ix iy] = find(T);
+[ix, iy] = find(T);
 cx = [0 ; find(diff(iy))];
 
 num = get_option(varargin,'num',1);
@@ -156,10 +156,10 @@ for k=1:numel(q)
   res2 = res/2;
   while res2 > accuracy
     res2 = res2/2;
-    S3G = localSO3Grid(res2,odf(1).CS,odf(1).SS,'center',q(k),'max_angle',res2*4);
+    S3G = localOrientationGrid(odf(1).CS,odf(1).SS,res2*4,'center',q(k),'resolution',res2);
     f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
     
-    [mo ndx] = max(f);
+    [mo, ndx] = max(f);
     q(k) = S3G(ndx);
     values(k) = mo;
   end

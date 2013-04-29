@@ -14,7 +14,8 @@ classdef uniformODF < ODF
     odf = doRotate(odf,~,varargin)
     f_hat = doFourier(odf,L,varargin)
     ori = discreteSample(odf,npoints,varargin)
-    doDisplay(odf)
+    [v,varargout] = doVolume(odf,center,radius,varargin)
+    doDisplay(odf)    
   end    
   
 end

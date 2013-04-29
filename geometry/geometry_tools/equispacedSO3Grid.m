@@ -78,9 +78,15 @@ end
 
 S3G = SO3Grid(ori,alphabeta,gamma,'resolution',res);
 
+if check_option(varargin,'maxAngle')
+  center = get_option(varargin,'center',idquaternion);
+  S3G = subGrid(S3G,center,maxAngle);
 end
 
 
+end
+
+% ----------------------------------------------------------------
 function s = no_center(res)
 
 if mod(round(2*pi/res),2) == 0
@@ -90,17 +96,7 @@ else
 end
 end
 
-function res = ori2res(ori)
-
-if numel(ori) == 0, res = 2*pi; return;end
-ml = min(numel(ori),500);
-ind1 = discretesample(numel(ori),ml);
-ind2 = discretesample(numel(ori),ml);
-d = angle_outer(ori(ind1),ori(ind2));
-d(d<0.005) = pi;
-res = quantile(min(d,[],2),min(0.9,sqrt(ml/numel(ori))));
-end
-
+% ---------------------------------------------------------------
 function ind = fundamental_region(q,cs,ss)
 
 if numel(q) == 0, ind = []; return; end
