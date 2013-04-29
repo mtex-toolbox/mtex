@@ -79,6 +79,7 @@ classdef unimodalODF < ODF
     odf = doRotate(odf,q,varargin)
     f_hat = doFourier(odf,L,varargin)
     ori = discreteSample(odf,npoints,varargin)
+    [v,varargout] = doVolume(odf,center,radius,varargin)
     doDisplay(odf)
   end    
   

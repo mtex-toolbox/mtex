@@ -5,7 +5,7 @@ function ori = discreteSample(odf,npoints,varargin)
 res = get_option(varargin,'resolution',5*degree);
 
 % some local grid
-S3G_local = localSO3Grid(cs,ss,'max_angle',res,'resolution',res/5);
+S3G_local = localOrientationGrid(cs,ss,res,'resolution',res/5);
 
 % the global grid
 if check_option(varargin,'precompute_d')
@@ -18,7 +18,7 @@ end
 
 d(d<0) = 0;
     
-r1 = discretesample(d,points);
-r2 = discretesample(numel(S3G_local),points,'XX');
+r1 = discretesample(d,npoints);
+r2 = discretesample(numel(S3G_local),npoints,'XX');
 
 ori = orientation(quaternion(S3G_global,r1) .* quaternion(S3G_local,r2),odf.CS,odf.SS);

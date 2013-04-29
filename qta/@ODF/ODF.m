@@ -35,6 +35,7 @@ classdef ODF < matlab.mixin.Heterogeneous
   
   methods(Access=protected)
     ori = discreteSample(odf,npoints,varargin)
+    [v,S3G] = doVolume(odf,center,radius,S3G,varargin)
   end
   
   methods(Sealed)

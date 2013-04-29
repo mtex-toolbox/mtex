@@ -17,8 +17,8 @@ classdef SO3Grid < orientation
 %  phi        - use phi
 %  ZXZ, Bunge - Bunge (phi1 Phi phi2) convention
 %  ZYZ, ABG   - Matthies (alpha beta gamma) convention
-%  MAX_ANGLE  - only up to maximum rotational angle
-%  CENTER     - with respect to this given center
+%  maxAngle   - only up to maximum rotational angle
+%  center     - with respect to this given center
 
   
   properties
@@ -44,11 +44,6 @@ classdef SO3Grid < orientation
   end
 end
 
-
-%if check_option(G,'indexed') && check_option(varargin,'MAX_ANGLE')
-%  center = get_option(varargin,'center',idquaternion);
-%  G = subGrid(G,center,maxangle);
-%end
 
 % -------------------------------------------------------------------------
 function q = axisAngleGrid(varargin)
