@@ -57,7 +57,7 @@ methods
     if numel(sym) > 1, o.SS = sym{2};end
     
     % empty constructor -> done
-    if nargin == 0, return; end
+    if isempty(varargin), return; end
     
     % some predefined orientations
     [names,phi1,Phi,phi2] = oriList;

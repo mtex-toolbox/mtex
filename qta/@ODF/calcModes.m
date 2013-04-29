@@ -40,39 +40,36 @@ res = 5*degree;
 % target resolution
 targetRes = get_option(varargin,'resolution',0.25*degree);
 
+% extract symmetry
+CS = odf(1).CS; SS = odf(1).SS;
+
 % initial seed
-ori = orientation(odf(1).CS,odf(1).SS);
-S3G = orientation(odf(1).CS,odf(1).SS);
+S3G = orientation(CS,SS);
+
 for i = 1:length(odf) 
   
-  switch ODF_type(odf(i).options{:})
+  switch class(odf(i))
   
-    case 'UNIFORM' % uniform portion
-    
-    case 'FOURIER'
-    
-      S3G = equispacedSO3Grid(odf(1).CS,odf(1).SS,'resolution',res);
-          
-    case'FIBRE' % fibre symmetric portion
-     
-      ori = [ori;orientation('fibre',...
-        odf(i).center{1},odf(i).center{2},odf(1).CS,odf(1).SS,'resolution',res)]; %#ok<AGROW>
       
-    case 'Bingham'
+    case'FibreODF' % fibre symmetric portion
+     
+      S3G = [S3G; orientation('fibre', odf(i).h, odf(i).r, CS, SS, 'resolution',res)]; %#ok<AGROW>
+      
+    case 'BinghamODF'
    
-      ori = [ori;orientation(odf(i).center(:),odf(1).CS,odf(1).SS)]; %#ok<AGROW>
-      S3G = equispacedSO3Grid(odf(1).CS,odf(1).SS,'resolution',res);
+      S3G = [S3G;odf(i).A(:)]; %#ok<AGROW>
        
-    otherwise % radially symmetric portion
+    case 'unimodalODF' % radially symmetric portion
       
       center = odf(i).center(odf(i).c>=quantile(odf(i).c,-20));
-      ori = [ori;center(:)]; %#ok<AGROW>
-           
+      S3G = [S3G;center(:)]; %#ok<AGROW>
+      
   end
 end
 
-% the search grid
-S3G = [orientation(S3G(:)); ori];
+if isempty(S3G)
+  S3G = equispacedSO3Grid(CS,SS,'resolution',res);
+end
 
 % first evaluation
 f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
@@ -83,8 +80,8 @@ g0 = S3G(f>=quantile(f,-20));
 while res > targetRes
 
   % new grid
-  S3G = [g0(:);...
-    localOrientationGrid(odf(1).CS,odf(1).SS,res,'center',g0,'resolution',res/4)];
+  S3G = [g0(:).',...
+    localOrientationGrid(CS,SS,res,'center',g0,'resolution',res/4)];
     
   % evaluate ODF
   f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
