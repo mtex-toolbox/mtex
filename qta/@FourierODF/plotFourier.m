@@ -21,6 +21,7 @@ end
 
 optionplot(0:L,f,varargin{:});
 
+xlim([0,L])
 xlabel('harmonic degree');
 ylabel('power');
 figure(gcf);
