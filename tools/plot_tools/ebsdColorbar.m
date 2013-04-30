@@ -28,7 +28,7 @@ else
   if ~iscell(cs), cs = {cs};end
   CCOptions = getappdata(gcf,'CCOptions');
   
-  for i = 1:length(cs)
+  for i = 1:numel(cs)
     if isa(cs{i},'symmetry')
             
       cc = getappdata(gcf,'colorcoding');

@@ -30,3 +30,5 @@ for i = 1:numel(odf)
   ori(iodf==i) = discreteSample(odf(i),nnz(iodf==i),varargin{:});
     
 end
+
+ori = EBSD(ori);

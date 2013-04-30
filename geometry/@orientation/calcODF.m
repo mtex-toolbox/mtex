@@ -115,7 +115,7 @@ vdisp([' kernel: ' char(k)],varargin{:});
 odf = unimodalODF(ori,k,CS,SS,'weights',weight);
 
 max_coef = 32;
-gridlen = numel(ori)*length(CS)*length(SS);
+gridlen = numel(ori)*numel(CS)*numel(SS);
 
 
 %% Fourier ODF
@@ -131,9 +131,8 @@ if ~check_option(varargin,{'exact','noFourier'}) && ...
       'since Fourier Coefficents of higher order than ', num2str(L),...
       ' are not considered; increasing the kernel halfwidth might help.'])
   end
-  odf = calcFourier(odf,get_option(varargin,'Fourier',L,'double'));
-  odf = FourierODF(odf);
-
+  odf = FourierODF(odf,get_option(varargin,'Fourier',L,'double'));
+  
   return
 elseif check_option(varargin,'exact') || gridlen < 2000
 %% exact ODF
@@ -175,8 +174,8 @@ vdisp([' approximation grid: ' char(S3G)],varargin{:});
 d = zeros(1,numel(S3G));
 
 % iterate due to memory restrictions?
-maxiter = ceil(length(CS)*...
-  length(SS)*numel(ori) /...
+maxiter = ceil(numel(CS)*...
+  numel(SS)*numel(ori) /...
   getMTEXpref('memory',300 * 1024));
 if maxiter > 1, progress(0,maxiter);end
 

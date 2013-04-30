@@ -28,7 +28,7 @@ A = A(1:min(max(2,L+1),length(A)));
 % calculate Fourier coefficients
 f_hat = gcA2fourier(abg,c,A);
 
-% for many center symmetrise c_chat
+% for many center symmetrise f_chat
 if 10*numel(odf.center)*numel(odf.SS)*numel(odf.CS) >= L^3
   
   if numel(odf.CS) ~= 1
@@ -44,7 +44,7 @@ if 10*numel(odf.center)*numel(odf.SS)*numel(odf.CS) >= L^3
     abg = Euler(odf.SS,'nfft');
     A(1:end) = 1;
     c = ones(1,numel(odf.SS));
-    f_hat = multiply(gcA2fourier(abg,c,A),odf.c_hat,length(A)-1);
+    f_hat = multiply(gcA2fourier(abg,c,A),f_hat,length(A)-1);
   end
 end
 

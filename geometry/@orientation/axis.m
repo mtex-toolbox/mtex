@@ -18,7 +18,7 @@ else
 end
   
 o = project2FundamentalRegion(o);
-a = axis(o.rotation);
+a = axis(o);
   
 S = disjoint(o.CS,o.SS);
 if numel(S) > 1

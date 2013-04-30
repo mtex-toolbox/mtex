@@ -54,6 +54,8 @@ function [odf,r,v1,v2] = centerSpecimen(odf,center,varargin)
 %%
 %
 
+return
+
 options.delta = get_option(varargin,'delta',0.5*degree);
 
 if nargin < 2

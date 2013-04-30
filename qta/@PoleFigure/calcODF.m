@@ -92,7 +92,7 @@ A = A(1:bw);
 % detect superposed pole figures
 lh = int32(zeros(1,length(pf)));
 for i=1:length(pf)
-	lh(i) = int32(length(get(pf(i),'h'))*length(CS)*length(SS));
+	lh(i) = int32(length(get(pf(i),'h'))*numel(CS)*numel(SS));
 end
 refl = get(pf,'c');
 

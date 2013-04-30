@@ -39,7 +39,7 @@ if ~check_option(varargin,'all') && numel(o) > 2000 || check_option(varargin,'po
     int2str(numel(o)),' given orientations']);
 
   samples = discretesample(ones(1,numel(o)),points);
-  o.rotation = o.rotation(samples);
+  o = subsref(o,samples);
   if ~isempty(data)
     data = data(samples); end
 end

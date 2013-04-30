@@ -104,7 +104,11 @@ classdef symmetry < rotation
       end
         
       % search for pointgroup
-      sym = findsymmetry(pGroup);
+      try
+        sym = findsymmetry(pGroup);
+      catch
+        sym = [];
+      end
 
       % nothing found?
       if isempty(sym)
