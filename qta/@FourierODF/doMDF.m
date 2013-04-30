@@ -1,27 +1,9 @@
 function mdf = doMDF(odf1,odf2,varargin)
 % calculate the uncorrelated misorientation distribution function (MDF) from one or two ODF
-%
-%% Syntax
-% mdf = calcMDF(odf)
-% mdf = calcMDF(odf1,odf2,'bandwidth',32)
-%
-%% Input
-%  odf  - @FourierODF
-%  odf1, odf2 - @FourierODF
-%
-%% Options
-% bandwidth - bandwidth for Fourier coefficients (default -- 32)
-%
-%% Output
-%  mdf - @FourierODF
-%
-%% See also
-% EBSD/calcMDF
-
 
 % get bandwidth
 L = get_option(varargin,'bandwidth',32);
-L = min(bandwidth(odf1),bandwidth(odf2),L);
+L = min([bandwidth(odf1),bandwidth(odf2),L]);
 
 % compute Fourier coefficients of mdf
 f_hat = [odf1.f_hat(1) * odf2.f_hat(1); zeros(deg2dim(L+1)-1,1)];
