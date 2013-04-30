@@ -95,4 +95,5 @@ plot(odf,'radially','center',euler2quat(50*degree,30*degree,20*degree))
 % Last but not least there is a power plot, plotting the Fourier
 % coefficients of an ODF
 
-plotFourier(odf,'bandwidth',32)
+odf = FourierODF(odf,32);
+plotFourier(odf)
