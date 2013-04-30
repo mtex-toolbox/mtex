@@ -52,7 +52,7 @@ data = get_option(varargin,'property',[]);
 if ~check_option(varargin,'all') && ...
     (sum(numel(o))*length(cs)*length(ss) > 10000 || check_option(varargin,'points'))
 
-  points = fix(get_option(varargin,'points',10000/length(cs)/length(ss)));
+  points = fix(get_option(varargin,'points',10000/numel(cs)/numel(ss)));
   disp(['  plotting ', int2str(points) ,' random orientations out of ', int2str(numel(o)),' given orientations']);
   disp('You can specify the the number points by the option "points".'); 
   disp('The option "all" ensures that all data are plotted');

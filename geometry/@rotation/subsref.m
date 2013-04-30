@@ -1,7 +1,7 @@
 function varargout = subsref(r,s)
 % overloads subsref
 
-if isa(s,'double') || isa(s,'logical')
+if ~isstruct(s)
   
   r.a = r.a(s);
   r.b = r.b(s);

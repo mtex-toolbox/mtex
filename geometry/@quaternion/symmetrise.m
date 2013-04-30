@@ -13,11 +13,11 @@ function varargout = symmetrise(q,CS,SS,varargin)
 % CrystalSymmetries
 
 q = (q * CS).'; % CS x M
-if nargin>2 && length(SS)>1
+if nargin>2 && numel(SS)>1
   q = SS * q;     % SS x (CS X M)
-  lSS = length(SS);
+  lSS = numel(SS);
 else
   lSS = 1;
 end
 
-varargout{1} = reshape(q,length(CS) * lSS,[]); % (CSxSS) x M
+varargout{1} = reshape(q,numel(CS) * lSS,[]); % (CSxSS) x M

@@ -75,19 +75,19 @@ end
 f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
 
 % extract 20 largest values
-g0 = S3G(f>=quantile(f,-20));
+g0 = S3G(f>=quantile(f(:),-20));
 
 while res > targetRes
 
   % new grid
-  S3G = [g0(:).',...
+  S3G = [g0(:),...
     localOrientationGrid(CS,SS,res,'center',g0,'resolution',res/4)];
     
   % evaluate ODF
   f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
   
   % extract largest values
-  g0 = S3G(f>=quantile(f,0));
+  g0 = S3G(f>=quantile(f(:),0));
   
   res = res / 2; 
 end

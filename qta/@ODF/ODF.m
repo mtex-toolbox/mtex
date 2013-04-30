@@ -75,7 +75,6 @@ classdef ODF < matlab.mixin.Heterogeneous
     plotAxisDistribution(odf,varargin)
     plotDiff(odf1,odf2,varargin)
     [x,omega] = plotfibre(odf,h,r,varargin)
-    plotFourier(odf,varargin)
     plotipdf(odf,r,varargin)
     plotodf(odf,varargin)
     plotodf1d(odf,varargin)
