@@ -1,6 +1,5 @@
-function mdf = doMDF(odf1,varargin)
+function mdf = doMDF(odf1,odf2,varargin)
 % calculate the uncorrelated misorientation distribution function (MDF) from one or two ODF
-
 
 center = inverse(odf1.center) * odf2.center.';
 c = odf1.c * odf2.c.';
@@ -11,9 +10,8 @@ ind = c > 0.1/numel(c);
 c = c(ind);
 center = center(ind);
 
-
-% approximation
-if numel(c1)*numel(c2) > 10000
+% if to much data -> approximation
+if numel(c) > 10000
   
   warning('not yet fully implemented');
   res = get_option(varargin,'resolution',1.25*degree);
@@ -42,7 +40,7 @@ if numel(c1)*numel(c2) > 10000
   end
   d = d ./ sum(d(:));
   
-  %% eliminate spare rotations in grid
+  % eliminate spare rotations in grid
   del = d ~= 0;
   center = subGrid(S3G,del);
   c = d(del);

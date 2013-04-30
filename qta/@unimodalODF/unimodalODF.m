@@ -76,6 +76,7 @@ classdef unimodalODF < ODF
   methods(Access=protected)
     f = doEval(odf,g,varargin)
     Z = doPDF(odf,h,r,varargin)
+    mdf = doMDF(odf1,odf2,varargin)
     odf = doRotate(odf,q,varargin)
     f_hat = doFourier(odf,L,varargin)
     ori = discreteSample(odf,npoints,varargin)

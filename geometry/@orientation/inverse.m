@@ -1,8 +1,6 @@
-function res = inverse(o)
+function o = inverse(o)
 % inverse of a orientation
 
-res = inverse@rotation(o);
+o = inverse@rotation(o);
 
-if isa(res,'function_handle'), dbstop;end
-
-[res.CS,res.SS] =  deal(res.SS,res.CS);
+[o.CS,o.SS] =  deal(o.SS,o.CS);

@@ -26,7 +26,7 @@ classdef ODF < matlab.mixin.Heterogeneous
   
   methods(Abstract,Access=protected)
     f = doEval(odf,g,varargin)
-    Z = doPDF(odf,h,r,varargin)
+    Z = doPDF(odf,h,r,varargin)    
     odf = doRotate(odf,q,varargin)
     f_hat = doFourier(odf,L,varargin)
     doDisplay(odf)
@@ -35,6 +35,8 @@ classdef ODF < matlab.mixin.Heterogeneous
   
   methods(Access=protected)
     ori = discreteSample(odf,npoints,varargin)
+    mdf = doMDF(odf1,odf2,varargin)
+    [TVoigt, TReuss] = doMeanTensor(odf,T,varargin)
     [v,S3G] = doVolume(odf,center,radius,S3G,varargin)
   end
   

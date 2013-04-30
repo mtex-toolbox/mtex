@@ -26,7 +26,22 @@ function f_hat = Fourier(odf,varargin)
 % ODF/plotFourier wignerD ODF/calcFourier FourierODF ODF/textureindex ODF/entropy ODF/eval
 %
 
+% return only one order
+if check_option(varargin,'order')
+  
+  L = get_option(varargin,'order');
+  f_hat = reshape(odf.f_hat(deg2dim(L)+1:deg2dim(L+1)),2*L+1,2*L+1);
+  
+  if check_option(varargin,'l2-normalization')
+    f_hat = f_hat ./ sqrt(2*L+1);
+  end
+  
+  return
+end
+
+
 f_hat = odf.f_hat;
+L = dim2deg(numel(f_hat));
 
 if check_option(varargin,'l2-normalization')
   for l = 0:L
@@ -41,9 +56,4 @@ if check_option(varargin,'weighted')
     f_hat(deg2dim(l)+1:deg2dim(l+1)) = ...
       f_hat(deg2dim(l)+1:deg2dim(l+1)) .* w(l+1);
   end
-end
-
-
-if check_option(varargin,'order')
-  f_hat = reshape(f_hat(deg2dim(L)+1:deg2dim(L+1)),2*L+1,2*L+1);
 end
