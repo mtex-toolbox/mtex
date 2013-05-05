@@ -10,6 +10,7 @@ function [m,er] = Miller(varargin)
 % m = Miller(u,v,w,cs,'uvw') -
 % m = Miller(u,v,t,w,cs,'uvw') -
 % m = Miller(u,v,w,cs,'direction') -
+% m = Miller(x,y,z,'xyz') - 
 % m = Miller('[uvw]',cs) - 
 % m = Miller('[uvw]\[uvw],cs) -
 % m = Miller('(hkl)\(hkl),cs) - 
@@ -49,6 +50,10 @@ elseif isa(varargin{1},'vector3d')
   end
   
   v = vector3d(varargin{1});
+  
+elseif check_option(varargin,'xyz')
+    
+  v = vector3d(varargin{:});
   
 elseif isa(varargin{1},'char')
   
@@ -93,8 +98,8 @@ elseif isa(varargin{1},'double')
     end
     v = d2v(varargin{1},varargin{2},varargin{nparam},m.CS);
     v = set_option(v,'uvw');
-    
-  else    
+        
+  else
     
     v = m2v(varargin{1},varargin{2},varargin{nparam},m.CS);
   
