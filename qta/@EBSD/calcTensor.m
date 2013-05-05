@@ -38,7 +38,7 @@ varargin(Tind) = [];
 
 % initialize avarage tensors
 TVoigt = set(T{1},'M',zeros(size(T{1})));
-TVoigt = set(TVoigt,'CS',symmetry);
+TVoigt = set(TVoigt,'CS',symmetry,'noTrafo');
 TReuss = TVoigt;
 TGeo = TVoigt;
 
