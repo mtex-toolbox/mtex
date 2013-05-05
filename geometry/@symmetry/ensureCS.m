@@ -15,7 +15,7 @@ M = axesOld^(-1) * axesNew;
 % if compatible transform to new reference frame
 MM = M'*M;%norm(MM - diag(diag(MM))) / norm(MM)
 if strcmp(csNew.laue,csOld.laue) && ...
-    norm(MM - eye(3)) / norm(MM) < 1*10^-2
+    norm(MM - eye(3)) / norm(MM) < 1*10^-1
   obj = set(obj,'CS',csNew);
   return
 end
