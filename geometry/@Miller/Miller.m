@@ -51,7 +51,7 @@ elseif isa(varargin{1},'vector3d')
   
   v = vector3d(varargin{1});
   
-elseif check_option(varargin,'xyz')
+elseif check_option(varargin,'xyz') || check_option(varargin,'polar')
     
   v = vector3d(varargin{:});
   
