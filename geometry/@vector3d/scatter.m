@@ -196,7 +196,7 @@ for i = 1:length(u)
   o = get(u(i),'MarkerSize');
   %n = l/350 * d;
   n = l/250 * d;
-  if abs((o-n)/o) > 0.1, set(u(i),'MarkerSize',n);end
+  if abs((o-n)/o) > 0.05, set(u(i),'MarkerSize',n);end
 end
 
 set(p,'unit',unit);

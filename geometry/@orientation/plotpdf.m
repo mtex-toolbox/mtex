@@ -82,7 +82,7 @@ data = @(i) repmat(data(:).',[numel(ss) numel(sh(i))]);
 
 multiplot(ax{:},numel(h),r,data,'scatter','TR',@(i) h(i),...  
   'minRho',minRho,'maxRho',maxRho,'minTheta',minTheta,'maxTheta',maxTheta,...
-  varargin{:});
+  'unifyMarkerSize',varargin{:});
 
 if isempty(ax)
   setappdata(gcf,'h',h);

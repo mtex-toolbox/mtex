@@ -143,6 +143,13 @@ end
 
 %% post process figure
 
+% ensure same marker size in all scatter plots
+if check_option(varargin,'unifyMarkerSize')
+  ax = findobj(a,'tag','dynamicMarkerSize');
+  markerSize = get(ax,'UserData');
+  arrayfun(@(x) set(x,'UserData',min(markerSize{:})),ax);
+end
+
 set(gcf,'ResizeFcn',@(src,evt) figResize(src,evt,a));
 
 if ~isappdata(gcf,'multiplotAxes')
