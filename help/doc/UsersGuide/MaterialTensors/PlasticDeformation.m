@@ -163,3 +163,57 @@ quiver(r,mActive,'ArrowSize',0.2,'LineWidth',2,'Color','r');
 % plot active slip direction in green
 quiver(r,nActive,'ArrowSize',0.2,'LineWidth',2,'Color','g');
 hold off
+
+%%
+% So far we have always assumed that the stress tensor is already given
+% relatively to the crystal coordinate system. Next we want to examine the
+% case where the stress is given in specimen coordinates and we know the
+% orientation of the crystal. Lets assume we have simple shear stress
+% tensor in 001 direction 
+
+M = zeros(3);M(3,3) = 1;
+sigma001 = tensor(M,'name','stress')
+
+%%
+% Furthermore, we assume the orientations to be given by an EBSD map. Thus
+% the next step is to extract the orientations from the EBSD data and
+% transform the stress tensor from specimen to crystal coordinates
+
+mtexdata aachen
+
+% extract the orientations
+ori = get(ebsd('Fe'),'orientations');
+
+% transform the stress tensor from specimen to crystal coordinates
+sigmaCS = rotate(sigma001,inverse(ori))
+
+%%
+% Next we compute maximum Schmidt factor and the active slip system for
+% every orientation in the ebsd data set
+
+[tauMax,mActive,nActive,tau,ind] = calcShearStress(sigmaCS,m,n,'symmetrise');
+
+plot(ebsd('Fe'),'property',tauMax')
+
+%%
+% The above procedure may also be applied to grains which has the advantage
+% to be much less computational demanding for large data sets.
+
+% compute grains
+grains = calcGrains(ebsd)
+
+% extract the orientations
+ori = get(grains('Fe'),'orientation');
+
+% transform the stress tensor from specimen to crystal coordinates
+sigmaCS = rotate(sigma001,inverse(ori))
+
+% compute maximum Schmid factor and active slip system
+[tauMax,mActive,nActive,tau,ind] = calcShearStress(sigmaCS,m,n,'symmetrise');
+
+plot(grains('Fe'),'property',tauMax)
+
+%% 
+% We may also colorize the active slip system. 
+
+plot(grains('Fe'),'property',ind)

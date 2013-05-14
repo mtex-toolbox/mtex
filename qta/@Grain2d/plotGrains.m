@@ -173,7 +173,9 @@ boundaryEdgeOrder(hole) = ...
 
 Polygons = [boundaryEdgeOrder(:)' holeEdgeOrder{:}];
 
-d(numel(boundaryEdgeOrder)+1:numel(Polygons),: ) = 1;
+% what is this needed for?
+%d(numel(boundaryEdgeOrder)+1:numel(Polygons),: ) = 1;
+d(numel(boundaryEdgeOrder)+1:numel(Polygons),: ) = NaN;
 
 A = cellArea(V,Polygons);
 
