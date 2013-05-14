@@ -83,7 +83,11 @@ elseif isa(prop,'char')
 
   end
 else
-  d = prop(subset,:);
+  if size(prop,2) == 3
+    d = prop(subset,:);
+  else
+    d = prop(subset);
+  end
   prop = 'user';
 end
 
