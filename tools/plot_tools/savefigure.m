@@ -28,13 +28,26 @@ end
 % try to switch to painters mode for vector formats
 % by converting RGB graphics to indexed graphics
 if any(strcmpi(ext,{'.eps','.pdf'})) && ~strcmpi(get(gcf,'renderer'),'painters')
+  
+  s = warning('error','MATLAB:hg:patch:RGBColorDataNotSupported');
+  
+  % directly switch to painters
   try
-    convertFigureRGB2ind;
-    set(gcf,'renderer','painters');    
-  catch    
-  end  
+    set(gcf,'renderer','painters');
+    drawnow
+    delay(10);
+        
+  catch % if this does not work try to convert RGB to indexed colors
+    try
+      convertFigureRGB2ind;
+      set(gcf,'renderer','painters');
+    catch
+      
+    end  
+  end
+  warning(s);
 end
-
+  
 % for bitmap formats try to use export fig
 if ~(ismac || ispc) || all(~strcmpi(ext,{'.eps','.pdf'}))
   try
@@ -126,7 +139,7 @@ for iax = 1:numel(ax)
   % take only RGB values
   ind = cellfun(@(x) size(x,3)==3,CData);
   childs = childs(ind);
-  CData = CData(ind)
+  CData = CData(ind);
   
   % cat Data into one vector
   combined = cat(1,CData{:});
