@@ -57,29 +57,40 @@ else
   return
 end
 
-if any(ndx) && isempty(dir(file))
+% change warning to error to make it catchable
+w = warning('error','MATLAB:load:cannotInstantiateLoadedVariable');
 
-  switch list(ndx).type
-    case 'ebsd'
+% try to load
+try
+  S = load(file);
+  
+catch %#ok<CTCH> % if can not load -> import
 
-      [CS,ebsd] = feval(['mtexdata_' list(ndx).name]);
-      save(file,'CS','ebsd');
+  if any(ndx) 
 
-    case 'pf'
-
-      [CS,h,pf,c] = feval(['mtexdata_' list(ndx).name]);
-      save(file,'CS','h','pf','c');
-
+    disp(' loading data ...')
+    switch list(ndx).type
+      case 'ebsd'
+        [S.CS,S.ebsd] = feval(['mtexdata_' list(ndx).name]);        
+      case 'pf'
+        [S.CS,S.h,S.pf,S.c] = feval(['mtexdata_' list(ndx).name]);
+    end
+    disp([' saving data to ' file])
+    save(file,'-struct','S');
   end
-
+  
 end
 
-S = load(file);
+% restore warning style
+warning(w);
+
+% copy to workspace
 fld = fields(S);
 for k=1:numel(fld)
   assignin('base',fld{k},S.(fld{k}));
 end
 
+% display
 if ~getMTEXpref('generatingHelpMode')
   disp([ upper(list(ndx).name) ' data loaded in variables']);
   disp(fld)
@@ -98,7 +109,7 @@ data(cellfun('isempty',{data.name})) = [];
 
 
 %% ----------------------------------------------------------- PoleFigure data --
-function [CS,h,pf,c] = mtexdata_dubna
+function [CS,h,c,pf] = mtexdata_dubna
 
 CS = symmetry('-3m',[1.4 1.4 1.5]);
 SS = symmetry;
@@ -125,7 +136,7 @@ c = {1,1,[0.52 ,1.23],1,1,1,1};
 pf = loadPoleFigure(fname,h,CS,SS,'interface','dubna','superposition',c);
 
 %%
-function [CS,h,pf,c] = mtexdata_geesthacht
+function [CS,h,c,pf] = mtexdata_geesthacht
 
 CS = symmetry('m-3m');
 SS = symmetry('-1');
@@ -144,7 +155,7 @@ c = ones(size(h));
 pf = loadPoleFigure(fname,h,CS,SS);
 
 %%
-function   [CS,h,pf,c] = mtexdata_ptx
+function   [CS,h,c,pf] = mtexdata_ptx
 
 CS = symmetry('mmm');
 SS = symmetry('-1');
