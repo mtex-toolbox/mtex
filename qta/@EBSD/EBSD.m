@@ -67,14 +67,15 @@ else
   else
     CS = {symmetry('cubic','mineral','unkown')};
   end
-
-  if max([0;ebsd.phaseMap(:)]) < numel(CS)
-    C = CS(ebsd.phaseMap+1);
-  elseif numel(ebsd.phaseMap)>1 && numel(CS) == 1
+  
+  if numel(ebsd.phaseMap)>1 && numel(CS) == 1
     C = repmat(CS,numel(ebsd.phaseMap),1);
-    if ebsd.phaseMap(1) == 0
+    if ebsd.phaseMap(1) <= 0
       C{1} = 'notIndexed';
     end
+  elseif max([0;ebsd.phaseMap(:)]) < numel(CS)
+    C = CS(ebsd.phaseMap+1);
+  
   elseif numel(ebsd.phaseMap) == numel(CS)
     C = CS;
   else
