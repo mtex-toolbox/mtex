@@ -25,39 +25,6 @@ end
 % seperate extension
 [~, ~, ext] = fileparts(fname);
 
-% try to switch to painters mode for vector formats
-% by converting RGB graphics to indexed graphics
-if any(strcmpi(ext,{'.eps','.pdf'})) && ~strcmpi(get(gcf,'renderer'),'painters')
-  
-  s = warning('error','MATLAB:hg:patch:RGBColorDataNotSupported');
-  
-  % directly switch to painters
-  try
-    set(gcf,'renderer','painters');
-    drawnow
-    delay(10);
-        
-  catch % if this does not work try to convert RGB to indexed colors
-    try
-      convertFigureRGB2ind;
-      set(gcf,'renderer','painters');
-    catch
-      
-    end  
-  end
-  warning(s);
-end
-  
-% for bitmap formats try to use export fig
-if ~(ismac || ispc) || all(~strcmpi(ext,{'.eps','.pdf'}))
-  try
-    export_fig(gcf,fname,'-m1.5');
-    %export_fig(gcf,fname);
-    if exist(fname,'file'), return;end
-  catch
-  end
-end
-
 % resize figure to look good
 ounits = get(gcf,'Units');
 set(gcf,'PaperPositionMode','auto');
@@ -75,17 +42,47 @@ pos = get(gcf,'PaperPosition');
 set(gcf,'PaperUnits','centimeters','PaperSize',[pos(3),pos(4)]);
 set(gcf,'Units',ounits);
 
+
+% try to switch to painters mode for vector formats
+% by converting RGB graphics to indexed graphics
+if any(strcmpi(ext,{'.eps','.pdf'})) && ~strcmpi(get(gcf,'renderer'),'painters') ...
+    && isRGB
+
+  try
+    convertFigureRGB2ind;
+    set(gcf,'renderer','painters');            
+  catch
+    warning('MTEX:export','Unable to switch to painter''s mode. You may need to export to png or jpg');
+  end
+
+end
+  
+% for bitmap formats try to use export fig
+if ~(ismac || ispc) || all(~strcmpi(ext,{'.eps','.pdf'}))
+  try
+    oldColor = get(gcf,'color');
+    set(gcf,'color','none');
+    export_fig(gcf,fname,'-m1.5');
+    %export_fig(gcf,fname);
+    if exist(fname,'file'), 
+      set(gcf,'color',oldColor);
+      return;
+    end
+  catch
+  end
+  set(gcf,'color',oldColor);
+end
+
+
+
 switch lower(ext(2:end))
 
 case {'eps','ps'}
   flags = {'-depsc'};  
-  %set(gcf,'renderer','painters');
 case 'ill'
   flags = {'-dill'};  
-  %set(gcf,'renderer','painters');  
 case {'pdf'}
   flags = {'-dpdf'};
-  %set(gcf,'renderer','painters');  
 case {'jpg','jpeg'}
   flags = {'-r600','-djpeg'};  
   set(gcf,'renderer','zbuffer');
@@ -117,12 +114,13 @@ end
 
 end
 
-%% ------------------------------------------------------------------
+
+% ------------------------------------------------------------------
 
 function convertFigureRGB2ind
 
 cmaplength = 1024;
-globmap = [];
+globmap = [1,1,1]; % white for NaN values
 
 ax = findall(gcf,'type','axes');
 
@@ -149,8 +147,12 @@ for iax = 1:numel(ax)
   % convert to index data
   [data, map] = rgb2ind(combined, cmaplength);
   
+  % NaN values should be white
+  ind = any(isnan(combined),3);
+  data(ind) = 0;
+    
   % shift data to fit globmap
-  data = data + (iax-1)*cmaplength;
+  data(~ind) = data(~ind) + size(globmap,1);
   globmap = [globmap;map]; %#ok<AGROW>
   
   pos = 1;
@@ -165,7 +167,24 @@ end
 
 %set new colormap
 set(gcf,'colormap',globmap);
-setcolorrange('equal');
+%setcolorrange('equal');
+
+end
+
+%%
+
+function out = isRGB
+
+out = false;
+
+ax = findall(gcf,'type','axes');
+childs = findobj(ax,'-property','CData');
+    
+if isempty(childs), return;end
+    
+CData = ensurecell(get(childs,'CData'));
+    
+out = any(cellfun(@(x) size(x,3)==3,CData));
 
 end
 
