@@ -59,6 +59,7 @@ end
 
 function s=barchar(i,varargin)
 
+i = round(i);
 s = '';
 for j = 1:length(i)
   if (i(j)<0) && check_option(varargin,'latex')
