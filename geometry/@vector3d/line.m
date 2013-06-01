@@ -9,7 +9,7 @@ end
 
 [h p] = scatter(ax,reshape(v,[],1),varargin{:});
 
-p = optiondraw(p,'edgecolor',get_option(varargin,'color','k'),...
+p = optiondraw(p,'edgecolor',get_option(varargin,{'color','linecolor'},'k'),...
   'Marker','none');
 
 if nargout>0
