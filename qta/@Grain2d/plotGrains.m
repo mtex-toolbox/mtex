@@ -76,7 +76,16 @@ setCamera(varargin{:});
 xlabel('x');ylabel('y');
 
 %%
+%d = vertcat(d{:});
+%[ud,m,n] = unique(d);
+%h = [];
+%if numel(ud) < 20 && numel(ud) > 1
+%  for i = 1:numel(ud)
+%    h = [h,plotFaces(boundaryEdgeOrder(n==i),V,d(n==i),varargin{:})];
+%  end
+%else
 h = plotFaces(boundaryEdgeOrder,V,vertcat(d{:}),varargin{:});
+%end
 
 % remove them from legend
 arrayfun(@(x) set(get(get(x,'Annotation'),'LegendInformation'),...
@@ -173,8 +182,8 @@ boundaryEdgeOrder(hole) = ...
 
 Polygons = [boundaryEdgeOrder(:)' holeEdgeOrder{:}];
 
-% what is this needed for?
-%d(numel(boundaryEdgeOrder)+1:numel(Polygons),: ) = 1;
+% how to colorize holes 
+% d(numel(boundaryEdgeOrder)+1:numel(Polygons),: ) = 1;
 d(numel(boundaryEdgeOrder)+1:numel(Polygons),: ) = NaN;
 
 A = cellArea(V,Polygons);
