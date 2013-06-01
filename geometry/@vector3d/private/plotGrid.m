@@ -1,7 +1,7 @@
 function plotGrid(ax, projection, extend, varargin)
 % plot Polar Grid
 
-if ~isappdata(ax,'grid') % there is not grid yet
+if ~isappdata(ax,'grid') % there is no grid yet
 
   % generate grid
   if strcmpi(projection.type,'plain')
@@ -90,8 +90,6 @@ function grid = plotPolarGrid(ax,projection,extend,varargin)
 % generate grid for axes ax
 
 % stepsize
-extend.maxTheta = pi/2;
-extend.minTheta = 0;
 dgrid = get_option(varargin,'grid_res',30*degree);
 dgrid = pi/round((pi)/dgrid);
 
@@ -141,10 +139,10 @@ end
 
 function [h,t] = merid(ax,projection,extend,x,y,rho,varargin)
 
-myextend = extend;
-extend.maxTheta = pi/2;
-extend.minTheta = pi/2;
-[X,Y] = project(sph2vec(pi/2,rho),projection,myextend,varargin{:});
+
+maxTheta = min(extend.maxTheta,pi/2);
+
+[X,Y] = project(sph2vec(maxTheta,rho),projection,extend,varargin{:});
 
 % vertical/horizontal alignment
 va = {'middle','bottom','middle','top'};
