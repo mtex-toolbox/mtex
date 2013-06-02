@@ -104,6 +104,7 @@ setMTEXpref('phaseColorMap',cmap);
 
 %%
 
+setMTEXpref('stopOnSymmetryMissmatch',true)
 setMTEXpref('mtexMethodsAdvise',true)
 
 %% Turn off Grain Selector
