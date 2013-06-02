@@ -27,4 +27,11 @@ if strcmp(csOld.laue,'-1') && isnull(norm(axesOld - eye(3)))
 end
 
 % otherwise put an error since crystal symmetries are equal
-error('Missmatch in crystal symmetries!')
+disp(' ')
+cs1 = csOld; display(cs1)
+cs2 = csNew; display(cs2)
+if getMTEXpref('stopOnSymmetryMissmatch',true)
+  error('The above two symmetries does not match!')
+else
+  warning('MTEX:symmetry:missmatch','The above two symmetries does not match!')
+end
