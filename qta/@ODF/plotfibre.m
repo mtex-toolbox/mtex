@@ -1,7 +1,5 @@
-function [x,omega] = plotfibre(odf,h,r,varargin)
-% plot odf
-%
-% Plots the ODF as various sections which can be controled by options.
+function [x,omega] = plotfibre(odf,varargin)
+% plot odf along a fibre
 %
 %% Syntax
 %  plotfibre(odf,h,r);
@@ -27,12 +25,67 @@ function [x,omega] = plotfibre(odf,h,r,varargin)
 if isempty(ax), newMTEXplot;end
 
 %%
-omega = linspace(-pi,pi,199);
 
-center = get_option(varargin,'CENTER',hr2quat(h,r),{'quaternion','rotation','orientation'});
+if isa(varargin{1},'vector3d')
+  varargin{1} = ensureCS(get(odf,'CS'),varargin(1));
+  omega = linspace(-pi,pi,501);
+  center = get_option(varargin,'CENTER',hr2quat(varargin{1},varargin{2}),{'quaternion','rotation','orientation'});
+  fibre = axis2quat(varargin{2},omega) .* center;
+elseif isa(varargin{1},'quaternion')
+  fibre = varargin{1};
+end
 
-fibre = axis2quat(r,omega) .* center;
+%
+fibre = orientation(fibre,odf(1).CS,odf(2).SS);
+
+
+% find loop
+omega = angle(fibre(2:end),fibre(1));
+fz = find(omega<1e-2);
+
+% remove values to close together
+fz = fz([true,diff(fz)>1]);
+
+
+if any(fz) && round(numel(omega) / fz(1)) == numel(fz) && ...
+    ~check_option(varargin,'comlete')
+  fibre = fibre(1:find(omega<1e-2,1,'first'));
+end
+
+% determine some nice orientations along the fibre
+% this is quit difficult
+e = Euler(fibre) ./ degree;
+
+err = sum(round(100*abs(round(e./5) - e./5)),2);
+
+ind = false(size(err));
+
+while nnz(ind) < 5
+  
+  % new candidates
+  ind2 = min(err) == err;
+  err(ind2) = inf;
+  
+  % compute the distance to the previous ticks
+  if any(ind)
+    d = arrayfun(@(x) min(abs(x-find(ind))),1:numel(ind));  
+    
+    % take only those candidates that are sufficent far away
+    ind2 = ind2 & d.' > max(d) / 1.75;
+  end
+  
+  ind = ind | ind2;
+end
+
+
 x = eval(odf,fibre,varargin{:});%#ok<EVLC>
 
-optionplot(ax{:},omega,x,varargin{:});
-xlim([-pi pi]); xlabel('omega')
+optionplot(ax{:},1:numel(ind),x,varargin{:});
+xlim(gca,[1,numel(ind)]);
+
+label = arrayfun(@(i) char(fibre(i),'nodegree'),find(ind),'uniformoutput',false);
+xticklabel_rotate(find(ind),90,label);
+
+
+
+
