@@ -34,5 +34,5 @@ else
   n(ind) = orth(r(ind));
 end
 
-q = axis2quat(n,acos(dot(h,r)));
+q = axis2quat(n,angle(h,r));
 
