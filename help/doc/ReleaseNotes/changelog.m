@@ -1,5 +1,25 @@
 %% MTEX Changelog
 %
+%% MTEX 3.4.2 - 06/2013
+%
+% *bugfix release*
+%
+% * option south is working again in pole figure plots
+% * geometric mean in tensor averagin, thanks to Julian Mecklenburgh
+% * improved support of osc EBSD format
+% * tensor symmetry check error can be turned of and has more detailed
+% error message
+% * improved syntax for Miller
+%   Miller(x,y,z,'xyz',CS)
+%   Miller('polar',theta,rho,CS)
+% * ensure same marker size in EBSD pole figure plots
+% * allow plotting Schmid factor for grains and EBSD data
+% * allow to anotate Miller to AxisDistribution plots
+% * improved figure export
+% * allow for negative phase indices in EBSD data
+% * bug fix: https://code.google.com/p/mtex/issues/detail?id=115
+% * improved ODF fibre plot
+%
 %% MTEX 3.4.1 - 04/2013
 %
 % *bugfix release*
