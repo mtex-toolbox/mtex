@@ -17,8 +17,9 @@ w = warning;
 warning off all
 for i =1:length(interfaces)
   try
-    n = nargout(interfaces{i}(1:end-2));
-    [args{1:(2*(n>1))}] = feval(interfaces{i}(1:end-2),fname,varargin{:},'check');
+    n = nargout(interfaces{i}(1:end-2)); %#ok<NASGU>
+    %[args{1:(2*(n>1))}] = feval(interfaces{i}(1:end-2),fname,varargin{:},'check');    
+    eval(['[args{1:(2*(n>1))}] = ' interfaces{i}(1:end-2) '( fname,varargin{:},''check'');']);
     
     if numel(args) > 1
       options = args{2};
