@@ -117,59 +117,7 @@ end
 
 % ------------------------------------------------------------------
 
-function convertFigureRGB2ind
 
-cmaplength = 1024;
-globmap = [1,1,1]; % white for NaN values
-
-ax = findall(gcf,'type','axes');
-
-for iax = 1:numel(ax)
-  
-  childs = findobj(ax(iax),'-property','CData');
-    
-  if isempty(childs), continue;end
-    
-  CData = get(childs,'CData');
-  
-  CData = ensurecell(CData);
-  
-  % take only RGB values
-  ind = cellfun(@(x) size(x,3)==3,CData);
-  childs = childs(ind);
-  CData = CData(ind);
-  
-  % cat Data into one vector
-  combined = cat(1,CData{:});
-  
-  if size(combined,3) == 1, continue;end
-  
-  % convert to index data
-  [data, map] = rgb2ind(combined, cmaplength);
-  
-  % NaN values should be white
-  ind = any(isnan(combined),3);
-  data(ind) = 0;
-    
-  % shift data to fit globmap
-  data(~ind) = data(~ind) + size(globmap,1);
-  globmap = [globmap;map]; %#ok<AGROW>
-  
-  pos = 1;
-  for ind = 1:numel(CData)
-    
-    s = size(CData{ind});
-    set(childs(ind),'CData',...
-      reshape(double(data(pos:pos+prod(s(1:2))-1)),s(1:2)));
-    pos = pos + prod(s(1:2));
-  end
-end
-
-%set new colormap
-set(gcf,'colormap',globmap);
-%setcolorrange('equal');
-
-end
 
 %%
 
