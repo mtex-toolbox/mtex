@@ -57,7 +57,7 @@ end
 
 %% antipodal
 if check_option(varargin,'antipodal') || check_option(v,'antipodal') ...
-    && ~strcmp(Laue(sym),'m-3')
+    %&& ~strcmp(Laue(sym),'m-3')
   swap = false(numel(v),1);
 else
   swap = d1 > d2;

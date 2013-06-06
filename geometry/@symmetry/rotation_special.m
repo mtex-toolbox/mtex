@@ -36,7 +36,7 @@ else
       v = vector3d;
     case 'm-3'
       q = Axis(vector3d(1,1,1),3);
-      v = vector3d;
+      v = vector3d(1,0,0);
     case 'm-3m'
       q = Axis(vector3d(1,1,1),3);
       v = vector3d(1,1,0);

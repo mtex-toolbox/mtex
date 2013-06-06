@@ -48,14 +48,17 @@ switch Laue(cs)
     center = sph2vec(pi/6,pi/8); 
   case 'm-3'
     if ~check_option(varargin,'antipodal')
-      warning('For symmetry ''m-3'' only antipodal colorcoding is supported right now'); %#ok<WNTAG>
+      
+      rgb = m3h2HSV(h,cs,varargin);
+      return
+      
+    else
+      varargin = delete_option(varargin,'antipodal');
+      constraints = [vector3d(1,-1,0),vector3d(-1,0,1),yvector,zvector];
+      constraints = constraints ./ norm(constraints);
+      center = sph2vec(pi/6,pi/8);
     end
-    
-    varargin = delete_option(varargin,'antipodal');
-    constraints = [vector3d(1,-1,0),vector3d(-1,0,1),yvector,zvector];
-    constraints = constraints ./ norm(constraints);
-    center = sph2vec(pi/6,pi/8);
-    
+           
   otherwise
     
     if check_option(varargin,'antipodal'), maxRho = maxRho * 2;end
@@ -74,7 +77,7 @@ if strcmp(Laue(cs),'m-3')
   pm = rho > pi/4;
   rho(pm) = pi/2 - rho(pm);
   sh = vector3d('polar',theta,rho);
-  
+    
 end
 
 % if the Fundamental region does not start at rho = 0
@@ -133,7 +136,62 @@ dh(imag(dh) ~=0 ) = 0;
 dh = dh(:);
 
 
-%% compute colors
+% black center
+dh(pm) = (1-dh(pm))./2;
+
+% white center
+dh(~pm) = 0.5+dh(~pm)./2;
+
+
+rgb = ar2rgb(omega,dh,get_option(varargin,'grayValue',1));
+
+end
+
+function rgb = m3h2HSV(h,varargin)
+
+
+[sh,pm] = project2FundamentalRegion(vector3d(h),{symmetry('m-3')});
+
+%[theta,rho] = polar(sh);
+%pm = rho > pi/2;
+%rho(pm) = pi - rho(pm);
+
+%sh = vector3d('polar',theta,rho);
+
+%pm = true(size(pm));
+
+center = vector3d(1,1,1);
+
+% compute angle -> hue value
+rot = rotation('axis',vector3d(1,-1,0),'angle',angle(center,zvector));
+[~,rhoStart] = polar(rot * vector3d(1,1,0));
+[~,rhoStop] = polar(rot * vector3d(1,0,1));
+
+[theta,rho] = polar(rot*sh);
+
+rho = mod(rho - rhoStart,2*pi) ./ mod(rhoStop - rhoStart,2*pi);
+
+constraints = [vector3d(1,0,0),vector3d(0,1,0)];
+cc = cross(sh,center);
+cc = cc ./ norm(cc);
+
+% compute distance to constraints
+dh = zeros([size(sh),length(constraints)]);
+for i = 1:length(constraints)
+    
+  % boundary points
+  bc = cross(cc,constraints(i));
+  bc = bc ./ norm(bc);
+  
+  % compute distances
+  dh(:,:,i) = angle(-sh,bc)./angle(-center,bc);
+  dh(isnan(dh)) = 1;
+end
+dh = min(dh,[],3);
+
+
+
+% compute colors
 % black center
 dh(pm) = (1-dh(pm))./2;
 
@@ -147,8 +205,25 @@ L = (dh - 0.5) .* grayValue(:) + 0.5;
 
 S = grayValue(:) .* (1-abs(2*dh-1)) ./ (1-abs(2*L-1));
 
-%% compute colors
+% compute rgb values
+
+[h,s,v] = hsl2hsv(min(1,2*(rho-0.5)),S,L);
+rgb = hsv2rgb(h,s,v);
+
+end
+
+%% compute rgb values from angle and radius
+function rgb = ar2rgb(omega,radius,grayValue)
+
+
+L = (radius - 0.5) .* grayValue(:) + 0.5;
+
+S = grayValue(:) .* (1-abs(2*radius-1)) ./ (1-abs(2*L-1));
+
 
 [h,s,v] = hsl2hsv(omega./2./pi,S,L);
+
 rgb = hsv2rgb(h,s,v);
+
+end
 
