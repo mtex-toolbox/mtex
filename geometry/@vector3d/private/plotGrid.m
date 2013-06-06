@@ -127,9 +127,12 @@ hb = [hb circ(ax,projection,extend,minTheta,maxTheta,'boundary')];
 h = [h arrayfun(@(t) circ(ax,projection,extend,minTheta,t),theta)];
 
 % draw meridians
-[hm,tm] = arrayfun(@(t) merid(ax,projection,extend,x,y,t),rho);
-h = [h hm];
-t = [t tm];
+if isnumeric(extend.maxTheta)
+  [hm,tm] = arrayfun(@(t) merid(ax,projection,extend,x,y,t),rho);
+  h = [h hm];
+  t = [t tm];
+end
+
 
 grid.boundary = hb;
 grid.grid     = h;
@@ -138,7 +141,6 @@ grid.ticks    = t;
 end
 
 function [h,t] = merid(ax,projection,extend,x,y,rho,varargin)
-
 
 maxTheta = min(extend.maxTheta,pi/2);
 
