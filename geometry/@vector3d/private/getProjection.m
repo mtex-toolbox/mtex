@@ -49,8 +49,9 @@ else
   theta = maxTheta(rho);
 end
 
-% project the,
-[x,y] = project( [sph2vec(0,rho) sph2vec(theta,rho)],projection,extend);
+% project the
+
+[x,y] = project( [sph2vec(0,rho) sph2vec(pi,rho) sph2vec(theta,rho)],projection,extend);
 
 % set bounding box
 projection.bounds = [min(x(:)),min(y(:)),max(x(:)),max(y(:))];
