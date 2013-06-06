@@ -1,5 +1,5 @@
-function [f,iters] = mhyper(kappa)
-% multivariat hypergeometric function 1F1(1/2,2, kappa)
+function y = mhyper(kappa)
+% multivariat hypergeometric function 1F1(1/2,p/2, kappa)
 %
 % reference:
 % G. HILLIER, R. KAN, and X. WANG: 
@@ -10,31 +10,36 @@ function [f,iters] = mhyper(kappa)
 % with many thanks to Raymond Kan
 %
 
-% corresponds to 1/b, where  b is the second argument of 1F1
-c = 1/2;
 s = length(kappa);
+p = poly(kappa);          % characteristic polynomial of matrix X  (with roots a_i)
+p = fliplr(p(2:end)); % eliminate leading coefficient and reflect
+d = ones(s,1);
 
-p = poly(kappa);  % characteristic polynomial of matrix X  (with roots a_i)
-p = p(end:-1:2);  % eliminate leading coefficient and reflect
+% corresponds to 1/b, where  b is the second argument of 1F1
+beta1 = s/2;
+c = 1/beta1;
 
-% initial values
-d = repmat(c,s,1);
-f = 1;
-
+y = 1;
 % the first few steps are a little different
-for i = 1:s-1
-    d(i+1) = (-(i:2*i-1).*p(s-i+1:end))*d(1:i)/(2*i);
-    f = f + d(i+1);
-    d = d/(2+i);    
+for i=1:s-1
+  d(i+1) = (-((i:2*i-1)./(2*i)).*p(s-i+1:s))*d(1:i);
+  y = y+c*d(i+1);
+  c = c/(beta1+i);
 end
 
+circshift = mod(1:s,s)+1;
+
+kp = (-s:-1)/2.*p;
 % the main iteration, note the cyclic shift of the entries of vector d
-while max(abs(d))/(abs(f)+1) > eps
-  i=i+1;
+while c*d(end) > eps
+  i = i+1;
   
-  d = [d(2:end); (-(2*i-s:2*i-1).*p)*d/(2*i)];
-  f = f + d(end);
-  d = d/(2+i);
+  d(1) = (-(kp/i+p))*d;
+  d = d(circshift);
+  
+  y = y + c*d(end);
+  c = c/(beta1+i);
 end
 
-iters = i-s+1;
+
+
