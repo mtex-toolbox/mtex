@@ -41,8 +41,7 @@ end
 
 [p,v] = feval(test_fun, n, kappa, lambda);
 
-T = 1-gammainc(p/2,v/2);
-
+T = 1-gammainc(p/2,v/2,'upper');
 % v=2, exp(-x/2)
 % T = 1-chi2cdf(p,v);
 
