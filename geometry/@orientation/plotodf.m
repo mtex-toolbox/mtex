@@ -49,7 +49,7 @@ end
 sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','omega','axisangle'},'phi2');
 [symbol,labelx,labely] = sectionLabels(sectype);
 
-if strcmpi(sectype,'sigma')
+if any(strcmpi(sectype,{'sigma','omega','axisangle'}))
   varargin = [{'innerPlotSpacing',10},varargin];
 else
   varargin = [{'projection','plain',...
