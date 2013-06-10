@@ -146,8 +146,10 @@ end
 % ensure same marker size in all scatter plots
 if check_option(varargin,'unifyMarkerSize')
   ax = findobj(a,'tag','dynamicMarkerSize');
-  markerSize = get(ax,'UserData');
-  arrayfun(@(x) set(x,'UserData',min(markerSize{:})),ax);
+  if ~isempty(ax)
+    markerSize = ensurecell(get(ax,'UserData'));
+    set(ax,'UserData',min([markerSize{:}]));
+  end
 end
 
 set(gcf,'ResizeFcn',@(src,evt) figResize(src,evt,a));
