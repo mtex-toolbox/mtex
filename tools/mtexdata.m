@@ -73,7 +73,7 @@ catch %#ok<CTCH> % if can not load -> import
       case 'ebsd'
         [S.CS,S.ebsd] = feval(['mtexdata_' list(ndx).name]);        
       case 'pf'
-        [S.CS,S.h,S.pf,S.c] = feval(['mtexdata_' list(ndx).name]);
+        [S.CS,S.h,S.c,S.pf] = feval(['mtexdata_' list(ndx).name]);
     end
     disp([' saving data to ' file])
     save(file,'-struct','S');
