@@ -49,12 +49,11 @@ try
           options = {'X||a'};
         case '2'
           options = {'X||a*'};
-          warning('MTEX:unsupportedSymmetry','symmetry not yet supported!')
         case '1'
           options = {'X||a'};
         case '20'
           laue = {'2'};
-          options = {'X||a'};
+          options = {'y||b','z||c'};
         otherwise
           if lattice(6) ~= 90
             options = {'X||a'};
@@ -80,8 +79,14 @@ try
   end
   
   % get number of columns
-  if isempty(sscanf(hl{nh+1},'%*f %*f %*f %*f %*f %*f %*f %*f %*f %*f %s\n'))
+  if isempty(sscanf(hl{nh+1},'%*f %*f %*f %*f %*f %*f %*f %*f %*f %*f\n'))
+  
+    ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
+      'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Phase' 'SEM_signal'},...
+      'Columns',1:9,varargin{:},'header',nh);
     
+  elseif isempty(sscanf(hl{nh+1},'%*f %*f %*f %*f %*f %*f %*f %*f %*f %*f %s\n'))
+        
     ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
       'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Phase' 'SEM_signal' 'Fit'},...
       'Columns',1:10,varargin{:},'header',nh);

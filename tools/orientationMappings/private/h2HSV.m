@@ -20,9 +20,12 @@ if check_option(varargin,'antipodal')
       center = zvector;      
       maxRho = pi;
             
-    case '2/m'
+    case '2/m' %ok
       
-      warning('not yet supported')
+      rot = get(cs,'rotation');      
+      constraints = get(rot(2),'axis');
+      center = constraints;
+      maxRho = pi;
       
     case {'-3','4/m','6/m'} % ok
       
@@ -67,11 +70,18 @@ if check_option(varargin,'antipodal')
 else
   
   switch Laue(cs)
-  
-    case {'-1','2/m','-3','4/m','6/m'} % all working but 2/m
+         
+    case {'-1','-3','4/m','6/m'} % ok
       
       constraints = zvector;      
       center = zvector;      
+    
+    case '2/m' %ok
+      
+      rot = get(cs,'rotation');      
+      constraints = get(rot(2),'axis');
+      center = constraints;
+      maxRho = pi;
       
     case 'm-3m'% ok
       
@@ -84,7 +94,7 @@ else
       center = vector3d(1,1,1);
       constraints = [vector3d(1,0,0),vector3d(0,1,0)];
       minRho = -60*degree;
-      maxRho = 60*degree;
+      maxRho = 120*degree;
       
     case {'mmm','-3m','4/mmm','6/mmm'} % ok
     
@@ -94,6 +104,7 @@ else
   end  
 end
 
+maxRho = maxRho + minRho;
 
 % if the Fundamental region does not start at rho = 0
 constraints = axis2quat(zvector,rho_min) * constraints;
