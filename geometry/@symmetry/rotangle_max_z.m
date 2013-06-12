@@ -5,7 +5,12 @@ switch Laue(s)
   case '-1'                          % I
     rho = 2*pi;
   case '2/m'                         % C2
-    rho = 2*pi;
+    rot = get(s,'rotation');
+    if ~isnull(dot(get(rot(2),'axis'),zvector)) || check_option(varargin,'antipodal')
+      rho = pi;
+    else      
+      rho = 2*pi;      
+    end    
   case {'mmm','m-3'}               % D2, T
     rho = pi/(1+check_option(varargin,'ALPHA'));
   case '-3'                          % C3
