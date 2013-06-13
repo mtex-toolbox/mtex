@@ -9,6 +9,7 @@ ss(~ind) = ss(~ind) .* (2 - ll(~ind));
 
 v = (ll + ss) ./ 2;
 s = (2 * ss) ./ (ll + ss);
+s(isnan(s)) = 0;
 
 end
 

@@ -27,9 +27,15 @@ end
 maxTheta = rotangle_max_y(cs,varargin{:})/2;
 v = [Miller(1,0,0),Miller(1,1,0),Miller(0,1,0),Miller(-1,2,0),Miller(0,0,1)];
 
+fak = 2;
 switch Laue(cs)  
   case '-3m'
-    minRho = -mod(get(Miller(1,0,-1,0,cs),'rho'),120*degree);
+    a = get(cs,'axis');
+    minRho = mod(get(a(1),'rho'),120*degree);
+    if check_option(varargin,'antipodal')
+      minRho = minRho-30*degree;
+      fak = 1;
+    end
   case 'm-3m'
     if check_option(varargin,'antipodal')
       maxRho = pi/4;
@@ -65,7 +71,7 @@ else
   
   % try to make minRho close to true x Axis  
   drho = minRho - (1-NWSE(getMTEXpref('xAxisDirection')))*90*degree;  
-  drho = floor(round(100*drho./maxRho)./100)*maxRho;
+  drho = ceil(round(100*drho./maxRho*fak)./100)*maxRho/fak;
   minRho = minRho - drho;
   
   v = set(v,'CS',cs);
