@@ -1,4 +1,4 @@
-function [v,swap,minRho] = project2FundamentalRegion(v,sym,varargin)
+function [v,vAntipodal,swap,minRho] = project2FundamentalRegion(v,sym,varargin)
 % projects vectors to the fundamental region of the inverse pole figure
 %
 %% Input
@@ -10,7 +10,7 @@ function [v,swap,minRho] = project2FundamentalRegion(v,sym,varargin)
 %  antipodal  - include [[AxialDirectional.html,antipodal symmetry]]
 %
 %% Output
-%  v      - @vector3d
+%  v     polar( - @vector3d
 %  swap   - .....
 %  minRho - begin of Fundamental region
 
@@ -44,27 +44,32 @@ rho = modCentered(rho,rotangle_max_z(sym),minRho);
 d1 = rho + 1000*theta;
 [d1,th1,rh1] = selectMinbyColumn(d1,theta,rho);
 
+v = sph2vec(th1,rh1);
+
 %% apply inversion
 if ~isempty(rho_rot)
-  rho2 = modCentered(2*rho_rot - rho,rotangle_max_z(sym),minRho);
-  d2 = rho2 + 1000*theta;
-  [d2,th2,rh2] = selectMinbyColumn(d2,theta,rho2);
-else
+  rho2 = modCentered(pi+2*rho_rot - rho,rotangle_max_z(sym),minRho);
+  theta2 = theta;
+elseif check_option(varargin,'antipodal') || check_option(v,'antipodal')
   rho2 = modCentered(pi + rho,rotangle_max_z(sym),minRho);
-  d2 = rho2 + 1000*(pi-theta);
-  [d2,th2,rh2] = selectMinbyColumn(d2,pi-theta,rho2);
+  theta2 = pi - theta;    
+else
+  rho2 = rho;
+  theta2 = pi - theta;
 end
 
+d2 = rho2 + 1000*theta2;
+[d2,th2,rh2] = selectMinbyColumn(d2,theta2,rho2);
+
 %% antipodal
-if check_option(varargin,'antipodal') || check_option(v,'antipodal') ...
-    %&& ~strcmp(Laue(sym),'m-3')
+if check_option(varargin,'antipodal') || check_option(v,'antipodal')
   swap = false(numel(v),1);
 else
   swap = d1 > d2;
 end
 
-[d,theta,rho] = selectMinbyColumn([d1;d2],[th1;th2],[rh1;rh2]);
-v = sph2vec(theta,rho);
+[~,theta,rho] = selectMinbyColumn([d1;d2],[th1;th2],[rh1;rh2]);
+vAntipodal = sph2vec(theta,rho);
 
 function d = modCentered(a,b,c)
 

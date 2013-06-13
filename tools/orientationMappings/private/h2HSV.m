@@ -4,12 +4,14 @@ function [rgb,options] = h2HSV(h,cs,varargin)
 options = extract_option(varargin,'antipodal');
 varargin = delete_option(varargin,'complete');
 
+% region to be plotted
 [minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(cs,varargin{:}); %#ok<ASGLU>
 maxRho = maxRho - minRho;
 
+
 % project to fundamental region
 h = vector3d(h(:)); h = h./norm(h);
-[sh,pm,rho_min] = project2FundamentalRegion(vector3d(h),{cs},varargin{:});
+[sh,shAnti,pm] = project2FundamentalRegion(vector3d(h),{cs},varargin{:});
 
 if check_option(varargin,'antipodal')
   switch Laue(cs)
@@ -20,24 +22,41 @@ if check_option(varargin,'antipodal')
       center = zvector;      
       maxRho = pi;
             
-    case '2/m' %ok
+    case '2/m'
       
-      rot = get(cs,'rotation');      
+      rot = get(cs,'rotation');
       constraints = get(rot(2),'axis');
       center = constraints;
       maxRho = pi;
-      
-    case {'-3','4/m','6/m'} % ok
+      shAnti = sh;
+          
+    case '-3'
       
       constraints = [yvector,axis2quat(zvector,maxRho/2) * (-yvector),zvector];
       center = sph2vec(pi/4,maxRho/4);      
       
       
       % restrict fundamental region in black and white
-      [theta,rho] = polar(sh);
+      [theta,rho] = polar(shAnti);
       pm = rho > maxRho/2;
       rho(pm) = maxRho - rho(pm);
-      sh = vector3d('polar',theta,rho);
+      shAnti = vector3d('polar',theta,rho);
+      
+      maxRho = 2*pi;
+      
+      warning('This colorcoding is not yet supported. Please use without option antipodal.')
+      
+    case {'4/m','6/m'} % ok
+      
+      constraints = [yvector,axis2quat(zvector,maxRho/2) * (-yvector),zvector];
+      center = sph2vec(pi/4,maxRho/4);      
+      
+      
+      % restrict fundamental region in black and white
+      [theta,rho] = polar(shAnti);
+      pm = rho > maxRho/2;
+      rho(pm) = maxRho - rho(pm);
+      shAnti = vector3d('polar',theta,rho);
       
       maxRho = 2*pi;
       
@@ -54,12 +73,30 @@ if check_option(varargin,'antipodal')
       maxRho = 2*pi;
 
       % restrict fundamental region in black and white
-      [theta,rho] = polar(sh);
+      [theta,rho] = polar(shAnti);
       pm = rho > pi/4;
       rho(pm) = pi/2 - rho(pm);
-      sh = vector3d('polar',theta,rho);
+      shAnti = vector3d('polar',theta,rho);
       
-    case {'mmm','-3m','4/mmm','6/mmm'} % ok
+    case '-3m' % ok
+      
+      constraints = [axis2quat(zvector,15*degree)*yvector,axis2quat(zvector,45*degree) * (-yvector),zvector];
+      center = sph2vec(pi/4,30*degree);      
+      
+      
+      % restrict fundamental region in black and white
+      [theta,rho] = polar(shAnti);
+      
+      rho = rho - minRho;
+      pm = rho > 45 * degree | rho < 15*degree;
+      rho(rho>45*degree) = 90*degree-rho(rho>45*degree);
+      rho(rho<15*degree) = 30*degree-rho(rho<15*degree);
+      rho = rho + minRho;
+      shAnti = vector3d('polar',theta,rho);
+            
+      maxRho = 2*pi;
+      
+    case {'mmm','4/mmm','6/mmm'} % ok
         
       constraints = [yvector,axis2quat(zvector,maxRho) * (-yvector),zvector];
       center = sph2vec(pi/4,maxRho/2);
@@ -82,6 +119,8 @@ else
       constraints = get(rot(2),'axis');
       center = constraints;
       maxRho = pi;
+      shAnti = sh;
+      pm = dot(shAnti,center)>0;
       
     case 'm-3m'% ok
       
@@ -91,12 +130,28 @@ else
       
     case 'm-3' % ok
       
-      center = vector3d(1,1,1);
-      constraints = [vector3d(1,0,0),vector3d(0,1,0)];
       minRho = -60*degree;
       maxRho = 120*degree;
       
-    case {'mmm','-3m','4/mmm','6/mmm'} % ok
+      center = axis2quat(zvector,-minRho) * vector3d(1,1,1);
+      constraints = axis2quat(zvector,-minRho) * [vector3d(1,0,0),vector3d(0,1,0)];
+      
+      
+    case '-3m'
+      
+      constraints = [yvector,axis2quat(zvector,maxRho/2) * (-yvector),zvector];
+      center = sph2vec(pi/4,maxRho/4);      
+      maxRho = 2*pi;
+
+      [theta,rho] = polar(sh);
+      
+      rho = mod(rho - minRho,120*degree);
+      pm = rho > 60 * degree;
+      rho(pm) = 120*degree-rho(pm);
+      rho = rho + minRho;
+      shAnti = vector3d('polar',theta,rho);
+                  
+    case {'mmm','4/mmm','6/mmm'} % ok
     
       constraints = [yvector,axis2quat(zvector,maxRho/2) * (-yvector),zvector];
       center = sph2vec(pi/4,maxRho/4);      
@@ -107,8 +162,8 @@ end
 maxRho = maxRho + minRho;
 
 % if the Fundamental region does not start at rho = 0
-constraints = axis2quat(zvector,rho_min) * constraints;
-center = axis2quat(zvector,rho_min) * center;
+constraints = axis2quat(zvector,minRho) * constraints;
+center = axis2quat(zvector,minRho) * center;
 
 % maybe a custom center is given
 center = get_option(varargin,'colorcenter',center);
@@ -116,11 +171,15 @@ center = project2FundamentalRegion(center./ norm(center),{cs},varargin{:});
 options = [{'colorcenter',center},options];
 
 % compute angle of the points "sh" relative to the center point "center"
-omega = calcAngle(sh,center);
-omega = mod(mod(omega-minRho,2*pi)./(maxRho-minRho),1);
+omega = calcAngle(shAnti,center);
+if maxRho-minRho < 2*pi-1e-5
+  omega = mod(mod(omega-minRho,2*pi)./(maxRho-minRho),1);
+else
+  omega = mod(omega./2./pi,1);
+end
 
 % compute saturation
-[radius,options] = calcRadius(sh,center,constraints,options,varargin);
+[radius,options] = calcRadius(shAnti,center,constraints,options,varargin);
 
 % black center
 radius(pm) = (1-radius(pm))./2;
@@ -142,7 +201,7 @@ function rgb = ar2rgb(omega,radius,grayValue)
 L = (radius - 0.5) .* grayValue(:) + 0.5;
 
 S = grayValue(:) .* (1-abs(2*radius-1)) ./ (1-abs(2*L-1));
-
+S(isnan(S))=0;
 
 [h,s,v] = hsl2hsv(omega,S,L);
 
@@ -217,3 +276,20 @@ omega(isnan(omega)) = 0;
 omega = omega(:);
 
 end
+
+% some test cases
+% 
+% cs1 = symmetry('-3m','x||a*')
+%
+% -> 2-fold axis is || y
+% fundamental region should start at 90 degree
+% ebsdColorbar(cs,'position',[50 50 950  451 ],'complete')
+% annotate(Miller('polar',65*degree,40*degree,cs),'all')
+%
+% cs2 = symmetry('-3m','x||a')
+% ebsdColorbar(cs2,'position',[50 50 950  451 ],'complete')
+%
+% now the antipodal case
+%
+% ebsdColorbar(cs1,'position',[50 50 950  451 ],'antipodal')
+% ebsdColorbar(cs2,'position',[50 50 950  451 ],'antipodal','complete')
