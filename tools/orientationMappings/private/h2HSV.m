@@ -179,7 +179,7 @@ else
 end
 
 % compute saturation
-[radius,options] = calcRadius(shAnti,center,constraints,options,varargin);
+[radius,options] = calcRadius(shAnti,center,constraints,options,varargin{:});
 
 % black center
 radius(pm) = (1-radius(pm))./2;

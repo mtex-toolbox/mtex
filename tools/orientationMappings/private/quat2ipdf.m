@@ -7,30 +7,9 @@ if isa(ori,'orientation') && ...
    
   % compute the center of the fundamental region
   cs = get(ori,'CS');
-    
-  switch Laue(cs)
-    
-    case {'m-3m','m-3'}
-      
-      center = sph2vec(pi/6,pi/8);
-      
-    case {'-1','4/m','6/m'}
-      
-      center = zvector;
-      
-    case '2/m'
-      
-      center = yvector;
-      
-    otherwise
-      
-      [minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(cs,varargin{:});      
-      maxRho = maxRho - minRho;
-      if check_option(varargin,'antipodal'), maxRho = maxRho * 2;end
-      center = sph2vec(pi/4,maxRho/4);
-      
-  end
-
+  [~,options] = h2HSV(xvector,cs,varargin{:});
+  center = get_option(options,'colorcenter');
+  
   % compute r such that mean(ori)^-1 * r = center
   r = mean(ori) * center;
   
