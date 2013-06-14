@@ -13,3 +13,8 @@ s(isnan(s)) = 0;
 
 end
 
+% r = linspace(1,2,30);
+% omega = linspace(0,2*pi);
+% [r,omega] = meshgrid(r,omega);
+% h = surf();
+% surf(r,omega,zeros(size(r)),hsv2rgb(omega./2./pi,ones(size(omega)),ones(size(omega))))
