@@ -78,7 +78,7 @@ end
 function ipdfColorbar(cs,cc,varargin)
 
 % hkl is antipodal
-if strcmp(cc,'ipdfHKL'),  varargin = [{'antipodal'},varargin]; end
+if strcmpi(cc,'ipdfHKL'),  varargin = [{'antipodal'},varargin]; end
 
 [minTheta,maxTheta,minRho,maxRho,v] = getFundamentalRegionPF(cs,varargin{:});
 
