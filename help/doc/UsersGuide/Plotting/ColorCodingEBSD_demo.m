@@ -88,55 +88,60 @@ figure, plotipdf(odf,zvector,'antipodal','silent')
 close all
 
 %% IPDF Overview
-% standard colorcoding and the so called (antipodal) oxford colorcoding
+% standard colorcoding with and without antipodal symmetry
 
 %% 
 % *triclinic symmetry*
 ebsdColorbar(symmetry('-1'))
-ebsdColorbar(symmetry('-1'),'colorcoding','ipdfHKL')
+ebsdColorbar(symmetry('-1'),'antipodal')
 
 %%
 % *monoclinic symmetry*
 ebsdColorbar(symmetry('2/m'))
-ebsdColorbar(symmetry('2/m'),'colorcoding','ipdfHKL')
+ebsdColorbar(symmetry('2/m'),'antipodal')
 
 %%
 % *orthorhombic symmetry*
 ebsdColorbar(symmetry('mmm'))
-ebsdColorbar(symmetry('mmm'),'colorcoding','ipdfHKL')
+ebsdColorbar(symmetry('mmm'),'antipodal')
 
 %%
 % *tetragonal symmetry*
 ebsdColorbar(symmetry('4/m'))
-ebsdColorbar(symmetry('4/m'),'colorcoding','ipdfHKL')
+ebsdColorbar(symmetry('4/m'),'antipodal')
 
 %% 
 % *trigonal symmetry*
 ebsdColorbar(symmetry('-3'))
-ebsdColorbar(symmetry('-3'),'colorcoding','ipdfHKL')
+ebsdColorbar(symmetry('-3'),'antipodal')
 
 %%
 %
 ebsdColorbar(symmetry('-3m'))
-ebsdColorbar(symmetry('-3m'),'colorcoding','ipdfHKL')
+ebsdColorbar(symmetry('-3m'),'antipodal')
 
 %%
 %
 ebsdColorbar(symmetry('4/mmm'))
-ebsdColorbar(symmetry('4/mmm'),'colorcoding','ipdfHKL')
+ebsdColorbar(symmetry('4/mmm'),'antipodal')
 
 %% 
 % *hexagonal symmetry*
 ebsdColorbar(symmetry('6/m'))
-ebsdColorbar(symmetry('6/m'),'colorcoding','ipdfHKL')
+ebsdColorbar(symmetry('6/m'),'antipodal')
 
 %%
 %
 ebsdColorbar(symmetry('6/mmm'))
-ebsdColorbar(symmetry('6/mmm'),'colorcoding','ipdfHKL')
+ebsdColorbar(symmetry('6/mmm'),'antipodal')
 
 %% 
 % *cubic symmetry*
+ebsdColorbar(symmetry('m-3'))
+ebsdColorbar(symmetry('m-3'),'antipodal')
+
+%% 
+% 
 ebsdColorbar(symmetry('m-3m'))
-ebsdColorbar(symmetry('m-3m'),'colorcoding','ipdfHKL')
+ebsdColorbar(symmetry('m-3m'),'antipodal')
 

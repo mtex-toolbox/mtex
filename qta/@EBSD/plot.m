@@ -18,7 +18,8 @@ function plot(ebsd,varargin)
 [ax,ebsd,varargin] = getAxHandle(ebsd,varargin{:});
 
 % determine plot type
-if check_option(varargin,{'scatter','axisangle','rodrigues'})
+if check_option(varargin,{'scatter','axisangle','rodrigues'}) && ...
+  ~check_option(varargin,'colorcoding')
   scatter(ax{:},ebsd,varargin{:});
 elseif check_option(varargin,{'sections','sigma','phi1','phi2','alpha','gamma'})
   plotodf(ax{:},ebsd,varargin{:});
