@@ -4,6 +4,7 @@
 %
 % *bugfix release*
 %
+% * fixed some inverse pole figure color codings
 % * option south is working again in pole figure plots
 % * geometric mean in tensor averagin, thanks to Julian Mecklenburgh
 % * improved support of osc EBSD format
