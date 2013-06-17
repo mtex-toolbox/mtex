@@ -16,5 +16,9 @@ end
 % r = linspace(1,2,30);
 % omega = linspace(0,2*pi);
 % [r,omega] = meshgrid(r,omega);
-% h = surf();
-% surf(r,omega,zeros(size(r)),hsv2rgb(omega./2./pi,ones(size(omega)),ones(size(omega))))
+% x = r .* cos(omega);
+% y = r .* sin(omega);
+% z = zeros(size(r));
+% rgb = hsv2rgb(omega./2./pi,ones(size(omega)),ones(size(omega)));
+% surf(x,y,z,rgb)
+% axis equal
