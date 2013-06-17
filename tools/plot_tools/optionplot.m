@@ -1,4 +1,4 @@
-function optionplot(x,y,varargin)
+function h = optionplot(x,y,varargin)
 % plot y against x using the options in varargin
 %
 
