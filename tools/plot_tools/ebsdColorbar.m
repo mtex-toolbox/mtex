@@ -90,9 +90,9 @@ d = orientation2color(h,cc,cs,varargin{:});
 
 if numel(d) == 3*numel(h)
   d = reshape(d,[size(h),3]);
-  surf(h,d);
+  surf(h,d,varargin{:});
 else
-  contourf(h,d);
+  contourf(h,d,varargin{:});
 end
 
 %title(['r = ' char(r,'tex')])
@@ -107,8 +107,8 @@ end
 %% colorbar for Euler color coding
 function odfColorbar(cs,cc,varargin)
 
-  
-[S3G,S2G,sec] = SO3Grid('plot',cs,symmetry,varargin{:});
+S3Goptions = delete_option(varargin,'axisAngle');
+[S3G,S2G,sec] = SO3Grid('plot',cs,symmetry,S3Goptions{:});
 
 [s1,s2,s3] = size(S3G);
 
