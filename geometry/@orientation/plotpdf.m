@@ -91,4 +91,49 @@ if isempty(ax)
   setappdata(gcf,'options',extract_option(varargin,'antipodal'));
   set(gcf,'Name',['Pole figures of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
   set(gcf,'Tag','pdf');
+  
+  % set data cursor
+  dcm_obj = datacursormode(gcf);
+  set(dcm_obj,'SnapToDataVertex','off')
+  set(dcm_obj,'UpdateFcn',{@tooltip});
+  datacursormode on;
 end
+
+end
+
+%% Tooltip function
+function txt = tooltip(varargin)
+
+% 
+dcm_obj = datacursormode(gcf);
+
+hcmenu = dcm_obj.CurrentDataCursor.uiContextMenu;
+
+%
+[r,h,v] = currentVector;
+[th,rh] = polar(r);
+txt = ['id ' xnum2str(v) ' at (' int2str(th/degree) ',' int2str(rh/degree) ')'];
+
+end
+
+
+function [r,h,value] = currentVector
+
+[pos,value,ax,iax] = getDataCursorPos(gcf);
+
+r = vector3d('polar',pos(1),pos(2));
+
+h = getappdata(gcf,'h');
+h = h{iax};
+
+projection = getappdata(ax,'projection');
+
+if projection.antipodal
+  h = set_option(h,'antipodal');
+end
+
+end
+
+
+
+
