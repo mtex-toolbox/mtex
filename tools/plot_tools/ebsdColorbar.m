@@ -22,6 +22,8 @@ if nargin >= 1 && isa(varargin{1},'symmetry')
   cc = get_option(varargin,'colorcoding','ipdfHSV');
   r = get_option(varargin,'r',xvector);
   
+  varargin = set_default_option(varargin,{'r',r});
+  
 else
   
   cs = getappdata(gcf,'CS');
@@ -84,15 +86,15 @@ if strcmpi(cc,'ipdfHKL'),  varargin = [{'antipodal'},varargin]; end
 
 h = S2Grid('PLOT','minTheta',minTheta,'maxTheta',maxTheta,...
   'minRho',minRho,'maxRho',maxRho,'RESTRICT2MINMAX','resolution',1*degree,varargin{:});
-
+r = get_option(varargin,'r');
 
 d = orientation2color(h,cc,cs,varargin{:});
 
 if numel(d) == 3*numel(h)
   d = reshape(d,[size(h),3]);
-  surf(h,d,varargin{:});
+  surf(h,d,'TL',r,varargin{:});
 else
-  contourf(h,d,varargin{:});
+  contourf(h,d,'TL',r,varargin{:});
 end
 
 %title(['r = ' char(r,'tex')])
