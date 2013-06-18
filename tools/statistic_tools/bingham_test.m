@@ -50,9 +50,9 @@ function [test_fun]= parseArgs(varargin)
 
 if check_option(varargin,{'sphere','spherical'})
   test_fun = 'spher';
-elseif check_option(varargin,{'prolate','prolatnes'})
+elseif check_option(varargin,{'prolate','prolatnes','prolateness'})
   test_fun = 'prolat';
-elseif check_option(varargin,{'oblate','oblatnes'})
+elseif check_option(varargin,{'oblate','oblatnes','oblateness'})
   test_fun = 'oblat';
 end
 
