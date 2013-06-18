@@ -63,6 +63,9 @@ plotGrid(ax,projection,extend,varargin{:});
 % add annotations
 plotAnnotate(ax,varargin{:})
 
+set(ax,'DataAspectRatio',[1 1 1])
+set(ax,'PlotBoxAspectRatio',[1 1 1])
+
 % output
 if nargout > 0
   varargout{1} = ax;
