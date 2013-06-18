@@ -62,7 +62,7 @@ function txt = tooltip(varargin)
 
 [r,h,value] = currentVector; %#ok<ASGLU>
 
-txt = [xnum2str(value) ' at ' char(h,'tolerance',3*degree)];
+txt = [xnum2str(value) ' at ' char(h,'tolerance',3*degree,'commasep')];
 
 end
 
@@ -72,7 +72,7 @@ function [r,h,value] = currentVector
 
 CS = getappdata(gcf,'CS');
 h = Miller(vector3d('polar',pos(1),pos(2)),CS);
-
+h = round(h);
 r = getappdata(gcf,'r');
 r = r(iax);
 
