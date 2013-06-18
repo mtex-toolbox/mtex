@@ -20,7 +20,7 @@ if numel(zd) == numel(xd)
   value = zd(pos(1) == xd & pos(2) == yd);
   value = value(1);
 else
-  value = [];
+  value = find(pos(1) == xd & pos(2) == yd);
 end
 
 % convert pos to vector3d for spherical plots
