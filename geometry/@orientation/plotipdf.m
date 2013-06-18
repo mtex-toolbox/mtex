@@ -95,5 +95,5 @@ rqr = xp^2 + yp^2;
 theta = acos(1-rqr/2);
 
 m = Miller(vector3d('polar',theta,rho),getappdata(gcf,'CS'));
-
-txt = char(m,'tolerance',3*degree);
+m = round(m);
+txt = char(m,'tolerance',3*degree,'commasep');

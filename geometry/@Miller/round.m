@@ -10,29 +10,23 @@ end
 
 mv = mv(:,[1 2 end])';
 
-mbr = selectMaxbyColumn(abs(mv));
-
-h = h./reshape(mbr.*round(mbr),size(h));
-mv = mv * diag(1./mbr.*round(mbr));
+mbr = reshape(selectMaxbyColumn(abs(mv)),size(h));
 
 tol = get_option(varargin,{'tol','tolerance'},1*degree);
 maxHKL = get_option(varargin,'maxHKL',12);
 
 for im = 1:numel(h)
-  
-  mm = mv(:,im) * (1:maxHKL);  
+%   
+  mm = mv(:,im)/mbr(im) * (1:maxHKL);  
   rm = round(mm);
-  
-  e = sum(bsxfun(@rdivide,mm.*rm,sqrt(sum((mm).^2,1)).*sqrt(sum((rm).^2,1))),1);
+
+  e = sum(mm ./ repmat(sqrt(sum(mm.^2,1)),3,1) .* rm ./ repmat(sqrt(sum(rm.^2,1)),3,1));
   
   e = round(e*1e7);
-  [e,j] = min(e);
- 
-  h.vector3d(im) = h.vector3d(im)*j;
+  [e,j] = sort(e,'descend');
   
+  h(im) = h(im)*(j(1)/mbr(im)); 
 end
-
-
 
 
 
