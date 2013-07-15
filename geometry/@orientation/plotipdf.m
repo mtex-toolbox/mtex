@@ -54,6 +54,13 @@ end
 if check_option(varargin,'colorcoding')
   colorcoding = lower(get_option(varargin,'colorcoding','angle'));
   data = orientation2color(o,colorcoding,varargin{:});
+  
+  % convert RGB to ind
+  if numel(data) == 3*numel(o)  
+    [data, map] = rgb2ind(reshape(data,[],1,3), 0.03,'nodither');
+    set(gcf,'colormap',map);    
+  end
+  
 end
 
 %%
