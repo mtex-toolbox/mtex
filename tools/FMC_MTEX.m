@@ -1,75 +1,75 @@
+function [AllPs,AllSals,numClusters] = FMC_MTEX(fmc)
+
 %% setup Wnext
-CS = get(ebsd,'CS');
-[Dl,Dr] = find(A_D);  % list of cells
-N = length(A_D);
+[i,j] = find(fmc.A_D);  % list of cells
+N     = size(fmc.A_D,1);
 
-O = quaternion(get(ebsd,'rotations'));
-q = O(Dl)'.*O(Dr);
-del =  real(2*acosd(max(abs(dot_outer(q,CS)),[],2))); 
+q     = inverse(fmc.O(i)).*fmc.O(j);
+del   = real(2*acosd(max(abs(dot_outer(q,fmc.CS)),[],2))); 
 
-
-Wn = exp(-cmaha0*(del));
-Wnext = sparse(Dl, Dr, Wn, N, N);
-clear q del Wn
+fmc.Wnext = sparse(i, j, exp(-fmc.cmaha0*(del)), N, N);
+clear q del
 
 %% RunFMC
 disp('starting RunFMC')
-Wnext = Wnext + Wnext';
-A_D = A_D | A_D';
-
+fmc.Wnext = fmc.Wnext + fmc.Wnext';
+fmc.A_D = fmc.A_D | fmc.A_D';
 
 
 %%
 
 AllPs = cell(1);
-numClusters = size(Wnext,1);
+numClusters = size(fmc.Wnext,1);
 
 %v contains the number of data points in each node
-v=ones(numClusters,1);  
+fmc.v=ones(numClusters,1);  
 
 %Sal is the saliency of each node
-Sal=Inf*ones(numClusters,1);
+fmc.Sal=Inf*ones(numClusters,1);
 
 % 
-AllSals=Sal;
-Varin=zeros(length(Wnext),1);
+AllSals    = cell(1);
+AllSals{1} = fmc.Sal;
+fmc.Varin  = zeros(N,1);
 
 % Initialize the matrix that will hold all the seed for each s level
-sSeeds = [];
+fmc.sSeeds = [];
 
 %Coarsen repeatedly until the size of W doesn't change
-sizeW = 0;
-sizeWnext = N;
+fmc.sizeW = 0;
+fmc.sizeWnext = N;
 
 %s is the iteration number
-s = 1;
+fmc.s = 1;
 
 %storage=[struct('Ps', speye(length(Wnext)))];
-P = speye(length(Wnext));
+fmc.P = speye(N);
 
 
-while ~isequal(sizeW,sizeWnext)
-     fprintf('S-Level: %i\n', s)
-     fprintf('Number of Clusters: %i\n', numClusters(s))
+while ~isequal(fmc.sizeW,fmc.sizeWnext)
+     fprintf('S-Level: %i\n', fmc.s)
+     fprintf('Number of Clusters: %i\n', numClusters(fmc.s))
      
-     W=Wnext; clear Wnext;
-     sizeW = sizeWnext;
+     fmc.W     = fmc.Wnext;
+     fmc.sizeW = fmc.sizeWnext;
 
-     FMC_Coarsen
+     fmc = FMC_Coarsen(fmc);
      
-     O = Ocoarse; clear Ocoarse;
-     Wnext = Wcoarse; clear Wcoarse;
-     v = vcoarse; clear vcoarse;
-     A_D = A_Dcoarse; clear A_Dcoarse;
-     Varin = Qvar; clear Qvar;
+     fmc.O     = fmc.Ocoarse; 
+     fmc.Wnext = fmc.Wcoarse;
+     fmc.v     = fmc.vcoarse;
+     fmc.A_D   = fmc.A_Dcoarse;
+     fmc.Varin = fmc.Qvar;
                   
-     s = s+1;
+     fmc.s = fmc.s+1;
      
-     AllPs{s} = P;
-     AllSals = [AllSals;Sal];
-     numClusters(s) = size(Wnext,1);
+     AllPs{fmc.s}       = fmc.P;
+     AllSals{fmc.s}     = fmc.Sal;
+     numClusters(fmc.s) = size(fmc.Wnext,1);
 
 end
+
+AllSals = vertcat(AllSals{:});
 
 clear W; clear Wnext; clear Sal; clear v;
 clear links; clear Aves; clear Varin;
