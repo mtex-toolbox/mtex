@@ -6,6 +6,7 @@ fmc = part0EdgeDilution(fmc);
 fmc = part1CoarseSeeds(fmc);
 fmc = part2CreateP(fmc);
 fmc = part3NormalizeP(fmc);
+fmc = part5CoarseWeights(fmc);
 fmc = part6InterpWeights(fmc);
 fmc = part7BiasWeights(fmc);
 fmc = part8Salieciens(fmc);
@@ -23,7 +24,7 @@ n       = sum(fmc.W>0)';  %Total numer of neighbors each entry has
 %weights of a to all its neighbors normalized by the total number of a's
 %neighbors, set that weight to zero. Same for b.
 w( w < (sumW(i)./(fmc.gammaW*n(i)))  &...
-         w < (sumW(j)./(fmc.gammaW*n(j))) ) = 0;
+  w < (sumW(j)./(fmc.gammaW*n(j))) ) = 0;
 
 fmc.W = sparse(i,j,w,fmc.sizeW,fmc.sizeW);
 
@@ -89,17 +90,28 @@ function fmc = part3NormalizeP(fmc)
 
 % if sum(P(i,:))>0, P(i,:)=P(i,:)/sum(P(i,:));
 Psum = sum(fmc.P,2);
-ind  = find(Psum > 0);
-i = find(Psum <= 0); 
+[i,j,p] = find(fmc.P);
+fmc.P = sparse(i,j,p./Psum(i),fmc.sizeW,fmc.sizeWnext);
 
-fmc.P(ind,:) = bsxfun(@rdivide,fmc.P(ind,:),Psum(ind));
-
-% i = find(fmc.F);
+i = find(Psum <= 0);
 fmc.Celements = [fmc.Celements i'];
 fmc.sizeWnext = numel(fmc.Celements);
 
 [~,j] = ismember(i,fmc.Celements);
 fmc.P = sparseConcat(fmc.P,i,j,ones(numel(i),1), [fmc.sizeW, fmc.sizeWnext]);
+
+end
+
+
+%% part 5:
+function fmc = part5CoarseWeights(fmc)
+
+P = fmc.P;
+%Calculate the new W and links
+fmc.Wcoarse   = P'*fmc.W*P;
+fmc.A_Dcoarse = P'*fmc.A_D*P;
+%calculate the number of data points in each new node
+fmc.vcoarse=P'*fmc.v;
 
 end
 
@@ -109,81 +121,88 @@ function fmc = part6InterpWeights(fmc)
 P = fmc.P;
 Celements = fmc.Celements;
 
-%Calculate the new W and links
-fmc.Wcoarse   = P'*fmc.W*P;
-fmc.A_Dcoarse = P'*fmc.A_D*P;
-%calculate the number of data points in each new node
-fmc.vcoarse=P'*fmc.v;
-
-
-%Initialize the new cluster averages
-Ocoarse = fmc.O(Celements);
-
-
 %Qvar is the variance of each new node
-Qvar=zeros(fmc.sizeWnext,1);
 
-%Calculate the new quaternion variances and averages using
-%the online variance updating algorithm
-for i=1:fmc.sizeWnext
-  elelist=find(P(:,i)>.05)';
-  elelist(elelist==Celements(i))=[];
-  Qvar(i)=fmc.Varin(Celements(i));
-  vcum=fmc.v(Celements(i));
-  fmc.O(elelist) = project2FundamentalRegion(fmc.O(elelist),fmc.CS,fmc.CS,Ocoarse(i));
-  for j=elelist
-    q = Ocoarse(i)'.*fmc.O(j);
-    del =  real(2*acosd(max(abs(dot_outer(q,fmc.CS)),[],2)));
-    if del<fmc.quatmax
-      vele=fmc.v(j)*P(j,i);
-      vtmp=vcum+vele;
-      Ocoarse(i) = mean([Ocoarse(i),fmc.O(j)],'weights',[vcum, vele]);
-      
-      Qvar(i)=vcum*Qvar(i)+vele*fmc.Varin(j)+(del^2*(vcum*vele)/vtmp);       %Single-pass Variance
-      Qvar(i)=Qvar(i)/vtmp;
-      vcum=vtmp;
-    else
-      P(j,i)=0;
-    end
-  end
+[i,j,p] = find(fmc.P);
+t = p > .05 & i ~= Celements(j)';
+i = i(t); j = j(t); p = p(t);
+
+O  = fmc.O(i);
+Oc = fmc.O(Celements);
+
+% project to fundamental region of Ocoarse_j
+qSym   = quaternion(fmc.CS);
+[~,si] = max(abs(dot_outer(inverse(O).*Oc(j),qSym)),[],2);
+O      = O.*qSym(si);
+
+O  = squeeze(double(O));
+Oc = squeeze(double(Oc));
+
+Qvar = fmc.Varin(Celements);
+vc = fmc.v(Celements);
+vi = fmc.v(i).*p;
+
+% % Calculate the new quaternion variances and averages using
+% % the online variance updating algorithm
+for k=1:size(O,1)
+  jk = j(k);
   
+  oi = O(k,:);
+  oc = Oc(jk,:);
+  
+  d = abs(oi*oc');
+  if d > fmc.quatmax2
+    del = 2*real(acosd(d));
+    
+    vt=vc(jk)+vi(k);
+    
+    w = [vc(jk); vi(k)]./vt;
+    Q = [oc;oi];
+    
+    [ev,ew] = eig(Q'*diag(w)*Q);
+    Oc(jk,:) = ev(:,diag(ew)>.5);
+    
+    Qvar(jk)=vc(jk)*Qvar(jk)+vi(k)*fmc.Varin(i(k))+(del^2*(vc(jk)*vi(k))/vt);       %Single-pass Variance
+    Qvar(jk)=Qvar(jk)/vt;
+    vc(jk)=vt;
+    
+  else
+    p(k) = 0;
+  end
 end
+
+Ocoarse = quaternion(Oc.').';
+
+P(sub2ind(size(P),i,j)) = p;
 
 fmc.Qvar = Qvar;
 fmc.P = P;
 fmc.Ocoarse = Ocoarse;
 
-
-clear Celements;
-clear v vcum vtemp vele;
-clear del elelist;
 end
 %% part 7: Bias weights
 function fmc = part7BiasWeights(fmc)
 %Use the Qvar and misorientation to find the Mahalanobis distance, then use
 %that to reweight the nodes.
-[Dl,Dr] = find(fmc.Wcoarse);  % list of cells
+[i,j] = find(fmc.Wcoarse);  % list of cells
 
-q = inverse(fmc.Ocoarse(Dl)).*fmc.Ocoarse(Dr);
+q = inverse(fmc.Ocoarse(i)).*fmc.Ocoarse(j);
 misorientation =  real(2*acosd(max(abs(dot_outer(q,fmc.CS)),[],2)));
-clear q
 
 Wthreshold = 1e-3;
 smallMis = abs(misorientation) <= Wthreshold;
 
-Dl1 = Dl(~smallMis);
-Dr1 = Dr(~smallMis);
-Dl2 = Dl(smallMis);
-Dr2 = Dr(smallMis);
+i1 = i(~smallMis);
+j1 = j(~smallMis);
+i2 = i(smallMis);
+j2 = j(smallMis);
 misorientation = misorientation(~smallMis);
-clear smallMis Dl Dr
 
-sqrtstuff = sqrt(min(fmc.Qvar(Dl1),fmc.Qvar(Dr1)));
+sqrtstuff = sqrt(min(fmc.Qvar(i1),fmc.Qvar(j1)));
 
 bias = exp(-fmc.cmaha*(abs(misorientation)-1.*sqrtstuff)./sqrtstuff);
-bias = sparse(Dl1, Dr1, bias, fmc.sizeWnext, fmc.sizeWnext) +...
-  sparse(Dl2, Dr2, 1,fmc.sizeWnext, fmc.sizeWnext);
-clear Dl1 Dr1 Dl2 Dr2 N
+bias = sparse(i1, j1, bias, fmc.sizeWnext, fmc.sizeWnext) +...
+  sparse(i2, j2, 1,fmc.sizeWnext, fmc.sizeWnext);
 
 fmc.Wcoarse = fmc.Wcoarse.*bias;
 
