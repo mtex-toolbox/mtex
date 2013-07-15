@@ -4,10 +4,14 @@ function [assignments] = FMC_interpret(AllSals, numClusters, AllPs, A_D, beta)
 %% run interpret 3D
 
 
-A_D = A_D+A_D';
-NNlist = {};
-for i = 1:length(A_D)
-    NNlist{i} = find(A_D(i,:));
+A_D = A_D|A_D';
+
+[i,~] = find(A_D);
+cs = [0 full(cumsum(sum(A_D)))];
+
+NNlist = cell(size(A_D,1),1);
+for k = 1:size(A_D,1)
+   NNlist{k} = i(cs(k)+1:cs(k+1))';
 end
 
 %% sort by saliency
@@ -62,18 +66,16 @@ for curS = numS-4:numS
     end
     
     allUs(:,numNodes + 1) = assignmentsY;
-       
     
     %assign clusters to points based on the strongest probability of any
     %point in the cluster
-    for point = 1:numPoints
-        [Prob, NodeIndex] = max(allUs(point,:));
-        if ((NodeIndex <= numNodes) && (Prob ~= 1))
-            nodePoints = allUs(:,NodeIndex)>=beta;
-            assignmentsX(nodePoints) = NodeIndex;
-            assignmentsY(nodePoints) = Prob;
-        end
+    [Prob, NodeIndex] = max(allUs,[],2);
+    for point = find((NodeIndex <= numNodes) & (Prob ~= 1))'
+      nodePoints = allUs(:,NodeIndex(point))>=beta;
+      assignmentsX(nodePoints) = NodeIndex(point);
+      assignmentsY(nodePoints) = Prob(point);
     end
+    
 end
 
 
