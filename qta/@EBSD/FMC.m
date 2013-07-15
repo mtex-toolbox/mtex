@@ -7,6 +7,7 @@ fmc.O = quaternion(ebsd.rotations);
 fmc.cmaha = cmaha;
 fmc.cmaha0 = get_option(varargin,{'cmaha0'},0.05,'double');
 fmc.quatmax = get_option(varargin,{'quatmax'},5,'double');
+fmc.quatmax2 = cos(fmc.quatmax/2*degree);
 fmc.gammaW = get_option(varargin,{'gammaW'},25,'double');
 fmc.alpha = get_option(varargin,{'alpha'},0.2,'double');
 fmc.beta = get_option(varargin,{'beta'},0.3,'double');
