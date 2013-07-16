@@ -26,20 +26,20 @@ varargin = varargin(2:end);
 
 % special option -> labeled
 if check_option(varargin,'labeled')
-  
+
   strings = cell(1,numel(v));
-  for i = 1:numel(v), strings{i} = char(subsref(v,i),getpref('mtex','textInterpreter')); end
-    
+  for i = 1:numel(v), strings{i} = char(subsref(v,i),getMTEXpref('textInterpreter')); end
+
   c = colormap;
   %if ~all(equal(c,2)), varargin = [{'BackGroundColor','w'},varargin];end
-  
+
 else % ensure cell as input
-  
+
   strings = ensurecell(strings);
   if numel(v)>1 && numel(strings)==1
     strings = repmat(strings,numel(v),1);
   end
-  
+
 end
 
 % extract plot options
@@ -48,11 +48,13 @@ end
 % project data
 [x,y] = project(v,projection,extend,varargin{:});
 
+% plot a spherical grid
+plotGrid(ax,projection,extend,varargin{:});
 
 %% print labels
 for i = 1:numel(strings)
   s = strings{i};
-  if ~ischar(s), s = char(s,getpref('mtex','textInterpreter'));end
+  if ~ischar(s), s = char(s,getMTEXpref('textInterpreter'));end
   h(end+1) = mtex_text(x(i),y(i),s,'parent',ax,...
     'HorizontalAlignment','center','VerticalAlignment','middle',...
     'tag','addMarkerSpacing','UserData',[x(i),y(i)],...
@@ -60,9 +62,6 @@ for i = 1:numel(strings)
 end
 
 %% finalize the plot
-
-% plot a spherical grid
-plotGrid(ax,projection,extend,varargin{:});
 
 % output
 if nargout > 0

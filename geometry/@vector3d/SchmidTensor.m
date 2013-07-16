@@ -17,24 +17,25 @@ function m = SchmidTensor(n,b,varargin)
 %%
 %
 
-tn = tensor(n);
-tb = tensor(b);
+% normalize and convert to tensor
+tn = tensor(n./norm(n));
+tb = tensor(b./norm(b));
 
 if check_option(varargin,'generalized')
   
-  m = EinsteinSum(tn,1,tb,2);
+  m = EinsteinSum(tn,1,tb,2,'name','generalized Schmid');
   
 elseif check_option(varargin,'antisymmetric')
   
-  m = 0.5*(EinsteinSum(tn,1,tb,2) - EinsteinSum(tn,2,tb,1));
+  m = 0.5*(EinsteinSum(tn,1,tb,2,'name','antisymmetric Schmid') - EinsteinSum(tn,2,tb,1));
   
 else
   
-  m = 0.5*(EinsteinSum(tn,1,tb,2) + EinsteinSum(tn,2,tb,1));
+  m = 0.5*(EinsteinSum(tn,1,tb,2,'name','symmetric Schmid') + EinsteinSum(tn,2,tb,1));
   
 end
 
-if isa(n,'Miller'), m = set(m,'CS',get(n,'CS')); end
+if isa(n,'Miller'), m = set(m,'CS',get(n,'CS'),'noTrafo'); end
 
 end
 

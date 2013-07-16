@@ -92,7 +92,7 @@ else
     hw = 10*degree;
     k = kernel('de la Vallee Poussin','halfwidth',hw,varargin{:});
   end
-    
+
 %   if ~check_option(varargin,'silent')
 %     disp(' ')
 %     warning('MTEX:nokernel',['No kernel halfwidth has been specified!' ...
@@ -101,7 +101,7 @@ else
 %     disp(' ')
 %   end
 
-  
+
 
 end
 
@@ -112,10 +112,10 @@ vdisp([' kernel: ' char(k)],varargin{:});
 
 %% construct exact kernel density estimation estimation
 
-odf = ODF(ori,weight,k,CS,SS);
+odf = unimodalODF(ori,k,CS,SS,'weights',weight);
 
 max_coef = 32;
-gridlen = numel(ori)*length(CS)*length(SS);
+gridlen = numel(ori)*numel(CS)*numel(SS);
 
 
 %% Fourier ODF
@@ -131,9 +131,8 @@ if ~check_option(varargin,{'exact','noFourier'}) && ...
       'since Fourier Coefficents of higher order than ', num2str(L),...
       ' are not considered; increasing the kernel halfwidth might help.'])
   end
-  odf = calcFourier(odf,get_option(varargin,'Fourier',L,'double'));
-  odf = FourierODF(odf);
-
+  odf = FourierODF(odf,get_option(varargin,'Fourier',L,'double'));
+  
   return
 elseif check_option(varargin,'exact') || gridlen < 2000
 %% exact ODF
@@ -175,9 +174,9 @@ vdisp([' approximation grid: ' char(S3G)],varargin{:});
 d = zeros(1,numel(S3G));
 
 % iterate due to memory restrictions?
-maxiter = ceil(length(CS)*...
-  length(SS)*numel(ori) /...
-  getpref('mtex','memory',300 * 1024));
+maxiter = ceil(numel(CS)*...
+  numel(SS)*numel(ori) /...
+  getMTEXpref('memory',300 * 1024));
 if maxiter > 1, progress(0,maxiter);end
 
 for iter = 1:maxiter
@@ -202,7 +201,7 @@ d = d(del);
 
 %% generate ODF
 
-odf = ODF(S3G,d,k,CS,SS);
+odf = unimodalODF(S3G,k,CS,SS,'weights',d);
 
 %% check wether kernel is to wide
 if check_option(varargin,'small_kernel') && hw > 2*get(S3G,'resolution')
@@ -211,6 +210,5 @@ if check_option(varargin,'small_kernel') && hw > 2*get(S3G,'resolution')
   k = kernel('de la Vallee Poussin','halfwidth',hw);
   vdisp([' recalculate ODF for kernel: ',char(k)],varargin{:});
   d = eval(odf,S3G); %#ok<EVLC>
-  odf = ODF(S3G,d./sum(d),k,CS,SS);
+  odf = unimodalODF(S3G,k,CS,SS,'weights',d./sum(d));
 end
-

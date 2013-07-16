@@ -30,7 +30,7 @@ switch pName
     
     T.(pName) = pValue;
     
-  case fields(T.properties)
+  otherwise
   
     T.properties.(pName) = pValue;
     

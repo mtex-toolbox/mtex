@@ -2,29 +2,43 @@ function plotGrid(ax, projection, extend, varargin)
 % plot Polar Grid
 
 if ~isappdata(ax,'grid') % there is not grid yet
-  
+
   % generate grid
-  grid = plotPolarGrid(ax,projection,extend,varargin{:});
-  
-  optiondraw(grid.boundary,'color','k');
-  optiondraw(grid.grid,'visible','on','linestyle',':','color',[.4 .4 .4]);
-  optiondraw(grid.ticks,'fontsize',8,'FontName','times','visible','off');
-  
-  set(ax,'box','on','XTick',[],'YTick',[]);
-  %axis(ax,'equal');
-  
+  if strcmpi(projection.type,'plain')
+    grid = plotPlainGrid(ax,projection,extend,varargin{:});
+    set(ax,'box','on');
+  else
+    grid = plotPolarGrid(ax,projection,extend,varargin{:});
+
+    % hide grid
+    optiondraw(grid.boundary,'color','k');
+    
+    if check_option(varargin,'grid') && ~strcmp(get_option(varargin,'grid'),'off')
+      vis = 'on';
+    else
+      vis = 'off';
+    end
+    optiondraw(grid.grid,'visible',vis,'linestyle',':','color',[.4 .4 .4]);
+    optiondraw(grid.ticks,'fontsize',8,'FontName','times','visible','off');
+
+    set(ax,'box','on','XTick',[],'YTick',[]);
+  end
+
   setappdata(ax,'grid',grid);
-  
-else % do something - to be documented
-  
+
+else % bring grid into front again
+
   grid = getappdata(ax,'grid');
-  childs = get(ax,'children');
-  s = structfun(@(x) ismember(childs,x),grid,'uniformoutput',false);
-  
-  isgrid = s.boundary | s.grid | s.ticks;
-  
-  set(ax,'Children',[childs(isgrid); childs(~isgrid)]);
-  
+  if ~isempty(grid)
+    childs = allchild(ax);
+    s = structfun(@(x) ismember(childs,x),grid,'uniformoutput',false);
+
+    isgrid = s.boundary | s.grid | s.ticks;
+    istext = strcmp(get(childs,'type'),'text');
+
+    set(ax,'Children',[childs(istext); childs(isgrid); childs(~isgrid & ~istext)]);
+  end
+
 end
 return
 
@@ -43,7 +57,6 @@ end
 if any(isnan(X)), return;end
 if check_option(varargin,'ticks'), v = 'on';else v = 'off';end
 
-
 % set back color index
 if isappdata(gca,'PlotColorIndex')
   if isempty(colorIndex)
@@ -53,6 +66,24 @@ if isappdata(gca,'PlotColorIndex')
   end
 end
 
+end
+
+%%
+function g = plotPlainGrid(ax,projection,extend,varargin)
+
+  dgrid = get_option(varargin,'grid_res',30*degree);
+
+  set(ax,'XTick',round((extend.minRho:dgrid:extend.maxRho)/degree))
+  set(ax,'YTick',round((extend.minTheta:dgrid:extend.maxTheta)/degree))
+
+  interpreter = getMTEXpref('textInterpreter');
+
+  xlabel(ax,get_option(varargin,'xlabel','rho'),'interpreter',interpreter,'FontSize',12,'VerticalAlignment','bottom');
+  ylabel(ax,get_option(varargin,'ylabel','theta'),'interpreter',interpreter,'FontSize',12,'VerticalAlignment','top');
+
+  g = [];
+
+end
 
 %% -------------------------------------------------------------------
 function grid = plotPolarGrid(ax,projection,extend,varargin)
@@ -73,53 +104,38 @@ if extend.maxRho ~= 2*pi, rho(1) = [];end
 % initalize handles for grid
 hb = []; h = []; t = [];
 
-% plain grid
-if strcmpi(projection.type,'plain')
-  
-  [x,y] = project(zvector,projection,extend);
-  
-%   h = [h arrayfun(@(t) circ(ax,projection,x,y,t),pi)];
-
-  [hm,tm] = arrayfun(@(t) merid(ax,projection,extend,x,y,t),rho);   
-  h = [h hm];
-  t = [t tm];
-  
-  
-else % polar grid
-  
-  % northern hemisphere
-  if extend.minTheta < pi/2-1e-3
-    center = zvector;
-    maxTheta = extend.maxTheta;
-    minTheta = 0;
-    theta = dgrid:dgrid:(pi/2-dgrid);
-  else % southern hemisphere
-    center = -zvector;
-    maxTheta = extend.minTheta;
-    minTheta = pi;
-    theta = pi/2+(dgrid:dgrid:(pi/2-dgrid));
-  end
-  
-  % center point
-  [x,y] = project(center,projection,extend);
-    
-  % draw outer circ
-  hb = [hb circ(ax,projection,extend,minTheta,maxTheta,'boundary')];
-  
-  % draw small circles
-  h = [h arrayfun(@(t) circ(ax,projection,extend,minTheta,t),theta)];
-    
-  % draw meridians
-  [hm,tm] = arrayfun(@(t) merid(ax,projection,extend,x,y,t),rho);
-  h = [h hm];
-  t = [t tm];
-      
+% northern hemisphere
+if extend.minTheta < pi/2-1e-3
+  center = zvector;
+  maxTheta = extend.maxTheta;
+  minTheta = 0;
+  theta = dgrid:dgrid:(pi/2-dgrid);
+else % southern hemisphere
+  center = -zvector;
+  maxTheta = extend.minTheta;
+  minTheta = pi;
+  theta = pi/2+(dgrid:dgrid:(pi/2-dgrid));
 end
+
+% center point
+[x,y] = project(center,projection,extend);
+
+% draw outer circ
+hb = [hb circ(ax,projection,extend,minTheta,maxTheta,'boundary')];
+
+% draw small circles
+h = [h arrayfun(@(t) circ(ax,projection,extend,minTheta,t),theta)];
+
+% draw meridians
+[hm,tm] = arrayfun(@(t) merid(ax,projection,extend,x,y,t),rho);
+h = [h hm];
+t = [t tm];
 
 grid.boundary = hb;
 grid.grid     = h;
 grid.ticks    = t;
 
+end
 
 function [h,t] = merid(ax,projection,extend,x,y,rho,varargin)
 
@@ -150,6 +166,7 @@ t = optiondraw(text(X,Y,s,'parent',ax,'interpreter','tex','handlevisibility','of
 %     t(k) = optiondraw(text(X,Y,s,'interpreter','latex'),options{:});
 %   end
 
+end
 
 function h = circ(ax,projection,extend,theta0,theta,varargin)
 
@@ -172,3 +189,5 @@ end
 [dx,dy] = project(sph2vec(theta,rho),projection,extend,varargin{:});
 
 h = line(dx,dy,'parent',ax,'handlevisibility','off');
+
+end

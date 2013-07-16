@@ -1,4 +1,4 @@
-function T = rotate(T,R)
+function T = rotate(T,R,varargin)
 % rotate a tensor by a list of rotations
 %
 %% Remarks

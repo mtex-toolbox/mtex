@@ -4,7 +4,6 @@ function plot(odf,varargin)
 % this function is only a shortcut to ODF/plotodf
 
 if check_option(varargin,'fibre')
-  fibre = get_option(varargin,'fibre');
   plotfibre(odf,varargin{:});
 else
   plotodf(odf,varargin{:});

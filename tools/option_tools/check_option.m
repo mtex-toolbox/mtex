@@ -22,6 +22,7 @@ if isempty_cell(option_list)
 elseif nargin <= 3
   out = find_option(option_list,option,varargin{:}) > 0;
 else
-  pos = find_option(option_list,option,'char');
-  out = pos > 0 && any(strcmpi(option_list{pos},varargin{2}));
+  pos = find_option(option_list,option);
+  out = pos > 0 && numel(option_list)>pos && ischar(option_list{pos+1}) && ...
+    strcmpi(option_list{pos+1},varargin{2});
 end

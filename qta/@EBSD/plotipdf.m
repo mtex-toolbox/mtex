@@ -1,4 +1,4 @@
-function plotipdf(ebsd,r,varargin)
+function plotipdf(ebsd,varargin)
 % plot inverse pole figures
 %
 %% Input
@@ -18,11 +18,17 @@ function plotipdf(ebsd,r,varargin)
 
 %% make new plot
 
-[ax,ebsd,r,varargin] = getAxHandle(ebsd,r,varargin{:});
+[ax,ebsd,varargin] = getAxHandle(ebsd,varargin{:});
 
 o = get(ebsd,'orientation');
 
 varargin = set_option_property(ebsd,varargin{:});
 
-plotipdf(ax{:},o,r,...
+if nargin > 1 && isa(varargin{1},'vector3d')
+  r = varargin(1);
+  varargin(1) = [];
+else
+  r = {};
+end
+plotipdf(ax{:},o,r{:},...
   'FigureTitle',[inputname(1) ' (' get(ebsd,'comment') ')'],varargin{:});

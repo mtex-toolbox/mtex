@@ -1,4 +1,4 @@
-function slice3(grains,varargin)
+function varargout = slice3(grains,varargin)
 % slice through 3d Grains
 %
 %% Input
@@ -14,8 +14,15 @@ function slice3(grains,varargin)
 % EBSD/slice3
 
 % make up new figure
+% newMTEXplot;
+
 newMTEXplot;
 
+% opts = parseArgs(varargin{:});
+% 
+% api = getGridApi(ebsd,varargin{:});
+% api = getSliceApi(api,opts);
+% 
 
 
 % hold on,
@@ -24,7 +31,7 @@ phaseMap = get(grains,'phaseMap');
 phase = get(grains,'phase');
 
 sliceType = get_flag(varargin,{'x','y','z','xy','xz','yz','xyz'},'xyz');
-slicePos  = get_option(varargin,sliceType,[.5 .5 .5],'double');
+slicePos  = get_option(varargin,sliceType,NaN,'double');
 
 if ~check_option(varargin,'dontFill')
   nphase = numel(phaseMap);
@@ -40,11 +47,10 @@ if ~check_option(varargin,'dontFill')
   [ig,id] = find(I_DG(:,any(I_DG,1))');
   d = d(ig,:);
   
-  hSlicer = slice3(get(grains,'EBSD'),'property',d,varargin{:});
+  hSlicer  = slice3(get(grains,'EBSD'),'property',d,varargin{:});
 else
-  hSlicer  = addSlicer(sliceType,varargin{:})
+  hSlicer  = addSlicer(sliceType,varargin{:});
 end
-
 
 if numel(slicePos)<=numel(sliceType)
   slicePos(1:numel(sliceType)) = slicePos(1);
@@ -59,6 +65,9 @@ F = F(any(I_FG,2),:);
 
 Xmin = min(V); Xmax = max(V);
 
+slicePos = (Xmax+Xmin)/2;
+
+
 plane = struct; n = 0;
 planePos = @(p,dim) interlim(p,Xmin(dim),Xmax(dim));
 
@@ -66,24 +75,30 @@ if any(sliceType == 'x')
   n = n+1;
   plane(n).fun = @(p) sliceObj( planePos(p,1),1,V,F);
   plane(n).h   = line();
+  
+  set(hSlicer(n),'min',Xmin(1),'max',Xmax(1));
 end
 
 if any(sliceType == 'y')
   n = n+1;
   plane(n).fun = @(p) sliceObj( planePos(p,2) ,2,V,F);
   plane(n).h   = line();
+    
+  set(hSlicer(n),'min',Xmin(2),'max',Xmax(2));
 end
 
 if any(sliceType == 'z')
   n = n+1;
   plane(n).fun = @(p) sliceObj( planePos(p,3) ,3,V,F);
   plane(n).h   = line();
+  
+  set(hSlicer(n),'min',Xmin(3),'max',Xmax(3));
 end
 
 for k=1:numel(plane)
   
   callBack = get(hSlicer(k),'Callback');
-  
+
   set(hSlicer(k),'value',slicePos(k),...
     'callback',{@sliceIt,plane(k),callBack});
   
@@ -93,15 +108,19 @@ end
 
 
 optiondraw([plane.h],varargin{:});
-axis equal
 axlim = [Xmin(:) Xmax(:)]';
-axis (axlim(:))
 grid on
+box on
+axis (axlim(:),'equal')
+
 view([30,15])
 
 
 set(gcf,'tag','ebsd_slice3');
 
+if nargout > 0
+  varargout{1} = [api.Slicer.hSlicer];
+end
 
 function obj = sliceObj(p,dim,V,F)
 
@@ -151,12 +170,13 @@ end
 
 function y = interlim(x,xmin,xmax)
 
-if x<=0
+if x<=xmin
   y = xmin;
-elseif x>1
+elseif x>xmax
   y = xmax;
 else
-  y = x.*(xmax-xmin)+xmin;
+  y = x;
+%   y = x.*(xmax-xmin)+xmin;
 end
 
 function  hSlicer = addSlicer(sliceType,varargin)

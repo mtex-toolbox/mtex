@@ -49,7 +49,7 @@ for iodf = 1:length(odf)
   else
 
     % generate grid
-    S3G = SO3Grid(hw,odf(1).CS,odf(1).SS);
+    S3G = equispacedSO3Grid(odf(1).CS,odf(1).SS,'resolution',hw);
 
     % restrict single orientations to this grid
 
@@ -59,7 +59,7 @@ for iodf = 1:length(odf)
 
     % iterate due to memory restrictions?
     maxiter = ceil(numel(odf(1).CS)*numel(odf(1).SS)*numel(g) /...
-      getpref('mtex','memory',300 * 1024));
+      getMTEXpref('memory',300 * 1024));
     if maxiter > 1, progress(0,maxiter);end
 
     for iter = 1:maxiter

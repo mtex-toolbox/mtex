@@ -32,6 +32,7 @@ grains = calcGrains(ebsd,'threshold',2.5*degree)
 % matrices>. In order to verify the result let us plot the grain boundaries
 % into the spatial EBSD plot.
 
+close all
 plot(ebsd)
 hold on
 plotBoundary(grains)
@@ -41,7 +42,7 @@ hold off
 % When plotting the grains directly the associated color is defined by the
 % mean orientation within each grain.
 
-close, plot(grains)
+plot(grains)
 
 %%
 % The capabilities <GrainSpatialPlots.html plotting grains> are a key for
@@ -67,7 +68,8 @@ A = sort(area(grains));
 % then, we can plot the probability to access a random grain from the
 % GrainSet which is smaller than a certain area
 
-close, semilogx(A,(1:numel(A))./numel(A))
+close all
+semilogx(A,(1:numel(A))./numel(A))
 set(gca,'xtick',5*10.^(-2:2)) % adjust the ticks
 grid on
 xlabel('area'),ylabel('cumulative percentage')
@@ -86,7 +88,8 @@ xlabel('area'),ylabel('cumulative area fraction')
 % the n-th grain.
 
 grains(1)
-close, plot(grains([327 1065]))
+close all
+plot(grains([327 1065]))
 
 %%
 % Selecting a single phase works like previously done with the EBSD data.
@@ -109,22 +112,26 @@ selected_grains = grains(grainSize(grains) >= 10 & grains('mg'))
 
 large_grains = grains( perimeter(grains) > 150  | selected_grains )
 
-close, plot(large_grains)
+close all
+plot(large_grains)
 
 %%
 % Also, one can select grains by its spatial location
 
 grains_by_xy = findByLocation(grains,[146  137])
 
-close, plot(grains_by_xy)
-hold on, plot(146,137,'marker','d','markerfacecolor','r','markersize',10)
+close all
+plot(grains_by_xy)
+hold on
+plot(146,137,'marker','d','markerfacecolor','r','markersize',10)
 
 %%
 % or by a specific orientation.
 
 grains_by_orientation = findByOrientation(grains('fe'),idquaternion, 10*degree)
 
-close, plot(grains_by_orientation)
+close all
+plot(grains_by_orientation)
 
 %% Correcting poor grains
 % Sometimes measurements belonging to grains with very few measurements can
@@ -135,7 +142,8 @@ close, plot(grains_by_orientation)
 
 grains = calcGrains(ebsd,'angle',5*degree,'keepNotIndexed')
 
-close, plot(grains)
+close all
+plot(grains)
 
 %%
 % The histogram of the grainsize shows a lot of grains consisting only of
@@ -174,7 +182,8 @@ large_grains = grains( ...
   (grains('fe') & grainSize(grains)>=5 ) | ...
   grains('mg'))
 
-close, plotBoundary(large_grains)
+close all
+plotBoundary(large_grains)
 hold on,
 plot(grains(~large_grains),'facecolor','r')
 
@@ -185,7 +194,8 @@ plot(grains(~large_grains),'facecolor','r')
 
 grains_corrected = calcGrains(large_grains,'keepNotIndexed','angle',5*degree)
 
-close, plot(grains_corrected,'property','phase')
+close all
+plot(grains_corrected,'property','phase')
 
 %%
 % Now, let us compare the grain size the both distribution, between the
@@ -198,8 +208,10 @@ Acorr   = sort(area(grains_corrected));
 % As the following plots indicate, the small grains are now assigned to
 % larger grains
 
-close,   semilogx(Auncorr,cumsum(Auncorr)/sum(Auncorr),'b')
-hold on, semilogx(Acorr,cumsum(Acorr)/sum(Acorr),'r')
+close all
+semilogx(Auncorr,cumsum(Auncorr)/sum(Auncorr),'b')
+hold on
+semilogx(Acorr,cumsum(Acorr)/sum(Acorr),'r')
 set(gca,'xtick',5*10.^(-2:2)) % adjust the ticks
 grid on
 legend('uncorrected','corrected')

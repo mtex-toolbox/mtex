@@ -23,20 +23,26 @@ if nargout == 2
   Sv = v;
   Sv.x = []; Sv.y = []; Sv.z = [];
   
+  % how to deal with antipodal symmetry
+  isAnti = check_option(varargin,'antipodal');
+  keepAnti = check_option(varargin,'keepAntipodal');
+  
   for i=1:length(v)
 	
-    h = S * subsref(v,i);
-    if check_option(varargin,'antipodal') && check_option(varargin,'keepAntipodal')
+    u = subsref(v,i);
+    h = S * u;
+    if isAnti && keepAnti
       h = [h;-h]; %#ok<AGROW>
     end
-    u = subsref(v,i);
+        
     for j = 2:length(h)
-      if ~any(isnull(norm(u-subsref(h,j)))) ...
-          && ~(~check_option(varargin,'keepAntipodal') ...
-          && check_option(varargin,'antipodal') ...
-          && any(isnull(norm(u+subsref(h,j)))))
-        u = [u,subsref(h,j)]; %#ok<AGROW>
+      
+      hj = subsref(h,j);
+      if ~any(isnull(norm(u-hj))) ...
+          && ~(~keepAnti && isAnti && any(isnull(norm(u + hj))))
+        u = [u,hj]; %#ok<AGROW>
       end
+      
     end
     h = u;
     Sv = [Sv,h]; %#ok<AGROW>

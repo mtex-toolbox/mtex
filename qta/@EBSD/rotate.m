@@ -50,7 +50,7 @@ if ~check_option(varargin,'keepXY')
     A = [cos(2*omega) sin(2*omega);sin(2*omega) -cos(2*omega)];
     ebsd = affinetrans(ebsd,A);
     
-  else
+  elseif ~isappr(angle(q),0)
     warning('MTEX:rotate',...
       'Spatial rotation of EBSD data is only supported for rotations about the z-axis. I''m going to rotate only the orientation data!');
   end

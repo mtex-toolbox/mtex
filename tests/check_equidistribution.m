@@ -8,7 +8,7 @@ q = SO3Grid(5*degree,cs,ss);
 
 k = kernel('de la Vallee Poussin','halfwidth',10*degree)
 
-odf = ODF(q,ones(size(q))./numel(q),k,cs,ss)
+odf = unimodalODF(q,k,cs,ss)
 
 plotpdf(odf,h,'resolution',5*degree)
 
@@ -33,6 +33,6 @@ q = SO3Grid(q,cs,ss);
 
 k = kernel('de la Vallee Poussin','halfwidth',10*degree)
 
-odf = ODF(q,ones(size(q))./numel(q),k,cs,ss)
+odf = unimodalODF(q,k,cs,ss)
 
 plotpdf(odf,h,'resolution',5*degree)

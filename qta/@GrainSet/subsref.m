@@ -11,7 +11,8 @@ function grains = subsref(grains,s)
 if isa(s,'double') || isa(s,'logical')
   
   if islogical(s)
-    s = find(s);    
+    if all(s), return;end
+    s = find(s);
   end
   
   ng = size(grains.I_DG,2);

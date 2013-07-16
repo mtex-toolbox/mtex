@@ -1,40 +1,32 @@
 function r = mtimes(a,b)
-% rotation times vector3d and rotation times rotation
+% r = a * b
 
-if isa(a,'rotation')
+% multiplication with -1 -> inversion
+if isnumeric(a) 
+  assert(all(abs(a(:))==1),'Rotations can be multiplied only by 1 or -1');
+  tmp = rotation(idquaternion(size(a)));
+  tmp(a==-1) = -tmp(a==-1);
+  a = tmp;
+end  
+
+if isnumeric(b)
+  assert(all(abs(b(:))==1),'Rotations can be multiplied only by 1 or -1');
+  tmp = rotation(idquaternion(size(b)));
+  tmp(b==-1) = -tmp(b==-1);
+  b = tmp;
+end  
+
+if isa(b,'vector3d')
+  
+  % apply rotation
+  r = rotate(b,a);
+    
+elseif isa(b,'quaternion')
   
   a = rotation(a);
-  
-  if isa(b,'rotation')
+  b = rotation(b);
     
-    r = a;
-    r.quaternion = a.quaternion * b.quaternion;
-        
-  elseif isa(b,'quaternion')
+  r = mtimes@quaternion(a,b);
+  r.i = bsxfun(@xor,a.i(:),b.i(:).');
     
-    r = a;
-    r.quaternion = a.quaternion * b;
-    
-  elseif isa(b,'vector3d')
-    
-    r = a.quaternion * b;
-    
-  else
-    
-    error('Type mismatch!')
-    
-  end
-  
-else
-  
-  if isa(a,'quaternion')
-    
-    r = rotation(b);
-    r.quaternion = a * b.quaternion;
-            
-  else
-    
-    error('Type mismatch!')
-    
-  end
 end

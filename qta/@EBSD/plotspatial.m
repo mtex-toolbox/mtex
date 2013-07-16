@@ -9,30 +9,32 @@ function varargout = plotspatial(ebsd,varargin)
 %     |'phase'| for achieving a spatial phase map, or an properity field of the ebsd
 %     data set, e.g. |'bands'|, |'bc'|, |'mad'|.
 %
-%  colocoding - [[orientation2color.html,colorize orientation]] according a
-%    colormap after inverse PoleFigure
+%  colocoding - [[orientation2color.html,colorize orientation]] according to
+%    a colorization of the inverse pole figure
 %
-%    * |'ipdf'|
-%    * |'hkl'|
+%    * |'ipdfHSV'|
+%    * |'ipdfHKL'|
+%    * |'ipdfAngle'|
+%    * |'ipdfCenter'|
 %
 %    other color codings
 %
 %    * |'angle'|
-%    * |'bunge'|, |'bunge2'|, |'euler'|
-%    * |'sigma'|
-%    * |'rodrigues'|
+%    * |'BungeRGB'|
+%    * |'RodriguesHSV'|
+%    * |'orientationCenter'|
 %
-%  antipodal      - include [[AxialDirectional.html,antipodal symmetry]] when
-%     using inverse
-%     PoleFigure colorization
+%  antipodal - include [[AxialDirectional.html,antipodal symmetry]] when
+%     using inverse PoleFigure colorization
 %
 %% Flags
 %  points   - plot dots instead of unitcells
+%
 %% Example
 % plot a EBSD data set spatially with custom colorcoding
 %
 %   mtexdata aachen
-%   plot(ebsd,'colorcoding','hkl')
+%   plot(ebsd,'colorcoding','ipdfHKL')
 %
 %   plot(ebsd,'property','phase')
 %
@@ -40,9 +42,6 @@ function varargout = plotspatial(ebsd,varargin)
 %
 %% See also
 % EBSD/plot
-
-% restrict to a given phase or region
-%ebsd = copy(ebsd,varargin{:});
 
 if ~numel(ebsd), return, end
 
@@ -60,6 +59,7 @@ x_D = [ebsd.options.x ebsd.options.y];
 numberOfPhases = numel(ebsd.phaseMap);
 X = cell(1,numberOfPhases);
 d = cell(1,numberOfPhases);
+opts = cell(1,numberOfPhases);
 
 isPhase = false(numberOfPhases,1);
 for k=1:numberOfPhases
@@ -67,10 +67,22 @@ for k=1:numberOfPhases
   isPhase(k)   = any(currentPhase);
 
   if isPhase(k)
-    [d{k},property,opts] = calcColorCode(ebsd,currentPhase,varargin{:});
+    [d{k},property,opts{k}] = calcColorCode(ebsd,currentPhase,varargin{:});
     X{k} = x_D(currentPhase,:);
   end
 end
+
+%% ensure all data have the same size
+dim2 = cellfun(@(x) size(x,2),d);
+
+if numel(unique(dim2)) > 1
+  for k = 1:numel(d)
+    if dim2(k)>0
+      d{k} = repmat(d{k},[1,max(dim2)/dim2(k)]);
+    end
+  end
+end
+
 
 %% default plot options
 
@@ -89,25 +101,20 @@ for p=1:numel(selectedPhases)
 end
 
 % make legend
-minerals = get(ebsd,'minerals');
-legend(h,minerals(isPhase));
-legend('off')
-
-if strcmpi(property,'phase'),
-  legend('show');
+if strcmpi(property,'phase')
+  minerals = get(ebsd,'minerals');
+  legend(h,minerals(isPhase),'location','NorthEast');
 end
+
 
 % set appdata
 if strncmpi(property,'orientation',11)
   setappdata(gcf,'CS',ebsd.CS(isPhase));
-  setappdata(gcf,'r',get_option(opts,'r',xvector));
-  setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
+  setappdata(gcf,'CCOptions',opts(isPhase));
   setappdata(gcf,'colorcoding',property(13:end));
 end
 
 set(gcf,'tag','ebsd_spatial');
-setappdata(gcf,'options',[extract_option(varargin,'antipodal'),...
-  opts varargin]);
 
 axis equal tight
 fixMTEXplot(gca,varargin{:});
@@ -119,15 +126,15 @@ if ~isOctave()
   set(dcm_obj,'SnapToDataVertex','off')
   set(dcm_obj,'UpdateFcn',{@tooltip,ebsd});
 
-  if check_option(varargin,'cursor'), datacursormode on;end
+  datacursormode on;
 end
 if nargout>0, varargout{1}=h; end
 
 %% Tooltip function
 function txt = tooltip(empt,eventdata,ebsd) %#ok<INUSL>
 
-pos = get(eventdata,'Position');
 
+[pos,value] = getDataCursorPos(gcf);
 [sub,map] = findByLocation(ebsd,[pos(1) pos(2)]);
 
 if numel(sub)>0
@@ -137,9 +144,11 @@ if numel(sub)>0
   txt{1} = ['#'  num2str(find(map))];
   txt{2} = ['Phase: ', minerals{sub.phase}];
   if ~isNotIndexed(sub)
-    txt{3} = ['Orientation: ' char(sub.rotations)];
+    txt{3} = ['Orientation: ' char(sub.rotations,'nodegree')];
   end
-
+  if ~isempty(value)
+    txt{3} = ['Value: ' xnum2str(value)];
+  end
 else
   txt = 'no data';
 end

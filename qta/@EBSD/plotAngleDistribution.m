@@ -71,7 +71,7 @@ CS = get(ebsd,'CSCell');
 phMap = get(ebsd,'phaseMap');
 maxomega = 0;
 
-for j = 1:length(CS)
+for j = 1:numel(CS)
   if isa(CS{j},'symmetry') && any(ph == phMap(j))
     maxomega = max(maxomega,get(CS{j},'maxOmega'));
   end

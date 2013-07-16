@@ -26,7 +26,7 @@ ss = o.SS;
 if ~isempty(ax) || newMTEXplot('ensureTag','ipdf',...
     'ensureAppdata',{{'CS',cs},{'SS',ss}})
   argin_check(r,{'vector3d'});
-  annotations  = {'TR',@(i) char(r(i),getpref('mtex','textInterpreter'))};
+  annotations  = {'TR',@(i) char(r(i),getMTEXpref('textInterpreter'))};
 else
   if ~isa(r,'vector3d')
     varargin = [{r},varargin];
@@ -35,23 +35,31 @@ else
   annotations  = {};
 end
 
-%% colorcoding
+%% colorcoding 1
 data = get_option(varargin,'property',[]);
 
-%% subsample if needed 
+%% subsample if needed
 
-if numel(o)*length(cs)*length(ss) > 100000 || check_option(varargin,'points')
-  points = fix(get_option(varargin,'points',100000/length(cs)/length(ss)));
+if numel(o)*numel(cs)*numel(ss) > 100000 || check_option(varargin,'points')
+  points = fix(get_option(varargin,'points',100000/numel(cs)/numel(ss)));
   disp(['  plotting ', int2str(points) ,' random orientations out of ', int2str(numel(o)),' given orientations']);
 
   samples = discretesample(ones(1,numel(o)),points);
-  o.rotation = o.rotation(samples);
+  o= subsref(o,samples);
   if ~isempty(data), data = data(samples); end
 
 end
 
+%% colorcoding 2
+if check_option(varargin,'colorcoding')
+  colorcoding = lower(get_option(varargin,'colorcoding','angle'));
+  data = orientation2color(o,colorcoding,varargin{:});
+end
+
+%%
+
 data = @(i) repmat(data(:),1,numel(symmetrise(r(i),ss)));
-  
+
 %% plot
 multiplot(ax{:},numel(r),...
   @(i) inverse(o(:)) * symmetrise(r(i),ss),data,...
@@ -89,4 +97,3 @@ theta = acos(1-rqr/2);
 m = Miller(vector3d('polar',theta,rho),getappdata(gcf,'CS'));
 
 txt = char(m,'tolerance',3*degree);
-

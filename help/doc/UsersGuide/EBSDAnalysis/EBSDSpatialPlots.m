@@ -20,7 +20,7 @@ mtexdata aachen
 % assign a color to each orientation and [[EBSD.plotspatial.html,plot]]
 % a colored map
 
-plot(ebsd('Fe'))
+close all;plot(ebsd('Fe'))
 
 %%
 % The orientations of the spatial map are mapped according to a
@@ -37,11 +37,101 @@ colorbar
 % The [[orientation2color.html, colorcoding]] could be specified by an
 % option
 
-close all, plot(ebsd('Fe'),'colorcoding','hkl')
+close all, plot(ebsd('Fe'),'colorcoding','ipdfHKL')
 
 %%
 
 colorbar
+
+%% Visualizing EBSD data with sharp textures
+% When visualize very sharp data the colorcoding of the data has to be
+% adapted. Let us consider the following data set
+
+mtexdata sharp
+close all;plot(ebsd)
+
+%%
+% and have a look into the 001 inverse pole figure
+
+plotipdf(ebsd,zvector,'colorcoding','ipdfangle','r',zvector,...
+  'MarkerSize',3,'grid')
+colorbar
+
+%%
+% The data have been colorcoded according to its azimuth angle. We see that
+% all individual orientations are clustered around azimuth angle 25 degree
+% with some outliers at 90 and 120 degree. In order to increase the contrast for
+% the main group we restrict the colorrange from 20 degree to 20 degree
+
+caxis([20 29]);
+
+% by the following lines we colorcode the outliers in purple.
+cmap = colormap;
+cmap(end,:) = [1 0 1];
+cmap(1,:) = [1 0 1];
+colormap(cmap)
+
+%%
+% The same colorcoding we can now apply to the EBSD map.
+
+close all;
+plot(ebsd,'colorcoding','ipdfangle','r',zvector)
+
+caxis([20 29]);
+colormap(cmap);
+
+%%
+% using the option sharp MTEX automatically tries to focus on the main
+% component in the orientation space and to increase there the contrast
+
+plot(ebsd,'sharp')
+
+
+%%
+% observe how in the inverse pole figure the orientations are scattered
+% closely around the white center. Together with the fact that the
+% transition from white to color is quite rappidly this gives a high
+% contrast.
+
+colorbar
+hold on
+plotipdf(ebsd,'points',10,'MarkerSize',10,'MarkerFaceColor','none','MarkerEdgeColor','k')
+hold off
+
+%% 
+% Another example is when analyzing the orientation distribution within
+% grains
+
+mtexdata aachen
+
+% segment grains
+grains = calcGrains(ebsd)
+
+% find largest grains
+largeGrains = grains(grainSize(grains)>500)
+
+%%
+% When plotting one specific grain with its orientations we see that they
+% all are very similar and, hence, get the same color
+
+% plot a grain 
+close all
+plotBoundary(largeGrains(1),'linewidth',2)
+hold on
+plot(largeGrains(1),'property','orientations')
+hold off
+
+%%
+% when applying the option sharp MTEX colors the mean orientation as white
+% and scales the maximum saturation to fit the maximum misorientation
+% angle. This way deviations of the orientation within one grain can be
+% visualised. 
+
+% plot a grain 
+plotBoundary(largeGrains(1),'linewidth',2)
+hold on
+plot(largeGrains(1),'property','orientations','sharp')
+hold off
 
 %% Customizing the color
 % In some cases, it might be useful to color certain orientations after
@@ -54,7 +144,7 @@ colorbar
 
 close all, 
 plot(ebsd('Fe'),'colorcoding',...
-  'h',{Miller(1,1,1),[0 0 1]},...
+  'ipdfCenter',{Miller(1,1,1),[0 0 1]},...
   'r',zvector,...
   'halfwidth',7.5*degree)
 
@@ -89,7 +179,7 @@ hcolored = {Miller(0,0,1),[1 0 0],...
 
 close all;
 plot(ebsd('Fe'),'colorcoding',...
-  'h',hcolored,...
+  'ipdfCenter',hcolored,...
   'r',xvector,...
   'halfwidth',12.5*degree,...
   'antipodal')
@@ -111,12 +201,12 @@ mode = orientation('euler',90*degree,50*degree,45*degree,'ABG')
 
 close all;
 plot(ebsd('Fe'),'colorcoding',...
-  'orientations',{mode,[0 0 1]},...
+  'orientationCenter',{mode,[0 0 1]},...
   'halfwidth',10*degree)
 
 %%
 
-colorbar('sections',9)
+colorbar('sections',9,'sigma')
 
 %%
 % the area of the colored EBSD data in the map corresponds to the volume
@@ -128,7 +218,7 @@ vol = volume(ebsd('fe'),mode,20*degree)
 % actually, the colored measurements stress a peak in the ODF
 
 odf = calcODF(ebsd('fe'),'halfwidth',10*degree,'silent');
-plot(odf,'sections',9,'antipodal','silent')
+plot(odf,'sections',9,'antipodal','silent','sigma')
 
 
 %% Coloring properties
@@ -175,7 +265,7 @@ mtexColorMap white2black
 
 hold on
 plot(ebsd('fe'),'colorcoding',...
-  'h',{Miller(1,1,1),[1 0 0]},'r',zvector,...
+  'ipdfCenter',{Miller(1,1,1),[1 0 0]},'r',zvector,...
   'translucent',.5)
 
 %%

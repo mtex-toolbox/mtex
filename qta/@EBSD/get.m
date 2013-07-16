@@ -48,10 +48,10 @@ switch lower(vname)
     
   case {'data','orientations','orientation'}
     
-    
-    checkSinglePhase(ebsd);
+    % ensure single phase   
+    [ebsd,cs] = checkSinglePhase(ebsd);
       
-    varargout{1} = orientation(ebsd.rotations,ebsd.CS{ebsd.phase(1)},ebsd.SS);
+    varargout{1} = orientation(ebsd.rotations,cs,ebsd.SS);
      
   case 'mis2mean'
     

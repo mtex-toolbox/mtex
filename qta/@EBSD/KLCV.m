@@ -30,7 +30,7 @@ cN = ceil(sN / pN);
 
 c = zeros(cN,length(psi));
 iN = zeros(1,cN);
-progress(0,cN,' estimate optimal kernel halfwidth: ');
+progress(0,cN,' estimating optimal kernel halfwidth: ');
 
 for i = 1:cN
   
@@ -42,7 +42,7 @@ for i = 1:cN
   for k = 1:length(psi)
     
     % eval kernel
-    f = evalCos(psi(k),d);
+    f = evalCos(psi(k),d) ./ numel(q) ./ numel(get(ebsd,'CS'));
     
     % remove diagonal
     f(sub2ind(size(f),1:size(f,1),ind)) = 0;

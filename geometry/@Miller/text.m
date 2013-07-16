@@ -25,7 +25,7 @@ if numel(strings)==1, strings = repcell(strings{1},numel(m),1);end
 
 % symmetrise
 if check_option(varargin,{'all','symmetrised','fundamentalRegion'})
-  
+
   if ~isempty(ax) && isappdata(ax{:},'projection')
     p = getappdata(ax{:},'projection');
     if p.antipodal, varargin = [varargin,{'antipodal'}];end
@@ -33,7 +33,7 @@ if check_option(varargin,{'all','symmetrised','fundamentalRegion'})
   if check_option(m,'antipodal')
     varargin = [varargin,{'antipodal'}];
   end
-  
+
   [m,l] = symmetrise(m,varargin{:},'keepAntipodal');
   if ~isempty(strings)
     strings = strings(rep(1:numel(strings),l));
@@ -41,10 +41,10 @@ if check_option(varargin,{'all','symmetrised','fundamentalRegion'})
   varargin = [varargin,{'removeAntipodal'}];
 
 end
-  
+
 
 if check_option(varargin,'labeled')
-  strings = char(m,getpref('mtex','textInterpreter'),'cell');
+  strings = char(m,getMTEXpref('textInterpreter'),'cell');
 end
 
 varargin = delete_option(varargin,'labeled');

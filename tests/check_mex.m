@@ -47,11 +47,11 @@ toc
 %% check SO3Grid/find
 
 cs = symmetry('trigonal');
+ss = symmetry(1);
 
-x = SO3Grid(1000,cs);
+x = equispacedSO3Grid(cs,ss,'points',100000);
+y = equispacedSO3Grid(cs,ss,'points',100000);
 
-x = SO3Grid(100000,cs);
-y = SO3Grid(100000,cs);
 
 tic
 angle_outer(x,y,5*degree);

@@ -5,6 +5,10 @@ switch vname
   case fields(obj)
     value = [obj.(vname)];
     
+  case 'name'
+    
+    value = obj.pointGroup;
+    
   case 'axesAngle'
     
     a = normalize(obj.axis);
@@ -30,7 +34,7 @@ switch vname
     
   case {'aufstellung','alignment','convention'}
     
-    if any(strcmp(obj.laue,{'-1','2/m','-3','-3m'}))
+    if any(strcmp(obj.laueGroup,{'-1','2/m','-3','-3m','6/m','6/mmm'}))
       abc = normalize(obj.axis);
       abcStar = normalize(get(obj,'axes*'));
       [uabc,ind] = unique([abc,abcStar]);
@@ -49,11 +53,11 @@ switch vname
       value = {};
     end
   case 'Laue'
-    value = obj.laue;
+    value = obj.laueGroup;
 
   case 'nfold'
     
-    switch obj.laue
+    switch obj.laueGroup
       
       case {'-1'}
     
@@ -79,7 +83,7 @@ switch vname
     
   case 'maxOmega'
     
-    switch obj.laue
+    switch obj.laueGroup
       
       case {'-1','2/m','-3','4/m','6/m'}
     

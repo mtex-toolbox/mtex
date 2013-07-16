@@ -1,4 +1,5 @@
 TensorArithmetics
 MeanTensors
 ElasticityTensor
+PlasticDeformation
 PiezoElectricity

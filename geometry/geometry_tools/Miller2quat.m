@@ -29,6 +29,8 @@ if isa(v1,'double')
   v2 = Miller(v2(1),v2(2),v2(3),CS);
 end
 
+v1 = normalize(v1);
+v2 = normalize(v2);
 
 % ensure angle (v1,v2) = 90°
 

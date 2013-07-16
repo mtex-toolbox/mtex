@@ -11,7 +11,7 @@
 % First, let us import some example <mtexdata.html EBSD data> and plot
 % the raw data
 
-plotx2east; plotzup
+plotx2east; plotzOutOfPlane
 mtexdata aachen;
 figure('position',[100 100 800 400])
 plot(ebsd)
@@ -29,7 +29,7 @@ plotpdf(ebsd('Fe'),Miller(1,2,3),'contourf','points',10000)
 % of plane. Assume you want to change this to z-axis into plane you need to
 % do
 
-plotzdown;
+plotzIntoPlane;
 figure('position',[100 100 800 400])
 plot(ebsd)
 
@@ -111,3 +111,7 @@ plotpdf(ebsd_rot('Fe'),Miller(1,2,3),'contourf','points',10000)
 % In the first case the spatial data are changed such that the Euler angles
 % referene frame coincides with the spatial reference frame and in the
 % second case the Euler angles are altered to get coincidence.
+%%
+
+% revert z-axis convention
+plotzOutOfPlane;

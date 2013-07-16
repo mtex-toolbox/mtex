@@ -10,6 +10,8 @@
 % the raw data
 
 mtexdata aachen;
+plotx2east
+close all
 plot(ebsd)
 
 %%
@@ -17,7 +19,8 @@ plot(ebsd)
 % indexed data is called phase _not Indexed_. They can be visualized by a
 % spatial phase plot
 
-close, plot(ebsd,'property','phase')
+close all
+plot(ebsd,'property','phase')
 
 %% Selecting certain phases
 % The data coresponding to a certain phase can be extracted by
@@ -33,7 +36,8 @@ ebsd({'Fe','Mg'})
 %%
 % As an example, let us plot only all not indexed data
 
-close, plot(ebsd('notIndexed'),'facecolor','r')
+close all
+plot(ebsd('notIndexed'),'facecolor','r')
 
 %% See also
 % EBSD/subsref EBSD/subsasgn
@@ -52,7 +56,8 @@ region = [120 100 80 30];
 %%
 % plot the ebsd data together with the region of interest
 
-close, plot(ebsd)
+close all
+plot(ebsd)
 rectangle('position',region,'edgecolor','r','linewidth',2)
 
 %%
@@ -65,7 +70,8 @@ ebsd = ebsd(inpolygon(ebsd,[120 100 200 130]))
 %%
 % plot
 
-close, plot(ebsd)
+close all
+plot(ebsd)
 
 %% Remove Inaccurate Orientation Measurements
 %
@@ -75,11 +81,14 @@ close, plot(ebsd)
 % Most EBSD measurements contain quantities indicating inaccurate
 % measurements. 
 
-close, plot(ebsd,'property','mad')
+close all
+plot(ebsd,'property','mad')
 
+%%
 % or
 
-close, plot(ebsd,'property','bc')
+close all
+plot(ebsd,'property','bc')
 
 %%
 % Here we will use the MAD or CI value to identify and eliminate
@@ -88,16 +97,17 @@ close, plot(ebsd,'property','bc')
 % extract the quantity mad 
 mad = get(ebsd,'mad');
 
-%or
-% % extract the quantity ci 
+%%
+% or extract the quantity bc
+
 bc = get(ebsd,'bc');
 
 % plot a histogram
-close, hist(mad)
+close all
+hist(mad)
 
-%or
-% plot a histogram
-close, hist(bc)
+figure
+hist(bc)
 
 
 %%
@@ -111,7 +121,8 @@ ebsd_corrected = ebsd(bc>0.1 )
 %%
 %
 
-close, plot(ebsd_corrected)
+close all
+plot(ebsd_corrected)
 
 
 
