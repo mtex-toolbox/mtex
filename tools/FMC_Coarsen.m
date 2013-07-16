@@ -1,15 +1,19 @@
 function fmc = FMC_Coarsen(fmc)
 %Performs one coarsening step.
 
+fmc.sizeW = fmc.sizeWnext;
 
 fmc = part0EdgeDilution(fmc);
 fmc = part1CoarseSeeds(fmc);
 fmc = part2CreateP(fmc);
 fmc = part3NormalizeP(fmc);
-fmc = part5CoarseWeights(fmc);
+fmc = part5CoarseWeightsUpdate(fmc);
 fmc = part6InterpWeights(fmc);
 fmc = part7BiasWeights(fmc);
 fmc = part8Salieciens(fmc);
+
+fmc.v     = fmc.vcoarse;
+
 
 end
 
@@ -38,11 +42,11 @@ function fmc = part1CoarseSeeds(fmc)
 
 %Celements is the list of nodes that are coarse nodes.
 %The nodes are considered in order of descending size
-alphaSumV = fmc.alpha*(sum(fmc.W,2)-diag(fmc.W));
+alphaSumV = full(fmc.alpha*(sum(fmc.W,2)-diag(fmc.W)));
 
 % if s == 1 sort by weights
 % else sort by size
-if fmc.s == 1
+if fmc.sLevel == 1
   [~,iorder] = sort(sum(fmc.W),'descend');
 else
   [~,iorder] = sort(fmc.v, 'descend');
@@ -56,11 +60,12 @@ Finv = false(fmc.sizeW,1);
 % that are in F. ind1 is the vector of indices of NZ entries of the rowI'th row
 %ind2 contains the indices of ind1 that are coarse nodes
 %sum of the weights between I'th pixel and nodes that are coarse
+
+% add most weighted adjacent node if degree of weights less than alphasum
 for k = iorder
   s    = cs(k)+1:cs(k+1);
-  fsub = Finv(i(s)); %elements of row
   wsub = w(s); % weights of row
-  Finv(k) = sum(wsub(fsub)) < alphaSumV(k);
+  Finv(k) = sum(wsub(Finv(i(s)))) < alphaSumV(k);
 end
 
 fmc.sizeWnext = nnz(Finv);
@@ -104,12 +109,12 @@ end
 
 
 %% part 5:
-function fmc = part5CoarseWeights(fmc)
+function fmc = part5CoarseWeightsUpdate(fmc)
 
 P = fmc.P;
 %Calculate the new W and links
-fmc.Wcoarse   = P'*fmc.W*P;
-fmc.A_Dcoarse = P'*fmc.A_D*P;
+fmc.W   = P'*fmc.W*P;
+fmc.A_D = P'*fmc.A_D*P;
 %calculate the number of data points in each new node
 fmc.vcoarse=P'*fmc.v;
 
@@ -123,24 +128,31 @@ Celements = fmc.Celements;
 
 %Qvar is the variance of each new node
 
-[i,j,p] = find(fmc.P);
-t = p > .05 & i ~= Celements(j)';
-i = i(t); j = j(t); p = p(t);
+[ii,jj,pp] = find(fmc.P);
+t = pp > .05 & ii ~= Celements(jj)';
+i = ii(t); j = jj(t); p = pp(t);
 
 O  = fmc.O(i);
 Oc = fmc.O(Celements);
 
 % project to fundamental region of Ocoarse_j
 qSym   = quaternion(fmc.CS);
-[~,si] = max(abs(dot_outer(inverse(O).*Oc(j),qSym)),[],2);
-O      = O.*qSym(si);
 
-O  = squeeze(double(O));
-Oc = squeeze(double(Oc));
+m   =  inverse(O).*Oc(j);
+projectSym = abs(dot(m,idquaternion)) < cos(20/2*degree);
+if any(projectSym)
+  [~,si] = max(abs(dot_outer(m(projectSym),qSym)),[],2);
+  O(projectSym)  = O(projectSym).*qSym(si);
+end
 
-Qvar = fmc.Varin(Celements);
-vc = fmc.v(Celements);
-vi = fmc.v(i).*p;
+O     = reshape(squeeze(double(O)),[],4);
+Oc    = reshape(squeeze(double(Oc)),[],4);
+
+QVari = fmc.Qvar(i);
+Qvar  = fmc.Qvar(Celements);
+
+vi    = fmc.v(i).*p;
+vc    = fmc.v(Celements);
 
 % % Calculate the new quaternion variances and averages using
 % % the online variance updating algorithm
@@ -162,7 +174,7 @@ for k=1:size(O,1)
     [ev,ew] = eig(Q'*diag(w)*Q);
     Oc(jk,:) = ev(:,diag(ew)>.5);
     
-    Qvar(jk)=vc(jk)*Qvar(jk)+vi(k)*fmc.Varin(i(k))+(del^2*(vc(jk)*vi(k))/vt);       %Single-pass Variance
+    Qvar(jk)=vc(jk)*Qvar(jk)+vi(k)*QVari(k)+(del^2*(vc(jk)*vi(k))/vt);       %Single-pass Variance
     Qvar(jk)=Qvar(jk)/vt;
     vc(jk)=vt;
     
@@ -171,31 +183,37 @@ for k=1:size(O,1)
   end
 end
 
-Ocoarse = quaternion(Oc.').';
-
-P(sub2ind(size(P),i,j)) = p;
+P = sparse(i,j,p,fmc.sizeW,fmc.sizeWnext) + ...
+  sparse(ii(~t),jj(~t),pp(~t),fmc.sizeW,fmc.sizeWnext);
+% P(sub2ind(size(P),i,j)) = p; % slow for large
 
 fmc.Qvar = Qvar;
+fmc.O = quaternion(Oc.').';
 fmc.P = P;
-fmc.Ocoarse = Ocoarse;
 
 end
+
 %% part 7: Bias weights
 function fmc = part7BiasWeights(fmc)
 %Use the Qvar and misorientation to find the Mahalanobis distance, then use
 %that to reweight the nodes.
-[i,j] = find(fmc.Wcoarse);  % list of cells
 
-q = inverse(fmc.Ocoarse(i)).*fmc.Ocoarse(j);
-misorientation =  real(2*acosd(max(abs(dot_outer(q,fmc.CS)),[],2)));
+[i,j] = find(triu(fmc.W));
+q = inverse(fmc.O(i)).*fmc.O(j);
+
+misorientation = abs(dot(q,idquaternion));
+checkSym = misorientation < cos(30/2*degree);
+if any(checkSym)
+  misorientation(checkSym) = max(abs(dot_outer(q(checkSym),fmc.CS)),[],2);
+end
+clear q;
+misorientation = real(2*acosd(misorientation));
 
 Wthreshold = 1e-3;
 smallMis = abs(misorientation) <= Wthreshold;
 
-i1 = i(~smallMis);
-j1 = j(~smallMis);
-i2 = i(smallMis);
-j2 = j(smallMis);
+i1 = i(~smallMis); j1 = j(~smallMis);
+i2 = i(smallMis);  j2 = j(smallMis);
 misorientation = misorientation(~smallMis);
 
 sqrtstuff = sqrt(min(fmc.Qvar(i1),fmc.Qvar(j1)));
@@ -204,7 +222,9 @@ bias = exp(-fmc.cmaha*(abs(misorientation)-1.*sqrtstuff)./sqrtstuff);
 bias = sparse(i1, j1, bias, fmc.sizeWnext, fmc.sizeWnext) +...
   sparse(i2, j2, 1,fmc.sizeWnext, fmc.sizeWnext);
 
-fmc.Wcoarse = fmc.Wcoarse.*bias;
+bias = bias + triu(bias,1)';
+
+fmc.W = fmc.W.*bias;
 
 
 end
@@ -212,8 +232,8 @@ end
 %% part 8: Calculate saliencies
 function fmc = part8Salieciens(fmc)
 
-fmc.Sal = 2*((sum(fmc.Wcoarse)' - diag(fmc.Wcoarse)).*diag(fmc.A_Dcoarse))./ ...
-  (diag(fmc.Wcoarse).*(sum(fmc.A_Dcoarse,2)-diag(fmc.A_Dcoarse)));
+fmc.Sal = 2*((sum(fmc.W)' - diag(fmc.W)).*diag(fmc.A_D))./ ...
+  (diag(fmc.W).*(sum(fmc.A_D,2)-diag(fmc.A_D)));
 
 end
 

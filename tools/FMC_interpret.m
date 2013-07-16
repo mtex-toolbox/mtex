@@ -31,7 +31,7 @@ lengthsub=zeros(1,numS);
 
 
 %1 spot in sAssign for each node, increasing number for each saliency set
-parfor curS=2:numS
+for curS=2:numS
     sAssign=[sAssign; curS*ones(numClusters(curS),1)];    
 end
 
@@ -42,9 +42,7 @@ for curS = numS-4:numS
     %find nodes for current s
     elemS = elements(sAssign(elements) == curS)';   %nodes of curS
     sLen = numClusters(curS);
-    numNodes = length(elemS);
-    allUs = zeros(numPoints,numNodes+1);
-    
+    numNodes = length(elemS);   
   
     % for each s from current s to s=1, iteratively find which nodes
     % are inside of the node by multiplying by Ps
@@ -54,30 +52,23 @@ for curS = numS-4:numS
     end
     
     % find probability of points assigned to each node
-    parfor curNodeIndex = 1:numNodes
-        %U is a vector of zeros whose entries correspond to whether
-        %subnodes belong to the current node...
-        U=zeros(sLen,1);
-        U(curNodeIndex)=1;  %seeded with a one for the current node
-        U = backPs*U;
-        
-       allUs(:,curNodeIndex) = U; 
-        
-    end
-    
-    allUs(:,numNodes + 1) = assignmentsY;
+    allUs = [backPs assignmentsY];    
     
     %assign clusters to points based on the strongest probability of any
     %point in the cluster
-    [Prob, NodeIndex] = max(allUs,[],2);
-    for point = find((NodeIndex <= numNodes) & (Prob ~= 1))'
-      nodePoints = allUs(:,NodeIndex(point))>=beta;
+    [Prob, NodeIndex] = max(allUs,[],2);   
+    %assign clusters to points based on the strongest probability of any
+%     %point in the cluster
+    allUs = allUs >= beta;
+    
+    for point = find((NodeIndex <= numNodes) & (Prob < 1))'
+      nodePoints = allUs(:,NodeIndex(point));
       assignmentsX(nodePoints) = NodeIndex(point);
       assignmentsY(nodePoints) = Prob(point);
     end
     
+    
 end
-
 
 %% Break up non-continuous (Michigan) clusters
 rLimit = 15;   %Recursion limit (MATLAB tends to crash around 840)
@@ -112,13 +103,13 @@ for point = 2:length(flag)
     end
 end
 
-singlePoints = find(flag == -1);
+singlePoints = find(flag == -1 & sum(A_D,2)>1);
 for pt = singlePoints'
 assignmentsN(pt) = assignmentsN(NNlist{pt}(2));
 end
 
 assignmentsX = assignmentsN;
-set(0,'RecursionLimit',500)
+% set(0,'RecursionLimit',500)
 
 
 assignments = [assignmentsX assignmentsY];

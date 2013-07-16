@@ -24,7 +24,11 @@ function grains = calcGrains(ebsd,varargin)
 
 %% parse input parameters
 
-thresholds = get_option(varargin,{'angle','threshold'},15*degree,'double');
+grainBoundaryCiterions = dir([mtex_path '/qta/@EBSD/private/gbc*.m']);
+grainBoundaryCiterions = {grainBoundaryCiterions.name};
+
+gbc      = get_flag(regexprep(grainBoundaryCiterions,'gbc_(\w*)\.m','$1'),varargin,'angle');
+gbcValue = get_option(varargin,gbc,15*degree,'double');
 
 %% remove not indexed phases
 
@@ -37,8 +41,8 @@ end
 
 %% verify inputs
 
-if numel(thresholds) == 1 && numel(ebsd.CS) > 1
-  thresholds = repmat(thresholds,size(ebsd.CS));
+if numel(gbcValue) == 1 && numel(ebsd.CS) > 1
+  gbcValue = repmat(gbcValue,size(ebsd.CS));
 end
 
 if isa(ebsd,'GrainSet'),  ebsd = get(ebsd,'ebsd'); end
@@ -112,8 +116,11 @@ switch dim
     
     [Dl,Dr,sz,dz,lz] = spatialdecomposition3d(x_D,ebsd.unitCell,varargin{:});
     
-    % adjacent cells, D x D
+%     adjacent cells, D x D
     A_D = sparse(double(Dl),double(Dr),1,d,d);
+    
+    A_D = triu(A_D | A_D');
+    [Dl,Dr] = find(A_D);    
     
     clear x_D
     
@@ -136,22 +143,17 @@ for p = 1:numel(ebsd.phaseMap)
   % check, whether they are indexed
   ndx = ndx & ~notIndexed(Dl) & ~notIndexed(Dr);
   
-  % now check whether the have a misorientation heigher or lower than a
-  % threshold
-  
-  % due to memory we split the computation
-  csndx = [uint32(0:1000000:sum(ndx)-1) sum(ndx)];
-  for k=1:numel(csndx)-1
-    andx = ndx & cumsum(ndx) > csndx(k) & cumsum(ndx) <= csndx(k+1);
+  % now check for the grain boundary criterion
+  if any(ndx)
     
-    o_Dl = orientation(ebsd.rotations(Dl(andx)),ebsd.CS{p},ebsd.SS);
-    o_Dr = orientation(ebsd.rotations(Dr(andx)),ebsd.CS{p},ebsd.SS);
+    criterion(ndx) = feval(['gbc_' gbc],...
+      ebsd.rotations,ebsd.CS{p},Dl(ndx),Dr(ndx),gbcValue(p),varargin{:});
     
-    criterion(andx) = dot(o_Dl,o_Dr) > cos(thresholds(p)/2);
   end
-    
-  clear o_Dl o_Dr ndx csndx andx
+  
 end
+
+clear ndx
 
 %%
 
