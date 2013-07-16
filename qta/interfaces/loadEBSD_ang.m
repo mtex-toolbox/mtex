@@ -16,6 +16,8 @@ function ebsd = loadEBSD_ang(fname,varargin)
 %  spatial and Euler reference frame coincide, i.e., rotate them by 180
 %  degree
 
+ebsd = EBSD;
+
 try
   % read file header
   hl = file2cell(fname,1000);
@@ -47,12 +49,11 @@ try
           options = {'X||a'};
         case '2'
           options = {'X||a*'};
-          warning('MTEX:unsupportedSymmetry','symmetry not yet supported!')
         case '1'
           options = {'X||a'};
         case '20'
           laue = {'2'};
-          options = {'X||a'};
+          options = {'y||b','z||c'};
         otherwise
           if lattice(6) ~= 90
             options = {'X||a'};
@@ -60,6 +61,7 @@ try
       end
       
       cs{phase} = symmetry(laue,lattice(1:3)',lattice(4:6)'*degree,'mineral',mineral,options{:}); %#ok<AGROW>
+      ReplaceExpr{i} = {mineral,int2str(i)};
     end
     assert(~isempty(cs));
   catch %#ok<CTCH>
@@ -71,9 +73,20 @@ try
   % number of header lines
   nh = find(strmatch('#',hl),1,'last');
   
+  % mineral name to phase number conversion needed?
+  if numel(sscanf(hl{end},'%f')) < 11
+    varargin = [{'ReplaceExpr',ReplaceExpr},varargin];
+  end
+  
   % get number of columns
-  if isempty(sscanf(hl{nh+1},'%*f %*f %*f %*f %*f %*f %*f %*f %*f %*f %s\n'))
+  if isempty(sscanf(hl{nh+1},'%*f %*f %*f %*f %*f %*f %*f %*f %*f %*f\n'))
+  
+    ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
+      'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Phase' 'SEM_signal'},...
+      'Columns',1:9,varargin{:},'header',nh);
     
+  elseif isempty(sscanf(hl{nh+1},'%*f %*f %*f %*f %*f %*f %*f %*f %*f %*f %s\n'))
+        
     ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
       'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Phase' 'SEM_signal' 'Fit'},...
       'Columns',1:10,varargin{:},'header',nh);
@@ -94,7 +107,7 @@ end
 % change reference frame
 if check_option(varargin,'convertSpatial2EulerReferenceFrame')
   ebsd = rotate(ebsd,rotation('axis',xvector+yvector,'angle',180*degree),'keepEuler');
-elseif check_option(varargin,'convertSpatial2EulerReferenceFrame')
+elseif check_option(varargin,'convertEuler2SpatialReferenceFrame')
   ebsd = rotate(ebsd,rotation('axis',xvector+yvector,'angle',180*degree),'keepXY');
 end
   

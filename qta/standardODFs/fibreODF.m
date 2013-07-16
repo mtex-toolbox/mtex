@@ -1,4 +1,4 @@
-function odf = fibreODF(h,r,CS,SS,varargin)
+function odf = fibreODF(h,r,varargin)
 % defines an fibre symmetric ODF
 %
 %% Description
@@ -7,8 +7,12 @@ function odf = fibreODF(h,r,CS,SS,varargin)
 % shape of the ODF is defined by a @kernel function.
 %
 %% Syntax
-%  odf = fibreODF(h,r,CS,SS,'halfwidth',hw)
-%  odf = fibreODF(h,r,CS,SS,kernel)
+%   h = Miller(h,k,l,CS)
+%   r = vector3d(x,y,z);
+%   odf = fibreODF(h,r) % default halfwith 10*degree
+%   odf = fibreODF(h,r,'halfwidth',15*degree) % specify halfwidth
+%   odf = fibreODF(h,r,kernel) % specify @kernel shape
+%   odf = fibreODF(h,r,CS,SS)  % specify crystal and specimen symmetry
 %
 %% Input
 %  h      - @Miller / @vector3d crystal direction
@@ -23,12 +27,19 @@ function odf = fibreODF(h,r,CS,SS,varargin)
 %% See also
 % ODF/ODF uniformODF unimodalODF
 
-error(nargchk(4, 6, nargin));
 argin_check(h,'Miller');
 argin_check(r,'vector3d');
-argin_check(CS,'symmetry');
-argin_check(SS,'symmetry');
-h = ensureCS(CS,{h});
+if nargin > 2 && isa(varargin{1},'symmetry')
+  CS = varargin{1};
+  h = ensureCS(CS,{h});
+else
+  CS = get(h,'CS');
+end
+if nargin > 3 && isa(varargin{2},'symmetry')
+  SS = varargin{2};
+else
+  SS = symmetry('triclinic');
+end
 
 if check_option(varargin,'bingham') % Bingham distributed ODF
   

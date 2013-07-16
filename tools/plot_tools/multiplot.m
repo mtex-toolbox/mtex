@@ -22,17 +22,17 @@ function a = multiplot(nplots,varargin)
 %  silent - no output
 %
 %% See also
-% S2Grid/plot savefigure   
+% S2Grid/plot savefigure
 
 %% if axes are alrady given plot into it and skip the rest
 if ~isempty(nplots) && all(ishandle(nplots)) && strcmp(get(nplots(1),'type'),'axes')
-  
+
   varargin(1) = [];
   efun = find(cellfun('isclass',varargin,'function_handle'));
   for kfun = 1:numel(efun)
     varargin{efun(kfun)} = varargin{efun(kfun)}(1);
   end
-    
+
   plot(nplots,varargin{:});
   return;
 end
@@ -50,13 +50,13 @@ ma = getappdata(gcf,'multiplotAxes');
 if ~strcmp(washold,'off') && ~isempty(ma) && all(numel(ma) == nplots) && ...
     all(ishandle(ma))
   a = ma;
-  nplots = numel(a); 
-  
-% make normal axes multiplot axes  
+  nplots = numel(a);
+
+% make normal axes multiplot axes
 elseif ishold && ~isempty(a) && all(nplots == numel(a)) && ...
     all(ishandle(a))
   nplots = numel(a);
-  
+
 else % make new axes
   rmallappdata
   for k=1:numel(a), cla(a(k));end
@@ -74,6 +74,7 @@ if check_option(varargin,'position')
 elseif strcmp(washold,'off')
   % determine optimal size
   screenExtend = get(0,'MonitorPositions');
+  screenExtend = screenExtend(1,:); % consider only the first monitor
   [bx,by,l] = bestfit(screenExtend(3),screenExtend(4),1,nplots,30,30);
   l = min(l,300);
   bx = bx*l;
@@ -92,14 +93,15 @@ if nargin>=3 && isa(varargin{2},'function_handle')
   end
   varargin(2) = []; %remove argument
 
-  % for equal colorcoding determine min and max of data 
-  if check_option(varargin,'colorRange',[],'equal')
+  % for equal colorcoding determine min and max of data
+  contours = get_option(varargin,{'contourf','contour'},[],'double');
+  if isempty(contours) && check_option(varargin,'colorRange',[],'equal')
     minData = nanmin(cellfun(@(x) nanmin(x(:)),data));
     maxData = nanmax(cellfun(@(x) nanmax(x(:)),data));
-    
-    % set colorcoding explicitly 
+
+    % set colorcoding explicitly
     varargin = set_option(varargin,'colorRange',[minData maxData]);
-  end  
+  end
 else
   data = [];
 end
@@ -113,10 +115,10 @@ for k=1:nplots
   for kfun = 1:nfun
     targin{efun(kfun)} = varargin{efun(kfun)}(k);
   end
-  
+
   % reinsert data
   if ~isempty(data) && ~isempty(data{k}), targin = {targin{1},data{k},targin{2:end}};end
-  
+
   plot(a(k),targin{:});
 end
 
@@ -124,12 +126,13 @@ end
 if ~isappdata(gcf,'colorbaraxis')
   d = axes('visible','off','position',[0 0 1 1],...
     'tag','colorbaraxis');
-  
-  ch = get(gcf,'children');
-  
-  set(gcf,'children',[ch(ch ~= d);ch(ch == d)]);
+
+  % bring invisible axis in back
+  ch = allchild(gcf);
+  ch = [ch(ch ~= d);ch(ch == d)];
+  set(gcf,'children',ch,'currentAxes',ch(1));
   set(d,'HandleVisibility','callback');
-  
+
   setappdata(gcf,'colorbaraxis',d);
 end
 
@@ -140,15 +143,24 @@ end
 
 %% post process figure
 
+% ensure same marker size in all scatter plots
+if check_option(varargin,'unifyMarkerSize')
+  ax = findobj(a,'tag','dynamicMarkerSize');
+  if ~isempty(ax)
+    markerSize = ensurecell(get(ax,'UserData'));
+    set(ax,'UserData',min([markerSize{:}]));
+  end
+end
+
 set(gcf,'ResizeFcn',@(src,evt) figResize(src,evt,a));
 
 if ~isappdata(gcf,'multiplotAxes')
-  
+
   setappdata(gcf,'multiplotAxes',a);
   setappdata(gcf,'autofit',get_option(varargin,'autofit','on'));
-  setappdata(gcf,'outerPlotSpacing',get_option(varargin,'outerPlotSpacing',getpref('mtex','outerPlotSpacing')));
-  setappdata(gcf,'innerPlotSpacing',get_option(varargin,'innerPlotSpacing',getpref('mtex','innerPlotSpacing')));
-  
+  setappdata(gcf,'outerPlotSpacing',get_option(varargin,'outerPlotSpacing',getMTEXpref('outerPlotSpacing')));
+  setappdata(gcf,'innerPlotSpacing',get_option(varargin,'innerPlotSpacing',getMTEXpref('innerPlotSpacing')));
+
   figResize(gcf,[],a);
 
   if ~check_option(varargin,'uncropped')
@@ -178,7 +190,7 @@ set(fig,'Units','pixels');
 if strcmp(getappdata(fig,'autofit'),'on')
 
   figpos = get(fig,'Position');
-  
+
   innerPlotSpacing = getappdata(fig,'innerPlotSpacing');
   outerPlotSpacing = getappdata(fig,'outerPlotSpacing');
 
@@ -187,17 +199,17 @@ if strcmp(getappdata(fig,'autofit'),'on')
   figpos(3) = figpos(3)-2*outerPlotSpacing;
   dxdy = get(a(1),'PlotBoxAspectRatio');
   % correct for xAxisDirection
-  if find(get(gca,'CameraUpVector'))==1
+  if find(get(a(1),'CameraUpVector'))==1
     dxdy(1:2) = fliplr(dxdy(1:2));
   end
   dxdy = dxdy(2)/dxdy(1);
   [nx,ny,l] = bestfit(figpos(3),figpos(4),dxdy,length(a),innerPlotSpacing,innerPlotSpacing);
   set(fig,'UserData',[nx*l+2*outerPlotSpacing+(nx-1)*innerPlotSpacing,...
     ny*l*dxdy+2*outerPlotSpacing+(ny-1)*innerPlotSpacing]);
-  setappdata(fig,'length',l); 
- 
+  setappdata(fig,'length',l);
+
   l = ceil(l);
-  ldxdy = ceil(l*dxdy); 
+  ldxdy = ceil(l*dxdy);
   for i = 1:length(a)
     [px,py] = ind2sub([nx ny],i);
     apos = [1+outerPlotSpacing+(px-1)*(l+innerPlotSpacing),...
@@ -205,15 +217,15 @@ if strcmp(getappdata(fig,'autofit'),'on')
       l,ldxdy];
     set(a(i),'Units','pixels','Position',apos);
   end
-  
+
   % resize colorbaraxis
   set(getappdata(fig,'colorbaraxis'),'units','pixel','position',[outerPlotSpacing,outerPlotSpacing,figpos(3:4)]);
 end
-  
+
 % set position of labels
 u = findobj(fig,'Tag','minmax','HorizontalAlignment','Right');
 for i = 1:length(u)
- 
+
  a = get(u(i),'parent');
  set(a,'units','points');
  apos = get(a,'Position');

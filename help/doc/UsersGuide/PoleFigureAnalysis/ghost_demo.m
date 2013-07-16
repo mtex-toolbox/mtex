@@ -16,7 +16,7 @@
 % for sharp textures the ghost effect is relatively small due to the strict
 % non-negativity condition. For weak textures, however, the ghost effect
 % might be remarkable. For those cases *MTEX* provides the option 
-% *ghost_ correction* which tries to determine the uniform portion of the
+% *ghost_correction* which tries to determine the uniform portion of the
 % unknown ODF and to transform the unknown weak ODF into a sharp ODF by
 % substracting this uniform portion. This is almost the approach Matthies
 % proposed in his book (He called the uniform portion *phon*).
@@ -71,11 +71,11 @@ calcError(rec_cor,odf)
 
 %% 
 % without ghost correction:
-plotodf(rec,'sections',9,'silent')
+plotodf(rec,'sections',9,'silent','sigma')
 
 %% 
 % with ghost correction:
-plotodf(rec_cor,'sections',9,'silent')
+plotodf(rec_cor,'sections',9,'silent','sigma')
 
 %% 
 % radial plot of the true ODF

@@ -8,7 +8,7 @@ function plot(grains,varargin)
 %% See also
 % GrainSet/plotBoundary Grain2d/plotGrains Grain3d/plotGrains
 
-EBSDProperties = get(get(grains,'ebsd'),'propertyNames');
+EBSDProperties = [get(get(grains,'ebsd'),'propertyNames');{'orientations'}];
 
 % plot boundary
 if check_option(varargin,'boundary')

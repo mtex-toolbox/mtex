@@ -29,6 +29,7 @@ plot(ax{:},axes,'all','FundamentalRegion',varargin{:});
 
 if isempty(ax)
   set(gcf,'tag','AxisDistribution');
+  setappdata(gcf,'CS',get(axes,'CS'));
   name = inputname(1);
   if isempty(name), name = ebsd.comment;end
   set(gcf,'Name',['Axis Distribution of ',name]);

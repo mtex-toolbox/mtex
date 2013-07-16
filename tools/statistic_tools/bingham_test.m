@@ -41,8 +41,7 @@ end
 
 [p,v] = feval(test_fun, n, kappa, lambda);
 
-T = 1-gammainc(p/2,v/2);
-
+T = 1-gammainc(p/2,v/2,'upper');
 % v=2, exp(-x/2)
 % T = 1-chi2cdf(p,v);
 
@@ -51,9 +50,9 @@ function [test_fun]= parseArgs(varargin)
 
 if check_option(varargin,{'sphere','spherical'})
   test_fun = 'spher';
-elseif check_option(varargin,{'prolate','prolatnes'})
+elseif check_option(varargin,{'prolate','prolatnes','prolateness'})
   test_fun = 'prolat';
-elseif check_option(varargin,{'oblate','oblatnes'})
+elseif check_option(varargin,{'oblate','oblatnes','oblateness'})
   test_fun = 'oblat';
 end
 

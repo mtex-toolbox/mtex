@@ -1,7 +1,14 @@
 function MTEXFigureMenu(varargin)
 
+% create a menu MTEX
 m = uimenu('label','MTEX');
 
+% make it second position
+mnchlds = allchild(gcf);
+p = findall(mnchlds,'Tag','figMenuFile');
+mnchlds = [mnchlds(2:find(p == mnchlds)-1) ; mnchlds(1) ; p]; % permutate positions
+set(gcf,'Children',mnchlds)
+  
 uimenu(m,'label','Export Image','callback',@Export);
 cm = uimenu(m,'label','Colormap');
 
@@ -19,13 +26,19 @@ uimenu(cc,'label','Tight','callback',@setColorCoding,'checked','on');
 
 
 %% axis alignment
-xdirection = uimenu(m,'label','X axis direction');
+xlabel = get_option(varargin,'xlabel','X');
+zlabel = get_option(varargin,'zlabel','Z');
+
+xlabel = regexprep(xlabel,'[$_\\]','');
+xlabel = regexprep(xlabel,'var','');
+
+xdirection = uimenu(m,'label',[xlabel ' axis direction']);
 uimenu(xdirection,'label','East','callback',@setXAxisDirection);
 uimenu(xdirection,'label','North','callback',@setXAxisDirection,'checked','on');
 uimenu(xdirection,'label','West','callback',@setXAxisDirection);
 uimenu(xdirection,'label','South','callback',@setXAxisDirection);
 
-zdirection = uimenu(m,'label','Z axis direction');
+zdirection = uimenu(m,'label',[zlabel ' axis direction']);
 uimenu(zdirection,'label','Out of plane','callback',@setZAxisDirection,'checked','on');
 uimenu(zdirection,'label','Into plane','callback',@setZAxisDirection);
 
@@ -35,8 +48,15 @@ uimenu(m,'label','Set Inner Margin','callback',{@setMargin,'inner'});
 uimenu(m,'label','Set Outer Margin','callback',{@setMargin,'outer'});  
 
 %% annotations
-uimenu(m,'label','Show grid','checked','on');
-uimenu(m,'label','Show ticks','checked','off');
+
+an = uimenu(m,'label','Anotations');
+uimenu(an,'label','Show min/max','checked','on','callback',{@setVisible,'minmax'});
+uimenu(an,'label','Show labels','checked','on','callback',{@setVisible,'labels'});
+uimenu(an,'label','Show ticks','checked','off','callback',{@setVisible,'ticks'});
+uimenu(an,'label','Show grid','checked','off','callback',{@setVisible,'grid'});
+
+
+
 
 %% fontsize
 
@@ -52,6 +72,7 @@ uimenu(fs,'label','17 points','callback',{@setFontSize,17});
 uimenu(fs,'label','18 points','callback',{@setFontSize,18});
 uimenu(fs,'label','19 points','callback',{@setFontSize,19});
 uimenu(fs,'label','20 points','callback',{@setFontSize,20});
+
 
 end
 
@@ -88,6 +109,48 @@ set(obj,'checked','on');
 
 end
 
+
+%% Grid Visibility
+function setVisible(obj,event,element)
+
+if strcmp(get(obj,'checked'),'on')
+  onoff = 'off';
+else
+  onoff = 'on';
+end
+
+set(obj,'checked',onoff);
+
+% for all axes
+ax = findobj(gcf,'type','axes');
+for a = 1:numel(ax)
+
+  switch element
+    case 'minmax'
+      if ~isappdata(ax(a),'annotation'), continue;end
+      an = getappdata(ax(a),'annotation');
+      set(an.h([1,3]),'visible',onoff);
+  
+    case 'labels'
+      la = [get(ax(a),'xlabel'),get(ax(a),'ylabel')];
+      set(la,'visible',onoff);
+          
+    otherwise
+    
+    if ~isappdata(ax(a),'grid'), continue;end
+    grid = getappdata(ax(a),'grid');
+    if isempty(grid)
+      set(ax(a),'XGrid',onoff,'YGrid',onoff);
+    else
+      set(grid.(element),'visible',onoff);
+    end
+  end  
+end
+
+end
+
+
+
 %% X Axis Direction
 function setXAxisDirection(obj,event)
 
@@ -107,7 +170,9 @@ for a = 1:numel(ax)
 end
 
 fn = get(gcf,'ResizeFcn');
-fn(gcf,event);
+if ~isempty(fn)
+  fn(gcf,event);
+end
 
 end
 

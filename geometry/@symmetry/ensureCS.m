@@ -15,7 +15,7 @@ M = axesOld^(-1) * axesNew;
 % if compatible transform to new reference frame
 MM = M'*M;%norm(MM - diag(diag(MM))) / norm(MM)
 if strcmp(csNew.laue,csOld.laue) && ...
-    norm(MM - diag(diag(MM))) / norm(MM) < 1*10^-5
+    norm(MM - eye(3)) / norm(MM) < 1*10^-1
   obj = set(obj,'CS',csNew);
   return
 end
@@ -27,4 +27,11 @@ if strcmp(csOld.laue,'-1') && isnull(norm(axesOld - eye(3)))
 end
 
 % otherwise put an error since crystal symmetries are equal
-error('Missmatch in crystal symmetries!')
+disp(' ')
+cs1 = csOld; display(cs1)
+cs2 = csNew; display(cs2)
+if getMTEXpref('stopOnSymmetryMissmatch',true)
+  error('The above two symmetries does not match!')
+else
+  warning('MTEX:symmetry:missmatch','The above two symmetries does not match!')
+end

@@ -45,4 +45,4 @@ fclose(fid);
 varargin = delete_option(varargin,'InfoLevel');
 T = tensor(T,varargin{:});
 
-options = {};
+options = varargin;

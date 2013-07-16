@@ -44,5 +44,5 @@ if numel(T) == 0
   interfaceError(fname);
 end
 
-options = {};
+options = varargin;
 

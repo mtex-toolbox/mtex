@@ -20,14 +20,14 @@ function varargout = plot(v,varargin)
 
 
 %% extract plot type
-plotTypes = {'smooth','scatter','text','contour','contourf','quiver','line','plane','circle','surf'};
+plotTypes = {'contour','contourf','smooth','scatter','text','quiver','line','plane','circle','surf','pcolor'};
 plotType = extract_option(varargin,plotTypes);
 if isempty_cell(plotType)
   plotType = 'scatter';
 else
   plotType = plotType{end};
 end
-varargin = delete_option(varargin,plotTypes);
+varargin = delete_option(varargin,plotTypes(3:end));
 
 % if data is vector3d type is quiver
 if ~isempty(varargin) && isa(varargin{1},'vector3d')
@@ -63,6 +63,10 @@ switch lower(plotType)
     
     [varargout{1:nargout}] = contour(ax{:},v,varargin{:});
     
+  case 'pcolor'
+    
+    [varargout{1:nargout}] = pcolor(ax{:},v,varargin{:});
+    
   case 'quiver'
     
     [varargout{1:nargout}] = quiver(ax{:},v,varargin{:});
@@ -89,7 +93,7 @@ end
 
 if check_option(labelopt,{'text','label','labeled'})
   washold = getHoldState(ax{:});
-  hold all
+  hold(ax{:},'all');
   text(ax{:},v,get_option(labelopt,{'text','label'}),labelopt{:});
   hold(ax{:},washold);
   

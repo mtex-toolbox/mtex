@@ -3,11 +3,11 @@ function check_installation
 
 
 
-% check tmp dir 
-if strfind(getpref('mtex','tempdir',tempdir),' ')
+% check tmp dir
+if strfind(getMTEXpref('tempdir',tempdir),' ')
   hline()
   disp('Warning: The path MTEX uses for temporary files');
-  disp(['  tempdir = ''' getpref('mtex','tempdir') '''']);
+  disp(['  tempdir = ''' getMTEXpref('tempdir') '''']);
   disp('contains white spaces!');
   disp(['Please change this in your <a href="matlab:edit mtex_settings.m">' ...
     'mtex_settings.m</a>!']);
@@ -21,11 +21,11 @@ check_binaries;
 check_mex;
 
 % check for nfft bug
-setpref('mtex','nfft_bug',0);
+setMTEXpref('nfft_bug',0);
 try
-  setpref('mtex','nfft_bug',~checkNfftBug);
+  setMTEXpref('nfft_bug',~checkNfftBug);
 catch
-  
+
 end
 
 
@@ -47,6 +47,7 @@ r = [reshape(rh,1,[]);reshape(th,1,[])];
 c = ones(size(th));
 
 Al = ones(size(th));
+setpref('mtex','binaries',false);
 
 try
 
@@ -56,17 +57,16 @@ try
   setpref('mtex','binaries',true);
 
 catch %#ok<*CTCH>
-
-  setpref('mtex','binaries',false);
-
-  if ismac && strcmp(getpref('mtex','architecture'),'maci') % maybe it is a 64 bit mac
+  
+  if ismac && strcmp(getMTEXpref('architecture'),'maci') % maybe it is a 64 bit mac
     try
-      setpref('mtex','architecture','maci64');
+      setMTEXpref('architecture','maci64');
       f = call_extern('odf2pf','EXTERN',gh,r,c,Al);
       assert(any(f));
+      setpref('mtex','binaries',true);
       return
     catch
-      setpref('mtex','architecture','maci');
+      setMTEXpref('architecture','maci');
     end
   end
 
@@ -91,7 +91,7 @@ function e = fast_check_binaries
 e = false;
 
 if ispc, mtex_ext = '.exe';else mtex_ext = '';end
-binariespath = fullfile(mtex_path,'c','bin',getpref('mtex','architecture'));
+binariespath = fullfile(mtex_path,'c','bin',getMTEXpref('architecture'));
 binaries = {'pf2odf','pdf2pf','odf2pf','odf2fc','fc2odf'};
 
 % check for existence
@@ -99,14 +99,13 @@ for k=1:numel(binaries)
   prg = fullfile(binariespath,binaries{k});
   if ~exist([prg mtex_ext],'file'),
     warning(['missing binary ' binaries{k} mtex_ext])
-    return; end
+    return; 
+  end
 end
 
-if ispref('mtex','binaries')
-  if getpref('mtex','binaries')
-    e = true;
-    return
-  end
+if ispref('mtex') && getpref('mtex','binaries')
+  e = true;
+  return
 end
 
 end
@@ -115,7 +114,7 @@ end
 function check_mex
 
 % set mex/directory
-mexpath = fullfile(mtex_path,'c','mex',getpref('mtex','architecture'));
+mexpath = fullfile(mtex_path,'c','mex',getMTEXpref('architecture'));
 addpath(mexpath,0);
 
 % check for mex files
@@ -202,7 +201,7 @@ for k=1:numel(mex)
   end
 end
 
-if ispref('mtex','mex')
+if ispref('mtex') && ispref('mtex','mex')
   if getpref('mtex','mex')
     e = true;
     return
@@ -218,6 +217,7 @@ catch
 end
 
 setpref('mtex','mex',e);
+
 end
 
 %% --------------------------------------------------------------
@@ -247,19 +247,19 @@ function out = checkNfftBug
   D = complex(D(1:2:end),D(2:2:end));
 
   l = 1;
-  
+
   % rotate spherical harmonics manualy
   Y = sphericalY(l,h).'; % -> Y
   gY = sphericalY(l,q*h).'; % -> rotated Y
-  
+
   % rotate spherical harmonics by matrix D
   D3 = reshape(D(2:10),3,3);
-  
+
   TY = D3 * Y;
-  
+
   % check whether spherical Y are totated correctly by D
   out = sqrt(norm(TY - gY)) < 0.001;
-  
+
 end
 
 

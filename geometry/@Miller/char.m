@@ -59,6 +59,8 @@ end
 
 function s=barchar(i,varargin)
 
+comma = check_option(varargin,'commasep');
+i = round(i);
 s = '';
 for j = 1:length(i)
   if (i(j)<0) && check_option(varargin,'latex')
@@ -66,7 +68,12 @@ for j = 1:length(i)
   else
     s = [s,int2str(i(j))]; %#ok<AGROW>
   end
+  
+  if comma && j < length(i)
+    s = [s,','];
+  end
 end
+
 
 function [l,r] = localBrackets(b,varargin)
 

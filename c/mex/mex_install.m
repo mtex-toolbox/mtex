@@ -30,11 +30,11 @@ for p = 1:length(places)
     if exist(mexfile(files{f}),'file')
       disp(['... compile ',files{f}]);
       if isOctave()
-        if ~exist(mexfile(getpref('mtex','architecture')),'dir')
-          mkdir(mexfile(getpref('mtex','architecture')));
+        if ~exist(mexfile(getMTEXpref('architecture')),'dir')
+          mkdir(mexfile(getMTEXpref('architecture')));
         end
         [dout, nout, eout] = fileparts (files{f});
-outfile = fullfile (mexfile(getpref('mtex','architecture')), [nout, '.', mexext()]);
+outfile = fullfile (mexfile(getMTEXpref('architecture')), [nout, '.', mexext()]);
         try
           if blas
             mex_blas(mexfile(files{f}),varargin{:},'-o', outfile);
@@ -47,9 +47,9 @@ outfile = fullfile (mexfile(getpref('mtex','architecture')), [nout, '.', mexext(
       else
         try
           if blas
-            mex_blas(mexfile(files{f}),varargin{:},'-outdir',mexfile(getpref('mtex','architecture')));
+            mex_blas(mexfile(files{f}),varargin{:},'-outdir',mexfile(getMTEXpref('architecture')));
           else
-            mex(varargin{:},'-outdir',mexfile(getpref('mtex','architecture')),mexfile(files{f}));
+            mex(varargin{:},'-outdir',mexfile(getMTEXpref('architecture')),mexfile(files{f}));
           end
         catch %#ok<CTCH>
           disp(['Compiling ' mexfile(files{f}) ' failed!']);

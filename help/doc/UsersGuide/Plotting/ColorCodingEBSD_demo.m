@@ -44,7 +44,7 @@ mtexdata aachen
 % plot shows how the colorcoding covers the whole orientation space. The
 % singularities of this representation are quite obvious.
 
-ebsdColorbar(symmetry('-1'),'colorcoding','Bunge','sections',6,'phi1')
+ebsdColorbar(symmetry('-1'),'colorcoding','BungeRGB','sections',6,'phi1')
 
 
 %% Colorcoding according to inverse pole figure 
@@ -65,7 +65,7 @@ colorbar
 % *HKL*. 
 % Another inverse Pole figure color code
 
-close all; plot(ebsd('Fe'),'colorcoding','hkl')
+close all; plot(ebsd('Fe'),'colorcoding','ipdfHKL')
 
 %%
 %
@@ -77,7 +77,7 @@ figure, plotipdf(odf,xvector,'antipodal','silent')
 %%
 % We can change the default view onto the specimen (xvector) by setting the option *r*
 
-close all, plot(ebsd('Fe'),'colorcoding','hkl','r',zvector)
+close all, plot(ebsd('Fe'),'colorcoding','ipdfHKL','r',zvector)
 
 %%
 %
@@ -88,64 +88,60 @@ figure, plotipdf(odf,zvector,'antipodal','silent')
 close all
 
 %% IPDF Overview
-% standard colorcoding and the so called (antipodal) oxford colorcoding
+% standard colorcoding with and without antipodal symmetry
 
 %% 
 % *triclinic symmetry*
 ebsdColorbar(symmetry('-1'))
-ebsdColorbar(symmetry('-1'),'colorcoding','hkl')
+ebsdColorbar(symmetry('-1'),'antipodal')
 
 %%
 % *monoclinic symmetry*
 ebsdColorbar(symmetry('2/m'))
-ebsdColorbar(symmetry('2/m'),'colorcoding','hkl')
+ebsdColorbar(symmetry('2/m'),'antipodal')
 
 %%
 % *orthorhombic symmetry*
 ebsdColorbar(symmetry('mmm'))
-ebsdColorbar(symmetry('mmm'),'colorcoding','hkl')
+ebsdColorbar(symmetry('mmm'),'antipodal')
 
 %%
 % *tetragonal symmetry*
 ebsdColorbar(symmetry('4/m'))
-ebsdColorbar(symmetry('4/m'),'colorcoding','hkl')
+ebsdColorbar(symmetry('4/m'),'antipodal')
 
 %% 
 % *trigonal symmetry*
 ebsdColorbar(symmetry('-3'))
-ebsdColorbar(symmetry('-3'),'colorcoding','hkl')
+ebsdColorbar(symmetry('-3'),'antipodal')
 
 %%
 %
 ebsdColorbar(symmetry('-3m'))
-ebsdColorbar(symmetry('-3m'),'colorcoding','hkl')
+ebsdColorbar(symmetry('-3m'),'antipodal')
 
 %%
 %
 ebsdColorbar(symmetry('4/mmm'))
-ebsdColorbar(symmetry('4/mmm'),'colorcoding','hkl')
+ebsdColorbar(symmetry('4/mmm'),'antipodal')
 
 %% 
 % *hexagonal symmetry*
 ebsdColorbar(symmetry('6/m'))
-ebsdColorbar(symmetry('6/m'),'colorcoding','hkl')
+ebsdColorbar(symmetry('6/m'),'antipodal')
 
 %%
 %
 ebsdColorbar(symmetry('6/mmm'))
-ebsdColorbar(symmetry('6/mmm'),'colorcoding','hkl')
+ebsdColorbar(symmetry('6/mmm'),'antipodal')
 
 %% 
 % *cubic symmetry*
+ebsdColorbar(symmetry('m-3'))
+ebsdColorbar(symmetry('m-3'),'antipodal')
+
+%% 
+% 
 ebsdColorbar(symmetry('m-3m'))
-ebsdColorbar(symmetry('m-3m'),'colorcoding','hkl')
+ebsdColorbar(symmetry('m-3m'),'antipodal')
 
-
-%% Other Colorcodes
-% there are many other ways to  <orientation2color.html, colorize>
-% orientations
-
-close all, plot(ebsd,'colorcoding','bunge')
-close, plot(ebsd,'colorcoding','bunge2')
-close, plot(ebsd,'colorcoding','ihs')
-close, plot(ebsd,'colorcoding','euler')

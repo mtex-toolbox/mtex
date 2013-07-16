@@ -135,5 +135,5 @@ o * m
 % crystallographically equivalent specimen directions.
 
 p = o * symmetrise(m);
-plot(p)
+plot(p,'grid')
 

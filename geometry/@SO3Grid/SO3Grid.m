@@ -65,7 +65,7 @@ elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
   
   % default sectioning for plot grids
   sectype = 'unknown';
-  if strcmpi(points,'plot'), sectype= 'sigma'; end
+  if strcmpi(points,'plot'), sectype= 'phi2'; end
   
   % check whether sectioning type is given explictely
   sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','axisangle','omega','omega2','psi'},sectype);
@@ -83,7 +83,7 @@ elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
       
     case 'omega2'
       
-      convention = 'Canove';
+      convention = 'Canova';
       
     case 'psi'
       

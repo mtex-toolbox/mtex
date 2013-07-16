@@ -1,4 +1,4 @@
-function q = symmetrise(q,CS,SS,varargin)
+function varargout = symmetrise(q,CS,SS,varargin)
 % symmetrcially equivalent orientations
 %
 %% Input
@@ -20,4 +20,4 @@ else
   lSS = 1;
 end
 
-q = reshape(q,length(CS) * lSS,[]); % (CSxSS) x M
+varargout{1} = reshape(q,length(CS) * lSS,[]); % (CSxSS) x M

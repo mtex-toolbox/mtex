@@ -1,4 +1,4 @@
-function [m,l] = symmetrise(m,varargin)
+function varargout = symmetrise(m,varargin)
 % directions symmetrically equivalent to m
 %
 %% Syntax
@@ -15,6 +15,8 @@ function [m,l] = symmetrise(m,varargin)
 
 if nargout==2
   [m.vector3d,l] = symmetrise(m.vector3d,m.CS,varargin{:});
+  varargout = {m,l};
 else
   m.vector3d = symmetrise(m.vector3d,m.CS,varargin{:});
+  varargout = {m};
 end

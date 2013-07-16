@@ -49,6 +49,18 @@ end
 
 boundaryEdgeOrder = vertcat(X{:});
 
+%% ensure all data have the same size
+dim2 = cellfun(@(x) size(x,2),d);
+
+if numel(unique(dim2)) > 1
+  for k = 1:numel(d)
+    if dim2(k)>0
+      d{k} = repmat(d{k},[1,max(dim2)/dim2(k)]);
+    end
+  end
+end
+
+
 %% default plot options
 
 varargin = set_default_option(varargin,...
@@ -64,12 +76,25 @@ setCamera(varargin{:});
 xlabel('x');ylabel('y');
 
 %%
+%d = vertcat(d{:});
+%[ud,m,n] = unique(d);
+%h = [];
+%if numel(ud) < 20 && numel(ud) > 1
+%  for i = 1:numel(ud)
+%    h = [h,plotFaces(boundaryEdgeOrder(n==i),V,d(n==i),varargin{:})];
+%  end
+%else
 h = plotFaces(boundaryEdgeOrder,V,vertcat(d{:}),varargin{:});
+%end
+
+% remove them from legend
+arrayfun(@(x) set(get(get(x,'Annotation'),'LegendInformation'),...
+    'IconDisplayStyle','off'),h);
 
 % make legend
 
 if strcmpi(property,'phase'),
-
+  
   F = get(grains,'F');
   F(any(F==0,2),:) = [];
 
@@ -84,7 +109,7 @@ if strcmpi(property,'phase'),
     end
   end
   minerals = get(grains,'minerals');
-  legend(lg,minerals(isPhase));
+  legend(lg,minerals(isPhase),'location','NorthEast');
 end
 
 
@@ -104,8 +129,46 @@ setappdata(gcf,'options',[extract_option(varargin,'antipodal'),...
 axis equal tight
 fixMTEXplot(gca,varargin{:});
 
+%% set data cursor
+if ~isOctave()
+  
+  dcm_obj = datacursormode(gcf);
+  set(dcm_obj,'SnapToDataVertex','off')
+  set(dcm_obj,'UpdateFcn',{@tooltip,grains});
+
+  datacursormode on;
+end
+
+%% Tooltip function
+function txt = tooltip(empt,eventdata,grains) %#ok<INUSL>
 
 
+[pos,value] = getDataCursorPos(gcf);
+try
+  sub = findByLocation(grains,[pos(1) pos(2)]);
+catch
+  sub = [];
+end
+
+if numel(sub)>0
+
+  [ebsd_id,grain_id] = find(get(sub,'I_DG')); %#ok<ASGLU>
+  minerals = get(sub,'minerals');
+
+  txt{1} = ['Grain: '  num2str(unique(grain_id))];
+  txt{2} = ['Phase: ', minerals{get(sub,'phaseMap') == get(sub,'phase')}];
+  if ~isNotIndexed(sub)
+    txt{3} = ['Orientation: ' char(get(sub,'orientation'),'nodegree')];
+  end
+  if ~isempty(value)
+    txt{3} = ['Value: ' xnum2str(value)];
+  end
+else
+  txt = 'no data';
+end
+
+
+%%
 function h = plotFaces(boundaryEdgeOrder,V,d,varargin)
 
 % add holes as polygons
@@ -119,7 +182,9 @@ boundaryEdgeOrder(hole) = ...
 
 Polygons = [boundaryEdgeOrder(:)' holeEdgeOrder{:}];
 
-d(numel(boundaryEdgeOrder)+1:numel(Polygons),: ) = 1;
+% how to colorize holes 
+% d(numel(boundaryEdgeOrder)+1:numel(Polygons),: ) = 1;
+d(numel(boundaryEdgeOrder)+1:numel(Polygons),: ) = NaN;
 
 A = cellArea(V,Polygons);
 

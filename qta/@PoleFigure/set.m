@@ -57,8 +57,16 @@ switch vname
         ivalue = value;
       end
   
-      pf(i).(vname) = ivalue;
-      if strcmp(vname,'CS'), pf(i).h = set(pf(i).h,'CS',ivalue);end  
+      switch vname
+        case 'CS'
+          pf(i).h = set(pf(i).h,'CS',ivalue);
+        case 'h'
+          if numel(ivalue) ~= numel(pf(i).c)
+            pf(i).c = ones(size(ivalue)) ./ numel(ivalue);
+          end
+      end
+          pf(i).(vname) = ivalue;
+      end
     end
       
 end

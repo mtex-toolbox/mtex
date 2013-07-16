@@ -30,7 +30,7 @@ switch vname
     
   case {'aufstellung','alignment','convention'}
     
-    if any(strcmp(obj.laue,{'-1','2/m','-3','-3m'}))
+    if any(strcmp(obj.laue,{'-1','2/m','-3','-3m','6/m','6/mmm'}))
       abc = normalize(obj.axis);
       abcStar = normalize(get(obj,'axes*'));
       [uabc,ind] = unique([abc,abcStar]);

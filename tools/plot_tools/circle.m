@@ -19,10 +19,13 @@ else
 end
 
 % if there is more then one circle - cycle through them
+h = [];
 if numel(n)>1
-  for i = 1:numel(n);
-    h(i) = circle(n(i),omega,varargin{:}); %#ok<AGROW>
+  hold on
+  for i = 1:numel(n);    
+    h = [h,circle(ax{:},n(i),omega,varargin{:})]; %#ok<AGROW>
   end
+
   return
 end
 

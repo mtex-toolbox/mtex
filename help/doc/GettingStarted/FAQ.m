@@ -12,6 +12,6 @@
 % LaTex. As a workaround switch off LaTex by uncommenting the following line in
 % [[matlab:edit mtex_settings.m,mtex_settings.m]].
 
-setpref('mtex','LaTex',false);
+setMTEXpref('LaTex',false);
 
 %%

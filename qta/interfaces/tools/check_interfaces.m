@@ -17,27 +17,34 @@ w = warning;
 warning off all
 for i =1:length(interfaces)
   try
-    feval(interfaces{i}(1:end-2),fname,varargin{:},'check');
+    n = nargout(interfaces{i}(1:end-2)); %#ok<NASGU>
+    %[args{1:(2*(n>1))}] = feval(interfaces{i}(1:end-2),fname,varargin{:},'check');    
+    eval(['[args{1:(2*(n>1))}] = ' interfaces{i}(1:end-2) '( fname,varargin{:},''check'');']);
+    
+    if numel(args) > 1
+      options = args{2};
+    end
+    
     interfaceName = regexp(interfaces{i},'_(.*).m','tokens');
     interface = {interface{:},char(interfaceName{1})};
-  catch  
+  catch
   end
 end
 warning(w);
 
 %% more then one interface
 if iscell(interface) && length(interface)>=2  % if there are multiple interfaces
- i = listdlg('PromptString',...
-   'There is more then one interface matching your data. Select one!',...
-   'SelectionMode','single',...
-   'ListSize',[400 100],...
-   'ListString',interface);
- interface = interface(i);
+  i = listdlg('PromptString',...
+    'There is more then one interface matching your data. Select one!',...
+    'SelectionMode','single',...
+    'ListSize',[400 100],...
+    'ListString',interface);
+  interface = interface(i);
 end
 
 %% no interface - try generic interface
 if isempty(interface)
-
+  
   try
     [d,options] = feval(['load' type '_generic'],fname,'check',varargin{:});
   catch %#ok<CTCH>
@@ -47,7 +54,7 @@ if isempty(interface)
     %disp(' ');
     error('Could not detect file format. Please contact one of the maintainers of MTEX and send him a copy of your data files.');
   end
-    
+  
   if isempty(d)
     interface = '';
   else

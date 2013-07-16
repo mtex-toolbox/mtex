@@ -25,18 +25,28 @@ if nargout == 1
 else
   
   switch cs.laue
-    case {'-1','2/m'}
+    case '-1'
       q = cs.rotation;
       v = vector3d;
+    case '2/m'
+      if isnull(dot(get(cs.rotation(2),'axis'),zvector))
+        q = cs.rotation(1);
+        v = get(cs.rotation(2),'axis');
+        %v = vector3d(1,1,0);
+      else
+        v = vector3d;
+        q = cs.rotation(1);
+      end            
     case {'mmm','-3m','4/mmm','6/mmm'}
       q = cs.rotation(1);
-      v = Miller(1,0,0,cs,'uvw');
+      v = get(cs,'axis');
+      v = v(1);
     case {'-3','4/m','6/m'}
       q = cs.rotation(1);
       v = vector3d;
     case 'm-3'
       q = Axis(vector3d(1,1,1),3);
-      v = vector3d;
+      v = vector3d(1,0,0);
     case 'm-3m'
       q = Axis(vector3d(1,1,1),3);
       v = vector3d(1,1,0);

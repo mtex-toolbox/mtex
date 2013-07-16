@@ -18,7 +18,7 @@ function [f,dist] = specialBoundary(grains,property,varargin)
 %            it after a choosen colorcoding, i.e.
 %
 %            plotBoundary(grains,'property','misorientation',...
-%              'colorcoding','ipdf')
+%              'colorcoding','ipdfHSV')
 %
 %    * double -- a single number |a| for which the misorientation angle
 %            between two neighbored measurements is lower or an interval [a b]
@@ -250,7 +250,7 @@ switch class(property)
       
     elseif strcmpi(property,'misorientation')
       
-      dist = orientation2color(m(:),get_option(varargin,'colorcoding','ipdf'),varargin{:});
+      dist = orientation2color(m(:),get_option(varargin,'colorcoding','ipdfHSV'),varargin{:});
       
     end
     

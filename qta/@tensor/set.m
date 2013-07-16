@@ -25,12 +25,16 @@ switch pName
     end
     
     T.CS = pValue;
+    
+    if ~check_option(varargin,'noCheck') && ~checkSymmetry(T)
+      T = symmetrise(T);
+    end
   
   case fields(T)
     
     T.(pName) = pValue;
     
-  case fields(T.properties)
+  otherwise
   
     T.properties.(pName) = pValue;
     

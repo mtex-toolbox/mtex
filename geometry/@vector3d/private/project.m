@@ -19,7 +19,7 @@ end
 
 % check for azimuth angle
 if extend.maxRho - extend.minRho < 2*pi-1e-6  
-  inRho = inside(rho,extend.minRho,extend.maxRho) | isnull(sin(theta));  
+  inRho = rhoInside(rho,extend.minRho,extend.maxRho) | isnull(sin(theta));  
   rho(~inRho) = NaN;
 end
 
@@ -32,32 +32,44 @@ else
 end
 
 
+%% plain projection
+if strcmpi(projection.type,'plain')
+  
+  if isa(v,'S2Grid')
+    X = rho;
+  else
+    X = mod(rho,2*pi);
+  end
+  X = reshape(X,size(v))./ degree;
+  Y = reshape(theta,size(v))./ degree;
+   
+  return
+end
+
 %% compute spherical projection
+
+% map to northern hemisphere
+ind = find(theta > pi/2+10^(-10));
+theta(ind)  = pi - theta(ind);
+
+% compute radius
 switch lower(projection.type)
   
-  case 'plain'
-    %     X = rho;
-    
-    if isa(v,'S2Grid'),  X = rho;
-    else   X = mod(rho,2*pi);  end    
-    Y = theta;
-    %     axis ij;
-    
   case {'stereo','eangle'} % equal angle
     
-    [X,Y] = stereographicProj(theta,rho);
-    
+    r =  tan(theta/2);
+
   case 'edist' % equal distance
     
-    [X,Y] = edistProj(theta,rho);
-    
+    r =  theta;
+
   case {'earea','schmidt'} % equal area
-    
-    [X,Y] = SchmidtProj(theta,rho);
-    
+
+    r =  sqrt(2*(1-cos(theta)));
+        
   case 'orthographic'
-    
-    [X,Y] = orthographicProj(theta,rho);
+
+    r =  sin(theta);
     
   otherwise
     
@@ -65,19 +77,6 @@ switch lower(projection.type)
     
 end
 
-% format output
-X = reshape(X,size(v));
-Y = reshape(Y,size(v));
-
-
-function ind = inside(rho,minRho,maxRho)
-
-minr = mod(minRho+1e-6,2*pi)-3e-6;
-maxr = mod(maxRho-1e-6,2*pi)+3e-6;
-if minr < maxr
-  ind = mod(rho-1e-6,2*pi) > minr & mod(rho+1e-6,2*pi) < maxr;
-else
-  ind = ~(mod(rho+1e-6,2*pi) > maxr & mod(rho-1e-6,2*pi) < minr);
-end
-
-% inside mean, there is a value of k such that 
+% compute coordinates
+X = reshape(cos(rho) .* r,size(v));
+Y = reshape(sin(rho) .* r,size(v));

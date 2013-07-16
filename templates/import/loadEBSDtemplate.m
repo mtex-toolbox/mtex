@@ -2,7 +2,7 @@
 %
 % This script was automatically created by the import wizard. You should
 % run the whoole script or parts of it in order to import your data. There
-% is no problem in making any chages to this scrip.
+% is no problem in making any changes to this script.
 
 %% Specify Crystal and Specimen Symmetries
 
@@ -13,8 +13,8 @@ CS = {crystal symmetry};
 SS = {specimen symmetry};
 
 % plotting convention
-setpref('mtex','xAxisDirection',{xAxisDirection});
-setpref('mtex','zAxisDirection',{zAxisDirection});
+setMTEXpref('xAxisDirection',{xAxisDirection});
+setMTEXpref('zAxisDirection',{zAxisDirection});
 
 %% Specify File Names
 
@@ -31,8 +31,7 @@ Z = {Z-values};
 %% Import the Data
 
 % create an EBSD variable containing the data
-ebsd = loadEBSD(fname,CS,SS,'interface',{interface} ...
-  ,{options});
+ebsd = loadEBSD(fname,CS,SS,'interface',{interface},{Z},{options});
 
 %% Correct Data
 

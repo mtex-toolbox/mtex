@@ -1,8 +1,14 @@
 %% build help with the DocHelp Toolbox
 %
 
+% !find doc/UsersGuide -exec touch {} \;
+
 clear
 close all
+
+%%
+
+mtexdata clear
 
 %%
 
@@ -11,7 +17,7 @@ plotx2east
 global mtex_progress;
 mtex_progress = 0;
 
-setpref('mtex','generatingHelpMode',true);
+setMTEXpref('generatingHelpMode',true);
 set(0,'FormatSpacing','compact')
 
 c = get(0,'DefaultFigureColor');
@@ -34,8 +40,8 @@ mtexHelpFiles = [mtexFunctionFiles mtexExampleFiles mtexDocFiles];
 
 mtexDocPictures = DocFile(getFiles(fullfile(mtex_path,'help','doc'),'*.png',true));
 
-mtexGeneralFiles = [DocFile(fullfile(mtex_path,'COPYING')) ...
-  DocFile(fullfile(mtex_path,'README')) ...
+mtexGeneralFiles = [DocFile(fullfile(mtex_path,'COPYING.txt')) ...
+  DocFile(fullfile(mtex_path,'README.txt')) ...
   DocFile(fullfile(mtex_path,'VERSION'))];
 
 
@@ -43,7 +49,7 @@ mtexGeneralFiles = [DocFile(fullfile(mtex_path,'COPYING')) ...
 
 
 docPath = fullfile(mtex_path,'help','mtex');
-outputDir = fullfile(mtex_path,'help','html');
+outputDir = fullfile(mtex_path,'help','mtex');
 tempDir = fullfile(mtex_path,'help','tmp');
 
 
@@ -52,7 +58,7 @@ tempDir = fullfile(mtex_path,'help','tmp');
 
 makeToolboxXML('name','MTEX',...
   'fullname','<b>MTEX</b> - A MATLAB Toolbox for Quantitative Texture Analysis',...
-  'versionname',getpref('mtex','version'),...
+  'versionname',getMTEXpref('version'),...
   'procuctpage','mtex_product_page.html')
 
 
@@ -73,7 +79,7 @@ makeFunctionsReference(mtexHelpFiles,'FunctionReference','outputDir',outputDir);
 %% make help toc
 
 makeHelpToc(mtexHelpFiles,'Documentation','FunctionMainFile','FunctionReference','outputDir',outputDir);
-copyfile(fullfile(outputDir,'helptoc.xml'), docPath);
+%copyfile(fullfile(outputDir,'helptoc.xml'), docPath);
 
 %% Publish Function Reference
 
@@ -128,15 +134,13 @@ deadlink(mtexDocFiles,outputDir);
 % (also F1 Help in recent matlab)
 
 builddocsearchdb(outputDir);
-copyfile(fullfile(outputDir,'helpsearch'),fullfile(docPath,'helpsearch'));
+%copyfile(fullfile(outputDir,'helpsearch'),fullfile(docPath,'helpsearch'));
 
 
 %% Build the help.jar
 
-system(['jar -cf ' fullfile(docPath,'help.jar') ' -C ' outputDir ' .']);
+%system(['jar -cf ' fullfile(docPath,'help.jar') ' -C ' outputDir ' .']);
 
 %% set back mtex options
 
-setpref('mtex','generatingHelpMode',false);
-
-
+setMTEXpref('generatingHelpMode',false);

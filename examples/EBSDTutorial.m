@@ -34,7 +34,7 @@ plotx2east
 % 1 using hkl colorcoding.
 
 figure('position',[100 100 800 350])
-plot(ebsd,'colorcoding','hkl')
+plot(ebsd,'colorcoding','ipdfHKL')
 
 %%
 % The colorcoding can be interpreted by the collored (0,0,1) inverse pole
@@ -54,7 +54,7 @@ grains = calcGrains(ebsd)
 % and plot them into our orientation plot
 
 figure('position',[100 100 800 350])
-plot(ebsd,'colorcoding','hkl')
+plot(ebsd,'colorcoding','ipdfHKL')
 hold on
 plotBoundary(grains,'linewidth',1.5)
 
@@ -62,7 +62,7 @@ plotBoundary(grains,'linewidth',1.5)
 % One can also plot all the grains together with their mean orientation
 
 figure('position',[100 100 800 350])
-plot(grains,'colorcoding','hkl')
+plot(grains,'colorcoding','ipdfHKL')
 
 %% ODF estimation
 % Next we reconstruct an ODF from the EBSD data. Therefore, we first have

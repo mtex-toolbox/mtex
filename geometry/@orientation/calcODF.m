@@ -92,7 +92,7 @@ else
     hw = 10*degree;
     k = kernel('de la Vallee Poussin','halfwidth',hw,varargin{:});
   end
-    
+
 %   if ~check_option(varargin,'silent')
 %     disp(' ')
 %     warning('MTEX:nokernel',['No kernel halfwidth has been specified!' ...
@@ -101,7 +101,7 @@ else
 %     disp(' ')
 %   end
 
-  
+
 
 end
 
@@ -177,7 +177,7 @@ d = zeros(1,numel(S3G));
 % iterate due to memory restrictions?
 maxiter = ceil(length(CS)*...
   length(SS)*numel(ori) /...
-  getpref('mtex','memory',300 * 1024));
+  getMTEXpref('memory',300 * 1024));
 if maxiter > 1, progress(0,maxiter);end
 
 for iter = 1:maxiter
@@ -213,4 +213,3 @@ if check_option(varargin,'small_kernel') && hw > 2*get(S3G,'resolution')
   d = eval(odf,S3G); %#ok<EVLC>
   odf = ODF(S3G,d./sum(d),k,CS,SS);
 end
-

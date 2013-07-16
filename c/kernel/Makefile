@@ -10,16 +10,19 @@
 # win32   - 32 bit Windows
 # win64   - 64 bit Windows
 #
-TARGET ?= glnx86
+TARGET ?= glnxa64
 # please correct the following installation directories:
 #
-# path to FFTW, i.e. to lib/libfftw3.a
-#FFTWPATH = /home/hielscher/c/
-FFTWPATH ?= /usr/local
+# path to FFTW, i.e. to libfftw3.a
+FFTW_LIB_PATH ?= /usr/lib/x86_64-linux-gnu/
+
+# path to FFTW header file, i.e., to fftw3.h
+FFTW_H_PATH ?= /usr/include/
 #
-# path to the NFFT, i.e. to /lib/libnfft3.a
-NFFTPATH ?= /home/hielscher/c
-#NFFTPATH = /usr/local
+# path to NFFT, i.e. to libnfft3.a
+NFFT_LIB_PATH ?= /usr/local/lib
+# path the NFFT header file, i.e., to nfft.h
+NFFT_H_PATH ?= /usr/local/include/
 #
 #--------------- end editable section ---------------------------------
 #
@@ -32,11 +35,11 @@ LD=gcc
 RM = /bin/rm -f
 LN = /bin/ln
 CFLAGS = -o3 -c -Wall
-MYCFLAGS=$(CFLAGS) -I$(FFTWPATH)/include -I$(NFFTPATH)/include -I../include
+MYCFLAGS=$(CFLAGS) -I$(FFTW_H_PATH) -I$(NFFT_H_PATH) -I../include
 LDFLAGS=-lm #-lpthread
 
 # list of static libraris
-LIBS = $(NFFTPATH)/lib/libnfft3.a $(FFTWPATH)/lib/libfftw3.a #$(FFTWPATH)/lib/libfftw3_threads.a
+LIBS = $(NFFT_LIB_PATH)/libnfft3.a $(FFTW_LIB_PATH)/libfftw3.a #$(FFTW_LIB_PATH)/libfftw3_threads.a
 
 # list of generated object files.
 IOTOOLS = $(TPATH)/pio.o $(TPATH)/helper.o $(TPATH)/sparse.o
@@ -50,27 +53,27 @@ all: $(TARGETS)
 
 # odf -> pdf
 odf2pf: odf2pf.o pdf.o $(IOTOOLS)
-	$(LD) $(LDFLAGS) $(IOTOOLS) pdf.o $(LIBS) $@.o -o $@
+	$(LD) $(IOTOOLS) pdf.o $(LIBS) $@.o -o $@ $(LDFLAGS)
 
 # pdf -> odf
 pf2odf: pf2odf.o pdf.o $(IOTOOLS) $(SOLVERTOOLS)
-	$(LD) $(LDFLAGS) $(IOTOOLS) pdf.o $(SOLVERTOOLS) $(LIBS) $@.o -o $@
+	$(LD) $(IOTOOLS) pdf.o $(SOLVERTOOLS) $(LIBS) $@.o -o $@ $(LDFLAGS)
 
 # pdf -> Fourier coefficients
 pf2pdf: pf2pdf.o $(IOTOOLS) pdf.o ipdf.o
-	$(LD) $(LDFLAGS) $(IOTOOLS) pdf.o ipdf.o $(LIBS) $@.o -o $@
+	$(LD) $(IOTOOLS) pdf.o ipdf.o $(LIBS) $@.o -o $@ $(LDFLAGS)
 
 # Fourier coefficients -> pdf
 pdf2pf: pdf2pf.o $(IOTOOLS) pdf.o
-	$(LD) $(LDFLAGS) $(IOTOOLS) pdf.o $(LIBS) $@.o -o $@
+	$(LD) $(IOTOOLS) pdf.o $(LIBS) $@.o -o $@ $(LDFLAGS)
 
 # Fourier coefficients - odf
 fc2odf: fc.o fc2odf.o $(IOTOOLS)
-	$(LD) $(LDFLAGS) $(IOTOOLS) fc.o $@.o $(LIBS) -o $@
+	$(LD) $(IOTOOLS) fc.o $@.o $(LIBS) -o $@ $(LDFLAGS)
 
 # odf -> Fourier coefficients
 odf2fc: fc.o odf2fc.o $(IOTOOLS)
-	$(LD) $(LDFLAGS) $(IOTOOLS) fc.o $@.o $(LIBS) -o $@
+	$(LD) $(IOTOOLS) fc.o $@.o $(LIBS) -o $@ $(LDFLAGS)
 
 install:
 	mv $(TARGETS) $(BPATH)

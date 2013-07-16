@@ -11,7 +11,7 @@ function [ebsd,interface,options] = loadEBSD(fname,varargin)
 % [[loadEBSD_generic.html,loadEBSD_generic]] for additional options.
 %
 %% Syntax
-%  pf = loadEBSD(fname,cs,ss,...,param,val,...)
+%  ebsd = loadEBSD(fname,cs,ss,...,param,val,...)
 %
 %% Input
 %  fname     - filename

@@ -43,6 +43,7 @@ if all(isnan(x) | isnan(y))
   if nargout > 0
     varargout{1} = [];
     varargout{2} = [];
+    h = [];
   end
 else
 
@@ -56,8 +57,8 @@ else
     };
 
   % markerSize
-  res = get(v,'resolution');
-  res = get_option(varargin,'scatter_resolution',res);
+  res = max(get(v,'resolution'),1*degree);
+  res = get_option(varargin,'scatter_resolution',res);  
   MarkerSize  = get_option(varargin,'MarkerSize',min(8,50*res));
   patchArgs = [patchArgs,{'MarkerSize',MarkerSize}];
 
@@ -97,7 +98,7 @@ else
       mfc = get_option(varargin,'MarkerColor','none');
       mfc = get_option(varargin,'MarkerFaceColor',mfc);
     else % cycle through colors
-      [ls,mfc] = nextstyle(ax,true,true,~ishold); %#ok<ASGLU>
+      [ls,mfc] = nextstyle(ax,true,true,~ishold(ax)); %#ok<ASGLU>
     end
     mec = get_option(varargin,'MarkerEdgeColor',mfc);
   
@@ -139,7 +140,7 @@ if nargout > 0
 end
 
 
-
+%% -----------------------------------------------
 function localResizeScatterCallback(h,e,hax)
 % get(fig,'position')
 
@@ -195,7 +196,7 @@ for i = 1:length(u)
   o = get(u(i),'MarkerSize');
   %n = l/350 * d;
   n = l/250 * d;
-  if abs((o-n)/o) > 0.1, set(u(i),'MarkerSize',n);end
+  if abs((o-n)/o) > 0.05, set(u(i),'MarkerSize',n);end
 end
 
 set(p,'unit',unit);

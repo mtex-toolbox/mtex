@@ -1,4 +1,4 @@
-function [tauMax,m,n,tau] = calcShearStress(sigma,m,n,varargin)
+function [tauMax,m,n,tau,ind] = calcShearStress(sigma,m,n,varargin)
 % shear stress
 %
 %% Syntax
@@ -26,27 +26,36 @@ function [tauMax,m,n,tau] = calcShearStress(sigma,m,n,varargin)
 
 if check_option(varargin,'symmetrise')
   
-  m = symmetrise(m);
-  n = symmetrise(n);
+  [m,l] = symmetrise(m,'antipodal'); %#ok<NASGU>
+  [n,l] = symmetrise(n,'antipodal'); %#ok<NASGU>
+  
+  %m = symmetrise(m);
+  %n = symmetrise(n);
   
   [r,c] = find(isnull(dot_outer(vector3d(m),vector3d(n))));
 
   m = m(r);
   n = n(c);
   
+else
+  assert(numel(m)==numel(n),'Number of planes and directions must be the same.');
 end
 
 tau = zeros(numel(m),numel(sigma));
 
 for i = 1:numel(m)
 
-  R = SchmidTensor(m(i),n(i));
+  R = SchmidTensor(m(i),n(i),varargin{:});
 
   tau(i,:) = EinsteinSum(R,[-1 -2],sigma,[-1 -2]);
   
 end
 
-[tauMax,ind] = max(tau);
+if numel(m)>1
+  [tauMax,ind] = max(abs(tau));
 
-m = m(ind);
-n = n(ind);
+  m = m(ind);
+  n = n(ind);
+else
+  tauMax = tau;
+end

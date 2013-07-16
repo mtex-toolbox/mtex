@@ -38,6 +38,7 @@ grains = calcGrains(ebsd,'threshold',5*degree);
 mori = get(grains('Fe'),'mis2mean')
 
 % plot a histogram of the misorientation angles
+close all
 hist(angle(mori)/degree)
 xlabel('Misorientation angles in degree')
 
@@ -65,7 +66,8 @@ calcMisorientation(grains(5),grains(6))
 % The following command plot the angle distribution of all misorientations
 % grouped according to phase trasistions.
 
-close, plotAngleDistribution(grains)
+close all
+plotAngleDistribution(grains)
 
 %%
 % The above angle distributions can be compared with the uncorrelated angle
@@ -79,7 +81,9 @@ close, plotAngleDistribution(grains)
 %
 % All these steps are performed by the single command
 
-hold on, plotAngleDistribution(grains,'ODF')
+hold on
+plotAngleDistribution(grains,'ODF')
+hold off
 
 %%
 % Another possibility is to compute an uncorrelated angle distribution from
@@ -87,13 +91,15 @@ hold on, plotAngleDistribution(grains,'ODF')
 % that are sufficently far from each other (uncorrelated points). The uncorrelated angle
 % distribution is plotted by
 
-close, plotAngleDistribution(grains,'uncorrelated')
+close all
+plotAngleDistribution(grains,'uncorrelated')
 
 %%
 % In order to consider only a specific phase transistion one can use the
 % syntax
 
-close, plotAngleDistribution(grains('Fe'),grains('Mg'),'uncorrelated')
+close all
+plotAngleDistribution(grains('Fe'),grains('Mg'),'uncorrelated')
 
 %% The axis distribution
 % 

@@ -17,14 +17,14 @@ proj = getappdata(ax,'projection');
 if check_option(varargin,'xAxisDirection')
   proj.xAxis = get_option(varargin,'xAxisDirection');
 elseif isempty(proj) || ~isfield(proj,'xAxis')
-  proj.xAxis = getpref('mtex','xAxisDirection');
+  proj.xAxis = getMTEXpref('xAxisDirection');
 end
 
 % exract z-axis
 if check_option(varargin,'zAxisDirection')
   proj.zAxis = get_option(varargin,'zAxisDirection');
 elseif isempty(proj) || ~isfield(proj,'zAxis')
-  proj.zAxis = getpref('mtex','zAxisDirection');
+  proj.zAxis = getMTEXpref('zAxisDirection');
 end
 
 % store in appdata
@@ -40,4 +40,3 @@ if strcmpi(proj.zAxis,'intoPlane')
 end
 
 view(ax,el,az);
-

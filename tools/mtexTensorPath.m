@@ -3,15 +3,15 @@ function p = mtexTensorPath
 %
 %% Syntax
 % mtexTensorPath -
-% getpref('mtex','TensorPath') - long form of mtexTensorPath
-% setpref('mtex','TensorPath',path) - change the path to Tensor files
+% getMTEXpref('TensorPath') - long form of mtexTensorPath
+% setMTEXpref('TensorPath',path) - change the path to Tensor files
 %
 %% See also
 % mtexDataPath mtexCifPath mtexEBSDPath mtexPoleFigurePath mtexODFPath
 % mtexTensorPath
 
 
-DataPath = getpref('mtex','TensorPath');
+DataPath = getMTEXpref('TensorPath');
 
 if exist(DataPath,'dir')
   p = DataPath;

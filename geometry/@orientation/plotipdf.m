@@ -26,7 +26,7 @@ ss = o.SS;
 if ~isempty(ax) || newMTEXplot('ensureTag','ipdf',...
     'ensureAppdata',{{'CS',cs},{'SS',ss}})
   argin_check(r,{'vector3d'});
-  annotations  = {'TR',@(i) char(r(i),getpref('mtex','textInterpreter'))};
+  annotations  = {'TR',@(i) char(r(i),getMTEXpref('textInterpreter'))};
 else
   if ~isa(r,'vector3d')
     varargin = [{r},varargin];
@@ -35,10 +35,10 @@ else
   annotations  = {};
 end
 
-%% colorcoding
+%% colorcoding 1
 data = get_option(varargin,'property',[]);
 
-%% subsample if needed 
+%% subsample if needed
 
 if numel(o)*length(cs)*length(ss) > 100000 || check_option(varargin,'points')
   points = fix(get_option(varargin,'points',100000/length(cs)/length(ss)));
@@ -50,12 +50,27 @@ if numel(o)*length(cs)*length(ss) > 100000 || check_option(varargin,'points')
 
 end
 
-data = @(i) repmat(data(:),1,numel(symmetrise(r(i),ss)));
+%% colorcoding 2
+if check_option(varargin,'colorcoding')
+  colorcoding = lower(get_option(varargin,'colorcoding','angle'));
+  data = orientation2color(o,colorcoding,varargin{:});
   
+  % convert RGB to ind
+  if numel(data) == 3*numel(o)  
+    [data, map] = rgb2ind(reshape(data,[],1,3), 0.03,'nodither');
+    set(gcf,'colormap',map);    
+  end
+  
+end
+
+%%
+
+data = @(i) repmat(data(:),1,numel(symmetrise(r(i),ss)));
+
 %% plot
 multiplot(ax{:},numel(r),...
   @(i) inverse(o(:)) * symmetrise(r(i),ss),data,...
-  'scatter','FundamentalRegion',...
+  'scatter','FundamentalRegion','unifyMarkerSize',...
   annotations{:},varargin{:});
 
 if isempty(ax)
@@ -87,6 +102,5 @@ rqr = xp^2 + yp^2;
 theta = acos(1-rqr/2);
 
 m = Miller(vector3d('polar',theta,rho),getappdata(gcf,'CS'));
-
-txt = char(m,'tolerance',3*degree);
-
+m = round(m);
+txt = char(m,'tolerance',3*degree,'commasep');

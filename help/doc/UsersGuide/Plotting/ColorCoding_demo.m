@@ -48,7 +48,7 @@ mtexColorMap white2black
 % One can set a default colormap adding the following command to
 % the configuration file mtex_settings.m
 
-setpref('mtex','defaultColorMap',LaboTeXColorMap);
+setMTEXpref('defaultColorMap',LaboTeXColorMap);
 
 
 %% Tight Colorcoding
@@ -128,5 +128,4 @@ colorbar
 %%
 % Finally, lets set back the default colormap.
 
-setpref('mtex','defaultColorMap',WhiteJetColorMap);
-
+setMTEXpref('defaultColorMap',WhiteJetColorMap);

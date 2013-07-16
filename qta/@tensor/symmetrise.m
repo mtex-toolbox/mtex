@@ -1,6 +1,8 @@
 function T = symmetrise(T)
 % symmetrise a tensor according to its crystal symmetry
 
+M_old = T.M;
+
 % make symmetric if neccasarry
 % rank 2 and 4  only
 if T.rank == 4 || T.rank == 2  
@@ -24,6 +26,11 @@ T.M(~isnull(imag(T.M))) = NaN;
 
 % take the mean 
 T.M = nanmean(T.M,T.rank+1);
+
+% check whether something has changed 
+if any(abs(T.M(:)-M_old(:))./max(abs(M_old(:)))>1e-6 & ~isnull(M_old(:)))
+  warning('MTEX:tensor','Tensor does not pose the right symmetry');
+end
 
 % NaN values become zero again
 T.M(isnan(T.M)) = 0;
