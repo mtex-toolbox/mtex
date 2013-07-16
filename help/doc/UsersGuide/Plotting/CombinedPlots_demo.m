@@ -66,11 +66,10 @@ hh = legend({'EBSD 1','EBSD 2'},'units','normalized','position',[0.022 0.9 0.1 0
 %%
 % and, of course, you can do the same with ODF plots:
 
-plotodf(odf,'sections',8,'contourf')
+plotodf(odf,'sections',8,'contourf','sigma')
 mtexColorMap white2black
 hold all
 plotodf(ebsd,'MarkerSize',8,'MarkerColor','b','MarkerEdgeColor','w')
-hold all
 plotodf(ebsd_rotated,'MarkerSize',8,'MarkerColor','r','MarkerEdgeColor','k');
 hold off
 

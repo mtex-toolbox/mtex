@@ -107,11 +107,11 @@ line(x(:,1),x(:,2),'linewidth',2)
 %% 
 % So, we compute misorientation angle and plot as a profile
 
-m = o(1).\o
+m = o(1) \ o
 
 close, plot(dist,angle(m)/degree)
 
-m = o(1:end-1).\o(2:end)
+m = o(1:end-1) \ o(2:end)
 
 hold on, plot(dist(1:end-1)+diff(dist)./2,... % shift 
   angle(m)/degree,'color','r')

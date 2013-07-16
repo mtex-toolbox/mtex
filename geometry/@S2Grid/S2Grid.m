@@ -56,7 +56,7 @@ if check_option(varargin,'south')
 else
   minthetaGrid = 0;
   
-  if check_option(varargin,'antipodal') && ...
+  if check_option(varargin,{'antipodal','north'}) && ...
       (~check_option(varargin,'complete') ||check_option(varargin,'north'))
     maxthetaGrid = pi/2;
   else
@@ -122,7 +122,7 @@ elseif isa(varargin{1},'vector3d')
     rho(ind) = mod(pi + rho(ind),2*pi);
   end
 
-  Grid = Grid(theta<=maxthetaGrid+1e-06 & inside(rho,minrhoGrid,maxrhoGrid));
+  Grid = Grid(theta<=maxthetaGrid+1e-06 & rhoInside(rho,minrhoGrid,maxrhoGrid));
   
 %% plot grid with maxtheta function
 elseif check_option(varargin,'plot') && exist('maxthetafun','var')

@@ -1,4 +1,4 @@
 function l = length(S)
 % number of symmetry elements
 
-l = numel(S.rotation);
+l = numel(S.a);

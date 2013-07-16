@@ -51,11 +51,11 @@ o = rotation('Euler',30*degree,50*degree,10*degree,'Roe')
 % *setpref*, for a permanent change the
 % <matlab:edit('mtex_settings.m') mtex_settings> should be edited. Compare
 
-setpref('mtex','EulerAngleConvention','Roe')
+setMTEXpref('EulerAngleConvention','Roe')
 o
 
 %%
-setpref('mtex','EulerAngleConvention','Bunge')
+setMTEXpref('EulerAngleConvention','Bunge')
 o
 
 %% SUB: Other Ways of Defining a Rotation
@@ -195,5 +195,3 @@ inverse(rot)
 
 cla reset;set(gcf,'position',[43   362   400   300])
 plot(rot)
-
-

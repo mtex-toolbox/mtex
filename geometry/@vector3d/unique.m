@@ -2,13 +2,16 @@ function [v,m,n] = unique(v,varargin)
 % disjoint list of vectors
 %
 %% Syntax
-%  v = symeq(v,<options>) - 
+%   v = unique(v) % find disjoined elements of the vector v
+%   [v,m,n] = unique(v,varargin)] %
 %
 %% Input
 %  v - @vector3d
 %
 %% Output
 %  v - @vector3d
+%  m -
+%  n -
 
 x = v.x(:);
 y = v.y(:);

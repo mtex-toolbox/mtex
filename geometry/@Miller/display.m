@@ -19,21 +19,24 @@ else
 end
 
 if numel(m) < 20 && numel(m) > 0
-
+  
+  eps = 1e4;
+  
   if check_option(m,'uvw')
     
-    uvtw = v2d(m);
+    uvtw = round(v2d(m)*eps)./eps;
+    uvtw(uvtw==0) = 0;   
     
     if any(strcmp(Laue(m.CS),{'-3','-3m','6/m','6/mmm'}))
       cprintf(uvtw.','-L','  ','-Lr',{'u' 'v' 't' 'w'});
     else
       cprintf(uvtw.','-L','  ','-Lr',{'u' 'v' 'w'});
     end
-        
+    
   else
     
-    hkl = v2m(m);
-  
+    hkl = round(v2m(m)*eps)./eps;
+    hkl(hkl==0) = 0;
     if any(strcmp(Laue(m.CS),{'-3','-3m','6/m','6/mmm'}))
       cprintf(hkl.','-L','  ','-Lr',{'h' 'k' 'i' 'l'});
     else

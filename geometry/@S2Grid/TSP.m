@@ -519,7 +519,7 @@ function tour = runTSPexternal(method,weight,varargin)
 tsp_file = createTSPLIB95file(weight);
 sol_file = [tsp_file(1:end-4) '.sol'];
 
-cmd = fullfile(getpref('mtex','TSPSolverPath'),method);
+cmd = fullfile(getMTEXpref('TSPSolverPath'),method);
 
 options = get_option(varargin,method,{},'cell');
 
@@ -596,7 +596,7 @@ function [fname] = createTSPLIB95file(weight)
 
 
 t = full(round(weight*10000));
-fname = [tempname(getpref('mtex','tempdir')) '.tsp'];
+fname = [tempname(getMTEXpref('tempdir')) '.tsp'];
 
 fid = fopen(fname,'w');
 
@@ -612,4 +612,3 @@ fprintf(fid,'%d ',t);
 fprintf(fid,'\r\nEOF\r\n');
 
 fclose(fid);
-

@@ -43,7 +43,7 @@ multiplot(ax{:},numel(pf),@(i) pf(i).r,pfunc,'TR',@(i) pf(i).h,...
   varargin{:});
 
 if isempty(ax)
-  setappdata(gcf,'h',get(pf,'h'));
+  setappdata(gcf,'h',get(pf,'hCell'));
   setappdata(gcf,'SS',pf(1).SS);
   setappdata(gcf,'CS',pf(1).CS);
   set(gcf,'Name',['Pole Figures of Specimen ',inputname(1)]);

@@ -21,7 +21,7 @@ function setcolorrange(varargin)
 %% See also
 % multiplot S2Grid/plot
 
-%% which figures to touch
+% which figures to touch
 if check_option(varargin,'all')  
   fig = 0;
 elseif check_option(varargin,'current')
@@ -31,12 +31,22 @@ else
 end
 
 % find all axes
-ax = getappdata(fig,'multiplotAxes');
+ax = findall(fig,'type','axes');
+checkMultiplotAxis = @(a) ismember(a,getappdata(get(a,'parent'),'multiplotAxes'));
+ax = ax(arrayfun(checkMultiplotAxis,ax));
 if isempty(ax), return; end
 
-%% find color range
+% colorbaraxes
+cax = findall(fig,'type','axes','tag','colorbaraxis');
+
 if check_option(varargin,'equal')
 
+  % ensure same scale in all plots
+  if ~equal(strcmp(get(cax,'zscale'),'log'),1)
+    error('You can not mix logarithmic and non logarithmic plots with equal colorrange')
+  end
+    
+  % find maximum color range
   c = zeros(length(ax),2);
   for i = 1:length(ax)
     c(i,:) = caxis(ax(i));
@@ -52,18 +62,11 @@ elseif check_option(varargin,'tight')
 elseif length(varargin)>=1 && isa(varargin{1},'double') &&...
     length(varargin{1})==2  
   
-  p = varargin{1};  
-  ax = getappdata(fig,'colorbaraxis');
-  if strcmp(get(ax,'zscale'),'log'), p = log10(p);end
+  p = varargin{1};
   
-  
-elseif check_option(varargin,'zero2white')
-  
-  for i = 1:length(ax)
-    c = caxis(ax(i));
-    caxis(ax(i),[0 c(2)]);
-  end
-    
+  % logarithmic scale?
+  if any(strcmp(get(cax,'zscale'),'log')), p = log10(p);end
+         
 else
   
   error('First argument must either be the color range or the flag ''equal''');  
@@ -71,20 +74,17 @@ else
 end
 
 if exist('p','var')
-  % find all axes including hidden
-  ax = getappdata(fig,'multiplotAxes');
-  for i = 1:length(ax),	caxis(ax(i),p);end
+  
+  % set the caxis to all axes
+  for i = 1:numel(ax),	caxis(ax(i),p);end
 
-  ax = getappdata(fig,'colorbaraxis');
-  if strcmp(get(ax,'zscale'),'log')
-    caxis(ax,10.^p);
-  else
-    caxis(ax,p);
+  % set the caxis to all colorbaraxes
+  for i = 1:numel(cax)
+    if strcmp(get(cax(i),'zscale'),'log')
+      caxis(cax(i),10.^p);
+    else
+      caxis(cax(i),p);
+    end
   end
-end
-
-if check_option(varargin,'zero2white')
-  map = colormap;
-  map(1,:) = [1,1,1];
-  colormap(map);
+  
 end

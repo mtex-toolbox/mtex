@@ -1,6 +1,6 @@
 function extend = getPlotRegion(v,varargin)
 % returns plotting region in polar coordiantes
-  
+
 %% default values from the vectors to plot
 
 [minTheta, maxTheta,minRho,maxRho] = get(v,'bounds',varargin{:});
@@ -12,10 +12,10 @@ minTheta = get_option(varargin,'minTheta',minTheta);
 maxTheta = get_option(varargin,'maxTheta',maxTheta);
 minRho   = get_option(varargin,'minRho',minRho);
 maxRho   = get_option(varargin,'maxRho',maxRho);
-    
+
 %% restrict using meta options north, south, upper, lower
 
-if strcmpi('outofPlane',getpref('mtex','zAxisDirection'))
+if strcmpi('outofPlane',getMTEXpref('zAxisDirection'))
   if check_option(varargin,'upper'), varargin = set_option(varargin,'north');end
   if check_option(varargin,'lower'), varargin = set_option(varargin,'south');end
 else
@@ -23,9 +23,9 @@ else
   if check_option(varargin,'lower'), varargin = set_option(varargin,'north');end
 end
 
-  
+
 if check_option(varargin,'north') && isnumeric(maxTheta) && maxTheta > pi/2
-  maxTheta = pi/2;  
+  maxTheta = pi/2;
 end
 
 if check_option(varargin,'south') && isnumeric(maxTheta) && ...

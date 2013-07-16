@@ -16,6 +16,5 @@ elseif isa(y,'ODF') && isa(x,'double')
 end
 
 for i = 1:length(odf)
-  odf(i).c_hat = f*odf(i).c_hat;
-  odf(i).c = f*odf(i).c;
+  odf(i).weight = odf(i).weight * f;
 end

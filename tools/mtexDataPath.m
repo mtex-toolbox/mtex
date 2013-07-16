@@ -3,14 +3,14 @@ function p = mtexDataPath
 %
 %% Syntax
 % mtexDataPath -
-% getpref('mtex','DataPath') - long form of mtexDataPath
-% setpref('mtex','DataPath',path) - change the path to mtex data
+% getMTEXpref('DataPath') - long form of mtexDataPath
+% setMTEXpref('DataPath',path) - change the path to mtex data
 %
 %% See also
 % mtexDataPath mtexCifPath mtexEBSDPath mtexPoleFigurePath mtexODFPath
 % mtexTensorPath
 
-DataPath = getpref('mtex','DataPath');
+DataPath = getMTEXpref('DataPath');
 
 if exist(DataPath,'dir')
   p = DataPath;

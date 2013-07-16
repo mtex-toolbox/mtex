@@ -1,22 +1,54 @@
 function fixMTEXplot(varargin)
 % remove boundary from the figure and handle zoom
+%
 
-%% general settings
+if nargin > 0 && any(ishghandle(varargin{1},'axes'))
+  ax = varargin{1};
+  varargin{1} = [];
+else
+  ax = gca;
+end
+fig = get(ax,'parent');
 
-warning('off','MATLAB:hg:patch:RGBColorDataNotSupported')
-set(gca,'TickDir','out',...
+% general settings
+set(ax,'TickDir','out',...
   'XMinorTick','on',...
   'YMinorTick','on',...
-  'Layer','top');
+  'Layer','top',...
+  'box','on');
+grid(ax,'off');
 
-grid on
+% make layout
+ResizeFcn(fig,[],varargin{:});
+
+% set resize function
+if isempty(get(gcf,'ResizeFcn'))
+  set(gcf,'ResizeFcn',@(src,evt) ResizeFcn(src,evt,'noresize',varargin{:}));
+end
+
+% set zoom function
+try
+  h = zoom(fig);
+
+  if isempty(get(h,'ActionPostCallback'))
+    set(h,'ActionPostCallback',@(e,v) resizeCanvas(e,v,fig,ax));
+  end
+catch %#ok<CTCH>
+end
+
+end
+
 
 %% compute optimal figure size
+function ResizeFcn(fig,evt,varargin)
+
+warning('off','MATLAB:hg:patch:RGBColorDataNotSupported')
+ax = get(fig,'CurrentAxes');
 
 % store extend
-extend = getappdata(gcf,'extend');
-if isempty(extend), extend = [get(gca,'xlim'),get(gca,'ylim')];end
-setappdata(gcf,'extend',extend);
+extend = getappdata(fig,'extend');
+if isempty(extend), extend = [get(ax,'xlim'),get(ax,'ylim')];end
+setappdata(fig,'extend',extend);
 
 % compute extend ratio dx/dy
 dxylim = [diff(extend(1:2)),diff(extend(3:4))];
@@ -24,18 +56,18 @@ dxylim = dxylim./max(dxylim);
 
 
 % store units
-old_fig_units = get(gcf,'units');
-old_ax_units = get(gca,'units');
-set(gcf,'units','pixels');
-set(gca ,'units','pixels');
+old_fig_units = get(fig,'units');
+old_ax_units = get(ax,'units');
+set(fig,'units','pixels');
+set(ax ,'units','pixels');
 
 % get figrure position
-fig_pos = get(gcf,'position');
-d = get_option(varargin,'outerPlotSpacing',getpref('mtex','outerPlotSpacing'));
+fig_pos = get(fig,'position');
+d = get_option(varargin,'outerPlotSpacing',getMTEXpref('outerPlotSpacing'));
 figxy = fig_pos(3:4) -42 - 2*d;
 
 % correct for cameraposition
-if find(get(gca,'CameraUpVector'))==1
+if find(get(ax,'CameraUpVector'))==1
   dxylim = fliplr(dxylim);
 end
 
@@ -43,43 +75,28 @@ ratio = figxy./dxylim;
 newfigxy = dxylim * min(ratio);
 
 lx = 0; ly = 0;
-if strcmp(get(gca,'Visible'),'on'), ly = 35; lx = 55; end
+if strcmp(get(ax,'Visible'),'on'), ly = 35; lx = 55; end
 
 if ~check_option(varargin,'noresize')
   fig_pos = [fig_pos(1:2) 50+newfigxy(1)+2*d 42+newfigxy(2)+2*d];
-  set(gcf,'position',fig_pos);
+  set(fig,'position',fig_pos);
 end
 
 if all(fig_pos(3:4)-d > 0)
-  set(gca,'position',[lx+2+d ly+2+d fig_pos(3)-2-lx-2*d fig_pos(4)-ly-2-2*d]);
+  set(ax,'position',[lx+2+d ly+2+d fig_pos(3)-2-lx-2*d fig_pos(4)-ly-2-2*d]);
 end
 
 % restore units
-set(gcf,'units',old_fig_units);
-set(gca,'units',old_ax_units);
+set(fig,'units',old_fig_units);
+set(ax,'units',old_ax_units);
 
-%% try to extend zoom to hole figure axis fill
-try
-  h = zoom(gcf);
-
-  if isempty(get(h,'ActionPostCallback'))
-    set(h,'ActionPostCallback',@(e,v) resizeCanvas(e,v,gcf,gca));
-  end
-catch %#ok<CTCH>
-end
-
-resizeCanvas([],[],gcf,gca);
-
-%%
+% extend canvas as position of axis
+resizeCanvas([],[],fig,ax);
 warning('on','MATLAB:hg:patch:RGBColorDataNotSupported')
-if isempty(get(gcf,'ResizeFcn'))
-  set(gcf,'ResizeFcn',{@fixMTEXplot,'noresize',varargin{:}});
-  fixMTEXplot(gca,'noresize');
-end
 
+end
 
 %% function for zooming
-
 function resizeCanvas(e,v,fig,ax) %#ok<*INUSL>
 
 % restore old camera setting
@@ -110,13 +127,11 @@ dx = diff(cx(1:2));
 dy = diff(cx(3:4));
 
 % correct for xAxisDirection
-if find(get(gca,'CameraUpVector'))==1
+if find(get(ax,'CameraUpVector'))==1
   [ax_r,ay_r] = deal(ay_r,ax_r);
 end
 
-
-%% resize ylim
-if ay_r < ey_r
+if ay_r < ey_r % resize ylim
 
   % new ylim = xlim * are_ratio
   dy = dx * ax_r - dy;
@@ -136,8 +151,9 @@ if ay_r < ey_r
   % set the new limit
   ylim(ax,y)
 
-  %% resize xlim
-else
+
+else % resize xlim
+  
   % new xlim = ylim * are_ratio
   dx = dy * ay_r - dx;
 
@@ -160,3 +176,4 @@ end
 % restore units
 set(fig,'units',old_fig_units);
 set(ax,'units',old_ax_units);
+end

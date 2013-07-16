@@ -29,7 +29,7 @@ model_odf = 0.5*uniformODF(cs,ss) + ...
   0.05*fibreODF(Miller(0,0,1),zvector,cs,ss,'halfwidth',10*degree) + ...
   0.05*unimodalODF(mod1,cs,ss,'halfwidth',15*degree) + ...
   0.3*unimodalODF(mod2,cs,ss,'halfwidth',25*degree);
-plotodf(model_odf,'sections',6,'silent')
+plot(model_odf,'sections',6,'silent')
 
 %% Save as .mat file
 %
@@ -37,7 +37,7 @@ plotodf(model_odf,'sections',6,'silent')
 % variabe odf as any other MATLAB variabel. 
 
 % the filename
-fname = fullfile(mtexDataPath, 'odf', 'odf.mat');
+fname = fullfile(mtexDataPath, 'ODF', 'odf.mat');
 save(fname,'model_odf')
 
 %%
@@ -55,7 +55,7 @@ load(fname)
 % column contains the value of the ODF at this specific position.
 
 % the filename
-fname = fullfile(mtexDataPath, 'odf', 'odf.txt');
+fname = fullfile(mtexDataPath, 'ODF', 'odf.txt');
 
 % export the ODF
 export(model_odf,fname,'Bunge')
@@ -66,7 +66,7 @@ export(model_odf,fname,'Bunge')
 % if you specify the grid in the orientation space directly.
 
 % define a equispaced grid in orientation space with resolution of 5 degree
-S3G = SO3Grid(5 * degree,cs,ss);
+S3G = equispacedSO3Grid(cs,ss,'resolution',5*degree);
 
 % export the ODF by values at these locations
 export(model_odf,fname,S3G,'Bunge','generic')
@@ -79,7 +79,7 @@ export(model_odf,fname,S3G,'Bunge','generic')
 % This format can be imported by MTEX without loss.
 
 % the filename
-fname = [mtexDataPath '/odf/odf.mtex'];
+fname = [mtexDataPath '/ODF/odf.mtex'];
 
 % export the ODF
 export(model_odf,fname,'Bunge','MTEX')
@@ -114,7 +114,7 @@ cs = symmetry('cubic');
 ss = symmetry('triclinic');
 
 % the file name
-fname = [mtexDataPath '/odf/odf.txt'];
+fname = [mtexDataPath '/ODF/odf.txt'];
 
 % the resolution used for the reconstruction of the ODF
 res = 10*degree;

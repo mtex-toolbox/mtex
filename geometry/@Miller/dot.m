@@ -27,24 +27,19 @@ if numel(m1) == 1 || numel(m2) == 1
   return
 end
 
+% symmetrize
+m1 = vector3d(symmetrise(m1,varargin{:}));
+m2 = vector3d(repmat(reshape(m2,1,[]),size(m1,1),1));
 
-%% where is the symmetry
-if isa(m1,'Miller')
-  m1 = vector3d(symmetrise(m1,varargin{:}));
-  m2 = vector3d(repmat(reshape(m2,1,[]),size(m1,1),1));
-else  
-  m2 = vector3d(symmetrise(m2,varargin{:}));
-  m1 = vector3d(repmat(reshape(m1,1,[]),size(m2,1),1));
-end
 
-%% normalize
+% normalize
 m1 = m1 ./ norm(m1);
 m2 = m2 ./ norm(m2);
 
-%% dotproduct
+% dotproduct
 d = dot(m1,m2);
 
-%% find maximum
+% find maximum
 if ~check_option(varargin,'all')
   d = max(d,[],1);
 end

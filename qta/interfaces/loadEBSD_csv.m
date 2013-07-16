@@ -1,12 +1,14 @@
 function ebsd = loadEBSD_csv(fname,varargin)
 
+ebsd = EBSD;
+
 try
 % read file header
-hl = file2cell(fname,200);
+fl = file2cell(fname,200);
 
 %number of header lines
-nh = find(strmatch('#',hl),1,'last');
-hl =   {hl{1:nh}};
+nh = find(strmatch('#',fl),1,'last');
+hl =   fl(1:nh);
 
 % check that the header fits the format:
 %# Column 1-3: phi1, PHI, phi2 (orientation of point in radians)
@@ -49,9 +51,37 @@ end
 
 if check_option(varargin,'check'), return;end
 
-ebsd = loadEBSD_generic(fname,'bunge','radiant',...
+iphase = columns(strcmpi(columnNames,'phase'));
+columns = [angles,xy,columns];
+iphase = columns == iphase;
+
+format = repcell('%f',1,max(columns));
+
+% check whether phase is numeric or not
+test = textscan(fl{end},[format{:}],1);
+if isempty(test{iphase}), format{iphase} = '%s';end
+
+% read data
+fid = fopen(fname);
+d = textscan(fid,[format{:},'%*[^\n]'],'HeaderLines',nh);
+fclose(fid);
+
+% extract phases from names
+if isempty(test{iphase})
+    
+  phases = unique(d{iphase});  
+  d{iphase} = cellfun(@(s) find(strcmp(s,phases)),d{iphase});
+  for i = 1:numel(phases)
+    cs{i} = symmetry('cubic','mineral',phases{i}); %#ok<AGROW>
+  end
+  varargin = [{'CS',cs},varargin];
+  
+end
+
+% generate EBSD variable
+ebsd = loadEBSD_generic([d{:}],'bunge','radiant',...
   'ColumnNames',[{'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y'} columnNames],...
-  'Columns',[angles,xy,columns],varargin{:},'header',nh);
+  'Columns',columns,varargin{:});
 
 
 catch

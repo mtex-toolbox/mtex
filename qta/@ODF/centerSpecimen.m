@@ -37,7 +37,7 @@ function [odf,r,v1,v2] = centerSpecimen(odf,center,varargin)
 %         rotation('euler', 90*degree,35*degree,0*degree)]
 %
 %       sr = SS*r;
-%       odf = unimodalODF(SO3Grid(sr(:),CS),CS);
+%       odf = unimodalODF(sr,CS);
 %
 % we define a rotational displacement
 %
@@ -53,6 +53,8 @@ function [odf,r,v1,v2] = centerSpecimen(odf,center,varargin)
 %
 %%
 %
+
+return
 
 options.delta = get_option(varargin,'delta',0.5*degree);
 
@@ -71,7 +73,7 @@ if check_option(varargin,'Fourier')
 else
   options.odf = odf;
   options.SO3 = get_option(varargin,'SO3Grid',...
-    SO3Grid(5*degree,get(odf,'CS'),get(odf,'SS'),varargin{:}));
+    equispacedSO3Grid(get(odf,'CS'),get(odf,'SS'),'resolution',5*degree,varargin{:}));
   options.y = eval(options.odf,options.SO3);
 end
 

@@ -16,6 +16,9 @@ function [v,swap,minRho] = project2FundamentalRegion(v,sym,varargin)
 
 %% get fundamental region
 
+% this is needed sometimes to get the right function to be called
+if iscell(sym), sym = sym{1};end
+
 [q,rho_rot] = rotation_special(sym);
 % q       - rotations not about the z -axis
 % rho_rot - position of the mirroring plane

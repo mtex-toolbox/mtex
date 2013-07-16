@@ -62,7 +62,7 @@ gamma(ind) = 0;
 %% transform to right convention
 
 conventions = {'nfft','ZYZ','ABG','Matthies','Roe','Kocks','Bunge','ZXZ','Canova'};
-convention = get_flag(varargin,conventions,getpref('mtex','EulerAngleConvention'));
+convention = get_flag(varargin,conventions,getMTEXpref('EulerAngleConvention'));
 
 switch lower(convention)
 
@@ -107,6 +107,12 @@ if nargout == 0
   d = [alpha(:) beta(:) gamma(:)]/degree;
   d(abs(d)<1e-10)=0;
 
+  if isa(quat,'rotation')
+    i = isImproper(quat);
+    d = [d,i(:)];
+    labels = [labels,{'Inv.'}];
+  end
+  
   disp(' ');
   disp(['  ' convention ' Euler angles in degree'])
   cprintf(d,'-L','  ','-Lc',labels);
@@ -115,7 +121,7 @@ if nargout == 0
 elseif check_option(varargin,'nfft')
 
   alpha = fft_rho(alpha);
-  if getpref('mtex','nfft_bug')
+  if getMTEXpref('nfft_bug')
     beta  = fft_theta(-beta);
   else
     beta  = fft_theta(beta);

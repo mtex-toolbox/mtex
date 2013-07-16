@@ -66,7 +66,7 @@ for i = 1:length(odf)
     elseif isa(odf(i).center,'SO3Grid')
       convention = get_flag(get(odf(i).center,'options'),{'ZXZ','ZYZ'},'none');
     else
-      convention = getpref('mtex','EulerAngleConvention');
+      convention = getMTEXpref('EulerAngleConvention');
     end
 
     % save matrix
@@ -84,4 +84,3 @@ end
 
 
 fclose(fid);
-

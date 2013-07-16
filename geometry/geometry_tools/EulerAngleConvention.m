@@ -1,7 +1,7 @@
 function [convention,labels] = EulerAngleConvention(varargin)
 
 conventions = {'nfft','ZYZ','ABG','Matthies','Roe','Kocks','Bunge','ZXZ','Canova'};
-convention = get_flag(varargin,conventions,getpref('mtex','EulerAngleConvention'));
+convention = get_flag(varargin,conventions,getMTEXpref('EulerAngleConvention'));
 
 switch convention
 

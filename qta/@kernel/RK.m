@@ -34,13 +34,13 @@ ng = numel(g);
 
 if length(h)>1 || isa(h,'S2Grid')   % inverse pole figure
 	r = r./norm(r);
-  in = reshape(inverse(symmetrise(g,CS,SS)).' * r,[ng,length(CS),length(SS)]);
-	out = h; lh = length(CS);
+  in = reshape(inverse(symmetrise(g,CS,SS)).' * r,[ng,numel(CS),numel(SS)]);
+	out = h; lh = numel(CS);
 else % pole figure
   h = vector3d(h);
 	h = reshape(h./norm(h),1,[]);
 	[h,lh] = symmetrise(h,CS,varargin{:});
-	%lh = length(CS);
+	%lh = numel(CS);
 	g = reshape(reshape((SS * reshape(g,1,[])).',[],1),[],1);
 	in = reshape(g*h,[ng,length(SS),lh]);
 	out = r;
@@ -81,11 +81,17 @@ else % calculate matrix
   f = zeros(numel(out),size(in,1));
     
   % take mean along all symmetries
-  for is = 1:length(SS)*lh   
+  for is = 1:length(SS)*lh
 		dmatrix = dot_outer(out,in(:,is));    
-		f = f + kk.RK(dmatrix);
+    f = f + kk.RK(dmatrix);
 		if check_option(varargin,'antipodal'), f = f + kk.RK(-dmatrix);end		
-	end
+  end
+  
+  %dmatrix = reshape(dot_outer(out,in),numel(out),size(in,1),[]);    
+  %f = f + sum(kk.RK(dmatrix),3);
+  %if check_option(varargin,'antipodal')
+  %  f = f + sum(kk.RK(-dmatrix),3);
+  %end
 	
 	if ~isempty(c), f = f * reshape(c,[],1);end
 	if check_option(varargin,'antipodal'), f = f/2;end

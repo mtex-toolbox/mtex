@@ -45,9 +45,9 @@ switch vname
     else
       id = varargin{1};
     end
-
+    
     if isa(id,'logical'), id = find(id);end
-
+    
     d = zeros(length(id),1);
     for i= 1:length(pf)
       idi = (id > cs(i)) & (id<=cs(i+1));
@@ -55,13 +55,19 @@ switch vname
     end
 
     varargout{1} = d;
-    
+
   case 'r'
     if nargout == 1
       varargout{1} = [pf.r];
     else
       varargout = {pf.r};
     end 
+  
+  case {'Miller','h','crystal directions'}
+    varargout{1} = [pf.h];
+    
+  case {'hCell'}
+    varargout{1} = {pf.h};
     
   case fields(pf)
     varargout{1} = [pf.(vname)];
@@ -74,10 +80,7 @@ switch vname
   case {'rho','azimuth'}
     [theta,rho] = polar([pf.r]); %#ok<ASGLU>
     varargout{1} = rho;
-    
-  case {'Miller','h','crystal directions'}
-    varargout{1} = [pf.h];
-    
+        
   case {'resolution'}
     
     for i = 1:length(pf)

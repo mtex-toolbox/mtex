@@ -40,15 +40,20 @@ if check_option(varargin,'section')
   S2 = axis2quat(n,omega)*axis2quat(orth(n),eta)*n;
 elseif check_option(varargin,'3d')
   
-  [x y z] = sphere(90);
+  [x,y,z] = sphere(90);
   S2 = vector3d(x,y,z);
 %   S2 = S2Grid('regular','resolution',120varargin{:});
   
 else
   % define a plotting grid
-  [minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(T.CS,'antipodal',varargin{:});
+  
+  if iseven(T.rank)
+    varargin = [varargin,'antipodal'];
+  end 
+  
+  [minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(T.CS,varargin{:});
   S2 = S2Grid('PLOT','minTheta',minTheta,'maxTheta',maxTheta,...
-    'minRho',minRho,'maxRho',maxRho,'RESTRICT2MINMAX','antipodal',varargin{:});
+    'minRho',minRho,'maxRho',maxRho,'RESTRICT2MINMAX',varargin{:});
   
 end
 % decide what to plot
@@ -108,6 +113,11 @@ switch lower(plotType)
       end
     end
     
+    if ~check_option(varargin,'density')
+      error(['No density given! For computing wave velocities '...
+      'the material density has to be specified. ' ...
+      'Please use the option ..''density'',value.. to do this.']);
+    end
     rho = get_option(varargin,'density',1);
     [vp,vs1,vs2,pp,ps1,ps2] = velocity(T,S2,rho); %#ok<ASGLU,NASGU>
     d = eval(get_option(varargin,'velocity','pp','char'));
@@ -149,7 +159,7 @@ else
   elseif isa(d,'vector3d')
     quiver(ax{:},S2,d,varargin{:});
   else
-    contourf(ax{:},S2,d,varargin{:});
+    plot(ax{:},S2,d,'contourf',varargin{:});
   end
   
 end

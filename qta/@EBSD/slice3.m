@@ -15,206 +15,316 @@ function varargout = slice3(ebsd,varargin)
 % make up new figure
 newMTEXplot;
 
-sliceType = get_flag(varargin,{'x','y','z','xy','xz','yz','xyz'},'xyz');
-slicePos  = get_option(varargin,sliceType,[.5 .5 .5],'double');
-hSlicer   = addSlicer(sliceType,varargin{:});
+opts = parseArgs(varargin{:});
 
-if numel(slicePos)<=numel(sliceType)
-  slicePos(1:numel(sliceType)) = slicePos(1);
-end
-
-% x is allways east
-% plotx2east
-
-% get pixels
-X = [ebsd.options.x(:) ebsd.options.y(:) ebsd.options.z(:)];
-Xmin = min(X); Xmax = max(X);
-
-dX = abs(2*ebsd.unitCell([1 13 17]));
-
-% grid coordinates
-iX = round(bsxfun(@rdivide,X,dX));
-iX = 1+bsxfun(@minus,iX,min(iX));
-
-sz = max(iX);
-
-% compute colorcoding
-d = [];
-for k=1:numel(ebsd.phaseMap)
-  iP = ebsd.phase==k;
-  [d(iP,:),property] = calcColorCode(ebsd,iP,varargin{:});
-end
-
-% fill colorcoding upon grid
-l = sparse(s2i3(sz,iX(:,1),iX(:,2),iX(:,3)),1,true,prod(sz),1);
-d(l,:) = d;
-d(~l,:)= NaN;
-
-% construct slicing planes
-g = @(i) linspace(Xmin(i),Xmax(i),sz(i));
-
-obj = struct; plane = struct; n = 0;
-
-if any(sliceType == 'x')
-  n = n+1;
-  % patch object
-  [x,y,z] = meshgrid(0,g(2),g(3));
-  [obj(n).Vertices(:,[2 3]) obj(n).Faces] = generateUnitCells([y(:) z(:)],ebsd.unitCell(9:end,:),varargin{:});
-  % color&pos-fun
-  [xi,yi,zi] = meshgrid(0,1:sz(2),1:sz(3));
-  plane(n).fun = @(p) d(s2i3(sz,interp(p,sz(1)),yi,zi),:);
-  plane(n).pos = @(p) interlim(p,Xmin(1)-dX(1)./2,Xmax(1)+dX(1)./2);
-  plane(n).dim = 1;
-end
-
-if any(sliceType == 'y')
-  n = n+1;
-  % patch object
-  [x,y,z] = meshgrid(g(1),0,g(3));
-  [obj(n).Vertices(:,[1 3]) obj(n).Faces] = generateUnitCells([x(:) z(:)],ebsd.unitCell(5:8,:),varargin{:});
-  % color&pos-fun
-  [xi,yi,zi] = meshgrid(1:sz(1),0,1:sz(3));
-  plane(n).fun = @(p) d(s2i3(sz,xi,interp(p,sz(2)),zi),:);
-  plane(n).pos = @(p) interlim(p,Xmin(2)-dX(2)./2,Xmax(2)+dX(2)./2);
-  plane(n).dim = 2;
-end
-
-if any(sliceType == 'z')
-  n = n+1;
-  % patch object
-  [x,y,z] = meshgrid(g(1),g(2),0);
-  [obj(n).Vertices(:,1:2)   obj(n).Faces] = generateUnitCells([x(:) y(:)],ebsd.unitCell(1:4,:),varargin{:});
-  % color&pos-fun
-  [xi yi] = meshgrid(1:sz(1),1:sz(2));
-  plane(n).fun = @(p) d(s2i3(sz,xi,yi,interp(p,sz(3))),:);
-  plane(n).pos = @(p) interlim(p,Xmin(3)-dX(3)./2,Xmax(3)+dX(3)./2);
-  plane(n).dim = 3;
-end
+api = getGridApi(ebsd,varargin{:});
+api = getSliceApi(api,opts);
 
 
-for k=1:numel(obj)
-  obj(k).FaceColor = 'flat';
-  obj(k).EdgeColor = 'none';
-  h(k) = patch(obj(k));
+xlabel('x')
+ylabel('y')
+zlabel('z')
 
-  set(hSlicer(k),...
-    'value',slicePos(k),...
-    'callback',{@sliceIt,h(k),plane(k)});
-
-  sliceIt(hSlicer(k),[],h(k),plane(k))
-end
-
-
-
-optiondraw(h,varargin{:});
-axis equal
-axlim = [Xmin(:)-dX(:)./2 Xmax(:)+dX(:)./2]';
-axis (axlim(:))
+box on
 grid on
-view([30,15])
+view(3)
 
+range = reshape([...
+  api.Grid.Xmin-api.Grid.dX/2; ...
+  api.Grid.Xmax+api.Grid.dX/2],1,[]);
 
-if size(d,2) == 1
-  set(gca,'CLim',[min(d) max(d)]);
+axis ('equal',range);
+
+if isfield(api,'CDataLim')
+  set(gca,'CLim',api.CDataLim);
 end
+
+optiondraw([api.Slicer.hSurf],varargin{:});
+set([api.Slicer.hSurf],'Visible','on')
 
 
 % make legend
-
-if strcmpi(property,'phase'),
-  % phase colormap
+if strcmpi(api.ColorCode,'phase')
   minerals = get(ebsd,'minerals');
-
-  isPhase = ismember(unique(d),ebsd.phaseMap);
-  phaseMap = ebsd.phaseMap;
-  for k=1:numel(phaseMap)
-    lg(k) = patch('vertices',[0 0],'faces',[1 1],'FaceVertexCData',phaseMap(k),'facecolor','flat')
-  end
-  set(gca,'CLim',[min(d) max(d)+1]);
-  colormap(hsv(numel(phaseMap)));
-  legend(lg,minerals(isPhase),'Location','NorthEast');
+  legend(minerals(api.isPhase));
 end
 
+
 % set appdata
-if strcmpi(property,'orientation') %&& strcmpi(cc,'ipdf')
-  setappdata(gcf,'CS',ebsd.CS)
-  setappdata(gcf,'r',get_option(varargin,'r',xvector,'vector3d'));
-  setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
-  setappdata(gcf,'colorcoding',lower(get_option(varargin,'colorcoding','ipdf')));
+if strncmpi(api.ColorCode,'orientation',11)
+  setappdata(gcf,'CS',ebsd.CS(api.isPhase));
+  setappdata(gcf,'CCOptions',opts(api.isPhase));
+  setappdata(gcf,'colorcoding',api.ColorCode(13:end));
 end
 
 set(gcf,'tag','ebsd_slice3');
-setappdata(gcf,'options',extract_option(varargin,'antipodal'));
-
-
-if nargout > 0
-  varargout{1} = hSlicer;
-end
-
-
-function sliceIt(ev,v,hSlicer,plane)
-
-p = get(ev,'value');
-z = get(hSlicer,'Vertices');
-
-z(:,plane.dim) = plane.pos(p);
-set(hSlicer,'Vertices',z);
-set(hSlicer,'FaceVertexCData',plane.fun(p));
-
-
-function ndx = s2i3(sz,ix,iy,iz)
-% faster version of sub2ind
-ndx = 1 + (ix-1) + (iy-1)*sz(1) +(iz-1)*sz(1)*sz(2);
-
-
-function y = interp(x,sz)
-
-if x <= 0
-  y = ones(size(sz));
-elseif x > 1
-  y = sz;
-else
-  y = ceil(x.*sz);
-end
-
-function y = interlim(x,xmin,xmax)
-
-if x<=0
-  y = xmin;
-elseif x>1
-  y = xmax;
-else
-  y = x.*(xmax-xmin)+xmin;
-end
-
-
-function  hSlicer = addSlicer(sliceType,varargin)
-
-fpos = -10;
-
-if strcmpi(get(gcf,'tag'),'ebsd_slice3')
-  hSliders = findall(gcf,'Style','slider');
-  fpos = max(cellfun(@(x) x(1),ensurecell(get(hSliders,'position'))))+10;
-else
-  fpos = -10;
-end
-
-for k=1:numel(sliceType)
-
-  fpos = fpos+20;
-
-  hSlicer(k) = uicontrol(...
-    'units','pixels',...
-    'backgroundcolor',[0.9 0.9 0.9],...   'callback',{@sliceitz,x,y,z,z},...        'callback',{@(e,eb) sliceit(getappdata(gcbf,'slicedata'),get(e,'value'))},...
-    'position',[fpos 10 16 120],...
-    'style','slider');
-  uicontrol('position',[fpos 130 16 16],...
-    'string',sliceType(k),'style','text');
-
-end
 
 set(gcf,'toolbar','figure')
 
 
+if nargout > 0
+  varargout{1} = [api.Slicer.hSlider];
+end
+
+function opts = parseArgs(varargin)
+
+c = varargin(cellfun('isclass',varargin,'char'));
+
+sliceType = '';
+slicePos   = [];
+
+for k=1:numel(c)
+  if all(ismember(double(c{k}),double('xyz')))
+    sliceP = get_option(varargin,c{k},[],'double');
+    if numel(sliceP) ~= numel(c{k})
+      error('Number of slice positions must agree with number of desired slices');
+    else
+      sliceType = [sliceType c{k}];
+      slicePos  = [slicePos  sliceP];
+    end
+  end
+end
+
+if isempty(slicePos)
+  sliceType = 'xyz';
+  slicePos  = [NaN NaN NaN];
+end
+
+opts.sliceType = sliceType;
+opts.slicePos  = slicePos;
+
+hide = {'on','off'};
+opts.hideSlider  = hide{1+check_option(varargin,{'hideSlider','hideSliders'})};
 
 
+function api = getGridApi(ebsd,varargin)
+
+options = ebsd.options;
+% get pixels
+X = [options.x(:) options.y(:) options.z(:)];
+
+Xmin = min(X);
+Xmax = max(X);
+
+% if unitcell is missing
+if isempty(ebsd.unitCell)
+  dX = [median(diff(unique(X(:,1)))) ...
+    median(diff(unique(X(:,2)))) ...
+    median(diff(unique(X(:,3))))];
+else
+  dX = abs(2*ebsd.unitCell([1 13 17]));
+end
+
+% compute colorcoding
+numberOfPhases = numel(ebsd.phaseMap);
+isPhase = false(numberOfPhases,1);
+d = [];
+
+for k=1:numberOfPhases
+  iP = ebsd.phase==k;
+  isPhase(k) = any(iP);
+  
+  [d(iP,:),property] = calcColorCode(ebsd,iP,varargin{:});
+end
+
+% grid coordinates
+iX = 1 + round(bsxfun(@rdivide,bsxfun(@minus,X,Xmin),dX));
+sz = max(iX);
+
+ndx = @(iX,iY,iZ) 1 + (iX-1) + (iY-1)*sz(1) +(iZ-1)*sz(1)*sz(2);
+% fill missing colors upon grid
+api.ColorCode = property;
+api.isPhase   = isPhase;
+
+CData         = NaN(prod(sz),size(d,2));
+CData(ndx(iX(:,1),iX(:,2),iX(:,3)),:) = d;
+
+api.CDataDim  = @(dim1,dim2) [sz([dim1 dim2]) size(CData,2)];
+api.CData     = @(iX,iY,iZ) CData(ndx(iX,iY,iZ),:);
+
+if size(d,2) == 1
+  api.CDataLim  = [min(d) max(d)];
+end
+
+grid.Xmin     = Xmin;
+grid.Xmax     = Xmax;
+grid.dX       = dX;
+% grid.Voxels   = sz;
+
+% dG       = @(i) (Xmin(i)-dX(i)/2):dX(i):(Xmax(i)+dX(i)/2);
+dG       = @(i) linspace(Xmin(i)-dX(i)/2,Xmax(i)+dX(i)/2,sz(i)+1);
+
+% surf coordiantes
+grid.meshSliceByDim = @(dim1,dim2) meshgrid(dG(dim1),dG(dim2),1);
+% surf indices
+grid.meshVoxelByDim = @(dim1,dim2) meshgrid(1:sz(dim1),1:sz(dim2));
+
+iX = @(p,d) interPos(p,Xmax(d),Xmin(d),dX(d),sz(d));
+pX = @(p,d) interLim(p,Xmin(d)-dX(d)./2,Xmax(d)+dX(d)./2);
+
+% dimension  % percentage
+grid.iX       = @(p) iX(p,1); % indexing
+grid.pX       = @(p) pX(p,1); % position
+
+grid.iY       = @(p) iX(p,2); % indexing
+grid.pY       = @(p) pX(p,2); % position
+
+grid.iZ       = @(p) iX(p,3); % indexing
+grid.pZ       = @(p) pX(p,3); % position
+
+api.Grid     = grid;
+
+
+function api = getSliceApi(api,opts)
+
+washold = getHoldState;
+hold all
+for k=1:numel(opts.sliceType)
+  
+  api.Slicer(k) = localAddSlicer(opts.sliceType(k),opts.slicePos(k),opts.hideSlider,api);
+  
+end
+
+hold(washold)
+
+
+function Slicer = localAddSlicer(sliceType,slicePos,hideSlider,api)
+
+
+sliderPosX    = 10;
+sliderOffsetX = 20;
+
+hOldSlices = findall(gcf,'tag','slicer');
+if ~isempty(hOldSlices)
+  oldSlicerPos = ensurecell(get(hOldSlices,'position'));
+  sliderPosX = max(cellfun(@(x) x(1),oldSlicerPos))+sliderOffsetX;
+end
+
+hSlider = uicontrol(...
+  'units','pixels',...
+  'backgroundcolor',[0.9 0.9 0.9],...
+  'position',[sliderPosX 10 16 120],...
+  'tag','slicer',...
+  'visible',hideSlider,...
+  'style','slider');
+
+hLabel  = uicontrol('position',[sliderPosX 130 16 16],...
+  'string',sliceType,...
+  'visible',hideSlider,...
+  'style','text');
+
+dim = find(strcmp(lower(sliceType),{'x','y','z'}));
+step = 1/(((api.Grid.Xmax(dim)-api.Grid.Xmin(dim))./api.Grid.dX(dim))+2);
+
+if ~isfinite(slicePos)
+  slicePos = (api.Grid.Xmax(dim)+api.Grid.Xmin(dim))/2;
+end
+
+set(hSlider,...
+  'Min',api.Grid.Xmin(dim)-api.Grid.dX(dim)/2,...
+  'Max',api.Grid.Xmax(dim)+api.Grid.dX(dim)/2,...
+  'Value',slicePos,...
+  'SliderStep',[step .1]);
+
+Slicer = feval(['localAdd' upper(sliceType) 'Slice'],api);
+Slicer.hSlider = hSlider;
+Slicer.hLabel  = hLabel;
+
+localAddSliceCallback(Slicer,slicePos);
+
+
+function localAddSliceCallback(Slicer,slicePos)
+
+set(Slicer.hSlider,...
+  'Value',slicePos,...
+  'Callback',{@localSliceCallback,Slicer});
+
+localSliceCallback([],[],Slicer);
+
+
+function localSliceCallback(event,source,Slicer)
+
+p = get(Slicer.hSlider,'Value');
+
+set(Slicer.hSurf,'CData',Slicer.getSliceCData(p));
+set(Slicer.hSurf,Slicer.dim,Slicer.getSlicePos(p));
+
+
+function Slicer = localAddXSlice(api)
+
+grd = api.Grid;
+
+[z,y,x] = grd.meshSliceByDim(3,2);
+[iZ,iY] = grd.meshVoxelByDim(3,2);
+
+Slicer.getSliceCData = @(pos) reshape(api.CData(grd.iX(pos),iY,iZ),api.CDataDim(2,3));
+Slicer.getSlicePos   = @(pos) x*grd.pX(pos);
+
+Slicer.dim = 'XData';
+
+Slicer.hSurf = surf(...
+  Slicer.getSlicePos(0),y,z,...
+  Slicer.getSliceCData(0),...
+  'EdgeColor','none',...
+  'Visible','off');
+
+
+function Slicer = localAddYSlice(api)
+
+grd = api.Grid;
+
+[z,x,y] = grd.meshSliceByDim(3,1);
+[iZ,iX] = grd.meshVoxelByDim(3,1);
+
+Slicer.getSliceCData = @(pos) reshape(api.CData(iX,grd.iY(pos),iZ),api.CDataDim(1,3));
+Slicer.getSlicePos   = @(pos) y*grd.pY(pos);
+
+Slicer.dim = 'YData';
+
+Slicer.hSurf = surf(...
+  x,Slicer.getSlicePos(0),z,...
+  Slicer.getSliceCData(0),...
+  'EdgeColor','none',...
+  'Visible','off');
+
+
+
+function Slicer = localAddZSlice(api)
+
+grd = api.Grid;
+
+[y,x,z] = grd.meshSliceByDim(2,1);
+[iY,iX] = grd.meshVoxelByDim(2,1);
+
+Slicer.getSliceCData = @(pos) reshape(api.CData(iX,iY,grd.iZ(pos)),api.CDataDim(1,2));
+Slicer.getSlicePos   = @(pos) z*grd.pZ(pos);
+
+Slicer.dim = 'ZData';
+
+Slicer.hSurf = surf(...
+  x,y,Slicer.getSlicePos(0),...
+  Slicer.getSliceCData(0),...
+  'EdgeColor','none',...
+  'Visible','off');
+
+
+function y = interPos(x,xmax,xmin,dx,sz)
+
+y = floor(1+(x+dx/2-xmin)./(xmax-xmin+dx)*sz);
+
+if (y < 1)
+  y = 1;
+elseif (y > sz)
+  y = sz;
+end
+
+
+function y = interLim(x,xmin,xmax)
+
+if x < xmin
+  y = xmin;
+elseif x > xmax
+  y = xmax;
+else
+  y = x;
+end

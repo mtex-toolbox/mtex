@@ -5,7 +5,7 @@ function A = calcKAM(grains,varargin)
 % grains - @GrainSet
 %
 %% Flags
-% Boundary    -  do also consider the grain boundary for average 
+% Boundary    -  do also consider the grain boundary for average
 % secondorder -  also include higher order neighbors
 %
 
@@ -23,10 +23,16 @@ n = size(grains.A_D,1);
 if check_option(varargin,'Boundary')
   A_D = grains.A_D;
 else
-  I_FD = grains.I_FDext | grains.I_FDsub;
-  [d,i] = find(I_FD(sum(I_FD,2) == 2,any(grains.I_DG,2))');
-  Dl = d(1:2:end); Dr = d(2:2:end);
-  A_D = grains.A_D - sparse(Dl,Dr,1,n,n);
+  I_DF = (grains.I_FDext | grains.I_FDsub)';
+  sub = sum(I_DF,1) == 2;  
+  [d,i] = find(I_DF(:,sub));
+  Dl = d(1:2:end); Dr = d(2:2:end);  % neighbored grains
+  
+  A_Df = sparse(Dl,Dr,true,n,n);
+  A_Df = A_Df | A_Df';
+  
+  A_D = grains.A_D;
+  A_D( A_Df(:)) = 0; % delete adjacencies
 end
 
 A_D = double(A_D);
@@ -40,25 +46,45 @@ A_D = A_D(b,b);
 
 [Dl Dr] = find(A_D|A_D');
 
-
-
 % delete adjacenies between different phase and not indexed measurements
 use = phase(Dl) == phase(Dr) & isIndexed(Dl) & isIndexed(Dr);
 Dl = Dl(use); Dr = Dr(use);
 phase = phase(Dl);
 
 % calculate misorientation angles
-prop = []; zeros(size(Dl));
+prop = zeros(size(phase)); zeros(size(Dl));
 for p=1:numel(phaseMap)
   currentPhase = phase == phaseMap(p);
   if any(currentPhase)
     
-    o_Dl = orientation(r(Dl(currentPhase)),CS{p},SS);
-    o_Dr = orientation(r(Dr(currentPhase)),CS{p},SS);
-    
-    m  = o_Dl.\o_Dr; % misorientation
+    nt = 250000;
+    if nnz(currentPhase) < nt
+      o_Dl = orientation(r(Dl(currentPhase)),CS{p},SS);
+      o_Dr = orientation(r(Dr(currentPhase)),CS{p},SS);
+      
+      %     m  = o_Dl.\o_Dr; % misorientation
+      prop(currentPhase,:) = angle(o_Dl,o_Dr);
+      
+    else
+      ind = find(currentPhase);
+      
+      cs = [0:nt:numel(ind)-1 numel(ind)];
+      
+      for k=1:numel(cs)-1
+        subset = ind(cs(k)+1:cs(k+1));
         
-    prop(currentPhase,:) = angle(m);
+        
+        o_Dl = orientation(r(Dl(subset)),CS{p},SS);
+        o_Dr = orientation(r(Dr(subset)),CS{p},SS);
+        
+        %     m  = o_Dl.\o_Dr; % misorientation
+        prop(subset,:) = angle(o_Dl,o_Dr);
+        
+      end      
+      
+    end
+    
+    %     prop(currentPhase,:) = angle(m);
     
   end
 end

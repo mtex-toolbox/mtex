@@ -1,8 +1,18 @@
 %% MTEX Changelog
 %
-%% Contents
+%% MTEX 3.4.1 - 04/2013
 %
-%% MTEX 3.4.0 - 12/2012
+% *bugfix release*
+%
+% * much improved graphics export to png and jpg files
+% * improved import wizard
+% * Miller(2,0,0) is now different from Miller(1,0,0)
+% * new EBSD interfaces h5, Bruker, Dream3d
+% * various speedups
+% * fix: startup error http://code.google.com/p/mtex/issues/detail?id=99
+% * fix: Rigaku csv interface
+%
+%% MTEX 3.4.0 - 03/2013
 %
 % *New plotting engine*
 %
@@ -11,31 +21,142 @@
 %
 % * The alignment of the axes in the plot is now described by the options
 % |xAxisDirection| which can be |north|, |west|, |south|, or |east|, and
-% |zAxisDirection| which can be |outOfPlane| or |intoPlane|.
+% |zAxisDirection| which can be |outOfPlane| or |intoPlane|. Accordinly,
+% there are now the commands
+%
+%   plotzOutOfPlane, plotzIntoPlane
+%
 % * The alignment of the axes can be changed interactively using the new
 % MTEX menu which is located in the menubar of each figure.
 % * northern and southern hemisphere are now separate axes that can be
 % stacked arbitrarily and are marked as north and south.
-% * Arbitary plots can be combined in one figure.
+% * Arbitary plots can be combined in one figure. The syntax is
+%
+%   ax = subplot(2,2,1)
+%   plot(ax,xvector)
+%
 % * One can now arbitrarily switch between scatter, contour and smooth
-% plots for any data.
-% obsolete options: |fliplr|, |flipud|, |gray|, 
-% 
+% plots for any data. E.g. instead of a scatter plot the following command
+% generates now a filled contour plot
+%
+%   plotpdf(ebsd,Miller(1,0,0),'contourf')
+%
+% * obsolete options: |fliplr|, |flipud|, |gray|,
+%
 % *Colormap handling*
-% User defined colormap can now be stored in the folder |colormaps|, e.g.
-% as |red2blueColorMap.m| and can set by
+%
+% * User defined colormap can now be stored in the folder |colormaps|, e.g.
+% as |red2blueColorMap.m| and can set interactively from the MTEX menu or
+% by the command
+%
 %   mtexColorMap red2blue
-% or interactively from the MTEX menu.
+%
+% *ODF*
+%
+% * The default ODF plot are now phi2 sections with plain projection and (0,0)
+% beeing at the top left corner. This can be changed interactivly in the
+% new MTEX menu.
+% * The computation of more then one maximum is back. Use the command
+%
+%   [modes, values] = calcModes(odf,n)
 %
 % *EBSD data*
+%
+% * MTEX is now aware about inconsistent coordinate system used in CTF and
+% HKL EBSD files for Euler angles and spatial coordinates. The user can now
+% convert either the spatial coordinates or the Euler angles such that they
+% become consistent. This can be easily done by the import wizard or via
+% the commands
+%
+%   % convert spatial coordinates to Euler angle coordinate system
+%   loadEBSD('filename','convertSpatial2EulerReferenceFrame')
+%
+%   % convert Euler angles to spatial coordinate system
+%   loadEBSD('filename','convertEuler2SpatialReferenceFrame')
+%
 % * It is now possible to store a color within the variable describing a
 %  certain mineral. This makes phase plots of EBSD data and grains more
 %  consistent and customizable.
+%
 %   CS = symmetry('cubic','mineral','Mg','color','red')
+%
 % * Better rule of thumb for the kernel width when computing an ODF from
 % individual orientations via kernel density estimation.
 % * inpolygon can be called as
+%
 %   inpolygon(ebsd,[xmin ymin xmax ymax])
+%
+% *Tensors*
+%
+% * new command to compute the Schmid tensor
+%
+%   R = SchmidTensor(m,n)
+%
+% * new command to compute Schmid factor and active slip system
+%
+%   [tauMax,mActive,nActive,tau,ind] = calcShearStress(stressTensor,m,n,'symmetrise')
+%
+% * it is now possible to define a tensor only by its relevant entries.
+% Missing entries are filled such that the symmetry properties are
+% satisfied.
+%
+% * faster, more stable tensor implementation
+% * new syntax in tensor indexing to be compatible with other MTEX classes.
+% For a 4 rank thensor |C| we have now
+%
+%   % extract entry 1,1,1,1 in tensor notation
+%   C{1,1,1,1}
+%
+%   % extract entry 1,1 in Voigt notation
+%   C{1,1}
+%
+% * For a list of tensors |C| we have
+%
+%   % extract the first tensor
+%   C(1)
+%
+% *Import / Export*
+%
+% * command to export orientations
+%
+%   export(ori,'fname')
+%
+% * command to import vector3d
+%
+%   v = loadVector3d('fname','ColumnNames',{'x','y','z'})
+%   v = loadVector3d('fname','ColumnNames',{'latitude','longitude'})
+%
+% * new interface for DRex
+% * new interface for Rigaku
+% * new interface for Saclay
+%
+% *General*
+%
+% * improved instalation / uninstalation
+% * new setting system
+%
+%   setpref('mtex','propertyName','propertyValue')
+%
+% has been replaced by
+%
+%   setMTEXpref('propertyName','propertyValue')
+%
+%
+%% MTEX 3.3.2 - 01/2013
+%
+% *bugfix release*
+%
+% * fix: better startup when using different MTEX versions
+% * fix: backport of the tensor fixes from MTEX 3.4
+% * fix: show normal colorbar in ebsd plot if scalar property is plotted
+% * fix: http://code.google.com/p/mtex/issues/detail?id=82
+% * fix: http://code.google.com/p/mtex/issues/detail?id=76
+% * fix: http://code.google.com/p/mtex/issues/detail?id=48
+% * fix: http://code.google.com/p/mtex/issues/detail?id=71
+% * fix: http://code.google.com/p/mtex/issues/detail?id=70
+% * fix: http://code.google.com/p/mtex/issues/detail?id=69
+% * fix: http://code.google.com/p/mtex/issues/detail?id=65
+% * fix: http://code.google.com/p/mtex/issues/detail?id=68
 %
 %% MTEX 3.3.1 - 07/2012
 %
@@ -75,7 +196,7 @@
 % imported generally]]. If the crystal symmetry of an @EBSD phase is set to a
 % string value, it will be treated as not indexed. e.g. mark the first
 % phase as |'not indexed'|
-% 
+%
 %   CS = {'not indexed',...
 %         symmetry('cubic','mineral','Fe'),...
 %         symmetry('cubic','mineral','Mg')};
@@ -86,12 +207,12 @@
 %
 % *Other*
 %
-% * the comand |set_mtex_option| is obsolete. Use the matlab command 
-% |setpref('mtex',...)| instead. Additionally, one can now see all options 
+% * the comand |set_mtex_option| is obsolete. Use the matlab command
+% |setMTEXpref(...)| instead. Additionally, one can now see all options
 % by the command |getpref('mtex')|
 %
 %% MTEX 3.2.3 - 03/2012
-% 
+%
 % *bugfix release*
 %
 % * allow zooming for multiplot objects again; change the z-order of axes

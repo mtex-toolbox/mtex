@@ -3,14 +3,14 @@ function p = mtexEBSDPath
 %
 %% Syntax
 % mtexEBSDPath -
-% getpref('mtex','EBSDPath') - long form of mtexEBSDPath
-% setpref('mtex','EBSDPath',path) - change the path to EBSD files
+% getMTEXpref('EBSDPath') - long form of mtexEBSDPath
+% setMTEXpref('EBSDPath',path) - change the path to EBSD files
 %
 %% See also
 % mtexDataPath mtexCifPath mtexEBSDPath mtexPoleFigurePath mtexODFPath
 % mtexTensorPath
 
-DataPath = getpref('mtex','EBSDPath');
+DataPath = getMTEXpref('EBSDPath');
 
 if exist(DataPath,'dir')
   p = DataPath;

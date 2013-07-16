@@ -127,8 +127,8 @@ elseif check_option(varargin,'path') % along a defined great circle
   
   F = reshape(pdf(odf,h,v),size(v));
   F = F.*rnd(size(v)); % if randomize  
-  Ff = zeros(n,length(cs)-1);
-  for k=1:length(cs)-1
+  Ff = zeros(n,numel(cs)-1);
+  for k=1:numel(cs)-1
     Ff(:,k) = sum(F(:,cs(k)+1:cs(k+1)),2);
   end
 

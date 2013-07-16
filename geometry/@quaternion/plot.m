@@ -13,7 +13,7 @@ function varargout = plot(q,varargin)
 
 %% two dimensional plot -> S2Grid/plot
 
-if ~(ishold && strcmp(get(gca,'tag'),'ebsd_raster')) && ...
+if ~(ishold(gca) && strcmp(get(gca,'tag'),'ebsd_raster')) && ...
   ~check_option(varargin,{'scatter','rodrigues','axisangle'})
 
   if numel(q) == 1
@@ -29,11 +29,11 @@ if ~(ishold && strcmp(get(gca,'tag'),'ebsd_raster')) && ...
 
     for i = 1:numel(v)
 
-      plot(S2Grid(q.*v(i)),varargin{:});
-      hold all
+      plot(q.*v(i),varargin{:});
+      hold(gca,'all')
     end
 
-    hold off
+    hold(gca,'off')
   end
   return
 end
@@ -52,7 +52,7 @@ if nargout > 0, varargout{1} = gca;end
 
 % color
 if ~check_option(varargin,{'MarkerColor','MarkerFaceColor','DATA','MarkerEdgeColor'})
-  [ls,c] = nextstyle(gca,true,true,~ishold);
+  [ls,c] = nextstyle(gca,true,true,~ishold(gca));
   varargin = {'MarkerEdgeColor',c,varargin{:}};
 end
 

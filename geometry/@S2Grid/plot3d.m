@@ -40,6 +40,8 @@ if check_option(varargin,'logarithmic')
   data(imag(data) ~= 0) = -inf;
 end
 
+data(isinf(data)) = NaN;
+
 %% 3d plot
 sphere3d(data.',-pi,pi,-pi/2,pi/2,10,1.5,'surf','spline',.001);
 shading interp

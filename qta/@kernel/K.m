@@ -40,8 +40,8 @@ if epsilon>rotangle_max_z(CS,'antipodal') % full matrixes
   g2 = quaternion(g2);
   w = zeros(numel(g1),numel(g2));
      
-	for iks = 1:length(CS)
-		for ips = 1:length(SS) % for all symmetries
+	for iks = 1:numel(CS)
+		for ips = 1:numel(SS) % for all symmetries
       
 			sg    = quaternion(SS,ips) * g1 * quaternion(CS,iks);  % rotate g1
       omega = abs(dot_outer(sg,g2));      % calculate full distance matrix            
@@ -106,4 +106,4 @@ else
 
 end
 %nnz(w)
-w = w / length(CS) / length(SS);
+w = w / numel(CS) / numel(SS);

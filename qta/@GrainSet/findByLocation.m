@@ -1,4 +1,4 @@
-function grains = findByLocation( grains, xy )
+function [grains,I_GX] = findByLocation( grains, X )
 % select a grain by spatial coordinates
 %
 %% Input
@@ -8,7 +8,7 @@ function grains = findByLocation( grains, xy )
 %% Output
 % grains - @GrainSet
 %
-%% Example 
+%% Example
 %  plotx2east
 %  plot(grains)
 %  p = ginput(1)
@@ -18,53 +18,61 @@ function grains = findByLocation( grains, xy )
 %% See also
 % EBSD/findByLocation GrainSet/findByOrientation
 
-I_VG = get(grains,'I_VG');
 
 if isa(grains,'Grain2d')
   boundaryEdgeOrder = get(grains,'boundaryEdgeOrder');
   isCell = cellfun('isclass',boundaryEdgeOrder,'cell');
   
   boundaryEdgeOrder(isCell) = cellfun(@(x) x{1} ,boundaryEdgeOrder(isCell),'UniformOutput',false);
-else isa(grains,'Grain3d')
-  warning('currently not supported, it only returns grains incedent to the closest boundary vertex')
 end
 
-s = any(I_VG,2);
-Vg = grains.V(s,:);
-I_VG = I_VG(s,:);
+I_VG   = get(grains,'I_VG');
+V      = grains.V;
 
-nd = sparse(numel(grains),size(xy,1));
-for k=1:size(xy,1)
+% restrict vertices to available grains
+subset = full(any(I_VG,2));
+V_g    = V(subset,:);
+I_GV   = I_VG(subset,any(I_VG,1))';
+
+
+closestVertex = bucketSearch(V_g,X);
+
+% buffer results
+[a,i] = find(I_GV(:,closestVertex));
+
+
+if exist('boundaryEdgeOrder','var')
+  edgeOrder = boundaryEdgeOrder(a);
   
-  dist = sqrt(sum(bsxfun(@minus,Vg,xy(k,:)).^2,2));
-  [dist i] = min(dist);
+  b = false(size(edgeOrder));
+  for k=1:numel(edgeOrder)
+    V_k = V(edgeOrder{k},:);
+    b(k) = inpolygon(X(i(k),1),X(i(k),2),V_k(:,1),V_k(:,2));
+  end
   
-  candit = find(I_VG(i,:));
+  I_GX = sparse(a,i,b);
   
-  if exist('boundaryEdgeOrder','var')
-    b =  boundaryEdgeOrder(candit);
+  checkHole = sum(I_GX) > 1;
+  
+  if any(checkHole)
+    h = find(checkHole);
     
-    c = false(numel(b),1);
-    for l=1:numel(b)
-      c(l) =  inpolygon(xy(k,1),xy(k,2),grains.V(b{l},1),grains.V(b{l},2));
+    for l = 1:numel(h)
+      candit = find(I_GX(:,h(l)));
+      [A m] = min(area(subsref(grains,candit)));
+      
+      I_GX(:,h(l)) = false;
+      I_GX(candit(m),h(l)) = true;
     end
-    candit = candit(c);
-    
-    if numel(candit)>1
-      [a i] =  min(area(subsref(grains,candit)));
-      candit = candit(i);
-    end
-    
-  else % 3d case
     
   end
   
-  nd(candit,k) = 1;
+else
+  
+  warning('I only return some grains close to the truth, since I have no idea');
+  
+  I_GX = sparse(a,i,1);  
+  
 end
 
-grains = subsref(grains, any(nd,2));
-
-
-
-
-
+grains = subsref(grains,any(I_GX,2));

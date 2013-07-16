@@ -84,12 +84,12 @@ plotipdf(odf,vector3d(1,1,2))
 %% plot recalculated ODF
 
 close all;figure('position',[15 111 920 508])
-plot(odf,'sections',18,'silent')
+plot(odf,'sections',18,'silent','sigma')
 
 %% rotate ODF back
 
 odfrotated = rotate(odf,axis2quat(xvector,45*degree));
-plot(odfrotated,'sections',8);
+plot(odfrotated,'sections',8,'sigma');
 annotate(calcModes(odfrotated),'marker','o',...
   'MarkerFaceColor','none','MarkerEdgeColor','k');
 

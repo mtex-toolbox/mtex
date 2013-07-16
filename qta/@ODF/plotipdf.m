@@ -45,4 +45,41 @@ if isempty(ax)
   name = inputname(1);
   if isempty(name), name = odf(1).comment;end
   set(gcf,'Name',['Inverse Pole Figures of ',name]);
+
+
+  %% set data cursor
+  dcm_obj = datacursormode(gcf);
+  set(dcm_obj,'SnapToDataVertex','off')
+  set(dcm_obj,'UpdateFcn',{@tooltip});
+
+  datacursormode on;
+end
+
+end
+
+%% Tooltip function
+function txt = tooltip(varargin)
+
+[r,h,value] = currentVector; %#ok<ASGLU>
+
+txt = [xnum2str(value) ' at ' char(h,'tolerance',3*degree)];
+
+end
+
+function [r,h,value] = currentVector
+
+[pos,value,ax,iax] = getDataCursorPos(gcf);
+
+CS = getappdata(gcf,'CS');
+h = Miller(vector3d('polar',pos(1),pos(2)),CS);
+
+r = getappdata(gcf,'r');
+r = r(iax);
+
+projection = getappdata(ax,'projection');
+
+if projection.antipodal
+  r = set_option(r,'antipodal');
+end
+
 end

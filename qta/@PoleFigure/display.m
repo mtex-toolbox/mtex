@@ -15,11 +15,11 @@ disp([h ' ' docmethods(inputname(1))]);
 
 if ~isempty(char(pf.comment)) 
   if all(equal(char(pf.comment),1)) 
-    s = pf(1).comment;
+    s = stripPath(pf(1).comment);    
   else
     s = '';
     for i=1:length(pf)
-      s = [s, pf(i).comment]; %#ok<AGROW>
+      s = [s, stripPath(pf(i).comment)]; %#ok<AGROW>
       if i~=length(pf), s = [s ', ']; end %#ok<AGROW>
     end
   end
@@ -44,3 +44,9 @@ for i = 1:length(pf)
 end
 
 
+function fn = stripPath(fn)
+
+ if exist(fn,'file')
+   [pstr,fn,ext] = fileparts(fn);
+   fn = [fn,ext];
+ end

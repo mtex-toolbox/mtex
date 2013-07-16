@@ -35,28 +35,29 @@ ebsd.comment = [];
 
 ebsd.comment = get_option(varargin,'comment',[]);
 ebsd.rotations = rotations(:);
+
 [ebsd.phaseMap,ignore,ebsd.phase] =  unique(...
-  get_option(varargin,'phase',ones(numel(ebsd.rotations),1))...
-  );
+  get_option(varargin,'phase',ones(numel(ebsd.rotations),1)));
+ebsd.phaseMap(isnan(ebsd.phaseMap)) = 0;
 
 % if all phases are zero replace them by 1
 if all(ebsd.phase == 0), ebsd.phase = ones(numel(ebsd.rotations),1);end
 
 % take symmetry from orientations
 if nargin >= 1 && isa(varargin{1},'orientation')
-  
+
   ebsd.SS = get(varargin{1},'SS');
   ebsd.CS = {get(varargin{1},'CS')};
-  
+
 else
-  
+
   % specimen symmetry
   if nargin >= 3 && isa(varargin{3},'symmetry') && ~isCS(varargin{3})
     ebsd.SS = varargin{3};
   else
     ebsd.SS = get_option(varargin,'SS',symmetry);
   end
-  
+
   % set up crystal symmetries
   if check_option(varargin,'cs')
     CS = ensurecell(get_option(varargin,'CS',{}));
@@ -64,21 +65,24 @@ else
       || (isa(varargin{2},'cell') && any(cellfun('isclass',varargin{2},'symmetry'))))
     CS = ensurecell(varargin{2});
   else
-    CS = {symmetry(1,'mineral','unkown')};
+    CS = {symmetry('cubic','mineral','unkown')};
   end
-  
+
   if max([0;ebsd.phaseMap(:)]) < numel(CS)
-    C = CS(ebsd.phaseMap+1);   
+    C = CS(ebsd.phaseMap+1);
   elseif numel(ebsd.phaseMap)>1 && numel(CS) == 1
     C = repmat(CS,numel(ebsd.phaseMap),1);
+    if ebsd.phaseMap(1) == 0
+      C{1} = 'notIndexed';
+    end
   elseif numel(ebsd.phaseMap) == numel(CS)
     C = CS;
   else
     error('symmetry mismatch')
   end
-  
+
   ebsd.CS = C;
-  
+
 end
 
 
@@ -87,16 +91,16 @@ ebsd.unitCell = get_option(varargin,'unitCell',[]);
 
 ebsd = class(ebsd,'EBSD');
 
-% remove ignore phases
+%% remove ignore phases
 if check_option(varargin,'ignorePhase')
-  
+
   del = ismember(ebsd.phaseMap(ebsd.phase),get_option(varargin,'ignorePhase',[]));
   ebsd = subsref(ebsd,~del);
-  
+
 end
 
-% apply colors
-colorOrder = getpref('mtex','EBSDColorNames');
+%% apply colors
+colorOrder = getMTEXpref('EBSDColorNames');
 nc = numel(colorOrder);
 c = 1;
 
