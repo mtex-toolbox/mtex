@@ -123,13 +123,12 @@ end
 %% part 6: Interpolate weights
 function fmc = part6InterpWeights(fmc)
 
-P = fmc.P;
-Celements = fmc.Celements;
+Celements = fmc.Celements(:);
 
 %Qvar is the variance of each new node
 
 [ii,jj,pp] = find(fmc.P);
-t = pp > .05 & ii ~= Celements(jj)';
+t = pp > .05 & ii ~= Celements(jj);
 i = ii(t); j = jj(t); p = pp(t);
 
 O  = fmc.O(i);
