@@ -216,3 +216,23 @@ function [CS,ebsd] = mtexdata_epidote
 
 ebsd = loadEBSD([mtexDataPath '/EBSD/data.ctf'],'ignorePhase',[0 3 4]);
 CS = get(ebsd,'CS');
+
+function [CS,ebsd] = mtexdata_single
+
+CS = symmetry('Fm3m',[4.04958 4.04958 4.04958]); % crystal symmetry
+% SS = symmetry('cubic');   % specimen symmetry
+
+fname = fullfile(mtexDataPath,'EBSD','single_grain_aluminum.txt');
+ebsd = loadEBSD(fname, CS, 'interface','generic',...
+   'RADIANS','ColumnNames', { 'Euler 1' 'Euler 2' 'Euler 3' 'x' 'y'},...
+  'Columns', [1 2 3 4 5],'ignorePhase', 0, 'Bunge');
+
+function [CS,ebsd] = mtexdata_alu
+
+CS = symmetry('Fm3m',[4.04958 4.04958 4.04958]); % crystal symmetry
+% SS = symmetry('cubic');   % specimen symmetry
+
+fname = fullfile(mtexDataPath,'EBSD','polycrystalline_aluminum.txt');
+ebsd = loadEBSD(fname, CS, 'interface','generic',...
+   'RADIANS','ColumnNames', { 'Euler 1' 'Euler 2' 'Euler 3' 'x' 'y'},...
+  'Columns', [1 2 3 4 5],'ignorePhase', 0, 'Bunge');
