@@ -274,9 +274,11 @@ switch class(property)
     
     
   case {'quaternion','rotation','orientation','SO3Grid'}
-    
-    dist = 2*acos(max(abs(dot_outer(m,property)),[],2));
-    
+
+    qproperty = unique(CSl*inverse(quaternion(property))*CSr);
+    dist = 2*acos(max(abs(dot_outer(quaternion(m),qproperty)),[],2));
+    % dist = 2*acos(max(abs(dot_outer(m,property)),[],2));
+      
   case 'vector3d'
     
     dist = angle(axis(m),property);
