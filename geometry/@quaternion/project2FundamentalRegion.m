@@ -4,7 +4,7 @@ function [q,omega] = project2FundamentalRegion(q,CS,SS,q_ref)
 %% Input
 %  q      - @quaternion
 %  CS, SS - crystal / specimen @symmetry
-%  q_ref  - reference @quaternion
+%  q_ref  - one reference @quaternion in or size(q)
 %
 %% Output
 %  q     - @quaternion
@@ -12,68 +12,48 @@ function [q,omega] = project2FundamentalRegion(q,CS,SS,q_ref)
 %
 
 %% get quaternions
-if nargin <= 3, q_ref = idquaternion;end
+
+if nargin < 4,
+  q_ref = idquaternion;
+else
+  q_ref = quaternion(q_ref);
+end
 q = quaternion(q);
 
-%% no specimen symmetry
-if nargin <=2 || numel(SS) <= 1 
-    
-  % may be we can skip something
-  omega = abs(dot(q,q_ref));
-  ind = omega < cos(20*degree);
+% may be we can skip something
+omega = abs(dot(q,q_ref));
+ind   = omega < cos(getMaxAngle(CS,SS)/2);
 
-  if ~any(ind),
-    omega = 2*acos(min(1,omega));
-    return;
-  end
-
-  % symetry elements
-  qSym = quaternion(CS);
-  
-  % compute all distances to the fundamental regions
-  omegaSym = abs(dot_outer(q_ref .* qSym,q));
-  
-  % find fundamental region
-  [omega,idy] = max(omegaSym,[],1);
-  
-  % project to fundamental region
-  qSym = inverse(qSym);
-  q = q .* reshape(subsref(qSym,idy),size(q));
-  
-  % compute angle
-  omega = reshape(2*acos(min(1,omega)),size(q));
-  
-%% with specimen symmetry
-else 
-  
-  % symmetry elements
-  qcs = quaternion(CS);
-  qss = quaternion(SS);
-  
-  if q_ref.a==1
-    d = dot_outer(qcs,qss);
-    ind = any(isappr(d,1),1);
-    ind(1) = false;
-    qsym = subsref(qss,~ind) * qcs;
-  else
-    qsym = qss * reshape(q_ref .* qcs,1,[]);
-  end
-  
-  % compute all distances to the fundamental regions  
-  omegaSym = abs(dot_outer(qsym,q));
-  
-  % find fundamental region
-  [omega,id] = max(omegaSym);
-  
-  % compute angle
-  omega = reshape(2*acos(min(1,omega)),size(q));
-  
-  if all(id==1), return;end
-  
-  % project to fundamental region
-  qcs = reshape(inverse(qcs),1,[]);
-  qss = reshape(inverse(qss),1,[]);
-  [idss,idcs] = ind2sub([numel(qss),numel(qcs)],id);
-  q = reshape(subsref(qss,idss),size(q)) .* q .* reshape(subsref(qcs,idcs),size(q));
-  
+if ~any(ind),
+  omega = 2*acos(min(1,omega));
+  return;
 end
+
+if numel(q) == numel(ind)
+  qsub = subsref(q,ind);
+else
+  qsub = q;
+end
+if numel(q_ref) == numel(ind)
+  q_ref = subsref(q_ref,ind);
+end
+
+% symetry elements
+if nargin < 3 || numel(SS) <= 1
+  qCS = quaternion(CS);
+else
+  qCS = reshape(unique(CS*inverse(SS)),[],1);  
+end
+
+% compute all distances to the fundamental regions
+omegaSym = abs(dot_outer(inverse(qsub).*q_ref,qCS));
+
+% find fundamental region
+[omega(ind),ix] = max(omegaSym,[],2);
+
+% project to fundamental region
+q = subsasgn(q,ind,qsub .* subsref(qCS,ix));
+
+% compute angle
+omega = 2*acos(min(1,omega));
+
