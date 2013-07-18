@@ -154,9 +154,9 @@ n  = header(7);
 % default start pos?
 startPos = 0; %6100;
 
-bufferLength = 2^15;
+bufferLength = 2^20;
 fseek(fid,startPos,-1);
-startData = fread(fid, bufferLength, '*uint8', 'l');
+startData = fread(fid,bufferLength,'*uint8', 'l');
 startPos  = startPos + strfind(startData',startBytes') - 1;
 
 fseek(fid,startPos+8,-1);
@@ -215,7 +215,7 @@ function CS = oscHeader(file)
 %char(data(10)) = F         Look at ASCII table, Dec 70 = F
 
 % buffer some chars... hopefully enough
-bufferLength = 2^16;
+bufferLength = 2^20;
 
 fid  = fopen(file,'rb');
 data = transpose(fread( fid,bufferLength,'*uint8',0,'l' ));
