@@ -32,9 +32,9 @@ gbcValue = get_option(varargin,gbc,15*degree,'double');
 
 %% remove not indexed phases
 
-if ~check_option(varargin,'keepNotIndexed')
+if any(isNotIndexed(ebsd)) && ~check_option(varargin,'keepNotIndexed')
   disp('  I''m removing all not indexed phases. The option "keepNotIndexed" keeps them.');
-  
+   
   ebsd = subsref(ebsd,~isNotIndexed(ebsd));
   
 end
@@ -49,10 +49,10 @@ if isa(ebsd,'GrainSet'),  ebsd = get(ebsd,'ebsd'); end
 
 if all(isfield(ebsd.options,{'x','y','z'}))
   x_D = get(ebsd,'xyz');
-  [Xt m n]  = unique(x_D(:,[3 2 1]),'first','rows'); %#ok<ASGLU>
+  [Xt,m,n]  = unique(x_D(:,[3 2 1]),'first','rows'); %#ok<ASGLU>
 elseif all(isfield(ebsd.options,{'x','y'}))
   x_D = get(ebsd,'xy');
-  [Xt m n]  = unique(x_D(:,[2 1]),'first','rows'); %#ok<ASGLU>
+  [Xt,m,n]  = unique(x_D(:,[2 1]),'first','rows'); %#ok<ASGLU>
 else
   error('mtex:GrainGeneration','no Spatial Data!');
 end
@@ -245,20 +245,26 @@ phase         = ebsd.phase(firstD);
 q             = quaternion(ebsd.rotations);
 meanRotation  = q(firstD);
 
-indexedPhases = ~cellfun('isclass',ebsd.CS(:),'char');
-doMeanCalc    = find(grainSize(:)>1 & indexedPhases(phase));
 
+indexedPhases = ~cellfun('isclass',ebsd.CS(:),'char');
+for p = find(indexedPhases)'
+  ndx = ebsd.phase(d) == p;
+  q(d(ndx)) = project2FundamentalRegion(...
+    q(d(ndx)),ebsd.CS{p},[],meanRotation(g(ndx)));  
+  
+  % mean may be inaccurate for some grains and should be projected again 
+  % any(sparse(d(ndx),g(ndx),angle(q(d(ndx)),meanRotation(g(ndx))) > getMaxAngle(ebsd.CS{p})/2))
+end
+
+
+
+doMeanCalc    = find(grainSize(:)>1 & indexedPhases(phase));
 cellMean      = cell(size(doMeanCalc));
 for k = 1:numel(doMeanCalc)
   cellMean{k} = d(grainRange(doMeanCalc(k))+1:grainRange(doMeanCalc(k)+1));
 end
-cellMean = partition(q,cellMean);
+cellMean = cellfun(@mean,partition(q,cellMean),'uniformoutput',false);
 
-for k=1:numel(doMeanCalc)
-  qMean = project2FundamentalRegion(cellMean{k}, ...
-    ebsd.CS{phase(doMeanCalc(k))},ebsd.SS,meanRotation(doMeanCalc(k)));
-  cellMean{k} = mean(qMean);
-end
 meanRotation(doMeanCalc) = [cellMean{:}];
 
 clear grainSize grainRange indexedPhases doMeanCalc cellMean q g qMean
