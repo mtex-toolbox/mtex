@@ -20,7 +20,6 @@ fmc.A_D      = A_D;
 
 assignments = FMC_interpret(AllSals, numClusters, AllPs, A_D, fmc.beta);
 
-[Dl, Dr] = find(triu(A_D));
 criterion = assignments(Dl,1) == assignments(Dr,1) & assignments(Dl,1) > 0;
 
 % I_DG = sparse(1:length(assignments),assignments(:,1),1);
