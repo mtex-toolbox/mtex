@@ -10,6 +10,10 @@ if isempty(q)
 end
 
 if isa(b,'quaternion')
+  if islogical(s) || isnumeric(s)
+    s = substruct('()',{s});      
+  end
+  
   switch s.type
     case '()'
       q.a = subsasgn(q.a,s,b.a);
