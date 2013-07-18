@@ -12,8 +12,15 @@ function q = unique(q,varargin)
 
 % q = cunion(q,@(a,b) eq(a,b,varargin{:}));
 
+a = q.a(:);
+b = q.b(:);
+c = q.c(:);
+d = q.d(:);
+
 % find duplicates points
-[ignore,m,n] = unique(round([q.a(:),q.b(:),q.c(:),q.d(:)]*1e7),'rows'); %#ok<ASGLU>
+% [ignore,m,n] = unique(round([a b c d]*1e7),'rows'); %#ok<ASGLU>
+% q == -q;
+[ignore,m,n] = unique(round([a.^2,b.^2,c.^2,d.^2,a.*b,a.*c,a.*d,b.*c,b.*d,c.*d]*1e7),'rows'); %#ok<ASGLU>
 
 % remove duplicated points
 q.a = q.a(m);
