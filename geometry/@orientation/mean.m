@@ -20,7 +20,7 @@ function [o lambda eigv kappa q]  = mean(o,varargin)
 %% See also
 % BinghamODF
 
-if numel(o) == 1 
+if numel(o) == 1
   
   if nargout > 1
     eigv = eye(4);
@@ -36,11 +36,11 @@ q_mean = get_option(varargin,'q0',quaternion(o,1));
 old_mean = [];
 q = quaternion(o);
 
-% iterate mean 
+% iterate mean
 iter = 1;
-while iter < 5 && (isempty(old_mean) || (abs(dot(q_mean,old_mean))<0.999))  
-  old_mean = q_mean;  
-  [q,omega] = project2FundamentalRegion(q,o.CS,o.SS,old_mean);
+while iter < 5 && (isempty(old_mean) || (abs(dot(q_mean,old_mean))<0.999))
+  old_mean = q_mean;
+  [q,omega] = project2FundamentalRegion(q,o.CS,old_mean);
   [q_mean lambda eigv] = mean(q,varargin{:});
   iter = iter + 1;
 end

@@ -250,7 +250,7 @@ indexedPhases = ~cellfun('isclass',ebsd.CS(:),'char');
 for p = find(indexedPhases)'
   ndx = ebsd.phase(d) == p;
   q(d(ndx)) = project2FundamentalRegion(...
-    q(d(ndx)),ebsd.CS{p},[],meanRotation(g(ndx)));  
+    q(d(ndx)),ebsd.CS{p},meanRotation(g(ndx)));  
   
   % mean may be inaccurate for some grains and should be projected again 
   % any(sparse(d(ndx),g(ndx),angle(q(d(ndx)),meanRotation(g(ndx))) > getMaxAngle(ebsd.CS{p})/2))

@@ -14,12 +14,12 @@ function a = axis(o1,o2)
 if nargin == 1
   o = o1;
 else
-  o = o1 * inverse(o2);
+  o = inverse(o1) .* (o2);
 end
-  
+
 o = project2FundamentalRegion(o);
 a = axis(o.rotation);
-  
+
 S = disjoint(o.CS,o.SS);
 if numel(S) > 1
   a = Miller(a,S);

@@ -3,11 +3,11 @@ function [rot,omega] = project2FundamentalRegion(rot,varargin)
 %
 %% Syntax
 %
-% project2FundamentalRegion(rot,CS,SS,rot_ref)
+% project2FundamentalRegion(rot,CS,rot_ref)
 %
 %% Input
 %  rot     - @rotation
-%  CS, SS  - crystal / specimen @symmetry      
+%  CS1,CS2 - crystal @symmetry
 %  rot_ref - reference @rotation
 %
 %% Output

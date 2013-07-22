@@ -5,27 +5,29 @@ err2 = zeros(11);
 
 for s1 = 1:11
   for s2 = 2:11
-    CS = symmetry(s1);
-    SS = symmetry(s2);
+    CS1 = symmetry(s1);
+    CS2 = symmetry(s2);
     
     q1 = randq(n);
     q2 = randq(n);
     
-    o1 = orientation(q1,CS,symmetry);
-    o2 = orientation(q2,SS,symmetry);
+    o1 = orientation(q1,CS1,symmetry);
+    o2 = orientation(q2,CS2,symmetry);
     
-    [q,omega] = project2FundamentalRegion(q1,CS,SS,q2);
+    [q,omega] = project2FundamentalRegion(inverse(q1).*q2,CS2,CS1);
     
-    w = angle(q,q2);
+    w = angle(q,idquaternion);
     
     omega2 = angle(o1,o2);
     
-    err2(s1,s2) = norm(w(:)-omega2(:));
+    err2(s1,s2) = norm(omega(:)-omega2(:));
     
   end
 end
 
 assert(max(err2(:)) < 10e-10,'quaternion:project2FundamentalRegion',...
-  'Projection to Fundamental Region failed')
+  'Projection to Fundamental Region: FAILED')
+
+disp('Projection to Fundamental Region: ok')
 
 
