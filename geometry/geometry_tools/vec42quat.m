@@ -17,8 +17,10 @@ function q = vec42quat(u1,v1,u2,v2)
 % quaternion_index quaternion/quaternion axis2quat Miller2quat 
 % euler2quat hr2quat idquaternion 
 
-u1 = vector3d(u1);
-u2 = vector3d(u2);
+u1 = normalize(vector3d(u1));
+v1 = normalize(vector3d(v1));
+u2 = normalize(vector3d(u2));
+v2 = normalize(vector3d(v2));
 
 % ckeck whether points have the same angle relative to each other
 if any(abs(dot(u1,u2)-dot(v1,v2))>1E-3)
