@@ -1,4 +1,4 @@
-function q = unique(q,varargin)
+function [q,m,n] = unique(q,varargin)
 % disjoint list of quaternions
 %
 %% Syntax
@@ -20,7 +20,13 @@ d = q.d(:);
 % find duplicates points
 % [ignore,m,n] = unique(round([a b c d]*1e7),'rows'); %#ok<ASGLU>
 % q == -q;
-[ignore,m,n] = unique(round([a.^2,b.^2,c.^2,d.^2,a.*b,a.*c,a.*d,b.*c,b.*d,c.*d]*1e7),'rows'); %#ok<ASGLU>
+if check_option(varargin,'antipodal')
+  abcd = [a.^2,b.^2,c.^2,d.^2,a.*b,a.*c,a.*d,b.*c,b.*d,c.*d];
+else
+  abcd = [a,b,c,d];
+end
+
+[ignore,m,n] = unique(round(abcd*1e7),'rows'); %#ok<ASGLU>
 
 % remove duplicated points
 q.a = q.a(m);
