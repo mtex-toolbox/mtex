@@ -15,7 +15,7 @@ function [ori,omega] = project2FundamentalRegion(ori,ori_ref)
 %
 
 if nargin == 2 && ~isempty(ori_ref)
-  [ori.rotation,omega] = project2FundamentalRegion(ori.rotation,ori.CS,ori.SS,quaternion(ori_ref));
+  [ori.rotation,omega] = project2FundamentalRegion(ori.rotation,ori.CS,quaternion(ori_ref));
 else
   [ori.rotation,omega] = project2FundamentalRegion(ori.rotation,ori.CS,ori.SS);
 end

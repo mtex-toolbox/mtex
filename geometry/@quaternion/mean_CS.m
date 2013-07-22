@@ -1,4 +1,4 @@
-function o = mean_CS(q,CS,SS)
+function o = mean_CS(q,CS)
 % fast mean of 
 %
 %% Syntax
@@ -14,7 +14,7 @@ function o = mean_CS(q,CS,SS)
 % orientation/mean
 
 if numel(q) > 1
-  q = project2FundamentalRegion(q,CS,SS,subsref(q,1));
+  q = project2FundamentalRegion(q,CS,subsref(q,1));
   q = mean(q);
 end
 

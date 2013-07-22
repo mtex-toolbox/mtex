@@ -7,7 +7,7 @@ function qqplot(o)
 %     qqplot(SO3Grid(2.5*degree,symmetry('m-3m')))
 %
 
-[o,h] = project2FundamentalRegion(o,idquaternion);
+[o,h] = project2FundamentalRegion(o);
 [pdf,omegas] = mispdf(get(o,'CS'));
 
 pdf = cumsum(pdf);

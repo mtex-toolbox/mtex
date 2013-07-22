@@ -135,7 +135,7 @@ O  = fmc.O(i);
 Oc = fmc.O(Celements);
 
 % project to fundamental region of Ocoarse_j
-O = project2FundamentalRegion(quaternion(O),fmc.CS,[],quaternion(Oc(j)));
+O = project2FundamentalRegion(quaternion(O),fmc.CS,quaternion(Oc(j)));
 
 O     = reshape(squeeze(double(O)),[],4);
 Oc    = reshape(squeeze(double(Oc)),[],4);
@@ -191,7 +191,7 @@ function fmc = part7BiasWeights(fmc)
 %that to reweight the nodes.
 
 [i,j] = find(triu(fmc.W));
-[~,misorientation] = project2FundamentalRegion(fmc.O(i),fmc.CS,[],fmc.O(j));
+[~,misorientation] = project2FundamentalRegion(fmc.O(i),fmc.CS,fmc.O(j));
 misorientation = misorientation/degree;
 
 Wthreshold = 1e-3;
