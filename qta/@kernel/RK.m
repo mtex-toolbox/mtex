@@ -34,13 +34,13 @@ ng = numel(g);
 
 if length(h)>1 || isa(h,'S2Grid')   % inverse pole figure
 	r = r./norm(r);
-  in = reshape(inverse(symmetrise(g,CS,SS)).' * r,[ng,length(CS),length(SS)]);
-	out = h; lh = length(CS);
+  in = reshape(inverse(symmetrise(g,CS,SS)).' * r,[ng,numel(CS),numel(SS)]);
+	out = h; lh = numel(CS);
 else % pole figure
   h = vector3d(h);
 	h = reshape(h./norm(h),1,[]);
 	[h,lh] = symmetrise(h,CS,varargin{:});
-	%lh = length(CS);
+	%lh = numel(CS);
 	g = reshape(reshape((SS * reshape(g,1,[])).',[],1),[],1);
 	in = reshape(g*h,[ng,length(SS),lh]);
 	out = r;

@@ -41,7 +41,7 @@ v2 = symmetrise(v2);
 
 v2 = v2(isnull(dot(vector3d(v1),vector3d(v2)))); 
 
-if numel(v2)==0, error('Miller indece have to be orthogonal');end
+if isempty(v2), error('Miller indece have to be orthogonal');end
 v2 = v2(1);
 
 % v1 -> e3

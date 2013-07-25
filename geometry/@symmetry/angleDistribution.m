@@ -98,7 +98,7 @@ switch Laue(cs)
 end
 
 % compute output
-ad = 2 * numel(cs) * xchi .* sin(omega ./ 2).^2;
+ad = 2 * length(cs) * xchi .* sin(omega ./ 2).^2;
 %ad = ad ./ mean(ad);
 ad(ad<0) = 0;
 

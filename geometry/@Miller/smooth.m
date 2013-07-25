@@ -1,12 +1,12 @@
 function varargout = smooth(m,varargin)
 % plot Miller indece
 %
-%% Input
+% Input
 %  m  - Miller
 %
-%% Options
+% Options
 %
-%% See also
+% See also
 % vector3d/smooth
 
 % get axis hande
@@ -21,7 +21,7 @@ if ~isempty(varargin) && isnumeric(varargin{1})
 end
     
 % get plotting region
-[minTheta,maxTheta,minRho,maxRho] = get(m,'bounds',varargin{:}); %#ok<ASGLU>
+[minTheta,maxTheta,minRho,maxRho] = get(m,'bounds',varargin{:});
 
 % use vector3d/smooth for output
 [varargout{1:nargout}] = smooth(ax{:},x(:),varargin{:},...

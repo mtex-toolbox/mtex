@@ -40,7 +40,7 @@ end
 [ax,odf,varargin] = getAxHandle(odf,varargin{:});
 
 % generate grids
-[S3G,S2G,sec] = SO3Grid('plot',odf(1).CS,odf(1).SS,varargin{:});
+[S3G,S2G,sec] = regularSO3Grid(odf(1).CS,odf(1).SS,varargin{:});
 
 Z = eval(odf,orientation(S3G),varargin{:});
 clear S3G;

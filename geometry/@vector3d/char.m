@@ -1,7 +1,21 @@
 function c = char(v,varargin)
 % convert to char
-%% Options
+%
+% Options
 %  LATEX
+
+% short summary for long vectors
+if length(v) > 4
+  
+  c = [size2str(v), ' points'];
+  if ~check_option(varargin,'short') && v.resolution<2*pi
+    c = [c, ', res.: ',xnum2str(v.resolution * 180/pi),mtexdegchar];
+  end
+  
+  return
+end
+
+% list all elements 
 
 if max(abs(v.x)) < 1e-14, v.x = zeros(size(v.x));end
 if max(abs(v.y)) < 1e-14, v.y = zeros(size(v.y));end

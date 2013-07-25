@@ -21,7 +21,7 @@ function varargout = text(m,varargin)
 % extract text
 strings = ensurecell(varargin{1});
 
-if numel(strings)==1, strings = repcell(strings{1},numel(m),1);end
+if numel(strings)==1, strings = repcell(strings{1},length(m),1);end
 
 % symmetrise
 if check_option(varargin,{'all','symmetrised','fundamentalRegion'})

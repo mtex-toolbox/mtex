@@ -13,7 +13,7 @@ function [ind,d] = find(SO3G,o,epsilon,varargin)
 % distances -
 %
 
-if ~check_option(SO3G,'indexed') || check_option(varargin,'exact')
+if check_option(varargin,'exact')
 
   d = angle_outer(SO3G,o);
   
@@ -23,14 +23,17 @@ if ~check_option(SO3G,'indexed') || check_option(varargin,'exact')
     ind = d<epsilon;
   end
 
-elseif numel(SO3G) == 0
+elseif isempty(SO3G) == 0
+  
   ind = [];
   d = [];
+  
 else
+  
   q = quaternion(o);
   
   % rotate q according to SO3Grid.center
-  if ~isempty(SO3G.center),q = inverse(SO3G.center) * q; end
+  if ~isempty(SO3G.center), q = inverse(SO3G.center) * q; end
     
   % correct for crystal and specimen symmetry
   qcs = quaternion(rotation_special(SO3G.CS));
@@ -44,11 +47,11 @@ else
   sgamma = getMin(SO3G.gamma);
   pgamma = getPeriod(SO3G.gamma(1));
 
+  % search for nearest neighbour
   if nargin == 2 
-%% search for nearest neighbour
 
-    d = zeros(numel(q),1);
-    ind = zeros(numel(q),1);
+    d = zeros(length(q),1);
+    ind = zeros(length(q),1);
     
     for is = 1:length(qss)
       for ic = 1:length(qcs)
@@ -64,9 +67,10 @@ else
             
       end
     end    
-  else  
-%% search for environment    
-    ind = logical(sparse(numel(SO3G),numel(q)));
+    
+  else % search for environment    
+    
+    ind = logical(sparse(length(SO3G),length(q)));
     
     % for all symmetries
     for is = 1:length(qss)

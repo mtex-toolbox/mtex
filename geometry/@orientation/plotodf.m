@@ -33,13 +33,13 @@ ss = o.SS;
 data = get_option(varargin,'property',[]);
 
 %% subsample to reduce size
-if ~check_option(varargin,'all') && numel(o) > 2000 || check_option(varargin,'points')
+if ~check_option(varargin,'all') && length(o) > 2000 || check_option(varargin,'points')
   points = fix(get_option(varargin,'points',2000));
   disp(['  plotting ', int2str(points) ,' random orientations out of ', ...
-    int2str(numel(o)),' given orientations']);
+    int2str(length(o)),' given orientations']);
 
-  samples = discretesample(ones(1,numel(o)),points);
-  o.rotation = o.rotation(samples);
+  samples = discretesample(ones(1,length(o)),points);
+  o = subsref(o,samples);
   if ~isempty(data)
     data = data(samples); end
 end
@@ -78,7 +78,7 @@ if isempty(ax) && ~newMTEXplot('ensureappdata',...
   
     sectype = getappdata(gcf,'SectionType');
     sec = getappdata(gcf,'sections');
-    nsec = numel(sec);
+    nsec = length(sec);
     
   if strcmpi(sectype,'omega')
     varargin = set_default_option(varargin,{getappdata(gcf,'h')});
@@ -94,7 +94,7 @@ end
 %% generate plots
 
 [S2G data]= project2ODFsection(o,sectype,sec,'data',data,varargin{:});
-S2G = arrayfun(@(i) set(S2G{i},'res',get(S2G{1},'resolution')),1:numel(S2G),'uniformoutput',false);
+S2G = arrayfun(@(i) set(S2G{i},'res',get(S2G{1},'resolution')),1:length(S2G),'uniformoutput',false);
 
 %% ------------------------- plot -----------------------------------------
 multiplot(ax{:},nsec,@(i) S2G{i},@(i) data{i},...

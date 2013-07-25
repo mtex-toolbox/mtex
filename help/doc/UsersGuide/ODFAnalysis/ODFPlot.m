@@ -135,7 +135,8 @@ plotfibre(odf,Miller(1,2,2),vector3d(2,1,1),'LineWidth',2);
 % A last way to visualize an ODF is to plot its Fourier coefficients
 
 close all;
-plotFourier(odf,'bandwidth',32)
+fodf = FourierODF(odf,32)
+plotFourier(fodf)
 
 %% Axis / Angle Distribution
 % Let us consider the uncorrelated missorientation ODF corresponding to our

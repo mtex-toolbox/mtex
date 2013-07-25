@@ -93,7 +93,7 @@ try
     
   else
     % replace minearal names by numbers
-    replaceExpr = arrayfun(@(i) {get(cs{i},'mineral'),num2str(i)},1:length(cs),'UniformOutput',false);
+    replaceExpr = arrayfun(@(i) {get(cs{i},'mineral'),num2str(i)},1:numel(cs),'UniformOutput',false);
     
     ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
       'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Fit' 'unknown1' 'unknown2' 'phase'},...

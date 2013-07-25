@@ -1,4 +1,4 @@
-function o = subsref(S3G,s)
+function o = subsref(S3G,varargin)
 % overloads subsref
 
-o = subsref(S3G.orientation,s);
+o = subsref(orientation(S3G),varargin{:});

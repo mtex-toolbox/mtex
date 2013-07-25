@@ -40,12 +40,12 @@ data = get_option(varargin,'property',[]);
 
 %% subsample if needed
 
-if numel(o)*length(cs)*length(ss) > 100000 || check_option(varargin,'points')
+if length(o)*length(cs)*length(ss) > 100000 || check_option(varargin,'points')
   points = fix(get_option(varargin,'points',100000/length(cs)/length(ss)));
-  disp(['  plotting ', int2str(points) ,' random orientations out of ', int2str(numel(o)),' given orientations']);
+  disp(['  plotting ', int2str(points) ,' random orientations out of ', int2str(length(o)),' given orientations']);
 
-  samples = discretesample(ones(1,numel(o)),points);
-  o.rotation = o.rotation(samples);
+  samples = discretesample(ones(1,length(o)),points);
+  o= subsref(o,samples);
   if ~isempty(data), data = data(samples); end
 
 end
@@ -65,10 +65,10 @@ end
 
 %%
 
-data = @(i) repmat(data(:),1,numel(symmetrise(r(i),ss)));
+data = @(i) repmat(data(:),1,length(symmetrise(r(i),ss)));
 
 %% plot
-multiplot(ax{:},numel(r),...
+multiplot(ax{:},length(r),...
   @(i) inverse(o(:)) * symmetrise(r(i),ss),data,...
   'scatter','FundamentalRegion','unifyMarkerSize',...
   annotations{:},varargin{:});

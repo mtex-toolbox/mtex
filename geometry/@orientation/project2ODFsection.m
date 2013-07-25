@@ -21,13 +21,13 @@ else
 end
 tol = get_option(varargin,'tolerance',tol);
 
-S2G = repcell(S2Grid(vector3d,varargin{:}),numel(sec),1);
+S2G = repcell(S2Grid(vector3d,varargin{:}),length(sec),1);
 
 %% axis angle
 
 if strcmpi(type,'axisangle')
   
-  for i=1:numel(sec)
+  for i=1:length(sec)
     ind(:,i) = angle(o)-tol < sec(i) & sec(i) < angle(o)+tol;
     S2G{i} = S2Grid(axis(subsref(o,ind(:,i))));
   end
@@ -78,7 +78,7 @@ end
 
 %% difference to the sections
 
-sec_angle = repmat(sec_angle(:),1,numel(sec));
+sec_angle = repmat(sec_angle(:),1,length(sec));
 sec = repmat(sec(:)',size(sec_angle,1),1);
 
 d = abs(mod(sec_angle - sec+pi,2*pi) -pi);
@@ -114,7 +114,7 @@ end
 if nargout > 1 && check_option(varargin,'data')
   dat = get_option(varargin,'data');
   if ~isempty(dat)
-    dat = repmat(dat,numel(o.CS),numel(o.SS));
+    dat = repmat(dat,length(o.CS),length(o.SS));
     
     dat = dat(ind);
     for i = 1:size(sec,2)

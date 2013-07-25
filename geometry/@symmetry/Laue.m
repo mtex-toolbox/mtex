@@ -1,4 +1,4 @@
 function c = Laue(s)
 % get Laue name
 
-c = s.laue;
+c = s.laueGroup;

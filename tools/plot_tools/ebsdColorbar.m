@@ -30,7 +30,7 @@ else
   if ~iscell(cs), cs = {cs};end
   CCOptions = getappdata(gcf,'CCOptions');
   
-  for i = 1:length(cs)
+  for i = 1:numel(cs)
     if isa(cs{i},'symmetry')
             
       cc = getappdata(gcf,'colorcoding');
@@ -110,7 +110,7 @@ end
 function odfColorbar(cs,cc,varargin)
 
 S3Goptions = delete_option(varargin,'axisAngle');
-[S3G,S2G,sec] = SO3Grid('plot',cs,symmetry,S3Goptions{:});
+[S3G,S2G,sec] = regularSO3Grid(cs,symmetry,varargin{:});
 
 [s1,s2,s3] = size(S3G);
 

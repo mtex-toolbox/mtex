@@ -5,14 +5,17 @@ disp(' ');
 disp([inputname(1) ' = ' doclink('vector3d_index','vector3d') ...
   ' ' docmethods(inputname(1))]);
 
-disp(['  size: ' size2str(v)]);
+disp([' size: ' size2str(v)]);
 
-o = char(option2str(check_option(v)));
-if ~isempty(o)
-  disp(['  options: ' o]);
+if v.antipodal
+  disp(' antipodal: true');
 end
 
-if check_option(varargin,'all') || (numel(v) < 20 && numel(v)>0)
+if v.resolution < 2*pi
+  disp([' resolution: ',xnum2str(v.resolution/degree),mtexdegchar]);
+end
+
+if check_option(varargin,'all') || (length(v) < 20 && ~isempty(v))
   
   d = [v.x(:),v.y(:),v.z(:)];
   d(abs(d) < 1e-10) = 0;

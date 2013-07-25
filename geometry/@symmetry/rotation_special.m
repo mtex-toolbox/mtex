@@ -9,24 +9,24 @@ function [q,rho] = rotation_special(cs,varargin)
 %  rho - position of the mirroring plane
 
 if nargout == 1
-  switch cs.laue
+  switch cs.laueGroup
     case {'-1','2/m'}
-      q = cs.rotation;
+      q = rotation(cs);
     case {'mmm','-3m','4/mmm','6/mmm'}
-      q = reshape(cs.rotation,[],2);
+      q = reshape(cs,[],2);
       q = q(1,:);
     case {'-3','4/m','6/m'}
-      q = cs.rotation(1);      
+      q = cs(1);      
     case {'m-3','m-3m'}
-      q = reshape(cs.rotation,[],6);
+      q = reshape(cs,[],6);
       q = q(1,:);
   end
   q = q(:);
 else
   
-  switch cs.laue
+  switch cs.laueGroup
     case '-1'
-      q = cs.rotation;
+      q = rotation(cs);
       v = vector3d;
     case '2/m'
       if isnull(dot(get(cs.rotation(2),'axis'),zvector))
@@ -38,11 +38,11 @@ else
         q = cs.rotation(1);
       end            
     case {'mmm','-3m','4/mmm','6/mmm'}
-      q = cs.rotation(1);
+      q = cs(1);
       v = get(cs,'axis');
       v = v(1);
     case {'-3','4/m','6/m'}
-      q = cs.rotation(1);
+      q = cs(1);
       v = vector3d;
     case 'm-3'
       q = Axis(vector3d(1,1,1),3);

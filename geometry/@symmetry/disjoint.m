@@ -24,16 +24,16 @@ for i=1:11 % check all Laue groups
   
   ss = symmetry(i);
   
-  if numel(ss) == numel(s) && all(any(isappr(dot_outer(s,ss),1)))
+  if length(ss) == length(s) && all(any(isappr(dot_outer(s,ss),1)))
     s = ss;
     return
   end
   
 end
 
-if numel(s) == 6
+if length(s) == 6
   s.laue = '-3m';
-elseif numel(s) == 12
+elseif length(s) == 12
   s.laue = '6/mmm';
 else
   s.laue = 'unknown';

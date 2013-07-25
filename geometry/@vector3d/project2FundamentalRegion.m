@@ -1,20 +1,20 @@
 function [v,vAntipodal,swap,minRho] = project2FundamentalRegion(v,sym,varargin)
 % projects vectors to the fundamental region of the inverse pole figure
 %
-%% Input
+% Input
 %  v  - @vector3d
 %  cs - @symmetry
 %
-%% Options
+% Options
 %  CENTER - reference orientation
 %  antipodal  - include [[AxialDirectional.html,antipodal symmetry]]
 %
-%% Output
+% Output
 %  v     polar( - @vector3d
 %  swap   - .....
 %  minRho - begin of Fundamental region
 
-%% get fundamental region
+% get fundamental region
 
 % this is needed sometimes to get the right function to be called
 if iscell(sym), sym = sym{1};end
@@ -25,18 +25,18 @@ if iscell(sym), sym = sym{1};end
 
 [minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(sym,varargin{:}); %#ok<ASGLU>
 
-%% symmetrise
+% symmetrise
 sv = q * v;
 [theta,rho] = polar(sv);
 
-%% if possible swap to upper hemisphere
+% if possible swap to upper hemisphere
 if ~isempty(rho_rot)
   ind = theta > pi/2;
   theta(ind) = pi - theta(ind);
   rho(ind) = 2*rho_rot - rho(ind);
 end
 
-%% find element with minimal theta, rho angles
+% find element with minimal theta, rho angles
 
 % compute rho within the range [rho_min,rho_max]
 rho = modCentered(rho,rotangle_max_z(sym),minRho);
@@ -63,7 +63,7 @@ d2 = rho2 + 1000*theta2;
 
 %% antipodal
 if check_option(varargin,'antipodal') || check_option(v,'antipodal')
-  swap = false(numel(v),1);
+  swap = false(length(v),1);
 else
   swap = d1 > d2;
 end
