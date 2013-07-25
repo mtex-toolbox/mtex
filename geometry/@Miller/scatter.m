@@ -1,19 +1,19 @@
 function varargout = scatter(m,varargin)
 % plot Miller indece
 %
-%% Input
+% Input
 %  m  - Miller
 %
-%% Options
+% Options
 %  ALL       - plot symmetrically equivalent directions
 %  antipodal - include antipodal symmetry
 %  labeled   - plot Miller indice as label
 %  label     - plot user label
 %
-%% See also
+% See also
 % vector3d/scatter
 
-%% preprocess input
+% -------------- preprocess input ---------------------------------
 
 % new figure if needed
 if ~ishandle(m), newMTEXplot;end
@@ -52,7 +52,7 @@ if check_option(varargin,'fundamentalRegion') && ~check_option(varargin,'complet
 end
 
   
-%% plot
+%--------------------- plot -------------------------------------
 
 if size(m,2) > 20 || ~isempty(cdata)
 
@@ -60,7 +60,7 @@ if size(m,2) > 20 || ~isempty(cdata)
   if ~isempty(cdata), varargin=[{cdata},varargin];end
   
   % plot them all with the same color
-  [varargout{1:nargout}] = scatter(ax{:},m.vector3d,varargin{:});
+  [varargout{1:nargout}] = scatter(ax{:},vector3d(m),varargin{:});
     
 else % if there are only a few points plots them with different colors
 
@@ -69,8 +69,9 @@ else % if there are only a few points plots them with different colors
 
   % plot
   hold(ax{:},'all');
+  v = vector3d(m);
   for i = 1:size(m,2)
-    scatter(ax{:},unique(m.vector3d(:,i)),varargin{:});
+    scatter(ax{:},unique(v(:,i)),varargin{:});
   end
 
   % revert old hold status

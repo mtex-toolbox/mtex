@@ -50,14 +50,14 @@ data = get_option(varargin,'property',[]);
 %% subsample if needed 
 
 if ~check_option(varargin,'all') && ...
-    (sum(numel(o))*length(cs)*length(ss) > 10000 || check_option(varargin,'points'))
+    (sum(length(o))*length(cs)*length(ss) > 10000 || check_option(varargin,'points'))
 
-  points = fix(get_option(varargin,'points',10000/numel(cs)/numel(ss)));
-  disp(['  plotting ', int2str(points) ,' random orientations out of ', int2str(numel(o)),' given orientations']);
+  points = fix(get_option(varargin,'points',10000/length(cs)/length(ss)));
+  disp(['  plotting ', int2str(points) ,' random orientations out of ', int2str(length(o)),' given orientations']);
   disp('You can specify the the number points by the option "points".'); 
   disp('The option "all" ensures that all data are plotted');
   
-  samples = discretesample(ones(1,numel(o)),points);
+  samples = discretesample(ones(1,length(o)),points);
   o = subsref(o,samples);
   if ~isempty(data), data = data(samples); end
 end
@@ -76,11 +76,11 @@ sh = @(i) symmetrise(h{i});
 r = @(i) reshape(ss * o * sh(i),[],1);
 
 % symmetrise data
-data = @(i) repmat(data(:).',[numel(ss) numel(sh(i))]);
+data = @(i) repmat(data(:).',[length(ss) length(sh(i))]);
 
 [minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(ss,'restrict2Hemisphere',varargin{:});
 
-multiplot(ax{:},numel(h),r,data,'scatter','TR',@(i) h(i),...  
+multiplot(ax{:},length(h),r,data,'scatter','TR',@(i) h(i),...  
   'minRho',minRho,'maxRho',maxRho,'minTheta',minTheta,'maxTheta',maxTheta,...
   varargin{:});
 

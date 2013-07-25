@@ -30,7 +30,7 @@ h = [];
 plotGrid(ax,projection,extend,varargin{:});
 
 %% plot custom
-for i = 1:numel(x), pcmd{1}(ax,x(i),y(i)); end
+for i = 1:length(x), pcmd{1}(ax,x(i),y(i)); end
 
 %% finalize the plot
 

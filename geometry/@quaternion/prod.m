@@ -1,4 +1,4 @@
-function q = subsref(varargin)
+function q = prod(varargin)
 % overloads q1 * q2 * q3
 
 if nargin == 0
@@ -8,7 +8,7 @@ if nargin == 0
 else
 
   q = varargin{1};
-  for i = 2:numel(varargin)
+  for i = 2:length(varargin)
     q = q * varargin{i};
   end
   

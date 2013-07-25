@@ -23,7 +23,7 @@ if check_option(varargin,'exact')
     ind = d<epsilon;
   end
 
-elseif numel(SO3G) == 0
+elseif isempty(SO3G) == 0
   
   ind = [];
   d = [];
@@ -50,8 +50,8 @@ else
   % search for nearest neighbour
   if nargin == 2 
 
-    d = zeros(numel(q),1);
-    ind = zeros(numel(q),1);
+    d = zeros(length(q),1);
+    ind = zeros(length(q),1);
     
     for is = 1:length(qss)
       for ic = 1:length(qcs)
@@ -70,7 +70,7 @@ else
     
   else % search for environment    
     
-    ind = logical(sparse(numel(SO3G),numel(q)));
+    ind = logical(sparse(length(SO3G),length(q)));
     
     % for all symmetries
     for is = 1:length(qss)

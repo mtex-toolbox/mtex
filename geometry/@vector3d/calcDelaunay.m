@@ -1,4 +1,4 @@
-function [face,vertices,S2G] = calcDelaunay(S2G)
+function [face,vertices,v] = calcDelaunay(v)
 % compute the Delaynay triangulation for a spherical grid
 %
 %% Input
@@ -9,12 +9,12 @@ function [face,vertices,S2G] = calcDelaunay(S2G)
 %  vertices - 
 
 % shifts vectors a little bit to prevent bad thinks
-S2G.vector3d = S2G.vector3d(:) + 0.001*vector3d(S2Grid('random','points',numel(S2G)));
-S2G = S2G ./ norm(S2G);
+v = v(:) + 0.001*vector3d('random','points',length(v));
+v = v ./ norm(v);
 
 
 % compute convex hull
-xyz = squeeze(shiftdim(double(S2G(:)),1));
+xyz = squeeze(shiftdim(double(v),1));
 
 face = convhulln(xyz')';
 face = flipud(face);
@@ -33,8 +33,7 @@ end
 face = sortrows(face')';
 
 % compute vertices
-vertices = cross(S2G.vector3d(face(2,:))-S2G.vector3d(face(1,:)),...
-  S2G.vector3d(face(3,:))-S2G.vector3d(face(1,:)));
+vertices = cross(v(face(2,:))-v(face(1,:)),v(face(3,:))-v(face(1,:)));
 
 % normalize
 vertices =  vertices ./ norm(vertices);

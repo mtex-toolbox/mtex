@@ -1,18 +1,18 @@
 function [v,l] = symmetrise(v,S,varargin)
 % symmetrcially equivalent directions and its multiple
 %
-%% Input
+% Input
 %  v - @vector3d
 %  S - @symmetry
 %
-%% Flags
+% Flags
 %  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
 %
-%% Output
+% Output
 %  Sv - symmetrically equivalent vectors
 %  l  - number of symmetrically equivalent vectors
 
-%% TODO
+% TODO
 % symmetrise behaviour for case 1 and option 'antipodal' is not very
 % intuitive
 
@@ -53,7 +53,7 @@ else
   
   v = S * v;
 
-  if (check_option(varargin,'antipodal') || check_option(v,'antipodal')) ...
+  if (check_option(varargin,'antipodal') || v.antipodal) ...
       && ~check_option(varargin,'skipAntipodal')
     v = [v;-v];
     if check_option(varargin,'plot')

@@ -11,7 +11,7 @@ function [V,C] = calcVoronoi(S2G,varargin)
 %% See also
 % voronoin
 
-n = numel(S2G);
+n = length(S2G);
 S2G = reshape(vector3d(S2G),[],1);
 
 [x,y,z] = double(S2G);
@@ -34,7 +34,7 @@ vert = vert(vertices);
 % sort the vertices clockwise around with respect to its center
 [ignore,left] = sortrows([center azimuth]); %#ok<*ASGLU>
 
-left = mod(vertices(left)'-1,numel(V))+1;
+left = mod(vertices(left)'-1,length(V))+1;
 
 % now we delete duplicated voronoi vertices
 eps = 10^-10; % machine precision
@@ -47,14 +47,14 @@ dublicated = find([diff(left)==0,false]);
 
 % check whether the duplicated is in the next cell // they shouldn't be
 % deleted
-last = [0;find(diff(center));numel(center)];
+last = [0;find(diff(center));length(center)];
 dublicated(ismember(dublicated,last)) = [];
 
 left(dublicated) = [];
 center(dublicated) = [];
 
 C = cell(n,1);
-last = [0;find(diff(center));numel(center)];
+last = [0;find(diff(center));length(center)];
 for k=1:numel(last)-1  
   ndx = last(k)+1:last(k+1);
   C{center(ndx(1))} = left( ndx );

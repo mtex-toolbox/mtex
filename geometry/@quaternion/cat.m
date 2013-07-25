@@ -1,10 +1,10 @@
 function q = cat(dim,varargin)
 % 
 
-q = varargin{2};
+q = varargin{1};
 
 qa = cell(size(varargin)); qb = qa; qc = qa; qd = qa;
-for i = 1:numel(varargin)
+for i = 1:length(varargin)
   qs = varargin{i};
   qa{i} = qs.a;
   qb{i} = qs.b;

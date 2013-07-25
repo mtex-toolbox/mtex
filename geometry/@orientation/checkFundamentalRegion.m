@@ -26,7 +26,7 @@ axes(ind) = [];
 
 % compute for each axes the minimum rotational angle
 c_sym = quaternion;
-while numel(axes)>0
+while ~isempty(axes)
   ind = dot(axes,axes(1),'antipodal') >= 1 - 1e-9;
   angle = min(angles(ind));
   
@@ -42,7 +42,7 @@ rc_sym = Rodrigues(c_sym);
 
 % find rotations in the fundamental region
 ind = true(size(rq));
-for i = 1:numel(rc_sym)
+for i = 1:length(rc_sym)
     
   d = rc_sym(i);
   nd = norm(d).^2;

@@ -29,11 +29,11 @@ if isa(q,'rotation')
   v.z(ind,:) = -v.z(ind,:);
 end
 
-% normal result is numel(q) x numel(v)
-% special cases are when numel(q) == 1 or numel(v)==1
-if numel(v) == 1
+% normal result is length(q) x length(v)
+% special cases are when length(q) == 1 or length(v)==1
+if length(v) == 1
   v = reshape(v,size(q));
-elseif numel(q) == 1
+elseif length(q) == 1
   v = reshape(v,size(v));
 end
 

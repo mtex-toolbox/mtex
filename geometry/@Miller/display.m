@@ -7,7 +7,7 @@ disp([inputname(1) ' = ' doclink('Miller_index','Miller') ...
 
 disp(['  size: ' size2str(m)]);
 
-o = char(option2str(check_option(m)));
+o = char(option2str(m.options));
 if ~isempty(o)
   disp(['  options: ' o]);
 end
@@ -18,30 +18,33 @@ else
   disp(['  symmetry: ',char(m.CS,'verbose')]);
 end
 
-if numel(m) < 20 && numel(m) > 0
+if length(m) < 20 && length(m) > 0
   
   eps = 1e4;
   
-  if check_option(m,'uvw')
+  switch m.dispStyle
     
-    uvtw = round(v2d(m)*eps)./eps;
-    uvtw(uvtw==0) = 0;   
+    case 'uvw'
+      
+      uvtw = round(m.uvw * eps)./eps;
+      uvtw(uvtw==0) = 0;
+      
+      if any(strcmp(Laue(m.CS),{'-3','-3m','6/m','6/mmm'}))
+        cprintf(uvtw.','-L','  ','-Lr',{'u' 'v' 't' 'w'});
+      else
+        cprintf(uvtw.','-L','  ','-Lr',{'u' 'v' 'w'});
+      end
     
-    if any(strcmp(Laue(m.CS),{'-3','-3m','6/m','6/mmm'}))
-      cprintf(uvtw.','-L','  ','-Lr',{'u' 'v' 't' 'w'});
-    else
-      cprintf(uvtw.','-L','  ','-Lr',{'u' 'v' 'w'});
-    end
+    case 'hkl'
     
-  else
-    
-    hkl = round(v2m(m)*eps)./eps;
-    hkl(hkl==0) = 0;
-    if any(strcmp(Laue(m.CS),{'-3','-3m','6/m','6/mmm'}))
-      cprintf(hkl.','-L','  ','-Lr',{'h' 'k' 'i' 'l'});
-    else
-      cprintf(hkl.','-L','  ','-Lr',{'h' 'k' 'l'});
-    end
-    
+      hkl = round(m.hkl * eps)./eps;
+      hkl(hkl==0) = 0;
+      if any(strcmp(Laue(m.CS),{'-3','-3m','6/m','6/mmm'}))
+        cprintf(hkl.','-L','  ','-Lr',{'h' 'k' 'i' 'l'});
+      else
+        cprintf(hkl.','-L','  ','-Lr',{'h' 'k' 'l'});
+      end
+    case 'xyz'
+        
   end
 end

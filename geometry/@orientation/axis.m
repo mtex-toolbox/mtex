@@ -24,6 +24,6 @@ o = project2FundamentalRegion(o);
 a = axis(o);
   
 
-if numel(S) > 1
+if length(S) > 1
   a = Miller(a,S);
 end

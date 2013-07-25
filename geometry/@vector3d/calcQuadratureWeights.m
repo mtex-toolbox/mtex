@@ -14,7 +14,7 @@ utheta = unique(theta(:));
 rho = get(S2G,'rho');
 urho = unique(rho(:));
 
-if numel(S2G) == numel(utheta) * numel(urho) && min(utheta) == 0
+if length(S2G) == length(utheta) * length(urho) && min(utheta) == 0
 
   dtheta = utheta(2) - utheta(1);
     
@@ -34,7 +34,7 @@ else
   w = calcVoronoiArea(uS2G)./4./pi;
 
   % compute weights
-  o = histc(n,1:numel(m));
+  o = histc(n,1:length(m));
   w = w./o;
   
   % redistribute weights
@@ -49,5 +49,5 @@ else
   
 end
 
-if any(isnan(w(:))) || any(imag(w(:))), w = 1./numel(S2G);end
+if any(isnan(w(:))) || any(imag(w(:))), w = 1./length(S2G);end
 

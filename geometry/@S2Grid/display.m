@@ -12,7 +12,7 @@ if ~isempty(o)
   disp(['  options: ' o]);
 end
 
-if numel(S2G) < 20 && numel(S2G)>0
+if length(S2G) < 20 && length(S2G)>0
   
   [x,y,z] = double(S2G);
   d = [x(:),y(:),z(:)];

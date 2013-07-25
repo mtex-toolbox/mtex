@@ -20,8 +20,8 @@ else
   cs = quaternion(o2.CS);
   ss = quaternion(o2.SS);
 end
-lCS = numel(cs);
-lSS = numel(ss);
+lCS = length(cs);
+lSS = length(ss);
 
 if (l1 < l2) && (l1>0)
  
