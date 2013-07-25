@@ -18,7 +18,6 @@ function [q,omega] = project2FundamentalRegion(q,CS1,q_ref)
 
 %% get quaternions
 
-q    = quaternion(q);
 qCS1 = quaternion(CS1);
 
 if nargin < 3, q_ref = idquaternion; end

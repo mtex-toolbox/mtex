@@ -24,6 +24,6 @@ disp(['  size: ' size2str(o)]);
 disp(['  ' csss{isCS(o.CS)+1} ': ', char(o.CS,'verbose')]);
 disp(['  ' csss{isCS(o.SS)+1} ': ',char(o.SS,'verbose')]);
 
-if numel(o) < 30 && numel(o)>0, Euler(o);end
+if length(o) < 30 && ~isempty(o), Euler(o);end
 
 disp(' ')

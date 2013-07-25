@@ -1,12 +1,8 @@
 function c = char(S3G,varargin)
 % convert to char
 
-if numel(S3G) == 1
-  c = char(quaternion(S3G),'EULER');
-else
-  c = [int2str(numel(S3G)),' orientations'];
-  res = get(S3G,'resolution');
-  if ~isempty(res) && ~check_option(varargin,'nores')
-    c = [c,', resolution: ',xnum2str(res*180/pi),mtexdegchar];
-  end
+c = [int2str(length(S3G)),' orientations'];
+res = get(S3G,'resolution');
+if ~isempty(res) && ~check_option(varargin,'nores')
+  c = [c,', resolution: ',xnum2str(res*180/pi),mtexdegchar];
 end

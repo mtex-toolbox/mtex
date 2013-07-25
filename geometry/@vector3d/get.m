@@ -1,7 +1,7 @@
 function varargout = get(obj,vname,varargin)
 % get object variable
 %
-%% Syntax
+% Syntax
 %   get(v,'x')
 %   get(v,'y')
 %   get(v,'z')
@@ -10,15 +10,15 @@ function varargout = get(obj,vname,varargin)
 %   get(v,'azimuth')
 %   get(v,'latitude')
 %
-%% Input
+% Input
 %  v - @vector3d
 %
-%% Ouput
+% Ouput
 %
-%% See also:
+% See also:
 %
 
-%% no vname - return list of all fields
+% no vname - return list of all fields
 if nargin == 1
 	vnames = get_obj_fields(obj(1));
   vnames = [vnames;{'hkl';'h';'k';'l';'i';'rho';'theta';'polar';'x';'y';'z'}];
@@ -26,7 +26,7 @@ if nargin == 1
   return
 end
 
-%% switch fieldnames
+% switch fieldnames
 switch lower(vname)
   
   case 'bounds'
@@ -38,15 +38,18 @@ switch lower(vname)
    
   case {'resolution','res'}
     
-    varargout{1} = 2*pi; % default to 2*pi
+    varargout{1} = obj.resolution;
     
-    if numel(obj)>50000
-      varargout{1} = sqrt(4*pi/numel(obj));
-    elseif numel(obj)>4
-      try %#ok<TRYNC>
-        a = calcVoronoiArea(S2Grid(obj));
-        assert(sqrt(mean(a))>0);
-        varargout{1} = median(sqrt(a));
+    if obj.resolution == 2*pi
+          
+      if length(obj)>50000
+        varargout{1} = sqrt(4*pi/length(obj));
+      elseif length(obj)>4
+        try %#ok<TRYNC>
+          a = calcVoronoiArea(obj);
+          assert(sqrt(mean(a))>0);
+          varargout{1} = median(sqrt(a));
+        end
       end
     end
     

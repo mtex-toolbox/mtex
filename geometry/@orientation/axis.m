@@ -13,14 +13,17 @@ function a = axis(o1,o2)
 
 if nargin == 1
   o = o1;
+  S = o1.CS;
 else
   o = inverse(o1) .* (o2);
+  S = disjoint(o1.CS,o2.CS);
 end
 
+% project to Fundamental region to get the axis with the smallest angle
 o = project2FundamentalRegion(o);
-a = axis(o.rotation);
+a = axis(o);
 
-S = disjoint(o.CS,o.SS);
-if numel(S) > 1
+
+if length(S) > 1
   a = Miller(a,S);
 end

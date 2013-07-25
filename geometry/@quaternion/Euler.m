@@ -107,6 +107,12 @@ if nargout == 0
   d = [alpha(:) beta(:) gamma(:)]/degree;
   d(abs(d)<1e-10)=0;
 
+  if isa(quat,'rotation')
+    i = isImproper(quat);
+    d = [d,i(:)];
+    labels = [labels,{'Inv.'}];
+  end
+  
   disp(' ');
   disp(['  ' convention ' Euler angles in degree'])
   cprintf(d,'-L','  ','-Lc',labels);

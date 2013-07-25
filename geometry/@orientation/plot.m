@@ -18,7 +18,7 @@ if ~(ishold(gca) && strcmp(get(gca,'tag'),'ebsd_raster')) && ...
 
   washold = ishold(gca);
   hold(gca,'all')
-  for i = 1:numel(o)
+  for i = 1:length(o)
 
     h = [Miller(1,0,0),Miller(0,1,0),Miller(0,0,1)];
     plot(subsref(o,i) * h,'label',...

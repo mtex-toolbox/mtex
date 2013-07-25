@@ -42,7 +42,7 @@ function odf = calcODF(ori,varargin)
 % ebsd_demo EBSD2odf EBSDSimulation_demo loadEBSD ODF/calcEBSD EBSD/calcKernel kernel/kernel
 
 % maybe there is nothing to do
-if numel(ori) == 0, odf = ODF; return, end
+if isempty(ori), odf = ODF; return, end
 
 
 %% extract symmetries and weights
@@ -54,7 +54,7 @@ SS = get(ori,'SS');
 if check_option(varargin,'weight')
   weight = get_option(varargin,'weight');
 else
-  weight = ones(1,numel(ori));
+  weight = ones(1,length(ori));
 end
 weight = weight ./ sum(weight(:));
 
@@ -84,9 +84,9 @@ elseif check_option(varargin,'halfwidth','double')
 else
 
   if ~check_option(varargin,'spatialDependent')
-    %hw = 5 * ( numel(CS) * numel(SS) * numel(ori))^(-1/3); % magic rule
+    %hw = 5 * ( length(CS) * length(SS) * length(ori))^(-1/3); % magic rule
     %hw = min(hw,45*degree);
-    kappa = (numel(CS) * numel(SS) * numel(ori))^(2/7) * 3; % magic rule
+    kappa = (length(CS) * length(SS) * length(ori))^(2/7) * 3; % magic rule
     k = kernel('de la Vallee Poussin',kappa,varargin{:});
   else
     hw = 10*degree;
@@ -112,10 +112,10 @@ vdisp([' kernel: ' char(k)],varargin{:});
 
 %% construct exact kernel density estimation estimation
 
-odf = ODF(ori,weight,k,CS,SS);
+odf = unimodalODF(ori,k,CS,SS,'weights',weight);
 
 max_coef = 32;
-gridlen = numel(ori)*length(CS)*length(SS);
+gridlen = length(ori)*length(CS)*length(SS);
 
 
 %% Fourier ODF
@@ -131,9 +131,8 @@ if ~check_option(varargin,{'exact','noFourier'}) && ...
       'since Fourier Coefficents of higher order than ', num2str(L),...
       ' are not considered; increasing the kernel halfwidth might help.'])
   end
-  odf = calcFourier(odf,get_option(varargin,'Fourier',L,'double'));
-  odf = FourierODF(odf);
-
+  odf = FourierODF(odf,get_option(varargin,'Fourier',L,'double'));
+  
   return
 elseif check_option(varargin,'exact') || gridlen < 2000
 %% exact ODF
@@ -172,11 +171,11 @@ vdisp([' approximation grid: ' char(S3G)],varargin{:});
 %% restrict single orientations to this grid
 
 % init variables
-d = zeros(1,numel(S3G));
+d = zeros(1,length(S3G));
 
 % iterate due to memory restrictions?
 maxiter = ceil(length(CS)*...
-  length(SS)*numel(ori) /...
+  length(SS)*length(ori) /...
   getMTEXpref('memory',300 * 1024));
 if maxiter > 1, progress(0,maxiter);end
 
@@ -184,8 +183,8 @@ for iter = 1:maxiter
 
   if maxiter > 1, progress(iter,maxiter); end
 
-  dind = ceil(numel(ori) / maxiter);
-  sind = 1+(iter-1)*dind:min(numel(ori),iter*dind);
+  dind = ceil(length(ori) / maxiter);
+  sind = 1+(iter-1)*dind:min(length(ori),iter*dind);
 
   ind = find(S3G,subsref(ori,sind));
   for i = 1:length(ind) % TODO -> make it faster
@@ -202,7 +201,7 @@ d = d(del);
 
 %% generate ODF
 
-odf = ODF(S3G,d,k,CS,SS);
+odf = unimodalODF(S3G,k,CS,SS,'weights',d);
 
 %% check wether kernel is to wide
 if check_option(varargin,'small_kernel') && hw > 2*get(S3G,'resolution')
@@ -211,5 +210,5 @@ if check_option(varargin,'small_kernel') && hw > 2*get(S3G,'resolution')
   k = kernel('de la Vallee Poussin','halfwidth',hw);
   vdisp([' recalculate ODF for kernel: ',char(k)],varargin{:});
   d = eval(odf,S3G); %#ok<EVLC>
-  odf = ODF(S3G,d./sum(d),k,CS,SS);
+  odf = unimodalODF(S3G,k,CS,SS,'weights',d./sum(d));
 end

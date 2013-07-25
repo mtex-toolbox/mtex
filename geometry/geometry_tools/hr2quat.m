@@ -28,7 +28,7 @@ n = cross(h,r);
 
 ind = isnull(n);
 
-if numel(h) >= numel(r)
+if length(h) >= length(r)
   n(ind) = orth(h(ind));
 else
   n(ind) = orth(r(ind));

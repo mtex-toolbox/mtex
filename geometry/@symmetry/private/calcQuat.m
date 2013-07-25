@@ -1,4 +1,4 @@
-function q = calcQuat(Laue,axis,varargin)
+function rot = calcQuat(Laue,axis,inv,varargin)
 % calculate quaternions for Laue groups
 
 ll0axis = vector3d(1,1,0);
@@ -6,10 +6,10 @@ ll0axis = vector3d(1,1,0);
 lllaxis = vector3d(1,1,1);
 maxis = axis(1);
 
-
+% compute rotations
 switch Laue
   case '-1'
-    q = quaternion(1,0,0,0);
+    rot = {rotation('Euler',0,0,0)};
   case '2/m'
   
     % determine rotation axis
@@ -17,27 +17,38 @@ switch Laue
     orth = sum(abs(dot_outer(axis,axis)));
     
     if all(round(orth)==1)
-      q = Axis(axis(2),2);
+      rot = {Axis(axis(2),2);}
     else
-      q = Axis(axis(round(orth)==1),2);
+      rot = {Axis(axis(round(orth)==1),2);}
     end
   case 'mmm'
-    q = Axis(axis(1),2).'*Axis(axis(3),2);
+    rot = {Axis(axis(1),2),Axis(axis(3),2)};
   case '-3'
-    q = Axis(axis(3),3);
+    rot = {Axis(axis(3),3)};
   case '-3m'
-    q = Axis(maxis,2).'*Axis(axis(3),3);
+    rot = {Axis(maxis,2),Axis(axis(3),3)};
   case '4/m'
-    q = Axis(axis(3),4);
+    rot = {Axis(axis(3),4)};
   case '4/mmm' 
-    q = Axis(axis(1),2).'*Axis(axis(3),4);
+    rot = {Axis(axis(1),2),Axis(axis(3),4)};
   case '6/m'
-    q = Axis(axis(3),6);
+    rot = {Axis(axis(3),6)};
   case '6/mmm'
-    q = Axis(maxis,2).'*Axis(axis(3),6);
+    rot = {Axis(maxis,2),Axis(axis(3),6)};
   case 'm-3'
-    q = reshape((Axis(lllaxis,3).'*Axis(axis(1),2)).',[],1)*Axis(axis(3),2);
+    rot = {Axis(lllaxis,3),Axis(axis(1),2),Axis(axis(3),2)};
   case 'm-3m'
-    q = reshape((Axis(lllaxis,3).'*Axis(ll0axis,2)).',[],1)*Axis(axis(3),4);
+    rot = {Axis(lllaxis,3),Axis(ll0axis,2),Axis(axis(3),4)};
 end
-q = reshape(q.',[],1);
+
+% apply inversion
+if size(inv,1) == 2
+  rot = [rot,{[rotation(idquaternion),-rotation(idquaternion)]}];
+else
+  rot = arrayfun(@(i) rot{i} .* inv(i).^(0:length(rot{i})-1) ,...
+    1:length(rot),'uniformOutput',false);
+  
+end
+
+rot = prod(rot{:});
+

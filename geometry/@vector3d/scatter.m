@@ -50,7 +50,7 @@ else
   % default arguments
   patchArgs = {'Parent',ax,...
     'vertices',[x(:) y(:)],...
-    'faces',1:numel(x),...
+    'faces',1:length(x),...
     'facecolor','none',...
     'edgecolor','none',...
     'marker','o',...
@@ -64,16 +64,16 @@ else
 
   % dynamic markersize
   if check_option(varargin,'dynamicMarkerSize') || ...
-      (~check_option(varargin,'MarkerSize') && numel(v)>20)
+      (~check_option(varargin,'MarkerSize') && length(v)>20)
     patchArgs = [patchArgs {'tag','dynamicMarkerSize','UserData',MarkerSize}];
   end
    
   %% colorcoding according to the first argument
-  if numel(varargin) > 0 && isnumeric(varargin{1}) && ~isempty(varargin{1})
+  if ~isempty(varargin) && isnumeric(varargin{1}) && ~isempty(varargin{1})
   
     % extract colorpatchArgs{3:end}coding
     cdata = varargin{1};
-    if numel(cdata) == numel(v)
+    if numel(cdata) == length(v)
       cdata = reshape(cdata,[],1);
     else
       cdata = reshape(cdata,[],3);
@@ -86,7 +86,7 @@ else
       'markeredgecolor','flat'),varargin{2:end});
   
     % add annotations for min and max
-    if numel(cdata) == numel(v)
+    if numel(cdata) == length(v)
       annotations = {'BL',{'Min:',xnum2str(min(cdata(:)))},'TL',{'Max:',xnum2str(max(cdata(:)))}};
     end
   
@@ -160,7 +160,7 @@ end
 markerSize = max(markerSize);
 
 
-for it = 1:numel(t)
+for it = 1:length(t)
   
   xy = get(t(it),'UserData');
   set(t(it),'unit','data','position',[xy,0]);

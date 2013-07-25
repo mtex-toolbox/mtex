@@ -68,11 +68,11 @@ else
   if check_option(varargin,'L0')
     epsilon = get_option(varargin,'L0',1);
     for i = 1:length(epsilon)
-      e(i) = sum(abs(d1-d2) > epsilon(i))/numel(d1);
+      e(i) = sum(abs(d1(:)-d2(:)) > epsilon(i))/numel(d1);
     end
   elseif check_option(varargin,'L2')
-    e = norm(d1-d2) / norm(d2);
+    e = norm(d1(:)-d2(:)) / norm(d2(:));
   else
-    e = sum(abs(d1-d2)) / length(d1) /2;
+    e = sum(abs(d1(:)-d2(:))) / numel(d1) /2;
   end
 end

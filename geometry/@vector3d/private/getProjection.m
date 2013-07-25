@@ -14,14 +14,14 @@ end
 projection.type = get_option(varargin,'projection','earea');
 
 % check for antipodal symmetry
-projection.antipodal = check_option(varargin,'antipodal') || check_option(v,'antipodal');
+projection.antipodal = check_option(varargin,'antipodal') || v.antipodal;
 
-%% read default plot options
+% read default plot options
 projection.xAxis = get_option(varargin,'xAxisDirection',getMTEXpref('xAxisDirection'));
 projection.zAxis = get_option(varargin,'zAxisDirection',getMTEXpref('zAxisDirection'));
 
 
-%% compute boundary box
+% compute boundary box
 minRho = extend.minRho;
 maxRho = extend.maxRho;
 minTheta = extend.minTheta;
@@ -63,10 +63,10 @@ set(ax,'DataAspectRatio',[1 1 1],...
   'XLim',[projection.bounds(1)-delta,projection.bounds(3)+delta],...
   'YLim',[projection.bounds(2)-delta,projection.bounds(4)+delta]);
 
-%% store data
+% store data
 setappdata(ax,'projection',projection)
 
-%% set view point
+% set view point
 setCamera(ax);
 
 set(ax,'dataaspectratio',[1 1 1]);

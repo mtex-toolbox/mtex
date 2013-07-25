@@ -1,7 +1,7 @@
 function check_subGrid(cs,ss)
 % check SO3Grid/subGrid
 %
-% compare subGrid function with the max_angle option to SO3Grid
+% compare subGrid function with the maxAngle option to SO3Grid
 %
 
 res = 2.5*degree;
@@ -17,7 +17,7 @@ progress(0,length(radius));
 for i = 1:length(radius)  
   
   f(i) = numel(...
-    SO3Grid(res,cs,ss,'center',center,'max_angle',radius(i))) / m; %#ok<AGROW>
+    equispacedSO3Grid(res,cs,ss,'center',center,'maxAngle',radius(i))) / m; %#ok<AGROW>
   q = subGrid(q,center,radius(i));
   g(i) = numel(q) / m; %#ok<AGROW>
   progress(i,length(radius));

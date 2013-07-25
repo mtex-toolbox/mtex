@@ -22,12 +22,12 @@ oldD = vector3d;
 
 % find rotation not part of the fundamental region
 ind = true(size(rq));
-for i = 2:numel(rc_sym)
+for i = 2:length(rc_sym)
   
   d = rc_sym(i)-rc_sym(1);
   if norm(d)<=1e-10 % find something that is orthogonal to rc_sym    
   
-    if length(oldD)==0
+    if isempty(oldD)
       d = orth(rc_sym(1));
     elseif length(oldD) == 1
       d = cross(oldD,rc_sym(1));

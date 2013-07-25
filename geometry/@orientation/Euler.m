@@ -22,7 +22,7 @@ function varargout = Euler(o,varargin)
 
 %% if they do not have to be nice
 if check_option(varargin,{'nfft','fastEuler'})
-  [varargout{1:nargout}] = Euler(o.rotation,varargin{:});
+  [varargout{1:nargout}] = Euler@rotation(o,varargin{:});
   return
 end
 
