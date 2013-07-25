@@ -34,19 +34,19 @@ else
 end
 
 
-if numel(qss) == 1  % no specimen symmetry
+if length(qss) == 1  % no specimen symmetry
   
   q = q1(:)'.*q2(:);
   
 else % specimen symmetry 
   
-  q = repmat(idquaternion,numel(qss),1)*q1';
+  q = repmat(idquaternion,length(qss),1)*q1';
   q = q.*(qss*q2);
   
 end
 
 
-if numel(qcs) == 1 % no crystal symmetry
+if length(qcs) == 1 % no crystal symmetry
   
   d = abs(get(q,'a'));
   
@@ -57,8 +57,8 @@ else  % crystal symmetry
 end
 
 
-if numel(qss) > 1 % if there was specimen symmetry
+if length(qss) > 1 % if there was specimen symmetry
   
-  d = max(reshape(d,numel(qss),[]),[],1);
+  d = max(reshape(d,length(qss),[]),[],1);
   
 end

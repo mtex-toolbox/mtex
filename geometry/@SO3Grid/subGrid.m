@@ -20,7 +20,7 @@ if nargin >= 3
 elseif islogical(q) 
   ind = q;
 else
-  ind = false(numel(G),1);
+  ind = false(length(G),1);
   ind(q) = true;
 end
 

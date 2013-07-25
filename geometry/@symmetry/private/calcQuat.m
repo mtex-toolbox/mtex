@@ -36,8 +36,8 @@ end
 if size(inv,1) == 2
   rot = [rot,{[rotation(idquaternion),-rotation(idquaternion)]}];
 else
-  rot = arrayfun(@(i) rot{i} .* inv(i).^(0:numel(rot{i})-1) ,...
-    1:numel(rot),'uniformOutput',false);
+  rot = arrayfun(@(i) rot{i} .* inv(i).^(0:length(rot{i})-1) ,...
+    1:length(rot),'uniformOutput',false);
   
 end
 

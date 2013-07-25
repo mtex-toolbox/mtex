@@ -19,4 +19,4 @@ function q = axis2quat_outer(v,omega)
 v = v ./norm(v);
 omega = omega(:)';
 
-q = quaternion(repmat(cos(omega/2),numel(v),1),v(:) * sin(omega/2));
+q = quaternion(repmat(cos(omega/2),length(v),1),v(:) * sin(omega/2));

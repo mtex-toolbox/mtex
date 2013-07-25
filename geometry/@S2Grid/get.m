@@ -4,7 +4,7 @@ function varargout = get(obj,vname,varargin)
 switch lower(vname)
   case {'resolution','res'}
     
-    if obj.res >= 2*pi-0.001 && numel(obj)>4
+    if obj.res >= 2*pi-0.001 && length(obj)>4
       try
         a = calcVoronoiArea(obj);
         varargout{1} = sqrt(mean(a));

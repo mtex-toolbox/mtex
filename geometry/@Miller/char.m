@@ -5,11 +5,11 @@ function c = char(m,varargin)
 %  NO_SCOPES
 %  LATEX
 
-c = cell(numel(m),1);
+c = cell(length(m),1);
 
 for i = 1:length(m)
   
-  if check_option(m,{'uvw','directions'}) || ...
+  if checkOption(m,{'uvw','directions'}) || ...
       check_option(varargin,{'uvw','directions'})
     
     h = v2d(subsref(m,i));

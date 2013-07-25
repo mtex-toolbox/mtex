@@ -40,7 +40,7 @@ function varargout = TSP(S2,varargin)
 %
 
 v = vector3d(S2(:));
-n = numel(v);
+n = length(v);
 
 method = get_option(varargin,'method','christophides2opt');
 
@@ -48,7 +48,7 @@ if check_option(varargin,'voronoi')
   A = VoronoiAdjacency(v);
   A = A + A*A + A*A*A; % add second and third order voronoi-neighbours;
 else
-  A = ones(numel(v));
+  A = ones(length(v));
 end
 
 weight   = dist(A,v,varargin{:});

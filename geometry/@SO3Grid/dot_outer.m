@@ -27,7 +27,7 @@ if check_option(varargin,{'full','all'})
   
 else
   
-  d = sparse(numel(S3G),numel(q));
+  d = sparse(length(S3G),length(q));
   
   % rotate q according to SO3Grid.center
   if ~isempty(S3G.center),q = inverse(S3G.center) * q; end
@@ -54,8 +54,8 @@ else
   
   [xalpha,xbeta,xgamma] = Euler( qss * q * qcs ,'ZYZ');
   
-  ncs = numel(qss)*numel(qcs);
-  cs = 0:numel(q):ncs*numel(q);
+  ncs = length(qss)*length(qcs);
+  cs = 0:length(q):ncs*length(q);
   
   for k=1:ncs
   

@@ -20,7 +20,7 @@ function [o, lambda, eigv, kappa, q]  = mean(o,varargin)
 %% See also
 % BinghamODF
 
-if numel(o) == 1 
+if length(o) == 1 
   
   if nargout > 1
     eigv = eye(4);

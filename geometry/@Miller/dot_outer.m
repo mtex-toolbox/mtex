@@ -1,18 +1,18 @@
 function d = dot_outer(m1,m2,varargin)
 % inner product between two Miller indece
 %
-%% Syntax
+% Syntax
 %  a = dot_outer(m1,m2)
 %
-%% Input
+% Input
 %  m1,m2 - @Miller
 %
-%% Output
+% Output
 %  d - m1 . m2
 
 % symmetrise
 m1 = symmetrise(m1,varargin{:});
-s = [size(m1),numel(m2)];
+s = [size(m1),length(m2)];
 
 % normalize
 m1 = m1 ./ norm(m1);

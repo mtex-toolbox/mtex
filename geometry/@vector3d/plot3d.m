@@ -31,7 +31,7 @@ function plot3d(S2G,varargin)
 % -------------------- GET OPTIONS ----------------------------------------
 
 % data
-data = reshape(get_option(varargin,'DATA',ones(1,numel(S2G))),...
+data = reshape(get_option(varargin,'DATA',ones(1,length(S2G))),...
   size(S2G));
 
 % log plot? 

@@ -15,7 +15,7 @@ function [q,omega] = project2FundamentalRegion(q,CS,SS,q_ref)
 if nargin <= 3, q_ref = idquaternion;end
 
 %% no specimen symmetry
-if nargin <=2 || numel(SS) <= 1 
+if nargin <=2 || length(SS) <= 1 
     
   % may be we can skip something
   omega = abs(dot(q,q_ref));
@@ -72,7 +72,7 @@ else
   % project to fundamental region
   qcs = reshape(inverse(qcs),1,[]);
   qss = reshape(inverse(qss),1,[]);
-  [idss,idcs] = ind2sub([numel(qss),numel(qcs)],id);
+  [idss,idcs] = ind2sub([length(qss),length(qcs)],id);
   q = reshape(subsref(qss,idss),size(q)) .* q .* reshape(subsref(qcs,idcs),size(q));
   
 end

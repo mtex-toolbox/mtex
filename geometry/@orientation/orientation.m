@@ -54,7 +54,7 @@ methods
 
     % set symmetry
     if ~isempty(sym), o.CS = sym{1};end
-    if numel(sym) > 1, o.SS = sym{2};end
+    if length(sym) > 1, o.SS = sym{2};end
     
     % empty constructor -> done
     if isempty(varargin), return; end

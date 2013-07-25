@@ -1,32 +1,24 @@
 function varargout = find(S2G,v,varargin)
 % return index of all points in a epsilon neighborhood of a vector
 %
-%% Syntax  
+% Syntax  
 % ind = find(S2G,v,epsilon) - find all points in a epsilon neighborhood of v
 % ind = find(S2G,v)         - find closest point
 %
-%% Input
+% Input
 %  S2G     - @S2Grid
 %  v       - @vector3d
 %  epsilon - double
 %
-%% Options
+% Options
 %  antipodal      - include [[AxialDirectional.html,antipodal symmetry]]
 %
-%% Output
+% Output
 %  ind     - int32        
 
-%% if points are not indexed
-if ~check_option(S2G,'INDEXED') || ~check_option(varargin,'direct')
   
-  [varargout{1:nargout}] = find(S2G.vector3d,v,varargin{:});
-  return
-  
-end
-  
-%% use indexing for fast finding of points
 d = [];
-if check_option(S2G,'antipodal'), v = [v(:),-v(:)]; end
+if checkOption(S2G,'antipodal'), v = [v(:),-v(:)]; end
 
 % compute polar coordinats
 [ytheta,yrho,iytheta,prho,rhomin] = getdata(S2G);

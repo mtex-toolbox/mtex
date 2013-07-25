@@ -21,7 +21,7 @@ if ~isempty(v1) && ~isempty(v2)
   d(d>1) = 1;
   d(d<-1) = -1;
   
-  if check_option(varargin,'antipodal') || check_option(v1,'antipodal') || check_option(v2,'antipodal')
+  if check_option(varargin,'antipodal') || v1.antipodal || v2.antipodal
     d = abs(d);
   end
   

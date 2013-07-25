@@ -18,7 +18,7 @@ mv = mv * diag(1./mbr.*round(mbr));
 tol = get_option(varargin,{'tol','tolerance'},1*degree);
 maxHKL = get_option(varargin,'maxHKL',12);
 
-for im = 1:numel(h)
+for im = 1:length(h)
   
   mm = mv(:,im) * (1:maxHKL);  
   rm = round(mm);

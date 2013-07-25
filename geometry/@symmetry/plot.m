@@ -36,14 +36,14 @@ else
   Improper = isImproper(rot);
   [axes,angle] = getMinAxes(rot(~Improper));
       
-  for i = 1:numel(axes)    
+  for i = 1:length(axes)    
     plotCustom(axes(i),{Symbol(angle(i),get(axes(i),'rho'))});
     hold on    
     plotCustom(-axes(i),{Symbol(angle(i),get(axes(i),'rho'),'FaceColor','k')});
   end
   
   [axes,angle] = getMinAxes(rot(Improper));
-  for i = 1:numel(axes)
+  for i = 1:length(axes)
     
     switch round(angle(i)/degree)
       case 180
@@ -77,7 +77,7 @@ axes(ind) = [];
 angle(ind) = [];
   
 [axes,~,pos] = unique(axes(:),'antipodal');
-angle = arrayfun(@(i) min(angle(pos==i)) ,1:numel(axes));
+angle = arrayfun(@(i) min(angle(pos==i)) ,1:length(axes));
 
 % sort axes
 [angle,idx] = sort(angle,2,'descend');

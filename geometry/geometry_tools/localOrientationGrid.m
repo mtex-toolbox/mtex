@@ -43,7 +43,7 @@ center = sym_center(ind);
 q = quaternion;
 for i = 1:length(center)
   cq = center(i) * qId(:);
-  if numel(SS) > 1
+  if length(SS) > 1
     ind = fundamental_region2(cq,center(i),CS,SS);
     cq = cq(ind);
   end
@@ -78,7 +78,7 @@ oldD = vector3d;
 
 % find rotation not part of the fundamental region
 ind = true(size(rq));
-for i = 2:numel(rc_sym)
+for i = 2:length(rc_sym)
   
   d = rc_sym(i)-rc_sym(1);
   if norm(d)<=1e-10 % find something that is orthogonal to rc_sym    

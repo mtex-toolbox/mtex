@@ -21,7 +21,7 @@ if isa(a,'SO3Grid') % right multiplication
       
 elseif isa(a,'quaternion') 
   
-  if numel(a) == 1 % rotate center only
+  if length(a) == 1 % rotate center only
     
     out = mtimes@orientation(a,b);
     if isempty(b.center)
