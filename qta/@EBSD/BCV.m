@@ -1,18 +1,19 @@
 function c = BCV(ebsd,psi)
 % biased cross validation
 %
-%% Input
+% Input
 %  ebsd - @EBSD
 %  psi  - @kernel
-%% Output
+%
+% Output
 %  c    - halfwidth
 %
-%% See also
+% See also
 % EBSD/calcODF EBSD/calcKernel grain/calcKernel EBSD/LSCV
 
 % extract data
 N = numel(ebsd);
-NCS = N * numel(get(ebsd,'CS'));
+NCS = N * length(get(ebsd,'CS'));
 
 o = get(ebsd,'orientations');
 try

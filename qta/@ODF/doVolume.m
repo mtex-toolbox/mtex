@@ -11,7 +11,7 @@ end
 
 % estimate volume portion of odf space
 reference = 9897129 * 96 / length(odf(1).CS) / length(odf(1).SS);
-f = min(1,numel(S3G) * (res / 0.25 / degree)^3 / reference);
+f = min(1,length(S3G) * (res / 0.25 / degree)^3 / reference);
   
 % eval odf
 if f == 0

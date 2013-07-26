@@ -1,16 +1,16 @@
 function pf = loadPoleFigure_aachen(fname,varargin)
 % import data fom aachen ptx file
 %
-%% Syntax
-% pf = loadPoleFigure_aachen_exp(fname,<options>)
+% Syntax
+%   pf = loadPoleFigure_aachen_exp(fname,<options>)
 %
-%% Input
+% Input
 %  fname  - filename
 %
-%% Output
+% Output
 %  pf - vector of @PoleFigure
 %
-%% See also
+% See also
 % ImportPoleFigureData loadPoleFigure
 
 fid = efopen(fname);
@@ -70,7 +70,7 @@ while ~feof(fid)
     assert(0.5 < dtheta && 20 > dtheta && 0.5 < dphi && 20 > dphi &&...
         10 <= maxtheta && maxtheta <= 90 && fakt > 0 && col > 0 && dig > 0);
 
-%% generate specimen directions  
+% ------------- generate specimen directions --------------------
     if isim == 0
       maxphi = 360;
     elseif isim == 2
@@ -85,10 +85,10 @@ while ~feof(fid)
     
     r = S2Grid('theta',theta,'rho',rho,'resolution',min(dtheta,dphi)*degree,'antipodal');
  
-%% read data
+% ---------------- read data ------------------------------------
     
     d = [];
-    while length(d) < numel(r) && ~feof(fid)
+    while length(d) < length(r) && ~feof(fid)
       l = fgetl(fid);
       if length(l)<dig*col, 
         continue;
@@ -97,7 +97,7 @@ while ~feof(fid)
       d = [d;str2num(l)]; %#ok<AGROW,ST2NM>
     end
     
-%% generate Polefigure    
+% --------------- generate Polefigure ---------------------------
     pf(ih) = PoleFigure(h,r,d,cs,varargin{:},'comment',comment); %#ok<AGROW>
     
     ih = ih +1;

@@ -1,12 +1,12 @@
 classdef unimodalODF < ODF
 % define a unimodal ODF
 %
-%% Description
+% Description
 % *unimodalODF* defines a radially symmetric, unimodal ODF 
 % with respect to a crystal orientation |mod|. The
 % shape of the ODF is defined by a @kernel function.
 %
-%% Syntax
+% Syntax
 %   mod = orientation('Euler',phi1,Phi,phi2,CS,SS)
 %   odf = unimodalODF(mod) % default halfwidth 10 degree 
 %   odf = unimodalODF(mod,'halfwidth',15*degree) % specify halfwidth
@@ -14,17 +14,17 @@ classdef unimodalODF < ODF
 %   odf = unimodalODF(mod,kernel) % specify @kernel shape 
 %   odf = unimodalODF(mod,'weights',weights) % specify weights for each component
 %
-%% Input
+% Input
 %  mod    - @quaternion modal orientation
 %  CS, SS - crystal, specimen @symmetry
 %  hw     - halfwidth of the kernel (default -- 10°)
 %  kernel - @kernel function (default -- de la Vallee Poussin)
 %
 %
-%% Output
+% Output
 %  odf - @ODF
 %
-%% See also
+% See also
 % ODF/ODF uniformODF fibreODF
 
   properties
@@ -67,7 +67,7 @@ classdef unimodalODF < ODF
 
       % get weights
       odf.c = get_option(varargin,'weights',ones(size(odf.center)));
-      assert(numel(odf.c) == numel(odf.center),...
+      assert(numel(odf.c) == length(odf.center),...
         'Number of orientations and weights must be equal!');
             
     end

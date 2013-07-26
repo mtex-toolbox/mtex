@@ -50,14 +50,14 @@ end
 comment = get_option(varargin,'comment',...
   ['Pole figures simulated from ',get(odf,'comment')]);
 
-c = ensurecell(get_option(varargin,'SUPERPOSITION',repcell(1,1,numel(h))));
+c = ensurecell(get_option(varargin,'SUPERPOSITION',repcell(1,1,length(h))));
 varargin = delete_option(varargin,'SUPERPOSITION');
 
 %% construct pole figures
-for iv = 1:numel(h)
+for iv = 1:length(h)
   
   % find specimen directions
-  if numel(r) == 1
+  if length(r) == 1
     ir = r{1};
   else
     ir = r{iv};

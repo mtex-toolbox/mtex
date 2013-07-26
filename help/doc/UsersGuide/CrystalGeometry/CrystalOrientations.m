@@ -186,7 +186,7 @@ inverse(o1)
 % * [[quaternion.Rodrigues.html,Rodrigues(o)]] % in Rodrigues parameter
 %
 
-[phi1,Phi,phi2] = Euler(o)
+[phi1,Phi,phi2] = Euler(o1)
 
 
 %% Plotting Orientations

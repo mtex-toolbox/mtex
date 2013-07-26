@@ -11,7 +11,7 @@ function q = maxpdf( odf,h, varargin)
 argin_check(h,'Miller');
 h = ensureCS(odf(1).CS,{h});
 
-for k=1:numel(h)
+for k=1:length(h)
   
   res = 5*degree;
   

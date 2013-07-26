@@ -34,9 +34,9 @@ else
   
 end
 
-alphabeta = S2Grid('equispaced','RESOLUTION',res,...
-  'MAXTHETA',maxBeta,'MINRHO',0,'MAXRHO',maxAlpha,...
-  no_center(res),'RESTRICT2MINMAX');
+alphabeta = equispacedS2Grid('resolution',res,...
+  'maxTheta',maxBeta,'minRho',0,'maxRho',maxAlpha,...
+  no_center(res),'restrict2minmax');
 
 ap2 = round(2*maxGamma/res);
 
@@ -50,7 +50,7 @@ dGamma = repmat(reshape(dGamma,1,[]),ap2,1);
 gamma = -maxGamma + (0:ap2-1) * 2 * maxGamma / ap2;
 
 % arrange alpha, beta, gamma
-gamma  = dGamma+repmat(gamma.',1,numel(alphabeta));
+gamma  = dGamma+repmat(gamma.',1,length(alphabeta));
 alpha = repmat(reshape(alpha,1,[]),ap2,1);
 beta  = repmat(reshape(beta,1,[]),ap2,1);
 

@@ -30,7 +30,7 @@ if check_option(varargin,{'all','symmetrised','fundamentalRegion'})
     p = getappdata(ax{:},'projection');
     if p.antipodal, varargin = [varargin,{'antipodal'}];end
   end
-  if check_option(m,'antipodal')
+  if m.antipodal
     varargin = [varargin,{'antipodal'}];
   end
 
@@ -49,4 +49,4 @@ end
 
 varargin = delete_option(varargin,'labeled');
 
-[varargout{1:nargout}] = text(ax{:},m.vector3d,strings,varargin{:});
+[varargout{1:nargout}] = text(ax{:},vector3d(m),strings,varargin{:});

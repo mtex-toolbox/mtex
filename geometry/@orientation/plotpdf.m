@@ -1,28 +1,27 @@
 function plotpdf(o,h,varargin)
 % plot pole figures
 %
-%% Syntax
-% plotpdf(ori,[h1,..,hN],<options>)
+% Syntax
+%   plotpdf(ori,[h1,..,hN],<options>)
 %
-%% Input
+% Input
 %  ori - @orientation
 %  h   - @Miller crystallographic directions
 %
-%% Options
-%  SUPERPOSITION - plot superposed pole figures
-%  POINTS        - number of points to be plotted
+% Options
+%  superposition - plot superposed pole figures
+%  points        - number of points to be plotted
 %
-%% Flags
-%  antipodal    - include [[AxialDirectional.html,antipodal symmetry]]
-%  COMPLETE - plot entire (hemi)--sphere
+% Flags
+%  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
+%  complete  - plot entire (hemi)--sphere
 %
-%% See also
+% See also
 % orientation/plotipdf S2Grid/plot savefigure
 % Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-%% where to plot
-
+% where to plot
 [ax,o,h,varargin] = getAxHandle(o,h,varargin{:});
 
 cs = o.CS;
@@ -44,10 +43,10 @@ else
   if ~isempty(options), varargin = {options{:},varargin{:}};end
 end
 
-%% colorcoding 1
+% colorcoding 1
 data = get_option(varargin,'property',[]);
 
-%% subsample if needed 
+% ------------------ subsample if needed --------------------------
 
 if ~check_option(varargin,'all') && ...
     (sum(length(o))*length(cs)*length(ss) > 10000 || check_option(varargin,'points'))
@@ -62,13 +61,13 @@ if ~check_option(varargin,'all') && ...
   if ~isempty(data), data = data(samples); end
 end
 
-%% colorcoding 2
+% colorcoding 2
 if check_option(varargin,'colorcoding')
   colorcoding = lower(get_option(varargin,'colorcoding','angle'));
   data = orientation2color(o,colorcoding,varargin{:});
   
   % convert RGB to ind
-  if numel(data) == 3*numel(o)  
+  if numel(data) == 3*length(o)  
     [data, map] = rgb2ind(reshape(data,[],1,3), 0.03,'nodither');
     set(gcf,'colormap',map);    
   end
@@ -76,7 +75,7 @@ if check_option(varargin,'colorcoding')
 end
 
 
-%% plot
+% ------------------------ plot ---------------------------
 
 % compute specimen directions
 sh = @(i) symmetrise(h{i});
@@ -108,7 +107,7 @@ end
 
 end
 
-%% Tooltip function
+% Tooltip function
 function txt = tooltip(varargin)
 
 % 

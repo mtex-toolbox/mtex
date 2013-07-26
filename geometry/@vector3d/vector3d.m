@@ -1,12 +1,10 @@
-classdef vector3d
+classdef vector3d < dynProp
   
   properties 
     x = []; % x coordinate
     y = []; % y coordinate
     z = []; % z coordinate
     antipodal = false;
-    resolution = 2*pi;
-    options = struct();
   end
     
   
@@ -26,7 +24,8 @@ classdef vector3d
       elseif nargin ==1
         if isa(x,'vector3d') % copy-constructor
           [v.x,v.y,v.z] = double(x);
-          v.options = x.options;
+          v.antipodal = x.antipodal;
+          v.prop = x.prop;
           return
         elseif isa(x,'double')
           if all(size(x) == [1,3])
@@ -38,15 +37,22 @@ classdef vector3d
         else
           error('wrong type of argument');
         end
+        
       elseif nargin >=3 && isnumeric(x) && isnumeric(y) && isnumeric(z)
+        
         v.x = x;
         v.y = y;
         v.z = z;
+        
       elseif strcmp(x,'polar')
-        [v.x,v.y,v.z] = double(sph2vec(y,z));
+        
+        v.x = sin(y).*cos(z);
+        v.y = sin(y).*sin(z);
+        v.z = cos(y);
+                
       end
 
-      % check for equal size
+      % ----------- check for equal size ------------------------
       if numel(v.x) ~= numel(v.y) || (numel(v.x) ~= numel(v.z))
   
         % find non singular size
@@ -69,19 +75,20 @@ classdef vector3d
         end
       end
 
-      if nargin > 3
-        if check_option(varargin,'normalize')
-          v = v ./ norm(v);
-        end      
-      end
-    
+      % ------------------ options ------------------------------
+      
+      % antipodal
       v.antipodal = check_option(varargin,'antipodal');
-      v.resolution = get_option(varargin,'resolution',2*pi);
+      
+      % resolution
+      if check_option(varargin,'resolution')
+        v = v.setProp('resolution',get_option(varargin,'resolution'));
+      end
+      
+      % normalize
+      if nargin > 3 && check_option(varargin,'normalize'), v = v ./ norm(v); end
+      
     end
-    
-    function val = get.x(obj)
-      val = obj.x;
-    end
-  
+     
   end
 end

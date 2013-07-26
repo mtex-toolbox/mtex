@@ -21,24 +21,8 @@ end
 
 S2G = S2Grid(theta,rho);
 
-S2G = set_option(S2G,extract_option(varargin,{'INDEXED','PLOT','north','south','antipodal','lower','upper'}));
+%S2G = set_option(S2G,extract_option(varargin,{'INDEXED','PLOT','north','south','antipodal','lower','upper'}));
 
 
-end
-
-
-function ntheta = N2ntheta(N,maxtheta,maxrho)
-ntheta = 1;
-while calcAnz(ntheta,0,maxtheta,maxrho) < N
-  ntheta = ntheta + 1;
-end
-if (calcAnz(ntheta,0,maxtheta,maxrho) - N) > (N-calcAnz(ntheta-1,0,maxtheta,maxrho))
-  ntheta = ntheta-1;
-end
-
-end
-
-function c = calcAnz(N,tmin,dt,dr)
-c = sum(round(sin(tmin+dt/N*(1:N)) * dr/dt * N));
 end
 

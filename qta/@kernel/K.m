@@ -1,16 +1,16 @@
 function w = K(kk,g1,g2,CS,SS,varargin)
 % evaluate kernel modulo symmetries
 %
-%% Input
+% Input
 %  kk     - @kernel
 %  g1, g2 - @quaternion(s)
 %  CS, SS - crystal , specimen @symmetry
 %
-%% Options
-%  EXACT - 
-%  EPSILON - 
+% Options
+%  exact - 
+%  epsilon - 
 %
-%% general formula:
+% general formula:
 % K(g1,g2) = Sum(g S) Sum(l) A_l Tr T_l(g1^-1 g g2)
 % where Tr T_l(x) = [sin(x/2)+sin(x*l)]/sin(x/2)
 
@@ -23,14 +23,14 @@ end
 
 % how to use sparse matrix representation 
 if isa(g1,'SO3Grid') && check_option(g1,'indexed'),
-  lg1 = numel(g1);
+  lg1 = length(g1);
 else
-  lg1 = -numel(g1);
+  lg1 = -length(g1);
 end
 if isa(g2,'SO3Grid') && check_option(g2,'indexed')
-  lg2 = numel(g2);
+  lg2 = length(g2);
 else
-  lg2 = -numel(g2);
+  lg2 = -length(g2);
 end
 
 
@@ -38,10 +38,10 @@ if epsilon>rotangle_max_z(CS,'antipodal') % full matrixes
  
   g1 = quaternion(g1);
   g2 = quaternion(g2);
-  w = zeros(numel(g1),numel(g2));
+  w = zeros(length(g1),length(g2));
      
-	for iks = 1:numel(CS)
-		for ips = 1:numel(SS) % for all symmetries
+	for iks = 1:length(CS)
+		for ips = 1:length(SS) % for all symmetries
       
 			sg    = quaternion(SS,ips) * g1 * quaternion(CS,iks);  % rotate g1
       omega = abs(dot_outer(sg,g2));      % calculate full distance matrix            
@@ -76,7 +76,7 @@ else
 	g1 = quaternion(g1);
 	g2 = quaternion(g2);
   
-	w = sparse(numel(g1),numel(g2));
+	w = sparse(length(g1),length(g2));
      
 	for iks = 1:length(CS)
 		for ips = 1:length(SS) % for all symmetries
@@ -91,13 +91,13 @@ else
       
 
 %  z = find(omega>cos(epsilon));
-%  if length(z) > numel(omega)/length(CS)/10, w = full(w); end
+%  if length(z) > length(omega)/length(CS)/10, w = full(w); end
 %  w(z) = w(z) +  kk.K(omega(z));
       
 %  if length(z) > numel(omega)/length(CS)/10, w = full(w); end
       
       [y,x] = find(omega>cos(epsilon));
-      dummy = sparse(y,x,kk.K(omega(sub2ind(size(w),y,x))),numel(g1),numel(g2));
+      dummy = sparse(y,x,kk.K(omega(sub2ind(size(w),y,x))),length(g1),length(g2));
       
       w = w + dummy;          
       
@@ -106,4 +106,4 @@ else
 
 end
 %nnz(w)
-w = w / numel(CS) / numel(SS);
+w = w / length(CS) / length(SS);

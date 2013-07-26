@@ -7,12 +7,10 @@ disp([inputname(1) ' = ' doclink('vector3d_index','vector3d') ...
 
 disp([' size: ' size2str(v)]);
 
-if v.antipodal
-  disp(' antipodal: true');
-end
+if v.antipodal, disp(' antipodal: true'); end
 
-if v.resolution < 2*pi
-  disp([' resolution: ',xnum2str(v.resolution/degree),mtexdegchar]);
+if isProp(v,'resolution')
+  disp([' resolution: ',xnum2str(getProp(v,'resolution')/degree),mtexdegchar]);
 end
 
 if check_option(varargin,'all') || (length(v) < 20 && ~isempty(v))

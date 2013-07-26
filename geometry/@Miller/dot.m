@@ -2,14 +2,14 @@ function d = dot(m1,m2,varargin)
 % inner product between two Miller indece
 %
 % Syntax
-% a = dot(m1,m2)
-% a = dot(m1,m2,'antipodal')
+%   a = dot(m1,m2)
+%   a = dot(m1,m2,'antipodal')
 %
 % Input
 %  m1,m2 - @Miller
 %
 % Output
-%  d - double [size(m1) numel(cs)]
+%  d - double [length(m1) length(cs)]
 % 
 % Options
 %  antipodal - consider m1,m2 with antipodal symmetry

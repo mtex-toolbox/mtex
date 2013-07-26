@@ -40,11 +40,11 @@ if length(qss) == 1  % no specimen symmetry
   
 else % specimen symmetry 
   
-  if numel(q1) == numel(q2)
+  if length(q1) == length(q2)
     
   q = repmat(idquaternion,length(qss),1)*q1';    
     q = q.*(qss*q2);
-  elseif numel(q1) == 1
+  elseif length(q1) == 1
     q = inverse(q1) .* (qss * q2);
   else
     q = inverse(qss * q1) .* q2;

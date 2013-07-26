@@ -39,9 +39,9 @@ else
   
   % make definitions more robust
   P.h = ensureCS(P.CS,{P.h});
-  if ~check_option(varargin,'complete'), P.r = set_option(P.r,'antipodal');end
+  if ~check_option(varargin,'complete'), P.r = setOption(P.r,'antipodal');end
   
-  assert(numel(P.data) == numel(P.r),'Number of diffraction intensitites is not equal to the number of specimen directions!');
+  assert(numel(P.data) == length(P.r),'Number of diffraction intensitites is not equal to the number of specimen directions!');
   
 end
 P = class(P,'PoleFigure');

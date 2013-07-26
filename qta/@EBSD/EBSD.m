@@ -6,21 +6,21 @@ function ebsd = EBSD(varargin)
 % [[ImportEBSDData.html,EBSD interfaces]]. You can also simulate EBSD data
 % from an ODF by the command [[ODF.calcEBSD.html,calcEBSD]].
 %
-%% Syntax
-%  ebsd = EBSD(orientations,CS,SS,...,param,val,...)
+% Syntax
+%   ebsd = EBSD(orientations,CS,SS,...,param,val,...)
 %
-%% Input
+% Input
 %  orientations - @orientation
 %  CS,SS        - crystal / specimen @symmetry
 %
-%% Options
+% Options
 %  Comment  - string
 %  phase    - specifing the phase of the EBSD object
 %  options  - struct with fields holding properties for each orientation
 %  xy       - spatial coordinates n x 2, where n is the number of input orientations
 %  unitCell - for internal use
 %
-%% See also
+% See also
 % ODF/calcEBSD EBSD/calcODF loadEBSD
 
 
@@ -37,11 +37,11 @@ ebsd.comment = get_option(varargin,'comment',[]);
 ebsd.rotations = rotations(:);
 
 [ebsd.phaseMap,ignore,ebsd.phase] =  unique(...
-  get_option(varargin,'phase',ones(numel(ebsd.rotations),1)));
+  get_option(varargin,'phase',ones(length(ebsd.rotations),1)));
 ebsd.phaseMap(isnan(ebsd.phaseMap)) = 0;
 
 % if all phases are zero replace them by 1
-if all(ebsd.phase == 0), ebsd.phase = ones(numel(ebsd.rotations),1);end
+if all(ebsd.phase == 0), ebsd.phase = ones(length(ebsd.rotations),1);end
 
 % take symmetry from orientations
 if nargin >= 1 && isa(varargin{1},'orientation')
@@ -68,15 +68,15 @@ else
     CS = {symmetry('cubic','mineral','unkown')};
   end
   
-  if numel(ebsd.phaseMap)>1 && numel(CS) == 1
+  if numel(ebsd.phaseMap)>1 && length(CS) == 1
     C = repmat(CS,numel(ebsd.phaseMap),1);
     if ebsd.phaseMap(1) <= 0
       C{1} = 'notIndexed';
     end
-  elseif max([0;ebsd.phaseMap(:)]) < numel(CS)
+  elseif max([0;ebsd.phaseMap(:)]) < length(CS)
     C = CS(ebsd.phaseMap+1);
   
-  elseif numel(ebsd.phaseMap) == numel(CS)
+  elseif numel(ebsd.phaseMap) == length(CS)
     C = CS;
   else
     error('symmetry mismatch')
@@ -92,7 +92,7 @@ ebsd.unitCell = get_option(varargin,'unitCell',[]);
 
 ebsd = class(ebsd,'EBSD');
 
-%% remove ignore phases
+% remove ignore phases
 if check_option(varargin,'ignorePhase')
 
   del = ismember(ebsd.phaseMap(ebsd.phase),get_option(varargin,'ignorePhase',[]));
@@ -100,7 +100,7 @@ if check_option(varargin,'ignorePhase')
 
 end
 
-%% apply colors
+% apply colors
 colorOrder = getMTEXpref('EBSDColorNames');
 nc = numel(colorOrder);
 c = 1;

@@ -38,7 +38,7 @@ res = get_option(varargin,'RESOLUTION',min(2.5*degree,radius/50),'double');
 S2G = S2Grid('equispaced','resolution',res,...
   'minTheta',minTheta,'maxTheta',maxTheta,'maxRho',maxRho,'minRho',minRho,...
   'RESTRICT2MINMAX',varargin{:});
-lS2G = numel(S2G);
+lS2G = length(S2G);
 S2G = subGrid(S2G,symmetrise(h),radius);
 
 % estimate volume portion of odf space
@@ -47,7 +47,7 @@ S2G = subGrid(S2G,symmetrise(h),radius);
 %  f = length(odf(1).CS) * (1-cos(radius))./2;
 %else
   % numerical value
-  f = numel(S2G)/lS2G;
+  f = length(S2G)/lS2G;
 %end  f = numel(S2G)/lS2G;
 
 % eval odf

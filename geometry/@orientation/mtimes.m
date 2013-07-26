@@ -1,18 +1,18 @@
 function r = mtimes(a,b)
 % orientation times Miller and orientation times orientation
 %
-%% Syntax
-%  o = o1 * o2
-%  r = o * h
-%  h = inverse(o)*r
+% Syntax
+%   o = o1 * o2
+%   r = o * h
+%   h = inverse(o)*r
 %
-%% Input
+% Input
 %  o - @orientation
 %  h - @Miller indice
 %  r - @vector3d
 %
-%% See also
-
+% See also
+% orientation/times
 
 % orientation times vector
 if isa(a,'orientation') && isa(b,'vector3d')    
@@ -31,7 +31,7 @@ if inner1 ~= inner2, warning('MTEX:Orientation','Possible symmetry missmatch!');
 r = mtimes@rotation(a,b);
 
 % convert back to rotation
-if isCS(right) || isCS(left), r = orientation(r,left,right); end
+if isCS(right) || isCS(left), r = orientation(r,right,left); end
 
 % TODO!!!
 %if length(r.CS) > 1 && ...

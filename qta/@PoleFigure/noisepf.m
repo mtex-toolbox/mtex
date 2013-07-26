@@ -4,18 +4,18 @@ function pdfn = noisepf(pdf,fak,background,varargin)
 % noisepf simulates realistic diffraction counts by generating random
 % samples of the Poisson distribution with mean m = alpha * pdf + bg
 %
-%% Syntax
-%  pdfn = noisepf(pdf,alpha,bg,<options>)
+% Syntax
+%   pdfn = noisepf(pdf,alpha,bg,<options>)
 %
-%% Input
+% Input
 %  pf    - @PoleFigure
 %  alpha - uniform radiation (double)
 %  bg    - background radiation (double)
 %
-%% Options
+% Options
 %  NONNEGATIV -> force data to be non negative
 %
-%% See also
+% See also
 % ODF/calcPoleFigure
 
 if nargin == 2, background = 0;end

@@ -28,6 +28,7 @@ catch, end
 m = Miller(1,0,0);
 r = 0;
 
+% ----------------------------------------------------------------
 function m = exp2Miller(e)
 
 if isempty(e), m = []; return, end
@@ -39,7 +40,7 @@ for i = 1:length(e)
   catch, end
 end
 
-if numel(m)>0
+if ~isempty(m)
   m = fliplr(m);
 else
   m = [];

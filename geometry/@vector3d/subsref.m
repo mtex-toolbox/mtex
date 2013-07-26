@@ -25,7 +25,8 @@ else
       end
       
     case '.'
-      [varargout{1:nargout}] = builtin('subsref',v,s);      
+      [varargout{1:nargout}] = builtin('subsref',v,s);
+      
   end
 end
 
