@@ -1,20 +1,20 @@
 function pf = set(pf,vname,value,varargin)
 % set polefigure properties to a specific value 
 %
-%% Syntax
-% pf = set(pf,'intensities',data,id)
-% pf = set(pf,'CS',cs) 
-% pf = set(pf,'h',h)
+% Syntax
+%   pf = set(pf,'intensities',data,id)
+%   pf = set(pf,'CS',cs) 
+%   pf = set(pf,'h',h)
 %
-%% Input
+% Input
 %  pf   - @PoleFigure
 %  data - [double] 
 %  id   - index set (optional)
 %
-%% Output
+% Output
 %  pf - @PoleFigure
 %
-%% See also
+% See also
 % PoleFigure/get PoleFigure/delete PoleFigure/copy
 
 switch vname
@@ -65,8 +65,8 @@ switch vname
             pf(i).c = ones(size(ivalue)) ./ numel(ivalue);
           end
       end
-          pf(i).(vname) = ivalue;
-      end
+      pf(i).(vname) = ivalue;
     end
+end
       
 end

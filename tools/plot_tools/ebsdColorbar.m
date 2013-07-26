@@ -1,20 +1,20 @@
 function ebsdColorbar(varargin)
 % plot a inverse pole figure reflecting EBSD data colorcoding
 %
-%% Syntax
-%  ebsdColorbar
-%  ebsdColorbar(cs)
+% Syntax
+%   ebsdColorbar
+%   ebsdColorbar(cs)
 %
-%% Input
+% Input
 %  cs - @symmetry
 %
-%% Output
+% Output
 %
 %
-%% See also
+% See also
 % orientation2color
 
-%% input check
+% ---------------- input check ---------------------------
 if nargin >= 1 && isa(varargin{1},'symmetry')
   
   cs = varargin{1};
@@ -44,7 +44,7 @@ else
 end
 
 
-%% plot colorbars
+% ------------------- plot colorbars ---------------------
 
 figure
 newMTEXplot;
@@ -63,7 +63,7 @@ else
 end
 
 
-%% finalize plot
+% ----------------- finalize plot ---------------------------
 
 set(gcf,'tag',type);
 setappdata(gcf,'colorcoding',cc);
@@ -76,7 +76,7 @@ setappdata(gcf,'options',extract_option(varargin,'antipodal'));
 end
 
 
-%% colorbar for ipdf color coding 
+% -------------------- colorbar for ipdf color coding  ------------
 function ipdfColorbar(cs,cc,varargin)
 
 % hkl is antipodal
@@ -90,7 +90,7 @@ r = get_option(varargin,'r');
 
 d = orientation2color(h,cc,cs,varargin{:});
 
-if numel(d) == 3*numel(h)
+if numel(d) == 3*length(h)
   d = reshape(d,[size(h),3]);
   surf(h,d,'TL',r,varargin{:});
 else
@@ -106,7 +106,7 @@ end
 
 end
 
-%% colorbar for Euler color coding
+% ------------------- colorbar for Euler color coding ------------
 function odfColorbar(cs,cc,varargin)
 
 S3Goptions = delete_option(varargin,'axisAngle');
@@ -115,7 +115,7 @@ S3Goptions = delete_option(varargin,'axisAngle');
 [s1,s2,s3] = size(S3G);
 
 d = orientation2color(S3G,cc,varargin{:});
-if numel(d) == numel(S3G)
+if numel(d) == length(S3G)
   rgb = 1;
   varargin = [{'smooth'},varargin];
 else

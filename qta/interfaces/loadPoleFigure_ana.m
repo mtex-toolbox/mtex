@@ -1,16 +1,16 @@
 function pf = loadPoleFigure_ana(fname,varargin)
 % import data fom ana file
 %
-%% Syntax
-% pf = loadPoleFigure_ana(fname,<options>)
+% Syntax
+%   pf = loadPoleFigure_ana(fname,<options>)
 %
-%% Input
+% Input
 %  fname  - filename
 %
-%% Output
+% Output
 %  pf - vector of @PoleFigure
 %
-%% See also
+% See also
 % ImportPoleFigureData loadPoleFigure
 
 
@@ -44,7 +44,7 @@ try
   h = string2Miller(fname);
   
   
-  assert(N == numel(r) && N > 10);
+  assert(N == length(r) && N > 10);
   d = textscan(fid,'%f',N);
   d = d{1};
   assert(N == numel(d));

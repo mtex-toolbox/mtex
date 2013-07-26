@@ -1,23 +1,22 @@
 function [q,omega] = project2FundamentalRegion(q,CS1,q_ref)
 % projects quaternions to a fundamental region
 %
-%% Syntax
-% project2FundamentalRegion(q,CS)       - to FR around idquaternion
-% project2FundamentalRegion(q,CS,q_ref) - to FR around reference rotation
-% project2FundamentalRegion(q,CS1,CS2)  - misorientation to FR around id
+% Syntax
+%   project2FundamentalRegion(q,CS)       % to FR around idquaternion
+%   project2FundamentalRegion(q,CS,q_ref) % to FR around reference rotation
+%   project2FundamentalRegion(q,CS1,CS2)  % misorientation to FR around id
 %
-%% Input
+% Input
 %  q        - @quaternion
 %  CS1, CS2 - crystal @symmetry
 %  q_ref    - one reference @quaternion or in size(q) or second crystal @symmetry
 %
-%% Output
+% Output
 %  q     - @quaternion
 %  omega - rotational angle to reference quaternion
 %
 
-%% get quaternions
-
+% get quaternions
 qCS1 = quaternion(CS1);
 
 if nargin < 3, q_ref = idquaternion; end
@@ -33,17 +32,16 @@ end
 omega = abs(dot(q,q_ref));
 ind   = omega < cos(getMaxAngle(CS1,qCS2)/2);
 
-if numel(q) == numel(ind)
-  q_sub = subsref(q,ind);
+if length(q) == numel(ind)
+  q_sub = quaternion(subsref(q,ind));
 else
-  q_sub = q;
-end
-if numel(q_ref) == numel(ind)
-  q_ref = subsref(q_ref,ind);
+  q_sub = quaternion(q);
 end
 
+if length(q_ref) == numel(ind), q_ref = subsref(q_ref,ind); end
+
 [uCS,m,n] = unique(qCS1*inverse(qCS2),'antipodal');
-[i,j]     = ind2sub([numel(qCS1),numel(qCS2)],m);
+[i,j]     = ind2sub([length(qCS1),length(qCS2)],m);
 
 % compute all distances to the fundamental regions
 omegaSym  = abs(dot_outer(inverse(q_sub).*q_ref,uCS));

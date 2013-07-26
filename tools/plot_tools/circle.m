@@ -22,7 +22,7 @@ end
 h = [];
 if numel(n)>1
   hold on
-  for i = 1:numel(n);    
+  for i = 1:length(n);    
     h = [h,circle(ax{:},n(i),omega,varargin{:})]; %#ok<AGROW>
   end
 

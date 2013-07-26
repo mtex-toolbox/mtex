@@ -2,7 +2,7 @@ classdef Miller < vector3d
 
   properties
     CS        % crystal symmetry
-    dispStyle % output convention hkl or uvw
+    dispStyle = 'hkl' % output convention hkl or uvw
   end
   
   properties (Dependent = true)    
@@ -66,7 +66,8 @@ classdef Miller < vector3d
         end
         
         [m.x,m.y,m.z] = double(varargin{1});
-        m.options = varargin{1}.options;
+        m.prop = varargin{1}.prop;
+        m.antipodal = varargin{1}.antipodal;
         
         % hkl and uvw
       elseif isa(varargin{1},'double')
@@ -140,7 +141,10 @@ classdef Miller < vector3d
     function m = set.hkl(m,hkl)
       % 
       % hkl must have the format [h,k,l] or [h k i l]
-            
+      
+      % remove i 
+      hkl = hkl(:,[1:2,end]);
+      
       % get reciprocal axes
       M = squeeze(double(get(m.CS,'axes*')));
       

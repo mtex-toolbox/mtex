@@ -7,10 +7,7 @@ disp([inputname(1) ' = ' doclink('Miller_index','Miller') ...
 
 disp(['  size: ' size2str(m)]);
 
-o = char(option2str(m.options));
-if ~isempty(o)
-  disp(['  options: ' o]);
-end
+if m.antipodal, disp(' antipodal: true');end
 
 if ~isempty(get(m.CS,'mineral'))
   disp(['  mineral: ',char(m.CS,'verbose')]);
@@ -18,7 +15,7 @@ else
   disp(['  symmetry: ',char(m.CS,'verbose')]);
 end
 
-if length(m) < 20 && length(m) > 0
+if length(m) < 20 && ~isempty(m)
   
   eps = 1e4;
   

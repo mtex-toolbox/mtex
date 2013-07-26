@@ -19,6 +19,6 @@ end
 d(d<0) = 0;
     
 r1 = discretesample(d,npoints);
-r2 = discretesample(numel(S3G_local),npoints,'XX');
+r2 = discretesample(length(S3G_local),npoints,'XX');
 
 ori = orientation(quaternion(S3G_global,r1) .* quaternion(S3G_local,r2),odf.CS,odf.SS);

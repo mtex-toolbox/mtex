@@ -1,28 +1,29 @@
 function grains = calcGrains(ebsd,varargin)
 % 2d and 3d construction of GrainSets from spatially indexed EBSD data
 %
-%% Syntax
-% grains = calcGrains(ebsd,'angle',10*degree)
+% Syntax
+%   grains = calcGrains(ebsd,'angle',10*degree)
 %
-%% Input
+% Input
 %  ebsd   - @EBSD
 %
-%% Output
+% Output
 %  grains  - @Grain2d | @Grain3d
-%% Options
+%
+% Options
 %  threshold|angle - array of threshold angles per phase of mis/disorientation in radians
 %  augmentation    - bounds the spatial domain
 %
 %    * |'cube'|
 %    * |'auto'|
 %
-%% Flags
+% Flags
 %  unitcell     - omit voronoi decomposition and treat a unitcell lattice
 %
-%% See also
+% See also
 % GrainSet/GrainSet
 
-%% parse input parameters
+% ------------- parse input parameters -------------------
 
 grainBoundaryCiterions = dir([mtex_path '/qta/@EBSD/private/gbc*.m']);
 grainBoundaryCiterions = {grainBoundaryCiterions.name};
@@ -30,7 +31,7 @@ grainBoundaryCiterions = {grainBoundaryCiterions.name};
 gbc      = get_flag(regexprep(grainBoundaryCiterions,'gbc_(\w*)\.m','$1'),varargin,'angle');
 gbcValue = get_option(varargin,gbc,15*degree,'double');
 
-%% remove not indexed phases
+% --------------- remove not indexed phases ----------------
 
 if any(isNotIndexed(ebsd)) && ~check_option(varargin,'keepNotIndexed')
   disp('  I''m removing all not indexed phases. The option "keepNotIndexed" keeps them.');
@@ -39,9 +40,9 @@ if any(isNotIndexed(ebsd)) && ~check_option(varargin,'keepNotIndexed')
   
 end
 
-%% verify inputs
+% ------------------ verify inputs --------------------------
 
-if numel(gbcValue) == 1 && numel(ebsd.CS) > 1
+if numel(gbcValue) == 1 && length(ebsd.CS) > 1
   gbcValue = repmat(gbcValue,size(ebsd.CS));
 end
 
@@ -74,7 +75,7 @@ clear m
 % get the location x of voronoi-generators D
 [d,dim] = size(x_D);
 
-%% spatial decomposition
+% ----------------spatial decomposition ---------------------------
 % decomposite the spatial domain into cells D with vertices x_V,
 
 switch dim
@@ -126,7 +127,7 @@ switch dim
     
 end
 
-%% segmentation
+% --------------------- segmentation ------------------------------
 
 % neighboured locations x_D, i.e. cells {D_l,D_r} in A_D
 
@@ -155,7 +156,7 @@ end
 
 clear ndx
 
-%%
+% ------------------------------------------------------------
 
 % adjacency of cells that have no common boundary
 A_Do = sparse(double(Dl(criterion)),double(Dr(criterion)),true,d,d);
@@ -166,14 +167,14 @@ A_Db = A_Db | A_Db';
 
 clear Dl Dr criterion notIndexed p k
 
-%% retrieve neighbours
+% ----------------- retrieve neighbours --------------------------
 
 I_DG = sparse(1:d,double(connectedComponents(A_Do)),1);    % voxels incident to grains
 A_G = I_DG'*A_Db*I_DG;                     % adjacency of grains
 
 clear A_Do
 
-%% interior and exterior grain boundaries
+% ----------- interior and exterior grain boundaries ------------
 
 sub = (A_Db * I_DG & I_DG)';                      % voxels that have a subgrain boundary
 [i,j] = find( diag(any(sub,1))*double(A_Db) ); % all adjacence to those
@@ -184,7 +185,7 @@ A_Db_ext = A_Db - A_Db_int;                        % adjacent over grain boundra
 
 clear A_Db sub i j
 
-%% create incidence graphs
+% ----------------- create incidence graphs ----------------------
 
 % now do
 switch dim
@@ -221,7 +222,7 @@ D_Fsub  = diag(sum(abs(I_FD(:,ix)) & abs(I_FD(:,iy)),2)>0);
 I_FDsub = D_Fsub*I_FD;
 clear I_FD I_FDbg D_Fsub ix iy
 
-%% sort edges of boundary when 2d case
+% ------------- sort edges of boundary when 2d case ----------------
 
 switch dim
   case 2
@@ -234,7 +235,7 @@ switch dim
     
 end
 
-%% mean orientation and phase
+% ------------ mean orientation and phase --------------------------
 
 [d,g] = find(I_DG);
 
@@ -270,7 +271,7 @@ meanRotation(doMeanCalc) = [cellMean{:}];
 clear grainSize grainRange indexedPhases doMeanCalc cellMean q g qMean
 
 
-%%
+% -----------------------------------------------------------
 
 grainSet.comment  = ebsd.comment;
 %', thresholds: ' ...
@@ -307,7 +308,7 @@ switch dim
 end
 
 
-%% some sub-routines for 2d case
+% ------------- some sub-routines for 2d case -----------------------
 function I_ED = EdgeOrientation(I_ED,E,x_V,x_D)
 % compute the orientaiton of an edge -1, 1
 

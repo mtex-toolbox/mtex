@@ -2,18 +2,18 @@ function f_hat = doFourier(odf,L,varargin)
 % called by ODF/calcFourier
 
 % set parameter
-c = odf.c / numel(odf.SS) / numel(odf.CS);
+c = odf.c / length(odf.SS) / length(odf.CS);
       
 % TODO
 % for a few center symmetrize before computing c_hat
-if 10*numel(odf.center)*numel(odf.SS)*numel(odf.CS) < max(L^3,100)
+if 10*length(odf.center)*length(odf.SS)*length(odf.CS) < max(L^3,100)
   
   g = odf.SS * reshape(quaternion(odf.center),1,[]); % SS x S3G
   g = reshape(g.',[],1);                             % S3G x SS
   g = reshape(g*odf.CS,1,[]);                        % S3G x SS x CS
   % g = quaternion(symmetrise(odf.center));
   
-  c = repmat(c,1,numel(odf.CS)*numel(odf.SS));
+  c = repmat(c,1,length(odf.CS)*length(odf.SS));
 else
   g = quaternion(odf.center);
 end
@@ -29,21 +29,21 @@ A = A(1:min(max(2,L+1),length(A)));
 f_hat = gcA2fourier(abg,c,A);
 
 % for many center symmetrise f_chat
-if 10*numel(odf.center)*numel(odf.SS)*numel(odf.CS) >= L^3
+if 10*length(odf.center)*length(odf.SS)*length(odf.CS) >= L^3
   
-  if numel(odf.CS) ~= 1
+  if length(odf.CS) ~= 1
     % symmetrize crystal symmetry
     abg = Euler(odf.CS,'nfft');
     A(1:end) = 1;
-    c = ones(1,numel(odf.CS));
+    c = ones(1,length(odf.CS));
     f_hat = multiply(f_hat,gcA2fourier(abg,c,A),length(A)-1);
   end
   
-  if numel(odf.SS) ~= 1
+  if length(odf.SS) ~= 1
     % symmetrize specimen symmetry
     abg = Euler(odf.SS,'nfft');
     A(1:end) = 1;
-    c = ones(1,numel(odf.SS));
+    c = ones(1,length(odf.SS));
     f_hat = multiply(gcA2fourier(abg,c,A),f_hat,length(A)-1);
   end
 end

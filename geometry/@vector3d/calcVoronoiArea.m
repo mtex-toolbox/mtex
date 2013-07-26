@@ -1,29 +1,29 @@
-function [area,centroids] = calcVoronoiArea(S2G,varargin)
+function [area,centroids] = calcVoronoiArea(v,varargin)
 % compute the area of the Voronoi decomposition
 %
-%% Input
-%  S2G - @S2Grid
+% Input
+%  v - @vector3d
 %
-%% Output
+% Output
 %  area - area of the corresponding Voronoi cells
 %  centroids - centroid of the voronoi cell
 %
-%% Options
+% Options
 % incomplete -
 
-%% in case of antipodal symmetry - add antipodal points
+v = reshape(v,[],1);
 
-antipodal = check_option(S2G,'antipodal');
+% in case of antipodal symmetry - add antipodal points
+antipodal = v.antipodal;
 if antipodal
-  S2G = [S2G(:);-S2G(:)];
-  S2G = delete_option(S2G,'antipodal');
+  v = [v;-v];
+  v.antipodal = false;
 end
 
-S2G = reshape(S2G,[],1);
-[V,C] = calcVoronoi(S2G);
+[V,C] = calcVoronoi(v);
 
 nd = ~cellfun('isempty',C);
-S2G = S2G.vector3d(nd);
+v = v.subsref(nd);
 
 last = cumsum(cellfun('prodofsize',C(nd)));
 
@@ -34,9 +34,9 @@ right = left(shift);
 
 center = cumsum([1 diff(shift)>1]);
 
-va = S2G(center);
-vb = V(left);
-vc = V(right);    % next vertex around
+va = v.subsref(center);
+vb = V.subsref(left);
+vc = V.subsref(right);    % next vertex around
 
 % calculate the area for each triangle around generator (va)
 A = real(sphericalTriangleArea(va,vb,vc));
@@ -46,11 +46,11 @@ if nargout>1
   x = full(sparse(center,1,x,numel(S2G),1));
   y = full(sparse(center,1,y,numel(S2G),1));
   z = full(sparse(center,1,z,numel(S2G),1));
-  centroids = (vector3d(x,y,z));
+  centroids = vector3d(x,y,z);
 end
 
 % accumulate areas of spherical triangles around generator
-A = full(sparse(center,1,A,numel(S2G),1));
+A = full(sparse(center,1,A,length(v),1));
 
 area = zeros(size(nd));
 area(nd) = A(1:nnz(nd));

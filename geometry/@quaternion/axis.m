@@ -1,12 +1,13 @@
 function v = axis(q)
 % rotational axis of the quaternion
-%% Syntax
-%  v = axis(q)
 %
-%% Input
+% Syntax
+%   v = axis(q)
+%
+% Input
 %  q - @quaternion
 %
-%% Output
+% Output
 %  v - @vector3d
 
 v = vector3d(q.b,q.c,q.d);

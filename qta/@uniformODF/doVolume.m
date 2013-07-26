@@ -7,7 +7,7 @@ if radius > rotangle_max_z(odf(1).CS)/2 || length(odf(1).SS) > 1
   
 else
   
-  v = numel(odf.CS) * (radius - sin(radius))./pi;
+  v = length(odf.CS) * (radius - sin(radius))./pi;
   varargout = varargin;
   
 end

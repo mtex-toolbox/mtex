@@ -1,13 +1,13 @@
 function pf = loadPoleFigure_geesthacht(fname,varargin)
 % load ptx file
 %
-%% Input
+% Input
 %  fname - file name
 %
-%% Output
+% Output
 %  pf    - vector of @PoleFigure
 %
-%% See also
+% See also
 % ImportPoleFigureData loadPoleFigure
 
 % read data
@@ -39,7 +39,7 @@ try
     
   end
   
-  assert(numel(r)>=5);
+  assert(length(r)>=5);
   
 catch
   interfaceError(fname);

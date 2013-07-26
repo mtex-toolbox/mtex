@@ -1,16 +1,16 @@
 function pf = loadPoleFigure_siemens(fname,varargin)
 % load D5000 data file
 %
-%% Syntax
-% pf = loadPoleFigure_D5000(fname,<options>)
+% Syntax
+%   pf = loadPoleFigure_D5000(fname,<options>)
 %
-%% Input
+% Input
 %  fname - file name
 %
-%% Output
+% Output
 %  pf    - @PoleFigure
 %
-%% See also
+% See also
 % loadPoleFigure ImportPoleFigureData
 
 fid = fopen(fname,'r');
@@ -58,7 +58,7 @@ end
 fclose(fid);
 
 % generate pole figure variable
-for p=1:numel(h)
+for p=1:length(h)
   
   n = numel(d{p})/numel(theta{p});
   r = S2Grid('theta',theta{p}*degree,'rho',linspace(0,2*pi*(n-1/n),n));

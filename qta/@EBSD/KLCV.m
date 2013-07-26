@@ -1,17 +1,18 @@
 function c = KLCV(ebsd,psi,varargin)
 % Kullback Leibler cross validation for optimal kernel estimation
 %
-%% Input
+% Input
 %  ebsd - @EBSD
 %  psi  - @kernel
-%% Options
+%
+% Options
 % SamplingSize - number of samples
 % PartitionSize - 
 %
-%% Output
+% Output
 %  c
 %
-%% See also
+% See also
 % EBSD/calcODF EBSD/calcKernel grain/calcKernel EBSD/BCV
 
 % get data
@@ -42,7 +43,7 @@ for i = 1:cN
   for k = 1:length(psi)
     
     % eval kernel
-    f = evalCos(psi(k),d) ./ numel(q) ./ numel(get(ebsd,'CS'));
+    f = evalCos(psi(k),d) ./ length(q) ./ length(get(ebsd,'CS'));
     
     % remove diagonal
     f(sub2ind(size(f),1:size(f,1),ind)) = 0;
@@ -68,7 +69,7 @@ c = c(end,:);
 
 return
 
-%% some testing data
+% some testing data
 
 cs = symmetry('orthorhombic'); %#ok<*UNRCH>
 ss = symmetry('triclinic');

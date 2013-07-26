@@ -1,35 +1,35 @@
-function [V,C] = calcVoronoi(S2G,varargin)
+function [V,C] = calcVoronoi(v,varargin)
 % compute the area of the Voronoi decomposition
 %
-%% Input
-%  S2G - @S2Grid
+% Input
+%  v - @vector3d
 %
-%% Output
+% Output
 %  V - list of Voronoi--Vertices
 %  C - cell array of Voronoi--Vertices per generator
 %
 %% See also
 % voronoin
 
-n = length(S2G);
-S2G = reshape(vector3d(S2G),[],1);
+n = length(v);
+v = reshape(v,[],1);
 
-[x,y,z] = double(S2G);
+[x,y,z] = double(v);
 faces = convhulln([x(:) y(:) z(:)],{'Qt','Pp','QJ'}); % delauny triangulation on sphere
 
 % voronoi-vertices
-V = normalize(cross(S2G(faces(:,3))-S2G(faces(:,1)),S2G(faces(:,2))-S2G(faces(:,1))));
+V = normalize(cross(v.subsref(faces(:,3))-v.subsref(faces(:,1)),v.subsref(faces(:,2))-v.subsref(faces(:,1))));
 
 % voronoi-vertices around generators
-[center vertices] = sort(faces(:));
+[center, vertices] = sort(faces(:));
 
 
-S2G = S2G(center);
+v = v.subsref(center);
 vert = repmat(V,3,1);
-vert = vert(vertices);
+vert = vert.subsref(vertices);
 
 % the azimuth of a voronoi-vertex relativ to its generator
-[ignore,azimuth] = polar(hr2quat(S2G,zvector).*cross(S2G,vert));
+[ignore,azimuth] = polar(hr2quat(v,zvector).*cross(v,vert));
 
 % sort the vertices clockwise around with respect to its center
 [ignore,left] = sortrows([center azimuth]); %#ok<*ASGLU>
@@ -39,7 +39,7 @@ left = mod(vertices(left)'-1,length(V))+1;
 % now we delete duplicated voronoi vertices
 eps = 10^-10; % machine precision
 [ignore,first,ind] = unique(round(squeeze(double(V))/eps)/eps,'rows');
-V = V(first); 
+V = V.subsref(first); 
 left = ind(left)';
 
 % erase duplicated vertices in the pointer list

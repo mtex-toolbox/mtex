@@ -149,7 +149,7 @@ values = f(ids);
 
 accuracy = get_option(varargin,'accuracy',0.25*degree);
 %centering of local max
-for k=1:numel(q)
+for k=1:length(q)
   res2 = res/2;
   while res2 > accuracy
     res2 = res2/2;

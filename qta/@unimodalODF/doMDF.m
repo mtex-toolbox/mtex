@@ -18,10 +18,10 @@ if numel(c) > 10000
   S3G = SO3Grid(res,cs2,cs1);
   
   % init variables
-  d = zeros(1,numel(S3G));
+  d = zeros(1,length(S3G));
   
   % iterate due to memory restrictions?
-  maxiter = ceil(length(cs1) * length(cs2) * numel(center) /...
+  maxiter = ceil(length(cs1) * length(cs2) * length(center) /...
     getMTEXpref('memory',300 * 1024));
   if maxiter > 1, progress(0,maxiter);end
   
@@ -29,8 +29,8 @@ if numel(c) > 10000
     
     if maxiter > 1, progress(iter,maxiter); end
     
-    dind = ceil(numel(center) / maxiter);
-    sind = 1+(iter-1)*dind:min(numel(center),iter*dind);
+    dind = ceil(length(center) / maxiter);
+    sind = 1+(iter-1)*dind:min(length(center),iter*dind);
     
     ind = find(S3G,center(sind));
     for i = 1:length(ind) % TODO -> make it faster

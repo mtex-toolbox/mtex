@@ -21,7 +21,7 @@ ss = symmetry();
 res = 5*degree;
 
 rotangle = res/2:res:pi-res/2;
-points = numel(S2Grid('equispaced','resolution',res));
+points = length(S2Grid('equispaced','resolution',res));
 
 q = quaternion();
 for i = 1:length(rotangle)

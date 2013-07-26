@@ -38,7 +38,7 @@ v = reshape(v,[],3);
 
 P = pdf(odf,h,r);
 
-nr = numel(r);
+nr = length(r);
 nx = fix(get_option(varargin,'Points',100));
 W = v(randi(nr,nx,1),:);
 

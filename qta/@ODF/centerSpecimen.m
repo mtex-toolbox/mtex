@@ -7,16 +7,16 @@ function [odf,r,v1,v2] = centerSpecimen(odf,center,varargin)
 % the routine starts with an lookaround grid for a given center (default
 % xvector) to find a starting value for newton iteration.
 %
-%% Input
+% Input
 %  odf    - @ODF
 %  center - look arround center for a suiteable start value (default xvector)
 %
-%% Output
+% Output
 %  odf    - rotated @ODF
 %  r      - its rotation rotate(odf_out,r) = odf_in
 %  v1,v2  - normal vector of the mirrorplans
 %
-%% Options
+% Options
 %  delta      - stepsize for evaluating the gradient
 %  itermax    - maximum number of newton iterations (default 5)
 %  SO3Grid    - a @SO3Grid the @ODF is evaluatete on
@@ -27,7 +27,7 @@ function [odf,r,v1,v2] = centerSpecimen(odf,center,varargin)
 %
 %  fourier    - use fourier coefficents as objective function
 %
-%% Examples
+% Examples
 % Starting with an synthetic odf with orthorhombic symmetry
 %
 %       CS = symmetry('cubic')
@@ -51,7 +51,7 @@ function [odf,r,v1,v2] = centerSpecimen(odf,center,varargin)
 %       [odr,r,v1,v2] = centerSpecimen(odf);
 %       plotpdf(odr,h,'antipodal')
 %
-%%
+%
 %
 
 return
@@ -116,12 +116,12 @@ if options.verbose
   fprintf(' looking at %d rotational axes\n', numel(v))
 end
 
-n = numel(vc);
+n = length(vc);
 val = zeros(size(vc));
 global mtex_progress
 mtex_progress = 1;
 progress(0,n);
-for k=1:numel(vc)
+for k=1:length(vc)
   progress(k,n);
   val(k) = f(vc(k),options);
 end

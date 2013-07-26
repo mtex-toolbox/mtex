@@ -37,19 +37,25 @@ switch lower(vname)
     varargout{4} =  2*pi; % maxRho
    
   case {'resolution','res'}
+
+    if obj.isProp('resolution')
+      
+      varargout{1} = obj.getProp('resolution');
     
-    varargout{1} = obj.resolution;
-    
-    if obj.resolution == 2*pi
-          
+    else
+              
       if length(obj)>50000
         varargout{1} = sqrt(4*pi/length(obj));
       elseif length(obj)>4
-        try %#ok<TRYNC>
+        try
           a = calcVoronoiArea(obj);
           assert(sqrt(mean(a))>0);
           varargout{1} = median(sqrt(a));
+        catch %#ok<*CTCH>
+          varargout{1} = 2*pi;
         end
+      else
+        varargout{1} = 2*pi;
       end
     end
     

@@ -83,7 +83,7 @@ try
     %[ig,ig,phase] = unique(phase);
   else
     
-    phase = ones(numel(q),1);
+    phase = ones(length(q),1);
     
   end
   

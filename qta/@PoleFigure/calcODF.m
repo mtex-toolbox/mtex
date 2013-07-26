@@ -68,7 +68,7 @@ iter_max = int32(get_option(varargin,'ITER_MAX',...
 iter_min = int32(get_option(varargin,'ITER_MIN',10,'double'));
 
 c0 = get_option(varargin,'C0',...
-	1/sum(numel(S3G))*ones(sum(numel(S3G)),1));
+	1/sum(length(S3G))*ones(sum(length(S3G)),1));
 
 
 % ----------------- prepare for calling calcODF.c -------------------------
@@ -81,7 +81,7 @@ clear ghtheta; clear ghrho;
 
 % extract kernel Fourier coefficents
 A = getA(psi);
-if check_option(get(pf(1),'r'),'antipodal')
+if pf(1).r.antipodal
   A(2:2:end) = 0;
 else
   warning('MTEX:missingFlag','Flag HEMISPHERE not set in PoleFigure data!');
@@ -92,7 +92,7 @@ A = A(1:bw);
 % detect superposed pole figures
 lh = int32(zeros(1,length(pf)));
 for i=1:length(pf)
-	lh(i) = int32(length(get(pf(i),'h'))*numel(CS)*numel(SS));
+	lh(i) = int32(length(get(pf(i),'h'))*length(CS)*length(SS));
 end
 refl = get(pf,'c');
 
@@ -107,7 +107,7 @@ clear rtheta;clear rrho;
 % ---------- normalize very different polefigures --------------------
 mm = max(max(pf));
 
-for i = 1:numel(pf)
+for i = 1:length(pf)
 
   if mm > 5*max(pf(i)), pf(i) = pf(i) * mm/5/max(pf(i));end
 
@@ -115,8 +115,8 @@ end
 
 % compute quadrature weights
 w = [];
-if ~check_option(varargin,'NoQuadratureWeights')
-  for i = 1:numel(pf)
+if ~check_option(varargin,'b')
+  for i = 1:length(pf)
     ww = calcQuadratureWeights(pf(i).r);
     w = [w;ww(:)]; %#ok<AGROW>
   end
@@ -192,7 +192,7 @@ for ip = 1:length(pf)
 end
 P = max(0,P); %no negative values !
 
-c0 = (1-phon)/numel(S3G)*ones(numel(S3G),1);
+c0 = (1-phon)/length(S3G)*ones(length(S3G),1);
 
 % calculate new ODF
 [c,alpha] = call_extern('pf2odf',...

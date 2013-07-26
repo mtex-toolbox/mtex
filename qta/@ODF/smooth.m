@@ -55,10 +55,10 @@ for iodf = 1:length(odf)
 
     % init variables
     g = quaternion(odf(iodf).center);
-    d = zeros(1,numel(S3G));
+    d = zeros(1,length(S3G));
 
     % iterate due to memory restrictions?
-    maxiter = ceil(numel(odf(1).CS)*numel(odf(1).SS)*numel(g) /...
+    maxiter = ceil(length(odf(1).CS)*length(odf(1).SS)*length(g) /...
       getMTEXpref('memory',300 * 1024));
     if maxiter > 1, progress(0,maxiter);end
 
@@ -66,8 +66,8 @@ for iodf = 1:length(odf)
 
       if maxiter > 1, progress(iter,maxiter); end
 
-      dind = ceil(numel(g) / maxiter);
-      sind = 1+(iter-1)*dind:min(numel(g),iter*dind);
+      dind = ceil(length(g) / maxiter);
+      sind = 1+(iter-1)*dind:min(length(g),iter*dind);
 
       ind = find(S3G,g(sind));
       for i = 1:length(ind)

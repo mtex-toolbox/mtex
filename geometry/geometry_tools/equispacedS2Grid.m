@@ -1,99 +1,62 @@
 function S2G = equispacedS2Grid(varargin)
 % defines an equispaced spherical grid
+%
 
 % extract options
+bounds = getPolarRange(varargin{:});
 
-% rho range
-minrhoGrid = 0;
-maxrhoGrid = 2*pi;
-
-minrho = get_option(varargin,'MINRHO',minrhoGrid);
-maxrho = get_option(varargin,'MAXRHO',maxrhoGrid);
-drho = maxrho - minrho;
-
-% theta range
-if check_option(varargin,'south')
-  minthetaGrid = pi/2;
-  maxthetaGrid = pi;
-else
-  minthetaGrid = 0;
-  
-  if check_option(varargin,{'antipodal','north'}) && ...
-      (~check_option(varargin,'complete') ||check_option(varargin,'north'))
-    maxthetaGrid = pi/2;
-  else
-    maxthetaGrid = pi;
-  end
-end
-
-mintheta = max(get_option(varargin,'MINTHETA',minthetaGrid), ...
-               minthetaGrid);
-
-maxtheta = get_option(varargin,'MAXTHETA',maxthetaGrid);
-
-if ~isnumeric(maxtheta)
-  maxthetafun = @(rho) min(maxtheta(rho),maxthetaGrid);
-  maxtheta = max(maxthetafun(linspace(minrho,maxrho,5)));
-else
-  maxtheta = min(maxtheta,maxthetaGrid);
-end
-dtheta = maxtheta - mintheta;
-
-% srict theta and rho range
-if check_option(varargin,'RESTRICT2MINMAX')
-  minrhoGrid = minrho;
-  maxrhoGrid = maxrho;
-  minthetaGrid = mintheta;
-  maxthetaGrid = maxtheta;
-end
-
-
-% equidistribution
-
+% get number of points
 if check_option(varargin,'points') % calculate resolution
-  ntheta = N2ntheta(fix(get_option(varargin,'points')),maxtheta,maxrho);
-  res =  maxtheta / ntheta;
+  ntheta = N2ntheta(fix(get_option(varargin,'points')),...
+    bounds.VR{2},bounds.VR{4});
+  res =  bounds.VR{2} / ntheta;
 else
-  res = get_option(varargin,'RESOLUTION',2.5*degree);
-  res =  2* maxtheta / round(2 * maxtheta / res);
-  ntheta = fix(round(2 * maxtheta / res+ check_option(varargin,'NO_CENTER') )/2);
+  res = get_option(varargin,'resolution',2.5*degree);
+  res =  2* bounds.VR{2} / round(2 * bounds.VR{2} / res);
+  ntheta = fix(round(2 * bounds.VR{2} / res + ...
+    check_option(varargin,'no_center') )/2);
 end
 
-
-if check_option(varargin,'NO_CENTER')
-  theta = mintheta + (0.5:ntheta-0.5)*res;
+% define polar angle
+if check_option(varargin,'no_center')
+  theta =  (0.5:ntheta-0.5)*res;
 else
-  theta = mintheta + (0:ntheta)*res;
+  theta = (0:ntheta)*res;
 end
-G.theta = S1Grid(theta,minthetaGrid,maxthetaGrid);
+theta = bounds.VR{1} + theta;
 
-
+% define azimuth angles
 identified = check_option(varargin,'antipodal');
+
 for j = 1:length(theta)
   
   th = theta(j);
-  if isappr(th,pi/2) && isappr(drho,2*pi) && identified
+  if isappr(th,pi/2) && isappr(bounds.drho,2*pi) && identified
     
-    G.rho(j) = S1Grid(minrho + G.res*(0.5*mod(j,2)+(0:2*ntheta-1))...
-      ,minrhoGrid,minrhoGrid + pi,'PERIODIC');
+    rh = bounds.VR{3} + res*(0.5*mod(j,2)+(0:2*ntheta-1));
+    rho(j) = S1Grid(rh,bounds.FR{3},bounds.FR{3} + pi,'periodic'); %#ok<AGROW>
     
   else
-    steps = max(round(sin(th) * drho / dtheta * ntheta),1);
-    rho = minrho + (0:steps-1 )* drho /steps + mod(j,2) * drho/steps/2;
-    G.rho(j) = S1Grid(rho,minrhoGrid,maxrhoGrid,'PERIODIC');
+    
+    steps = max(round(sin(th) * bounds.drho / bounds.dtheta * ntheta),1);
+    rh = bounds.VR{3} + (0:steps-1 )* bounds.drho /steps + ...
+      mod(j,2) * bounds.drho/steps/2;
+    rho(j) = S1Grid(rh,bounds.FR{3},bounds.FR{4},'periodic'); %#ok<AGROW>
   end
 end
 
-S2G = S2Grid(calcGrid(G.theta,G.rho),theta,rho,'resolution',res,varargin{:});
+theta = S1Grid(theta,bounds.FR{1},bounds.FR{2});
 
+S2G = S2Grid(theta,rho);
+S2G = S2G.setProp('resolution',res);
 
-S2G = set_option(S2G,...
-  extract_option(varargin,{'INDEXED','PLOT','north','south','antipodal','lower','upper'}));
+%S2G = set_option(S2G,...
+%  extract_option(varargin,{'INDEXED','PLOT','north','south','antipodal','lower','upper'}));
 
 
 end
 
-
+% ---------------------------------------------------------
 function ntheta = N2ntheta(N,maxtheta,maxrho)
 ntheta = 1;
 while calcAnz(ntheta,0,maxtheta,maxrho) < N

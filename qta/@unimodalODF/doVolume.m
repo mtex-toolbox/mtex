@@ -8,7 +8,7 @@ if radius > rotangle_max_z(odf(1).CS)/2 || length(odf(1).SS) > 1
 else
 
   % compute distances
-  d = reshape(odf.center.angle_outer(center,'all'),[],numel(odf.center));
+  d = reshape(odf.center.angle_outer(center,'all'),[],length(odf.center));
 
   % precompute volumes
   [vol,r] = volume(odf.psi,radius);
