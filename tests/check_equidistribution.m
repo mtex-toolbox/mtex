@@ -21,11 +21,11 @@ ss = symmetry();
 res = 5*degree;
 
 rotangle = res/2:res:pi-res/2;
-points = length(S2Grid('equispaced','resolution',res));
+points = length(equispacedS2Grid('resolution',res));
 
 q = quaternion();
 for i = 1:length(rotangle)
-  rotax = S2Grid('equispaced','points',sin(rotangle(i)/2)^2*points);
+  rotax = equispacedS2Grid('points',sin(rotangle(i)/2)^2*points);
   q = [q,axis2quat(vector3d(rotax),rotangle(i))];
 end
 

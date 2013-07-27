@@ -1,7 +1,7 @@
 function q = subsasgn(q,s,b)
 % overloads subsasgn
 
-if isempty(q)
+if isempty(q) && ~isempty(b)
   q = b;
   q.a = [];
   q.b = [];
@@ -9,9 +9,9 @@ if isempty(q)
   q.d = [];
 end
 
- if islogical(s) || isnumeric(s)
-    s = substruct('()',{s});      
-  end
+if islogical(s) || isnumeric(s)
+  s = substruct('()',{s});
+end
 
 switch s(1).type
   

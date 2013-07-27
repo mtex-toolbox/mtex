@@ -35,7 +35,7 @@ try
   data = reshape(data,72,[]);
   data = data(:,1:17);
   
-  r = S2Grid('regular','theta',(0:5:80)*degree,...
+  r = regularS2Grid('theta',(0:5:80)*degree,...
     'rho',(2.5:5:360)*degree,'maxtheta',80*degree);
   
   % pf = PoleFigure(Miller(1,1,1),r,data,symmetry('cubic'),symmetry);

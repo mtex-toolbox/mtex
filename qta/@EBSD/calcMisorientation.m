@@ -46,8 +46,8 @@ minDistance = get_option(varargin,'minDistance',maxExtend/100);
 
 samplSize = get_option(varargin,'sampleSize',100000);
 
-i1 = randi(numel(ebsd1),samplSize,1);
-i2 = randi(numel(ebsd2),samplSize,1);
+i1 = randi(length(ebsd1),samplSize,1);
+i2 = randi(length(ebsd2),samplSize,1);
 
 %% ensure points are not to close together
 

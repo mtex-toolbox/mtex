@@ -104,9 +104,9 @@ function v_start = initialSearch(center, options)
 
 if options.plot
   %   v = S2Grid('plot','resolution',options.resolution,'maxtheta',110*degree,'mintheta',80*degree)
-  v = S2Grid('plot','resolution',options.resolution,'maxtheta',options.maxangle);
+  v = plotS2Grid('resolution',options.resolution,'maxtheta',options.maxangle);
 else
-  v = S2Grid('equispaced','resolution',options.resolution,'maxtheta',options.maxangle);
+  v = equispacedS2Grid('resolution',options.resolution,'maxtheta',options.maxangle);
 end
 
 q = hr2quat(zvector,center);

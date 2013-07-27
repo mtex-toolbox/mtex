@@ -1,7 +1,7 @@
 function v = subsasgn(v,s,b)
 % overloads subsasgn
 
-if isempty(v)
+if isempty(v)  && ~isempty(b)
   v = b;
   v.x = [];
   v.y = [];

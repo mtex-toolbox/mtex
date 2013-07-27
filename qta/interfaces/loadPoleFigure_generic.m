@@ -53,7 +53,7 @@ if size(d,2)>15 || ...
   % determine specimen directions
   if ~(~isempty(varargin) && isa(varargin{1},'vector3d') && size(varargin{1}) == size(d))
 
-    r = S2Grid('regular','points',size(d),'antipodal',varargin{:});
+    r = regularS2Grid('points',size(d),'antipodal',varargin{:});
     
     if ~check_option(varargin,'maxtheta')
       warning(['No grid of specimen directions was specified' ...

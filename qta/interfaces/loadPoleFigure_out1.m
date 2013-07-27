@@ -19,7 +19,7 @@ try
   data = txt2mat(fname,'NumHeaderLines',15,'NumColumns',2,...
     'InfoLevel',0,'ReadMode','block','BadLineString',{'!@!'});
   
-  r = S2Grid('points',[72 18],'regular','maxtheta',85*degree);
+  r = regularS2Grid('points',[72 18],'maxtheta',85*degree);
   
   gz = length(r);
   numpf = length(data)/gz;

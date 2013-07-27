@@ -84,7 +84,7 @@ if strcmpi(cc,'ipdfHKL'),  varargin = [{'antipodal'},varargin]; end
 
 [minTheta,maxTheta,minRho,maxRho,v] = getFundamentalRegionPF(cs,varargin{:});
 
-h = S2Grid('PLOT','minTheta',minTheta,'maxTheta',maxTheta,...
+h = plotS2Grid('minTheta',minTheta,'maxTheta',maxTheta,...
   'minRho',minRho,'maxRho',maxRho,'RESTRICT2MINMAX','resolution',1*degree,varargin{:});
 r = get_option(varargin,'r');
 

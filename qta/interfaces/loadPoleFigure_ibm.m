@@ -36,7 +36,7 @@ try
     d = textscan(fid,'%d',72*19);
     d = reshape(d{1},[72 19]);
     
-    r = S2Grid('regular','points',size(d));
+    r = regularS2Grid('points',size(d));
     
     % generate Polefigure
     pf(ipf) = PoleFigure(h,r,double(d),'comment',comment,varargin{:}); %#ok<AGROW>

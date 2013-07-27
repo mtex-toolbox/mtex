@@ -35,7 +35,7 @@ ipf = get_option(varargin,'zero_range',1:length(pf),'double');
 
   
 % approximation grid
-S2G = S2Grid('regular','resolution',1*degree,'antipodal');
+S2G = regularS2Grid('resolution',1*degree,'antipodal');
 
 % loop over pole figures
 for ip = ipf

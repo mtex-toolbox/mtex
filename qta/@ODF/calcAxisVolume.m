@@ -22,7 +22,7 @@ function v = calcAxisVolume(odf,axis,radius,varargin)
 res = get_option(varargin,'resolution',radius/5);
 
 % define a grid for quadrature
-h = S2Grid('equispaced','resolution',res,varargin{:});
+h = equispacedS2Grid('resolution',res,varargin{:});
 
 % restrict to fundamental region
 sym = disjoint(odf.CS,odf.SS);

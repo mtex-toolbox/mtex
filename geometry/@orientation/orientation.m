@@ -1,18 +1,18 @@
 classdef orientation < rotation
 % defines an orientation
 %
-%% Syntax
-%  ori = orientation(rot,cs,ss) -
-%  ori = orientation('Euler',phi1,Phi,phi2,cs,ss) -
-%  ori = orientation('Euler',alpha,beta,gamma,'ZYZ',cs,ss) -
-%  ori = orientation('Miller',[h k l],[u v w],cs,ss) -
-%  ori = orientation(name,cs,ss) -
-%  ori = orientation('axis,v,'angle',omega,cs,ss) -
-%  ori = orientation('matrix',A,cs) -
-%  ori = orientation('map',u1,v1,u2,v2,cs) -
-%  ori = orientation('quaternion',a,b,c,d,cs) -
+% Syntax
+%   ori = orientation(rot,cs,ss) 
+%   ori = orientation('Euler',phi1,Phi,phi2,cs,ss) 
+%   ori = orientation('Euler',alpha,beta,gamma,'ZYZ',cs,ss) 
+%   ori = orientation('Miller',[h k l],[u v w],cs,ss) 
+%   ori = orientation(name,cs,ss) 
+%   ori = orientation('axis,v,'angle',omega,cs,ss) 
+%   ori = orientation('matrix',A,cs) 
+%   ori = orientation('map',u1,v1,u2,v2,cs) 
+%   ori = orientation('quaternion',a,b,c,d,cs) 
 %
-%% Input
+% Input
 % rot       - @rotation
 % cs, ss    - @symmetry
 % u1,u2     - @Miller
@@ -27,10 +27,10 @@ classdef orientation < rotation
 %    * 'Brass', 'Brass2'
 %    * 'PLage', 'PLage2', 'QLage', 'QLage2', 'QLage3', 'QLage4'
 %
-%% Ouptut
+% Ouptut
 %  ori - @orientation
 %
-%% See also
+% See also
 % quaternion_index orientation_index
 
 properties
@@ -99,7 +99,7 @@ end
 
 end
 
-%% some predefined orientations
+% --------------- some predefined orientations ----------------------
 
 function [names,phi1,Phi,phi2] = oriList
   

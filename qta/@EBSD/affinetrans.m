@@ -31,7 +31,7 @@ end
 
 %% rotate the spatial data
 if isfield(ebsd.options,'x') && isfield(ebsd.options,'x')
-  xy = [ebsd.options.x, ebsd.options.y, ones(numel(ebsd),1)] * T';
+  xy = [ebsd.options.x, ebsd.options.y, ones(length(ebsd),1)] * T';
   ebsd.options.x = xy(:,1);
   ebsd.options.y = xy(:,2);
 end

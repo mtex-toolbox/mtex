@@ -20,10 +20,10 @@ function plotebsd(ebsd,varargin)
 
 [ax,ebsd,varargin] = getAxHandle(ebsd,varargin{:});
 
-if numel(ebsd) > 2000 || check_option(varargin,'points')
+if length(ebsd) > 2000 || check_option(varargin,'points')
   points = fix(get_option(varargin,'points',2000));
   disp(['plot ', int2str(points) ,' random orientations out of ', ...
-    int2str(numel(ebsd)),' given orientations']);
+    int2str(length(ebsd)),' given orientations']);
   ebsd = subsample(ebsd,points);
 end
 

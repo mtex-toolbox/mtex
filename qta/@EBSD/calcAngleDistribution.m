@@ -21,7 +21,7 @@ if check_option(varargin,'smooth')
   odf1 = calcODF(ebsd,'Fourier','halfwidth',10*degree);
   
   ebsd2 = getClass(varargin,'EBSD',[]);
-  if isempty(ebsd2) || numel(ebsd) == numel(ebsd2)
+  if isempty(ebsd2) || length(ebsd) == length(ebsd2)
     odf2 = odf1;
   else
     odf2 = calcODF(ebsd2,'halfwidth',10*degree,'Fourier');

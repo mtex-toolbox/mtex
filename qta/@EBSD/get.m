@@ -123,7 +123,7 @@ switch lower(vname)
       w = ebsd.options.weight;
       varargout{1} = w./sum(w(:));
     else
-      varargout{1} = ones(numel(ebsd),1)./numel(ebsd);
+      varargout{1} = ones(length(ebsd),1)./length(ebsd);
     end
     
   case 'mineral'

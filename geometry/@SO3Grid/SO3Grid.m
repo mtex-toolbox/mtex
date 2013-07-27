@@ -49,7 +49,7 @@ end
 function q = axisAngleGrid(varargin)
 
 % extract axes and angles
-axes = S2Grid('plot','north',varargin{:});  
+axes = plotS2Grid('north',varargin{:});  
 angles = linspace(0,pi,6);
 angles = get_option(varargin,'angles',angles,'double');
 % compute quaternions

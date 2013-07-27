@@ -76,7 +76,7 @@ plotpdf(rec,h)
 %%
 %
 % define specimen directions
-r = S2Grid('regular','antipodal')
+r = regularS2Grid('antipodal')
 
 %%
 % define crystal directions

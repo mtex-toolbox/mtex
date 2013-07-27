@@ -33,7 +33,7 @@ fprintf(fid,'%% crystal symmetry: %s\n',char(CS));
 fprintf(fid,'%% specimen symmetry: %s\n',char(SS));
 
 % get SO3Grid
-S3G = getClass(varargin,'SO3Grid',SO3Grid('regular',CS,SS,varargin{:}));
+S3G = getClass(varargin,'SO3Grid',regularSO3Grid(CS,SS,varargin{:}));
 
 % evaluate ODF
 v = eval(odf,S3G,varargin{:}); %#ok<EVLC>

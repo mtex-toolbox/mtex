@@ -50,8 +50,8 @@ if check_option(varargin,'restrict2MinMax'), bounds.FR = bounds.VR; end
 if check_option(varargin,'points')
   bounds.points = get_option(varargin,'points');
   if length(bounds.points) == 1
-    bounds.res = sqrt(bounds.drho * dtheta/bounds.points);
-    bounds.res = dtheta/round(bounds.dtheta/res);
+    bounds.res = sqrt(bounds.drho * bounds.dtheta/bounds.points);
+    bounds.res = bounds.dtheta/round(bounds.dtheta/bounds.res);
     bounds.points = round([bounds.drho/bounds.res,bounds.dtheta/bounds.res]);
   end
 else

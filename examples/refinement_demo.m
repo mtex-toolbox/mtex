@@ -29,7 +29,7 @@ figure, plotpdf(odf_true,h)
 
 %% Initial measure grid
 
-r = S2Grid('equispaced','resolution',15*degree,'antipodal');
+r = equispacedS2Grid('resolution',15*degree,'antipodal');
 
 figure
 plot(r,'markersize',12)
@@ -100,7 +100,7 @@ plot(pf_measured,'silent');
 %% Compared to a dense measured Polefigure
 %
 
-r = S2Grid('equispaced','resolution',get(pf_measured,'resolution'));
+r = equispacedS2Grid('resolution',get(pf_measured,'resolution'));
 for l=1:length(h)
   pf_simulated(l) = calcPoleFigure(odf_true,h(l),r);
 end

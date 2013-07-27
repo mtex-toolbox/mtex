@@ -44,7 +44,7 @@ if nargin >= 3 && (isa(varargin{1},'vector3d') || ...
   r = ensurecell(varargin{1});
   varargin(1) = [];
 else
-  r = {S2Grid('regular',varargin{:})};
+  r = {regularS2Grid(varargin{:})};
 end
 
 comment = get_option(varargin,'comment',...

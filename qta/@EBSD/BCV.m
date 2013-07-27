@@ -12,7 +12,7 @@ function c = BCV(ebsd,psi)
 % EBSD/calcODF EBSD/calcKernel grain/calcKernel EBSD/LSCV
 
 % extract data
-N = numel(ebsd);
+N = length(ebsd);
 NCS = N * length(get(ebsd,'CS'));
 
 o = get(ebsd,'orientations');

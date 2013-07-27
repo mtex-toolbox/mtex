@@ -43,7 +43,7 @@ switch lower(ext)
   case '.cnv'
     r  = DubnaGrid(size(d,2));
   case '.cns'
-    r = S2Grid('regular','points',size(d),'maxtheta',5*degree*(size(d,2)-1),'antipodal');
+    r = regularS2Grid('points',size(d),'maxtheta',5*degree*(size(d,2)-1),'antipodal');
 end
 
 pf = PoleFigure(h,r,d,varargin{:});

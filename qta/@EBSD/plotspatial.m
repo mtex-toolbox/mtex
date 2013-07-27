@@ -43,7 +43,7 @@ function varargout = plotspatial(ebsd,varargin)
 %% See also
 % EBSD/plot
 
-if ~numel(ebsd), return, end
+if isempty(ebsd), return, end
 
 %% check for 3d data
 if isfield(ebsd.options,'z')

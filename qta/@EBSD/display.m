@@ -17,7 +17,7 @@ if ~isempty(ebsd.comment)
   disp(['  Comment: ' ebsd.comment(1:end-1)]);  
 end
 
-if numel(ebsd)>0 && ~isempty(fields(ebsd.options))
+if ~isempty(ebsd) && ~isempty(fields(ebsd.options))
   disp(['  Properties: ',option2str(fields(ebsd.options))]);
 end
 
@@ -55,7 +55,7 @@ for ip = 1:numel(ebsd.phaseMap)
 
 end
 
-if numel(ebsd)>0
+if ~isempty(ebsd)
   cprintf(matrix,'-L','  ','-Lc',...
     {'Phase' 'Orientations' 'Mineral' 'Color' 'Symmetry' 'Crystal reference frame'},...
     '-ic','F');
@@ -65,9 +65,9 @@ end
 
 disp(' ');
 
-if 0 < numel(ebsd) && numel(ebsd) <= 20
+if ~isempty(ebsd) && length(ebsd) <= 20
   fn = fields(ebsd.options);
-  d = zeros(sum(numel(ebsd)),numel(fn));
+  d = zeros(length(ebsd),numel(fn));
   for j = 1:numel(fn)
     if isnumeric(ebsd.options.(fn{j}))
       d(:,j) = vertcat(ebsd.options.(fn{j}));

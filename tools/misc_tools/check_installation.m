@@ -36,7 +36,7 @@ function check_binaries
 
 if fast_check_binaries, return; end
 
-[th,rh] = polar(S2Grid('equispaced','points',10));
+[th,rh] = polar(equispacedS2Grid('points',10));
 
 th = fft_theta(th);
 rh = fft_rho(rh);
