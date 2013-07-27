@@ -25,12 +25,12 @@ toc
 
 %% check S2Grid/find
 
-x = S2Grid('equispaced','points',500);
+x = equispacedS2Grid('points',500);
 plot(subGrid(x,find(x,xvector,10*degree)));
 full(find(x,xvector,10*degree))
 
-x = S2Grid('equispaced','points',5000);
-y = vector3d(S2Grid('equispaced','points',100));
+x = equispacedS2Grid('points',5000);
+y = vector3d(equispacedS2Grid('points',100));
 
 tic
 for i = 1:length(y)

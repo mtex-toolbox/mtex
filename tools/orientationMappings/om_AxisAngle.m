@@ -49,7 +49,7 @@ return
 
 cs = symmetry('m-3m');
 
-r = S2Grid('plot');
+r = plotS2Grid;
 o = rotation('axis',r,'angle',10*degree);
 rod = Rodrigues(o);
 

@@ -93,7 +93,7 @@ return
 
 %%
 
-v = S2Grid('plot');
+v = plotS2Grid;
 o = orientation('axis',v,'angle',0.51*pi,symmetry(1));
 
 c = rodrigues2rgb(o);

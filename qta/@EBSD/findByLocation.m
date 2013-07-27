@@ -31,7 +31,7 @@ delta = 1.5*mean(sqrt(sum(diff(ebsd.unitCell).^2,2)));
 
 x_Dm = x_D-delta;  x_Dp = x_D+delta;
 
-nd = sparse(numel(ebsd),size(xy,1));
+nd = sparse(length(ebsd),size(xy,1));
 dim = size(x_D,2);
 for k=1:size(xy,1)
   

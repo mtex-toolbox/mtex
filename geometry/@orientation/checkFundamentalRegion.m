@@ -16,8 +16,8 @@ function [ind,boundary] = checkFundamentalRegion(ori,varargin)
 c_sym = quaternion(ori.CS * ori.SS);
 
 % compute rotational axes and angles
-axes = get(c_sym(2:end),'axis');
-angles = get(c_sym(2:end),'angle');
+axes = c_sym(2:end).axis;
+angles = c_sym(2:end).angle;
 angles = min(angles,2*pi-angles);
 
 ind = angles < 1e-6;

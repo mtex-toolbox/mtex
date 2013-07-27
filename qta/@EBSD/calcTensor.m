@@ -63,7 +63,7 @@ for p = phases
   % extract orientations and wights
   ind = ebsd.phase == p;
   ori = get(subsref(ebsd,ind),'orientations');
-  weight = get(subsref(ebsd,ind),'weight') * nnz(ind) ./ numel(ebsd);
+  weight = get(subsref(ebsd,ind),'weight') * nnz(ind) ./ length(ebsd);
   
   rotT = rotate(T{p},ori);
   rotInvT = rotate(inv(T{p}),ori);

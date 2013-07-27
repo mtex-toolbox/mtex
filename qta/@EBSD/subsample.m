@@ -14,8 +14,8 @@ function ebsd = subsample(ebsd,points)
 %% See also
 % EBSD/delete 
 
-if points >= numel(ebsd), return;end
+if points >= length(ebsd), return;end
 
-ind = discretesample(numel(ebsd),points);
+ind = discretesample(length(ebsd),points);
 
 ebsd = subsref(ebsd,ind);

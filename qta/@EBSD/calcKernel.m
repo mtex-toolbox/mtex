@@ -45,8 +45,8 @@ psi = get_option(varargin,'kernel',psi);
 
 % if there are to many orientations -> subsampling
 maxSample = 5000;
-if numel(ebsd) > maxSample
-  fak = (numel(ebsd)/maxSample).^(1/7); % true is 2/7 but let us stay on the save side
+if length(ebsd) > maxSample
+  fak = (length(ebsd)/maxSample).^(1/7); % true is 2/7 but let us stay on the save side
   ebsd = subsample(ebsd,maxSample);
 else
   fak = 1;

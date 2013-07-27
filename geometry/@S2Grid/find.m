@@ -48,7 +48,7 @@ else
   ind = S2Grid_find_region(ytheta,int32(iytheta),...
     yrho,prho,xtheta,xrho,varargin{1});
   
-  if check_option(S2G,'antipodal')
+  if S2G.antipodal
     ind = ind(:,1:size(v,1)) | ind(:,size(v,1) + 1:end);
   end
   

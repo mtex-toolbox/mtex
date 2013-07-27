@@ -14,7 +14,7 @@ function plot_zero_range(pf,varargin)
 % PoleFigure/calcODF
 
 % plotting grid
-S2G = S2Grid('PLOT','antipodal',varargin{:});
+S2G = plotS2Grid('antipodal',varargin{:});
 
 % loop over pole figures
 for ip = 1:length(pf)

@@ -25,7 +25,7 @@ for i = 1:length(rotAngle)
   
   dres = acos(max((cos(res/2)-cos(rotAngle(i)/2)^2)/...
     (sin(rotAngle(i)/2)^2),-1));  
-  axes = S2Grid('equispaced','resolution',dres);
+  axes = equispacedS2Grid('resolution',dres);
   
   qId = [qId,axis2quat(axes,rotAngle(i))]; %#ok<AGROW>
 end

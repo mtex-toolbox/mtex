@@ -16,7 +16,7 @@ for k=1:length(h)
   res = 5*degree;
   
   % try to find the maximum value for P(h,r)
-  S2 = S2Grid('equispaced','resolution',res);
+  S2 = equispacedS2Grid('resolution',res);
   
   while res/2 > 0.25*degree
     
@@ -27,7 +27,7 @@ for k=1:length(h)
     
     %local search
     v = vector3d(S2(i));
-    S2 = hr2quat(zvector,v)*S2Grid('equispaced','maxtheta',4*res,'resolution',res);
+    S2 = hr2quat(zvector,v)*equispacedS2Grid('maxtheta',4*res,'resolution',res);
     
   end
   

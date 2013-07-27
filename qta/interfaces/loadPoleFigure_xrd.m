@@ -39,7 +39,7 @@ for i = 1:length(rhoStartToken)
     rho = (rhoStart(1):rhoStep(1):rhoStop(1))*degree;
     theta = pi/2-readToken(h,thetaToken{i})*degree;
     
-    r = S2Grid('regular','theta',theta,'rho',rho);
+    r = regularS2Grid('theta',theta,'rho',rho);
   catch %#ok<CTCH>
     continue
   end

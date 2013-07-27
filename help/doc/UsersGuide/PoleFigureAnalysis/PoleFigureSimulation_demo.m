@@ -50,7 +50,7 @@ h = [Miller(1,1,1,cs),Miller(1,1,0,cs),Miller(1,0,1,cs),Miller(0,1,1,cs),...
 %%
 % The <S2Grid_index.html grid> of specimen directions
 
-r = S2Grid('regular','resolution',5*degree);
+r = regularS2Grid('resolution',5*degree);
 
 
 %%

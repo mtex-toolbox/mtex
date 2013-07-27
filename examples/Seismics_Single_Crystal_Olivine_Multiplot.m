@@ -66,7 +66,7 @@ rho=3.355;
 %%
 %**************************************************************************
 % Generate velocities and polarizations on a fine pole figure S2Grid
-XY_grid=S2Grid('EQUISPACED','HEMISPHERE','upper', 'resolution',1*degree);
+XY_grid=equispacedS2Grid('HEMISPHERE','upper', 'resolution',1*degree);
 [vp,vs1,vs2,pp,ps1,ps2] = velocity(C,XY_grid,rho);
 %**************************************************************************
 % P-wave velocity (km/s)

@@ -76,7 +76,7 @@ for k=1:numel(CSCell)
 end
 
 
-n = numel(ebsd);
+n = length(ebsd);
 
 if n > 2^14
   chnk = 2^14;

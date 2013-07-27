@@ -48,7 +48,7 @@ end
 theta = S1Grid(theta,bounds.FR{1},bounds.FR{2});
 
 S2G = S2Grid(theta,rho);
-S2G = S2G.setProp('resolution',res);
+S2G = S2G.set('resolution',res);
 
 %S2G = set_option(S2G,...
 %  extract_option(varargin,{'INDEXED','PLOT','north','south','antipodal','lower','upper'}));

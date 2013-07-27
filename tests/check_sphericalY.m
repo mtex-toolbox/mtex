@@ -1,7 +1,7 @@
 function check_sphericalY(varargin)
 
 L = get_option(varargin,'bandwidth',5);
-S2G = S2Grid('equispaced','points',100);
+S2G = equispacedS2Grid('points',100);
 
 [theta,rho] = polar(S2G);
 

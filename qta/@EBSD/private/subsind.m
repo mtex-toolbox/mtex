@@ -2,7 +2,7 @@ function ind = subsind(ebsd,subs)
 % subindexing of EBSD data
 %
 
-ind = true(1,numel(ebsd));
+ind = true(1,length(ebsd));
 
 for i = 1:length(subs)
     
@@ -20,8 +20,8 @@ for i = 1:length(subs)
 
   elseif isa(subs{i},'symmetry')
     
-    phases = false(1,numel(ebsd.CS));
-    for k=1:numel(ebsd.CS)
+    phases = false(1,length(ebsd.CS));
+    for k=1:length(ebsd.CS)
       if isa(ebsd.CS{k},'symmetry') && ebsd.CS{k} == subs{i} && ...
           (isempty(get(subs{i},'mineral')) || strcmp(get(ebsd.CS{k},'mineral'),get(subs{i},'mineral')))
         phases(k) = true;

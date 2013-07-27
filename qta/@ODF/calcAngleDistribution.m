@@ -42,7 +42,7 @@ if ~check_option(varargin,'fast')
   % for all angles
   for k=1:numel(omega)  
     
-    S2G = S2Grid('equispaced','points',max(1,round(4/3*sin(omega(k)/2).^2/res^2))); % create a grid
+    S2G = equispacedS2Grid('points',max(1,round(4/3*sin(omega(k)/2).^2/res^2))); % create a grid
         
     % create orientations
     o = axis2quat(S2G,omega(k));

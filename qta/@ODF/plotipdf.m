@@ -25,7 +25,7 @@ argin_check(r,{'vector3d'});
 %% plotting grid
 [minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(odf(1).CS,'restrict2Hemisphere',varargin{:});
 
-h = S2Grid('PLOT','minTheta',minTheta,'MAXTHETA',maxTheta,'MAXRHO',maxRho,'MINRHO',minRho,'RESTRICT2MINMAX',varargin{:});
+h = plotS2Grid('minTheta',minTheta,'maxTheta',maxTheta,'maxRho',maxRho,'MINRHO',minRho,'RESTRICT2MINMAX',varargin{:});
 
 %% plot
 disp(' ');

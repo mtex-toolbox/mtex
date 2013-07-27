@@ -60,7 +60,7 @@ classdef BinghamODF < ODF
       end
       
       % if only one orientation was given -> extend to matrix
-      if numel(odf.A) == 1, odf.A = odf.A * quaternion(eye(4)); end
+      if length(odf.A) == 1, odf.A = odf.A * quaternion(eye(4)); end
       
       odf.A = orientation(odf.A,odf.CS,odf.SS);  
       

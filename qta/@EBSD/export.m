@@ -15,7 +15,7 @@ function export(ebsd,fname,varargin)
 fn = fields(ebsd.options);
 
 % allocate memory
-d = zeros(numel(ebsd),4+numel(fn));
+d = zeros(length(ebsd),4+numel(fn));
 
 % add Euler angles
 [d(:,1:3),EulerNames] = get(ebsd,'Euler',varargin{:});

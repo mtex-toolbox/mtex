@@ -202,8 +202,8 @@ ori * [h1,h2]
 %%
 % create
 S2G = S2Grid(zvector);
-S2G = S2Grid('regular','RESOLUTION',5*pi/180,'north')
-S2G = S2Grid('equispaced','points',1000,'antipodal');
+S2G = regularS2Grid('RESOLUTION',5*pi/180,'north')
+S2G = equispacedS2Grid('points',1000,'antipodal');
 
 %%
 % operations

@@ -49,7 +49,7 @@ nsec = length(sec);
   
     
 % no sectioning angles
-S2G = S2Grid('regular','MAXTHETA',max_theta,'MAXRHO',max_rho,'RESTRICT2MINMAX',varargin{:});
+S2G = regularS2Grid('maxTheta',max_theta,'maxRho',max_rho,'restrict2MinMax',varargin{:});
 [theta,rho] = polar(S2G);
 
 % build size(S2G) x nsec matrix of Euler angles

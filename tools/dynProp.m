@@ -26,8 +26,10 @@ classdef dynProp
       
     end
        
-    function dp = setProp(dp,name,value)
-      dp.prop.(name) = value;
+    function dp = set(dp,varargin)
+      for i = 1:2:numel(varargin)        
+        dp.prop.(varargin{i}) = varargin{i+1};
+      end
     end
     
     function value = getProp(dp,name)
