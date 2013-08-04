@@ -27,5 +27,7 @@ if strcmp(vname,'CS')
     end
   end
 else
-  error('Unknown Field!');
+  
+  obj = set@vector3d(obj,vname,value,varargin{:});
+  
 end

@@ -12,14 +12,9 @@ end;
 
 disp([h ' ' docmethods(inputname(1))])
 
-% show comment
-if ~isempty(ebsd.comment)
-  disp(['  Comment: ' ebsd.comment(1:end-1)]);  
-end
-
-if ~isempty(ebsd) && ~isempty(fields(ebsd.options))
-  disp(['  Properties: ',option2str(fields(ebsd.options))]);
-end
+%if ~isempty(ebsd) && ~isempty(fields(ebsd.options))
+%  disp(['  Properties: ',option2str(fields(ebsd.options))]);
+%end
 
 
 % ebsd.phaseMap

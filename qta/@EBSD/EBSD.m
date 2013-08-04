@@ -1,4 +1,4 @@
-function ebsd = EBSD(varargin)
+classdef EBSD < dynProp
 % constructor
 %
 % *EBSD* is the low level constructor for an *EBSD* object representing EBSD
@@ -14,7 +14,6 @@ function ebsd = EBSD(varargin)
 %  CS,SS        - crystal / specimen @symmetry
 %
 % Options
-%  Comment  - string
 %  phase    - specifing the phase of the EBSD object
 %  options  - struct with fields holding properties for each orientation
 %  xy       - spatial coordinates n x 2, where n is the number of input orientations
@@ -23,91 +22,104 @@ function ebsd = EBSD(varargin)
 % See also
 % ODF/calcEBSD EBSD/calcODF loadEBSD
 
-
-if nargin==1 && isa(varargin{1},'EBSD') % copy constructor
-  ebsd = varargin{1};
-  return
-else
-  rotations = rotation(varargin{:});
+properties
+  
+  CS = {}               % crystal symmetries
+  phase = []            % 
+  phaseMap = []         %
+  rotations = rotation  %
+  unitCell = []         %
+  
 end
 
-ebsd.comment = [];
+methods
 
-ebsd.comment = get_option(varargin,'comment',[]);
-ebsd.rotations = rotations(:);
+  function ebsd = EBSD(varargin)
 
-[ebsd.phaseMap,ignore,ebsd.phase] =  unique(...
-  get_option(varargin,'phase',ones(length(ebsd.rotations),1)));
-ebsd.phaseMap(isnan(ebsd.phaseMap)) = 0;
-
-% if all phases are zero replace them by 1
-if all(ebsd.phase == 0), ebsd.phase = ones(length(ebsd.rotations),1);end
-
-% take symmetry from orientations
-if nargin >= 1 && isa(varargin{1},'orientation')
-
-  ebsd.SS = get(varargin{1},'SS');
-  ebsd.CS = {get(varargin{1},'CS')};
-
-else
-
-  % specimen symmetry
-  if nargin >= 3 && isa(varargin{3},'symmetry') && ~isCS(varargin{3})
-    ebsd.SS = varargin{3};
-  else
-    ebsd.SS = get_option(varargin,'SS',symmetry);
-  end
-
-  % set up crystal symmetries
-  if check_option(varargin,'cs')
-    CS = ensurecell(get_option(varargin,'CS',{}));
-  elseif nargin >= 2 && ((isa(varargin{2},'symmetry') && isCS(varargin{2}))...
-      || (isa(varargin{2},'cell') && any(cellfun('isclass',varargin{2},'symmetry'))))
-    CS = ensurecell(varargin{2});
-  else
-    CS = {symmetry('cubic','mineral','unkown')};
-  end
-  
-  if numel(ebsd.phaseMap)>1 && length(CS) == 1
-    C = repmat(CS,numel(ebsd.phaseMap),1);
-    if ebsd.phaseMap(1) <= 0
-      C{1} = 'notIndexed';
+    if nargin==1 && isa(varargin{1},'EBSD') % copy constructor
+      ebsd = varargin{1};
+      return
+    else
+      ebsd.rotations = reshape(rotation(varargin{:}),[],1);
     end
-  elseif max([0;ebsd.phaseMap(:)]) < length(CS)
-    C = CS(ebsd.phaseMap+1);
+
+    % extract phases
+    [ebsd.phaseMap,~,ebsd.phase] =  unique(...
+      get_option(varargin,'phase',ones(length(ebsd),1)));
+    ebsd.phaseMap(isnan(ebsd.phaseMap)) = 0;
+
+    % if all phases are zero replace them by 1
+    if all(ebsd.phase == 0), ebsd.phase = ones(length(ebsd),1);end
+
+    % -------------- set up symmetries --------------------------
+    
+    % if input is orientation -> only one phase
+    if nargin >= 1 && isa(varargin{1},'orientation')
+
+      % take symmetry from orientations
+      ebsd.CS = {get(varargin{1},'CS')};
+
+      
+    else % otherwise there can be more then one phase
+
+      % CS given as option
+      if check_option(varargin,'cs')
+        
+        ebsd.CS = ensurecell(get_option(varargin,'CS',{}));
+      
+        % CS given as second argument
+      elseif nargin >= 2 && ((isa(varargin{2},'symmetry') && isCS(varargin{2}))...
+          || (isa(varargin{2},'cell') && any(cellfun('isclass',varargin{2},'symmetry'))))
+        ebsd.CS = ensurecell(varargin{2});
+                
+      else % CS not given -> guess cubic
+        
+        ebsd.CS = {symmetry('cubic','mineral','unkown')};
+        
+      end
   
-  elseif numel(ebsd.phaseMap) == length(CS)
-    C = CS;
-  else
-    error('symmetry mismatch')
+      % check number of symmetries and phases coincides
+      if numel(ebsd.phaseMap)>1 && length(ebsd.CS) == 1
+        
+        ebsd.CS = repmat(ebsd.CS,numel(ebsd.phaseMap),1);
+        
+        if ebsd.phaseMap(1) <= 0
+          ebsd.CS{1} = 'notIndexed';
+        end
+        
+      elseif max([0;ebsd.phaseMap(:)]) < length(ebsd.CS)
+        
+        ebsd.CS = ebsd.CS(ebsd.phaseMap+1);
+  
+      elseif numel(ebsd.phaseMap) ~= length(ebsd.CS)
+        error('symmetry mismatch')
+      end
+    end
+
+    % extract additional properties
+    ebsd.prop = get_option(varargin,'options',struct);    
+    ebsd.unitCell = get_option(varargin,'unitCell',[]);
+
+    % remove ignore phases
+    if check_option(varargin,'ignorePhase')
+
+      del = ismember(ebsd.phaseMap(ebsd.phase),get_option(varargin,'ignorePhase',[]));
+      ebsd = subsref(ebsd,~del);
+
+    end
+
+    % apply colors
+    colorOrder = getMTEXpref('EBSDColorNames');
+    nc = numel(colorOrder);
+    c = 1;
+
+    for ph = 1:numel(ebsd.phaseMap)
+      if ~ischar(ebsd.CS{ph}) && isempty(get(ebsd.CS{ph},'color'))
+        ebsd.CS{ph} = set(ebsd.CS{ph},'color',colorOrder{mod(c-1,nc)+1});
+        c = c+1;
+      end
+    end  
   end
-
-  ebsd.CS = C;
-
 end
 
-
-ebsd.options = get_option(varargin,'options',struct);
-ebsd.unitCell = get_option(varargin,'unitCell',[]);
-
-ebsd = class(ebsd,'EBSD');
-
-% remove ignore phases
-if check_option(varargin,'ignorePhase')
-
-  del = ismember(ebsd.phaseMap(ebsd.phase),get_option(varargin,'ignorePhase',[]));
-  ebsd = subsref(ebsd,~del);
-
-end
-
-% apply colors
-colorOrder = getMTEXpref('EBSDColorNames');
-nc = numel(colorOrder);
-c = 1;
-
-for ph = 1:numel(ebsd.phaseMap)
-  if ~ischar(ebsd.CS{ph}) && isempty(get(ebsd.CS{ph},'color'))
-    ebsd.CS{ph} = set(ebsd.CS{ph},'color',colorOrder{mod(c-1,nc)+1});
-    c = c+1;
-  end
 end

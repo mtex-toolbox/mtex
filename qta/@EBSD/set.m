@@ -41,21 +41,21 @@ if any(strcmp(vname,fields(ebsd)))
   
   ebsd.(vname) = value;
   
-elseif isfield(ebsd.options,vname)
-  
-  if isempty(value)
-    
-    ebsd.options = rmfield( ebsd.options,vname);
-    
-  else
-    
-    ebsd.options.(vname) = value;
-    
-  end
-  
+% elseif isfield(ebsd.options,vname)
+%   
+%   if isempty(value)
+%     
+%     ebsd.options = rmfield( ebsd.options,vname);
+%     
+%   else
+%     
+%     ebsd.options.(vname) = value;
+%     
+%   end
+%   
 else
   
-  ebsd.options.(vname) = value;
-  
+  ebsd = set@dynProp(ebsd,vname,value,varargin{:});
+    
 end
 
