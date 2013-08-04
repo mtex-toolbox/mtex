@@ -14,4 +14,4 @@ function r = ldivide(a,b)
 %% See also
 % 
 
-r = inverse(a) .* b;
+r = inv(a) .* b;

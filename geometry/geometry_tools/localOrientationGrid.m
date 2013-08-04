@@ -1,12 +1,12 @@
 function ori = localOrientationGrid(CS,SS,maxAngle,varargin)
 % define a equispaced grid localized to a center orientation
 %
-%% Input
+% Input
 %  CS       - @symmetry
 %  SS       - @symmetry
 %  maxAngle - 
 %
-%% Output
+% Output
 %
 %  ori - @orientation
 %
@@ -56,17 +56,17 @@ end
 
 function ind = fundamental_region2(q,center,cs,ss)
 %
-%% Input
+% Input
 %  q      - @quaternion to project
 %  center - center of fundamental region
 %  cs, ss - crystal and specimen @symmetry
 %
-%% Output
+% Output
 %  ind    -
 
 % symmetrise
 c_sym = ss *  center * cs;
-omega = angle(c_sym * inverse(center));
+omega = angle(c_sym * inv(center));
 [~,c_sym] = selectMinbyRow(omega,c_sym);
 
 % convert to rodrigues space

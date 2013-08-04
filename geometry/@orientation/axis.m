@@ -18,7 +18,7 @@ if nargin == 1
   o = o1;
   S = o1.CS;
 else
-  o = inverse(o1) .* (o2);
+  o = inv(o1) .* (o2);
   S = disjoint(o1.CS,o2.CS);
 end
 

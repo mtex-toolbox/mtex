@@ -71,9 +71,9 @@ sx = quaternion(subGrid(x,find(x,q,10*degree)));
 dist(cs,symmetry,q,sx) / degree
 
 
-plot(inverse(sx)*xvector)
-plot(inverse(sx)*yvector)
-plot(inverse(sx)*zvector)
+plot(inv(sx)*xvector)
+plot(inv(sx)*yvector)
+plot(inv(sx)*zvector)
 
 
 A = cos(ay)*cos(cy)*cos(ax)*(cos(by)*cos(bx)-1) - ...

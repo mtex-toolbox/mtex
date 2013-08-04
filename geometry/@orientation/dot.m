@@ -45,9 +45,9 @@ else % specimen symmetry
   q = repmat(idquaternion,length(qss),1)*q1';    
     q = q.*(qss*q2);
   elseif length(q1) == 1
-    q = inverse(q1) .* (qss * q2);
+    q = inv(q1) .* (qss * q2);
   else
-    q = inverse(qss * q1) .* q2;
+    q = inv(qss * q1) .* q2;
   end
   
 end

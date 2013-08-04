@@ -9,7 +9,7 @@ else
   options = {'center',center};
 end
 
-mori = inverse(center) * o;
+mori = inv(center) * o;
 
 s = disjoint(get(mori,'CS'),get(mori,'SS'));
 mori = project2FundamentalRegion(mori);

@@ -173,9 +173,9 @@ angle(o1)/degree
 axis(o1)
 %%
 % To obtain the inverse orientation to o, one can use the command
-% <quaternion.inverse.html inverse(q)>
+% <quaternion.inv.html inv(q)>
 
-inverse(o1)
+inv(o1)
 
 %% Conversion into Euler Angles and Rodrigues Parametrisation
 %

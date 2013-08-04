@@ -77,7 +77,7 @@ switch lower(vname)
     %
     %     o = get(grains,'rotations');
     %     m = grains.meanRotation(g);
-    %     varargout{1} = orientation(inverse(o) .* m,get(grains,'CS'),get(grains,'CS'));
+    %     varargout{1} = orientation(inv(o) .* m,get(grains,'CS'),get(grains,'CS'));
     %
     
   case 'i_vg'

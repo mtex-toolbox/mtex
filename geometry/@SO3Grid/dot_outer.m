@@ -30,7 +30,7 @@ else
   d = sparse(length(S3G),length(q));
   
   % rotate q according to SO3Grid.center
-  if ~isempty(S3G.center),q = inverse(S3G.center) * q; end
+  if ~isempty(S3G.center),q = inv(S3G.center) * q; end
   
   % extract SO3Grid
   [ybeta,yalpha,ialphabeta,palpha] = getdata(S3G.alphabeta);

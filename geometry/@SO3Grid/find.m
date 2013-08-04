@@ -33,7 +33,7 @@ else
   q = quaternion(o);
   
   % rotate q according to SO3Grid.center
-  if ~isempty(SO3G.center), q = inverse(SO3G.center) * q; end
+  if ~isempty(SO3G.center), q = inv(SO3G.center) * q; end
     
   % correct for crystal and specimen symmetry
   qcs = quaternion(rotation_special(SO3G.CS));

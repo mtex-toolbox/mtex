@@ -93,7 +93,7 @@ end
 v1 = newton(initialSearch(center,options),options);
 v2 = newton(initialSearch(orth(v1),options),options);
 
-r = inverse(rotation('map',v1,xvector,v2,yvector));
+r = inv(rotation('map',v1,xvector,v2,yvector));
 if all(isfinite(double(r)))
   odf = rotate(odf,r);
 end

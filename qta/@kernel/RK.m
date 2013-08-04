@@ -34,7 +34,7 @@ ng = length(g);
 
 if length(h)>1 || isa(h,'S2Grid')   % inverse pole figure
 	r = r./norm(r);
-  in = reshape(inverse(symmetrise(g,CS,SS)).' * r,[ng,length(CS),length(SS)]);
+  in = reshape(inv(symmetrise(g,CS,SS)).' * r,[ng,length(CS),length(SS)]);
 	out = h; lh = length(CS);
 else % pole figure
   h = vector3d(h);

@@ -40,17 +40,17 @@ end
 
 if length(q_ref) == numel(ind), q_ref = subsref(q_ref,ind); end
 
-[uCS,m,n] = unique(qCS1*inverse(qCS2),'antipodal');
+[uCS,m,n] = unique(qCS1*inv(qCS2),'antipodal');
 [i,j]     = ind2sub([length(qCS1),length(qCS2)],m);
 
 % compute all distances to the fundamental regions
-omegaSym  = abs(dot_outer(inverse(q_sub).*q_ref,uCS));
+omegaSym  = abs(dot_outer(inv(q_sub).*q_ref,uCS));
 
 % find symmetry elements projecting to fundamental region
 [omega(ind),nx] = max(omegaSym,[],2);
 
 % project to fundamental region
-q = subsasgn(q,ind,inverse(subsref(qCS2,j(nx))).*q_sub.*subsref(qCS1,i(nx)));
+q = subsasgn(q,ind,inv(subsref(qCS2,j(nx))).*q_sub.*subsref(qCS1,i(nx)));
 
 % compute angle
 omega = 2*acos(min(1,omega));
