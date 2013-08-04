@@ -56,7 +56,7 @@ plot([rot rot2])
 angle(rot)
 axis(rot)
 angle(rot, rot2)
-inverse(rot)
+inv(rot)
 [alpha, beta ,gamma] = Euler(rot)
 
 %% Crystal and Specimen Symmetries

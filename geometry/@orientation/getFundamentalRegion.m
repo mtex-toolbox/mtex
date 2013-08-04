@@ -36,7 +36,7 @@ if length(o.SS) == 1
   [omega,idy] = max(omegaSym,[],1);
   
   % project to fundamental region
-  qSym = inverse(qSym);
+  qSym = inv(qSym);
   q = q .* reshape(qSym(idy),size(q));
   
   % compute angle
@@ -57,8 +57,8 @@ else
   if all(id==1), return;end
   
   % project to fundamental region
-  qcs = reshape(inverse(qcs),1,[]);
-  qss = reshape(inverse(qss),1,[]);
+  qcs = reshape(inv(qcs),1,[]);
+  qss = reshape(inv(qss),1,[]);
   [idss,idcs] = ind2sub([length(qss),length(qcs)],id);
   q = reshape(qss(idss),size(q)) .* q .* reshape(qcs(idcs),size(q));
   

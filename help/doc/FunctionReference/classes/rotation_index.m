@@ -171,9 +171,9 @@ angle(rot1,rot2)/degree
 % *The inverse Rotation*
 %
 % The inverse rotation you get from the command
-% <quaternion.inverse.html inverse(rot)>
+% <quaternion.inv.html inv(rot)>
 
-inverse(rot)
+inv(rot)
 
 %% SUB: Conversion into Euler Angles and Rodrigues Parametrisation
 %

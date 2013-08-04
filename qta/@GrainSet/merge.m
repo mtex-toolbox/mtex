@@ -168,7 +168,7 @@ if any(~unchanged) % some of the were merged
   grains.meanRotation = meanRotation;
   
   [g,d] = find(I_DG');
-  mis2mean = inverse(r(d)).* reshape(meanRotation(g),[],1);
+  mis2mean = inv(r(d)).* reshape(meanRotation(g),[],1);
   
   grains.EBSD = set(grains.EBSD,'mis2mean',mis2mean);
 end

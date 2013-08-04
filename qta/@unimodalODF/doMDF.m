@@ -1,7 +1,7 @@
 function mdf = doMDF(odf1,odf2,varargin)
 % calculate the uncorrelated misorientation distribution function (MDF) from one or two ODF
 
-center = inverse(odf1.center) * odf2.center.';
+center = inv(odf1.center) * odf2.center.';
 c = odf1.c * odf2.c.';
 psi = odf1.psi * odf2.psi;
 

@@ -4,7 +4,7 @@ function r = mtimes(a,b)
 % Syntax
 %   o = o1 * o2
 %   r = o * h
-%   h = inverse(o)*r
+%   h = inv(o)*r
 %
 % Input
 %  o - @orientation

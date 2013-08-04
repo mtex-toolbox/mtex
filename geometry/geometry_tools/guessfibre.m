@@ -45,7 +45,7 @@ if isa(g1,'orientation')
   g = project2FundamentalRegion(g,g2); 
 end
 
-[ev ew] = eig(matrix(inverse(g(1))*g(2)));
+[ev ew] = eig(matrix(inv(g(1))*g(2)));
 
 b = ~any(imag(ev),1); % take the real valued
     % ~imag(diag(ew))

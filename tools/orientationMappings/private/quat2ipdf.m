@@ -26,4 +26,4 @@ end
 
 
 % compute crystal directions
-h = inverse(ori) .* r;
+h = inv(ori) .* r;

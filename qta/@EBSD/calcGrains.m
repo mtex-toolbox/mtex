@@ -293,7 +293,7 @@ grainSet.V        = x_V;            clear x_V;
 grainSet.options  = struct;
 
 [g,d] = find(grainSet.I_DG'); clear I_DG;
-ebsd.options.mis2mean = inverse(ebsd.rotations(d)).* reshape(grainSet.meanRotation(g),[],1);
+ebsd.options.mis2mean = inv(ebsd.rotations(d)).* reshape(grainSet.meanRotation(g),[],1);
 
 switch dim
   case 2

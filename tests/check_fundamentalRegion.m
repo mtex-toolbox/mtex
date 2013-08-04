@@ -14,7 +14,7 @@ for s1 = 1:11
     o1 = orientation(q1,CS1,symmetry);
     o2 = orientation(q2,CS2,symmetry);
     
-    [q,omega] = project2FundamentalRegion(inverse(q1).*q2,CS2,CS1);
+    [q,omega] = project2FundamentalRegion(inv(q1).*q2,CS2,CS1);
     
     w = angle(q,idquaternion);
     

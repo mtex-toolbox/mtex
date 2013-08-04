@@ -275,7 +275,7 @@ switch class(property)
     
   case {'quaternion','rotation','orientation','SO3Grid'}
 
-    qproperty = unique(CSl*inverse(quaternion(property))*CSr);
+    qproperty = unique(CSl*inv(quaternion(property))*CSr);
     dist = 2*acos(max(abs(dot_outer(quaternion(m),qproperty)),[],2));
     % dist = 2*acos(max(abs(dot_outer(m,property)),[],2));
       

@@ -1,13 +1,13 @@
-function q = inverse(q)
+function q = inv(q)
 % quaternion of the inverse roation
 %
-%% Input
+% Input
 %  q - @quaternion
 %
-%% Output
+% Output
 %  q - @quaternion of the inverse rotation
 %
-%% See also
+% See also
 % quaternion/ctranspose
 
 q = ctranspose(q);

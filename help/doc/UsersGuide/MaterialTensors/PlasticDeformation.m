@@ -185,7 +185,7 @@ mtexdata aachen
 ori = get(ebsd('Fe'),'orientations');
 
 % transform the stress tensor from specimen to crystal coordinates
-sigmaCS = rotate(sigma001,inverse(ori))
+sigmaCS = rotate(sigma001,inv(ori))
 
 %%
 % Next we compute maximum Schmidt factor and the active slip system for
@@ -206,7 +206,7 @@ grains = calcGrains(ebsd)
 ori = get(grains('Fe'),'orientation');
 
 % transform the stress tensor from specimen to crystal coordinates
-sigmaCS = rotate(sigma001,inverse(ori))
+sigmaCS = rotate(sigma001,inv(ori))
 
 % compute maximum Schmid factor and active slip system
 [tauMax,mActive,nActive,tau,ind] = calcShearStress(sigmaCS,m,n,'symmetrise');
