@@ -5,6 +5,6 @@ switch varargin{1}
   case fields(obj)
     obj.(varargin{1}) = varargin{2};
   otherwise
-    obj = set@dynProp(obj,varargin{:});
+    obj = set@dynOption(obj,varargin{:});
 end
 

@@ -1,14 +1,14 @@
 function [ind,d] = find(SO3G,o,epsilon,varargin)
 % return indece and distance of all nodes within a eps neighborhood
 %
-%% Syntax  
-% [ind,dist] = find(SO3G,nodes,radius)
+% Syntax  
+%   [ind,dist] = find(SO3G,nodes,radius)
 %
-%% Input
+% Input
 %  SO3G   - @SO3Grid
 %  nodes  - @quaternion
 %  radius - double
-%% Output
+% Output
 % indece - 
 % distances -
 %

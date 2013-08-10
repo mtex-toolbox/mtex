@@ -1,15 +1,15 @@
 function new = scale(pf,alpha)
 % scale polefigure by a factor
 %
-%% Input
+% Input
 % pf    - @PoleFigure
 % alpha - scaling factor
 %
-%% Output
+% Output
 %
 % new - scaled @PoleFigure
 %
-%% See also
+% See also
 % PoleFigure/mtimes
 
 if length(alpha) ==1
@@ -17,7 +17,7 @@ if length(alpha) ==1
 end
 
 for i = 1:length(pf)
-    pf(i).data = pf(i).data * alpha(i);
+    pf(i).intensities = pf(i).intensities * alpha(i);
 end
 
 new = pf;

@@ -1,17 +1,18 @@
 function d = dot_outer(S3G,q,varargin)
 % return outer inner product of all nodes within a eps neighborhood
 %
-%% Syntax  
-%  d = dot_outer(SO3G,nodes,'epsilon',radius)
+% Syntax  
+%   d = dot_outer(SO3G,nodes,'epsilon',radius)
 %
-%% Input
+% Input
 %  SO3G   - @SO3Grid
 %  nodes  - @quaternion
 %  radius - double
-%% Output
+%
+% Output
 %  d      - sparse matrix
 %
-%% formuala:
+% Formula
 % cos angle(g1,g2)/2 = dot(g1,g2)
 
 if ~isa(S3G,'SO3Grid')
@@ -30,7 +31,7 @@ else
   d = sparse(length(S3G),length(q));
   
   % rotate q according to SO3Grid.center
-  if ~isempty(S3G.center),q = inv(S3G.center) * q; end
+  if ~isempty(S3G.center),q = inv(S3G.center) * q; end %#ok<MINV>
   
   % extract SO3Grid
   [ybeta,yalpha,ialphabeta,palpha] = getdata(S3G.alphabeta);

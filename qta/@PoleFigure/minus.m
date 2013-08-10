@@ -22,10 +22,10 @@ end
 
 for i = 1:length(pf)
 
-  if isa(pf2,'PoleFigure'), r  = pf2(i).data; else r  = pf2(i); end
+  if isa(pf2,'PoleFigure'), r  = pf2(i).intensities; else r  = pf2(i); end
   
-  if length(r)>1, r = reshape(r,size(pf(i).data));end
+  if length(r)>1, r = reshape(r,size(pf(i).intensities));end
   
-  pf(i).data = sgn * (pf(i).data - r);
+  pf(i).intensities = sgn * (pf(i).intensities - r);
 
 end

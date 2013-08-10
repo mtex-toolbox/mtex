@@ -4,7 +4,6 @@ function ebsd = subsasgn(ebsd,s,b)
 if ~isa(ebsd,'EBSD')
   ebsd = EBSD;
   ebsd.CS = b.CS;
-  ebsd.SS = b.SS;
 end
 
 if isa(s,'double') || isa(s,'logical')
@@ -43,9 +42,36 @@ if isa(s,'double') || isa(s,'logical')
     
   end
 
-elseif strcmp(s.type,'()')
-
-  ind = subsind(ebsd,s.subs);
-  ebsd = subsasgn(ebsd,ind,b);
-
+  return
+  
+end
+  
+switch s(1).type
+  
+  case '()'
+      
+    if numel(s)>1, b =  subsasgn(subsref(ebsd,s(1)),s(2:end),b); end
+    
+    if isempty(b)
+      
+      ebsd = subsasgn@dynProp(ebsd,s(1),[]);
+      ebsd.rotations = subsasgn(ebsd.rotations,s(1),[]);
+                  
+    else
+      
+      ebsd = subsasgn@dynProp(ebsd,s(1),b);
+      ebsd.rotations = subsasgn(ebsd.rotations,s(1),b.rotations);
+                  
+    end
+    
+  otherwise
+    
+    try
+      ebsd = builtin('subsasgn',ebsd,s,b);
+      return
+    end
+    
+    ebsd = subsasgn@dynProp(ebsd,s,b);
+        
+end
 end

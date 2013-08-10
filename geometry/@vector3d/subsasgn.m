@@ -33,8 +33,12 @@ switch s(1).type
       v.z = subsasgn(v.z,s(1),b.z);
     end
   otherwise
-      
-    v =  builtin('subsasgn',v,s,b);
+    
+    try
+      v =  builtin('subsasgn',v,s,b);
+    catch
+      v = subsasgn@dynOption(v,s,b);
+    end
       
 end
 

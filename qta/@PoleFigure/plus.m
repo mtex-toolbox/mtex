@@ -4,7 +4,7 @@ function pf = plus(pf1,pf2)
 % overload the + operator, i.e. one can now write pf1 + pf2 in order to
 % add two pole figures
 %
-%% See also
+% See also
 % PoleFigure_index PoleFigure/minus PoleFigure/mtimes
 
 
@@ -21,8 +21,8 @@ end
 
 for i = 1:length(pf)
   if isa(pf2,'PoleFigure')
-    pf(i).data = pf(i).data + pf2(i).data;
+    pf(i).intensities = pf(i).intensities + pf2(i).intensities;
   else
-    pf(i).data = pf(i).data + pf2;
+    pf(i).intensities = pf(i).intensities + pf2;
   end
 end

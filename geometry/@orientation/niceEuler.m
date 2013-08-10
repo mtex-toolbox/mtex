@@ -1,32 +1,24 @@
-function varargout = Euler(o,varargin)
+function varargout = niceEuler(o,varargin)
 % orientation to euler angle
 %
-%% Description
+% Description
 % calculates the Euler angle for a rotation |q|
 %
-%% Syntax
+% Syntax
 % [alpha,beta,gamma] = Euler(quat) - 
 % [phi1,Phi,phi2] = Euler(quat,'Bunge') -
 % euler = Euler(quat,'Bunge') -
 %
-%% Input
+% Input
 %  quat - @quaternion
-%% Output
+% Output
 %  alpha, beta, gamma  - Matthies
 %  phi1, Phi, phi2     - BUNGE
-%% Options
+% Options
 %  ABG, ZYZ   - Matthies (alpha,beta,gamma) convention (default)
 %  BUNGE, ZXZ - Bunge (phi, Phi, phi2) convention
-%% See also
+% See also
 % quaternion/Rodrigues
-
-%% if they do not have to be nice
-if check_option(varargin,{'nfft','fastEuler'})
-  [varargout{1:nargout}] = Euler@rotation(o,varargin{:});
-  return
-end
-
-%% if they have to be nice
 
 % symmetrise
 osym = symmetrise(o);
@@ -51,7 +43,7 @@ ind = abs(round(phi1/degree)-phi1/degree) > 0.01 | ...
 penalty(ind) = penalty(ind) + 10;
 
 % take the best Euler angles
-[d,i] = min(penalty,[],1);
+[~,i] = min(penalty,[],1);
 
 osym = subsref(osym,sub2ind(size(osym),i,1:size(osym,2)));
 

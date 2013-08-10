@@ -1,4 +1,4 @@
-classdef vector3d < dynProp
+classdef vector3d < dynOption
   
   properties 
     x = []; % x coordinate
@@ -25,7 +25,7 @@ classdef vector3d < dynProp
         if isa(x,'vector3d') % copy-constructor
           [v.x,v.y,v.z] = double(x);
           v.antipodal = x.antipodal;
-          v.prop = x.prop;
+          v.opt = x.opt;
           return
         elseif isa(x,'double')
           if all(size(x) == [1,3])
@@ -82,7 +82,7 @@ classdef vector3d < dynProp
       
       % resolution
       if check_option(varargin,'resolution')
-        v = v.setProp('resolution',get_option(varargin,'resolution'));
+        v = set(v,'resolution',get_option(varargin,'resolution'));
       end
       
       % normalize

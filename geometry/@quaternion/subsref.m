@@ -26,7 +26,11 @@ else
       end
       
     case '.'
-      [varargout{1:nargout}] = builtin('subsref',q,s);
+      try
+        [varargout{1:nargout}] = builtin('subsref',q,s);
+      catch
+        [varargout{1:nargout}] = dynProp@subsref(q,s);
+      end
   end
 end
 

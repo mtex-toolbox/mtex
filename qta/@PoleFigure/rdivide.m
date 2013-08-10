@@ -11,12 +11,12 @@ if isa(arg1,'double'), npf = arg2; else npf = arg1;end
 
 for i = 1:length(npf)
     
-  if isa(arg1,'double'), l = arg1(i); else l = arg1(i).data; end;
+  if isa(arg1,'double'), l = arg1(i); else l = arg1(i).intensities; end;
   
-  if isa(arg2,'double'), r = arg2(i); else r = arg2(i).data; end
+  if isa(arg2,'double'), r = arg2(i); else r = arg2(i).intensities; end
 
   if length(r) > 1, r = reshape(r,size(l));end
   
-  npf(i).data = l./r;
+  npf(i).intensities = l./r;
     
 end

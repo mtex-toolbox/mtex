@@ -1,14 +1,14 @@
-function varargout = plot(o,varargin)
+function plot(o,varargin)
 % plot function
 %
-%% Input
+% Input
 %  o - @orientation
 %
-%% Options
+% Options
 %  RODRIGUES - plot in rodrigues space
 %  AXISANGLE - plot in axis / angle
 %
-%% See also
+% See also
 % orientation/scatter Plotting
 
 newMTEXplot;

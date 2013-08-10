@@ -1,17 +1,18 @@
 function [G, ind] = subGrid(G,q,epsilon,varargin)
 % sub-SO3Grid as epsilon neigborhood of a node
-%% Syntax
-%  G = subGrid(G,midpoint,radius)
+%
+% Syntax
+%   G = subGrid(G,midpoint,radius)
 % 
-%% Input
+% Input
 %  G        - @SO3Grid
 %  midpoint - @quaternion
 %  radius   - double
 %
-%% Output
+% Output
 %  G - SO3Grid
 %
-%% See also
+% See also
 %  SO3Grid/find S2Grid/subGrid
 
 if nargin >= 3

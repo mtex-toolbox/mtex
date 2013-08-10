@@ -8,7 +8,7 @@ function [S2G r]= refine(S2G)
 %  S2G - @S2Grid with half the resolution
 
   
-S2G.options.resolution = S2G.options.resolution / 2;
+S2G.opt.resolution = S2G.opt.resolution / 2;
 S2G.theta = refine(S2G.theta);
 for i=1:length(S2G.rho)
   S2G.rho(2*i-1) = refine(S2G.rho(i));

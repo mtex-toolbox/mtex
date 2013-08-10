@@ -1,27 +1,27 @@
 function varargout = get(pf,vname,varargin)
 % extract data from a Pole Figure object
 %
-%% Syntax
-%  d = get(pf,'intensities,'id)  - raw diffraction intensities
-%  s = get(pf,'CS')              - crystal symmetry
-%  r = get(pf,'r')               - specimen directions
-%  h = get(pf,'h')               - crystal directions
-%  b = get(pf,'bg')              - background intensities
-%  c = get(pf,'c')               - superposition coefficients
-%  t = get(pf,'theta')           - polar angle of specimen directions
-%  r = get(pf,'rho')             - azimuthal angle of specimen directions
+% Syntax
+%   d = get(pf,'intensities,'id)  - raw diffraction intensities
+%   s = get(pf,'CS')              - crystal symmetry
+%   r = get(pf,'r')               - specimen directions
+%   h = get(pf,'h')               - crystal directions
+%   b = get(pf,'bg')              - background intensities
+%   c = get(pf,'c')               - superposition coefficients
+%   t = get(pf,'theta')           - polar angle of specimen directions
+%   r = get(pf,'rho')             - azimuthal angle of specimen directions
 %
-%% Input
+% Input
 %  pf - @PoleFigure
 %  id - index set (optional)
 %
-%% Output
+% Output
 %  d - raw diffraction intensities
 %  s - @symmetry
 %  h - @Miller
 %  r - @vector3d
 %
-%% See also
+% See also
 % PoleFigure/set PoleFigure/copy PoleFigure/delete
 
 
@@ -51,7 +51,7 @@ switch vname
     d = zeros(length(id),1);
     for i= 1:length(pf)
       idi = (id > cs(i)) & (id<=cs(i+1));
-      d(idi) = pf(i).data(id(idi)-cs(i));
+      d(idi) = pf(i).intensities(id(idi)-cs(i));
     end
 
     varargout{1} = d;

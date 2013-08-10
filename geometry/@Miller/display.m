@@ -5,16 +5,16 @@ disp(' ');
 disp([inputname(1) ' = ' doclink('Miller_index','Miller') ...
   ' ' docmethods(inputname(1))]);
 
-disp(['  size: ' size2str(m)]);
+display@vector3d(m,'skipHeader', 'skipCoordinates');
 
-if m.antipodal, disp(' antipodal: true');end
-
+% display symmetry
 if ~isempty(get(m.CS,'mineral'))
-  disp(['  mineral: ',char(m.CS,'verbose')]);
+  disp([' mineral: ',char(m.CS,'verbose')]);
 else
-  disp(['  symmetry: ',char(m.CS,'verbose')]);
+  disp([' symmetry: ',char(m.CS,'verbose')]);
 end
 
+% display coordinates
 if length(m) < 20 && ~isempty(m)
   
   eps = 1e4;

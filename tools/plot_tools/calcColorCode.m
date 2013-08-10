@@ -26,8 +26,8 @@ elseif isa(prop,'char')
         o = [];
       end
       
-      if ischar(get(obj,'CS')) || isempty(obj)
-        d = NaN(numel(obj),1);
+      if isempty(o)
+        d = NaN(length(obj),1);
       else
               
         if strcmpi(prop,'mis2mean'), varargin = [varargin 'r','auto']; end
@@ -69,17 +69,17 @@ elseif isa(prop,'char')
         end
       end
 
-    case lower(get(obj))
-
-      d = get(obj,prop);
-
     case 'angle'
 
       d = angle(get(obj,'orientations'))/degree;
 
     otherwise
 
-      error('Unknown colorcoding!')
+      try
+        d = get(obj,prop);
+      catch       %#ok<CTCH>
+        error('Unknown colorcoding!')
+      end
 
   end
 else

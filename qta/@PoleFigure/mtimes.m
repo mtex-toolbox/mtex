@@ -4,7 +4,7 @@ function npf = mtimes(arg1,arg2)
 % overload the * operator, i.e. one can now write x * pf in order to
 % scale the @PoleFigure pf by the factor x 
 %
-%% See also
+% See also
 % PoleFigure_index PoleFigure/plus PoleFigure/minus
 
 
@@ -24,6 +24,6 @@ elseif isa(m,'quaternion')
 elseif isa(m,'PoleFigure')
   npf = pf;
   for i = 1:length(pf)
-    npf(i).data = pf(i).data .* m.data;
+    npf(i).intensities = pf(i).intensities .* m.intensities;
   end
 end

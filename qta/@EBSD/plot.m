@@ -1,17 +1,17 @@
 function plot(ebsd,varargin)
 % bypasses ebsd plotting functions 
 %
-%% Input
+% Input
 %  ebsd - @EBSD
 %
-%% Flages
-%  SCATTER       - three dimensional scatter plot
-%  AXISANGLE     - axis angle projection
-%  RODRIGUES     - rodrigues parameterization
-%  POINTS        - number of orientations to be plotted
-%  CENTER        - reference orientation
+% Flages
+%  scatter       - three dimensional scatter plot
+%  axisAngle     - axis angle projection
+%  Rodrigues     - rodrigues parameterization
+%  points        - number of orientations to be plotted
+%  center        - reference orientation
 %
-%% See also
+% See also
 % EBSD/scatter EBSD/plotspatial EBSD/plotpdf savefigure
 
 % where to plot
@@ -23,7 +23,7 @@ if check_option(varargin,{'scatter','axisangle','rodrigues'}) && ...
   scatter(ax{:},ebsd,varargin{:});
 elseif check_option(varargin,{'sections','sigma','phi1','phi2','alpha','gamma'})
   plotodf(ax{:},ebsd,varargin{:});
-elseif isfield(ebsd.options,'x') && isfield(ebsd.options,'y')
+elseif isProp(ebsd,'x') && isProp(ebsd,'y')
   plotspatial(ax{:},ebsd,varargin{:});
 else
   h = [Miller(0,0,1),Miller(1,1,0),Miller(1,1,1)];

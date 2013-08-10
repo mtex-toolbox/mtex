@@ -5,15 +5,15 @@ function ebsd = horzcat(varargin)
 % [ebsd(1) ebsd(2)]
 % 
 
-
+% maybe there is nothing to do
+varargin(cellfun('isempty',varargin)) = [];
 if nargin == 1, 
   ebsd = varargin{1};
   return;
 end
 
-varargin(cellfun('isempty',varargin)) = [];
-
-ebsd = varargin{1};
+% concatenate properties
+ebsd = horzcat@dynProp(varargin{:});
 
 for k=1:numel(varargin)
   s(k) = struct(varargin{k});
@@ -22,15 +22,6 @@ end
 ebsd.phaseMap = vertcat(s.phaseMap);
 ebsd.CS = horzcat(s.CS);
 ebsd.rotations = vertcat(s.rotations);
-ebsd.phase = vertcat(s.phase);
-
-prop = [s.prop];
-
-for fn = fieldnames(prop)'
-  if length(s(1).prop.(char(fn))) == length(s(1).rotations)
-    ebsd.prop.(char(fn)) = vertcat(prop.(char(fn)));  
-  end
-end
 
 [ebsd.phaseMap,b] = unique(ebsd.phaseMap);
 ebsd.CS = ebsd.CS(b);

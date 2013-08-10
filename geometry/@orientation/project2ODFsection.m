@@ -1,19 +1,18 @@
 function [S2G, data]= project2ODFsection(o,type,sec,varargin)
 % project orientation to ODF sections used by plotodf
 %
-%% Input
+% Input
 %  o  - @SO3Grid
 %  type - section type
 %  sec  - sections
 %
-%% Output
+% Output
 %  S2G  - vector of @S2Grid
 %
-%% Options
+% Options
 %  tolerance -
 
-%% get input
-
+% get input
 if length(sec) >= 2
   tol = min(5*degree,abs(sec(1)-sec(2))/2);
 else
@@ -23,8 +22,7 @@ tol = get_option(varargin,'tolerance',tol);
 
 S2G = repcell(S2Grid(vector3d,varargin{:}),length(sec),1);
 
-%% axis angle
-
+% ------------ axis angle projection -------------------
 if strcmpi(type,'axisangle')
   
   for i=1:length(sec)
@@ -43,8 +41,7 @@ if strcmpi(type,'axisangle')
   return
 end
 
-%% symmetries and convert to Euler angle
-
+% symmetries and convert to Euler angle
 q = symmetrise(o);
 
 switch lower(type)
@@ -76,15 +73,14 @@ switch lower(type)
     rho = e1;
 end
 
-%% difference to the sections
-
+% difference to the sections
 sec_angle = repmat(sec_angle(:),1,length(sec));
 sec = repmat(sec(:)',size(sec_angle,1),1);
 
 d = abs(mod(sec_angle - sec+pi,2*pi) -pi);
 dmin = min(d,[],2);
 
-%% restrict to those within tolerance
+% restrict to those within tolerance
 
 ind = dmin < tol;
 if ~any(ind)
@@ -98,16 +94,12 @@ rho = rho(ind);
 d = d(ind,:);
 dmin = dmin(ind);
 
-%% Find closest section
-
+% find closest section
 ind2 = isappr(d,repmat(dmin,1,size(sec,2)));
 
-%% construct output
-
-for i = 1:size(sec,2)
-  
-  S2G{i} = S2Grid(sph2vec(e2(ind2(:,i)),mod(rho(ind2(:,i)),2*pi)),varargin{:});
-  
+% construct output
+for i = 1:size(sec,2)  
+  S2G{i} = S2Grid(sph2vec(e2(ind2(:,i)),mod(rho(ind2(:,i)),2*pi)),varargin{:});  
 end
 
 

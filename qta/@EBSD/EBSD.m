@@ -1,4 +1,4 @@
-classdef EBSD < dynProp
+classdef EBSD < dynProp & dynOption
 % constructor
 %
 % *EBSD* is the low level constructor for an *EBSD* object representing EBSD
@@ -7,11 +7,11 @@ classdef EBSD < dynProp
 % from an ODF by the command [[ODF.calcEBSD.html,calcEBSD]].
 %
 % Syntax
-%   ebsd = EBSD(orientations,CS,SS,...,param,val,...)
+%   ebsd = EBSD(orientations,CS,...,param,val,...)
 %
 % Input
 %  orientations - @orientation
-%  CS,SS        - crystal / specimen @symmetry
+%  CS           - crystal / specimen @symmetry
 %
 % Options
 %  phase    - specifing the phase of the EBSD object
@@ -25,11 +25,14 @@ classdef EBSD < dynProp
 properties
   
   CS = {}               % crystal symmetries
-  phase = []            % 
   phaseMap = []         %
   rotations = rotation  %
   unitCell = []         %
   
+end
+
+properties (Dependent = true)
+  phase % phase   
 end
 
 methods
@@ -43,6 +46,9 @@ methods
       ebsd.rotations = reshape(rotation(varargin{:}),[],1);
     end
 
+    % extract additional properties
+    ebsd.prop = get_option(varargin,'options',struct);        
+    
     % extract phases
     [ebsd.phaseMap,~,ebsd.phase] =  unique(...
       get_option(varargin,'phase',ones(length(ebsd),1)));
@@ -96,8 +102,7 @@ methods
       end
     end
 
-    % extract additional properties
-    ebsd.prop = get_option(varargin,'options',struct);    
+    % get unit cell
     ebsd.unitCell = get_option(varargin,'unitCell',[]);
 
     % remove ignore phases
@@ -120,6 +125,16 @@ methods
       end
     end  
   end
+  
+  % --------------------------------------------------------------
+  function phase = get.phase(ebsd)
+    phase = ebsd.prop.phase;
+  end
+  
+  function ebsd = set.phase(ebsd,phase)
+    ebsd.prop.phase = phase;
+  end
+    
 end
 
 end

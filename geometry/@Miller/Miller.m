@@ -66,7 +66,7 @@ classdef Miller < vector3d
         end
         
         [m.x,m.y,m.z] = double(varargin{1});
-        m.prop = varargin{1}.prop;
+        m.opt = varargin{1}.opt;
         m.antipodal = varargin{1}.antipodal;
         
         % hkl and uvw

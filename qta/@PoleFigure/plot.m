@@ -3,17 +3,17 @@ function plot(pf,varargin)
 %
 % plots the Diffraction intensities as distinct colord dots on the sphere
 %
-%% Input
+% Input
 %  pf - @PoleFigure
 %
-%% Options
-%  BACKGROUND   - plot background data
+% Options
+% background   - plot background data
 %
-%% See also
+% See also
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo 
 
-%% new plot
+% new plot
 [ax,pf,varargin] = getAxHandle(pf,varargin{:});
 if isempty(ax),
   newMTEXplot('ensureTag','pdf','ensureAppdata',...
@@ -21,10 +21,12 @@ if isempty(ax),
 end
 
 field = lower(get_option(varargin,'colorcoding',[]));
-if isfield(pf(1).options,field)
-  pfunc = @(i) pf(i).options.(field);
+
+% TODO !!!
+if isProp(pf(1),field)
+  pfunc = @(i) pf(i).(field);
 else
-  pfunc = @(i) pf(i).data;
+  pfunc = @(i) pf(i).intensities;
 end
 
 if check_option(varargin,{'contourf','contour','smooth'}) && ...

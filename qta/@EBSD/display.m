@@ -61,13 +61,13 @@ end
 disp(' ');
 
 if ~isempty(ebsd) && length(ebsd) <= 20
-  fn = fields(ebsd.options);
+  fn = fields(ebsd.prop);
   d = zeros(length(ebsd),numel(fn));
   for j = 1:numel(fn)
-    if isnumeric(ebsd.options.(fn{j}))
-      d(:,j) = vertcat(ebsd.options.(fn{j}));
-    elseif isa(ebsd.options.(fn{j}),'quaternion')
-      d(:,j) = angle(ebsd.options.(fn{j})) / degree;
+    if isnumeric(ebsd.prop.(fn{j}))
+      d(:,j) = vertcat(ebsd.prop.(fn{j}));
+    elseif isa(ebsd.prop.(fn{j}),'quaternion')
+      d(:,j) = angle(ebsd.prop.(fn{j})) / degree;
     end
   end
   cprintf(d,'-Lc',fn);

@@ -25,7 +25,12 @@ else
       end
       
     case '.'
-      [varargout{1:nargout}] = builtin('subsref',v,s);
+      try
+        [varargout{1:nargout}] = builtin('subsref',v,s);
+      catch
+        [varargout{1:nargout}] = subsref@dynOption(v,s);
+      end
+      
       
   end
 end

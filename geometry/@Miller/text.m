@@ -1,19 +1,17 @@
 function varargout = text(m,varargin)
 % plot Miller indece
 %
-%% Input
+% Input
 %  m  - Miller
 %
-%% Options
+% Options
 %  ALL       - plot symmetrically equivalent directions
 %  antipodal - include antipodal symmetry
 %  labeled   - plot Miller indice as label
 %  label     - plot user label
 %
-%% See also
+% See also
 % vector3d/text
-
-%% preprocess input
 
 % get axis hande
 [ax,m,varargin] = getAxHandle(m,varargin{:});

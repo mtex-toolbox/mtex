@@ -1,17 +1,17 @@
 function d = getdata(pf,id)
 % get raw pole figure data
 %
-%% Syntax
-%  d  = getdata(pf,id)
+% Syntax
+%   d  = getdata(pf,id)
 %
-%% Input
+% Input
 %  pf - @PoleFigure
 %  id - index set (optional)
 %
-%% Output
+% Output
 %  d - raw diffraction intensities
 %
-%% See also
+% See also
 % PoleFigure/setdata
 
 cs = cumsum([0,GridLength(pf)]);
@@ -23,6 +23,6 @@ if isa(id,'logical'), id = find(id);end
 d = zeros(length(id),1);
 for i= 1:length(pf)
   idi = (id > cs(i)) & (id<=cs(i+1));
-  d(idi) = pf(i).data(id(idi)-cs(i));
+  d(idi) = pf(i).intensities(id(idi)-cs(i));
 end
   
