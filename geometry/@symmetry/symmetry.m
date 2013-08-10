@@ -2,12 +2,12 @@ classdef symmetry < rotation
 % constructor
 %
 %
-%% Input
+% Input
 %  name  - Schoenflies or International notation of the Laue group
 %  axis  - [a,b,c] --> length of the crystallographic axes
 %  angle - [alpha,beta,gamma] --> angle between the axes
 %
-%% Syntax
+% Syntax
 % symmetry -
 % symmetry('cubic') -
 % symmetry('2/m',[8.6 13 7.2],[90 116, 90]*degree,'mineral','orthoclase') -
@@ -15,10 +15,10 @@ classdef symmetry < rotation
 % symmetry(9) -
 % symmetry('spacegroup',153) -
 %
-%% Output
+% Output
 %  s - @symmetry
 %
-%% Remarks
+% Remarks
 % Supported Symmetries
 %
 %  crystal system  Schoen-  Inter-    Laue     Rotational
@@ -176,7 +176,7 @@ classdef symmetry < rotation
   end
 end
 
-%% ---------------------------------------------------------------
+% ---------------------------------------------------------------
 
 function list = spaceGroups
 

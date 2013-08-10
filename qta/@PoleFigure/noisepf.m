@@ -23,9 +23,9 @@ if numel(fak) == 1, fak = repmat(fak,numel(pdf),1);end
 
 pdfn = pdf;
 for i = 1:length(pdf)
-    data = randp(fak(i)*pdf(i).data + background) - background;
-		if check_option(varargin,'NONNEGATIV')
-			data(data < 0) = 0;
-		end
-    pdfn(i).data = data;
+  data = randp(fak(i)*pdf(i).intensities + background) - background;
+  if check_option(varargin,'NONNEGATIV')
+    data(data < 0) = 0;
+  end
+  pdfn(i).intensities = data;
 end

@@ -118,7 +118,7 @@ o \ r
 %
 % Let 
 
-o = orientation('Euler',90*degree,0,0,cs,ss);
+o = orientation('Euler',90*degree,0,0,cs);
 rot = rotation('Euler',0,60*degree,0);
 
 %%

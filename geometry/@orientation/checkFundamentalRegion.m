@@ -1,18 +1,19 @@
 function [ind,boundary] = checkFundamentalRegion(ori,varargin)
 % checks whether a orientation sits within the fundamental region
 %
-%% Input
+% Syntax
+%   ind = checkFundamentalRegion(ori,center)
+%
+% Input
 %  ori - @orientation
 %
-%% Options
+% Options
 %  center - @quaternion / center of fundamental region
 %
-%% Output
+% Output
 %  ind    - indices of those orientations that are within the Fundamental region
 
 % take the product of crystal and specimen symmetries
-%qSS = quaternion(ori.SS);
-%qCS = quaternion(ori.CS);
 c_sym = quaternion(ori.CS * ori.SS);
 
 % compute rotational axes and angles

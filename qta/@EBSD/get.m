@@ -1,36 +1,36 @@
 function varargout = get(ebsd,vname,varargin)
 % extract data from a Pole Figure object
 %
-%% Syntax
-%  d = get(ebsd,'orientations')  - returns individuel orientations of the EBSD data
-%  s = get(ebsd,'CS')            - returns its crystal symmetry
-%  x = get(ebsd,'x')             - returns its spatial x coordinates
-%  y = get(ebsd,'y')             - returns its spatial y coordinates
-%  p = get(ebsd,'property')      - properties associated with the orientations
-%  m = get(ebsd,'mad')           - property field MAD, if MAD is a property
+% Syntax
+%   d = get(ebsd,'orientations')  - returns individuel orientations of the EBSD data
+%   s = get(ebsd,'CS')            - returns its crystal symmetry
+%   x = get(ebsd,'x')             - returns its spatial x coordinates
+%   y = get(ebsd,'y')             - returns its spatial y coordinates
+%   p = get(ebsd,'property')      - properties associated with the orientations
+%   m = get(ebsd,'mad')           - property field MAD, if MAD is a property
 %
-%% Input
+% Input
 %  ebsd - @EBSD
 %
-%% Options
+% Options
 %  phase - phase to consider
 %
-%% Output
+% Output
 %  d - @orientation
 %  s - @symmetry
 %  x,y,p,m - double
 %
-%% See also
+% See also
 % EBSD/set
 
 
-properties = get_obj_fields(ebsd);
-options    = get_obj_fields(ebsd.options);
-if nargin == 1
-  vnames = [properties;options;{'data';'quaternion';'orientations';'Euler';'mineral';'minerals'}];
-  if nargout, varargout{1} = vnames; else disp(vnames), end
-  return
-end
+%properties = get_obj_fields(ebsd);
+%options    = get_obj_fields(ebsd.options);
+%if nargin == 1
+%  vnames = [properties;options;{'data';'quaternion';'orientations';'Euler';'mineral';'minerals'}];
+%  if nargout, varargout{1} = vnames; else disp(vnames), end
+%  return
+%end
 
 switch lower(vname)
   case 'cs'
@@ -51,7 +51,7 @@ switch lower(vname)
     % ensure single phase   
     [ebsd,cs] = checkSinglePhase(ebsd);
       
-    varargout{1} = orientation(ebsd.rotations,cs,ebsd.SS);
+    varargout{1} = orientation(ebsd.rotations,cs);
      
   case 'mis2mean'
     
@@ -78,15 +78,7 @@ switch lower(vname)
     
   case 'phase' 
     
-    varargout{1} = ebsd.phaseMap(ebsd.phase);
-    
-  case lower(properties)
-    
-    varargout{1} = ebsd.(properties{find_option(properties,vname)});
-    
-  case lower(options)
-    
-    varargout{1} = ebsd.options.(options{find_option(options,vname)});
+    varargout{1} = ebsd.phaseMap(ebsd.phase);      
     
   case {'quaternions','quaternion'}
     
@@ -153,6 +145,17 @@ switch lower(vname)
     varargout{1} = fieldnames(ebsd.options);
     
   otherwise
+    
+    try %#ok<TRYNC>
+      varargout{1} = ebsd.prop.(vname);
+      return
+    end
+    
+    try %#ok<TRYNC>
+      varargout{1} = ebsd.opt.(vname);
+      return
+    end
+    
     error(['There is no ''' vname ''' property in the ''EBSD'' object'])
 end
 

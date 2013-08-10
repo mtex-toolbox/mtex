@@ -1,21 +1,22 @@
 function varargout = Euler(S3G,varargin)
 % convert SO3Grid to Euler angles
 %
-%% Syntax
+% Syntax
 %
-%  [phi1,Phi,phi2] = Euler(S3G,'Bunge');
-%  abg = Euler(S3G);
+%   [phi1,Phi,phi2] = Euler(S3G,'Bunge');
+%   abg = Euler(S3G);
 %
-%% Input
+% Input
 %  S3G - @SO3Grid
 %
-%% Options
+% Options
 %  ZYZ, ABG   - Matthies (alpha, beta, gamma) convention (default)
 %  ZXZ, BUNGE - Bunge (phi1,Phi,phi2) convention %
 %
-%% See also
+% See also
 % quaternion/Euler
 
+% TODO: remove code duplication
 
 if ~isa(S3G,'SO3Grid')
   ind = cellfun(@(x) isa(x,'SO3Grid'),varargin);

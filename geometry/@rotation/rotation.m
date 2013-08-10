@@ -1,4 +1,4 @@
-classdef rotation < quaternion
+classdef rotation < quaternion & dynOption
 % defines an rotation
 %
 % Syntax

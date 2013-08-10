@@ -105,6 +105,11 @@ idata = cellfun('prodofsize',data);
 
 % ------------- apply options ----------------------------------
 
+% set file name
+for i = 1:numel(data)
+  data{i} = setOption(data{i},'file_name',ls(fname{i})); %#ok<AGROW>
+end
+
 if strcmpi(type,'EBSD') && check_option(varargin,'3d')
   Z = get_option(varargin,'3d',1:numel(data),'double');
   for k=1:numel(data)
@@ -114,17 +119,13 @@ if strcmpi(type,'EBSD') && check_option(varargin,'3d')
   data = set(data,'unitCell',calcUnitCell(get(data,'xyz'),varargin{:}));
 end
 
-% set crystal and specimen symmetry, specimen direction and comments
-
+% set crystal and specimen symmetry, specimen direction
 if ~any(strcmpi(type,{'tensor','vector3d'}))
   if iscell(data),
-    data = cellfun(@(d,f) set(d,'fileName',strtrim(ls(f))),data,fname,'UniformOutput',false);
+    data = cellfun(@(d,f) setOption(d,'file_name',strtrim(ls(f))),data,fname,'UniformOutput',false);
     data = [data{:}];
   end
-  %for i = 1:length(data)
-  %  data(i) = set(data(i),'comment',ls(fname{i})); %#ok<AGROW>
-  %end
-  
+     
   if exist('cs','var'), data = set(data,'CS',cs,'noTrafo');end
   if exist('ss','var'), data = set(data,'SS',ss);end % TODO
   if exist('h','var'),  data = set(data,'h',h);end

@@ -1,11 +1,11 @@
 function d = dot_outer(o1,o2,varargin)
 % dot_outer
 %
-%% Input
+% Input
 %  o1, o2 - @orientation
 %
-%% Output
-%
+% Output
+% d - double of size length(o1) < length(o2)
 
 
 g1 = reshape(quaternion(o1),1,[]);

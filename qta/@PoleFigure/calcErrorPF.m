@@ -5,24 +5,24 @@ function pfcalc = calcErrorPF(pfmeas,pfcalc,varargin)
 % meassured intensities and the recalculated @ODF or between two meassured
 % @PoleFigure.
 %
-%% Syntax
+% Syntax
 % pf = calcErrorPF(pfmeas,pfcalc,<options>) -
 % pf = calcErrorPF(pfmeas,odf,<options>)    -
 %
-%% Input
+% Input
 %  pfmeas - meassured @PoleFigure 
 %  pfcalc - recalculated @PoleFigure
 %  odf    - recalculated @ODF
 %
-%% Options
+% Options
 %  RP    - RP value (default)
 %  l1    - l1 error
 %  l2    - l2 error
 %
-%% Output
+% Output
 %  pf - @PoleFigure 
 %
-%% See also
+% See also
 %  PoleFigure/calcError ODF/calcPoleFigure
 
 % evaluate ODF if neccesary
@@ -53,6 +53,6 @@ for i = 1:length(pfmeas)
     d = abs(d1-d2)./max(d1+epsilon*alpha,d2+epsilon*alpha);
     %d = abs(d1-d2)./(d1+epsilon*alpha);
   end
-  pfcalc(i).data = d;
+  pfcalc(i).intensities = d;
   progress(i,length(pfmeas));
 end

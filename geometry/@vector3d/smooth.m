@@ -49,7 +49,7 @@ end
 % -------------- interpolate if no regular grid was given ---------
 
 % may be externalize this into a funtion interp of S2Grid
-if ~isProp(v,'plot') || ~v.prop.plot
+if ~isOption(v,'plot') || ~v.opt.plot
 
   if size(v,1) == 1 || size(v,2) == 1
 

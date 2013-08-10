@@ -1,20 +1,20 @@
 function [q,omega] = getFundamentalRegion(o,q_ref)
 % projects orientations to a fundamental region
 %
-%% Input
+% Input
 %  o     - @orientation
 %  q_ref - reference @quaternion
 %
-%% Output
+% Output
 %  q     - @quaternion
 %  omega - rotational angle to reference orientation
 %
 
-%% get quaternions
+% get quaternions
 if nargin == 1, q_ref = idquaternion;end
 q = quaternion(o);
 
-%% no specimen symmetry
+% no specimen symmetry
 if length(o.SS) == 1 
     
   % may be we can skip something
@@ -42,7 +42,7 @@ if length(o.SS) == 1
   % compute angle
   omega = reshape(2*acos(min(1,omega)),size(q));
   
-%% with specimen symmetry
+% with specimen symmetry
 else 
   
   % symetry elements

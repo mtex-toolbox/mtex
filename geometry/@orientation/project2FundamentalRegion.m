@@ -1,15 +1,14 @@
 function [ori,omega] = project2FundamentalRegion(ori,varargin)
 % projects orientation to a fundamental region
 %
-%% Syntax
+% Syntax
+%   [ori,omega] = project2FundamentalRegion(ori,rot_ref)
 %
-% [ori,omega] = project2FundamentalRegion(ori,rot_ref)
-%
-%% Input
+% Input
 %  ori     - @orientation
 %  ori_ref - reference @rotation
 %
-%% Output
+% Output
 %  ori     - @orientation
 %  omega   - rotational angle to reference rotation
 %

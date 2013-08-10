@@ -1,16 +1,16 @@
 function ind = find_outlier(pf,varargin)
 % find outliers in pole figures
 %
-%% Input
+% Input
 %  pf - @PoleFigure
 %  
-%% Options
+% Options
 %  alpha - double 
 %
-%% Output
+% Output
 %  ind - indece of the outliers
 %
-%% See also
+% See also
 % PoleFigure/delete
 
 
@@ -29,10 +29,10 @@ for ipf = 1:length(pf)
   next(speye(length(next))==1) = false;
   
   % compute mean
-  dmean = next * pf(ipf).data(:) ./ sum(next,2);
+  dmean = next * pf(ipf).intensities(:) ./ sum(next,2);
   
-  dstd = std(pf(ipf).data(:));
+  dstd = std(pf(ipf).intensities(:));
   
-  ind = [ind;lpf(ipf) + find(abs(dmean - pf(ipf).data(:))>alpha*dstd)]; %#ok<AGROW>
+  ind = [ind;lpf(ipf) + find(abs(dmean - pf(ipf).intensities(:))>alpha*dstd)]; %#ok<AGROW>
   
 end

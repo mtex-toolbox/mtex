@@ -46,7 +46,7 @@ d1 = rho + 1000*theta;
 
 v = sph2vec(th1,rh1);
 
-%% apply inversion
+% apply inversion
 if ~isempty(rho_rot)
   rho2 = modCentered(pi+2*rho_rot - rho,rotangle_max_z(sym),minRho);
   theta2 = theta;
@@ -61,8 +61,8 @@ end
 d2 = rho2 + 1000*theta2;
 [d2,th2,rh2] = selectMinbyColumn(d2,theta2,rho2);
 
-%% antipodal
-if check_option(varargin,'antipodal') || check_option(v,'antipodal')
+% antipodal
+if check_option(varargin,'antipodal') || v.antipodal
   swap = false(length(v),1);
 else
   swap = d1 > d2;
@@ -71,6 +71,7 @@ end
 [~,theta,rho] = selectMinbyColumn([d1;d2],[th1;th2],[rh1;rh2]);
 vAntipodal = sph2vec(theta,rho);
 
+% ----------------------------------------------------------------
 function d = modCentered(a,b,c)
 
 d = mod(a-c,b)+c;

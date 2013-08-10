@@ -25,7 +25,6 @@ classdef SO3Grid < orientation
     alphabeta = [];
     gamma    = [];
     resolution = 2*pi;
-    options = {};
     center  = [];
   end
   
@@ -39,8 +38,7 @@ classdef SO3Grid < orientation
       S3G.gamma = gamma;
       S3G.center = get_option(varargin,'center',idquaternion);
       S3G.resolution = get_option(varargin,'resolution',2*pi);
-      S3G.options = {};
-    end         
+    end
   end
 end
 

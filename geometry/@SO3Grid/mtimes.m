@@ -1,16 +1,16 @@
 function out = mtimes(a,b)
 % outer quaternion multiplication
 %
-%% Syntax
+% Syntax
 %  out = a * b
 %  out = a * v
 %
-%% Input
+% Input
 %  a - @SO3Grid
 %  b - @quaternion 
 %  v - @vector3d
 %
-%% Output
+% Output
 %  out - @SO3Grid / @vector3d
 
 if isa(a,'SO3Grid') % right multiplication

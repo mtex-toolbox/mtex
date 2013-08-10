@@ -37,7 +37,7 @@ for i = 1:length(m)
   end
   
   % only display rounded results
-  if all(round(hkl)==hkl)
+  if all(isappr(round(hkl),hkl))
     s = barchar(hkl,varargin{:});
   else
     s = '---';

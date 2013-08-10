@@ -5,18 +5,18 @@ function npf = remove_outlier(pf)
 % lower or larger then the 95 percent quantile within a certain 
 % neigborhood by the 95 percent quantile. 
 %
-%% Syntax
-% npf = remove_outlier(pf)
+% Syntax
+%   npf = remove_outlier(pf)
 %
-%% Input
+% Input
 %  pf - @PoleFigure
 %
-%% Output
+% Output
 %  npf - @PoleFigure
 
 for i=1:length(pf)
 	
-	pf(i).data = remove_outlier(pf(i).data);
+	pf(i).intensities = remove_outlier(pf(i).intensities);
 	
 end
 

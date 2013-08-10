@@ -13,20 +13,6 @@ end;
 
 disp([h ' ' docmethods(inputname(1))]);
 
-if ~isempty(char(pf.comment)) 
-  if all(equal(char(pf.comment),1)) 
-    s = stripPath(pf(1).comment);    
-  else
-    s = '';
-    for i=1:length(pf)
-      s = [s, stripPath(pf(i).comment)]; %#ok<AGROW>
-      if i~=length(pf), s = [s ', ']; end %#ok<AGROW>
-    end
-  end
-  disp(['  comment: ' s(1:min(60,end))]);
-end
-
-
 if isempty(pf), return;end
 
 % display mineral name

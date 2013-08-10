@@ -38,9 +38,9 @@ switch lower(vname)
    
   case {'resolution','res'}
 
-    if obj.isProp('resolution')
+    if obj.isOption('resolution')
       
-      varargout{1} = obj.getProp('resolution');
+      varargout{1} = obj.getOption('resolution');
     
     else
               
