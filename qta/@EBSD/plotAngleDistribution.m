@@ -1,16 +1,15 @@
 function plotAngleDistribution( ebsd, varargin )
 % plot the angle distribution
 %
-%% Input
-% ebsd - @EBSD
+% Input
+%  ebsd - @EBSD
 %
-%% Flags
-%
+% Flags
 %  ODF, MDF     - compute the uncorrelated angle distribution from the MDF
 %  uncorrelated - compute the uncorrelated angle distribution from the EBSD
 %  data
 %
-%% See also
+% See also
 % EBSD/calcAngleDistribution
 %
 
@@ -18,8 +17,7 @@ function plotAngleDistribution( ebsd, varargin )
 [ax,ebsd,varargin] = getAxHandle(ebsd,varargin{:});
 if isempty(ax), newMTEXplot;end
 
-%% get phases
-
+% get phases
 ind = cellfun(@(c) isa(c,'EBSD'),varargin);
 if any(ind)
   ebsd2 = varargin{find(ind,1)};
@@ -36,8 +34,7 @@ else
 end
 
 
-%%
-
+%
 ebsd  = subsref(ebsd,~isNotIndexed(ebsd));
 ebsd2 = subsref(ebsd2,~isNotIndexed(ebsd2));
 
@@ -65,8 +62,7 @@ end
 ph1 = ph1(tril(ones(size(ph1)))>0);
 ph2 = ph2(tril(ones(size(ph2)))>0);
 
-%% compute omega
-
+% compute omega
 CS = get(ebsd,'CSCell');
 phMap = get(ebsd,'phaseMap');
 maxomega = 0;
@@ -83,8 +79,7 @@ else
   omega = linspace(0,maxomega,bins);
 end
 
-%% compute angle distributions
-
+% compute angle distributions
 f = zeros(numel(omega),numel(ph1));
 
 for i = 1:numel(ph1)
@@ -95,8 +90,7 @@ for i = 1:numel(ph1)
   lg{i} = [mineral{ph1(i)} ' - ' mineral{ph2(i)}]; %#ok<AGROW>
 end
 
-%% plot
-
+% plot
 if check_option(varargin,{'ODF','MDF'})
 
   p = findobj(gca,'Type','patch');

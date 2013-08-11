@@ -1,30 +1,27 @@
 function v = volume(ebsd,center,radius,varargin)
 % ratio of orientations with a certain orientation
 %
-%% Description
+% Description
 % returns the ratio of mass of the ebsd that is close to 
 % one of the orientations as radius
 %
-%% Syntax
-%  v = volume(ebsd,center,radius,<options>)
+% Syntax
+%   v = volume(ebsd,center,radius,<options>)
 %
-%% Input
+% Input
 %  ebsd   - @EBSD
 %  center - @quaternion
 %  radius - double
 %
-%% See also
+% See also
 % ODF/volume
-
-% extract orientations
-o = get(ebsd,'orientations');
 
 % extract weights
 weight = get(ebsd,'weight');
 
 % compute volume
-if isempty(o)
+if isempty(ebsd)
   v = 0;
 else
-  v = sum(weight(find(o,center,radius,varargin{:})));
+  v = sum(weight(find(ebsd.orientations,center,radius,varargin{:})));
 end

@@ -1,7 +1,7 @@
 function ebsd = rotate(ebsd,q,varargin)
 % rotate EBSD orientations or spatial data around point of origin
 %
-%% Syntax
+% Syntax
 %
 %   % roate the whoole data set about the z-axis by 90*degree
 %   ebsd = rotate(ebsd,10*degree) 
@@ -12,16 +12,16 @@ function ebsd = rotate(ebsd,q,varargin)
 %   % roate only the spatial data
 %   ebsd = rotate(ebsd,180*degree,'keepEuler') 
 %
-%% Input
+% Input
 %  ebsd - @EBSD
 %  angle - double
 %  q    - @quaternion
 %
-%% Flags
+% Flags
 %  keepXY    - rotate only the orientation data, i.e. the Euler angles
 %  keepEuler - rotate only the spatial data, i.e., the x,y, and z values
 %
-%% Output
+% Output
 %  ebsd - @EBSD
 
 if isa(q,'double'), q = axis2quat(zvector,q); end

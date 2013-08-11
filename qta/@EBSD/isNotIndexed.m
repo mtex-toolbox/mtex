@@ -1,10 +1,9 @@
 function notIndexed = isNotIndexed(ebsd)
 % returns if a spatially EBSD data is indexed
 %
-%% Example
-% select all indexed EBSD data
-%
-%  ebsd(~isNotIndexed(ebsd))
+% Example
+%   %select all indexed EBSD data
+%   ebsd(~isNotIndexed(ebsd))
 
 
 notIndexedPhase = ebsd.phaseMap(cellfun('isclass',ebsd.CS,'char'));

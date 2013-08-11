@@ -1,11 +1,11 @@
 function export_h5(ebsd,fname,varargin)
 % export EBSD data to a ascii file
 %
-%% Input
+% Input
 %  ebsd - @EBSD
 %  fname - filename
 %
-%% Options
+% Options
 %  BUNGE   - Bunge convention (default)
 %  ABG     - Matthies convention (alpha beta gamma)
 %  DEGREE  - output in degree (default)

@@ -1,17 +1,17 @@
 function ebsd = subsample(ebsd,points)
 % subsample of ebsd data
 %
-%% Syntax
-% subsample(ebsd,points)
+% Syntax
+%   subsample(ebsd,points)
 %
-%% Input
+% Input
 %  ebsd    - @EBSD
 %  points  - number of random subsamples 
 %
-%% Output
+% Output
 %  ebsd    - @EBSD
 %
-%% See also
+% See also
 % EBSD/delete 
 
 if points >= length(ebsd), return;end

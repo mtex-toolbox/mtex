@@ -1,7 +1,7 @@
 function [TVoigt, TReuss, THill] = calcTensor(ebsd,varargin)
 % compute the average tensor for an EBSD data set
 %
-%% Syntax
+% Syntax
 % [TVoigt, TReuss, THill] = calcTensor(ebsd,T_phase1,T_phase2,...) - returns
 %    the Voigt--, Reuss-- and Hill-- @tensor, applies each tensor
 %    given in order of input to each phase
@@ -16,19 +16,19 @@ function [TVoigt, TReuss, THill] = calcTensor(ebsd,varargin)
 % TVoigt = calcTensor(ebsd,T_phase1,T_phase2,'geometricMean') - use
 % geometric mean instead of arithmetric one
 %
-%% Input
+% Input
 %  ebsd     - @EBSD
 %  T_phaseN - @tensor for the N--th phase
 %
-%% Output
+% Output
 %  T    - @tensor
 %
-%% Options
+% Options
 %  Voigt - voigt mean
 %  Reuss - reuss mean
 %  Hill  - hill mean
 %
-%% See also
+% See also
 %
 
 % extract tensors and remove them from varargin
@@ -54,8 +54,6 @@ if numel(T) < max(phases)
     error('There are more phases then tensors');
   end
 end
-
-
 
 % cycle through phases and tensors
 for p = phases

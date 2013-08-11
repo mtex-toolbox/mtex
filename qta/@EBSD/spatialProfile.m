@@ -1,32 +1,32 @@
 function varargout = spatialProfile(ebsd,lineX,varargin)
 % selects property values on a given line segment
 % 
-%% Syntax
-% spatialProfile(ebsd,lineX,'property',...) - plots a profile
-% [p,dist] = spatialProfile(ebsd,lineX,'property',...) - returns a sorted
-%      list |p|, where p a property and a distance |dist| to begin of line segment 
-%% Input
-% ebsd - @EBSD
-% lineX - list of spatial coordinates |[x(:) y(:)]| of if 3d |[x(:) y(:) z(:)]|, 
+% Syntax
+%   % plots a profile of property bc
+%   spatialProfile(ebsd,lineX,'property','bc') 
+%
+%   % returns a sorted list p, where p a property and a distance |dist| to begin of line segment 
+%   [p,dist] = spatialProfile(ebsd,lineX,'property','bc')
+%
+% Input
+%  ebsd  - @EBSD
+%  lineX - list of spatial coordinates |[x(:) y(:)]| of if 3d |[x(:) y(:) z(:)]|, 
 %    where $x_i,x_{i+1}$ defines a line segment
-%% Options
-% property - by default orientation, otherwise a property field.
+% Options
+%  property - by default orientation, otherwise a property field.
 %
-%% Example
+% Example
 %
-%  plot(ebsd)
-%  lineX = ginput(2)
-%  spatialProfile(ebsd,lineX,'property','mad')
+%   plot(ebsd)
+%   lineX = ginput(2)
+%   spatialProfile(ebsd,lineX,'property','mad')
 %
 
+if isa(ebsd,'GrainSet'), ebsd = get(ebsd,'EBSD');end
 
-if isa(ebsd,'GrainSet')
-  ebsd = get(ebsd,'EBSD');
-end
-
-if all(isfield(ebsd.options,{'x','y','z'}))
+if all(isfield(ebsd.prop,{'x','y','z'}))
   x_D = get(ebsd,'xyz');
-elseif all(isfield(ebsd.options,{'x','y'}))
+elseif all(isfield(ebsd.prop,{'x','y'}))
   x_D = get(ebsd,'xy');
 else
   error('mtex:SpatialProfile','no Spatial Data!');
@@ -56,7 +56,7 @@ for k=1:size(lineX,1)-1
   D(dim+1,dim+1) = 1;
   D(:,end) =  [-lineX(k+double(s<0),:) 1] * D';
   
-  % homogen linear tranformation´
+  % homogen linear tranformationï¿½
   x_DX = x_D*D';
   
   sel =  sqrt(sum(x_DX(:,2:end-1).^2,2)) <= radius &  ... distance to line
@@ -98,7 +98,7 @@ else
 end
 
 
-
+% ----------------------------------------------------------------
 function d = unitCellDiameter(unitCell)
 
 

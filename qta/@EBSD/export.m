@@ -1,18 +1,19 @@
 function export(ebsd,fname,varargin)
 % export EBSD data to a ascii file
 %
-%% Input
+% Input
 %  ebsd - @EBSD
 %  fname - filename
 %
-%% Options
-%  BUNGE   - Bunge convention (default)
+% Options
+%  Bunge   - Bunge convention (default)
 %  ABG     - Matthies convention (alpha beta gamma)
-%  DEGREE  - output in degree (default)
-%  RADIANS - output in radians
+%  degree  - output in degree (default)
+%  radians - output in radians
 
+% TODO
 
-fn = fields(ebsd.options);
+fn = fields(ebsd.prop);
 
 % allocate memory
 d = zeros(length(ebsd),4+numel(fn));
