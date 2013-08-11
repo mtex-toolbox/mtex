@@ -48,11 +48,11 @@ end
 
 if isa(ebsd,'GrainSet'),  ebsd = get(ebsd,'ebsd'); end
 
-if all(isfield(ebsd.options,{'x','y','z'}))
-  x_D = get(ebsd,'xyz');
+if all(isfield(ebsd.prop,{'x','y','z'}))
+  x_D = [ebsd.prop.x(:),ebsd.prop.y(:),ebsd.prop.z(:)];
   [Xt,m,n]  = unique(x_D(:,[3 2 1]),'first','rows'); %#ok<ASGLU>
-elseif all(isfield(ebsd.options,{'x','y'}))
-  x_D = get(ebsd,'xy');
+elseif all(isfield(ebsd.prop,{'x','y'}))
+  x_D = [ebsd.prop.x(:),ebsd.prop.y(:)];
   [Xt,m,n]  = unique(x_D(:,[2 1]),'first','rows'); %#ok<ASGLU>
 else
   error('mtex:GrainGeneration','no Spatial Data!');
@@ -273,7 +273,6 @@ clear grainSize grainRange indexedPhases doMeanCalc cellMean q g qMean
 
 % -----------------------------------------------------------
 
-grainSet.comment  = ebsd.comment;
 %', thresholds: ' ...
 %  sprintf(['%3.1f' mtexdegchar ', '],thresholds/degree)];
 %grainSet.comment(end-1:end) = [];
@@ -293,7 +292,7 @@ grainSet.V        = x_V;            clear x_V;
 grainSet.options  = struct;
 
 [g,d] = find(grainSet.I_DG'); clear I_DG;
-ebsd.options.mis2mean = inv(ebsd.rotations(d)).* reshape(grainSet.meanRotation(g),[],1);
+ebsd.prop.mis2mean = inv(ebsd.rotations(d)).* reshape(grainSet.meanRotation(g),[],1);
 
 switch dim
   case 2

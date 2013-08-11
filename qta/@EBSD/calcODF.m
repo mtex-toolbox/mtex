@@ -43,7 +43,7 @@ function odf = calcODF(ebsd,varargin)
 ori = get(ebsd,'orientations');
 
 % extract weights
-if isfield(ebsd.options,'weight')
+if isProp(ebsd,'weight')
   varargin = [varargin,'weight',get(ebsd,'weight')];
 end
 

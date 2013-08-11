@@ -14,8 +14,8 @@ rho = repmat(...
 
 S2G = S2Grid(theta,rho);
 
-S2G = S2G.set('plot',true,'resolution',steps);
+S2G = S2G.setOption('plot',true,'resolution',steps);
 
-%S2G = set_option(S2G,extract_option(varargin,{'INDEXED','PLOT','north','south','antipodal','lower','upper'}));
+% TODO: extractoptions 'north','south','antipodal','lower','upper'
 
 end

@@ -37,9 +37,9 @@ plot(pf)
 % Data stored in a <PoleFigure_index.html PoleFigure> variable can be
 % extracted using the command <PoleFigure_get.hmtl get>, e.g., by
 
-I = get(pf,'intensities'); % intensities
-h = get(pf,'Miller')       % Miller indice
-r = get(pf,'r')            % specimen directions
+I = pf(1).intensities; % intensities
+h = pf(1).h;            % Miller indice
+r = pf(1).r;            % specimen directions
 
 %%
 % *basic statistics*

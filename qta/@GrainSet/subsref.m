@@ -1,7 +1,7 @@
 function grains = subsref(grains,s)
 % access subsets of a GrainSet
 %
-%% Syntax
+% Syntax
 % grains( 1:10 )          - returns the 10 first grains of a GrainSet
 % grains( ~grains('fe') ) - returns all grains not of the particular phase.
 %                           logical array with size of the complete
@@ -39,7 +39,7 @@ if isa(s,'double') || isa(s,'logical')
   
   ebsd_subs = nonzeros(cumsum(old_D) .* any(grains.I_DG,2));
   
-  grains.EBSD = grains.EBSD(ebsd_subs);
+  grains.ebsd = grains.ebsd(ebsd_subs);
   
   D = any(grains.I_FDext | grains.I_FDsub,2);
   grains.F(~D,:) = 0;

@@ -23,7 +23,7 @@ if check_option(varargin,'exact')
     ind = d<epsilon;
   end
 
-elseif isempty(SO3G) == 0
+elseif isempty(SO3G)
   
   ind = [];
   d = [];

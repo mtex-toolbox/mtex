@@ -9,11 +9,11 @@ function gr = GrainSet(grainStruct,ebsd)
 %
 % constructs such a *GrainSet*.
 %
-%% Input
+% Input
 % grainStruct - defining necessary incidence and adjaceny matrices
 % ebsd - @EBSD
 %
-%% See also
+% See also
 % EBSD/calcGrains Grain3d/Grain3d Grain2d/Grain2d
 
 if nargin == 0
@@ -32,4 +32,5 @@ if nargin == 0
   ebsd = EBSD;
 end
 
-gr = class(grainStruct,'GrainSet',ebsd);
+grainStruct.ebsd = ebsd;
+gr = class(grainStruct,'GrainSet');

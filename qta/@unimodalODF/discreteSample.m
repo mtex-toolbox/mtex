@@ -8,7 +8,7 @@ else
   ic = discretesample(odf.c, points);
 end
     
-axis = S2Grid('random','points',npoints);
+axis = randv(npoints,1);
 angle = randomSample(odf.psi,npoints);
 
 ori = orientation(quaternion(odf.center,ic) .* axis2quat(axis,angle),odf.CS,odf.SS);

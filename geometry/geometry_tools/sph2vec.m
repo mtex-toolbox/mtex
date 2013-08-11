@@ -3,16 +3,16 @@ function [x,y,z] = sph2vec(theta,rho,r)
 %
 % transforms spherical into cartesian coordiantes
 %
-%% Syntax
-% v = sph2vec(theta,rho) -
-% v = sph2vec(theta,rho,r) -
-% [x,y,z] = sph2vec(theta,rho,r) -
+% Syntax
+%   v = sph2vec(theta,rho) -
+%   v = sph2vec(theta,rho,r) -
+%   [x,y,z] = sph2vec(theta,rho,r) -
 %
-%% Input
+% Input
 %  theta, rho - spherical coordinates in radians
 %  r          - radius
 %
-%% Output
+% Output
 %  v     - @vector3d 
 %  x,y,z - double
 

@@ -92,7 +92,7 @@ end
 
 
 % generate plots
-[S2G data]= project2ODFsection(o,sectype,sec,'data',data,varargin{:});
+[S2G, data]= project2ODFsection(o,sectype,sec,'data',data,varargin{:});
 S2G = arrayfun(@(i) set(S2G{i},'res',get(S2G{1},'resolution')),1:length(S2G),'uniformoutput',false);
 
 % ------------------------- plot -----------------------------------------

@@ -1,45 +1,47 @@
 function varargout = get(grains,vname)
 % return property of a GrainSet
 %
-%% Input
+% Input
 % grains - @GrainSet
 %
-%% Syntax
-%  o = get(grains,'meanOrientation') - returns the mean orientation of grains
-%  o = get(grains,'orientations')    - returns individual orientations of the 
+% Syntax
+%   % returns the mean orientation of grains
+%   o = get(grains,'meanOrientation') 
+%   o = get(grains,'orientations')    % returns individual orientations of the 
 %                                      EBSD data from which grains were
 %                                      constructed.
-%  m = get(grains,'mis2mean')        - returns the misorientation of the
+%   m = get(grains,'mis2mean')        % returns the misorientation of the
 %                                      EBSD data to the mean orientation of
 %                                      each grain.
-%  p = get(grains,'phase')           - returns the phase index of grains
-%  A = get(grains,'A_D')             - returns the adjacency matrix of neighbored
+%   p = get(grains,'phase')           % returns the phase index of grains
+%   A = get(grains,'A_D')             % returns the adjacency matrix of neighbored
 %                                      EBSD measurments.
-%  I = get(grains,'I_DG')            - returns the incidence matrix ebsd measurement
+%   I = get(grains,'I_DG')            % returns the incidence matrix ebsd measurement
 %                                      incident to grain.
-%  s = get(grains,'CS')              - returns the first indexed crystal symmetry
+%   s = get(grains,'CS')              % returns the first indexed crystal symmetry
 %                                      of the grains.
-%  p = get(grains,'mad')             - returns the MAD property of the EBSD data, if MAD is a 
+%   p = get(grains,'mad')             % returns the MAD property of the EBSD data, if MAD is a 
 %                                      property of EBSD data from which the
 %                                      grains were constructed.
 %
-%% Input
+% Input
 %  grains - @GrainSet
 %
-%% Output
+% Output
 %  o,m - @orientation
 %  s - @symmetry
 %  A,I - sparse matrix
 %  p - double
 %
-%% See also
+% See also
 % EBSD/set
 
 properties = get_obj_fields(grains,'GrainSet');
 options    = fieldnames(grains.options);
+classOpt = get_obj_fields(grains.ebsd);
 
 if nargin == 1
-  vnames = [properties;options;{'mean';'meanorientation';'orientations';'mineral';'minerals'}];
+  vnames = [classOpt;properties;options;{'mean';'meanorientation';'orientations';'mineral';'minerals'}];
   if nargout, varargout{1} = vnames; else disp(vnames), end
   return
 end
@@ -62,7 +64,7 @@ switch lower(vname)
     else
       
       CS = get(grains,'CSCell');
-      varargout{1} = orientation(grains.meanRotation,CS{grains.phase(1)},get(grains,'SS'));
+      varargout{1} = orientation(grains.meanRotation,CS{grains.phase(1)});
       
     end
     
@@ -120,13 +122,13 @@ switch lower(vname)
    
   case 'ebsd'
     
-    varargout{1} = grains.EBSD;
+    varargout{1} = grains.ebsd;
     
     
     % overload from EBSD data
-  case [lower(get(grains.EBSD));'cscell'; 'weight']
+  case [lower(get(grains.ebsd));'cscell'; 'weight']
     
-    varargout{1} = get(grains.EBSD,vname);
+    varargout{1} = get(grains.ebsd,vname);
     
   otherwise
     

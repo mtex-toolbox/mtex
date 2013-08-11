@@ -20,7 +20,8 @@ else
 end
 tol = get_option(varargin,'tolerance',tol);
 
-S2G = repcell(S2Grid(vector3d,varargin{:}),length(sec),1);
+% TODO
+%S2G = repcell(S2Grid(vector3d,varargin{:}),length(sec),1);
 
 % ------------ axis angle projection -------------------
 if strcmpi(type,'axisangle')
@@ -98,8 +99,9 @@ dmin = dmin(ind);
 ind2 = isappr(d,repmat(dmin,1,size(sec,2)));
 
 % construct output
+% TODO
 for i = 1:size(sec,2)  
-  S2G{i} = S2Grid(sph2vec(e2(ind2(:,i)),mod(rho(ind2(:,i)),2*pi)),varargin{:});  
+  S2G{i} = vector3d('polar',e2(ind2(:,i)),mod(rho(ind2(:,i)),2*pi),varargin{:});
 end
 
 

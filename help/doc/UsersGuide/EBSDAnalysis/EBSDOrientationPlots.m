@@ -18,21 +18,21 @@ mtexdata aachen
 %%
 % and select all individual orientations of the Iron phase
 
-o = get(ebsd('Fe'),'orientations')
+ebsd('Fe').orientations
 
 
 %% Scatter Pole Figure Plot
 % A pole figure showing scattered points of these data figure can be
 % produced by the command <orientation.plotpdf.html plotpdf>.
 
-plotpdf(o,Miller(1,0,0))
+plotpdf(ebsd('Fe').orientations,Miller(1,0,0))
 
 
 %% Scatter (Inverse) Pole Figure Plot
 % Accordingly, scatter points in inverse pole figures are produced by the
-% command  <orientation.plotpdf.html plotipdf>.
+% command  <EBSD.plotipdf.html plotipdf>.
 
-plotipdf(o,xvector)
+plotipdf(ebsd('Fe'),xvector)
 
 
 %% Scatter Plot in ODF Sections
@@ -42,7 +42,7 @@ plotipdf(o,xvector)
 % plots not to become too crowed with points. The number of randomly chosen orientations
 % can be specified by the option *points*.
 
-plotodf(o,'points',1000,'sigma')
+plotodf(ebsd('Fe'),'points',1000,'sigma')
 
 
 %% Scatter Plot in Axis Angle or Rodrigues Space
@@ -50,7 +50,7 @@ plotodf(o,'points',1000,'sigma')
 % orientation space, i.e., either in axis/angle parameterization or in Rodrigues
 % parameterization.
 
-scatter(o,'center',idquaternion)
+scatter(ebsd('Fe'),'center',idquaternion)
 
 %%
 % Here, the optional option 'center' specifies the center of the unique

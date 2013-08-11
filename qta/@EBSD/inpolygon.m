@@ -1,25 +1,22 @@
 function ind = inpolygon(ebsd,xy)
 % checks which ebsd data are within given polygon
 %
-%% Syntax
+% Syntax
 %   ind = inpolygon(ebsd,[xmin,ymin,dx,dy]) % select indices by rectangle
 %   ind = inpolygon(ebsd,[x1 y1; x2 y2; x3 y3; x4 y4]) % select indices by poylgon
 %   ebsd = ebsd(ind) % select EBSD data by indices
 %
-%% Input
+% Input
 %  ebsd    - @EBSD
 %  xmin, xmax - lower left corner of a rectangle
 %  dx, dy - extend of a rectangle
 %  x, y  - vertices of a polygon
 %
-%% Ouput
+% Ouput
 %  ind - logical
 %
-%% See also
+% See also
 % inpolygon
-
-% get xy coordinates
-XY = get(ebsd,'xy');
 
 % shortcut for simple rectangles
 if numel(xy)==4
@@ -30,8 +27,8 @@ if numel(xy)==4
   
 end
 
-if ~isempty(XY)
+if ~isempty(ebsd.prop.x)
   %  check for inside
-  ind = inpolygon(XY(:,1),XY(:,2),xy(:,1),xy(:,2));
+  ind = inpolygon(ebsd.prop.x,ebsd.prop.y,xy(:,1),xy(:,2));
   
 end

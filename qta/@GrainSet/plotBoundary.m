@@ -61,7 +61,7 @@ obj.Vertices = full(grains.V);
 % clear up figure
 
 varargin = set_default_option(varargin,...
-  {'name', [char(get_option(varargin,'property')) ' boundary plot of ' inputname(1) ' (' grains.comment ')']});
+  {'name', [char(get_option(varargin,'property')) ' boundary plot of ' inputname(1)]});
 
 newMTEXplot('renderer','opengl',varargin{:});
 setCamera(varargin{:});

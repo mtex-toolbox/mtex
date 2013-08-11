@@ -21,12 +21,12 @@ function s = sum_K(kk,g1,g2,CS,SS,c,varargin)
 
 
 % how to index grid representation
-if isa(g1,'SO3Grid') && check_option(g1,'indexed'),
+if isa(g1,'SO3Grid')
   lg1 = length(g1);
 else
   lg1 = -length(g1);
 end
-if isa(g2,'SO3Grid') && check_option(g2,'indexed')
+if isa(g2,'SO3Grid')
   lg2 = length(g2);
 else
   lg2 = -length(g2);

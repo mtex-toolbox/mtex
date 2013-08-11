@@ -32,7 +32,8 @@ properties
 end
 
 properties (Dependent = true)
-  phase % phase   
+  phase        % phase
+  orientations % 
 end
 
 methods
@@ -129,6 +130,14 @@ methods
   % --------------------------------------------------------------
   function phase = get.phase(ebsd)
     phase = ebsd.prop.phase;
+  end
+  
+  function ori = get.orientations(ebsd)
+    
+    % ensure single phase   
+    [ebsd,cs] = checkSinglePhase(ebsd);
+    
+    ori = orientation(ebsd.rotations,cs);
   end
   
   function ebsd = set.phase(ebsd,phase)

@@ -39,10 +39,14 @@ classdef dynOption
     end
        
     % -------------------------------------------
-    function dOpt = set(dOpt,varargin)
+    function dOpt = setOption(dOpt,varargin)
       for i = 1:2:numel(varargin)        
         dOpt.opt.(varargin{i}) = varargin{i+1};
       end
+    end
+    
+    function dOpt = set(dOpt,varargin)
+      dOpt = setOption(dOpt,varargin{:});      
     end
     
     % -------------------------------------------
