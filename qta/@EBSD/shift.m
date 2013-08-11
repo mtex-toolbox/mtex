@@ -1,11 +1,11 @@
 function ebsd = shift(ebsd,xy)
 % shift spatial ebsd-data about (x,y)
 %
-%% Input
+% Input
 %  ebsd - @EBSD
 %  xy   - coordinates
 %
-%% Output
+% Output
 %  shifted ebsd - @EBSD
 
 ebsd = affinetrans(ebsd,[],xy);

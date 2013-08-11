@@ -1,14 +1,14 @@
 function axes = calcAxisDistribution(ebsd,varargin)
 % calculate axis distribution
 %
-%% Input
+% Input
 % ebsd - @EBSD
 %
-%% Flags
+% Flags
 %
-%% Output
+% Output
 %
-%% See also
+% See also
 % EBSD/calcMisorientation EBSD/plotAngleDistribution
 
 mori = calcMisorientation(ebsd,varargin{:});

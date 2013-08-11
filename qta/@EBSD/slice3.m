@@ -3,12 +3,12 @@ function varargout = slice3(ebsd,varargin)
 %
 % for colorcoding plee see [[EBSD.plotspatial.html,plotspatial]]
 %
-%% Input
-% ebsd - @EBSD
-%% Flags
-% x|y|z|xy|xyz - specifiy a slicing plane
-% dontFill - do not colorize the interior of a grain
-%% See also
+% Input
+%  ebsd - @EBSD
+% Flags
+%  x|y|z|xy|xyz - specifiy a slicing plane
+%  dontFill - do not colorize the interior of a grain
+% See also
 % Grain3d/slice3 EBSD/plotspatial
 
 
@@ -99,9 +99,8 @@ opts.hideSlider  = hide{1+check_option(varargin,{'hideSlider','hideSliders'})};
 
 function api = getGridApi(ebsd,varargin)
 
-options = ebsd.options;
 % get pixels
-X = [options.x(:) options.y(:) options.z(:)];
+X = [ebsd.prop.x(:), ebsd.prop.y(:), ebsd.prop.z(:)];
 
 Xmin = min(X);
 Xmax = max(X);

@@ -3,11 +3,11 @@ function ebsd = mtimes(x,y)
 %
 % overloads the * operator
 %
-%% Syntax
-% ebsd = g*@EBSD - rotates the EBSD data by @orientation g
-% ebsd = @EBSD*v - rotate a @vector3d v by EBSD data
+% Syntax
+%   ebsd = g * ebsd % rotates the EBSD data by orientation g
+%   ebsd = ebsd * v % rotate a vector3d v by EBSD data
 %
-%% See also
+% See also
 % EBSD_index EBSD/rotate
 
 if isa(x,'EBSD') && isa(y,'vector3d')

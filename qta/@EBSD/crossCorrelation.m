@@ -1,13 +1,15 @@
 function [psi,c] = crossCorrelation(ebsd,varargin)
 % computes the cross correlation for the kernel density estimator
 %
-%% Input
-% ebsd - @EBSD
-%% Options
-% kernel - a user defined @kernel
-% SamplingSize - 
-% PartitionSize - 
-%% See also
+% Input
+%  ebsd - @EBSD
+%
+% Options
+%  kernel - a user defined @kernel
+%  SamplingSize - 
+%  PartitionSize - 
+%
+% See also
 % EBSD/calcKernel
 
 for k = 1:15
@@ -15,9 +17,9 @@ for k = 1:15
 end
 psi = get_option(varargin,'kernel',psi);
 
-q = get(ebsd,'orientations');
+q = ebsd.orientations;
 
-%% partition data set
+% partition data set
 sN = ceil(min(length(q),get_option(varargin,'SamplingSize',1000)));
 pN = get_option(varargin,'PartitionSize',ceil(1000000/numel(q)));
 cN = ceil(sN / pN);
@@ -60,7 +62,8 @@ psi = psi(ci);
 
 return
 
-%% some testing data
+% ----------------------------------------------------------------
+% some testing data
 
 cs = symmetry('orthorhombic'); %#ok<*UNRCH>
 ss = symmetry('triclinic');

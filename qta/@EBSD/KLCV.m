@@ -6,8 +6,8 @@ function c = KLCV(ebsd,psi,varargin)
 %  psi  - @kernel
 %
 % Options
-% SamplingSize - number of samples
-% PartitionSize - 
+%  SamplingSize - number of samples
+%  PartitionSize - 
 %
 % Output
 %  c
