@@ -50,7 +50,7 @@ v = sph2vec(th1,rh1);
 if ~isempty(rho_rot)
   rho2 = modCentered(pi+2*rho_rot - rho,rotangle_max_z(sym),minRho);
   theta2 = theta;
-elseif check_option(varargin,'antipodal') || check_option(v,'antipodal')
+elseif check_option(varargin,'antipodal') || v.antipodal
   rho2 = modCentered(pi + rho,rotangle_max_z(sym),minRho);
   theta2 = pi - theta;    
 else

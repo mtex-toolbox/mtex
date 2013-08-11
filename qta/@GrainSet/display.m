@@ -13,10 +13,6 @@ end;
 
 disp([h ' ' docmethods(inputname(1))])
 
-% show comment
-if ~isempty(grains.comment)
-  disp(['  comment: ' grains.comment(1:end-1)]);  
-end
 
 % show properties
 properties = fields(grains.options);
@@ -31,8 +27,8 @@ end
 
 %
 CS        = get(grains,'CSCell');
-phaseMap  = get(grains,'phaseMap');
-ebsdPhase = get(grains.EBSD,'phase');
+phaseMap  = grains.ebsd.phaseMap;
+ebsdPhase = grains.ebsd.phase;
 
 matrix = cell(numel(phaseMap),6);
 

@@ -40,7 +40,7 @@ end
 
 if length(q_ref) == numel(ind), q_ref = subsref(q_ref,ind); end
 
-[uCS,m,n] = unique(qCS1*inv(qCS2),'antipodal');
+[uCS,m,n] = unique(qCS1*inv(qCS2),'antipodal'); %#ok<MINV>
 [i,j]     = ind2sub([length(qCS1),length(qCS2)],m);
 
 % compute all distances to the fundamental regions

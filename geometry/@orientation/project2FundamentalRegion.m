@@ -13,5 +13,7 @@ function [ori,omega] = project2FundamentalRegion(ori,varargin)
 %  omega   - rotational angle to reference rotation
 %
 
-[ori,omega] = project2FundamentalRegion@rotation(ori,ori.CS,ori.SS,varargin{:});
+% TODO
+% [ori,omega] = project2FundamentalRegion@rotation(ori,ori.CS,ori.SS,varargin{:});
 
+[ori,omega] = project2FundamentalRegion@rotation(ori,ori.CS,varargin{:});

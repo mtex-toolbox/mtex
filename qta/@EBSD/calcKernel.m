@@ -1,13 +1,13 @@
 function psi = calcKernel(ebsd,varargin)
 % compute an optimal kernel function ODF estimation
 %
-%% Input
+% Input
 %  ebsd - @EBSD
 %
-%% Output
+% Output
 %  psi    - @kernel
 %
-%% Options
+% Options
 % method  - select a halfwidth by
 %
 %    * |'RuleOfThumb'| 
@@ -18,7 +18,7 @@ function psi = calcKernel(ebsd,varargin)
 %    * |'KLCV'| -- Kullback Leibler cross validation
 %    * |'BCV'| -- biased cross validation
 %
-%% See also
+% See also
 % EBSD/calcODF EBSD/BCV EBSD/KLCV EBSD/LSCV
 
 % ensure single phase
@@ -30,7 +30,7 @@ if numel(unique(ebsd.phase)) > 1
 end
 
 % ensure spatial independence
-if isfield(ebsd.options,'x')
+if isfield(ebsd.prop,'x')
   warning('MTEX:calcKernel',['Measurements seem to be spatially dependend.' ...
     ' Usually this results in to sharp kernel functions. You may want to'...
     ' restore grains first and then estimate the kernel from the grains.' ...

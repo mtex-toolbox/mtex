@@ -7,4 +7,4 @@ function plotspatial( grains, varargin )
 %% See also
 % EBSD/plotspatial
 
-plotspatial(grains.EBSD,varargin{:});
+plotspatial(grains.ebsd,varargin{:});

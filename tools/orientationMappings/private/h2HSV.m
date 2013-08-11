@@ -115,8 +115,8 @@ else
     
     case '2/m' %ok
       
-      rot = get(cs,'rotation');      
-      constraints = get(rot(2),'axis');
+      rot = rotation(cs);      
+      constraints = rot(2).axis;
       center = constraints;
       maxRho = pi;
       shAnti = sh;

@@ -62,8 +62,8 @@ else
   res = get_option(varargin,'resolution',max(0.75*degree,hw / 2));
   S3G = equispacedSO3Grid(ori.CS,ori.SS,'resolution',res);
 
-  % construct a sparse matrix showing the relatation between noth grids
-  M = sparse(1:length(ori),find(ori,S3G),weight,length(ori),length(S3G));
+  % construct a sparse matrix showing the relatation between both grids
+  M = sparse(1:length(ori),find(S3G,ori),weight,length(ori),length(S3G));
 
   % compute weights
   weight = full(sum(M));
@@ -78,24 +78,3 @@ else
 end
   
 end
-
-% ----------------------------------------------------------
-function k = getKernel(ori,varargin)
-    
-% get halfwidth and kernel
-if check_option(varargin,'kernel')
-  k = get_option(varargin,'kernel');
-elseif check_option(varargin,'halfwidth','double')
-  k = kernel('de la Vallee Poussin',varargin{:});
-else
-  
-  if ~check_option(varargin,'spatialDependent')
-    kappa = (length(ori.CS) * length(ori.SS) * length(ori))^(2/7) * 3; % magic rule
-    k = kernel('de la Vallee Poussin',kappa,varargin{:});
-  else
-    k = kernel('de la Vallee Poussin','halfwidth',10*degree,varargin{:});
-  end
-  
-end
-end
-

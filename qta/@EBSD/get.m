@@ -24,13 +24,13 @@ function varargout = get(ebsd,vname,varargin)
 % EBSD/set
 
 
-%properties = get_obj_fields(ebsd);
-%options    = get_obj_fields(ebsd.options);
-%if nargin == 1
-%  vnames = [properties;options;{'data';'quaternion';'orientations';'Euler';'mineral';'minerals'}];
-%  if nargout, varargout{1} = vnames; else disp(vnames), end
-%  return
-%end
+properties = get_obj_fields(ebsd.prop);
+options    = get_obj_fields(ebsd.opt);
+if nargin == 1
+  vnames = [properties;options;{'data';'quaternion';'orientations';'Euler';'mineral';'minerals'}];
+  if nargout, varargout{1} = vnames; else disp(vnames), end
+  return
+end
 
 switch lower(vname)
   case 'cs'
@@ -111,8 +111,8 @@ switch lower(vname)
     
   case {'weight','weights'}
     
-    if isfield(ebsd.options, 'weight')
-      w = ebsd.options.weight;
+    if isfield(ebsd.prop, 'weight')
+      w = ebsd.prop.weight;
       varargout{1} = w./sum(w(:));
     else
       varargout{1} = ones(length(ebsd),1)./length(ebsd);
@@ -138,11 +138,11 @@ switch lower(vname)
     
   case 'properties'
     
-    varargout{1} = ebsd.options;
+    varargout{1} = ebsd.prop;
     
   case 'propertynames'
     
-    varargout{1} = fieldnames(ebsd.options);
+    varargout{1} = fieldnames(ebsd.prop);
     
   otherwise
     

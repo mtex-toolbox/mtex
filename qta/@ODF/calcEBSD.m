@@ -1,17 +1,17 @@
 function ori = calcEBSD(odf,points,varargin)
 % simulate EBSD data from ODF
 %
-%% Syntax
-%  ebsd = calcEBSD(odf,points)
+% Syntax
+%   ebsd = calcEBSD(odf,points)
 %
-%% Input
+% Input
 %  odf    - @ODF
 %  points - number of orientation to be simualted
 %
-%% Output
+% Output
 %  ebsd   - @EBSD
 %
-%% See Also
+% See Also
 % ODF_calcPoleFigure
 
 % distribute samples over the parts of the ODF

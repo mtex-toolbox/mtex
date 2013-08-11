@@ -1,10 +1,10 @@
 function [q,rho] = rotation_special(cs,varargin)
 % returns symmetry elements different from rotation about c-axis
 %
-%% Input:
+% Input:
 %  cs - @symmetry
 %
-%% Output
+% Output
 %  q   - symmetry elements other then rotation about the z--axis
 %  rho - position of the mirroring plane
 
@@ -22,27 +22,26 @@ if nargout == 1
       q = q(1,:);
   end
   q = q(:);
-else
+else % TODO
   
   switch cs.laueGroup
     case '-1'
-      q = rotation(cs);
+      q = idquaternion;
       v = vector3d;
     case '2/m'
-      if isnull(dot(get(cs.rotation(2),'axis'),zvector))
-        q = cs.rotation(1);
-        v = get(cs.rotation(2),'axis');
-        %v = vector3d(1,1,0);
+      rot = rotation(cs);
+      v = rot(2).axis;
+      if isnull(dot(v,zvector))
+        q = idquaternion;
       else
         v = vector3d;
-        q = cs.rotation(1);
+        q = idquaternion;
       end            
     case {'mmm','-3m','4/mmm','6/mmm'}
-      q = cs(1);
-      v = get(cs,'axis');
-      v = v(1);
+      q = idquaternion;
+      v = cs.axis(1);
     case {'-3','4/m','6/m'}
-      q = cs(1);
+      q = idquaternion;
       v = vector3d;
     case 'm-3'
       q = Axis(vector3d(1,1,1),3);

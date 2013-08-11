@@ -42,20 +42,24 @@ function odf = calcODF(ori,varargin)
 % ebsd_demo EBSD2odf EBSDSimulation_demo loadEBSD ODF/calcEBSD EBSD/calcKernel kernel/kernel
 
 % Bingham ODF estimation
-if check_option(varargin,'bingham')
-  
+if check_option(varargin,'bingham')  
   odf = calcBinghamODF(ori,varargin{:});
+  return;
+end
   
-elseif  ~check_option(varargin,{'exact','noFourier'}) && ...
+% estimate kernel function
+psi = getKernel(ori,varargin{:});
+
+if  ~check_option(varargin,{'exact','noFourier'}) && ...
     (check_option(varargin,'Fourier') || ...
-    strcmpi(get(k,'name'),'dirichlet') || ...
-    (gridlen > 200 && bandwidth(k) < max_coef))
+    strcmpi(get(psi,'name'),'dirichlet') || ...
+    (length(ori) > 200 && bandwidth(psi) < 33))
   
-  odf = calcFourierODF(ori,varargin{:});
+  odf = calcFourierODF(ori,varargin{:},'kernel',psi);
   
 else
     
-  odf = calcKernelODF(ori,varargin{:});
+  odf = calcKernelODF(ori,varargin{:},'kernel',psi);
   
 end
 
