@@ -1,20 +1,20 @@
 function m= matrix(T,varargin)
 % return tensor as a matrix
 %
-%% Syntax
-% m = matrix(T)
-% m = matrix(T,'voigt')
+% Syntax
+%   m = matrix(T)
+%   m = matrix(T,'voigt')
 %
-%% Input
+% Input
 %  T - @tensor
 %
-%% Output
+% Output
 %  m - matrix
 %
-%% Options
+% Options
 %  voigt - give a 4 rank tensor in voigt notation, i.e. as a 6 x 6 matrix
 %
-%% See also
+% See also
 %
 
 if check_option(varargin,{'compact','voigt'})

@@ -60,10 +60,17 @@ classdef dynOption
     end
     
     % --------------------------------------------
-    function addOption(dOpt,name)
-      for i = 1:numel(dOpt)
-        dOpt.opt.(name) = [];
-      end
+    function dOpt = addOption(dOpt,name)
+      dOpt.opt.(name) = [];
+    end
+    
+    % --------------------------------------------
+    function dOpt = rmOption(dOpt,varargin)
+      for i = 1:numel(varargin)
+        if isfield(dOpt.opt,varargin{i})
+          dOpt.opt = rmfield(dOpt.opt,varargin{i});
+        end
+      end      
     end
 
     % -------------------------------------------------------

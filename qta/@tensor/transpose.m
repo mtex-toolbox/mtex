@@ -1,10 +1,10 @@
 function T = transpose(T)
 % conjugate of a tensor
 %
-%% Input
+% Input
 %  T - @tensor
 % 
-%% Output
+% Output
 %  T - @tensor
 %
 

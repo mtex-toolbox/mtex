@@ -3,17 +3,17 @@ function [vp,vs1,vs2,pp,ps1,ps2] = velocity(C,x,rho)
 % the elastic stiffness Cijkl tensor and density (g/cm3)
 %
 % Input
-% C   - elasticity stiffness tensor Cijkl (UNITS GPa) @tensor
-% x   - list of propagation directions (@vector3d)
-% rho - material density (UNITS g/cm3)
+%  C   - elasticity stiffness tensor Cijkl (UNITS GPa) @tensor
+%  x   - list of propagation directions (@vector3d)
+%  rho - material density (UNITS g/cm3)
 %
 % Output
-% vp  - velocity of the p--wave (UNITS km/s)
-% vs1 - velocity of the s1--wave (UNITS km/s)
-% vs2 - velocity of the s2--wave (UNITS km/s)
-% pp  - polarisation of the p--wave (particle movement, vibration direction)
-% ps1 - polarisation of the s1--wave (particle movement, vibration direction)
-% ps2 - polarisation of the s2--wave (particle movement, vibration direction)
+%  vp  - velocity of the p--wave (UNITS km/s)
+%  vs1 - velocity of the s1--wave (UNITS km/s)
+%  vs2 - velocity of the s2--wave (UNITS km/s)
+%  pp  - polarisation of the p--wave (particle movement, vibration direction)
+%  ps1 - polarisation of the s1--wave (particle movement, vibration direction)
+%  ps2 - polarisation of the s2--wave (particle movement, vibration direction)
 %
 
 % compute CristoffelTensor

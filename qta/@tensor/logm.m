@@ -1,10 +1,10 @@
 function T = logm(T)
-% log of a tensor
+% matrix logarithm of a tensor
 %
-%% Input
+% Input
 %  T - @tensor
 %
-%% Output
+% Output
 %  T - @tensor
 %
 
@@ -40,13 +40,7 @@ switch T.rank
 end
 
 % change the name
-if hasProperty(T,'name')
-  name = get(T,'name');
-  T = set(T,'name',['log ' name]);
-  
-end
+if isOption(T,'name'), T.opt.name = ['log ' T.opt.name]; end
 
 % change the unit
-if hasProperty(T,'unit')
-  T = set(T,'unit',['log' get(T,'unit')]);
-end
+if isOption(T,'unit'), T.opt.name = ['log ' T.opt.unit]; end
