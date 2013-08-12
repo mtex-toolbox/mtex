@@ -12,10 +12,14 @@ end;
 
 disp([h ' ' docmethods(inputname(1))])
 
-%if ~isempty(ebsd) && ~isempty(fields(ebsd.options))
-%  disp(['  Properties: ',option2str(fields(ebsd.options))]);
-%end
+% empty ebsd set 
+if isempty(ebsd)
+  disp('  EBSD is empty!')
+  return
+end
 
+% display all other options
+disp(char(dynOption(ebsd)));
 
 % ebsd.phaseMap
 matrix = cell(numel(ebsd.phaseMap),5);
@@ -50,13 +54,9 @@ for ip = 1:numel(ebsd.phaseMap)
 
 end
 
-if ~isempty(ebsd)
-  cprintf(matrix,'-L','  ','-Lc',...
-    {'Phase' 'Orientations' 'Mineral' 'Color' 'Symmetry' 'Crystal reference frame'},...
-    '-ic','F');
-else
-  disp('  EBSD is empty!')
-end
+cprintf(matrix,'-L','  ','-Lc',...
+  {'Phase' 'Orientations' 'Mineral' 'Color' 'Symmetry' 'Crystal reference frame'},...
+  '-ic','F');
 
 disp(' ');
 

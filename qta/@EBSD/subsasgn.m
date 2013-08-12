@@ -66,12 +66,18 @@ switch s(1).type
     
   otherwise
     
-    try
+    % maybe we can adress the ebsd object directly
+    try %#ok<TRYNC>
       ebsd = builtin('subsasgn',ebsd,s,b);
       return
     end
     
-    ebsd = subsasgn@dynProp(ebsd,s,b);
-        
+    % maybe it is an option
+    if ebsd.isOption(s(1).subs)
+      ebsd = subsasgn@dynOption(ebsd,s,b);
+    else % otherwise a property
+      ebsd = subsasgn@dynProp(ebsd,s,b);
+    end
+
 end
 end

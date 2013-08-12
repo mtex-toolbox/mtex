@@ -5,7 +5,7 @@ disp(' ');
 
 % collect top line
 h = doclink('tensor_index','tensor');
-if hasProperty(T,'name'), h = [get(T,'name'),' ',h];end
+if isOption(T,'name'), h = [get(T,'name'),' ',h];end
 
 if check_option(varargin,'vname')
   h = [get_option(varargin,'vname'), ' = ' h];
@@ -17,9 +17,9 @@ end;
 disp([h ' ' docmethods(inputname(1))])
 
 % collect tensor properties
-props = fieldnames(T.properties);
+props = fieldnames(T.opt);
 props = props(~strcmp(props,'name'));
-propV = cellfun(@(prop) char(T.properties.(prop)),props,'UniformOutput',false);
+propV = cellfun(@(prop) char(T.opt.(prop)),props,'UniformOutput',false);
 
 % add size if greater one
 if sum(size(T.M)>1) > T.rank
@@ -46,7 +46,7 @@ end
 % display all properties
 cprintf(propV(:),'-L','  ','-ic','L','-la','L','-Lr',props,'-d',': ');
 
-if sum(size(T.M)>1) > T.rank, return;end
+if sum(size(T.M)>1) > T.rank || isempty(T.M), return;end
 
 % display tensor coefficients
 disp(' ');

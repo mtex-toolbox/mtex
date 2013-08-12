@@ -1,10 +1,10 @@
-function T = logm(T)
-% log of a tensor
+function T = expm(T)
+% matrix exponential of a tensor
 %
-%% Input
+% Input
 %  T - @tensor
 %
-%% Output
+% Output
 %  T - @tensor
 %
 
@@ -39,13 +39,7 @@ switch T.rank
 end
 
 % change the name
-if hasProperty(T,'name')
-  name = get(T,'name');
-  T = set(T,'name',['exp ' name]);
-  
-end
+if isOption(T,'name'), T.opt.name = ['exp ' T.opt.name]; end
 
 % change the unit
-if hasProperty(T,'unit')
-  T = set(T,'unit',['exp' get(T,'unit')]);
-end
+if isOption(T,'unit'), T.opt.unit = ['exp ' T.opt.unit]; end

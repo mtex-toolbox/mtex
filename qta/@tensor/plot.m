@@ -1,19 +1,17 @@
 function plot(T,varargin)
 % plot a tensor T
 %
-%% Input
+% Input
 %  T - @tensor
 %
-%% Options
-% plotType - directionalMagnitude
-%            YoungsModulus
-%            linearCompressibility
-%            velocity'
-% 3d - plot surface of plotType instead of spherical projection
-% section - plot a section 
+% Options
+%  plotType - directionalMagnitude
+%             YoungsModulus
+%             linearCompressibility
+%             velocity'
+%  3d - plot surface of plotType instead of spherical projection
+%  section - plot a section 
 %            -- @vector3d - of given plane normal
-%
-%%
 %
 %
 
