@@ -1,31 +1,30 @@
 function export_generic(odf,filename,varargin)
 % export an ODF to an ASCII file
 %
-%% Syntax
-% export(odf,'file.txt',S3G)
-% export(odf,'file.txt',regular,'resolution',2.5*degree)
-% export(odf,'file.txt',regular,'resolution',2.5*degree)
+% Syntax
+%   export(odf,'file.txt',S3G)
+%   export(odf,'file.txt',regular,'resolution',2.5*degree)
+%   export(odf,'file.txt',regular,'resolution',2.5*degree)
 %
-%% Input
+% Input
 %  odf      - ODF to be exported
 %  filename - name of the ascii file
 %
-%% Options
+% Options
 %  weights   - export weights of the ODF components
 %  ZYZ, ABG  - Matthies (alpha, beta, gamma) convention (default)
 %  ZXZ,BUNGE - Bunge (phi1,Phi,phi2) convention 
 %
-%% See also
+% See also
 % ODFImportExport
   
 
-%% open the file
+% open the file
 if nargin == 1, filename = uigetfile;end
 fid = fopen(filename,'w');
 
-%% write intro
+% write intro
 fprintf(fid,'%% MTEX ODF\n');
-fprintf(fid,'%% %s\n',get(odf,'comment'));
 
 % symmetries
 CS = odf(1).CS; SS = odf(1).SS;

@@ -5,17 +5,17 @@ function f_hat = calcFourier(odf,L,varargin)
 % returned ODF. In order to get the Fourier coefficients of an ODF use
 % [[ODF_Fourier.html,Fourier]].
 %
-%% Syntax  
-% odf = calcFourier(odf,L)
+% Syntax  
+%   odf = calcFourier(odf,L)
 %
-%% Input
+% Input
 %  odf  - @ODF
 %  L    - order up to which Fourier coefficients are calculated
 %
-%% Output
+% Output
 %  nodf - @ODF where Fourier coefficients are stored for further use 
 %
-%% See also
+% See also
 % ODF/plotFourier ODF/Fourier wignerD FourierODF ODF/textureindex ODF/entropy ODF/eval 
 %
 

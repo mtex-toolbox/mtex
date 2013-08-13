@@ -113,7 +113,7 @@ end
 if strcmpi(type,'EBSD') && check_option(varargin,'3d')
   Z = get_option(varargin,'3d',1:numel(data),'double');
   for k=1:numel(data)
-    data{k} = set(data{k},'z',repmat(Z(k),numel(data{k}),1)); %#ok<AGROW>
+    data{k} = set(data{k},'z',repmat(Z(k),length(data{k}),1)); %#ok<AGROW>
   end
   data = [data{:}];
   data = set(data,'unitCell',calcUnitCell(get(data,'xyz'),varargin{:}));

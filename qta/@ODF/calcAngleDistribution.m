@@ -2,17 +2,17 @@ function [density,omega] = calcAngleDistribution(odf,varargin)
 % compute the angle distribution of an ODF or an MDF 
 %
 %
-%% Input
+% Input
 %  odf - @ODF
 %  omega - list of angles
 %
-%% Flags
-%  EVEN       - calculate even portion only
+% Flags
+%  even       - calculate even portion only
 %
-%% Output
+% Output
 %  x   - values of the axis distribution
 %
-%% See also
+% See also
 
 if nargin > 1 && isa(varargin{1},'ODF')
   odf = calcMDF(odf,varargin{1});
@@ -54,7 +54,7 @@ if ~check_option(varargin,'fast')
     
     % store these orientations
     S3G = [S3G,o]; %#ok<AGROW>
-    iS3G(k+1) = numel(S3G); %#ok<AGROW>
+    iS3G(k+1) = length(S3G); %#ok<AGROW>
     
   end
   
@@ -77,7 +77,7 @@ else
   % get resolution
   res = get_option(varargin,'resolution',2.5*degree);
   
-  %% simluate EBSD data
+  % simluate EBSD data
   ebsd = calcEBSD(odf,points,'resolution',res);
 
   % compute angles
@@ -86,7 +86,7 @@ else
   maxangle = max(angles);
 
 
-  %% perform kernel density estimation
+  % perform kernel density estimation
 
   [bandwidth,density,omega] = kde(angles,2^8,0,maxangle); %#ok<ASGLU>
 

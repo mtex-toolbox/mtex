@@ -14,7 +14,7 @@ switch T.rank
 
   case 2
 
-    for l = 1:numel(T)
+    for l = 1:length(T)
       T.M(:,:,l) = logm(T.M(:,:,l));
     end
 
@@ -28,7 +28,7 @@ switch T.rank
     M = tensor42(T.M,T.doubleConvention);
 
     % log the matrix
-    for l = 1:numel(T)
+    for l = 1:length(T)
       M(:,:,l) = logm(M(:,:,l));
     end
 

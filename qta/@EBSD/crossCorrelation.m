@@ -21,7 +21,7 @@ q = ebsd.orientations;
 
 % partition data set
 sN = ceil(min(length(q),get_option(varargin,'SamplingSize',1000)));
-pN = get_option(varargin,'PartitionSize',ceil(1000000/numel(q)));
+pN = get_option(varargin,'PartitionSize',ceil(1000000/length(q)));
 cN = ceil(sN / pN);
 
 c = zeros(cN,length(psi));
