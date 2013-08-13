@@ -37,7 +37,6 @@ if isempty(ax)
 end
 setappdata(gcf,'options',extract_option(varargin,'antipodal'));
 name = inputname(1);
-if isempty(name), name = odf(1).comment;end
 set(gcf,'Name',['Axis Distribution of ',name]);
 
 function d = pos(d)

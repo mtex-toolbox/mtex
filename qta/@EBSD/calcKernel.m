@@ -59,7 +59,7 @@ switch method
 
     % compute resolution of the orientations
     ori = get(ebsd,'orientations');
-    if numel(ori) == 0
+    if isempty(ori)
       res = 2*pi;
     else
       d = angle_outer(ori,ori);

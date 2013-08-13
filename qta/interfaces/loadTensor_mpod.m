@@ -1,27 +1,27 @@
 function [T,interface,options] = loadTensor_mpod(fname,varargin)
 % import Tensor data
 %
-%% Description
+% Description
 % *loadTensor_mod* is a high level method for importing Tensor data from external
 % files.
 % [[http://www.materialproperties.org/data/, Material Properties Open Database]]
 %
-%% Syntax
+% Syntax
 %  pf = loadTensor_mpod(fname,cs,ss,<options>)
 %
-%% Input
+% Input
 %  fname     - filename
 %  cs, ss    - crystal, specimen @symmetry (optional)
 %
-%% Example
+% Example
 % download form MPOD
 %    T = loadTensor_mpod(1000055)
 %    T = loadTensor_mpod('1000055.mpod')
 %
-%% See also
+% See also
 % loadTensor
 
-%% Remarks
+% Remarks
 % TODO
 %
 %  * allow import of not ij indexed single properties e.g. _prop_heat_capacity_C
@@ -29,9 +29,8 @@ function [T,interface,options] = loadTensor_mpod(fname,varargin)
 %  * better symmetry import
 %  * do it right for combined ijE,ijS notation (e.g. _prop_piezoelectric_*)
 
-if isnumeric(fname)
-  fname = copyonline(fname);
-end
+if isnumeric(fname), fname = copyonline(fname);end
+
 [pathstr, name, ext] = fileparts(fname);
 if isempty(ext), ext = '.mpod';end
 if isempty(pathstr) && ~exist([name,ext],'file')
@@ -132,13 +131,9 @@ for Entry = entry(~cellfun('isempty',entry))
   end
 end
 
-if numel(T) == 1
-  T = T{1};
-end
+if numel(T) == 1, T = T{1};end
 
-if numel(T) == 0
-  interfaceError(fname);
-end
+if isempty(T), interfaceError(fname); end
 
 function [cs,mineral] = mpod2symmetry(str,varargin)
 % import crystal symmetry from cif file

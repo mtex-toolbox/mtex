@@ -15,7 +15,7 @@ function odf = calcBinghamODF(ori,varargin)
 % ebsd_demo EBSD2odf EBSDSimulation_demo loadEBSD ODF/calcEBSD EBSD/calcKernel kernel/kernel
 
 % maybe there is nothing to do
-if numel(ori) == 0, odf = ODF; return, end
+if isempty(ori), odf = ODF; return, end
 
 % estimate Bingham parameters
 [~,~,ev,kappa] = mean(ori,varargin{:});

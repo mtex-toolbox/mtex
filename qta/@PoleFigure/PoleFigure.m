@@ -40,7 +40,7 @@ classdef PoleFigure < dynOption
           
       P.h = argin_check(h,{'vector3d','Miller'});
       P.r = argin_check(r,{'vector3d','S2Grid'});
-      if ~check_option(varargin,'complete'), P.r = setOption(P.r,'antipodal');end
+      if ~check_option(varargin,'complete'), P.r.antipodal = true;end
       
       P.intensities= argin_check(data,{'double','int'});
       assert(numel(P.intensities) == length(P.r),...

@@ -1,10 +1,9 @@
 classdef ODF < matlab.mixin.Heterogeneous
   
   properties
-    CS = symmetry('-1','crystal'); % crystal symmetry
-    SS = symmetry('-1','specimen'); % specimen symmetry
+    CS = symmetry('-1'); % crystal symmetry
+    SS = symmetry('-1'); % specimen symmetry
     weight = 1; % weight
-    comment = '';
   end
   
   methods

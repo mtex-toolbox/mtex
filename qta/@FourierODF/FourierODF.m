@@ -1,21 +1,21 @@
 classdef FourierODF < ODF
   % defines an ODF by its Fourier coefficients
-%
-%% Description
-% *FourierODF* defines an  ODF by its Fourier coefficients
-%
-%% Syntax
-%  odf = FourierODF(C,CS,SS)
-%
-%% Input
-%  C      - Fourier coefficients / C -- coefficients
-%  CS, SS - crystal, specimen @symmetry
-%
-%% Output
-%  odf - @ODF
-%
-%% See also
-% ODF/ODF uniformODF fibreODF unimodalODF
+  %
+  % Description
+  % *FourierODF* defines an  ODF by its Fourier coefficients
+  %
+  % Syntax
+  %   odf = FourierODF(C,CS,SS)
+  %
+  % Input
+  %  C      - Fourier coefficients / C -- coefficients
+  %  CS, SS - crystal, specimen @symmetry
+  %
+  % Output
+  %  odf - @ODF
+  %
+  % See also
+  % ODF/ODF uniformODF fibreODF unimodalODF
   
   properties
     f_hat    

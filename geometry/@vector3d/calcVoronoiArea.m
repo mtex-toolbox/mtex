@@ -43,9 +43,9 @@ A = real(sphericalTriangleArea(va,vb,vc));
 
 if nargout>1
   [x,y,z]= double(A.*(va+vb+vc));
-  x = full(sparse(center,1,x,numel(S2G),1));
-  y = full(sparse(center,1,y,numel(S2G),1));
-  z = full(sparse(center,1,z,numel(S2G),1));
+  x = full(sparse(center,1,x,length(S2G),1));
+  y = full(sparse(center,1,y,length(S2G),1));
+  z = full(sparse(center,1,z,length(S2G),1));
   centroids = vector3d(x,y,z);
 end
 

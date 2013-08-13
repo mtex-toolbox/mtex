@@ -3,7 +3,7 @@ function display(odf,varargin)
 
 disp(' ');
 
-%% variable name
+% variable name
 if check_option(varargin,'vname')
   h = [get_option(varargin,'vname'), ' = '];
 elseif ~isempty(inputname(1))
@@ -24,7 +24,7 @@ csss = {'sample symmetry ','crystal symmetry'};
 cs = odf(1).CS;
 ss = odf(1).SS;
 
-%% ODF / MDF
+% ODF / MDF
 if isCS(ss) && isCS(cs)
   h = [h, doclink('MDF_index','MDF')];
 else
@@ -33,11 +33,7 @@ end
 
 disp([h ' ' docmethods(inputname(1))]);
 
-if ~isempty(odf(1).comment)
-  disp(['  comment: ' odf(1).comment]);
-end
-
-%% display symmtries and minerals
+% display symmtries and minerals
 disp(['  ' csss{isCS(cs)+1} ': ', char(cs,'verbose')]);
 disp(['  ' csss{isCS(ss)+1} ': ',char(ss,'verbose')]);
 
