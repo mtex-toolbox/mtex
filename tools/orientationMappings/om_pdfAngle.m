@@ -1,8 +1,7 @@
 function [c,options] = om_pdfAngle(o,varargin)
 % converts orientations to rgb values by polar angles (theta, rho)
 
-%% compute pole figure vectors
-
+% compute pole figure vectors
 if isa(o,'orientation')
   % get pole figure vector
   h = get_option(varargin,'h',Miller(0,0,1));
@@ -14,8 +13,7 @@ else
   r = o(:);
 end
 
-%% convert pole figure vectors to angle
-
+% convert pole figure vectors to angle
 [theta rho] = polar(r);
 
 switch lower(get_option(varargin,'angle','rho'))

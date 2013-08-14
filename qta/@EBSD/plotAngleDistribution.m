@@ -27,7 +27,7 @@ else
 end
 
 
-if numel(varargin)>1 && isscalar(varargin{1})
+if ~isempty(varargin) && isscalar(varargin{1})
   bins = varargin{1};
 else
   bins = 20;
@@ -63,8 +63,8 @@ ph1 = ph1(tril(ones(size(ph1)))>0);
 ph2 = ph2(tril(ones(size(ph2)))>0);
 
 % compute omega
-CS = get(ebsd,'CSCell');
-phMap = get(ebsd,'phaseMap');
+CS = ebsd.CS;
+phMap = ebsd.phaseMap;
 maxomega = 0;
 
 for j = 1:numel(CS)

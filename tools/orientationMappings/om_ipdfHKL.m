@@ -1,7 +1,7 @@
 function [rgb,options] = om_ipdfHKL(o,varargin)
 % converts orientations to rgb values
 
-%% convert to Miller
+% convert to Miller
 if isa(o,'orientation')
   h = quat2ipdf(o,varargin{:});
   cs = get(o,'CS');
@@ -11,8 +11,6 @@ else
 end
 
 options = varargin;
-
-%%
 
 %its antipodal
 % project to fundamental region
@@ -24,8 +22,7 @@ rho = rho - rho_min;
 [minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(cs,'antipodal');
 
 
-%% special case Laue -1
-
+% special case Laue -1
 if strcmp(Laue(cs),'-1')
   maxrho = pi*2/3;
   rrho =  rho+maxrho;
@@ -49,7 +46,7 @@ if any(strcmp(Laue(cs),{'m-3m','m-3'}))
 
 end
 
-%% compute RGB values
+% compute RGB values
 r = (1-theta./maxTheta);
 g = theta./maxTheta .* (maxRho - rho) ./ maxRho;
 b = theta./maxTheta .* rho ./ maxRho;   
