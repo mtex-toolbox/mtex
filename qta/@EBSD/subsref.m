@@ -1,4 +1,4 @@
-function ebsd = subsref(ebsd,s)
+function varargout = subsref(ebsd,s)
 % indexing of EBSD data
 %
 % Syntax
@@ -10,8 +10,8 @@ function ebsd = subsref(ebsd,s)
 % called with direct indexing
 if isa(s,'double') || isa(s,'logical')
     
-  ebsd = subsref@dynProp(ebsd,s);
-  ebsd.rotations = ebsd.rotations(s);
+  varargout{1} = subsref@dynProp(ebsd,s);
+  varargout{1}.rotations = ebsd.rotations(s);
   return;
   
 end
@@ -20,12 +20,12 @@ if strcmp(s(1).type,'()')
   
   if check_option(s(1).subs,'sort')
     
-    ebsd = subsref(ebsd,get_option(s(1).subs,'sort'));
+    varargout{1} = subsref(ebsd,get_option(s(1).subs,'sort'));
     
   else
     
     ind = subsind(ebsd,s(1).subs);
-    ebsd = subsref(ebsd,ind);
+    varargout{1} = subsref(ebsd,ind);
     
   end
 
@@ -40,17 +40,17 @@ end
 
 % maybe reference to a dynamic option
 try %#ok<TRYNC>
-  ebsd = subsref@dynOption(ebsd,s);
+  [varargout{1:nargout}] = subsref@dynOption(ebsd,s);
   return
 end
   
 % maybe reference to a dynamic property
 try %#ok<TRYNC>
-  ebsd = subsref@dynProp(ebsd,s);
+  [varargout{1:nargout}] = subsref@dynProp(ebsd,s);
   return
 end
   
 % maybe reference to a normal property
-ebsd = builtin('subsref',ebsd,s);
+[varargout{1:nargout}] = builtin('subsref',ebsd,s);
 
 end

@@ -30,10 +30,10 @@ ebsd2 = checkSinglePhase(ebsd2);
 % --------- determine minimum distance ----------------------
 
 %exteact coordinates
-X1 = get(ebsd1,'X');
-Y1 = get(ebsd1,'Y');
-X2 = get(ebsd2,'X');
-Y2 = get(ebsd2,'Y');
+X1 = ebsd1.prop.x;
+Y1 = ebsd1.prop.y;
+X2 = ebsd2.prop.x;
+Y2 = ebsd2.prop.y;
 
 % get max extend
 maxExtend = sqrt((max([X1;X2])-min([X1;X2]))^2 +...
