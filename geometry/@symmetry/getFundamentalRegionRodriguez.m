@@ -1,12 +1,12 @@
-function  h = getFundamentalRegionRodriguez(cs,varargin)
+function  h = getFundamentalRegionRodrigues(cs,varargin)
 % get the fundamental region for a crystal and specimen symmetry
 
-ax = axis(cs);
-an = angle(cs) ./ 2;
+[axes,angle] = getMinAxes(cs);
 
-rot = rotation('axis',ax(2:end),'angle',an(2:end));
+rot = rotation('axis',[axes,-axes],'angle',[angle,angle]./2);
 
 h = Rodrigues(rot);
 
-
 % v .* h <= norm(h)
+
+
