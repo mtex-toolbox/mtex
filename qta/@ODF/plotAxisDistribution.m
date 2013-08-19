@@ -1,33 +1,30 @@
 function plotAxisDistribution(odf,varargin)
 % plot axis distribution
 %
-%% Input
+% Input
 %  odf - @ODF
 %
-%% Options
+% Options
 %  RESOLUTION - resolution of the plots
 %
-%% Flags
+% Flags
 %  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
 %  COMPLETE  - plot entire (hemi)--sphere
 %
-%% See also
+% See also
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-%% make new plot
-
+% make new plot
 [ax,odf,varargin] = getAxHandle(odf,varargin{:});
 if isempty(ax), newMTEXplot;end
 
-%% plotting grid
-
+% plotting grid
 [minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(disjoint(odf(1).CS,odf(1).SS),'antipodal',varargin{:});
 h = plotS2Grid('minTheta',minTheta,'maxTheta',maxTheta,...
   'maxRho',maxRho,'minRho',minRho,'RESTRICT2MINMAX','antipodal',varargin{:});
 
-
-%% plot
+% plot
 smooth(ax{:},h,pos(calcAxisDistribution(odf,h,varargin{:})),varargin{:});
 
 if isempty(ax)

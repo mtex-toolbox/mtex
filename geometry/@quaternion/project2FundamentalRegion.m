@@ -29,6 +29,7 @@ else
 end
 
 % may be we can skip something
+q = reshape(q,[],1);
 omega = abs(dot(q,q_ref));
 ind   = omega < cos(getMaxAngle(CS1,qCS2)/2);
 

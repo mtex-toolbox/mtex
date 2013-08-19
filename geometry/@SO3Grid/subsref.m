@@ -1,4 +1,8 @@
-function o = subsref(S3G,varargin)
+function varargout = subsref(S3G,varargin)
 % overloads subsref
 
-o = subsref(orientation(S3G),varargin{:});
+try
+  [varargout{1:nargout}] = subsref(orientation(S3G),varargin{:});
+catch %#ok<CTCH>
+  [varargout{1:nargout}] = builtin('subsref',S3G,varargin{:});
+end

@@ -1,12 +1,12 @@
 function plot(s,varargin)
 % plot symmetry
 %
-%% Input
+% Input
 %  s - symmetry
 %
-%% Output
+% Output
 %
-%% Options
+% Options
 %  antipodal      - include [[AxialDirectional.html,antipodal symmetry]]
 
 if check_option(varargin,'hkl')
@@ -66,24 +66,6 @@ end
 
 end
 
-function [axes,angle] = getMinAxes(rot)
-
-axes = get(rot,'axis');
-angle = get(rot,'angle');
-angle = min(angle,2*pi-angle);
-
-ind = isnull(angle);
-axes(ind) = [];
-angle(ind) = [];
-  
-[axes,~,pos] = unique(axes(:),'antipodal');
-angle = arrayfun(@(i) min(angle(pos==i)) ,1:length(axes));
-
-% sort axes
-[angle,idx] = sort(angle,2,'descend');
-axes = axes(idx);
-
-end
 
 function s = Symbol(angle,alpha,varargin)
 switch round(angle/degree)
@@ -98,7 +80,7 @@ switch round(angle/degree)
 end
 end
 
-%%
+%
 function ellipse(cx,cy,dx,dy,angle,varargin)
 
 A = [[cos(angle) -sin(angle)];[sin(angle) cos(angle)]];
@@ -114,7 +96,7 @@ patch('vertices',xy,'faces',1:size(xy,1),varargin{:});
 
 end
 
-%%
+%
 function triangle(x,y,d,varargin)
 
 patch('vertices',[x+[-d;0;d],y+d*sqrt(3)/3*[-1;2;-1]],'faces',1:3,varargin{:});

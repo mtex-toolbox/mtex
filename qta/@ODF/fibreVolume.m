@@ -1,23 +1,23 @@
 function v = fibreVolume(odf,h,r,radius,varargin)
 % ratio of orientations with a certain orientation
 %
-%% Description
+% Description
 % returns the ratio of mass of the odf that within a certain
 % distance from a given fibre
 %
-%% Syntax
-%  v = fibreVolume(odf,h,r,radius,<options>)
+% Syntax
+%   v = fibreVolume(odf,h,r,radius,<options>)
 %
-%% Input
+% Input
 %  odf    - @ODF
 %  h      - @Miller
 %  r      - @vector3d
 %  radius - double
 %
-%% Options
+% Options
 %  resolution - resolution of discretization
 %
-%% See also
+% See also
 % ODF/volume ODF/entropy ODF/textureindex
 
 % check input

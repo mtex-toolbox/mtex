@@ -1,25 +1,22 @@
 function mdf = calcMDF(odf1,varargin)
 % calculate the uncorrelated misorientation distribution function (MDF) from one or two ODF
 %
-%% Syntax
-% mdf = calcMDF(odf)
-% mdf = calcMDF(odf1,odf2,'bandwidth',32)
+% Syntax
+%   mdf = calcMDF(odf)
+%   mdf = calcMDF(odf1,odf2,'bandwidth',32)
 %
-%% Input
+% Input
 %  odf  - @ODF
 %  odf1, odf2 - @ODF
 %
-%% Options
+% Options
 % bandwidth - bandwidth for Fourier coefficients (default -- 32)
 %
-%% Output
+% Output
 %  mdf - @ODF
 %
-%% See also
+% See also
 % EBSD/calcODF
-
-%% check input
-
 
 % Kernel method
 if check_option(varargin,'kernelMethod') && isa(odf1,'unimodalODF') && ...

@@ -1,11 +1,11 @@
 function odf = rotate(odf,q,varargin)
 % rotate ODF
 %
-%% Input
+% Input
 %  odf - @ODF
 %  q   - @rotation
 %
-%% Output
+% Output
 %  rotated odf - @ODF
 
 for i = 1:length(odf)

@@ -4,18 +4,18 @@ function Z = pdf(odf,h,r,varargin)
 % pdf is a lowlevel function to evaluate the PDF corresponding to an ODF 
 % at a list of crystal and specimen directions
 %
-%% Input
+% Input
 %  odf - @ODF
 %  h   - @Miller / @vector3d crystal directions
 %  r   - @vector3d specimen directions
 %
-%% Options
-%  SUPERPOSITION - calculate superposed pdf
+% Options
+%  superposition - calculate superposed pdf
 %
-%% Flags
+% Flags
 %  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
 %
-%% See also
+% See also
 % ODF/plotpdf ODF/plotipdf ODF/calcPoleFigure
 
 % check crystal symmetry

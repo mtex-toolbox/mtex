@@ -1,14 +1,14 @@
 function odf = smooth(odf,varargin)
 % smooth ODF
 %
-%% Input
+% Input
 %  odf - @ODF
 %  res - resolution
 %
-%% Output
+% Output
 %  odf - smoothed @ODF
 %
-%% See also
+% See also
 % loadEBSD_generic
 
 if nargin >= 2 && isa(varargin{1},'kernel')
@@ -21,11 +21,11 @@ hw = get(psi,'halfwidth');
 
 for iodf = 1:length(odf)
 
-  %% Uniform portion
+  % Uniform portion
   if check_option(odf(iodf),'uniform')
 
 
-  %% Fourier portion
+  % Fourier portion
   elseif check_option(odf(iodf),'Fourier')
 
     A = get(psi,'A');
@@ -45,7 +45,7 @@ for iodf = 1:length(odf)
 
     odf(iodf).psi = odf(iodf).psi./2;
 
-  %% unimodal portion
+  % unimodal portion
   else
 
     % generate grid

@@ -2,21 +2,20 @@ function f = eval(odf,g,varargin)
 % evaluate an odf at orientation g
 %
 %
-%% Input
+% Input
 %  odf - @ODF
 %  g   - @orientation
 %
-%% Flags
-%  EVEN       - calculate even portion only
-%  FOURIER    - use NFSOFT based algorithm
+% Flags
+%  even       - calculate even portion only
 %
-%% Output
+% Output
 %  f   - values of the ODF at the orientations g
 %
-%% See also
+% See also
 % kernel/sum_K kernel/K
 
-if isa(g,'orientation') && odf(1).CS ~= get(g,'CS') && odf(1).SS ~= get(g,'SS')
+if isa(g,'orientation') && odf(1).CS ~= g.CS && odf(1).SS ~= g.SS
   warning('symmetry missmatch'); %#ok<WNTAG>
 end
 f = zeros(size(g));

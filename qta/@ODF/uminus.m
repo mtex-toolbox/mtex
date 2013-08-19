@@ -3,7 +3,7 @@ function odf = uminus(odf)
 %
 % overload the - operator, i.e. one can now write - @ODF
 %
-%% See also
+% See also
 % ODF_index ODF/mtimes
 
 for i = 1:numel(odf)

@@ -4,7 +4,7 @@ function odf = minus(o1,o2)
 % overload the - operator, i.e. one can now write @ODF - @ODF in order
 % get the superposition of two ODFs
 %
-%% See also
+% See also
 % ODF_index ODF/mtimes
 
 odf = [o1,-o2];

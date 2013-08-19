@@ -23,11 +23,11 @@ end
 field = lower(get_option(varargin,'colorcoding',[]));
 
 % TODO !!!
-if isProp(pf(1),field)
-  pfunc = @(i) pf(i).(field);
-else
-  pfunc = @(i) pf(i).intensities;
-end
+%if isProp(pf(1),field)
+%  pfunc = @(i) pf(i).(field);
+%else
+pfunc = @(i) pf(i).intensities;
+%end
 
 if check_option(varargin,{'contourf','contour','smooth'}) && ...
     (size(pfunc(1),1) == 1 || size(pfunc(1),2) == 1)

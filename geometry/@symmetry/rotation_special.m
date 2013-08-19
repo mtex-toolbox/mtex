@@ -39,7 +39,7 @@ else % TODO
       end            
     case {'mmm','-3m','4/mmm','6/mmm'}
       q = idquaternion;
-      v = cs.axis(1);
+      v = cs.axes(1);
     case {'-3','4/m','6/m'}
       q = idquaternion;
       v = vector3d;

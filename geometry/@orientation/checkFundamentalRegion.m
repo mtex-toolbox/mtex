@@ -55,6 +55,7 @@ end
 if ~check_option(varargin,'onlyAngle')
   sym = disjoint(ori.CS,ori.SS);
   
+  if length(sym)==1, return;end
   h = Miller(vector3d(rq),sym);
   
   ind = ind & checkFundamentalRegion(h);

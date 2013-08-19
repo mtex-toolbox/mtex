@@ -1,23 +1,22 @@
 function [modes, values] = calcModes(odf,varargin)
 % heuristic to find modal orientations
 %
-%% Syntax
-%
+% Syntax
 %   [modes, values] = calcModes(odf,n)
 %
-%% Input
+% Input
 %  odf - @ODF 
 %  n   - number of modes
 %
-%% Output
+% Output
 %  modes - modal @orientation
 %  values - values of the ODF at the modal @orientation
 %
-%% Options
+% Options
 %  resolution  - search--grid resolution
 %  accuracy    - in radians
 %
-%% Example
+% Example
 %  find the local maxima of the [[SantaFe.html,SantaFe]] ODF
 %
 %    mode = calcModes(SantaFe)
@@ -25,7 +24,7 @@ function [modes, values] = calcModes(odf,varargin)
 %    annotate(mode)
 %
 %
-%% See also
+% See also
 % ODF/max
 
 % find multiple modes
@@ -46,6 +45,7 @@ CS = odf(1).CS; SS = odf(1).SS;
 % initial seed
 S3G = orientation(CS,SS);
 
+% TODO
 for i = 1:length(odf) 
   
   switch class(odf(i))
@@ -95,7 +95,7 @@ end
 [values,ind] = max(f(:));
 modes = S3G(ind);
 
-%% -------------------------------------------------------
+% -------------------------------------------------------
 
 function [modes,values] = findMultipleModes(odf,varargin)
 

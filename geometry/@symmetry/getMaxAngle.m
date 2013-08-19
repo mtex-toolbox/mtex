@@ -1,6 +1,7 @@
 function  omega = getMaxAngle(cs,ss)
 % get the maximum angle of a fundamental region without interplay
 
+% TODO: function name does not reflect what this functions does
 if nargin < 2 || length(ss) <= 1
   omega = pi/max(nfold(cs));
 else

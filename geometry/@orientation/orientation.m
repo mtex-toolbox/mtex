@@ -53,6 +53,10 @@ methods
     o = o@rotation(varargin{:});
 
     % set symmetry
+    if isa(varargin{1},'orientation')
+      o.CS = varargin{1}.CS;
+      o.SS = varargin{1}.SS;
+    end
     if ~isempty(sym), o.CS = sym{1};end
     if length(sym) > 1, o.SS = sym{2};end
     
