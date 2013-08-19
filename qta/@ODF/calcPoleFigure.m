@@ -5,7 +5,6 @@ function pf = calcPoleFigure(odf,h,varargin)
 % It supports superposed pole figures and irregular sampling grids.
 %
 % Syntax
-%
 %   pf = calcPolefigure(odf,h,r)
 %   pf = calcPolefigure(odf,h,'resolution',5*degree)
 %   pf = calcPoleFigure(odf,h,'resolution',5*degree,'complete')

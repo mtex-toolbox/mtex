@@ -1,4 +1,11 @@
-function rot = subsref(sym,varargin)
+function varargout = subsref(sym,varargin)
 % overloads subsref
 
-rot = subsref(rotation(sym),varargin{:});
+try
+  [varargout{1:nargout}] = subsref(rotation(sym),varargin{:});
+catch %#ok<CTCH>
+  [varargout{1:nargout}] = builtin('subsref',sym,varargin{:});
+end
+
+
+

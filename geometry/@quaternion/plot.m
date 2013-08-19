@@ -13,6 +13,7 @@ function varargout = plot(q,varargin)
 
 %% two dimensional plot -> S2Grid/plot
 
+% TODO
 if ~(ishold(gca) && strcmp(get(gca,'tag'),'ebsd_raster')) && ...
   ~check_option(varargin,{'scatter','rodrigues','axisangle'})
 

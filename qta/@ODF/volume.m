@@ -1,23 +1,23 @@
 function v = volume(odf,center,radius,varargin)
 % ratio of orientations with a certain orientation
 %
-%% Description
+% Description
 % The function 'volume' returns the ratio of an orientation that is close
 % to an orientation (center) by a misorientation tolerance (radius) to the
 % volume of the entire odf.
 %
-%% Syntax
-%  v = volume(odf,center,radius,<options>)
+% Syntax
+%   v = volume(odf,center,radius)
 %
-%% Input
+% Input
 %  odf    - @ODF
 %  center - @orientation
 %  radius - double
 %
-%% Options
+% Options
 %  resolution - resolution of discretization
 %
-%% See also
+% See also
 % ODF/fibreVolume ODF/entropy ODF/textureindex
 
 % check input

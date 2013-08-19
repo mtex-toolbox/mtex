@@ -32,19 +32,17 @@ classdef rotation < quaternion & dynOption
     function rot = rotation(varargin)
 
       if nargin == 0, return;end
-      
-      switch class(varargin{1})
 
-        % copy constructor
-        case {'rotation','symmetry','SO3Grid','orientation'}
-       
-          rot.a = varargin{1}.a;
-          rot.b = varargin{1}.b;
-          rot.c = varargin{1}.c;
-          rot.d = varargin{1}.d;
-          rot.i = varargin{1}.i;
-          
-          return;
+      if isa(varargin{1},'rotation') % copy constructor
+        rot.a = varargin{1}.a;
+        rot.b = varargin{1}.b;
+        rot.c = varargin{1}.c;
+        rot.d = varargin{1}.d;
+        rot.i = varargin{1}.i;
+        return
+      end
+        
+      switch class(varargin{1})        
 
         case {'quaternion','double'}
        
@@ -72,6 +70,10 @@ classdef rotation < quaternion & dynOption
            
               quat = quaternion(varargin{2:end});
 
+            case 'rodrigues'
+              
+              quat = rodrigues2quat(varargin{2});
+              
             case 'matrix'
               
               quat = mat2quat(varargin{2:end});

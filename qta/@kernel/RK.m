@@ -32,6 +32,7 @@ function f = RK(kk,g,h,r,c,CS,SS,varargin)
 g = quaternion(g);
 ng = length(g);
 
+% TODO: condition S2Grid makes no sense
 if length(h)>1 || isa(h,'S2Grid')   % inverse pole figure
 	r = r./norm(r);
   in = reshape(inv(symmetrise(g,CS,SS)).' * r,[ng,length(CS),length(SS)]);

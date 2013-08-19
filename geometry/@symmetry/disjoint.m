@@ -14,10 +14,7 @@ end
 if numel(is1) == 1, s = symmetry; return; end
 
 % take the equal ones
-s = s1;
-s.rotation = s1.rotation(is1);
-s.mineral = '';
-s.name = 'common symmetry';
+s = subsref(s1,is1);
 
 % find a symmetry that exactly contains s
 for i=1:11 % check all Laue groups
@@ -31,10 +28,11 @@ for i=1:11 % check all Laue groups
   
 end
 
-if length(s) == 6
-  s.laue = '-3m';
-elseif length(s) == 12
-  s.laue = '6/mmm';
-else
-  s.laue = 'unknown';
-end
+% TODO:
+% if length(s) == 6
+%   s.laue = '-3m';
+% elseif length(s) == 12
+%   s.laue = '6/mmm';
+% else
+%   s.laue = 'unknown';
+% end

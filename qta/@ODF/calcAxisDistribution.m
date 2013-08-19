@@ -1,7 +1,6 @@
 function x = calcAxisDistribution(odf,h,varargin)
 % compute the axis distribution of an ODF or MDF
 %
-%
 % Input
 %  odf - @ODF
 %  h   - @vector3d

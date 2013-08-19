@@ -1,14 +1,14 @@
 function S3G = quantile(odf,varargin)
 % quantile orientations of an ODF
 %
-%% Syntax
-%  SO3 = quantile(odf,p,<options>)
+% Syntax
+%   SO3 = quantile(odf,p,<options>)
 %
-%% Input
+% Input
 %  odf - @ODF
 %  p   - upper quantile, if negative lower quantile
 %
-%% See Also
+% See Also
 % PoleFigure/quantile
 
 
@@ -26,7 +26,7 @@ end
 S3G = extract_SO3grid(odf,varargin{:});
 
 f = eval(odf,S3G,varargin{:});
-[f ndx] = sort(f);
+[f, ndx] = sort(f);
 
 pd = cumsum(f)./sum(f);
 

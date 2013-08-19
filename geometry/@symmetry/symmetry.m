@@ -4,7 +4,7 @@ classdef symmetry < rotation
 %
 % Input
 %  name  - Schoenflies or International notation of the Laue group
-%  axis  - [a,b,c] --> length of the crystallographic axes
+%  axes  - [a,b,c] --> length of the crystallographic axes
 %  angle - [alpha,beta,gamma] --> angle between the axes
 %
 % Syntax
@@ -22,7 +22,7 @@ classdef symmetry < rotation
 % Supported Symmetries
 %
 %  crystal system  Schoen-  Inter-    Laue     Rotational
-%                  flies    national  class    axis
+%                  flies    national  class    axes
 %  triclinic       C1       1         -1       1
 %  triclinic       Ci       -1        -1       1
 %  monoclinic      C2       2         2/m      2
@@ -61,7 +61,7 @@ classdef symmetry < rotation
     isCS = false; % is crystal symmetry
     pointGroup = 'triclinic';
     laueGroup  = '-1';
-    axis = [xvector,yvector,zvector];
+    axes = [xvector,yvector,zvector];
     mineral = '';
     color = '';
     
@@ -148,7 +148,7 @@ classdef symmetry < rotation
       end
 
       % compute coordinate system
-      s.axis = calcAxis(abc,angles,varargin{:});
+      s.axes = calcAxis(abc,angles,varargin{:});
       
       
       % set up symmetry
@@ -159,7 +159,7 @@ classdef symmetry < rotation
       s.color = get_option(varargin,'color','');
       
       % compute symmetry operations
-      r = calcQuat(s.laueGroup,s.axis,sym.Inversion);
+      r = calcQuat(s.laueGroup,s.axes,sym.Inversion);
       [s.a, s.b, s.c, s.d] = double(r);
       s.i = isImproper(r);
       
@@ -169,7 +169,7 @@ classdef symmetry < rotation
       elseif check_option(varargin,'crystal')
         s.isCS = true;
       else
-        s.isCS = ~(numel(s.a)<=4 && all(isnull(norm(s.axis-[xvector,yvector,zvector]))));
+        s.isCS = ~(numel(s.a)<=4 && all(isnull(norm(s.axes-[xvector,yvector,zvector]))));
       end
       
     end

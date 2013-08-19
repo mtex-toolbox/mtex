@@ -1,11 +1,11 @@
 function q = maxpdf( odf,h, varargin)
 % returns the maximum orientation in a polefigure
 %
-%% Input
-% @ODF - an odf
-% @Miller - a crystal direction
+% Input
+%  odf - @ODF
+%  h   - @Miller
 %
-%%
+%
 %
 
 argin_check(h,'Miller');

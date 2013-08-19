@@ -6,17 +6,16 @@ function e = entropy(odf,varargin)
 % $$ e = - \int f(g) \ln f(g) dg$$
 %
 %
-%% Input
+% Input
 %  odf - @ODF 
 %
-%% Output
+% Output
 %  entropy - double
 %
-%% Options
+% Options
 %  resolution - resolution of the discretization
-%% See also
+% See also
 % ODF/textureindex ODF/volume
-
 
 % discretisation
 S3G = extract_SO3grid(odf,varargin{:});

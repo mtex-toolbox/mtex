@@ -1,11 +1,12 @@
 function q = times(q1,q2)
 % implements quaternion .* quaternion and quaternion .* vector3d 
-%% Input
+%
+% Input
 %  q1 - @quaternion
 %  q2 - @quaternion | @vector3d
 %
-%% Output
-%  @quaternion | @vector3d
+% Output
+%  q  - @quaternion | @vector3d
 
 if isa(q1,'quaternion') && isa(q2,'quaternion')
   

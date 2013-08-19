@@ -5,16 +5,16 @@ function [I, odf] = transinformation(odf1,odf2,varargin)
 %
 % $$ I = \int f(g_{1+2}) \ln \frac{f(g_{1+2})}{f(g_1) * f(g_2)}  dg $$
 %
-%% Input
+% Input
 %  odf - @ODF 
 %
-%% Output
+% Output
 %  texture index - double
 %
-%% Options
+% Options
 %  resolution - resolution of the discretization
 %
-%% See also
+% See also
 % ODF/entropy ODF/textureindex ODF/calcError
 
 

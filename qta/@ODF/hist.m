@@ -1,13 +1,13 @@
 function hist(odf,varargin)
 % calcualtes a histogram of ODF
 %
-%% Input
+% Input
 %  odf - @ODF
 %
-%% Options
+% Options
 %  resolution - resolution used for calculation (default = 5*degree)
 %
-%% See also
+% See also
 %  savefigure
 
 % eval odf

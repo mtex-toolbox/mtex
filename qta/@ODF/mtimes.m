@@ -4,7 +4,7 @@ function odf = mtimes(x,y)
 % overload the * operator, i.e. one can now write x*@ODF or @ODF*y in order
 % to scale an ODF
 %
-%% See also
+% See also
 % ODF_index ODF/plus
 
 if isa(x,'ODF') && isa(y,'double')

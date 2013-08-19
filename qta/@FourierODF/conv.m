@@ -1,13 +1,14 @@
 function odf = conv(odf,psi,varargin)
 % convolute ODF with kernel psi
 %
-%% Input
+% Input
 %  odf - @ODF
 %  psi - convolution @kernel
 %
-%% See also
+% See also
 % ODF_calcFourier ODF_Fourier
 
+%TODO
 L = bandwidth(odf);
 A = getA(psi);
 A(end+1:L+1) = 0;

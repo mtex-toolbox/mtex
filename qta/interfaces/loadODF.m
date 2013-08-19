@@ -1,7 +1,7 @@
 function [odf,interface,options] = loadODF(fname,varargin)
 % import ebsd data 
 %
-%% Description
+% Description
 % *loadODF* is a high level method for importing ODF data from external
 % files. It autodetects the format of the file. As parameters the method
 % requires a filename and the crystal and specimen @symmetry. Furthermore,
@@ -10,21 +10,21 @@ function [odf,interface,options] = loadODF(fname,varargin)
 % row the euler angles of a certain orientation see
 % [[loadODF_generic.html,loadODF_generic]] for additional options.
 %
-%% Syntax
-%  pf = loadODF(fname,cs,ss,<options>)
+% Syntax
+%   odf = loadODF(fname,cs,ss)
 %
-%% Input
+% Input
 %  fname     - filename
 %  cs, ss    - crystal, specimen @symmetry (optional)
 %
-%% Options
+% Options
 %  interface  - specific interface to be used
 %  comment    - comment to be associated with the data
 %
-%% Output
+% Output
 %  odf - @ODF
 %
-%% See also
+% See also
 % ImportEBSDData EBSD/calcODF ebsd_demo loadEBSD_generic
 
 [odf,interface,options] = loadData(fname,'ODF',varargin{:});

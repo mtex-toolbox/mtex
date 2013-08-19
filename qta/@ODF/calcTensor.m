@@ -1,23 +1,23 @@
 function [TVoigt, TReuss, THill] = calcTensor(odf,T,varargin)
 % compute the average tensor for an ODF
 %
-%% Syntax
-% [TVoigt, TReuss, THill] = calcTensor(odf,T)
-% THill = calcTensor(odf,T,'Hill')
+% Syntax
+%   [TVoigt, TReuss, THill] = calcTensor(odf,T)
+%   THill = calcTensor(odf,T,'Hill')
 %
-%% Input
+% Input
 %  odf - @ODF
 %  T   - @tensor
 %
-%% Output
+% Output
 %  T    - @tensor
 %
-%% Options
+% Options
 %  voigt - voigt mean
 %  reuss - reuss mean
 %  hill  - hill mean
 %
-%% See also
+% See also
 %
  
 % convert to FourierODF

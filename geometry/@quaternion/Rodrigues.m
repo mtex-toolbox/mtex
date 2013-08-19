@@ -1,14 +1,16 @@
 function v = Rodrigues(q)
 % quaternion to rodrigues representation
 %
-%% Description
+% Description
 % calculates the Rodrigues vector for a quaternion |q|
 %
-%% Input
+% Input
 %  q - @quaternion
-%% Output
+%
+% Output
 %  v - @vector3d
-%% See also
+%
+% See also
 % quaternion/Euler
 
 q.a(q.a==0) = 1e-100;
