@@ -54,21 +54,12 @@ for ip = 1:numel(ebsd.phaseMap)
 
 end
 
-cprintf(matrix,'-L','  ','-Lc',...
-  {'Phase' 'Orientations' 'Mineral' 'Color' 'Symmetry' 'Crystal reference frame'},...
-  '-ic','F');
-
 disp(' ');
 
-if ~isempty(ebsd) && length(ebsd) <= 20
-  fn = fields(ebsd.prop);
-  d = zeros(length(ebsd),numel(fn));
-  for j = 1:numel(fn)
-    if isnumeric(ebsd.prop.(fn{j}))
-      d(:,j) = vertcat(ebsd.prop.(fn{j}));
-    elseif isa(ebsd.prop.(fn{j}),'quaternion')
-      d(:,j) = angle(ebsd.prop.(fn{j})) / degree;
-    end
-  end
-  cprintf(d,'-Lc',fn);
-end
+cprintf(matrix,'-L',' ','-Lc',...
+  {'Phase' 'Orientations' 'Mineral' 'Color' 'Symmetry' 'Crystal reference frame'},...
+  '-ic',true);
+
+disp(' ');
+disp(char(dynProp(ebsd.prop)));
+disp(' ');

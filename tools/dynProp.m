@@ -159,6 +159,24 @@ classdef dynProp
     function out = isProp(dp,name)
       out = isfield(dp.prop,name);
     end
+    % -----------------------------------------------
+    function c = char(dp)
+      
+      fn = fieldnames(dp.prop);
+      if ~isempty(fn) && length(dp)<=20        
+        d = zeros(length(dp),numel(fn));
+        for j = 1:numel(fn)
+          if isnumeric(dp.prop.(fn{j}))
+            d(:,j) = vertcat(dp.prop.(fn{j}));
+          elseif isa(dp.prop.(fn{j}),'quaternion')
+            d(:,j) = angle(dp.prop.(fn{j})) / degree;
+          end
+        end
+        c  = cprintf(d,'-Lc',fn,'-L',' ','-d','   ','-ic',true);
+      else
+        c  = cprintf(fn(:)','-L',' Properties: ','-d',', ','-ic',true);        
+      end      
+    end
     
     % -----------------------------------------------
     function display(dp)
@@ -168,19 +186,10 @@ classdef dynProp
         ' ' docmethods(inputname(1))]);
 
       fn = fieldnames(dp.prop);
-      if isempty(fn) || length(dp)>20, return;end
       
       disp([' size: ' size2str(dp.prop.(fn{1}))])
       
-      d = zeros(length(dp),numel(fn));
-      for j = 1:numel(fn)
-        if isnumeric(dp.prop.(fn{j}))
-          d(:,j) = vertcat(dp.prop.(fn{j}));
-        elseif isa(dp.prop.(fn{j}),'quaternion')
-          d(:,j) = angle(dp.prop.(fn{j})) / degree;
-        end
-      end
-      cprintf(d,'-Lc',fn);
+      disp(char(dp))
             
     end
     
