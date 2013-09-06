@@ -33,6 +33,10 @@ end
 % may be we can skip something
 omega = abs(dot(q,q_ref));
 ind   = omega < cos(getMaxAngle(CS1,qCS2)/2);
+if ~any(ind)
+  omega = 2*acos(min(1,omega));
+  return
+end
 
 if numel(q) == numel(ind)
   q_sub = subsref(q,ind);
