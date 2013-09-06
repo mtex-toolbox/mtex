@@ -2,7 +2,7 @@ function varargout = mean( ebsd,varargin)
 % returns mean, kappas and eigenvector of ebsd object
 %
 %% Syntax
-% [m kappa v kappa] = mean(ebsd) - 
+% [m lambda v kappa] = mean(ebsd) - 
 %
 %% Input
 %  ebsd      - @EBSD
