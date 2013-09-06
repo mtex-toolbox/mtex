@@ -46,6 +46,10 @@ end
 
 switch lower(vname)
   
+  case  {'id', 'grain id', 'grain_id'}
+    
+    [varargout{1},~] = find(grains.I_DG.');
+  
   case {'mean','meanorientation','orientation'}
     
     % check only a single phase is involved
