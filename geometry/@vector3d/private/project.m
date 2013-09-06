@@ -19,7 +19,8 @@ end
 
 % check for azimuth angle
 if extend.maxRho - extend.minRho < 2*pi-1e-6  
-  inRho = rhoInside(rho,extend.minRho,extend.maxRho) | isnull(sin(theta));  
+  inRho = rhoInside(rho,extend.minRho,extend.maxRho) | ...
+    (isnull(sin(theta)) & ~strcmp(projection.type,'plain'));    
   rho(~inRho) = NaN;
 end
 
