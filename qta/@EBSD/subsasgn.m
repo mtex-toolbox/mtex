@@ -33,7 +33,9 @@ if isa(s,'double') || isa(s,'logical')
     
   elseif isa(b,'EBSD') % copy measurements
     
-    ebsd.options = structfun(@(x) subsasgn(x,ss,b.options),ebsd.options,'UniformOutput',false);
+    for fn = char(fieldnames(ebsd.options))
+      ebsd.options.(fn) = subsasgn(ebsd.options.(fn),ss,b.options.(fn));
+    end
     ebsd.rotations = subsasgn(ebsd.rotations,ss,b.rotations);
     ebsd.phase = subsasgn(ebsd.phase,ss,b.phase);
     
