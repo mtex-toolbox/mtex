@@ -1,10 +1,10 @@
 function d = dot_outer(v1,v2,varargin)
 % outer dot product
 %
-%% Input
+% Input
 %  v1, v2 - @vector3d
 %
-%% Output
+% Output
 %  d - double
 
 % if second argument is Miller call corresponding method
