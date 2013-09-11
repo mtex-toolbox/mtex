@@ -1,4 +1,4 @@
-classdef orientation < rotation
+classdef (InferiorClasses = {?rotation,?quaternion}) orientation < rotation
 % defines an orientation
 %
 % Syntax

@@ -1,22 +1,22 @@
-function [q lambda V] = mean(q,varargin)
+function [q,lambda, V] = mean(q,varargin)
 % mean of a list of quaternions, principle axes and moments of inertia
 %
-%% Input
+% Input
 %  q        - list of @quaternion
 %
-%% Options
+% Options
 %  weights  - list of weights
 %
-%% Output
+% Output
 %  mean     - mean orientation
 %  lambda   - principle moments of inertia
 %  V        - principle axes of inertia (@orientation)
 %
-%% See also
+% See also
 % orientation/mean
 
 T = qq(q,varargin{:});
-[V lambda ] = eig(T);
+[V, lambda] = eig(T);
 l = diag(lambda);
 pos = find(max(l)==l,1);
 q.a = V(1,pos);

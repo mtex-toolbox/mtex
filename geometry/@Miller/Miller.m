@@ -1,4 +1,4 @@
-classdef Miller < vector3d
+classdef (InferiorClasses = {?vector3d,?S2Grid}) Miller < vector3d
 
   properties
     CS        % crystal symmetry

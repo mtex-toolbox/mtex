@@ -1,15 +1,15 @@
 function varargout = symmetrise(q,CS,SS,varargin)
 % symmetrcially equivalent orientations
 %
-%% Input
+% Input
 %  q  - @quaternion
 %  CS - crystal @symmetry
 %  SS - specimen @symmetry
 %
-%% Output
+% Output
 %  q - symmetrically equivalent orientations CS x SS x q
 %
-%% See also
+% See also
 % CrystalSymmetries
 
 q = (q * CS).'; % CS x M
