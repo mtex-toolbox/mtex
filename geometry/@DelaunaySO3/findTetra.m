@@ -10,9 +10,20 @@
  %  bario - bariocentric coordinates
  %
  
- % look up table TODO!!
+ ori = orientation(ori,DSO3.CS,DSO3.SS);
+ 
+ % look up table
  if ~isempty(DSO3.lookup)
    [max_phi1,max_Phi,max_phi2] = getFundamentalRegion(DSO3.CS,DSO3.SS);
+   %ori = ori.project2FundamentalRegion;
+   
+   if max_Phi<pi
+     [axes,~] = DSO3.CS.getMinAxes;
+     ia = find(isnull(dot(axes,zvector)),1,'first');
+     [~,Phi,~] = Euler(ori);
+     ori(Phi > pi/2) = ori(Phi > pi/2) * orientation('axis',axes(ia),'angle',pi,DSO3.CS,DSO3.CS);     
+   end
+   
    [phi1,Phi,phi2] = Euler(ori);
    s = size(DSO3.lookup)-1;
    iphi1 = 1+round(mod(phi1./max_phi1,1) * s(1));

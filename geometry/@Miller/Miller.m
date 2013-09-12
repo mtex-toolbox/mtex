@@ -1,5 +1,5 @@
-classdef (InferiorClasses = {?vector3d,?S2Grid}) Miller < vector3d
-
+classdef Miller < vector3d
+%(InferiorClasses = {?vector3d,?S2Grid})
   properties
     CS        % crystal symmetry
     dispStyle = 'hkl' % output convention hkl or uvw

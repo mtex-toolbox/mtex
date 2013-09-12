@@ -2,7 +2,7 @@ function display(s)
 % standard output
 
 % check whether crystal or specimen symmetry
-if s.isCS
+if ~s.isCS
   
   disp(' ');
   disp([inputname(1) ' = ' s.pointGroup ' specimen ' doclink('symmetry_index','symmetry') ' ' docmethods(inputname(1))]);

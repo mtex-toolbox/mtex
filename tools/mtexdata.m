@@ -116,7 +116,7 @@ data(cellfun('isempty',{data.name})) = [];
 function [CS,h,c,pf] = mtexdata_dubna
 
 CS = symmetry('-3m',[1.4 1.4 1.5]);
-SS = symmetry;
+
 fname = {...
   fullfile(mtexDataPath,'PoleFigure','dubna','Q(02-21)_amp.cnv'),...
   fullfile(mtexDataPath,'PoleFigure','dubna','Q(10-10)_amp.cnv'),...
@@ -137,7 +137,7 @@ h = {...
 
 c = {1,1,[0.52 ,1.23],1,1,1,1};
 
-pf = loadPoleFigure(fname,h,CS,SS,'interface','dubna','superposition',c);
+pf = loadPoleFigure(fname,h,'interface','dubna','superposition',c);
 
 % ------------------------------------------------------------------
 function [CS,h,c,pf] = mtexdata_geesthacht
