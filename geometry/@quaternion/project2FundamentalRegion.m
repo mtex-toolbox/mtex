@@ -18,7 +18,6 @@ function [q,omega] = project2FundamentalRegion(q,CS1,q_ref)
 
 % get quaternions
 qCS1 = quaternion(CS1);
-q = quaternion(q);
 
 if nargin < 3, q_ref = idquaternion; end
 if isa(q_ref,'symmetry')
@@ -32,7 +31,7 @@ end
 q = reshape(q,[],1);
 
 % compute distance to reference orientation
-omega = abs(dot(q,q_ref));
+omega = abs(dot(quaternion(q),q_ref));
 
 % may be we can skip something
 ind   = omega < cos(getMaxAngle(CS1,qCS2)/2);

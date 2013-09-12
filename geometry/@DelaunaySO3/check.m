@@ -2,11 +2,14 @@
 
 cs = symmetry('O')
 ori = equispacedSO3Grid(cs,symmetry,'resolution',5*degree)
+%ori = uorientation(randq(100),cs);
+%ori = orientation(rotation(symmetry('O')),cs)
+
+% pertube data a bot
 odf = unimodalODF(idquaternion,'halfwidth',0.5*degree);
 ebsd = calcEBSD(odf,length(ori));
-ori = ebsd.rotations .* orientation(ori(:));
-%ori = orientation(randq(100),cs);
-%ori = orientation(rotation(symmetry('O')),cs)
+ori = ebsd.rotations .* orientation(ori.subsref(':'));
+
 DSO3 = DelaunaySO3(ori)
 
 %% check adjacence matrix
@@ -15,15 +18,36 @@ hist(sum(DSO3.A_tetra))
 
 %% check neigbouring matrix
 
-DSO3.tetraNeigbour(5,:)
+DSO3.tetraNeighbour(5,:)
 
 DSO3.tetra([5,DSO3.tetraNeighbour(5,:)],:)
 
-%% check find routing
+%% check find routine
 
 %[ind,bario] = DSO3.findTetra(orientation('Euler',10*degree,20*degree,5*degree,cs))
 
 [ind,bario] = DSO3.findTetra(orientation('Euler',317*degree,0*degree,0*degree,cs))
+
+%%
+
+odf = fibreODF(Miller(1,0,0,cs),zvector)
+
+plotpdf(odf,Miller(1,0,0,cs))
+
+%%
+
+f = eval(odf,DSO3);
+
+fodf = femODF(DSO3,'weights',f)
+
+%plot(fodf)
+
+plotpdf(odf,Miller(1,0,0))
+
+%%
+
+
+
 
 %% have there some to many adjecent tetrahegons?
 [m,ind] = max(sum(DSO3.A_tetra))
