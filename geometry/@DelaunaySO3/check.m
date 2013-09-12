@@ -1,13 +1,13 @@
 
 
-cs = symmetry('O')
+cs = symmetry('-3m')
 ori = equispacedSO3Grid(cs,symmetry,'resolution',5*degree)
 %ori = uorientation(randq(100),cs);
 %ori = orientation(rotation(symmetry('O')),cs)
 
-% pertube data a bot
-odf = unimodalODF(idquaternion,'halfwidth',0.5*degree);
-ebsd = calcEBSD(odf,length(ori));
+% pertube data a bit
+odf_pertube = unimodalODF(idquaternion,'halfwidth',0.5*degree);
+ebsd = calcEBSD(odf_pertube,length(ori));
 ori = ebsd.rotations .* orientation(ori.subsref(':'));
 
 DSO3 = DelaunaySO3(ori)
@@ -34,15 +34,28 @@ odf = fibreODF(Miller(1,0,0,cs),zvector)
 
 plotpdf(odf,Miller(1,0,0,cs))
 
+
+%%
+
+mtexdata dubna
+
+odf = calcODF(pf)
+
+%%
+
+plotpdf(odf,Miller(1,1,1,cs))
+
+
 %%
 
 f = eval(odf,DSO3);
 
 fodf = femODF(DSO3,'weights',f)
 
+%%
 %plot(fodf)
 
-plotpdf(odf,Miller(1,0,0))
+plotpdf(fodf,Miller(1,1,1,cs))
 
 %%
 
