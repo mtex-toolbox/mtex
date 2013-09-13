@@ -2,24 +2,21 @@ function varargout = plot(v,varargin)
 % plot three dimensional vector
 %
 %
-%% Options
+% Options
 %  Marker          
 %  MarkerSize
 %  MarkerFaceColor
 %  MarkerEdgeColor
 %
-%% Flags
+% Flags
 %  smooth   - plot point cloud as colored density
 %  contourf - plot point cloud as filled contours
 %  contour  - plot point cloud as contours
 
-%% where to plot
+% where to plot
 [ax,v,varargin] = getAxHandle(v,varargin{:});
 
-
-
-
-%% extract plot type
+% extract plot type
 plotTypes = {'contour','contourf','smooth','scatter','text','quiver','line','plane','circle','surf','pcolor','custom'};
 plotType = extract_option(varargin,plotTypes);
 if isempty_cell(plotType)
@@ -39,7 +36,7 @@ labelopt = varargin;
 varargin = delete_option(varargin,{'text','label','labeled'});
 
 
-%% call plotting routine according to type
+% call plotting routine according to type
 switch lower(plotType)
 
   case 'scatter'
@@ -93,7 +90,7 @@ switch lower(plotType)
     
 end
 
-%% plot labels
+% plot labels
 
 if check_option(labelopt,{'text','label','labeled'})
   washold = getHoldState(ax{:});

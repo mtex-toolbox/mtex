@@ -6,6 +6,12 @@ function pdf = doPDF(odf,h,r,varargin)
 % define fibres ->  max(length(h),length(r)) x resolution
 ori = fibre2quat(h,r,'resolution',2*degree);
 
+if check_option(varargin,'antipodal')
+  
+  ori = [ori,fibre2quat(-h,r,'resolution',2*degree)];
+  
+end
+
 % evaluate ODF at these fibre
 f = doEval(odf,ori);
 
