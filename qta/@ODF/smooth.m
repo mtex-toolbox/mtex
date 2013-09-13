@@ -33,13 +33,15 @@ for iodf = 1:length(odf)
 
     odf(iodf).c_hat=odf(iodf).c_hat(1:deg2dim(L+1));
     for l = 0:L
-      odf(iodf).c_hat(deg2dim(l)+1:deg2dim(l+1)) = odf(iodf).c_hat(deg2dim(l)+1:deg2dim(l+1)) * A(l+1);
+      odf(iodf).c_hat(deg2dim(l)+1:deg2dim(l+1)) = ...
+        odf(iodf).c_hat(deg2dim(l)+1:deg2dim(l+1)) * A(l+1);
     end
 
   elseif check_option(odf(iodf),'fibre')
 
     psi_old = odf(iodf).psi;
-    odf(iodf).psi = kernel(get(psi_old,'name'),'halfwidth',hw + get(psi_old,'halfwidth'));
+    odf(iodf).psi = kernel(get(psi_old,'name'),'halfwidth',...
+      hw + get(psi_old,'halfwidth'));
 
   elseif check_option(odf(iodf),'Bingham')
 
@@ -84,7 +86,8 @@ for iodf = 1:length(odf)
     odf(iodf).center = S3G;
     odf(iodf).c = d;
     psi_old = odf(iodf).psi;
-    odf(iodf).psi = kernel(get(psi_old,'name'),'halfwidth',hw + get(psi_old,'halfwidth'));
+    odf(iodf).psi = kernel(get(psi_old,'name'),'halfwidth',...
+      hw + get(psi_old,'halfwidth'));
 
   end
 end

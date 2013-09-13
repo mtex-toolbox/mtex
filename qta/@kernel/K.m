@@ -14,6 +14,9 @@ function w = K(kk,g1,g2,CS,SS,varargin)
 % K(g1,g2) = Sum(g S) Sum(l) A_l Tr T_l(g1^-1 g g2)
 % where Tr T_l(x) = [sin(x/2)+sin(x*l)]/sin(x/2)
 
+% only the pur rotational part is of interest
+qCS = unique(quaternion(CS));
+qSS = unique(quaternion(SS));
 
 if check_option(varargin,'EXACT')
   epsilon = pi;
@@ -40,10 +43,10 @@ if epsilon>rotangle_max_z(CS,'antipodal') % full matrixes
   g2 = quaternion(g2);
   w = zeros(length(g1),length(g2));
      
-	for iks = 1:length(CS)
-		for ips = 1:length(SS) % for all symmetries
+	for iks = 1:length(qCS)
+		for ips = 1:length(qSS) % for all symmetries
       
-			sg    = quaternion(SS,ips) * g1 * quaternion(CS,iks);  % rotate g1
+			sg    = qSS(ips) * g1 * qCS(iks);  % rotate g1
       omega = abs(dot_outer(sg,g2));      % calculate full distance matrix            
       w = w + kk.K(omega);          
       
@@ -78,14 +81,14 @@ else
   
 	w = sparse(length(g1),length(g2));
      
-	for iks = 1:length(CS)
-		for ips = 1:length(SS) % for all symmetries
+	for iks = 1:length(qCS)
+		for ips = 1:length(qSS) % for all symmetries
       
       if abs(lg1) > abs(lg2)
-        sg    = quaternion(SS,ips) * g2 * quaternion(CS,iks);  % rotate g1
+        sg    = qSS(ips) * g2 * qCS(iks);  % rotate g1
         omega = abs(dot_outer(g1,sg));      % calculate full distance matrix
       else
-        sg    = quaternion(SS,ips) * g1 * quaternion(CS,iks);  % rotate g1
+        sg    = qSS(ips) * g1 * qCS(iks);  % rotate g1
         omega = abs(dot_outer(sg,g2));      % calculate full distance matrix
       end
       
@@ -106,4 +109,4 @@ else
 
 end
 %nnz(w)
-w = w / length(CS) / length(SS);
+w = w / length(qCS) / length(qSS);

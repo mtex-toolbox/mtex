@@ -1,6 +1,10 @@
 function [S3G,S2G,sec] = regularSO3Grid(CS,SS,varargin)
 % give a regular grid in orientation space
-
+%
+% Input
+%
+% Output
+%
 
 % determine sectioning type
 sectypes = {...
