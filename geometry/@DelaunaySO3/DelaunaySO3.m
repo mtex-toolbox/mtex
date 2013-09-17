@@ -16,7 +16,7 @@ classdef (InferiorClasses = {?rotation,?quaternion}) DelaunaySO3 < orientation
     
       % are tetragehons already given?      
       if check_option(varargin,'tetra')
-        DSO3.tetra = get_option(varargin,'tetra');
+        DSO3.tetra = sort(get_option(varargin,'tetra'),2);
       else        
         % pertube data a bit    
         % it would be better if this would be needed only for the
