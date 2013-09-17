@@ -1,15 +1,15 @@
 function G = S1Grid(points,min,max,varargin)
 % Constructor
 %
-%% Input
+% Input
 %  points - double
 %  min    - double
 %  max    - double
 %
-%% Output
+% Output
 %  S1G - @S1Grid
 %
-%% Options
+% Options
 %  PERIODIC - periodic @S1Grid
 
 if (nargout == 0) && (nargin == 0)

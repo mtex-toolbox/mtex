@@ -3,6 +3,6 @@ function doDisplay(odf,varargin)
 
 disp('  FEM portion:');
 disp(['    center: ',int2str(length(odf.center))]);
-disp(['    tetrahegons: ',int2str(length(odf.center.A_tetra))]);
+disp(['    tetrahegons: ',int2str(size(odf.center.tetra,1))]);
 
 end
