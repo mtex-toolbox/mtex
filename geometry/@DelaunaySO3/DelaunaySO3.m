@@ -1,4 +1,4 @@
-classdef DelaunaySO3 < orientation
+classdef (InferiorClasses = {?rotation,?quaternion}) DelaunaySO3 < orientation
 
   properties
         
@@ -14,10 +14,16 @@ classdef DelaunaySO3 < orientation
       
       DSO3 = DSO3@orientation(varargin{:});
     
-      % compute tetrahegons
+      % are tetragehons already given?      
       if check_option(varargin,'tetra')
         DSO3.tetra = get_option(varargin,'tetra');
-      else
+      else        
+        % pertube data a bit    
+        % it would be better if this would be needed only for the
+        % triangulation, but for some reason we cant skip it
+        [DSO3.a,DSO3.b,DSO3.c,DSO3.d] = double(perturbe(DSO3,0.05*degree));
+      
+        % compute tetrahegons
         DSO3.tetra = calcDelaunay2(DSO3);
       end
       

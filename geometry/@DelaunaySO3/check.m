@@ -6,9 +6,9 @@ ori = equispacedSO3Grid(cs,symmetry,'resolution',10*degree)
 %ori = orientation(rotation(symmetry('O')),cs)
 
 % pertube data a bit
-odf_pertube = unimodalODF(idquaternion,'halfwidth',0.5*degree);
-ebsd = calcEBSD(odf_pertube,length(ori));
-ori = ebsd.rotations .* orientation(ori.subsref(':'));
+%odf_pertube = unimodalODF(idquaternion,'halfwidth',0.5*degree);
+%ebsd = calcEBSD(odf_pertube,length(ori));
+%ori = ebsd.rotations .* orientation(ori.subsref(':'));
 
 DSO3 = DelaunaySO3(ori)
 
@@ -26,7 +26,7 @@ DSO3.tetra([5,DSO3.tetraNeighbour(5,:)],:)
 
 %[ind,bario] = DSO3.findTetra(orientation('Euler',10*degree,20*degree,5*degree,cs))
 
-[ind,bario] = DSO3.findTetra(orientation('Euler',317*degree,0*degree,0*degree,cs))
+[ind,bario] = DSO3.findTetra(orientation('Euler',317*degree,20*degree,0*degree,cs))
 
 %%
 
@@ -58,12 +58,14 @@ fodf = femODF(DSO3,'weights',f)
 %%
 %plot(fodf)
 figure(2)
-plotpdf(fodf,Miller(1,1,1,cs),'antipodal')
+plotpdf(fodf,Miller(1,1,1,cs),'antipodal','pcolor')
 
 %%
 
-
-
+plotfibre(fodf,Miller(1,1,1,cs),xvector)
+hold all
+plotfibre(odf,Miller(1,1,1,cs),xvector)
+hold off
 
 %% have there some to many adjecent tetrahegons?
 [m,ind] = max(sum(DSO3.A_tetra))
