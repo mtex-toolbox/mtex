@@ -1,8 +1,11 @@
 function r = cat(dim,varargin)
 %
 
-r = rotation(varargin{1});
+% ensure result is at least rotation
+r = varargin{1};
+if ~isa(r,'rotation'), r = rotation(r);end
 
+% convert to cells
 inv = cell(size(varargin));
 a = inv; b = a; c = a; d = a;
 
@@ -22,6 +25,7 @@ for i = 1:numel(varargin)
   
 end
 
+% concatenate cells
 r.a = cat(dim,a{:});
 r.b = cat(dim,b{:});
 r.c = cat(dim,c{:});

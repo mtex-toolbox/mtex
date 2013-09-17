@@ -33,7 +33,8 @@
    tetra = DSO3.lookup(sub2ind(size(DSO3.lookup),iphi1,iPhi,iphi2));
  else
    ind = find(DSO3,ori);
-   [~,tetra] = max(DSO3.I_oriTetra(:,ind));
+   I = sparse(repmat((1:size(DSO3.tetra,1))',1,4),DSO3.tetra,1);
+   [~,tetra] = max(I(:,ind));
  end
   
  % initalize

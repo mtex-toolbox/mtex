@@ -1,36 +1,28 @@
 classdef DelaunaySO3 < orientation
 
   properties
-    
-    I_oriTetra     % incidence matrix between orientatios and tetrahegons    
-    A_tetra        % adjecence matrix between tetrahegons
+        
+    tetra          % list of vertices of the tetrahegons
     tetraNeighbour % neigbouring tetraeders orderd as faces
     lookup         % lookup table orientation -> tetrahedrons
                        
   end
-  
-  properties (Dependent = true)
     
-    tetra % list of vertices of the tetrahegons
-    A_ori % oriention adjecents matrix
-    
-  end
-  
-  
   methods
     
     function DSO3 = DelaunaySO3(varargin)
       
       DSO3 = DSO3@orientation(varargin{:});
     
-      % compute incintence matrix
-      DSO3.I_oriTetra = calcDelaunay2(DSO3);
-    
-      % compute adjacence matrices
-      DSO3.A_tetra = (DSO3.I_oriTetra * DSO3.I_oriTetra')==3;
+      % compute tetrahegons
+      if check_option(varargin,'tetra')
+        DSO3.tetra = get_option(varargin,'tetra');
+      else
+        DSO3.tetra = calcDelaunay2(DSO3);
+      end
       
       % compute neighbouring list
-      DSO3.tetraNeighbour = calcNeighbour(DSO3);
+      DSO3.tetraNeighbour = calcNeighbour(DSO3.tetra);
       
       % compute lookup table
       res = 40*degree;
@@ -39,14 +31,7 @@ classdef DelaunaySO3 < orientation
         DSO3.lookup = calcLookUp(DSO3,res);
       end
     end
-  
-    function tetra = get.tetra(DSO3)
-      
-      [u,~] = find(DSO3.I_oriTetra.');
-      tetra = reshape(u,4,[]).';
-      
-    end
-    
+          
 end
 
 end
@@ -69,11 +54,17 @@ lookup = reshape(DSO3.findTetra(ori),size(ori));
 
 end
 
-function N = calcNeighbour(DSO3)
+function N = calcNeighbour(tetra)
 % compute which tetrahegons are connceted by which face
 
-[u,v] = find(DSO3.A_tetra); % v is sorted
-s = DSO3.tetra(v,:) - DSO3.tetra(u,:);
+% indicence matrix tetra -> ori
+I = sparse(repmat((1:size(tetra,1))',1,4),tetra,1);
+      
+% compute adjacence matrices
+A = (I * I')==3;
+
+[u,v] = find(A); % v is sorted
+s = tetra(v,:) - tetra(u,:);
 
 % side is first minus of s or last plus
 [ind,side] = max(s<0,[],2);
@@ -82,16 +73,11 @@ s = DSO3.tetra(v,:) - DSO3.tetra(u,:);
 side(~ind) = 5-side2(~ind);
 
 % set up neigbouring list
-ind = 4*(0:(size(DSO3.A_tetra,1)-1));
+ind = 4*(0:(size(A,1)-1));
 ind = repmat(ind,4,1) + reshape(side,4,[]);
 N(ind) = u;
 N = reshape(N,4,[]).';
-
-% % set up extendet adjecency matrix
-% % such that [u,v,value] = find(A_tetra) value(k) is the side of the tetrahegon v(k) where u(k) touches
-%DSO3.A_tetra = sparse(u,v,side,size(DSO3.A_tetra,1),size(DSO3.A_tetra,1));
-%DSO3.A_ori = (DSO3.I_oriTetra' * DSO3.I_oriTetra)>0;
-      
+     
 end
 
 
@@ -166,7 +152,7 @@ I = sparse(repmat((1:size(K,1))',1,4),K,1,size(K,1),length(ori));
 
 end
 
-function I = calcDelaunay2(ori)
+function tetra = calcDelaunay2(ori)
 % compute delaunay triagulation
 
 % step 1 - restrict to fundamental region
@@ -192,23 +178,10 @@ K = sortrows(sort(K,2));
 % the original orienation
 ind = K > length(ori);
 K(all(ind,2),:) = [];
-KK = 1+mod(K-1,length(ori));
-
-% this should be equal
-% sum(sum(ind')==1) == sum(sum(ind')==3)
+tetra = 1+mod(K-1,length(ori));
 
 % there might be duplicated tetrahegons - remove them
-KK = sortrows(sort(KK,2));
-KK = unique(KK,'rows');
-
-% find bad  tetragonals
-ind = find(any(~diff(KK,1,2),2));
-
-%
-%tetramesh(KK,squeeze(double(ori.axis .* ori.angle)),'facealpha',0.5)
-
-
-% step 6 - set up the orientations - tetrahegons incidence matrix 
-I = sparse(repmat((1:size(KK,1))',1,4),KK,1,size(KK,1),length(ori));
+tetra = sortrows(sort(tetra,2));
+tetra = unique(tetra,'rows');
 
 end

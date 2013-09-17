@@ -4,12 +4,14 @@ function S2G = regularS2Grid(varargin)
 bounds = getPolarRange(varargin{:});
 
 % set up polar angles
-theta = S1Grid(linspace(bounds.VR{1:2},bounds.points(2)),bounds.FR{1:2});
+theta = get_option(varargin,'theta',linspace(bounds.VR{1:2},bounds.points(2)));
+theta = S1Grid(theta,bounds.FR{1:2});
 
 % set up azimuth angles
 steps = (bounds.VR{4}-bounds.VR{3}) / bounds.points(1);
+rho = get_option(varargin,'rho',bounds.VR{3} + steps*(0:bounds.points(1)-1));
 rho = repmat(...
-  S1Grid(bounds.VR{3} + steps*(0:bounds.points(1)-1),bounds.FR{3:4},...
+  S1Grid(rho,bounds.FR{3:4},...
   'PERIODIC'),1,bounds.points(2));
 
 % set up grid

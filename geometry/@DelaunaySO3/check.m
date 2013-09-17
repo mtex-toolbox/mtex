@@ -1,7 +1,7 @@
 
 
-cs = symmetry('-3m')
-ori = equispacedSO3Grid(cs,symmetry,'resolution',5*degree)
+cs = symmetry('-3m',[1.4 1.4 1.5])
+ori = equispacedSO3Grid(cs,symmetry,'resolution',10*degree)
 %ori = uorientation(randq(100),cs);
 %ori = orientation(rotation(symmetry('O')),cs)
 
@@ -39,10 +39,14 @@ plotpdf(odf,Miller(1,0,0,cs))
 
 mtexdata dubna
 
-odf = calcODF(pf)
+odf = calcODF(pf,'zero_range')
 
 %%
 
+%dodf = odf;
+%odf.c = ones(size(odf.c))./numel(odf.c);
+
+figure(1)
 plotpdf(odf,Miller(1,1,1,cs))
 
 
@@ -51,11 +55,10 @@ plotpdf(odf,Miller(1,1,1,cs))
 f = eval(odf,DSO3);
 
 fodf = femODF(DSO3,'weights',f)
-
 %%
 %plot(fodf)
-
-plotpdf(fodf,Miller(1,1,1,cs))
+figure(2)
+plotpdf(fodf,Miller(1,1,1,cs),'antipodal')
 
 %%
 

@@ -1,37 +1,5 @@
 classdef (InferiorClasses = {?rotation,?quaternion}) orientation < rotation
-% defines an orientation
 %
-% Syntax
-%   ori = orientation(rot,cs,ss) 
-%   ori = orientation('Euler',phi1,Phi,phi2,cs,ss) 
-%   ori = orientation('Euler',alpha,beta,gamma,'ZYZ',cs,ss) 
-%   ori = orientation('Miller',[h k l],[u v w],cs,ss) 
-%   ori = orientation(name,cs,ss) 
-%   ori = orientation('axis,v,'angle',omega,cs,ss) 
-%   ori = orientation('matrix',A,cs) 
-%   ori = orientation('map',u1,v1,u2,v2,cs) 
-%   ori = orientation('quaternion',a,b,c,d,cs) 
-%
-% Input
-% rot       - @rotation
-% cs, ss    - @symmetry
-% u1,u2     - @Miller
-% v, v1, v2 - @vector3d
-% name      - named orientation
-%    currently available:
-%
-%    * 'Cube', 'CubeND22', 'CubeND45', 'CubeRD'
-%    * 'Goss', 'invGoss'
-%    * 'Copper', 'Copper2'
-%    * 'SR', 'SR2', 'SR3', 'SR4'
-%    * 'Brass', 'Brass2'
-%    * 'PLage', 'PLage2', 'QLage', 'QLage2', 'QLage3', 'QLage4'
-%
-% Ouptut
-%  ori - @orientation
-%
-% See also
-% quaternion_index orientation_index
 
 properties
   
@@ -43,7 +11,40 @@ end
 methods
 
   function o = orientation(varargin)
-  
+    % defines an orientation
+    %
+    % Syntax
+    %   ori = orientation(rot,cs,ss)
+    %   ori = orientation('Euler',phi1,Phi,phi2,cs,ss)
+    %   ori = orientation('Euler',alpha,beta,gamma,'ZYZ',cs,ss)
+    %   ori = orientation('Miller',[h k l],[u v w],cs,ss)
+    %   ori = orientation(name,cs,ss)
+    %   ori = orientation('axis,v,'angle',omega,cs,ss)
+    %   ori = orientation('matrix',A,cs)
+    %   ori = orientation('map',u1,v1,u2,v2,cs)
+    %   ori = orientation('quaternion',a,b,c,d,cs)
+    %
+    % Input
+    %  rot       - @rotation
+    %  cs, ss    - @symmetry
+    %  u1,u2     - @Miller
+    %  v, v1, v2 - @vector3d
+    %  name      - named orientation
+    %    currently available:
+    %
+    %    * 'Cube', 'CubeND22', 'CubeND45', 'CubeRD'
+    %    * 'Goss', 'invGoss'
+    %    * 'Copper', 'Copper2'
+    %    * 'SR', 'SR2', 'SR3', 'SR4'
+    %    * 'Brass', 'Brass2'
+    %    * 'PLage', 'PLage2', 'QLage', 'QLage2', 'QLage3', 'QLage4'
+    %
+    % Ouptut
+    %  ori - @orientation
+    %
+    % See also
+    % quaternion_index orientation_index
+    
     % find and remove symmetries
     args  = cellfun(@(s) isa(s,'symmetry'),varargin,'uniformoutput',true);
     sym = varargin(args);
@@ -52,6 +53,8 @@ methods
     % call rotation constructor
     o = o@rotation(varargin{:});
 
+    if nargin == 0, return;end
+    
     % set symmetry
     if isa(varargin{1},'orientation')
       o.CS = varargin{1}.CS;
