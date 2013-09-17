@@ -1,7 +1,7 @@
 
 
 cs = symmetry('-3m',[1.4 1.4 1.5])
-ori = equispacedSO3Grid(cs,symmetry,'resolution',10*degree)
+ori = equispacedSO3Grid(cs,symmetry,'resolution',20*degree)
 %ori = uorientation(randq(100),cs);
 %ori = orientation(rotation(symmetry('O')),cs)
 
@@ -11,6 +11,8 @@ ori = equispacedSO3Grid(cs,symmetry,'resolution',10*degree)
 %ori = ebsd.rotations .* orientation(ori.subsref(':'));
 
 DSO3 = DelaunaySO3(ori)
+DSO3 = refine(DSO3);
+%DSO3 = refine(DSO3);
 
 %% check adjacence matrix
 hist(sum(DSO3.A_tetra))
@@ -55,6 +57,11 @@ plotpdf(odf,Miller(1,1,1,cs))
 f = eval(odf,DSO3);
 
 fodf = femODF(DSO3,'weights',f)
+
+%%
+
+plotodf(fodf,'sigma')
+
 %%
 %plot(fodf)
 figure(2)

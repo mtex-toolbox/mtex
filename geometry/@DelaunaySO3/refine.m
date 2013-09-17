@@ -29,7 +29,7 @@ newTetra = [[base;corner],octaeder].';
 % new vertices as mean of all edges
 centerEdges = mean2(DSO3.subsref(v(:,1)),DSO3.subsref(v(:,2)));
 
-rDSO3 = DelaunaySO3([orientation(DSO3);centerEdges],'tetra',newTetra);
+rDSO3 = DelaunaySO3([orientation(DSO3.subsref(':'));centerEdges],'tetra',newTetra);
 
 end
 
