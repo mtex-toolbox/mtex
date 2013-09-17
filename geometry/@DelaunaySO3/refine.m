@@ -43,10 +43,10 @@ dv.SS = symmetry;
 [dv,omega] = dv.project2FundamentalRegion;
 
 % half angle
-dv.a = dv.a .* cos(omega./2) ./ cos(omega./4);
-dv.b = dv.b .* sin(omega./2) ./ sin(omega./4);
-dv.c = dv.c .* sin(omega./2) ./ sin(omega./4);
-dv.d = dv.d .* sin(omega./2) ./ sin(omega./4);
+dv.a = dv.a .* cos(omega./4) ./ cos(omega./2);
+dv.b = dv.b .* sin(omega./4) ./ sin(omega./2);
+dv.c = dv.c .* sin(omega./4) ./ sin(omega./2);
+dv.d = dv.d .* sin(omega./4) ./ sin(omega./2);
 
 % new vertices
 v = v1 .* dv;
