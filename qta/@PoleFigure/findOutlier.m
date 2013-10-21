@@ -1,4 +1,4 @@
-function ind = find_outlier(pf,varargin)
+function ind = findOutlier(pf,varargin)
 % find outliers in pole figures
 %
 % Input
