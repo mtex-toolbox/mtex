@@ -36,9 +36,9 @@ else
   % extract SO3Grid
   [ybeta,yalpha,ialphabeta,palpha] = getdata(S3G.alphabeta);
   
-  ygamma = double(S3G.gamma);
-  sgamma = getMin(S3G.gamma);
-  pgamma = getPeriod(S3G.gamma(1));
+  ygamma = [S3G.gamma.points];
+  sgamma = [S3G.gamma.min];
+  pgamma = S3G.gamma(1).period;
   igamma = cumsum([0,GridLength(S3G.gamma)]);
   
   % correct for specimen symmetry

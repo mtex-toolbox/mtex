@@ -44,8 +44,8 @@ else
   palpha = max(palpha,pi);
   ygamma = double(SO3G.gamma);
   igamma = cumsum([0,GridLength(SO3G.gamma)]);
-  sgamma = getMin(SO3G.gamma);
-  pgamma = getPeriod(SO3G.gamma(1));
+  sgamma = [SO3G.gamma.min];
+  pgamma = SO3G.gamma(1).periodic;
 
   % search for nearest neighbour
   if nargin == 2 

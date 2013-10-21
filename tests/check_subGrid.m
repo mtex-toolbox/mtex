@@ -8,7 +8,7 @@ res = 2.5*degree;
 
 radius = fliplr(linspace(res,120,40)*degree);
 
-q = SO3Grid(res,cs,ss);
+q = equispacedSO3Grid(cs,ss,'resolution',res);
 
 m = length(q);
 center = axis2quat(xvector+yvector,0*degree);
@@ -16,8 +16,9 @@ center = axis2quat(xvector+yvector,0*degree);
 progress(0,length(radius));
 for i = 1:length(radius)  
   
-  f(i) = length(...
-    equispacedSO3Grid(res,cs,ss,'center',center,'maxAngle',radius(i))) / m; %#ok<AGROW>
+  S3G = equispacedSO3Grid(cs,ss,'center',center,...
+    'maxAngle',radius(i),'resolution',res);
+  f(i) = length(S3G) / m; %#ok<AGROW>
   q = subGrid(q,center,radius(i));
   g(i) = length(q) / m; %#ok<AGROW>
   progress(i,length(radius));
@@ -35,7 +36,7 @@ q = SO3Grid(res,cs,ss);
 q = subGrid(q,idquaternion,50*degree);
 q = subGrid(q,idquaternion,20*degree);
 
-%%
+%
 
 cs = symmetry('m-3m');
 ss = symmetry('mmm');
@@ -45,9 +46,9 @@ S3G = SO3Grid(2*degree,cs,ss);
 q1 = subGrid(S3G,center,20*degree,'exact')
 q2 = subGrid(S3G,center,20*degree)
 
-%%
+%
 
 d1 = subGrid(S3G,center,20*degree,'exact')
 d2 = subGrid(S3G,center,20*degree)
 
-%%
+%
