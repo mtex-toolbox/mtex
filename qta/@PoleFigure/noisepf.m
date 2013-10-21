@@ -5,7 +5,7 @@ function pdfn = noisepf(pdf,fak,background,varargin)
 % samples of the Poisson distribution with mean m = alpha * pdf + bg
 %
 % Syntax
-%   pdfn = noisepf(pdf,alpha,bg,<options>)
+%   pdfn = noisepf(pdf,alpha,bg)
 %
 % Input
 %  pf    - @PoleFigure
@@ -13,7 +13,7 @@ function pdfn = noisepf(pdf,fak,background,varargin)
 %  bg    - background radiation (double)
 %
 % Options
-%  NONNEGATIV -> force data to be non negative
+%  NONNEGATIV - force data to be non negative
 %
 % See also
 % ODF/calcPoleFigure

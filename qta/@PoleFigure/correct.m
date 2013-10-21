@@ -1,8 +1,9 @@
 function pf = correct( pf, varargin )
-% corrects a (list of) polfigure(s)
+% corrects polfigures for background and defocussing
 %
 % Syntax
-%   pf = correct(pf)
+%   pf = correct(pf,'bg',bg_pf)
+%   pf = correct(pf,'def',def_pf)
 %
 % Input
 %  pf - list of @PoleFigure

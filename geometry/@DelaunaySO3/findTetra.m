@@ -33,7 +33,7 @@
    tetra = DSO3.lookup(sub2ind(size(DSO3.lookup),iphi1,iPhi,iphi2));
  else
    ind = find(DSO3,ori);
-   I = sparse(repmat((1:size(DSO3.tetra,1))',1,4),DSO3.tetra,1);
+   I = sparse(repmat((1:size(DSO3.tetra,1))',1,4),double(DSO3.tetra),1);
    [~,tetra] = max(I(:,ind));
  end
   
@@ -43,15 +43,18 @@
  
  iter = zeros(size(ori));
  
+ tic;
  % while not all found
  while any(~inside(:))
    
+   %disp([int2str(nnz(~inside)) '/' int2str(numel(inside))]) 
+   %toc
    iter(~inside) = iter(~inside) + 1;
    ind = find(~inside);
    
    % compute bariocentric coordiantes
-   bario(~inside,:) = calcBario(DSO3,ori(~inside),tetra(~inside));
-    
+   bario(~inside,:) = calcBario(DSO3,ori(~inside),tetra(~inside));   
+   
    % check inside
    [neg,side] = min(bario(~inside,:),[],2);   
    
@@ -64,13 +67,15 @@
    %[~,side] = max(d);
       
    % for those outside update tetra
-   t = tetra(ind(neg<0));
+   t = double(tetra(ind(neg<0)));
    s = side(neg<0);
    tetra(ind(neg<0)) = DSO3.tetraNeighbour(...
      sub2ind(size(DSO3.tetraNeighbour),t(:),s(:)));
       
    % update inside
-   inside(~inside) = neg >=0;
+   inside(~inside) = neg >=0;   
+   
+   %if nnz(~inside) <= 5, find(~inside), end
    
  end
  

@@ -1,6 +1,9 @@
 function r = cat(dim,varargin)
 %
 
+% remove emtpy arguments
+varargin(cellfun('isempty',varargin)) = [];
+
 % ensure result is at least rotation
 r = varargin{1};
 if ~isa(r,'rotation'), r = rotation(r);end

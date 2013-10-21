@@ -163,7 +163,7 @@ classdef Miller < vector3d
     function uvtw = get.uvw(m)
     
       % get crystal coordinate system (a,b,c)
-      M = squeeze(double(m.CS.axis)).';
+      M = squeeze(double(m.CS.axes)).';
 
       % get x, y, z coordinates
       xyz = reshape(double(m),[],3).';
@@ -204,7 +204,7 @@ classdef Miller < vector3d
       end
                
       % get direct axes 
-      M = squeeze(double(m.CS.axis));
+      M = squeeze(double(m.CS.axes));
       
       % compute x, y, z coordinates
       m.x = uvw * M(:,1);

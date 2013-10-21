@@ -68,4 +68,5 @@ if any(qind)
 end
 
 q = quaternion(Quat);
+q = q./norm(q);
 q = q';

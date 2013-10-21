@@ -1,13 +1,13 @@
 function plot(pf,varargin)
 % plot pole figure
 %
-% plots the Diffraction intensities as distinct colord dots on the sphere
+% plots the diffraction intensities
 %
 % Input
 %  pf - @PoleFigure
 %
 % Options
-% background   - plot background data
+%  background   - plot background data
 %
 % See also
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo

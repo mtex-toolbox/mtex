@@ -5,7 +5,7 @@ function vol = volume(pf,q,radius)
 % returns the ratio of mass of the polefigure at a given location
 %
 % Syntax
-%  v = volume(pf,center,radius,<options>)
+%   v = volume(pf,center,radius)
 %
 % Input
 %  odf    - @ODF

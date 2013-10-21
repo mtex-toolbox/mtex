@@ -1,21 +1,5 @@
 classdef PoleFigure < dynOption
-% constructor 
-%
-% *PoleFigure* is the low level constructor. For importing real world data
-% you might want to use the predefined [[ImportPoleFigureData.html,interfaces]]
-%
-% Input
-%  h     - crystal directions (@vector3d | @Miller)
-%  r     - specimen directions (@S2Grid)
-%  intensities - diffraction counts (double)
-%  CS,SS - crystal, specimen @symmetry
-%
-% Options
-%  superposition - weights for superposed crystal directions
-%  background    - background intensities
-%
-% See also
-% ImportPoleFigureData loadPoleFigure loadPoleFigure_generic
+
 
    
   properties
@@ -35,9 +19,26 @@ classdef PoleFigure < dynOption
   
   
     function P = PoleFigure(h,r,data,varargin)
-
+      % constructor 
+      %
+      % *PoleFigure* is the low level constructor. For importing real world data
+      % you might want to use the predefined [[ImportPoleFigureData.html,interfaces]]
+      %
+      % Input
+      %  h     - crystal directions (@vector3d | @Miller)
+      %  r     - specimen directions (@S2Grid)
+      %  intensities - diffraction counts (double)
+      %  CS,SS - crystal, specimen @symmetry
+      %
+      % Options
+      %  superposition - weights for superposed crystal directions
+      %  background    - background intensities
+      %
+      % See also
+      % ImportPoleFigureData loadPoleFigure loadPoleFigure_generic
+      
       if nargin == 0, return;end
-          
+      
       P.h = argin_check(h,{'vector3d','Miller'});
       P.r = argin_check(r,{'vector3d','S2Grid'});
       if ~check_option(varargin,'complete'), P.r.antipodal = true;end
@@ -56,8 +57,7 @@ classdef PoleFigure < dynOption
     function pf = set.CS(pf,CS)
       
       pf.h.CS = CS;
-      
-      
+            
     end
     
     function CS = get.CS(pf)

@@ -43,7 +43,7 @@ targetRes = get_option(varargin,'resolution',0.25*degree);
 CS = odf(1).CS; SS = odf(1).SS;
 
 % initial seed
-S3G = orientation(CS,SS);
+S3G = [];
 
 % TODO
 for i = 1:length(odf) 
@@ -80,7 +80,7 @@ g0 = S3G(f>=quantile(f(:),-20));
 while res > targetRes
 
   % new grid
-  S3G = [g0(:),...
+  S3G = [g0(:).',...
     localOrientationGrid(CS,SS,res,'center',g0,'resolution',res/4)];
     
   % evaluate ODF

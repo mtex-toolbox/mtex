@@ -13,6 +13,8 @@ ori = equispacedSO3Grid(cs,symmetry,'resolution',20*degree)
 DSO3 = DelaunaySO3(ori)
 DSO3 = refine(DSO3);
 %DSO3 = refine(DSO3);
+%DSO3 = refine(DSO3);
+%DSO3 = refine(DSO3);
 
 %% check adjacence matrix
 hist(sum(DSO3.A_tetra))
@@ -48,8 +50,7 @@ odf = calcODF(pf,'zero_range')
 %dodf = odf;
 %odf.c = ones(size(odf.c))./numel(odf.c);
 
-figure(1)
-plotpdf(odf,Miller(1,1,1,cs))
+
 
 
 %%
@@ -59,19 +60,37 @@ f = eval(odf,DSO3);
 fodf = femODF(DSO3,'weights',f)
 
 %%
+tic
+f = eval(odf,DSO3);
+toc
+
+tic
+f = eval(fodf,DSO3);
+toc
+
+%%
 
 plotodf(fodf,'sigma')
 
 %%
 %plot(fodf)
+figure(1)
+tic
+plotpdf(odf,Miller(1,1,1,cs))
+toc
 figure(2)
+tic
 plotpdf(fodf,Miller(1,1,1,cs),'antipodal','pcolor')
+toc
 
 %%
-
-plotfibre(fodf,Miller(1,1,1,cs),xvector)
+tic
+plotfibre(fodf,Miller(1,1,1,cs),xvector);
+toc
 hold all
-plotfibre(odf,Miller(1,1,1,cs),xvector)
+tic
+plotfibre(odf,Miller(1,1,1,cs),xvector);
+toc
 hold off
 
 %% have there some to many adjecent tetrahegons?
@@ -137,3 +156,36 @@ plot(quaternion(ori(ind)),'scatter')
 %%
 
 max(angle(quaternion(ori(ind)))) / degree
+
+%%
+
+h = Miller(1,0,0)
+r = regularS2Grid('antipodal')
+
+M = pdfMatrix(DSO3,h,r);
+
+%%
+
+cs = symmetry('-3m',[1.4 1.4 1.5])
+ori = equispacedSO3Grid(cs,symmetry,'resolution',5*degree)
+DSO3 = DelaunaySO3(ori)
+
+%%
+
+odf = unimodalODF(orientation('Euler',10*degree,0,0,cs),'halfwidth',20*degree)
+
+%%
+
+h = {Miller(1,1,1,cs),Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(1,2,1)};
+
+pf = odf.calcPoleFigure(h,regularS2Grid('resolution',5*degree))
+
+fodf = calcFEMODF(pf,DSO3)
+
+%%
+
+plotpdf(fodf,h)
+
+%%
+
+plot(fodf,'sigma')
