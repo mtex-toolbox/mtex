@@ -1,11 +1,11 @@
 function pf = quantile(pf,p,varargin)
 % quantile of polefigure
 %
-%% Input 
+% Input 
 % pf  - @PoleFigure
 % p   - upper quantile, if negative lower quantile
 %
-%% See Also
+% See Also
 % ODF/quantile
 
 if p < 0 
@@ -16,9 +16,9 @@ else
 end
 
 for l=1:length(pf)
-  pf_data = getdata(pf(l));
+  pf_data = pf(l).intensities;
 
-  [pf_data ndx] = sort(pf_data);
+  [pf_data, ndx] = sort(pf_data);
   pd = cumsum(pf_data)./sum(pf_data);
   
   pf(l) = delete(pf(l), ndx( c(pd < p) ));  

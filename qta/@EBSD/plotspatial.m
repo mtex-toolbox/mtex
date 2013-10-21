@@ -97,8 +97,10 @@ setCamera(varargin{:});
 
 selectedPhases = find(isPhase);
 for p=1:numel(selectedPhases)
-
-  h(p) = plotUnitCells(X{selectedPhases(p)},d{selectedPhases(p)},ebsd.unitCell,varargin{:});
+  if ~isempty(d{selectedPhases(p)})    
+    h(p) = plotUnitCells(X{selectedPhases(p)},...
+      reshape(d{selectedPhases(p)},size(X{selectedPhases(p)},1),[]),ebsd.unitCell,varargin{:});
+  end
 end
 
 % make legend

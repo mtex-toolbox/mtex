@@ -1,21 +1,21 @@
 function alpha = calcNormalization(pf1,pf2)
 % normalization of a meassured pole figure with respect to a second pole figure
 %
-%% Syntax
-%  alpha = calcNormalization(pf1,pf2)
+% Syntax
+%   alpha = calcNormalization(pf1,pf2)
 %
-%% Input
+% Input
 %  pf1,pf2 - @PoleFigure
 %
-%% Output
+% Output
 %  alpha - [double] normalization coefficients
 %
-%% See also
+% See also
 % PoleFigure/calcError
 
 for i = 1:length(pf1)
-  d1 = max(0,getdata(pf1(i)));
-  d2 = max(0,getdata(pf2(i)));
+  d1 = max(0,pf1(i).intensities);
+  d2 = max(0,pf2(i).intensities);
   
   w = calcQuadratureWeights(pf1(i).r);
   

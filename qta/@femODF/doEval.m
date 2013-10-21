@@ -8,7 +8,8 @@ function f = doEval(odf,ori,varargin)
 vertices = odf.center.tetra(tetra(:),:);
 
 % set up evaluation matrix
-M = sparse(repmat(1:length(ori),4,1)',vertices,bario,length(ori),length(odf.center));
+M = sparse(repmat(1:length(ori),4,1)',double(vertices),bario,...
+  length(ori),length(odf.center));
 
 % compute function values 
 f = M * odf.weights(:);

@@ -10,7 +10,6 @@ elseif ~isempty(inputname(1))
   h = [inputname(1), ' = ' h];
 end;
 
-
 disp([h ' ' docmethods(inputname(1))]);
 
 if isempty(pf), return;end
@@ -28,11 +27,3 @@ disp(' ');
 for i = 1:length(pf)
   disp(['  ',char(pf(i),'short')]);
 end
-
-
-function fn = stripPath(fn)
-
- if exist(fn,'file')
-   [pstr,fn,ext] = fileparts(fn);
-   fn = [fn,ext];
- end

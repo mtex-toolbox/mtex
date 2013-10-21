@@ -32,15 +32,15 @@ classdef dynOption
     end
     
     % -------------------------------------------
-    function varargout = subsasgn(dOpt,s,value)
+    %function varargout = subsasgn(dOpt,s,value)
 
-      try
-        [varargout{1:nargout}] = builtin('subsasgn',dOpt,s,value);
-      catch        
-        dOp.opt = subsasgn(dOpt.opt,s,value);
-        varargout{1} = dOpt;
-      end
-    end
+    %  try
+    %    [varargout{1:nargout}] = builtin('subsasgn',dOpt,s,value);
+    %  catch        
+    %    dOp.opt = subsasgn(dOpt.opt,s,value);
+    %    varargout{1} = dOpt;
+    %  end
+    %end
        
     % -------------------------------------------
     function dOpt = setOption(dOpt,varargin)

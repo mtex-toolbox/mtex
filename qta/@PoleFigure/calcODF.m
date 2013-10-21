@@ -11,10 +11,10 @@ function [odf,alpha] = calcODF(pf,varargin)
 % resolution, smoothing, etc. See below for a complete description.
 %
 %
-%% Input
+% Input
 %  pf - @PoleFigure
 %
-%% Options
+% Options
 %  KERNEL            - the ansatz functions (default = de la Vallee Poussin)
 %  KERNELWIDTH | HALFWIDTH - halfwidth of the ansatz functions (default = 2/3 * resolution)
 %  RESOLUTION        - localization grid for the ansatz fucntions (default = 3/2 resolution(pf))
@@ -25,7 +25,7 @@ function [odf,alpha] = calcODF(pf,varargin)
 %  ODF_SAVE          - save ODF simultanously
 %  C0                - initial guess (default = [1 1 1 1 ... 1])
 %
-%% Flags
+% Flags
 %  ZERO_RANGE        - apply zero range method (default = )
 %  NOGHOSTCORRECTION - omit ghost correction
 %  ENSURE_DESCENT - stop iteration whenever no procress if observed
@@ -34,11 +34,11 @@ function [odf,alpha] = calcODF(pf,varargin)
 %  ODF_TEST       - for testing only
 %  SILENT         - no output
 %
-%% Output
+% Output
 %  odf    - reconstructed @ODF
 %  alpha  - scaling factors, calculated during reconstruction
 %
-%% See also
+% See also
 % PoleFigure2odf ODF_demo PoleFigureSimulation_demo
 % loadPoleFigure ImportPoleFigureData examples_index
 

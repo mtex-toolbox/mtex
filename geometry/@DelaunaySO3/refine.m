@@ -1,4 +1,4 @@
-function rDSO3 = refine(DSO3)
+function DSO3 = refine(DSO3)
 
 
 % step 1: compute center of any two orientation connected by an edge
@@ -18,7 +18,6 @@ base = iCenterEdges(:,[1 2 3  1 4 5  2 4 6  3 5 6]);
 base = reshape(base.',3,[]);
 corner = reshape(DSO3.tetra.',1,[]);
 
-
 % split center octaeder into four tetrahegons
 octaeder = iCenterEdges(:,[1 3 4 5  3 4 5 6  1 2 3 4  2 3 4 6]);
 octaeder = reshape(octaeder.',4,[]);
@@ -29,7 +28,34 @@ newTetra = [[base;corner],octaeder].';
 % new vertices as mean of all edges
 centerEdges = mean2(DSO3.subsref(v(:,1)),DSO3.subsref(v(:,2)));
 
-rDSO3 = DelaunaySO3([orientation(DSO3.subsref(':'));centerEdges],'tetra',newTetra);
+% set up refined grid
+DSO3.a = [DSO3.a(:);centerEdges.a];
+DSO3.b = [DSO3.b(:);centerEdges.b];
+DSO3.c = [DSO3.c(:);centerEdges.c];
+DSO3.d = [DSO3.d(:);centerEdges.d];
+DSO3.i = zeros(size(DSO3.d));
+
+% set up new tetrahegons
+DSO3.tetra = sort(newTetra,2);
+
+% compute neighbouring list
+DSO3.tetraNeighbour = calcNeighbour(DSO3.tetra);
+
+% the neighbours of the four corner tetrahegons
+%1 2 3 4
+%cornerNeighbour = 
+%DSO3.tetraNeighbour
+
+% set up new lookup
+%DSO3.lookup = DSO3.lookup*8;
+%DSO3.lookup = calcLookUp(DSO3,5*degree);
+DSO3.lookup = [];
+res = 40*degree;
+for i = 1:3
+  res = res / 2;
+  DSO3.lookup = calcLookUp(DSO3,res);
+end
+
 
 end
 

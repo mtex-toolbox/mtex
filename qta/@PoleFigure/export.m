@@ -20,7 +20,7 @@ for i = 1:length(pf)
   dname = [filename,'_',char(pf(i).h),'.txt'];
 
   [theta,rho] = polar(pf(i).r);
-	if check_option(varargin,'DEGREE')
+	if check_option(varargin,'degree')
 		theta = theta * 180'/pi;		
 		rho = rho * 180'/pi;
 	end

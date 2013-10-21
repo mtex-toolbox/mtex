@@ -4,17 +4,17 @@ function pf = copy(pf,condition)
 % A new set of pole figures is constrcuted from the initial pole figures by
 % including only the points specified by condition
 %
-%% Syntax  
-% pf  = copy(pf,condition)
+% Syntax  
+%   pf  = copy(pf,condition)
 %
-%% Input
+% Input
 %  pf         - @PoleFigure
 %  condition  - condition / index set
 %
-%% Output
+% Output
 %  pf - @PoleFigure
 %
-%% See also
+% See also
 % PoleFigure/get PoleFigure/delete PoleFigure/set PoleFigure_index
 
 if isnumeric(condition),

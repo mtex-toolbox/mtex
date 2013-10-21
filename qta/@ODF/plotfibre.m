@@ -83,8 +83,10 @@ optionplot(ax{:},1:numel(ind),x,varargin{:});
 xlim(gca,[1,numel(ind)]);
 
 label = arrayfun(@(i) char(fibre(i),'nodegree'),find(ind),'uniformoutput',false);
+try
 xticklabel_rotate(find(ind),90,label);
-
+catch
+end
 
 
 

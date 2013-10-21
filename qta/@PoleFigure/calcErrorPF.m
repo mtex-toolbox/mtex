@@ -6,8 +6,8 @@ function pfcalc = calcErrorPF(pfmeas,pfcalc,varargin)
 % @PoleFigure.
 %
 % Syntax
-% pf = calcErrorPF(pfmeas,pfcalc,<options>) -
-% pf = calcErrorPF(pfmeas,odf,<options>)    -
+%   pf = calcErrorPF(pfmeas,pfcalc) %
+%   pf = calcErrorPF(pfmeas,odf)    %
 %
 % Input
 %  pfmeas - meassured @PoleFigure 
@@ -36,8 +36,8 @@ for i = 1:length(pfmeas)
   % normalization
   alpha = calcNormalization(pfmeas(i),pfcalc(i));
   
-  d1 = getdata(pfmeas(i));
-  d2 = getdata(pfcalc(i))*alpha;
+  d1 = pfmeas(i).intensities;
+  d2 = pfcalc(i).intensities * alpha;
   
   if check_option(varargin,'l1')    
     d = abs(d1-d2);    

@@ -1,23 +1,18 @@
-function new = scale(pf,alpha)
+function pf = scale(pf,alpha)
 % scale polefigure by a factor
 %
 % Input
-% pf    - @PoleFigure
-% alpha - scaling factor
+%  pf    - @PoleFigure
+%  alpha - scaling factor
 %
 % Output
-%
-% new - scaled @PoleFigure
+%  pf - @PoleFigure
 %
 % See also
 % PoleFigure/mtimes
 
-if length(alpha) ==1
-		alpha= repmat(alpha,size(pf));
-end
+if length(alpha) ==1, alpha = repmat(alpha,size(pf));end
 
 for i = 1:length(pf)
-    pf(i).intensities = pf(i).intensities * alpha(i);
+  pf(i).intensities = pf(i).intensities * alpha(i);
 end
-
-new = pf;

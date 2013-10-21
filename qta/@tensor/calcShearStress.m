@@ -41,7 +41,7 @@ else
   assert(length(m)==length(n),'Number of planes and directions must be the same.');
 end
 
-tau = zeros(length(m),numel(sigma));
+tau = zeros(length(m),length(sigma));
 
 for i = 1:length(m)
 
