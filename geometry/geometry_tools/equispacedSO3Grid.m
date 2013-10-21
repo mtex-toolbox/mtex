@@ -5,7 +5,7 @@ function S3G = equispacedSO3Grid(CS,SS,varargin)
 maxAngle = get_option(varargin,'maxAngle',2*pi);
 
 % get fundamental region
-[maxAlpha,maxBeta,maxGamma] = symmetry2Euler(CS,SS,'SO3Grid');
+[maxAlpha,maxBeta,maxGamma] = getFundamentalRegion(CS,SS,'SO3Grid');
 maxGamma = maxGamma/2;
 if ~check_option(varargin,'center'), maxGamma = min(maxGamma,maxAngle);end
 
