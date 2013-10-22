@@ -36,6 +36,8 @@ else
   % extract SO3Grid
   [ybeta,yalpha,ialphabeta,palpha] = getdata(S3G.alphabeta);
   
+  
+  
   ygamma = [S3G.gamma.points];
   sgamma = [S3G.gamma.min];
   pgamma = S3G.gamma(1).period;

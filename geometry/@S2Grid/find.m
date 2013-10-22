@@ -21,7 +21,12 @@ d = [];
 if checkOption(S2G,'antipodal'), v = [v(:),-v(:)]; end
 
 % compute polar coordinats
-[ytheta,yrho,iytheta,prho,rhomin] = getdata(S2G);
+ytheta = double(S2G.theta);
+yrho = double(S2G.rho);
+iytheta = cumsum([0,GridLength(S2G.rho)]);
+prho = S2G.rho(1).max;
+rhomin = S2G.rho(1).min;
+
 yrho = yrho - rhomin;
 [xtheta,xrho] = polar(v);
 xrho = xrho - rhomin;
