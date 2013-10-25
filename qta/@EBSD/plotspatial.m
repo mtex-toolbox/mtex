@@ -62,7 +62,8 @@ d = cell(1,numberOfPhases);
 opts = cell(1,numberOfPhases);
 
 % what to plot
-prop = get_option(varargin,'property','orientations',{'char','double'});
+prop = get_option(varargin,'property','orientations',...
+  {'char','double','orientation','quaternion','rotation'});
 
 isPhase = false(numberOfPhases,1);
 for k=1:numberOfPhases

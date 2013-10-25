@@ -15,10 +15,10 @@ grains = calcGrains(ebsd,'angle',2*degree)
 
 %%
 % The <GrainSet_index.html GrainSet> contains the EBSD data it was reconstructed from. We can
-% access these data by the <GrainSet.get.html get> command.
+% access these data by
 
 grain_selected = grains( grainSize(grains) >=  1160)
-ebsd_selected  = get(grain_selected,'EBSD')
+grain_selected.ebsd
 
 %%
 % A more convinient way to select grains in daily practice, is by spatial
@@ -29,16 +29,20 @@ ebsd_selected  = get(grain_selected,'EBSD')
 grain_selected = findByLocation(grains,[145  137])
 
 %%
+% you can get the id of this grain by
+
+grain_selected.id
+
+%%
 %
 
 plotBoundary(grain_selected,'linewidth',2)
-hold on, plot(ebsd_selected)
+hold on, plot(grain_selected.ebsd)
 
 %% Visualize the misorientation within a grain
 % 
 
-o = get(grain_selected,'mis2mean')
-close, plotspatial(grain_selected,'property',angle(o)/degree)
+close, plot(grain_selected.ebsd)
 colorbar
 
 %%

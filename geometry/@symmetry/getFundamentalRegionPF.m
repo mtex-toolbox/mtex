@@ -17,16 +17,16 @@ function  [minTheta,maxTheta,minRho,maxRho,v,N] = getFundamentalRegionPF(cs,vara
 
 % default values from the symmetry
 minTheta = 0;
-maxRho = rotangle_max_z(cs);
+maxRho = cs.rotangle_max_z;
 minRho = 0;
-if check_option(varargin,'antipodal') && rotangle_max_y(cs)/2 < pi
+if check_option(varargin,'antipodal') && cs.rotangle_max_y/2 < pi
   maxRho = maxRho / 2;
 end
-maxTheta = rotangle_max_y(cs,varargin{:})/2;
+maxTheta = cs.rotangle_max_y(varargin{:})/2;
 v = [Miller(1,0,0),Miller(1,1,0),Miller(0,1,0),Miller(-1,2,0),Miller(0,0,1)];
 
 fak = 2;
-switch Laue(cs)  
+switch cs.Laue
   case '-3m'
     a = cs.axes;
     minRho = mod(get(a(1),'rho'),120*degree);
@@ -116,7 +116,7 @@ end
 
 
 % describe Fundamental region by normal to planes
-switch Laue(cs)
+switch cs.Laue
 
   case 'm-3m' %ok
 

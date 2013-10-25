@@ -1,13 +1,14 @@
 function grains = horzcat(varargin)
 % concatenation of grains from the same GrainSet
 %
-%% Syntax
+% Syntax
 % g = [grains_1, grains_2, ..., grains_n]
-%% Example
-%  g = [grains('fe') grains('mg')]
-%  g = [grains(1:100) grains(500:end)]
 %
-%% See also
+% Example
+%   g = [grains('fe') grains('mg')]
+%   g = [grains(1:100) grains(500:end)]
+%
+% See also
 % GrainSet/vertcat
 
 grains = varargin{1};

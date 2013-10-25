@@ -5,13 +5,13 @@ options = extract_option(varargin,'antipodal');
 varargin = delete_option(varargin,'complete');
 
 % region to be plotted
-[minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(cs,varargin{:}); %#ok<ASGLU>
+[minTheta,maxTheta,minRho,maxRho] = cs.getFundamentalRegionPF(cs,varargin{:}); %#ok<ASGLU>
 maxRho = maxRho - minRho;
 
 
 % project to fundamental region
 h = vector3d(h(:)); h = h./norm(h);
-[sh,shAnti,pm] = project2FundamentalRegion(vector3d(h),{cs},varargin{:});
+[sh,shAnti,pm] = h.project2FundamentalRegion(cs,varargin{:});
 
 if check_option(varargin,'antipodal')
   switch Laue(cs)

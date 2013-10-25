@@ -30,6 +30,7 @@ classdef GrainSet < dynProp
   end
   
   properties (Dependent = true)
+    id                           % identification number
     A_D
     A_G
     I_VF
@@ -58,6 +59,10 @@ classdef GrainSet < dynProp
       obj.F        = grainStruct.F;            
       obj.V        = grainStruct.V;          
       
+    end
+    
+    function id = get.id(grains)
+      id = find(any(grains.I_DG,1));
     end
     
     function A_D = get.A_D(grains)
@@ -122,9 +127,13 @@ classdef GrainSet < dynProp
     
     function mis2mean = get.mis2mean(grains)
       
-      [g,d] = find(grains.I_DG');
-      mis2mean = inv(grains.ebsd.rotations(d)).* ...
-        reshape(grains.meanRotation(g),[],1);
+      % restrict to actual grains
+      I_DG_restricted = grains.I_DG(any(grains.I_DG,2),any(grains.I_DG,1));
+      
+      % find pairs of grains and orientations
+      [g,d] = find(I_DG_restricted');
+      mis2mean = inv(grains.ebsd.orientations(d)).* ...
+        reshape(grains.meanOrientation(g),[],1);
 
     end
     
