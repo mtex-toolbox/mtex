@@ -34,7 +34,7 @@ X = cell(1,numberOfPhases);
 d = cell(1,numberOfPhases);
 
 % what to plot
-prop = get_option(varargin,'property','meanOrientation',{'char','double'});
+prop = get_option(varargin,'property','meanOrientation',{'char','double','quaternion'});
 
 isPhase = false(numberOfPhases,1);
 for p=1:numberOfPhases

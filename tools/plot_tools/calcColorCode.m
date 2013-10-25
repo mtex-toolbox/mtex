@@ -45,28 +45,26 @@ if isa(prop,'char') && strcmpi(prop,'phase')
   end
   return
 end
+ 
+% try to extract property from object
+if ischar(prop) 
   
-% user defined property
-if isnumeric(prop)
-
+  try
+    d = obj.(prop);
+  catch       %#ok<CTCH>
+    d = NaN(length(obj),1);
+  end
+  
+else % user defined property
+  
   if size(prop,2) == 3
     d = prop(subset,:);
   else
     d = prop(subset);
   end
-  prop = 'user';
   
-  return
 end
-
-% try to extract property from object
-try
-  d = obj.(prop);
-catch       %#ok<CTCH>
-  d = NaN(length(obj),1);
-  %error('Unknown colorcoding!')
-end
-    
+  
 % if d is an orientation convert to color
 if isa(d,'quaternion')
   
@@ -80,7 +78,7 @@ if isa(d,'quaternion')
   
 end
 
-%
+% convert to column vector
 if any(size(d)==1) && numel(obj) > 1
   d = d(:);
 end

@@ -1,21 +1,21 @@
 function [grains,I_GX] = findByLocation( grains, X )
 % select a grain by spatial coordinates
 %
-%% Input
-% grains - @GrainSet
-% xy - list of [x(:) y(:)] coordinates, respectively [x(:) y(:) z(:)]
+% Input
+%  grains - @GrainSet
+%  xy     - list of [x(:) y(:)] coordinates, respectively [x(:) y(:) z(:)]
 %
-%% Output
-% grains - @GrainSet
+% Output
+%  grains - @GrainSet
 %
-%% Example
+% Example
 %  plotx2east
 %  plot(grains)
 %  p = ginput(1)
 %  g = findByLocation(grains,p);
 %  hold on, plotBoundary(g,'color','r','lineWidth',2)
 %
-%% See also
+% See also
 % EBSD/findByLocation GrainSet/findByOrientation
 
 
@@ -26,13 +26,10 @@ if isa(grains,'Grain2d')
   boundaryEdgeOrder(isCell) = cellfun(@(x) x{1} ,boundaryEdgeOrder(isCell),'UniformOutput',false);
 end
 
-I_VG   = get(grains,'I_VG');
-V      = grains.V;
-
 % restrict vertices to available grains
-subset = full(any(I_VG,2));
-V_g    = V(subset,:);
-I_GV   = I_VG(subset,any(I_VG,1))';
+subset = full(any(grains.I_VG,2));
+V_g    = grains.V(subset,:);
+I_GV   = grains.I_VG(subset,any(grains.I_VG,1))';
 
 
 closestVertex = bucketSearch(V_g,X);
@@ -46,7 +43,7 @@ if exist('boundaryEdgeOrder','var')
   
   b = false(size(edgeOrder));
   for k=1:numel(edgeOrder)
-    V_k = V(edgeOrder{k},:);
+    V_k = grains.V(edgeOrder{k},:);
     b(k) = inpolygon(X(i(k),1),X(i(k),2),V_k(:,1),V_k(:,2));
   end
   
@@ -59,7 +56,7 @@ if exist('boundaryEdgeOrder','var')
     
     for l = 1:numel(h)
       candit = find(I_GX(:,h(l)));
-      [A m] = min(area(subsref(grains,candit)));
+      [A m] = min(area(subSet(grains,candit)));
       
       I_GX(:,h(l)) = false;
       I_GX(candit(m),h(l)) = true;
@@ -75,4 +72,4 @@ else
   
 end
 
-grains = subsref(grains,any(I_GX,2));
+grains = subSet(grains,any(I_GX,2));

@@ -1,9 +1,9 @@
 function [f,dist] = specialBoundary(grains,property,varargin)
 % classifies the misorientation present on grain boundaries
 %
-%% Input
-% grains   - @GrainSet
-% property - colorize a special grain boundary property, variants are:
+% Input
+%  grains   - @GrainSet
+%  property - colorize a special grain boundary property, variants are:
 %
 %    * |'phase'| -- boundaries between different phases
 %
@@ -34,7 +34,7 @@ function [f,dist] = specialBoundary(grains,property,varargin)
 %
 %    *  @vector3d -- axis of misorientation
 %
-%% Options
+% Options
 %  delta - specify a searching radius for special grain boundary
 %            (default 5 degrees), if a orientation or crystallographic face
 %            is specified.
@@ -53,38 +53,38 @@ function [f,dist] = specialBoundary(grains,property,varargin)
 %    input property, if there is a third commongrain, satisfying the
 %    property specified after ThirdCommonGrain.
 %
-%% Flags
-% internal - only plot boundaries within a grain which do not match the grain boundary
-%         criterion
-% external - only plot grain--boundaries to other grains.
+% Flags
+%  internal - only plot boundaries within a grain which do not match the grain boundary
+%             criterion
+%  external - only plot grain--boundaries to other grains.
 %
-% PhaseRestricted - do not consider different phases when compting misorientations
+%  PhaseRestricted - do not consider different phases when compting misorientations
 %
-%% Syntax
+% Syntax
 %
-% [f,dist] = specialBoundary(grains,property,...,param,val,...) - returns the
-%   face index of neighbored grains whos common boundary face satisfies
-%   |property| and its distance |dist|
+%   % faces that satisfy |property|
+%   [f,dist] = specialBoundary(grains,property) 
 %
-% f = specialBoundary(grains,[0 10]*degree) - faces whos misorientation angle
-%   lies between 0 and 10 degrees
+%   % faces whos misorientation angle lies between 0 and 10 degrees
+%   f = specialBoundary(grains,[0 10]*degree) 
 %
-% f = specialBoundary(grains,CSL(3)) - faces of two adjacent grains with a CSL(3) boundary 
+%   % faces of two adjacent grains with a CSL(3) boundary 
+%   f = specialBoundary(grains,CSL(3)) 
 %
-% f = specialBoundary(grains,CSL(9),'ThirdCommonGrain',CSL(3)) - faces of two
-%   grains with special boundary CSL9 having a boundary to a third grain in
-%   common with CSL(3)
+%   % faces grains with special boundary CSL9 having a boundary to a third
+%   % grain in common with CSL(3)
+%   f = specialBoundary(grains,CSL(9),'ThirdCommonGrain',CSL(3)) 
 %
-%% Output
-% f    - list of faces of the @GrainSet that satisfy the specified criterion
-% dist - distance to critierion
+% Output
+%  f    - list of faces of the @GrainSet that satisfy the specified criterion
+%  dist - distance to critierion
 %
-%% See also
+% See also
 % GrainSet/merge GrainSet/plotBoundary
 
-grains = subsref(grains,get_option(varargin,'ExclusiveGrains',true(size(grains))));
+grains = subSet(grains,get_option(varargin,'ExclusiveGrains',true(size(grains))));
 
-%% which boundaries should be considered
+% which boundaries should be considered
 
 if check_option(varargin,{'ext','external'})
   I_FD = logical(grains.I_FDext);
@@ -109,7 +109,7 @@ if check_option(varargin,'ExclusiveNeighborhoods') && ~check_option(varargin,'Ex
   I_FD(~(any(I_FG(:,i) & I_FG(:,j),2)),:) = false;
 end
 
-%%
+%
 
 if check_option(varargin,'ThirdCommonGrain')
   
@@ -131,7 +131,7 @@ elseif check_option(varargin,'TripleJunction')
   
 end
 
-%%
+%
 
 if nargin < 2 || isempty(property)
   
@@ -139,7 +139,7 @@ if nargin < 2 || isempty(property)
   dist = false;
   
 else
-  %% retrive adjacent measurements and its face
+  % retrive adjacent measurements and its face
   
   doubleEdges = find(sum(I_FD,2) == 2);
   [d,f] = find(I_FD(doubleEdges,any(grains.I_DG,2))');
@@ -150,7 +150,7 @@ else
   Dl = d(1:2:end);
   Dr = d(2:2:end);
   
-  %% classify the boundary segment
+  % classify the boundary segment
   
   % phase properties of underlaying EBSD data
   phase     = grains.phaseMap(grains.phase);
@@ -302,7 +302,7 @@ m = m(isCriterion);
 
 
 
-%% TODO (?)
+% TODO (?)
 %   case {'csl'}
 %
 %     ax = axis(m(:));

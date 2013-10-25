@@ -23,7 +23,7 @@ if iscell(sym), sym = sym{1};end
 % q       - rotations not about the z -axis
 % rho_rot - position of the mirroring plane
 
-[minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(sym,varargin{:}); %#ok<ASGLU>
+[minTheta,maxTheta,minRho,maxRho] = sym.getFundamentalRegionPF(varargin{:}); %#ok<ASGLU>
 
 % symmetrise
 sv = q * v;
