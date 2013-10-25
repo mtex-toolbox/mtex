@@ -5,19 +5,23 @@ function ind = subsind(ebsd,subs)
 ind = true(1,length(ebsd));
 
 for i = 1:length(subs)
-    
+
+  % ebsd('mineralname') or ebsd({'mineralname1','mineralname2'})
   if ischar(subs{i}) || iscellstr(subs{i})
     
-    miner = ensurecell(subs{i});
-    minerals = get(ebsd,'minerals');
-    phases = false(1,numel(minerals));
+    mineralsSubs = ensurecell(subs{i});
+    phaseNumbers = cellfun(@num2str,num2cell(ebsd.phaseMap(:)'),'Uniformoutput',false);
     
-    for k=1:numel(miner)
-      phases = phases | ~cellfun('isempty',regexpi(minerals,miner{k}));
-    end 
+    phases = false(1,numel(ebsd.minerals));
+    
+    for k=1:numel(mineralsSubs)
+      phases = phases ...
+        | ~cellfun('isempty',regexpi(ebsd.minerals,mineralsSubs{k})) ...
+        | strcmpi(phaseNumbers,mineralsSubs{k});
+    end
     
     ind = ind & phases(ebsd.phase(:).');
-
+    
   elseif isa(subs{i},'symmetry')
     
     phases = false(1,length(ebsd.CS));
@@ -26,7 +30,7 @@ for i = 1:length(subs)
           (isempty(get(subs{i},'mineral')) || strcmp(get(ebsd.CS{k},'mineral'),get(subs{i},'mineral')))
         phases(k) = true;
       end
-    end 
+    end
     ind = ind & phases(ebsd.phase(:).');
     
   elseif isa(subs{i},'grain')
@@ -45,9 +49,9 @@ for i = 1:length(subs)
     iind(subs{i}) = true;
     ind = ind & iind;
     
-%   elseif isa(subs{i},'polygon')
+    %   elseif isa(subs{i},'polygon')
     
-%     ind = ind & inpolygon(ebsd,subs{i})';
+    %     ind = ind & inpolygon(ebsd,subs{i})';
     
   end
 end

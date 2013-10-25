@@ -9,7 +9,7 @@ end
 
 V = grains.V;
 
-FD = grains.I_FDext | grains.I_FDsub;
+FD = grains.I_FDext | grains.I_FDint;
 F = grains.F(any(FD,2),:);
 
 [i,j,f] = find(double(F));

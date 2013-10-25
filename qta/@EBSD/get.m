@@ -78,7 +78,7 @@ switch lower(vname)
     
   case 'phase' 
     
-    varargout{1} = ebsd.phaseMap(ebsd.phase);      
+    varargout{1} = ebsd.phase;  
     
   case {'quaternions','quaternion'}
     

@@ -61,13 +61,16 @@ X = cell(1,numberOfPhases);
 d = cell(1,numberOfPhases);
 opts = cell(1,numberOfPhases);
 
+% what to plot
+prop = get_option(varargin,'property','orientations',{'char','double'});
+
 isPhase = false(numberOfPhases,1);
 for k=1:numberOfPhases
   currentPhase = ebsd.phase==k;
   isPhase(k)   = any(currentPhase);
 
   if isPhase(k)
-    [d{k},property,opts{k}] = calcColorCode(ebsd,currentPhase,varargin{:});
+    [d{k},property,opts{k}] = calcColorCode(ebsd,currentPhase,prop,varargin{:});
     X{k} = x_D(currentPhase,:);
   end
 end

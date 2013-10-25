@@ -10,8 +10,8 @@ function c = centroid(grains)
 %% See also
 % Grain3d/centroid
 
-V = full(get(grains,'V'));
-F = get(grains,'boundaryEdgeOrder');
+V = grains.V;
+F = grains.boundaryEdgeOrder;
 
 c = zeros(numel(grains),2);
 

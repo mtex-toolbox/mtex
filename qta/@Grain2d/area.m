@@ -10,12 +10,12 @@ function A = area(grains,varargin)
 %% See also
 %
 
-V = get(grains,'V');
-F = get(grains,'boundaryEdgeOrder');
+V = grains.V;
+F = grains.boundaryEdgeOrder;
 
 isc = cellfun('isclass',F,'cell');
 
-A = zeros(numel(grains),1);
+A = zeros(size(grains));
 
 if any(isc)
 A(isc) = cellfun(@(x) 2*max(x) -sum(x),...

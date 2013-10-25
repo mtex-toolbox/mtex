@@ -12,27 +12,19 @@ function A = calcKAM(grains,varargin)
 
 
 CS = get(grains,'CSCell');
-SS = get(grains,'SS');
-r         = get(grains.EBSD,'quaternion');
-phaseMap  = get(grains,'phaseMap');
-phase     = get(grains.EBSD,'phase');
-isIndexed = ~isNotIndexed(grains.EBSD);
+
+r         = grains.rotations;
+phaseMap  = grains.phaseMap;
+phase     = grains.phaseMap(grains.phase);
+
+isIndexed = ~isNotIndexed(grains);
 
 % adjacent cells on grain boundary
 n = size(grains.A_D,1);
 if check_option(varargin,'Boundary')
   A_D = grains.A_D;
 else
-  I_DF = (grains.I_FDext | grains.I_FDsub)';
-  sub = sum(I_DF,1) == 2;  
-  [d,i] = find(I_DF(:,sub));
-  Dl = d(1:2:end); Dr = d(2:2:end);  % neighbored grains
-  
-  A_Df = sparse(Dl,Dr,true,n,n);
-  A_Df = A_Df | A_Df';
-  
-  A_D = grains.A_D;
-  A_D( A_Df(:)) = 0; % delete adjacencies
+  A_D = grains.A_Do;
 end
 
 A_D = double(A_D);
@@ -59,8 +51,8 @@ for p=1:numel(phaseMap)
     
     nt = 250000;
     if nnz(currentPhase) < nt
-      o_Dl = orientation(r(Dl(currentPhase)),CS{p},SS);
-      o_Dr = orientation(r(Dr(currentPhase)),CS{p},SS);
+      o_Dl = orientation(r(Dl(currentPhase)),CS{p});
+      o_Dr = orientation(r(Dr(currentPhase)),CS{p});
       
       %     m  = o_Dl.\o_Dr; % misorientation
       prop(currentPhase,:) = angle(o_Dl,o_Dr);
@@ -74,8 +66,8 @@ for p=1:numel(phaseMap)
         subset = ind(cs(k)+1:cs(k+1));
         
         
-        o_Dl = orientation(r(Dl(subset)),CS{p},SS);
-        o_Dr = orientation(r(Dr(subset)),CS{p},SS);
+        o_Dl = orientation(r(Dl(subset)),CS{p});
+        o_Dr = orientation(r(Dr(subset)),CS{p});
         
         %     m  = o_Dl.\o_Dr; % misorientation
         prop(subset,:) = angle(o_Dl,o_Dr);

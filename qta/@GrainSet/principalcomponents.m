@@ -19,10 +19,10 @@ V = full(grains.V);
 F = full(grains.F);
 dim = size(V,2);
 
-I_VF = get(grains,'I_VF');
-[vertex,face]=  find(I_VF);
-halfDist = sqrt(sum((V(F(face,1),:) - V(F(face,2),:)).^2,2))/2;
-I_VFweight = sqrt(sparse(vertex,face,halfDist,size(I_VF,1),size(I_VF,2)));
+I_VF = grains.I_VF;
+[v,f] =  find(I_VF);
+halfDist = sqrt(sum((V(F(f,1),:) - V(F(f,2),:)).^2,2))/2;
+I_VFweight = sqrt(sparse(v,f,halfDist,size(I_VF,1),size(I_VF,2)));
 I_VGweight = I_VFweight * abs(grains.I_FDext) * grains.I_DG;
 
 
@@ -35,7 +35,7 @@ c = centroid(grains);
 
 ew = zeros(dim,dim,numel(grains));
 ev = zeros(dim,dim,numel(grains));
-for k=1:numel(grains)
+for k=1:size(grains,1)
   ndx = cs(k)+1:cs(k+1);
   Vg = bsxfun(@minus,V(v(ndx),:), c(k,:));
   Vg = bsxfun(@times,Vg, weight(ndx));
@@ -51,11 +51,12 @@ end
 if nargout < 1
   plotBoundary(grains,'facealpha',0.2);
   
+  ng = size(grains,1);
   % center = cell(numel(grains));
-  ax1 = cell(numel(grains),1);
-  ax2 = cell(numel(grains),1);
+  ax1 = cell(ng,1);
+  ax2 = cell(ng,1);
   
-  for k=1:numel(grains)
+  for k=1:ng
     v = ev(:,:,k)*ew(:,:,k);
     
     center = bsxfun(@times,c(k,:),ones(dim,1));

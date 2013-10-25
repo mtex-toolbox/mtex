@@ -89,9 +89,9 @@ grains = subsref(grains,get_option(varargin,'ExclusiveGrains',true(size(grains))
 if check_option(varargin,{'ext','external'})
   I_FD = logical(grains.I_FDext);
 elseif check_option(varargin,{'int','internal'})
-  I_FD = logical(grains.I_FDsub);
+  I_FD = logical(grains.I_FDint);
 else
-  I_FD = grains.I_FDext | grains.I_FDsub;
+  I_FD = grains.I_FDext | grains.I_FDint;
 end
 
 if check_option(varargin,'ExclusiveNeighborhoods') && ~check_option(varargin,'ExclusiveGrains')
@@ -153,8 +153,8 @@ else
   %% classify the boundary segment
   
   % phase properties of underlaying EBSD data
-  phase     = get(grains.EBSD,'phase');
-  phaseMap  = get(grains.EBSD,'phaseMap');
+  phase     = grains.phaseMap(grains.phase);
+  phaseMap  = grains.phaseMap;
   
   if strcmpi(property,'phase')
     
@@ -173,10 +173,10 @@ else
     
   else
     % otherwise its some orientation property
-    CS        = get(grains.EBSD,'CSCell');
-    SS        = get(grains.EBSD,'SS');
-    r         = get(grains.EBSD,'quaternion');
-    isIndexed = ~isNotIndexed(grains.EBSD);
+    CS        = grains.CS;
+    SS        = symmetry;
+    r         = grains.rotations;
+    isIndexed = ~isNotIndexed(EBSD(grains));
     
     % consider only boundaries between indexed measurements
     use = isIndexed(Dl) & isIndexed(Dr);

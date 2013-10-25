@@ -119,11 +119,14 @@ numberOfPhases = numel(ebsd.phaseMap);
 isPhase = false(numberOfPhases,1);
 d = [];
 
+% what to plot
+prop = get_option(varargin,'property','orientations',{'char','double'});
+
 for k=1:numberOfPhases
   iP = ebsd.phase==k;
   isPhase(k) = any(iP);
   
-  [d(iP,:),property] = calcColorCode(ebsd,iP,varargin{:});
+  [d(iP,:),property] = calcColorCode(ebsd,iP,prop,varargin{:});
 end
 
 % grid coordinates

@@ -1,8 +1,6 @@
 function e = end(grains,i,n)
 % overloaded end function
-
-if n==1
-	e = numel(grains.phase);
-else
-	e = size(grains.phase,i);
-end
+	e = nnz(any(grains.I_DG,1));
+% else
+% 	e = size(grains.phase,i);
+% end
