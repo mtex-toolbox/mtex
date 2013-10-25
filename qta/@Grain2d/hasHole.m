@@ -8,5 +8,4 @@ function h = hasHole(grains)
 % h  - logical array, |true| if a grain has hole
 %
 
-h = get(grains,'boundaryEdgeOrder');
-h = cellfun('isclass',h,'cell');
+h = cellfun('isclass',grains.boundaryEdgeOrder(:),'cell');

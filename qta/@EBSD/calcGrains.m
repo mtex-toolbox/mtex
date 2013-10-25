@@ -35,7 +35,7 @@ gbcValue = get_option(varargin,gbc,15*degree,'double');
 
 if any(isNotIndexed(ebsd)) && ~check_option(varargin,'keepNotIndexed')
   disp('  I''m removing all not indexed phases. The option "keepNotIndexed" keeps them.');
-   
+  
   ebsd = subsref(ebsd,~isNotIndexed(ebsd));
   
 end
@@ -117,11 +117,11 @@ switch dim
     
     [Dl,Dr,sz,dz,lz] = spatialdecomposition3d(x_D,ebsd.unitCell,varargin{:});
     
-%     adjacent cells, D x D
+    %     adjacent cells, D x D
     A_D = sparse(double(Dl),double(Dr),1,d,d);
     
-    A_D = triu(A_D | A_D');
-    [Dl,Dr] = find(A_D);    
+    A_D = triu(A_D | A_D',1);
+    [Dl,Dr] = find(A_D);
     
     clear x_D
     
@@ -138,6 +138,7 @@ notIndexed = isNotIndexed(ebsd);
 for p = 1:numel(ebsd.phaseMap)
   
   % neighboured cells Dl and Dr have the same phase
+%   ndx = ebsd.phase(Dl) == ebsd.phaseMap(p) & ebsd.phase(Dr) == ebsd.phaseMap(p);
   ndx = ebsd.phase(Dl) == p & ebsd.phase(Dr) == p;
   criterion(ndx) = true;
   
@@ -170,9 +171,9 @@ clear Dl Dr criterion notIndexed p k
 % ----------------- retrieve neighbours --------------------------
 
 I_DG = sparse(1:d,double(connectedComponents(A_Do)),1);    % voxels incident to grains
-A_G = I_DG'*A_Db*I_DG;                     % adjacency of grains
+% % A_G = I_DG'*A_Db*I_DG;                     % adjacency of grains
 
-clear A_Do
+% clear A_Do
 
 % ----------- interior and exterior grain boundaries ------------
 
@@ -183,7 +184,7 @@ sub = any(sub(:,i) & sub(:,j),1);              % pairs in a grain
 A_Db_int = sparse(i(sub),j(sub),1,d,d);
 A_Db_ext = A_Db - A_Db_int;                        % adjacent over grain boundray
 
-clear A_Db sub i j
+clear sub i j
 
 % ----------------- create incidence graphs ----------------------
 
@@ -219,7 +220,7 @@ clear D_Fext D_Fbg I_FDbg
 [ix,iy] = find(A_Db_int);
 clear A_Db_int
 D_Fsub  = diag(sum(abs(I_FD(:,ix)) & abs(I_FD(:,iy)),2)>0);
-I_FDsub = D_Fsub*I_FD;
+I_FDint = D_Fsub*I_FD;
 clear I_FD I_FDbg D_Fsub ix iy
 
 % ------------- sort edges of boundary when 2d case ----------------
@@ -227,7 +228,7 @@ clear I_FD I_FDbg D_Fsub ix iy
 switch dim
   case 2
     I_FDext = EdgeOrientation(I_FDext,F,x_V,x_D);
-    I_FDsub = EdgeOrientation(I_FDsub,F,x_V,x_D);
+    I_FDint = EdgeOrientation(I_FDint,F,x_V,x_D);
     
     b = BoundaryFaceOrder(D,F,I_FDext,I_DG);
     
@@ -249,11 +250,11 @@ meanRotation  = q(firstD);
 
 indexedPhases = ~cellfun('isclass',ebsd.CS(:),'char');
 for p = find(indexedPhases)'
-  ndx = ebsd.phase(d) == p;
+  ndx = ebsd.phase(d) == p; % ebsd.phaseMap(p);
   q(d(ndx)) = project2FundamentalRegion(...
-    q(d(ndx)),ebsd.CS{p},meanRotation(g(ndx)));  
+    q(d(ndx)),ebsd.CS{p},meanRotation(g(ndx)));
   
-  % mean may be inaccurate for some grains and should be projected again 
+  % mean may be inaccurate for some grains and should be projected again
   % any(sparse(d(ndx),g(ndx),angle(q(d(ndx)),meanRotation(g(ndx))) > getMaxAngle(ebsd.CS{p})/2))
 end
 
@@ -273,36 +274,27 @@ clear grainSize grainRange indexedPhases doMeanCalc cellMean q g qMean
 
 % -----------------------------------------------------------
 
-%', thresholds: ' ...
-%  sprintf(['%3.1f' mtexdegchar ', '],thresholds/degree)];
-%grainSet.comment(end-1:end) = [];
+% set up grainStruct
+grainStruct.V    = x_V;            clear x_V;
+grainStruct.F    = F;              clear F;
+grainStruct.I_FDext  = I_FDext;        clear I_FDext;
+grainStruct.I_FDint  = I_FDint;        clear I_FDint;
+grainStruct.I_DG     = logical(I_DG);  clear I_DG;
+grainStruct.A_Db     = logical(A_Db);   clear A_D;
+grainStruct.A_Do     = logical(A_Do);   clear A_D;
 
-grainSet.A_D      = logical(A_D);   clear A_D;
-grainSet.I_DG     = logical(I_DG);  clear I_DG;
-grainSet.A_G      = logical(A_G);   clear A_G;
-grainSet.meanRotation = meanRotation;  clear meanRotation;
-% grain.rotations    = ebsd.rotations;
-grainSet.phase    = phase;          clear phase;
-%
-grainSet.I_FDext  = I_FDext;        clear I_FDext;
-grainSet.I_FDsub  = I_FDsub;        clear I_FDsub;
-% model.I_VE     = logical(I_VE);
-grainSet.F        = F;              clear F;
-grainSet.V        = x_V;            clear x_V;
-grainSet.options  = struct;
-
-[g,d] = find(grainSet.I_DG'); clear I_DG;
-ebsd.prop.mis2mean = inv(ebsd.rotations(d)).* reshape(grainSet.meanRotation(g),[],1);
+grainStruct.ebsd = ebsd;
+grainStruct.meanRotation = meanRotation;  clear meanRotation;
 
 switch dim
-  case 2
+  case 2    
     
-    grainSet.options.boundaryEdgeOrder = b;
-    grains = Grain2d(grainSet,ebsd);
+    grainStruct.boundaryEdgeOrder = b;
+    grains = Grain2d(grainStruct);
     
   case 3
     
-    grains = Grain3d(grainSet,ebsd);
+    grains = Grain3d(ebsd);
     
 end
 

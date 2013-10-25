@@ -63,7 +63,7 @@ function [grains,I_PC] = merge(grains, property, varargin)
 f = specialBoundary(grains,property,varargin{:},'PhaseRestricted');
 
 % delete faces that satisfy the criterion
-I_FD = grains.I_FDext | grains.I_FDsub;
+I_FD = grains.I_FDext | grains.I_FDint;
 I_FD(f,:) = false;
 
 %% Resegment   (see calcGrains)
@@ -110,15 +110,15 @@ I_FDext = (D_Fext| D_Fbg)*I_FD;
 
 [ix,iy] = find(A_Db_int);
 D_Fsub  = diag(sum(abs(I_FD(:,ix)) & abs(I_FD(:,iy)),2)>0);
-I_FDsub = D_Fsub*I_FD;
+I_FDint = D_Fsub*I_FD;
 
 % retrive old boundary edge orientation
-I_FD = grains.I_FDext + grains.I_FDsub;
+I_FD = grains.I_FDext + grains.I_FDint;
 I_FDext(logical(I_FDext)) = I_FD(logical(I_FDext));
-I_FDsub(logical(I_FDsub)) = I_FD(logical(I_FDsub));
+I_FDint(logical(I_FDint)) = I_FD(logical(I_FDint));
 
 grains.I_FDext = I_FDext;
-grains.I_FDsub = I_FDsub;
+grains.I_FDint = I_FDint;
 
 %% sort edges of boundary when 2d case
 

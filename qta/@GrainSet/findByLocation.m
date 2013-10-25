@@ -20,7 +20,7 @@ function [grains,I_GX] = findByLocation( grains, X )
 
 
 if isa(grains,'Grain2d')
-  boundaryEdgeOrder = get(grains,'boundaryEdgeOrder');
+  boundaryEdgeOrder = grains.boundaryEdgeOrder;
   isCell = cellfun('isclass',boundaryEdgeOrder,'cell');
   
   boundaryEdgeOrder(isCell) = cellfun(@(x) x{1} ,boundaryEdgeOrder(isCell),'UniformOutput',false);

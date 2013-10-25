@@ -1,4 +1,4 @@
-function varargout = get(grains,vname)
+function varargout = get(grains,vname,varargin)
 % return property of a GrainSet
 %
 % Input
@@ -6,8 +6,8 @@ function varargout = get(grains,vname)
 %
 % Syntax
 %   % returns the mean orientation of grains
-%   o = get(grains,'meanOrientation') 
-%   o = get(grains,'orientations')    % returns individual orientations of the 
+%   o = get(grains,'meanOrientation')
+%   o = get(grains,'orientations')    % returns individual orientations of the
 %                                      EBSD data from which grains were
 %                                      constructed.
 %   m = get(grains,'mis2mean')        % returns the misorientation of the
@@ -20,7 +20,7 @@ function varargout = get(grains,vname)
 %                                      incident to grain.
 %   s = get(grains,'CS')              % returns the first indexed crystal symmetry
 %                                      of the grains.
-%   p = get(grains,'mad')             % returns the MAD property of the EBSD data, if MAD is a 
+%   p = get(grains,'mad')             % returns the MAD property of the EBSD data, if MAD is a
 %                                      property of EBSD data from which the
 %                                      grains were constructed.
 %
@@ -36,18 +36,21 @@ function varargout = get(grains,vname)
 % See also
 % EBSD/set
 
-properties = get_obj_fields(grains,'GrainSet');
-options    = fieldnames(grains.options);
-classOpt = get_obj_fields(grains.ebsd);
-
+properties = get_obj_fields(grains.prop);
+options    = get_obj_fields(grains.opt);
 if nargin == 1
-  vnames = [classOpt;properties;options;{'mean';'meanorientation';'orientations';'mineral';'minerals'}];
+  vnames = [properties;options;{'data';'quaternion';'orientations';'Euler';'mineral';'minerals'}];
   if nargout, varargout{1} = vnames; else disp(vnames), end
   return
 end
 
+
 switch lower(vname)
   
+  case 'phase'
+    
+    varargout{1} = grains.phaseMap(grains.gphase);
+    
   case {'mean','meanorientation','orientation'}
     
     % check only a single phase is involved
@@ -63,8 +66,7 @@ switch lower(vname)
       
     else
       
-      CS = get(grains,'CSCell');
-      varargout{1} = orientation(grains.meanRotation,CS{grains.phase(1)});
+      varargout{1} = orientation(grains.meanRotation,grains.CS{grains.phase(1)});
       
     end
     
@@ -80,60 +82,15 @@ switch lower(vname)
     %     o = get(grains,'rotations');
     %     m = grains.meanRotation(g);
     %     varargout{1} = orientation(inv(o) .* m,get(grains,'CS'),get(grains,'CS'));
-    %
-    
-  case 'i_vg'
-    
-    % vertices incident to a grain V x G
-    [i,j,v] = find(double(grains.F));
-    I_VF = sparse(v,i,1,double(size(grains.V,1)),double(size(grains.I_FDext,1)));
-    I_VG = I_VF * (grains.I_FDext|grains.I_FDsub) * grains.I_DG;
-    
-    varargout{1} = I_VG>0;
-    
-  case 'i_vf'
-    
-    % vertices incident to a grain V x G
-    [i,j,v] = find(double(grains.F));
-    I_VF = sparse(v,i,1,size(grains.V,1),size(grains.I_FDext,1));    
-    varargout{1} = I_VF>0;
-    
-  case 'i_fg'
-    
-    I_FD = grains.I_FDext | grains.I_FDsub;
-    varargout{1} = I_FD*double(grains.I_DG);    
-    
-  case 'phase'
-    
-    phaseMap = get(grains,'phaseMap');
-    varargout{1} = phaseMap(grains.phase);
-    
-  case 'phases'
-    
-    varargout{1} = get(grains,'phaseMap');
-    
-  case lower(properties)
-    
-    varargout{1} = grains.(properties{find_option(properties,vname)});
-        
-  case lower(options)
-    
-    varargout{1} = grains.options.(options{find_option(options,vname)});
-   
-  case 'ebsd'
-    
-    varargout{1} = grains.ebsd;
-    
-    
-    % overload from EBSD data
-  case [lower(get(grains.ebsd));'cscell'; 'weight']
-    
-    varargout{1} = get(grains.ebsd,vname);
+    %    
     
   otherwise
     
-    error(['Unknown Property "' vname '" in class GrainSet']);
+    try
+      varargout{1} = get@EBSD(grains,vname,varargin{:});
+      return
+    catch
+      error(['Unknown Property "' vname '" in class GrainSet']);
+    end
     
 end
-
-

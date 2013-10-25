@@ -18,6 +18,7 @@ if isempty(ebsd)
   return
 end
 
+disp(' ')
 % display all other options
 disp(char(dynOption(ebsd)));
 
@@ -54,11 +55,10 @@ for ip = 1:numel(ebsd.phaseMap)
 
 end
 
-disp(' ');
 
 cprintf(matrix,'-L',' ','-Lc',...
   {'Phase' 'Orientations' 'Mineral' 'Color' 'Symmetry' 'Crystal reference frame'},...
-  '-ic',true);
+  '-d','  ','-ic',true);
 
 disp(' ');
 disp(char(dynProp(ebsd.prop)));

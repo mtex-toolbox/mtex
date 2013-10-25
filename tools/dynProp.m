@@ -32,7 +32,7 @@ classdef dynProp
       
     end
     
-    function n = numel(dp,varargin)
+    function n = numel(varargin)
       
       n = 1;
       
@@ -103,7 +103,7 @@ classdef dynProp
         case '.'
           try
         
-            varargout{1} = subsref(dp.prop,s);
+            varargout{1} = subsref(dp.prop,s(1));
         
           catch 
                 
