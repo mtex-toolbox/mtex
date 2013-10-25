@@ -20,12 +20,12 @@ if strcmp(s(1).type,'()')
   
   if check_option(s(1).subs,'sort')
     
-    varargout{1} = subsref(ebsd,get_option(s(1).subs,'sort'));
+    ebsd = subsref(ebsd,get_option(s(1).subs,'sort'));
     
   else
     
     ind = subsind(ebsd,s(1).subs);
-    varargout{1} = subsref(ebsd,ind);
+    ebsd = subsref(ebsd,ind);
     
   end
 
@@ -33,6 +33,7 @@ if strcmp(s(1).type,'()')
   if numel(s)>1
     s = s(2:end);
   else
+    varargout{1} = ebsd;
     return
   end  
 
