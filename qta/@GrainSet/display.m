@@ -28,10 +28,10 @@ for ip = 1:numel(phaseMap)
   matrix{ip,1} = num2str(phaseMap(ip)); %#ok<*AGROW>
   
   % grains
-  matrix{ip,2} = int2str(nnz(grains.phase == ip));
+  matrix{ip,2} = int2str(nnz(grains.phaseId == ip));
   
   % orientations
-  matrix{ip,3} = int2str(nnz(grains.ebsd.phase == ip));  
+  matrix{ip,3} = int2str(nnz(grains.ebsd.phaseId == ip));  
   
   % abort in special cases
   if isempty(CS{ip})

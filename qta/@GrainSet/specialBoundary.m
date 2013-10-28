@@ -153,7 +153,7 @@ else
   % classify the boundary segment
   
   % phase properties of underlaying EBSD data
-  phase     = grains.phaseMap(grains.phase);
+  phase     = grains.ebsd.phaseId;
   phaseMap  = grains.phaseMap;
   
   if strcmpi(property,'phase')
@@ -175,8 +175,8 @@ else
     % otherwise its some orientation property
     CS        = grains.CS;
     SS        = symmetry;
-    r         = grains.rotations;
-    isIndexed = ~isNotIndexed(EBSD(grains));
+    r         = grains.meanRotation;
+    isIndexed = ~isNotIndexed(grains.ebsd);
     
     % consider only boundaries between indexed measurements
     use = isIndexed(Dl) & isIndexed(Dr);

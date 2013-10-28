@@ -43,7 +43,7 @@ TReuss = TVoigt;
 TGeo = TVoigt;
 
 % get phases and populate tensors
-phases = unique(ebsd.phase)';
+phases = unique(ebsd.phaseId)';
 if numel(T) < max(phases)
   if numel(T) == numel(phases)
     TT(phases) = T;
@@ -59,9 +59,9 @@ end
 for p = phases
 
   % extract orientations and wights
-  ind = ebsd.phase == p;
-  ori = get(subsref(ebsd,ind),'orientations');
-  weight = get(subsref(ebsd,ind),'weight') * nnz(ind) ./ length(ebsd);
+  ind = ebsd.phaseId == p;
+  ori = get(subSet(ebsd,ind),'orientations');
+  weight = get(subSet(ebsd,ind),'weight') * nnz(ind) ./ length(ebsd);
   
   rotT = rotate(T{p},ori);
   rotInvT = rotate(inv(T{p}),ori);

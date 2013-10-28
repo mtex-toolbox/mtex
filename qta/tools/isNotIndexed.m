@@ -6,4 +6,4 @@ function notIndexed = isNotIndexed(obj)
 
 
 notIndexedPhase = find(cellfun('isclass',obj.CS,'char'));
-notIndexed = ismember(obj.phase,notIndexedPhase);
+notIndexed = ismember(obj.phaseId,notIndexedPhase);

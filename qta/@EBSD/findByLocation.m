@@ -43,7 +43,7 @@ for k=1:size(xy,1)
 end
 
 map = any(nd,2);
-ebsd = subsref(ebsd,map);
+ebsd = subSet(ebsd,map);
 
 
 

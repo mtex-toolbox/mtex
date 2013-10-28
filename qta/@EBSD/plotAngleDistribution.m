@@ -35,8 +35,8 @@ end
 
 
 %
-ebsd  = subsref(ebsd,~isNotIndexed(ebsd));
-ebsd2 = subsref(ebsd2,~isNotIndexed(ebsd2));
+ebsd  = subSet(ebsd,~isNotIndexed(ebsd));
+ebsd2 = subSet(ebsd2,~isNotIndexed(ebsd2));
 
 phases1 = get(ebsd,'phase');
 ph1 = unique(phases1);
@@ -47,9 +47,9 @@ ph2 = unique(phases2);
 [ph phpos] = unique([ph1,ph2],'first');
 for j = 1:numel(ph)
   if ismember(ph(j),ph1)
-    obj{phpos(j)} = subsref(ebsd,phases1 == ph(j)); %#ok<AGROW>
+    obj{phpos(j)} = subSet(ebsd,phases1 == ph(j)); %#ok<AGROW>
   else
-    obj{phpos(j)} = subsref(ebsd2,phases2 == ph(j)); %#ok<AGROW>
+    obj{phpos(j)} = subSet(ebsd2,phases2 == ph(j)); %#ok<AGROW>
   end
   mineral{phpos(j)} = get(obj{phpos(j)},'mineral'); %#ok<AGROW>
   if check_option(varargin,{'ODF','MDF'})

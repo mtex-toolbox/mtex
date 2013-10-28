@@ -36,7 +36,7 @@ gbcValue = get_option(varargin,gbc,15*degree,'double');
 if any(isNotIndexed(ebsd)) && ~check_option(varargin,'keepNotIndexed')
   disp('  I''m removing all not indexed phases. The option "keepNotIndexed" keeps them.');
   
-  ebsd = subsref(ebsd,~isNotIndexed(ebsd));
+  ebsd = subSet(ebsd,~isNotIndexed(ebsd));
   
 end
 
@@ -69,7 +69,7 @@ clear n
 x_D = x_D(m,:);
 
 % sort ebsd accordingly
-ebsd = subsref(ebsd,m);
+ebsd = subSet(ebsd,m);
 clear m
 
 % get the location x of voronoi-generators D
@@ -139,7 +139,7 @@ for p = 1:numel(ebsd.phaseMap)
   
   % neighboured cells Dl and Dr have the same phase
 %   ndx = ebsd.phase(Dl) == ebsd.phaseMap(p) & ebsd.phase(Dr) == ebsd.phaseMap(p);
-  ndx = ebsd.phase(Dl) == p & ebsd.phase(Dr) == p;
+  ndx = ebsd.phaseId(Dl) == p & ebsd.phaseId(Dr) == p;
   criterion(ndx) = true;
   
   % check, whether they are indexed
@@ -243,14 +243,14 @@ end
 grainSize     = full(sum(I_DG>0,1));
 grainRange    = [0 cumsum(grainSize)];
 firstD        = d(grainRange(2:end));
-phase         = ebsd.phase(firstD);
+phaseId       = ebsd.phaseId(firstD);
 q             = quaternion(ebsd.rotations);
 meanRotation  = q(firstD);
 
 
 indexedPhases = ~cellfun('isclass',ebsd.CS(:),'char');
 for p = find(indexedPhases)'
-  ndx = ebsd.phase(d) == p; % ebsd.phaseMap(p);
+  ndx = ebsd.phaseId(d) == p; % ebsd.phaseMap(p);
   q(d(ndx)) = project2FundamentalRegion(...
     q(d(ndx)),ebsd.CS{p},meanRotation(g(ndx)));
   
@@ -260,7 +260,7 @@ end
 
 
 
-doMeanCalc    = find(grainSize(:)>1 & indexedPhases(phase));
+doMeanCalc    = find(grainSize(:)>1 & indexedPhases(phaseId));
 cellMean      = cell(size(doMeanCalc));
 for k = 1:numel(doMeanCalc)
   cellMean{k} = d(grainRange(doMeanCalc(k))+1:grainRange(doMeanCalc(k)+1));

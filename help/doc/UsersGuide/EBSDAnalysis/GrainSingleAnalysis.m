@@ -42,12 +42,13 @@ hold on, plot(grain_selected.ebsd)
 %% Visualize the misorientation within a grain
 % 
 
-close, plot(grain_selected.ebsd)
+close, plot(grain_selected.ebsd,'property',grain_selected.mis2mean,...
+  'colorcoding','angle')
 colorbar
 
 %%
 
-close, plotspatial(grain_selected,'property','mis2mean')
+close, plot(grain_selected,'property','mis2mean')
 
 %% Testing on Bingham distribution for a single grain
 % Although the orientations of an individual grain are highly concentrated,
@@ -58,28 +59,29 @@ close, plotspatial(grain_selected,'property','mis2mean')
 % only plots the mean orientation of grains. Thus, for these commands, we
 % have to explicitely specify the underlaying EBSD data.
 
-plotpdf(ebsd_selected,...
+plotpdf(grain_selected.meanOrientation,...
   [Miller(0,0,1),Miller(0,1,1),Miller(1,1,1)],'antipodal')
 
 %%
-%
 
-scatter(grain_selected)
+plotpdf(grain_selected.ebsd,...
+  [Miller(0,0,1),Miller(0,1,1),Miller(1,1,1)],'antipodal')
+
 
 %%
 % Testing on the distribution shows a gentle prolatness, nevertheless we
 % would reject the hypothesis for some level of significance, since the
 % distribution is highly concentrated and the numerical results vague.
 
-[qm,lambda,U,kappa] = mean(grain_selected,'approximated');
+[qm,lambda,U,kappa] = mean(grain_selected.ebsd,'approximated');
 num2str(kappa')
 
 %%
 %
 
-T_spherical = bingham_test(grain_selected,'spherical','approximated');
-T_prolate   = bingham_test(grain_selected,'prolate',  'approximated');
-T_oblate    = bingham_test(grain_selected,'oblate',   'approximated');
+T_spherical = bingham_test(grain_selected.ebsd,'spherical','approximated');
+T_prolate   = bingham_test(grain_selected.ebsd,'prolate',  'approximated');
+T_oblate    = bingham_test(grain_selected.ebsd,'oblate',   'approximated');
 
 [T_spherical T_prolate T_oblate]
 
@@ -92,7 +94,7 @@ T_oblate    = bingham_test(grain_selected,'oblate',   'approximated');
 % We proceed by specifiing such a line segment
 
 close,   plotBoundary(grain_selected,'linewidth',2)
-hold on, plot(ebsd_selected,'property','angle')
+hold on, plot(grain_selected.ebsd,'colorcoding','angle')
 
 % line segment
 x =  [154   125.25;
@@ -103,7 +105,7 @@ line(x(:,1),x(:,2),'linewidth',2)
 % The command <EBSD.spatialProfile.html spatialProfile> extracts
 % orientations along a line segment
 
-[o,dist] = spatialProfile(ebsd_selected,x);
+[o,dist] = spatialProfile(grain_selected.ebsd,x);
 
 %%
 % where the first output argument is a set of orientations ordered along
@@ -115,7 +117,7 @@ m = o(1) \ o
 
 close, plot(dist,angle(m)/degree)
 
-m = o(1:end-1) \ o(2:end)
+m = o(1:end-1) .\ o(2:end)
 
 hold on, plot(dist(1:end-1)+diff(dist)./2,... % shift 
   angle(m)/degree,'color','r')

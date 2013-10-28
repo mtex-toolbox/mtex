@@ -31,7 +31,7 @@ grains.I_FDext = grains.I_FDext*D;
 grains.I_FDint = grains.I_FDint*D;
 
 ebsd_subs = nonzeros(cumsum(old_D) .* any(grains.I_DG,2));
-grains.ebsd = subsref(grains.ebsd,ebsd_subs);
+grains.ebsd = subSet(grains.ebsd,ebsd_subs);
   
 D = any(grains.I_FDext | grains.I_FDint,2);
 grains.F(~D,:) = 0;

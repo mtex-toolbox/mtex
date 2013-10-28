@@ -123,7 +123,7 @@ d = [];
 prop = get_option(varargin,'property','orientations',{'char','double'});
 
 for k=1:numberOfPhases
-  iP = ebsd.phase==k;
+  iP = ebsd.phaseId == k;
   isPhase(k) = any(iP);
   
   [d(iP,:),property] = calcColorCode(ebsd,iP,prop,varargin{:});

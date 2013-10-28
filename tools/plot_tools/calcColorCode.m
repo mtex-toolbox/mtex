@@ -37,10 +37,10 @@ if isa(prop,'char') && strcmpi(prop,'phase')
 
       end
           
-      ph = obj.phaseMap(i);
-      d(obj.phase==ph,1) = cmap{index}(1);
-      d(obj.phase==ph,2) = cmap{index}(2);
-      d(obj.phase==ph,3) = cmap{index}(3);
+      %ph = obj.phaseMap(i);
+      d(obj.phaseId==i,1) = cmap{index}(1);
+      d(obj.phaseId==i,2) = cmap{index}(2);
+      d(obj.phaseId==i,3) = cmap{index}(3);
     end
   end
   return

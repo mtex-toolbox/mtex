@@ -69,22 +69,20 @@ classdef dynProp
     
     
     % --------------------------------------------------
+    
+    
+    function dp = subSet(dp,ind)
+
+      fn = fieldnames(dp.prop);
+      for i = 1:numel(fn)
+        dp.prop.(fn{i}) = dp.prop.(fn{i})(ind);
+      end
+
+    end
+
+    
     function varargout = subsref(dp,s)
 
-      % use direct indexing
-      if isa(s,'double') || isa(s,'logical')
-        
-        fn = fieldnames(dp.prop);
-        for i = 1:numel(fn)
-          dp.prop.(fn{i}) = dp.prop.(fn{i})(s);
-        end
-        
-        varargout{1} = dp;
-        return
-        
-      end
-      
-      % use indexing by struct      
       switch s(1).type
         case '()'
   

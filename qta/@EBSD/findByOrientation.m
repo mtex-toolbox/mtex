@@ -14,4 +14,4 @@ function ebsd = findByOrientation(ebsd,q0,epsilon)
 
 ind  = find(ebsd.orientations,q0,epsilon);
 
-ebsd = subsref(ebsd,any(ind,2));
+ebsd = subSet(ebsd,any(ind,2));

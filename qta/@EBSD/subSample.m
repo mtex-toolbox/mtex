@@ -1,8 +1,8 @@
-function ebsd = subsample(ebsd,points)
+function ebsd = subSample(ebsd,points)
 % subsample of ebsd data
 %
 % Syntax
-%   subsample(ebsd,points)
+%   subSample(ebsd,points)
 %
 % Input
 %  ebsd    - @EBSD
@@ -18,4 +18,4 @@ if points >= length(ebsd), return;end
 
 ind = discretesample(length(ebsd),points);
 
-ebsd = subsref(ebsd,ind);
+ebsd = subSet(ebsd,ind);

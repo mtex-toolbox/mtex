@@ -67,7 +67,7 @@ prop = get_option(varargin,'property','orientations',...
 
 isPhase = false(numberOfPhases,1);
 for k=1:numberOfPhases
-  currentPhase = ebsd.phase==k;
+  currentPhase = ebsd.phaseId==k;
   isPhase(k)   = any(currentPhase);
 
   if isPhase(k)
@@ -149,7 +149,7 @@ if numel(sub)>0
   minerals = get(sub,'minerals');
 
   txt{1} = ['#'  num2str(find(map))];
-  txt{2} = ['Phase: ', minerals{sub.phase}];
+  txt{2} = ['Phase: ', minerals{sub.phaseId}];
   if ~isNotIndexed(sub)
     txt{3} = ['Orientation: ' char(sub.rotations,'nodegree')];
   end
