@@ -20,7 +20,7 @@ for i = 1:length(subs)
         | strcmpi(phaseNumbers,mineralsSubs{k});
     end
     
-    ind = ind & phases(ebsd.phase(:).');
+    ind = ind & phases(ebsd.phaseId(:).');
     
   elseif isa(subs{i},'symmetry')
     
@@ -31,7 +31,7 @@ for i = 1:length(subs)
         phases(k) = true;
       end
     end
-    ind = ind & phases(ebsd.phase(:).');
+    ind = ind & phases(ebsd.phaseId(:).');
     
   elseif isa(subs{i},'grain')
     

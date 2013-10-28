@@ -38,6 +38,7 @@ classdef GrainSet < dynProp
     I_VG
     I_FD
     I_FG
+    phaseId
     phase
     phaseMap
     CS
@@ -95,11 +96,15 @@ classdef GrainSet < dynProp
       I_FG = grains.I_FD*double(grains.I_DG);
     end
     
-    function ph = get.phase(grains)
+    function phId = get.phaseId(grains)
       d = find(any(grains.I_DG,2));      
-      D = sparse(d,d,grains.ebsd.phase,size(grains.I_DG,1),size(grains.I_DG,1));
+      D = sparse(d,d,grains.ebsd.phaseId,size(grains.I_DG,1),size(grains.I_DG,1));
       
-      ph = nonzeros(max(grains.I_DG'*D,[],2));
+      phId = nonzeros(max(grains.I_DG'*D,[],2));
+    end
+    
+    function ph = get.phase(grains)
+      ph = grains.phaseMap(grains.phaseId);
     end
     
     function map = get.phaseMap(grains)
@@ -118,11 +123,21 @@ classdef GrainSet < dynProp
       grains.ebsd.CS = CS;
     end
     
-    function grains = set.phase(grains,ph)
+    function grains = set.phaseId(grains,ph)
       g = find(any(grains.I_DG,1));
       G = sparse(g,g,ph,size(grains.I_DG,2),size(grains.I_DG,2));
       
-      grains.ebsd.phase = nonzeros(max((grains.I_DG*G),[],2));
+      grains.ebsd.phaseId = nonzeros(max((grains.I_DG*G),[],2));
+    end
+    
+    function grains = set.phase(grains,ph)
+      
+      phId = zeros(size(ph));
+      for i = 1:numel(grains.phaseMap)
+        phId(ph==grains.phaseMap(i)) = i;
+      end
+      
+      grains.phaseId = phId;
     end
     
     function mis2mean = get.mis2mean(grains)
@@ -170,7 +185,7 @@ classdef GrainSet < dynProp
             phases = phases | ~cellfun('isempty',regexpi(minerals(:),miner{k})) | ...
               strcmpi(alt_mineral,miner{k});
           end
-          ind = ind & phases(grains.phase(:));
+          ind = ind & phases(grains.phaseId(:));
           
           %   elseif isa(subs{i},'grain')
           

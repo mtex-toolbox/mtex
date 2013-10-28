@@ -44,7 +44,7 @@ end
 % fill ebsd variable
 
 ebsd.rotations = reshape(ebsd.rotations(ci),[],1);
-ebsd.phase = reshape(ebsd.phase(ci),[],1);
+ebsd.phaseId = reshape(ebsd.phaseId(ci),[],1);
 
 for fn = fieldnames(ebsd.options).'
   if any(strcmp(char(fn),{'x','y','z'})), continue;end

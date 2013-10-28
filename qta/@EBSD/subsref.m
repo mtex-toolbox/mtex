@@ -7,28 +7,11 @@ function varargout = subsref(ebsd,s)
 %   ebsd(1:end)       - returns data 
 %
 
-% called with direct indexing
-if isa(s,'double') || isa(s,'logical')
-    
-  varargout{1} = subsref@dynProp(ebsd,s);
-  varargout{1}.rotations = ebsd.rotations(s);
-  return;
-  
-end
-  
 if strcmp(s(1).type,'()')
   
-  if check_option(s(1).subs,'sort')
+  ind = subsind(ebsd,s(1).subs);
+  ebsd = subSet(ebsd,ind);
     
-    ebsd = subsref(ebsd,get_option(s(1).subs,'sort'));
-    
-  else
-    
-    ind = subsind(ebsd,s(1).subs);
-    ebsd = subsref(ebsd,ind);
-    
-  end
-
   % is there something more to do?
   if numel(s)>1
     s = s(2:end);

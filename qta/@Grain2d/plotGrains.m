@@ -38,7 +38,7 @@ prop = get_option(varargin,'property','meanOrientation',{'char','double','quater
 
 isPhase = false(numberOfPhases,1);
 for p=1:numberOfPhases
-  currentPhase = grains.phase==p;
+  currentPhase = grains.phaseId==p;
   isPhase(p)   = any(currentPhase);
 
   if isPhase(p)

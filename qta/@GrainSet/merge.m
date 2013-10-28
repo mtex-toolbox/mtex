@@ -131,8 +131,8 @@ end
 %% update phase
 
 [parent,child] = find(I_PC);
-phase(parent) = grains.phase(child);
-grains.phase = phase;
+phase(parent) = grains.phaseId(child);
+grains.phaseId = phase;
 
 %% update mean orientation
 

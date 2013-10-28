@@ -6,7 +6,7 @@ function e = end(ebsd,i,n)
 
 
 if n==1
-	e = numel(ebsd.phase);
+	e = numel(ebsd.phaseId);
 else
-	e = size(ebsd.phase,i);
+	e = size(ebsd.phaseId,i);
 end

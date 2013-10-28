@@ -49,24 +49,24 @@ switch lower(vname)
   
   case 'phase'
     
-    varargout{1} = grains.phaseMap(grains.gphase);
+    varargout{1} = grains.phaseMap(grains.phase);
     
   case {'mean','meanorientation','orientation'}
     
     % check only a single phase is involved
-    if numel(unique(grains.phase)) > 1
+    if numel(unique(grains.phaseId)) > 1
       
       error('MTEX:MultiplePhases',['This operatorion is only permitted for a single phase!' ...
         'See ' doclink('xx','xx')  ...
         ' for how to restrict EBSD data to a single phase.']);
       
-    elseif numel(grains.phase) == 0
+    elseif numel(grains.phaseId) == 0
       
       varargout{1} = [];
       
     else
       
-      varargout{1} = orientation(grains.meanRotation,grains.CS{grains.phase(1)});
+      varargout{1} = orientation(grains.meanRotation,grains.CS{grains.phaseId(1)});
       
     end
     

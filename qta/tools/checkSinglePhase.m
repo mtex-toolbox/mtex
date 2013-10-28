@@ -6,7 +6,7 @@ obj(isNotIndexed(obj)) = [];
 % check only a single phase is involved
 try
   
-  phase = unique(obj.phase);
+  phase = unique(obj.phaseId);
   if numel(phase) > 1    
     error('MTEX:MultiplePhases',['This operatorion is only permitted for a single phase! ' ...
       'Please see ' doclink('ebsdModifyData','modify EBSD data')  ...

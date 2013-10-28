@@ -32,8 +32,8 @@ for k = 2:numel(varargin)
   grains.meanRotation = [grains.meanRotation;g.meanRotation];
   grains.meanRotation = grains.meanRotation(gndx);
   
-  grains.phase = [grains.phase;g.phase];
-  grains.phase = grains.phase(gndx);
+  grains.phase = [grains.phaseId;g.phaseId];
+  grains.phase = grains.phaseId(gndx);
   
   grains.I_FDext = max(grains.I_FDext,g.I_FDext);
   grains.I_FDint = max(grains.I_FDint,g.I_FDint);

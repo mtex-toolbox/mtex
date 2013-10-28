@@ -1,12 +1,12 @@
 function A = calcKAM(grains,varargin)
 % intergranular average misorientation angle per orientation
 %
-%% Input
-% grains - @GrainSet
+% Input
+%  grains - @GrainSet
 %
-%% Flags
-% Boundary    -  do also consider the grain boundary for average
-% secondorder -  also include higher order neighbors
+% Flags
+%  Boundary    -  do also consider the grain boundary for average
+%  secondorder -  also include higher order neighbors
 %
 
 
@@ -15,7 +15,7 @@ CS = get(grains,'CSCell');
 
 r         = grains.rotations;
 phaseMap  = grains.phaseMap;
-phase     = grains.phaseMap(grains.phase);
+phase     = grains.phase;
 
 isIndexed = ~isNotIndexed(grains);
 

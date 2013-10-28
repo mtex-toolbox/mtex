@@ -6,7 +6,7 @@ try
   % restrict to indexed phases
   phases = find(cellfun(@(cs) isa(cs,'symmetry'),ebsd.CS));
   
-  phases = intersect(phases,unique(ebsd.phase));
+  phases = intersect(phases,unique(ebsd.phaseId));
   
   if numel(phases) > 1
   
@@ -20,10 +20,10 @@ try
     
   end
   
-  ebsd = subsref(ebsd,ebsd.phase == phases);
+  ebsd = subSet(ebsd,ebsd.phaseId == phases);
   cs = ebsd.CS{phases};
   
-  if numel(ebsd.phase) == 0
+  if numel(ebsd.phaseId) == 0
     error('MTEX:MultiplePhases','The EBSD set is Empty!');
   end
     

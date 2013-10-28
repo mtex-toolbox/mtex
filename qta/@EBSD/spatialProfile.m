@@ -25,9 +25,9 @@ function varargout = spatialProfile(ebsd,lineX,varargin)
 if isa(ebsd,'GrainSet'), ebsd = get(ebsd,'EBSD');end
 
 if all(isfield(ebsd.prop,{'x','y','z'}))
-  x_D = get(ebsd,'xyz');
+  x_D = [ebsd.prop.x,ebsd.prop.y,ebsd.prop.z];
 elseif all(isfield(ebsd.prop,{'x','y'}))
-  x_D = get(ebsd,'xy');
+  x_D = [ebsd.prop.x,ebsd.prop.y];
 else
   error('mtex:SpatialProfile','no Spatial Data!');
 end

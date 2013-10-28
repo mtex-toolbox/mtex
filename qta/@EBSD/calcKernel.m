@@ -22,7 +22,7 @@ function psi = calcKernel(ebsd,varargin)
 % EBSD/calcODF EBSD/BCV EBSD/KLCV EBSD/LSCV
 
 % ensure single phase
-if numel(unique(ebsd.phase)) > 1
+if numel(unique(ebsd.phaseId)) > 1
 
   error('MTEX:MultiplePhases',['This operatorion is only permitted for a single phase!' ...
     'See ' doclink('xx','xx')  ...
@@ -47,7 +47,7 @@ psi = get_option(varargin,'kernel',psi);
 maxSample = 5000;
 if length(ebsd) > maxSample
   fak = (length(ebsd)/maxSample).^(1/7); % true is 2/7 but let us stay on the save side
-  ebsd = subsample(ebsd,maxSample);
+  ebsd = subSample(ebsd,maxSample);
 else
   fak = 1;
 end

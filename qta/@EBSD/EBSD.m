@@ -33,6 +33,7 @@ classdef EBSD < dynProp & dynOption
   
   properties (Dependent = true)
     phase        % phase
+    phaseId      % 
     orientations %
     minerals     % mineral names
   end
@@ -60,12 +61,13 @@ classdef EBSD < dynProp & dynOption
       ebsd.prop = get_option(varargin,'options',struct);
       
       % extract phases
-      [ebsd.phaseMap,~,ebsd.phase] =  unique(...
+      [ebsd.phaseMap,~,ebsd.phaseId] =  unique(...
         get_option(varargin,'phase',ones(length(ebsd),1)));
       ebsd.phaseMap(isnan(ebsd.phaseMap)) = 0;
       
+      % TODO!!
       % if all phases are zero replace them by 1
-      if all(ebsd.phase == 0), ebsd.phase = ones(length(ebsd),1);end
+      %if all(ebsd.phase == 0), ebsd.phase = ones(length(ebsd),1);end
       
       % -------------- set up symmetries --------------------------
       
@@ -119,7 +121,7 @@ classdef EBSD < dynProp & dynOption
       if check_option(varargin,'ignorePhase')
         
         del = ismember(ebsd.phaseMap(ebsd.phase),get_option(varargin,'ignorePhase',[]));
-        ebsd = subsref(ebsd,~del);
+        ebsd = subSet(ebsd,~del);
         
       end
       
@@ -137,8 +139,12 @@ classdef EBSD < dynProp & dynOption
     end
     
     % --------------------------------------------------------------
+    function phaseId = get.phaseId(ebsd)
+      phaseId = ebsd.prop.phase;
+    end
+    
     function phase = get.phase(ebsd)
-      phase = ebsd.prop.phase;
+      phase = ebsd.phaseMap(ebsd.prop.phase);
     end
     
     function ebsd = set.phase(ebsd,phase)

@@ -14,7 +14,7 @@ if isa(s,'double') || isa(s,'logical')
     
     ebsd.options = structfun(@(x) subsasgn(x,ss,[]),ebsd.options,'UniformOutput',false);
     ebsd.rotations = subsasgn(ebsd.rotations,ss,[]);
-    ebsd.phase = subsasgn(ebsd.phase,ss,[]);
+    ebsd.phaseId = subsasgn(ebsd.phaseId,ss,[]);
     
   elseif isa(b,'char') % assign a new phase
     
@@ -28,13 +28,13 @@ if isa(s,'double') || isa(s,'logical')
       ebsd.CS{newphase} = b;      
     end
     
-    ebsd.phase = subsasgn(ebsd.phase,ss,newphase);
+    ebsd.phaseId = subsasgn(ebsd.phaseId,ss,newphase);
     
   elseif isa(b,'EBSD') % copy measurements
     
     ebsd.options = structfun(@(x) subsasgn(x,ss,b.options),ebsd.options,'UniformOutput',false);
     ebsd.rotations = subsasgn(ebsd.rotations,ss,b.rotations);
-    ebsd.phase = subsasgn(ebsd.phase,ss,b.phase);
+    ebsd.phaseId = subsasgn(ebsd.phaseId,ss,b.phaseId);
     
   else
     

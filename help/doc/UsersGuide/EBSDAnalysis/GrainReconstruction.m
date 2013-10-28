@@ -192,7 +192,7 @@ plot(grains(~large_grains),'facecolor','r')
 % grain boundaries. Next, we use the EBSD data of the computed grain set to
 % do the reconstruction again.
 
-grains_corrected = calcGrains(large_grains,'keepNotIndexed','angle',5*degree)
+grains_corrected = calcGrains(large_grains.ebsd,'keepNotIndexed','angle',5*degree)
 
 close all
 plot(grains_corrected,'property','phase')
