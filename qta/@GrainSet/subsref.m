@@ -16,10 +16,10 @@ if strcmp(s(1).type,'()')
 elseif strcmp(s(1).type,'.')
   
   % maybe reference to a dynamic option
-  try %#ok<TRYNC>
-    [varargout{1:nargout}] = subsref@dynOption(grains,s);
-    return
-  end
+  %try %#ok<TRYNC>
+  %  [varargout{1:nargout}] = subsref@dynOption(grains,s);
+  %  return
+  %end
   
   % maybe reference to a dynamic property
   try %#ok<TRYNC>

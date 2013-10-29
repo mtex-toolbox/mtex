@@ -51,15 +51,15 @@ classdef GrainSet < dynProp
   methods
     function obj = GrainSet(grainStruct,varargin)
       
-      obj.ebsd = grainStruct.ebsd;
+      obj.ebsd     = grainStruct.ebsd;
       obj.A_Db     = logical(grainStruct.A_Db);
       obj.A_Do     = logical(grainStruct.A_Do);
-      obj.I_DG     = logical(grainStruct.I_DG);
-      obj.meanRotation = grainStruct.meanRotation;
+      obj.I_DG     = logical(grainStruct.I_DG);      
       obj.I_FDext  = grainStruct.I_FDext;      
       obj.I_FDint  = grainStruct.I_FDint;      
       obj.F        = grainStruct.F;            
       obj.V        = grainStruct.V;          
+      obj.meanRotation = calcMeanRotation(obj);
       
     end
     
@@ -177,7 +177,7 @@ classdef GrainSet < dynProp
   methods (Access = protected)
     
     function ind = subsind(grains,subs)
-      ind = true(size(grains));
+      ind = true(length(grains),1);
       
       for i = 1:length(subs)
         
@@ -224,4 +224,38 @@ classdef GrainSet < dynProp
     
   end
   
+end
+
+% ------------ mean orientation and phase --------------------------
+function meanRotation = calcMeanRotation(grains)
+
+[d,g] = find(grains.I_DG);
+
+grainSize     = full(sum(grains.I_DG>0,1));   % points per grain
+grainRange    = [0 cumsum(grainSize)];        % 
+firstD        = d(grainRange(2:end));
+phaseId       = grains.ebsd.phaseId(firstD);
+q             = quaternion(grains.ebsd.rotations);
+meanRotation  = q(firstD);
+
+indexedPhases = ~cellfun('isclass',grains.CS(:),'char');
+
+for p = find(indexedPhases)'
+  ndx = grains.ebsd.phaseId(d) == p; 
+  q(d(ndx)) = project2FundamentalRegion(...
+    q(d(ndx)),grains.CS{p},meanRotation(g(ndx)));
+  
+  % mean may be inaccurate for some grains and should be projected again
+  % any(sparse(d(ndx),g(ndx),angle(q(d(ndx)),meanRotation(g(ndx))) > getMaxAngle(ebsd.CS{p})/2))
+end
+
+doMeanCalc    = find(grainSize(:)>1 & indexedPhases(phaseId));
+cellMean      = cell(size(doMeanCalc));
+for k = 1:numel(doMeanCalc)
+  cellMean{k} = d(grainRange(doMeanCalc(k))+1:grainRange(doMeanCalc(k)+1));
+end
+cellMean = cellfun(@mean,partition(q,cellMean),'uniformoutput',false);
+
+meanRotation(doMeanCalc) = [cellMean{:}];
+
 end
