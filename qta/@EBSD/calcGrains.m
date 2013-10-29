@@ -221,39 +221,6 @@ D_Fsub  = diag(sum(abs(I_FD(:,ix)) & abs(I_FD(:,iy)),2)>0);
 I_FDint = D_Fsub*I_FD;
 clear I_FD I_FDbg D_Fsub ix iy
 
-% ------------ mean orientation and phase --------------------------
-
-[d,g] = find(I_DG);
-
-grainSize     = full(sum(I_DG>0,1));
-grainRange    = [0 cumsum(grainSize)];
-firstD        = d(grainRange(2:end));
-phaseId       = ebsd.phaseId(firstD);
-q             = quaternion(ebsd.rotations);
-meanRotation  = q(firstD);
-
-
-indexedPhases = ~cellfun('isclass',ebsd.CS(:),'char');
-for p = find(indexedPhases)'
-  ndx = ebsd.phaseId(d) == p; % ebsd.phaseMap(p);
-  q(d(ndx)) = project2FundamentalRegion(...
-    q(d(ndx)),ebsd.CS{p},meanRotation(g(ndx)));
-  
-  % mean may be inaccurate for some grains and should be projected again
-  % any(sparse(d(ndx),g(ndx),angle(q(d(ndx)),meanRotation(g(ndx))) > getMaxAngle(ebsd.CS{p})/2))
-end
-
-
-
-doMeanCalc    = find(grainSize(:)>1 & indexedPhases(phaseId));
-cellMean      = cell(size(doMeanCalc));
-for k = 1:numel(doMeanCalc)
-  cellMean{k} = d(grainRange(doMeanCalc(k))+1:grainRange(doMeanCalc(k)+1));
-end
-cellMean = cellfun(@mean,partition(q,cellMean),'uniformoutput',false);
-
-meanRotation(doMeanCalc) = [cellMean{:}];
-
 clear grainSize grainRange indexedPhases doMeanCalc cellMean q g qMean
 
 
@@ -267,14 +234,13 @@ grainStruct.I_FDint  = I_FDint;        clear I_FDint;
 grainStruct.I_DG     = logical(I_DG);  clear I_DG;
 grainStruct.A_Db     = logical(A_Db);   clear A_D;
 grainStruct.A_Do     = logical(A_Do);   clear A_D;
+grainStruct.D = D;
 
 grainStruct.ebsd = ebsd;
-grainStruct.meanRotation = meanRotation;  clear meanRotation;
 
 switch dim
   case 2    
     
-    grainStruct.D = D;
     grains = Grain2d(grainStruct);
     
   case 3
