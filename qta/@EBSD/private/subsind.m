@@ -12,11 +12,11 @@ for i = 1:length(subs)
     mineralsSubs = ensurecell(subs{i});
     phaseNumbers = cellfun(@num2str,num2cell(ebsd.phaseMap(:)'),'Uniformoutput',false);
     
-    phases = false(1,numel(ebsd.minerals));
+    phases = false(1,numel(ebsd.CS));
     
     for k=1:numel(mineralsSubs)
       phases = phases ...
-        | ~cellfun('isempty',regexpi(ebsd.minerals,mineralsSubs{k})) ...
+        | ~cellfun('isempty',regexpi(ebsd.allMinerals,mineralsSubs{k})) ...
         | strcmpi(phaseNumbers,mineralsSubs{k});
     end
     
