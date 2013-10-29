@@ -108,7 +108,7 @@ if strcmpi(property,'phase'),
       lg = [lg patch('vertices',dummyV,'faces',[1 1],'FaceColor',d{k}(1,:))];
     end
   end
-  legend(lg,grains.minerals(isPhase),'location','NorthEast');
+  legend(lg,grains.allMinerals(isPhase),'location','NorthEast');
 end
 
 
@@ -150,13 +150,12 @@ end
 
 if numel(sub)>0
 
-  [ebsd_id,grain_id] = find(get(sub,'I_DG')); %#ok<ASGLU>
-  minerals = get(sub,'minerals');
-
-  txt{1} = ['Grain: '  num2str(unique(grain_id))];
-  txt{2} = ['Phase: ', minerals{get(sub,'phaseMap') == get(sub,'phase')}];
+  %[ebsd_id,grain_id] = find(get(sub,'I_DG')); %#ok<ASGLU>
+  
+  txt{1} = ['Grain: '  num2str(unique(sub.id))];
+  txt{2} = ['Phase: ', sub.mineral];
   if ~isNotIndexed(sub)
-    txt{3} = ['Orientation: ' char(get(sub,'orientation'),'nodegree')];
+    txt{3} = ['Orientation: ' char(sub.meanOrientation,'nodegree')];
   end
   if ~isempty(value)
     txt{3} = ['Value: ' xnum2str(value)];

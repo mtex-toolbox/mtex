@@ -9,15 +9,15 @@ function [ind,d] = find(SO3G,o,epsilon,varargin)
 %  nodes  - @quaternion
 %  radius - double
 % Output
-% indece - 
-% distances -
+%  ind  - index of the closes grid point
+%  dist - misorientation angle
 %
 
 if check_option(varargin,'exact')
 
   d = angle_outer(SO3G,o);
   
-  if nargin == 2
+  if isempty(epsilon)
     [d,ind] = max(d,[],1);
   else
     ind = d<epsilon;
@@ -33,7 +33,7 @@ else
   q = quaternion(o);
   
   % rotate q according to SO3Grid.center
-  if ~isempty(SO3G.center), q = inv(SO3G.center) * q; end
+  if ~isempty(SO3G.center), q = inv(SO3G.center) * q; end %#ok<MINV>
     
   % correct for crystal and specimen symmetry
   qcs = quaternion(rotation_special(SO3G.CS));
@@ -45,7 +45,7 @@ else
   ygamma = double(SO3G.gamma);
   igamma = cumsum([0,GridLength(SO3G.gamma)]);
   sgamma = [SO3G.gamma.min];
-  pgamma = SO3G.gamma(1).periodic;
+  pgamma = SO3G.gamma(1).period;
 
   % search for nearest neighbour
   if nargin == 2 

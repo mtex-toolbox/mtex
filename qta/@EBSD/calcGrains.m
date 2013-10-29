@@ -46,8 +46,6 @@ if numel(gbcValue) == 1 && length(ebsd.CS) > 1
   gbcValue = repmat(gbcValue,size(ebsd.CS));
 end
 
-if isa(ebsd,'GrainSet'),  ebsd = get(ebsd,'ebsd'); end
-
 if all(isfield(ebsd.prop,{'x','y','z'}))
   x_D = [ebsd.prop.x(:),ebsd.prop.y(:),ebsd.prop.z(:)];
   [Xt,m,n]  = unique(x_D(:,[3 2 1]),'first','rows'); %#ok<ASGLU>
@@ -223,19 +221,6 @@ D_Fsub  = diag(sum(abs(I_FD(:,ix)) & abs(I_FD(:,iy)),2)>0);
 I_FDint = D_Fsub*I_FD;
 clear I_FD I_FDbg D_Fsub ix iy
 
-% ------------- sort edges of boundary when 2d case ----------------
-
-switch dim
-  case 2
-    I_FDext = EdgeOrientation(I_FDext,F,x_V,x_D);
-    I_FDint = EdgeOrientation(I_FDint,F,x_V,x_D);
-    
-    b = BoundaryFaceOrder(D,F,I_FDext,I_DG);
-    
-    clear x_D D
-    
-end
-
 % ------------ mean orientation and phase --------------------------
 
 [d,g] = find(I_DG);
@@ -289,64 +274,12 @@ grainStruct.meanRotation = meanRotation;  clear meanRotation;
 switch dim
   case 2    
     
-    grainStruct.boundaryEdgeOrder = b;
+    grainStruct.D = D;
     grains = Grain2d(grainStruct);
     
   case 3
     
     grains = Grain3d(ebsd);
     
-end
-
-
-% ------------- some sub-routines for 2d case -----------------------
-function I_ED = EdgeOrientation(I_ED,E,x_V,x_D)
-% compute the orientaiton of an edge -1, 1
-
-[e,d] = find(I_ED);
-
-% in complex plane with x_D as point of orign
-e1d = complex(x_V(E(e,1),1) - x_D(d,1), x_V(E(e,1),2) - x_D(d,2));
-e2d = complex(x_V(E(e,2),1) - x_D(d,1), x_V(E(e,2),2) - x_D(d,2));
-
-I_ED = sparse(e,d,sign(angle(e1d./e2d)),size(I_ED,1),size(I_ED,2));
-
-
-function b = BoundaryFaceOrder(D,F,I_FD,I_DG)
-
-
-I_FG = I_FD*I_DG;
-[i,d,s] = find(I_FG);
-
-b = cell(max(d),1);
-
-onePixelGrain = full(sum(I_DG,1)) == 1;
-[id,jg] = find(I_DG(:,onePixelGrain));
-b(onePixelGrain) = D(id);
-% close single cells
-
-for k = find(onePixelGrain)
-  b{k} = [b{k} b{k}(1)];
-end
-% b(onePixelGrain) = cellfun(@(x) [x x(1)],  b(onePixelGrain),...
-%   'UniformOutput',false);
-
-
-cs = [0 cumsum(full(sum(I_FG~=0,1)))];
-for k=find(~onePixelGrain)
-  ndx = cs(k)+1:cs(k+1);
-  
-  E1 = F(i(ndx),:);
-  s1 = s(ndx); % flip edge
-  E1(s1>0,[2 1]) = E1(s1>0,[1 2]);
-  
-  b{k} = EulerCycles(E1(:,1),E1(:,2));
-  
-end
-
-for k=find(cellfun('isclass',b(:)','cell'))
-  boundary = b{k};
-  [ignore,order] = sort(cellfun('prodofsize', boundary),'descend');
-  b{k} = boundary(order);
 end
 

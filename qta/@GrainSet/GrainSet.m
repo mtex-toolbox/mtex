@@ -42,9 +42,10 @@ classdef GrainSet < dynProp
     phase
     phaseMap
     CS
-    minerals
+    mineral                     % mineral name of the grain
+    allMinerals                 % all mineral names of the data set
     mis2mean
-    meanOrientation               % mean orientation of the grain
+    meanOrientation             % mean orientation of the grain
   end
   
   methods
@@ -160,9 +161,15 @@ classdef GrainSet < dynProp
       ori = orientation(grains.meanRotation,cs);
     end
             
-    function minerals = get.minerals(grains)
+    function mineral =  get.mineral(grains)
       
-      minerals = grains.ebsd.minerals;
+      mineral = grains.ebsd.mineral;
+    
+    end
+    
+    function minerals = get.allMinerals(grains)
+      
+      minerals = grains.ebsd.allMinerals;
     
     end
   end

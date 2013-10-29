@@ -35,7 +35,8 @@ classdef EBSD < dynProp & dynOption
     phase        % phase
     phaseId      % 
     orientations %
-    minerals     % mineral names
+    mineral      % mineral name
+    allMinerals  % all mineral names
   end
   
   methods
@@ -61,8 +62,8 @@ classdef EBSD < dynProp & dynOption
       ebsd.prop = get_option(varargin,'options',struct);
       
       % extract phases
-      [ebsd.phaseMap,~,ebsd.phaseId] =  unique(...
-        get_option(varargin,'phase',ones(length(ebsd),1)));
+      [ebsd.phaseMap,~,ebsd.prop.phaseId] =  unique(...
+        get_option(varargin,'phase',ones(length(ebsd.rotations),1)));
       ebsd.phaseMap(isnan(ebsd.phaseMap)) = 0;
       
       % TODO!!
@@ -140,15 +141,26 @@ classdef EBSD < dynProp & dynOption
     
     % --------------------------------------------------------------
     function phaseId = get.phaseId(ebsd)
-      phaseId = ebsd.prop.phase;
+      phaseId = ebsd.prop.phaseId;
     end
     
     function phase = get.phase(ebsd)
-      phase = ebsd.phaseMap(ebsd.prop.phase);
+      phase = ebsd.phaseMap(ebsd.prop.phaseId);
+    end
+    
+    function ebsd = set.phaseId(ebsd,phaseId)
+      ebsd.prop.phaseId = phaseId;
     end
     
     function ebsd = set.phase(ebsd,phase)
-      ebsd.prop.phase = phase;
+      
+      phId = zeros(size(ph));
+      for i = 1:numel(ebsd.phaseMap)
+        phId(phase==ebsd.phaseMap(i)) = i;
+      end
+      
+      ebsd.prop.phaseId = phaseId;
+            
     end
     
     function ori = get.orientations(ebsd)
@@ -160,7 +172,15 @@ classdef EBSD < dynProp & dynOption
     end
         
     
-    function minerals = get.minerals(ebsd)
+    function mineral = get.mineral(ebsd)
+      
+      % ensure single phase
+      [~,cs] = checkSinglePhase(ebsd);
+      mineral = cs.mineral;      
+      
+    end
+    
+    function minerals = get.allMinerals(ebsd)
       isCS = cellfun('isclass',ebsd.CS,'symmetry');
       minerals(isCS) = cellfun(@(x) x.mineral,ebsd.CS(isCS),'uniformoutput',false);
       minerals(~isCS) = ebsd.CS(~isCS);
