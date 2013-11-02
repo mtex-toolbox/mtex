@@ -20,10 +20,13 @@ CData = CData(ind);
 combined = cellfun(@(x) reshape(x,[],1,3),CData,'uniformOutput',false);
 
 combined = cat(1,combined{:});
-  
+
 % convert RGB data to colormap indexed data
-[data, map] = rgb2ind(combined, cmaplength,'nodither');
-  
+[map,~,data] = unique(squeeze(combined),'rows');
+if size(map,1) > 100
+  [data, map] = rgb2ind(combined, cmaplength,'nodither');
+end  
+
 % NaN values should be white
 ind = any(isnan(combined),3);
 if any(ind(:))
