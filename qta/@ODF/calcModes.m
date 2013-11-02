@@ -97,6 +97,8 @@ end
 [values,ind] = max(f(:));
 modes = S3G(ind);
 
+end
+
 %% -------------------------------------------------------
 
 function [modes,values] = findMultipleModes(odf,varargin)
@@ -165,3 +167,5 @@ for k=1:numel(q)
 end
 
 modes = orientation(q,odf(1).CS,odf(1).SS);
+
+end
