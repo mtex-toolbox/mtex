@@ -36,7 +36,7 @@ elseif isa(varargin{1},'quaternion')
 end
 
 %
-fibre = orientation(fibre,odf(1).CS,odf(2).SS);
+fibre = orientation(fibre,odf(1).CS,odf(1).SS);
 
 
 % find loop
