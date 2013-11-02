@@ -156,6 +156,18 @@ elseif check_option(varargin,'random')
   theta = acos(2*(rand(points,1)-0.5));
   rho   = 2*pi*rand(points,1);
   
+  ind = rhoInside(rho,minrho,maxrho) & theta >= mintheta;
+  theta = theta(ind);
+  rho = rho(ind);
+  
+  if isnumeric(maxtheta)
+    ind = theta <= maxtheta;
+  else
+    ind = theta <= maxtheta(rho);
+  end
+  theta = theta(ind);
+  rho = rho(ind);
+  
   Grid = sph2vec(theta,rho);
     
 %% all other idexed grids
@@ -213,7 +225,7 @@ else
   elseif check_option(varargin,'equispaced')
 
     if check_option(varargin,'points') % calculate resolution
-      ntheta = N2ntheta(fix(get_option(varargin,'points')),maxtheta,maxrho);
+      ntheta = N2ntheta(fix(get_option(varargin,'points')),maxtheta,maxrho-minrho);
       res =  maxtheta / ntheta;
     else
       res = get_option(varargin,'RESOLUTION',2.5*degree);
