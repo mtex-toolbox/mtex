@@ -32,11 +32,19 @@ try
   
   h = string2Miller(regexprep(description,'.*hkl:(\w*) (\w*) (\w*).*','$1$2$3'));
   
-  data = reshape(data,72,[]);
-  data = data(:,1:17);
+  try
+    data = reshape(data,72,[]);
+    data = data(:,1:17);
   
-  r = S2Grid('regular','theta',(0:5:80)*degree,...
-    'rho',(2.5:5:360)*degree,'maxtheta',80*degree);
+    r = S2Grid('regular','theta',(0:5:80)*degree,...
+      'rho',(2.5:5:360)*degree,'maxtheta',80*degree);
+  catch
+    
+    data = reshape(data,73,[]);
+    r = S2Grid('regular','theta',(0:5:(size(data,2)-1)*5)*degree,...
+      'rho',(0:5:360)*degree,'antipodal','maxtheta',(size(data,2)-1)*5*degree);
+        
+  end
   
   % pf = PoleFigure(Miller(1,1,1),r,data,symmetry('cubic'),symmetry);
   pf = PoleFigure(h,r,data.^2/500,varargin{:});
