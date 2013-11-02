@@ -193,6 +193,7 @@ sigmaCS = rotate(sigma001,inverse(ori))
 
 [tauMax,mActive,nActive,tau,ind] = calcShearStress(sigmaCS,m,n,'symmetrise');
 
+close all
 plot(ebsd('Fe'),'property',tauMax')
 
 %%
