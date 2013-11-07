@@ -17,7 +17,7 @@ fmc.W = sparse(i, j, exp(-fmc.cmaha0*(del)), N, N);
 clear q del
 
 %% RunFMC
-disp('starting RunFMC')
+vdisp('starting RunFMC')
 fmc.W = fmc.W + fmc.W';
 fmc.A_D = fmc.A_D | fmc.A_D';
 
@@ -52,8 +52,8 @@ fmc.P = speye(N);
 
 while ~isequal(fmc.sizeW,fmc.sizeWnext)
   
-  fprintf('S-Level: %i\n', fmc.sLevel)
-  fprintf('Number of Clusters: %i\n', numClusters(fmc.sLevel))
+  vdisp(['S-Level: ' int2str(fmc.sLevel)]);
+  vdisp(['Number of Clusters: ' int2str(numClusters(fmc.sLevel))]);
   
   fmc = FMC_Coarsen(fmc);
   
