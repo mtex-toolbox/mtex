@@ -85,5 +85,5 @@ elseif check_option(varargin,{'convertEuler2SpatialReferenceFrame','wizard'})
 else
   warning(['.ctf files have usualy inconsistent conventions for spatial ' ...
     'coordinates and Euler angles. You may want to use one of the options ' ...
-    '''convertSpatial2EulerReferenceFrame'' or ''keepEuler'' to correct for this']);  
+    '''convertSpatial2EulerReferenceFrame'' or ''convertEuler2SpatialReferenceFrame'' to correct for this']);  
 end
