@@ -80,6 +80,10 @@ end
 % change reference frame
 if check_option(varargin,'convertSpatial2EulerReferenceFrame')
   ebsd = rotate(ebsd,rotation('axis',xvector,'angle',180*degree),'keepEuler');
-elseif check_option(varargin,'convertSpatial2EulerReferenceFrame')
+elseif check_option(varargin,{'convertEuler2SpatialReferenceFrame','wizard'}) 
   ebsd = rotate(ebsd,rotation('axis',xvector,'angle',180*degree),'keepXY');
+else
+  warning(['.ctf files have usualy inconsistent conventions for spatial ' ...
+    'coordinates and Euler angles. You may want to use one of the options ' ...
+    '''convertSpatial2EulerReferenceFrame'' or ''keepEuler'' to correct for this']);  
 end
