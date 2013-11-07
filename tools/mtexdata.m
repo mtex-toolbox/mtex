@@ -217,6 +217,13 @@ function [CS,ebsd] = mtexdata_epidote
 ebsd = loadEBSD([mtexDataPath '/EBSD/data.ctf'],'ignorePhase',[0 3 4]);
 CS = get(ebsd,'CS');
 
+%%
+function [CS,ebsd] = mtexdata_forsterite
+
+ebsd = loadEBSD([mtexDataPath '/EBSD/forsterite.ctf'],'convertEuler2spatialReferenceFrame');
+CS = get(ebsd,'CS');
+
+%%
 function [CS,ebsd] = mtexdata_single
 
 CS = symmetry('Fm3m',[4.04958 4.04958 4.04958]); % crystal symmetry
