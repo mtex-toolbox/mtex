@@ -37,7 +37,7 @@ end
 
 % build assignments
 for curS = numS-4:numS
-    fprintf('Considering S = %i \n', curS)
+    vdisp(['Considering S = ', int2str(curS)]);
     
     %find nodes for current s
     elemS = elements(sAssign(elements) == curS)';   %nodes of curS
@@ -76,7 +76,7 @@ rLimit = 15;   %Recursion limit (MATLAB tends to crash around 840)
 %MATLAB's huge overhead. Better to make more calls than fewer, deeper calls
 % set(0,'RecursionLimit',rLimit)
 
-disp('Breaking non-continuous clusters')
+vdisp('Breaking non-continuous clusters')
 
 flag = zeros(length(assignmentsX),1);
 assignmentsN = zeros(length(assignmentsX),1);
