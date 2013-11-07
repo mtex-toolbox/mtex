@@ -40,11 +40,11 @@ grains_FMC = calcGrains(ebsd,'FMC',3.5)
 %%
 % plot the grains
 figure('position',[100 100 800 350])
-plot(grains_FMC)
+plot(grains_FMC,'sharp')
 
 %%
 % and overlay on the EBSD data for reference
 figure('position',[500 100 800 350])
-plot(ebsd)
+plot(ebsd,'sharp')
 hold on
 plotBoundary(grains_FMC,'linewidth',1.5)
