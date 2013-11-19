@@ -33,7 +33,7 @@ function varargout = plotspatial(ebsd,varargin)
 %% Example
 % plot a EBSD data set spatially with custom colorcoding
 %
-%   mtexdata aachen
+%   mtexdata forsterite
 %   plot(ebsd,'colorcoding','ipdfHKL')
 %
 %   plot(ebsd,'property','phase')
