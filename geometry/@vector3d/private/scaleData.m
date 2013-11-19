@@ -36,6 +36,7 @@ elseif check_option(varargin,'colorRange','double')
 end
  
 % correct for allmost constant data
-if colorRange(2)-colorRange(1) < 1e-15
+if colorRange(1)>0 && ...
+    ((colorRange(2)-colorRange(1))/colorRange(1) < 1e-15)
   colorRange = [min(colorRange(1),0),max(colorRange(2),1)];
 end
