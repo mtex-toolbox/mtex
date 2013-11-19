@@ -9,9 +9,10 @@
 %% Connection between grains and EBSD data
 % As usual, let us first import some EBSD data construct some grains
 
-mtexdata aachen
+close all
+mtexdata forsterite
 plotx2east
-grains = calcGrains(ebsd,'angle',2*degree)
+grains = calcGrains(ebsd)
 
 %%
 % The <GrainSet_index.html GrainSet> contains the EBSD data it was reconstructed from. We can
@@ -26,24 +27,34 @@ ebsd_selected  = get(grain_selected,'EBSD')
 % adjusted to match the spatial coordinates, present in the EBSD or
 % GrainSet.
 
-grain_selected = findByLocation(grains,[145  137])
+grain_selected = findByLocation(grains,[12000  3000])
 
 %%
 %
 
 plotBoundary(grain_selected,'linewidth',2)
-hold on, plot(ebsd_selected)
+hold on
+plot(get(grain_selected,'ebsd'))
+hold off
 
 %% Visualize the misorientation within a grain
 % 
 
 o = get(grain_selected,'mis2mean')
-close, plotspatial(grain_selected,'property',angle(o)/degree)
+plotBoundary(grain_selected,'linewidth',2)
+hold on
+plotspatial(grain_selected,'property',angle(o)/degree)
 colorbar
+hold off
 
 %%
 
-close, plotspatial(grain_selected,'property','mis2mean')
+close
+plotBoundary(grain_selected,'linewidth',2)
+hold on
+plotspatial(grain_selected,'property','mis2mean')
+hold off
+
 
 %% Testing on Bingham distribution for a single grain
 % Although the orientations of an individual grain are highly concentrated,
@@ -54,7 +65,7 @@ close, plotspatial(grain_selected,'property','mis2mean')
 % only plots the mean orientation of grains. Thus, for these commands, we
 % have to explicitely specify the underlaying EBSD data.
 
-plotpdf(ebsd_selected,...
+plotpdf(get(grain_selected,'ebsd'),...
   [Miller(0,0,1),Miller(0,1,1),Miller(1,1,1)],'antipodal')
 
 %%
@@ -88,18 +99,19 @@ T_oblate    = bingham_test(grain_selected,'oblate',   'approximated');
 % We proceed by specifiing such a line segment
 
 close,   plotBoundary(grain_selected,'linewidth',2)
-hold on, plot(ebsd_selected,'property','angle')
+hold on, plot(get(grain_selected,'ebsd'),'property','angle')
 
 % line segment
-x =  [154   125.25;
-      169.5  134];
+x =  [11000   2500; ...
+      13500  5000];
+
 line(x(:,1),x(:,2),'linewidth',2)
 
 %%
 % The command <EBSD.spatialProfile.html spatialProfile> extracts
 % orientations along a line segment
 
-[o,dist] = spatialProfile(ebsd_selected,x);
+[o,dist] = spatialProfile(get(grain_selected,'ebsd'),x);
 
 %%
 % where the first output argument is a set of orientations ordered along
@@ -124,8 +136,4 @@ legend('to reference orientation','to neighbour')
 % distance
 
 close, plot(axis(o),dist,'markersize',3,'antipodal')
-
-
-
-
 

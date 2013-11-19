@@ -6,7 +6,7 @@
 % grains>. We define a grain  as a region, in which the misorientation of
 % neighbored measurements is less than a given threshold.
 
-mtexdata aachen
+mtexdata forsterite
 grains = calcGrains(ebsd,'angle',12.5*degree)
 
 %%

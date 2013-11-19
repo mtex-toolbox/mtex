@@ -13,12 +13,12 @@
 %%
 % Let us first import some EBSD data with a [[matlab:edit mtexdata, script file]]
 
-mtexdata aachen
+mtexdata forsterite
 
 %%
 % and select all individual orientations of the Iron phase
 
-o = get(ebsd('Fe'),'orientations')
+o = get(ebsd('Fo'),'orientations')
 
 
 %% Scatter Pole Figure Plot
@@ -71,34 +71,26 @@ grains = calcGrains(ebsd);
 % Then the scatter plot of the individual orientations of the Iron phase in
 % the inverse pole figure is achieved by
 
-plotipdf(ebsd('Fe'),xvector,'points',1000, 'MarkerSize',3);
+plotipdf(ebsd('Fo'),xvector,'points',1000, 'MarkerSize',3);
 
 %%
 % In the same way the mean orientations of grains can be visualized
 
-plotipdf(grains('Fe'),xvector,'points',500, 'MarkerSize',3);
+plotipdf(grains('Fo'),xvector,'points',500, 'MarkerSize',3);
 
 %%
 % Once can also use different colors on the scatter points by certain [[EBSD.get.html,EBSD
 % properties]] or [[GrainSet.get.html,grain properties]]
 
-plotpdf(ebsd('Fe'),[Miller(1,0,0),Miller(1,1,0)],'antipodal','MarkerSize',4,...
+plotpdf(ebsd('Fo'),[Miller(1,0,0),Miller(1,1,0)],'antipodal','MarkerSize',4,...
   'property','mad')
 
 %%
 % or some arbitrary data vector
 
-plotodf(grains('Fe'),'antipodal','sections',9,'MarkerSize',3,...
+plotodf(grains('Fo'),'antipodal','sections',9,'MarkerSize',3,...
   'property',shapefactor(grains('Fe')),'sigma');
 
-%% 
-% Superposition of two scatter plots is achieved by the commands *hold on*
-% and *hold off*.
-
-plotipdf(ebsd('Fe'),xvector,'MarkerSize',5,'points',100)
-hold on
-plotipdf(ebsd('Mg'),xvector,'MarkerSize',5,'points',100,'MarkerColor','r')
-hold off
 
 %%
 % See also <PlotTypes_demo.html#5, Scatter plots> for more information

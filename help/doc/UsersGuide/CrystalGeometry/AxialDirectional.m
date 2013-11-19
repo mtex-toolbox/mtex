@@ -112,19 +112,19 @@ plotipdf(odf,yvector,'antipodal')
 % Antipodal symmetry effects also the colocoding of ebsd plots. Let's first
 % import some data.
 
-mtexdata aachen
+mtexdata forsterite
 
 %%
 % Now we plot these data with a colorcoding according to the inverse
 % (1,0,0) pole figure. Here no antipodal symmetry is present.
 
 close all
-plot(ebsd('fe'))
+plot(ebsd('fo'))
 colorbar
 
 %%
 % Compare to the result when antipodal symmetry is introduced.
 
 close all
-plot(ebsd('fe'),'antipodal')
+plot(ebsd('fo'),'antipodal')
 colorbar

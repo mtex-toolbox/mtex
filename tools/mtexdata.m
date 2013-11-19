@@ -221,7 +221,7 @@ CS = get(ebsd,'CS');
 function [CS,ebsd] = mtexdata_forsterite
 
 ebsd = loadEBSD([mtexDataPath '/EBSD/forsterite.ctf'],'convertEuler2spatialReferenceFrame');
-CS = get(ebsd,'CS');
+CS = get(ebsd,'CSCell');
 
 %%
 function [CS,ebsd] = mtexdata_single

@@ -19,7 +19,7 @@
 %% The sample data set
 % Let us first import some EBSD data by a [[matlab:edit mtexdata, script file]]
 
-mtexdata aachen
+mtexdata forsterite
 plotx2east
 
 %%
@@ -35,7 +35,7 @@ grains = calcGrains(ebsd,'threshold',5*degree);
 % <ebsd_get.html,get>.
 
 % get the misorientations to mean
-mori = get(grains('Fe'),'mis2mean')
+mori = get(grains('Fo'),'mis2mean')
 
 % plot a histogram of the misorientation angles
 close all
@@ -99,14 +99,14 @@ plotAngleDistribution(grains,'uncorrelated')
 % syntax
 
 close all
-plotAngleDistribution(grains('Fe'),grains('Mg'),'uncorrelated')
+plotAngleDistribution(grains('Fo'),grains('En'),'uncorrelated')
 
 %% The axis distribution
 % 
 % Let's start here with the uncorrelated axis distribution, which depends
 % only on the underlying ODFs. 
 
-plotAxisDistribution(grains('Fe'),'uncorrelated','contourf','antipodal')
+plotAxisDistribution(grains('Fo'),'uncorrelated','contourf','antipodal')
 colorbar
 
 %%
@@ -114,7 +114,7 @@ colorbar
 % plot
 
 hold on
-plotAxisDistribution(grains('Fe'),'antipodal','SampleSize',100,...
+plotAxisDistribution(grains('Fo'),'antipodal','SampleSize',100,...
   'MarkerSize',4,'MarkerFaceColor','none','MarkerEdgeColor','red')
 mtexColorMap white2black
 hold off
@@ -124,7 +124,7 @@ hold off
 % comparison we plot the axis distribiution of the boundary misorientations
 % also as a density plot.
 
-plotAxisDistribution(grains('Fe'),'antipodal','contourf')
+plotAxisDistribution(grains('Fo'),'antipodal','contourf')
 colorbar
 
 %%

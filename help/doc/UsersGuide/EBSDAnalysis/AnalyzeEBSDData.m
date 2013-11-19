@@ -3,47 +3,96 @@
 %% Open in Editor
 %
 %% 
-% EBSD Data analysis is not yet complete in MTEX. However most of the main
-% functionalities are already implemented. First of all one can estimate an
-% ODF from EBSD data. This is explained in detail in the section
-% <EBSD2odf.html EBSD estimation from EBSD data>. Further
-% possibilities include the calculation of volume fractions directly from EBSD data, 
-% calculations of the mean orientation and estimation of the Fourier coefficients. 
+% Here we discuss tools for the analysis of EBSD data which are independent
+% from its spatial coordinates. For spatial analysis we refer to <xxx.html
+% this page>.
 %
 %% Contents
 %
-%% Syntax
+%% Data import
 %
 % Let us first import some EBSD data:
 %
 
-cs = {...
-  'notIndexed',...
-  symmetry('m-3m','mineral','Fe'),... % crystal symmetry phase 1
-  symmetry('m-3m','mineral','Mg')};   % crystal symmetry phase 2
+plotx2east
+ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','forsterite.ctf'),...
+  'convertEuler2SpatialReferenceFrame');
 
-ss = symmetry('triclinic');
+plot(ebsd)
 
-ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt'),cs,ss,... 
-                'interface','generic','Bunge',...
-                 'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3'},...
-                 'Columns', [2 3 4 5 6 7]);
-
-plot(ebsd('Fe'))
-
-%% Mean Orientation
+%% Orientation plot
 %
-% The next step is to determine the mean orientation of the first phase
+% We start our investiagations of the Forsterite phase by plotting some
+% pole figures
 
-m = mean(ebsd('Fe'));
+plotpdf(ebsd('Forsterite'),[Miller(1,0,0),Miller(0,1,0),Miller(0,0,1)],'antipodal')
 
-% and plot it within a pole figure plot
+%%
+% From the 100 pole figure we might suspect a fibre texture present in our
+% data. Lets check this. First we determine the vector orhtogonal to fibre
+% in the 100 pole figure
 
-plotpdf(ebsd('Fe'),[Miller(1,0,0),Miller(0,0,1)],'antipodal')
-annotate(m,'Marker','s','MarkerFaceColor','red')
+% the orientations of the Forsterite phase
+ori = get(ebsd('Forsterite'),'orientations')
 
-%% Volume
+% the vectors in the 100 pole figure
+r = ori * Miller(1,0,0)
+
+% the vector best orthogonal to all r
+rOrth = orth(S2Grid(r))
+
+% output
+hold on
+plot(rOrth)
+hold off
+
+%%
+% we can check how large is the number of orientations that are in the 100
+% polegigure within a 10 degree fibre around the great circle with center
+% |rOrth|. The following line gives the result in percent
+
+100 * sum(angle(r,rOrth)>80*degree) / numel(ori)
+
+
+%%
+% Next we want to answer the question which crystal direction is mapped to
+% |rOrth|. To this end we look at the corresponding inverse pole figure
+
+plotipdf(ebsd('Forsterite'),rOrth,'smooth')
+
+annotate(Miller(0,1,0))
+
+%%
+% From the inverse pole figure it becomes clear that the orientations are
+% close to the fibre |Miller(0,1,0)|, |rOrth|. Let check this by computing
+% the fibre volume
+
+100 * fibreVolume(ebsd('Forsterite'),Miller(0,1,0),rOrth,10*degree)
+
+%%
+% Suprisingly this value is significantly lower then the value we obtained
+% we looking only at the 100 pole figure. Finaly lets plot the ODF along
+% this fibre
+
+odf = calcODF((ebsd('Forsterite')))
+
+plotfibre(odf,Miller(0,1,0),rOrth)
+
+ylim([0,26])
+
+%%
+% We see that to ODF is far from beeing constant along the fibre. Thus,
+% together with observation about the small fibre volume we would reject
+% the hypothesis of an fibre texture.
 %
-% Now lets estimate the the volume close to the mean orientation.
+% Let finaly plot the ODF in orientation space to verify our decision
 
-volume(ebsd('Fe'),m,10*degree)
+plot(odf,'sigma')
+
+%%
+% Here we see the typical large individuell spots that are typical for
+% large grains. Thus the ODF estimated from the EBSD data
+% and all our previous analysis suffers from the fact that to few grains
+% have been measured. For texture analysis it would have been favourable to
+% measure at a lower resultion but a larger region.
+

@@ -10,14 +10,14 @@
 % <EBSD_index.html EBSD> object, which here is imported by a
 % [[matlab:edit mtexdata, script file]]
 
-mtexdata aachen
+mtexdata forsterite
 
 %% ODF Estimation
 %
 % These EBSD dataset consist of two phases, Iron and Magnesium. The ODF of the Iron
 % phase is computed by the command
 
-odf = calcODF(ebsd('Fe'))
+odf = calcODF(ebsd('fo'))
 
 %%
 % The function <EBSD.calcODF.html calcODF> implements the ODF estimation from
@@ -42,7 +42,7 @@ odf = calcODF(ebsd('Fe'))
 % EBSD measurements (only one measurement per grain). 
 
 % try to compute an optimal kernel
-psi = calcKernel(ebsd('Fe'))
+psi = calcKernel(ebsd('fo'))
 
 %%
 % In the above example the EBSD measurements are spatial dependend and the
@@ -57,10 +57,10 @@ grains = calcGrains(ebsd);
 grains = grains(grainSize(grains)>5);
 
 % compute optimal halfwidth from grains
-psi = calcKernel(grains('Fe'))
+psi = calcKernel(grains('fo'))
 
 % compute the ODF with the kernel psi
-odf = calcODF(ebsd('Fe'),'kernel',psi)
+odf = calcODF(ebsd('fo'),'kernel',psi)
 
 
 %%
