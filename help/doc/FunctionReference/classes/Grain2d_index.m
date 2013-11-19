@@ -2,7 +2,7 @@
 % class representing *2d Grains*. inherits methods of @GrainSet
 %
 
-mtexdata aachen
+mtexdata forsterite
 grains = calcGrains(ebsd)
 
 %%

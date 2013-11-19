@@ -11,15 +11,15 @@
 % 
 % Lets import some EBSD data and reconstruct the grains.
 
-mtexdata aachen
+mtexdata forsterite
 grains = calcGrains(ebsd)
 
 %% SUB: The boundary misorientation distribution function
 %
 % The boundary misorientation distribution function for the phase
-% transition from Fe to Mg can be computed by
+% transition from Forsterite to Enstatite can be computed by
 
-mdf_boundary = calcMDF(grains('Fe'),grains('Mg'),'halfwidth',10*degree)
+mdf_boundary = calcMDF(grains('Fo'),grains('En'),'halfwidth',10*degree)
 
 %%
 % The misorientation distribution function can be processed as any other
@@ -37,7 +37,7 @@ plotpdf(mdf_boundary,Miller(1,0,0))
 % Alternatively the uncorelated misorientation distribution function can be
 % computed by providing the option *uncorelated*
 
-mdf_uncor = calcMDF(grains('Fe'),grains('Mg'),'uncorrelated','halfwidth',10*degree)
+mdf_uncor = calcMDF(grains('Fo'),grains('En'),'uncorrelated','halfwidth',10*degree)
 
 %%
 % Obviously it is different from the boundary misorientation distribution
@@ -49,14 +49,14 @@ plotpdf(mdf_uncor,Miller(1,0,0))
 %
 % Let given two odfs
 
-odf_fe = calcODF(ebsd('fe'),'halfwidth',10*degree)
-odf_mg = calcODF(ebsd('mg'),'halfwidth',10*degree)
+odf_fo = calcODF(ebsd('fo'),'halfwidth',10*degree)
+odf_en = calcODF(ebsd('en'),'halfwidth',10*degree)
 
 %%
 % Then the uncorrelated misorientation function between these two ODFs can
 % be computed by
 
-mdf = calcMDF(odf_fe,odf_mg)
+mdf = calcMDF(odf_fo,odf_en)
 
 %%
 % This misorientation distribution function should be similar to the
@@ -74,7 +74,7 @@ plotpdf(mdf,Miller(1,0,0))
 % misorientations with the theoretical angle distribution of the
 % uncorrelated MDF.
 
-plotAngleDistribution(grains('fe'),grains('mg'))
+plotAngleDistribution(grains('fo'),grains('en'))
 
 hold on
 
@@ -92,7 +92,7 @@ hold off
 % The same we can do with the axis distribution. First the actual angle distribution of the boundary
 % misorientations
 
-plotAxisDistribution(grains('fe'),grains('mg'),'smooth','antipodal')
+plotAxisDistribution(grains('fo'),grains('en'),'smooth','antipodal')
 
 %%
 % Now the theoretical axis distribution of the

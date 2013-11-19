@@ -10,15 +10,20 @@
 % One of the central issues analizing grains is the visualization by
 % spatial maps. Therefor, let us first reconstruct some grains
 
-mtexdata aachen
+mtexdata forsterite
 plotx2east
-grains = calcGrains(ebsd,'threshold',2*degree)
+
+grains = calcGrains(ebsd)
+
+
 
 %% Plotting grains and combined plots
-% The most naive way to plot grains is just
+% When plotting the grains directly the associated color is defined by the
+% mean orientation within each grain.
 
 close all
 plot(grains)
+
 
 %%
 % Nevertheless, the plot command accepts options as already known from the
@@ -154,14 +159,14 @@ plotBoundary(grains,'property','misorientation',...
 close all
 plotBoundary(grains,'linecolor','k')
 hold on
-plotBoundary(grains,'property',[10 15]*degree,'linecolor','b','linewidth',2)
-plotBoundary(grains,'property',[ 5 10]*degree,'linecolor','g','linewidth',2)
-plotBoundary(grains,'property',[ 2  5]*degree,'linecolor','r','linewidth',2)
+plotBoundary(grains,'property',[20 40]*degree,'linecolor','b','linewidth',2)
+plotBoundary(grains,'property',[10 20]*degree,'linecolor','g','linewidth',2)
+plotBoundary(grains,'property',[ 0  10]*degree,'linecolor','r','linewidth',2)
 
-legend('>15^\circ',...
-  '10^\circ-15^\circ',...
-  '5^\circ-10^\circ',...
-  '2^\circ-5^\circ')
+legend('>40^\circ',...
+  '20^\circ-40^\circ',...
+  '10^\circ-20^\circ',...
+  '< 10^\circ')
 
 %%
 % Or we mark the rotation axis of the misorientation.
@@ -169,10 +174,10 @@ legend('>15^\circ',...
 close all
 plotBoundary(grains)
 hold on
-plotBoundary(grains,'property',vector3d(1,1,1),'delta',2*degree,...
+plotBoundary(grains,'property',vector3d(0,0,1),'delta',5*degree,...
   'linecolor','b','linewidth',1.5)
 
-legend('>2^\circ','[111]')
+legend('>5^\circ','[001]')
 
 %% 
 % Or we mark a special rotation between neighboured grains. If a

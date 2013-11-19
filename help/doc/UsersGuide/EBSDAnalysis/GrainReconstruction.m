@@ -25,7 +25,7 @@ plot(ebsd)
 %%
 % We see that there are a lot of not indexed locations. For grain
 % reconstruction we have to two different choices how to deal with these
-% unindexed region:
+% unindexed regions:
 %
 % # assign them to the surrounding grains
 % # leaf the unindexed
@@ -143,3 +143,76 @@ plotBoundary(grains_FMC,'linewidth',1.5)
 % stop overide mode
 hold off
 
+%% Correcting poor grains
+% Sometimes measurements belonging to grains with very few measurements can
+% be regarded as inaccurate. This time, we explicitely keep the not
+% indexed measurements by the flag |keepNotIndexed|
+
+mtexdata forsterite
+
+grains = calcGrains(ebsd,'angle',5*degree,'keepNotIndexed')
+
+plot(grains,'property','phase')
+
+%%
+% The number of measurements per grain can be accessed by the command
+% <GrainSet.grainSize.html GrainSize>. Let us determine the number of
+% grains with less then 10 measurements
+
+nnz(grainSize(grains) < 5)
+
+% or the percentage of those grains relative to the total number of grains
+100 * nnz(grainSize(grains) < 10) / numel(grains)
+
+%%
+% We see that almost 92 percent of all grains consist of less then ten
+% measurement points. Next, we compute the percentage of small grains for
+% the individuell phases
+
+p = 100*[nnz(grainSize(grains('notIndexed')) < 10) ...
+  nnz(grainSize(grains('forsterite')) < 10) ...
+  nnz(grainSize(grains('enstatite')) < 10) ...
+  nnz(grainSize(grains('diopside')) < 10)]./numel(grains)
+
+%%
+% We see that almost all small grains are acually not indexed. In order to
+% allow filling in those holes we remove these small not indexed grains
+% completely from the data set
+
+condition = grainSize(grains)>=10 | get(grains,'phase')>0;
+
+grains(condition)
+
+%%
+% If we now perform grain reconstruction a second time these small holes
+% will be assigned to the neighbouring grains
+
+grains = calcGrains(grains(condition),'keepNotIndexed')
+
+plot(grains)
+
+%%
+% We see that all small unindexed regions has been filled. Another way for
+% correcting EBSD data is to filter them accoring to quality measures like
+% MAD or band contrast. Lets plot the band contrast of our measurements
+
+plot(ebsd,'property','bc')
+
+colorbar
+
+%%
+% We see that there is a rectangular region in top left corner which low
+% band contrast. In order to filter out all measurements with low band
+% contrast we can do
+
+condition = get(ebsd,'bc') > 80;
+
+plot(ebsd(condition))
+
+%%
+% Although this filtering has cleared out large regions. The grain
+% reconstruction algorithm works still well.
+
+grains = calcGrains(ebsd(condition))
+
+plot(grains)

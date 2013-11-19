@@ -5,9 +5,9 @@
 %
 %% Contents
 %
-% Let us first import some EBSD data by a [[matlab:edit loadaachen.m, script file]]
+% Let us first import some EBSD data
 
-mtexdata aachen
+mtexdata forsterite
 
 %% See also
 % EBSD/plotspatial grain/plotGrains ebsdColorbar orientation2color
@@ -55,7 +55,7 @@ ebsdColorbar(symmetry('-1'),'colorcoding','BungeRGB','sections',6,'phi1')
 % of the sample reference frame (xvector, yvector or zvector).
 
 close all
-plot(ebsd('Fe'))
+plot(ebsd('Fo'))
 
 %%
 
@@ -65,19 +65,19 @@ colorbar
 % *HKL*. 
 % Another inverse Pole figure color code
 
-close all; plot(ebsd('Fe'),'colorcoding','ipdfHKL')
+close all; plot(ebsd('Fo'),'colorcoding','ipdfHKL')
 
 %%
 %
 colorbar
 
-odf = calcODF(ebsd('Fe'),'silent');
+odf = calcODF(ebsd('Fo'),'silent');
 figure, plotipdf(odf,xvector,'antipodal','silent')
 
 %%
 % We can change the default view onto the specimen (xvector) by setting the option *r*
 
-close all, plot(ebsd('Fe'),'colorcoding','ipdfHKL','r',zvector)
+close all, plot(ebsd('Fo'),'colorcoding','ipdfHKL','r',zvector)
 
 %%
 %

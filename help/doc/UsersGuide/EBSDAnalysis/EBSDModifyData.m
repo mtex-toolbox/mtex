@@ -9,7 +9,7 @@
 % First, let us import some example <mtexdata.html EBSD data> and plot
 % the raw data
 
-mtexdata aachen;
+mtexdata forsterite;
 plotx2east
 close all
 plot(ebsd)
@@ -25,13 +25,13 @@ plot(ebsd,'property','phase')
 %% Selecting certain phases
 % The data coresponding to a certain phase can be extracted by
 
-ebsd_Fe = ebsd('Fe')
+ebsd_Fe = ebsd('Forsterite')
 
 %%
 % In order to extract a couple of phases, the mineral names have to be
 % grouped in curled parethesis.
 
-ebsd({'Fe','Mg'})
+ebsd({'Fo','En'})
 
 %%
 % As an example, let us plot only all not indexed data

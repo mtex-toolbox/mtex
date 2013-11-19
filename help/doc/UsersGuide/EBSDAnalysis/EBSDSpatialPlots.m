@@ -13,14 +13,14 @@
 %%
 % Let us first import some EBSD data with a [[matlab:edit mtexdata, script file]]
 
-mtexdata aachen
+mtexdata forsterite
 
 %% Coloring of spatial orientation data
 % If the EBSD data are provided with spatial coordinates, one can
 % assign a color to each orientation and [[EBSD.plotspatial.html,plot]]
 % a colored map
 
-close all;plot(ebsd('Fe'))
+close all;plot(ebsd('fo'))
 
 %%
 % The orientations of the spatial map are mapped according to a
@@ -37,7 +37,7 @@ colorbar
 % The [[orientation2color.html, colorcoding]] could be specified by an
 % option
 
-close all, plot(ebsd('Fe'),'colorcoding','ipdfHKL')
+close all, plot(ebsd('fo'),'colorcoding','ipdfHKL')
 
 %%
 
@@ -102,7 +102,7 @@ hold off
 % Another example is when analyzing the orientation distribution within
 % grains
 
-mtexdata aachen
+mtexdata forsterite
 
 % segment grains
 grains = calcGrains(ebsd)
@@ -143,7 +143,7 @@ hold off
 % with its rgb color and the specimen direction *r*, which should be marked.
 
 close all, 
-plot(ebsd('Fe'),'colorcoding',...
+plot(ebsd('fo'),'colorcoding',...
   'ipdfCenter',{Miller(1,1,1),[0 0 1]},...
   'r',zvector,...
   'halfwidth',7.5*degree)
@@ -162,10 +162,10 @@ set(gcf,'renderer','zbuffer')
 % the percentage of blue colored area in the map is equivalent to the fibre
 % volume
 
-vol = fibreVolume(ebsd('fe'),Miller(1,1,1),zvector,15*degree)
+vol = fibreVolume(ebsd('fo'),Miller(1,1,1),zvector,15*degree)
 
 close all;
-plotipdf(ebsd('fe'),zvector,'markercolor','k','marker','x')
+plotipdf(ebsd('fo'),zvector,'markercolor','k','marker','x')
 
 %%
 % we can easily extend the colorcoding
@@ -178,7 +178,7 @@ hcolored = {Miller(0,0,1),[1 0 0],...
   Miller(5,5,2)   ,[0 1 1]};
 
 close all;
-plot(ebsd('Fe'),'colorcoding',...
+plot(ebsd('fo'),'colorcoding',...
   'ipdfCenter',hcolored,...
   'r',xvector,...
   'halfwidth',12.5*degree,...
@@ -200,7 +200,7 @@ mode = orientation('euler',90*degree,50*degree,45*degree,'ABG')
 % in the case of fibres
 
 close all;
-plot(ebsd('Fe'),'colorcoding',...
+plot(ebsd('fo'),'colorcoding',...
   'orientationCenter',{mode,[0 0 1]},...
   'halfwidth',10*degree)
 
@@ -212,12 +212,12 @@ colorbar('sections',9,'sigma')
 % the area of the colored EBSD data in the map corresponds to the volume
 % portion
 
-vol = volume(ebsd('fe'),mode,20*degree)
+vol = volume(ebsd('fo'),mode,20*degree)
 
 %%
 % actually, the colored measurements stress a peak in the ODF
 
-odf = calcODF(ebsd('fe'),'halfwidth',10*degree,'silent');
+odf = calcODF(ebsd('fo'),'halfwidth',10*degree,'silent');
 plot(odf,'sections',9,'antipodal','silent','sigma')
 
 
@@ -245,8 +245,8 @@ mtexColorMap white2black
 % information to be plotted, where N referes to the number of measurements
 % in the EBSD data set.
 
-p1 = get(ebsd('Fe'),'bc');
-plot(ebsd('Fe'),'property', p1)
+p1 = get(ebsd('fo'),'bc');
+plot(ebsd('fo'),'property', p1)
 
 %% 
 % if the size is just Nx1, the color can be adjusted with
@@ -264,7 +264,7 @@ plot(ebsd,'property','bc')
 mtexColorMap white2black
 
 hold on
-plot(ebsd('fe'),'colorcoding',...
+plot(ebsd('fo'),'colorcoding',...
   'ipdfCenter',{Miller(1,1,1),[1 0 0]},'r',zvector,...
   'translucent',.5)
 
