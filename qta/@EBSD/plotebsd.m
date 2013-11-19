@@ -12,8 +12,8 @@ function plotebsd(ebsd,varargin)
 %
 %% Example
 % 
-%   mtexdata aachen
-%   plotebsd(ebsd('Fe'),'scatter')
+%   mtexdata forsterite
+%   plotebsd(ebsd('Fo'),'scatter')
 %
 %% See also
 % EBSD/plotpdf EBSD/scatter savefigure
