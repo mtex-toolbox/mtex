@@ -27,7 +27,10 @@ d(:,4) = w./ sum(w);
 
 fid = efopen(filename,'w');
 
-fprintf(fid,'\n\n\n\n');
+% header
+% fourth line has to include the angle convention (B for Bunge)
+% and the total number of grains in the phase
+fprintf(fid,'\n\n\nB %d\n',numel(ebsd));
 
 fprintf(fid,'%7.2f %7.2f %7.2f %11.7f\n',d');
 
