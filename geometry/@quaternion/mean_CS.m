@@ -18,4 +18,4 @@ if numel(q) > 1
   q = mean(q);
 end
 
-o = orientation(q,CS,SS);
+o = orientation(q,CS);
