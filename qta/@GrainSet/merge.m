@@ -141,7 +141,6 @@ unchanged = sum(I_PC,2)==1;  % unchanged
 if any(~unchanged) % some of the were merged  
   
   CS = get(grains,'CSCell');
-  SS = get(grains,'SS');
   r  = get(grains.EBSD,'quaternion');
 
   [i,oldval] = find(I_PC(unchanged,:));
@@ -161,7 +160,7 @@ if any(~unchanged) % some of the were merged
   for k=1:numel(cc)
     c = changed(k);
     if ~ischar(CS{phase(k)})
-      meanRotation(c) = mean_CS(qcedx{k},CS{phase(c)},SS);
+      meanRotation(c) = mean_CS(qcedx{k},CS{phase(c)});
     end
   end
   
