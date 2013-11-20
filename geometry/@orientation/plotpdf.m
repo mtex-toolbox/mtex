@@ -30,7 +30,7 @@ ss = o.SS;
 
 % for a new plot 
 if ~isempty(ax) || newMTEXplot('ensureTag','pdf',...
-    'ensureAppdata',{{'CS',cs},{'SS',ss}})
+    'ensureAppdata',{{'SS',ss}})
   
   % convert to cell
   if ~iscell(h), h = vec2cell(h);end 
