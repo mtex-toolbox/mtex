@@ -23,7 +23,7 @@ for k=1:numel(h)
     res = res/2;
     f = pdf(odf,h(k),S2);
     
-    [a i] = max(f);
+    [a, i] = max(f);
     
     %local search
     v = vector3d(S2(i));
@@ -35,7 +35,7 @@ for k=1:numel(h)
   g = fibre2quat(h(k),v,'resolution',0.25*degree);
   f = eval(odf,g);
   
-  [a i] = max(f);
+  [a, i] = max(f);
   q(k) = g(i);
   
 end
