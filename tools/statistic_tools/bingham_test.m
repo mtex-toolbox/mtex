@@ -1,4 +1,4 @@
-function [T,p,v] = binham_test(o,varargin)
+function [T,p,v] = bingham_test(o,varargin)
 % bingham test for spherical/prolat/oblat case
 %
 %% Input
@@ -19,9 +19,9 @@ test_fun = parseArgs(varargin{:});
 if isa(o,'EBSD')
   o = get(o,'orientations');
   if strfind(test_fun,'chat')
-    [kappa lambda Tv n] = c_hat(o);
+    [kappa, lambda, Tv, n] = c_hat(o);
   else
-    [q lambda Tv kappa] = mean(o,varargin{:});
+    [q, lambda, Tv, kappa] = mean(o,varargin{:});
     n = numel(o);  
   end
 elseif isa(o,'double')
