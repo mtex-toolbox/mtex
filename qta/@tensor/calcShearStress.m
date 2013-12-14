@@ -58,5 +58,5 @@ if numel(m)>1
   n = n(ind);
 else
   tauMax = tau;
-  ind = ones(size(m));
+  ind = ones(size(tauMax));
 end
