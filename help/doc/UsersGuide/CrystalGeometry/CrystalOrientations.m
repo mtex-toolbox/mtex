@@ -34,7 +34,7 @@ ss = symmetry('orthorhombic');
 % *The Bunge Euler Angle Convention*
 %
 % Here an arbitrary rotation is determined by three consecutive rotations
-% in the sample reference frame. The first is about the z-axis, the second about the y-axis, 
+% in the sample reference frame. The first is about the z-axis, the second about the x-axis, 
 % and the third again about the z-axis. Hence, one needs three angles to define an
 % orientation by Euler angles. In the literature these angles are known as
 % "triplet of Euler angles" or simply "Euler angles" and you can find many
