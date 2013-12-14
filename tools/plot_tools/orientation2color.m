@@ -16,7 +16,11 @@ colorCodings = {colorCodings.name};
 found = strcmpi(['om_' colorCoding,'.m'],colorCodings);
 
 if ~any(found)
-  error('Unknown color coding!');
+  colorCodings = strrep(colorCodings,'om_','');
+  colorCodings = strrep(colorCodings,'.m','');
+  format = ['\n\n' repmat(' %s\n',1,numel(colorCodings))];
+  error(['Unknown color coding! Available colorcodings are: ',format],...
+    colorCodings{:});
 end
 
 % compute color
