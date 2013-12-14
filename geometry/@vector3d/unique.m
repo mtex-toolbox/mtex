@@ -20,8 +20,10 @@ else
   xyz = [x,y,z];  
 end
 
+tol = get_option(varargin,'tolerance',1e-7);
+
 % find duplicates points
-[ignore,m,n] = unique(round(xyz*1e7),'rows'); %#ok<ASGLU>
+[ignore,m,n] = unique(round(xyz./tol),'rows'); %#ok<ASGLU>
 
 % remove duplicated points
 v.x = v.x(m);
