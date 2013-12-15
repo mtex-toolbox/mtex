@@ -179,10 +179,12 @@ sigma001 = tensor(M,'name','stress')
 % the next step is to extract the orientations from the EBSD data and
 % transform the stress tensor from specimen to crystal coordinates
 
-mtexdata aachen
+mtexdata forsterite
+
+CS_Forsterite = get(ebsd('Forsterite'),'CS')
 
 % extract the orientations
-ori = get(ebsd('Fe'),'orientations');
+ori = get(ebsd('Forsterite'),'orientations');
 
 % transform the stress tensor from specimen to crystal coordinates
 sigmaCS = rotate(sigma001,inverse(ori))
@@ -191,10 +193,19 @@ sigmaCS = rotate(sigma001,inverse(ori))
 % Next we compute maximum Schmidt factor and the active slip system for
 % every orientation in the ebsd data set
 
-[tauMax,mActive,nActive,tau,ind] = calcShearStress(sigmaCS,m,n,'symmetrise');
+% define the slip directions and slip plane normals
+% (010)[100]
+% slip direction [100]
+b = Miller(1,0,0,CS_Forsterite,'uvw');
+% slip plane normal (010)
+n = Miller(0,1,0,CS_Forsterite,'hkl');
+
+[tauMax,mActive,nActive,tau,ind] = calcShearStress(sigmaCS,n,b,'symmetrise');
 
 close all
-plot(ebsd('Fe'),'property',tauMax')
+plot(ebsd('Forsterite'),'property',tauMax')
+colorbar
+title('Schmidt factors for (010)[100]')
 
 %%
 % The above procedure may also be applied to grains which has the advantage
@@ -204,17 +215,19 @@ plot(ebsd('Fe'),'property',tauMax')
 grains = calcGrains(ebsd)
 
 % extract the orientations
-ori = get(grains('Fe'),'orientation');
+ori = get(grains('Forsterite'),'orientation');
 
 % transform the stress tensor from specimen to crystal coordinates
 sigmaCS = rotate(sigma001,inverse(ori))
 
 % compute maximum Schmid factor and active slip system
-[tauMax,mActive,nActive,tau,ind] = calcShearStress(sigmaCS,m,n,'symmetrise');
+[tauMax,mActive,nActive,tau,ind] = calcShearStress(sigmaCS,n,b,'symmetrise');
 
-plot(grains('Fe'),'property',tauMax)
+plot(grains('Forsterite'),'property',tauMax)
+colorbar
+title('Schmidt factors for (010)[100]')
 
 %% 
 % We may also colorize the active slip system. 
 
-plot(grains('Fe'),'property',ind)
+plot(grains('Forsterite'),'property',ind)
