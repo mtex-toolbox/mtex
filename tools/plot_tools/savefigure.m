@@ -23,7 +23,7 @@ if nargin == 0,
 end
 
 % seperate extension
-[~, ~, ext] = fileparts(fname);
+[tmp1, tmp2, ext] = fileparts(fname);
 
 % resize figure to look good
 ounits = get(gcf,'Units');

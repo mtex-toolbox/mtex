@@ -163,7 +163,7 @@ ar = area(grains);
 bins = linspace(0,max(ar)+eps,15);
 
 % find for each area the binId
-[~,binId] = histc(ar,bins);
+[tmp,binId] = histc(ar,bins);
 
 % compute the sum of areas belonging to the same bin
 cumArea = zeros(1,numel(bins)-1);

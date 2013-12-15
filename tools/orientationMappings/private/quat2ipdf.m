@@ -7,7 +7,7 @@ if isa(ori,'orientation') && ...
    
   % compute the center of the fundamental region
   cs = get(ori,'CS');
-  [~,options] = h2HSV(xvector,cs,varargin{:});
+  [tmp,options] = h2HSV(xvector,cs,varargin{:});
   center = get_option(options,'colorcenter');
   
   % compute r such that mean(ori)^-1 * r = center
