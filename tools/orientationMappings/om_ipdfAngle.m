@@ -37,5 +37,5 @@ end
 
 options = varargin;
 c = reshape(c,size(h))./degree;
-[~,col] = min(abs(c-min(abs(c(:,1)))));
+[tmp,col] = min(abs(c-min(abs(c(:,1)))));
 c = c(sub2ind(size(c),col,1:size(c,2)));

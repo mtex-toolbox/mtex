@@ -68,7 +68,7 @@ else
   swap = d1 > d2;
 end
 
-[~,theta,rho] = selectMinbyColumn([d1;d2],[th1;th2],[rh1;rh2]);
+[tmp,theta,rho] = selectMinbyColumn([d1;d2],[th1;th2],[rh1;rh2]);
 vAntipodal = sph2vec(theta,rho);
 
 function d = modCentered(a,b,c)
