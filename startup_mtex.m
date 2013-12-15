@@ -16,6 +16,13 @@ if (~isOctave() && MATLABverLessThan('7.1'))
   error(['MTEX can not be installed because your MATLAB version ',version,...
     ' is outdated and not longer supported by MTEX. The oldest MATLAB ',...
     'version MTEX has been tested on is 7.1.']);
+  
+elseif MATLABverLessThan('7.6')
+
+  warning(['MTEX will not be fully functional because your MATLAB version ',version,...
+    ' is outdated and not longer supported by MTEX. The oldest MATLAB ',...
+    'version MTEX has been tested on is 7.6.']);
+  
 end
 
 
