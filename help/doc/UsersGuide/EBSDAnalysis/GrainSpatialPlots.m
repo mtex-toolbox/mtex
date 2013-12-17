@@ -131,21 +131,26 @@ hold on, plot(grains,'property','mis2mean')
 
 %% SUB: Misorientation
 % Basicly there are two ways to visualize misorientation along a grain
-% boundary, either to plot the misorientation angle
+% boundary. The most simplest way is to colorize the grain boundaries
+% with respect to the misorientation angle.
 
 close all
 plotBoundary(grains,'property','angle','linewidth',1.5)
 colorbar
 
 %%
-% or to colorize the misorientation itself between neighboured grains (of the same
+% The more sophisticated way is to colorize the misorientation space and
+% apply color to the respectibe grain boundaries. this or to colorize the misorientation itself between neighboured grains (of the same 
 % phase)
 
 close all
 plotBoundary(grains)
 hold on
-plotBoundary(grains,'property','misorientation',...
-  'colorcoding','ipdfHKL','r',vector3d(1,1,1),'linewidth',1.5)
+plotBoundary(grains('Fo'),'property','misorientation',...
+  'colorcoding','patala','linewidth',1.5)
+
+% plot the colorbar
+colorbar('omega',[5,15,25,35,45,55,65,75,85,95,105,115])
 
 %% SUB: Classifing special boundaries
 % Actually, it might be more informative, if we classify the grain

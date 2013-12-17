@@ -54,6 +54,11 @@ if strncmp(cc,'ipdf',3) && ~check_option(varargin,'orientationSpace')
   type = 'ipdf';
   ipdfColorbar(cs,cc,varargin{:});
   
+elseif strcmp(cc,'patala')
+    
+  type = 'patala';
+  patalaColorbar(cs,cc,varargin{:});
+  
 % Colorize orientation space
 else
   
