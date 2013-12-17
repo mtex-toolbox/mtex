@@ -27,25 +27,34 @@ if ~check_option(varargin,'fast')
   % initialize evaluation grid
   S3G = quaternion;
   iS3G = 0;
+  cs1 = get(odf,'CS');
+  cs2 = get(odf,'SS');
+  csU = union(cs1,cs2);
+  csD = disjoint(cs1,cs2);
   
   % the angle distribution of the uniformODF
   if check_option(varargin,'omega')
     omega = get_option(varargin,'omega',[]);
     density = zeros(size(omega));
-    d = angleDistribution(get(odf,'CS'),omega);
+    d = angleDistribution(cs1,omega); % TODO this should probably be csU
     density(1:numel(d)) = d;
   else
-    [density,omega] = angleDistribution(get(odf,'CS'));
+    [density,omega] = angleDistribution(cs1); % TODO this should probably be csU
   end
   
+  [minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(csD);
 
   % for all angles
   for k=1:numel(omega)  
     
-    S2G = S2Grid('equispaced','points',max(1,round(4/3*sin(omega(k)/2).^2/res^2))); % create a grid
-        
+    S2G = S2Grid('equispaced','points',max(1,round(4/3*sin(omega(k)/2).^2/res^2)),...
+      'minTheta',minTheta,'MAXTHETA',maxTheta,'MAXRHO',maxRho,'MINRHO',minRho,'RESTRICT2MINMAX'); % create a grid
+
+    %S2G = S2Grid('random','points',max(1,numel(csD)*round(4/3*sin(omega(k)/2).^2/res^2)),...
+    %  'minTheta',minTheta,'MAXTHETA',maxTheta,'MAXRHO',maxRho,'MINRHO',minRho,'RESTRICT2MINMAX'); % create a grid
+    
     % create orientations
-    o = axis2quat(S2G,omega(k));
+    o = axis2quat(S2G(:),omega(k));
     
     % and select those
     rotAngle = abs(dot_outer(o,get(odf,'CS')));
@@ -53,7 +62,7 @@ if ~check_option(varargin,'fast')
     o = o(rotAngle(:,1)>maxAngle-0.0001);
     
     % store these orientations
-    S3G = [S3G,o]; %#ok<AGROW>
+    S3G = [S3G;o]; %#ok<AGROW>
     iS3G(k+1) = numel(S3G); %#ok<AGROW>
     
   end
