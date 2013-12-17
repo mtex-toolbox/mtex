@@ -114,4 +114,9 @@ h = optiondraw(patch(obj),varargin{:});
 axis equal tight
 fixMTEXplot(varargin{:});
 
-
+% save options for drawing later the correct colorbar
+if strcmp(get_option(varargin,'colorcoding'),'patala')
+  setappdata(gcf,'CS',get(grains,'CS'));
+  setappdata(gcf,'CCOptions',{{'r',vector3d(1,0,0),'colorcenter',vector3d(1,0,0)}});
+  setappdata(gcf,'colorcoding',get_option(varargin,'colorcoding'));
+end
