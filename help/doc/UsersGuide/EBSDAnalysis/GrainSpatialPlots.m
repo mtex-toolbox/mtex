@@ -140,8 +140,7 @@ colorbar
 
 %%
 % The more sophisticated way is to colorize the misorientation space and
-% apply color to the respectibe grain boundaries. this or to colorize the misorientation itself between neighboured grains (of the same 
-% phase)
+% apply the color to the respectibe grain boundaries. More details [TODO]
 
 close all
 plotBoundary(grains)
@@ -150,7 +149,7 @@ plotBoundary(grains('Fo'),'property','misorientation',...
   'colorcoding','patala','linewidth',1.5)
 
 % plot the colorbar
-colorbar('omega',[5,15,25,35,45,55,65,75,85,95,105,115])
+colorbar
 
 %% SUB: Classifing special boundaries
 % Actually, it might be more informative, if we classify the grain
