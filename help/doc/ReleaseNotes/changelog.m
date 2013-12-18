@@ -1,5 +1,43 @@
 %% MTEX Changelog
 %
+%% MTEX 3.5.0 - 12/2013
+%
+% *Misorientation colorcoding*
+%
+% * Patala colormap for misorientations
+% * publication:  S. Patala, J. K. Mason, and C. A. Schuh, �Improved
+% representations of misorientation information for grain boundary science
+% and engineering, Prog. Mater. Sci., vol. 57, no. 8, pp. 1383-1425, 2012.
+% * implementation: Oliver Johnson
+% * syntax:
+%
+%   plotBoundary(grains('Fo'),'property','misorientation','colorcoding','patala')
+%
+% * Fast multiscale clustering (FMC) method for grain reconstruction*
+%
+% * grain reconstruction algorithm for highly deformed materials without
+% sharp grain boundaries
+% * publication: C. McMahon, B. Soe, A. Loeb, A. Vemulkar, M. Ferry, 
+% L. Bassman, Boundary identification in EBSD data with a generalization of
+% fast multiscale clustering, Ultramicroscopy, 2013, 133:16-25.
+% * implementation: Andrew Loeb
+% * syntax:
+%
+%    grains = calcGrains(ebsd,'FMC')
+%
+% *Bug fixes*
+%
+% * .osc, .rw1 interfaces improved
+% * .ang, .ctf interfaces give a warning if called without one of the
+% options |convertSpatial2EulerReferenceFrame| or
+% |convertEuler2SpatialReferenceFrame|
+% * entropy should not be imaginary
+% * one can now access the grain id directly by
+%
+%   get(grains,'id')
+%
+% * MTEX-3.5.0 should be compatible with Matlab 2008a
+%
 %% MTEX 3.4.2 - 06/2013
 %
 % *bugfix release*
