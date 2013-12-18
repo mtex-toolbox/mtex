@@ -36,6 +36,8 @@
 %
 %   get(grains,'id')
 %
+% * improved MTEX startup
+% * many other bug fixes
 % * MTEX-3.5.0 should be compatible with Matlab 2008a
 %
 %% MTEX 3.4.2 - 06/2013
