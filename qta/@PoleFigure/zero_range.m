@@ -58,7 +58,7 @@ for ip = ipf
     theta= fft_theta(theta);
     rho  = fft_rho(rho);          
 
-    % project to northern hemisphere
+    % project to upper hemisphere
     rho(theta>0.25) = 0.5 + rho(theta>0.25);
     rho(rho<0) = rho(rho<0) + 1;
     theta(theta>0.25) = 0.5-theta(theta>0.25);

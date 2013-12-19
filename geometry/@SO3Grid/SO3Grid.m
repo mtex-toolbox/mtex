@@ -141,7 +141,7 @@ elseif isa(points,'char') && any(strcmpi(points,{'plot','regular'}))
   % special case axis/angle
   if strcmpi(sectype,'axisangle')
     
-    S2G = S2Grid('plot','north',varargin{:});
+    S2G = S2Grid('plot','upper',varargin{:});
     
     for i=1:nsec
       Grid(:,:,i) = axis2quat(S2G,sec(i));

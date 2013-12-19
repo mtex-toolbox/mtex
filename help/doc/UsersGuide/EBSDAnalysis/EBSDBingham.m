@@ -102,7 +102,7 @@ odf_prolate = fibreODF(Miller(0,0,1),zvector,...
 %%
 %
 
-plotpdf(odf_prolate,h,'north','silent')
+plotpdf(odf_prolate,h,'upper','silent')
 
 %%
 % As before, we generate some random orientations from an model odf. The

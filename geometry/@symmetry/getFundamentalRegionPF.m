@@ -87,22 +87,21 @@ minRho   = get_option(varargin,'minRho',minRho);
 maxRho = maxRho + minRho;
 maxRho   = get_option(varargin,'maxRho',maxRho);
 
-%% restrict using meta options north, south, upper, lower
+%% restrict using meta options upper, lower
 
-if strcmpi('outofPlane',getMTEXpref('zAxisDirection'))
-  if check_option(varargin,'upper'), varargin = set_option(varargin,'north');end
-  if check_option(varargin,'lower'), varargin = set_option(varargin,'south');end
-else
-  if check_option(varargin,'upper'), varargin = set_option(varargin,'south');end
-  if check_option(varargin,'lower'), varargin = set_option(varargin,'north');end
-end
+%if strcmpi('outofPlane',getMTEXpref('zAxisDirection'))
+%  if check_option(varargin,'upper'), varargin = set_option(varargin,'north');end
+%  if check_option(varargin,'lower'), varargin = set_option(varargin,'south');end
+%else
+%  if check_option(varargin,'upper'), varargin = set_option(varargin,'south');end
+%  if check_option(varargin,'lower'), varargin = set_option(varargin,'north');end
+%end
 
-
-if check_option(varargin,'north') && isnumeric(maxTheta) && maxTheta > pi/2
+if check_option(varargin,'upper') && isnumeric(maxTheta) && maxTheta > pi/2
   maxTheta = pi/2;
 end
 
-if check_option(varargin,'south') && isnumeric(maxTheta) && maxTheta > pi/2+0.001
+if check_option(varargin,'lower') && isnumeric(maxTheta) && maxTheta > pi/2+0.001
   
   minTheta = pi/2;
 

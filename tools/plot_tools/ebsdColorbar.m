@@ -105,9 +105,9 @@ end
 %title(['r = ' char(r,'tex')])
   
 % annotate crystal directions
-if any(strcmp(cc,{'ipdf','hkl','h'}))
-  annotate(v,'MarkerFaceColor','k','labeled','all');
-end
+set(gcf,'tag','ipdf')
+setappdata(gcf,'CS',cs);
+annotate(v,'MarkerFaceColor','k','labeled','symmetrised');
 
 end
 
