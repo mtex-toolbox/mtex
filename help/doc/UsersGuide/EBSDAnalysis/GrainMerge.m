@@ -15,7 +15,7 @@
 % Let us start with some reconstructed grains with grain boundaries of
 % at least 2 degree difference in orientation.
 
-mtexdata forsterite
+mtexdata aachen
 plotx2east
 grains = calcGrains(ebsd,'angle',2*degree)
 
