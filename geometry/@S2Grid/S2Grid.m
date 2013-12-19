@@ -12,7 +12,7 @@ function G = S2Grid(varargin)
 %% Options
 %  POINTS     - [nrho,ntheta] number of points to be generated
 %  RESOLUTION - resolution of a equispaced grid
-%  HEMISPHERE - 'north', 'south', 'lower', 'uper', 'complete', 'sphere', 'identified'}
+%  HEMISPHERE - 'lower', 'uper', 'complete', 'sphere', 'identified'}
 %  THETA      - theta angle
 %  RHO        - rho angle
 %  MINRHO     - starting rho angle (default 0)
@@ -50,14 +50,14 @@ maxrho = get_option(varargin,'MAXRHO',maxrhoGrid);
 drho = maxrho - minrho;
 
 % theta range
-if check_option(varargin,'south')
+if check_option(varargin,'lower')
   minthetaGrid = pi/2;
   maxthetaGrid = pi;
 else
   minthetaGrid = 0;
   
-  if check_option(varargin,{'antipodal','north'}) && ...
-      (~check_option(varargin,'complete') ||check_option(varargin,'north'))
+  if check_option(varargin,{'antipodal','upper'}) && ...
+      (~check_option(varargin,'complete') ||check_option(varargin,'upper'))
     maxthetaGrid = pi/2;
   else
     maxthetaGrid = pi;
@@ -266,7 +266,7 @@ else
 end
 
 Grid = set_option(Grid,...
-  extract_option(varargin,{'INDEXED','PLOT','north','south','antipodal','lower','upper'}));
+  extract_option(varargin,{'INDEXED','PLOT','antipodal','lower','upper'}));
 
 G = class(G,'S2Grid',Grid);
 

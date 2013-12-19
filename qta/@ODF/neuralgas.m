@@ -31,7 +31,7 @@ if check_option(varargin,'verbose'), verb = true; else verb = false; end
 
 r = get_option(varargin,'Grid',...
   S2Grid('equispaced','resolution',get_option(varargin,'resolution',2*degree),...
-  'north','maxtheta',get_option(varargin,'maxtheta',70*degree)));
+  'upper','maxtheta',get_option(varargin,'maxtheta',70*degree)));
 
 v = double(vector3d(r));
 v = reshape(v,[],3);
@@ -84,7 +84,7 @@ for t=1:tmax
   W(:,3) = W(:,3)./nrm; 
       
   if verb && ~mod(t,500)
-    plot(S2Grid(vector3d(W')),'north');
+    plot(S2Grid(vector3d(W')),'upper');
     drawnow
   end  
 end
@@ -93,7 +93,7 @@ S2G = S2Grid(vector3d(W'));
 
 
 if verb 
-  plotpdf(odf,h,'north');
+  plotpdf(odf,h,'upper');
   hold on, 
   plot(S2G);
 end
