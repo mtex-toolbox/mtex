@@ -1,5 +1,5 @@
 function [ax,v,varargout] = splitNorthSouth(v,varargin)
-% split plot in north and south plot
+% split plot in upper and lower hemisphere
 %
 % 1: axis given -> no extend stored -> compute extend -> finish
 % 2: axis is hold and has extend -> use multiplot
@@ -19,7 +19,7 @@ if ishandle(v)
 
       extend.maxTheta = pi/2;  
 %      warning(['You can only plot one hemisphere in an axis. ' ...
-%        ' Consider restricting by using one of the options ''north'', ''south'', ''upper'', or, ''lower''!']);
+%        ' Consider restricting by using one of the options ''upper'', or, ''lower''!']);
       
     end
     setappdata(ax,'extend',extend);
@@ -39,7 +39,7 @@ else
   extend = getPlotRegion(v,varargin{:});
   
   % hemisphere names
-  upperlower = {'north','south'};
+  upperlower = {'upper','lower'};
 
   % for plain projection do not split
   if check_option(varargin,'plain')

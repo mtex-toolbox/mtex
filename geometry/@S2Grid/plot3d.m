@@ -15,8 +15,8 @@ function plot3d(S2G,varargin)
 %  RANGE    - minimum and maximum for color coding [min,max]
 %
 %% Flags
-%  NORTH       - plot only points on the north hemisphere (default)
-%  SOUTH       - plot only points on the southern hemisphere
+%  lower       - plot only points on the upper hemisphere (default)
+%  upper       - plot only points on the lower hemisphere
 %  DOTS        - single points (default) 
 %  SMOOTH      - interpolated plot 
 %  CONTOUR     - contour plot

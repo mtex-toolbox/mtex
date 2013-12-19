@@ -32,7 +32,7 @@ E = YoungsModulus(C,x)
 % <tensor.plot.html plot> command.
 
 setMTEXpref('defaultColorMap',blue2redColorMap);
-plot(C,'PlotType','YoungsModulus','complete','north')
+plot(C,'PlotType','YoungsModulus','complete','upper')
 
 %% Linear Compressibility
 % The linear compressibility is the deformation of an arbitrarily shaped
@@ -47,7 +47,7 @@ beta = linearCompressibility(C,x)
 % It can be plotted by passing the option *linearCompressibility* to the
 % <tensor.plot.html plot> command.
 
-plot(C,'PlotType','linearCompressibility','complete','north')
+plot(C,'PlotType','linearCompressibility','complete','upper')
 
 %% Christoffel Tensor
 % The Christoffel Tensor is symmetric because of the symmetry of the
@@ -80,23 +80,23 @@ rho = 2.3
 % In order to visualize these quantities there are several posibilities.
 % Let us first plot the direction dependend wave speed of the p-wave
 
-plot(C,'PlotType','velocity','vp','density',rho,'complete','north')
+plot(C,'PlotType','velocity','vp','density',rho,'complete','upper')
 
 %%
 % Next we plot on the top of this plot the p-wave polarisation direction.
 
 hold on
-plot(C,'PlotType','velocity','pp','density',rho,'complete','north')
+plot(C,'PlotType','velocity','pp','density',rho,'complete','upper')
 hold off
 
 %%
 % Finally we visualize the speed difference between the s1 and s2 waves
 % together with the  fast shear-wave polarization.
 
-plot(C,'PlotType','velocity','vs1-vs2','density',rho,'complete','north')
+plot(C,'PlotType','velocity','vs1-vs2','density',rho,'complete','upper')
 
 hold on
-plot(C,'PlotType','velocity','ps1','density',rho,'complete','north')
+plot(C,'PlotType','velocity','ps1','density',rho,'complete','upper')
 hold off
 
 

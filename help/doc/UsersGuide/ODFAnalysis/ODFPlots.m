@@ -33,11 +33,11 @@ h = [Miller(1,0,-1,0,cs),Miller(0,0,0,1,cs),...
 plotpdf(odf,h)
 
 %%
-% One recognizes that for each crystal direction the northern and the
-% southern hemisphere of the pole figure is plotted. Since specimen
+% One recognizes that for each crystal direction the upper and the
+% lower hemisphere of the pole figure is plotted. Since specimen
 % symmetry here is tricline they might differ. It is well known that
-% diffration data results in pole figures where the norther and the
-% southern hemispheres are superposed. This can achieved in MTEX by passing
+% diffration data results in pole figures where the upper and the
+% lower hemispheres are superposed. This can achieved in MTEX by passing
 % the option *antipodal*.
 
 plotpdf(odf,h,'antipodal')
