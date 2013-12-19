@@ -104,13 +104,13 @@ if extend.maxRho ~= 2*pi, rho(1) = [];end
 % initalize handles for grid
 hb = []; h = []; t = [];
 
-% northern hemisphere
+% upper hemisphere
 if extend.minTheta < pi/2-1e-3
   center = zvector;
   maxTheta = extend.maxTheta;
   minTheta = 0;
   theta = dgrid:dgrid:(pi/2-dgrid);
-else % southern hemisphere
+else % lower hemisphere
   center = -zvector;
   maxTheta = extend.minTheta;
   minTheta = pi;

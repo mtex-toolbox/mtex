@@ -54,7 +54,7 @@ tau = double(EinsteinSum(R,[-1,-2],sigma,[-1,-2]))
 % directions
 
 % define a grid of tension directions
-r = S2Grid('plot','resolution',0.5*degree,'north')
+r = S2Grid('plot','resolution',0.5*degree,'upper')
 
 % define the coressponding list of simple shear stress tensors 
 sigma = EinsteinSum(tensor(r),1,tensor(r),2,'name','stress tensor')

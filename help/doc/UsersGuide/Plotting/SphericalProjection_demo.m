@@ -28,24 +28,24 @@ odf = fibreODF(Miller(1,1,0),zvector,cs,ss)
 % *Partial Spherical Plots*
 %
 % If an ODF has triclinic specimen symmetry its pole figures differs in
-% general on the northern hemisphere and the southern hemisphere. By
-% default MTEX plots in this case both hemispheres. The northern on the
-% left hand side and the southern on the right hand side.
+% general on the upper hemisphere and the lower hemisphere. By
+% default MTEX plots in this case both hemispheres. The upper on the
+% left hand side and the lower on the right hand side.
 
 plotpdf(odf,Miller(1,1,0))
 
 %%
 %
-% MTEX allows also to plot only the northern or the southern by passing the
-% options *north* or *south*.
+% MTEX allows also to plot only the upper or the lower hemisphere by
+% passing the options |upper| or |lower|.
 
-plotpdf(odf,Miller(1,1,0),'south')
+plotpdf(odf,Miller(1,1,0),'lower')
 
 %%
 % Due to Friedels law meassured pole figures are a superposition of the
-% nothern and the southern hemisphere (since antipodal directions are
+% upper and the lower hemisphere (since antipodal directions are
 % associated). In order to plot pole figures as a superposition of the
-% northern and southern hemisphere one has to enforce <AxialDirectional.html
+% upper and lower hemisphere one has to enforce <AxialDirectional.html
 % antipodal symmetry>. This is done by the option *antipodal*.
 
 plotpdf(odf,Miller(1,1,0),'antipodal')

@@ -58,7 +58,7 @@ plot(r/degree,reshape(v,size(v,1),[]));
 cs = symmetry('m-3m');
 ss = symmetry('mmm');
 S3G = SO3Grid(1*degree,cs,ss);
-r = S2Grid('plot','resolution',10*degree,'hemisphere','north','maxrho',90*degree,'RESTRICT2MINMAX');
+r = S2Grid('plot','resolution',10*degree,'hemisphere','upper','maxrho',90*degree,'RESTRICT2MINMAX');
 rv = vector3d(r);
 d1 = zeros(size(rv));
 d2 = zeros(size(rv));

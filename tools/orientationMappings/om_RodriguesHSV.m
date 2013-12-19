@@ -103,7 +103,7 @@ surf(v,c)
 
 %%
 
-ebsdColorbar(symmetry(1),'colorcoding','RodriguesHSV','sections',12,'resolution',1*degree,'north')
+ebsdColorbar(symmetry(1),'colorcoding','RodriguesHSV','sections',12,'resolution',1*degree,'upper')
 %ebsdColorbar(symmetry(3),'colorcoding','RodriguesHSV','sections',12,'resolution',1*degree,'south')
 
 %%

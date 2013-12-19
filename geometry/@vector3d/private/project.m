@@ -49,7 +49,7 @@ end
 
 %% compute spherical projection
 
-% map to northern hemisphere
+% map to upper hemisphere
 ind = find(theta > pi/2+10^(-10));
 theta(ind)  = pi - theta(ind);
 

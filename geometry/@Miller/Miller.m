@@ -108,6 +108,6 @@ elseif isa(varargin{1},'double')
 end
 
 v = set_option(v,...
-  extract_option(varargin,{'north','south','antipodal'}));
+  extract_option(varargin,{'lower','upper','antipodal'}));
 
 m = class(m,'Miller',v);
