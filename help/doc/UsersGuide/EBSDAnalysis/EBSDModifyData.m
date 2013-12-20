@@ -73,6 +73,11 @@ ebsd = ebsd(inpolygon(ebsd,[120 100 200 130]))
 close all
 plot(ebsd)
 
+%%
+% Note, that you can also select a polygon by mouse using the command
+%
+%   poly = selectPolygon
+%
 %% Remove Inaccurate Orientation Measurements
 %
 % *By MAD (mean angular deviation)* in the case of Oxford Channel programs, or *by
