@@ -116,11 +116,11 @@ elseif ~check_option(varargin,'voronoi')
   varargout{4} =  sparse(bf(F),D,val,6*nf,nd);
   
 else
-  augmentation = get_option(varargin,'augmentation','cube');
+  boundary = get_option(varargin,'boundary','cube');
   
   % extrapolate dummy coordinates %dirty
   if ~check_option(varargin,'3d')
-    switch lower(augmentation)
+    switch lower(boundary)
       case 'cube'
         v = get_option(varargin,'dx',ceil(nthroot(size(x_D,1),3)));
         a = min(x_D);
@@ -163,7 +163,7 @@ else
         
         dummy = unique(dummy,'rows');
       otherwise
-        error('wrong augmentation option')
+        error('Uknown boundary type.')
     end
   else
     dx = (max(xy(:,1)) - min(xy(:,1)));
