@@ -16,7 +16,7 @@ if check_option(varargin,'unitCell')
   
 else
   
-  dummyCoordinates = calcAugmentation(X,unitCell,varargin{:});
+  dummyCoordinates = calcBoundary(X,unitCell,varargin{:});
 
   [v,c] = voronoin([X;dummyCoordinates],{'Q5','Q6'}); 
 
@@ -25,17 +25,17 @@ else
 end
 
 
-function dummyCoordinates = calcAugmentation(X,unitCell,varargin)
+function dummyCoordinates = calcBoundary(X,unitCell,varargin)
 % dummy coordinates so that the voronoi-cells of X are finite
 
 dummyCoordinates = [];
 
 % specify a bounding polyogn
-augmentation = get_option(varargin,'Augmentation','hull',{'char','double'});
+boundary = get_option(varargin,'boundary','hull',{'char','double'});
 
-if ischar(augmentation)
+if ischar(boundary)
   
-  switch lower(augmentation)
+  switch lower(boundary)
     case {'hull','convexhull'}
       x = X(:,1);  y = X(:,2);
 
@@ -61,13 +61,13 @@ if ischar(augmentation)
       
     otherwise     
       
-      error('no Augmentation specified');   
+      error('uknown boundary type. Available options are ''convexhull'' and ''cube''.');   
       
   end
   
-elseif isa(augmentation,'double')
+elseif isa(boundary,'double')
   
-  boundingX = augmentation;
+  boundingX = boundary;
   
 end
 

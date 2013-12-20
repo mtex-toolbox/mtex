@@ -2,7 +2,7 @@ function grains = calcGrains(ebsd,varargin)
 % 2d and 3d construction of GrainSets from spatially indexed EBSD data
 %
 %% Syntax
-% grains = calcGrains(ebsd,'angle',10*degree)
+%   grains = calcGrains(ebsd,'angle',10*degree)
 %
 %% Input
 %  ebsd   - @EBSD
@@ -11,10 +11,7 @@ function grains = calcGrains(ebsd,varargin)
 %  grains  - @Grain2d | @Grain3d
 %% Options
 %  threshold|angle - array of threshold angles per phase of mis/disorientation in radians
-%  augmentation    - bounds the spatial domain
-%
-%    * |'cube'|
-%    * |'auto'|
+%  boundary        - bounds the spatial domain
 %
 %% Flags
 %  unitcell     - omit voronoi decomposition and treat a unitcell lattice
