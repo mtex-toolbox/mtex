@@ -13,7 +13,7 @@
 %
 %   plotBoundary(grains('Fo'),'property','misorientation','colorcoding','patala')
 %
-% * Fast multiscale clustering (FMC) method for grain reconstruction*
+% *Fast multiscale clustering (FMC) method for grain reconstruction*
 %
 % * grain reconstruction algorithm for highly deformed materials without
 % sharp grain boundaries
@@ -25,6 +25,24 @@
 %
 %    grains = calcGrains(ebsd,'FMC')
 %
+% *Misc changes*
+%
+% * one can now access the grain id by
+%
+%   get(grains,'id')
+%
+% * the flags |'north'| and |'south'| are obsolete and have been replaced
+% by |'upper'| and |'lower'|
+% * you can specify the outer boundary for grain reconstruction in non
+% convex EBSD data set by the option |'boundary'|
+%
+%   poly = [[x1,y1];[x2,y2];[xn,yn];[x1,y1]]
+%   grains = calcGrains(ebsd,'boundary',poly)
+% 
+% * you can select a polygon interactively with the mouse using the command
+%
+%   poly = selectPolygon
+%
 % *Bug fixes*
 %
 % * .osc, .rw1 interfaces improved
@@ -32,10 +50,6 @@
 % options |convertSpatial2EulerReferenceFrame| or
 % |convertEuler2SpatialReferenceFrame|
 % * entropy should not be imaginary
-% * one can now access the grain id directly by
-%
-%   get(grains,'id')
-%
 % * improved MTEX startup
 % * many other bug fixes
 % * MTEX-3.5.0 should be compatible with Matlab 2008a
