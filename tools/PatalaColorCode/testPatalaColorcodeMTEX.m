@@ -26,10 +26,6 @@
 % CTRL+SHIFT+ENTER to run the next cell.
 %-------------------------------------------------------------------------%
 
-clear all;
-close all
-clc;
-
 %% Load Test Data
 
 load('testdata.mat')

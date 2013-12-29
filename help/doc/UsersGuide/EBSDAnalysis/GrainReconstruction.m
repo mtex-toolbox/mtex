@@ -152,6 +152,7 @@ mtexdata forsterite
 
 grains = calcGrains(ebsd,'angle',5*degree,'keepNotIndexed')
 
+close all
 plot(grains,'property','phase')
 
 %%

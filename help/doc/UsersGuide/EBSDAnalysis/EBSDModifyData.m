@@ -51,7 +51,7 @@ plot(ebsd('notIndexed'),'facecolor','r')
 %%
 % First define a region by [xmin ymin xmax-xmin ymax-ymin]
 
-region = [120 100 80 30];
+region = [5 2 10 5]*10^3;
 
 %%
 % plot the ebsd data together with the region of interest
@@ -64,7 +64,7 @@ rectangle('position',region,'edgecolor','r','linewidth',2)
 % In order to restrict the ebsd data to the polygon we may use the command
 % <EBSD.inpolygon.html inpolygon> to locate all EBSD data inside the region
 
-ebsd = ebsd(inpolygon(ebsd,[120 100 200 130]))
+ebsd = ebsd(inpolygon(ebsd,region))
 
 
 %%
