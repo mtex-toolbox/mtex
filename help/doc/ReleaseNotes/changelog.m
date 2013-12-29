@@ -49,7 +49,8 @@
 % * .ang, .ctf interfaces give a warning if called without one of the
 % options |convertSpatial2EulerReferenceFrame| or
 % |convertEuler2SpatialReferenceFrame|
-% * entropy should not be imaginary
+% * fixed: entropy should never be imaginary
+% * removed function |SO3Grid/union|
 % * improved MTEX startup
 % * many other bug fixes
 % * MTEX-3.5.0 should be compatible with Matlab 2008a

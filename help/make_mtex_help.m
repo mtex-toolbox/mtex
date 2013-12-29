@@ -111,7 +111,7 @@ copy(DocFile(getPublishGeneral),fullfile(mtex_path,'examples','html'));
 %% Publish Doc
 
 publish(mtexDocFiles,'outputDir',outputDir,'tempDir',tempDir,'evalCode',true,'force',false);
-copy(mtexDocFiles,fullfile(mtex_path,'examples','UsersGuide'));
+%copy(mtexDocFiles,fullfile(mtex_path,'examples','UsersGuide'));
 
 %%
 
