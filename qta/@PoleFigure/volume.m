@@ -1,18 +1,18 @@
 function vol = volume(pf,q,radius)
 % ratio of vectors with a certain direction
 %
-%% Description
+% Description
 % returns the ratio of mass of the polefigure at a given location
 %
-%% Syntax
-%  v = volume(pf,center,radius,<options>)
+% Syntax
+%   v = volume(pf,center,radius)
 %
-%% Input
+% Input
 %  odf    - @ODF
 %  center - @orientation / @vector3d
 %  radius - double
 %
-%% See also
+% See also
 % ODF/volume
 
 
@@ -24,7 +24,7 @@ for k=1:numel(pf)
     v = q;
   end
   
-  d = pf(k).data;
+  d = pf(k).intensities;
   v = any(find(pf(k).r,v,radius),2);
   v = reshape(full(v),size(d));  
   

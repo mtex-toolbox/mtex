@@ -5,7 +5,7 @@ d = 10e-5;
 
 v = vector3d(r);
 
-sz = numel(v);
+sz = length(v);
 ndx = @(n) (n*sz+1):(n+1)*sz;
 
 % directions

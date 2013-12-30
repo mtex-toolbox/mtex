@@ -1,17 +1,17 @@
 function spf = calcPoleFigure(pf,odf,varargin)
 % simulate pole figure
 %
-%% Syntax
-% pf = simulatePoleFigure(pf,odf,varargin)
+% Syntax
+%   pf = simulatePoleFigure(pf,odf)
 %
-%% Input
+% Input
 %  pf  - meassured @PoleFigure
 %  odf - @ODF
 %
-%% Output
-% spf - PoleFigure 
+% Output
+%  spf - PoleFigure 
 %
-%% See also
+% See also
 % ODF/simulatePoleFigure
 
 progress(0,length(pf));

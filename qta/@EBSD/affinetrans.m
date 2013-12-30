@@ -1,7 +1,7 @@
 function ebsd = affinetrans(ebsd, A, b)
 % perform an affine transformation on spatial ebsd data
 %
-%% Input
+% Input
 %  ebsd - @EBSD
 %  A    - transformation matrix or homogeneous coordinates, e.g. 
 %
@@ -9,11 +9,11 @@ function ebsd = affinetrans(ebsd, A, b)
 %   
 %  b    - shift term
 %
-%% Output
+% Output
 %  transformed ebsd - @EBSD
 
 
-%% set up transformation matrix
+% set up transformation matrix
 if all(size(A) == [3 3])
   T = A;
 elseif nargin < 3
@@ -29,11 +29,11 @@ else
   T(3,3) = 1;
 end
 
-%% rotate the spatial data
-if isfield(ebsd.options,'x') && isfield(ebsd.options,'x')
-  xy = [ebsd.options.x, ebsd.options.y, ones(numel(ebsd),1)] * T';
-  ebsd.options.x = xy(:,1);
-  ebsd.options.y = xy(:,2);
+% rotate the spatial data
+if isfield(ebsd.prop,'x') && isfield(ebsd.prop,'y')
+  xy = [ebsd.prop.x, ebsd.prop.y, ones(length(ebsd),1)] * T';
+  ebsd.prop.x = xy(:,1);
+  ebsd.prop.y = xy(:,2);
 end
 
 % rotate the unit cells

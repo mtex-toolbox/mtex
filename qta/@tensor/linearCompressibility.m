@@ -1,16 +1,15 @@
 function beta = linearCompressibility(C,x)
 % computes the linear compressibility of an elasticity tensor
 %
-%% Remarks
-% formula: 
+% Description
 %
 % $$\beta(x) = S_{ijkk} x_i x_j$$
 %
-%% Input
+% Input
 %  C - elastic stiffness @tensor
 %  x - list of @vector3d
 %
-%% Output
+% Output
 %  beta - linear compressibility in directions v
 %
 

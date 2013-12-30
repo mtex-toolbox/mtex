@@ -1,25 +1,20 @@
 function grains = findByOrientation( grains,q0, epsilon )
 % select grains by orientation
 %
-%% Input
-% grains - @GrainSet
-% q0 - @quaternion | @rotation | @orientation 
-% epsilon - searching radius
+% Input
+%  grains - @GrainSet
+%  q0 - @quaternion | @rotation | @orientation 
+%  epsilon - searching radius
 %
-%% Output
-% grains - @GrainSet
+% Output
+%  grains - @GrainSet
 %
-%% Example 
-%  g = findByLocation(grains,idquaternion,10*degree);
+% Example 
+%   g = findByOrientation(grains,idquaternion,10*degree);
 %
-%% See also
+% See also
 % EBSD/findByLocation GrainSet/findByOrientation
 
+ind = find(grains.meanOrientation,q0,epsilon);
 
-
-o = get(grains,'orientation');
-
-ind = find(o,q0,epsilon);
-
-grains = subsref(grains,any(ind,2));
-
+grains = subSet(grains,any(ind,2));

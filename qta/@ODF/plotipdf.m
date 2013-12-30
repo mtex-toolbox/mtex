@@ -1,41 +1,41 @@
 function plotipdf(odf,r,varargin)
 % plot inverse pole figures
 %
-%% Input
+% Input
 %  odf - @ODF
 %  r   - @vector3d specimen directions
 %
-%% Options
+% Options
 %  RESOLUTION - resolution of the plots
 %
-%% Flags
+% Flags
 %  antipodal    - include [[AxialDirectional.html,antipodal symmetry]]
 %  COMPLETE - plot entire (hemi)--sphere
 %
-%% See also
+% See also
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-%% make new plot
+% make new plot
 [ax,odf,r,varargin] = getAxHandle(odf,r,varargin{:});
 if isempty(ax), newMTEXplot;end
 
 argin_check(r,{'vector3d'});
 
-%% plotting grid
+% plotting grid
 [minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(odf(1).CS,'restrict2Hemisphere',varargin{:});
 
-h = S2Grid('PLOT','minTheta',minTheta,'MAXTHETA',maxTheta,'MAXRHO',maxRho,'MINRHO',minRho,'RESTRICT2MINMAX',varargin{:});
+h = plotS2Grid('minTheta',minTheta,'maxTheta',maxTheta,'maxRho',maxRho,'MINRHO',minRho,'RESTRICT2MINMAX',varargin{:});
 
-%% plot
+% plot
 disp(' ');
 disp('Plotting inverse pole density function:')
 
-multiplot(ax{:},numel(r), h,...
+multiplot(ax{:},length(r), h,...
   @(i) ensureNonNeg(pdf(odf,h,r(i)./norm(r(i)),varargin{:})),...
   'smooth','TR',@(i) r(i),varargin{:});
 
-%% finalize plot
+% finalize plot
 if isempty(ax)
   setappdata(gcf,'r',r);
   setappdata(gcf,'CS',odf(1).CS);
@@ -43,11 +43,10 @@ if isempty(ax)
   set(gcf,'tag','ipdf');
   setappdata(gcf,'options',extract_option(varargin,'antipodal'));
   name = inputname(1);
-  if isempty(name), name = odf(1).comment;end
   set(gcf,'Name',['Inverse Pole Figures of ',name]);
 
 
-  %% set data cursor
+  % set data cursor
   dcm_obj = datacursormode(gcf);
   set(dcm_obj,'SnapToDataVertex','off')
   set(dcm_obj,'UpdateFcn',{@tooltip});
@@ -57,7 +56,7 @@ end
 
 end
 
-%% Tooltip function
+% --------------- tooltip function ------------------------------
 function txt = tooltip(varargin)
 
 [r,h,value] = currentVector; %#ok<ASGLU>

@@ -1,23 +1,22 @@
 function T = rotate(T,R,varargin)
 % rotate a tensor by a list of rotations
 %
-%% Remarks
-% Formula: 
+% Description
 %
 % $$T_{rst} = T_{ijk} R_{ri} R_{sj} R_{tk}$$
 %
-%% Input
+% Input
 %  T - @tensor
 %  R - @rotation or rotation matrix or a list of them
 %
-%% Output
+% Output
 %  T - rotated @tensor
 %
 
 % ensure that the rotations have the right reference frame
 if isa(R,'orientation')
   R = ensureCS(T.CS,{R});
-  T.CS = get(R,'SS');
+  T.CS = R.SS;
 end
 
 % convert rotation to 3 x 3 matrix - (3 x 3 x N) for many rotation

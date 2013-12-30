@@ -6,7 +6,7 @@ assertExtension(fname,'.nja');
 comment = '';
 fid = efopen(fname);
 try
-  %% read header
+  % read header
   comment = textscan(fid,'%s',45,'delimiter','&','whitespace','');
   fclose(fid);
 catch

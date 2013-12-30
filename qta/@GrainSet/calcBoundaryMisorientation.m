@@ -1,24 +1,25 @@
 function mori = calcBoundaryMisorientation(grains1,varargin)
 % calculate misorientation at grain boundaries
 %
-%% Input 
-% grains - @GrainSet
-%% Flags
-% subboundary - only consider grain boundaries within a grain
-% external - only consider grain boundaries closing a grain
+% Input 
+%  grains - @GrainSet
 %
-%% Output
-% m - @orientation, such that
+% Flags
+%  subboundary - only consider grain boundaries within a grain
+%  external    - only consider grain boundaries closing a grain
+%
+% Output
+%  m - @orientation, such that
 %
 %    $$m = (g{_i}^{--1}*CS^{--1}) * (CS *\circ g_j)$$
 %
 %   for two neighbored orientations $g_i, g_j$ with crystal @symmetry $CS$ of 
 %   the same phase located on a grain boundary.
 %
-%% See also
+% See also
 % GrainSet/calcMisorientation GrainSet/plotAngleDistribution
 
-%% get input
+% get input
 % check whether another grain set is present
 ind = cellfun(@(c) isa(c,'GrainSet'),varargin);
 if any(ind)
@@ -30,19 +31,19 @@ end
 checkSinglePhase(grains1);
 checkSinglePhase(grains2);
 
-%% select the right boundaries
+% select the right boundaries
 if check_option(varargin,{'sub','subboundary','internal','intern'})
-  I_FD1 = logical(grains1.I_FDsub);
-  I_FD2 = logical(grains2.I_FDsub);
+  I_FD1 = logical(grains1.I_FDint);
+  I_FD2 = logical(grains2.I_FDint);
 elseif  check_option(varargin,{'external','ext','extern'})
   I_FD1 = logical(grains1.I_FDext);
   I_FD2 = logical(grains2.I_FDext);
 else % otherwise select all boundaries
-  I_FD1 = grains1.I_FDext | grains1.I_FDsub;
-  I_FD2 = grains2.I_FDext | grains2.I_FDsub;
+  I_FD1 = grains1.I_FDext | grains1.I_FDint;
+  I_FD2 = grains2.I_FDext | grains2.I_FDint;
 end
 
-%% find adjacent voronoi cells
+% find adjacent voronoi cells
 if any(ind) && grains1 ~= grains2
   [Dl,dummy] = find(I_FD1(sum(I_FD1,2) >= 1 & sum(I_FD2,2) >= 1,...
     any(grains1.I_DG,2))'); %#ok<NASGU>
@@ -55,10 +56,10 @@ else
   Dr = D(2:2:end);
 end
   
-%% compute length of the common boundary of the adjacent vornoi cells
+% compute length of the common boundary of the adjacent vornoi cells
 % TODO
   
-%% subsample
+% subsample
 
 if check_option(varargin,'SampleSize')
   sampleSize = get_option(varargin,'SampleSize');
@@ -69,11 +70,11 @@ if check_option(varargin,'SampleSize')
   end
 end
 
-%% compute misorienations
+% compute misorienations
 if numel(Dl) >0
     
-  ol = get(grains1.EBSD,'orientations');
-  or = get(grains2.EBSD,'orientations');
+  ol = grains1.ebsd.orientations;
+  or = grains2.ebsd.orientations;
   mori = ol(Dl).\or(Dr);
   
 else

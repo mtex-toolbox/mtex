@@ -1,29 +1,30 @@
 function T = EinsteinSum(T1,dimT1,varargin)
 % tensor multiplication according to Einstein summation
 %
-%% Description
+% Description
 % This function computes a tensor product according to Einstein summation
 % convention
 %
-%% Syntax
-% C = EinsteinSum(E,[1 --1 2 --2],v,--1,v,--2) - sumation against dimension ...
+% Syntax
+%   % sumation against dimension 1 and 2
+%   C = EinsteinSum(E,[1 --1 2 --2],v,--1,v,--2) 
 %
-%% Input
+% Input
 %  T1,T2 - @tensor
 %  dimT1 - vector of indices giving the summation order in tensor 1
 %  dimT2 - vector of indices giving the summation order in tensor 2
 %
-%% Output
+% Output
 %  T - @tensor
 %
-%% See also
+% See also
 %
 
 % sum over equal negative values in dimT1
 [T1.M,dimT1] = innerSum(T1.M,dimT1);
 
 
-%% for each tensor in varargin
+% for each tensor in varargin
 while ~isempty(varargin) && ~ischar(varargin{1})
 
   % take new vector from varargin
@@ -51,7 +52,7 @@ while ~isempty(varargin) && ~ischar(varargin{1})
   M2 = reshape(M2,[sT2,l2,1,1]);
   ll = max(l1,l2);    
   
-  %% check for equals negative values in dimT1 and dimT2
+  % -------- check for equals negative values in dimT1 and dimT2 ----
   
   [a,b] = findDouble([dimT1,dimT2]);
   b = b - length(dimT1);
@@ -82,7 +83,7 @@ while ~isempty(varargin) && ~ischar(varargin{1})
   end
   
     
-  %% join matrix 1 and matrix 2
+  % ------------------ join matrix 1 and matrix 2 -------------
   if ~isempty(M2)
     
     if (l1 == 1) || (l2 == 1)
@@ -132,7 +133,7 @@ while ~isempty(varargin) && ~ischar(varargin{1})
     
 end
 
-%% reorder dimension
+% ----------------- reorder dimension ------------------------
 order = 1:max(T1.rank,ndims(T1.M));
 order(1:length(dimT1)) = dimT1;
 
@@ -141,11 +142,9 @@ try
 catch %#ok<CTCH>
   error(['Bad indice! Positive indice has to be a permutation of the numbers: ' num2str(1:ndims(T1.M))])
 end
-T = T1;
 
-%% remove name and unit
-if hasProperty(T,'name'), T.properties = rmfield(T.properties,'name');end
-if hasProperty(T,'unit'), T.properties = rmfield(T.properties,'unit');end
+% remove name and unit
+T = T1.rmOption('name','unit');
   
 if check_option(varargin,'doubleconvention')
   T.doubleConvention = true;
@@ -154,15 +153,12 @@ end
 
 varargin = delete_option(varargin,{'doubleconvention','singleconvention','InfoLevel'});
 
-%% extract properties
-while ~isempty_cell(varargin)  
-  T.properties.(varargin{1}) = varargin{2};
-  varargin = varargin(3:end);
-end
+% extract options
+T = T.setOption(varargin{:});
 
 end
 
-%% ------------- private functions -----------------------
+% ------------------- private functions -------------------------
 
 function [r,s,l] = getSize(M,ind)
 
@@ -185,8 +181,7 @@ a = a'; b = b';
  
 end
 
-
-%% 
+% 
 function [M,ind] = innerSum(M,ind)
 
 % find indices to be summed

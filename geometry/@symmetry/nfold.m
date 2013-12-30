@@ -1,7 +1,7 @@
 function n = nfold( cs )
 % maximal n-fold of symmetry axes
 
-switch cs.laue
+switch cs.Laue
   case {'2/m','mmm'}
     n = 2;
   case {'m-3','-3','-3m'}

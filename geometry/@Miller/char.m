@@ -1,18 +1,18 @@
 function c = char(m,varargin)
 % Miller indece to string
 %
-%% Options
-%  NO_SCOPES
-%  LATEX
+% Options
+%  no_scopes
+%  latex
+%  commasep
 
-c = cell(numel(m),1);
+c = cell(length(m),1);
 
 for i = 1:length(m)
   
-  if check_option(m,{'uvw','directions'}) || ...
-      check_option(varargin,{'uvw','directions'})
+  if strcmp(m.dispStyle,'uvw') || check_option(varargin,{'uvw','directions'})
     
-    h = v2d(subsref(m,i));
+    hkl = m.uvw(i,:);
     
     if check_option(varargin,{'tex','latex'})
       leftBracket = '\left\langle ';
@@ -24,7 +24,8 @@ for i = 1:length(m)
     
   else
     
-    h = v2m(subsref(m,i),varargin{:});
+    hkl = m.hkl(i,:);
+    
     if check_option(varargin,{'tex','latex'})
       leftBracket = '\{';
       rightBracket = '\}';
@@ -32,30 +33,26 @@ for i = 1:length(m)
       leftBracket = '{';
       rightBracket = '}';
     end
-    
-    if all(round(h)==h)
-      s = barchar(h,varargin{:});
-    else
-      s = '---';
-    end
-    
-    if ~check_option(varargin,'NO_SCOPES')
-      s = ['\{',s,'\}']; %#ok<AGROW>
-    end
+            
   end
   
-  s = [leftBracket barchar(h,varargin{:}) rightBracket];
-  if check_option(varargin,'LaTeX')
-    s = ['$' s '$'];
+  % only display rounded results
+  if all(isappr(round(hkl),hkl))
+    s = barchar(hkl,varargin{:});
+  else
+    s = '---';
   end
+  
+  % add scopes
+  if ~check_option(varargin,'NO_SCOPES'), s = [leftBracket s rightBracket]; end %#ok<AGROW>
+  if check_option(varargin,'LaTeX'), s = ['$' s '$']; end %#ok<AGROW>
   
   c{i} = s;
 end
 
-if ~check_option(varargin,'cell')
-  c = strcat(c{:});
-end
+if ~check_option(varargin,'cell'), c = strcat(c{:});end
 
+% -----------------------------------------------------------------
 
 function s=barchar(i,varargin)
 
@@ -73,19 +70,3 @@ for j = 1:length(i)
     s = [s,','];
   end
 end
-
-
-function [l,r] = localBrackets(b,varargin)
-
-l = b(1); r = b(2);
-if check_option(varargin,{'tex','latex'})
-  l = ['\' l]; r = ['\' r];
-end
-
-
-
-
-
-
-
-

@@ -1,42 +1,44 @@
 function s = sum_K(kk,g1,g2,CS,SS,c,varargin)
 % sum up kernels modulo symmetries
-%% Syntax
-% w = sum_K(kk,g1,g2,CS,SS,c,<options>)
 %
-%% Input
+% Syntax
+%   w = sum_K(kk,g1,g2,CS,SS,c,<options>)
+%
+% Input
 %  kk     - @kernel
 %  g1, g2 - @quaternion(s)
 %  CS, SS - crystal , specimen @symmetry
 %  c      - double
 %
-%% Options
+% Options
 %  EXACT -
 %  EPSILON -
 %
-%% general formula:
+% Description
+% general formula:
 %
 % $$s(g1_i) = sum_j c_j K(g1_i,g2_j) $$
 
 
 % how to index grid representation
-if isa(g1,'SO3Grid') && check_option(g1,'indexed'),
-  lg1 = numel(g1);
+if isa(g1,'SO3Grid')
+  lg1 = length(g1);
 else
-  lg1 = -numel(g1);
+  lg1 = -length(g1);
 end
-if isa(g2,'SO3Grid') && check_option(g2,'indexed')
-  lg2 = numel(g2);
+if isa(g2,'SO3Grid')
+  lg2 = length(g2);
 else
-  lg2 = -numel(g2);
+  lg2 = -length(g2);
 end
 
 along = (lg1 > lg2 && lg1 > 0) || (abs(lg1) > abs(lg2) && lg2 < 0);
 if along
   g2 = quaternion(g2);
-  num = numel(g2);
+  num = length(g2);
 else
   g1 = quaternion(g1);
-  num = numel(g1);
+  num = length(g1);
 end
 
 % init variables

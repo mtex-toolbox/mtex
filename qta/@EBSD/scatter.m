@@ -1,24 +1,22 @@
 function scatter(ebsd,varargin)
 % plots ebsd data as scatter plot
 %
-%% Syntax
-% scatter(ebsd,<options>)
+% Syntax
+%   scatter(ebsd)
+%   scatter(ebsd,'property','mad')
 %
-%% Input
+% Input
 %  ebsd - @EBSD
 %
-%% Options
-%  AXISANGLE     - axis angle projection
-%  RODRIGUES     - rodrigues parameterization
-%  POINTS        - number of orientations to be plotted
-%  CENTER        - orientation center
+% Options
+%  axisAngle - axis angle projection
+%  Rodrigues - rodrigues parameterization
+%  points    - number of orientations to be plotted
+%  center    - orientation center
 %
-%% See also
+% See also
 % EBSD/plotpdf savefigure
-
-o = get(ebsd,'orientations');
 
 varargin = set_option_property(ebsd,varargin{:});
 
-scatter(o,...
-  'FigureTitle',[inputname(1) ' (' get(ebsd,'comment') ')'],varargin{:});
+scatter(ebsd.orientations,'FigureTitle',inputname(1),varargin{:});

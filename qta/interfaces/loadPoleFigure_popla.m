@@ -1,16 +1,16 @@
 function pf = loadPoleFigure_popla(fname,varargin)
 % import data fom Popla file
 %
-%% Syntax
-% pf = loadPoleFigure_popla(fname,<options>)
+% Syntax
+%   pf = loadPoleFigure_popla(fname,<options>)
 %
-%% Input
+% Input
 %  fname    - filename
 %
-%% Output
+% Output
 %  pf - vector of @PoleFigure
 %
-%% See also
+% See also
 % ImportPoleFigureData loadPoleFigure
 
 
@@ -56,7 +56,7 @@ try
       % colums - make interface working for those!
       d = [];
       l = fgetl(fid);
-      while ~isempty(l) %length(d) < numel(r)
+      while ~isempty(l) %length(d) < length(r)
         l = l(1+mod(numel(l),4):end);
         data = str2num(reshape(l,4,[])');
         d = [d; data(1:18) ./ scaling];
@@ -67,7 +67,7 @@ try
       end
       
       % restrict data to specified domain
-      d = reshape(d(1:numel(r)),size(r));
+      d = reshape(d(1:length(r)),size(r));
       
       % generate Polefigure
       pf(ipf) = PoleFigure(h,r,double(d),'comment',comment,varargin{:}); %#ok<AGROW>

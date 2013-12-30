@@ -1,23 +1,23 @@
 function plotAngleDistribution(odf,varargin)
 % plot axis distribution
 %
-%% Input
+% Input
 %  odf - @ODF
 %
-%% Options
+% Options
 %  RESOLUTION - resolution of the plots
 %
 
 
-%% make new plot
+% make new plot
 [ax,odf,varargin] = getAxHandle(odf,varargin{:});
 if isempty(ax), newMTEXplot;end
 
-%%
+%
 [f,omega] = calcAngleDistribution(odf,varargin{:});
 
 
-%% plot
+% plot
 %bar(omega/degree,max(0,f));
 % xlim([0,max(omega)])
 

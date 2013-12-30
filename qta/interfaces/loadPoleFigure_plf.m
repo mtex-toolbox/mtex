@@ -26,7 +26,7 @@ try
     d = d{:};
     d(isnan(d)) = [];
     
-    r =  S2Grid('Regular','Points',[90 17],'MINTHETA',0,'MAXTHETA',80*degree);
+    r =  regularS2Grid('Points',[90 17],'MINTHETA',0,'MAXTHETA',80*degree);
     
     pf(ip) = PoleFigure(h,r,d,varargin{:});
     ip = 1 + ip;

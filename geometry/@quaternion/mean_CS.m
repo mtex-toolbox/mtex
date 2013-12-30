@@ -13,7 +13,7 @@ function o = mean_CS(q,CS)
 %% See also
 % orientation/mean
 
-if numel(q) > 1
+if length(q) > 1
   q = project2FundamentalRegion(q,CS,subsref(q,1));
   q = mean(q);
 end

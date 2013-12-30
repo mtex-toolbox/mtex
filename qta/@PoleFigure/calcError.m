@@ -7,23 +7,23 @@ function e = calcError(pf,rec,varargin)
 % error or the mean square error is calculated. The scaling coefficients
 % are calculated by the function PoleFigure/calcNormalization
 %
-%% Syntax
-%  e = calcError(pf,pf2,param) - compares two different @PoleFigure with same @S2Grid
-%  e = calcError(pf,rec,param) - compares @PoleFigure with the Recalculated @ODF
+% Syntax
+%   e = calcError(pf,pf2) % compares two different @PoleFigure with same @S2Grid
+%   e = calcError(pf,rec) % compares @PoleFigure with the Recalculated @ODF
 %
-%% Input
+% Input
 %  pf,pf2 - @PoleFigure
 %  rec    - @ODF     
 %
-%% Output
+% Output
 %  e - error
 %
-%% Flags
+% Flags
 %  RP - (default) 
 %  l1 - L1 error
 %  l2 - L2 error
 %
-%% See also
+% See also
 % ODF/calcError PoleFigure/calcNormalization PoleFigure/scale
 
 argin_check(rec,{'ODF','PoleFigure'});
@@ -35,14 +35,14 @@ errorpf = calcErrorPF(pf,rec,varargin{:});
 e = zeros(1,numel(pf));
 for i = 1:length(pf)
   
-  e(i) = sum(errorpf(i).data(:));
+  e(i) = sum(errorpf(i).intensities(:));
   
   if check_option(varargin,'l1')
-    e(i) = e(i)/sum(abs(pf(i).data(:))); % L^1 error
+    e(i) = e(i)/sum(abs(pf(i).intensities(:))); % L^1 error
   elseif check_option(varargin,'l2')
-    e(i) = e(i)/sum((pf(i).data(:)).^2); % L^2 error
+    e(i) = e(i)/sum((pf(i).intensities(:)).^2); % L^2 error
   else 
-    e(i) = e(i)/numel(pf(i).r);       % RP error
+    e(i) = e(i)/length(pf(i).r);       % RP error
   end
 end
 

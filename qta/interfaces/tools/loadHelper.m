@@ -2,17 +2,17 @@ function loader = loadHelper( d, varargin )
 % helps to load data-matrix with ColumnNames
 % restricts also data according to conventions (e.g. >4pi)
 %
-%% Input
-% d -  (n x m) matrix
-% ColumnNames - (1 x m) cell of names
-% Columns - (1 x m) cell of ColumnNames indizes
+% Input
+%  d -  (n x m) matrix
+%  ColumnNames - (1 x m) cell of names
+%  Columns - (1 x m) cell of ColumnNames indizes
 %
-%% Options
-% KeepNaN
-% Radians
-% passive rotation
+% Options
+%  KeepNaN
+%  Radians
+%  passive rotation
 % ...
-%% Output
+% Output
 % loader  - structure with some funs
 %
 
@@ -84,7 +84,7 @@ loader.getColumnData = @getColumnData;
       end
       
       if check_option(opts.Options,{'passive','passive rotation'})
-        q = inverse(q);
+        q = inv(q);
       end
       
     else

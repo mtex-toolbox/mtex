@@ -1,7 +1,7 @@
 function ebsd = loadEBSD_brukertxt(fname,varargin)
 % read Bruker *.txt file
 %
-%% Syntax
+% Syntax
 %   ebsd = loadEBSD_brukertxt(fname)
 %
 
@@ -46,7 +46,7 @@ for k=1:numel(lineBreaks)-1
       if strncmpi(keyword,'Phase',5)
         
         nphase = nphase + 1;
-        phases(nphase).Phase = nphase;
+        phases(nphase).phaseId = nphase;
         
       elseif strncmpi(keyword,' ',1)
         

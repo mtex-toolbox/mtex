@@ -1,20 +1,20 @@
-function [I odf] = transinformation(odf1,odf2,varargin)
+function [I, odf] = transinformation(odf1,odf2,varargin)
 % information dependence of two odfs
 %
 % defined as:
 %
 % $$ I = \int f(g_{1+2}) \ln \frac{f(g_{1+2})}{f(g_1) * f(g_2)}  dg $$
 %
-%% Input
+% Input
 %  odf - @ODF 
 %
-%% Output
+% Output
 %  texture index - double
 %
-%% Options
+% Options
 %  resolution - resolution of the discretization
 %
-%% See also
+% See also
 % ODF/entropy ODF/textureindex ODF/calcError
 
 
@@ -38,6 +38,6 @@ I = nansum(h);
 
 if nargout > 1,
   S3G = subGrid(S3G,~ind);
-  odf = ODF(S3G,h,extract_kernel(S3G,varargin),...
-    get(S3G,'CS'),get(S3G,'SS'),varargin{:});
+  odf = unimodalODF(S3G,extract_kernel(S3G,varargin),...
+    get(S3G,'CS'),get(S3G,'SS'),varargin{:},'weights',h);
 end

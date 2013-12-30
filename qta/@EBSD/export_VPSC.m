@@ -12,7 +12,7 @@ function export_VPSC(ebsd,filename,varargin)
 % EBSDImportExport
   
 % allocate memory
-d = zeros(numel(ebsd),4);
+d = zeros(length(ebsd),4);
 
 % add Euler angles
 d(:,1:3) = get(ebsd,'Euler',varargin{:});

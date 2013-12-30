@@ -1,14 +1,14 @@
 function PF = measurePoleFigure(odf,h,varargin)
 % simulate a polefigure measurement
 %
-%% Syntax
-%  pf = measurePoleFigure(odf,h,@S2Grid,...) - 
-%  pf = measurePoleFigure(odf,h,'integral','steps',30,'drho',5*degree,...) -
-%  pf = measurePoleFigure(odf,h,'path',@vector3d,@vector3d,...) - 
+% Syntax
+%   pf = measurePoleFigure(odf,h,@S2Grid,...) - 
+%   pf = measurePoleFigure(odf,h,'integral','steps',30,'drho',5*degree,...) -
+%   pf = measurePoleFigure(odf,h,'path',@vector3d,@vector3d,...) - 
 %
-%% Input
+% Input
 % 
-%% Options
+% Options
 %  S2Grid     - perform a point measure
 %  integral   - integrate over small circle while measuring
 %  mintheta/minrho - S2Grid parameter
@@ -128,7 +128,7 @@ elseif check_option(varargin,'path') % along a defined great circle
   F = reshape(pdf(odf,h,v),size(v));
   F = F.*rnd(size(v)); % if randomize  
   Ff = zeros(n,length(cs)-1);
-  for k=1:length(cs)-1
+  for k=1:numel(cs)-1
     Ff(:,k) = sum(F(:,cs(k)+1:cs(k+1)),2);
   end
 

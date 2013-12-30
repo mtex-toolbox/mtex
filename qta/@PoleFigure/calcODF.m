@@ -11,10 +11,10 @@ function [odf,alpha] = calcODF(pf,varargin)
 % resolution, smoothing, etc. See below for a complete description.
 %
 %
-%% Input
+% Input
 %  pf - @PoleFigure
 %
-%% Options
+% Options
 %  KERNEL            - the ansatz functions (default = de la Vallee Poussin)
 %  KERNELWIDTH | HALFWIDTH - halfwidth of the ansatz functions (default = 2/3 * resolution)
 %  RESOLUTION        - localization grid for the ansatz fucntions (default = 3/2 resolution(pf))
@@ -25,7 +25,7 @@ function [odf,alpha] = calcODF(pf,varargin)
 %  ODF_SAVE          - save ODF simultanously
 %  C0                - initial guess (default = [1 1 1 1 ... 1])
 %
-%% Flags
+% Flags
 %  ZERO_RANGE        - apply zero range method (default = )
 %  NOGHOSTCORRECTION - omit ghost correction
 %  ENSURE_DESCENT - stop iteration whenever no procress if observed
@@ -34,11 +34,11 @@ function [odf,alpha] = calcODF(pf,varargin)
 %  ODF_TEST       - for testing only
 %  SILENT         - no output
 %
-%% Output
+% Output
 %  odf    - reconstructed @ODF
 %  alpha  - scaling factors, calculated during reconstruction
 %
-%% See also
+% See also
 % PoleFigure2odf ODF_demo PoleFigureSimulation_demo
 % loadPoleFigure ImportPoleFigureData examples_index
 
@@ -46,30 +46,32 @@ tic
 
 vdisp('------ MTEX -- PDF to ODF inversion ------------------',varargin{:})
 
-%% ------------------- get input--------------------------------------------
+% ------------------- get input--------------------------------------------
+
 CS = pf(1).CS; SS = pf(1).SS;
 
-S3G = get_option(varargin,'RESOLUTION',get(pf,'resolution'),{'double','SO3Grid'});
-if ~isa(S3G,'SO3Grid'), S3G = SO3Grid(S3G,CS,SS); end
-if check_option(varargin,'zero_range'), S3G = zero_range(pf,S3G,varargin{:});end
-if ~(CS == get(S3G,'CS') && SS == get(S3G,'SS'))
-    qwarning('Symmetry of the Grid does not fit to the given Symmetrie');
-end
+% generate discretization of orientation space
+res = get_option(varargin,'resolution',get(pf,'resolution'));
+S3G = equispacedSO3Grid(CS,SS,'resolution',res);
 
+% zero range method
+if check_option(varargin,'zero_range'), S3G = zero_range(pf,S3G,varargin{:});end
+
+% get kernel
 kw = get_option(varargin,{'HALFWIDTH','KERNELWIDTH'},get(S3G,'resolution'),'double');
 psi = get_option(varargin,'kernel',...
   kernel('de la Vallee Poussin','HALFWIDTH',kw),'kernel');
 
+% get other options
 iter_max = int32(get_option(varargin,'ITER_MAX',...
   getMTEXpref('ITER_MAX',15),'double'));
 iter_min = int32(get_option(varargin,'ITER_MIN',10,'double'));
 
 c0 = get_option(varargin,'C0',...
-	1/sum(numel(S3G))*ones(sum(numel(S3G)),1));
+	1/sum(length(S3G))*ones(sum(length(S3G)),1));
 
 
-%% ----------------- prepare for calling calcODF.c -------------------------
-%% -------------------------------------------------------------------------
+% ----------------- prepare for calling calcODF.c -------------------------
 
 % calculate gh
 gh = symmetrise(S3G).' * get(pf,'h'); % S3G x SS x CS x h
@@ -79,7 +81,7 @@ clear ghtheta; clear ghrho;
 
 % extract kernel Fourier coefficents
 A = getA(psi);
-if check_option(get(pf(1),'r'),'antipodal')
+if pf(1).r.antipodal
   A(2:2:end) = 0;
 else
   warning('MTEX:missingFlag','Flag HEMISPHERE not set in PoleFigure data!');
@@ -102,21 +104,19 @@ r = [reshape(rrho,1,[]);reshape(rtheta,1,[])]/2/pi;
 clear rtheta;clear rrho;
 
 
-%% ---------- normalize very different polefigures --------------------
+% ---------- normalize very different polefigures --------------------
 mm = max(max(pf));
 
-for i = 1:numel(pf)
+for i = 1:length(pf)
 
   if mm > 5*max(pf(i)), pf(i) = pf(i) * mm/5/max(pf(i));end
 
 end
 
-%% ----------------------- WHEIGHTS ----------------------------------
-
 % compute quadrature weights
 w = [];
-if ~check_option(varargin,'NoQuadratureWeights')
-  for i = 1:numel(pf)
+if ~check_option(varargin,'b')
+  for i = 1:length(pf)
     ww = calcQuadratureWeights(pf(i).r);
     w = [w;ww(:)]; %#ok<AGROW>
   end
@@ -132,7 +132,7 @@ else
   RM = [];
 end
 
-%% --------------------- ODF testing ----------------------------------
+% --------------------- ODF testing ----------------------------------
 orig = get_option(varargin,'ODF_TEST',[]);
 test_S3G = get_option(varargin,'TEST_GRID',S3G);
 if isempty(orig)
@@ -147,18 +147,13 @@ else
   evaldata = eval(orig,test_S3G,'EXACT'); %#ok<*GTARG>
 end
 
-%% --------------------- CALCULATE FLAGS ---------------------------------
+% --------------------- CALCULATE FLAGS ---------------------------------
 CW_flags = {{'WEIGHTS',0},{'REGULARISATION',1},...
   {'SAVE_ODF',5},{'RP_VALUES',6},{'FORCE_ITER_MAX',7},{'ODF_TEST',8}};
 flags = calc_flags(varargin,CW_flags);
 
-%% -------------------- call c-routine -----------------------------------
-% -----------------------------------------------------------------------
-
+% -------------------- call c-routine -----------------------------------
 vdisp('Call c-routine',varargin{:});
-
-comment = get_option(varargin,'comment',...
-  ['ODF recalculated from ',get(pf,'comment')]);
 
 [c,alpha] = call_extern('pf2odf',...
   'INTERN',lP,lh,refl,iter_max,iter_min,flags,...
@@ -167,12 +162,11 @@ comment = get_option(varargin,'comment',...
 vdisp(['required time: ',int2str(toc),'s'],varargin{:});
 
 % return ODF
-odf = 1/sum(c)*ODF(S3G,c,psi,CS,SS,'comment',comment);
+odf = 1/sum(c)*unimodalODF(S3G,psi,CS,SS,'weights',c);
 
 if check_option(varargin,'noGhostCorrection'), return;end
 
 % ------------------ ghost correction -----------------------------------
-% -----------------------------------------------------------------------
 
 % determine phon
 phon = 1;
@@ -198,7 +192,7 @@ for ip = 1:length(pf)
 end
 P = max(0,P); %no negative values !
 
-c0 = (1-phon)/numel(S3G)*ones(numel(S3G),1);
+c0 = (1-phon)/length(S3G)*ones(length(S3G),1);
 
 % calculate new ODF
 [c,alpha] = call_extern('pf2odf',...
@@ -207,8 +201,8 @@ c0 = (1-phon)/numel(S3G)*ones(numel(S3G),1);
   char(extract_option(varargin,'silent')));
 
 % return ODF
-odf(1) = phon * uniformODF(CS,SS,'comment',comment);
-odf(1+(phon>0)) = (1-phon)/sum(c)*ODF(S3G,c,psi,CS,SS,'comment',comment);
+odf(1) = phon * uniformODF(CS,SS);
+odf(1+(phon>0)) = (1-phon)/sum(c)*unimodalODF(S3G,psi,CS,SS,'weights',c);
 
 end
 

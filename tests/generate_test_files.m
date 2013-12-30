@@ -7,7 +7,7 @@ ss = symmetry('-1');
 h = [Miller(1,0,0,cs),Miller(0,0,1,cs)];
 
 % specimen directions
-r = S2Grid('equispaced','resolution',5*degree,'hemisphere');
+r = equispacedS2Grid('resolution',5*degree,'hemisphere');
 
 % ODF
 odf = unimodalODF(idquaternion,cs,ss);

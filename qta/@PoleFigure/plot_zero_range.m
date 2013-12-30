@@ -1,20 +1,11 @@
 function plot_zero_range(pf,varargin)
 % implements the zero range method
 %
-%% Input
+% Input
 %  pf  - @PoleFigure
-%
-%% Output
-%  NS3G - antipodal @SO3Grid
-%
-%% Options
-% 
-%
-%% See also
-% PoleFigure/calcODF
 
 % plotting grid
-S2G = S2Grid('PLOT','antipodal',varargin{:});
+S2G = plotS2Grid('antipodal',varargin{:});
 
 % loop over pole figures
 for ip = 1:length(pf)

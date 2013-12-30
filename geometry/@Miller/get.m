@@ -1,7 +1,7 @@
 function varargout = get(obj,vname,varargin)
 % get object variable
 
-%% no vname - return list of all fields
+% no vname - return list of all fields
 if nargin == 1
 	vnames = get_obj_fields(obj(1));
   vnames = [vnames;{'hkl';'h';'k';'l';'i';'rho';'theta';'polar';'x';'y';'z'}];
@@ -9,7 +9,7 @@ if nargin == 1
   return
 end
 
-%% switch fieldnames
+% switch fieldnames
 switch lower(vname)
 
   case {'hkl','h','k','l','i'}

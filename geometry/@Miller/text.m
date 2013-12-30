@@ -1,19 +1,17 @@
 function varargout = text(m,varargin)
 % plot Miller indece
 %
-%% Input
+% Input
 %  m  - Miller
 %
-%% Options
+% Options
 %  ALL       - plot symmetrically equivalent directions
 %  antipodal - include antipodal symmetry
 %  labeled   - plot Miller indice as label
 %  label     - plot user label
 %
-%% See also
+% See also
 % vector3d/text
-
-%% preprocess input
 
 % get axis hande
 [ax,m,varargin] = getAxHandle(m,varargin{:});
@@ -21,7 +19,7 @@ function varargout = text(m,varargin)
 % extract text
 strings = ensurecell(varargin{1});
 
-if numel(strings)==1, strings = repcell(strings{1},numel(m),1);end
+if numel(strings)==1, strings = repcell(strings{1},length(m),1);end
 
 % symmetrise
 if check_option(varargin,{'all','symmetrised','fundamentalRegion'})
@@ -30,7 +28,7 @@ if check_option(varargin,{'all','symmetrised','fundamentalRegion'})
     p = getappdata(ax{:},'projection');
     if p.antipodal, varargin = [varargin,{'antipodal'}];end
   end
-  if check_option(m,'antipodal')
+  if m.antipodal
     varargin = [varargin,{'antipodal'}];
   end
 
@@ -49,4 +47,4 @@ end
 
 varargin = delete_option(varargin,'labeled');
 
-[varargout{1:nargout}] = text(ax{:},m.vector3d,strings,varargin{:});
+[varargout{1:nargout}] = text(ax{:},vector3d(m),strings,varargin{:});

@@ -16,7 +16,7 @@ ss = get(SantaFe,'SS');
 h = [Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(1,1,1,cs),Miller(2,1,1,cs)];
 
 % specimen directions
-r = S2Grid('equispaced','resolution',5*degree,'antipodal');
+r = equispacedS2Grid('resolution',5*degree,'antipodal');
 
 % pole figures
 pf = calcPoleFigure(SantaFe,h,r);

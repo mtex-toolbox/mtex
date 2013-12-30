@@ -6,25 +6,25 @@ function export(pf,filename,varargin)
 % |intensity|, where (|theta|, |rho|) are the polar coordinates of the specimen
 % directions and |intensity| is the diffraction intensity
 %
-%% Input
+% Input
 %  pf       - @PoleFigure
 %  filename - string
 %
-%% Options
+% Options
 %  DEGREE - theta / rho output in degree instead of radians
 %
-%% See also
+% See also
 % loadPoleFigure_generic
 
 for i = 1:length(pf)
   dname = [filename,'_',char(pf(i).h),'.txt'];
 
   [theta,rho] = polar(pf(i).r);
-	if check_option(varargin,'DEGREE')
+	if check_option(varargin,'degree')
 		theta = theta * 180'/pi;		
 		rho = rho * 180'/pi;
 	end
-	d = [theta(:),rho(:),pf(i).data(:)]; %#ok<NASGU>
+	d = [theta(:),rho(:),pf(i).intensities(:)]; %#ok<NASGU>
   save(dname,'d','-ASCII');
     
 end

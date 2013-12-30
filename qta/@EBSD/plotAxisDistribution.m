@@ -1,17 +1,17 @@
 function plotAxisDistribution(ebsd,varargin)
 % plot uncorrelated axis distribution
 %
-%% Input
+% Input
 %  ebsd - @EBSD
 %
-%% Options
-%  RESOLUTION - resolution of the plots
+% Options
+%  resolution - resolution of the plots
 %
-%% Flags
+% Flags
 %  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
-%  COMPLETE  - plot entire (hemi)--sphere
+%  complete  - plot entire (hemi)--sphere
 %
-%% See also
+% See also
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
@@ -19,14 +19,13 @@ function plotAxisDistribution(ebsd,varargin)
 [ax,ebsd,varargin] = getAxHandle(ebsd,varargin{:});
 if isempty(ax), newMTEXplot;end
 
-%% calc axis distribution
-
+% calc axis distribution
 axes = calcAxisDistribution(ebsd,'SampleSize',10000,varargin{:});
 
+% plot
 plot(ax{:},axes,'all','FundamentalRegion',varargin{:});
 
-%% set tags
-
+% set tags
 if isempty(ax)
   set(gcf,'tag','AxisDistribution');
   setappdata(gcf,'CS',get(axes,'CS'));

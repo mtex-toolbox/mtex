@@ -4,7 +4,6 @@ function ebsd = subsasgn(ebsd,s,b)
 if ~isa(ebsd,'EBSD')
   ebsd = EBSD;
   ebsd.CS = b.CS;
-  ebsd.SS = b.SS;
 end
 
 if isa(s,'double') || isa(s,'logical')
@@ -15,7 +14,7 @@ if isa(s,'double') || isa(s,'logical')
     
     ebsd.options = structfun(@(x) subsasgn(x,ss,[]),ebsd.options,'UniformOutput',false);
     ebsd.rotations = subsasgn(ebsd.rotations,ss,[]);
-    ebsd.phase = subsasgn(ebsd.phase,ss,[]);
+    ebsd.phaseId = subsasgn(ebsd.phaseId,ss,[]);
     
   elseif isa(b,'char') % assign a new phase
     
@@ -29,7 +28,7 @@ if isa(s,'double') || isa(s,'logical')
       ebsd.CS{newphase} = b;      
     end
     
-    ebsd.phase = subsasgn(ebsd.phase,ss,newphase);
+    ebsd.phaseId = subsasgn(ebsd.phaseId,ss,newphase);
     
   elseif isa(b,'EBSD') % copy measurements
     
@@ -38,7 +37,7 @@ if isa(s,'double') || isa(s,'logical')
       ebsd.options.(fn{ifn}) = subsasgn(ebsd.options.(fn{ifn}),ss,b.options.(fn{ifn}));
     end
     ebsd.rotations = subsasgn(ebsd.rotations,ss,b.rotations);
-    ebsd.phase = subsasgn(ebsd.phase,ss,b.phase);
+    ebsd.phaseId = subsasgn(ebsd.phaseId,ss,b.phaseId);
     
   else
     
@@ -46,9 +45,42 @@ if isa(s,'double') || isa(s,'logical')
     
   end
 
-elseif strcmp(s.type,'()')
+  return
+  
+end
+  
+switch s(1).type
+  
+  case '()'
+      
+    if numel(s)>1, b =  subsasgn(subsref(ebsd,s(1)),s(2:end),b); end
+    
+    if isempty(b)
+      
+      ebsd = subsasgn@dynProp(ebsd,s(1),[]);
+      ebsd.rotations = subsasgn(ebsd.rotations,s(1),[]);
+                  
+    else
+      
+      ebsd = subsasgn@dynProp(ebsd,s(1),b);
+      ebsd.rotations = subsasgn(ebsd.rotations,s(1),b.rotations);
+                  
+    end
+    
+  otherwise
+    
+    % maybe we can adress the ebsd object directly
+    try %#ok<TRYNC>
+      ebsd = builtin('subsasgn',ebsd,s,b);
+      return
+    end
+    
+    % maybe it is an option
+    if ebsd.isOption(s(1).subs)
+      ebsd = subsasgn@dynOption(ebsd,s,b);
+    else % otherwise a property
+      ebsd = subsasgn@dynProp(ebsd,s,b);
+    end
 
-  ind = subsind(ebsd,s.subs);
-  ebsd = subsasgn(ebsd,ind,b);
-
+end
 end

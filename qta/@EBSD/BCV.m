@@ -1,20 +1,21 @@
 function c = BCV(ebsd,psi)
 % biased cross validation
 %
-%% Input
+% Input
 %  ebsd - @EBSD
 %  psi  - @kernel
-%% Output
+%
+% Output
 %  c    - halfwidth
 %
-%% See also
+% See also
 % EBSD/calcODF EBSD/calcKernel grain/calcKernel EBSD/LSCV
 
 % extract data
-N = numel(ebsd);
-NCS = N * numel(get(ebsd,'CS'));
+N = length(ebsd);
+NCS = N * length(get(ebsd,'CS'));
 
-o = get(ebsd,'orientations');
+o = ebsd.orientations;
 try
   w = get(ebsd,'weight');
   w = ones(size(w));
@@ -26,8 +27,7 @@ ebsd = set(ebsd,'weight',w);
 
 % compute Fourier coefficients
 L = 16;
-odf_d = calcODF(ebsd,'kernel',kernel('Dirichlet',L),'Fourier',L,'silent');
-
+odf_d = calcFourierODF(ebsd,'kernel',kernel('Dirichlet',L),'silent');
 
 sob = kernel('Sobolev',1,'bandwidth',L);
 

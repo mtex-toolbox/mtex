@@ -1,16 +1,16 @@
 function pf = loadPoleFigure_xrd(fname,varargin)
 % import data fom aachen xrd file
 %
-%% Syntax
-% pf = loadPoleFigure_xrd(fname,<options>)
+% Syntax
+%   pf = loadPoleFigure_xrd(fname,<options>)
 %
-%% Input
+% Input
 %  fname  - filename
 %
-%% Output
+% Output
 %  pf - @PoleFigure
 %
-%% See also
+% See also
 % ImportPoleFigureData loadPoleFigure
 
 pf = PoleFigure;
@@ -39,7 +39,7 @@ for i = 1:length(rhoStartToken)
     rho = (rhoStart(1):rhoStep(1):rhoStop(1))*degree;
     theta = pi/2-readToken(h,thetaToken{i})*degree;
     
-    r = S2Grid('regular','theta',theta,'rho',rho);
+    r = regularS2Grid('theta',theta,'rho',rho);
   catch %#ok<CTCH>
     continue
   end
@@ -47,12 +47,12 @@ for i = 1:length(rhoStartToken)
   if ~isempty(r), break;end
 end
 
-assert(numel(r)>0);
+assert(~isempty(r));
 if check_option(varargin,'check'), return;end
 
 h = string2Miller(fname);
 
-%% read data
+% ------------------------ read data -------------------------
 
 fid = efopen(fname);
 
@@ -60,7 +60,7 @@ d = cell2mat(textscan(fid,'%n','CommentStyle','*','Whitespace',' \n,',...
   'MultipleDelimsAsOne',true));
 
 % if there are more then one value per direction take the second one
-if numel(d) > numel(r)
+if numel(d) > length(r)
   
   d = d(2:3:end);
   
@@ -68,10 +68,10 @@ end
 
 fclose(fid);
 
-%% define Pole Figure
+% define Pole Figure 
 pf = PoleFigure(h,r,d,varargin{:});
 
-
+% ----------------------------------------------------------------
 function value = readToken(str,token)
 
 str = regexp(str,token,'tokens');

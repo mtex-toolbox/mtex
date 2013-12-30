@@ -1,19 +1,19 @@
-function NG = shift(G,delta)
+function G = shift(G,delta)
 % shifts S1Grid by delta
-%% Syntax
-%  NG = shift(G,delta)
 %
-%% Input
+% Syntax
+%   G = shift(G,delta)
+%
+% Input
 %  S1G   - @S1Grid
 %  delta - double
-%% Output
+% Output
 %  S1G + delta
 
-NG = G;
 for i = 1:length(G)
-    NG(i).points = G(i).points + delta;
-		if NG(i).periodic
-			NG(i).points = mod(NG(i).points - G(i).min ,G(i).max-G(i).min) + G(i).min;
+    G(i).points = G(i).points + delta;
+		if G(i).periodic
+			G(i).points = mod(G(i).points - G(i).min ,G(i).max-G(i).min) + G(i).min;
 		end	
 end
 

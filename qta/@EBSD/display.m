@@ -12,15 +12,15 @@ end;
 
 disp([h ' ' docmethods(inputname(1))])
 
-% show comment
-if ~isempty(ebsd.comment)
-  disp(['  Comment: ' ebsd.comment(1:end-1)]);  
+% empty ebsd set 
+if isempty(ebsd)
+  disp('  EBSD is empty!')
+  return
 end
 
-if numel(ebsd)>0 && ~isempty(fields(ebsd.options))
-  disp(['  Properties: ',option2str(fields(ebsd.options))]);
-end
-
+disp(' ')
+% display all other options
+disp(char(dynOption(ebsd)));
 
 % ebsd.phaseMap
 matrix = cell(numel(ebsd.phaseMap),5);
@@ -30,7 +30,7 @@ for ip = 1:numel(ebsd.phaseMap)
   matrix{ip,1} = num2str(ebsd.phaseMap(ip)); %#ok<*AGROW>
 
   % orientations
-  matrix{ip,2} = [int2str(nnz(ebsd.phase == ip)) ' (' xnum2str(100*nnz(ebsd.phase == ip)./length(ebsd.phase)) '%)'];
+  matrix{ip,2} = int2str(nnz(ebsd.phaseId == ip));
   
     % mineral
   CS = ebsd.CS{ip};
@@ -55,25 +55,11 @@ for ip = 1:numel(ebsd.phaseMap)
 
 end
 
-if numel(ebsd)>0
-  cprintf(matrix,'-L','  ','-Lc',...
-    {'Phase' 'Orientations' 'Mineral' 'Color' 'Symmetry' 'Crystal reference frame'},...
-    '-ic','F');
-else
-  disp('  EBSD is empty!')
-end
+
+cprintf(matrix,'-L',' ','-Lc',...
+  {'Phase' 'Orientations' 'Mineral' 'Color' 'Symmetry' 'Crystal reference frame'},...
+  '-d','  ','-ic',true);
 
 disp(' ');
-
-if 0 < numel(ebsd) && numel(ebsd) <= 20
-  fn = fields(ebsd.options);
-  d = zeros(sum(numel(ebsd)),numel(fn));
-  for j = 1:numel(fn)
-    if isnumeric(ebsd.options.(fn{j}))
-      d(:,j) = vertcat(ebsd.options.(fn{j}));
-    elseif isa(ebsd.options.(fn{j}),'quaternion')
-      d(:,j) = angle(ebsd.options.(fn{j})) / degree;
-    end
-  end
-  cprintf(d,'-Lc',fn);
-end
+disp(char(dynProp(ebsd.prop)));
+disp(' ');

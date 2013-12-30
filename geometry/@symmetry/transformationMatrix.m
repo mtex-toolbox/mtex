@@ -1,17 +1,17 @@
 function M = transformationMatrix(cs1,cs2)
 % compute the transformation matrix from cs1 to cs2
 %
-%% Input
+% Input
 % cs1, cs2 - @symmetry
 %
-%% Output
+% Output
 % M - transformation matrix cs1 to cs2
 %
-%% See also
+% See also
 %
 
-axes1 = reshape(double(normalize(get(cs1,'axes'))),3,3);
-axes2 = reshape(double(normalize(get(cs2,'axes'))),3,3);
+axes1 = reshape(double(normalize(cs1.axes)),3,3);
+axes2 = reshape(double(normalize(cs2.axes)),3,3);
 
 M = axes2^-1 * axes1;
 

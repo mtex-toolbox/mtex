@@ -15,10 +15,15 @@ if isa(ori,'orientation') && ...
   
 else
   
-  r = get_option(varargin,'r',xvector,'vector3d');
+  if isCS(get(ori,'SS'))
+    r = Miller(0,0,1,get(ori,'SS'));
+  else
+    r = xvector;
+  end
+  r = get_option(varargin,'r',r,'vector3d');
   
 end
 
 
 % compute crystal directions
-h = inverse(ori) .* r;
+h = inv(ori) .* r;

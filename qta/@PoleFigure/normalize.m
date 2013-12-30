@@ -1,29 +1,31 @@
 function pf = normalize(pf,odf)
 % normalization of a meassured pole figure with respect to an ODF
 %
-%% Syntax
-% pf = normalize(pf)
-% pf = normalize(pf,odf)
+% Syntax
+%   pf = normalize(pf)
+%   pf = normalize(pf,odf)
 %
-%% Input
+% Input
 %  pf  - @PoleFigure
 %  odf - @ODF
 %
-%% Output
+% Output
 %  pf  - @PoleFigure
 %
-%% See also
+% See also
 % PoleFigure/calcError
 
-%% no ODF given 
+% no ODF given 
 if nargin == 1
 
   alpha = mean(pf);
   
-%% ODF given
+% ODF given
 else
-  for i = 1:length(pf)
-    pf_odf(i) = calcPoleFigure(odf,pf(i).h,pf(i).r,'superposition',pf(i).c); %#ok<AGROW>
+  %TODO
+  pf_odf = calcPoleFigure(odf,pf(1).h,pf(1).r,'superposition',pf(1).c);
+  for i = 2:length(pf)
+    pf_odf(i) = calcPoleFigure(odf,pf(i).h,pf(i).r,'superposition',pf(i).c);
   end
 
   alpha = calcNormalization(pf,pf_odf);

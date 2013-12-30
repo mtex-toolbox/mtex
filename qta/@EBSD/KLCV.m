@@ -1,17 +1,18 @@
 function c = KLCV(ebsd,psi,varargin)
 % Kullback Leibler cross validation for optimal kernel estimation
 %
-%% Input
+% Input
 %  ebsd - @EBSD
 %  psi  - @kernel
-%% Options
-% SamplingSize - number of samples
-% PartitionSize - 
 %
-%% Output
+% Options
+%  SamplingSize - number of samples
+%  PartitionSize - 
+%
+% Output
 %  c
 %
-%% See also
+% See also
 % EBSD/calcODF EBSD/calcKernel grain/calcKernel EBSD/BCV
 
 % get data
@@ -25,7 +26,7 @@ q = get(ebsd,'orientations');
 
 % partition data set
 sN = ceil(min(length(q),get_option(varargin,'SamplingSize',1000)));
-pN = get_option(varargin,'PartitionSize',ceil(1000000/numel(q)));
+pN = get_option(varargin,'PartitionSize',ceil(1000000/length(q)));
 cN = ceil(sN / pN);
 
 c = zeros(cN,length(psi));
@@ -42,7 +43,7 @@ for i = 1:cN
   for k = 1:length(psi)
     
     % eval kernel
-    f = evalCos(psi(k),d) ./ numel(q) ./ numel(get(ebsd,'CS'));
+    f = evalCos(psi(k),d) ./ length(q) ./ length(get(ebsd,'CS'));
     
     % remove diagonal
     f(sub2ind(size(f),1:size(f,1),ind)) = 0;
@@ -68,7 +69,7 @@ c = c(end,:);
 
 return
 
-%% some testing data
+% some testing data
 
 cs = symmetry('orthorhombic'); %#ok<*UNRCH>
 ss = symmetry('triclinic');

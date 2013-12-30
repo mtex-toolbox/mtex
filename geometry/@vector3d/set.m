@@ -1,10 +1,10 @@
-function obj = set(obj,vname,value)
+function obj = set(obj,varargin)
 % set object variable
 
-switch vname
+switch varargin{1}
   case fields(obj)
-    obj.(vname) = value;
+    obj.(varargin{1}) = varargin{2};
   otherwise
-    error('Unknown field in class vector3d!')
+    obj = set@dynOption(obj,varargin{:});
 end
 

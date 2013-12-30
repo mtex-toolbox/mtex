@@ -1,29 +1,30 @@
 function [density,omega] = calcAngleDistribution(ebsd,varargin)
 % calculate angle distribution
 %
-%% Input
-% ebsd - @EBSD
+% Input
+%  ebsd - @EBSD
 %
-%% Flags
+% Flags
 %
-%% Output
-% density - the density, such that 
+% Output
+%  density - the density, such that 
 %
 %    $$\int f(\omega) d\omega = \pi$$
 %
-% omega  - intervals of density
-%% See also
+%  omega  - intervals of density
+%
+% See also
 % EBSD/calcMisorientation EBSD/plotAngleDistribution
 
 if check_option(varargin,'smooth')
   
-  odf1 = calcODF(ebsd,'Fourier','halfwidth',10*degree);
+  odf1 = calcFourierODF(ebsd,'halfwidth',10*degree);
   
   ebsd2 = getClass(varargin,'EBSD',[]);
-  if isempty(ebsd2) || numel(ebsd) == numel(ebsd2)
+  if isempty(ebsd2) || length(ebsd) == length(ebsd2)
     odf2 = odf1;
   else
-    odf2 = calcODF(ebsd2,'halfwidth',10*degree,'Fourier');
+    odf2 = calcFourierODF(ebsd2,'halfwidth',10*degree);
   end
     
   mdf = calcMDF(odf1,odf2);
@@ -34,7 +35,7 @@ else
   m = calcMisorientation(ebsd,varargin{:});
 
   [dns,omega] = angleDistribution(get(m,'CS'));
-  omega = linspace(0,max(omega),min(50,max(5,numel(m)/20)));
+  omega = linspace(0,max(omega),min(50,max(5,length(m)/20)));
   omega = get_option(varargin,'omega',omega);
 
   density = histc(angle(m),omega);

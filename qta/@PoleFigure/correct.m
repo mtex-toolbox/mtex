@@ -1,21 +1,22 @@
 function pf = correct( pf, varargin )
-% corrects a (list of) polfigure(s)
+% corrects polfigures for background and defocussing
 %
-%% Syntax
-% pf = correct(pf,<options>)
+% Syntax
+%   pf = correct(pf,'bg',bg_pf)
+%   pf = correct(pf,'def',def_pf)
 %
-%% Input
+% Input
 %  pf - list of @PoleFigure
 %
-%% Options
+% Options
 %  BACKGROUND | BG               - Background PoleFigure
 %  DEFOCUSING | DEF              - Defocusing PoleFigure
 %  BACKGROUND DEFOCUSING | DEFBG - Background of defocusing PoleFigure
 %
-%% Output
+% Output
 %  pf    - @PoleFigure
 %
-%% See also
+% See also
 %  ModifyPoleFigureData
 
 % Background correction
@@ -43,8 +44,7 @@ end
 pf = pf./def;
 
 
-%% Handle the case of correction pole figurs that are given only by theta
-%% angles
+% Handle the case of correction pole figurs that are given only by theta angles
 function pf_orig = adapt_pf(pf,pf_orig,msg)
 
 if length(pf) == 1, pf = repmat(pf,numel(pf_orig),1);end
@@ -61,7 +61,7 @@ end
 % otherwise interpolate according to theta
 try
   for i = 1:length(pf)
-    pf_orig(i).data = interp1(get(pf(i),'theta'),pf(i).data,get(pf_orig(i),'theta'),'spline');
+    pf_orig(i).intensities = interp1(get(pf(i),'theta'),pf(i).intensities,get(pf_orig(i),'theta'),'spline');
   end
 catch
   error([msg ' does not fit original pole figure data!']);

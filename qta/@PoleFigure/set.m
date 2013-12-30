@@ -1,20 +1,20 @@
 function pf = set(pf,vname,value,varargin)
 % set polefigure properties to a specific value 
 %
-%% Syntax
-% pf = set(pf,'intensities',data,id)
-% pf = set(pf,'CS',cs) 
-% pf = set(pf,'h',h)
+% Syntax
+%   pf = set(pf,'intensities',data,id)
+%   pf = set(pf,'CS',cs) 
+%   pf = set(pf,'h',h)
 %
-%% Input
+% Input
 %  pf   - @PoleFigure
 %  data - [double] 
 %  id   - index set (optional)
 %
-%% Output
+% Output
 %  pf - @PoleFigure
 %
-%% See also
+% See also
 % PoleFigure/get PoleFigure/delete PoleFigure/copy
 
 switch vname
@@ -30,16 +30,16 @@ switch vname
         ipf = (id > cs(i)) & (id<=cs(i+1));
         
         if numel(value) > 1
-          pf(i).data(id(ipf)-cs(i)) = value(ipf);
+          pf(i).intensities(id(ipf)-cs(i)) = value(ipf);
         else
-          pf(i).data(id(ipf)-cs(i)) = value;
+          pf(i).intensities(id(ipf)-cs(i)) = value;
         end
       end
   
     else
   
       for i = 1:length(pf)
-        pf(i).data = value(min(numel(value),cs(i)+1:cs(i+1)));
+        pf(i).intensities = value(min(numel(value),cs(i)+1:cs(i+1)));
       end
   
     end
@@ -64,9 +64,17 @@ switch vname
           if numel(ivalue) ~= numel(pf(i).c)
             pf(i).c = ones(size(ivalue)) ./ numel(ivalue);
           end
-      end
-          pf(i).(vname) = ivalue;
-      end
+          pf(i).h = ivalue;
+        otherwise
+          
+          try
+            pf(i).(vname) = ivalue;
+          catch
+          
+            pf(i) = set@dynOption(pf(i),varargin{:});
+          end          
+      end      
     end
+end
       
 end

@@ -1,7 +1,7 @@
 function [ebsd,options] = loadEBSD_generic(fname,varargin)
 % load ebsd data from generic text files
 %
-%% Description
+% Description
 %
 % *loadEBSD_generic* loads individual orientations and phase information
 % from text or exel files that have a column oriented format as
@@ -18,13 +18,13 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 % is specified by the options |ColumnNames| and |Columns|. The files can be
 % contain any number of header lines.
 %
-%% Syntax
+% Syntax
 %   pf   = loadEBSD_generic(fname,'ColumnNames',{'Euler1','Euler2','Euler3'})
 %
-%% Input
+% Input
 %  fname - file name (text files only)
 %
-%% Options
+% Options
 %  ColumnNames       - names of the colums to be imported, mandatory are euler 1, euler 2, euler 3
 %  Columns           - postions of the columns to be imported
 %  RADIANS           - treat input in radiand
@@ -34,7 +34,7 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 %  ABG               - [alpha beta gamma] Euler angle in Mathies convention
 %
 %
-%% Example
+% Example
 %
 %   fname = fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt');
 %   CS = {'not indexed',...
@@ -45,7 +45,7 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 %     {'Index' 'Phase' 'x' 'y' 'Euler1' 'Euler2' 'Euler3' 'MAD' 'BC' 'BS'...
 %     'Bands' 'Error' 'ReliabilityIndex'}, 'Bunge')
 %
-%% See also
+% See also
 % ImportEBSDData loadEBSD ebsd_demo
 
 try
@@ -83,7 +83,7 @@ try
     %[ig,ig,phase] = unique(phase);
   else
     
-    phase = ones(numel(q),1);
+    phase = ones(length(q),1);
     
   end
   

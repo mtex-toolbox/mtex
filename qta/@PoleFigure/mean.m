@@ -1,13 +1,13 @@
 function m = mean(pf,varargin)
 % mean of pole figure intensities
 %
-%% Syntax
-% m = mean(pf)
+% Syntax
+%   m = mean(pf)
 %
-%% Input
+% Input
 %  pf  - @PoleFigure
 %
-%% Output
+% Output
 %  m  - mean
 %
 
@@ -16,6 +16,6 @@ for i = 1:length(pf)
   
   w = calcQuadratureWeights(pf(i).r);
     
-  m(i) = sum(sum(reshape(pf(i).data,size(w)) .* w));
+  m(i) = sum(sum(reshape(pf(i).intensities,size(w)) .* w));
   
 end

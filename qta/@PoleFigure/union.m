@@ -1,13 +1,13 @@
 function pf = union(pf1,pf2)
 % crytsallographic direction to one
-%% Syntax
-%  pf = union(pf1,pf2)
+% Syntax
+%   pf = union(pf1,pf2)
 %
-%% Input
+% Input
 %  pf1 - @PoleFigure
 %  pf2 - @PoleFigure (optional)
 %
-%% Output
+% Output
 %  pf  - @PoleFigure
 
 if nargin==2, pf1 = [pf1,pf2];end
@@ -22,7 +22,8 @@ for i = 2:length(pf1)
     
   if all(pf(j).h == pf1(i).h)
     pf(j).r = [pf(j).r,pf1(i).r]; %#ok<AGROW>
-    pf(j).data = [reshape(pf(j).data,1,[]),reshape(pf1(i).data,1,[])]; %#ok<AGROW>
+    pf(j).intensities = [reshape(pf(j).intensities,1,[]),...
+      reshape(pf1(i).intensities,1,[])]; %#ok<AGROW>
   else
     pf(length(pf)+1) = pf1(i); %#ok<AGROW>
   end

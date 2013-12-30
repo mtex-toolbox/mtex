@@ -13,14 +13,14 @@ function kde = kernelDensityEstimation(v,out,varargin)
 
 %% parse some input 
 
-if numel(v)==0
+if isempty(v)
   kde = zeros(size(out));
   return
 end
 
 hw = get_option(varargin,'halfwidth',10*degree);
 psi = get_option(varargin,'kernel',kernel('de la vallee','halfwidth',hw));
-c = get_option(varargin,'weights',ones(numel(v),1));
+c = get_option(varargin,'weights',ones(length(v),1));
 c = c./sum(c);
 
 %% evaluate density
@@ -38,8 +38,8 @@ r = [reshape(out_rho,1,[]);reshape(out_theta,1,[])];
 	
 % extract legendre coefficents
 Al = getA(psi);
-if check_option(varargin,'antipodal') || check_option(v,'antipodal') || ...
-    check_option(out,'antipodal')
+if check_option(varargin,'antipodal') || v.antipodal || ...
+    out.antipodal
   Al(2:2:end) = 0;
 end
 bw = get_option(varargin,'bandwidth',length(Al));

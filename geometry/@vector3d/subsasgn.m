@@ -1,37 +1,45 @@
 function v = subsasgn(v,s,b)
 % overloads subsasgn
 
-if isempty(v)
+if isempty(v)  && ~isempty(b)
   v = b;
   v.x = [];
   v.y = [];
   v.z = [];
 end
 
-  
 if isnumeric(s) || islogical(s)
+
   v.x(s) = b.x;
   v.y(s) = b.y;
   v.z(s) = b.z;
-  v.options = b.options;
-  return;
+  return
 end
 
-if isa(b,'vector3d')
+
+switch s(1).type
   
-  switch s.type
-    case '()'
-      v.x = subsasgn(v.x,s,b.x);
-      v.y = subsasgn(v.y,s,b.y);
-      v.z = subsasgn(v.z,s,b.z);
-      v.options = b.options;
-    otherwise
-      error('Wrong indexing. Only ()-indexing is allowed for vector3d!');
-  end
-elseif isempty(b)
-  v.x = subsasgn(v.x,s,[]);
-  v.y = subsasgn(v.y,s,[]);
-  v.z = subsasgn(v.z,s,[]);
-else
-  error('Value must be of type quaternion!');
+  case '()'
+      
+    if numel(s)>1, b =  builtin('subsasgn',subsref(v,s(1)),s(2:end),b); end
+      
+    if isempty(b)
+      v.x = subsasgn(v.x,s(1),[]);
+      v.y = subsasgn(v.y,s(1),[]);
+      v.z = subsasgn(v.z,s(1),[]);
+    else
+      v.x = subsasgn(v.x,s(1),b.x);
+      v.y = subsasgn(v.y,s(1),b.y);
+      v.z = subsasgn(v.z,s(1),b.z);
+    end
+  otherwise
+    
+    try
+      v =  builtin('subsasgn',v,s,b);
+    catch
+      v = subsasgn@dynOption(v,s,b);
+    end
+      
+end
+
 end

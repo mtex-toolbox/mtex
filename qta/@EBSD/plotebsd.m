@@ -1,36 +1,35 @@
 function plotebsd(ebsd,varargin)
 % scatter / pole point plot of ebsd data
 %
-%% Input
+% Input
 %  ebsd - @EBSD
 %
-%% Options
-%  SCATTER | RODRIGUES - plot orientations in axis/angle or rodrigues
+% Options
+%  scatter | Rodrigues - plot orientations in axis/angle or rodrigues
 %                        parametrization
-%  POINTS        - number of orientations to be plotted
-%  CENTER        - orientation center
+%  points        - number of orientations to be plotted
+%  center        - orientation center
 %
-%% Example
+% Example
 % 
 %   mtexdata forsterite
 %   plotebsd(ebsd('Fo'),'scatter')
 %
-%% See also
+% See also
 % EBSD/plotpdf EBSD/scatter savefigure
 
 [ax,ebsd,varargin] = getAxHandle(ebsd,varargin{:});
 
-if numel(ebsd) > 2000 || check_option(varargin,'points')
+if length(ebsd) > 2000 || check_option(varargin,'points')
   points = fix(get_option(varargin,'points',2000));
   disp(['plot ', int2str(points) ,' random orientations out of ', ...
-    int2str(numel(ebsd)),' given orientations']);
-  ebsd = subsample(ebsd,points);
+    int2str(length(ebsd)),' given orientations']);
+  ebsd = subSample(ebsd,points);
 end
 
-%% compute center
-
+% compute center
 if ~check_option(varargin,'center')
   varargin = {varargin{:},'center',mean(ebsd)};
 end
 
-plot(ax{:},get(ebsd,'orientations'),varargin{:});
+plot(ax{:},ebsd.orientations,varargin{:});

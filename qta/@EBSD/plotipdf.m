@@ -1,26 +1,24 @@
 function plotipdf(ebsd,varargin)
 % plot inverse pole figures
 %
-%% Input
+% Input
 %  ebsd - @EBSD
 %  r   - @vector3d specimen directions
 %
-%% Options
+% Options
 %  RESOLUTION - resolution of the plots
 %  
-%% Flags
-%  antipodal    - include [[AxialDirectional.html,antipodal symmetry]]
-%  COMPLETE - plot entire (hemi)--sphere
+% Flags
+%  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
+%  complete  - plot entire (hemi)--sphere
 %
-%% See also
+% See also
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo 
 
-%% make new plot
-
+% make new plot
 [ax,ebsd,varargin] = getAxHandle(ebsd,varargin{:});
 
-o = get(ebsd,'orientation');
 
 varargin = set_option_property(ebsd,varargin{:});
 
@@ -30,5 +28,5 @@ if nargin > 1 && isa(varargin{1},'vector3d')
 else
   r = {};
 end
-plotipdf(ax{:},o,r{:},...
-  'FigureTitle',[inputname(1) ' (' get(ebsd,'comment') ')'],varargin{:});
+plotipdf(ax{:},ebsd.orientations,r{:},...
+  'FigureTitle',inputname(1),varargin{:});

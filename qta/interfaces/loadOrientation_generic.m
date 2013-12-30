@@ -1,9 +1,9 @@
 function [ori,options] = loadOrientation_generic(fname,varargin)
 % load Orientation data from generic text files
 %
-%% Description
+% Description
 %
-% *loadOrientation_generic* loads individual orientations
+% loadOrientation_generic loads individual orientations
 % from text or exel files that have a column oriented format as
 %
 %  phi1_1 Phi_1 phi2_1
@@ -18,13 +18,13 @@ function [ori,options] = loadOrientation_generic(fname,varargin)
 % is specified by the options |ColumnNames| and |Columns|. The files can be
 % contain any number of header lines.
 %
-%% Syntax
+% Syntax
 %   ori   = loadOrientation_generic(fname,'ColumnNames',{'Euler1','Euler2','Euler3'})
 %
-%% Input
+% Input
 %  fname - file name (text files only)
 %
-%% Options
+% Options
 %  ColumnNames       - names of the colums to be imported, mandatory are euler 1, euler 2, euler 3
 %  Columns           - postions of the columns to be imported
 %  RADIANS           - treat input in radiand
@@ -34,7 +34,7 @@ function [ori,options] = loadOrientation_generic(fname,varargin)
 %  ABG               - [alpha beta gamma] Euler angle in Mathies convention
 %
 %
-%% Example
+% Example
 %
 %   fname = fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt');
 %   CS = symmetry('m-3m','mineral','Mg');
@@ -43,7 +43,7 @@ function [ori,options] = loadOrientation_generic(fname,varargin)
 %   ori = loadOrientation_generic(fname,'CS',CS,'SS',SS, 'ColumnNames', ...
 %     {'Euler1' 'Euler2' 'Euler3'},'Columns',[5,6,7],'Bunge')
 %
-%% See also
+% See also
 % loadOrientation
 
 try
@@ -134,7 +134,7 @@ else
   
 end
 
-if check_option(varargin,{'passive','passive rotation'}), q = inverse(q); end
+if check_option(varargin,{'passive','passive rotation'}), q = inv(q); end
 
 % return varargin as options
 options = varargin;

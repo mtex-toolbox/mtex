@@ -1,10 +1,10 @@
 function [AllPs,AllSals,numClusters] = FMC_MTEX(fmc)
 
-%% setup Wnext
+% setup Wnext
 [i,j] = find(fmc.A_D);  % list of cells
 N     = size(fmc.A_D,1);
 
-q     = inverse(fmc.O(i)).*fmc.O(j);
+q     = inv(fmc.O(i)).*fmc.O(j);
 
 d     = abs(dot(q,idquaternion));
 checkSym = d < cos(20/2*degree);
@@ -16,12 +16,12 @@ del   = 2*real(acosd(d));
 fmc.W = sparse(i, j, exp(-fmc.cmaha0*(del)), N, N);
 clear q del
 
-%% RunFMC
+% RunFMC
 vdisp('starting RunFMC')
 fmc.W = fmc.W + fmc.W';
 fmc.A_D = fmc.A_D | fmc.A_D';
 
-%%
+%
 
 AllPs = cell(1);
 numClusters = size(fmc.W,1);

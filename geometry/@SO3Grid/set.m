@@ -4,5 +4,5 @@ function obj = set(obj,vname,value,varargin)
 if isfield(obj,vname)
   obj.(vname) = value{1};
 else
-  obj.orientation = set(obj.orientation,vname,value,varargin{:});
+  obj = set@rotation(obj,vname,value,varargin{:});
 end

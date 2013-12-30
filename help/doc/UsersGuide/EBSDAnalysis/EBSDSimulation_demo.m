@@ -1,4 +1,4 @@
-%% Simulating EBSD data
+ii%% Simulating EBSD data
 % How to simulate an arbitrary number of individual orientations data from
 % any ODF. 
 %

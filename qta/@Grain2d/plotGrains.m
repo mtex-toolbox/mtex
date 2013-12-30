@@ -1,14 +1,14 @@
 function plotGrains(grains,varargin)
 % colorize grains
 %
-%% Syntax
-% plotGrains(grains,'property','orientation') -
-% plotGrains(grains,'property',get(grains,'phase')) -
+% Syntax
+%   plotGrains(grains) % colorize by mean orientatation
+%   plotGrains(grains,'property','phase') % 
 %
-%% Input
+% Input
 %  grains  - @Grain2d
 %
-%% Options
+% Options
 %  property - colorize a grains by given property, variants are:
 %
 %    * |'phase'| -- make a phase map.
@@ -22,34 +22,34 @@ function plotGrains(grains,varargin)
 %
 %  PatchProperty - see documentation of patch objects for manipulating the
 %                 apperance, e.g. 'EdgeColor'
-%% See also
+% See also
 % Grain3d/plotGrains
 
-V = get(grains,'V');
-boundaryEdgeOrder = get(grains,'boundaryEdgeOrder');
+% --------------------- compute colorcoding ------------------------
 
-phaseMap = get(grains,'phaseMap');
-phase    = get(grains,'phase');
-
-% seperate measurements per phase
-numberOfPhases = numel(phaseMap);
+% seperate measurements per phase into cells
+numberOfPhases = numel(grains.phaseMap);
 X = cell(1,numberOfPhases);
 d = cell(1,numberOfPhases);
 
-isPhase = false(numberOfPhases,1);
-for k=1:numberOfPhases
-  currentPhase = phase==phaseMap(k);
-  isPhase(k)   = any(currentPhase);
+% what to plot
+prop = get_option(varargin,'property','meanOrientation',{'char','double','quaternion','vector3d'});
 
-  if isPhase(k)
-    X{k} = boundaryEdgeOrder(currentPhase);
-    [d{k},property,opts] = calcColorCode(grains,currentPhase,varargin{:});
+% seperate into cells and compute colorcoding
+isPhase = false(numberOfPhases,1);
+for p=1:numberOfPhases
+  currentPhase = grains.phaseId==p;
+  isPhase(p)   = any(currentPhase);
+
+  if isPhase(p)
+    X{p} = grains.boundaryEdgeOrder(currentPhase);
+    [d{p},property,opts] = calcColorCode(grains,currentPhase,prop,varargin{:});
   end
 end
 
 boundaryEdgeOrder = vertcat(X{:});
 
-%% ensure all data have the same size
+% ensure all data have the same size
 dim2 = cellfun(@(x) size(x,2),d);
 
 if numel(unique(dim2)) > 1
@@ -61,44 +61,31 @@ if numel(unique(dim2)) > 1
 end
 
 
-%% default plot options
+% ------------------- plotting --------------------------------------
 
-varargin = set_default_option(varargin,...
-  {'name', [property ' plot of ' inputname(1) ' (' get(grains,'comment') ')']});
-
-%%
-
-% clear up figure
+% set up figure
 newMTEXplot('renderer','opengl',varargin{:});
 setCamera(varargin{:});
 
 % set direction of x and y axis
 xlabel('x');ylabel('y');
 
-%%
-%d = vertcat(d{:});
-%[ud,m,n] = unique(d);
-%h = [];
-%if numel(ud) < 20 && numel(ud) > 1
-%  for i = 1:numel(ud)
-%    h = [h,plotFaces(boundaryEdgeOrder(n==i),V,d(n==i),varargin{:})];
-%  end
-%else
-h = plotFaces(boundaryEdgeOrder,V,vertcat(d{:}),varargin{:});
-%end
+% plot polygons
+h = plotFaces(boundaryEdgeOrder,grains.V,vertcat(d{:}),varargin{:});
+
+% ---------------- legend -------------------------------------------
 
 % remove them from legend
 arrayfun(@(x) set(get(get(x,'Annotation'),'LegendInformation'),...
     'IconDisplayStyle','off'),h);
 
-% make legend
-
+% make legend for phase plots
 if strcmpi(property,'phase'),
   
-  F = get(grains,'F');
+  F = grains.F;
   F(any(F==0,2),:) = [];
 
-  dummyV = min(V(F,:));
+  dummyV = min(grains.V(F,:));
 
   % phase colormap
   lg = [];
@@ -108,15 +95,14 @@ if strcmpi(property,'phase'),
       lg = [lg patch('vertices',dummyV,'faces',[1 1],'FaceColor',d{k}(1,:))];
     end
   end
-  minerals = get(grains,'minerals');
-  legend(lg,minerals(isPhase),'location','NorthEast');
+  legend(lg,grains.allMinerals(isPhase),'location','NorthEast');
 end
 
+% --------------finalize -------------------------------------------
 
 % set appdata
 if strncmpi(property,'orientation',11)
-  CS = get(grains,'CSCell');
-  setappdata(gcf,'CS',CS(isPhase));
+  setappdata(gcf,'CS',grains.CS(isPhase));
   setappdata(gcf,'r',get_option(opts,'r',xvector));
   setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
   setappdata(gcf,'colorcoding',property(13:end));
@@ -129,7 +115,7 @@ setappdata(gcf,'options',[extract_option(varargin,'antipodal'),...
 axis equal tight
 fixMTEXplot(gca,varargin{:});
 
-%% set data cursor
+% set data cursor
 if ~isOctave()
   
   dcm_obj = datacursormode(gcf);
@@ -139,7 +125,11 @@ if ~isOctave()
   datacursormode on;
 end
 
-%% Tooltip function
+% -----------------------------------------------------------------
+% ------------ private functions ----------------------------------
+% -----------------------------------------------------------------
+
+% Tooltip function
 function txt = tooltip(empt,eventdata,grains) %#ok<INUSL>
 
 
@@ -152,13 +142,12 @@ end
 
 if numel(sub)>0
 
-  [ebsd_id,grain_id] = find(get(sub,'I_DG')); %#ok<ASGLU>
-  minerals = get(sub,'minerals');
-
-  txt{1} = ['Grain: '  num2str(unique(grain_id))];
-  txt{2} = ['Phase: ', minerals{get(sub,'phaseMap') == get(sub,'phase')}];
+  %[ebsd_id,grain_id] = find(get(sub,'I_DG')); %#ok<ASGLU>
+  
+  txt{1} = ['Grain: '  num2str(unique(sub.id))];
+  txt{2} = ['Phase: ', sub.mineral];
   if ~isNotIndexed(sub)
-    txt{3} = ['Orientation: ' char(get(sub,'orientation'),'nodegree')];
+    txt{3} = ['Orientation: ' char(sub.meanOrientation,'nodegree')];
   end
   if ~isempty(value)
     txt{3} = ['Value: ' xnum2str(value)];
@@ -168,7 +157,7 @@ else
 end
 
 
-%%
+% ----------------------------------------------------------------------
 function h = plotFaces(boundaryEdgeOrder,V,d,varargin)
 
 % add holes as polygons

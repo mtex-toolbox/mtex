@@ -3,16 +3,16 @@ function plotodf(odf,varargin)
 %
 % Plots the ODF as various sections which can be controled by options.
 %
-%% Input
+% Input
 %  odf - @ODF
 %
-%% Options
+% Options
 %  SECTIONS   - number of plots
 %  RESOLUTION - resolution of each plot
 %  CENTER     - for radially symmetric plot
 %  AXES       - for radially symmetric plot
 %
-%% Flags
+% Flags
 %  SIGMA (default)
 %  OMEGA - sections along crystal directions @Miller
 %  ALPHA
@@ -22,30 +22,30 @@ function plotodf(odf,varargin)
 %  RADIALLY
 %  AXISANGLE
 %
-%% See also
+% See also
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
 
 
-%% -------- one - dimensional plot ---------------------------------------
+% -------- one - dimensional plot ---------------------------------------
 if check_option(varargin,'RADIALLY')
   plotodf1d(odf,varargin{:});
   return
 end
 
-%% two dimensional sections
+% ------------ two dimensional sections ----------------------------
 
 % where to plot
 [ax,odf,varargin] = getAxHandle(odf,varargin{:});
 
 % generate grids
-[S3G,S2G,sec] = SO3Grid('plot',odf(1).CS,odf(1).SS,varargin{:});
+[S3G,S2G,sec] = regularSO3Grid(odf(1).CS,odf(1).SS,varargin{:});
 
 Z = eval(odf,orientation(S3G),varargin{:});
 clear S3G;
 
-%% ------------------------- plot -----------------------------------------
+% ------------------------- plot -----------------------------------------
 sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','omega','axisangle'},'phi2');
 [symbol,labelx,labely] = sectionLabels(sectype);
 
@@ -64,7 +64,7 @@ fprintf(['\nPlotting ODF as ',sectype,' sections, range: ',...
 if isempty(ax), newMTEXplot('xlabel',labelx,'ylabel',labely);end
 
 
-%% plot
+% plot
 if check_option(varargin,{'contour3','surf3','slice3'})
   
   [xlim ylim] = polar(S2G);
@@ -82,10 +82,9 @@ else
     'colorrange','equal',varargin{:}); %#ok<*EVLC>
 end
 
-%% finalize plot
+% --------------- finalize plot ---------------------------
 if isempty(ax),
   name = inputname(1);
-  if isempty(name), name = odf(1).comment;end
   set(gcf,'Name',['ODF ' sectype '-sections "',name,'"']);
   setappdata(gcf,'sections',sec);
   setappdata(gcf,'SectionType',sectype);
@@ -99,7 +98,7 @@ if isempty(ax),
     setappdata(gcf,'h',h);
   end
 
-  %% set data cursor
+  % set data cursor
   dcm_obj = datacursormode(gcf);
   set(dcm_obj,'SnapToDataVertex','off')
   set(dcm_obj,'UpdateFcn',{@tooltip});
@@ -109,7 +108,7 @@ end
 
 end
 
-%% Tooltip function
+% --------------- Tooltip function -------------------------------
 function txt = tooltip(varargin)
 
 % 
@@ -130,7 +129,7 @@ txt = [xnum2str(v) ' at ' char(ori,'nodegree')];
 
 end
 
-%%
+%
 function markEquivalent(varargin)
 
 ori = currentOrientation;

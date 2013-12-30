@@ -4,11 +4,11 @@ function varargout = get(obj,vname,varargin)
 switch lower(vname)
   case {'resolution','res'}
     
-    if obj.res >= 2*pi-0.001 && numel(obj)>4
+    if obj.res >= 2*pi-0.001 && length(obj)>4
       try
         a = calcVoronoiArea(obj);
         varargout{1} = sqrt(mean(a));
-        assert(value>0);
+        assert(varargout{1}>0);
       catch
         varargout{1} = obj.res;
       end
@@ -28,20 +28,19 @@ switch lower(vname)
    varargout{4} =  get(obj,'maxRho');
    
   case 'minrho'
-    varargout{1} = min(getMin(obj.rho));
+    varargout{1} = min([obj.rho.min]);
   case 'maxrho'
-    varargout{1} = max(getMax(obj.rho));
+    varargout{1} = max([obj.rho.max]);
   case 'mintheta'    
-    m = obj.theta;
-    if isa(m,'function_handle')
+    if isa(obj.theta,'function_handle')
       varargout{1} = 0;
     else
-      varargout{1} = min(getMin(m));
+      varargout{1} = min([obj.theta.min]);
     end    
   case 'maxtheta'    
     varargout{1} = obj.theta;
     if ~isa(varargout{1},'function_handle')
-      varargout{1} = max(getMax(varargout{1}));
+      varargout{1} = max([obj.theta.max]);
     end    
   case 'theta'
     [theta,rho] = polar(obj); %#ok<NASGU>

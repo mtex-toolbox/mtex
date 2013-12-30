@@ -16,7 +16,7 @@ function pf = loadPoleFigure_beartex(fname,varargin)
 fid = efopen(fname);
 
 ipf = 1;
-r = S2Grid('regular','points',[72, 19],'antipodal');
+r = regularS2Grid('points',[72, 19],'antipodal');
 spacegroup =  {'C1','C2','D2','C4','D4','T','O','C3','D3','C6','D6'};
 
 try

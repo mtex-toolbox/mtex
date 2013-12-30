@@ -25,11 +25,11 @@ function [mori,weights] = calcMisorientation(grains,varargin)
 
 if check_option(varargin,'mis2mean')
 
-  mori = get(grains.EBSD,'mis2mean');
+  mori = grains.mis2mean;
   
 elseif check_option(varargin,'uncorrelated')
   
-  mori = calcMisorientation(grains.EBSD,varargin{:});
+  mori = calcMisorientation(EBSD(grains),varargin{:});
   
 else
   

@@ -14,14 +14,14 @@ M = axesOld^(-1) * axesNew;
 
 % if compatible transform to new reference frame
 MM = M'*M;%norm(MM - diag(diag(MM))) / norm(MM)
-if strcmp(csNew.laue,csOld.laue) && ...
+if strcmp(csNew.laueGroup,csOld.laueGroup) && ...
     norm(MM - eye(3)) / norm(MM) < 1*10^-1
   obj = set(obj,'CS',csNew);
   return
 end
 
 % trivial symmetry - for the lazy ones
-if strcmp(csOld.laue,'-1') && isnull(norm(axesOld - eye(3)))
+if strcmp(csOld.laueGroup,'-1') && isnull(norm(axesOld - eye(3)))
   obj = set(obj,'CS',csNew,'noTrafo');
   return
 end

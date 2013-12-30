@@ -1,19 +1,18 @@
 function [S2G, data]= project2ODFsection(o,type,sec,varargin)
 % project orientation to ODF sections used by plotodf
 %
-%% Input
+% Input
 %  o  - @SO3Grid
 %  type - section type
 %  sec  - sections
 %
-%% Output
+% Output
 %  S2G  - vector of @S2Grid
 %
-%% Options
+% Options
 %  tolerance -
 
-%% get input
-
+% get input
 if length(sec) >= 2
   tol = min(5*degree,abs(sec(1)-sec(2))/2);
 else
@@ -21,13 +20,13 @@ else
 end
 tol = get_option(varargin,'tolerance',tol);
 
-S2G = repcell(S2Grid(vector3d,varargin{:}),numel(sec),1);
+% TODO
+%S2G = repcell(S2Grid(vector3d,varargin{:}),length(sec),1);
 
-%% axis angle
-
+% ------------ axis angle projection -------------------
 if strcmpi(type,'axisangle')
   
-  for i=1:numel(sec)
+  for i=1:length(sec)
     ind(:,i) = angle(o)-tol < sec(i) & sec(i) < angle(o)+tol;
     S2G{i} = S2Grid(axis(subsref(o,ind(:,i))));
   end
@@ -43,8 +42,7 @@ if strcmpi(type,'axisangle')
   return
 end
 
-%% symmetries and convert to Euler angle
-
+% symmetries and convert to Euler angle
 q = symmetrise(o);
 
 switch lower(type)
@@ -76,15 +74,14 @@ switch lower(type)
     rho = e1;
 end
 
-%% difference to the sections
-
-sec_angle = repmat(sec_angle(:),1,numel(sec));
+% difference to the sections
+sec_angle = repmat(sec_angle(:),1,length(sec));
 sec = repmat(sec(:)',size(sec_angle,1),1);
 
 d = abs(mod(sec_angle - sec+pi,2*pi) -pi);
 dmin = min(d,[],2);
 
-%% restrict to those within tolerance
+% restrict to those within tolerance
 
 ind = dmin < tol;
 if ~any(ind)
@@ -98,23 +95,20 @@ rho = rho(ind);
 d = d(ind,:);
 dmin = dmin(ind);
 
-%% Find closest section
-
+% find closest section
 ind2 = isappr(d,repmat(dmin,1,size(sec,2)));
 
-%% construct output
-
-for i = 1:size(sec,2)
-  
-  S2G{i} = S2Grid(sph2vec(e2(ind2(:,i)),mod(rho(ind2(:,i)),2*pi)),varargin{:});
-  
+% construct output
+% TODO
+for i = 1:size(sec,2)  
+  S2G{i} = vector3d('polar',e2(ind2(:,i)),mod(rho(ind2(:,i)),2*pi),varargin{:});
 end
 
 
 if nargout > 1 && check_option(varargin,'data')
   dat = get_option(varargin,'data');
   if ~isempty(dat)
-    dat = repmat(dat,numel(o.CS),numel(o.SS));
+    dat = repmat(dat,length(o.CS),length(o.SS));
     
     dat = dat(ind);
     for i = 1:size(sec,2)

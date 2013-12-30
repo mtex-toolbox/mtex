@@ -33,13 +33,12 @@ plotpdf(ebsd('Forsterite'),[Miller(1,0,0),Miller(0,1,0),Miller(0,0,1)],'antipoda
 % in the 100 pole figure
 
 % the orientations of the Forsterite phase
-ori = get(ebsd('Forsterite'),'orientations')
-
+ori = ebsd('Forsterite').orientations
 % the vectors in the 100 pole figure
 r = ori * Miller(1,0,0)
 
 % the vector best orthogonal to all r
-rOrth = orth(S2Grid(r))
+rOrth = orth(r)
 
 % output
 hold on

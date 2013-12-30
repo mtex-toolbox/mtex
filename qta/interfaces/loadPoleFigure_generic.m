@@ -1,7 +1,7 @@
 function [pf,varargin] = loadPoleFigure_generic(fname,varargin)
 % load pole figure data from (theta,rho,intensity) files
 %
-%% Description 
+% Description 
 %
 % *loadPoleFigure_generic* is a generic function that reads any txt files of
 % diffraction intensities that are of the following format
@@ -18,23 +18,23 @@ function [pf,varargin] = loadPoleFigure_generic(fname,varargin)
 % options |ColumnNames| and |Columns|. Furthermore, the files can be contain any number of
 % header lines to be ignored using the option |HEADER|. 
 %
-%% Input
+% Input
 %  fname - file name (text files only)
 %
-%% Options
+% Options
 %  ColumnNames       - content of the columns to be imported
 %  Columns           - positions of the columns to be imported
 %  RADIANS           - treat input in radians
 %  DELIMITER         - delimiter between numbers
 %  HEADER            - number of header lines
 % 
-%% Example
-%    fname = [mtexDataPath '/PoleFigure/nja/seifert-111.nja'];
-%    pf = loadPoleFigure_generic(fname,'HEADER',21,'degree',...
+% Example
+%   fname = [mtexDataPath '/PoleFigure/nja/seifert-111.nja'];
+%   pf = loadPoleFigure_generic(fname,'HEADER',21,'degree',...
 %        'ColumnNames',{'polar angle','azimuth angle','intensity'},...
 %        'Columns',[1 2 3])
 %
-%% See also
+% See also
 % ImportPoleFigureData loadPoleFigure
 
 
@@ -46,14 +46,14 @@ if size(d,1) < 10 || size(d,2) < 3
   error('Generic interface could not detect any numeric data in %s',fname);
 end
 
-%% assume one big data block containing only intensities
+% assume one big data block containing only intensities
 if size(d,2)>15 || ...
     (~isempty(varargin) && isa(varargin{1},'vector3d') && size(varargin{1}) == size(d))
 
   % determine specimen directions
   if ~(~isempty(varargin) && isa(varargin{1},'vector3d') && size(varargin{1}) == size(d))
 
-    r = S2Grid('regular','points',size(d),'antipodal',varargin{:});
+    r = regularS2Grid('points',size(d),'antipodal',varargin{:});
     
     if ~check_option(varargin,'maxtheta')
       warning(['No grid of specimen directions was specified' ...
@@ -75,7 +75,7 @@ if size(d,2)>15 || ...
   
 end
 
-%% assume columns of data
+% assume columns of data
 
 % no options given -> ask
 if ~check_option(varargin,'ColumnNames')
@@ -88,7 +88,7 @@ end
 
 loader = loadHelper(d,varargin{:});
 
-r      = S2Grid(loader.getVector3d(),'antipodal');
+r      = loader.getVector3d();
 
 I      = loader.getColumnData('Intensity');
 

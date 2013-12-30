@@ -1,19 +1,18 @@
 function hist(odf,varargin)
 % calcualtes a histogram of ODF
 %
-%% Input
+% Input
 %  odf - @ODF
 %
-%% Options
+% Options
 %  resolution - resolution used for calculation (default = 5*degree)
 %
-%% See also
+% See also
 %  savefigure
 
 % eval odf
-resolution = get_option(varargin,'resolution',5*degree);
 CS = odf(1).CS; SS = odf(1).SS;
-SO3G = SO3Grid(resolution,CS,SS);
+SO3G = equispacedSO3Grid(CS,SS,varargin{:});
 d = eval(odf,SO3G,'loosely'); %#ok<GTARG>
 
 % make log histogram 

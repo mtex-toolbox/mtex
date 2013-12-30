@@ -1,16 +1,16 @@
 function value = get(T,pName)
 % extract data from a tensor variable
 %
-%% Syntax
+% Syntax
 %  d = get(T,'mineral') 
 % 
-%% Input
+% Input
 %  T     - @tensor
 %  pName - property name
 %
-%% Output
+% Output
 %
-%% See also
+% See also
 % tensor/set
 
 
@@ -20,9 +20,9 @@ switch pName
     
     value = T.(pName);
     
-  case fields(T.properties)
+  case fields(T.opt)
   
-    value = T.properties.(pName);
+    value = T.opt.(pName);
 
   otherwise
     

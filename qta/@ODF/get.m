@@ -1,27 +1,27 @@
 function varargout = get(obj,vname,varargin)
 % extract data from an ODF object
 %
-%% Syntax
+% Syntax
 %   s = get(odf,'CS')            % crystal symmetry
 %   w = get(odf,'weights')       % weights of the texture components
 %   k = get(odf,'kernel')        % get kernel of unimodal and fibre portions
 %   c = get(odf,'center')        % center of the components 
 %   y = get(odf,'kappa')         % Bingham coefficients
 % 
-%% Input
+% Input
 %  odf - @ODF
 %
-%% Output
+% Output
 %  w - double
 %  s - @symmetry 
 %  k - @kernel
 %  x,y,p,m - double
 %
-%% See also
+% See also
 % ODF/set
 
 
-%% no vname - return list of all fields
+% no vname - return list of all fields
 if nargin == 1
 	vnames = get_obj_fields(obj(1));
   vnames = [vnames;{'resolution';'weights';'kernel';'kappa'}];
@@ -30,9 +30,9 @@ if nargin == 1
 end
 
 
-%% switch fieldnames
+% switch fieldnames
 switch vname
-  case {'CS','SS','comment','options'}
+  case {'CS','SS','options'}
     varargout{1} = obj(1).(vname);
     
   case 'symmetry'

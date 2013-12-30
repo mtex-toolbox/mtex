@@ -1,19 +1,19 @@
 function c = LSCV(ebsd,psi)
 % least squares cross valiadation
 %
-%% Input
+% Input
 %  ebsd - @EBSD
 %  psi  - @kernel
 %
-%% Output
+% Output
 %  c
 %
-%% See also
+% See also
 % EBSD/calcODF EBSD/calcKernel grain/calcKernel EBSD/BCV
 
 % extract data
-N = numel(ebsd);
-o = get(ebsd,'orientations');
+N = length(ebsd);
+o = ebsd.orientations;
 try
   w = get(ebsd,'weight');
   w = ones(size(w));

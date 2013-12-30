@@ -1,31 +1,40 @@
-function ebsd = subsref(ebsd,s)
+function varargout = subsref(ebsd,s)
 % indexing of EBSD data
 %
-%% Syntax:
-%  ebsd('Fe')        - returns data of phase Fe
-%  ebsd({'Fe','Mg'}) - returns data of phase Fe and Mg
-%  ebsd(1:end)       - returns data 
+% Syntax
+%   ebsd('Fe')        - returns data of phase Fe
+%   ebsd({'Fe','Mg'}) - returns data of phase Fe and Mg
+%   ebsd(1:end)       - returns data 
 %
 
-if isa(s,'double') || isa(s,'logical')
+if strcmp(s(1).type,'()')
   
-  ebsd.options = structfun(@(x) x(s),ebsd.options,'UniformOutput',false);
-  ebsd.rotations = ebsd.rotations(s);
-  ebsd.phase = ebsd.phase(s);
-  
-elseif strcmp(s.type,'()')
-  
-  if check_option(s.subs,'sort')
+  ind = subsind(ebsd,s(1).subs);
+  ebsd = subSet(ebsd,ind);
     
-    ebsd = subsref(ebsd,get_option(s.subs,'sort'));
-    
+  % is there something more to do?
+  if numel(s)>1
+    s = s(2:end);
   else
-    
-    ind = subsind(ebsd,s.subs);
-    ebsd = subsref(ebsd,ind);
-    
-  end
+    varargout{1} = ebsd;
+    return
+  end  
+
 end
 
+% maybe reference to a dynamic option
+try %#ok<TRYNC>
+  [varargout{1:nargout}] = subsref@dynOption(ebsd,s);
+  return
+end
+  
+% maybe reference to a dynamic property
+try %#ok<TRYNC>
+  [varargout{1:nargout}] = subsref@dynProp(ebsd,s);
+  return
+end
+  
+% maybe reference to a normal property
+[varargout{1:nargout}] = builtin('subsref',ebsd,s);
 
-
+end

@@ -1,28 +1,28 @@
 function [tauMax,m,n,tau,ind] = calcShearStress(sigma,m,n,varargin)
 % shear stress
 %
-%% Syntax
+% Syntax
 %   [tauMax,m,n,tau] = calcShearStress(sigma,m,n)
 %
-%% Formula
+% Formula
 %
 %  q = T_i1i2i3...id v_i1 v_i2 v_i3 ... v_id
 %
-%% Input
+% Input
 %  sigma - stress @tensor
 %  m - normal vector the the slip or twinning plane
 %  n - Burgers vector (slip) or twin shear direction (twinning)
 %
-%% Ouptut
+% Ouptut
 %  tauMax - maximum shear stress
 %  m      - active plane
 %  n      - active direction
 %  tau    - shear stresses with respect to all planes
 %
-%% Options
+% Options
 %  symmetrise - consider also all symmetrically equivalent  planes and directions
 %
-%% See Also
+% See Also
 
 if check_option(varargin,'symmetrise')
   
@@ -38,12 +38,12 @@ if check_option(varargin,'symmetrise')
   n = n(c);
   
 else
-  assert(numel(m)==numel(n),'Number of planes and directions must be the same.');
+  assert(length(m)==length(n),'Number of planes and directions must be the same.');
 end
 
-tau = zeros(numel(m),numel(sigma));
+tau = zeros(length(m),length(sigma));
 
-for i = 1:numel(m)
+for i = 1:length(m)
 
   R = SchmidTensor(m(i),n(i),varargin{:});
 
@@ -51,7 +51,7 @@ for i = 1:numel(m)
   
 end
 
-if numel(m)>1
+if length(m)>1
   [tauMax,ind] = max(abs(tau));
 
   m = m(ind);

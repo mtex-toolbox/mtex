@@ -1,21 +1,17 @@
 function hist(pf,varargin)
 % calcualte histogram of pole figures
 %
-%% Input
-%  odf - @PoleFigure
+% Input
+%  pf - @PoleFigure
 %
-%% Options
-%  resolution - resolution used for calculation (default = 5*degree)
-%
-%% See also
-% savefigure
+
 
 s = GridLength(pf);
 
 d = NaN(max(s),length(pf));
 
 for i = 1:length(pf)
-  d(1:s(i),i) = getdata(pf(i));
+  d(1:s(i),i) = pf(i).intensities(:);
 end
 
 m = max(d(:));

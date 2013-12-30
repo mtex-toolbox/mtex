@@ -1,43 +1,39 @@
 function v = fibreVolume(ebsd,h,r,radius,varargin)
 % ratio of orientations close to a certain fibre
 %
-%% Description
+% Description
 % returns the ratio of mass of the ebsd that is close to 
 % a certain fibre
 %
-%% Syntax
-%  v = volume(ebsd,h,r,radius,<options>)
+% Syntax
+%   v = volume(ebsd,h,r,radius)
 %
-%% Input
+% Input
 %  ebsd   - @EBSD
 %  h      - @Miller
 %  r      - @vector3d
 %  radius - double
 %
-%% See also
+% See also
 % ODF/volume
 
-%% extract orientations
-o = get(ebsd,'orientations');
+% extract orientations
+o = ebsd.orientations;
 
-%% check input
+% check input
 argin_check(h,{'Miller','vector3d'});
 if isa(h,'Miller')
-  h = ensureCS(get(o,'CS'),{h});
+  h = ensureCS(o.CS,{h});
 else
-  h = Miller(h,get(o,'CS'));
+  h = Miller(h,o.CS);
 end
 argin_check(r,'vector3d');
 argin_check(radius,'double');
 
-if ~strcmp(Laue(get(o,'SS')),'-1')
-  error('Only triclinic specimen symmetry is supported for fibreVolume');
-end
-
-%% extract weights
+% extract weights
 weight = get(ebsd,'weight');
 
-%% compute volume
+% compute volume
 if isempty(o)
   v = 0;
 else

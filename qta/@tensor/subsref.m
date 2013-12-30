@@ -1,27 +1,22 @@
-function T = subsref(T,s)
+function varargout = subsref(T,s)
 %overloads subsref
 
-switch s.type
+if strcmp(s(1).type,'()')
 
-  case '()'
-  
-   s.subs = [repcell(':',1,T.rank) s.subs]; 
+  s.subs = [repcell(':',1,T.rank) s.subs];
     
-   T.M = subsref(T.M,s);
-    
-  case '{}'
-
-    s.type = '()';
-    if T.rank == 4 && numel(s.subs)==2
-      M = tensor42(T.M,T.doubleConvention);
-      T = subsref(M,s);
-    elseif T.rank==3 && numel(s.subs)==2
-      M = tensor32(T.M,T.doubleConvention);
-      T = subsref(M,s);
-    else
-      T = subsref(T.M,s);
-    end
-    
+  T.M = subsref(T.M,s);
+      
+  if numel(s)==1
+    varargout{1} = T;
+    return;
+  else
+    s = s(2:end);
+  end
 end
-
-
+  
+try
+  [varargout{1:nargout}] = builtin('subsref',T,s);
+catch
+  [varargout{1:nargout}] = subsref@dynOption(T,s);
+end

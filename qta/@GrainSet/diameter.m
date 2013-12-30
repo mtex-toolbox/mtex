@@ -6,14 +6,13 @@ function [d] = diameter(grains)
 V = grains.V;
 dim = size(V,2);
 
-I_VG = get(grains,'I_VG');
-[v,g] = find(I_VG);
+[v,g] = find(grains.I_VG);
 
 cs = [0; find(diff(g));size(g,1)];
 
 d = zeros(size(grains));
 
-for k=1:numel(grains)
+for k=1:size(grains,1)
   Vg = V(v(cs(k)+1:cs(k+1)),:);
   nv = size(Vg,1);
   

@@ -7,16 +7,16 @@ function [odf,r,v1,v2] = centerSpecimen(odf,center,varargin)
 % the routine starts with an lookaround grid for a given center (default
 % xvector) to find a starting value for newton iteration.
 %
-%% Input
+% Input
 %  odf    - @ODF
 %  center - look arround center for a suiteable start value (default xvector)
 %
-%% Output
+% Output
 %  odf    - rotated @ODF
 %  r      - its rotation rotate(odf_out,r) = odf_in
 %  v1,v2  - normal vector of the mirrorplans
 %
-%% Options
+% Options
 %  delta      - stepsize for evaluating the gradient
 %  itermax    - maximum number of newton iterations (default 5)
 %  SO3Grid    - a @SO3Grid the @ODF is evaluatete on
@@ -27,7 +27,7 @@ function [odf,r,v1,v2] = centerSpecimen(odf,center,varargin)
 %
 %  fourier    - use fourier coefficents as objective function
 %
-%% Examples
+% Examples
 % Starting with an synthetic odf with orthorhombic symmetry
 %
 %       CS = symmetry('cubic')
@@ -37,7 +37,7 @@ function [odf,r,v1,v2] = centerSpecimen(odf,center,varargin)
 %         rotation('euler', 90*degree,35*degree,0*degree)]
 %
 %       sr = SS*r;
-%       odf = unimodalODF(SO3Grid(sr(:),CS),CS);
+%       odf = unimodalODF(sr,CS);
 %
 % we define a rotational displacement
 %
@@ -51,8 +51,10 @@ function [odf,r,v1,v2] = centerSpecimen(odf,center,varargin)
 %       [odr,r,v1,v2] = centerSpecimen(odf);
 %       plotpdf(odr,h,'antipodal')
 %
-%%
 %
+%
+
+return
 
 options.delta = get_option(varargin,'delta',0.5*degree);
 
@@ -71,7 +73,7 @@ if check_option(varargin,'Fourier')
 else
   options.odf = odf;
   options.SO3 = get_option(varargin,'SO3Grid',...
-    SO3Grid(5*degree,get(odf,'CS'),get(odf,'SS'),varargin{:}));
+    equispacedSO3Grid(get(odf,'CS'),get(odf,'SS'),'resolution',5*degree,varargin{:}));
   options.y = eval(options.odf,options.SO3);
 end
 
@@ -91,7 +93,7 @@ end
 v1 = newton(initialSearch(center,options),options);
 v2 = newton(initialSearch(orth(v1),options),options);
 
-r = inverse(rotation('map',v1,xvector,v2,yvector));
+r = inv(rotation('map',v1,xvector,v2,yvector));
 if all(isfinite(double(r)))
   odf = rotate(odf,r);
 end
@@ -102,9 +104,9 @@ function v_start = initialSearch(center, options)
 
 if options.plot
   %   v = S2Grid('plot','resolution',options.resolution,'maxtheta',110*degree,'mintheta',80*degree)
-  v = S2Grid('plot','resolution',options.resolution,'maxtheta',options.maxangle);
+  v = plotS2Grid('resolution',options.resolution,'maxtheta',options.maxangle);
 else
-  v = S2Grid('equispaced','resolution',options.resolution,'maxtheta',options.maxangle);
+  v = equispacedS2Grid('resolution',options.resolution,'maxtheta',options.maxangle);
 end
 
 q = hr2quat(zvector,center);
@@ -114,12 +116,12 @@ if options.verbose
   fprintf(' looking at %d rotational axes\n', numel(v))
 end
 
-n = numel(vc);
+n = length(vc);
 val = zeros(size(vc));
 global mtex_progress
 mtex_progress = 1;
 progress(0,n);
-for k=1:numel(vc)
+for k=1:length(vc)
   progress(k,n);
   val(k) = f(vc(k),options);
 end

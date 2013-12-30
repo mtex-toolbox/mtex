@@ -5,18 +5,18 @@ function t = textureindex(odf,varargin)
 %
 % $$ t = -\int f(g)^2 dg$$
 %
-%% Input
+% Input
 %  odf - @ODF 
 %
-%% Output
+% Output
 %  texture index - double
 %
-%% Options
+% Options
 %  resolution - resolution of the discretization
 %  fourier    - use Fourier coefficients 
 %  bandwidth  - bandwidth used for Fourier calculation
 %
-%% See also
+% See also
 % ODF/norm ODF/entropy ODF/volume ODF_index ODF/calcFourier
 
 if check_option(varargin,'fourier')
@@ -30,5 +30,5 @@ else
   % eval odf
   t = eval(odf,S3G,varargin{:});
   t = t / sum(t) * length(t);
-  t = sum(t.^2)/numel(S3G);
+  t = sum(t.^2)/length(S3G);
 end

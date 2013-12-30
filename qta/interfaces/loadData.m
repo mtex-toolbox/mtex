@@ -1,27 +1,27 @@
 function [data,interface,options,idata] = loadData(fname,type,varargin)
 % import PoleFigure, EBSD, and ODF data
 %
-%% Description
+% Description
 % *loadData* is a low level method for importing EBSD, PoleFigure, ODF and
 % Tensor data from external files. It autodetects the format of the file.
 % As parameters the method requires a filename and the crystal and specimen
 % @symmetry. 
 %
-%% Input
+% Input
 %  fname     - filename
 %  cs, ss    - crystal, specimen @symmetry (optional)
 %
-%% Options
+% Options
 %  interface  - specific interface to be used
 %  comment    - comment to be associated with the data
 %
-%% Output
+% Output
 %  data - @EBSD, @PoleFigure, @ODF, @tensor, @vector3d, @orientation
 %
-%% See also
+% See also
 % ImportEBSDData EBSD/calcODF ebsd_demo loadEBSD_generic
 
-%% process input arguments
+% process input arguments
 
 % get file names
 if nargin < 1
@@ -66,7 +66,7 @@ end
 
 varargin(posCS) = [];
 
-%% determine interface
+% ---------- determine interface ---------------------------
 
 if ~check_option(varargin,'interface')
   [interface,options] = check_interfaces(fname{1},type,varargin{:});
@@ -77,7 +77,7 @@ end
 
 if isempty(interface), return; end
 
-%% import data
+% --------------- import data ---------------------------------
 
 % determine superposition - PoleFigure only
 c = get_option(options,'superposition');
@@ -103,29 +103,31 @@ if exist('hw','var'), close(hw);end
 
 idata = cellfun('prodofsize',data);
 
-%% apply options
+% ------------- apply options ----------------------------------
+
+% set file name
+for i = 1:numel(data)
+  data{i} = setOption(data{i},'file_name',ls(fname{i})); %#ok<AGROW>
+end
 
 if strcmpi(type,'EBSD') && check_option(varargin,'3d')
   Z = get_option(varargin,'3d',1:numel(data),'double');
   for k=1:numel(data)
-    data{k} = set(data{k},'z',repmat(Z(k),numel(data{k}),1)); %#ok<AGROW>
+    data{k} = set(data{k},'z',repmat(Z(k),length(data{k}),1)); %#ok<AGROW>
   end
   data = [data{:}];
   data = set(data,'unitCell',calcUnitCell(get(data,'xyz'),varargin{:}));
 end
 
-%% set crystal and specimen symmetry, specimen direction and comments
+% set crystal and specimen symmetry, specimen direction
 if ~any(strcmpi(type,{'tensor','vector3d'}))
   if iscell(data),
-    data = cellfun(@(d,f) set(d,'comment',strtrim(ls(f))),data,fname,'UniformOutput',false);
+    data = cellfun(@(d,f) setOption(d,'file_name',strtrim(ls(f))),data,fname,'UniformOutput',false);
     data = [data{:}];
   end
-  %for i = 1:length(data)
-  %  data(i) = set(data(i),'comment',ls(fname{i})); %#ok<AGROW>
-  %end
-  
+     
   if exist('cs','var'), data = set(data,'CS',cs,'noTrafo');end
-  if exist('ss','var'), data = set(data,'SS',ss,'noTrafo');end
+  if exist('ss','var'), data = set(data,'SS',ss);end % TODO
   if exist('h','var'),  data = set(data,'h',h);end
   if ~isempty_cell(c),  data = set(data,'c',c);end
 else
@@ -141,19 +143,19 @@ else
       if iscell(data)
         data = cellfun(@(d) set(d,'SS',ss,'noTrafo'),data,'UniformOutput',false);
       else
-        data = set(data,'SS',ss,'noTrafo')
+        data = set(data,'SS',ss,'noTrafo');
       end;
     end
   end
   
 end
 
-%% rotate data
+% rotate data
 if check_option(varargin,'rotate')
   data = rotate(data,axis2quat(zvector,get_option(varargin,'rotate')));
 end
 
-
+% --------------------------------------------------------------
 function v = checkClass(var,className)
 
 if iscell(var) && ~isempty(var), 

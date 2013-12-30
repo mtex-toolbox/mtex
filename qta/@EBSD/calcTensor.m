@@ -1,7 +1,7 @@
 function [TVoigt, TReuss, THill] = calcTensor(ebsd,varargin)
 % compute the average tensor for an EBSD data set
 %
-%% Syntax
+% Syntax
 % [TVoigt, TReuss, THill] = calcTensor(ebsd,T_phase1,T_phase2,...) - returns
 %    the Voigt--, Reuss-- and Hill-- @tensor, applies each tensor
 %    given in order of input to each phase
@@ -16,19 +16,19 @@ function [TVoigt, TReuss, THill] = calcTensor(ebsd,varargin)
 % TVoigt = calcTensor(ebsd,T_phase1,T_phase2,'geometricMean') - use
 % geometric mean instead of arithmetric one
 %
-%% Input
+% Input
 %  ebsd     - @EBSD
 %  T_phaseN - @tensor for the N--th phase
 %
-%% Output
+% Output
 %  T    - @tensor
 %
-%% Options
+% Options
 %  Voigt - voigt mean
 %  Reuss - reuss mean
 %  Hill  - hill mean
 %
-%% See also
+% See also
 %
 
 % extract tensors and remove them from varargin
@@ -43,7 +43,7 @@ TReuss = TVoigt;
 TGeo = TVoigt;
 
 % get phases and populate tensors
-phases = unique(ebsd.phase)';
+phases = unique(ebsd.phaseId)';
 if numel(T) < max(phases)
   if numel(T) == numel(phases)
     TT(phases) = T;
@@ -55,15 +55,13 @@ if numel(T) < max(phases)
   end
 end
 
-
-
 % cycle through phases and tensors
 for p = phases
 
   % extract orientations and wights
-  ind = ebsd.phase == p;
-  ori = get(subsref(ebsd,ind),'orientations');
-  weight = get(subsref(ebsd,ind),'weight') * nnz(ind) ./ numel(ebsd);
+  ind = ebsd.phaseId == p;
+  ori = get(subSet(ebsd,ind),'orientations');
+  weight = get(subSet(ebsd,ind),'weight') * nnz(ind) ./ length(ebsd);
   
   rotT = rotate(T{p},ori);
   rotInvT = rotate(inv(T{p}),ori);

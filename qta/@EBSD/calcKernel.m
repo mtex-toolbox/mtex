@@ -1,13 +1,13 @@
 function psi = calcKernel(ebsd,varargin)
 % compute an optimal kernel function ODF estimation
 %
-%% Input
+% Input
 %  ebsd - @EBSD
 %
-%% Output
+% Output
 %  psi    - @kernel
 %
-%% Options
+% Options
 % method  - select a halfwidth by
 %
 %    * |'RuleOfThumb'| 
@@ -18,11 +18,11 @@ function psi = calcKernel(ebsd,varargin)
 %    * |'KLCV'| -- Kullback Leibler cross validation
 %    * |'BCV'| -- biased cross validation
 %
-%% See also
+% See also
 % EBSD/calcODF EBSD/BCV EBSD/KLCV EBSD/LSCV
 
 % ensure single phase
-if numel(unique(ebsd.phase)) > 1
+if numel(unique(ebsd.phaseId)) > 1
 
   error('MTEX:MultiplePhases',['This operatorion is only permitted for a single phase!' ...
     'See ' doclink('xx','xx')  ...
@@ -30,7 +30,7 @@ if numel(unique(ebsd.phase)) > 1
 end
 
 % ensure spatial independence
-if isfield(ebsd.options,'x')
+if isfield(ebsd.prop,'x')
   warning('MTEX:calcKernel',['Measurements seem to be spatially dependend.' ...
     ' Usually this results in to sharp kernel functions. You may want to'...
     ' restore grains first and then estimate the kernel from the grains.' ...
@@ -45,9 +45,9 @@ psi = get_option(varargin,'kernel',psi);
 
 % if there are to many orientations -> subsampling
 maxSample = 5000;
-if numel(ebsd) > maxSample
-  fak = (numel(ebsd)/maxSample).^(1/7); % true is 2/7 but let us stay on the save side
-  ebsd = subsample(ebsd,maxSample);
+if length(ebsd) > maxSample
+  fak = (length(ebsd)/maxSample).^(1/7); % true is 2/7 but let us stay on the save side
+  ebsd = subSample(ebsd,maxSample);
 else
   fak = 1;
 end
@@ -59,7 +59,7 @@ switch method
 
     % compute resolution of the orientations
     ori = get(ebsd,'orientations');
-    if numel(ori) == 0
+    if isempty(ori)
       res = 2*pi;
     else
       d = angle_outer(ori,ori);

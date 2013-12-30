@@ -96,32 +96,19 @@ close all
 plot(ebsd,'property','bc')
 
 %%
-% Here we will use the MAD or CI value to identify and eliminate
+% Here we will use the MAD to identify and eliminate
 % inaccurate measurements.
-
-% extract the quantity mad 
-mad = get(ebsd,'mad');
-
-%%
-% or extract the quantity bc
-
-bc = get(ebsd,'bc');
 
 % plot a histogram
 close all
-hist(mad)
-
-figure
-hist(bc)
+hist(ebsd.mad)
 
 
 %%
 
 % take only those measurements with MAD smaller then one
-ebsd_corrected = ebsd(mad<1)
+ebsd_corrected = ebsd(ebsd.mad<0.8)
 
-% take only those measurements with CI higher then 0.1 or 0.2
-ebsd_corrected = ebsd(bc>0.1 )
 
 %%
 %

@@ -1,16 +1,16 @@
 function varargout = scatter(v,varargin)
 %
-%% Syntax
+% Syntax
 %   scatter(v)              %
 %   scatter(v,data)         %
 %   scatter(v,text)
 %
-%% Input
+% Input
 %  v     - @vector3d
 %  data  - double
 %  rgb   - a list of rgb color values
 %
-%% Options
+% Options
 %  Marker            - 
 %  MarkerFaceColor   -
 %  MarkerEdgeColor   - 
@@ -18,11 +18,11 @@ function varargout = scatter(v,varargin)
 %  MarkerSize        - size of the markers in pixel
 %  DynamicMarkerSize - scale marker size when plot is resized
 %
-%% Output
+% Output
 %
-%% See also
+% See also
 
-%% plot preperations
+% plot preperations
 
 
 % where to plot
@@ -64,16 +64,16 @@ else
 
   % dynamic markersize
   if check_option(varargin,'dynamicMarkerSize') || ...
-      (~check_option(varargin,'MarkerSize') && numel(v)>20)
+      (~check_option(varargin,'MarkerSize') && length(v)>20)
     patchArgs = [patchArgs {'tag','dynamicMarkerSize','UserData',MarkerSize}];
   end
    
-  %% colorcoding according to the first argument
-  if numel(varargin) > 0 && isnumeric(varargin{1}) && ~isempty(varargin{1})
+  % ------- colorcoding according to the first argument -----------
+  if ~isempty(varargin) && isnumeric(varargin{1}) && ~isempty(varargin{1})
   
     % extract colorpatchArgs{3:end}coding
     cdata = varargin{1};
-    if numel(cdata) == numel(v)
+    if numel(cdata) == length(v)
       cdata = reshape(cdata,[],1);
     else
       cdata = reshape(cdata,[],3);
@@ -86,11 +86,11 @@ else
       'markeredgecolor','flat'),varargin{2:end});
   
     % add annotations for min and max
-    if numel(cdata) == numel(v)
+    if numel(cdata) == length(v)
       annotations = {'BL',{'Min:',xnum2str(min(cdata(:)))},'TL',{'Max:',xnum2str(max(cdata(:)))}};
     end
   
-    %% colorcoding according to nextStyle
+    % --------- colorcoding according to nextStyle -----------------
   else
   
     % get color
@@ -110,7 +110,7 @@ else
   end
 end
 
-%% finalize the plot
+% ------------- finalize the plot ----------------------------
 
 % plot a spherical grid
 plotGrid(ax,projection,extend,varargin{:});
@@ -140,13 +140,13 @@ if nargout > 0
 end
 
 
-%% -----------------------------------------------
+% ---------------------------------------------------------------
 function localResizeScatterCallback(h,e,hax)
 % get(fig,'position')
 
 hax = handle(hax);
 
-%% adjust label positions
+% ------------ adjust label positions ----------------
 t = findobj(hax,'Tag','addMarkerSpacing');
 
 % get markerSize
@@ -160,7 +160,7 @@ end
 markerSize = max(markerSize);
 
 
-for it = 1:numel(t)
+for it = 1:length(t)
   
   xy = get(t(it),'UserData');
   set(t(it),'unit','data','position',[xy,0]);
@@ -180,7 +180,7 @@ for it = 1:numel(t)
   %get(t(it),'position')
 end
 
-%% scale scatterplots
+% ------------- scale scatterplots -------------------------------
 u = findobj(hax,'Tag','dynamicMarkerSize');
 
 if isempty(u), return;end

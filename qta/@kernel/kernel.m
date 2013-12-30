@@ -1,18 +1,18 @@
 function K = kernel(name,varargin)
 % constructor
 %
-%% Description
+% Description
 % The constructor *kernel* defines a @kernel object given the name 
 % of the kernel and its halfwidth beta or its free parameter kappa.
 % A second posibility is to define the kernel by its Fourier 
 % coefficients. A @kernel object is needed when defining a @ODF.
 %
-%% Syntax
+% Syntax
 %   psi = kernel('de la Vallee Poussin',20) % by parameter
 %   psi = kernel('de la Vallee Poussin','halfwidth',10*degree) % by halfwidth
 %   psi = kernel('Dirichlet','bandwidth',10*degree) % by bandwidth
 %
-%% Input
+% Input
 % name - name of the kernel, supported kernels are:
 %
 %    * |'Laplace'|
@@ -31,13 +31,13 @@ function K = kernel(name,varargin)
 %    * |'Jackson'|
 %    * |'ghost'|
 % 
-%% Options
+% Options
 %  PARAMETER - kappa (double)
 %  HALFWIDTH - beta  (double)
 %  FOURIER   - AL    (double)
 %  BANDWIDTH - L     (int32)
 %
-%% See also
+% See also
 % ODF_index kernel/gethw unimodalODF uniformODF
        
 kernels = {'Laplace','Abel Poisson','de la Vallee Poussin',...

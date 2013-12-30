@@ -1,16 +1,16 @@
 function pf = loadPoleFigure_out1(fname,varargin)
 % import polfigure-data form Graz
 %
-%% Syntax
-% pf = loadPoleFigure_out1(fname,<options>)
+% Syntax
+%  pf = loadPoleFigure_out1(fname,<options>)
 %
-%% Input
+% Input
 %  fname  - filename
 %
-%% Output
+% Output
 %  pf - vector of @PoleFigure
 %
-%% See also
+% See also
 % ImportPoleFigureData loadPoleFigure
 
 try
@@ -19,9 +19,9 @@ try
   data = txt2mat(fname,'NumHeaderLines',15,'NumColumns',2,...
     'InfoLevel',0,'ReadMode','block','BadLineString',{'!@!'});
   
-  r = S2Grid('points',[72 18],'regular','maxtheta',85*degree);
+  r = regularS2Grid('points',[72 18],'maxtheta',85*degree);
   
-  gz = numel(r);
+  gz = length(r);
   numpf = length(data)/gz;
   
   h = [ Miller(1,0,0), Miller(1,1,0),  Miller(1,0,2),  Miller(2,0,0),...

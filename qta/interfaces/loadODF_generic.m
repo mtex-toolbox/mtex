@@ -1,7 +1,7 @@
 function [odf,options] = loadODF_generic(fname,varargin)
 % load pole figure data from (alpha,beta,gamma) files
 %
-%% Description 
+% Description 
 %
 % *loadEBSD_txt* is a generic function that reads any txt or exel files of
 % diffraction intensities that are of the following format
@@ -18,13 +18,13 @@ function [odf,options] = loadODF_generic(fname,varargin)
 % is specified by the options |ColumnNames| and |Columns|. The files can be
 % contain any number of header lines.
 %
-%% Syntax
-%  odf   = loadODF_generic(fname,<options>)
+% Syntax
+%   odf   = loadODF_generic(fname,<options>)
 %
-%% Input
+% Input
 %  fname - file name (text files only)
 %
-%% Options
+% Options
 %  ColumnNames  - names of the colums to be imported, mandatory are euler 1, euler 2, euler 3 
 %  Columns      - postions of the columns to be imported
 %  RADIANS      - treat input in radiand
@@ -34,14 +34,14 @@ function [odf,options] = loadODF_generic(fname,varargin)
 %  ZYZ, ABG     - [alpha beta gamma] Euler angle in Mathies convention
 %
 % 
-%% Example
+% Example
 %
 %    fname = fullfile(mtexDataPath,'ODF','odf.txt');
 %    odf = loadODF_generic(fname,'cs',symmetry('cubic'),'header',5,...
 %      'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'weight'},...
 %      'Columns',[1,2,3,4])
 %
-%% See also
+% See also
 % import_wizard loadODF ODF_demo
 
 odf = ODF;
@@ -107,7 +107,7 @@ switch method
     res = get_option(varargin,'resolution',3*degree);
   
     % interpolate
-    S3G = SO3Grid(res,cs,ss);
+    S3G = equispacedSO3Grid(cs,ss,'resolution',res);
 
     % get kernel
     psi = get_option(varargin,'kernel',kernel('de la Vallee Poussin','halfwidth',res));
@@ -118,7 +118,7 @@ switch method
     mw = M * weight;
     w = pcg(MM,mw,1e-2,30);
     %sum(w)
-    odf = ODF(S3G,w./sum(w),psi,cs,ss);
+    odf = unimodalODF(S3G,psi,cs,ss,'weights',w./sum(w));
     
 end
 

@@ -188,7 +188,7 @@ grains(condition)
 % If we now perform grain reconstruction a second time these small holes
 % will be assigned to the neighbouring grains
 
-grains = calcGrains(grains(condition),'keepNotIndexed')
+grains = calcGrains(grains(condition).ebsd,'keepNotIndexed')
 
 plot(grains)
 
