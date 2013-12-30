@@ -91,7 +91,7 @@ end
 % default plot options
 
 varargin = set_default_option(varargin,...
-  {'name', [property ' plot of ' inputname(1)]});
+  {'name', ['plot of ' inputname(1)]});
 
 % clear up figure
 newMTEXplot('renderer','opengl',varargin{:});
@@ -144,12 +144,10 @@ function txt = tooltip(empt,eventdata,ebsd) %#ok<INUSL>
 [pos,value] = getDataCursorPos(gcf);
 [sub,map] = findByLocation(ebsd,[pos(1) pos(2)]);
 
-if numel(sub)>0
-
-  minerals = get(sub,'minerals');
+if ~isempty(sub)
 
   txt{1} = ['#'  num2str(find(map))];
-  txt{2} = ['Phase: ', minerals{sub.phaseId}];
+  txt{2} = ['Phase: ', sub.mineral];
   if ~isNotIndexed(sub)
     txt{3} = ['Orientation: ' char(sub.rotations,'nodegree')];
   end

@@ -19,10 +19,10 @@ function [ebsd,map] = findByLocation( ebsd, xy )
 
 
 
-if all(isfield(ebsd.options,{'x','y','z'}))
-  x_D = get(ebsd,'xyz');
-elseif all(isfield(ebsd.options,{'x','y'}))
-  x_D = get(ebsd,'xy');
+if all(isfield(ebsd.prop,{'x','y','z'}))
+  x_D = [ebsd.prop.x,ebsd.prop.y,ebsd.prop.z];
+elseif all(isfield(ebsd.prop,{'x','y'}))
+  x_D = [ebsd.prop.x,ebsd.prop.y];
 else
   error('mtex:findByLocation','no Spatial Data!');
 end
