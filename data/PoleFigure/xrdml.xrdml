@@ -1,0 +1,1479 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xrdMeasurements xmlns="http://www.xrdml.com/XRDMeasurement/1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.xrdml.com/XRDMeasurement/1.2 http://www.xrdml.com/XRDMeasurement/1.2/XRDMeasurement.xsd" status="Completed">
+	<comment>
+		<entry>Configuration=MRD SW - All Optics, Owner=User-1, Creation date=9/5/2005 1:49:22 PM</entry>
+		<entry>Goniometer=PW3050/65 (Theta/2Theta); Minimum step size 2Theta:0.001; Minimum step size Omega:0.001</entry>
+		<entry>Sample stage=MRD Cradle; Minimum step size Phi:0.01; Minimum step size Psi:0.01; Minimum step size X:0.01; Minimum step size Y:0.01; Minimum step size Z:0.001</entry>
+		<entry>Diffractometer system=XPERT-PRO</entry>
+		<entry>Measurement program=Cu-111 Standard Tex-Pol-C 3degree, Owner=User-1, Creation date=9/16/2005 2:29:49 PM</entry>
+	</comment>
+	<sample type="To be analyzed">
+		<id>Copper</id>
+		<name>Cu Texture Standard</name>
+		<preparedBy>PANalytical BV</preparedBy>
+	</sample>
+	<xrdMeasurement measurementType="Texture pole figure" status="Completed" measurementStepAxis="Psi">
+		<comment>
+			<entry/>
+		</comment>
+		<usedWavelength intended="K-Alpha 1">
+			<kAlpha1 unit="Angstrom">1.5405980</kAlpha1>
+			<kAlpha2 unit="Angstrom">1.5444260</kAlpha2>
+			<kBeta unit="Angstrom">1.3922500</kBeta>
+			<ratioKAlpha2KAlpha1>0.5000</ratioKAlpha2KAlpha1>
+		</usedWavelength>
+		<incidentBeamPath>
+			<radius unit="mm">320.00</radius>
+			<xRayTube id="1010048" name="PW3373/10 Cu LFF DK147424">
+				<tension unit="kV">45</tension>
+				<current unit="mA">40</current>
+				<anodeMaterial>Cu</anodeMaterial>
+				<focus type="Line">
+					<length unit="mm">12.0</length>
+					<width unit="mm">0.4</width>
+					<takeOffAngle unit="deg">6.0</takeOffAngle>
+				</focus>
+			</xRayTube>
+			<filter id="20010004" name="Nickel">
+				<material>Ni</material>
+				<thickness unit="mm">0.020</thickness>
+			</filter>
+			<sollerSlit id="21010002" name="Soller 0.04 rad.">
+				<opening unit="rad">0.0400</opening>
+			</sollerSlit>
+			<mask id="22080002" name="Inc. Mask Fixed  10 mm (MPD/MRD)">
+				<distanceToSample unit="mm">220.00</distanceToSample>
+				<width unit="mm">6.60</width>
+			</mask>
+			<divergenceSlit id="22010004" name="Slit Fixed 1/2°" xsi:type="fixedDivergenceSlitType">
+				<distanceToSample unit="mm">225.00</distanceToSample>
+				<height unit="mm">0.76</height>
+			</divergenceSlit>
+		</incidentBeamPath>
+		<diffractedBeamPath>
+			<radius unit="mm">320.00</radius>
+			<antiScatterSlit id="22060009" name="Prog. AS Slit" xsi:type="fixedAntiScatterSlitType">
+				<angle unit="deg">4</angle>
+			</antiScatterSlit>
+			<receivingSlit id="22020009" name="Prog. Rec. Slit">
+				<height unit="mm">2.00</height>
+			</receivingSlit>
+			<detector id="7010005" name="PW3011/10 (Miniprop. small window)" xsi:type="pointDetectorType">
+				<phd>
+					<lowerLevel unit="%">35.0</lowerLevel>
+					<upperLevel unit="%">80.0</upperLevel>
+				</phd>
+			</detector>
+		</diffractedBeamPath>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-17T20:43:43+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-17T20:53:44+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>0.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">160142 159414 158835 158473 158293 159354 159482 158357 158704 157311 158175 157568 157477 157681 158487 157791 157748 157923 158442 157307 156193 155070 153595 151985 150777 149972 146658 144665 142542 140059 138016 136299 134144 132553 129611 127529 124244 121605 118332 115288 113008 109979 106636 103854 101443 99074 96454 93690 91099 88360 86966 84862 83990 83121 82597 81211 81949 81328 81593 81090 82975 82565 83295 84674 86510 86791 89334 91240 92536 95113 97115 100366 102616 105255 108453 111147 113470 116149 118875 121806 124451 127714 129868 132159 135500 137989 140226 142334 145381 146818 149144 150142 152617 153210 153317 154447 155121 156804 155909 157082 157334 158490 158665 158907 159741 160080 160111 159931 159386 159954 160195 159911 160433 159762 160220 160284 160595 159319 159741 160407</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-17T20:53:53+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-17T21:03:54+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>3.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">147235 146896 146773 147018 147396 147587 147531 148018 148452 149326 149169 149782 150699 151556 151195 152590 152464 153717 153101 153716 152678 152619 151817 150779 149509 148279 146403 145234 144030 141890 139402 137422 135858 133879 130802 128290 125176 123150 119181 116966 113368 110114 106783 103476 100134 96166 93254 89649 86828 83855 81563 80861 79034 77982 78119 76385 76831 76075 75926 76855 76392 76863 78448 79385 80827 82347 83799 86097 88201 90557 93175 95762 99106 102428 104213 107961 110746 112874 116146 119545 121685 125352 127630 130011 131996 134650 136351 136682 137443 138396 138665 139926 139143 140907 140891 141714 142044 142247 143031 143572 144051 145301 145161 145649 145310 144959 145708 145685 145698 146876 146961 147016 146761 146122 145796 146249 146683 146317 147097 147582</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-17T21:04:03+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-17T21:14:03+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>6.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">123393 124390 124879 124924 125372 125409 126373 127306 128942 130106 131618 132147 133952 134934 136085 138069 139127 140660 142523 144928 145876 146991 147494 147814 147970 146138 145526 145789 145408 144484 142432 140910 139267 137265 134742 133136 129955 126236 121266 117239 113271 109593 104013 99957 94246 90253 86653 82408 78727 75498 72471 70636 69372 68111 66001 65456 64679 64512 65015 64977 64834 65322 65709 67039 68479 70839 72314 74280 77136 79661 82889 85703 88897 92551 95456 99517 102698 106759 110460 114250 117500 121240 122601 125393 126083 126900 126207 126109 126053 126117 126112 125627 124590 125640 125499 125318 125720 126131 125968 126265 126435 126762 126423 126361 126504 126553 125870 126367 125323 125515 125120 125574 124815 124438 124875 124411 123578 123379 123196 123311</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-17T21:14:12+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-17T21:24:13+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>9.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">102228 103503 104219 104622 106135 106224 107416 109658 110983 112314 114405 116050 118570 120376 122827 125160 127399 131490 135077 138261 140742 142969 144728 147480 148706 150122 151317 151077 151604 152565 150060 148947 147394 145637 142696 140193 137358 133036 127632 121076 115130 108978 101978 95947 89270 83728 78552 73759 68342 65682 62565 60233 58381 56702 55626 54552 53822 53347 53730 53091 53178 54026 54495 55719 56760 58995 60672 62697 66435 69032 71460 74946 78621 82489 86480 90654 95669 100943 107042 112662 117731 121069 124144 125055 125530 125576 125153 124496 123581 124076 124225 123956 122548 121590 120696 119232 118543 117537 117137 116981 116190 115566 113634 113649 111635 110795 110028 109003 107850 107193 106433 106092 104399 103852 102682 103171 102007 102694 102098 101410</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-17T21:24:22+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-17T21:34:23+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>12.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">88036 88678 89801 91033 92001 93654 95545 97151 99252 101911 104023 106744 109873 112402 116271 120442 125416 130939 135553 140709 146112 149680 152677 155352 157296 160366 161943 164582 165680 170655 163798 162734 161525 158082 155300 152878 148754 143775 136492 129966 121684 112028 102283 93537 86258 78861 72918 67204 62952 59120 56356 53433 51338 49888 48376 46898 46290 45761 45207 45192 45288 45559 46316 47049 48535 50240 52497 54895 57552 61131 64414 68113 72340 78251 83941 89446 96284 103700 111117 118640 125102 130245 133710 136070 138107 137965 135819 136094 135670 137088 136903 136998 136623 134669 132982 130095 128756 127430 124605 122174 120235 116802 113087 110245 106425 104441 101337 99441 98286 94847 92609 91290 89235 87987 87434 86606 86520 86992 88031 88124</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-17T21:34:31+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-17T21:44:33+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>15.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">78057 78280 79004 80790 82438 84412 85931 88255 90767 94698 97868 102280 106748 112040 117288 123689 131237 138596 146369 153154 159789 164011 169525 172326 176424 180694 184244 186193 187822 191969 186977 183822 181341 177752 174343 168789 162775 156865 150097 141683 130810 119216 106583 95704 86241 77942 69868 63316 59645 55362 51955 48988 46214 44336 42828 41191 40638 39666 39197 39051 39164 39757 40018 41228 42758 44481 46817 49561 52820 56388 60576 65804 71457 78012 85348 94561 104695 113608 123933 134212 143399 150672 156023 159835 162965 165399 164589 165272 166031 168071 167541 165586 165586 163519 160475 157727 155203 151222 145682 139016 134763 129162 121954 116930 109830 103911 99585 97372 92780 87312 83730 82215 80775 78633 76709 76596 75940 76349 76828 76673</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-17T21:44:41+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-17T21:54:42+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>18.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">68779 69448 69972 71314 73297 75835 78394 80811 84870 89719 95144 100903 107391 116210 124697 131383 140184 149427 159014 168211 176073 182148 190412 196996 202282 208012 212820 212887 213335 216472 213512 211763 208075 202777 196707 187176 181058 173908 163445 153322 141596 127661 112322 99714 89091 78050 69039 62201 56546 51540 47825 44342 41781 39654 38145 37142 36075 34893 34824 34709 35138 35741 36056 36801 38016 40759 42535 45522 49229 54573 59352 64309 71104 79617 89642 100929 114221 128087 141722 155727 169688 179501 188734 192987 197068 202269 204567 208288 210001 211615 209671 206688 205327 203699 200007 194137 191148 183481 175746 166504 155887 147056 136953 125127 116823 107868 101015 95980 89667 83944 79647 76480 74118 71942 70330 69263 69025 68432 67952 68602</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-17T21:54:51+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-17T22:04:52+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>21.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">64070 64065 64366 65480 66981 69812 72803 75926 79981 86508 93014 99900 109000 117827 127898 137948 147016 157990 171302 184748 195044 204252 212744 221797 226946 234451 238466 239492 241000 239361 238947 240341 237746 230999 224456 213462 204848 193944 181849 168285 152490 134194 117132 102618 90334 79035 68216 60102 54387 49128 44812 40970 38775 36465 35268 34052 32820 32181 31946 31627 31823 32165 32897 33615 34763 36592 39022 41545 45406 51405 57917 63991 72447 82545 93936 107261 124034 139896 156125 173227 192956 208723 219564 226476 232245 240141 243286 243280 245247 245504 244616 241900 240076 238645 236712 231287 226742 214836 202837 190589 178515 166272 150544 134677 123029 111705 101791 93371 87418 82031 77209 73678 69691 67250 64897 63459 63216 63071 62434 62929</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-17T22:05:01+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-17T22:15:02+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>24.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">59577 60408 60974 61355 63012 64984 68199 72038 77325 84443 92213 99859 110025 118990 130663 144717 155409 170381 185346 200109 212285 222971 229427 236954 243060 251001 251767 252090 248507 248674 246601 248688 247421 245477 243051 231842 226939 216105 201904 188524 167442 146082 126523 107322 91956 80561 67434 59997 53977 48246 43174 39033 36252 34677 33184 32327 31400 31050 30081 29697 30369 30461 30902 31831 32542 34823 36672 39523 43344 48995 54828 62381 72307 83134 95423 111573 127855 145438 162434 179771 203759 220310 235266 243078 246677 252838 254218 253342 251237 253642 254571 251951 252353 250938 251366 248358 243659 231583 217937 201974 192114 179128 161690 143312 128371 116025 104070 93381 86072 79489 74483 70939 66796 63953 61242 60525 59719 59052 58589 59400</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-17T22:15:10+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-17T22:25:11+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>27.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">56366 57030 57402 59897 60884 63007 65999 69805 75196 83878 91571 100386 110238 121329 136646 152007 163487 182493 199720 211198 223180 229924 231212 235054 239990 245168 246716 244633 240081 239672 237476 240556 242585 242526 240396 235764 232548 225023 211833 200325 182992 160119 135174 114831 97601 82888 68718 59174 52498 47388 42544 37943 34903 33445 32129 31411 30321 29489 28760 28730 28719 28990 29193 29866 31123 33378 35484 38689 41925 47355 53857 60306 69687 81533 93449 107543 126888 145787 162265 180453 201727 220312 232833 238094 240479 242607 245501 244018 243222 243972 246058 244562 245009 247090 248707 244320 241439 232861 226965 212247 199511 181218 164481 147525 130192 117038 104429 94365 84065 77790 72465 67832 63623 62099 60135 58288 57972 56953 55939 55234</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-17T22:25:20+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-17T22:35:21+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>30.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">54621 54900 56706 57576 59241 61399 64507 68084 74060 82882 89686 100123 109902 124754 143102 158974 172642 191757 205672 216125 225475 230322 231349 231290 230361 233279 233232 228194 226837 225336 223490 229589 236095 236060 233636 231338 229674 224160 212764 203344 190257 168509 142364 123181 104309 84956 70297 59065 51158 45972 41528 36987 34641 33205 32032 30656 29124 28151 27846 27399 27897 28244 28442 28953 30519 32567 35713 38238 41387 46089 51909 58742 67692 78164 88968 100813 120514 140494 157574 176897 198255 216873 228042 232503 233979 233516 236596 235622 233035 231436 231211 233121 236421 239286 237295 233558 233344 228683 223920 210513 194824 174888 162789 148281 129404 115741 104407 93196 83296 77114 72874 67185 63299 60510 59015 58337 56982 54976 53602 54122</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-17T22:35:30+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-17T22:45:31+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>33.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">53806 54677 56005 57168 58205 60817 64565 68668 75024 82155 90061 101055 112825 127559 144155 160742 176351 192677 203690 215154 220927 227344 231137 228599 223379 221766 217157 213110 214214 210327 211462 214044 223533 229620 229669 226410 228257 221098 210676 204907 193379 172703 145035 122854 104113 85376 70614 59861 51552 45754 41388 37244 34812 32519 31597 30234 28918 27951 27425 27034 27479 28097 28210 29568 30708 32548 35265 37801 40259 44466 49017 55866 64719 73014 81568 93793 110185 128553 147366 168631 190227 206734 221178 225748 222882 218055 215690 212574 205022 201717 202644 207275 212892 221329 222690 225289 224895 223251 215453 199556 181045 166571 156741 145961 127570 113669 102999 93057 82823 75953 71932 67897 63994 60954 58506 57191 55383 52904 53290 53999</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-17T22:45:40+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-17T22:55:41+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>36.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">53385 54727 55210 56819 59332 61902 66362 70140 74618 82588 91802 104480 117650 128991 139834 153051 168802 183036 194037 203825 210676 215313 215543 207861 197571 188514 180434 175336 173833 172634 175525 179055 187687 200089 210140 213809 217273 211199 203416 200409 187427 168554 143556 118508 100394 85063 71257 61958 52896 46565 40985 37716 34761 32455 30594 29862 28674 28014 27433 27142 27225 28059 28230 29719 31062 33259 35417 37380 39655 42958 47451 52799 60997 67262 75002 85467 98468 113145 132726 151303 172924 188559 197318 195250 186302 175606 166680 158671 152052 150472 154199 161140 166568 179100 190372 201856 205595 209498 206049 186824 167012 153515 143779 134383 122057 110791 101840 90008 79838 73421 70195 68241 64379 61030 58542 57121 55406 52968 53608 53075</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-17T22:55:50+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-17T23:05:51+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>39.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">53523 54469 56410 58800 61141 64557 68891 72496 74713 82763 91813 102677 116016 126034 134461 145235 155667 168902 180694 187090 188070 184742 173586 157766 142845 132859 122930 117124 114712 113023 113858 121850 127323 140911 154950 170087 180549 185113 184758 185768 172638 159829 137655 112462 95592 83070 70397 62099 53240 46779 41373 38049 35492 33093 30468 29520 28573 27613 27052 27447 28089 28419 29204 30078 31822 33683 36105 37814 38609 40692 44569 49322 54832 61593 68313 77563 87106 100168 116149 130735 145061 152436 148346 140305 129741 118837 109340 102706 100563 101648 102259 105360 110672 123258 137063 150539 163492 175056 181061 172899 156246 142975 128754 119531 111073 99585 94394 84143 74078 70236 69622 68752 65848 62195 59626 57992 55897 54031 54407 52664</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-17T23:06:00+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-17T23:16:01+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>42.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">54189 54420 56919 60228 64112 67963 71511 73893 75399 81447 89092 96888 106486 114394 126160 134743 141489 153317 160360 156052 145224 134376 114061 97573 85346 77043 71874 68870 67583 65624 67662 71306 74837 83282 91589 105528 122332 136887 147062 153652 149530 142535 125008 104468 90532 78456 67858 60148 53719 47809 42622 39991 38212 34564 31330 29281 27969 27975 27462 27642 28596 30362 30670 30933 32408 34190 36178 36485 36160 38265 41113 44810 48419 54779 61910 67880 77142 88533 98423 105244 108693 105720 98216 90505 84376 76841 71261 67634 66878 67657 66732 68182 72076 78386 86098 97058 109206 124387 136829 145859 139719 130335 115410 106221 97043 87872 82599 77094 72608 67941 66890 68802 68159 64390 62536 59195 56671 54012 54740 53670</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-17T23:16:10+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-17T23:26:11+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>45.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">52616 55412 58244 61572 68442 71086 73844 74809 76696 79854 84682 87555 95061 103006 112721 118418 123304 130840 126283 111860 94972 82753 67499 58257 51259 46896 46342 45915 45282 45590 45702 47537 48805 50435 53282 58718 69293 84157 98191 112732 121026 121915 110910 96524 84847 74434 64419 56899 51098 46530 44033 40907 39659 37097 33687 29748 28641 28352 28049 27642 27739 29991 31614 32003 33240 34315 35253 34829 34646 36351 38165 40684 43665 49243 53853 60073 66884 73289 76909 76663 75037 70323 66089 61227 57212 53493 50818 48869 48329 48199 47435 48300 50526 53661 56757 62467 70414 81197 91888 106029 111631 114350 103387 95039 85535 78080 73027 70539 70011 66684 66688 67615 68093 67206 65131 61254 57255 54356 54023 53143</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-17T23:26:20+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-17T23:36:20+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>48.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">50634 53996 57732 63871 70365 74050 75263 74212 74268 75395 78682 79096 84851 92931 98228 100329 101072 99316 85448 71391 57924 49537 43574 39001 36886 35182 35692 35395 36168 37063 36474 37346 36501 36410 37202 38376 42604 49348 59932 73378 89294 95033 92601 85805 77917 68615 58760 52373 48311 45931 44051 40767 40803 39140 34569 30601 28752 28019 27703 27214 27054 28967 30534 31803 33881 34509 35055 33333 33686 34410 35245 36197 39220 43669 47645 52135 55318 57744 57967 55411 53175 50454 48752 45639 43156 40503 38993 38667 37956 37309 36912 37044 38834 40768 41864 45002 49122 54755 63124 72966 82226 90395 89839 84179 78967 71611 67234 66910 66106 65263 65788 66534 68891 69542 66662 62112 56714 54624 52455 50825</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-17T23:36:29+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-17T23:46:31+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>51.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">49460 52733 55390 61897 69925 73987 74508 70645 70684 70281 71742 72436 76658 82070 83432 82471 78676 69594 56800 47061 40004 35678 33033 31448 30218 29920 29829 30649 30879 31345 31359 30811 30319 30179 29926 30306 31598 33261 38864 47389 60655 68922 73542 73095 68069 60865 53753 48380 46263 44306 43007 40018 41054 38534 34114 30034 28014 26950 26931 26390 26667 27147 28829 31074 34195 33287 33953 32815 31834 31941 32645 32587 34834 38528 42057 44344 44607 44028 42832 41228 40107 39069 37533 36505 34806 33468 31949 31433 31316 30488 30482 30822 31628 32569 33166 35045 37612 40975 45184 51581 59659 67479 73310 74369 72723 66584 63690 63486 62581 63185 64591 67611 69197 70721 67110 60782 54630 52004 48909 49077</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-17T23:46:39+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-17T23:56:40+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>54.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">48610 50638 52728 57707 67322 71032 71584 67902 63889 64433 65154 66465 68862 70368 69469 65884 59264 49395 41346 35356 31200 29074 27900 26927 26060 26057 26164 27607 27645 28200 27780 26997 26710 26125 26142 25967 25993 27024 28738 33706 42028 50041 56231 59739 57912 53619 49199 45134 43483 42051 40731 39407 39647 36782 32833 29149 27078 26279 25529 24659 24636 25445 27477 29477 30709 32037 31685 30964 30868 30459 29813 30042 31914 33490 36321 37102 36380 34635 33378 32766 32721 32046 31339 30710 29971 28370 27518 26778 26330 26059 25974 25994 27194 26961 27539 28914 30603 32422 34719 39298 45488 52422 60575 64536 65501 61861 60825 59142 58355 59076 63041 67070 67138 67249 63658 58547 50904 48477 45122 46085</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-17T23:56:49+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-18T00:06:50+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>57.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">44111 47117 48609 54229 60536 65265 66562 61927 57131 58431 59146 58768 59730 58843 57093 51430 45134 38433 32990 29480 26921 25069 24581 23935 23525 23711 24377 24854 25392 25305 24925 24572 24019 23294 22808 22532 22933 23259 24698 27273 31912 39112 44577 47454 48109 46915 44517 41549 40310 39021 37649 36627 36696 34415 31824 27864 25121 24394 23613 22629 22387 23229 24643 26292 27668 28809 28489 28255 29017 27590 27144 27884 28579 29892 30275 30623 29804 28486 27760 27480 27406 27399 27205 26923 25975 24847 23906 23503 22917 22719 22642 22782 23470 23479 24284 24369 25648 26833 28437 32099 36079 42439 49693 53677 56976 56765 56466 54907 55484 55336 58234 62600 62949 61832 58930 53855 47493 43887 40711 41707</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-18T00:06:59+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-18T00:17:00+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>60.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">38412 41387 43678 49054 54384 57419 58229 55991 50939 52465 52875 51497 51346 48983 45594 42122 37163 32347 28274 26075 24061 22498 22377 22138 21495 22042 22215 23314 23691 23437 23259 22450 21859 21038 20481 20369 20821 21264 22126 23746 26968 32122 36549 38238 40631 40225 38343 37574 36455 35173 33684 32682 32252 32307 29604 25919 23454 22456 21443 20736 20131 20007 21401 23034 24295 24761 25406 25362 25691 25015 24141 25514 25966 26287 25992 25476 25103 24583 24339 24046 23887 24203 24287 23942 23144 21850 21988 20760 20220 19795 20220 20336 20596 20924 21064 21146 22514 23570 24869 27319 30256 34968 40003 44532 48349 50755 52675 51799 52043 52956 53806 56600 57464 55704 53026 48154 43062 38847 37082 36473</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-18T00:17:09+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-18T00:27:10+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>63.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">33862 36341 37894 41381 46885 48318 49217 49303 47746 47785 47904 44786 45083 42810 38368 35748 32023 28486 25519 23977 21499 20874 20404 20286 20536 20887 21394 22017 22404 22338 21840 21151 20169 19574 19245 19251 19357 19739 20422 21739 23544 26716 30983 32908 34519 34723 33248 33190 32773 31128 29491 27522 27493 28547 26250 23240 21541 20400 19356 18635 18050 18206 18296 19795 20345 21029 22015 22380 22399 21738 21626 22226 23376 22516 23078 22266 21619 21624 21574 21584 21563 21205 21698 21821 20906 19824 19248 18689 18282 17912 18264 17967 18410 18312 18418 18968 19814 20362 21474 23306 26190 29911 33594 36985 41571 44555 48115 47760 48133 48737 48631 48919 49856 49001 46253 42560 37425 34860 33512 33059</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-18T00:27:19+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-18T00:37:20+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>66.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">29198 31933 33127 34926 38620 39914 40724 42315 42421 42337 41555 38840 38004 36660 33367 30609 27253 25373 23454 21571 20245 19258 18975 19249 19426 19904 21068 21494 22030 21711 21164 20151 19672 19053 18249 17944 17919 18182 18932 19745 21262 24173 26673 28707 29843 30085 28776 28530 28639 27091 25420 23430 23003 23894 22321 20312 19182 18057 16921 16357 16039 15991 15676 16667 17474 17691 18478 19202 19474 19534 18902 19042 19564 19633 19994 19553 19109 19033 18960 18886 19033 19018 19345 19469 18905 18268 17766 16954 16628 16320 16739 16543 16315 16246 16333 16876 17524 18478 19421 20504 23005 26320 29232 31525 34839 37940 42146 42030 42934 42663 42626 42610 42185 41905 39757 36255 32704 30891 30426 29460</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-18T00:37:29+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-18T00:47:30+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>69.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">25534 27512 28668 28972 31195 33194 33841 35697 36978 36224 35458 33658 32650 31243 29333 26396 24256 22835 20993 19411 18610 18134 17882 18165 18820 20150 20874 21477 21908 21484 20964 20114 18979 18665 17992 17115 17138 17158 17392 18204 19728 21170 23565 24464 25910 25646 24662 24427 24130 23142 21468 19493 18668 19019 18088 17381 16738 15607 14901 13931 14143 14082 13487 14150 14815 14692 15705 16434 16531 16370 16062 16523 16595 16443 16496 16176 16101 16223 16762 16681 16954 17169 17468 17823 17564 16761 16226 15565 15191 15510 14988 14949 14860 14563 14515 15109 15694 16227 16917 18200 20635 23023 25090 26853 29368 32001 35456 36803 37042 37412 36606 35939 35022 34372 33310 30677 27925 26943 26474 25463</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-18T00:47:39+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-18T00:57:40+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>72.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">22066 23343 23995 23761 24689 26035 27573 28999 30203 30113 30065 28849 28097 26701 24789 22167 20841 20108 18820 17891 17048 16932 16759 17527 18719 20073 21390 22043 22408 21961 21131 19772 19402 18364 17613 16542 16008 15909 16175 16576 17685 19088 20488 21038 22042 21817 21140 20252 20040 19082 17578 16763 14981 15049 14719 14441 13913 13262 12664 12171 12284 11921 11861 11452 12266 12359 12723 13726 13861 13622 13388 13481 13725 14024 13615 13285 13750 13590 14107 14334 14894 15280 15724 16100 16092 15668 15371 14636 14303 14441 14503 13893 13639 13396 13086 13794 13713 14431 14644 16212 17806 19780 21597 22687 25032 27255 29707 31506 31881 32190 30803 28716 27798 26662 26410 25121 23384 22602 22879 22108</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-18T00:57:49+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-18T01:07:50+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>75.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">18829 18772 19074 19106 18841 19521 21267 22219 22765 23920 24145 23636 22961 22036 20729 18663 17560 17028 15977 15675 15010 15341 15587 16856 18080 19933 21844 22715 22541 22457 21605 20529 19573 18243 17202 16138 15074 14541 14605 15084 15263 16299 17261 17754 18010 17432 17332 16769 16295 15334 14038 12815 11793 11739 12002 11966 11867 11091 10877 10383 10390 10101 9951 9760 9720 9851 10468 10894 11274 11188 11346 11506 11499 11196 11126 11121 11187 11575 11592 12004 12432 13113 13568 14435 14672 14940 14407 14346 14415 14232 14258 13818 13210 12754 12150 12046 12456 12676 13327 13973 15339 16748 17786 18797 20856 23190 25109 26216 26384 25937 24678 22762 21078 20394 20338 19632 19227 18891 19287 19096</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-18T01:07:59+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-18T01:18:00+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>78.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">15256 15190 15175 14606 14533 14665 15342 16347 17055 18088 18431 18289 18193 17320 16354 15090 14101 13546 13056 13188 13362 13525 14092 15646 17591 19626 21547 22694 22816 22835 21370 20236 19524 18095 16664 15010 13708 13077 12373 12690 12854 13128 13711 14010 13769 13833 13544 13010 12343 11695 10523 9593 9234 9082 9562 9690 10033 9433 8827 8526 8439 8195 8031 8012 7703 7815 7994 8426 8858 8892 9181 9123 9194 8896 8635 8827 8893 9294 9389 9858 10115 10606 11510 12499 13313 13465 13783 14106 14315 14044 13722 13300 12806 12378 11574 10900 10868 10883 11317 11851 12542 13087 14375 14991 16463 18570 19866 20623 20420 19634 18640 17477 15977 15054 15362 15210 15242 15449 15741 15348</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-18T01:18:09+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-18T01:28:11+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>81.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">11492 11321 11064 10642 10648 10881 11118 11862 12301 12849 13330 13509 13506 12419 11763 11261 10394 10234 9939 10214 10568 11203 12084 13595 15858 17878 19497 20337 20476 20328 18986 18207 17467 16411 14473 12911 11590 10950 10016 9770 9767 10038 10247 10063 10050 10195 10001 9816 9142 8677 7965 7243 7042 7060 7399 7650 8012 7551 6818 6687 6523 6418 6248 6098 5934 6022 5885 6097 6467 6646 6867 6958 6832 7040 6690 6680 6733 7129 7197 7608 7853 8204 8987 10116 11072 11803 12304 12673 12770 12164 11911 11770 11457 11037 10284 9556 9117 8959 9270 9513 9408 10282 10611 11237 12208 13224 14349 14761 14839 13939 13072 12180 11555 11013 11422 11331 11440 11756 12026 11740</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-18T01:28:19+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-18T01:38:20+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>84.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">7645 7511 7144 7100 7095 7007 7301 7527 8030 8509 8598 8938 8596 8152 7605 7468 7300 7140 6869 7280 7522 7995 8907 10202 11887 13311 14904 14863 14839 14729 13524 13259 12510 12241 10632 9551 8537 7835 7208 6948 6814 6702 6743 6829 6880 6875 6840 6803 6231 5778 5429 5060 4889 5147 5487 5834 5572 5229 4792 4628 4593 4609 4316 4287 4169 4201 4154 4318 4395 4517 4782 4600 4822 4686 4728 4772 4806 4839 5157 5303 5404 5677 6296 7137 7888 8484 9049 9490 9623 9004 8877 8870 8729 8345 7688 7209 6746 6583 6352 6405 6553 6926 7031 7551 8247 8511 9131 9414 9299 8992 8414 7900 7525 7333 7531 7643 7708 7590 7914 7581</intensities>
+			</dataPoints>
+		</scan>
+		<scan appendNumber="0" mode="Continuous" scanAxis="Phi" status="Completed">
+			<header>
+				<startTimeStamp>2005-09-18T01:38:29+02:00</startTimeStamp>
+				<endTimeStamp>2005-09-18T01:48:30+02:00</endTimeStamp>
+				<author>
+					<name>detlev.gotz</name>
+				</author>
+				<source>
+					<applicationSoftware version="2.1x-30">X'Pert Data Collector</applicationSoftware>
+					<instrumentControlSoftware version="1.6A">XPERT-PRO</instrumentControlSoftware>
+					<instrumentID>0000000000000001</instrumentID>
+				</source>
+			</header>
+			<reflection>
+				<hkl>
+					<h>1</h>
+					<k>1</k>
+					<l>1</l>
+				</hkl>
+			</reflection>
+			<dataPoints>
+				<positions axis="2Theta" unit="deg">
+					<commonPosition>43.249</commonPosition>
+				</positions>
+				<positions axis="Omega" unit="deg">
+					<commonPosition>21.625</commonPosition>
+				</positions>
+				<positions axis="Phi" unit="deg">
+					<startPosition>1.50</startPosition>
+					<endPosition>358.50</endPosition>
+				</positions>
+				<positions axis="Psi" unit="deg">
+					<commonPosition>87.00</commonPosition>
+				</positions>
+				<positions axis="X" unit="mm">
+					<commonPosition>5.50</commonPosition>
+				</positions>
+				<positions axis="Y" unit="mm">
+					<commonPosition>-37.00</commonPosition>
+				</positions>
+				<positions axis="Z" unit="mm">
+					<commonPosition>3.001</commonPosition>
+				</positions>
+				<commonCountingTime unit="seconds">5.00</commonCountingTime>
+				<intensities unit="counts">3943 3952 3795 3789 3746 3766 3826 4023 4226 4344 4556 4556 4606 4368 4044 4029 4049 3954 4054 4215 4220 4549 4849 5554 6757 7694 8167 8220 8278 7659 7208 6949 6737 6431 5711 5162 4606 4362 4108 3787 3770 3765 3741 3788 3698 3655 3621 3546 3355 3285 3109 2874 2842 3065 3480 3776 3591 3308 2836 2646 2641 2687 2564 2543 2534 2445 2545 2449 2569 2659 2664 2691 2750 2666 2846 2672 2691 2776 2998 2984 3008 3211 3412 3844 4172 4619 4847 4978 5057 4863 4832 4856 4620 4629 4237 4007 3766 3672 3565 3439 3533 3588 3700 3888 4132 4379 4518 4558 4413 4396 4266 4075 3856 3909 3791 3995 3911 4005 3893 3969</intensities>
+			</dataPoints>
+		</scan>
+	</xrdMeasurement>
+</xrdMeasurements>
