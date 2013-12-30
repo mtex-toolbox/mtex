@@ -9,13 +9,13 @@ function startup_mtex(varargin)
 
 %% Check MATLAB version
 
-lasterr('') %reset all errors
+lasterr('') %#ok<LERR> %reset all errors
 
-if (~isOctave() && MATLABverLessThan('7.1'))
+if (~isOctave() && MATLABverLessThan('7.11'))
 
   error(['MTEX can not be installed because your MATLAB version ',version,...
     ' is outdated and not longer supported by MTEX. The oldest MATLAB ',...
-    'version MTEX has been tested on is 7.1.']);
+    'version MTEX has been tested on is 7.11.']);
 end
 
 
