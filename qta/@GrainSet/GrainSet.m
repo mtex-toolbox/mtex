@@ -46,6 +46,7 @@ classdef GrainSet < dynProp
     allMinerals                 % all mineral names of the data set
     mis2mean
     meanOrientation             % mean orientation of the grain
+    indexedPhasesId             % id's of all non empty indexed phase 
   end
   
   methods
@@ -73,6 +74,12 @@ classdef GrainSet < dynProp
     
     function A_G = get.A_G(grains)
       A_G = grains.I_DG'*double(grains.A_Db)*grains.I_DG;
+    end
+    
+    function id = get.indexedPhasesId(grains)
+      
+      id = grains.ebsd.indexedPhasesId;
+    
     end
     
     function I_VF = get.I_VF(grains)

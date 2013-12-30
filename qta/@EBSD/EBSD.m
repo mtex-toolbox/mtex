@@ -32,11 +32,12 @@ classdef EBSD < dynProp & dynOption
   end
   
   properties (Dependent = true)
-    phase        % phase
-    phaseId      % 
-    orientations %
-    mineral      % mineral name
-    allMinerals  % all mineral names
+    phase           % phase
+    phaseId         % 
+    orientations    %
+    mineral         % mineral name
+    allMinerals     % all mineral names
+    indexedPhasesId % id's of all non empty indexed phase
   end
   
   methods
@@ -121,7 +122,7 @@ classdef EBSD < dynProp & dynOption
       % remove ignore phases
       if check_option(varargin,'ignorePhase')
         
-        del = ismember(ebsd.phaseMap(ebsd.phase),get_option(varargin,'ignorePhase',[]));
+        del = ismember(ebsd.phaseMap(ebsd.phaseId),get_option(varargin,'ignorePhase',[]));
         ebsd = subSet(ebsd,~del);
         
       end
@@ -163,6 +164,14 @@ classdef EBSD < dynProp & dynOption
             
     end
     
+    function id = get.indexedPhasesId(obj)
+      
+      id = intersect(...
+        find(~cellfun('isclass',obj.CS,'char')),...
+        unique(obj.phaseId));
+    
+    end
+      
     function ori = get.orientations(ebsd)
       
       % ensure single phase
