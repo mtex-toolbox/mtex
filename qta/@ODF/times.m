@@ -4,7 +4,7 @@ function odf = times(x,y)
 % overload the * operator, i.e. one can now write x*@ODF or @ODF*y in order
 % to scale an ODF
 %
-%% See also
+% See also
 % ODF_index ODF/plus
 
 if isa(x,'ODF') && isa(y,'double')
@@ -18,6 +18,5 @@ end
 if numel(f) == 1, f = repmat(f,size(odf));end
 
 for i = 1:length(odf)
-  odf(i).c_hat = f(i) * odf(i).c_hat;
-  odf(i).c = f(i) * odf(i).c;
+  odf(i).weight = odf(i).weight * f(i);
 end

@@ -1,6 +1,6 @@
 %% check SO3Grid/subGrid
 %
-% compare subGrid function with the max_angle option to SO3Grid
+% compare subGrid function with the maxAngle option to SO3Grid
 %
 
 q = quaternion(SO3Grid(100000,symmetry,symmetry));

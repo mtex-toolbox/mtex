@@ -1,6 +1,6 @@
 function ind = fundamental_region(q,cs,ss)
 
-if numel(q) == 0, ind = []; return; end
+if isempty(q), ind = []; return; end
 
 c = {};
 
@@ -26,7 +26,7 @@ end
 
 % find rotation not part of the fundamental region
 rodrigues = Rodrigues(q); clear q;
-ind = false(numel(rodrigues),1);
+ind = false(length(rodrigues),1);
 for i = 1:length(c)
   for j = 1:length(c{i}.v)
     p = dot(rodrigues,1/norm(c{i}.v(j)) * c{i}.v(j));

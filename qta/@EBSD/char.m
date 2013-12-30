@@ -21,7 +21,7 @@ for p = 1:numel(ebsd.phaseMap)
     ss = [ss 'symmetry ' Laue(CS) ', ']; %#ok<AGROW>
   end
   
-  ss = [ss, num2str(nnz(ebsd.phase == p)),' orientations '];    %#ok<AGROW>
+  ss = [ss, num2str(nnz(ebsd.phaseId == p)),' orientations '];    %#ok<AGROW>
   
   
   s = strvcat(s,ss); %#ok<VCAT>

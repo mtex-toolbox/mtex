@@ -42,15 +42,16 @@ plot(grains,'colorcoding','ipdfCenter',{Miller(1,1,1),[0 0 1]},...
 
 %%
 % With the *hold on* command, one can combine several plots, e.g. let us
-% take a look at the mad and the phase at the same time. We can control
+% take a look at the band contrast and the phase at the same time. We can control
 % transparency with the option *translucent*.
 
 close all
-plot(ebsd,'property','mad')
-mtexColorMap white2black
+plot(ebsd,'property','bc')
+mtexColorMap black2white
 
 hold on
-plot(grains,'property','phase','translucent',0.4)
+plot(ebsd,'property','phase','translucent',1)
+hold off
 
 %%
 % Please note, that the opengl renderer has to be activated to plot grains
@@ -60,7 +61,8 @@ plot(grains,'property','phase','translucent',0.4)
 % from, thus we select grains of a GrainSet and plot its corresponding EBSD
 
 close all
-plotspatial(grains(grainSize(grains)>15),'property','bc')
+plotspatial(grains(grainSize(grains)>15).ebsd,'property','bc')
+mtexColorMap black2white
 
 %%
 % Also, a property to plot can be given as a Nx1 vector, where N is the
@@ -127,7 +129,7 @@ plotBoundary(grains,'internal','linecolor','r','linewidth',2)
 %%
 % We also want to see the rotation within the grain.
 
-hold on, plot(grains,'property','mis2mean')
+hold on, plot(grains,'property','mis2mean','colorcoding','angle')
 
 %% SUB: Misorientation
 % Basicly there are two ways to visualize misorientation along a grain

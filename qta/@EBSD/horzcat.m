@@ -1,13 +1,19 @@
 function ebsd = horzcat(varargin)
 % overloads [ebsd1,ebsd2,ebsd3..]
 %
-%% Syntax 
+% Syntax 
 % [ebsd(1) ebsd(2)]
 % 
 
+% maybe there is nothing to do
 varargin(cellfun('isempty',varargin)) = [];
+if nargin == 1, 
+  ebsd = varargin{1};
+  return;
+end
 
-ebsd = varargin{1};
+% concatenate properties
+ebsd = horzcat@dynProp(varargin{:});
 
 for k=1:numel(varargin)
   s(k) = struct(varargin{k});
@@ -16,14 +22,6 @@ end
 ebsd.phaseMap = vertcat(s.phaseMap);
 ebsd.CS = horzcat(s.CS);
 ebsd.rotations = vertcat(s.rotations);
-ebsd.phase = vertcat(s.phase);
 
-options = [s.options];
-
-for fn = fieldnames(options)'
-  ebsd.options.(char(fn)) = vertcat(options.(char(fn)));
-end
-
-[ebsd.phaseMap b] = unique(ebsd.phaseMap);
+[ebsd.phaseMap,b] = unique(ebsd.phaseMap);
 ebsd.CS = ebsd.CS(b);
-

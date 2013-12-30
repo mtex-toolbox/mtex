@@ -1,17 +1,17 @@
 function zr = calcZeroRange(pf,S2G,varargin)
 % calculate zero range
 %
-%% Input
+% Input
 %  pf  - @PoleFigure
 %  S2G - @S2Grid
 %
-%% Output
+% Output
 %  zr  - logical
 %
-%% Options
+% Options
 % 
 %
-%% See also
+% See also
 % PoleFigure/calcODF
 
 % transform in polar coordinates -> output nodes
@@ -35,7 +35,7 @@ in_rho   = fft_rho(in_rho);
 gh = [reshape(in_rho,1,[]);reshape(in_theta,1,[])];
   
 % normalization
-c = ones(size(pf.data));
+c = ones(size(pf.intensities));
 w = call_extern('odf2pf','EXTERN',gh,r,c,Al);
 mw = RK(k,idquaternion,xvector,xvector,1,symmetry,symmetry);
 %w = max(RK(k,idquaternion,xvector,xvector,1,symmetry,symmetry)*0.25,w);
@@ -43,8 +43,8 @@ mw = RK(k,idquaternion,xvector,xvector,1,symmetry,symmetry);
   
 % c - coefficients
 delta = get_option(varargin,'zr_delta',0.01,'double');
-bg = get_option(varargin,'zr_bg',delta * max(pf.data(:)));
-c = (get_option(varargin,'zr_factor',10)*(pf.data > bg)-1);
+bg = get_option(varargin,'zr_bg',delta * max(pf.intensities(:)));
+c = (get_option(varargin,'zr_factor',10)*(pf.intensities > bg)-1);
 %plot(pf.r,'data',c)
 
 f = call_extern('odf2pf','EXTERN',gh,r,c,Al);

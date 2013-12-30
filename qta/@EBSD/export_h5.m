@@ -1,11 +1,11 @@
 function export_h5(ebsd,fname,varargin)
 % export EBSD data to a ascii file
 %
-%% Input
+% Input
 %  ebsd - @EBSD
 %  fname - filename
 %
-%% Options
+% Options
 %  BUNGE   - Bunge convention (default)
 %  ABG     - Matthies convention (alpha beta gamma)
 %  DEGREE  - output in degree (default)
@@ -76,7 +76,7 @@ for k=1:numel(CSCell)
 end
 
 
-n = numel(ebsd);
+n = length(ebsd);
 
 if n > 2^14
   chnk = 2^14;

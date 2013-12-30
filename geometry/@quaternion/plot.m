@@ -13,10 +13,11 @@ function varargout = plot(q,varargin)
 
 %% two dimensional plot -> S2Grid/plot
 
+% TODO
 if ~(ishold(gca) && strcmp(get(gca,'tag'),'ebsd_raster')) && ...
   ~check_option(varargin,{'scatter','rodrigues','axisangle'})
 
-  if numel(q) == 1
+  if length(q) == 1
 
     v = [xvector,yvector,zvector];
     plot(q*v,'label',...
@@ -27,9 +28,9 @@ if ~(ishold(gca) && strcmp(get(gca,'tag'),'ebsd_raster')) && ...
 
     v = [xvector,yvector,zvector];
 
-    for i = 1:numel(v)
+    for i = 1:length(v)
 
-      plot(S2Grid(q.*v(i)),varargin{:});
+      plot(q.*v(i),varargin{:});
       hold(gca,'all')
     end
 

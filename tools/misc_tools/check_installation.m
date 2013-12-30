@@ -36,7 +36,7 @@ function check_binaries
 
 if fast_check_binaries, return; end
 
-[th,rh] = polar(S2Grid('equispaced','points',10));
+[th,rh] = polar(equispacedS2Grid('points',10));
 
 th = fft_theta(th);
 rh = fft_rho(rh);
@@ -209,8 +209,8 @@ if ispref('mtex') && ispref('mtex','mex')
 end
 
 try
-  S3G = SO3Grid(100,symmetry,symmetry);
-  dot_outer(S3G,idquaternion,'epsilon',pi/10);
+  S3G = equispacedSO3Grid(symmetry,symmetry,'points',100);
+  dot_outer(S3G,idquaternion,'epsilon',pi/4);
   e = true;
 catch
   e = false;

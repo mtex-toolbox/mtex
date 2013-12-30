@@ -1,18 +1,18 @@
 function [m,ori]= max(odf,varargin)
 % heuristic to find local modal orientations
 %
-%% Input
+% Input
 %  odf - @ODF 
 %
-%% Output
+% Output
 %  m   - maximum in multiples of the uniform ODF
 %  ori - @orientation where the maximum is atained
 %
-%% Options
+% Options
 %  resolution  - search--grid resolution
 %  accuracy    - in radians
 %
-%% Example
+% Example
 %  find the local maxima of the [[SantaFe.html,SantaFe]] ODF
 %
 %    [m,ori] = max(SantaFe)
@@ -20,7 +20,7 @@ function [m,ori]= max(odf,varargin)
 %    annotate(ori)
 %
 %
-%% See also
+% See also
 % ODF/calcModes
 
 [ori,m] = calcModes(odf,varargin{:});

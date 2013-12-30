@@ -1,29 +1,29 @@
 function [ori,interface,options] = loadOrientation(fname,varargin)
-% import Orientation data 
+% import orientation data from data files
 %
-%% Description
-% *loadOrientation* is a high level method for importing orientation data from external
+% Description
+% loadOrientation is a high level method for importing orientation data from external
 % files. It autodetects the format of the file. As parameters the method
-% requires a filename and the crystal and specimen @symmetry. In the case of
+% requires a filename and the crystal and specimen symmetry. In the case of
 % generic ascii files each of which consist of a table containing in each
 % row the euler angles of a certain orientation see
 % [[loadOrientation_generic.html,loadOrientation_generic]] for additional options.
 %
-%% Syntax
+% Syntax
 %  ori = loadOrientation(fname,cs,ss)
 %
-%% Input
+% Input
 %  fname     - filename
 %  cs, ss    - crystal, specimen @symmetry (optional)
 %
-%% Options
+% Options
 %  interface  - specific interface to be used
 %  comment    - comment to be associated with the data
 %
-%% Output
+% Output
 %  ori - @orientation
 %
-%% See also
+% See also
 % loadOrientation_generic
 
 [ori,interface,options] = loadData(fname,'Orientation',varargin{:});

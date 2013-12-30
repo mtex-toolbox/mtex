@@ -56,7 +56,7 @@ plot([rot rot2])
 angle(rot)
 axis(rot)
 angle(rot, rot2)
-inverse(rot)
+inv(rot)
 [alpha, beta ,gamma] = Euler(rot)
 
 %% Crystal and Specimen Symmetries
@@ -202,8 +202,8 @@ ori * [h1,h2]
 %%
 % create
 S2G = S2Grid(zvector);
-S2G = S2Grid('regular','RESOLUTION',5*pi/180,'upper')
-S2G = S2Grid('equispaced','points',1000,'antipodal');
+S2G = regularS2Grid('RESOLUTION',5*pi/180,'upper')
+S2G = equispacedS2Grid('points',1000,'antipodal');
 
 %%
 % operations

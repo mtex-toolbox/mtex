@@ -1,13 +1,13 @@
-function s = symmetry(name,varargin)
+classdef symmetry < rotation
 % constructor
 %
 %
-%% Input
+% Input
 %  name  - Schoenflies or International notation of the Laue group
-%  axis  - [a,b,c] --> length of the crystallographic axes
+%  axes  - [a,b,c] --> length of the crystallographic axes
 %  angle - [alpha,beta,gamma] --> angle between the axes
 %
-%% Syntax
+% Syntax
 % symmetry -
 % symmetry('cubic') -
 % symmetry('2/m',[8.6 13 7.2],[90 116, 90]*degree,'mineral','orthoclase') -
@@ -15,14 +15,14 @@ function s = symmetry(name,varargin)
 % symmetry(9) -
 % symmetry('spacegroup',153) -
 %
-%% Output
+% Output
 %  s - @symmetry
 %
-%% Remarks
+% Remarks
 % Supported Symmetries
 %
 %  crystal system  Schoen-  Inter-    Laue     Rotational
-%                  flies    national  class    axis
+%                  flies    national  class    axes
 %  triclinic       C1       1         -1       1
 %  triclinic       Ci       -1        -1       1
 %  monoclinic      C2       2         2/m      2
@@ -55,120 +55,163 @@ function s = symmetry(name,varargin)
 %  cubic           O        432       m-3m     432
 %  cubic           Td       -43m      m-3m     432
 %  cubic           Oh       m-3m      m-3m     432
-
-%% get input
-
-if nargin == 0
-  s.name = 'triclinic';
-  s.laue = '-1';
-  s.axis =  [xvector,yvector,zvector];
-  s.mineral = '';
-  s.color = '';
-  s = class(s,'symmetry',rotation(idquaternion));
-  return
-end
-
-if isa(name,'symmetry'),  s = name;return;end
-if isa(name,'double')
-  LaueGroups =  {'C1','C2','D2','C4','D4','T','O','C3','D3','C6','D6'};
-  name = LaueGroups{name};
   
-elseif strncmp(name,'spacegroup',10) && nargin > 1
+  properties
+
+    isCS = false; % is crystal symmetry
+    pointGroup = 'triclinic';
+    laueGroup  = '-1';
+    axes = [xvector,yvector,zvector];
+    mineral = '';
+    color = '';
     
-  list = { 1,    '1';
-    2,   '-1';
-    5,    '2';
-    9,    'm';
-    15,   '2/m';
-    24,    '222';
-    46,    'mm2';
-    74,   'mmm';
-    80,    '4';
-    82,    '-4';
-    88,   '4/m';
-    98,    '422';
-    110,    '4/mmm';
-    122,   '-42m';
-    142,    '4/mmm';
-    146,    '3';
-    148,   '-3';
-    155,    '32';
-    161,    '3m';
-    167,   '-3m';
-    173,    '6';
-    174,    '-6';
-    176,    '6/m';
-    182,   '622';
-    186,   '6mm';
-    190,  '-6m2';
-    194, '6/mmm';
-    199,    '23';
-    206,   'm-3';
-    214,   '432';
-    220,  '-43m';
-    230,  'm-3m';};
-  ndx = nnz([list{:,1}] < varargin{1});
-  
-  if ndx>31
-    error('I''m sorry, I know only 230 space groups ...')
-  end
-  varargin = varargin(2:end);
-  name = list{ndx+1,2};
-  
-end
-
-
-
-%% search for symmetry
-
-% maybe this is a point group
-try
-  sym = findsymmetry(name);
-catch %#ok<*CTCH>
-  
-  if check_option(varargin,'noCIF')
-    error('symmetry "%s" not found',name);
   end
   
-  % maybe it is a space group
-  try
-    sym = findsymmetry(hms2point(name));
-  catch
-    try % may be it is a cif file
-      s = loadCIF(name,varargin{:});
-      return;
-    catch
+  methods
+    
+    function s = symmetry(varargin)
+    
+      s = s@rotation(idquaternion);
+      
+      if nargin == 0 % empty constructor
+        return;
+      elseif isa(varargin{1},'symmetry') % copy constructor
+        s = varargin{1};
+        return
+      end
+      
+      % determine point group
+      if isa(varargin{1},'double') % point group by number
+  
+        LaueGroups =  {'C1','C2','D2','C4','D4','T','O','C3','D3','C6','D6'};
+        pGroup = LaueGroups{varargin{1}};
+        
+      elseif strncmp(varargin{1},'spacegroup',10) && nargin > 1 % space group by number
+  
+        list = spaceGroups;
+        ndx = nnz([list{:,1}] < varargin{1});
+  
+        if ndx>31
+          error('I''m sorry, I know only 230 space groups ...')
+        end
+        varargin = varargin(2:end);
+        pGroup = list{ndx+1,2};
+        
+      else % given by its name
+        
+        pGroup = varargin{1};
+        
+      end
+        
+      % search for pointgroup
+      try
+        sym = findsymmetry(pGroup);
+      catch
+        sym = [];
+      end
+
+      % nothing found?
+      if isempty(sym)
+                   
+        if check_option(varargin,'noCIF'), error('symmetry "%s" not found',pGroup); end
+  
+        % may be it is a cif file
+        try
+          s = loadCIF(varargin{:});
+          return;
+        catch %#ok<CTCH>
+          if ~check_option(varargin,'silent')
+            help symmetry;
+            error('symmetry "%s" not found',pGroup);
+          end
+        end
+      end
+      varargin(1) = [];
+
+      % get axes length (a b c)
+      if ~isempty(varargin) && isa(varargin{1},'double')
+        abc = varargin{1};
+        varargin(1) = [];
+      else 
+        abc = [1,1,1];
+      end
+      
+      % get axes angles (alpha beta gamma)
+      if ~isempty(varargin) && isa(varargin{1},'double') && any(strcmp(sym.Laue,{'-1','2/m'}))
+        angles = varargin{1};
+        if any(angles>2*pi), angles = angles * degree;end
+        varargin(1) = [];
+      elseif any(strcmp(sym.System,{'trigonal','hexagonal'}))
+        angles = [90 90 120] * degree;
+      else
+        angles = [90 90 90] * degree;
+      end
+
+      % compute coordinate system
+      s.axes = calcAxis(abc,angles,varargin{:});
+      
+      
+      % set up symmetry
+      s.pointGroup = pGroup;
+      s.laueGroup = sym.Laue;
+      
+      s.mineral = get_option(varargin,'mineral','');
+      s.color = get_option(varargin,'color','');
+      
+      % compute symmetry operations
+      r = calcQuat(s.laueGroup,s.axes,sym.Inversion);
+      [s.a, s.b, s.c, s.d] = double(r);
+      s.i = isImproper(r);
+      
+      % decide crystal / specimen symmetry
+      if check_option(varargin,'specimen')
+        s.isCS = false;
+      elseif check_option(varargin,'crystal')
+        s.isCS = true;
+      else
+        s.isCS = ~(numel(s.a)<=4 && all(isnull(norm(s.axes-[xvector,yvector,zvector]))));
+      end
+      
     end
-    if ~check_option(varargin,'silent')
-      help symmetry;
-      error('symmetry "%s" not found',name);
-    end
   end
 end
 
+% ---------------------------------------------------------------
 
-if ~isempty(varargin) && isa(varargin{1},'double')
-  axis = varargin{1};
-  varargin(1) = [];
-else
-  axis = [1 1 1];
+function list = spaceGroups
+
+list = { 1,    '1';
+  2,   '-1';
+  5,    '2';
+  9,    'm';
+  15,   '2/m';
+  24,    '222';
+  46,    'mm2';
+  74,   'mmm';
+  80,    '4';
+  82,    '-4';
+  88,   '4/m';
+  98,    '422';
+  110,    '4/mmm';
+  122,   '-42m';
+  142,    '4/mmm';
+  146,    '3';
+  148,   '-3';
+  155,    '32';
+  161,    '3m';
+  167,   '-3m';
+  173,    '6';
+  174,    '-6';
+  176,    '6/m';
+  182,   '622';
+  186,   '6mm';
+  190,  '-6m2';
+  194, '6/mmm';
+  199,    '23';
+  206,   'm-3';
+  214,   '432';
+  220,  '-43m';
+  230,  'm-3m'};
 end
-if ~isempty(varargin) && isa(varargin{1},'double') && any(strcmp(sym.Laue,{'-1','2/m'}))
-  angle = varargin{1};
-  if any(angle>2*pi), angle = angle * degree;end
-  varargin(1) = [];
-elseif any(strcmp(sym.System,{'trigonal','hexagonal'}))
-  angle= [90 90 120] * degree;
-else
-  angle= [90 90 90] * degree;
-end
 
 
-%% set up symmetry
-s.name = name;
-s.laue = sym.Laue;
-s.axis = calcAxis(axis,angle,varargin{:});
-s.mineral = get_option(varargin,'mineral','');
-s.color = get_option(varargin,'color','');
-
-s = class(s,'symmetry',rotation(calcQuat(s.laue,s.axis)));

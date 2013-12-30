@@ -1,18 +1,18 @@
 function D = wignerD2(l, g)
 % spherical harmonics of degree l
 %
-%% Input
+% Input
 %  l     - degree
 %  theta - azimuth angle
 %  rho   - polar
 %
-%% Output
+% Output
 %  Y - (2l+1) x numel(theta,rho) matrix of function values
 %
-%% See also
+% See also
 % wignerD sphericalY
 
-r = vector3d(S2Grid('equispaced','resolution',1.5*degree));
+r = equispacedS2Grid('resolution',1.5*degree);
 
 Y1 = sphericalY(l,r);
 Y2 = sphericalY(l,g*r);

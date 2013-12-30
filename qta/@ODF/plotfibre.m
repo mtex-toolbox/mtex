@@ -1,31 +1,30 @@
 function [x,omega] = plotfibre(odf,varargin)
 % plot odf along a fibre
 %
-%% Syntax
+% Syntax
 %  plotfibre(odf,h,r);
 %
-%% Input
+% Input
 %  odf - @ODF
-%    h - @Miller crystal directions
-%    r - @vector3d specimen direction
+%  h   - @Miller crystal directions
+%  r   - @vector3d specimen direction
 %
-%% Options
+% Options
 %  RESOLUTION - resolution of each plot
 %  CENTER     - for radially symmetric plot
 %
-%% Example
-%  plotfibre(SantaFe,Miller(1,1.2,1.6),vector3d(1.1,1.5,1.3))
+% Example
+%   plotfibre(SantaFe,Miller(1,1.2,1.6),vector3d(1.1,1.5,1.3))
 %
-%% See also
+% See also
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-%% where to plot
+% where to plot
 [ax,odf,varargin] = getAxHandle(odf,varargin{:});
 if isempty(ax), newMTEXplot;end
 
-%%
-
+%
 if isa(varargin{1},'vector3d')
   varargin{1} = ensureCS(get(odf,'CS'),varargin(1));
   omega = linspace(-pi,pi,501);
@@ -41,10 +40,10 @@ fibre = orientation(fibre,odf(1).CS,odf(1).SS);
 
 % find loop
 omega = angle(fibre(2:end),fibre(1));
-fz = find(omega<1e-2);
+fz = find(omega(:)<1e-2);
 
 % remove values to close together
-fz = fz([true,diff(fz)>1]);
+fz = fz([true;diff(fz)>1]);
 
 
 if any(fz) && round(numel(omega) / fz(1)) == numel(fz) && ...
@@ -84,8 +83,10 @@ optionplot(ax{:},1:numel(ind),x,varargin{:});
 xlim(gca,[1,numel(ind)]);
 
 label = arrayfun(@(i) char(fibre(i),'nodegree'),find(ind),'uniformoutput',false);
+try
 xticklabel_rotate(find(ind),90,label);
-
+catch
+end
 
 
 

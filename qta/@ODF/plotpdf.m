@@ -1,32 +1,32 @@
 function plotpdf(odf,h,varargin)
 % plot pole figures
 %
-%% Syntax
-% plotpdf(odf,[h1,..,hN],<options>)
-% plotpdf(odf,{h1,..,hN},'superposition',{c1,..,cN},<options>)
+% Syntax
+%   plotpdf(odf,[h1,..,hN],<options>)
+%   plotpdf(odf,{h1,..,hN},'superposition',{c1,..,cN},<options>)
 %
-%% Input
+% Input
 %  odf - @ODF
 %  h   - @Miller crystallographic directions
 %  c   - structure coefficients
 %
-%% Options
+% Options
 %  RESOLUTION    - resolution of the plots
 %  SUPERPOSITION - plot superposed pole figures
 %
-%% Flags
+% Flags
 %  antipodal    - include [[AxialDirectional.html,antipodal symmetry]]
 %  COMPLETE - plot entire (hemi)--sphere
 %
-%% See also
+% See also
 % S2Grid/plot annotate savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-%% where to plot
+% where to plot
 [ax,odf,h,varargin] = getAxHandle(odf,h,varargin{:});
 if isempty(ax), newMTEXplot;end
 
-%% check input
+% check input
 
 % convert to cell
 if ~iscell(h), h = vec2cell(h);end
@@ -49,19 +49,19 @@ else
   c = num2cell(ones(size(h)));
 end
 
-%% plotting grid
+% plotting grid
 
 [minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(odf(1).SS,'restrict2Hemisphere',varargin{:});
-r = S2Grid('PLOT','minTheta',minTheta,'maxTheta',maxTheta,...
-  'maxRho',maxRho,'minRho',minRho,'RESTRICT2MINMAX',varargin{:});
+r = plotS2Grid('minTheta',minTheta,'maxTheta',maxTheta,...
+  'maxRho',maxRho,'minRho',minRho,'restrict2MinMax',varargin{:});
 
-%% plot
+% plot
 
-multiplot(ax{:},numel(h),...
+multiplot(ax{:},length(h),...
   r,@(i) ensureNonNeg(pdf(odf,h{i},r,varargin{:},'superposition',c{i})),...
   'smooth','TR',@(i) h{i},varargin{:});
 
-%% finalize plot
+% finalize plot
 
 if isempty(ax)
   setappdata(gcf,'odf',odf);
@@ -70,10 +70,9 @@ if isempty(ax)
   setappdata(gcf,'SS',odf(1).SS);
   set(gcf,'tag','pdf');
   name = inputname(1);
-  if isempty(name), name = odf(1).comment;end
   set(gcf,'Name',['Pole figures of "',name,'"']);
 
-  %% set data cursor
+  % set data cursor
   dcm_obj = datacursormode(gcf);
   set(dcm_obj,'SnapToDataVertex','off')
   set(dcm_obj,'UpdateFcn',{@tooltip});
@@ -82,7 +81,7 @@ end
 
 end
 
-%% Tooltip function
+% -------------- Tooltip function ---------------------------------
 function txt = tooltip(varargin)
 
 % 
@@ -104,7 +103,7 @@ txt = [xnum2str(v) ' at (' int2str(th/degree) ',' int2str(rh/degree) ')'];
 
 end
 
-%%
+%
 function plotFibre(varargin)
 
 [r,h] = currentVector;
@@ -116,7 +115,7 @@ plotfibre(odf,h,r);
 
 end
 
-%%
+%
 function markEquivalent(varargin)
 
 [r,h] = currentVector;

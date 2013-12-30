@@ -1,8 +1,11 @@
 function G = calcGrid(Gtheta,Grho)
 % calculate grid from theta, rho
 %
-% input:  theta, rho - S1Grid
-% output: vector3d
+% input
+%  theta, rho - S1Grid
+%
+% output
+%  vector3d
 
 theta = double(Gtheta);
 theta = rep(theta,GridLength(Grho));

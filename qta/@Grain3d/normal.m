@@ -11,7 +11,7 @@ n = cell(size(grains,1),1);
 F = get(grains,'F');
 V = get(grains,'V');
 
-I_FD = get(grains, 'I_FDext') + get(grains, 'I_FDsub');
+I_FD = get(grains, 'I_FDext') + get(grains, 'I_FDint');
 I_FG = I_FD * get(grains,'I_DG');
 
 [f,g,orientation] = find(I_FG);

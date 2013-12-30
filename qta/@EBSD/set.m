@@ -1,25 +1,25 @@
 function ebsd = set(ebsd,vname,value,varargin)
 % set object variable to value
 %
-%% Syntax
-%  ebsd = set(ebsd,'vname',value)   -
-%  ebsd = set(ebsd,'CS',symmetry)   - changes the crystal symmetry
-%  ebsd = set(ebsd,'newfield',value)  - adds |'newfield'| as an EBSD property, e.g. like MAD..
+% Syntax
+%   ebsd = set(ebsd,'vname',value)    %
+%   ebsd = set(ebsd,'CS',symmetry)    % changes the crystal symmetry
+%   ebsd = set(ebsd,'newfield',value) % adds |'newfield'| as an EBSD property, e.g. like MAD..
 %
-%% Input
+% Input
 %  ebsd - @EBSD
 %
-%% Options
+% Options
 %  phase - phase to consider
 %  CS | SS - modify @symmetry
 %  X - change spatial coordinates
 %  orientations - set @orientation. Not recommend, should use the
 %  [[EBSD.EBSD.html,EBSD]] constructor
 %
-%% Output
+% Output
 % ebsd - the modified @EBSD object
 %
-%% See also
+% See also
 % EBSD/get
 
 
@@ -41,21 +41,9 @@ if any(strcmp(vname,fields(ebsd)))
   
   ebsd.(vname) = value;
   
-elseif isfield(ebsd.options,vname)
-  
-  if isempty(value)
-    
-    ebsd.options = rmfield( ebsd.options,vname);
-    
-  else
-    
-    ebsd.options.(vname) = value;
-    
-  end
-  
 else
   
-  ebsd.options.(vname) = value;
-  
+  ebsd = set@dynProp(ebsd,vname,value,varargin{:});
+    
 end
 

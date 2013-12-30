@@ -2,10 +2,10 @@ function display(s)
 % standard output
 
 % check whether crystal or specimen symmetry
-if isempty(s.mineral) && length(s)<=4 && all(s.axis == [xvector,yvector,zvector])
+if ~s.isCS
   
   disp(' ');
-  disp([inputname(1) ' = ' s.name ' specimen ' doclink('symmetry_index','symmetry') ' ' docmethods(inputname(1))]);
+  disp([inputname(1) ' = ' s.pointGroup ' specimen ' doclink('symmetry_index','symmetry') ' ' docmethods(inputname(1))]);
   disp(' ');
   
   return
@@ -33,24 +33,24 @@ end
 
 % add symmetry
 props{end+1} = 'symmetry'; 
-propV{end+1} = [s.name ' (' s.laue ')'];
+propV{end+1} = [s.pointGroup ' (' s.laueGroup ')'];
 
 % add axis length
-if ~any(strcmp(s.laue,{'m-3','m-3m'}))
+if ~any(strcmp(s.laueGroup,{'m-3','m-3m'}))
   props{end+1} = 'a, b, c'; 
   propV{end+1} = option2str(vec2cell(get(s,'axesLength')));
 end
 
 
 % add axis angle
-if any(strcmp(s.laue,{'-1','2/m'}))
+if any(strcmp(s.laueGroup,{'-1','2/m'}))
   props{end+1} = 'alpha, beta, gamma';
   angles = get(s,'axesAngle');
   propV{end+1} = [num2str(angles(1)) '°, ' num2str(angles(2)) '°, ' num2str(angles(3)) '°'];
 end
 
 % add reference frame
-if any(strcmp(s.laue,{'-1','2/m','-3m','-3','6/m','6/mmm'}))
+if any(strcmp(s.laueGroup,{'-1','2/m','-3m','-3','6/m','6/mmm'}))
   props{end+1} = 'reference frame'; 
   propV{end+1} = option2str(get(s,'convention'));    
 end

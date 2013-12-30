@@ -1,6 +1,5 @@
-function [d,prop,opts] = calcColorCode(obj,subset,varargin)
+function [d,prop,opts] = calcColorCode(obj,subset,prop,varargin)
 
-prop = get_option(varargin,'property','orientation',{'char','double'});
 opts = {};
 
 if isempty(subset) || (numel(subset) == 1 && subset == 0)
@@ -10,87 +9,79 @@ else
   obj = obj(subset);
 end
 
-if numel(obj) == 0  % empty object
+% empty object
+if isempty(obj), d = [];return;end
 
-  d = [];
-
-elseif isa(prop,'char')
-  switch lower(prop)
-    case {'orientation','mis2mean','orientations'}
-
-      colorcoding = lower(get_option(varargin,'colorcoding','ipdfHSV'));
+% special case phase
+if isa(prop,'char') && strcmpi(prop,'phase')
+  
+  % extract colormaps
+  cmap = getMTEXpref('EBSDColors');
+  colorNames = getMTEXpref('EBSDColorNames');
+  
+  % preallocate color vector
+  d = ones(length(obj),3);
+  
+  % for all phases
+  for i = 1:numel(obj.phaseMap)
+    
+    if ~ischar(obj.CS{i})
       
-      try
-        o = get(obj,prop);
-      catch %#ok<CTCH>
-        o = [];
-      end
-      
-      if ischar(get(obj,'CS')) || isempty(obj)
-        d = NaN(numel(obj),1);
-      else
-              
-        if strcmpi(prop,'mis2mean'), varargin = [varargin 'r','auto']; end
-        [d,opts] = orientation2color(o,colorcoding,varargin{:});
-      
-      end
-
-      prop = ['orientation.' colorcoding];
+      if isempty(get(obj.CS{i},'color'))
         
-            
-    case 'phase'
+        index = i;
+        
+      else
+        
+        index = strmatch(get(obj.CS{i},'color'),colorNames);
 
-      cmap = getMTEXpref('EBSDColors');
-      colorNames = getMTEXpref('EBSDColorNames');
-
-      phase = get(obj,'phase');
-      phases = get(obj,'phases');
-
-      cs =get(obj,'CSCell');
-      d = ones(numel(phase),3);
-
-      for i = 1:numel(phases)
-
-        ph = phases(i);
-        if ~ischar(cs{i})
-
-          if isempty(get(cs{i},'color'))
-
-            index = i;
-
-          else
-
-            index = strmatch(get(cs{i},'color'),colorNames);
-
-          end
-          d(phase==ph,1) = cmap{index}(1);
-          d(phase==ph,2) = cmap{index}(2);
-          d(phase==ph,3) = cmap{index}(3);
-        end
       end
-
-    case lower(get(obj))
-
-      d = get(obj,prop);
-
-    case 'angle'
-
-      d = angle(get(obj,'orientations'))/degree;
-
-    otherwise
-
-      error('Unknown colorcoding!')
-
+          
+      %ph = obj.phaseMap(i);
+      d(obj.phaseId==i,1) = cmap{index}(1);
+      d(obj.phaseId==i,2) = cmap{index}(2);
+      d(obj.phaseId==i,3) = cmap{index}(3);
+    end
   end
-else
+  return
+end
+ 
+% try to extract property from object
+if ischar(prop) 
+  
+  try
+    d = obj.(prop);
+  catch       %#ok<CTCH>
+    d = NaN(length(obj),1);
+  end
+  
+else % user defined property
+  
   if size(prop,2) == 3
     d = prop(subset,:);
   else
     d = prop(subset);
   end
-  prop = 'user';
+  
+end
+  
+% if d is an orientation convert to color
+if isa(d,'quaternion')
+  
+  % get colorcoding
+  colorcoding = lower(get_option(varargin,'colorcoding','ipdfHSV'));
+  prop = ['orientation.' colorcoding];
+  
+  if strcmpi(prop,'mis2mean'), varargin = [varargin 'r','auto']; end
+  
+  [d,opts] = orientation2color(d,colorcoding,varargin{:});
+  
 end
 
-if any(size(d)==1) && numel(obj) > 1
+% convert to column vector
+if any(size(d)==1) && length(obj) > 1
   d = d(:);
 end
+
+% check for correct size
+assert(size(d,1)==length(obj),'Number of data points and properties must be equal!');

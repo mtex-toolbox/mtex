@@ -1,27 +1,29 @@
 function varargout = Euler(quat,varargin)
 % quaternion to euler angle
 %
-%% Description
+% Description
 % calculates the Euler angle for a rotation |q|
 %
-%% Syntax
-% [alpha,beta,gamma] = Euler(quat) -
-% [phi1,Phi,phi2] = Euler(quat,'Bunge') -
-% euler = Euler(quat,'Bunge') -
+% Syntax
+%   [alpha,beta,gamma] = Euler(quat) -
+%   [phi1,Phi,phi2] = Euler(quat,'Bunge') -
+%   euler = Euler(quat,'Bunge') -
 %
-%% Input
+% Input
 %  quat - @quaternion
-%% Output
+%
+% Output
 %  alpha, beta, gamma  - Matthies
 %  phi1, Phi, phi2     - BUNGE
-%% Options
+%
+% Options
 %  ABG, ZYZ   - Matthies (alpha,beta,gamma) convention (default)
 %  BUNGE, ZXZ - Bunge (phi, Phi, phi2) convention
-%% See also
+%
+% See also
 % quaternion/Rodrigues
 
-%% check input
-
+% check input
 if isa(quat,'quaternion')
   qa = quat.a;
   qb = quat.b;
@@ -33,7 +35,7 @@ elseif find_type(varargin,'symmetry')
 end
 
 
-%% compute Matthies Euler angle
+% compute Matthies Euler angle
 
 at1 = atan2(qd,qa);
 at2 = atan2(qb,qc);
@@ -46,20 +48,7 @@ ind = isnull(beta);
 alpha(ind) = 2*asin(max(-1,min(1,ssign(qa(ind)).*qd(ind))));
 gamma(ind) = 0;
 
-%ind = isnull(beta-pi);
-%alpha(ind) =  2*asin(max(-1,min(1,ssign(qc(ind)).*qb(ind))));
-%gamma(ind) = 0;
-
-%alpha = atan2( qc .* qd - qa .* qb  ,  qb .* qd + qa .* qc );
-%beta = acos(max(-1,min(1,-qb.^2 - qc.^2 + qd.^2 + qa.^2)));
-%gamma = atan2( qc .* qd + qa .* qb  , -qb .* qd + qa .* qc );
-
-% Bunges
-%  gamma = atan2( qb .* qd - qa .* qc ,   qc .* qd + qa .* qb );
-%  beta = acos(max(-1,min(1,-qb.^2 - qc.^2 + qd.^2 + qa.^2)));
-%  alpha = atan2( qb .* qd + qa .* qc  , -qc .* qd + qa .* qb );
-
-%% transform to right convention
+% transform to right convention
 
 conventions = {'nfft','ZYZ','ABG','Matthies','Roe','Kocks','Bunge','ZXZ','Canova'};
 convention = get_flag(varargin,conventions,getMTEXpref('EulerAngleConvention'));
@@ -107,6 +96,12 @@ if nargout == 0
   d = [alpha(:) beta(:) gamma(:)]/degree;
   d(abs(d)<1e-10)=0;
 
+  if isa(quat,'rotation')
+    i = isImproper(quat);
+    d = [d,i(:)];
+    labels = [labels,{'Inv.'}];
+  end
+  
   disp(' ');
   disp(['  ' convention ' Euler angles in degree'])
   cprintf(d,'-L','  ','-Lc',labels);

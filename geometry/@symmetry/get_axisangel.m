@@ -1,7 +1,8 @@
 function [c,w,a] = get_axisangel( cs )
 
+% TODO
 % set axes
-a = cs.axis;
+a = cs.axes;
 c = norm(a);
 a = a./c;
 

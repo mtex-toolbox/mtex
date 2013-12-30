@@ -1,14 +1,14 @@
 function plotFundamentalRegion(CS,varargin)
 % plots fundamental in odf-space
 %
-%% Input
+% Input
 %  CS - @symmetry
 %
-%% Options
-%  zone -  1..n, plot only a specific fundamental region 
-% center - @quaternion
+% Options
+%  zone   -  1..n, plot only a specific fundamental region 
+%  center - @quaternion
 %
-%% See also
+% See also
 % odf/plotodf orientation/plotodf
 
 sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','axisangle','omega'},'sigma');
@@ -16,7 +16,7 @@ sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','axisangle','
 qcenter = quaternion(get_option(varargin,'center',idquaternion))*CS;
 
 % define a plotting grid
-[S3G,S2,sec] = SO3Grid('plot',CS,symmetry,varargin{:});
+[S3G,S2,sec] = regularSO3Grid(CS,symmetry,varargin{:});
 
 % specifiy which fundamental zone is at an orientation
 [d,zone] = max(round(1000*abs(dot_outer(quaternion(S3G),qcenter))),[],2);
@@ -31,8 +31,8 @@ end
 
 % plot all fundamental zones around center together
 multiplot(@(i) S2,@(i) zone(:,:,i),numel(sec),...
-  'ANOTATION',@(i) [int2str(sec(i)*180/pi),'^\circ'],...
-  'TIGHT','margin',0,'contourf',[-0.01,(1:numel(dummy1))-0.01],...
+  'annotation',@(i) [int2str(sec(i)*180/pi),'^\circ'],...
+  'tight','margin',0,'contourf',[-0.01,(1:numel(dummy1))-0.01],...
   varargin{:});
 
 %setup some plot properties

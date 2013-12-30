@@ -1,21 +1,21 @@
 function [mori,weights] = calcMisorientation(ebsd1,varargin)
 % calculate uncorelated misorientations between two ebsd phases
 %
-%% Input 
-% ebsd - @EBSD
+% Input 
+%  ebsd - @EBSD
 %
-%% Output
-% m - @orientation, such that
+% Output
+%  m - @orientation, such that
 %
 %    $$m = (g{_i}^{--1}*CS^{--1}) * (CS *\circ g_j)$$
 %
 %   for two neighbored orientations $g_i, g_j$ with crystal @symmetry $CS$ of 
 %   the same phase located on a grain boundary.
 %
-%% See also
+% See also
 %
 
-%% get second ebsd set
+% get second ebsd set
 ind = cellfun(@(c) isa(c,'EBSD'),varargin);
 if any(ind)
   ebsd2 = varargin{find(ind,1)};
@@ -27,13 +27,13 @@ end
 ebsd1 = checkSinglePhase(ebsd1);
 ebsd2 = checkSinglePhase(ebsd2);
 
-%% determine minimum distance
+% --------- determine minimum distance ----------------------
 
 %exteact coordinates
-X1 = get(ebsd1,'X');
-Y1 = get(ebsd1,'Y');
-X2 = get(ebsd2,'X');
-Y2 = get(ebsd2,'Y');
+X1 = ebsd1.prop.x;
+Y1 = ebsd1.prop.y;
+X2 = ebsd2.prop.x;
+Y2 = ebsd2.prop.y;
 
 % get max extend
 maxExtend = sqrt((max([X1;X2])-min([X1;X2]))^2 +...
@@ -42,28 +42,20 @@ maxExtend = sqrt((max([X1;X2])-min([X1;X2]))^2 +...
 minDistance = get_option(varargin,'minDistance',maxExtend/100);
 
 
-%% take a random sample
-
+% take a random sample
 samplSize = get_option(varargin,'sampleSize',100000);
 
-i1 = randi(numel(ebsd1),samplSize,1);
-i2 = randi(numel(ebsd2),samplSize,1);
+i1 = randi(length(ebsd1),samplSize,1);
+i2 = randi(length(ebsd2),samplSize,1);
 
-%% ensure points are not to close together
-
+% ensure points are not to close together
 d = sqrt((X1(i1)-X2(i2)).^2 + (X1(i1)-X2(i2)).^2);
 
 ind = d > minDistance;
+i1 = i1(ind); i2 = i2(ind);
 
-i1 = i1(ind);
-i2 = i2(ind);
-
-%% compute misorientations
-
-o1 = get(ebsd1,'orientations');
-o2 = get(ebsd2,'orientations');
-
-mori = o1(i1) .\ o2(i2);
+% compute misorientations
+mori = ebsd1.orientations(i1) .\ ebsd2.orientations(i2);
 
 % compute weights
-weights = ones(size(mori)) ./ numel(mori);
+weights = ones(size(mori)) ./ length(mori);

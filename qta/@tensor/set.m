@@ -1,17 +1,17 @@
 function T = set(T,pName,pValue,varargin)
 % set properties of a tensor variable
 %
-%% Syntax
-%  T = set(T,'mineral','mineral name')  
+% Syntax
+%   T = set(T,'mineral','mineral name')  
 % 
-%% Input
+% Input
 %  T      - @tensor
 %  pName  - property name
 %  pValue - property value
 %
-%% Output
+% Output
 %
-%% See also
+% See also
 % tensor/get
 
 

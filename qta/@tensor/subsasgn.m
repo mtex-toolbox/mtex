@@ -26,4 +26,12 @@ switch s.type
       T.M = subsasgn(T.M,s,b);
     end
     
+  otherwise
+    
+    try
+      T =  builtin('subsasgn',T,s,b);
+    catch
+      T = subsasgn@dynOption(T,s,b);
+    end
+          
 end

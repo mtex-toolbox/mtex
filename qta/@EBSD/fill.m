@@ -1,30 +1,28 @@
 function ebsd = fill(ebsd,cube,dx)
 % extrapolate spatial EBSD data by nearest neighbour for tetragonal lattice
 %
-%% Input
-% ebsd - @EBSD
-% cube - a cube with extends [xmin xmax ymin ymax zmin zmax]
-% dx   - stepsize
+% Input
+%  ebsd - @EBSD
+%  cube - a cube with extends [xmin xmax ymin ymax zmin zmax]
+%  dx   - stepsize
 %
-%% Example
-%  ebsd_filled = fill(ebsd,extend(ebsd),.6)
+% Example
+%   ebsd_filled = fill(ebsd,extend(ebsd),.6)
 %
 
-%% extract spatial coordinates
+% extract spatial coordinates
 
-dim = nnz(isfield(ebsd.options,{'x','y','z'}));
+dim = nnz(isfield(ebsd.prop,{'x','y','z'}));
 
 if dim == 2
-  X = get(ebsd,'xy');  
+  X = [ebsd.prop.x,ebsd.prop.y];  
 elseif dim == 3
-  X = get(ebsd,'xyz');
+  X = [ebsd.prop.x,ebsd.prop.y,,ebsd.prop.z];
 end
 
-if numel(dx) == 1
-  dx(1:3) = dx;
-end
+if numel(dx) == 1, dx(1:3) = dx;end
 
-%% generate regular grid and interpolate
+% --- generate regular grid and interpolate ---------
 
 % setup interpolation object
 F = TriScatteredInterp(X,(1:size(X,1)).','nearest');
@@ -43,20 +41,19 @@ elseif dim == 3
   ci = fix(F(xi,yi,zi));
 end
 
-%% fill ebsd variable
+% fill ebsd variable
 
 ebsd.rotations = reshape(ebsd.rotations(ci),[],1);
-ebsd.phase = reshape(ebsd.phase(ci),[],1);
+ebsd.phaseId = reshape(ebsd.phaseId(ci),[],1);
 
 for fn = fieldnames(ebsd.options).'
   if any(strcmp(char(fn),{'x','y','z'})), continue;end
   ebsd.options.(char(fn)) = ebsd.options.(char(fn))(ci);
 end
 
-X = [ebsd.options.x(:),ebsd.options.y(:)];
+X = [ebsd.prop.x(:),ebsd.prop.y(:)];
 if isfield(ebsd.options,'z')
-  X = [X ebsd.options.z(:)];
+  X = [X ebsd.prop.z(:)];
 end
 
 ebsd.unitCell = calcUnitCell(X);
-

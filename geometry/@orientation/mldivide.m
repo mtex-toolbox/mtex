@@ -1,17 +1,17 @@
 function r = mldivide(a,b)
 % o \ v 
 %
-%% Syntax
+% Syntax
 %  h = o \ r
 %
-%% Input
+% Input
 %  o - @orientation
 %  r - @vector3d
 %
-%% Output
+% Output
 %  h - @Miller indice
 %
-%% See also
+% See also
 % 
 
-r = inverse(a) * b;
+r = inv(a) * b; %#ok<MINV>

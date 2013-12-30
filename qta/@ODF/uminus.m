@@ -3,10 +3,9 @@ function odf = uminus(odf)
 %
 % overload the - operator, i.e. one can now write - @ODF
 %
-%% See also
+% See also
 % ODF_index ODF/mtimes
 
-for i = 1:length(odf)
-  odf(i).c = -odf(i).c;
-  odf(i).c_hat = -odf(i).c_hat;
+for i = 1:numel(odf)
+  odf(i).weight = -odf(i).weight;
 end

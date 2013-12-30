@@ -1,29 +1,29 @@
 function e = calcError(odf1,odf2,varargin)
 % calculate approximation error between two ODFs
 %
-%% Syntax
-%  e = calcError(odf1,odf2)
-%  e = calcError(odf,pf,'RP')
+% Syntax
+%   e = calcError(odf1,odf2)
+%   e = calcError(odf,pf,'RP')
 %
-%% Input
+% Input
 %  odf1, odf2 - @ODF
 %  pf   - @PoleFigure
 %  S3G  - @SO3Grid of quadrature nodes (optional)
 %
-%% Options
+% Options
 %  L0 - measure of the orientation space where $|odf1 -- odf2|>\epsilon|
 %  L1 - L^1 error 
 %  L2 - L^2 error
 %  RP - RP  error (default)
 %  resolution - resolution used for calculation of the error
 %
-%% See also
+% See also
 % PoleFigure/calcODF PoleFigure/calcError 
 
-%% compare with a pole figure
+% compare with a pole figure
 if isa(odf2,'PoleFigure'), e = calcError(odf2,odf1,varargin{:}); return;end
 
-%% compare two odfs
+% compare two odfs
 
 % check for equal symmetries
 error(nargchk(2, inf, nargin))
@@ -36,6 +36,7 @@ if evaluated
   assert(CS1 == CS2 && SS1 == SS2,'Input ODFs does not have same symmetry.');
 end
 
+% TODO
 % Fourier based algorithm
 if check_option(varargin,'Fourier') && check_option(varargin,'L2')
   
@@ -68,11 +69,11 @@ else
   if check_option(varargin,'L0')
     epsilon = get_option(varargin,'L0',1);
     for i = 1:length(epsilon)
-      e(i) = sum(abs(d1-d2) > epsilon(i))/numel(d1);
+      e(i) = sum(abs(d1(:)-d2(:)) > epsilon(i))/numel(d1);
     end
   elseif check_option(varargin,'L2')
-    e = norm(d1-d2) / norm(d2);
+    e = norm(d1(:)-d2(:)) / norm(d2(:));
   else
-    e = sum(abs(d1-d2)) / length(d1) /2;
+    e = sum(abs(d1(:)-d2(:))) / numel(d1) /2;
   end
 end

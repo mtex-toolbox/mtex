@@ -1,18 +1,28 @@
 function display(v,varargin)
 % standard output
 
-disp(' ');
-disp([inputname(1) ' = ' doclink('vector3d_index','vector3d') ...
-  ' ' docmethods(inputname(1))]);
-
-disp(['  size: ' size2str(v)]);
-
-o = char(option2str(check_option(v)));
-if ~isempty(o)
-  disp(['  options: ' o]);
+if ~check_option(varargin,'skipHeader')
+  disp(' ');
+  disp([inputname(1) ' = ' doclink('vector3d_index','vector3d') ...
+    ' ' docmethods(inputname(1))]);
 end
 
-if check_option(varargin,'all') || (numel(v) < 20 && numel(v)>0)
+disp([' size: ' size2str(v)]);
+
+if v.antipodal, disp(' antipodal: true'); end
+
+% display resolution 
+if isOption(v,'resolution')
+  disp([' resolution: ',xnum2str(getOption(v,'resolution')/degree),mtexdegchar]);
+  v.opt = rmfield(v.opt,'resolution');
+end
+
+% display all other options
+disp(char(dynOption(v)));
+
+% display coordinates
+if ~check_option(varargin,'skipCoordinates') && ...
+    (check_option(varargin,'all') || (length(v) < 20 && ~isempty(v)))
   
   d = [v.x(:),v.y(:),v.z(:)];
   d(abs(d) < 1e-10) = 0;

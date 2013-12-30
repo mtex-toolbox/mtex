@@ -1,14 +1,14 @@
 function mdf = calcMDF(varargin)
 % calculate misorientation distribution function
 %
-%% Input 
-% ebsd   - @EBSD
-% grains - @GrainSet
+% Input 
+%  ebsd   - @EBSD
+%  grains - @GrainSet
 %
-%% Output
-% mdf - @ODF MDF
+% Output
+%  mdf - @ODF MDF
 %
-%% See also
+% See also
 %
 
 % compute misorientations
@@ -16,5 +16,3 @@ function mdf = calcMDF(varargin)
 
 % perform kernel density estimation
 mdf = calcODF(mori,'weight',weights,varargin{:});
-
-

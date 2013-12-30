@@ -1,10 +1,10 @@
-function T = logm(T)
-% log of a tensor
+function T = expm(T)
+% matrix exponential of a tensor
 %
-%% Input
+% Input
 %  T - @tensor
 %
-%% Output
+% Output
 %  T - @tensor
 %
 
@@ -14,7 +14,7 @@ switch T.rank
 
   case 2
 
-    for l = 1:numel(T)
+    for l = 1:length(T)
       T.M(:,:,l) = expm(T.M(:,:,l));
     end
   case 3
@@ -27,7 +27,7 @@ switch T.rank
     M = tensor42(T.M,T.doubleConvention);
 
     % exponential of the matrix
-    for l = 1:numel(T)
+    for l = 1:length(T)
       M(:,:,l) = expm(M(:,:,l));
     end
 
@@ -39,13 +39,7 @@ switch T.rank
 end
 
 % change the name
-if hasProperty(T,'name')
-  name = get(T,'name');
-  T = set(T,'name',['exp ' name]);
-  
-end
+if isOption(T,'name'), T.opt.name = ['exp ' T.opt.name]; end
 
 % change the unit
-if hasProperty(T,'unit')
-  T = set(T,'unit',['exp' get(T,'unit')]);
-end
+if isOption(T,'unit'), T.opt.unit = ['exp ' T.opt.unit]; end

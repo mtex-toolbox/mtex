@@ -1,10 +1,10 @@
 function T = inv(T)
 % inverse of a tensor
 %
-%% Input
+% Input
 %  T - @tensor
 %
-%% Output
+% Output
 %  T - @tensor
 %
 
@@ -38,33 +38,30 @@ switch T.rank
 end
 
 % change the name
-if hasProperty(T,'name')
-  name = get(T,'name');
-  if any(strfind(name,'stiffness'))
-    T = set(T,'name',strrep(name,'stiffness','compliance'));
-  elseif any(strfind(name,'compliance'))
-    T = set(T,'name',strrep(name,'compliance','stiffness'));
-  elseif any(strfind(name,'inverse'))
-    T = set(T,'name',strrep(name,'inverse ',''));
+if isOption(T,'name')
+  if any(strfind(T.opt.name,'stiffness'))
+    T.opt.name = strrep(T.opt.name,'stiffness','compliance');
+  elseif any(strfind(T.opt.name,'compliance'))
+    T.opt.name = strrep(T.opt.name,'compliance','stiffness');
+  elseif any(strfind(T.opt.name,'inverse'))
+    T.opt.name = strrep(T.opt.name,'inverse ','');
   else
-    T = set(T,'name',['inverse ' name]);
+    T.opt.name = ['inverse ' T.opt.name];
   end
 end
 
 % change the unit
-if hasProperty(T,'unit')
-  unit = get(T,'unit');
-  slash = strfind(unit,'/');
+if isOption(T,'unit')
+  slash = strfind(T.opt.unit,'/');
   if ~isempty(slash)
-    a = strtrim(strrep(unit(1:slash-1),'1',''));
-    b = strtrim(unit(slash+1:end));
+    a = strtrim(strrep(T.opt.unit(1:slash-1),'1',''));
+    b = strtrim(T.opt.unit(slash+1:end));
     if isempty(a)
-      unit = b;
+      T.opt.unit = b;
     else
-      unit = [b ' / ' a];
+      T.opt.unit = [b ' / ' a];
     end    
   else
-    unit = ['1 / ' strtrim(unit)];
-  end
-  T = set(T,'unit',unit);
+    T.opt.unit = ['1 / ' strtrim(T.opt.unit)];
+  end  
 end

@@ -1,20 +1,18 @@
 function E = YoungsModulus(C,x)
 % Young's modulus for an elasticity tensor
 %
-%% Remarks
-%
-% formula: 
+% Description
 %
 % $$E = \frac{1}{S_{ijkl} x_i x_j x_k x_l}$$
 %
-%% Input
+% Input
 %  C - elastic stiffness @tensor
 %  x - list of @vector3d
 %
-%% Output
+% Output
 %  E - Youngs modulus
 %
-%% See also
+% See also
 % tensor/shearModulus tensor/volumeCompressibility tensor/ChristoffelTensor
 
 % compute the compliance tensor

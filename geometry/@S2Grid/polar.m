@@ -1,23 +1,18 @@
 function [theta,rho] = polar(S2G,varargin)
 % polar coordinates of S2Grid
 %
-%% Input
+% Input
 %  S2G - S2Grid
 %  indece - int32 (optional)
-%% Output
+% Output
 % [theta,rho] - double
 
-if check_option(S2G,'INDEXED')
-  theta = double([S2G.theta]);
-  theta = rep(theta,GridLength(S2G.rho));
-  rho = double([S2G.rho]);
-  theta = reshape(theta,size(S2G));
-  rho = reshape(rho,size(S2G));
+theta = double([S2G.theta]);
+theta = rep(theta,GridLength(S2G.rho));
+rho = double([S2G.rho]);
+theta = reshape(theta,size(S2G));
+rho = reshape(rho,size(S2G));
   
-else
-  [theta,rho] = polar(S2G.vector3d);
-end
-
 % correct data
 ind = (rho < 0.0001) | (rho > 2.0001*pi);
 rho(ind) = mod(rho(ind),2*pi);

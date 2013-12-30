@@ -1,21 +1,19 @@
 function E = shearModulus(C,h,u)
 % shear modulus for an elasticity tensor
 %
-%% Remarks
-%
-% formula:
+% Description
 %
 % $$G = \frac{1}{4 S_{ijkl} h_i u_j h_k u_l}$$
 %
-%% Input
+% Input
 %  C - elastic stiffness @tensor
 %  h - shear plane @vector3d
 %  u - shear direction @vector3d
 %
-%% Output
+% Output
 %  E - shear modulus
 %
-%% See also
+% See also
 % tensor/YoungsModulus tensor/volumeCompressibility tensor/ChristoffelTensor
 
 % compute the compliance tensor

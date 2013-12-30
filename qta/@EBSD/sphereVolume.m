@@ -1,34 +1,36 @@
 function v = sphereVolume(ebsd,center,radius,varargin)
 % ratio of orientations with a certain orientation
 %
-%% Description
+% Description
 % returns the ratio of mass of the ebsd that is close to 
 % one of the orientations as radius
 %
-%% Syntax
-%  v = volume(ebsd,center,radius,<options>)
+% Syntax
+%   v = volume(ebsd,center,radius)
 %
-%% Input
+% Input
 %  ebsd   - @EBSD
 %  center - @quaternion
 %  radius - double
 %
-%% See also
+% See also
 % ODF/volume
 
 % extract orientations
-o = get(ebsd,'orientations');
+o = ebsd.orientations;
 
 % extract weights
 weight = get(ebsd,'weight');
 
 % compute volume
-if isempty(o)
+if isempty(ebsd)
+  
   v = 0;
+
 else
   
-  center = orientation(center,get(o,'CS'),get(o,'SS'));
-  a = max(angle_outer(quaternion(o),symmetrise(center)),[],2);
+  center = orientation(center,o.CS);
+  a = max(angle_outer(quaternion(o),quaternion(symmetrise(center))),[],2);
   
   v = sum(weight(a > pi - radius));
 end

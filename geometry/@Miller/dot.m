@@ -1,25 +1,25 @@
 function d = dot(m1,m2,varargin)
 % inner product between two Miller indece
 %
-%% Syntax
-% a = dot(m1,m2)
-% a = dot(m1,m2,'antipodal')
+% Syntax
+%   a = dot(m1,m2)
+%   a = dot(m1,m2,'antipodal')
 %
-%% Input
+% Input
 %  m1,m2 - @Miller
 %
-%% Output
-%  d - double [size(m1) numel(cs)]
+% Output
+%  d - double [length(m1) length(cs)]
 % 
-%% Options
+% Options
 %  antipodal - consider m1,m2 with antipodal symmetry
 %  all       -
 
 
-if numel(m1) == 1 || numel(m2) == 1
+if length(m1) == 1 || length(m2) == 1
   d = dot_outer(m1,m2,varargin{:});
   
-  if numel(m1) == 1
+  if length(m1) == 1
     d = reshape(d,[size(m2),size(d,3)]);
   else
     d = reshape(d,[size(m1),size(d,3)]);

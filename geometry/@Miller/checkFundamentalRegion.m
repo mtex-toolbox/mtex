@@ -1,19 +1,18 @@
 function ind = checkFundamentalRegion(m,varargin)
 % checks Miller indice to be within the fundamental region
 %
-%% Syntax
+% Syntax
 %  ind = checkFundamentalRegion(m)
 %
-%% Input
+% Input
 %  m - @Miller
 %
-%% Output
+% Output
 %  ind - boolean
 %
-%% Options
+% Options
 %  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
 
 [h0,h1,h2,h3,h4,N] = getFundamentalRegionPF(m.CS,varargin{:}); %#ok<*ASGLU>
 
-ind = all(dot_outer(m.vector3d,N) >= -1e-6,2);
-
+ind = all(dot_outer(vector3d(m),N) >= -1e-6,2);

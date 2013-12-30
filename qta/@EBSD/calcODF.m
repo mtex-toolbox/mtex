@@ -14,38 +14,35 @@ function odf = calcODF(ebsd,varargin)
 % ODF to choose this parameter right. Look at this
 % [[EBSDSimulation_demo.html, description]] for exhausive discussion.
 %
-%% Syntax
-% calcODF(ebsd,...,param,var,...) - returns an @ODF calculated via kernel density estimation
+% Syntax
+%   calcODF(ebsd,...,param,var,...) - returns an @ODF calculated via kernel density estimation
 %
-%% Input
+% Input
 %  ebsd - @EBSD
 %
-%% Output
+% Output
 %  odf - @ODF
 %
-%% Options
-%  HALFWIDTH        - halfwidth of the kernel function 
-%  RESOLUTION       - resolution of the grid where the ODF is approximated
-%  KERNEL           - kernel function (default -- de la Valee Poussin kernel)
+% Options
+%  halfwidth        - halfwidth of the kernel function 
+%  resolution       - resolution of the grid where the ODF is approximated
+%  kernel           - kernel function (default -- de la Valee Poussin kernel)
 %  L/HARMONICDEGREE - (if Fourier) order up to which Fourier coefficients are calculated
 %
-%% Flags
+% Flags
 %  SILENT           - no output
 %  EXACT            - no approximation to a corser grid
 %  FOURIER          - force Fourier method
 %  BINGHAM          - model bingham odf
 %  noFourier        - no Fourier method
 %
-%% See also
+% See also
 % ebsd_demo EBSD2odf EBSDSimulation_demo loadEBSD ODF/calcEBSD EBSD/calcKernel kernel/kernel
 
-% extract orientations
-ori = get(ebsd,'orientations');
-
 % extract weights
-if isfield(ebsd.options,'weight')
-  varargin = [varargin,'weight',get(ebsd,'weight')];
+if isProp(ebsd,'weight')
+  varargin = [varargin,'weight',ebsd.prop.weight];
 end
 
 % compute ODF
-odf = calcODF(ori,varargin{:});
+odf = calcODF(ebsd.orientations,varargin{:});

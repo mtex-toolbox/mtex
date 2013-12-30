@@ -1,16 +1,15 @@
 function nu = PoissonRatio(C,x,y)
 % computes the Poisson ratio of an elasticity tensor
 %
-%% Input
+% Input
 %  C - elastic compliance @tensor
 %  x - @vector3d
 %  y - @vector3d
 %
-%% Output
+% Output
 %  nu - Poisson ratio in directions x and y
 %
-%% Remarks
-% formula:
+% Remarks
 % 
 % $$\nu = \frac{-S_{ijkl} x_i x_j y_k y_l}{S_{mnop} x_m x_n x_o x_p}$$ 
 %

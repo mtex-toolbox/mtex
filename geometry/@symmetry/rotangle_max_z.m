@@ -5,8 +5,8 @@ switch Laue(s)
   case '-1'                          % I
     rho = 2*pi;
   case '2/m'                         % C2
-    rot = get(s,'rotation');
-    if ~isnull(dot(get(rot(2),'axis'),zvector)) || check_option(varargin,'antipodal')
+    rot = rotation(s);
+    if ~isnull(dot(rot(2).axis,zvector)) || check_option(varargin,'antipodal')
       rho = pi;
     else      
       rho = 2*pi;      

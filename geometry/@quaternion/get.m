@@ -3,10 +3,10 @@ function varargout = get(obj,vname,varargin)
 
 
 switch lower(vname)  
-  case {'euler'}
+  case 'euler'
     [varargout{1:nargout}] = Euler(obj,varargin{:});
-  case {'rodrigues'}
-    [varargout{1:nargout}] = Euler(obj,varargin{:});
+  case 'rodrigues'
+    [varargout{1:nargout}] = Rodrigues(obj);
   case fields(obj)
     varargout{1} = obj.(vname);
   case 'a'

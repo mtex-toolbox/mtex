@@ -1,16 +1,16 @@
 function [ad,omega] = angleDistribution(cs,omega,varargin)
 % compute the angle distribution of a uniform ODF for a crystal symmetry
 %
-%% Input
-% cs - crystal @symmetry
-% omega - angle
+% Input
+%  cs - crystal @symmetry
+%  omega - angle
 %
-%% Ouput
-% ad - angle distribution
-% omega - angles
+% Ouput
+%  ad - angle distribution
+%  omega - angles
 %
-%% Options
-% angle|threshold - distribution with the angles within  a threshold
+% Options
+%  angle|threshold - distribution with the angles within  a threshold
 %
 
 if nargin < 2
@@ -98,7 +98,7 @@ switch Laue(cs)
 end
 
 % compute output
-ad = 2 * numel(cs) * xchi .* sin(omega ./ 2).^2;
+ad = 2 * length(cs) * xchi .* sin(omega ./ 2).^2;
 %ad = ad ./ mean(ad);
 ad(ad<0) = 0;
 

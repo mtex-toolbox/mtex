@@ -26,22 +26,20 @@ function  peri = perimeter(grains,varargin)
 % Grain2d/equivalentperimeter
 
 
-I_FD = abs(get(grains,'I_FDext'));
-I_DG = get(grains,'I_DG');
-I_FG = I_FD*I_DG;
+I_FG = grains.I_FD*grains.I_DG;
 
 f = specialBoundary(grains,varargin{:},[],'ext');
 
-[i,g] = find(I_FG(f,any(I_DG)));
+[i,g] = find(I_FG(f,any(grains.I_DG)));
 f = f(i);
 
-V = full(get(grains,'V'));
-F = full(get(grains,'F'));
+V = grains.V;
+F = grains.F;
 
 F = F(f,:);
 edgeLength = sqrt(sum((V(F(:,1),:) - V(F(:,2),:)).^2,2));
 
-peri = full(sparse(g,1,edgeLength,numel(grains),1));
+peri = full(sparse(g,1,edgeLength,size(grains,1),1));
 
 
 

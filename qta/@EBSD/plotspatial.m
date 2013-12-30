@@ -1,10 +1,10 @@
 function varargout = plotspatial(ebsd,varargin)
 % spatial EBSD plot
 %
-%% Input
+% Input
 %  ebsd - @EBSD
 %
-%% Options
+% Options
 %  property - property used for coloring (default: orientation), other properties may be
 %     |'phase'| for achieving a spatial phase map, or an properity field of the ebsd
 %     data set, e.g. |'bands'|, |'bc'|, |'mad'|.
@@ -27,10 +27,10 @@ function varargout = plotspatial(ebsd,varargin)
 %  antipodal - include [[AxialDirectional.html,antipodal symmetry]] when
 %     using inverse PoleFigure colorization
 %
-%% Flags
+% Flags
 %  points   - plot dots instead of unitcells
 %
-%% Example
+% Example
 % plot a EBSD data set spatially with custom colorcoding
 %
 %   mtexdata forsterite
@@ -40,20 +40,20 @@ function varargout = plotspatial(ebsd,varargin)
 %
 %   plot(ebsd,'property','mad')
 %
-%% See also
+% See also
 % EBSD/plot
 
-if ~numel(ebsd), return, end
+if isempty(ebsd), return, end
 
-%% check for 3d data
-if isfield(ebsd.options,'z')
+% check for 3d data
+if isProp(ebsd,'z')
   slice3(ebsd,varargin{:});
   return
 end
 
-%% get spatial coordinates and colorcoding
+% get spatial coordinates and colorcoding
 
-x_D = [ebsd.options.x ebsd.options.y];
+x_D = [ebsd.prop.x ebsd.prop.y];
 
 % seperate measurements per phase
 numberOfPhases = numel(ebsd.phaseMap);
@@ -61,18 +61,22 @@ X = cell(1,numberOfPhases);
 d = cell(1,numberOfPhases);
 opts = cell(1,numberOfPhases);
 
+% what to plot
+prop = get_option(varargin,'property','orientations',...
+  {'char','double','orientation','quaternion','rotation'});
+
 isPhase = false(numberOfPhases,1);
 for k=1:numberOfPhases
-  currentPhase = ebsd.phase==k;
+  currentPhase = ebsd.phaseId==k;
   isPhase(k)   = any(currentPhase);
 
   if isPhase(k)
-    [d{k},property,opts{k}] = calcColorCode(ebsd,currentPhase,varargin{:});
+    [d{k},property,opts{k}] = calcColorCode(ebsd,currentPhase,prop,varargin{:});
     X{k} = x_D(currentPhase,:);
   end
 end
 
-%% ensure all data have the same size
+% ensure all data have the same size
 dim2 = cellfun(@(x) size(x,2),d);
 
 if numel(unique(dim2)) > 1
@@ -84,20 +88,23 @@ if numel(unique(dim2)) > 1
 end
 
 
-%% default plot options
+% default plot options
 
 varargin = set_default_option(varargin,...
-  {'name', [property ' plot of ' inputname(1) ' (' ebsd.comment ')']});
+  {'name', ['plot of ' inputname(1)]});
 
 % clear up figure
 newMTEXplot('renderer','opengl',varargin{:});
 setCamera(varargin{:});
 
-%%
+%
 
 selectedPhases = find(isPhase);
 for p=1:numel(selectedPhases)
-  h(p) = plotUnitCells(X{selectedPhases(p)},d{selectedPhases(p)},ebsd.unitCell,varargin{:});
+  if ~isempty(d{selectedPhases(p)})    
+    h(p) = plotUnitCells(X{selectedPhases(p)},...
+      reshape(d{selectedPhases(p)},size(X{selectedPhases(p)},1),[]),ebsd.unitCell,varargin{:});
+  end
 end
 
 % make legend
@@ -120,8 +127,8 @@ axis equal tight
 fixMTEXplot(gca,varargin{:});
 
 
-if ~isOctave()
-  %% set data cursor
+% set data cursor
+if ~isOctave()  
   dcm_obj = datacursormode(gcf);
   set(dcm_obj,'SnapToDataVertex','off')
   set(dcm_obj,'UpdateFcn',{@tooltip,ebsd});
@@ -130,19 +137,17 @@ if ~isOctave()
 end
 if nargout>0, varargout{1}=h; end
 
-%% Tooltip function
+% Tooltip function
 function txt = tooltip(empt,eventdata,ebsd) %#ok<INUSL>
 
 
 [pos,value] = getDataCursorPos(gcf);
 [sub,map] = findByLocation(ebsd,[pos(1) pos(2)]);
 
-if numel(sub)>0
-
-  minerals = get(sub,'minerals');
+if ~isempty(sub)
 
   txt{1} = ['#'  num2str(find(map))];
-  txt{2} = ['Phase: ', minerals{sub.phase}];
+  txt{2} = ['Phase: ', sub.mineral];
   if ~isNotIndexed(sub)
     txt{3} = ['Orientation: ' char(sub.rotations,'nodegree')];
   end

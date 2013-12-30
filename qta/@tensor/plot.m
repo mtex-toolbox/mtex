@@ -1,19 +1,17 @@
 function plot(T,varargin)
 % plot a tensor T
 %
-%% Input
+% Input
 %  T - @tensor
 %
-%% Options
-% plotType - directionalMagnitude
-%            YoungsModulus
-%            linearCompressibility
-%            velocity'
-% 3d - plot surface of plotType instead of spherical projection
-% section - plot a section 
+% Options
+%  plotType - directionalMagnitude
+%             YoungsModulus
+%             linearCompressibility
+%             velocity'
+%  3d - plot surface of plotType instead of spherical projection
+%  section - plot a section 
 %            -- @vector3d - of given plane normal
-%
-%%
 %
 %
 
@@ -52,7 +50,7 @@ else
   end 
   
   [minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(T.CS,varargin{:});
-  S2 = S2Grid('PLOT','minTheta',minTheta,'maxTheta',maxTheta,...
+  S2 = plotS2Grid('minTheta',minTheta,'maxTheta',maxTheta,...
     'minRho',minRho,'maxRho',maxRho,'RESTRICT2MINMAX',varargin{:});
   
 end
@@ -104,7 +102,7 @@ switch lower(plotType)
   case 'velocity'
     
     if check_option(varargin,{'pp','ps1','ps2'})
-      S2 = S2Grid('equispaced','minTheta',...
+      S2 = equispacedS2Grid('minTheta',...
         minTheta,'maxTheta',maxTheta,'maxRho',maxRho,'minRho',...
         minRho,'RESTRICT2MINMAX','resolution',10*degree,'no_center','antipodal',varargin{:});
       varargin = ['color','k','MaxHeadSize',0,varargin];

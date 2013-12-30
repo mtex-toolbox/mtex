@@ -1,24 +1,18 @@
 function varargout = mean( ebsd,varargin)
 % returns mean, kappas and eigenvector of ebsd object
 %
-%% Syntax
+% Syntax
 % [m lambda v kappa] = mean(ebsd) - 
 %
-%% Input
-%  ebsd      - @EBSD
+% Input
+%  ebsd     - @EBSD
 %
-%% Output
+% Output
 %  m        - one equivalent mean @orientation
 %  lambda   - eigenvalues of orientation tensor
 %  v        - eigenvectors of orientation tensor
 %  kappa    - parameters of bingham distribution
 %
 
-o = get(ebsd,'orientations');
+[varargout{1:nargout}]  = mean(ebsd.orientations,'weights',get(ebsd,'weight'),varargin{:});
 
-% extract weights
-if isfield(ebsd.options,'weight')
-  [varargout{1:nargout}]  = mean(o,'weights',get(ebsd,'weight'),varargin{:});
-else
-  [varargout{1:nargout}]  = mean(o,varargin{:});
-end

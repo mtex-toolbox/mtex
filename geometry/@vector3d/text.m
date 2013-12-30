@@ -27,8 +27,8 @@ varargin = varargin(2:end);
 % special option -> labeled
 if check_option(varargin,'labeled')
 
-  strings = cell(1,numel(v));
-  for i = 1:numel(v), strings{i} = char(subsref(v,i),getMTEXpref('textInterpreter')); end
+  strings = cell(1,length(v));
+  for i = 1:length(v), strings{i} = char(subsref(v,i),getMTEXpref('textInterpreter')); end
 
   c = colormap;
   %if ~all(equal(c,2)), varargin = [{'BackGroundColor','w'},varargin];end
@@ -36,8 +36,8 @@ if check_option(varargin,'labeled')
 else % ensure cell as input
 
   strings = ensurecell(strings);
-  if numel(v)>1 && numel(strings)==1
-    strings = repmat(strings,numel(v),1);
+  if length(v)>1 && length(strings)==1
+    strings = repmat(strings,length(v),1);
   end
 
 end
@@ -52,7 +52,7 @@ end
 plotGrid(ax,projection,extend,varargin{:});
 
 %% print labels
-for i = 1:numel(strings)
+for i = 1:length(strings)
   s = strings{i};
   if ~ischar(s), s = char(s,getMTEXpref('textInterpreter'));end
   h(end+1) = mtex_text(x(i),y(i),s,'parent',ax,...

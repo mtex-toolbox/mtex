@@ -54,7 +54,7 @@ tau = double(EinsteinSum(R,[-1,-2],sigma,[-1,-2]))
 % directions
 
 % define a grid of tension directions
-r = S2Grid('plot','resolution',0.5*degree,'upper')
+r = plotS2Grid('resolution',0.5*degree,'upper')
 
 % define the coressponding list of simple shear stress tensors 
 sigma = EinsteinSum(tensor(r),1,tensor(r),2,'name','stress tensor')
@@ -187,7 +187,7 @@ CS_Forsterite = get(ebsd('Forsterite'),'CS')
 ori = get(ebsd('Forsterite'),'orientations');
 
 % transform the stress tensor from specimen to crystal coordinates
-sigmaCS = rotate(sigma001,inverse(ori))
+sigmaCS = rotate(sigma001,inv(ori))
 
 %%
 % Next we compute maximum Schmidt factor and the active slip system for
@@ -218,7 +218,7 @@ grains = calcGrains(ebsd)
 ori = get(grains('Forsterite'),'orientation');
 
 % transform the stress tensor from specimen to crystal coordinates
-sigmaCS = rotate(sigma001,inverse(ori))
+sigmaCS = rotate(sigma001,inv(ori))
 
 % compute maximum Schmid factor and active slip system
 [tauMax,mActive,nActive,tau,ind] = calcShearStress(sigmaCS,n,b,'symmetrise');

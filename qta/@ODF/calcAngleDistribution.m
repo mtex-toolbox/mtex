@@ -1,18 +1,17 @@
 function [density,omega] = calcAngleDistribution(odf,varargin)
 % compute the angle distribution of an ODF or an MDF 
 %
-%
-%% Input
+% Input
 %  odf - @ODF
 %  omega - list of angles
 %
-%% Flags
-%  EVEN       - calculate even portion only
+% Flags
+%  even       - calculate even portion only
 %
-%% Output
+% Output
 %  x   - values of the axis distribution
 %
-%% See also
+% See also
 
 if nargin > 1 && isa(varargin{1},'ODF')
   odf = calcMDF(odf,varargin{1});
@@ -47,8 +46,8 @@ if ~check_option(varargin,'fast')
   % for all angles
   for k=1:numel(omega)  
     
-    S2G = S2Grid('equispaced','points',max(1,round(4/3*sin(omega(k)/2).^2/res^2)),...
-      'minTheta',minTheta,'MAXTHETA',maxTheta,'MAXRHO',maxRho,'MINRHO',minRho,'RESTRICT2MINMAX'); % create a grid
+    S2G = equispacedS2Grid('points',max(1,round(4/3*sin(omega(k)/2).^2/res^2)),...
+      'minTheta',minTheta,'MAXTHETA',maxTheta,'MAXRHO',maxRho,'MINRHO',minRho,'RESTRICT2MINMAX'); % create a grid  TODO
 
     %S2G = S2Grid('random','points',max(1,numel(csD)*round(4/3*sin(omega(k)/2).^2/res^2)),...
     %  'minTheta',minTheta,'MAXTHETA',maxTheta,'MAXRHO',maxRho,'MINRHO',minRho,'RESTRICT2MINMAX'); % create a grid
@@ -63,7 +62,7 @@ if ~check_option(varargin,'fast')
     
     % store these orientations
     S3G = [S3G;o]; %#ok<AGROW>
-    iS3G(k+1) = numel(S3G); %#ok<AGROW>
+    iS3G(k+1) = length(S3G); %#ok<AGROW>
     
   end
   
@@ -86,7 +85,7 @@ else
   % get resolution
   res = get_option(varargin,'resolution',2.5*degree);
   
-  %% simluate EBSD data
+  % simluate EBSD data
   ebsd = calcEBSD(odf,points,'resolution',res);
 
   % compute angles
@@ -95,7 +94,7 @@ else
   maxangle = max(angles);
 
 
-  %% perform kernel density estimation
+  % perform kernel density estimation
 
   [bandwidth,density,omega] = kde(angles,2^8,0,maxangle); %#ok<ASGLU>
 

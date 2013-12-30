@@ -1,10 +1,10 @@
 function f = RK(kk,g,h,r,c,CS,SS,varargin)
 % sum Radon trasformed kernel
 %
-%% Syntax
-%  f = RK(kk,g,h,r,c,CS,SS,varargin) - 
+% Syntax
+%   f = RK(kk,g,h,r,c,CS,SS,varargin) - 
 %
-%% Input
+% Input
 %  kk   - @kernel
 %  g    - @quaternion(s)
 %  h    - list of crystal directions
@@ -12,29 +12,30 @@ function f = RK(kk,g,h,r,c,CS,SS,varargin)
 %  c    - coefficients
 %  CS,SS- crystal, specimen @symmetry
 %
-%% Options
+% Options
 %  antipodal - antipodal Radon transform $P(h,r) = (\mathcal{R}f(h,r) + \mathcal{R}f(--h,r))/2$
 %  BANDWIDTH - bandwidth of ansatz functions
 %
-%% Output
+% Output
 % matrix - 1. dim --> g, 2.dim --> r
 %
-%% Remarks
+% Description
 % formulae
 % 
 % $$ f_j = \sum_i c_i \mathcal{R}K(g_i,h,r_j)$$
 %
 % $$ \mathcal{R}K((h,r);g) = \sum_l A_l P_l(gh, r)$$
 %
-%% See also
+% See also
 % kernel/k kernel/rkk
 
 g = quaternion(g);
-ng = numel(g);
+ng = length(g);
 
+% TODO: condition S2Grid makes no sense
 if length(h)>1 || isa(h,'S2Grid')   % inverse pole figure
 	r = r./norm(r);
-  in = reshape(inverse(symmetrise(g,CS,SS)).' * r,[ng,length(CS),length(SS)]);
+  in = reshape(inv(symmetrise(g,CS,SS)).' * r,[ng,length(CS),length(SS)]);
 	out = h; lh = length(CS);
 else % pole figure
   h = vector3d(h);
@@ -49,7 +50,7 @@ clear g;
 
 
 % NFSFT-based algorithm
-if check_option(varargin,'fourier') || (numel(in) > 50 && numel(out) > 50 && ~isempty(c) && ...
+if check_option(varargin,'fourier') || (length(in) > 50 && length(out) > 50 && ~isempty(c) && ...
     ~isempty(getA(kk)) && ~check_option(varargin,'exact'))
 		
 	% transform in polar coordinates
@@ -75,10 +76,10 @@ if check_option(varargin,'fourier') || (numel(in) > 50 && numel(out) > 50 && ~is
 else % calculate matrix
 
   out = vector3d(out); out = out./norm(out);
-  if numel(in)*numel(out)>50000000
-    qwarning(['possible to large Matrix: ',int2str(numel(in)*numel(out))]);
+  if length(in)*length(out)>50000000
+    qwarning(['possible to large Matrix: ',int2str(length(in)*length(out))]);
   end
-  f = zeros(numel(out),size(in,1));
+  f = zeros(length(out),size(in,1));
     
   % take mean along all symmetries
   for is = 1:length(SS)*lh

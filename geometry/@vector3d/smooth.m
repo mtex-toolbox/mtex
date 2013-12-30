@@ -1,17 +1,17 @@
 function varargout = smooth(v,varargin)
 %
-%% Syntax
+% Syntax
 %
-%% Input
+% Input
 %
-%% Output
+% Output
 %
-%% Options
+% Options
 %
-%% See also
+% See also
 %
 
-%% get input
+% ------------------- get input --------------------------
 
 % where to plot
 [ax,v,varargin] = splitNorthSouth(v,varargin{:},'smooth');
@@ -24,7 +24,7 @@ if isempty(ax), return;end
 %hfig = get(ax,'parent');
 %set(hfig,'color',[1 1 1]);
 
-%% extract colors
+% ---------------- extract colors --------------------------
 
 % color given by the first argument?
 if ~isempty(varargin) && isnumeric(varargin{1})
@@ -34,7 +34,7 @@ if ~isempty(varargin) && isnumeric(varargin{1})
 else % no color given -> do kernel density estimation
 
 
-  out = S2Grid('plot',...
+  out = plotS2Grid(...
     'minTheta',extend.minTheta,...
     'maxTheta',extend.maxTheta,...
     'minRho',extend.minRho,...
@@ -46,10 +46,10 @@ else % no color given -> do kernel density estimation
   cdata = reshape(cdata,size(v));
 end
 
-%% interpolate if no regular grid was given
+% -------------- interpolate if no regular grid was given ---------
 
 % may be externalize this into a funtion interp of S2Grid
-if ~check_option(v,'plot')
+if ~isOption(v,'plot') || ~v.opt.plot
 
   if size(v,1) == 1 || size(v,2) == 1
 
@@ -67,7 +67,7 @@ if ~check_option(v,'plot')
       extend.maxTheta = min(extend.maxTheta,maxTheta);
     end
 
-    myPlotGrid = S2Grid('plot','resolution',res,...
+    myPlotGrid = plotS2Grid('resolution',res,...
       'minTheta',extend.minTheta,...
       'maxTheta',extend.maxTheta,...
       'minRho',extend.minRho,...
@@ -87,13 +87,12 @@ if ~check_option(v,'plot')
 end
 
 
-%% scale the data
-
+% scale the data
 [cdata,colorRange,minData,maxData] = scaleData(cdata,varargin{:});
 if ~any(isnan(colorRange)), caxis(ax,colorRange);end
 
 
-%% compute contour lines
+% ------------- compute contour lines ------------------------
 
 % number of contour lines
 contours = get_option(varargin,'contours',50);
@@ -103,7 +102,7 @@ if length(contours) == 1
   contours = linspace(colorRange(1),colorRange(2),contours);
 end
 
-%% draw contours
+% ----------------- draw contours ------------------------------
 
 hold(ax,'on')
 
@@ -124,7 +123,7 @@ hold(ax,'off')
 % set styles
 optiondraw(h,'LineStyle','none','Fill','on',varargin{:});
 
-%% finalize the plot
+% --------------- finalize the plot ---------------------------
 
 % adjust caxis according to colorRange
 if ~any(isnan(colorRange)), caxis(ax,colorRange); end

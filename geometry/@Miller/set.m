@@ -4,19 +4,30 @@ function obj = set(obj,vname,value,varargin)
 if strcmp(vname,'CS')
   
   if value ~= obj.CS
-    % recompute representation in cartesian coordinates
-    if check_option(obj,'uvw')
-      uvw = v2d(obj);
-      obj.CS = value;
-      obj.vector3d = reshape(d2v(uvw(:,1),uvw(:,2),uvw(:,end),value),size(obj));
-      obj = set_option(obj,'uvw');
-    else
-      hkl = v2m(obj);
-      obj.CS = value;
-      obj.vector3d = reshape(m2v(hkl(:,1),hkl(:,2),hkl(:,end),value),size(obj));
+    
+    % keep representation in displayStyle when changing crystal symmetry    
+    switch obj.dispStyle
+    
+      case 'uvw'
+    
+        uvw = obj.uvw;
+        obj.CS = value;
+        obj.uvw = uvw;
+        
+      case 'hkl'
+    
+        hkl = obj.hkl;
+        obj.CS = value;
+        obj.hkl = hkl;
+        
+      otherwise
+        
+        obj.CS = value;
+        
     end
   end
-  
 else
-  error('Unknown Field!');
+  
+  obj = set@vector3d(obj,vname,value,varargin{:});
+  
 end

@@ -1,11 +1,11 @@
 function S2G = neuralgas(odf,h,varargin)
 % attempt to distribute measure-sites equally according to invers polefigure density (experimental)
 %
-%% Input
+% Input
 %  odf - @ODF
 %  h   - @Miller
 %
-%% Options
+% Options
 %  Grid    - @S2Grid, reference Grid to evaluate PDF
 %  resolution - Grid Resolution
 %  maxtheta - max Theta of Grid
@@ -15,10 +15,10 @@ function S2G = neuralgas(odf,h,varargin)
 %  lambda  - stimuli of 
 %  verbose - display points during optimisation
 %
-%% Example
-%  S2G = neuralgas(odf,Miller(1,0,0),'points',500,'epoches',25)
+% Example
+%   S2G = neuralgas(odf,Miller(1,0,0),'points',500,'epoches',25)
 %
-%% See also
+% See also
 % S2Grid/refine
 
 
@@ -30,7 +30,7 @@ if length(h)>1, warning('only perceeding with first Miller indice'), end
 if check_option(varargin,'verbose'), verb = true; else verb = false; end
 
 r = get_option(varargin,'Grid',...
-  S2Grid('equispaced','resolution',get_option(varargin,'resolution',2*degree),...
+  equispacedS2Grid('resolution',get_option(varargin,'resolution',2*degree),...
   'upper','maxtheta',get_option(varargin,'maxtheta',70*degree)));
 
 v = double(vector3d(r));
@@ -38,7 +38,7 @@ v = reshape(v,[],3);
 
 P = pdf(odf,h,r);
 
-nr = numel(r);
+nr = length(r);
 nx = fix(get_option(varargin,'Points',100));
 W = v(randi(nr,nx,1),:);
 

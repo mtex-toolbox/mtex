@@ -96,27 +96,31 @@ fibreVolume(odf2,Miller(0,0,1),xvector,20*degree)
 % [[ghost_demo.html,ghost effect]].
 
 %%
+% transform into an odf given by Fourier coefficients
+fodf = FourierODF(odf3,32)
+
+%%
 % The Fourier coefficients of order 2:
-Fourier(odf2,'order',2)              
+reshape(fodf.f_hat(11:35),5,5)
 
 %%
 % The decay of the Fourier coefficients:
 close all;
-plotFourier(odf3,'bandwidth',32)
+plotFourier(fodf)
 
 %% Pole Figures and Values at Specific Orientations
 %
 % Using the command <ODF.eval.html eval> any ODF can be evaluated at any
 % (set of) orientation(s).
 
-eval(odf1,orientation('Euler',0*degree,20*degree,30*degree))
+odf1.eval(orientation('Euler',0*degree,20*degree,30*degree))
 
 %%
 % For a more complex example let us define a fibre and plot the ODF there.
 
 fibre = orientation('fibre',Miller(1,0,0),yvector);
 
-plot(eval(odf2,fibre));
+plot(odf2.eval(fibre));
 
 %%
 % Evaluation of the corresponding pole figure or inverse pole figure is
@@ -125,8 +129,13 @@ plot(eval(odf2,fibre));
 pdf(odf2,Miller(1,0,0),xvector)
 
 %% Extract Internal Representation
-%
-% As allway the <ODF.get.html> and <ODF.set.html set> offers a simple way
-% to addres the internal ODF representation of MTEX.
+% The internal representation of the ODF can be adressed by the command
 
-get(odf3,'center')
+properties(odf3)
+
+%%
+% The properties in this list can be accessed by
+
+odf3.center
+
+odf3.psi

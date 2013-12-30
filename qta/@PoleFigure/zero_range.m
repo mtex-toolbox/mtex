@@ -1,41 +1,41 @@
 function NS3G = zero_range(pf,S3G,varargin)
 % implements the zero range method
 %
-%% Input
+% Input
 %  pf  - @PoleFigure
 %  S3G - initial @SO3Grid
 %
-%% Output
+% Output
 %  NS3G - antipodal @SO3Grid
 %
-%% Options
+% Options
 %  zero_range   - which pole figures to be included
 %  zr_bg        - intensity to be considered as background
 %  zr_factor    - backgound = pf_max_value / zr_factor
 %  zr_halfwidth - halfwidth of the kernel used for estimation
 %  zr_delta     - height of a positive kernel
 %
-%% See also
+% See also
 % PoleFigure/calcODF
 
 
-%% calculate symmetrically equivalent orientations
-%% TODO
+% ------- calculate symmetrically equivalent orientations ----------
+% TODO
 g = quaternion(S3G);
 cs = pf(1).CS; ss = pf(1).SS;
 g = ss*reshape(g,1,[]);               % SS x S3G
 g = reshape(g.',[],1);                % S3G x SS
-g = reshape(g*cs,numel(S3G),[]); % S3G x SS x CS
+g = reshape(g*cs,length(S3G),[]); % S3G x SS x CS
 
 % start with complete grid
-ind = true(numel(S3G),1);
+ind = true(length(S3G),1);
 
 % which pole figures to check
 ipf = get_option(varargin,'zero_range',1:length(pf),'double');
 
   
-%% approximation grid
-S2G = S2Grid('regular','resolution',1*degree,'antipodal');
+% approximation grid
+S2G = regularS2Grid('resolution',1*degree,'antipodal');
 
 % loop over pole figures
 for ip = ipf
@@ -66,7 +66,7 @@ for ip = ipf
     % calculate indece
     ir = 1+round(theta * 4 * (size(S2G,2)-1))*size(S2G,1) + ...
       round(rho * size(S2G,1));
-    ir(ir>numel(S2G)) = numel(S2G);
+    ir(ir>length(S2G)) = length(S2G);
     
     % ignore all orientations that are close to the zero range
     ind(ind) = all(zr(ir),2);

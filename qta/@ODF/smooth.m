@@ -1,14 +1,14 @@
 function odf = smooth(odf,varargin)
 % smooth ODF
 %
-%% Input
+% Input
 %  odf - @ODF
 %  res - resolution
 %
-%% Output
+% Output
 %  odf - smoothed @ODF
 %
-%% See also
+% See also
 % loadEBSD_generic
 
 if nargin >= 2 && isa(varargin{1},'kernel')
@@ -21,11 +21,11 @@ hw = get(psi,'halfwidth');
 
 for iodf = 1:length(odf)
 
-  %% Uniform portion
+  % Uniform portion
   if check_option(odf(iodf),'uniform')
 
 
-  %% Fourier portion
+  % Fourier portion
   elseif check_option(odf(iodf),'Fourier')
 
     A = get(psi,'A');
@@ -33,32 +33,34 @@ for iodf = 1:length(odf)
 
     odf(iodf).c_hat=odf(iodf).c_hat(1:deg2dim(L+1));
     for l = 0:L
-      odf(iodf).c_hat(deg2dim(l)+1:deg2dim(l+1)) = odf(iodf).c_hat(deg2dim(l)+1:deg2dim(l+1)) * A(l+1);
+      odf(iodf).c_hat(deg2dim(l)+1:deg2dim(l+1)) = ...
+        odf(iodf).c_hat(deg2dim(l)+1:deg2dim(l+1)) * A(l+1);
     end
 
   elseif check_option(odf(iodf),'fibre')
 
     psi_old = odf(iodf).psi;
-    odf(iodf).psi = kernel(get(psi_old,'name'),'halfwidth',hw + get(psi_old,'halfwidth'));
+    odf(iodf).psi = kernel(get(psi_old,'name'),'halfwidth',...
+      hw + get(psi_old,'halfwidth'));
 
   elseif check_option(odf(iodf),'Bingham')
 
     odf(iodf).psi = odf(iodf).psi./2;
 
-  %% unimodal portion
+  % unimodal portion
   else
 
     % generate grid
-    S3G = SO3Grid(hw,odf(1).CS,odf(1).SS);
+    S3G = equispacedSO3Grid(odf(1).CS,odf(1).SS,'resolution',hw);
 
     % restrict single orientations to this grid
 
     % init variables
     g = quaternion(odf(iodf).center);
-    d = zeros(1,numel(S3G));
+    d = zeros(1,length(S3G));
 
     % iterate due to memory restrictions?
-    maxiter = ceil(numel(odf(1).CS)*numel(odf(1).SS)*numel(g) /...
+    maxiter = ceil(length(odf(1).CS)*length(odf(1).SS)*length(g) /...
       getMTEXpref('memory',300 * 1024));
     if maxiter > 1, progress(0,maxiter);end
 
@@ -66,8 +68,8 @@ for iodf = 1:length(odf)
 
       if maxiter > 1, progress(iter,maxiter); end
 
-      dind = ceil(numel(g) / maxiter);
-      sind = 1+(iter-1)*dind:min(numel(g),iter*dind);
+      dind = ceil(length(g) / maxiter);
+      sind = 1+(iter-1)*dind:min(length(g),iter*dind);
 
       ind = find(S3G,g(sind));
       for i = 1:length(ind)
@@ -84,7 +86,8 @@ for iodf = 1:length(odf)
     odf(iodf).center = S3G;
     odf(iodf).c = d;
     psi_old = odf(iodf).psi;
-    odf(iodf).psi = kernel(get(psi_old,'name'),'halfwidth',hw + get(psi_old,'halfwidth'));
+    odf(iodf).psi = kernel(get(psi_old,'name'),'halfwidth',...
+      hw + get(psi_old,'halfwidth'));
 
   end
 end

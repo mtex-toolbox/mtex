@@ -1,20 +1,19 @@
 function x = calcAxisDistribution(odf,h,varargin)
 % compute the axis distribution of an ODF or MDF
 %
-%
-%% Input
+% Input
 %  odf - @ODF
 %  h   - @vector3d
 %
-%% Flags
+% Options
 %  smallesAngle - use axis corresponding to the smalles angle
 %  largestAngle - use axis corresponding to the largest angle
 %  allAngles    - use all axes
 %
-%% Output
+% Output
 %  x   - values of the axis distribution
 %
-%% See also
+% See also
 
 res = get_option(varargin,'resolution',2.5*degree)/8;
 
@@ -44,7 +43,7 @@ else
     %ind = abs(omega) <= omega2 + 0.00001;
     
     ind = checkFundamentalRegion(S3G,'onlyAngle');
-    w = numel(union(odf.CS,odf.SS));
+    w = length(union(odf.CS,odf.SS));
     
   end
   

@@ -21,7 +21,7 @@
 cs = symmetry('-3m'); ss = symmetry('-1');
 odf = fibreODF(Miller(1,1,0),zvector,cs,ss)
 pf = calcPoleFigure(odf,[Miller(1,0,0),Miller(1,1,1)],...
-  S2Grid('equispaced','points',500,'antipodal'));
+  equispacedS2Grid('points',500,'antipodal'));
 
 
 %% Tight Colorcoding

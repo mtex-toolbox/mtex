@@ -1,16 +1,16 @@
 function pf = loadPoleFigure_pwd(fname,varargin)
 % load D5000 powder data file
 %
-%% Syntax
-% pf = loadPoleFigure_pwd(fname,<options>)
+% Syntax
+%   pf = loadPoleFigure_pwd(fname,<options>)
 %
-%% Input
+% Input
 %  fname - file name
 %
-%% Output
+% Output
 %  pf    - @PoleFigure
 %
-%% See also
+% See also
 % loadPoleFigure ImportPoleFigureData
 
 assertExtension(fname,'.pwd');
@@ -54,7 +54,7 @@ theta = theta*degree;
 d = def-defbg;
 
 % store defocussing in a pole figure variable
-for p=1:numel(h)
+for p=1:length(h)
   th = theta(p,:);
   r = S2Grid(sph2vec(th,zeros(size(th))));
   pf(p) = PoleFigure(h(p),r,d(p,:),varargin{:});

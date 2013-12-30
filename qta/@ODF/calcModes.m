@@ -1,23 +1,22 @@
 function [modes, values] = calcModes(odf,varargin)
 % heuristic to find modal orientations
 %
-%% Syntax
-%
+% Syntax
 %   [modes, values] = calcModes(odf,n)
 %
-%% Input
+% Input
 %  odf - @ODF 
 %  n   - number of modes
 %
-%% Output
+% Output
 %  modes - modal @orientation
 %  values - values of the ODF at the modal @orientation
 %
-%% Options
+% Options
 %  resolution  - search--grid resolution
 %  accuracy    - in radians
 %
-%% Example
+% Example
 %  find the local maxima of the [[SantaFe.html,SantaFe]] ODF
 %
 %    mode = calcModes(SantaFe)
@@ -25,7 +24,7 @@ function [modes, values] = calcModes(odf,varargin)
 %    annotate(mode)
 %
 %
-%% See also
+% See also
 % ODF/max
 
 % find multiple modes
@@ -40,56 +39,55 @@ res = 5*degree;
 % target resolution
 targetRes = get_option(varargin,'resolution',0.25*degree);
 
+% extract symmetry
+CS = odf(1).CS; SS = odf(1).SS;
+
 % initial seed
-ori = orientation(odf(1).CS,odf(1).SS);
-S3G = orientation(odf(1).CS,odf(1).SS);
+S3G = [];
+
+% TODO
 for i = 1:length(odf) 
   
-  switch ODF_type(odf(i).options{:})
+  switch class(odf(i))
   
-    case 'UNIFORM' % uniform portion
-    
-    case 'FOURIER'
-    
-      S3G = SO3Grid(res,odf(1).CS,odf(1).SS);
-          
-    case'FIBRE' % fibre symmetric portion
-     
-      ori = [ori;orientation('fibre',...
-        odf(i).center{1},odf(i).center{2},odf(1).CS,odf(1).SS,'resolution',res)]; %#ok<AGROW>
       
-    case 'Bingham'
+    case'FibreODF' % fibre symmetric portion
+     
+      S3G = [S3G; orientation('fibre', odf(i).h, odf(i).r, CS, SS, 'resolution',res)]; %#ok<AGROW>
+      
+    case 'BinghamODF'
    
-      ori = [ori;orientation(odf(i).center(:),odf(1).CS,odf(1).SS)]; %#ok<AGROW>
-      S3G = SO3Grid(res,odf(1).CS,odf(1).SS);
+      S3G = [S3G;odf(i).A(:)]; %#ok<AGROW>
        
-    otherwise % radially symmetric portion
+    case 'unimodalODF' % radially symmetric portion
       
       center = odf(i).center(odf(i).c>=quantile(odf(i).c,-20));
-      ori = [ori;center(:)]; %#ok<AGROW>
-           
+      S3G = [S3G;center(:)]; %#ok<AGROW>
+      
   end
 end
 
-% the search grid
-S3G = [orientation(S3G(:)); ori];
+if isempty(S3G)
+  S3G = equispacedSO3Grid(CS,SS,'resolution',res);
+end
 
 % first evaluation
 f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
 
 % extract 20 largest values
-g0 = S3G(f>=quantile(f,-20));
+g0 = S3G(f>=quantile(f(:),-20));
 
 while res > targetRes
 
   % new grid
-  S3G = [g0(:);orientation(SO3Grid(res/4,odf(1).CS,odf(1).SS,'max_angle',res,'center',g0))];
+  S3G = [g0(:).',...
+    localOrientationGrid(CS,SS,res,'center',g0,'resolution',res/4)];
     
   % evaluate ODF
   f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
   
   % extract largest values
-  g0 = S3G(f>=quantile(f,0));
+  g0 = S3G(f>=quantile(f(:),0));
   
   res = res / 2; 
 end
@@ -97,9 +95,7 @@ end
 [values,ind] = max(f(:));
 modes = S3G(ind);
 
-end
-
-%% -------------------------------------------------------
+% -------------------------------------------------------
 
 function [modes,values] = findMultipleModes(odf,varargin)
 
@@ -118,7 +114,7 @@ f = f(del);
 S3Gs = subGrid(S3G,del);
 T = find(S3Gs,qa,res*1.5);
 
-[f ndx] = sort(f,'descend');
+[f, ndx] = sort(f,'descend');
 qa = qa(ndx);
 
 T = T(ndx,:);
@@ -131,7 +127,7 @@ nn = numel(f);
 ls = false(1,nn);
 ids = false(1,nn);
 
-[ix iy] = find(T);
+[ix, iy] = find(T);
 cx = [0 ; find(diff(iy))];
 
 num = get_option(varargin,'num',1);
@@ -153,14 +149,14 @@ values = f(ids);
 
 accuracy = get_option(varargin,'accuracy',0.25*degree);
 %centering of local max
-for k=1:numel(q)
+for k=1:length(q)
   res2 = res/2;
   while res2 > accuracy
     res2 = res2/2;
-    S3G = SO3Grid(res2,odf(1).CS,odf(1).SS,'center',q(k),'max_angle',res2*4);
+    S3G = localOrientationGrid(odf(1).CS,odf(1).SS,res2*4,'center',q(k),'resolution',res2);
     f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
     
-    [mo ndx] = max(f);
+    [mo, ndx] = max(f);
     q(k) = S3G(ndx);
     values(k) = mo;
   end
