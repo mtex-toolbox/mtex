@@ -25,24 +25,24 @@ function plotGrains(grains,varargin)
 % See also
 % Grain3d/plotGrains
 
-V = grains.V;
-boundaryEdgeOrder = grains.boundaryEdgeOrder;
+% --------------------- compute colorcoding ------------------------
 
-% seperate measurements per phase
+% seperate measurements per phase into cells
 numberOfPhases = numel(grains.phaseMap);
 X = cell(1,numberOfPhases);
 d = cell(1,numberOfPhases);
 
 % what to plot
-prop = get_option(varargin,'property','meanOrientation',{'char','double','quaternion'});
+prop = get_option(varargin,'property','meanOrientation',{'char','double','quaternion','vector3d'});
 
+% seperate into cells and compute colorcoding
 isPhase = false(numberOfPhases,1);
 for p=1:numberOfPhases
   currentPhase = grains.phaseId==p;
   isPhase(p)   = any(currentPhase);
 
   if isPhase(p)
-    X{p} = boundaryEdgeOrder(currentPhase);
+    X{p} = grains.boundaryEdgeOrder(currentPhase);
     [d{p},property,opts] = calcColorCode(grains,currentPhase,prop,varargin{:});
   end
 end
@@ -61,44 +61,31 @@ if numel(unique(dim2)) > 1
 end
 
 
-% default plot options
+% ------------------- plotting --------------------------------------
 
-% varargin = set_default_option(varargin,...
-%   {'name', [property ' plot of ' inputname(1) ' (' get(grains,'comment') ')']});
-
-%
-
-% clear up figure
+% set up figure
 newMTEXplot('renderer','opengl',varargin{:});
 setCamera(varargin{:});
 
 % set direction of x and y axis
 xlabel('x');ylabel('y');
 
-%
-%d = vertcat(d{:});
-%[ud,m,n] = unique(d);
-%h = [];
-%if numel(ud) < 20 && numel(ud) > 1
-%  for i = 1:numel(ud)
-%    h = [h,plotFaces(boundaryEdgeOrder(n==i),V,d(n==i),varargin{:})];
-%  end
-%else
-h = plotFaces(boundaryEdgeOrder,V,vertcat(d{:}),varargin{:});
-%end
+% plot polygons
+h = plotFaces(boundaryEdgeOrder,grains.V,vertcat(d{:}),varargin{:});
+
+% ---------------- legend -------------------------------------------
 
 % remove them from legend
 arrayfun(@(x) set(get(get(x,'Annotation'),'LegendInformation'),...
     'IconDisplayStyle','off'),h);
 
-% make legend
-
+% make legend for phase plots
 if strcmpi(property,'phase'),
   
   F = grains.F;
   F(any(F==0,2),:) = [];
 
-  dummyV = min(V(F,:));
+  dummyV = min(grains.V(F,:));
 
   % phase colormap
   lg = [];
@@ -111,6 +98,7 @@ if strcmpi(property,'phase'),
   legend(lg,grains.allMinerals(isPhase),'location','NorthEast');
 end
 
+% --------------finalize -------------------------------------------
 
 % set appdata
 if strncmpi(property,'orientation',11)
@@ -136,6 +124,10 @@ if ~isOctave()
 
   datacursormode on;
 end
+
+% -----------------------------------------------------------------
+% ------------ private functions ----------------------------------
+% -----------------------------------------------------------------
 
 % Tooltip function
 function txt = tooltip(empt,eventdata,grains) %#ok<INUSL>

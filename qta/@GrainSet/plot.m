@@ -15,6 +15,20 @@ if check_option(varargin,'boundary')
   
   plotBoundary(grains,varargin{:})
   
+elseif check_option(varargin,'property',[],'mis2mean')
+  
+  plotBoundary(grains);
+  hold on
+  for phId = grains.indexedPhasesId.'
+    
+    grainsPh = subSet(grains,grains.phaseId==phId);
+    
+    plot(grainsPh.ebsd,'colorcoding','angle',varargin{:},...
+      'property',grainsPh.mis2mean);
+    
+  end
+  hold off
+  
 % plot filled grains
 else
   
