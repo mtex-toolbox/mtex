@@ -3,7 +3,7 @@ function [ori,options] = loadOrientation_generic(fname,varargin)
 %
 % Description
 %
-% *loadOrientation_generic* loads individual orientations
+% loadOrientation_generic loads individual orientations
 % from text or exel files that have a column oriented format as
 %
 %  phi1_1 Phi_1 phi2_1

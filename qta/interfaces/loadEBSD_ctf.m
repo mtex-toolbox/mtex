@@ -1,14 +1,14 @@
 function ebsd = loadEBSD_ctf(fname,varargin)
 % read HKL *.ctf file
 %
-%% Syntax
+% Syntax
 %   ebsd = loadEBSD_ctf(fname,'convertSpatial2EulerReferenceFrame')
 %   ebsd = loadEBSD_ctf(fname,'convertEuler2SpatialReferenceFrame')
 %
-%% Input
+% Input
 %  fname - file name
 %
-%% Flags
+% Flags
 %  convertSpatial2EulerReferenceFrame - change x and y values such that
 %  spatial and Euler reference frame coincide, i.e., rotate them by 180
 %  degree
