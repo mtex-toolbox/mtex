@@ -66,7 +66,6 @@ release:
 	rm -rf $(RDIR)/$(RNAME)*
 	cp -R . $(RDIR)/$(RNAME)
 	rm -rf $(RDIR)/$(RNAME)/help/tmp
-	rm -rf $(RDIR)/$(RNAME)/tools/export_fig
 	chmod -R a+rX $(RDIR)/$(RNAME)
 	rm -rf $(RDIR)/$(RNAME)/.hg
 	rm -rf $(RDIR)/$(RNAME)/.hg*
