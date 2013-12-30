@@ -79,6 +79,9 @@ if isa(d,'quaternion')
 end
 
 % convert to column vector
-if any(size(d)==1) && numel(obj) > 1
+if any(size(d)==1) && length(obj) > 1
   d = d(:);
 end
+
+% check for correct size
+assert(size(d,1)==length(obj),'Number of data points and properties must be equal!');
