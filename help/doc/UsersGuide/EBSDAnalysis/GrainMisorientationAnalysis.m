@@ -19,7 +19,7 @@
 %% The sample data set
 % Let us first import some EBSD data by a [[matlab:edit mtexdata, script file]]
 
-mtexdata aachen
+mtexdata forsterite
 plotx2east
 
 %%
@@ -35,7 +35,7 @@ grains = calcGrains(ebsd,'threshold',5*degree);
 % <ebsd_get.html,get>.
 
 % get the misorientations to mean
-mori = get(grains('Fe'),'mis2mean')
+mori = grains('Fo').mis2mean
 
 % plot a histogram of the misorientation angles
 close all
@@ -45,14 +45,30 @@ xlabel('Misorientation angles in degree')
 %%
 % The visualization of the misorientation can be done by
 
-close,   plot(grains,'property','mis2mean')
-hold on, plotBoundary(grains,'edgecolor','k','linewidth',0.5)
+close,   plot(grains,'property','mis2mean','colorcoding','angle')
+hold on, plotBoundary(grains,'edgecolor','k','linewidth',.5)
 
 %% Boundary misorientations
 % The misorientation between adjacent grains can be computed by the command
 % <GrainSet.calcMisorientation.html>
 
-calcMisorientation(grains(5),grains(6))
+% get the id of the largest grain
+[~,id] = max(grains.grainSize);
+
+% get the neigbours of this grain
+neigbourId = find(grains.A_G(:,id));
+
+% find the largest neigbouring grain
+[~,id2] = max(grains(neigbourId).grainSize);
+id2 = neigbourId(id2);
+
+% plot these grains
+plot(grains([id,id2]))
+
+
+%%
+
+calcMisorientation(grains(1293),grains(1245))
 
 %%
 % In order to visualize the the misorientation between any two adjacent
