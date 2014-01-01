@@ -17,9 +17,9 @@ switch Laue
     orth = sum(abs(dot_outer(axis,axis)));
     
     if all(round(orth)==1)
-      rot = {Axis(axis(2),2);}
+      rot = {Axis(axis(2),2)};
     else
-      rot = {Axis(axis(round(orth)==1),2);}
+      rot = {Axis(axis(round(orth)==1),2)};
     end
   case 'mmm'
     rot = {Axis(axis(1),2),Axis(axis(3),2)};

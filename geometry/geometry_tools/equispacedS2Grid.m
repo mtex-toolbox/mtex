@@ -1,17 +1,17 @@
 function S2G = equispacedS2Grid(varargin)
 % defines an equispaced spherical grid
 %
-  ind = rhoInside(rho,minrho,maxrho) & theta >= mintheta;
-  theta = theta(ind);
-  rho = rho(ind);
-  
-  if isnumeric(maxtheta)
-    ind = theta <= maxtheta;
-  else
-    ind = theta <= maxtheta(rho);
-  end
-  theta = theta(ind);
-  rho = rho(ind);
+%  ind = rhoInside(rho,minrho,maxrho) & theta >= mintheta;
+%  theta = theta(ind);
+%  rho = rho(ind);
+%  
+%  if isnumeric(maxtheta)
+%    ind = theta <= maxtheta;
+%  else
+%    ind = theta <= maxtheta(rho);
+%  end
+%  theta = theta(ind);
+%  rho = rho(ind);
   
 
 % extract options
