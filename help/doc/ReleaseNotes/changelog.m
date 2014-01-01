@@ -5,7 +5,7 @@
 % *Misorientation colorcoding*
 %
 % * Patala colormap for misorientations
-% * publication:  S. Patala, J. K. Mason, and C. A. Schuh, �Improved
+% * publication:  S. Patala, J. K. Mason, and C. A. Schuh, Improved
 % representations of misorientation information for grain boundary science
 % and engineering, Prog. Mater. Sci., vol. 57, no. 8, pp. 1383-1425, 2012.
 % * implementation: Oliver Johnson
@@ -36,7 +36,7 @@
 % * you can specify the outer boundary for grain reconstruction in non
 % convex EBSD data set by the option |'boundary'|
 %
-%   poly = [[x1,y1];[x2,y2];[xn,yn];[x1,y1]]
+%   poly = [ [x1,y1];[x2,y2];[xn,yn];[x1,y1] ]
 %   grains = calcGrains(ebsd,'boundary',poly)
 % 
 % * you can select a polygon interactively with the mouse using the command
