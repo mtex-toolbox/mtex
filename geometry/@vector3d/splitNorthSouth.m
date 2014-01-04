@@ -5,7 +5,8 @@ function [ax,v,varargout] = splitNorthSouth(v,varargin)
 % 2: axis is hold and has extend -> use multiplot
 % 3: new multiplot
 
-%% case 1: predefined axis
+% case 1: predefined axis
+% -----------------------
 if ishandle(v)
   ax = v;
   v = varargin{1};
@@ -25,14 +26,16 @@ if ishandle(v)
     setappdata(ax,'extend',extend);
   end
   
-%% case 2: axis is hold and has extend
+% case 2: axis is hold and has extend
+% -----------------------------------
 elseif ~newMTEXplot && isappdata(gca,'extend')
   
   v = multiplot([],v,varargin{:});
         
   ax = {};
 
-%% case 3: create new axes  
+% case 3: create new axes
+% -----------------------
 else
   
   % get polar plot region

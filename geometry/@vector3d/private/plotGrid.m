@@ -51,7 +51,7 @@ try
 catch %#ok<CTCH>
 end
 
-%% labels
+% labels
 
 
 if any(isnan(X)), return;end
@@ -68,7 +68,7 @@ end
 
 end
 
-%%
+% ------------------------------------------------------
 function g = plotPlainGrid(ax,projection,extend,varargin)
 
   dgrid = get_option(varargin,'grid_res',30*degree);
@@ -85,7 +85,7 @@ function g = plotPlainGrid(ax,projection,extend,varargin)
 
 end
 
-%% -------------------------------------------------------------------
+% -------------------------------------------------------------------
 function grid = plotPolarGrid(ax,projection,extend,varargin)
 % generate grid for axes ax
 

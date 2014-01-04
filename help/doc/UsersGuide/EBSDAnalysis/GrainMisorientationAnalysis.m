@@ -45,7 +45,8 @@ xlabel('Misorientation angles in degree')
 %%
 % The visualization of the misorientation can be done by
 
-close,   plot(grains,'property','mis2mean','colorcoding','angle')
+close,   plot(grains('Forsterite').ebsd,...
+  'property',grains('Forsterite').mis2mean,'colorcoding','angle')
 hold on, plotBoundary(grains,'edgecolor','k','linewidth',.5)
 
 %% Boundary misorientations
@@ -67,8 +68,13 @@ plot(grains([id,id2]))
 
 
 %%
+% Note that MTEX computes misorientations for all grain boundary segments
+% between two grains
+mori = calcMisorientation(grains(id),grains(id2))
 
-calcMisorientation(grains(1293),grains(1245))
+%%
+% The mean misorientation is computed by
+mean(mori)
 
 %%
 % In order to visualize the the misorientation between any two adjacent
