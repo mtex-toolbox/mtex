@@ -1,17 +1,17 @@
 function varargout = surf(v,varargin)
 %
-%% Syntax
+% Syntax
 %
-%% Input
+% Input
 %
-%% Output
+% Output
 %
-%% Options
+% Options
 %
-%% See also
+% See also
 %
 
-%% get input
+% get input
 
 % where to plot
 [ax,v,varargin] = splitNorthSouth(v,varargin{:},'surf');
@@ -30,7 +30,7 @@ cdata = varargin{1};
 set(gcf,'renderer','zBuffer');
 shading interp
 
-%% draw surface
+% draw surface
 
 hold(ax,'on')
     
@@ -52,7 +52,7 @@ hold(ax,'off')
 optiondraw(h,'LineStyle','none','Fill','on',varargin{:});
 
 
-%% finalize the plot
+%-------- finalize the plot ---------------------------
 
 % plot polar grid
 plotGrid(ax,projection,extend,varargin{:});

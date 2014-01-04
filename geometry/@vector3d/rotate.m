@@ -1,14 +1,14 @@
 function v = rotate(v,q)
 % rotate vector3d by quaternion
 %
-%% Syntax
+% Syntax
 %  r = rotate(v,q)
 %
-%% Input
+% Input
 %  v - @vector3d
 %  q - @quaternion
 %
-%% Output
+% Output
 %  r = q * v;
 
 
