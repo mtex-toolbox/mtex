@@ -47,7 +47,7 @@ for i = 1:length(center)
     ind = fundamental_region2(cq,center(i),CS,SS);
     cq = cq(ind);
   end
-  q = [q;cq]; %#ok<AGROW>
+  q = [q;cq(:)]; %#ok<AGROW>
 end
 
 ori = orientation(q,CS,SS);

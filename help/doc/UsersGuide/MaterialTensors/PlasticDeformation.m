@@ -150,7 +150,7 @@ mtexColorMap black2white
 % We can even visualize the active slip system
 
 % take as directions the centers of the fundamental regions
-r = S2Grid(symmetrise([Miller(1,3,5,CS),Miller(-1,3,5,CS)]));
+r = symmetrise([Miller(1,3,5,CS),Miller(-1,3,5,CS)]);
 sigma = EinsteinSum(tensor(r),1,r,2)
 
 % compute active slip system
@@ -181,10 +181,11 @@ sigma001 = tensor(M,'name','stress')
 
 mtexdata forsterite
 
-CS_Forsterite = get(ebsd('Forsterite'),'CS')
+% extract the orientations
+ori = ebsd('Forsterite').orientations;
 
 % extract the orientations
-ori = get(ebsd('Forsterite'),'orientations');
+CS_Forsterite = ori.CS;
 
 % transform the stress tensor from specimen to crystal coordinates
 sigmaCS = rotate(sigma001,inv(ori))
@@ -215,7 +216,7 @@ title('Schmidt factors for (010)[100]')
 grains = calcGrains(ebsd)
 
 % extract the orientations
-ori = get(grains('Forsterite'),'orientation');
+ori = grains('Forsterite').meanOrientation;
 
 % transform the stress tensor from specimen to crystal coordinates
 sigmaCS = rotate(sigma001,inv(ori))

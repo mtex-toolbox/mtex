@@ -2,7 +2,7 @@ function [q,m,n] = unique(q,varargin)
 % disjoint list of quaternions
 %
 % Syntax
-%  q = unique(q,<options>) - 
+%   q = unique(q)
 %
 % Input
 %  q - @quaternion

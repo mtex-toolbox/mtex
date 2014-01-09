@@ -180,7 +180,7 @@ p = 100*[nnz(grainSize(grains('notIndexed')) < 10) ...
 % allow filling in those holes we remove these small not indexed grains
 % completely from the data set
 
-condition = grainSize(grains)>=10 | get(grains,'phase')>0;
+condition = grainSize(grains)>=10 | grains.phase>0;
 
 grains(condition)
 

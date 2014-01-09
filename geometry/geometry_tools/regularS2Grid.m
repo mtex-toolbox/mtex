@@ -12,7 +12,7 @@ steps = (bounds.VR{4}-bounds.VR{3}) / bounds.points(1);
 rho = get_option(varargin,'rho',bounds.VR{3} + steps*(0:bounds.points(1)-1));
 rho = repmat(...
   S1Grid(rho,bounds.FR{3:4},...
-  'PERIODIC'),1,bounds.points(2));
+  'PERIODIC'),1,GridLength(theta));
 
 % set up grid
 S2G = S2Grid(theta,rho);

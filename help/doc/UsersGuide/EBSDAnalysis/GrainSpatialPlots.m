@@ -129,15 +129,16 @@ plotBoundary(grains,'internal','linecolor','r','linewidth',2)
 %%
 % We also want to see the rotation within the grain.
 
-hold on, plot(grains,'property','mis2mean','colorcoding','angle')
+hold on, plot(grains('fo').ebsd,'property',grains('fo').mis2mean,'colorcoding','angle')
 
 %% SUB: Misorientation
 % Basicly there are two ways to visualize misorientation along a grain
 % boundary. The most simplest way is to colorize the grain boundaries
 % with respect to the misorientation angle.
 
+% TODO
 close all
-plotBoundary(grains,'property','angle','linewidth',1.5)
+%plotBoundary(grains,'property','angle','linewidth',1.5)
 colorbar
 
 %%
@@ -147,8 +148,10 @@ colorbar
 close all
 plotBoundary(grains)
 hold on
-plotBoundary(grains('Fo'),'property','misorientation',...
-  'colorcoding','patala','linewidth',1.5)
+
+% TODO
+%plotBoundary(grains('Fo'),'property','misorientation',...
+%  'colorcoding','patala','linewidth',1.5)
 
 % plot the colorbar
 colorbar

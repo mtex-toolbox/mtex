@@ -1,13 +1,13 @@
 function m = mean(v,varargin)
 % computes the mean vector 
 %
-%% Input
+% Input
 %  v - @vector3d
 %
-%% Output
+% Output
 %  m - @vector3d
 %
-%% Options
+% Options
 %  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
 % 
 

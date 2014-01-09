@@ -83,7 +83,7 @@ classdef symmetry < rotation
       % determine point group
       if isa(varargin{1},'double') % point group by number
   
-        LaueGroups =  {'C1','C2','D2','C4','D4','T','O','C3','D3','C6','D6'};
+        LaueGroups =  {'-1','2/m','mmm','4/m','4/mmm','m-3','m-3m','-3','-3m','6/m','6/mmm'};
         pGroup = LaueGroups{varargin{1}};
         
       elseif strncmp(varargin{1},'spacegroup',10) && nargin > 1 % space group by number

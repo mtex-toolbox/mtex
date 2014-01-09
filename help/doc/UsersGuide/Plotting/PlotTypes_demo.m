@@ -88,4 +88,4 @@ plotpdf(odf,Miller(1,0,0),'antipodal','resolution',10*degree)
 % They can be customized by the standard MATLAB linespec
 % options. See [[matlab:doc linespec,linespec]]!
 
-plotodf(odf,'radially','linewidth',2,'linestyle','-.')
+%plotodf(odf,'radially','linewidth',2,'linestyle','-.')

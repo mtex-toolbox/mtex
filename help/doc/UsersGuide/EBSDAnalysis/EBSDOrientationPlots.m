@@ -76,10 +76,10 @@ plotipdf(ebsd('Fo'),xvector,'points',1000, 'MarkerSize',3);
 %%
 % In the same way the mean orientations of grains can be visualized
 
-plotipdf(grains('Fo'),xvector,'points',500, 'MarkerSize',3);
+plotipdf(grains('Fo').meanOrientation,xvector,'points',500, 'MarkerSize',3);
 
 %%
-% Once can also use different colors on the scatter points by certain [[EBSD.get.html,EBSD
+% One can also use different colors on the scatter points by certain [[EBSD.get.html,EBSD
 % properties]] or [[GrainSet.get.html,grain properties]]
 
 plotpdf(ebsd('Fo'),[Miller(1,0,0),Miller(1,1,0)],'antipodal','MarkerSize',4,...
@@ -88,7 +88,7 @@ plotpdf(ebsd('Fo'),[Miller(1,0,0),Miller(1,1,0)],'antipodal','MarkerSize',4,...
 %%
 % or some arbitrary data vector
 
-plotodf(grains('Fo'),'antipodal','sections',9,'MarkerSize',3,...
+plotodf(grains('Fo').meanOrientation,'antipodal','sections',9,'MarkerSize',3,...
   'property',shapefactor(grains('Fo')),'sigma');
 
 

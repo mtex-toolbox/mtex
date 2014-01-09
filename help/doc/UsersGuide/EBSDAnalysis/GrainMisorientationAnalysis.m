@@ -104,7 +104,7 @@ plotAngleDistribution(grains)
 % All these steps are performed by the single command
 
 hold on
-plotAngleDistribution(grains,'ODF')
+plotAngleDistribution(ebsd,'ODF')
 hold off
 
 %%

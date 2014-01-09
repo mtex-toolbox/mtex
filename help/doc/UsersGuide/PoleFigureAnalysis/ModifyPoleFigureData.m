@@ -68,7 +68,7 @@ plot(pf)
 % 
 % As pole figures are usaly experimental data they may contain outliers. In
 % order to remove outliers from pole figure data one can use the functions
-% <PoleFigure.find_outlier.html find_outlier> and <PoleFigure.delete.html
+% <PoleFigure.findOutlier.html findOutlier> and <PoleFigure.delete.html
 % delete>. Here a simple example:
 
 % get the polar angle of the pole figure data
@@ -83,7 +83,7 @@ plot(pf_outlier)
 
 %%
 % lets find and remove these outliers
-outlier = find_outlier(pf_outlier);
+outlier = findOutlier(pf_outlier);
 pf_outlier = delete(pf_outlier,outlier);
 
 % plot the corrected pole figures

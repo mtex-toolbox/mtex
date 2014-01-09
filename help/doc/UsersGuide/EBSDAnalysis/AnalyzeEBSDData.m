@@ -28,9 +28,9 @@ plot(ebsd)
 plotpdf(ebsd('Forsterite'),[Miller(1,0,0),Miller(0,1,0),Miller(0,0,1)],'antipodal')
 
 %%
-% From the 100 pole figure we might suspect a fibre texture present in our
+% From the {100} pole figure we might suspect a fibre texture present in our
 % data. Lets check this. First we determine the vector orhtogonal to fibre
-% in the 100 pole figure
+% in the {100} pole figure
 
 % the orientations of the Forsterite phase
 ori = ebsd('Forsterite').orientations
@@ -38,7 +38,7 @@ ori = ebsd('Forsterite').orientations
 r = ori * Miller(1,0,0)
 
 % the vector best orthogonal to all r
-rOrth = orth(r)
+rOrth = perp(r)
 
 % output
 hold on
@@ -46,11 +46,11 @@ plot(rOrth)
 hold off
 
 %%
-% we can check how large is the number of orientations that are in the 100
-% polegigure within a 10 degree fibre around the great circle with center
-% |rOrth|. The following line gives the result in percent
+% we can check how large is the number of orientations that are in the
+% (100) polegigure within a 10 degree fibre around the great circle with
+% center |rOrth|. The following line gives the result in percent
 
-100 * sum(angle(r,rOrth)>80*degree) / numel(ori)
+100 * sum(angle(r,rOrth)>80*degree) / length(ori)
 
 
 %%

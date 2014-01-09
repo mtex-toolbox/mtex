@@ -14,7 +14,7 @@ end
 if numel(is1) == 1, s = symmetry; return; end
 
 % take the equal ones
-s = subsref(s1,is1);
+s = unique(subsref(s1,is1));
 
 % find a symmetry that exactly contains s
 for i=1:11 % check all Laue groups
