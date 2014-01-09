@@ -1,4 +1,4 @@
-function [S2G, data]= project2ODFsection(o,type,sec,varargin)
+function [v, data]= project2ODFsection(o,type,sec,varargin)
 % project orientation to ODF sections used by plotodf
 %
 % Input
@@ -14,21 +14,21 @@ function [S2G, data]= project2ODFsection(o,type,sec,varargin)
 
 % get input
 if length(sec) >= 2
-  tol = min(5*degree,abs(sec(1)-sec(2))/2);
+  tol = min(10*degree,abs(sec(1)-sec(2))/2);
 else
   tol = 5*degree;
 end
 tol = get_option(varargin,'tolerance',tol);
 
 % TODO
-%S2G = repcell(S2Grid(vector3d,varargin{:}),length(sec),1);
+v = repcell(vector3d,length(sec),1);
 
 % ------------ axis angle projection -------------------
 if strcmpi(type,'axisangle')
   
   for i=1:length(sec)
     ind(:,i) = angle(o)-tol < sec(i) & sec(i) < angle(o)+tol;
-    S2G{i} = S2Grid(axis(subsref(o,ind(:,i))));
+    v{i} = S2Grid(axis(subsref(o,ind(:,i))));
   end
   
   if nargout > 1 && check_option(varargin,'data')
@@ -101,7 +101,7 @@ ind2 = isappr(d,repmat(dmin,1,size(sec,2)));
 % construct output
 % TODO
 for i = 1:size(sec,2)  
-  S2G{i} = vector3d('polar',e2(ind2(:,i)),mod(rho(ind2(:,i)),2*pi),varargin{:});
+  v{i} = vector3d('polar',e2(ind2(:,i)),mod(rho(ind2(:,i)),2*pi),varargin{:});
 end
 
 

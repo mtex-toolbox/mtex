@@ -73,7 +73,7 @@ annotate(mod2,...
 %%
 % also ODF plots
 
-plot(odf,'sections',12,'sigma')
+plot(odf,'sections',18,'sigma')
 mtexColorMap white2black
 annotate(mod1,...
     'MarkerSize',15,'MarkerEdgeColor','r','MarkerFaceColor','none')

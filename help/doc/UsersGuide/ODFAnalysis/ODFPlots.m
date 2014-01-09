@@ -69,7 +69,7 @@ plotipdf(odf,r,'complete')
 % * phi2 sections
 % * sigma sections
 %
-% The default section type is *sigma sections* since it does not introduce 
+% The default section type are phi2 sections since it does not introduce 
 % distortions into the orientation space.
 
 plot(odf,'sections',12,'silent')
@@ -83,12 +83,21 @@ plot(SantaFe,'alpha','sections',9,...
   'projection','plain','contourf','silent')
 mtexColorMap white2black
 
-%% Radial ODF Plots
+%% Fibre Plots
 %
-% In case you have an unimodal ODF a radial plot is sometimes usefull. 
-%
+% Any fibre in orientation space can be specified by a crystal direction |h|
+% and a specimen direction |r| which then consists of all orientation |g|
+% satisfying |g * h = r|.
 
-plot(odf,'radially','center',euler2quat(50*degree,30*degree,20*degree))
+h = Miller(1,1,1,cs)
+
+r = vector3d(1,0,0)
+
+%%
+% In order to visuallize an ODF along the fibre defined by |h| and |r| the
+% command <ODF_plotFibre.html plotFibre> can be used
+
+plotFibre(odf,h,r)
 
 %% Power Plot
 %
