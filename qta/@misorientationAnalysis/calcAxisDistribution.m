@@ -1,8 +1,9 @@
-function axes = calcAxisDistribution(ebsd,varargin)
+function axes = calcAxisDistribution(obj,varargin)
 % calculate axis distribution
 %
 % Input
-% ebsd - @EBSD
+% ebsd   - @EBSD
+% grains - @grainSet
 %
 % Flags
 %
@@ -11,6 +12,6 @@ function axes = calcAxisDistribution(ebsd,varargin)
 % See also
 % EBSD/calcMisorientation EBSD/plotAngleDistribution
 
-mori = calcMisorientation(ebsd,varargin{:});
+mori = calcMisorientation(obj,varargin{:});
 
 axes = axis(mori);

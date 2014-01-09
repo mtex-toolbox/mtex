@@ -1,8 +1,10 @@
-function [density,omega] = calcAngleDistribution(ebsd,varargin)
+function [density,omega] = calcAngleDistribution(obj,varargin)
 % calculate angle distribution
 %
+%
 % Input
-%  ebsd - @EBSD
+%  ebsd   - @EBSD
+%  grains - @grainSet
 %
 % Flags
 %
@@ -14,17 +16,19 @@ function [density,omega] = calcAngleDistribution(ebsd,varargin)
 %  omega  - intervals of density
 %
 % See also
-% EBSD/calcMisorientation EBSD/plotAngleDistribution
+% EBSD/calcMisorientation misorientationAnalysis/plotAngleDistribution
 
+% compute the misorientation distribution to get a smooth angle
+% distribution
 if check_option(varargin,'smooth')
   
-  odf1 = calcFourierODF(ebsd,'halfwidth',10*degree);
+  odf1 = calcFourierODF(obj,'halfwidth',10*degree);
   
-  ebsd2 = getClass(varargin,'EBSD',[]);
-  if isempty(ebsd2) || length(ebsd) == length(ebsd2)
+  obj2 = getClass(varargin,'misorientationAnaylsis',[]);
+  if isempty(obj2) || length(obj) == length(obj2)
     odf2 = odf1;
   else
-    odf2 = calcFourierODF(ebsd2,'halfwidth',10*degree);
+    odf2 = calcFourierODF(obj2,'halfwidth',10*degree);
   end
     
   mdf = calcMDF(odf1,odf2);
@@ -32,9 +36,9 @@ if check_option(varargin,'smooth')
   [density,omega] = calcAngleDistribution(mdf,varargin{:});
   
 else
-  m = calcMisorientation(ebsd,varargin{:});
+  m = calcMisorientation(obj,varargin{:});
 
-  [dns,omega] = angleDistribution(get(m,'CS'));
+  [dns,omega] = angleDistribution(m.CS);
   omega = linspace(0,max(omega),min(50,max(5,length(m)/20)));
   omega = get_option(varargin,'omega',omega);
 
