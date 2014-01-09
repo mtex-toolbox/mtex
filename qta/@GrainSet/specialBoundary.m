@@ -175,7 +175,7 @@ else
     % otherwise its some orientation property
     CS        = grains.CS;
     SS        = symmetry;
-    r         = grains.meanRotation;
+    r         = grains.ebsd.rotations;
     isIndexed = ~isNotIndexed(grains.ebsd);
     
     % consider only boundaries between indexed measurements
@@ -208,9 +208,9 @@ else
       
       if any(segment)
         % left crystal symmetry
-        CSl = CS{Pl(p) == phaseMap};
+        CSl = CS{Pl(p)};
         % right crystal symmetry
-        CSr = CS{Pr(p) == phaseMap};
+        CSr = CS{Pr(p)};
         
         [boundarySegment(segment),dist(segment,:)] = checkCriterion(...
           r(Dl(segment)),r(Dr(segment)),CSl,CSr,SS,property,varargin{:});

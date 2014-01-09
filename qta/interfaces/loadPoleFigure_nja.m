@@ -23,7 +23,7 @@ try
   d  = d(:,3);
   
   h = string2Miller(regexprep([comment{1}{19:21}], '[A-Z=\s]', '', 'ignorecase'));
-  r = S2Grid(sph2vec(th,rh),'antipodal');
+  r = vector3d('polar',th,rh,'antipodal');
   
   pf = PoleFigure(h,r,d,'BACKGROUND',bg,varargin{:});
 catch

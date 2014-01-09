@@ -1,9 +1,8 @@
 function Z = doPDF(odf,h,r,varargin)
 % calculate pole figure from Fourier coefficients
 
-% get input
-even = 1 + (check_option(varargin,'antipodal') || ...
-  (isa(r,'S2Grid') && check_option(r,'antipodal')));
+% use only even Fourier coefficients?
+even = 1 + (check_option(varargin,'antipodal') || r.antipodal);
 
 if length(h) == 1  % pole figures
   in = h;

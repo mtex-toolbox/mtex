@@ -4,7 +4,7 @@ function varargout = subsref(varargin)
 try
   [varargout{1:nargout}] = builtin('subsref',varargin{:});  
 catch
-  [varargout{1:nargout}] = dynProp@subsref(varargin{:});
+  [varargout{1:nargout}] = subsref@dynOption(varargin{:});
 end
 
 end

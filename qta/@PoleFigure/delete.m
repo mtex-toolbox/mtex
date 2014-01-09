@@ -28,7 +28,7 @@ cs = cumsum([0,GridLength(pf)]);
 for k = 1:length(pf)
   idi = id(cs(k)+1:cs(k+1));
   
-  if ~isempty(pf(k).bgdata), pf(k).bgdata(idi) = [];end
+  if ~isempty(pf(k).bg), pf(k).bg(idi) = [];end
   pf(k).intensities(idi) = [];
-  pf(k).r = delete(pf(k).r,idi);
+  pf(k).r(idi) = [];
 end

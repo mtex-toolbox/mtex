@@ -1,16 +1,16 @@
 function pf = loadPoleFigure_rigaku_dat(fname,varargin)
 % load *.dat files of rigaku devices
 %
-%% Syntax
-% pf = loadPoleFigure_rigaku_dat(fname,<options>)
+% Syntax
+%   pf = loadPoleFigure_rigaku_dat(fname,<options>)
 %
-%% Input
+% Input
 %  fname  - filename
 %
-%% Output
+% Output
 %  pf - @PoleFigure
 %
-%% See also
+% See also
 % ImportPoleFigureData loadPoleFigure
 
 try
@@ -35,7 +35,7 @@ try
   theta = sqrt(x.^2 + y.^2)*degree;
   
   % setup specimen directions
-  r = S2Grid(sph2vec(theta,rho),'antipodal');
+  r = vector3d('polar',theta,rho,'antipodal');
   
   % guess crystal direction
   h = string2Miller(fname);
@@ -50,5 +50,3 @@ catch
   
 end
 
-
-%%

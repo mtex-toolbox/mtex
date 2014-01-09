@@ -44,7 +44,7 @@ else  % other projections
   
 end
 
-r = S2Grid(vector3d('polar',theta,rho)); % fix 'RESOLUTION'
+r = vector3d('polar',theta,rho,'antipodal');
 
 h  = string2Miller(fname);
 pf = PoleFigure(h,r,data,'comment',comment,varargin{:});

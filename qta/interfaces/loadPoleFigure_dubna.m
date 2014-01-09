@@ -1,20 +1,20 @@
 function pf = loadPoleFigure_dubna(fname,varargin)
 % load dubna cnv file 
 %
-%% Syntax
-% pf = loadPoleFigure_dubna(fname,<options>)
+% Syntax
+%   pf = loadPoleFigure_dubna(fname)
 %
-%% Input
+% Input
 %  fname - file name
 %
-%% Options
+% Options
 %  STANDARD_GRID - use reguar 5 degree grid
 %  DUBNA_GRID    - use original rotated Dubna grid
 %
-%% Output
+% Output
 %  pf    - @PoleFigure
 %
-%% See also
+% See also
 % loadPoleFigure dubna_demo ImportPoleFigureData
 
 % ensure right extension

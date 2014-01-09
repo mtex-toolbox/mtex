@@ -1,16 +1,16 @@
 function pf = loadPoleFigure_rigaku_txt(fname,varargin)
 % import data fom ana file
 %
-%% Syntax
-% pf = loadPoleFigure_rigaku_txt(fname,<options>)
+% Syntax
+%   pf = loadPoleFigure_rigaku_txt(fname,<options>)
 %
-%% Input
+% Input
 %  fname  - filename
 %
-%% Output
+% Output
 %  pf - vector of @PoleFigure
 %
-%% See also
+% See also
 % ImportPoleFigureData loadPoleFigure
 
 fid = efopen(fname);
@@ -69,7 +69,7 @@ try
   r = vector3d('polar',theta,rho); 
   
   % append last pole figure
-  pf = PoleFigure(string2Miller(fname),S2Grid(r),d,varargin{:});
+  pf = PoleFigure(string2Miller(fname),r,d,varargin{:});
   
 catch
   interfaceError(fname,fid);

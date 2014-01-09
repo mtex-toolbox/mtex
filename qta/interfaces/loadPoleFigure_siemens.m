@@ -61,7 +61,7 @@ fclose(fid);
 for p=1:length(h)
   
   n = numel(d{p})/numel(theta{p});
-  r = S2Grid('theta',theta{p}*degree,'rho',linspace(0,2*pi*(n-1/n),n));
+  r = regularS2Grid('theta',theta{p}*degree,'rho',linspace(0,2*pi*(n-1/n),n));
   pf(p) = PoleFigure(h(p),r,d{p},varargin{:});
   
 end

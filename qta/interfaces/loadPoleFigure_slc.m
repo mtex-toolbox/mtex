@@ -1,13 +1,13 @@
 function pf = loadPoleFigure_slc(fname,varargin)
 % load *.txt file with regular grid
 %
-%% Input
+% Input
 % fname - file name
 %
-%% Output
+% Output
 % pf    - @PoleFigure
 %
-%% See also
+% See also
 % ImportPoleFigureData loadPoleFigure
 
 % ensure right extension
@@ -23,7 +23,8 @@ try
   % set up specimen directions
   rho = A(:,1)*10*degree;
   theta = linspace(90*degree,-90*degree,size(A,2)-1);
-  r = S2Grid('theta',theta,'rho',rho,'antipodal');
+  
+  r = regularS2Grid('theta',theta,'rho',rho,'antipodal');
   
   A = A(:,2:end);
   

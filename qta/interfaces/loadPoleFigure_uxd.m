@@ -1,16 +1,16 @@
 function pf = loadPoleFigure_uxd(fname,varargin)
 % import data fom ana file
 %
-%% Syntax
-% pf = loadPoleFigure_uxd(fname,<options>)
+% Syntax
+%   pf = loadPoleFigure_uxd(fname,<options>)
 %
-%% Input
+% Input
 %  fname  - filename
 %
-%% Output
+% Output
 %  pf - vector of @PoleFigure
 %
-%% See also
+% See also
 % ImportPoleFigureData loadPoleFigure
 
 fid = efopen(fname);
@@ -38,7 +38,7 @@ try
     % new polfigure
     if ~strcmp(h,th)
       if ~isempty(h)
-        pf(npf) = PoleFigure(Miller(1,0,0),S2Grid(r),d,symmetry('m-3m'),symmetry,'comment',comment); %#ok<AGROW>
+        pf(npf) = PoleFigure(Miller(1,0,0),r,d,symmetry('m-3m'),symmetry,'comment',comment); %#ok<AGROW>
         npf = npf + 1;
       end
       h = th;
@@ -64,7 +64,7 @@ try
   end
   
   % append last pole figure
-  pf(npf) = PoleFigure(string2Miller(fname),S2Grid(r),d,'comment',comment,varargin{:});
+  pf(npf) = PoleFigure(string2Miller(fname),r,d,'comment',comment,varargin{:});
   
 catch
   interfaceError(fname,fid);

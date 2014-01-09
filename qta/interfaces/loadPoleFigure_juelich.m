@@ -1,13 +1,13 @@
 function pf = loadPoleFigure_juelich(fname,varargin)
 % load juelich data format
 %
-%% Input
+% Input
 %  fname - file name
 %
-%% Output
+% Output
 %  pf    - vector of @PoleFigure
 %
-%% See also
+% See also
 % ImportPoleFigureData loadPoleFigure
 
 % check second commentar line

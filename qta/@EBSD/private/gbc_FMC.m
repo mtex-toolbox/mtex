@@ -1,7 +1,7 @@
 function [criterion] = gbc_FMC(q, CS, Dl,Dr, cmaha, varargin)
 
 
-A_D = sparse(Dl,Dr,true,numel(q),numel(q));
+A_D = sparse(Dl,Dr,true,length(q),length(q));
 
 fmc.CS = CS;
 fmc.O  = q;

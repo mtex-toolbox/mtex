@@ -1,15 +1,16 @@
 function pf = loadPoleFigure_aachen_exp(fname,varargin)
 % import data fom aachen_exp file
 %
-%% Syntax
-% pf = loadPoleFigure_aachen_exp(fname,<options>)
+% Syntax
+%   pf = loadPoleFigure_aachen_exp(fname,<options>)
 %
-%% Input
+% Input
 %  fname  - filename
 %
-%% Output
+% Output
 %  pf - vector of @PoleFigure
-%% See also
+%
+% See also
 % ImportPoleFigureData loadPoleFigure
 
 % open file
@@ -31,7 +32,7 @@ try
   
   theta = (rd{1}:rd{3}:rd{2})*degree;
   rho = (rd{4}:rd{5}:360-rd{5})*degree;
-  r = S2Grid('theta',theta,'rho',rho,'antipodal');
+  r = regularS2Grid('theta',theta,'rho',rho,'antipodal');
   
   ip = 1;
   while ~feof(fid)

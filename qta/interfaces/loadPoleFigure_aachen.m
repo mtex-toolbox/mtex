@@ -83,7 +83,7 @@ while ~feof(fid)
     rho   = (0:dphi:maxphi-dphi) * degree;
     theta = ((1-iwin)*dtheta/2:dtheta:maxtheta)*degree;
     
-    r = S2Grid('theta',theta,'rho',rho,'resolution',min(dtheta,dphi)*degree,'antipodal');
+    r = regularS2Grid('theta',theta,'rho',rho,'resolution',min(dtheta,dphi)*degree,'antipodal');
  
 % ---------------- read data ------------------------------------
     

@@ -4,6 +4,7 @@ classdef ODF < matlab.mixin.Heterogeneous
     CS = symmetry('-1'); % crystal symmetry
     SS = symmetry('-1'); % specimen symmetry
     weight = 1; % weight
+    file_name = [];
   end
   
   methods
@@ -75,7 +76,7 @@ classdef ODF < matlab.mixin.Heterogeneous
     plotAngleDistribution(odf,varargin)
     plotAxisDistribution(odf,varargin)
     plotDiff(odf1,odf2,varargin)
-    [x,omega] = plotfibre(odf,h,r,varargin)
+    [x,omega] = plotFibre(odf,h,r,varargin)
     plotipdf(odf,r,varargin)
     plotodf(odf,varargin)
     plotodf1d(odf,varargin)

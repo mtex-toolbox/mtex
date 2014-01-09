@@ -1,19 +1,19 @@
 function pf = loadPoleFigure_labotex(fname,varargin)
 % load labotex pole figure data
 %
-%% Input
+% Input
 % fname - file name
 %
-%% Output
+% Output
 % pf    - @PoleFigure
 %
-%% See also
+% See also
 % ImportPoleFigureData loadPoleFigure
 
 % open the file
 fid = efopen(fname);
 
-%% read header
+% read header
 
 try
   
@@ -43,14 +43,14 @@ try
     hr = sscanf(s,'%f%f%f%f%f%f%f%f%d%d%d%d%d');
     theta = (hr(2):hr(4):hr(3))*degree;
     rho = (hr(5):hr(7):hr(6))*degree;
-    r{n} = S2Grid('theta',theta,'rho',rho,'antipodal'); %#ok<AGROW>
+    r{n} = regularS2Grid('theta',theta,'rho',rho,'antipodal'); %#ok<AGROW>
     h{n} = Miller(hr(9),hr(10),hr(11),cs); %#ok<AGROW>
   end
   
   for n = 1:npf
     
     % read data
-    d = textscan(fid,'%f',numel(r{n}));
+    d = textscan(fid,'%f',length(r{n}));
     d = reshape(double(d{1}),size(r{n}));
     
     % construct pole figure object

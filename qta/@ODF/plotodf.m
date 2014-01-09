@@ -30,7 +30,7 @@ function plotodf(odf,varargin)
 
 % -------- one - dimensional plot ---------------------------------------
 if check_option(varargin,'RADIALLY')
-  plotodf1d(odf,varargin{:});
+  plotFibre(odf,varargin{:});
   return
 end
 

@@ -22,7 +22,7 @@ function [TVoigt, TReuss, THill] = calcTensor(odf,T,varargin)
  
 % convert to FourierODF
 if ~isa(odf,'BinghamODF') && ~check_option(varargin,'quadrature')
-  odf = FourierODF(odf,rank(T));
+  odf = FourierODF(odf,T.rank);
 end
 
 % more then one output -> also compute Reuss mean

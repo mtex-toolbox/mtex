@@ -47,7 +47,7 @@ for i = 1:length(pfmeas)
     epsilon = get_option(varargin,'RP',1,'double');
     ind = d2 > epsilon*alpha;
     d = abs(d1(ind)-d2(ind))./d2(ind);
-    pfcalc(i).r = delete(pfcalc(i).r,~ind);
+    pfcalc(i).r = pfcalc(i).r(ind);
   else
     epsilon = get_option(varargin,'epsilon',0.5,'double');
     d = abs(d1-d2)./max(d1+epsilon*alpha,d2+epsilon*alpha);

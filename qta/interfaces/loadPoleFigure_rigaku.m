@@ -1,16 +1,16 @@
 function pf = loadPoleFigure_rigaku(fname,varargin)
 % import data fom Rigaku SamrtLab txt file
 %
-%% Syntax
-% pf = loadPoleFigure_rigaku(fname,<options>)
+% Syntax
+%   pf = loadPoleFigure_rigaku(fname,<options>)
 %
-%% Input
+% Input
 %  fname  - filename
 %
-%% Output
+% Output
 %  pf - @PoleFigure
 %
-%% See also
+% See also
 % ImportPoleFigureData loadPoleFigure
 
 try
@@ -29,7 +29,6 @@ try
   theta = (90 - data(:,1))*degree;
   rho = data(:,2) * degree;
   r = vector3d('polar',theta,rho);
-  r = S2Grid(r,'antipodal');
   
   % define crystal directions
   h = string2Miller(fname);

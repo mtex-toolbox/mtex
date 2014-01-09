@@ -11,14 +11,14 @@ elseif isa(T2,'tensor') && isa(T1,'double')
   
 elseif isa(T2,'tensor') && isa(T2,'tensor')
   
-  if rank(T1) < rank(T2)
+  if T1.rank < T2.rank
     r = size(T2.M);
-    r(1:rank(T1)) = 1;
+    r(1:T1.rank) = 1;
     T1.M = repmat(T1.M,r);
     T1.rank = T2.rank;
-  elseif rank(T1) > rank(T2)
+  elseif T1.rank > T2.rank
     r = size(T1.M);
-    r(1:rank(T2)) = 1;
+    r(1:T2.rank) = 1;
     T2.M = repmat(T2.M,r);
     T2.rank = T1.rank;
   end

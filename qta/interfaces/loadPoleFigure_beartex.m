@@ -1,16 +1,16 @@
 function pf = loadPoleFigure_beartex(fname,varargin)
 % import data fom BeaTex file
 %
-%% Syntax
-% pf = loadPoleFigure_beartex(fname,<options>)
+% Syntax
+%   pf = loadPoleFigure_beartex(fname,<options>)
 %
-%% Input
+% Input
 %  fname    - filename
 %
-%% Output
+% Output
 %  pf - vector of @PoleFigure
 %
-%% See also
+% See also
 % ImportPoleFigureData loadPoleFigure
 
 fid = efopen(fname);
