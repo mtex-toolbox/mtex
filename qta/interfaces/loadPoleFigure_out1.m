@@ -32,7 +32,7 @@ try
     d = data((k*gz)+1:(k+1)*gz,2);
     pf(k+1) = PoleFigure(h(k+1),r,d,varargin{:});
   end
-  pf = delete(pf,getdata(pf)<0);
+  pf = delete(pf,get(pf,'intensities')<0);
 catch
   interfaceError(fname);
 end

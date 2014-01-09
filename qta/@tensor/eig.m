@@ -1,7 +1,7 @@
 function [E,V] = eig(T)
 % compute the eigenvalues and eigenvectors of a tensor
 
-switch rank(T)
+switch T.rank
 
   case 1
   case 2

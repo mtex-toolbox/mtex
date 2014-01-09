@@ -1,16 +1,16 @@
 function pf = loadPoleFigure_ibm(fname,varargin)
 % import data fom ibm file
 %
-%% Syntax
-% pf = loadPoleFigure_ibm(fname,<options>)
+% Syntax
+%   pf = loadPoleFigure_ibm(fname,<options>)
 %
-%% Input
+% Input
 %  fname    - filename
 %
-%% Output
+% Output
 %  pf - vector of @PoleFigure
 %
-%% See also
+% See also
 % ImportPoleFigureData loadPoleFigure
 
 assertExtension(fname,'.ibm');

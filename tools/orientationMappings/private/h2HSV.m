@@ -24,8 +24,7 @@ if check_option(varargin,'antipodal')
             
     case '2/m'
       
-      rot = get(cs,'rotation');
-      constraints = get(rot(2),'axis');
+      constraints = cs(2).axis;
       center = constraints;
       maxRho = pi;
       shAnti = sh;

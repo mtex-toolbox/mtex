@@ -31,7 +31,7 @@ try
   while pos <= length(d{1})
     
     npos = find(d{1}(pos)==d{1},1,'last');
-    r = S2Grid(sph2vec(pi/2-d{2}(pos:npos)*degree,d{3}(pos:npos)*degree),'antipodal');
+    r = vector3d('polar',pi/2-d{2}(pos:npos)*degree,d{3}(pos:npos)*degree);
     dd = d{4}(pos:npos);
     
     pf = [pf,PoleFigure(Miller(1,0,0),r,dd,varargin{:})]; %#ok<AGROW>

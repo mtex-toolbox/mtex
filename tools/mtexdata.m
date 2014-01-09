@@ -200,7 +200,8 @@ ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','sharp.txt'),'CS',CS,...
 % ----------------------------------------------------------------------
 function [CS,ebsd] = mtexdata_3d
 
-ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','3dData','*.ANG'),'3d', (0:58)*0.12);
+ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','3dData','*.ANG'),...
+  '3d', (0:58)*0.12,'convertEuler2SpatialReferenceFrame');
 CS = get(ebsd,'CS');
 
 % ----------------------------------------------------------------------
@@ -218,7 +219,8 @@ ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','P5629U1.txt'),CS, ...
 % ----------------------------------------------------------------------
 function [CS,ebsd] = mtexdata_epidote
 
-ebsd = loadEBSD([mtexDataPath '/EBSD/data.ctf'],'ignorePhase',[0 3 4]);
+ebsd = loadEBSD([mtexDataPath '/EBSD/data.ctf'],'ignorePhase',[0 3 4],...
+  'convertEuler2SpatialReferenceFrame');
 CS = get(ebsd,'CS');
 
 

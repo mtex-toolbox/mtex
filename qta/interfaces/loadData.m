@@ -113,10 +113,10 @@ end
 if strcmpi(type,'EBSD') && check_option(varargin,'3d')
   Z = get_option(varargin,'3d',1:numel(data),'double');
   for k=1:numel(data)
-    data{k} = set(data{k},'z',repmat(Z(k),length(data{k}),1)); %#ok<AGROW>
+    data{k}.z = repmat(Z(k),length(data{k}),1);     %#ok<AGROW>
   end
   data = [data{:}];
-  data = set(data,'unitCell',calcUnitCell(get(data,'xyz'),varargin{:}));
+  data.unitCell = calcUnitCell([data.x(:),data.y(:),data.z(:)],varargin{:});
 end
 
 % set crystal and specimen symmetry, specimen direction
@@ -125,9 +125,9 @@ if ~any(strcmpi(type,{'tensor','vector3d'}))
     data = cellfun(@(d,f) setOption(d,'file_name',strtrim(ls(f))),data,fname,'UniformOutput',false);
     data = [data{:}];
   end
-     
+    
   if exist('cs','var'), data = set(data,'CS',cs,'noTrafo');end
-  if exist('ss','var'), data = set(data,'SS',ss);end % TODO
+  if exist('ss','var') && ~isa(data,'EBSD'), data = set(data,'SS',ss);end % TODO
   if exist('h','var'),  data = set(data,'h',h);end
   if ~isempty_cell(c),  data = set(data,'c',c);end
 else

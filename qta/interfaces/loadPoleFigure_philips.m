@@ -1,13 +1,13 @@
 function pf = loadPoleFigure_philips(fname,varargin)
 % load philips *.txt file
 %
-%% Input
+% Input
 % fname - file name
 %
-%% Output
+% Output
 % pf    - @PoleFigure
 %
-%% See also
+% See also
 % ImportPoleFigureData loadPoleFigure
 
 fid = efopen(fname);
@@ -34,7 +34,7 @@ try
   assert_grid(theta{1},theta{3},theta{2},rho{1},rho{3},rho{2},'degree');
   theta = (theta{1}:theta{3}:theta{2})*degree;
   rho = (rho{1}:rho{3}:rho{2})*degree;
-  r = S2Grid('theta',theta,'rho',rho(1:end-1),'antipodal');
+  r = regularS2Grid('theta',theta,'rho',rho(1:end-1),'antipodal');
   
   % one free line
   assert(isempty(fgetl(fid)));

@@ -1,13 +1,13 @@
 function unitCell = calcUnitCell(xy,varargin)
 % compute the unit cell for an EBSD data set
 %
-%% Input
+% Input
 %  xy - spatial coordinates
 %
-%% Output
+% Output
 %  unitCell - coordinates of the unit cell
 %
-%% Options
+% Options
 %
 % GridType - [automatic, hexagonal, rectangular]
 
@@ -37,14 +37,14 @@ xy = subSample(xy,10000);
 
 try
   % compute Voronoi decomposition
-  [v c] = voronoin(xy,{'Qz'});
+  [v, c] = voronoin(xy,{'Qz'});
   
   % compute the area of all Voronoi cells
   areaf = @(x,y) abs(0.5.*sum(x(1:end-1).*y(2:end)-x(2:end).*y(1:end-1)));
   areaf = cellfun(@(c1) areaf(v([c1 c1(1)],1),v([c1 c1(1)],2)),c);
   
   % the unit cell should be the Voronoi cell with the smalles area
-  [a ci] = min(areaf);
+  [a, ci] = min(areaf);
   
   % compute vertices of the unit cell
   unitCell = [v(c{ci},1) - xy(ci,1),v(c{ci},2) - xy(ci,2)];
@@ -88,7 +88,7 @@ end
 
 
 
-%% a regular polygon with s vertices, diameter d, and rotation rot
+% a regular polygon with s vertices, diameter d, and rotation rot
 function unitCell = regularPoly(s,d,rot)
 
 c = exp(1i*((pi/s:pi/(s/2):2*pi)+rot))*d./sqrt((s/2));
@@ -111,7 +111,7 @@ isRegular = any(sides == [4 6]) && ... % norm(sideLength - mean(sideLength))*dxy
   norm(enclosingAngle - mean(enclosingAngle)) < 0.05*degree;
 
 
-%% find a quare subset of about N points
+% find a quare subset of about N points
 function xy = subSample(xy,N)
 
 xminmax = [min(xy(:,1));max(xy(:,1))];

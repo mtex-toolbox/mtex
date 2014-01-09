@@ -4,23 +4,14 @@ function psi = calcKernel(grains,varargin)
 %
 % for options, please see [[EBSD.calcKernel.html, calcKernel]].
 %
-%% Input
+% Input
 %  grains - @GrainSet
 %
-%% Output
+% Output
 %  psi    - @kernel
 %
-%% See also
+% See also
 % EBSD/calcKernel EBSD/calcODF
 
-% extract mean orientations
-o = get(grains,'orientation');
-  
-% define weights
-opt.weight = grainSize(grains);
-
-% construct weighted ebsd object
-ebsd = EBSD(o,'options',opt);
-  
 % compute kernel function
-psi = calcKernel(ebsd,varargin{:});
+psi = calcKernel(grains.meanOrientation,'weights',grains.grainSize,varargin{:});

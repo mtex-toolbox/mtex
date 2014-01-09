@@ -1,16 +1,16 @@
 function pf = loadPoleFigure_scintag(fname,varargin)
 % import data fom scintag ascii file
 %
-%% Syntax
-% pf = loadPoleFigure_scintag(fname,<options>)
+% Syntax
+%   pf = loadPoleFigure_scintag(fname,<options>)
 %
-%% Input
+% Input
 %  fname    - filename
 %
-%% Output
+% Output
 %  pf - vector of @PoleFigure
 %
-%% See also
+% See also
 % ImportPoleFigureData loadPoleFigure
 
 
@@ -67,7 +67,7 @@ try
     
   end
   
-  pf = PoleFigure( h,S2Grid(r,'antipodal'),I,varargin{:});
+  pf = PoleFigure( h,r,I,varargin{:});
 catch
   interfaceError(fname);
 end

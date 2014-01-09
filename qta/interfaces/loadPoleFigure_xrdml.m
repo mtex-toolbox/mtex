@@ -1,16 +1,16 @@
 function pf = loadPoleFigure_xrdml(fname,varargin)
 % load xrdMeasurement (xrdml) file
 %
-%% Syntax
-% pf = loadPoleFigure_xrdml(fname,<options>)
+% Syntax
+%   pf = loadPoleFigure_xrdml(fname,<options>)
 %
-%% Input
+% Input
 %  fname - file name
 %
-%% Output
+% Output
 %  pf    - @PoleFigure
 %
-%% See also
+% See also
 % ImportPoleFigureData
 
 assertExtension(fname,'.xml','.xrdml');
@@ -58,7 +58,7 @@ if numel(unique([data.position_2Theta]))>1
 end
 
 d = vertcat(data.intensities);
-r = S2Grid(vertcat(data.r));
+r = vertcat(data.r);
 
 hkl = unique(vertcat(data.h),'rows');
 h = Miller(hkl(:,1),hkl(:,2),hkl(:,3));

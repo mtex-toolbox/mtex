@@ -4,7 +4,7 @@ function [grains,I_PC] = merge(grains, property, varargin)
 % The function merges grains where the special boundary is determined by
 % the function <GrainSet.specialBoundary.html specialBoundary>
 %
-%% Input
+% Input
 % grains  - @GrainSet
 % property - colorize a special grain boundary property, variants are:
 %
@@ -22,7 +22,7 @@ function [grains,I_PC] = merge(grains, property, varargin)
 %
 %    *  @vector3d -- axis of misorientation
 %
-%% Options
+% Options
 %  delta - specify a searching radius for special grain boundary
 %            (default 5 degrees), if a orientation or crystallographic face
 %            is specified.
@@ -41,11 +41,11 @@ function [grains,I_PC] = merge(grains, property, varargin)
 %    input property, if there is a third commongrain, satisfying the
 %    property specified after ThirdCommonGrain.
 %
-%% Output
+% Output
 % grains - @GrainSet
 % I_PC   - incidence matrix with Parents x Childs
 %
-%% Syntax
+% Syntax
 % [g,I_PC] = merge(grains,property,...,param,val,...) - merges neighbored grains
 %   whos common boundary satisfies |property| and returns also an matrix
 %   parents vs. childs
@@ -55,10 +55,11 @@ function [grains,I_PC] = merge(grains, property, varargin)
 %
 % g = merge(grains,CSL(3))        - merges grains with special boundary CSL3
 %
-%% See also
+% See also
 % EBSD/calcGrains GrainSet/specialBoundary
 
-%% Determine the boundaries, which should be merged
+% Determine the boundaries, which should be merged
+% ------------------------------------------------
 
 f = specialBoundary(grains,property,varargin{:},'PhaseRestricted');
 
@@ -66,7 +67,8 @@ f = specialBoundary(grains,property,varargin{:},'PhaseRestricted');
 I_FD = grains.I_FDext | grains.I_FDint;
 I_FD(f,:) = false;
 
-%% Resegment   (see calcGrains)
+% Resegment   (see calcGrains)
+% ----------------------------
 
 I_FD = double(I_FD);
 % new boundaries
@@ -77,7 +79,8 @@ ids = connectedComponents(A_Do|A_Do');
 
 A_Db = A_Db|A_Db';
 
-%% retrieve neighbours
+% retrieve neighbours
+% -------------------
 
 I_DG = sparse(1:numel(ids),double(ids),1);  % voxels incident to grains
 A_G = I_DG'*A_Db*I_DG;                      % adjacency of grains
@@ -86,9 +89,11 @@ A_G = I_DG'*A_Db*I_DG;                      % adjacency of grains
 I_PC = double(I_DG'*grains.I_DG>0); % determine which cells were merged;
 
 grains.I_DG = I_DG;
-grains.A_G = A_G > 0;
+%grains.A_G = A_G > 0;
+grains.A_Db = A_Db;
 
-%% interior and exterior grain boundaries
+% interior and exterior grain boundaries
+% --------------------------------------
 
 sub = A_Db * I_DG & I_DG;                      % voxels that have a subgrain boundary
 [i,j] = find( diag(any(sub,2))*double(A_Db) ); % all adjacence to those
@@ -98,7 +103,8 @@ d = size(grains.A_D,1);
 A_Db_int = sparse(i(sub),j(sub),1,d,d);
 A_Db_ext = A_Db - A_Db_int;
 
-%% create incidence graphs
+% create incidence graphs
+% -----------------------
 
 I_FDbg = diag(sum(I_FD,2)==1)*I_FD;
 
@@ -120,28 +126,20 @@ I_FDint(logical(I_FDint)) = I_FD(logical(I_FDint));
 grains.I_FDext = I_FDext;
 grains.I_FDint = I_FDint;
 
-%% sort edges of boundary when 2d case
-
-if isfield(grains.options,'boundaryEdgeOrder')
-  
-  grains.options.boundaryEdgeOrder = BoundaryFaceOrder(I_PC,grains.options.boundaryEdgeOrder, grains.F, I_FDext, I_DG);
-  
+% sort edges of boundary when 2d case
+if isprop(grains,'boundaryEdgeOrder')
+  grains.boundaryEdgeOrder = ...
+    BoundaryFaceOrder(I_PC,grains.boundaryEdgeOrder, grains.F, I_FDext, I_DG); 
 end
 
-%% update phase
 
-[parent,child] = find(I_PC);
-phase(parent) = grains.phaseId(child);
-grains.phaseId = phase;
-
-%% update mean orientation
-
+% update mean orientation
+% -----------------------
 unchanged = sum(I_PC,2)==1;  % unchanged
 
 if any(~unchanged) % some of the were merged  
-  
-  CS = get(grains,'CSCell');
-  r  = get(grains.EBSD,'quaternion');
+    
+  r  = grains.ebsd.rotations;
 
   [i,oldval] = find(I_PC(unchanged,:));
   meanRotation(unchanged) = grains.meanRotation(oldval);
@@ -159,17 +157,14 @@ if any(~unchanged) % some of the were merged
   changed = find(~unchanged);
   for k=1:numel(cc)
     c = changed(k);
-    if ~ischar(CS{phase(k)})
-      meanRotation(c) = mean_CS(qcedx{k},CS{phase(c)});
+    phId = grains.phaseId(k);
+    if ~ischar(grains.CS{phId})
+      meanRotation(c) = mean_CS(qcedx{k},grains.CS{phId});
     end
   end
   
   grains.meanRotation = meanRotation;
   
-  [g,d] = find(I_DG');
-  mis2mean = inv(r(d)).* reshape(meanRotation(g),[],1);
-  
-  grains.EBSD = set(grains.EBSD,'mis2mean',mis2mean);
 end
 
 

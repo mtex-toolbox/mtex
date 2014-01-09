@@ -40,7 +40,7 @@ try
   % check grid
   assert(numel(theta) < 1000 && numel(rho)<1000);
   
-  r = S2Grid('theta',theta,'rho',rho,'antipodal');
+  r = regularS2Grid('theta',theta,'rho',rho,'antipodal');
   h = string2Miller(fname);
   
   

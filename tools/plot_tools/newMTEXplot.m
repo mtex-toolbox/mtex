@@ -19,7 +19,7 @@ newFigure = strcmp(getHoldState,'off') ||  check_option(varargin,'newFigure');
 if ~newFigure && check_option(varargin,'ensureTag') && ...
   ~any(strcmpi(get(gcf,'tag'),get_option(varargin,'ensureTag')))
   newFigure = true;
-  warning('MTEX:newFigure','Plot type not compatible to previous plot! I''going to create a new figure.');
+  warning('MTEX:newFigure','Plot type not compatible to previous plot! I''m going to create a new figure.');
 end
 
 %% check appdata
