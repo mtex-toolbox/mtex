@@ -1,9 +1,9 @@
-function c = LSCV(ebsd,psi)
+function c = LSCV(ori,psi,varargin)
 % least squares cross valiadation
 %
 % Input
-%  ebsd - @EBSD
-%  psi  - @kernel
+%  ori - @orientation
+%  psi - @kernel
 %
 % Output
 %  c
@@ -12,21 +12,14 @@ function c = LSCV(ebsd,psi)
 % EBSD/calcODF EBSD/calcKernel grain/calcKernel EBSD/BCV
 
 % extract data
-N = length(ebsd);
-o = ebsd.orientations;
-try
-  w = get(ebsd,'weight');
-  w = ones(size(w));
-catch
-  w = ones(size(o));
-end
-w = w ./ sum(w(:));
-ebsd = set(ebsd,'weight',w);
+N = length(ori);
+
+w = get_option(varargin,'weights',ones(size(ori)));
 
 % compute Fourier coefficients
 L = 25;
-odf_d = calcODF(ebsd,'kernel',kernel('Dirichlet',L),'Fourier',L,'silent');
-
+odf_d = calcFourierODF(ori,'weight',w,...
+  'kernel',kernel('Dirichlet',L),'silent');
 
 c = zeros(1,length(psi));
 
@@ -43,7 +36,7 @@ for i = 1:length(psi)
   
   % compute LSCV
   c(i) = (1-1/N)^2 * norm(Fourier(eodf,'l2-normalization'))^2 ...
-    - 2/N * sum(1./(1-w) .* eval(eodf,o)) ...
+    - 2/N * sum(1./(1-w) .* eval(eodf,ori)) ...
     + 2/N * eval(psi(i),0)* sum(w./(1-w)); %#ok<EVLC>
     
   % compute something else ---> no sence
