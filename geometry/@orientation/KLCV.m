@@ -1,9 +1,9 @@
-function c = KLCV(ebsd,psi,varargin)
+function c = KLCV(ori,psi,varargin)
 % Kullback Leibler cross validation for optimal kernel estimation
 %
 % Input
-%  ebsd - @EBSD
-%  psi  - @kernel
+%  ori - @orientation
+%  psi - @kernel
 %
 % Options
 %  SamplingSize - number of samples
@@ -15,8 +15,6 @@ function c = KLCV(ebsd,psi,varargin)
 % See also
 % EBSD/calcODF EBSD/calcKernel grain/calcKernel EBSD/BCV
 
-% get data
-q = get(ebsd,'orientations');
 %try
 %  w = get(ebsd,'weight');
 %  w = ones(size(w));
@@ -25,8 +23,8 @@ q = get(ebsd,'orientations');
 %end
 
 % partition data set
-sN = ceil(min(length(q),get_option(varargin,'SamplingSize',1000)));
-pN = get_option(varargin,'PartitionSize',ceil(1000000/length(q)));
+sN = ceil(min(length(ori),get_option(varargin,'SamplingSize',1000)));
+pN = get_option(varargin,'PartitionSize',ceil(1000000/length(ori)));
 cN = ceil(sN / pN);
 
 c = zeros(cN,length(psi));
@@ -35,15 +33,15 @@ progress(0,cN,' estimating optimal kernel halfwidth: ');
 
 for i = 1:cN
   
-  iN(i) = min(length(q),i*pN);
+  iN(i) = min(length(ori),i*pN);
   ind = ((i-1) * pN + 1):iN(i);
  
-  d =  dot_outer(q(ind),q);
+  d =  dot_outer(subSet(ori,ind),ori);
   
   for k = 1:length(psi)
     
     % eval kernel
-    f = evalCos(psi(k),d) ./ length(q) ./ length(get(ebsd,'CS'));
+    f = evalCos(psi(k),d) ./ length(ori) ./ length(ori.CS);
     
     % remove diagonal
     f(sub2ind(size(f),1:size(f,1),ind)) = 0;
@@ -55,9 +53,7 @@ for i = 1:cN
   end
   
   %[cm,ci] = max(sum(c));
-  %fprintf('%d ',ci);
-  
-  
+  %fprintf('%d ',ci);  
   
 end
 %fprintf('\n');
