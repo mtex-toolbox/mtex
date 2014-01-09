@@ -1,8 +1,9 @@
-function plotAngleDistribution( ebsd, varargin )
+function plotAngleDistribution( obj, varargin )
 % plot the angle distribution
 %
 % Input
 %  ebsd - @EBSD
+%  grains - @grainSet
 %
 % Flags
 %  ODF, MDF     - compute the uncorrelated angle distribution from the MDF
@@ -14,46 +15,46 @@ function plotAngleDistribution( ebsd, varargin )
 %
 
 % where to plot
-[ax,ebsd,varargin] = getAxHandle(ebsd,varargin{:});
+[ax,obj,varargin] = getAxHandle(obj,varargin{:});
 if isempty(ax), newMTEXplot;end
 
 % get phases
-ind = cellfun(@(c) isa(c,'EBSD'),varargin);
+ind = cellfun(@(c) isa(c,'misorientationAnalysis'),varargin);
 if any(ind)
-  ebsd2 = varargin{find(ind,1)};
+  obj2 = varargin{find(ind,1)};
   varargin = varargin(~ind);
 else
-  ebsd2 = ebsd;
+  obj2 = obj;
 end
 
-
+% bin size given?
 if ~isempty(varargin) && isscalar(varargin{1})
   bins = varargin{1};
 else
   bins = 20;
 end
 
+% only consider indexed data
+obj  = subSet(obj,~isNotIndexed(obj));
+obj2 = subSet(obj2,~isNotIndexed(obj2));
 
-%
-ebsd  = subSet(ebsd,~isNotIndexed(ebsd));
-ebsd2 = subSet(ebsd2,~isNotIndexed(ebsd2));
-
-phases1 = get(ebsd,'phase');
+% split according to phases
+phases1 = obj.phase;
 ph1 = unique(phases1);
 
-phases2 = get(ebsd2,'phase');
+phases2 = obj2.phase;
 ph2 = unique(phases2);
 
-[ph phpos] = unique([ph1,ph2],'first');
+[ph, phpos] = unique([ph1,ph2],'first');
 for j = 1:numel(ph)
   if ismember(ph(j),ph1)
-    obj{phpos(j)} = subSet(ebsd,phases1 == ph(j)); %#ok<AGROW>
+    objSplit{phpos(j)} = subSet(obj,phases1 == ph(j)); 
   else
-    obj{phpos(j)} = subSet(ebsd2,phases2 == ph(j)); %#ok<AGROW>
+    objSplit{phpos(j)} = subSet(obj2,phases2 == ph(j));
   end
-  mineral{phpos(j)} = get(obj{phpos(j)},'mineral'); %#ok<AGROW>
+  mineral{phpos(j)} = objSplit{phpos(j)}.mineral; %#ok<AGROW>
   if check_option(varargin,{'ODF','MDF'})
-    obj{phpos(j)} = calcODF(obj{phpos(j)},'Fourier','halfwidth',10*degree,varargin{:}); %#ok<AGROW>
+    objSplit{phpos(j)} = calcODF(objSplit{phpos(j)},'Fourier','halfwidth',10*degree,varargin{:}); %#ok<AGROW>
   end
 end
 
@@ -63,8 +64,8 @@ ph1 = ph1(tril(ones(size(ph1)))>0);
 ph2 = ph2(tril(ones(size(ph2)))>0);
 
 % compute omega
-CS = ebsd.CS;
-phMap = ebsd.phaseMap;
+CS = obj.CS;
+phMap = obj.phaseMap;
 maxomega = 0;
 
 for j = 1:numel(CS)
@@ -84,7 +85,7 @@ f = zeros(numel(omega),numel(ph1));
 
 for i = 1:numel(ph1)
 
-  f(:,i) = calcAngleDistribution(obj{ph1(i)},obj{ph2(i)},'omega',omega,varargin{:});
+  f(:,i) = calcAngleDistribution(objSplit{ph1(i)},objSplit{ph2(i)},'omega',omega,varargin{:});
   f(:,i) = 100*f(:,i) ./ sum(f(:,i));
 
   lg{i} = [mineral{ph1(i)} ' - ' mineral{ph2(i)}]; %#ok<AGROW>

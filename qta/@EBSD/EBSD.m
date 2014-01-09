@@ -1,4 +1,4 @@
-classdef EBSD < dynProp & dynOption
+classdef EBSD < dynProp & dynOption & misorientationAnalysis
   % constructor
   %
   % *EBSD* is the low level constructor for an *EBSD* object representing EBSD

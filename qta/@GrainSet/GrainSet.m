@@ -1,4 +1,4 @@
-classdef GrainSet < dynProp
+classdef GrainSet < dynProp & misorientationAnalysis
   % construct
   %
   % *GrainSet* represents grain objects. a *GrainSet* can be constructed from

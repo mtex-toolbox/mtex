@@ -1,8 +1,9 @@
-function plotAxisDistribution(ebsd,varargin)
+function plotAxisDistribution(obj,varargin)
 % plot uncorrelated axis distribution
 %
 % Input
-%  ebsd - @EBSD
+%  ebsd   - @EBSD
+%  grains - @grainSet
 %
 % Options
 %  resolution - resolution of the plots
@@ -16,11 +17,11 @@ function plotAxisDistribution(ebsd,varargin)
 % SphericalProjection_demo
 
 % where to plot
-[ax,ebsd,varargin] = getAxHandle(ebsd,varargin{:});
+[ax,obj,varargin] = getAxHandle(obj,varargin{:});
 if isempty(ax), newMTEXplot;end
 
 % calc axis distribution
-axes = calcAxisDistribution(ebsd,'SampleSize',10000,varargin{:});
+axes = calcAxisDistribution(obj,'SampleSize',10000,varargin{:});
 
 % plot
 plot(ax{:},axes,'all','FundamentalRegion',varargin{:});
@@ -30,7 +31,7 @@ if isempty(ax)
   set(gcf,'tag','AxisDistribution');
   setappdata(gcf,'CS',get(axes,'CS'));
   name = inputname(1);
-  if isempty(name), name = ebsd.comment;end
+  if isempty(name), name = obj.comment;end
   set(gcf,'Name',['Axis Distribution of ',name]);
 end
 
