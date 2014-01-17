@@ -21,8 +21,8 @@ end
 csss = {'sample symmetry ','crystal symmetry'};
 
 % symmetries
-cs = odf(1).CS;
-ss = odf(1).SS;
+cs = odf.CS;
+ss = odf.SS;
 
 % ODF / MDF
 if isCS(ss) && isCS(cs)
@@ -39,10 +39,10 @@ disp(['  ' csss{isCS(ss)+1} ': ',char(ss,'verbose')]);
 
 % display components
 disp(' ');
-for i = 1:length(odf)
+for i = 1:length(odf.components)
   
-  odf(i).doDisplay;
-  disp(['    weight: ',num2str(odf(i).weight)]);  
+  odf.components{i}.display;
+  disp(['    weight: ',num2str(odf.weights(i))]);  
   disp(' ');
   
 end

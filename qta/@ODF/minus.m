@@ -7,4 +7,4 @@ function odf = minus(o1,o2)
 % See also
 % ODF_index ODF/mtimes
 
-odf = [o1,-o2];
+odf = o1 + (-1).* o2;

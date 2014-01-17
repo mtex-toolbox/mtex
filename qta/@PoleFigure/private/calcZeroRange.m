@@ -21,11 +21,11 @@ out_rho  = fft_rho(out_rho);
 r  = [reshape(out_rho,1,[]);reshape(out_theta,1,[])];
 
 % kernel used for calculation
-k = kernel('de la Vallee Poussin','halfwidth',...
-  get_option(varargin,'zr_halfwidth',2*get(pf,'resolution')),varargin{:});
+k = deLaValeePoussinKernel('halfwidth',...
+  get_option(varargin,'zr_halfwidth',2*get(pf,'resolution')));
 
 % legendre coefficents
-Al = getA(k); Al(2:2:end) = 0;
+Al = k.A; Al(2:2:end) = 0;
 Al = Al(1:min(400,length(Al)));
 
 % in - nodes to become r
@@ -37,7 +37,7 @@ gh = [reshape(in_rho,1,[]);reshape(in_theta,1,[])];
 % normalization
 c = ones(size(pf.intensities));
 w = call_extern('odf2pf','EXTERN',gh,r,c,Al);
-mw = RK(k,idquaternion,xvector,xvector,1,symmetry,symmetry);
+mw = k.RK(1);
 %w = max(RK(k,idquaternion,xvector,xvector,1,symmetry,symmetry)*0.25,w);
 %plot(S2G,'data',min(w,mw))
   

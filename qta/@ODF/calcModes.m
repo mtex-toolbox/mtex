@@ -39,61 +39,37 @@ res = 5*degree;
 % target resolution
 targetRes = get_option(varargin,'resolution',0.25*degree);
 
-% extract symmetry
-CS = odf(1).CS; SS = odf(1).SS;
 
 % initial seed
-S3G = [];
+ori = orientation(odf.CS,odf.SS);
 
-% TODO
-for i = 1:length(odf) 
-  
-  switch class(odf(i))
-  
-      
-    case'FibreODF' % fibre symmetric portion
-     
-      S3G = [S3G; orientation('fibre', odf(i).h, odf(i).r, CS, SS, 'resolution',res)]; %#ok<AGROW>
-      
-    case 'BinghamODF'
-   
-      S3G = [S3G;odf(i).A(:)]; %#ok<AGROW>
-       
-    case 'unimodalODF' % radially symmetric portion
-      
-      center = odf(i).center(odf(i).c>=quantile(odf(i).c,-20));
-      S3G = [S3G;center(:)]; %#ok<AGROW>
-      
-  end
+for i = 1:length(odf.components)   
+  ori = [ori,calcModes(odf.components{i},res)];     %#ok<AGROW>
 end
-
-if isempty(S3G)
-  S3G = equispacedSO3Grid(CS,SS,'resolution',res);
-end
-
+  
 % first evaluation
-f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
+f = eval(odf,ori,varargin{:}); %#ok<EVLC>
 
 % extract 20 largest values
-g0 = S3G(f>=quantile(f(:),-20));
+oriNextSeed = ori(f>=quantile(f(:),-20));
 
 while res > targetRes
 
   % new grid
-  S3G = [g0(:);...
-    localOrientationGrid(CS,SS,res,'center',g0,'resolution',res/4)];
+  ori = [oriNextSeed(:);...
+    localOrientationGrid(odf.CS,odf.SS,res,'center',oriNextSeed,'resolution',res/4)];
     
   % evaluate ODF
-  f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
+  f = eval(odf,ori,varargin{:}); %#ok<EVLC>
   
   % extract largest values
-  g0 = S3G(f>=quantile(f(:),0));
+  oriNextSeed = ori(f>=quantile(f(:),0));
   
   res = res / 2; 
 end
 
 [values,ind] = max(f(:));
-modes = S3G(ind);
+modes = ori(ind);
 
 end
 

@@ -23,11 +23,11 @@ L = max(L,4);
 
 f_hat = zeros(deg2dim(L+1),1);
 
-for i = 1:numel(odf)
+for i = 1:numel(odf.components)
   
-  hat = doFourier(odf(i),L,varargin{:});
+  hat = calcFourier(odf.components{i},L,varargin{:});
   
-  f_hat(1:numel(hat)) = f_hat(1:numel(hat)) + odf(i).weight * hat;
+  f_hat(1:numel(hat)) = f_hat(1:numel(hat)) + odf.weights(i) * hat;
     
 end
 

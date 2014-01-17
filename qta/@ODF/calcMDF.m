@@ -22,7 +22,8 @@ function mdf = calcMDF(odf1,varargin)
 if check_option(varargin,'kernelMethod') && isa(odf1,'unimodalODF') && ...
     (isa(varargin{1},'unimodalODF') || ~isa(varargin{1},'ODF'))
 
-  mdf = doMDF(odf1,varargin{:});
+  % TODO
+  mdf = calcMDF(odf1,varargin{:});
   
 else % Fourier method
   
@@ -33,7 +34,7 @@ else % Fourier method
   odf1 = FourierODF(odf1,L);
 
   % extract Fourier coefficients
-  L = min(bandwidth(odf1),L);
+  L = min(odf1.components{1}.bandwidth,L);
 
   % is second argument also an ODF?
   if nargin > 1 && isa(varargin{1},'ODF')
@@ -43,6 +44,6 @@ else % Fourier method
   end
 
   % compute MDF
-  mdf = doMDF(odf1,odf2);
+  mdf = calcMDF(odf1.components,odf2.components);
 
 end

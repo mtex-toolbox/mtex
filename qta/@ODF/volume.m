@@ -28,9 +28,9 @@ v = 0;
 S3G = [];
 
 % cycle through components
-for i = 1:length(odf)
+for i = 1:length(odf.components)
   
-  [iv,S3G] = doVolume(odf(i),center,radius,S3G,varargin{:});
+  [iv,S3G] = volume(odf.components{i},center,radius,S3G,varargin{:});
   v = v + iv;
   
 end

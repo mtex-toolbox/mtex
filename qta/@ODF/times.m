@@ -15,8 +15,4 @@ elseif isa(y,'ODF') && isa(x,'double')
   f = x;
 end
 
-if numel(f) == 1, f = repmat(f,size(odf));end
-
-for i = 1:length(odf)
-  odf(i).weight = odf(i).weight * f(i);
-end
+odf.weights = odf.weights .* f;

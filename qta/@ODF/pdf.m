@@ -19,7 +19,7 @@ function Z = pdf(odf,h,r,varargin)
 % ODF/plotpdf ODF/plotipdf ODF/calcPoleFigure
 
 % check crystal symmetry
-if isa(h,'Miller'), h = ensureCS(odf(1).CS,{h});end
+if isa(h,'Miller'), h = ensureCS(odf.CS,{h});end
 
 % superposition coefficients
 sp = get_option(varargin,'superposition',1);
@@ -44,8 +44,9 @@ for s = 1:length(sp)
   end
   
   % compute poledensity for all portions
-  for i = 1:length(odf)
-    Z = Z + odf(i).weight * sp(s) * reshape(doPDF(odf(i),hh,r,varargin{:}),size(Z));
+  for i = 1:length(odf.components)
+    Z = Z + odf.weights(i) * sp(s) * ...
+      reshape(calcPDF(odf.components{i},hh,r,varargin{:}),size(Z));
   end
 end
 

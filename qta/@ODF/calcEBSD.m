@@ -15,19 +15,19 @@ function ori = calcEBSD(odf,points,varargin)
 % ODF_calcPoleFigure
 
 % distribute samples over the parts of the ODF
-if length(odf) == 1
+if length(odf.components) == 1
   iodf = ones(points,1);
 else
-  iodf = discretesample([odf.weight], points);
+  iodf = discretesample([odf.weights], points);
 end
 
 % preallocate orientations
 ori = repmat(orientation(idquaternion,odf(1).CS,odf(1).SS),points,1);
 
 % draw random sample from each component
-for i = 1:numel(odf)
+for i = 1:numel(odf.components)
 
-  ori(iodf==i) = discreteSample(odf(i),nnz(iodf==i),varargin{:});
+  ori(iodf==i) = discreteSample(odf.components{i},nnz(iodf==i),varargin{:});
     
 end
 

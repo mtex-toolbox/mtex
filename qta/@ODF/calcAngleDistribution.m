@@ -26,8 +26,8 @@ if ~check_option(varargin,'fast')
   % initialize evaluation grid
   S3G = quaternion;
   iS3G = 0;
-  cs1 = get(odf,'CS');
-  cs2 = get(odf,'SS');
+  cs1 = odf.CS;
+  cs2 = odf.SS;
   csU = union(cs1,cs2);
   csD = disjoint(cs1,cs2);
   

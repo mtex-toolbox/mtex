@@ -4,11 +4,10 @@ function odf = SantaFe
 CS = symmetry('cubic');
 SS = symmetry('222');
 
-psi = kernel('von Mises Fisher','HALFWIDTH',10*degree);
-g0 = Miller2quat(Miller(1,2,2,CS),Miller(2,2,1,CS));
+psi = vonMisesFisherKernel('HALFWIDTH',10*degree);
+ori = orientation('Miller',Miller(1,2,2,CS),Miller(2,2,1,CS));
 
-odf =  0.73 * uniformODF(CS,SS,'comment','the SantaFe-sample ODF') ...
-  + 0.27 * unimodalODF(g0,CS,SS,psi);
+odf =  0.73 * uniformODF(CS,SS) + 0.27 * unimodalODF(ori,CS,SS,psi);
 
 
 % 3,7

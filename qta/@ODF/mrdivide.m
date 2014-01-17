@@ -10,6 +10,5 @@ function odf = mrdivide(odf,s)
 argin_check(odf,'ODF');
 argin_check(s,'double');
 
-for i = 1:length(odf)
-  odf(i).weight = odf(i).weight ./ s;
-end
+odf.weights = odf.weights ./ s;
+
