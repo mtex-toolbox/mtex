@@ -48,13 +48,13 @@ end
 weight = weight ./ sum(weight(:));
 
 % construct kernel
-k = getKernel(ori,varargin{:});
-hw = gethw(k);
+psi = getKernel(ori,varargin{:});
+hw = psi.halfwidth;
 
 if check_option(varargin,'exact')
   
   % set up exact ODF
-  odf = unimodalODF(ori,k,ori.CS,ori.SS,'weights',weight);
+  odf = unimodalODF(ori,psi,ori.CS,ori.SS,'weights',weight);
   
 else
   
@@ -74,7 +74,7 @@ else
   weight = weight(weight~=0);
   
   % set up approximated ODF
-  odf = unimodalODF(S3G,k,ori.CS,ori.SS,'weights',weight);
+  odf = unimodalODF(S3G,psi,ori.CS,ori.SS,'weights',weight);
 end
   
 end

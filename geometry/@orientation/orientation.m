@@ -56,7 +56,7 @@ methods
     if nargin == 0, return;end
     
     % set symmetry
-    if isa(varargin{1},'orientation')
+    if ~isempty(varargin) && isa(varargin{1},'orientation')
       o.CS = varargin{1}.CS;
       o.SS = varargin{1}.SS;
     end
