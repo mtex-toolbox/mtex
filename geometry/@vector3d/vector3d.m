@@ -7,7 +7,6 @@ classdef vector3d < dynOption
     antipodal = false;
   end
     
-  
   methods
     
     function v = vector3d(x,y,z,varargin)
@@ -89,6 +88,6 @@ classdef vector3d < dynOption
       if nargin > 3 && check_option(varargin,'normalize'), v = v ./ norm(v); end
       
     end
-     
+  
   end
 end

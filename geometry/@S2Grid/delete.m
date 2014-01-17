@@ -23,13 +23,13 @@ S2G.x(points) = [];
 S2G.y(points) = [];
 S2G.z(points) = [];
 
-cs = [0 cumsum(GridLength(S2G.rho))];
+cs = [0 cumsum(GridLength(S2G.rhoGrid))];
 % update rho indexing
-for ith = 1:GridLength(S2G.theta)
+for ith = 1:GridLength(S2G.thetaGrid)
   irh = points(cs(ith)+1:cs(ith+1));
-  S2G.rho(ith) = delete(S2G.rho(ith),irh);
+  S2G.rhoGrid(ith) = delete(S2G.rhoGrid(ith),irh);
 end
   
 % update theta indexing
-S2G.theta = delete(S2G.theta,GridLength(S2G.rho)==0);
-S2G.rho(GridLength(S2G.rho) == 0) = [];
+S2G.thetaGrid = delete(S2G.thetaGrid,GridLength(S2G.rhoGrid)==0);
+S2G.rhoGrid(GridLength(S2G.rhoGrid) == 0) = [];

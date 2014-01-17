@@ -19,8 +19,8 @@ switch lower(vname)
   case 'bounds'
     
    varargout{1} =  get(obj,'minTheta');
-   if isa(obj.theta,'function_handle')
-     varargout{2} =  obj.theta;
+   if isa(obj.thetaGrid,'function_handle')
+     varargout{2} =  obj.thetaGrid;
    else
      varargout{2} =  get(obj,'maxTheta');
    end
@@ -28,19 +28,19 @@ switch lower(vname)
    varargout{4} =  get(obj,'maxRho');
    
   case 'minrho'
-    varargout{1} = min([obj.rho.min]);
+    varargout{1} = min([obj.rhoGrid.min]);
   case 'maxrho'
-    varargout{1} = max([obj.rho.max]);
+    varargout{1} = max([obj.rhoGrid.max]);
   case 'mintheta'    
-    if isa(obj.theta,'function_handle')
+    if isa(obj.thetaGrid,'function_handle')
       varargout{1} = 0;
     else
-      varargout{1} = min([obj.theta.min]);
+      varargout{1} = min([obj.thetaGrid.min]);
     end    
   case 'maxtheta'    
-    varargout{1} = obj.theta;
+    varargout{1} = obj.thetaGrid;
     if ~isa(varargout{1},'function_handle')
-      varargout{1} = max([obj.theta.max]);
+      varargout{1} = max([obj.thetaGrid.max]);
     end    
   case 'theta'
     [theta,rho] = polar(obj); %#ok<NASGU>
