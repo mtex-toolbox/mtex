@@ -26,6 +26,6 @@ S2G.x = S2G.x(ind);
 S2G.y = S2G.y(ind);
 S2G.z = S2G.z(ind);
 
-S2G.rho = subGrid(S2G.rho,ind);
-S2G.theta = subGrid(S2G.theta,GridLength(S2G.rho)>0);
-S2G.rho(GridLength(S2G.rho)==0) = [];
+S2G.rhoGrid = subGrid(S2G.rhoGrid,ind);
+S2G.thetaGrid = subGrid(S2G.thetaGrid,GridLength(S2G.rhoGrid)>0);
+S2G.rhoGrid(GridLength(S2G.rhoGrid)==0) = [];

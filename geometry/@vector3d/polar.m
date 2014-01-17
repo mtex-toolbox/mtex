@@ -1,8 +1,8 @@
 function [theta,rho,r] = polar(v)
 % cartesian to spherical coordinates
-%% Input
+% Input
 %  v - @vector3d
-%% Output
+% Output
 %  theta  - polar angle
 %  rho    - azimuthal angle 
 %  r      - radius

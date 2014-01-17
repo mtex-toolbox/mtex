@@ -40,8 +40,8 @@ classdef S2Grid < vector3d
 
 properties
   
-  theta = S1Grid([],0,pi);
-  rho = S1Grid([],0,2*pi);  
+  thetaGrid = S1Grid([],0,pi);
+  rhoGrid = S1Grid([],0,2*pi);  
   res = 2*pi;
    
 end
@@ -49,13 +49,13 @@ end
 methods
 
   
-  function S2G = S2Grid(theta,rho,varargin)
+  function S2G = S2Grid(thetaGrid,rhoGrid,varargin)
       
     % call superclass method
-    v = calcGrid(theta,rho);
+    v = calcGrid(thetaGrid,rhoGrid);
     [S2G.x,S2G.y,S2G.z] = double(v);    
-    S2G.theta = theta;
-    S2G.rho = rho;
+    S2G.thetaGrid = thetaGrid;
+    S2G.rhoGrid = rhoGrid;
     S2G.res = get_option(varargin,'resolution',2*pi);
   end
   
