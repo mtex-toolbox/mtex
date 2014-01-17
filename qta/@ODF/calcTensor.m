@@ -30,14 +30,14 @@ if ~check_option(varargin,'Reuss'), varargin = [varargin,{'Voigt'}];end
 if nargout > 1, varargin = [varargin,{'Reuss'}];end
 
 % cycle through components
-[TVoigt, TReuss] = doMeanTensor(odf,T,varargin{:});
+[TVoigt, TReuss] = calcTensor(odf.components{1},T,varargin{:});
 
-for i = 2:numel(odf)
-
-  [TV, TR] = doMeanTensor(odf,T,varargin{:});
+for i = 2:numel(odf.components)
   
-  TVoigt = TVoigt + odf(i).weight * TV;
-  TReuss = TReuss + odf(i).weight * TR;
+  [TV, TR] = calcTensor(odf.components{i},T,varargin{:});
+  
+  TVoigt = TVoigt + odf.weights(i) * TV;
+  TReuss = TReuss + odf.weights(i) * TR;
 
 end
 

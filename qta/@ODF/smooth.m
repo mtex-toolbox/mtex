@@ -19,7 +19,8 @@ else
 end
 hw = get(psi,'halfwidth');
 
-for iodf = 1:length(odf)
+% TODO
+for iodf = 1:length(odf.components)
 
   % Uniform portion
   if check_option(odf(iodf),'uniform')

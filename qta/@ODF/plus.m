@@ -1,4 +1,4 @@
-function odf = plus(o1,o2)
+function o1 = plus(o1,o2)
 % superposeing two ODFs
 %
 % overload the + operator, i.e. one can now write @ODF + @ODF in order
@@ -17,6 +17,5 @@ elseif isa(o1,'double')
   
 end
 
-odf = [o1,o2];
-
-  
+o1.components = [o1.components(:);o2.components(:)];
+o1.weights = [o1.weights(:);o2.weights(:)];

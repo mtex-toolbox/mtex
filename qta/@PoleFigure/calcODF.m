@@ -55,12 +55,12 @@ res = get_option(varargin,'resolution',get(pf,'resolution'));
 S3G = equispacedSO3Grid(CS,SS,'resolution',res);
 
 % zero range method
-if check_option(varargin,'zero_range'), S3G = zero_range(pf,S3G,varargin{:});end
+if check_option(varargin,{'ZR','zero_range'}), S3G = zero_range(pf,S3G,varargin{:});end
 
 % get kernel
 kw = get_option(varargin,{'HALFWIDTH','KERNELWIDTH'},get(S3G,'resolution'),'double');
 psi = get_option(varargin,'kernel',...
-  kernel('de la Vallee Poussin','HALFWIDTH',kw),'kernel');
+  deLaValeePoussinKernel('halfwidth',kw),'kernel');
 
 % get other options
 iter_max = int32(get_option(varargin,'ITER_MAX',...
@@ -80,7 +80,7 @@ gh = [ghrho.';ghtheta.'] /2 /pi;
 clear ghtheta; clear ghrho;
 
 % extract kernel Fourier coefficents
-A = getA(psi);
+A = psi.A;
 if pf(1).r.antipodal
   A(2:2:end) = 0;
 else

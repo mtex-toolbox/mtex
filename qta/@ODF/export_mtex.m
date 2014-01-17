@@ -28,8 +28,8 @@ fprintf(fid,'%% crystal symmetry: %s\n',char(CS));
 fprintf(fid,'%% specimen symmetry: %s\n',char(SS));
 
 % loop over all components
-
-for i = 1:length(odf)
+% TODO
+for i = 1:length(odf.components)
 
   if check_option(odf(i),'UNIFORM') % uniform portion
 

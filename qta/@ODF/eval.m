@@ -15,11 +15,13 @@ function f = eval(odf,g,varargin)
 % See also
 % kernel/sum_K kernel/K
 
-if isa(g,'orientation') && odf(1).CS ~= g.CS && odf(1).SS ~= g.SS
+if isa(g,'orientation') && odf.CS ~= g.CS && odf.SS ~= g.SS
   warning('symmetry missmatch'); %#ok<WNTAG>
 end
-f = zeros(size(g));
 
-for i = 1:numel(odf)   
-  f = f + odf(i).weight * reshape(doEval(odf(i),g,varargin{:}),size(g));
+% evaluate components
+f = zeros(size(g));
+for i = 1:numel(odf.components)
+  f = f + odf.weights(i) * reshape(...
+    eval(odf.components{i},g,varargin{:}),size(g));
 end
