@@ -92,8 +92,12 @@ void S2Grid_find_region(S2Grid ths[],
 			buffer ind_buffer[])
 {
   int i,itheta;
-  double cs,ss;
-
+  double cs,ss,ct,st,ce;
+  
+  ce = cos(e);
+  ct = cos(theta);
+  st = sin(theta);
+  
   /* search theta */
   buffer_reset(&ths->theta_buffer);
   S1Grid_find_region(&ths->theta,theta,e,&ths->theta_buffer);
@@ -106,17 +110,17 @@ void S2Grid_find_region(S2Grid ths[],
     /*printf("iytheta: %d \n",iytheta[itheta]);*/
 
     /* calculate new distances */
-    cs = cos(theta)*cos(ths->theta.x[itheta]);
-    ss = sin(theta)*sin(ths->theta.x[itheta]);  
+    cs = ct*cos(ths->theta.x[itheta]);
+    ss = st*sin(ths->theta.x[itheta]);  
 
-    if (ss < 0.0001 || (cos(e)-cs)/ss < -0.9999)   
+    if (ss < 0.0001 || (ce-cs)/ss < -0.9999)   
       
       /* close to north-pole -> all points */
       buffer_append(ind_buffer,0,ths->rho[itheta].n-1);
     
-    else if  (cs + ss > cos(e))
+    else if  (cs + ss > ce)
       /* search rho */
       S1Grid_find_region(&ths->rho[itheta],rho,
-			 acos((cos(e)-cs)/ss),ind_buffer);    
+			 acos((ce-cs)/ss),ind_buffer);    
   }
 }
