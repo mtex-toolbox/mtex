@@ -41,10 +41,10 @@ odf = calcKernelODF(ori,varargin{:},'exact');
 
 % get bandwidth
 L = get_option(varargin,{'L','HarmonicDegree'},...
-  min(max(10,bandwidth(odf.psi)),64),'double');
+  min(max(10,odf.components{1}.psi.bandwidth),64),'double');
 
 % check kernel has at most the requested bandwidth
-if bandwidth(odf.psi) > L,
+if odf.components{1}.psi.bandwidth > L,
   warning('MTEX:EBSD:calcODF',['Estimation of ODF might become vaque,' ...
     'since Fourier Coefficents of higher order than ', num2str(L),...
       ' are not considered; increasing the kernel halfwidth might help.'])
