@@ -14,6 +14,8 @@ classdef (InferiorClasses = {?rotation,?quaternion}) DelaunaySO3 < orientation
       
       DSO3 = DSO3@orientation(varargin{:});
     
+      if nargin == 0, return; end
+      
       % pertube data a bit
       % it would be better if this would be needed only for the
       % triangulation, but for some reason we cant skip it

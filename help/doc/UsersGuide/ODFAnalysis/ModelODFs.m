@@ -52,12 +52,12 @@ odf = uniformODF(cs,ss)
 % and. In order to define a unimodal ODF one needs
 %
 % * a preferred <orientation_index.html orientation> mod1
-% * a <kernel_index.html kernel> function *psi* defining the shape
+% * a <kernel_index.html kernel> function |psi| defining the shape
 % * the crystal and specimen <symmetry_index.html symmetry>
 
-x = orientation('Miller',[1,2,2],[2,2,1],cs,ss);
-psi = kernel('von Mises Fisher','HALFWIDTH',10*degree);
-odf = unimodalODF(x,cs,ss,psi)
+ori = orientation('Miller',[1,2,2],[2,2,1],cs,ss);
+psi = vonMisesFisherKernel('HALFWIDTH',10*degree);
+odf = unimodalODF(ori,psi,cs,ss)
 
 plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
 
@@ -170,11 +170,10 @@ plot(odf,'sections',6,'silent','sigma');
 cs = symmetry('cubic');
 ss = symmetry('orthorhombic');
 
-psi = kernel('von Mises Fisher','HALFWIDTH',10*degree);
+psi = vonMisesFisherKernel('halfwidth',10*degree);
 mod1 = orientation('Miller',[1,2,2],[2,2,1],cs,ss);
 
-odf =  0.73 * uniformODF(cs,ss,'comment','the SantaFe-sample ODF') ...
-  + 0.27 * unimodalODF(mod1,cs,ss,psi)
+odf =  0.73 * uniformODF(cs,ss) + 0.27 * unimodalODF(mod1,psi)
 
 close all
 plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')

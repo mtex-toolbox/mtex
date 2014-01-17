@@ -33,11 +33,11 @@ odf3 = calcODF(pf,'resolution',5*degree,'iter_max',10)
 % The modal orientation of an ODF is the crystallographic prefered
 % orientation of the texture. It is characterized as the maximum of the
 % ODF. In MTEX it can be computed by the command 
-% <ODF.calcModes.html,calcModes>
+% <ODF.calcModes.html calcModes>
 
 %%
 % Determine the modalorientation as an
-% >orientation_index.html,orientation>:
+% <orientation_index.html orientation>:
 center = calcModes(odf3)
 
 %% 
@@ -50,8 +50,8 @@ annotate(center,'marker','s','MarkerFaceColor','black')
 %
 % Texture characteristics are used for a rough classification of ODF into
 % sharp and weak ones. The two most common texture characteristcs are the
-% [[ODF.entropy.html,entropy]] and the 
-% [[ODF.textureindex.html,texture index]]. 
+% <ODF.entropy.html entropy> and the 
+% <ODF.textureindex.html texture index>. 
 
 %%
 % Compute the texture index:
