@@ -6,40 +6,27 @@ function startup_mtex(varargin)
 % mtex_settings.m in this directory.
 %
 
-
-%% Check MATLAB version
-
+% Check MATLAB version
+% --------------------
 lasterr('') %#ok<LERR> %reset all errors
 
-if (~isOctave() && MATLABverLessThan('7.11'))
-
+if MATLABverLessThan('7.6')
   error(['MTEX can not be installed because your MATLAB version ',version,...
     ' is outdated and not longer supported by MTEX. The oldest MATLAB ',...
-    'version MTEX has been tested on is 7.11.']);
-  
-elseif MATLABverLessThan('7.6')
-
-  warning(['MTEX will not be fully functional because your MATLAB version ',version,...
-    ' is outdated and not longer supported by MTEX. The oldest MATLAB ',...
-    'version MTEX has been tested on is 7.6.']);
-  
+    'version MTEX has been tested on is 7.11.']);  
 end
-
-
-%%
+  
 % path to this function to be considered as the root of the MTEX
 % installation
 local_path = fileparts(mfilename('fullpath'));
 
-
-%% needs installation ?
-
+% needs installation ?
 do_install(local_path);
 
-%% initialize MTEX
+% initialize MTEX
 fprintf('initialize');
 
-%read version from version file
+%read MTEX version from version file
 try
   fid = fopen('VERSION','r');
   MTEXversion = fgetl(fid);
@@ -51,13 +38,11 @@ end
 
 p();
 
-%% setup search path
-
+% setup search path
 setMTEXPath(local_path);
 p();
 
-%% set path to MTEX directories
-
+% set path to MTEX directories
 setMTEXpref('mtexPath',local_path);
 setMTEXpref('DataPath',fullfile(local_path,'data'));
 setMTEXpref('architecture',computer('arch'));
@@ -65,34 +50,32 @@ setMTEXpref('version',MTEXversion);
 setMTEXpref('generatingHelpMode',false);
 p();
 
-
-%% init settings
+% init settings
 mtex_settings;
 p();
 
-%% check installation
+% check installation
 check_installation;
 p();
 
-%% finish
+% finish
 if isempty(lasterr) % everything fine
   fprintf(repmat('\b',1,length(MTEXversion)+18));
 else
   disp(' done!')
 end
 
-
-
-if ~isOctave() && isempty(javachk('desktop')) && ~check_option(varargin,'noMenu')
+if isempty(javachk('desktop')) && ~check_option(varargin,'noMenu')
   MTEXmenu;
 end
 
-
 end
-%% --------- private functions ----------------------
 
 
-%% mtex installation
+% --------- private functions ----------------------
+
+% mtex installation
+% -----------------
 function do_install(local_path)
 
 % check wether local_path is in search path
@@ -107,8 +90,6 @@ else
   setappdata(0,'MTEXInstalled',false);
 end
 
-
-
 % look for older version
 if any(strfind(path,'mtex'))
   disp('I found an older version of MTEX and remove it from the current search path!');
@@ -121,62 +102,20 @@ if any(strfind(path,'mtex'))
   local_path = fileparts(mfilename('fullpath'));
 end
 
-if (~isOctave() && MATLABverLessThan('7.8'))
-  cd('..'); % leave current directory for some unknown reason
-end
 addpath(local_path);
 
 end
 
-%% set MTEX search path
+% set MTEX search path
 function setMTEXPath(local_path)
 
-% obligatory paths
-pathes = { {''}, ...
-  {'qta'}, {'qta' 'interfaces'},{'qta' 'interfaces' 'tools'},...
-  {'qta' 'standardODFs'},{'qta' 'tools'},...
-  {'geometry'},{'geometry' 'geometry_tools'},...
-  {'tools'},{'tools' 'orientationMappings'},{'tools' 'dubna_tools'},...
-  {'tools' 'PatalaColorCode' 'Colormaps'},...
-  {'tools' 'PatalaColorCode' 'Legend_23'},...
-  {'tools' 'PatalaColorCode' 'Legend_222'},...
-  {'tools' 'PatalaColorCode' 'Legend_422'},...
-  {'tools' 'PatalaColorCode' 'Legend_432'},...
-  {'tools' 'PatalaColorCode' 'Legend_622'},...
-  {'tools' 'PatalaColorCode' 'Utilities'},...
-  {'tools' 'PatalaColorCode'},...
-  {'tools' 'file_tools'},{'tools' 'option_tools'},...
-  {'tools' 'import_wizard'},{'tools' 'plot_tools'},{'tools' 'statistic_tools'},...
-  {'tools' 'misc_tools'},{'tools' 'math_tools'},{'tools' 'graph_tools'},{'tools' 'compatibility'},...
-  {'tools' 'template_wizard'},{'tools','colormaps'},...
-  {'help','doc','FunctionReference','classes'},...
-  {'examples'},{'help' 'doc' 'UsersGuide'},...
-  {'tests'},{'extern','export_fig'},{'extern'}};
-
-pathes = cellfun(@(p) fullfile(local_path,p{:}), pathes, 'uniformoutput', false);
-addpath(pathes{:},0);
-
-% compatibility path
-if isOctave()
-  addpath(genpath(fullfile(local_path,'tools','compatibility','octave')),0);
-  comp = dir(fullfile(local_path,'tools','compatibility','octave','ver*'));
-else
-  comp = dir(fullfile(local_path,'tools','compatibility','ver*'));
-end
-for k=1:length(comp)
-  if (isOctave() && OCTAVEverLessThan(comp(k).name(4:end))) ...
-     || MATLABverLessThan(comp(k).name(4:end))
-    addpath(genpath(fullfile(local_path,'tools','compatibility',comp(k).name)),0);
-  end
-end
-
-if (~isOctave() && MATLABverLessThan('7.3')), make_bsx_mex;end
-
-%addpath_recurse(fullfile(local_path,'help','UsersGuide'));
+addpath_recurse(local_path,{'c','data','help','templates'});
+addpath_recurse(fullfile(local_path,'help','doc','UsersGuide'));
 
 end
 
-%% check MATLAB version
+% check MATLAB version
+% --------------------
 function result = MATLABverLessThan(verstr)
 
 MATLABver = ver('MATLAB');
@@ -188,15 +127,6 @@ result = (sign(toolboxParts - verParts) * [1; .1; .01]) < 0;
 
 end
 
-%% check Octave version
-function result = OctaveverLessThan(verstr)
-
-toolboxParts = getParts(version ());
-verParts = getParts(verstr);
-
-result = (sign(toolboxParts - verParts) * [1; .1; .01]) < 0;
-
-end
 
 function parts = getParts(V)
 parts = sscanf(V, '%d.%d.%d')';
@@ -211,8 +141,199 @@ if isempty(lasterr)
 end
 end
 
-function result = isOctave ()
-  persistent is_octave;
-  is_octave = exist ('OCTAVE_VERSION');
-  result = is_octave;
+
+% -----------------------------------------------------------------------
+function addpath_recurse(strStartDir, caStrsIgnoreDirs, strXorIntAddpathMode, blnRemDirs, blnDebug)
+%ADDPATH_RECURSE  Adds (or removes) the specified directory and its subfolders
+% addpath_recurse(strStartDir, caStrsIgnoreDirs, strXorIntAddpathMode, blnRemDirs, blnDebug)
+%
+% By default, all hidden directories (preceded by '.'), overloaded method directories
+% (preceded by '@'), and directories named 'private' or 'CVS' are ignored.
+%
+% Input Variables
+% ===============
+% strStartDir::
+%   Starting directory full path name.  All subdirectories (except ignore list) will be added to the path.
+%   By default, uses current directory.
+% caStrsIgnoreDirs::
+%   Cell array of strings specifying directories to ignore.
+%   Will also ignore all subdirectories beneath these directories.
+%   By default, empty list. i.e. {''}.
+% strXorIntAddpathMode::
+%   Addpath mode, either 0/1, or 'begin','end'.
+%   By default, prepends.
+% blnRemDirs::
+%   Boolean, when true will run function "in reverse", and 
+%   recursively removes directories from starting path.
+%   By default, false.
+% blnDebug::
+%   Boolean, when true prints debug info.
+%   By default, false.
+%
+% Output Variables
+% ================
+% None. If blnDebug is specified, diagnostic information will print to the screen.
+%
+% Example(s)
+% ==========
+% (1) addpath_recurse();                                      %Take all defaults. 
+% (2) addpath_recurse('strStartDir');                         %Start at 'strStartDir', take other defaults. i.e. Do addpath().
+% (3) addpath_recurse('strStartDir', '', 0, true);            %Start at 'strStartDir', and undo example (2). i.e. Do rmpath().
+% (4) addpath_recurse('strStartDir', '', 'end', false, true); %Do example (2) again, append to path, and display debug info.
+% (5) addpath_recurse('strStartDir', '', 1, true, true);      %Undo example (4), and display debug info.
+
+%
+% See Also
+% ========
+% addpath()
+%
+% Developers
+% ===========
+% Init  Name             Contact
+% ----  ---------------  ---------------------------------------------
+% AK    Anthony Kendall  anthony [dot] kendall [at] gmail [dot] com
+% JMcD  Joe Mc Donnell   
+%
+% Modifications
+% =============
+% Version   Date      Who    What
+% --------  --------  -----  --------------------------------------------------------------------
+% 00.00.00  20080808  AK     First created.
+%           20090410  JMcD   Redo input argument processing/checking.
+%                            Only do processing/checking once. Do recursion in separate function.
+%           20090411  JMcD   Add debugging mode to display run info.
+%           20090414  AK     Modified variable names, small edits to code, ignoring CSV by default
+%           20091104  AK     Modified an optimization for Mac compatibility,
+%                            recursive calls to just build the string for
+%                            addpath/rmpath rather than call it each time
+
+%--------------------------------------------------------------------------
+%Error messages.
+strErrStartDirNoExist = 'Start directory does not exist ???';
+strErrIgnoreDirsType = 'Ignore directories must be a string or cell array. See HELP ???';
+strErrIllAddpathMode = 'Illegal value for addpath() mode.  See HELP ???';
+strErrIllRevRecurseRemType = 'Illegal value for reverse recurse remove, must be a logical/boolean.  See HELP ??';
+
+strErrWrongNumArg = 'Wrong number of input arguments.  See HELP ???';
+strAddpathErrMessage = strErrIllAddpathMode;
+
+%Set input args defaults and/or check them.
+intNumInArgs = nargin();
+assert(intNumInArgs <= 5, strErrWrongNumArg);
+
+if intNumInArgs < 1
+ strStartDir = pwd();
 end
+
+if intNumInArgs < 2
+  caStrsIgnoreDirs = {''};
+end
+
+if intNumInArgs >= 2 && ischar(caStrsIgnoreDirs)
+  caStrsIgnoreDirs = { caStrsIgnoreDirs };
+end
+
+if intNumInArgs < 3 || (intNumInArgs >= 3 && isempty(strXorIntAddpathMode))
+  strXorIntAddpathMode = 0;
+end
+
+if intNumInArgs >= 3 && ischar(strXorIntAddpathMode)  %Use 0/1 internally.
+  strAddpathErrMessage = sprintf('Input arg addpath() mode "%s" ???\n%s', strXorIntAddpathMode, strErrIllAddpathMode);
+  assert(any(strcmpi(strXorIntAddpathMode, {'begin', 'end'})), strAddpathErrMessage);
+  strXorIntAddpathMode = strcmpi(strXorIntAddpathMode, 'end'); %When 'end' 0 sets prepend, otherwise 1 sets append.
+end
+
+if intNumInArgs < 4
+  blnRemDirs = false;
+end
+
+if intNumInArgs < 5
+  blnDebug = false;
+end
+
+if size(caStrsIgnoreDirs, 1) > 1
+  caStrsIgnoreDirs = caStrsIgnoreDirs'; %Transpose from column to row vector, in theory.
+end
+
+%Check input args OK, before we do the thing.
+strErrStartDirNoExist = sprintf('Input arg start directory "%s" ???\n%s', strStartDir, strErrStartDirNoExist);
+assert(exist(strStartDir, 'dir') > 0, strErrStartDirNoExist);
+assert(iscell(caStrsIgnoreDirs), strErrIgnoreDirsType);
+assert(strXorIntAddpathMode == 0 || strXorIntAddpathMode == 1, strAddpathErrMessage);
+assert(islogical(blnRemDirs), strErrIllRevRecurseRemType);
+assert(islogical(blnDebug), 'Debug must be logical/boolean.  See HELP.');
+
+if blnDebug
+  intPrintWidth = 34;
+  rvAddpathModes = {'prepend', 'append'};
+  strAddpathMode = char(rvAddpathModes{ fix(strXorIntAddpathMode) + 1});
+  strRevRecurseDirModes = { 'false', 'true' };
+  strRevRecurseDirs = char(strRevRecurseDirModes{ fix(blnRemDirs) + 1 });
+  strIgnoreDirs = '';
+  for intD = 1 : length(caStrsIgnoreDirs)
+    if ~isempty(strIgnoreDirs)
+      strIgnoreDirs = sprintf('%s, ', strIgnoreDirs);
+    end
+    strIgnoreDirs = sprintf('%s%s', strIgnoreDirs, char(caStrsIgnoreDirs{intD}));
+  end
+  strTestModeResults = sprintf('... Debug mode, start recurse addpath arguments ...');
+  strTestModeResults = sprintf('%s\n%*s: "%s"', strTestModeResults, intPrintWidth, 'Start directory', strStartDir);
+  strTestModeResults = sprintf('%s\n%*s: "%s"', strTestModeResults, intPrintWidth, 'Ignore directories', strIgnoreDirs);
+  strTestModeResults = sprintf('%s\n%*s: "%s"', strTestModeResults, intPrintWidth, 'addpath() mode', strAddpathMode);
+  strTestModeResults = sprintf('%s\n%*s: "%s"', strTestModeResults, intPrintWidth, 'Reverse recurse remove directories', strRevRecurseDirs);
+  disp(strTestModeResults);
+end
+
+%Don't print the MATLAB warning if remove path string is not found
+if blnRemDirs, warning('off', 'MATLAB:rmpath:DirNotFound'); end
+
+%Build the list of directories
+caAddRemDirs = {};
+[caAddRemDirs] = addpath_recursively(caAddRemDirs, strStartDir, caStrsIgnoreDirs, strXorIntAddpathMode, blnRemDirs,blnDebug);
+
+%Remove or add the directory from the search path
+if blnRemDirs
+  if blnDebug, fprintf('"%s", removing from search path ...', strStartDir); end
+  rmpath(caAddRemDirs{:})
+else
+  if blnDebug, fprintf('"%s", adding to search path ...', strStartDir); end
+  addpath(caAddRemDirs{:}, strXorIntAddpathMode);
+end
+
+%Restore the warning state for rmpath
+if blnRemDirs, warning('on', 'MATLAB:rmpath:DirNotFound'); end
+
+end % function addpath_recurse
+%--------------------------------------------------------------------------
+
+%--------------------------------------------------------------------------
+function [caAddRemDirs] = addpath_recursively(caAddRemDirs, strStartDir, caStrsIgnoreDirs, strXorIntAddpathMode, blnRemDirs, blnDebug)
+%Note:Don't need to check input arguments, because caller already has.
+
+%Add this directory to the add/remove path list
+caAddRemDirs = [caAddRemDirs,strStartDir];
+
+strFileSep = filesep();
+%Get list of directories beneath the specified directory, this two-step process is faster.
+if ispc
+    saSubDirs = dir(sprintf('%s%s%s', strStartDir, strFileSep, '*.'));
+else
+    saSubDirs = dir(strStartDir);
+end
+saSubDirs = saSubDirs([saSubDirs.isdir]); %Handles files without extensions that otherwise pass through previous filter
+
+%Loop through the directory list and recursively call this function.
+for intDirIndex = 1 : length(saSubDirs)
+  strThisDirName = saSubDirs(intDirIndex).name;
+  blnIgnoreDir = any(strcmpi(strThisDirName, { 'private', 'CVS', '.', '..', caStrsIgnoreDirs{:} }));
+  blnDirBegins = any(strncmp(strThisDirName, {'@', '.','+'}, 1));
+  if ~(blnIgnoreDir || blnDirBegins)
+    strThisStartDir = sprintf('%s%s%s', strStartDir, strFileSep, strThisDirName);
+    if blnDebug, fprintf('"%s", recursing ...', strThisStartDir); end
+    [caAddRemDirs] = addpath_recursively(caAddRemDirs, strThisStartDir, caStrsIgnoreDirs, strXorIntAddpathMode, blnRemDirs, blnDebug);
+  end
+end % for each directory.
+
+end % function addpath_recursively
+%--------------------------------------------------------------------------
+%__END__
