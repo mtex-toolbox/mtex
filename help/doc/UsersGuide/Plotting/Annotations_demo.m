@@ -100,9 +100,11 @@ annotate(mod2,...
 % The following example compares the Fourier coefficients of the fibre ODF
 % with the Fourier co,'margin'}efficients of an unimodal ODF.
 
-plotFourier(odf)
+
+plotFourier(FourierODF(odf,32))
 hold all
-plotFourier(fibreODF(Miller(1,0,0),zvector,cs,ss))
+fodf = fibreODF(Miller(1,0,0),zvector,cs,ss);
+plotFourier(FourierODF(fodf,32));
 hold off
 
 legend({'Fibre ODF','Unimodal ODF'})
