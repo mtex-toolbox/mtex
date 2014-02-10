@@ -221,7 +221,7 @@ classdef EBSD < dynProp & dynOption & misorientationAnalysis
         w = ebsd.prop.weights;
       else
         w = ones(size(ebsd));
-      end
+      end      
     end
     
     function ebsd = set.weights(ebsd,weights)

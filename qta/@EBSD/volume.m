@@ -16,12 +16,9 @@ function v = volume(ebsd,center,radius,varargin)
 % See also
 % ODF/volume
 
-% extract weights
-weight = get(ebsd,'weight');
-
 % compute volume
 if isempty(ebsd)
   v = 0;
 else
-  v = sum(weight(find(ebsd.orientations,center,radius,varargin{:})));
+  v = sum(ebsd.weights(find(ebsd.orientations,center,radius,varargin{:})));
 end

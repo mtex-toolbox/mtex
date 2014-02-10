@@ -41,7 +41,7 @@ function odf = calcODF(ebsd,varargin)
 
 % extract weights
 if isProp(ebsd,'weight')
-  varargin = [varargin,'weight',ebsd.prop.weight];
+  varargin = [varargin,'weights',ebsd.prop.weights];
 end
 
 % compute ODF
