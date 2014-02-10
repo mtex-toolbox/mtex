@@ -40,7 +40,7 @@ function odf = calcODF(ebsd,varargin)
 % ebsd_demo EBSD2odf EBSDSimulation_demo loadEBSD ODF/calcEBSD EBSD/calcKernel kernel/kernel
 
 % extract weights
-if isProp(ebsd,'weight')
+if isProp(ebsd,'weights')
   varargin = [varargin,'weights',ebsd.prop.weights];
 end
 

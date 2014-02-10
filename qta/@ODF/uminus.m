@@ -6,6 +6,5 @@ function odf = uminus(odf)
 % See also
 % ODF_index ODF/mtimes
 
-for i = 1:numel(odf)
-  odf(i).weight = -odf(i).weight;
-end
+odf.weights = -odf.weights;
+

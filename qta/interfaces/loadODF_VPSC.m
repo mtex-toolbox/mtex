@@ -19,4 +19,4 @@ ss = symmetry('-1');
 
 % import the data
 [odf,options] = loadODF_generic(fname,'cs',cs,'ss',ss,'bunge','degree',...
-  'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'weight'},'density',varargin{:});
+  'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'weights'},'density',varargin{:});

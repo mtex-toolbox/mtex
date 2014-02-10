@@ -20,7 +20,7 @@ w = w ./ sum(w(:));
 
 % compute Fourier coefficients
 L = 16;
-odf_d = calcFourierODF(ori,'weight',weights,...
+odf_d = calcFourierODF(ori,'weights',weights,...
   'kernel',kernel('Dirichlet',L),'silent');
 
 sob = kernel('Sobolev',1,'bandwidth',L);

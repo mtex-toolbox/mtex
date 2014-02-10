@@ -70,17 +70,17 @@ loader = loadHelper(d,varargin{:});
 
 q      = loader.getRotations();
 
-% get weight
-weight = loader.getColumnData('weight');
+% get weights
+weights = loader.getColumnData('weights');
 
-% if no weight given - set to one
-if isempty(weight), weight = ones(size(q)); end
+% if no weights given - set to one
+if isempty(weights), weights = ones(size(q)); end
    
 % return varargin as options
 options = varargin;
 if ischeck, odf = uniformODF(symmetry,symmetry);return;end
 
-if numel(unique(weight)) > 1
+if numel(unique(weights)) > 1
   defaultMethod = 'interp';
 else
   defaultMethod = 'density';
@@ -97,7 +97,7 @@ switch method
     ebsd = EBSD(q,cs,ss,varargin{:});
     
     % calc ODF
-    odf = calcODF(ebsd,'weight',weight,'silent',varargin{:});    
+    odf = calcODF(ebsd,'weights',weights,'silent',varargin{:});    
     
   case 'interp'
   
@@ -113,7 +113,7 @@ switch method
     M = K(psi,S3G,q,cs,ss);
 
     MM = M * M';
-    mw = M * weight;
+    mw = M * weights;
     w = pcg(MM,mw,1e-2,30);
     %sum(w)
     odf = unimodalODF(S3G,psi,cs,ss,'weights',w./sum(w));

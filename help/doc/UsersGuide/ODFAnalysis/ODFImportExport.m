@@ -121,7 +121,7 @@ res = 10*degree;
 
 % load the data
 odf = loadODF(fname,cs,ss,'resolution',res,'Bunge',...
-  'ColumnNames',{'Euler 1','Euler 2','Euler 3','weight'});
+  'ColumnNames',{'Euler 1','Euler 2','Euler 3','weights'});
 
 % plot data
 plotodf(odf,'sections',6,'silent')

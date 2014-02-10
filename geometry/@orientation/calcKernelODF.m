@@ -40,12 +40,12 @@ function odf = calcKernelODF(ori,varargin)
 if isempty(ori), odf = ODF; return, end
 
 % extract weights
-if check_option(varargin,'weight')
-  weight = get_option(varargin,'weight');
+if check_option(varargin,'weights')
+  weights = get_option(varargin,'weights');
 else
-  weight = ones(1,length(ori));
+  weights = ones(1,length(ori));
 end
-weight = weight ./ sum(weight(:));
+weights = weights ./ sum(weights(:));
 
 % construct kernel
 psi = getKernel(ori,varargin{:});
@@ -54,7 +54,7 @@ hw = psi.halfwidth;
 if check_option(varargin,'exact')
   
   % set up exact ODF
-  odf = unimodalODF(ori,psi,ori.CS,ori.SS,'weights',weight);
+  odf = unimodalODF(ori,psi,ori.CS,ori.SS,'weights',weights);
   
 else
   
@@ -63,18 +63,18 @@ else
   S3G = equispacedSO3Grid(ori.CS,ori.SS,'resolution',res);
 
   % construct a sparse matrix showing the relatation between both grids
-  M = sparse(1:length(ori),find(S3G,ori),weight,length(ori),length(S3G));
+  M = sparse(1:length(ori),find(S3G,ori),weights,length(ori),length(S3G));
 
   % compute weights
-  weight = full(sum(M));
-  weight = weight ./ sum(weight);
+  weights = full(sum(M));
+  weights = weights ./ sum(weights);
 
   % eliminate spare rotations in grid
-  S3G = subGrid(S3G,weight~=0);
-  weight = weight(weight~=0);
+  S3G = subGrid(S3G,weights~=0);
+  weights = weights(weights~=0);
   
   % set up approximated ODF
-  odf = unimodalODF(S3G,psi,ori.CS,ori.SS,'weights',weight);
+  odf = unimodalODF(S3G,psi,ori.CS,ori.SS,'weights',weights);
 end
   
 end
