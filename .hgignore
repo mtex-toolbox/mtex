@@ -28,4 +28,4 @@ help/html/*
 help/tmp/*
 data/odf/odf.txt
 data/odf/odf.mtex
-tools/export_fig/.ignore/*
+extern/export_fig/.ignore/*
