@@ -1,14 +1,14 @@
 function [prop,radians,fun]= mispdf(o,varargin)
 % random misorientation and kernel density estimated
 %
-%% Input
+% Input
 %  o  - @orientation | @EBSD | @symmetry
 %
-%% Reference
+% Reference
 % A. Morawiec - Misorientation-Angle Distribution of Randomly Oriented
 % Symmetric Objects
 %
-%% See also
+% See also
 % ODF/angleDistribution 
 
 % TODO
@@ -27,10 +27,10 @@ if isa(o,'ebsd') || isa(o,'orientation') || isa(o,'grain')
     return
   end
   
-  CS = get(o,'CS');
+  CS = o.CS;
   
-  %% kernel density ?
-  [a omegas] = project2FundamentalRegion(o);
+  % kernel density ?
+  [a, omegas] = project2FundamentalRegion(o);
   
   %gaussian kernel
   k = @(t) 1./sqrt(2*pi) .* exp(-1/2.*t.^2);
@@ -54,7 +54,7 @@ end
 
 
 
-%% S functions
+% S functions
 
 S1 = @(alpha) 2*pi.*(1-cos(alpha));
 
@@ -63,7 +63,7 @@ C = @(alpha, beta, gamma) acos( (cos(gamma)- cos(alpha).*cos(beta))./(sin(alpha)
 S2 = @(alpha, beta, gamma) 2*(pi - C(alpha,beta,gamma) - ...
     cos(alpha).* C(gamma, alpha, beta) - cos(beta).* C(beta,gamma,alpha));
 
-%%
+%
 if strcmp(Laue(CS),'m-3m') % octahedral O
     n=1;
 
@@ -139,14 +139,14 @@ else
 end
 
 
-%% density function
+% density function
 
 % r = tan(omega./2)
 
 p = @(omega) n./(2*pi^2) .* sin(omega./2).^2 .* chi( tan(omega./2) );
 
 
-%% density
+% density
 % hold on
 
 w = @(omega) (pi/180).*p(omega)./quad(p,0,max_cs(CS));
@@ -186,7 +186,7 @@ end
 
 
 
-%% tetrahedral T
+% tetrahedral T
 
 alpha = @(r) acos( 3.^(1/2)./(3*r) );
 delta = acos(1/3);
@@ -203,7 +203,7 @@ z =  @(r) zeros(1,length(r)-length([l1(r) l2(r) l3(r)]) );
 chi = @(r) [chi1(l1(r)) chi2(l2(r)) chi3(l3(r)) z(r) ];
 
 
-%% icosahedral Y
+% icosahedral Y
 
 h5 = tan(pi/2/5);
 

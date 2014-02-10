@@ -31,13 +31,7 @@ classdef dynProp
       l = prod(size(dp)); %#ok<PSIZE>
       
     end
-    
-    function n = numel(varargin)
-      
-      n = 1;
-      
-    end
-    
+        
     % ----------------------------------------------------
     function dp = cat(dim,varargin)
       
@@ -101,7 +95,7 @@ classdef dynProp
         case '.'
           try
         
-            varargout{1} = subsref(dp.prop,s(1));
+            varargout{1} = subsref(dp.prop,s);
         
           catch 
                 

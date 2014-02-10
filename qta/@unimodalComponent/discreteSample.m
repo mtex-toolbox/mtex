@@ -19,7 +19,7 @@ t = linspace(0,1,M);
 % compute cummulative distribution function
 c = 4 / pi * cumsum(sqrt(1-t.^2) .* component.psi.K(t)) / M;
   
-r = rand(N,1);
+r = rand(npoints,1);
 [~,t] = histc(r,c);
 angle = 2 * acos(t ./ M);
 

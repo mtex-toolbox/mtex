@@ -38,7 +38,7 @@ if ~isempty(npos) && ~check_option(varargin,'path') % point measurement
   for k=1:steps
     F = F + F0.*rnd([gl 1]);  % maybe we count something
   end
-  PF = PoleFigure(h,S2Grid(r),round(F),get(odf,'CS'),get(odf,'SS'));
+  PF = PoleFigure(h,r,round(F),odf.CS,odf.SS);
   
 elseif check_option(varargin,'integral') %along smallcircles
   

@@ -82,7 +82,7 @@ classdef (InferiorClasses = {?quaternion,?rotation,?orientation}) tensor < dynOp
       end
   
       T.rank    = get_option(varargin,'rank',r);
-      varargin = delete_option(varargin,'rank');
+      varargin = delete_option(varargin,'rank',1);
 
       % extract symmetry
       args = find(cellfun(@(s) isa(s,'symmetry'),varargin,'uniformoutput',true));

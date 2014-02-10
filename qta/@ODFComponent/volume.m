@@ -18,5 +18,5 @@ if f == 0
   v = 0;
 else
   v = mean(eval(component,S3G)) * f;  %#ok<EVLC>
-  v = min(v,sum(component.weight));
+  v = min(v,sum(component.weights));
 end
