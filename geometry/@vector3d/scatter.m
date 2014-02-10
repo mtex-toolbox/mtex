@@ -57,7 +57,7 @@ else
     };
 
   % markerSize
-  res = max(get(v,'resolution'),1*degree);
+  res = max(v.resolution,1*degree);
   res = get_option(varargin,'scatter_resolution',res);  
   MarkerSize  = get_option(varargin,'MarkerSize',min(8,50*res));
   patchArgs = [patchArgs,{'MarkerSize',MarkerSize}];

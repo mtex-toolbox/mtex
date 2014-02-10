@@ -9,10 +9,8 @@ function w = calcQuadratureWeights(v,varargin)
 %
 
 % check for regular grid
-theta = get(v,'theta');
-utheta = unique(theta(:));
-rho = get(v,'rho');
-urho = unique(rho(:));
+utheta = unique(v.theta(:));
+urho = unique(v.rho(:));
 
 if length(v) == length(utheta) * length(urho) && min(utheta) == 0
 
@@ -22,7 +20,7 @@ if length(v) == length(utheta) * length(urho) && min(utheta) == 0
   N = pi / dtheta;
   w = fclencurt(N+1,-1,1);
   w = w(1:length(utheta));
-  w = w ./ sum(w) ./ numel(theta) .* numel(utheta);
+  w = w ./ sum(w) ./ length(v) .* numel(utheta);
   w= repmat(w',numel(urho),1);
         
 else
