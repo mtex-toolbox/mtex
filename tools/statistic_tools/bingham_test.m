@@ -1,23 +1,23 @@
 function [T,p,v] = bingham_test(o,varargin)
 % bingham test for spherical/prolat/oblat case
 %
-%% Input
+% Input
 %  o      - @orientation / @EBSD / @GrainSet
 %
-%% Options
+% Options
 %  spherical - test case
 %  prolate    -
 %  oblate     - 
 %  c_hat     - test without kappas
 %
-%% See also
+% See also
 %  evalkappa c_hat
 
 
 test_fun = parseArgs(varargin{:});
 
 if isa(o,'EBSD')
-  o = get(o,'orientations');
+  o = o.orientations;
   if strfind(test_fun,'chat')
     [kappa, lambda, Tv, n] = c_hat(o);
   else

@@ -9,7 +9,7 @@ function q = maxpdf( odf,h, varargin)
 %
 
 argin_check(h,'Miller');
-h = ensureCS(odf(1).CS,{h});
+h = odf.CS.ensureCS(h);
 
 for k=1:length(h)
   

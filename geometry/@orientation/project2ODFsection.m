@@ -54,8 +54,11 @@ end
 
 if strcmpi(type,'omega')
   hpos = find_type(varargin,'Miller');
-  if hpos > 0, h = varargin{hpos}(1);
-  else h = Miller(0,0,1,get(o,'CS')); end
+  if hpos > 0
+    h = varargin{hpos}(1);
+  else
+    h = Miller(0,0,1,o.CS); 
+  end
   [alpha,beta] = polar(h);
   q = q*euler2quat(beta,alpha,0,'ABG');
 end

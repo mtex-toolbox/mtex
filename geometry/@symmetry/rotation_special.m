@@ -51,7 +51,7 @@ else % TODO
       v = vector3d(1,1,0);
   end
   
-  rho = mod(get(v,'rho'),rotangle_max_z(cs));
+  rho = mod(v.rho,cs.rotangle_max_z);
   
   q = q(:);
 end

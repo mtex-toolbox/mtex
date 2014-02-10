@@ -35,7 +35,7 @@ h = argin_check(varargin{1},'Miller');
 r = argin_check(varargin{2},'vector3d');
       
 % check crystal symmetry
-if isCS(CS), h = ensureCS(CS,{h});end
+if isCS(CS), h = CS.ensureCS(h);end
       
 % get kernel
 if nargin > 2 && isa(varargin{3},'kernel')

@@ -23,7 +23,7 @@ function psi = calcKernel(ori,varargin)
 
 % prepare kernels for testing
 for k = 1:10
-  psi(k) = kernel('de la Vallee Poussin','halfwidth',30*degree/2^(k/3)); %#ok<AGROW>
+  psi{k} = deLaValeePoussinKernel('halfwidth',30*degree/2^(k/3)); %#ok<AGROW>
 end
 psi = get_option(varargin,'kernel',psi);
 
@@ -55,8 +55,8 @@ switch method
     end
 
     hw = max((res * 3)/2,2*degree);
-    psi = kernel('de la Vallee Poussin','halfwidth',hw);
-    psi = kernel('de la Vallee Poussin',fak*get(psi,'kappa'));
+    psi = deLaValeePoussinKernel('halfwidth',hw);
+    psi = deLaValeePoussinKernel(fak*psi.kappa);
 
     return
   case 'LSCV'
@@ -78,5 +78,5 @@ switch method
 end
 
 [cc,i] = max(c);
-psi = kernel('de la Vallee Poussin',fak*get(psi(i(1)),'kappa'));
+psi = deLaValeePoussinKernel(fak*psi{i(1)}.kappa);
 

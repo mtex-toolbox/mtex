@@ -29,7 +29,7 @@ plot(ax{:},axes,'all','FundamentalRegion',varargin{:});
 % set tags
 if isempty(ax)
   set(gcf,'tag','AxisDistribution');
-  setappdata(gcf,'CS',get(axes,'CS'));
+  setappdata(gcf,'CS',axes.CS);
   set(gcf,'Name','Axis Distribution');
 end
 

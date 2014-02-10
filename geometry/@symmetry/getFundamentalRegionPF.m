@@ -28,8 +28,7 @@ v = [Miller(1,0,0),Miller(1,1,0),Miller(0,1,0),Miller(-1,2,0),Miller(0,0,1)];
 fak = 2;
 switch cs.Laue
   case '-3m'
-    a = cs.axes;
-    minRho = mod(get(a(1),'rho'),120*degree);
+    minRho = mod(cs.axes(1).rho,120*degree);
     if check_option(varargin,'antipodal')
       minRho = minRho-30*degree;
       fak = 1;

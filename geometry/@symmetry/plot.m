@@ -37,9 +37,9 @@ else
   [axes,angle] = getMinAxes(rot(~Improper));
       
   for i = 1:length(axes)    
-    plotCustom(axes(i),{Symbol(angle(i),get(axes(i),'rho'))});
+    plotCustom(axes(i),{Symbol(angle(i),axes(i).rho)});
     hold on    
-    plotCustom(-axes(i),{Symbol(angle(i),get(axes(i),'rho'),'FaceColor','k')});
+    plotCustom(-axes(i),{Symbol(angle(i),axes(i).rho,'FaceColor','k')});
   end
   
   [axes,angle] = getMinAxes(rot(Improper));

@@ -37,7 +37,7 @@ function [rgb,options] = om_patala(o,varargin)
 switch class(o)
   case 'orientation'
     % get crystal symmetry
-    cs = get(o,'CS');
+    cs = o.CS;
     
     % get point group name
     cs = pointgroup(cs);
@@ -46,7 +46,7 @@ switch class(o)
     assert(any(strcmpi(cs,{'23','222','422','432','622'})),'Point group %s is not supported for Patala colormapping. \nOnly the following point groups are supported: ''23'',''222'',''422'',''432'',''622''.',cs);
     
     % get disorientations
-    m = [get(o,'a'),get(o,'b'),get(o,'c'),get(o,'d')];
+    m = [o.a,o.b,o.c,o.d];
     d = disorientation(m,cs);
     
     % get rodriguez vectors
@@ -62,8 +62,8 @@ switch class(o)
     omega = get_option(varargin,'omega');
     
     % get spherical coordinates
-    theta = get(o,'theta');
-    phi = get(o,'rho'); %MTEX calls the azimuthal angle rho
+    theta = o.theta;
+    phi = o.rho; %MTEX calls the azimuthal angle rho
     
     % get disorientations
     m = [cos(omega/2)*ones(size(theta(:))),...

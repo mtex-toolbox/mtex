@@ -5,5 +5,5 @@ function notIndexed = isNotIndexed(obj)
 %   ebsd(~isNotIndexed(ebsd)) %select all indexed EBSD data
 
 
-notIndexedPhase = find(cellfun('isclass',obj.CS,'char'));
+notIndexedPhase = find(cellfun('isclass',obj.allCS,'char'));
 notIndexed = ismember(obj.phaseId,notIndexedPhase);

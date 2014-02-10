@@ -6,7 +6,7 @@ if isempty(subset) || (numel(subset) == 1 && subset == 0)
   d = [];
   return
 else
-  obj = obj(subset);
+  obj = obj(subset(:));
 end
 
 % empty object
@@ -25,15 +25,15 @@ if isa(prop,'char') && strcmpi(prop,'phase')
   % for all phases
   for i = 1:numel(obj.phaseMap)
     
-    if ~ischar(obj.CS{i})
+    if ~ischar(obj.allCS{i})
       
-      if isempty(get(obj.CS{i},'color'))
+      if isempty(get(obj.allCS{i},'color'))
         
         index = i;
         
       else
         
-        index = strmatch(get(obj.CS{i},'color'),colorNames);
+        index = strmatch(get(obj.allCS{i},'color'),colorNames);
 
       end
           

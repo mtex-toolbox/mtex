@@ -64,7 +64,7 @@ ph1 = ph1(tril(ones(size(ph1)))>0);
 ph2 = ph2(tril(ones(size(ph2)))>0);
 
 % compute omega
-CS = obj.CS;
+CS = obj.allCS;
 phMap = obj.phaseMap;
 maxomega = 0;
 

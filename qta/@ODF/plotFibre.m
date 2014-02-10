@@ -26,7 +26,7 @@ if isempty(ax), newMTEXplot;end
 
 %
 if isa(varargin{1},'vector3d')
-  varargin{1} = ensureCS(get(odf,'CS'),varargin(1));
+  varargin{1} = odf.CS.ensureCS(varargin{1});
   omega = linspace(-pi,pi,501);
   center = get_option(varargin,'CENTER',hr2quat(varargin{1},varargin{2}),{'quaternion','rotation','orientation'});
   fibre = axis2quat(varargin{2},omega) .* center;
@@ -35,7 +35,7 @@ elseif isa(varargin{1},'quaternion')
 end
 
 %
-fibre = orientation(fibre,odf(1).CS,odf(1).SS);
+fibre = orientation(fibre,odf.CS,odf.SS);
 
 
 % find loop

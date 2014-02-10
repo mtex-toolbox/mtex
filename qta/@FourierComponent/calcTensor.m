@@ -2,13 +2,15 @@ function [TVoigt, TReuss] = calcTensor(component,T,varargin)
 % compute the average tensor for an ODF
 
 % init Voigt and Reuss averages
-TVoigt = set(T,'M',zeros([repmat(3,1,T.rank) 1 1]));
-TVoigt = set(TVoigt,'CS',symmetry);
+TVoigt = T;
+TVoigt.M = zeros([repmat(3,1,T.rank) 1 1]);
+TVoigt.CS = symmetry;
 
 % for Reuss tensor invert tensor
 Tinv = inv(T);
-TReuss = set(Tinv,'M',zeros([repmat(3,1,T.rank) 1 1]));
-TReuss = set(TReuss,'CS',symmetry);
+TReuss = Tinv;
+TReuss.M = zeros([repmat(3,1,T.rank) 1 1]);
+TReuss.CS = symmetry;
   
 for l = 0:T.rank
   

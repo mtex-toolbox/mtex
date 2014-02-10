@@ -5,7 +5,7 @@ function [rgb,options] = om_ipdfCenter(o,varargin)
 % convert to Miller
 if isa(o,'orientation')
   h = quat2ipdf(o,varargin{:});
-  cs = get(o,'CS');
+  cs = o.CS;
 else
   h = o;
   cs = varargin{1};
@@ -14,14 +14,13 @@ end
 %
 markers = get_option(varargin,{'ipdfCenter'},{Miller(1,1,1),[1 0 0]},'cell');
 
-psi =  kernel('de la vallee','halfwidth',get_option(varargin,'halfwidth',10*degree));
+psi =  deLaValeePoussinKernel('halfwidth',get_option(varargin,'halfwidth',10*degree));
 
 h = Miller(vector3d(h(:)),cs);
 m = Miller([markers{1:2:end}],cs);
 dmatrix = reshape(dot_outer(h,m),[],length(m));    
 
-RK = get(psi,'RK');
-val = bsxfun(@rdivide,RK(dmatrix),RK(ones(size(m))));
+val = bsxfun(@rdivide,psi.RK(dmatrix),psi.RK(ones(size(m))));
 s = size(h);
 rgb = ones([s,3]);
 

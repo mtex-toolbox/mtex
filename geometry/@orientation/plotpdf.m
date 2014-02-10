@@ -35,7 +35,7 @@ if ~isempty(ax) || newMTEXplot('ensureTag','pdf',...
   if ~iscell(h), h = vec2cell(h);end 
   argin_check([h{:}],{'Miller'});  
   for i = 1:length(h)
-    h{i} = ensureCS(get(o,'CS'),h(i));
+    h{i} = o.CS.ensureCS(h{i});
   end  
 else
   h = getappdata(gcf,'h');

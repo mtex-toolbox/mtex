@@ -7,7 +7,7 @@ options = extract_option(varargin,'antipodal');
 if isa(o,'orientation')
   [h,r] = quat2ipdf(o,varargin{:});
   options = [{'r',r},options];
-  cs = get(o,'CS');
+  cs = o.CS;
 else
   h = o;
   cs = varargin{1};  

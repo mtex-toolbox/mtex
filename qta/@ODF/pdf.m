@@ -19,7 +19,7 @@ function Z = pdf(odf,h,r,varargin)
 % ODF/plotpdf ODF/plotipdf ODF/calcPoleFigure
 
 % check crystal symmetry
-if isa(h,'Miller'), h = ensureCS(odf.CS,{h});end
+if isa(h,'Miller'), h = odf.CS.ensureCS(h);end
 
 % superposition coefficients
 sp = get_option(varargin,'superposition',1);

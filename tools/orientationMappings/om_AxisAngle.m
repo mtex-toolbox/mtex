@@ -11,7 +11,7 @@ end
 
 mori = inv(center) * o;
 
-s = disjoint(get(mori,'CS'),get(mori,'SS'));
+s = disjoint(mori.CS,mori.SS);
 mori = project2FundamentalRegion(mori);
 
 omega = abs(angle(mori)) ./ pi;
