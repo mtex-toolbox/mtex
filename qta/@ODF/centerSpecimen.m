@@ -66,14 +66,15 @@ end
 if check_option(varargin,'Fourier')
   if ~check_option(odf,'fourier')
     L = get_option(varargin,{'bandwidth','L'},16);
-    odf = FourierODF(calcFourier(set(odf,'SS',symmetry),L));
+    odf.SS = symmetry;
+    odf = FourierODF(odf,L);
   end
   options.odf = odf;
   options.c_hat = Fourier(odf);
 else
   options.odf = odf;
   options.SO3 = get_option(varargin,'SO3Grid',...
-    equispacedSO3Grid(get(odf,'CS'),get(odf,'SS'),'resolution',5*degree,varargin{:}));
+    equispacedSO3Grid(odf.CS,odf.SS,'resolution',5*degree,varargin{:}));
   options.y = eval(options.odf,options.SO3);
 end
 

@@ -20,7 +20,7 @@ function plotAxisDistribution(odf,varargin)
 if isempty(ax), newMTEXplot;end
 
 % plotting grid
-[minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(disjoint(odf(1).CS,odf(1).SS),'antipodal',varargin{:});
+[minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(disjoint(odf.CS,odf.SS),'antipodal',varargin{:});
 h = plotS2Grid('minTheta',minTheta,'maxTheta',maxTheta,...
   'maxRho',maxRho,'minRho',minRho,'RESTRICT2MINMAX','antipodal',varargin{:});
 
@@ -28,8 +28,8 @@ h = plotS2Grid('minTheta',minTheta,'maxTheta',maxTheta,...
 smooth(ax{:},h,pos(calcAxisDistribution(odf,h,varargin{:})),varargin{:});
 
 if isempty(ax)
-  setappdata(gcf,'CS',odf(1).CS);
-  setappdata(gcf,'SS',odf(1).SS);
+  setappdata(gcf,'CS',odf.CS);
+  setappdata(gcf,'SS',odf.SS);
   set(gcf,'tag','AxisDistribution');
 end
 setappdata(gcf,'options',extract_option(varargin,'antipodal'));

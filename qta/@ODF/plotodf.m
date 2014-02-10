@@ -40,7 +40,7 @@ end
 [ax,odf,varargin] = getAxHandle(odf,varargin{:});
 
 % generate grids
-[S3G,S2G,sec] = regularSO3Grid(odf(1).CS,odf(1).SS,varargin{:});
+[S3G,S2G,sec] = regularSO3Grid(odf.CS,odf.SS,varargin{:});
 
 Z = eval(odf,orientation(S3G),varargin{:});
 clear S3G;
@@ -88,8 +88,8 @@ if isempty(ax),
   set(gcf,'Name',['ODF ' sectype '-sections "',name,'"']);
   setappdata(gcf,'sections',sec);
   setappdata(gcf,'SectionType',sectype);
-  setappdata(gcf,'CS',odf(1).CS);
-  setappdata(gcf,'SS',odf(1).SS);
+  setappdata(gcf,'CS',odf.CS);
+  setappdata(gcf,'SS',odf.SS);
   set(gcf,'tag','odf')
 
 

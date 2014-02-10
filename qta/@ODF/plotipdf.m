@@ -23,7 +23,7 @@ if isempty(ax), newMTEXplot;end
 argin_check(r,{'vector3d'});
 
 % plotting grid
-[minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(odf(1).CS,'restrict2Hemisphere',varargin{:});
+[minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(odf.CS,'restrict2Hemisphere',varargin{:});
 
 h = plotS2Grid('minTheta',minTheta,'maxTheta',maxTheta,'maxRho',maxRho,'MINRHO',minRho,'RESTRICT2MINMAX',varargin{:});
 
@@ -38,8 +38,8 @@ multiplot(ax{:},length(r), h,...
 % finalize plot
 if isempty(ax)
   setappdata(gcf,'r',r);
-  setappdata(gcf,'CS',odf(1).CS);
-  setappdata(gcf,'SS',odf(1).SS);
+  setappdata(gcf,'CS',odf.CS);
+  setappdata(gcf,'SS',odf.SS);
   set(gcf,'tag','ipdf');
   setappdata(gcf,'options',extract_option(varargin,'antipodal'));
   name = inputname(1);

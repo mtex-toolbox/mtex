@@ -22,11 +22,11 @@ function v = fibreVolume(odf,h,r,radius,varargin)
 
 % check input
 argin_check(h,{'Miller','vector3d'});
-if isa(h,'Miller'), h = ensureCS(odf(1).CS,{h});end
+if isa(h,'Miller'), h = odf.CS.ensureCS(h);end
 argin_check(r,'vector3d');
 argin_check(radius,'double');
 
-if ~strcmp(Laue(odf(1).SS),'-1')
+if ~strcmp(Laue(odf.SS),'-1')
   error('Only triclinic specimen symmetry is supported for fibreVolume');
 end
 
@@ -34,7 +34,7 @@ end
 res = get_option(varargin,'RESOLUTION',min(2.5*degree,radius/50),'double');
 
 % discretisation
-[minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(odf(1).CS);  
+[minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(odf.CS);  
 S2G = equispacedS2Grid('resolution',res,...
   'minTheta',minTheta,'maxTheta',maxTheta,'maxRho',maxRho,'minRho',minRho,...
   'restrict2MinMax',varargin{:});
@@ -42,9 +42,9 @@ lS2G = length(S2G);
 S2G = subGrid(S2G,symmetrise(h),radius);
 
 % estimate volume portion of odf space
-%if radius < rotangle_max_z(odf(1).CS) / 8
+%if radius < rotangle_max_z(odf.CS) / 8
 %  % theoretical value
-%  f = length(odf(1).CS) * (1-cos(radius))./2;
+%  f = length(odf.CS) * (1-cos(radius))./2;
 %else
   % numerical value
   f = length(S2G)/lS2G;

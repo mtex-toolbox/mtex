@@ -24,7 +24,7 @@ weight = sin(omega./2).^2 ./ length(omega);
 % define a grid for quadrature
 h = repmat(h(:),1,length(omega));
 omega = repmat(omega,size(h,1),1);
-S3G = orientation('axis',h,'angle',omega,odf(1).CS,odf(1).SS);
+S3G = orientation('axis',h,'angle',omega,odf.CS,odf.SS);
 
 if check_option(varargin,'allAngles')
   
