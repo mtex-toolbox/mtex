@@ -22,12 +22,11 @@ if nargin == 1
   
 % ODF given
 else
-  %TODO
-  pf_odf = calcPoleFigure(odf,pf(1).h,pf(1).r,'superposition',pf(1).c);
-  for i = 2:length(pf)
-    pf_odf(i) = calcPoleFigure(odf,pf(i).h,pf(i).r,'superposition',pf(i).c);
-  end
-
+  
+  % recalculate pole figures
+  pf_odf = calcPoleFigure(odf,pf.allH,pf.allR,'superposition',pf.c);
+  
+  % compute normalization
   alpha = calcNormalization(pf,pf_odf);
   
 end

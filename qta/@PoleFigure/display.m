@@ -12,18 +12,17 @@ end;
 
 disp([h ' ' docmethods(inputname(1))]);
 
-if isempty(pf), return;end
+if isempty_cell(pf.allH), return;end
 
 % display mineral name
-if ~isempty(get(pf(1).CS,'mineral'))
-  disp(['  mineral: ',get(pf(1).CS,'mineral')]);
+if ~isempty(pf.CS.mineral)
+  disp(['  mineral: ',pf.CS.mineral]);
 end
 
-disp(['  crystal symmetry : ',get(pf(1).CS,'name'),' (',...
-  option2str([{get(pf(1).CS,'Laue')},get(pf(1).CS,'alignment')]) ')']);
-disp(['  specimen symmetry: ',get(pf(1).SS,'name')]);
+disp(['  crystal symmetry : ',char(pf.CS,'verbose')]);
+disp(['  specimen symmetry: ',char(pf.SS,'verbose')]);
 disp(' ');
 
-for i = 1:length(pf)
-  disp(['  ',char(pf(i),'short')]);
+for i = 1:pf.numPF
+  disp(['  ',char(pf.select(i),'short')]);
 end

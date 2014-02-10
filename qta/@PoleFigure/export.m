@@ -16,15 +16,15 @@ function export(pf,filename,varargin)
 % See also
 % loadPoleFigure_generic
 
-for i = 1:length(pf)
-  dname = [filename,'_',char(pf(i).h),'.txt'];
+for i = 1:pf.numPF
+  dname = [filename,'_',char(pf.allH{i}),'.txt'];
 
-  [theta,rho] = polar(pf(i).r);
+  [theta,rho] = polar(pf.allR{i});
 	if check_option(varargin,'degree')
 		theta = theta * 180'/pi;		
 		rho = rho * 180'/pi;
 	end
-	d = [theta(:),rho(:),pf(i).intensities(:)]; %#ok<NASGU>
+	d = [theta(:),rho(:),pf.allI{i}(:)]; %#ok<NASGU>
   save(dname,'d','-ASCII');
     
 end

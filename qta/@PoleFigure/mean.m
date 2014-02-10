@@ -11,11 +11,11 @@ function m = mean(pf,varargin)
 %  m  - mean
 %
 
-m = zeros(size(pf));
-for i = 1:length(pf)
+m = zeros(1,pf.numPF);
+for i = 1:pf.numPF
   
-  w = calcQuadratureWeights(pf(i).r);
+  w = calcQuadratureWeights(pf.allR{i});
     
-  m(i) = sum(sum(reshape(pf(i).intensities,size(w)) .* w));
+  m(i) = sum(sum(reshape(pf.allI{i},size(w)) .* w));
   
 end

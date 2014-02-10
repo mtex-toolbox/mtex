@@ -13,11 +13,11 @@ function alpha = calcNormalization(pf1,pf2)
 % See also
 % PoleFigure/calcError
 
-for i = 1:length(pf1)
-  d1 = max(0,pf1(i).intensities);
-  d2 = max(0,pf2(i).intensities);
+for i = 1:pf1.numPF
+  d1 = max(0,pf1.allI{i});
+  d2 = max(0,pf2.allI{i});
   
-  w = calcQuadratureWeights(pf1(i).r);
+  w = calcQuadratureWeights(pf1.allR{i});
   
   alpha(i) = sum(w(:)'*d1(:) / (w(:)'*d2(:))); %#ok<AGROW>
 end

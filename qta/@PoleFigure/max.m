@@ -1,4 +1,4 @@
-function m = max(pf,pf2)
+function pf = max(pf1,pf2)
 % maximum of two pole figures or the maximum of a single polefigure
 %
 % Syntax:
@@ -17,29 +17,21 @@ function m = max(pf,pf2)
 
 if nargin == 1
   
-  for i =1:length(pf)
-    m(i) = max(pf(i).intensities(:));
-  end
+  pf = cellfun(@max,pf1.allI);    
+    
+elseif isa(pf1,'double')
   
-elseif isa(pf,'double')
-  
-  m = pf2;
-  for i = 1:length(pf2)
-    m(i).intensities = max(pf,pf2(i).intensities);
-  end
-  
+  pf = pf2;
+  pf.intensities = max(pf1,pf2.intensities);
+    
 elseif isa(pf2,'double')
   
-  m = pf;
-  for i = 1:length(pf)
-    m(i).intensities = max(pf2,pf(i).intensities);
-  end
-  
+  pf = pf1;
+  pf.intensities = max(pf2,pf1.intensities);
+    
 else
   
-  m = pf2;
-  for i = 1:length(pf2)
-    m(i).intensities = max(pf(i).intensities,pf2(i).intensities);
-  end
-  
+  pf = pf1;
+  pf.intensities = max(pf1.intensities,pf2.intensities);
+    
 end

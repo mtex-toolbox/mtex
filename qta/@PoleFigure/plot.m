@@ -17,17 +17,17 @@ function plot(pf,varargin)
 [ax,pf,varargin] = getAxHandle(pf,varargin{:});
 if isempty(ax),
   newMTEXplot('ensureTag','pdf','ensureAppdata',...
-    {{'CS',pf(1).CS},{'SS',pf(1).SS},{'h',get(pf,'h')}});
+    {{'CS',pf.CS},{'SS',pf.SS},{'h',pf.allH}});
 end
 
 field = lower(get_option(varargin,'colorcoding',[]));
 
 % TODO !!!
-%if isProp(pf(1),field)
-%  pfunc = @(i) pf(i).(field);
-%else
-pfunc = @(i) pf(i).intensities;
-%end
+if isProp(pf,field)
+  pfunc = @(i) pf({i}).(field);
+else
+  pfunc = @(i) pf.allI{i};
+end
 
 if check_option(varargin,{'contourf','contour','smooth'}) && ...
     (size(pfunc(1),1) == 1 || size(pfunc(1),2) == 1)
@@ -40,14 +40,14 @@ end
 vdisp(' ',varargin{:});
 vdisp('Plotting pole figures:',varargin{:})
 
-multiplot(ax{:},numel(pf),@(i) pf(i).r,pfunc,'TR',@(i) pf(i).h,...
+multiplot(ax{:},pf.numPF,@(i) pf.allR{i},pfunc,'TR',@(i) pf.allH{i},...
   'dynamicMarkerSize',...
   varargin{:});
 
 if isempty(ax)
-  setappdata(gcf,'h',get(pf,'hCell'));
-  setappdata(gcf,'SS',pf(1).SS);
-  setappdata(gcf,'CS',pf(1).CS);
+  setappdata(gcf,'h',pf.allH);
+  setappdata(gcf,'SS',pf.SS);
+  setappdata(gcf,'CS',pf.CS);
   set(gcf,'Name',['Pole Figures of Specimen ',inputname(1)]);
   set(gcf,'Tag','pdf');
 end

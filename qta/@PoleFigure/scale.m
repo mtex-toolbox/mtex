@@ -11,8 +11,6 @@ function pf = scale(pf,alpha)
 % See also
 % PoleFigure/mtimes
 
-if length(alpha) ==1, alpha = repmat(alpha,size(pf));end
+if length(alpha) ==1, alpha = repmat(alpha,1,pf.numPF);end
 
-for i = 1:length(pf)
-  pf(i).intensities = pf(i).intensities * alpha(i);
-end
+for i = 1:pf.numPF, pf.allI{i} = pf.allI{i} .* alpha(i); end
