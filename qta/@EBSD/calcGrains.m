@@ -39,8 +39,8 @@ end
 
 % ------------------ verify inputs --------------------------
 
-if numel(gbcValue) == 1 && length(ebsd.CS) > 1
-  gbcValue = repmat(gbcValue,size(ebsd.CS));
+if numel(gbcValue) == 1 && length(ebsd.allCS) > 1
+  gbcValue = repmat(gbcValue,size(ebsd.allCS));
 end
 
 if all(isfield(ebsd.prop,{'x','y','z'}))
@@ -144,7 +144,7 @@ for p = 1:numel(ebsd.phaseMap)
   if any(ndx)
     
     criterion(ndx) = feval(['gbc_' gbc],...
-      ebsd.rotations,ebsd.CS{p},Dl(ndx),Dr(ndx),gbcValue(p),varargin{:});
+      ebsd.rotations,ebsd.allCS{p},Dl(ndx),Dr(ndx),gbcValue(p),varargin{:});
     
   end
   

@@ -7,22 +7,22 @@ for p = 1:numel(ebsd.phaseMap)
   ss = [];
   ss = [ss, 'phase ',num2str(ebsd.phaseMap(p)) ' ']; %#ok<AGROW>
   
-  CS = ebsd.CS{p};
+  CS = ebsd.allCS{p};
   if ischar(CS)
     ss = [ss, '(not Indexed): ' CS ', ']; %#ok<AGROW>
   else
     
-    if ~isempty(get(CS,'mineral'))
-      ss = [ss, '(' get(CS,'mineral') '): '];
+    if ~isempty(CS.mineral)
+      ss = [ss, '(' CS.mineral '): ']; %#ok<AGROW>
     else
-      ss = [ss, ': '];
+      ss = [ss, ': ']; %#ok<AGROW>
     end
     
-    ss = [ss 'symmetry ' Laue(CS) ', ']; %#ok<AGROW>
+    ss = [ss 'symmetry ' CS.Laue ', ']; %#ok<AGROW>
   end
   
   ss = [ss, num2str(nnz(ebsd.phaseId == p)),' orientations '];    %#ok<AGROW>
   
   
-  s = strvcat(s,ss); %#ok<VCAT>
+  s = strvcat(s,ss);
 end

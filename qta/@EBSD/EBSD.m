@@ -24,7 +24,7 @@ classdef EBSD < dynProp & dynOption & misorientationAnalysis
   
   properties
     
-    CS = {}               % crystal symmetries
+    allCS = {}               % crystal symmetries
     phaseMap = []         %
     rotations = rotation  %
     unitCell = []         %
@@ -35,30 +35,19 @@ classdef EBSD < dynProp & dynOption & misorientationAnalysis
     phase           % phase
     phaseId         % 
     orientations    %
+    CS              %
     mineral         % mineral name
     allMinerals     % all mineral names
     indexedPhasesId % id's of all non empty indexed phase
+    weights         % 
   end
   
   methods
     
     function ebsd = EBSD(varargin)
-      
-      if nargin==1 && isa(varargin{1},'EBSD') % copy constructor
-        obj = varargin{1};
-        
-        ebsd.CS = obj.CS;
-        ebsd.phaseMap = obj.phaseMap;
-        ebsd.rotations = obj.rotations;
-        ebsd.unitCell = obj.unitCell;
-        ebsd.phase = obj.phase;
-        ebsd.prop = obj.prop;
-        ebsd.opt = obj.opt;
-        return
-      else
-        ebsd.rotations = reshape(rotation(varargin{:}),[],1);
-      end
-      
+                  
+      ebsd.rotations = reshape(rotation(varargin{:}),[],1);
+            
       % extract additional properties
       ebsd.prop = get_option(varargin,'options',struct);
       
@@ -77,7 +66,7 @@ classdef EBSD < dynProp & dynOption & misorientationAnalysis
       if nargin >= 1 && isa(varargin{1},'orientation')
         
         % take symmetry from orientations
-        ebsd.CS = {get(varargin{1},'CS')};
+        ebsd.allCS = {varargin{1}.CS};
         
         
       else % otherwise there can be more then one phase
@@ -85,33 +74,33 @@ classdef EBSD < dynProp & dynOption & misorientationAnalysis
         % CS given as option
         if check_option(varargin,'cs')
           
-          ebsd.CS = ensurecell(get_option(varargin,'CS',{}));
+          ebsd.allCS = ensurecell(get_option(varargin,'CS',{}));
           
           % CS given as second argument
         elseif nargin >= 2 && ((isa(varargin{2},'symmetry') && isCS(varargin{2}))...
             || (isa(varargin{2},'cell') && any(cellfun('isclass',varargin{2},'symmetry'))))
-          ebsd.CS = ensurecell(varargin{2});
+          ebsd.allCS = ensurecell(varargin{2});
           
         else % CS not given -> guess cubic
           
-          ebsd.CS = {symmetry('cubic','mineral','unkown')};
+          ebsd.allCS = {symmetry('cubic','mineral','unkown')};
           
         end
         
         % check number of symmetries and phases coincides
-        if numel(ebsd.phaseMap)>1 && length(ebsd.CS) == 1
+        if numel(ebsd.phaseMap)>1 && length(ebsd.allCS) == 1
           
-          ebsd.CS = repmat(ebsd.CS,numel(ebsd.phaseMap),1);
+          ebsd.allCS = repmat(ebsd.allCS,numel(ebsd.phaseMap),1);
           
           if ebsd.phaseMap(1) <= 0
-            ebsd.CS{1} = 'notIndexed';
+            ebsd.allCS{1} = 'notIndexed';
           end
           
-        elseif max([0;ebsd.phaseMap(:)]) < length(ebsd.CS)
+        elseif max([0;ebsd.phaseMap(:)]) < length(ebsd.allCS)
           
-          ebsd.CS = ebsd.CS(ebsd.phaseMap+1);
+          ebsd.allCS = ebsd.allCS(ebsd.phaseMap+1);
           
-        elseif numel(ebsd.phaseMap) ~= length(ebsd.CS)
+        elseif numel(ebsd.phaseMap) ~= length(ebsd.allCS)
           error('symmetry mismatch')
         end
       end
@@ -133,8 +122,8 @@ classdef EBSD < dynProp & dynOption & misorientationAnalysis
       c = 1;
       
       for ph = 1:numel(ebsd.phaseMap)
-        if ~ischar(ebsd.CS{ph}) && isempty(get(ebsd.CS{ph},'color'))
-          ebsd.CS{ph} = set(ebsd.CS{ph},'color',colorOrder{mod(c-1,nc)+1});
+        if ~ischar(ebsd.allCS{ph}) && isempty(ebsd.allCS{ph}.color)
+          ebsd.allCS{ph}.color = colorOrder{mod(c-1,nc)+1};
           c = c+1;
         end
       end
@@ -167,7 +156,7 @@ classdef EBSD < dynProp & dynOption & misorientationAnalysis
     function id = get.indexedPhasesId(obj)
       
       id = intersect(...
-        find(~cellfun('isclass',obj.CS,'char')),...
+        find(~cellfun('isclass',obj.allCS,'char')),...
         unique(obj.phaseId));
     
     end
@@ -181,6 +170,38 @@ classdef EBSD < dynProp & dynOption & misorientationAnalysis
     end
         
     
+    function cs = get.CS(ebsd)
+      
+      % ensure single phase
+      [~,cs] = checkSinglePhase(ebsd);
+            
+    end
+    
+    function ebsd = set.CS(ebsd,cs)
+            
+      if isa(cs,'symmetry')      
+        % ensure single phase
+        id = unique(ebsd.phaseId);
+      
+        if numel(id) == 1
+          ebsd.allCS{id} = cs;
+        else
+          % TODO
+        end
+      elseif iscell(cs)    
+        if length(cs) == numel(ebsd.phaseMap)
+          ebsd.allCS = cs;
+        elseif length(CS) == numel(ebsd.indexedPhasesId)
+          ebsd.allCS = repcell('not indexed',1,numel(ebsd.phaseMap));
+          ebsd.allCS(ebsd.indexedPhasesId) = cs;
+        else
+          error('The number of symmetries specified is less than the largest phase id.')
+        end        
+      else
+        error('Assignment should be of type symmetry');
+      end
+    end
+    
     function mineral = get.mineral(ebsd)
       
       % ensure single phase
@@ -190,9 +211,21 @@ classdef EBSD < dynProp & dynOption & misorientationAnalysis
     end
     
     function minerals = get.allMinerals(ebsd)
-      isCS = cellfun('isclass',ebsd.CS,'symmetry');
-      minerals(isCS) = cellfun(@(x) x.mineral,ebsd.CS(isCS),'uniformoutput',false);
-      minerals(~isCS) = ebsd.CS(~isCS);
+      isCS = cellfun('isclass',ebsd.allCS,'symmetry');
+      minerals(isCS) = cellfun(@(x) x.mineral,ebsd.allCS(isCS),'uniformoutput',false);
+      minerals(~isCS) = ebsd.allCS(~isCS);
+    end
+    
+    function w = get.weights(ebsd)
+      if ebsd.isProp('weights')
+        w = ebsd.prop.weights;
+      else
+        w = ones(size(ebsd));
+      end
+    end
+    
+    function ebsd = set.weights(ebsd,weights)
+      ebsd.prop.weights = weights;
     end
     
   end

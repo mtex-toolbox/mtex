@@ -2,8 +2,13 @@ function ind = subsind(ebsd,subs)
 % subindexing of EBSD data
 %
 
-ind = true(1,length(ebsd));
-
+if numel(subs)==2 && all(cellfun(@isnumeric, subs))
+  ind = ebsd.findByLocation([subs{:}]);
+  return
+else
+  ind = true(1,length(ebsd));
+end
+  
 for i = 1:length(subs)
 
   % ebsd('mineralname') or ebsd({'mineralname1','mineralname2'})
@@ -12,7 +17,7 @@ for i = 1:length(subs)
     mineralsSubs = ensurecell(subs{i});
     phaseNumbers = cellfun(@num2str,num2cell(ebsd.phaseMap(:)'),'Uniformoutput',false);
     
-    phases = false(1,numel(ebsd.CS));
+    phases = false(1,numel(ebsd.allCS));
     
     for k=1:numel(mineralsSubs)
       phases = phases ...
@@ -24,10 +29,10 @@ for i = 1:length(subs)
     
   elseif isa(subs{i},'symmetry')
     
-    phases = false(1,length(ebsd.CS));
-    for k=1:length(ebsd.CS)
-      if isa(ebsd.CS{k},'symmetry') && ebsd.CS{k} == subs{i} && ...
-          (isempty(get(subs{i},'mineral')) || strcmp(get(ebsd.CS{k},'mineral'),get(subs{i},'mineral')))
+    phases = false(1,length(ebsd.allCS));
+    for k=1:length(ebsd.allCS)
+      if isa(ebsd.allCS{k},'symmetry') && ebsd.CS{k} == subs{i} && ...
+          (isempty(subs{i}.mineral) || strcmp(ebsd.CS{k}.mineral,subs{i}.mineral))
         phases(k) = true;
       end
     end
@@ -35,7 +40,7 @@ for i = 1:length(subs)
     
   elseif isa(subs{i},'grain')
     
-    ind = ind & ismember(ebsd.options.grain_id,get(subs{i},'id'))';
+    ind = ind & ismember(ebsd.options.grain_id,subs{i}.id)';
     
   elseif isa(subs{i},'logical')
     

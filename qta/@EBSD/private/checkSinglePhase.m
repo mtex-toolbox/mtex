@@ -4,7 +4,7 @@ function [ebsd,cs] = checkSinglePhase(ebsd)
 try
   
   % restrict to indexed phases
-  phases = find(cellfun(@(cs) isa(cs,'symmetry'),ebsd.CS));
+  phases = find(cellfun(@(cs) isa(cs,'symmetry'),ebsd.allCS));
   
   phases = intersect(phases,unique(ebsd.phaseId));
   
@@ -21,7 +21,7 @@ try
   end
   
   ebsd = subSet(ebsd,ebsd.phaseId == phases);
-  cs = ebsd.CS{phases};
+  cs = ebsd.allCS{phases};
   
   if numel(ebsd.phaseId) == 0
     error('MTEX:MultiplePhases','The EBSD set is Empty!');

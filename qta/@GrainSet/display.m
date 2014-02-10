@@ -16,16 +16,13 @@ disp([h ' ' docmethods(inputname(1))])
 disp(' ')
 %disp(char(dynOption(grains)));
 
-%
-CS       = grains.ebsd.CS;
-phaseMap = grains.ebsd.phaseMap;
+% generate phase table
+matrix = cell(numel(grains.phaseMap),6);
 
-matrix = cell(numel(phaseMap),6);
-
-for ip = 1:numel(phaseMap)
+for ip = 1:numel(grains.phaseMap)
   
   % phase
-  matrix{ip,1} = num2str(phaseMap(ip)); %#ok<*AGROW>
+  matrix{ip,1} = num2str(grains.phaseMap(ip)); %#ok<*AGROW>
   
   % grains
   matrix{ip,2} = int2str(nnz(grains.phaseId == ip));
@@ -34,21 +31,21 @@ for ip = 1:numel(phaseMap)
   matrix{ip,3} = int2str(nnz(grains.ebsd.phaseId == ip));  
   
   % abort in special cases
-  if isempty(CS{ip})
+  if isempty(grains.allCS{ip})
     continue
-  elseif ischar(CS{ip})
-    matrix{ip,4} = CS{ip};
+  elseif ischar(grains.allCS{ip})
+    matrix{ip,4} = grains.allCS{ip};
     continue
   else
     % mineral
-    matrix{ip,4} = char(CS{ip}.mineral);
+    matrix{ip,4} = char(grains.allCS{ip}.mineral);
   end
   
   % symmetry
-  matrix{ip,5} = CS{ip}.pointGroup;
+  matrix{ip,5} = grains.allCS{ip}.pointGroup;
   
   % reference frame
-  matrix{ip,6} = option2str(get(CS{ip},'alignment'));
+  matrix{ip,6} = option2str(grains.allCS{ip}.alignment);
   
 end
 
