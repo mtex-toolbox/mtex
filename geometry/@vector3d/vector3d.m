@@ -7,6 +7,12 @@ classdef vector3d < dynOption
     antipodal = false;
   end
     
+  properties (Dependent = true)
+    theta   % polar angle
+    rho     % azimuth angle
+    resolution % mean distance between the points on the sphere
+  end
+  
   methods
     
     function v = vector3d(x,y,z,varargin)
@@ -81,7 +87,7 @@ classdef vector3d < dynOption
       
       % resolution
       if check_option(varargin,'resolution')
-        v = set(v,'resolution',get_option(varargin,'resolution'));
+        v = v.setOption('resolution',get_option(varargin,'resolution'));
       end
       
       % normalize
@@ -89,5 +95,35 @@ classdef vector3d < dynOption
       
     end
   
+    function rho = get.rho(v)
+      rho = getRho(v);
+    end
+    
+    function theta = get.theta(v)
+      theta = getTheta(v);
+    end
+    
+    function res = get.resolution(v)
+      
+      if v.isOption('resolution')
+        res = v.getOption('resolution');
+      elseif length(v)>4
+        try
+          a = calcVoronoiArea(v);
+          res = sqrt(median(a));
+          assert(res>0);
+        catch
+          res = 2*pi;
+        end
+      else
+        res = 2*pi;
+      end
+    end
+    
+    function v = set.resolution(v,res)
+      
+      v = v.setOption('resolution',res);
+      
+    end
   end
 end

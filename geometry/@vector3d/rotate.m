@@ -38,9 +38,9 @@ elseif length(q) == 1
 end
 
 % if output has symmetry set it to Miller
-if isa(q,'orientation') && isCS(get(q,'SS'))
+if isa(q,'orientation') && isCS(q.SS)
    
-   v = Miller(v,get(q,'SS'));
+   v = Miller(v,q.SS);
   
 else % convert to vector3d
 

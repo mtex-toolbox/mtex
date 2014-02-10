@@ -55,7 +55,7 @@ if ~isOption(v,'plot') || ~v.opt.plot
 
     % specify a plotting grid
     theta = polar(v);
-    res = max(2.5*degree,get(v,'resolution'));
+    res = max(2.5*degree,v.resolution);
 
     minTheta = min(theta);
     maxTheta = max(theta);
