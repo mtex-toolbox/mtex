@@ -1,4 +1,4 @@
-function pdfn = noisepf(pdf,fak,background,varargin)
+function pf = noisepf(pf,fak,background,varargin)
 % simulate diffraction counts
 %
 % noisepf simulates realistic diffraction counts by generating random
@@ -19,13 +19,12 @@ function pdfn = noisepf(pdf,fak,background,varargin)
 % ODF/calcPoleFigure
 
 if nargin == 2, background = 0;end
-if numel(fak) == 1, fak = repmat(fak,numel(pdf),1);end
+if numel(fak) == 1, fak = repmat(fak,pf.numPF,1);end
 
-pdfn = pdf;
-for i = 1:length(pdf)
-  data = randp(fak(i)*pdf(i).intensities + background) - background;
+for i = 1:pf.numPF
+  pf.allI{i} = ...
+  randp(fak(i)*pf.allI{i} + background) - background;  
   if check_option(varargin,'NONNEGATIV')
-    data(data < 0) = 0;
-  end
-  pdfn(i).intensities = data;
+    pf.allI{i}(pf.allI{i} < 0) = 0;
+  end  
 end

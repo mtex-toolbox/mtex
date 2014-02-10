@@ -1,10 +1,11 @@
-function m = min(pf,pf2)
-% minimum of two pole figures or the maximum of a single polefigure
+function pf = min(pf1,pf2)
+% minimum of two pole figures or the minimum of a single polefigure
 %
-% Syntay:
+% Syntax:
 %   m  = min(pf)
 %   pf = min(pf1,pf2)
-%   pf = min(pf1,x) = max(x,pf1)
+%   pf = min(pf1,intensity)
+%   pf = min(intensity,pf1)
 %
 % Input
 %  pf       - @PoleFigure
@@ -17,29 +18,21 @@ function m = min(pf,pf2)
 
 if nargin == 1
   
-  for i =1:length(pf)
-    m(i) = min(pf(i).intensities(:));
-  end
+  pf = cellfun(@min,pf1.allI);    
+    
+elseif isa(pf1,'double')
   
-elseif isa(pf,'double')
-  
-  m = pf2;
-  for i = 1:length(pf2)
-    m(i).intensities = min(pf,pf2(i).intensities);
-  end
-  
+  pf = pf2;
+  pf.intensities = min(pf1,pf2.intensities);
+    
 elseif isa(pf2,'double')
   
-  m = pf;
-  for i = 1:length(pf)
-    m(i).intensities = min(pf2,pf(i).intensities);
-  end
-  
+  pf = pf1;
+  pf.intensities = min(pf2,pf1.intensities);
+    
 else
   
-  m = pf2;
-  for i = 1:length(pf2)
-    m(i).intensities = min(pf(i).intensities,pf2(i).intensities);
-  end
-  
+  pf = pf1;
+  pf.intensities = min(pf1.intensities,pf2.intensities);
+    
 end

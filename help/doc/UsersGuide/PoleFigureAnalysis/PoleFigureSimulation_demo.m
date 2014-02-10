@@ -17,11 +17,11 @@ ss = symmetry('triclinic');
 mod1 = orientation('axis',xvector,'angle',45*degree,cs,ss);
 mod2 = orientation('axis',yvector,'angle',65*degree,cs,ss);
 model_odf = 0.5*uniformODF(cs,ss) + ...
-  0.05*fibreODF(Miller(1,0,0),xvector,cs,ss,'halfwidth',10*degree) + ...
-  0.05*fibreODF(Miller(0,1,0),yvector,cs,ss,'halfwidth',10*degree) + ...
-  0.05*fibreODF(Miller(0,0,1),zvector,cs,ss,'halfwidth',10*degree) + ...
-  0.05*unimodalODF(mod1,cs,ss,'halfwidth',15*degree) + ...
-  0.3*unimodalODF(mod2,cs,ss,'halfwidth',25*degree);
+  0.05*fibreODF(Miller(1,0,0,cs),xvector,'halfwidth',10*degree) + ...
+  0.05*fibreODF(Miller(0,1,0,cs),yvector,'halfwidth',10*degree) + ...
+  0.05*fibreODF(Miller(0,0,1,cs),zvector,'halfwidth',10*degree) + ...
+  0.05*unimodalODF(mod1,'halfwidth',15*degree) + ...
+  0.3*unimodalODF(mod2,'halfwidth',25*degree);
 
 %%
 %
@@ -98,11 +98,11 @@ calcError(odf,model_odf,'resolution',5*degree)
 % previous reconstructions.
 
 e = [];
-for i = 1:length(pf)
+for i = 1:pf.numPF
 
-  odf = calcODF(pf(1:i),'silent','NoGhostCorrection');
+  odf = calcODF(pf({1:i}),'silent','NoGhostCorrection');
   e(i,1) = calcError(odf,model_odf,'resolution',2.5*degree);
-  odf = calcODF(pf(1:i),'silent');
+  odf = calcODF(pf({1:i}),'silent');
   e(i,2) = calcError(odf,model_odf,'resolution',2.5*degree);
 
 end
@@ -111,7 +111,7 @@ end
 % Plot the error in dependency of the number of single orientations.
 
 close all;
-plot(1:length(pf),e)
+plot(1:pf.numPF,e)
 ylim([0.07 0.32])
 xlabel('Number of Pole Figures');
 ylabel('Reconstruction Error');

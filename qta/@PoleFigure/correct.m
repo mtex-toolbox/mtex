@@ -44,24 +44,31 @@ end
 pf = pf./def;
 
 
-% Handle the case of correction pole figurs that are given only by theta angles
+% handle the case of correction pole figurs that are given only by theta angles
 function pf_orig = adapt_pf(pf,pf_orig,msg)
 
-if length(pf) == 1, pf = repmat(pf,numel(pf_orig),1);end
-if numel(pf) ~= numel(pf_orig)
+% only a single pole figure given
+if pf.numPF == 1
+  pf.allH = pf_orig.allH;
+  pf.allR = repmat(pf.allR,size(pf_orig.allR));
+  pf.allI = repmat(pf.allI,size(pf_orig.allI));
+end
+   
+if pf.numPF ~= pf_orig.numPF
   error(['number of ' msg ' does not fitt number of pole figures']);
 end
 
 % check for identical specimen directions
-if all([pf.r] == [pf_orig.r])
-  pf_orig = set(pf_orig,'intensities',get(pf,'intensities'));
+if all(pf.r == pf_orig.r)
+  pf_orig.intensities = pf.intensities;
   return
 end
 
 % otherwise interpolate according to theta
 try
-  for i = 1:length(pf)
-    pf_orig(i).intensities = interp1(get(pf(i),'theta'),pf(i).intensities,get(pf_orig(i),'theta'),'spline');
+  for i = 1:pf.numPF
+    pf_orig.allI{i} = interp1(pf.allR{i}.theta,pf.allI{i},...
+      pf_orig.allR{i}.theta,'spline');    
   end
 catch
   error([msg ' does not fit original pole figure data!']);

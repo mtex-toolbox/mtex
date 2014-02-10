@@ -15,25 +15,19 @@ function zr = calcZeroRange(pf,S2G,varargin)
 % PoleFigure/calcODF
 
 % transform in polar coordinates -> output nodes
-[out_theta,out_rho] = polar(S2G);
-out_theta= fft_theta(out_theta);
-out_rho  = fft_rho(out_rho);
-r  = [reshape(out_rho,1,[]);reshape(out_theta,1,[])];
+r  = [fft_rho(S2G.rho(:)),fft_theta(S2G.theta(:))].';
 
 % kernel used for calculation
 k = deLaValeePoussinKernel('halfwidth',...
-  get_option(varargin,'zr_halfwidth',2*get(pf,'resolution')));
+  get_option(varargin,'zr_halfwidth',2*pf.r.resolution));
 
 % legendre coefficents
 Al = k.A; Al(2:2:end) = 0;
 Al = Al(1:min(400,length(Al)));
 
 % in - nodes to become r
-[in_theta,in_rho] = polar(pf.r);
-in_theta = fft_theta(in_theta);
-in_rho   = fft_rho(in_rho);
-gh = [reshape(in_rho,1,[]);reshape(in_theta,1,[])];
-  
+gh = [fft_rho(pf.r.rho(:)),fft_theta(pf.r.theta(:))].';
+
 % normalization
 c = ones(size(pf.intensities));
 w = call_extern('odf2pf','EXTERN',gh,r,c,Al);

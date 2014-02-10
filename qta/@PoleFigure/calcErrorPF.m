@@ -27,17 +27,17 @@ function pfcalc = calcErrorPF(pfmeas,pfcalc,varargin)
 
 % evaluate ODF if neccesary
 if isa(pfcalc,'ODF')
-  pfcalc = calcPoleFigure(pfcalc,{pfmeas.h},{pfmeas.r},'superposition',{pfmeas.c});
+  pfcalc = calcPoleFigure(pfcalc,pfmeas.allH,pfmeas.allR,'superposition',pfmeas.c);
 end
 
-progress(0,length(pfmeas));
-for i = 1:length(pfmeas)
+progress(0,pfmeas.numPF);
+for i = 1:pfmeas.numPF
   
   % normalization
-  alpha = calcNormalization(pfmeas(i),pfcalc(i));
+  alpha = calcNormalization(pfmeas.select(i),pfcalc.select(i));
   
-  d1 = pfmeas(i).intensities;
-  d2 = pfcalc(i).intensities * alpha;
+  d1 = pfmeas.allI{i};
+  d2 = pfcalc.allI{i} * alpha;
   
   if check_option(varargin,'l1')    
     d = abs(d1-d2);    
@@ -47,12 +47,12 @@ for i = 1:length(pfmeas)
     epsilon = get_option(varargin,'RP',1,'double');
     ind = d2 > epsilon*alpha;
     d = abs(d1(ind)-d2(ind))./d2(ind);
-    pfcalc(i).r = pfcalc(i).r(ind);
+    pfcalc.allR{i} = pfcalc.allR{i}(ind);
   else
     epsilon = get_option(varargin,'epsilon',0.5,'double');
     d = abs(d1-d2)./max(d1+epsilon*alpha,d2+epsilon*alpha);
     %d = abs(d1-d2)./(d1+epsilon*alpha);
   end
-  pfcalc(i).intensities = d;
-  progress(i,length(pfmeas));
+  pfcalc.allI{i} = d;
+  progress(i,pfmeas.numPF);
 end

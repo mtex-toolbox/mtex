@@ -8,16 +8,16 @@ function plot_zero_range(pf,varargin)
 S2G = plotS2Grid('antipodal',varargin{:});
 
 % loop over pole figures
-for ip = 1:length(pf)
+for ip = 1:pf.numPF
 
-  fprintf('applying zero range method to %s \n',char(get(pf(ip),'Miller')));
+  fprintf('applying zero range method to %s \n',char(pf.allH{ip}));
 
-  zr{ip} = double(calcZeroRange(pf(ip),S2G,varargin{:})); %#ok<AGROW>
+  zr{ip} = double(calcZeroRange(pf.select(ip),S2G,varargin{:})); %#ok<AGROW>
   
 end
 
 multiplot(@(i) S2G,@(i) zr{i},length(zr),...
-  'DISP',@(i,Z) [' plot PDF h=',char(get(pf(i),'Miller'))],...
-  'ANOTATION',@(i) get(pf(i),'Miller'),...
+  'DISP',@(i,Z) [' plot PDF h=',char(pf.allH{i})],...
+  'ANOTATION',@(i) pf.allH{i},...
   'smooth','interp',varargin{:});
 

@@ -32,17 +32,15 @@ argin_check(rec,{'ODF','PoleFigure'});
 errorpf = calcErrorPF(pf,rec,varargin{:});
 
 % calc error
-e = zeros(1,numel(pf));
-for i = 1:length(pf)
+e = zeros(1,pf.numPF);
+for i = 1:pf.numPF
   
-  e(i) = sum(errorpf(i).intensities(:));
+  e(i) = mean(errorpf.allI{i}(:)); % RP error
   
   if check_option(varargin,'l1')
-    e(i) = e(i)/sum(abs(pf(i).intensities(:))); % L^1 error
+    e(i) = e(i)/mean(abs(pf.allI{i}(:))); % L^1 error
   elseif check_option(varargin,'l2')
-    e(i) = e(i)/sum((pf(i).intensities(:)).^2); % L^2 error
-  else 
-    e(i) = e(i)/length(pf(i).r);       % RP error
+    e(i) = e(i)/mean((pf.allI{i}(:)).^2); % L^2 error  
   end
 end
 

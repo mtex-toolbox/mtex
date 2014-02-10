@@ -80,8 +80,7 @@ plot(pf,'position',[100 100 600 300])
 % As an example, if one wants to set all negative intensities to zero one
 % can issue the command
 
-polar_angle = get(pf,'polar');
-pf = delete(pf,polar_angle >= 74*degree & polar_angle <= 81*degree);
+pf = delete(pf,pf.r.rho >= 74*degree & pf.r.rho <= 81*degree);
 plot(pf)
 
 

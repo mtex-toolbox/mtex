@@ -1,24 +1,24 @@
-classdef PoleFigure < dynOption
+classdef PoleFigure < dynProp & dynOption
 
-
-   
   properties
-    h = Miller()        % crystal direction
-    r = vector3d()      % specimen directions
-    intensities = []    % diffraction intensities
-    c = []              % superposition coefficients
-    bg = []             % background
-    SS                  % specimen symmetry
+    allH = {}           % crystal directions
+    allR = {}           % specimen directions
+    allI = {}           % intensities
+    c = {}              % structure coefficients for superposed pole figures
+    SS = symmetry       % specimen symmetry
   end
-  
-  properties (Dependent = true)  
-    CS    
+   
+  properties (Dependent = true)
+    CS                  % crystal symmetry
+    h                   % crystal direction of single pole figure
+    r                   % specimen directions
+    intensities         % diffraction intensities
   end
   
   methods
   
   
-    function P = PoleFigure(h,r,data,varargin)
+    function pf = PoleFigure(h,r,intensities,varargin)
       % constructor 
       %
       % *PoleFigure* is the low level constructor. For importing real world data
@@ -39,32 +39,94 @@ classdef PoleFigure < dynOption
       
       if nargin == 0, return;end
       
-      P.h = argin_check(h,{'vector3d','Miller'});
-      P.r = argin_check(r,{'vector3d','S2Grid'});
-      if ~check_option(varargin,'complete'), P.r.antipodal = true;end
-      
-      P.intensities= argin_check(data,{'double','int'});
-      assert(numel(P.intensities) == length(P.r),...
-        'Number of diffraction intensitites is not equal to the number of specimen directions!');
-      P.bg = get_option(varargin,'background',[],'double');
-      P.c = reshape(get_option(varargin,'superposition',ones(1,length(h)),'double'),1,[]);
-      P.c= P.c ./sum(P.c);
+      pf.allH = ensurecell(h);
+      pf.allR = ensurecell(r);
+      if ~check_option(varargin,'complete'), pf.allR{1}.antipodal = true;end      
+      pf.allI = ensurecell(intensities);
             
-      P.SS = get_option(varargin,'SS',symmetry);
-      
+      pf.c = ensurecell(get_option(varargin,'superposition',...
+        repcell(1,size(pf.allH))));
+      pf.c = cellfun(@(x) x./sum(x),pf.c,'uniformOutput',false);
+            
+      % extract symmetries
+      args = find(cellfun(@(s) isa(s,'symmetry'),varargin,'uniformoutput',true));
+      if ~isempty(args)
+        pf.CS = varargin{args(1)};
+        if numel(args)>1
+          pf.SS = varargin{args(2)};
+        else
+          pf.SS = symmetry;
+        end
+      end      
     end
     
     function pf = set.CS(pf,CS)
       
-      pf.h.CS = CS;
-            
+      for i = 1:length(pf.allH)
+        pf.allH{i}.CS = CS;
+      end
     end
-    
+        
     function CS = get.CS(pf)
       
-      CS = pf.h.CS;
+      CS = pf.allH{1}.CS;
       
     end
     
-  end 
+    function h = get.h(pf)
+      h = [pf.allH{:}];
+    end
+    
+    function r = get.r(pf)
+      try
+        r = [pf.allR{:}];
+      catch
+        for i = 1:numel(pf.allR)
+          pf.allR{i} = pf.allR{i}(:);
+        end
+        r = vertcat(pf.allR{:});
+      end
+    end
+    
+    function i = get.intensities(pf)
+      try
+        i = [pf.allI{:}];
+      catch
+        for i = 1:numel(pf.allI)
+          pf.allI{i} = pf.allI{i}(:);
+        end
+        i = vertcat(pf.allI{:});
+      end
+    end
+    
+    function pf = set.intensities(pf,i)
+      
+      if numel(i) == 1
+        for ipf = 1:numel(pf.allI)
+          
+          pf.allI{ipf} = i*ones(size(pf.allI{ipf}));
+          
+        end
+      else
+        cs = cumsum([0,cellfun('prodofsize',pf.allI)]);
+        
+        for ipf = 1:numel(pf.allI)
+          pf.allI{ipf} = i(cs(ipf)+1:cs(ipf+1));
+        end
+      end
+    end
+    
+    function varargout = size(pf,varargin)
+      [varargout{1:nargout}] = size(pf.r,varargin{:});
+    end
+    
+    function varargout = length(pf,varargin)
+      [varargout{1:nargout}] = length(pf.r,varargin{:});
+    end
+    
+    function n = numPF(pf)
+      n = numel(pf.allH);
+    end
+    
+  end
 end

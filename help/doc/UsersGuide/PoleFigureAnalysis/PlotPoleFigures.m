@@ -23,7 +23,7 @@ plot(pf)
 % MTEX tries to guess the right size of circle in order to produce a
 % pleasing result. However, you can adjust this size using the option *MarkerSize*.
 
-plot(pf,'MarkerSize',5)
+plot(pf,'MarkerSize',4)
 
 %% Contour Plots
 % Some people like to have there raw pole figures to be drawn as contour
@@ -54,4 +54,4 @@ odf = calcODF(pf,'silent')
 %%
 % Now smooth pole figures can be plotted for arbitrary crystallographic directions.
 
-plotpdf(odf,get(pf,'Miller'),'antipodal')
+plotpdf(odf,pf.h,'antipodal')

@@ -39,7 +39,7 @@ vdisp('------ MTEX -- PDF to ODF inversion ------------------',varargin{:})
 CS = pf.CS; SS = pf.SS;
 
 % generate FEM discretization of orientation space
-res = get_option(varargin,'resolution',get(pf,'resolution'));
+res = get_option(varargin,'resolution',pf.resolution);
 %ori = equispacedSO3Grid(CS,SS,'resolution',min(res,10*degree));
 %DSO3 = DelaunaySO3(ori);
 DSO3 = varargin{1};

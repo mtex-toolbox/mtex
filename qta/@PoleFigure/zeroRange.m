@@ -1,4 +1,4 @@
-function NS3G = zero_range(pf,S3G,varargin)
+function S3G = zeroRange(pf,S3G,varargin)
 % implements the zero range method
 %
 % Input
@@ -19,20 +19,14 @@ function NS3G = zero_range(pf,S3G,varargin)
 % PoleFigure/calcODF
 
 
-% ------- calculate symmetrically equivalent orientations ----------
-% TODO
-g = quaternion(S3G);
-cs = pf(1).CS; ss = pf(1).SS;
-g = ss*reshape(g,1,[]);               % SS x S3G
-g = reshape(g.',[],1);                % S3G x SS
-g = reshape(g*cs,length(S3G),[]); % S3G x SS x CS
+% symmetrically equivalent orientations
+g = S3G.symmetrise.';
 
 % start with complete grid
 ind = true(length(S3G),1);
 
 % which pole figures to check
-ipf = get_option(varargin,'zero_range',1:length(pf),'double');
-
+ipf = get_option(varargin,'zero_range',1:pf.numPF,'double');
   
 % approximation grid
 S2G = regularS2Grid('resolution',1*degree,'antipodal');
@@ -40,10 +34,10 @@ S2G = regularS2Grid('resolution',1*degree,'antipodal');
 % loop over pole figures
 for ip = ipf
 
-  fprintf('applying zero range method to %s',char(get(pf(ip),'Miller')));
+  fprintf('applying zero range method to %s',char(pf.allH{ip}));
   
   % compute zero ranges at approximation grid
-  zr = calcZeroRange(pf(ip),S2G,varargin{:});
+  zr = calcZeroRange(pf.select(ip),S2G,varargin{:});
   
   % loop over symmetries
   for is = 1:size(g,2)
@@ -51,12 +45,11 @@ for ip = ipf
     fprintf('.');
     
     % calculate specimen directions corresponding to grid
-    ggh = g(ind,is) * pf(ip).h;
+    ggh = g(ind,is) * pf.allH{ip};
     
     % transform in polar coordinates -> output nodes
-    [theta,rho] = polar(ggh);
-    theta= fft_theta(theta);
-    rho  = fft_rho(rho);          
+    theta= fft_theta(ggh.theta);
+    rho  = fft_rho(ggh.rho);          
 
     % project to upper hemisphere
     rho(theta>0.25) = 0.5 + rho(theta>0.25);
@@ -76,4 +69,4 @@ for ip = ipf
   fprintf(' - reduction: %d / %d\n',sum(ind),length(ind));
 end
 
-NS3G = subGrid(S3G,ind);
+S3G = subGrid(S3G,ind);

@@ -1,4 +1,4 @@
-function npf = times(arg1,arg2)
+function pf = times(arg1,arg2)
 % implements pf1 .* b and a .* pf2
 %
 % overload the .* operator, i.e. one can now write x .* pf in order to
@@ -16,12 +16,9 @@ else
 end
 
 if isa(m,'double')
-  npf = scale(pf,m);
+  pf = scale(pf,m);
 elseif isa(m,'quaternion')
-  npf = rotate(pf,m);
+  pf = rotate(pf,m);
 elseif isa(m,'PoleFigure');
-  npf = pf;
-  for i = 1:length(pf)
-    npf(i).intensities = pf(i).intensities .* m(i).intensities;
-  end
+  for i = 1:pf.numPF, pf.allI{i} = pf.allI{i} .* m.allI{i}; end
 end

@@ -14,6 +14,6 @@ function pf = rotate(pf,rot,varargin)
 % See also
 % euler2quat axis2quat Miller2quat hr2quat ODF/rotate
 
-for ipf = 1:length(pf)
-	pf(ipf).r =  rotate(pf(ipf).r,rot);
+for ipf = 1:pf.numPF
+	pf.allR{ipf} =  pf.allR{ipf}.rotate(rot);
 end

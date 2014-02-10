@@ -1,10 +1,10 @@
 function pf = unique(pf)
 % remove dublicated points in a polefigure
 
-for ip = 1:numel(pf)
+for ip = 1:pf.numPF
       
-  [r,ndx] = unique(pf(ip).r); %#ok<ASGLU>
+  [pf.allR{ip},ndx] = unique(pf.allR{ip});
     
-  pf(ip) = copy(pf(ip),ndx);
+  pf.allI{ip} = pf.allI{ip}(ndx);
     
 end

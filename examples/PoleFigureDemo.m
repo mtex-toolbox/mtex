@@ -35,11 +35,11 @@ plot(pf)
 %
 % *get raw data*
 % Data stored in a <PoleFigure_index.html PoleFigure> variable can be
-% extracted using the command <PoleFigure_get.hmtl get>, e.g., by
+% extracted by
 
-I = pf(1).intensities; % intensities
-h = pf(1).h;            % Miller indice
-r = pf(1).r;            % specimen directions
+I = pf.intensities; % intensities
+h = pf.h;            % Miller indice
+r = pf.r;            % specimen directions
 
 %%
 % *basic statistics*
@@ -54,8 +54,7 @@ find_outlier(pf);
 %
 %%
 
-[theta,rho] = get(pf,'polar');
-pf_modified = delete(pf,theta >= 70*degree & theta <= 75*degree)
+pf_modified = delete(pf,pf.r.theta >= 70*degree & pf.r.theta <= 75*degree)
 
 plot(pf_modified)
 

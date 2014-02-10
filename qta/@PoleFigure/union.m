@@ -1,30 +1,41 @@
-function pf = union(pf1,pf2)
+function pf = union(pf,varargin)
 % crytsallographic direction to one
+%
 % Syntax
-%   pf = union(pf1,pf2)
+%   pf = union(pf)
+%   pf = union(pf1,pf2,pf3)
 %
 % Input
-%  pf1 - @PoleFigure
-%  pf2 - @PoleFigure (optional)
+%  pf, pf1, pf2 - @PoleFigure
 %
 % Output
 %  pf  - @PoleFigure
 
-if nargin==2, pf1 = [pf1,pf2];end
+pf = [pf,varargin{:}];
+i = 2;
 
-pf(1) = pf1(1);
-
-for i = 2:length(pf1)
+while i <= pf.numPF
   
-  for j = 1:length(pf)    
-    if all(pf(j).h == pf1(i).h), break;end
-  end
+  % any previous equal to current?
+  match = arrayfun(@(j) all(pf.allH{i} == pf.allH{j}),1:i-1);
     
-  if all(pf(j).h == pf1(i).h)
-    pf(j).r = [pf(j).r,pf1(i).r]; %#ok<AGROW>
-    pf(j).intensities = [reshape(pf(j).intensities,1,[]),...
-      reshape(pf1(i).intensities,1,[])]; %#ok<AGROW>
+  % if duplication found
+  if any(match)
+    % combine current with duplicated pole figure
+    pos = find(match);
+    pf.allR{pos} = [pf.allR{pos}(:);pf.allR{i}(:)];
+    pf.allI{pos} = [pf.allI{pos}(:);pf.allI{i}(:)];    
+    
+    % remove the current pole figure
+    pf.allR(i) = [];
+    pf.allH(i) = [];
+    pf.allI(i) = [];
+    pf.c(i) = [];
   else
-    pf(length(pf)+1) = pf1(i); %#ok<AGROW>
+    i = i + 1;
   end
+  
+end
+
+u
 end

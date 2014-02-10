@@ -1,4 +1,4 @@
-function spf = calcPoleFigure(pf,odf,varargin)
+function pf = calcPoleFigure(pf,odf,varargin)
 % simulate pole figure
 %
 % Syntax
@@ -9,16 +9,10 @@ function spf = calcPoleFigure(pf,odf,varargin)
 %  odf - @ODF
 %
 % Output
-%  spf - PoleFigure 
+%  pf - simulated PoleFigure 
 %
 % See also
 % ODF/simulatePoleFigure
 
-progress(0,length(pf));
-for i = 1:length(pf)
-    
-  spf(i) = calcPoleFigure(odf,pf(i).h,pf(i).r,...
-    'superposition',pf(i).c,varargin{:});
-  progress(i,length(pf));
-  
-end
+pf = calcPoleFigure(odf,pf.allH,pf.allR,'superposition',pf.c,varargin{:});
+

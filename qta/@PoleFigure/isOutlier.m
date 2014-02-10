@@ -1,4 +1,4 @@
-function ind = findOutlier(pf,varargin)
+function ind = isOutlier(pf,varargin)
 % find outliers in pole figures
 %
 % Input
@@ -32,3 +32,5 @@ for ipf = 1:pf.numPF
   ind = [ind;abs(dmean - pf.allI{ipf}(:))>alpha*dstd]; %#ok<AGROW>
   
 end
+
+ind = logical(ind);

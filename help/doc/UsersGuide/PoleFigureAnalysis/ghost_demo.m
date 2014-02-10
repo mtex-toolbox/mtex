@@ -80,16 +80,16 @@ plotodf(rec_cor,'sections',9,'silent','sigma')
 %% 
 % radial plot of the true ODF
 close all
-plotodf(odf,'radially','center',idquaternion,'axes',yvector,'color','b')
+plotFibre(odf,Miller(0,1,0),yvector,'color','b');
 hold on
 
 %%
 % radial plot without ghost correction:
-plotodf(rec,'radially','center',idquaternion,'axes',yvector,'color','g')
+plotFibre(rec,Miller(0,1,0),yvector,'color','g');
 
 %%
 % radial plot with ghost correction:
-plotodf(rec_cor,'radially','center',idquaternion,'axes',yvector,'color','r','linestyle','--')
+plotFibre(rec_cor,Miller(0,1,0),yvector,'color','r','linestyle','--');
 hold off
 legend({'true ODF','without ghost correction','with ghost correction'})
 

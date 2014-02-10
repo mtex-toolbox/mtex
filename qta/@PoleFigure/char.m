@@ -5,13 +5,12 @@ function str = char(pf,varargin)
 if check_option(varargin,'short')
   str = {};
 else
-  str = {[' crystal symmetry:  ' char(pf(1).CS)],...
-    [' specimen symmetry: ' char(pf(1).SS)]};  
+  str = {[' crystal symmetry:  ' char(pf.CS)],...
+    [' specimen symmetry: ' char(pf.SS)]};  
 end
-for i = 1:numel(pf)
-	toadd = ['h = ',char(pf(i).h)];
-  toadd = [toadd,[', r = ',char(pf(i).r,'short')]]; 
-%   toadd = [toadd ', ' pf(i).comment];
+for i = 1:pf.numPF
+	toadd = ['h = ',char(pf.allH{i})];
+  toadd = [toadd,[', r = ',char(pf.allR{i},'short')]]; 
   str = [str,toadd];
 end
 
