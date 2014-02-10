@@ -5,7 +5,7 @@ function [c,options] = om_pdfAngle(o,varargin)
 if isa(o,'orientation')
   % get pole figure vector
   h = get_option(varargin,'h',Miller(0,0,1));
-  h = ensureCS(get(o,'CS'),ensurecell(h));
+  h = o.CS.ensureCS(h);
 
   % symmetrise and rotate
   r = o * symmetrise(h,varargin{:});  
@@ -13,21 +13,18 @@ else
   r = o(:);
 end
 
-% convert pole figure vectors to angle
-[theta rho] = polar(r);
-
 switch lower(get_option(varargin,'angle','rho'))
   case 'rho'
     
-    c = rho ./ degree;
+    c = r.rho ./ degree;
     
   case 'theta'
     
-    c = theta ./ degree;
+    c = r.theta ./ degree;
     
   case 'both'
     
-    c = (theta + rho) ./ degree;
+    c = (r.theta + r.rho) ./ degree;
     
   otherwise
     

@@ -1,18 +1,19 @@
 function n = normal(grains)
 % face normal of polyeder
 %
-%% Input
+% Input
 % grains - @Grain3d
-%% Output
+%
+% Output
 % n - normal of faces of the grain boundary
 
 n = cell(size(grains,1),1);
 
-F = get(grains,'F');
-V = get(grains,'V');
+F = grains.F;
+V = grains.V;
 
-I_FD = get(grains, 'I_FDext') + get(grains, 'I_FDint');
-I_FG = I_FD * get(grains,'I_DG');
+I_FD = grains.I_FDext + grains.I_FDint;
+I_FG = I_FD * grains.I_DG;
 
 [f,g,orientation] = find(I_FG);
 

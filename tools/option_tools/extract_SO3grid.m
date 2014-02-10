@@ -11,7 +11,7 @@ end
 S3G = get_option(varargin,'SO3Grid',[],'SO3Grid');
 if isempty(S3G), %eval when necessary
   res = get_option(varargin,'RESOLUTION',2.5*degree);
-  S3G = equispacedSO3Grid(get(obj(1),'CS'),get(obj(1),'SS'),'resolution',res); 
+  S3G = equispacedSO3Grid(obj.CS,obj.SS,'resolution',res); 
 end
 
 if nargout > 1, options = set_option(varargin,'SO3Grid',S3G); end

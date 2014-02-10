@@ -19,13 +19,13 @@ fn = fields(ebsd.prop);
 d = zeros(length(ebsd),4+numel(fn));
 
 % add Euler angles
-[d(:,1:3),EulerNames] = get(ebsd,'Euler',varargin{:});
+[d(:,1:3),EulerNames] = ebsd.rotations.Euler(varargin{:});
 if ~check_option(varargin,{'radians','radiant','radiand'})
   d = d ./ degree;
 end
 
 % add phase
-d(:,4) = get(ebsd,'phase',varargin{:});
+d(:,4) = ebsd.phase;
 
 % update fieldnames
 fn = [EulerNames.';'phase';fn];

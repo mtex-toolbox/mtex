@@ -35,7 +35,7 @@ if ~iscell(h), h = vec2cell(h);end
 try
   argin_check([h{:}],'Miller');
   for i = 1:length(h)
-    h{i} = ensureCS(odf(1).CS,h(i));
+    h{i} = odf.CS.ensureCS(h{i});
   end
 catch %#ok<CTCH>
   plotipdf(ax{:},odf,h,varargin);
@@ -51,7 +51,7 @@ end
 
 % plotting grid
 
-[minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(odf(1).SS,'restrict2Hemisphere',varargin{:});
+[minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(odf.SS,'restrict2Hemisphere',varargin{:});
 r = plotS2Grid('minTheta',minTheta,'maxTheta',maxTheta,...
   'maxRho',maxRho,'minRho',minRho,'restrict2MinMax',varargin{:});
 
@@ -66,8 +66,8 @@ multiplot(ax{:},length(h),...
 if isempty(ax)
   setappdata(gcf,'odf',odf);
   setappdata(gcf,'h',h);
-  setappdata(gcf,'CS',odf(1).CS);
-  setappdata(gcf,'SS',odf(1).SS);
+  setappdata(gcf,'CS',odf.CS);
+  setappdata(gcf,'SS',odf.SS);
   set(gcf,'tag','pdf');
   name = inputname(1);
   set(gcf,'Name',['Pole figures of "',name,'"']);
@@ -122,7 +122,7 @@ function markEquivalent(varargin)
 
 odf = getappdata(gcf,'odf');
 
-fibre = orientation('fibre',h,r,get(odf,'CS'),get(odf,'SS'));
+fibre = orientation('fibre',h,r,odf.CS,odf.SS);
 f = eval(odf,fibre); %#ok<EVLC>
 
 [v,p] = max(f); %#ok<ASGLU>

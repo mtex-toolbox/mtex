@@ -14,20 +14,17 @@ function [ad,omega] = angleDistribution(cs,omega,varargin)
 %
 
 if nargin < 2
-  omega = linspace(0,get(cs,'maxOmega'),300);
+  omega = linspace(0,cs.getMaxAngleFundamentalRegion,300);
 else
   % restrict omega
-  omega = omega(omega < get(cs,'maxOmega'));
+  omega = omega(omega < cs.getMaxAngleFundamentalRegion);
 end
 
 % multiplier
 xchi = ones(size(omega));
 
-% get highest symmetry axis
-nfold = get(cs,'nfold');
-
 % start of region for the highest symmetry axis
-xhn = tan(pi/2/nfold);
+xhn = tan(pi/2/cs.nfold);
 
 % magic number
 rmag = tan(omega./2);
@@ -48,7 +45,7 @@ switch Laue(cs)
     
     % second region ->
     ind = rmag > 1.0;
-    xchi(ind) = xchi(ind) + nfold*(1./rmag(ind)-1);
+    xchi(ind) = xchi(ind) + cs.nfold*(1./rmag(ind)-1);
     
     % third region ->
     xedge = sqrt(1 + xhn^2);
@@ -57,9 +54,9 @@ switch Laue(cs)
     alpha1 = acos(xhn ./ rmag(ind));
     alpha2 = acos(1 ./ rmag(ind));
     XS21 = S2ABC(alpha1,alpha2,pi/2);
-    XS22 = S2ABC(alpha2,alpha2,pi/nfold);
+    XS22 = S2ABC(alpha2,alpha2,pi/cs.nfold);
     
-    xchi(ind) = xchi(ind) + nfold*XS21./pi + nfold*XS22./2./pi;
+    xchi(ind) = xchi(ind) + cs.nfold*XS21./pi + cs.nfold*XS22./2./pi;
     
   case 'm-3'
 

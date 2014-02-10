@@ -13,7 +13,7 @@ try
       '  for how to restrict EBSD data to a single phase.']);     
   end
   
-  cs = obj.CS{phase};
+  cs = obj.allCS{phase};
       
 catch e
   throwAsCaller(e)

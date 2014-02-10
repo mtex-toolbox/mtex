@@ -22,8 +22,6 @@ function varargout = spatialProfile(ebsd,lineX,varargin)
 %   spatialProfile(ebsd,lineX,'property','mad')
 %
 
-if isa(ebsd,'GrainSet'), ebsd = get(ebsd,'EBSD');end
-
 if all(isfield(ebsd.prop,{'x','y','z'}))
   x_D = [ebsd.prop.x,ebsd.prop.y,ebsd.prop.z];
 elseif all(isfield(ebsd.prop,{'x','y'}))
@@ -33,8 +31,8 @@ else
 end
 
 
-prop = get_option(varargin,'property','orientation');
-propVal = get(ebsd,prop);
+prop = get_option(varargin,'property','orientations');
+propVal = ebsd.(prop);
 
 radius = unitCellDiameter(ebsd.unitCell)/2;
 

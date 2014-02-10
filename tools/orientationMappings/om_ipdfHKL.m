@@ -4,7 +4,7 @@ function [rgb,options] = om_ipdfHKL(o,varargin)
 % convert to Miller
 if isa(o,'orientation')
   h = quat2ipdf(o,varargin{:});
-  cs = get(o,'CS');
+  cs = o.CS;
 else
   h = o;
   cs = varargin{1};

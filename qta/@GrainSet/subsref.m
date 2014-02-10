@@ -26,10 +26,7 @@ elseif strcmp(s(1).type,'.')
     [varargout{1:nargout}] = subsref@dynProp(grains,s);
     return
   end
-  
-  % maybe reference to a normal property
-  [varargout{1:nargout}] = builtin('subsref',grains,s);
-  
+    
 end
 
 % is there something more to do?

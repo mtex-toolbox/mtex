@@ -11,7 +11,7 @@ elseif isa(obj,'orientation')
   sym1 = obj.SS;
   sym2 = obj.CS;
 elseif isa(obj,'Miller')
-  sym1 = get(obj,'CS');
+  sym1 = obj.CS;
 end
 
 end

@@ -107,7 +107,7 @@ idata = cellfun('prodofsize',data);
 
 % set file name
 for i = 1:numel(data)
-  data{i} = setOption(data{i},'file_name',ls(fname{i})); %#ok<AGROW>
+  data{i} = data{i}.setOption('file_name',ls(fname{i})); %#ok<AGROW>
 end
 
 if strcmpi(type,'EBSD') && check_option(varargin,'3d')
@@ -126,8 +126,8 @@ if ~any(strcmpi(type,{'tensor','vector3d'}))
     data = [data{:}];
   end
     
-  if exist('cs','var'), data = set(data,'CS',cs,'noTrafo');end
-  if exist('ss','var') && ~isa(data,'EBSD'), data = set(data,'SS',ss);end % TODO
+  if exist('cs','var'), data.CS = cs;end
+  if exist('ss','var') && ~isa(data,'EBSD'), data.SS = ss;end % TODO
   if exist('h','var'),  data = set(data,'h',h);end
   if ~isempty_cell(c),  data = set(data,'c',c);end
 else
@@ -135,15 +135,15 @@ else
   
   if exist('cs','var'),
     if iscell(data)
-      data = cellfun(@(d) set(d,'CS',cs,'noTrafo'),data,'UniformOutput',false);
+      for i = 1:numel(data), data{i}.CS = cs; end
     else
-      data = set(data,'CS',cs,'noTrafo');
+      data.CS = cs;
     end
     if exist('ss','var'),
       if iscell(data)
-        data = cellfun(@(d) set(d,'SS',ss,'noTrafo'),data,'UniformOutput',false);
+        for i = 1:numel(data), data{i}.SS = ss; end
       else
-        data = set(data,'SS',ss,'noTrafo');
+        data.SS = ss;
       end;
     end
   end

@@ -93,7 +93,9 @@ end
 
 % generate plots
 [S2G, data]= project2ODFsection(o,sectype,sec,'data',data,varargin{:});
-S2G = arrayfun(@(i) set(S2G{i},'res',get(S2G{1},'resolution')),1:length(S2G),'uniformoutput',false);
+
+%ensure equal resolution for all plots
+for i = 1:length(S2G), S2G{i}.resolution = S2G{1}.resolution; end
 
 % ------------------------- plot -----------------------------------------
 multiplot(ax{:},nsec,@(i) S2G{i},@(i) data{i},...

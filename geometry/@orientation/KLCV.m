@@ -41,7 +41,7 @@ for i = 1:cN
   for k = 1:length(psi)
     
     % eval kernel
-    f = evalCos(psi(k),d) ./ length(ori) ./ length(ori.CS);
+    f = psi{k}.K(d) ./ length(ori) ./ length(ori.CS);
     
     % remove diagonal
     f(sub2ind(size(f),1:size(f,1),ind)) = 0;
@@ -79,7 +79,7 @@ model_odf = 0.5*uniformODF(cs,ss) + ...
 ebsd = calcEBSD(model_odf,1000);
 
 for k = 1:15
-  psi(k) = kernel('de la Vallee Poussin','halfwidth',40*degree/2^(k/4));
+  psi{k} = kernel('de la Vallee Poussin','halfwidth',40*degree/2^(k/4));
 end
 psi
 

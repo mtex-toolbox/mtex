@@ -21,4 +21,4 @@ function g = rotvec2mat(v)
 q = axis2quat(v(1),v(2),v(3),v(4));
 
 % convert to rotation matrix
-g = q2gmat([get(q,'a'),get(q,'b'),get(q,'c'),get(q,'d')]);
+g = q2gmat([q.a,q.b,q.c,q.d]);

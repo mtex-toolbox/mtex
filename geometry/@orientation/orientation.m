@@ -83,6 +83,9 @@ methods
           
           case 'miller'
             
+            if ~o.CS.isCS
+              o.CS = varargin{2}.CS;
+            end
             o = orientation(Miller2quat(varargin{2:3},o.CS),o.CS,o.SS);       
   
           case lower(names)

@@ -7,16 +7,14 @@ o = project2FundamentalRegion(o);
 % 
 v = Rodrigues(o);
 
-cs = get(o,'cs');
-
-switch Laue(cs)
+switch Laue(o.CS)
   
   case '-1'
     a = abs(angle(o)) ./ pi;
     
   otherwise
     
-    h = getFundamentalRegionRodriguez(cs);
+    h = getFundamentalRegionRodriguez(o.CS);
     h = h ./ norm(h).^2;
     
     a = max(abs(dot_outer(h,v)));

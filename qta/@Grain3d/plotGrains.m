@@ -1,9 +1,9 @@
 function plotGrains(grains,varargin)
 % colorize grains
 %
-%% Input
+% Input
 %  grains  - @Grain3d
-%% Options
+% Options
 %  property - colorize a grains by given property, variants are:
 %
 %    * |'phase'| -- make a phase map.
@@ -15,28 +15,24 @@ function plotGrains(grains,varargin)
 %
 %  PatchProperty - see documentation of patch objects for manipulating the
 %                 apperance, e.g. 'EdgeColor'
-%% See also
+% See also
 % Grain2d/plotGrains
 
 newMTEXplot;
 
-obj.Vertices = get(grains,'V');
-obj.Faces    = get(grains,'F');
+obj.Vertices = grains.V;
+obj.Faces    = grains.F;
 
 obj.EdgeColor = 'none';
 obj.FaceColor = 'flat';
 
-
-phaseMap = get(grains,'phaseMap');
-phase = get(grains,'phase');
-
 % seperate measurements per phase
-numberOfPhases = numel(phaseMap);
+numberOfPhases = numel(grains.phaseMap);
 d = cell(1,numberOfPhases);
 
 isPhase = false(numberOfPhases,1);
 for k=1:numberOfPhases
-  currentPhase = phase==phaseMap(k);
+  currentPhase = grains.phase==grains.phaseMap(k);
   isPhase(k)   = any(currentPhase);
   
   if isPhase(k)
@@ -76,8 +72,7 @@ else
     
   % set appdata
   if strncmpi(property,'orientation',11)
-    CS = get(grains,'CSCell');
-    setappdata(gcf,'CS',CS(isPhase));
+    setappdata(gcf,'CS',grains.allCS(isPhase));
     setappdata(gcf,'r',get_option(opts,'r',xvector));
     setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
     setappdata(gcf,'colorcoding',property(13:end));

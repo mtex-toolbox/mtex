@@ -53,7 +53,7 @@ for k=1:nsteps
   % merge the new measurements with old ones
   pf_measured = union(pf_simulated,pf_measured);  
   
-  fprintf('--- at resolution : %f\n', get(pf_measured,'resolution')/degree);  
+  fprintf('--- at resolution : %f\n', pf_measured.r.resolution/degree);
   
   if k < nsteps
     % odf modelling

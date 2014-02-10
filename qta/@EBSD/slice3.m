@@ -45,8 +45,7 @@ set([api.Slicer.hSurf],'Visible','on')
 
 % make legend
 if strcmpi(api.ColorCode,'phase')
-  minerals = get(ebsd,'minerals');
-  legend(minerals(api.isPhase));
+  legend(ebsd.minerals(api.isPhase));
 end
 
 
@@ -124,7 +123,7 @@ prop = get_option(varargin,'property','orientations',{'char','double'});
 
 for k=1:numberOfPhases
   iP = ebsd.phaseId == k;
-  isPhase(k) = any(iP);
+  isPhase(k) = any(iP(:));
   
   [d(iP,:),property] = calcColorCode(ebsd,iP,prop,varargin{:});
 end

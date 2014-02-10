@@ -55,7 +55,7 @@ end
 
 if length(qcs) == 1 % no crystal symmetry
   
-  d = abs(get(q,'a'));
+  d = abs(q.a);
   
 else  % crystal symmetry
   
