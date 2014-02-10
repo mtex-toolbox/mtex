@@ -56,7 +56,7 @@ if ~check_option(varargin,'fast')
     o = axis2quat(S2G(:),omega(k));
     
     % and select those
-    rotAngle = abs(dot_outer(o,get(odf,'CS')));
+    rotAngle = abs(dot_outer(o,odf.CS));
     maxAngle = max(rotAngle,[],2); 
     o = o(rotAngle(:,1)>maxAngle-0.0001);
     
@@ -89,7 +89,7 @@ else
   ebsd = calcEBSD(odf,points,'resolution',res);
 
   % compute angles
-  angles = angle(get(ebsd,'orientations'));
+  angles = ebsd.orientations.angle;
 
   maxangle = max(angles);
 

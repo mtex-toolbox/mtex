@@ -17,7 +17,7 @@ else
   psi = kernel('de la Vallee Poussin','halfwidth',...
     get_option(varargin,'halfwidth',5*degree));
 end
-hw = get(psi,'halfwidth');
+hw = psi.halfwidth;
 
 % TODO
 for iodf = 1:length(odf.components)
@@ -29,20 +29,19 @@ for iodf = 1:length(odf.components)
   % Fourier portion
   elseif check_option(odf(iodf),'Fourier')
 
-    A = get(psi,'A');
-    L = min(bandwidth(odf),find(A,1,'last')-1);
+    L = min(bandwidth(odf),find(psi.A,1,'last')-1);
 
     odf(iodf).c_hat=odf(iodf).c_hat(1:deg2dim(L+1));
     for l = 0:L
       odf(iodf).c_hat(deg2dim(l)+1:deg2dim(l+1)) = ...
-        odf(iodf).c_hat(deg2dim(l)+1:deg2dim(l+1)) * A(l+1);
+        odf(iodf).c_hat(deg2dim(l)+1:deg2dim(l+1)) * psi.A(l+1);
     end
 
   elseif check_option(odf(iodf),'fibre')
 
     psi_old = odf(iodf).psi;
     odf(iodf).psi = kernel(get(psi_old,'name'),'halfwidth',...
-      hw + get(psi_old,'halfwidth'));
+      hw + psi_old.halfwidth);
 
   elseif check_option(odf(iodf),'Bingham')
 
@@ -52,7 +51,7 @@ for iodf = 1:length(odf.components)
   else
 
     % generate grid
-    S3G = equispacedSO3Grid(odf(1).CS,odf(1).SS,'resolution',hw);
+    S3G = equispacedSO3Grid(odf.CS,odf.SS,'resolution',hw);
 
     % restrict single orientations to this grid
 
@@ -61,7 +60,7 @@ for iodf = 1:length(odf.components)
     d = zeros(1,length(S3G));
 
     % iterate due to memory restrictions?
-    maxiter = ceil(length(odf(1).CS)*length(odf(1).SS)*length(g) /...
+    maxiter = ceil(length(odf.CS)*length(odf.SS)*length(g) /...
       getMTEXpref('memory',300 * 1024));
     if maxiter > 1, progress(0,maxiter);end
 
@@ -88,7 +87,7 @@ for iodf = 1:length(odf.components)
     odf(iodf).c = d;
     psi_old = odf(iodf).psi;
     odf(iodf).psi = kernel(get(psi_old,'name'),'halfwidth',...
-      hw + get(psi_old,'halfwidth'));
+      hw + psi_old.halfwidth');
 
   end
 end

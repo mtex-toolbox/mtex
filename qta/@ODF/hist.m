@@ -11,8 +11,7 @@ function hist(odf,varargin)
 %  savefigure
 
 % eval odf
-CS = odf(1).CS; SS = odf(1).SS;
-SO3G = equispacedSO3Grid(CS,SS,varargin{:});
+SO3G = equispacedSO3Grid(odf.CS,odf.SS,varargin{:});
 d = eval(odf,SO3G,'loosely'); %#ok<GTARG>
 
 % make log histogram 

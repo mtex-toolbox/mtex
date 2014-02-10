@@ -23,9 +23,8 @@ fid = fopen(filename,'w');
 fprintf(fid,'%% MTEX ODF\n');
 
 % symmetries
-CS = odf(1).CS; SS = odf(1).SS;
-fprintf(fid,'%% crystal symmetry: %s\n',char(CS));
-fprintf(fid,'%% specimen symmetry: %s\n',char(SS));
+fprintf(fid,'%% crystal symmetry: %s\n',char(odf.CS));
+fprintf(fid,'%% specimen symmetry: %s\n',char(odf.SS));
 
 % loop over all components
 % TODO

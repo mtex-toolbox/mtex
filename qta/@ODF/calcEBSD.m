@@ -22,7 +22,7 @@ else
 end
 
 % preallocate orientations
-ori = repmat(orientation(idquaternion,odf(1).CS,odf(1).SS),points,1);
+ori = repmat(orientation(idquaternion,odf.CS,odf.SS),points,1);
 
 % draw random sample from each component
 for i = 1:numel(odf.components)

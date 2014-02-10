@@ -131,7 +131,7 @@ for k=1:length(q)
   res2 = res/2;
   while res2 > accuracy
     res2 = res2/2;
-    S3G = localOrientationGrid(odf(1).CS,odf(1).SS,res2*4,'center',q(k),'resolution',res2);
+    S3G = localOrientationGrid(odf.CS,odf.SS,res2*4,'center',q(k),'resolution',res2);
     f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
     
     [mo, ndx] = max(f);
@@ -140,6 +140,6 @@ for k=1:length(q)
   end
 end
 
-modes = orientation(q,odf(1).CS,odf(1).SS);
+modes = orientation(q,odf.CS,odf.SS);
 
 end
