@@ -18,7 +18,10 @@ function r = times(a,b)
 [inner2,right] = extractSym(b);
 
 % ensure inner symmetries coincide
-if inner1 ~= inner2, warning('MTEX:Orientation','Possible missmatch in symmetry!');end
+if inner1 ~= inner2
+  % warning('MTEX:Orientation','Possible symmetry missmatch!');
+  a = a.transformReferenceFrame(inner2);
+end
 
 % rotation multiplication
 r = times@rotation(a,b);

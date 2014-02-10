@@ -1,11 +1,12 @@
 classdef Miller < vector3d
 %(InferiorClasses = {?vector3d,?S2Grid})
-  properties
-    CS        % crystal symmetry
+  properties (Access = private)
+    CSprivate % crystal symmetry
     dispStyle = 'hkl' % output convention hkl or uvw
   end
   
-  properties (Dependent = true)    
+  properties (Dependent = true)
+    CS        % crystal symmetry
     hkl       % direct coordinates    
     h
     k
@@ -48,7 +49,7 @@ classdef Miller < vector3d
       % vector3d_index symmetry_index
       
       % check for symmetry
-      m.CS = getClass(varargin,'symmetry',symmetry);
+      m.CSprivate = getClass(varargin,'symmetry',symmetry);
 
       if nargin == 0 %empty constructor
 
@@ -59,6 +60,10 @@ classdef Miller < vector3d
         m = varargin{1};
         return;
   
+      elseif ischar(varargin{1})
+        
+        [m.x,m.y,m.z] = double(s2v(varargin{1},m));
+              
       elseif isa(varargin{1},'vector3d') % vector3d
   
         if any(norm(varargin{1}) == 0)
@@ -114,10 +119,39 @@ classdef Miller < vector3d
     end
     
     % -----------------------------------------------------------
+    
+    function cs = get.CS(m)
+      cs = m.CSprivate;
+    end
+    
+    function m = set.CS(m,cs)             
+      % recompute representation in cartesian coordinates
+      if m.CSprivate ~= cs
+
+        switch m.dispStyle
+    
+          case 'uvw'
+      
+            uvw = m.uvw;
+            m.CSprivate = cs;
+            m.uvw = uvw;
+      
+          case 'hkl'
+      
+            hkl = m.hkl;
+            m.CSprivate = cs;
+            m.hkl = hkl;
+      
+          otherwise        
+            m.CSprivate = cs;
+        end  
+      end      
+    end
+    
     function hkl = get.hkl(m)
       
       % get reciprocal axes
-      M = squeeze(double(get(m.CS,'axes*'))).';
+      M = squeeze(double(m.CS.axesDual)).';
       
       % get xyz coordinates
       v = reshape(double(m),[],3).';
@@ -146,7 +180,7 @@ classdef Miller < vector3d
       hkl = hkl(:,[1:2,end]);
       
       % get reciprocal axes
-      M = squeeze(double(get(m.CS,'axes*')));
+      M = squeeze(double(m.CS.axesDual));
       
       % compute x, y, z coordinates
       m.x = hkl * M(:,1);
