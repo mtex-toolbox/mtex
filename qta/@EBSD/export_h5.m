@@ -15,26 +15,17 @@ function export_h5(ebsd,fname,varargin)
 if nargin > 2
   root = varargin{1};
 else  
-  root = get(ebsd,'comment');
-  if isempty(root)    
-    root = ['/' inputname(1)];    
-  else
-    root = ['/' root];
-  end  
+  root = ['/' inputname(1)];  
 end
 
 [p,f] = fileparts(fname);
 fname = fullfile(p,[f '.h5']);
 
+allCS = ebsd.allCS;
+phaseMap = ebsd.phaseMap;
 
-CSCell = get(ebsd,'CSCell');
-
-phaseMap = get(ebsd,'phaseMap');
-
-
-
-for k=1:numel(CSCell)
-  CS = CSCell{k};
+for k=1:numel(allCS)
+  CS = allCS{k};
   
   cm = phaseMap(k);
   
@@ -45,10 +36,10 @@ for k=1:numel(CSCell)
   
   if isa(CS,'symmetry')
     
-    h5writeatt(fname,name,'Name',get(CS,'name'));
-    h5writeatt(fname,name,'Mineral',get(CS,'mineral'));
-    h5writeatt(fname,name,'Color',get(CS,'color'));
-    h5writeatt(fname,name,'Laue',get(CS,'Laue'));
+    h5writeatt(fname,name,'Name',CS.name);
+    h5writeatt(fname,name,'Mineral',CS.mineral);
+    h5writeatt(fname,name,'Color',CS.color);
+    h5writeatt(fname,name,'Laue',CS.Laue);
     
     ax = get(CS,'axesLength');
     h5writeatt(fname,name,'a',ax(1));
@@ -60,7 +51,7 @@ for k=1:numel(CSCell)
     h5writeatt(fname,name,'beta',ang(2));
     h5writeatt(fname,name,'gamma',ang(3));
     
-    ali = get(CS,'alignment');
+    ali = CS.alignment;
     if numel(ali) >0
       ali(1:end-1) = strcat(ali(1:end-1),', ');
       ali = regexprep([ali{:}],',',', ');
@@ -97,15 +88,15 @@ h5writeatt(fname,[root '/Orientations'],'Unit','Radian');
 h5writeatt(fname,[root '/Orientations'],'Mapping','Active');
 
 h5create(fname,[root '/PhaseIndex'],[1 n],'Datatype','uint8','ChunkSize',[1 chnk],opts{:});
-h5write(fname, [root '/PhaseIndex'],reshape(get(ebsd,'phase'),1,[]));
+h5write(fname, [root '/PhaseIndex'],ebsd.phase(:).');
 
 fn = fields(ebsd.options);
 
 
 if all(isfield(ebsd.options,{'x','y','z'}))
-  coords = get(ebsd,'xyz');
+  coords = [ebsd.x,ebsd.y,ebsd.z];
 elseif all(isfield(ebsd.options,{'x','y'}))
-  coords = get(ebsd,'xy');
+  coords = [ebsd.x,ebsd.y];
 else
   coords = [];
 end
@@ -114,7 +105,7 @@ if ~isempty(coords)
   h5create(fname,[root '/SpatialCoordinates'],[size(coords,2) n],'Datatype','single','ChunkSize',[size(coords,2) chnk],opts{:});
   h5write(fname,[root '/SpatialCoordinates'],double(coords'));
   
-  u = get(ebsd,'unitCell');
+  u = ebsd.unitCell;
   if ~isempty(u)
     h5writeatt(fname,[root '/SpatialCoordinates'],'Unit','unknown')
     h5writeatt(fname,[root '/SpatialCoordinates'],'UnitCell',u)

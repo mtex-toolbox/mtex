@@ -42,6 +42,7 @@ classdef GrainSet < dynProp & misorientationAnalysis
     phase
     phaseMap
     CS
+    allCS
     mineral                     % mineral name of the grain
     allMinerals                 % all mineral names of the data set
     mis2mean
@@ -131,6 +132,14 @@ classdef GrainSet < dynProp & misorientationAnalysis
       grains.ebsd.CS = CS;
     end
     
+    function allCS = get.allCS(grains)
+      allCS = grains.ebsd.allCS;
+    end
+    
+    function grains = set.allCS(grains,allCS)
+      grains.ebsd.allCS = allCS;
+    end
+    
     function grains = set.phaseId(grains,ph)
       g = find(any(grains.I_DG,1));
       G = sparse(g,g,ph,size(grains.I_DG,2),size(grains.I_DG,2));
@@ -191,12 +200,11 @@ classdef GrainSet < dynProp & misorientationAnalysis
         if ischar(subs{i}) || iscellstr(subs{i})
           
           miner = ensurecell(subs{i});
-          minerals = get(grains.ebsd,'minerals');
           alt_mineral = cellfun(@num2str,num2cell(grains.phaseMap),'Uniformoutput',false);
-          phases = false(length(minerals),1);
+          phases = false(length(grains.phaseMap),1);
           
           for k=1:numel(miner)
-            phases = phases | ~cellfun('isempty',regexpi(minerals(:),miner{k})) | ...
+            phases = phases | ~cellfun('isempty',regexpi(grains.allMinerals(:),miner{k})) | ...
               strcmpi(alt_mineral,miner{k});
           end
           ind = ind & phases(grains.phaseId(:));
@@ -245,12 +253,14 @@ phaseId       = grains.ebsd.phaseId(firstD);
 q             = quaternion(grains.ebsd.rotations);
 meanRotation  = q(firstD);
 
-indexedPhases = ~cellfun('isclass',grains.CS(:),'char');
+indexedPhases = ~cellfun('isclass',grains.allCS(:),'char');
 
-for p = find(indexedPhases)'
-  ndx = grains.ebsd.phaseId(d) == p; 
-  q(d(ndx)) = project2FundamentalRegion(...
-    q(d(ndx)),grains.CS{p},meanRotation(g(ndx)));
+for p = grains.indexedPhasesId
+  ndx = grains.ebsd.phaseId(d) == p;
+  if any(ndx)
+    q(d(ndx)) = project2FundamentalRegion(...
+      q(d(ndx)),grains.allCS{p},meanRotation(g(ndx)));
+  end
   
   % mean may be inaccurate for some grains and should be projected again
   % any(sparse(d(ndx),g(ndx),angle(q(d(ndx)),meanRotation(g(ndx))) > getMaxAngle(ebsd.CS{p})/2))

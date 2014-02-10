@@ -3,7 +3,7 @@ function ebsd = subsasgn(ebsd,s,b)
 
 if ~isa(ebsd,'EBSD')
   ebsd = EBSD;
-  ebsd.CS = b.CS;
+  ebsd.allCS = b.allCS;
 end
 
 if isa(s,'double') || isa(s,'logical')
@@ -18,14 +18,13 @@ if isa(s,'double') || isa(s,'logical')
     
   elseif isa(b,'char') % assign a new phase
     
-    minerals = get(ebsd,'minerals');
-    ind = strcmp(b,minerals);
+    ind = strcmp(b,ebsd.minerals);
     if any(ind)
       newphase = find(ind,1);
     else
       newphase = numel(ebsd.phaseMap)+1;
       ebsd.phaseMap(newphase) = 0;
-      ebsd.CS{newphase} = b;      
+      ebsd.allCS{newphase} = b;      
     end
     
     ebsd.phaseId = subsasgn(ebsd.phaseId,ss,newphase);

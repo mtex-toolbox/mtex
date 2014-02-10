@@ -4,9 +4,9 @@ function plotBoundary(grains,varargin)
 % The function plots grain boundaries where the boundary is determined by
 % the function <GrainSet.specialBoundary.html specialBoundary>
 %
-%% Input
+% Input
 %  grains  - @Grain2d | @Grain3d
-%% Options
+% Options
 %  property - colorize a special grain boundary property, variants are:
 %
 %    * |'phase'| -- boundaries between different phases
@@ -39,12 +39,12 @@ function plotBoundary(grains,varargin)
 %
 %  linewidth - width of the line
 %
-%% Flags
+% Flags
 % internal - only plot boundaries within a grain which do not match the grain boundary
 %         criterion
 % external - only plot grain--boundaries to other grains.
 %
-%% See also
+% See also
 % GrainSet/specialBoundary
 
 % compute boundary segments which should be plotted
@@ -116,7 +116,7 @@ fixMTEXplot(varargin{:});
 
 % save options for drawing later the correct colorbar
 if strcmp(get_option(varargin,'colorcoding'),'patala')
-  setappdata(gcf,'CS',get(grains,'CS'));
+  setappdata(gcf,'CS',grains.allCS);
   setappdata(gcf,'CCOptions',{{'r',vector3d(1,0,0),'colorcenter',vector3d(1,0,0)}});
   setappdata(gcf,'colorcoding',get_option(varargin,'colorcoding'));
 end

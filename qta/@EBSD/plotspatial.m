@@ -109,14 +109,13 @@ end
 
 % make legend
 if strcmpi(property,'phase')
-  minerals = get(ebsd,'minerals');
-  legend(h,minerals(isPhase),'location','NorthEast');
+  legend(h,ebsd.allMinerals(isPhase),'location','NorthEast');
 end
 
 
 % set appdata
 if strncmpi(property,'orientation',11)
-  setappdata(gcf,'CS',ebsd.CS(isPhase));
+  setappdata(gcf,'CS',ebsd.allCS(isPhase));
   setappdata(gcf,'CCOptions',opts(isPhase));
   setappdata(gcf,'colorcoding',property(13:end));
 end

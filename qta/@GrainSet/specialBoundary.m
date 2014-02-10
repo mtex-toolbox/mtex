@@ -173,7 +173,7 @@ else
     
   else
     % otherwise its some orientation property
-    CS        = grains.CS;
+    CS        = grains.allCS;
     SS        = symmetry;
     r         = grains.ebsd.rotations;
     isIndexed = ~isNotIndexed(grains.ebsd);
@@ -285,8 +285,8 @@ switch class(property)
     
   case 'Miller'
     
-    lh = ensureCS(get(m,'CS'),ensurecell(property));
-    rh = ensureCS(get(m,'SS'),ensurecell(property));
+    lh = m.CS.ensureCS(property);
+    rh = m.SS.ensureCS(property);
     
     dist = angle(m*lh,rh);
     

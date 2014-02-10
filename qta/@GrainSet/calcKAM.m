@@ -9,10 +9,6 @@ function A = calcKAM(grains,varargin)
 %  secondorder -  also include higher order neighbors
 %
 
-
-
-CS = get(grains,'CSCell');
-
 r         = grains.rotations;
 phaseMap  = grains.phaseMap;
 phase     = grains.phase;
@@ -51,8 +47,8 @@ for p=1:numel(phaseMap)
     
     nt = 250000;
     if nnz(currentPhase) < nt
-      o_Dl = orientation(r(Dl(currentPhase)),CS{p});
-      o_Dr = orientation(r(Dr(currentPhase)),CS{p});
+      o_Dl = orientation(r(Dl(currentPhase)),grains.allCS{p});
+      o_Dr = orientation(r(Dr(currentPhase)),grains.allCS{p});
       
       %     m  = o_Dl.\o_Dr; % misorientation
       prop(currentPhase,:) = angle(o_Dl,o_Dr);
@@ -66,8 +62,8 @@ for p=1:numel(phaseMap)
         subset = ind(cs(k)+1:cs(k+1));
         
         
-        o_Dl = orientation(r(Dl(subset)),CS{p});
-        o_Dr = orientation(r(Dr(subset)),CS{p});
+        o_Dl = orientation(r(Dl(subset)),grains.allCS{p});
+        o_Dr = orientation(r(Dr(subset)),grains.allCS{p});
         
         %     m  = o_Dl.\o_Dr; % misorientation
         prop(subset,:) = angle(o_Dl,o_Dr);
