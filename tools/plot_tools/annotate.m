@@ -1,21 +1,20 @@
 function annotate(varargin)
 % plots to all axes of the current figure
 %
-%% Syntax
+% Syntax
+%   annotate([xvector,yvector,zvector])
+%   annotate(Miller(1,1,1,cs),'all')
 %
-%  annotate([xvector,yvector,zvector])
-%  annotate(Miller(1,1,1,cs),'all')
-%
-%% Description
+% Description
 % The function *annotate* plots annotations, e.g. specimen or crystal
 % directions to all subfigures of the current figure. You can pass to
 % *annotate* all the options you would normaly would like to pass to the
 % ordinary plot command.
 %
-%% See also
+% See also
 % Miller/plot vector3d/plot
 
-%% preprocessing
+% preprocessing
 
 % no arguments -> quit
 if nargin == 0 || isempty(varargin{1}), return; end
@@ -36,11 +35,10 @@ varargin(1) = [];
 ss = getappdata(gcf,'SS');
 cs = getappdata(gcf,'CS');
 
-%% plotting
+% plotting
 switch get(gcf,'tag')
-    
-  %% pole figure annotations
-  case 'pdf' 
+      
+  case 'pdf' % pole figure annotations
     if isa(obj,'quaternion')
       
       % force right crystal and specimen symmetry
@@ -54,8 +52,8 @@ switch get(gcf,'tag')
       error('Only orientations and specimen directions can be anotated to pole figure plots');
     end
     
-    %% inverse pole figure plot
-    case {'ipdf','hkl','AxisDistribution'}
+    
+    case {'ipdf','hkl','AxisDistribution'} % inverse pole figure plot
       
       if isa(obj,'quaternion')
         
@@ -63,15 +61,15 @@ switch get(gcf,'tag')
         
       elseif isa(obj,'Miller')
         
-        obj = ensureCS(cs,{obj});
+        obj = cs.ensureCS(obj);
         multiplot([],obj,'symmetrised',defaultAnnotationStyle{:},varargin{:});
         
       else        
         error('Only orientations and Miller indece can be anotated to inverse pole figure plots');
       end
       
-%% EBSD 3d scatter plot      
-  case 'ebsd_scatter'
+
+  case 'ebsd_scatter' % EBSD 3d scatter plot      
       
     if isa(obj,'quaternion')
       plot(orientation(obj,cs,ss),'center',getappdata(gca,'center'),varargin{:});
@@ -79,9 +77,9 @@ switch get(gcf,'tag')
       error('Only orientations can be anotated to EBSD scatter plots');
     end
       
-%% Tensor plot    
-  case 'tensor'
-      
+
+  case 'tensor' % Tensor plot    
+    
     if isa(obj,'vector3d')
       
       multiplot([],obj,defaultAnnotationStyle{:},varargin{:});
@@ -90,25 +88,24 @@ switch get(gcf,'tag')
       error('Only crystal and specimen directions can be anotated to tensor plots');
     end
     
-    %% ODF sections plot
-    case 'odf'
-      
-      if strcmpi(getappdata(gcf,'SectionType'),'omega')
-        varargin = set_default_option(varargin,{getappdata(gcf,'h')});
-      end
     
-      % compute projection to ODF sections
-      S2G = project2ODFsection(orientation(obj,cs,ss),...
-        getappdata(gcf,'SectionType'),getappdata(gcf,'sections'),varargin{:});
+  case 'odf' % ODF sections plot
       
-      if isa(obj,'quaternion')
-        multiplot([],@(i) S2G{i},defaultAnnotationStyle{:},varargin{:});
-      else
-        error('Only orientations can be anotated to ODF section plots');
-      end
-          
+    if strcmpi(getappdata(gcf,'SectionType'),'omega')
+      varargin = set_default_option(varargin,{getappdata(gcf,'h')});
+    end
+    
+    % compute projection to ODF sections
+    S2G = project2ODFsection(orientation(obj,cs,ss),...
+      getappdata(gcf,'SectionType'),getappdata(gcf,'sections'),varargin{:});
+    
+    if isa(obj,'quaternion')
+      multiplot([],@(i) S2G{i},defaultAnnotationStyle{:},varargin{:});
+    else
+      error('Only orientations can be anotated to ODF section plots');
+    end
+    
 end
 
-%% postprocess axes
-
+% postprocess axes
 if ~washold, hold off;end
