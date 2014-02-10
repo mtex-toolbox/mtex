@@ -83,13 +83,13 @@ classdef kernel
       value = zeros(numel(dh),numel(dr));
       if numel(dh)<numel(dr)
         for ih = 1:length(dh)
-          Plh = legendre0(length(psi.A)-1,dh(ih))';
-          value(ih,:) = ClenshawL(psi.A .* Plh,dr);
+          Plh = legendre0(length(psi.A)-1,dh(ih));
+          value(ih,:) = ClenshawL(psi.A(:) .* Plh,dr);
         end
       else
         for ir = 1:length(dr)
-          Plr = legendre0(length(psi.A)-1,dr(ir))';
-          value(:,ir) = ClenshawL(psi.A .* Plr,dh).';
+          Plr = legendre0(length(psi.A)-1,dr(ir));
+          value(:,ir) = ClenshawL(psi.A(:) .* Plr,dh).';
         end
       end
       value(value<0)=0;
