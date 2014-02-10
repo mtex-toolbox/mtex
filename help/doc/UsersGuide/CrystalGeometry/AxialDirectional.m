@@ -54,8 +54,8 @@ angle(v1,v2,'antipodal') / degree
 
 mtexdata dubna
 
-% plot pole figure data
-plot(pf(1))
+% plot the first pole figure
+plot(pf({1}))
 
 %%
 % Moreover if you annotate a certain direction to pole figure data, it is

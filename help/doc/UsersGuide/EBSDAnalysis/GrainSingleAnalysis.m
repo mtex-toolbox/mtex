@@ -45,8 +45,12 @@ hold off
 %% Visualize the misorientation within a grain
 % 
 
-close, plot(grain_selected.ebsd,'property',grain_selected.mis2mean,...
+close
+plotBoundary(grain_selected,'linewidth',2)
+hold on
+plot(grain_selected.ebsd,'property',grain_selected.mis2mean,...
   'colorcoding','angle')
+hold off
 colorbar
 
 %%

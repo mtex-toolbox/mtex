@@ -67,19 +67,19 @@ entropy(odf2)
 % Volume portions describes the relative volume of crystals having a
 % certain orientation. The relative volume of crystals having a orientation
 % close to a given orientation is computed by the command
-% [[ODF.volume.html,volume]] and the relative volume of crystals having a 
+% <ODF.volume.html volume> and the relative volume of crystals having a 
 % orientation close to a given fibre is computed by the command
-% [[ODF.fibreVolume.html,fibreVolume]]
+% <ODF.fibreVolume.html fibreVolume>
 
 %%
-% The relative volume of crystals with missorientation maximum 30 degree
-% from the modal orientation:
-volume(odf3,calcModes(odf3),30*degree)  
+% The relative volume in percent of crystals with missorientation maximum
+% 30 degree from the modal orientation:
+volume(odf3,calcModes(odf3),30*degree)*100
 
 %%
 % The relative volume of crystals with missorientation maximum 20 degree
-% from the prefered fibre:
-fibreVolume(odf2,Miller(0,0,1),xvector,20*degree)  
+% from the prefered fibre in percent:
+fibreVolume(odf2,Miller(0,0,1),xvector,20*degree) * 100 
 
 
 %% Fourier Coefficients
@@ -93,7 +93,7 @@ fibreVolume(odf2,Miller(0,0,1),xvector,20*degree)
 % Moreover, the decay of the Fourier coefficients is directly related to
 % the smoothness of the ODF. The decay of the Fourier coefficients might
 % also hint for the presents of a ghost effect. See 
-% [[ghost_demo.html,ghost effect]].
+% <ghost_demo.html ghost effect>.
 
 %%
 % transform into an odf given by Fourier coefficients
@@ -101,7 +101,7 @@ fodf = FourierODF(odf3,32)
 
 %%
 % The Fourier coefficients of order 2:
-reshape(fodf.f_hat(11:35),5,5)
+reshape(fodf.components{1}.f_hat(11:35),5,5)
 
 %%
 % The decay of the Fourier coefficients:
@@ -120,7 +120,7 @@ odf1.eval(orientation('Euler',0*degree,20*degree,30*degree))
 
 fibre = orientation('fibre',Miller(1,0,0),yvector);
 
-plot(odf2.eval(fibre));
+plot(odf2.eval(fibre))
 
 %%
 % Evaluation of the corresponding pole figure or inverse pole figure is
@@ -131,11 +131,11 @@ pdf(odf2,Miller(1,0,0),xvector)
 %% Extract Internal Representation
 % The internal representation of the ODF can be adressed by the command
 
-properties(odf3)
+properties(odf3.components{1})
 
 %%
 % The properties in this list can be accessed by
 
-odf3.center
+odf3.components{1}.center
 
-odf3.psi
+odf3.components{1}.psi
