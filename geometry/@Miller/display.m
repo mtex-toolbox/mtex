@@ -8,7 +8,7 @@ disp([inputname(1) ' = ' doclink('Miller_index','Miller') ...
 display@vector3d(m,'skipHeader', 'skipCoordinates');
 
 % display symmetry
-if ~isempty(get(m.CS,'mineral'))
+if ~isempty(m.CS.mineral)
   disp([' mineral: ',char(m.CS,'verbose')]);
 else
   disp([' symmetry: ',char(m.CS,'verbose')]);
