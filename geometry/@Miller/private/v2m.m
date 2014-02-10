@@ -1,17 +1,17 @@
 function hkl = v2m(m,varargin)
 % vector3d --> Miller-indece 
 %
-%% Syntax
+% Syntax
 %  v = v2m(m)
 %
-%% Input
+% Input
 %  v - @vector3d
 %
-%% Output
+% Output
 %  h,k,l - integer
 
-%% set up matrix
-a = get(m.CS,'axis');
+% set up matrix
+a = m.CS.axes;
 
 %volume
 V  = dot(a(1),cross(a(2),a(3)));
@@ -23,7 +23,7 @@ c_star = cross(a(1),a(2))./V;
 [x,y,z] = double([a_star b_star c_star]);
 M = [x;y;z];
 
-%% compute Miller indice
+% compute Miller indice
 v = reshape(double(m),[],3).';
 
 hkl = (M \ v)';

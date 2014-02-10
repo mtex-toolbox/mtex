@@ -47,9 +47,9 @@ set(gui.hMiller     ,'Callback',@localUpdateIndices);
       [path,file,ext] = fileparts(files{k});
       pf = data{k};
       
-      for j=1:numel(pf)
+      for j=1:pf.numPF
         
-        h = char(get(pf(j),'h'));
+        h = char(pf({j}).h);
         entry = ['               ' file ext];
         entry(1:numel(h)) = h;
         
@@ -66,10 +66,10 @@ set(gui.hMiller     ,'Callback',@localUpdateIndices);
     pf  = data{map(1)}(map(2));
     
     
-    h = get(pf,'h');
-    c = get(pf,'c');
+    h = pf.h;
+    c = pf.c;
     
-    hkl = get(h,'hkl')';
+    hkl = h.hkl';
     
     set(gui.hMiller(1),'String',int2str(hkl(1,:)));
     set(gui.hMiller(2),'String',int2str(hkl(2,:)));
