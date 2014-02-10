@@ -15,7 +15,7 @@ function T = rotate(T,R,varargin)
 
 % ensure that the rotations have the right reference frame
 if isa(R,'orientation')
-  R = ensureCS(T.CS,{R});
+  R = T.CS.ensureCS(R);
   T.CS = R.SS;
 end
 
