@@ -107,7 +107,7 @@ figure('position',[50 50 1200 500])
 axesPos = subplot(1,3,1)
 
 % plot pole figure 1 at this position
-plot(axesPos,pf(1))
+plot(axesPos,pf({1}))
 
 % set position 2 in a 1x3 matrix as the current plotting position
 axesPos = subplot(1,3,2)
@@ -119,5 +119,5 @@ plotpdf(axesPos,odf,h{1},'antipodal')
 axesPos = subplot(1,3,3)
 
 % plot the difference pole figure at this position
-plotDiff(axesPos,odf,pf(1))
+plotDiff(axesPos,odf,pf({1}))
 

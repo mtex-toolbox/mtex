@@ -118,7 +118,7 @@ largeGrains = grains(grainSize(grains)>500)
 close all
 plotBoundary(largeGrains(1),'linewidth',2)
 hold on
-plot(largeGrains(1),'property','orientations')
+plot(largeGrains(1).ebsd,'property','orientations')
 hold off
 
 %%
@@ -130,7 +130,7 @@ hold off
 % plot a grain 
 plotBoundary(largeGrains(1),'linewidth',2)
 hold on
-plot(largeGrains(1),'property','orientations','sharp')
+plot(largeGrains(1).ebsd,'property','orientations','sharp')
 hold off
 
 %% Customizing the color
@@ -193,7 +193,7 @@ colorbar
 % Suppose the mode of the ODF somewhere in our spatial distribution of
 % grains (the orientation map).
 
-mode = orientation('euler',90*degree,50*degree,45*degree,'ABG')
+mode = mean(ebsd('Forsterite'))
 
 %%
 % The definition of colors for certain orientations is carried out similarly as 
@@ -202,7 +202,7 @@ mode = orientation('euler',90*degree,50*degree,45*degree,'ABG')
 close all;
 plot(ebsd('fo'),'colorcoding',...
   'orientationCenter',{mode,[0 0 1]},...
-  'halfwidth',10*degree)
+  'halfwidth',20*degree)
 
 %%
 
@@ -245,8 +245,7 @@ mtexColorMap white2black
 % information to be plotted, where N referes to the number of measurements
 % in the EBSD data set.
 
-p1 = get(ebsd('fo'),'bc');
-plot(ebsd('fo'),'property', p1)
+plot(ebsd('fo'),'property', ebsd('Forsterite').bc)
 
 %% 
 % if the size is just Nx1, the color can be adjusted with

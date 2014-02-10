@@ -35,7 +35,7 @@ plotpdf(ebsd('Forsterite'),[Miller(1,0,0),Miller(0,1,0),Miller(0,0,1)],'antipoda
 % the orientations of the Forsterite phase
 ori = ebsd('Forsterite').orientations
 % the vectors in the 100 pole figure
-r = ori * Miller(1,0,0)
+r = ori * Miller(1,0,0,ori.CS)
 
 % the vector best orthogonal to all r
 rOrth = perp(r)
@@ -75,7 +75,7 @@ annotate(Miller(0,1,0))
 
 odf = calcODF((ebsd('Forsterite')))
 
-plotfibre(odf,Miller(0,1,0),rOrth)
+plotFibre(odf,Miller(0,1,0),rOrth)
 
 ylim([0,26])
 

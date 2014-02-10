@@ -206,7 +206,7 @@ colorbar
 % band contrast. In order to filter out all measurements with low band
 % contrast we can do
 
-condition = get(ebsd,'bc') > 80;
+condition = ebsd.bc > 80;
 
 plot(ebsd(condition))
 

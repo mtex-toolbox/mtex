@@ -74,8 +74,8 @@ for i = 1:6
   odf = calcODF(ebsd,'kernel',psi2,'silent');
   e(i,2) = calcError(odf,fibre_odf,'resolution',2.5*degree);  
 
-  disp(['Rule of thumb: ' int2str(get(psi2,'halfwidth')/degree) mtexdegchar ...
-    'Kullback Leibler cross validation: ' int2str(get(psi1,'halfwidth')/degree) mtexdegchar]);
+  disp(['Rule of thumb: ' int2str(psi2.halfwidth/degree) mtexdegchar ...
+    'Kullback Leibler cross validation: ' int2str(psi1.halfwidth/degree) mtexdegchar]);
   
 end
 

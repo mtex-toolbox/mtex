@@ -115,7 +115,7 @@ plot(odf,'surf3')
 %% Plotting the ODF along a fibre
 % For plotting the ODF along a certain fibre we have the command
 
-plotfibre(odf,Miller(1,2,-3,2,cs),vector3d(2,1,1),'LineWidth',2);
+plotFibre(odf,Miller(1,2,-3,2,cs),vector3d(2,1,1),'LineWidth',2);
 
 %% Fourier Coefficients
 % A last way to visualize an ODF is to plot its Fourier coefficients

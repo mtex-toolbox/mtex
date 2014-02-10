@@ -15,7 +15,7 @@ setMTEXpref('defaultColorMap',blue2redColorMap);
 % We start by importing some ebsd data of Glaucophane and Epidote.
 
 ebsd = loadEBSD([mtexDataPath '/EBSD/data.ctf'],...
-  'ignorePhase',[0 3 4])
+  'ignorePhase',[0 3 4],'convertEuler2SpatialReferenceFrame')
 
 %%
 % Lets visualize a subset of the data
@@ -29,11 +29,10 @@ plot(ebsd(inpolygon(ebsd,[2000 0 1400 375])),'colorcoding','ipdfHKL')
 % define maximum acceptable MAD value
 MAD_MAXIMUM= 1.3;
 
-% extract MAD
-MAD = get(ebsd,'mad');
-
 % eliminate all meassurements with MAD larger than MAD_MAXIMUM
-ebsd(MAD>MAD_MAXIMUM) = []
+ebsd(ebsd.mad >MAD_MAXIMUM) = []
+
+plot(ebsd(inpolygon(ebsd,[2000 0 1400 375])))
 
 %% Define Elastic Stiffness Tensors for Glaucophane and Epidote
 %
