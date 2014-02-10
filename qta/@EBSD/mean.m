@@ -14,5 +14,5 @@ function varargout = mean( ebsd,varargin)
 %  kappa    - parameters of bingham distribution
 %
 
-[varargout{1:nargout}]  = mean(ebsd.orientations,'weights',get(ebsd,'weight'),varargin{:});
+[varargout{1:nargout}]  = mean(ebsd.orientations,'weights',ebsd.weights,varargin{:});
 

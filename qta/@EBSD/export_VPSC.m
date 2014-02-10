@@ -1,26 +1,26 @@
 function export_VPSC(ebsd,filename,varargin)
 % export EBSD to the VPSC format
 %
-%% Syntax
-% export_VPSC(ebsd,'file.txt')
+% Syntax
+%   export_VPSC(ebsd,'file.txt')
 %
-%% Input
+% Input
 %  ebsd     - ebsd data to be exported
 %  filename - name of the ascii file
 %
-%% See also
+% See also
 % EBSDImportExport
   
 % allocate memory
 d = zeros(length(ebsd),4);
 
 % add Euler angles
-d(:,1:3) = get(ebsd,'Euler',varargin{:});
+d(:,1:3) = ebsd.rotations.Euler(varargin{:});
 if ~check_option(varargin,{'radians','radiant','radiand'})
   d = d ./ degree;
 end
 
-w = get(ebsd,'weights');
+w = ebsd.weights;
 
 % add weight
 d(:,4) = w./ sum(w);

@@ -19,9 +19,6 @@ function v = sphereVolume(ebsd,center,radius,varargin)
 % extract orientations
 o = ebsd.orientations;
 
-% extract weights
-weight = get(ebsd,'weight');
-
 % compute volume
 if isempty(ebsd)
   
@@ -32,5 +29,5 @@ else
   center = orientation(center,o.CS);
   a = max(angle_outer(quaternion(o),quaternion(symmetrise(center))),[],2);
   
-  v = sum(weight(a > pi - radius));
+  v = sum(ebsd.weights(a > pi - radius));
 end

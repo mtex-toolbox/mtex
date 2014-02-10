@@ -23,19 +23,16 @@ o = ebsd.orientations;
 % check input
 argin_check(h,{'Miller','vector3d'});
 if isa(h,'Miller')
-  h = ensureCS(o.CS,{h});
+  h = o.CS.ensureCS(h);
 else
   h = Miller(h,o.CS);
 end
 argin_check(r,'vector3d');
 argin_check(radius,'double');
 
-% extract weights
-weight = get(ebsd,'weight');
-
 % compute volume
 if isempty(o)
   v = 0;
 else
-  v = sum(weight(angle(o .\ r,h,varargin{:}) < radius));
+  v = mean(ebsd.weights(angle(o .\ r,h,varargin{:}) < radius));
 end

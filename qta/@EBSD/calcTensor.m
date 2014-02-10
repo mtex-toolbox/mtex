@@ -37,10 +37,10 @@ T = varargin(Tind);
 varargin(Tind) = [];
 
 % initialize avarage tensors
-TVoigt = set(T{1},'M',zeros(size(T{1})));
-TVoigt = set(TVoigt,'CS',symmetry,'noTrafo');
+TVoigt = T{1};
+TVoigt.M = zeros(size(T{1}));
+TVoigt.CS = symmetry;
 TReuss = TVoigt;
-TGeo = TVoigt;
 
 % get phases and populate tensors
 phases = unique(ebsd.phaseId)';
@@ -59,9 +59,9 @@ end
 for p = phases
 
   % extract orientations and wights
-  ind = ebsd.phaseId == p;
-  ori = get(subSet(ebsd,ind),'orientations');
-  weight = get(subSet(ebsd,ind),'weight') * nnz(ind) ./ length(ebsd);
+  ebsd_p = subSet(ebsd,ebsd.phaseId == p);
+  ori = ebsd_p.orientations;
+  weights = ebsd_p.weights * length(ebsd_p) ./ length(ebsd);
   
   rotT = rotate(T{p},ori);
   rotInvT = rotate(inv(T{p}),ori);
@@ -75,10 +75,10 @@ for p = phases
   end
         
   % take the mean of the rotated tensors times the weight
-  TVoigt = sum(weight .* rotT) + TVoigt;
+  TVoigt = sum(weights .* rotT) + TVoigt;
 
   % take the mean of the rotated tensors times the weight
-  TReuss = sum(weight .* rotInvT) + TReuss;
+  TReuss = sum(weights .* rotInvT) + TReuss;
   
 end
 
