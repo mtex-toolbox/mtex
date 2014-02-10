@@ -10,8 +10,5 @@ function odf = rdivide(odf,s)
 argin_check(odf,'ODF');
 argin_check(s,'double');
 
-if length(s) == 1, s = repmat(s,size(odf));end
+odf.weighs =  odf.weighs ./ s; 
 
-for i = 1:numel(odf)
-  odf(i).weight = odf(i).weight ./ s(i);
-end

@@ -18,7 +18,7 @@ w = get_option(varargin,'weights',ones(size(ori)));
 
 % compute Fourier coefficients
 L = 25;
-odf_d = calcFourierODF(ori,'weight',w,...
+odf_d = calcFourierODF(ori,'weights',w,...
   'kernel',kernel('Dirichlet',L),'silent');
 
 c = zeros(1,length(psi));
