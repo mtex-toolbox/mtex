@@ -21,7 +21,7 @@ if ~isempty(varargin) && isnumeric(varargin{1})
 end
     
 % get plotting region
-[minTheta,maxTheta,minRho,maxRho] = get(m,'bounds',varargin{:});
+[minTheta,maxTheta,minRho,maxRho] = m.sphericalRegion(varargin{:});
 
 % use vector3d/smooth for output
 [varargout{1:nargout}] = smooth(ax{:},x(:),varargin{:},...

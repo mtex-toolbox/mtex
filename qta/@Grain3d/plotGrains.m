@@ -43,8 +43,8 @@ end
 d = vertcat(d{:});
 
 
-I_FD = get(grains,'I_FDext');
-I_DG = get(grains,'I_DG');
+I_FD = grains.I_FDext;
+I_DG = grains.I_DG;
 
 [f,g] = find(double(I_FD)*I_DG(:,any(I_DG)));
 

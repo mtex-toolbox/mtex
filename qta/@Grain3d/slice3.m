@@ -1,16 +1,19 @@
 function varargout = slice3(grains,varargin)
 % slice through 3d Grains
 %
-%% Input
+% Input
 % grains - @Grain3d
-%% Options
+%
+% Options
 % color - changes the boundary color
 % linewidth - changes the width of grain boundary
 % PatchProperty - see documentation of patch objects.
-%% Flags
+%
+% Flags
 % x|y|z|xy|xyz - specifiy a slicing plane
 % dontFill - do not colorize the interior of a grain
-%% See also
+%
+% See also
 % EBSD/slice3
 
 % make up new figure
@@ -27,27 +30,23 @@ newMTEXplot;
 
 % hold on,
 
-phaseMap = get(grains,'phaseMap');
-phase = get(grains,'phase');
-
 sliceType = get_flag(varargin,{'x','y','z','xy','xz','yz','xyz'},'xyz');
 slicePos  = get_option(varargin,sliceType,NaN,'double');
 
 if ~check_option(varargin,'dontFill')
-  nphase = numel(phaseMap);
+  nphase = numel(grains.phaseMap);
   X = cell(1,nphase);
   for k=1:nphase
-    iP =  phase == phaseMap(k);
+    iP =  grains.phase == grains.phaseMap(k);
     [d{k},property] = calcColorCode(grains,iP,varargin{:});
   end
   isPhase = find(~cellfun('isempty',d));
   d = vertcat(d{:});
   
-  I_DG = get(grains,'I_DG');
-  [ig,id] = find(I_DG(:,any(I_DG,1))');
+  [ig,id] = find(grains.I_DG(:,any(grains.I_DG,1))');
   d = d(ig,:);
   
-  hSlicer  = slice3(get(grains,'EBSD'),'property',d,varargin{:});
+  hSlicer  = slice3(grains.ebsd,'property',d,varargin{:});
 else
   hSlicer  = addSlicer(sliceType,varargin{:});
 end
@@ -56,14 +55,9 @@ if numel(slicePos)<=numel(sliceType)
   slicePos(1:numel(sliceType)) = slicePos(1);
 end
 
-V = get(grains,'V');
-F = get(grains,'F');
+F = grains.F(any(grains.I_FG,2),:);
 
-I_FG = get(grains,'i_fg');
-
-F = F(any(I_FG,2),:);
-
-Xmin = min(V); Xmax = max(V);
+Xmin = min(grains.V); Xmax = max(grains.V);
 
 slicePos = (Xmax+Xmin)/2;
 
@@ -73,7 +67,7 @@ planePos = @(p,dim) interlim(p,Xmin(dim),Xmax(dim));
 
 if any(sliceType == 'x')
   n = n+1;
-  plane(n).fun = @(p) sliceObj( planePos(p,1),1,V,F);
+  plane(n).fun = @(p) sliceObj( planePos(p,1),1,grains.V,F);
   plane(n).h   = line();
   
   set(hSlicer(n),'min',Xmin(1),'max',Xmax(1));
@@ -81,7 +75,7 @@ end
 
 if any(sliceType == 'y')
   n = n+1;
-  plane(n).fun = @(p) sliceObj( planePos(p,2) ,2,V,F);
+  plane(n).fun = @(p) sliceObj( planePos(p,2) ,2,grains.V,F);
   plane(n).h   = line();
     
   set(hSlicer(n),'min',Xmin(2),'max',Xmax(2));
@@ -89,7 +83,7 @@ end
 
 if any(sliceType == 'z')
   n = n+1;
-  plane(n).fun = @(p) sliceObj( planePos(p,3) ,3,V,F);
+  plane(n).fun = @(p) sliceObj( planePos(p,3) ,3,grains.V,F);
   plane(n).h   = line();
   
   set(hSlicer(n),'min',Xmin(3),'max',Xmax(3));

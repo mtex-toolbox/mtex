@@ -41,15 +41,14 @@ for k=1:numel(allCS)
     h5writeatt(fname,name,'Color',CS.color);
     h5writeatt(fname,name,'Laue',CS.Laue);
     
-    ax = get(CS,'axesLength');
+    ax = norm(CS.axes);
     h5writeatt(fname,name,'a',ax(1));
     h5writeatt(fname,name,'b',ax(2));
     h5writeatt(fname,name,'c',ax(3));
     
-    ang = get(CS,'axesAngle');
-    h5writeatt(fname,name,'alpha',ang(1));
-    h5writeatt(fname,name,'beta',ang(2));
-    h5writeatt(fname,name,'gamma',ang(3));
+    h5writeatt(fname,name,'alpha',CS.alpha);
+    h5writeatt(fname,name,'beta',CS.beta);
+    h5writeatt(fname,name,'gamma',CS.gamma);
     
     ali = CS.alignment;
     if numel(ali) >0

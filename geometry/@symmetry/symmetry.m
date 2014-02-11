@@ -66,7 +66,15 @@ classdef symmetry < rotation
     color = '';
     
   end
+
+  properties (Dependent = true)
   
+    alpha % angle between b and c
+    beta  % angle between c and a
+    gamma % angle between a and b
+    
+  end
+    
   methods
     
     function s = symmetry(varargin)
@@ -173,7 +181,21 @@ classdef symmetry < rotation
       end
       
     end
+    
+    function alpha = get.alpha(cs)
+      alpha = angle(cs.axes(2),cs.axes(3));
+    end
+    
+    function beta = get.beta(cs)
+      beta = angle(cs.axes(3),cs.axes(1));
+    end
+    
+    function gamma = get.gamma(cs)
+      gamma = angle(cs.axes(1),cs.axes(2));
+    end
+    
   end
+    
 end
 
 % ---------------------------------------------------------------

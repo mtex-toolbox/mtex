@@ -71,7 +71,7 @@ else
   drho = ceil(round(100*drho./maxRho*fak)./100)*maxRho/fak;
   minRho = minRho - drho;
   
-  v = set(v,'CS',cs);
+  v.CS = cs;
   opt = extract_option(varargin,'antipodal');
   v = unique(v,opt{:});
 end

@@ -1,29 +1,30 @@
 function [J T q p] = joinCount(grains,coloring,varargin)
 % returns the a joins-count between neighbour coloring
 %
-%% Syntax
+% Syntax
 %  [J,T,q,p] = joinCount(grains,coloring)
-%% Input
+%
+% Input
 %  grains   - @GrainSet
 %  coloring - double list of color corresponding to the grains
 %
-%% Output
+% Output
 %  J - join count matrice
 %  T - normalized chi^2 test of independence
 %  q - empirical entities actually counted
 %  p - esitmated
 %
-%% Example
+% Example
 % join count of phase transitions
 % 
-%  [J,T,q,p] = joincount(grains,get(grains,'phase'))
+%  [J,T,q,p] = joincount(grains,grains.phase)
 %
 
 
 [n,pair] = neighbors(grains);
 pair(pair(:,1) == pair(:,2),:) = []; % delete self reference
 
-[c m color] = unique(coloring);
+[c, m, color] = unique(coloring);
 colors =  color(pair);
 
 
@@ -38,7 +39,7 @@ for k=1:length(c)
 end
 
 
-%%
+%
 
 nc = size(J,1);
 pi = zeros(size(J));
@@ -50,7 +51,7 @@ for i=1:nc
 end
 q = triu(q);
 
-%% indipendence test
+% indipendence test
 
 
 Pb = zeros(nc,nc);
@@ -85,7 +86,7 @@ end
 
 
 
-%% TODO
+% TODO
 
 
 
