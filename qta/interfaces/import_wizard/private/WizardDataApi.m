@@ -328,7 +328,7 @@ api.clearAllData();
     Options.SS.rotOption = 1;
     Options.SS.text      = '';
     
-    Options.ODF.psi      = kernel('de la valle','halfwidth',10*degree);
+    Options.ODF.psi      = deLaValeePoussinKernel('halfwidth',10*degree);
     Options.ODF.exact    = true;
     Options.ODF.approx   = 5;
     Options.ODF.method   = true;
@@ -386,8 +386,8 @@ api.clearAllData();
       if isa(data{1},'EBSD')
         CS = {};  map = [];
         for j=1:numel(data)
-          CS  = [CS get(data{j},'CSCell')];
-          map = [map;get(data{j},'phaseMap')];
+          CS  = [CS data{j}.allCS];
+          map = [map;data{j}.phaseMap];
         end
         
         [map,b,c] = unique(map);
@@ -402,10 +402,8 @@ api.clearAllData();
         
       else
         
-        for l=1:numel(data)-1
-          CS1 = get(data{l},'CS');
-          CS2 = get(data{l+1},'CS');
-          if CS1 ~= CS2
+        for l=1:numel(data)-1          
+          if data{l}.CS ~= data{l+1}.CS
             error('Symmetry mismatch in the EBSD phasemap, I won''t do that!');
           end
         end

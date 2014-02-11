@@ -231,9 +231,9 @@ end
     function str = getCrystalSymmetry()
       
       if isa(data,'EBSD')
-        cs = get(data,'CSCell');
+        cs = data.allCS;
       else
-        cs = {get(data,'CS')};
+        cs = {data.CS};
       end
       
       str = toString(cs);
@@ -260,28 +260,26 @@ end
             
             opt = {};
             % for non cubic symmetries
-            if ~any(strcmp(get(cs{i},'Laue'),{'m-3','m-3m'}))
+            if ~any(strcmp(cs{i}.Laue,{'m-3','m-3m'}))
               opt = [opt {axLength}]; %#ok<AGROW>
             end
             
             % for triclinic and monoclinic get angles
-            if any(strcmp(get(cs{i},'Laue'),{'-1','2/m'}))
+            if any(strcmp(cs{i}.Laue,{'-1','2/m'}))
               opt = [opt {[n2s([axAngles{:}]),'*degree']}]; %#ok<AGROW>
             end
             
-            opt = [opt get(cs{i},'alignment')]; %#ok<AGROW>
+            opt = [opt cs{i}.alignment]; %#ok<AGROW>
             
-            mineral = get(cs{i},'mineral');
-            if ~isempty(mineral)
-              opt = [opt,{'mineral',mineral}];  %#ok<AGROW>
+            if ~isempty(cs{i}.mineral)
+              opt = [opt,{'mineral',cs{i}.mineral}];  %#ok<AGROW>
             end
             
-            color = get(cs{i},'color');
-            if ~isempty(color)
-              opt = [opt,{'color',color}];  %#ok<AGROW>
+            if ~isempty(cs{i}.color)
+              opt = [opt,{'color',cs{i}.color}];  %#ok<AGROW>
             end
             
-            tmpString = strcat('symmetry(''', get(cs{i},'name'),'''',option2str(opt,'quoted'),')');
+            tmpString = strcat('symmetry(''', cs{i}.name,'''',option2str(opt,'quoted'),')');
             
           end
           
@@ -295,7 +293,7 @@ end
     
     function str = getSpecimenSymmetry()
       
-      str = ['symmetry(''',strrep(char(get(data,'SS')),'"',''), ''')'];
+      str = ['symmetry(''',strrep(data.SS.char,'"',''), ''')'];
       
     end
     
@@ -434,7 +432,8 @@ end
     
     function str = hasCoefficient()
       
-      if length(get(data,'c')) > length(data)
+      % TODO
+      if length(data.c) > length(data)
         str = {'''superposition'',c'};
       else
         str = '';
@@ -444,11 +443,12 @@ end
     
     function str = getCoefficients()
       
+      % TODO
       % specifiy structural coefficients for superposed pole figures
-      if length(get(data,'c')) > length(data)
+      if length(data.c) > length(data)
         c = [];
-        for k = 1:length(data)
-          c = strcat(c,n2s(get(data(k),'c')),',');
+        for k = 1:data.numPF
+          c = strcat(c,n2s(data.c{k}),',');
         end
         cstr = strcat('c = {',c(1:end-1),'}');
       else
@@ -463,10 +463,9 @@ end
       str = {'{ ...'};
       eps = 10e4;
       
-      for k = 1:length(data)
-        h = get(data(k),'h');
-        
-        hkl = round(get(h,'hkl')*eps)./eps;
+      for k = 1:data.numPF
+                
+        hkl = round(data.allH{k}.hkl*eps)./eps;
         
         sh = strcat('Miller(',num2str(hkl,'%d,'),'CS)');
         
@@ -484,14 +483,13 @@ end
     
     function str = getODFKernelName()
       
-      str = ['''' get(get(data,'psi'),'name') ''''];
+      str = ['''' data.psi.name ''''];
       
     end
     
     function str = getODFHalfwidth()
       
-      hw  = get(get(data,'psi'),'halfwidth');
-      str = [xnum2str(hw/degree) '*degree'];
+      str = [xnum2str(data.psi.halfwidth/degree) '*degree'];
       
     end
     

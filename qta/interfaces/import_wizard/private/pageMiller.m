@@ -101,8 +101,8 @@ set(gui.hMiller     ,'Callback',@localUpdateIndices);
       assert(all(cellfun('prodofsize',hkl) == numel(c)));
       
       pf = data{map(1)}(map(2));
-      pf = set(pf,'h',Miller(hkl{:},get(pf,'CS')));
-      pf = set(pf,'c',c);
+      pf.h = Miller(hkl{:},pf.CS);
+      pf.c = c;
       data{map(1)}(map(2)) = pf;
       
       api.setData(data);
