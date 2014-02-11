@@ -19,5 +19,26 @@ function t = norm(odf,varargin)
 % See also
 % ODF/textureindex ODF/entropy ODF/volume ODF_index ODF/calcFourier
 
-t = norm(Fourier(odf,'l2-normalization',varargin{:}));
-  
+% decide which method to use
+if all(cellfun(@(x) isa(x,'FourierComponent'),odf.components)) ...
+  || odf.bandwidth < 32
+  default = 'Fourier';
+else
+  default = 'quadrature';
+end
+
+method = get_option(varargin,'method',default);
+
+switch method
+  case 'Fourier'
+    odf = FourierODF(odf);
+    t = odf.components{1}.norm;
+  case 'quadrature'
+    
+    % get approximation grid
+    S3G = extract_SO3grid(odf,varargin{:},'resolution',5*degree);
+
+    % eval ODF
+    t = sqrt(mean(eval(odf,S3G).^2));
+    
+end

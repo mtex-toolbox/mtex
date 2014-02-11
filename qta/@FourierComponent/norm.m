@@ -1,4 +1,4 @@
-function t = norm(odf,varargin)
+function t = norm(component,varargin)
 % caclulate texture index of ODF
 %
 % The norm of an ODF f is defined as:
@@ -14,4 +14,4 @@ function t = norm(odf,varargin)
 % See also
 % ODF/textureindex ODF/entropy ODF/volume ODF_index ODF/calcFourier
 
-t = norm(Fourier(odf,'l2-normalization',varargin{:}));
+t = norm(Fourier(component,'l2-normalization',varargin{:}));
