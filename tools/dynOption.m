@@ -24,10 +24,19 @@ classdef dynOption
       
       try
         [varargout{1:nargout}] = builtin('subsref',dOpt,s);
-      catch 
-        for i = 1:numel(dOpt)
-          varargout{i} = subsref(dOpt(i).opt,s);
-        end        
+      catch err
+        if (strcmp(err.identifier,'MATLAB:noSuchMethodOrField'))
+          try
+            varargout = cell(1,numel(dOpt));
+            for i = 1:numel(dOpt)
+              varargout{i} = subsref(dOpt(i).opt,s);
+            end
+          catch
+            throwAsCaller(err);
+          end
+        else
+          throwAsCaller(err);
+        end
       end      
     end
     
