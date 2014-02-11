@@ -21,7 +21,7 @@ if length(o) > 2000 || check_option(varargin,'points')
   points = fix(get_option(varargin,'points',2000));
   disp(['plot ', int2str(points) ,' random orientations out of ', ...
     int2str(length(o)),' given orientations']);
-  o = subsref(o,discretesample(ones(1,length(o)),fix(points)));
+  o = o.subSet(discretesample(ones(1,length(o)),fix(points)));
 end
 
 % prepare new figure

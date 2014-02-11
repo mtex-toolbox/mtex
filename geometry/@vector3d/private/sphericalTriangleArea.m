@@ -16,9 +16,9 @@ eps = 10^-10;
 nd = ~(l2n_ab < eps | l2n_bc < eps | l2n_ca < eps);
 
 % normalize the plane normal vector
-n_ab = n_ab.subsref(nd)./l2n_ab(nd);
-n_bc = n_bc.subsref(nd)./l2n_bc(nd);
-n_ca = n_ca.subsref(nd)./l2n_ca(nd);
+n_ab = n_ab.subSet(nd)./l2n_ab(nd);
+n_bc = n_bc.subSet(nd)./l2n_bc(nd);
+n_ca = n_ca.subSet(nd)./l2n_ca(nd);
 
 % Girard's formula. A+B+C-pi, with angles  A,B,C between the great circles
 area = zeros(size(nd));

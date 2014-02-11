@@ -26,7 +26,7 @@ octaeder = reshape(octaeder.',4,[]);
 newTetra = [[base;corner],octaeder].';
 
 % new vertices as mean of all edges
-centerEdges = mean2(DSO3.subsref(v(:,1)),DSO3.subsref(v(:,2)));
+centerEdges = mean2(DSO3.subSet(v(:,1)),DSO3.subSet(v(:,2)));
 
 % set up refined grid
 DSO3.a = [DSO3.a(:);centerEdges.a];

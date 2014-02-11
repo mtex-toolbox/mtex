@@ -29,7 +29,7 @@ if nargout == 2
   
   for i=1:length(v)
 	
-    u = subsref(v,i);
+    u = v.subSet(i);
     h = S * u;
     if isAnti && keepAnti
       h = [h;-h]; %#ok<AGROW>
@@ -37,7 +37,7 @@ if nargout == 2
         
     for j = 2:length(h)
       
-      hj = subsref(h,j);
+      hj = h.subSet(j);
       if ~any(isnull(norm(u-hj))) ...
           && ~(~keepAnti && isAnti && any(isnull(norm(u + hj))))
         u = [u,hj]; %#ok<AGROW>

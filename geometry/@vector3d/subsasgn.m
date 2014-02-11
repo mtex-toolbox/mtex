@@ -1,21 +1,12 @@
 function v = subsasgn(v,s,b)
 % overloads subsasgn
 
-if isempty(v)  && ~isempty(b)
+if isempty(v) && ~isempty(b)
   v = b;
   v.x = [];
   v.y = [];
   v.z = [];
 end
-
-if isnumeric(s) || islogical(s)
-
-  v.x(s) = b.x;
-  v.y(s) = b.y;
-  v.z(s) = b.z;
-  return
-end
-
 
 switch s(1).type
   

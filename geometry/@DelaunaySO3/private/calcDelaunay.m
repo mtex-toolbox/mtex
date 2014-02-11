@@ -24,7 +24,7 @@ for ib = 1:length(bounds)
   % apply symmetry operation
   s = rotation('Rodrigues',bounds(ib))^2;
   boundaryOri{ib} = orientation(...
-    subsref(ori,boundaryOriInd{ib}) * inv(s),ori.CS,ori.SS); %#ok<MINV>
+    ori.subSet(boundaryOriInd{ib}) * inv(s),ori.CS,ori.SS); %#ok<MINV>
     
   % check that the rotated nodes are indeed outside the fundamental region
   %ind = boundaryOri{ib}.checkFundamentalRegion;

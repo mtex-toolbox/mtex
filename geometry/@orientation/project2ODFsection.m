@@ -28,7 +28,7 @@ if strcmpi(type,'axisangle')
   
   for i=1:length(sec)
     ind(:,i) = angle(o)-tol < sec(i) & sec(i) < angle(o)+tol;
-    v{i} = S2Grid(axis(subsref(o,ind(:,i))));
+    v{i} = axis(o.subSet(ind(:,i)));
   end
   
   if nargout > 1 && check_option(varargin,'data')

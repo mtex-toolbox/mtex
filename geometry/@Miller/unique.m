@@ -17,4 +17,4 @@ v = vector3d(symmetrise(m,varargin{:}));
 
 [tmp,ndx,pos] = unique(min(reshape(pos,size(v)),[],1)); %#ok<ASGLU>
 
-m = subsref(m,ndx);
+m = m.subSet(ndx);

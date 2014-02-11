@@ -1,19 +1,17 @@
 function varargout = text(v,varargin)
 %
-%% Syntax
-%   scatter(v,s)  %
+% Syntax
+%   text(v,s)  %
 %
-%% Input
+% Input
 %  v  - @vector3d
 %  s  - string
 %
-%% Options
+% Options
 %
-%% Output
+% Output
 %
-%% See also
-
-%% plot prepertations
+% See also
 
 % where to plot
 [ax,v,varargin] = splitNorthSouth(v,varargin{:},'text');
@@ -28,7 +26,7 @@ varargin = varargin(2:end);
 if check_option(varargin,'labeled')
 
   strings = cell(1,length(v));
-  for i = 1:length(v), strings{i} = char(subsref(v,i),getMTEXpref('textInterpreter')); end
+  for i = 1:length(v), strings{i} = char(v.subSet(i),getMTEXpref('textInterpreter')); end
 
   c = colormap;
   %if ~all(equal(c,2)), varargin = [{'BackGroundColor','w'},varargin];end
@@ -51,7 +49,7 @@ end
 % plot a spherical grid
 plotGrid(ax,projection,extend,varargin{:});
 
-%% print labels
+% print labels
 for i = 1:length(strings)
   s = strings{i};
   if ~ischar(s), s = char(s,getMTEXpref('textInterpreter'));end
@@ -61,7 +59,7 @@ for i = 1:length(strings)
     'margin',0.001,varargin{2:end});  %#ok<AGROW>
 end
 
-%% finalize the plot
+% ---------- finalize the plot -------------------
 
 % output
 if nargout > 0

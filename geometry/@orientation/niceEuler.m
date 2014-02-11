@@ -45,7 +45,7 @@ penalty(ind) = penalty(ind) + 10;
 % take the best Euler angles
 [~,i] = min(penalty,[],1);
 
-osym = subsref(osym,sub2ind(size(osym),i,1:size(osym,2)));
+osym = osym.subSet(sub2ind(size(osym),i,1:size(osym,2)));
 
 % return result
 [varargout{1:nargout}] = Euler(osym,varargin{:});
