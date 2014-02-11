@@ -11,27 +11,27 @@ function varargout = subsref(grains,s)
 if strcmp(s(1).type,'()')
   
   ind = subsind(grains,s(1).subs);
-  varargout{1} = subSet(grains,ind);
-  
-elseif strcmp(s(1).type,'.')
-  
-  % maybe reference to a dynamic option
-  %try %#ok<TRYNC>
-  %  [varargout{1:nargout}] = subsref@dynOption(grains,s);
-  %  return
-  %end
-  
-  % maybe reference to a dynamic property
-  try %#ok<TRYNC>
-    [varargout{1:nargout}] = subsref@dynProp(grains,s);
+  grains = subSet(grains,ind);
+ 
+  % is there something more to do?
+  if numel(s)>1
+    s = s(2:end);
+  else
+    varargout{1} = grains;
     return
   end
-    
 end
 
-% is there something more to do?
-if numel(s)>1
-  varargout{1} = subsref(varargout{1},s(2:end));
+% maybe reference to a dynamic property
+try %#ok<TRYNC>
+  [varargout{1:nargout}] = subsref@dynProp(grains,s);
   return
 end
 
+% maybe reference to a dynamic option
+try %#ok<TRYNC>
+  [varargout{1:nargout}] = subsref@dynOption(grains,s);
+  return
+end
+  
+end

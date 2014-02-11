@@ -77,10 +77,10 @@ plot(pf,'position',[100 100 600 300])
 %
 % An exhausive introduction how to modify pole figure data can be found
 % <ModifyPoleFigureData.html here>
-% As an example, if one wants to set all negative intensities to zero one
-% can issue the command
+% As an example, if one wants to remove all intensities with polar angle
+% bewtween 74 and 81 degree one can do
 
-pf = delete(pf,pf.r.rho >= 74*degree & pf.r.rho <= 81*degree);
+pf(pf.r.theta >= 74*degree & pf.r.theta <= 81*degree) = [];
 plot(pf)
 
 

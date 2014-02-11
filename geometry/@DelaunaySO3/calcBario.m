@@ -11,7 +11,7 @@ function bario = calcBario(DSO3,ori,tetra)
 %
 
 % compute vertices
-vertices = subsref(DSO3,DSO3.tetra(tetra,:));
+vertices = DSO3.subSet(DSO3.tetra(tetra,:));
 
 % translate everything such that ori becomes the identity
 vertices = repmat(inv(ori(:)),1,4) .* reshape(vertices,[],4);

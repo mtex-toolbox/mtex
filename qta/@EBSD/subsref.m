@@ -22,19 +22,16 @@ if strcmp(s(1).type,'()')
 
 end
 
+% maybe reference to a dynamic property
+try %#ok<TRYNC>
+  [varargout{1:nargout}] = subsref@dynProp(ebsd,s);
+  return
+end
+
 % maybe reference to a dynamic option
 try %#ok<TRYNC>
   [varargout{1:nargout}] = subsref@dynOption(ebsd,s);
   return
 end
   
-% maybe reference to a dynamic property
-try %#ok<TRYNC>
-  [varargout{1:nargout}] = subsref@dynProp(ebsd,s);
-  return
-end
-  
-% maybe reference to a normal property
-[varargout{1:nargout}] = builtin('subsref',ebsd,s);
-
 end

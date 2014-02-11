@@ -1,14 +1,14 @@
 function [V,C] = calcVoronoi(q,varargin)
 % compute the the Voronoi decomposition for unit quaternions
 %
-%% Input
+% Input
 %  q - @quaternion
 %
-%% Output
+% Output
 %  V - Voronoi--Vertices
 %  C - Voronoi--Cells containing the index to the Voronoi--Vertex
 %
-%% See also
+% See also
 % S2Grid\calcVoronoi voronoin
 
 % make it double cover
@@ -20,20 +20,20 @@ n = length(q);
 
 % voronoi-vertices
 V = normalize(cross(...
-  subsref(q,faces(:,4))-subsref(q,faces(:,1)),...
-  subsref(q,faces(:,3))-subsref(q,faces(:,1)),...
-  subsref(q,faces(:,2))-subsref(q,faces(:,1))));
+  q.subSet(faces(:,4))-q.subSet(faces(:,1)),...
+  q.subSet(faces(:,3))-q.subSet(faces(:,1)),...
+  q.subSet(faces(:,2))-q.subSet(faces(:,1))));
 
 
 % voronoi-vertices around generators
-[center vertices] = sort(faces(:));
+[center, vertices] = sort(faces(:));
 
 vertices = mod(vertices'-1,length(V))+1;
 
 % now we delete duplicated voronoi vertices
 eps = 10^-10; % machine precision
 [ignore,first,ind] = unique(round(squeeze(double(V))/eps)/eps,'rows');
-V = subsref(V,first); 
+V = V.subSet(first); 
 left = ind(vertices)';
 
 % erase duplicated vertices in the pointer list

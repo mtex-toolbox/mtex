@@ -23,7 +23,7 @@ end
 [V,C] = calcVoronoi(v);
 
 nd = ~cellfun('isempty',C);
-v = v.subsref(nd);
+v = v.subSet(nd);
 
 last = cumsum(cellfun('prodofsize',C(nd)));
 
@@ -34,9 +34,9 @@ right = left(shift);
 
 center = cumsum([1 diff(shift)>1]);
 
-va = v.subsref(center);
-vb = V.subsref(left);
-vc = V.subsref(right);    % next vertex around
+va = v.subSet(center);
+vb = V.subSet(left);
+vc = V.subSet(right);    % next vertex around
 
 % calculate the area for each triangle around generator (va)
 A = real(sphericalTriangleArea(va,vb,vc));

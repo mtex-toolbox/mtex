@@ -45,7 +45,7 @@ if length(o)*length(cs)*length(ss) > 100000 || check_option(varargin,'points')
   disp(['  plotting ', int2str(points) ,' random orientations out of ', int2str(length(o)),' given orientations']);
 
   samples = discretesample(ones(1,length(o)),points);
-  o= subsref(o,samples);
+  o= o.subSet(samples);
   if ~isempty(data), data = data(samples); end
 
 end

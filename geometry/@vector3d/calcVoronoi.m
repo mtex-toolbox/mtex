@@ -8,7 +8,7 @@ function [V,C] = calcVoronoi(v,varargin)
 %  V - list of Voronoi--Vertices
 %  C - cell array of Voronoi--Vertices per generator
 %
-%% See also
+% See also
 % voronoin
 
 n = length(v);
@@ -18,15 +18,16 @@ v = reshape(v,[],1);
 faces = convhulln([x(:) y(:) z(:)],{'Qt','Pp','QJ'}); % delauny triangulation on sphere
 
 % voronoi-vertices
-V = normalize(cross(v.subsref(faces(:,3))-v.subsref(faces(:,1)),v.subsref(faces(:,2))-v.subsref(faces(:,1))));
+V = normalize(cross(v.subSet(faces(:,3))-v.subSet(faces(:,1)),...
+  v.subSet(faces(:,2))-v.subSet(faces(:,1))));
 
 % voronoi-vertices around generators
 [center, vertices] = sort(faces(:));
 
 
-v = v.subsref(center);
+v = v.subSet(center);
 vert = repmat(V,3,1);
-vert = vert.subsref(vertices);
+vert = vert.subSet(vertices);
 
 % the azimuth of a voronoi-vertex relativ to its generator
 [ignore,azimuth] = polar(hr2quat(v,zvector).*cross(v,vert));
@@ -39,7 +40,7 @@ left = mod(vertices(left)'-1,length(V))+1;
 % now we delete duplicated voronoi vertices
 eps = 10^-10; % machine precision
 [ignore,first,ind] = unique(round(squeeze(double(V))/eps)/eps,'rows');
-V = V.subsref(first); 
+V = V.subSet(first); 
 left = ind(left)';
 
 % erase duplicated vertices in the pointer list

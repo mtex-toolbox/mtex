@@ -57,7 +57,7 @@ if ~check_option(varargin,'all') && ...
   disp('The option "all" ensures that all data are plotted');
   
   samples = discretesample(ones(1,length(o)),points);
-  o = subsref(o,samples);
+  o= o.subSet(samples);
   if ~isempty(data), data = data(samples); end
 end
 

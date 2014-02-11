@@ -1,11 +1,14 @@
-function varargout = subsref(sym,varargin)
+function varargout = subsref(sym,s)
 % overloads subsref
 
-try
-  [varargout{1:nargout}] = subsref(rotation(sym),varargin{:});
-catch %#ok<CTCH>
-  [varargout{1:nargout}] = builtin('subsref',sym,varargin{:});
+switch s(1).type
+  case '()'
+
+    % subindexing symmetry is rotation!!
+    [varargout{1:nargout}] = subsref@rotation(rotation(sym),s);
+      
+  case '.'
+
+    [varargout{1:nargout}] = builtin('subsref',sym,s);
+    
 end
-
-
-

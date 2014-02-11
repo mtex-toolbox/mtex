@@ -42,13 +42,13 @@ end
 
 % restrict to quaternion which are not yet it FR
 if length(q) == numel(ind)
-  q_sub = quaternion(q.subsref(ind));
+  q_sub = quaternion(q.subSet(ind));
 else
   q_sub = quaternion(q);
 end
 
 % if q_ref was a list of reference rotations
-if length(q_ref) == numel(ind), q_ref = subsref(q_ref,ind); end
+if length(q_ref) == numel(ind), q_ref = q_ref.subSet(ind); end
 
 % use that angle( CS2*q*CS1 ) =  angle( q * CS1 * inv(CS2) )
 [uCS,m,~] = unique(qCS1*inv(qCS2),'antipodal'); %#ok<MINV>
@@ -61,7 +61,13 @@ omegaSym  = abs(dot_outer(inv(q_sub).*q_ref,uCS));
 [omega(ind),nx] = max(omegaSym,[],2);
 
 % project to fundamental region
-q = q.subsasgn(ind,inv(qCS2.subsref(j(nx))).*q_sub.*qCS1.subsref(i(nx)));
+qn = inv(qCS2.subSet(j(nx))).*q_sub.*qCS1.subSet(i(nx));
+
+% replace projected quaternions
+q.a(ind) = qn.a;
+q.b(ind) = qn.b;
+q.c(ind) = qn.c;
+q.d(ind) = qn.d;
 
 % compute angle
 omega = 2*acos(min(1,omega));
