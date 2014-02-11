@@ -15,8 +15,12 @@ classdef ODF < dynOption
       
       if nargin == 0, return;end
           
-      odf.components = {components};
-      odf.weights    = weights;
+      odf.components = ensurecell(components);
+      if nargin == 2
+        odf.weights    = weights;
+      else
+        odf.weights = 1;
+      end
       
     end
     

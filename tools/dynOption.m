@@ -50,11 +50,7 @@ classdef dynOption
         end
       end
     end
-    
-    function dOpt = set(dOpt,varargin)
-      dOpt = setOption(dOpt,varargin{:});      
-    end
-    
+        
     % -------------------------------------------
     function varargout = getOption(dOpt,name)
       for j = 1:numel(dOpt)

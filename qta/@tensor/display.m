@@ -5,7 +5,7 @@ disp(' ');
 
 % collect top line
 h = doclink('tensor_index','tensor');
-if isOption(T,'name'), h = [T.name,' ',h];end
+if isOption(T,'name'), h = [T.getOption('name'),' ',h];end
 
 if check_option(varargin,'vname')
   h = [get_option(varargin,'vname'), ' = ' h];

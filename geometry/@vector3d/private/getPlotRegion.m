@@ -2,7 +2,7 @@ function extend = getPlotRegion(v,varargin)
 % returns plotting region in polar coordiantes
 
 % default values from the vectors to plot
-[minTheta, maxTheta,minRho,maxRho] = v.sphericalRegion(varargin{:});
+[minTheta, maxTheta,minRho,maxRho] = sphericalRegion(v,varargin{:});
 
 % get values from direct options
 minTheta = get_option(varargin,'minTheta',minTheta);
