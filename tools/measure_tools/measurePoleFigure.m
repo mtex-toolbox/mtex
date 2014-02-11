@@ -70,7 +70,7 @@ elseif check_option(varargin,'integral') %along smallcircles
     F(k,:) = sum( f(ind,:),1);
   end
   
-  PF = PoleFigure(h,r,round(F),get(odf,'CS'),get(odf,'SS'));
+  PF = PoleFigure(h,r,round(F),odf.CS,odf.SS);
  
 elseif check_option(varargin,'path') % along a defined great circle
     

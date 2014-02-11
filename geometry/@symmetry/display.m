@@ -38,21 +38,20 @@ propV{end+1} = [s.pointGroup ' (' s.laueGroup ')'];
 % add axis length
 if ~any(strcmp(s.laueGroup,{'m-3','m-3m'}))
   props{end+1} = 'a, b, c'; 
-  propV{end+1} = option2str(vec2cell(get(s,'axesLength')));
+  propV{end+1} = option2str(vec2cell(nom(s.axes)));
 end
 
 
 % add axis angle
 if any(strcmp(s.laueGroup,{'-1','2/m'}))
   props{end+1} = 'alpha, beta, gamma';
-  angles = get(s,'axesAngle');
-  propV{end+1} = [num2str(angles(1)) '°, ' num2str(angles(2)) '°, ' num2str(angles(3)) '°'];
+  propV{end+1} = [num2str(s.alpha) '°, ' num2str(s.beta) '°, ' num2str(s.gamma) '°'];
 end
 
 % add reference frame
 if any(strcmp(s.laueGroup,{'-1','2/m','-3m','-3','6/m','6/mmm'}))
   props{end+1} = 'reference frame'; 
-  propV{end+1} = option2str(get(s,'convention'));    
+  propV{end+1} = option2str(s.alignment);    
 end
 
 % display all properties

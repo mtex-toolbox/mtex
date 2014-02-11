@@ -100,7 +100,7 @@ plot(pf_measured,'silent');
 %% Compared to a dense measured Polefigure
 %
 
-r = equispacedS2Grid('resolution',get(pf_measured,'resolution'));
+r = equispacedS2Grid('resolution',pf_measured.resolution);
 for l=1:length(h)
   pf_simulated(l) = calcPoleFigure(odf_true,h(l),r);
 end

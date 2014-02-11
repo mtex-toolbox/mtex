@@ -27,13 +27,13 @@ if isa(prop,'char') && strcmpi(prop,'phase')
     
     if ~ischar(obj.allCS{i})
       
-      if isempty(get(obj.allCS{i},'color'))
+      if isempty(obj.allCS{i}.color)
         
         index = i;
         
       else
         
-        index = strmatch(get(obj.allCS{i},'color'),colorNames);
+        index = strmatch(obj.allCS{i}.color,colorNames);
 
       end
           

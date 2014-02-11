@@ -29,10 +29,10 @@ c = zeros(1,length(psi));
 
 for i = 1:length(psi)
   
-  kappa = get(psi(i),'kappa');
+  kappa = psi{i}.kappa;
   
   % compute ODF
-  eodf = conv(odf_d,(psi(i)*sob)^2);
+  eodf = conv(odf_d,(psi{i}*sob)^2);
   
   
   % compute BCV

@@ -37,7 +37,7 @@ else
       options = ensurecell(CCOptions{i});
       ebsdColorbar(cs{i},options{:},varargin{:},'colorcoding',cc);
 
-      set(gcf,'Name',[ '[' cc '] Colorcoding for phase ',get(cs{i},'mineral')]);
+      set(gcf,'Name',[ '[' cc '] Colorcoding for phase ',cs{i}.mineral]);
     end
   end
   return
