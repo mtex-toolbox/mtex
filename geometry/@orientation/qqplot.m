@@ -8,7 +8,7 @@ function qqplot(o)
 %
 
 [o,h] = project2FundamentalRegion(o);
-[pdf,omegas] = mispdf(o.CS);
+[pdf,omegas] = o.CS.angleDistribution;
 
 pdf = cumsum(pdf);
 pdf = pdf./pdf(end);
