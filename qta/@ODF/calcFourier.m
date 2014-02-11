@@ -19,7 +19,7 @@ function f_hat = calcFourier(odf,varargin)
 % ODF/plotFourier ODF/Fourier wignerD FourierODF ODF/textureindex ODF/entropy ODF/eval 
 %
 
-if isnumeric(varargin{1})
+if nargin > 1 && isnumeric(varargin{1})
   L = max(varargin{1},4);
 else
   L = get_option(varargin,'bandwidth',32);
