@@ -24,10 +24,7 @@ function pf = calcPoleFigure(odf,h,varargin)
 % See also
 % PoleFigure/scale PoleFigure/calcPoleFigure PoleFigure/noisepf
 
-% check for antipodal symmetry
-if ~check_option(varargin,'complete')
-  varargin = [varargin,{'antipodal'}];
-end
+% ------ crystal directions -------------
 
 % convert to cell
 if ~iscell(h), h = vec2cell(h);end
@@ -35,34 +32,40 @@ if ~iscell(h), h = vec2cell(h);end
 % ensure crystal symmetry
 argin_check([h{:}],'Miller');
 for i = 1:length(h)
-  h{i} = ensureCS(odf(1).CS,h(i));
+  h{i} = odf.CS.ensureCS(h{i});
 end
 
-if nargin >= 3 && (isa(varargin{1},'vector3d') || ...
-    (iscell(varargin{1}) && ~isempty(varargin{1}) && isa(varargin{1}{1},'vector3d')))
-  r = ensurecell(varargin{1});
-  varargin(1) = [];
+% ------ specimen directions -------------
+
+% check for antipodal symmetry
+if ~check_option(varargin,'complete')
+  varargin = [varargin,{'antipodal'}];
+end
+
+% get directions
+if nargin >= 3 && isa(varargin{1},'vector3d')
+  
+  r = repcell(varargin{1},length(h),1);
+  
+elseif nargin >= 3 && iscell(varargin{1}) && ...
+    length(varargin{1}) == length(h) && isa(varargin{1}{1},'vector3d')
+  
+  r = varargin{1};
+  
 else
-  r = {regularS2Grid(varargin{:})};
+  r = repcell(regularS2Grid(varargin{:}),length(h),1);
 end
 
-c = ensurecell(get_option(varargin,'SUPERPOSITION',repcell(1,1,length(h))));
-varargin = delete_option(varargin,'SUPERPOSITION');
+% ----- structure coefficients -------------
+c = ensurecell(get_option(varargin,'superposition',repcell(1,1,length(h))));
 
-% construct pole figures
-for iv = 1:length(h)
+% ----- intensities --------------------------
+for ip = 1:length(h)
   
-  % find specimen directions
-  if length(r) == 1
-    ir = r{1};
-  else
-    ir = r{iv};
-  end
-  
-  % compute data
-  Z = reshape(pdf(odf,h{iv},ir,varargin{:},'superposition',c{iv}),size(ir));
-  
-  pf(iv) = PoleFigure(h{iv},ir,Z,odf(1).CS,odf(1).SS,...
-    varargin{:},'superposition',c{iv}); %#ok<AGROW>
+  intensities{ip} = reshape(calcPDF(odf,h{ip},r{ip},varargin{:},...
+    'superposition',c{ip}),size(r{ip})); %#ok<AGROW>
   
 end
+
+% set up the pole figures
+pf = PoleFigure(h,r,intensities,odf.CS,odf.SS,varargin{:},'superposition',c);

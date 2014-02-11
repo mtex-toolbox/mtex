@@ -44,6 +44,6 @@ else % Fourier method
   end
 
   % compute MDF
-  mdf = calcMDF(odf1.components,odf2.components);
+  mdf = calcMDF(odf1.components{1},odf2.components{1});
 
 end

@@ -1,9 +1,9 @@
-function f_hat = calcFourier(odf,L,varargin)
+function f_hat = calcFourier(odf,varargin)
 % compute Fourier coefficients of odf
 %
 % Compute the Fourier coefficients of the ODF and store them in the
 % returned ODF. In order to get the Fourier coefficients of an ODF use
-% [[ODF_Fourier.html,Fourier]].
+% <ODF_Fourier.html Fourier>.
 %
 % Syntax  
 %   odf = calcFourier(odf,L)
@@ -19,7 +19,11 @@ function f_hat = calcFourier(odf,L,varargin)
 % ODF/plotFourier ODF/Fourier wignerD FourierODF ODF/textureindex ODF/entropy ODF/eval 
 %
 
-L = max(L,4);
+if isnumeric(varargin{1})
+  L = max(varargin{1},4);
+else
+  L = get_option(varargin,'bandwidth',32);
+end
 
 f_hat = zeros(deg2dim(L+1),1);
 

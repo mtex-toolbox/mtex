@@ -38,7 +38,7 @@ propV{end+1} = [s.pointGroup ' (' s.laueGroup ')'];
 % add axis length
 if ~any(strcmp(s.laueGroup,{'m-3','m-3m'}))
   props{end+1} = 'a, b, c'; 
-  propV{end+1} = option2str(vec2cell(nom(s.axes)));
+  propV{end+1} = option2str(vec2cell(norm(s.axes)));
 end
 
 

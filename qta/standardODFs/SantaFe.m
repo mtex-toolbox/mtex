@@ -5,7 +5,7 @@ CS = symmetry('cubic');
 SS = symmetry('222');
 
 psi = vonMisesFisherKernel('HALFWIDTH',10*degree);
-ori = orientation('Miller',Miller(1,2,2,CS),Miller(2,2,1,CS));
+ori = orientation('Miller',Miller(1,2,2,CS),Miller(2,2,1,CS),CS,SS);
 
 odf =  0.73 * uniformODF(CS,SS) + 0.27 * unimodalODF(ori,CS,SS,psi);
 
