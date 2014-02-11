@@ -59,10 +59,10 @@ set(gui.hApprox      ,'Callback',@localChange)
     data = api.getData();
     data = [data{:}];
     
-    psi = get(data,'psi');
+    psi = data.psi;
     
-    kname = get(psi,'name');
-    hw    = get(psi,'halfwidth');
+    kname = psi.name;
+    hw    = psi.halfwidth;
     
     set(gui.hKernel,'Value',...
       find(strcmp(get(gui.hKernel,'String'),kname)));
@@ -78,7 +78,7 @@ set(gui.hApprox      ,'Callback',@localChange)
     set(gui.hApprox,'Enable',state{1+getODF('exact')});
     set(gui.hApprox,'String',getODF('approx'));
     
-    plotKernel(psi,get(data,'CS'));
+    plotKernel(psi,data.CS);
     
   end
 

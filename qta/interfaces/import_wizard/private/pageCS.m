@@ -55,17 +55,16 @@ set(gui.hSearchCIF,'CallBack',@lookupMineral);
     
     if isa(data,'EBSD')
       
-      CS = get(data,'CSCell');
-      nPhases = numel(CS);
+      nPhases = numel(data.allCS);
       
-      CS = CS{currentPhase};
-      
-      phaseMap = get(data,'phaseMap');
-      api.setWizardTitle(['Crystal Reference Frame for Phase '  num2str(phaseMap(currentPhase))]);
+      CS = data.allCS{currentPhase};
+            
+      api.setWizardTitle(['Crystal Reference Frame for Phase '  ...
+        num2str(data.phaseMap(currentPhase))]);
       
     else
       
-      CS = get(data,'CS');
+      CS = data.CS;
       nPhases = 1;
       
     end
@@ -99,14 +98,13 @@ set(gui.hSearchCIF,'CallBack',@lookupMineral);
       csname = strmatch(Laue(CS),SymmetryList);
       set(gui.hCrystal,'value',csname(1));
       
-      color = get(CS,'color');
-      color = strmatch(color,getMTEXpref('EBSDColorNames'));
+      color = strmatch(CS.color,getMTEXpref('EBSDColorNames'));
       set(gui.hColor,'value',color(1));
             
       % set alignment
       if any(strcmp(Laue(CS),{'-1','2/m','-3','-3m','6/m','6/mmm'}))
         set(gui.hAlignment,'enable','on');
-        al = [get(CS,'alignment'),{'',''}];
+        al = [CS.alignment,{'',''}];
         set(gui.hAlignment(1),'value',find(strcmp(AlignmentList,al{1})));
         set(gui.hAlignment(2),'value',find(strcmp(AlignmentList,al{2})));
       else
@@ -127,7 +125,7 @@ set(gui.hSearchCIF,'CallBack',@lookupMineral);
       end
       
       % set mineral
-      set(gui.hMineral,'string',get(CS,'mineral'));
+      set(gui.hMineral,'string',CS.mineral);
     end
     
   end
@@ -175,13 +173,11 @@ set(gui.hSearchCIF,'CallBack',@lookupMineral);
       
       if isa(data{k},'EBSD')
         
-        CSCell = get(data{k},'CSCell');
-        CSCell{currentPhase} = CS;
-        data{k} = set(data{k},'CS',CSCell);
-        
+        data{k}.allCS{currentPhase} = CS;
+                
       else
         
-        data{k} = set(data{k},'CS',CS);
+        data{k}.CS= CS;
         
       end
       

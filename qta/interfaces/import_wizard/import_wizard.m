@@ -34,7 +34,7 @@ function test_wizard_export(api,varargin)
 
 api = WizardDataApi(api);
 
-%% testcases
+% testcases
 
 switch lower(get_option(varargin,'test',''))
   case '3d'
