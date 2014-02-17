@@ -41,6 +41,7 @@ classdef PoleFigure < dynProp & dynOption
       
       pf.allH = ensurecell(h);
       pf.allR = ensurecell(r);
+      if numel(pf.allR) == 1, pf.allR = repmat(pf.allR,size(pf.allH));end
       if ~check_option(varargin,'complete'), pf.allR{1}.antipodal = true;end      
       pf.allI = ensurecell(intensities);
             
