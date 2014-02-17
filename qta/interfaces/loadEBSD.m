@@ -8,18 +8,16 @@ function [ebsd,interface,options] = loadEBSD(fname,varargin)
 % you can specify a comment to be associated with the data. In the case of
 % generic ascii files each of which consist of a table containing in each
 % row the euler angles of a certain orientation see
-% [[loadEBSD_generic.html,loadEBSD_generic]] for additional options.
+% <loadEBSD_generic.html loadEBSD_generic> for additional options.
 %
 % Syntax
-%   ebsd = loadEBSD(fname,cs,ss,...,param,val,...)
+%   ebsd = loadEBSD(fname)
 %
 % Input
 %  fname     - filename
-%  cs, ss    - crystal, specimen @symmetry (optional)
 %
 % Options
 %  interface  - specific interface to be used
-%  comment    - comment to be associated with the data
 %
 % Output
 %  ebsd - @EBSD
@@ -27,4 +25,44 @@ function [ebsd,interface,options] = loadEBSD(fname,varargin)
 % See also
 % ImportEBSDData EBSD/calcODF ebsd_demo loadEBSD_generic
 
-[ebsd,interface,options] = loadData(fname,'EBSD',varargin{:});
+% extract file names
+fname = getFileNames(fname);
+
+% determine interface 
+if check_option(varargin,'interface')
+  interface = get_option(varargin,'interface');
+  options = delete_option(varargin,'interface',1);
+else
+  [interface,options] = check_interfaces(fname{1},'EBSD',varargin{:});
+  if isempty(interface), return; end
+end
+
+% show waitbar for 3d
+is3d = check_option(varargin,'3d');
+if is3d
+  hw = waitbar(0,'Loading data files.');
+  Z = get_option(varargin,'3d',1:numel(fname),'double');
+end
+  
+for k = 1:numel(fname)
+
+  % load the data
+  ebsd{k} = feval(['loadEBSD_',char(interface)],...
+    fname{k},options{:},'InfoLevel',~is3d);   %#ok<AGROW>
+  
+  % assign Z - value
+  if is3d
+    [~,fn,ext] = fileparts(fname{k});
+    waitbar(k/numel(fname),hw,['Loaded data file ',[fn ext]]);
+    ebsd{k}.z = repmat(Z(k),length(ebsd{k}),1); %#ok<AGROW>
+  end  
+end
+
+% combine multiple inputs
+ebsd = [ebsd{:}];
+
+% compute unit cell for 3d data
+if check_option(varargin,'3d')    
+  ebsd.unitCell = calcUnitCell([ebsd.x(:),ebsd.y(:),ebsd.z(:)],varargin{:});
+  close(hw)
+end
