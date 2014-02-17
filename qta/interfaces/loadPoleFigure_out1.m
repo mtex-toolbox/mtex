@@ -24,15 +24,16 @@ try
   gz = length(r);
   numpf = length(data)/gz;
   
-  h = [ Miller(1,0,0), Miller(1,1,0),  Miller(1,0,2),  Miller(2,0,0),...
-    Miller(2,0,1), Miller(1,1,2),  Miller(2,1,1),  Miller(1,1,3)];
+  h = { Miller(1,0,0), Miller(1,1,0),  Miller(1,0,2),  Miller(2,0,0),...
+    Miller(2,0,1), Miller(1,1,2),  Miller(2,1,1),  Miller(1,1,3)};
   if numpf > length(h), h(length(h)+1:numpf) = Miller(1,0,0); end
   
-  for k=0:numpf-1
-    d = data((k*gz)+1:(k+1)*gz,2);
-    pf(k+1) = PoleFigure(h(k+1),r,d,varargin{:});
-  end
-  pf = delete(pf,get(pf,'intensities')<0);
+  for k=0:numpf-1, d{k+1} = data((k*gz)+1:(k+1)*gz,2); end
+  
+  pf = PoleFigure(h,r,d,varargin{:});
+  
+  pf(pf.intensities < 0) = [];
+  
 catch
   interfaceError(fname);
 end

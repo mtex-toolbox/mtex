@@ -50,14 +50,13 @@ try
   for n = 1:npf
     
     % read data
-    d = textscan(fid,'%f',length(r{n}));
-    d = reshape(double(d{1}),size(r{n}));
-    
-    % construct pole figure object
-    pf(n) = PoleFigure(h{n},r{n},d,cs,'comment',comment,varargin{:}); %#ok<AGROW>
-    
+    tmp = textscan(fid,'%f',length(r{n}));
+    d{n} = reshape(double(tmp{1}),size(r{n}));
+
   end
   
+  % construct pole figure object
+  pf = PoleFigure(h,r,d,cs,'comment',comment,varargin{:});
   
 catch %#ok<CTCH>
   interfaceError(fname,fid);

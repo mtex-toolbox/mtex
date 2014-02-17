@@ -28,18 +28,21 @@ try
   
   while ~feof(fid)
     
-    s = fgetl(fid);
+    s = strtrim(fgetl(fid));
+    while (isempty(s) || ~ischar(s))  && ~feof(fid)
+      s = strtrim(fgetl(fid));
+    end
+    
+    if ~ischar(s) || isempty(s), break;end
     p = textscan(s,'%s %s %s %s');
-    h = string2Miller(char(p{1}));
+    h{ipf} = string2Miller(char(p{1}));
     fgetl(fid);
     
-    d = textscan(fid,'%d',72*19);
-    d = reshape(d{1},[72 19]);
+    tmp = textscan(fid,'%d',72*19);
+    d{ipf} = double(reshape(tmp{1},[72 19]));
     
-    r = regularS2Grid('points',size(d));
-    
-    % generate Polefigure
-    pf(ipf) = PoleFigure(h,r,double(d),'comment',comment,varargin{:}); %#ok<AGROW>
+    r{ipf} = regularS2Grid('points',size(d{ipf}));
+        
     %comment = [];
     ipf = ipf+1;
     fgetl(fid);
@@ -47,6 +50,9 @@ try
     fgetl(fid);
     
   end
+
+  % generate Polefigure
+  pf = PoleFigure(h,r,d,'comment',comment,varargin{:});
   
 catch %#ok<CTCH>
   if ~exist('pf','var')

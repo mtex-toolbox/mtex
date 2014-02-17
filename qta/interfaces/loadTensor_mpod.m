@@ -4,7 +4,8 @@ function [T,interface,options] = loadTensor_mpod(fname,varargin)
 % Description
 % *loadTensor_mod* is a high level method for importing Tensor data from external
 % files.
-% [[http://www.materialproperties.org/data/, Material Properties Open Database]]
+% <http://www.materialproperties.org/data/ Material Properties Open
+% Database>
 %
 % Syntax
 %  pf = loadTensor_mpod(fname,cs,ss,<options>)

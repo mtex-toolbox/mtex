@@ -43,26 +43,29 @@ try
     % read HKL
     hkl = fgetl(fid);
     hkl = regexp(hkl,'KL\s*([0-9_-]*).\s*THETA','tokens');
-    h = string2Miller(char(hkl{1}));
+    h{ip} = string2Miller(char(hkl{1}));
     
     % read data
     for j = 1:length(theta)
       
-      d(:,j) = fscanf(fid,'%e',length(rho));
+      d{ip}(:,j) = fscanf(fid,'%e',length(rho));
       
       %skip theta mark
       textscan(fid,'-%*s');
       
     end
-    
-    pf(ip) = PoleFigure(h,r,d,symmetry('cubic'),symmetry);
+        
     ip = 1 + ip;
   end
   
 catch
-  if ~exist('pf','var')
-    interfaceError(fname,fid);
-  end
+  
 end
 
 fclose(fid);
+
+try
+  pf = PoleFigure(h,r,d,symmetry('cubic'),symmetry);
+catch
+  interfaceError(fname,fid);
+end

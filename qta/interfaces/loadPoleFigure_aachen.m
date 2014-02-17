@@ -42,12 +42,13 @@ while ~feof(fid)
     % one line describing hkl and grid of specimen directions
     %  003 hxxxx  5.00 5.00 90.00    1    0  (12f6.0)
     l = fgetl(fid);
-    h = string2Miller(l(1:5));
     try
       cs = symmetry(strtrim(l(6:10)),'silent','noCIF');
     catch %#ok<CTCH>
       cs = symmetry('m-3m');
     end
+    h{ih} = string2Miller(l(1:5),cs);
+    
     dtheta = str2double(l(11:15));
     dphi   = str2double(l(16:20));
     maxtheta = str2double(l(21:25));
@@ -59,8 +60,6 @@ while ~feof(fid)
       col = str2double(fmt(1));
       dig = str2double(fmt(2));
     end
-
-    
     
     % next line contains multiplikator
     %  1000 .500 -112    0   0.   experimental data
@@ -68,9 +67,9 @@ while ~feof(fid)
     fakt = str2double(l(1:6));
     
     assert(0.5 < dtheta && 20 > dtheta && 0.5 < dphi && 20 > dphi &&...
-        10 <= maxtheta && maxtheta <= 90 && fakt > 0 && col > 0 && dig > 0);
+      10 <= maxtheta && maxtheta <= 90 && fakt > 0 && col > 0 && dig > 0);
 
-% ------------- generate specimen directions --------------------
+    % ------------- generate specimen directions --------------------
     if isim == 0
       maxphi = 360;
     elseif isim == 2
@@ -83,33 +82,34 @@ while ~feof(fid)
     rho   = (0:dphi:maxphi-dphi) * degree;
     theta = ((1-iwin)*dtheta/2:dtheta:maxtheta)*degree;
     
-    r = regularS2Grid('theta',theta,'rho',rho,'resolution',min(dtheta,dphi)*degree,'antipodal');
+    r{ih} = regularS2Grid('theta',theta,'rho',rho,'resolution',min(dtheta,dphi)*degree,'antipodal');
  
-% ---------------- read data ------------------------------------
+    % ---------------- read data ------------------------------------
     
-    d = [];
+    d{ih} = [];
     while length(d) < length(r) && ~feof(fid)
       l = fgetl(fid);
       if length(l)<dig*col, 
         continue;
       end
       l = reshape(l(1:dig*col),dig,col).';
-      d = [d;str2num(l)]; %#ok<AGROW,ST2NM>
+      d{ih} = [d{ih};str2num(l)]; %#ok<AGROW,ST2NM>
     end
-    
-% --------------- generate Polefigure ---------------------------
-    pf(ih) = PoleFigure(h,r,d,cs,varargin{:},'comment',comment); %#ok<AGROW>
-    
+            
     ih = ih +1;
     
   catch %#ok<CTCH>
-    if ~exist('pf','var')
-      interfaceError(fname,fid);
-    end
+    if ih == 1, interfaceError(fname,fid);end
   end
 end
-
 fclose(fid);
+
+% --------------- generate Polefigure ---------------------------
+try
+  pf = PoleFigure(h,r,d,cs,varargin{:},'comment',comment);
+catch
+  interfaceError(fname,fid);
+end
 
 %Aachen-Format:
 %==============
@@ -121,11 +121,11 @@ fclose(fid);
 %          tetlim (maximaler polwinkel )
 %          iwin   (0=position der daten in den mitten der rasterfelder,
 %                  1=position auf den ecken)
-%          isym   (0=vollst�ndige polfigur, 2= halbe polfigur,
+%          isym   (0=vollst?ndige polfigur, 2= halbe polfigur,
 %                  4=viertel polfigur)
 %          fmt    (leseformat der daten)
 %3. Zeile: mult   (faktor mit dem die daten multipliziert wurden)
 %          ----   20 unbenutzte characters, text1: weitere 50 character
 %
-%In der Aachen-datei k�nnen mehrere Messungen hintereinander stehen, hier 2.
+%In der Aachen-datei k???nnen mehrere Messungen hintereinander stehen, hier 2.
 %--------------------------------------------------------------------------------

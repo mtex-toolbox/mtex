@@ -1,13 +1,13 @@
 function pf = loadPoleFigure_plf(fname,varargin)
 % load plf file
 %
-%% Syntax
-% pf = loadPoleFigure_plf(fname,<options>)
+% Syntax
+%   pf = loadPoleFigure_plf(fname,<options>)
 %
-%% Input
+% Input
 %  fname - file name
 %
-%% Output
+% Output
 %  pf    - @PoleFigure
 %
 
@@ -15,22 +15,23 @@ assertExtension(fname,'.plf');
 
 fid = fopen(fname,'r');
 
+r =  regularS2Grid('Points',[90 17],'MINTHETA',0,'MAXTHETA',80*degree);
+
 try
   ip = 1;
   while ~feof(fid)
     hkl = fgetl(fid);
-    h = string2Miller(hkl(1:4));
+    h{ip} = string2Miller(hkl(1:4));
     
-    d = textscan(fid,'%f','delimiter','\n');
+    tmp = textscan(fid,'%f','delimiter','\n');
     fgetl(fid); %skip stars
-    d = d{:};
-    d(isnan(d)) = [];
-    
-    r =  regularS2Grid('Points',[90 17],'MINTHETA',0,'MAXTHETA',80*degree);
-    
-    pf(ip) = PoleFigure(h,r,d,varargin{:});
+    tmp = tmp{:};
+    tmp(isnan(tmp)) = [];
+    d{ip} = tmp;           
     ip = 1 + ip;
   end
+  
+  pf = PoleFigure(h,r,d,varargin{:});
 catch
   if ~exist('pf','var')
     interfaceError(fname,fid);

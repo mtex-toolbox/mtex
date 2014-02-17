@@ -41,36 +41,38 @@ try
     end
     
     hkl = sscanf(c{7},'%f',3);
-    h = Miller(hkl(1),hkl(2),hkl(3),cs);
+    h{ipf} = Miller(hkl(1),hkl(2),hkl(3),cs);
     
     info = str2num(reshape(c{7}(11:40),5,[])');
     
     %  theta = 0:info(3):90-info(3);
     %  rho = 0:info(6):360-info(6);
     
-    data = zeros(18,72);
+    data{ipf} = zeros(18,72);
     for k = 1:76
       l = fgetl(fid);
-      data(:,k) = str2num( reshape(l(2:end),4,[]).' );
+      data{ipf}(:,k) = str2num( reshape(l(2:end),4,[]).' );
     end
     
     fgetl(fid);
-    
-    pf(ipf) = PoleFigure(h,r,data,cs,ss,'comment',comment,varargin{:});
+        
     
     % mintheta = info(1);  maxtheta = info(2);
-    
-    pf(ipf) = delete(pf(ipf), get(pf(ipf),'theta')  < info(1)*degree-eps | ...
-      get(pf(ipf),'theta')  > info(2)*degree+eps);
+        
     
     ipf = ipf+1;
   end
+  
+  pf = PoleFigure(h,r,data,cs,ss,'comment',comment,varargin{:});
   
 catch
   if ~exist('pf','var')
     interfaceError(fname,fid);
   end
 end
+
+pf(pf.r.theta < info(1)*degree-eps | pf.r.theta > info(2)*degree+eps) = [];
+
 
 fclose(fid);
 

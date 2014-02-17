@@ -27,19 +27,22 @@ try
   assert(all(d{2}>=0 & d{2}<=90 & d{3}>=-370 & d{3}<=370));
   
   pos = 1;
-  pf = [];
+  r = {};
+  h = {};
+  intensities = {};
   while pos <= length(d{1})
     
     npos = find(d{1}(pos)==d{1},1,'last');
-    r = vector3d('polar',pi/2-d{2}(pos:npos)*degree,d{3}(pos:npos)*degree);
-    dd = d{4}(pos:npos);
+    r{end+1} = vector3d('polar',pi/2-d{2}(pos:npos)*degree,d{3}(pos:npos)*degree); %#ok<AGROW>
+    assert(length(r{1})>=5);
+    intensities{end+1} = d{4}(pos:npos); %#ok<AGROW>
+    h{end+1} = Miller(1,0,0); %#ok<AGROW>
     
-    pf = [pf,PoleFigure(Miller(1,0,0),r,dd,varargin{:})]; %#ok<AGROW>
     pos = npos+1;
     
   end
   
-  assert(length(r)>=5);
+  pf = PoleFigure(h,r,intensities,varargin{:});
   
 catch
   interfaceError(fname);
