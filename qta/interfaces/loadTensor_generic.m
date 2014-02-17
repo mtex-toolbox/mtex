@@ -1,7 +1,7 @@
 function [T,options] = loadTensor_generic(fname,varargin)
 % load a Tensor from a file
 %
-%% Description 
+% Description 
 %
 % *loadEBSD_generic* is a generic function that reads any ascii file
 % containing a matrix like
@@ -13,18 +13,18 @@ function [T,options] = loadTensor_generic(fname,varargin)
 %
 % describing the a Tensor
 %
-%% Syntax
-%  pf   = loadTensor_generic(fname,<options>)
+% Syntax
+%   pf   = loadTensor_generic(fname,<options>)
 %
-%% Input
+% Input
 %  fname - file name (text files only)
 %
-%% Options
+% Options
 %  name              - name of the tensor
 % 
-%% Example
+% Example
 %
-%% See also
+% See also
 % loadData
 
 % remove option "check"
