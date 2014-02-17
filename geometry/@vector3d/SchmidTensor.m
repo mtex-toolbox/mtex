@@ -1,20 +1,18 @@
 function m = SchmidTensor(n,b,varargin)
 % computes the Schmidt tensor
 %
-%% Input
+% Input
 %  n - normal vector the the slip or twinning plane
 %  b - Burgers vector (slip) or twin shear direction (twinning)
 %
-%% Output
+% Output
 %  m - Schmid tensor
 %
-%% Options
+% Options
 %
 %  generalized   - 
 %  symmetric     - default
 %  antisymmetric -
-%
-%%
 %
 
 % normalize and convert to tensor

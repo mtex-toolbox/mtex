@@ -117,11 +117,7 @@ setMTEXpref('mtexMethodsAdvise',true)
 % symbols
 
 % by default turn LaTeX on only on Windows or Mac
-if isOctave
-  setMTEXpref('textInterpreter','none');
-else
-  setMTEXpref('textInterpreter','LaTeX');
-end
+setMTEXpref('textInterpreter','LaTeX');
 
 %% Workaround for NFFT bug
 % comment out the following line if MTEX is compiled againsed NFFT 3.1.3 or
@@ -162,13 +158,9 @@ setMTEXpref('tempdir',tempdir);
 % MTEX sometimes experences problems when printing the degree character
 % reenter the degree character here in this case
 
-if isOctave()
-  %degree_char = '';
-  degree_char = '°';
-else
-  degree_char = native2unicode([194 176],'UTF-8');
-  %degree_char = '°';
-end
+degree_char = native2unicode([194 176],'UTF-8');
+%degree_char = '?';
+
 setMTEXpref('degreeChar',degree_char);
 
 %%

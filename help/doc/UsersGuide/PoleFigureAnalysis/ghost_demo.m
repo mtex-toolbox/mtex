@@ -41,10 +41,10 @@ pf = calcPoleFigure(odf,h,r);
 
 %% ODF Estimation
 % without ghost correction:
-rec = calcODF(pf,'noGhostCorrection');
+rec = calcODF(pf,'noGhostCorrection','silent');
 %%
 % with ghost correction:
-rec_cor = calcODF(pf);
+rec_cor = calcODF(pf,'silent');
 
 %% Compare RP Errors
 
@@ -94,9 +94,9 @@ hold off
 legend({'true ODF','without ghost correction','with ghost correction'})
 
 %% Calculate Fourier coefficients
-odf = calcFourier(odf,25);
-rec = calcFourier(rec,25);
-rec_cor = calcFourier(rec_cor,25);
+odf = FourierODF(odf,25);
+rec = FourierODF(rec,25);
+rec_cor = FourierODF(rec_cor,25);
 
 %% Calculate Reconstruction Errors from Fourier Coefficients
 
