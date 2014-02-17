@@ -100,6 +100,11 @@ classdef EBSD < dynProp & dynOption & misorientationAnalysis
           
           ebsd.allCS = ebsd.allCS(ebsd.phaseMap+1);
           
+        elseif sum(ebsd.phaseMap>0) == numel(ebsd.allCS)
+          
+          ebsd.allCS(ebsd.phaseMap>0) = ebsd.allCS;
+          ebsd.allCS(ebsd.phaseMap<=0) = repcell('notIndexed',1,sum(ebsd.phaseMap<=0));
+          
         elseif numel(ebsd.phaseMap) ~= length(ebsd.allCS)
           error('symmetry mismatch')
         end
@@ -122,7 +127,7 @@ classdef EBSD < dynProp & dynOption & misorientationAnalysis
       c = 1;
       
       for ph = 1:numel(ebsd.phaseMap)
-        if ~ischar(ebsd.allCS{ph}) && isempty(ebsd.allCS{ph}.color)
+        if isa(ebsd.allCS{ph},'symmetry') && isempty(ebsd.allCS{ph}.color)
           ebsd.allCS{ph}.color = colorOrder{mod(c-1,nc)+1};
           c = c+1;
         end

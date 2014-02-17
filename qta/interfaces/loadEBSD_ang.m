@@ -1,14 +1,14 @@
 function ebsd = loadEBSD_ang(fname,varargin)
 % read TSL *.ang file
 %
-%% Syntax
+% Syntax
 %   ebsd = loadEBSD_ang(fname,'convertSpatial2EulerReferenceFrame')
 %   ebsd = loadEBSD_ang(fname,'convertEuler2SpatialReferenceFrame')
 %
-%% Input
+% Input
 %  fname - file name
 %
-%% Flags
+% Flags
 %  convertSpatial2EulerReferenceFrame - change x and y values such that
 %  spatial and Euler reference frame coincide, i.e., rotate them by 180
 %  degree
@@ -93,7 +93,7 @@ try
     
   else
     % replace minearal names by numbers
-    replaceExpr = arrayfun(@(i) {get(cs{i},'mineral'),num2str(i)},1:numel(cs),'UniformOutput',false);
+    replaceExpr = arrayfun(@(i) {cs{i}.mineral,num2str(i)},1:numel(cs),'UniformOutput',false);
     
     ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
       'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Fit' 'unknown1' 'unknown2' 'phase'},...

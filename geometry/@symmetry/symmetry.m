@@ -97,7 +97,7 @@ classdef symmetry < rotation
       elseif strncmp(varargin{1},'spacegroup',10) && nargin > 1 % space group by number
   
         list = spaceGroups;
-        ndx = nnz([list{:,1}] < varargin{1});
+        ndx = nnz([list{:,1}] < varargin{2});
   
         if ndx>31
           error('I''m sorry, I know only 230 space groups ...')

@@ -69,7 +69,7 @@ for k=1:numel(lineBreaks)-1
 end
 
 
-requiredFields = {'Phase';'Name';'Spacegroup';'A';'B';'C';'Alpha';'Beta';'Gamma'};
+requiredFields = {'phaseId';'Name';'Spacegroup';'A';'B';'C';'Alpha';'Beta';'Gamma'};
 
 CS = cell(numel(phases)+1,1);
 CS{1} = 'notIndexed';
