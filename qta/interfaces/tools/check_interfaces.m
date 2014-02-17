@@ -3,7 +3,7 @@ function [interface,options] = check_interfaces(fname,type,varargin)
 
 if ~exist(fname,'file'), error('File %s not found.',fname);end
 
-%% find all installed interfaces
+% find all installed interfaces
 interfaces = dir([mtex_path '/qta/interfaces/load' type '_*.m']);
 interfaces = {interfaces.name};
 % do not use interfaces generic
@@ -12,7 +12,7 @@ interfaces = interfaces(ind);
 
 interface = {}; options = varargin;
 
-%% ckeck for matching interfaces
+% ckeck for matching interfaces
 w = warning;
 warning off all
 for i =1:length(interfaces)
@@ -32,7 +32,7 @@ for i =1:length(interfaces)
 end
 warning(w);
 
-%% more then one interface
+% more then one interface
 if iscell(interface) && length(interface)>=2  % if there are multiple interfaces
   i = listdlg('PromptString',...
     'There is more then one interface matching your data. Select one!',...
@@ -42,7 +42,7 @@ if iscell(interface) && length(interface)>=2  % if there are multiple interfaces
   interface = interface(i);
 end
 
-%% no interface - try generic interface
+% no interface - try generic interface
 if isempty(interface)
   
   try
