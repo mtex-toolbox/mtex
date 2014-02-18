@@ -260,16 +260,19 @@ api.clearAllData();
       data = data.obj;
       
       if getEBSD('is3d')
-        
+      
+        % TODO
         data(:) = cellfun(@(x,z) set(x,'z',z*ones(numel(x),1)),...
           data(:),getEBSD('Z'),'UniformOutput',false);
         
+      else
+      
+        data = [data{:}];
+        data.unitCell = calcUnitCell([data.x(:),data.y(:)]);
+        
       end
       
-      X = {'xy','xyz'};
-      data = [data{:}];
-      data = set(data,'unitCell',...
-        calcUnitCell(get(data, X{1+getEBSD('is3d')})));
+      
       
     end
     

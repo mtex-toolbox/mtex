@@ -36,7 +36,7 @@ for k=1:numel(allCS)
   
   if isa(CS,'symmetry')
     
-    h5writeatt(fname,name,'Name',CS.name);
+    h5writeatt(fname,name,'Name',CS.spaceGroup);
     h5writeatt(fname,name,'Mineral',CS.mineral);
     h5writeatt(fname,name,'Color',CS.color);
     h5writeatt(fname,name,'Laue',CS.Laue);

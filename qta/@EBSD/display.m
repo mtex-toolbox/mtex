@@ -48,7 +48,7 @@ for ip = 1:numel(ebsd.phaseMap)
   matrix{ip,4} = char(CS.color);
   
   % symmetry
-  matrix{ip,5} = CS.pointGroup;
+  matrix{ip,5} = CS.spaceGroup;
 
   % reference frame
   matrix{ip,6} = option2str(CS.alignment);
