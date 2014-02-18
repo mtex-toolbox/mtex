@@ -1,13 +1,19 @@
 function [X,Y] = project(v,projection,extend,varargin)
 % perform spherical projection and restriction to plotable domain
 
-%% for antipodal symmetry project all to current hemisphere
+% for antipodal symmetry project all to current hemisphere
 if projection.antipodal && ~check_option(varargin,'removeAntipodal')
   
-  if ~(isnumeric(extend.maxTheta) && extend.maxTheta == pi) 
-    v = subsasgn(v,v.z < -1e-6,-vector3d(subsref(v,v.z < -1e-6)));
+  if ~(isnumeric(extend.maxTheta) && extend.maxTheta == pi)
+    ind = v.z < -1e-6;
+    v.z(ind) = -v.z(ind);
+    v.y(ind) = -v.y(ind);
+    v.x(ind) = -v.x(ind);
   elseif isappr(extend.minTheta,pi/2)
-    v = subsasgn(v,v.z > 1e-6,-vector3d(subsref(v,v.z > 1e-6)));
+    ind = v.z > -1e-6;
+    v.z(ind) = -v.z(ind);
+    v.y(ind) = -v.y(ind);
+    v.x(ind) = -v.x(ind);
   end  
 end
 
@@ -15,7 +21,7 @@ end
 [theta,rho] = polar(v);
 
 
-%% restrict to plotable domain
+% restrict to plotable domain
 
 % check for azimuth angle
 if extend.maxRho - extend.minRho < 2*pi-1e-6  
@@ -33,7 +39,7 @@ else
 end
 
 
-%% plain projection
+% plain projection
 if strcmpi(projection.type,'plain')
   
   if isa(v,'S2Grid')
@@ -47,7 +53,7 @@ if strcmpi(projection.type,'plain')
   return
 end
 
-%% compute spherical projection
+% compute spherical projection
 
 % map to upper hemisphere
 ind = find(theta > pi/2+10^(-10));
