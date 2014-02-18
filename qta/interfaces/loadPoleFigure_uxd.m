@@ -20,7 +20,7 @@ try
   comment = fgetl(fid);
   [p,comment] = fileparts(fname);
   
-  h = [];
+  lastTh = [];  
   npf = 1;
   
   while ~feof(fid)
@@ -35,13 +35,15 @@ try
     th = readfield(header,'THETA');
     assert(str2double(th)>0 && str2double(th)<90);
     
-    % new polfigure
-    if ~strcmp(h,th)
-      if ~isempty(h)
-        pf(npf) = PoleFigure(Miller(1,0,0),r,d,symmetry('m-3m'),symmetry,'comment',comment); %#ok<AGROW>
+    % if theta is different from last theta start new polfigure
+    if ~strcmp(lastTh,th)
+      if ~isempty(lastTh)
+        allH{npf} = Miller(1,0,0);
+        allR{npf} = r;
+        allI{npf} = d;       
         npf = npf + 1;
       end
-      h = th;
+      lastTh = th;
       r = vector3d;
       d = [];
     end
@@ -64,8 +66,13 @@ try
   end
   
   % append last pole figure
-  pf(npf) = PoleFigure(string2Miller(fname),r,d,'comment',comment,varargin{:});
+  allH{npf} = string2Miller(fname);
+  allR{npf} = r;
+  allI{npf} = d;
   
+  % define pole figure
+  pf = PoleFigure(allH,allR,allI,varargin{:});
+    
 catch
   interfaceError(fname,fid);
 end

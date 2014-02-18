@@ -63,11 +63,11 @@ set(gui.hMiller     ,'Callback',@localUpdateIndices);
     val = get(gui.hList,'Value');
     
     map = gui.map{val};
-    pf  = data{map(1)}(map(2));
+    pf  = data{map(1)};
     
     
-    h = pf.h;
-    c = pf.c;
+    h = pf.allH{map(2)};
+    c = pf.c{map(2)};
     
     hkl = h.hkl';
     
@@ -100,10 +100,12 @@ set(gui.hMiller     ,'Callback',@localUpdateIndices);
     try
       assert(all(cellfun('prodofsize',hkl) == numel(c)));
       
-      pf = data{map(1)}(map(2));
-      pf.h = Miller(hkl{:},pf.CS);
-      pf.c = c;
-      data{map(1)}(map(2)) = pf;
+      % set hkl
+      data{map(1)}.allH{map(2)} = Miller(hkl{:},data{map(1)}.CS);
+      
+      % set superposition coefficients
+      data{map(1)}.c{map(2)} = c;
+      
       
       api.setData(data);
       
