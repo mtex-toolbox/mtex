@@ -3,12 +3,12 @@ function c = char(s,varargin)
 
 if check_option(varargin,'verbose')
   if ~isempty(s.mineral)
-    c = [s.mineral ' (' option2str([{s.pointGroup},s.alignment]) ')'];
+    c = [s.mineral ' (' option2str([{s.spaceGroup},s.alignment]) ')'];
   elseif isCS(s)
-    c = option2str([{s.pointGroup},s.alignment]);
+    c = option2str([{s.spaceGroup},s.alignment]);
   else
-    c = s.pointGroup;
+    c = s.spaceGroup;
   end
 else
-  c = ['"',s.pointGroup,'"'];
+  c = ['"',s.spaceGroup,'"'];
 end

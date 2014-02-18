@@ -5,7 +5,7 @@ function display(s)
 if ~s.isCS
   
   disp(' ');
-  disp([inputname(1) ' = ' s.pointGroup ' specimen ' doclink('symmetry_index','symmetry') ' ' docmethods(inputname(1))]);
+  disp([inputname(1) ' = ' s.spaceGroup ' specimen ' doclink('symmetry_index','symmetry') ' ' docmethods(inputname(1))]);
   disp(' ');
   
   return
@@ -33,7 +33,7 @@ end
 
 % add symmetry
 props{end+1} = 'symmetry'; 
-propV{end+1} = [s.pointGroup ' (' s.laueGroup ')'];
+propV{end+1} = [s.spaceGroup ' (' s.laueGroup ')'];
 
 % add axis length
 if ~any(strcmp(s.laueGroup,{'m-3','m-3m'}))

@@ -59,7 +59,7 @@ classdef symmetry < rotation
   properties
 
     isCS = false; % is crystal symmetry
-    pointGroup = 'triclinic';
+    spaceGroup = 'triclinic';
     laueGroup  = '-1';
     axes = [xvector,yvector,zvector];
     mineral = '';
@@ -160,7 +160,7 @@ classdef symmetry < rotation
       
       
       % set up symmetry
-      s.pointGroup = pGroup;
+      s.spaceGroup = pGroup;
       s.laueGroup = sym.Laue;
       
       s.mineral = get_option(varargin,'mineral','');
