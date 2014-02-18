@@ -45,9 +45,12 @@ classdef PoleFigure < dynProp & dynOption
       if ~check_option(varargin,'complete'), pf.allR{1}.antipodal = true;end      
       pf.allI = ensurecell(intensities);
             
+      
       pf.c = ensurecell(get_option(varargin,'superposition',...
-        repcell(1,size(pf.allH))));
-      pf.c = cellfun(@(x) x./sum(x),pf.c,'uniformOutput',false);
+        cellfun(@(x) ones(1,length(x)),pf.allH,'uniformoutput',false)));
+      
+      % normalize structure coefficients
+      %pf.c = cellfun(@(x) x./sum(x),pf.c,'uniformOutput',false);
             
       % extract symmetries
       args = find(cellfun(@(s) isa(s,'symmetry'),varargin,'uniformoutput',true));

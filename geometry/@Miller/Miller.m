@@ -93,7 +93,8 @@ classdef Miller < vector3d
         end
         
         % set coordinates
-        coord = cellfun(@(c) c(:),varargin(1:nparam));
+        coord = reshape([varargin{1:nparam}],[],nparam);
+                
         if check_option(varargin,{'uvw','uvtw','direction'});          
           
           m.uvw = coord;

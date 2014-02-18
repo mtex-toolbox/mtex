@@ -112,12 +112,14 @@ set(gui.hSearchCIF,'CallBack',@lookupMineral);
       end
       
       % set axes
-      [c, angle] = get_axisangel(CS);
-      
       for k=1:3
-        set(gui.hAxes(k),'String',c(k));
-        set(gui.hAngle(k),'String',angle{k});
+        set(gui.hAxes(k),'String',norm(CS.axes(k)));        
       end
+      
+      set(gui.hAngle(1),'String',CS.alpha / degree);
+      set(gui.hAngle(2),'String',CS.beta / degree);
+      set(gui.hAngle(3),'String',CS.gamma / degree);
+      
       
       % set whether axes and angles can be changed
       if ~strcmp(Laue(CS),{'-1','2/m'})
