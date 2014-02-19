@@ -59,21 +59,27 @@ region = [5 2 10 5]*10^3;
 % plot the ebsd data together with the region of interest
 
 close all
-plot(ebsd)
+plot(ebsd,'property','phase')
 rectangle('position',region,'edgecolor','r','linewidth',2)
 
 %%
-% In order to restrict the ebsd data to the polygon we may use the command
-% <EBSD.inpolygon.html inpolygon> to locate all EBSD data inside the region
+% The command <EBSD.inpolygon.html inpolygon> checks for each EBSD data
+% point whether it is inside a polygon or not, i.e.
 
-ebsd = ebsd(inpolygon(ebsd,region))
+condition = inpolygon(ebsd,region);
 
+%%
+% results in a large vector of |TRUE| and |FALSE| stating which data points
+% are inside the region. Restricting the EBSD data by this condition is
+% done via
+
+ebsd = ebsd(condition)
 
 %%
 % plot
 
 close all
-plot(ebsd)
+plot(ebsd,'property','phase')
 
 %%
 % Note, that you can also select a polygon by mouse using the command
