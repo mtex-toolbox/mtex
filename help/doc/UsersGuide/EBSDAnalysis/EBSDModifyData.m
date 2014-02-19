@@ -6,42 +6,44 @@
 %% Contents
 %
 %%
-% First, let us import some example <mtexdata.html EBSD data> and plot
+% First, let us import some example <mtexdata.html EBSD data>. and plot
 % the raw data
 
-mtexdata forsterite;
-plotx2east
-close all
-plot(ebsd)
+mtexdata forsterite
 
 %%
-% These data consist of two indexed phases, _Iron_ and _Magnesium_ : The not
-% indexed data is called phase _not Indexed_. They can be visualized by a
-% spatial phase plot
+% These data consist of two indexed phases, _Iron_ and _Magnesium_. The not
+% indexed phase called phase _not Indexed_. The phases can be visualized by
 
-close all
+close all, plotx2east
 plot(ebsd,'property','phase')
 
-%% Selecting certain phases
-% The data coresponding to a certain phase can be extracted by
+%% Selecting a certain phase
+% In order to restrict the EBSD data to a certain phase just use the
+% mineral name as an index, i.e.
 
-ebsd_Fe = ebsd('Forsterite')
+ebsd('Forsterite')
 
 %%
-% In order to extract a couple of phases, the mineral names have to be
-% grouped in curled parethesis.
+% contains only the Forterite measurements. In order to extract a couple of
+% phases, the mineral names have to be grouped in curled parethesis.
 
 ebsd({'Fo','En'})
 
 %%
-% As an example, let us plot only all not indexed data
+% As an example, let us plot the Forsterite data. 
 
 close all
-plot(ebsd('notIndexed'),'facecolor','r')
+plot(ebsd('Forsterite'))
+%plot(ebsd('notIndexed'),'facecolor','r')
 
-%% See also
-% EBSD/subsref EBSD/subsasgn
-%
+%%
+% The data are colorized according to its orientation. By default color of
+% an orientation is determined by its position in the 100 inverse pole
+% figure which itself is colored as
+
+ebsdColorbar
+
 
 %% Restricting to a region of interest
 % If one is not interested in the whole data set but only in those
