@@ -37,13 +37,9 @@ end
 
 % TODO
 % Fourier based algorithm
-if check_option(varargin,'Fourier') && check_option(varargin,'L2')
+if check_option(varargin,'L2')
   
-  L = get_option(varargin,'bandwidth',min(bandwidth(odf1),bandwidth(odf2)));
-  f1_hat = Fourier(odf1,'bandwidth',L,'l2-normalization');
-  f2_hat = Fourier(odf2,'bandwidth',L,'l2-normalization');
-
-  e = norm(f1_hat - f2_hat)./norm(f2_hat);
+  e = norm(odf1 - odf2)./norm(odf2);
 
 % quadrature  rule based algorithm
 else
