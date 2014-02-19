@@ -47,6 +47,10 @@ for i = 1:length(odf.components)
   ori = [ori,calcModes(odf.components{i},res)];     %#ok<AGROW>
 end
   
+if isempty(ori),
+  ori = equispacedSO3Grid(odf.CS,odf.SS,'resolution',res);
+end
+
 % first evaluation
 f = eval(odf,ori,varargin{:}); %#ok<EVLC>
 
