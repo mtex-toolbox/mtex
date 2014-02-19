@@ -29,9 +29,11 @@ if strcmp(char(root.getTagName()),'xrdMeasurements')
   
   for k=1:xrdMeasurment.getLength
     
-    pf(k) = localParseMeasurement(xrdMeasurment.item(k-1),varargin{:});
+    [allH{k},allR{k},allI{k}] = localParseMeasurement(xrdMeasurment.item(k-1),varargin{:}); %#ok<AGROW>
     
   end
+  
+  pf = PoleFigure(allH,allR,allI,varargin{:});
   
 else
   
@@ -39,32 +41,32 @@ else
   
 end
 
+end
 
-
-function pf = localParseMeasurement(measurement,varargin)
+function [h,r,d] = localParseMeasurement(measurement,varargin)
 
 % measurement.getElementsByTagName('comment');
 scan = measurement.getElementsByTagName('scan');
 
-q = quaternion;
-for k=1:scan.getLength()
-  
-  data(k) = localParseScan( scan.item(k-1) );
-  
+% extract intensities
+for k=1:scan.getLength() 
+  data(k) = localParseScan( scan.item(k-1) );  
 end
+d = vertcat(data.intensities);
 
+% extract specimen directions
+r = vertcat(data.r);
+
+% extract Miller indices
+hkl = unique(vertcat(data.h),'rows');
+h = Miller(hkl(:,1),hkl(:,2),hkl(:,3));
+
+% check for constant 2Theta angle
 if numel(unique([data.position_2Theta]))>1
   warning('data may be corrupted, I recognized different 2Theta angles for one measurement')
 end
 
-d = vertcat(data.intensities);
-r = vertcat(data.r);
-
-hkl = unique(vertcat(data.h),'rows');
-h = Miller(hkl(:,1),hkl(:,2),hkl(:,3));
-
-pf = PoleFigure(h,r,d,varargin{:});
-
+end
 
 function data = localParseScan(scan)
 
@@ -85,6 +87,7 @@ data.intensities = data.intensities./data.commonCountingTime;
 data.h = localParseReflection( scan );
 data.r = localConvertScanToSpecimenDirection(data);
 
+end
 
 function hkl = localParseReflection(scan)
 
@@ -99,6 +102,7 @@ else
   hkl = [0,0,1];
 end
 
+end
 
 function r = localConvertScanToSpecimenDirection(data)
 
@@ -131,6 +135,7 @@ q = axis2quat(zvector,phi) .* ...
 
 r = q*yvector;
 
+end
 
 function pos = localParsePositions(dataPoints)
 
@@ -161,4 +166,6 @@ for k = 1:positions.getLength()
   pos.(ax) = val;
   pos.([ax '_unit']) = unit;
   
+end
+
 end
