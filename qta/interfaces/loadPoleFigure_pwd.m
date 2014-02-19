@@ -27,7 +27,7 @@ try
     if strfind(line,'R')
       
       p = p+1; k=1;
-      h(p) = string2Miller(line(2:end));
+      allH{p} = string2Miller(line(2:end));
       
       % if not a command line - it is a data line
     elseif isempty(regexp(line,'[*#]'))
@@ -54,8 +54,9 @@ theta = theta*degree;
 d = def-defbg;
 
 % store defocussing in a pole figure variable
-for p=1:length(h)
-  th = theta(p,:);
-  r = sph2vec(th,zeros(size(th)));
-  pf(p) = PoleFigure(h(p),r,d(p,:),varargin{:});
+for p=1:length(allH)
+  allI{p} = d(p,:);
+  allR{p} = vector3d('polar',theta(p,:),0);
 end
+
+pf = PoleFigure(allH,allR,allI,varargin{:});
