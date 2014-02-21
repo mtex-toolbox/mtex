@@ -15,13 +15,6 @@ function c = KLCV(ori,psi,varargin)
 % See also
 % EBSD/calcODF EBSD/calcKernel grain/calcKernel EBSD/BCV
 
-%try
-%  w = get(ebsd,'weight');
-%  w = ones(size(w));
-%catch
-%  w = ones(size(o));
-%end
-
 % partition data set
 sN = ceil(min(length(ori),get_option(varargin,'SamplingSize',1000)));
 pN = get_option(varargin,'PartitionSize',ceil(1000000/length(ori)));
