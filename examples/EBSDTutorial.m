@@ -76,7 +76,7 @@ odf = calcODF(ebsd('Fe'),'kernel',psi)
 % <ODFCalculations.html ODF analysis> and <ODFPlot.html ODF visualisation>
 % is available.
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],...
+plotPDF(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],...
   'antipodal','silent','position',[100 100 600 200])
 
 

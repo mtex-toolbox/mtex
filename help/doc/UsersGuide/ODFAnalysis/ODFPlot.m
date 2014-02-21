@@ -25,27 +25,27 @@ setMTEXpref('defaultColorMap',LaboTeXColorMap);
 
 %% Pole Figures
 % Plotting some pole figures of an <ODF_index.html ODF> is straight forward
-% using the <ODF.plotpdf.html plotpdf> command. The only mandatory
+% using the <ODF.plotPDF.html plotPDF> command. The only mandatory
 % arguments are the ODF to be plotted and the <Miller_index.html Miller
 % indice> of the crystal directions you want to have pole figures for.
 
-plotpdf(odf,[Miller(1,0,-1,0,cs),Miller(0,0,0,1,cs)])
+plotPDF(odf,[Miller(1,0,-1,0,cs),Miller(0,0,0,1,cs)])
 
 %%
-% By default the <ODF.plotpdf.html plotpdf> command plots the upper as well
+% By default the <ODF.plotPDF.html plotPDF> command plots the upper as well
 % a the lower hemisphere of each pole sphere. In order to superpose
 % antipodal directions you have to use the option *antipodal*.
 
-plotpdf(odf,[Miller(1,0,-1,0,cs),Miller(0,0,0,1,cs)],'antipodal')
+plotPDF(odf,[Miller(1,0,-1,0,cs),Miller(0,0,0,1,cs)],'antipodal')
 
 
 %% Inverse Pole Figures
 % Plotting inverse pole figures is analogously to plotting pole figures
 % with the only difference that you have to use the command
-% <ODF.plotipdf.html plotipdf> and you to specify specimen directions and
+% <ODF.plotIPDF.html plotIPDF> and you to specify specimen directions and
 % not crystal directions.
 
-plotipdf(odf,[xvector,zvector],'antipodal')
+plotIPDF(odf,[xvector,zvector],'antipodal')
 annotate(Miller(1,0,0),'labeled')
 
 %%
@@ -53,12 +53,12 @@ annotate(Miller(1,0,0),'labeled')
 % the crystal symmetry. In order to plot the complete inverse pole figure
 % you have to use the option *complete*.
 
-plotipdf(odf,[xvector,zvector],'antipodal','complete')
+plotIPDF(odf,[xvector,zvector],'antipodal','complete')
 
 %% ODF Sections
 %
 % Plotting an ODF in two dimensional sections through the orientation space
-% is done using the command <ODF.plotodf.html plot>. By default the
+% is done using the command <ODF.plotODF.html plot>. By default the
 % sections are at constant angles phi2. The number of sections can be
 % specified by an option
 
@@ -86,7 +86,7 @@ plot(odf,'phi2',[25 30 35 40]*degree,'contourf','silent')
 % They can be seen as the (001) pole figure splitted according to rotations
 % about the (001) axis. Lets have a look at the 001 pole figure
 
-plotpdf(odf,Miller(0,0,0,1,cs))
+plotPDF(odf,Miller(0,0,0,1,cs))
 
 %%
 % We observe three spots. Two in the center and one at 100. When splitting

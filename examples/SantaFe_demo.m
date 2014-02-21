@@ -43,7 +43,7 @@ plotDiff(pf,rec)
  
 %% Plot estimated pole figures
 
-plotpdf(rec,pf.h,'antipodal')
+plotPDF(rec,pf.h,'antipodal')
 
 %% Plot estimated ODF (Ghost Corrected)
 

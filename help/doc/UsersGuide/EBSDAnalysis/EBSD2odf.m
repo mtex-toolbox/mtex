@@ -67,7 +67,7 @@ odf = calcODF(ebsd('fo'),'kernel',psi)
 % Once an ODF is estimated all the functionality MTEX offers for 
 % <ODFCalculations.html ODF analysis> and <ODFPlot.html ODF visualisation> is available. 
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],'antipodal','silent')
+plotPDF(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],'antipodal','silent')
 
 
 %% Effect of halfwidth selection

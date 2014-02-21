@@ -1,8 +1,8 @@
-function plotpdf(grains,h,varargin)
+function plotPDF(grains,h,varargin)
 % plot pole figures
 %
 % Syntax
-%   plotpdf(ebsd,[h1,..,hN])
+%   plotPDF(ebsd,[h1,..,hN])
 %
 % Input
 %  ebsd - @GrainSet
@@ -25,5 +25,5 @@ function plotpdf(grains,h,varargin)
 
 varargin = set_option_property(grains,varargin{:});
 
-plotpdf(ax{:},grains.meanOrientation,h,...
+plotPDF(ax{:},grains.meanOrientation,h,...
   'FigureTitle',inputname(1),varargin{:});

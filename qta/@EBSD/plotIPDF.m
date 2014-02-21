@@ -1,4 +1,4 @@
-function plotipdf(ebsd,varargin)
+function plotIPDF(ebsd,varargin)
 % plot inverse pole figures
 %
 % Input
@@ -28,5 +28,5 @@ if nargin > 1 && isa(varargin{1},'vector3d')
 else
   r = {};
 end
-plotipdf(ax{:},ebsd.orientations,r{:},...
+plotIPDF(ax{:},ebsd.orientations,r{:},...
   'FigureTitle',inputname(1),varargin{:});

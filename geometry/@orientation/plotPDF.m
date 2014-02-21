@@ -1,8 +1,8 @@
-function plotpdf(o,h,varargin)
+function plotPDF(o,h,varargin)
 % plot pole figures
 %
 % Syntax
-%   plotpdf(ori,[h1,..,hN],<options>)
+%   plotPDF(ori,[h1,..,hN],<options>)
 %
 % Input
 %  ori - @orientation

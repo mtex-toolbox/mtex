@@ -12,7 +12,7 @@ function plot(ebsd,varargin)
 %  center        - reference orientation
 %
 % See also
-% EBSD/scatter EBSD/plotspatial EBSD/plotpdf savefigure
+% EBSD/scatter EBSD/plotspatial EBSD/plotPDF savefigure
 
 % where to plot
 [ax,ebsd,varargin] = getAxHandle(ebsd,varargin{:});
@@ -22,10 +22,10 @@ if check_option(varargin,{'scatter','axisangle','rodrigues'}) && ...
   ~check_option(varargin,'colorcoding')
   scatter(ax{:},ebsd,varargin{:});
 elseif check_option(varargin,{'sections','sigma','phi1','phi2','alpha','gamma'})
-  plotodf(ax{:},ebsd,varargin{:});
+  plotODF(ax{:},ebsd,varargin{:});
 elseif isProp(ebsd,'x') && isProp(ebsd,'y')
   plotspatial(ax{:},ebsd,varargin{:});
 else
   h = [Miller(0,0,1),Miller(1,1,0),Miller(1,1,1)];
-  plotpdf(ax{:},ebsd,h,varargin{:});
+  plotPDF(ax{:},ebsd,h,varargin{:});
 end

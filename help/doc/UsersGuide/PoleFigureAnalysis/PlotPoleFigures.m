@@ -54,4 +54,4 @@ odf = calcODF(pf,'silent')
 %%
 % Now smooth pole figures can be plotted for arbitrary crystallographic directions.
 
-plotpdf(odf,pf.h,'antipodal')
+plotPDF(odf,pf.h,'antipodal')

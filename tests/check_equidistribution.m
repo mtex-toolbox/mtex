@@ -10,7 +10,7 @@ k = kernel('de la Vallee Poussin','halfwidth',10*degree)
 
 odf = unimodalODF(q,k,cs,ss)
 
-plotpdf(odf,h,'resolution',5*degree)
+plotPDF(odf,h,'resolution',5*degree)
 
 
 return
@@ -35,4 +35,4 @@ k = kernel('de la Vallee Poussin','halfwidth',10*degree)
 
 odf = unimodalODF(q,k,cs,ss)
 
-plotpdf(odf,h,'resolution',5*degree)
+plotPDF(odf,h,'resolution',5*degree)

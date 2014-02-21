@@ -44,12 +44,12 @@ function [odf,r,v1,v2] = centerSpecimen(odf,center,varargin)
 %       r2 = rotation('euler', 6*degree,4*degree,0*degree)
 %       odf = rotate(odf,r2);
 %
-%       plotpdf(odf,h,'antipodal');
+%       plotPDF(odf,h,'antipodal');
 %
 % and now retrive the rotation back
 %
 %       [odr,r,v1,v2] = centerSpecimen(odf);
-%       plotpdf(odr,h,'antipodal')
+%       plotPDF(odr,h,'antipodal')
 %
 %
 %

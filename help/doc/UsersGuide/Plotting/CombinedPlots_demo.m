@@ -44,9 +44,9 @@ hold off
 % a second way would be to superpose the pole figures of both EBSD data sets.
 
 h = [Miller(0,0,0,1,cs),Miller(1,0,-1,0,cs)];
-plotpdf(ebsd,h,'antipodal','MarkerSize',4)
+plotPDF(ebsd,h,'antipodal','MarkerSize',4)
 hold all % keep plot
-plotpdf(ebsd_rotated,h,'MarkerSize',4);
+plotPDF(ebsd_rotated,h,'MarkerSize',4);
 hold off % next plot command deletes all plots
 
 
@@ -54,23 +54,23 @@ hold off % next plot command deletes all plots
 % You can also combine a contour plot of a model ODF with a scatter plot of single
 % orientations.
 
-plotpdf(odf,h,'antipodal','contourf','grid')
+plotPDF(odf,h,'antipodal','contourf','grid')
 mtexColorMap white2black
 hold all
-plotpdf(ebsd,h,'antipodal','MarkerSize',5,'MarkerColor','b','MarkerEdgeColor','w')
+plotPDF(ebsd,h,'antipodal','MarkerSize',5,'MarkerColor','b','MarkerEdgeColor','w')
 hold all
-plotpdf(ebsd_rotated,h,'MarkerSize',5,'MarkerColor','r','MarkerEdgeColor','k');
+plotPDF(ebsd_rotated,h,'MarkerSize',5,'MarkerColor','r','MarkerEdgeColor','k');
 hold off
 hh = legend({'EBSD 1','EBSD 2'},'units','normalized','position',[0.022 0.9 0.1 0.08]);
 
 %%
 % and, of course, you can do the same with ODF plots:
 
-plotodf(odf,'sections',8,'contourf','sigma')
+plotODF(odf,'sections',8,'contourf','sigma')
 mtexColorMap white2black
 hold all
-plotodf(ebsd,'MarkerSize',8,'MarkerColor','b','MarkerEdgeColor','w')
-plotodf(ebsd_rotated,'MarkerSize',8,'MarkerColor','r','MarkerEdgeColor','k');
+plotODF(ebsd,'MarkerSize',8,'MarkerColor','b','MarkerEdgeColor','w')
+plotODF(ebsd_rotated,'MarkerSize',8,'MarkerColor','r','MarkerEdgeColor','k');
 hold off
 
 
@@ -78,7 +78,7 @@ hold off
 % Next we are going to add some Miller indices to an inverse pole figure
 % plot.
 
-plotipdf(odf,xvector);
+plotIPDF(odf,xvector);
 mtexColorMap white2black
 
 hold all % keep plot
@@ -113,7 +113,7 @@ plot(axesPos,pf({1}))
 axesPos = subplot(1,3,2)
 
 % plot the recalculated pole figure at this position
-plotpdf(axesPos,odf,h{1},'antipodal')
+plotPDF(axesPos,odf,h{1},'antipodal')
 
 % set position 3 in a 1x3 matrix as the current plotting position
 axesPos = subplot(1,3,3)

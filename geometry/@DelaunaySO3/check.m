@@ -36,7 +36,7 @@ DSO3.tetra([5,DSO3.tetraNeighbour(5,:)],:)
 
 odf = fibreODF(Miller(1,0,0,cs),zvector)
 
-plotpdf(odf,Miller(1,0,0,cs))
+plotPDF(odf,Miller(1,0,0,cs))
 
 
 %%
@@ -70,26 +70,26 @@ toc
 
 %%
 
-plotodf(fodf,'sigma')
+plotODF(fodf,'sigma')
 
 %%
 %plot(fodf)
 figure(1)
 tic
-plotpdf(odf,Miller(1,1,1,cs))
+plotPDF(odf,Miller(1,1,1,cs))
 toc
 figure(2)
 tic
-plotpdf(fodf,Miller(1,1,1,cs),'antipodal','pcolor')
+plotPDF(fodf,Miller(1,1,1,cs),'antipodal','pcolor')
 toc
 
 %%
 tic
-plotfibre(fodf,Miller(1,1,1,cs),xvector);
+plotFibre(fodf,Miller(1,1,1,cs),xvector);
 toc
 hold all
 tic
-plotfibre(odf,Miller(1,1,1,cs),xvector);
+plotFibre(odf,Miller(1,1,1,cs),xvector);
 toc
 hold off
 
@@ -184,7 +184,7 @@ fodf = calcFEMODF(pf,DSO3)
 
 %%
 
-plotpdf(fodf,h)
+plotPDF(fodf,h)
 
 %%
 

@@ -1,10 +1,10 @@
 function plot(odf,varargin)
 % plots odf
 %
-% this function is only a shortcut to ODF/plotodf
+% this function is only a shortcut to ODF/plotODF
 
 if check_option(varargin,'fibre')
-  plotfibre(odf,varargin{:});
+  plotFibre(odf,varargin{:});
 else
-  plotodf(odf,varargin{:});
+  plotODF(odf,varargin{:});
 end

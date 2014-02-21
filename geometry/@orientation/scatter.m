@@ -14,7 +14,7 @@ function scatter(o,varargin)
 %  center    - orientation center
 %
 % See also
-% EBSD/plotpdf savefigure
+% EBSD/plotPDF savefigure
 
 % subsample to reduce size
 if length(o) > 2000 || check_option(varargin,'points')

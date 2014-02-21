@@ -30,7 +30,7 @@ mdf_boundary = calcMDF(grains('Fo'),grains('En'),'halfwidth',10*degree)
 %%
 % or plot the pole figure coresponding to the crystal axis (1,0,0)
 
-plotpdf(mdf_boundary,Miller(1,0,0))
+plotPDF(mdf_boundary,Miller(1,0,0))
 
 %% SUB: The uncorrelated misorientation distribution function
 % 
@@ -43,7 +43,7 @@ mdf_uncor = calcMDF(grains('Fo'),grains('En'),'uncorrelated','halfwidth',10*degr
 % Obviously it is different from the boundary misorientation distribution
 % function.
 
-plotpdf(mdf_uncor,Miller(1,0,0))
+plotPDF(mdf_uncor,Miller(1,0,0))
 
 %% Computing the uncorrelated misorientation function from two ODFs
 %
@@ -62,7 +62,7 @@ mdf = calcMDF(odf_fo,odf_en)
 % This misorientation distribution function should be similar to the
 % uncorrelated misorinetation function computed directly from the grains
 
-plotpdf(mdf,Miller(1,0,0))
+plotPDF(mdf,Miller(1,0,0))
 
 %% Analyzing misorientation functions
 %

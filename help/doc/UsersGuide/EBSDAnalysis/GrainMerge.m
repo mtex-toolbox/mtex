@@ -72,10 +72,10 @@ plotBoundary(parent,'linecolor','k','linewidth',2)
 % together
 
 close all
-plotpdf(childs(1).ebsd,Miller(1,1,1),...
+plotPDF(childs(1).ebsd,Miller(1,1,1),...
   'marker','x','markersize',5,'antipodal')
 hold on
-plotpdf(childs(2).ebsd,Miller(1,1,1),...
+plotPDF(childs(2).ebsd,Miller(1,1,1),...
   'marker','x','markersize',5,'antipodal')
 
 %%
@@ -147,12 +147,12 @@ childs = grains(find(I_PC(1258,:)))
 % We can inspect the orientations
 
 close all
-plotpdf(parent.ebsd,Miller(0,0,1),'antipodal');
+plotPDF(parent.ebsd,Miller(0,0,1),'antipodal');
 hold on
 
 c = {'y','m','r','c','g'};
 for k=1:numel(childs)
-  plotpdf(childs(k).ebsd,Miller(0,0,1),...
+  plotPDF(childs(k).ebsd,Miller(0,0,1),...
     'markercolor',c{k},'marker','x','markersize',5,'antipodal')
 end
 

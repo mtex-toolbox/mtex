@@ -69,12 +69,12 @@ plotDiff(pf,odf)
 
 %% Recalculate c-axis pole figures
 
-plotpdf(odf,Miller(0,0,1,cs),'antipodal')
+plotPDF(odf,Miller(0,0,1,cs),'antipodal')
 
 
 %% Plot inverse pole figure
 
-plotipdf(odf,vector3d(1,1,2))
+plotIPDF(odf,vector3d(1,1,2))
 
 %% plot recalculated ODF
 

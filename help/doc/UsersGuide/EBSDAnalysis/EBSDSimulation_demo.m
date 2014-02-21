@@ -22,7 +22,7 @@ fibre_odf = 0.5*uniformODF(cs,ss) + 0.5*fibreODF(Miller(0,0,0,1),zvector,cs,ss);
 
 %%
 %
-plotodf(fibre_odf,'sections',6,'silent')
+plotODF(fibre_odf,'sections',6,'silent')
 
 
 %% Simulate EBSD Data
@@ -46,7 +46,7 @@ odf = calcODF(ebsd,'kernel',psi)
 %%
 % which can be plotted,
 
-plotodf(odf,'sections',6,'silent')
+plotODF(odf,'sections',6,'silent')
 
 
 %%

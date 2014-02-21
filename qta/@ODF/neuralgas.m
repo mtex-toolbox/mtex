@@ -93,7 +93,7 @@ S2G = S2Grid(vector3d(W'));
 
 
 if verb 
-  plotpdf(odf,h,'upper');
+  plotPDF(odf,h,'upper');
   hold on, 
   plot(S2G);
 end

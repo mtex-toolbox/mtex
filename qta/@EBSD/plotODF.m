@@ -1,4 +1,4 @@
-function plotodf(ebsd,varargin)
+function plotODF(ebsd,varargin)
 % Plot EBSD data at ODF sections
 %
 % Input
@@ -26,4 +26,4 @@ function plotodf(ebsd,varargin)
 
 varargin = set_option_property(ebsd,varargin{:});
 
-plotodf(ax{:},ebsd.orientations,'FigureTitle',inputname(1),varargin{:});
+plotODF(ax{:},ebsd.orientations,'FigureTitle',inputname(1),varargin{:});

@@ -24,7 +24,7 @@ odf = 0.7*unimodalODF(mod1,cs,ss) + 0.3*unimodalODF(mod2,cs,ss);
 % that the color range is automatically set to *equal* when adding a colorbar
 % to a figure with  more then one plot (see. <ColorCoding_demo.html Color Coding>).
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal')
+plotPDF(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal')
 colorbar
 
 
@@ -50,7 +50,7 @@ annotate([xvector,yvector,zvector],'label',{'x','y','z'},...
 % The command <annotate.html annotate> allows also to plot
 % <Miller_index.html crystal directions> to inverse pole figures.
 
-plotipdf(odf,[xvector,zvector],'antipodal','marginx',10,'minmax','off')
+plotIPDF(odf,[xvector,zvector],'antipodal','marginx',10,'minmax','off')
 mtexColorMap white2black
 annotate([Miller(1,0,0),Miller(1,1,0),Miller(0,0,1),Miller(2,-1,0)],'all','labeled')
 
@@ -60,7 +60,7 @@ annotate([Miller(1,0,0),Miller(1,1,0),Miller(0,0,1),Miller(2,-1,0)],'all','label
 % One can also mark specific orientations in the pole figures or in the inverse pole
 % figures
 
-plotipdf(odf,[xvector,zvector],'antipodal','marginx',10,'minmax','off')
+plotIPDF(odf,[xvector,zvector],'antipodal','marginx',10,'minmax','off')
 mtexColorMap white2black
 annotate(mod1,...
     'marker','s','MarkerSize',6,'MarkerFaceColor','r',...
@@ -116,5 +116,5 @@ legend({'Fibre ODF','Unimodal ODF'})
 % For this reason there is the option *grid*, which enables the grid and the 
 % option *grid_res*, which allows to specifiy the spacing of the grid lines.
 
-plotpdf(odf,[Miller(1,0,0),Miller(0,0,1)],'grid','grid_res',15*degree,'antipodal');
+plotPDF(odf,[Miller(1,0,0),Miller(0,0,1)],'grid','grid_res',15*degree,'antipodal');
 mtexColorMap white2black

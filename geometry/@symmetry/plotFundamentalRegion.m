@@ -9,7 +9,7 @@ function plotFundamentalRegion(CS,varargin)
 %  center - @quaternion
 %
 % See also
-% odf/plotodf orientation/plotodf
+% odf/plotODF orientation/plotODF
 
 sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','axisangle','omega'},'sigma');
 

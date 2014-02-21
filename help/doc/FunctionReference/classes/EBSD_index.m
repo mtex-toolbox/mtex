@@ -57,7 +57,7 @@ plot(ebsd,'antipodal')
 
 colorbar
 hold on
-plotipdf(ebsd,xvector,'markerSize',3,'points',500,'marker','o','markerfacecolor','none','markeredgecolor','k')
+plotIPDF(ebsd,xvector,'markerSize',3,'points',500,'marker','o','markerfacecolor','none','markeredgecolor','k')
 hold off
 
 %% SUB: Modify EBSD Data
@@ -82,7 +82,7 @@ hold off
 % <EBSD2odf.html here>. 
 
 odf = calcODF(ebsd('fe'),'halfwidth',10*degree)
-plotpdf(odf,Miller(1,0,0,cs),'antipodal')
+plotPDF(odf,Miller(1,0,0,cs),'antipodal')
 
 
 %% SUB: Simulate EBSD Data
@@ -94,7 +94,7 @@ plotpdf(odf,Miller(1,0,0,cs),'antipodal')
 % <ODF.calcEBSD.html calcEBSD>, e.g.
 
 ebsd = calcEBSD(unimodalODF(idquaternion,cs,ss),500)
-plotpdf(ebsd,Miller(1,0,0),'antipodal','MarkerSize',3)
+plotPDF(ebsd,Miller(1,0,0),'antipodal','MarkerSize',3)
 
 %% SUB: Demo
 %
