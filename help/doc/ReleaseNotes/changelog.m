@@ -1,12 +1,106 @@
 %% MTEX Changelog
 %
+%% MTEX 4.0.0 - 02/2014
+% 
+% MTEX 4 is a complete rewrite of the internal class system which was
+% required to keep MTEX compatible with upcomming Matlab releases. Note
+% that MTEX 3.5 will not work on Matlab versions later then 2014a. As a
+% positive side effect the syntax has been made more consisent and
+% powerfull. On the bad side MTEX 3.5. code will probably need some
+% adaption to run on MTEX 4. There are three general principles to consider
+%
+% *Use dot indexing istead of get and set method*
+%
+% The syntax
+%
+%   h = get(m,'h')
+%   m = set(m,'h',h+1)
+%
+% is obsolete. |set| and |get| methods are not longer supported by any MTEX
+% class. Instead use dot indexing
+%
+%   h = m.h
+%   m.h = h + 1
+%
+% Note, that this syntax can be nested, i.e., one can write
+%
+%   ebsd('Forsterite').orientations.angle
+%
+% to get the rotational angle of all Forsterite orientations, or,
+%
+%   cs.axes(1).x
+%
+% to get the x coordinate of the first crystallographic coordinate axis -
+% the a axis. As an nice bonus you can now use TAB completion to cycle
+% through all possible properties and methods of a class.
+%
+% *Use *
+%
+% Formerly, MTEX used different naming conventions for function. Starting
+% with MTEX 4.0 all function names consisting of several words, have the
+% first word spelled with lowercase latters and the consecutive words
+% starting with a capital letter. Most notable changes are
+%  * |plotPDF|
+%  * |plotIPDF|
+%  * |plotODF|
+%  * |calcError|
+%
+% *Pole figure indexing is now analoge to EBSD data*
+%
+% You can now index pole figure data by conditions in the same manner as
+% EBSD data. E.g. the condition
+%
+%   condition = pf.r.theta < 80 * degree
+%
+% is a index to all pole figure data with polar angle smaller then 80
+% degree. To restrict the pole figure variable |pf| to the data write
+%
+%   pf_restrcited = pf(condition)
+%
+% In the same manner we can also remove all negative intensities
+% 
+%   condition = pf.intensities < 0
+%   pf(condition) = []
+%
+% In order to address individuell pole figures within a array of pole
+% figures |pf| use the syntax
+%
+%   pf('111')
+%
+% or
+%
+%   pf(Miller(1,1,1))
+%
+% The old syntax
+%
+%   pf(1)
+%
+% for accessing the first pole figure will not work anymore as it now refers to
+% the first pole figure measurement. The direct replacement for the above
+% command is
+%
+%   pf({1})
+%
+% *MTEX 4.0 supports all 32 point groups*
+%
+% In MTEX 4.0 it is for the first time possible to calculate with
+% reflections, inversions and .  As a consequence all 32 point groups are
+% supported. This is particularly important when working with
+% piezoellectric tensors and symmetries like 4mm.
+%
+% Care should be taken, when using non Laue groups for pole figure or EBSD
+% data. In those cases MTEX 4.0 automatically realizes the addiotional
+% symmetry comming from Fridels law and expands the symmetry to the
+% corresponding Laue group. This can be prevented by the option
+% |noFriedel|.
+%
 %% MTEX 3.5.0 - 12/2013
 %
 % *Misorientation colorcoding*
 %
 % * Patala colormap for misorientations
-% * publication:  S. Patala, J. K. Mason, and C. A. Schuh, �Improved
-% representations of misorientation information for grain boundary science
+% * publication:  S. Patala, J. K. Mason, and C. A. Schuh, Improved
+% representations of misorientation information for grain boundary, science
 % and engineering, Prog. Mater. Sci., vol. 57, no. 8, pp. 1383-1425, 2012.
 % * implementation: Oliver Johnson
 % * syntax:
@@ -259,7 +353,7 @@
 %   get(grains,'EBSD')
 %
 % * the grain selector tool for spatial grain plots was removed,
-% nevertheless, grains still can be [[GrainSingleAnalysis.html,selected spatially]].
+% nevertheless, grains still can be <GrainSingleAnalysis.html selected spatially>.
 % * scripts using the old grain engine may not work properly, for more
 % details of the functionalities and functioning of the @GrainSet please
 % see the documention.
@@ -268,8 +362,8 @@
 % *EBSD*
 %
 % * Behavior of the |'ignorePhase'| changed. Now it is called in general
-% |'not indexed'| and the not indexed data [[ImportEBSDData.html,is
-% imported generally]]. If the crystal symmetry of an @EBSD phase is set to a
+% |'not indexed'| and the not indexed data <ImportEBSDData.html is
+% imported generally>. If the crystal symmetry of an @EBSD phase is set to a
 % string value, it will be treated as not indexed. e.g. mark the first
 % phase as |'not indexed'|
 %
@@ -591,10 +685,10 @@
 %
 % * ODF reconstruction and PDF calculation is about *10 times faster* now
 % (thanks to the new NFFT 4.0 library)
-% * ODF plotting and the calculation of [[ODF.volume.html,volume
-% fractions]], the [[ODF.textureindex.html,texture index]], the
-% [[ODF.entropy.html,entropy]] and [[ODF.calcFourier.html,Fourier
-% coefficients]] is about *100 times faster*
+% * ODF plotting and the calculation of <ODF.volume.html volume
+% fractions>, the <ODF.textureindex.html texture index>, the
+% <ODF.entropy.html entropy> and <ODF.calcFourier.html Fourier
+% coefficients> is about *100 times faster*
 %
 % *New Support of EBSD Data Analysis*
 %
@@ -635,22 +729,22 @@
 %
 %% MTEX 0.3 - 10/2007
 %
-% * new function [[ODF.Fourier.html,fourier]] to calculate the
+% * new function <ODF.Fourier.html fourier> to calculate the
 % Fouriercoefficents of an arbitrary ODF
 % * new option |ghost correction| in function
-% [[PoleFigure.calcODF.html,calcODF]]
-% * new option |zero range| in function [[PoleFigure.calcODF.html,calcODF]]
-% * new function [[loadEBSD]] to import EBSD data
+% <PoleFigure.calcODF.html calcODF>
+% * new option |zero range| in function <PoleFigure.calcODF.html calcODF>
+% * new function <loadEBSD.html loadEBSD> to import EBSD data
 % * simplified syntax for the import of diffraction data
 % * new import wizard for pole figure data
-% * support of triclinic crystal [[symmetry_index.html,symmetry]] with
+% * support of triclinic crystal <symmetry_index.html symmetry> with
 % arbitrary angles between the axes
 % * default plotting options may now be specified in mtex_settings.m
 % * new plot option _3d_ for a three dimensional spherical plot of pole
 % figures
 % * contour levels may be specified explicitely in all plot functions
-% [[ODF.plotodf.html,plotodf]],[[ODF.plotpdf.html,plotpdf]] and
-% [[ODF.plotipdf.html,plotipdf]]
+% <ODF.plotodf.html plotodf>,<ODF.plotpdf.html plotpdf> and
+% <ODF.plotipdf.html,plotipdf>
 % * new plot option _logarithmic_
 % * many bugfixes
 %
