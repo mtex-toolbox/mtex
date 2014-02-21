@@ -36,11 +36,6 @@ pf = loadPoleFigure(fname,h,cs,ss,'superposition',c)
 figure('position',[359 450 749 249])
 plot(pf)
 
-%% Analyse pole figures
-
-clf
-hist(pf)
-
 %% Correct pole figures
 
 pf_corrected = delete(pf,pf.r.theta >= 70*degree &...
