@@ -1,5 +1,5 @@
 function [v, data]= project2ODFsection(o,type,sec,varargin)
-% project orientation to ODF sections used by plotodf
+% project orientation to ODF sections used by plotODF
 %
 % Input
 %  o  - @SO3Grid

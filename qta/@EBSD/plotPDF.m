@@ -1,8 +1,8 @@
-function plotpdf(ebsd,h,varargin)
+function plotPDF(ebsd,h,varargin)
 % plot pole figures
 %
 % Syntax
-%   plotpdf(ebsd,[h1,..,hN],<options>)
+%   plotPDF(ebsd,[h1,..,hN],<options>)
 %
 % Input
 %  ebsd - @EBSD
@@ -25,5 +25,5 @@ function plotpdf(ebsd,h,varargin)
 
 varargin = set_option_property(ebsd,varargin{:});
 
-plotpdf(ax{:},ebsd.orientations,h,...
+plotPDF(ax{:},ebsd.orientations,h,...
   'FigureTitle',inputname(1),varargin{:});

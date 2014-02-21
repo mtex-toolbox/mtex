@@ -24,7 +24,7 @@ h = [ ...
   Miller(1,1,0,cs), ...
   ];
 
-figure, plotpdf(odf_true,h)
+figure, plotPDF(odf_true,h)
 
 
 %% Initial measure grid

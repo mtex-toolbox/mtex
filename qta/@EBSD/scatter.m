@@ -15,7 +15,7 @@ function scatter(ebsd,varargin)
 %  center    - orientation center
 %
 % See also
-% EBSD/plotpdf savefigure
+% EBSD/plotPDF savefigure
 
 varargin = set_option_property(ebsd,varargin{:});
 

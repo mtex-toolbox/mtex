@@ -25,7 +25,7 @@ plot(ebsd)
 % We start our investiagations of the Forsterite phase by plotting some
 % pole figures
 
-plotpdf(ebsd('Forsterite'),[Miller(1,0,0),Miller(0,1,0),Miller(0,0,1)],'antipodal')
+plotPDF(ebsd('Forsterite'),[Miller(1,0,0),Miller(0,1,0),Miller(0,0,1)],'antipodal')
 
 %%
 % From the {100} pole figure we might suspect a fibre texture present in our

@@ -1,4 +1,4 @@
-function plotodf(odf,varargin)
+function plotODF(odf,varargin)
 % plot odf
 %
 % Plots the ODF as various sections which can be controled by options.

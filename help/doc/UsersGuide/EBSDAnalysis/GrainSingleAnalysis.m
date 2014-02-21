@@ -62,16 +62,16 @@ close, plot(grain_selected,'property','mis2mean')
 % they may vary in the shape. In particular, if the grain was deformed by
 % some process, we are interessed in quantifications.
 %%
-% Note, that the |plotpdf|, |plotipdf| and |plotodf| command by default
+% Note, that the |plotPDF|, |plotIPDF| and |plotODF| command by default
 % only plots the mean orientation of grains. Thus, for these commands, we
 % have to explicitely specify the underlaying EBSD data.
 
-plotpdf(grain_selected.meanOrientation,...
+plotPDF(grain_selected.meanOrientation,...
   [Miller(0,0,1),Miller(0,1,1),Miller(1,1,1)],'antipodal')
 
 %%
 
-plotpdf(grain_selected.ebsd,...
+plotPDF(grain_selected.ebsd,...
   [Miller(0,0,1),Miller(0,1,1),Miller(1,1,1)],'antipodal')
 
 

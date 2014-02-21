@@ -26,11 +26,11 @@ odf = 0.1 * unimodalODF(mod1,cs,ss) ...
 %% Pole Figure Plots
 % 
 % In order to plot the pole figures corresponding to a certain list of
-% crystal directions one uses the command <ODF.plotpdf.html plotpdf>.
+% crystal directions one uses the command <ODF.plotPDF.html plotPDF>.
 
 h = [Miller(1,0,-1,0,cs),Miller(0,0,0,1,cs),...
   Miller(1,1,-2,1,cs),Miller(1,1,-2,3,cs)];
-plotpdf(odf,h)
+plotPDF(odf,h)
 
 %%
 % One recognizes that for each crystal direction the upper and the
@@ -40,23 +40,23 @@ plotpdf(odf,h)
 % lower hemispheres are superposed. This can achieved in MTEX by passing
 % the option *antipodal*.
 
-plotpdf(odf,h,'antipodal')
+plotPDF(odf,h,'antipodal')
 
 %% Inverse Pole Figure Plots
 %
 % Plotting inverse pole figures with respect to certain specimen directions
 % is as simple as plotting ordinary pole figures. Here one has to use the
-% command <ODF.plotipdf.html plotipdf>. 
+% command <ODF.plotIPDF.html plotIPDF>. 
 
 r = [vector3d(1,0,0),vector3d(0,0,1)];
-plotipdf(odf,r)
+plotIPDF(odf,r)
 
 %%
 % Due to the trigonal crystal symmetry not a complete sphere is plotted but
 % only a 120° sector. In order to plot the complete inverse pole figure
 % simply add the option *complete*.
 
-plotipdf(odf,r,'complete')
+plotIPDF(odf,r,'complete')
 
 %% ODF Sections
 %

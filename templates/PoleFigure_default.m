@@ -12,4 +12,4 @@ odf = calcODF(pf)
 
 %% Plot Caclulated Pole Figures
 
-plotpdf(odf,h)
+plotPDF(odf,h)

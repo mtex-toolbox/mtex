@@ -1,9 +1,9 @@
-function plotpdf(odf,h,varargin)
+function plotPDF(odf,h,varargin)
 % plot pole figures
 %
 % Syntax
-%   plotpdf(odf,[h1,..,hN],<options>)
-%   plotpdf(odf,{h1,..,hN},'superposition',{c1,..,cN},<options>)
+%   plotPDF(odf,[h1,..,hN],<options>)
+%   plotPDF(odf,{h1,..,hN},'superposition',{c1,..,cN},<options>)
 %
 % Input
 %  odf - @ODF
@@ -111,7 +111,7 @@ function plotFibre(varargin)
 odf = getappdata(gcf,'odf');
 
 figure
-plotfibre(odf,h,r);
+plotFibre(odf,h,r);
 
 end
 

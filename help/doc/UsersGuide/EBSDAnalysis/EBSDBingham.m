@@ -42,7 +42,7 @@ odf = BinghamODF(kappa,U,symmetry,symmetry)
 %
 
 h = [Miller(0,0,1) Miller(1,0,0) Miller(1,1,1)];
-plotpdf(odf,h,'antipodal','silent');
+plotPDF(odf,h,'antipodal','silent');
 
 
 % plot(odf,'sections',10)
@@ -54,7 +54,7 @@ odf_spherical = unimodalODF(idquaternion,symmetry,symmetry,'halfwidth',20*degree
 %%
 %
 
-plotpdf(odf_spherical,h,'antipodal','silent')
+plotPDF(odf_spherical,h,'antipodal','silent')
 
 %%
 % Next we simulate individual orientations from this odf, in a scattered
@@ -91,7 +91,7 @@ odf_spherical = BinghamODF(kappa,U,symmetry,symmetry)
 %%
 %
 
-plotpdf(odf_spherical,h,'antipodal','silent')
+plotPDF(odf_spherical,h,'antipodal','silent')
 
 %% Prolate case and fibre distribution
 % The prolate case correspondes to a fibre.
@@ -102,7 +102,7 @@ odf_prolate = fibreODF(Miller(0,0,1),zvector,...
 %%
 %
 
-plotpdf(odf_prolate,h,'upper','silent')
+plotPDF(odf_prolate,h,'upper','silent')
 
 %%
 % As before, we generate some random orientations from an model odf. The
@@ -136,7 +136,7 @@ odf_prolate = BinghamODF(kappa,U,symmetry,symmetry)
 %%
 %
 
-plotpdf(odf_prolate,h,'antipodal','silent')
+plotPDF(odf_prolate,h,'antipodal','silent')
 
 %% Oblate case
 % The oblate case of the bingham distribution has no direct counterpart in
@@ -147,7 +147,7 @@ odf_oblate = BinghamODF([50 50 50 0],eye(4),symmetry,symmetry)
 %%
 %
 
-plotpdf(odf_oblate,h,'antipodal','silent')
+plotPDF(odf_oblate,h,'antipodal','silent')
 
 %%
 % The oblate cases in axis/angle space reminds on a disk 
@@ -179,6 +179,6 @@ odf_oblate = BinghamODF(kappa, U,symmetry,symmetry)
 %%
 %
 
-plotpdf(odf_oblate,h,'antipodal','silent')
+plotPDF(odf_oblate,h,'antipodal','silent')
 
 

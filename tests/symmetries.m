@@ -11,11 +11,11 @@ odf = 0.5*unimodalODF(q1,cs,ss) + ...
   0.5*unimodalODF(q3,cs,ss);
 
 %%
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1),Miller(0,0,1),Miller(1,1,0)],'contourf','antipodal')
+plotPDF(odf,[Miller(1,0,0),Miller(1,1,1),Miller(0,0,1),Miller(1,1,0)],'contourf','antipodal')
 mtexColorMap white2black
 
 %%
-plotipdf(odf,[xvector,yvector,vector3d(1,1,1)],'complete')
+plotIPDF(odf,[xvector,yvector,vector3d(1,1,1)],'complete')
 
 %% 
 
@@ -28,12 +28,12 @@ q = calcModes(odf)
 
 %%
 figure(2)
-plotodf(odf,'complete')
+plotODF(odf,'complete')
 mtexColorMap white2black
 
 %%
 
-plotodf(odf,'alpha','projection','plain','sections',5)
+plotODF(odf,'alpha','projection','plain','sections',5)
 
 %%
 

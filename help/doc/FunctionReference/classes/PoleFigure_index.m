@@ -92,7 +92,7 @@ plot(pf)
 % <PoleFigure2odf.html here>
 
 odf = calcODF(pf,'zero_range','silent')
-plotpdf(odf,h,'superposition',c,...
+plotPDF(odf,h,'superposition',c,...
   'antipodal','position',[100 100 800 300])
 
 

@@ -3,10 +3,10 @@
 % ODFs.
 %%
 % All described commands can be applied to model ODFs constructed via
-% [[uniformODF.html, uniformODF]], [[unimodalODF.html, unimodalODF]],
-% or [[fibreODF.html, fibreODF]] and to all estimated ODF calculated
-% from [[PoleFigure_calcODF.html, pole figures]] or
-% [[EBSD_calcODF.html, EBSD data]].
+% <uniformODF.html uniformODF>, <unimodalODF.html unimodalODF>,
+% or <fibreODF.html fibreODF> and to all estimated ODF calculated
+% from <PoleFigure_calcODF.html pole figures> or
+% <EBSD_calcODF.html EBSD data>.
 %
 %
 
@@ -53,8 +53,8 @@ Lambda = [-10,-10,10,10]
 A = quaternion(eye(4))
 odf = BinghamODF(Lambda,A,CS,SS)
 
-plotipdf(odf,xvector)
-plotpdf(odf,Miller(1,0,0))
+plotIPDF(odf,xvector)
+plotPDF(odf,Miller(1,0,0))
 
 %%
 % *ODF Arithmetics*
@@ -63,7 +63,7 @@ plotpdf(odf,Miller(1,0,0))
 
 rot = rotation('axis',yvector,'angle',90*degree);
 odf = rotate(odf,rot)
-plotpdf(odf,Miller(1,0,0))
+plotPDF(odf,Miller(1,0,0))
 
 %% Working with ODFs
 
@@ -87,8 +87,8 @@ Fourier(odf2,3)           % the C-coefficients
 % *Plotting (Inverse) Pole Figures*
 
 close all
-plotpdf(odf,Miller(0,1,0),'antipodal')
-plotipdf(odf,[xvector,zvector])
+plotPDF(odf,Miller(0,1,0),'antipodal')
+plotIPDF(odf,[xvector,zvector])
 
 %%
 % *Plotting an ODF*
@@ -113,21 +113,21 @@ odf = unimodalODF(ori,cs,ss);
 % b) Plot some pole figures. Are there pole figures with and without
 % antipodal symmetry? What about the inverse pole figures?
 
-plotpdf(odf,[Miller(1,0,0),Miller(2,3,1)])
+plotPDF(odf,[Miller(1,0,0),Miller(2,3,1)])
 
 %%
 
-close all;plotpdf(odf,[Miller(1,0,0),Miller(2,3,1)],'antipodal')
+close all;plotPDF(odf,[Miller(1,0,0),Miller(2,3,1)],'antipodal')
 
 %%
 
-close all;plotipdf(odf,vector3d(1,1,3))
+close all;plotIPDF(odf,vector3d(1,1,3))
 
 %%
 % c) Plot the ODF in sigma and phi2 - sections. How many mods do
 % you observe?
 
-close all;plotodf(odf,'sections',6)
+close all;plotODF(odf,'sections',6)
 
 %%
 % d) Compute the volume of the ODF that is within a distance of 10 degree of

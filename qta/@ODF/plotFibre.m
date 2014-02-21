@@ -14,7 +14,7 @@ function [x,omega] = plotFibre(odf,varargin)
 %  CENTER     - for radially symmetric plot
 %
 % Example
-%   plotfibre(SantaFe,Miller(1,1.2,1.6),vector3d(1.1,1.5,1.3))
+%   plotFibre(SantaFe,Miller(1,1.2,1.6),vector3d(1.1,1.5,1.3))
 %
 % See also
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo

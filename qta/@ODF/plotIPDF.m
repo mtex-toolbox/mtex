@@ -1,4 +1,4 @@
-function plotipdf(odf,r,varargin)
+function plotIPDF(odf,r,varargin)
 % plot inverse pole figures
 %
 % Input

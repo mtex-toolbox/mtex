@@ -72,7 +72,7 @@ close all; plot(ebsd('Fo'),'colorcoding','ipdfHKL')
 colorbar
 
 odf = calcODF(ebsd('Fo'),'silent');
-figure, plotipdf(odf,xvector,'antipodal','silent')
+figure, plotIPDF(odf,xvector,'antipodal','silent')
 
 %%
 % We can change the default view onto the specimen (xvector) by setting the option *r*
@@ -82,7 +82,7 @@ close all, plot(ebsd('Fo'),'colorcoding','ipdfHKL','r',zvector)
 %%
 %
 colorbar
-figure, plotipdf(odf,zvector,'antipodal','silent')
+figure, plotIPDF(odf,zvector,'antipodal','silent')
 
 %%
 close all

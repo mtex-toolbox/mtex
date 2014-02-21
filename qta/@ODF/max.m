@@ -16,7 +16,7 @@ function [m,ori]= max(odf,varargin)
 %  find the local maxima of the [[SantaFe.html,SantaFe]] ODF
 %
 %    [m,ori] = max(SantaFe)
-%    plotpdf(SantaFe,Miller(0,0,1))
+%    plotPDF(SantaFe,Miller(0,0,1))
 %    annotate(ori)
 %
 %

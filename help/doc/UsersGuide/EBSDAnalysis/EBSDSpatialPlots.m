@@ -53,7 +53,7 @@ close all;plot(ebsd)
 %%
 % and have a look into the 001 inverse pole figure
 
-plotipdf(ebsd,zvector,'colorcoding','ipdfangle','r',zvector,...
+plotIPDF(ebsd,zvector,'colorcoding','ipdfangle','r',zvector,...
   'MarkerSize',3,'grid')
 colorbar
 
@@ -95,7 +95,7 @@ plot(ebsd,'sharp')
 
 colorbar
 hold on
-plotipdf(ebsd,'points',10,'MarkerSize',10,'MarkerFaceColor','none','MarkerEdgeColor','k')
+plotIPDF(ebsd,'points',10,'MarkerSize',10,'MarkerFaceColor','none','MarkerEdgeColor','k')
 hold off
 
 %% 
@@ -165,7 +165,7 @@ set(gcf,'renderer','zbuffer')
 vol = fibreVolume(ebsd('fo'),Miller(1,1,1),zvector,15*degree)
 
 close all;
-plotipdf(ebsd('fo'),zvector,'markercolor','k','marker','x')
+plotIPDF(ebsd('fo'),zvector,'markercolor','k','marker','x')
 
 %%
 % we can easily extend the colorcoding

@@ -16,7 +16,7 @@ function Z = calcPDF(odf,h,r,varargin)
 %  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
 %
 % See also
-% ODF/plotpdf ODF/plotipdf ODF/calcPoleFigure
+% ODF/plotPDF ODF/plotIPDF ODF/calcPoleFigure
 
 % check crystal symmetry
 if isa(h,'Miller'), h = odf.CS.ensureCS(h);end

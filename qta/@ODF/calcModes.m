@@ -20,7 +20,7 @@ function [modes, values] = calcModes(odf,varargin)
 %  find the local maxima of the [[SantaFe.html,SantaFe]] ODF
 %
 %    mode = calcModes(SantaFe)
-%    plotpdf(SantaFe,Miller(0,0,1))
+%    plotPDF(SantaFe,Miller(0,0,1))
 %    annotate(mode)
 %
 %

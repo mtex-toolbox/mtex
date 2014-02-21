@@ -42,7 +42,7 @@ switch get(gcf,'tag')
     if isa(obj,'quaternion')
       
       % force right crystal and specimen symmetry
-      plotpdf(orientation(obj,cs,ss),[],defaultAnnotationStyle{:},varargin{:});
+      plotPDF(orientation(obj,cs,ss),[],defaultAnnotationStyle{:},varargin{:});
       
     elseif isa(obj,'vector3d')
   
@@ -57,7 +57,7 @@ switch get(gcf,'tag')
       
       if isa(obj,'quaternion')
         
-        plotipdf(orientation(obj,cs,ss),[],defaultAnnotationStyle{:},varargin{:});
+        plotIPDF(orientation(obj,cs,ss),[],defaultAnnotationStyle{:},varargin{:});
         
       elseif isa(obj,'Miller')
         

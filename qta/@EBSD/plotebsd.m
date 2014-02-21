@@ -16,7 +16,7 @@ function plotebsd(ebsd,varargin)
 %   plotebsd(ebsd('Fo'),'scatter')
 %
 % See also
-% EBSD/plotpdf EBSD/scatter savefigure
+% EBSD/plotPDF EBSD/scatter savefigure
 
 [ax,ebsd,varargin] = getAxHandle(ebsd,varargin{:});
 

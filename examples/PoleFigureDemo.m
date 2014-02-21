@@ -69,7 +69,7 @@ plot(pf_modified)
 
 rec = calcODF(pf,'RESOLUTION',10*degree,'background',1,'iter_max',6)
 
-plotpdf(rec,h)
+plotPDF(rec,h)
 
 
 %%
@@ -89,13 +89,13 @@ pf_SantaFe = calcPoleFigure(SantaFe,h,r);
 % estimate an ODF with ghost correction
 rec = calcODF(pf_SantaFe,'RESOLUTION',10*degree,'background',10)
 
-plotodf(rec,'sections',6)
+plotODF(rec,'sections',6)
 
 %%
 % without ghost correction
 rec_ng = calcODF(pf_SantaFe,'RESOLUTION',10*degree,'background',10,'NoGhostCorrection')
 
-plotodf(rec_ng,'sections',6)
+plotODF(rec_ng,'sections',6)
 
 
 %% Error Analysis

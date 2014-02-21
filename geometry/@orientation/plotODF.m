@@ -1,4 +1,4 @@
-function plotodf(o,varargin)
+function plotODF(o,varargin)
 % Plot EBSD data at ODF sections
 %
 % Input

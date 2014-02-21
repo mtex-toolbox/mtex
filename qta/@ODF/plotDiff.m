@@ -26,5 +26,5 @@ function plotDiff(odf1,odf2,varargin)
 if isa(odf2,'PoleFigure')
   plot(ax{:},calcErrorPF(odf2,odf1,varargin{:}),'colorrange','equal',varargin{:})
 else
-  plotodf(ax{:},odf1-odf2,varargin{:})
+  plotODF(ax{:},odf1-odf2,varargin{:})
 end
