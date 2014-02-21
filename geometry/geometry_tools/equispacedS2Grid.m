@@ -1,6 +1,28 @@
 function S2G = equispacedS2Grid(varargin)
 % defines an equispaced spherical grid
 %
+% Syntax
+%   equispacedS2Grid('points',300)
+%   equispacedS2Grid('resolution',5*degree)
+%
+% Options
+%  points     - number of points to be generated
+%  resolution - resolution of the grid
+%  hemisphere - 'lower', 'uper', 'complete', 'sphere', 'identified'
+%  minRho     - starting rho angle (default 0)
+%  maxRho     - maximum rho angle (default 2*pi)
+%  minTheta   - starting theta angle (default 0)
+%  maxTheta   - maximum theta angle (default pi)
+%
+% Flags
+%  antipodal  - include <AxialDirectional.html antipodal symmetry>
+%  restrict2MinMax - restrict margins to min / max
+%  no_center  - ommit point at center
+%
+% See also
+% regularS2Grid plotS2Grid
+
+
 %  ind = rhoInside(rho,minrho,maxrho) & theta >= mintheta;
 %  theta = theta(ind);
 %  rho = rho(ind);
@@ -61,10 +83,6 @@ theta = S1Grid(theta,bounds.FR{1},bounds.FR{2});
 
 S2G = S2Grid(theta,rho);
 S2G = S2G.setOption('resolution',res);
-
-%S2G = set_option(S2G,...
-%  extract_option(varargin,{'INDEXED','PLOT','north','south','antipodal','lower','upper'}));
-
 
 end
 
