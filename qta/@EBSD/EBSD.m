@@ -3,8 +3,8 @@ classdef EBSD < dynProp & dynOption & misorientationAnalysis
   %
   % *EBSD* is the low level constructor for an *EBSD* object representing EBSD
   % data. For importing real world data you might want to use the predefined
-  % [[ImportEBSDData.html,EBSD interfaces]]. You can also simulate EBSD data
-  % from an ODF by the command [[ODF.calcEBSD.html,calcEBSD]].
+  % <ImportEBSDData.html EBSD interfaces>. You can also simulate EBSD data
+  % from an ODF by the command <ODF.calcEBSD.html calcEBSD>.
   %
   % Syntax
   %   ebsd = EBSD(orientations,CS,...,param,val,...)

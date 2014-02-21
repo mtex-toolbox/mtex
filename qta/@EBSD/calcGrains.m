@@ -21,7 +21,6 @@ function grains = calcGrains(ebsd,varargin)
 % GrainSet/GrainSet
 
 % ------------- parse input parameters -------------------
-
 grainBoundaryCiterions = dir([mtex_path '/qta/@EBSD/private/gbc*.m']);
 grainBoundaryCiterions = {grainBoundaryCiterions.name};
 
@@ -29,8 +28,7 @@ gbc      = get_flag(regexprep(grainBoundaryCiterions,'gbc_(\w*)\.m','$1'),vararg
 gbcValue = get_option(varargin,gbc,15*degree,'double');
 
 % --------------- remove not indexed phases ----------------
-
-if any(isNotIndexed(ebsd)) && ~check_option(varargin,'keepNotIndexed')
+if any(any(isNotIndexed(ebsd))) && ~check_option(varargin,'keepNotIndexed')
   disp('  I''m removing all not indexed phases. The option "keepNotIndexed" keeps them.');
   
   ebsd = subSet(ebsd,~isNotIndexed(ebsd));
@@ -38,37 +36,35 @@ if any(isNotIndexed(ebsd)) && ~check_option(varargin,'keepNotIndexed')
 end
 
 % ------------------ verify inputs --------------------------
-
 if numel(gbcValue) == 1 && length(ebsd.allCS) > 1
   gbcValue = repmat(gbcValue,size(ebsd.allCS));
 end
 
+% check for duplicated data points
 if all(isfield(ebsd.prop,{'x','y','z'}))
   x_D = [ebsd.prop.x(:),ebsd.prop.y(:),ebsd.prop.z(:)];
-  [Xt,m,n]  = unique(x_D(:,[3 2 1]),'first','rows'); %#ok<ASGLU>
+  [~,m,n]  = unique(x_D(:,[3 2 1]),'first','rows');
 elseif all(isfield(ebsd.prop,{'x','y'}))
   x_D = [ebsd.prop.x(:),ebsd.prop.y(:)];
-  [Xt,m,n]  = unique(x_D(:,[2 1]),'first','rows'); %#ok<ASGLU>
+  [~,m,n]  = unique(x_D(:,[2 1]),'first','rows');
 else
   error('mtex:GrainGeneration','no Spatial Data!');
 end
-clear Xt
 
-% check for duplicated data points
 if numel(m) ~= numel(n)
   warning('mtex:GrainGeneration','spatially duplicated data points, perceed by erasing them')
 end
 clear n
 
-% sort X
+% sort X and remove duplicated data
 x_D = x_D(m,:);
 
 % sort ebsd accordingly
 ebsd = subSet(ebsd,m);
 clear m
 
-% get the location x of voronoi-generators D
-[d,dim] = size(x_D);
+% number of unique positions and dimension of the data
+[numX,dim] = size(x_D);
 
 % ----------------spatial decomposition ---------------------------
 % decomposite the spatial domain into cells D with vertices x_V,
@@ -76,6 +72,9 @@ clear m
 switch dim
   case 2
     
+    % compute voronoi decomposition
+    % x_V - list of vertices of the Voronoi cells
+    % D   - cell array of Vornoi cells with cenetrs X_D ordered accordingly
     [x_V,D] = spatialdecomposition(x_D,ebsd.unitCell,varargin{:});
     
     % now we need some adjacencies and incidences
@@ -99,11 +98,12 @@ switch dim
     I_FD = sparse(ie,id,1);
     
     % vertices incident to cells, V x D
-    I_VD = sparse(iv,id,1,size(x_V,1),d);
+    I_VD = sparse(iv,id,1,size(x_V,1),numX);
     
     % adjacent cells, D x D
     A_D = triu(I_VD'*I_VD>1,1);
-    
+
+    % 
     [Dl,Dr] = find(A_D);  % list of cells
     
     clear I_VD iv id ie p b indx ivn
@@ -113,7 +113,7 @@ switch dim
     [Dl,Dr,sz,dz,lz] = spatialdecomposition3d(x_D,ebsd.unitCell,varargin{:});
     
     %     adjacent cells, D x D
-    A_D = sparse(double(Dl),double(Dr),1,d,d);
+    A_D = sparse(double(Dl),double(Dr),1,numX,numX);
     
     A_D = triu(A_D | A_D',1);
     [Dl,Dr] = find(A_D);
@@ -155,17 +155,17 @@ clear ndx
 % ------------------------------------------------------------
 
 % adjacency of cells that have no common boundary
-A_Do = sparse(double(Dl(criterion)),double(Dr(criterion)),true,d,d);
+A_Do = sparse(double(Dl(criterion)),double(Dr(criterion)),true,numX,numX);
 A_Do = A_Do | A_Do';
 
-A_Db = sparse(double(Dl(~criterion)),double(Dr(~criterion)),true,d,d);
+A_Db = sparse(double(Dl(~criterion)),double(Dr(~criterion)),true,numX,numX);
 A_Db = A_Db | A_Db';
 
 clear Dl Dr criterion notIndexed p k
 
 % ----------------- retrieve neighbours --------------------------
 
-I_DG = sparse(1:d,double(connectedComponents(A_Do)),1);    % voxels incident to grains
+I_DG = sparse(1:numX,double(connectedComponents(A_Do)),1);    % voxels incident to grains
 % % A_G = I_DG'*A_Db*I_DG;                     % adjacency of grains
 
 % clear A_Do
@@ -176,7 +176,7 @@ sub = (A_Db * I_DG & I_DG)';                      % voxels that have a subgrain 
 [i,j] = find( diag(any(sub,1))*double(A_Db) ); % all adjacence to those
 sub = any(sub(:,i) & sub(:,j),1);              % pairs in a grain
 
-A_Db_int = sparse(i(sub),j(sub),1,d,d);
+A_Db_int = sparse(i(sub),j(sub),1,numX,numX);
 A_Db_ext = A_Db - A_Db_int;                        % adjacent over grain boundray
 
 clear sub i j
@@ -231,13 +231,13 @@ grainStruct.I_FDint  = I_FDint;        clear I_FDint;
 grainStruct.I_DG     = logical(I_DG);  clear I_DG;
 grainStruct.A_Db     = logical(A_Db);   clear A_D;
 grainStruct.A_Do     = logical(A_Do);   clear A_D;
-grainStruct.D = D;
 
 grainStruct.ebsd = ebsd;
 
 switch dim
   case 2    
-    
+
+    grainStruct.D = D;
     grains = Grain2d(grainStruct);
     
   case 3
