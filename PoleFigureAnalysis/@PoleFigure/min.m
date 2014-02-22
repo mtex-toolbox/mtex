@@ -18,7 +18,7 @@ function pf = min(pf1,pf2)
 
 if nargin == 1
   
-  pf = cellfun(@min,pf1.allI);    
+  pf = cellfun(@(x) min(x(:)),pf1.allI);    
     
 elseif isa(pf1,'double')
   

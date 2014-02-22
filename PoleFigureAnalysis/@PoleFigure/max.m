@@ -17,7 +17,7 @@ function pf = max(pf1,pf2)
 
 if nargin == 1
   
-  pf = cellfun(@max,pf1.allI);    
+  pf = cellfun(@(x) max(x(:)),pf1.allI);    
     
 elseif isa(pf1,'double')
   

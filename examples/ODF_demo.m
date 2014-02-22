@@ -20,8 +20,7 @@
 SS  = symmetry('orthorhombic');
 CS  = symmetry('cubic');
 o   = orientation('brass',CS,SS);
-psi = kernel('von Mises Fisher',...
-             'halfwidth',20*degree);
+psi = vonMisesFisherKernel('halfwidth',20*degree);
 
 odf1 = unimodalODF(o,CS,SS,psi)
 
@@ -32,8 +31,7 @@ SS = symmetry('triclinic');
 CS = symmetry('hexagonal');
 h = Miller(1,0,0,CS);
 r = xvector;
-psi = kernel('Abel Poisson',...
-             'halfwidth',18*degree);
+psi = AbelPoissonKernel('halfwidth',18*degree);
 
 odf2 = fibreODF(h,r,CS,SS,psi)
 
@@ -75,12 +73,12 @@ calcError(odf2,odf3,'L1')      % difference between ODFs
 mean(odf)                      % the mean orientation
 max(odf)
 
-volume(odf,centerODF,5*degree)    % the volume of a ball
+volume(odf,centerODF,5*degree) % the volume of a ball
 fibreVolume(odf2,h,r,5*degree) % the volume of a fibre
 
-textureindex(odf)         % the texture index
-entropy(odf)              % the entropy
-Fourier(odf2,3)           % the C-coefficients
+textureindex(odf)              % the texture index
+entropy(odf)                   % the entropy
+f_hat = calcFourier(odf2,16);  % the C-coefficients up to order 16
 
 
 %% Plotting ODFs
