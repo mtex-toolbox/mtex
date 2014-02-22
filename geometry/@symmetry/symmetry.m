@@ -178,7 +178,7 @@ classdef symmetry < rotation
       elseif check_option(varargin,'crystal')
         s.isCS = true;
       else
-        s.isCS = ~(numel(s.a)<=4 && all(isnull(norm(s.axes-[xvector,yvector,zvector]))));
+        s.isCS = ~(numel(s.a)<=8 && all(isnull(norm(s.axes-[xvector,yvector,zvector]))));
       end
       
     end
