@@ -4,7 +4,7 @@ function [interface,options] = check_interfaces(fname,type,varargin)
 if ~exist(fname,'file'), error('File %s not found.',fname);end
 
 % find all installed interfaces
-interfaces = dir([mtex_path '/qta/interfaces/load' type '_*.m']);
+interfaces = dir([mtex_path '/interfaces/load' type '_*.m']);
 interfaces = {interfaces.name};
 % do not use interfaces generic
 ind = cellfun('isempty',strfind(interfaces,'generic'));

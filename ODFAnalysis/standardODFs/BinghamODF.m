@@ -23,7 +23,7 @@ function odf = BinghamODF(varargin)
 
 
 % get crystal and specimen symmetry
-[CS,SS] = extractSymmetries(varargin);
+[CS,SS] = extractSymmetries(varargin{:});
 
 % get kappa
 kappa = argin_check(varargin{1},'double');

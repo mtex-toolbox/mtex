@@ -1,4 +1,4 @@
-function [pf,interface,options,ipf] = loadPoleFigure(fname,varargin)
+function [pf,interface,options] = loadPoleFigure(fname,varargin)
 % import pole figure data 
 %
 % Description

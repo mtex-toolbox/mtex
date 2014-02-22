@@ -57,7 +57,7 @@ hold off
 % Next we want to answer the question which crystal direction is mapped to
 % |rOrth|. To this end we look at the corresponding inverse pole figure
 
-plotipdf(ebsd('Forsterite'),rOrth,'smooth')
+plotIPDF(ebsd('Forsterite'),rOrth,'smooth')
 
 annotate(Miller(0,1,0))
 

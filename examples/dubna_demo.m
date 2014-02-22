@@ -38,8 +38,7 @@ plot(pf)
 
 %% Correct pole figures
 
-pf_corrected = delete(pf,pf.r.theta >= 70*degree &...
-  pf.r.theta <= 75*degree);
+pf_corrected = pf(pf.r.theta < 70*degree | pf.r.theta > 75*degree);
 
 plot(pf_corrected)
 

@@ -47,14 +47,13 @@ r = pf.r;            % specimen directions
 
 min(pf)
 max(pf)
-hist(pf)
-find_outlier(pf);
+isOutlier(pf);
 
 %% Manipulate pole figure data
 %
 %%
 
-pf_modified = delete(pf,pf.r.theta >= 70*degree & pf.r.theta <= 75*degree)
+pf_modified = pf(pf.r.theta < 70*degree | pf.r.theta > 75*degree)
 
 plot(pf_modified)
 
@@ -67,7 +66,7 @@ plot(pf_modified)
 %% PDF - to - ODF Reconstruction
 
 
-rec = calcODF(pf,'RESOLUTION',10*degree,'background',1,'iter_max',6)
+rec = calcODF(pf,'RESOLUTION',10*degree,'iter_max',6)
 
 plotPDF(rec,h)
 
