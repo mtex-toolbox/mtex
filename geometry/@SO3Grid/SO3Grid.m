@@ -1,4 +1,4 @@
-classdef SO3Grid < orientation
+classdef (InferiorClasses = {?rotation,?quaternion}) SO3Grid < orientation
 %  
 % Syntax
 %  S3G = SO3Grid(nodes,CS,SS)

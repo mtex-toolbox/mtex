@@ -19,8 +19,13 @@ function r = times(a,b)
 
 % ensure inner symmetries coincide
 if inner1 ~= inner2
-  % warning('MTEX:Orientation','Possible symmetry missmatch!');
-  a = a.transformReferenceFrame(inner2);
+  if isa(a,'orientation')
+    a = a.transformReferenceFrame(inner2);
+  elseif all(isnull(min(angle_outer(inner2,a))))
+    left = inner2;
+  else
+    warning('Rotation does not respect symmetry!');
+  end
 end
 
 % rotation multiplication

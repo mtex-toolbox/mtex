@@ -23,7 +23,13 @@ elseif isa(a,'quaternion')
   
   if length(a) == 1 % rotate center only
     
-    out = mtimes@orientation(a,b);
+    r = mtimes@orientation(a,b);
+    out = b;
+    out.a = r.a;
+    out.b = r.b;
+    out.c = r.c;
+    out.d = r.d;
+    out.i = r.i;
     if isempty(b.center)
       out.center = a;
     else
