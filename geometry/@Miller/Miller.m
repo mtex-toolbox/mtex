@@ -193,7 +193,30 @@ classdef Miller < vector3d
       
     end
     
+    function m = set.h(m,h)
+      m.hkl = [h m.k m.l];
+    end
     
+    function m = set.k(m,k)
+      m.hkl = [m.h k m.l];
+    end
+    
+    function m = set.l(m,l)
+      m.hkl = [m.h m.k l];
+    end
+    
+    function m = set.u(m,u)
+      m.uvw = [u m.v m.w];
+    end
+    
+    function m = set.v(m,v)
+      m.uvw = [m.u v m.w];
+    end
+    
+    function m = set.w(m,w)
+      m.uvw = [m.u m.v w];
+    end
+        
     % -----------------------------------------------------------
     function uvtw = get.uvw(m)
     
