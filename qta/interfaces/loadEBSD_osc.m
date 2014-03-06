@@ -44,6 +44,19 @@ catch
 end
 
 
+% same as in *.ang 
+% change reference frame
+if check_option(varargin,'convertSpatial2EulerReferenceFrame')
+  ebsd = rotate(ebsd,rotation('axis',xvector+yvector,'angle',180*degree),'keepEuler');
+elseif check_option(varargin,{'convertEuler2SpatialReferenceFrame','wizard'})
+  ebsd = rotate(ebsd,rotation('axis',xvector+yvector,'angle',180*degree),'keepXY');
+else
+  warning(['.ang files have usualy inconsistent conventions for spatial ' ...
+    'coordinates and Euler angles. You may want to use one of the options ' ...
+    '''convertSpatial2EulerReferenceFrame'' or ''convertEuler2SpatialReferenceFrame'' to correct for this']);  
+end  
+
+
 
 %% taken from ANYSTITCH
 %
