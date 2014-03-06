@@ -1,0 +1,61 @@
+#------------------------------------------------------------------------------
+#$Date: 2010-09-30 10:46:17 +0000 (Thu, 30 Sep 2010) $
+#$Revision: 001 $
+#------------------------------------------------------------------------------
+#
+# This file is available in the Material Properties Open Database (MPOD),
+# http://www.mpod.net/
+#
+# The file may be used within the scientific community so long as
+# proper attribution is given to the journal article from which the
+# data were obtained.
+#
+data_1000055
+_cod_database_code               5000035
+_structure_refined 'no'
+_phase_name alpha-Quartz
+_chemical_formula_sum 'Si O2'
+_symmetry_point_group_name_H-M 32
+_cell_length_a  4.91239
+_cell_length_c  5.40385
+loop_
+_publ_author_name
+'Ogi H.'
+'Ohmori T.'
+'Nakamura N.'
+'Hirao M.'
+_publ_section_title
+;
+Elastic, anelastic, and piezoelectric coefficients of alpha-quartz determined by resonance ultrasound spectroscopy
+;
+_journal_name_full               'Journal of Applied Physics'
+_journal_article_reference       053511
+_journal_pages_number             7
+_journal_volume                  100
+_journal_year                    2006
+_prop_measurement_method 'RUS'
+_prop_conditions_temperature 303
+_prop_elastic_stiffness_cijE 'cijE'
+_prop_piezoelectric_eij 'eij'
+loop_
+_prop_data_label
+_prop_data_tensorial_index
+_prop_data_value
+cijE 11 86.76
+cijE 12 6.868
+cijE 13 11.85
+cijE 14 -18.02
+cijE 22 86.76
+cijE 23 11.85
+cijE 24 18.02
+cijE 33 105.46
+cijE 44 58.14
+cijE 55 58.14
+cijE 56 -36.04
+cijE 66 39.946
+eij 11 0.151
+eij 12 -0.151
+eij 14 -0.061
+eij 25 0.061
+eij 26 -0.302
+

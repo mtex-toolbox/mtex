@@ -1,0 +1,30 @@
+CPINIT.TXT	a cprintf ini file example
+created:
+	us	10-Jan-2008 us@neurol.unizh.ch
+modified:
+	us	11-Jun-2009 08:58:55
+localid:	us@USZ|ws-nos-36362|x86|Windows XP|7.7.0.471.R2008b
+--------------------------------------------------------------------------------
+,,	,	;
+note nonsense options FOO_xx
+decoding starts after FIRST occurrence of a typical option pair:
+'-begin','start of options'; % an option comment
+'-FOO_x1',{
+		1 2 3	% a cell comment
+		3 2 1
+	};
+% a line comment
+'-mt',1,'-nd',pi
+'-Lcs','=',
+'-Lr'	,	,	,  ,	  ,num2cell(--5:-10*-1);
+,,,'-Lc'	,	{'X','Y'}.'
+'-FOO_x2',{{'abc',1,'12'},'foo',--12:--23}
+
+'-FOO_x3',rand(2,2,3)
+'-FOO_x4',,,,'-FOO_x5','-E',@(x) sprintf('%s',class(x));;'-t','+';,;,,;
+'-FOO_x6'={
+1 2 3
+3 2 1
+};'-FOO_x7',{1,2,3;4,5,6};,,'-FOO_x8','-',;;		
+'-tab',10,,,'-f','-',,,,,
+'-FOO_x8','foo'	;	,;

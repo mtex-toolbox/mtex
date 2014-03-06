@@ -1,0 +1,17 @@
+E.H.Abramson, J.M.Brown, L.J.Slutsky and J.Zang JGR 1997 GPa
+San Carlos OLIVINE Fo90 room pressure and temperatutre
+density kg/m3
+3355.0
+a,b,c,alpha,beta,gamma
+  4.7646 10.2296  5.9942 90.000  90.000  90.000
+Elastic constant axes X1,X2,X3
+Two orthogonal crystallographic directions
+X1,X3
+[100],[001]
+Cij (GPa)
+ 320.50   68.15  71.60   .00   .00   .00
+  68.15  196.50  76.80   .00   .00   .00
+  71.60   76.80 233.50   .00   .00   .00
+    .00     .00    .00 64.00   .00   .00
+    .00     .00    .00   .00 77.00   .00
+    .00     .00    .00   .00   .00 78.70
