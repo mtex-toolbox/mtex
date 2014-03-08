@@ -1,8 +1,8 @@
 function d = dot(o1,o2)
 % compute minimum dot(o1,o2) modulo symmetry
 
-q1 = quaternion(o1);
-q2 = quaternion(o2);
+q1 = rotation(o1);
+q2 = rotation(o2);
 
 if ~isa(o2,'orientation') % only one input associated with symmetry
   
@@ -55,10 +55,10 @@ end
 
 if length(qcs) == 1 % no crystal symmetry
   
-  d = abs(q.a);
+  d = min(1-q.i,abs(q.a));
   
 else  % crystal symmetry
-  
+    
   d = max(abs(dot_outer(q,qcs)),[],2);
   
 end
