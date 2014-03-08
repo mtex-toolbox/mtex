@@ -12,8 +12,8 @@ classdef symmetry < rotation
 % symmetry('cubic') -
 % symmetry('2/m',[8.6 13 7.2],[90 116, 90]*degree,'mineral','orthoclase') -
 % symmetry('O') -
-% symmetry(9) -
-% symmetry('spacegroup',153) -
+% symmetry('LaueId',9) -
+% symmetry('SpaceId',153) -
 %
 % Output
 %  s - @symmetry
@@ -21,57 +21,64 @@ classdef symmetry < rotation
 % Remarks
 % Supported Symmetries
 %
-%  crystal system  Schoen-  Inter-    Laue     Rotational
-%                  flies    national  class    axes
-%  triclinic       C1       1         -1       1
-%  triclinic       Ci       -1        -1       1
-%  monoclinic      C2       2         2/m      2
-%  monoclinic      Cs       m         2/m      2
-%  monoclinic      C2h      2/m       2/m      2
-%  orthorhombic    D2       222       mmm      222
-%  orthorhombic    C2v      mm2       mmm      222
-%  orthorhombic    D2h      mmm       mmm      222
-%  tetragonal      C4       4         4/m      4
-%  tetragonal      S4       -4        4/m      4
-%  tetragonal      C4h      4/m       4/m      4
-%  tetragonal      D4       422       4/mmm    422
-%  tetragonal      C4v      4mm       4/mmm    422
-%  tetragonal      D2d      -42m      4/mmm    422
-%  tetragonal      D4h      4/mmm     4/mmm    422
-%  trigonal        C3       3         -3       3
-%  trigonal        C3i      -3        -3       3
-%  trigonal        D3       32        -3m      32
-%  trigonal        C3v      3m        -3m      32
-%  trigonal        D3d      -3m       -3m      32
-%  hexagonal       C6       6         6/m      6
-%  hexagonal       C3h      -6        6/m      6
-%  hexagonal       C6h      6/m       6/m      6
-%  hexagonal       D6       622       6/mmm    622
-%  hexagonal       C6v      6mm       6/mmm    622
-%  hexagonal       D3h      -6m2      6/mmm    622
-%  hexagonal       D6h      6/mmm     6/mmm    622
-%  cubic           T        23        m-3      23
-%  cubic           Th       m-3       m-3      23
-%  cubic           O        432       m-3m     432
-%  cubic           Td       -43m      m-3m     432
-%  cubic           Oh       m-3m      m-3m     432
+%  id crystal system  Schoen-  Inter-    Laue     Rotational
+%                     flies    national  class    axes
+%  1  triclinic       C1       1         -1       1
+%  2  triclinic       Ci       -1        -1       1
+%  3  monoclinic      C2       2         2/m      2
+%  4  monoclinic      Cs       m         2/m      2
+%  5  monoclinic      C2h      2/m       2/m      2
+%  6  orthorhombic    D2       222       mmm      222
+%  7  orthorhombic    C2v      mm2       mmm      222
+%  8  orthorhombic    D2h      mmm       mmm      222
+%  9  tetragonal      C4       4         4/m      4
+%  10 tetragonal      S4       -4        4/m      4
+%  11 tetragonal      C4h      4/m       4/m      4
+%  12 tetragonal      D4       422       4/mmm    422
+%  13 tetragonal      C4v      4mm       4/mmm    422
+%  14 tetragonal      D2d      -42m      4/mmm    422
+%  15 tetragonal      D4h      4/mmm     4/mmm    422
+%  16 trigonal        C3       3         -3       3
+%  17 trigonal        C3i      -3        -3       3
+%  18 trigonal        D3       32        -3m      32
+%  19 trigonal        C3v      3m        -3m      32
+%  20 trigonal        D3d      -3m       -3m      32
+%  21 hexagonal       C6       6         6/m      6
+%  22 hexagonal       C3h      -6        6/m      6
+%  23 hexagonal       C6h      6/m       6/m      6
+%  24 hexagonal       D6       622       6/mmm    622
+%  25 hexagonal       C6v      6mm       6/mmm    622
+%  26 hexagonal       D3h      -6m2      6/mmm    622
+%  27 hexagonal       D6h      6/mmm     6/mmm    622
+%  28 cubic           T        23        m-3      23
+%  29 cubic           Th       m-3       m-3      23
+%  30 cubic           O        432       m-3m     432
+%  31 cubic           Td       -43m      m-3m     432
+%  32 cubic           Oh       m-3m      m-3m     432
   
   properties
 
     isCS = false; % is crystal symmetry
-    spaceGroup = 'triclinic';
-    laueGroup  = '-1';
-    axes = [xvector,yvector,zvector];
-    mineral = '';
-    color = '';
-    
+    axes = [xvector,yvector,zvector]; % coordinate system
+    mineral = '';                     % mineral name
+    id = 1;                           % point group id, compare to symList
+    color = '';                       % color used for EBSD plotting    
   end
 
   properties (Dependent = true)
+      
+    alpha       % angle between b and c
+    beta        % angle between c and a
+    gamma       % angle between a and b
+    pointGroup  % name of the point group
+    lattice     % type of crystal lattice 
+    isLaue      % is it a Laue group
+    isProper   % does it contain only proper rotations
+  end
   
-    alpha % angle between b and c
-    beta  % angle between c and a
-    gamma % angle between a and b
+  properties (Constant = true)
+    
+    pointGroups = pointGroupList % list of all point groups
     
   end
     
@@ -81,61 +88,48 @@ classdef symmetry < rotation
     
       s = s@rotation(idquaternion);
       
-      if nargin == 0 % empty constructor
-        return;
-      elseif isa(varargin{1},'symmetry') % copy constructor
-        s = varargin{1};
-        return
-      end
+      % empty constructor
+      if nargin == 0, return; end
       
-      % determine point group
-      if isa(varargin{1},'double') % point group by number
-  
-        LaueGroups =  {'-1','2/m','mmm','4/m','4/mmm','m-3','m-3m','-3','-3m','6/m','6/mmm'};
-        pGroup = LaueGroups{varargin{1}};
+      if check_option(varargin,'LaueId')
+      
+        % -1 2/m mmm 4/m 4/mmm m-3 m-3m -3 -3m 6/m 6/mmm
+        LaueGroups = [2,5,8,11,15,29,32,17,20,22,27];
+        s.id = LaueGroups(get_option(varargin,'LaueId'));
+        varargin = delete_option(varargin,'LaueId');
+      
+      elseif check_option(varargin,'SpaceId')
         
-      elseif strncmp(varargin{1},'spacegroup',10) && nargin > 1 % space group by number
-  
         list = spaceGroups;
-        ndx = nnz([list{:,1}] < varargin{2});
-  
-        if ndx>31
-          error('I''m sorry, I know only 230 space groups ...')
-        end
-        varargin = varargin(2:end);
-        pGroup = list{ndx+1,2};
+        ndx = nnz([list{:,1}] < get_option(varargin,'SpaceId'));
+        varargin = delete_option(varargin,'SpaceId');
+        if ndx>31, error('I''m sorry, I know only 230 space groups ...'); end
+        s.id = ndx+1;
         
-      else % given by its name
-        
-        pGroup = varargin{1};
-        
-      end
-        
-      % search for pointgroup
-      try
-        sym = findsymmetry(pGroup);
-      catch
-        sym = [];
-      end
+      else
 
-      % nothing found?
-      if isempty(sym)
-                   
-        if check_option(varargin,'noCIF'), error('symmetry "%s" not found',pGroup); end
-  
-        % may be it is a cif file
         try
-          s = loadCIF(varargin{:});
-          return;
+          s.id = findsymmetry(varargin{1});
+          varargin(1) = [];
         catch %#ok<CTCH>
-          if ~check_option(varargin,'silent')
-            help symmetry;
+          
+          if check_option(varargin,'noCIF')
             error('symmetry "%s" not found',pGroup);
           end
-        end
-      end
-      varargin(1) = [];
-
+  
+          % may be it is a cif file
+          try
+            s = loadCIF(varargin{:});
+            return;
+          catch %#ok<CTCH>
+            if ~check_option(varargin,'silent')
+              help symmetry;
+              error('symmetry "%s" not found',varargin{1});
+            end
+          end
+        end        
+      end      
+                      
       % get axes length (a b c)
       if ~isempty(varargin) && isa(varargin{1},'double')
         abc = varargin{1};
@@ -146,11 +140,11 @@ classdef symmetry < rotation
       
       % get axes angles (alpha beta gamma)
       if ~isempty(varargin) && isa(varargin{1},'double') && ...
-          any(strcmp(sym.Laue,{'-1','2/m'}))
+          s.id <= 5
         angles = varargin{1};
         if any(angles>2*pi), angles = angles * degree;end
         varargin(1) = [];
-      elseif any(strcmp(sym.System,{'trigonal','hexagonal'}))
+      elseif any(strcmp(symmetry.pointGroups(s.id).lattice,{'trigonal','hexagonal'}))
         angles = [90 90 120] * degree;
       else
         angles = [90 90 90] * degree;
@@ -159,16 +153,11 @@ classdef symmetry < rotation
       % compute coordinate system
       s.axes = calcAxis(abc,angles,varargin{:});
       
-      
-      % set up symmetry
-      s.spaceGroup = pGroup;
-      s.laueGroup = sym.Laue;
-      
       s.mineral = get_option(varargin,'mineral','');
       s.color = get_option(varargin,'color','');
       
       % compute symmetry operations
-      r = calcQuat(s.laueGroup,s.axes,sym.Inversion);
+      r = calcQuat(s.LaueName,s.axes,symmetry.pointGroups(s.id).Inversion);
       [s.a, s.b, s.c, s.d] = double(r);
       s.i = isImproper(r);
       
@@ -195,6 +184,21 @@ classdef symmetry < rotation
       gamma = angle(cs.axes(1),cs.axes(2));
     end
     
+    function pg = get.pointGroup(cs)
+      pg = symmetry.pointGroups(cs.id).Inter;
+    end
+    
+    function l = get.lattice(cs)
+      l = symmetry.pointGroups(cs.id).lattice;
+    end
+    
+    function r = get.isLaue(cs)
+      r = cs.id == symmetry.pointGroups(cs.id).LaueId;
+    end
+    
+    function r = get.isProper(cs)
+      r = ~any(cs.i(:));
+    end
   end
     
 end
@@ -215,7 +219,7 @@ list = { 1,    '1';
   82,    '-4';
   88,   '4/m';
   98,    '422';
-  110,    '4/mmm';
+  110,    '4mm';
   122,   '-42m';
   142,    '4/mmm';
   146,    '3';

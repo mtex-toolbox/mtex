@@ -1,7 +1,6 @@
 function obj = ensureCS(csNew,obj)
 % ensures that an obj has the right crystal symmetry
 
-if iscell(obj), obj = obj{1};end
 csOld = obj.CS;
 
 % if equal, everythink is ok
@@ -14,14 +13,14 @@ M = axesOld^(-1) * axesNew;
 
 % if compatible transform to new reference frame
 MM = M'*M;%norm(MM - diag(diag(MM))) / norm(MM)
-if strcmp(csNew.laueGroup,csOld.laueGroup) && ...
+if csNew.id == csOld.id && ...
     norm(MM - eye(3)) / norm(MM) < 1*10^-1
   obj = obj.transformReferenceFrame(csNew);
   return
 end
 
 % trivial symmetry - for the lazy ones
-if strcmp(csOld.laueGroup,'-1') && isnull(norm(axesOld - eye(3)))
+if csOld.id < 3 && isnull(norm(axesOld - eye(3)))
   obj.CS = csNew;
   return
 end

@@ -29,7 +29,7 @@ xhn = tan(pi/2/cs.nfold);
 % magic number
 rmag = tan(omega./2);
 
-switch Laue(cs)
+switch cs.LaueName
           
   case {'2/m','-3','4/m','6/m'}
                     

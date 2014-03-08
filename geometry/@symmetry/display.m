@@ -5,7 +5,7 @@ function display(s)
 if ~s.isCS
   
   disp(' ');
-  disp([inputname(1) ' = ' s.spaceGroup ' specimen ' doclink('symmetry_index','symmetry') ' ' docmethods(inputname(1))]);
+  disp([inputname(1) ' = ' s.lattice ' specimen ' doclink('symmetry_index','symmetry') ' ' docmethods(inputname(1))]);
   disp(' ');
   
   return
@@ -33,23 +33,20 @@ end
 
 % add symmetry
 props{end+1} = 'symmetry'; 
-propV{end+1} = [s.spaceGroup ' (' s.laueGroup ')'];
+propV{end+1} = [symmetry.pointGroups(s.id).Inter];
 
 % add axis length
-if ~any(strcmp(s.laueGroup,{'m-3','m-3m'}))
-  props{end+1} = 'a, b, c'; 
-  propV{end+1} = option2str(vec2cell(norm(s.axes)));
-end
-
+props{end+1} = 'a, b, c';
+propV{end+1} = option2str(vec2cell(norm(s.axes)));
 
 % add axis angle
-if any(strcmp(s.laueGroup,{'-1','2/m'}))
+if s.id < 6
   props{end+1} = 'alpha, beta, gamma';
   propV{end+1} = [num2str(s.alpha) '°, ' num2str(s.beta) '°, ' num2str(s.gamma) '°'];
 end
 
 % add reference frame
-if any(strcmp(s.laueGroup,{'-1','2/m','-3m','-3','6/m','6/mmm'}))
+if any(strcmp(s.lattice,{'triclinic','monoclinic','trigonal','hexagonal'}))
   props{end+1} = 'reference frame'; 
   propV{end+1} = option2str(s.alignment);    
 end

@@ -38,6 +38,6 @@ end
 %    max_phi2 = max_phi2 / 2;
 %end
 
-if check_option(varargin,'SO3Grid') && strcmp(Laue(cs),'m-3m')  
+if check_option(varargin,'SO3Grid') && strcmp(cs.LaueName,'m-3m')  
   maxPhi = pi/3;
 end
