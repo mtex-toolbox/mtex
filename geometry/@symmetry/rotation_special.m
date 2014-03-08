@@ -9,7 +9,7 @@ function [q,rho] = rotation_special(cs,varargin)
 %  rho - position of the mirroring plane
 
 if nargout == 1
-  switch cs.laueGroup
+  switch cs.LaueName
     case {'-1','2/m'}
       q = rotation(cs);
     case {'mmm','-3m','4/mmm','6/mmm'}
@@ -24,7 +24,7 @@ if nargout == 1
   q = q(:);
 else % TODO
   
-  switch cs.laueGroup
+  switch cs.LaueName
     case '-1'
       q = idquaternion;
       v = vector3d;

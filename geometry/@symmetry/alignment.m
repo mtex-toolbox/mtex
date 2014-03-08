@@ -2,7 +2,8 @@ function str = alignment(cs)
 % get alignment of the reference frame
 
     
-if any(strcmp(cs.laueGroup,{'-1','2/m','-3','-3m','6/m','6/mmm'}))
+if any(strcmp(cs.lattice,{'triclinic','monoclinic','trigonal','hexagonal'}))
+    
   abc = normalize(cs.axes);
   abcStar = normalize(cs.axesDual);
   [uabc,ind] = unique([abc,abcStar]);

@@ -1,7 +1,7 @@
 function rho = rotangle_max_z(s,varargin)
 % maximum angle rho
 
-switch Laue(s)   
+switch s.LaueName
   case '-1'                          % I
     rho = 2*pi;
   case '2/m'                         % C2

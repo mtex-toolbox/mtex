@@ -17,6 +17,7 @@ if numel(is1) == 1, s = symmetry; return; end
 s = unique(s1.subSet(is1));
 
 % find a symmetry that exactly contains s
+% TODO!!
 for i=1:11 % check all Laue groups
   
   ss = symmetry(i);
