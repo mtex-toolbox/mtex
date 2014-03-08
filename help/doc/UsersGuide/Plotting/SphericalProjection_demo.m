@@ -19,7 +19,7 @@
 % In order to demostrate the different projections we start by defining a
 % model ODF.
 
-cs = symmetry('-3m'); ss = symmetry('-1');
+cs = symmetry('-3m'); ss = symmetry('1');
 odf = fibreODF(Miller(1,1,0),zvector,cs,ss)
 
 
@@ -94,7 +94,7 @@ plotPDF(odf,Miller(1,0,0),'antipodal')
 % crystal directions.
 
 cs = symmetry('m-3m');
-plot(cs,'projection','edist','grid_res',15*degree,'antipodal')
+plot(cs,'hkl','projection','edist','grid_res',15*degree,'antipodal')
 
 
 %% Stereographic Projection (Equal Angle Projection)
@@ -103,7 +103,7 @@ plot(cs,'projection','edist','grid_res',15*degree,'antipodal')
 % which preserves the angle between arbitrary great circles. It
 % can be chosen by setting the option *stereo* or *eangle*.
 
-plot(cs,'projection','eangle','antipodal','grid_res',15*degree)
+plot(cs,'hkl','projection','eangle','antipodal','grid_res',15*degree)
 
 
 %% Plain Projection
@@ -122,7 +122,3 @@ mtexColorMap white2black
 % might be rotated freely in space
 
 plotPDF(odf,Miller(1,0,0),'3d')
-
-
-
-

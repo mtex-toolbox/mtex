@@ -15,15 +15,15 @@
 % Alternatively one can also specify the halfwidth of the kernel. Below you
 % find a list of all kernel functions supported by MTEX.
 
-demok(1) = kernel('Abel Poisson',0.79);
-demok(2) = kernel('de la Vallee Poussin',13);
-demok(3) = kernel('von Mises Fisher',7.5);
-demok(4) = kernel('bump',35*degree);
-demok(5) = kernel('Square Singularity',0.72);
-demok(6) = kernel('fibre von Mises Fisher',7.2);
-demok(7) = kernel('Gauss Weierstrass',0.07);
-demok(8) = kernel('Dirichlet',3);
-%demok(4) = kernel('local',0.85);
+psi{1} = AbelPoissonKernel(0.79);
+psi{2} = deLaValeePoussinKernel(13);
+psi{3} = vonMisesFisherKernel(7.5);
+psi{4} = bumpKernel(35*degree);
+psi{5} = SquareSingularityKernel(0.72);
+psi{6} = fibreVonMisesFisherKernel(7.2);
+psi{7} = GaussWeierstrassKernel(0.07);
+psi{8} = DirichletKernel(3);
+
 
 
 %% SUB: Plotting the kernel
@@ -33,13 +33,18 @@ demok(8) = kernel('Dirichlet',3);
 
 % the kernel on SO(3)
 close; figure('position',[100,100,500,450])
-plot(demok,'K','legend');
+hold all
+for i = 1:numel(psi)
+  plot(psi{i},'K');
+end
+hold off
+
 
 %%
 % the corresponding PDF
-plot(demok,'RK','legend');
+plot(psi,'RK','legend');
 ylim([-5,20])
 
 %%
 % the Fourrier coefficients of the kernels
-plot(demok,'Fourier','bandwidth',32,'legend');
+plot(psi,'Fourier','bandwidth',32,'legend');
