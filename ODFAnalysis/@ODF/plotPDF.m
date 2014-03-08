@@ -22,12 +22,6 @@ function plotPDF(odf,h,varargin)
 % S2Grid/plot annotate savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-% where to plot
-[ax,odf,h,varargin] = getAxHandle(odf,h,varargin{:});
-if isempty(ax), newMTEXplot;end
-
-% check input
-
 % convert to cell
 if ~iscell(h), h = vec2cell(h);end
 
@@ -38,7 +32,7 @@ try
     h{i} = odf.CS.ensureCS(h{i});
   end
 catch %#ok<CTCH>
-  plotipdf(ax{:},odf,h,varargin);
+  plotIPDF(odf,h,varargin);
   return
 end
 
@@ -50,20 +44,27 @@ else
 end
 
 % plotting grid
+sR = getFundamentalRegionPF(odf.SS,'restrict2Hemisphere',varargin{:});
+r = plotS2Grid(sR,varargin{:});
 
-[minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(odf.SS,'restrict2Hemisphere',varargin{:});
-r = plotS2Grid('minTheta',minTheta,'maxTheta',maxTheta,...
-  'maxRho',maxRho,'minRho',minRho,'restrict2MinMax',varargin{:});
+% compute pole figures
+for i =1:length(h)
+  p{i} = ensureNonNeg(pdf(odf,h{i},r,varargin{:},'superposition',c{i})); %#ok<AGROW,NASGU>
+end
 
-% plot
+% plot pole figures
+if check_option(varargin,'parent')
+  r.smooth(p{1},'TR',h{1},varargin{:});
+else
+  
+  mtexFig = mtexFigure; % create a new figure
+  
+  for i = 1:length(h)
+    r.plot(p{i},'TR',h{i},'parent',mtexFig.nextAxis,'smooth',varargin{:});
+  end
 
-multiplot(ax{:},length(h),...
-  r,@(i) ensureNonNeg(pdf(odf,h{i},r,varargin{:},'superposition',c{i})),...
-  'smooth','TR',@(i) h{i},varargin{:});
-
-% finalize plot
-
-if isempty(ax)
+  % finalize plot
+  mtexFig.drawNow;
   setappdata(gcf,'odf',odf);
   setappdata(gcf,'h',h);
   setappdata(gcf,'CS',odf.CS);
@@ -77,8 +78,9 @@ if isempty(ax)
   set(dcm_obj,'SnapToDataVertex','off')
   set(dcm_obj,'UpdateFcn',{@tooltip});
   datacursormode on;
-end
 
+end
+  
 end
 
 % -------------- Tooltip function ---------------------------------

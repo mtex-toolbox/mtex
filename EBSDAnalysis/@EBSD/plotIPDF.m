@@ -17,8 +17,6 @@ function plotIPDF(ebsd,varargin)
 % SphericalProjection_demo 
 
 % make new plot
-[ax,ebsd,varargin] = getAxHandle(ebsd,varargin{:});
-
 
 varargin = set_option_property(ebsd,varargin{:});
 
@@ -28,5 +26,6 @@ if nargin > 1 && isa(varargin{1},'vector3d')
 else
   r = {};
 end
-plotIPDF(ax{:},ebsd.orientations,r{:},...
+
+plotIPDF(ebsd.orientations,r{:},...
   'FigureTitle',inputname(1),varargin{:});

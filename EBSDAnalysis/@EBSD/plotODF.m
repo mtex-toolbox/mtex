@@ -22,8 +22,6 @@ function plotODF(ebsd,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo 
 
-[ax,ebsd,varargin] = getAxHandle(ebsd,varargin{:});
-
 varargin = set_option_property(ebsd,varargin{:});
 
-plotODF(ax{:},ebsd.orientations,'FigureTitle',inputname(1),varargin{:});
+plotODF(ebsd.orientations,'FigureTitle',inputname(1),varargin{:});

@@ -1,41 +1,26 @@
-function varargout = plotCustom(v,pcmd,varargin)
+function plotCustom(v,pcmd,varargin)
 %
-%% Syntax
+% Syntax
 %   plotcustom(v,@(x,y) drawCommand(x,y))  %
 %
-%% Input
+% Input
 %  v  - @vector3d
 %  s  - string
 %
-%% Options
+% Options
 %
-%% Output
+% Output
 %
-%% See also
+% See also
 
-%% plot prepertations
+% initialize spherical plot
+sP = newSphericalPlot(v,varargin{:});
 
-% where to plot
-[ax,v,pcmd,varargin] = splitNorthSouth(v,pcmd,varargin{:},'custom');
-if isempty(ax), return;end
-h = [];
+for j = 1:numel(sP)
 
-% extract plot options
-[projection,extend] = getProjection(ax,v,varargin{:});
+  % project data
+  [x,y] = project(sP(j).proj,v,varargin{:});
 
-% project data
-[x,y] = project(v,projection,extend,varargin{:});
-
-% plot a spherical grid
-plotGrid(ax,projection,extend,varargin{:});
-
-%% plot custom
-for i = 1:length(x), pcmd{1}(ax,x(i),y(i)); end
-
-%% finalize the plot
-
-% output
-if nargout > 0
-  varargout{1} = ax;
-  varargout{2} = h;
+  % plot custom
+  for i = 1:length(x), pcmd{1}(sP(j).ax,x(i),y(i)); end
 end

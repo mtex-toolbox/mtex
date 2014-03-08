@@ -17,31 +17,26 @@ function plotIPDF(o,r,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-% ---------------------- where to plot -----------------------
-[ax,o,r,varargin] = getAxHandle(o,r,varargin{:});
+mtexFig = mtexFigure('ensureTag','ipdf',...
+  'ensureAppdata',{{'CS',o.CS}});
 
-cs = o.CS;
-ss = o.SS;
-
-if ~isempty(ax) || newMTEXplot('ensureTag','ipdf',...
-    'ensureAppdata',{{'CS',cs},{'SS',ss}})
-  argin_check(r,{'vector3d'});
-  annotations  = {'TR',@(i) char(r(i),getMTEXpref('textInterpreter'))};
+if isempty(mtexFig.children)
+  argin_check(r,'vector3d');
 else
   if ~isa(r,'vector3d')
     varargin = [{r},varargin];
   end
   r = getappdata(gcf,'r');
-  annotations  = {};
 end
 
 % colorcoding 1
 data = get_option(varargin,'property',[]);
 
 % --------------- subsample if needed ------------------------
+if (length(o)*length(o.CS)*length(o.SS) > 100000 || check_option(varargin,'points')) ...
+    && ~check_option(varargin,{'all','contourf','smooth','contour'})
 
-if length(o)*length(cs)*length(ss) > 100000 || check_option(varargin,'points')
-  points = fix(get_option(varargin,'points',100000/length(cs)/length(ss)));
+  points = fix(get_option(varargin,'points',100000/length(o.CS)/length(o.SS)));
   disp(['  plotting ', int2str(points) ,' random orientations out of ', int2str(length(o)),' given orientations']);
 
   samples = discretesample(ones(1,length(o)),points);
@@ -63,24 +58,36 @@ if check_option(varargin,'colorcoding')
   
 end
 
-%
+% ------------------ plot ------------------------------
 
-data = @(i) repmat(data(:),1,length(symmetrise(r(i),ss)));
+% predefines axes?
+paxes = get_option(varargin,'parent');
 
-% plot
-multiplot(ax{:},length(r),...
-  @(i) inv(o(:)) * symmetrise(r(i),ss),data,...
-  'scatter','FundamentalRegion','unifyMarkerSize',...
-  annotations{:},varargin{:});
+for i = 1:length(r)
 
-if isempty(ax)
+  % which axes
+  if isempty(paxes), ax = mtexFig.nextAxis; else ax = paxes(i); end
+  
+  % the crystal directions
+  rSym = symmetrise(r(i),o.SS);
+  h = o(:) \ rSym;
+  
+  %  plot  
+  h.plot(repmat(data(:),1,length(rSym)),'scatter','symmetrised',...
+    'fundamentalRegion','TR',char(r(i),getMTEXpref('textInterpreter')),...
+    'parent',ax,varargin{:});
+  
+  % TODO: unifyMarkerSize
+
+end
+
+if isempty(paxes)
   setappdata(gcf,'r',r);
-  setappdata(gcf,'SS',ss);
-  setappdata(gcf,'CS',cs);
+  setappdata(gcf,'SS',o.SS);
+  setappdata(gcf,'CS',o.CS);
   setappdata(gcf,'options',extract_option(varargin,'antipodal'));
   set(gcf,'Name',['Inverse Pole figures of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
   set(gcf,'Tag','ipdf');
-
 
   % set data cursor
   dcm_obj = datacursormode(gcf);
@@ -88,6 +95,8 @@ if isempty(ax)
   set(dcm_obj,'UpdateFcn',{@tooltip});
 
   datacursormode on;
+  mtexFig.drawNow;
+
 end
 
 

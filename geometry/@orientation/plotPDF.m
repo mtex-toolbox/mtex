@@ -17,30 +17,23 @@ function plotPDF(o,h,varargin)
 %  complete  - plot entire (hemi)--sphere
 %
 % See also
-% orientation/plotipdf S2Grid/plot savefigure
+% orientation/plotIPDF S2Grid/plot savefigure
 % Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-% where to plot
-[ax,o,h,varargin] = getAxHandle(o,h,varargin{:});
-
-cs = o.CS;
-ss = o.SS;
+mtexFig = mtexFigure('ensureTag','pdf','ensureAppdata',{{'SS',o.SS}});
 
 % for a new plot 
-if ~isempty(ax) || newMTEXplot('ensureTag','pdf',...
-    'ensureAppdata',{{'SS',ss}})
+if isempty(mtexFig.children)
   
   % convert to cell
   if ~iscell(h), h = vec2cell(h);end 
   argin_check([h{:}],{'Miller'});  
   for i = 1:length(h)
     h{i} = o.CS.ensureCS(h{i});
-  end  
+  end    
 else
   h = getappdata(gcf,'h');
-  options = getappdata(gcf,'options');
-  if ~isempty(options), varargin = {options{:},varargin{:}};end
 end
 
 % colorcoding 1
@@ -49,9 +42,9 @@ data = get_option(varargin,'property',[]);
 % ------------------ subsample if needed --------------------------
 
 if ~check_option(varargin,'all') && ...
-    (sum(length(o))*length(cs)*length(ss) > 10000 || check_option(varargin,'points'))
+    (sum(length(o))*length(o.CS)*length(o.SS) > 10000 || check_option(varargin,'points'))
 
-  points = fix(get_option(varargin,'points',10000/length(cs)/length(ss)));
+  points = fix(get_option(varargin,'points',10000/length(o.CS)/length(o.SS)));
   disp(['  plotting ', int2str(points) ,' random orientations out of ', int2str(length(o)),' given orientations']);
   disp('You can specify the the number points by the option "points".'); 
   disp('The option "all" ensures that all data are plotted');
@@ -74,26 +67,30 @@ if check_option(varargin,'colorcoding')
   
 end
 
-
 % ------------------------ plot ---------------------------
 
-% compute specimen directions
-sh = @(i) symmetrise(h{i});
-r = @(i) reshape(ss * o * sh(i),[],1);
+% predefines axes?
+paxes = get_option(varargin,'parent',mtexFig.children);
 
-% symmetrise data
-data = @(i) repmat(data(:).',[length(ss) length(sh(i))]);
+for i = 1:length(h)
 
-[minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(ss,'restrict2Hemisphere',varargin{:});
+  % compute specimen directions
+  sh = symmetrise(h{i});
+  r = reshape(o.SS * o * sh,[],1);
+  
+  if isempty(paxes), ax = mtexFig.nextAxis; else ax = paxes(i); end
+   
+  r.plot(repmat(data(:).',[length(o.SS) length(sh)]),'fundamentalRegion',...
+    'parent',ax,'scatter','TR',h(i),varargin{:});
+  
+  % TODO: unifyMarkerSize
 
-multiplot(ax{:},length(h),r,data,'scatter','TR',@(i) h(i),...  
-  'minRho',minRho,'maxRho',maxRho,'minTheta',minTheta,'maxTheta',maxTheta,...
-  'unifyMarkerSize',varargin{:});
+end
 
-if isempty(ax)
+if isempty(paxes)
   setappdata(gcf,'h',h);
-  setappdata(gcf,'SS',ss);
-  setappdata(gcf,'CS',cs);
+  setappdata(gcf,'SS',o.SS);
+  setappdata(gcf,'CS',o.CS);
   setappdata(gcf,'options',extract_option(varargin,'antipodal'));
   set(gcf,'Name',['Pole figures of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
   set(gcf,'Tag','pdf');

@@ -46,7 +46,7 @@ switch get(gcf,'tag')
       
     elseif isa(obj,'vector3d')
   
-      multiplot([],obj,defaultAnnotationStyle{:},varargin{:});
+      plot(obj,defaultAnnotationStyle{:},varargin{:});
         
     else
       error('Only orientations and specimen directions can be anotated to pole figure plots');
@@ -62,7 +62,7 @@ switch get(gcf,'tag')
       elseif isa(obj,'Miller')
         
         obj = cs.ensureCS(obj);
-        multiplot([],obj,'symmetrised',defaultAnnotationStyle{:},varargin{:});
+        plot(obj,'symmetrised',defaultAnnotationStyle{:},varargin{:});
         
       else        
         error('Only orientations and Miller indece can be anotated to inverse pole figure plots');
@@ -82,7 +82,7 @@ switch get(gcf,'tag')
     
     if isa(obj,'vector3d')
       
-      multiplot([],obj,defaultAnnotationStyle{:},varargin{:});
+      plot(obj,defaultAnnotationStyle{:},varargin{:});
       
     else
       error('Only crystal and specimen directions can be anotated to tensor plots');
