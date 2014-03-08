@@ -36,10 +36,10 @@ for k=1:numel(allCS)
   
   if isa(CS,'symmetry')
     
-    h5writeatt(fname,name,'Name',CS.spaceGroup);
+    h5writeatt(fname,name,'Name',CS.pointGroup);
     h5writeatt(fname,name,'Mineral',CS.mineral);
     h5writeatt(fname,name,'Color',CS.color);
-    h5writeatt(fname,name,'Laue',CS.Laue);
+    h5writeatt(fname,name,'Laue',CS.LaueName);
     
     ax = norm(CS.axes);
     h5writeatt(fname,name,'a',ax(1));

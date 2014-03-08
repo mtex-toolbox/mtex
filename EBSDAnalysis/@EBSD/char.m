@@ -18,7 +18,7 @@ for p = 1:numel(ebsd.phaseMap)
       ss = [ss, ': ']; %#ok<AGROW>
     end
     
-    ss = [ss 'symmetry ' CS.Laue ', ']; %#ok<AGROW>
+    ss = [ss 'symmetry ' CS.pointGroup ', ']; %#ok<AGROW>
   end
   
   ss = [ss, num2str(nnz(ebsd.phaseId == p)),' orientations '];    %#ok<AGROW>

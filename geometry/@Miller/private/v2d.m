@@ -20,8 +20,8 @@ mdouble = reshape(double(m),[],3).';
 
 uvtw = (M \ mdouble)';
 
-if any(strcmp(Laue(m.CS),{'-3','-3m','6/m','6/mmm'}))
-    
+if any(strcmp(m.CS.lattice,{'trigonal','hexagonal'}))
+      
   uvtw(:,4) = uvtw(:,3);
   uvtw(:,3) = -(uvtw(:,1) + uvtw(:,2))./3;
   [uvtw(:,1), uvtw(:,2)] = deal((2*uvtw(:,1)-uvtw(:,2))./3,(2*uvtw(:,2)-uvtw(:,1))./3);

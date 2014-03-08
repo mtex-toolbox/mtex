@@ -95,14 +95,14 @@ set(gui.hSearchCIF,'CallBack',@lookupMineral);
       set(gui.hIndexed(1),'Value',1);
       set(gui.hIndexed(2),'Value',0);
       
-      csname = strmatch(Laue(CS),SymmetryList);
+      csname = strmatch(CS.LaueName,SymmetryList);
       set(gui.hCrystal,'value',csname(1));
       
       color = strmatch(CS.color,getMTEXpref('EBSDColorNames'));
       set(gui.hColor,'value',color(1));
             
       % set alignment
-      if any(strcmp(Laue(CS),{'-1','2/m','-3','-3m','6/m','6/mmm'}))
+      if any(strcmp(CS.LaueName,{'-1','2/m','-3','-3m','6/m','6/mmm'}))
         set(gui.hAlignment,'enable','on');
         al = [CS.alignment,{'',''}];
         set(gui.hAlignment(1),'value',find(strcmp(AlignmentList,al{1})));
@@ -122,7 +122,7 @@ set(gui.hSearchCIF,'CallBack',@lookupMineral);
       
       
       % set whether axes and angles can be changed
-      if ~strcmp(Laue(CS),{'-1','2/m'})
+      if ~strcmp(CS.LaueName,{'-1','2/m'})
         set(gui.hAngle, 'Enable', 'off');
       end
       

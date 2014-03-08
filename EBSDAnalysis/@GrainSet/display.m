@@ -42,7 +42,7 @@ for ip = 1:numel(grains.phaseMap)
   end
   
   % symmetry
-  matrix{ip,5} = grains.allCS{ip}.spaceGroup;
+  matrix{ip,5} = grains.allCS{ip}.pointGroup;
   
   % reference frame
   matrix{ip,6} = option2str(grains.allCS{ip}.alignment);

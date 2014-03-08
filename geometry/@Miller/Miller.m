@@ -161,7 +161,7 @@ classdef Miller < vector3d
       hkl = (M \ v)';
 
       % add fourth component for trigonal and hexagonal systems
-      if any(strcmp(Laue(m.CS),{'-3','-3m','6/m','6/mmm'}))
+      if any(strcmp(m.CS.lattice,{'trigonal','hexagonal'}))
         hkl = [hkl(:,1:2),-hkl(:,1)-hkl(:,2),hkl(:,3)];
       end
       
@@ -230,12 +230,10 @@ classdef Miller < vector3d
       uvtw = (M \ xyz)';
 
       % add fourth component for trigonal and hexagonal systems
-      if any(strcmp(Laue(m.CS),{'-3','-3m','6/m','6/mmm'}))
-    
+      if any(strcmp(m.CS.lattice,{'trigonal','hexagonal'}))
         uvtw(:,4) = uvtw(:,3);
         uvtw(:,3) = -(uvtw(:,1) + uvtw(:,2))./3;
-        [uvtw(:,1), uvtw(:,2)] = deal((2*uvtw(:,1)-uvtw(:,2))./3,(2*uvtw(:,2)-uvtw(:,1))./3);
-  
+        [uvtw(:,1), uvtw(:,2)] = deal((2*uvtw(:,1)-uvtw(:,2))./3,(2*uvtw(:,2)-uvtw(:,1))./3);  
       end
     end
       
@@ -255,7 +253,7 @@ classdef Miller < vector3d
         
         uvw = [uvw(:,1)-uvw(:,3),uvw(:,2)-uvw(:,3),uvw(:,4)];
         
-      elseif any(strcmp(Laue(m.CS),{'-3','-3m','6/m','6/mmm'}))
+      elseif any(strcmp(m.CS.lattice,{'trigonal','hexagonal'})) 
         
         uvw = [2*uvw(:,1) + uvw(:,2),2*uvw(:,2) + uvw(:,1),uvw(:,3)];
         

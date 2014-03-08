@@ -102,10 +102,12 @@ function pg = pointgroup(cs)
 sl = SymList;
 
 % find a match
-ind = strcmpi(Laue(cs),{sl.Laue});
+ind = strcmpi(cs.LaueName,{sl.Laue});
 
 % return point group name
 pg = sl(ind).Rot;
+
+%TODO
 
 end
 

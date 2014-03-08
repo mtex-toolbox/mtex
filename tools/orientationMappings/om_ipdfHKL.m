@@ -40,7 +40,7 @@ if strcmp(Laue(cs),'-1')
   return
 end
   
-if any(strcmp(Laue(cs),{'m-3m','m-3'}))
+if any(strcmp(cs.LaueName,{'m-3m','m-3'}))
 
   maxTheta = maxTheta(rho);
 
