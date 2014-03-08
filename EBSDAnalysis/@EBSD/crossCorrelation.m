@@ -13,7 +13,7 @@ function [psi,c] = crossCorrelation(ebsd,varargin)
 % EBSD/calcKernel
 
 for k = 1:15
-  psi(k) = kernel('de la Vallee Poussin','halfwidth',40*degree/2^(k/4)); %#ok<AGROW>
+  psi(k) = deLaValeePoussinKernel('halfwidth',40*degree/2^(k/4)); %#ok<AGROW>
 end
 psi = get_option(varargin,'kernel',psi);
 
@@ -77,7 +77,7 @@ model_odf = 0.5*uniformODF(cs,ss) + ...
 ebsd= calcEBSD(model_odf,1000);
 
 for k = 1:15
-  psi(k) = kernel('de la Vallee Poussin','halfwidth',40*degree/2^(k/4));
+  psi(k) = deLaValeePoussinKernel('halfwidth',40*degree/2^(k/4));
 end
 psi
 
