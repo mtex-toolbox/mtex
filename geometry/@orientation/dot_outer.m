@@ -8,17 +8,17 @@ function d = dot_outer(o1,o2,varargin)
 % d - double of size length(o1) < length(o2)
 
 
-g1 = reshape(quaternion(o1),1,[]);
-g2 = reshape(quaternion(o2),1,[]);
+g1 = reshape(rotation(o1),1,[]);
+g2 = reshape(rotation(o2),1,[]);
 
 l1 = length(g1);
 l2 = length(g2);
 if isa(o1,'orientation')
-  cs = quaternion(o1.CS);
-  ss = quaternion(o1.SS);
+  cs = rotation(o1.CS);
+  ss = rotation(o1.SS);
 else
-  cs = quaternion(o2.CS);
-  ss = quaternion(o2.SS);
+  cs = rotation(o2.CS);
+  ss = rotation(o2.SS);
 end
 lCS = length(cs);
 lSS = length(ss);

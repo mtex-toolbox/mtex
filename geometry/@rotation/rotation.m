@@ -25,7 +25,7 @@ classdef rotation < quaternion & dynOption
 % quaternion_index orientation_index
 
   properties
-    i = []; % is inversion    
+    i = []; % 0 stands for proper rotation, 1 for improper rotation
   end
   
   methods
