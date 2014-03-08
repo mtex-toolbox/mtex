@@ -26,7 +26,7 @@ if length(m) < 20 && ~isempty(m)
       uvtw = round(m.uvw * eps)./eps;
       uvtw(uvtw==0) = 0;
       
-      if any(strcmp(Laue(m.CS),{'-3','-3m','6/m','6/mmm'}))
+      if any(strcmp(m.CS.lattice,{'trigonal','hexagonal'}))
         cprintf(uvtw.','-L','  ','-Lr',{'u' 'v' 't' 'w'});
       else
         cprintf(uvtw.','-L','  ','-Lr',{'u' 'v' 'w'});
@@ -36,7 +36,7 @@ if length(m) < 20 && ~isempty(m)
     
       hkl = round(m.hkl * eps)./eps;
       hkl(hkl==0) = 0;
-      if any(strcmp(Laue(m.CS),{'-3','-3m','6/m','6/mmm'}))
+      if any(strcmp(m.CS.lattice,{'trigonal','hexagonal'}))                
         cprintf(hkl.','-L','  ','-Lr',{'h' 'k' 'i' 'l'});
       else
         cprintf(hkl.','-L','  ','-Lr',{'h' 'k' 'l'});

@@ -19,7 +19,7 @@ if check_option(varargin,'points')
 
   points = get_option(varargin,'points');
   
-  switch Laue(CS)  % special case: cubic symmetry
+  switch CS.LaueName  % special case: cubic symmetry
     case 'm-3'
       points = 3*points;
     case 'm-3m'
@@ -109,20 +109,20 @@ if isempty(q), ind = []; return; end
 c = {};
 
 % eliminiate 3 fold symmetry axis of cubic symmetries
-switch Laue(cs)
+switch cs.LaueName
   
   case   {'m-3m','m-3'}
     
     c{end+1}.v = vector3d([1 1 1 1 -1 -1 -1 -1],[1 1 -1 -1 1 1 -1 -1],[1 -1 1 -1 1 -1 1 -1]);
     c{end}.h = sqrt(3)/3;
     
-    if strcmp(Laue(cs),'m-3m')
+    if strcmp(cs.LaueName,'m-3m')
       c{end+1}.v = vector3d([1 -1 0 0 0 0],[0 0 1 -1 0 0],[0 0 0 0 1 -1]);
       c{end}.h = sqrt(2)-1;
     end
 end
 
-switch Laue(ss)
+switch ss.LaueName
   case 'mmm'
    c{end+1}.v = vector3d([-1 0],[0 -1],[0 0]);
    c{end}.h = 0;

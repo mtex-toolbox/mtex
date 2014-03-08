@@ -28,7 +28,7 @@ v = reshape(double(m),[],3).';
 
 hkl = (M \ v)';
 
-if any(strcmp(Laue(m.CS),{'-3','-3m','6/m','6/mmm'}))  
+if any(strcmp(m.CS.lattice,{'trigonal','hexagonal'}))
   hkl = [hkl(:,1:2),-hkl(:,1)-hkl(:,2),hkl(:,3)];
 end
 

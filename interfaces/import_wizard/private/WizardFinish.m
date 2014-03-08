@@ -259,14 +259,10 @@ end
             axAngles = [cs{i}.alpha,cs{i}.beta,cs{i}.gamma];
             axLength = norm(cs{i}.axes);
             
-            opt = {};
-            % for non cubic symmetries
-            if ~any(strcmp(cs{i}.Laue,{'m-3','m-3m'}))
-              opt = [opt {axLength}]; %#ok<AGROW>
-            end
+            opt = {axLength};
             
             % for triclinic and monoclinic get angles
-            if any(strcmp(cs{i}.Laue,{'-1','2/m'}))
+            if any(strcmp(cs{i}.lattice,{'triclinic','monoclinic'}))
               opt = [opt {[n2s(axAngles),'*degree']}]; %#ok<AGROW>
             end
             
@@ -280,7 +276,7 @@ end
               opt = [opt,{'color',cs{i}.color}];  %#ok<AGROW>
             end
             
-            tmpString = strcat('symmetry(''', cs{i}.spaceGroup,'''',option2str(opt,'quoted'),')');
+            tmpString = strcat('symmetry(''', cs{i}.pointGroup,'''',option2str(opt,'quoted'),')');
             
           end
           
