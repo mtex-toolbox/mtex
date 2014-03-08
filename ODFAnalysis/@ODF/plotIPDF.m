@@ -9,42 +9,44 @@ function plotIPDF(odf,r,varargin)
 %  RESOLUTION - resolution of the plots
 %
 % Flags
-%  antipodal    - include [[AxialDirectional.html,antipodal symmetry]]
-%  COMPLETE - plot entire (hemi)--sphere
+%  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
+%  complete  - plot entire (hemi)--sphere
 %
 % See also
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-% make new plot
-[ax,odf,r,varargin] = getAxHandle(odf,r,varargin{:});
-if isempty(ax), newMTEXplot;end
+argin_check(r,'vector3d');
 
-argin_check(r,{'vector3d'});
+% get fundamental region for the inverse pole figure
+sR = getFundamentalRegionPF(odf.CS,'restrict2Hemisphere',varargin{:});
 
 % plotting grid
-[minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(odf.CS,'restrict2Hemisphere',varargin{:});
+h = plotS2Grid(sR,varargin{:});
 
-h = plotS2Grid('minTheta',minTheta,'maxTheta',maxTheta,'maxRho',maxRho,'MINRHO',minRho,'RESTRICT2MINMAX',varargin{:});
+% compute inverse pole figures
+for i =1:length(r)
+  p{i} = ensureNonNeg(pdf(odf,h,r(i),varargin{:})); %#ok<AGROW>
+end
 
-% plot
-disp(' ');
-disp('Plotting inverse pole density function:')
+% plot pole figures
+if check_option(varargin,'parent')
+  h.smooth(p{1},'TR',r{1},varargin{:});
+else
+  
+  mtexFig = mtexFigure; % create a new figure
+  
+  for i = 1:length(r)
+    h.smooth(p{i},'TR',r(i),'parent',mtexFig.nextAxis,varargin{:});
+  end
 
-multiplot(ax{:},length(r), h,...
-  @(i) ensureNonNeg(pdf(odf,h,r(i)./norm(r(i)),varargin{:})),...
-  'smooth','TR',@(i) r(i),varargin{:});
-
-% finalize plot
-if isempty(ax)
+  % finalize plot
   setappdata(gcf,'r',r);
   setappdata(gcf,'CS',odf.CS);
   setappdata(gcf,'SS',odf.SS);
   set(gcf,'tag','ipdf');
-  setappdata(gcf,'options',extract_option(varargin,'antipodal'));
   name = inputname(1);
   set(gcf,'Name',['Inverse Pole Figures of ',name]);
-
 
   % set data cursor
   dcm_obj = datacursormode(gcf);
@@ -52,6 +54,8 @@ if isempty(ax)
   set(dcm_obj,'UpdateFcn',{@tooltip});
 
   datacursormode on;
+  mtexFig.drawNow;
+
 end
 
 end

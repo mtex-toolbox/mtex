@@ -9,21 +9,18 @@ function plotPDF(ebsd,h,varargin)
 %  h    - @Miller crystallographic directions
 %
 % Options
-%  SUPERPOSITION - plot superposed pole figures
-%  POINTS        - number of points to be plotted
+%  superposition - plot superposed pole figures
+%  points        - number of points to be plotted
 %
 % Flags
-%  antipodal    - include [[AxialDirectional.html,antipodal symmetry]]
-%  COMPLETE - plot entire (hemi)--sphere
+%  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
+%  complete  - plot entire (hemi)--sphere
 %
 % See also
 % EBSD/plotebsd S2Grid/plot savefigure
 % Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-[ax,ebsd,h,varargin] = getAxHandle(ebsd,h,varargin{:});
-
 varargin = set_option_property(ebsd,varargin{:});
 
-plotPDF(ax{:},ebsd.orientations,h,...
-  'FigureTitle',inputname(1),varargin{:});
+plotPDF(ebsd.orientations,h,'FigureTitle',inputname(1),varargin{:});

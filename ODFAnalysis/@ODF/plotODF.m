@@ -7,40 +7,25 @@ function plotODF(odf,varargin)
 %  odf - @ODF
 %
 % Options
-%  SECTIONS   - number of plots
-%  RESOLUTION - resolution of each plot
-%  CENTER     - for radially symmetric plot
-%  AXES       - for radially symmetric plot
+%  sections   - number of sections
+%  resolution - resolution of each plot
 %
 % Flags
-%  SIGMA (default)
-%  OMEGA - sections along crystal directions @Miller
-%  ALPHA
-%  GAMMA
-%  PHI1
-%  PHI2
-%  RADIALLY
-%  AXISANGLE
+%  phi2  - sections along phi2 Bunge angle (default)
+%  phi1  - sections along phi1 Bunge angle
+%  sigma - sections along phi1 - phi2
+%  alpha - sections along alpha Matthies angle
+%  gamma - sections along gamma Matthies angle
+%  omega - sections along crystal directions @Miller
+%
+%  contour3, surf3, slice3 - 3d volume plot
 %
 % See also
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-
-
-% -------- one - dimensional plot ---------------------------------------
-if check_option(varargin,'RADIALLY')
-  plotFibre(odf,varargin{:});
-  return
-end
-
-% ------------ two dimensional sections ----------------------------
-
-% where to plot
-[ax,odf,varargin] = getAxHandle(odf,varargin{:});
-
 % generate grids
-[S3G,S2G,sec] = regularSO3Grid(odf.CS,odf.SS,varargin{:});
+[S3G,S2G,sec] = plotSO3Grid(odf.CS,odf.SS,'resolution',2.5*degree,varargin{:});
 
 Z = eval(odf,orientation(S3G),varargin{:});
 clear S3G;
@@ -54,36 +39,44 @@ if any(strcmpi(sectype,{'sigma','omega','axisangle'}))
 else
   varargin = [{'projection','plain',...
     'xAxisDirection','east','zAxisDirection','intoPlane',...
-    'innerPlotSpacing',35,'outerPlotSpacing',35},varargin];
+    'innerPlotSpacing',55,'outerPlotSpacing',55},varargin];
 end
 
 fprintf(['\nPlotting ODF as ',sectype,' sections, range: ',...
   xnum2str(min(sec)/degree),mtexdegchar,' - ',xnum2str(max(sec)/degree),mtexdegchar,'\n']);
 
 % make new plot
-if isempty(ax), newMTEXplot('xlabel',labelx,'ylabel',labely);end
-
+mtexFig = mtexFigure(varargin{:});
 
 % plot
 if check_option(varargin,{'contour3','surf3','slice3'})
   
-  [xlim ylim] = polar(S2G);
+  [xlim,ylim] = polar(S2G);
 
   v = get_option(varargin,{'surf3','contour3'},10,'double');
   contour3s(xlim(1,:)./degree,ylim(:,1)'./degree,sec./degree,Z,v,varargin{:},...
     'xlabel',labely,'ylabel',labelx,'zlabel',['$' symbol '$']);
 
 else
-  %
-  multiplot(numel(sec),...
-    S2G,  @(i) Z(:,:,i),...    'DISP',@(i,Z) [' ',symbol(2:end),' = ',xnum2str(sec(i)/degree),mtexdegchar,' ',...    ' Max: ',xnum2str(max(Z(:))),...    ' Min: ',xnum2str(min(Z(:)))],...
-    'smooth','TR',@(i) [int2str(sec(i)*180/pi),'^\circ'],...
-    'xlabel',labelx,'ylabel',labely,...
-    'colorrange','equal',varargin{:}); %#ok<*EVLC>
+    
+  % predefines axes?
+  paxes = get_option(varargin,'parent');
+  
+  for i = 1:length(sec)
+    
+    if isempty(paxes), ax = mtexFig.nextAxis; else ax = paxes(i); end
+    
+    S2G.plot(Z(:,:,i),'TR',[int2str(sec(i)*180/pi),'^\circ'],...
+      'xlabel',labelx,'ylabel',labely,...
+      'colorRange',[min(Z(:)),max(Z(:))],'smooth',...
+      'parent',ax,varargin{:});
+  end
+  
 end
 
 % --------------- finalize plot ---------------------------
-if isempty(ax),
+if ~check_option(varargin,'parent')
+
   name = inputname(1);
   set(gcf,'Name',['ODF ' sectype '-sections "',name,'"']);
   setappdata(gcf,'sections',sec);
@@ -104,6 +97,8 @@ if isempty(ax),
   set(dcm_obj,'UpdateFcn',{@tooltip});
   %menu = get(dcm_obj,'UIContextMenu');
   datacursormode on;
+
+  mtexFig.drawNow;
 end
 
 end

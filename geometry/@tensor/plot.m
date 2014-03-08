@@ -15,10 +15,6 @@ function plot(T,varargin)
 %
 %
 
-[ax,T,varargin] = getAxHandle(T,varargin{:});
-
-if isempty(ax), newMTEXplot;end
-
 if check_option(varargin,'section')
   omega = linspace(-pi,pi,361);
   
@@ -49,9 +45,8 @@ else
     varargin = [varargin,'antipodal'];
   end 
   
-  [minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(T.CS,varargin{:});
-  S2 = plotS2Grid('minTheta',minTheta,'maxTheta',maxTheta,...
-    'minRho',minRho,'maxRho',maxRho,'RESTRICT2MINMAX',varargin{:});
+  sR = getFundamentalRegionPF(T.CS,varargin{:});
+  S2 = plotS2Grid(sR,varargin{:});
   
 end
 % decide what to plot
@@ -102,9 +97,9 @@ switch lower(plotType)
   case 'velocity'
     
     if check_option(varargin,{'pp','ps1','ps2'})
-      S2 = equispacedS2Grid('minTheta',...
-        minTheta,'maxTheta',maxTheta,'maxRho',maxRho,'minRho',...
-        minRho,'RESTRICT2MINMAX','resolution',10*degree,'no_center','antipodal',varargin{:});
+      S2 = equispacedS2Grid('resolution',10*degree,'no_center','antipodal',varargin{:});
+      S2 = S2(sR.checkInside(S2));
+      
       varargin = ['color','k','MaxHeadSize',0,varargin];
       if check_option(varargin,'complete')
         varargin = [varargin,{'removeAntipodal'}];
@@ -133,7 +128,7 @@ if check_option(varargin,'section')
   xx = d(:).*cos(omega(:));
   yy = d(:).*sin(omega(:));
   
-  h = plot(ax{:},xx,yy);
+  h = plot(xx,yy);
   axis equal
   optiondraw(h,varargin{:});
 
@@ -141,7 +136,7 @@ elseif check_option(varargin,'3d')
   
   [x,y,z] = double(abs(d).*S2);
   
-  h = surf(ax{:},x,y,z);
+  h = surf(x,y,z);
   set(h,'CData',d)
   axis equal
   optiondraw(h,varargin{:});
@@ -155,15 +150,14 @@ else
       'TR',@(i) label(i),...
       varargin{:});
   elseif isa(d,'vector3d')
-    quiver(ax{:},S2,d,varargin{:});
+    quiver(S2,d,varargin{:});
   else
-    plot(ax{:},S2,d,'contourf',varargin{:});
+    plot(S2,d,'contourf',varargin{:});
   end
   
 end
 
-if isempty(ax)
-  set(gcf,'tag','tensor');
-end
+set(gcf,'tag','tensor');
+
 
 %plot(S2,'data',d,'antipodal','smooth',varargin{:});
