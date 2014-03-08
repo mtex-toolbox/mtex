@@ -83,9 +83,9 @@ o = orientation('matrix',eye(3),cs,ss)
 % 
 % In the MTEX there is a list of predefined orientations:
 %
-% * [[cubeOrientation.html,cubeOrientation]]
-% * [[gossOrientation.html,gossOrientation]]
-% * [[brassOrientation.html,brassOrientation]]
+% * <cubeOrientation.html cubeOrientation>
+% * <gossOrientation.html gossOrientation>
+% * <brassOrientation.html brassOrientation>
 %
 %
 

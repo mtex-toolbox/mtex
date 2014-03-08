@@ -62,7 +62,9 @@ plot(pf({1}))
 % always interpreted as an axis, i.e. projected to the upper hemisphere if
 % necessary
 
+
 annotate(vector3d(1,0,-1),'labeled','backgroundColor','w')
+
 
 %% Antipodal Symmetry in Recalculated Pole Figures
 %

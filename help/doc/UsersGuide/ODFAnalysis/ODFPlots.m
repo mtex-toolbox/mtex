@@ -17,7 +17,7 @@
 % and a fibre symmetric model ODF 
 
 cs = symmetry('-3m'); 
-ss = symmetry('-1');
+ss = symmetry('1');
 mod1 = orientation('euler',50*degree,30*degree,20*degree,'ZYZ',cs,ss);
 
 odf = 0.1 * unimodalODF(mod1,cs,ss) ...
@@ -97,7 +97,7 @@ r = vector3d(1,0,0)
 % In order to visuallize an ODF along the fibre defined by |h| and |r| the
 % command <ODF_plotFibre.html plotFibre> can be used
 
-plotFibre(odf,h,r)
+plotFibre(odf,h,r);
 
 %% Power Plot
 %

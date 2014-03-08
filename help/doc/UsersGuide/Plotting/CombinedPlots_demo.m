@@ -10,7 +10,7 @@
 %% General Principle
 % In order to tell MATLAB to plot one plot right on the top of an older
 % plot one has to use the commands [[matlab:doc hold,hold all]] and
-% [[matlab:doc hold,hold off]]. Let's demostrate this using a simple example.
+% <matlab:doc hold hold off>. Let's demostrate this using a simple example.
 
 plot([2 2])
 
@@ -25,8 +25,8 @@ hold off
 
 %%
 % let's simulate some EBSD data
-cs = symmetry('-3m'); ss = symmetry('triclinic');
-odf = unimodalODF(orientation('euler',0,0,0,cs,ss));
+cs = symmetry('-3m');
+odf = unimodalODF(orientation('euler',0,0,0,cs));
 ebsd = calcEBSD(odf,100);
 ebsd_rotated = calcEBSD(rotate(odf,rotation('Euler',60*degree,60*degree,0*degree)),100);
 
@@ -69,8 +69,8 @@ hh = legend({'EBSD 1','EBSD 2'},'units','normalized','position',[0.022 0.9 0.1 0
 plotODF(odf,'sections',8,'contourf','sigma')
 mtexColorMap white2black
 hold all
-plotODF(ebsd,'MarkerSize',8,'MarkerColor','b','MarkerEdgeColor','w')
-plotODF(ebsd_rotated,'MarkerSize',8,'MarkerColor','r','MarkerEdgeColor','k');
+plotODF(ebsd,'MarkerSize',6,'MarkerColor','b','MarkerEdgeColor','w')
+plotODF(ebsd_rotated,'MarkerSize',6,'MarkerColor','r','MarkerEdgeColor','k');
 hold off
 
 
@@ -104,20 +104,20 @@ odf = calcODF(pf)
 figure('position',[50 50 1200 500])
 
 % set position 1 in a 1x3 matrix as the current plotting position
-axesPos = subplot(1,3,1)
+axesPos = subplot(1,3,1);
 
 % plot pole figure 1 at this position
-plot(axesPos,pf({1}))
+plot(pf({1}),'parent',axesPos)
 
 % set position 2 in a 1x3 matrix as the current plotting position
-axesPos = subplot(1,3,2)
+axesPos = subplot(1,3,2);
 
 % plot the recalculated pole figure at this position
-plotPDF(axesPos,odf,h{1},'antipodal')
+plotPDF(odf,h{1},'antipodal','parent',axesPos)
 
 % set position 3 in a 1x3 matrix as the current plotting position
-axesPos = subplot(1,3,3)
+axesPos = subplot(1,3,3);
 
 % plot the difference pole figure at this position
-plotDiff(axesPos,odf,pf({1}))
+plotDiff(odf,pf({1}),'parent',axesPos)
 
