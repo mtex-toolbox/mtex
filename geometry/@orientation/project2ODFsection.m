@@ -12,6 +12,8 @@ function [v, data]= project2ODFsection(o,type,sec,varargin)
 % Options
 %  tolerance -
 
+%TODO: remove loop as we have a loop already in plotODF
+
 % get input
 if length(sec) >= 2
   tol = min(10*degree,abs(sec(1)-sec(2))/2);

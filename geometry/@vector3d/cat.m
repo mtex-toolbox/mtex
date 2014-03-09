@@ -6,9 +6,11 @@ v = varargin{1};
 vx = cell(size(varargin)); vy = vx; vz = vx;
 for i = 1:numel(varargin)
   vs = varargin{i};
-  vx{i} = vs.x;
-  vy{i} = vs.y;
-  vz{i} = vs.z;
+  if ~isempty(vs)
+    vx{i} = vs.x;
+    vy{i} = vs.y;
+    vz{i} = vs.z;
+  end
 end
 
 v.x = cat(dim,vx{:});

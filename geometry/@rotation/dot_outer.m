@@ -7,4 +7,5 @@ function d = dot_outer(rot1,rot2,varargin)
 % Output
 %  d - double length(rot1) x length(rot2)
 
-d = abs(dot_outer(quaternion(rot1),quaternion(rot2),varargin{:}));
+d = min(~bsxfun(@xor,rot1.i(:),rot2.i(:).'),...
+  abs(dot_outer(quaternion(rot1),quaternion(rot2),varargin{:})));

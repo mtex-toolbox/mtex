@@ -51,7 +51,6 @@ sec = linspace(0,max_sec,nsec+1); sec(end) = [];
 sec = get_option(varargin,sectype,sec,'double');
 nsec = length(sec);
   
-    
 % no sectioning angles
 S2G = regularS2Grid('maxTheta',max_theta,'maxRho',max_rho,'restrict2MinMax',varargin{:});
 [theta,rho] = polar(S2G);

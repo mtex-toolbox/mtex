@@ -4,11 +4,11 @@ function [cs,mineral] = loadCIF(fname,varargin)
 % if cif file not found and input name is a valid COD entry, this function tries
 % to download the file from [[http://www.crystallography.net/cif/,http://www.crystallography.net/cif/]]
 %
-%% Syntax
-% loadCIF('5000035.cif') -
-% loadCIF(5000035)       - lookup online
+% Syntax
+%  loadCIF('5000035.cif') -
+%  loadCIF(5000035)       - lookup online
 %
-%% See also
+% See also
 % symmetry
 
 

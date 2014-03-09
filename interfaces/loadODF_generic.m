@@ -108,7 +108,7 @@ switch method
     S3G = equispacedSO3Grid(cs,ss,'resolution',res);
 
     % get kernel
-    psi = get_option(varargin,'kernel',kernel('de la Vallee Poussin','halfwidth',res));
+    psi = get_option(varargin,'kernel',deLaValeePoussinKernel('halfwidth',res));
 
     M = K(psi,S3G,q,cs,ss);
 
