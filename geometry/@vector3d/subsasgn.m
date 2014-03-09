@@ -25,11 +25,7 @@ switch s(1).type
     end
   otherwise
     
-    try
-      v =  builtin('subsasgn',v,s,b);
-    catch
-      v = subsasgn@dynOption(v,s,b);
-    end
+    v =  builtin('subsasgn',v,s,b);    
       
 end
 

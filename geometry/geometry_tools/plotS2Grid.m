@@ -1,4 +1,4 @@
-function S2G = plotS2Grid(varargin)
+function v = plotS2Grid(varargin)
 %
 % Syntax
 %   plotS2Grid('resolution',[5*degree 2.5*degree])
@@ -19,22 +19,44 @@ function S2G = plotS2Grid(varargin)
 % equispacedS2Grid regularS2Grid
 
 
-% extract options
-bounds = getPolarRange(varargin{:});
+% get spherical region
+%sR = getPolarRange(varargin{:});
+if isa(varargin{1},'sphericalRegion')
+  sR = varargin{1};
+else
+  sR = sphericalRegion(varargin{:});
+end
+  
+% TODO: extractoptions 'antipodal','lower','upper'
 
-% set up polar angles
-theta = S1Grid(linspace(bounds.VR{1:2},bounds.points(2)),bounds.FR{1:2});
+% get resolution
+res = get_option(varargin,'resolution',1*degree);
 
-% set up azimuth angles
-steps = (bounds.VR{4}-bounds.VR{3}) / bounds.points(1);
-rho = repmat(...
-  S1Grid(bounds.VR{3} + steps*(0:bounds.points(1)),bounds.FR{3:4}),...
-  1,bounds.points(2));
+[rhoMin,rhoMax] = rhoRange(sR);
+rho = linspace(rhoMin,rhoMax,round(1+(rhoMax-rhoMin)/res));
 
-S2G = S2Grid(theta,rho);
+[thetaMin,thetaMax] = thetaRange(sR,rho);
 
-S2G = S2G.setOption('plot',true,'resolution',steps);
+% remove values out of region
+ind = (thetaMax > 1e-5) & (thetaMin < pi - 1e-5);
 
-% TODO: extractoptions 'north','south','antipodal','lower','upper'
+ind(end) = ind(end-1); ind(1) = ind(2);
+
+rho(~ind) = []; thetaMin(~ind) = []; thetaMax(~ind) = [];
+
+
+% generate grid
+dtheta = thetaMax - thetaMin;
+ntheta = round(max(dtheta./res));
+
+theta = linspace(0,1,ntheta).' * dtheta + repmat(thetaMin,ntheta,1);
+
+rho = repmat(rho,ntheta,1);
+
+v = sph2vec(theta,rho);
+
+v = v.setOption('plot',true,'resolution',res,'region',sR);
+
+
 
 end

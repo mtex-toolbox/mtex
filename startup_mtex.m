@@ -6,6 +6,13 @@ function startup_mtex(varargin)
 % mtex_settings.m in this directory.
 %
 
+
+% this is a bugfix for MATLAV having very high cpu load on idle
+if isunix && ~ismac
+  com.mathworks.mlwidgets.html.HtmlComponentFactory.setDefaultType('HTMLRENDERER');
+end
+
+
 % Check MATLAB version
 % --------------------
 lasterr('') %#ok<LERR> %reset all errors

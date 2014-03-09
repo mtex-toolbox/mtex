@@ -20,8 +20,14 @@ if check_option(varargin,'hkl')
   m = unique(m);
 
   % plot them
-  plot(m,'symmetrised','labeled','MarkerEdgeColor','k','grid',varargin{:});
-
+  mtexFigure;
+  m(1).scatter('symmetrised','labeled','MarkerEdgeColor','k','grid',varargin{:});
+  hold all
+  for i = 2:length(m)
+    m(i).scatter('symmetrised','labeled','MarkerEdgeColor','k','grid',varargin{:});
+  end
+  hold off;
+  
   % postprocess figure
   setappdata(gcf,'CS',s);
   set(gcf,'tag','ipdf');
@@ -31,7 +37,6 @@ else
   
   % determine symmetry axes
   rot = rotation(s);
-  
   
   Improper = isImproper(rot);
   [axes,angle] = getMinAxes(rot(~Improper));

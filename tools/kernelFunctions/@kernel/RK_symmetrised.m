@@ -72,7 +72,8 @@ else % calculate matrix
     qwarning(['possible to large Matrix: ',int2str(length(in)*length(out))]);
   end
   M = zeros(length(out),size(in,1));
-    
+  in = vector3d(in); out = vector3d(out);
+ 
   % take mean along all symmetries
   for is = 1:length(SS)*lh
 		dmatrix = dot_outer(out.normalize,in(:,is).normalize);

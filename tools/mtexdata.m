@@ -115,7 +115,7 @@ data(cellfun('isempty',{data.name})) = [];
 % -------------------- PoleFigure data ----------------------------------
 function [CS,h,c,pf] = mtexdata_dubna
 
-CS = symmetry('-3m',[1.4 1.4 1.5]);
+CS = symmetry('quartz');
 SS = symmetry();
 
 fname = {...
