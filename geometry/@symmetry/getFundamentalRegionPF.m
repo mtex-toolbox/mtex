@@ -1,19 +1,79 @@
-function  [minTheta,maxTheta,minRho,maxRho,v,N] = getFundamentalRegionPF(cs,varargin)
-% get the fundamental region for (inverse) pole figure
+function  sR = getFundamentalRegionPF(cs,varargin)
+% get the spherical fundamental region for a symmetry
 %
 % Input
-%  cs - crystal symmetry
+%  cs - symmetry
 %
 % Ouput
-%  maxTheta -
-%  maxRho   -
-%  minRho   - starting rho
-%  v        - some nice Miller indice
-%  N        -
+%  sR - spherical Region
 %
 % Options
-%  antipodal      - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
 %
+
+% antipodal symmetry is nothing else then adding inversion to the symmetry
+% group
+if check_option(varargin,'antipodal'), cs = cs.Laue; end
+
+% a first very simple rule for the fundamental region
+
+% if we have an inversion or some symmetry operation no parallel to z
+if ~cs.isProper || any(~isnull([cs.b(:);cs.c(:)]))
+  N = zvector; % then we can map everything on the norther hemisphere
+else
+  N = vector3d;
+end
+
+% the region on the northern hemisphere now depends just on the
+% number of symmetry operations
+if length(cs) > 1+length(N)
+  drho = 2*pi * (1+length(N)) / length(cs);
+  N = [N,vector3d('theta',90*degree,'rho',[90*degree,drho-90*degree])];
+end
+
+% TODO correct for different alignments in 32
+
+% some special cases
+switch cs.id
+  
+  case 1 % 1
+       
+  case 2 % -1
+    
+    N = zvector;
+    
+  case 3 % 2
+    
+  case 4 % m
+    
+  case 5 % 2/m
+    
+  case 6 % 222
+  case 7 % 22
+  case 8 % 2mm
+  case 9 % mm2
+  case 10 % mmm
+  case 11 % 2/m2  
+    
+  case 28 % 23
+    N = [vector3d(0,-1,1),vector3d(-1,0,1),vector3d(1,0,1),yvector,zvector];
+  case 29 % m-3
+    N = [vector3d(0,-1,1),vector3d(-1,0,1),xvector,yvector,zvector];
+  case 30 % 432
+    N = [vector3d(1,-1,0),vector3d(0,-1,1),yvector,zvector];
+  case 31 % -43m
+    N = [vector3d(1,-1,0),vector3d(0,-1,1),yvector,zvector];
+  case 32 % m-3m    
+    N = [vector3d(1,-1,0),vector3d(-1,0,1),yvector,zvector];
+end
+
+if check_option(varargin,'complete')
+  sR = sphericalRegion;
+else
+  sR = sphericalRegion(N);
+end
+
+return
 
 % default values from the symmetry
 minTheta = 0;
@@ -26,7 +86,7 @@ maxTheta = cs.rotangle_max_y(varargin{:})/2;
 v = [Miller(1,0,0),Miller(1,1,0),Miller(0,1,0),Miller(-1,2,0),Miller(0,0,1)];
 
 fak = 2;
-switch cs.Laue
+switch cs.LaueName
   case '-3m'
     minRho = mod(cs.axes(1).rho,120*degree);
     if check_option(varargin,'antipodal')
@@ -109,7 +169,7 @@ end
 
 
 % describe Fundamental region by normal to planes
-switch cs.Laue
+switch cs.LaueName
 
   case 'm-3m' %ok
 
@@ -139,6 +199,8 @@ switch cs.Laue
     end
 
 end
+
+sR = sphericalRegion(N);
 
 end
 
