@@ -26,7 +26,7 @@ if isa(h,'Miller'), h = odf.CS.ensureCS(h);end
 argin_check(r,'vector3d');
 argin_check(radius,'double');
 
-if ~strcmp(Laue(odf.SS),'-1')
+if length(odf.SS) > 1
   error('Only triclinic specimen symmetry is supported for fibreVolume');
 end
 
@@ -34,11 +34,11 @@ end
 res = get_option(varargin,'RESOLUTION',min(2.5*degree,radius/50),'double');
 
 % discretisation
-[minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(odf.CS);  
-S2G = equispacedS2Grid('resolution',res,...
-  'minTheta',minTheta,'maxTheta',maxTheta,'maxRho',maxRho,'minRho',minRho,...
-  'restrict2MinMax',varargin{:});
+sR = getFundamentalRegionPF(odf.CS);  
+S2G = equispacedS2Grid('resolution',res,varargin{:});
+S2G(~sR.checkInside(S2G)) = [];
 lS2G = length(S2G);
+% TODO: not supported for vector3d
 S2G = subGrid(S2G,symmetrise(h),radius);
 
 % estimate volume portion of odf space
