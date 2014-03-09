@@ -49,11 +49,24 @@ classdef vector3d < dynOption
         v.y = y;
         v.z = z;
         
-      elseif strcmp(x,'polar')
+      elseif ischar(x)
         
-        v.x = sin(y).*cos(z);
-        v.y = sin(y).*sin(z);
-        v.z = cos(y);
+        if strcmp(x,'polar')
+        
+          v.x = sin(y).*cos(z);
+          v.y = sin(y).*sin(z);
+          v.z = cos(y);
+          
+        else
+          
+          theta = get_option([{x,y,z},varargin],{'theta','azimuth'});
+          rho = get_option([{x,y,z},varargin],{'rho','polar'});
+          
+          v.x = sin(theta).*cos(rho);
+          v.y = sin(theta).*sin(rho);
+          v.z = cos(theta);
+          
+        end
                 
       end
 
