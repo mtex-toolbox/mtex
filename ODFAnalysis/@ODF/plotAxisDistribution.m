@@ -20,9 +20,8 @@ function plotAxisDistribution(odf,varargin)
 if isempty(ax), newMTEXplot;end
 
 % plotting grid
-[minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(disjoint(odf.CS,odf.SS),'antipodal',varargin{:});
-h = plotS2Grid('minTheta',minTheta,'maxTheta',maxTheta,...
-  'maxRho',maxRho,'minRho',minRho,'RESTRICT2MINMAX','antipodal',varargin{:});
+sR = fundamentalSector(disjoint(odf.CS,odf.SS),'antipodal',varargin{:});
+h = plotS2Grid(sR,'antipodal',varargin{:});
 
 % plot
 smooth(ax{:},h,pos(calcAxisDistribution(odf,h,varargin{:})),varargin{:});

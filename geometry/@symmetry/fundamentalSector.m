@@ -1,5 +1,5 @@
-function  sR = getFundamentalRegionPF(cs,varargin)
-% get the spherical fundamental region for a symmetry
+function  sR = fundamentalSector(cs,varargin)
+% get the fundamental sector for a symmetry in the inverse pole figure
 %
 % Input
 %  cs - symmetry
@@ -18,7 +18,7 @@ if check_option(varargin,'antipodal'), cs = cs.Laue; end
 % a first very simple rule for the fundamental region
 
 % if we have an inversion or some symmetry operation no parallel to z
-if ~cs.isProper || any(~isnull([cs.b(:);cs.c(:)]))
+if any(angle(zvector,symmetrise(zvector,cs))>pi/2+1e-4)  
   N = zvector; % then we can map everything on the norther hemisphere
 else
   N = vector3d;
@@ -44,6 +44,8 @@ switch cs.id
     
   case 3 % 2
     
+   N = getMinAxes(cs);
+    
   case 4 % m
     
   case 5 % 2/m
@@ -53,18 +55,26 @@ switch cs.id
   case 8 % 2mm
   case 9 % mm2
   case 10 % mmm
-  case 11 % 2/m2  
-    
+  case 11 % 32
+    h = Miller(1,0,0,cs);
+    N = rotate(N,rotation('axis',zvector,'angle',h.rho-120*degree));
+  case 13
+    h = Miller(1,0,0,cs);
+    N = rotate(N,rotation('axis',zvector,'angle',h.rho-120*degree));
+  case 19 %-42m
+    N = rotate(N,-45*degree);
+  case 26
+    N = rotate(N,-30*degree);
   case 28 % 23
     N = [vector3d(0,-1,1),vector3d(-1,0,1),vector3d(1,0,1),yvector,zvector];
   case 29 % m-3
     N = [vector3d(0,-1,1),vector3d(-1,0,1),xvector,yvector,zvector];
   case 30 % 432
-    N = [vector3d(1,-1,0),vector3d(0,-1,1),yvector,zvector];
+    N = [vector3d(1,-1,0),vector3d(0,-1,1),yvector];
   case 31 % -43m
-    N = [vector3d(1,-1,0),vector3d(0,-1,1),yvector,zvector];
+    N = [vector3d(1,-1,0),vector3d(1,1,0),vector3d(-1,0,1)];
   case 32 % m-3m    
-    N = [vector3d(1,-1,0),vector3d(-1,0,1),yvector,zvector];
+    N = [vector3d(1,-1,0),vector3d(-1,0,1),yvector];
 end
 
 if check_option(varargin,'complete')

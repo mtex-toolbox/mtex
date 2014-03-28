@@ -87,10 +87,9 @@ function ipdfColorbar(cs,cc,varargin)
 % hkl is antipodal
 if strcmpi(cc,'ipdfHKL'),  varargin = [{'antipodal'},varargin]; end
 
-[minTheta,maxTheta,minRho,maxRho,v] = getFundamentalRegionPF(cs,varargin{:});
+sR = fundamentalSector(cs,varargin{:});
 
-h = plotS2Grid('minTheta',minTheta,'maxTheta',maxTheta,...
-  'minRho',minRho,'maxRho',maxRho,'RESTRICT2MINMAX','resolution',1*degree,varargin{:});
+h = plotS2Grid(sR,'resolution',1*degree,varargin{:});
 r = get_option(varargin,'r');
 
 d = orientation2color(h,cc,cs,varargin{:});
@@ -107,7 +106,9 @@ end
 % annotate crystal directions
 set(gcf,'tag','ipdf')
 setappdata(gcf,'CS',cs);
-annotate(v,'MarkerFaceColor','k','labeled','symmetrised');
+h = Miller(sR.vertices,cs);
+h.dispStyle = 'uvw';
+annotate(round(h),'MarkerFaceColor','k','labeled','symmetrised');
 
 end
 

@@ -44,7 +44,7 @@ else
 end
 
 % plotting grid
-sR = getFundamentalRegionPF(odf.SS,'restrict2Hemisphere',varargin{:});
+sR = fundamentalSector(odf.SS,varargin{:});
 r = plotS2Grid(sR,varargin{:});
 
 % compute pole figures
