@@ -19,13 +19,13 @@ for i = 1:length(maps)
   uimenu(cm,'label',maps{i},'callback',@setColorMap);
 end
 
-%% colorcoding
+% colorcoding
 cc = uimenu(m,'label','Colorcoding');
 uimenu(cc,'label','Equal','callback',@setColorCoding);
 uimenu(cc,'label','Tight','callback',@setColorCoding,'checked','on');
 
 
-%% axis alignment
+% axis alignment
 xlabel = get_option(varargin,'xlabel','X');
 zlabel = get_option(varargin,'zlabel','Z');
 
@@ -42,12 +42,12 @@ zdirection = uimenu(m,'label',[zlabel ' axis direction']);
 uimenu(zdirection,'label','Out of plane','callback',@setZAxisDirection,'checked','on');
 uimenu(zdirection,'label','Into plane','callback',@setZAxisDirection);
 
-%% spacing
+% spacing
 
 uimenu(m,'label','Set Inner Margin','callback',{@setMargin,'inner'});
 uimenu(m,'label','Set Outer Margin','callback',{@setMargin,'outer'});  
 
-%% annotations
+% annotations
 
 an = uimenu(m,'label','Anotations');
 uimenu(an,'label','Show min/max','checked','on','callback',{@setVisible,'minmax'});
@@ -58,7 +58,7 @@ uimenu(an,'label','Show grid','checked','off','callback',{@setVisible,'grid'});
 
 
 
-%% fontsize
+% fontsize
 
 fs = uimenu(m,'label','Fontsize');
 uimenu(fs,'label','10 points','callback',{@setFontSize,10},'checked','on');
@@ -88,16 +88,16 @@ cm = cellfun(@(x) x(1:end-8),cmd,'UniformOutput',false);
 
 end
 
-%% -------------- Callbacks ---------------------------
+% -------------- Callbacks ---------------------------
 
-%% export
+% export
 function Export(obj,event) %#ok<INUSD>
 
 savefigure;
 
 end
 
-%% FontSize
+% FontSize
 function setFontSize(obj,event,fs) %#ok<INUSL>
 
 uncheck = findobj(gcf,'parent',get(obj,'parent'));
@@ -110,7 +110,7 @@ set(obj,'checked','on');
 end
 
 
-%% Grid Visibility
+% Grid Visibility
 function setVisible(obj,event,element)
 
 if strcmp(get(obj,'checked'),'on')
@@ -137,12 +137,12 @@ for a = 1:numel(ax)
           
     otherwise
     
-    if ~isappdata(ax(a),'grid'), continue;end
-    grid = getappdata(ax(a),'grid');
-    if isempty(grid)
+    if ~isappdata(ax(a),'sphericalPlot'), continue;end
+    sP = getappdata(ax(a),'sphericalPlot');
+    if isempty(sP.grid)
       set(ax(a),'XGrid',onoff,'YGrid',onoff);
     else
-      set(grid.(element),'visible',onoff);
+      set(sP.(element),'visible',onoff);
     end
   end  
 end
@@ -151,7 +151,7 @@ end
 
 
 
-%% X Axis Direction
+% X Axis Direction
 function setXAxisDirection(obj,event)
 
 
@@ -164,7 +164,7 @@ xAxis = get(obj,'label');
 ax = findobj(gcf,'type','axes');
 for a = 1:numel(ax)
 
-  if ~isappdata(ax(a),'projection'), continue;end  
+  %if ~isappdata(ax(a),'projection'), continue;end
   setCamera(ax(a),'xAxisDirection',xAxis);
     
 end
@@ -176,7 +176,7 @@ end
 
 end
 
-%% Z Axis Direction
+% Z Axis Direction
 function setZAxisDirection(obj,event)
 
 uncheck = findobj(gcf,'parent',get(obj,'parent'));
@@ -189,7 +189,7 @@ zAxis(zAxis==' ')=[];
 ax = findobj(gcf,'type','axes');
 for a = 1:numel(ax)
 
-  if ~isappdata(ax(a),'projection'), continue;end  
+  %if ~isappdata(ax(a),'projection'), continue;end  
   setCamera(ax(a),'zAxisDirection',zAxis);
   
 end
@@ -199,7 +199,7 @@ fn(gcf,event);
 
 end
 
-%% Margins
+% Margins
 function setMargin(obj,event,type) %#ok<INUSL>
 
 [h,fig] = gcbo; %#ok<ASGLU>
@@ -218,7 +218,7 @@ resizeFcn(fig,event);
 end
 
 
-%% Color coding
+% Color coding
 function setColorCoding(obj,event) %#ok<INUSD>
 
 uncheck = findobj(gcf,'parent',get(obj,'parent'));
