@@ -2,7 +2,9 @@ function v = rotate(v,q)
 % rotate vector3d by quaternion
 %
 % Syntax
-%  r = rotate(v,q)
+%   v = rotate(v,20*degree) % rotation about the z-axis
+%   rot = rotation('Euler',10*degree,20*degree,30*degree)
+%   v = rotate(v,rot)
 %
 % Input
 %  v - @vector3d
@@ -11,6 +13,7 @@ function v = rotate(v,q)
 % Output
 %  r = q * v;
 
+if isnumeric(q), q = axis2quat(zvector,q);end
 
 % bring the coefficient into the right shape
 [a,b,c,d] = double(q(:));
