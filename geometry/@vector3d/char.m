@@ -33,7 +33,7 @@ for i = 1:length(v.x)
       c = [c,' ',num2str([v.x(i),v.y(i),v.z(i)],'(%3.2f,%3.2f,%3.2f)')];
     end
   else
-    c = [c,' ',num2str(v.x(i)),num2str(v.y(i)),num2str(v.z(i))]; %#ok<AGROW>
+    c = [c,' ',num2str(v.x(i)),',',num2str(v.y(i)),',',num2str(v.z(i))]; %#ok<AGROW>
   end
 end
 

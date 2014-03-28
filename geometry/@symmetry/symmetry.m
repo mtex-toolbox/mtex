@@ -91,7 +91,11 @@ classdef symmetry < rotation
       % empty constructor
       if nargin == 0, return; end
       
-      if check_option(varargin,'LaueId')
+      if check_option(varargin,'PointId')
+        
+        s.id = get_option(varargin,'PointId');
+        
+      elseif check_option(varargin,'LaueId')
       
         % -1 2/m mmm 4/m 4/mmm m-3 m-3m -3 -3m 6/m 6/mmm
         LaueGroups = [2,5,8,11,15,29,32,17,20,22,27];
@@ -167,7 +171,7 @@ classdef symmetry < rotation
       elseif check_option(varargin,'crystal')
         s.isCS = true;
       else
-        s.isCS = ~(numel(s.a)<=8 && all(isnull(norm(s.axes-[xvector,yvector,zvector]))));
+        s.isCS = ~(numel(s.a)<=4 && all(isnull(norm(s.axes-[xvector,yvector,zvector]))));
       end
       
     end

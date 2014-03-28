@@ -21,7 +21,7 @@ function v = plotS2Grid(varargin)
 
 % get spherical region
 %sR = getPolarRange(varargin{:});
-if isa(varargin{1},'sphericalRegion')
+if nargin>0 && isa(varargin{1},'sphericalRegion')
   sR = varargin{1};
 else
   sR = sphericalRegion(varargin{:});
