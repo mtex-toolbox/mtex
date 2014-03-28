@@ -18,12 +18,14 @@ for j = 1:numel(sP)
     bigCircle = rotate(orth(sR.N(i)),rot);
     v = sR.alpha(i) * sR.N(i) + sqrt(1-sR.alpha(i)^2) * bigCircle;
     
+    v = v(sR.checkInside(v));
+    
     % project data
     [x,y] = project(sP(j).proj,v);
     
     % plot
-    h(i) = line('xdata',x,'ydata',y,'parent',sP(j).ax,...
-      'color',[0.2 0.2 0.2],'linewidth',1.5); %#ok<AGROW>
+    h(i) = optiondraw(line('xdata',x,'ydata',y,'parent',sP(j).ax,...
+      'color',[0.2 0.2 0.2],'linewidth',1.5),varargin{:}); %#ok<AGROW>
   end
 end
 

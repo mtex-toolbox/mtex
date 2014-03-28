@@ -137,13 +137,50 @@ classdef sphericalRegion
     function v = vertices(sR)
       % get the vertices of the fundamental region
       
+      v = boundary(sR);
+      
+    end
+    
+    function e = edges(sR)
+      
+            
+    end
+    
+    function [v,e] = boundary(sR)
+      % compute vertices and eges of a spherical region
+    
       [l,r] = find(triu(ones(length(sR.N)),1));
       
       v = planeIntersect(sR.N(l),sR.N(r),sR.alpha(l),sR.alpha(r));
       
-      v(~sR.checkInside(v)) = [];
+      ind = sR.checkInside(v);
+      l = [l(:),l(:)]; r = [r(:),r(:)];
+      e = [reshape(l(ind),[],1),reshape(r(ind),[],1)];
+      v(~ind) = [];
       
-      v = unique(v);
+    end
+    
+    function alpha = innerAngle(sR)
+      
+      [~,e] = boundary(sR);
+      alpha = pi-angle(sR.N(e(:,1)),sR.N(e(:,2)));
+      
+      
+    end
+    
+    function c = center(sR)
+      
+      v = equispacedS2Grid('resolution',1*degree);
+      v = v(sR.checkInside(v));
+      
+      c = mean(v);
+      
+      if norm(c) < 1e-4
+        c = zvector;
+      else
+        c = c.normalize;
+      end
+      
       
     end
     
