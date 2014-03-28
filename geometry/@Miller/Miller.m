@@ -1,13 +1,17 @@
 classdef Miller < vector3d
-%(InferiorClasses = {?vector3d,?S2Grid})
-  properties (Access = private)
-    CSprivate % crystal symmetry
+  %(InferiorClasses = {?vector3d,?S2Grid})
+
+  properties
     dispStyle = 'hkl' % output convention hkl or uvw
   end
-  
+
+  properties (Access = private)
+    CSprivate % crystal symmetry
+  end
+
   properties (Dependent = true)
     CS        % crystal symmetry
-    hkl       % direct coordinates    
+    hkl       % direct coordinates
     h
     k
     i
@@ -19,7 +23,7 @@ classdef Miller < vector3d
     w
   end
     
-  methods
+methods
 
     function m = Miller(varargin)
       % define a crystal direction by Miller indice
