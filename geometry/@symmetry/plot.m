@@ -9,6 +9,10 @@ function plot(s,varargin)
 % Options
 %  antipodal      - include [[AxialDirectional.html,antipodal symmetry]]
 
+mtexFigure;
+washold = getHoldState;
+hold on
+
 if check_option(varargin,'hkl')
 
   % which directions to plot
@@ -19,21 +23,21 @@ if check_option(varargin,'hkl')
 
   m = unique(m);
 
-  % plot them
-  mtexFigure;
+  % plot them    
   m(1).scatter('symmetrised','labeled','MarkerEdgeColor','k','grid',varargin{:});
-  hold all
+  hold all;
   for i = 2:length(m)
     m(i).scatter('symmetrised','labeled','MarkerEdgeColor','k','grid',varargin{:});
   end
-  hold off;
-  
+
   % postprocess figure
   setappdata(gcf,'CS',s);
   set(gcf,'tag','ipdf');
   setappdata(gcf,'options',extract_option(varargin,'antipodal'));
   
 else
+    
+  symbolSize = 0.15*get_option(varargin,'symbolSize',1);    
   
   % determine symmetry axes
   rot = rotation(s);
@@ -55,35 +59,46 @@ else
         circle(axes(i),'linewidth',2,'color','k');
       case 90
         options = {'FaceColor','none','LineWidth',3};
-        plotCustom(axes(i),{@(ax,x,y) square(x,y,0.275,'parent',ax,options{:})});
-        plotCustom(-axes(i),{@(ax,x,y) square(x,y,0.275,'parent',ax,options{:})});
+        plotCustom(axes(i),{@(ax,x,y) square(x,y,symbolSize,'parent',ax,options{:})});
+        plotCustom(-axes(i),{@(ax,x,y) square(x,y,symbolSize,'parent',ax,options{:})});
       case 120
         % small circle
-        plotCustom([axes(i),-axes(i)],{@(ax,x,y) ellipse(x,y,0.075,0.075,0,'parent',ax,'FaceColor','w')});
+        plotCustom([axes(i),-axes(i)],{@(ax,x,y) ...
+          ellipse(x,y,0.3*symbolSize,0.3*symbolSize,0,'parent',ax,'FaceColor','w')});
       case 60
         options = {'FaceColor','none','LineWidth',3};
-        plotCustom([axes(i),-axes(i)],{@(ax,x,y) hexagon(x,y,0.25,'parent',ax,options{:})});
+        plotCustom([axes(i),-axes(i)],{@(ax,x,y) hexagon(x,y,1.2*symbolSize,'parent',ax,options{:})});
     end
   end
   
-  hold off  
+  mtexFig = mtexFigure;
+  for ax = mtexFig.children
+    set(ax,'xlim',1.1*get(ax,'xlim'));
+    set(ax,'ylim',1.1*get(ax,'ylim'));
+    %xlim(ax,'auto');
+    %ylim(ax,'auto');
+  end  
 end
 
-end
-
+hold(washold);
 
 function s = Symbol(angle,alpha,varargin)
 switch round(angle/degree)
   case 180
-    s = @(ax,x,y) ellipse(x,y,0.075,0.2,alpha,'parent',ax,varargin{:});
+    s = @(ax,x,y) ellipse(x,y,0.3*symbolSize,symbolSize,alpha,'parent',ax,varargin{:});
   case 120
-    s = @(ax,x,y) triangle(x,y,0.2,'parent',ax,varargin{:});
+    s = @(ax,x,y) triangle(x,y,0.8*symbolSize,'parent',ax,varargin{:});
   case 90
-    s = @(ax,x,y) square(x,y,0.2,'parent',ax,varargin{:});
+    s = @(ax,x,y) square(x,y,0.7*symbolSize,'parent',ax,varargin{:});
   case 60
-    s = @(ax,x,y) hexagon(x,y,0.2,'parent',ax,varargin{:});
+    s = @(ax,x,y) hexagon(x,y,0.75*symbolSize,'parent',ax,varargin{:});
 end
 end
+
+
+end
+
+
 
 %
 function ellipse(cx,cy,dx,dy,angle,varargin)
