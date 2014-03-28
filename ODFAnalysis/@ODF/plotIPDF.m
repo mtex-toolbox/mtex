@@ -18,8 +18,8 @@ function plotIPDF(odf,r,varargin)
 
 argin_check(r,'vector3d');
 
-% get fundamental region for the inverse pole figure
-sR = getFundamentalRegionPF(odf.CS,'restrict2Hemisphere',varargin{:});
+% get fundamental sector for the inverse pole figure
+sR = fundamentalSector(odf.CS,varargin{:});
 
 % plotting grid
 h = plotS2Grid(sR,varargin{:});

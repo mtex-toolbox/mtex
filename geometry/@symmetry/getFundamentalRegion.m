@@ -14,7 +14,7 @@ function  [maxPhi1,maxPhi,maxPhi2] = getFundamentalRegion(cs,ss,varargin)
 %  maxPhi2 - maximum Euler angle phi_2
 %
 % See also
-% symmetry/getFundamentalRegionRodriguez symmetry/getFundamentalRegionPF
+% symmetry/getFundamentalRegionRodriguez symmetry/FundamentalSector
 
 % phi1
 if rotangle_max_y(cs) == pi && rotangle_max_y(ss) == pi

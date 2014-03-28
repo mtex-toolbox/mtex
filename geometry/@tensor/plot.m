@@ -45,7 +45,7 @@ else
     varargin = [varargin,'antipodal'];
   end 
   
-  sR = getFundamentalRegionPF(T.CS,varargin{:});
+  sR = fundamentalSector(T.CS,varargin{:});
   S2 = plotS2Grid(sR,varargin{:});
   
 end
