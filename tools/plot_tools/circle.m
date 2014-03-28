@@ -1,11 +1,12 @@
 function h = circle(n,varargin)
 % annotated a circle
 %
-%% Input
-% n     - a normal @vector3d
-% omega - an opening angle around n (default pi/2) (GreatCircle)
+% Input
+%  n     - a normal @vector3d
+%  omega - an opening angle around n (default pi/2) (GreatCircle)
 %         an @vector3d
-%% Options
+%
+% Options
 %
 
 % where to plot
@@ -52,6 +53,6 @@ holdState = getHoldState;
 
 if ~holdState, hold on, end
 
-h = plot(ax{:},c,'line',varargin{:});
+plot(ax{:},c,'line',varargin{:});
 
 hold(ax{:},holdState);
