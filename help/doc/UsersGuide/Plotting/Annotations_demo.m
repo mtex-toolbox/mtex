@@ -11,10 +11,10 @@
 %
 % Let us first define some model ODFs to be plotted later on.
 
-cs = symmetry('-3m'); ss = symmetry('-1');
+cs = symmetry('-3m');
 mod1 = orientation('Euler',30*degree,40*degree,10*degree);
 mod2 = orientation('Euler',10*degree,80*degree,70*degree);
-odf = 0.7*unimodalODF(mod1,cs,ss) + 0.3*unimodalODF(mod2,cs,ss);
+odf = 0.7*unimodalODF(mod1,cs) + 0.3*unimodalODF(mod2,cs);
 
 
 %% Adding a Colorbar
@@ -103,7 +103,7 @@ annotate(mod2,...
 
 plotFourier(FourierODF(odf,32))
 hold all
-fodf = fibreODF(Miller(1,0,0),zvector,cs,ss);
+fodf = fibreODF(Miller(1,0,0),zvector,cs);
 plotFourier(FourierODF(fodf,32));
 hold off
 

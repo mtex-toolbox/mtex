@@ -16,9 +16,8 @@
 %
 % Let us first define a simple fibre symmetric ODF.
 
-cs = symmetry('trigonal');
-ss = symmetry('triclinic');
-fibre_odf = 0.5*uniformODF(cs,ss) + 0.5*fibreODF(Miller(0,0,0,1),zvector,cs,ss);
+cs = symmetry('32');
+fibre_odf = 0.5*uniformODF(cs) + 0.5*fibreODF(Miller(0,0,0,1),zvector,cs);
 
 %%
 %

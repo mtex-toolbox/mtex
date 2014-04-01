@@ -27,18 +27,17 @@ odf1 = unimodalODF(o,CS,SS,psi)
 %%
 % *Fibre ODFs*
 
-SS = symmetry('triclinic');
 CS = symmetry('hexagonal');
 h = Miller(1,0,0,CS);
 r = xvector;
 psi = AbelPoissonKernel('halfwidth',18*degree);
 
-odf2 = fibreODF(h,r,CS,SS,psi)
+odf2 = fibreODF(h,r,CS,psi)
 
 %%
 % *uniform ODFs*
 
-odf3 = uniformODF(CS,SS)
+odf3 = uniformODF(CS)
 
 %%
 % *FourierODF*
@@ -49,7 +48,7 @@ odf3 = uniformODF(CS,SS)
 
 Lambda = [-10,-10,10,10]
 A = quaternion(eye(4))
-odf = BinghamODF(Lambda,A,CS,SS)
+odf = BinghamODF(Lambda,A,CS)
 
 plotIPDF(odf,xvector)
 plotPDF(odf,Miller(1,0,0))
@@ -103,8 +102,7 @@ mtexColorMap white2black
 % indice). What is its modal orientation in Euler angles?
 
 cs = symmetry('cubic');
-ss = symmetry('triclinic');
-ori = orientation('Miller',[0 0 1],[3 1 0],cs,ss);
+ori = orientation('Miller',[0 0 1],[3 1 0],cs);
 odf = unimodalODF(ori,cs,ss);
 
 %%

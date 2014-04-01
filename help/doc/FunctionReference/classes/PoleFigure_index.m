@@ -33,7 +33,6 @@ import_wizard
 
 % specify scrystal and specimen symmetry
 cs = symmetry('-3m',[1.4,1.4,1.5]);
-ss = symmetry('triclinic');
 
 % specify file names
 fname = {...
@@ -48,7 +47,7 @@ h = {Miller(1,0,-1,0,cs),[Miller(0,1,-1,1,cs),Miller(1,0,-1,1,cs)],Miller(1,1,-2
 c = {1,[0.52 ,1.23],1};
 
 % import pole figure data
-pf = loadPoleFigure(fname,h,cs,ss,'superposition',c)
+pf = loadPoleFigure(fname,h,cs,'superposition',c)
 
 % After running the script the variable *pf* is created which contains all
 % information about the pole figure data. 

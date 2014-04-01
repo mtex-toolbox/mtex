@@ -1,7 +1,7 @@
 %%
 
 cs = symmetry('m-3m');
-ss = symmetry('-1');
+ss = symmetry('1');
 
 odf = unimodalODF(idquaternion,cs,ss,'halfwidth',1.5*degree);
 

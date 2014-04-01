@@ -12,7 +12,7 @@ classdef FourierComponent < ODFComponent
     function component = FourierComponent(f_hat,CS,SS)
                        
       component.CS = CS;
-      component.SS = SS;
+      if nargin>2, component.SS = SS;end
       
       % extract f_hat
       if isa(f_hat,'cell')

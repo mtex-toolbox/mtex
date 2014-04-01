@@ -27,10 +27,9 @@
 %
 % A unimodal ODF with a high uniform portion.
 
-cs = symmetry('mmm');
-ss = symmetry('triclinic');
-mod1 = orientation('Euler',0,0,0,cs,ss);
-odf = 0.9*uniformODF(cs,ss) + ...
+cs = symmetry('222');
+mod1 = orientation('Euler',0,0,0,cs);
+odf = 0.9*uniformODF(cs) + ...
   0.1*unimodalODF(mod1,'halfwidth',10*degree)
 
 %% Simulate pole figures

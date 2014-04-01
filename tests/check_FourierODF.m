@@ -2,8 +2,8 @@
 
 %% set symmetries
 
-cs = symmetry('-1');
-ss = symmetry('-1');  
+cs = symmetry('1');
+ss = symmetry('1');  
 h = [Miller(1,0,0),Miller(1,1,0),Miller(0,0,1),Miller(1,-3,-4)];
 
 %% check unimodal ODF

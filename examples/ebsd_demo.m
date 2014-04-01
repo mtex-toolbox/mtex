@@ -15,14 +15,13 @@ CS = {...
   'Not Indexed',...
   symmetry('m-3m','mineral','Fe'),... % crystal symmetry phase 1
   symmetry('m-3m','mineral','Mg')};   % crystal symmetry phase 2
-SS = symmetry('-1');   % specimen symmetry
 
 %% import ebsd data
 
 % file name
 fname = fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt');
 
-ebsd = loadEBSD(fname,CS,SS,'interface','generic',...
+ebsd = loadEBSD(fname,CS,'interface','generic',...
   'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'Mad' 'BC'},...
   'Columns', [2 3 4 5 6 7 8 9],...
   'ignorePhase', 0, 'Bunge');
@@ -94,7 +93,7 @@ hold off
 %
 % Simulate EBSD data from a given standard ODF
 CS = symmetry('trigonal');
-fibre_odf = 0.5*uniformODF(CS,SS) + 0.5*fibreODF(Miller(0,0,0,1),zvector,CS,SS);
+fibre_odf = 0.5*uniformODF(CS) + 0.5*fibreODF(Miller(0,0,0,1),zvector,CS);
 plotODF(fibre_odf,'sections',6,'silent')
 ebsd = calcEBSD(fibre_odf,10000)
 

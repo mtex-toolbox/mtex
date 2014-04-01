@@ -47,7 +47,7 @@ function [odf,options] = loadODF_generic(fname,varargin)
 % get options
 ischeck = check_option(varargin,'check');
 cs = get_option(varargin,'cs',symmetry('m-3m'));
-ss = get_option(varargin,'ss',symmetry('-1'));
+ss = get_option(varargin,'ss',symmetry('1'));
 
 % load data
 [d,varargin,header,c] = load_generic(char(fname),varargin{:});

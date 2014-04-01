@@ -13,13 +13,13 @@
 
 %%
 % A bimodal ODF:
-cs = symmetry('orthorhombic');ss = symmetry('triclinic');
-odf1 = unimodalODF(orientation('Euler',0,0,0,cs,ss)) + ...
-  unimodalODF(orientation('Euler',30*degree,0,0,cs,ss))
+cs = symmetry('orthorhombic');
+odf1 = unimodalODF(orientation('Euler',0,0,0,cs)) + ...
+  unimodalODF(orientation('Euler',30*degree,0,0,cs))
 
 %% 
 % A fibre ODF:
-odf2 = fibreODF(Miller(0,0,1),xvector,cs,ss)
+odf2 = fibreODF(Miller(0,0,1),xvector,cs)
 
 %%
 % An ODF estimated from diffraction data:
@@ -79,7 +79,8 @@ volume(odf3,calcModes(odf3),30*degree)*100
 %%
 % The relative volume of crystals with missorientation maximum 20 degree
 % from the prefered fibre in percent:
-fibreVolume(odf2,Miller(0,0,1),xvector,20*degree) * 100 
+% TODO
+%fibreVolume(odf2,Miller(0,0,1),xvector,20*degree) * 100 
 
 
 %% Fourier Coefficients
