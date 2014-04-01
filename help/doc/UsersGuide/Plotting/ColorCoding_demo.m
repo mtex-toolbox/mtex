@@ -19,8 +19,8 @@
 % Let us first define some model ODF_index.html ODFs> to be plotted later
 % on.
 
-cs = symmetry('-3m'); ss = symmetry('-1');
-odf = fibreODF(Miller(1,1,0),zvector,cs,ss)
+cs = symmetry('-3m');
+odf = fibreODF(Miller(1,1,0),zvector,cs)
 pf = calcPoleFigure(odf,[Miller(1,0,0),Miller(1,1,1)],...
   equispacedS2Grid('points',500,'antipodal'));
 
@@ -81,7 +81,7 @@ close all
 plotPDF(odf,[Miller(1,0,0),Miller(1,1,1)],...
   'colorrange',[0 4],'antipodal');
 figure
-plotPDF(.5*odf+.5*uniformODF(cs,ss),[Miller(1,0,0),Miller(1,1,1)],...
+plotPDF(.5*odf+.5*uniformODF(cs),[Miller(1,0,0),Miller(1,1,1)],...
   'colorrange',[0 4],'antipodal');
 
 
@@ -110,7 +110,7 @@ setcolorrange([0.38,3.9])
 figure(1)
 plotPDF(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal')
 figure(2)
-plotPDF(.5*odf+.5*uniformODF(cs,ss),[Miller(1,0,0),Miller(1,1,1)],'antipodal');
+plotPDF(.5*odf+.5*uniformODF(cs),[Miller(1,0,0),Miller(1,1,1)],'antipodal');
 
 setcolorrange('equal','all')
 

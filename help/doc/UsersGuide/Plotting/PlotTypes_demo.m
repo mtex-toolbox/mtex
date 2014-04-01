@@ -10,8 +10,8 @@
 %
 % Let us first define a model ODF to be plotted later on.
 
-cs = symmetry('-3m'); ss = symmetry('-1');
-odf = fibreODF(Miller(1,1,0),zvector,cs,ss)
+cs = symmetry('-3m');
+odf = fibreODF(Miller(1,1,0),zvector,cs)
 pf = calcPoleFigure(odf,Miller(1,0,0),equispacedS2Grid('antipodal'));
 
 %%

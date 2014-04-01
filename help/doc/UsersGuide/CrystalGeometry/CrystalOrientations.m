@@ -23,7 +23,7 @@
 % specimen symmetry first.
 
 cs = symmetry('cubic');
-ss = symmetry('orthorhombic');
+ss = symmetry('orthorhombic','specimen');
 
 %%
 %

@@ -15,7 +15,7 @@
 % A tensor is defined by its entries and a crystal symmetry. Let us
 % consider a simple example. First we define some crystal symmetry
 
-cs = symmetry('-1');
+cs = symmetry('1');
 
 %%
 % Next we define a two rank tensor by its matrix

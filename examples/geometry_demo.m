@@ -112,7 +112,7 @@ plot([h1,h2],'all','labeled')
 
 ori = orientation(rot,CS,SS)
 ori = orientation('Euler',alpha,beta,gamma,CS,SS)
-ori = orientation('brass',symmetry('cubic'),symmetry('triclinic'))
+ori = orientation('brass',symmetry('cubic'))
 ori = orientation('Miller',[1 0 0],[1 1 1],CS,SS)
 
 %%
