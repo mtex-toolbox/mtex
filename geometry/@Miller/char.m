@@ -15,11 +15,11 @@ for i = 1:length(m)
     hkl = m.uvw(i,:);
     
     if check_option(varargin,{'tex','latex'})
-      leftBracket = '\left\langle ';
-      rightBracket = '\right\rangle';
+      leftBracket = '['; %'\left\langle ';
+      rightBracket = ']';% '\right\rangle';
     else
-      leftBracket = '<';
-      rightBracket = '>';
+      leftBracket = '[';%'<';
+      rightBracket = ']';%'>';
     end
     
   else
@@ -27,11 +27,11 @@ for i = 1:length(m)
     hkl = m.hkl(i,:);
     
     if check_option(varargin,{'tex','latex'})
-      leftBracket = '\{';
-      rightBracket = '\}';
+      leftBracket = '(';%'\{';
+      rightBracket = ')';% '\}';
     else
-      leftBracket = '{';
-      rightBracket = '}';
+      leftBracket = '(';%'{';
+      rightBracket = ')';% '}';
     end
             
   end
