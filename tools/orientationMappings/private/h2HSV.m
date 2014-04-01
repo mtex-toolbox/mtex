@@ -21,6 +21,13 @@ switch cs.id
     
     center = getMinAxes(cs);
   
+    % reduce fundamental sector for black-white colorcoding
+    sR.N(2) = center; sR.alpha(2) = 0;
+     
+    % copy to the reduced sector
+    ind = dot(h_sR,sR.N(2))<1e-5;
+    h(ind) = reflection(sR.N(2)) * h(ind);
+    
     
   case 5 % -2m
     
@@ -138,7 +145,7 @@ switch cs.id
   case {28}
     %rho = mod(3*rho,2*pi);
     
-  case {9,14,21}
+  case {3,9,14,21}
     
     v = rotate(v,axis2quat(yvector,-pi/2));
     
