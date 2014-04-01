@@ -1,8 +1,8 @@
-function plot3d(v,data,varargin)
+function h = scatter3d(v,data,varargin)
 % plot spherical data
 %
 % Syntax
-%   plot3d(v,data)
+%   scatter3d(v,data)
 %
 % Input
 %
@@ -19,9 +19,12 @@ else
 end
 
 % plot
-surf(v.x,v.y,v.z,reshape(data,size(v,1),size(v,2),[]),'parent',ax);
+v = 1.02 .* v ./ norm(v);
+v = [reshape(v,[],1);-reshape(v,[],1)];
 
-shading(ax,'interp');
+h = scatter3(v.x(:),v.y(:),v.z(:),30,...
+  [reshape(data,length(v)/2,[]);reshape(data,length(v)/2,[])],'filled');
+
 axis(ax,'equal','vis3d','off');
 axis on
 c = caxis(ax);
@@ -35,3 +38,5 @@ text(0,0,1.6,'z','FontSize',15,'parent',ax)
 
 set(ax,'XDir','rev','YDir','rev',...
 'XLim',[-1.5,1.5],'YLim',[-1.5,1.5],'ZLim',[-1.5,1.5]);
+
+if nargout == 0, clear h;end
