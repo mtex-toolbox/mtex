@@ -14,7 +14,8 @@ function plot(v,varargin)
 %  contour  - plot point cloud as contours
 
 % extract plot type
-plotTypes = {'contour','contourf','smooth','scatter','text','quiver','line','plane','circle','surf','pcolor','custom','PatchPatala'};
+plotTypes = {'contour','contourf','smooth','scatter','text','quiver',...
+  'line','plane','circle','surf','pcolor','custom','PatchPatala','3d','scatter3d'};
 plotType = extract_option(varargin,plotTypes);
 if isempty_cell(plotType)
   plotType = 'scatter';
@@ -31,6 +32,18 @@ end
 % call plotting routine according to type
 switch lower(plotType)
 
+  case '3d'
+    
+    if v.isOption('plot')
+      v.plot3d(varargin{:});
+    else
+      v.scatter3d(varargin{:});
+    end
+    
+  case 'scatter3d'
+    
+    v.plot3d(varargin{:});
+  
   case 'scatter'
   
     v.scatter(varargin{:});
@@ -81,6 +94,6 @@ switch lower(plotType)
     
   case 'custom'
       
-    v.plotCustom(varargin{:});
+    v.plotCustom(varargin{:});      
     
 end
