@@ -7,13 +7,18 @@ function [theta,rho,r] = polar(v)
 %  rho    - azimuthal angle 
 %  r      - radius
 
-if nargout == 0
-  hr = sqrt(v.x.^2 + v.y.^2 + v.z.^2);
-  hrho =  reshape(atan2(v.y,v.x),1,[])/degree;
-  htheta = reshape(acos(v.z./hr),1,[])/degree;
-  cprintf([htheta;hrho],'-n',' %3.1f','-Lr',{'polar angle ','azimuthal angle '},'-dt',mtexdegchar,'-T',mtexdegchar);
+r = sqrt(v.x.^2 + v.y.^2 + v.z.^2);
+if isfield(v.opt,'theta')
+  theta = v.opt.theta;
+  rho = v.opt.rho;  
 else
-  r = sqrt(v.x.^2 + v.y.^2 + v.z.^2);
-  rho = atan2(v.y,v.x);
+  rho = mod(atan2(v.y,v.x),2*pi);
   theta = acos(v.z./r);
+end
+
+if nargout == 0
+  rho =  mod(rho(:).'./degree,360);
+  theta = theta(:).'./degree;
+  cprintf([theta;rho],'-n',' %3.1f','-Lr',{'polar angle ','azimuthal angle '},'-dt',mtexdegchar,'-T',mtexdegchar);
+  clear rho, clear theta
 end

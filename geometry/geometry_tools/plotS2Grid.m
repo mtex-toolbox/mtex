@@ -55,7 +55,7 @@ rho = repmat(rho,ntheta,1);
 
 v = sph2vec(theta,rho);
 
-v = v.setOption('plot',true,'resolution',res,'region',sR);
+v = v.setOption('plot',true,'resolution',res,'region',sR,'theta',theta,'rho',rho);
 
 
 
