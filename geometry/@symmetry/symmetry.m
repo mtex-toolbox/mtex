@@ -161,7 +161,7 @@ classdef symmetry < rotation
       s.color = get_option(varargin,'color','');
       
       % compute symmetry operations
-      r = calcQuat(s.LaueName,s.axes,symmetry.pointGroups(s.id).Inversion);
+      r = calcQuat(s.LaueName,s.axes,symmetry.pointGroups(s.id).Inversion,varargin{:});
       [s.a, s.b, s.c, s.d] = double(r);
       s.i = isImproper(r);
       

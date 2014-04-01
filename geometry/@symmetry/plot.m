@@ -10,8 +10,6 @@ function plot(s,varargin)
 %  antipodal      - include [[AxialDirectional.html,antipodal symmetry]]
 
 mtexFigure;
-washold = getHoldState;
-hold on
 
 if check_option(varargin,'hkl')
 
@@ -80,7 +78,7 @@ else
   end  
 end
 
-hold(washold);
+hold off
 
 function s = Symbol(angle,alpha,varargin)
 switch round(angle/degree)

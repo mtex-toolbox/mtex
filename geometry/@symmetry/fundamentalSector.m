@@ -44,8 +44,12 @@ switch cs.id
     
   case 3 % 2
     
-   N = getMinAxes(cs);
-    
+    if isnull(dot(getMinAxes(cs),zvector))
+      N = zvector;
+    else
+      ind = find(isnull(dot(getMinAxes(cs),cs.axes)),1);
+      N = cs.axes(ind);
+    end
   case 4 % m
     
   case 5 % 2/m
@@ -77,7 +81,7 @@ switch cs.id
     N = [vector3d(1,-1,0),vector3d(-1,0,1),yvector];
 end
 
-if check_option(varargin,'complete')
+if check_option(varargin,{'complete','3d'})
   sR = sphericalRegion;
 else
   sR = sphericalRegion(N);
@@ -128,7 +132,7 @@ end
 
 %
 
-if check_option(varargin,'complete')
+if check_option(varargin,{'complete','3d'})
   minRho = 0;
   maxRho = 2*pi;
   minTheta = 0;

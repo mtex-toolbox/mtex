@@ -18,9 +18,9 @@ s = unique(s1.subSet(is1));
 
 % find a symmetry that exactly contains s
 % TODO!!
-for i=1:11 % check all Laue groups
+for i=1:32 % check all Laue groups
   
-  ss = symmetry(i);
+  ss = symmetry('pointId',i);
   
   if length(ss) == length(s) && all(any(isappr(dot_outer(s,ss),1)))
     s = ss;

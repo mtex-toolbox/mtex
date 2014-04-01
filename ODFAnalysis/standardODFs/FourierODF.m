@@ -1,4 +1,4 @@
-function odf = FourierODF(C,CS,SS)
+function odf = FourierODF(C,CS,varargin)
 % defines an ODF by its Fourier coefficients
 %
 % Syntax
@@ -24,7 +24,7 @@ else
   f_hat = C;
 end
 
-component = FourierComponent(f_hat,CS,SS);
+component = FourierComponent(f_hat,CS,varargin{:});
   
 odf = ODF(component,1);
 

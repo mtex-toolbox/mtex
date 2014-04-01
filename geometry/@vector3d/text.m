@@ -45,4 +45,12 @@ for j = 1:numel(sP)
       'tag','addMarkerSpacing','UserData',[x(i),y(i)],...
       'margin',0.001,varargin{2:end});
   end
+
+  % call resize callback to get positioning right
+  try
+    cb = getappdata(sP(j).ax,'dynamicMarkerSizeListener');
+    cb.Callback([],[]);
+  catch    
+  end  
+end
 end

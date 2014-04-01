@@ -164,6 +164,8 @@ classdef EBSD < dynProp & dynOption & misorientationAnalysis
         find(~cellfun('isclass',obj.allCS,'char')),...
         unique(obj.phaseId));
     
+      id = id(:).';
+      
     end
       
     function ori = get.orientations(ebsd)

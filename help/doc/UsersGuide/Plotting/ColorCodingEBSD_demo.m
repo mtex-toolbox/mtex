@@ -65,7 +65,8 @@ colorbar
 % *HKL*. 
 % Another inverse Pole figure color code
 
-close all; plot(ebsd('Fo'),'colorcoding','ipdfHKL')
+% TODO
+%close all; plot(ebsd('Fo'),'colorcoding','ipdfHKL')
 
 %%
 %
@@ -77,7 +78,7 @@ figure, plotIPDF(odf,xvector,'antipodal','silent')
 %%
 % We can change the default view onto the specimen (xvector) by setting the option *r*
 
-close all, plot(ebsd('Fo'),'colorcoding','ipdfHKL','r',zvector)
+close all, plot(ebsd('Fo'),'r',zvector)
 
 %%
 %
@@ -92,7 +93,7 @@ close all
 
 %% 
 % *triclinic symmetry*
-ebsdColorbar(symmetry('-1'))
+ebsdColorbar(symmetry('1'))
 ebsdColorbar(symmetry('-1'),'antipodal')
 
 %%

@@ -1,24 +1,24 @@
 function setcolorrange(varargin)
 % set color range for figures 
 %
-%% Syntax
-%  setcolorrange([min max],'all')
-%  setcolorrange('equal','current')
-%  setcolorrange('tight','figure',figurelist)
+% Syntax
+%   setcolorrange([min max],'all')
+%   setcolorrange('equal','current')
+%   setcolorrange('tight','figure',figurelist)
 %
-%% Input
+% Input
 %  [min max]  - minimum and maximum value
 %  figurelist - list of figure where the plots should be scaled  
 %
-%% Options
+% Options
 %  equal       - scale plots to the same range
 %  tight       - scale plots individually
 %  all         - scale all plots
 %  current     - scale only plots in the current figure
 %  figure      - scale only plots in figurelist
-%  ZERO2WHITE  - color zero values white
+%  zero2white  - color zero values white
 %
-%% See also
+% See also
 % multiplot S2Grid/plot
 
 % which figures to touch
@@ -31,25 +31,20 @@ else
 end
 
 % find all axes
-ax = findall(fig,'type','axes');
-checkMultiplotAxis = @(a) ismember(a,getappdata(get(a,'parent'),'multiplotAxes'));
-ax = ax(arrayfun(checkMultiplotAxis,ax));
-if isempty(ax), return; end
-
-% colorbaraxes
-cax = findall(fig,'type','axes','tag','colorbaraxis');
+mtexFig = getappdata(fig,'mtexFig');
+if isempty(mtexFig.children), return; end
 
 if check_option(varargin,'equal')
 
   % ensure same scale in all plots
-  if ~equal(strcmp(get(cax,'zscale'),'log'),1)
+  if ~equal(strcmp(get(mtexFig.cBarAxis,'zscale'),'log'),1)
     error('You can not mix logarithmic and non logarithmic plots with equal colorrange')
   end
     
   % find maximum color range
-  c = zeros(length(ax),2);
-  for i = 1:length(ax)
-    c(i,:) = caxis(ax(i));
+  c = zeros(length(mtexFig.children),2);
+  for i = 1:length(mtexFig.children)
+    c(i,:) = caxis(mtexFig.children(i));
   end
   mi = min(c,[],1);
   ma = max(c,[],1);
@@ -65,7 +60,7 @@ elseif length(varargin)>=1 && isa(varargin{1},'double') &&...
   p = varargin{1};
   
   % logarithmic scale?
-  if any(strcmp(get(cax,'zscale'),'log')), p = log10(p);end
+  if any(strcmp(get(mtexFig.cBarAxis,'zscale'),'log')), p = log10(p);end
          
 else
   
@@ -76,14 +71,16 @@ end
 if exist('p','var')
   
   % set the caxis to all axes
-  for i = 1:numel(ax),	caxis(ax(i),p);end
+  for i = 1:numel(mtexFig.children)
+    caxis(mtexFig.children(i),p);
+  end
 
   % set the caxis to all colorbaraxes
-  for i = 1:numel(cax)
-    if strcmp(get(cax(i),'zscale'),'log')
-      caxis(cax(i),10.^p);
+  for i = 1:numel(mtexFig.cBarAxis)
+    if strcmp(get(mtexFig.cBarAxis(i),'zscale'),'log')
+      caxis(mtexFig.cBarAxis(i),10.^p);
     else
-      caxis(cax(i),p);
+      caxis(mtexFig.cBarAxis(i),p);
     end
   end
   

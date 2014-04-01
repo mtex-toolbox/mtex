@@ -18,7 +18,7 @@ figSize = get(mtexFig.parent,'Position');
 
 % decide between south and east
 if ~check_option(varargin,'log') && (check_option(varargin,'south') || ...
-    (figSize(4) > mtexFig.axesHeight+10 && ~check_option(varargin,'east')))
+    (any(figSize(4) > mtexFig.axesHeight+10) && ~check_option(varargin,'east')))
   if ~check_option(varargin,'south')
     varargin = [{'south'},varargin];
   end

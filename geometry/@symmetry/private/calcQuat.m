@@ -17,7 +17,13 @@ switch Laue
     orth = sum(abs(dot_outer(axis,axis)));
     
     if all(round(orth)==1)
-      rot = {Axis(axis(2),2)};
+      if check_option(varargin,'2||a')
+        rot = {Axis(axis(1),2)};
+      elseif check_option(varargin,'2||c')
+        rot = {Axis(axis(3),2)};
+      else
+        rot = {Axis(axis(2),2)};
+      end
     else
       rot = {Axis(axis(round(orth)==1),2)};
     end

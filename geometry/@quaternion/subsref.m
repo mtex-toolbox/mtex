@@ -15,7 +15,7 @@ switch s(1).type
       varargout{1} = q;
     end
       
-  case '.'
+  otherwise
     [varargout{1:nargout}] = builtin('subsref',q,s);
 end
 end

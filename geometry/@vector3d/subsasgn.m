@@ -1,7 +1,7 @@
 function v = subsasgn(v,s,b)
 % overloads subsasgn
 
-if isempty(v) && ~isempty(b)
+if ~isa(v,'vector3d') && ~isempty(b)
   v = b;
   v.x = [];
   v.y = [];

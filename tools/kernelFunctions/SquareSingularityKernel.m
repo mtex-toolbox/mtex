@@ -1,4 +1,4 @@
-classdef squaredSingularityKernel < kernel
+classdef SquareSingularityKernel < kernel
       
   properties
     kappa = 90;
@@ -7,7 +7,7 @@ classdef squaredSingularityKernel < kernel
       
   methods
     
-    function psi = deLaValeePoussinKernel(varargin)
+    function psi = SquareSingularityKernel(varargin)
       
   
       psi = psi.cutA;

@@ -51,7 +51,8 @@ if isempty(mtexFig.children)
     sP(i) = sphericalPlot(ax,proj(i),varargin{:});         %#ok<AGROW>
     
   end
-        
+  mtexFig.drawNow;
+          
 else % add to or overide existing axes
     
   for i = 1:numel(mtexFig.children)

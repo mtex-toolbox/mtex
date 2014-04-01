@@ -56,11 +56,13 @@ rho = mod(atan2(dot(ry,dv),dot(rx,dv)),2*pi);
 rho(isnan(rho)) = 0;
 
 ind = isnull(angle(center,sR.vertices));
-if any(ind)
+if any(ind) % if center is in a vertice
   
   alpha = sR.innerAngle;
   rho = mod(rho,alpha(ind)) * 2*pi ./ alpha(ind);
   
+elseif any(isnull(dot(sR.N,center))) % if center is at the boundary
+  rho = mod(rho,pi) * 2;
 end
 
 

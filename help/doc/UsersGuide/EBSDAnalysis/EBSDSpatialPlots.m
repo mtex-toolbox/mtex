@@ -34,10 +34,10 @@ close all;plot(ebsd('fo'))
 colorbar
 
 %%
-% The [[orientation2color.html, colorcoding]] could be specified by an
+% The <orientation2color.html colorcoding> could be specified by an
 % option
 
-close all, plot(ebsd('fo'),'colorcoding','ipdfHKL')
+close all, plot(ebsd('fo'))
 
 %%
 
@@ -142,7 +142,7 @@ hold off
 % To color a fibre, one has to specify the crystal direction *h* together
 % with its rgb color and the specimen direction *r*, which should be marked.
 
-close all, 
+close all
 plot(ebsd('fo'),'colorcoding',...
   'ipdfCenter',{Miller(1,1,1),[0 0 1]},...
   'r',zvector,...
