@@ -17,7 +17,7 @@ classdef eareaProjection < sphericalProjection
       theta(ind)  = pi - theta(ind);
 
       % turn around antipodal vectors
-      sP.sR.antipodal = false;
+      sP.sR.antipodal = false; v.antipodal = false;
       ind = ~sP.sR.checkInside(v);
       rho(ind) = rho(ind) + pi;
       

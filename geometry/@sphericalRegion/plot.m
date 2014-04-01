@@ -18,10 +18,11 @@ for j = 1:numel(sP)
     bigCircle = rotate(orth(sR.N(i)),rot);
     v = sR.alpha(i) * sR.N(i) + sqrt(1-sR.alpha(i)^2) * bigCircle;
     
-    v = v(sR.checkInside(v));
-    
     % project data
     [x,y] = project(sP(j).proj,v);
+    x(~sR.checkInside(v))=NaN;
+    
+
     
     % plot
     h(i) = optiondraw(line('xdata',x,'ydata',y,'parent',sP(j).ax,...

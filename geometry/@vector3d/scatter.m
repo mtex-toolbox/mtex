@@ -30,9 +30,6 @@ for i = 1:numel(sP)
   % project data
   [x,y] = project(sP(i).proj,v,varargin{:});
 
-  % annotations
-  annotations = {};
-
   % check that there is something left to plot
   if all(isnan(x) | isnan(y))
     if nargout > 0
@@ -80,7 +77,8 @@ for i = 1:numel(sP)
       
       % add annotations for min and max
       if numel(cdata) == length(v)
-        annotations = {'BL',{'Min:',xnum2str(min(cdata(:)))},'TL',{'Max:',xnum2str(max(cdata(:)))}};
+        set(sP(i).TL,'string',{'Max:',xnum2str(max(cdata(:)))});
+        set(sP(i).BL,'string',{'Min:',xnum2str(min(cdata(:)))});
       end
   
       % --------- colorcoding according to nextStyle -----------------
@@ -102,9 +100,6 @@ for i = 1:numel(sP)
 
     end
   end
-    
-  % add annotations
-  sP(i).plotAnnotate(annotations{:},varargin{:})
 
   % set resize function for dynamic marker sizes
   try
@@ -113,7 +108,11 @@ for i = 1:numel(sP)
       'PropertyPostSet', {@localResizeScatterCallback,sP(i).ax});
     % save listener, otherwise  callback may die
     setappdata(hax, 'dynamicMarkerSizeListener', hListener);
-  catch
+  catch    
+    hListener = addlistener(hax,'Position','PostSet',...
+      @(obj,events) localResizeScatterCallback(obj,events,sP(i).ax));
+    localResizeScatterCallback([],[],sP(i).ax);
+    setappdata(hax, 'dynamicMarkerSizeListener', hListener);
     %disp('some Error!');
   end
 
@@ -122,7 +121,10 @@ for i = 1:numel(sP)
     text(v,get_option(varargin,{'text','label'}),'parent',sP(i).ax,varargin{:});
   end
 
-  
+  if ~check_option(varargin,'doNotDraw')
+    mtexFig = getappdata(sP(1).parent,'mtexFig');
+    mtexFig.drawNow;
+  end
   
 end
 
@@ -163,7 +165,7 @@ for it = 1:length(t)
     setappdata(t(it),'extent',extend);
   end
   margin = get(t(it),'margin');
-  xy(2) = xy(2) - extend(4)/2 - margin - markerSize/2 + 2;
+  xy(2) = xy(2) - extend(4)/2 - margin - markerSize/2 - 5;
   if isnumeric(get(t(it),'BackgroundColor')), xy(2) = xy(2) - 5;end
   set(t(it),'position',xy);
   set(t(it),'unit','data');

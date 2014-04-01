@@ -6,7 +6,7 @@ function ori = discreteSample(component,npoints,varargin)
 if numel(component.weights) == 1
   ic = ones(npoints,1);
 else
-  ic = discretesample(component.weights, points);
+  ic = discretesample(component.weights, npoints);
 end
     
 % take random rotational axes
@@ -24,5 +24,5 @@ r = rand(npoints,1);
 angle = 2 * acos(t ./ M);
 
 % set up orientations
-ori = orientation(quaternion(component.center,ic) .* ...
+ori = orientation(quaternion(component.center,ic(:)) .* ...
   axis2quat(axis,angle),component.CS,component.SS);

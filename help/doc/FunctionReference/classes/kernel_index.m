@@ -19,11 +19,11 @@ psi{1} = AbelPoissonKernel(0.79);
 psi{2} = deLaValeePoussinKernel(13);
 psi{3} = vonMisesFisherKernel(7.5);
 psi{4} = bumpKernel(35*degree);
-psi{5} = SquareSingularityKernel(0.72);
-psi{6} = fibreVonMisesFisherKernel(7.2);
-psi{7} = GaussWeierstrassKernel(0.07);
-psi{8} = DirichletKernel(3);
+psi{5} = DirichletKernel(9);
+%psi{6} = GaussWeierstrassKernel(0.07);
 
+%psi{5} = fibreVonMisesFisherKernel(7.2);
+%psi{8} = SquareSingularityKernel(0.72);
 
 
 %% SUB: Plotting the kernel
@@ -35,16 +35,30 @@ psi{8} = DirichletKernel(3);
 close; figure('position',[100,100,500,450])
 hold all
 for i = 1:numel(psi)
-  plot(psi{i},'K');
+  plot(psi{i});
 end
 hold off
 
 
 %%
 % the corresponding PDF
-plot(psi,'RK','legend');
-ylim([-5,20])
+close; figure('position',[100,100,500,450])
+hold all
+for i = 1:numel(psi)
+  plotPDF(psi{i},'RK');
+end
+hold off
+
+ylim([-1,20])
 
 %%
 % the Fourrier coefficients of the kernels
-plot(psi,'Fourier','bandwidth',32,'legend');
+
+close; figure('position',[100,100,500,450])
+hold all
+for i = 1:numel(psi)
+  plotFourier(psi{i},'bandwidth',32);
+end
+hold off
+
+

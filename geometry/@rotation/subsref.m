@@ -16,7 +16,12 @@ switch s(1).type
     end
       
   case '.'
-    [varargout{1:nargout}] = subsref@dynOption(r,s);
+    if isfield(r.opt,s(1).subs)
+      [varargout{1:nargout}] = subsref(r.prop,s(2:end));
+    else
+      [varargout{1:nargout}] = builtin('subsref',r,s);      
+    end
+    %[varargout{1:nargout}] = builtin('subsref',r,s(2:end));
 end
   
 end

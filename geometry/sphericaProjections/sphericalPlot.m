@@ -7,6 +7,7 @@ classdef sphericalPlot < handle
     grid     %
     ticks    %
     ax       %
+    parent   % the figure that contains the spherical plot
     TL       %
     TR       %
     BL       %
@@ -31,6 +32,7 @@ classdef sphericalPlot < handle
       end
       
       sP.ax = ax;
+      sP.parent = get(ax,'parent');
       sP.proj = proj;
       setappdata(ax,'sphericalPlot',sP);
       
@@ -66,6 +68,8 @@ classdef sphericalPlot < handle
         end
         
       end
+      
+      plotAnnotate(sP,varargin{:});
       
       % revert old hold status
       hold(ax,washold);
@@ -177,10 +181,13 @@ classdef sphericalPlot < handle
     function plotPlainGrid(sP,varargin)
       
       % the ticks
-      dgrid = get_option(varargin,'grid_res',30*degree);
+      %dgrid = get_option(varargin,'grid_res',30*degree);
       polarRange = sP.sphericalRegion.polarRange;
-      rho = round((polarRange(2):dgrid:polarRange(4))/degree);
-      theta = round((polarRange(1):dgrid:polarRange(3))/degree);
+      theta = round(linspace(polarRange(1),polarRange(3),4)/degree);
+      rho = round(linspace(polarRange(2),polarRange(4),4)/degree);      
+      %theta = round((polarRange(1):dgrid:polarRange(3))/degree);
+      %rho = round((polarRange(2):dgrid:polarRange(4))/degree);
+      
       set(sP.ax,'XTick',rho);
       set(sP.ax,'YTick',theta);
 

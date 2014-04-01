@@ -41,13 +41,13 @@ if ~check_option(varargin,'fast')
     [density,omega] = angleDistribution(cs1); % TODO this should probably be csU
   end
   
-  [minTheta,maxTheta,minRho,maxRho] = getFundamentalRegionPF(csD);
+  sR = csD.fundamentalSector;
 
   % for all angles
   for k=1:numel(omega)  
     
     S2G = equispacedS2Grid('points',max(1,round(4/3*sin(omega(k)/2).^2/res^2)),...
-      'minTheta',minTheta,'MAXTHETA',maxTheta,'MAXRHO',maxRho,'MINRHO',minRho,'RESTRICT2MINMAX'); % create a grid  TODO
+      sR,'RESTRICT2MINMAX'); % create a grid  TODO
 
     %S2G = S2Grid('random','points',max(1,numel(csD)*round(4/3*sin(omega(k)/2).^2/res^2)),...
     %  'minTheta',minTheta,'MAXTHETA',maxTheta,'MAXRHO',maxRho,'MINRHO',minRho,'RESTRICT2MINMAX'); % create a grid
