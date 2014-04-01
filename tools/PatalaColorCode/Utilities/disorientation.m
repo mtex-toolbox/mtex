@@ -56,6 +56,18 @@
 %   9/24/2012 - Added support for MTEX 3.3.1 symmetry labels
 %-------------------------------------------------------------------------%
 
+% some testing code
+% angle = 10*degree;
+% v = regularS2Grid('points',50000)
+% q = axis2quat(v,angle)
+% cs = symmetry('mmm');
+% d = disorientation([q.a(:),q.b(:),q.c(:),q.d(:)],cs.LaueName);
+% qq = quaternion(d.'), plot(qq.axis)
+% hold on, plot(rotate(cs.fundamentalSector,90*degree),'color','r'), hold off
+% hold on, plot(rotate(cs.fundamentalSector,axis2quat(yvector,90*degree)*axis2quat(zvector,90*degree)),'color','b'), hold off
+% plot(axis2quat(zvector,90*degree)*axis2quat(yvector,90*degree)*q.axis)
+
+
 function d = disorientation(m,cs)
 
 %---determine appropriate symmetry relations to use---%
