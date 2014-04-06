@@ -7,7 +7,7 @@
 %
 %
 %  Dr. Ralf Hielscher
-%  [[mailto:Ralf.Hielscher@mathematik.tu-chemnitz.de,Ralf.Hielscher@mathematik.tu-chemnitz.de]]
+%  <mailto:Ralf.Hielscher@mathematik.tu-chemnitz.de Ralf.Hielscher@mathematik.tu-chemnitz.de>
 %
 %  TU Chemnitz
 %  Fakultät für Mathematik
@@ -15,12 +15,12 @@
 %  D-09107 Chemnitz, GERMANY
 %
 %  personal homepage:
-%  [[http://www-user.tu-chemnitz.de/~rahi,http://www-user.tu-chemnitz.de/~rahi]]
+%  <http://www-user.tu-chemnitz.de/~rahi http://www-user.tu-chemnitz.de/~rahi>
 %
 % and
 %
 %  Florian Bachmann
-%  [[mailto:fl.bachmann@googlemail.com,fl.bachmann@googlemail.com]]
+%  <mailto:fl.bachmann@googlemail.com fl.bachmann@googlemail.com>
 %
 %  TU Bergakademie Freiberg
 %  Institute of Geophysics and Geoinformatics
@@ -32,7 +32,7 @@
 % All MTEX releases, development news, FAQs can be found on the MTEX
 % hompage
 %
-%  [[http://mtex.googlecode.com,http://mtex.googlecode.com/]]
+%  <http://mtex.googlecode.com http://mtex.googlecode.com/>
 %
 %% Credits
 %

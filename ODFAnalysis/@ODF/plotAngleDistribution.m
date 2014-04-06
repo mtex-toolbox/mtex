@@ -5,23 +5,17 @@ function plotAngleDistribution(odf,varargin)
 %  odf - @ODF
 %
 % Options
-%  RESOLUTION - resolution of the plots
+%  resolution - resolution of the plots
 %
 
+% get axis
+ax = get_option(varargin,'parent',gca);
 
-% make new plot
-[ax,odf,varargin] = getAxHandle(odf,varargin{:});
-if isempty(ax), newMTEXplot;end
-
-%
+% compute angle distribution
 [f,omega] = calcAngleDistribution(odf,varargin{:});
 
-
 % plot
-%bar(omega/degree,max(0,f));
-% xlim([0,max(omega)])
-
-p = findobj(gca,'Type','patch');
+p = findobj(ax,'Type','patch');
 
 if ~isempty(p)
   faktor = 100 / mean(f) / size(get(p(1),'faces'),1);
@@ -29,7 +23,6 @@ else
   faktor = 1;
 end
 
-optiondraw(plot(ax{:},omega/degree,faktor * max(0,f)),'LineWidth',2,varargin{:});
+optiondraw(plot(omega/degree,faktor * max(0,f),'parent',ax),'LineWidth',2,varargin{:});
 
-optionplot(omega/degree,faktor * max(0,f),varargin{:});
-xlabel(ax{:},'orientation angle in degree')
+xlabel(ax,'orientation angle in degree')

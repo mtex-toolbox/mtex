@@ -1,19 +1,19 @@
 function plotPDF(grains,h,varargin)
-% plot pole figures
+% plot mean orientation in pole figures
 %
 % Syntax
-%   plotPDF(ebsd,[h1,..,hN])
+%   plotPDF(grains,[h1,..,hN])
 %
 % Input
-%  ebsd - @GrainSet
-%  h    - @Miller crystallographic directions
+%  grains - @GrainSet
+%  h      - @Miller crystallographic directions
 %
 % Options
-%  SUPERPOSITION - plot superposed pole figures
-%  POINTS        - number of points to be plotted
+%  superposition - plot superposed pole figures
+%  points        - number of points to be plotted
 %
 % Flags
-%  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal - include <AxialDirectional.html antipodal symmetry>
 %  complete  - plot complete (hemi)--sphere
 %
 % See also
@@ -21,9 +21,7 @@ function plotPDF(grains,h,varargin)
 % Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-[ax,grains,h,varargin] = getAxHandle(grains,h,varargin{:});
-
 varargin = set_option_property(grains,varargin{:});
 
-plotPDF(ax{:},grains.meanOrientation,h,...
+plotPDF(grains.meanOrientation,h,...
   'FigureTitle',inputname(1),varargin{:});

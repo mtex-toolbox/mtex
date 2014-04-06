@@ -14,9 +14,8 @@ function plotAngleDistribution( obj, varargin )
 % EBSD/calcAngleDistribution
 %
 
-% where to plot
-[ax,obj,varargin] = getAxHandle(obj,varargin{:});
-if isempty(ax), newMTEXplot;end
+% get axis
+ax = get_option(varargin,'parent',gca);
 
 % get phases
 ind = cellfun(@(c) isa(c,'misorientationAnalysis'),varargin);
@@ -94,7 +93,7 @@ end
 % plot
 if check_option(varargin,{'ODF','MDF'})
 
-  p = findobj(gca,'Type','patch');
+  p = findobj(ax,'Type','patch');
 
   if ~isempty(p)
     faktor = size(f,1) / size(get(p(1),'faces'),1);
@@ -102,13 +101,13 @@ if check_option(varargin,{'ODF','MDF'})
     faktor = size(f,1);
   end
 
-  optiondraw(plot(ax{:},omega/degree,faktor * max(0,f)),'LineWidth',2,varargin{:});
+  optiondraw(plot(omega/degree,faktor * max(0,f),'parent',ax),'LineWidth',2,varargin{:});
 else
-  optiondraw(bar(ax{:},omega/degree,f),'BarWidth',1.5,varargin{:});
+  optiondraw(bar(omega/degree,f,'parent',ax),'BarWidth',1.5,varargin{:});
 end
 
-xlabel('misorientation angle in degree')
-xlim([0,max(omega)/degree])
-ylabel('percent')
+xlabel(ax,'misorientation angle in degree')
+xlim(ax,[0,max(omega)/degree])
+ylabel(ax,'percent')
 
-legend(lg{:},'Location','northwest')
+legend(ax,lg{:},'Location','northwest')

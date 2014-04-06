@@ -20,9 +20,8 @@ function [x,omega] = plotFibre(odf,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-% where to plot
-[ax,odf,varargin] = getAxHandle(odf,varargin{:});
-if isempty(ax), newMTEXplot;end
+% get axis
+ax = get_option(varargin,'parent',gca);
 
 %
 if isa(varargin{1},'vector3d')
@@ -76,15 +75,14 @@ while nnz(ind) < 5
   ind = ind | ind2;
 end
 
-
 x = eval(odf,fibre,varargin{:});%#ok<EVLC>
 
-optionplot(ax{:},1:numel(ind),x,varargin{:});
+optiondraw(plot(1:numel(ind),x,'parent',ax),varargin{:});
 xlim(gca,[1,numel(ind)]);
 
 label = arrayfun(@(i) char(fibre(i),'nodegree'),find(ind),'uniformoutput',false);
 try
-xticklabel_rotate(find(ind),90,label);
+  xticklabel_rotate(find(ind),90,label);
 catch
 end
 

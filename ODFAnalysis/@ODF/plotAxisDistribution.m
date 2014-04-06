@@ -15,23 +15,17 @@ function plotAxisDistribution(odf,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-% make new plot
-[ax,odf,varargin] = getAxHandle(odf,varargin{:});
-if isempty(ax), newMTEXplot;end
-
 % plotting grid
 sR = fundamentalSector(disjoint(odf.CS,odf.SS),'antipodal',varargin{:});
 h = plotS2Grid(sR,'antipodal',varargin{:});
 
 % plot
-smooth(ax{:},h,pos(calcAxisDistribution(odf,h,varargin{:})),varargin{:});
+smooth(h,pos(calcAxisDistribution(odf,h,varargin{:})),varargin{:});
 
-if isempty(ax)
-  setappdata(gcf,'CS',odf.CS);
-  setappdata(gcf,'SS',odf.SS);
-  set(gcf,'tag','AxisDistribution');
-end
-setappdata(gcf,'options',extract_option(varargin,'antipodal'));
+setappdata(gcf,'CS',odf.CS);
+setappdata(gcf,'SS',odf.SS);
+set(gcf,'tag','AxisDistribution');
+
 name = inputname(1);
 set(gcf,'Name',['Axis Distribution of ',name]);
 

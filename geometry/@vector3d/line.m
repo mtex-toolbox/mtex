@@ -1,4 +1,4 @@
-function line(v,varargin)
+function varargout = line(v,varargin)
 
-scatter(reshape(v,[],1),varargin{:},'edgecolor',...
+[varargout{1:nargout}] = scatter(reshape(v,[],1),varargin{:},'edgecolor',...
   get_option(varargin,{'color','linecolor'},'k'),'Marker','none');

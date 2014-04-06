@@ -1,23 +1,19 @@
 function varargout = patchPatala(v,varargin)
 %
-%% Syntax
+% Syntax
 %
-%% Input
+% Input
 %
-%% Output
+% Output
 %
-%% Options
+% Options
 %
-%% See also
+% See also
 %
 
-%% get input
 
-[ax,v,varargin] = getAxHandle(v,varargin{:});
-ax = ax{1};
-
-%% draw surface
-
+% draw surface
+% TODO
 axes(ax)
 varargin{1}(v)
 
