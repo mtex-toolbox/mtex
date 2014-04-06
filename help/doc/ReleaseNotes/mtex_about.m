@@ -40,7 +40,4 @@
 %
 % * <http://www-user.tu-chemnitz.de/~potts/nfft/ NFFT> - D. Potts, S. Kunis, J. Keiner, A. Vollrath
 % * txt2mat -  A.Tönnesmann
-% * Sphere3d - JM DeFreitas
-% * Arrow3d - Changshun Deng
-% * statusbar, createTable - Yair M. Altman
 % * uitabpane - Shiying Zhao
