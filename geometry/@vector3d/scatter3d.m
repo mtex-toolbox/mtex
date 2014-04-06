@@ -9,8 +9,6 @@ function h = scatter3d(v,data,varargin)
 % See also
 % savefigure
 
-% -------------------- GET OPTIONS ----------------------------------------
-
 % where to plot
 if check_option(varargin,'parent')
   ax = get_option(varargin,'parent');

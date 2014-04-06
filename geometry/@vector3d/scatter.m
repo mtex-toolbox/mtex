@@ -1,4 +1,4 @@
-function scatter(v,varargin)
+function h = scatter(v,varargin)
 %
 % Syntax
 %   scatter(v)              %
@@ -25,80 +25,76 @@ function scatter(v,varargin)
 % initialize spherical plots
 sP = newSphericalPlot(v,varargin{:});
 
+h = [];
+
 for i = 1:numel(sP)
 
   % project data
   [x,y] = project(sP(i).proj,v,varargin{:});
 
   % check that there is something left to plot
-  if all(isnan(x) | isnan(y))
-    if nargout > 0
-      h = [];
-    end
-  else
-
-    % default arguments
-    patchArgs = {'parent',sP(i).ax,...
-      'vertices',[x(:) y(:)],...
-      'faces',1:numel(x),...
-      'facecolor','none',...
-      'edgecolor','none',...
-      'marker','o',...
-      };
-
-    % markerSize
-    res = max(v.resolution,1*degree);
-    res = get_option(varargin,'scatter_resolution',res);
-    MarkerSize  = get_option(varargin,'MarkerSize',min(8,50*res));
-    patchArgs = [patchArgs,{'MarkerSize',MarkerSize}]; %#ok<AGROW>
-
-    % dynamic markersize
-    if check_option(varargin,'dynamicMarkerSize') || ...
-        (~check_option(varargin,'MarkerSize') && length(v)>20)
-      patchArgs = [patchArgs {'tag','dynamicMarkerSize','UserData',MarkerSize}]; %#ok<AGROW>
-    end
+  if all(isnan(x) | isnan(y)), continue; end
     
-    % ------- colorcoding according to the first argument -----------
-    if ~isempty(varargin) && isnumeric(varargin{1}) && ~isempty(varargin{1})
-      
-      % extract colorpatchArgs{3:end}coding
-      cdata = varargin{1};
-      if numel(cdata) == length(v)
-        cdata = reshape(cdata,[],1);
-      else
-        cdata = reshape(cdata,[],3);
-      end
-      
-      % draw patches
-      h = optiondraw(patch(patchArgs{:},...
-        'facevertexcdata',cdata,...
-        'markerfacecolor','flat',...
-        'markeredgecolor','flat'),varargin{2:end});
-      
-      % add annotations for min and max
-      if numel(cdata) == length(v)
-        set(sP(i).TL,'string',{'Max:',xnum2str(max(cdata(:)))});
-        set(sP(i).BL,'string',{'Min:',xnum2str(min(cdata(:)))});
-      end
-  
-      % --------- colorcoding according to nextStyle -----------------
-    else
-  
-      % get color
-      if check_option(varargin,{'MarkerColor','MarkerFaceColor'})
-        mfc = get_option(varargin,'MarkerColor','none');
-        mfc = get_option(varargin,'MarkerFaceColor',mfc);
-      else % cycle through colors
-        [ls,mfc] = nextstyle(sP(i).ax,true,true,~ishold(sP(i).ax)); %#ok<ASGLU>
-      end
-      mec = get_option(varargin,'MarkerEdgeColor',mfc);
-  
-      % draw patches
-      h = optiondraw(patch(patchArgs{:},...
-        'MarkerFaceColor',mfc,...
-        'MarkerEdgeColor',mec),varargin{:});
+  % default arguments
+  patchArgs = {'parent',sP(i).ax,...
+    'vertices',[x(:) y(:)],...
+    'faces',1:numel(x),...
+    'facecolor','none',...
+    'edgecolor','none',...
+    'marker','o',...
+    };
 
+  % markerSize
+  res = max(v.resolution,1*degree);
+  res = get_option(varargin,'scatter_resolution',res);
+  MarkerSize  = get_option(varargin,'MarkerSize',min(8,50*res));
+  patchArgs = [patchArgs,{'MarkerSize',MarkerSize}]; %#ok<AGROW>
+
+  % dynamic markersize
+  if check_option(varargin,'dynamicMarkerSize') || ...
+      (~check_option(varargin,'MarkerSize') && length(v)>20)
+    patchArgs = [patchArgs {'tag','dynamicMarkerSize','UserData',MarkerSize}]; %#ok<AGROW>
+  end
+    
+  % ------- colorcoding according to the first argument -----------
+  if ~isempty(varargin) && isnumeric(varargin{1}) && ~isempty(varargin{1})
+      
+    % extract colorpatchArgs{3:end}coding
+    cdata = varargin{1};
+    if numel(cdata) == length(v)
+      cdata = reshape(cdata,[],1);
+    else
+      cdata = reshape(cdata,[],3);
     end
+      
+    % draw patches
+    h(i) = optiondraw(patch(patchArgs{:},...
+      'facevertexcdata',cdata,...
+      'markerfacecolor','flat',...
+      'markeredgecolor','flat'),varargin{2:end}); %#ok<AGROW>
+      
+    % add annotations for min and max
+    if numel(cdata) == length(v)
+      set(sP(i).TL,'string',{'Max:',xnum2str(max(cdata(:)))});
+      set(sP(i).BL,'string',{'Min:',xnum2str(min(cdata(:)))});
+    end
+      
+  else % --------- colorcoding according to nextStyle -----------------
+  
+    % get color
+    if check_option(varargin,{'MarkerColor','MarkerFaceColor'})
+      mfc = get_option(varargin,'MarkerColor','none');
+      mfc = get_option(varargin,'MarkerFaceColor',mfc);
+    else % cycle through colors
+      [ls,mfc] = nextstyle(sP(i).ax,true,true,~ishold(sP(i).ax)); %#ok<ASGLU>
+    end
+    mec = get_option(varargin,'MarkerEdgeColor',mfc);
+  
+    % draw patches
+    h(i) = optiondraw(patch(patchArgs{:},...
+      'MarkerFaceColor',mfc,...
+      'MarkerEdgeColor',mec),varargin{:}); %#ok<AGROW>
+
   end
 
   % set resize function for dynamic marker sizes
@@ -128,6 +124,7 @@ for i = 1:numel(sP)
   
 end
 
+if nargout == 0, clear h;end
 
 end
 

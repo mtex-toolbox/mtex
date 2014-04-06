@@ -16,20 +16,12 @@ function plotAxisDistribution(obj,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-% where to plot
-[ax,obj,varargin] = getAxHandle(obj,varargin{:});
-if isempty(ax), newMTEXplot;end
-
 % calc axis distribution
 axes = calcAxisDistribution(obj,'SampleSize',10000,varargin{:});
 
 % plot
-plot(ax{:},axes,'all','FundamentalRegion',varargin{:});
+plot(axes,'all','FundamentalRegion',varargin{:});
 
-% set tags
-if isempty(ax)
-  set(gcf,'tag','AxisDistribution');
-  setappdata(gcf,'CS',axes.CS);
-  set(gcf,'Name','Axis Distribution');
-end
-
+set(gcf,'tag','AxisDistribution');
+setappdata(gcf,'CS',axes.CS);
+set(gcf,'Name','Axis Distribution');
