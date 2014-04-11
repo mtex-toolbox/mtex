@@ -16,8 +16,15 @@ classdef sphericalRegion
         
     function sR = sphericalRegion(varargin)
       %
-      
-      if nargin > 0 && nargin < 3 && isa(varargin{1},'vector3d')
+
+      if check_option(varargin,'vertices')
+        
+        v = get_option(varargin,'vertices');
+        
+        sR.N = normalize(cross(v,v([2:end,1])));
+        sR.alpha = zeros(size(sR.N));
+        
+      elseif nargin > 0 && nargin < 3 && isa(varargin{1},'vector3d')
         sR.N = varargin{1}.normalize;
         if nargin == 2
           sR.alpha = varargin{2};
@@ -170,22 +177,38 @@ classdef sphericalRegion
     
     function c = center(sR)
       
-      v = equispacedS2Grid('resolution',1*degree);
-      v = v(sR.checkInside(v));
+      v = unique(sR.vertices);
       
-      c = mean(v);
+      if length(sR.N) < 2
+        
+        c = sR.N;
+        
+      elseif length(v) < 3
+        
+        % find the pair of maximum angle
+        w = angle_outer(sR.N,sR.N);
+        [i,j] = find(w == max(w(:)),1);
+        
+        c = mean(sR.N([i,j]));
       
-      if norm(c) < 1e-4
-        c = zvector;
+      elseif length(v) < 4
+        
+        c = mean(v);
+
       else
-        c = c.normalize;
+      
+        v = equispacedS2Grid('resolution',1*degree);
+        v = v(sR.checkInside(v));
+      
+        c = mean(v);
+      
+        if norm(c) < 1e-4
+          c = zvector;
+        else
+          c = c.normalize;
+        end
       end
-      
-      
     end
-    
-    
   end
-  
 end
 
