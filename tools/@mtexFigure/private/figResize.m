@@ -2,7 +2,7 @@ function figResize(fig,evt,mtexFig) %#ok<INUSL,INUSL>
 % resize figure and reorder subfigs
 
 % check autofit is enabled
-if isempty(mtexFig.children) || ~mtexFig.autofit, return;end
+if isempty(mtexFig.children), return;end
 
 % store old units and perform all calculations in pixel
 old_units = get(fig,'Units');
