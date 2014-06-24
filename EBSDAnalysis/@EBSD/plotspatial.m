@@ -1,4 +1,4 @@
-function varargout = plotspatial(ebsd,varargin)
+function h = plotspatial(ebsd,varargin)
 % spatial EBSD plot
 %
 % Input
@@ -43,117 +43,57 @@ function varargout = plotspatial(ebsd,varargin)
 % See also
 % EBSD/plot
 
-if isempty(ebsd), return, end
-
-% check for 3d data
-if isProp(ebsd,'z')
-  slice3(ebsd,varargin{:});
-  return
-end
-
-% get spatial coordinates and colorcoding
-
-x_D = [ebsd.prop.x ebsd.prop.y];
-
-% seperate measurements per phase
-numberOfPhases = numel(ebsd.phaseMap);
-X = cell(1,numberOfPhases);
-d = cell(1,numberOfPhases);
-opts = cell(1,numberOfPhases);
+% create a new plot
+mP = newMapPlot(varargin{:});
 
 % what to plot
-prop = get_option(varargin,'property','orientations',...
-  {'char','double','orientation','quaternion','rotation'});
-
-isPhase = false(numberOfPhases,1);
-for k=1:numberOfPhases
-  currentPhase = ebsd.phaseId==k;
-  isPhase(k)   = any(currentPhase);
-
-  if isPhase(k)
-    [d{k},property,opts{k}] = calcColorCode(ebsd,currentPhase,prop,varargin{:});
-    X{k} = x_D(currentPhase,:);
-  end
-end
-
-% ensure all data have the same size
-dim2 = cellfun(@(x) size(x,2),d);
-
-if numel(unique(dim2)) > 1
-  for k = 1:numel(d)
-    if dim2(k)>0
-      d{k} = repmat(d{k},[1,max(dim2)/dim2(k)]);
-    end
-  end
-end
-
-
-% default plot options
-
-varargin = set_default_option(varargin,...
-  {'name', ['plot of ' inputname(1)]});
-
-% clear up figure
-newMTEXplot('renderer','opengl',varargin{:});
-setCamera(varargin{:});
-
-%
-
-selectedPhases = find(isPhase);
-for p=1:numel(selectedPhases)
-  if ~isempty(d{selectedPhases(p)})    
-    h(p) = plotUnitCells(X{selectedPhases(p)},...
-      reshape(d{selectedPhases(p)},size(X{selectedPhases(p)},1),[]),ebsd.unitCell,varargin{:});
-  end
-end
-
-% make legend
-if strcmpi(property,'phase')
-  legend(h,ebsd.allMinerals(isPhase),'location','NorthEast');
-end
-
-
-% set appdata
-if strncmpi(property,'orientation',11)
-  setappdata(gcf,'CS',ebsd.allCS(isPhase));
-  setappdata(gcf,'CCOptions',opts(isPhase));
-  setappdata(gcf,'colorcoding',property(13:end));
-end
-
-set(gcf,'tag','ebsd_spatial');
-
-axis equal tight
-fixMTEXplot(gca,varargin{:});
-
-
-% set data cursor
-if ~isOctave()  
-  dcm_obj = datacursormode(gcf);
-  set(dcm_obj,'SnapToDataVertex','off')
-  set(dcm_obj,'UpdateFcn',{@tooltip,ebsd});
-
-  datacursormode on;
-end
-if nargout>0, varargout{1}=h; end
-
-% Tooltip function
-function txt = tooltip(empt,eventdata,ebsd) %#ok<INUSL>
-
-
-[pos,value] = getDataCursorPos(gcf);
-[sub,map] = findByLocation(ebsd,[pos(1) pos(2)]);
-
-if ~isempty(sub)
-
-  txt{1} = ['#'  num2str(find(map))];
-  txt{2} = ['Phase: ', sub.mineral];
-  if ~isNotIndexed(sub)
-    txt{3} = ['Orientation: ' char(sub.rotations,'nodegree')];
-  end
-  if ~isempty(value)
-    txt{3} = ['Value: ' xnum2str(value)];
-  end
+if nargin>1 && isnumeric(varargin{1})
+  property = varargin{1};
 else
-  txt = 'no data';
+  property = get_option(varargin,'property','phase');
 end
 
+% phase plot
+if ischar(property) && strcmpi(property,'phase')
+
+  for k=1:numel(ebsd.phaseMap)
+      
+    ind = ebsd.phaseId == k;
+    
+    if ~any(ind), continue; end
+    
+    color = ebsd.subSet(ind).color;
+    
+    h(k) = plotUnitCells([ebsd.prop.x(ind), ebsd.prop.y(ind)],...
+    color, ebsd.unitCell, 'parent', mP.ax, varargin{:}); %#ok<AGROW>  
+    
+  end
+
+  idPlotted = unique(ebsd.phaseId);
+  legend(h(idPlotted),ebsd.allMinerals(idPlotted),'location','NorthEast');
+  
+else % plot numeric property
+  
+  if ~any(numel(property) == length(ebsd) * [1,3])
+    ebsd = ebsd.subSet(~isNotIndexed(ebsd));
+  end
+  
+  assert(any(numel(property) == length(ebsd) * [1,3]),...
+    'The number of values should match the number of ebsd data!')
+  
+  h = plotUnitCells([ebsd.prop.x, ebsd.prop.y],...
+    property, ebsd.unitCell, 'parent', mP.ax, varargin{:});
+  
+end
+  
+% keep track of the extend of the graphics
+% this is needed for the zoom: TODO maybe this can be done better
+axis(mP.ax,'tight')
+mP.extend(1) = min(mP.extend(1),min(ebsd.prop.x(:)));
+mP.extend(2) = max(mP.extend(2),max(ebsd.prop.x(:)));
+mP.extend(3) = min(mP.extend(3),min(ebsd.prop.y(:)));
+mP.extend(4) = max(mP.extend(4),max(ebsd.prop.y(:)));
+
+if nargout==0, clear h; end
+
+end
