@@ -20,25 +20,18 @@ classdef dynOption
     end
     
     % -----------------------------------------
-    function varargout = subsref(dOpt,s)
-      
-      try
-        [varargout{1:nargout}] = builtin('subsref',dOpt,s);
-      catch err
-        if (strcmp(err.identifier,'MATLAB:noSuchMethodOrField'))
-          try
-            varargout = cell(1,numel(dOpt));
-            for i = 1:numel(dOpt)
-              varargout{i} = subsref(dOpt(i).opt,s);
-            end
-          catch
-            throwAsCaller(err);
-          end
-        else
-          throwAsCaller(err);
-        end
-      end      
-    end
+%     function varargout = subsref(dOpt,s)
+%       
+%       
+%       try
+%         varargout = cell(1,numel(dOpt));
+%         for i = 1:numel(dOpt)
+%           varargout{i} = subsref(dOpt(i).opt,s);
+%         end
+%       catch
+%         [varargout{1:nargout}] = builtin('subsref',dOpt,s);
+%       end      
+%     end
     
     % -------------------------------------------
     %function varargout = subsasgn(dOpt,s,value)
@@ -96,7 +89,11 @@ classdef dynOption
         fn = names{i};
         switch class(dOpt.opt.(fn))
           case 'double'
-            s = xnum2str(dOpt.opt.(fn));
+            if numel(dOpt.opt.(fn)) < 20
+              s = xnum2str(dOpt.opt.(fn));
+            else
+              s = [size2str(dOpt.opt.(fn)) ' double'];
+            end
           case 'logical'
             if dOpt.opt.(fn)
               s = 'true';
