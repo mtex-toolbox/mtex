@@ -1,5 +1,5 @@
 %% Plotting spatially indexed EBSD data
-% How to plot spatially indexed orientations
+% How to visualize EBSD data
 %
 %% Open in Editor
 %
@@ -10,60 +10,155 @@
 %% Contents
 %
 
-%%
+%% Phase Plots
 % Let us first import some EBSD data with a [[matlab:edit mtexdata, script file]]
 
 mtexdata forsterite
 
-%% Coloring of spatial orientation data
-% If the EBSD data are provided with spatial coordinates, one can
-% assign a color to each orientation and [[EBSD.plotspatial.html,plot]]
-% a colored map
+%%
+% By default MTEX plots a phase map for EBSD data.
 
-close all;plot(ebsd('fo'))
+plot(ebsd)
+
 
 %%
-% The orientations of the spatial map are mapped according to a
-% <ColorCodingEBSD_demo.html colorcoding>. A standard way to color
-% orientations is to assign each fibre $g*h=r$ a chromatic value, where the
-% specimen direction $r$ is fixed. Then the map can be interpreted as
-% colored inverse pole figure, where a certain crystallographic form (plane, axis)
-% is associated with a specified color in relation to the crystal reference
-% frame.
+% You can access the color of each phase by
 
+ebsd('Diopside').color
+
+%%
+% These values are RGB values, e.g. to make the color for diopside even
+% more red we can do
+
+ebsd('Diopside').color = [1 0 0];
+
+plot(ebsd)
+
+%% Visualizing arbitrary properties
+% Appart from the phase information we can use any other property to
+% colorize the EBSD data. As an example we may plot the band contrast
+
+plot(ebsd,ebsd.bc)
+colorbar
+
+
+%% Visualizing orienations
+% Actually, we can pass any list of numbers or colors as a second input
+% argument to be visualized together with the ebsd data. Hence, in order to
+% visualize the orientations in an EBSD map we have first to compute a
+% color for each orientation. the most simple way is to assign to each
+% orientation its rotational angle this is done by the command
+
+plot(ebsd('Forsterite'),ebsd('Forsterite').orientations.angle)
 colorbar
 
 %%
-% The <orientation2color.html colorcoding> could be specified by an
-% option
+% Lets make things a bit more formal. Therefore we define first a
+% orientation mapping that assignes to each orientation its rotational
+% angle
 
-close all, plot(ebsd('fo'))
+oM = angleOrientationMapping(ebsd('Fo'))
 
 %%
+% now the color, which is actually the rotatinal angle, is computed by the
+% command
 
-colorbar
+color = oM.orientation2color(ebsd('Fo').orientations);
 
+%%
+% and we can visuallize it by
+plot(ebsd('Forsterite'),color)
+
+%%
+% While for the previous case this seems to be unnecesarily complicated it
+% allows us to define arbitrary complex color mapping. Consider for example
+% the following standard color mapping that uses an colorization of the
+% fundamental sector in the inverse pole figure to assign a color to each
+% orientation
+
+% this defines a color mapping for the Forsterite phase
+oM = ipdfHSVOrientationMapping(ebsd('Forsterite'))
+
+% this is the colored fundamental sector
+plot(oM)
+
+%%
+% Now we can proceed as above
+
+% compute the colors
+color = oM.orientation2color(ebsd('Fo').orientations);
+
+% plot the colors
+plot(ebsd('Forsterite'),color)
+
+%%
+% Orientation mappings usually provide several options to alter the
+% alignment of colors. Lets give some examples
+
+% we may interchange green and blue by setting
+oM.colorPostRotation = reflection(yvector);
+
+plot(oM)
+
+%%
+% or cycle of colors red, green, blue by
+oM.colorPostRotation = rotation('axis',zvector,'angle',120*degree);
+
+plot(oM)
+
+%%
+% Furthermore, we can explicitly set the inverse pole figure directions by
+
+oM.inversePoleFigureDirection = zvector;
+
+% compute the colors again
+color = oM.orientation2color(ebsd('Forsterite').orientations);
+
+% and plot them
+plot(ebsd('Forsterite'),color)
+
+
+%%
+% Beside the recommented orientation mapping
+% <ipdfHSVOrientationMapping.html ipdfHSVOrientationMapping> MTEX supports
+% also a lot of other color mappings as summarized below
+%
+% * 
+% *
+% *
+% *
+%
+%
 %% Visualizing EBSD data with sharp textures
-% When visualize very sharp data the colorcoding of the data has to be
-% adapted. Let us consider the following data set
+% Using spezialized orientation mappings is particularly usefull when
+% visualizing sharp data. Let us consider the following data set
 
 mtexdata sharp
-close all;plot(ebsd)
+
+oM = ipdfHSVOrientationMapping(ebsd);
+
+close all;plot(ebsd,oM.orientation2color(ebsd.orientations))
 
 %%
-% and have a look into the 001 inverse pole figure
+% and have a look into the 001 inverse pole figure.
 
-plotIPDF(ebsd,zvector,'colorcoding','ipdfangle','r',zvector,...
-  'MarkerSize',3,'grid')
-colorbar
+% compute the positions in the inverse pole figure
+h = ebsd.orientations .\ zvector;
+h = project2FundamentalRegion(h);
+
+% compute the azimuth angle in degree
+color = h.rho ./ degree;
+
+plotIPDF(ebsd,zvector,'property',color,'MarkerSize',3,'grid')
+% colorbar % TODO
 
 %%
-% The data have been colorcoded according to its azimuth angle. We see that
-% all individual orientations are clustered around azimuth angle 25 degree
-% with some outliers at 90 and 120 degree. In order to increase the contrast for
-% the main group we restrict the colorrange from 20 degree to 20 degree
+% We see that all individual orientations are clustered around azimuth
+% angle 25 degree with some outliers at 90 and 120 degree. In order to
+% increase the contrast for the main group we restrict the colorrange from
+% 20 degree to 29 degree.
 
-caxis([20 29]);
+caxis([20 29]-120);
 
 % by the following lines we colorcode the outliers in purple.
 cmap = colormap;
@@ -74,10 +169,31 @@ colormap(cmap)
 %%
 % The same colorcoding we can now apply to the EBSD map.
 
-close all;
-plot(ebsd,'colorcoding','ipdfangle','r',zvector)
+% plot the data with the customized color
+plot(ebsd,color)
 
-caxis([20 29]);
+% set scaling of the angles to 20 - 29 degree
+caxis([20 29]-120);
+
+% colorize outliers in purple.
+cmap = colormap;
+cmap(end,:) = [1 0 1];
+cmap(1,:) = [1 0 1];
+colormap(cmap)
+
+%%
+% TODO: maybe remove this
+
+close all;
+
+oM = ipdfAzimuthOrientationMapping(ebsd('calcite'))
+oM.inversePoleFigureDirection = zvector;
+
+color = oM.orientation2color(ebsd.orientations);
+
+plot(ebsd,color)
+
+caxis([20 29]-120);
 colormap(cmap);
 
 %%

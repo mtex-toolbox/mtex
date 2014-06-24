@@ -5,10 +5,6 @@
 %
 %% Contents
 %
-% Let us first import some EBSD data
-
-mtexdata forsterite
-
 %% See also
 % EBSD/plotspatial grain/plotGrains ebsdColorbar orientation2color
 
@@ -38,111 +34,172 @@ mtexdata forsterite
 %
 %% Assigning the Euler angles to the RGB values
 % Using the Euler angles as the RGB values is probably the most simplest
-% way of colorcoding. However, it introduces a lot of artefacts at those
-% points where different Euler angles describe almost the same orientation.
-% In this case, the point 2 of our requirement list is not satisfied. The following
-% plot shows how the colorcoding covers the whole orientation space. The
-% singularities of this representation are quite obvious.
+% way of mapping an orientation to a color. In MTEX such a color map is
+% defined as a variable of type <orientationMapping.html orientatiomMapping>
 
-ebsdColorbar(symmetry('-1'),'colorcoding','BungeRGB','sections',6,'phi1')
+% we have to set up a crystal symmetry first, as it defines the fundamental
+% region for the Euler angles
+cs = symmetry('432')
+
+% thise defins the orientation map
+oM = BungeRGBOrientationMapping(cs)
+
+%%
+% Given an arbitrary orientation
+
+ori = orientation('Euler',10*degree,20*degree,0*degree)
+
+%%
+% we can compute the corresponding color as rgb values by
+
+rgb = oM.orientation2color(ori)
+
+%%
+% Lets visuallize the orientation map by plotting it in orientation space
+% as phi_1 sections
+
+plot(oM,'sections',6,'phi1')
+
+
+%%
+% Although this visualization looks very smooth, the orientation map using
+% Euler angles introduces lots of color jumps, i.e., the point 2 of our
+% requirement list is not satisfied. This becomes obvious when plotting the
+% colors as sigma sections, i.e., when section according to phi_1 - phi_2
+
+plot(oM,'sections',6,'sigma')
 
 
 %% Colorcoding according to inverse pole figure 
 %
-% The standard way of plotting EBSD data in orientation maps is based on an inverse
-% pole figure color coding. Through these color code, one can make a direct relationship
-% between diffent grains and their respective crystal directions in relation to one of the axis
-% of the sample reference frame (xvector, yvector or zvector).
+% The standard way of mapping orientations to colors is based on inverse
+% pole figures. The following orienation map assignes a color to each
+% direction of the fundamental sector of the inverse pole figure
 
-close all
-plot(ebsd('Fo'))
+oM = ipdfHSVOrientationMapping(cs)
 
-%%
-
-colorbar
+plot(oM)
 
 %%
-% *HKL*. 
-% Another inverse Pole figure color code
+% We may also look at the inverse pole figure sphere in 3d. One can nicely
+% observe how the color map follows the given symmetry group.
 
-% TODO
-%close all; plot(ebsd('Fo'),'colorcoding','ipdfHKL')
+plot(oM,'3d')
+
+% add some axes
+hold on
+gray = [0.4 0.4 0.4];
+arrow3d(cs.axes(1),'facecolor',gray)
+text3(Miller(1,0,0,cs),'a_1','horizontalAlignment','right')
+
+arrow3d(cs.axes(2),'facecolor',gray)
+text3(Miller(0,1,0,cs),'a_2','verticalAlignment','cap','horizontalAlignment','left')
+
+arrow3d(cs.axes(3),'facecolor',gray)
+text3(Miller(0,0,1,cs),'c','verticalAlignment','bottom')
+hold off
 
 %%
+% Alternatively we may plot the color mapping in 2d on the entire sphere
+% together with the symmetry elements
+
+plot(oM,'complete')
+
+hold on
+plot(cs)
+hold off
+
+
+%%
+% The orientation map provides several options to alter the alignment of
+% the colors. Lets give some examples
+
+% we may interchange green and blue by setting
+oM.colorPostRotation = reflection(yvector);
+
+plot(oM)
+
+%%
+% or shift the cycle of colors red, green, blue by
+oM.colorPostRotation = rotation('axis',zvector,'angle',120*degree);
+
+plot(oM)
+
+
+%%
+% Lets now consider an EBSD map
+
+mtexdata forsterite
+
+plot(ebsd)
+
+%%
+% and asume we want to colorize the Forsterite phase according to its
+% orientation. Then we first define the orientation mapping.
+% Note that we can pass the phase we want to color instead of the crysta
+% symmetry
+
+oM = ipdfHSVOrientationMapping(ebsd('Forsterite'))
+
+%%
+% We may also want to set the inverse pole figure direction. This is done by
+
+oM.inversePoleFigureDirection = zvector;
+
+%%
+% Next we compute the color corresponding to each orientation we want to
+% plot.
+
+color = oM.orientation2color(ebsd('Forsterite').orientations);
+
+%%
+% Finally, we can use these colors to visuallize the orientations of the
+% Forsterite phase
+
+plot(ebsd('Forsterite'),color)
+
+%%
+% We can visuallize the orientations of the forsterite phase also the other
+% way round by plotting them into the inverse pole figure map.
+
+plot(oM)
+
+hold on
+plotIPDF(ebsd('Forsterite'),oM.inversePoleFigureDirection,...
+  'MarkerSize',4,'MarkerFaceColor','none','MarkerEdgeColor','k')
+hold off
+
+%%
+% Since orientations measured by EBSD devices are pure rotations specified by
+% its Euler angles, we may restrict the crystal symmetry group to pure
+% rotations as well. As this group is smaller in general the corresponding
+% fundamental sector is larger, which allows to distinguish more rotations
+
+% this restricts the crystal symmetries used for visualization
+% to proper rotations
+ebsd('Forsterite').CS = ebsd('Forsterite').CS.properGroup;
+oM.CS1 = oM.CS1.properGroup;
+
 %
-colorbar
-
-odf = calcODF(ebsd('Fo'),'silent');
-figure, plotIPDF(odf,xvector,'antipodal','silent')
-
-%%
-% We can change the default view onto the specimen (xvector) by setting the option *r*
-
-close all, plot(ebsd('Fo'),'r',zvector)
-
-%%
-%
-colorbar
-figure, plotIPDF(odf,zvector,'antipodal','silent')
-
-%%
-close all
-
-%% IPDF Overview
-% standard colorcoding with and without antipodal symmetry
+plot(oM)
 
 %% 
-% *triclinic symmetry*
-ebsdColorbar(symmetry('1'))
-ebsdColorbar(symmetry('-1'),'antipodal')
+% We observe that the fundamental sector is twice as large as for the
+% original crystal symmetry. Furthermore, the meassured Euler angles are
+% not symmetric within this enlarged fundamental sector
+
+hold on
+plotIPDF(ebsd('Forsterite'),oM.inversePoleFigureDirection,...
+  'MarkerSize',4,'MarkerFaceColor','none','MarkerEdgeColor','k')
+hold off
 
 %%
-% *monoclinic symmetry*
-ebsdColorbar(symmetry('2/m'))
-ebsdColorbar(symmetry('2/m'),'antipodal')
+% Lets finish this example by plotting the ebsd map of the Forsterite
+% orientations color mapped according to this restricted symmetry group.
+% The advantage of restricting the symmetry group is that we can
+% distinguish more grains.
 
-%%
-% *orthorhombic symmetry*
-ebsdColorbar(symmetry('mmm'))
-ebsdColorbar(symmetry('mmm'),'antipodal')
+color = oM.orientation2color(ebsd('Forsterite').orientations);
 
-%%
-% *tetragonal symmetry*
-ebsdColorbar(symmetry('4/m'))
-ebsdColorbar(symmetry('4/m'),'antipodal')
-
-%% 
-% *trigonal symmetry*
-ebsdColorbar(symmetry('-3'))
-ebsdColorbar(symmetry('-3'),'antipodal')
-
-%%
-%
-ebsdColorbar(symmetry('-3m'))
-ebsdColorbar(symmetry('-3m'),'antipodal')
-
-%%
-%
-ebsdColorbar(symmetry('4/mmm'))
-ebsdColorbar(symmetry('4/mmm'),'antipodal')
-
-%% 
-% *hexagonal symmetry*
-ebsdColorbar(symmetry('6/m'))
-ebsdColorbar(symmetry('6/m'),'antipodal')
-
-%%
-%
-ebsdColorbar(symmetry('6/mmm'))
-ebsdColorbar(symmetry('6/mmm'),'antipodal')
-
-%% 
-% *cubic symmetry*
-ebsdColorbar(symmetry('m-3'))
-ebsdColorbar(symmetry('m-3'),'antipodal')
-
-%% 
-% 
-ebsdColorbar(symmetry('m-3m'))
-ebsdColorbar(symmetry('m-3m'),'antipodal')
+plot(ebsd('Forsterite'),color)
 
