@@ -62,6 +62,9 @@ switch cs.id
   case 11 % 32
     h = Miller(1,0,0,cs);
     N = rotate(N,rotation('axis',zvector,'angle',h.rho-120*degree));
+  case 12 % 3m
+    h = Miller(1,0,0,cs);
+    N = rotate(N,rotation('axis',zvector,'angle',h.rho-120*degree));
   case 13
     h = Miller(1,0,0,cs);
     N = rotate(N,rotation('axis',zvector,'angle',h.rho-120*degree));
@@ -70,7 +73,8 @@ switch cs.id
   case 26
     N = rotate(N,-30*degree);
   case 28 % 23
-    N = [vector3d(0,-1,1),vector3d(-1,0,1),vector3d(1,0,1),yvector,zvector];
+    %N = [vector3d(0,-1,1),vector3d(-1,0,1),vector3d(1,0,1),yvector,zvector];
+    N = vector3d([1 1 0 0],[1 -1 1 -1],[0 0 1 1]);
   case 29 % m-3
     N = [vector3d(0,-1,1),vector3d(-1,0,1),xvector,yvector,zvector];
   case 30 % 432
