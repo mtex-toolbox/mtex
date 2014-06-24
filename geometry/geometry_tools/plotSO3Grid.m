@@ -45,8 +45,7 @@ elseif strcmpi(sectype,'omega')
 end
   
 % sections
-nsec = get_option(varargin,'SECTIONS',...
-  round(max_sec/get_option(varargin,'resolution',5*degree)));
+nsec = get_option(varargin,'sections',min(18,round(max_sec/10/degree)));
 sec = linspace(0,max_sec,nsec+1); sec(end) = [];
 sec = get_option(varargin,sectype,sec,'double');
 nsec = length(sec);

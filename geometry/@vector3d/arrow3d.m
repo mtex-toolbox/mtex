@@ -7,9 +7,7 @@ function h = arrow3d(v,varargin)
 % Input
 %
 % See also
-% savefigure vector3d/scatter3d vector3d/plot3d
-
-% -------------------- GET OPTIONS ----------------------------------------
+% savefigure vector3d/scatter3 vector3d/plot3 vector3d/text3
 
 % where to plot
 if check_option(varargin,'parent')
@@ -40,16 +38,11 @@ n = rotate(v.orth,rotation('axis',v,'angle',linspace(0,2*pi,50)));
 hull = repmat(c,length(n),1) + n * r;
 
 % plot as surface plot
-h = optiondraw(surf(hull.x,hull.y,hull.z,'facecolor','k','edgecolor','none'),varargin{:});
+h = optiondraw(surf(hull.x,hull.y,hull.z,'parent',ax,...
+  'facecolor','k','edgecolor','none'),varargin{:});
 
 % set caxis back
 caxis(ax,cax);
-
-
-if check_option(varargin,'label')
-  v = v.*1;
-  text(v.x,v.y,v.z,get_option(varargin,'label'),'FontSize',15,'verticalAlignment','cap')
-end
 
 % set axis to 3d
 axis(ax,'equal','vis3d','off');
