@@ -12,6 +12,15 @@ classdef eangleProjection < sphericalProjection
   
       [rho,theta] = project@sphericalProjection(sP,v,varargin{:});
 
+      % map to upper hemisphere
+      ind = find(theta > pi/2+10^(-10));
+      theta(ind)  = pi - theta(ind);
+
+      % turn around antipodal vectors
+      sP.sR.antipodal = false; v.antipodal = false;
+      ind = ~sP.sR.checkInside(v);
+      rho(ind) = rho(ind) + pi;
+      
       % formula for equal area projection
       r =  tan(theta/2);
             
