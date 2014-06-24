@@ -1,4 +1,4 @@
-function plot(v,varargin)
+function varargout = plot(v,varargin)
 % plot three dimensional vector
 %
 %
@@ -32,68 +32,67 @@ end
 % call plotting routine according to type
 switch lower(plotType)
 
-  case '3d'
-    
+  case '3d'    
     if v.isOption('plot')
-      v.plot3d(varargin{:});
+      [varargout{1:nargout}] = v.plot3d(varargin{:});
     else
-      v.scatter3d(varargin{:});
+      [varargout{1:nargout}] = v.scatter3d(varargin{:});
     end
     
   case 'scatter3d'
     
-    v.plot3d(varargin{:});
+    [varargout{1:nargout}] = v.plot3d(varargin{:});
   
   case 'scatter'
   
-    v.scatter(varargin{:});
+    [varargout{1:nargout}] = v.scatter(varargin{:});
     
   case 'smooth'
     
-    v.smooth(varargin{:});
+    [varargout{1:nargout}] = v.smooth(varargin{:});
     
   case 'surf'
     
-    v.surf(varargin{:});
+    [varargout{1:nargout}] = v.surf(varargin{:});
   
   case 'patchpatala'
         
-    v.patchPatala(varargin{:});
+    [varargout{1:nargout}] = v.patchPatala(varargin{:});
         
   case 'contourf'
     
-    v.contourf(varargin{:});
+    [varargout{1:nargout}] = v.contourf(varargin{:});
     
   case 'contour'
     
-    v.contour(varargin{:});
+    [varargout{1:nargout}] = v.contour(varargin{:});
     
   case 'pcolor'
     
-    v.pcolor(varargin{:});
+    [varargout{1:nargout}] = v.pcolor(varargin{:});
     
   case 'quiver'
     
-    v.quiver(varargin{:});
+    [varargout{1:nargout}] = v.quiver(varargin{:});
     
   case 'line'
     
-    v.line(varargin{:});
+    [varargout{1:nargout}] = v.line(varargin{:});
     
   case 'circle'
     
-    v.circle(varargin{:});
+    [varargout{1:nargout}] = v.circle(varargin{:});
     
   case 'plane'
     
-    v.circle(90*degree,varargin{:});
+    [varargout{1:nargout}] = v.circle(90*degree,varargin{:});
     
   case 'text'
     
-    v.text(varargin{:});
+    [varargout{1:nargout}] = v.text(varargin{:});
     
   case 'custom'
       
-    v.plotCustom(varargin{:});      
+    [varargout{1:nargout}] = v.plotCustom(varargin{:});      
     
 end
