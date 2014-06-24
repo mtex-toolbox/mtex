@@ -1,4 +1,4 @@
-function scatter(m,varargin)
+function varargout = scatter(m,varargin)
 % plot Miller indece
 %
 % Input
@@ -28,7 +28,7 @@ if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetris
     
     varargin{1} = repmat(varargin{1}(:)',size(m,1),1);    
       
-  elseif numel(m) < 100 || check_option(varargin,{'labeled','label'}) 
+  elseif length(m) < 100 || check_option(varargin,{'labeled','label'}) 
   
       [m,l] = symmetrise(m); % symmetrise without repetition
         
@@ -41,4 +41,4 @@ if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetris
 end
 
 % plot them all with the same color
-scatter@vector3d(m,varargin{:});
+[varargout{1:nargout}] = scatter@vector3d(m,varargin{:});
