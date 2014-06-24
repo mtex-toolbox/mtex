@@ -32,7 +32,7 @@ end
 b = find(any(grains.I_DG,2));
 A_D = A_D(b,b);
 
-[Dl Dr] = find(A_D|A_D');
+[Dl, Dr] = find(A_D|A_D');
 
 % delete adjacenies between different phase and not indexed measurements
 use = phase(Dl) == phase(Dr) & isIndexed(Dl) & isIndexed(Dr);
