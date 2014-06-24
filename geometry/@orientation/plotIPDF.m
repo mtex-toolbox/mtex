@@ -1,4 +1,4 @@
-function plotIPDF(o,r,varargin)
+function plotIPDF(o,varargin)
 % plot inverse pole figures
 %
 % Input
@@ -17,22 +17,38 @@ function plotIPDF(o,r,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-mtexFig = mtexFigure('ensureTag','ipdf',...
-  'ensureAppdata',{{'CS',o.CS}});
+mtexFig = mtexFigure('ensureTag','ipdf','ensureAppdata',{{'CS',o.CS}},...
+  'name',['Inverse Pole figures of ' o.CS.mineral]);
 
-if isempty(mtexFig.children)
+% create new inverse pole figure axes
+if isempty(mtexFig.children) 
+  
+  r = varargin{1};
   argin_check(r,'vector3d');
-else
-  if ~isa(r,'vector3d')
-    varargin = [{r},varargin];
-  end
-  r = getappdata(gcf,'r');
+  setappdata(mtexFig.parent,'inversePoleFigureDirection',r);
+  paxes = [];
+
+  % set data cursor
+  dcm_obj = datacursormode(mtexFig.parent);
+  set(dcm_obj,'SnapToDataVertex','off')
+  set(dcm_obj,'UpdateFcn',{@tooltip});
+
+  datacursormode on;
+  
+else % use the existing axes and directions
+  
+  % predefines axes?
+  paxes = get_option(varargin,'parent',mtexFig.children);
+  
+  r = getappdata(mtexFig.parent,'inversePoleFigureDirection');
+    
 end
 
-% colorcoding 1
+% color coding
 data = get_option(varargin,'property',[]);
+if size(data,2) == length(o), data = data.'; end
 
-% --------------- subsample if needed ------------------------
+%  subsample if needed 
 if (length(o)*length(o.CS)*length(o.SS) > 100000 || check_option(varargin,'points')) ...
     && ~check_option(varargin,{'all','contourf','smooth','contour'})
 
@@ -40,64 +56,30 @@ if (length(o)*length(o.CS)*length(o.SS) > 100000 || check_option(varargin,'point
   disp(['  plotting ', int2str(points) ,' random orientations out of ', int2str(length(o)),' given orientations']);
 
   samples = discretesample(ones(1,length(o)),points);
-  o= o.subSet(samples);
-  if ~isempty(data), data = data(samples); end
+  o = o.subSet(samples);
+  if ~isempty(data), data = data(samples,:); end
 
 end
 
-% colorcoding 2
-if check_option(varargin,'colorcoding')
-  colorcoding = lower(get_option(varargin,'colorcoding','angle'));
-  data = orientation2color(o,colorcoding,varargin{:});
-  
-  % convert RGB to ind
-  if numel(data) == 3*length(o)  
-    [data, map] = rgb2ind(reshape(data,[],1,3), 0.03,'nodither');
-    set(gcf,'colormap',map);    
-  end
-  
-end
-
-% ------------------ plot ------------------------------
-
-% predefines axes?
-paxes = get_option(varargin,'parent');
-
-for i = 1:length(r)
+for ir = 1:length(r)
 
   % which axes
-  if isempty(paxes), ax = mtexFig.nextAxis; else ax = paxes(i); end
+  if isempty(paxes), ax = mtexFig.nextAxis; else ax = paxes(ir); end
   
   % the crystal directions
-  rSym = symmetrise(r(i),o.SS);
+  rSym = symmetrise(r(ir),o.SS);
   h = o(:) \ rSym;
   
   %  plot  
   h.plot(repmat(data(:),1,length(rSym)),'scatter','symmetrised',...
-    'fundamentalRegion','TR',char(r(i),getMTEXpref('textInterpreter')),...
+    'fundamentalRegion','TR',char(r(ir),getMTEXpref('textInterpreter')),...
     'parent',ax,varargin{:});
   
   % TODO: unifyMarkerSize
 
 end
 
-if isempty(paxes)
-  setappdata(gcf,'r',r);
-  setappdata(gcf,'SS',o.SS);
-  setappdata(gcf,'CS',o.CS);
-  setappdata(gcf,'options',extract_option(varargin,'antipodal'));
-  set(gcf,'Name',['Inverse Pole figures of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
-  set(gcf,'Tag','ipdf');
-
-  % set data cursor
-  dcm_obj = datacursormode(gcf);
-  set(dcm_obj,'SnapToDataVertex','off')
-  set(dcm_obj,'UpdateFcn',{@tooltip});
-
-  datacursormode on;
-  mtexFig.drawNow;
-
-end
+mtexFig.drawNow;
 
 
 % --------------- Tooltip function ------------------
