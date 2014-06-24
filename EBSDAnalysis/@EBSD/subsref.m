@@ -23,15 +23,14 @@ if strcmp(s(1).type,'()')
 end
 
 % maybe reference to a dynamic property
-try %#ok<TRYNC>
+if isProperty(ebsd,s(1).subs)
+  
   [varargout{1:nargout}] = subsref@dynProp(ebsd,s);
-  return
+  
+else
+  
+  [varargout{1:nargout}] = builtin('subsref',ebsd,s);
+  
 end
 
-% maybe reference to a dynamic option
-try %#ok<TRYNC>
-  [varargout{1:nargout}] = subsref@dynOption(ebsd,s);
-  return
-end
-  
 end
