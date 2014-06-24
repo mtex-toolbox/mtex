@@ -19,9 +19,10 @@ classdef GrainSet < dynProp & misorientationAnalysis
   properties
     V  = zeros(0,3)              % vertices - (x,y,(z)) coordinate
     F  = zeros(0,3)              % edges(faces) - vertices ids (v1,v2,(v3))
-    I_FDint = sparse(0,0)        % cells - interior faces
-    I_FDext = sparse(0,0)        % cells - exterior faces
-    I_DG = sparse(0,0)           % grains - cells
+    I_DG = sparse(0,0)           % voronoi cells x grains
+    I_FDint = sparse(0,0)        % interior faces x voronoi cells
+    I_FDext = sparse(0,0)        % exterior faces y voronoi cells
+    
     A_Db  = sparse(0,0)          % cells with grain boundary
     A_Do  = sparse(0,0)          % cells within one grain
         
@@ -31,13 +32,13 @@ classdef GrainSet < dynProp & misorientationAnalysis
   
   properties (Dependent = true)
     id                           % identification number
-    A_D
-    A_G
+    A_D                          % adjacent cells
+    A_G                          % adjacent grains
     I_VF
     I_VD
     I_VG
-    I_FD
-    I_FG
+    I_FD                         % faces - cells
+    I_FG                         % faces - grains
     phaseId
     phase
     phaseMap
@@ -62,6 +63,8 @@ classdef GrainSet < dynProp & misorientationAnalysis
       obj.F        = grainStruct.F;            
       obj.V        = grainStruct.V;          
       obj.meanRotation = calcMeanRotation(obj);
+      
+      obj = cleanupFaces(obj);
       
     end
     
@@ -98,7 +101,7 @@ classdef GrainSet < dynProp & misorientationAnalysis
     end
     
     function I_FD = get.I_FD(grains)
-      I_FD = double(grains.I_FDext | grains.I_FDint);
+      I_FD = grains.I_FDext | grains.I_FDint;
     end
     
     function I_FG = get.I_FG(grains)
@@ -237,6 +240,19 @@ classdef GrainSet < dynProp & misorientationAnalysis
       end
     end
     
+  end
+ 
+  
+  methods (Access=protected)
+    function grains = cleanupFaces(grains)
+      % remove faces that are not a grainboundary
+
+      ind = ~any(grains.I_FD,2);
+      grains.I_FDext(ind,:) = [];
+      grains.I_FDint(ind,:) = [];
+      grains.F(ind,:) = [];
+      
+    end
   end
   
 end

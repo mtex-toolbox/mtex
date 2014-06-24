@@ -23,14 +23,16 @@ classdef Grain2d < GrainSet
   methods
     function obj = Grain2d(gs,varargin)
           
-      x_D = [gs.ebsd.prop.x(:),gs.ebsd.prop.y(:)];
+      x_D = [gs.ebsd.prop.x(:),gs.ebsd.prop.y(:)];    
       
       gs.I_FDext = EdgeOrientation(gs.I_FDext,gs.F,gs.V,x_D);
       gs.I_FDint = EdgeOrientation(gs.I_FDint,gs.F,gs.V,x_D);
                
       obj = obj@GrainSet(gs,varargin{:});      
+      
       obj.boundaryEdgeOrder = BoundaryFaceOrder(gs.D,gs.F,gs.I_FDext,gs.I_DG);
 
+      
       
       function I_ED = EdgeOrientation(I_ED,E,x_V,x_D)
         % compute the orientaiton of an edge -1, 1
@@ -83,9 +85,6 @@ classdef Grain2d < GrainSet
     
     end
   end
-
-
-  
   
 end
 
