@@ -1,4 +1,4 @@
-function surf(v,cdata,varargin)
+function h = surf(v,cdata,varargin)
 %
 % Syntax
 %
@@ -17,9 +17,6 @@ sP = newSphericalPlot(v,varargin{:});
 
 for j = 1:numel(sP)
 
-  %set(gcf,'renderer','zBuffer');
-  %shading interp
-
   % draw surface
       
   % project data
@@ -35,11 +32,15 @@ for j = 1:numel(sP)
   hold(sP(j).ax,'on')
   
   % plot surface  
-  h = surf(x,y,zeros(size(x)),real(data),'parent',sP(j).ax);
+  h(j) = surf(x,y,zeros(size(x)),real(data),'parent',sP(j).ax);
+  shading(sP(j).ax,'interp');
     
   hold(sP(j).ax,'off')
   
   % set styles
-  optiondraw(h,'LineStyle','none','Fill','on',varargin{:});
+  optiondraw(h(j),'LineStyle','none','Fill','on',varargin{:});
 
 end
+
+set(sP(1).parent,'renderer','zBuffer');
+if nargout == 0, clear h; end

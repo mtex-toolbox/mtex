@@ -1,4 +1,4 @@
-function plot3d(v,data,varargin)
+function varargout = plot3d(v,data,varargin)
 % plot spherical data
 %
 % Syntax
@@ -19,7 +19,7 @@ else
 end
 
 % plot
-surf(v.x,v.y,v.z,reshape(data,size(v,1),size(v,2),[]),'parent',ax);
+[varargout{1:nargout}] = surf(v.x,v.y,v.z,reshape(data,size(v,1),size(v,2),[]),'parent',ax);
 
 shading(ax,'interp');
 axis(ax,'equal','vis3d','off');

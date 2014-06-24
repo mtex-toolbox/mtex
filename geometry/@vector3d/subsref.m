@@ -12,8 +12,10 @@ switch s(1).type
       [varargout{1:nargout}] = builtin('subsref',v,s(2:end));
     else
       varargout{1} = v;
-    end      
-  case '.'
-    [varargout{1:nargout}] = subsref@dynOption(v,s);
+    end  
+  otherwise
+    
+    [varargout{1:nargout}] = builtin('subsref',v,s);
+      
 end
 end
