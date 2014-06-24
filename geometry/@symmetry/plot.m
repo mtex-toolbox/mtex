@@ -57,8 +57,8 @@ else
         circle(axes(i),'linewidth',2,'color','k');
       case 90
         options = {'FaceColor','none','LineWidth',3};
-        plotCustom(axes(i),{@(ax,x,y) square(x,y,symbolSize,'parent',ax,options{:})});
-        plotCustom(-axes(i),{@(ax,x,y) square(x,y,symbolSize,'parent',ax,options{:})});
+        plotCustom(axes(i),{@(ax,x,y) square(x,y,1.2*symbolSize,'parent',ax,options{:})});
+        plotCustom(-axes(i),{@(ax,x,y) square(x,y,1.2*symbolSize,'parent',ax,options{:})});
       case 120
         % small circle
         plotCustom([axes(i),-axes(i)],{@(ax,x,y) ...
