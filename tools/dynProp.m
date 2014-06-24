@@ -63,7 +63,11 @@ classdef dynProp
     
     
     % --------------------------------------------------
+  
     
+    function b = isProperty(dp,fieldName)
+      b = isfield(dp.prop,fieldName);
+    end
     
     function dp = subSet(dp,ind)
 
