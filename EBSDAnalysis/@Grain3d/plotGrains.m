@@ -73,7 +73,7 @@ else
   % set appdata
   if strncmpi(property,'orientation',11)
     setappdata(gcf,'CS',grains.allCS(isPhase));
-    setappdata(gcf,'r',get_option(opts,'r',xvector));
+    setappdata(gcf,'inversePoleFigureDirection',get_option(opts,'r',xvector));
     setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
     setappdata(gcf,'colorcoding',property(13:end));
   end

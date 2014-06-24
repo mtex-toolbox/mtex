@@ -1,8 +1,9 @@
-function plotGrains(grains,varargin)
+function h = plotGrains(grains,varargin)
 % colorize grains
 %
 % Syntax
-%   plotGrains(grains) % colorize by mean orientatation
+%   plotGrains(grains) % colorize by phase
+%   
 %   plotGrains(grains,'property','phase') % 
 %
 % Input
@@ -27,100 +28,63 @@ function plotGrains(grains,varargin)
 
 % --------------------- compute colorcoding ------------------------
 
-% seperate measurements per phase into cells
-numberOfPhases = numel(grains.phaseMap);
-X = cell(1,numberOfPhases);
-d = cell(1,numberOfPhases);
+% create a new plot
+mP = newMapPlot(varargin{:});
 
-% what to plot
-prop = get_option(varargin,'property','meanOrientation',{'char','double','quaternion','vector3d'});
-
-% seperate into cells and compute colorcoding
-isPhase = false(numberOfPhases,1);
-for p=1:numberOfPhases
-  currentPhase = grains.phaseId==p;
-  isPhase(p)   = any(currentPhase);
-
-  if isPhase(p)
-    X{p} = grains.boundaryEdgeOrder(currentPhase);
-    [d{p},property,opts] = calcColorCode(grains,currentPhase,prop,varargin{:});
-  end
+% what to plot - phase is default
+if nargin>1 && isnumeric(varargin{1})
+  property = varargin{1};
+else
+  property = get_option(varargin,'property','phase');
 end
 
-boundaryEdgeOrder = vertcat(X{:});
+% phase plot
+if ischar(property) && strcmpi(property,'phase')
 
-% ensure all data have the same size
-dim2 = cellfun(@(x) size(x,2),d);
+  for k=1:numel(grains.phaseMap)
+      
+    ind = grains.phaseId == k;
+    
+    if ~any(ind), continue; end
+    
+    color = grains.subSet(ind).ebsd.color;
 
-if numel(unique(dim2)) > 1
-  for k = 1:numel(d)
-    if dim2(k)>0
-      d{k} = repmat(d{k},[1,max(dim2)/dim2(k)]);
-    end
+    % plot polygons
+    h{k} = plotFaces(grains.boundaryEdgeOrder(ind),grains.V,color,...
+      'parent', mP.ax,varargin{:}); %#ok<AGROW>
+
+    lh{k} = h{k}(1);
+    
+    % reactivate legend information
+    set(get(get(h{k}(1),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');      
+    
   end
-end
-
-
-% ------------------- plotting --------------------------------------
-
-% set up figure
-newMTEXplot('renderer','opengl',varargin{:});
-setCamera(varargin{:});
-
-% set direction of x and y axis
-xlabel('x');ylabel('y');
-
-% plot polygons
-h = plotFaces(boundaryEdgeOrder,grains.V,vertcat(d{:}),varargin{:});
-
-% ---------------- legend -------------------------------------------
-
-% remove them from legend
-arrayfun(@(x) set(get(get(x,'Annotation'),'LegendInformation'),...
-    'IconDisplayStyle','off'),h);
-
-% make legend for phase plots
-if strcmpi(property,'phase'),
   
-  F = grains.F;
-  F(any(F==0,2),:) = [];
+  idPlotted = unique(grains.phaseId);
+  legend([lh{idPlotted}],grains.allMinerals(idPlotted));
 
-  dummyV = min(grains.V(F,:));
+else % plot numeric property
 
-  % phase colormap
-  lg = [];
-  for k=1:numel(d)
-    if ~isempty(d{k})
-
-      lg = [lg patch('vertices',dummyV,'faces',[1 1],'FaceColor',d{k}(1,:))];
-    end
-  end
-  legend(lg,grains.allMinerals(isPhase),'location','NorthEast');
+  assert(numel(property) == length(grains) || numel(property) == length(grains)*3,...
+    'The number of values should match the number of grains!')
+  
+  % plot polygons
+  h = plotFaces(grains.boundaryEdgeOrder,grains.V,property,...
+    'parent', mP.ax,varargin{:});
+  
 end
 
-% --------------finalize -------------------------------------------
+axis(mP.ax,'tight');
 
-% set appdata
-if strncmpi(property,'orientation',11)
-  setappdata(gcf,'CS',grains.allCS(isPhase));
-  setappdata(gcf,'r',get_option(opts,'r',xvector));
-  setappdata(gcf,'colorcenter',get_option(varargin,'colorcenter',[]));
-  setappdata(gcf,'colorcoding',property(13:end));
-end
+if nargout == 0, clear h;end
 
-set(gcf,'tag','ebsd_spatial');
-setappdata(gcf,'options',[extract_option(varargin,'antipodal'),...
-  opts varargin]);
-
-axis equal tight
-fixMTEXplot(gca,varargin{:});
 
 % set data cursor
-dcm_obj = datacursormode(gcf);
-set(dcm_obj,'SnapToDataVertex','off')
-set(dcm_obj,'UpdateFcn',{@tooltip,grains});
+%dcm_obj = datacursormode(gcf);
+%set(dcm_obj,'SnapToDataVertex','off')
+%set(dcm_obj,'UpdateFcn',{@tooltip,grains});
 
-datacursormode on;
+%datacursormode on;
 
 
 % -----------------------------------------------------------------
@@ -171,6 +135,9 @@ Polygons = [boundaryEdgeOrder(:)' holeEdgeOrder{:}];
 
 % how to colorize holes 
 % d(numel(boundaryEdgeOrder)+1:numel(Polygons),: ) = 1;
+if size(d,1) == 1
+  d = repmat(d,numel(boundaryEdgeOrder),1);
+end
 d(numel(boundaryEdgeOrder)+1:numel(Polygons),: ) = NaN;
 
 A = cellArea(V,Polygons);
@@ -218,10 +185,10 @@ for p=numel(Parts):-1:1
   % plot the patches
   h(p) = optiondraw(patch(obj),varargin{:});
 
+  % remove them from legend
+  set(get(get(h(p),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+  
 end
-
-
-
 
 function A = cellArea(V,D)
 
@@ -240,5 +207,3 @@ for k=1:numel(D)
   ndx = cs(k)+1:cs(k+1)-1;
   A(k) = abs(sum(dF(ndx))*0.5);
 end
-
-
