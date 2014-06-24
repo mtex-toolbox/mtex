@@ -92,7 +92,7 @@ switch dim
     % edges list
     F = [iv(:), ivn(:)];
     % should be unique (i.e one edge is incident to two cells D)
-    [F, b, ie] = unique(sort(F,2),'rows');
+    [F, ~, ie] = unique(sort(F,2),'rows');
     
     % edges incident to cells, E x D
     I_FD = sparse(ie,id,1);
