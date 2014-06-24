@@ -53,7 +53,8 @@ methods
       % vector3d_index symmetry_index
       
       % check for symmetry
-      m.CSprivate = getClass(varargin,'symmetry',symmetry);
+      m.CSprivate = getClass(varargin,'symmetry',[]);
+      assert(isa(m.CSprivate,'symmetry') && m.CSprivate.isCS,'No crystal symmetry specified!');
 
       if nargin == 0 %empty constructor
 
