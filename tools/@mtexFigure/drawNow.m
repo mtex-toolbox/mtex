@@ -1,6 +1,6 @@
 function  drawNow(mtexFig, varargin)
 
-if ~check_option(varargin,'position')  
+if check_option(varargin,'position')  
   adjustFigurePosition(mtexFig)
   refresh(mtexFig.parent);
 else
