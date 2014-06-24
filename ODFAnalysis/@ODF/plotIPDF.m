@@ -41,7 +41,7 @@ else
   end
 
   % finalize plot
-  setappdata(gcf,'r',r);
+  setappdata(gcf,'inversePoleFigureDirection',r);
   setappdata(gcf,'CS',odf.CS);
   setappdata(gcf,'SS',odf.SS);
   set(gcf,'tag','ipdf');
@@ -76,7 +76,7 @@ function [r,h,value] = currentVector
 CS = getappdata(gcf,'CS');
 h = Miller(vector3d('polar',pos(1),pos(2)),CS);
 h = round(h);
-r = getappdata(gcf,'r');
+r = getappdata(gcf,'inversePoleFigureDirection');
 r = r(iax);
 
 projection = getappdata(ax,'projection');
