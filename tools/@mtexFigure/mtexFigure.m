@@ -6,9 +6,9 @@ classdef mtexFigure < handle
     cBarAxis          % the colorbar axes
     outerPlotSpacing  % 
     innerPlotSpacing  %  
-    autofit           %    
-    nrows             % number of rows
-    ncols             % number of columns
+    keepAspectRatio   %
+    nrows = 1         % number of rows
+    ncols = 1         % number of columns
     axisWidth
     axisHeight
   end
@@ -16,7 +16,6 @@ classdef mtexFigure < handle
   properties (Dependent = true)        
     axesWidth
     axesHeight
-    %raster             % [number of columns, number of rows]
   end
   
   methods    
@@ -83,8 +82,7 @@ classdef mtexFigure < handle
         set(gcf,'units','pixel');
 
         varargin = delete_option(varargin,'color',1);
-
-        optiondraw(gcf,varargin{:});
+        
         set(gcf,'units',old_units);
       
         % set custom resize function
@@ -97,8 +95,8 @@ classdef mtexFigure < handle
           getMTEXpref('outerPlotSpacing'));
         mtexFig.innerPlotSpacing = get_option(varargin,'innerPlotSpacing',...
           getMTEXpref('innerPlotSpacing'));
-        mtexFig.autofit = get_option(varargin,'autofit',true);
-      
+        mtexFig.keepAspectRatio = get_option(varargin,'keepAspectRatio',true);
+              
         % invisible axes for adding a colorbar
         mtexFig.cBarAxis = axes('visible','off','position',[0 0 1 1],...
           'tag','colorbaraxis','HandleVisibility','callback');
@@ -117,6 +115,8 @@ classdef mtexFigure < handle
         
         set(mtexFig.parent,'color',[1 1 1],'nextPlot','replace');
         setappdata(mtexFig.parent,'mtexFig',mtexFig);        
+        
+        optiondraw(mtexFig.parent,varargin{:});
         
       else
         
@@ -137,6 +137,7 @@ classdef mtexFigure < handle
       
       screenExtend = get(0,'MonitorPositions');
       screenExtend = screenExtend(1,:); % consider only the first monitor
+      screenExtend = screenExtend(3:4);
       
       % compute best partioning
       calcBestFit(mtexFig,'screen','maxWidth',300);
@@ -148,48 +149,20 @@ classdef mtexFigure < handle
       set(mtexFig.parent,'position',position);
       
     end
-
-%     function aw = get.axisWidth(mtexFig)
-%       if ~isempty(mtexFig.children(1))
-%         pos = get(mtexFig.children(1),'position');
-%         aw = pos(3);
-%       else
-%         aw = [];
-%       end
-%     end
-%     
-%     function set.axisWidth(mtexFig,aw)      
-%       for i = 1:numel(mtexFig.children)        
-%         pos = get(mtexFig.children(1),'position');
-%         pos(3) = aw;
-%         set(mtexFig.children(i),'position',pos);
-%       end      
-%     end
-    
-%     function set.axisHeight(mtexFig,aw)      
-%       for i = 1:numel(mtexFig.children)        
-%         pos = get(mtexFig.children(1),'position');
-%         pos(4) = aw;
-%         set(mtexFig.children(i),'position',pos);
-%       end      
-%     end
-%     
-%     function aw = get.axisHeight(mtexFig)
-%       if ~isempty(mtexFig.children(1))
-%         pos = get(mtexFig.children(1),'position');
-%         aw = pos(4);
-%       else
-%         aw = [];
-%       end
-%     end
-        
+       
     function aw = get.axesWidth(mtexFig)
+      % the width of all axes is the number of columns times the width of
+      % each single axis + inner and outer spacing
+      
       aw = mtexFig.ncols * mtexFig.axisWidth + ...
         2*mtexFig.outerPlotSpacing + ...
         (mtexFig.ncols-1) * mtexFig.innerPlotSpacing;
     end
     
     function ah = get.axesHeight(mtexFig)
+      % the height of all axes is the number of rows times the height of
+      % each single axis + inner and outer spacing
+      
       ah = mtexFig.nrows * mtexFig.axisHeight + ...
         2*mtexFig.outerPlotSpacing + ...
         (mtexFig.nrows-1) * mtexFig.innerPlotSpacing;

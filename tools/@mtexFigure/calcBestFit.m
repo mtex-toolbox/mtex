@@ -22,38 +22,45 @@ else
 end
 figSize = figSize(3:4) - 2*mtexFig.outerPlotSpacing;
 
-% get axes size
-axesSize = get(mtexFig.children(1),'PlotBoxAspectRatio');
+if mtexFig.keepAspectRatio
 
-% correct for xAxisDirection
-if find(get(mtexFig.children(1),'CameraUpVector'))==1
-  axesSize(1:2) = fliplr(axesSize(1:2));
-end
-axesRatio = axesSize(2)/axesSize(1);
+  % get axes size
+  axesSize = get(mtexFig.children(1),'PlotBoxAspectRatio');
 
-% maximum axes width for a given partition
-lx = @(nc,nr) ceil(min((figSize(1)-(nc-1)*mtexFig.innerPlotSpacing)/nc,...
-  (figSize(2)-(nr-1)*mtexFig.innerPlotSpacing)/axesRatio/nr));
-
-% start with one row partition
-mtexFig.nrows = 1; mtexFig.ncols = numel(mtexFig.children);
-mtexFig.axisWidth = lx(mtexFig.ncols,mtexFig.nrows);
-
-% check for better partitions
-for nr=2:numel(mtexFig.children)
-  nc = ceil(numel(mtexFig.children)/nr);
-  if lx(nc,nr) > mtexFig.axisWidth % new best fit
-    mtexFig.axisWidth = lx(nc,nr);
-    mtexFig.ncols = nc;
-    mtexFig.nrows = nr;
+  % correct for xAxisDirection
+  if find(get(mtexFig.children(1),'CameraUpVector'))==1
+    axesSize(1:2) = fliplr(axesSize(1:2));
   end
+  axesRatio = axesSize(2)/axesSize(1);
+
+  % maximum axes width for a given partition
+  lx = @(nc,nr) ceil(min((figSize(1)-(nc-1)*mtexFig.innerPlotSpacing)/nc,...
+    (figSize(2)-(nr-1)*mtexFig.innerPlotSpacing)/axesRatio/nr));
+
+  % start with one row partition
+  mtexFig.nrows = 1; mtexFig.ncols = numel(mtexFig.children);
+  mtexFig.axisWidth = lx(mtexFig.ncols,mtexFig.nrows);
+
+  % check for better partitions
+  for nr=2:numel(mtexFig.children)
+    nc = ceil(numel(mtexFig.children)/nr);
+    if lx(nc,nr) > mtexFig.axisWidth % new best fit
+      mtexFig.axisWidth = lx(nc,nr);
+      mtexFig.ncols = nc;
+      mtexFig.nrows = nr;
+    end
+  end
+
+  if check_option(varargin,'maxWidth')
+    mtexFig.axisWidth = min(mtexFig.axisWidth,get_option(varargin,'maxWidth'));
+  end
+
+  mtexFig.axisHeight = ceil(mtexFig.axisWidth*axesRatio);
+  
+else
+  mtexFig.axisWidth = (figSize(1)-(mtexFig.ncols-1)*mtexFig.innerPlotSpacing)/mtexFig.ncols;
+  mtexFig.axisHeight = (figSize(2)-(mtexFig.nrows-1)*mtexFig.innerPlotSpacing)/mtexFig.nrows;
 end
-
-if check_option(varargin,'maxWidth')
-  mtexFig.axisWidth = min(mtexFig.axisWidth,get_option(varargin,'maxWidth'));
-end
-
-mtexFig.axisHeight = ceil(mtexFig.axisWidth*axesRatio);
-
+  
 end
 
