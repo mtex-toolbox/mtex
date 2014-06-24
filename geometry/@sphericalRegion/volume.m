@@ -10,9 +10,9 @@ function v = volume(sR,varargin)
 
 %first only for triangles
 
-l = [1,2,3];
-r = [2,3,1];
+l = 1:length(sR.N);
+r = [l(2:end),l(1)];
 
-innerAngles = angle(sR.N(l),sR.N(r));
+innerAngles = pi-angle(sR.N(l),sR.N(r));
 
-v = sum(innerAngles) - length(sR.n-2) * pi;
+v = sum(innerAngles) - (length(sR.N)-2) * pi;
