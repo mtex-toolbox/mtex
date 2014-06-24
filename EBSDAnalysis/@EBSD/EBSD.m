@@ -24,7 +24,7 @@ classdef EBSD < dynProp & dynOption & misorientationAnalysis
   
   properties
     
-    allCS = {}               % crystal symmetries
+    allCS = {}            % crystal symmetries
     phaseMap = []         %
     rotations = rotation  %
     unitCell = []         %
@@ -35,11 +35,12 @@ classdef EBSD < dynProp & dynOption & misorientationAnalysis
     phase           % phase
     phaseId         % 
     orientations    %
-    CS              %
-    mineral         % mineral name
+    CS              % crystal symmetry of one specific phase
+    mineral         % mineral name of one specific phase
     allMinerals     % all mineral names
     indexedPhasesId % id's of all non empty indexed phase
-    weights         % 
+    weights         %
+    color           % color of one specific phase
   end
   
   methods
@@ -180,7 +181,15 @@ classdef EBSD < dynProp & dynOption & misorientationAnalysis
     function cs = get.CS(ebsd)
       
       % ensure single phase
-      [~,cs] = checkSinglePhase(ebsd);
+      id = ebsd.indexedPhasesId;
+               
+      if numel(id)>1     
+              
+        error('MTEX:MultiplePhases',['This operatorion is only permitted for a single phase! ' ...
+          'Please see ' doclink('ebsdModifyData','modify EBSD data')  ...
+          '  for how to restrict EBSD data to a single phase.']);
+      end
+      cs = ebsd.allCS{id};
             
     end
     
@@ -214,6 +223,38 @@ classdef EBSD < dynProp & dynOption & misorientationAnalysis
       % ensure single phase
       [~,cs] = checkSinglePhase(ebsd);
       mineral = cs.mineral;      
+      
+    end
+    
+    
+    function ebsd = set.color(ebsd,color)
+      
+      ebsd.CS.color = color;
+      
+    end
+    
+    function c = get.color(ebsd)
+      
+      % notindexed phase should be white by default
+      if all(isNotIndexed(ebsd))
+        c = ones(1,3); 
+        return
+      end
+      
+      % ensure single phase and extract symmetry
+      cs = ebsd.CS;
+            
+      % extract colormaps
+      cmap = getMTEXpref('EBSDColors');
+      colorNames = getMTEXpref('EBSDColorNames');
+  
+      if isempty(cs.color)
+        c = cmap{ebsd.phaseId};
+      elseif ischar(cs.color)
+        c = cmap{strcmpi(cs.color,colorNames)};
+      else
+        c = cs.color;
+      end
       
     end
     
