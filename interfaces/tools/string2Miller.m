@@ -25,7 +25,7 @@ try
   % if this fails set to default value and report
 catch, end
 
-m = Miller(1,0,0);
+m = Miller(1,0,0,symmetry('m-3m'));
 r = 0;
 
 % ----------------------------------------------------------------
