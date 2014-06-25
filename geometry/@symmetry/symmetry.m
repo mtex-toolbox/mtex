@@ -166,13 +166,15 @@ classdef symmetry < rotation
       s.i = isImproper(r);
       
       % decide crystal / specimen symmetry
-      if check_option(varargin,'specimen')
-        s.isCS = false;
-      elseif check_option(varargin,'crystal')
-        s.isCS = true;
-      else
-        s.isCS = ~(numel(s.a)<=4 && all(isnull(norm(s.axes-[xvector,yvector,zvector]))));
-      end
+      s.isCS = ~check_option(varargin,'specimen');
+%      if check_option(varargin,'specimen')
+%        s.isCS = false;
+%      elseif check_option(varargin,'crystal')
+%      else
+%        s.isCS = true;
+%      else
+%        s.isCS = ~(numel(s.a)<=4 && all(isnull(norm(s.axes-[xvector,yvector,zvector]))));
+%      end
       
     end
     
