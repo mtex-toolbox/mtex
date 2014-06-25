@@ -28,8 +28,11 @@ center = sR.center;
 switch cs.id
 
   case 1, addReflector(-cs.axes(2));                          % 1
-  case 2, addReflector(zvector);                              % -1
-  case 3, addReflector(rotate(sR.N,-90*degree));              % 2
+  case 2, addReflector(cs.axes(2));                           % -1
+  case 3,                                                     % 2
+    pm = 2*isPerp(cs(2).axis,zvector)-1;
+    addReflector(rotate(sR.N,...
+        rotation('axis',cs(2).axis,'angle',pm*90*degree)));  
   case 4, % nothing to do                                     % m
   case {5,6}, addReflector(rotate(sR.N(2),90*degree));        % -2m,222
   case {7,8} % nothing to do                                  % mm2,mmm
@@ -81,19 +84,31 @@ v = vector3d('rho',rho,'theta',radius.*pi);
 
 switch cs.id  % rotate red to the center  
   %case 1, rot = reflection(yvector); 
-  case {2,4} % m 
-    rot = reflection(yvector) * (-rotation('Euler',90*degree,90*degree,0));
+  case {2}
+    rot = rotation(idquaternion);
+  case {4} % m 2
+    if ~isPerp(cs(2).axis,zvector) % m||c
+      rot = reflection(yvector) * (-rotation('Euler',90*degree,90*degree,0));
+    elseif ~isPerp(cs(2).axis,cs.axes(2))
+      rot = rotation(idquaternion);
+    else
+      rot = rotation('axis',xvector,'angle',90*degree);
+    end
+      
   %case {7,8,13,14,16,17,18,19,20,26}, rot = reflection(yvector);
-  case 12
-    rot = rotation('axis',xvector,'angle',90*degree) * reflection(yvector);
+  %case 12
+    %rot = rotation('axis',xvector,'angle',90*degree) * reflection(yvector);
   case vec2cell([1:6,9:12,15,21:25,27]), rot = reflection(yvector);  
   otherwise
     rot = rotation(idquaternion);
 end
 
+% change white and black
 if ismember(cs.id,[1,3,5,6,9,11,13,15,21:24])
   rot = reflection(zvector) * rot;
 end
+
+% blue not correctly aligned: 3m (12), 
 
 % post rotate the color
 v = oM.colorPostRotation * rot * v;

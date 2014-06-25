@@ -51,14 +51,15 @@ switch cs.id
       N = cs.axes(ind);
     end
   case 4 % m
-    
+    N = getMinAxes(cs);
   case 5 % 2/m
     
   case 6 % 222
-  case 7 % 22
-  case 8 % 2mm
-  case 9 % mm2
-  case 10 % mmm
+  case {7,33,34} % 2mm, m2m, mm2
+    N = cs.subSet(cs.isImproper).axis; % take mirror planes
+  case 8 % mmm
+  case 9 % 3
+  case 10 % -3
   case 11 % 32
     h = Miller(1,0,0,cs);
     N = rotate(N,rotation('axis',zvector,'angle',h.rho-120*degree));
@@ -68,6 +69,10 @@ switch cs.id
   case 13
     h = Miller(1,0,0,cs);
     N = rotate(N,rotation('axis',zvector,'angle',h.rho-120*degree));
+  case {21,21} % 6, 62
+    h = Miller(1,0,0,cs);
+    N = rotate(N,rotation('axis',zvector,'angle',...
+      -mod(h.rho-120*degree,60*degree)));
   case 19 %-42m
     N = rotate(N,-45*degree);
   case 26
