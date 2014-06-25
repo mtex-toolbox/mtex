@@ -1,0 +1,15 @@
+function Z = calcPDF(component,h,r,varargin)
+% calculate pdf 
+
+Z = zeros(length(h),length(r));
+
+sh = symmetrise(component.h,varargin{:});
+sr = symmetrise(component.r,component.SS);
+
+for i = 1:length(sh)
+  dh = dot_outer(sh(i).normalize,h.normalize);
+  for j = 1:length(sr)
+    dr = dot_outer(sr(j).normalize,r.normalize);
+    Z = Z + component.weights * component.psi.RRK(dh.',dr) / length(sh);
+  end
+end
