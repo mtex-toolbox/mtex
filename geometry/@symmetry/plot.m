@@ -9,7 +9,7 @@ function plot(s,varargin)
 % Options
 %  antipodal      - include [[AxialDirectional.html,antipodal symmetry]]
 
-mtexFigure;
+mtexFig = mtexFigure;
 
 if check_option(varargin,'hkl')
 
@@ -37,38 +37,53 @@ else
     
   symbolSize = 0.15*get_option(varargin,'symbolSize',1);    
   
-  % determine symmetry axes
+  % extract symmetry elements
   rot = rotation(s);
-  
   Improper = isImproper(rot);
-  [axes,angle] = getMinAxes(rot(~Improper));
-      
-  for i = 1:length(axes)    
-    plotCustom(axes(i),{Symbol(angle(i),axes(i).rho)});
-    hold on    
-    plotCustom(-axes(i),{Symbol(angle(i),axes(i).rho,'FaceColor','k')});
+  [axesP,angleP] = getMinAxes(rot(~Improper));
+  [axesI,angleI] = getMinAxes(rot(Improper));
+
+    % plot rotational axes     
+  for i = 1:length(axesP)    
+    plotCustom(axesP(i),{Symbol(angleP(i),axesP(i).rho)});     
+    hold on
+    plotCustom(-axesP(i),{Symbol(angleP(i),axesP(i).rho,'FaceColor','k')});
   end
   
-  [axes,angle] = getMinAxes(rot(Improper));
-  for i = 1:length(axes)
+  % plot mirrot planes
+  mir = Improper & rot.angle>pi-1e-4;
+  circle(rot(mir).axis,'linewidth',3,'color','k');
+
+  % plot inversion axes 
+  options = {'FaceColor','white','LineWidth',3};
+  
+  for i = 1:length(axesI)
     
-    switch round(angle(i)/degree)
-      case 180
-        circle(axes(i),'linewidth',2,'color','k');
-      case 90
-        options = {'FaceColor','none','LineWidth',3};
-        plotCustom(axes(i),{@(ax,x,y) square(x,y,1.2*symbolSize,'parent',ax,options{:})});
-        plotCustom(-axes(i),{@(ax,x,y) square(x,y,1.2*symbolSize,'parent',ax,options{:})});
-      case 120
-        % small circle
-        plotCustom([axes(i),-axes(i)],{@(ax,x,y) ...
-          ellipse(x,y,0.3*symbolSize,0.3*symbolSize,0,'parent',ax,'FaceColor','w')});
+    switch round(angleI(i)/degree)      
+      case 90      
+        plotCustom(axesI(i),{@(ax,x,y) square(x,y,1.2*symbolSize,'parent',ax,options{:})});
+        plotCustom(-axesI(i),{@(ax,x,y) square(x,y,1.2*symbolSize,'parent',ax,options{:})});      
       case 60
-        options = {'FaceColor','none','LineWidth',3};
-        plotCustom([axes(i),-axes(i)],{@(ax,x,y) hexagon(x,y,1.2*symbolSize,'parent',ax,options{:})});
+        plotCustom([axesI(i),-axesI(i)],{@(ax,x,y) hexagon(x,y,1.2*symbolSize,'parent',ax,options{:})});
     end
   end
   
+  % plot rotational axes     
+  for i = 1:length(axesP)    
+    plotCustom(axesP(i),{Symbol(angleP(i),axesP(i).rho)});     
+    plotCustom(-axesP(i),{Symbol(angleP(i),axesP(i).rho,'FaceColor','k')});
+  end
+  
+  % mark three fold inversion axes
+  for i = 1:length(axesI)    
+    switch round(angleI(i)/degree)            
+      case 120
+        % small circle
+        plotCustom([axesI(i),-axesI(i)],{@(ax,x,y) ...
+          ellipse(x,y,0.3*symbolSize,0.3*symbolSize,0,'parent',ax,'FaceColor','w')});
+    end
+  end
+    
   mtexFig = mtexFigure;
   for ax = mtexFig.children
     set(ax,'xlim',1.1*get(ax,'xlim'));
