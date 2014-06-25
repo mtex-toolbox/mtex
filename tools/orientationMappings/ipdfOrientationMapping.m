@@ -3,7 +3,7 @@ classdef ipdfOrientationMapping < orientationMapping
   %   Detailed explanation goes here
   
   properties
-    r = zvector % direction of the inverse pole figure
+    inversePoleFigureDirection = zvector 
   end
   
   methods
@@ -11,7 +11,9 @@ classdef ipdfOrientationMapping < orientationMapping
     function oM = ipdfOrientationMapping(varargin)
       oM = oM@orientationMapping(varargin{:});
       
-      if isCS(oM.CS2), oM.r = Miller(oM.r,oM.CS2); end
+      if isCS(oM.CS2)
+        oM.inversePoleFigureDirection = Miller(oM.inversePoleFigureDirection,oM.CS2);
+      end
       
     end
     
@@ -25,17 +27,28 @@ classdef ipdfOrientationMapping < orientationMapping
 
       if numel(d) == 3*length(h)
         d = reshape(d,[size(h),3]);
-        plotCMD = 'surf';
+        defaultPlotCMD = 'surf';
       else
-        plotCMD = 'pcolor';
+        defaultPlotCMD = 'pcolor';
       end
-      plot(h,d,'TR','',plotCMD,varargin{:});
+      h = plot(h,d,'TR','',defaultPlotCMD,varargin{:});
 
-      title([oM.CS1.mineral ' (' char(oM(1).r) ') inverse pole figure coloring'])
-  
+      
+      if isempty(oM.CS1.mineral)
+        name = oM.CS1.pointGroup;
+      else
+        name = oM.CS1.mineral;
+      end
+      
+      ax = get(h(1),'parent'); 
+      fig = get(ax,'parent');
+      title(ax,[name ' (' char(oM(1).inversePoleFigureDirection) ') inverse pole figure coloring'])
+   
+      set(fig,'tag','ipdf')
+      setappdata(fig,'CS',oM.CS1);
+      setappdata(fig,'inversePoleFigureDirection',oM.inversePoleFigureDirection);
+      
       % annotate crystal directions
-      set(gcf,'tag','ipdf')
-      setappdata(gcf,'CS',oM.CS1);
       h = Miller(unique(sR.vertices),oM.CS1);
       h.dispStyle = 'uvw';
       annotate(round(h),'MarkerFaceColor','k','labeled','symmetrised');
@@ -45,7 +58,7 @@ classdef ipdfOrientationMapping < orientationMapping
     function rgb = orientation2color(oM,ori)
     
       % compute crystal directions
-      h = inv(ori) .* oM.r;
+      h = inv(ori) .* oM.inversePoleFigureDirection;
 
       % colorize fundamental region
       rgb = Miller2color(oM,h);
