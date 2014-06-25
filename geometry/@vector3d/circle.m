@@ -8,6 +8,7 @@ function h = circle(normals,varargin)
 %
 % Options
 %
+
 % extract radius
 if numel(varargin) >= 1 && isnumeric(varargin{1})
   omega = varargin{1};
@@ -26,7 +27,7 @@ for i = 1:length(normals)
   c = axis2quat(n,(0:1:360)*degree) * axis2quat(orth(n),omega)*n;
   
   % plot circles
-  h = [h,line(c,varargin{:})]; %#ok<AGROW>
+  h = [h,line(c,varargin{:},'hold')]; %#ok<AGROW>
   
 end
 
