@@ -46,14 +46,12 @@ switch cs.id
   case 18, % nothing to do                                    % 4mm
   case 19, addReflector(rotate(sR.N(2),45*degree));           % -42m
   case 20, % nothing to do                                    % 4/mmm
-  case {21,23}, addReflector(rotate(sR.N(end),-30*degree));   % 6, 6/m,
+  case {21,23,24}, addReflector(rotate(sR.N(end),-30*degree)); % 6, 6/m, 622
   case 22                                                     % -6
     rot = rotation('axis',zvector,'angle',[30,-30]*degree);
     addReflector(rot .* sR.N(end-1:end));
-  case {24}, restrict2Sym(cs.Laue);                           % 622
   case {25,26,27}, % nothing to do                            % 6mm,-62m,6/mmm
-  %case 28, restrict2Sym(cs.Laue); center = vector3d(1,1,1);   % 23
-  case 28, addReflector(vector3d(-1,0,1));
+  case 28, addReflector(vector3d(-1,0,1));                    % 23
   case 29, addReflector(rotate(sR.N(3),-45*degree))           % m-3   
   case 30, restrict2Sym(cs.Laue);                             % 432,
   case {31,32}, % nothing to do                               % -43m,m-3m
@@ -84,7 +82,7 @@ v = vector3d('rho',rho,'theta',radius.*pi);
 
 switch cs.id  % rotate red to the center  
   %case 1, rot = reflection(yvector); 
-  case {2}
+  case 2
     rot = rotation(idquaternion);
   case {4} % m 2
     if ~isPerp(cs(2).axis,zvector) % m||c
@@ -96,9 +94,9 @@ switch cs.id  % rotate red to the center
     end
       
   %case {7,8,13,14,16,17,18,19,20,26}, rot = reflection(yvector);
-  %case 12
-    %rot = rotation('axis',xvector,'angle',90*degree) * reflection(yvector);
-  case vec2cell([1:6,9:12,15,21:25,27]), rot = reflection(yvector);  
+  case 12
+    rot = rotation('axis',xvector,'angle',90*degree) * reflection(yvector);
+  case vec2cell([1:6,9:12,15,21:25,27]), rot = reflection(yvector);
   otherwise
     rot = rotation(idquaternion);
 end
