@@ -40,7 +40,7 @@ switch Laue
   case '6/m'
     rot = {Axis(axis(3),6)};
   case '6/mmm'
-    rot = {Axis(twoFoldAxis,2),Axis(axis(3),6)};
+    rot = {Axis(axis(2),2),Axis(axis(3),6)};
   case 'm-3'
     rot = {Axis(lllaxis,3),Axis(axis(1),2),Axis(axis(3),2)};
   case 'm-3m'
