@@ -33,6 +33,8 @@ end
 
 % TODO correct for different alignments in 32
 
+aAxis = Miller(1,0,0,cs);
+
 % some special cases
 switch cs.id
   
@@ -61,22 +63,17 @@ switch cs.id
   case 9 % 3
   case 10 % -3
   case 11 % 32
-    h = Miller(1,0,0,cs);
-    N = rotate(N,rotation('axis',zvector,'angle',h.rho-120*degree));
+    N = rotate(N,rotation('axis',zvector,'angle',aAxis.rho-120*degree));
   case 12 % 3m
-    h = Miller(1,0,0,cs);
-    N = rotate(N,rotation('axis',zvector,'angle',h.rho-120*degree));
+    N = rotate(N,rotation('axis',zvector,'angle',aAxis.rho-120*degree));
   case 13
-    h = Miller(1,0,0,cs);
-    N = rotate(N,rotation('axis',zvector,'angle',h.rho-120*degree));
-  case {21,21} % 6, 62
-    h = Miller(1,0,0,cs);
-    N = rotate(N,rotation('axis',zvector,'angle',...
-      -mod(h.rho-120*degree,60*degree)));
+    N = rotate(N,rotation('axis',zvector,'angle',aAxis.rho-120*degree));
+  case {21,24} % 6, 622    
+    N = rotate(N,-mod(round(aAxis.rho./degree),60)*degree);
   case 19 %-42m
     N = rotate(N,-45*degree);
-  case 26
-    N = rotate(N,-30*degree);
+  case 26 % 6m2
+    N = rotate(N,-mod(round(aAxis.rho./degree-30),60)*degree);
   case 28 % 23
     %N = [vector3d(0,-1,1),vector3d(-1,0,1),vector3d(1,0,1),yvector,zvector];
     N = vector3d([1 1 0 0],[1 -1 1 -1],[0 0 1 1]);
