@@ -21,8 +21,16 @@ for i = 1:length(subs)
     
     for k=1:numel(mineralsSubs)
       phases = phases ...
-        | ~cellfun('isempty',regexpi(ebsd.allMinerals,mineralsSubs{k})) ...
+        | strcmpi(ebsd.allMinerals,mineralsSubs{k}) ...
         | strcmpi(phaseNumbers,mineralsSubs{k});
+    end
+
+    % if now complete match was found allow also for partial match
+    if ~any(phases)
+      for k=1:numel(mineralsSubs)
+        phases = phases ...
+          | strncmpi(ebsd.allMinerals,mineralsSubs{k},length(mineralsSubs{k}));
+      end
     end
     
     ind = ind & phases(ebsd.phaseId(:).');
