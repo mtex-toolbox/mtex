@@ -43,12 +43,10 @@ else
   [axesP,angleP] = getMinAxes(rot(~Improper));
   [axesI,angleI] = getMinAxes(rot(Improper));
 
-    % plot rotational axes     
-  for i = 1:length(axesP)    
-    plotCustom(axesP(i),{Symbol(angleP(i),axesP(i).rho)});     
-    hold on
-    plotCustom(-axesP(i),{Symbol(angleP(i),axesP(i).rho,'FaceColor','k')});
-  end
+  % initalize plot
+  newSphericalPlot([zvector,-zvector],varargin{:});
+  
+  hold on
   
   % plot mirrot planes
   mir = Improper & rot.angle>pi-1e-4;
