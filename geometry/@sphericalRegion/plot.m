@@ -10,6 +10,9 @@ sP = newSphericalPlot(sR,varargin{:});
 
 for j = 1:numel(sP)
   
+  % ensure sector is at this hemisphere
+  if volume([sP(j).sphericalRegion,sR])<eps, continue, end
+  
   % plot the region
   omega = linspace(0,2*pi,721);
   for i=1:length(sR.N)
@@ -21,9 +24,7 @@ for j = 1:numel(sP)
     % project data
     [x,y] = project(sP(j).proj,v);
     x(~sR.checkInside(v))=NaN;
-    
-
-    
+                
     % plot
     h(i) = optiondraw(line('xdata',x,'ydata',y,'parent',sP(j).ax,...
       'color',[0.2 0.2 0.2],'linewidth',1.5),varargin{:}); %#ok<AGROW>
