@@ -1,60 +1,67 @@
-function rot = calcQuat(Laue,axis,inv,varargin)
+function rot = calcQuat(s,varargin)
 % calculate quaternions for Laue groups
 
 ll0axis = vector3d(1,1,0);
-%Tl0axis = axis(1)+axis(2);
 lllaxis = vector3d(1,1,1);
 
-if check_option(varargin,{'2||a','m||a'})
-  twoFoldAxis = axis(1);
-elseif check_option(varargin,{'2||c','m||c'})
-  twoFoldAxis = axis(3);
-else
-  twoFoldAxis = axis(2);
-end
+a = s.axes(1);
+b = s.axes(2);
+c = s.axes(3);
+
+a1 = s.axes(1);
+a2 = s.axes(2);
+m = a1 - a2;
+
+pg = pointGroupList;
+pg = pg(s.id);
 
 % compute rotations
-switch Laue
-  case '-1'
-    rot = {rotation('Euler',0,0,0)};
-  case '2/m'
-  
-    % determine rotation axis
-    % this should be orthogonal to the other two axes
-    orth = sum(abs(dot_outer(axis,axis)));    
-    if all(round(orth)==1)
-      rot = {Axis(twoFoldAxis,2)};    
-    else
-      rot = {Axis(axis(round(orth)==1),2)};
-    end
-  case 'mmm'
-    rot = {Axis(axis(1),2),Axis(axis(3),2)};
-  case '-3'
-    rot = {Axis(axis(3),3)};
-  case '-3m'
-    rot = {Axis(twoFoldAxis,2),Axis(axis(3),3)};
-  case '4/m'
-    rot = {Axis(axis(3),4)};
-  case '4/mmm' 
-    rot = {Axis(axis(1),2),Axis(axis(3),4)};
-  case '6/m'
-    rot = {Axis(axis(3),6)};
-  case '6/mmm'
-    rot = {Axis(axis(2),2),Axis(axis(3),6)};
-  case 'm-3'
-    rot = {Axis(lllaxis,3),Axis(axis(1),2),Axis(axis(3),2)};
-  case 'm-3m'
-    rot = {Axis(lllaxis,3),Axis(ll0axis,2),Axis(axis(3),4)};
+switch pg.properId
+  case 1 % 1
+    rot = {rotation('Euler',0,0,0)};    
+  case 3 % 211
+    rot = {symAxis(a,2)};
+  case 6 % 121
+    rot = {symAxis(b,2)};
+  case 9 % 112
+    rot = {symAxis(c,2)};    
+  case 12 % 222
+    rot = {symAxis(a,2),symAxis(c,2)};
+  case 17 % 3
+    rot = {symAxis(c,3)};
+  case 19 % 321
+    rot = {symAxis(a1,2),symAxis(c,3)};
+  case 22 % 312
+    rot = {symAxis(m,2),symAxis(c,3)};
+  case 25 % 4    
+    rot = {symAxis(c,4)};
+  case 28 % 4/mmm
+    rot = {symAxis(a,2),symAxis(c,4)};
+  case 33 % 6
+    rot = {symAxis(c,6)};
+  case 36 % 622
+    rot = {symAxis(a,2),symAxis(c,6)};
+  case 41 % 23
+    rot = {symAxis(lllaxis,3),symAxis(a,2),symAxis(c,2)};
+  case 43 % 432
+    rot = {symAxis(lllaxis,3),symAxis(ll0axis,2),symAxis(c,4)};
 end
 
 % apply inversion
-if size(inv,1) == 2
+if size(pg.Inversion ,1) == 2
   rot = [rot,{[rotation(idquaternion),-rotation(idquaternion)]}];
 else
-  rot = arrayfun(@(i) rot{i} .* inv(i).^(0:length(rot{i})-1) ,...
+  rot = arrayfun(@(i) rot{i} .* pg.Inversion(i).^(0:length(rot{i})-1) ,...
     1:length(rot),'uniformOutput',false);
   
 end
 
 rot = prod(rot{:});
 
+end
+
+function rot = symAxis(v,n)
+
+rot = rotation('axis',v,'angle',2*pi/n*(0:n-1));
+
+end

@@ -3,7 +3,7 @@
 
 clf
 % define some symmetry
-cs = symmetry('2/m','2||a')
+cs = symmetry('-6m2','2||a')
 
 % define the colorcoding
 oM = ipdfHSVOrientationMapping(cs);
@@ -40,18 +40,19 @@ hold off
 %savefigure('x.png')
 
 %% visalization in 2d
-% for 3, 6, 622 adapt fundamental region to a-axis
-% todo: symmetry('m','2||a')
-% 
+% correct: -3, a||y, -6 a||x,
+
+% blue to green color jump: -1, 2/m, -3
+% green not at Miller(1,0,0): 121, 2/m11, m2m, 312, -6m2,
 
 plotx2east
 
-cs = symmetry('3m','a||x');
+cs = symmetry('-6','a||y');
 
 % define the colorcoding
 oM = ipdfHSVOrientationMapping(cs);
 %oM.colorPostRotation = reflection(zvector) * reflection(yvector);
-%oM.colorPostRotation = rotation('axis',xvector,'angle',90*degree);
+%oM.colorPostRotation = rotation('axis',xvector,'angle',180*degree);
 %oM.colorPostRotation = rotation('axis',zvector,'angle',0*degree)*rotation('axis',yvector,'angle',90*degree);
 
 % plot the colorcoding
@@ -76,7 +77,7 @@ plot(cs.fundamentalSector,'color','r')
 % add some axes
 hold on
 plot(cs.axes,'label',{'a_1','a_2','c'},'MarkerEdgeColor','white',...
-    'backgroundcolor','w','Marker','s','MarkerFaceColor','black')
+    'backgroundcolor','none','Marker','s','MarkerFaceColor','black')
 
 hold off
 

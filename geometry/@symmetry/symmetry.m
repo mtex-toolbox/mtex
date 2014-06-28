@@ -121,9 +121,10 @@ classdef symmetry < rotation
             error('symmetry "%s" not found',pGroup);
           end
   
+          error('symmetry "%s" not found',varargin{1});
           % may be it is a cif file
           try
-            s = loadCIF(varargin{:});
+            %s = loadCIF(varargin{:});
             return;
           catch %#ok<CTCH>
             if ~check_option(varargin,'silent')
@@ -161,7 +162,7 @@ classdef symmetry < rotation
       s.color = get_option(varargin,'color','');
       
       % compute symmetry operations
-      r = calcQuat(s.LaueName,s.axes,symmetry.pointGroups(s.id).Inversion,varargin{:});
+      r = calcQuat(s,varargin{:});
       [s.a, s.b, s.c, s.d] = double(r);
       s.i = isImproper(r);
       
