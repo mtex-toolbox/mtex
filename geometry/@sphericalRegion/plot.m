@@ -11,7 +11,7 @@ sP = newSphericalPlot(sR,varargin{:});
 for j = 1:numel(sP)
   
   % ensure sector is at this hemisphere
-  if volume([sP(j).sphericalRegion,sR])<eps, continue, end
+  if any(dot(sR.N,sP(j).sphericalRegion.N)<eps-1), continue, end
   
   % plot the region
   omega = linspace(0,2*pi,721);
