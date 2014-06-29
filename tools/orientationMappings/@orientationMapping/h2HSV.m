@@ -26,7 +26,7 @@ center = sR.center;
 
 rot = rotation(idquaternion);
 
-if ismember(cs.id,[2,5,8,11,18,21,24,26])
+if ismember(cs.id,[2,18,26])
   warning('Not a topological correct colormap! Green to blue colorjumps possible');
 end
 
@@ -34,19 +34,18 @@ end
 switch cs.id
 
   case 1, addReflector(cs.axes(2));                          % 1
-  case 2,                                                    % -1
-    addReflector(cs.axes(2));                           
+  case 2, addReflector(cs.axes(2));                          % -1
   case {3,6,9},                                              % 211, 121, 112
     pm = 1-2*isPerp(cs(2).axis,zvector);
     addReflector(rotate(sR.N,...
         rotation('axis',cs(2).axis,'angle',pm*90*degree)));
       if cs.id == 6, black2white;end
   case 4, green2white;                                       % m11
+  case 5, addReflector(cross(sR.N(1),sR.N(2)));              % 2/m11, 112/m
   case 7,                                                    % 1m1
+  case {8,11}, addReflector(-cross(sR.N(1),sR.N(2)));        % 12/m1
   case 10, rot = rotation('Euler',270*degree,90*degree,180*degree); % 11m    
-  case {5,8,11}                                              % 2/m11 
-  case {12}, addReflector(rotate(sR.N(2),-90*degree));        % -2m,222
-  %case {7,8} % nothing to do                                  % mm2,mmm  
+  case 12, addReflector(rotate(sR.N(2),-90*degree));        % -2m,222
   case 17                                                      % 3
     r = rotation('axis',zvector,'angle',[30,-30]*degree);
     addReflector(r .* sR.N(end-1:end));
@@ -62,9 +61,10 @@ switch cs.id
     %rot = rotation('axis',xvector,'angle',90*degree+3*cs.axes(1).rho);
     %rot = rotation('axis',xvector,'angle',180*degree);
   %case 12, % nothing to do                                    % 3m
-  %case 13, addReflector(rotate(sR.N(2),30*degree));           % -3m
   case 20, green2white;                                        %3m1
-  case {21,24},                                                %-31m
+  case 21, addReflector(rotate(sR.N(2),30*degree));       % -31m
+  case 24, addReflector(rotate(sR.N(2),30*degree));       % -3m1
+    black2white; blue2green
   case {25,27,28}, addReflector(rotate(sR.N(end),-45*degree)) % 4,4/m,422
   case 26, addReflector(rotate(sR.N(end),-90*degree));         % -4 
   case 29, % nothing to do                                    % 4mm
@@ -112,30 +112,6 @@ v = vector3d('rho',rho,'theta',radius.*pi);
 % post processing of the color vector
 % by default we have white at the z, black at the -z, red
 % at x and green and blue at 120 and 240 degree accordingly
-
-%switch cs.id  % rotate red to the center  
-  %case 1, rot = reflection(yvector); 
-  %case 2
-  %  rot = rotation(idquaternion);
-  %case {4} % m 2
-  %  if ~isPerp(cs(2).axis,zvector) % m||c
-  %    rot = reflection(yvector) * (-rotation('Euler',90*degree,90*degree,0));
-  %  elseif ~isPerp(cs(2).axis,cs.axes(2))
-  %    rot = rotation(idquaternion);
-  %  else
-  %    rot = rotation('axis',xvector,'angle',90*degree);
-  %  end
-  %    
-  %case {7,8,13,14,16,17,18,19,20,26}, rot = reflection(yvector);
-  %case 12
-  %  rot = rotation('axis',xvector,'angle',90*degree) * reflection(yvector);
-%  case 39 % !!
-%    rot = rotation('axis',xvector,'angle',90*degree);
-  %case vec2cell([1:6,9:12,15,21:25,27]), rot = reflection(yvector);
-%  otherwise
-%    rot = rotation(idquaternion);
-%end
-
 
 % post rotate the color
 v = oM.colorPostRotation * rot * v;

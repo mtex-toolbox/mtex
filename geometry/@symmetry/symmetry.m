@@ -145,7 +145,7 @@ classdef symmetry < rotation
       
       % get axes angles (alpha beta gamma)
       if ~isempty(varargin) && isa(varargin{1},'double') && ...
-          s.id <= 5
+          s.id < 12
         angles = varargin{1};
         if any(angles>2*pi), angles = angles * degree;end
         varargin(1) = [];
