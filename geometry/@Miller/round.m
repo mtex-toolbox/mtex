@@ -4,33 +4,37 @@ function h = round(h,varargin)
 
 switch h.dispStyle
   
-  case 'uvw'
-    mv = v2d(h);  
+  case  'uvw'
+    mOld = h.uvw;
+  case 'UVTW'
+    mOld = h.UVTW;  
   case 'hkl'
-    mv = v2m(h);
+    mOld = h.hkl;
   otherwise
     return;
 end
 
-mv = mv(:,[1 2 end])';
+% the Miller indices
+mOld = mOld(:,[1 2 end])';
 
-mbr = reshape(selectMaxbyColumn(abs(mv)),size(h));
+% the 
+mMax = reshape(max(abs(mOld),[],1),size(h));
+%mbr = reshape(selectMaxbyColumn(abs(mv)),size(h));
 
 maxHKL = get_option(varargin,'maxHKL',12);
 
-fak = ones(size(h));
-for im = 1:size(mv,2)
+multiplier = ones(size(h));
+for im = 1:size(mOld,2)
 %   
-  mm = mv(:,im)/mbr(im) * (1:maxHKL);  
-  rm = round(mm);
-
-  e = sum(mm ./ repmat(sqrt(sum(mm.^2,1)),3,1) .* rm ./ repmat(sqrt(sum(rm.^2,1)),3,1));
   
-  e = round(e*1e7);
-  [~,j] = min(e);
+  mNew = mOld(:,im) / mMax(im) * (1:maxHKL);  
   
-  fak(im) = j/mbr(im);
+  e = round(1e7 * sum(mNew - round(mNew)).^2./sum(mNew.^2));
+    
+  [~,n] = min(e);
+  
+  multiplier(im) = n/mMax(im);
   
 end
 
-h = h .* fak;
+h = h .* multiplier;
