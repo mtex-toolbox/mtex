@@ -4,7 +4,7 @@ classdef (InferiorClasses = {?rotation,?quaternion}) orientation < rotation
 properties
   
   CS = symmetry('1');
-  SS = symmetry('1');
+  SS = symmetry('1','specimen');
   
 end
 

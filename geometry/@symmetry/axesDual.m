@@ -1,5 +1,5 @@
 function vec = axesDual(cs)
-% get dual coordinate axes
+% return dual coordinate axes
 
 abc = cs.axes;
 V  = dot(abc(1),cross(abc(2),abc(3)));

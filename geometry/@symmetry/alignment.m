@@ -1,7 +1,7 @@
 function str = alignment(cs)
-% get alignment of the reference frame
+% return alignment of the reference frame as string, e.g. x||a, y||b*
 
-    
+
 if any(strcmp(cs.lattice,{'triclinic','monoclinic','trigonal','hexagonal'}))
     
   abc = normalize(cs.axes);
