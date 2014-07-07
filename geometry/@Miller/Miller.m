@@ -17,10 +17,14 @@ classdef Miller < vector3d
     i
     l
     uvw       % reciprocal coordinates
+    UVTW      % reciprocal coordinates
     u
     v
-    t
     w
+    U
+    V
+    T
+    W
   end
     
 methods
@@ -102,7 +106,11 @@ methods
                 
         if check_option(varargin,{'uvw','uvtw','direction'});          
           
-          m.uvw = coord;
+          if nparam == 3 && ~check_option(varargin,'uvtw')
+            m.uvw = coord;
+          else
+            m.UVTW = coord;
+          end
           
         elseif check_option(varargin,'xyz');
           
@@ -221,9 +229,25 @@ methods
     function m = set.w(m,w)
       m.uvw = [m.u m.v w];
     end
+    
+    function m = set.U(m,U)
+      m.UVTW = [U m.V m.T m.T];
+    end
+    
+    function m = set.V(m,V)
+      m.UVTW = [m.U V m.T m.W];
+    end
+    
+    function m = set.T(m,T)
+      m.UVTW = [m.U m.V T m.W];
+    end
+    
+    function m = set.W(m,W)
+      m.UVTW = [m.U m.V m.T W];
+    end
         
-    % -----------------------------------------------------------
-    function uvtw = get.uvw(m)
+    % -----------------------------------------------------------            
+    function uvw = get.uvw(m)
     
       % get crystal coordinate system (a,b,c)
       M = squeeze(double(m.CS.axes)).';
@@ -232,20 +256,38 @@ methods
       xyz = reshape(double(m),[],3).';
 
       % compute u, v, w coordinates
-      uvtw = (M \ xyz)';
+      uvw = (M \ xyz)';
 
       % add fourth component for trigonal and hexagonal systems
-      if any(strcmp(m.CS.lattice,{'trigonal','hexagonal'}))
-        uvtw(:,4) = uvtw(:,3);
-        uvtw(:,3) = -(uvtw(:,1) + uvtw(:,2))./3;
-        [uvtw(:,1), uvtw(:,2)] = deal((2*uvtw(:,1)-uvtw(:,2))./3,(2*uvtw(:,2)-uvtw(:,1))./3);  
-      end
+      %if any(strcmp(m.CS.lattice,{'trigonal','hexagonal'}))
+      %  uvtw(:,4) = uvtw(:,3);
+      %  uvtw(:,3) = -(uvtw(:,1) + uvtw(:,2))./3;
+      %  [uvtw(:,1), uvtw(:,2)] = deal((2*uvtw(:,1)-uvtw(:,2))./3,(2*uvtw(:,2)-uvtw(:,1))./3);  
+      %end
     end
       
+    function UVTW = get.UVTW(m)
+      %U = 2u -v, V = 2v - u, T = - (u+v), W = 3w
+
+      uvw = m.uvw;
+      
+      UVTW = [2*uvw(:,1)-uvw(:,2),...
+        2*uvw(:,2)-uvw(:,1),...
+        -uvw(:,1)-uvw(:,2),...
+        3*uvw(:,3)];
+            
+    end
+    
+    
     function u = get.u(m), u = m.uvw(:,1);end
     function v = get.v(m), v = m.uvw(:,2);end
-    function t = get.t(m), t = m.uvw(:,3);end
-    function w = get.w(m), w = m.uvw(:,end);end
+    function w = get.w(m), w = m.uvw(:,3);end
+    function U = get.U(m), U = m.UVTW(:,1);end
+    function V = get.V(m), V = m.UVTW(:,2);end
+    function T = get.T(m), T = m.UVTW(:,3);end
+    function W = get.W(m), W = m.UVTW(:,4);end
+    
+    
         
     % ------------------------------------------------------------
     
@@ -254,15 +296,7 @@ methods
       % uvw must be of format [u v w] or [u v t w] 
       
       % correct for 4 component vectors
-      if size(uvw,2) == 4
-        
-        uvw = [uvw(:,1)-uvw(:,3),uvw(:,2)-uvw(:,3),uvw(:,4)];
-        
-      elseif any(strcmp(m.CS.lattice,{'trigonal','hexagonal'})) 
-        
-        uvw = [2*uvw(:,1) + uvw(:,2),2*uvw(:,2) + uvw(:,1),uvw(:,3)];
-        
-      end
+      if size(uvw,2) == 4, error('Use UVTW to set four Miller indice!'); end
                
       % get direct axes 
       M = squeeze(double(m.CS.axes));
@@ -277,7 +311,26 @@ methods
       
     end
     
-  end
+    function m = set.UVTW(m,UVTW)
+      %    
+      %U = 2u -v, V = 2v - u, T = - (u+v), W = 3w
       
+      % correct for 4 component vectors
+      if size(UVTW,2) == 4
+        
+        m.uvw = [UVTW(:,1)-UVTW(:,3),UVTW(:,2)-UVTW(:,3),UVTW(:,4)]./3;
+        
+      elseif any(strcmp(m.CS.lattice,{'trigonal','hexagonal'})) 
+        
+        m.uvw = [2*UVTW(:,1) + UVTW(:,2),2*UVTW(:,2) + UVTW(:,1),UVTW(:,3)]./3;
+        
+      end
+      
+      % set default display style
+      m.dispStyle = 'UVTW';
+      
+    end
+end
+        
 end
 
