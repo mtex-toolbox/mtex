@@ -51,7 +51,7 @@ classdef ipdfOrientationMapping < orientationMapping
       % annotate crystal directions
       h = Miller(unique(sR.vertices),oM.CS1);
       h.dispStyle = 'uvw';
-      annotate(round(h),'MarkerFaceColor','k','labeled','symmetrised');
+      annotate(unique(round(h)),'MarkerFaceColor','k','labeled','symmetrised');
 
     end
         
