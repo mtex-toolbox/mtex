@@ -41,10 +41,14 @@ switch cs.id
         rotation('axis',cs(2).axis,'angle',pm*90*degree)));
       if cs.id == 6, black2white;end
   case 4, green2white;                                       % m11
-  case 5, addReflector(cross(sR.N(1),sR.N(2)));              % 2/m11, 112/m
+  %case 5, addReflector(cross(sR.N(1),sR.N(2)));             % 2/m11, 112/m
   case 7,                                                    % 1m1
-  case {8,11}, addReflector(-cross(sR.N(1),sR.N(2)));        % 12/m1
-  case 10, rot = rotation('Euler',270*degree,90*degree,180*degree); % 11m    
+  %case 8, addReflector(-cross(sR.N(1),sR.N(2)));        % 12/m1
+  case 10, rot = rotation('Euler',270*degree,90*degree,180*degree); % 11m
+  case {5,8,11,27,35} % 2/m, 4/m, 6/m
+    mir = cs.isImproper & cs.angle>pi-1e-4;
+    center = cs(mir).axis;
+    rot = rotation('Euler',270*degree,90*degree,180*degree);    
   case 12, addReflector(rotate(sR.N(2),-90*degree));        % -2m,222
   case 17                                                      % 3
     r = rotation('axis',zvector,'angle',[30,-30]*degree);
@@ -65,8 +69,9 @@ switch cs.id
   case 21, addReflector(rotate(sR.N(2),30*degree));       % -31m
   case 24, addReflector(rotate(sR.N(2),30*degree));       % -3m1
     black2white; blue2green
-  case {25,27,28}, addReflector(rotate(sR.N(end),-45*degree)) % 4,4/m,422
+  case {25,28}, addReflector(rotate(sR.N(end),-45*degree)) % 4,4/m,422
   case 26, addReflector(rotate(sR.N(end),-90*degree));         % -4 
+  
   case 29, % nothing to do                                    % 4mm
   case 30, addReflector(rotate(sR.N(2),45*degree));           % -42m
   case 31, addReflector(-rotate(sR.N(2),45*degree));           % -4m2
@@ -78,7 +83,8 @@ switch cs.id
   case 34                                                     % -6
     r = rotation('axis',zvector,'angle',[30,-30]*degree);
     addReflector(r .* sR.N(end-1:end));
-  case {35,36}                                                % 6/m, 622
+  
+  case {36}                                                % 6/m, 622
     addReflector(rotate(sR.N(end),-30*degree));
     blue2green;
     black2white;
@@ -88,7 +94,8 @@ switch cs.id
     %green2white;
     %if mod(round(cs.axes(1).rho/degree),60)==30, blue2green; end    
   case 41, addReflector(vector3d(-1,0,1));                    % 23
-  case 42, addReflector(rotate(sR.N(3),-45*degree))           % m-3   
+  %case 42, addReflector(rotate(sR.N(3),-45*degree))           % m-3
+  case 42, center = vector3d(1,1,1);
   case 43, restrict2Sym(cs.Laue);                             % 432,
   case {44,45}, % nothing to do                               % -43m,m-3m
 end
