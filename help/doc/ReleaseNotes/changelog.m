@@ -94,6 +94,19 @@
 % corresponding Laue group. This can be prevented by the option
 % |noFriedel|.
 %
+% *Support for three digit notation for Miller indices of trigonal
+% symmetries*
+%
+% MTEX 4.0 understands now uvw and UVTW notation for trigonal symmetries.
+% The following two commands define the same crystallographic direction,
+% namely the a1-axis
+%
+%   Miller(1,0,0,symmetry('-3m'),'uvw')
+%
+%   Miller(2,-1,-1,0,symmetry('-3m'),'UVTW')
+%
+
+
 %% MTEX 3.5.0 - 12/2013
 %
 % *Misorientation colorcoding*

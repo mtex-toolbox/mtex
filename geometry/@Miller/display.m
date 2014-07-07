@@ -26,12 +26,15 @@ if length(m) < 20 && ~isempty(m)
       uvtw = round(m.uvw * eps)./eps;
       uvtw(uvtw==0) = 0;
       
-      if any(strcmp(m.CS.lattice,{'trigonal','hexagonal'}))
-        cprintf(uvtw.','-L','  ','-Lr',{'u' 'v' 't' 'w'});
-      else
-        cprintf(uvtw.','-L','  ','-Lr',{'u' 'v' 'w'});
-      end
-    
+      cprintf(uvtw.','-L','  ','-Lr',{'u' 'v' 'w'});
+          
+    case 'UVTW'
+      
+      uvtw = round(m.UVTW * eps)./eps;
+      uvtw(uvtw==0) = 0;
+      
+      cprintf(uvtw.','-L','  ','-Lr',{'U' 'V' 'T' 'W'});
+      
     case 'hkl'
     
       hkl = round(m.hkl * eps)./eps;
