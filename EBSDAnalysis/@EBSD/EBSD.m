@@ -176,6 +176,13 @@ classdef EBSD < dynProp & dynOption & misorientationAnalysis
       
       ori = orientation(ebsd.rotations,cs);
     end
+    
+    function ebsd = set.orientations(ebsd,ori)
+      
+      ebsd.rotations = rotation(ori);
+      ebsd.CS = ori.CS;
+            
+    end
         
     
     function cs = get.CS(ebsd)
