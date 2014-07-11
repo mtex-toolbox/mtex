@@ -98,7 +98,7 @@ classdef symmetry < rotation
       elseif check_option(varargin,'LaueId')
       
         % -1 2/m mmm 4/m 4/mmm m-3 m-3m -3 -3m 6/m 6/mmm
-        LaueGroups = [2,5,8,11,15,29,32,17,20,22,27];
+        LaueGroups = [2,8,16,27,32,42,45,18,21,35,40];
         s.id = LaueGroups(get_option(varargin,'LaueId'));
         varargin = delete_option(varargin,'LaueId');
       
