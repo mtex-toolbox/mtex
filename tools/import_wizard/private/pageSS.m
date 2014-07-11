@@ -154,7 +154,7 @@ set(gui.hRotAngle        ,'Callback',@localUpdateAxes)
       [' use ' upper(interf) ' interface flag ''convertSpatial2EulerReferenceFrame'''],...
       [' use ' upper(interf) ' interface flag ''convertEuler2SpatialReferenceFrame''']};
     
-    if ~any(strcmpi(interf,{'ang','ctf'}))
+    if ~any(strcmpi(interf,{'ang','ctf','crc'}))
       options(4:5) = [];
     end
     
