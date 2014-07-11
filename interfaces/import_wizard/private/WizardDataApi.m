@@ -244,7 +244,7 @@ api.clearAllData();
         switch api.Export.getInterface()
           case {'ang','osc'}
             rot = rotation('axis',xvector+yvector,'angle',180*degree);
-          case 'ctf'
+          case {'ctf','crc'}
             rot = rotation('axis',xvector,'angle',180*degree);
         end
       else
@@ -426,7 +426,7 @@ api.clearAllData();
           end
         case 'EBSD'
           switch interface
-            case {'ang','ctf','osc'}
+            case {'ang','ctf','crc','osc'}
               setSS('rotOption',5);
           end
       end
