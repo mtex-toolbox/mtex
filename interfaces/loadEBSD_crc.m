@@ -46,10 +46,11 @@ if check_option(varargin,'convertSpatial2EulerReferenceFrame')
 elseif check_option(varargin,{'convertEuler2SpatialReferenceFrame','wizard'})
   ebsd = rotate(ebsd,rotation('axis',xvector,'angle',180*degree),'keepXY');
 else
-  warning(['.crc files have usualy inconsistent conventions for spatial ' ...
+  warning(['.crc and .cpr files have usualy inconsistent conventions for spatial ' ...
     'coordinates and Euler angles. You may want to use one of the options ' ...
     '''convertSpatial2EulerReferenceFrame'' or ''convertEuler2SpatialReferenceFrame'' to correct for this']);  
 end
+
 
   function CS = getCS(cpr)
     

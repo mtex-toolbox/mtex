@@ -13,7 +13,7 @@ function [density,omega] = calcAngleDistribution(obj,varargin)
 %
 %    $$\int f(\omega) d\omega = \pi$$
 %
-%  omega  - intervals of density
+%  omega   - interval of density
 %
 % See also
 % EBSD/calcMisorientation misorientationAnalysis/plotAngleDistribution
