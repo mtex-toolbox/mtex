@@ -31,7 +31,7 @@ if length(cs) > 1+length(N)
   N = [N,vector3d('theta',90*degree,'rho',[90*degree,drho-90*degree])];
 end
 
-aAxis = Miller(1,0,0,cs);
+aAxis = cs.axes(1);
 
 % some special cases
 switch cs.id
@@ -57,19 +57,19 @@ switch cs.id
   case 16 % mmm
   case 17 % 3
   case 18 % 3, -3
-    N = rotate(N,-mod(round(aAxis.rho./degree),120)*degree);   
+    N = rotate(N,-mod(round(aAxis.rho./degree)+30,120)*degree);   
   case {19,20,21} % 32, 3m, -3m
-    N = rotate(N,-mod(round(aAxis.rho./degree),120)*degree);   
+    N = rotate(N,-mod(round(aAxis.rho./degree)+30,120)*degree);   
   case {22,23,24}
-    N = rotate(N,-mod(round(aAxis.rho./degree-30),60)*degree);   
+    N = rotate(N,-mod(round(aAxis.rho./degree),60)*degree);   
   case 30 %-42m
     N = rotate(N,-45*degree);
   case {33,34,35,36} % 6, 622    
-    N = rotate(N,-mod(round(aAxis.rho./degree),60)*degree);  
+    N = rotate(N,-mod(round(aAxis.rho./degree+30),60)*degree);  
   case 38 % 62m
-    N = rotate(N,-mod(round(aAxis.rho./degree-30),60)*degree);
-  case 39 % 6m2
     N = rotate(N,-mod(round(aAxis.rho./degree),60)*degree);
+  case 39 % 6m2
+    N = rotate(N,-mod(round(aAxis.rho./degree+30),60)*degree);
   case 41 % 23
     %N = [vector3d(0,-1,1),vector3d(-1,0,1),vector3d(1,0,1),yvector,zvector];
     N = vector3d([1 1 0 0],[1 -1 1 -1],[0 0 1 1]);
