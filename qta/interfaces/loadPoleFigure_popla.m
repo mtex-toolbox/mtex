@@ -56,7 +56,7 @@ try
       % colums - make interface working for those!
       d = [];
       l = fgetl(fid);
-      while ~isempty(l) %length(d) < numel(r)
+      while ~isempty(l) && ischar(l)%length(d) < numel(r)
         l = l(1+mod(numel(l),4):end);
         data = str2num(reshape(l,4,[])');
         d = [d; data(1:18) ./ scaling];
