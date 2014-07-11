@@ -170,7 +170,7 @@ elseif check_option(varargin,'random')
   
   Grid = sph2vec(theta,rho);
     
-%% all other idexed grids
+%% all other indexed grids
 else
 
   %% theta and rho are given directly

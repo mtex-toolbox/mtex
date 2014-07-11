@@ -17,7 +17,6 @@ function ebsd = EBSD(varargin)
 %  Comment  - string
 %  phase    - specifing the phase of the EBSD object
 %  options  - struct with fields holding properties for each orientation
-%  xy       - spatial coordinates n x 2, where n is the number of input orientations
 %  unitCell - for internal use
 %
 %% See also
