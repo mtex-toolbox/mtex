@@ -214,13 +214,13 @@ ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','P5629U1.txt'),CS, ...
 %%
 function [CS,ebsd] = mtexdata_epidote
 
-ebsd = loadEBSD([mtexDataPath '/EBSD/data.ctf'],'ignorePhase',[0 3 4]);
+ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD/data.ctf'),'ignorePhase',[0 3 4]);
 CS = get(ebsd,'CS');
 
 %%
 function [CS,ebsd] = mtexdata_forsterite
 
-ebsd = loadEBSD([mtexDataPath '/EBSD/forsterite.ctf'],'convertEuler2spatialReferenceFrame');
+ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','forsterite.ctf'),'convertEuler2spatialReferenceFrame');
 CS = get(ebsd,'CSCell');
 
 %%
