@@ -12,6 +12,9 @@ function [density,omega] = calcAngleDistribution(ebsd,varargin)
 %    $$\int f(\omega) d\omega = \pi$$
 %
 % omega  - intervals of density
+%
+% in the discrete case density sums up to 100
+%
 %% See also
 % EBSD/calcMisorientation EBSD/plotAngleDistribution
 
