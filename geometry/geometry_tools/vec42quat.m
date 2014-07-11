@@ -101,8 +101,19 @@ if isempty(omega), omega =[];end
 q(ind) = axis2quat(ax,omega);
 
 
-%% case 5: d1 || d2 -> rotation about (u1 x u2) x (v1 x v2)
-ind = indLeft & abs(cross(d1,d2))<1e-6;
+%% case 5: d1 || d2 and rotation about 180 degree
+ind = indLeft & abs(cross(d1,d2))<1e-6 & ...
+  abs(cross(cross(u1,u2),cross(v1,v2))) < 1e-6;
+indLeft = indLeft & ~ind;
+
+ax = (u1(ind)+v1(ind)) + 100*(u2(ind)+v2(ind));
+ax = ax./norm(ax);
+
+q(ind) = axis2quat(ax,pi);
+
+
+%% case 6: d1 || d2 -> rotation about (u1 x u2) x (v1 x v2)
+ind = indLeft & abs(cross(d1,d2))<1e-6 ;
 indLeft = indLeft & ~ind;
 
 ax = cross(cross(u1(ind),u2(ind)),cross(v1(ind),v2(ind)));
@@ -119,7 +130,7 @@ omega = acos(dot(a,b));
 q(ind) = axis2quat(ax,omega);
 
 
-%% case 6: d1 and d2 are not collinear -> rotation about d1 x d2
+%% case 7: d1 and d2 are not collinear -> rotation about d1 x d2
 
 % roation axis
 axis = cross(d1(indLeft),d2(indLeft));
