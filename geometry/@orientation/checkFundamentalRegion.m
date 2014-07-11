@@ -1,23 +1,24 @@
 function [ind,boundary] = checkFundamentalRegion(ori,varargin)
 % checks whether a orientation sits within the fundamental region
 %
-%% Input
+% Syntax
+%   ind = checkFundamentalRegion(ori,center)
+%
+% Input
 %  ori - @orientation
 %
-%% Options
+% Options
 %  center - @quaternion / center of fundamental region
 %
-%% Output
+% Output
 %  ind    - indices of those orientations that are within the Fundamental region
 
 % take the product of crystal and specimen symmetries
-%qSS = quaternion(ori.SS);
-%qCS = quaternion(ori.CS);
 c_sym = quaternion(ori.CS * ori.SS);
 
 % compute rotational axes and angles
-axes = get(c_sym(2:end),'axis');
-angles = get(c_sym(2:end),'angle');
+axes = c_sym(2:end).axis;
+angles = c_sym(2:end).angle;
 angles = min(angles,2*pi-angles);
 
 ind = angles < 1e-6;
@@ -26,7 +27,7 @@ axes(ind) = [];
 
 % compute for each axes the minimum rotational angle
 c_sym = quaternion;
-while numel(axes)>0
+while ~isempty(axes)
   ind = dot(axes,axes(1),'antipodal') >= 1 - 1e-9;
   angle = min(angles(ind));
   
@@ -42,7 +43,7 @@ rc_sym = Rodrigues(c_sym);
 
 % find rotations in the fundamental region
 ind = true(size(rq));
-for i = 1:numel(rc_sym)
+for i = 1:length(rc_sym)
     
   d = rc_sym(i);
   nd = norm(d).^2;
@@ -54,6 +55,7 @@ end
 if ~check_option(varargin,'onlyAngle')
   sym = disjoint(ori.CS,ori.SS);
   
+  if length(sym)==1, return;end
   h = Miller(vector3d(rq),sym);
   
   ind = ind & checkFundamentalRegion(h);

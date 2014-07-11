@@ -6,8 +6,7 @@ if isa(ori,'orientation') && ...
   check_option(varargin,'sharp'))
    
   % compute the center of the fundamental region
-  cs = get(ori,'CS');
-  [tmp,options] = h2HSV(xvector,cs,varargin{:});
+  [~,options] = h2HSV(xvector,ori.CS,varargin{:});
   center = get_option(options,'colorcenter');
   
   % compute r such that mean(ori)^-1 * r = center
@@ -15,10 +14,15 @@ if isa(ori,'orientation') && ...
   
 else
   
-  r = get_option(varargin,'r',xvector,'vector3d');
+  if isCS(ori.SS)
+    r = Miller(0,0,1,ori.SS);
+  else
+    r = xvector;
+  end
+  r = get_option(varargin,'r',r,'vector3d');
   
 end
 
 
 % compute crystal directions
-h = inverse(ori) .* r;
+h = inv(ori) .* r;

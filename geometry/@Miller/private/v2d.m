@@ -1,27 +1,27 @@
 function uvtw = v2d(m,varargin)
 % vector3d --> Miller-indece (u,v,w)
 %
-%% Syntax
+% Syntax
 %  [u,v,w] = v2d(m)
 %
-%% Input
+% Input
 %  m - @Miller
 %
-%% Output
+% Output
 %  u,v,w - integer
 
-%% set up matrix
+% set up matrix
 
-[x,y,z] = double(get(m.CS,'axis'));
+[x,y,z] = double(m.CS.axes);
 M = [x;y;z];
 
-%% compute Miller indice
+% compute Miller indice
 mdouble = reshape(double(m),[],3).';
 
 uvtw = (M \ mdouble)';
 
-if any(strcmp(Laue(m.CS),{'-3','-3m','6/m','6/mmm'}))
-    
+if any(strcmp(m.CS.lattice,{'trigonal','hexagonal'}))
+      
   uvtw(:,4) = uvtw(:,3);
   uvtw(:,3) = -(uvtw(:,1) + uvtw(:,2))./3;
   [uvtw(:,1), uvtw(:,2)] = deal((2*uvtw(:,1)-uvtw(:,2))./3,(2*uvtw(:,2)-uvtw(:,1))./3);

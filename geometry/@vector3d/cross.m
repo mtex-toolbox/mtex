@@ -1,8 +1,9 @@
 function v = cross(v1,v2)
 % pointwise cross product of two vector3d
-%% Input
+%
+% Input
 %  v1,v2 - @vector3d
-%% Output
+% Output
 %  @vector3d
 
 % Calculate cross product

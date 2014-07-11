@@ -30,13 +30,12 @@ import_wizard('ebsd')
 
 
 cs = symmetry('m-3m','mineral','fe');      % crystal symmetry
-ss = symmetry('triclinic'); % specimen symmetry
 
 % file names
 fname = fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt');
 
 % load data
-ebsd = loadEBSD(fname,cs,ss,... 
+ebsd = loadEBSD(fname,cs,... 
                 'interface','generic','Bunge','ignorePhase',[0 2],...
                  'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3'},...
                  'Columns', [2 3 4 5 6 7])
@@ -57,7 +56,7 @@ plot(ebsd,'antipodal')
 
 colorbar
 hold on
-plotipdf(ebsd,xvector,'markerSize',3,'points',500,'marker','o','markerfacecolor','none','markeredgecolor','k')
+plotIPDF(ebsd,xvector,'markerSize',3,'points',500,'marker','o','markerfacecolor','none','markeredgecolor','k')
 hold off
 
 %% SUB: Modify EBSD Data
@@ -76,13 +75,13 @@ hold off
 
 %% SUB: Calculate an ODF from EBSD Data
 %
-% The command [[EBSD.calcODF.html,calcODF]]  performs an ODF calculation
+% The command <EBSD.calcODF.html calcODF>  performs an ODF calculation
 % from EBSD data using kernel density estimation EBSD data. For a precise
 % explanation of the algorithm and the available options please look at
 % <EBSD2odf.html here>. 
 
 odf = calcODF(ebsd('fe'),'halfwidth',10*degree)
-plotpdf(odf,Miller(1,0,0,cs),'antipodal')
+plotPDF(odf,Miller(1,0,0,cs),'antipodal')
 
 
 %% SUB: Simulate EBSD Data
@@ -93,8 +92,8 @@ plotpdf(odf,Miller(1,0,0,cs),'antipodal')
 % ODF up to a given error. The MTEX command to simulate EBSD data is
 % <ODF.calcEBSD.html calcEBSD>, e.g.
 
-ebsd = calcEBSD(unimodalODF(idquaternion,cs,ss),500)
-plotpdf(ebsd,Miller(1,0,0),'antipodal','MarkerSize',3)
+ebsd = calcEBSD(unimodalODF(idquaternion,cs),500)
+plotPDF(ebsd,Miller(1,0,0),'antipodal','MarkerSize',3)
 
 %% SUB: Demo
 %

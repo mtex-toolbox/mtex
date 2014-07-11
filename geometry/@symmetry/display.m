@@ -2,10 +2,10 @@ function display(s)
 % standard output
 
 % check whether crystal or specimen symmetry
-if isempty(s.mineral) && length(s)<=4 && all(s.axis == [xvector,yvector,zvector])
+if ~s.isCS
   
   disp(' ');
-  disp([inputname(1) ' = ' s.name ' specimen ' doclink('symmetry_index','symmetry') ' ' docmethods(inputname(1))]);
+  disp([inputname(1) ' = ' s.lattice ' specimen ' doclink('symmetry_index','symmetry') ' ' docmethods(inputname(1))]);
   disp(' ');
   
   return
@@ -33,26 +33,22 @@ end
 
 % add symmetry
 props{end+1} = 'symmetry'; 
-propV{end+1} = [s.name ' (' s.laue ')'];
+propV{end+1} = [symmetry.pointGroups(s.id).Inter];
 
 % add axis length
-if ~any(strcmp(s.laue,{'m-3','m-3m'}))
-  props{end+1} = 'a, b, c'; 
-  propV{end+1} = option2str(vec2cell(get(s,'axesLength')));
-end
-
+props{end+1} = 'a, b, c';
+propV{end+1} = option2str(vec2cell(norm(s.axes)));
 
 % add axis angle
-if any(strcmp(s.laue,{'-1','2/m'}))
+if s.id < 12
   props{end+1} = 'alpha, beta, gamma';
-  angles = get(s,'axesAngle');
-  propV{end+1} = [num2str(angles(1)) '°, ' num2str(angles(2)) '°, ' num2str(angles(3)) '°'];
+  propV{end+1} = [num2str(s.alpha./degree) '°, ' num2str(s.beta./degree) '°, ' num2str(s.gamma./degree) '°'];
 end
 
 % add reference frame
-if any(strcmp(s.laue,{'-1','2/m','-3m','-3','6/m','6/mmm'}))
+if any(strcmp(s.lattice,{'triclinic','monoclinic','trigonal','hexagonal'}))
   props{end+1} = 'reference frame'; 
-  propV{end+1} = option2str(get(s,'convention'));    
+  propV{end+1} = option2str(s.alignment);    
 end
 
 % display all properties

@@ -88,15 +88,15 @@ hold off
 %%
 % This is a very powerfull way of accessing grains as the condition can be
 % build up using any grain property. As an example let us consider the
-% phase. We can access it by the command <GrainSet.get.html get>
+% phase. The phase of the first five grains we get by
 
-phase = get(grains,'phase');
+grains(1:5).phase
 
 %%
 % Now we can access or grains of the first phase Forsterite by the
 % condition
 
-condition = phase == 1;
+condition = grains.phase == 1;
 plot(grains(condition))
 
 %%
@@ -109,7 +109,7 @@ grains('forsterite')
 % Logical indexing allows also for more complex queries, e.g. selecting all
 % grains perimeter larger then 6000 and at least 600 measurements within
 
-condition = perimeter(grains)>6000 & grainSize(grains) >= 600;
+condition = grains.perimeter>6000 & grains.grainSize >= 600;
 
 selected_grains = grains(condition)
 
@@ -135,8 +135,8 @@ hold off
 % In order to select all grains with a certain orientation once can use the
 % command <GrainSet.findByOrientation.html findByOrientation>
 
- grains_selected = findByOrientation(grains('fo'),...
-  orientation('Euler',350*degree,50*degree,100*degree,CS{1}),...
+grains_selected = findByOrientation(grains('fo'),...
+  orientation('Euler',350*degree,50*degree,100*degree,CS),...
   10*degree)
 
 plot(grains_selected)
@@ -153,7 +153,7 @@ grains = calcGrains(ebsd)
 %%
 % and compute the vector of grain areas
 
-ar = area(grains);
+ar = grains.area;
 
 %%
 % The following script compute the distribution of grain areas within the
@@ -189,11 +189,8 @@ ylabel('relative volume')
 % scatter plot of shapefactor against aspactratio to check for correlation.
 %
 
-sf = shapefactor(grains);
-as = aspectratio(grains);
-
 % the size of the dots corresponds to the area of the grains
-scatter(sf, as, 50*ar./max(ar) )
+scatter(grains.shapefactor, grains.aspectratio, 50*ar./max(ar) )
 
 
 %% Spatial Dependencies
@@ -201,7 +198,5 @@ scatter(sf, as, 50*ar./max(ar) )
 % dependence in the spatial arrangement or not, therefor we can count the
 % transitions to a neighbour grain
 
-ph = get(grains,'phase');
-
-[J, T, p ] = joinCount(grains,ph)
+[J, T, p ] = joinCount(grains,grains.phase)
 

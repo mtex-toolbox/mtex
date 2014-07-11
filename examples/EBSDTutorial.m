@@ -13,18 +13,15 @@ CS = {...
   symmetry('m-3m','mineral','Fe'),...
   symmetry('m-3m','mineral','Mg')};
 
-% specimen symmetry
-SS = symmetry('-1');
-
 % specify file name
 fname = fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt');
 
 
 % create an EBSD variable containing the data
-ebsd = loadEBSD(fname,CS,SS,'interface','generic' ...
+ebsd = loadEBSD(fname,CS,'interface','generic' ...
   , 'ColumnNames', ...
   { 'Index' 'Phase' 'x' 'y' 'Euler1' 'Euler2' 'Euler3' 'MAD' 'BC' 'BS' 'Bands' 'Error' 'ReliabilityIndex'}, ...
-  'Bunge', 'ignorePhase', 0);
+  'ignorePhase', 0);
 
 % plotting convention
 plotx2east
@@ -34,7 +31,7 @@ plotx2east
 % 1 using hkl colorcoding.
 
 figure('position',[100 100 800 350])
-plot(ebsd,'colorcoding','ipdfHKL')
+plot(ebsd)
 
 %%
 % The colorcoding can be interpreted by the collored (0,0,1) inverse pole
@@ -54,7 +51,7 @@ grains = calcGrains(ebsd)
 % and plot them into our orientation plot
 
 figure('position',[100 100 800 350])
-plot(ebsd,'colorcoding','ipdfHKL')
+plot(ebsd)
 hold on
 plotBoundary(grains,'linewidth',1.5)
 
@@ -62,7 +59,7 @@ plotBoundary(grains,'linewidth',1.5)
 % One can also plot all the grains together with their mean orientation
 
 figure('position',[100 100 800 350])
-plot(grains,'colorcoding','ipdfHKL')
+plot(grains)
 
 %% ODF estimation
 % Next we reconstruct an ODF from the EBSD data. Therefore, we first have
@@ -79,7 +76,7 @@ odf = calcODF(ebsd('Fe'),'kernel',psi)
 % <ODFCalculations.html ODF analysis> and <ODFPlot.html ODF visualisation>
 % is available.
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],...
+plotPDF(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],...
   'antipodal','silent','position',[100 100 600 200])
 
 

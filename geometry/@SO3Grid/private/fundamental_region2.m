@@ -10,7 +10,7 @@ function ind = fundamental_region2(q,center,cs,ss)
 
 % symmetrise
 c_sym = ss *  center * cs;
-omega = angle(c_sym * inverse(center));
+omega = angle(c_sym * inv(center));
 [omega,c_sym] = selectMinbyRow(omega,c_sym);
 
 % convert to rodrigues space
@@ -22,12 +22,12 @@ oldD = vector3d;
 
 % find rotation not part of the fundamental region
 ind = true(size(rq));
-for i = 2:numel(rc_sym)
+for i = 2:length(rc_sym)
   
   d = rc_sym(i)-rc_sym(1);
   if norm(d)<=1e-10 % find something that is orthogonal to rc_sym    
   
-    if length(oldD)==0
+    if isempty(oldD)
       d = orth(rc_sym(1));
     elseif length(oldD) == 1
       d = cross(oldD,rc_sym(1));

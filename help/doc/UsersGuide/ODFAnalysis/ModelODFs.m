@@ -52,14 +52,14 @@ odf = uniformODF(cs,ss)
 % and. In order to define a unimodal ODF one needs
 %
 % * a preferred <orientation_index.html orientation> mod1
-% * a <kernel_index.html kernel> function *psi* defining the shape
+% * a <kernel_index.html kernel> function |psi| defining the shape
 % * the crystal and specimen <symmetry_index.html symmetry>
 
-x = orientation('Miller',[1,2,2],[2,2,1],cs,ss);
-psi = kernel('von Mises Fisher','HALFWIDTH',10*degree);
-odf = unimodalODF(x,cs,ss,psi)
+ori = orientation('Miller',[1,2,2],[2,2,1],cs,ss);
+psi = vonMisesFisherKernel('HALFWIDTH',10*degree);
+odf = unimodalODF(ori,psi,cs,ss)
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
+plotPDF(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
 
 %%
 % For simplicity one can also ommit the kernel function. In this case the
@@ -89,7 +89,7 @@ h = Miller(0,0,1);
 r = xvector;
 odf = fibreODF(h,r,cs,ss,psi)
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
+plotPDF(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
 
 %% ODFs given by Fourier coefficients
 %
@@ -101,17 +101,16 @@ plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
 %
 % where $l=0,\ldots,L$ denotes the order of the Fourier coefficients.
 
-cs   = symmetry('triclinic');    % crystal symmetry
-ss   = symmetry('triclinic');    % specimen symmetry
+cs   = symmetry('1');    % crystal symmetry
 C = [1;reshape(eye(3),[],1);reshape(eye(5),[],1)]; % Fourier coefficients
-odf = FourierODF(C,cs,ss)
+odf = FourierODF(C,cs)
 
 plot(odf,'sections',6,'silent','sigma')
 mtexColorMap LaboTeX
 
 %%
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
+plotPDF(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
 
 %% Bingham ODFs
 %
@@ -135,7 +134,6 @@ plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
 %
 
 cs = symmetry('-3m');
-ss = symmetry('-1');
 
 %%
 % *Bingham unimodal ODF*
@@ -144,14 +142,14 @@ ss = symmetry('-1');
 mod = orientation('Euler',45*degree,0*degree,0*degree);
 
 % the corresponding Bingham ODF
-odf = BinghamODF(20,mod * quaternion(eye(4)),cs,ss)
+odf = BinghamODF(20,mod,cs)
 
 plot(odf,'sections',6,'silent','contourf','sigma')
 
 %%
 % *Bingham fibre ODF*
 
-odf = BinghamODF([-10,-10,10,10],quaternion(eye(4)),cs,ss)
+odf = BinghamODF([-10,-10,10,10],quaternion(eye(4)),cs)
 
 plot(odf,'sections',6,'silent','sigma')
 
@@ -159,7 +157,7 @@ plot(odf,'sections',6,'silent','sigma')
 % *Bingham spherical ODF*
 
 
-odf = BinghamODF([-10,10,10,10],quaternion(eye(4)),cs,ss)
+odf = BinghamODF([-10,10,10,10],quaternion(eye(4)),cs)
 
 plot(odf,'sections',6,'silent','sigma');
 
@@ -170,11 +168,10 @@ plot(odf,'sections',6,'silent','sigma');
 cs = symmetry('cubic');
 ss = symmetry('orthorhombic');
 
-psi = kernel('von Mises Fisher','HALFWIDTH',10*degree);
+psi = vonMisesFisherKernel('halfwidth',10*degree);
 mod1 = orientation('Miller',[1,2,2],[2,2,1],cs,ss);
 
-odf =  0.73 * uniformODF(cs,ss,'comment','the SantaFe-sample ODF') ...
-  + 0.27 * unimodalODF(mod1,cs,ss,psi)
+odf =  0.73 * uniformODF(cs,ss) + 0.27 * unimodalODF(mod1,psi)
 
 close all
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
+plotPDF(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')

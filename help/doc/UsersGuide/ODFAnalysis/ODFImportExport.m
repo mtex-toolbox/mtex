@@ -20,15 +20,14 @@
 % sample ODF which is defined as the superposition of several model ODFs.
 
 cs = symmetry('cubic');
-ss = symmetry('triclinic');
 mod1 = orientation('axis',xvector,'angle',45*degree,cs);
-mod2 = orientation('axis',yvector,'angle',65*degree,ss);
-model_odf = 0.5*uniformODF(cs,ss) + ...
-  0.05*fibreODF(Miller(1,0,0),xvector,cs,ss,'halfwidth',10*degree) + ...
-  0.05*fibreODF(Miller(0,1,0),yvector,cs,ss,'halfwidth',10*degree) + ...
-  0.05*fibreODF(Miller(0,0,1),zvector,cs,ss,'halfwidth',10*degree) + ...
-  0.05*unimodalODF(mod1,cs,ss,'halfwidth',15*degree) + ...
-  0.3*unimodalODF(mod2,cs,ss,'halfwidth',25*degree);
+mod2 = orientation('axis',yvector,'angle',65*degree,cs);
+model_odf = 0.5*uniformODF(cs) + ...
+  0.05*fibreODF(Miller(1,0,0),xvector,cs,'halfwidth',10*degree) + ...
+  0.05*fibreODF(Miller(0,1,0),yvector,cs,'halfwidth',10*degree) + ...
+  0.05*fibreODF(Miller(0,0,1),zvector,cs,'halfwidth',10*degree) + ...
+  0.05*unimodalODF(mod1,cs,'halfwidth',15*degree) + ...
+  0.3*unimodalODF(mod2,cs,'halfwidth',25*degree);
 plot(model_odf,'sections',6,'silent')
 
 %% Save as .mat file
@@ -66,7 +65,7 @@ export(model_odf,fname,'Bunge')
 % if you specify the grid in the orientation space directly.
 
 % define a equispaced grid in orientation space with resolution of 5 degree
-S3G = SO3Grid(5 * degree,cs,ss);
+S3G = equispacedSO3Grid(cs,'resolution',5*degree);
 
 % export the ODF by values at these locations
 export(model_odf,fname,S3G,'Bunge','generic')
@@ -111,7 +110,6 @@ import_wizard('ODF')
 
 % define crystal and specimen symmetry
 cs = symmetry('cubic');
-ss = symmetry('triclinic');
 
 % the file name
 fname = [mtexDataPath '/ODF/odf.txt'];
@@ -120,11 +118,11 @@ fname = [mtexDataPath '/ODF/odf.txt'];
 res = 10*degree;
 
 % load the data
-odf = loadODF(fname,cs,ss,'resolution',res,'Bunge',...
-  'ColumnNames',{'Euler 1','Euler 2','Euler 3','weight'});
+odf = loadODF(fname,cs,'resolution',res,'Bunge',...
+  'ColumnNames',{'Euler 1','Euler 2','Euler 3','weights'});
 
 % plot data
-plotodf(odf,'sections',6,'silent')
+plotODF(odf,'sections',6,'silent')
 
 %%
 % So far ODFs may only exported from and imported into ASCII files that

@@ -5,7 +5,7 @@ if check_option(varargin,'property')
   data = get_option(varargin,'property');
   if ischar(data)
     varargin = delete_option(varargin,data);
-    data = get(obj,data);     
+    data = obj.(data);     
   end
   
   varargin = set_option(varargin,'property',data);

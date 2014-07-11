@@ -25,12 +25,12 @@ toc
 
 %% check S2Grid/find
 
-x = S2Grid('equispaced','points',500);
+x = equispacedS2Grid('points',500);
 plot(subGrid(x,find(x,xvector,10*degree)));
 full(find(x,xvector,10*degree))
 
-x = S2Grid('equispaced','points',5000);
-y = vector3d(S2Grid('equispaced','points',100));
+x = equispacedS2Grid('points',5000);
+y = vector3d(equispacedS2Grid('points',100));
 
 tic
 for i = 1:length(y)
@@ -47,11 +47,11 @@ toc
 %% check SO3Grid/find
 
 cs = symmetry('trigonal');
+ss = symmetry('1');
 
-x = SO3Grid(1000,cs);
+x = equispacedSO3Grid(cs,ss,'points',100000);
+y = equispacedSO3Grid(cs,ss,'points',100000);
 
-x = SO3Grid(100000,cs);
-y = SO3Grid(100000,cs);
 
 tic
 angle_outer(x,y,5*degree);
@@ -71,9 +71,9 @@ sx = quaternion(subGrid(x,find(x,q,10*degree)));
 dist(cs,symmetry,q,sx) / degree
 
 
-plot(inverse(sx)*xvector)
-plot(inverse(sx)*yvector)
-plot(inverse(sx)*zvector)
+plot(inv(sx)*xvector)
+plot(inv(sx)*yvector)
+plot(inv(sx)*zvector)
 
 
 A = cos(ay)*cos(cy)*cos(ax)*(cos(by)*cos(bx)-1) - ...

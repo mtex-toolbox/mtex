@@ -29,9 +29,9 @@ options.x = X(:,1);
 options.y = X(:,2);
 options.z = X(:,3);
 
-o = SO3Grid('random',CS,SS,'points',size(X,1));
+o = orientation('random',CS,SS,'points',size(X,1));
 
-ebsd = EBSD(orientation(o),'options',options);
+ebsd = EBSD(o,'options',options);
 
 %%
 % currently the voronoi decomposition in 3d is not supported, so before

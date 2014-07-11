@@ -6,8 +6,22 @@ if ischar(name)
     if isempty(which(name))
       error('unknown colormap name');      
     end
-    name = feval(name);
+    map = feval(name);
+  else
+    map = colormap(name);
   end
-  colormap(name);
+else
+  map = name;
 end
 
+if isappdata(gcf,'mtexFig')
+  mtexFig = getappdata(gcf,'mtexFig');
+  for i = 1:numel(mtexFig.children)
+    colormap(mtexFig.children(i),map);
+  end  
+  colormap(mtexFig.cBarAxis,map);
+else
+  colormap(map);
+end
+
+  

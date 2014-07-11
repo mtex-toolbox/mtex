@@ -23,7 +23,7 @@
 % specimen symmetry first.
 
 cs = symmetry('cubic');
-ss = symmetry('orthorhombic');
+ss = symmetry('orthorhombic','specimen');
 
 %%
 %
@@ -83,9 +83,9 @@ o = orientation('matrix',eye(3),cs,ss)
 % 
 % In the MTEX there is a list of predefined orientations:
 %
-% * [[cubeOrientation.html,cubeOrientation]]
-% * [[gossOrientation.html,gossOrientation]]
-% * [[brassOrientation.html,brassOrientation]]
+% * <cubeOrientation.html cubeOrientation>
+% * <gossOrientation.html gossOrientation>
+% * <brassOrientation.html brassOrientation>
 %
 %
 
@@ -118,7 +118,7 @@ o \ r
 %
 % Let 
 
-o = orientation('Euler',90*degree,0,0,cs,ss);
+o = orientation('Euler',90*degree,0,0,cs);
 rot = rotation('Euler',0,60*degree,0);
 
 %%
@@ -173,9 +173,9 @@ angle(o1)/degree
 axis(o1)
 %%
 % To obtain the inverse orientation to o, one can use the command
-% <quaternion.inverse.html inverse(q)>
+% <quaternion.inv.html inv(q)>
 
-inverse(o1)
+inv(o1)
 
 %% Conversion into Euler Angles and Rodrigues Parametrisation
 %
@@ -186,7 +186,7 @@ inverse(o1)
 % * [[quaternion.Rodrigues.html,Rodrigues(o)]] % in Rodrigues parameter
 %
 
-[phi1,Phi,phi2] = Euler(o)
+[phi1,Phi,phi2] = Euler(o1)
 
 
 %% Plotting Orientations

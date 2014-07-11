@@ -6,42 +6,44 @@
 %% Contents
 %
 %%
-% First, let us import some example <mtexdata.html EBSD data> and plot
+% First, let us import some example <mtexdata.html EBSD data>. and plot
 % the raw data
 
-mtexdata forsterite;
-plotx2east
-close all
-plot(ebsd)
+mtexdata forsterite
 
 %%
-% These data consist of two indexed phases, _Iron_ and _Magnesium_ : The not
-% indexed data is called phase _not Indexed_. They can be visualized by a
-% spatial phase plot
+% These data consist of two indexed phases, _Iron_ and _Magnesium_. The not
+% indexed phase called phase _not Indexed_. The phases can be visualized by
 
-close all
+close all, plotx2east
 plot(ebsd,'property','phase')
 
-%% Selecting certain phases
-% The data coresponding to a certain phase can be extracted by
+%% Selecting a certain phase
+% In order to restrict the EBSD data to a certain phase just use the
+% mineral name as an index, i.e.
 
-ebsd_Fe = ebsd('Forsterite')
+ebsd('Forsterite')
 
 %%
-% In order to extract a couple of phases, the mineral names have to be
-% grouped in curled parethesis.
+% contains only the Forterite measurements. In order to extract a couple of
+% phases, the mineral names have to be grouped in curled parethesis.
 
 ebsd({'Fo','En'})
 
 %%
-% As an example, let us plot only all not indexed data
+% As an example, let us plot the Forsterite data. 
 
 close all
-plot(ebsd('notIndexed'),'facecolor','r')
+plot(ebsd('Forsterite'))
+%plot(ebsd('notIndexed'),'facecolor','r')
 
-%% See also
-% EBSD/subsref EBSD/subsasgn
-%
+%%
+% The data are colorized according to its orientation. By default color of
+% an orientation is determined by its position in the 100 inverse pole
+% figure which itself is colored as
+
+ebsdColorbar
+
 
 %% Restricting to a region of interest
 % If one is not interested in the whole data set but only in those
@@ -57,21 +59,27 @@ region = [5 2 10 5]*10^3;
 % plot the ebsd data together with the region of interest
 
 close all
-plot(ebsd)
+plot(ebsd,'property','phase')
 rectangle('position',region,'edgecolor','r','linewidth',2)
 
 %%
-% In order to restrict the ebsd data to the polygon we may use the command
-% <EBSD.inpolygon.html inpolygon> to locate all EBSD data inside the region
+% The command <EBSD.inpolygon.html inpolygon> checks for each EBSD data
+% point whether it is inside a polygon or not, i.e.
 
-ebsd = ebsd(inpolygon(ebsd,region))
+condition = inpolygon(ebsd,region);
 
+%%
+% results in a large vector of |TRUE| and |FALSE| stating which data points
+% are inside the region. Restricting the EBSD data by this condition is
+% done via
+
+ebsd = ebsd(condition)
 
 %%
 % plot
 
 close all
-plot(ebsd)
+plot(ebsd,'property','phase')
 
 %%
 % Note, that you can also select a polygon by mouse using the command
@@ -96,32 +104,19 @@ close all
 plot(ebsd,'property','bc')
 
 %%
-% Here we will use the MAD or CI value to identify and eliminate
+% Here we will use the MAD to identify and eliminate
 % inaccurate measurements.
-
-% extract the quantity mad 
-mad = get(ebsd,'mad');
-
-%%
-% or extract the quantity bc
-
-bc = get(ebsd,'bc');
 
 % plot a histogram
 close all
-hist(mad)
-
-figure
-hist(bc)
+hist(ebsd.mad)
 
 
 %%
 
 % take only those measurements with MAD smaller then one
-ebsd_corrected = ebsd(mad<1)
+ebsd_corrected = ebsd(ebsd.mad<0.8)
 
-% take only those measurements with CI higher then 0.1 or 0.2
-ebsd_corrected = ebsd(bc>0.1 )
 
 %%
 %

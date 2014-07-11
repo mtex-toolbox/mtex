@@ -14,7 +14,6 @@
 
 % specify scrystal and specimen symmetry
 cs = symmetry('-3m',[1.4,1.4,1.5]);
-ss = symmetry('triclinic');
 
 % specify file names
 fname = {...
@@ -29,22 +28,16 @@ h = {Miller(1,0,-1,0,cs),[Miller(0,1,-1,1,cs),Miller(1,0,-1,1,cs)],Miller(1,1,-2
 c = {1,[0.52 ,1.23],1};
 
 % import pole figure data
-pf = loadPoleFigure(fname,h,cs,ss,'superposition',c)
+pf = loadPoleFigure(fname,h,cs,'superposition',c)
 
 %% plot pole figures
 
 figure('position',[359 450 749 249])
 plot(pf)
 
-%% Analyse pole figures
-
-clf
-hist(pf)
-
 %% Correct pole figures
 
-pf_corrected = delete(pf,get(pf,'theta') >= 70*degree &...
-  get(pf,'theta') <= 75*degree);
+pf_corrected = pf(pf.r.theta < 70*degree | pf.r.theta > 75*degree);
 
 plot(pf_corrected)
 
@@ -74,12 +67,12 @@ plotDiff(pf,odf)
 
 %% Recalculate c-axis pole figures
 
-plotpdf(odf,Miller(0,0,1,cs),'antipodal')
+plotPDF(odf,Miller(0,0,1,cs),'antipodal')
 
 
 %% Plot inverse pole figure
 
-plotipdf(odf,vector3d(1,1,2))
+plotIPDF(odf,vector3d(1,1,2))
 
 %% plot recalculated ODF
 

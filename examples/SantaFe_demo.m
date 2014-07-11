@@ -8,15 +8,11 @@
 
 %% Simulate pole figures
 
-% get crystal and specimen symmetry
-cs = get(SantaFe,'CS');
-ss = get(SantaFe,'SS');
-
 % crystal directions
-h = [Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(1,1,1,cs),Miller(2,1,1,cs)];
+h = [Miller(1,0,0),Miller(1,1,0),Miller(1,1,1),Miller(2,1,1)];
 
 % specimen directions
-r = S2Grid('equispaced','resolution',5*degree,'antipodal');
+r = equispacedS2Grid('resolution',5*degree,'antipodal');
 
 % pole figures
 pf = calcPoleFigure(SantaFe,h,r);
@@ -26,8 +22,8 @@ pf = noisepf(pf,100);
 
 % plot them
 close; figure('position',[100,100,800,300])
-plot(pf)
-
+plot(pf,'MarkerSize',5)
+mtexColorMap LaboTeX
 
 %% ODF Estimation with Ghost Correction
 rec = calcODF(pf)
@@ -47,7 +43,7 @@ plotDiff(pf,rec)
  
 %% Plot estimated pole figures
 
-plotpdf(rec,get(pf,'Miller'),'antipodal')
+plotPDF(rec,pf.h,'antipodal')
 
 %% Plot estimated ODF (Ghost Corrected)
 

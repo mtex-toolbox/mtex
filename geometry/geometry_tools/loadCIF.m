@@ -4,11 +4,11 @@ function [cs,mineral] = loadCIF(fname,varargin)
 % if cif file not found and input name is a valid COD entry, this function tries
 % to download the file from [[http://www.crystallography.net/cif/,http://www.crystallography.net/cif/]]
 %
-%% Syntax
-% loadCIF('5000035.cif') -
-% loadCIF(5000035)       - lookup online
+% Syntax
+%  loadCIF('5000035.cif') -
+%  loadCIF(5000035)       - lookup online
 %
-%% See also
+% See also
 % symmetry
 
 
@@ -68,11 +68,11 @@ try
     extract_token(str,'_cell_angle_beta',true) ...
     extract_token(str,'_cell_angle_gamma',true)];
   
-  if numel(axis)<3,
+  if length(axis)<3,
 %     warning('crystallographic axis mismatch');    
     axis = [1 1 1];
   end
-  if numel(angles)<3,
+  if length(angles)<3,
 %     warning('crystallographic angles mismatch');
     angles = [90 90 90];    
   end

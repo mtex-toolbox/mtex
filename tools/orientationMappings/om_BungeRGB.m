@@ -2,7 +2,7 @@ function [rgb,options] = om_BungeRGB(o,varargin)
 % Euler angles are mapped to rgb values
 %
 
-[maxphi1,maxPhi,maxphi2] = getFundamentalRegion(get(o,'CS'),get(o,'SS'),varargin{:});
+[maxphi1,maxPhi,maxphi2] = getFundamentalRegion(o.CS,o.SS,varargin{:});
 
 % get reference orientation
 if check_option(varargin,'center')

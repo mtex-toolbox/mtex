@@ -1,4 +1,4 @@
-function map = hsv(m)
+function map = hsvColorMap(m)
 %HSV    Hue-saturation-value color map
 %   HSV(M) returns an M-by-3 matrix containing an HSV colormap.
 %   HSV, by itself, is the same length as the current figure's

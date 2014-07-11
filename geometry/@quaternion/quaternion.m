@@ -1,70 +1,63 @@
-function q=quaternion(a,b,c,d)
-% Constructor
-
-if nargin == 0
-  q.a = [];
-  q.b = [];
-  q.c = [];
-  q.d = [];
+classdef quaternion
+  % TODO: the syntax quanternion(r,2:20) was allowed
   
-  q = class(q,'quaternion');
-elseif nargin == 1
-  if isa(a,'quaternion')
-    if nargin == 2
-      q = a(b);
-    else
-      q=a;
-    end
-  elseif isa(a,'vector3d')
-    q.a = zeros(size(a));
-    [q.b,q.c,q.d] = double(a);
-    
-    q = class(q,'quaternion');
-  elseif isa(a,'double') && size(a,1) == 4
-    q.a = a(1,:,:,:,:,:,:);
-    q.b = a(2,:,:,:,:,:,:);
-    q.c = a(3,:,:,:,:,:,:);
-    q.d = a(4,:,:,:,:,:,:);
-    
-    q = class(q,'quaternion');
-  else
-    error('input should be a quaternion or vector3d');
-  end
-elseif nargin == 2
-  if isa(b,'vector3d')
-    if length(a) ~= 1
-      q.a = a;
-    else
-      q.a = repmat(a,size(b));
-    end
-    [q.b,q.c,q.d] = double(b);
-    
-    q = class(q,'quaternion');
-  elseif size(b,1)==3
-    q.a = a;
-    q.b = b(1,:);
-    q.c = b(2,:);
-    q.d = b(3,:);
-    
-    q = class(q,'quaternion');
-  elseif size(b,2) == 3
-    q.a = a;
-    q.b = b(:,1);
-    q.c = b(:,2);
-    q.d = b(:,3);
-    
-    q = class(q,'quaternion');
-  else
-    error('second argument should be a threedimensional vector');
-  end
-elseif nargin == 4
-  q.a = a;
-  q.b = b;
-  q.c = c;
-  q.d = d;
   
-  q = class(q,'quaternion');
-else
-  error('wrong number of arguments');
+  properties
+    a % real part
+    b % * i
+    c % * j
+    d % * k
+  end
+  
+  methods
+    function q = quaternion(varargin)
+      
+      if nargin == 0, return;end
+      
+      if isa(varargin{1},'quaternion')   % copy constructor
+              
+          q.a = varargin{1}.a(varargin{2:end});
+          q.b = varargin{1}.b(varargin{2:end});
+          q.c = varargin{1}.c(varargin{2:end});
+          q.d = varargin{1}.d(varargin{2:end});
+          
+      elseif isa(varargin{1},'vector3d')
+          
+        q.a = zeros(size(varargin{1}));
+        [q.b,q.c,q.d] = double(varargin{1});
+          
+      elseif isnumeric(varargin{1})
+          
+        switch nargin
+            
+          case 1
+              
+            D = varargin{1};
+              
+            [q.a, q.b, q.c, q.d] = deal(D(1,:),D(2,:),D(3,:),D(4,:));
+            
+            s = size(D);
+            s = [1 s(2:ndims(D))];
+            
+            q = reshape(q,s);
+              
+          case 2
+              
+            if length(varargin{1}) ~= 1
+              q.a = varargin{1};
+            else
+              q.a = repmat(varargin{1},size(varargin{2}));
+            end
+            [q.b,q.c,q.d] = double(varargin{2});
+            
+          case 4
+            
+              [q.a, q.b, q.c, q.d] = deal(varargin{:});
+              
+        end
+      end
+      
+    end
+  end
+  
 end
-

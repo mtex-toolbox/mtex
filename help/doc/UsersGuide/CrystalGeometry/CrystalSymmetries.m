@@ -69,7 +69,9 @@ plot(cs)
 
 cs = symmetry('-3m',[1.7,1.7,1.4],'Y||a');
 plot(cs)
-
+hold on
+plot(cs,'hkl')
+hold off
 
 %% Calculations
 %
@@ -82,7 +84,15 @@ ss * orientation('euler',0,0,pi/4,cs,ss) * cs  % all crystallographically equiva
 
 %% Plotting symmetries
 %
-% Symmetries are visualized by plotting their main axes and the
+% One can also visualize crystal symmetries by plotting the main axes and the
 % corresponding equivalent directions
 
-plot(cs,'antipodal')
+h = [Miller(1,0,-1,0,cs),Miller(1,1,-2,0,cs),...
+  Miller(1,0,-1,1,cs),Miller(1,1,-2,1,cs),...
+  Miller(0,0,0,1,cs)];
+
+hold all
+for i = 1:length(h)
+  plot(h(i),'symmetrised','labeled')
+end
+hold off

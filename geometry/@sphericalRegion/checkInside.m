@@ -1,0 +1,20 @@
+function inside = checkInside(sR,v,varargin)
+% check for points to be inside the spherical region
+  
+% for antipodal symmetry check v and -v
+if (sR.antipodal || check_option(varargin,'antipodal')) && ...
+    ~check_option(varargin,'removeAntipodal')
+  sR.antipodal = false;
+  inside = checkInside(sR,v) | checkInside(sR,-v);
+  return
+end
+
+% verify all conditions are satisfies
+inside = true(size(v));
+v = normalize(vector3d(v));
+for i = 1:length(sR.N)
+  inside = inside & (sR.N(i).dot(v) >= sR.alpha(i)-1e-6);
+end
+ 
+end
+ 

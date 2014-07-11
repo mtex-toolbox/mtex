@@ -7,24 +7,21 @@ o = project2FundamentalRegion(o);
 % 
 v = Rodrigues(o);
 
-cs = get(o,'cs');
-
-switch Laue(cs)
+switch Laue(o.CS)
   
   case '-1'
     a = abs(angle(o)) ./ pi;
     
   otherwise
     
-    h = getFundamentalRegionRodriguez(cs);
+    h = getFundamentalRegionRodriguez(o.CS);
     h = h ./ norm(h).^2;
     
     a = max(abs(dot_outer(h,v)));
             
 end
 
-%% compute directional dependend color
-
+% compute directional dependend color
 h = v./norm(v);
 
 constraints = [yvector,zvector,zvector];
@@ -38,7 +35,7 @@ center = sph2vec(pi/4,pi/4);
 %sh = v(:);
 
 
-%% compute angle
+% compute angle
 rx = center - zvector; rx = rx ./ norm(rx);
 ry = cross(center,rx); ry = ry ./ norm(ry);
 dv = (center - sh); dv = dv ./ norm(dv);
@@ -47,7 +44,7 @@ omega(isnan(omega)) = 0;
 omega = omega(:);
 
 
-%% compute saturation
+% ---------- compute saturation --------------------------
 
 % center
 cc = cross(sh,center);
@@ -83,7 +80,7 @@ L = (dh - 0.5) .* a(:) + 0.5;
 
 S = a(:) .* (1-abs(2*dh-1)) ./ (1-abs(2*L-1));
 
-%% compute colors
+% compute colors
 
 [h,s,v] = hsl2hsv(omega./2./pi,S,L);
 c = hsv2rgb(h,s,v);
@@ -91,9 +88,9 @@ options = varargin;
 
 return
 
-%%
+%
 
-v = S2Grid('plot');
+v = plotS2Grid;
 o = orientation('axis',v,'angle',0.51*pi,symmetry(1));
 
 c = rodrigues2rgb(o);
@@ -101,11 +98,11 @@ c = reshape(c,[size(v),3]);
 
 surf(v,c)
 
-%%
+%
 
 ebsdColorbar(symmetry(1),'colorcoding','RodriguesHSV','sections',12,'resolution',1*degree,'upper')
 %ebsdColorbar(symmetry(3),'colorcoding','RodriguesHSV','sections',12,'resolution',1*degree,'south')
 
-%%
+%
 
 ebsdColorbar(symmetry('-1'),'colorcoding','RodriguesHSV','sections',12,'phi1','projection','plain')

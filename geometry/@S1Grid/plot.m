@@ -6,6 +6,6 @@ if S1G(1).periodic
 	theta = repmat(pi/2,1,length(rho));
 	plot(sph2vec(theta,rho),strtrim(cellstr(num2str(S1G.points(:)))));
 else
-	y = repmat(1,1,GridLength(S1G));
+	y = ones(1,1,GridLength(S1G));
 	plot(S1G.points,y,'.','MarkerSize',10);
 end

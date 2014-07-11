@@ -1,11 +1,11 @@
 function export(q,fname,varargin)
 % export quaternions to a ascii file
 %
-%% Input
+% Input
 %  ebsd - @EBSD
 %  fname - filename
 %
-%% Options
+% Options
 %  quaternion - store as quaternion values
 %  Bunge   - Bunge convention (default)
 %  Matthies     - Matthies convention (alpha beta gamma)
@@ -20,7 +20,7 @@ if check_option(varargin,'quaternion')
 else
   
   % add Euler angles
-  [d,columnNames] = get(q,'Euler',varargin{:});
+  [d,columnNames] = q.Euler(varargin{:});
 
 end
   

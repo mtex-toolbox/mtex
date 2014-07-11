@@ -11,10 +11,10 @@
 %
 % Let us first define some model ODFs to be plotted later on.
 
-cs = symmetry('-3m'); ss = symmetry('-1');
+cs = symmetry('-3m');
 mod1 = orientation('Euler',30*degree,40*degree,10*degree);
 mod2 = orientation('Euler',10*degree,80*degree,70*degree);
-odf = 0.7*unimodalODF(mod1,cs,ss) + 0.3*unimodalODF(mod2,cs,ss);
+odf = 0.7*unimodalODF(mod1,cs) + 0.3*unimodalODF(mod2,cs);
 
 
 %% Adding a Colorbar
@@ -24,7 +24,7 @@ odf = 0.7*unimodalODF(mod1,cs,ss) + 0.3*unimodalODF(mod2,cs,ss);
 % that the color range is automatically set to *equal* when adding a colorbar
 % to a figure with  more then one plot (see. <ColorCoding_demo.html Color Coding>).
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal')
+plotPDF(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal')
 colorbar
 
 
@@ -50,7 +50,7 @@ annotate([xvector,yvector,zvector],'label',{'x','y','z'},...
 % The command <annotate.html annotate> allows also to plot
 % <Miller_index.html crystal directions> to inverse pole figures.
 
-plotipdf(odf,[xvector,zvector],'antipodal','marginx',10,'minmax','off')
+plotIPDF(odf,[xvector,zvector],'antipodal','marginx',10,'minmax','off')
 mtexColorMap white2black
 annotate([Miller(1,0,0),Miller(1,1,0),Miller(0,0,1),Miller(2,-1,0)],'all','labeled')
 
@@ -60,7 +60,7 @@ annotate([Miller(1,0,0),Miller(1,1,0),Miller(0,0,1),Miller(2,-1,0)],'all','label
 % One can also mark specific orientations in the pole figures or in the inverse pole
 % figures
 
-plotipdf(odf,[xvector,zvector],'antipodal','marginx',10,'minmax','off')
+plotIPDF(odf,[xvector,zvector],'antipodal','marginx',10,'minmax','off')
 mtexColorMap white2black
 annotate(mod1,...
     'marker','s','MarkerSize',6,'MarkerFaceColor','r',...
@@ -73,7 +73,7 @@ annotate(mod2,...
 %%
 % also ODF plots
 
-plot(odf,'sections',12,'sigma')
+plot(odf,'sections',18,'sigma')
 mtexColorMap white2black
 annotate(mod1,...
     'MarkerSize',15,'MarkerEdgeColor','r','MarkerFaceColor','none')
@@ -100,9 +100,11 @@ annotate(mod2,...
 % The following example compares the Fourier coefficients of the fibre ODF
 % with the Fourier co,'margin'}efficients of an unimodal ODF.
 
-plotFourier(odf)
+
+plotFourier(FourierODF(odf,32))
 hold all
-plotFourier(fibreODF(Miller(1,0,0),zvector,cs,ss))
+fodf = fibreODF(Miller(1,0,0),zvector,cs);
+plotFourier(FourierODF(fodf,32));
 hold off
 
 legend({'Fibre ODF','Unimodal ODF'})
@@ -114,5 +116,5 @@ legend({'Fibre ODF','Unimodal ODF'})
 % For this reason there is the option *grid*, which enables the grid and the 
 % option *grid_res*, which allows to specifiy the spacing of the grid lines.
 
-plotpdf(odf,[Miller(1,0,0),Miller(0,0,1)],'grid','grid_res',15*degree,'antipodal');
+plotPDF(odf,[Miller(1,0,0),Miller(0,0,1)],'grid','grid_res',15*degree,'antipodal');
 mtexColorMap white2black

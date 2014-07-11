@@ -1,52 +1,38 @@
-function varargout = text(m,varargin)
+function text(m,varargin)
 % plot Miller indece
 %
-%% Input
+% Input
 %  m  - Miller
 %
-%% Options
-%  ALL       - plot symmetrically equivalent directions
-%  antipodal - include antipodal symmetry
-%  labeled   - plot Miller indice as label
-%  label     - plot user label
+% Options
+%  symmetrised - plot symmetrically equivalent directions
+%  antipodal   - include antipodal symmetry
+%  labeled     - plot Miller indice as label
+%  label       - plot user label
 %
-%% See also
+% See also
 % vector3d/text
 
-%% preprocess input
-
-% get axis hande
-[ax,m,varargin] = getAxHandle(m,varargin{:});
-
-% extract text
-strings = ensurecell(varargin{1});
-
-if numel(strings)==1, strings = repcell(strings{1},numel(m),1);end
-
 % symmetrise
-if check_option(varargin,{'all','symmetrised','fundamentalRegion'})
-
-  if ~isempty(ax) && isappdata(ax{:},'projection')
-    p = getappdata(ax{:},'projection');
-    if p.antipodal, varargin = [varargin,{'antipodal'}];end
-  end
-  if check_option(m,'antipodal')
-    varargin = [varargin,{'antipodal'}];
-  end
+if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetrise')
 
   [m,l] = symmetrise(m,varargin{:},'keepAntipodal');
-  if ~isempty(strings)
-    strings = strings(rep(1:numel(strings),l));
+  
+  % symmetrise labels
+  if ~check_option(varargin,'labeled') && ~isempty(varargin)
+    strings = ensurecell(varargin{1});
+    if iscellstr(varargin{1}) && ~isempty(strings)
+      
+      if numel(strings)==1
+        strings = repcell(strings{1},length(m),1);
+      else
+        strings = strings(rep(1:numel(strings),l));
+      end
+      varargin{1} = strings;  
+    end  
   end
-  varargin = [varargin,{'removeAntipodal'}];
-
+  
+  varargin = [varargin,{'removeAntipodal','skipSymmetrise'}];
 end
 
-
-if check_option(varargin,'labeled')
-  strings = char(m,getMTEXpref('textInterpreter'),'cell');
-end
-
-varargin = delete_option(varargin,'labeled');
-
-[varargout{1:nargout}] = text(ax{:},m.vector3d,strings,varargin{:});
+text@vector3d(m,varargin{:});

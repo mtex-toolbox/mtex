@@ -1,7 +1,7 @@
 function  omega = getMaxAngleFundamentalRegion(cs)
 % get the maximum angle of a fundamental region
 
-switch cs.laue
+switch cs.LaueName
   
   case {'-1','2/m','-3','4/m','6/m'}
     

@@ -14,27 +14,26 @@ end
 if numel(is1) == 1, s = symmetry; return; end
 
 % take the equal ones
-s = s1;
-s.rotation = s1.rotation(is1);
-s.mineral = '';
-s.name = 'common symmetry';
+s = unique(s1.subSet(is1));
 
 % find a symmetry that exactly contains s
-for i=1:11 % check all Laue groups
+% TODO!!
+for i=1:32 % check all Laue groups
   
-  ss = symmetry(i);
+  ss = symmetry('pointId',i);
   
-  if numel(ss) == numel(s) && all(any(isappr(dot_outer(s,ss),1)))
+  if length(ss) == length(s) && all(any(isappr(dot_outer(s,ss),1)))
     s = ss;
     return
   end
   
 end
 
-if numel(s) == 6
-  s.laue = '-3m';
-elseif numel(s) == 12
-  s.laue = '6/mmm';
-else
-  s.laue = 'unknown';
-end
+% TODO:
+% if length(s) == 6
+%   s.laue = '-3m';
+% elseif length(s) == 12
+%   s.laue = '6/mmm';
+% else
+%   s.laue = 'unknown';
+% end

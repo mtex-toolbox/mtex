@@ -9,13 +9,13 @@
 %%
 % Let us first define some model ODFs to be plotted later on.
 
-cs = symmetry('-3m'); ss = symmetry('-1');
-mod1 = orientation('euler',90*degree,40*degree,110*degree,'ZYZ');
-mod2 = orientation('euler',50*degree,30*degree,-30*degree,'ZYZ');
+cs = symmetry('-3m');
+mod1 = orientation('euler',90*degree,40*degree,110*degree,'ZYZ',cs);
+mod2 = orientation('euler',50*degree,30*degree,-30*degree,'ZYZ',cs);
 
-odf = 0.2*unimodalODF(mod1,cs,ss) ...
-  + 0.3*unimodalODF(mod2,cs,ss) ...
-  + 0.5*fibreODF(Miller(0,0,1),vector3d(1,0,0),cs,ss,'halfwidth',10*degree);
+odf = 0.2*unimodalODF(mod1) ...
+  + 0.3*unimodalODF(mod2) ...
+  + 0.5*fibreODF(Miller(0,0,1,cs),vector3d(1,0,0),'halfwidth',10*degree)
   
 
 %%
@@ -25,27 +25,27 @@ setMTEXpref('defaultColorMap',LaboTeXColorMap);
 
 %% Pole Figures
 % Plotting some pole figures of an <ODF_index.html ODF> is straight forward
-% using the <ODF.plotpdf.html plotpdf> command. The only mandatory
+% using the <ODF.plotPDF.html plotPDF> command. The only mandatory
 % arguments are the ODF to be plotted and the <Miller_index.html Miller
 % indice> of the crystal directions you want to have pole figures for.
 
-plotpdf(odf,[Miller(1,0,-1,0),Miller(0,0,0,1)])
+plotPDF(odf,[Miller(1,0,-1,0,cs),Miller(0,0,0,1,cs)])
 
 %%
-% By default the <ODF.plotpdf.html plotpdf> command plots the upper as well
+% By default the <ODF.plotPDF.html plotPDF> command plots the upper as well
 % a the lower hemisphere of each pole sphere. In order to superpose
 % antipodal directions you have to use the option *antipodal*.
 
-plotpdf(odf,[Miller(1,0,-1,0),Miller(0,0,0,1)],'antipodal')
+plotPDF(odf,[Miller(1,0,-1,0,cs),Miller(0,0,0,1,cs)],'antipodal')
 
 
 %% Inverse Pole Figures
 % Plotting inverse pole figures is analogously to plotting pole figures
 % with the only difference that you have to use the command
-% <ODF.plotipdf.html plotipdf> and you to specify specimen directions and
+% <ODF.plotIPDF.html plotIPDF> and you to specify specimen directions and
 % not crystal directions.
 
-plotipdf(odf,[xvector,zvector],'antipodal')
+plotIPDF(odf,[xvector,zvector],'antipodal')
 annotate(Miller(1,0,0),'labeled')
 
 %%
@@ -53,26 +53,12 @@ annotate(Miller(1,0,0),'labeled')
 % the crystal symmetry. In order to plot the complete inverse pole figure
 % you have to use the option *complete*.
 
-plotipdf(odf,[xvector,zvector],'antipodal','complete')
-
-%%
-% By default MTEX always plot the fundamental region starting with azimuth
-% angle rho = 0. Esspecially, if the x axis is plotted to north it might be
-% desireable to plot the fundamental region starting with some negative
-% value. To this end there is the option *minRho*.
-
-plotx2north
-plotipdf(odf,[xvector,zvector],'antipodal')
-annotate(Miller(1,0,0),'labeled')
-figure
-plotipdf(odf,[xvector,zvector],'antipodal','minRho',-60*degree)
-annotate(Miller(1,0,0),'labeled')
-plotx2east
+plotIPDF(odf,[xvector,zvector],'antipodal','complete')
 
 %% ODF Sections
 %
 % Plotting an ODF in two dimensional sections through the orientation space
-% is done using the command <ODF.plotodf.html plot>. By default the
+% is done using the command <ODF.plotODF.html plot>. By default the
 % sections are at constant angles phi2. The number of sections can be
 % specified by an option
 
@@ -88,11 +74,11 @@ plot(odf,'phi2',[25 30 35 40]*degree,'contourf','silent')
 % Beside the standard phi2 sections MTEX supports also sections according
 % to all other Euler angles. 
 %
-% * PHI2 (default)
-% * PHI1 
-% * ALPHA (Matthies Euler angles)
-% * GAMMA (Matthies Euler angles)
-% * SIGMA (alpha+gamma)
+% * phi2 (default)
+% * phi1 
+% * alpha (Matthies Euler angles)
+% * gamma (Matthies Euler angles)
+% * sigma (alpha+gamma)
 %
 %%
 % In this context the authors of MTEX recommends the sigma sections as they
@@ -100,7 +86,7 @@ plot(odf,'phi2',[25 30 35 40]*degree,'contourf','silent')
 % They can be seen as the (001) pole figure splitted according to rotations
 % about the (001) axis. Lets have a look at the 001 pole figure
 
-plotpdf(odf,Miller(0,0,0,1))
+plotPDF(odf,Miller(0,0,0,1,cs))
 
 %%
 % We observe three spots. Two in the center and one at 100. When splitting
@@ -129,13 +115,14 @@ plot(odf,'surf3')
 %% Plotting the ODF along a fibre
 % For plotting the ODF along a certain fibre we have the command
 
-plotfibre(odf,Miller(1,2,2),vector3d(2,1,1),'LineWidth',2);
+plotFibre(odf,Miller(1,2,-3,2,cs),vector3d(2,1,1),'LineWidth',2);
 
 %% Fourier Coefficients
 % A last way to visualize an ODF is to plot its Fourier coefficients
 
 close all;
-plotFourier(odf,'bandwidth',32)
+fodf = FourierODF(odf,32)
+plotFourier(fodf)
 
 %% Axis / Angle Distribution
 % Let us consider the uncorrelated missorientation ODF corresponding to our

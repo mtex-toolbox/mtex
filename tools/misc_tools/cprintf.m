@@ -2016,6 +2016,7 @@ function	[t,par]=CPRINTF_cell(par,t,ix,fmt)
 		switch	fmtc
 		case	'char'
 		for	i=ix
+      if isnumeric(t{i}) && t{i}==0, t{i}=0;end
 			t{i}=sprintf(fmt,t{i});
 		end
 		case	'function_handle'

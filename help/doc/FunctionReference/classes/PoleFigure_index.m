@@ -33,7 +33,6 @@ import_wizard
 
 % specify scrystal and specimen symmetry
 cs = symmetry('-3m',[1.4,1.4,1.5]);
-ss = symmetry('triclinic');
 
 % specify file names
 fname = {...
@@ -48,7 +47,7 @@ h = {Miller(1,0,-1,0,cs),[Miller(0,1,-1,1,cs),Miller(1,0,-1,1,cs)],Miller(1,1,-2
 c = {1,[0.52 ,1.23],1};
 
 % import pole figure data
-pf = loadPoleFigure(fname,h,cs,ss,'superposition',c)
+pf = loadPoleFigure(fname,h,cs,'superposition',c)
 
 % After running the script the variable *pf* is created which contains all
 % information about the pole figure data. 
@@ -77,11 +76,10 @@ plot(pf,'position',[100 100 600 300])
 %
 % An exhausive introduction how to modify pole figure data can be found
 % <ModifyPoleFigureData.html here>
-% As an example, if one wants to set all negative intensities to zero one
-% can issue the command
+% As an example, if one wants to remove all intensities with polar angle
+% bewtween 74 and 81 degree one can do
 
-polar_angle = get(pf,'polar');
-pf = delete(pf,polar_angle >= 74*degree & polar_angle <= 81*degree);
+pf(pf.r.theta >= 74*degree & pf.r.theta <= 81*degree) = [];
 plot(pf)
 
 
@@ -93,7 +91,7 @@ plot(pf)
 % <PoleFigure2odf.html here>
 
 odf = calcODF(pf,'zero_range','silent')
-plotpdf(odf,h,'superposition',c,...
+plotPDF(odf,h,'superposition',c,...
   'antipodal','position',[100 100 800 300])
 
 
@@ -106,5 +104,5 @@ plotpdf(odf,h,'superposition',c,...
 % command to simulate pole figure is <ODF.calcPoleFigure.html
 % calcPoleFigure>, e.g.
 
-pf = calcPoleFigure(SantaFe,Miller(1,0,0),S2Grid('regular'))
+pf = calcPoleFigure(SantaFe,Miller(1,0,0),regularS2Grid)
 plot(pf)

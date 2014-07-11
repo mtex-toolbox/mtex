@@ -24,12 +24,12 @@ h = [ ...
   Miller(1,1,0,cs), ...
   ];
 
-figure, plotpdf(odf_true,h)
+figure, plotPDF(odf_true,h)
 
 
 %% Initial measure grid
 
-r = S2Grid('equispaced','resolution',15*degree,'antipodal');
+r = equispacedS2Grid('resolution',15*degree,'antipodal');
 
 figure
 plot(r,'markersize',12)
@@ -53,7 +53,7 @@ for k=1:nsteps
   % merge the new measurements with old ones
   pf_measured = union(pf_simulated,pf_measured);  
   
-  fprintf('--- at resolution : %f\n', get(pf_measured,'resolution')/degree);  
+  fprintf('--- at resolution : %f\n', pf_measured.r.resolution/degree);
   
   if k < nsteps
     % odf modelling
@@ -100,7 +100,7 @@ plot(pf_measured,'silent');
 %% Compared to a dense measured Polefigure
 %
 
-r = S2Grid('equispaced','resolution',get(pf_measured,'resolution'));
+r = equispacedS2Grid('resolution',pf_measured.resolution);
 for l=1:length(h)
   pf_simulated(l) = calcPoleFigure(odf_true,h(l),r);
 end

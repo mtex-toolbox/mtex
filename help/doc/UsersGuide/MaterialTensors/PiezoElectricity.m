@@ -12,7 +12,7 @@
 % at first, let us import some piezo electric contants for a quartz
 % specimen.
 
-CS = symmetry('-3m', [4.916 4.916 5.4054], 'X||a*', 'Z||c', 'mineral', 'Quartz');
+CS = symmetry('32', [4.916 4.916 5.4054], 'X||a*', 'Z||c', 'mineral', 'Quartz');
 
 fname = fullfile(mtexDataPath,'tensor', 'Single_RH_quartz_poly.P');
 
@@ -33,6 +33,7 @@ plot(P,'complete','smooth')
 %%
 % Most often, the polarisation is illustrated as surface magnitude
 
+close all
 plot(P,'3d')
 
 %%

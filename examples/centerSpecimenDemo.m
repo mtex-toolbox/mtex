@@ -45,25 +45,25 @@ c = c./sum(c(:)); % adjust weight to 1
 %%
 % the model
 
-psi = kernel('de la vallee','halfwidth',12*degree);
-odf = ODF(SO3Grid(o(:),CS),c(:),psi,CS,symmetry)
+psi = deLaValeePoussinKernel('halfwidth',12*degree);
+odf = unimodalODF(o(:),CS,psi,'weights',c)
 
 %%
 %
 
-plotpdf(odf,h,'antipodal','position',[100 100 900 300],'contourf',8,'silent')
+plotPDF(odf,h,'antipodal','position',[100 100 900 300],'contourf',8,'silent')
 
 %% 
 % 'simulated' rotation of odf (rodf)
 
 rodf = rotate(odf,rotation('euler',5*degree,2*degree,4*degree));
-figure, plotpdf(rodf,h,'antipodal','position',[100 100 900 300],'contourf',8,'silent');
+figure, plotPDF(rodf,h,'antipodal','position',[100 100 900 300],'contourf',8,'silent');
 
 %% 
 % back rotatated odf (bodf)
 
 [bodf,rr] = centerSpecimen(rodf,xvector)
-figure, plotpdf(bodf,h,'antipodal','position',[100 100 900 300],'contourf',8,'silent')
+figure, plotPDF(bodf,h,'antipodal','position',[100 100 900 300],'contourf',8,'silent')
 
 %% 
 % error analysis 
@@ -100,14 +100,14 @@ plot(pf,'position',[100 100 900 250],'silent')
 % calc an odf for these data
 
 odf = calcODF(pf)
-figure, plotpdf(odf,h,'antipodal','position',[100 100 900 250],'silent')
+figure, plotPDF(odf,h,'antipodal','position',[100 100 900 250],'silent')
 
 %%
 % sometimes its better to start with an other center
 
 [rodf,r] = centerSpecimen(odf,yvector);
 rodf = rotate(rodf,axis2quat(zvector,90*degree));
-figure, plotpdf(rodf,h,'antipodal','position',[100 100 900 250],'silent');
+figure, plotPDF(rodf,h,'antipodal','position',[100 100 900 250],'silent');
 
 Euler(r)
 

@@ -59,7 +59,7 @@ plot(m,'Grid')   % plot Miller indice
 % crystal directions are plotted together with there correct Miller indice.
 
 figure,
-plot(m,cs,'all','labeled','grid')   % plot Miller indice
+plot(m,cs,'symmetrised','labeled','grid')   % plot Miller indice
 
 %% Symmetrically Equivalent Crystal Directions
 %

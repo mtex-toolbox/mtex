@@ -1,16 +1,16 @@
 function [c,options] = om_ipdfAngle(o,varargin)
 % colorize by azimuth or polar angle of inverse pole figure vectors
 
-%% convert to Miller
+% convert to Miller
 if isa(o,'orientation')
   h = quat2ipdf(o,varargin{:});
-  cs = get(o,'CS');
+  cs = o.CS;
 else
   h = o;
   cs = varargin{1};
 end
 
-%% compute minimum angle
+% compute minimum angle
 h = symmetrise(Miller(h,cs),varargin{:});
 
 % convert to polar angles

@@ -3,10 +3,10 @@
 % ODFs.
 %%
 % All described commands can be applied to model ODFs constructed via
-% [[uniformODF.html, uniformODF]], [[unimodalODF.html, unimodalODF]],
-% or [[fibreODF.html, fibreODF]] and to all estimated ODF calculated
-% from [[PoleFigure_calcODF.html, pole figures]] or
-% [[EBSD_calcODF.html, EBSD data]].
+% <uniformODF.html uniformODF>, <unimodalODF.html unimodalODF>,
+% or <fibreODF.html fibreODF> and to all estimated ODF calculated
+% from <PoleFigure_calcODF.html pole figures> or
+% <EBSD_calcODF.html EBSD data>.
 %
 %
 
@@ -20,27 +20,24 @@
 SS  = symmetry('orthorhombic');
 CS  = symmetry('cubic');
 o   = orientation('brass',CS,SS);
-psi = kernel('von Mises Fisher',...
-             'halfwidth',20*degree);
+psi = vonMisesFisherKernel('halfwidth',20*degree);
 
 odf1 = unimodalODF(o,CS,SS,psi)
 
 %%
 % *Fibre ODFs*
 
-SS = symmetry('triclinic');
 CS = symmetry('hexagonal');
 h = Miller(1,0,0,CS);
 r = xvector;
-psi = kernel('Abel Poisson',...
-             'halfwidth',18*degree);
+psi = AbelPoissonKernel('halfwidth',18*degree);
 
-odf2 = fibreODF(h,r,CS,SS,psi)
+odf2 = fibreODF(h,r,CS,psi)
 
 %%
 % *uniform ODFs*
 
-odf3 = uniformODF(CS,SS)
+odf3 = uniformODF(CS)
 
 %%
 % *FourierODF*
@@ -51,10 +48,10 @@ odf3 = uniformODF(CS,SS)
 
 Lambda = [-10,-10,10,10]
 A = quaternion(eye(4))
-odf = BinghamODF(Lambda,A,CS,SS)
+odf = BinghamODF(Lambda,A,CS)
 
-plotipdf(odf,xvector)
-plotpdf(odf,Miller(1,0,0))
+plotIPDF(odf,xvector)
+plotPDF(odf,Miller(1,0,0))
 
 %%
 % *ODF Arithmetics*
@@ -63,7 +60,7 @@ plotpdf(odf,Miller(1,0,0))
 
 rot = rotation('axis',yvector,'angle',90*degree);
 odf = rotate(odf,rot)
-plotpdf(odf,Miller(1,0,0))
+plotPDF(odf,Miller(1,0,0))
 
 %% Working with ODFs
 
@@ -75,20 +72,20 @@ calcError(odf2,odf3,'L1')      % difference between ODFs
 mean(odf)                      % the mean orientation
 max(odf)
 
-volume(odf,centerODF,5*degree)    % the volume of a ball
+volume(odf,centerODF,5*degree) % the volume of a ball
 fibreVolume(odf2,h,r,5*degree) % the volume of a fibre
 
-textureindex(odf)         % the texture index
-entropy(odf)              % the entropy
-Fourier(odf2,3)           % the C-coefficients
+textureindex(odf)              % the texture index
+entropy(odf)                   % the entropy
+f_hat = calcFourier(odf2,16);  % the C-coefficients up to order 16
 
 
 %% Plotting ODFs
 % *Plotting (Inverse) Pole Figures*
 
 close all
-plotpdf(odf,Miller(0,1,0),'antipodal')
-plotipdf(odf,[xvector,zvector])
+plotPDF(odf,Miller(0,1,0),'antipodal')
+plotIPDF(odf,[xvector,zvector])
 
 %%
 % *Plotting an ODF*
@@ -105,29 +102,28 @@ mtexColorMap white2black
 % indice). What is its modal orientation in Euler angles?
 
 cs = symmetry('cubic');
-ss = symmetry('triclinic');
-ori = orientation('Miller',[0 0 1],[3 1 0],cs,ss);
+ori = orientation('Miller',[0 0 1],[3 1 0],cs);
 odf = unimodalODF(ori,cs,ss);
 
 %%
 % b) Plot some pole figures. Are there pole figures with and without
 % antipodal symmetry? What about the inverse pole figures?
 
-plotpdf(odf,[Miller(1,0,0),Miller(2,3,1)])
+plotPDF(odf,[Miller(1,0,0),Miller(2,3,1)])
 
 %%
 
-close all;plotpdf(odf,[Miller(1,0,0),Miller(2,3,1)],'antipodal')
+close all;plotPDF(odf,[Miller(1,0,0),Miller(2,3,1)],'antipodal')
 
 %%
 
-close all;plotipdf(odf,vector3d(1,1,3))
+close all;plotIPDF(odf,vector3d(1,1,3))
 
 %%
 % c) Plot the ODF in sigma and phi2 - sections. How many mods do
 % you observe?
 
-close all;plotodf(odf,'sections',6)
+close all;plotODF(odf,'sections',6)
 
 %%
 % d) Compute the volume of the ODF that is within a distance of 10 degree of

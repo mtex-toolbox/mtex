@@ -1,4 +1,4 @@
-function [k hw options]= extract_kernel(g,varargin)
+function [k, hw, options]= extract_kernel(g,varargin)
 
 
 if nargin == 2, 
@@ -13,11 +13,11 @@ k = get_option(varargin,'kernel',[],'kernel');
 if isempty(k), 
   hw = get_option(varargin,'halfwidth');
   if isempty(hw), 
-    [a b] = mean(g);
+    [a, b] = mean(g);
     hw = max(prod(1-b) ,2*degree);
   end
   %  if isempty(hw), hw = max(get(g,'resolution') * 3,2*degree); end
-  k = kernel('de la Vallee Poussin','halfwidth',hw);
+  k = deLaValeePoussinKernel('halfwidth',hw);
 else
   hw = gethw(k);
 end

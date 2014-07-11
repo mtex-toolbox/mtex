@@ -21,15 +21,15 @@ plot(pf)
 % background correction. Let us therefore split the pole figures into
 % these two groups. 
 
-pf_complete = pf([1 3]);
-pf_background= pf([2 4]);
+pf_complete = pf({1,3})
+pf_background= pf({2,4})
 
 %%
 % Actually it is possible to work with pole figures as with simple numbers.
 % E.g. it is possible to add / subtract pole figures. A superposition of
 % the first and the third pole figure can be written as
 
-2*pf(1) + 3*pf(3)
+2*pf({1}) + 3*pf({3})
 
 
 %% Correct pole figure data
@@ -44,11 +44,11 @@ plot(pf)
 %% Normalize pole figures
 %
 % Sometimes people want to have normalized pole figures. In the case of
-% compete pole figures this can be simply archived using the command
+% complete pole figures this can be simply archived using the command
 % <PoleFigure.normalize.html normalize> 
 
-pf = normalize(pf);
-plot(pf)
+pf_normalized = normalize(pf);
+plot(pf_normalized)
 
 %%
 % However, in the case of incomplete pole figures it is well known, that
@@ -59,51 +59,58 @@ plot(pf)
 odf = calcODF(pf);
 
 % and use it for normalization
-pf = normalize(pf,odf);
+pf_normalized = normalize(pf,odf);
 
-plot(pf)
+plot(pf_normalized)
 
 
 %% Modify certain pole figure values
 % 
 % As pole figures are usaly experimental data they may contain outliers. In
-% order to remove outliers from pole figure data one can use the functions
-% <PoleFigure.find_outlier.html find_outlier> and <PoleFigure.delete.html
-% delete>. Here a simple example:
+% order to remove outliers from pole figure data one can use the function
+% <PoleFigure.isOutlier.html isOutlier>. Here a simple example:
 
-% get the polar angle of the pole figure data
-theta = get(pf,'theta');
+% Let us add 100 random outliers to the pole figure data
+% First we select 100 random positions within the pole figures
+ind = randperm(pf.length,100);
 
-% and set some measurements to a large value 
-pf_outlier = set(pf,'intensities',3.5,...
-  theta>35*degree & theta<40*degree)
+% Next we multiply the intensity at these positions by a random value
+% between 3 and 4
+factor = 3+rand(100,1);
+pf(ind).intensities = pf(ind).intensities .* factor;
 
-% now we an outlier in the center of both pole figures
-plot(pf_outlier)
+% Lets check the result
+plot(pf)
 
 %%
-% lets find and remove these outliers
-outlier = find_outlier(pf_outlier);
-pf_outlier = delete(pf_outlier,outlier);
+% check for outliers
+condition = pf.isOutlier;
+
+% remove outliers
+pf(condition) = [];
 
 % plot the corrected pole figures
-plot(pf_outlier)
+plot(pf)
 
+%%
+% Sometimes applying the above correction is not sufficent. Then it can
+% help to repeat the outlier detection ones again
+
+pf(pf.isOutlier) = [];
+plot(pf)
 
 %% Remove certain measurements from the data
-% In the same way one can manipulate and delete pole figure data by any
-% criteria. Of particular importance are the functions <PoleFigure.set.html
-% set> and <PoleFigure.get.html get> which allows to address the raw pole
-% figure data directly. Lets, e.g. cap all values that are larger then 500.
-
+% In the same way as we removed the outlier one can manipulate and delete
+% pole figure data by any criteria. Lets, e.g. cap all values that are
+% larger then 500. 
 
 % find those values
-large_values = get(pf,'intensities') > 500;
+condition = pf.intensities > 500;
 
 % cap the values in the pole figures
-pf_corrected = set(pf,'intensities',500,large_values);
+pf(condition).intensities = 500;
 
-plot(pf_corrected)
+plot(pf)
 
 
 %% Rotate pole figures

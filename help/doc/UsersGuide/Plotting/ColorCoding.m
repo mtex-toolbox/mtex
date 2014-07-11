@@ -18,10 +18,10 @@
 % Let us first define some model <ODF_index.html ODFs> to be plotted later
 % on.
 
-cs = symmetry('-3m'); ss = symmetry('-1');
-odf = fibreODF(Miller(1,1,0),zvector,cs,ss)
+cs = symmetry('-3m');
+odf = fibreODF(Miller(1,1,0),zvector,cs)
 pf = calcPoleFigure(odf,[Miller(1,0,0),Miller(1,1,1)],...
-  S2Grid('equispaced','points',500,'antipodal'));
+  equispacedS2Grid('points',500,'antipodal'));
 
 
 %% Tight Colorcoding
@@ -48,13 +48,13 @@ plot(pf,'colorrange','equal')
 %% Setting an Explicite Colorrange
 %
 % If you want to have a unified colorcoding for several figures you can
-% set the colorrange directly in the <ODF.plotpdf.html plot command>
+% set the colorrange directly in the <ODF.plotPDF.html plot command>
 
 close all
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],...
+plotPDF(odf,[Miller(1,0,0),Miller(1,1,1)],...
   'colorrange',[0 4],'antipodal');
 figure
-plotpdf(.5*odf+.5*uniformODF(cs,ss),[Miller(1,0,0),Miller(1,1,1)],...
+plotPDF(.5*odf+.5*uniformODF(cs),[Miller(1,0,0),Miller(1,1,1)],...
   'colorrange',[0 4],'antipodal');
 
 
@@ -64,7 +64,7 @@ plotpdf(.5*odf+.5*uniformODF(cs,ss),[Miller(1,0,0),Miller(1,1,1)],...
 % directly
 
 close all
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],...
+plotPDF(odf,[Miller(1,0,0),Miller(1,1,1)],...
   'contourf',0:1:5,'antipodal')
 
 
@@ -81,9 +81,9 @@ setcolorrange([0.38,3.9])
 % equal colorcoding to all open figures.
 
 figure(1)
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal')
+plotPDF(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal')
 figure(2)
-plotpdf(.5*odf+.5*uniformODF(cs,ss),[Miller(1,0,0),Miller(1,1,1)],'antipodal');
+plotPDF(.5*odf+.5*uniformODF(cs),[Miller(1,0,0),Miller(1,1,1)],'antipodal');
 
 setcolorrange('equal','all')
 
@@ -94,7 +94,7 @@ setcolorrange('equal','all')
 % plots in MTEX understand the option *logarithmic*, e.g.
 
 close all;
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal','logarithmic')
+plotPDF(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal','logarithmic')
 setcolorrange([0.01 12]);
 colorbar
 
@@ -104,5 +104,5 @@ colorbar
 % The colormap can be changed by the command mtexColorMap, e.g., in order
 % to set a white to black colormap one has the commands
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal')
+plotPDF(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal')
 mtexColorMap white2black

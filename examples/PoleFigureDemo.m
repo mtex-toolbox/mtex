@@ -35,11 +35,11 @@ plot(pf)
 %
 % *get raw data*
 % Data stored in a <PoleFigure_index.html PoleFigure> variable can be
-% extracted using the command <PoleFigure_get.hmtl get>, e.g., by
+% extracted by
 
-I = get(pf,'intensities'); % intensities
-h = get(pf,'Miller')       % Miller indice
-r = get(pf,'r')            % specimen directions
+I = pf.intensities; % intensities
+h = pf.h;            % Miller indice
+r = pf.r;            % specimen directions
 
 %%
 % *basic statistics*
@@ -47,15 +47,13 @@ r = get(pf,'r')            % specimen directions
 
 min(pf)
 max(pf)
-hist(pf)
-find_outlier(pf);
+isOutlier(pf);
 
 %% Manipulate pole figure data
 %
 %%
 
-[theta,rho] = get(pf,'polar');
-pf_modified = delete(pf,theta >= 70*degree & theta <= 75*degree)
+pf_modified = pf(pf.r.theta < 70*degree | pf.r.theta > 75*degree)
 
 plot(pf_modified)
 
@@ -68,15 +66,15 @@ plot(pf_modified)
 %% PDF - to - ODF Reconstruction
 
 
-rec = calcODF(pf,'RESOLUTION',10*degree,'background',1,'iter_max',6)
+rec = calcODF(pf,'RESOLUTION',10*degree,'iter_max',6)
 
-plotpdf(rec,h)
+plotPDF(rec,h)
 
 
 %%
 %
 % define specimen directions
-r = S2Grid('regular','antipodal')
+r = regularS2Grid('antipodal')
 
 %%
 % define crystal directions
@@ -90,13 +88,13 @@ pf_SantaFe = calcPoleFigure(SantaFe,h,r);
 % estimate an ODF with ghost correction
 rec = calcODF(pf_SantaFe,'RESOLUTION',10*degree,'background',10)
 
-plotodf(rec,'sections',6)
+plotODF(rec,'sections',6)
 
 %%
 % without ghost correction
 rec_ng = calcODF(pf_SantaFe,'RESOLUTION',10*degree,'background',10,'NoGhostCorrection')
 
-plotodf(rec_ng,'sections',6)
+plotODF(rec_ng,'sections',6)
 
 
 %% Error Analysis

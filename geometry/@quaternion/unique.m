@@ -1,13 +1,13 @@
 function [q,m,n] = unique(q,varargin)
 % disjoint list of quaternions
 %
-%% Syntax
-%  q = unique(q,<options>) - 
+% Syntax
+%   q = unique(q)
 %
-%% Input
+% Input
 %  q - @quaternion
 %
-%% Output
+% Output
 %  q - @quaternion
 
 % q = cunion(q,@(a,b) eq(a,b,varargin{:}));

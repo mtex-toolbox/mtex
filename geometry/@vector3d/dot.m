@@ -1,16 +1,16 @@
 function d = dot(v1,v2,varargin)
 % pointwise inner product
 %
-%% Usage
+% Usage
 % d = dot(v1,v2)
 %
-%% Input
+% Input
 %  v1, v2 - @vector3d
 %
-%% Options
+% Options
 %  antipodal - 
 %
-%% Output
+% Output
 %  double
 
 % if second argument is Miller call corresponding method
@@ -26,6 +26,6 @@ zz = v1.z .* v2.z;
 d = xx + yy + zz;
 
 % 
-if check_option(varargin,'antipodal') || check_option(v1,'antipodal') || check_option(v2,'antipodal')
+if check_option(varargin,'antipodal') || v1.antipodal || v2.antipodal
   d = abs(d);
 end

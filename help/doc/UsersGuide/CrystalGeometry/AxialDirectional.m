@@ -54,15 +54,17 @@ angle(v1,v2,'antipodal') / degree
 
 mtexdata dubna
 
-% plot pole figure data
-plot(pf(1))
+% plot the first pole figure
+plot(pf({1}))
 
 %%
 % Moreover if you annotate a certain direction to pole figure data, it is
 % always interpreted as an axis, i.e. projected to the upper hemisphere if
 % necessary
 
+
 annotate(vector3d(1,0,-1),'labeled','backgroundColor','w')
+
 
 %% Antipodal Symmetry in Recalculated Pole Figures
 %
@@ -76,13 +78,13 @@ o = orientation('Euler',20*degree,30*degree,0,'ZYZ',CS);
 odf = unimodalODF(o);
 
 % plot pole figures
-plotpdf(odf,[Miller(1,2,2),-Miller(1,2,2)])
+plotPDF(odf,[Miller(1,2,2),-Miller(1,2,2)])
 
 %%
 % Hence, if one wants to compare calculated pole figures with experimental
 % ones, one has to add antipodal symmetry.
 
-plotpdf(odf,Miller(1,2,2),'antipodal')
+plotPDF(odf,Miller(1,2,2),'antipodal')
 
 %% Antipodal Symmetry in Inverse Pole Figures
 %
@@ -90,21 +92,21 @@ plotpdf(odf,Miller(1,2,2),'antipodal')
 % look at complete, inverse pole figures they do not posses antipodal symmetry
 % in general
 
-plotipdf(odf,[yvector,-yvector],'complete')
+plotIPDF(odf,[yvector,-yvector],'complete')
 
 %%
 % However, if we add the keyword antipodal, antipodal symmetry is enforced.
 
-plotipdf(odf,yvector,'antipodal','complete')
+plotIPDF(odf,yvector,'antipodal','complete')
 
 %%
 % Notice how MTEX, automatically reduces the fundamental region of inverse
 % pole figures in the case that antipodal symmetry is present.
 
-plotipdf(odf,yvector)
+plotIPDF(odf,yvector)
 
 %%
-plotipdf(odf,yvector,'antipodal')
+plotIPDF(odf,yvector,'antipodal')
 
 
 %% EBSD Colocoding

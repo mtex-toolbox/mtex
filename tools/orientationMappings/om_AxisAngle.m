@@ -9,9 +9,9 @@ else
   options = {'center',center};
 end
 
-mori = inverse(center) * o;
+mori = inv(center) * o;
 
-s = disjoint(get(mori,'CS'),get(mori,'SS'));
+s = disjoint(mori.CS,mori.SS);
 mori = project2FundamentalRegion(mori);
 
 omega = abs(angle(mori)) ./ pi;
@@ -49,7 +49,7 @@ return
 
 cs = symmetry('m-3m');
 
-r = S2Grid('plot');
+r = plotS2Grid;
 o = rotation('axis',r,'angle',10*degree);
 rod = Rodrigues(o);
 

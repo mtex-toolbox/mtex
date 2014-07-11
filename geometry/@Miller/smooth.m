@@ -1,16 +1,14 @@
-function varargout = smooth(m,varargin)
+function smooth(m,varargin)
 % plot Miller indece
 %
-%% Input
+% Input
 %  m  - Miller
 %
-%% Options
+% Options
 %
-%% See also
+% See also
 % vector3d/smooth
 
-% get axis hande
-[ax,m,varargin] = getAxHandle(m,varargin{:});
 
 % symmetrise points
 x = vector3d(symmetrise(m,'skipAntipodal'));
@@ -21,11 +19,7 @@ if ~isempty(varargin) && isnumeric(varargin{1})
 end
     
 % get plotting region
-[minTheta,maxTheta,minRho,maxRho] = get(m,'bounds',varargin{:}); %#ok<ASGLU>
+sR = region(m,varargin{:});
 
 % use vector3d/smooth for output
-[varargout{1:nargout}] = smooth(ax{:},x(:),varargin{:},...
-  'minTheta',minTheta,...
-  'maxTheta',maxTheta,...
-  'minRho',minRho,...
-  'maxRho',maxRho);
+smooth(x(:),varargin{:},sR);

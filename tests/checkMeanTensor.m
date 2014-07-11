@@ -143,7 +143,7 @@ odf = calcODF(ebsd_corrected,C_Epidote,'kernel',psi,'phase',2)
 
 %%
 
-S3G = SO3Grid('random',CS{1},SS,'points',10)
+S3G = orientation('random',CS{1},SS,'points',10)
 
 ebsd = EBSD(S3G)
 

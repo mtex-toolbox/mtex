@@ -15,14 +15,13 @@ CS = {...
   'Not Indexed',...
   symmetry('m-3m','mineral','Fe'),... % crystal symmetry phase 1
   symmetry('m-3m','mineral','Mg')};   % crystal symmetry phase 2
-SS = symmetry('-1');   % specimen symmetry
 
 %% import ebsd data
 
 % file name
 fname = fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt');
 
-ebsd = loadEBSD(fname,CS,SS,'interface','generic',...
+ebsd = loadEBSD(fname,CS,'interface','generic',...
   'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'Mad' 'BC'},...
   'Columns', [2 3 4 5 6 7 8 9],...
   'ignorePhase', 0, 'Bunge');
@@ -37,7 +36,7 @@ plot(ebsd)
 
 h = [Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)];
 close; figure('position',[100,100,600,300])
-plotpdf(ebsd('Fe'),h,'points',500,'antipodal')
+plotPDF(ebsd('Fe'),h,'points',500,'antipodal')
 
 %% Kernel Density Estimation
 %
@@ -53,14 +52,14 @@ odf2 = calcODF(ebsd('Fe'),'halfwidth',5*degree)
 %% Plot pole figures
 
 close all;figure('position',[160   389   632   216])
-plotpdf(odf1,h,'antipodal')
+plotPDF(odf1,h,'antipodal')
 figure('position',[160   389   632   216])
-plotpdf(odf2,h,'antipodal')
+plotPDF(odf2,h,'antipodal')
 
 %% Plot ODF
 
 close;figure('position',[46   300   702   300]);
-plotodf(odf2,'sections',9,'resolution',2*degree,...
+plotODF(odf2,'sections',9,'resolution',2*degree,...
   'FontSize',10,'silent')
 
 %% Estimation of Fourier Coefficients
@@ -94,8 +93,8 @@ hold off
 %
 % Simulate EBSD data from a given standard ODF
 CS = symmetry('trigonal');
-fibre_odf = 0.5*uniformODF(CS,SS) + 0.5*fibreODF(Miller(0,0,0,1),zvector,CS,SS);
-plotodf(fibre_odf,'sections',6,'silent')
+fibre_odf = 0.5*uniformODF(CS) + 0.5*fibreODF(Miller(0,0,0,1),zvector,CS);
+plotODF(fibre_odf,'sections',6,'silent')
 ebsd = calcEBSD(fibre_odf,10000)
 
 %%
@@ -106,7 +105,7 @@ odf = calcODF(ebsd)
 %%
 % plot the estimated ODF
 
-plotodf(odf,'sections',6,'silent')
+plotODF(odf,'sections',6,'silent')
 
 %%
 % calculate estimation error

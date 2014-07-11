@@ -1,9 +1,10 @@
 function NG = refine(G)
 % refine S1Grid
-%% Input
-%  @S1Grid
-%% Output
-%  @S1Grid with double the points
+%
+% Input
+%  G - @S1Grid
+% Output
+%  G - @S1Grid with double the points
 %
 
 NG = G;

@@ -67,7 +67,7 @@ odf = calcODF(ebsd('fo'),'kernel',psi)
 % Once an ODF is estimated all the functionality MTEX offers for 
 % <ODFCalculations.html ODF analysis> and <ODFPlot.html ODF visualisation> is available. 
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],'antipodal','silent')
+plotPDF(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],'antipodal','silent')
 
 
 %% Effect of halfwidth selection
@@ -78,7 +78,8 @@ plotpdf(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],'antipodal','silent')
 %
 % Lets start with a model ODF and simulate some EBSD data.
 
-ebsd = calcEBSD(SantaFe,10000)
+modelODF = fibreODF(Miller(1,1,1),xvector,symmetry('cubic'));
+ebsd = calcEBSD(modelODF,10000)
 
 %%
 % Next we define a list of kernel halfwidth ,
@@ -91,7 +92,7 @@ hw = [1*degree, 2*degree, 4*degree, 8*degree, 16*degree, 32*degree];
 for i = 1:length(hw)
   
   odf = calcODF(ebsd,'halfwidth',hw(i),'silent');
-  e(i) = calcError(SantaFe, odf);
+  e(i) = calcError(modelODF, odf);
   
 end
 

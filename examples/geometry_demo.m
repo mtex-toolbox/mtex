@@ -56,7 +56,7 @@ plot([rot rot2])
 angle(rot)
 axis(rot)
 angle(rot, rot2)
-inverse(rot)
+inv(rot)
 [alpha, beta ,gamma] = Euler(rot)
 
 %% Crystal and Specimen Symmetries
@@ -112,7 +112,7 @@ plot([h1,h2],'all','labeled')
 
 ori = orientation(rot,CS,SS)
 ori = orientation('Euler',alpha,beta,gamma,CS,SS)
-ori = orientation('brass',symmetry('cubic'),symmetry('triclinic'))
+ori = orientation('brass',symmetry('cubic'))
 ori = orientation('Miller',[1 0 0],[1 1 1],CS,SS)
 
 %%
@@ -193,56 +193,4 @@ r2 = yvector;
 ori = orientation('map',h1,r1,h2,r2,CS)
 
 ori * [h1,h2]
-
-
-%% Extra Topic - Grids
-%
-% *Two Dimensioal Grids*
-
-%%
-% create
-S2G = S2Grid(zvector);
-S2G = S2Grid('regular','RESOLUTION',5*pi/180,'upper')
-S2G = S2Grid('equispaced','points',1000,'antipodal');
-
-%%
-% operations
-
-q = axis2quat(1,1,1,60*degree);
-
-rotate(S2G,q);
-delete(S2G,get(S2G,'theta')==pi/2);
-subGrid(S2G,get(S2G,'theta')<=80*degree);
-
-%%
-% plot
-plot(S2G)
-
-%%
-% operations:
-% *subgrid
-% *transformation to spherical coordinates
-%
-%%
-% * orientation grids*
-
-%%
-% create
-SO3G = SO3Grid(q);
-SO3G = SO3Grid(5*pi/180,CS,SS);
-SO3G = SO3Grid(500,CS,SS)
-
-%%
-% operate
-set(gcf,'position',[ 67   242   777   384]);
-plot(SO3G * xvector)
-
-%%
-%
-plot(SO3G * symmetrise(xvector,CS))
-
-%%
-% plot
-close all;
-plot(SO3G,'RODRIGUES')
 

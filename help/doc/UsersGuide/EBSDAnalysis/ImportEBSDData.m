@@ -22,9 +22,9 @@
 import_wizard('EBSD'); 
 
 %%
-% or by using the start menu item *Start/Toolboxes/MTEX/Import Wizard* and
+% or by using the start menu item _Start/Toolboxes/MTEX/Import Wizard_ and
 % switch to the EBSD tab. EBSD Data files can be also imported via the
-% <matlab:filebrowser file browser> by choosing *Import Data* from the
+% <matlab:filebrowser file browser> by choosing _Import Data_ from the
 % context menu of the selected file, if its file extension was registered
 % with <matlab:opentoline(fullfile(mtex_path,'mtex_settings.m'),25,1)
 % |mtex_settings.m|>
@@ -85,9 +85,6 @@ CS = {...
   symmetry('mmm', [18.2406 8.8302 5.1852], 'mineral', 'Enstatite', 'color', 'light green'),...
   symmetry('2/m', [9.746 8.99 5.251], [90,105.63,90]*degree, 'X||a*', 'Y||b*', 'Z||c', 'mineral', 'Diopside', 'color', 'light red')};
 
-% specimen symmetry
-SS = symmetry('triclinic');
-
 % plotting convention
 setMTEXpref('xAxisDirection','east');
 setMTEXpref('zAxisDirection','outOfPlane');
@@ -96,7 +93,7 @@ setMTEXpref('zAxisDirection','outOfPlane');
 fname = fullfile(mtexDataPath,'EBSD','forsterite.ctf');
 
 % create an EBSD variable containing the data
-ebsd = loadEBSD(fname,CS,SS,'interface','ctf',...
+ebsd = loadEBSD(fname,CS,'interface','ctf',...
   'convertEuler2SpatialReferenceFrame', 'wizard');
 
 

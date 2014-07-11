@@ -38,7 +38,7 @@ odf = calcODF(pf)
 % You may want to verify that the pole figures are reproduced. Here is a
 % plot of the computed pole figures.
 
-plotpdf(odf,h,'antipodal','silent','superposition',c)
+plotPDF(odf,h,'antipodal','silent','superposition',c)
 
 
 %% Error analyis
@@ -73,7 +73,7 @@ odf_model = unimodalODF(calcModes(odf),...
   CS,symmetry,'halfwidth',15*degree)
 
 % plot the pole figures
-plotpdf(odf_model,h,'antipodal','superposition',c)
+plotPDF(odf_model,h,'antipodal','superposition',c)
 
 % compute the difference
 calcError(odf_model,odf)
@@ -90,7 +90,7 @@ calcError(odf_model,odf)
 % Next an example how to change the default resolution:
 
 odf = calcODF(pf,'resolution',15*degree)
-plotpdf(odf,h,'antipodal','silent','superposition',c)
+plotPDF(odf,h,'antipodal','silent','superposition',c)
 
 %%
 % Beside the resolution you can use the following options to change the
@@ -113,7 +113,7 @@ plotpdf(odf,h,'antipodal','silent','superposition',c)
 % plot_zero_range>.
 
 odf = calcODF(pf,'zero_range')
-plotpdf(odf,h,'antipodal','silent','superposition',c)
+plotPDF(odf,h,'antipodal','silent','superposition',c)
 
 %% Ghost Corrections
 %

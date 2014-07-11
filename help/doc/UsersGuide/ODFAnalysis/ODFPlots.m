@@ -17,7 +17,7 @@
 % and a fibre symmetric model ODF 
 
 cs = symmetry('-3m'); 
-ss = symmetry('-1');
+ss = symmetry('1');
 mod1 = orientation('euler',50*degree,30*degree,20*degree,'ZYZ',cs,ss);
 
 odf = 0.1 * unimodalODF(mod1,cs,ss) ...
@@ -26,11 +26,11 @@ odf = 0.1 * unimodalODF(mod1,cs,ss) ...
 %% Pole Figure Plots
 % 
 % In order to plot the pole figures corresponding to a certain list of
-% crystal directions one uses the command <ODF.plotpdf.html plotpdf>.
+% crystal directions one uses the command <ODF.plotPDF.html plotPDF>.
 
 h = [Miller(1,0,-1,0,cs),Miller(0,0,0,1,cs),...
   Miller(1,1,-2,1,cs),Miller(1,1,-2,3,cs)];
-plotpdf(odf,h)
+plotPDF(odf,h)
 
 %%
 % One recognizes that for each crystal direction the upper and the
@@ -40,23 +40,23 @@ plotpdf(odf,h)
 % lower hemispheres are superposed. This can achieved in MTEX by passing
 % the option *antipodal*.
 
-plotpdf(odf,h,'antipodal')
+plotPDF(odf,h,'antipodal')
 
 %% Inverse Pole Figure Plots
 %
 % Plotting inverse pole figures with respect to certain specimen directions
 % is as simple as plotting ordinary pole figures. Here one has to use the
-% command <ODF.plotipdf.html plotipdf>. 
+% command <ODF.plotIPDF.html plotIPDF>. 
 
 r = [vector3d(1,0,0),vector3d(0,0,1)];
-plotipdf(odf,r)
+plotIPDF(odf,r)
 
 %%
 % Due to the trigonal crystal symmetry not a complete sphere is plotted but
 % only a 120° sector. In order to plot the complete inverse pole figure
 % simply add the option *complete*.
 
-plotipdf(odf,r,'complete')
+plotIPDF(odf,r,'complete')
 
 %% ODF Sections
 %
@@ -69,7 +69,7 @@ plotipdf(odf,r,'complete')
 % * phi2 sections
 % * sigma sections
 %
-% The default section type is *sigma sections* since it does not introduce 
+% The default section type are phi2 sections since it does not introduce 
 % distortions into the orientation space.
 
 plot(odf,'sections',12,'silent')
@@ -83,16 +83,26 @@ plot(SantaFe,'alpha','sections',9,...
   'projection','plain','contourf','silent')
 mtexColorMap white2black
 
-%% Radial ODF Plots
+%% Fibre Plots
 %
-% In case you have an unimodal ODF a radial plot is sometimes usefull. 
-%
+% Any fibre in orientation space can be specified by a crystal direction |h|
+% and a specimen direction |r| which then consists of all orientation |g|
+% satisfying |g * h = r|.
 
-plot(odf,'radially','center',euler2quat(50*degree,30*degree,20*degree))
+h = Miller(1,1,1,cs)
+
+r = vector3d(1,0,0)
+
+%%
+% In order to visuallize an ODF along the fibre defined by |h| and |r| the
+% command <ODF_plotFibre.html plotFibre> can be used
+
+plotFibre(odf,h,r);
 
 %% Power Plot
 %
 % Last but not least there is a power plot, plotting the Fourier
 % coefficients of an ODF
 
-plotFourier(odf,'bandwidth',32)
+odf = FourierODF(odf,32);
+plotFourier(odf)

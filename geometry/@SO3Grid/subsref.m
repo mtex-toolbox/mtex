@@ -1,4 +1,9 @@
-function o = subsref(S3G,s)
+function varargout = subsref(S3G,varargin)
 % overloads subsref
 
-o = subsref(S3G.orientation,s);
+try
+  % subindexing SO3Grid is orientation!!
+  [varargout{1:nargout}] = subsref(orientation(S3G),varargin{:});
+catch %#ok<CTCH>
+  [varargout{1:nargout}] = builtin('subsref',S3G,varargin{:});
+end

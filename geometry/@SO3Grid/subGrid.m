@@ -1,17 +1,18 @@
-function [G ind] = subGrid(G,q,epsilon,varargin)
+function [G, ind] = subGrid(G,q,epsilon,varargin)
 % sub-SO3Grid as epsilon neigborhood of a node
-%% Syntax
-%  G = subGrid(G,midpoint,radius)
+%
+% Syntax
+%   G = subGrid(G,midpoint,radius)
 % 
-%% Input
+% Input
 %  G        - @SO3Grid
 %  midpoint - @quaternion
 %  radius   - double
 %
-%% Output
+% Output
 %  G - SO3Grid
 %
-%% See also
+% See also
 %  SO3Grid/find S2Grid/subGrid
 
 if nargin >= 3
@@ -20,16 +21,17 @@ if nargin >= 3
 elseif islogical(q) 
   ind = q;
 else
-  ind = false(numel(G),1);
+  ind = false(length(G),1);
   ind(q) = true;
 end
 
-G.orientation = G.orientation(ind);
+G.a = G.a(ind);
+G.b = G.b(ind);
+G.c = G.c(ind);
+G.d = G.d(ind);
+G.i = G.i(ind);
 
-if check_option(G,'indexed')
-  G.gamma = subGrid(G.gamma,ind);
-  %disp([int2str(sum(GridLength(G.gamma))), ' - ', int2str(numel(G.Grid))]);
-  G.alphabeta  = subGrid(G.alphabeta,GridLength(G.gamma)>0);
-  %disp(int2str(GridLength(G.alphabeta)));
-  G.gamma(GridLength(G.gamma)==0) = [];
-end
+G.gamma = subGrid(G.gamma,ind);
+G.alphabeta  = subGrid(G.alphabeta,GridLength(G.gamma)>0);
+G.gamma(GridLength(G.gamma)==0) = [];
+

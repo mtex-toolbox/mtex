@@ -1,5 +1,5 @@
 %% Plotting spatially indexed EBSD data
-% How to plot spatially indexed orientations
+% How to visualize EBSD data
 %
 %% Open in Editor
 %
@@ -10,129 +10,135 @@
 %% Contents
 %
 
-%%
+%% Phase Plots
 % Let us first import some EBSD data with a [[matlab:edit mtexdata, script file]]
 
 mtexdata forsterite
 
-%% Coloring of spatial orientation data
-% If the EBSD data are provided with spatial coordinates, one can
-% assign a color to each orientation and [[EBSD.plotspatial.html,plot]]
-% a colored map
-
-close all;plot(ebsd('fo'))
-
 %%
-% The orientations of the spatial map are mapped according to a
-% <ColorCodingEBSD_demo.html colorcoding>. A standard way to color
-% orientations is to assign each fibre $g*h=r$ a chromatic value, where the
-% specimen direction $r$ is fixed. Then the map can be interpreted as
-% colored inverse pole figure, where a certain crystallographic form (plane, axis)
-% is associated with a specified color in relation to the crystal reference
-% frame.
+% By default MTEX plots a phase map for EBSD data.
 
-colorbar
-
-%%
-% The [[orientation2color.html, colorcoding]] could be specified by an
-% option
-
-close all, plot(ebsd('fo'),'colorcoding','ipdfHKL')
-
-%%
-
-colorbar
-
-%% Visualizing EBSD data with sharp textures
-% When visualize very sharp data the colorcoding of the data has to be
-% adapted. Let us consider the following data set
-
-mtexdata sharp
-close all;plot(ebsd)
-
-%%
-% and have a look into the 001 inverse pole figure
-
-plotipdf(ebsd,zvector,'colorcoding','ipdfangle','r',zvector,...
-  'MarkerSize',3,'grid')
-colorbar
-
-%%
-% The data have been colorcoded according to its azimuth angle. We see that
-% all individual orientations are clustered around azimuth angle 25 degree
-% with some outliers at 90 and 120 degree. In order to increase the contrast for
-% the main group we restrict the colorrange from 20 degree to 20 degree
-
-caxis([20 29]);
-
-% by the following lines we colorcode the outliers in purple.
-cmap = colormap;
-cmap(end,:) = [1 0 1];
-cmap(1,:) = [1 0 1];
-colormap(cmap)
-
-%%
-% The same colorcoding we can now apply to the EBSD map.
-
-close all;
-plot(ebsd,'colorcoding','ipdfangle','r',zvector)
-
-caxis([20 29]);
-colormap(cmap);
-
-%%
-% using the option sharp MTEX automatically tries to focus on the main
-% component in the orientation space and to increase there the contrast
-
-plot(ebsd,'sharp')
+plot(ebsd)
 
 
 %%
-% observe how in the inverse pole figure the orientations are scattered
-% closely around the white center. Together with the fact that the
-% transition from white to color is quite rappidly this gives a high
-% contrast.
+% You can access the color of each phase by
 
-colorbar
+ebsd('Diopside').color
+
+%%
+% These values are RGB values, e.g. to make the color for diopside even
+% more red we can do
+
+ebsd('Diopside').color = [1 0 0];
+
+plot(ebsd)
+
+%%
+% By default, not indexed phases are plotted as white. To directly specify 
+% a color for some ebsd data use the option |FaceColor|.
+
 hold on
-plotipdf(ebsd,'points',10,'MarkerSize',10,'MarkerFaceColor','none','MarkerEdgeColor','k')
+plot(ebsd('notIndexed'),'FaceColor','black')
 hold off
 
-%% 
-% Another example is when analyzing the orientation distribution within
-% grains
+%% Visualizing arbitrary properties
+% Appart from the phase information we can use any other property to
+% colorize the EBSD data. As an example we may plot the band contrast
 
-mtexdata forsterite
+plot(ebsd,ebsd.bc)
 
-% segment grains
-grains = calcGrains(ebsd)
+colormap gray % this makes the image grayscale
 
-% find largest grains
-largeGrains = grains(grainSize(grains)>500)
+colorbar
 
-%%
-% When plotting one specific grain with its orientations we see that they
-% all are very similar and, hence, get the same color
+%% Visualizing orienations
+% Actually, we can pass any list of numbers or colors as a second input
+% argument to be visualized together with the ebsd data. In order to
+% visualize orientations in an EBSD map we have first to compute a
+% color for each orientation. The most simple way is to assign to each
+% orientation its rotational angle. This is done by the command
 
-% plot a grain 
-close all
-plotBoundary(largeGrains(1),'linewidth',2)
-hold on
-plot(largeGrains(1),'property','orientations')
-hold off
+plot(ebsd('Forsterite'),ebsd('Forsterite').orientations.angle)
+colorbar
 
 %%
-% when applying the option sharp MTEX colors the mean orientation as white
-% and scales the maximum saturation to fit the maximum misorientation
-% angle. This way deviations of the orientation within one grain can be
-% visualised. 
+% Lets make things a bit more formal. Therefore we define first a
+% orientation mapping that assignes to each orientation its rotational
+% angle
 
-% plot a grain 
-plotBoundary(largeGrains(1),'linewidth',2)
-hold on
-plot(largeGrains(1),'property','orientations','sharp')
-hold off
+oM = angleOrientationMapping(ebsd('Fo'))
 
+%%
+% now the color, which is actually the rotational angle, is computed by the
+% command
+
+color = oM.orientation2color(ebsd('Fo').orientations);
+
+%%
+% and we can visuallize it by
+plot(ebsd('Forsterite'),color)
+
+%%
+% While for the previous case this seems to be unnecesarily complicated it
+% allows us to define arbitrary complex color mapping. Consider for example
+% the following standard color mapping that uses an colorization of the
+% fundamental sector in the inverse pole figure to assign a color to each
+% orientation
+
+% this defines a color mapping for the Forsterite phase
+oM = ipdfHSVOrientationMapping(ebsd('Forsterite'))
+
+% this is the colored fundamental sector
+plot(oM)
+
+%%
+% Now we can proceed as above
+
+% compute the colors
+color = oM.orientation2color(ebsd('Fo').orientations);
+
+% plot the colors
+plot(ebsd('Forsterite'),color)
+
+%%
+% Orientation mappings usually provide several options to alter the
+% alignment of colors. Lets give some examples
+
+% we may interchange green and blue by setting
+oM.colorPostRotation = reflection(yvector);
+
+plot(oM)
+
+%%
+% or cycle of colors red, green, blue by
+oM.colorPostRotation = rotation('axis',zvector,'angle',120*degree);
+
+plot(oM)
+
+%%
+% Furthermore, we can explicitly set the inverse pole figure directions by
+
+oM.inversePoleFigureDirection = zvector;
+
+% compute the colors again
+color = oM.orientation2color(ebsd('Forsterite').orientations);
+
+% and plot them
+plot(ebsd('Forsterite'),color)
+
+
+%%
+% Beside the recommented orientation mapping
+% <ipdfHSVOrientationMapping.html ipdfHSVOrientationMapping> MTEX supports
+% also a lot of other color mappings as summarized below
+%
+% * 
+% *
+% *
+% *
+%
+%
 %% Customizing the color
 % In some cases, it might be useful to color certain orientations after
 % one needs. This can be done in two ways, either to color a certain fibre,
@@ -142,7 +148,7 @@ hold off
 % To color a fibre, one has to specify the crystal direction *h* together
 % with its rgb color and the specimen direction *r*, which should be marked.
 
-close all, 
+close all
 plot(ebsd('fo'),'colorcoding',...
   'ipdfCenter',{Miller(1,1,1),[0 0 1]},...
   'r',zvector,...
@@ -165,7 +171,7 @@ set(gcf,'renderer','zbuffer')
 vol = fibreVolume(ebsd('fo'),Miller(1,1,1),zvector,15*degree)
 
 close all;
-plotipdf(ebsd('fo'),zvector,'markercolor','k','marker','x')
+plotIPDF(ebsd('fo'),zvector,'markercolor','k','marker','x')
 
 %%
 % we can easily extend the colorcoding
@@ -193,7 +199,7 @@ colorbar
 % Suppose the mode of the ODF somewhere in our spatial distribution of
 % grains (the orientation map).
 
-mode = orientation('euler',90*degree,50*degree,45*degree,'ABG')
+mode = mean(ebsd('Forsterite'))
 
 %%
 % The definition of colors for certain orientations is carried out similarly as 
@@ -202,7 +208,7 @@ mode = orientation('euler',90*degree,50*degree,45*degree,'ABG')
 close all;
 plot(ebsd('fo'),'colorcoding',...
   'orientationCenter',{mode,[0 0 1]},...
-  'halfwidth',10*degree)
+  'halfwidth',20*degree)
 
 %%
 
@@ -245,8 +251,7 @@ mtexColorMap white2black
 % information to be plotted, where N referes to the number of measurements
 % in the EBSD data set.
 
-p1 = get(ebsd('fo'),'bc');
-plot(ebsd('fo'),'property', p1)
+plot(ebsd('fo'),'property', ebsd('Forsterite').bc)
 
 %% 
 % if the size is just Nx1, the color can be adjusted with

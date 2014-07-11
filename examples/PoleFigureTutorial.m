@@ -8,7 +8,6 @@
 
 % specify scrystal and specimen symmetry
 cs = symmetry('-3m',[1.4,1.4,1.5]);
-ss = symmetry('triclinic');
 
 % specify file names
 fname = {...
@@ -23,7 +22,7 @@ h = {Miller(1,0,-1,0,cs),[Miller(0,1,-1,1,cs),Miller(1,0,-1,1,cs)],Miller(1,1,-2
 c = {1,[0.52 ,1.23],1};
 
 % import pole figure data
-pf = loadPoleFigure(fname,h,cs,ss,'superposition',c,...
+pf = loadPoleFigure(fname,h,cs,'superposition',c,...
   'comment','Dubna Tutorial pole figures')
 
 %% Plot pole figures
@@ -35,5 +34,5 @@ plot(pf)
 odf = calcODF(pf)
 
 %% Calculate c-axis pole figure from the ODF
-plotpdf(odf,Miller(0,0,1,cs),'antipodal')
+plotPDF(odf,Miller(0,0,1,cs),'antipodal')
 

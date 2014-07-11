@@ -25,21 +25,20 @@ plot(ebsd)
 % We start our investiagations of the Forsterite phase by plotting some
 % pole figures
 
-plotpdf(ebsd('Forsterite'),[Miller(1,0,0),Miller(0,1,0),Miller(0,0,1)],'antipodal')
+plotPDF(ebsd('Forsterite'),[Miller(1,0,0),Miller(0,1,0),Miller(0,0,1)],'antipodal')
 
 %%
-% From the 100 pole figure we might suspect a fibre texture present in our
+% From the {100} pole figure we might suspect a fibre texture present in our
 % data. Lets check this. First we determine the vector orhtogonal to fibre
-% in the 100 pole figure
+% in the {100} pole figure
 
 % the orientations of the Forsterite phase
-ori = get(ebsd('Forsterite'),'orientations')
-
+ori = ebsd('Forsterite').orientations
 % the vectors in the 100 pole figure
-r = ori * Miller(1,0,0)
+r = ori * Miller(1,0,0,ori.CS)
 
 % the vector best orthogonal to all r
-rOrth = orth(S2Grid(r))
+rOrth = perp(r)
 
 % output
 hold on
@@ -47,18 +46,18 @@ plot(rOrth)
 hold off
 
 %%
-% we can check how large is the number of orientations that are in the 100
-% polegigure within a 10 degree fibre around the great circle with center
-% |rOrth|. The following line gives the result in percent
+% we can check how large is the number of orientations that are in the
+% (100) polegigure within a 10 degree fibre around the great circle with
+% center |rOrth|. The following line gives the result in percent
 
-100 * sum(angle(r,rOrth)>80*degree) / numel(ori)
+100 * sum(angle(r,rOrth)>80*degree) / length(ori)
 
 
 %%
 % Next we want to answer the question which crystal direction is mapped to
 % |rOrth|. To this end we look at the corresponding inverse pole figure
 
-plotipdf(ebsd('Forsterite'),rOrth,'smooth')
+plotIPDF(ebsd('Forsterite'),rOrth,'smooth')
 
 annotate(Miller(0,1,0))
 
@@ -76,7 +75,7 @@ annotate(Miller(0,1,0))
 
 odf = calcODF((ebsd('Forsterite')))
 
-plotfibre(odf,Miller(0,1,0),rOrth)
+plotFibre(odf,Miller(0,1,0),rOrth)
 
 ylim([0,26])
 

@@ -1,14 +1,14 @@
-function varargout = plot(o,varargin)
+function plot(o,varargin)
 % plot function
 %
-%% Input
+% Input
 %  o - @orientation
 %
-%% Options
+% Options
 %  RODRIGUES - plot in rodrigues space
 %  AXISANGLE - plot in axis / angle
 %
-%% See also
+% See also
 % orientation/scatter Plotting
 
 newMTEXplot;
@@ -18,10 +18,10 @@ if ~(ishold(gca) && strcmp(get(gca,'tag'),'ebsd_raster')) && ...
 
   washold = ishold(gca);
   hold(gca,'all')
-  for i = 1:numel(o)
+  for i = 1:length(o)
 
-    h = [Miller(1,0,0),Miller(0,1,0),Miller(0,0,1)];
-    plot(subsref(o,i) * h,'label',...
+    h = [Miller(1,0,0,o.CS),Miller(0,1,0,o.CS),Miller(0,0,1,o.CS)];
+    plot(o.subSet(i) * h,'label',...
       char(h,getMTEXpref('textInterpreter'),'cell'),...
       varargin{:});
   end

@@ -16,13 +16,12 @@
 %
 % Let us first define a simple fibre symmetric ODF.
 
-cs = symmetry('trigonal');
-ss = symmetry('triclinic');
-fibre_odf = 0.5*uniformODF(cs,ss) + 0.5*fibreODF(Miller(0,0,0,1),zvector,cs,ss);
+cs = symmetry('32');
+fibre_odf = 0.5*uniformODF(cs) + 0.5*fibreODF(Miller(0,0,0,1),zvector,cs);
 
 %%
 %
-plotodf(fibre_odf,'sections',6,'silent')
+plotODF(fibre_odf,'sections',6,'silent')
 
 
 %% Simulate EBSD Data
@@ -46,7 +45,7 @@ odf = calcODF(ebsd,'kernel',psi)
 %%
 % which can be plotted,
 
-plotodf(odf,'sections',6,'silent')
+plotODF(odf,'sections',6,'silent')
 
 
 %%
@@ -74,8 +73,8 @@ for i = 1:6
   odf = calcODF(ebsd,'kernel',psi2,'silent');
   e(i,2) = calcError(odf,fibre_odf,'resolution',2.5*degree);  
 
-  disp(['Rule of thumb: ' int2str(get(psi2,'halfwidth')/degree) mtexdegchar ...
-    'Kullback Leibler cross validation: ' int2str(get(psi1,'halfwidth')/degree) mtexdegchar]);
+  disp(['Rule of thumb: ' int2str(psi2.halfwidth/degree) mtexdegchar ...
+    'Kullback Leibler cross validation: ' int2str(psi1.halfwidth/degree) mtexdegchar]);
   
 end
 

@@ -1,12 +1,12 @@
 function [c,options] = orientation2color(o,colorCoding,varargin)
 % convert orientation to color
 %
-%% Input
+% Input
 %  o    - @orientation
 %  coloring -
 %    IPDF, HKL
 %    BUNGE, IHS, RODRIGUES, ANGLE
-%%
+%
 %
 
 % search available color codings
@@ -27,6 +27,6 @@ end
 [c,options] = feval(colorCodings{found}(1:end-2),o,varargin{:});
 
 % arrange RGB values
-if 3*numel(o) == numel(c)
+if 3*length(o) == numel(c)
   c = reshape(c,[],3);
 end

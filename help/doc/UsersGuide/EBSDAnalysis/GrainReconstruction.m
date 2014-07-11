@@ -180,7 +180,7 @@ p = 100*[nnz(grainSize(grains('notIndexed')) < 10) ...
 % allow filling in those holes we remove these small not indexed grains
 % completely from the data set
 
-condition = grainSize(grains)>=10 | get(grains,'phase')>0;
+condition = grainSize(grains)>=10 | grains.phase>0;
 
 grains(condition)
 
@@ -188,7 +188,7 @@ grains(condition)
 % If we now perform grain reconstruction a second time these small holes
 % will be assigned to the neighbouring grains
 
-grains = calcGrains(grains(condition),'keepNotIndexed')
+grains = calcGrains(grains(condition).ebsd,'keepNotIndexed')
 
 plot(grains)
 
@@ -206,7 +206,7 @@ colorbar
 % band contrast. In order to filter out all measurements with low band
 % contrast we can do
 
-condition = get(ebsd,'bc') > 80;
+condition = ebsd.bc > 80;
 
 plot(ebsd(condition))
 
