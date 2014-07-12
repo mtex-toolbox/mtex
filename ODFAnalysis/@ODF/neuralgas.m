@@ -16,7 +16,7 @@ function S2G = neuralgas(odf,h,varargin)
 %  verbose - display points during optimisation
 %
 % Example
-%   S2G = neuralgas(odf,Miller(1,0,0),'points',500,'epoches',25)
+%   S2G = neuralgas(odf,Miller(1,0,0,cs),'points',500,'epoches',25)
 %
 % See also
 % S2Grid/refine

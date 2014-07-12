@@ -19,7 +19,8 @@ plot(ebsd)
 %%
 % as well as some pole figure data
 close all
-plotPDF(ebsd('forsterite'),Miller(1,2,3),'contourf','points',10000)
+CS = ebsd('forsterite').CS;
+plotPDF(ebsd('forsterite'),Miller(1,2,3,CS),'contourf','points',10000)
 
 %% Altering the graphical output
 %
@@ -39,7 +40,7 @@ plot(ebsd)
 % east direction. This change of the alignment of the reference frame does
 % not only effect spatial EBSD plots but also all pole figure plots.
 
-plotPDF(ebsd('fo'),Miller(1,2,3),'contourf','points',10000)
+plotPDF(ebsd('fo'),Miller(1,2,3,CS),'contourf','points',10000)
 
 %%
 % However, by changing the alignment of the reference frame in the
@@ -72,7 +73,7 @@ plot(ebsd_rot)
 % spatial data, i.e. the x, y values, but also the Euler angles are
 % rotated accordingly. 
 
-plotPDF(ebsd_rot('fo'),Miller(1,2,3),'contourf','points',10000)
+plotPDF(ebsd_rot('fo'),Miller(1,2,3,CS),'contourf','points',10000)
 
 %% See also
 % EBSD/rotate EBSD/shift EBSD/affinetrans
@@ -97,7 +98,7 @@ plot(ebsd_rot)
 %%
 % The pole figure remains unchanged:
 
-plotPDF(ebsd_rot('forsterite'),Miller(1,2,3),'contourf','points',10000)
+plotPDF(ebsd_rot('forsterite'),Miller(1,2,3,CS),'contourf','points',10000)
 
 %% Correcting HKL and CTF files
 % Both *.ctf and *.ang data files are known to use different reference

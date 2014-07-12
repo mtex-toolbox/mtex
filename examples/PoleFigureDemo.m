@@ -78,7 +78,7 @@ r = regularS2Grid('antipodal')
 
 %%
 % define crystal directions
-h = [Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)];
+h = [Miller(1,0,0,CS),Miller(1,1,0,CS),Miller(1,1,1,CS)];
 
 %%
 % simulate pole figure data

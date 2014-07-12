@@ -104,5 +104,6 @@ plotPDF(odf,h,'superposition',c,...
 % command to simulate pole figure is <ODF.calcPoleFigure.html
 % calcPoleFigure>, e.g.
 
-pf = calcPoleFigure(SantaFe,Miller(1,0,0),regularS2Grid)
+cs = symmetry('m-3m')
+pf = calcPoleFigure(SantaFe,Miller(1,0,0,cs),regularS2Grid)
 plot(pf)

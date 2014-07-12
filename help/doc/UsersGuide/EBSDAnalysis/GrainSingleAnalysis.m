@@ -66,13 +66,14 @@ close, plot(grain_selected,'property','mis2mean')
 % only plots the mean orientation of grains. Thus, for these commands, we
 % have to explicitely specify the underlaying EBSD data.
 
+cs = grain_selected.CS;
 plotPDF(grain_selected.meanOrientation,...
-  [Miller(0,0,1),Miller(0,1,1),Miller(1,1,1)],'antipodal')
+  [Miller(0,0,1,cs),Miller(0,1,1,cs),Miller(1,1,1,cs)],'antipodal')
 
 %%
 
 plotPDF(grain_selected.ebsd,...
-  [Miller(0,0,1),Miller(0,1,1),Miller(1,1,1)],'antipodal')
+  [Miller(0,0,1,cs),Miller(0,1,1,cs),Miller(1,1,1,cs)],'antipodal')
 
 
 %%

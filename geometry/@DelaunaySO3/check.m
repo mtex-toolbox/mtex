@@ -159,7 +159,7 @@ max(angle(quaternion(ori(ind)))) / degree
 
 %%
 
-h = Miller(1,0,0)
+h = Miller(1,0,0,cs)
 r = regularS2Grid('antipodal')
 
 M = pdfMatrix(DSO3,h,r);
@@ -176,7 +176,7 @@ odf = unimodalODF(orientation('Euler',10*degree,0,0,cs),'halfwidth',20*degree)
 
 %%
 
-h = {Miller(1,1,1,cs),Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(1,2,1)};
+h = {Miller(1,1,1,cs),Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(1,2,1,cs)};
 
 pf = odf.calcPoleFigure(h,regularS2Grid('resolution',5*degree))
 

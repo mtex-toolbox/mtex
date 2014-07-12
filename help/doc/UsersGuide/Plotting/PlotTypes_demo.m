@@ -11,8 +11,8 @@
 % Let us first define a model ODF to be plotted later on.
 
 cs = symmetry('-3m');
-odf = fibreODF(Miller(1,1,0),zvector,cs)
-pf = calcPoleFigure(odf,Miller(1,0,0),equispacedS2Grid('antipodal'));
+odf = fibreODF(Miller(1,1,0,cs),zvector)
+pf = calcPoleFigure(odf,Miller(1,0,0,cs),equispacedS2Grid('antipodal'));
 
 %%
 % and simulate some EBSD data
@@ -43,7 +43,7 @@ plot(zvector,'Marker','p','MarkerSize',15,'MarkerFaceColor','red','MarkerEdgeCol
 %
 % |Label|, |Color|, |BackgroundColor|, |FontSize|
 
-plot([Miller(1,1,1),Miller(-1,1,1)],...
+plot([Miller(1,1,1,cs),Miller(-1,1,1,cs)],...
   'label',{'X','Y'},...
   'Color','blue','BackgroundColor','yellow','FontSize',20,'grid')
 
@@ -61,7 +61,7 @@ plot(pf)
 % contour levels can be specified as an option. (See [[matlab:doc
 % contourgroupproperties,contourgroup_properties]] for more options!)
 
-plotPDF(odf,Miller(1,0,0),'contour',0:0.5:4,'antipodal')
+plotPDF(odf,Miller(1,0,0,cs),'contour',0:0.5:4,'antipodal')
 
 
 %%  Filled Contour Plots
@@ -69,7 +69,7 @@ plotPDF(odf,Miller(1,0,0),'contour',0:0.5:4,'antipodal')
 % Filled contour plots are obtained by the option *contourf*. Again you may
 % pass as an option the number of contour lines or its exact location.
 
-plotPDF(odf,Miller(1,0,0),'contourf','antipodal')
+plotPDF(odf,Miller(1,0,0,cs),'contourf','antipodal')
 
 
 %% Smooth Interpolated Plots
@@ -78,7 +78,7 @@ plotPDF(odf,Miller(1,0,0),'contourf','antipodal')
 % results in a colored plot without contour lines. Here one can specify the
 % resolution of the plot using the option |resolution|.
 
-plotPDF(odf,Miller(1,0,0),'antipodal','resolution',10*degree)
+plotPDF(odf,Miller(1,0,0,cs),'antipodal','resolution',10*degree)
 
 
 %% Line Plots

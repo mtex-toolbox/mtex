@@ -25,7 +25,7 @@ ebsd('Fo').orientations
 % A pole figure showing scattered points of these data figure can be
 % produced by the command <orientation.plotPDF.html plotPDF>.
 
-plotPDF(ebsd('Fo').orientations,Miller(1,0,0))
+plotPDF(ebsd('Fo').orientations,Miller(1,0,0,ebsd('Fo').CS))
 
 
 %% Scatter (Inverse) Pole Figure Plot
@@ -82,7 +82,7 @@ plotIPDF(grains('Fo').meanOrientation,xvector,'points',500, 'MarkerSize',3);
 % One can also use different colors on the scatter points by certain [[EBSD.get.html,EBSD
 % properties]] or [[GrainSet.get.html,grain properties]]
 
-plotPDF(ebsd('Fo'),[Miller(1,0,0),Miller(1,1,0)],'antipodal','MarkerSize',4,...
+plotPDF(ebsd('Fo'),[Miller(1,0,0,ebsd('Fo').CS),Miller(1,1,0,ebsd('Fo').CS)],'antipodal','MarkerSize',4,...
   'property','mad')
 
 %%

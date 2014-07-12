@@ -36,7 +36,7 @@ plot([v,w],'FontSize',20)
 % *Definition*
 rot = rotation('Euler',10*degree,20*degree,30*degree);
 rot = rotation('axis',xvector,'angle',30*degree);
-rot = rotation('map',Miller(1,0,0),yvector,Miller(0,1,1),zvector);
+rot = rotation('map',xvector,yvector,vector3d(0,1,1),zvector);
 rot = rotation('quaternion',0.5,0.5,0.5,0.5)
 
 %%

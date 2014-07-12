@@ -69,7 +69,7 @@
 %
 % or
 %
-%   pf(Miller(1,1,1))
+%   pf(Miller(1,1,1,cs))
 %
 % The old syntax
 %

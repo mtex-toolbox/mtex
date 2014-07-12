@@ -19,8 +19,8 @@
 % In order to demostrate the different projections we start by defining a
 % model ODF.
 
-cs = symmetry('-3m'); ss = symmetry('1');
-odf = fibreODF(Miller(1,1,0),zvector,cs,ss)
+cs = symmetry('-3m');
+odf = fibreODF(Miller(1,1,0,cs),zvector)
 
 
 %% Alignment of the Hemishpheres
@@ -32,14 +32,14 @@ odf = fibreODF(Miller(1,1,0),zvector,cs,ss)
 % default MTEX plots in this case both hemispheres. The upper on the
 % left hand side and the lower on the right hand side.
 
-plotPDF(odf,Miller(1,1,0))
+plotPDF(odf,Miller(1,1,0,cs))
 
 %%
 %
 % MTEX allows also to plot only the upper or the lower hemisphere by
 % passing the options |upper| or |lower|.
 
-plotPDF(odf,Miller(1,1,0),'lower')
+plotPDF(odf,Miller(1,1,0,cs),'lower')
 
 %%
 % Due to Friedels law meassured pole figures are a superposition of the
@@ -48,7 +48,7 @@ plotPDF(odf,Miller(1,1,0),'lower')
 % upper and lower hemisphere one has to enforce <AxialDirectional.html
 % antipodal symmetry>. This is done by the option *antipodal*.
 
-plotPDF(odf,Miller(1,1,0),'antipodal')
+plotPDF(odf,Miller(1,1,0,cs),'antipodal')
 
 
 %% Alignment of the Coordinate Axes
@@ -65,13 +65,13 @@ plotPDF(odf,Miller(1,1,0),'antipodal')
 
 plotx2north
 
-plotPDF(odf,Miller(1,0,0),'antipodal')
+plotPDF(odf,Miller(1,0,0,cs),'antipodal')
 annotate([xvector,yvector,zvector],'label',{'X','Y','Z'},'backgroundcolor','w');
 
 %%
 plotx2east
 
-plotPDF(odf,Miller(1,0,0),'antipodal')
+plotPDF(odf,Miller(1,0,0,cs),'antipodal')
 annotate([xvector,yvector,zvector],'label',{'X','Y','Z'},'backgroundcolor','w');
 
 
@@ -82,7 +82,7 @@ annotate([xvector,yvector,zvector],'label',{'X','Y','Z'},'backgroundcolor','w');
 % by area equal area projection is the default projection in MTEX. In can
 % be set explicetly by the flags *earea* or *schmidt*.
 
-plotPDF(odf,Miller(1,0,0),'antipodal')
+plotPDF(odf,Miller(1,0,0,cs),'antipodal')
 
 
 
@@ -121,4 +121,4 @@ mtexColorMap white2black
 % MTEX also offers a three dimensional plot of pole figures which even
 % might be rotated freely in space
 
-plotPDF(odf,Miller(1,0,0),'3d')
+plotPDF(odf,Miller(1,0,0,cs),'3d')

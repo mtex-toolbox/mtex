@@ -12,9 +12,9 @@
 % Let us first define some model ODFs to be plotted later on.
 
 cs = symmetry('-3m');
-mod1 = orientation('Euler',30*degree,40*degree,10*degree);
-mod2 = orientation('Euler',10*degree,80*degree,70*degree);
-odf = 0.7*unimodalODF(mod1,cs) + 0.3*unimodalODF(mod2,cs);
+mod1 = orientation('Euler',30*degree,40*degree,10*degree,cs);
+mod2 = orientation('Euler',10*degree,80*degree,70*degree,cs);
+odf = 0.7*unimodalODF(mod1) + 0.3*unimodalODF(mod2)
 
 
 %% Adding a Colorbar
@@ -24,7 +24,7 @@ odf = 0.7*unimodalODF(mod1,cs) + 0.3*unimodalODF(mod2,cs);
 % that the color range is automatically set to *equal* when adding a colorbar
 % to a figure with  more then one plot (see. <ColorCoding_demo.html Color Coding>).
 
-plotPDF(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal')
+plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],'antipodal')
 colorbar
 
 
@@ -52,7 +52,7 @@ annotate([xvector,yvector,zvector],'label',{'x','y','z'},...
 
 plotIPDF(odf,[xvector,zvector],'antipodal','marginx',10,'minmax','off')
 mtexColorMap white2black
-annotate([Miller(1,0,0),Miller(1,1,0),Miller(0,0,1),Miller(2,-1,0)],'all','labeled')
+annotate([Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(0,0,1,cs),Miller(2,-1,0,cs)],'all','labeled')
 
 
 %% Adding Preferred Orientations
@@ -103,7 +103,7 @@ annotate(mod2,...
 
 plotFourier(FourierODF(odf,32))
 hold all
-fodf = fibreODF(Miller(1,0,0),zvector,cs);
+fodf = fibreODF(Miller(1,0,0,cs),zvector);
 plotFourier(FourierODF(fodf,32));
 hold off
 
@@ -116,5 +116,5 @@ legend({'Fibre ODF','Unimodal ODF'})
 % For this reason there is the option *grid*, which enables the grid and the 
 % option *grid_res*, which allows to specifiy the spacing of the grid lines.
 
-plotPDF(odf,[Miller(1,0,0),Miller(0,0,1)],'grid','grid_res',15*degree,'antipodal');
+plotPDF(odf,[Miller(1,0,0,cs),Miller(0,0,1,cs)],'grid','grid_res',15*degree,'antipodal');
 mtexColorMap white2black

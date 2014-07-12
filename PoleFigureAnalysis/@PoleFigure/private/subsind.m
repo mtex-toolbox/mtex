@@ -9,7 +9,7 @@ if iscellstr(varargin)
     
   h = cellfun(@(x) string2Miller(x,pf.CS),varargin,'uniformOutput',false);
     
-elseif isa(varargin{1},'Miller') % pf(Miller(1,0,0))
+elseif isa(varargin{1},'Miller') % pf(Miller(1,0,0,cs))
   
   h = cellfun(@(x) pf.CS.ensureCS(x),varargin);  
   

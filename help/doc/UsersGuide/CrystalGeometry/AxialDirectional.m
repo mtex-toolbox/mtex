@@ -78,13 +78,13 @@ o = orientation('Euler',20*degree,30*degree,0,'ZYZ',CS);
 odf = unimodalODF(o);
 
 % plot pole figures
-plotPDF(odf,[Miller(1,2,2),-Miller(1,2,2)])
+plotPDF(odf,[Miller(1,2,2,CS),-Miller(1,2,2,CS)])
 
 %%
 % Hence, if one wants to compare calculated pole figures with experimental
 % ones, one has to add antipodal symmetry.
 
-plotPDF(odf,Miller(1,2,2),'antipodal')
+plotPDF(odf,Miller(1,2,2,CS),'antipodal')
 
 %% Antipodal Symmetry in Inverse Pole Figures
 %

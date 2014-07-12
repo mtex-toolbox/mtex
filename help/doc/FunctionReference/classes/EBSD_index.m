@@ -93,7 +93,7 @@ plotPDF(odf,Miller(1,0,0,cs),'antipodal')
 % <ODF.calcEBSD.html calcEBSD>, e.g.
 
 ebsd = calcEBSD(unimodalODF(idquaternion,cs),500)
-plotPDF(ebsd,Miller(1,0,0),'antipodal','MarkerSize',3)
+plotPDF(ebsd,Miller(1,0,0,cs),'antipodal','MarkerSize',3)
 
 %% SUB: Demo
 %
