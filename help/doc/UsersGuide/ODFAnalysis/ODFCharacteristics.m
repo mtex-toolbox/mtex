@@ -19,7 +19,8 @@ odf1 = unimodalODF(orientation('Euler',0,0,0,cs)) + ...
 
 %% 
 % A fibre ODF:
-odf2 = fibreODF(Miller(0,0,1),xvector,cs)
+
+odf2 = fibreODF(Miller(0,0,1,cs),xvector)
 
 %%
 % An ODF estimated from diffraction data:
@@ -119,7 +120,7 @@ odf1.eval(orientation('Euler',0*degree,20*degree,30*degree))
 %%
 % For a more complex example let us define a fibre and plot the ODF there.
 
-fibre = orientation('fibre',Miller(1,0,0),yvector);
+fibre = orientation('fibre',Miller(1,0,0,cs),yvector);
 
 plot(odf2.eval(fibre))
 
@@ -127,7 +128,7 @@ plot(odf2.eval(fibre))
 % Evaluation of the corresponding pole figure or inverse pole figure is
 % done using the command <ODF.pdf.html pdf>.
 
-pdf(odf2,Miller(1,0,0),xvector)
+pdf(odf2,Miller(1,0,0,cs),xvector)
 
 %% Extract Internal Representation
 % The internal representation of the ODF can be adressed by the command

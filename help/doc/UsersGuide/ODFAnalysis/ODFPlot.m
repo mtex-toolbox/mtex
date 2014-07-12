@@ -46,7 +46,7 @@ plotPDF(odf,[Miller(1,0,-1,0,cs),Miller(0,0,0,1,cs)],'antipodal')
 % not crystal directions.
 
 plotIPDF(odf,[xvector,zvector],'antipodal')
-annotate(Miller(1,0,0),'labeled')
+annotate(Miller(1,0,0,odf.CS),'labeled')
 
 %%
 % By default MTEX alway plots only the fundamental region with respect to

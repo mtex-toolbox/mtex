@@ -25,7 +25,7 @@
 % example, almost all ploting methods support the option |RESOLUTION|
 % followed by a double value specifying the resolution
 
-plotPDF(odf,Miller(1,0,0),'resolution',5*degree,'contour');
+plotPDF(odf,Miller(1,0,0,cs),'resolution',5*degree,'contour');
 
 %%
 % Options that are not followed by a value are called flags. In the above

@@ -59,7 +59,7 @@ ori = orientation('Miller',[1,2,2],[2,2,1],cs,ss);
 psi = vonMisesFisherKernel('HALFWIDTH',10*degree);
 odf = unimodalODF(ori,psi,cs,ss)
 
-plotPDF(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
+plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal')
 
 %%
 % For simplicity one can also ommit the kernel function. In this case the
@@ -85,11 +85,11 @@ plotPDF(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
 % * a <kernel_index.html kernel> function *psi* defining the shape
 % * the crystal and specimen <symmetry_index.html symmetry>
 
-h = Miller(0,0,1);
+h = Miller(0,0,1,cs);
 r = xvector;
 odf = fibreODF(h,r,cs,ss,psi)
 
-plotPDF(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
+plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal')
 
 %% ODFs given by Fourier coefficients
 %
@@ -110,7 +110,7 @@ mtexColorMap LaboTeX
 
 %%
 
-plotPDF(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
+plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal')
 
 %% Bingham ODFs
 %
@@ -174,4 +174,4 @@ mod1 = orientation('Miller',[1,2,2],[2,2,1],cs,ss);
 odf =  0.73 * uniformODF(cs,ss) + 0.27 * unimodalODF(mod1,psi)
 
 close all
-plotPDF(odf,[Miller(1,0,0),Miller(1,1,0)],'antipodal')
+plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal')

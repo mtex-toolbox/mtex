@@ -28,10 +28,10 @@ plotx2east
 
 %% Visualize the data
 % First we make a spatial plot of the orientations of the crystals of phase
-% 1 using hkl colorcoding.
+% 1
 
 figure('position',[100 100 800 350])
-plot(ebsd)
+plot(ebsd('Fe'))
 
 %%
 % The colorcoding can be interpreted by the collored (0,0,1) inverse pole
@@ -51,7 +51,7 @@ grains = calcGrains(ebsd)
 % and plot them into our orientation plot
 
 figure('position',[100 100 800 350])
-plot(ebsd)
+plot(ebsd('Fe'))
 hold on
 plotBoundary(grains,'linewidth',1.5)
 
@@ -59,7 +59,7 @@ plotBoundary(grains,'linewidth',1.5)
 % One can also plot all the grains together with their mean orientation
 
 figure('position',[100 100 800 350])
-plot(grains)
+plot(grains('Fe'))
 
 %% ODF estimation
 % Next we reconstruct an ODF from the EBSD data. Therefore, we first have
@@ -76,7 +76,7 @@ odf = calcODF(ebsd('Fe'),'kernel',psi)
 % <ODFCalculations.html ODF analysis> and <ODFPlot.html ODF visualisation>
 % is available.
 
-plotPDF(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],...
+plotPDF(odf,[Miller(1,0,0,CS{2}),Miller(1,1,0,CS{2}),Miller(1,1,1,CS{2})],...
   'antipodal','silent','position',[100 100 600 200])
 
 

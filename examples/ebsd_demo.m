@@ -34,7 +34,7 @@ plot(ebsd)
 
 %% Plot Pole Figures as Scatter Plots
 
-h = [Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)];
+h = [Miller(1,0,0,CS{2}),Miller(1,1,0,CS{2}),Miller(1,1,1,CS{2})];
 close; figure('position',[100,100,600,300])
 plotPDF(ebsd('Fe'),h,'points',500,'antipodal')
 
@@ -93,7 +93,7 @@ hold off
 %
 % Simulate EBSD data from a given standard ODF
 CS = symmetry('trigonal');
-fibre_odf = 0.5*uniformODF(CS) + 0.5*fibreODF(Miller(0,0,0,1),zvector,CS);
+fibre_odf = 0.5*uniformODF(CS) + 0.5*fibreODF(Miller(0,0,0,1,CS),zvector,CS);
 plotODF(fibre_odf,'sections',6,'silent')
 ebsd = calcEBSD(fibre_odf,10000)
 

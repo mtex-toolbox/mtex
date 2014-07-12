@@ -33,15 +33,17 @@
 %%
 % The general setup of the Bingham distribution in MTEX is done as follows
 
+cs = symmetry('1');
+
 kappa = [100 90 80 0];   % shape parameters
 U     = eye(4);          % orthogonal matrix
 
-odf = BinghamODF(kappa,U,symmetry,symmetry)
+odf = BinghamODF(kappa,U,cs)
 
 %%
 %
 
-h = [Miller(0,0,1) Miller(1,0,0) Miller(1,1,1)];
+h = [Miller(0,0,1,cs) Miller(1,0,0,cs) Miller(1,1,1,cs)];
 plotPDF(odf,h,'antipodal','silent');
 
 
@@ -96,8 +98,8 @@ plotPDF(odf_spherical,h,'antipodal','silent')
 %% Prolate case and fibre distribution
 % The prolate case correspondes to a fibre.
 
-odf_prolate = fibreODF(Miller(0,0,1),zvector,...
-  symmetry,symmetry,'halfwidth',20*degree)
+odf_prolate = fibreODF(Miller(0,0,1,symmetry('1')),zvector,...
+  'halfwidth',20*degree)
 
 %%
 %

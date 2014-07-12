@@ -20,8 +20,8 @@
 % on.
 
 cs = symmetry('-3m');
-odf = fibreODF(Miller(1,1,0),zvector,cs)
-pf = calcPoleFigure(odf,[Miller(1,0,0),Miller(1,1,1)],...
+odf = fibreODF(Miller(1,1,0,cs),zvector)
+pf = calcPoleFigure(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],...
   equispacedS2Grid('points',500,'antipodal'));
 
 %% Setting a Colormap
@@ -78,10 +78,10 @@ plot(pf,'colorrange','equal')
 % set the colorrange directly in the <ODF.plotPDF.html plot command>
 
 close all
-plotPDF(odf,[Miller(1,0,0),Miller(1,1,1)],...
+plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],...
   'colorrange',[0 4],'antipodal');
 figure
-plotPDF(.5*odf+.5*uniformODF(cs),[Miller(1,0,0),Miller(1,1,1)],...
+plotPDF(.5*odf+.5*uniformODF(cs),[Miller(1,0,0,cs),Miller(1,1,1,cs)],...
   'colorrange',[0 4],'antipodal');
 
 
@@ -91,7 +91,7 @@ plotPDF(.5*odf+.5*uniformODF(cs),[Miller(1,0,0),Miller(1,1,1)],...
 % directly
 
 close all
-plotPDF(odf,[Miller(1,0,0),Miller(1,1,1)],...
+plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],...
   'contourf',0:1:5,'antipodal')
 
 
@@ -108,9 +108,9 @@ setcolorrange([0.38,3.9])
 % equal color coding to all open figures.
 
 figure(1)
-plotPDF(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal')
+plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],'antipodal')
 figure(2)
-plotPDF(.5*odf+.5*uniformODF(cs),[Miller(1,0,0),Miller(1,1,1)],'antipodal');
+plotPDF(.5*odf+.5*uniformODF(cs),[Miller(1,0,0,cs),Miller(1,1,1,cs)],'antipodal');
 
 setcolorrange('equal','all')
 
@@ -121,7 +121,7 @@ setcolorrange('equal','all')
 % plots in MTEX understand the option *logarithmic*, e.g.
 
 close all;
-plotPDF(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal','logarithmic')
+plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],'antipodal','logarithmic')
 setcolorrange([0.01 12]);
 colorbar
 

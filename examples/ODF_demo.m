@@ -51,7 +51,7 @@ A = quaternion(eye(4))
 odf = BinghamODF(Lambda,A,CS)
 
 plotIPDF(odf,xvector)
-plotPDF(odf,Miller(1,0,0))
+plotPDF(odf,Miller(1,0,0,CS))
 
 %%
 % *ODF Arithmetics*
@@ -60,7 +60,7 @@ plotPDF(odf,Miller(1,0,0))
 
 rot = rotation('axis',yvector,'angle',90*degree);
 odf = rotate(odf,rot)
-plotPDF(odf,Miller(1,0,0))
+plotPDF(odf,Miller(1,0,0,CS))
 
 %% Working with ODFs
 
@@ -84,7 +84,7 @@ f_hat = calcFourier(odf2,16);  % the C-coefficients up to order 16
 % *Plotting (Inverse) Pole Figures*
 
 close all
-plotPDF(odf,Miller(0,1,0),'antipodal')
+plotPDF(odf,Miller(0,1,0,CS),'antipodal')
 plotIPDF(odf,[xvector,zvector])
 
 %%
@@ -102,18 +102,18 @@ mtexColorMap white2black
 % indice). What is its modal orientation in Euler angles?
 
 cs = symmetry('cubic');
-ori = orientation('Miller',[0 0 1],[3 1 0],cs);
+ori = orientation('Miller',[0 0 1],[3 1 0],CS);
 odf = unimodalODF(ori,cs,ss);
 
 %%
 % b) Plot some pole figures. Are there pole figures with and without
 % antipodal symmetry? What about the inverse pole figures?
 
-plotPDF(odf,[Miller(1,0,0),Miller(2,3,1)])
+plotPDF(odf,[Miller(1,0,0,CS),Miller(2,3,1,CS)])
 
 %%
 
-close all;plotPDF(odf,[Miller(1,0,0),Miller(2,3,1)],'antipodal')
+close all;plotPDF(odf,[Miller(1,0,0,CS),Miller(2,3,1,CS)],'antipodal')
 
 %%
 
@@ -137,8 +137,8 @@ volume(uniformODF(cs,ss),ori,10*degree)
 % (0,0,0,1), r1 = (0,1,0), h2 = (1,0,-1,0), r2 = (1,0,0). Do the two fibres intersect?
 
 cs = symmetry('trigonal');
-odf = 0.5 * fibreODF(Miller(0,0,0,1),yvector,cs,ss) + ...
-      0.5 * fibreODF(Miller(1,0,-1,0),xvector,cs,ss)
+odf = 0.5 * fibreODF(Miller(0,0,0,1,CS),yvector,CS,SS) + ...
+      0.5 * fibreODF(Miller(1,0,-1,0,CS),xvector,CS,SS)
 
 %%
 % f) What is the modal orientation of the ODF?

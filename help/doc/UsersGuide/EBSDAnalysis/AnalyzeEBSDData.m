@@ -15,7 +15,7 @@
 %
 
 plotx2east
-ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','forsterite.ctf'),...
+ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','Forsterite.ctf'),...
   'convertEuler2SpatialReferenceFrame');
 
 plot(ebsd)
@@ -25,7 +25,9 @@ plot(ebsd)
 % We start our investiagations of the Forsterite phase by plotting some
 % pole figures
 
-plotPDF(ebsd('Forsterite'),[Miller(1,0,0),Miller(0,1,0),Miller(0,0,1)],'antipodal')
+cs = ebsd('Forsterite').CS
+h = [Miller(1,0,0,cs),Miller(0,1,0,cs),Miller(0,0,1,cs)];
+plotPDF(ebsd('Forsterite'),h,'antipodal')
 
 %%
 % From the {100} pole figure we might suspect a fibre texture present in our
@@ -59,14 +61,14 @@ hold off
 
 plotIPDF(ebsd('Forsterite'),rOrth,'smooth')
 
-annotate(Miller(0,1,0))
+annotate(Miller(0,1,0,cs))
 
 %%
 % From the inverse pole figure it becomes clear that the orientations are
 % close to the fibre |Miller(0,1,0)|, |rOrth|. Let check this by computing
 % the fibre volume
 
-100 * fibreVolume(ebsd('Forsterite'),Miller(0,1,0),rOrth,10*degree)
+100 * fibreVolume(ebsd('Forsterite'),Miller(0,1,0,cs),rOrth,10*degree)
 
 %%
 % Suprisingly this value is significantly lower then the value we obtained
@@ -75,7 +77,7 @@ annotate(Miller(0,1,0))
 
 odf = calcODF((ebsd('Forsterite')))
 
-plotFibre(odf,Miller(0,1,0),rOrth)
+plotFibre(odf,Miller(0,1,0,cs),rOrth)
 
 ylim([0,26])
 

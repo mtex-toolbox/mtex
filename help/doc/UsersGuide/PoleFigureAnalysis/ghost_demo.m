@@ -39,7 +39,7 @@ odf = 0.9*uniformODF(cs) + ...
 r = equispacedS2Grid('resolution',5*degree,'antipodal');
 
 % crystal directions
-h = [Miller(1,0,0),Miller(0,1,0),Miller(0,0,1)];
+h = [Miller(1,0,0,cs),Miller(0,1,0,cs),Miller(0,0,1,cs)];
 
 % compute pole figures
 pf = calcPoleFigure(odf,h,r);
@@ -88,16 +88,16 @@ plotODF(rec_cor,'sections',9,'silent','sigma')
 %% 
 % radial plot of the true ODF
 close all
-plotFibre(odf,Miller(0,1,0),yvector,'color','b');
+plotFibre(odf,Miller(0,1,0,cs),yvector,'color','b');
 hold on
 
 %%
 % radial plot without ghost correction:
-plotFibre(rec,Miller(0,1,0),yvector,'color','g');
+plotFibre(rec,Miller(0,1,0,cs),yvector,'color','g');
 
 %%
 % radial plot with ghost correction:
-plotFibre(rec_cor,Miller(0,1,0),yvector,'color','r','linestyle','--');
+plotFibre(rec_cor,Miller(0,1,0,cs),yvector,'color','r','linestyle','--');
 hold off
 legend({'true ODF','without ghost correction','with ghost correction'})
 
