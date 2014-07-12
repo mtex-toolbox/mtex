@@ -105,10 +105,12 @@ for i = 1:numel(sP)
     % save listener, otherwise  callback may die
     setappdata(hax, 'dynamicMarkerSizeListener', hListener);
   catch    
-    hListener = addlistener(hax,'Position','PostSet',...
-      @(obj,events) localResizeScatterCallback(obj,events,sP(i).ax));
-    localResizeScatterCallback([],[],sP(i).ax);
-    setappdata(hax, 'dynamicMarkerSizeListener', hListener);
+    if ~isappdata(hax, 'dynamicMarkerSizeListener')
+      hListener = addlistener(hax,'Position','PostSet',...
+        @(obj,events) localResizeScatterCallback(obj,events,sP(i).ax));
+%      localResizeScatterCallback([],[],sP(i).ax);
+      setappdata(hax, 'dynamicMarkerSizeListener', hListener);
+    end
     %disp('some Error!');
   end
 
@@ -117,11 +119,9 @@ for i = 1:numel(sP)
     text(v,get_option(varargin,{'text','label'}),'parent',sP(i).ax,varargin{:});
   end
 
-  if ~check_option(varargin,'doNotDraw')
-    mtexFig = getappdata(sP(1).parent,'mtexFig');
-    mtexFig.drawNow;
-  end
-  
+  mtexFig = getappdata(sP(1).parent,'mtexFig');
+  mtexFig.drawNow(varargin{:});
+    
 end
 
 if nargout == 0, clear h;end
@@ -152,6 +152,7 @@ markerSize = max(markerSize);
 for it = 1:length(t)
   
   xy = get(t(it),'UserData');
+  if any(isnan(xy)), continue; end
   set(t(it),'unit','data','position',[xy,0]);
   set(t(it),'unit','pixels');
   xy = get(t(it),'position');

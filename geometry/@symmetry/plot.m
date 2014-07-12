@@ -20,19 +20,20 @@ if check_option(varargin,'hkl')
     Miller(1,1,1,s)];
 
   m = unique(m);
-
+  options = [{'symmetrised','labeled','MarkerEdgeColor','k','grid','doNotDraw'},varargin];
+  
   % plot them    
-  m(1).scatter('symmetrised','labeled','MarkerEdgeColor','k','grid',varargin{:});
+  m(1).scatter(options{:});
   hold all;
   for i = 2:length(m)
-    m(i).scatter('symmetrised','labeled','MarkerEdgeColor','k','grid',varargin{:});
+    m(i).scatter(options{:});
   end
 
   % postprocess figure
   setappdata(gcf,'CS',s);
   set(gcf,'tag','ipdf');
-  setappdata(gcf,'options',extract_option(varargin,'antipodal'));
-  
+  mtexFig.drawNow(varargin{:});
+    
 else
     
   symbolSize = 0.15*get_option(varargin,'symbolSize',1);    
@@ -50,10 +51,10 @@ else
   
   % plot mirrot planes
   mir = Improper & rot.angle>pi-1e-4;
-  circle(rot(mir).axis,'linewidth',3,'color','k');
+  circle(rot(mir).axis,'linewidth',3,'color','k','doNotDraw');
 
   % plot inversion axes 
-  options = {'FaceColor','white','LineWidth',3};
+  options = {'FaceColor','white','LineWidth',3,'doNotDraw'};
   
   for i = 1:length(axesI)
     
@@ -68,8 +69,8 @@ else
   
   % plot rotational axes     
   for i = 1:length(axesP)    
-    plotCustom(axesP(i),{Symbol(angleP(i),axesP(i).rho)});     
-    plotCustom(-axesP(i),{Symbol(angleP(i),axesP(i).rho,'FaceColor','k')});
+    plotCustom(axesP(i),{Symbol(angleP(i),axesP(i).rho)},'doNotDraw');     
+    plotCustom(-axesP(i),{Symbol(angleP(i),axesP(i).rho,'FaceColor','k')},'doNotDraw');
   end
   
   % mark three fold inversion axes
@@ -89,6 +90,7 @@ else
     %xlim(ax,'auto');
     %ylim(ax,'auto');
   end  
+  mtexFig.drawNow(varargin{:});
 end
 
 hold off
@@ -108,8 +110,6 @@ end
 
 
 end
-
-
 
 %
 function ellipse(cx,cy,dx,dy,angle,varargin)
