@@ -34,6 +34,17 @@ mP = newMapPlot(varargin{:});
 % what to plot - phase is default
 if nargin>1 && isnumeric(varargin{1})
   property = varargin{1};
+elseif numel(grains.indexedPhasesId)==1
+  
+  grains = grains.subSet(grains.phaseId == grains.indexedPhasesId);
+  
+  oM = ipdfHSVOrientationMapping(grains);
+  property = oM.orientation2color(grains.meanOrientation);
+  disp('  I''m going to colorize the ebsd data with the ');
+  disp('  standard MTEX colorkey. To view the colorkey do:');
+    disp(' ');
+  disp('  oM = ipdfHSVOrientationMapping(ebsd_variable_name)')
+  disp('  plot(oM)')
 else
   property = get_option(varargin,'property','phase');
 end
