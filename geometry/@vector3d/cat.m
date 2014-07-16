@@ -1,6 +1,8 @@
 function v = cat(dim,varargin)
 % 
 
+% remove emtpy arguments
+varargin(cellfun('isempty',varargin)) = [];
 v = varargin{1};
 
 vx = cell(size(varargin)); vy = vx; vz = vx;
