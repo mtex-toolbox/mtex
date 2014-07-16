@@ -37,7 +37,7 @@ else
 end
 
 
-if epsilon>rotangle_max_z(CS,'antipodal') % full matrixes
+if epsilon>2*pi/CS.Laue.multiplicityZ % full matrixes
  
   q1 = quaternion(q1);
   q2 = quaternion(q2);

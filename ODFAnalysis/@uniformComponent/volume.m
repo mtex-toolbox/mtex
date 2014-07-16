@@ -1,7 +1,7 @@
 function [v,varargout] = volume(component,center,radius,varargin)
     
 % for large angles or specimen symmetry take the quadrature based algorithm
-if radius > rotangle_max_z(component.CS)/2 || ...
+if radius > pi / component.CS.multiplicityZ || ...
     length(component.SS) > 1
   
   % TODO this could also be computed explicitely

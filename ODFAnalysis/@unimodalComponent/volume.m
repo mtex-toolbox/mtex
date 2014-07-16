@@ -1,7 +1,8 @@
 function [v,varargout] = volume(component,center,radius,varargin)
 
 % for large angles or specimen symmetry take the quadrature based algorithm
-if radius > rotangle_max_z(component(1).CS)/2 || length(component(1).SS) > 1
+if radius > pi / component.CS.multiplicityZ || ...
+    length(component(1).SS) > 1
   
   [v,varargout{1:nargout-1}] = volume@ODFComponent(component,center,radius,varargin{:});
   
