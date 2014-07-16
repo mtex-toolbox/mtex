@@ -17,43 +17,48 @@ classdef sphericalRegion
     function sR = sphericalRegion(varargin)
       %
 
-      if check_option(varargin,'vertices')
-        
-        v = get_option(varargin,'vertices');
-        
-        sR.N = normalize(cross(v,v([2:end,1])));
-        sR.alpha = zeros(size(sR.N));
-        
-      elseif nargin > 0 && nargin < 3 && isa(varargin{1},'vector3d')
+      % default syntax sphericalRegion(N,alpha)
+      if nargin>=2 && isa(varargin{1},'vector3d') && isa(varargin{2},'double')
         sR.N = varargin{1}.normalize;
-        if nargin == 2
-          sR.alpha = varargin{2};
-        else
-          sR.alpha = zeros(size(sR.N));
-        end
-        
+        sR.alpha = varargin{2};
       else
-           
-        maxTheta = get_option(varargin,'maxTheta',pi);
-        if maxTheta < pi-1e-5
-          sR.N = [sR.N,zvector];
-          sR.alpha = [sR.alpha,cos(maxTheta)];
-        end
+        sR.N = vector3d;
+        sR.alpha = [];
+      end
+      
+      % region given by vertices
+      if check_option(varargin,'vertices')
+        v = get_option(varargin,'vertices');
+        N = normalize(cross(v,v([2:end,1])));
+        sR.N = [sR.N,N];
+        sR.alpha = [sR.alpha,zeros(size(N))];      
+      end
         
-        minTheta = get_option(varargin,'minTheta',0);
-        if minTheta > 1e-5
-          sR.N = [sR.N,-zvector];
-          sR.alpha = [sR.alpha,cos(pi-minTheta)];
-        end
+      % additional options
+      maxTheta = get_option(varargin,'maxTheta',pi);
+      if maxTheta < pi-1e-5
+        sR.N = [sR.N,zvector];
+        sR.alpha = [sR.alpha,cos(maxTheta)];
+      end
         
-        minRho = get_option(varargin,'minRho',0);
-        maxRho = get_option(varargin,'maxRho',2*pi);
+      minTheta = get_option(varargin,'minTheta',0);
+      if minTheta > 1e-5
+        sR.N = [sR.N,-zvector];
+        sR.alpha = [sR.alpha,cos(pi-minTheta)];
+      end
+        
+      minRho = get_option(varargin,'minRho',0);
+      maxRho = get_option(varargin,'maxRho',2*pi);
                 
-        if maxRho - minRho < 2*pi - 1e-5
-          sR.N = [sR.N,sph2vec(90*degree,[90*degree+minRho,maxRho-90*degree])];
-          sR.alpha = [sR.alpha,0,0];
-        end        
-      end      
+      if maxRho - minRho < 2*pi - 1e-5
+        sR.N = [sR.N,sph2vec(90*degree,[90*degree+minRho,maxRho-90*degree])];
+        sR.alpha = [sR.alpha,0,0];
+      end
+            
+      if check_option(varargin,'upper'), sR = sR.restrict2Upper; end
+      if check_option(varargin,'lower'), sR = sR.restrict2Lower; end
+      if check_option(varargin,{'complete','3d'}), sR = sphericalRegion; end
+      
     end
             
     function th = thetaMin(sR)
