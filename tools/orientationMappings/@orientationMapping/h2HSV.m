@@ -25,6 +25,7 @@ h = h_sR;
 center = sR.center;
 
 rot = rotation(idquaternion);
+alpha = 0;
 
 if ismember(cs.id,[2,18,26])
   warning('Not a topological correct colormap! Green to blue colorjumps possible');
@@ -40,16 +41,24 @@ switch cs.id
     addReflector(rotate(sR.N,...
         rotation('axis',cs(2).axis,'angle',pm*90*degree)));
       if cs.id == 6, black2white;end
-  case 4, green2white;                                       % m11
+  case 4, green2white; alpha = 0.3;                          % m11
   %case 5, addReflector(cross(sR.N(1),sR.N(2)));             % 2/m11, 112/m
-  case 7,                                                    % 1m1
+  case 7, alpha = 0.3;                                       % 1m1
   %case 8, addReflector(-cross(sR.N(1),sR.N(2)));        % 12/m1
   case 10, rot = rotation('Euler',270*degree,90*degree,180*degree); % 11m
   case {5,8,11,27,35} % 2/m, 4/m, 6/m
     mir = cs.isImproper & cs.angle>pi-1e-4;
-    center = cs(mir).axis;
-    rot = rotation('Euler',270*degree,90*degree,180*degree);    
+    center = cs(mir).axis;    
+    alpha = 0.3;
+    if cs.id == 5                                             % 2/m11
+      rot = rotation('Euler',30*degree,90*degree,0*degree);
+    elseif cs.id == 8
+      rot = idquaternion;
+    else
+      rot = rotation('Euler',270*degree,90*degree,180*degree);
+    end
   case 12, addReflector(rotate(sR.N(2),-90*degree));        % -2m,222
+  %case 15, alpha = 0.3; %mm2
   case 17                                                      % 3
     r = rotation('axis',zvector,'angle',[30,-30]*degree);
     addReflector(r .* sR.N(end-1:end));
@@ -112,6 +121,9 @@ radius(whiteOrBlack) = 0.5+radius(whiteOrBlack)./2;
 
 % black center
 radius(~whiteOrBlack) = (1-radius(~whiteOrBlack))./2;
+
+% stretch colors 
+radius = radius*(1+alpha)-alpha;
 
 % compute the color vector on the sphere
 v = vector3d('rho',rho,'theta',radius.*pi);
