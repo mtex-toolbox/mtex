@@ -8,37 +8,41 @@ function c = char(m,varargin)
 
 c = cell(length(m),1);
 
+% output format
+format = extract_option(varargin,{'hkl','uvw','UVTW'});
+if ~isempty(format), m.dispStyle = format{1};end
+
 for i = 1:length(m)
   
-  if strcmp(m.dispStyle,'uvw') || check_option(varargin,{'uvw','directions'})
+  abc = m.subSet(i).(m.dispStyle);
+  
+  switch m.dispStyle
+
+    case {'uvw','UVTW'}
+     
+      if check_option(varargin,{'tex','latex'})
+        leftBracket = '['; %'\left\langle ';
+        rightBracket = ']';% '\right\rangle';
+      else
+        leftBracket = '[';%'<';
+        rightBracket = ']';%'>';
+      end
     
-    hkl = m.uvw(i,:);
+    case {'hkl','hkil'}
     
-    if check_option(varargin,{'tex','latex'})
-      leftBracket = '['; %'\left\langle ';
-      rightBracket = ']';% '\right\rangle';
-    else
-      leftBracket = '[';%'<';
-      rightBracket = ']';%'>';
-    end
-    
-  else
-    
-    hkl = m.hkl(i,:);
-    
-    if check_option(varargin,{'tex','latex'})
-      leftBracket = '(';%'\{';
-      rightBracket = ')';% '\}';
-    else
-      leftBracket = '(';%'{';
-      rightBracket = ')';% '}';
-    end
-            
+      if check_option(varargin,{'tex','latex'})
+        leftBracket = '(';%'\{';
+        rightBracket = ')';% '\}';
+      else
+        leftBracket = '(';%'{';
+        rightBracket = ')';% '}';
+      end
   end
+
   
   % only display rounded results
-  if all(isappr(round(hkl),hkl))
-    s = barchar(hkl,varargin{:});
+  if all(isappr(round(abc),abc))
+    s = barchar(abc,varargin{:});
   else
     s = '---';
   end
