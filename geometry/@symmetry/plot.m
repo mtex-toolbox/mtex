@@ -54,7 +54,7 @@ else
   circle(rot(mir).axis,'linewidth',3,'color','k','doNotDraw');
 
   % plot inversion axes 
-  options = {'FaceColor','white','LineWidth',3,'doNotDraw'};
+  options = {'FaceColor','white','LineWidth',3};
   
   for i = 1:length(axesI)
     
@@ -69,8 +69,8 @@ else
   
   % plot rotational axes     
   for i = 1:length(axesP)    
-    plotCustom(axesP(i),{Symbol(angleP(i),axesP(i).rho)},'doNotDraw');     
-    plotCustom(-axesP(i),{Symbol(angleP(i),axesP(i).rho,'FaceColor','k')},'doNotDraw');
+    plotCustom(axesP(i),{Symbol(angleP(i),axesP(i).rho)});
+    plotCustom(-axesP(i),{Symbol(angleP(i),axesP(i).rho,'FaceColor','k')});
   end
   
   % mark three fold inversion axes
