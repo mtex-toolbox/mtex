@@ -53,7 +53,7 @@ else
   end
   
   % for finding the minimial beta angle
-  qcs = quaternion(rotation_special(S3G.CS));
+  qcs = quaternion(S3G.CS.rotation_special);
   
   [xalpha,xbeta,xgamma] = Euler( qss * q * qcs ,'ZYZ');
   

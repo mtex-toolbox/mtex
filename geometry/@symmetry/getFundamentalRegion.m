@@ -17,26 +17,22 @@ function  [maxPhi1,maxPhi,maxPhi2] = getFundamentalRegion(cs,ss,varargin)
 % symmetry/getFundamentalRegionRodriguez symmetry/FundamentalSector
 
 % phi1
-if rotangle_max_y(cs) == pi && rotangle_max_y(ss) == pi
-  maxPhi1 = pi/2;
-else
-  maxPhi1 = rotangle_max_z(ss);
+maxPhi1 = 2*pi/ss.multiplicityZ;
+if cs.multiplicityPerpZ >= 2 && ss.multiplicityPerpZ >= 2 
+  maxPhi1 = max(pi/2,maxPhi1/2);
 end
 
 %phi2
-maxPhi2 = rotangle_max_z(cs);
+maxPhi2 = 2*pi/cs.multiplicityZ;
 
 % Phi
-maxPhi = min(rotangle_max_y(cs),rotangle_max_y(ss))/2;
+maxPhi = pi / min(2,max(cs.multiplicityPerpZ, ss.multiplicityPerpZ));
+
 if check_option(varargin,'complete')
   maxPhi1 = 2*pi;
   maxPhi = pi;
   maxPhi2 = 2*pi;
 end
-%elseif check_option(varargin,'antipodal')
-%  if rotangle_max_y(cs)/2 < pi
-%    max_phi2 = max_phi2 / 2;
-%end
 
 if check_option(varargin,'SO3Grid') && strcmp(cs.LaueName,'m-3m')  
   maxPhi = pi/3;

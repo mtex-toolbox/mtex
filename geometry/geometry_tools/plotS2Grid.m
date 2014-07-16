@@ -20,14 +20,13 @@ function v = plotS2Grid(varargin)
 
 
 % get spherical region
-%sR = getPolarRange(varargin{:});
 if nargin>0 && isa(varargin{1},'sphericalRegion')
   sR = varargin{1};
 else
   sR = sphericalRegion(varargin{:});
 end
   
-% TODO: extractoptions 'antipodal','lower','upper'
+% TODO: extract options 'antipodal','lower','upper'
 
 % get resolution
 res = get_option(varargin,'resolution',1*degree);

@@ -1,5 +1,5 @@
 function Z = calcPDF(component,h,r,varargin)
-% calculate pdf 
+% calculate pdf for fibre component
 
 Z = zeros(length(h),length(r));
 

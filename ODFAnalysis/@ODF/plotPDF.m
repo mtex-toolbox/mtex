@@ -49,7 +49,7 @@ r = plotS2Grid(sR,varargin{:});
 
 % compute pole figures
 for i =1:length(h)
-  p{i} = ensureNonNeg(pdf(odf,h{i},r,varargin{:},'superposition',c{i})); %#ok<AGROW,NASGU>
+  p{i} = ensureNonNeg(pdf(odf,h{i},r,varargin{:},'superposition',c{i})); %#ok<AGROW>      
 end
 
 % plot pole figures
