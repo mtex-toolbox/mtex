@@ -9,13 +9,17 @@
 %%
 % Let us first define some model ODFs to be plotted later on.
 
-cs = symmetry('-3m');
+cs = symmetry('32');
 mod1 = orientation('euler',90*degree,40*degree,110*degree,'ZYZ',cs);
 mod2 = orientation('euler',50*degree,30*degree,-30*degree,'ZYZ',cs);
 
 odf = 0.2*unimodalODF(mod1) ...
   + 0.3*unimodalODF(mod2) ...
   + 0.5*fibreODF(Miller(0,0,1,cs),vector3d(1,0,0),'halfwidth',10*degree)
+  
+
+%odf = 0.2*unimodalODF(mod2) 
+  
   
 
 %%
@@ -32,11 +36,38 @@ setMTEXpref('defaultColorMap',LaboTeXColorMap);
 plotPDF(odf,[Miller(1,0,-1,0,cs),Miller(0,0,0,1,cs)])
 
 %%
-% By default the <ODF.plotPDF.html plotPDF> command plots the upper as well
-% a the lower hemisphere of each pole sphere. In order to superpose
-% antipodal directions you have to use the option *antipodal*.
+% By default the <ODF.plotPDF.html plotPDF> command plots only the upper 
+% hemisphere of each pole sphere. In order to plot upper and lower
+% hemisphere you can do the following
 
-plotPDF(odf,[Miller(1,0,-1,0,cs),Miller(0,0,0,1,cs)],'antipodal')
+mtexFig = mtexFigure;
+
+plotPDF(odf,Miller(1,0,-1,1,cs),'TL','upper','parent',mtexFig.nextAxis)
+
+plotPDF(odf,Miller(1,0,-1,1,cs),'TL','lower','parent',mtexFig.nextAxis)
+
+mtexFig.drawNow
+
+%%
+% We see that in general uper and lower hemisphere of the pole figure do
+% not coincide. This is only the case if one one following reason is
+% satisfied
+%
+% * the crystal direction h is symmetricaly equivalent to -h, in the
+% present example this is true for the c-axis h = (0001)
+% * the symmetry group contains the inversion, i.e., it is a Laue group
+% * we consider experimental pole figures where we have antipodal symmetry,
+% due to Friedel's law.
+%
+% In MTEX antipodal symmetry can be enforced by the use the option *antipodal*.
+
+mtexFig = mtexFigure;
+
+plotPDF(odf,Miller(1,0,-1,1,cs),'TL','upper','antipodal','parent',mtexFig.nextAxis)
+
+plotPDF(odf,Miller(1,0,-1,1,cs),'TL','lower','antipodal','parent',mtexFig.nextAxis)
+
+mtexFig.drawNow
 
 
 %% Inverse Pole Figures
@@ -46,7 +77,7 @@ plotPDF(odf,[Miller(1,0,-1,0,cs),Miller(0,0,0,1,cs)],'antipodal')
 % not crystal directions.
 
 plotIPDF(odf,[xvector,zvector],'antipodal')
-annotate(Miller(1,0,0,odf.CS),'labeled')
+annotate(Miller(1,0,-1,0,odf.CS,'UVTW'),'labeled')
 
 %%
 % By default MTEX alway plots only the fundamental region with respect to
@@ -60,7 +91,7 @@ plotIPDF(odf,[xvector,zvector],'antipodal','complete')
 % Plotting an ODF in two dimensional sections through the orientation space
 % is done using the command <ODF.plotODF.html plot>. By default the
 % sections are at constant angles phi2. The number of sections can be
-% specified by an option
+% specified by the option |sections|
 
 plot(odf,'sections',6,'silent')
 

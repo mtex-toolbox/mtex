@@ -40,7 +40,7 @@ m = Miller(1,0,1,cs,'hkl')
 % In the case of trigonal and hexagonal crystal symmetry, the convention
 % of using four Miller indices h, k, i, l, is also supported
 
-cs = symmetry('quartz.cif')
+cs = loadCIF('quartz.cif')
 m = Miller(2,1,-3,1,cs,'hkl')
 
 
@@ -59,7 +59,7 @@ plot(m,'Grid')   % plot Miller indice
 % crystal directions are plotted together with there correct Miller indice.
 
 figure,
-plot(m,cs,'symmetrised','labeled','grid')   % plot Miller indice
+plot(m,cs,'symmetrised','labeled','grid','backgroundcolor','w')   % plot Miller indice
 
 %% Symmetrically Equivalent Crystal Directions
 %
