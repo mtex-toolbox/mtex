@@ -83,9 +83,12 @@ switch cs.id
     N = [vector3d(1,-1,0),vector3d(-1,0,1),yvector];
 end
 
-if check_option(varargin,{'complete','3d'})
-  sR = sphericalRegion;
-else
-  sR = sphericalRegion(N);
-end
+% correct for different x-Axis alignments
+%x = (find(strcmp(NWSE,getMTEXpref('xAxisDirection')))-1)*90*degree;
+%z = find(strcmp(UpDown,getMTEXpref('zAxisDirection')))-1;
+%dOmega = (-1)^z * x;
+%dOmega = z*90*degree + round(dOmega/pi*cs.multiplicityZ)*pi/cs.multiplicityZ;
+%N = rotate(N,-dOmega);
+
+sR = sphericalRegion(N,zeros(size(N)),varargin{:});
 
