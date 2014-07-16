@@ -89,3 +89,43 @@ plot(acos(d)*2)
 x = histc(acos(d)/degree*2,0:5:100);
 plot(cumsum(x))
 hold on
+
+
+%%
+
+cs = symmetry('211');
+
+S3G = equispacedSO3Grid(cs,symmetry,'points',3000);
+
+q = randq(1000);
+
+epsilon = 180*degree;
+tic, d1 = dot_outer(S3G,q,'epsilon',epsilon);toc
+
+tic, d2 = dot_outer(S3G,q,'full');toc
+
+disp(['Error: ' num2str(max(abs(d1(:)-d2(:)))), ...
+  '  Expected Error: ' num2str(cos(epsilon/2))])
+
+
+%%
+
+
+
+%%
+
+mypcolor(d1-d2)
+shading flat
+
+
+
+
+
+
+
+
+
+
+
+
+

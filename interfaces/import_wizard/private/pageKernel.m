@@ -85,7 +85,7 @@ set(gui.hApprox      ,'Callback',@localChange)
   function plotKernel(k,CS)
     
     try
-      ma = rotangle_max_z(CS);
+      ma = 2* pi / CS.multiplicityZ;
       omega = linspace(-ma/2,ma/2,5000);
       
       v = eval(k,omega); %#ok<EVLC>

@@ -4,7 +4,7 @@ function S3G = equispacedSO3Grid(CS,SS,varargin)
 % may be we should populate only a ball
 maxAngle = get_option(varargin,'maxAngle',2*pi);
 
-if maxAngle < rotangle_max_z(CS)/4
+if maxAngle < pi/2/CS.multiplicityZ
   S3G = localOrientationGrid(CS,SS,maxAngle,varargin{:});
   return
 end
