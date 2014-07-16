@@ -37,7 +37,7 @@ plot([v1,v2],'label',{'v_1','v_2'},'antipodal')
 %
 % Another example, where it matters whether antipodal symmetry is assumed
 % or not is the angle between two vectors. In the absence of antipodal
-% geometry we have
+^% geometry we have
 
 angle(v1,v2) / degree
 
@@ -119,14 +119,16 @@ mtexdata forsterite
 %%
 % Now we plot these data with a colorcoding according to the inverse
 % (1,0,0) pole figure. Here no antipodal symmetry is present.
+% TODO: explain oM
+
 
 close all
 plot(ebsd('fo'))
-colorbar
+%colorbar
 
 %%
 % Compare to the result when antipodal symmetry is introduced.
 
 close all
 plot(ebsd('fo'),'antipodal')
-colorbar
+%colorbar

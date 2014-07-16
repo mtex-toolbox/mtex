@@ -13,7 +13,7 @@
 
 %%
 % A bimodal ODF:
-cs = symmetry('orthorhombic');
+cs = symmetry('mmm');
 odf1 = unimodalODF(orientation('Euler',0,0,0,cs)) + ...
   unimodalODF(orientation('Euler',30*degree,0,0,cs))
 
@@ -23,11 +23,11 @@ odf1 = unimodalODF(orientation('Euler',0,0,0,cs)) + ...
 odf2 = fibreODF(Miller(0,0,1,cs),xvector)
 
 %%
-% An ODF estimated from diffraction data:
+% An ODF estimated from diffraction data
 
 mtexdata dubna
 
-odf3 = calcODF(pf,'resolution',5*degree,'iter_max',10)
+odf3 = calcODF(pf,'resolution',5*degree,'zero_Range')
 
 
 %% Modal Orientations
