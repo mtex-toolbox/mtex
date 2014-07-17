@@ -41,7 +41,7 @@ cs = symmetry('Td');
 % Finally, MTEX allows to define a crystal symmetry by importing a
 % crystallographic information file (*.cif).
 
-cs = loadCIF('quartz.cif')
+cs = symmetry('quartz')
 
 
 %% The Crystal Coordinate System
