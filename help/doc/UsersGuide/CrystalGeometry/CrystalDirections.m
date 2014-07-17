@@ -40,7 +40,7 @@ m = Miller(1,0,1,cs,'hkl')
 % In the case of trigonal and hexagonal crystal symmetry, the convention
 % of using four Miller indices h, k, i, l, is also supported
 
-cs = loadCIF('quartz.cif')
+cs = symmetry('quartz')
 m = Miller(2,1,-3,1,cs,'hkl')
 
 

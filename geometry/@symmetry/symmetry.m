@@ -121,10 +121,10 @@ classdef symmetry < rotation
             error('symmetry "%s" not found',pGroup);
           end
   
-          error('symmetry "%s" not found',varargin{1});
+          %error('symmetry "%s" not found',varargin{1});
           % may be it is a cif file
           try
-            %s = loadCIF(varargin{:});
+            s = loadCIF(varargin{:});
             return;
           catch %#ok<CTCH>
             if ~check_option(varargin,'silent')
