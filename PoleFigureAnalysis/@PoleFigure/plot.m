@@ -27,7 +27,7 @@ for i = 1:length(pf.allH)
   if isempty(paxes), ax = mtexFig.nextAxis; else ax = paxes(i); end
   
   pf.allR{i}.plot(pf.allI{i},'TR',pf.allH{i},...
-    'dynamicMarkerSize','parent',ax,varargin{:});
+    'dynamicMarkerSize','parent',ax,'doNotDraw',varargin{:});
 end
 
 if isempty(paxes)
@@ -36,5 +36,5 @@ if isempty(paxes)
   setappdata(gcf,'CS',pf.CS);
   set(gcf,'Name',['Pole Figures of Specimen ',inputname(1)]);
   set(gcf,'Tag','pdf');
-  mtexFig.drawNow;
+  mtexFig.drawNow('autoPosition');
 end

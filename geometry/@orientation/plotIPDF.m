@@ -53,7 +53,7 @@ if (length(o)*length(o.CS)*length(o.SS) > 100000 || check_option(varargin,'point
     && ~check_option(varargin,{'all','contourf','smooth','contour'})
 
   points = fix(get_option(varargin,'points',100000/length(o.CS)/length(o.SS)));
-  disp(['  plotting ', int2str(points) ,' random orientations out of ', int2str(length(o)),' given orientations']);
+  disp(['  I''m plotting ', int2str(points) ,' random orientations out of ', int2str(length(o)),' given orientations']);
 
   samples = discretesample(ones(1,length(o)),points);
   o = o.subSet(samples);
@@ -73,13 +73,13 @@ for ir = 1:length(r)
   %  plot  
   h.plot(repmat(data(:),1,length(rSym)),'scatter','symmetrised',...
     'fundamentalRegion','TR',char(r(ir),getMTEXpref('textInterpreter')),...
-    'parent',ax,varargin{:});
+    'parent',ax,'doNotDraw',varargin{:});
   
   % TODO: unifyMarkerSize
 
 end
 
-mtexFig.drawNow;
+mtexFig.drawNow('autoPosition');
 
 
 % --------------- Tooltip function ------------------
