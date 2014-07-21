@@ -60,11 +60,11 @@ else
   mtexFig = mtexFigure; % create a new figure
   
   for i = 1:length(h)
-    r.plot(p{i},'TR',h{i},'parent',mtexFig.nextAxis,'smooth',varargin{:});
+    r.plot(p{i},'TR',h{i},'parent',mtexFig.nextAxis,'smooth','doNotDraw',varargin{:});
   end
 
   % finalize plot
-  mtexFig.drawNow;
+  mtexFig.drawNow('autoPosition');
   setappdata(gcf,'odf',odf);
   setappdata(gcf,'h',h);
   setappdata(gcf,'CS',odf.CS);

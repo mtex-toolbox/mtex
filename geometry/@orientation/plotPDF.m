@@ -45,9 +45,9 @@ if ~check_option(varargin,'all') && ...
     (sum(length(o))*length(o.CS)*length(o.SS) > 10000 || check_option(varargin,'points'))
 
   points = fix(get_option(varargin,'points',10000/length(o.CS)/length(o.SS)));
-  disp(['  plotting ', int2str(points) ,' random orientations out of ', int2str(length(o)),' given orientations']);
-  disp('You can specify the the number points by the option "points".'); 
-  disp('The option "all" ensures that all data are plotted');
+  disp(['  I''m plotting ', int2str(points) ,' random orientations out of ', int2str(length(o)),' given orientations']);
+  disp('  You can specify the the number points by the option "points".'); 
+  disp('  The option "all" ensures that all data are plotted');
   
   samples = discretesample(ones(1,length(o)),points);
   o= o.subSet(samples);
@@ -81,7 +81,7 @@ for i = 1:length(h)
   if isempty(paxes), ax = mtexFig.nextAxis; else ax = paxes(i); end
    
   r.plot(repmat(data(:).',[length(o.SS) length(sh)]),'fundamentalRegion',...
-    'parent',ax,'scatter','TR',h(i),varargin{:});
+    'parent',ax,'scatter','TR',h(i),'doNotDraw',varargin{:});
   
   % TODO: unifyMarkerSize
 
@@ -100,6 +100,7 @@ if isempty(paxes)
   set(dcm_obj,'SnapToDataVertex','off')
   set(dcm_obj,'UpdateFcn',{@tooltip});
   datacursormode on;
+  mtexFig.drawNow('autoPosition');
 end
 
 end

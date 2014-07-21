@@ -69,7 +69,7 @@ else
     S2G.plot(Z(:,:,i),'TR',[int2str(sec(i)*180/pi),'^\circ'],...
       'xlabel',labelx,'ylabel',labely,...
       'colorRange',[min(Z(:)),max(Z(:))],'smooth',...
-      'parent',ax,varargin{:});
+      'parent',ax,'doNotDraw',varargin{:});
   end
   
 end
@@ -98,7 +98,7 @@ if ~check_option(varargin,'parent')
   %menu = get(dcm_obj,'UIContextMenu');
   datacursormode on;
 
-  mtexFig.drawNow;
+  mtexFig.drawNow('autoPosition');
 end
 
 end

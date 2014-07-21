@@ -37,10 +37,11 @@ else
   mtexFig = mtexFigure; % create a new figure
   
   for i = 1:length(r)
-    h.smooth(p{i},'TR',r(i),'parent',mtexFig.nextAxis,varargin{:});
+    h.smooth(p{i},'TR',r(i),'parent',mtexFig.nextAxis,'doNotDraw',varargin{:});
   end
 
   % finalize plot
+  mtexFig.drawNow('autoPosition');
   setappdata(gcf,'inversePoleFigureDirection',r);
   setappdata(gcf,'CS',odf.CS);
   setappdata(gcf,'SS',odf.SS);
