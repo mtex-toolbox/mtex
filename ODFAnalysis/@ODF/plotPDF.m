@@ -26,14 +26,9 @@ function plotPDF(odf,h,varargin)
 if ~iscell(h), h = vec2cell(h);end
 
 % ensure crystal symmetry
-try
-  argin_check([h{:}],'Miller');
-  for i = 1:length(h)
-    h{i} = odf.CS.ensureCS(h{i});
-  end
-catch %#ok<CTCH>
-  plotIPDF(odf,h,varargin);
-  return
+argin_check([h{:}],'Miller');
+for i = 1:length(h)
+  h{i} = odf.CS.ensureCS(h{i});
 end
 
 % superposition coefficients
@@ -60,16 +55,22 @@ else
   mtexFig = mtexFigure; % create a new figure
   
   for i = 1:length(h)
-    r.plot(p{i},'TR',h{i},'parent',mtexFig.nextAxis,'smooth','doNotDraw',varargin{:});
+    ax = mtexFig.nextAxis;
+    r.plot(p{i},'TR',h{i},'parent',ax,...
+      'smooth','doNotDraw',varargin{:});
+    
+    % TODO: adapt this to other plots as well
+    setappdata(ax,'h',h{i});
+    setappdata(gcf,'CS',odf.CS);
+    setappdata(gcf,'SS',odf.SS);
   end
 
-  % finalize plot
-  mtexFig.drawNow('autoPosition');
-  setappdata(gcf,'odf',odf);
-  setappdata(gcf,'h',h);
+  % finalize plot    
+  set(gcf,'tag','pdf');
   setappdata(gcf,'CS',odf.CS);
   setappdata(gcf,'SS',odf.SS);
-  set(gcf,'tag','pdf');
+  setappdata(gcf,'h',h{i});
+  setappdata(gcf,'odf',odf);
   name = inputname(1);
   set(gcf,'Name',['Pole figures of "',name,'"']);
 
@@ -78,7 +79,8 @@ else
   set(dcm_obj,'SnapToDataVertex','off')
   set(dcm_obj,'UpdateFcn',{@tooltip});
   datacursormode on;
-
+  mtexFig.drawNow('autoPosition');
+  
 end
   
 end
@@ -89,31 +91,32 @@ function txt = tooltip(varargin)
 % 
 dcm_obj = datacursormode(gcf);
 
-hcmenu = dcm_obj.CurrentDataCursor.uiContextMenu;
+hcmenu = dcm_obj.createContextMenu;
+%hcmenu = dcm_obj.CurrentDataCursor.uiContextMenu;
+
 if numel(get(hcmenu,'children'))<10
   uimenu(hcmenu, 'Label', 'Mark Equivalent Modes', 'Callback', @markEquivalent);
-  uimenu(hcmenu, 'Label', 'Plot Fibre', 'Callback', @plotFibre);
+  uimenu(hcmenu, 'Label', 'Plot Fibre', 'Callback', @localPlotFibre);
   mcolor = uimenu(hcmenu, 'Label', 'Marker color', 'Callback', @display);
   msize = uimenu(hcmenu, 'Label', 'Marker size', 'Callback', @display);
   mshape = uimenu(hcmenu, 'Label', 'Marker shape', 'Callback', @display);
+  dcm_obj.UIContextMenu = hcmenu;
 end
 
-%
 [r,h,v] = currentVector;
-[th,rh] = polar(r);
-txt = [xnum2str(v) ' at (' int2str(th/degree) ',' int2str(rh/degree) ')'];
+txt = [xnum2str(v) ' at (' int2str(r.theta/degree) ',' int2str(r.rho/degree) ')'];
 
 end
 
 %
-function plotFibre(varargin)
+function localPlotFibre(varargin)
 
 [r,h] = currentVector;
 
 odf = getappdata(gcf,'odf');
 
 figure
-plotFibre(odf,h,r);
+odf.plotFibre(h,r);
 
 end
 
@@ -136,18 +139,11 @@ end
 
 function [r,h,value] = currentVector
 
-[pos,value,ax,iax] = getDataCursorPos(gcf);
+[r,value,ax] = getDataCursorPos(gcf);
 
-r = vector3d('polar',pos(1),pos(2));
+h = getappdata(ax,'h');
 
-h = getappdata(gcf,'h');
-h = h{iax};
-
-projection = getappdata(ax,'projection');
-
-if projection.antipodal
-  h = set_option(h,'antipodal');
-end
+% TODO: h should be antipodal if projection is antipodal
 
 end
 
