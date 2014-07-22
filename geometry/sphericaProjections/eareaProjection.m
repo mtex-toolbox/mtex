@@ -31,7 +31,10 @@ classdef eareaProjection < sphericalProjection
     end
     
     function v = iproject(sP,x,y)
-      v = vector3d('theta',x*degree,'rho',y*degree);
+      rho = atan2(y,x);
+      r = x.^2 + y.^2;
+      theta = acos(1-r./2);
+      v = vector3d('theta',theta,'rho',rho);
     end
     
   end
