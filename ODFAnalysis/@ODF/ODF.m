@@ -6,8 +6,8 @@ classdef ODF < dynOption
   end
   
   properties (Dependent = true)
-    CS % crystal symmetry
-    SS % specimen symmetry
+    CS % crystal symmetry for ODF
+    SS % specimen symmetry for ODF    
   end
   
   methods
@@ -20,8 +20,7 @@ classdef ODF < dynOption
         odf.weights    = weights;
       else
         odf.weights = 1;
-      end
-      
+      end      
     end
     
     function odf = set.CS(odf,CS)

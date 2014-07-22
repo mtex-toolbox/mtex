@@ -2,8 +2,8 @@ classdef mapPlot < handle
   % class to handle spatial plots of EBSD data and grains
   
   properties    
-    ax        %
-    parent    % the figure that contains the spherical plot
+    ax        % the axes that contain the map
+    parent    % the figure that contains the map plot
     micronbar %
     extend = [inf -inf inf -inf]   %
   end
