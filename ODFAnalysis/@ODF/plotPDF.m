@@ -22,14 +22,10 @@ function plotPDF(odf,h,varargin)
 % S2Grid/plot annotate savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-% convert to cell
-if ~iscell(h), h = vec2cell(h);end
-
 % ensure crystal symmetry
+if ~iscell(h), h = vec2cell(h);end
 argin_check([h{:}],'Miller');
-for i = 1:length(h)
-  h{i} = odf.CS.ensureCS(h{i});
-end
+for i = 1:length(h), h{i} = odf.CS.ensureCS(h{i}); end
 
 % superposition coefficients
 if check_option(varargin,'superposition')
@@ -42,47 +38,33 @@ end
 sR = fundamentalSector(odf.SS,varargin{:});
 r = plotS2Grid(sR,varargin{:});
 
-% compute pole figures
-for i =1:length(h)
-  p{i} = ensureNonNeg(pdf(odf,h{i},r,varargin{:},'superposition',c{i})); %#ok<AGROW>      
+% create a new figure if needed
+[mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
+  
+for i = 1:length(h)
+  
+  if i>1, mtexFig.nextAxis; end
+
+  % compute pole figures
+  p = ensureNonNeg(pdf(odf,h{i},r,varargin{:},'superposition',c{i}));
+  
+  r.plot(p,'TR',h{i},'parent',mtexFig.gca,...
+    'smooth','doNotDraw',varargin{:});
+  
+  % TODO: adapt this to other plots as well
+  setappdata(mtexFig.gca,'h',h{i});
 end
 
-% plot pole figures
-if check_option(varargin,'parent')
-  r.smooth(p{1},'TR',h{1},varargin{:});
-else
-  
-  mtexFig = mtexFigure; % create a new figure
-  
-  for i = 1:length(h)
-    ax = mtexFig.nextAxis;
-    r.plot(p{i},'TR',h{i},'parent',ax,...
-      'smooth','doNotDraw',varargin{:});
-    
-    % TODO: adapt this to other plots as well
-    setappdata(ax,'h',h{i});
-    setappdata(gcf,'CS',odf.CS);
-    setappdata(gcf,'SS',odf.SS);
-  end
-
-  % finalize plot    
+if isNew % finalize plot
   set(gcf,'tag','pdf');
-  setappdata(gcf,'CS',odf.CS);
   setappdata(gcf,'SS',odf.SS);
-  setappdata(gcf,'h',h{i});
-  setappdata(gcf,'odf',odf);
-  name = inputname(1);
-  set(gcf,'Name',['Pole figures of "',name,'"']);
-
-  % set data cursor
-  dcm_obj = datacursormode(gcf);
-  set(dcm_obj,'SnapToDataVertex','off')
-  set(dcm_obj,'UpdateFcn',{@tooltip});
-  datacursormode on;
+  setappdata(gcf,'h',h);
+  setappdata(gcf,'odf',odf);  
+  set(gcf,'Name',['Pole figures of "',inputname(1),'"']);
+  
   mtexFig.drawNow('autoPosition');
-  
 end
-  
+
 end
 
 % -------------- Tooltip function ---------------------------------

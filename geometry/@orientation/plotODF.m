@@ -24,11 +24,11 @@ function plotODF(o,varargin)
 % SphericalProjection_demo
 
 
-mtexFig = mtexFigure('ensureTag','odf','ensureAppdata',...
-  {{'sections',[]},{'CS',o.CS},{'SS',o.SS}});
+[mtexFig,isNew] = newMtexFigure('ensureTag','odf','ensureAppdata',...
+  {{'sections',[]},{'CS',o.CS},{'SS',o.SS}},varargin{:});
 
 % for a new plot 
-if isempty(mtexFig.children)
+if isNew
   
   % determine section type
   sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','omega','axisangle'},'phi2');
@@ -84,22 +84,21 @@ end
 % project orientations to ODF sections
 [S2G, data]= project2ODFsection(o,sectype,sec,'data',data,varargin{:});
 
-% predefines axes?
-paxes = get_option(varargin,'parent',mtexFig.children);
-
 % generate plots
 for i = 1:length(sec)
 
-  if isempty(paxes), ax = mtexFig.nextAxis; else ax = paxes(i); end
+  if i>1, mtexFig.nextAxis; end
+    
   S2G{i}.resolution = S2G{1}.resolution;
 
   % plot
-  S2G{i}.plot(data{i},'parent',ax,'TR',[int2str(sec(i)*180/pi),'^\circ'],...
-    'xlabel',labelx,'ylabel',labely,'dynamicMarkerSize',varargin{:});
+  S2G{i}.plot(data{i},'parent',mtexFig.gca,'TR',[int2str(sec(i)*180/pi),'^\circ'],...
+    'xlabel',labelx,'ylabel',labely,'dynamicMarkerSize','doNotDraw',varargin{:});
     
 end
 
-if isempty(ax)
+if isNew
+  
   setappdata(gcf,'sections',sec);
   setappdata(gcf,'SectionType',sectype);
   setappdata(gcf,'CS',o.CS);
@@ -111,5 +110,7 @@ if isempty(ax)
     h = varargin{find_type(varargin,'Miller')};
     setappdata(gcf,'h',h);
   end
+  
+  mtexFig.drawNow('autoPosition');
 end
 

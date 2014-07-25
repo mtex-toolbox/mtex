@@ -13,24 +13,18 @@ function plot(pf,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo 
 
-
-% predefines axes?
-if check_option(varargin,'parent')  
-  paxes = get_option(varargin,'parent');
-else  
-  mtexFig = mtexFigure; % make new plot
-  paxes = mtexFig.children;
-end
+[mtexFig,isNew] = newMtexFigure(varargin{:}); 
   
 for i = 1:length(pf.allH)
   
-  if isempty(paxes), ax = mtexFig.nextAxis; else ax = paxes(i); end
+  if i>1, mtexFig.nextAxis; end
   
   pf.allR{i}.plot(pf.allI{i},'TR',pf.allH{i},...
-    'dynamicMarkerSize','parent',ax,'doNotDraw',varargin{:});
+    'dynamicMarkerSize','parent',mtexFig.gca,'doNotDraw',varargin{:});
+      
 end
 
-if isempty(paxes)
+if isNew % finalize plot
   setappdata(gcf,'h',pf.allH);
   setappdata(gcf,'SS',pf.SS);
   setappdata(gcf,'CS',pf.CS);

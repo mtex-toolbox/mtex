@@ -46,7 +46,7 @@ fprintf(['\nPlotting ODF as ',sectype,' sections, range: ',...
   xnum2str(min(sec)/degree),mtexdegchar,' - ',xnum2str(max(sec)/degree),mtexdegchar,'\n']);
 
 % make new plot
-mtexFig = mtexFigure(varargin{:});
+[mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
 % plot
 if check_option(varargin,{'contour3','surf3','slice3'})
@@ -59,44 +59,31 @@ if check_option(varargin,{'contour3','surf3','slice3'})
 
 else
     
-  % predefines axes?
-  paxes = get_option(varargin,'parent');
-  
   for i = 1:length(sec)
     
-    if isempty(paxes), ax = mtexFig.nextAxis; else ax = paxes(i); end
+    if i>1, mtexFig.nextAxis; end
     
     S2G.plot(Z(:,:,i),'TR',[int2str(sec(i)*180/pi),'^\circ'],...
       'xlabel',labelx,'ylabel',labely,...
       'colorRange',[min(Z(:)),max(Z(:))],'smooth',...
-      'parent',ax,'doNotDraw',varargin{:});
+      'parent',mtexFig.gca,'doNotDraw',varargin{:});
   end
   
 end
 
-% --------------- finalize plot ---------------------------
-if ~check_option(varargin,'parent')
+if isNew % finalize plot
 
-  name = inputname(1);
-  set(gcf,'Name',['ODF ' sectype '-sections "',name,'"']);
+  set(gcf,'Name',['ODF ' sectype '-sections "',inputname(1),'"']);
   setappdata(gcf,'sections',sec);
   setappdata(gcf,'SectionType',sectype);
   setappdata(gcf,'CS',odf.CS);
   setappdata(gcf,'SS',odf.SS);
   set(gcf,'tag','odf')
 
-
   if strcmpi(sectype,'omega') && ~isempty(find_type(varargin,'Miller'))
     h = varargin{find_type(varargin,'Miller')};
     setappdata(gcf,'h',h);
   end
-
-  % set data cursor
-  dcm_obj = datacursormode(gcf);
-  set(dcm_obj,'SnapToDataVertex','off')
-  set(dcm_obj,'UpdateFcn',{@tooltip});
-  %menu = get(dcm_obj,'UIContextMenu');
-  datacursormode on;
 
   mtexFig.drawNow('autoPosition');
 end

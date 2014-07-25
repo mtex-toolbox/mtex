@@ -19,7 +19,7 @@ if isappdata(gcf,'mtexFig')
   for i = 1:numel(mtexFig.children)
     colormap(mtexFig.children(i),map);
   end  
-  colormap(mtexFig.cBarAxis,map);
+  %colormap(mtexFig.cBarAxis,map);
 else
   colormap(map);
 end

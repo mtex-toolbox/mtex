@@ -50,7 +50,8 @@ classdef orientationMapping < handle
         xnum2str(min(sec)/degree),mtexdegchar,' - ',xnum2str(max(sec)/degree),mtexdegchar,'\n']);
 
       % make new plot
-      mtexFig = mtexFigure(varargin{:});
+      % TODO
+      mtexFig = newMtexFigure(varargin{:});
 
       setappdata(gcf,'sections',sec);
       setappdata(gcf,'SectionType',sectype);
