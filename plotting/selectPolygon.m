@@ -1,7 +1,7 @@
 function poly = selectPolygon(varargin)
 % select a polygon by mouse
 %
-%% Syntax
+% Syntax
 %   poly = selectPolygon
 %   ebsd = ebsd(inpolygon(ebsd,poly))
 

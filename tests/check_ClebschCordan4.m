@@ -40,7 +40,7 @@ C4 = EinsteinSum(CG4,[1 3 -1],D4,[-1 -2],CG4,[2 4 -2])
 
 a = reshape(matrix(C0 + C1 + C2 + C3 + C4),[25,25]) ./ D1D2_ref;
 
-mypcolor(real(a))
+imagesc(real(a))
 mtexColorMap white2black
 
 %% next we expand D1 * D1 * D1 * D1 in the same way
@@ -89,5 +89,5 @@ end
 
 a = reshape(double(T4D1),[3*3*3*3,3*3*3*3]) ./ T4D1_ref;
 
-mypcolor(real(a))
+imagesc(real(a))
 

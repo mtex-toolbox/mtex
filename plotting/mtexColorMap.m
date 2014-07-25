@@ -1,4 +1,5 @@
 function mtexColorMap(name,varargin)
+% define an MTEX colormap
 
 if ischar(name)
   if isempty(which(name))
