@@ -90,5 +90,10 @@ end
 %dOmega = z*90*degree + round(dOmega/pi*cs.multiplicityZ)*pi/cs.multiplicityZ;
 %N = rotate(N,-dOmega);
 
+% this will be restricted later anyway
+if check_option(varargin,{'upper','lower','maxTheta','minTheta'})
+  N(abs(N.z)==1) = [];
+end
+
 sR = sphericalRegion(N,zeros(size(N)),varargin{:});
 

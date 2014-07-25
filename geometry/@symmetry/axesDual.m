@@ -1,8 +1,11 @@
 function vec = axesDual(cs)
 % return dual coordinate axes
 
-abc = cs.axes;
-V  = dot(abc(1),cross(abc(2),abc(3)));
-vec(1) = cross(abc(2),abc(3)) ./ V;
-vec(2) = cross(abc(3),abc(1)) ./ V;
-vec(3) = cross(abc(1),abc(2)) ./ V;
+a = cs.axes.subSet(1);
+b = cs.axes.subSet(2);
+c = cs.axes.subSet(3);
+bc = cross(b,c);
+V  = dot(a,bc);
+vec(1) = bc ./ V;
+vec(2) = cross(c,a) ./ V;
+vec(3) = cross(a,b) ./ V;
