@@ -11,7 +11,6 @@ else
   ax = gca;
 end
 
-
 % exract x- and z-axis direction
 xAxis = get_option(varargin,'xAxisDirection',getMTEXpref('xAxisDirection'));
 zAxis = get_option(varargin,'zAxisDirection',getMTEXpref('zAxisDirection'));

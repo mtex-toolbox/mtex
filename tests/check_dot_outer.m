@@ -65,7 +65,7 @@ i = find(d > cos(e/2));
 
 gi = subGrid(g,i)
 qi = quaternion(gi);
-mypcolor(acos(full(dot_outer(gi,gi,'nocubictrifoldaxis'))));
+imagesc(acos(full(dot_outer(gi,gi,'nocubictrifoldaxis'))));
 %%
 
 d = dot_outer(g,...
@@ -110,22 +110,4 @@ disp(['Error: ' num2str(max(abs(d1(:)-d2(:)))), ...
 
 %%
 
-
-
-%%
-
-mypcolor(d1-d2)
-shading flat
-
-
-
-
-
-
-
-
-
-
-
-
-
+imagesc(d1-d2)

@@ -1,8 +1,8 @@
-function [pos,value,ax,iax] = getDataCursorPos(fig)
+function [pos,value,ax,iax] = getDataCursorPos(mtexFig)
 % get the position and value of the data cursor
 %
 
-dcm_obj = datacursormode(fig);
+dcm_obj = datacursormode(mtexFig.parent);
 
 % get position
 try
@@ -35,8 +35,8 @@ end
 ax = target.Parent;
 
 % extract position in multiplot axes
-if isappdata(fig,'multiplotAxes')
-  all_ax = getappdata(fig,'multiplotAxes');
+if isappdata(mtexFig,'multiplotAxes')
+  all_ax = getappdata(mtexFig,'multiplotAxes');
   iax = ax == all_ax;
 else
   iax = 1;

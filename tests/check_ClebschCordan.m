@@ -31,6 +31,6 @@ C2 = EinsteinSum(CG2,[1 3 -1],D2,[-1 -2],CG2,[2 4 -2])
 a = reshape(matrix(C0 + C1 + C2),[9,9]) ./ D;
 A = round(a)
 
-mypcolor(A)
+imagesc(A)
 
 assert(norm(A.* D - reshape(matrix(C0 + C1 + C2),[9,9]))<=1e-10,'Clebsch Gordan check failed')

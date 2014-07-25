@@ -1,4 +1,5 @@
-function text(v,varargin)
+function h = text(v,varargin)
+% display a text in a spherical plot
 %
 % Syntax
 %   text(v,s)  %
@@ -9,12 +10,13 @@ function text(v,varargin)
 %
 % Options
 %
-% Output
-%
 % See also
 
 % initialize spherical plot
 sP = newSphericalPlot(v,varargin{:},'hold');
+h = [];
+interpreter = getMTEXpref('textInterpreter');
+fs = getMTEXpref('FontSize');
 
 for j = 1:numel(sP)
 
@@ -35,20 +37,32 @@ for j = 1:numel(sP)
     end
 
   end
-
-  % print labels
+  
+  % print labels  
   for i = 1:length(strings)
+    
     s = strings{i};
-    if ~ischar(s), s = char(s,getMTEXpref('textInterpreter'));end
-    mtex_text(x(i),y(i),s,'parent',sP(j).ax,...
+    if ~ischar(s), s = char(s,interpreter);end
+
+    if strcmpi(interpreter,'LaTeX') && ~isempty(regexp(s,'[\\\^_]','ONCE'))
+      s = ['$' s '$']; %#ok<AGROW>
+    end
+    
+    h = [h,optiondraw(text(x(i),y(i),s,'interpreter',interpreter,...
       'HorizontalAlignment','center','VerticalAlignment','middle',...
       'tag','addMarkerSpacing','UserData',[x(i),y(i)],...
-      'margin',0.001,varargin{2:end});
+      'margin',0.001,'parent',sP(j).ax),'FontSize',fs,varargin{2:end})]; %#ok<AGROW>
+    
   end
 
   % finish plot
-  mtexFig = getappdata(sP(1).parent,'mtexFig');
-  mtexFig.drawNow(varargin{:});
-  
+  if isappdata(sP(1).parent,'mtexFig')
+    mtexFig = getappdata(sP(1).parent,'mtexFig');
+    mtexFig.drawNow(varargin{:});
+  end
 end
+
+if nargout == 0, clear h;end
+
 end
+
