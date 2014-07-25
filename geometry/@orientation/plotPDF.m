@@ -1,5 +1,5 @@
 function plotPDF(o,h,varargin)
-% plot pole figures
+% plot orientations into pole figures
 %
 % Syntax
 %   plotPDF(ori,[h1,..,hN],<options>)
@@ -13,7 +13,7 @@ function plotPDF(o,h,varargin)
 %  points        - number of points to be plotted
 %
 % Flags
-%  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
+%  antipodal - include <AxialDirectional.html antipodal symmetry>
 %  complete  - plot entire (hemi)--sphere
 %
 % See also
@@ -21,17 +21,20 @@ function plotPDF(o,h,varargin)
 % Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-mtexFig = mtexFigure('ensureTag','pdf','ensureAppdata',{{'SS',o.SS}});
+[mtexFig,isNew] = newMtexFigure('ensureTag','pdf',...
+  'ensureAppdata',{{'SS',o.SS}},...
+  'datacursormode',@tooltip,varargin{:});
 
-% for a new plot 
-if isempty(mtexFig.children)
+if isNew % for a new plot 
   
-  % convert to cell
   if ~iscell(h), h = vec2cell(h);end 
   argin_check([h{:}],{'Miller'});  
   for i = 1:length(h)
     h{i} = o.CS.ensureCS(h{i});
   end    
+  setappdata(gcf,'h',h);
+  set(gcf,'Name',['Pole figures of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
+  
 else
   h = getappdata(gcf,'h');
 end
@@ -40,7 +43,6 @@ end
 data = get_option(varargin,'property',[]);
 
 % ------------------ subsample if needed --------------------------
-
 if ~check_option(varargin,'all') && ...
     (sum(length(o))*length(o.CS)*length(o.SS) > 10000 || check_option(varargin,'points'))
 
@@ -67,41 +69,23 @@ if check_option(varargin,'colorcoding')
   
 end
 
-% ------------------------ plot ---------------------------
-
-% predefines axes?
-paxes = get_option(varargin,'parent',mtexFig.children);
-
+% plot
 for i = 1:length(h)
+
+  if i>1, mtexFig.nextAxis; end
 
   % compute specimen directions
   sh = symmetrise(h{i});
   r = reshape(o.SS * o * sh,[],1);
-  
-  if isempty(paxes), ax = mtexFig.nextAxis; else ax = paxes(i); end
-   
+     
   r.plot(repmat(data(:).',[length(o.SS) length(sh)]),'fundamentalRegion',...
-    'parent',ax,'scatter','TR',h(i),'doNotDraw',varargin{:});
+    'parent',mtexFig.gca,'scatter','TR',h(i),'doNotDraw',varargin{:});
   
   % TODO: unifyMarkerSize
 
 end
 
-if isempty(paxes)
-  setappdata(gcf,'h',h);
-  setappdata(gcf,'SS',o.SS);
-  setappdata(gcf,'CS',o.CS);
-  setappdata(gcf,'options',extract_option(varargin,'antipodal'));
-  set(gcf,'Name',['Pole figures of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
-  set(gcf,'Tag','pdf');
-  
-  % set data cursor
-  dcm_obj = datacursormode(gcf);
-  set(dcm_obj,'SnapToDataVertex','off')
-  set(dcm_obj,'UpdateFcn',{@tooltip});
-  datacursormode on;
-  mtexFig.drawNow('autoPosition');
-end
+if isNew, mtexFig.drawNow('autoPosition'); end
 
 end
 

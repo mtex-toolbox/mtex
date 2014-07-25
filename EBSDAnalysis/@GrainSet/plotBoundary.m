@@ -63,8 +63,8 @@ obj.Vertices = full(grains.V);
 varargin = set_default_option(varargin,...
   {'name', [char(get_option(varargin,'property')) ' boundary plot of ' inputname(1)]});
 
-newMTEXplot('renderer','opengl',varargin{:});
-setCamera(varargin{:});
+% TODO: replace by mapPlot
+%newMTEXplot('renderer','opengl',varargin{:});
 
 xlabel('x');ylabel('y');
 

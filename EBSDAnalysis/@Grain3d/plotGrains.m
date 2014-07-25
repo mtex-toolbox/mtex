@@ -18,8 +18,6 @@ function plotGrains(grains,varargin)
 % See also
 % Grain2d/plotGrains
 
-newMTEXplot;
-
 obj.Vertices = grains.V;
 obj.Faces    = grains.F;
 

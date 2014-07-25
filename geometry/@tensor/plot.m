@@ -141,15 +141,9 @@ elseif check_option(varargin,'3d')
   axis equal
   optiondraw(h,varargin{:});
 
-  
 else
   
-  if isa(d,'function_handle')
-    multiplot(ax{:},numel(label),@(i) S2,@(i) d(i),...
-      'contourf',...
-      'TR',@(i) label(i),...
-      varargin{:});
-  elseif isa(d,'vector3d')
+  if isa(d,'vector3d')
     quiver(S2,d,varargin{:});
   else
     plot(S2,d,'contourf',varargin{:});

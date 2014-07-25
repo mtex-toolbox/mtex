@@ -80,7 +80,7 @@ for i = 1:numel(sP)
     end
       
   else % --------- colorcoding according to nextStyle -----------------
-  
+      
     % get color
     if check_option(varargin,{'MarkerColor','MarkerFaceColor'})
       mfc = get_option(varargin,'MarkerColor','none');
@@ -119,9 +119,10 @@ for i = 1:numel(sP)
     text(v,get_option(varargin,{'text','label'}),'parent',sP(i).ax,varargin{:});
   end
 
-  mtexFig = getappdata(sP(1).parent,'mtexFig');
-  mtexFig.drawNow(varargin{:});
-    
+  if isappdata(sP(1).parent,'mtexFig')
+    mtexFig = getappdata(sP(1).parent,'mtexFig');
+    mtexFig.drawNow(varargin{:});
+  end
 end
 
 if nargout == 0, clear h;end

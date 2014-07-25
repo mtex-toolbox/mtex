@@ -4,94 +4,60 @@ function plot(s,varargin)
 % Input
 %  s - symmetry
 %
-% Output
-%
-% Options
-%  antipodal      - include [[AxialDirectional.html,antipodal symmetry]]
 
-mtexFig = mtexFigure;
+symbolSize = 0.15*get_option(varargin,'symbolSize',1);
 
-if check_option(varargin,'hkl')
+% extract symmetry elements
+rot = rotation(s);
+Improper = isImproper(rot);
+[axesP,angleP] = getMinAxes(rot(~Improper));
+[axesI,angleI] = getMinAxes(rot(Improper));
 
-  % which directions to plot
-  m = [Miller(1,0,0,s),Miller(0,1,0,s),...
-    Miller(0,0,1,s),Miller(1,1,0,s),...
-    Miller(0,1,1,s),Miller(1,0,1,s),...
-    Miller(1,1,1,s)];
+% initalize plot
+newSphericalPlot([zvector,-zvector],varargin{:});
 
-  m = unique(m);
-  options = [{'symmetrised','labeled','MarkerEdgeColor','k','grid','doNotDraw'},varargin];
+hold on
   
-  % plot them    
-  m(1).scatter(options{:});
-  hold all;
-  for i = 2:length(m)
-    m(i).scatter(options{:});
-  end
+% plot mirrot planes
+mir = Improper & rot.angle>pi-1e-4;
+circle(rot(mir).axis,'linewidth',3,'color','k','doNotDraw');
 
-  % postprocess figure
-  setappdata(gcf,'CS',s);
-  set(gcf,'tag','ipdf');
-  mtexFig.drawNow(varargin{:});
+% plot inversion axes
+options = {'FaceColor','white','LineWidth',3};
+  
+for i = 1:length(axesI)
     
-else
-    
-  symbolSize = 0.15*get_option(varargin,'symbolSize',1);    
-  
-  % extract symmetry elements
-  rot = rotation(s);
-  Improper = isImproper(rot);
-  [axesP,angleP] = getMinAxes(rot(~Improper));
-  [axesI,angleI] = getMinAxes(rot(Improper));
-
-  % initalize plot
-  newSphericalPlot([zvector,-zvector],varargin{:});
-  
-  hold on
-  
-  % plot mirrot planes
-  mir = Improper & rot.angle>pi-1e-4;
-  circle(rot(mir).axis,'linewidth',3,'color','k','doNotDraw');
-
-  % plot inversion axes 
-  options = {'FaceColor','white','LineWidth',3};
-  
-  for i = 1:length(axesI)
-    
-    switch round(angleI(i)/degree)      
-      case 90      
-        plotCustom(axesI(i),{@(ax,x,y) square(x,y,1.2*symbolSize,'parent',ax,options{:})});
-        plotCustom(-axesI(i),{@(ax,x,y) square(x,y,1.2*symbolSize,'parent',ax,options{:})});      
-      case 60
-        plotCustom([axesI(i),-axesI(i)],{@(ax,x,y) hexagon(x,y,1.2*symbolSize,'parent',ax,options{:})});
-    end
+  switch round(angleI(i)/degree)
+    case 90
+      plotCustom(axesI(i),{@(ax,x,y) square(x,y,1.2*symbolSize,'parent',ax,options{:})});
+      plotCustom(-axesI(i),{@(ax,x,y) square(x,y,1.2*symbolSize,'parent',ax,options{:})});
+    case 60
+      plotCustom([axesI(i),-axesI(i)],{@(ax,x,y) hexagon(x,y,1.2*symbolSize,'parent',ax,options{:})});
   end
-  
-  % plot rotational axes     
-  for i = 1:length(axesP)    
-    plotCustom(axesP(i),{Symbol(angleP(i),axesP(i).rho)});
-    plotCustom(-axesP(i),{Symbol(angleP(i),axesP(i).rho,'FaceColor','k')});
-  end
-  
-  % mark three fold inversion axes
-  for i = 1:length(axesI)    
-    switch round(angleI(i)/degree)            
-      case 120
-        % small circle
-        plotCustom([axesI(i),-axesI(i)],{@(ax,x,y) ...
-          ellipse(x,y,0.3*symbolSize,0.3*symbolSize,0,'parent',ax,'FaceColor','w')});
-    end
-  end
-    
-  mtexFig = mtexFigure;
-  for ax = mtexFig.children
-    set(ax,'xlim',1.1*get(ax,'xlim'));
-    set(ax,'ylim',1.1*get(ax,'ylim'));
-    %xlim(ax,'auto');
-    %ylim(ax,'auto');
-  end  
-  mtexFig.drawNow(varargin{:});
 end
+  
+% plot rotational axes
+for i = 1:length(axesP)
+  plotCustom(axesP(i),{Symbol(angleP(i),axesP(i).rho)});
+  plotCustom(-axesP(i),{Symbol(angleP(i),axesP(i).rho,'FaceColor','k')});
+end
+  
+% mark three fold inversion axes
+for i = 1:length(axesI)
+  switch round(angleI(i)/degree)
+    case 120
+      % small circle
+      plotCustom([axesI(i),-axesI(i)],{@(ax,x,y) ...
+        ellipse(x,y,0.3*symbolSize,0.3*symbolSize,0,'parent',ax,'FaceColor','w')});
+  end
+end
+    
+mtexFig = newMtexFigure;
+for ax = mtexFig.children(:).'
+  set(ax,'xlim',1.1*get(ax,'xlim'));
+  set(ax,'ylim',1.1*get(ax,'ylim'));  
+end
+mtexFig.drawNow(varargin{:});
 
 hold off
 
@@ -107,7 +73,6 @@ switch round(angle/degree)
     s = @(ax,x,y) hexagon(x,y,0.75*symbolSize,'parent',ax,varargin{:});
 end
 end
-
 
 end
 

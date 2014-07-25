@@ -12,9 +12,6 @@ function varargout = slice3(ebsd,varargin)
 % Grain3d/slice3 EBSD/plotspatial
 
 
-% make up new figure
-newMTEXplot;
-
 opts = parseArgs(varargin{:});
 
 api = getGridApi(ebsd,varargin{:});

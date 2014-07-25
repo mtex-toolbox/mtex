@@ -1,4 +1,4 @@
-function scatter(o,varargin)
+function varargout = scatter(o,varargin)
 % plots ebsd data as scatter plot
 %
 % Syntax
@@ -24,35 +24,30 @@ if length(o) > 2000 || check_option(varargin,'points')
   o = o.subSet(discretesample(ones(1,length(o)),fix(points)));
 end
 
-% prepare new figure
-if newMTEXplot('ensureTag','ebsd_scatter',...
-    'ensureAppdata',{{'CS',o.CS},{'SS',o.SS}});
+[mtexFig,isNew] = newMtexFigure('ensureTag','quaternionScatter',...
+  'ensureAppdata',{{'CS',o.CS},{'SS',o.SS}},varargin{:});
+
+if isNew
   
   % reference orientation for fundamental region
-  if ~check_option(varargin,'center')
-    varargin = [varargin,{'center',mean(o)}];
-  end
-    
+  if check_option(varargin,'center')
+    center = get_option(varargin,'center');    
+  else
+    center = mean(o);
+  end  
+  setappdata(mtexFig.parent,'center',center);
+
+  setappdata(mtexFig.parent,'CS',o.CS);
+  setappdata(mtexFig.parent,'SS',o.SS);  
+  
 else
-  
-  varargin = {'center',getappdata(gca,'center'),varargin{:}};
-  
+  center = getappdata(mtexFig.parent,'center');    
 end
 
-
-% ------------- plot -------------------------
-
-% center of the plot
-center = get_option(varargin,'center',idquaternion);
 varargin = delete_option(varargin,'center');
 q = project2FundamentalRegion(o,center);
+  
+% plot
+[varargout{1:nargout}]= scatter@rotation(q,'parent',mtexFig.gca,varargin{:});
 
-plot(quaternion(q),'scatter',varargin{:});
-
-
-% store appdata
-setappdata(gcf,'CS',o.CS);
-setappdata(gcf,'SS',o.SS);
-setappdata(gca,'center',center);
-set(gcf,'Name',['Scatter plot of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
-set(gcf,'tag','ebsd_scatter');
+set(mtexFig.parent,'Name',['Scatter plot of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);

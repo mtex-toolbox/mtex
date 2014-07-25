@@ -76,8 +76,6 @@ api.clearPage             = @clearPanel;
         'Color',get(0,'defaultUicontrolBackgroundColor'),...
         'Position',[(scrsz(3)-w)/2 (scrsz(4)-h)/2 w h]);
       
-      iconMTEX(hWzrd);
-      
     else
       
       figure('units','pixels',...

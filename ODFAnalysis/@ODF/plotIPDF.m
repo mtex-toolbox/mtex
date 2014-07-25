@@ -24,38 +24,30 @@ sR = fundamentalSector(odf.CS,varargin{:});
 % plotting grid
 h = plotS2Grid(sR,varargin{:});
 
-% compute inverse pole figures
-for i =1:length(r)
-  p{i} = ensureNonNeg(pdf(odf,h,r(i),varargin{:})); %#ok<AGROW>
+% create a new figure if needed
+[mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
+
+for i = 1:length(r)
+  if i>1, mtexFig.nextAxis; end
+
+  % compute inverse pole figures
+  p = ensureNonNeg(pdf(odf,h,r(i),varargin{:}));
+
+  % plot
+  h.smooth(p,'TR',r(i),'parent',mtexFig.gca,'doNotDraw',varargin{:});
 end
 
-% plot pole figures
-if check_option(varargin,'parent')
-  h.smooth(p{1},'TR',r{1},varargin{:});
-else
-  
-  mtexFig = mtexFigure; % create a new figure
-  
-  for i = 1:length(r)
-    h.smooth(p{i},'TR',r(i),'parent',mtexFig.nextAxis,'doNotDraw',varargin{:});
-  end
 
-  % finalize plot
+if isNew % finalize plot
+  
   mtexFig.drawNow('autoPosition');
   setappdata(gcf,'inversePoleFigureDirection',r);
   setappdata(gcf,'CS',odf.CS);
   setappdata(gcf,'SS',odf.SS);
   set(gcf,'tag','ipdf');
-  name = inputname(1);
-  set(gcf,'Name',['Inverse Pole Figures of ',name]);
+  set(gcf,'Name',['Inverse Pole Figures of ',inputname(1)]);
 
-  % set data cursor
-  dcm_obj = datacursormode(gcf);
-  set(dcm_obj,'SnapToDataVertex','off')
-  set(dcm_obj,'UpdateFcn',{@tooltip});
-
-  datacursormode on;
-  mtexFig.drawNow;
+  mtexFig.drawNow('autoPosition');
 
 end
 

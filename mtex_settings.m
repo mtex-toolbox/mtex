@@ -23,6 +23,9 @@ setMTEXpref('innerPlotSpacing',20);
 % default fontsize
 setMTEXpref('FontSize',13);
 
+% default annotation style
+setMTEXpref('annotationStyle',...
+  {'marker','s','MarkerEdgeColor','w','MarkerFaceColor','k'});
 
 %% Euler angle convention
 % default Euler angle convention

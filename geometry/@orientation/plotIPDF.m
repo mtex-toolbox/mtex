@@ -1,5 +1,5 @@
 function plotIPDF(o,varargin)
-% plot inverse pole figures
+% plot orientations into inverse pole figures
 %
 % Input
 %  ebsd - @EBSD
@@ -17,29 +17,19 @@ function plotIPDF(o,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-mtexFig = mtexFigure('ensureTag','ipdf','ensureAppdata',{{'CS',o.CS}},...
-  'name',['Inverse Pole figures of ' o.CS.mineral]);
+[mtexFig,isNew] = newMtexFigure('ensureTag','ipdf',...
+  'ensureAppdata',{{'CS',o.CS}},...
+  'name',['Inverse Pole figures of ' o.CS.mineral],...
+  'datacursormode',@tooltip,varargin{:});
 
-% create new inverse pole figure axes
-if isempty(mtexFig.children) 
+if isNew 
   
   r = varargin{1};
   argin_check(r,'vector3d');
   setappdata(mtexFig.parent,'inversePoleFigureDirection',r);
-  paxes = [];
-
-  % set data cursor
-  dcm_obj = datacursormode(mtexFig.parent);
-  set(dcm_obj,'SnapToDataVertex','off')
-  set(dcm_obj,'UpdateFcn',{@tooltip});
-
-  datacursormode on;
-  
-else % use the existing axes and directions
-  
-  % predefines axes?
-  paxes = get_option(varargin,'parent',mtexFig.children);
-  
+    
+else % take inverse pole figure directions from figure
+   
   r = getappdata(mtexFig.parent,'inversePoleFigureDirection');
     
 end
@@ -63,8 +53,7 @@ end
 
 for ir = 1:length(r)
 
-  % which axes
-  if isempty(paxes), ax = mtexFig.nextAxis; else ax = paxes(ir); end
+  if ir>1, mtexFig.nextAxis; end  
   
   % the crystal directions
   rSym = symmetrise(r(ir),o.SS);
@@ -73,7 +62,7 @@ for ir = 1:length(r)
   %  plot  
   h.plot(repmat(data(:),1,length(rSym)),'scatter','symmetrised',...
     'fundamentalRegion','TR',char(r(ir),getMTEXpref('textInterpreter')),...
-    'parent',ax,'doNotDraw',varargin{:});
+    'parent',mtexFig.gca,'doNotDraw',varargin{:});
   
   % TODO: unifyMarkerSize
 

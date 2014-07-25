@@ -31,9 +31,9 @@ if check_option(varargin,'parent')
 end
   
 % create a new mtexFigure or get a reference to it
-mtexFig = mtexFigure(varargin{:});
+[mtexFig,isNew] = newMtexFigure(varargin{:});
 
-if isempty(mtexFig.children)
+if isNew
 
   % get spherical region
   sR = getPlotRegion(v,varargin{:});
@@ -45,13 +45,13 @@ if isempty(mtexFig.children)
   for i = 1:numel(proj)    
     
     % create a new axis
-    ax = mtexFig.nextAxis;
+    if i>1, mtexFig.nextAxis; end
     
     % create a new spherical plot
-    sP(i) = sphericalPlot(ax,proj(i),varargin{:});         %#ok<AGROW>
+    sP(i) = sphericalPlot(mtexFig.gca,proj(i),varargin{:});         %#ok<AGROW>
     
   end
-  mtexFig.drawNow;
+  mtexFig.drawNow(varargin{:});
           
 else % add to or overide existing axes
     
