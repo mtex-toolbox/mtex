@@ -1,4 +1,5 @@
 function v = plotS2Grid(varargin)
+% create a regular S2Grid for plotting
 %
 % Syntax
 %   plotS2Grid('resolution',[5*degree 2.5*degree])

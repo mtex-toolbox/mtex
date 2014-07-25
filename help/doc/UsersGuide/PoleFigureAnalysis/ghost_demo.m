@@ -44,6 +44,8 @@ h = [Miller(1,0,0,cs),Miller(0,1,0,cs),Miller(0,0,1,cs)];
 % compute pole figures
 pf = calcPoleFigure(odf,h,r);
 
+plot(pf)
+
 %% ODF Estimation
 % without ghost correction:
 
@@ -88,16 +90,16 @@ plotODF(rec_cor,'sections',9,'silent','sigma')
 %% 
 % radial plot of the true ODF
 close all
-plotFibre(odf,Miller(0,1,0,cs),yvector,'color','b');
-hold on
+plotFibre(odf,Miller(0,1,0,cs),yvector,'linewidth',2);
+hold all
 
 %%
 % radial plot without ghost correction:
-plotFibre(rec,Miller(0,1,0,cs),yvector,'color','g');
+plotFibre(rec,Miller(0,1,0,cs),yvector,'linewidth',2);
 
 %%
 % radial plot with ghost correction:
-plotFibre(rec_cor,Miller(0,1,0,cs),yvector,'color','r','linestyle','--');
+plotFibre(rec_cor,Miller(0,1,0,cs),yvector,'linestyle','--','linewidth',2);
 hold off
 legend({'true ODF','without ghost correction','with ghost correction'})
 
@@ -131,7 +133,7 @@ calcError(rec_cor,odf,'L2')
 %%
 % true ODF
 close all;
-plotFourier(odf)
+plotFourier(odf,'linewidth',2)
 
 %%
 % keep plotting windows and add next plots
@@ -139,11 +141,11 @@ hold all
 
 %%
 % Without ghost correction:
-plotFourier(rec)
+plotFourier(rec,'linewidth',2)
 
 %%
 % with ghost correction
-plotFourier(rec_cor)
+plotFourier(rec_cor,'linewidth',2)
 legend({'true ODF','without ghost correction','with ghost correction'})
 % next plot command overwrites plot window
 hold off

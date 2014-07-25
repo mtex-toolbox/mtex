@@ -5,10 +5,18 @@ function [pos,value,ax,iax] = getDataCursorPos(fig)
 dcm_obj = datacursormode(fig);
 
 % get position
-pos = dcm_obj.CurrentDataCursor.getCursorInfo.Position;
+try
+  pos = dcm_obj.getCursorInfo.Position;
+catch
+ pos = dcm_obj.CurrentDataCursor.getCursorInfo.Position;
+end
 
 % get value
-target = dcm_obj.CurrentDataCursor.getCursorInfo.Target;
+try
+  target = dcm_obj.getCursorInfo.Target;
+catch
+  target = dcm_obj.CurrentDataCursor.getCursorInfo.Target;
+end
 xd = get(target,'xdata');
 yd = get(target,'ydata');
 zd = get(target,'zdata');
@@ -24,7 +32,7 @@ else
 end
 
 % convert pos to vector3d for spherical plots
-ax = target.parent;
+ax = target.Parent;
 
 % extract position in multiplot axes
 if isappdata(fig,'multiplotAxes')
@@ -35,13 +43,10 @@ else
 end
 
 % for spherical plots convert to polar coordinates
-if ~isappdata(ax,'projection'), return;end
-projection = getappdata(ax,'projection');
-
-if ~isfield(projection,'type'), return;end
-  
-[theta,rho] = projectInv(pos(1),pos(2),projection.type);
-pos = [theta,rho];
-
+sP = getappdata(ax,'sphericalPlot');
+if ~isempty(sP)
+  pos = sP.proj.iproject(pos(1),pos(2));
+end
+ 
 end
 

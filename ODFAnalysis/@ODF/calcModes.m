@@ -23,7 +23,6 @@ function [modes, values] = calcModes(odf,varargin)
 %    plotPDF(SantaFe,Miller(0,0,1))
 %    annotate(mode)
 %
-%
 % See also
 % ODF/max
 

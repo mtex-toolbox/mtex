@@ -34,7 +34,7 @@ classdef mapPlot < handle
         'Layer','top',...
         'box','on');
       grid(ax,'off');
-      axis(ax,'equal','tight');
+      axis(ax,'equal','tight','on');
       
       setCamera(varargin{:});
       
