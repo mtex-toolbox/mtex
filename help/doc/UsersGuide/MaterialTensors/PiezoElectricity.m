@@ -23,6 +23,9 @@ P = loadTensor(fname,CS,'propertyname','piecoelectricity','unit','C/N','interfac
 % have the most polarisation. By default, we restrict ourselfs to the
 % unique region implied by crystal symmetry
 
+% set some colormap well suited for tensor visualisation
+setMTEXpref('defaultColorMap','parula');
+
 plot(P)
 
 %%
@@ -80,3 +83,5 @@ colorbar
 close all
 plot(Pm,'complete')
 colorbar
+
+setMTEXpref('defaultColorMap',WhiteJetColorMap)

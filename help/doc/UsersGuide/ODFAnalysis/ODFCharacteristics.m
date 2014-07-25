@@ -115,7 +115,7 @@ plotFourier(fodf)
 % Using the command <ODF.eval.html eval> any ODF can be evaluated at any
 % (set of) orientation(s).
 
-odf1.eval(orientation('Euler',0*degree,20*degree,30*degree))
+odf1.eval(orientation('Euler',0*degree,20*degree,30*degree,cs))
 
 %%
 % For a more complex example let us define a fibre and plot the ODF there.
@@ -128,7 +128,7 @@ plot(odf2.eval(fibre))
 % Evaluation of the corresponding pole figure or inverse pole figure is
 % done using the command <ODF.pdf.html pdf>.
 
-pdf(odf2,Miller(1,0,0,cs),xvector)
+odf2.pdf(Miller(1,0,0,cs),xvector)
 
 %% Extract Internal Representation
 % The internal representation of the ODF can be adressed by the command
