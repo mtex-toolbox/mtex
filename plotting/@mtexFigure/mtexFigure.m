@@ -8,14 +8,16 @@ classdef mtexFigure < handle
 
   properties
     parent            % the parent figure    
-    %cBarAxis          % the colorbar axes
+    cBarAxis          % the colorbar axes
     outerPlotSpacing  % 
     innerPlotSpacing  %  
-    keepAspectRatio   %
+    keepAspectRatio   % 
     nrows = 1         % number of rows
     ncols = 1         % number of columns
-    axisWidth
-    axisHeight
+    axisWidth         % width of an individual axis
+    axisHeight        % height of an individual axis 
+    cbx = 0           % colorbar width
+    cby = 0           % colorbar height
   end
   
   properties (Dependent = true)        
@@ -34,8 +36,6 @@ classdef mtexFigure < handle
       % clear figure and set it up
       clf('reset');
       rmallappdata(gcf);
-
-      MTEXFigureMenu(varargin{:});
 
       % set figure name
       if ~isempty(get_option(varargin,'FigureTitle'))
@@ -67,25 +67,18 @@ classdef mtexFigure < handle
         datacursormode on;      
       end
       
-     end
-    
-    function adjustFigurePosition(mtexFig)
-      % determine optimal size
+      set(mtexFig.parent,'DefaultAxesCreateFcn',...
+        @colorBarCreateFcn);
       
-      screenExtend = get(0,'MonitorPositions');
-      screenExtend = screenExtend(1,:); % consider only the first monitor
-      screenExtend = screenExtend(3:4);
+      MTEXFigureMenu(mtexFig,varargin{:});
       
-      % compute best partioning
-      calcBestFit(mtexFig,'screen','maxWidth',300);
-      
-      % resize figure      
-      width = mtexFig.axesWidth;
-      height = mtexFig.axesHeight;
-      position = [(screenExtend(1)-width)/2,(screenExtend(2)-height)/2,width,height];
-      set(mtexFig.parent,'position',position);
+      function colorBarCreateFcn(a,b)
+        
+      end
       
     end
+    
+    
     
     function ax = gca(mtexFig)
       % return current axis if exist otherwise create a new one
@@ -157,19 +150,6 @@ classdef mtexFigure < handle
         (mtexFig.nrows-1) * mtexFig.innerPlotSpacing;
     end
 
-    
-    
-    function unifyMarkerSize(mtexFig)
-      % ensure same marker size in all scatter plots
-      
-      if check_option(varargin,'unifyMarkerSize')
-        ax = findobj(a,'tag','dynamicMarkerSize');
-        if ~isempty(ax)
-          markerSize = ensurecell(get(ax,'UserData'));
-          set(ax,'UserData',min([markerSize{:}]));
-        end
-      end
-    end
   end
 end
 
