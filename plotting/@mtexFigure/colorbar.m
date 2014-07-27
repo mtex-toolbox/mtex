@@ -1,5 +1,53 @@
 function colorbar(mtexFig,varargin)
+
+if check_option(varargin,'global')
+
+else
+  
+  if isempty(mtexFig.cBarAxis) % create some new colorbars  
+    
+    if equalScale % one new colorbar
       
+      mtexFig.cBarAxis = colorbar('peer',mtexFig.children(end),'eastoutside');      
+      mtexFig.cby = 0;
+      mtexFig.cbx = 0;
+      
+    else % many new colorbars
+    
+      for i = 1:numel(mtexFig.children)
+        mtexFig.cBarAxis(i) = colorbar('peer',mtexFig.children(i),'southoutside');
+        mtexFig.cby = 30;
+        mtexFig.cbx = 0;
+      end
+      set(mtexFig.cBarAxis,'FontSize',getMTEXpref('FontSize'));
+    end
+  else % remove old colorbars
+    
+    mtexFig.cby = 0;
+    mtexFig.cbx = 0;
+    delete(mtexFig.cBarAxis);
+    mtexFig.cBarAxis = [];
+  end
+end
+
+mtexFig.drawNow(varargin{:});
+
+
+  function eq = equalScale
+    
+    cl = cell2mat(get(mtexFig.children,'CLim'));
+    
+    eq = all(cl(1,1)==cl(:,1) & cl(1,2)==cl(:,2));
+    
+  end
+
+end
+
+
+
+
+function xx(varargin)
+
 % remove colorbar if already present
 if check_option(varargin,'off') || ...
     ~isempty(findobj(mtexFig.parent,'tag','Colorbar'))

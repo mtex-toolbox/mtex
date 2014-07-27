@@ -1,4 +1,4 @@
-function MTEXFigureMenu(varargin)
+function MTEXFigureMenu(mtexFig,varargin)
 
 % create a menu MTEX
 m = uimenu('label','MTEX');
@@ -10,6 +10,7 @@ mnchlds = [mnchlds(2:find(p == mnchlds)-1) ; mnchlds(1) ; p]; % permutate positi
 set(gcf,'Children',mnchlds)
   
 uimenu(m,'label','Export Image','callback',@Export);
+uimenu(m,'label','Colorbar','callback',@mtexFig.colorbar);
 cm = uimenu(m,'label','Colormap');
 
 % Colormap submenu
@@ -18,6 +19,7 @@ maps = getColormaps;
 for i = 1:length(maps)
   uimenu(cm,'label',maps{i},'callback',@setColorMap);
 end
+
 
 % colorcoding
 cc = uimenu(m,'label','Colorcoding');
@@ -74,7 +76,8 @@ uimenu(fs,'label','19 points','callback',{@setFontSize,19});
 uimenu(fs,'label','20 points','callback',{@setFontSize,20});
 
 
-end
+
+
 
 function [cm,cmd] = getColormaps
 
@@ -93,7 +96,7 @@ end
 % export
 function Export(obj,event) %#ok<INUSD>
 
-savefigure;
+saveFigure;
 
 end
 
@@ -217,7 +220,6 @@ resizeFcn(fig,event);
 
 end
 
-
 % Color coding
 function setColorCoding(obj,event) %#ok<INUSD>
 
@@ -225,15 +227,16 @@ uncheck = findobj(gcf,'parent',get(obj,'parent'));
 set(uncheck,'checked','off');
 
 if strcmpi(get(obj,'label'),'tight')
-  setcolorrange('tight');
+  mtexFig.CLim('tight');
 else
-  setcolorrange('equal');
+  mtexFig.CLim('equal');
 end
 
 
 set(obj,'checked','on');
 
 end
+
 
 function setColorMap(obj,event) %#ok<INUSD>
 
@@ -241,10 +244,11 @@ uncheck = findobj(gcf,'parent',get(obj,'parent'));
 set(uncheck,'checked','off');
 map = get(obj,'label');
 map = feval([map 'ColorMap']);
-mtexFig = getappdata(gcf,'mtexFig');
-for i=1:numel(mtexFig.children),
-  colormap(mtexFig.children(i),map);
+for ii=1:numel(mtexFig.children),
+  colormap(mtexFig.children(ii),map);
 end
 set(obj,'checked','on');
+
+end
 
 end

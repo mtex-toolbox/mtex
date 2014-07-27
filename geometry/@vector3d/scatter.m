@@ -74,10 +74,10 @@ for i = 1:numel(sP)
       'markeredgecolor','flat'),varargin{2:end}); %#ok<AGROW>
       
     % add annotations for min and max
-    if numel(cdata) == length(v)
-      set(sP(i).TL,'string',{'Max:',xnum2str(max(cdata(:)))});
-      set(sP(i).BL,'string',{'Min:',xnum2str(min(cdata(:)))});
-    end
+    %if numel(cdata) == length(v)
+    %  set(sP(i).TL,'string',{'Max:',xnum2str(max(cdata(:)))});
+    %  set(sP(i).BL,'string',{'Min:',xnum2str(min(cdata(:)))});
+    %end
       
   else % --------- colorcoding according to nextStyle -----------------
       
