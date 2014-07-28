@@ -8,6 +8,7 @@ classdef mtexFigure < handle
 
   properties
     parent            % the parent figure    
+    children          % the axes
     cBarAxis          % the colorbar axes
     outerPlotSpacing  % 
     innerPlotSpacing  %  
@@ -21,7 +22,6 @@ classdef mtexFigure < handle
   end
   
   properties (Dependent = true)        
-    children          % the axes
     currentAxes       % current axis
     currentId         % current axis id
     axesWidth
@@ -68,12 +68,19 @@ classdef mtexFigure < handle
       end
       
       set(mtexFig.parent,'DefaultAxesCreateFcn',...
-        @colorBarCreateFcn);
+        @updateChildren);
+      set(mtexFig.parent,'DefaultAxesDeleteFcn',...
+        @deleteChildren);
       
       MTEXFigureMenu(mtexFig,varargin{:});
       
-      function colorBarCreateFcn(a,b)
-        
+      function updateChildren(a,b)
+        mtexFig.children = ...
+        flipud(findobj(mtexFig.parent,'type','axes','-not','tag','Colorbar')); 
+      end
+      
+      function deleteChildren(a,b)
+        mtexFig.children(mtexFig.children==a) = [];
       end
       
     end
@@ -91,14 +98,7 @@ classdef mtexFigure < handle
     
     
     % ---------------------------------------------------------
-    
-    function ax = get.children(mtexFig)
-      %ax = get(mtexFig.parent,'Children'); 
-      %ax = ax(:);
-      %ax = flipud(ax(2:end));
-      ax = flipud(findobj(mtexFig.parent,'type','axes','-not','tag','Colorbar')); 
-    end
-    
+            
     function ax = get.currentAxes(mtexFig)
       ax = get(mtexFig.parent,'CurrentAxes');
     end

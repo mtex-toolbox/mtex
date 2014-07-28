@@ -13,8 +13,6 @@ function calcBestFit(mtexFig,varargin)
 %  nrows - number of rows
 %  axisWidth - width of an axis
 
-childs = mtexFig.children;
-
 % compute empty space
 if check_option(varargin,'screen')
   screenExtend = get(0,'MonitorPositions');
@@ -28,10 +26,10 @@ figSize = figSize(3:4) - 2*mtexFig.outerPlotSpacing;
 if mtexFig.keepAspectRatio
 
   % get axes size
-  axesSize = get(childs(1),'PlotBoxAspectRatio');
+  axesSize = get(mtexFig.children(1),'PlotBoxAspectRatio');
 
   % correct for xAxisDirection
-  if find(get(childs(1),'CameraUpVector'))==1
+  if find(get(mtexFig.children(1),'CameraUpVector'))==1
     axesSize(1:2) = fliplr(axesSize(1:2));
   end
   axesRatio = axesSize(2)/axesSize(1);
@@ -42,13 +40,13 @@ if mtexFig.keepAspectRatio
     (figSize(2)-(nr-1)*mtexFig.innerPlotSpacing - nr*mtexFig.cby)/axesRatio/nr));
 
   % start with one row partition
-  mtexFig.nrows = 1; mtexFig.ncols = numel(childs);
+  mtexFig.nrows = 1; mtexFig.ncols = numel(mtexFig.children);
   mtexFig.axisWidth = lx(mtexFig.ncols,mtexFig.nrows);
 
   % check for better partitions
   
-  for nr=2:numel(childs)
-    nc = ceil(numel(childs) / nr);
+  for nr=2:numel(mtexFig.children)
+    nc = ceil(numel(mtexFig.children) / nr);
     if lx(nc,nr) > mtexFig.axisWidth % new best fit
       mtexFig.axisWidth = lx(nc,nr);
       mtexFig.ncols = nc;

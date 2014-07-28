@@ -1,9 +1,7 @@
 function figResize(fig,evt,mtexFig) %#ok<INUSL,INUSL>
 % resize figure and reorder subfigs
 
-% check autofit is enabled
-childs = mtexFig.children;
-if isempty(childs), return;end
+if isempty(mtexFig.children), return;end
 
 % store old units and perform all calculations in pixel
 old_units = get(fig,'Units');
@@ -15,7 +13,7 @@ figSize = figSize(3:4) - 2*mtexFig.outerPlotSpacing;
 mtexFig.calcBestFit;
 
 % align axes according to the partioning
-for i = 1:length(childs)
+for i = 1:length(mtexFig.children)
   
   % compute position in raster
   [col,row] = ind2sub([mtexFig.ncols mtexFig.nrows],i);
@@ -26,7 +24,7 @@ for i = 1:length(childs)
     - row * (mtexFig.axisHeight) ...
     - (row-1)*(mtexFig.innerPlotSpacing + mtexFig.cby -1),...
     mtexFig.axisWidth,mtexFig.axisHeight];
-  set(childs(i),'Units','pixels','Position',axisPos);
+  set(mtexFig.children(i),'Units','pixels','Position',axisPos);
     
   % position the colorbars
   if mtexFig.cbx > 0
