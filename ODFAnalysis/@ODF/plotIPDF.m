@@ -51,31 +51,16 @@ if isNew % finalize plot
 
 end
 
-end
-
 % --------------- tooltip function ------------------------------
 function txt = tooltip(varargin)
 
-[r,h,value] = currentVector; %#ok<ASGLU>
+[h_local,value] = getDataCursorPos(mtexFig);
 
-txt = [xnum2str(value) ' at ' char(h,'tolerance',3*degree,'commasep')];
+h_local = Miller(h_local,getappdata(mtexFig.parent,'CS'),'uvw');
+h_local = round(h_local,'tolerance',3*degree);
+txt = [xnum2str(value) ' at ' char(h_local)];
+
+end
 
 end
 
-function [r,h,value] = currentVector
-
-[pos,value,ax,iax] = getDataCursorPos(gcf);
-
-CS = getappdata(gcf,'CS');
-h = Miller(vector3d('polar',pos(1),pos(2)),CS);
-h = round(h);
-r = getappdata(gcf,'inversePoleFigureDirection');
-r = r(iax);
-
-projection = getappdata(ax,'projection');
-
-if projection.antipodal
-  r = set_option(r,'antipodal');
-end
-
-end

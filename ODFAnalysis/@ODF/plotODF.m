@@ -88,15 +88,14 @@ if isNew % finalize plot
   mtexFig.drawNow('autoPosition');
 end
 
-end
-
 % --------------- Tooltip function -------------------------------
 function txt = tooltip(varargin)
 
 % 
-dcm_obj = datacursormode(gcf);
+dcm_obj = datacursormode(mtexFig.parent);
 
-hcmenu = dcm_obj.CurrentDataCursor.uiContextMenu;
+hcmenu = dcm_obj.createContextMenu;
+%hcmenu = dcm_obj.CurrentDataCursor.uiContextMenu;
 if numel(get(hcmenu,'children'))<10
   uimenu(hcmenu, 'Label', 'Mark equivalent orientations', 'Callback', @markEquivalent);
   mcolor = uimenu(hcmenu, 'Label', 'Marker color', 'Callback', @display);
@@ -114,44 +113,45 @@ end
 %
 function markEquivalent(varargin)
 
-ori = currentOrientation;
-
-annotate(ori);
+annotate(currentOrientation);
 
 end
 
 
 function [ori,value] = currentOrientation
 
-[pos,value,ax,iax] = getDataCursorPos(gcf); %#ok<ASGLU>
-sec = getappdata(gcf,'sections');
+[pos,value,ax] = getDataCursorPos(mtexFig);
+
+iax = mtexFig.children == ax;
 
 switch getappdata(gcf,'SectionType')
   case 'phi1'
     euler1 = sec(iax);
-    euler2 = pos(1);
-    euler3 = pos(2);
+    euler2 = pos.theta;
+    euler3 = pos.rho;
     convention = 'Bunge';
   case 'phi2'
     euler3 = sec(iax);
-    euler2 = pos(1);
-    euler1 = pos(2);
+    euler2 = pos.theta;
+    euler1 = pos.rho;
     convention = 'Bunge';
   case 'alpha'
     euler3 = sec(iax);
-    euler2 = pos(1);
-    euler1 = pos(2);
+    euler2 = pos.theta;
+    euler1 = pos.rho;
     convention = 'Matthies';
   case 'sigma'
-    euler1 = pos(2);
-    euler2 = pos(1);
-    euler3 = sec(iax) - pos(2);
+    euler1 = pos.rho;
+    euler2 = pos.theta;
+    euler3 = sec(iax) - pos.rho;
     convention = 'Matthies';
   otherwise
     error('unknown sectioning!')
 end
 
-ori = orientation('Euler',euler1,euler2,euler3,convention,...
-  getappdata(gcf,'CS'),getappdata(gcf,'SS'));
+ori = orientation('Euler',euler1,euler2,euler3,convention,odf.CS,odf.SS);
 
 end
+
+end
+

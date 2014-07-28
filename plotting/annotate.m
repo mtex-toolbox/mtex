@@ -1,4 +1,4 @@
-function annotate(varargin)
+function annotate(obj,varargin)
 % annotate to a existing figure
 
 washold = getHoldState;

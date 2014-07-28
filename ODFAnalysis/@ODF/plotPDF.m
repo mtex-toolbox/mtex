@@ -51,83 +51,75 @@ for i = 1:length(h)
   r.plot(p,'TR',h{i},'parent',mtexFig.gca,...
     'smooth','doNotDraw',varargin{:});
   
-  % TODO: adapt this to other plots as well
-  setappdata(mtexFig.gca,'h',h{i});
 end
 
 if isNew % finalize plot
   set(gcf,'tag','pdf');
   setappdata(gcf,'SS',odf.SS);
   setappdata(gcf,'h',h);
-  setappdata(gcf,'odf',odf);  
   set(gcf,'Name',['Pole figures of "',inputname(1),'"']);
   
   mtexFig.drawNow('autoPosition');
 end
 
-end
-
 % -------------- Tooltip function ---------------------------------
-function txt = tooltip(varargin)
 
-% 
-dcm_obj = datacursormode(gcf);
+  function txt = tooltip(varargin)
 
-hcmenu = dcm_obj.createContextMenu;
-%hcmenu = dcm_obj.CurrentDataCursor.uiContextMenu;
+    %
+    dcm_obj = datacursormode(gcf);
 
-if numel(get(hcmenu,'children'))<10
-  uimenu(hcmenu, 'Label', 'Mark Equivalent Modes', 'Callback', @markEquivalent);
-  uimenu(hcmenu, 'Label', 'Plot Fibre', 'Callback', @localPlotFibre);
-  mcolor = uimenu(hcmenu, 'Label', 'Marker color', 'Callback', @display);
-  msize = uimenu(hcmenu, 'Label', 'Marker size', 'Callback', @display);
-  mshape = uimenu(hcmenu, 'Label', 'Marker shape', 'Callback', @display);
-  dcm_obj.UIContextMenu = hcmenu;
+    hcmenu = dcm_obj.createContextMenu;
+    %hcmenu = dcm_obj.CurrentDataCursor.uiContextMenu;
+
+    if numel(get(hcmenu,'children'))<10
+      uimenu(hcmenu, 'Label', 'Mark Equivalent Modes', 'Callback', @markEquivalent);
+      uimenu(hcmenu, 'Label', 'Plot Fibre', 'Callback', @localPlotFibre);
+      mcolor = uimenu(hcmenu, 'Label', 'Marker color', 'Callback', @display);
+      msize = uimenu(hcmenu, 'Label', 'Marker size', 'Callback', @display);
+      mshape = uimenu(hcmenu, 'Label', 'Marker shape', 'Callback', @display);
+      dcm_obj.UIContextMenu = hcmenu;
+    end
+
+    [r_local,v] = getDataCursorPos(mtexFig);
+
+    txt = [xnum2str(v) ' at (' int2str(r_local.theta/degree) ',' int2str(r_local.rho/degree) ')'];
+
+  end
+  
+  function localPlotFibre(varargin)
+
+    [r_local,~,ax] = getDataCursorPos(mtexFig);
+
+    figure
+    odf.plotFibre(h{mtexFig.children==ax},r_local);
+
+  end
+
+  function markEquivalent(varargin)
+
+    [r_local,~,ax] = getDataCursorPos(mtexFig);
+    
+    fibre = orientation('fibre',h{mtexFig.children==ax},r_local,odf.CS,odf.SS);
+    f = eval(odf,fibre); %#ok<EVLC>
+
+    [v,vpos] = max(f); %#ok<ASGLU>
+
+    annotate(fibre(vpos));
+
+  end
+
 end
 
-[r,h,v] = currentVector;
-txt = [xnum2str(v) ' at (' int2str(r.theta/degree) ',' int2str(r.rho/degree) ')'];
 
-end
 
 %
-function localPlotFibre(varargin)
 
-[r,h] = currentVector;
-
-odf = getappdata(gcf,'odf');
-
-figure
-odf.plotFibre(h,r);
-
-end
 
 %
-function markEquivalent(varargin)
-
-[r,h] = currentVector;
-
-odf = getappdata(gcf,'odf');
-
-fibre = orientation('fibre',h,r,odf.CS,odf.SS);
-f = eval(odf,fibre); %#ok<EVLC>
-
-[v,p] = max(f); %#ok<ASGLU>
-
-annotate(fibre(p));
-
-end
 
 
-function [r,h,value] = currentVector
 
-[r,value,ax] = getDataCursorPos(gcf);
-
-h = getappdata(ax,'h');
-
-% TODO: h should be antipodal if projection is antipodal
-
-end
 
 
 

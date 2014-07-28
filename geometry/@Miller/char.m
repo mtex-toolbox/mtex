@@ -37,11 +37,18 @@ for i = 1:length(m)
         leftBracket = '(';%'{';
         rightBracket = ')';% '}';
       end
+      
+    otherwise
+      leftBracket = '';
+      rightBracket = '';
+      
   end
 
   
   % only display rounded results
-  if all(isappr(round(abc),abc))
+  if strcmpi(m.dispStyle,'xyz')
+    s = xnum2str(abc);
+  elseif all(isappr(round(abc),abc))
     s = barchar(abc,varargin{:});
   else
     s = '---';

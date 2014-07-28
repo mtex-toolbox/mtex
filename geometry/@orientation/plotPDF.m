@@ -87,41 +87,15 @@ end
 
 if isNew, mtexFig.drawNow('autoPosition'); end
 
-end
-
-% Tooltip function
+% ----------- Tooltip function ------------------------
 function txt = tooltip(varargin)
 
-% 
-dcm_obj = datacursormode(gcf);
+[r_local,id] = getDataCursorPos(mtexFig);
 
-hcmenu = dcm_obj.CurrentDataCursor.uiContextMenu;
-
-%
-[r,h,v] = currentVector;
-[th,rh] = polar(r);
-txt = ['id ' xnum2str(v) ' at (' int2str(th/degree) ',' int2str(rh/degree) ')'];
+txt = ['id ' xnum2str(id) ' at (' int2str(r_local.theta/degree) ',' int2str(r_local.rho/degree) ')'];
 
 end
 
-
-function [r,h,value] = currentVector
-
-[pos,value,ax,iax] = getDataCursorPos(gcf);
-
-r = vector3d('polar',pos(1),pos(2));
-
-h = getappdata(gcf,'h');
-h = h{iax};
-
-projection = getappdata(ax,'projection');
-
-if projection.antipodal
-  h = set_option(h,'antipodal');
 end
-
-end
-
-
 
 
