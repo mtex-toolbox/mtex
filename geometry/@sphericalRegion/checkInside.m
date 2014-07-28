@@ -13,7 +13,7 @@ end
 inside = true(size(v));
 v = normalize(vector3d(v));
 for i = 1:length(sR.N)
-  inside = inside & (sR.N(i).dot(v) >= sR.alpha(i)-1e-6);
+  inside = inside & (dot(subSet(sR.N,i),v) >= sR.alpha(i)-1e-6);
 end
  
 end
