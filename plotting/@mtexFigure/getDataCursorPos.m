@@ -1,4 +1,4 @@
-function [pos,value,ax,iax] = getDataCursorPos(mtexFig)
+function [pos,value,ax] = getDataCursorPos(mtexFig)
 % get the position and value of the data cursor
 %
 
@@ -33,14 +33,6 @@ end
 
 % convert pos to vector3d for spherical plots
 ax = target.Parent;
-
-% extract position in multiplot axes
-if isappdata(mtexFig,'multiplotAxes')
-  all_ax = getappdata(mtexFig,'multiplotAxes');
-  iax = ax == all_ax;
-else
-  iax = 1;
-end
 
 % for spherical plots convert to polar coordinates
 sP = getappdata(ax,'sphericalPlot');

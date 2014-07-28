@@ -45,6 +45,8 @@ if length(m) < 20 && ~isempty(m)
         cprintf(hkl.','-L','  ','-Lr',{'h' 'k' 'l'});
       end
     case 'xyz'
-        
+      xyz = round(m.xyz * eps)./eps;
+      xyz(xyz==0) = 0;      
+      cprintf(xyz.','-L','  ','-Lr',{'x' 'y' 'z'});
   end
 end

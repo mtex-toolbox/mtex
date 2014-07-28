@@ -35,6 +35,7 @@ mtexFig.drawNow(varargin{:});
 
   function eq = equalScale
     
+    if numel(mtexFig.children) <= 1, eq = true; return; end
     cl = cell2mat(get(mtexFig.children,'CLim'));
     
     eq = all(cl(1,1)==cl(:,1) & cl(1,2)==cl(:,2));
