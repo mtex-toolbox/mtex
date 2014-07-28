@@ -96,7 +96,7 @@ classdef mtexFigure < handle
       %ax = get(mtexFig.parent,'Children'); 
       %ax = ax(:);
       %ax = flipud(ax(2:end));
-      ax = flipud(findobj(mtexFig.parent,'type','axes')); 
+      ax = flipud(findobj(mtexFig.parent,'type','axes','-not','tag','Colorbar')); 
     end
     
     function ax = get.currentAxes(mtexFig)
