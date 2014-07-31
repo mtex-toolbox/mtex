@@ -52,22 +52,11 @@ classdef GrainSet < dynProp & misorientationAnalysis
   end
   
   methods
-    function obj = GrainSet(grainStruct,varargin)
+    function obj = GrainSet(varargin)
       
-      obj.ebsd     = grainStruct.ebsd;
-      obj.A_Db     = logical(grainStruct.A_Db);
-      obj.A_Do     = logical(grainStruct.A_Do);
-      obj.I_DG     = logical(grainStruct.I_DG);      
-      obj.I_FDext  = grainStruct.I_FDext;      
-      obj.I_FDint  = grainStruct.I_FDint;      
-      obj.F        = grainStruct.F;            
-      obj.V        = grainStruct.V;          
-      obj.meanRotation = calcMeanRotation(obj);
-      
-      obj = cleanupFaces(obj);
-      
+           
     end
-    
+ 
     function id = get.id(grains)
       id = find(any(grains.I_DG,1));
     end
@@ -248,9 +237,7 @@ classdef GrainSet < dynProp & misorientationAnalysis
       % remove faces that are not a grainboundary
 
       ind = ~any(grains.I_FD,2);
-      grains.I_FDext(ind,:) = [];
-      grains.I_FDint(ind,:) = [];
-      grains.F(ind,:) = [];
+      grains.F(ind,:) = 0;
       
     end
   end
