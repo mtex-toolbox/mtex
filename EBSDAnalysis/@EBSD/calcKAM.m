@@ -47,8 +47,8 @@ for p=1:numel(phaseMap)
     
     nt = 250000;
     if nnz(currentPhase) < nt
-      o_Dl = orientation(r(Dl(currentPhase)),grains.allCS{p});
-      o_Dr = orientation(r(Dr(currentPhase)),grains.allCS{p});
+      o_Dl = orientation(r(Dl(currentPhase)),grains.CSList{p});
+      o_Dr = orientation(r(Dr(currentPhase)),grains.CSList{p});
       
       %     m  = o_Dl.\o_Dr; % misorientation
       prop(currentPhase,:) = angle(o_Dl,o_Dr);
@@ -62,8 +62,8 @@ for p=1:numel(phaseMap)
         subset = ind(cs(k)+1:cs(k+1));
         
         
-        o_Dl = orientation(r(Dl(subset)),grains.allCS{p});
-        o_Dr = orientation(r(Dr(subset)),grains.allCS{p});
+        o_Dl = orientation(r(Dl(subset)),grains.CSList{p});
+        o_Dr = orientation(r(Dr(subset)),grains.CSList{p});
         
         %     m  = o_Dl.\o_Dr; % misorientation
         prop(subset,:) = angle(o_Dl,o_Dr);

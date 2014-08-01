@@ -17,11 +17,11 @@ for i = 1:length(subs)
     mineralsSubs = ensurecell(subs{i});
     phaseNumbers = cellfun(@num2str,num2cell(ebsd.phaseMap(:)'),'Uniformoutput',false);
     
-    phases = false(1,numel(ebsd.allCS));
+    phases = false(1,numel(ebsd.CSList));
     
     for k=1:numel(mineralsSubs)
       phases = phases ...
-        | strcmpi(ebsd.allMinerals,mineralsSubs{k}) ...
+        | strcmpi(ebsd.MineralList,mineralsSubs{k}) ...
         | strcmpi(phaseNumbers,mineralsSubs{k});
     end
 
@@ -29,7 +29,7 @@ for i = 1:length(subs)
     if ~any(phases)
       for k=1:numel(mineralsSubs)
         phases = phases ...
-          | strncmpi(ebsd.allMinerals,mineralsSubs{k},length(mineralsSubs{k}));
+          | strncmpi(ebsd.MineralList,mineralsSubs{k},length(mineralsSubs{k}));
       end
     end
     
@@ -37,9 +37,9 @@ for i = 1:length(subs)
     
   elseif isa(subs{i},'symmetry')
     
-    phases = false(1,length(ebsd.allCS));
-    for k=1:length(ebsd.allCS)
-      if isa(ebsd.allCS{k},'symmetry') && ebsd.CS{k} == subs{i} && ...
+    phases = false(1,length(ebsd.CSList));
+    for k=1:length(ebsd.CSList)
+      if isa(ebsd.CSList{k},'symmetry') && ebsd.CS{k} == subs{i} && ...
           (isempty(subs{i}.mineral) || strcmp(ebsd.CS{k}.mineral,subs{i}.mineral))
         phases(k) = true;
       end

@@ -389,7 +389,7 @@ api.clearAllData();
       if isa(data{1},'EBSD')
         CS = {};  map = [];
         for j=1:numel(data)
-          CS  = [CS data{j}.allCS];
+          CS  = [CS data{j}.CSList];
           map = [map;data{j}.phaseMap];
         end
         

@@ -3,7 +3,7 @@ classdef phaseList
 
   properties
     phaseId = []    % index to a phase map - 1,2,3,4,....    
-    allCS = {}      % list of crystal symmetries
+    CSList = {}     % list of crystal symmetries
     phaseMap = []   % phase numbers as used in the data - 0,5,10,11,...
   end
   
@@ -11,7 +11,7 @@ classdef phaseList
     phase           % phase
     CS              % crystal symmetry of one specific phase
     mineral         % mineral name of one specific phase
-    allMinerals     % all mineral names
+    MineralList     % list of mineral names
     indexedPhasesId % id's of all non empty indexed phase
     color           % color of one specific phase
   end
@@ -19,15 +19,15 @@ classdef phaseList
     
   methods
     
-    function pL = phaseList(phases,allCS)
+    function pL = phaseList(phases,CSList)
 
-      if nargin == 2, pL = pL.init(phases,allCS); end
+      if nargin == 2, pL = pL.init(phases,CSList); end
       
     end
     
     % --------------------------------------------------------------
     
-    function pL = init(pL,phases,allCS)
+    function pL = init(pL,phases,CSList)
       % extract phases
       [pL.phaseMap,~,pL.phaseId] =  unique(phases);
         
@@ -37,25 +37,25 @@ classdef phaseList
       % if all phases are zero replace them by 1
       %if all(ebsd.phase == 0), ebsd.phase = ones(length(ebsd),1);end
 
-      pL.allCS = allCS;
+      pL.CSList = CSList;
       
       % check number of symmetries and phases coincides
-      if numel(pL.phaseMap)>1 && length(pL.allCS) == 1
+      if numel(pL.phaseMap)>1 && length(pL.CSList) == 1
           
-        pL.allCS = repmat(pL.allCS,numel(pL.phaseMap),1);
+        pL.CSList = repmat(pL.CSList,numel(pL.phaseMap),1);
           
-        if pL.phaseMap(1) <= 0, pL.allCS{1} = 'notIndexed'; end
+        if pL.phaseMap(1) <= 0, pL.CSList{1} = 'notIndexed'; end
           
-      elseif max([0;pL.phaseMap(:)]) < length(pL.allCS)
+      elseif max([0;pL.phaseMap(:)]) < length(pL.CSList)
           
-        pL.allCS = pL.allCS(pL.phaseMap+1);
+        pL.CSList = pL.CSList(pL.phaseMap+1);
           
-      elseif sum(pL.phaseMap>0) == numel(pL.allCS)
+      elseif sum(pL.phaseMap>0) == numel(pL.CSList)
           
-        pL.allCS(pL.phaseMap>0) = pL.allCS;
-        pL.allCS(pL.phaseMap<=0) = repcell('notIndexed',1,sum(pL.phaseMap<=0));
+        pL.CSList(pL.phaseMap>0) = pL.CSList;
+        pL.CSList(pL.phaseMap<=0) = repcell('notIndexed',1,sum(pL.phaseMap<=0));
           
-      elseif numel(pL.phaseMap) ~= length(pL.allCS)
+      elseif numel(pL.phaseMap) ~= length(pL.CSList)
         error('symmetry mismatch')
       end
 
@@ -65,8 +65,8 @@ classdef phaseList
       c = 1;
       
       for ph = 1:numel(pL.phaseMap)
-        if isa(pL.allCS{ph},'symmetry') && isempty(pL.allCS{ph}.color)
-          pL.allCS{ph}.color = colorOrder{mod(c-1,nc)+1};
+        if isa(pL.CSList{ph},'symmetry') && isempty(pL.CSList{ph}.color)
+          pL.CSList{ph}.color = colorOrder{mod(c-1,nc)+1};
           c = c+1;
         end
       end
@@ -93,7 +93,7 @@ classdef phaseList
     function id = get.indexedPhasesId(pL)
       
       id = intersect(...
-        find(~cellfun('isclass',pL.allCS,'char')),...
+        find(~cellfun('isclass',pL.CSList,'char')),...
         unique(pL.phaseId));
     
       id = id(:).';
@@ -111,7 +111,7 @@ classdef phaseList
           'Please see ' doclink('pLModifyData','modify EBSD data')  ...
           '  for how to restrict EBSD data to a single phase.']);
       end
-      cs = pL.allCS{id};
+      cs = pL.CSList{id};
             
     end
     
@@ -122,16 +122,16 @@ classdef phaseList
         id = unique(pL.phaseId);
       
         if numel(id) == 1
-          pL.allCS{id} = cs;
+          pL.CSList{id} = cs;
         else
           % TODO
         end
       elseif iscell(cs)    
         if length(cs) == numel(pL.phaseMap)
-          pL.allCS = cs;
+          pL.CSList = cs;
         elseif length(CS) == numel(pL.indexedPhasesId)
-          pL.allCS = repcell('not indexed',1,numel(pL.phaseMap));
-          pL.allCS(pL.indexedPhasesId) = cs;
+          pL.CSList = repcell('not indexed',1,numel(pL.phaseMap));
+          pL.CSList(pL.indexedPhasesId) = cs;
         else
           error('The number of symmetries specified is less than the largest phase id.')
         end        
@@ -180,10 +180,21 @@ classdef phaseList
       
     end
     
-    function minerals = get.allMinerals(pL)
-      isCS = cellfun('isclass',pL.allCS,'symmetry');
-      minerals(isCS) = cellfun(@(x) x.mineral,pL.allCS(isCS),'uniformoutput',false);
-      minerals(~isCS) = pL.allCS(~isCS);
+    function minerals = get.MineralList(pL)
+      isCS = cellfun('isclass',pL.CSList,'symmetry');
+      minerals(isCS) = cellfun(@(x) x.mineral,pL.CSList(isCS),'uniformoutput',false);
+      minerals(~isCS) = pL.CSList(~isCS);
+    end
+
+    function notIndexed = isNotIndexed(pL)
+      % returns if a spatially EBSD data is indexed
+      %
+      % Example
+      %   ebsd(~isNotIndexed(ebsd)) %select all indexed EBSD data
+
+
+      notIndexedPhase = find(cellfun('isclass',pL.CSList,'char'));
+      notIndexed = ismember(pL.phaseId,notIndexedPhase);
     end
     
     function [pL,cs] = checkSinglePhase(pL)
@@ -192,7 +203,7 @@ classdef phaseList
       try
   
         % restrict to indexed phases
-        phases = find(cellfun(@(cs) isa(cs,'symmetry'),pL.allCS));
+        phases = find(cellfun(@(cs) isa(cs,'symmetry'),pL.CSList));
   
         phases = intersect(phases,unique(pL.phaseId));
   
@@ -209,7 +220,7 @@ classdef phaseList
         end
   
         pL = subSet(pL,pL.phaseId == phases);
-        cs = pL.allCS{phases};
+        cs = pL.CSList{phases};
   
         if numel(pL.phaseId) == 0
           error('MTEX:MultiplePhases','The data set is Empty!');

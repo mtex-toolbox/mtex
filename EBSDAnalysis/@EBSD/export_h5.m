@@ -21,11 +21,11 @@ end
 [p,f] = fileparts(fname);
 fname = fullfile(p,[f '.h5']);
 
-allCS = ebsd.allCS;
+CSList = ebsd.CSList;
 phaseMap = ebsd.phaseMap;
 
-for k=1:numel(allCS)
-  CS = allCS{k};
+for k=1:numel(CSList)
+  CS = CSList{k};
   
   cm = phaseMap(k);
   

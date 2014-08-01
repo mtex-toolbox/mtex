@@ -53,7 +53,7 @@ classdef grainBoundary < phaseList & dynProp %& misorientationAnalysis
       isNotBoundary = gB.ebsdId>0;
       gB.phaseId(isNotBoundary) = ebsd.phaseId(gB.ebsdId(isNotBoundary));
       gB.phaseMap = ebsd.phaseMap;
-      gB.allCS = ebsd.allCS;
+      gB.CSList = ebsd.CSList;
     
     end
 
@@ -76,11 +76,11 @@ classdef grainBoundary < phaseList & dynProp %& misorientationAnalysis
         
         if ischar(ph)
           alt_mineral = cellfun(@num2str,num2cell(gB.phaseMap),'Uniformoutput',false);
-          ph = ~cellfun('isempty',regexpi(gB.allMinerals(:),ph)) | ...
+          ph = ~cellfun('isempty',regexpi(gB.MineralList(:),ph)) | ...
             strcmpi(alt_mineral,ph);
           phId = find(ph,1);        
         elseif isa(ph,'symmetry')
-          phId = find(cellfun(@(cs) cs==ph,gB.allCS));
+          phId = find(cellfun(@(cs) cs==ph,gB.CSList));
         else
           phId = find(ph == gB.phaseMap);
         end
@@ -95,7 +95,7 @@ classdef grainBoundary < phaseList & dynProp %& misorientationAnalysis
         out = any(gB.phaseId == phaseId,2);
       
         % not indexed phase should include outer border as well
-        if ischar(gB.allCS{phaseId}), out = out | any(gB.phaseId == 0,2); end
+        if ischar(gB.CSList{phaseId}), out = out | any(gB.phaseId == 0,2); end
         
       elseif phaseId == phaseId2
         

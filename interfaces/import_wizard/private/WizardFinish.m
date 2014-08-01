@@ -231,7 +231,7 @@ end
     function str = getCrystalSymmetry()
       
       if isa(data,'EBSD')
-        cs = data.allCS;
+        cs = data.CSList;
       else
         cs = {data.CS};
       end

@@ -11,7 +11,7 @@ for i = 1:length(subs)
     phases = false(length(grains.phaseMap),1);
     
     for k=1:numel(miner)
-      phases = phases | ~cellfun('isempty',regexpi(grains.allMinerals(:),miner{k})) | ...
+      phases = phases | ~cellfun('isempty',regexpi(grains.MineralList(:),miner{k})) | ...
         strcmpi(alt_mineral,miner{k});
     end
     ind = ind & phases(grains.phaseId(:));

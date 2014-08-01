@@ -30,7 +30,7 @@ classdef grain2d < phaseList & dynProp
       % compute phaseId's     
       grains.phaseId = max(I_DG' * ...
         spdiags(ebsd.phaseId,0,numel(ebsd.phaseId),numel(ebsd.phaseId)),[],2);
-      grains.allCS = ebsd.allCS;
+      grains.CSList = ebsd.CSList;
       grains.phaseMap = ebsd.phaseMap;
            
       % split face x cell incidence matrix into
@@ -147,13 +147,13 @@ classdef grain2d < phaseList & dynProp
         q             = quaternion(ebsd.rotations);
         meanRotation  = q(firstD);
 
-        indexedPhases = ~cellfun('isclass',grains.allCS(:),'char');
+        indexedPhases = ~cellfun('isclass',grains.CSList(:),'char');
 
         for p = grains.indexedPhasesId
           ndx = ebsd.phaseId(d) == p;
           if any(ndx)
             q(d(ndx)) = project2FundamentalRegion(...
-              q(d(ndx)),grains.allCS{p},meanRotation(g(ndx)));
+              q(d(ndx)),grains.CSList{p},meanRotation(g(ndx)));
           end
   
           % mean may be inaccurate for some grains and should be projected again

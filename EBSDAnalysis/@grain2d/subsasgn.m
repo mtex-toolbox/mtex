@@ -20,7 +20,7 @@ switch s(1).type
       
       grains = subsasgn@dynProp(grains,s(1),b);
       grains.meanRotation = subsasgn(grains.meanRotation,s(1),b.meanRotation);
-      grains.allCS = b.allCS;
+      grains.CSList = b.CSList;
       grains.phaseMap = b.phaseMap;
       
     end
