@@ -63,7 +63,7 @@ if ischar(property) && strcmpi(property,'phase')
   end
 
   idPlotted = unique(ebsd.phaseId);
-  legend(h(idPlotted),ebsd.MineralList(idPlotted),'location','NorthEast');
+  legend(h(idPlotted),ebsd.mineralList(idPlotted),'location','NorthEast');
   
 else % plot numeric property
   

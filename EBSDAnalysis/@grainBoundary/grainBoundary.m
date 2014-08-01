@@ -17,7 +17,7 @@ classdef grainBoundary < phaseList & dynProp %& misorientationAnalysis
     id = []              % face id
     ebsdId = zeros(0,2)  % id's of the neigbouring ebsd data to a face
     isInt = false(0,0)   % internal or not internal grain boundary
-    misRotation = rotation % misrotations
+    misrotation = rotation % misrotations
   end
   
   % general properties
@@ -76,7 +76,7 @@ classdef grainBoundary < phaseList & dynProp %& misorientationAnalysis
         
         if ischar(ph)
           alt_mineral = cellfun(@num2str,num2cell(gB.phaseMap),'Uniformoutput',false);
-          ph = ~cellfun('isempty',regexpi(gB.MineralList(:),ph)) | ...
+          ph = ~cellfun('isempty',regexpi(gB.mineralList(:),ph)) | ...
             strcmpi(alt_mineral,ph);
           phId = find(ph,1);        
         elseif isa(ph,'symmetry')

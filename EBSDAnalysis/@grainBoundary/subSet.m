@@ -13,6 +13,4 @@ gB.F = gB.F(ind,:);
 gB.id = gB.id(ind);
 gB.ebsdId = gB.ebsdId(ind,:);
 gB.phaseId = gB.phaseId(ind,:);
-
-%gB.isInt = false(0,0) 
-%gB.misRotation = rotation
+gB.misrotation = gB.misrotation(ind);

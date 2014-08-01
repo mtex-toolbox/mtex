@@ -72,7 +72,7 @@ if ischar(property) && strcmpi(property,'phase')
   end
   
   idPlotted = unique(grains.phaseId);
-  legend([lh{idPlotted}],grains.MineralList(idPlotted));
+  legend([lh{idPlotted}],grains.mineralList(idPlotted));
 
 else % plot numeric property
 

@@ -21,7 +21,7 @@ for i = 1:length(subs)
     
     for k=1:numel(mineralsSubs)
       phases = phases ...
-        | strcmpi(ebsd.MineralList,mineralsSubs{k}) ...
+        | strcmpi(ebsd.mineralList,mineralsSubs{k}) ...
         | strcmpi(phaseNumbers,mineralsSubs{k});
     end
 
@@ -29,7 +29,7 @@ for i = 1:length(subs)
     if ~any(phases)
       for k=1:numel(mineralsSubs)
         phases = phases ...
-          | strncmpi(ebsd.MineralList,mineralsSubs{k},length(mineralsSubs{k}));
+          | strncmpi(ebsd.mineralList,mineralsSubs{k},length(mineralsSubs{k}));
       end
     end
     
