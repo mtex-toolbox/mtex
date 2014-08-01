@@ -54,6 +54,18 @@ classdef grainBoundary < phaseList & dynProp %& misorientationAnalysis
       gB.phaseId(isNotBoundary) = ebsd.phaseId(gB.ebsdId(isNotBoundary));
       gB.phaseMap = ebsd.phaseMap;
       gB.CSList = ebsd.CSList;
+      
+      % sort ebsdId such that first phaseId1 <= phaseId2
+      doSort = gB.phaseId(:,1) > gB.phaseId(:,2);
+      gB.phaseId(doSort,:) = fliplr(gB.phaseId(doSort,:));
+      gB.ebsdId(doSort,:) = fliplr(gB.ebsdId(doSort,:));
+      
+      % compute misrotations
+      gB.misrotation = rotation(idquaternion(length(gB),1));
+      isNotBoundary = all(gB.ebsdId,2);
+      gB.misrotation(isNotBoundary) = ...
+        inv(ebsd.rotations(gB.ebsdId(isNotBoundary,1))) ...
+        .* ebsd.rotations(gB.ebsdId(isNotBoundary,2));
     
     end
 
