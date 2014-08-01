@@ -109,7 +109,8 @@ try
       
     end
     
-    ebsd{k} = EBSD(q,CS,'phase',phaseIndex,'options',props,'comment',kGroup.Name,options{:});
+    % TODO
+    ebsd{k} = EBSD(q,phaseIndex,CS,'options',props,'comment',kGroup.Name,options{:});
     
   end
   

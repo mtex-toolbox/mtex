@@ -224,7 +224,7 @@ ebsd = loadEBSD([mtexDataPath '/EBSD/data.ctf'],'ignorePhase',[0 3 4],...
 % ----------------------------------------------------------------------
 function ebsd = mtexdata_forsterite
 
-ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','forsterite.ctf'),'convertEuler2spatialReferenceFrame');
+ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','Forsterite.ctf'),'convertEuler2spatialReferenceFrame');
 
 
 % -----------------------------------------------------------------------

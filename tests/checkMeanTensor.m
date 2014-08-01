@@ -145,14 +145,10 @@ odf = calcODF(ebsd_corrected,C_Epidote,'kernel',psi,'phase',2)
 
 S3G = orientation('random',CS{1},SS,'points',10)
 
-ebsd = EBSD(S3G)
-
 psi = kernel('di',4)
 
 %odf = unimodalODF(S3G,CS{1},SS,psi)
-odf = calcODF(ebsd,'kernel',psi)
+odf = calcODF(S3G,'kernel',psi)
 
-calcTensor(ebsd,C_Glaucophane)
+calcTensor(S3G,C_Glaucophane)
 calcTensor(odf,C_Glaucophane)
-
-

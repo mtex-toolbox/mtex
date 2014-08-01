@@ -44,7 +44,7 @@ ebsd = removeDublicated(ebsd);
 % A_db - neigbhouring cells with grain boundary
 % A_Do - neigbhouring cells without grain boundary
 
-grains = Grain2d(ebsd,V,F,D,I_FD,A_Db,A_Do);
+grains = grain2d(ebsd,V,F,D,I_FD,A_Db,A_Do);
 
 end
 

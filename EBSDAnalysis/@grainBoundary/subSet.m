@@ -1,5 +1,5 @@
 function gB = subSet(gB,ind)
-% 
+% restrict boundary
 %
 % Input
 %  gB - @grainBoundary
@@ -9,6 +9,10 @@ function gB = subSet(gB,ind)
 %  grains - @grainBoundary
 %
 
-gB.grains.F = gB.grains.F(ind,:);
-gB.grains.I_FDint = gB.grains.I_FDint(ind,:);
-gB.grains.I_FDext = gB.grains.I_FDext(ind,:);
+gB.F = gB.F(ind,:);
+gB.id = gB.id(ind);
+gB.ebsdId = gB.ebsdId(ind,:);
+gB.phaseId = gB.phaseId(ind,:);
+
+%gB.isInt = false(0,0) 
+%gB.misRotation = rotation

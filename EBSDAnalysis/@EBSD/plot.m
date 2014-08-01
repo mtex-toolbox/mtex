@@ -1,28 +1,92 @@
-function plot(ebsd,varargin)
-% bypasses ebsd plotting functions 
+function h = plot(ebsd,varargin)
+% spatial EBSD plot
 %
 % Input
 %  ebsd - @EBSD
 %
-% Flages
-%  scatter       - three dimensional scatter plot
-%  axisAngle     - axis angle projection
-%  Rodrigues     - rodrigues parameterization
-%  points        - number of orientations to be plotted
-%  center        - reference orientation
+% Options
+%
+%  antipodal - include [[AxialDirectional.html,antipodal symmetry]] when
+%     using inverse PoleFigure colorization
+%
+% Flags
+%  points   - plot dots instead of unitcells
+%
+% Example
+% plot a EBSD data set spatially with custom colorcoding
+%
+%   mtexdata forsterite
+%   plot(ebsd,'colorcoding','ipdfHKL')
+%
+%   plot(ebsd,'property','phase')
+%
+%   plot(ebsd,'property','mad')
 %
 % See also
-% EBSD/scatter EBSD/plotspatial EBSD/plotPDF savefigure
+% EBSD/plot
 
-% determine plot type
-if check_option(varargin,{'scatter','axisangle','rodrigues'}) && ...
-  ~check_option(varargin,'colorcoding')
-  scatter(ebsd,varargin{:});
-elseif check_option(varargin,{'sections','sigma','phi1','phi2','alpha','gamma'})
-  plotODF(ebsd,varargin{:});
-elseif isProp(ebsd,'x') && isProp(ebsd,'y')
-  plotspatial(ebsd,varargin{:});
+% create a new plot
+mP = newMapPlot(varargin{:});
+
+% what to plot
+if nargin>1 && isnumeric(varargin{1})
+  property = varargin{1};
+elseif numel(ebsd.indexedPhasesId)==1
+  
+  ebsd = ebsd.subSet(ebsd.phaseId == ebsd.indexedPhasesId);
+  
+  oM = ipdfHSVOrientationMapping(ebsd);
+  property = oM.orientation2color(ebsd.orientations);
+  disp('  I''m going to colorize the ebsd data with the ');
+  disp('  standard MTEX colorkey. To view the colorkey do:');
+    disp(' ');
+  disp('  oM = ipdfHSVOrientationMapping(ebsd_variable_name)')
+  disp('  plot(oM)')
 else
-  h = [Miller(0,0,1),Miller(1,1,0),Miller(1,1,1)];
-  plotPDF(ebsd,h,varargin{:});
+  property = get_option(varargin,'property','phase');
+end
+
+% phase plot
+if ischar(property) && strcmpi(property,'phase')
+
+  for k=1:numel(ebsd.phaseMap)
+      
+    ind = ebsd.phaseId == k;
+    
+    if ~any(ind), continue; end
+    
+    color = ebsd.subSet(ind).color;
+    
+    h(k) = plotUnitCells([ebsd.prop.x(ind), ebsd.prop.y(ind)],...
+    color, ebsd.unitCell, 'parent', mP.ax, varargin{:}); %#ok<AGROW>  
+    
+  end
+
+  idPlotted = unique(ebsd.phaseId);
+  legend(h(idPlotted),ebsd.allMinerals(idPlotted),'location','NorthEast');
+  
+else % plot numeric property
+  
+  if ~any(numel(property) == length(ebsd) * [1,3])
+    ebsd = ebsd.subSet(~isNotIndexed(ebsd));
+  end
+  
+  assert(any(numel(property) == length(ebsd) * [1,3]),...
+    'The number of values should match the number of ebsd data!')
+  
+  h = plotUnitCells([ebsd.prop.x, ebsd.prop.y],...
+    property, ebsd.unitCell, 'parent', mP.ax, varargin{:});
+  
+end
+  
+% keep track of the extend of the graphics
+% this is needed for the zoom: TODO maybe this can be done better
+axis(mP.ax,'tight')
+mP.extend(1) = min(mP.extend(1),min(ebsd.prop.x(:)));
+mP.extend(2) = max(mP.extend(2),max(ebsd.prop.x(:)));
+mP.extend(3) = min(mP.extend(3),min(ebsd.prop.y(:)));
+mP.extend(4) = max(mP.extend(4),max(ebsd.prop.y(:)));
+
+if nargout==0, clear h; end
+
 end
