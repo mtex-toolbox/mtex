@@ -5,17 +5,22 @@ classdef grain2d < phaseList & dynProp
   properties
     poly={}    % cell list of polygons forming the grains
     id=[]      % id of each grain
-    meanRotation = rotation % mean rotation of the grains       
+    meanRotation = rotation % mean rotation of the grains
+    grainSize = [] % number of measurements per grain
   end
     
   % general properties
-  properties  
-    V = zeros(0,2) % vertices with x,y coordinates    
+  properties
+    V = zeros(0,2) % vertices with x,y coordinates
     boundary = grainBoundary % boundary of the grains
   end
     
   properties (Dependent = true)
     meanOrientation
+  end
+  
+  properties (Dependent = true, Access = protected)
+    idV % active vertices
   end
   
   methods
@@ -39,6 +44,7 @@ classdef grain2d < phaseList & dynProp
       [I_FDext,I_FDint] = calcBoundary;
 
       grains.id = 1:numel(grains.phaseId);
+      grains.grainSize = full(sum(I_DG,1)).';
       grains.V = V; % vertices
                   
       grains.boundary = grainBoundary(V,F,I_FDext,I_DG,ebsd);
@@ -170,6 +176,15 @@ classdef grain2d < phaseList & dynProp
         meanRotation(doMeanCalc) = [cellMean{:}];
 
       end      
+    end
+    
+    function idV = get.idV(grains)
+      
+      isCell = cellfun('isclass',grains.poly,'cell');
+      polygons = grains.poly;
+      polygons(isCell) = cellfun(@(x) [x{:}] ,grains.poly(isCell),'UniformOutput',false);
+      idV = unique([polygons{:}]);
+      
     end
     
     function ori = get.meanOrientation(grains)
