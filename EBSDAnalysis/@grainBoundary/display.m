@@ -33,7 +33,8 @@ matrix = cell(size(pairs,1),3);
 
 for ip = 1:size(pairs,1)
 
-  matrix{ip,1} = int2str(nnz(gB.hasPhaseId(pairs(ip,1)) & gB.hasPhaseId(pairs(ip,2))));
+  num(ip) = nnz(gB.hasPhaseId(pairs(ip,1),pairs(ip,2)));
+  matrix{ip,1} = int2str(num(ip));
   
   % phases
   if ischar(gB.allCS{pairs(ip,1)})
@@ -48,6 +49,8 @@ for ip = 1:size(pairs,1)
   end
 
 end
+matrix(num==0,:) = [];
+
 
 cprintf(matrix,'-L',' ','-Lc',...
   {'Segments' 'mineral 1' 'mineral 2'},'-d','  ','-ic',true);

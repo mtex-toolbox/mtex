@@ -33,9 +33,9 @@ try
       -Xstep/2 -Ystep/2];
   end
   
-  ebsd = EBSD( loader.getRotations(),...
-    'cs',      CS,...
-    'phase',   loader.getColumnData('phase'),...
+  ebsd = EBSD(loader.getRotations(),...
+    loader.getColumnData('phase'),...
+    CS,...
     'options', loader.getOptions('ignoreColumns','phase'),...
     'unitCell',unitCell);
   
@@ -58,7 +58,7 @@ end
 
 
 
-%% taken from ANYSTITCH
+% taken from ANYSTITCH
 %
 % A.L. PILCHAK, A.R. SHIVELEY, J.S. TILEY, and D.L. BALLARD,
 % AnyStitch: a tool for combining electron backscatter diffraction data sets.
@@ -70,7 +70,7 @@ end
 % adam.pilchak@wpafb.af.mil
 % adam.shiveley@wpafb.af.mil
 %
-%% BSD License:
+% BSD License:
 %  * ================================================================================
 %  * Copyright (c) 2011, Adam L. Pilchak, Adam R. Shiveley (USAF Research Laboratory)
 %  * All rights reserved.
@@ -102,7 +102,7 @@ end
 %  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 %
 
-%% Osc2Ang( OscFile )
+% Osc2Ang( OscFile )
 function [data, Xstep, Ystep] = oscData( file )
 %  [RelevantData,Xstep,Ystep ] = Osc2Ang(OscFile) reads the *.osc file
 %  whose path is defined by the string OscFile into a variable RelevantData in the matlab workspace.
@@ -112,7 +112,7 @@ function [data, Xstep, Ystep] = oscData( file )
 %   an *.ang file
 %
 %
-%% Open the Current Osc for reading as binary
+% Open the Current Osc for reading as binary
 % % fid = fopen(OscFile,'rb');
 
 % read the data stored in the .osc file as 8 bit
@@ -146,7 +146,7 @@ function [data, Xstep, Ystep] = oscData( file )
 % % RelevantData = typecast(final_euler_angles(:), 'single');
 
 
-%% faster version
+% faster version
 
 % look for a certain pattern
 startBytes = hex2dec({'B9','0B','EF','FF','02','00','00','00'});

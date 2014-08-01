@@ -1,4 +1,4 @@
-classdef grainBoundary < dynProp %& misorientationAnalysis
+classdef grainBoundary < phaseList & dynProp %& misorientationAnalysis
   % grainBoundary list of grain boundaries in 2-D
   %
   % grainBoundary is used to extract, analyze and visualize grain
@@ -6,169 +6,109 @@ classdef grainBoundary < dynProp %& misorientationAnalysis
   %
   % gB = grainBoundary() creates an empty list of grain boundaries
   %
-  % gB = grains.grainBoudary() extracted the all the boundary information
+  % gB = grains.boudary() extracted the all the boundary information
   % from a list of grains
   %
   % 
 
+  % properties with as many rows as data
   properties
-    grains
+    F = zeros(0,2)       % list of faces - indeces to V
+    id = []              % face id
+    ebsdId = zeros(0,2)  % id's of the neigbouring ebsd data to a face
+    isInt = false(0,0)   % internal or not internal grain boundary
+    misRotation = rotation % misrotations
   end
   
-  properties (Dependent = true)
-    
-    id                    % identification number
-    
-    V                     % vertices - (x,y,(z)) coordinate
-    F                     % edges - vertices ids (v1,v2)
-    
-    ebsd                  % ebsd data assoziated with the boundaries
-    
-    ebsdId                %
-    phaseId
-    phase
-    phaseMap
-    CS
-    allCS
-    mineral                     % mineral name of the grain
-    allMinerals                 % all mineral names of the data set
-    mis2mean
-    meanOrientation             % mean orientation of the grain
-    indexedPhasesId             % id's of all non empty indexed phase 
-
-    
-    
-    %phase1
-    %phase2
-    %CS1
-    %CS2
-    %mineral1
-    %mineral2    
+  % general properties
+  properties
+    V = [] % vertices x,y coordinates    
   end
   
   methods
-    function gB = grainBoundary(grains)
+    function gB = grainBoundary(V,F,I_FD,I_DG,ebsd)
       
       if nargin == 0, return; end
       
-      gB.grains = grains;
+      % remove empty lines from I_FD and F
+      isBoundary = any(I_FD,2);
+      %I_FD = I_FD(isBoundary,:);
+      
+      gB.V = V;
+      gB.F = F(full(isBoundary),:);
+      gB.id = 1:size(F,1);
+  
+      % compute ebsdID
+      [eId,fId] = find(I_FD.');
+      
+      % scale fid down to 1:length(gB)
+      d = diff([0;fId]);      
+      fId = cumsum(d>0) + (d==0)*length(gB);
+            
+      gB.ebsdId = zeros(length(gB),2);
+      gB.ebsdId(fId) = eId;      
+      
+      % compute phaseId
+      gB.phaseId = zeros(length(gB),2);
+      isNotBoundary = gB.ebsdId>0;
+      gB.phaseId(isNotBoundary) = ebsd.phaseId(gB.ebsdId(isNotBoundary));
+      gB.phaseMap = ebsd.phaseMap;
+      gB.allCS = ebsd.allCS;
+    
+    end
+
+    
+    function mori = misorientation(gB)
+            
+      mori = orientation(gB.misrotation,gB.CS{:});
       
     end
     
-    function out = hasPhase(gB,phase)
+    function out = hasPhase(gB,phase1,phase2)
       
-      if ischar(phase)
-        % find symmetry
-        phase = symmetry;
-      end
-      
-      if isa(phase,'symmetry')
-        phaseId = find(cellfun(@(cs) cs==phase,gB.allCS));
+      if nargin == 2
+        out = gB.hasPhaseId(convert2Id(phase1));
       else
-        phaseId = find(phase == gB.phaseMap);
+        out = hasPhaseId(gB,convert2Id(phase1),convert2Id(phase2));
       end
       
-      out = gB.hasPhaseId(phaseId);           
+      function phId = convert2Id(ph)
+        
+        if ischar(ph)
+          alt_mineral = cellfun(@num2str,num2cell(gB.phaseMap),'Uniformoutput',false);
+          ph = ~cellfun('isempty',regexpi(gB.allMinerals(:),ph)) | ...
+            strcmpi(alt_mineral,ph);
+          phId = find(ph,1);        
+        elseif isa(ph,'symmetry')
+          phId = find(cellfun(@(cs) cs==ph,gB.allCS));
+        else
+          phId = find(ph == gB.phaseMap);
+        end
+        
+      end
       
     end
     
-    function out = hasPhaseId(gB,phaseId)
+    function out = hasPhaseId(gB,phaseId,phaseId2)
       
-      gBphId = gB.phaseId;
-      out = any(gBphId == phaseId,2);
+      if nargin == 2
+        out = any(gB.phaseId == phaseId,2);
       
-      % not indexed phase should include outer border as well
-      if ischar(gB.allCS{phaseId}), out = out | any(gBphId == 0,2); end
+        % not indexed phase should include outer border as well
+        if ischar(gB.allCS{phaseId}), out = out | any(gB.phaseId == 0,2); end
+        
+      elseif phaseId == phaseId2
+        
+        out = all(gB.phaseId == phaseId,2);
+        
+      else
+        
+        out = gB.hasPhaseId(phaseId) & gB.hasPhaseId(phaseId2);
+        
+      end
       
-    end
-
-    
-    function mori = calcMisorientation(gB)
-      % compute the misorientations along the boundary
-      
-      lOri = gB.grains.ebsd(gB.ebsdIdLeft).orientations;
-      rOri = gB.grains.ebsd(gB.ebsdIdRight).orientations;
-      
-      mori = inv(lOri) .* rOri;
-      
-    end
-    
-    function V = get.V(gB)
-      
-      V = gB.grains.V;
-      
-    end
-    
-    function F = get.F(gB)
-      
-      F = gB.grains.F;
-      
-    end
-    
-    function id = get.ebsdId(gB)
-      % return ids to ebsd data neigbouring the faces
-      %
-      % gB.ebsdId is a Nx2 table where N is the number of faces 
-            
-      id = zeros(size(gB.grains.I_FD,1),2);
-      
-      % add indices of faces with two neibours
-      ind = sum(gB.grains.I_FD~=0,2)==2;
-                
-      [ifd,~] = find(gB.grains.I_FD(ind,:).');
-      
-      id(ind,:) = reshape(ifd,2,[]).';
-      
-      % add indices of faces with one neibour
-      ind = sum(gB.grains.I_FD~=0,2)==1;
-                
-      [ifd,~] = find(gB.grains.I_FD(ind,:).');
-      
-      id(ind,1) = ifd;
-      
-    end
-    
-    function id = get.phaseId(gB)
-      % neigbouring phaseIds to a face
-      
-      id = zeros(size(gB.grains.I_FD,1),2);
-      
-      ebsdId = gB.ebsdId;
-      
-      id(ebsdId>0) = gB.ebsd.phaseId(ebsdId(ebsdId>0));
-            
     end
 
-    function ph = get.phase(gB)
-      % neigbouring phase to a face
-      
-      ph = zeros(size(gB.grains.I_FD,1),2);
-      
-      ebsdId = gB.ebsdId;
-      
-      ph(ebsdId>0) = gB.ebsd.phase(ebsdId(ebsdId>0));
-      
-    end
-    
-    
-    function CS = get.allCS(gB), CS = gB.grains.allCS; end
-    
-    function pm = get.phaseMap(gB), pm = gB.grains.phaseMap; end
-
-    function ebsd = get.ebsd(gB), ebsd = gB.grains.ebsd; end
-    
-    
-    %phase1
-    %phase2
-    %CS1
-    %CS2
-    %mineral1
-    %mineral2    
-      
-      
-    
   end
-  
-  
 
 end
