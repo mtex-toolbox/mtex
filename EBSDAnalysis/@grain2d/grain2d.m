@@ -47,7 +47,7 @@ classdef grain2d < phaseList & dynProp
       grains.grainSize = full(sum(I_DG,1)).';
       grains.V = V; % vertices
                   
-      grains.boundary = grainBoundary(V,F,I_FDext,I_DG,ebsd);
+      grains.boundary = grainBoundary(V,F,I_FDext,ebsd);
       %grains.A_Db = logical(A_Db);
       %grains.A_Do = logical(A_Do);
       %grains.I_DG = logical(I_DG);
@@ -146,8 +146,7 @@ classdef grain2d < phaseList & dynProp
 
         [d,g] = find(I_DG);
 
-        grainSize     = full(sum(I_DG>0,1));   % points per grain
-        grainRange    = [0 cumsum(grainSize)];        %
+        grainRange    = [0 cumsum(grains.grainSize)];        %
         firstD        = d(grainRange(2:end));
         phaseId       = ebsd.phaseId(firstD);
         q             = quaternion(ebsd.rotations);

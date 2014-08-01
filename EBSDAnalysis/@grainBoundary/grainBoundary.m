@@ -26,7 +26,7 @@ classdef grainBoundary < phaseList & dynProp %& misorientationAnalysis
   end
   
   methods
-    function gB = grainBoundary(V,F,I_FD,I_DG,ebsd)
+    function gB = grainBoundary(V,F,I_FD,ebsd)
       
       if nargin == 0, return; end
       
