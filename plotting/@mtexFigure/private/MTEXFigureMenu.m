@@ -157,25 +157,11 @@ end
 % X Axis Direction
 function setXAxisDirection(obj,event)
 
-
 uncheck = findobj(gcf,'parent',get(obj,'parent'));
 set(uncheck,'checked','off');
 set(obj,'checked','on');
-xAxis = get(obj,'label');
 
-% for all axes
-ax = findobj(gcf,'type','axes');
-for a = 1:numel(ax)
-
-  %if ~isappdata(ax(a),'projection'), continue;end
-  setCamera(ax(a),'xAxisDirection',xAxis);
-    
-end
-
-fn = get(gcf,'ResizeFcn');
-if ~isempty(fn)
-  fn(gcf,event);
-end
+mtexFig.setCamera('xAxisDirection',get(obj,'label'));
 
 end
 
@@ -188,17 +174,7 @@ set(obj,'checked','on');
 zAxis = get(obj,'label');
 zAxis(zAxis==' ')=[];
 
-% for all axes
-ax = findobj(gcf,'type','axes');
-for a = 1:numel(ax)
-
-  %if ~isappdata(ax(a),'projection'), continue;end  
-  setCamera(ax(a),'zAxisDirection',zAxis);
-  
-end
-
-fn = get(gcf,'ResizeFcn');
-fn(gcf,event);
+mtexFig.setCamera('zAxisDirection',zAxis);
 
 end
 
@@ -206,14 +182,14 @@ end
 function setMargin(obj,event,type) %#ok<INUSL>
 
 [h,fig] = gcbo; %#ok<ASGLU>
-m = getappdata(fig,[type 'PlotSpacing']);
+m = mtexFig.([type 'PlotSpacing']);
 
 prompt = {['Enter ' type ' margin :']};
 dlg_title = 'Set Margin';
 num_lines = 1;
 m = str2double(inputdlg(prompt,dlg_title,num_lines,{num2str(m)}));
 
-setappdata(gcf,[type 'PlotSpacing'],m);
+mtexFig.([type 'PlotSpacing']) = m;
 
 resizeFcn = get(fig,'resizeFcn');
 resizeFcn(fig,event);

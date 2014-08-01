@@ -63,8 +63,9 @@ if nargin > 1 && isnumeric(varargin{1}) && size(varargin{1},1) == length(gB)
   obj.Vertices(end+1,:) = NaN;
   obj.Vertices = obj.Vertices(obj.Faces',:);
   obj.Faces = 1:size(obj.Vertices,1);
+  
   obj.EdgeColor = 'flat';
-  obj.FaceVertexCData = varargin{1};
+  obj.FaceVertexCData = reshape(repmat(varargin{1},1,3)',size(varargin{1},2),[])';
 
 else % color given directly
     
@@ -73,6 +74,5 @@ else % color given directly
 end
 
 h = optiondraw(patch(obj),varargin{:});
-xlabel('x');ylabel('y');
 
 if nargout == 0, clear h; end

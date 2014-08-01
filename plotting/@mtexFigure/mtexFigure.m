@@ -150,6 +150,14 @@ classdef mtexFigure < handle
         (mtexFig.nrows-1) * mtexFig.innerPlotSpacing;
     end
 
+    function setCamera(mtexFig,varargin)
+      
+      for a = 1:numel(mtexFig.children)
+        setCamera(mtexFig.children(a),varargin{:});        
+      end
+      mtexFig.drawNow;
+    end
+    
   end
 end
 
