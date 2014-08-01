@@ -24,5 +24,7 @@ disp(['  specimen symmetry: ',char(pf.SS,'verbose')]);
 disp(' ');
 
 for i = 1:pf.numPF
-  disp(['  ',char(pf.select(i),'short')]);
+  if ~isempty(pf.select(i))
+    disp(['  ',char(pf.select(i),'short')]);
+  end
 end
