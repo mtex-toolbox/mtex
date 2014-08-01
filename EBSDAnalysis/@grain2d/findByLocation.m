@@ -1,4 +1,4 @@
-function [grains,I_GX] = findByLocation( grains, X )
+function id = findByLocation( grains, pos )
 % select a grain by spatial coordinates
 %
 % Input
@@ -18,58 +18,31 @@ function [grains,I_GX] = findByLocation( grains, X )
 % See also
 % EBSD/findByLocation GrainSet/findByOrientation
 
-
-if isa(grains,'grain2d')
-  boundaryEdgeOrder = grains.boundaryEdgeOrder;
-  isCell = cellfun('isclass',boundaryEdgeOrder,'cell');
-  
-  boundaryEdgeOrder(isCell) = cellfun(@(x) x{1} ,boundaryEdgeOrder(isCell),'UniformOutput',false);
-end
+% extract polygons with holes
+isCell = cellfun('isclass',grains.poly,'cell');
+poly = grains.poly;
+poly(isCell) = cellfun(@(x) [x{:}] ,grains.poly(isCell),'UniformOutput',false);
 
 % restrict vertices to available grains
-subset = full(any(grains.I_VG,2));
-V_g    = grains.V(subset,:);
-I_GV   = grains.I_VG(subset,any(grains.I_VG,1))';
+iV = unique([poly{:}]);
+% and search for the closest vertice
+closestVertex = iV(bucketSearch(grains.V(iV,:),pos));
 
+id = find(cellfun(@(x) any(x==closestVertex), poly));
 
-closestVertex = bucketSearch(V_g,X);
+% list of candidates - now without holes
+poly = grains.poly(id);
+isCell = cellfun('isclass',poly,'cell');  
+poly(isCell) = cellfun(@(x) x{1} ,poly(isCell),'UniformOutput',false);
 
-% buffer results
-[a,i] = find(I_GV(:,closestVertex));
-
-
-if exist('boundaryEdgeOrder','var')
-  edgeOrder = boundaryEdgeOrder(a);
-  
-  b = false(size(edgeOrder));
-  for k=1:numel(edgeOrder)
-    V_k = grains.V(edgeOrder{k},:);
-    b(k) = inpolygon(X(i(k),1),X(i(k),2),V_k(:,1),V_k(:,2));
-  end
-  
-  I_GX = sparse(a,i,b);
-  
-  checkHole = sum(I_GX) > 1;
-  
-  if any(checkHole)
-    h = find(checkHole);
-    
-    for l = 1:numel(h)
-      candit = find(I_GX(:,h(l)));
-      [A m] = min(area(subSet(grains,candit)));
-      
-      I_GX(:,h(l)) = false;
-      I_GX(candit(m),h(l)) = true;
-    end
-    
-  end
-  
-else
-  
-  warning('I only return some grains close to the truth, since I have no idea');
-  
-  I_GX = sparse(a,i,1);  
-  
+% check whether pos is inside the canditats
+inside = false(size(id));
+for k=1:numel(poly)
+  V_k = grains.V(poly{k},:);
+  inside(k) = inpolygon(pos(1),pos(2),V_k(:,1),V_k(:,2));
 end
+id = id(inside);
 
-grains = subSet(grains,any(I_GX,2));
+% maybe its inside of more then one grain - then take the smallest one
+[~,ind] = min(area(grains.subSet(id)));
+id = id(ind);
