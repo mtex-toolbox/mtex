@@ -146,7 +146,7 @@ classdef grain2d < phaseList & dynProp
 
         [d,g] = find(I_DG);
 
-        grainRange    = [0 cumsum(grains.grainSize)];        %
+        grainRange    = [0;cumsum(grains.grainSize)];        %
         firstD        = d(grainRange(2:end));
         phaseId       = ebsd.phaseId(firstD);
         q             = quaternion(ebsd.rotations);
@@ -165,7 +165,7 @@ classdef grain2d < phaseList & dynProp
           % any(sparse(d(ndx),g(ndx),angle(q(d(ndx)),meanRotation(g(ndx))) > getMaxAngle(ebsd.CS{p})/2))
         end
 
-        doMeanCalc    = find(grainSize(:)>1 & indexedPhases(phaseId));
+        doMeanCalc    = find(grains.grainSize>1 & indexedPhases(phaseId));
         cellMean      = cell(size(doMeanCalc));
         for k = 1:numel(doMeanCalc)
           cellMean{k} = d(grainRange(doMeanCalc(k))+1:grainRange(doMeanCalc(k)+1));
