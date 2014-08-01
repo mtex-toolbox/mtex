@@ -19,7 +19,7 @@ grains = calcGrains(ebsd)
 
 plot(ebsd)
 hold on
-plotBoundary(grains,'linewidth',2)
+plot(grains.boundary,'linewidth',2)
 hold off
 
 
@@ -29,14 +29,14 @@ hold off
 % obtain a vector of the same lenght with numbers representing the area of
 % each grain
 
-grain_area = area(grains);
+grain_area = grains.area;
 
 %%
 % As a first rather simple application we could colorize the grains
 % according to their area, i.e., according to the numbers stored in
-% |grain_area|. This can be done by the option |property|.
+% |grain_area|
 
-plot(grains,'property',grain_area)
+plot(grains,grain_area)
 
 %%
 % As a second application we can ask for the largest grain within our data
@@ -56,7 +56,7 @@ grains(max_id)
 % and so we can plot it
 
 hold on
-plotBoundary(grains(max_id),'linecolor','red')
+plot(grains(max_id).boundary,'linecolor','red','linewidth',1.5)
 hold off
 
 %%
@@ -70,7 +70,7 @@ hold off
 large_grain_id = sorted_id(1:5);
 
 hold on
-plotBoundary(grains(large_grain_id),'linecolor','green','linewidth',1.5)
+plot(grains(large_grain_id).boundary,'linecolor','green','linewidth',1.5)
 hold off
 
 
@@ -82,7 +82,7 @@ hold off
 condition = grain_area > max_area/2;
 
 hold on
-plotBoundary(grains(condition),'linecolor','red','linewidth',1.5)
+plot(grains(condition).boundary,'linecolor','red','linewidth',1.5)
 hold off
 
 %%
@@ -116,18 +116,18 @@ selected_grains = grains(condition)
 plot(selected_grains)
 
 %% Indexing by orientation or position
-% In order to select a grain by its spatial coordinates the command
-% <GrainSet.findByLocation.html findByLocation> can be used
+% One can also select a grain by its spatial coordinates using the syntax
+% |grains(x,y)|
 
-position = [12000,4000];
+x = 12000; y = 4000;
 
 plot(grains);
 
 hold on
 
-plotBoundary(findByLocation(grains,position),'linewidth',2,'linecolor','r')
+plot(grains(x,y).boundary,'linewidth',2,'linecolor','r')
 
-plot(position(1),position(2),'marker','s','markerfacecolor','k',...
+plot(x,y,'marker','s','markerfacecolor','k',...
   'markersize',10,'markeredgecolor','w')
 hold off
 
@@ -136,7 +136,7 @@ hold off
 % command <GrainSet.findByOrientation.html findByOrientation>
 
 grains_selected = findByOrientation(grains('fo'),...
-  orientation('Euler',350*degree,50*degree,100*degree,CS),...
+  orientation('Euler',350*degree,50*degree,100*degree,grains('fo').CS),...
   10*degree)
 
 plot(grains_selected)
@@ -144,40 +144,17 @@ plot(grains_selected)
 
 
 %% Grain-size Analysis
-% Lets go back to the grain size and analyze its distribution. TO this end
+% Lets go back to the grain size and analyze its distribution. To this end
 % we consider the complete data set.
 
 mtexdata forsterite
 grains = calcGrains(ebsd)
 
 %%
-% and compute the vector of grain areas
+% Then the following command gives you a nice overview over the grain size
+% distributions of the grains
 
-ar = grains.area;
-
-%%
-% The following script compute the distribution of grain areas within the
-% data set.
-
-% define the binning of the areas
-bins = linspace(0,max(ar)+eps,15);
-
-% find for each area the binId
-[tmp,binId] = histc(ar,bins);
-
-% compute the sum of areas belonging to the same bin
-cumArea = zeros(1,numel(bins)-1);
-for i = 1:numel(bins)-1
-  cumArea(i) = sum(ar(binId == i)) ./ sum(ar);
-end
-
-% plot the result as a bar plot
-binCenter = 0.5*(bins(1:end-1)+bins(2:end));
-bar(binCenter,cumArea,'BarWidth',1)
-xlim([bins(1),bins(end)])
-xlabel('Grain Area')
-ylabel('relative volume')
-
+hist(grains)
 
 %%
 % Beside the area there are various other geometric properties that can be

@@ -37,7 +37,7 @@ classdef phaseList
       % if all phases are zero replace them by 1
       %if all(ebsd.phase == 0), ebsd.phase = ones(length(ebsd),1);end
 
-      pL.CSList = CSList;
+      pL.CSList = ensurecell(CSList);
       
       % check number of symmetries and phases coincides
       if numel(pL.phaseMap)>1 && length(pL.CSList) == 1
@@ -103,15 +103,20 @@ classdef phaseList
     function cs = get.CS(pL)
       
       % ensure single phase
-      id = pL.indexedPhasesId;
-               
-      if numel(id)>1     
+      id = unique(pL.phaseId,'rows');
+                     
+      if numel(id)>size(pL.phaseId,2)     
               
         error('MTEX:MultiplePhases',['This operatorion is only permitted for a single phase! ' ...
-          'Please see ' doclink('pLModifyData','modify EBSD data')  ...
+          'Please see ' doclink('EBSDModifyData','modify EBSD data')  ...
           '  for how to restrict EBSD data to a single phase.']);
+      
+      elseif numel(id) > 1
+        cs = pL.CSList(id);
+      else
+        cs = pL.CSList{id};
       end
-      cs = pL.CSList{id};
+      
             
     end
     

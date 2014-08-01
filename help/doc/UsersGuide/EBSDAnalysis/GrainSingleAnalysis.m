@@ -18,7 +18,7 @@ grains = calcGrains(ebsd)
 % The <GrainSet_index.html GrainSet> contains the EBSD data it was reconstructed from. We can
 % access these data by
 
-grain_selected = grains( grainSize(grains) >=  1160)
+grain_selected = grains( grains.grainSize >=  1160)
 grain_selected.ebsd
 
 %%
@@ -27,7 +27,8 @@ grain_selected.ebsd
 % adjusted to match the spatial coordinates, present in the EBSD or
 % GrainSet.
 
-grain_selected = findByLocation(grains,[12000  3000])
+grain_selected = grains(12000,3000)
+
 
 %%
 % you can get the id of this grain by
