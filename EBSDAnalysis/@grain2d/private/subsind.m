@@ -1,5 +1,10 @@
 function ind = subsind(grains,subs)
 
+if numel(subs)==2 && all(cellfun(@isnumeric, subs))
+  ind = grains.findByLocation([subs{:}]);
+  return
+end
+
 ind = true(length(grains),1);
       
 for i = 1:length(subs)

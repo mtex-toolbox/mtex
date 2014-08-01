@@ -54,8 +54,8 @@ hold on
 plotBoundary(grains,'linewidth',1.5)
 
 % mark two grains by location
-plotBoundary(findByLocation(grains,[12000 4000]),'linecolor','r','linewidth',2)
-plotBoundary(findByLocation(grains,[11300 6100]),'linecolor','r','linewidth',2)
+plot(grains(12000,4000).boundary,'linecolor','r','linewidth',2)
+plot(grains(11300,6100).boundary,'linecolor','r','linewidth',2)
 
 % stop overide mode
 hold off
@@ -80,8 +80,8 @@ hold on
 plotBoundary(grains)
 
 % mark two grains by location
-plotBoundary(findByLocation(grains,[12000 4000]),'linecolor','r','linewidth',2)
-plotBoundary(findByLocation(grains,[11300 6100]),'linecolor','r','linewidth',2)
+plot(grains(12000,4000).boundary,'linecolor','r','linewidth',2)
+plot(grains(11300,6100).boundary,'linecolor','r','linewidth',2)
 
 
 % stop overide mode
