@@ -108,8 +108,8 @@ grainBoundaryCiterions = {grainBoundaryCiterions.name};
 gbc      = get_flag(regexprep(grainBoundaryCiterions,'gbc_(\w*)\.m','$1'),varargin,'angle');
 gbcValue = get_option(varargin,gbc,15*degree,'double');
 
-if numel(gbcValue) == 1 && length(ebsd.allCS) > 1
-  gbcValue = repmat(gbcValue,size(ebsd.allCS));
+if numel(gbcValue) == 1 && length(ebsd.CSList) > 1
+  gbcValue = repmat(gbcValue,size(ebsd.CSList));
 end
 
 % get pairs of neighbouring cells {D_l,D_r} in A_D
@@ -133,7 +133,7 @@ for p = 1:numel(ebsd.phaseMap)
   if any(ndx)
     
     connect(ndx) = feval(['gbc_' gbc],...
-      ebsd.rotations,ebsd.allCS{p},Dl(ndx),Dr(ndx),gbcValue(p),varargin{:});
+      ebsd.rotations,ebsd.CSList{p},Dl(ndx),Dr(ndx),gbcValue(p),varargin{:});
     
   end  
 end

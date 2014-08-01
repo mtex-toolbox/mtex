@@ -158,8 +158,8 @@ if any(~unchanged) % some of the were merged
   for k=1:numel(cc)
     c = changed(k);
     phId = grains.phaseId(k);
-    if ~ischar(grains.allCS{phId})
-      meanRotation(c) = mean_CS(qcedx{k},grains.allCS{phId});
+    if ~ischar(grains.CSList{phId})
+      meanRotation(c) = mean_CS(qcedx{k},grains.CSList{phId});
     end
   end
   

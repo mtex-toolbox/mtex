@@ -31,21 +31,21 @@ for ip = 1:numel(grains.phaseMap)
   %matrix{ip,3} = int2str(nnz(grains.ebsd.phaseId == ip));  
   
   % abort in special cases
-  if isempty(grains.allCS{ip})
+  if isempty(grains.CSList{ip})
     continue
-  elseif ischar(grains.allCS{ip})
-    matrix{ip,3} = grains.allCS{ip};
+  elseif ischar(grains.CSList{ip})
+    matrix{ip,3} = grains.CSList{ip};
     continue
   else
     % mineral
-    matrix{ip,3} = char(grains.allCS{ip}.mineral);
+    matrix{ip,3} = char(grains.CSList{ip}.mineral);
   end
   
   % symmetry
-  matrix{ip,4} = grains.allCS{ip}.pointGroup;
+  matrix{ip,4} = grains.CSList{ip}.pointGroup;
   
   % reference frame
-  matrix{ip,5} = option2str(grains.allCS{ip}.alignment);
+  matrix{ip,5} = option2str(grains.CSList{ip}.alignment);
   
 end
 

@@ -1,4 +1,4 @@
-function ebsd = horzcat(varargin)
+function ebsd = cat(dim,varargin)
 % overloads [ebsd1,ebsd2,ebsd3..]
 %
 % Syntax 
@@ -13,15 +13,15 @@ if nargin == 1,
 end
 
 % concatenate properties
-ebsd = horzcat@dynProp(varargin{:});
+ebsd = cat@dynProp(1,varargin{:});
 
 for k=1:numel(varargin)
   s(k) = struct(varargin{k});
 end
 
 ebsd.phaseMap = vertcat(s.phaseMap);
-ebsd.CS = horzcat(s.allCS);
-ebsd.rotations = vertcat(s.rotations);
+ebsd.CS = horzcat(s.CSList);
+ebsd.rotations = cat(1,s.rotations);
 
 [ebsd.phaseMap,b] = unique(ebsd.phaseMap);
-ebsd.CS = ebsd.allCS(b);
+ebsd.CS = ebsd.CSList(b);

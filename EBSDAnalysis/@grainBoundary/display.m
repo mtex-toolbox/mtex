@@ -37,15 +37,15 @@ for ip = 1:size(pairs,1)
   matrix{ip,1} = int2str(num(ip));
   
   % phases
-  if ischar(gB.allCS{pairs(ip,1)})
-    matrix{ip,2} = gB.allCS{pairs(ip,1)};
+  if ischar(gB.CSList{pairs(ip,1)})
+    matrix{ip,2} = gB.CSList{pairs(ip,1)};
   else
-    matrix{ip,2} = gB.allCS{pairs(ip,1)}.mineral;
+    matrix{ip,2} = gB.CSList{pairs(ip,1)}.mineral;
   end
-  if ischar(gB.allCS{pairs(ip,2)})
-    matrix{ip,3} = gB.allCS{pairs(ip,2)};
+  if ischar(gB.CSList{pairs(ip,2)})
+    matrix{ip,3} = gB.CSList{pairs(ip,2)};
   else
-    matrix{ip,3} = gB.allCS{pairs(ip,2)}.mineral;
+    matrix{ip,3} = gB.CSList{pairs(ip,2)}.mineral;
   end
 
 end
