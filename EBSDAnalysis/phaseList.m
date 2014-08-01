@@ -11,7 +11,7 @@ classdef phaseList
     phase           % phase
     CS              % crystal symmetry of one specific phase
     mineral         % mineral name of one specific phase
-    MineralList     % list of mineral names
+    mineralList     % list of mineral names
     indexedPhasesId % id's of all non empty indexed phase
     color           % color of one specific phase
   end
@@ -180,7 +180,7 @@ classdef phaseList
       
     end
     
-    function minerals = get.MineralList(pL)
+    function minerals = get.mineralList(pL)
       isCS = cellfun('isclass',pL.CSList,'symmetry');
       minerals(isCS) = cellfun(@(x) x.mineral,pL.CSList(isCS),'uniformoutput',false);
       minerals(~isCS) = pL.CSList(~isCS);
