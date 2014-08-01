@@ -4,7 +4,7 @@ function h = plot(grains,varargin)
 % Syntax
 %   plot(grains) % colorize by phase
 %   
-%   plot(grains,'property','phase') % 
+%   plot(grains,property) % colorize by property
 %
 % Input
 %  grains  - @Grain2d
@@ -141,6 +141,10 @@ boundaryEdgeOrder(hole) = ...
   cellfun(@(x) x{1},boundaryEdgeOrder(hole),'UniformOutput',false);
 
 Polygons = [boundaryEdgeOrder(:)' holeEdgeOrder{:}];
+
+
+if size(d,1) ~= numel(boundaryEdgeOrder) && ...
+  size(d,2) == numel(boundaryEdgeOrder), d = d.'; end
 
 % how to colorize holes 
 % d(numel(boundaryEdgeOrder)+1:numel(Polygons),: ) = 1;
