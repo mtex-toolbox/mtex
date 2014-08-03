@@ -26,7 +26,6 @@ classdef EBSD < phaseList & dynProp & dynOption & misorientationAnalysis
   properties
     id = []               % unique id's starting with 1    
     rotations = rotation  % rotations without crystal symmetry
-    grainId = []          % index to a grain map
     A_D = []              % adjecency matrix of the measurement points
   end
   
