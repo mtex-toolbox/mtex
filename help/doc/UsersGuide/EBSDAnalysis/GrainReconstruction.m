@@ -134,7 +134,6 @@ grains_FMC = calcGrains(ebsd,'FMC',3.5)
 % We observe how this method nicely splits the measurements into clusters
 % of similar orientation
 
-% TODO
 plot(ebsd)
 
 % start overide mode
@@ -151,7 +150,7 @@ hold off
 
 mtexdata forsterite
 
-grains = calcGrains(ebsd,'angle',5*degree,'keepNotIndexed')
+[grains,ebsd] = calcGrains(ebsd,'angle',5*degree,'keepNotIndexed')
 
 close all
 plot(grains)

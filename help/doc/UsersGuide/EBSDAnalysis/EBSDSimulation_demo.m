@@ -28,19 +28,19 @@ plotODF(fibre_odf,'sections',6,'silent')
 %
 % This ODF we use now to simulate 10000 individual orientations.
 
-ebsd = calcEBSD(fibre_odf,10000)
+ori = calcOrientations(fibre_odf,10000)
 
 %% ODF Estimation from EBSD Data
 %
 % From the 10000 individual orientations we can now estimate an ODF. First
 % we determine the optimal kernel function
 
-psi = calcKernel(ebsd)
+psi = calcKernel(ori)
 
 %%
 % and then we use this kernel function for kernel density estimation
 
-odf = calcODF(ebsd,'kernel',psi)
+odf = calcODF(ori,'kernel',psi)
 
 %%
 % which can be plotted,
@@ -63,14 +63,14 @@ calcError(odf,fibre_odf,'resolution',5*degree)
 e = [];
 for i = 1:6
 
-  ebsd = calcEBSD(fibre_odf,10^i,'silent');
+  ori = calcOrientations(fibre_odf,10^i,'silent');
   
-  psi1 = calcKernel(ebsd,'SamplingSize',10000,'silent');
-  odf = calcODF(ebsd,'kernel',psi1,'silent');
+  psi1 = calcKernel(ori,'SamplingSize',10000,'silent');
+  odf = calcODF(ori,'kernel',psi1,'silent');
   e(i,1) = calcError(odf,fibre_odf,'resolution',2.5*degree);
   
-  psi2 = calcKernel(ebsd,'method','RuleOfThumb','silent');
-  odf = calcODF(ebsd,'kernel',psi2,'silent');
+  psi2 = calcKernel(ori,'method','RuleOfThumb','silent');
+  odf = calcODF(ori,'kernel',psi2,'silent');
   e(i,2) = calcError(odf,fibre_odf,'resolution',2.5*degree);  
 
   disp(['Rule of thumb: ' int2str(psi2.halfwidth/degree) mtexdegchar ...

@@ -62,14 +62,14 @@ plotPDF(odf_spherical,h,'antipodal','silent')
 % Next we simulate individual orientations from this odf, in a scattered
 % axis/angle plot in which the simulated data looks like a sphere
 
-ebsd_spherical = calcEBSD(odf_spherical,1000);
-scatter(ebsd_spherical)
+ori_spherical = calcOrientations(odf_spherical,1000);
+scatter(ori_spherical)
 
 %%
 % From this simulated ebsd data, we can estimate the parameters of the bingham
 % distribution,
 
-[qm,lambda,U,kappa] = mean(ebsd_spherical);
+[qm,lambda,U,kappa] = mean(ori_spherical);
 kappa'
 
 %%
@@ -78,9 +78,9 @@ kappa'
 %
 % next, we test the different cases of the distribution on rejection
 
-T_spherical = bingham_test(ebsd_spherical,'spherical','approximated');
-T_oblate    = bingham_test(ebsd_spherical,'prolate',  'approximated');
-T_prolate   = bingham_test(ebsd_spherical,'oblate',   'approximated');
+T_spherical = bingham_test(ori_spherical,'spherical','approximated');
+T_oblate    = bingham_test(ori_spherical,'prolate',  'approximated');
+T_prolate   = bingham_test(ori_spherical,'oblate',   'approximated');
 
 t = [T_spherical T_oblate T_prolate]
 
@@ -110,21 +110,21 @@ plotPDF(odf_prolate,h,'upper','silent')
 % As before, we generate some random orientations from an model odf. The
 % shape in a axis/angle scatter plot reminds of a cigar
 
-ebsd_prolate = calcEBSD(odf_prolate,1000);
-scatter(ebsd_prolate)
+ori_prolate = calcOrientations(odf_prolate,1000);
+scatter(ori_prolate)
 
 %%
 % We estimate the parameters of the bingham distribution
 
-[qm,lambda,U,kappa] = mean(ebsd_prolate);
+[qm,lambda,U,kappa] = mean(ori_prolate);
 kappa'
 
 %%
 % and test on the three cases
 
-T_spherical = bingham_test(ebsd_prolate,'spherical','approximated');
-T_oblate    = bingham_test(ebsd_prolate,'prolate',  'approximated');
-T_prolate   = bingham_test(ebsd_prolate,'oblate',   'approximated');
+T_spherical = bingham_test(ori_prolate,'spherical','approximated');
+T_oblate    = bingham_test(ori_prolate,'prolate',  'approximated');
+T_prolate   = bingham_test(ori_prolate,'oblate',   'approximated');
 
 t = [T_spherical T_oblate T_prolate]
 
@@ -154,21 +154,21 @@ plotPDF(odf_oblate,h,'antipodal','silent')
 %%
 % The oblate cases in axis/angle space reminds on a disk 
 
-ebsd_oblate = calcEBSD(odf_oblate,1000);
-scatter(ebsd_oblate)
+ori_oblate = calcOrientations(odf_oblate,1000);
+scatter(ori_oblate)
 
 %%
 % We estimate the parameters again
 
-[qm,lambda,U,kappa] = mean(ebsd_oblate);
+[qm,lambda,U,kappa] = mean(ori_oblate);
 kappa'
 
 %%
 % and do the tests
 
-T_spherical = bingham_test(ebsd_oblate,'spherical','approximated');
-T_oblate    = bingham_test(ebsd_oblate,'prolate',  'approximated');
-T_prolate   = bingham_test(ebsd_oblate,'oblate',   'approximated');
+T_spherical = bingham_test(ori_oblate,'spherical','approximated');
+T_oblate    = bingham_test(ori_oblate,'prolate',  'approximated');
+T_prolate   = bingham_test(ori_oblate,'oblate',   'approximated');
 
 t = [T_spherical T_oblate T_prolate]
 
