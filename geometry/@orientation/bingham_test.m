@@ -1,8 +1,8 @@
-function [T,p,v] = bingham_test(o,varargin)
+function [T,p,v] = bingham_test(ori,varargin)
 % bingham test for spherical/prolat/oblat case
 %
 % Input
-%  o      - @orientation / @EBSD / @GrainSet
+%  ori      - @orientation
 %
 % Options
 %  spherical - test case
@@ -16,18 +16,11 @@ function [T,p,v] = bingham_test(o,varargin)
 
 test_fun = parseArgs(varargin{:});
 
-if isa(o,'EBSD')
-  o = o.orientations;
-  if strfind(test_fun,'chat')
-    [kappa, lambda, Tv, n] = c_hat(o);
-  else
-    [q, lambda, Tv, kappa] = mean(o,varargin{:});
-    n = numel(o);  
-  end
-elseif isa(o,'double')
-  n = o;
-  kappa = varargin{1};
-  lambda = varargin{2};
+if strfind(test_fun,'chat')
+  [kappa, lambda, Tv, n] = c_hat(ori);
+else
+  [q, lambda, Tv, kappa] = mean(ori,varargin{:});
+  n = numel(ori);
 end
 
 if isempty(strfind(test_fun,'chat'))
