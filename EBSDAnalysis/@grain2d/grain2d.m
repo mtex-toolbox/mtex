@@ -24,14 +24,10 @@ classdef grain2d < phaseList & dynProp
   end
   
   methods
-    function grains = grain2d(ebsd,V,F,D,I_FD,A_Db,A_Do)
+    function grains = grain2d(ebsd,V,F,D,I_DG,I_FD,A_Db)
                   
       if nargin == 0, return;end
       
-      % compute grains as connected components of A_Do
-      % I_DG - incidence matrix cells to grains
-      I_DG = sparse(1:length(ebsd),double(connectedComponents(A_Do)),1);
-
       % compute phaseId's     
       grains.phaseId = max(I_DG' * ...
         spdiags(ebsd.phaseId,0,numel(ebsd.phaseId),numel(ebsd.phaseId)),[],2);

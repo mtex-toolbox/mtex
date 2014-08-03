@@ -1,4 +1,4 @@
-function grains = calcGrains(ebsd,varargin)
+function [grains,ebsd] = calcGrains(ebsd,varargin)
 % 2d and 3d construction of GrainSets from spatially indexed EBSD data
 %
 % Syntax
@@ -44,7 +44,14 @@ ebsd = removeDublicated(ebsd);
 % A_db - neigbhouring cells with grain boundary
 % A_Do - neigbhouring cells without grain boundary
 
-grains = grain2d(ebsd,V,F,D,I_FD,A_Db,A_Do);
+% compute grains as connected components of A_Do
+% I_DG - incidence matrix cells to grains
+I_DG = sparse(1:length(ebsd),double(connectedComponents(A_Do)),1);
+
+% store grain id
+[ebsd.prop.grainId,~] = find(I_DG.');
+
+grains = grain2d(ebsd,V,F,D,I_DG,I_FD,A_Db);
 
 end
 
@@ -102,7 +109,7 @@ function [A_Db,A_Do] = doSegmentation(I_FD,ebsd,varargin)
 % segmentation 
 
 % extract segmentation method
-grainBoundaryCiterions = dir([mtex_path '/qta/@EBSD/private/gbc*.m']);
+grainBoundaryCiterions = dir([mtex_path '/EBSDAnalysis/@EBSD/private/gbc*.m']);
 grainBoundaryCiterions = {grainBoundaryCiterions.name};
 
 gbc      = get_flag(regexprep(grainBoundaryCiterions,'gbc_(\w*)\.m','$1'),varargin,'angle');
