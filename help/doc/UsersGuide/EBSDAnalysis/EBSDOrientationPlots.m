@@ -32,7 +32,7 @@ plotPDF(ebsd('Fo').orientations,Miller(1,0,0,ebsd('Fo').CS))
 % Accordingly, scatter points in inverse pole figures are produced by the
 % command  <EBSD.plotIPDF.html plotIPDF>.
 
-plotIPDF(ebsd('Fo'),xvector)
+plotIPDF(ebsd('Fo').orientations,xvector)
 
 
 %% Scatter Plot in ODF Sections
@@ -42,7 +42,7 @@ plotIPDF(ebsd('Fo'),xvector)
 % plots not to become too crowed with points. The number of randomly chosen orientations
 % can be specified by the option *points*.
 
-plotODF(ebsd('Fo'),'points',1000,'sigma')
+plotODF(ebsd('Fo').orientations,'points',1000,'sigma','sections',9)
 
 
 %% Scatter Plot in Axis Angle or Rodrigues Space
@@ -50,7 +50,7 @@ plotODF(ebsd('Fo'),'points',1000,'sigma')
 % orientation space, i.e., either in axis/angle parameterization or in Rodrigues
 % parameterization.
 
-scatter(ebsd('Fo'),'center',idquaternion)
+scatter(ebsd('Fo').orientations,'center',idquaternion)
 
 %%
 % Here, the optional option 'center' specifies the center of the unique
@@ -71,19 +71,21 @@ grains = calcGrains(ebsd);
 % Then the scatter plot of the individual orientations of the Iron phase in
 % the inverse pole figure is achieved by
 
-plotIPDF(ebsd('Fo'),xvector,'points',1000, 'MarkerSize',3);
+plotIPDF(ebsd('Fo').orientations,xvector,'points',1000, 'MarkerSize',3);
 
 %%
 % In the same way the mean orientations of grains can be visualized
 
+hold all
 plotIPDF(grains('Fo').meanOrientation,xvector,'points',500, 'MarkerSize',3);
+hold off
 
 %%
 % One can also use different colors on the scatter points by certain [[EBSD.get.html,EBSD
 % properties]] or [[GrainSet.get.html,grain properties]]
 
-plotPDF(ebsd('Fo'),[Miller(1,0,0,ebsd('Fo').CS),Miller(1,1,0,ebsd('Fo').CS)],'antipodal','MarkerSize',4,...
-  'property','mad')
+plotPDF(ebsd('Fo').orientations,[Miller(1,0,0,ebsd('Fo').CS),Miller(1,1,0,ebsd('Fo').CS)],'antipodal','MarkerSize',4,...
+  'property',ebsd.mad)
 
 %%
 % or some arbitrary data vector

@@ -15,7 +15,7 @@ mtexdata forsterite
 % These data consist of two indexed phases, _Iron_ and _Magnesium_. The not
 % indexed phase called phase _not Indexed_. The phases can be visualized by
 
-close all, plotx2east
+close all; plotx2east
 plot(ebsd,'property','phase')
 
 %% Selecting a certain phase
@@ -39,10 +39,12 @@ plot(ebsd('Forsterite'))
 
 %%
 % The data are colorized according to its orientation. By default color of
-% an orientation is determined by its position in the 100 inverse pole
+% an orientation is determined by its position in the 001 inverse pole
 % figure which itself is colored as
 
-ebsdColorbar
+oM = ipdfHSVOrientationMapping(ebsd('Forsterite'))
+plot(oM)
+
 
 
 %% Restricting to a region of interest
@@ -59,7 +61,7 @@ region = [5 2 10 5]*10^3;
 % plot the ebsd data together with the region of interest
 
 close all
-plot(ebsd,'property','phase')
+plot(ebsd)
 rectangle('position',region,'edgecolor','r','linewidth',2)
 
 %%
@@ -79,7 +81,7 @@ ebsd = ebsd(condition)
 % plot
 
 close all
-plot(ebsd,'property','phase')
+plot(ebsd)
 
 %%
 % Note, that you can also select a polygon by mouse using the command
@@ -95,13 +97,13 @@ plot(ebsd,'property','phase')
 % measurements. 
 
 close all
-plot(ebsd,'property','mad')
+plot(ebsd,ebsd.mad)
 
 %%
 % or
 
 close all
-plot(ebsd,'property','bc')
+plot(ebsd,ebsd.bc)
 
 %%
 % Here we will use the MAD to identify and eliminate

@@ -168,10 +168,10 @@ set(gcf,'renderer','zbuffer')
 % the percentage of blue colored area in the map is equivalent to the fibre
 % volume
 
-vol = fibreVolume(ebsd('fo'),Miller(1,1,1),zvector,15*degree)
+vol = fibreVolume(ebsd('fo'),Miller(1,1,1,ebsd('fo').CS),zvector,15*degree)
 
 close all;
-plotIPDF(ebsd('fo'),zvector,'markercolor','k','marker','x')
+plotIPDF(ebsd('fo').orientations,zvector,'markercolor','k','marker','x')
 
 %%
 % we can easily extend the colorcoding
@@ -233,7 +233,7 @@ plot(odf,'sections',9,'antipodal','silent','sigma')
 %
 
 close all;
-plot(ebsd,'property','phase')
+plot(ebsd)
 
 %% SUB: Other properties
 %
@@ -243,7 +243,8 @@ plot(ebsd,'property','phase')
 % plotting option
 
 close all
-plot(ebsd,'property','bc')
+plot(ebsd,ebsd.bc)
+colorbar
 mtexColorMap white2black
 
 %%
@@ -251,7 +252,8 @@ mtexColorMap white2black
 % information to be plotted, where N referes to the number of measurements
 % in the EBSD data set.
 
-plot(ebsd('fo'),'property', ebsd('Forsterite').bc)
+plot(ebsd('fo'),ebsd('Forsterite').bc)
+colorbar
 
 %% 
 % if the size is just Nx1, the color can be adjusted with
@@ -265,7 +267,7 @@ mtexColorMap white2black
 % |'opengl'|.
 
 close all;
-plot(ebsd,'property','bc')
+plot(ebsd,ebsd.bc)
 mtexColorMap white2black
 
 hold on
@@ -277,7 +279,7 @@ plot(ebsd('fo'),'colorcoding',...
 % another example
 
 close all;
-plot(ebsd,'property','bc')
+plot(ebsd,ebsd.bc)
 mtexColorMap white2black
 
 hold on, plot(ebsd,'translucent',0.25)

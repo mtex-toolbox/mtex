@@ -4,9 +4,10 @@
 
 mtexdata sharp
 
-oM = ipdfHSVOrientationMapping(ebsd);
+oM = ipdfHSVOrientationMapping(ebsd('calcite'));
 
-close all;plot(ebsd,oM.orientation2color(ebsd.orientations))
+close all;
+plot(ebsd('calcite'),oM.orientation2color(ebsd('calcite').orientations))
 
 %%
 % and have a look into the 001 inverse pole figure.
@@ -18,8 +19,8 @@ h = project2FundamentalRegion(h);
 % compute the azimuth angle in degree
 color = h.rho ./ degree;
 
-plotIPDF(ebsd,zvector,'property',color,'MarkerSize',3,'grid')
-% colorbar % TODO
+plotIPDF(ebsd.orientations,zvector,'property',color,'MarkerSize',3,'grid')
+colorbar 
 
 %%
 % We see that all individual orientations are clustered around azimuth
@@ -27,7 +28,7 @@ plotIPDF(ebsd,zvector,'property',color,'MarkerSize',3,'grid')
 % increase the contrast for the main group we restrict the colorrange from
 % 20 degree to 29 degree.
 
-caxis([20 29]-120);
+caxis([20 30]);
 
 % by the following lines we colorcode the outliers in purple.
 cmap = colormap;
@@ -42,7 +43,7 @@ colormap(cmap)
 plot(ebsd,color)
 
 % set scaling of the angles to 20 - 29 degree
-caxis([20 29]-120);
+caxis([20 30]);
 
 % colorize outliers in purple.
 cmap = colormap;
@@ -62,7 +63,7 @@ color = oM.orientation2color(ebsd.orientations);
 
 plot(ebsd,color)
 
-caxis([20 29]-120);
+caxis([20 30]);
 colormap(cmap);
 
 %%
@@ -80,7 +81,7 @@ plot(ebsd,'sharp')
 
 colorbar
 hold on
-plotIPDF(ebsd,'points',10,'MarkerSize',10,'MarkerFaceColor','none','MarkerEdgeColor','k')
+plotIPDF(ebsd.orientations,'points',10,'MarkerSize',10,'MarkerFaceColor','none','MarkerEdgeColor','k')
 hold off
 
 %% 
@@ -90,10 +91,10 @@ hold off
 mtexdata forsterite
 
 % segment grains
-grains = calcGrains(ebsd)
+[grains,ebsd] = calcGrains(ebsd)
 
 % find largest grains
-largeGrains = grains(grainSize(grains)>500)
+largeGrains = grains(grains.grainSize>500)
 
 %%
 % When plotting one specific grain with its orientations we see that they
@@ -101,9 +102,9 @@ largeGrains = grains(grainSize(grains)>500)
 
 % plot a grain 
 close all
-plotBoundary(largeGrains(1),'linewidth',2)
+plot(largeGrains(1).boundary,'linewidth',2)
 hold on
-plot(largeGrains(1).ebsd,'property','orientations')
+plot(ebsd(largeGrains(1)))
 hold off
 
 %%
@@ -113,8 +114,8 @@ hold off
 % visualised. 
 
 % plot a grain 
-plotBoundary(largeGrains(1),'linewidth',2)
+plot(largeGrains(1).boundary,'linewidth',2)
 hold on
-plot(largeGrains(1).ebsd,'property','orientations','sharp')
+plot(ebsd(largeGrains(1)),'sharp')
 hold off
 
