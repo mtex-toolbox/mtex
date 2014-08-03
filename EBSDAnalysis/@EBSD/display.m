@@ -55,6 +55,8 @@ for ip = 1:numel(ebsd.phaseMap)
 
 end
 
+% remove empty rows
+matrix(histc(ebsd.phaseId,1:numel(ebsd.phaseMap))==0,:) = [];
 
 cprintf(matrix,'-L',' ','-Lc',...
   {'Phase' 'Orientations' 'Mineral' 'Color' 'Symmetry' 'Crystal reference frame'},...
