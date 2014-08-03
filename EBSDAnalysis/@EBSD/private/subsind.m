@@ -46,9 +46,9 @@ for i = 1:length(subs)
     end
     ind = ind & phases(ebsd.phaseId(:).');
     
-  elseif isa(subs{i},'grain')
+  elseif isa(subs{i},'grain2d')
     
-    ind = ind & ismember(ebsd.options.grain_id,subs{i}.id)';
+    ind = ind & ismember(ebsd.prop.grainId,subs{i}.id)';
     
   elseif isa(subs{i},'logical')
     
