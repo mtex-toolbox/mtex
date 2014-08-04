@@ -10,7 +10,7 @@ mnchlds = [mnchlds(2:find(p == mnchlds)-1) ; mnchlds(1) ; p]; % permutate positi
 set(gcf,'Children',mnchlds)
   
 uimenu(m,'label','Export Image','callback',@Export);
-uimenu(m,'label','Colorbar','callback',@mtexFig.colorbar);
+uimenu(m,'label','Colorbar','callback',@(a,b) mtexFig.colorbar);
 cm = uimenu(m,'label','Colormap');
 
 % Colormap submenu
