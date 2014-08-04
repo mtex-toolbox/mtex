@@ -18,30 +18,34 @@ for i = 1:length(mtexFig.children)
   % compute position in raster
   [col,row] = ind2sub([mtexFig.ncols mtexFig.nrows],i);
   
+  aw = mtexFig.axisWidth + mtexFig.innerPlotSpacing + sum(mtexFig.tightInset([1,3]));
+  ah = mtexFig.axisHeight + mtexFig.innerPlotSpacing + sum(mtexFig.tightInset([2,4]));
+  
   axisPos = [1 + mtexFig.outerPlotSpacing + ...
-    (col-1)*(mtexFig.axisWidth + mtexFig.innerPlotSpacing + mtexFig.cbx),...
-    1 + mtexFig.outerPlotSpacing + figSize(2) ...
-    - row * (mtexFig.axisHeight) ...
-    - (row-1)*(mtexFig.innerPlotSpacing + mtexFig.cby -1),...
+    (col-1)*aw + mtexFig.tightInset(1),...
+    figSize(2) + 1 + mtexFig.outerPlotSpacing ...
+    - row * ah ...
+    + mtexFig.innerPlotSpacing + mtexFig.tightInset(2),...
     mtexFig.axisWidth,mtexFig.axisHeight];
   set(mtexFig.children(i),'Units','pixels','Position',axisPos);
     
   % position the colorbars
-  if mtexFig.cbx > 0
+  if ~isempty(mtexFig.cBarAxis)
     
-    set(mtexFig.cBarAxis(i),'units','pixel','position',...
-      [axisPos(1)+mtexFig.axisWidth,...
-      axisPos(2)+1,...
-      mtexFig.cbx/2,mtexFig.axisHeight-1]);
-  elseif mtexFig.cby > 0
+    pos = get(mtexFig.cBarAxis(i),'position');
     
-    set(mtexFig.cBarAxis(i),'units','pixel','position',...
-      [axisPos(1),...
-      axisPos(2)-mtexFig.cby/2,...
-      mtexFig.axisWidth-1,mtexFig.cby/2]);
-    
+    if pos(4) > pos(3)
+      set(mtexFig.cBarAxis(i),'position',...
+        [axisPos(1)+mtexFig.axisWidth,...
+        axisPos(2)+1,...
+        pos(3),mtexFig.axisHeight-1]);
+    else
+      set(mtexFig.cBarAxis(i),'position',...
+        [axisPos(1),...
+        axisPos(2)-pos(4),...
+        mtexFig.axisWidth-1,pos(4)]);
+    end
   end
-  
 end
 
 % resize colorbaraxis
@@ -50,4 +54,28 @@ end
 % revert figure units
 set(fig,'Units',old_units);
 
+function testit
+
+close all
+mtexFig = mtexFigure;
+mtexFig.gca
+rectangle('position',[0,0,1,1])
+axis equal  tight
+title('asdsa')
+xlabel('asd')
+mtexFig.nextAxis;
+rectangle('position',[0,0,1,1])
+axis equal tight
+xlabel('asd')
+
+title('asdasd2')
+axis(mtexFig.children(1),'off')
+axis(mtexFig.children(2),'off')
+
+mtexFig.drawNow
+
 end
+
+
+end
+

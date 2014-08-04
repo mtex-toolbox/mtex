@@ -19,6 +19,7 @@ classdef mtexFigure < handle
     axisHeight        % height of an individual axis 
     cbx = 0           % colorbar width
     cby = 0           % colorbar height
+    tightInset = [0,0,0,0] % is added to axisSize
   end
   
   properties (Dependent = true)        

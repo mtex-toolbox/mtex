@@ -8,23 +8,23 @@ else
     
     if equalScale % one new colorbar
       
-      mtexFig.cBarAxis = colorbar('peer',mtexFig.children(end),'eastoutside');      
-      mtexFig.cby = 0;
-      mtexFig.cbx = 0;
+      mtexFig.cBarAxis = colorbar('peer',mtexFig.children(end),'eastoutside','units','pixel');
       
     else % many new colorbars
     
-      for i = 1:numel(mtexFig.children)
-        mtexFig.cBarAxis(i) = colorbar('peer',mtexFig.children(i),'southoutside');
-        mtexFig.cby = 30;
-        mtexFig.cbx = 0;
+      for i = 1:numel(mtexFig.children)        
+        mtexFig.cBarAxis(i) = optiondraw(colorbar('peer',mtexFig.children(i),'southoutside','units','pixel'),varargin{:});
+        pos = get(mtexFig.cBarAxis(i),'position');
+        if pos(3)<pos(4)
+          pos(3)=15;
+        else
+          pos(4)=15;
+        end
+        set(mtexFig.cBarAxis(i),'position',pos);
       end
       set(mtexFig.cBarAxis,'FontSize',getMTEXpref('FontSize'));
     end
   else % remove old colorbars
-    
-    mtexFig.cby = 0;
-    mtexFig.cbx = 0;
     delete(mtexFig.cBarAxis);
     mtexFig.cBarAxis = [];
   end
@@ -43,8 +43,6 @@ mtexFig.drawNow(varargin{:});
   end
 
 end
-
-
 
 
 function xx(varargin)

@@ -36,8 +36,8 @@ if mtexFig.keepAspectRatio
 
   % maximum axes width for a given partition
   lx = @(nc,nr) ceil(min(...
-    (figSize(1)-(nc-1)*mtexFig.innerPlotSpacing - nc*mtexFig.cbx)/nc,...
-    (figSize(2)-(nr-1)*mtexFig.innerPlotSpacing - nr*mtexFig.cby)/axesRatio/nr));
+    (figSize(1)-(nc-1)*mtexFig.innerPlotSpacing - nc*sum(mtexFig.tightInset([1,3])))/nc,...
+    (figSize(2)-(nr-1)*mtexFig.innerPlotSpacing - nr*sum(mtexFig.tightInset([2,4])))/axesRatio/nr));
 
   % start with one row partition
   mtexFig.nrows = 1; mtexFig.ncols = numel(mtexFig.children);
