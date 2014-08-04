@@ -13,7 +13,7 @@ else
     else % many new colorbars
     
       for i = 1:numel(mtexFig.children)        
-        mtexFig.cBarAxis(i) = optiondraw(colorbar('peer',mtexFig.children(i),'southoutside','units','pixel'),varargin{:});
+        mtexFig.cBarAxis(i) = optiondraw(colorbar('peer',mtexFig.children(i),'eastoutside','units','pixel'),varargin{:});
         pos = get(mtexFig.cBarAxis(i),'position');
         if pos(3)<pos(4)
           pos(3)=15;
