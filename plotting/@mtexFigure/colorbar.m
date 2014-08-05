@@ -1,33 +1,33 @@
 function colorbar(mtexFig,varargin)
 
-if check_option(varargin,'global')
-
-else
+if isempty(mtexFig.cBarAxis) % create some new colorbars
+    
+  if ~mtexFig.keepAspectRatio
   
-  if isempty(mtexFig.cBarAxis) % create some new colorbars  
+    mtexFig.cBarAxis = colorbar('peer',mtexFig.children(end),'eastoutside','units','pixel');
+    return
     
-    if equalScale % one new colorbar
+  elseif equalScale % one new colorbar
       
-      mtexFig.cBarAxis = colorbar('peer',mtexFig.children(end),'eastoutside','units','pixel');
+    mtexFig.cBarAxis = colorbar('peer',mtexFig.children(end),'eastoutside','units','pixel');
       
-    else % many new colorbars
+  else % many new colorbars
     
-      for i = 1:numel(mtexFig.children)        
-        mtexFig.cBarAxis(i) = optiondraw(colorbar('peer',mtexFig.children(i),'eastoutside','units','pixel'),varargin{:});
-        pos = get(mtexFig.cBarAxis(i),'position');
-        if pos(3)<pos(4)
-          pos(3)=15;
-        else
-          pos(4)=15;
-        end
-        set(mtexFig.cBarAxis(i),'position',pos);
+    for i = 1:numel(mtexFig.children)
+      mtexFig.cBarAxis(i) = optiondraw(colorbar('peer',mtexFig.children(i),'eastoutside','units','pixel'),varargin{:});
+      pos = get(mtexFig.cBarAxis(i),'position');
+      if pos(3)<pos(4)
+        pos(3)=15;
+      else
+        pos(4)=15;
       end
-      set(mtexFig.cBarAxis,'FontSize',getMTEXpref('FontSize'));
+      set(mtexFig.cBarAxis(i),'position',pos);
     end
-  else % remove old colorbars
-    delete(mtexFig.cBarAxis);
-    mtexFig.cBarAxis = [];
+    set(mtexFig.cBarAxis,'FontSize',getMTEXpref('FontSize'));
   end
+else % remove old colorbars
+  delete(mtexFig.cBarAxis);
+  mtexFig.cBarAxis = [];
 end
 
 mtexFig.drawNow(varargin{:});

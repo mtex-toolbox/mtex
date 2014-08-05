@@ -76,6 +76,11 @@ classdef mtexFigure < handle
       MTEXFigureMenu(mtexFig,varargin{:});
       
       function updateChildren(a,b)
+        
+        % prevent that this is called by colorbar
+        x = dbstack; 
+        if strcmpi(x(2).name,'colorbar'), return;end
+        
         mtexFig.children = ...
         flipud(findobj(mtexFig.parent,'type','axes','-not','tag','Colorbar')); 
       end
@@ -137,8 +142,8 @@ classdef mtexFigure < handle
       % the width of all axes is the number of columns times the width of
       % each single axis + inner and outer spacing
       
-      aw = mtexFig.ncols * mtexFig.axisWidth + ...
-        2*mtexFig.outerPlotSpacing + ...
+      aw = mtexFig.ncols * (mtexFig.axisWidth + sum(mtexFig.tightInset([1,3])))...
+        + 2*mtexFig.outerPlotSpacing + ...
         (mtexFig.ncols-1) * mtexFig.innerPlotSpacing;
     end
     
@@ -146,8 +151,8 @@ classdef mtexFigure < handle
       % the height of all axes is the number of rows times the height of
       % each single axis + inner and outer spacing
       
-      ah = mtexFig.nrows * mtexFig.axisHeight + ...
-        2*mtexFig.outerPlotSpacing + ...
+      ah = mtexFig.nrows * (mtexFig.axisHeight +  + sum(mtexFig.tightInset([2,4])))...
+        + 2*mtexFig.outerPlotSpacing + ...
         (mtexFig.nrows-1) * mtexFig.innerPlotSpacing;
     end
 

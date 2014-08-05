@@ -30,30 +30,38 @@ for i = 1:length(mtexFig.children)
   set(mtexFig.children(i),'Units','pixels','Position',axisPos);
     
   % position the colorbars
-  if ~isempty(mtexFig.cBarAxis)
+  if numel(mtexFig.cBarAxis) == numel(mtexFig.children)
     
-    pos = get(mtexFig.cBarAxis(i),'position');
+    resizeColorBar(mtexFig.cBarAxis(i))
+  
+  elseif ~isempty(mtexFig.cBarAxis) && i == numel(mtexFig.children) 
     
-    if pos(4) > pos(3)
-      set(mtexFig.cBarAxis(i),'position',...
-        [axisPos(1)+mtexFig.axisWidth,...
+    resizeColorBar(mtexFig.cBarAxis)
+    
+  end
+end
+
+% revert figure units
+set(fig,'Units',old_units);
+
+
+  function resizeColorBar(cBar)
+  
+    if ~mtexFig.keepAspectRatio, return; end
+    pos = get(cBar,'position');
+    if pos(4) > pos(3) % vertical
+      set(cBar,'position',...
+        [axisPos(1)+mtexFig.axisWidth+10,...
         axisPos(2)+1,...
         pos(3),mtexFig.axisHeight-1]);
-    else
-      set(mtexFig.cBarAxis(i),'position',...
+    else % horizonal
+      set(cBar,'position',...
         [axisPos(1),...
         axisPos(2)-pos(4),...
         mtexFig.axisWidth-1,pos(4)]);
     end
   end
-end
-
-% resize colorbaraxis
-%set(mtexFig.cBarAxis,'units','pixel','position',[mtexFig.outerPlotSpacing,mtexFig.outerPlotSpacing,figSize]);
-
-% revert figure units
-set(fig,'Units',old_units);
-
+  
 function testit
 
 close all

@@ -61,8 +61,19 @@ if mtexFig.keepAspectRatio
   mtexFig.axisHeight = ceil(mtexFig.axisWidth*axesRatio);
   
 else
-  mtexFig.axisWidth = (figSize(1)-(mtexFig.ncols-1)*mtexFig.innerPlotSpacing)/mtexFig.ncols;
-  mtexFig.axisHeight = (figSize(2)-(mtexFig.nrows-1)*mtexFig.innerPlotSpacing)/mtexFig.nrows;
+  
+  % determine colorbar size vertical only
+  if ~isempty(mtexFig.cBarAxis)
+    pos = mtexFig.cBarSize;
+  else
+    pos = [0,0];
+  end
+  
+  mtexFig.axisWidth = (figSize(1)-(mtexFig.ncols-1)*mtexFig.innerPlotSpacing ...
+    - mtexFig.ncols*sum(mtexFig.tightInset([1,3]))-pos(1))/mtexFig.ncols;
+  mtexFig.axisHeight = (figSize(2)-(mtexFig.nrows-1)*mtexFig.innerPlotSpacing ...
+    - mtexFig.nrows*sum(mtexFig.tightInset([2,4])))/mtexFig.nrows;
+  
 end
   
 end
