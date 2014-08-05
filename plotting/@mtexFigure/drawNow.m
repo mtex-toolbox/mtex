@@ -7,6 +7,10 @@ set(mtexFig.children,'units','pixel');
 rFcn = get(mtexFig.parent,'ResizeFcn');
 rFcn(mtexFig.parent,[]);
 
+% update children
+ mtexFig.children = flipud(findobj(mtexFig.parent,'type','axes',...
+   '-not','tag','Colorbar')); 
+
 getTightInset;
 
 if check_option(varargin,'autoPosition')  
@@ -40,8 +44,12 @@ end
       mtexFig.tightInset = get(ax,'tightInset');
       set(ax,'xTickLabel',xtl,'yTickLabel',ytl,'xlabel',xl,'ylabel',yl);
     else
+      axis(ax,'normal');
       mtexFig.tightInset = get(ax,'tightInset');
+      axis(ax,'equal');
     end
+    
+    
     
     if ~isempty(mtexFig.cBarAxis)
       
