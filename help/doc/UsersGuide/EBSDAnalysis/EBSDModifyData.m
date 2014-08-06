@@ -16,7 +16,7 @@ mtexdata forsterite
 % indexed phase called phase _not Indexed_. The phases can be visualized by
 
 close all; plotx2east
-plot(ebsd,'property','phase')
+plot(ebsd)
 
 %% Selecting a certain phase
 % In order to restrict the EBSD data to a certain phase just use the
@@ -98,12 +98,14 @@ plot(ebsd)
 
 close all
 plot(ebsd,ebsd.mad)
+colorbar(gcm)
 
 %%
 % or
 
 close all
 plot(ebsd,ebsd.bc)
+colorbar(gcm)
 
 %%
 % Here we will use the MAD to identify and eliminate

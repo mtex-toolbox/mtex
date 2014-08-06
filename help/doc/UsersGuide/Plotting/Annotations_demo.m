@@ -19,22 +19,28 @@ odf = 0.7*unimodalODF(mod1) + 0.3*unimodalODF(mod2)
 
 %% Adding a Colorbar
 %
-% Adding a colorbar is simply done by clicking the corresponding button in
-% the figure toolbar or using the command <colorbar.html colorbar>. Note
-% that the color range is automatically set to *equal* when adding a colorbar
-% to a figure with  more then one plot (see. <ColorCoding_demo.html Color Coding>).
+% Adding colorbars is done by using the command <mtexFigure.colorbar.html
+% colorbar>. 
 
 plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],'antipodal')
-colorbar
-
+colorbar(gcm)
 
 %%
 % Executing the command <colorbar.html colorbar> twice deletes the colorbar.
 % You can also have a horizontal colorbar at the bottom of the figure using
 % the option *south*.
 
-colorbar           % delete vertical colorbar
-colorbar('south')  % add horizontal colorbar
+colorbar(gcm)                           % delete vertical colorbar
+colorbar(gcm,'location','southOutSide') % add horizontal colorbars
+
+%%
+% If color range is equal in all plots of one figure only one colorbar
+% is added (see. <ColorCoding_demo.html Color Coding>).
+
+colorbar(gcm)      % delete colorbar
+CLim(gcm,'equal'); % set equal color range to all plots
+colorbar(gcm)      % create a new colorbar
+
 
 %% Adding Specimen and Crystal Directions
 %
@@ -57,8 +63,8 @@ annotate([Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(0,0,1,cs),Miller(2,-1,0,cs)],
 
 %% Adding Preferred Orientations
 %
-% One can also mark specific orientations in the pole figures or in the inverse pole
-% figures
+% One can also mark specific orientations in the pole figures or in the
+% inverse pole figures
 
 plotIPDF(odf,[xvector,zvector],'antipodal','marginx',10,'minmax','off')
 mtexColorMap white2black
@@ -71,7 +77,7 @@ annotate(mod2,...
     'label','B')
 
 %%
-% also ODF plots
+% as well as in ODF plots
 
 plot(odf,'sections',18,'sigma')
 mtexColorMap white2black
@@ -82,10 +88,10 @@ annotate(mod2,...
   'MarkerSize',15,'MarkerEdgeColor','g','MarkerFaceColor','none')
   
 %%
-% or EBSD scatter plots
+% or orientation scatter plots
 
-ebsd = calcEBSD(odf,200);
-scatter(ebsd,'center',mod1);
+ori = calcOrientations(odf,200);
+scatter(ori,'center',mod1);
 annotate(mod1,...
   'MarkerSize',10,'MarkerEdgeColor','r','MarkerFaceColor','r')
 annotate(mod2,...

@@ -132,16 +132,6 @@ plot(odf,'sections',6,'silent','sigma')
 % sigma sections are nothing else then the splitted 001 pole figure they
 % are much more simple to interprete then ussual phi2 sections.
 
-%% 3D Euler Space
-% Instead of sectioning one could plot the Euler Angles in 3D by using one
-% of the options
-%
-% * contour3
-% * surf3
-% * slice3
-%
-
-plot(odf,'surf3')
 
 %% Plotting the ODF along a fibre
 % For plotting the ODF along a certain fibre we have the command

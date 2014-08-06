@@ -34,7 +34,7 @@ pf = calcPoleFigure(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],...
 
 close all
 plot(pf)
-
+colorbar(gcm)
 
 %% Equal Colorcoding
 %
@@ -42,8 +42,8 @@ plot(pf)
 % a bit hard. If you want to have one colorcoding for all plots within one figure use the
 % option *colorrange* to *equal*.
 
-plot(pf,'colorrange','equal')
-
+plot(pf,'colorRange','equal')
+colorbar(gcm)
 
 %% Setting an Explicite Colorrange
 %
@@ -53,10 +53,12 @@ plot(pf,'colorrange','equal')
 close all
 plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],...
   'colorrange',[0 4],'antipodal');
+colorbar(gcm)
+
 figure
 plotPDF(.5*odf+.5*uniformODF(cs),[Miller(1,0,0,cs),Miller(1,1,1,cs)],...
   'colorrange',[0 4],'antipodal');
-
+colorbar(gcm)
 
 %% Setting the Contour Levels
 %
@@ -66,26 +68,14 @@ plotPDF(.5*odf+.5*uniformODF(cs),[Miller(1,0,0,cs),Miller(1,1,1,cs)],...
 close all
 plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],...
   'contourf',0:1:5,'antipodal')
-
+colorbar(gcm)
 
 %% Modifying the Colorrange After Plotting
 %
 % The color range of the figures can also be adjusted afterwards using the
-% command <setcolorrange.html setcolorrange>
+% command <mtexFigure.CLim.html CLim>
 
-setcolorrange([0.38,3.9])
-
-
-%% 
-% The command <setcolorrange.html setcolorrange> also allows to set an
-% equal colorcoding to all open figures.
-
-figure(1)
-plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],'antipodal')
-figure(2)
-plotPDF(.5*odf+.5*uniformODF(cs),[Miller(1,0,0,cs),Miller(1,1,1,cs)],'antipodal');
-
-setcolorrange('equal','all')
+CLim(gcm,[0.38,3.9])
 
 
 %% Logarithmic Plots
@@ -95,8 +85,8 @@ setcolorrange('equal','all')
 
 close all;
 plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],'antipodal','logarithmic')
-setcolorrange([0.01 12]);
-colorbar
+CLim(gcm,[0.01 12]);
+colorbar(gcm)
 
 
 %% Changing the Colormap
@@ -106,3 +96,4 @@ colorbar
 
 plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],'antipodal')
 mtexColorMap white2black
+colorbar(gcm)

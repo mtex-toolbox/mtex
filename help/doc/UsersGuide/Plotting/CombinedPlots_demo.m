@@ -27,16 +27,16 @@ hold off
 % let's simulate some EBSD data
 cs = symmetry('-3m');
 odf = unimodalODF(orientation('euler',0,0,0,cs));
-ebsd = calcEBSD(odf,100);
-ebsd_rotated = calcEBSD(rotate(odf,rotation('Euler',60*degree,60*degree,0*degree)),100);
+ori = calcOrientations(odf,100);
+ori_rotated = calcOrientations(rotate(odf,rotation('Euler',60*degree,60*degree,0*degree)),100);
 
 %%
 % plot them as a scatter plot in axis / angle parametrized orientation
 % space
 
-scatter(ebsd)
+scatter(ori)
 hold all
-scatter(ebsd_rotated);
+scatter(ori_rotated);
 hold off
 
 
@@ -44,9 +44,9 @@ hold off
 % a second way would be to superpose the pole figures of both EBSD data sets.
 
 h = [Miller(0,0,0,1,cs),Miller(1,0,-1,0,cs)];
-plotPDF(ebsd,h,'antipodal','MarkerSize',4)
+plotPDF(ori,h,'antipodal','MarkerSize',4)
 hold all % keep plot
-plotPDF(ebsd_rotated,h,'MarkerSize',4);
+plotPDF(ori_rotated,h,'MarkerSize',4);
 hold off % next plot command deletes all plots
 
 
@@ -57,9 +57,9 @@ hold off % next plot command deletes all plots
 plotPDF(odf,h,'antipodal','contourf','grid')
 mtexColorMap white2black
 hold all
-plotPDF(ebsd,h,'antipodal','MarkerSize',5,'MarkerColor','b','MarkerEdgeColor','w')
+plotPDF(ori,h,'antipodal','MarkerSize',5,'MarkerColor','b','MarkerEdgeColor','w')
 hold all
-plotPDF(ebsd_rotated,h,'MarkerSize',5,'MarkerColor','r','MarkerEdgeColor','k');
+plotPDF(ori_rotated,h,'MarkerSize',5,'MarkerColor','r','MarkerEdgeColor','k');
 hold off
 hh = legend({'EBSD 1','EBSD 2'},'units','normalized','position',[0.022 0.9 0.1 0.08]);
 
@@ -69,8 +69,8 @@ hh = legend({'EBSD 1','EBSD 2'},'units','normalized','position',[0.022 0.9 0.1 0
 plotODF(odf,'sections',8,'contourf','sigma')
 mtexColorMap white2black
 hold all
-plotODF(ebsd,'MarkerSize',6,'MarkerColor','b','MarkerEdgeColor','w')
-plotODF(ebsd_rotated,'MarkerSize',6,'MarkerColor','r','MarkerEdgeColor','k');
+plotODF(ori,'MarkerSize',6,'MarkerColor','b','MarkerEdgeColor','w')
+plotODF(ori_rotated,'MarkerSize',6,'MarkerColor','r','MarkerEdgeColor','k');
 hold off
 
 
