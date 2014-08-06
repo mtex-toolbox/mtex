@@ -39,7 +39,7 @@ classdef grain2d < phaseList & dynProp
       % I_FDint - faces x cells internal grain boundaries
       [I_FDext,I_FDint] = calcBoundary;
 
-      grains.id = 1:numel(grains.phaseId);
+      grains.id = (1:numel(grains.phaseId)).';
       grains.grainSize = full(sum(I_DG,1)).';
       grains.V = V; % vertices
                   

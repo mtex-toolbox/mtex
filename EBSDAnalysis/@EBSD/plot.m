@@ -31,7 +31,7 @@ mP = newMapPlot(varargin{:});
 % what to plot
 if nargin>1 && isnumeric(varargin{1})
   property = varargin{1};
-elseif numel(ebsd.indexedPhasesId)==1
+elseif numel(ebsd.indexedPhasesId)==1 
   
   ebsd = ebsd.subSet(ebsd.phaseId == ebsd.indexedPhasesId);
   
@@ -86,6 +86,8 @@ mP.extend(1) = min(mP.extend(1),min(ebsd.prop.x(:)));
 mP.extend(2) = max(mP.extend(2),max(ebsd.prop.x(:)));
 mP.extend(3) = min(mP.extend(3),min(ebsd.prop.y(:)));
 mP.extend(4) = max(mP.extend(4),max(ebsd.prop.y(:)));
+
+drawNow(gcm,varargin{:})
 
 if nargout==0, clear h; end
 

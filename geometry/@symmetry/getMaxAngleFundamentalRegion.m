@@ -7,7 +7,7 @@ switch cs.LaueName
     
     omega = pi;
     
-  case {'mmm','-3m','4/mmm','6/mmm'}
+  case {'mmm','-3m','4/mmm','6/mmm','-3m1','-31m'}
     
     omega = 2*atan(sqrt(1+2*tan(pi/2 / nfold(cs))^2));
     

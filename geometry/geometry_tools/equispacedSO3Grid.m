@@ -9,6 +9,11 @@ if maxAngle < pi/2/CS.multiplicityZ
   return
 end
 
+if ~isa(SS,'symmetry')
+  varargin = [{SS},varargin];
+  SS = symmetry('1','specimen');
+end
+
 % get fundamental region
 [maxAlpha,maxBeta,maxGamma] = getFundamentalRegion(CS,SS,'SO3Grid');
 maxGamma = maxGamma/2;

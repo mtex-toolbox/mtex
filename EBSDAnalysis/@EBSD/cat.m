@@ -20,8 +20,8 @@ for k=1:numel(varargin)
 end
 
 ebsd.phaseMap = vertcat(s.phaseMap);
-ebsd.CS = horzcat(s.CSList);
+ebsd.CSList = horzcat(s.CSList);
 ebsd.rotations = cat(1,s.rotations);
 
 [ebsd.phaseMap,b] = unique(ebsd.phaseMap);
-ebsd.CS = ebsd.CSList(b);
+ebsd.CSList = ebsd.CSList(b);

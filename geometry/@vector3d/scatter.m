@@ -121,7 +121,7 @@ for i = 1:numel(sP)
 
   if isappdata(sP(1).parent,'mtexFig')
     mtexFig = getappdata(sP(1).parent,'mtexFig');
-    mtexFig.drawNow(varargin{:});
+    mtexFig.drawNow('autoposition',varargin{:});
   end
 end
 
