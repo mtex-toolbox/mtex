@@ -25,9 +25,9 @@ plot(ebsd)
 % We start our investiagations of the Forsterite phase by plotting some
 % pole figures
 
-cs = ebsd('Forsterite').CS
+cs = ebsd('Forsterite').CS % the crystal symmetry of the forsterite phase
 h = [Miller(1,0,0,cs),Miller(0,1,0,cs),Miller(0,0,1,cs)];
-plotPDF(ebsd('Forsterite'),h,'antipodal')
+plotPDF(ebsd('Forsterite').orientations,h,'antipodal')
 
 %%
 % From the {100} pole figure we might suspect a fibre texture present in our
@@ -59,23 +59,23 @@ hold off
 % Next we want to answer the question which crystal direction is mapped to
 % |rOrth|. To this end we look at the corresponding inverse pole figure
 
-plotIPDF(ebsd('Forsterite'),rOrth,'smooth')
+plotIPDF(ebsd('Forsterite').orientations,rOrth,'smooth')
 
 annotate(Miller(0,1,0,cs))
 
 %%
 % From the inverse pole figure it becomes clear that the orientations are
 % close to the fibre |Miller(0,1,0)|, |rOrth|. Let check this by computing
-% the fibre volume
+% the fibre volume in percent
 
-100 * fibreVolume(ebsd('Forsterite'),Miller(0,1,0,cs),rOrth,10*degree)
+100 * fibreVolume(ebsd('Forsterite').orientations,Miller(0,1,0,cs),rOrth,10*degree)
 
 %%
 % Suprisingly this value is significantly lower then the value we obtained
 % we looking only at the 100 pole figure. Finaly lets plot the ODF along
 % this fibre
 
-odf = calcODF((ebsd('Forsterite')))
+odf = calcODF(ebsd('Forsterite').orientations)
 
 plotFibre(odf,Miller(0,1,0,cs),rOrth)
 

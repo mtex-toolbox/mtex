@@ -121,4 +121,4 @@ mtexColorMap white2black
 % MTEX also offers a three dimensional plot of pole figures which even
 % might be rotated freely in space
 
-plotPDF(odf,Miller(1,0,0,cs),'3d')
+plotPDF(odf,Miller(1,0,0,odf.CS),'3d')

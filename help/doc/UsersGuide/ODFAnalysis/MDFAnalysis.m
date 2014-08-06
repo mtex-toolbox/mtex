@@ -19,7 +19,7 @@ grains = calcGrains(ebsd)
 % The boundary misorientation distribution function for the phase
 % transition from Forsterite to Enstatite can be computed by
 
-mdf_boundary = calcMDF(grains('Fo'),grains('En'),'halfwidth',10*degree)
+mdf_boundary = calcODF(grains.boundary({'Fo','En'}).misorientation,'halfwidth',10*degree)
 
 %%
 % The misorientation distribution function can be processed as any other

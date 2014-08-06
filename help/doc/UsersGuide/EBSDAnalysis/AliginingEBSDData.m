@@ -1,4 +1,4 @@
-%% Align EBSD data to a reference frame
+%% Aligning EBSD data to a reference frame
 % How to align EBSD correctly to certain reference frames
 %%
 % This article discusses how 
@@ -27,9 +27,9 @@ plotPDF(ebsd('forsterite').orientations,Miller(1,2,3,CS),'contourf')
 % If you are unsatisfied with the orientation of your EBSD map in the
 % graphical output this might be simply because the alignment of
 % the reference frame of your data on your plot is not correct. In the
-% above picture the x-axis is plotted to east and the z-axis is plotted out
-% of plane. Assume you want to change this to z-axis into plane you need to
-% do
+% above pictures the x-axis is plotted to east and the z-axis is plotted
+% out of plane. Assume you want to change this to z-axis into plane you
+% need to do
 
 plotzIntoPlane;
 figure('position',[100 100 800 400])
@@ -49,7 +49,7 @@ plotPDF(ebsd('fo').orientations,Miller(1,2,3,CS),'contourf')
 % those changes of the alignment of the reference frame in the plots.
 
 %% Rotatating the data - realigning the reference frame
-% Sometimes it is necessary to relating the EBSD data to another external
+% Sometimes it is necessary to relate the EBSD data to a different external
 % reference frame, or to  change the external reference frame from one to
 % the other, e.g. if one wants to concatenate several ebsd data sets where
 % the mounting was not done in perfect coincidence. In these cases the data

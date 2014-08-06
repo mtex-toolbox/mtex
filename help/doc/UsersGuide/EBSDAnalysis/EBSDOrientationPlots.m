@@ -91,7 +91,7 @@ plotPDF(ebsd('Fo').orientations,[Miller(1,0,0,ebsd('Fo').CS),Miller(1,1,0,ebsd('
 % or some arbitrary data vector
 
 plotODF(grains('Fo').meanOrientation,'antipodal','sections',9,'MarkerSize',3,...
-  'property',shapefactor(grains('Fo')),'sigma');
+  'property',grains('Fo').area,'sigma');
 
 
 %%

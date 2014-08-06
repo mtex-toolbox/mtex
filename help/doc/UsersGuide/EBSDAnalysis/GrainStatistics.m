@@ -132,16 +132,18 @@ plot(x,y,'marker','s','markerfacecolor','k',...
 hold off
 
 %%
-% In order to select all grains with a certain orientation once can use the
-% command <GrainSet.findByOrientation.html findByOrientation>
+% In order to select all grains with a certain orientation one can do
 
-grains_selected = findByOrientation(grains('fo'),...
-  orientation('Euler',350*degree,50*degree,100*degree,grains('fo').CS),...
-  10*degree)
+% restrict first to Forsterite phase
+grains_fo = grains('fo') 
+
+% the reference orientation
+ori = orientation('Euler',350*degree,50*degree,100*degree,grains('fo').CS)
+
+% select all grain with misorientation angle to ori less then 20 degree
+grains_selected = grains_fo(angle(grains_fo.meanOrientation,ori)<20*degree)
 
 plot(grains_selected)
-
-
 
 %% Grain-size Analysis
 % Lets go back to the grain size and analyze its distribution. To this end
@@ -156,18 +158,19 @@ grains = calcGrains(ebsd)
 
 hist(grains)
 
-%%
+%% 
+% TODO
 % Beside the area there are various other geometric properties that can be
-% computed for grains, e.g., the <Grain2d.perimeter.html perimeter>,
-% the <GrainSet.diameter.html diameter>, the <Grain2d.equivalentradius.html
-% equivalentradius>, the <Grain2d.equivalentperimeter.html
-% equivalentperimeter>, the <Grain2d.aspectratio.html aspectratio>,
-% and the <Grain2d.shapefactor.html shapefactor>. The following is a simple
+% computed for grains, e.g., the <grain2d.perimeter.html perimeter>,
+% the <grain2d.diameter.html diameter>, the <grain2d.equivalentradius.html
+% equivalentradius>, the <grain2d.equivalentperimeter.html
+% equivalentperimeter>, the <grain2d.aspectratio.html aspectratio>,
+% and the <grain2d.shapefactor.html shapefactor>. The following is a simple
 % scatter plot of shapefactor against aspactratio to check for correlation.
 %
 
 % the size of the dots corresponds to the area of the grains
-scatter(grains.shapefactor, grains.aspectratio, 50*ar./max(ar) )
+%scatter(grains.shapefactor, grains.aspectratio, 50*ar./max(ar) )
 
 
 %% Spatial Dependencies
@@ -175,5 +178,5 @@ scatter(grains.shapefactor, grains.aspectratio, 50*ar./max(ar) )
 % dependence in the spatial arrangement or not, therefor we can count the
 % transitions to a neighbour grain
 
-[J, T, p ] = joinCount(grains,grains.phase)
+%[J, T, p ] = joinCount(grains,grains.phase)
 

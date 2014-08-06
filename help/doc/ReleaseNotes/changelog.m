@@ -34,7 +34,7 @@
 % the a axis. As an nice bonus you can now use TAB completion to cycle
 % through all possible properties and methods of a class.
 %
-% *Use *
+% *Use camelCaseCommands instead of this_style_commands*
 %
 % Formerly, MTEX used different naming conventions for function. Starting
 % with MTEX 4.0 all function names consisting of several words, have the
@@ -105,8 +105,14 @@
 %
 %   Miller(2,-1,-1,0,symmetry('-3m'),'UVTW')
 %
-
-
+% *Functionality that has been (temporarily) removed*
+%
+% * 3d EBSD data handling + 3d grains
+% * some grain functions like aspectRation, equivalent diamter
+% * logarithmic scaling of plots
+% * 3d plot of ODFs
+% * some of the orientation color maps
+%
 %% MTEX 3.5.0 - 12/2013
 %
 % *Misorientation colorcoding*

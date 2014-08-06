@@ -100,30 +100,20 @@ plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],...
 % The color range of the figures can also be adjusted afterwards using the
 % command <setcolorrange.html setcolorrange>
 
-setcolorrange([0.38,3.9])
+CLim(gcm,[0.38,3.9])
 
-
-%%
-% The command <setcolorrange.html setcolorrange> also allows to set an
-% equal color coding to all open figures.
-
-figure(1)
-plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],'antipodal')
-figure(2)
-plotPDF(.5*odf+.5*uniformODF(cs),[Miller(1,0,0,cs),Miller(1,1,1,cs)],'antipodal');
-
-setcolorrange('equal','all')
 
 
 %% Logarithmic Plots
 %
 % Sometimes logarithmic scaled plots are of interest. For this case all
 % plots in MTEX understand the option *logarithmic*, e.g.
+% TODO:
 
-close all;
-plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],'antipodal','logarithmic')
-setcolorrange([0.01 12]);
-colorbar
+%close all;
+%plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],'antipodal','logarithmic')
+%setcolorrange([0.01 12]);
+%colorbar
 
 %%
 % Finally, lets set back the default colormap.
