@@ -73,12 +73,14 @@ plotPDF(rec,h)
 
 %%
 %
+odf = SantaFe
+
 % define specimen directions
 r = regularS2Grid('antipodal')
 
 %%
 % define crystal directions
-h = [Miller(1,0,0,CS),Miller(1,1,0,CS),Miller(1,1,1,CS)];
+h = [Miller(1,0,0,odf.CS),Miller(1,1,0,odf.CS),Miller(1,1,1,odf.CS)];
 
 %%
 % simulate pole figure data

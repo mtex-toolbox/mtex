@@ -106,7 +106,7 @@ try
   opt = loader.getOptions('ignoreColumns','Phase');
   
   % set up EBSD variable
-  ebsd = EBSD(q,phase,get_option(varargin,'CS'),'options',opt,varargin{:});
+  ebsd = EBSD(q,phase,get_option(varargin,'CS',symmetry('m-3m')),'options',opt,varargin{:});
   
 catch
   interfaceError(fname)
