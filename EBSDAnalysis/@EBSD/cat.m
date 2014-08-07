@@ -15,9 +15,12 @@ end
 % concatenate properties
 ebsd = cat@dynProp(1,varargin{:});
 
+warning('off','MATLAB:structOnObject');
+warning off all
 for k=1:numel(varargin)
   s(k) = struct(varargin{k});
 end
+warning('on','MATLAB:structOnObject');
 
 ebsd.phaseMap = vertcat(s.phaseMap);
 ebsd.CSList = horzcat(s.CSList);
