@@ -105,14 +105,8 @@ switch lower(plotType)
         varargin = [varargin,{'removeAntipodal'}];
       end
     end
-    
-    if ~check_option(varargin,'density')
-      error(['No density given! For computing wave velocities '...
-      'the material density has to be specified. ' ...
-      'Please use the option ..''density'',value.. to do this.']);
-    end
-    rho = get_option(varargin,'density',1);
-    [vp,vs1,vs2,pp,ps1,ps2] = velocity(T,S2,rho); %#ok<ASGLU,NASGU>
+        
+    [vp,vs1,vs2,pp,ps1,ps2] = velocity(T,S2); %#ok<ASGLU>
     d = eval(get_option(varargin,'velocity','pp','char'));
     
   otherwise

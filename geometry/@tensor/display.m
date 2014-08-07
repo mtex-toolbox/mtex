@@ -19,7 +19,8 @@ disp([h ' ' docmethods(inputname(1))])
 % collect tensor properties
 props = fieldnames(T.opt);
 props = props(~strcmp(props,'name'));
-propV = cellfun(@(prop) char(T.opt.(prop)),props,'UniformOutput',false);
+
+propV = cellfun(@(prop) c2char(T.opt.(prop)),props,'UniformOutput',false);
 
 % add size if greater one
 if sum(size(T.M)>1) > T.rank
@@ -82,3 +83,13 @@ if isfinite(b) && abs(b) > 1
 end
 
 cprintf(M,'-L',' ','-ic','|F');
+
+end
+
+function c = c2char(c)
+if isnumeric(c)
+  c = num2str(c);
+else
+  c = char(c);
+end
+end

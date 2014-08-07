@@ -66,8 +66,12 @@ classdef dynOption
     end
     
     % --------------------------------------------
-    function dOpt = addOption(dOpt,name)
-      dOpt.opt.(name) = [];
+    function dOpt = addOption(dOpt,name,value)
+      if nargin == 2
+        dOpt.opt.(name) = [];
+      else
+        dOpt.opt.(name) = value;
+      end
     end
     
     % --------------------------------------------
