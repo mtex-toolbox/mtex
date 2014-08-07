@@ -116,7 +116,7 @@ for i = 1:numel(sP)
 
   % plot labels
   if check_option(varargin,{'text','label','labeled'})
-    text(v,get_option(varargin,{'text','label'}),'parent',sP(i).ax,varargin{:});
+    text(v,get_option(varargin,{'text','label'}),'parent',sP(i).ax,'addMarkerSpacing',varargin{:});
   end
 
   if isappdata(sP(1).parent,'mtexFig')
