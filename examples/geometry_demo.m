@@ -65,7 +65,7 @@ inv(rot)
 % *Definition*
 S = symmetry('triclinic',[1.1 1.3 2.3],[80 110 120]*degree);
 CS = symmetry('-3m',[2,2,1],'X||a','mineral','iron');
-SS = symmetry ('mmm');
+SS = symmetry ('mmm','specimen');
 
 % load from a cif file
 symmetry('quartz.cif')
@@ -134,7 +134,7 @@ angle(ori)
 %%
 % *Plotting*
 
-plot([ori,ori2])
+plotPDF([ori,ori2],Miller(1,0,0,CS))
 
 
 
