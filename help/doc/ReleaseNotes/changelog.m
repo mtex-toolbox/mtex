@@ -112,6 +112,8 @@
 % * logarithmic scaling of plots
 % * 3d plot of ODFs
 % * some of the orientation color maps
+% * fibreVolume
+% * Dirichlet kernel
 %
 %% MTEX 3.5.0 - 12/2013
 %
