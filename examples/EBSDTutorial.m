@@ -18,7 +18,7 @@ fname = fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt');
 
 
 % create an EBSD variable containing the data
-ebsd = loadEBSD(fname,CS,'interface','generic' ...
+ebsd = loadEBSD(fname,'CS',CS,'interface','generic' ...
   , 'ColumnNames', ...
   { 'Index' 'Phase' 'x' 'y' 'Euler1' 'Euler2' 'Euler3' 'MAD' 'BC' 'BS' 'Bands' 'Error' 'ReliabilityIndex'}, ...
   'ignorePhase', 0);
@@ -37,7 +37,8 @@ plot(ebsd('Fe'))
 % The colorcoding can be interpreted by the collored (0,0,1) inverse pole
 % figure
 
-colorbar('position',[100 100 250 250])
+oM = ipdfHSVOrientationMapping(ebsd('Fe'))
+plot(oM)
 
 %%
 
@@ -53,7 +54,7 @@ grains = calcGrains(ebsd)
 figure('position',[100 100 800 350])
 plot(ebsd('Fe'))
 hold on
-plotBoundary(grains,'linewidth',1.5)
+plot(grains.boundary,'linewidth',1.5)
 
 %%
 % One can also plot all the grains together with their mean orientation
@@ -65,11 +66,11 @@ plot(grains('Fe'))
 % Next we reconstruct an ODF from the EBSD data. Therefore, we first have
 % to fix a kenel function. This can be done by
 
-psi = calcKernel(grains('Fe'))
+psi = calcKernel(grains('Fe').meanOrientation)
 
 %%
 % Now the ODF is reconstructed by
-odf = calcODF(ebsd('Fe'),'kernel',psi)
+odf = calcODF(ebsd('Fe').orientations,'kernel',psi)
 
 %%
 % Once an ODF is estimated all the functionallity MTEX offers for 

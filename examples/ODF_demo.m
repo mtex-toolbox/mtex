@@ -17,7 +17,7 @@
 %
 % *Unimodal ODFs*
 
-SS  = symmetry('orthorhombic');
+SS  = symmetry('orthorhombic','specimen');
 CS  = symmetry('cubic');
 o   = orientation('brass',CS,SS);
 psi = vonMisesFisherKernel('halfwidth',20*degree);
@@ -101,9 +101,9 @@ mtexColorMap white2black
 % a) Construct a cubic unimodal ODF with mod at [0 0 1](3 1 0). (Miller
 % indice). What is its modal orientation in Euler angles?
 
-cs = symmetry('cubic');
+CS = symmetry('cubic');
 ori = orientation('Miller',[0 0 1],[3 1 0],CS);
-odf = unimodalODF(ori,cs,ss);
+odf = unimodalODF(ori);
 
 %%
 % b) Plot some pole figures. Are there pole figures with and without
@@ -130,7 +130,7 @@ close all;plotODF(odf,'sections',6)
 % the mod. Compare to an the uniform ODF.
 
 volume(odf,ori,10*degree)
-volume(uniformODF(cs,ss),ori,10*degree)
+volume(uniformODF(CS,SS),ori,10*degree)
 
 %%
 % e) Construct a trigonal ODF that consists of two fibres at h1 =

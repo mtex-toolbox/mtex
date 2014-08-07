@@ -12,7 +12,7 @@
 plotx2north
 
 CS = symmetry('cubic');
-SS = symmetry('orthorhombic');
+SS = symmetry('222','specimen');
 h = [Miller(1,1,1,CS),Miller(2,0,0,CS),Miller(2,2,0,CS)];
 
 
