@@ -81,7 +81,7 @@ hold off
 % <EBSD2odf.html here>. 
 
 odf = calcODF(ebsd('Fe').orientations,'halfwidth',10*degree)
-plotPDF(odf,Miller(1,0,0,cs),'antipodal')
+plotPDF(odf,Miller(1,0,0,odf.CS),'antipodal')
 
 
 %% SUB: Simulate EBSD Data
