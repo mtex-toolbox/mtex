@@ -47,11 +47,16 @@ for j = 1:numel(sP)
     if strcmpi(interpreter,'LaTeX') && ~isempty(regexp(s,'[\\\^_]','ONCE'))
       s = ['$' s '$']; %#ok<AGROW>
     end
+
+    if check_option(varargin,'addMarkerSpacing'),
+      tag = {'tag','addMarkerSpacing','UserData',[x(i),y(i)]};
+    else
+      tag = {};
+    end
     
     h = [h,optiondraw(text(x(i),y(i),s,'interpreter',interpreter,...
       'HorizontalAlignment','center','VerticalAlignment','middle',...
-      'tag','addMarkerSpacing','UserData',[x(i),y(i)],...
-      'margin',0.001,'parent',sP(j).ax),'FontSize',fs,varargin{2:end})]; %#ok<AGROW>
+      tag{:},'margin',0.001,'parent',sP(j).ax),'FontSize',fs,varargin{2:end})]; %#ok<AGROW>    
     
   end
 
