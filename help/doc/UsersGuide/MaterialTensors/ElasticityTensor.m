@@ -71,32 +71,36 @@ T = ChristoffelTensor(C,x)
 rho = 2.3
 
 %%
+% which we can write directly into the ellastic stiffness tensor
+C = addOption(C,'density',rho)
+
+%%
 % Then the velocities are computed by the command <tensor.velocity.html
 % velocity>
 
-[vp,vs1,vs2,pp,ps1,ps2] = velocity(C,xvector,rho)
+[vp,vs1,vs2,pp,ps1,ps2] = velocity(C,xvector)
 
 %%
 % In order to visualize these quantities there are several posibilities.
 % Let us first plot the direction dependend wave speed of the p-wave
 
-plot(C,'PlotType','velocity','vp','density',rho,'complete','upper')
+plot(C,'PlotType','velocity','vp','complete','upper')
 
 %%
 % Next we plot on the top of this plot the p-wave polarisation direction.
 
 hold on
-plot(C,'PlotType','velocity','pp','density',rho,'complete','upper')
+plot(C,'PlotType','velocity','pp','complete','upper')
 hold off
 
 %%
 % Finally we visualize the speed difference between the s1 and s2 waves
 % together with the  fast shear-wave polarization.
 
-plot(C,'PlotType','velocity','vs1-vs2','density',rho,'complete','upper')
+plot(C,'PlotType','velocity','vs1-vs2','complete','upper')
 
 hold on
-plot(C,'PlotType','velocity','ps1','density',rho,'complete','upper')
+plot(C,'PlotType','velocity','ps1','complete','upper')
 hold off
 
 
