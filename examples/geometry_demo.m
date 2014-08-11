@@ -37,7 +37,8 @@ plot([v,w],'FontSize',20)
 rot = rotation('Euler',10*degree,20*degree,30*degree);
 rot = rotation('axis',xvector,'angle',30*degree);
 rot = rotation('map',xvector,yvector,vector3d(0,1,1),zvector);
-rot = rotation('quaternion',0.5,0.5,0.5,0.5)
+rot = rotation('quaternion',0.5,0.5,0.5,0.5);
+rot = reflection(zvector)
 
 %%
 % *Calculations*
@@ -49,7 +50,7 @@ rot2 = rot * rot
 %%
 % *plotting*
 
-plot([rot rot2])
+scatter([rot rot2])
 
 %%
 % *Basic Functions*
@@ -63,12 +64,12 @@ inv(rot)
 
 %%
 % *Definition*
-S = symmetry('triclinic',[1.1 1.3 2.3],[80 110 120]*degree);
-CS = symmetry('-3m',[2,2,1],'X||a','mineral','iron');
-SS = symmetry ('mmm','specimen');
+S = crystalSymmetry('triclinic',[1.1 1.3 2.3],[80 110 120]*degree);
+CS = crystalSymmetry('-3m',[2,2,1],'X||a','mineral','iron');
+SS = specimenSymmetry ('mmm');
 
 % load from a cif file
-symmetry('quartz.cif')
+loadCIF('quartz')
 
 %%
 % *Basic Functions*
@@ -112,7 +113,7 @@ plot([h1,h2],'all','labeled')
 
 ori = orientation(rot,CS,SS)
 ori = orientation('Euler',alpha,beta,gamma,CS,SS)
-ori = orientation('brass',symmetry('cubic'))
+ori = orientation('brass',crystalSymmetry('cubic'))
 ori = orientation('Miller',[1 0 0],[1 1 1],CS,SS)
 
 %%
@@ -142,10 +143,10 @@ plotPDF([ori,ori2],Miller(1,0,0,CS))
 %
 % 1) Consider trigonal crystal symmetry.
 %
-% a) Find all crystallographic directions symmetrically equivalent to $h =
-% (1, 0, \bar 1, 0)$ (Miller indices)!
+% a) Find all crystallographic directions symmetrically equivalent to h =
+% (1, 0, -1, 0) (Miller indices)!
 
-CS = symmetry('-3m')
+CS = crystalSymmetry('-3m')
 h = Miller(1,0,-1,0,CS);
 symmetrise(h)
 

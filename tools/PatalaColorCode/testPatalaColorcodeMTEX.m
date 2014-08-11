@@ -37,7 +37,7 @@ plotx2east
 close all
 
 %---set the symmetry---%
-ebsd = set(ebsd,'CS',symmetry('23'));
+ebsd = set(ebsd,'CS',crystalSymmetry('23'));
 
 %---segment ebsd data into grains---%
 grains = calcGrains(ebsd);
@@ -56,7 +56,7 @@ colorbar('omega',[5,15,25,35,45,55,65,75,85])
 close all
 
 %---set the symmetry---%
-ebsd = set(ebsd,'CS',symmetry('222'));
+ebsd = set(ebsd,'CS',crystalSymmetry('222'));
 
 %---segment ebsd data into grains---%
 grains = calcGrains(ebsd);
@@ -74,7 +74,7 @@ colorbar('omega',[5,15,25,35,45,55,65,75,85,95,105,115])
 close all
 
 %---set the symmetry---%
-ebsd = set(ebsd,'CS',symmetry('422'));
+ebsd = set(ebsd,'CS',crystalSymmetry('422'));
 
 %---segment ebsd data into grains---%
 grains = calcGrains(ebsd);
@@ -92,7 +92,7 @@ colorbar('omega',[5,15,25,35,45,55,65,75,85,95])
 close all
 
 %---set the symmetry---%
-ebsd = set(ebsd,'CS',symmetry('432'));
+ebsd = set(ebsd,'CS',crystalSymmetry('432'));
 
 %---segment ebsd data into grains---%
 grains = calcGrains(ebsd);
@@ -110,7 +110,7 @@ colorbar('omega',[2.5:5:57.5,61.3997])
 close all
 
 %---set the symmetry---%
-ebsd = set(ebsd,'CS',symmetry('622'));
+ebsd = set(ebsd,'CS',crystalSymmetry('622'));
 
 %---segment ebsd data into grains---%
 grains = calcGrains(ebsd);

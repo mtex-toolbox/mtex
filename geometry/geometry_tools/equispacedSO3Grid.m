@@ -11,7 +11,7 @@ end
 
 if ~isa(SS,'symmetry')
   varargin = [{SS},varargin];
-  SS = symmetry('1','specimen');
+  SS = specimenSymmetry('1');
 end
 
 % get fundamental region
@@ -72,7 +72,7 @@ gamma = S1Grid(gamma,-maxGamma+dGamma(1,:),...
 res = 2 * maxGamma / ap2;
 
 % eliminiate 3 fold symmetry axis of cubic symmetries
-ind = fundamental_region(ori,CS,symmetry());
+ind = fundamental_region(ori,CS,specimenSymmetry);
 
 if nnz(ind) ~= 0
   % eliminate those rotations

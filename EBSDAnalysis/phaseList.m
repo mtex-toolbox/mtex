@@ -186,7 +186,7 @@ classdef phaseList
     end
     
     function minerals = get.mineralList(pL)
-      isCS = cellfun('isclass',pL.CSList,'symmetry');
+      isCS = cellfun('isclass',pL.CSList,'crystalSymmetry');
       minerals(isCS) = cellfun(@(x) x.mineral,pL.CSList(isCS),'uniformoutput',false);
       minerals(~isCS) = pL.CSList(~isCS);
     end

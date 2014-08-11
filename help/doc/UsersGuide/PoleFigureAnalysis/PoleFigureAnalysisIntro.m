@@ -23,7 +23,7 @@ import_wizard
 % wizard looks a follows.
 
 % specify scrystal and specimen symmetry
-cs = symmetry('32',[1.4,1.4,1.5]);
+cs = crystalSymmetry('32',[1.4,1.4,1.5]);
 
 % specify file names
 fname = {...
@@ -93,5 +93,5 @@ plotPDF(odf,h,'antipodal','superposition',c)
 % command to simulate pole figure is <ODF.calcPoleFigure.html
 % calcPoleFigure>, e.g.
 
-pf = calcPoleFigure(SantaFe,Miller(1,0,0,symmetry('m-3m')),regularS2Grid)
+pf = calcPoleFigure(SantaFe,Miller(1,0,0,crystalSymmetry('m-3m')),regularS2Grid)
 plot(pf)

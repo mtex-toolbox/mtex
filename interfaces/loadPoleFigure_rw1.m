@@ -46,7 +46,7 @@ try
             
   end
     
-  % pf = PoleFigure(Miller(1,1,1),r,data,symmetry('cubic'),symmetry);
+  % pf = PoleFigure(Miller(1,1,1),r,data,crystalSymmetry('cubic'));
   pf = PoleFigure(h,r,data.^2/500,varargin{:});
   
 catch 

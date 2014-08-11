@@ -7,8 +7,8 @@
 %% Import Pole Figures
 
 % specify crystal and specimen symmetry
-CS = symmetry('-3m',[1.4 1.4 1.5]);
-SS = symmetry;
+CS = crystalSymmetry('-3m',[1.4 1.4 1.5]);
+SS = specimensymmetry;
 
 % specify file names
 fname = {...

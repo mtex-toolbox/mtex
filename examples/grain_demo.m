@@ -13,8 +13,8 @@
 % specify crystal and specimen symmetry
 CS = {...
   'not Indexed',...
-  symmetry('m-3m','mineral','Fe'),... % crystal symmetry phase 1
-  symmetry('m-3m','mineral','Mg')};   % crystal symmetry phase 2
+  crystalSymmetry('m-3m','mineral','Fe'),... % crystal symmetry phase 1
+  crystalSymmetry('m-3m','mineral','Mg')};   % crystal symmetry phase 2
 
 %% Import ebsd data
 

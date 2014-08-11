@@ -1,24 +1,5 @@
-classdef symmetry < rotation
-% constructor
+classdef (Abstract) symmetry < rotation
 %
-%
-% Input
-%  name  - Schoenflies or International notation of the Laue group
-%  axes  - [a,b,c] --> length of the crystallographic axes
-%  angle - [alpha,beta,gamma] --> angle between the axes
-%
-% Syntax
-% symmetry -
-% symmetry('cubic') -
-% symmetry('2/m',[8.6 13 7.2],[90 116, 90]*degree,'mineral','orthoclase') -
-% symmetry('O') -
-% symmetry('LaueId',9) -
-% symmetry('SpaceId',153) -
-%
-% Output
-%  s - @symmetry
-%
-% Remarks
 % Supported Symmetries
 %
 %  id crystal system  Schoen-  Inter-    Laue     Rotational
@@ -57,23 +38,14 @@ classdef symmetry < rotation
 %  32 cubic           Oh       m-3m      m-3m     432
   
   properties
-
-    isCS = false; % is crystal symmetry
-    axes = [xvector,yvector,zvector]; % coordinate system
-    mineral = '';                     % mineral name
-    id = 1;                           % point group id, compare to symList
-    color = '';                       % color used for EBSD plotting    
+    id = 1;     % point group id, compare to symList    
   end
 
   properties (Dependent = true)
-      
-    alpha       % angle between b and c
-    beta        % angle between c and a
-    gamma       % angle between a and b
+    lattice     % type of crystal lattice
     pointGroup  % name of the point group
-    lattice     % type of crystal lattice 
     isLaue      % is it a Laue group
-    isProper   % does it contain only proper rotations
+    isProper    % does it contain only proper rotations
   end
   
   properties (Constant = true)
@@ -112,93 +84,20 @@ classdef symmetry < rotation
         
       else
 
-        try
-          s.id = findsymmetry(varargin{1});
-          varargin(1) = [];
-        catch %#ok<CTCH>
-          
-          if check_option(varargin,'noCIF')
-            error('symmetry "%s" not found',pGroup);
-          end
-  
-          %error('symmetry "%s" not found',varargin{1});
-          % may be it is a cif file
-          try
-            s = loadCIF(varargin{:});
-            return;
-          catch %#ok<CTCH>
-            if ~check_option(varargin,'silent')
-              help symmetry;
-              error('symmetry "%s" not found',varargin{1});
-            end
-          end
-        end        
+        s.id = findsymmetry(varargin{1});
+        
       end      
-                      
-      % get axes length (a b c)
-      if ~isempty(varargin) && isa(varargin{1},'double')
-        abc = varargin{1};
-        varargin(1) = [];
-      else 
-        abc = [1,1,1];
-      end
-      
-      % get axes angles (alpha beta gamma)
-      if ~isempty(varargin) && isa(varargin{1},'double') && ...
-          s.id < 12
-        angles = varargin{1};
-        if any(angles>2*pi), angles = angles * degree;end
-        varargin(1) = [];
-      elseif any(strcmp(symmetry.pointGroups(s.id).lattice,{'trigonal','hexagonal'}))
-        angles = [90 90 120] * degree;
-      else
-        angles = [90 90 90] * degree;
-      end
-
-      % compute coordinate system
-      s.axes = calcAxis(abc,angles,varargin{:});
-      
-      s.mineral = get_option(varargin,'mineral','');
-      s.color = get_option(varargin,'color','');
-      
-      % compute symmetry operations
-      r = calcQuat(s,varargin{:});
-      [s.a, s.b, s.c, s.d] = double(r);
-      s.i = isImproper(r);
-      
-      % decide crystal / specimen symmetry
-      s.isCS = ~check_option(varargin,'specimen');
-%      if check_option(varargin,'specimen')
-%        s.isCS = false;
-%      elseif check_option(varargin,'crystal')
-%      else
-%        s.isCS = true;
-%      else
-%        s.isCS = ~(numel(s.a)<=4 && all(isnull(norm(s.axes-[xvector,yvector,zvector]))));
-%      end
-      
-    end
-    
-    function alpha = get.alpha(cs)
-      alpha = angle(cs.axes(2),cs.axes(3));
-    end
-    
-    function beta = get.beta(cs)
-      beta = angle(cs.axes(3),cs.axes(1));
-    end
-    
-    function gamma = get.gamma(cs)
-      gamma = angle(cs.axes(1),cs.axes(2));
-    end
-    
-    function pg = get.pointGroup(cs)
-      pg = symmetry.pointGroups(cs.id).Inter;
+                                        
     end
     
     function l = get.lattice(cs)
       l = symmetry.pointGroups(cs.id).lattice;
     end
     
+    function pg = get.pointGroup(cs)
+      pg = symmetry.pointGroups(cs.id).Inter;
+    end
+            
     function r = get.isLaue(cs)
       r = cs.id == symmetry.pointGroups(cs.id).LaueId;
     end

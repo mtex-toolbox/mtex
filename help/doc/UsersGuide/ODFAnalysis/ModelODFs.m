@@ -38,8 +38,8 @@
 % one needs only to specify its crystal and specimen symmetry and to use
 % the command [[uniformODF.html,uniformODF]].
 
-cs = symmetry('cubic');
-ss = symmetry('orthorhombic');
+cs = crystalSymmetry('cubic');
+ss = speicmenSymmetry('orthorhombic');
 odf = uniformODF(cs,ss)
 
 %% Unimodal ODFs
@@ -57,7 +57,7 @@ odf = uniformODF(cs,ss)
 
 ori = orientation('Miller',[1,2,2],[2,2,1],cs,ss);
 psi = vonMisesFisherKernel('HALFWIDTH',10*degree);
-odf = unimodalODF(ori,psi,cs,ss)
+odf = unimodalODF(ori,psi)
 
 plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal')
 
@@ -87,7 +87,7 @@ plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal')
 
 h = Miller(0,0,1,cs);
 r = xvector;
-odf = fibreODF(h,r,cs,ss,psi)
+odf = fibreODF(h,r,ss,psi)
 
 plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal')
 
@@ -101,7 +101,7 @@ plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal')
 %
 % where $l=0,\ldots,L$ denotes the order of the Fourier coefficients.
 
-cs   = symmetry('1');    % crystal symmetry
+cs   = crystalSymmetry('1');    % crystal symmetry
 C = [1;reshape(eye(3),[],1);reshape(eye(5),[],1)]; % Fourier coefficients
 odf = FourierODF(C,cs)
 
@@ -133,7 +133,7 @@ plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal')
 % * four values lambda
 %
 
-cs = symmetry('-3m');
+cs = crystalSymmetry('-3m');
 
 %%
 % *Bingham unimodal ODF*
@@ -165,8 +165,8 @@ plot(odf,'sections',6,'silent','sigma');
 % All the above can be arbitrarily rotated and combinend. For instance, the
 % classical Santafe example can be defined by commands
 
-cs = symmetry('cubic');
-ss = symmetry('orthorhombic');
+cs = crystalSymmetry('cubic');
+ss = specimenSymmetry('orthorhombic');
 
 psi = vonMisesFisherKernel('halfwidth',10*degree);
 mod1 = orientation('Miller',[1,2,2],[2,2,1],cs,ss);

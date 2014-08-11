@@ -6,7 +6,7 @@ classdef fibreComponent < ODFComponent
     r
     psi = deLaValeePoussinKernel('halfwidth',10*degree);
     weights = 1;
-    SS = symmetry;
+    SS = specimenSymmetry;
   end
 
   properties (Dependent = true)

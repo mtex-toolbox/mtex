@@ -57,7 +57,7 @@ elseif ~isempty(sR.vertices)
 end
 % some testing code
 % 
-% sR = fundamentalSector(symmetry('-3m'))
+% sR = fundamentalSector(crystalSymmetry('-3m'))
 % v = plotS2Grid(sR)
 % [r,rho] = polarCoordinates(sR,v,sR.center);
 % pcolor(v,r)

@@ -1,7 +1,7 @@
 function [sym1,sym2] = extractSym(obj)
 % extract left and right symmetry from various objects
 
-sym1 = symmetry;
+sym1 = specimenSymmetry;
 sym2 = sym1;
 
 if isa(obj,'symmetry')

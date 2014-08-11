@@ -13,8 +13,8 @@
 % specify crystal and specimen symmetry
 CS = {...
   'Not Indexed',...
-  symmetry('m-3m','mineral','Fe'),... % crystal symmetry phase 1
-  symmetry('m-3m','mineral','Mg')};   % crystal symmetry phase 2
+  crystalSymmetry('m-3m','mineral','Fe'),... % crystal symmetry phase 1
+  crystalSymmetry('m-3m','mineral','Mg')};   % crystal symmetry phase 2
 
 %% import ebsd data
 
@@ -97,8 +97,8 @@ hold off
 %
 % Simulate EBSD data from a given standard ODF
 
-CS = symmetry('trigonal');
-fibre_odf = 0.5*uniformODF(CS) + 0.5*fibreODF(Miller(0,0,0,1,CS),zvector,CS);
+CS = crystalSymmetry('trigonal');
+fibre_odf = 0.5*uniformODF(CS) + 0.5*fibreODF(Miller(0,0,0,1,CS),zvector);
 plotODF(fibre_odf,'sections',6,'silent')
 ori = calcOrientations(fibre_odf,10000)
 

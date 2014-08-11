@@ -174,7 +174,7 @@ else
   else
     % otherwise its some orientation property
     CS        = grains.CSList;
-    SS        = symmetry;
+    SS        = specimenSymmetry;
     r         = grains.ebsd.rotations;
     isIndexed = ~isNotIndexed(grains.ebsd);
     

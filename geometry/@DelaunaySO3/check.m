@@ -1,9 +1,9 @@
 
 
-cs = symmetry('-3m',[1.4 1.4 1.5])
-ori = equispacedSO3Grid(cs,symmetry,'resolution',20*degree)
+cs = crystalSymmetry('-3m',[1.4 1.4 1.5])
+ori = equispacedSO3Grid(cs,specimenSymmetry,'resolution',20*degree)
 %ori = uorientation(randq(100),cs);
-%ori = orientation(rotation(symmetry('O')),cs)
+%ori = orientation(rotation(crystalSymmetry('O')),cs)
 
 % pertube data a bit
 %odf_pertube = unimodalODF(idquaternion,'halfwidth',0.5*degree);
@@ -118,7 +118,7 @@ toc
 
 %
 
-cs = symmetry('m-3m');
+cs = crystalSymmetry('m-3m');
 
 
 for k = 1:numel(cs)
@@ -130,7 +130,7 @@ end
 
 %% define an 
 
-cs = symmetry('O');
+cs = crystalSymmetry('O');
 
 x = linspace(-pi,pi,56);
 y = linspace(-pi,pi,56);
@@ -166,8 +166,8 @@ M = pdfMatrix(DSO3,h,r);
 
 %%
 
-cs = symmetry('-3m',[1.4 1.4 1.5])
-ori = equispacedSO3Grid(cs,symmetry,'resolution',5*degree)
+cs = crystalSymmetry('-3m',[1.4 1.4 1.5])
+ori = equispacedSO3Grid(cs,specimenSymmetry,'resolution',5*degree)
 DSO3 = DelaunaySO3(ori)
 
 %%

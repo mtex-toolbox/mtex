@@ -4,7 +4,7 @@ function qqplot(o)
 %
 % Example
 %
-%     qqplot(SO3Grid(2.5*degree,symmetry('m-3m')))
+%     qqplot(SO3Grid(2.5*degree,crystalSymmetry('m-3m')))
 %
 
 [o,h] = project2FundamentalRegion(o);

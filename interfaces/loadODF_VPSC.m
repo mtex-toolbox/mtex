@@ -14,7 +14,7 @@ elseif check_option(varargin,'check')
 end
 
 % set default values for the crystal and specimen symmetry
-cs = symmetry('cubic');
+cs = crystalSymmetry('cubic');
 
 % import the data
 [odf,options] = loadODF_generic(fname,'cs',cs,'bunge','degree',...

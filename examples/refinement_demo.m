@@ -6,7 +6,7 @@
 %% Some arbitrary modelODF
 
 
-cs = symmetry('cubic');
+cs = crystalSymmetry('cubic');
 
 ori1 = orientation('Euler',10*degree,10*degree,10*degree,'ABG',cs);
 ori2 = orientation('Euler',10*degree,30*degree,10*degree,'ABG',cs);

@@ -8,7 +8,7 @@
 
 %% Simulate pole figures
 
-CS = symmetry('m-3m');
+CS = crystalSymmetry('m-3m');
 
 % crystal directions
 h = [Miller(1,0,0,CS),Miller(1,1,0,CS),Miller(1,1,1,CS),Miller(2,1,1,CS)];

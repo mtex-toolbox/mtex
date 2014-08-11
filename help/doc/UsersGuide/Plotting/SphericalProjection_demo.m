@@ -19,7 +19,7 @@
 % In order to demostrate the different projections we start by defining a
 % model ODF.
 
-cs = symmetry('-3m');
+cs = crystalSymmetry('-3m');
 odf = fibreODF(Miller(1,1,0,cs),zvector)
 
 
@@ -93,7 +93,7 @@ plotPDF(odf,Miller(1,0,0,cs),'antipodal')
 % origin. Hence it might be a more intuitive projection if you look at
 % crystal directions.
 
-cs = symmetry('m-3m');
+cs = crystalSymmetry('m-3m');
 plot(cs,'hkl','projection','edist','grid_res',15*degree,'antipodal')
 
 

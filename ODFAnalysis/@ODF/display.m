@@ -18,14 +18,8 @@ if isempty(odf)
   return
 end
 
-csss = {'sample symmetry ','crystal symmetry'};
-
-% symmetries
-cs = odf.CS;
-ss = odf.SS;
-
 % ODF / MDF
-if isCS(ss) && isCS(cs)
+if isa(odf.SS,'crystalSymmetry') && isa(odf.CS,'crystalSymmetry')
   h = [h, doclink('MDF_index','MDF')];
 else
   h = [h,doclink('ODF_index','ODF')];
@@ -34,8 +28,8 @@ end
 disp([h ' ' docmethods(inputname(1))]);
 
 % display symmtries and minerals
-disp(['  ' csss{isCS(cs)+1} ': ', char(cs,'verbose')]);
-disp(['  ' csss{isCS(ss)+1} ': ',char(ss,'verbose')]);
+disp(char(odf.CS,'verbose'));
+disp(char(odf.SS,'verbose'));
 
 % display components
 disp(' ');

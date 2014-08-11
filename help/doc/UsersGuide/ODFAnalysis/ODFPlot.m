@@ -9,7 +9,7 @@
 %%
 % Let us first define some model ODFs to be plotted later on.
 
-cs = symmetry('32');
+cs = crystalSymmetry('32');
 mod1 = orientation('euler',90*degree,40*degree,110*degree,'ZYZ',cs);
 mod2 = orientation('euler',50*degree,30*degree,-30*degree,'ZYZ',cs);
 

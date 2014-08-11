@@ -39,7 +39,9 @@ end
 r = mtimes@rotation(a,b);
 
 % convert back to orientation
-if isCS(right) || isCS(left), r = orientation(r,right,left); end
+if isa(right,'crystalSymmetry') || isa(left,'crystalSymmetry')
+  r = orientation(r,right,left); 
+end
 
 % TODO!!!
 %if length(r.CS) > 1 && ...

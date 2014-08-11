@@ -72,7 +72,7 @@ if isempty(test{iphase})
   phases = unique(d{iphase});  
   d{iphase} = cellfun(@(s) find(strcmp(s,phases)),d{iphase});
   for i = 1:numel(phases)
-    cs{i} = symmetry('cubic','mineral',phases{i}); %#ok<AGROW>
+    cs{i} = crystalSymmetry('cubic','mineral',phases{i}); %#ok<AGROW>
   end
   varargin = [{'CS',cs},varargin];
   

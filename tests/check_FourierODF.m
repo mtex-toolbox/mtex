@@ -2,7 +2,7 @@
 
 %% set symmetries
 
-cs = symmetry('1');
+cs = crystalSymmetry('1');
 h = [Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(0,0,1,cs),Miller(1,-3,-4,cs)];
 
 %% check unimodal ODF

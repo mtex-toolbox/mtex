@@ -13,7 +13,7 @@
 %
 
 % specify scrystal and specimen symmetry
-cs = symmetry('-3m',[1.4,1.4,1.5]);
+cs = crystalSymmetry('-3m',[1.4,1.4,1.5]);
 
 % specify file names
 fname = {...

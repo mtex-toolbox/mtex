@@ -15,7 +15,7 @@
 % A tensor is defined by its entries and a crystal symmetry. Let us
 % consider a simple example. First we define some crystal symmetry
 
-cs = symmetry('1');
+cs = crystalSymmetry('1');
 
 %%
 % Next we define a two rank tensor by its matrix
@@ -35,7 +35,7 @@ T = tensor(diag([10 3 1]),cs)
 
 fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
 
-cs = symmetry('mmm',[4.7646 10.2296 5.9942]);
+cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942]);
 
 C = loadTensor(fname,cs,'name','stiffness')
 

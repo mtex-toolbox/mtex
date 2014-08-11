@@ -11,7 +11,7 @@ classdef ipdfOrientationMapping < orientationMapping
     function oM = ipdfOrientationMapping(varargin)
       oM = oM@orientationMapping(varargin{:});
       
-      if isCS(oM.CS2)
+      if isa(oM.CS2,'crystalSymmetry')
         oM.inversePoleFigureDirection = Miller(oM.inversePoleFigureDirection,oM.CS2);
       end
       

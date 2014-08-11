@@ -39,7 +39,7 @@ varargin(Tind) = [];
 % initialize avarage tensors
 TVoigt = T{1};
 TVoigt.M = zeros(size(T{1}));
-TVoigt.CS = symmetry;
+TVoigt.CS = specimenSymmetry;
 TReuss = TVoigt;
 
 % get phases and populate tensors

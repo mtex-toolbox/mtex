@@ -12,7 +12,7 @@
 %% Schmidt factor
 % Let us assume a Nickel crystal
 
-CS = symmetry('cubic',[3.523,3.523,3.523],'mineral','Nickel')
+CS = crystalSymmetry('cubic',[3.523,3.523,3.523],'mineral','Nickel')
 
 %%
 % Then for a certain slip plane

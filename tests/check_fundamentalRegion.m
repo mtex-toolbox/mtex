@@ -5,8 +5,8 @@ err2 = zeros(11);
 
 for s1 = 1:11
   for s2 = 2:11
-    CS1 = symmetry(s1);
-    CS2 = symmetry(s2);
+    CS1 = crystalSymmetry(s1);
+    CS2 = crystalSymmetry(s2);
     
     q1 = randq(n);
     q2 = randq(n);

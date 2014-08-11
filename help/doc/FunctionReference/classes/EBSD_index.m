@@ -29,7 +29,7 @@ import_wizard('ebsd')
 % wizard looks a follows.
 
 
-cs = symmetry('m-3m','mineral','Fe');      % crystal symmetry
+cs = crystalSymmetry('m-3m','mineral','Fe');      % crystal symmetry
 
 % file names
 fname = fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt');

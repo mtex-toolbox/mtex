@@ -30,8 +30,8 @@ function [odf,r,v1,v2] = centerSpecimen(odf,center,varargin)
 % Examples
 % Starting with an synthetic odf with orthorhombic symmetry
 %
-%       CS = symmetry('cubic')
-%       SS = symmetry('orthorhombic')
+%       CS = crystalSymmetry('cubic')
+%       SS = specimenSymmetry('orthorhombic')
 %       h = [Miller(0,0,1),Miller(0,1,1),Miller(1,1,1)];
 %       r = [ rotation('euler', 90*degree,35*degree,30*degree) ...
 %         rotation('euler', 90*degree,35*degree,0*degree)]
@@ -66,7 +66,7 @@ end
 if check_option(varargin,'Fourier')
   if ~check_option(odf,'fourier')
     L = get_option(varargin,{'bandwidth','L'},16);
-    odf.SS = symmetry;
+    odf.SS = specimenSymmetry;
     odf = FourierODF(odf,L);
   end
   options.odf = odf;

@@ -4,13 +4,13 @@ function [TVoigt, TReuss] = calcTensor(component,T,varargin)
 % init Voigt and Reuss averages
 TVoigt = T;
 TVoigt.M = zeros([repmat(3,1,T.rank) 1 1]);
-TVoigt.CS = symmetry;
+TVoigt.CS = specimenSymmetry;
 
 % for Reuss tensor invert tensor
 Tinv = inv(T);
 TReuss = Tinv;
 TReuss.M = zeros([repmat(3,1,T.rank) 1 1]);
-TReuss.CS = symmetry;
+TReuss.CS = specimenSymmetry;
   
 for l = 0:T.rank
   

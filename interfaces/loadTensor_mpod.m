@@ -49,7 +49,7 @@ str = file2cell(fname);
 try
   cs = mpod2symmetry(str,varargin{:});
 catch
-  cs = symmetry;
+  cs = specimenSymmetry;
 end
 
 T = {};

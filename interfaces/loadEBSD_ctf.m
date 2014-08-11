@@ -35,7 +35,7 @@ try
   nphase = sscanf(hl{phase_line},'%s\t%u');
   nphase = nphase(end);
   
-  ss = symmetry;
+  ss = specimenSymmetry;
   
   % Crystallogaphic Parameters of all phases
   Laue = {'-1','2/m','mmm','4/m','4/mmm',...
@@ -62,7 +62,7 @@ try
       
       % Laue group (class) number
       laue = Laue{sscanf(mpara{4},'%u')};
-      cs{K+1} = symmetry(laue,abc(:)',abg(:)','mineral',mineral); %#ok<AGROW>
+      cs{K+1} = crystalSymmetry(laue,abc(:)',abg(:)','mineral',mineral); %#ok<AGROW>
     end
   end
   

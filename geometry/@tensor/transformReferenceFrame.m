@@ -24,8 +24,8 @@ end
   
 
 % check for change of reference frame
-% cs1 = symmetry('triclinic',[1 2 3],[70 80 120]*degree,'Z||a*')
-% cs2 = symmetry('triclinic',[1 2 3],[70 80 120]*degree,'Z||b','X||a*')
+% cs1 = crystalSymmetry('triclinic',[1 2 3],[70 80 120]*degree,'Z||a*')
+% cs2 = crystalSymmetry('triclinic',[1 2 3],[70 80 120]*degree,'Z||b','X||a*')
 % T1 = tensor(rand(3),cs1)
 % T2 = T1.transformReferenceFrame(cs2)
 % o1 = orientation('Euler',30*degree,50*degree,120*degree,cs1)

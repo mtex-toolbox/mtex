@@ -3,8 +3,8 @@ classdef FourierComponent < ODFComponent
   
   properties
     f_hat    
-    CS = symmetry
-    SS = symmetry
+    CS = crystalSymmetry
+    SS = specimenSsymmetry
   end
  
   methods

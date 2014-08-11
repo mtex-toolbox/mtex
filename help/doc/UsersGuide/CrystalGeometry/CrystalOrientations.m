@@ -22,8 +22,8 @@
 % In order to define a crystal orientation one has to define crystal and
 % specimen symmetry first.
 
-cs = symmetry('cubic');
-ss = symmetry('orthorhombic','specimen');
+cs = crystalSymmetry('cubic');
+ss = specimenSymmetry('orthorhombic');
 
 %%
 %

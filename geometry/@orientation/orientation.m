@@ -8,8 +8,8 @@ classdef (InferiorClasses = {?rotation,?quaternion}) orientation < rotation
 
 properties
   
-  CS = symmetry('1');
-  SS = symmetry('1','specimen');
+  CS = crystalSymmetry('1');
+  SS = specimenSymmetry('1');
   
 end
 
@@ -88,7 +88,7 @@ methods
           
           case 'miller'
             
-            if ~o.CS.isCS
+            if ~isa(o.CS,'crystalSymmetry')
               o.CS = varargin{2}.CS;
             end
             o = orientation(Miller2quat(varargin{2:3},o.CS),o.CS,o.SS);       

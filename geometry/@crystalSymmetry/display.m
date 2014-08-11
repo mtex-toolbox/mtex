@@ -1,19 +1,8 @@
 function display(s)
 % standard output
 
-% check whether crystal or specimen symmetry
-if ~s.isCS
-  
-  disp(' ');
-  disp([inputname(1) ' = ' s.lattice ' specimen ' doclink('symmetry_index','symmetry') ' ' docmethods(inputname(1))]);
-  disp(' ');
-  
-  return
-end
-
-
 disp(' ');
-disp([inputname(1) ' = crystal ' doclink('symmetry_index','symmetry') ' ' docmethods(inputname(1))]);
+disp([inputname(1) ' = ' doclink('crystalSymmetry_index','crystalSymmetry') ' ' docmethods(inputname(1))]);
 
 disp(' ');
 
@@ -55,6 +44,3 @@ end
 cprintf(propV(:),'-L','  ','-ic','L','-la','L','-Lr',props,'-d',': ');
 
 disp(' ');
-
-
-

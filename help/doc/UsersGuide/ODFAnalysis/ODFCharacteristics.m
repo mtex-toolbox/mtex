@@ -13,7 +13,7 @@
 
 %%
 % A bimodal ODF:
-cs = symmetry('mmm');
+cs = crystalSymmetry('mmm');
 odf1 = unimodalODF(orientation('Euler',0,0,0,cs)) + ...
   unimodalODF(orientation('Euler',30*degree,0,0,cs))
 

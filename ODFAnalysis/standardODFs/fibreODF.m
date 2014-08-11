@@ -12,7 +12,7 @@ function odf = fibreODF(varargin)
 %   odf = fibreODF(h,r) % default halfwith 10*degree
 %   odf = fibreODF(h,r,'halfwidth',15*degree) % specify halfwidth
 %   odf = fibreODF(h,r,kernel) % specify @kernel shape
-%   odf = fibreODF(h,r,CS,SS)  % specify crystal and specimen symmetry
+%   odf = fibreODF(h,r,SS)  % specify crystal and specimen symmetry
 %
 % Input
 %  h      - @Miller / @vector3d crystal direction
@@ -28,15 +28,12 @@ function odf = fibreODF(varargin)
 % ODF/ODF uniformODF unimodalODF
 
 % get crystal and specimen symmetry
-[CS,SS] = extractSymmetries(varargin);
+SS = getClass(varargin,'symmetry',specimenSymmetry);
                       
 % get fibre
 h = argin_check(varargin{1},'Miller');
 r = argin_check(varargin{2},'vector3d');
-      
-% check crystal symmetry
-if isCS(CS), h = CS.ensureCS(h);end
-      
+           
 % get kernel
 if nargin > 2 && isa(varargin{3},'kernel')
   psi = varargin{3};

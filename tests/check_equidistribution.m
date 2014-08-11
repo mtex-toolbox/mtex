@@ -15,8 +15,8 @@ plotPDF(odf,h,'resolution',5*degree)
 
 return
 
-cs = symmetry();
-ss = symmetry();
+cs = crystalSymmetry();
+ss = specimenSymmetry();
 
 res = 5*degree;
 

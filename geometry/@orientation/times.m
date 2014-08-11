@@ -32,7 +32,7 @@ end
 r = times@rotation(a,b);
 
 % convert back to rotation
-if isCS(right) || isCS(left)
+if isa(right,'crystalSymmetry') || isa(left,'crystalSymmetry')
   if isa(b,'vector3d')
     r = Miller(r,left);
   else

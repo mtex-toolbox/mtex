@@ -46,8 +46,8 @@ toc
 
 %% check SO3Grid/find
 
-cs = symmetry('trigonal');
-ss = symmetry('1');
+cs = crystalSymmetry('trigonal');
+ss = specimenSymmetry('1');
 
 x = equispacedSO3Grid(cs,ss,'points',100000);
 y = equispacedSO3Grid(cs,ss,'points',100000);
