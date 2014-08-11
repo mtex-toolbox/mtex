@@ -78,7 +78,7 @@ if isempty(weights), weights = ones(size(q)); end
    
 % return varargin as options
 options = varargin;
-if ischeck, odf = uniformODF(symmetry,symmetry);return;end
+if ischeck, odf = uniformODF;return;end
 
 if numel(unique(weights)) > 1
   defaultMethod = 'interp';
