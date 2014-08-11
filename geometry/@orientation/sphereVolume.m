@@ -1,4 +1,4 @@
-function v = sphereVolume(ebsd,center,radius,varargin)
+function v = sphereVolume(ori,center,radius,varargin)
 % ratio of orientations with a certain orientation
 %
 % Description
@@ -16,18 +16,15 @@ function v = sphereVolume(ebsd,center,radius,varargin)
 % See also
 % ODF/volume
 
-% extract orientations
-o = ebsd.orientations;
-
 % compute volume
-if isempty(ebsd)
+if isempty(ori)
   
   v = 0;
 
 else
   
-  center = orientation(center,o.CS);
-  a = max(angle_outer(quaternion(o),quaternion(symmetrise(center))),[],2);
+  center = orientation(center,ori.CS);
+  a = max(angle_outer(quaternion(ori),quaternion(symmetrise(center))),[],2);
   
-  v = sum(ebsd.weights(a > pi - radius));
+  v = sum(ori.weights(a > pi - radius));
 end

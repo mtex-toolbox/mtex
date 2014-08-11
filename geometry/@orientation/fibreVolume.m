@@ -1,4 +1,4 @@
-function v = fibreVolume(ebsd,h,r,radius,varargin)
+function v = fibreVolume(ori,h,r,radius,varargin)
 % ratio of orientations close to a certain fibre
 %
 % Description
@@ -6,10 +6,10 @@ function v = fibreVolume(ebsd,h,r,radius,varargin)
 % a certain fibre
 %
 % Syntax
-%   v = volume(ebsd,h,r,radius)
+%   v = volume(ori,h,r,radius)
 %
 % Input
-%  ebsd   - @EBSD
+%  ori    - @orientation
 %  h      - @Miller
 %  r      - @vector3d
 %  radius - double
@@ -17,22 +17,22 @@ function v = fibreVolume(ebsd,h,r,radius,varargin)
 % See also
 % ODF/volume
 
-% extract orientations
-o = ebsd.orientations;
-
 % check input
 argin_check(h,{'Miller','vector3d'});
 if isa(h,'Miller')
-  h = o.CS.ensureCS(h);
+  h = ori.CS.ensureCS(h);
 else
-  h = Miller(h,o.CS);
+  h = Miller(h,ori.CS);
 end
 argin_check(r,'vector3d');
 argin_check(radius,'double');
 
 % compute volume
-if isempty(o)
+if isempty(ori)
   v = 0;
+elseif check_option(varargin,'weight')
+  weights = get_option(varargin,'weights');
+  v = mean(weights(angle(ori .\ r,h,varargin{:}) < radius));
 else
-  v = mean(ebsd.weights(angle(o .\ r,h,varargin{:}) < radius));
+  v = nnz(angle(ori .\ r,h,varargin{:}) < radius) ./ length(ori);
 end
