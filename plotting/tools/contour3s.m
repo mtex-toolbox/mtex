@@ -1,14 +1,14 @@
 function contour3s(x,y,z,Z,v,varargin)
 % contour-slices 
 
-%% Flag
+% Flag
 %  contour3
 %  surf3
 %  slice3
 %
 %  x,y,z,xy,yz,yz,xyz - slicing planes
 
-%%
+%
 % plot(SantaFe,'alpha','contour3','xyz','sections',90,'resolution',1*degree)
 % plot(SantaFe,'phi1','slice3','xyz')
 % plot(SantaFe,'sigma','surf3')
@@ -158,7 +158,7 @@ zlabel(labelz,'interpreter','LaTeX');
 
 end
 
-%%  
+% -----------------------------------------------------------------
 function sliceitz(e,c,x,y,z,Z)
 
 fx = get(e,'Value');
@@ -177,7 +177,7 @@ setappdata(gcbo,'slicingz',h);
 
 end
 
-%%
+% -----------------------------------------------------------------
 function sliceity(e,c,x,y,z,Z)
 
 fx = get(e,'Value');
@@ -196,7 +196,7 @@ setappdata(gcbo,'slicingy',h);
 
 end
 
-%%
+% ------------------------------------------------------------------
 function sliceitx(e,c,x,y,z,Z)
 
 fx = get(e,'Value');
