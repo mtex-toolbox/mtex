@@ -1,4 +1,4 @@
-classdef grainBoundary < phaseList & dynProp %& misorientationAnalysis
+classdef grainBoundary < phaseList & dynProp
   % grainBoundary list of grain boundaries in 2-D
   %
   % grainBoundary is used to extract, analyze and visualize grain
@@ -23,6 +23,10 @@ classdef grainBoundary < phaseList & dynProp %& misorientationAnalysis
   % general properties
   properties
     V = [] % vertices x,y coordinates    
+  end
+  
+  properties (Dependent = true)
+    misorientation
   end
   
   methods
@@ -70,7 +74,7 @@ classdef grainBoundary < phaseList & dynProp %& misorientationAnalysis
     end
 
     
-    function mori = misorientation(gB)
+    function mori = get.misorientation(gB)
             
       mori = orientation(gB.misrotation,gB.CS{:});
       
