@@ -30,7 +30,7 @@ mtexFig.drawNow(varargin{:});
     
     % if lower bound is close to zero - make it exactly zero
     c = get(peer,'CLim');
-    if c(1) / (c(2)-c(1))<1e-3;
+    if abs(c(1) / (c(2)-c(1)))<1e-3;
       set(peer,'CLim',[0,c(2)]);
     end
     

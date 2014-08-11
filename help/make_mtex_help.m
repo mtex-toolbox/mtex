@@ -1,4 +1,5 @@
-%% build help with the DocHelp Toolbox
+function make_mtex_help(varargin)
+% build help with the DocHelp Toolbox
 %
 
 % !find doc/UsersGuide -exec touch {} \;
@@ -147,3 +148,5 @@ builddocsearchdb(outputDir);
 %% set back mtex options
 
 setMTEXpref('generatingHelpMode',false);
+
+end
