@@ -1,40 +1,25 @@
 function  peri = perimeter(grains,varargin)
-% calculates the perimeter of a grain, with Holes
+% calculates the perimeter of a grain, with holes
 %
 % Input
-%  p - @GrainSet 
-%  property - if specified, returns only the length of
-%    boundary satisfying a <GrainSet.specialBoundary.html specialBoundary>
+%  p - @grain2d
 %
-% Options
-% options - please see <GrainSet.specialBoundary.html specialBoundary>
 % Output
 %  peri    - perimeter
 %
 % Syntax
-% p = perimeter(grains) - 
-%
-% p = perimeter(grains,10*degree) - returns the length of low angle
-%   boundaries per grain
-%
-% p = perimeter(grains,CSL(3)) - returns the length of special boundaries
-%   per grains
-%
-% p = perimeter(grains,property,...,param,val,...) -
+%   p = perimeter(grains) - 
 %
 % See also
-% Grain2d/equivalentperimeter
+% grain2d/equivalentperimeter
 
-f = specialBoundary(grains,varargin{:},[],'ext');
+hasHole = grains.hasHole;
+peri = zeros(size(grains));
 
-[i,g] = find(grains.I_FG(f,any(grains.I_DG)));
-f = f(i);
+polyPeri = @(ind) sum(sqrt(sum(diff(grains.V(ind,:)).^2,2)));
+peri(~hasHole) = cellfun(polyPeri,...
+  grains.poly(~hasHole));
 
-V = grains.V;
-F = grains.F;
-
-F = F(f,:);
-edgeLength = sqrt(sum((V(F(:,1),:) - V(F(:,2),:)).^2,2));
-
-peri = full(sparse(g,1,edgeLength,size(grains,1),1));
+peri(hasHole) = cellfun(@(c) sum(cellfun(polyPeri,c)),...
+  grains.poly(hasHole));
 
