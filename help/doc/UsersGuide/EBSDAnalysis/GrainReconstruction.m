@@ -51,11 +51,11 @@ grains = calcGrains(ebsd)
 hold on
 
 % plot the boundary of all grains
-plotBoundary(grains,'linewidth',1.5)
+plot(grains.boundary,'linewidth',1.5)
 
 % mark two grains by location
-plotBoundary(findByLocation(grains,[12000 4000]),'linecolor','r','linewidth',2)
-plotBoundary(findByLocation(grains,[11300 6100]),'linecolor','r','linewidth',2)
+plot(grains(12000,4000).boundary,'linecolor','r','linewidth',2)
+plot(grains(11300,6100).boundary,'linecolor','r','linewidth',2)
 
 % stop overide mode
 hold off
@@ -77,11 +77,11 @@ plot(ebsd)
 hold on
 
 % plot grain boundaries
-plotBoundary(grains)
+plot(grains.boundary)
 
 % mark two grains by location
-plotBoundary(findByLocation(grains,[12000 4000]),'linecolor','r','linewidth',2)
-plotBoundary(findByLocation(grains,[11300 6100]),'linecolor','r','linewidth',2)
+plot(grains(12000,4000).boundary,'linecolor','r','linewidth',2)
+plot(grains(11300,6100).boundary,'linecolor','r','linewidth',2)
 
 
 % stop overide mode
@@ -111,9 +111,9 @@ grains_high = calcGrains(ebsd,'angle',1*degree);
 grains_low  = calcGrains(ebsd,'angle',0.5*degree);
 
 figure('position',[100 100 800 350])
-plotBoundary(grains_high)
+plot(grains_high.boundary)
 figure('position',[500 100 800 350])
-plotBoundary(grains_low)
+plot(grains_low.boundary)
 
 %%
 % As an alternative MTEX includes the fast multiscale clustering method
@@ -134,11 +134,11 @@ grains_FMC = calcGrains(ebsd,'FMC',3.5)
 % We observe how this method nicely splits the measurements into clusters
 % of similar orientation
 
-plot(ebsd,'sharp')
+plot(ebsd)
 
 % start overide mode
 hold on
-plotBoundary(grains_FMC,'linewidth',1.5)
+plot(grains_FMC.boundary,'linewidth',1.5)
 
 % stop overide mode
 hold off
@@ -150,37 +150,37 @@ hold off
 
 mtexdata forsterite
 
-grains = calcGrains(ebsd,'angle',5*degree,'keepNotIndexed')
+[grains,ebsd] = calcGrains(ebsd,'angle',5*degree,'keepNotIndexed')
 
 close all
-plot(grains,'property','phase')
+plot(grains)
 
 %%
 % The number of measurements per grain can be accessed by the command
 % <GrainSet.grainSize.html GrainSize>. Let us determine the number of
 % grains with less then 10 measurements
 
-nnz(grainSize(grains) < 5)
+nnz(grains.grainSize < 5)
 
 % or the percentage of those grains relative to the total number of grains
-100 * nnz(grainSize(grains) < 10) / numel(grains)
+100 * nnz(grains.grainSize < 10) / length(grains)
 
 %%
 % We see that almost 92 percent of all grains consist of less then ten
 % measurement points. Next, we compute the percentage of small grains for
 % the individuell phases
 
-p = 100*[nnz(grainSize(grains('notIndexed')) < 10) ...
-  nnz(grainSize(grains('forsterite')) < 10) ...
-  nnz(grainSize(grains('enstatite')) < 10) ...
-  nnz(grainSize(grains('diopside')) < 10)]./numel(grains)
+p = 100*[nnz(grains('notIndexed').grainSize < 10); ...
+  nnz(grains('forsterite').grainSize < 10); ...
+  nnz(grains('enstatite').grainSize < 10); ...
+  nnz(grains('diopside').grainSize < 10)]./length(grains)
 
 %%
 % We see that almost all small grains are acually not indexed. In order to
 % allow filling in those holes we remove these small not indexed grains
 % completely from the data set
 
-condition = grainSize(grains)>=10 | grains.phase>0;
+condition = grains.grainSize >=10 | grains.phase > 0;
 
 grains(condition)
 
@@ -188,7 +188,7 @@ grains(condition)
 % If we now perform grain reconstruction a second time these small holes
 % will be assigned to the neighbouring grains
 
-grains = calcGrains(grains(condition).ebsd,'keepNotIndexed')
+grains = calcGrains(ebsd(grains(condition)),'keepNotIndexed')
 
 plot(grains)
 
@@ -197,7 +197,7 @@ plot(grains)
 % correcting EBSD data is to filter them accoring to quality measures like
 % MAD or band contrast. Lets plot the band contrast of our measurements
 
-plot(ebsd,'property','bc')
+plot(ebsd,ebsd.bc)
 
 colorbar
 

@@ -1,9 +1,9 @@
 function varargout = bucketSearch(V,X)
 % n-d search of the closest vertex out of a set of vertices V
 
-%% output
+% output
 %
-%% Example
+% Example
 %  bucketsearch2(rand(300,2),rand(200000,2));
 %
 

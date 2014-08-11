@@ -25,7 +25,7 @@ plotx2east
 %%
 % and <EBSD.calcGrains.html reconstruct> grains by
 
-grains = calcGrains(ebsd,'threshold',5*degree);
+[grains,ebsd] = calcGrains(ebsd,'threshold',5*degree);
 
 
 %% Intergranular misorientations
@@ -35,26 +35,44 @@ grains = calcGrains(ebsd,'threshold',5*degree);
 % <ebsd_get.html,get>.
 
 % get the misorientations to mean
-mori = grains('Fo').mis2mean
+mori = mis2mean(ebsd('Fo'),grains)
 
 % plot a histogram of the misorientation angles
 close all
-hist(angle(mori)/degree)
+hist(mori.angle/degree)
 xlabel('Misorientation angles in degree')
 
 %%
 % The visualization of the misorientation can be done by
 
-close,   plot(grains('Forsterite').ebsd,...
-  'property',grains('Forsterite').mis2mean,'colorcoding','angle')
-hold on, plotBoundary(grains,'edgecolor','k','linewidth',.5)
+close all
+plot(ebsd('Forsterite'), angle(mis2mean(ebsd('Forsterite'),grains))./degree)
+colorbar
+hold on
+plot(grains.boundary,'edgecolor','k','linewidth',.5)
+hold off
 
 %% Boundary misorientations
 % The misorientation between adjacent grains can be computed by the command
-% <GrainSet.calcMisorientation.html>
+% <grainBoundary.misorientation.html>
 
 % get the id of the largest grain
 [~,id] = max(grains.grainSize);
+
+
+plot(grains(id))
+
+%%
+
+plot(grains(id).boundary({'Fo','Fo'}),'linecolor','r')
+
+grains(id).boundary({'Fo','Fo'}).misorientation
+
+%%
+
+
+
+%%
 
 % get the neigbours of this grain
 neigbourId = find(grains.A_G(:,id));

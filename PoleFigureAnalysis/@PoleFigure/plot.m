@@ -19,9 +19,11 @@ for i = 1:length(pf.allH)
   
   if i>1, mtexFig.nextAxis; end
   
-  pf.allR{i}.plot(pf.allI{i},'TR',pf.allH{i},...
+  pf.allR{i}.plot(pf.allI{i},'TR','',...
     'dynamicMarkerSize','parent',mtexFig.gca,'doNotDraw',varargin{:});
-      
+  %title(mtexFig.gca,char(pf.allH{i},'LaTex'),...
+  %  'FontSize',getMTEXpref('FontSize'),'Interpreter','LaTex');
+  title(mtexFig.gca,char(pf.allH{i}),'FontSize',getMTEXpref('FontSize'));
 end
 
 if isNew % finalize plot
@@ -30,5 +32,5 @@ if isNew % finalize plot
   setappdata(gcf,'CS',pf.CS);
   set(gcf,'Name',['Pole Figures of Specimen ',inputname(1)]);
   set(gcf,'Tag','pdf');
-  mtexFig.drawNow('autoPosition');
+  mtexFig.drawNow('autoPosition',varargin{:});
 end

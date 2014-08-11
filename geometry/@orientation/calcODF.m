@@ -3,7 +3,7 @@ function odf = calcODF(ori,varargin)
 %
 % *calcODF* is one of the core function of the MTEX toolbox.
 % It estimates an ODF from a set of individual crystal orientations by
-% [[EBSD2odf.html kernel,density estimation]].
+% <EBSD2odf.html kernel density estimation>.
 %
 % The function *calcODF* has several options to control the halfwidth of
 % the kernel functions, the resolution, etc. Most important the estimated
@@ -12,11 +12,10 @@ function odf = calcODF(ori,varargin)
 % If the halfwidth is large the estimated ODF is smooth whereas a small halfwidth
 % results in a sharp ODF. It depends on your prior information about the
 % ODF to choose this parameter right. Look at this
-% [[EBSDSimulation_demo.html, description]] for exhausive discussion.
+% <EBSDSimulation_demo.html description> for exhausive discussion.
 %
 % Syntax
-%   calcODF(ori,...,param,var,...)
-%   calcODF(ebsd,...,param,var,...)
+%   calcODF(ori,)
 %
 % Input
 %  ori  - @orientation

@@ -94,10 +94,10 @@ switch method
 
     % load single orientations
     if ~check_option(varargin,{'exact','resolution'}), varargin = [varargin,'exact'];end
-    ebsd = EBSD(q,cs,ss,varargin{:});
+    ori = orienation(q,cs,ss,varargin{:});
     
     % calc ODF
-    odf = calcODF(ebsd,'weights',weights,'silent',varargin{:});    
+    odf = calcODF(ori,'weights',weights,'silent',varargin{:});    
     
   case 'interp'
   
@@ -110,7 +110,7 @@ switch method
     % get kernel
     psi = get_option(varargin,'kernel',deLaValeePoussinKernel('halfwidth',res));
 
-    M = K(psi,S3G,q,cs,ss);
+    M = psi.K_symmetrised(S3G,q,cs,ss);
 
     MM = M * M';
     mw = M * weights;

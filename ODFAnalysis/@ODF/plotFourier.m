@@ -19,7 +19,7 @@ for l = 0:L
   f(l+1) = norm(odf_hat(deg2dim(l)+1:deg2dim(l+1)));
 end
 
-optionplot(0:L,f,varargin{:});
+optionplot(0:L,f,'Marker','o','linestyle',':',varargin{:});
 
 xlim([0,L])
 xlabel('harmonic degree');

@@ -7,13 +7,12 @@
 
 
 cs = symmetry('cubic');
-ss = symmetry;
 
-q = Euler(10*degree,10*degree,10*degree,'ABG');
-q2 =  Euler(10*degree,30*degree,10*degree,'ABG');
+ori1 = orientation('Euler',10*degree,10*degree,10*degree,'ABG',cs);
+ori2 = orientation('Euler',10*degree,30*degree,10*degree,'ABG',cs);
 
-odf_true = .6*unimodalODF(q,cs,ss,'halfwidth',5*degree) + ...
-            .4*unimodalODF(q2,cs,ss,'halfwidth',4*degree)
+odf_true = .6*unimodalODF(ori1,'halfwidth',5*degree) + ...
+            .4*unimodalODF(ori2,'halfwidth',4*degree)
          
 
 %% Polefigures to measure 

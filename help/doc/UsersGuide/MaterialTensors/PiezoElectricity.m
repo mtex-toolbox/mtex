@@ -27,11 +27,14 @@ P = loadTensor(fname,CS,'propertyname','piecoelectricity','unit','C/N','interfac
 setMTEXpref('defaultColorMap','parula');
 
 plot(P)
+colorbar(gcm)
 
 %%
 % but also, we can plot the whole crystal behavior
 
+close all
 plot(P,'complete','smooth')
+colorbar(gcm)
 
 %%
 % Most often, the polarisation is illustrated as surface magnitude
@@ -66,13 +69,13 @@ plot(P,'section',xvector)
 
 fname = fullfile(mtexDataPath,'tensor', 'Tongue_Quartzite_Bunge_Euler');
 
-ebsd = loadEBSD(fname,CS,'interface','generic' ...
+ori = loadOrientation(fname,CS,'interface','generic' ...
   , 'ColumnNames', { 'Euler 1' 'Euler 2' 'Euler 3'}, 'Bunge', 'active rotation')
 
 %%
 % The figure on p.1184 of the publication
 
-Pm = calcTensor(ebsd,P)
+Pm = ori.calcTensor(P)
 
 plot(Pm)
 colorbar
@@ -82,6 +85,6 @@ colorbar
 
 close all
 plot(Pm,'complete')
-colorbar
+colorbar(gcm)
 
 setMTEXpref('defaultColorMap',WhiteJetColorMap)

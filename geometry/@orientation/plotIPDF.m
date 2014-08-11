@@ -61,9 +61,11 @@ for ir = 1:length(r)
   
   %  plot  
   h.plot(repmat(data(:),1,length(rSym)),'scatter','symmetrised',...
-    'fundamentalRegion','TR',char(r(ir),getMTEXpref('textInterpreter')),...
+    'fundamentalRegion','TR','',...
     'parent',mtexFig.gca,'doNotDraw',varargin{:});
   
+  title(mtexFig.gca,char(r(ir)),'FontSize',getMTEXpref('FontSize'));
+
   % TODO: unifyMarkerSize
 
 end

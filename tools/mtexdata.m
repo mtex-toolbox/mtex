@@ -157,7 +157,7 @@ h = { ...
 
 c = ones(size(h));
 
-pf = loadPoleFigure(fname,h,CS,SS);
+pf = loadPoleFigure_geesthacht(fname,h,CS,SS);
 
 %
 function   [CS,h,c,pf] = mtexdata_ptx
@@ -224,7 +224,7 @@ ebsd = loadEBSD([mtexDataPath '/EBSD/data.ctf'],'ignorePhase',[0 3 4],...
 % ----------------------------------------------------------------------
 function ebsd = mtexdata_forsterite
 
-ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','forsterite.ctf'),'convertEuler2spatialReferenceFrame');
+ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','Forsterite.ctf'),'convertEuler2spatialReferenceFrame');
 
 
 % -----------------------------------------------------------------------

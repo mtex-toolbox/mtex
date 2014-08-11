@@ -1,4 +1,9 @@
 classdef (InferiorClasses = {?rotation,?quaternion}) orientation < rotation
+% orientation - class representing orientations
+%
+% This MTEX class represents orientations and misorientations. 
+%
+% orientation('Euler',phi1,Phi,phi2,cs)  defines an orientation in Euler angles
 %
 
 properties

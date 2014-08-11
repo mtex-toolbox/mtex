@@ -86,5 +86,5 @@ try
 catch
 end
 
-
+if nargout == 0, clear x omega; end
 

@@ -3,7 +3,7 @@ function ebsd = subsasgn(ebsd,s,b)
 
 if ~isa(ebsd,'EBSD')
   ebsd = EBSD;
-  ebsd.allCS = b.allCS;
+  ebsd.CSList = b.CSList;
 end
 
 switch s(1).type
@@ -23,7 +23,7 @@ switch s(1).type
       
       ebsd = subsasgn@dynProp(ebsd,s(1),b);
       ebsd.rotations = subsasgn(ebsd.rotations,s(1),b.rotations);
-      ebsd.allCS = b.allCS;
+      ebsd.CSList = b.CSList;
       ebsd.phaseMap = b.phaseMap;
       
     end

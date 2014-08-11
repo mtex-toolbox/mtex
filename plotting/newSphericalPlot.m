@@ -42,13 +42,26 @@ if isNew
   % this might return two projections for upper and lower hemisphere
   proj = getProjection(sR,varargin{:});
   
-  for i = 1:numel(proj)    
+  for i = 1:numel(proj)
     
     % create a new axis
     if i>1, mtexFig.nextAxis; end
     
+    % display upper/lower if needed
+    if numel(proj)>1          
+      if ~proj(i).sR.isUpper
+        tr = {'TR','lower'};
+      elseif ~proj(i).sR.isLower
+        tr = {'TR','upper'};
+      else
+        tr = {};
+      end
+    else
+      tr = {};
+    end
+    
     % create a new spherical plot
-    sP(i) = sphericalPlot(mtexFig.gca,proj(i),varargin{:});         %#ok<AGROW>
+    sP(i) = sphericalPlot(mtexFig.gca,proj(i),tr{:},varargin{:});         %#ok<AGROW>
     
   end
   mtexFig.drawNow(varargin{:});

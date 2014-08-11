@@ -7,7 +7,7 @@ for p = 1:numel(ebsd.phaseMap)
   ss = [];
   ss = [ss, 'phase ',num2str(ebsd.phaseMap(p)) ' ']; %#ok<AGROW>
   
-  CS = ebsd.allCS{p};
+  CS = ebsd.CSList{p};
   if ischar(CS)
     ss = [ss, '(not Indexed): ' CS ', ']; %#ok<AGROW>
   else

@@ -13,7 +13,7 @@ function c = KLCV(ori,psi,varargin)
 %  c
 %
 % See also
-% EBSD/calcODF EBSD/calcKernel grain/calcKernel EBSD/BCV
+% orientation/calcODF orientation/calcKernel orientation/BCV
 
 % partition data set
 sN = ceil(min(length(ori),get_option(varargin,'SamplingSize',1000)));
@@ -68,14 +68,14 @@ model_odf = 0.5*uniformODF(cs,ss) + ...
   0.05*unimodalODF(axis2quat(xvector,45*degree),cs,'halfwidth',15*degree) + ...
   0.3*unimodalODF(axis2quat(yvector,65*degree),cs,'halfwidth',25*degree);
 
-ebsd = calcEBSD(model_odf,1000);
+ori = calcOrientations(model_odf,1000);
 
 for k = 1:15
   psi{k} = deLaValeePoussinKernel('halfwidth',40*degree/2^(k/4));
 end
 psi
 
-c = crossCorrelation(ebsd,psi,'PartitionSize',10,'SamplingSize',1000);
+c = crossCorrelation(ori,psi,'PartitionSize',10,'SamplingSize',1000);
 
 plot(c)
 

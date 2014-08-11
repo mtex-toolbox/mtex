@@ -5,8 +5,8 @@ classdef DirichletKernel < kernel
     
     function psi = DirichletKernel(N)
       
-      psi.A = ones(N+1,1);
-      
+      psi.A = 2.*(0:N)+1;
+            
     end
   
     function c = char(psi)

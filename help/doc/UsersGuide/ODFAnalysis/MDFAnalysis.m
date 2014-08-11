@@ -19,7 +19,7 @@ grains = calcGrains(ebsd)
 % The boundary misorientation distribution function for the phase
 % transition from Forsterite to Enstatite can be computed by
 
-mdf_boundary = calcMDF(grains('Fo'),grains('En'),'halfwidth',10*degree)
+mdf_boundary = calcODF(grains.boundary('Fo','En').misorientation,'halfwidth',10*degree)
 
 %%
 % The misorientation distribution function can be processed as any other
@@ -36,27 +36,27 @@ plotPDF(mdf_boundary,Miller(1,0,0,ebsd('Fo').CS))
 % 
 % Alternatively the uncorelated misorientation distribution function can be
 % computed by providing the option *uncorelated*
-
-mdf_uncor = calcMDF(grains('Fo'),grains('En'),'uncorrelated','halfwidth',10*degree)
+% TODO
+% mdf_uncor = calcODF(ebsd('Fo'),ebsd('En'),'halfwidth',10*degree)
 
 %%
 % Obviously it is different from the boundary misorientation distribution
 % function.
 
-plotPDF(mdf_uncor,Miller(1,0,0,ebsd('Fo').CS))
+%plotPDF(mdf_uncor,Miller(1,0,0,ebsd('Fo').CS))
 
 %% Computing the uncorrelated misorientation function from two ODFs
 %
 % Let given two odfs
 
-odf_fo = calcODF(ebsd('fo'),'halfwidth',10*degree)
-odf_en = calcODF(ebsd('en'),'halfwidth',10*degree)
+odf_fo = calcODF(ebsd('fo').orientations,'halfwidth',10*degree)
+odf_en = calcODF(ebsd('en').orientations,'halfwidth',10*degree)
 
 %%
 % Then the uncorrelated misorientation function between these two ODFs can
 % be computed by
 
-mdf = calcMDF(odf_fo,odf_en)
+mdf = calcMDF(odf_en,odf_fo)
 
 %%
 % This misorientation distribution function should be similar to the

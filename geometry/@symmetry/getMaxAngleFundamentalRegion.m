@@ -3,11 +3,11 @@ function  omega = getMaxAngleFundamentalRegion(cs)
 
 switch cs.LaueName
   
-  case {'-1','2/m','-3','4/m','6/m'}
+  case {'-1','2/m','-3','4/m','6/m','12/m1','2/m11','112/m'}
     
     omega = pi;
     
-  case {'mmm','-3m','4/mmm','6/mmm'}
+  case {'mmm','-3m','4/mmm','6/mmm','-3m1','-31m'}
     
     omega = 2*atan(sqrt(1+2*tan(pi/2 / nfold(cs))^2));
     
