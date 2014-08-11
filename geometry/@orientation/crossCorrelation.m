@@ -1,8 +1,8 @@
-function [psi,c] = crossCorrelation(ebsd,varargin)
+function [psi,c] = crossCorrelation(ori,varargin)
 % computes the cross correlation for the kernel density estimator
 %
 % Input
-%  ebsd - @EBSD
+%  ori - @orientation
 %
 % Options
 %  kernel - a user defined @kernel
@@ -10,18 +10,16 @@ function [psi,c] = crossCorrelation(ebsd,varargin)
 %  PartitionSize - 
 %
 % See also
-% EBSD/calcKernel
+% ori/calcKernel
 
 for k = 1:15
   psi(k) = deLaValeePoussinKernel('halfwidth',40*degree/2^(k/4)); %#ok<AGROW>
 end
 psi = get_option(varargin,'kernel',psi);
 
-q = ebsd.orientations;
-
 % partition data set
-sN = ceil(min(length(q),get_option(varargin,'SamplingSize',1000)));
-pN = get_option(varargin,'PartitionSize',ceil(1000000/length(q)));
+sN = ceil(min(length(ori),get_option(varargin,'SamplingSize',1000)));
+pN = get_option(varargin,'PartitionSize',ceil(1000000/length(ori)));
 cN = ceil(sN / pN);
 
 c = zeros(cN,length(psi));
@@ -30,10 +28,10 @@ progress(0,cN,' estimate optimal kernel halfwidth: ');
 
 for i = 1:cN
   
-  iN(i) = min(length(q),i*pN);
+  iN(i) = min(length(ori),i*pN);
   ind = ((i-1) * pN + 1):iN(i);
  
-  d =  dot_outer(q(ind),q);
+  d =  dot_outer(ori(ind),ori);
   
   for k = 1:length(psi)
     
@@ -73,14 +71,14 @@ model_odf = 0.5*uniformODF(cs) + ...
   0.05*unimodalODF(axis2quat(xvector,45*degree),cs,'halfwidth',15*degree) + ...
   0.3*unimodalODF(axis2quat(yvector,65*degree),cs,'halfwidth',25*degree);
 
-ebsd= calcEBSD(model_odf,1000);
+ori= calcOrientation(model_odf,1000);
 
 for k = 1:15
   psi(k) = deLaValeePoussinKernel('halfwidth',40*degree/2^(k/4));
 end
 psi
 
-c = crossCorrelation(ebsd,psi,'PartitionSize',10,'SamplingSize',1000);
+c = crossCorrelation(ori,psi,'PartitionSize',10,'SamplingSize',1000);
 
 plot(c)
 

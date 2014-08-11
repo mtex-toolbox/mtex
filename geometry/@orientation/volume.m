@@ -1,4 +1,4 @@
-function v = volume(ebsd,center,radius,varargin)
+function v = volume(ori,center,radius,varargin)
 % ratio of orientations with a certain orientation
 %
 % Description
@@ -17,8 +17,11 @@ function v = volume(ebsd,center,radius,varargin)
 % ODF/volume
 
 % compute volume
-if isempty(ebsd)
+if isempty(ori)
   v = 0;
+elseif check_option(varargin,'weights')
+  weights = get_option(varargin,'weights');
+  v = sum(weights(find(ori,center,radius,varargin{:})));
 else
-  v = sum(ebsd.weights(find(ebsd.orientations,center,radius,varargin{:})));
+  v = nnz(angle(ori,center,varargin{:})<=radius) ./ length(ori);
 end
