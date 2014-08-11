@@ -3,7 +3,7 @@ function  omega = getMaxAngleFundamentalRegion(cs)
 
 switch cs.LaueName
   
-  case {'-1','2/m','-3','4/m','6/m'}
+  case {'-1','2/m','-3','4/m','6/m','12/m1','2/m11','112/m'}
     
     omega = pi;
     

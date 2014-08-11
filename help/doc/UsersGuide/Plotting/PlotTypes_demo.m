@@ -25,6 +25,7 @@ ori = calcOrientations(odf,100)
 %%
 % 
 
+close all
 scatter(ori)
 
 %%

@@ -38,7 +38,7 @@ elseif length(varargin)>=1 && isa(varargin{1},'double') &&...
   p = varargin{1};
   
   % logarithmic scale?
-  if any(strcmp(get(mtexFig.cBarAxis,'zscale'),'log')), p = log10(p);end
+  %if any(strcmp(get(mtexFig.cBarAxis,'zscale'),'log')), p = log10(p);end
          
 else
   
