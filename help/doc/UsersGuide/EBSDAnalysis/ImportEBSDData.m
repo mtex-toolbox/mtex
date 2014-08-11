@@ -90,18 +90,18 @@ setMTEXpref('xAxisDirection','east');
 setMTEXpref('zAxisDirection','outOfPlane');
 
 % file name
-fname = fullfile(mtexDataPath,'EBSD','forsterite.ctf');
+fname = fullfile(mtexDataPath,'EBSD','Forsterite.ctf');
 
 % create an EBSD variable containing the data
 ebsd = loadEBSD(fname,CS,'interface','ctf',...
-  'convertEuler2SpatialReferenceFrame', 'wizard');
+  'convertEuler2SpatialReferenceFrame');
 
 
 %%
 % Running this script imports the data into a variable named
 % |ebsd|. From this point, the script can be extended to your needs, e.g:
 
-plot(ebsd,'property','phase')
+plot(ebsd)
 
 %% Writing your own interface
 %

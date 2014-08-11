@@ -15,7 +15,7 @@ setMTEXpref('defaultColorMap',blue2redColorMap);
 % We start by importing some ebsd data of Glaucophane and Epidote.
 
 ebsd = loadEBSD([mtexDataPath '/EBSD/data.ctf'],...
-  'ignorePhase',[0 3 4],'convertEuler2SpatialReferenceFrame')
+  'convertEuler2SpatialReferenceFrame')
 
 %%
 % Lets visualize a subset of the data
@@ -83,7 +83,7 @@ CEpidote = tensor(MEpidote,csEpidote)
 %% The Average Tensor from EBSD Data
 % The Voigt, Reuss, and Hill averages for all phases are computed by
 
-[CVoigt,CReuss,CHill] =  calcTensor(ebsd,CGlaucophane,CEpidote)
+[CVoigt,CReuss,CHill] =  calcTensor(ebsd({'Epidote','Glaucophane'}),CGlaucophane,CEpidote)
 
 %%
 % for a single phase the syntax is
@@ -94,7 +94,7 @@ CEpidote = tensor(MEpidote,csEpidote)
 %% ODF Estimation
 % Next we estimate an ODF for the Epidote phase
 
-odfEpidote = calcODF(ebsd('Epidote'),'halfwidth',10*degree)
+odfEpidote = calcODF(ebsd('Epidote').orientations,'halfwidth',10*degree)
 
 
 %% The Average Tensor from an ODF

@@ -51,7 +51,7 @@ else
 end
       
 % if only one orientation was given -> extend to matrix
-if length(A) == 1, A = A * quaternion(eye(4)); end
+if length(A) == 1, A = quaternion(eye(4)) * A; end
       
 A = orientation(A,CS,SS);
       

@@ -39,7 +39,7 @@
 % the command [[uniformODF.html,uniformODF]].
 
 cs = crystalSymmetry('cubic');
-ss = speicmenSymmetry('orthorhombic');
+ss = specimenSymmetry('orthorhombic');
 odf = uniformODF(cs,ss)
 
 %% Unimodal ODFs
