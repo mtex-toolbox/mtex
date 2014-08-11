@@ -8,7 +8,7 @@
 
 % specify crystal and specimen symmetry
 CS = crystalSymmetry('-3m',[1.4 1.4 1.5]);
-SS = specimensymmetry;
+SS = specimenSymmetry;
 
 % specify file names
 fname = {...
@@ -69,7 +69,7 @@ plot(pf_modified)
 rec = calcODF(pf,'RESOLUTION',10*degree,'iter_max',6)
 
 plotPDF(rec,h)
-
+colorbar(gcm)
 
 %%
 %

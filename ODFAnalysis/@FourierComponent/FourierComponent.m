@@ -4,7 +4,7 @@ classdef FourierComponent < ODFComponent
   properties
     f_hat    
     CS = crystalSymmetry
-    SS = specimenSsymmetry
+    SS = specimenSymmetry
   end
  
   methods
