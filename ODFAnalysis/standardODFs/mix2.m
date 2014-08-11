@@ -1,8 +1,8 @@
 function odf = mix2
 % mix2 sample ODF
 
-CS = symmetry('cubic');
-SS = symmetry('222');
+CS = crystalSymmetry('cubic');
+SS = specimenSymmetry('222');
 
 odf(1) = 0.3095*uniformODF(CS,SS);
 

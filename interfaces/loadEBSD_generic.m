@@ -38,9 +38,9 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 %
 %   fname = fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt');
 %   CS = {'not indexed',...
-%          symmetry('m-3m','mineral','Fe'),...
-%          symmetry('m-3m','mineral','Mg')};
-%   SS = symmetry('triclinic');
+%          crystalSymmetry('m-3m','mineral','Fe'),...
+%          crystalSymmetry('m-3m','mineral','Mg')};
+%   SS = specimenSymmetry('triclinic');
 %   ebsd = loadEBSD_generic(fname,'CS',CS,'SS',SS, 'ColumnNames', ...
 %     {'Index' 'Phase' 'x' 'y' 'Euler1' 'Euler2' 'Euler3' 'MAD' 'BC' 'BS'...
 %     'Bands' 'Error' 'ReliabilityIndex'}, 'Bunge')
@@ -106,7 +106,7 @@ try
   opt = loader.getOptions('ignoreColumns','Phase');
   
   % set up EBSD variable
-  ebsd = EBSD(q,phase,get_option(varargin,'CS',symmetry('m-3m')),'options',opt,varargin{:});
+  ebsd = EBSD(q,phase,get_option(varargin,'CS',crystalSymmetry('m-3m')),'options',opt,varargin{:});
   
 catch
   interfaceError(fname)

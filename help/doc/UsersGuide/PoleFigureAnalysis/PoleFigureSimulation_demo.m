@@ -12,7 +12,7 @@
 % ODF estimation routine. Let us start with a model ODF given as the
 % superposition of 6 components.
 
-cs = symmetry('orthorhombic');
+cs = crystalSymmetry('orthorhombic');
 mod1 = orientation('axis',xvector,'angle',45*degree,cs);
 mod2 = orientation('axis',yvector,'angle',65*degree,cs);
 model_odf = 0.5*uniformODF(cs) + ...

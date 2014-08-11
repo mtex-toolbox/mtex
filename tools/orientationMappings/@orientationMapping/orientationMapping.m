@@ -3,8 +3,8 @@ classdef orientationMapping < handle
   %   Detailed explanation goes here
   
   properties
-    CS1 = symmetry % crystal symmetry
-    CS2 = symmetry % crystal symmetry of a second phase for misorientations
+    CS1 = crystalSymmetry % crystal symmetry
+    CS2 = specimenSymmetry % crystal symmetry of a second phase for misorientations
     colorPostRotation = rotation(idquaternion)
   end
   

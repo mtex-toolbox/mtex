@@ -179,7 +179,7 @@ for k=1:numel(data)
     %   get_option(attr,'color')
     alignment  =get_option(attr,'Alignment');
     
-    CS{k} = symmetry(name,axes,ang,alignment,'mineral',mineral);
+    CS{k} = crystalSymmetry(name,axes,ang,alignment,'mineral',mineral);
     
   else
     

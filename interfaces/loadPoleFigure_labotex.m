@@ -28,7 +28,7 @@ try
   s = fgetl(fid);
   c = sscanf(s,'%d%f%f%f%f%f%f');
   spacegroup =  {'C1','C2','D2','C4','D4','T','O','C3','D3','C6','D6'};
-  cs = symmetry(spacegroup{c(1)},c(2:4),c(5:7)*degree);
+  cs = crystalSymmetry(spacegroup{c(1)},c(2:4),c(5:7)*degree);
   
   % number of pole figures
   s = fgetl(fid);

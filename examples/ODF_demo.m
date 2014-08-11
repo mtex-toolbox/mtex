@@ -17,8 +17,8 @@
 %
 % *Unimodal ODFs*
 
-SS  = symmetry('orthorhombic','specimen');
-CS  = symmetry('cubic');
+SS  = specimenSymmetry('orthorhombic');
+CS  = crystalSymmetry('cubic');
 o   = orientation('brass',CS,SS);
 psi = vonMisesFisherKernel('halfwidth',20*degree);
 
@@ -27,12 +27,12 @@ odf1 = unimodalODF(o,CS,SS,psi)
 %%
 % *Fibre ODFs*
 
-CS = symmetry('hexagonal');
+CS = crystalSymmetry('hexagonal');
 h = Miller(1,0,0,CS);
 r = xvector;
 psi = AbelPoissonKernel('halfwidth',18*degree);
 
-odf2 = fibreODF(h,r,CS,psi)
+odf2 = fibreODF(h,r,psi)
 
 %%
 % *uniform ODFs*
@@ -101,7 +101,7 @@ mtexColorMap white2black
 % a) Construct a cubic unimodal ODF with mod at [0 0 1](3 1 0). (Miller
 % indice). What is its modal orientation in Euler angles?
 
-CS = symmetry('cubic');
+CS = crystalSymmetry('cubic');
 ori = orientation('Miller',[0 0 1],[3 1 0],CS);
 odf = unimodalODF(ori);
 
@@ -136,9 +136,9 @@ volume(uniformODF(CS,SS),ori,10*degree)
 % e) Construct a trigonal ODF that consists of two fibres at h1 =
 % (0,0,0,1), r1 = (0,1,0), h2 = (1,0,-1,0), r2 = (1,0,0). Do the two fibres intersect?
 
-cs = symmetry('trigonal');
-odf = 0.5 * fibreODF(Miller(0,0,0,1,CS),yvector,CS,SS) + ...
-      0.5 * fibreODF(Miller(1,0,-1,0,CS),xvector,CS,SS)
+cs = crystalSymmetry('trigonal');
+odf = 0.5 * fibreODF(Miller(0,0,0,1,cs),yvector) + ...
+      0.5 * fibreODF(Miller(1,0,-1,0,cs),xvector)
 
 %%
 % f) What is the modal orientation of the ODF?

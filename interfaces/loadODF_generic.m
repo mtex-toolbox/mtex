@@ -37,7 +37,7 @@ function [odf,options] = loadODF_generic(fname,varargin)
 % Example
 %
 %    fname = fullfile(mtexDataPath,'ODF','odf.txt');
-%    odf = loadODF_generic(fname,'cs',symmetry('cubic'),'header',5,...
+%    odf = loadODF_generic(fname,'cs',crystalSymmetry('cubic'),'header',5,...
 %      'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'weight'},...
 %      'Columns',[1,2,3,4])
 %
@@ -46,8 +46,8 @@ function [odf,options] = loadODF_generic(fname,varargin)
 
 % get options
 ischeck = check_option(varargin,'check');
-cs = get_option(varargin,'cs',symmetry('m-3m'));
-ss = get_option(varargin,'ss',symmetry('1'));
+cs = get_option(varargin,'cs',crystalSymmetry('m-3m'));
+ss = get_option(varargin,'ss',specimenSymmetry('1'));
 
 % load data
 [d,varargin,header,c] = load_generic(char(fname),varargin{:});

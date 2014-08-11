@@ -9,7 +9,7 @@
 % Olivine structure 
 % (4.7646 10.2296 5.9942 90.00 90.00 90.00) - Orthorhombic
 
-cs_tensor = symmetry('mmm',[4.7646,10.2296,5.9942],...
+cs_tensor = crystalSymmetry('mmm',[4.7646,10.2296,5.9942],...
     [90.00,90.00,90.00]*degree,'x||a','z||c','mineral','Olivine');
 
 %% Import 4th rank tensor as 6 by 6 matrix

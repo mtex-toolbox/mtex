@@ -36,8 +36,8 @@ try
     
     if ~exist('crystal','var')
       crystal = sscanf(c{6},'%f');
-      cs = symmetry(spacegroup{crystal(7)}, crystal(1:3), crystal(4:6)*degree);
-      ss = symmetry(spacegroup{crystal(8)});
+      cs = crystalSymmetry(spacegroup{crystal(7)}, crystal(1:3), crystal(4:6)*degree);
+      ss = specimenSymmetry(spacegroup{crystal(8)});
     end
     
     hkl = sscanf(c{7},'%f',3);

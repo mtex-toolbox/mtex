@@ -20,13 +20,13 @@
 %% Defining a Crystal Symmetry by the Name of its Laue Group
 %
 
-cs = symmetry('m-3m')
+cs = crystalSymmetry('m-3m')
 
 %%
 % defines a cubic crystal symmetry using the international notation. Of
 % course MTEX understands also the Schoenflies notation
 
-cs = symmetry('O');
+cs = crystalSymmetry('O');
 
 %% Defining a Crystal Symmetry by the Name of its Point Group or its Space Group
 %
@@ -34,14 +34,14 @@ cs = symmetry('O');
 % group or a space group MTEX auomatically determines the corresponding
 % Laue group and assigns it to the variable.
 
-cs = symmetry('Td');
+cs = crystalSymmetry('Td');
 
 %% Defining a Crystal Symmetry by a CIF File
 %
 % Finally, MTEX allows to define a crystal symmetry by importing a
 % crystallographic information file (*.cif).
 
-cs = symmetry('quartz')
+cs = loadCIF('quartz')
 
 
 %% The Crystal Coordinate System
@@ -51,7 +51,7 @@ cs = symmetry('quartz')
 % crystal symmetry the crystal coordinate system has to be specified by the
 % length of the axes and the angle between the axes. 
 
-cs = symmetry('triclinic',[1,2.2,3.1],[80*degree,85*degree,95*degree]);
+cs = crystalSymmetry('triclinic',[1,2.2,3.1],[80*degree,85*degree,95*degree]);
 
 %% A and B Configurations
 %
@@ -62,12 +62,12 @@ cs = symmetry('triclinic',[1,2.2,3.1],[80*degree,85*degree,95*degree]);
 % configuration to be used one can pass either the option *X||a* or the
 % option *Y||a*.
 
-cs = symmetry('-3m',[1.7,1.7,1.4],'X||a');
+cs = crystalSymmetry('-3m',[1.7,1.7,1.4],'X||a');
 plot(cs)
 
 %%
 
-cs = symmetry('-3m',[1.7,1.7,1.4],'Y||a');
+cs = crystalSymmetry('-3m',[1.7,1.7,1.4],'Y||a');
 plot(cs)
 hold on
 plot(cs,'hkl','backgroundcolor','w')
@@ -79,7 +79,7 @@ hold off
 % right onto a <orientation_index.html orientation> results in a vector
 % containing all crystallographically equivalent orientations.
 
-ss = symmetry('mmm','specimen');   % specimen symmetry
+ss = specimenSymmetry('mmm');   % specimen symmetry
 ss * orientation('euler',0,0,pi/4,cs,ss) * cs  % all crystallographically equivalent orientations
 
 %% Plotting symmetries

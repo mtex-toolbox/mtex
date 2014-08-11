@@ -29,7 +29,7 @@ plot(radius/degree,[f',g'])
 
 return
 
-x = SO3Grid(1000,symmetry('cubic'));
+x = SO3Grid(1000,crystalSymmetry('cubic'));
 dist(x,idquaternion,'epsilon',20*degree);
 
 q = SO3Grid(res,cs,ss);
@@ -38,8 +38,8 @@ q = subGrid(q,idquaternion,20*degree);
 
 %
 
-cs = symmetry('m-3m');
-ss = symmetry('mmm');
+cs = crystalSymmetry('m-3m');
+ss = specimenSymmetry('mmm');
 
 center = axis2quat(xvector,25*degree);
 S3G = SO3Grid(2*degree,cs,ss);

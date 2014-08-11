@@ -47,7 +47,7 @@ rgb = h2HSV(v,s,'grayValue',omega,'antipodal');
 
 return
 
-cs = symmetry('m-3m');
+cs = crystalSymmetry('m-3m');
 
 r = plotS2Grid;
 o = rotation('axis',r,'angle',10*degree);

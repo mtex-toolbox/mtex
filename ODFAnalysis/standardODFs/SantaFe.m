@@ -1,8 +1,8 @@
 function odf = SantaFe
 % the SantaFe-sample ODF
 
-CS = symmetry('cubic');
-SS = symmetry('222');
+CS = crystalSymmetry('cubic');
+SS = specimenSymmetry('222');
 
 psi = vonMisesFisherKernel('HALFWIDTH',10*degree);
 ori = orientation('Miller',Miller(1,2,2,CS),Miller(2,2,1,CS),CS,SS);

@@ -60,7 +60,7 @@ try
           end
       end
       
-      cs{phase} = symmetry(laue,lattice(1:3)',lattice(4:6)'*degree,'mineral',mineral,options{:}); %#ok<AGROW>
+      cs{phase} = crystalSymmetry(laue,lattice(1:3)',lattice(4:6)'*degree,'mineral',mineral,options{:}); %#ok<AGROW>
       ReplaceExpr{i} = {mineral,int2str(i)};
     end
     assert(~isempty(cs));

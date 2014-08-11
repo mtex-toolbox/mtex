@@ -172,7 +172,7 @@ rgb = ar2rgb(mod(v.rho./ 2 ./ pi,1),v.theta./pi,get_option(varargin,'grayValue',
 end
 
 % some testing code
-% cs = symmetry('m-3m')
+% cs = crystalSymmetry('m-3m')
 % h = plotS2Grid(cs.fundamentalSector)
 % rgb = h2HSV(h,cs);
 % surf(h,rgb)

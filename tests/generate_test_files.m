@@ -1,7 +1,7 @@
 function generate_test_files(varargin)
 
-cs = symmetry('-3m');
-ss = symmetry('-1');
+cs = crystalSymmetry('-3m');
+ss = specimenSymmetry('-1');
 
 % crystal directions
 h = [Miller(1,0,0,cs),Miller(0,0,1,cs)];

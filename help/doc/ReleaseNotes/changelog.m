@@ -101,9 +101,9 @@
 % The following two commands define the same crystallographic direction,
 % namely the a1-axis
 %
-%   Miller(1,0,0,symmetry('-3m'),'uvw')
+%   Miller(1,0,0,crystalSymmetry('-3m'),'uvw')
 %
-%   Miller(2,-1,-1,0,symmetry('-3m'),'UVTW')
+%   Miller(2,-1,-1,0,crystalSymmetry('-3m'),'UVTW')
 %
 % *Functionality that has been (temporarily) removed*
 %

@@ -160,10 +160,10 @@ set(gui.hSearchCIF,'CallBack',@lookupMineral);
       co = getMTEXpref('EBSDColorNames');
       co = co{get(gui.hColor,'Value')};
       try
-        CS = symmetry(cs,[axis{:}],[angle{:}]*degree,al{al1},al{al2},...
+        CS = crystalSymmetry(cs,[axis{:}],[angle{:}]*degree,al{al1},al{al2},...
           'mineral',mineral,'color',co);
       catch %#ok<CTCH>
-        CS = symmetry(cs,[axis{:}],[angle{:}]*degree,'mineral',mineral,'color',co);
+        CS = crystalSymmetry(cs,[axis{:}],[angle{:}]*degree,'mineral',mineral,'color',co);
       end
     end
     

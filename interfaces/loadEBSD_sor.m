@@ -1,13 +1,13 @@
 function ebsd = loadEBSD_sor(fname,varargin)
 % load LaboTex *.sor file
 %
-%% Input
+% Input
 % fname - file name
 %
-%% Output
+% Output
 % ebsd    - @EBSD
 %
-%% See also
+% See also
 % ImportEBSDData
 
 % ensure right extension
@@ -34,7 +34,7 @@ try
   d = textscan(fid,'%d %f %f %f %f %f %f %f %d %d %d\n',1);
   
   % define symmetry
-  cs = symmetry(spacegroup{d{1}},[d{2:4}],[d{5:7}]*degree);
+  cs = crystalSymmetry(spacegroup{d{1}},[d{2:4}],[d{5:7}]*degree);
   
   if d{9}==0
     options = {'ColumnNames',{'Euler1','Euler2','Euler3'}};

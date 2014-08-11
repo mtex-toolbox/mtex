@@ -3,7 +3,7 @@
 
 clf
 % define some symmetry
-cs = symmetry('-6m2','2||a')
+cs = crystalSymmetry('-6m2','2||a')
 
 % define the colorcoding
 oM = ipdfHSVOrientationMapping(cs);
@@ -47,7 +47,7 @@ hold off
 
 plotx2east
 
-cs = symmetry('-6','a||y');
+cs = crystalSymmetry('-6','a||y');
 
 % define the colorcoding
 oM = ipdfHSVOrientationMapping(cs);
@@ -88,7 +88,7 @@ hold off
 for i = 1:32
   
   close all
-  cs = symmetry('pointId',i,'2||c');
+  cs = crystalSymmetry('pointId',i,'2||c');
   
   oM = ipdfHSVOrientationMapping(cs);
 

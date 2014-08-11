@@ -2,7 +2,7 @@
 
 plotx2east
 
-cs = symmetry(9)
+cs = crystalSymmetry(9)
 
 
 q = SO3Grid(5000,cs)

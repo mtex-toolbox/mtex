@@ -25,7 +25,7 @@ hold off
 
 %%
 % let's simulate some EBSD data
-cs = symmetry('-3m');
+cs = crystalSymmetry('-3m');
 odf = unimodalODF(orientation('euler',0,0,0,cs));
 ori = calcOrientations(odf,100);
 ori_rotated = calcOrientations(rotate(odf,rotation('Euler',60*degree,60*degree,0*degree)),100);

@@ -79,7 +79,7 @@ plotPDF(odf,h,'antipodal','silent')
 %
 % Lets start with a model ODF and simulate some individual orientation data.
 
-modelODF = fibreODF(Miller(1,1,1,symmetry('cubic')),xvector);
+modelODF = fibreODF(Miller(1,1,1,crystalSymmetry('cubic')),xvector);
 ori = calcOrientations(modelODF,10000)
 
 %%

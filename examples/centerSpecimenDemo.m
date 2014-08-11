@@ -11,8 +11,8 @@
 
 plotx2north
 
-CS = symmetry('cubic');
-SS = symmetry('222','specimen');
+CS = crystalSymmetry('cubic');
+SS = specimenSymmetry('222');
 h = [Miller(1,1,1,CS),Miller(2,0,0,CS),Miller(2,2,0,CS)];
 
 

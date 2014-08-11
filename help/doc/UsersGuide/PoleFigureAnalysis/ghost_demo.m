@@ -27,7 +27,7 @@
 %
 % A unimodal ODF with a high uniform portion.
 
-cs = symmetry('222');
+cs = crystalSymmetry('222');
 mod1 = orientation('Euler',0,0,0,cs);
 odf = 0.9*uniformODF(cs) + ...
   0.1*unimodalODF(mod1,'halfwidth',10*degree)

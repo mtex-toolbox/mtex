@@ -31,7 +31,11 @@ if length(cs) > 1+length(N)
   N = [N,vector3d('theta',90*degree,'rho',[90*degree,drho-90*degree])];
 end
 
-aAxis = cs.axes(1);
+try
+  aAxis = cs.axes(1);
+catch
+  aAxis = xvector;
+end
 
 % some special cases
 switch cs.id

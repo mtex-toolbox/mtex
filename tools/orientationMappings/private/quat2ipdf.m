@@ -14,7 +14,7 @@ if isa(ori,'orientation') && ...
   
 else
   
-  if isCS(ori.SS)
+  if isa(ori.SS,'crystalSymmetry')
     r = Miller(0,0,1,ori.SS);
   else
     r = xvector;

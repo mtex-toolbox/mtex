@@ -39,7 +39,7 @@
 
 % we have to set up a crystal symmetry first, as it defines the fundamental
 % region for the Euler angles
-cs = symmetry('432')
+cs = crystalSymmetry('432')
 
 % thise defins the orientation map
 oM = BungeRGBOrientationMapping(cs)

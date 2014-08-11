@@ -60,7 +60,7 @@
 % angle = 10*degree;
 % v = regularS2Grid('points',50000)
 % q = axis2quat(v,angle)
-% cs = symmetry('mmm');
+% cs = crystalSymmetry('mmm');
 % d = disorientation([q.a(:),q.b(:),q.c(:),q.d(:)],cs.LaueName);
 % qq = quaternion(d.'), plot(qq.axis)
 % hold on, plot(rotate(cs.fundamentalSector,90*degree),'color','r'), hold off

@@ -354,7 +354,7 @@ for k = 1:nPhase
       end
   end
   
-  CS{k} = symmetry(laueGroup,axLength,axAngle,'mineral',phaseName,options{:});
+  CS{k} = crystalSymmetry(laueGroup,axLength,axAngle,'mineral',phaseName,options{:});
   
 end
 

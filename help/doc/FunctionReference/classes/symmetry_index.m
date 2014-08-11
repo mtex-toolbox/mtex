@@ -31,12 +31,12 @@
 % *Laue Group - international notation*
 %
 
-cs = symmetry('m-3m')
+cs = crystalSymmetry('m-3m')
 
 %% 
 % *Laue Group - Schoenflies notation*
 
-cs = symmetry('O')
+cs = crystalSymmetry('O')
 
 %%
 % *Point Group or its Space Group*
@@ -45,7 +45,7 @@ cs = symmetry('O')
 % group or a space group MTEX auomatically determines the corresponding
 % Laue group and assignes it to the variable.
 
-cs = symmetry('Td')
+cs = crystalSymmetry('Td')
 
 %%
 % *CIF Files*
@@ -53,7 +53,7 @@ cs = symmetry('Td')
 % Finally, MTEX allows to define a crystal symmetry by importing a
 % crystallographic information file (*.cif).
 
-cs = symmetry('quartz.cif')
+cs = loadCIF('quartz')
 
 
 %% SUB: The Crystal Coordinate System
@@ -63,7 +63,7 @@ cs = symmetry('quartz.cif')
 % crystal symmetry the crystal coordinate system has to be specified by the
 % length of the axis and the angle between the axis. 
 
-cs = symmetry('triclinic',[1,2.2,3.1],[80*degree,85*degree,95*degree]);
+cs = crystalSymmetry('triclinic',[1,2.2,3.1],[80*degree,85*degree,95*degree]);
 
 %% 
 % *A and B Configurations*
@@ -75,11 +75,11 @@ cs = symmetry('triclinic',[1,2.2,3.1],[80*degree,85*degree,95*degree]);
 % configuration to be used one can pass either the option *X||a* or the
 % option *Y||a*.
 
-cs = symmetry('-3m',[1.7,1.7,1.4],'X||a');
+cs = crystalSymmetry('-3m',[1.7,1.7,1.4],'X||a');
 plot(cs)
 
 %%
 
-cs = symmetry('-3m',[1.7,1.7,1.4],'Y||a');
+cs = crystalSymmetry('-3m',[1.7,1.7,1.4],'Y||a');
 plot(cs)
 

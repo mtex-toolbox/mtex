@@ -33,7 +33,7 @@
 %%
 % The general setup of the Bingham distribution in MTEX is done as follows
 
-cs = symmetry('1');
+cs = crystalSymmetry('1');
 
 kappa = [100 90 80 0];   % shape parameters
 U     = eye(4);          % orthogonal matrix
@@ -51,7 +51,7 @@ plotPDF(odf,h,'antipodal','silent');
 %% The bipolar case and unimodal distribution
 % First we define some unimodal odf
 
-odf_spherical = unimodalODF(idquaternion,symmetry,symmetry,'halfwidth',20*degree)
+odf_spherical = unimodalODF(idquaternion,crystalSymmetry,specimenSymmetry,'halfwidth',20*degree)
 
 %%
 %
@@ -88,7 +88,7 @@ t = [T_spherical T_oblate T_prolate]
 % The spherical test case failed to reject it for some level of
 % significance, hence we would dismiss the hypothesis prolate and oblate.
 
-odf_spherical = BinghamODF(kappa,U,symmetry,symmetry)
+odf_spherical = BinghamODF(kappa,U,crystalSymmetry,specimenSymmetry)
 
 %%
 %
@@ -98,7 +98,7 @@ plotPDF(odf_spherical,h,'antipodal','silent')
 %% Prolate case and fibre distribution
 % The prolate case correspondes to a fibre.
 
-odf_prolate = fibreODF(Miller(0,0,1,symmetry('1')),zvector,...
+odf_prolate = fibreODF(Miller(0,0,1,crystalSymmetry('1')),zvector,...
   'halfwidth',20*degree)
 
 %%
@@ -133,7 +133,7 @@ t = [T_spherical T_oblate T_prolate]
 % prolate. We construct the bingham distribution from the parameters, it
 % might show some skewness
 
-odf_prolate = BinghamODF(kappa,U,symmetry,symmetry)
+odf_prolate = BinghamODF(kappa,U,crystalSymmetry,specimenSymmetry)
 
 %%
 %
@@ -144,7 +144,7 @@ plotPDF(odf_prolate,h,'antipodal','silent')
 % The oblate case of the bingham distribution has no direct counterpart in
 % terms of texture components, thus we can construct it straightforward
 
-odf_oblate = BinghamODF([50 50 50 0],eye(4),symmetry,symmetry)
+odf_oblate = BinghamODF([50 50 50 0],eye(4),crystalSymmetry,specimenSymmetry)
 
 %%
 %
@@ -176,7 +176,7 @@ t = [T_spherical T_oblate T_prolate]
 % the spherical and oblate case are clearly rejected, the prolate case
 % failed to reject for some level of significance
 
-odf_oblate = BinghamODF(kappa, U,symmetry,symmetry)
+odf_oblate = BinghamODF(kappa, U,crystalSymmetry,specimenSymmetry)
 
 %%
 %

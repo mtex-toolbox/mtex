@@ -1,8 +1,8 @@
 classdef uniformComponent < ODFComponent
     
   properties
-    CS = symmetry; % crystal symmetry
-    SS = symmetry; % specimen symmetry
+    CS = crystalSymmetry;  % crystal symmetry
+    SS = specimenSymmetry; % specimen symmetry
   end
   
   methods

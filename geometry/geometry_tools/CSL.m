@@ -27,7 +27,7 @@ end
 if nargout == 0
   listCSL(csl);
 else
-  q = orientation(qr,symmetry('cubic'));
+  q = orientation(qr,crystalSymmetry('cubic'));
 end
 
 

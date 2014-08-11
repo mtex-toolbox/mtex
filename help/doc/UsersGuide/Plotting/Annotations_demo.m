@@ -11,7 +11,7 @@
 %
 % Let us first define some model ODFs to be plotted later on.
 
-cs = symmetry('-3m');
+cs = crystalSymmetry('-3m');
 mod1 = orientation('Euler',30*degree,40*degree,10*degree,cs);
 mod2 = orientation('Euler',10*degree,80*degree,70*degree,cs);
 odf = 0.7*unimodalODF(mod1) + 0.3*unimodalODF(mod2)

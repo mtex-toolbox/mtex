@@ -1,5 +1,5 @@
-cs = symmetry('m-3m')
-ss = symmetry('mmm')
+cs = crystalSymmetry('m-3m')
+ss = specimenSymmetry('mmm')
 g0 = Miller2quat(Miller(1,2,2,cs),Miller(2,2,1,cs));
 
 %%
@@ -22,8 +22,8 @@ x = eval(unimodalODF(axis2quat(xvector,45*degree),cs,ss,'halfwidth',15*degree),.
   SO3Grid(1.25*degree,cs,ss));
 sum(x)/length(x)
 %%
-cs = symmetry('m-3m')
-ss = symmetry('mmm')
+cs = crystalSymmetry('m-3m')
+ss = specimenSymmetry('mmm')
 omega = linspace(0,pi/2,20);
 for i = 1:length(omega)
   odf = unimodalODF(axis2quat(xvector,omega(i)),cs,ss,'halfwidth',5*degree);
@@ -35,8 +35,8 @@ fprintf('\n');
 plot(omega,v);
 
 %%
-ss = symmetry('mmm');
-cs = symmetry('4/mmm');
+ss = specimenSymmetry('mmm');
+cs = crystalSymmetry('4/mmm');
 q = axis2quat(vector3d(1,1,1),2*pi/3*(0:2));
 q= q(1);
 g = SO3Grid(10*degree,cs,ss);
@@ -93,7 +93,7 @@ hold on
 
 %%
 
-cs = symmetry('211');
+cs = crystalSymmetry('211');
 
 S3G = equispacedSO3Grid(cs,symmetry,'points',3000);
 

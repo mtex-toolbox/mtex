@@ -5,7 +5,7 @@ classdef PoleFigure < dynProp & dynOption
     allR = {}           % specimen directions
     allI = {}           % intensities
     c = {}              % structure coefficients for superposed pole figures
-    SS = symmetry       % specimen symmetry
+    SS = specimenSymmetry       % specimen symmetry
   end
    
   properties (Dependent = true)
@@ -59,7 +59,7 @@ classdef PoleFigure < dynProp & dynOption
         if numel(args)>1
           pf.SS = varargin{args(2)};
         else
-          pf.SS = symmetry;
+          pf.SS = specimenSymmetry;
         end
       end      
     end

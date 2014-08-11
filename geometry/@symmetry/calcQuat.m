@@ -1,15 +1,17 @@
-function rot = calcQuat(s,varargin)
+function s = calcQuat(s,axes)
 % calculate quaternions for Laue groups
+
+if nargin == 1, axes = [xvector,yvector,zvector]; end
 
 ll0axis = vector3d(1,1,0);
 lllaxis = vector3d(1,1,1);
 
-a = s.axes(1);
-b = s.axes(2);
-c = s.axes(3);
+a = axes(1);
+b = axes(2);
+c = axes(3);
 
-a1 = s.axes(1);
-a2 = s.axes(2);
+a1 = axes(1);
+a2 = axes(2);
 m = a1 - a2;
 
 pg = pointGroupList;
@@ -56,6 +58,9 @@ else
   
 end
 
+% store symmetries
 rot = prod(rot{:});
+[s.a, s.b, s.c, s.d] = double(rot);
+s.i = isImproper(rot);
 
 end

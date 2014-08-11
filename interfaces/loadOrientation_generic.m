@@ -37,8 +37,8 @@ function [ori,options] = loadOrientation_generic(fname,varargin)
 % Example
 %
 %   fname = fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt');
-%   CS = symmetry('m-3m','mineral','Mg');
-%   SS = symmetry('triclinic');
+%   CS = crystalSymmetry('m-3m','mineral','Mg');
+%   SS = specimenSymmetry('triclinic');
 %   
 %   ori = loadOrientation_generic(fname,'CS',CS,'SS',SS, 'ColumnNames', ...
 %     {'Euler1' 'Euler2' 'Euler3'},'Columns',[5,6,7],'Bunge')

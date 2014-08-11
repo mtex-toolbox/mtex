@@ -79,7 +79,7 @@ try
   
   assert(~isempty(group));
       
-  cs = symmetry(group,axis,angles*degree,'mineral',mineral);
+  cs = crystalSymmetry(group,axis,angles*degree,'mineral',mineral);
   
 catch
   error(['Error reading cif file', fname]);

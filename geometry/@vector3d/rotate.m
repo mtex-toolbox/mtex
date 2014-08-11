@@ -41,7 +41,7 @@ elseif length(q) == 1
 end
 
 % if output has symmetry set it to Miller
-if isa(q,'orientation') && isCS(q.SS)
+if isa(q,'orientation') && isa(q.SS,'crystalSymmetry')
    
    v = Miller(v,q.SS);
   

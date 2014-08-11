@@ -11,7 +11,7 @@ end
 [is1,is2] = find(isappr(dot_outer(s1,s2),1));
 
 % no common rotation -> take triclinic
-if numel(is1) == 1, s = symmetry; return; end
+if numel(is1) == 1, s = crystalSymmetry; return; end
 
 % take the equal ones
 s = unique(s1.subSet(is1));
@@ -20,7 +20,7 @@ s = unique(s1.subSet(is1));
 % TODO!!
 for i=1:32 % check all Laue groups
   
-  ss = symmetry('pointId',i);
+  ss = crystalSymmetry('pointId',i);
   
   if length(ss) == length(s) && all(any(isappr(dot_outer(s,ss),1)))
     s = ss;

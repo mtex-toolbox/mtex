@@ -3,7 +3,7 @@ classdef (InferiorClasses = {?quaternion,?rotation,?orientation}) tensor < dynOp
   properties
     M = []        % the tensor coefficients
     rank = 0      % tensor rank
-    CS = symmetry % crystal symmetry
+    CS = specimenSymmetry % crystal symmetry
     doubleConvention = false %
   end
   
@@ -90,7 +90,7 @@ classdef (InferiorClasses = {?quaternion,?rotation,?orientation}) tensor < dynOp
         T.CS = varargin{args};
         varargin(args) = [];
       else
-        T.CS = symmetry;
+        T.CS = specimenSymmetry;
       end
 
       options = delete_option(varargin,{'doubleconvention','singleconvention','InfoLevel','noCheck'});
