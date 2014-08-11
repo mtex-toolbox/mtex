@@ -89,15 +89,8 @@ classdef sphericalPlot < handle
     function plotAnnotate(sP,varargin)
       % tl tr bl br
     
-      if ~sP.sphericalRegion.isUpper
-        TR = 'lower';
-      elseif ~sP.sphericalRegion.isLower
-        TR = 'upper';
-      else
-        TR = '';
-      end
       t.TL = get_option(varargin,{'TopLeft','TL'},'');
-      t.TR = get_option(varargin,{'TopRight','TR'},TR);
+      t.TR = get_option(varargin,{'TopRight','TR'},'');
       t.BL = get_option(varargin,{'BottomLeft','BL'},'');
       t.BR = get_option(varargin,{'BottomRight','BR'},'');
       

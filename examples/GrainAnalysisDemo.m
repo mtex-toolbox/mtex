@@ -23,7 +23,7 @@ plotx2east
 % Biotite (green) and Orthoclase (yellow)
 
 figure('position',[100 100  750 300]);
-plot(ebsd,'property','phase')
+plot(ebsd)
 
 %% Restrict to the region of interest (RoI)
 % the box is given by [xmin ymin xmax-xmin ymax-ymin] and indicates a
@@ -47,9 +47,10 @@ grains = calcGrains(ebsd_region,'angle',15*degree)
 % boundaries.
 
 figure('position',[100 100  750 300]);
-hold all
-plot(ebsd_region,'property','phase')
-plotBoundary(grains,'color','k')
+hold on
+plot(ebsd_region)
+hold on
+plot(grains.boundary,'color','k')
 hold off
 % set(gcf,'renderer','zbuffer')
 
@@ -58,17 +59,21 @@ hold off
 % boundaries.
 
 figure('position',[100 100 750 300]);
-hold all
-plot(grains({'Andesina','Biotite','Orthoclase'}),'property','phase','FaceAlpha',0.2)
-plotBoundary(grains,'color','black');
-plot(ebsd_region('Quartz-new'),'r',zvector)
+plot(grains({'Andesina','Biotite','Orthoclase'}),'FaceAlpha',0.2)
+hold on
+plot(grains.boundary,'color','black');
+hold on
+plot(ebsd_region('Quartz'))
 legend off
 hold off
 
 %%
 % colored according to the false color map of its inverse polefigure
 
-colorbar('Position',[825 100 300 300])
+close all
+oM = ipdfHSVOrientationMapping(ebsd_region('Quartz'));
+plot(oM,'Position',[825 100 300 300])
+
 
 %%
 % (RoI) The reconstructed grains. The quartz grains are colored according to
@@ -76,11 +81,11 @@ colorbar('Position',[825 100 300 300])
 % there phase.
 
 figure('position',[100 100  750 300]);
-hold all
-plot(grains({'Andesina','Biotite','Orthoclase'}),'property','phase','FaceAlpha',0.2)
+plot(grains({'Andesina','Biotite','Orthoclase'}),'FaceAlpha',0.2)
+hold on
 plot(grains('Quartz'))
 legend off
-hold off
+
 
 
 
@@ -89,10 +94,20 @@ hold off
 % a misorientation with rotational axis close to the c-axis.
 % TODO
 
+close all
+AOboundary = grains.boundary('Andesina','Orthoclase');
+angle = AOboundary.misorientation.angle;
+
+hist(angle./degree)
+
+%%
+
+
 figure('position',[100 100  750 300]);
-hold all
 plot(grains,'property','phase','FaceAlpha',0.4)
-plotBoundary(grains,'property',Miller(0,0,1),'linewidth',2,'linecolor','red')
+hold on
+
+plot(AOboundary(angle>160*degree),'linewidth',2,'linecolor','red')
 hold off
 
 

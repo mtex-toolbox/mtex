@@ -43,7 +43,7 @@ end
 data = get_option(varargin,'property',[]);
 
 % ------------------ subsample if needed --------------------------
-if ~check_option(varargin,'all') && ...
+if ~check_option(varargin,{'all','contour','contourf','smooth'}) && ...
     (sum(length(o))*length(o.CS)*length(o.SS) > 10000 || check_option(varargin,'points'))
 
   points = fix(get_option(varargin,'points',10000/length(o.CS)/length(o.SS)));

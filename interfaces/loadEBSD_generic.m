@@ -106,12 +106,8 @@ try
   opt = loader.getOptions('ignoreColumns','Phase');
   
   % set up EBSD variable
-  ebsd = EBSD(q,varargin{:},'phase',phase,'options',opt);
+  ebsd = EBSD(q,phase,get_option(varargin,'CS',symmetry('m-3m')),'options',opt,varargin{:});
   
 catch
   interfaceError(fname)
 end
-
-function str = stripws(str)
-
-str = strrep(str,' ','');

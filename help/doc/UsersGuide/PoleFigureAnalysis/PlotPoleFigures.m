@@ -18,12 +18,14 @@ mtexdata ptx
 % the measured intensity.
 
 plot(pf)
+colorbar(gcm)
 
 %%
 % MTEX tries to guess the right size of circle in order to produce a
 % pleasing result. However, you can adjust this size using the option *MarkerSize*.
 
 plot(pf,'MarkerSize',4)
+colorbar(gcm)
 
 %% Contour Plots
 % Some people like to have there raw pole figures to be drawn as contour
@@ -37,13 +39,15 @@ plot(pf,'MarkerSize',4)
 % measurement grids.
 
 plot(pf,'contourf')
+colorbar(gcm)
 
 %%
 % When drawing a colorbar next to the pole figure plots it is necessary
 % to have the same color coding in all plots. This can be done as following
 
-setcolorrange('equal');
-colorbar
+colorbar(gcm) % remove colorbars
+CLim(gcm,'equal');
+colorbar(gcm) % add a single colorbar
 
 %% Plotting Recalculated Pole Figures
 %

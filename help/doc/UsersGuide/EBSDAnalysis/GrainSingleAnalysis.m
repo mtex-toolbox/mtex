@@ -12,14 +12,14 @@
 close all
 mtexdata forsterite
 plotx2east
-grains = calcGrains(ebsd)
+[grains,ebsd] = calcGrains(ebsd)
 
 %%
 % The <GrainSet_index.html GrainSet> contains the EBSD data it was reconstructed from. We can
 % access these data by
 
-grain_selected = grains( grainSize(grains) >=  1160)
-grain_selected.ebsd
+grain_selected = grains( grains.grainSize >=  1160)
+ebsd_selected = ebsd(grain_selected)
 
 %%
 % A more convinient way to select grains in daily practice, is by spatial
@@ -27,7 +27,8 @@ grain_selected.ebsd
 % adjusted to match the spatial coordinates, present in the EBSD or
 % GrainSet.
 
-grain_selected = findByLocation(grains,[12000  3000])
+grain_selected = grains(12000,3000)
+
 
 %%
 % you can get the id of this grain by
@@ -37,25 +38,21 @@ grain_selected.id
 %%
 %
 
-plotBoundary(grain_selected,'linewidth',2)
+plot(grain_selected.boundary,'linewidth',2)
 hold on
-plot(grain_selected.ebsd)
+plot(ebsd(grain_selected))
 hold off
 
 %% Visualize the misorientation within a grain
 % 
 
 close
-plotBoundary(grain_selected,'linewidth',2)
+plot(grain_selected.boundary,'linewidth',2)
 hold on
-plot(grain_selected.ebsd,'property',grain_selected.mis2mean,...
-  'colorcoding','angle')
+mis2meanAngle = angle(mis2mean(ebsd(grain_selected),grains));
+plot(ebsd(grain_selected),mis2meanAngle./degree)
 hold off
 colorbar
-
-%%
-
-close, plot(grain_selected,'property','mis2mean')
 
 %% Testing on Bingham distribution for a single grain
 % Although the orientations of an individual grain are highly concentrated,
@@ -72,7 +69,7 @@ plotPDF(grain_selected.meanOrientation,...
 
 %%
 
-plotPDF(grain_selected.ebsd,...
+plotPDF(ebsd(grain_selected).orientations,...
   [Miller(0,0,1,cs),Miller(0,1,1,cs),Miller(1,1,1,cs)],'antipodal')
 
 
@@ -81,15 +78,15 @@ plotPDF(grain_selected.ebsd,...
 % would reject the hypothesis for some level of significance, since the
 % distribution is highly concentrated and the numerical results vague.
 
-[qm,lambda,U,kappa] = mean(grain_selected.ebsd,'approximated');
+[qm,lambda,U,kappa] = mean(ebsd(grain_selected).orientations,'approximated');
 num2str(kappa')
 
 %%
 %
-
-T_spherical = bingham_test(grain_selected.ebsd,'spherical','approximated');
-T_prolate   = bingham_test(grain_selected.ebsd,'prolate',  'approximated');
-T_oblate    = bingham_test(grain_selected.ebsd,'oblate',   'approximated');
+ori = ebsd(grain_selected).orientations;
+T_spherical = bingham_test(ori,'spherical','approximated');
+T_prolate   = bingham_test(ori,'prolate',  'approximated');
+T_oblate    = bingham_test(ori,'oblate',   'approximated');
 
 [T_spherical T_prolate T_oblate]
 
@@ -101,8 +98,8 @@ T_oblate    = bingham_test(grain_selected.ebsd,'oblate',   'approximated');
 %%
 % We proceed by specifiing such a line segment
 
-close,   plotBoundary(grain_selected,'linewidth',2)
-hold on, plot(grain_selected.ebsd,'colorcoding','angle')
+close,   plot(grain_selected.boundary,'linewidth',2)
+hold on, plot(ebsd(grain_selected),ebsd(grain_selected).orientations.angle)
 
 % line segment
 x =  [11000   2500; ...
@@ -114,7 +111,7 @@ line(x(:,1),x(:,2),'linewidth',2)
 % The command <EBSD.spatialProfile.html spatialProfile> extracts
 % orientations along a line segment
 
-[o,dist] = spatialProfile(grain_selected.ebsd,x);
+[o,dist] = spatialProfile(ebsd(grain_selected),x);
 
 %%
 % where the first output argument is a set of orientations ordered along

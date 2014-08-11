@@ -39,7 +39,7 @@ if any(strcmpi(sectype,{'sigma','omega','axisangle'}))
 else
   varargin = [{'projection','plain',...
     'xAxisDirection','east','zAxisDirection','intoPlane',...
-    'innerPlotSpacing',55,'outerPlotSpacing',55},varargin];
+    'innerPlotSpacing',10,'outerPlotSpacing',10},varargin];
 end
 
 fprintf(['\nPlotting ODF as ',sectype,' sections, range: ',...
@@ -48,29 +48,16 @@ fprintf(['\nPlotting ODF as ',sectype,' sections, range: ',...
 % make new plot
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
-% plot
-if check_option(varargin,{'contour3','surf3','slice3'})
-  
-  [xlim,ylim] = polar(S2G);
-
-  v = get_option(varargin,{'surf3','contour3'},10,'double');
-  contour3s(xlim(1,:)./degree,ylim(:,1)'./degree,sec./degree,Z,v,varargin{:},...
-    'xlabel',labely,'ylabel',labelx,'zlabel',['$' symbol '$']);
-
-else
+for i = 1:length(sec)
     
-  for i = 1:length(sec)
+  if i>1, mtexFig.nextAxis; end
     
-    if i>1, mtexFig.nextAxis; end
-    
-    S2G.plot(Z(:,:,i),'TR',[int2str(sec(i)*180/pi),'^\circ'],...
-      'xlabel',labelx,'ylabel',labely,...
-      'colorRange',[min(Z(:)),max(Z(:))],'smooth',...
-      'parent',mtexFig.gca,'doNotDraw',varargin{:});
-  end
-  
+  S2G.plot(Z(:,:,i),'TR',[int2str(sec(i)*180/pi),'^\circ'],...
+    'xlabel',labelx,'ylabel',labely,...
+    'colorRange',[min(Z(:)),max(Z(:))],'smooth',...
+    'parent',mtexFig.gca,'doNotDraw',varargin{:});
 end
-
+  
 if isNew % finalize plot
 
   set(gcf,'Name',['ODF ' sectype '-sections "',inputname(1),'"']);

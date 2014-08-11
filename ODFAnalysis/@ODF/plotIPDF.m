@@ -34,7 +34,9 @@ for i = 1:length(r)
   p = ensureNonNeg(pdf(odf,h,r(i),varargin{:}));
 
   % plot
-  h.smooth(p,'TR',r(i),'parent',mtexFig.gca,'doNotDraw',varargin{:});
+  h.smooth(p,'TR','','parent',mtexFig.gca,'doNotDraw',varargin{:});
+  title(mtexFig.gca,char(r(i)),'FontSize',getMTEXpref('FontSize'));
+
 end
 
 

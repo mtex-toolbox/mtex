@@ -15,8 +15,13 @@ if strcmp(s(1).type,'()')
   end
 end
   
-try
+if isOption(T,s(1).subs)
+  if numel(s)==1
+    varargout{1} = T.opt.(s(1).subs);
+  else
+    [varargout{1:nargout}] = subsref(T.opt.(s(1).subs),s(2:end));
+  end
+  %subsref@dynOption(T,s);
+else
   [varargout{1:nargout}] = builtin('subsref',T,s);
-catch
-  [varargout{1:nargout}] = subsref@dynOption(T,s);
 end

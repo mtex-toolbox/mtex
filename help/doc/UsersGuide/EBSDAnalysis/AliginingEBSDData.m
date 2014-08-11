@@ -1,4 +1,4 @@
-%% Align EBSD data to a reference frame
+%% Aligning EBSD data to a reference frame
 % How to align EBSD correctly to certain reference frames
 %%
 % This article discusses how 
@@ -20,16 +20,16 @@ plot(ebsd)
 % as well as some pole figure data
 close all
 CS = ebsd('forsterite').CS;
-plotPDF(ebsd('forsterite'),Miller(1,2,3,CS),'contourf','points',10000)
+plotPDF(ebsd('forsterite').orientations,Miller(1,2,3,CS),'contourf')
 
 %% Altering the graphical output
 %
 % If you are unsatisfied with the orientation of your EBSD map in the
 % graphical output this might be simply because the alignment of
 % the reference frame of your data on your plot is not correct. In the
-% above picture the x-axis is plotted to east and the z-axis is plotted out
-% of plane. Assume you want to change this to z-axis into plane you need to
-% do
+% above pictures the x-axis is plotted to east and the z-axis is plotted
+% out of plane. Assume you want to change this to z-axis into plane you
+% need to do
 
 plotzIntoPlane;
 figure('position',[100 100 800 400])
@@ -40,7 +40,7 @@ plot(ebsd)
 % east direction. This change of the alignment of the reference frame does
 % not only effect spatial EBSD plots but also all pole figure plots.
 
-plotPDF(ebsd('fo'),Miller(1,2,3,CS),'contourf','points',10000)
+plotPDF(ebsd('fo').orientations,Miller(1,2,3,CS),'contourf')
 
 %%
 % However, by changing the alignment of the reference frame in the
@@ -49,7 +49,7 @@ plotPDF(ebsd('fo'),Miller(1,2,3,CS),'contourf','points',10000)
 % those changes of the alignment of the reference frame in the plots.
 
 %% Rotatating the data - realigning the reference frame
-% Sometimes it is necessary to relating the EBSD data to another external
+% Sometimes it is necessary to relate the EBSD data to a different external
 % reference frame, or to  change the external reference frame from one to
 % the other, e.g. if one wants to concatenate several ebsd data sets where
 % the mounting was not done in perfect coincidence. In these cases the data
@@ -73,7 +73,7 @@ plot(ebsd_rot)
 % spatial data, i.e. the x, y values, but also the Euler angles are
 % rotated accordingly. 
 
-plotPDF(ebsd_rot('fo'),Miller(1,2,3,CS),'contourf','points',10000)
+plotPDF(ebsd_rot('fo').orientations,Miller(1,2,3,CS),'contourf')
 
 %% See also
 % EBSD/rotate EBSD/shift EBSD/affinetrans
@@ -98,7 +98,7 @@ plot(ebsd_rot)
 %%
 % The pole figure remains unchanged:
 
-plotPDF(ebsd_rot('forsterite'),Miller(1,2,3,CS),'contourf','points',10000)
+plotPDF(ebsd_rot('forsterite').orientations,Miller(1,2,3,CS),'contourf')
 
 %% Correcting HKL and CTF files
 % Both *.ctf and *.ang data files are known to use different reference

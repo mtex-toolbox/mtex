@@ -165,7 +165,7 @@ plot(ebsd('Forsterite'),color)
 plot(oM)
 
 hold on
-plotIPDF(ebsd('Forsterite'),oM.inversePoleFigureDirection,...
+plotIPDF(ebsd('Forsterite').orientations,oM.inversePoleFigureDirection,...
   'MarkerSize',4,'MarkerFaceColor','none','MarkerEdgeColor','k')
 hold off
 
@@ -189,7 +189,7 @@ plot(oM)
 % not symmetric within this enlarged fundamental sector
 
 hold on
-plotIPDF(ebsd('Forsterite'),oM.inversePoleFigureDirection,...
+plotIPDF(ebsd('Forsterite').orientations,oM.inversePoleFigureDirection,...
   'MarkerSize',4,'MarkerFaceColor','none','MarkerEdgeColor','k')
 hold off
 

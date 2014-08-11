@@ -16,6 +16,17 @@ function [vp,vs1,vs2,pp,ps1,ps2] = velocity(C,x,rho)
 %  ps2 - polarisation of the s2--wave (particle movement, vibration direction)
 %
 
+% take density from tensor if not specified differently
+if nargin == 3
+elseif isfield(C.opt,'density')
+  rho = C.opt.density;
+else
+  rho = 1;
+  warning(['No density given! For computing wave velocities '...
+    'the material density has to be specified. ' ...
+    'I''m going to use the density rho=1.']);        
+end
+
 % compute CristoffelTensor
 E = ChristoffelTensor(C,x);
 

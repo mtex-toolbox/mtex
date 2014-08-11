@@ -14,12 +14,7 @@ end
 uphases = unique(data.Phases);
 CS = repmat({symmetry('cubic')},numel(uphases),1);
 
-ebsd = EBSD(data.Rotations,CS,...
-  'phases',   data.Phases,...
-  'unitCell', unitCell,...
-  'Options',  opts);
-
-
+ebsd = EBSD(data.Rotations,data.Phases,CS,'unitCell', unitCell,'Options',opts);
 
 
 function api = localGetApi(fname)

@@ -16,7 +16,7 @@ pf = calcPoleFigure(odf,Miller(1,0,0,cs),equispacedS2Grid('antipodal'));
 
 %%
 % and simulate some EBSD data
-ebsd = calcEBSD(odf,100)
+ori = calcOrientations(odf,100)
 
 %% Scatter Plots
 % In a scatter plots indivudal points are plotted. This plot is usually
@@ -25,7 +25,8 @@ ebsd = calcEBSD(odf,100)
 %%
 % 
 
-scatter(ebsd)
+close all
+scatter(ori)
 
 %%
 % Three dimensional vectors, Miller indices, spherical grids are plotted as

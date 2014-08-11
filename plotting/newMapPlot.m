@@ -25,7 +25,7 @@ else
   mtexFig.keepAspectRatio = false;
   
   % create a new map plot
-  mP = mapPlot(mtexFig.nextAxis,varargin{:});
+  mP = mapPlot(mtexFig.gca,varargin{:});
   
 end
   
