@@ -25,7 +25,9 @@ if ~posHasChanged
   rFcn(mtexFig.parent,[]);
 end
 
-
+if check_option(varargin,'colorrange')
+  mtexFig.CLim(get_option(varargin,'colorrange'));
+end
 
 
 

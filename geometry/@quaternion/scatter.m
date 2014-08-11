@@ -31,9 +31,7 @@ switch projection
     v = v(abs(v) < 1e5);
     [x,y,z] = double(v);
   case 'axisangle'
-    omega = angle(q);
-    v = axis(q);
-    [x,y,z] = double(v .* omega ./ degree);
+    [x,y,z] = double(q.axis .* q.angle ./ degree);
 end
 
 % color

@@ -106,7 +106,7 @@ annotate(mod2,...
 % The following example compares the Fourier coefficients of the fibre ODF
 % with the Fourier co,'margin'}efficients of an unimodal ODF.
 
-
+close all
 plotFourier(FourierODF(odf,32))
 hold all
 fodf = fibreODF(Miller(1,0,0,cs),zvector);
@@ -115,7 +115,8 @@ hold off
 
 legend({'Fibre ODF','Unimodal ODF'})
 
-%% Adding a Spherical Grid
+%%
+% Adding a Spherical Grid
 %
 % Sometimes it is usefull to have a spherical grid in your plot to make the
 % projection easier to understand or if you need to know some angular relationships. 
