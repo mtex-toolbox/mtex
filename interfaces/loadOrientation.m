@@ -38,5 +38,5 @@ else
   if isempty(interface), return; end
 end
 
-% load tensor
+% call specific interface
 ori = feval(['loadOrientation_',char(interface)],fname,options{:});

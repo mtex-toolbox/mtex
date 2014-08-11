@@ -47,102 +47,100 @@ function [ori,options] = loadOrientation_generic(fname,varargin)
 % loadOrientation
 
 try
-% load data
-[d,options,header,c] = load_generic(char(fname),varargin{:});
 
-varargin = options;
+  % load data
+  [d,options,header,c] = load_generic(char(fname),varargin{:});
 
-% no data found
-if size(d,1) < 1 || size(d,2) < 3
-  error('Generic interface could not detect any numeric data in %s',fname);
-end
+  varargin = options;
 
-% no options given -> ask
-if ~check_option(varargin,'ColumnNames')
-  
-  options = generic_wizard('data',d(1:end<101,:),'type','Orientation','header',header,'columns',c);
-  if isempty(options), ori = []; return; end
-  varargin = [options,varargin];
-  
-end
-
-names = lower(get_option(varargin,'ColumnNames'));
-cols = get_option(varargin,'Columns',1:length(names));
-
-
-assert(length(cols) == length(names), 'Length of ColumnNames and Columns differ');
-
-[names m] = unique(names);
-cols = cols(m);
-
-istype = @(in, a) all(cellfun(@(x) any(find(strcmpi(stripws(in),stripws(x)))),a));
-layoutcol = @(in, a) cols(cell2mat(cellfun(@(x) find(strcmpi(stripws(in(:)),stripws(x))),a(:),'uniformoutput',false)));
-
-euler = lower({'Euler 1' 'Euler 2' 'Euler 3'});
-bunge = lower({'Phi1' 'Phi' 'Phi2'});
-quat = lower({'Quat real' 'Quat i' 'Quat j' 'Quat k'});
-
-if istype(names,euler) || istype(names,bunge) % Euler angles specified
-  
-  if istype(names,euler)
-    layout = layoutcol(names,euler);
-  else
-    layout = layoutcol(names,bunge);
+  % no data found
+  if size(d,1) < 1 || size(d,2) < 3
+    error('Generic interface could not detect any numeric data in %s',fname);
   end
+
+  % no options given -> ask
+  if ~check_option(varargin,'ColumnNames')
+    options = generic_wizard('data',d(1:end<101,:),'type','Orientation','header',header,'columns',c);
+    if isempty(options), ori = []; return; end
+    varargin = [options,varargin];  
+  end
+
+  names = lower(get_option(varargin,'ColumnNames'));
+  cols = get_option(varargin,'Columns',1:length(names));
+
+  assert(length(cols) == length(names), 'Length of ColumnNames and Columns differ');
+
+  [names m] = unique(names);
+  cols = cols(m);
+
+  istype = @(in, a) all(cellfun(@(x) any(find(strcmpi(stripws(in),stripws(x)))),a));
+  layoutcol = @(in, a) cols(cell2mat(cellfun(@(x) find(strcmpi(stripws(in(:)),stripws(x))),a(:),'uniformoutput',false)));
+
+  euler = lower({'Euler 1' 'Euler 2' 'Euler 3'});
+  bunge = lower({'Phi1' 'Phi' 'Phi2'});
+  quat = lower({'Quat real' 'Quat i' 'Quat j' 'Quat k'});
+
+  if istype(names,euler) || istype(names,bunge) % Euler angles specified
   
-  %extract options
-  dg = degree + (1-degree)*check_option(varargin,{'radians','radiant','radiand'});
+    if istype(names,euler)
+      layout = layoutcol(names,euler);
+    else
+      layout = layoutcol(names,bunge);
+    end
   
-  % eliminate nans
-  if ~check_option(varargin,'keepNaN')
+    %extract options
+    dg = degree + (1-degree)*check_option(varargin,{'radians','radiant','radiand'});
+  
+    % eliminate nans
+    if ~check_option(varargin,'keepNaN'),
+      d(any(isnan(d(:,layout)),2),:) = [];
+    end
+  
+    % eliminate rows where angle is 4*pi
+    ind = abs(d(:,layout(1))*dg-4*pi)<1e-3;
+    d(ind,:) = [];
+  
+    % extract data
+    alpha = d(:,layout(1))*dg;
+    beta  = d(:,layout(2))*dg;
+    gamma = d(:,layout(3))*dg;
+  
+    assert(all((beta >=0 & beta <= pi &...
+      alpha >= -2*pi & alpha <= 4*pi &...
+      gamma > -2*pi & gamma<4*pi) | ...
+      isnan(alpha)));
+  
+    % check for choosing
+    if max([alpha(:);beta(:);gamma(:)]) < 10*degree
+      warndlg('The imported Euler angles appears to be quit small, maybe your data are in radians and not in degree as you specified?');
+    end
+  
+    % transform to quaternions
+    noSymmetry = cellfun(@(x) ~isa(x,'symmetry'),varargin);
+    q = rotation('Euler',alpha,beta,gamma,varargin{noSymmetry});
+  
+  elseif istype(names,quat) % import quaternion
+  
+    layout = layoutcol(names,quat);
     d(any(isnan(d(:,layout)),2),:) = [];
+  
+    q = quaternion(d(:,layout(1)),d(:,layout(2)),d(:,layout(3)),d(:,layout(4)));
+  
+  else
+  
+    error('You should at least specify three Euler angles or four quaternion components!');
+  
   end
-  
-  % eliminate rows where angle is 4*pi
-  ind = abs(d(:,layout(1))*dg-4*pi)<1e-3;
-  d(ind,:) = [];
-  
-  % extract data
-  alpha = d(:,layout(1))*dg;
-  beta  = d(:,layout(2))*dg;
-  gamma = d(:,layout(3))*dg;
-  
-  assert(all((beta >=0 & beta <= pi &...
-    alpha >= -2*pi & alpha <= 4*pi &...
-    gamma > -2*pi & gamma<4*pi) | ...
-    isnan(alpha)));
-  
-  % check for choosing
-  if max([alpha(:);beta(:);gamma(:)]) < 10*degree
-    warndlg('The imported Euler angles appears to be quit small, maybe your data are in radians and not in degree as you specified?');
-  end
-  
-  % transform to quaternions
-  noSymmetry = cellfun(@(x) ~isa(x,'symmetry'),varargin);
-  q = rotation('Euler',alpha,beta,gamma,varargin{noSymmetry});
-  
-elseif istype(names,quat) % import quaternion
-  
-  layout = layoutcol(names,quat);
-  d(any(isnan(d(:,layout)),2),:) = [];
-  
-  q = quaternion(d(:,layout(1)),d(:,layout(2)),d(:,layout(3)),d(:,layout(4)));
-  
-else
-  
-  error('You should at least specify three Euler angles or four quaternion components!');
-  
-end
 
-if check_option(varargin,{'passive','passive rotation'}), q = inv(q); end
+  if check_option(varargin,{'passive','passive rotation'}), q = inv(q); end
 
-% return varargin as options
-options = varargin;
+  % return varargin as options
+  options = varargin;
 
-% set up ori variable
-CS = get_option(varargin,'CS',symmetry);
-SS = get_option(varargin,'SS',symmetry);
-ori = orientation(q,CS,SS);
+  % set up ori variable
+  CS = getClass(varargin,'crystalSymmetry',crystalSymmetry);
+  SS = getClass(varargin,'specimenSymmetry',specimenSymmetry);
+  ori = orientation(q,CS,SS);
 
 catch
   interfaceError(fname)

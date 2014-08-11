@@ -39,7 +39,7 @@ if T.doubleConvention
 end
 
 % collect symmetry
-if length(T.CS) > 1 || ~all(1==norm(T.CS.axes))
+if isa(T.CS,'crystalSymmetry')
   props{end+1} = 'mineral'; 
   propV{end+1} = char(T.CS,'verbose');
 end
