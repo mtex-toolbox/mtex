@@ -204,7 +204,7 @@ n = Miller(0,1,0,CS_Forsterite,'hkl');
 [tauMax,mActive,nActive,tau,ind] = calcShearStress(sigmaCS,n,b,'symmetrise');
 
 close all
-plot(ebsd('Forsterite'),'property',tauMax')
+plot(ebsd('Forsterite'),tauMax')
 colorbar
 title('Schmidt factors for (010)[100]')
 
@@ -224,11 +224,11 @@ sigmaCS = rotate(sigma001,inv(ori))
 % compute maximum Schmid factor and active slip system
 [tauMax,mActive,nActive,tau,ind] = calcShearStress(sigmaCS,n,b,'symmetrise');
 
-plot(grains('Forsterite'),'property',tauMax)
+plot(grains('Forsterite'),tauMax)
 colorbar
 title('Schmidt factors for (010)[100]')
 
 %% 
 % We may also colorize the active slip system. 
 
-plot(grains('Forsterite'),'property',ind)
+plot(grains('Forsterite'),ind)
