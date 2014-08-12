@@ -2,55 +2,46 @@ function h = plot(grains,varargin)
 % colorize grains
 %
 % Syntax
-%   plot(grains) % colorize by phase
-%   
+%   plot(grains)          % colorize by phase
 %   plot(grains,property) % colorize by property
 %
 % Input
-%  grains  - @Grain2d
-%
-% Options
-%  property - colorize a grains by given property, variants are:
-%
-%    * |'phase'| -- make a phase map.
-%
-%    * |'orientation'| -- colorize a grain after its orientaiton
-%
-%            plot(grains,'property','orientation',...
-%              'colorcoding','ipdf');
-%
-%    * numeric array with length of number of grains.
+%  grains  - @grain2d
 %
 %  PatchProperty - see documentation of patch objects for manipulating the
 %                 apperance, e.g. 'EdgeColor'
 % See also
-% Grain3d/plotGrains
+% EBSD/plot grainBoundary/plot
 
 % --------------------- compute colorcoding ------------------------
 
 % create a new plot
 mP = newMapPlot(varargin{:});
 
-% what to plot - phase is default
-if nargin>1 && isnumeric(varargin{1})
-  property = varargin{1};
-elseif numel(grains.indexedPhasesId)==1
+% transform orientations to color
+if nargin>1 && isa(varargin{1},'orientation')
   
-  grains = grains.subSet(grains.phaseId == grains.indexedPhasesId);
-  
-  oM = ipdfHSVOrientationMapping(grains);
-  property = oM.orientation2color(grains.meanOrientation);
-  disp('  I''m going to colorize the ebsd data with the ');
+  oM = ipdfHSVOrientationMapping(varargin{1});
+  varargin{1} = oM.orientation2color(varargin{1});
+  disp('  I''m going to colorize the orientation data with the ');
   disp('  standard MTEX colorkey. To view the colorkey do:');
-    disp(' ');
-  disp('  oM = ipdfHSVOrientationMapping(ebsd_variable_name)')
+  disp(' ');
+  disp('  oM = ipdfHSVOrientationMapping(ori_variable_name)')
   disp('  plot(oM)')
-else
-  property = get_option(varargin,'property','phase');
 end
 
-% phase plot
-if ischar(property) && strcmpi(property,'phase')
+% numerical data are given
+if nargin>1 && isnumeric(varargin{1})
+  
+  property = varargin{1};
+  
+  assert(any(numel(property) == length(grains) * [1,3]),...
+  'Number of grains must be the same as the number of data');
+  
+  % plot polygons
+  h = plotFaces(grains.poly,grains.V,property,'parent', mP.ax,varargin{:});
+  
+else % otherwise phase plot
 
   for k=1:numel(grains.phaseMap)
       
@@ -71,19 +62,11 @@ if ischar(property) && strcmpi(property,'phase')
   end
   
   legend('-DynamicLegend','location','NorthEast');
-
-
-else % plot numeric property
-
-  assert(numel(property) == length(grains) || numel(property) == length(grains)*3,...
-    'The number of values should match the number of grains!')
-  
-  % plot polygons
-  h = plotFaces(grains.poly,grains.V,property,...
-    'parent', mP.ax,varargin{:});
-  
+    
 end
 
+% keep track of the extend of the graphics
+% this is needed for the zoom: TODO maybe this can be done better
 axis(mP.ax,'tight');
 
 if nargout == 0, clear h;end
