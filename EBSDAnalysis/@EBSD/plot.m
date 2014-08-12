@@ -57,13 +57,12 @@ if ischar(property) && strcmpi(property,'phase')
     
     color = ebsd.subSet(ind).color;
     
-    h(k) = plotUnitCells([ebsd.prop.x(ind), ebsd.prop.y(ind)],...
-    color, ebsd.unitCell, 'parent', mP.ax, varargin{:}); %#ok<AGROW>  
-    
+    h(k) = plotUnitCells([ebsd.prop.x(ind), ebsd.prop.y(ind)], color, ebsd.unitCell,...
+      'parent', mP.ax, 'DisplayName',ebsd.mineralList{k},varargin{:}); %#ok<AGROW>
+  
   end
-
-  idPlotted = unique(ebsd.phaseId);
-  legend(h(idPlotted),ebsd.mineralList(idPlotted),'location','NorthEast');
+  
+  legend('-DynamicLegend','location','NorthEast');
   
 else % plot numeric property
   
