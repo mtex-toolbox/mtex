@@ -28,26 +28,32 @@ function h = plot(ebsd,varargin)
 % create a new plot
 mP = newMapPlot(varargin{:});
 
-% what to plot
-if nargin>1 && isnumeric(varargin{1})
-  property = varargin{1};
-elseif numel(ebsd.indexedPhasesId)==1 
+% transform orientations to color
+if nargin>1 && isa(varargin{1},'orientation')
+    
+  oM = ipdfHSVOrientationMapping(varargin{1});
+  varargin{1} = oM.orientation2color(varargin{1});
   
-  ebsd = ebsd.subSet(ebsd.phaseId == ebsd.indexedPhasesId);
-  
-  oM = ipdfHSVOrientationMapping(ebsd);
-  property = oM.orientation2color(ebsd.orientations);
-  disp('  I''m going to colorize the ebsd data with the ');
+  disp('  I''m going to colorize the orientation data with the ');
   disp('  standard MTEX colorkey. To view the colorkey do:');
     disp(' ');
-  disp('  oM = ipdfHSVOrientationMapping(ebsd_variable_name)')
+  disp('  oM = ipdfHSVOrientationMapping(ori_variable_name)')
   disp('  plot(oM)')
-else
-  property = get_option(varargin,'property','phase');
 end
 
-% phase plot
-if ischar(property) && strcmpi(property,'phase')
+
+% numerical data are given
+if nargin>1 && isnumeric(varargin{1})
+  
+  property = varargin{1};
+  
+  assert(any(numel(property) == length(ebsd) * [1,3]),...
+    'The number of values should match the number of ebsd data!')
+  
+  h = plotUnitCells([ebsd.prop.x, ebsd.prop.y],...
+    property, ebsd.unitCell, 'parent', mP.ax, varargin{:});
+
+else % phase plot
 
   for k=1:numel(ebsd.phaseMap)
       
@@ -63,18 +69,6 @@ if ischar(property) && strcmpi(property,'phase')
   end
   
   legend('-DynamicLegend','location','NorthEast');
-  
-else % plot numeric property
-  
-  if ~any(numel(property) == length(ebsd) * [1,3])
-    ebsd = ebsd.subSet(~isNotIndexed(ebsd));
-  end
-  
-  assert(any(numel(property) == length(ebsd) * [1,3]),...
-    'The number of values should match the number of ebsd data!')
-  
-  h = plotUnitCells([ebsd.prop.x, ebsd.prop.y],...
-    property, ebsd.unitCell, 'parent', mP.ax, varargin{:});
   
 end
   
