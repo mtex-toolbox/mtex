@@ -82,9 +82,9 @@ plotIPDF(odf,xvector);
 mtexColorMap white2black
 
 hold all % keep plot
-plot(Miller(1,1,-2,0,cs),'symmetrised','labeled')
-plot(Miller(0,1,-1,0,cs),'symmetrised','labeled')
-plot(Miller(0,1,-1,1,cs),'symmetrised','labeled')
+plot(Miller(1,1,-2,0,cs),'symmetrised','labeled','backgroundColor','w')
+plot(Miller(0,1,-1,0,cs),'symmetrised','labeled','backgroundColor','w')
+plot(Miller(0,1,-1,1,cs),'symmetrised','labeled','backgroundColor','w')
 hold off % next plot command deletes all plots
 
 %% Combining different plots in one figure

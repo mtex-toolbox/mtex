@@ -30,7 +30,7 @@ plot(grains)
 % ebsd plot spatial command.
 
 close all
-plot(grains,'property','phase')
+plot(grains)
 
 %%
 % Particularly one can apply the color coding of orientations, i.e.
@@ -46,11 +46,11 @@ plot(grains,'colorcoding','ipdfCenter',{Miller(1,1,1),[0 0 1]},...
 % transparency with the option *translucent*.
 
 close all
-plot(ebsd,'property','bc')
+plot(ebsd,ebsd.bc)
 mtexColorMap black2white
 
 hold on
-plot(ebsd,'property','phase','translucent',1)
+plot(ebsd,'translucent',1)
 hold off
 
 %%
@@ -61,7 +61,8 @@ hold off
 % from, thus we select grains of a GrainSet and plot its corresponding EBSD
 
 close all
-plotspatial(grains(grainSize(grains)>15).ebsd,'property','bc')
+ebsd_grain = ebsd(grains(grainSize(grains)>15))
+plotspatial(ebsd_grain,ebsd_grain.bc)
 mtexColorMap black2white
 
 %%
@@ -69,7 +70,7 @@ mtexColorMap black2white
 % number of grains.
 
 close all
-plot(grains,'property',shapefactor(grains))
+plot(grains,shapefactor(grains))
 
 
 %% Visualizing grain boundaries
@@ -85,7 +86,7 @@ plotBoundary(grains)
 % on command, so we can plot various information together
 
 hold on
-plot(ebsd,'property','bc')
+plot(ebsd,ebsd.bc)
 mtexColorMap white2black
 
 %%
@@ -107,14 +108,14 @@ plotBoundary(grains_selection,'linecolor','r','linewidth',2)
 close all
 plot(grains,'translucent',.3)
 hold on
-plotBoundary(grains,'property','phase','linecolor','r','linewidth',1.5)
+plot(grains.boundary,'linecolor','r','linewidth',1.5)
 
 
 %%
 % Also, one can encode the combination of phases at the grain boundary. Here, for
 % instance we have three types occuring: Fe-Fe, Fe-Mg and Mg-Mg
 
-close, plotBoundary(grains,'property','phasetransition')
+close, plot(grains.boundary)
 
 %% SUB: Subboundaries
 % Another special type of boundaries, are boundaries that are located

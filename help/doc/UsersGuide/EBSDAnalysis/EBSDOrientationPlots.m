@@ -84,8 +84,9 @@ hold off
 % One can also use different colors on the scatter points by certain [[EBSD.get.html,EBSD
 % properties]] or [[GrainSet.get.html,grain properties]]
 
-plotPDF(ebsd('Fo').orientations,[Miller(1,0,0,ebsd('Fo').CS),Miller(1,1,0,ebsd('Fo').CS)],'antipodal','MarkerSize',4,...
-  'property',ebsd.mad)
+h = [Miller(1,0,0,ebsd('Fo').CS),Miller(1,1,0,ebsd('Fo').CS)];
+plotPDF(ebsd('Fo').orientations,...
+  h,'antipodal','MarkerSize',4,'property',ebsd.mad)
 
 %%
 % or some arbitrary data vector

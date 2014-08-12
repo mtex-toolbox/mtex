@@ -137,7 +137,7 @@ sigma
 
 % pot the maximum Schmidt factor
 contourf(r,tauMax);
-colorbar
+colorbar(gcm)
 
 %%
 
@@ -205,7 +205,7 @@ n = Miller(0,1,0,CS_Forsterite,'hkl');
 
 close all
 plot(ebsd('Forsterite'),tauMax')
-colorbar
+colorbar(gcm)
 title('Schmidt factors for (010)[100]')
 
 %%
@@ -225,7 +225,7 @@ sigmaCS = rotate(sigma001,inv(ori))
 [tauMax,mActive,nActive,tau,ind] = calcShearStress(sigmaCS,n,b,'symmetrise');
 
 plot(grains('Forsterite'),tauMax)
-colorbar
+colorbar(gcm)
 title('Schmidt factors for (010)[100]')
 
 %% 

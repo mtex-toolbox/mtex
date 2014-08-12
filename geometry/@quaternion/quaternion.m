@@ -1,7 +1,5 @@
 classdef quaternion
-  % TODO: the syntax quanternion(r,2:20) was allowed
-  
-  
+    
   properties
     a % real part
     b % * i

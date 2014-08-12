@@ -49,8 +49,7 @@ hold off
 close
 plot(grain_selected.boundary,'linewidth',2)
 hold on
-mis2meanAngle = angle(mis2mean(ebsd(grain_selected),grains));
-plot(ebsd(grain_selected),mis2meanAngle./degree)
+plot(ebsd(grain_selected),ebsd(grain_selected).mis2mean.angle./degree)
 hold off
 colorbar
 
@@ -58,16 +57,6 @@ colorbar
 % Although the orientations of an individual grain are highly concentrated,
 % they may vary in the shape. In particular, if the grain was deformed by
 % some process, we are interessed in quantifications.
-%%
-% Note, that the |plotPDF|, |plotIPDF| and |plotODF| command by default
-% only plots the mean orientation of grains. Thus, for these commands, we
-% have to explicitely specify the underlaying EBSD data.
-
-cs = grain_selected.CS;
-plotPDF(grain_selected.meanOrientation,...
-  [Miller(0,0,1,cs),Miller(0,1,1,cs),Miller(1,1,1,cs)],'antipodal')
-
-%%
 
 plotPDF(ebsd(grain_selected).orientations,...
   [Miller(0,0,1,cs),Miller(0,1,1,cs),Miller(1,1,1,cs)],'antipodal')
