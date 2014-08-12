@@ -104,7 +104,7 @@ hist(angle./degree)
 
 
 figure('position',[100 100  750 300]);
-plot(grains,'property','phase','FaceAlpha',0.4)
+plot(grains,'FaceAlpha',0.4)
 hold on
 
 plot(AOboundary(angle>160*degree),'linewidth',2,'linecolor','red')

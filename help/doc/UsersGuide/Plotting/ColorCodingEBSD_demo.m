@@ -84,6 +84,7 @@ plot(oM)
 % We may also look at the inverse pole figure sphere in 3d. One can nicely
 % observe how the color map follows the given symmetry group.
 
+close all
 plot(oM,'3d')
 
 % add some axes

@@ -35,9 +35,10 @@ plotx2east
 % <ebsd_get.html,get>.
 
 % get the misorientations to mean
-mori = mis2mean(ebsd('Fo'),grains)
+mori = ebsd('Fo').mis2mean
 
 % plot a histogram of the misorientation angles
+% TODO: plotAngleDistribution(mori)
 close all
 hist(mori.angle/degree)
 xlabel('Misorientation angles in degree')
@@ -46,8 +47,9 @@ xlabel('Misorientation angles in degree')
 % The visualization of the misorientation can be done by
 
 close all
-plot(ebsd('Forsterite'), angle(mis2mean(ebsd('Forsterite'),grains))./degree)
-colorbar
+plot(ebsd('Forsterite'),ebsd('Forsterite').mis2mean.angle./degree)
+mtexColorMap WhiteJet
+colorbar(gcm)
 hold on
 plot(grains.boundary,'edgecolor','k','linewidth',.5)
 hold off
