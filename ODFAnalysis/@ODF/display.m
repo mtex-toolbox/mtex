@@ -28,8 +28,8 @@ end
 disp([h ' ' docmethods(inputname(1))]);
 
 % display symmtries and minerals
-disp(char(odf.CS,'verbose'));
-disp(char(odf.SS,'verbose'));
+if ~isempty(odf.CS), disp(char(odf.CS,'verbose','symmetryType'));end
+if ~isempty(odf.SS), disp(char(odf.SS,'verbose','symmetryType'));end
 
 % display components
 disp(' ');

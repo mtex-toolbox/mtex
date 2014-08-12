@@ -59,7 +59,7 @@ r = vertcat(data.r);
 
 % extract Miller indices
 hkl = unique(vertcat(data.h),'rows');
-h = Miller(hkl(:,1),hkl(:,2),hkl(:,3));
+h = Miller(hkl(:,1),hkl(:,2),hkl(:,3),crystalSymmetry);
 
 % check for constant 2Theta angle
 if numel(unique([data.position_2Theta]))>1

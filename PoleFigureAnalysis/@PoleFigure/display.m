@@ -19,8 +19,8 @@ if ~isempty(pf.CS.mineral)
   disp(['  mineral: ',pf.CS.mineral]);
 end
 
-disp(['  crystal symmetry : ',char(pf.CS,'verbose')]);
-disp(['  specimen symmetry: ',char(pf.SS,'verbose')]);
+disp(char(pf.CS,'verbose','symmetryType'));
+disp(char(pf.SS,'verbose','symmetryType'));
 disp(' ');
 
 for i = 1:pf.numPF

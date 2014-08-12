@@ -156,7 +156,7 @@ h = { ...
 
 c = ones(size(h));
 
-pf = loadPoleFigure_geesthacht(fname,h,CS,SS);
+pf = loadPoleFigure(fname,h,CS,SS);
 
 %
 function   [CS,h,c,pf] = mtexdata_ptx

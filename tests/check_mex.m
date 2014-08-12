@@ -68,7 +68,7 @@ q = idquaternion;
 
 sx = quaternion(subGrid(x,find(x,q,10*degree)));
 
-dist(cs,symmetry,q,sx) / degree
+dist(cs,specimenSymmetry,q,sx) / degree
 
 
 plot(inv(sx)*xvector)

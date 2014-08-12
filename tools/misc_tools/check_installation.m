@@ -31,7 +31,7 @@ end
 
 end
 
-%% ------------ check for binaries --------------------------
+% ------------ check for binaries --------------------------
 function check_binaries
 
 if fast_check_binaries, return; end
@@ -110,7 +110,7 @@ end
 
 end
 
-%%    ----------- check mex files ---------------------------
+%    ----------- check mex files ---------------------------
 function check_mex
 
 % set mex/directory
@@ -181,7 +181,7 @@ end
 hline('-')
 end
 
-%% ----------------------------------------------------------------------
+% ----------------------------------------------------------------------
 
 function e = fast_check_mex(mexpath)
 
@@ -209,7 +209,7 @@ if ispref('mtex') && ispref('mtex','mex')
 end
 
 try
-  S3G = equispacedSO3Grid(symmetry,symmetry,'points',100);
+  S3G = equispacedSO3Grid(crystalSymmetry,specimenSymmetry,'points',100);
   dot_outer(S3G,idquaternion,'epsilon',pi/4);
   e = true;
 catch
@@ -220,7 +220,7 @@ setpref('mtex','mex',e);
 
 end
 
-%% --------------------------------------------------------------
+% --------------------------------------------------------------
 
 function out = checkNfftBug
 
@@ -263,7 +263,7 @@ function out = checkNfftBug
 end
 
 
-%% -----------------------------------------------------------------------
+% -----------------------------------------------------------------------
 
 
 function hline(st)
