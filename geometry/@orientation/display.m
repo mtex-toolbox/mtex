@@ -19,8 +19,8 @@ end
 disp([s ' ' docmethods(inputname(1))]);
 
 disp(['  size: ' size2str(o)]);
-disp(char(o.CS,'verbose'));
-disp(char(o.SS,'verbose'));
+disp(char(o.CS,'verbose','symmetryType'));
+disp(char(o.SS,'verbose','symmetryType'));
 
 if length(o) < 30 && ~isempty(o), Euler(o);end
 

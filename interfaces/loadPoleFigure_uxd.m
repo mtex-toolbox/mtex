@@ -38,7 +38,7 @@ try
     % if theta is different from last theta start new polfigure
     if ~strcmp(lastTh,th)
       if ~isempty(lastTh)
-        allH{npf} = Miller(1,0,0);
+        allH{npf} = Miller(1,0,0,crystalSymmetry);
         allR{npf} = r;
         allI{npf} = d;       
         npf = npf + 1;
