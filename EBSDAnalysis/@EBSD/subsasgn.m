@@ -26,7 +26,7 @@ switch s(1).type
       ebsd = subsasgn@dynProp(ebsd,s(1),b);
       ebsd.rotations = subsasgn(ebsd.rotations,s(1),b.rotations);
       ebsd.id = subsasgn(ebsd.id,s(1),b.id);
-      ebsd.phaseId = subsasgn(ebsd.phaseId,s(1),[]);
+      ebsd.phaseId = subsasgn(ebsd.phaseId,s(1),b.phaseId);
       ebsd.CSList = b.CSList;
       ebsd.phaseMap = b.phaseMap;
       

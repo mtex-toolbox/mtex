@@ -2,14 +2,14 @@ function make_mtex_help(varargin)
 % build help with the DocHelp Toolbox
 %
 
-% !find doc/UsersGuide -exec touch {} \;
+if check_option(varargin,'clear')
+  !find doc/UsersGuide -exec touch {} \;
+  mtexdata clear
+end
 
 clear
 close all
-
-%%
-
-mtexdata clear
+plotx2east
 
 %%
 

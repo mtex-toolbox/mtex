@@ -16,11 +16,11 @@ function h = plot(ebsd,varargin)
 % plot a EBSD data set spatially with custom colorcoding
 %
 %   mtexdata forsterite
-%   plot(ebsd,'colorcoding','ipdfHKL')
+%   plot(ebsd)
 %
-%   plot(ebsd,'property','phase')
+%   plot(ebsd('Forsterite'))
 %
-%   plot(ebsd,'property','mad')
+%   plot(ebsd,ebsd.mad)
 %
 % See also
 % EBSD/plot
