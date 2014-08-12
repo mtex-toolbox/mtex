@@ -15,14 +15,17 @@ switch s(1).type
       
       s(1).subs = {~s(1).subs{1}};
       grains = subsref(grains,s(1));      
-                  
+      
     else
       
       grains = subsasgn@dynProp(grains,s(1),b);
       grains.meanRotation = subsasgn(grains.meanRotation,s(1),b.meanRotation);
+      grains.id = subsasgn(grains.id,s(1),b.id);
+      grains.grainSize = subsasgn(grains.grainSize,s(1),b.grainSize);
+      grains.poly = subsasgn(grains.poly,s(1),b.poly);
       grains.CSList = b.CSList;
       grains.phaseMap = b.phaseMap;
-      
+
     end
     
   otherwise
