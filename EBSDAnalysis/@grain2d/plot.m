@@ -64,15 +64,14 @@ if ischar(property) && strcmpi(property,'phase')
     h{k} = plotFaces(grains.poly(ind),grains.V,color,...
       'parent', mP.ax,varargin{:}); %#ok<AGROW>
 
-    lh{k} = h{k}(end);
-    
     % reactivate legend information
-    set(get(get(h{k}(end),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');      
-    
+    set(h{k},'DisplayName',grains.mineralList{k});
+    set(get(get(h{k}(end),'Annotation'),'LegendInformation'),'IconDisplayStyle','on');
+
   end
   
-  idPlotted = unique(grains.phaseId);
-  legend([lh{idPlotted}],grains.mineralList(idPlotted));
+  legend('-DynamicLegend','location','NorthEast');
+
 
 else % plot numeric property
 
