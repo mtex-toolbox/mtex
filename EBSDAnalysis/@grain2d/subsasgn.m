@@ -1,7 +1,7 @@
 function grains = subsasgn(grains,s,b)
 % overloads subsasgn
 
-if ~isa(grains,'GrainSet'), grains = b([]); end
+if ~isa(grains,'grain2d'), grains = b([]); end
 
 switch s(1).type
   
