@@ -47,13 +47,13 @@ classdef grainBoundary < phaseList & dynProp
       
       % scale fid down to 1:length(gB)
       d = diff([0;fId]);      
-      fId = cumsum(d>0) + (d==0)*length(gB);
+      fId = cumsum(d>0) + (d==0)*length(gB.F);
             
-      gB.ebsdId = zeros(length(gB),2);
+      gB.ebsdId = zeros(length(gB.F),2);
       gB.ebsdId(fId) = eId;      
       
       % compute phaseId
-      gB.phaseId = zeros(length(gB),2);
+      gB.phaseId = zeros(length(gB.F),2);
       isNotBoundary = gB.ebsdId>0;
       gB.phaseId(isNotBoundary) = ebsd.phaseId(gB.ebsdId(isNotBoundary));
       gB.phaseMap = ebsd.phaseMap;
@@ -65,7 +65,7 @@ classdef grainBoundary < phaseList & dynProp
       gB.ebsdId(doSort,:) = fliplr(gB.ebsdId(doSort,:));
       
       % compute misrotations
-      gB.misrotation = rotation(idquaternion(length(gB),1));
+      gB.misrotation = rotation(idquaternion(length(gB.F),1));
       isNotBoundary = all(gB.ebsdId,2);
       gB.misrotation(isNotBoundary) = ...
         inv(ebsd.rotations(gB.ebsdId(isNotBoundary,1))) ...
@@ -111,7 +111,7 @@ classdef grainBoundary < phaseList & dynProp
         out = any(gB.phaseId == phaseId,2);
       
         % not indexed phase should include outer border as well
-        if ischar(gB.CSList{phaseId}), out = out | any(gB.phaseId == 0,2); end
+        if phaseId > 0 && ischar(gB.CSList{phaseId}), out = out | any(gB.phaseId == 0,2); end
         
       elseif phaseId == phaseId2
         

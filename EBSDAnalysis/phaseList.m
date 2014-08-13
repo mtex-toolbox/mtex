@@ -59,6 +59,12 @@ classdef phaseList
         error('symmetry mismatch')
       end
 
+      % ensure that there is at least one notIndexed phase
+      if all(cellfun(@(x) isa(x,'symmetry'),pL.CSList))
+        pL.CSList = [pL.CSList,{'not indexed'}];
+        pL.phaseMap = [pL.phaseMap;0];
+      end
+      
       % apply colors
       colorOrder = getMTEXpref('EBSDColorNames');
       nc = numel(colorOrder);
@@ -89,7 +95,7 @@ classdef phaseList
       pL.phaseId = phId;
             
     end
-    
+
     function id = get.indexedPhasesId(pL)
       
       id = intersect(...
@@ -198,10 +204,31 @@ classdef phaseList
       %   ebsd(~isNotIndexed(ebsd)) %select all indexed EBSD data
 
 
-      notIndexedPhase = find(cellfun('isclass',pL.CSList,'char'));
+      notIndexedPhase = [0,find(cellfun('isclass',pL.CSList,'char'))];
       notIndexed = ismember(pL.phaseId,notIndexedPhase);
     end
     
+    function out = isempty(pL)
+      out = isempty(pL.phaseId);
+    end
+    
+    function varargout = size(pL,varargin)
+      [varargout{1:nargout}] = size(pL.phaseId(:,1),varargin{:});
+    end
+    
+    function out = length(pL)
+      out = size(pL.phaseId,1);
+    end
+
+    function e = end(pL,i,n)
+
+      if n==1
+        e = numel(pL.phaseId);
+      else
+        e = size(pL.phaseId,i);
+      end
+    end
+       
     function [pL,cs] = checkSinglePhase(pL)
 
       % check only a single phase is involved
