@@ -13,25 +13,7 @@ classdef dynProp
       dp.prop = struct(varargin{:});      
       
     end
-  
-    function s = size(dp,varargin)
-    
-      fn = fieldnames(dp.prop);
       
-      if isempty(fn)
-        s = size([],varargin{:});
-      else
-        s = size(dp.prop.(fn{1}),varargin{:});
-      end
-      
-    end
-      
-    function l = length(dp)
-      
-      l = prod(size(dp)); %#ok<PSIZE>
-      
-    end
-        
     % ----------------------------------------------------
     function dp = cat(dim,varargin)
       
@@ -159,7 +141,7 @@ classdef dynProp
     function c = char(dp)
       
       fn = fieldnames(dp.prop);
-      if ~isempty(fn) && length(dp)<=20        
+      if ~isempty(fn) && length(dp.prop.(fn{1}))<=20
         d = zeros(length(dp),numel(fn));
         for j = 1:numel(fn)
           if isnumeric(dp.prop.(fn{j}))
