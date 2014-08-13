@@ -25,7 +25,6 @@ end
 disp(' ')
 
 pairs = allPairs(1:numel(gB.phaseMap));
-%pairs(1) = [];
 
 % ebsd.phaseMap
 matrix = cell(size(pairs,1),3);
