@@ -79,10 +79,11 @@ classdef mtexFigure < handle
         
         % prevent that this is called by colorbar
         x = dbstack; 
-        if strcmpi(x(2).name,'colorbar'), return;end
+        if any(strcmpi(x(2).name,{'colorbar','legend'})), return;end
         
         mtexFig.children = ...
-        flipud(findobj(mtexFig.parent,'type','axes','-not','tag','Colorbar')); 
+        flipud(findobj(mtexFig.parent,'type','axes',...
+        '-not','tag','Colorbar','-and','-not','tag','legend')); 
       end
       
       function deleteChildren(a,b)
