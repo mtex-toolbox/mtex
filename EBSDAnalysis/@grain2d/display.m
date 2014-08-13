@@ -2,8 +2,7 @@ function  display(grains,varargin)
 % standard output
 
 disp(' ');
-h = [doclink([class(grains) '_index'], class(grains)) '-' ...
-  doclink('GrainSet_index','Set')];
+h = doclink('grain2d_index','grain2d');
 
 if check_option(varargin,'vname')
   h = [get_option(varargin,'vname'), ' = ' h];
@@ -26,10 +25,7 @@ for ip = 1:numel(grains.phaseMap)
   
   % grains
   matrix{ip,2} = int2str(nnz(grains.phaseId == ip));
-  
-  % orientations
-  %matrix{ip,3} = int2str(nnz(grains.ebsd.phaseId == ip));  
-  
+    
   % abort in special cases
   if isempty(grains.CSList{ip})
     continue
@@ -49,12 +45,15 @@ for ip = 1:numel(grains.phaseMap)
   
 end
 
+% remove empty rows
+matrix(histc(full(grains.phaseId),1:numel(grains.phaseMap))==0,:) = [];
+
 if ~isempty(grains)
   cprintf(matrix,'-L',' ','-Lc',...
-    {'Phase' 'Grains' 'Orientations' 'Mineral'  'Symmetry' 'Crystal reference frame'},...
+    {'Phase' 'Grains' 'Mineral'  'Symmetry' 'Crystal reference frame'},...
     '-d','  ','-ic',true);
 else
-  disp('  GrainSet is empty!')
+  disp('  no grains here!')
 end
 
 % show properties
