@@ -9,7 +9,7 @@ rFcn(mtexFig.parent,[]);
 
 % update children
  mtexFig.children = flipud(findobj(mtexFig.parent,'type','axes',...
-   '-not','tag','Colorbar')); 
+   '-not','tag','Colorbar','-and','-not','tag','legend')); 
 
 getTightInset;
 
@@ -45,6 +45,8 @@ end
       set(ax,'xTickLabel',[],'yTickLabel',[]);
       mtexFig.tightInset = get(ax,'tightInset');
       set(ax,'xTickLabel',xtl,'yTickLabel',ytl,'xlabel',xl,'ylabel',yl);
+    elseif strcmpi(get(ax,'PlotBoxAspectRatioMode'),'auto')
+      mtexFig.tightInset = get(ax,'tightInset');
     else
       axis(ax,'normal');
       mtexFig.tightInset = get(ax,'tightInset');
