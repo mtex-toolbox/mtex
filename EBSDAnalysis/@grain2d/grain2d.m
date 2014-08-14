@@ -183,11 +183,7 @@ classdef grain2d < phaseList & dynProp
     end
     
     function ori = get.meanOrientation(grains)
-      
-      % ensure single phase
-      [grains,cs] = checkSinglePhase(grains);
-      
-      ori = orientation(grains.meanRotation,cs);
+      ori = orientation(grains.meanRotation,grains.CS);
     end
     
   end
