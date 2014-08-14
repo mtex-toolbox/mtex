@@ -11,15 +11,15 @@ function h = plotAngleDistribution( ori, varargin )
 
 mtexFig = newMtexFigure;
 
-% compute omega
-maxomega = getMaxAngleFundamentalRegion(ori.CS);
+% compute angles
+omega = ori.angle;
 
 % seach for existing bar plots
 h = findobj(mtexFig.gca,'type','bar','-or','type','hgGroup');
 
 if ~isempty(h)
-  omega = ensurecell(get(h,'XData'));
-  omega = omega{1}*degree;
+  bins = ensurecell(get(h,'XData'));
+  bins = bins{1}*degree;
   
   density = ensurecell(get(h,'YData'));
   density = cellfun(@(x) x(:),density,'UniformOutput',false);
@@ -27,23 +27,29 @@ if ~isempty(h)
   lg = ensurecell(get(h,'DisplayName'));
   delete(h); % remove old bars
   
+  %TODO: maybe we have to enlarge bins
+  
 else
   % bin size given?
   if ~isempty(varargin) && isscalar(varargin{1})
-    bins = varargin{1};
+    nbins = varargin{1};
   else
-    bins = 20;
+    nbins = 20;
   end
-  omega = linspace(0,maxomega,bins);
-  density = zeros(bins,1);
+
+  % compute bins
+  maxomega = max(omega);
+  bins = linspace(0,maxomega,nbins);
+  bins = 0.5 .* (bins(2:end)+bins(1:end-1));
+  density = zeros(nbins-1,1);
   lg = {};
 end
 
 % compute angle distributions
-d = histc(ori.angle,omega).';
+d = histc(omega,bins).';
 density(:,end) = 100 * d ./ sum(d);
 
-h = optiondraw(bar(omega/degree,density,'parent',mtexFig.gca),varargin{:});
+h = optiondraw(bar(bins/degree,density,'parent',mtexFig.gca),varargin{:});
 
 % update legend
 lg = [lg;{[ori.CS.mineral '-' ori.SS.mineral]}];
@@ -53,7 +59,7 @@ end
 
 xlabel(mtexFig.gca,'angle in degree')
 ylabel(mtexFig.gca,'percent')
-xlim(mtexFig.gca,[0,max(omega)/degree])
-%mtexFig.drawNow
+%xlim(mtexFig.gca,[0,max(bins)/degree])
+mtexFig.drawNow(varargin{:})
 
 if nargout == 0, clear h;end

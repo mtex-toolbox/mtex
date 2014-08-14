@@ -55,11 +55,13 @@ ph2 = ph2(tril(ones(size(ph2)))>0);
 for i = 1:numel(ph1)
 
   mori = calcMisorientation(objSplit{ph1(i)},objSplit{ph2(i)},varargin{:});
-  h = plotAngleDistribution(mori);
+  h = plotAngleDistribution(mori,'doNotDraw');
   hold on
     
 end
 
 legend(mtexFig.gca,'-DynamicLegend','Location','northwest')
+
+mtexFig.drawNow(varargin{:})
 
 if nargout==0, clear h;end
