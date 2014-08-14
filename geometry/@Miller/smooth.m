@@ -1,4 +1,4 @@
-function smooth(m,varargin)
+function varargout = smooth(m,varargin)
 % plot Miller indece
 %
 % Input
@@ -22,4 +22,5 @@ end
 sR = region(m,varargin{:});
 
 % use vector3d/smooth for output
-smooth(x(:),varargin{:},sR);
+[varargout{1:nargout}] = smooth(x(:),varargin{:},sR);
+
