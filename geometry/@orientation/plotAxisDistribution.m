@@ -1,4 +1,4 @@
-function plotAxisDistribution(ori,varargin)
+function varargout = plotAxisDistribution(ori,varargin)
 % plot uncorrelated axis distribution
 %
 % Input
@@ -19,7 +19,7 @@ mtexFig = newMtexFigure('ensureTag','AxisDistribution',varargin{:});
 
 % plot
 axes = ori.axis;
-plot(axes,'symmetrised','FundamentalRegion',varargin{:},'parent',mtexFig.gca);
+[varargout{1:nargout}] = plot(axes,'symmetrised','FundamentalRegion',varargin{:},'parent',mtexFig.gca);
 
 set(gcf,'tag','AxisDistribution');
 setappdata(gcf,'CS',axes.CS);

@@ -16,7 +16,7 @@ function plotAxisDistribution(ebsd1,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-mtexFig = newMtexFigure;
+mtexFig = newMtexFigure(varargin{:});
 
 % get phases
 if nargin > 1 && isa(varargin{1},'EBSD')

@@ -8,7 +8,7 @@ function h = plotAngleDistribution( gB, varargin )
 % orientation/calcAngleDistribution
 %
 
-mtexFig = newMtexFigure;
+mtexFig = newMtexFigure(varargin{:});
 
 % only consider indexed data
 gB  = subSet(gB,~any(gB.isNotIndexed,2));
