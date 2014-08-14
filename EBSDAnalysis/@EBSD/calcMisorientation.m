@@ -24,8 +24,8 @@ else
 end
 
 % function works only for single phases
-ebsd1 = checkSinglePhase(ebsd1);
-ebsd2 = checkSinglePhase(ebsd2);
+checkSinglePhase(ebsd1);
+checkSinglePhase(ebsd2);
 
 % --------- determine minimum distance ----------------------
 
