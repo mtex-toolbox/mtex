@@ -1,15 +1,17 @@
-function smooth(v,varargin)
+function h = smooth(v,varargin)
 %
 % Syntax
 %
 % Input
 %
 % Output
-%fahrrad-gegen-polizeiauto
+%
 % Options
 %
 % See also
 %
+
+h = [];
 
 % initialize spherical plot
 sP = newSphericalPlot(v,varargin{:});
@@ -104,13 +106,10 @@ for j = 1:numel(sP)
   data = reshape(submatrix(cdata,ind),size(x));
 
   % plot contours
-  h = betterContourf(sP(j).ax,x,y,data,contours,varargin{:});
-
+  h(end+1) = betterContourf(sP(j).ax,x,y,data,contours,varargin{:});   
+  
   hold(sP(j).ax,'off')
-
-  % set styles
-  optiondraw(h,'LineStyle','none','Fill','on',varargin{:});
-
+  
   % --------------- finalize the plot ---------------------------
 
   % adjust caxis according to colorRange
@@ -130,7 +129,13 @@ for j = 1:numel(sP)
   sP(j).plotAnnotate(varargin{:})
   
 end
-  
+
+% set styles
+optiondraw(h,'LineStyle','none','Fill','on',varargin{:});
+
+
+if nargout == 0, clear h; end
+
 function h = betterContourf(ax,X,Y,data,contours,varargin)
 
 h = [];
@@ -165,6 +170,9 @@ if numel(unique(data)) > 1
     end
   else
     [CM,h] = contourf(ax,X,Y,data,contours); %#ok<ASGLU>
+    
+    % do not display in the legend
+    set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
   end
 
 elseif ~check_option(varargin,'fill',[],'off')

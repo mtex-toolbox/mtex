@@ -28,6 +28,10 @@ for j = 1:numel(sP)
     % plot
     h(i) = optiondraw(line('xdata',x,'ydata',y,'parent',sP(j).ax,...
       'color',[0.2 0.2 0.2],'linewidth',1.5),varargin{:}); %#ok<AGROW>
+    
+    % do not display in the legend
+    set(get(get(h(i),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+    
   end
 end
 
