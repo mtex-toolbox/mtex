@@ -80,11 +80,7 @@ classdef EBSD < phaseList & dynProp & dynOption & misorientationAnalysis
     end
       
     function ori = get.orientations(ebsd)
-      
-      % ensure single phase
-      [ebsd,cs] = checkSinglePhase(ebsd);
-      
-      ori = orientation(ebsd.rotations,cs);
+      ori = orientation(ebsd.rotations,ebsd.CS);
     end
     
     function ebsd = set.orientations(ebsd,ori)
