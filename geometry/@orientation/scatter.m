@@ -45,7 +45,7 @@ else
 end
 
 varargin = delete_option(varargin,'center');
-q = project2FundamentalRegion(o,center);
+q = rotation(project2FundamentalRegion(o,center));
   
 % plot
 [varargout{1:nargout}]= scatter@rotation(q,'parent',mtexFig.gca,varargin{:});
