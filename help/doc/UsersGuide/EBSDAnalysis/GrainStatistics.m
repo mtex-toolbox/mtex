@@ -150,13 +150,42 @@ plot(grains_selected)
 % we consider the complete data set.
 
 mtexdata forsterite
-grains = calcGrains(ebsd)
+[grains,ebsd] = calcGrains(ebsd)
 
 %%
 % Then the following command gives you a nice overview over the grain size
 % distributions of the grains
 
 hist(grains)
+
+%%
+% Sometimes it is desireable to remove all boundary grains as they might
+% distort grain statistics. To do so one should remember that each grain
+% boundary has a property |phaseId| which is zero if the face has an outer
+% boundary. 
+
+% first we get all faces that have an outer boundary
+face_id = grains.boundary.hasPhaseId(0);
+
+% next we compute the corresponding ebsd_id
+ebsd_id = grains.boundary(face_id).ebsdId;
+
+% lets plot the corresponding ebsd measurements
+ebsd_id = unique(ebsd_id(:,2));
+plot(ebsd(ebsd_id))
+
+%%
+% to compute the corresponding grain_id we do
+grain_id = unique(ebsd(ebsd_id).grainId);
+
+% and plot the boundary grains
+plot(grains(grain_id))
+
+%%
+% finally we can remove the boundary grains by
+grains(grain_id) = []
+
+plot(grains)
 
 %% 
 % TODO

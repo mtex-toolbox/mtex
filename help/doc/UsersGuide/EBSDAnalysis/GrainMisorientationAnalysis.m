@@ -7,9 +7,9 @@
 %
 %% Definition
 %
-% In MTEX the misorientation between two orientations x, y is defined as
+% In MTEX the misorientation between two orientations o1, o2 is defined as
 %
-% $$ mis(x,y) = x^{-1} * y  $$
+% $$ mis(o_1,o_2) = o_1^{-1} * o_2  $$
 %
 % In the case of EBSD data, intergranular misorientations, misorientations
 % between neighbouring grains, and misorientations between random
@@ -38,9 +38,7 @@ plotx2east
 mori = ebsd('Fo').mis2mean
 
 % plot a histogram of the misorientation angles
-% TODO: plotAngleDistribution(mori)
-close all
-hist(mori.angle/degree)
+plotAngleDistribution(mori)
 xlabel('Misorientation angles in degree')
 
 %%
@@ -58,43 +56,30 @@ hold off
 % The misorientation between adjacent grains can be computed by the command
 % <grainBoundary.misorientation.html>
 
-% get the id of the largest grain
-[~,id] = max(grains.grainSize);
+plot(grains)
 
+hold on
 
-plot(grains(id))
+bnd_FoFo = grains.boundary({'Fo','Fo'})
 
-%%
+plot(bnd_FoFo,'linecolor','r')
 
-plot(grains(id).boundary({'Fo','Fo'}),'linecolor','r')
+hold off
 
-grains(id).boundary({'Fo','Fo'}).misorientation
-
-%%
-
+bnd_FoFo.misorientation
 
 
 %%
 
-% get the neigbours of this grain
-neigbourId = find(grains.A_G(:,id));
+plot(ebsd,'facealpha',0.5)
 
-% find the largest neigbouring grain
-[~,id2] = max(grains(neigbourId).grainSize);
-id2 = neigbourId(id2);
+hold on
+plot(grains.boundary)
+plot(bnd_FoFo,bnd_FoFo.misorientation.angle./degree,'linewidth',2)
+mtexColorMap blue2red
+colorbar(gcm)
+hold off
 
-% plot these grains
-plot(grains([id,id2]))
-
-
-%%
-% Note that MTEX computes misorientations for all grain boundary segments
-% between two grains
-mori = calcMisorientation(grains(id),grains(id2))
-
-%%
-% The mean misorientation is computed by
-mean(mori)
 
 %%
 % In order to visualize the the misorientation between any two adjacent
@@ -108,8 +93,7 @@ mean(mori)
 % The following command plot the angle distribution of all misorientations
 % grouped according to phase trasistions.
 
-close all
-plotAngleDistribution(grains)
+plotAngleDistribution(grains.boundary)
 
 %%
 % The above angle distributions can be compared with the uncorrelated angle
@@ -124,7 +108,7 @@ plotAngleDistribution(grains)
 % All these steps are performed by the single command
 
 hold on
-plotAngleDistribution(ebsd,'ODF')
+plotAngleDistribution(ebsd)
 hold off
 
 %%
@@ -133,23 +117,21 @@ hold off
 % that are sufficently far from each other (uncorrelated points). The uncorrelated angle
 % distribution is plotted by
 
-close all
-plotAngleDistribution(grains,'uncorrelated')
+%plotAngleDistribution(ebsd,'ODF')
 
 %%
 % In order to consider only a specific phase transistion one can use the
 % syntax
 
-close all
-plotAngleDistribution(grains('Fo'),grains('En'),'uncorrelated')
+plotAngleDistribution(ebsd('Fo'),ebsd('En'))
 
 %% The axis distribution
 % 
 % Let's start here with the uncorrelated axis distribution, which depends
 % only on the underlying ODFs. 
 
-plotAxisDistribution(grains('Fo'),'uncorrelated','contourf','antipodal')
-colorbar
+plotAxisDistribution(grains.boundary({'Fo','Fo'}).misorientation,'contourf','antipodal')
+colorbar(gcm)
 
 %%
 % We may plot the axes of the boundary misorientations directly into this
