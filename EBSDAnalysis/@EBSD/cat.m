@@ -7,7 +7,7 @@ function ebsd = cat(dim,varargin)
 
 % maybe there is nothing to do
 varargin(cellfun('isempty',varargin)) = [];
-if nargin == 1, 
+if nargin == 2, 
   ebsd = varargin{1};
   return;
 end
@@ -16,7 +16,6 @@ end
 ebsd = cat@dynProp(1,varargin{:});
 
 warning('off','MATLAB:structOnObject');
-warning off all
 for k=1:numel(varargin)
   s(k) = struct(varargin{k});
 end

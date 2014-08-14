@@ -73,7 +73,6 @@ plotODF(ori,'MarkerSize',6,'MarkerColor','b','MarkerEdgeColor','w')
 plotODF(ori_rotated,'MarkerSize',6,'MarkerColor','r','MarkerEdgeColor','k');
 hold off
 
-
 %% Add Miller Indices to an Inverse Pole Figure Plot
 % Next we are going to add some Miller indices to an inverse pole figure
 % plot.
@@ -82,6 +81,7 @@ plotIPDF(odf,xvector);
 mtexColorMap white2black
 
 hold all % keep plot
+plot(Miller(0,0,0,1,cs),'symmetrised','labeled','backgroundColor','w')
 plot(Miller(1,1,-2,0,cs),'symmetrised','labeled','backgroundColor','w')
 plot(Miller(0,1,-1,0,cs),'symmetrised','labeled','backgroundColor','w')
 plot(Miller(0,1,-1,1,cs),'symmetrised','labeled','backgroundColor','w')

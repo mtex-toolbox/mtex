@@ -106,7 +106,7 @@ for j = 1:numel(sP)
   data = reshape(submatrix(cdata,ind),size(x));
 
   % plot contours
-  h(end+1) = betterContourf(sP(j).ax,x,y,data,contours,varargin{:});   
+  h = [h,betterContourf(sP(j).ax,x,y,data,contours,varargin{:})];
   
   hold(sP(j).ax,'off')
   

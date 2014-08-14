@@ -72,11 +72,7 @@ classdef EBSD < phaseList & dynProp & dynOption & misorientationAnalysis
     % --------------------------------------------------------------
 
     function ori = get.mis2mean(ebsd)
-      
-      % ensure single phase
-      [ebsd,cs] = checkSinglePhase(ebsd);
-      
-      ori = orientation(ebsd.prop.mis2meanRotation,cs,cs);
+      ori = orientation(ebsd.prop.mis2meanRotation,ebsd.CS,ebsd.CS);
     end
       
     function ori = get.orientations(ebsd)

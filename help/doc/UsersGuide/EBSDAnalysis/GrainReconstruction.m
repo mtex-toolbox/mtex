@@ -100,7 +100,8 @@ hold off
 
 mtexdata single
 
-plot(ebsd)
+% TODO: sharp colorcoding
+plot(ebsd,ebsd.orientations)
 
 %%
 % We obeserve that the are no rapid changes in orientation which would
