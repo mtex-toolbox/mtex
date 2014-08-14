@@ -49,8 +49,7 @@ colorbar(gcm)      % create a new colorbar
 % <annotate.html annotate> one can easily add <vector3d_index.html specimen
 % coordinate axes> to a pole figure plot.
 
-annotate([xvector,yvector,zvector],'label',{'x','y','z'},...
-  'BackgroundColor','w');
+annotate([xvector,yvector,zvector],'label',{'X','Y','Z'},'BackgroundColor','w')
 
 %%
 % The command <annotate.html annotate> allows also to plot
@@ -58,7 +57,8 @@ annotate([xvector,yvector,zvector],'label',{'x','y','z'},...
 
 plotIPDF(odf,[xvector,zvector],'antipodal','marginx',10,'minmax','off')
 mtexColorMap white2black
-annotate([Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(0,0,1,cs),Miller(2,-1,0,cs)],'all','labeled')
+annotate([Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(0,0,1,cs),Miller(2,-1,0,cs)],...
+  'all','labeled','BackgroundColor','w')
 
 
 %% Adding Preferred Orientations
@@ -66,7 +66,7 @@ annotate([Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(0,0,1,cs),Miller(2,-1,0,cs)],
 % One can also mark specific orientations in the pole figures or in the
 % inverse pole figures
 
-plotIPDF(odf,[xvector,zvector],'antipodal','marginx',10,'minmax','off')
+plotIPDF(odf,[xvector,zvector],'antipodal')
 mtexColorMap white2black
 annotate(mod1,...
     'marker','s','MarkerSize',6,'MarkerFaceColor','r',...
