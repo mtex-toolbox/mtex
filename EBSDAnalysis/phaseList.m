@@ -109,21 +109,14 @@ classdef phaseList
     function cs = get.CS(pL)
       
       % ensure single phase
-      id = unique(pL.phaseId,'rows');
-                     
-      if numel(id)>size(pL.phaseId,2)     
-              
-        error('MTEX:MultiplePhases',['This operatorion is only permitted for a single phase! ' ...
-          'Please see ' doclink('EBSDModifyData','modify EBSD data')  ...
-          '  for how to restrict EBSD data to a single phase.']);
-      
-      elseif numel(id) > 1
+      id = checkSinglePhase(pL);
+                          
+      if numel(id) > 1
         cs = pL.CSList(id);
       else
         cs = pL.CSList{id};
       end
-      
-            
+                
     end
     
     function pL = set.CS(pL,cs)
@@ -153,10 +146,12 @@ classdef phaseList
     
     function mineral = get.mineral(pL)
       
-      % ensure single phase
-      [~,cs] = checkSinglePhase(pL);
-      mineral = cs.mineral;      
-      
+      cs = pL.CS;
+      if iscell(cs)
+        mineral = {cs{1}.mineral,cs{2}.mineral};
+      else
+        mineral = cs.mineral;
+      end
     end
     
     
@@ -229,38 +224,21 @@ classdef phaseList
       end
     end
        
-    function [pL,cs] = checkSinglePhase(pL)
-
-      % check only a single phase is involved
-      try
-  
-        % restrict to indexed phases
-        phases = find(cellfun(@(cs) isa(cs,'symmetry'),pL.CSList));
-  
-        phases = intersect(phases,unique(pL.phaseId));
-  
-        if numel(phases) > 1
-  
-          error('MTEX:MultiplePhases',['This operatorion is only permitted for a single phase! ' ...
-            'Please see ' doclink('EBSDModifyData','modify EBSD data')  ...
-            ' for how to restrict EBSD data to a single phase.']);
-  
-        elseif isempty(phases)
-    
-          error('MTEX:NoPhase','There are no indexed data in this variable!');
-    
-        end
-  
-        pL = subSet(pL,pL.phaseId == phases);
-        cs = pL.CSList{phases};
-  
-        if numel(pL.phaseId) == 0
-          error('MTEX:MultiplePhases','The data set is Empty!');
-        end
-    
-      catch e
-        throwAsCaller(e)
+    function id = checkSinglePhase(pL)
+      % ensure single phase
+      
+      id = unique(pL.phaseId,'rows');
+                           
+      if numel(id)>size(pL.phaseId,2)     
+              
+        error('MTEX:MultiplePhases',['This operatorion is only permitted for a single phase! ' ...
+          'Please see ' doclink('EBSDModifyData','modify EBSD data')  ...
+          '  for how to restrict EBSD data to a single phase.']);
+        
+      elseif isempty(id) || ~all(any(bsxfun(@eq,id,pL.indexedPhasesId(:)),1))
+        error('MTEX:NoPhase','There are no indexed data in this variable!');
       end
+      
     end
   end
 end
