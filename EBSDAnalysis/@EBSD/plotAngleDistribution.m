@@ -11,7 +11,7 @@ function h = plotAngleDistribution( ebsd1, varargin )
 % orientation/calcAngleDistribution
 %
 
-mtexFig = newMtexFigure;
+mtexFig = newMtexFigure(varargin{:});
 
 % get phases
 if nargin > 1 && isa(varargin{1},'EBSD')

@@ -9,7 +9,7 @@ function h = plotAngleDistribution( ori, varargin )
 % orientation/plotAxisDistribution
 %
 
-mtexFig = newMtexFigure;
+mtexFig = newMtexFigure(varargin{:});
 
 % compute angles
 omega = ori.angle;
