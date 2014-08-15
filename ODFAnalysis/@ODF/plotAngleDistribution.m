@@ -15,10 +15,13 @@ ax = get_option(varargin,'parent',gca);
 [f,omega] = calcAngleDistribution(odf,varargin{:});
 
 % plot
-p = findobj(ax,'Type','patch');
+pPatch = findobj(ax,'Type','patch');
+pBar = findobj(ax,'type','bar');
 
-if ~isempty(p)
-  faktor = 100 / mean(f) / size(get(p(1),'faces'),1);
+if ~isempty(pPatch)
+  faktor = 100 / mean(f) / size(get(pPatch(1),'faces'),1);
+elseif ~isempty(pBar)
+  faktor = 100 / mean(f) / size(get(pBar(1),'XData'),2);
 else
   faktor = 1;
 end
