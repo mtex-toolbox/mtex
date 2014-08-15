@@ -33,7 +33,7 @@ end
 % create a new mtexFigure or get a reference to it
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 
-if isNew
+if isNew || ~isappdata(mtexFig.children(1),'sphericalPlot')
 
   % get spherical region
   sR = getPlotRegion(v,varargin{:});
@@ -41,11 +41,13 @@ if isNew
   % extract projection(s)
   % this might return two projections for upper and lower hemisphere
   proj = getProjection(sR,varargin{:});
+  holdState = getHoldState(mtexFig.gca);
   
   for i = 1:numel(proj)
     
     % create a new axis
     if i>1, mtexFig.nextAxis; end
+    hold(mtexFig.gca,holdState);
     
     % display upper/lower if needed
     if numel(proj)>1          
