@@ -135,6 +135,12 @@ v = vector3d('rho',rho,'theta',radius.*pi);
 % post rotate the color
 v = oM.colorPostRotation * rot * v;
 
+% stretching of the colors
+[th,rh] = polar(v);
+th = (th ./ pi).^oM.colorStretching .* pi;
+
+v = sph2vec(th,rh);
+
 % compute rgb values
 rgb = ar2rgb(mod(v.rho./ 2 ./ pi,1),v.theta./pi,get_option(varargin,'grayValue',1));
 
@@ -183,12 +189,12 @@ end
 function rgb = ar2rgb(omega,radius,grayValue)
 
 
-L = (radius - 0.5) .* grayValue(:) + 0.5;
+L = (radius(:) - 0.5) .* grayValue(:) + 0.5;
 
-S = grayValue(:) .* (1-abs(2*radius-1)) ./ (1-abs(2*L-1));
+S = grayValue(:) .* (1-abs(2*radius(:)-1)) ./ (1-abs(2*L-1));
 S(isnan(S))=0;
 
-[h,s,v] = hsl2hsv(omega,S,L);
+[h,s,v] = hsl2hsv(omega(:),S(:),L(:));
 
 % the following lines correct for small yellow and cyan range in normal hsv
 % space
