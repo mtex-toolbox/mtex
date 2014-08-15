@@ -61,7 +61,7 @@ plotPDF(ori,h,'antipodal','MarkerSize',5,'MarkerColor','b','MarkerEdgeColor','w'
 hold all
 plotPDF(ori_rotated,h,'MarkerSize',5,'MarkerColor','r','MarkerEdgeColor','k');
 hold off
-hh = legend({'EBSD 1','EBSD 2'},'units','normalized','position',[0.022 0.9 0.1 0.08]);
+legend({'EBSD 1','EBSD 2'},'units','normalized','position',[0.05 0.85 0.1 0.08]);
 
 %%
 % and, of course, you can do the same with ODF plots:

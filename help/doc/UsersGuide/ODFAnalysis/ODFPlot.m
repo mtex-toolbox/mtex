@@ -136,6 +136,7 @@ plot(odf,'sections',6,'silent','sigma')
 %% Plotting the ODF along a fibre
 % For plotting the ODF along a certain fibre we have the command
 
+close all
 plotFibre(odf,Miller(1,2,-3,2,cs),vector3d(2,1,1),'LineWidth',2);
 
 %% Fourier Coefficients

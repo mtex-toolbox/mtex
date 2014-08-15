@@ -78,7 +78,7 @@ ori = loadOrientation(fname,CS,'interface','generic' ...
 Pm = ori.calcTensor(P)
 
 plot(Pm)
-colorbar
+colorbar(gcm)
 
 %%
 %

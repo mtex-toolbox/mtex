@@ -87,19 +87,6 @@ plot(oM)
 close all
 plot(oM,'3d')
 
-% add some axes
-hold on
-gray = [0.4 0.4 0.4];
-arrow3d(cs.axes(1),'facecolor',gray)
-text3(Miller(1,0,0,cs),'a_1','horizontalAlignment','right')
-
-arrow3d(cs.axes(2),'facecolor',gray)
-text3(Miller(0,1,0,cs),'a_2','verticalAlignment','cap','horizontalAlignment','left')
-
-arrow3d(cs.axes(3),'facecolor',gray)
-text3(Miller(0,0,1,cs),'c','verticalAlignment','bottom')
-hold off
-
 %%
 % Alternatively we may plot the color mapping in 2d on the entire sphere
 % together with the symmetry elements
