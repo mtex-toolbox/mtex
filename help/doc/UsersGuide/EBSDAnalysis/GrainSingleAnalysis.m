@@ -58,6 +58,7 @@ colorbar
 % they may vary in the shape. In particular, if the grain was deformed by
 % some process, we are interessed in quantifications.
 
+cs = ebsd(grain_selected).CS;
 plotPDF(ebsd(grain_selected).orientations,...
   [Miller(0,0,1,cs),Miller(0,1,1,cs),Miller(1,1,1,cs)],'antipodal')
 

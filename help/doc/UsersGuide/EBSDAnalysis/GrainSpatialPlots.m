@@ -13,7 +13,7 @@
 mtexdata forsterite
 plotx2east
 
-grains = calcGrains(ebsd)
+[grains,ebsd] = calcGrains(ebsd)
 
 
 
@@ -35,22 +35,23 @@ plot(grains)
 %%
 % Particularly one can apply the color coding of orientations, i.e.
 % spatially locate the grains with certain orientation.
+% TODO:
 
-close all
-plot(grains,'colorcoding','ipdfCenter',{Miller(1,1,1),[0 0 1]},...
-  'r',zvector)
+%close all
+%plot(grains,'colorcoding','ipdfCenter',{Miller(1,1,1),[0 0 1]},...
+%  'r',zvector)
 
 %%
 % With the *hold on* command, one can combine several plots, e.g. let us
 % take a look at the band contrast and the phase at the same time. We can control
-% transparency with the option *translucent*.
+% transparency with the option *facealpha*.
 
 close all
 plot(ebsd,ebsd.bc)
 mtexColorMap black2white
 
 hold on
-plot(ebsd,'translucent',1)
+plot(ebsd,'facealpha',0.5)
 hold off
 
 %%
@@ -61,8 +62,8 @@ hold off
 % from, thus we select grains of a GrainSet and plot its corresponding EBSD
 
 close all
-ebsd_grain = ebsd(grains(grainSize(grains)>15))
-plotspatial(ebsd_grain,ebsd_grain.bc)
+ebsd_grain = ebsd(grains(grains.grainSize>15))
+plot(ebsd_grain,ebsd_grain.bc)
 mtexColorMap black2white
 
 %%
@@ -79,7 +80,7 @@ plot(grains,shapefactor(grains))
 % plotBoundary> command.
 
 close all
-plotBoundary(grains)
+plot(grains.boundary)
 
 %%
 % A grain boundaries plot can be easily combined with further plots by *hold
@@ -92,10 +93,10 @@ mtexColorMap white2black
 %%
 % e.g. we want also to see all one pixel grains
 
-grains_selection = grains( grainSize(grains) == 1) ;
+grains_selection = grains( grains.grainSize == 1) ;
 
 hold on
-plotBoundary(grains_selection,'linecolor','r','linewidth',2)
+plot(grains_selection.boundary,'linecolor','r','linewidth',2)
 
 %% Visualizing special grain boundaries
 % Most interesting is a closer look at special grain boundaries. This can
@@ -121,25 +122,26 @@ close, plot(grains.boundary)
 % Another special type of boundaries, are boundaries that are located
 % within a grain, nevertheless this happens, if two adjacent measurements
 % are somehow conneted by a lattice rotation within a grain.
+% TODO:
 
 close all
-plotBoundary(grains,'external')
+plot(grains.boundary,'external')
 hold on
-plotBoundary(grains,'internal','linecolor','r','linewidth',2)
+plot(grains.boundary,'internal','linecolor','r','linewidth',2)
 
 %%
 % We also want to see the rotation within the grain.
 
-hold on, plot(grains('fo').ebsd,'property',grains('fo').mis2mean,'colorcoding','angle')
+hold on, plot(ebsd(grains('fo')),ebsd(grains('fo')).mis2mean.angle./degree)
 
 %% SUB: Misorientation
 % Basicly there are two ways to visualize misorientation along a grain
 % boundary. The most simplest way is to colorize the grain boundaries
 % with respect to the misorientation angle.
 
-% TODO
+
 close all
-%plotBoundary(grains,'property','angle','linewidth',1.5)
+plot(grains.boundary({'Fo','Fo'}),grains.boundary({'Fo','Fo'}).misorientation.angle./degree,'linewidth',1.5)
 colorbar
 
 %%
@@ -147,7 +149,7 @@ colorbar
 % apply the color to the respectibe grain boundaries. More details [TODO]
 
 close all
-plotBoundary(grains)
+plot(grains.boundary)
 hold on
 
 % TODO
@@ -155,7 +157,7 @@ hold on
 %  'colorcoding','patala','linewidth',1.5)
 
 % plot the colorbar
-colorbar
+% colorbar
 
 %% SUB: Classifing special boundaries
 % Actually, it might be more informative, if we classify the grain

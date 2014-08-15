@@ -94,7 +94,7 @@ plotPDF(odf,Miller(1,0,0,cs),'antipodal')
 % crystal directions.
 
 cs = crystalSymmetry('m-3m');
-plot(cs,'hkl','projection','edist','grid_res',15*degree,'antipodal')
+plotHKL(cs,'projection','edist','upper','grid_res',15*degree,'BackGroundColor','w')
 
 
 %% Stereographic Projection (Equal Angle Projection)
@@ -103,7 +103,7 @@ plot(cs,'hkl','projection','edist','grid_res',15*degree,'antipodal')
 % which preserves the angle between arbitrary great circles. It
 % can be chosen by setting the option *stereo* or *eangle*.
 
-plot(cs,'hkl','projection','eangle','antipodal','grid_res',15*degree)
+plotHKL(cs,'projection','eangle','upper','grid_res',15*degree,'BackGroundColor','w')
 
 
 %% Plain Projection

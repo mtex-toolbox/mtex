@@ -36,14 +36,15 @@ plotPDF(mdf_boundary,Miller(1,0,0,ebsd('Fo').CS))
 % 
 % Alternatively the uncorelated misorientation distribution function can be
 % computed by providing the option *uncorelated*
-% TODO
-% mdf_uncor = calcODF(ebsd('Fo'),ebsd('En'),'halfwidth',10*degree)
+
+mori = calcMisorientation(ebsd('Fo'),ebsd('En'))
+mdf_uncor = calcODF(mori)
 
 %%
 % Obviously it is different from the boundary misorientation distribution
 % function.
 
-%plotPDF(mdf_uncor,Miller(1,0,0,ebsd('Fo').CS))
+plotPDF(mdf_uncor,Miller(1,0,0,ebsd('Fo').CS))
 
 %% Computing the uncorrelated misorientation function from two ODFs
 %
@@ -60,7 +61,7 @@ mdf = calcMDF(odf_en,odf_fo)
 
 %%
 % This misorientation distribution function should be similar to the
-% uncorrelated misorinetation function computed directly from the grains
+% uncorrelated misorinetation function computed directly from the ebsd data
 
 plotPDF(mdf,Miller(1,0,0,ebsd('Fo').CS))
 
@@ -74,7 +75,7 @@ plotPDF(mdf,Miller(1,0,0,ebsd('Fo').CS))
 % misorientations with the theoretical angle distribution of the
 % uncorrelated MDF.
 
-plotAngleDistribution(grains('fo'),grains('en'))
+plotAngleDistribution(grains.boundary('fo','en'))
 
 hold on
 
@@ -92,7 +93,7 @@ hold off
 % The same we can do with the axis distribution. First the actual angle distribution of the boundary
 % misorientations
 
-plotAxisDistribution(grains('fo'),grains('en'),'smooth','antipodal')
+plotAxisDistribution(grains.boundary('fo','en'),'smooth')
 
 %%
 % Now the theoretical axis distribution of the

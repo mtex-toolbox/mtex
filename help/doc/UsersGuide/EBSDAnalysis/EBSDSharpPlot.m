@@ -1,13 +1,16 @@
 %% Visualizing EBSD data with sharp textures
 % Using spezialized orientation mappings is particularly usefull when
-% visualizing sharp data. Let us consider the following data set
+% visualizing sharp data. Let us consider the following data set which
+% restrict to the calcite phase
 
 mtexdata sharp
 
-oM = ipdfHSVOrientationMapping(ebsd('calcite'));
+ebsd = ebsd('calcite');
+
+oM = ipdfHSVOrientationMapping(ebsd);
 
 close all;
-plot(ebsd('calcite'),oM.orientation2color(ebsd('calcite').orientations))
+plot(ebsd,oM.orientation2color(ebsd.orientations))
 
 %%
 % and have a look into the 001 inverse pole figure.
@@ -20,7 +23,7 @@ h = project2FundamentalRegion(h);
 color = h.rho ./ degree;
 
 plotIPDF(ebsd.orientations,zvector,'property',color,'MarkerSize',3,'grid')
-colorbar 
+colorbar(gcm)
 
 %%
 % We see that all individual orientations are clustered around azimuth
@@ -56,7 +59,7 @@ colormap(cmap)
 
 close all;
 
-oM = ipdfAzimuthOrientationMapping(ebsd('calcite'))
+oM = ipdfAzimuthOrientationMapping(ebsd)
 oM.inversePoleFigureDirection = zvector;
 
 color = oM.orientation2color(ebsd.orientations);
@@ -66,23 +69,55 @@ plot(ebsd,color)
 caxis([20 30]);
 colormap(cmap);
 
+%% Sharpening the default colorcoding
+% Next we want to apply the same ideas as above to the default MTEX
+% color mapping, i.e. we want to stretch the colors such that they cover
+% just the orientations of interest. 
+
+oM = ipdfHSVOrientationMapping(ebsd);
+oM.CS1 = oM.CS1.properGroup
+
+% To this end, we first compute the inverse pole figure direction such that
+% the mean orientation is just at the white spot of the inverse pole figure
+
+%center = vector3d(0.627963, 0.627963, 0.459701);
+center = vector3d(0.433013, 0.75, 0.5);
+mori = mean(ebsd.orientations);
+oM.inversePoleFigureDirection = mori * center;
+
+close all;
+plot(ebsd,oM.orientation2color(ebsd.orientations))
+
+%% 
+% We observe that the orientation map is almost completly white.
+% Next we use the option |colorStretching| to increase contrast.
+
+oM.colorStretching = 15;
+plot(ebsd,oM.orientation2color(ebsd.orientations))
+
 %%
-% using the option sharp MTEX automatically tries to focus on the main
-% component in the orientation space and to increase there the contrast
+% You may play around with the option |colorStretching| to obtain the best
+% result. As for interpretation keep in mind that white color represents
+% the mean orientation and the color becomes more saturated and later dark
+% as the orientation to color diverges from the mean orientation.
+%
+% Lets have a look at the corresponding color map.
 
-plot(ebsd,'sharp')
+plot(oM,'resolution',0.25*degree)
 
-
+%hold on
+%plotIPDF(ebsd.orientations,'points',10,'MarkerSize',1,'MarkerFaceColor','w','MarkerEdgeColor','w')
+%hold off
 %%
 % observe how in the inverse pole figure the orientations are scattered
 % closely around the white center. Together with the fact that the
 % transition from white to color is quite rappidly this gives a high
 % contrast.
+% using the option sharp MTEX automatically tries to focus on the main
+% component in the orientation space and to increase there the contrast
 
-colorbar
-hold on
-plotIPDF(ebsd.orientations,'points',10,'MarkerSize',10,'MarkerFaceColor','none','MarkerEdgeColor','k')
-hold off
+plot(ebsd,'sharp')
+
 
 %% 
 % Another example is when analyzing the orientation distribution within
@@ -96,6 +131,8 @@ mtexdata forsterite
 % find largest grains
 largeGrains = grains(grains.grainSize>500)
 
+ebsd = ebsd(largeGrains(1))
+
 %%
 % When plotting one specific grain with its orientations we see that they
 % all are very similar and, hence, get the same color
@@ -104,7 +141,7 @@ largeGrains = grains(grains.grainSize>500)
 close all
 plot(largeGrains(1).boundary,'linewidth',2)
 hold on
-plot(ebsd(largeGrains(1)))
+plot(ebsd,ebsd.orientations)
 hold off
 
 %%
@@ -116,6 +153,6 @@ hold off
 % plot a grain 
 plot(largeGrains(1).boundary,'linewidth',2)
 hold on
-plot(ebsd(largeGrains(1)),'sharp')
+oM = ipdfHSVOrientationMapping(ebsd,'sharp');
+plot(ebsd,oM.orientation2color(ebsd.orientations))
 hold off
-

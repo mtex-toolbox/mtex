@@ -52,6 +52,18 @@ hold on
 plot(grains.boundary,'edgecolor','k','linewidth',.5)
 hold off
 
+%%
+
+cs = ebsd('Forsterite').CS.Laue;
+oM = axisAngleOrientationMapping(cs)
+oM.maxAngle = 4*degree;
+
+plot(ebsd('Forsterite'),oM.orientation2color(ebsd('Forsterite').mis2mean))
+hold on
+plot(grains.boundary,'edgecolor','k','linewidth',.5)
+hold off
+
+
 %% Boundary misorientations
 % The misorientation between adjacent grains can be computed by the command
 % <grainBoundary.misorientation.html>
@@ -93,6 +105,7 @@ hold off
 % The following command plot the angle distribution of all misorientations
 % grouped according to phase trasistions.
 
+close all
 plotAngleDistribution(grains.boundary)
 
 %%
@@ -107,9 +120,9 @@ plotAngleDistribution(grains.boundary)
 %
 % All these steps are performed by the single command
 
-hold on
+close all
 plotAngleDistribution(ebsd)
-hold off
+
 
 %%
 % Another possibility is to compute an uncorrelated angle distribution from
@@ -123,6 +136,7 @@ hold off
 % In order to consider only a specific phase transistion one can use the
 % syntax
 
+close all
 plotAngleDistribution(ebsd('Fo'),ebsd('En'))
 
 %% The axis distribution
@@ -130,26 +144,19 @@ plotAngleDistribution(ebsd('Fo'),ebsd('En'))
 % Let's start here with the uncorrelated axis distribution, which depends
 % only on the underlying ODFs. 
 
-plotAxisDistribution(grains.boundary({'Fo','Fo'}).misorientation,'contourf','antipodal')
-colorbar(gcm)
+close all
+mtexFig = newMtexFigure;
+plotAxisDistribution(ebsd('Fo'),'smooth','parent',mtexFig.gca)
+title('uncorrelated axis distribution')
 
 %%
 % We may plot the axes of the boundary misorientations directly into this
 % plot
 
-hold on
-plotAxisDistribution(grains('Fo'),'antipodal','SampleSize',100,...
-  'MarkerSize',4,'MarkerFaceColor','none','MarkerEdgeColor','red')
-mtexColorMap white2black
-hold off
-
-%%
-% However, this might serve only for a qualitative comparison. For a better
-% comparison we plot the axis distribiution of the boundary misorientations
-% also as a density plot.
-
-plotAxisDistribution(grains('Fo'),'antipodal','contourf')
-colorbar
+mtexFig.nextAxis
+plotAxisDistribution(grains.boundary({'Fo','Fo'}),'smooth','parent',mtexFig.gca)
+title('boundary axis distribution')
+colorbar(gcm)
 
 %%
 % This shows a much stronger preference of the (1,1,1) axis in comparison
