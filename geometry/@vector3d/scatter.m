@@ -72,7 +72,8 @@ for i = 1:numel(sP)
       'facevertexcdata',cdata,...
       'markerfacecolor','flat',...
       'markeredgecolor','flat'),varargin{2:end}); %#ok<AGROW>
-      
+    set(get(get(h(i),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+    
     % add annotations for min and max
     %if numel(cdata) == length(v)
     %  set(sP(i).TL,'string',{'Max:',xnum2str(max(cdata(:)))});
@@ -94,7 +95,18 @@ for i = 1:numel(sP)
     h(i) = optiondraw(patch(patchArgs{:},...
       'MarkerFaceColor',mfc,...
       'MarkerEdgeColor',mec),varargin{:}); %#ok<AGROW>
-
+    
+    % this is for legend only
+    set(get(get(h(i),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+    %h(i) = optiondraw(scatter(x,y,...
+    %  'MarkerFaceColor',mfc,...
+    %  'MarkerEdgeColor',mec),varargin{:}); %#ok<AGROW>
+    holdState = get(sP(i).ax,'nextPlot');
+    set(sP(i).ax,'nextPlot','add');
+    optiondraw(scatter(0,0,'parent',sP(i).ax,'MarkerFaceColor',mfc,...
+      'MarkerEdgeColor',mec,'visible','off'),varargin{:});
+    set(sP(i).ax,'nextPlot',holdState);
+    
   end
 
   % set resize function for dynamic marker sizes
