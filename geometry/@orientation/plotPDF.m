@@ -79,8 +79,9 @@ for i = 1:length(h)
   r = reshape(o.SS * o * sh,[],1);
      
   r.plot(repmat(data(:).',[length(o.SS) length(sh)]),'fundamentalRegion',...
-    'parent',mtexFig.gca,'scatter','TR',h(i),'doNotDraw',varargin{:});
-  
+    'parent',mtexFig.gca,'doNotDraw',varargin{:});
+  title(mtexFig.gca,char(h{i}),'FontSize',getMTEXpref('FontSize'));
+
   % TODO: unifyMarkerSize
 
 end

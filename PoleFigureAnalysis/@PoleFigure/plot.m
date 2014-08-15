@@ -19,10 +19,8 @@ for i = 1:length(pf.allH)
   
   if i>1, mtexFig.nextAxis; end
   
-  pf.allR{i}.plot(pf.allI{i},'TR','',...
+  pf.allR{i}.plot(pf.allI{i},...
     'dynamicMarkerSize','parent',mtexFig.gca,'doNotDraw',varargin{:});
-  %title(mtexFig.gca,char(pf.allH{i},'LaTex'),...
-  %  'FontSize',getMTEXpref('FontSize'),'Interpreter','LaTex');
   title(mtexFig.gca,char(pf.allH{i}),'FontSize',getMTEXpref('FontSize'));
 end
 

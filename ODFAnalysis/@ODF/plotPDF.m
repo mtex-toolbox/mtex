@@ -48,10 +48,9 @@ for i = 1:length(h)
   % compute pole figures
   p = ensureNonNeg(pdf(odf,h{i},r,varargin{:},'superposition',c{i}));
   
-  r.plot(p,'TR','','parent',mtexFig.gca,...
-    'smooth','doNotDraw',varargin{:});
-  %title(mtexFig.gca,char(h{i},'LaTex'),'interpreter','LaTex','FontSize',13);
+  r.plot(p,'parent',mtexFig.gca,'smooth','doNotDraw',varargin{:});
   title(mtexFig.gca,char(h{i}),'FontSize',getMTEXpref('FontSize'));
+  
 end
 
 if isNew % finalize plot

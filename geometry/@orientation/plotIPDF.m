@@ -60,9 +60,8 @@ for ir = 1:length(r)
   h = o(:) \ rSym;
   
   %  plot  
-  h.plot(repmat(data(:),1,length(rSym)),'scatter','symmetrised',...
-    'fundamentalRegion','TR','',...
-    'parent',mtexFig.gca,'doNotDraw',varargin{:});
+  h.plot(repmat(data(:),1,length(rSym)),'symmetrised',...
+    'fundamentalRegion','parent',mtexFig.gca,'doNotDraw',varargin{:});
   
   title(mtexFig.gca,char(r(ir)),'FontSize',getMTEXpref('FontSize'));
 
