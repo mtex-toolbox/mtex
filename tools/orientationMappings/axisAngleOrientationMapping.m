@@ -26,7 +26,7 @@ classdef axisAngleOrientationMapping < orientationMapping
       gray = ori.angle./maxAngle;
       gray(gray > 1) = NaN;
       
-      rgb = h2HSV(ori.axis,oM.CS1,'grayValue',gray);
+      rgb = h2HSV(oM,ori.axis,oM.CS1,'grayValue',gray);
       
     end
   end
