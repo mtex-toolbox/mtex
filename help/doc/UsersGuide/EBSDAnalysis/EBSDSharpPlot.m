@@ -79,11 +79,7 @@ oM.CS1 = oM.CS1.properGroup
 
 % To this end, we first compute the inverse pole figure direction such that
 % the mean orientation is just at the white spot of the inverse pole figure
-
-%center = vector3d(0.627963, 0.627963, 0.459701);
-center = vector3d(0.433013, 0.75, 0.5);
-mori = mean(ebsd.orientations);
-oM.inversePoleFigureDirection = mori * center;
+oM.inversePoleFigureDirection = mean(ebsd.orientations) * oM.whiteCenter;
 
 close all;
 plot(ebsd,oM.orientation2color(ebsd.orientations))
@@ -92,7 +88,7 @@ plot(ebsd,oM.orientation2color(ebsd.orientations))
 % We observe that the orientation map is almost completly white.
 % Next we use the option |colorStretching| to increase contrast.
 
-oM.colorStretching = 15;
+oM.colorStretching = 30;
 plot(ebsd,oM.orientation2color(ebsd.orientations))
 
 %%
@@ -113,10 +109,6 @@ plot(oM,'resolution',0.25*degree)
 % closely around the white center. Together with the fact that the
 % transition from white to color is quite rappidly this gives a high
 % contrast.
-% using the option sharp MTEX automatically tries to focus on the main
-% component in the orientation space and to increase there the contrast
-
-plot(ebsd,'sharp')
 
 
 %% 
@@ -153,6 +145,8 @@ hold off
 % plot a grain 
 plot(largeGrains(1).boundary,'linewidth',2)
 hold on
-oM = ipdfHSVOrientationMapping(ebsd,'sharp');
+oM = ipdfHSVOrientationMapping(ebsd);
+oM.inversePoleFigureDirection = mean(ebsd.orientations) * oM.whiteCenter;
+oM.colorStretching = 40;
 plot(ebsd,oM.orientation2color(ebsd.orientations))
 hold off
