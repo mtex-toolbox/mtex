@@ -50,7 +50,7 @@ end
     else
       axis(ax,'normal');
       mtexFig.tightInset = get(ax,'tightInset');
-      axis(ax,'equal');
+      axis(ax,'equal','tight');
     end
     
     
