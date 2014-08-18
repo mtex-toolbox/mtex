@@ -41,7 +41,6 @@ classdef ipdfTSLOrientationMapping < ipdfHSVOrientationMapping
       % post processing of the color vector
       % by default we have white at the z, black at the -z, red
       % at x and green and blue at 120 and 240 degree accordingly
-
       % post rotate the color
       v = oM.colorPostRotation * rot * v;
 
