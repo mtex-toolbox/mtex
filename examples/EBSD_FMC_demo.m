@@ -11,11 +11,17 @@
 
 %% Import EBSD data
 
+% load some data
 mtexdata single
 plotx2east
 
-figure('position',[100 100 800 350])
-plot(ebsd)
+% prepare sharp colorcoding
+oM = ipdfHSVOrientationMapping(ebsd);
+oM.inversePoleFigureDirection = mean(ebsd.orientations) * oM.whiteCenter;
+oM.colorStretching = 3
+
+figure('position',[100 100 350 350])
+plot(ebsd,oM.orientation2color(ebsd.orientations))
 
 %% Segment with thresholding
 % No pixel-to-pixel threshold value captures important boundaries without
@@ -23,10 +29,10 @@ plot(ebsd)
 grains_high = calcGrains(ebsd,'angle',1*degree);
 grains_low  = calcGrains(ebsd,'angle',0.5*degree);
 
-figure('position',[100 100 800 350])
-plot(grains_high)
-figure('position',[500 100 800 350])
-plot(grains_low)
+hold on
+plot(grains_low.boundary,'linecolor',0.7*[1 1 1])
+plot(grains_high.boundary,'linecolor','k')
+hold off
 
 %% Segment with FMC
 % Analogous with the threshold angle, a  single parameter, C_Maha controls
@@ -39,12 +45,8 @@ grains_FMC = calcGrains(ebsd,'FMC',3.5)
 
 %%
 % plot the grains
-figure('position',[100 100 800 350])
-plot(grains_FMC,'sharp')
-
-%%
-% and overlay on the EBSD data for reference
-figure('position',[500 100 800 350])
-plot(ebsd,'sharp')
+figure('position',[100 100 350 350])
+plot(ebsd,oM.orientation2color(ebsd.orientations))
 hold on
-plotBoundary(grains_FMC,'linewidth',1.5)
+plot(grains_FMC.boundary,'linewidth',1.5)
+hold off

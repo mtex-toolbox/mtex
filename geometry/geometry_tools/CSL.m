@@ -1,16 +1,16 @@
 function q = CSL(sigma,varargin)
 % return orientation of coincidence site lattice for cubic symmetry
 %
-%% Syntax
+% Syntax
 %  q = CSL(sigma)
 %  q = CSL(angle)   - angle in radians of csl rotation
 %  q = CSL([u v w]) - axis of csl rotation
 %
-%% Options
+% Options
 %  delta    - search radius around angle or axis
 %  maxsigma - 
 %
-%% Output 
+% Output 
 %  o - @orientation
 %
 
@@ -132,12 +132,12 @@ csl = csl(ndx(ndx2));
 function listCSL(csl)
 
 ndx = 1:length(csl);
-[a ind] = sort([csl.angle]);
+[a, ind] = sort([csl.angle]);
 ndx = ndx(ind);
-[a ind] = sort([csl(ndx).sigma]);
+[a, ind] = sort([csl(ndx).sigma]);
 ndx = ndx(ind);
 
 for k = ndx
   cs = csl(k); 
-  fprintf(' sigma: %2d  | %5.3f�/[%d%d%d]  \n', cs.sigma, cs.angle/degree,cs.axis);
+  fprintf(' sigma: %2d  | %5.3fdegree/[%d%d%d]  \n', cs.sigma, cs.angle/degree,cs.axis);
 end
