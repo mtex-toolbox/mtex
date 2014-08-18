@@ -11,7 +11,7 @@ sP = newSphericalPlot(sR,varargin{:});
 for j = 1:numel(sP)
   
   % ensure sector is at this hemisphere
-  if any(dot(sR.N,sP(j).sphericalRegion.N)<eps-1), continue, end
+  if any(any(dot_outer(sR.N,sP(j).sphericalRegion.N)<eps-1)), continue, end
   
   % plot the region
   omega = linspace(0,2*pi,721);
@@ -31,7 +31,7 @@ for j = 1:numel(sP)
     
     % do not display in the legend
     set(get(get(h(i),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
-    
+
   end
 end
 
