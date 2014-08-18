@@ -43,12 +43,9 @@ classdef orientationMapping < handle
       sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma'},'phi2');
       [symbol,labelx,labely] = sectionLabels(sectype);
 
-      if strcmp(sectype,'sigma')
-        varargin = [{'innerPlotSpacing',10},varargin];
-      else
-        varargin = [{'projection','plain',...
-          'xAxisDirection','east','zAxisDirection','intoPlane',...
-          'innerPlotSpacing',35,'outerPlotSpacing',35},varargin];
+      if ~strcmp(sectype,'sigma')
+        varargin = [{'projection','plain','xAxisDirection','east',...
+          'zAxisDirection','intoPlane'},varargin];
       end
       
       fprintf(['\nPlotting colormap as ',sectype,' sections, range: ',...

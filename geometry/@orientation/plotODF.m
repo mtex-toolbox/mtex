@@ -33,12 +33,9 @@ if isNew
   % determine section type
   sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','omega','axisangle'},'phi2');
   
-  if any(strcmpi(sectype,{'sigma','omega','axisangle'}))
-    varargin = [{'innerPlotSpacing',10},varargin];
-  else
-    varargin = [{'projection','plain',...
-      'xAxisDirection','east','zAxisDirection','intoPlane',...
-      'innerPlotSpacing',35,'outerPlotSpacing',35},varargin];
+  if ~any(strcmpi(sectype,{'sigma','omega','axisangle'}))
+    varargin = [{'projection','plain','xAxisDirection','east',...
+      'zAxisDirection','intoPlane'},varargin];
   end
 
   % get fundamental plotting region

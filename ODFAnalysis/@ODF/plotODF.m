@@ -34,12 +34,9 @@ clear S3G;
 sectype = get_flag(varargin,{'alpha','phi1','gamma','phi2','sigma','omega','axisangle'},'phi2');
 [symbol,labelx,labely] = sectionLabels(sectype);
 
-if any(strcmpi(sectype,{'sigma','omega','axisangle'}))
-  varargin = [{'innerPlotSpacing',10},varargin];
-else
+if ~any(strcmpi(sectype,{'sigma','omega','axisangle'}))
   varargin = [{'projection','plain',...
-    'xAxisDirection','east','zAxisDirection','intoPlane',...
-    'innerPlotSpacing',10,'outerPlotSpacing',10},varargin];
+    'xAxisDirection','east','zAxisDirection','intoPlane'},varargin];
 end
 
 fprintf(['\nPlotting ODF as ',sectype,' sections, range: ',...
