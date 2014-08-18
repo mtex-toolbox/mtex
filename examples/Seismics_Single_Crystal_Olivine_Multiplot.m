@@ -170,7 +170,7 @@ blackMarker = {'Marker','s','MarkerSize',10,...
   'MarkerEdgeColor','white','MarkerFaceColor','black'};
 whiteMarker = {'Marker','o','MarkerSize',10,...
   'MarkerEdgeColor','black','MarkerFaceColor','white'};
-titleOpt = {'FontSize',getMTEXpref('FontSize')}; %{'FontSize',15};
+titleOpt = {'FontSize',getMTEXpref('FontSize'),'visible','on'}; %{'FontSize',15};
 
 % Setup multiplot
 % define plot size [origin X,Y,Width,Height]
@@ -196,7 +196,7 @@ title('Vp (km/s)',titleOpt{:})
 % percentage anisotropy
 AVpS = ['Vp Anisotropy = ',num2str(AVp,'%6.1f')];
 % N.B. x and y reversed in subplot
-ylabel(AVpS,titleOpt{:}) 
+ylabel(AVpS,titleOpt{:})
 
 % mark maximum with black square and minimum with white circle
 hold on
@@ -276,7 +276,7 @@ title('Vs2 (km/s)',titleOpt{:})
 
 % Percentage anisotropy
 AVs2S = ['Vs2 Anisotropy = ',num2str(AVs2,'%6.1f')];
-ylabel(AVs2S,titleOpt{:}) 
+ylabel(AVs2S,titleOpt{:})
 hold on
 
 plot(C,'PlotType','velocity','ps2',...
@@ -344,6 +344,7 @@ hold off
 
 %%
 
+% add colorbars to all plots
 mtexFig.colorbar
 
 %%
