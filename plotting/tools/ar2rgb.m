@@ -1,12 +1,12 @@
 function rgb = ar2rgb(omega,radius,grayValue)
 % compute rgb values from angle and radius
 
-L = (radius - 0.5) .* grayValue(:) + 0.5;
+L = (radius(:) - 0.5) .* grayValue(:) + 0.5;
 
-S = grayValue(:) .* (1-abs(2*radius-1)) ./ (1-abs(2*L-1));
+S = grayValue(:) .* (1-abs(2*radius(:)-1)) ./ (1-abs(2*L-1));
 S(isnan(S))=0;
 
-[h,s,v] = hsl2hsv(omega,S,L);
+[h,s,v] = hsl2hsv(omega(:),S(:),L(:));
 
 % the following lines correct for small yellow and cyan range in normal hsv
 % space
@@ -25,4 +25,3 @@ h = interp1(z,f,h);
 rgb = reshape(hsv2rgb(h,s,v),[],3);
 
 end
-

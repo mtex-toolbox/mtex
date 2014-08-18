@@ -4,16 +4,15 @@ classdef orientationMapping < handle
   
   properties
     CS1 = crystalSymmetry % crystal symmetry
-    CS2 = specimenSymmetry % crystal symmetry of a second phase for misorientations
-    colorPostRotation = rotation(idquaternion)
-    colorStretching = 1;
+    CS2 = specimenSymmetry % crystal symmetry of a second phase for misorientations    
   end
-  
+   
   methods
     
     function oM = orientationMapping(ebsd,varargin)
+      if nargin == 0, return; end
       if isa(ebsd,'EBSD') || isa(ebsd,'GrainSet')
-        oM.CS1 = ebsd.CS;
+        oM.CS1 = ebsd.CS.properGroup;
       elseif isa(ebsd,'symmetry')
         oM.CS1 = ebsd;
       end
@@ -22,7 +21,7 @@ classdef orientationMapping < handle
         oM.CS2 = varargin{1};
       end
     end
-            
+      
     function plot(oM,varargin)
       % plot an color bar
 

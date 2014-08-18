@@ -1,4 +1,4 @@
-classdef axisAngleOrientationMapping < orientationMapping
+classdef axisAngleOrientationMapping < orientationMapping & HSVOrientationMapping
   % 
   %   Detailed explanation goes here
   
@@ -9,7 +9,7 @@ classdef axisAngleOrientationMapping < orientationMapping
   
   methods
     function oM = axisAngleOrientationMapping(varargin)
-      oM = oM@orientationMapping(varargin{:});
+      oM = oM@HSVOrientationMapping(varargin{:});
       oM.center = get_option(varargin,'center',idquaternion);      
     end
   
@@ -26,7 +26,7 @@ classdef axisAngleOrientationMapping < orientationMapping
       gray = ori.angle./maxAngle;
       gray(gray > 1) = NaN;
       
-      rgb = h2HSV(oM,ori.axis,oM.CS1,'grayValue',gray);
+      rgb = h2color(oM,ori.axis,'grayValue',gray);
       
     end
   end
