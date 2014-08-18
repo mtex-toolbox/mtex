@@ -1,15 +1,15 @@
-function savefigure(fname,varargin)
+function saveFigure(fname,varargin)
 % save figure as grafik file
 %
-%% Description
+% Description
 % This function is supposed to produce cropped, publication ready image
 % files from your plots. The format of the file is determined by the
 % extension of the filename. 
 %
-%% Syntax
-% savefigure(fname,<options>)
+% Syntax
+%   savefigure(fname,<options>)
 %
-%% Input
+% Input
 %  filename - string
 %  
 
@@ -22,49 +22,38 @@ if nargin == 0,
   fname = [pathstr,name];
 end
 
+%if ~isempty(gcm), drawNow(gcm,'autoPosition');end
+
+setPaperSize;
+
+% for recent Matlab versions saveas should be fine
+if ~verLessThan('matlab','8.4'), saveas(gcf,fname); return; end
+
 % seperate extension
-[tmp1, tmp2, ext] = fileparts(fname);
-
-% resize figure to look good
-ounits = get(gcf,'Units');
-set(gcf,'PaperPositionMode','auto');
-set(gcf,'Units','pixels');
-pos = get(gcf,'Position');
-si = get(gcf,'UserData');
-	
-if (length(si) == 2) && isempty(findall(gcf,'tag','Colorbar'))
-  pos([3,4]) = si;
-	set(gcf,'Position',pos);
-end
-
-set(gcf,'Units','centimeters');
-pos = get(gcf,'PaperPosition');
-set(gcf,'PaperUnits','centimeters','PaperSize',[pos(3),pos(4)]);
-set(gcf,'Units',ounits);
-
+[~, ~, ext] = fileparts(fname);
 
 % try to switch to painters mode for vector formats
 % by converting RGB graphics to indexed graphics
 if any(strcmpi(ext,{'.eps','.pdf'})) && ~strcmpi(get(gcf,'renderer'),'painters') ...
     && isRGB
-
+  
   try
     convertFigureRGB2ind;
-    set(gcf,'renderer','painters');            
+    set(gcf,'renderer','painters');
   catch
     warning('MTEX:export','Unable to switch to painter''s mode. You may need to export to png or jpg');
   end
-
-end
   
+end
+
 % for bitmap formats try to use export fig
-if ~(ismac || ispc) || all(~strcmpi(ext,{'.eps','.pdf'}))
+if all(~strcmpi(ext,{'.eps','.pdf'}))
   try
     oldColor = get(gcf,'color');
     set(gcf,'color','none');
     export_fig(gcf,fname,'-m1.5');
     %export_fig(gcf,fname);
-    if exist(fname,'file'), 
+    if exist(fname,'file'),
       set(gcf,'color',oldColor);
       return;
     end
@@ -73,25 +62,24 @@ if ~(ismac || ispc) || all(~strcmpi(ext,{'.eps','.pdf'}))
   set(gcf,'color',oldColor);
 end
 
-
-
+% determine flags
 switch lower(ext(2:end))
-
-case {'eps','ps'}
-  flags = {'-depsc'};  
-case 'ill'
-  flags = {'-dill'};  
+  
+  case {'eps','ps'}
+    flags = {'-depsc'};
+  case 'ill'
+    flags = {'-dill'};
 case {'pdf'}
   flags = {'-dpdf'};
 case {'jpg','jpeg'}
-  flags = {'-r600','-djpeg'};  
+  flags = {'-r600','-djpeg'};
   set(gcf,'renderer','zbuffer');
-case {'tiff'}
+  case {'tiff'}
   flags = {'-r500','-dtiff'};
-case {'png'}
-  flags = {'-r500','-dpng'};
-case {'bmp'}
-  flags = {'-r500','-dbmp'};
+  case {'png'}
+    flags = {'-r500','-dpng'};
+  case {'bmp'}
+    flags = {'-r500','-dbmp'};
 otherwise
   saveas(gcf,fname);
   return
@@ -114,13 +102,7 @@ end
 
 end
 
-
 % ------------------------------------------------------------------
-
-
-
-%%
-
 function out = isRGB
 
 out = false;
@@ -136,8 +118,7 @@ out = any(cellfun(@(x) size(x,3)==3,CData));
 
 end
 
-%%
-
+%
 function convertAxisLabel2text
 
 ax = findall(gcf,'type','axes');
@@ -157,4 +138,17 @@ for iax = 1:numel(ax)
   end    
 end
   
+end
+
+function setPaperSize
+% resize figure to look good
+
+ounits = get(gcf,'Units');
+set(gcf,'PaperPositionMode','auto');
+set(gcf,'Units','centimeters');
+pos = get(gcf,'PaperPosition');
+set(gcf,'PaperUnits','centimeters','PaperSize',[pos(3),pos(4)]);
+set(gcf,'Units',ounits);
+
+
 end
