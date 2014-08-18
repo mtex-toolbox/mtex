@@ -17,8 +17,8 @@ setMTEXpref('xAxisDirection','north');
 setMTEXpref('zAxisDirection','outOfPlane');
 
 % default spacing between muliple plots
-setMTEXpref('outerPlotSpacing',30);
-setMTEXpref('innerPlotSpacing',20);
+setMTEXpref('outerPlotSpacing',10);
+setMTEXpref('innerPlotSpacing',10);
 
 % default fontsize
 setMTEXpref('FontSize',13);
