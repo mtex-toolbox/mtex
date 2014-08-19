@@ -1,15 +1,15 @@
 %% MTEX Changelog
 %
-%% MTEX 4.0.0 - 02/2014
+%% MTEX 4.0.0 - 08/2014
 % 
 % MTEX 4 is a complete rewrite of the internal class system which was
 % required to keep MTEX compatible with upcomming Matlab releases. Note
 % that MTEX 3.5 will not work on Matlab versions later then 2014a. As a
 % positive side effect the syntax has been made more consisent and
-% powerfull. On the bad side MTEX 3.5. code will probably need some
+% powerfull. On the bad side MTEX 3.5. code will need some
 % adaption to run on MTEX 4. There are three general principles to consider
 %
-% *Use dot indexing istead of get and set method*
+% *Use dot indexing istead of get and set methods*
 %
 % The syntax
 %
@@ -31,12 +31,12 @@
 %   cs.axes(1).x
 %
 % to get the x coordinate of the first crystallographic coordinate axis -
-% the a axis. As an nice bonus you can now use TAB completion to cycle
+% the a-axis. As an nice bonus you can now use TAB completion to cycle
 % through all possible properties and methods of a class.
 %
-% *Use camelCaseCommands instead of this_style_commands*
+% *Use camelCaseCommands instead of under_score_commands*
 %
-% Formerly, MTEX used different naming conventions for function. Starting
+% Formerly, MTEX used different naming conventions for functions. Starting
 % with MTEX 4.0 all function names consisting of several words, have the
 % first word spelled with lowercase latters and the consecutive words
 % starting with a capital letter. Most notable changes are
@@ -45,7 +45,102 @@
 %  * |plotODF|
 %  * |calcError|
 %
-% *Pole figure indexing is now analoge to EBSD data*
+% *Grain boundaries are now directly accessable*
+%
+% MTEX 4.0 introduces a new type of variables called |grainBoundary| which 
+% allows to represent arbitary grain boundaries and to to work with them as
+% with grains. The following lines give some examples. Much more is possible.
+%
+%   % select boundary from specific grains
+%   grains.boundary 
+%
+%   % select boundary by phase transistion
+%   gB = grains.boundary('Forstarite','Enstatite') 
+%
+%   % select boundary by misorientation angle
+%   gB(gB.misorientation.angle>100*degree)
+%
+%   % compute misorientation angle distribution for specific grain boundaries
+%   plotAngleDistribution(gB)
+%
+% *Plotting EBSD, grain, grainBoundary data has different syntax*
+%
+% The syntax of the plot commands has made more consistent throughout MTEX.
+% It is now
+%
+%   plot(obj,data)
+%
+% where obj is the object to be plotted, i.e., EBSD data, grains, 
+% grain boundaries, spherical vectors, pole figures, etc., and the data are 
+% either pure numbers or RGB values describing the color. Examples are
+%
+%   % plot MAD values of EBSD data
+%   plot(ebsd,ebsd.mad)
+%
+%   % colorize grains according to area
+%   plot(grains,grains.area)
+%
+%   % colorize grain boundary according to misorientation angle
+%   gB = grains.boundary('Forsterite','Enstatite')
+%   plot(gB,gB.misorientation.angle)   
+%
+% Colorization according to phase or phase transition is the new default 
+% when calling without data argument, i.e., the following results in a 
+% phase plot
+%
+%   plot(ebsd)
+%
+% In order to colorize according to orientations one has first to define a
+% orientationMapping by
+% 
+%   oM = ipdfHSVOrientationMapping(ebsd('Forsterite'))
+%
+% Then one can use the command |oM.orientation2color| to compute RGB values
+% for the orientations
+%
+%   plot(ebsd('Forsterite'),oM.orientation2color(ebsd('Forsterite').orientations))
+%
+% The orientation mapping can be visualized by
+%
+%   plot(oM)
+%
+% *EBSD data are alway spatialy indexed*
+%
+% Starting with MTEX 4.0 EBSD data alway have to have x and y coordinates.
+% EBSD data without spatial coordinates are imported simply as orientations.
+% As a consequence, all orientation related functionalities of EBSD data
+% have been moved to |orientations|, i.e., you can not do anymore
+%
+%   plotpdf(ebsd('Fo'),Miller(1,0,0))
+%   calcODF(ebsd('Fo'))
+%   volume((ebsd('Fo'))
+%
+% But you have to explicitely state that you operate on the orientations, i.e.
+%
+%   plotpdf(ebsd('Fo').orientations,Miller(1,0,0,ebsd('Fo').CS))
+%   calcODF(ebsd('Fo').orientations)
+%   volume((ebsd('Fo').orientations)
+%
+% This makes it more easy to apply the same functions to misorientations 
+% to grain mean orientations |grains.meanOrientation|, ebsd misorientation 
+$ to mean |mean |ebsd.mis2mean| or boundary misorientations 
+% |grains.boundary.misorientation|
+%
+% *MTEX 4.0 distingueshes between crystal and specimen symmetry*
+%
+% In MTEX 4.0 two new variable types |specimenSymmetry| and 
+% |crystalSymmetry| have been introduced to clearly distinguesh between 
+% these two types of symmetry. Calling
+%
+%   cs = symmetry('m-3m')
+%   ss = symmetry('triclinic')
+%
+% is not allowed anymore! Please use instead
+%
+%   cs = crystalSymmetry('m-3m','mineral','phaseName')
+%   ss = specimenSymmetry('triclinic')
+%
+% *Pole figure indexing is now analogously to EBSD data*
 %
 % You can now index pole figure data by conditions in the same manner as
 % EBSD data. E.g. the condition
@@ -84,15 +179,14 @@
 % *MTEX 4.0 supports all 32 point groups*
 %
 % In MTEX 4.0 it is for the first time possible to calculate with
-% reflections, inversions and .  As a consequence all 32 point groups are
+% reflections and inversions. As a consequence all 32 point groups are
 % supported. This is particularly important when working with
-% piezoellectric tensors and symmetries like 4mm.
+% piezoellectric tensors and symmetries like 4mm. Moreover, 
+% MTEX distingueshes between the point groups 112, 121, 112 up to -3m1 and
+% -31m. 
 %
 % Care should be taken, when using non Laue groups for pole figure or EBSD
-% data. In those cases MTEX 4.0 automatically realizes the addiotional
-% symmetry comming from Fridels law and expands the symmetry to the
-% corresponding Laue group. This can be prevented by the option
-% |noFriedel|.
+% data. 
 %
 % *Support for three digit notation for Miller indices of trigonal
 % symmetries*
@@ -105,7 +199,15 @@
 %
 %   Miller(2,-1,-1,0,crystalSymmetry('-3m'),'UVTW')
 %
+% *Improved graphics*
+%
+% MTEX can now display colorbars next to pole figure, tensor or ODF plots 
+% and offers much more powerfull options to customize the plots with titles,
+% legends, etc. 
+%
 % *Functionality that has been (temporarily) removed*
+%
+% This can be seen as a todo list.
 %
 % * 3d EBSD data handling + 3d grains
 % * some grain functions like aspectRation, equivalent diamter
@@ -114,6 +216,7 @@
 % * some of the orientation color maps
 % * fibreVolume
 % * Dirichlet kernel
+% * patala colorcoding
 %
 %% MTEX 3.5.0 - 12/2013
 %
