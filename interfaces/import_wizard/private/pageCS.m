@@ -102,7 +102,7 @@ set(gui.hSearchCIF,'CallBack',@lookupMineral);
       set(gui.hColor,'value',color(1));
             
       % set alignment
-      if any(strcmp(CS.LaueName,{'-1','2/m','-3','-3m','6/m','6/mmm'}))
+      if any(CS.Laue.id == [2,5,8,11,18,21,24,35,40]) %,{'-1','2/m','-3','-3m','6/m','6/mmm'}))
         set(gui.hAlignment,'enable','on');
         al = [CS.alignment,{'',''}];
         set(gui.hAlignment(1),'value',find(strcmp(AlignmentList,al{1})));
@@ -122,9 +122,7 @@ set(gui.hSearchCIF,'CallBack',@lookupMineral);
       
       
       % set whether axes and angles can be changed
-      if ~strcmp(CS.LaueName,{'-1','2/m'})
-        set(gui.hAngle, 'Enable', 'off');
-      end
+      if ~any(CS.Laue.id==[2,5,8,11]), set(gui.hAngle, 'Enable', 'off'); end
       
       % set mineral
       set(gui.hMineral,'string',CS.mineral);
@@ -144,7 +142,7 @@ set(gui.hSearchCIF,'CallBack',@lookupMineral);
       
       cs = get(gui.hCrystal,'Value');
       cs = SymmetryList(cs);
-      cs = strtrim(cs{1}(1:6));
+      %cs = strtrim(cs{1}(1:6));
       
       for k=1:3
         axis{k}  =  str2double(get(gui.hAxes(k),'String')); %#ok<AGROW>
@@ -213,22 +211,10 @@ set(gui.hSearchCIF,'CallBack',@lookupMineral);
 
   function [ sym ] = SymmetryList( index )
     
-    sym = [ ...
-      {'-1    triclinic'}; ...
-      {'2/m   monoclinic'};...
-      {'mmm   orthorhombic'};...
-      {'4/m   tetragonal'};...
-      {'4/mmm tetragonal'};...
-      {'-3    trigonal'};...
-      {'-3m   trigonal'};...
-      {'6/m   hexagonal'};...
-      {'6/mmm hexagonal'};...
-      {'m-3   cubic'};...
-      {'m-3m  cubic'}];
-    
-    if nargin > 0
-      sym = sym( index );
-    end
+    sym = struct2cell(symmetry.pointGroups);
+    sym = squeeze(sym(2,1,:));
+        
+    if nargin > 0, sym = sym(index) ; end
     
   end
 
@@ -333,7 +319,7 @@ set(gui.hSearchCIF,'CallBack',@lookupMineral);
     
     uicontrol(...
       'Parent',csGroup,...
-      'String','Laue Group',...
+      'String','Point Group',...
       'HitTest','off',...
       'Style','text',...
       'FontSize',fs,...
