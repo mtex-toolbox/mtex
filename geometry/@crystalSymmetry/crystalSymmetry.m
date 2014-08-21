@@ -76,7 +76,16 @@ classdef crystalSymmetry < symmetry
     function s = crystalSymmetry(varargin)
     
       s = s@symmetry(varargin{:});
-                                  
+                  
+      if nargin > 1
+        if ischar(varargin{1}) && any(strcmpi(varargin{1},{'pointId','LaueId'}))
+          varargin(1:2) = [];
+        else
+          varargin(1) = [];
+        end
+      end
+        
+        
       % get axes length (a b c)
       if ~isempty(varargin) && isa(varargin{1},'double')
         abc = varargin{1};
