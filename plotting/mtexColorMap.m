@@ -2,7 +2,7 @@ function mtexColorMap(name,varargin)
 % define an MTEX colormap
 
 if ischar(name)
-  if isempty(which(name))
+  if isempty(which([name '.m']))
     name = [name,'ColorMap'];
     if isempty(which(name))
       error('unknown colormap name');      

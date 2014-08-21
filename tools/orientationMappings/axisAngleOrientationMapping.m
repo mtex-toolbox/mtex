@@ -3,7 +3,7 @@ classdef axisAngleOrientationMapping < orientationMapping & HSVOrientationMappin
   %   Detailed explanation goes here
   
   properties
-    center
+    center = idquaternion
     maxAngle = 'auto'
   end
   
