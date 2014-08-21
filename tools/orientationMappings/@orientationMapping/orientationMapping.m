@@ -11,8 +11,12 @@ classdef orientationMapping < handle
     
     function oM = orientationMapping(ebsd,varargin)
       if nargin == 0, return; end
-      if isa(ebsd,'EBSD') || isa(ebsd,'GrainSet')
+      if isa(ebsd,'EBSD') || isa(ebsd,'grain2d')
         oM.CS1 = ebsd.CS.properGroup;
+      elseif isa(ebsd,'grainBoundary')
+        [oM.CS1,oM.CS2] = deal(ebsd.CS{:});
+        oM.CS1 = oM.CS1.properGroup;
+        oM.CS2 = oM.CS2.properGroup;
       elseif isa(ebsd,'symmetry')
         oM.CS1 = ebsd;
       end
