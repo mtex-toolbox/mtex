@@ -39,7 +39,7 @@ else
   h = getappdata(gcf,'h');
 end
 
-% colorcoding 1
+% colorcoding 1 TODO this should be done differently
 data = get_option(varargin,'property',[]);
 
 % ------------------ subsample if needed --------------------------
@@ -56,7 +56,7 @@ if ~check_option(varargin,{'all','contour','contourf','smooth'}) && ...
   if ~isempty(data), data = data(samples); end
 end
 
-% colorcoding 2
+% colorcoding 2 TODO: remove this
 if check_option(varargin,'colorcoding')
   colorcoding = lower(get_option(varargin,'colorcoding','angle'));
   data = orientation2color(o,colorcoding,varargin{:});

@@ -123,7 +123,7 @@
 %
 % This makes it more easy to apply the same functions to misorientations 
 % to grain mean orientations |grains.meanOrientation|, ebsd misorientation 
-$ to mean |mean |ebsd.mis2mean| or boundary misorientations 
+% to mean |mean |ebsd.mis2mean| or boundary misorientations 
 % |grains.boundary.misorientation|
 %
 % *MTEX 4.0 distingueshes between crystal and specimen symmetry*
