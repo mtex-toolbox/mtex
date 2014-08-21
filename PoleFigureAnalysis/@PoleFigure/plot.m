@@ -14,12 +14,18 @@ function plot(pf,varargin)
 % SphericalProjection_demo 
 
 [mtexFig,isNew] = newMtexFigure(varargin{:}); 
-  
+
+if nargin > 1 && isnumeric(varargin{1})
+  data = mat2cell(varargin{1}(:),cellfun('prodofsize',pf.allI));
+else
+  data = pf.allI;
+end
+
 for i = 1:length(pf.allH)
   
   if i>1, mtexFig.nextAxis; end
   
-  pf.allR{i}.plot(pf.allI{i},...
+  pf.allR{i}.plot(data{i},...
     'dynamicMarkerSize','parent',mtexFig.gca,'doNotDraw',varargin{:});
   title(mtexFig.gca,char(pf.allH{i}),'FontSize',getMTEXpref('FontSize'));
 end
