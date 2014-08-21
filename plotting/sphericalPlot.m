@@ -53,10 +53,10 @@ classdef sphericalPlot < handle
         
         % plot boundary
         sP.boundary = sP.sphericalRegion.plot('parent',ax);
-              
-        sP.plotPolarGrid(varargin{:});
+                
+        try sP.plotPolarGrid(varargin{:});end
 
-        set(ax,'box','on','XTick',[],'YTick',[]);
+        set(ax,'XTick',[],'YTick',[]);
         axis(ax,'off');
     
         % compute bounding box

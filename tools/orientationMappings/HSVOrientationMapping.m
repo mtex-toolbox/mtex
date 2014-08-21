@@ -101,6 +101,7 @@ classdef HSVOrientationMapping < orientationMapping
     
     function updateColorPostRotation(oM)
       % adjust colors
+      
       switch oM.CS1.id
         case 4, oM.green2white;                            % m11
         case 5, oM.colorPostRotation = rotation('Euler',30*degree,90*degree,0*degree); % 2/m11

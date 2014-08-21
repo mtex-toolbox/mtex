@@ -14,11 +14,6 @@ disp([h ' ' docmethods(inputname(1))]);
 
 if isempty_cell(pf.allH), return;end
 
-% display mineral name
-if ~isempty(pf.CS.mineral)
-  disp(['  mineral: ',pf.CS.mineral]);
-end
-
 disp(char(pf.CS,'verbose','symmetryType'));
 disp(char(pf.SS,'verbose','symmetryType'));
 disp(' ');
