@@ -13,6 +13,11 @@ for j = 1:numel(sP)
   % ensure sector is at this hemisphere
   if any(any(dot_outer(sR.N,sP(j).sphericalRegion.N)<eps-1)), continue, end
   
+  if all(sR.checkInside(sP(j).sphericalRegion.N)) && ~isempty(sP(j).boundary)
+    h = optiondraw(sP(j).boundary,varargin{:});
+    continue; 
+  end
+  
   % plot the region
   omega = linspace(0,2*pi,721);
   for i=1:length(sR.N)
