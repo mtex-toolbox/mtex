@@ -125,20 +125,27 @@ classdef HSVOrientationMapping < orientationMapping
     function rgb = h2color(oM,h,varargin)
       
       h = h.project2FundamentalRegion(oM.CS1);
-            
+      whiteCenter = oM.whiteCenter.project2FundamentalRegion(oM.CS1);
+      switchWB = false;
+      
       % copy to the reduced sector
       h_sR = h;
       for i = 1:length(oM.refl)
         ind = dot(h_sR,oM.refl(i))<1e-5;
         h_sR(ind) = reflection(oM.refl(i)) * h_sR(ind);
+        
+        if dot(whiteCenter,oM.refl(i))<1e-5
+          whiteCenter = reflection(oM.refl(i)) * whiteCenter;
+          switchWB = ~switchWB;
+        end
       end
             
       % compute angle of the points "sh" relative to the center point "center"
       % this should be between 0 and 1
-      [radius,rho] = polarCoordinates(oM.sR,h_sR,oM.whiteCenter);
+      [radius,rho] = polarCoordinates(oM.sR,h_sR,whiteCenter);
 
       % which are white
-      whiteOrBlack = h_sR == h;
+      whiteOrBlack = xor(h_sR == h,switchWB);
 
       % white center
       radius(whiteOrBlack) = 0.5+radius(whiteOrBlack)./2;
