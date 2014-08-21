@@ -54,9 +54,11 @@ hold off
 
 %%
 
+
+
 cs = ebsd('Forsterite').CS.Laue;
 oM = axisAngleOrientationMapping(cs)
-oM.maxAngle = 4*degree;
+%oM.maxAngle = 50*degree;
 
 plot(ebsd('Forsterite'),oM.orientation2color(ebsd('Forsterite').mis2mean))
 hold on

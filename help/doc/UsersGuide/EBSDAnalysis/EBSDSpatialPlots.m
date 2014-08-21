@@ -13,13 +13,14 @@
 %% Phase Plots
 % Let us first import some EBSD data with a [[matlab:edit mtexdata, script file]]
 
+close all, plotx2east
 mtexdata forsterite
 
 %%
 % By default MTEX plots a phase map for EBSD data.
 
-plot(ebsd)
 
+plot(ebsd)
 
 %%
 % You can access the color of each phase by
@@ -100,6 +101,7 @@ plot(oM)
 color = oM.orientation2color(ebsd('Fo').orientations);
 
 % plot the colors
+close all
 plot(ebsd('Forsterite'),color)
 
 %%
@@ -126,6 +128,7 @@ oM.inversePoleFigureDirection = zvector;
 color = oM.orientation2color(ebsd('Forsterite').orientations);
 
 % and plot them
+close all
 plot(ebsd('Forsterite'),color)
 
 

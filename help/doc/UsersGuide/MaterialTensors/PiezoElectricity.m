@@ -24,7 +24,7 @@ P = loadTensor(fname,CS,'propertyname','piecoelectricity','unit','C/N','interfac
 % unique region implied by crystal symmetry
 
 % set some colormap well suited for tensor visualisation
-setMTEXpref('defaultColorMap','parula');
+setMTEXpref('defaultColorMap',blue2redColorMap);
 
 plot(P)
 colorbar(gcm)
