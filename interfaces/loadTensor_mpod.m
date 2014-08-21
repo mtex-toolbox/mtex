@@ -1,4 +1,4 @@
-function [T,interface,options] = loadTensor_mpod(fname,varargin)
+function T = loadTensor_mpod(fname,varargin)
 % import Tensor data
 %
 % Description

@@ -21,9 +21,7 @@ for i =1:length(interfaces)
     %[args{1:(2*(n>1))}] = feval(interfaces{i}(1:end-2),fname,varargin{:},'check');    
     eval(['[args{1:(2*(n>1))}] = ' interfaces{i}(1:end-2) '( fname,varargin{:},''check'');']);
     
-    if numel(args) > 1
-      options = args{2};
-    end
+    if numel(args) > 1, options = args{2};end
     
     interfaceName = regexp(interfaces{i},'_(.*).m','tokens');
     interface = {interface{:},char(interfaceName{1})};
