@@ -80,7 +80,7 @@ mP.extend(2) = max(mP.extend(2),max(ebsd.prop.x(:)));
 mP.extend(3) = min(mP.extend(3),min(ebsd.prop.y(:)));
 mP.extend(4) = max(mP.extend(4),max(ebsd.prop.y(:)));
 
-drawNow(gcm,varargin{:})
+if ~isempty(gcm), drawNow(gcm,varargin{:}); end
 
 if nargout==0, clear h; end
 
