@@ -28,7 +28,7 @@ function [T,options] = loadTensor_P(fname,varargin)
 % loadData
 
 % remove option "check"
-varargin = delete_option(varargin,'check');
+varargin = delete_option(varargin,{'check','wizard'});
 
 [path,name,ext] = fileparts(fname);
 if ~strcmpi(ext,'.P'), interfaceError(fname), end
