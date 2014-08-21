@@ -1,6 +1,11 @@
 function  sR = fundamentalSector(cs,varargin)
 % get the fundamental sector for a symmetry in the inverse pole figure
 %
+% Syntax
+%   sR = fundamentalSector(cs)
+%   sR = fundamentalSector(cs,omega) TODO: this should give the fundamental
+%   sector of rotational axes for a specific rotation angle omega
+%
 % Input
 %  cs - symmetry
 %

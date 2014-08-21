@@ -15,7 +15,7 @@ function odf = calcODF(ori,varargin)
 % <EBSDSimulation_demo.html description> for exhausive discussion.
 %
 % Syntax
-%   calcODF(ori,)
+%   calcODF(ori)
 %
 % Input
 %  ori  - @orientation
