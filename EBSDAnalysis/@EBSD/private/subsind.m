@@ -48,6 +48,11 @@ for i = 1:length(subs)
     
   elseif isa(subs{i},'grain2d')
     
+    if ~ebsd.isProp('grainId')
+      error('%s\n\n%s\n',['There is no grainId stored within your EBSD data. ' ...
+        'You should compute grains by the command'],...
+        '  [grains,ebsd] = calcGrains(ebsd)');
+    end
     ind = ind & ismember(ebsd.prop.grainId,subs{i}.id)';
     
   elseif isa(subs{i},'logical')
