@@ -36,7 +36,9 @@ try
   d = permute(d,[2,1,3]);
   %d = flipdim(d,1);
   d = flipdim(d,2);
-  ori = orientation('matrix',d);
+  CS = getClass(varargin,'crystalSymmetry',crystalSymmetry);
+  SS = getClass(varargin,'specimenSymmetry',specimenSymmetry);
+  ori = orientation('matrix',CS,SS);
     
   
 catch %#ok<CTCH>

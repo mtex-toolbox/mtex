@@ -21,7 +21,7 @@ classdef HSVOrientationMapping < orientationMapping
     sR = sphericalRegion
   end
 
-  properties %(Access = private)
+  properties (Access = private)
     refl = [];
     rot = rotation(idquaternion);
     alpha = 0;
