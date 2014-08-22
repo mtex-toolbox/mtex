@@ -87,6 +87,14 @@ classdef phaseList
     
     function pL = set.phase(pL,phase)
       
+      if numel(phase) == 1
+        phase = repmat(phase,size(pL.phaseId));
+      elseif numel(phase) == numel(pl.phaseId)
+        phase = reshape(phase,size(pL.phaseId));
+      else
+        error('List of phases has wrong size.')
+      end
+      
       phId = zeros(size(phase));
       for i = 1:numel(pL.phaseMap)
         phId(phase==pL.phaseMap(i)) = i;

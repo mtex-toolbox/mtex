@@ -26,7 +26,11 @@ switch s(1).type
   otherwise
     
     v =  builtin('subsasgn',v,s,b);    
-      
+
+    % ensure x,y,z have the same size
+    if numel(v.x)==1, v.x = repmat(v.x,size(v.y));end
+    if numel(v.y)==1, v.y = repmat(v.y,size(v.z));end
+    if numel(v.z)==1, v.z = repmat(v.z,size(v.x));end
 end
 
 end
