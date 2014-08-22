@@ -47,7 +47,7 @@ hold off
 
 plotx2east
 
-cs = crystalSymmetry('-6','a||y');
+cs = crystalSymmetry('pointId',43,'a||x');
 
 % define the colorcoding
 oM = ipdfHSVOrientationMapping(cs);
@@ -55,6 +55,7 @@ oM = ipdfHSVOrientationMapping(cs);
 %oM.colorPostRotation = rotation('axis',xvector,'angle',180*degree);
 %oM.colorPostRotation = rotation('axis',zvector,'angle',0*degree)*rotation('axis',yvector,'angle',90*degree);
 
+%oM.alpha = 0.3;
 % plot the colorcoding
 plot(oM,'complete','position',[100 100 800 400])
 %plot(oM,'complete','projection','eangle')
