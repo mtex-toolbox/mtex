@@ -67,7 +67,7 @@ plot(P,'section',xvector)
 % pp.1169-1187
 %
 
-fname = fullfile(mtexDataPath,'tensor', 'Tongue_Quartzite_Bunge_Euler');
+fname = fullfile(mtexDataPath,'orientation', 'Tongue_Quartzite_Bunge_Euler');
 
 ori = loadOrientation(fname,CS,'interface','generic' ...
   , 'ColumnNames', { 'Euler 1' 'Euler 2' 'Euler 3'}, 'Bunge', 'active rotation')
