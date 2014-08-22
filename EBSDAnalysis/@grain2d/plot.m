@@ -18,6 +18,11 @@ function h = plot(grains,varargin)
 % create a new plot
 mP = newMapPlot(varargin{:});
 
+if isempty(grains)
+  if nargout==1, h = [];end
+  return;
+end
+
 % transform orientations to color
 if nargin>1 && isa(varargin{1},'orientation')
   
@@ -41,6 +46,15 @@ if nargin>1 && isnumeric(varargin{1})
   % plot polygons
   h = plotFaces(grains.poly,grains.V,property,'parent', mP.ax,varargin{:});
   
+elseif check_option(varargin,'FaceColor')
+  
+  % plot polygons
+  color = get_option(varargin,'FaceColor');
+  h = plotFaces(grains.poly,grains.V,color,'parent', mP.ax,varargin{:});
+  
+  % reactivate legend information
+  set(get(get(h(end),'Annotation'),'LegendInformation'),'IconDisplayStyle','on');
+  
 else % otherwise phase plot
 
   for k=1:numel(grains.phaseMap)
@@ -53,10 +67,9 @@ else % otherwise phase plot
 
     % plot polygons
     h{k} = plotFaces(grains.poly(ind),grains.V,color,...
-      'parent', mP.ax,varargin{:}); %#ok<AGROW>
+      'parent', mP.ax,'DisplayName',grains.mineralList{k},varargin{:}); %#ok<AGROW>
 
     % reactivate legend information
-    set(h{k},'DisplayName',grains.mineralList{k});
     set(get(get(h{k}(end),'Annotation'),'LegendInformation'),'IconDisplayStyle','on');
 
   end
