@@ -26,7 +26,5 @@ if nargin >= 3
     ind = d < epsilon;
   end
 else
-  m = min(d,[],1);
-  ind = find(isnull(d - m));
-  d = m;  
+  [d,ind] = min(d,[],1);
 end

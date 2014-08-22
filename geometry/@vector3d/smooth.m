@@ -24,70 +24,43 @@ for j = 1:numel(sP)
   if ~isempty(varargin) && isnumeric(varargin{1}) && ~isempty(varargin{1})
 
     cdata = varargin{1};
-
+    S2G = v;
+    
   else % no color given -> do kernel density estimation
 
-    out = plotS2Grid(sP.sphericalRegion);
+    S2G = plotS2Grid(sP(j).sphericalRegion);
 
-    cdata = kernelDensityEstimation(v(:),out,'halfwidth',5*degree,varargin{:});
-    v = out;
-
-    cdata = reshape(cdata,size(v));
+    cdata = kernelDensityEstimation(v(:),S2G,'halfwidth',5*degree,varargin{:});    
+    cdata = reshape(cdata,size(S2G));
+    
   end
 
-  % -------------- interpolate if no regular grid was given ---------
+  % interpolate if no regular grid was given
+  if ~isOption(S2G,'plot') || ~S2G.opt.plot
+    
+    if size(S2G,1) == 1 || size(S2G,2) == 1
 
-  % may be externalize this into a funtion interp of S2Grid
-  if ~isOption(v,'plot') || ~v.opt.plot
-
-    if size(v,1) == 1 || size(v,2) == 1
-
-      % specify a plotting grid
-      theta = polar(v);
-      res = max(2.5*degree,v.resolution);
-
-      minTheta = min(theta);
-      maxTheta = max(theta);
-      if minTheta < 1*degree, minTheta = 0;end
-      if abs(maxTheta-pi/2)<1*degree, maxTheta = pi/2;end
-      if abs(maxTheta-pi)<1*degree, maxTheta = pi;end
-      extend.minTheta = max(extend.minTheta,minTheta);
-      if isnumeric(extend.maxTheta)
-        extend.maxTheta = min(extend.maxTheta,maxTheta);
-      end
-
-      myPlotGrid = plotS2Grid('resolution',res,...
-        'minTheta',extend.minTheta,...
-        'maxTheta',extend.maxTheta,...
-        'minRho',extend.minRho,...
-        'maxRho',extend.maxRho,...
-        'restrict2minmax',varargin{:});
-
-      % interpolate on the plotting grid
-      [ind,d] = find(v,vector3d(myPlotGrid)); % nearest neighbour interpolation
-      cdata = cdata(ind);
-      cdata(d < cos(2*res)) = nan;
-      v = myPlotGrid;
-      clear myPlotGrid;
-      cdata = reshape(cdata,size(v));
-    elseif ~isa(sP.proj,'plainRojection') 
+      S2G = plotS2Grid(sP(j).sphericalRegion,'resolution',2.5*degree,varargin{:});
+      cdata = interpS2(v,cdata,S2G);
+      
+    elseif ~isa(sP.proj,'plainRojection')
+      
       % close the gap between 0 and 2*pi
       varargin = set_option(varargin,'correctContour');
+      
     end
   end
-
-
+  
   % scale the data
   [cdata,colorRange,minData,maxData] = scaleData(cdata,varargin{:});
   if ~any(isnan(colorRange)), caxis(sP(j).ax,colorRange);end
-
 
   % ------------- compute contour lines ------------------------
 
   % number of contour lines
   contours = get_option(varargin,'contours',50);
 
-  % specify contourlines explicetly
+  % specify contourlines explicitely
   if length(contours) == 1
     contours = linspace(colorRange(1),colorRange(2),contours);
   end
@@ -97,7 +70,7 @@ for j = 1:numel(sP)
   hold(sP(j).ax,'on')
 
   % project data
-  [x,y] = project(sP(j).proj,v,'removeAntipodal');
+  [x,y] = project(sP(j).proj,S2G,'removeAntipodal');
 
   % extract non nan data
   ind = ~isnan(x);
@@ -136,6 +109,9 @@ optiondraw(h,'LineStyle','none','Fill','on',varargin{:});
 
 if nargout == 0, clear h; end
 
+end
+
+% ------------------------------------------------------------
 function h = betterContourf(ax,X,Y,data,contours,varargin)
 
 h = [];
@@ -158,6 +134,10 @@ if numel(unique(data)) > 1
 
   if check_option(varargin,'pcolor')
     h = pcolor(ax,X,Y,data);
+    
+    % do not display in the legend
+    set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+    
     if numel(data) >= 500
      if length(unique(data))<50
        shading flat;
@@ -177,4 +157,16 @@ if numel(unique(data)) > 1
 
 elseif ~check_option(varargin,'fill',[],'off')
   h = fill(X,Y,data,'LineStyle','none','parent',ax);
+end
+
+end
+
+function yi = interpS2(x,y,xi)
+% nearest neighbour  interpolate on the plotting grid
+
+[ind,d] = find(x,xi);
+yi = y(ind);
+yi(d > 2*xi.resolution) = nan;
+yi = reshape(yi,size(xi));
+
 end
