@@ -263,7 +263,7 @@ end
             
             % for triclinic and monoclinic get angles
             if any(strcmp(cs{i}.lattice,{'triclinic','monoclinic'}))
-              opt = [opt {[n2s(axAngles),'*degree']}]; %#ok<AGROW>
+              opt = [opt {[n2s(axAngles./degree),'*degree']}]; %#ok<AGROW>
             end
             
             opt = [opt cs{i}.alignment]; %#ok<AGROW>
