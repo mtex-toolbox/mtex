@@ -1,21 +1,18 @@
 function ind = subsind(gB,subs)
 
-ind = true(length(gB),1);
+% first select for minerals
+isMineralName = cellfun(@ischar,subs);
+if any(isMineralName)
+  ind = gB.hasPhase(subs{isMineralName});
+else
+  ind = true(length(gB),1);
+end
+subs = subs(~isMineralName);
 
+% other indexing
 for i = 1:length(subs)
   
-  if ischar(subs{i}) || iscellstr(subs{i})
-    
-    miner = ensurecell(subs{i});
-    
-    ind = ind & gB.hasPhase(miner{:});
-                      
-    %   elseif isa(subs{i},'grain')
-    
-    %     ind = ind & ismember(ebsd.options.grain_id,get(subs{i},'id'))';
-
-    
-  elseif isa(subs{i},'logical')
+  if isa(subs{i},'logical')
     
     sub = any(subs{i}, find(size(subs{i}')==max(size(ind)),1));
     

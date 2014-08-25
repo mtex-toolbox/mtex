@@ -74,7 +74,7 @@ plot(grains)
 
 hold on
 
-bnd_FoFo = grains.boundary({'Fo','Fo'})
+bnd_FoFo = grains.boundary('Fo','Fo')
 
 plot(bnd_FoFo,'linecolor','r')
 
@@ -156,7 +156,7 @@ title('uncorrelated axis distribution')
 % plot
 
 mtexFig.nextAxis
-plotAxisDistribution(grains.boundary({'Fo','Fo'}),'smooth','parent',mtexFig.gca)
+plotAxisDistribution(grains.boundary('Fo','Fo'),'smooth','parent',mtexFig.gca)
 title('boundary axis distribution')
 colorbar(gcm)
 
