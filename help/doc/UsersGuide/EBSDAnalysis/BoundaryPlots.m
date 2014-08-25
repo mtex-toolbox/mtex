@@ -72,7 +72,7 @@ plot(grains.boundary('Fo','En'),'linecolor','r','linewidth',1.5)
 % with respect to the misorientation angle.
 
 close all
-gB_Fo = grains.boundary({'Fo','Fo'});
+gB_Fo = grains.boundary('Fo','Fo');
 plot(grains,'translucent',.3)
 legend off
 hold on
