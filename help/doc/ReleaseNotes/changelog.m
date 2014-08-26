@@ -217,6 +217,13 @@
 % * fibreVolume
 % * Dirichlet kernel
 % * patala colorcoding
+% * v.x = 0 
+% * adjust axes position for ODF plots
+% * ODF/calcPDF and ODF/pdf are dublicates
+% * misorientation analysis is not yet complete
+% * some colormaps, e.g. blue2red switched
+% * add calcODF to obsolete since EBSD/calcODF is obsolete
+% * histogram of valume fractions of CSL boundaries
 %
 %% MTEX 3.5.0 - 12/2013
 %
