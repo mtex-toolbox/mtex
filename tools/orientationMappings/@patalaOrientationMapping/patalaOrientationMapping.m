@@ -28,10 +28,10 @@ classdef patalaOrientationMapping < orientationMapping
 %         [r_value g_value b_value] indicating the color assigned to the
 %         misorientation o(i) according to the Patala coloring scheme.
 %
-% [1] S. Patala, J. K. Mason, and C. A. Schuh, �Improved representations of
+% [1] S. Patala, J. K. Mason, and C. A. Schuh, Improved representations of
 %     misorientation information for grain boundary science and 
-%     engineering,� Prog. Mater. Sci., vol. 57, no. 8, pp. 1383�1425, 2012.
-%-------------------------------------------------------------------------%
+%     engineering, Prog. Mater. Sci., vol. 57, no. 8, pp. 1383-1425, 2012.
+%-------------------------------------------------------------------------
 
   
   properties
@@ -40,33 +40,23 @@ classdef patalaOrientationMapping < orientationMapping
   
   methods
    
-    function rgb = orientation2color(oM,ori)
-      
-      % get crystal symmetry
-      cs = ori.CS;
-      
-      % get disorientations
-      m = [ori.a,ori.b,ori.c,ori.d];
-      d = disorientation(m,cs.properGroup.pointGroup);
-      
-      % get rodriguez vectors
-      r = bsxfun(@rdivide,d(:,2:4),d(:,1));
+    function oM = patalaOrientationMapping(varargin)
+      oM = oM@orientationMapping(varargin{:});
+    end
+    
+    function rgb = orientation2color(oM,mori) 
 
-      % get rgb colors
-      switch cs.properGroup.pointGroup
-        case '23'
-          rgb = colormap23(r);
-        case '222'
-          rgb = colormap222(r);
-        case '422'
-          rgb = colormap422(r);
-        case '432'
-          rgb = colormap432(r);
-        case '622'
-          rgb = colormap622(r);
-        otherwise
-          assert(any(strcmpi(cs,{'23','222','422','432','622'})),'Point group %s is not supported for Patala colormapping. \nOnly the following point groups are supported: ''23'',''222'',''422'',''432'',''622''.',cs);
-      end
+      rot = rotation(mori);
+
+      axis = rotation('axis',vector3d(1,1,1),'angle',120*degree) * ...
+        project2FundamentalRegion(rot.axis,oM.CS1.Laue);
+
+      q = rotation('axis',axis(:),'angle',mori.angle);
+
+      v = double(Rodrigues(q));
+
+      rgb = reshape(colormap432(reshape(v,[],3)),[size(mori) 3]);
+
     end
   end
 end
