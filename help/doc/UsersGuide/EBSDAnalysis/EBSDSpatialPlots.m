@@ -13,12 +13,12 @@
 %% Phase Plots
 % Let us first import some EBSD data with a [[matlab:edit mtexdata, script file]]
 
-close all, plotx2east
+close all; plotx2east
 mtexdata forsterite
+csFo = ebsd('Forsterite').CS
 
 %%
 % By default MTEX plots a phase map for EBSD data.
-
 
 plot(ebsd)
 
@@ -149,121 +149,86 @@ plot(ebsd('Forsterite'),color)
 % or a certain orientation.
 
 %% SUB: Coloring certain fibres
-% TODO:
 % To color a fibre, one has to specify the crystal direction *h* together
 % with its rgb color and the specimen direction *r*, which should be marked.
 
-%close all
-%plot(ebsd('fo'),'colorcoding',...
-%  'ipdfCenter',{Miller(1,1,1),[0 0 1]},...
-%  'r',zvector,...
-%  'halfwidth',7.5*degree)
+oM = ipdfCenterOrientationMapping(csFo);
+oM.inversePoleFigureDirection = zvector;
+oM.center = Miller(1,1,1,csFo);
+oM.color = [0 0 1];
+oM.psi = deLaValeePoussinKernel('halfwidth',7.5*degree);
+
+plot(ebsd('fo'),oM.orientation2color(ebsd('fo').orientations))
 
 %%
 % the option |halfwidth| controls half of the intensity of the color at a
 % given distance. Here we have chosen the (111)[001] fibre to be drawn in blue,
 % and at 7.5 degrees, where the blue should be only lighter.
 
-%colorbar
-%hold on
-%circle(Miller(1,1,1),15*degree,'linewidth',2)
-%set(gcf,'renderer','zbuffer')
+plot(oM)
+hold on
+circle(Miller(1,1,1,csFo),15*degree,'linewidth',2)
 
 %%
 % the percentage of blue colored area in the map is equivalent to the fibre
 % volume
 
-vol = fibreVolume(ebsd('fo').orientations,Miller(1,1,1,ebsd('fo').CS),zvector,15*degree)
+vol = fibreVolume(ebsd('fo').orientations,Miller(1,1,1,csFo),zvector,15*degree)
 
-close all;
-plotIPDF(ebsd('fo').orientations,zvector,'markercolor','k','marker','x')
+plotIPDF(ebsd('fo').orientations,zvector,'markercolor','k','marker','x','points',200)
+hold off
 
 %%
 % we can easily extend the colorcoding
 
-%hcolored = {Miller(0,0,1),[1 0 0],... 
-%  Miller(0,1,1)   ,[0 1 0],...
-%  Miller(1,1,1)   ,[0 0 1],...
-%  Miller(11,4,4)  ,[1 0 1],...
-%  Miller(5,0,2)   ,[1 1 0],...
-%  Miller(5,5,2)   ,[0 1 1]};
+oM.center = [Miller(0,0,1,csFo),Miller(0,1,1,csFo),Miller(1,1,1,csFo),...
+  Miller(11,4,4,csFo), Miller(5,0,2,csFo) , Miller(5,5,2,csFo)]
 
-%close all;
-%plot(ebsd('fo'),'colorcoding',...
-%  'ipdfCenter',hcolored,...
-%  'r',xvector,...
-%  'halfwidth',12.5*degree,...
-%  'antipodal')
+oM.color = [[1 0 0];[0 1 0];[0 0 1];[1 0 1];[1 1 0];[0 1 1]];
+
+close all;
+plot(ebsd('fo'),oM.orientation2color(ebsd('fo').orientations))
 
 %%
 
-%colorbar
+plot(oM,'complete')
 
 %% SUB: Coloring certain orientations
 % We might be interested to locate some special orientation in our orientation map. 
 % Suppose the mode of the ODF somewhere in our spatial distribution of
 % grains (the orientation map).
 
-mode = mean(ebsd('Forsterite'))
+mode = 
 
 %%
 % The definition of colors for certain orientations is carried out similarly as 
 % in the case of fibres
 
-%close all;
-%plot(ebsd('fo'),'colorcoding',...
-%  'orientationCenter',{mode,[0 0 1]},...
-%  'halfwidth',20*degree)
+oM = centerOrientationMapping(ebsd('Fo'));
+oM.center = mean(ebsd('Forsterite'));
+oM.color = [0,0,1];
+oM.psi = deLaValeePoussinKernel('halfwidth',20*degree);
 
-%%
+plot(ebsd('fo'),oM.orientation2color(ebsd('fo').orientations))
 
-%colorbar('sections',9,'sigma')
+% and the correspoding colormap
+figure(2)
+plot(oM,'sections',9,'sigma')
 
 %%
 % the area of the colored EBSD data in the map corresponds to the volume
 % portion (in percent)
 
-vol = 100 * volume(ebsd('fo').orientations,mode,20*degree)
+vol = 100 * volume(ebsd('fo').orientations,oM.center,20*degree)
 
 %%
 % actually, the colored measurements stress a peak in the ODF
 
+close all
 odf = calcODF(ebsd('fo').orientations,'halfwidth',10*degree,'silent');
 plot(odf,'sections',9,'antipodal','silent','sigma')
 colorbar(gcm)
 
-%% Coloring properties
-%
-%% SUB: Phase map
-%
-
-close all;
-plot(ebsd)
-
-%% SUB: Other properties
-%
-% Often the individual orientation measurements come along with some other
-% properties, maybe something called background contrast, stored in our
-% EBSD as *property* bc, we can plot it easily by specifing it as a
-% plotting option
-
-close all
-plot(ebsd,ebsd.bc)
-colorbar(gcm)
-mtexColorMap white2black
-
-%%
-% the property could also be a Nx1 or an Nx3-vector containing the color
-% information to be plotted, where N referes to the number of measurements
-% in the EBSD data set.
-
-plot(ebsd('fo'),ebsd('Forsterite').bc)
-colorbar(gcm)
-
-%% 
-% if the size is just Nx1, the color can be adjusted with
-
-mtexColorMap white2black
 
 %% Combining different plots
 % Combining different plots can be done either by plotting only subsets of
@@ -275,11 +240,15 @@ close all;
 plot(ebsd,ebsd.bc)
 mtexColorMap white2black
 
-% TODO
-%hold on
-%plot(ebsd('fo'),'colorcoding',...
-%  'ipdfCenter',{Miller(1,1,1),[1 0 0]},'r',zvector,...
-%  'translucent',.5)
+oM = ipdfCenterOrientationMapping(csFo);
+oM.inversePoleFigureDirection = zvector;
+oM.center = Miller(1,1,1,csFo);
+oM.color = [0 0 1];
+oM.psi = deLaValeePoussinKernel('halfwidth',7.5*degree);
+
+hold on
+plot(ebsd('fo'),oM.orientation2color(ebsd('fo').orientations),'FaceAlpha',0.5)
+hold off
 
 %%
 % another example
@@ -288,5 +257,7 @@ close all;
 plot(ebsd,ebsd.bc)
 mtexColorMap black2white
 
-hold on, plot(ebsd('fo'),'translucent',0.35)
+hold on
+plot(ebsd('fo'),'FaceAlpha',0.5)
+hold off
 
