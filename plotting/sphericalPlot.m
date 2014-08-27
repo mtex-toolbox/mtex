@@ -160,7 +160,7 @@ classdef sphericalPlot < handle
       if ~isempty(sP.grid)
         childs = allchild(sP.ax);
   
-        isgrid = ismember(childs,[sP.grid,sP.boundary]);
+        isgrid = ismember(childs,[sP.grid(:);sP.boundary(:)]);
         istext = strcmp(get(childs,'type'),'text');
   
         % TODO: this crahes on MATLAB 2014b
