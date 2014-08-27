@@ -31,7 +31,7 @@ for i = 1:length(r)
   if i>1, mtexFig.nextAxis; end
 
   % compute inverse pole figures
-  p = ensureNonNeg(pdf(odf,h,r(i),varargin{:}));
+  p = ensureNonNeg(odf.calcPDF(h,r(i),varargin{:}));
 
   % plot
   h.smooth(p,'parent',mtexFig.gca,'doNotDraw',varargin{:});

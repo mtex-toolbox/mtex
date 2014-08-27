@@ -53,6 +53,6 @@ S2G = S2G(angle(h,S2G)<radius);
 if f==0
   v = 0;
 else
-  v = min(1,mean(pdf(odf,S2G,r)) * f);
+  v = min(1,mean(odf.calcPDF(S2G,r)) * f);
 end
 

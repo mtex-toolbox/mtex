@@ -21,7 +21,7 @@ for k=1:length(h)
   while res/2 > 0.25*degree
     
     res = res/2;
-    f = pdf(odf,h(k),S2);
+    f = odf.calcPDF(h(k),S2);
     
     [a, i] = max(f);
     

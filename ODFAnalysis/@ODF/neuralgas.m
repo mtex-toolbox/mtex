@@ -36,7 +36,7 @@ r = get_option(varargin,'Grid',...
 v = double(vector3d(r));
 v = reshape(v,[],3);
 
-P = pdf(odf,h,r);
+P = odf.calcPDF(h,r);
 
 nr = length(r);
 nx = fix(get_option(varargin,'Points',100));
