@@ -205,45 +205,28 @@ classdef sphericalPlot < handle
       for i = 1:length(theta), circ(sP,theta(i)); end
       
       % draw meridians
-      rho = 0:dgrid:2*pi-dgrid;
-      for i = 1:length(rho), plotMeridian(sP,rho(i)); end
+      %rho = 0:dgrid:2*pi-dgrid;
+      %for i = 1:length(rho), plotMeridian(sP,rho(i)); end
+      plotMeridians(sP,0:dgrid:pi-dgrid);
 
     end
 
     
-    function plotMeridian(sP,rho,varargin)
+    function plotMeridians(sP,rho,varargin)
 
       % the points
       if sP.sphericalRegion.isUpper
-        v = sph2vec(linspace(0,pi/2,181),rho);
+        theta = linspace(-pi/2,pi/2,181);        
       else
-        v = sph2vec(linspace(pi,pi/2,181),rho);
+        theta = linspace(3/2*pi,pi/2,181);
       end
-      
-      [x,y] = project(sP.proj,v);
-      ind = ~isnan(x);
-      i1 = find(ind,1,'first');
-      i2 = find(ind,1,'last');
-      x = x([i1,i2]);
-      y = y([i1,i2]);
+      [theta,rho] = meshgrid(theta,rho);
+      v = sph2vec(theta,rho);
+      [x,y] = project(sP.proj,v.');
 
       % grid
-      sP.grid(end+1) = line(x,y,'parent',sP.ax,...
-        'handlevisibility','off','color',[.8 .8 .8]);
-
-      s = [xnum2str(rho/degree) mtexdegchar];
-      sP.ticks(end+1) = text(x(end),y(end),s,'parent',sP.ax,...
-        'interpreter','tex','handlevisibility','off',...
-        'FontName','Ubuntu','fontsize',8,'visible','off');
-
-      return
-
-      % vertical/horizontal alignment
-      va = {'middle','bottom','middle','top'};
-      ha = {'left','center','right','center'};
-      r = mod(round(atan2(Y(1,:),X(1,:))/pi*2),4)+1;
-
-      options = [{'HorizontalAlignment',ha{r},'VerticalAlignment',va{r}},varargin];
+      sP.grid = [sP.grid(:);line(x,y,'parent',sP.ax,...
+        'handlevisibility','off','color',[.8 .8 .8])];
       
     end
     
