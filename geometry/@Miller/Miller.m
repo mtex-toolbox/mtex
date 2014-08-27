@@ -59,7 +59,8 @@ methods
       
       % check for symmetry
       m.CSprivate = getClass(varargin,'crystalSymmetry',[]);
-      assert(~isempty(m.CSprivate),'No crystal symmetry specified!');
+      assert(~isempty(m.CSprivate),['Starting with MTEX 4.0 Miller ' ...
+        'indices always require to specify a crystal symmetry!']);
 
       if nargin == 0 %empty constructor
 
