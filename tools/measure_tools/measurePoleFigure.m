@@ -34,7 +34,7 @@ if ~isempty(npos) && ~check_option(varargin,'path') % point measurement
  
   gl = numel(r);
   F = zeros(gl, 1);
-  F0 = pdf(odf,h,r);
+  F0 = calcPDF(odf,h,r);
   for k=1:steps
     F = F + F0.*rnd([gl 1]);  % maybe we count something
   end
@@ -60,7 +60,7 @@ elseif check_option(varargin,'integral') %along smallcircles
   drho = minrho-drho/2:inc:maxrho+drho/2;
   tmp = S2Grid('theta',dtheta,'rho',drho);
   
-  f = reshape(pdf(odf,h,tmp), GridSize(tmp));
+  f = reshape(odf.calcPDF(h,tmp), GridSize(tmp));
   f = f.*rnd(size(f)); % maybe we count something
 
   %cummulate
@@ -125,7 +125,7 @@ elseif check_option(varargin,'path') % along a defined great circle
     cs = [1:steps:steps*dpoints steps*dpoints];
   end
   
-  F = reshape(pdf(odf,h,v),size(v));
+  F = reshape(odf.calcPDF(h,v),size(v));
   F = F.*rnd(size(v)); % if randomize  
   Ff = zeros(n,length(cs)-1);
   for k=1:numel(cs)-1

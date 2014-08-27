@@ -126,9 +126,9 @@ plot(odf2.eval(fibre))
 
 %%
 % Evaluation of the corresponding pole figure or inverse pole figure is
-% done using the command <ODF.pdf.html pdf>.
+% done using the command <ODF.calcPDF.html calcPDF>.
 
-odf2.pdf(Miller(1,0,0,cs),xvector)
+odf2.calcPDF(Miller(1,0,0,cs),xvector)
 
 %% Extract Internal Representation
 % The internal representation of the ODF can be adressed by the command

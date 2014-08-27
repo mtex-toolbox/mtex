@@ -46,7 +46,7 @@ for i = 1:length(h)
   if i>1, mtexFig.nextAxis; end
 
   % compute pole figures
-  p = ensureNonNeg(pdf(odf,h{i},r,varargin{:},'superposition',c{i}));
+  p = ensureNonNeg(odf.calcPDF(h{i},r,varargin{:},'superposition',c{i}));
   
   r.plot(p,'parent',mtexFig.gca,'smooth','doNotDraw',varargin{:});
   title(mtexFig.gca,char(h{i}),'FontSize',getMTEXpref('FontSize'));
