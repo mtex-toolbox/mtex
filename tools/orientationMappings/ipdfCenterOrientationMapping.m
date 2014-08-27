@@ -24,11 +24,11 @@ classdef ipdfCenterOrientationMapping < ipdfOrientationMapping
       s = size(h);
       rgb = ones([s,3]);
 
-      for k=1:length(oM)
+      for k=1:length(oM.center)
 
-        w = oM(k).psi.RK(dot(h,oM(k).center)) ./ oM(k).psi.RK(1);
+        w = oM.psi.RK(dot(h,oM.center(k))) ./ oM.psi.RK(1);
   
-        cdata = rgb2hsv(repmat(oM(k).color,length(h),1));
+        cdata = rgb2hsv(repmat(oM.color(k,:),length(h),1));
         cdata(:,2) = w(:).*cdata(:,2);
         cdata = reshape(hsv2rgb(cdata),[s,3]);
         rgb = rgb.*cdata;
