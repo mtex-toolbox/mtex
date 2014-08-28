@@ -41,7 +41,7 @@ for j = 1:numel(sP)
     if size(S2G,1) == 1 || size(S2G,2) == 1
 
       S2G = plotS2Grid(sP(j).sphericalRegion,'resolution',2.5*degree,varargin{:});
-      cdata = interpS2(v,cdata,S2G);
+      cdata = interp(v,cdata,S2G);
       
     elseif ~isa(sP.proj,'plainRojection')
       
@@ -158,15 +158,5 @@ if numel(unique(data)) > 1
 elseif ~check_option(varargin,'fill',[],'off')
   h = fill(X,Y,data,'LineStyle','none','parent',ax);
 end
-
-end
-
-function yi = interpS2(x,y,xi)
-% nearest neighbour  interpolate on the plotting grid
-
-[ind,d] = find(x,xi);
-yi = y(ind);
-yi(d > 2*xi.resolution) = nan;
-yi = reshape(yi,size(xi));
 
 end
