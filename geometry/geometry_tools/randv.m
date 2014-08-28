@@ -7,4 +7,4 @@ end
 theta = acos(2*(rand(varargin{:})-0.5));
 phi   = 2*pi*rand(varargin{:});
 
-v = sph2vec(theta,phi);
+v = vector3d('theta',theta,'rho',rho);

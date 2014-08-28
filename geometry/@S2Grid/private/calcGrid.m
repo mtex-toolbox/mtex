@@ -11,7 +11,7 @@ theta = double(Gtheta);
 theta = rep(theta,GridLength(Grho));
 rho = double(Grho);
 
-G = sph2vec(theta,rho);
+G = vector3d('theta',theta,'rho',rho);
 if all(GridLength(Grho) == GridLength(Grho(1)))
   G = reshape(G,GridLength(Grho(1)),length(Grho));
 end

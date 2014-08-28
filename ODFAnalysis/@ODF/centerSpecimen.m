@@ -168,7 +168,7 @@ while  iter < options.itermax  %&& (fval-oldfval) > 0
   end
 end
 
-v = sph2vec(p(1),p(2));
+v = vector3d('theta',p(1),'rho',p(2));
 
 
 function jf = jacobian(j,options)
@@ -217,7 +217,7 @@ function y = f(v,options)
 % objective function
 
 if isnumeric(v)
-  r = axis2quat(sph2vec(v(1),v(2)),pi);
+  r = axis2quat(vector3d('theta',v(1),'rho',v(2)),pi);
 else
   r = axis2quat(v,pi);
 end

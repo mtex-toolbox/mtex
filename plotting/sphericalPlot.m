@@ -221,7 +221,7 @@ classdef sphericalPlot < handle
         theta = linspace(3/2*pi,pi/2,181);
       end
       [theta,rho] = meshgrid(theta,rho);
-      v = sph2vec(theta,rho);
+      v =  vector3d('theta',theta,'rho',rho);
       [x,y] = project(sP.proj,v.');
 
       % grid

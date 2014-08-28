@@ -54,7 +54,7 @@ theta = linspace(0,1,ntheta).' * dtheta + repmat(thetaMin,ntheta,1);
 
 rho = repmat(rho,ntheta,1);
 
-v = sph2vec(theta,rho);
+v = vector3d('theta',theta,'rho',rho);
 
 v = v.setOption('plot',true,'resolution',res,'region',sR,'theta',theta,'rho',rho);
 
