@@ -108,13 +108,15 @@ sR = sphericalRegion(N,zeros(size(N)),varargin{:});
 
 % determine the fundamental sector for misorientation axes with fixed
 % rotational angle
-if nargin > 1 && isnumeric(varargin{1})
+if check_option(varargin,'angle')
+
+  omega = get_option(varargin,'angle');
   
   % the rotational axes of the symmetry
   v = unique(cs.axis); v = [v(:).',-v(:).'];
   
   % the radius of the small circles to excluded
-  alpha = min(1,cot(varargin{1}./2) .* tan(pi/2 ./ cs.nfold(v)));
+  alpha = min(1,cot(omega./2) .* tan(pi/2 ./ cs.nfold(v)));
   
   % restrict fundamental sector
   sR.N = [sR.N,-v];
