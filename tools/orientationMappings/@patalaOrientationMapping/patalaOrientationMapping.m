@@ -48,15 +48,18 @@ classdef patalaOrientationMapping < orientationMapping
 
       rot = rotation(mori);
 
-      axis = rotation('axis',vector3d(1,1,1),'angle',120*degree) * ...
-        project2FundamentalRegion(rot.axis,oM.CS1.Laue);
+      axis = project2FundamentalRegion(rot.axis,oM.CS1.Laue);
 
-      q = rotation('axis',axis(:),'angle',mori.angle);
+      v = Rodrigues(rotation('axis',axis(:),'angle',mori.angle));
 
-      v = double(Rodrigues(q));
-
-      rgb = reshape(colormap432(reshape(v,[],3)),[size(mori) 3]);
-
+      switch oM.CS1.LaueName
+        case 'm-3m'
+          rgb = colormap432(v);
+        case 'mmm'
+          rgb = colormap222(v);
+        case {'-3m1','-31m'}
+      end
+      rgb = reshape(rgb,[size(mori) 3]);
     end
   end
 end
