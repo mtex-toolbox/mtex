@@ -169,7 +169,7 @@ classdef HSVOrientationMapping < orientationMapping
       [th,rh] = polar(v);
       th = (th ./ pi).^oM.colorStretching .* pi;
 
-      v = sph2vec(th,rh);
+      v =  vector3d('theta',th,'rho',rh);
 
       % compute rgb values
       rgb = ar2rgb(mod(v.rho./ 2 ./ pi,1),v.theta./pi,get_option(varargin,'grayValue',1));
