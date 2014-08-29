@@ -33,7 +33,7 @@ ebsd = removeDublicated(ebsd);
 
 % subdivide the domain into cells according to the measurement locations,
 % i.e. by Voronoi teselation or unit cell
-[V,F,D,I_FD] = spatialDecomposition_local([ebsd.prop.x(:), ebsd.prop.y(:)],ebsd.unitCell,varargin{:});
+[V,F,I_FD] = spatialDecomposition_local([ebsd.prop.x(:), ebsd.prop.y(:)],ebsd.unitCell,varargin{:});
 % V - list of vertices
 % F - list of faces
 % D - cell array of cells
@@ -49,7 +49,7 @@ ebsd = removeDublicated(ebsd);
 I_DG = sparse(1:length(ebsd),double(connectedComponents(A_Do)),1);
 
 % setup grains
-grains = grain2d(ebsd,V,F,D,I_DG,I_FD,A_Db);
+grains = grain2d(ebsd,V,F,I_DG,I_FD,A_Db);
 
 % store grain id
 [ebsd.prop.grainId,~] = find(I_DG.');
@@ -74,7 +74,7 @@ function ebsd = removeDublicated(ebsd)
   ebsd = subSet(ebsd,m); 
 end
 
-function [V,F,D,I_FD] = spatialDecomposition_local(x_D,unitCell,varargin)
+function [V,F,I_FD] = spatialDecomposition_local(x_D,unitCell,varargin)
 % decomposite the spatial domain into cells D with vertices V,
 %
 % Output

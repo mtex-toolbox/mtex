@@ -13,6 +13,7 @@ classdef grain2d < phaseList & dynProp
   properties
     V = zeros(0,2) % vertices with x,y coordinates
     boundary = grainBoundary % boundary of the grains
+    innerBoundary = grainBoundary % inner grain boundary
   end
     
   properties (Dependent = true)
@@ -24,8 +25,16 @@ classdef grain2d < phaseList & dynProp
   end
   
   methods
-    function grains = grain2d(ebsd,V,F,D,I_DG,I_FD,A_Db)
-                  
+    function grains = grain2d(ebsd,V,F,I_DG,I_FD,A_Db)
+      %
+      % Input:
+      %   ebsd - EBSD data set
+      %   V    - list of vertices
+      %   F    - list of edges
+      %   I_DG - incidence matrix - ebsd cells x grains
+      %   I_FD - incidence matrix - edges x ebsd cells
+      %   A_Db - adjacense matrix of cells
+      
       if nargin == 0, return;end
       
       % compute phaseId's     
@@ -39,11 +48,23 @@ classdef grain2d < phaseList & dynProp
       % I_FDint - faces x cells internal grain boundaries
       [I_FDext,I_FDint] = calcBoundary;
 
+      % remove empty lines from I_FD, F, and V
+      isBoundary = full(any(I_FDext,2) | any(I_FDint,2));
+      F = F(isBoundary,:);
+      I_FDext = I_FDext.'; I_FDext = I_FDext(:,isBoundary).';
+      I_FDint = I_FDint.'; I_FDint = I_FDint(:,isBoundary).';
+            
+      % remove vertices that are not needed anymore
+      [inUse,~,F] = unique(F);
+      V = V(inUse,:);
+      F = reshape(F,[],2);
+      
       grains.id = (1:numel(grains.phaseId)).';
       grains.grainSize = full(sum(I_DG,1)).';
       grains.V = V; % vertices
                   
       grains.boundary = grainBoundary(V,F,I_FDext,ebsd);
+      grains.innerBoundary = grainBoundary(V,F,I_FDint,ebsd);
       %grains.A_Db = logical(A_Db);
       %grains.A_Do = logical(A_Do);
       %grains.I_DG = logical(I_DG);
@@ -64,7 +85,7 @@ classdef grain2d < phaseList & dynProp
         sub = any(sub(:,i) & sub(:,j),1);              % pairs in a grain
 
         % split grain boundaries A_Db into interior and exterior
-        A_Db_int = sparse(i(sub),j(sub),1,length(D),length(D));
+        A_Db_int = sparse(i(sub),j(sub),1,size(I_DG,1),size(I_DG,1));
         A_Db_ext = A_Db - A_Db_int;                    % adjacent over grain boundray
             
         % create incidence graphs
@@ -109,17 +130,8 @@ classdef grain2d < phaseList & dynProp
 
         b = cell(max(d),1);
 
-        onePixelGrain = full(sum(I_DG,1)) == 1;
-        [id,jg] = find(I_DG(:,onePixelGrain));
-        b(onePixelGrain) = D(id);
-        % close single cells
-
-        for k = find(onePixelGrain), b{k} = [b{k} b{k}(1)]; end
-        % b(onePixelGrain) = cellfun(@(x) [x x(1)],  b(onePixelGrain),...
-        %   'UniformOutput',false);
-
         cs = [0 cumsum(full(sum(I_FG~=0,1)))];
-        for k=find(~onePixelGrain)
+        for k=1:size(I_DG,2)
           ndx = cs(k)+1:cs(k+1);
   
           E1 = F(i(ndx),:);

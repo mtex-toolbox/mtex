@@ -16,7 +16,6 @@ classdef grainBoundary < phaseList & dynProp
     F = zeros(0,2)       % list of faces - indeces to V
     id = []              % face id
     ebsdId = zeros(0,2)  % id's of the neigbouring ebsd data to a face
-    isInt = false(0,0)   % internal or not internal grain boundary
     misrotation = rotation % misrotations
   end
   
@@ -36,12 +35,10 @@ classdef grainBoundary < phaseList & dynProp
       
       % remove empty lines from I_FD and F
       isBoundary = any(I_FD,2);
-      %I_FD = I_FD(isBoundary,:);
-      
-      gB.V = V;
       gB.F = F(full(isBoundary),:);
+      gB.V = V;
       gB.id = 1:size(F,1);
-  
+            
       % compute ebsdID
       [eId,fId] = find(I_FD.');
       
@@ -72,7 +69,6 @@ classdef grainBoundary < phaseList & dynProp
         .* ebsd.rotations(gB.ebsdId(isNotBoundary,2));
     
     end
-
     
     function mori = get.misorientation(gB)
             
