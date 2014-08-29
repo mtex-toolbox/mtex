@@ -1,8 +1,6 @@
 function [v,c] = spatialdecomposition(X,unitCell,varargin)
 
-if isempty(unitCell)
-  unitCell = calcUnitCell(X);
-end
+if isempty(unitCell), unitCell = calcUnitCell(X); end
 
 if check_option(varargin,'unitCell')
   
