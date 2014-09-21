@@ -118,8 +118,11 @@ classdef dynProp
           end
         otherwise
     
-          dp.prop =  builtin('subsasgn',dp.prop,s,value);
-      
+          if isprop(dp,s.subs)
+            dp = builtin('subsasgn',dp,s,value);
+          else
+            dp.prop =  builtin('subsasgn',dp.prop,s,value);
+          end
       end      
     end
        
