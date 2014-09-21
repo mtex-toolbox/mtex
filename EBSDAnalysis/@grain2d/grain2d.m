@@ -10,14 +10,14 @@ classdef grain2d < phaseList & dynProp
   end
     
   % general properties
-  properties
-    V = zeros(0,2) % vertices with x,y coordinates
+  properties    
     boundary = grainBoundary % boundary of the grains
     innerBoundary = grainBoundary % inner grain boundary
   end
     
   properties (Dependent = true)
     meanOrientation
+    V = zeros(0,2) % vertices with x,y coordinates
   end
   
   properties (Dependent = true, Access = protected)
@@ -61,8 +61,7 @@ classdef grain2d < phaseList & dynProp
       
       grains.id = (1:numel(grains.phaseId)).';
       grains.grainSize = full(sum(I_DG,1)).';
-      grains.V = V; % vertices
-                  
+                        
       grains.boundary = grainBoundary(V,F,I_FDext,ebsd);
       grains.innerBoundary = grainBoundary(V,F,I_FDint,ebsd);
       %grains.A_Db = logical(A_Db);
@@ -183,6 +182,14 @@ classdef grain2d < phaseList & dynProp
         meanRotation(doMeanCalc) = [cellMean{:}];
 
       end      
+    end
+    
+    function V = get.V(grains)
+      V = grains.boundary.V;
+    end
+    
+    function grains = set.V(grains,V)
+      grains.boundary.V = V;
     end
     
     function idV = get.idV(grains)
