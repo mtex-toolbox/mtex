@@ -25,7 +25,12 @@ classdef grainBoundary < phaseList & dynProp
   end
   
   properties (Dependent = true)
-    misorientation
+    misorientation % 
+    direction      %
+    I_VF           % incidence matrix vertices - faces
+    A_F            % adjecency matrix faces - faces
+    segmentId      % connected component id
+    segmentSize    % number of faces that form a segment
   end
   
   methods
@@ -74,6 +79,32 @@ classdef grainBoundary < phaseList & dynProp
             
       mori = orientation(gB.misrotation,gB.CS{:});
       
+    end
+    
+    function dir = get.direction(gB)      
+      v1 = vector3d(gB.V(gB.F(:,1),1),gB.V(gB.F(:,1),2),zeros(length(gB),1),'antipodal');
+      v2 = vector3d(gB.V(gB.F(:,2),1),gB.V(gB.F(:,2),2),zeros(length(gB),1));
+      dir = normalize(v1-v2);
+    end
+    
+    function I_VF = get.I_VF(gB)
+      [i,~,f] = find(gB.F);
+      I_VF = sparse(f,i,1,size(gB.V,1),size(gB.F,1));
+    end
+
+    function A_F = get.A_F(gB)
+      I_VF = gB.I_VF;           
+      A_F = I_VF.' * I_VF;
+    end
+    
+    function segmentId = get.segmentId(gB)
+      segmentId = connectedComponents(gB.A_F).';
+    end
+    
+    function segmentSize = get.segmentSize(gB)
+      segId = gB.segmentId;
+      [bincounts,ind] = histc(segId,unique(segId));
+      segmentSize = bincounts(ind);
     end
     
     function out = hasPhase(gB,phase1,phase2)
