@@ -96,23 +96,25 @@ set(dcm_obj,'UpdateFcn',{@tooltip,grains});
 
 datacursormode on;
 
+end
+
 % ------------------ Tooltip function -----------------------------
 function txt = tooltip(empt,eventdata,grains) %#ok<INUSL>
 
 
-[pos,value] = getDataCursorPos(gcf);
+[pos,value] = getDataCursorPos(gcm);
 try
-  sub = findByLocation(grains,[pos(1) pos(2)]);
+  grain = grains.subSet(findByLocation(grains,[pos(1) pos(2)]));
 catch
-  sub = [];
+  grain = [];
 end
 
-if numel(sub)>0
+if numel(grain)>0
 
-  txt{1} = ['Grain: '  num2str(unique(sub.id))];
-  txt{2} = ['Phase: ', sub.mineral];
-  if ~isNotIndexed(sub)
-    txt{3} = ['Orientation: ' char(sub.meanOrientation,'nodegree')];
+  txt{1} = ['Grain: '  num2str(unique(grain.id))];
+  txt{2} = ['Phase: ', grain.mineral];
+  if ~grain.isNotIndexed
+    txt{3} = ['Orientation: ' char(grain.meanOrientation,'nodegree')];
   end
   if ~isempty(value)
     txt{3} = ['Value: ' xnum2str(value)];
@@ -121,6 +123,7 @@ else
   txt = 'no data';
 end
 
+end
 
 % ----------------------------------------------------------------------
 function h = plotFaces(poly,V,d,varargin)
@@ -178,3 +181,6 @@ for p=numel(Parts):-1:1
   set(get(get(h(p),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
   
 end
+
+end
+
