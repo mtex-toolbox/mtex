@@ -73,10 +73,14 @@ else % otherwise phase plot
     set(get(get(h{k}(end),'Annotation'),'LegendInformation'),'IconDisplayStyle','on');
 
   end
-  
+
   legend('-DynamicLegend','location','NorthEast');
     
 end
+
+hold on
+plot(grains.boundary,varargin{:});
+hold off
 
 % keep track of the extend of the graphics
 % this is needed for the zoom: TODO maybe this can be done better
@@ -86,18 +90,13 @@ if nargout == 0, clear h;end
 
 
 % set data cursor
-%dcm_obj = datacursormode(gcf);
-%set(dcm_obj,'SnapToDataVertex','off')
-%set(dcm_obj,'UpdateFcn',{@tooltip,grains});
+dcm_obj = datacursormode(gcf);
+set(dcm_obj,'SnapToDataVertex','off')
+set(dcm_obj,'UpdateFcn',{@tooltip,grains});
 
-%datacursormode on;
+datacursormode on;
 
-
-% -----------------------------------------------------------------
-% ------------ private functions ----------------------------------
-% -----------------------------------------------------------------
-
-% Tooltip function
+% ------------------ Tooltip function -----------------------------
 function txt = tooltip(empt,eventdata,grains) %#ok<INUSL>
 
 
@@ -124,44 +123,26 @@ end
 
 
 % ----------------------------------------------------------------------
-function h = plotFaces(boundaryEdgeOrder,V,d,varargin)
+function h = plotFaces(poly,V,d,varargin)
 
-% add holes as polygons
-hole = cellfun('isclass',boundaryEdgeOrder,'cell');
+if size(d,1) ~= numel(poly) && ...
+  size(d,2) == numel(poly), d = d.'; end
 
-% split into holes an bounding
-holeEdgeOrder = ...
-  cellfun(@(x) x(2:end),boundaryEdgeOrder(hole),'UniformOutput',false);
-boundaryEdgeOrder(hole) = ...
-  cellfun(@(x) x{1},boundaryEdgeOrder(hole),'UniformOutput',false);
+if size(d,1) == 1, d = repmat(d,numel(poly),1); end
 
-Polygons = [boundaryEdgeOrder(:)' holeEdgeOrder{:}];
-
-
-if size(d,1) ~= numel(boundaryEdgeOrder) && ...
-  size(d,2) == numel(boundaryEdgeOrder), d = d.'; end
-
-% how to colorize holes 
-% d(numel(boundaryEdgeOrder)+1:numel(Polygons),: ) = 1;
-if size(d,1) == 1
-  d = repmat(d,numel(boundaryEdgeOrder),1);
-end
-d(numel(boundaryEdgeOrder)+1:numel(Polygons),: ) = NaN;
-
-A = cellArea(V,Polygons);
-
-numParts = fix(log(max(cellfun('prodofsize',Polygons)))/2);
-Parts = splitdata(A,numParts,'ascend');
+numParts = fix(log(max(cellfun('prodofsize',poly)))/2);
+Parts = splitdata(cellfun('prodofsize',poly),numParts,'ascend');
 
 obj.FaceColor = 'flat';
+obj.EdgeColor = 'None';
 
 for p=numel(Parts):-1:1
   zOrder = Parts{p}(end:-1:1); % reverse
 
   obj.FaceVertexCData = d(zOrder,:);
 
-  Faces = Polygons(zOrder);
-  s     = cellfun('prodofsize',Faces);
+  Faces = poly(zOrder);
+  s     = cellfun('prodofsize',Faces).';
   cs    = [0 cumsum(s)];
 
   % reduce face-vertex indices to required
@@ -196,22 +177,4 @@ for p=numel(Parts):-1:1
   % remove them from legend
   set(get(get(h(p),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
   
-end
-
-function A = cellArea(V,D)
-
-D = D(:);
-A = zeros(size(D));
-
-faceOrder = [D{:}];
-
-x = V(faceOrder,1);
-y = V(faceOrder,2);
-
-dF = full(x(1:end-1).*y(2:end)-x(2:end).*y(1:end-1));
-
-cs = [0; cumsum(cellfun('prodofsize',D))];
-for k=1:numel(D)
-  ndx = cs(k)+1:cs(k+1)-1;
-  A(k) = abs(sum(dF(ndx))*0.5);
 end

@@ -58,19 +58,16 @@ classdef grain2d < phaseList & dynProp
       [inUse,~,F] = unique(F);
       V = V(inUse,:);
       F = reshape(F,[],2);
-      
+
       grains.id = (1:numel(grains.phaseId)).';
       grains.grainSize = full(sum(I_DG,1)).';
                         
       grains.boundary = grainBoundary(V,F,I_FDext,ebsd);
       grains.innerBoundary = grainBoundary(V,F,I_FDint,ebsd);
-      %grains.A_Db = logical(A_Db);
-      %grains.A_Do = logical(A_Do);
-      %grains.I_DG = logical(I_DG);
-
-      %
-      grains.poly = BoundaryFaceOrder(I_FDext);
-
+      
+      %grains.poly = BoundaryFaceOrder(I_FDext);
+      grains.poly = calcPolygons(I_FDext * I_DG,F,V);
+      
       grains.meanRotation = calcMeanRotation;
       
       
@@ -100,51 +97,46 @@ classdef grain2d < phaseList & dynProp
         D_Fsub  = diag(sum(abs(I_FD(:,ix)) & abs(I_FD(:,iy)),2)>0);
         I_FDint = D_Fsub*I_FD;
         
-        % store edge orientation
-        I_FDext = EdgeOrientation(I_FDext);
-        I_FDint = EdgeOrientation(I_FDint);
-        
       end
       
-      
-      function I_ED = EdgeOrientation(I_ED)
-        % compute the orientation of an edge +1, -1
-
-        x_D = [ebsd.prop.x(:),ebsd.prop.y(:)];
+      function poly = BoundaryFaceOrder(I_FD)
+        % TODO: this needs to become a private function
+        % Input:
+        %  I_FG - incidence matrix faces to grains
         
-        [e,d] = find(I_ED);
+        % step 1: compute edge orientation of faces
+   
+        I_FG = I_FD * I_DG;
+        [iF,iG] = find(I_FG);
+        % compute ori here!
+        %
+        % iF - faceId
+        % iG - grainId
+        % ori - edgeOrientation +-1
+        
+        poly = cell(max(iG),1);
 
-        % in complex plane with x_D as point of origin
-        e1d = complex(V(F(e,1),1) - x_D(d,1), V(F(e,1),2) - x_D(d,2));
-        e2d = complex(V(F(e,2),1) - x_D(d,1), V(F(e,2),2) - x_D(d,2));
-
-        I_ED = sparse(e,d,sign(angle(e1d./e2d)),size(I_ED,1),size(I_ED,2));
-
-      end
-      
-      function b = BoundaryFaceOrder(I_FD)
-
-        I_FG = I_FD*I_DG;
-        [i,d,s] = find(I_FG);
-
-        b = cell(max(d),1);
-
+        % go through iF and iG grainwise
         cs = [0 cumsum(full(sum(I_FG~=0,1)))];
         for k=1:size(I_DG,2)
           ndx = cs(k)+1:cs(k+1);
   
-          E1 = F(i(ndx),:);
-          s1 = s(ndx); % flip edge
-          E1(s1>0,[2 1]) = E1(s1>0,[1 2]);
-  
-          b{k} = EulerCycles(E1(:,1),E1(:,2));
-  
-        end
+          E1 = F(iF(ndx),:);
+            
+          EC = EulerCycles2(E1);
+          
+          % first cicle should positive and all others negatively oriented
+          for c = 1:numel(EC)
+            if xor( c==1 , polySgnArea(V(EC{c},1),V(EC{c},2))>0 )
+              EC{c} = fliplr(EC{c});
+            end
+          end
 
-        for k=find(cellfun('isclass',b(:)','cell'))
-          boundary = b{k};
-          [~,order] = sort(cellfun('prodofsize', boundary),'descend');
-          b{k} = boundary(order);
+          % this is needed
+          for c=3:numel(EC), EC{c} = [EC{1}(1) EC{c}]; end
+
+          poly{k} = [EC{:}];
+          
         end
 
       end
