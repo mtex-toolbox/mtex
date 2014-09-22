@@ -48,11 +48,11 @@ ebsd = removeDublicated(ebsd);
 % I_DG - incidence matrix cells to grains
 I_DG = sparse(1:length(ebsd),double(connectedComponents(A_Do)),1);
 
-% setup grains
-grains = grain2d(ebsd,V,F,I_DG,I_FD,A_Db);
-
 % store grain id
 [ebsd.prop.grainId,~] = find(I_DG.');
+
+% setup grains
+grains = grain2d(ebsd,V,F,I_DG,I_FD,A_Db);
 
 % store mis2mean
 ebsd.prop.mis2meanRotation = inv(ebsd.rotations) .* ...

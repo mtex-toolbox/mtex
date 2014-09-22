@@ -12,5 +12,6 @@ function gB = subSet(gB,ind)
 gB.F = gB.F(ind,:);
 gB.id = gB.id(ind);
 gB.ebsdId = gB.ebsdId(ind,:);
+gB.grainId = gB.grainId(ind,:);
 gB.phaseId = gB.phaseId(ind,:);
 gB.misrotation = gB.misrotation(ind);
