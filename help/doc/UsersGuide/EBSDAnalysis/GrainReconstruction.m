@@ -91,7 +91,7 @@ hold off
 % Note how the one marked grain has been seperated into two grains and the
 % other marked grain has been seperated into many very small grains.
 
-%% Grain reconstrion by the multiscale clustering method
+%% Grain reconstruction by the multiscale clustering method
 %
 % When analyzing grains with gradual and subtle boundaries the threshold
 % based method may not lead to the desired result.
@@ -100,8 +100,11 @@ hold off
 
 mtexdata single
 
-% TODO: sharp colorcoding
-plot(ebsd,ebsd.orientations)
+oM = ipdfHSVOrientationMapping(ebsd);
+oM.inversePoleFigureDirection = mean(ebsd) * oM.whiteCenter;
+oM.colorStretching = 5;
+
+plot(ebsd,oM.orientation2color(ebsd.orientations))
 
 %%
 % We obeserve that the are no rapid changes in orientation which would
@@ -112,10 +115,16 @@ grains_high = calcGrains(ebsd,'angle',1*degree);
 grains_low  = calcGrains(ebsd,'angle',0.5*degree);
 
 figure('position',[100 100 800 350])
+plot(ebsd,oM.orientation2color(ebsd.orientations))
+hold on
 plot(grains_high.boundary)
-figure('position',[500 100 800 350])
-plot(grains_low.boundary)
+hold off
 
+figure('position',[500 100 800 350])
+plot(ebsd,oM.orientation2color(ebsd.orientations))
+hold on
+plot(grains_low.boundary)
+hold off
 %%
 % As an alternative MTEX includes the fast multiscale clustering method
 % (FMC method) which  constructs clusters in a hierarchical manner from
@@ -131,11 +140,14 @@ plot(grains_low.boundary)
 
 grains_FMC = calcGrains(ebsd,'FMC',3.5)
 
+% smooth grains to remove staircase effect
+grains_FMC = smooth(grains_FMC);
+
 %%
 % We observe how this method nicely splits the measurements into clusters
 % of similar orientation
 
-plot(ebsd)
+plot(ebsd,oM.orientation2color(ebsd.orientations))
 
 % start overide mode
 hold on

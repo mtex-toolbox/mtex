@@ -167,16 +167,18 @@ hist(grains)
 % first we get all faces that have an outer boundary
 face_id = grains.boundary.hasPhaseId(0);
 
-% next we compute the corresponding ebsd_id
-ebsd_id = grains.boundary(face_id).ebsdId;
-
-% lets plot the corresponding ebsd measurements
-ebsd_id = unique(ebsd_id(:,2));
-plot(ebsd(ebsd_id))
+plot(grains)
+hold on
+plot(grains.boundary(face_id),'linecolor','red','linewidth',2)
+hold off
 
 %%
-% to compute the corresponding grain_id we do
-grain_id = unique(ebsd(ebsd_id).grainId);
+
+% next we compute the corresponding grain_id
+grain_id = grains.boundary(face_id).grainId;
+
+% remove all zeros
+grain_id(grain_id==0) = [];
 
 % and plot the boundary grains
 plot(grains(grain_id))
