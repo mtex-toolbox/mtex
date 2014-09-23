@@ -1,199 +1,89 @@
-function [grains,I_PC] = merge(grains, property, varargin)
-% merge grains with special boundary
+function [grains_merged,grains] = merge(grains, gB)
+% merge grains along certain grain boundaries
 %
 % The function merges grains where the special boundary is determined by
 % the function <GrainSet.specialBoundary.html specialBoundary>
 %
 % Input
-% grains  - @GrainSet
-% property - colorize a special grain boundary property, variants are:
-%
-%    * double -- a single number for which the misorientation  angle is lower or
-%            an interval [a b]
-%
-%    *  @quaternion | @rotation | @orientation -- plot grain boundaries with
-%            a specified misorientation
-%
-%            plot(grains,'property',...
-%               rotation('axis',zvector,'angle',60*degree))
-%
-%    *  @Miller -- plot grain boundaries such as specified
-%            crystallographic face are parallel. use with option 'delta'
-%
-%    *  @vector3d -- axis of misorientation
-%
-% Options
-%  delta - specify a searching radius for special grain boundary
-%            (default 5 degrees), if a orientation or crystallographic face
-%            is specified.
-%
-%  ExclusiveGrains - a subset of grains of the given grainset marked in a
-%    logical Nx1 array
-%
-%  ExclusiveNeighborhoods - an adjacency matrix of neighbored grains or a
-%    Nx2 array indexing the neigborhoods
-%
-%  TripleJunction - return faces between two adjacent grains satisfying the
-%    input property, if there is a triple junction with a thrid grain,
-%    satisfying the property specified after TripleJunction.
-%
-%  ThirdCommonGrain - return faces between two adjacent grains satisfying the
-%    input property, if there is a third commongrain, satisfying the
-%    property specified after ThirdCommonGrain.
+%  grains   - @grain2d
+%  boundary - @grainBoundary
 %
 % Output
-% grains - @GrainSet
-% I_PC   - incidence matrix with Parents x Childs
+%  grains_merged - @grain2d
+%  grains - 
 %
-% Syntax
-% [g,I_PC] = merge(grains,property,...,param,val,...) - merges neighbored grains
-%   whos common boundary satisfies |property| and returns also an matrix
-%   parents vs. childs
+% Example:
 %
-% g = merge(grains,[0 10]*degree) - merges grains whos misorientation angle
-%  lies between 0 and 10 degrees
+%   mtexdata small
+%   grains = smooth(calcGrains(ebsd))
 %
-% g = merge(grains,CSL(3))        - merges grains with special boundary CSL3
-%
-% See also
-% EBSD/calcGrains GrainSet/specialBoundary
+%   % merge all neigbouring Diopside grains
+%   gB = grains.boundary('Diopside','Diopside')
+%   [grains_m,grains] = merge(grains,gB)
 
-% Determine the boundaries, which should be merged
-% ------------------------------------------------
 
-f = specialBoundary(grains,property,varargin{:},'PhaseRestricted');
+% 1. determine grainId of gB except for inner gB and gB with specimen boundary
+mergeId = gB.grainId;
+mergeId(any(mergeId==0,2) | diff(mergeId,[],2) == 0,:) = [];
 
-% delete faces that satisfy the criterion
-I_FD = grains.I_FDext | grains.I_FDint;
-I_FD(f,:) = false;
+% 2. determine grains not to touch
+[keepId,keepInd] = setdiff(grains.id,mergeId);
+old2newId = zeros(max(grains.id),1);
+old2newId(keepId) = 1:numel(keepId);
 
-% Resegment   (see calcGrains)
-% ----------------------------
+% 3. determine which grains to merge
+A = sparse(mergeId(:,1),mergeId(:,2),1,length(grains),length(grains));
+A = full(A + A.');
+ind = any(A,1);
+old2newId(ind) =  numel(keepId) + connectedComponents(A(ind,ind));
 
-I_FD = double(I_FD);
-% new boundaries
-A_Db = I_FD'*I_FD & grains.A_D;
+% 4. set up new grain variable 
+numNewGrains = max(old2newId);
+grains_merged = grains;
+grains_merged.id = (1:numNewGrains).';
+grains_merged.poly = cell(numNewGrains,1);
+grains_merged.phaseId = zeros(numNewGrains,1);
+grains_merged.grainSize = zeros(numNewGrains,1);
+grains_merged.meanRotation = idRotation(numNewGrains,1);
 
-A_Do = grains.A_D - A_Db; % internal adjacencies
-ids = connectedComponents(A_Do|A_Do');
+% 5. set new grainIds in grains.boundary
+ind = grains.boundary.grainId > 0;
+grains_merged.boundary.grainId(ind) = old2newId(grains.boundary.grainId(ind));
 
-A_Db = A_Db|A_Db';
+% and in the old grains
+grains.prop.parentId = old2newId(grains.id);
 
-% retrieve neighbours
-% -------------------
+% 6. remove "new inner" grain boundaries 
+inner = diff(grains_merged.boundary.grainId,1,2) == 0;
+grains_merged.boundary(inner) = [];
 
-I_DG = sparse(1:numel(ids),double(ids),1);  % voxels incident to grains
-A_G = I_DG'*A_Db*I_DG;                      % adjacency of grains
+% 7. set up unmerged polygons
+newInd = old2newId(keepId);
+grains_merged.poly(newInd) = grains.poly(keepInd);
+grains_merged.phaseId(newInd) = grains.phaseId(keepInd);
+grains_merged.grainSize(newInd) = grains.grainSize(keepInd);
+grains_merged.meanRotation(newInd) = grains.meanRotation(keepInd);
 
-% Parent x Childs
-I_PC = double(I_DG'*grains.I_DG>0); % determine which cells were merged;
+% 8. set up merged polygons
+I_FG = grains_merged.boundary.I_FG;
+I_FG(:,1:numel(keepId)) = [];
 
-grains.I_DG = I_DG;
-%grains.A_G = A_G > 0;
-grains.A_Db = A_Db;
+newInd = numel(keepId)+(1:size(I_FG,2));
+grains_merged.poly(newInd) = ...
+  calcPolygons(I_FG,grains_merged.boundary.F,grains_merged.boundary.V);
 
-% interior and exterior grain boundaries
-% --------------------------------------
-
-sub = A_Db * I_DG & I_DG;                      % voxels that have a subgrain boundary
-[i,j] = find( diag(any(sub,2))*double(A_Db) ); % all adjacence to those
-sub = any(sub(i,:) & sub(j,:),2);              % pairs in a grain
-
-d = size(grains.A_D,1);
-A_Db_int = sparse(i(sub),j(sub),1,d,d);
-A_Db_ext = A_Db - A_Db_int;
-
-% create incidence graphs
-% -----------------------
-
-I_FDbg = diag(sum(I_FD,2)==1)*I_FD;
-
-[ix,iy] = find(A_Db_ext);
-D_Fext  = diag(sum(abs(I_FD(:,ix)) & abs(I_FD(:,iy)),2)>0);
-
-D_Fbg = diag(any(I_FDbg,2));
-I_FDext = (D_Fext| D_Fbg)*I_FD;
-
-[ix,iy] = find(A_Db_int);
-D_Fsub  = diag(sum(abs(I_FD(:,ix)) & abs(I_FD(:,iy)),2)>0);
-I_FDint = D_Fsub*I_FD;
-
-% retrive old boundary edge orientation
-I_FD = grains.I_FDext + grains.I_FDint;
-I_FDext(logical(I_FDext)) = I_FD(logical(I_FDext));
-I_FDint(logical(I_FDint)) = I_FD(logical(I_FDint));
-
-grains.I_FDext = I_FDext;
-grains.I_FDint = I_FDint;
-
-% sort edges of boundary when 2d case
-if isprop(grains,'boundaryEdgeOrder')
-  grains.boundaryEdgeOrder = ...
-    BoundaryFaceOrder(I_PC,grains.boundaryEdgeOrder, grains.F, I_FDext, I_DG); 
+% new grain size is sum of old grain sizes
+gS = sparse(old2newId(grains.id),grains.id,grains.grainSize);
+grains_merged.grainSize= sum(gS,2);
+  
+% new phase id is max of old phase ids
+phaseId = sparse(old2newId(grains.id),grains.id,grains.phaseId);
+grains_merged.phaseId = max(phaseId,[],2);
+  
+% update meanRotation
+for i = 1:numel(newInd)
+  ind = grains.prop.parentId == newInd(i);
+  cs = grains.CSList{grains_merged.phaseId(newInd(i))};
+  grains_merged.meanRotation(newInd(i)) = rotation(...
+    mean(orientation(grains.meanRotation(ind),cs),'weights',grains.grainSize(ind)));
 end
-
-
-% update mean orientation
-% -----------------------
-unchanged = sum(I_PC,2)==1;  % unchanged
-
-if any(~unchanged) % some of the were merged  
-    
-  r  = grains.ebsd.rotations;
-
-  [i,oldval] = find(I_PC(unchanged,:));
-  meanRotation(unchanged) = grains.meanRotation(oldval);
-  changedI_DG = I_DG(:,~unchanged);
-  [i,j] = find(changedI_DG);
-  
-  cc = full(sum(changedI_DG,1));
-  cs = [0 cumsum(cc)];  
-  
-  for k=1:numel(cc)
-    edx{k} = i(cs(k)+1:cs(k+1));
-  end
-  qcedx = partition(r,edx);
-  
-  changed = find(~unchanged);
-  for k=1:numel(cc)
-    c = changed(k);
-    phId = grains.phaseId(k);
-    if ~ischar(grains.CSList{phId})
-      meanRotation(c) = mean_CS(qcedx{k},grains.CSList{phId});
-    end
-  end
-  
-  grains.meanRotation = meanRotation;
-  
-end
-
-
-function b = BoundaryFaceOrder(I_PC,boundaries,F,I_FD,I_DG)
-
-unchanged = sum(I_PC,2)==1;  % unchanged
-[i,old_unchanged] = find(I_PC(unchanged,:));
-b(unchanged) = boundaries(old_unchanged);
-
-I_FG = I_FD*I_DG;
-[i,d,s] = find(I_FG);
-cs = [0 cumsum(full(sum(I_FG~=0,1)))];
-
-for k=find(~unchanged)'
-  ndx = cs(k)+1:cs(k+1);
-  
-  E1 = F(i(ndx),:);
-  s1 = s(ndx); % flip edge
-  E1(s1>0,[2 1]) = E1(s1>0,[1 2]);
-  
-  b{k} = EulerCycles(E1(:,1),E1(:,2));
-  
-end
-
-for k=find(cellfun('isclass',b(:)','cell'))
-  boundary = b{k};
-  [ignore,order] = sort(cellfun('prodofsize', boundary),'descend');
-  b{k} = boundary(order);
-end
-
-b = b(:);
-
