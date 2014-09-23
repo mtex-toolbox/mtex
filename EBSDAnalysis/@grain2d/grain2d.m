@@ -16,12 +16,13 @@ classdef grain2d < phaseList & dynProp
   end
     
   properties (Dependent = true)
-    meanOrientation
-    V = zeros(0,2) % vertices with x,y coordinates
+    meanOrientation  % mean orientation
+    V                % vertices with x,y coordinates
+    id2ind           % 
   end
   
   properties (Dependent = true, Access = protected)
-    idV % active vertices
+    idV % active vertices    
   end
   
   methods
@@ -191,6 +192,11 @@ classdef grain2d < phaseList & dynProp
       polygons(isCell) = cellfun(@(x) [x{:}] ,grains.poly(isCell),'UniformOutput',false);
       idV = unique([polygons{:}]);
       
+    end
+    
+    function id2ind = get.id2ind(grains)
+      id2ind = zeros(max(grains.id),1);
+      id2ind(grains.id) = 1:length(grains);
     end
     
     function ori = get.meanOrientation(grains)

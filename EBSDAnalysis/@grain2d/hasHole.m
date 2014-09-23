@@ -8,4 +8,4 @@ function h = hasHole(grains)
 % h  - logical array, |true| if a grain has hole
 %
 
-h = cellfun('isclass',grains.poly(:),'cell');
+% TODO

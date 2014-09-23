@@ -1,7 +1,7 @@
 function T = qq(q,varargin)
 % returns w * q' * q
 % 
-%% Input
+% Input
 %  q - list of quaternions
 %  w - list of weights
 

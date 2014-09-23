@@ -13,7 +13,6 @@ classdef grainBoundary < phaseList & dynProp
   % properties with as many rows as data
   properties
     F = zeros(0,2)       % list of faces - indeces to V    
-    id = []              % face id
     grainId = zeros(0,2) % id's of the neigbouring grains to a face
     ebsdId = zeros(0,2)  % id's of the neigbouring ebsd data to a face
     misrotation = rotation % misrotations
@@ -28,6 +27,7 @@ classdef grainBoundary < phaseList & dynProp
     misorientation % misorientation between adjecent measurements to a boundary
     direction      % direction of the boundary segment
     I_VF           % incidence matrix vertices - faces
+    I_FG           % incidence matrix faces - grains
     A_F            % adjecency matrix faces - faces
     segmentId      % connected component id
     segmentSize    % number of faces that form a segment
@@ -42,8 +42,7 @@ classdef grainBoundary < phaseList & dynProp
       isBoundary = any(I_FD,2);
       gB.F = F(full(isBoundary),:);
       gB.V = V;
-      gB.id = 1:size(F,1);
-            
+                  
       % compute ebsdID
       [eId,fId] = find(I_FD.');
       
@@ -97,6 +96,12 @@ classdef grainBoundary < phaseList & dynProp
       I_VF = sparse(f,i,1,size(gB.V,1),size(gB.F,1));
     end
 
+    function I_FG = get.I_FG(gB)
+      ind = gB.grainId>0;
+      iF = repmat(1:size(gB.F,1),1,2);
+      I_FG = sparse(iF(ind),gB.grainId(ind),1);
+    end   
+    
     function A_F = get.A_F(gB)
       I_VF = gB.I_VF;           
       A_F = I_VF.' * I_VF;

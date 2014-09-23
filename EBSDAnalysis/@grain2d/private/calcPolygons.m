@@ -1,6 +1,9 @@
 function poly = calcPolygons(I_FG,F,V)
+%
 % Input:
 %  I_FG - incidence matrix faces to grains
+%  F    - list of faces
+%  V    - list of vertices
 
 poly = cell(size(I_FG,2),1);
 
