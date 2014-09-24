@@ -62,7 +62,7 @@ if strcmpi(type,'omega')
     h = Miller(0,0,1,o.CS); 
   end
   [alpha,beta] = polar(h);
-  q = q*euler2quat(beta,alpha,0,'ABG');
+  q = q*rotation('Euler',beta,alpha,0,'ABG');
 end
 
 [e1,e2,e3] = Euler(q,convention);

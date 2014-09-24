@@ -19,7 +19,7 @@ function quat = Miller2quat(v1,v2,CS)
 %  quat - @quaternion
 %
 % See also
-% quaternion_index quaternion/quaternion axis2quat euler2quat 
+% quaternion_index quaternion/quaternion
 % vec42quat hr2quat idquaternion 
 
 % !!! TODO !!!!
