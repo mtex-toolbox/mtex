@@ -205,6 +205,10 @@
 % and offers much more powerfull options to customize the plots with titles,
 % legends, etc. 
 %
+% *density is now an optional property of ellastic tensors*
+%
+% TODO: write about it
+%
 % *Functionality that has been (temporarily) removed*
 %
 % This can be seen as a todo list.
@@ -220,8 +224,11 @@
 % * v.x = 0 
 % * misorientation analysis is not yet complete
 % * some colormaps, e.g. blue2red switched
-% * add calcODF to obsolete since EBSD/calcODF is obsolete
 % * histogram of valume fractions of CSL boundaries
+% * abbreviations for mineral names - general matching class
+% * grainBoundary(grain1,grain2) should give the grain boundary between grain 1 and grain 2
+% * remove id from EBSD?
+% * changing the phase of a grain should change phases in boundary
 %
 %% MTEX 3.5.0 - 12/2013
 %
@@ -564,7 +571,7 @@
 % * computation of the uncorrelated misorientation distribution (MDF) for
 % one or two ODFs
 % * computation of the theoretical angle distribution of an ODF or MDF
-% * computation of the misorienation to mean for EBSD data
+% * computation of the misorientation to mean for EBSD data
 %
 % *New Syntax for EBSD and grain variables*
 %
