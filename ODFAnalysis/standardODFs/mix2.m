@@ -4,17 +4,13 @@ function odf = mix2
 CS = crystalSymmetry('cubic');
 SS = specimenSymmetry('222');
 
-odf(1) = 0.3095*uniformODF(CS,SS);
+psi = vonMisesFisherKernel(HALFWIDTH',17*degree);
+ori1 = orientation('Euler',54.736*degree, 45.0*degree, 0.0*degree,CS,SS);
+ori2 = orientation('Euler',62.968*degree, 57.689*degree, 71.565*degree,CS,SS);
+ori3 = orientation('Euler',50.768*degree, 65.905*degree, 63.435*degree,CS,SS);
 
-psi = kernel('von Mieses Fischer','HALFWIDTH',17*degree);
-q1 = euler2quat(54.736*degree, 45.0*degree, 0.0*degree);
-odf(2) = 0.315*ODF(q1,1,psi,CS,SS);
-
-q2 = euler2quat(62.968*degree, 57.689*degree, 71.565*degree);
-odf(3) = 0.315*ODF(q2,1,psi,CS,SS);
-
-q3 = euler2quat(50.768*degree, 65.905*degree, 63.435*degree);
-odf(4) = 0.0605*ODF(q3,1,psi,CS,SS);
+odf = 0.3095*uniformODF(CS,SS) + 0.315*unimodalODF(ori1,psi) + ...
+  0.315*unimodalODF(ori2,psi) + 0.0605*uniformODF(ori3,psi);
 
 
 % 3,7

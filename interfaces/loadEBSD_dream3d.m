@@ -78,7 +78,7 @@ for k=1:numel(api.fieldNames)
   
   switch api.fieldNames{k}
     case 'EulerAngles'
-      e.Rotations = euler2quat(data(:,1),data(:,2),data(:,3),'ZXZ');
+      e.Rotations = rotation('Euler',data(:,1),data(:,2),data(:,3),'ZXZ');
     case 'Phases'
       e.Phases = data;
     case {'GoodVoxels','Quats'}

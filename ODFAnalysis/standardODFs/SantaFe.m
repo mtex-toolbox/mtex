@@ -16,4 +16,4 @@ odf =  0.73 * uniformODF(CS,SS) + 0.27 * unimodalODF(ori,CS,SS,psi);
 % 0.73
 % 63.435,48.190,63.435
 % 1,20.0,0.27,1
-%q = euler2quat(63.435*degree,48.190*degree,63.435*degree,'BUNGE');
+%q = rotation('Euler',63.435*degree,48.190*degree,63.435*degree,'BUNGE');

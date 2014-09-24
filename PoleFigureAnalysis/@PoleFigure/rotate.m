@@ -12,7 +12,7 @@ function pf = rotate(pf,rot,varargin)
 %  pf - rotated @PoleFigure
 %
 % See also
-% euler2quat axis2quat Miller2quat hr2quat ODF/rotate
+% rotation_index ODF/rotate
 
 for ipf = 1:pf.numPF
 	pf.allR{ipf} =  pf.allR{ipf}.rotate(rot);
