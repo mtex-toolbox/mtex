@@ -30,7 +30,8 @@ for ip = 1:numel(ebsd.phaseMap)
   matrix{ip,1} = num2str(ebsd.phaseMap(ip)); %#ok<*AGROW>
 
   % orientations
-  matrix{ip,2} = int2str(nnz(ebsd.phaseId == ip));
+  numPhase = nnz(ebsd.phaseId == ip);
+  matrix{ip,2} = [int2str(numPhase) ' (' xnum2str(100*numPhase./length(ebsd.phase)) '%)'];
   
     % mineral
   CS = ebsd.CSList{ip};
