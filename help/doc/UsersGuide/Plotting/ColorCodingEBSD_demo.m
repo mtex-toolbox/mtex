@@ -73,7 +73,7 @@ plot(oM,'sections',6,'sigma')
 %% Colorcoding according to inverse pole figure 
 %
 % The standard way of mapping orientations to colors is based on inverse
-% pole figures. The following orienation map assignes a color to each
+% pole figures. The following orientation map assignes a color to each
 % direction of the fundamental sector of the inverse pole figure
 
 oM = ipdfHSVOrientationMapping(cs)

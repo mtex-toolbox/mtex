@@ -21,7 +21,7 @@ K = sortrows(sort(K,2));
 
 % step 4 - remove tetrahegons completely outside the fundamental region
 % and replace indices to symmetrised orientations by the indices of
-% the original orienation
+% the original orientation
 ind = K > length(ori);
 K(all(ind,2),:) = [];
 tetra = 1+mod(K-1,length(ori));

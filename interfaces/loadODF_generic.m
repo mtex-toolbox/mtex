@@ -94,7 +94,7 @@ switch method
 
     % load single orientations
     if ~check_option(varargin,{'exact','resolution'}), varargin = [varargin,'exact'];end
-    ori = orienation(q,cs,ss,varargin{:});
+    ori = orientation(q,cs,ss,varargin{:});
     
     % calc ODF
     odf = calcODF(ori,'weights',weights,'silent',varargin{:});    
