@@ -15,4 +15,4 @@ function mdf = calcMDF(varargin)
 [mori,weights] = calcMisorientation(varargin{:});
 
 % perform kernel density estimation
-mdf = calcODF(mori,'weights',weights,varargin{:});
+mdf = calcFourierODF(mori,'weights',weights,varargin{:});
