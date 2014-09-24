@@ -63,7 +63,12 @@ classdef ipdfOrientationMapping < orientationMapping
         hold off
       else
         h = Miller(unique(sR.vertices),oM.CS1);
-        h.dispStyle = 'uvw';
+        switch oM.CS1.lattice
+          case {'hexagonal','tetragonal'}
+            h.dispStyle = 'UVTW';
+          otherwise
+            h.dispStyle = 'uvw';
+        end
         annotate(unique(round(h)),'MarkerFaceColor','k','labeled','symmetrised');
       end
 
