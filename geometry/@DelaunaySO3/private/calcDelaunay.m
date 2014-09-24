@@ -49,7 +49,7 @@ K = convhulln(q);
 
 % step 5 - remove tetrahegons completely outside the fundamental region
 % and replace indices to symmetrised orientations by the indices of
-% the original orienation
+% the original orientation
 ind = K > length(ori);
 K(ind) = boundaryOriInd(K(ind)-length(ori));
 K(all(ind,2),:) = [];

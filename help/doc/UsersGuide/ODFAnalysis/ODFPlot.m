@@ -154,7 +154,7 @@ mdf = calcMDF(odf)
 
 %%
 % Then we can plot the distribution of the rotation axes of this
-% missorienation ODF
+% missorientation ODF
 
 plotAxisDistribution(mdf)
 

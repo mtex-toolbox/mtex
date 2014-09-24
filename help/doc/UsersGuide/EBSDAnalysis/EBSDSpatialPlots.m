@@ -53,7 +53,7 @@ colormap gray % this makes the image grayscale
 
 colorbar(gcm)
 
-%% Visualizing orienations
+%% Visualizing orientations
 % Actually, we can pass any list of numbers or colors as a second input
 % argument to be visualized together with the ebsd data. In order to
 % visualize orientations in an EBSD map we have first to compute a
