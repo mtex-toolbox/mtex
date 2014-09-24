@@ -1,5 +1,6 @@
 function ind = subsind(grains,subs)
 
+% dermine grains by x,y coordinates
 if numel(subs)==2 && all(cellfun(@isnumeric, subs))
   ind = grains.findByLocation([subs{:}]);
   return

@@ -162,6 +162,22 @@ classdef grainBoundary < phaseList & dynProp
       
     end
 
+    function out = hasGrain(gB,grainId,grainId2)
+      
+      if isa(grainId,'grain2d'), grainId = grainId.id;end
+      
+      if nargin == 2
+        
+        out = any(ismember(gB.grainId,grainId),2);
+        
+      else
+        
+        out = gB.hasGrain(grainId) & gB.hasGrain(grainId2);
+        
+      end
+      
+    end
+    
   end
 
 end
