@@ -129,7 +129,7 @@ classdef grainBoundary < phaseList & dynProp
         
         if ischar(ph)
           alt_mineral = cellfun(@num2str,num2cell(gB.phaseMap),'Uniformoutput',false);
-          ph = ~cellfun('isempty',regexpi(gB.mineralList(:),ph)) | ...
+          ph = ~cellfun('isempty',regexpi(gB.mineralList(:),['^' ph])) | ...
             strcmpi(alt_mineral,ph);
           phId = find(ph,1);        
         elseif isa(ph,'symmetry')
