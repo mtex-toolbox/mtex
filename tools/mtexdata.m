@@ -196,6 +196,14 @@ CS = {...
 ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','sharp.txt'),'CS',CS,...
   'ColumnNames', {'Euler 1' 'Euler 2' 'Euler 3' 'Phase' 'x' 'y' });
 
+function ebsd = mtexdata_small
+
+
+ebsd = mtexdata_forsterite;
+region = [33 4.5 3 3]*10^3;
+ebsd = ebsd(ebsd.inpolygon(region));
+
+
 % ----------------------------------------------------------------------
 function ebsd = mtexdata_3d
 
