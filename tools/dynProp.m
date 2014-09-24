@@ -145,7 +145,7 @@ classdef dynProp
       
       fn = fieldnames(dp.prop);
       if ~isempty(fn) && length(dp.prop.(fn{1}))<=20
-        d = zeros(length(dp),numel(fn));
+        d = zeros(length(dp.prop.(fn{1})),numel(fn));
         for j = 1:numel(fn)
           if isnumeric(dp.prop.(fn{j}))
             d(:,j) = vertcat(dp.prop.(fn{j}));
