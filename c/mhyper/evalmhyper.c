@@ -19,10 +19,10 @@ int main (int argc, char *argv[]){
     {{"d:"     , "%d", &d,       NULL, sizeof(int)},
      {"iter:"  , "%d", &iters,   NULL, sizeof(int)},
 	 {"lambda:", "DATA_FILE", &lambdas, &n , sizeof(double)},
-	 {"kappa:", "DATA_FILE", &kappas, &nk , sizeof(double)},  //psi
-	 {"h:", "DATA_FILE", &f, &nf , sizeof(double)},           //odf
-	 {"a:", "DATA_FILE", &a, &na , sizeof(double)},          //pdf a
-	 {"bc:", "DATA_FILE", &b, &nb , sizeof(double)},          //pdf sqrt(b^2 + c^2)
+	 {"kappa:", "DATA_FILE", &kappas, &nk , sizeof(double)},  /*psi*/
+	 {"h:", "DATA_FILE", &f, &nf , sizeof(double)},           /*odf*/
+	 {"a:", "DATA_FILE", &a, &na , sizeof(double)},          /*pdf a*/
+	 {"bc:", "DATA_FILE", &b, &nb , sizeof(double)},          /*pdf sqrt(b^2 + c^2)*/
 	 {"res1:","%s ", &f_out_name,NULL, 0}};
     
 	FILE *f_param;
@@ -37,8 +37,8 @@ int main (int argc, char *argv[]){
 	/* read parameter file */
 	f_param = check_fopen(argv[1],"r");
 	if (read_param_file(f_param,param,Nparam,argc==2)<Nparam){	
-		//printf("Some parameters not found!");
-		//abort();
+		/*printf("Some parameters not found!");*/
+		/*abort();*/
 	}
 	fclose(f_param);
 	
@@ -48,7 +48,7 @@ int main (int argc, char *argv[]){
 	long int prec = d;
 	
 	
-	if (nk>0) {   // kappas given
+	if (nk>0) {   /* kappas given*/
 		mpfr_t C;
 		
 		kappa = (mpfr_t*) malloc (nk*sizeof(mpfr_t));
@@ -60,9 +60,9 @@ int main (int argc, char *argv[]){
 		
 		mhyper(C, kappa, nk);
 		
-		// gmp_printf("C: %.*Fe \n ", 20, C);	
+		/* gmp_printf("C: %.*Fe \n ", 20, C);	*/
 		
-		if (nf>0) // eval odf values
+		if (nf>0) /* eval odf values*/
 		{
 			eval_exp_Ah(C,f,nf);
 			
@@ -70,9 +70,9 @@ int main (int argc, char *argv[]){
 			fwrite(f,sizeof(double),nf,f_out);
 			fclose(f_out);
 		} 
-		if ( na > 0) {// eval pdf values
+		if ( na > 0) {/* eval pdf values*/
 		
-		/*	// testing BesselI[0,a]
+		/* testing BesselI[0,a]
 			mpfr_t in, out;					
 						
 			for(k=0;k<na;k++){
@@ -103,7 +103,7 @@ int main (int argc, char *argv[]){
 			fclose(f_out);
 		}
 		
-		if (nf == 0 && na == 0) { // only return constant		
+		if (nf == 0 && na == 0) { /* only return constant */
 	
 			double CC = mpfr_get_d(C,prec);
 			
@@ -113,7 +113,7 @@ int main (int argc, char *argv[]){
 		
 		}
 	
-	} else {	// solve kappas
+	} else {	/* solve kappas */
 		/* copy input variables */	
 		lambda = (mpfr_t*) malloc (n*sizeof(mpfr_t));
 		kappa = (mpfr_t*) malloc (n*sizeof(mpfr_t));	
@@ -162,8 +162,8 @@ int main (int argc, char *argv[]){
 		
 				
 		for(k=0;k<n;k++){
-			lambdas[k] = mpfr_get_d(kappa[k],GMP_RNDN);	// something wents wront in matlab for 473.66316276431799;
-								// % bug:   lambda= [0.97 0.01 0.001];
+			lambdas[k] = mpfr_get_d(kappa[k],GMP_RNDN);	/* something wents wront in matlab for 473.66316276431799;*/
+								/* % bug:   lambda= [0.97 0.01 0.001];*/
 		}
 			
 		f_out = check_fopen(f_out_name,"wb");

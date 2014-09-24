@@ -37,8 +37,8 @@ void zbfm_print_flags(FILE *f,zbfm_solver_plan *ths){
 
 void zbfm_solver_iterate(zbfm_solver_plan *ths){
 
- // time_t rawtime;
- // struct tm * timeinfo;
+ /* time_t rawtime; /*
+ /* struct tm * timeinfo; /*
   
   fprintf(stdout,"start iteration\n");fflush(stdout);
 
