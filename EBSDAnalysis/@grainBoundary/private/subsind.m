@@ -9,6 +9,13 @@ else
 end
 subs = subs(~isMineralName);
 
+% select for grains
+isGrain = cellfun(@(x) isa(x,'grain2d'),subs);
+if any(isGrain)
+  ind = ind & gB.hasGrain(subs{isGrain});
+end
+subs = subs(~isGrain);
+
 % other indexing
 for i = 1:length(subs)
   
