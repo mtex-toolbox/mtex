@@ -147,7 +147,6 @@ void SO3Grid_find_region(SO3Grid ths[],
   double yalpha,ybeta,dalpha;
     double cyb,syb;
 	double cda,sda;
- // double cya,cyb,cyg,sya,syb,syg;
   double a,b,c,d,e,cc,ss,re,im,dg;
 
   alpha = MOD(alpha,ths->alphabeta.rho[0].p);
@@ -186,8 +185,7 @@ void SO3Grid_find_region(SO3Grid ths[],
 	d = (cc+1)*cda + ss;
 	e = (cxb+cyb)*sda;	
 	
-	// b = sqrt(re*re+im*im);
-	b = sqrt(d*d+e*e);
+  b = sqrt(d*d+e*e);
 	c = (1 + 2*cos(epsilon) - a) / b; 
 	    /*printf("(%d, %.4e, %.4e, %.4e)\n",iab,gamma,dg,c);*/
 	     
@@ -234,9 +232,6 @@ void SO3Grid_dist_region(SO3Grid ths[],
   S2Grid_find_region(&ths->alphabeta,beta,alpha,
 		     epsilon,&ths->alphabeta_buffer);
 			 
-			//   S2Grid_print(&ths->alphabeta);
-
-
   /*print_double(ths->alphabeta.theta_large,10);*/
   /*buffer_print(&ths->alphabeta_buffer);*/
   /* search gamma */
@@ -262,8 +257,7 @@ void SO3Grid_dist_region(SO3Grid ths[],
 	d = (cc+1)*cda + ss;
 	e = (cxb+cyb)*sda;	
 	
-	// b = sqrt(re*re+im*im);
-	b = sqrt(d*d+e*e);
+  b = sqrt(d*d+e*e);
 	c = (1 + 2*cos(epsilon) - a) / b; 
 	    /*printf("(%d, %.4e, %.4e, %.4e)\n",iab,gamma,dg,c);*/
 	    
