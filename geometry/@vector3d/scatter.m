@@ -177,7 +177,7 @@ for it = 1:length(t)
   end
   margin = get(t(it),'margin');
   xy(2) = xy(2) - extend(4)/2 - margin - markerSize/2 - 5;
-  if isnumeric(get(t(it),'BackgroundColor')), xy(2) = xy(2) - 5;end
+  %if isnumeric(get(t(it),'BackgroundColor')), xy(2) = xy(2) - 5;end
   set(t(it),'position',xy);
   set(t(it),'unit','data');
   %get(t(it),'position')
