@@ -1,4 +1,4 @@
-%% Visualizing grain boundaries
+%% Grain Boundaries
 % Overview about colorizing grain boundaries 
 %
 %% Open in Editor
@@ -23,7 +23,7 @@ gB = grains.boundary
 plot(gB)
 
 %%
-% Accordingly we can acces the grain boundary of a specific grain by
+% Accordingly we can access the grain boundary of a specific grain by
 
 grains(931).boundary
 
@@ -50,9 +50,10 @@ hold off
 % transitions
 
 close all
-plot(grains,'translucent',.3)
+plot(grains,'faceAlpha',.3)
 hold on
 plot(grains.boundary('Fo','En'),'linecolor','r','linewidth',1.5)
+hold off
 
 %% SUB: Subboundaries
 % Another special type of boundaries, are boundaries that are located
