@@ -116,7 +116,7 @@ classdef HSVOrientationMapping < orientationMapping
         case 24, oM.black2white; oM.blue2green;            % -3m1
         case {33,36}, oM.blue2green; oM.black2white;       % 6
         case {37,40}                                       % 6mm,-62m,6/mmm
-          if mod(round(oM.CS1.axes(1).rho/degree),60)==30, blue2green; end
+          if mod(round(oM.CS1.axes(1).rho/degree),60)==30, oM.blue2green; end
       end
       
       if any(oM.CS1.id==[5,7,11,27,35]), oM.alpha = 0.3; end      
