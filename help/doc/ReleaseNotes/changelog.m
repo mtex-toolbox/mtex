@@ -225,10 +225,9 @@
 % * misorientation analysis is not yet complete
 % * some colormaps, e.g. blue2red switched
 % * histogram of valume fractions of CSL boundaries
-% * abbreviations for mineral names - general matching class
-% * grainBoundary(grain1,grain2) should give the grain boundary between grain 1 and grain 2
 % * remove id from EBSD?
 % * changing the phase of a grain should change phases in boundary
+% * KAM and GOSS
 %
 %% MTEX 3.5.0 - 12/2013
 %
