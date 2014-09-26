@@ -33,7 +33,7 @@ ebsd = removeDublicated(ebsd);
 
 % subdivide the domain into cells according to the measurement locations,
 % i.e. by Voronoi teselation or unit cell
-[V,F,I_FD] = spatialDecomposition_local([ebsd.prop.x(:), ebsd.prop.y(:)],ebsd.unitCell,varargin{:});
+[V,F,I_FD] = spatialDecomposition([ebsd.prop.x(:), ebsd.prop.y(:)],ebsd.unitCell,varargin{:});
 % V - list of vertices
 % F - list of faces
 % D - cell array of cells
@@ -72,42 +72,6 @@ function ebsd = removeDublicated(ebsd)
   
   % sort X and remove duplicated data
   ebsd = subSet(ebsd,m); 
-end
-
-function [V,F,I_FD] = spatialDecomposition_local(x_D,unitCell,varargin)
-% decomposite the spatial domain into cells D with vertices V,
-%
-% Output
-%  V - list of vertices
-%  F - list of faces
-%  I_FD - incidence matrix between faces to cells
-
-% compute voronoi decomposition
-% V - list of vertices of the Voronoi cells
-% D   - cell array of Vornoi cells with centers X_D ordered accordingly
-[V,D] = spatialdecomposition(x_D,unitCell,varargin{:});
-    
-% now we need some adjacencies and incidences
-iv = [D{:}];            % nodes incident to cells D
-id = zeros(size(iv));   % number the cells
-    
-p = [0; cumsum(cellfun('prodofsize',D))];
-for k=1:numel(D), id(p(k)+1:p(k+1)) = k; end
-    
-% next vertex
-indx = 2:numel(iv)+1;
-indx(p(2:end)) = p(1:end-1)+1;
-ivn = iv(indx);
-
-% edges list
-F = [iv(:), ivn(:)];
-
-% should be unique (i.e one edge is incident to two cells D)
-[F, ~, ie] = unique(sort(F,2),'rows');
-
-% faces incident to cells, F x D
-I_FD = sparse(ie,id,1);
-
 end
 
 function [A_Db,A_Do] = doSegmentation(I_FD,ebsd,varargin)

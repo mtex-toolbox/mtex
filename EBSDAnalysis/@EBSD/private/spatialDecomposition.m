@@ -1,26 +1,59 @@
-function [v,c] = spatialdecomposition(X,unitCell,varargin)
+function [V,F,I_FD] = spatialDecomposition(X,unitCell,varargin)
+% decomposite the spatial domain into cells D with vertices V,
+%
+% Output
+%  V - list of vertices
+%  F - list of faces
+%  I_FD - incidence matrix between faces to cells
 
+% compute voronoi decomposition
+% V - list of vertices of the Voronoi cells
+% D   - cell array of Vornoi cells with centers X_D ordered accordingly
 if isempty(unitCell), unitCell = calcUnitCell(X); end
 
 if check_option(varargin,'unitCell')
   
   % compute the vertices
-  [v,faces] = generateUnitCells(X,unitCell,varargin{:});
+  [V,faces] = generateUnitCells(X,unitCell,varargin{:});
  
-  c = cell(size(X,1),1);
+  D = cell(size(X,1),1);
   for k=1:size(X,1)  
-    c{k} = faces(k,:);
+    D{k} = faces(k,:);
   end
   
 else
   
   dummyCoordinates = calcBoundary(X,unitCell,varargin{:});
 
-  [v,c] = voronoin([X;dummyCoordinates],{'Q5','Q6'}); 
+  [V,D] = voronoin([X;dummyCoordinates],{'Q5','Q6'}); 
 
-  c = c(1:size(X,1));
+  D = D(1:size(X,1));
   
 end
+
+% now we need some adjacencies and incidences
+iv = [D{:}];            % nodes incident to cells D
+id = zeros(size(iv));   % number the cells
+    
+p = [0; cumsum(cellfun('prodofsize',D))];
+for k=1:numel(D), id(p(k)+1:p(k+1)) = k; end
+    
+% next vertex
+indx = 2:numel(iv)+1;
+indx(p(2:end)) = p(1:end-1)+1;
+ivn = iv(indx);
+
+% edges list
+F = [iv(:), ivn(:)];
+
+% should be unique (i.e one edge is incident to two cells D)
+[F, ~, ie] = unique(sort(F,2),'rows');
+
+% faces incident to cells, F x D
+I_FD = sparse(ie,id,1);
+
+end
+
 
 
 function dummyCoordinates = calcBoundary(X,unitCell,varargin)
@@ -144,3 +177,4 @@ end
   
 dummyCoordinates = unique(dummyCoordinates,'first','rows');
 
+end
