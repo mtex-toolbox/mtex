@@ -13,7 +13,6 @@ grains = subSet@dynProp(grains,ind);
 
 grains.poly = grains.poly(ind);
 grains.id = grains.id(ind);
-grains.meanRotation = grains.meanRotation(ind);
 grains.phaseId = grains.phaseId(ind);
 grains.grainSize = grains.grainSize(ind);
 

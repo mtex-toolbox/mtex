@@ -4,8 +4,7 @@ classdef grain2d < phaseList & dynProp
   % properties with as many rows as data
   properties
     poly={}    % cell list of polygons forming the grains
-    id=[]      % id of each grain
-    meanRotation = rotation % mean rotation of the grains
+    id=[]      % id of each grain    
     grainSize = [] % number of measurements per grain
   end
     
@@ -19,6 +18,7 @@ classdef grain2d < phaseList & dynProp
     meanOrientation  % mean orientation
     V                % vertices with x,y coordinates
     id2ind           % 
+    GOS              % intergranular average misorientation angle
   end
   
   properties (Dependent = true, Access = protected)
@@ -66,10 +66,9 @@ classdef grain2d < phaseList & dynProp
       grains.boundary = grainBoundary(V,F,I_FDext,ebsd);
       grains.innerBoundary = grainBoundary(V,F,I_FDint,ebsd);
       
-      %grains.poly = BoundaryFaceOrder(I_FDext);
       grains.poly = calcPolygons(I_FDext * I_DG,F,V);
       
-      grains.meanRotation = calcMeanRotation;
+      [grains.prop.meanRotation,grains.prop.GOS] = calcMeanRotation;
       
       
       function [I_FDext,I_FDint] = calcBoundary
@@ -100,49 +99,8 @@ classdef grain2d < phaseList & dynProp
         
       end
       
-      function poly = BoundaryFaceOrder(I_FD)
-        % TODO: this needs to become a private function
-        % Input:
-        %  I_FG - incidence matrix faces to grains
-        
-        % step 1: compute edge orientation of faces
-   
-        I_FG = I_FD * I_DG;
-        [iF,iG] = find(I_FG);
-        % compute ori here!
-        %
-        % iF - faceId
-        % iG - grainId
-        % ori - edgeOrientation +-1
-        
-        poly = cell(max(iG),1);
-
-        % go through iF and iG grainwise
-        cs = [0 cumsum(full(sum(I_FG~=0,1)))];
-        for k=1:size(I_DG,2)
-          ndx = cs(k)+1:cs(k+1);
-  
-          E1 = F(iF(ndx),:);
-            
-          EC = EulerCycles2(E1);
-          
-          % first cicle should positive and all others negatively oriented
-          for c = 1:numel(EC)
-            if xor( c==1 , polySgnArea(V(EC{c},1),V(EC{c},2))>0 )
-              EC{c} = fliplr(EC{c});
-            end
-          end
-
-          % this is needed
-          for c=3:numel(EC), EC{c} = [EC{1}(1) EC{c}]; end
-
-          poly{k} = [EC{:}];
-          
-        end
-
-      end
-    
-      function meanRotation = calcMeanRotation
+     
+      function [meanRotation,GOS] = calcMeanRotation
 
         [d,g] = find(I_DG);
 
@@ -151,29 +109,29 @@ classdef grain2d < phaseList & dynProp
         phaseId       = ebsd.phaseId(firstD);
         q             = quaternion(ebsd.rotations);
         meanRotation  = q(firstD);
-
+        GOS           = zeros(numel(grains),1);
         indexedPhases = ~cellfun('isclass',grains.CSList(:),'char');
 
+        % choose between equivalent orientations in one grain
+        % such that all are close together
         for p = grains.indexedPhasesId
           ndx = ebsd.phaseId(d) == p;
           if any(ndx)
             q(d(ndx)) = project2FundamentalRegion(...
               q(d(ndx)),grains.CSList{p},meanRotation(g(ndx)));
           end
-  
-          % mean may be inaccurate for some grains and should be projected again
-          % any(sparse(d(ndx),g(ndx),angle(q(d(ndx)),meanRotation(g(ndx))) > getMaxAngle(ebsd.CS{p})/2))
         end
-
+        ebsd.rotations = rotation(q);
+        
         doMeanCalc    = find(grains.grainSize>1 & indexedPhases(phaseId));
-        cellMean      = cell(size(doMeanCalc));
         for k = 1:numel(doMeanCalc)
-          cellMean{k} = d(grainRange(doMeanCalc(k))+1:grainRange(doMeanCalc(k)+1));
+          
+          qind = subSet(q,d(grainRange(doMeanCalc(k))+1:grainRange(doMeanCalc(k)+1)));
+          mq = mean(qind);
+          meanRotation = setSubSet(meanRotation,doMeanCalc(k),mq);
+          GOS(doMeanCalc(k)) = mean(angle(mq,qind));
+        
         end
-        cellMean = cellfun(@mean,partition(q,cellMean),'uniformoutput',false);
-
-        meanRotation(doMeanCalc) = [cellMean{:}];
-
       end      
     end
     
@@ -200,7 +158,12 @@ classdef grain2d < phaseList & dynProp
     end
     
     function ori = get.meanOrientation(grains)
-      ori = orientation(grains.meanRotation,grains.CS);
+      ori = orientation(grains.prop.meanRotation,grains.CS);
+    end
+   
+    
+    function gos = get.GOS(grains)
+      gos = grains.prop.GOS;
     end
     
   end
