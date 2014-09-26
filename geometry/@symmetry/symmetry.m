@@ -1,4 +1,4 @@
-classdef (Abstract) symmetry < rotation
+classdef symmetry < rotation
 %
 % Supported Symmetries
 %
