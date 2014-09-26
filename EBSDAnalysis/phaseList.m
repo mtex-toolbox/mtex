@@ -9,6 +9,7 @@ classdef phaseList
   
   properties (Dependent = true)
     phase           % phase
+    isIndexed       % indexed measurements
     CS              % crystal symmetry of one specific phase
     mineral         % mineral name of one specific phase
     mineralList     % list of mineral names
@@ -172,7 +173,7 @@ classdef phaseList
     function c = get.color(pL)
       
       % notindexed phase should be white by default
-      if all(isNotIndexed(pL))
+      if ~any(pL.isIndexed)
         c = ones(1,3); 
         return
       end
@@ -200,15 +201,9 @@ classdef phaseList
       minerals(~isCS) = pL.CSList(~isCS);
     end
 
-    function notIndexed = isNotIndexed(pL)
-      % returns if a spatially EBSD data is indexed
-      %
-      % Example
-      %   ebsd(~isNotIndexed(ebsd)) %select all indexed EBSD data
-
-
+    function isInd = get.isIndexed(pL)
       notIndexedPhase = [0,find(cellfun('isclass',pL.CSList,'char'))];
-      notIndexed = ismember(pL.phaseId,notIndexedPhase);
+      isInd = ~all(ismember(pL.phaseId,notIndexedPhase),2);
     end
     
     function out = isempty(pL)

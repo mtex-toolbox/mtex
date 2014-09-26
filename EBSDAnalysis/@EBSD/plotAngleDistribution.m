@@ -22,8 +22,8 @@ else
 end
 
 % only consider indexed data
-ebsd1  = subSet(ebsd1,~isNotIndexed(ebsd1));
-ebsd2 = subSet(ebsd2,~isNotIndexed(ebsd2));
+ebsd1  = subSet(ebsd1,ebsd1.isIndexed);
+ebsd2 = subSet(ebsd2,ebsd2.isIndexed);
 
 % split according to phases
 phases1 = ebsd1.phase;

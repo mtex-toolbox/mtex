@@ -11,7 +11,7 @@ function h = plotAngleDistribution( gB, varargin )
 mtexFig = newMtexFigure(varargin{:});
 
 % only consider indexed data
-gB  = subSet(gB,~any(gB.isNotIndexed,2));
+gB  = subSet(gB,gB.isIndexed);
 
 % split according to phases
 pairs = allPairs(1:numel(gB.phaseMap));
