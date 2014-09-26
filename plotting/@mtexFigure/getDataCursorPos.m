@@ -24,15 +24,17 @@ if isempty(zd)
   zd = get(target,'CData');
 end
 
-if numel(zd) == numel(xd)
-  value = zd(pos(1) == xd & pos(2) == yd);
-  value = value(1);
-else
-  value = find(pos(1) == xd & pos(2) == yd);
+if size(xd,1) ~= 1 && size(xd,2) == numel(zd)   
+  xd = mean(xd);
+  yd = mean(yd);  
 end
 
+[~,value] = min((xd-pos(1)).^2 + (yd-pos(2)).^2);
+
+if numel(zd) == numel(xd), value = zd(value); end
+
 % convert pos to vector3d for spherical plots
-ax = target.Parent;
+ax = get(target,'Parent');
 
 % for spherical plots convert to polar coordinates
 sP = getappdata(ax,'sphericalPlot');

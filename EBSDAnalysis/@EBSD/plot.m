@@ -84,4 +84,40 @@ if ~isempty(gcm), drawNow(gcm,varargin{:}); end
 
 if nargout==0, clear h; end
 
+% set data cursor
+dcm_obj = datacursormode(gcf);
+set(dcm_obj,'SnapToDataVertex','on')
+set(dcm_obj,'UpdateFcn',{@tooltip,ebsd});
+
+datacursormode on;
+
 end
+
+% ----------------------------------------------------------------------
+% Tooltip function
+function txt = tooltip(empt,eventdata,ebsd) %#ok<INUSL>
+
+[pos,value] = getDataCursorPos(gcm);
+
+try
+  id = findByLocation(ebsd,[pos(1) pos(2)]);
+catch
+  id = [];
+end
+
+if ~isempty(id)
+
+  txt{1} = ['#'  num2str(id)];
+  txt{2} = ['Phase: ', ebsd.mineralList{ebsd.phaseId(id)}];
+  if ebsd.isIndexed(id)
+    txt{3} = ['Orientation: ' char(ebsd.rotations(id),'nodegree')];
+  end
+  if ~isempty(value)
+    txt{end+1} = ['Value: ' xnum2str(value)];
+  end
+else
+  txt = 'no data';
+end
+
+end
+
