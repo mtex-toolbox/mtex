@@ -5,6 +5,6 @@ if nargin < 2
 end
 
 theta = acos(2*(rand(varargin{:})-0.5));
-phi   = 2*pi*rand(varargin{:});
+rho   = 2*pi*rand(varargin{:});
 
 v = vector3d('theta',theta,'rho',rho);
