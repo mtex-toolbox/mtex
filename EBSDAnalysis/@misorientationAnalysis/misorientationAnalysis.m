@@ -1,4 +1,4 @@
-classdef (Abstract) misorientationAnalysis
+classdef misorientationAnalysis
   %MISORIENTATIONANALYSIS Summary of this class goes here
   %   Detailed explanation goes here
   
