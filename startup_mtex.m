@@ -9,7 +9,9 @@ function startup_mtex(varargin)
 
 % this is a bugfix for MATLAV having very high cpu load on idle
 if isunix && ~ismac
-  com.mathworks.mlwidgets.html.HtmlComponentFactory.setDefaultType('HTMLRENDERER');
+  try
+    com.mathworks.mlwidgets.html.HtmlComponentFactory.setDefaultType('HTMLRENDERER');
+  end
 end
 
 
