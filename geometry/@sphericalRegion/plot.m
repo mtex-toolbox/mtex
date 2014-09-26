@@ -10,10 +10,11 @@ sP = newSphericalPlot(sR,varargin{:});
 
 for j = 1:numel(sP)
   
-  % ensure sector is at this hemisphere
-  if any(any(dot_outer(sR.N,sP(j).sphericalRegion.N)<eps-1)), continue, end
-  
-  if all(sR.checkInside(sP(j).sphericalRegion.N)) && ~isempty(sP(j).boundary)
+  % ensure sector is at this hemisphere TODO
+  %if any(any(dot_outer(sR.N,sP(j).sphericalRegion.N)<eps-1)), continue, end
+ 
+  %if all(sR.checkInside(sP(j).sphericalRegion.N)) && ~isempty(sP(j).boundary)
+  if ~isempty(sP(j).boundary) && sR == sP(j).sphericalRegion
     h = optiondraw(sP(j).boundary,varargin{:});
     continue; 
   end
