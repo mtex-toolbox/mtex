@@ -16,6 +16,7 @@
 
 plotx2east
 mtexdata forsterite
+close all
 
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
@@ -28,7 +29,7 @@ plot(ebsd)
 % unindexed regions:
 %
 % # assign them to the surrounding grains
-% # leaf the unindexed
+% # leaf them unindexed
 %
 % By default MTEX uses the first method. 
 %

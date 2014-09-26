@@ -1,10 +1,11 @@
-function kam = calcKAM(ebsd,varargin)
+function kam = KAM(ebsd,varargin)
 % intergranular average misorientation angle per orientation
 %
 % Syntax
 %
-%   kam = calcKAM(ebsd,'threshold',10*degree)
-%   kam = calcKAM(ebsd,'secondOrder')
+%   kam = KAM(ebsd,'threshold',10*degree)
+%   kam = KAM(ebsd,'secondOrder')
+%   plot(ebsd,ebsd.KAM./degree)
 %
 % Input
 %  grains - @grain2d
