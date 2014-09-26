@@ -40,4 +40,4 @@ for k=1:size(xy,1)
   
 end
 
-map = any(nd,2);
+map = find(any(nd,2));

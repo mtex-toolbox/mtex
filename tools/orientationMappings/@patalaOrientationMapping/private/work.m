@@ -1,13 +1,22 @@
 %%
 
-plot(sphericalRegion([xvector,yvector,zvector],[0,0,0]),...
-  'color',[0.8 0.8 0.8],'linewidth',1)
 
-alpha = 0.7;
-sR = sphericalRegion([-xvector,-yvector,-zvector,xvector,yvector,zvector],-alpha*[1,1,1,0,0,0]);
+
+cs = crystalSymmetry('m-3m')
+
+plot(cs)
+
+%plot(cs.fundamentalSector,'color',[0.8 0.8 0.8],'linewidth',1)
+
+sR = cs.fundamentalSector(50*degree)
+
 hold on
-plot(sR)
+plot(sR,'color','red','linewidth',2)
 hold off
+
+
+
+
 
 %%
 
@@ -21,7 +30,7 @@ hold off
 
 plotx2east
 
-cs = crystalSymmetry(9)
+cs = crystalSymmetry('m-3m')
 
 
 q = SO3Grid(5000,cs)
