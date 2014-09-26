@@ -30,9 +30,9 @@ for ipoly = 1:numF
   
   if mod(nextB,2), nextB = nextB + 1; else nextB = nextB - 1; end
   
-  if iB(nextB) > 0
-    currentiB = iB(nextB);
-  else %start new cycle
+  currentiB = iB(nextB);
+  
+  if currentiB == 0 %start new cycle
     [~,~,currentiB] = find(iB,1);
     tourStart(end+1) = ipoly+1; %#ok<AGROW>
   end    
