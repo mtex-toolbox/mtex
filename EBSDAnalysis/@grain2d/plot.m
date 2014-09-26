@@ -113,7 +113,7 @@ if numel(grain)>0
 
   txt{1} = ['Grain: '  num2str(unique(grain.id))];
   txt{2} = ['Phase: ', grain.mineral];
-  if ~grain.isNotIndexed
+  if grain.isIndexed
     txt{3} = ['Orientation: ' char(grain.meanOrientation,'nodegree')];
   end
   if ~isempty(value)

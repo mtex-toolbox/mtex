@@ -22,10 +22,10 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 
 
 % remove not indexed phases 
-if any(any(isNotIndexed(ebsd))) && ~check_option(varargin,'keepNotIndexed')
+if ~all(ebsd.isIndexed) && ~check_option(varargin,'keepNotIndexed')
 
   disp('  I''m removing all not indexed phases. The option "keepNotIndexed" keeps them.');
-  ebsd = subSet(ebsd,~isNotIndexed(ebsd));
+  ebsd = subSet(ebsd,ebsd.isIndexed);
 end
 
 % remove dublicated data points
@@ -94,8 +94,6 @@ A_D = I_FD'*I_FD==1;
 
 connect = false(size(Dl));
 
-notIndexed = isNotIndexed(ebsd);
-
 for p = 1:numel(ebsd.phaseMap)
   
   % neighboured cells Dl and Dr have the same phase
@@ -103,7 +101,7 @@ for p = 1:numel(ebsd.phaseMap)
   connect(ndx) = true;
   
   % check, whether they are indexed
-  ndx = ndx & ~notIndexed(Dl) & ~notIndexed(Dr);
+  ndx = ndx & ebsd.isIndexed(Dl) & ebsd.isIndexed(Dr);
   
   % now check for the grain boundary criterion
   if any(ndx)

@@ -34,8 +34,8 @@ else
 end
 
 % only consider indexed data
-obj  = subSet(obj,~isNotIndexed(obj));
-obj2 = subSet(obj2,~isNotIndexed(obj2));
+obj  = subSet(obj,obj.isIndexed);
+obj2 = subSet(obj2,obj2.isIndexed);
 
 % split according to phases
 phases1 = obj.phase;
