@@ -1,4 +1,4 @@
-function [J T q p] = joinCount(grains,coloring,varargin)
+function [J, T, q, p] = joinCount(grains,coloring,varargin)
 % returns the a joins-count between neighbour coloring
 %
 % Syntax

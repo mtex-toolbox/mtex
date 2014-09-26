@@ -117,7 +117,7 @@ if numel(grain)>0
     txt{3} = ['Orientation: ' char(grain.meanOrientation,'nodegree')];
   end
   if ~isempty(value)
-    txt{3} = ['Value: ' xnum2str(value)];
+    txt{end+1} = ['Value: ' xnum2str(value)];
   end
 else
   txt = 'no data';
