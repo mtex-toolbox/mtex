@@ -1,82 +1,52 @@
-function A = calcKAM(grains,varargin)
+function kam = calcKAM(ebsd,varargin)
 % intergranular average misorientation angle per orientation
 %
+% Syntax
+%
+%   kam = calcKAM(ebsd,'threshold',10*degree)
+%   kam = calcKAM(ebsd,'secondOrder')
+%
 % Input
-%  grains - @GrainSet
+%  grains - @grain2d
 %
 % Flags
-%  Boundary    -  do also consider the grain boundary for average
-%  secondorder -  also include higher order neighbors
+%  secondorder -  include second order neighbors
 %
 
-r         = grains.rotations;
-phaseMap  = grains.phaseMap;
-phase     = grains.phase;
-
-isIndexed = ~isNotIndexed(grains);
-
-% adjacent cells on grain boundary
-n = size(grains.A_D,1);
-if check_option(varargin,'Boundary')
-  A_D = grains.A_D;
-else
-  A_D = grains.A_Do;
-end
-
-A_D = double(A_D);
+% compute adjacent measurements
+[~,~,I_FD] = spatialDecomposition([ebsd.prop.x(:), ebsd.prop.y(:)],ebsd.unitCell,'unitCell');
+A_D = I_FD.' * I_FD;
 
 if check_option(varargin,{'second','secondorder'})
   A_D = A_D + A_D*A_D;
 end
 
-b = find(any(grains.I_DG,2));
-A_D = A_D(b,b);
+% extract adjacent pairs
+[Dl, Dr] = find(A_D);
 
-[Dl, Dr] = find(A_D|A_D');
-
-% delete adjacenies between different phase and not indexed measurements
-use = phase(Dl) == phase(Dr) & isIndexed(Dl) & isIndexed(Dr);
+% take only ordered pairs of same, indexed phase 
+use = Dl > Dr & ebsd.phaseId(Dl) == ebsd.phaseId(Dr) & ebsd.isIndexed(Dl);
 Dl = Dl(use); Dr = Dr(use);
-phase = phase(Dl);
+phaseId = ebsd.phaseId(Dl);
 
 % calculate misorientation angles
-prop = zeros(size(phase)); zeros(size(Dl));
-for p=1:numel(phaseMap)
-  currentPhase = phase == phaseMap(p);
+omega = zeros(size(Dl));
+
+% iterate all phases
+for p=1:numel(ebsd.phaseMap)
+  
+  currentPhase = phaseId == p;
   if any(currentPhase)
     
-    nt = 250000;
-    if nnz(currentPhase) < nt
-      o_Dl = orientation(r(Dl(currentPhase)),grains.CSList{p});
-      o_Dr = orientation(r(Dr(currentPhase)),grains.CSList{p});
-      
-      %     m  = o_Dl.\o_Dr; % misorientation
-      prop(currentPhase,:) = angle(o_Dl,o_Dr);
-      
-    else
-      ind = find(currentPhase);
-      
-      cs = [0:nt:numel(ind)-1 numel(ind)];
-      
-      for k=1:numel(cs)-1
-        subset = ind(cs(k)+1:cs(k+1));
-        
-        
-        o_Dl = orientation(r(Dl(subset)),grains.CSList{p});
-        o_Dr = orientation(r(Dr(subset)),grains.CSList{p});
-        
-        %     m  = o_Dl.\o_Dr; % misorientation
-        prop(subset,:) = angle(o_Dl,o_Dr);
-        
-      end      
-      
-    end
-    
-    %     prop(currentPhase,:) = angle(m);
+    o_Dl = orientation(ebsd.rotations(Dl(currentPhase)),ebsd.CSList{p});
+    o_Dr = orientation(ebsd.rotations(Dr(currentPhase)),ebsd.CSList{p});
+    omega(currentPhase) = angle(o_Dl,o_Dr);
     
   end
 end
 
-A = sparse(Dl,Dr,prop,n,n);
-A = A+A';
-A = full(sum(A,2)./sum(A>0,2));
+% compute kernel average misorientation
+ind = omega < get_option(varargin,'threshold',10*degree);
+kam = sparse(Dl(ind),Dr(ind),omega(ind),length(ebsd),length(ebsd));
+kam = kam+kam';
+kam = full(sum(kam,2)./sum(kam>0,2));
