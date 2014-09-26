@@ -143,26 +143,3 @@ set(mP.ax,'units',old_ax_units);
 
 end
 
-% ----------------------------------------------------------------------
-% Tooltip function
-function txt = tooltip(empt,eventdata,ebsd) %#ok<INUSL>
-
-
-[pos,value] = getDataCursorPos(gcf);
-[sub,map] = findByLocation(ebsd,[pos(1) pos(2)]);
-
-if ~isempty(sub)
-
-  txt{1} = ['#'  num2str(find(map))];
-  txt{2} = ['Phase: ', sub.mineral];
-  if ~isNotIndexed(sub)
-    txt{3} = ['Orientation: ' char(sub.rotations,'nodegree')];
-  end
-  if ~isempty(value)
-    txt{3} = ['Value: ' xnum2str(value)];
-  end
-else
-  txt = 'no data';
-end
-
-end
