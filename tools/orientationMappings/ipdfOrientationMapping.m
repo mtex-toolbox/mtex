@@ -19,34 +19,35 @@ classdef ipdfOrientationMapping < orientationMapping
     
     function plot(oM,varargin)
       
-      sR = oM.CS1.fundamentalSector(varargin{:});
+      
+      [mtexFig,isNew] = newMtexFigure(varargin);
 
+      % init plotting grid
+      sR = oM.CS1.fundamentalSector(varargin{:});
       h = plotS2Grid(sR,'resolution',1*degree,varargin{:});
       
+      % compute colors
       d = oM.Miller2color(h);
 
+      % plot the colored sector
       if numel(d) == 3*length(h)
         d = reshape(d,[size(h),3]);
         defaultPlotCMD = 'surf';
       else
         defaultPlotCMD = 'pcolor';
       end
-      h = plot(h,d,defaultPlotCMD,varargin{:});
-
+      plot(h,d,defaultPlotCMD,'parent',mtexFig.gca,varargin{:});
+      title(mtexFig.gca,char(oM(1).inversePoleFigureDirection));
       
       if isempty(oM.CS1.mineral)
         name = ['"' oM.CS1.pointGroup '"'];
       else
         name = oM.CS1.mineral;
       end
-      
-      ax = get(h(1),'parent'); 
-      fig = get(ax,'parent');
-      set(fig,'name',['Inverse pole figure coloring for ' name])
-      title(ax,char(oM(1).inversePoleFigureDirection));
-      set(fig,'tag','ipdf')
-      setappdata(fig,'CS',oM.CS1);
-      setappdata(fig,'inversePoleFigureDirection',oM.inversePoleFigureDirection);
+      set(mtexFig.parent,'name',['Inverse pole figure coloring for ' name])      
+      set(mtexFig.parent,'tag','ipdf')
+      setappdata(mtexFig.parent,'CS',oM.CS1);
+      setappdata(mtexFig.parent,'inversePoleFigureDirection',oM.inversePoleFigureDirection);
       
       % annotate crystal directions
       if check_option(varargin,'3d')
@@ -62,7 +63,9 @@ classdef ipdfOrientationMapping < orientationMapping
         text3(Miller(0,0,1,'uvw',oM.CS1),'c','verticalAlignment','bottom')
         hold off
       else
-        h = Miller(unique(sR.vertices),oM.CS1);
+        h = sR.vertices;
+        if length(unique(h,'antipodal')) <=2, h = [h,xvector,yvector,zvector]; end
+        h = Miller(unique(h),oM.CS1);
         switch oM.CS1.lattice
           case {'hexagonal','tetragonal'}
             h.dispStyle = 'UVTW';
@@ -70,6 +73,8 @@ classdef ipdfOrientationMapping < orientationMapping
             h.dispStyle = 'uvw';
         end
         annotate(unique(round(h)),'MarkerFaceColor','k','labeled','symmetrised');
+        mtexFig.outerPlotSpacing = 30;
+        mtexFig.drawNow('autoposition',varargin{:});
       end
 
     end
