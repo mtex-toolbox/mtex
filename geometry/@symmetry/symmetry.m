@@ -53,7 +53,12 @@ classdef symmetry < rotation
     pointGroups = pointGroupList % list of all point groups
     
   end
-    
+
+  % this is an abstract class
+  methods (Abstract = true)
+    display(s)
+  end
+  
   methods
     
     function s = symmetry(varargin)
@@ -105,8 +110,9 @@ classdef symmetry < rotation
     function r = get.isProper(cs)
       r = ~any(cs.i(:));
     end
+        
   end
-    
+      
 end
 
 % ---------------------------------------------------------------
