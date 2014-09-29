@@ -109,7 +109,7 @@ classdef grain2d < phaseList & dynProp
         phaseId       = ebsd.phaseId(firstD);
         q             = quaternion(ebsd.rotations);
         meanRotation  = q(firstD);
-        GOS           = zeros(numel(grains),1);
+        GOS           = zeros(length(grains),1);
         indexedPhases = ~cellfun('isclass',grains.CSList(:),'char');
 
         % choose between equivalent orientations in one grain
