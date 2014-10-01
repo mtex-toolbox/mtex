@@ -1,18 +1,20 @@
-function figResize(fig,evt,mtexFig) %#ok<INUSL,INUSL>
+function updateLayout(mtexFig)
 % resize figure and reorder subfigs
 
 if isempty(mtexFig.children), return;end
 
 % store old units and perform all calculations in pixel
-old_units = get(fig,'Units');
-set(fig,'Units','pixels');
+old_units = get(mtexFig.parent,'Units');
+set(mtexFig.parent,'Units','pixels');
 
 figSize = get(mtexFig.parent,'Position');
 figSize = figSize(3:4) - 2*mtexFig.outerPlotSpacing;
 
-mtexFig.calcBestFit;
+% compute layout
+[mtexFig.ncols,mtexFig.nrows] = calcPartition(mtexFig,figSize);
+[mtexFig.axisWidth,mtexFig.axisHeight] = calcAxesSize(mtexFig,figSize);
 
-% align axes according to the partioning
+% align axes according to layout
 for i = 1:length(mtexFig.children)
   
   % compute position in raster
@@ -27,8 +29,8 @@ for i = 1:length(mtexFig.children)
     - row * ah ...
     + mtexFig.innerPlotSpacing + mtexFig.tightInset(2),...
     mtexFig.axisWidth,mtexFig.axisHeight];
-  set(mtexFig.children(i),'Units','pixels','Position',axisPos);
-    
+  set(mtexFig.children(i),'Units','Pixel','Position',axisPos);
+  
   % position the colorbars
   if numel(mtexFig.cBarAxis) == numel(mtexFig.children)
     
@@ -42,12 +44,11 @@ for i = 1:length(mtexFig.children)
 end
 
 % revert figure units
-set(fig,'Units',old_units);
+set(mtexFig.parent,'Units',old_units);
 
 
   function resizeColorBar(cBar)
   
-    if ~mtexFig.keepAspectRatio, return; end
     pos = get(cBar,'position');
     if pos(4) > pos(3) % vertical
       set(cBar,'position',...

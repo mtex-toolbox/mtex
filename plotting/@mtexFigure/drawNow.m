@@ -4,80 +4,75 @@ if check_option(varargin,'doNotDraw'), return;end
 
 set(mtexFig.children,'units','pixel');
 
-rFcn = get(mtexFig.parent,'ResizeFcn');
-rFcn(mtexFig.parent,[]);
+% update children to be only the axes of mtexFig
+mtexFig.children = flipud(findobj(mtexFig.parent,'type','axes',...
+  '-not','tag','Colorbar','-and','-not','tag','legend'));
 
-% update children
- mtexFig.children = flipud(findobj(mtexFig.parent,'type','axes',...
-   '-not','tag','Colorbar','-and','-not','tag','legend')); 
+% this seems to be necesarry to get tight inset right
+updateLayout(mtexFig);
 
-getTightInset;
+% compute surounding box of each axis in pixel
+mtexFig.tightInset = calcTightInset(mtexFig);
 
-if check_option(varargin,'autoPosition')  
-  posHasChanged = adjustFigurePosition(mtexFig);
-  %refresh(mtexFig.parent);  
+% determine prelimary figure size
+if check_option(varargin,'position')
+  
+  position = get_option(varargin,'position');
+  figSize = position(3:4);
+  
+  if any(strcmpi(position,{'auto','large','normal','small'}))
+    screenExtend = get(0,'MonitorPositions');
+    
+    figSize = screenExtend(1,3:4) - [0,120]; % consider only the first monitor
+
+    switch position
+      case 'auto'
+        n = numel(mtexFig.children);
+        figSize = figSize .* min([1 1],[n/4, (1 + (n>4))/2]);
+      case 'large'
+        figSize = figSize .* 0.9;
+      case 'normal'
+        figSize = figSize .* 0.5;
+      case 'small'
+        figSize = figSize .* 0.25;
+    end
+  end
+  
 else
-  posHasChanged = false;
+
+  position = get(mtexFig.parent,'Position'); 
+  figSize = position(3:4) - 2*mtexFig.outerPlotSpacing;
+  
 end
 
-if ~posHasChanged
-  rFcn = get(mtexFig.parent,'ResizeFcn');
-  rFcn(mtexFig.parent,[]);
+figSize = figSize - 2*mtexFig.outerPlotSpacing;
+
+% compute layout
+[mtexFig.ncols,mtexFig.nrows] = calcPartition(mtexFig,figSize);
+[mtexFig.axisWidth,mtexFig.axisHeight] = calcAxesSize(mtexFig,figSize);
+
+% resize figure
+if exist('screenExtend','var')
+  width = mtexFig.axesWidth;
+  height = mtexFig.axesHeight;
+  position = [(screenExtend(3)-width)/2,(screenExtend(4)-height)/2,width,height];
 end
 
+% draw layout
+set(mtexFig.parent,'ResizeFcn',[]);
+set(mtexFig.parent,'position',position);
+updateLayout(mtexFig);
+set(mtexFig.parent,'ResizeFcn',@(src,evt) updateLayout(mtexFig));
+
+% update colorrange
 if check_option(varargin,'colorrange')
   mtexFig.CLim(get_option(varargin,'colorrange'));
 end
 
-
-
-  function getTightInset
-    % determine tight inset for each axis
-    
-    if isempty(mtexFig.children), return; end
-    ax = mtexFig.children(1);
-    
-    if strcmpi(get(ax,'visible'),'off')
-      xtl = get(ax,'xTickLabel');
-      ytl = get(ax,'yTickLabel');
-      xl = get(ax,'xLabel');
-      yl = get(ax,'yLabel');
-      set(ax,'xTickLabel',[],'yTickLabel',[]);
-      mtexFig.tightInset = get(ax,'tightInset');
-      set(ax,'xTickLabel',xtl,'yTickLabel',ytl,'xlabel',xl,'ylabel',yl);
-    elseif strcmpi(get(ax,'PlotBoxAspectRatioMode'),'auto')
-      mtexFig.tightInset = get(ax,'tightInset');
-    else
-      axis(ax,'normal');
-      mtexFig.tightInset = get(ax,'tightInset');
-      axis(ax,'equal','tight');
-    end
-    
-    
-    
-    if ~isempty(mtexFig.cBarAxis)
-      
-      pos = get(mtexFig.cBarAxis(1),'position');
-      pos = pos(3:4);
-      pos(pos==max(pos)) = 0;
-      
-      
-      try
-        tiPos = get(mtexFig.cBarAxis(1),'tightInset');
-        tiPos = tiPos(1:2) + tiPos(3:4);
-        
-      catch
-        tiPos = [2.5,1.5]*get(mtexFig.cBarAxis(1),'FontSize');
-      end        
-      pos(pos>0) = pos(pos>0) + tiPos(pos>0);
-    
-      if numel(mtexFig.cBarAxis) == numel(mtexFig.children)
-        mtexFig.tightInset = mtexFig.tightInset + [0,pos(2),pos(1),0];
-      else
-        
-      end
-    end
-  end
-
+% update scale bars
+for i = 1:numel(mtexFig.children)
+  mP = getappdata(mtexFig.children(i),'mapPlot');
+  if ~isempty(mP), mP.micronBar.update; end  
+end
 
 end

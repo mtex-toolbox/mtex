@@ -108,6 +108,6 @@ if isNew
     setappdata(gcf,'h',h);
   end
   
-  mtexFig.drawNow('autoPosition');
+  mtexFig.drawNow('Position','auto',varargin{:});
 end
 

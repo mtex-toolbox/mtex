@@ -49,7 +49,8 @@ function h = plot(gB,varargin)
 % GrainSet/specialBoundary
 
 % create a new plot
-mP = newMapPlot(varargin{:});
+[mtexFig,isNew] = newMtexFigure(varargin{:});
+mP = newMapPlot('scanUnit',gB.scanUnit,varargin{:});
 
 obj.Faces    = gB.F;
 obj.Vertices = gB.V;
@@ -76,3 +77,5 @@ end
 h = optiondraw(patch(obj),varargin{:});
 
 if nargout == 0, clear h; end
+if isNew, mtexFig.drawNow('position','large',varargin{:}); end
+mtexFig.keepAspectRatio = false;

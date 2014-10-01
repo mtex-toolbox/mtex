@@ -2,15 +2,10 @@ function colorbar(mtexFig,varargin)
 
 if isempty(mtexFig.cBarAxis) % create some new colorbars
     
-  if ~mtexFig.keepAspectRatio
+  if ~mtexFig.keepAspectRatio || equalScale % one new colorbar
   
-    mtexFig.cBarAxis = colorbar('peer',mtexFig.children(end),'eastoutside','units','pixel');
-    return
-    
-  elseif equalScale % one new colorbar
-      
     mtexFig.cBarAxis = addColorbar(mtexFig.children(end),varargin{:});
-    
+            
   else % many new colorbars
     
     for i = 1:numel(mtexFig.children)      
