@@ -79,7 +79,7 @@ legend off
 hold on
 plot(gB_Fo,gB_Fo.misorientation.angle./degree,'linewidth',1.5)
 hold off
-colorbar(gcm)
+colorbar
 
 %%
 % The more sophisticated way is to colorize the misorientation space and

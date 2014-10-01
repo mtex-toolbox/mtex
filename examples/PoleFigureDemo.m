@@ -69,7 +69,7 @@ plot(pf_modified)
 rec = calcODF(pf,'RESOLUTION',10*degree,'iter_max',6)
 
 plotPDF(rec,h)
-colorbar(gcm)
+colorbar
 
 %%
 %

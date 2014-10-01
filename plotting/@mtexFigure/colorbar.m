@@ -30,7 +30,7 @@ mtexFig.drawNow(varargin{:});
     end
     
     fs = getMTEXpref('FontSize');  
-    h = optiondraw(colorbar('peer',peer,'eastoutside','units','pixel',...
+    h = optiondraw(buildinColorbar('peer',peer,'eastoutside','units','pixel',...
       'FontSize',fs),varargin{:});
     
     pos = get(h,'position');

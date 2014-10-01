@@ -27,14 +27,14 @@ P = loadTensor(fname,CS,'propertyname','piecoelectricity','unit','C/N','interfac
 setMTEXpref('defaultColorMap',blue2redColorMap);
 
 plot(P)
-colorbar(gcm)
+colorbar
 
 %%
 % but also, we can plot the whole crystal behavior
 
 close all
 plot(P,'complete','smooth')
-colorbar(gcm)
+colorbar
 
 %%
 % Most often, the polarisation is illustrated as surface magnitude
@@ -78,13 +78,13 @@ ori = loadOrientation(fname,CS,'interface','generic' ...
 Pm = ori.calcTensor(P)
 
 plot(Pm)
-colorbar(gcm)
+colorbar
 
 %%
 %
 
 close all
 plot(Pm,'complete')
-colorbar(gcm)
+colorbar
 
 setMTEXpref('defaultColorMap',WhiteJetColorMap)
