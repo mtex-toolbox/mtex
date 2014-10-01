@@ -12,8 +12,6 @@ else
   
 end
 
-lx = 'x'; ly = 'y';
-
 if length(d) == size(xy,1)
 
   obj.FaceVertexCData = reshape(d,size(xy,1),[]);
@@ -58,8 +56,7 @@ end
 
 h = optiondraw(patch(obj,'parent',ax),varargin{:});
 
-% cosmetics
-xlabel(lx); ylabel(ly);
+if nargout == 0, clear h;end
 
 
 

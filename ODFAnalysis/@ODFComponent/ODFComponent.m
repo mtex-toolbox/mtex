@@ -1,4 +1,4 @@
-classdef (Abstract) ODFComponent
+classdef ODFComponent
      
   properties (Abstract)
     CS % crystal symmetry
