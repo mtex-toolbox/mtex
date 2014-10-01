@@ -98,14 +98,14 @@ plot(ebsd)
 
 close all
 plot(ebsd,ebsd.mad)
-colorbar(gcm)
+colorbar
 
 %%
 % or
 
 close all
 plot(ebsd,ebsd.bc)
-colorbar(gcm)
+colorbar
 
 %%
 % Here we will use the MAD to identify and eliminate

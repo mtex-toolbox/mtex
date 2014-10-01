@@ -23,7 +23,7 @@ h = project2FundamentalRegion(h);
 color = h.rho ./ degree;
 
 plotIPDF(ebsd.orientations,zvector,'property',color,'MarkerSize',3,'grid')
-colorbar(gcm)
+colorbar
 
 %%
 % We see that all individual orientations are clustered around azimuth

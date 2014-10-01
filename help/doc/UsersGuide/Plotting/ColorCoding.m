@@ -34,7 +34,7 @@ pf = calcPoleFigure(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],...
 
 close all
 plot(pf)
-colorbar(gcm)
+colorbar
 
 %% Equal Colorcoding
 %
@@ -43,7 +43,7 @@ colorbar(gcm)
 % option *colorrange* to *equal*.
 
 plot(pf,'colorRange','equal')
-colorbar(gcm)
+colorbar
 
 %% Setting an Explicite Colorrange
 %
@@ -53,12 +53,12 @@ colorbar(gcm)
 close all
 plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],...
   'colorrange',[0 4],'antipodal');
-colorbar(gcm)
+colorbar
 
 figure
 plotPDF(.5*odf+.5*uniformODF(cs),[Miller(1,0,0,cs),Miller(1,1,1,cs)],...
   'colorrange',[0 4],'antipodal');
-colorbar(gcm)
+colorbar
 
 %% Setting the Contour Levels
 %
@@ -68,7 +68,7 @@ colorbar(gcm)
 close all
 plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],...
   'contourf',0:1:5,'antipodal')
-colorbar(gcm)
+colorbar
 
 %% Modifying the Colorrange After Plotting
 %
@@ -86,7 +86,7 @@ CLim(gcm,[0.38,3.9])
 close all;
 plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],'antipodal','logarithmic')
 CLim(gcm,[0.01 12]);
-colorbar(gcm)
+colorbar
 
 
 %% Changing the Colormap
@@ -96,4 +96,4 @@ colorbar(gcm)
 
 plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],'antipodal')
 mtexColorMap white2black
-colorbar(gcm)
+colorbar
