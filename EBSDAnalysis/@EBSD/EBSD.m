@@ -30,7 +30,8 @@ classdef EBSD < phaseList & dynProp & dynOption & misorientationAnalysis
   end
   
   % general properties
-  properties    
+  properties
+    scanUnit = 'um'       % unit of the x,y coordinates
     unitCell = []         % cell associated to a measurement
   end
   
