@@ -1,25 +1,21 @@
 function  peri = perimeter(grains,varargin)
-% calculates the perimeter of a grain, with holes
+% calculates the perimeter of a grain, without holes
 %
 % Input
-%  p - @grain2d
+%  grains - @grain2d
 %
 % Output
-%  peri    - perimeter
+%  peri - perimeter
 %
 % Syntax
-%   p = perimeter(grains) - 
+%   peri = grains.perimeter
 %
 % See also
 % grain2d/equivalentperimeter
 
-hasHole = grains.hasHole;
-peri = zeros(size(grains));
 
-polyPeri = @(ind) sum(sqrt(sum(diff(grains.V(ind,:)).^2,2)));
-peri(~hasHole) = cellfun(polyPeri,...
-  grains.poly(~hasHole));
+% reduce to first loop
+poly = cellfun(@(x) x(1:find(x(2:end) == x(1),1)),grains.poly,'uniformOutput',false);
 
-peri(hasHole) = cellfun(@(c) sum(cellfun(polyPeri,c)),...
-  grains.poly(hasHole));
-
+peri =  cellfun(@(ind) sum(sqrt(sum(diff(grains.V(ind,:)).^2,2))),poly);
+  
