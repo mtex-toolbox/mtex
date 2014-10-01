@@ -65,4 +65,5 @@ cprintf(matrix,'-L',' ','-Lc',...
 
 disp(' ');
 disp(char(dynProp(ebsd.prop)));
+disp([' Scan unit : ',ebsd.scanUnit]);
 disp(' ');

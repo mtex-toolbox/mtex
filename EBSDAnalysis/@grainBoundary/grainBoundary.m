@@ -20,7 +20,8 @@ classdef grainBoundary < phaseList & dynProp
   
   % general properties
   properties
-    V = []         % vertices x,y coordinates    
+    V = []          % vertices x,y coordinates        
+    scanUnit = 'um' % unit of the vertice coordinates
   end
   
   properties (Dependent = true)

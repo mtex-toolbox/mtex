@@ -17,6 +17,7 @@ classdef grain2d < phaseList & dynProp
   properties (Dependent = true)
     meanOrientation  % mean orientation
     V                % vertices with x,y coordinates
+    scanUnit         % unit of the vertice coordinates
     id2ind           % 
     GOS              % intergranular average misorientation angle
   end
@@ -164,6 +165,10 @@ classdef grain2d < phaseList & dynProp
     
     function gos = get.GOS(grains)
       gos = grains.prop.GOS;
+    end
+    
+    function unit = get.scanUnit(grains)
+      unit = grains.boundary.scanUnit;
     end
     
   end
