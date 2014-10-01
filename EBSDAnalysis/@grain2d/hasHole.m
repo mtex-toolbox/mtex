@@ -8,4 +8,4 @@ function h = hasHole(grains)
 % h  - logical array, |true| if a grain has hole
 %
 
-% TODO
+h = cellfun(@(x) nnz(x == x(1))>2,grains.poly);
