@@ -4,7 +4,7 @@ classdef mapPlot < handle
   properties    
     ax        % the axes that contain the map
     parent    % the figure that contains the map plot
-    micronbar %
+    micronBar % 
     extend = [inf -inf inf -inf]   %
   end
   
@@ -26,16 +26,23 @@ classdef mapPlot < handle
       
       mP.ax = ax;
       mP.parent = get(ax,'parent');
+      mP.micronBar = scaleBar(mP,get_option(varargin,'scanUnit','um'));
       
       % general settings
+      axis(ax,'equal','tight','on');
+      
       set(ax,'TickDir','out',...
-        'XMinorTick','on',...
-        'YMinorTick','on',...
+        'XMinorTick','off',...
+        'YMinorTick','off',...
+        'TickLength',[0,0],...
+        'XTickLabel',{},...
+        'yTickLabel',{},...
         'Layer','top',...
         'box','on');
       grid(ax,'off');
-      axis(ax,'equal','tight','on');
-      
+      xlabel(ax,'x','visible','off')
+      ylabel(ax,'y','visible','off')
+            
       setCamera(varargin{:});
       
       setappdata(ax,'mapPlot',mP);
@@ -114,7 +121,6 @@ if ay_r < ey_r % resize ylim
 
   % set the new limit
   ylim(mP.ax,y)
-
 
 else % resize xlim
   
