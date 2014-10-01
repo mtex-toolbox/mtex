@@ -19,7 +19,7 @@ classdef grain2d < phaseList & dynProp
     V                % vertices with x,y coordinates
     scanUnit         % unit of the vertice coordinates
     id2ind           % 
-    GOS              % intergranular average misorientation angle
+    GOS              % intergranular average misorientation angle    
   end
   
   properties (Dependent = true, Access = protected)
@@ -65,6 +65,7 @@ classdef grain2d < phaseList & dynProp
       grains.grainSize = full(sum(I_DG,1)).';
                         
       grains.boundary = grainBoundary(V,F,I_FDext,ebsd);
+      grains.boundary.scanUnit = ebsd.scanUnit;
       grains.innerBoundary = grainBoundary(V,F,I_FDint,ebsd);
       
       grains.poly = calcPolygons(I_FDext * I_DG,F,V);
