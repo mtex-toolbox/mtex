@@ -137,17 +137,30 @@ for a = 1:numel(ax)
     case 'labels'
       la = [get(ax(a),'xlabel'),get(ax(a),'ylabel')];
       set(la,'visible',onoff);
-          
+
+    case 'ticks'
+      
+      if strcmp(onoff,'on')
+        set(ax(a),'xtickLabelMode','auto','ytickLabelMode','auto');
+        set(ax(a),'tickLength',[0.01,0.01]);
+      else
+        set(ax(a),'xtickLabel',{},'ytickLabel',{});
+        set(ax(a),'tickLength',[0,0]);
+      end
+      
     otherwise
     
-    if ~isappdata(ax(a),'sphericalPlot'), continue;end
-    sP = getappdata(ax(a),'sphericalPlot');
-    if isempty(sP.grid)
-      set(ax(a),'XGrid',onoff,'YGrid',onoff);
-    else
-      set(sP.(element),'visible',onoff);
-    end
-  end  
+      if isappdata(ax(a),'sphericalPlot')
+        sP = getappdata(ax(a),'sphericalPlot');
+        if isempty(sP.grid)
+          set(ax(a),'XGrid',onoff,'YGrid',onoff);
+        else
+          set(sP.(element),'visible',onoff);
+        end
+      else
+        
+      end
+  end
 end
 
 end

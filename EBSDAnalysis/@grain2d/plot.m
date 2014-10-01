@@ -16,7 +16,8 @@ function h = plot(grains,varargin)
 % --------------------- compute colorcoding ------------------------
 
 % create a new plot
-mP = newMapPlot(varargin{:});
+[mtexFig,isNew] = newMtexFigure(varargin{:});
+mP = newMapPlot('scanUnit',grains.scanUnit,varargin{:});
 
 if isempty(grains)
   if nargout==1, h = [];end
@@ -74,13 +75,17 @@ else % otherwise phase plot
 
   end
 
-  legend('-DynamicLegend','location','NorthEast');
-    
 end
 
+% we have to plot grain boundary individually
 hold on
-plot(grains.boundary,varargin{:});
+hh = plot(grains.boundary,varargin{:});
+set(get(get(hh,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
 hold off
+
+warning off
+legend('-DynamicLegend','location','NorthEast');
+warning on
 
 % keep track of the extend of the graphics
 % this is needed for the zoom: TODO maybe this can be done better
@@ -95,6 +100,9 @@ set(dcm_obj,'SnapToDataVertex','off')
 set(dcm_obj,'UpdateFcn',{@tooltip,grains});
 
 datacursormode on;
+
+if isNew, mtexFig.drawNow('position','large',varargin{:}); end
+mtexFig.keepAspectRatio = false;
 
 end
 

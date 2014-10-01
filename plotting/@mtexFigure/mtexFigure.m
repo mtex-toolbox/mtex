@@ -5,6 +5,23 @@ classdef mtexFigure < handle
 % * nicely resize axes
 % * individual colorbar
 % * global colorbars
+%
+% case A: children of same size and fixed aspectratio 
+%
+%  drawNow
+%    |  |
+%    V  |
+%  calcTightInset -> compute width of boundary around each axis
+%       |
+%       V
+%  updateLayout
+%       |
+%       V
+%  calcPartition -> compute partition (nrows, ncols)
+%       |
+%       V
+%  calcAxesSize  -> compute axes size
+
 
   properties
     parent            % the parent figure    
@@ -44,7 +61,7 @@ classdef mtexFigure < handle
       end
       
       % set custom resize function
-      set(gcf,'ResizeFcn',@(src,evt) figResize(src,evt,mtexFig));
+      set(gcf,'ResizeFcn',@(src,evt) updateLayout(mtexFig));
 
       mtexFig.parent = gcf;
                 
@@ -58,6 +75,7 @@ classdef mtexFigure < handle
       setappdata(mtexFig.parent,'mtexFig',mtexFig);
       
       varargin = delete_option(varargin,'color',1);
+      varargin = delete_option(varargin,'position',1);
       optiondraw(mtexFig.parent,varargin{:});              
 
       % set data cursor
@@ -152,7 +170,7 @@ classdef mtexFigure < handle
       % the height of all axes is the number of rows times the height of
       % each single axis + inner and outer spacing
       
-      ah = mtexFig.nrows * (mtexFig.axisHeight +  + sum(mtexFig.tightInset([2,4])))...
+      ah = mtexFig.nrows * (mtexFig.axisHeight + sum(mtexFig.tightInset([2,4])))...
         + 2*mtexFig.outerPlotSpacing + ...
         (mtexFig.nrows-1) * mtexFig.innerPlotSpacing;
     end

@@ -42,14 +42,12 @@ end
 
 if isNew % finalize plot
   
-  mtexFig.drawNow('autoPosition');
+  mtexFig.drawNow('Position','auto',varargin{:});
   setappdata(gcf,'inversePoleFigureDirection',r);
   setappdata(gcf,'CS',odf.CS);
   setappdata(gcf,'SS',odf.SS);
   set(gcf,'tag','ipdf');
   set(gcf,'Name',['Inverse Pole Figures of ',inputname(1)]);
-
-  mtexFig.drawNow('autoPosition');
 
 end
 

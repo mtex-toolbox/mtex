@@ -69,8 +69,9 @@ for ir = 1:length(r)
 
 end
 
-mtexFig.drawNow('autoPosition');
-
+if isNew
+  mtexFig.drawNow('Position','auto',varargin{:});
+end
 
 % --------------- Tooltip function ------------------
 function txt = tooltip(empt,eventdata) %#ok<INUSL>

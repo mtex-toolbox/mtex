@@ -69,7 +69,8 @@ if isNew % finalize plot
     setappdata(gcf,'h',h);
   end
 
-  mtexFig.drawNow('autoPosition');
+  mtexFig.drawNow('Position','auto',varargin{:});
+  
 end
 
 % --------------- Tooltip function -------------------------------

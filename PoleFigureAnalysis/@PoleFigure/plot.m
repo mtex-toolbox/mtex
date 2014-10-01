@@ -36,5 +36,5 @@ if isNew % finalize plot
   setappdata(gcf,'CS',pf.CS);
   set(gcf,'Name',['Pole Figures of Specimen ',inputname(1)]);
   set(gcf,'Tag','pdf');
-  mtexFig.drawNow('autoPosition',varargin{:});
+  mtexFig.drawNow('Position','auto',varargin{:});
 end
