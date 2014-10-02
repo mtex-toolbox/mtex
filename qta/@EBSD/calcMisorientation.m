@@ -29,7 +29,7 @@ checkSinglePhase(ebsd2);
 
 %% determine minimum distance
 
-%exteact coordinates
+%extract coordinates
 X1 = get(ebsd1,'X');
 Y1 = get(ebsd1,'Y');
 X2 = get(ebsd2,'X');
@@ -49,7 +49,7 @@ samplSize = get_option(varargin,'sampleSize',100000);
 i1 = randi(numel(ebsd1),samplSize,1);
 i2 = randi(numel(ebsd2),samplSize,1);
 
-%% ensure points are not to close together
+%% ensure points are not too close together
 
 d = sqrt((X1(i1)-X2(i2)).^2 + (X1(i1)-X2(i2)).^2);
 

@@ -32,6 +32,7 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 %  HEADER            - number of header lines
 %  BUNGE             - [phi1 Phi phi2] Euler angle in Bunge convention (default)
 %  ABG               - [alpha beta gamma] Euler angle in Mathies convention
+%  PASSIVE           - 
 %
 %
 %% Example
@@ -47,6 +48,8 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 %
 %% See also
 % ImportEBSDData loadEBSD ebsd_demo
+
+max_num_phases = 40;
 
 try
 % load data
@@ -106,7 +109,7 @@ if istype(names,euler) % Euler angles specified
   
   % check for choosing
   if max([alpha(:);beta(:);gamma(:)]) < 10*degree
-    warndlg('The imported Euler angles appears to be quit small, maybe your data are in radians and not in degree as you specified?');
+    warndlg('The imported Euler angles appear to be quite small. Perhaps your data are in radians and not in degrees as you specified?');
   end
   
   % transform to quaternions
@@ -131,6 +134,19 @@ if istype(names,{'Phase'})
   
   phase = d(:,layoutcol(names,{'Phase'}));
   
+  % In some software, selecting/partitioning data points is done by setting
+  % the phase value to -1. All phase values must be positive integers in
+  % mtex. To fix this, add a 'dummy' phase to contain the excluded points.
+  if any(phase < 0)
+      loc = check_option(varargin, 'cs');
+      tmp=varargin{loc+1};
+      assignin('base','tmp2',tmp)
+      phase(phase < 0) = max(phase)+1;
+      tmp{length(tmp)+1} = symmetry('1', 'mineral', 'Excluded points');
+      assignin('base','tmp3',tmp)
+      varargin{loc+1} = tmp(:);      
+      clear tmp
+  end  
   
   %[ig,ig,phase] = unique(phase);
 else
@@ -139,9 +155,10 @@ else
   
 end
 
-if max(phase)>40
-  
-  warning('MTEX:tomanyphases','Found more then 20 phases. I''m going to ignore them.');
+if max(phase)>max_num_phases
+    
+  warning('MTEX:toomanyphases', ...
+      ['Found more than ' num2str(max_num_phases) '. I''m going to ignore them all.']);
   phase = ones(size(d,1),1);
   
 end
@@ -156,7 +173,6 @@ if istype(names,{'x' 'y'})
   
 end
 
-
 % assign all other as options
 opt = struct;
 opts = delete_option(names,  [euler quat {'Phase'}]);
@@ -170,7 +186,6 @@ if ~isempty(opts)
   opts_struct = [opts_struct{:}];
   opt = struct(opts_struct{:});
 end
-
 
 % return varargin as options
 options = varargin;
