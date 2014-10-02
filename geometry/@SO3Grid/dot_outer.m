@@ -1,60 +1,64 @@
-function d = dot_outer(SO3G,q,varargin)
+function d = dot_outer(S3G,q,varargin)
 % return outer inner product of all nodes within a eps neighborhood
 %
-%% Syntax  
-%  d = dot_outer(SO3G,nodes,'epsilon',radius)
+% Syntax  
+%   d = dot_outer(SO3G,nodes,'epsilon',radius)
 %
-%% Input
+% Input
 %  SO3G   - @SO3Grid
 %  nodes  - @quaternion
 %  radius - double
-%% Output
+%
+% Output
 %  d      - sparse matrix
 %
-%% formuala:
+% Formula
 % cos angle(g1,g2)/2 = dot(g1,g2)
 
-if ~isa(SO3G,'SO3Grid')
-  d = dot_outer(q,SO3G,varargin{:});
+if ~isa(S3G,'SO3Grid')
+  d = dot_outer(q,S3G,varargin{:}).';
   return
 end
 
 epsilon = get_option(varargin,'epsilon',pi);
 
-if ~check_option(SO3G,'indexed') || check_option(varargin,{'full','all'})
+if check_option(varargin,{'full','all'})
   
-  d = dot_outer(SO3G.orientation,q,varargin{:});
+  d = dot_outer(orientation(S3G),q,varargin{:});
   
 else
-  d = sparse(numel(SO3G),numel(q));
+  
+  d = sparse(length(S3G),length(q));
   
   % rotate q according to SO3Grid.center
-  if ~isempty(SO3G.center),q = inverse(SO3G.center) * q; end
+  if ~isempty(S3G.center),q = inv(S3G.center) * q; end %#ok<MINV>
   
   % extract SO3Grid
-  [ybeta,yalpha,ialphabeta,palpha] = getdata(SO3G.alphabeta);
+  [ybeta,yalpha,ialphabeta,palpha] = getdata(S3G.alphabeta);
   
-  ygamma = double(SO3G.gamma);
-  sgamma = getMin(SO3G.gamma);
-  pgamma = getPeriod(SO3G.gamma(1));
-  igamma = cumsum([0,GridLength(SO3G.gamma)]);
+  
+  
+  ygamma = [S3G.gamma.points];
+  sgamma = [S3G.gamma.min];
+  pgamma = S3G.gamma(1).period;
+  igamma = cumsum([0,GridLength(S3G.gamma)]);
   
   % correct for specimen symmetry
   if check_option(varargin,'nospecimensymmetry')
     qss = idquaternion;
     palpha = 2*pi;
   else
-    qss = quaternion(rotation_special(SO3G.SS));
+    qss = quaternion(rotation_special(S3G.SS));
     palpha = max(palpha,pi);
   end
   
   % for finding the minimial beta angle
-  qcs = quaternion(rotation_special(SO3G.CS));
+  qcs = quaternion(S3G.CS.rotation_special);
   
   [xalpha,xbeta,xgamma] = Euler( qss * q * qcs ,'ZYZ');
   
-  ncs = numel(qss)*numel(qcs);
-  cs = 0:numel(q):ncs*numel(q);
+  ncs = length(qss)*length(qcs);
+  cs = 0:length(q):ncs*length(q);
   
   for k=1:ncs
   

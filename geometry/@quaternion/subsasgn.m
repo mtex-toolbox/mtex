@@ -1,7 +1,7 @@
 function q = subsasgn(q,s,b)
 % overloads subsasgn
 
-if isempty(q)
+if isempty(q) && ~isempty(b)
   q = b;
   q.a = [];
   q.b = [];
@@ -9,21 +9,31 @@ if isempty(q)
   q.d = [];
 end
 
-if isa(b,'quaternion')
-  switch s.type
-    case '()'
-      q.a = subsasgn(q.a,s,b.a);
-      q.b = subsasgn(q.b,s,b.b);
-      q.c = subsasgn(q.c,s,b.c);
-      q.d = subsasgn(q.d,s,b.d);
-    otherwise
-      error('Wrong indexing. Only ()-indexing is allowed for quaternion!');
-  end
-elseif isempty(b)
-  q.a = subsasgn(q.a,s,[]);
-  q.b = subsasgn(q.b,s,[]);
-  q.c = subsasgn(q.c,s,[]);
-  q.d = subsasgn(q.d,s,[]);
-else
-  error('Value must be of type quaternion!');
+if islogical(s) || isnumeric(s)
+  s = substruct('()',{s});
+end
+
+switch s(1).type
+  
+  case '()'
+      
+    if numel(s)>1, b =  builtin('subsasgn',subsref(q,s(1)),s(2:end),b); end
+      
+    if isempty(b)
+      q.a = subsasgn(q.a,s(1),[]);
+      q.b = subsasgn(q.b,s(1),[]);
+      q.c = subsasgn(q.c,s(1),[]);
+      q.d = subsasgn(q.d,s(1),[]);
+    else
+      q.a = subsasgn(q.a,s(1),b.a);
+      q.b = subsasgn(q.b,s(1),b.b);
+      q.c = subsasgn(q.c,s(1),b.c);
+      q.d = subsasgn(q.d,s(1),b.d);
+    end
+  otherwise
+      
+    q =  builtin('subsasgn',q,s,b);
+      
+end
+
 end

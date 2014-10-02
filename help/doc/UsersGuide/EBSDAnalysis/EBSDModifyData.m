@@ -6,70 +6,46 @@
 %% Contents
 %
 %%
-% First, let us import some example <mtexdata.html EBSD data> and plot
+% First, let us import some example <mtexdata.html EBSD data>. and plot
 % the raw data
 
-mtexdata aachen;
+mtexdata forsterite
+
+%%
+% These data consist of two indexed phases, _Iron_ and _Magnesium_. The not
+% indexed phase called phase _not Indexed_. The phases can be visualized by
+
+close all; plotx2east
 plot(ebsd)
 
-%%
-% These data consist of two indexed phases, _Iron_ and _Magnesium_ : The not
-% indexed data is called phase _not Indexed_. They can be visualized by a
-% spatial phase plot (also called orientation map)
+%% Selecting a certain phase
+% In order to restrict the EBSD data to a certain phase just use the
+% mineral name as an index, i.e.
 
-close, plot(ebsd,'property','phase')
-
-%% Selecting certain phases
-% In order to restrict the data to a certain phase, the data is indexed by
-% its mineral name with the following syntax
-
-ebsd_Fe = ebsd('Fe')
+ebsd('Forsterite')
 
 %%
-% In order to extract a couple of phases, the mineral names have to be
-% grouped in curled parethesis.
+% contains only the Forterite measurements. In order to extract a couple of
+% phases, the mineral names have to be grouped in curled parethesis.
 
-ebsd({'Fe','Mg'})
-
-%%
-% As an example, let us plot only all not indexed data
-
-close, plot(ebsd('notIndexed'),'facecolor','r')
-
-%% See also
-% EBSD/subsref EBSD/subsasgn
-%
-%% Realign / Rotate the data
-%
-% Sometimes it is necessary to realing the EBSD data to the correct position in the external reference frame, or to 
-% change the external reference frame from one to the other. Rotations in
-% MTEX can be done by rotating, shifting or flipping. This is done by the 
-% commands <EBSD.rotate.html rotate>, <EBSD.fliplr.html fliplr>, <EBSD.flipud.html flipud> and
-% <EBSD.shift.html shift>.
-
-% define a rotation
-rot = rotation('axis',zvector,'angle',5*degree);
-
-% rotate the EBSD data
-ebsd_rot = rotate(ebsd,rot);
-
-% plot the rotated EBSD data
-close, plot(ebsd_rot)
+ebsd({'Fo','En'})
 
 %%
-% It should be stressed that any sort of rotation on EBSD DATASETS does not only effect the spatial
-% data, i.e. the x, y values, but also the crystal orientations are rotated
-% accordingly. This is true as well for the flipping commands
-% <EBSD.rotate.html rotate> and <EBSD.fliplr.html fliplr>. A good test is
-% to rotate a given dataset in different ways and make plots for different
-% rotations. You will see that not only the picture is flipped/shifted/rotated but also the
-% color of the grain changes!
+% As an example, let us plot the Forsterite data. 
 
-ebsd_flip = fliplr(ebsd_rot);
-close, plot( ebsd_flip )
+close all
+plot(ebsd('Forsterite'))
+%plot(ebsd('notIndexed'),'facecolor','r')
 
-%% See also
-% EBSD/rotate EBSD/fliplr EBSD/flipud EBSD/shift EBSD/affinetrans
+%%
+% The data are colorized according to its orientation. By default color of
+% an orientation is determined by its position in the 001 inverse pole
+% figure which itself is colored as
+
+oM = ipdfHSVOrientationMapping(ebsd('Forsterite'))
+plot(oM)
+
+
 
 %% Restricting to a region of interest
 % If one is not interested in the whole data set but only in those
@@ -77,36 +53,41 @@ close, plot( ebsd_flip )
 % as follows:
 
 %%
-% First define a region
+% First define a region by [xmin ymin xmax-xmin ymax-ymin]
 
-region = [120 100;
-          200 100;
-          200 130; 
-          120 130;
-          120 100];
+region = [5 2 10 5]*10^3;
 
 %%
 % plot the ebsd data together with the region of interest
 
-close, plot(ebsd)
-line(region(:,1),region(:,2),'color','r','linewidth',2)
+close all
+plot(ebsd)
+rectangle('position',region,'edgecolor','r','linewidth',2)
 
 %%
-% In order to restrict the ebsd data to the polygon we may use the command
-% <EBSD.inpolygon.html inpolygon> to locate all EBSD data inside the region
+% The command <EBSD.inpolygon.html inpolygon> checks for each EBSD data
+% point whether it is inside a polygon or not, i.e.
 
-in_region = inpolygon(ebsd,region);
+condition = inpolygon(ebsd,region);
 
 %%
-% and use subindexing to restrict the data
+% results in a large vector of |TRUE| and |FALSE| stating which data points
+% are inside the region. Restricting the EBSD data by this condition is
+% done via
 
-ebsd = ebsd( in_region )
+ebsd = ebsd(condition)
 
 %%
 % plot
 
-close, plot(ebsd)
+close all
+plot(ebsd)
 
+%%
+% Note, that you can also select a polygon by mouse using the command
+%
+%   poly = selectPolygon
+%
 %% Remove Inaccurate Orientation Measurements
 %
 % *By MAD (mean angular deviation)* in the case of Oxford Channel programs, or *by
@@ -115,43 +96,37 @@ close, plot(ebsd)
 % Most EBSD measurements contain quantities indicating inaccurate
 % measurements. 
 
-close, plot(ebsd,'property','mad')
-
-% or
-
-close, plot(ebsd,'property','bc')
+close all
+plot(ebsd,ebsd.mad)
+colorbar
 
 %%
-% Here we will use the MAD or CI value to identify and eliminate
+% or
+
+close all
+plot(ebsd,ebsd.bc)
+colorbar
+
+%%
+% Here we will use the MAD to identify and eliminate
 % inaccurate measurements.
 
-% extract the quantity mad 
-mad = get(ebsd,'mad');
-
-%or
-% % extract the quantity ci 
-bc = get(ebsd,'bc');
-
 % plot a histogram
-close, hist(mad)
-
-%or
-% plot a histogram
-close, hist(bc)
+close all
+hist(ebsd.mad)
 
 
 %%
 
 % take only those measurements with MAD smaller then one
-ebsd_corrected = ebsd(mad<1)
+ebsd_corrected = ebsd(ebsd.mad<0.8)
 
-% take only those measurements with CI higher then 0.1 or 0.2
-ebsd_corrected = ebsd(bc>0.1 )
 
 %%
 %
 
-close, plot(ebsd_corrected)
+close all
+plot(ebsd_corrected)
 
 
 

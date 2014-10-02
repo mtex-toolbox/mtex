@@ -1,20 +1,19 @@
-function [m,l] = symmetrise(m,varargin)
+function varargout = symmetrise(m,varargin)
 % directions symmetrically equivalent to m
 %
-%% Syntax
+% Syntax
 %  m = symmetrise(m) - @Miller indice symmetrically equivalent to m
 %
-%% Input
+% Input
 %  m - @Miller
 %
-%% Output
+% Output
 %  v - @Miller
 %
-%% Options
+% Options
 %  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
 
-if nargout==2
-  [m.vector3d,l] = symmetrise(m.vector3d,m.CS,varargin{:});
-else
-  m.vector3d = symmetrise(m.vector3d,m.CS,varargin{:});
-end
+[varargout{1:nargout}] = symmetrise(vector3d(m),m.CS,varargin{:});
+
+[m.x,m.y,m.z] = double(varargout{1});
+varargout{1} = m;

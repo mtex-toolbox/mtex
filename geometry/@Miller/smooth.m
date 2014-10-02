@@ -1,29 +1,26 @@
 function varargout = smooth(m,varargin)
 % plot Miller indece
 %
-%% Input
+% Input
 %  m  - Miller
 %
-%% Options
+% Options
 %
-%% See also
+% See also
 % vector3d/smooth
 
-% get axis hande
-[ax,m,varargin] = getAxHandle(m,varargin{:});
 
-o = extract_option(m,'antipodal');
-
-% define plotting grid
-[maxtheta,maxrho,minrho] = getFundamentalRegionPF(m.CS,o{:},varargin{:});
-out = S2Grid('PLOT','MAXTHETA',maxtheta,'MAXRHO',maxrho,'MINRHO',minrho,...
-  'RESTRICT2MINMAX',o{:},varargin{:});
+% symmetrise points
+x = vector3d(symmetrise(m,'skipAntipodal'));
 
 % symmetrise data
-x = symmetrise(m,'skipAntipodal');
-
-% perform kernel density estimation
-kde = kernelDensityEstimation(x,out,varargin{:});
+if ~isempty(varargin) && isnumeric(varargin{1})
+  varargin{1} = repmat(varargin{1}(:).',size(x,1),1);
+end
+    
+% get plotting region
+sR = region(m,varargin{:});
 
 % use vector3d/smooth for output
-[varargout{1:nargout}] = smooth(ax,out,kde,varargin{:});
+[varargout{1:nargout}] = smooth(x(:),varargin{:},sR);
+

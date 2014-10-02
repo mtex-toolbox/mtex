@@ -61,17 +61,21 @@ I_PC(1000,:)
 parent = merged_grains( 1000 );
 childs = grains(logical( I_PC(1000,:) ))
 
-close,   plot(childs)
-hold on, plotBoundary(childs,'linecolor','r','linewidth',1.5)
-hold on, plotBoundary(parent,'linecolor','k','linewidth',2)
+close all
+plot(childs)
+hold on
+plotBoundary(childs,'linecolor','r','linewidth',1.5)
+plotBoundary(parent,'linecolor','k','linewidth',2)
 
 %%
 % the two populations of the EBSD of the neighbour grains are close
 % together
 
-close,   plotpdf(get(childs(1),'EBSD'),Miller(1,1,1),...
+close all
+plotPDF(childs(1).ebsd,Miller(1,1,1),...
   'marker','x','markersize',5,'antipodal')
-hold on, plotpdf(get(childs(2),'EBSD'),Miller(1,1,1),...
+hold on
+plotPDF(childs(2).ebsd,Miller(1,1,1),...
   'marker','x','markersize',5,'antipodal')
 
 %%
@@ -79,6 +83,7 @@ hold on, plotpdf(get(childs(2),'EBSD'),Miller(1,1,1),...
 
 [merged_grains_20,I_PC2] = merge(merged_grains,[10 20]*degree);
 
+close all
 hist(full(sum(I_PC2,2)),1:11)
 
 %%
@@ -98,18 +103,23 @@ grandparent  = merged_grains_20(s)
 parents      = merged_grains( logical(I_PC2(s,:)))
 childs       = grains( logical( I_PC2(s,:) * I_PC ) )
 
-close,   plot(childs)
-hold on, plotBoundary(parents,'linecolor','r','linewidth',2)
-hold on, plotBoundary(grandparent,'linecolor','k','linewidth',2)
+close all
+plot(childs)
+hold on
+plotBoundary(parents,'linecolor','r','linewidth',2)
+plotBoundary(grandparent,'linecolor','k','linewidth',2)
 
 %%
 
-close,   plot(parents)
-hold on, plotBoundary(grandparent,'linecolor','k','linewidth',2)
+close all
+plot(parents)
+hold on
+plotBoundary(grandparent,'linecolor','k','linewidth',2)
 
 %%
 
-close,   plot(grandparent)
+close all
+plot(grandparent)
 
 %% Merging grains with special boundaries
 % We can also merge grains with a special grain boundary relation, this
@@ -121,6 +131,7 @@ close,   plot(grandparent)
 % Some grains show that they form a complex interaction, i.e. there are some merges
 % and some do not merge
 
+close all
 hist(full(sum(I_PC,2)),1:12)
 
 %%
@@ -135,12 +146,14 @@ childs = grains(find(I_PC(1258,:)))
 %%
 % We can inspect the orientations
 
-close, plotpdf(get(parent,'EBSD'),Miller(0,0,1),'antipodal');
+close all
+plotPDF(parent.ebsd,Miller(0,0,1),'antipodal');
+hold on
 
 c = {'y','m','r','c','g'};
 for k=1:numel(childs)
- hold on,plotpdf(get(childs(k),'EBSD'),Miller(0,0,1),...
-  'markercolor',c{k},'marker','x','markersize',5,'antipodal')
+  plotPDF(childs(k).ebsd,Miller(0,0,1),...
+    'markercolor',c{k},'marker','x','markersize',5,'antipodal')
 end
 
 %%
@@ -148,13 +161,16 @@ end
 
 c = {'y','m','r','c','g'};
 
-close,   plotBoundary(parent,'linewidth',3)
-hold on, plotBoundary(childs,'property',CSL(3),...
+close all
+plotBoundary(parent,'linewidth',3)
+hold on
+
+plotBoundary(childs,'property',CSL(3),...
   'linecolor','b','linewidth',2)
 
-hold on, plotBoundary(childs,'property',CSL(9),...
+plotBoundary(childs,'property',CSL(9),...
   'linecolor',[ 0 1 1 ],'linewidth',3)
 
 for k=1:numel(childs)
-  hold on, plot(childs(k),'facecolor',c{k},'edgecolor','none')
+  plot(childs(k),'facecolor',c{k},'edgecolor','none')
 end

@@ -9,16 +9,17 @@
 %% Connection between grains and EBSD data
 % As usual, let us first import some EBSD data construct some grains
 
-mtexdata aachen
+close all
+mtexdata forsterite
 plotx2east
-grains = calcGrains(ebsd,'angle',2*degree)
+[grains,ebsd] = calcGrains(ebsd)
 
 %%
 % The <GrainSet_index.html GrainSet> contains the EBSD data it was reconstructed from. We can
-% access these data by the <GrainSet.get.html get> command.
+% access these data by
 
-grain_selected = grains( grainSize(grains) >=  1160)
-ebsd_selected  = get(grain_selected,'EBSD')
+grain_selected = grains( grains.grainSize >=  1160)
+ebsd_selected = ebsd(grain_selected)
 
 %%
 % A more convinient way to select grains in daily practice, is by spatial
@@ -26,57 +27,56 @@ ebsd_selected  = get(grain_selected,'EBSD')
 % adjusted to match the spatial coordinates, present in the EBSD or
 % GrainSet.
 
-grain_selected = findByLocation(grains,[145  137])
+grain_selected = grains(12000,3000)
+
+
+%%
+% you can get the id of this grain by
+
+grain_selected.id
 
 %%
 %
 
-plotBoundary(grain_selected,'linewidth',2)
-hold on, plot(ebsd_selected)
+plot(grain_selected.boundary,'linewidth',2)
+hold on
+plot(ebsd(grain_selected))
+hold off
 
 %% Visualize the misorientation within a grain
 % 
 
-o = get(grain_selected,'mis2mean')
-close, plotspatial(grain_selected,'property',angle(o)/degree)
+close
+plot(grain_selected.boundary,'linewidth',2)
+hold on
+plot(ebsd(grain_selected),ebsd(grain_selected).mis2mean.angle./degree)
+hold off
 colorbar
-
-%%
-
-close, plotspatial(grain_selected,'property','mis2mean')
 
 %% Testing on Bingham distribution for a single grain
 % Although the orientations of an individual grain are highly concentrated,
 % they may vary in the shape. In particular, if the grain was deformed by
 % some process, we are interessed in quantifications.
-%%
-% Note, that the |plotpdf|, |plotipdf| and |plotodf| command by default
-% only plots the mean orientation of grains. Thus, for these commands, we
-% have to explicitely specify the underlaying EBSD data.
 
-close, plotpdf(ebsd_selected,...
-  [Miller(0,0,1),Miller(0,1,1),Miller(1,1,1)],'antipodal',...
-  'position',[100 100 600 300])
+cs = ebsd(grain_selected).CS;
+plotPDF(ebsd(grain_selected).orientations,...
+  [Miller(0,0,1,cs),Miller(0,1,1,cs),Miller(1,1,1,cs)],'antipodal')
 
-%%
-%
-
-close, scatter(grain_selected)
 
 %%
 % Testing on the distribution shows a gentle prolatness, nevertheless we
 % would reject the hypothesis for some level of significance, since the
 % distribution is highly concentrated and the numerical results vague.
 
-[qm,lambda,U,kappa] = mean(grain_selected,'approximated');
+[qm,lambda,U,kappa] = mean(ebsd(grain_selected).orientations,'approximated');
 num2str(kappa')
 
 %%
 %
-
-T_spherical = bingham_test(grain_selected,'spherical','approximated');
-T_prolate   = bingham_test(grain_selected,'prolate',  'approximated');
-T_oblate    = bingham_test(grain_selected,'oblate',   'approximated');
+ori = ebsd(grain_selected).orientations;
+T_spherical = bingham_test(ori,'spherical','approximated');
+T_prolate   = bingham_test(ori,'prolate',  'approximated');
+T_oblate    = bingham_test(ori,'oblate',   'approximated');
 
 [T_spherical T_prolate T_oblate]
 
@@ -88,19 +88,20 @@ T_oblate    = bingham_test(grain_selected,'oblate',   'approximated');
 %%
 % We proceed by specifiing such a line segment
 
-close,   plotBoundary(grain_selected,'linewidth',2)
-hold on, plot(ebsd_selected,'property','angle')
+close,   plot(grain_selected.boundary,'linewidth',2)
+hold on, plot(ebsd(grain_selected),ebsd(grain_selected).orientations.angle)
 
 % line segment
-x =  [154   125.25;
-      169.5  134];
+x =  [11000   2500; ...
+      13500  5000];
+
 line(x(:,1),x(:,2),'linewidth',2)
 
 %%
 % The command <EBSD.spatialProfile.html spatialProfile> extracts
 % orientations along a line segment
 
-[o,dist] = spatialProfile(ebsd_selected,x);
+[o,dist] = spatialProfile(ebsd(grain_selected),x);
 
 %%
 % where the first output argument is a set of orientations ordered along
@@ -108,11 +109,11 @@ line(x(:,1),x(:,2),'linewidth',2)
 %% 
 % So, we compute misorientation angle and plot as a profile
 
-m = o(1).\o
+m = o(1) \ o
 
 close, plot(dist,angle(m)/degree)
 
-m = o(1:end-1).\o(2:end)
+m = o(1:end-1) .\ o(2:end)
 
 hold on, plot(dist(1:end-1)+diff(dist)./2,... % shift 
   angle(m)/degree,'color','r')
@@ -125,8 +126,4 @@ legend('to reference orientation','to neighbour')
 % distance
 
 close, plot(axis(o),dist,'markersize',3,'antipodal')
-
-
-
-
 

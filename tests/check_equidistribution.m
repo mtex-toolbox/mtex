@@ -6,33 +6,33 @@ hh = symmetrise(h);
 
 q = SO3Grid(5*degree,cs,ss);
 
-k = kernel('de la Vallee Poussin','halfwidth',10*degree)
+k = deLaValeePoussinKernel('halfwidth',10*degree)
 
-odf = ODF(q,ones(size(q))./numel(q),k,cs,ss)
+odf = unimodalODF(q,k,cs,ss)
 
-plotpdf(odf,h,'resolution',5*degree)
+plotPDF(odf,h,'resolution',5*degree)
 
 
 return
 
-cs = symmetry();
-ss = symmetry();
+cs = crystalSymmetry();
+ss = specimenSymmetry();
 
 res = 5*degree;
 
 rotangle = res/2:res:pi-res/2;
-points = numel(S2Grid('equispaced','resolution',res));
+points = length(equispacedS2Grid('resolution',res));
 
 q = quaternion();
 for i = 1:length(rotangle)
-  rotax = S2Grid('equispaced','points',sin(rotangle(i)/2)^2*points);
+  rotax = equispacedS2Grid('points',sin(rotangle(i)/2)^2*points);
   q = [q,axis2quat(vector3d(rotax),rotangle(i))];
 end
 
 q = SO3Grid(q,cs,ss);
 
-k = kernel('de la Vallee Poussin','halfwidth',10*degree)
+k = deLaValeePoussinKernel('halfwidth',10*degree)
 
-odf = ODF(q,ones(size(q))./numel(q),k,cs,ss)
+odf = unimodalODF(q,k,cs,ss)
 
-plotpdf(odf,h,'resolution',5*degree)
+plotPDF(odf,h,'resolution',5*degree)

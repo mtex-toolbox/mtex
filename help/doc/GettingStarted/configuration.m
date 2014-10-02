@@ -25,11 +25,14 @@
 % example, almost all ploting methods support the option |RESOLUTION|
 % followed by a double value specifying the resolution
 
-plotpdf(odf,Miller(1,0,0),'resolution',5*degree,'contour');
+odf = SantaFe
+plotPDF(odf,Miller(1,0,0,odf.CS),'resolution',5*degree,'contour');
 
 %%
 % Options that are not followed by a value are called flags. In the above
 % example |contour| is a flag that says the plotting routine to plot
 % contour lines. Options and flags to a function are allways optional and
-% can be passed in any order.
+% can be passed in any order. If conflicting options or flags are passed,
+% i.e., the resolution is specified twice, the later option in the list is
+% considered to be the right one.
 %

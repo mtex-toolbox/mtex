@@ -1,7 +1,7 @@
 %%
 
-cs = symmetry('m-3m');
-ss = symmetry('-1');
+cs = crystalSymmetry('m-3m');
+ss = specimenSymmetry('1');
 
 odf = unimodalODF(idquaternion,cs,ss,'halfwidth',1.5*degree);
 
@@ -25,8 +25,8 @@ plot(r/degree,v);
 
 %%
 clear v;
-cs = symmetry('m-3m');
-ss = symmetry('mmm');
+cs = crystalSymmetry('m-3m');
+ss = specimenSymmetry('mmm');
 r = linspace(0*degree,60*degree,20);
 omega = linspace(0,45*degree,4);
 for i = 1:length(r)
@@ -55,14 +55,14 @@ plot(r/degree,reshape(v,size(v,1),[]));
 %plot(r/degree,v);
 
 %%
-cs = symmetry('m-3m');
-ss = symmetry('mmm');
+cs = crystalSymmetry('m-3m');
+ss = specimenSymmetry('mmm');
 S3G = SO3Grid(1*degree,cs,ss);
-r = S2Grid('plot','resolution',10*degree,'hemisphere','north','maxrho',90*degree,'RESTRICT2MINMAX');
+r = plotS2Grid('resolution',10*degree,'hemisphere','upper','maxrho',90*degree,'RESTRICT2MINMAX');
 rv = vector3d(r);
 d1 = zeros(size(rv));
 d2 = zeros(size(rv));
-for i = 1:numel(rv)
+for i = 1:length(rv)
   q = axis2quat(rv(i),20*degree);
   d1(i) = length(find(dot_outer(S3G,q,'epsilon',20*degree)));
   d2(i) = volume(uniformODF(cs,ss),q,15*degree);

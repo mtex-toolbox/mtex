@@ -9,4 +9,4 @@ alpha = 2*pi*rand(varargin{:});
 beta  = acos(2*(rand(varargin{:})-0.5));
 gamma = 2*pi*rand(varargin{:});
 
-q = euler2quat(alpha,beta,gamma);
+q = rotation('Euler',alpha,beta,gamma);

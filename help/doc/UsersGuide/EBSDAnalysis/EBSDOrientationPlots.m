@@ -13,37 +13,36 @@
 %%
 % Let us first import some EBSD data with a [[matlab:edit mtexdata, script file]]
 
-mtexdata aachen
+mtexdata forsterite
 
 %%
 % and select all individual orientations of the Iron phase
 
-o = get(ebsd('Fe'),'orientations')
+ebsd('Fo').orientations
 
 
 %% Scatter Pole Figure Plot
 % A pole figure showing scattered points of these data figure can be
-% produced by the command <orientation.plotpdf.html plotpdf>.
+% produced by the command <orientation.plotPDF.html plotPDF>.
 
-plotpdf(o,Miller(1,0,0))
+plotPDF(ebsd('Fo').orientations,Miller(1,0,0,ebsd('Fo').CS))
 
 
 %% Scatter (Inverse) Pole Figure Plot
 % Accordingly, scatter points in inverse pole figures are produced by the
-% command  <orientation.plotpdf.html plotipdf>.
+% command  <EBSD.plotIPDF.html plotIPDF>.
 
-plotipdf(o,xvector)
+plotIPDF(ebsd('Fo').orientations,xvector)
 
 
 %% Scatter Plot in ODF Sections
 % The plotting og scatter points in sections of the orientation space is carried out by the
-% command <orientation.plotodf.html plotodf>. In the above examples the number
+% command <orientation.plotODF.html plotODF>. In the above examples the number
 % of plotted orientations was chosen automatically such that the
 % plots not to become too crowed with points. The number of randomly chosen orientations
 % can be specified by the option *points*.
 
-close all;figure('position',[100 100 700 400])
-plotodf(o,'points',1000)
+plotODF(ebsd('Fo').orientations,'points',1000,'sigma','sections',9)
 
 
 %% Scatter Plot in Axis Angle or Rodrigues Space
@@ -51,7 +50,7 @@ plotodf(o,'points',1000)
 % orientation space, i.e., either in axis/angle parameterization or in Rodrigues
 % parameterization.
 
-scatter(o,'center',idquaternion)
+scatter(ebsd('Fo').orientations,'center',idquaternion)
 
 %%
 % Here, the optional option 'center' specifies the center of the unique
@@ -72,37 +71,29 @@ grains = calcGrains(ebsd);
 % Then the scatter plot of the individual orientations of the Iron phase in
 % the inverse pole figure is achieved by
 
-plotipdf(ebsd('Fe'),xvector,'points',100, 'MarkerSize',3);
+plotIPDF(ebsd('Fo').orientations,xvector,'points',1000, 'MarkerSize',3);
 
 %%
 % In the same way the mean orientations of grains can be visualized
 
-plotipdf(grains('Fe'),xvector,'points',100, 'MarkerSize',3);
+hold all
+plotIPDF(grains('Fo').meanOrientation,xvector,'points',500, 'MarkerSize',3);
+hold off
 
 %%
-% Once can also use different colors on the scatter points by certain [[EBSD.get.html,EBSD
+% One can also use different colors on the scatter points by certain [[EBSD.get.html,EBSD
 % properties]] or [[GrainSet.get.html,grain properties]]
 
-close all;
-plotpdf(ebsd('Fe'),[Miller(1,0,0),Miller(1,1,0)],'antipodal','MarkerSize',4,...
-  'property','mad')
+h = [Miller(1,0,0,ebsd('Fo').CS),Miller(1,1,0,ebsd('Fo').CS)];
+plotPDF(ebsd('Fo').orientations,...
+  h,'antipodal','MarkerSize',4,'property',ebsd.mad)
 
 %%
 % or some arbitrary data vector
 
-close all;figure('position',[100 100 500 500])
-plotodf(grains('Fe'),'antipodal','sections',9,'MarkerSize',3,...
-  'property',shapefactor(grains('Fe')));
+plotODF(grains('Fo').meanOrientation,'antipodal','sections',9,'MarkerSize',3,...
+  'property',grains('Fo').area,'sigma');
 
-%% 
-% Superposition of two scatter plots is achieved by the commands *hold on*
-% and *hold off*.
-
-close all
-plotipdf(ebsd('Fe'),xvector,'MarkerSize',3,'points',100)
-hold on
-plotipdf(ebsd('Mg'),xvector,'MarkerSize',3,'points',100,'MarkerColor','r')
-hold off
 
 %%
 % See also <PlotTypes_demo.html#5, Scatter plots> for more information

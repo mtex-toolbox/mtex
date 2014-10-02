@@ -1,21 +1,21 @@
-function o = mean_CS(q,CS,SS)
+function o = mean_CS(q,CS)
 % fast mean of 
 %
-%% Syntax
-% m = mean(o)
+% Syntax
+%   m = mean(o)
 %
-%% Input
+% Input
 %  o        - list of @orientation
 %
-%% Output
+% Output
 %  m      - mean @orientation
 %
-%% See also
+% See also
 % orientation/mean
 
-if numel(q) > 1
-  q = project2FundamentalRegion(q,CS,SS,subsref(q,1));
+if length(q) > 1
+  q = project2FundamentalRegion(q,CS,q.subSet(1));
   q = mean(q);
 end
 
-o = orientation(q,CS,SS);
+o = orientation(q,CS);

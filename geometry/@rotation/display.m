@@ -6,7 +6,7 @@ disp([inputname(1) ' = ' doclink('rotation_index','rotation')...
   ' ' docmethods(inputname(1))]);
 disp(['  size: ' size2str(rot)]);
 
-if numel(rot) < 30 && numel(rot)>0
+if length(rot) < 30 && ~isempty(rot)
   
   Euler(rot);
   

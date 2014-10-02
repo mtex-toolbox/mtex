@@ -1,30 +1,30 @@
 function quat = Miller2quat(v1,v2,CS)
 % calculate quaternion from Miller indece
 %
-%% Description
+% Description
 % The method *Miller2quat* defines a [[quaternion_index.html,rotation]]
 % by Miller indece as the rotation |q| such that |q * v1 = e3| and |q * e1 = v2|
 %
-%% Syntax
+% Syntax
 %  quat = Miller2quat(m1,m2)
 %  quat = Miller2quat([h k l],[u v w],CS)
 %
-%% Input
+% Input
 %  m1, m2 - @Miller
 %  h,k,l  - Miller indece (double)
 %  u,v,w  - Miller indece (double)
-%  CS     - crystal @symmetry
+%  CS     - @crystalSymmetry
 %
-%% Output
+% Output
 %  quat - @quaternion
 %
-%% See also
-% quaternion_index quaternion/quaternion axis2quat euler2quat 
+% See also
+% rotation_index quaternion/quaternion 
 % vec42quat hr2quat idquaternion 
 
 
 if isa(v1,'double')
-  if nargin == 2, CS = symmetry('cubic');end
+  if nargin == 2, CS = crystalSymmetry('cubic');end
   v1 = Miller(v1(1),v1(2),v1(3),CS);
   v2 = Miller(v2(1),v2(2),v2(3),CS);
 end

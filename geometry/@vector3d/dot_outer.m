@@ -1,9 +1,17 @@
 function d = dot_outer(v1,v2,varargin)
 % outer dot product
-%% Input
+%
+% Input
 %  v1, v2 - @vector3d
-%% Output
-%  @vector3d 
+%
+% Output
+%  d - double
+
+% if second argument is Miller call corresponding method
+if isa(v2,'Miller')
+  d = dot_outer(v2,v1,varargin{:}); % TODO: check this!!!!
+  return
+end
 
 if ~isempty(v1) && ~isempty(v2) 
 			
@@ -13,7 +21,7 @@ if ~isempty(v1) && ~isempty(v2)
   d(d>1) = 1;
   d(d<-1) = -1;
   
-  if check_option(varargin,'antipodal') || check_option(v1,'antipodal') || check_option(v2,'antipodal')
+  if check_option(varargin,'antipodal') || v1.antipodal || v2.antipodal
     d = abs(d);
   end
   

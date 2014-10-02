@@ -4,11 +4,11 @@
 
 h = [Miller(1,0,0),Miller(1,1,0),Miller(1,1,1),Miller(1,1,3)];
 
-plotpdf(ebsd,h,'antipodal');
+plotPDF(ebsd,h,'antipodal');
 
 %% Mean orientation and orientation tensor
 
-[q_mean lambda EV kappa] = mean(ebsd);
+[q_mean, lambda, EV, kappa] = mean(ebsd);
 
 % some output
 Euler(symmetrise(q_mean))
@@ -20,12 +20,12 @@ fprintf(' %.7f  %7.2f\n',[lambda kappa]')
 
 odf_model = BinghamODF(kappa,EV,CS,SS);
 
-plotpdf(odf_model,h,'antipodal','resolution',5*degree);
+plotPDF(odf_model,h,'antipodal','resolution',5*degree);
 annotate(q_mean);
 
 %%
 
-plotodf(odf_model,'sigma','sections',9);
+plotODF(odf_model,'sigma','sections',9);
 
 
 %% Testing on distribution by parameters
@@ -82,13 +82,13 @@ for resolutions = [5 2.5 1.5] *degree
   fprintf(' %7.2f     %7.2f\n', [kappa,  kappa_sim]')
 end
 
-plotpdf(ebsd_sim,h,'antipodal')
+plotPDF(ebsd_sim,h,'antipodal')
 
 %% Non-parametric model
 
 odf_recalc = calcODF(ebsd);
 
-plotpdf(odf_recalc,h,'antipodal');
+plotPDF(odf_recalc,h,'antipodal');
 
 %% compare it to parametric model
 

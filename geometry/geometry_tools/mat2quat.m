@@ -1,24 +1,20 @@
 function q = mat2quat(mat,varargin)
 % converts direction cosine matrix to quaternion
 %
-%% Description
+% Syntax
+%   q = matrix2quat(mat)
 %
-%% Syntax
-%  q = matrix2quat(mat)
-%
-%% Input
-%
+% Input
 %  mat - vector of matrixes
 %
-%% Output
-%
+% Output
 %  q - @quaternion
 %
-%% See also
+% See also
 %
 % quaternion_matrix Euler axis2quat hr2quat
 %
-%% Theory
+% Description
 % Wertz says to the algo similar to this with largest divisor
 %       q4 = 1/2*sqrt((1+mat(1,1)+mat(2,2)+mat(3,3))); 
 % Eqn 12-14a - c
@@ -72,4 +68,5 @@ if any(qind)
 end
 
 q = quaternion(Quat);
+q = q./norm(q);
 q = q';

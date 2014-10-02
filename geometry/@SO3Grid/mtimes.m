@@ -1,38 +1,45 @@
 function out = mtimes(a,b)
 % outer quaternion multiplication
 %
-%% Syntax
+% Syntax
 %  out = a * b
 %  out = a * v
 %
-%% Input
+% Input
 %  a - @SO3Grid
 %  b - @quaternion 
 %  v - @vector3d
 %
-%% Output
+% Output
 %  out - @SO3Grid / @vector3d
 
 if isa(a,'SO3Grid') % right multiplication
   
-  if isa(b,'SO3Grid'), b = b.orientation; end
+  if isa(b,'SO3Grid'), b = orientation(b); end
     
-  out = a.orientation * b;
+  out = orientation(a) * b;
       
 elseif isa(a,'quaternion') 
   
-  if numel(a) == 1 % rotate center only
+  if length(a) == 1 % rotate center only
     
+    r = mtimes@orientation(a,b);
     out = b;
-    if isempty(out.center)
+    out.a = r.a;
+    out.b = r.b;
+    out.c = r.c;
+    out.d = r.d;
+    out.i = r.i;
+    if isempty(b.center)
       out.center = a;
     else
       out.center = a * out.center;
     end
-    out.orientation = a * out.orientation;
-    
+        
   else
-    out = a * b.orientation;
+    
+    out = a * orientation(b);
+    
   end
           
 else

@@ -22,8 +22,8 @@
 % In order to define a crystal orientation one has to define crystal and
 % specimen symmetry first.
 
-cs = symmetry('cubic');
-ss = symmetry('orthorhombic');
+cs = crystalSymmetry('cubic');
+ss = specimenSymmetry('orthorhombic');
 
 %%
 %
@@ -34,7 +34,7 @@ ss = symmetry('orthorhombic');
 % *The Bunge Euler Angle Convention*
 %
 % Here an arbitrary rotation is determined by three consecutive rotations
-% in the sample reference frame. The first is about the z-axis, the second about the y-axis, 
+% in the sample reference frame. The first is about the z-axis, the second about the x-axis, 
 % and the third again about the z-axis. Hence, one needs three angles to define an
 % orientation by Euler angles. In the literature these angles are known as
 % "triplet of Euler angles" or simply "Euler angles" and you can find many
@@ -83,9 +83,9 @@ o = orientation('matrix',eye(3),cs,ss)
 % 
 % In the MTEX there is a list of predefined orientations:
 %
-% * [[cubeOrientation.html,cubeOrientation]]
-% * [[gossOrientation.html,gossOrientation]]
-% * [[brassOrientation.html,brassOrientation]]
+% * <cubeOrientation.html cubeOrientation>
+% * <gossOrientation.html gossOrientation>
+% * <brassOrientation.html brassOrientation>
 %
 %
 
@@ -118,7 +118,7 @@ o \ r
 %
 % Let 
 
-o = orientation('Euler',90*degree,0,0,cs,ss);
+o = orientation('Euler',90*degree,0,0,cs);
 rot = rotation('Euler',0,60*degree,0);
 
 %%
@@ -173,9 +173,9 @@ angle(o1)/degree
 axis(o1)
 %%
 % To obtain the inverse orientation to o, one can use the command
-% <quaternion.inverse.html inverse(q)>
+% <quaternion.inv.html inv(q)>
 
-inverse(o1)
+inv(o1)
 
 %% Conversion into Euler Angles and Rodrigues Parametrisation
 %
@@ -186,7 +186,7 @@ inverse(o1)
 % * [[quaternion.Rodrigues.html,Rodrigues(o)]] % in Rodrigues parameter
 %
 
-[phi1,Phi,phi2] = Euler(o)
+[phi1,Phi,phi2] = Euler(o1)
 
 
 %% Plotting Orientations
@@ -195,7 +195,6 @@ inverse(o1)
 % quaternion by plotting how the standard basis x,y,z transforms under the
 % rotation.
 
-cla reset;set(gcf,'position',[43   362   400   300])
 plot(o1)
 
 

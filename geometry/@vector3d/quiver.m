@@ -1,66 +1,59 @@
-function varargout = quiver(v, d, varargin )
+function quiver(v, d, varargin )
 %
-%% Syntax
+% Syntax
 %   quiver(v,d)
 %
-%% Input
+% Input
 %  v - @vector3d
 %  d - @vector3d  
 %
-%% Options
+% Options
 %  arrowSize     - length of the arrow
 %  autoArrowSize - automatically determine the length of the arrow
 %  MaxHeadSize   - size of the head
 %
-%% Output
+% Output
 %
-%% See also
+% See also
 
-%% plot prepertations
+% initialize spherical plot
+sP = newSphericalPlot(v,varargin{:});
 
-% where to plot
-[ax,v,varargin] = getAxHandle(v,varargin{:});
+for j = 1:numel(sP)
 
-% extract plot options
-projection = getProjection(ax,v,varargin{:});
+  % project data
+  [x,y] = project(sP(j).proj,v,varargin{:});
+  x = x(:); y = y(:);
 
-% project data
-[x,y] = project(v,projection);
-x = x(:); y = y(:);
+  % make the quiver plot
 
-%% make the quiver plot
+  mhs = get_option(varargin,'MaxHeadSize',0.9);
+  arrowSize = get_option(varargin,'arrowSize',0.03);
 
-mhs = get_option(varargin,'MaxHeadSize',0.9);
-arrowSize = get_option(varargin,'arrowSize',0.03);
-
-[dx,dy] = project(d,projection);
+  proj = sP(j).proj;
+  proj.sR = sphericalRegion;
+  [dx,dy] = project(proj,d,'removeAntipodal');
   
-dx = reshape(abs(arrowSize)*dx,size(x));
-dy = reshape(abs(arrowSize)*dy,size(x));
+  dx = reshape(abs(arrowSize)*dx,size(x));
+  dy = reshape(abs(arrowSize)*dy,size(x));
 
-if ~check_option(varargin,'autoArrowSize')
-  arrowSize = 0;
-end
+  if ~check_option(varargin,'autoArrowSize')
+    arrowSize = 0;
+  end
   
-optiondraw(quiver(x,y,dx,dy,arrowSize,'MaxHeadSize',mhs),varargin{:});
+  optiondraw(quiver(x,y,dx,dy,arrowSize,'MaxHeadSize',mhs,'parent',sP(j).ax),varargin{:});
   
-if mhs == 0 % no head -> extend into opposite direction
-  hold on
-  optiondraw(quiver(x,y,-dx,-dy,arrowSize,'MaxHeadSize',0),varargin{:});
-  hold off
+  if mhs == 0 % no head -> extend into opposite direction
+    hold(sP(j).ax,'on')
+    optiondraw(quiver(x,y,-dx,-dy,arrowSize,'MaxHeadSize',0,'parent',sP(j).ax),varargin{:});
+    hold(sP(j).ax,'off')
+  end
+
+  % finalize the plot
+
+  % add annotations
+  sP(j).plotAnnotate(varargin{:})
+
+  %set(ax,'DataAspectRatio',[1 1 1])
+  %set(ax,'PlotBoxAspectRatio',[1 1 1])
 end
-
-%% finalize the plot
-
-% plot a spherical grid
-plotGrid(ax,projection,varargin{:});
-
-% add annotations
-plotAnnotate(ax,varargin{:})
-
-% output
-if nargout > 0
-  varargout{1} = ax;
-  varargout{2} = h;
-end
-

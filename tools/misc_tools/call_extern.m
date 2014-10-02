@@ -23,13 +23,13 @@ function varargout = call_extern(prg,varargin)
 
 if ispc, mtex_ext = '.exe';else mtex_ext = '';end
 
-prg = fullfile(mtex_path,'c','bin',getpref('mtex','architecture'),prg);
+prg = fullfile(mtex_path,'c','bin',getMTEXpref('architecture'),prg);
 
 if ~exist([prg,mtex_ext],'file')
   error(['Can not find ',[prg,mtex_ext],'!']);
 end
 
-mtex_tmppath = getpref('mtex','tempdir',tempdir);
+mtex_tmppath = getMTEXpref('tempdir',tempdir);
 
 %% local flags
 inline = 0;
@@ -127,19 +127,19 @@ fclose(fid);
 %% run linux command
 vdisp(verbose,['  call ',prg]);
 if isunix
-  cmd = [getpref('mtex','prefix_cmd'),prg,' ',mtex_tmppath,name,...
-    '.txt 2>> ',getpref('mtex','logfile'),getpref('mtex','postfix_cmd')];
+  cmd = [getMTEXpref('prefix_cmd'),prg,' ',mtex_tmppath,name,...
+    '.txt 2>> ',getMTEXpref('logfile'),getMTEXpref('postfix_cmd')];
 else
 
   %enclose whitespaces into parenthis
   prg = regexprep(prg,'[^\\]*\s+[^\\]*','"$0"');
 
-  cmd = [getpref('mtex','prefix_cmd'),prg,'.exe ',mtex_tmppath,name,...
-    '.txt',getpref('mtex','postfix_cmd')];
+  cmd = [getMTEXpref('prefix_cmd'),prg,'.exe ',mtex_tmppath,name,...
+    '.txt',getMTEXpref('postfix_cmd')];
 end
-if check_option(varargin,'silent') && (isunix || ispc), cmd = [cmd,' >> ',getpref('mtex','logfile')]; end
+if check_option(varargin,'silent') && (isunix || ispc), cmd = [cmd,' >> ',getMTEXpref('logfile')]; end
 
-if getpref('mtex','debugMode')
+if getMTEXpref('debugMode')
   disp('Stopped because of "debug_mode"');
   disp(['Files written to ',mtex_tmppath,name]);
   fprintf('You may want to execute the command\n\n%s\n\n',cmd);
@@ -166,7 +166,7 @@ end % function
 %% retrieve information
 function out = readdata(name,verbose,nout)
 
-mtex_tmppath = getpref('mtex','tempdir',tempdir);
+mtex_tmppath = getMTEXpref('tempdir',tempdir);
 for i=1:nout
   vdisp(verbose,['  read result file ',int2str(i)]);
   fdata = fopen([mtex_tmppath,name,'_res',int2str(i),'.dat'],'r');
@@ -182,7 +182,7 @@ end
 %% cleanup
 function cleanup(name,verbose)
 
-mtex_tmppath = getpref('mtex','tempdir',tempdir);
+mtex_tmppath = getMTEXpref('tempdir',tempdir);
 % delete parameter files
 vdisp(verbose,'  delete datafiles:')
 

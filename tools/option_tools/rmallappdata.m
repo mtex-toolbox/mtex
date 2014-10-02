@@ -1,6 +1,7 @@
 function rmallappdata(fig,varargin)
 % removes all figure appdata
 
+if nargin == 0, fig = gcf;end
 d = getappdata(fig);
 f = fields(d);
 

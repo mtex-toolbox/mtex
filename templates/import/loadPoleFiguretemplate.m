@@ -2,7 +2,7 @@
 %
 % This script was automatically created by the import wizard. You should
 % run the whoole script or parts of it in order to import your data. There
-% is no problem in making any chages to this scrip.
+% is no problem in making any changes to this script.
 
 %% Specify Crystal and Specimen Symmetries
 
@@ -13,7 +13,8 @@ CS = {crystal symmetry};
 SS = {specimen symmetry};
 
 % plotting convention
-{plotting convention}
+setMTEXpref('xAxisDirection',{xAxisDirection});
+setMTEXpref('zAxisDirection',{zAxisDirection});
 
 %% Specify File Names
 
@@ -23,7 +24,7 @@ pname = {path to files};
 % which files to be imported
 fname = {file names};
 
-% background 
+% background
 pname = {path to bg files};
 fname_bg = {bg file names};
 
@@ -36,9 +37,11 @@ pname = {path to defbg files};
 fname_defbg = {defbg file names};
 
 
-%% Specify Miller Idice
+%% Specify Miller Indice
 
 h = {Miller};
+
+%% Specifiy Structural Coefficients for Superposed Pole Figures
 
 c = {structural coefficients};
 
@@ -59,3 +62,7 @@ pf_defbg = loadPoleFigure(fname_defbg,h,CS,SS,{structural coefficients},'interfa
 % correct data
 pf = correct(pf,{corrections});
 
+%% Correct Data
+
+rot = rotation('Euler',{phi1},{Phi},{phi2});
+pf = rotate(pf,rot,{rotationOption});

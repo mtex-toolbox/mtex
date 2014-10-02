@@ -10,5 +10,7 @@ catch %#ok<CTCH>
   if isempty(m)
     m = 300 * 1024;
   end
+  % reset error
+  lasterr('');
 end
 end

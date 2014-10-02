@@ -78,18 +78,19 @@ inddist SO3Grid_find(SO3Grid ths[],
 {
 
   int iab;
-  double cxa,cxb,cxg,sxa,sxb,sxg;
+  double cxb,cxg,sxb,sxg;
   double yalpha,ybeta,dalpha;
-  double cya,cyb,cyg,sya,syb,syg;
+  double cyb,syb;
+  double cc,ss,cda,sda;
   double re,im,dg;
-  double a,b;
+  double a,b,d,e;
   inddist id;
 
   alpha = MOD(alpha,ths->alphabeta.rho[0].p);
 
   /* calculate sin and cos */
-  cxa = cos(alpha); cxb = cos(beta); 
-  sxa = sin(alpha); sxb = sin(beta); 
+  cxb = cos(beta); 
+  sxb = sin(beta); 
 
   /* search alphabeta */
   buffer_reset(&ths->alphabeta_buffer);
@@ -106,19 +107,20 @@ inddist SO3Grid_find(SO3Grid ths[],
   gamma = MOD3(gamma,ths->gamma[iab].p,ths->gamma[iab].min);
   cxg = cos(gamma); sxg = sin(gamma);
   cyb = cos(ybeta); syb = sin(ybeta);
+  cda = cos(dalpha); sda = sin(dalpha);    
     
-  /* calculate delta gamma */
-  a = cxb*cyb + sxb*syb*cos(dalpha);
+    /* calculate delta gamma */ 
+	cc = cxb*cyb;
+	ss = sxb*syb;
+	a = cc + ss*cda;	 
+	d = (cc+1)*cda + ss;
+	e = (cxb+cyb)*sda;	
 
-  re = 0.5*cxb*cyb*(cos(dalpha-gamma)+cos(-dalpha-gamma)) + 
-    cxg * (sxb*syb + cos(dalpha)) - 
-    (cxb+cyb)*sin(dalpha) * sxg;
-  im = 0.5*cxb*cyb*(sin(dalpha-gamma)+sin(-dalpha-gamma)) -
-    sxg * (sxb*syb + cos(dalpha)) -
-    (cxb+cyb)*sin(dalpha) * cxg;
-  b = sqrt(re*re+im*im);
-    
-  dg = -atan2(im,re);
+	b = sqrt(d*d+e*e);		
+	re = d*cxg-e*sxg;
+	im = -d*sxg-e*cxg;
+    dg = -atan2(im,re);
+	
 
   id.ind =  ths->igamma[iab] + S1Grid_find(&ths->gamma[iab],dg);
 
@@ -140,17 +142,17 @@ void SO3Grid_find_region(SO3Grid ths[],
 			 buffer ind_buffer[])
 {
 
-  int i, iab, j, ind_old;
-  double cxa,cxb,cxg,sxa,sxb,sxg;
+  int i, iab, ind_old;
+  double cxb,cxg,sxb,sxg;
   double yalpha,ybeta,dalpha;
-  double cya,cyb,cyg,sya,syb,syg;
-  double a,b,c,re,im,dg,dg2;
+    double cyb,syb;
+	double cda,sda;
+  double a,b,c,d,e,cc,ss,re,im,dg;
 
   alpha = MOD(alpha,ths->alphabeta.rho[0].p);
 
   /* calculate sin and cos */
-  cxa = cos(alpha); cxb = cos(beta); 
-  sxa = sin(alpha); sxb = sin(beta); 
+  cxb = cos(beta); sxb = sin(beta); 
 
   /* search alphabeta */
   buffer_reset(&ths->alphabeta_buffer);
@@ -158,6 +160,7 @@ void SO3Grid_find_region(SO3Grid ths[],
 		     epsilon,&ths->alphabeta_buffer);
   /*buffer_print(&ths->alphabeta_buffer);*/
   /*print_double(ths->alphabeta.theta_large,10);*/
+  
 
   /* search gamma */
   for (i=0;i<ths->alphabeta_buffer.used;i++) {
@@ -173,26 +176,25 @@ void SO3Grid_find_region(SO3Grid ths[],
     gamma = MOD3(gamma,ths->gamma[iab].p,ths->gamma[iab].min);
     cxg = cos(gamma); sxg = sin(gamma);
     cyb = cos(ybeta); syb = sin(ybeta);
+    cda = cos(dalpha); sda = sin(dalpha);    
     
-    /* calculate delta gamma */
-    a = cxb*cyb + sxb*syb*cos(dalpha);
-    re = 0.5*cxb*cyb*(cos(dalpha-gamma)+cos(-dalpha-gamma)) + 
-      cxg * (sxb*syb + cos(dalpha)) - 
-      (cxb+cyb)*sin(dalpha) * sxg;
-    im = 0.5*cxb*cyb*(sin(dalpha-gamma)+sin(-dalpha-gamma)) -
-      sxg * (sxb*syb + cos(dalpha)) -
-      (cxb+cyb)*sin(dalpha) * cxg;
-    
-    b = sqrt(re*re+im*im);
-    c = (1 + 2*cos(epsilon) - a) / b;
-
-    /*printf("(%d, %.4e, %.4e, %.4e)\n",iab,gamma,dg,c);*/
-
+    /* calculate delta gamma */ 
+	cc = cxb*cyb;
+	ss = sxb*syb;
+	a = cc + ss*cda;	 
+	d = (cc+1)*cda + ss;
+	e = (cxb+cyb)*sda;	
+	
+  b = sqrt(d*d+e*e);
+	c = (1 + 2*cos(epsilon) - a) / b; 
+	    /*printf("(%d, %.4e, %.4e, %.4e)\n",iab,gamma,dg,c);*/
+	     
     if (c > 1.0) continue;
     else if (c < -1.0 + 1e-10) c = 3.1416;
-    else c = acos(c);
-   
-
+    else c = acos(c);	
+		
+	re = d*cxg-e*sxg;
+	im = -d*sxg-e*cxg;
     dg = -atan2(im,re);
     /*printf("(%d, %.4e, %.4e)\n",iab,dg,acos(c));*/
 
@@ -215,22 +217,21 @@ void SO3Grid_dist_region(SO3Grid ths[],
 {
 
   int i, iab, j, ind_old;
-  double cxa,cxb,cxg,sxa,sxb,sxg;
-  double yalpha,ybeta,dalpha;
-  double cya,cyb,cyg,sya,syb,syg;
-  double a,b,c,re,im,dg,dg2;
+  double cxb,cxg,cyb,syb,sxb,sxg,cda,sda;
+  double yalpha,ybeta,dalpha; 
+  double a,b,c,d,e,cc,ss,tmp1,re,im,dg,dg2;
+   
 
   alpha = MOD(alpha,ths->alphabeta.rho[0].p);
 
   /* calculate sin and cos */
-  cxa = cos(alpha); cxb = cos(beta); 
-  sxa = sin(alpha); sxb = sin(beta);
+  cxb = cos(beta); sxb = sin(beta);
 
   /* search alphabeta */
   buffer_reset(&ths->alphabeta_buffer);
   S2Grid_find_region(&ths->alphabeta,beta,alpha,
 		     epsilon,&ths->alphabeta_buffer);
-
+			 
   /*print_double(ths->alphabeta.theta_large,10);*/
   /*buffer_print(&ths->alphabeta_buffer);*/
   /* search gamma */
@@ -241,31 +242,32 @@ void SO3Grid_dist_region(SO3Grid ths[],
     yalpha = ths->alphabeta.rho_large[iab];
     ybeta = ths->alphabeta.theta_large[iab];
     dalpha = MOD0(alpha-yalpha,ths->alphabeta.rho[0].p);
-    /*printf("(%d, %.4e, %.4e)\n",iab,yalpha,ybeta);*/
-
-    /* calculate sin and cos */
+	/*printf("(%d, %.4e, %.4e)\n",iab,yalpha,ybeta);*/
+	
+	 /* calculate sin and cos */
     gamma = MOD3(gamma,ths->gamma[iab].p,ths->gamma[iab].min);
     cxg = cos(gamma); sxg = sin(gamma);
     cyb = cos(ybeta); syb = sin(ybeta);
+	cda = cos(dalpha); sda = sin(dalpha);    
     
-    /* calculate delta gamma */
-    a = cxb*cyb + sxb*syb*cos(dalpha);
-    re = 0.5*cxb*cyb*(cos(dalpha-gamma)+cos(-dalpha-gamma)) + 
-      cxg * (sxb*syb + cos(dalpha)) - 
-      (cxb+cyb)*sin(dalpha) * sxg;
-    im = 0.5*cxb*cyb*(sin(dalpha-gamma)+sin(-dalpha-gamma)) -
-      sxg * (sxb*syb + cos(dalpha)) -
-      (cxb+cyb)*sin(dalpha) * cxg;
-    
-    b = sqrt(re*re+im*im);
-    c = (1 + 2*cos(epsilon) - a) / b;
-
-    dg = -atan2(im,re);
-    /*printf("(%d, %.4e, %.4e, %.4e)\n",iab,gamma,dg,c);*/
-    
-    if (c > 1.0) continue;
+    /* calculate delta gamma */ 
+	cc = cxb*cyb;
+	ss = sxb*syb;
+	a = cc + ss*cda;	 
+	d = (cc+1)*cda + ss;
+	e = (cxb+cyb)*sda;	
+	
+  b = sqrt(d*d+e*e);
+	c = (1 + 2*cos(epsilon) - a) / b; 
+	    /*printf("(%d, %.4e, %.4e, %.4e)\n",iab,gamma,dg,c);*/
+	    
+	re = d*cxg-e*sxg;
+	im = -d*sxg-e*cxg;
+    dg = -atan2(im,re); 
+	
+    if (c > 1.0) continue;  /* may be not necessary */
     else if (c < -1.0 + 1e-10) c = 3.1416;
-    else c = acos(c);
+    else c = acos(c);		
 
     ind_old = ind_buffer->used;
     buffer_set_offset(ind_buffer,ths->igamma[iab]);

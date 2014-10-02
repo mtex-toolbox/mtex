@@ -20,7 +20,6 @@ v2 = vector3d(1,1,-2);
 %%
 % when plotted at the sphere
 
-close all; figure('position',[100 100 400 300])
 plot([v1,v2],'label',{'v_1','v_2'})
 
 %%
@@ -55,15 +54,17 @@ angle(v1,v2,'antipodal') / degree
 
 mtexdata dubna
 
-% plot pole figure data
-plot(pf(1))
+% plot the first pole figure
+plot(pf({1}))
 
 %%
 % Moreover if you annotate a certain direction to pole figure data, it is
 % always interpreted as an axis, i.e. projected to the upper hemisphere if
 % necessary
 
-annotate(vector3d(1,0,-1),'labeled')
+
+annotate(vector3d(1,0,-1),'labeled','backgroundColor','w')
+
 
 %% Antipodal Symmetry in Recalculated Pole Figures
 %
@@ -77,13 +78,13 @@ o = orientation('Euler',20*degree,30*degree,0,'ZYZ',CS);
 odf = unimodalODF(o);
 
 % plot pole figures
-plotpdf(odf,Miller(1,2,2),'position',[100 100 400 200])
+plotPDF(odf,[Miller(1,2,2,CS),-Miller(1,2,2,CS)])
 
 %%
 % Hence, if one wants to compare calculated pole figures with experimental
 % ones, one has to add antipodal symmetry.
 
-plotpdf(odf,Miller(1,2,2),'antipodal')
+plotPDF(odf,Miller(1,2,2,CS),'antipodal')
 
 %% Antipodal Symmetry in Inverse Pole Figures
 %
@@ -91,24 +92,21 @@ plotpdf(odf,Miller(1,2,2),'antipodal')
 % look at complete, inverse pole figures they do not posses antipodal symmetry
 % in general
 
-plotipdf(odf,yvector,'position',[100 100 400 200],'complete')
+plotIPDF(odf,[yvector,-yvector],'complete')
 
 %%
 % However, if we add the keyword antipodal, antipodal symmetry is enforced.
 
-plotipdf(odf,yvector,'antipodal','complete')
+plotIPDF(odf,yvector,'antipodal','complete')
 
 %%
 % Notice how MTEX, automatically reduces the fundamental region of inverse
 % pole figures in the case that antipodal symmetry is present.
 
-close all
-figure(1)
-plotipdf(odf,yvector,'position',[100 100 400 200])
+plotIPDF(odf,yvector)
 
-
-figure(2)
-plotipdf(odf,yvector,'antipodal','position',[100 100 400 200])
+%%
+plotIPDF(odf,yvector,'antipodal')
 
 
 %% EBSD Colocoding
@@ -116,19 +114,19 @@ plotipdf(odf,yvector,'antipodal','position',[100 100 400 200])
 % Antipodal symmetry effects also the colocoding of ebsd plots. Let's first
 % import some data.
 
-mtexdata aachen
+mtexdata forsterite
 
 %%
 % Now we plot these data with a colorcoding according to the inverse
 % (1,0,0) pole figure. Here no antipodal symmetry is present.
+% TODO: explain oM
 
 close all
-plot(ebsd('fe'))
-colorbar
+plot(ebsd('fo'))
 
 %%
 % Compare to the result when antipodal symmetry is introduced.
 
 close all
-plot(ebsd('fe'),'antipodal')
-colorbar
+plot(ebsd('fo'),'antipodal')
+

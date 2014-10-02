@@ -15,12 +15,13 @@ o = rotation('Euler',150*degree,40*degree,35*degree);
 
 odf = unimodalODF(o,symmetry,symmetry,'halfwidth',1*degree);
 
-T_odf = calcTensor(odf,T,'Fourier');
+T_odf_f = calcTensor(odf,T,'Fourier');
+T_odf_q = calcTensor(odf,T,'quadrature');
 
 %figure(2)
 %plot(T_odf)
 
-assert(norm(matrix(T_odf)-matrix(rotate(T,o)))<1e-3,'Error checking two rank tensor!')
+assert(norm(matrix(T_odf_f)-matrix(rotate(T,o)))<1e-3,'Error checking one rank tensor!')
 
 %% define a rank 2 tensor and rotate it
 
@@ -142,16 +143,12 @@ odf = calcODF(ebsd_corrected,C_Epidote,'kernel',psi,'phase',2)
 
 %%
 
-S3G = SO3Grid('random',CS{1},SS,'points',10)
-
-ebsd = EBSD(S3G)
+S3G = orientation('random',CS{1},SS,'points',10)
 
 psi = kernel('di',4)
 
 %odf = unimodalODF(S3G,CS{1},SS,psi)
-odf = calcODF(ebsd,'kernel',psi)
+odf = calcODF(S3G,'kernel',psi)
 
-calcTensor(ebsd,C_Glaucophane)
+calcTensor(S3G,C_Glaucophane)
 calcTensor(odf,C_Glaucophane)
-
-

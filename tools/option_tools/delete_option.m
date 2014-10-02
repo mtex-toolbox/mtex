@@ -1,19 +1,19 @@
 function out_list = delete_option(option_list,option,nparams,type)
 % clear options in option list
 %
-%% Syntax
-%  value = set_option(option_list,{option1,option2,option3,...})
-%  value = set_option(option_list,option,nparams)
+% Syntax
+%   value = set_option(option_list,{option1,option2,option3,...})
+%   value = set_option(option_list,option,nparams)
 %
-%% Input
+% Input
 %  option_list - Cell Array
 %  option      - String
 %  nparams     - number of parameters (optional)
 %
-%% Output
+% Output
 %  out_list      - Cell Array
 %
-%% See also
+% See also
 % check_option get_option set_option
 
 i = 1;

@@ -16,7 +16,7 @@
 % for sharp textures the ghost effect is relatively small due to the strict
 % non-negativity condition. For weak textures, however, the ghost effect
 % might be remarkable. For those cases *MTEX* provides the option 
-% *ghost_ correction* which tries to determine the uniform portion of the
+% *ghost_correction* which tries to determine the uniform portion of the
 % unknown ODF and to transform the unknown weak ODF into a sharp ODF by
 % substracting this uniform portion. This is almost the approach Matthies
 % proposed in his book (He called the uniform portion *phon*).
@@ -27,24 +27,34 @@
 %
 % A unimodal ODF with a high uniform portion.
 
-cs = symmetry('mmm');
-ss = symmetry('triclinic');
-mod1 = orientation('Euler',0,0,0);
-odf = 0.9*uniformODF(cs,ss) + ...
-  0.1*unimodalODF(mod1,cs,ss,'halfwidth',10*degree)
+cs = crystalSymmetry('222');
+mod1 = orientation('Euler',0,0,0,cs);
+odf = 0.9*uniformODF(cs) + ...
+  0.1*unimodalODF(mod1,'halfwidth',10*degree)
 
 %% Simulate pole figures
 % 
-r = S2Grid('equispaced','resolution',5*degree,'antipodal');
-h = [Miller(1,0,0),Miller(0,1,0),Miller(0,0,1)];
+
+% specimen directions
+r = equispacedS2Grid('resolution',5*degree,'antipodal');
+
+% crystal directions
+h = [Miller(1,0,0,cs),Miller(0,1,0,cs),Miller(0,0,1,cs)];
+
+% compute pole figures
 pf = calcPoleFigure(odf,h,r);
+
+plot(pf)
 
 %% ODF Estimation
 % without ghost correction:
-rec = calcODF(pf,'noGhostCorrection');
+
+rec = calcODF(pf,'noGhostCorrection','silent');
+
 %%
 % with ghost correction:
-rec_cor = calcODF(pf);
+
+rec_cor = calcODF(pf,'silent');
 
 %% Compare RP Errors
 
@@ -71,42 +81,47 @@ calcError(rec_cor,odf)
 
 %% 
 % without ghost correction:
-plotodf(rec,'sections',9,'silent')
+plotODF(rec,'sections',9,'silent','sigma')
 
 %% 
 % with ghost correction:
-plotodf(rec_cor,'sections',9,'silent')
+plotODF(rec_cor,'sections',9,'silent','sigma')
 
 %% 
 % radial plot of the true ODF
 close all
-plotodf(odf,'radially','center',idquaternion,'axes',yvector,'color','b')
-hold on
+plotFibre(odf,Miller(0,1,0,cs),yvector,'linewidth',2);
+hold all
 
 %%
 % radial plot without ghost correction:
-plotodf(rec,'radially','center',idquaternion,'axes',yvector,'color','g')
+plotFibre(rec,Miller(0,1,0,cs),yvector,'linewidth',2);
 
 %%
 % radial plot with ghost correction:
-plotodf(rec_cor,'radially','center',idquaternion,'axes',yvector,'color','r','linestyle','--')
+plotFibre(rec_cor,Miller(0,1,0,cs),yvector,'linestyle','--','linewidth',2);
 hold off
 legend({'true ODF','without ghost correction','with ghost correction'})
 
 %% Calculate Fourier coefficients
-odf = calcFourier(odf,25);
-rec = calcFourier(rec,25);
-rec_cor = calcFourier(rec_cor,25);
+% Next we want to analyze the fit of the Fourier coefficients of the
+% reconstructed ODFs. To this end we first compute Fourier representations
+% for each ODF
+
+odf = FourierODF(odf,25)
+rec = FourierODF(rec,25)
+rec_cor = FourierODF(rec_cor,25)
 
 %% Calculate Reconstruction Errors from Fourier Coefficients
 
 %% 
 % without ghost correction:
-calcError(rec,odf,'Fourier','L2')
+%
+calcError(rec,odf,'L2')
 
 %% 
 % with ghost correction:
-calcError(rec_cor,odf,'Fourier','L2')
+calcError(rec_cor,odf,'L2')
 
 
 %% Plot Fourier Coefficients   
@@ -118,7 +133,7 @@ calcError(rec_cor,odf,'Fourier','L2')
 %%
 % true ODF
 close all;
-plotFourier(odf)
+plotFourier(odf,'linewidth',2)
 
 %%
 % keep plotting windows and add next plots
@@ -126,11 +141,11 @@ hold all
 
 %%
 % Without ghost correction:
-plotFourier(rec)
+plotFourier(rec,'linewidth',2)
 
 %%
 % with ghost correction
-plotFourier(rec_cor)
+plotFourier(rec_cor,'linewidth',2)
 legend({'true ODF','without ghost correction','with ghost correction'})
 % next plot command overwrites plot window
 hold off

@@ -7,7 +7,7 @@ disp([inputname(1) ' = ' doclink('Rotations','Quaternion') ...
 
 disp(['  size: ' size2str(q)]);
 
-if numel(q) < 30 && numel(q)>0
+if length(q) < 30 && ~isempty(q)
   
   d = [q.a(:),q.b(:),q.c(:),q.d(:)];
   d(abs(d)<1e-13) = 0;

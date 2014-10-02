@@ -1,14 +1,14 @@
 function a = angle(v1,v2,varargin)
 % angle between two vectors
-%% Input
+% Input
 %  v1, v2 - @vector3d
 %
-%% Output
+% Output
 %  angle  - double
 %
-%% Options
+% Options
 %  antipodal  - include [[AxialDirectional.html,antipodal symmetry]]
 
-a = dot(v1./norm(v1),v2./norm(v2),varargin{:});
+a = dot(v1.normalize,v2.normalize,varargin{:});
 
 a = real(acos(a));

@@ -10,8 +10,8 @@ end
 if nargout > 0 && ischar(obj)
 
   if evalin('base',['exist(''' obj ''',''var'')']) && ...
-      getpref('mtex','mtexMethodsAdvise',true) && ...
-      ~getpref('mtex','generatingHelpMode')
+      getMTEXpref('mtexMethodsAdvise',true) && ...
+      ~getMTEXpref('generatingHelpMode')
 
     varargout{1} = ['(<a href="matlab:docmethods(' obj ')">show methods</a>',...
       ', <a href="matlab:plot(' obj ')">plot</a>)'];
@@ -41,7 +41,7 @@ else
   [ig,ndx] = sort(lower(f));
   f = f(ndx);
   c  = cellfun(@(x) x{2},fun(ndx),'UniformOutput',false);
-  ds = cellfun(@(f,c) doclink([c '/' f],f),f,c,'UniformOutput',false);
+  ds = cellfun(@(f,c) doclink([c '.' f],f),f,c,'UniformOutput',false);
 
   isInherited = ~strcmpi(c,classname);
   disp( formatedOutput(classname,ds(~isInherited),f(~isInherited)) );
@@ -74,4 +74,3 @@ for k = n*fix(numel(c)/n):-n:1
 end
 
 s = [char(10) 'Methods for class ' doclink([cl '/' cl],cl) ':' char(10) char(10) deblank(s) char(10)];
-

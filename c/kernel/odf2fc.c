@@ -42,7 +42,7 @@ int main(int argc,char *argv[]){
   fclose(f_param);
 
   /* set bandwidth right*/
-  L = L - 1; //! (A(1:end-1))
+  L = L - 1; /*! (A(1:end-1)) */
 
   /* check input data */
   if ((MM == 0) || (M == 0)) {

@@ -6,14 +6,13 @@
 %% Some arbitrary modelODF
 
 
-cs = symmetry('cubic');
-ss = symmetry;
+cs = crystalSymmetry('cubic');
 
-q = Euler(10*degree,10*degree,10*degree,'ABG');
-q2 =  Euler(10*degree,30*degree,10*degree,'ABG');
+ori1 = orientation('Euler',10*degree,10*degree,10*degree,'ABG',cs);
+ori2 = orientation('Euler',10*degree,30*degree,10*degree,'ABG',cs);
 
-odf_true = .6*unimodalODF(q,cs,ss,'halfwidth',5*degree) + ...
-            .4*unimodalODF(q2,cs,ss,'halfwidth',4*degree)
+odf_true = .6*unimodalODF(ori1,'halfwidth',5*degree) + ...
+            .4*unimodalODF(ori2,'halfwidth',4*degree)
          
 
 %% Polefigures to measure 
@@ -24,12 +23,12 @@ h = [ ...
   Miller(1,1,0,cs), ...
   ];
 
-figure, plotpdf(odf_true,h)
+figure, plotPDF(odf_true,h)
 
 
 %% Initial measure grid
 
-r = S2Grid('equispaced','resolution',15*degree,'maxtheta',90*degree);
+r = equispacedS2Grid('resolution',15*degree,'antipodal');
 
 figure
 plot(r,'markersize',12)
@@ -53,7 +52,7 @@ for k=1:nsteps
   % merge the new measurements with old ones
   pf_measured = union(pf_simulated,pf_measured);  
   
-  fprintf('--- at resolution : %f\n', get(pf_measured,'resolution')/degree);  
+  fprintf('--- at resolution : %f\n', pf_measured.r.resolution/degree);
   
   if k < nsteps
     % odf modelling
@@ -100,7 +99,7 @@ plot(pf_measured,'silent');
 %% Compared to a dense measured Polefigure
 %
 
-r = S2Grid('equispaced','resolution',get(pf_measured,'resolution'));
+r = equispacedS2Grid('resolution',pf_measured.resolution);
 for l=1:length(h)
   pf_simulated(l) = calcPoleFigure(odf_true,h(l),r);
 end

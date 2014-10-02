@@ -10,7 +10,7 @@
 % Crystal directions are represented in MTEX by the variables of the class
 % *Miller* which in turn represent a direction with respect to the crystal
 % coordinate system. described  by three or four values h, l, k (,m) and a
-% [[symmetry_index.html,crystall symmetry]]. Essentially all operations
+% <crystalSymmetry_index.html crystall symmetry>. Essentially all operations
 % defined for the @vector3d class are also available for Miller indece.
 % Furthermore, You can ask for all crystallographically equivalent crystal
 % directions to one Miller indece.
@@ -22,7 +22,7 @@
 % corresponding symmetry class. It is also possible to convert a vector3d
 % object into a Miller indice.
 
-cs = symmetry('trigonal');
+cs = crystalSymmetry('trigonal');
 m = Miller(1,0,-1,1,cs)
 m = Miller(zvector,cs)
 

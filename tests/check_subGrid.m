@@ -1,25 +1,26 @@
 function check_subGrid(cs,ss)
 % check SO3Grid/subGrid
 %
-% compare subGrid function with the max_angle option to SO3Grid
+% compare subGrid function with the maxAngle option to SO3Grid
 %
 
 res = 2.5*degree;
 
 radius = fliplr(linspace(res,120,40)*degree);
 
-q = SO3Grid(res,cs,ss);
+q = equispacedSO3Grid(cs,ss,'resolution',res);
 
-m = numel(q);
+m = length(q);
 center = axis2quat(xvector+yvector,0*degree);
 
 progress(0,length(radius));
 for i = 1:length(radius)  
   
-  f(i) = numel(...
-    SO3Grid(res,cs,ss,'center',center,'max_angle',radius(i))) / m; %#ok<AGROW>
+  S3G = equispacedSO3Grid(cs,ss,'center',center,...
+    'maxAngle',radius(i),'resolution',res);
+  f(i) = length(S3G) / m; %#ok<AGROW>
   q = subGrid(q,center,radius(i));
-  g(i) = numel(q) / m; %#ok<AGROW>
+  g(i) = length(q) / m; %#ok<AGROW>
   progress(i,length(radius));
   
 end
@@ -28,26 +29,26 @@ plot(radius/degree,[f',g'])
 
 return
 
-x = SO3Grid(1000,symmetry('cubic'));
+x = SO3Grid(1000,crystalSymmetry('cubic'));
 dist(x,idquaternion,'epsilon',20*degree);
 
 q = SO3Grid(res,cs,ss);
 q = subGrid(q,idquaternion,50*degree);
 q = subGrid(q,idquaternion,20*degree);
 
-%%
+%
 
-cs = symmetry('m-3m');
-ss = symmetry('mmm');
+cs = crystalSymmetry('m-3m');
+ss = specimenSymmetry('mmm');
 
 center = axis2quat(xvector,25*degree);
 S3G = SO3Grid(2*degree,cs,ss);
 q1 = subGrid(S3G,center,20*degree,'exact')
 q2 = subGrid(S3G,center,20*degree)
 
-%%
+%
 
 d1 = subGrid(S3G,center,20*degree,'exact')
 d2 = subGrid(S3G,center,20*degree)
 
-%%
+%

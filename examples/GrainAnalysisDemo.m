@@ -23,15 +23,14 @@ plotx2east
 % Biotite (green) and Orthoclase (yellow)
 
 figure('position',[100 100  750 300]);
-plot(ebsd,'property','phase')
+plot(ebsd)
 
 %% Restrict to the region of interest (RoI)
-% the box is indicating a region of interest (RoI).
+% the box is given by [xmin ymin xmax-xmin ymax-ymin] and indicates a
+% region of interest (RoI).
 
-legend off
-region = [19000 1500; 23000 1500; 23000 3000; 19000 3000; 19000 1500];
-line(region(:,1),region(:,2),'color','k','linewidth',2)
-hold off
+region = [19000 1500 4000 1500];
+rectangle('position',region,'edgecolor','r','linewidth',2)
 
 %%
 % to which we restrict the data
@@ -48,9 +47,10 @@ grains = calcGrains(ebsd_region,'angle',15*degree)
 % boundaries.
 
 figure('position',[100 100  750 300]);
-hold all
-plot(ebsd_region,'property','phase')
-plotBoundary(grains,'color','k')
+hold on
+plot(ebsd_region)
+hold on
+plot(grains.boundary,'color','k')
 hold off
 % set(gcf,'renderer','zbuffer')
 
@@ -59,18 +59,21 @@ hold off
 % boundaries.
 
 figure('position',[100 100 750 300]);
-hold all
-plot(grains({'Andesina','Biotite','Orthoclase'}),'property','phase','FaceAlpha',0.2)
-plotBoundary(grains,'color','black');
-plot(ebsd_region('Quartz-new'),'colorcoding','hkl','h',zvector)
+plot(grains({'Andesina','Biotite','Orthoclase'}),'FaceAlpha',0.2)
+hold on
+plot(grains.boundary,'color','black');
+hold on
+plot(ebsd_region('Quartz'))
 legend off
 hold off
-% set(gcf,'renderer','zbuffer')
 
 %%
 % colored according to the false color map of its inverse polefigure
 
-colorbar('Position',[825 100 300 300])
+close all
+oM = ipdfHSVOrientationMapping(ebsd_region('Quartz'));
+plot(oM,'Position',[825 100 300 300])
+
 
 %%
 % (RoI) The reconstructed grains. The quartz grains are colored according to
@@ -78,22 +81,33 @@ colorbar('Position',[825 100 300 300])
 % there phase.
 
 figure('position',[100 100  750 300]);
-hold all
-plot(grains({'Andesina','Biotite','Orthoclase'}),'property','phase','FaceAlpha',0.2)
-plot(grains('Quartz'),'colorcoding','hkl')
+plot(grains({'Andesina','Biotite','Orthoclase'}),'FaceAlpha',0.2)
+hold on
+plot(grains('Quartz'))
 legend off
-hold off
-% set(gcf,'renderer','zbuffer')
+
+
 
 
 %% Highlight specific boundaries
 % (RoI) Phase map with grain boundaries highlighted, where adjacent grains have
 % a misorientation with rotational axis close to the c-axis.
+% TODO
+
+close all
+AOboundary = grains.boundary('Andesina','Orthoclase');
+angle = AOboundary.misorientation.angle;
+
+hist(angle./degree)
+
+%%
+
 
 figure('position',[100 100  750 300]);
-hold all
-plot(grains,'property','phase','FaceAlpha',0.4)
-plotBoundary(grains,'property',Miller(0,0,1),'linewidth',2,'linecolor','red')
+plot(grains,'FaceAlpha',0.4)
+hold on
+
+plot(AOboundary(angle>160*degree),'linewidth',2,'linecolor','red')
 hold off
-% set(gcf,'renderer','zbuffer')
+
 

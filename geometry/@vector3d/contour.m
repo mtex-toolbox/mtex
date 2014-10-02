@@ -1,8 +1,19 @@
-function [ output_args ] = contour( v, varargin )
-%CONTOUR Summary of this function goes here
-%   Detailed explanation goes here
+function contour(v,data,varargin)
+% spherical contour plot
+%
+% Syntax
+%   contour(v,data)
+%
+% Input
+%  v - @vector3d
+%  data - double
+%
+% Options
+%  contours - number of contours
+%
+% See also
+% vector3d/plot vector3d/contourf
 
-
-
-
-smooth(v,varargin{:},'contours',10,'LineStyle','-','LineColor','auto','fill','off')
+% plot
+v.smooth(data,'contours',10,...
+  'LineStyle','-','fill','off',varargin{:});

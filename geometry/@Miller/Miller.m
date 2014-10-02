@@ -1,108 +1,345 @@
-function [m,er] = Miller(varargin)
-% define a crystal direction by Miller indice
-%
-%% Syntax
-% m = Miller(h,k,l,cs) -
-% m = Miller(h,k,l,cs,'hkl') -
-% m = Miller(h,k,l,cs,'pole') -
-% m = Miller(h,k,i,l,cs) -
-% m = Miller('(hkl)',cs) -
-% m = Miller(u,v,w,cs,'uvw') -
-% m = Miller(u,v,t,w,cs,'uvw') -
-% m = Miller(u,v,w,cs,'direction') -
-% m = Miller('[uvw]',cs) - 
-% m = Miller('[uvw]\[uvw],cs) -
-% m = Miller('(hkl)\(hkl),cs) - 
-% m = Miller(x,cs) - 
-%
-%
-%% Input
-%  h,k,l,i(optional) - Miller indice of the plane normal
-%  u,v,w,t(optional) - Miller indice of a direction
-%  x  - @vector3d
-%  cs - crystal @symmetry
-%
-%% See also
-% vector3d_index symmetry_index
+classdef Miller < vector3d
+  %(InferiorClasses = {?vector3d,?S2Grid})
 
-er = 0;
-
-%% check for symmetry
-m.CS = getClass(varargin,'symmetry',symmetry);
-
-%% empty
-if nargin == 0
-  
-  v = vector3d;
-
-%% copy constructor
-elseif isa(varargin{1},'Miller')
-  
-  m = varargin{1};
-  return
-  
-%% vector3d  
-elseif isa(varargin{1},'vector3d')
-  
-  if any(norm(varargin{1}) == 0)
-    error('(0,0,0) is not a valid Miller index');
+  properties
+    dispStyle = 'hkl' % output convention hkl or uvw
   end
-  
-  v = vector3d(varargin{1});
-  
-elseif isa(varargin{1},'char')
-  
-  v = vector3d;
- 	for k=1:nargin
-    s = varargin{k};
-    if isa(s,'char')
-      v(k) = s2v(s,m);
-    end    
-  end  
-  
- 
-%% hkl and uvw  
-elseif isa(varargin{1},'double')
-  
-  % get hkls and uvw from input
-  nparam = min([length(varargin),4,find(cellfun(@(x) ~isa(x,'double'),varargin),1)-1]);
-  
-  % check for right input
-  if nparam < 3, error('You need at least 3 Miller indice!');end
-  
-  % check fourth coefficient is right
-  if nparam==4 && varargin{1} + varargin{2} + varargin{3} ~= 0
-    if nargout == 2
-      er = 1;
-    elseif check_option(varargin,{'uvw','uvtw','direction'})
-      warning(['Convention u+v+t=0 violated! I assume t = ',int2str(-varargin{1} - varargin{2})]); %#ok<WNTAG>
-    else
-      warning(['Convention h+k+i=0 violated! I assume i = ',int2str(-varargin{1} - varargin{2})]); %#ok<WNTAG>
-    end
+
+  properties (Access = private)
+    CSprivate % crystal symmetry
   end
-  
-  if check_option(varargin,{'uvw','uvtw','direction'});
+
+  properties (Dependent = true)
+    CS        % crystal symmetry
+    hkl       % direct coordinates
+    h
+    k
+    i
+    l
+    uvw       % reciprocal coordinates
+    UVTW      % reciprocal coordinates
+    u
+    v
+    w
+    U
+    V
+    T
+    W
+    xyz
+  end
     
-    if nparam==4
-      varargin{1} = varargin{1} - varargin{3};
-      varargin{2} = varargin{2} - varargin{3};
-    elseif  any(strcmp(Laue(m.CS),{'-3','-3m','6/m','6/mmm'}))
-      x = varargin{1}; y = varargin{2};
-      varargin{1} = 2*x + y;
-      varargin{2} = 2*y + x;      
+methods
+
+    function m = Miller(varargin)
+      % define a crystal direction by Miller indice
+      %
+      % Syntax
+      % m = Miller(h,k,l,cs) -
+      % m = Miller(h,k,l,cs,'hkl') -
+      % m = Miller(h,k,l,cs,'pole') -
+      % m = Miller(h,k,i,l,cs) -
+      % m = Miller('(hkl)',cs) -
+      % m = Miller(u,v,w,cs,'uvw') -
+      % m = Miller(u,v,t,w,cs,'uvw') -
+      % m = Miller(u,v,w,cs,'direction') -
+      % m = Miller('[uvw]',cs) -
+      % m = Miller('[uvw]\[uvw],cs) -
+      % m = Miller('(hkl)\(hkl),cs) -
+      % m = Miller(x,cs) -
+      %
+      %
+      % Input
+      %  h,k,l,i(optional) - Miller indice of the plane normal
+      %  u,v,w,t(optional) - Miller indice of a direction
+      %  x  - @vector3d
+      %  cs - crystal @symmetry
+      %
+      % See also
+      % vector3d_index symmetry_index
+      
+      % check for symmetry
+      m.CSprivate = getClass(varargin,'crystalSymmetry',[]);
+      assert(~isempty(m.CSprivate),['Starting with MTEX 4.0 Miller ' ...
+        'indices always require to specify a crystal symmetry!']);
+
+      if nargin == 0 %empty constructor
+
+        return
+  
+      elseif isa(varargin{1},'Miller') % copy constructor
+  
+        m = varargin{1};
+        return;
+  
+      elseif ischar(varargin{1})
+        
+        [m.x,m.y,m.z] = double(s2v(varargin{1},m));
+              
+      elseif isa(varargin{1},'vector3d') % vector3d
+  
+        if any(norm(varargin{1}) == 0)
+          error('(0,0,0) is not a valid Miller index');
+        end
+        
+        [m.x,m.y,m.z] = double(varargin{1});
+        m.opt = varargin{1}.opt;
+        m.antipodal = varargin{1}.antipodal;
+        
+        % hkl and uvw
+      elseif isa(varargin{1},'double')
+        
+        % get hkls and uvw from input
+        nparam = min([length(varargin),4,find(cellfun(@(x) ~isa(x,'double'),varargin),1)-1]);
+        
+        % check for right input
+        if nparam < 3, error('You need at least 3 Miller indice!');end
+        
+        % check fourth coefficient is right
+        if nparam==4 && all(varargin{1} + varargin{2} + varargin{3} ~= 0)
+          if check_option(varargin,{'uvw','uvtw','direction'})
+            warning(['Convention u+v+t=0 violated! I assume t = ',int2str(-varargin{1} - varargin{2})]); %#ok<WNTAG>
+          else
+            warning(['Convention h+k+i=0 violated! I assume i = ',int2str(-varargin{1} - varargin{2})]); %#ok<WNTAG>
+          end
+        end
+        
+        % set coordinates
+        coord = reshape([varargin{1:nparam}],[],nparam);
+                
+        if check_option(varargin,{'uvw','uvtw','direction'});          
+          
+          if nparam == 3 && ~check_option(varargin,'uvtw')
+            m.uvw = coord;
+          else
+            m.UVTW = coord;
+          end
+          
+        elseif check_option(varargin,'xyz');
+          
+          m.x = coord(:,1);
+          m.y = coord(:,2);
+          m.z = coord(:,3);
+          m.dispStyle = 'xyz';
+          
+        else          
+          
+          m.hkl = coord;
+          
+        end
+        
+      end
+
+      % add antipodal symmetry ?
+      m.antipodal = check_option(varargin,'antipodal');
+
     end
-    v = d2v(varargin{1},varargin{2},varargin{nparam},m.CS);
-    v = set_option(v,'uvw');
     
-  else    
+    % -----------------------------------------------------------
     
-    v = m2v(varargin{1},varargin{2},varargin{nparam},m.CS);
-  
-  end  
+    function cs = get.CS(m)
+      cs = m.CSprivate;
+    end
     
+    function m = set.CS(m,cs)             
+      % recompute representation in cartesian coordinates
+      if m.CSprivate ~= cs
+
+        switch m.dispStyle
+    
+          case 'uvw'
+      
+            uvw = m.uvw;
+            m.CSprivate = cs;
+            m.uvw = uvw;
+      
+          case 'hkl'
+      
+            hkl = m.hkl;
+            m.CSprivate = cs;
+            m.hkl = hkl;
+      
+          otherwise        
+            m.CSprivate = cs;
+        end  
+      end      
+    end
+    
+    function hkl = get.hkl(m)
+      
+      % get reciprocal axes
+      M = squeeze(double(m.CS.axesDual)).';
+      
+      % get xyz coordinates
+      v = reshape(double(m),[],3).';
+
+      % compute reciprocal coordinates
+      hkl = (M \ v)';
+
+      % add fourth component for trigonal and hexagonal systems
+      if any(strcmp(m.CS.lattice,{'trigonal','hexagonal'}))
+        hkl = [hkl(:,1:2),-hkl(:,1)-hkl(:,2),hkl(:,3)];
+      end
+      
+    end
+    
+    function xyz = get.xyz(m)
+      
+      xyz = [m.x(:),m.y(:),m.z(:)];
+      
+    end
+    
+    
+    function h = get.h(m), h = m.hkl(:,1);end
+    function k = get.k(m), k = m.hkl(:,2);end
+    function i = get.i(m), i = m.hkl(:,3);end
+    function l = get.l(m), l = m.hkl(:,end);end
+        
+    % ------------------------------------------------------------
+    function m = set.hkl(m,hkl)
+      % 
+      % hkl must have the format [h,k,l] or [h k i l]
+      
+      % remove i 
+      hkl = hkl(:,[1:2,end]);
+      
+      % get reciprocal axes
+      M = squeeze(double(m.CS.axesDual));
+      
+      % compute x, y, z coordinates
+      m.x = hkl * M(:,1);
+      m.y = hkl * M(:,2);
+      m.z = hkl * M(:,3); 
+      
+      % set default display style
+      m.dispStyle = 'hkl';
+      
+    end
+    
+    function m = set.h(m,h)
+      m.hkl = [h m.k m.l];
+    end
+    
+    function m = set.k(m,k)
+      m.hkl = [m.h k m.l];
+    end
+    
+    function m = set.l(m,l)
+      m.hkl = [m.h m.k l];
+    end
+    
+    function m = set.u(m,u)
+      m.uvw = [u m.v m.w];
+    end
+    
+    function m = set.v(m,v)
+      m.uvw = [m.u v m.w];
+    end
+    
+    function m = set.w(m,w)
+      m.uvw = [m.u m.v w];
+    end
+    
+    function m = set.U(m,U)
+      m.UVTW = [U m.V m.T m.T];
+    end
+    
+    function m = set.V(m,V)
+      m.UVTW = [m.U V m.T m.W];
+    end
+    
+    function m = set.T(m,T)
+      m.UVTW = [m.U m.V T m.W];
+    end
+    
+    function m = set.W(m,W)
+      m.UVTW = [m.U m.V m.T W];
+    end
+        
+    % -----------------------------------------------------------            
+    function uvw = get.uvw(m)
+    
+      % get crystal coordinate system (a,b,c)
+      M = squeeze(double(m.CS.axes)).';
+
+      % get x, y, z coordinates
+      xyz = reshape(double(m),[],3).';
+
+      % compute u, v, w coordinates
+      uvw = (M \ xyz)';
+
+      % add fourth component for trigonal and hexagonal systems
+      %if any(strcmp(m.CS.lattice,{'trigonal','hexagonal'}))
+      %  uvtw(:,4) = uvtw(:,3);
+      %  uvtw(:,3) = -(uvtw(:,1) + uvtw(:,2))./3;
+      %  [uvtw(:,1), uvtw(:,2)] = deal((2*uvtw(:,1)-uvtw(:,2))./3,(2*uvtw(:,2)-uvtw(:,1))./3);  
+      %end
+    end
+      
+    function UVTW = get.UVTW(m)
+      %U = 2u -v, V = 2v - u, T = - (u+v), W = 3w
+
+      uvw = m.uvw;
+      
+      UVTW = [2*uvw(:,1)-uvw(:,2),...
+        2*uvw(:,2)-uvw(:,1),...
+        -uvw(:,1)-uvw(:,2),...
+        3*uvw(:,3)];
+            
+    end
+    
+    
+    function u = get.u(m), u = m.uvw(:,1);end
+    function v = get.v(m), v = m.uvw(:,2);end
+    function w = get.w(m), w = m.uvw(:,3);end
+    function U = get.U(m), U = m.UVTW(:,1);end
+    function V = get.V(m), V = m.UVTW(:,2);end
+    function T = get.T(m), T = m.UVTW(:,3);end
+    function W = get.W(m), W = m.UVTW(:,4);end
+    
+    
+        
+    % ------------------------------------------------------------
+    
+    function m = set.uvw(m,uvw)
+      %
+      % uvw must be of format [u v w] or [u v t w] 
+      
+      % correct for 4 component vectors
+      if size(uvw,2) == 4, error('Use UVTW to set four Miller indice!'); end
+               
+      % get direct axes 
+      M = squeeze(double(m.CS.axes));
+      
+      % compute x, y, z coordinates
+      m.x = uvw * M(:,1);
+      m.y = uvw * M(:,2);
+      m.z = uvw * M(:,3);
+      
+      % set default display style
+      m.dispStyle = 'uvw';
+      
+    end
+    
+    function m = set.UVTW(m,UVTW)
+      %    
+      %U = 2u -v, V = 2v - u, T = - (u+v), W = 3w
+      
+      % correct for 4 component vectors
+      if size(UVTW,2) == 4
+        
+        m.uvw = [UVTW(:,1)-UVTW(:,3),UVTW(:,2)-UVTW(:,3),UVTW(:,4)]./3;
+        
+      elseif any(strcmp(m.CS.lattice,{'trigonal','hexagonal'})) 
+        
+        m.uvw = [2*UVTW(:,1) + UVTW(:,2),2*UVTW(:,2) + UVTW(:,1),UVTW(:,3)]./3;
+        
+      end
+      
+      % set default display style
+      m.dispStyle = 'UVTW';
+      
+    end
+end
+        
 end
 
-v = set_option(v,...
-  extract_option(varargin,{'north','south','antipodal'}));
-
-m = class(m,'Miller',v);

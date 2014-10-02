@@ -12,7 +12,7 @@
 % at first, let us import some piezo electric contants for a quartz
 % specimen.
 
-CS = symmetry('-3m', [4.916 4.916 5.4054], 'X||a*', 'Z||c', 'mineral', 'Quartz');
+CS = crystalSymmetry('32', [4.916 4.916 5.4054], 'X||a*', 'Z||c', 'mineral', 'Quartz');
 
 fname = fullfile(mtexDataPath,'tensor', 'Single_RH_quartz_poly.P');
 
@@ -23,16 +23,23 @@ P = loadTensor(fname,CS,'propertyname','piecoelectricity','unit','C/N','interfac
 % have the most polarisation. By default, we restrict ourselfs to the
 % unique region implied by crystal symmetry
 
+% set some colormap well suited for tensor visualisation
+setMTEXpref('defaultColorMap',blue2redColorMap);
+
 plot(P)
+colorbar
 
 %%
 % but also, we can plot the whole crystal behavior
 
+close all
 plot(P,'complete','smooth')
+colorbar
 
 %%
 % Most often, the polarisation is illustrated as surface magnitude
 
+close all
 plot(P,'3d')
 
 %%
@@ -60,15 +67,15 @@ plot(P,'section',xvector)
 % pp.1169-1187
 %
 
-fname = fullfile(mtexDataPath,'tensor', 'Tongue_Quartzite_Bunge_Euler');
+fname = fullfile(mtexDataPath,'orientation', 'Tongue_Quartzite_Bunge_Euler');
 
-ebsd = loadEBSD(fname,CS,'interface','generic' ...
+ori = loadOrientation(fname,CS,'interface','generic' ...
   , 'ColumnNames', { 'Euler 1' 'Euler 2' 'Euler 3'}, 'Bunge', 'active rotation')
 
 %%
 % The figure on p.1184 of the publication
 
-Pm = calcTensor(ebsd,P)
+Pm = ori.calcTensor(P)
 
 plot(Pm)
 colorbar
@@ -79,3 +86,5 @@ colorbar
 close all
 plot(Pm,'complete')
 colorbar
+
+setMTEXpref('defaultColorMap',WhiteJetColorMap)

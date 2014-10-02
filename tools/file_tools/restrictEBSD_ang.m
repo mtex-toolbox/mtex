@@ -18,7 +18,7 @@ y = d(:,5);
 ux = unique(x);
 uy = unique(y);
 
-s = get_option(varargin,'subsample',1);
+s = get_option(varargin,'subSample',1);
 
 ux = ux(1:s:end);
 uy = uy(1:s:end);

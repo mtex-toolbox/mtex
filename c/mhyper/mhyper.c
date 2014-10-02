@@ -11,21 +11,21 @@
   #include <omp.h>
 #endif
 */
-//#include <mpfr.h>
-//#include "gmp.h"
+/*#include <mpfr.h>*/
+/*#include "gmp.h"*/
 
 mp_rnd_t prec; 
 mpfr_t delta, delta2;
 
 
-void init_prec(int digit){ // precision issues
+void init_prec(int digit){ /* precision issues*/
 	/* set precision */
 	prec = digit;
 	mpfr_set_default_prec( prec );
 		
 	/* set delta */
 	mpfr_init_set_d(delta,10,prec);
-	mpfr_pow_ui(delta,delta,prec/16,GMP_RNDN); //- digits*1/4); 
+	mpfr_pow_ui(delta,delta,prec/16,GMP_RNDN); /*- digits*1/4); */
 	mpfr_ui_div(delta,5,delta,GMP_RNDN);
 	
 	mpfr_init2(delta2,prec);
@@ -148,7 +148,7 @@ void mhyper(mpfr_t f, mpfr_t *kappa,const long n){
 	}
 	
 	
-	//k -=1; 
+	/*k -=1; */
 	mpfr_t old_f;
 	mpfr_init2(old_f,prec);
 	for (;;)
@@ -218,7 +218,7 @@ void eval_exp_besseli(double *a, double *bc, mpfr_t C, int n){
 	mpfr_init2(az, prec);
 	mpfr_init2(bz, prec);
 	
-	//exp(a) ./ C .* besseli(0,sqrt(b.^2 + c.^2))
+	/*exp(a) ./ C .* besseli(0,sqrt(b.^2 + c.^2))*/
 	
 	for(k=0;k<n;k++){
 		mpfr_init_set_d(az,a[k],prec);
@@ -233,7 +233,7 @@ void eval_exp_besseli(double *a, double *bc, mpfr_t C, int n){
 
 
 int mpfr_i0(mpfr_t res, mpfr_srcptr z, mp_rnd_t r){
-	// see mpfr_j0 / mpfr_jn
+	/* see mpfr_j0 / mpfr_jn */
 
 	 int inex;
   unsigned long absn;
@@ -264,15 +264,15 @@ int mpfr_i0(mpfr_t res, mpfr_srcptr z, mp_rnd_t r){
       mpfr_div_2ui (y, y, 2, GMP_RNDN);   /* z^2/4 */
       mpfr_fac_ui (s, absn, GMP_RNDN);    /* |n|! */
       mpfr_div (t, t, s, GMP_RNDN);
-   //   if (absn > 0)
-   //     mpfr_div_2ui (t, t, absn, GMP_RNDN);
+   /*   if (absn > 0)*/
+   /*     mpfr_div_2ui (t, t, absn, GMP_RNDN);*/
       mpfr_set (s, t, GMP_RNDN);
       exps = MPFR_EXP (s);
       expT = exps;
       for (k = 1; ; k++)
         {
           mpfr_mul (t, t, y, GMP_RNDN);
-        //  mpfr_neg (t, t, GMP_RNDN);  // else its j0 !
+        /*  mpfr_neg (t, t, GMP_RNDN);   else its j0 !*/
 		  mpfr_div_ui (t, t, k * k, GMP_RNDN);
 		  
           exps = MPFR_EXP (t);
@@ -445,7 +445,7 @@ void check_diag(mpfr_t **A,const int n){
 	
 	if ( mpfr_zero_p(tmp) ){
 		printf("warning: system singular to working precision\n");
-		//mpfr_printf("det: %.18RE ", tmp);
+		/*mpfr_printf("det: %.18RE ", tmp);*/
 		exit(0);
 	}
 	
@@ -504,7 +504,7 @@ void solveAxb(mpfr_t *x, mpfr_t **A, mpfr_t *b ,int n){
 	check_diag(A,n);
 	
 	for(k=0; k<n;k++)
-		mpfr_init2(x[k],prec); // clear values of x	
+		mpfr_init2(x[k],prec); /* clear values of x	*/
 	
 	/* gaussian elemination */
 
@@ -543,12 +543,12 @@ void guessinitial(mpfr_t *kappa, mpfr_t *lambda,const int n){
 	mpfr_init2(mm,prec);	
 	mpos = max_N(lambda,n);
 	for(k=0;k<n;++k){
-		if (k != mpos){  // 1/2*(l-1)*l
+		if (k != mpos){  /* 1/2*(l-1)*l*/
 			mpfr_sub_ui(kappa[k],lambda[k],1,prec);
 			mpfr_mul_ui(kappa[k],kappa[k],2,GMP_RNDN);
 			mpfr_mul(kappa[k],kappa[k],lambda[k],GMP_RNDN);
 			
-			if( !mpfr_eq(kappa[k],mm,prec/2) ) //omit x/0
+			if( !mpfr_eq(kappa[k],mm,prec/2) ) /*omit x/0*/
 				mpfr_ui_div(kappa[k],1,kappa[k],GMP_RNDN);
 			else {
 				printf("warning: system might go infty, since one entry is zero\n");
@@ -580,7 +580,7 @@ void newton(int iters, mpfr_t *kappa, mpfr_t *lambda, int n){
 	for(k=0;k<n;k++)
 		jf[k] = (mpfr_t *) malloc (n*sizeof(mpfr_t));	
 	
-	guessinitial(kappa,lambda,n);  // solvesym
+	guessinitial(kappa,lambda,n);  /* solvesym*/
 	
 	mpfr_init2(t1,prec); mpfr_init2(t2,prec);
 	
@@ -602,7 +602,7 @@ void newton(int iters, mpfr_t *kappa, mpfr_t *lambda, int n){
 		mpfr_printf("iteration: %d, defect: %.16RE\n", iter+1,  t2);
 		printf(" kappa :");  print_N(kappa,n);
 		printf(" lambda:");	 print_N(dl,n);*/
-		//printf("\n");
+		/*printf("\n");*/
 
 		/*	*/	
 		for(k=0;k<n;k++){
@@ -630,7 +630,7 @@ void newton(int iters, mpfr_t *kappa, mpfr_t *lambda, int n){
 		for(k=0;k<n;++k)
 			mpfr_sub(kappa[k], kappa[k], kappaN,prec);
 			
-		//	exit(0);
+		/*	exit(0);*/
 		
 	}	
 	

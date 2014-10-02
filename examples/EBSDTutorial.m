@@ -10,37 +10,35 @@
 % crystal symmetry
 CS = {...
   'Not Indexed',...
-  symmetry('m-3m','mineral','Fe'),...
-  symmetry('m-3m','mineral','Mg')};
-
-% specimen symmetry
-SS = symmetry('-1');
+  crystalSymmetry('m-3m','mineral','Fe'),...
+  crystalSymmetry('m-3m','mineral','Mg')};
 
 % specify file name
 fname = fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt');
 
 
 % create an EBSD variable containing the data
-ebsd = loadEBSD(fname,CS,SS,'interface','generic' ...
+ebsd = loadEBSD(fname,'CS',CS,'interface','generic' ...
   , 'ColumnNames', ...
   { 'Index' 'Phase' 'x' 'y' 'Euler1' 'Euler2' 'Euler3' 'MAD' 'BC' 'BS' 'Bands' 'Error' 'ReliabilityIndex'}, ...
-  'Bunge', 'ignorePhase', 0);
+  'ignorePhase', 0);
 
 % plotting convention
 plotx2east
 
 %% Visualize the data
 % First we make a spatial plot of the orientations of the crystals of phase
-% 1 using hkl colorcoding.
+% 1
 
 figure('position',[100 100 800 350])
-plot(ebsd,'colorcoding','hkl')
+plot(ebsd('Fe'))
 
 %%
 % The colorcoding can be interpreted by the collored (0,0,1) inverse pole
 % figure
 
-colorbar('position',[100 100 250 250])
+oM = ipdfHSVOrientationMapping(ebsd('Fe'))
+plot(oM)
 
 %%
 
@@ -54,32 +52,32 @@ grains = calcGrains(ebsd)
 % and plot them into our orientation plot
 
 figure('position',[100 100 800 350])
-plot(ebsd,'colorcoding','hkl')
+plot(ebsd('Fe'))
 hold on
-plotBoundary(grains,'linewidth',1.5)
+plot(grains.boundary,'linewidth',1.5)
 
 %%
 % One can also plot all the grains together with their mean orientation
 
 figure('position',[100 100 800 350])
-plot(grains,'colorcoding','hkl')
+plot(grains('Fe'))
 
 %% ODF estimation
 % Next we reconstruct an ODF from the EBSD data. Therefore, we first have
 % to fix a kenel function. This can be done by
 
-psi = calcKernel(grains('Fe'))
+psi = calcKernel(grains('Fe').meanOrientation)
 
 %%
 % Now the ODF is reconstructed by
-odf = calcODF(ebsd('Fe'),'kernel',psi)
+odf = calcODF(ebsd('Fe').orientations,'kernel',psi)
 
 %%
 % Once an ODF is estimated all the functionallity MTEX offers for 
 % <ODFCalculations.html ODF analysis> and <ODFPlot.html ODF visualisation>
 % is available.
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)],...
+plotPDF(odf,[Miller(1,0,0,CS{2}),Miller(1,1,0,CS{2}),Miller(1,1,1,CS{2})],...
   'antipodal','silent','position',[100 100 600 200])
 
 

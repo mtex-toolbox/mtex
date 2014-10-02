@@ -1,27 +1,27 @@
-function [chat T Tv n] = c_hat(varargin)
+function [chat, T, Tv, n] = c_hat(varargin)
 % return the second moments for bingham test
 %
-%% Input
+% Input
 %  o   -  @EBSD / @orientation / @grain
 %
-%% Output
+% Output
 %  chat  - 4x4 tensor 
 %  T     - eigenvalues
 %  Tv    - eigenvectors
 %  n     - number of points
 %
-%% See also
+% See also
 % bingham_test
 
 
 if isa(varargin{1},'EBSD')
-  varargin{1} = get(varargin{1},'orientations');
+  varargin{1} = varargin{1}.orientations;
 end
 
 if isa(varargin{1},'orientation')
   n = numel(varargin{1});
-  [qm T Tv kappa q] = mean(varargin{:},'approximated');
-  [T nd]=sort(T,'descend');
+  [qm, T, Tv, kappa, q] = mean(varargin{:},'approximated');
+  [T, nd]=sort(T,'descend');
   Tv = Tv(:,nd);
   x = reshape(double(q),[],4);
 end

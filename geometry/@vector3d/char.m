@@ -1,7 +1,21 @@
 function c = char(v,varargin)
 % convert to char
-%% Options
+%
+% Options
 %  LATEX
+
+% short summary for long vectors
+if length(v) > 4
+  
+  c = [size2str(v), ' points'];
+  if ~check_option(varargin,'short') && v.resolution<2*pi
+    c = [c, ', res.: ',xnum2str(v.resolution * 180/pi),mtexdegchar];
+  end
+  
+  return
+end
+
+% list all elements 
 
 if max(abs(v.x)) < 1e-14, v.x = zeros(size(v.x));end
 if max(abs(v.y)) < 1e-14, v.y = zeros(size(v.y));end
@@ -19,11 +33,12 @@ for i = 1:length(v.x)
       c = [c,' ',num2str([v.x(i),v.y(i),v.z(i)],'(%3.2f,%3.2f,%3.2f)')];
     end
   else
-    c = [c,' ',num2str(v.x(i)),num2str(v.y(i)),num2str(v.z(i))]; %#ok<AGROW>
+    c = [c,' ',num2str(v.x(i)),',',num2str(v.y(i)),',',num2str(v.z(i))]; %#ok<AGROW>
   end
 end
 
 if ~isempty(c), c(1)=[];end
+if ~isempty(c) && check_option(varargin,{'LaTeX'}), c = ['$' c '$'];end
 
 function iv = vec2int(v)
 
