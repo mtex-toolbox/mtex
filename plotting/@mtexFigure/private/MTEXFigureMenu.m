@@ -52,9 +52,9 @@ uimenu(m,'label','Set Outer Margin','callback',{@setMargin,'outer'});
 % annotations
 
 an = uimenu(m,'label','Anotations');
-uimenu(an,'label','Show min/max','checked','on','callback',{@setVisible,'minmax'});
-uimenu(an,'label','Show labels','checked','on','callback',{@setVisible,'labels'});
-uimenu(an,'label','Show ticks','checked','off','callback',{@setVisible,'ticks'});
+uimenu(an,'label','Show min/max','checked','off','callback',{@setVisible,'minmax'});
+uimenu(an,'label','Show labels','checked','off','callback',{@setVisible,'labels'});
+uimenu(an,'label','Show coordinates','checked','off','callback',{@setVisible,'ticks'});
 uimenu(an,'label','Show grid','checked','off','callback',{@setVisible,'grid'});
 
 
@@ -162,6 +162,8 @@ for a = 1:numel(ax)
       end
   end
 end
+
+mtexFig.drawNow
 
 end
 
