@@ -1,6 +1,4 @@
-function S2G = subsasgn(S2G,varargin)
-%overloads subsasgn
+function S2G = subsasgn(S2G,s,b)
+% overloads subsasgn
 
-S2G.vector3d = subsasgn(S2G.vector3d,varargin{:});
-
-S2G = delete_option(S2G,'indexed');
+S2G = subsasgn@vector3d(vector3d(S2G),s,b);

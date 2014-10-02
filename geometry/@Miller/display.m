@@ -5,40 +5,48 @@ disp(' ');
 disp([inputname(1) ' = ' doclink('Miller_index','Miller') ...
   ' ' docmethods(inputname(1))]);
 
-disp(['  size: ' size2str(m)]);
+display@vector3d(m,'skipHeader', 'skipCoordinates');
 
-o = char(option2str(check_option(m)));
-if ~isempty(o)
-  disp(['  options: ' o]);
-end
-
-if ~isempty(get(m.CS,'mineral'))
-  disp(['  mineral: ',char(m.CS,'verbose')]);
+% display symmetry
+if ~isempty(m.CS.mineral)
+  disp([' mineral: ',char(m.CS,'verbose')]);
 else
-  disp(['  symmetry: ',char(m.CS,'verbose')]);
+  disp([' symmetry: ',char(m.CS,'verbose')]);
 end
 
-if numel(m) < 20 && numel(m) > 0
-
-  if check_option(m,'uvw')
-    
-    uvtw = v2d(m);
-    
-    if any(strcmp(Laue(m.CS),{'-3','-3m','6/m','6/mmm'}))
-      cprintf(uvtw.','-L','  ','-Lr',{'u' 'v' 't' 'w'});
-    else
-      cprintf(uvtw.','-L','  ','-Lr',{'u' 'v' 'w'});
-    end
-        
-  else
-    
-    hkl = v2m(m);
+% display coordinates
+if length(m) < 20 && ~isempty(m)
   
-    if any(strcmp(Laue(m.CS),{'-3','-3m','6/m','6/mmm'}))
-      cprintf(hkl.','-L','  ','-Lr',{'h' 'k' 'i' 'l'});
-    else
-      cprintf(hkl.','-L','  ','-Lr',{'h' 'k' 'l'});
-    end
+  eps = 1e4;
+  
+  switch m.dispStyle
     
+    case 'uvw'
+      
+      uvtw = round(m.uvw * eps)./eps;
+      uvtw(uvtw==0) = 0;
+      
+      cprintf(uvtw.','-L','  ','-Lr',{'u' 'v' 'w'});
+          
+    case 'UVTW'
+      
+      uvtw = round(m.UVTW * eps)./eps;
+      uvtw(uvtw==0) = 0;
+      
+      cprintf(uvtw.','-L','  ','-Lr',{'U' 'V' 'T' 'W'});
+      
+    case 'hkl'
+    
+      hkl = round(m.hkl * eps)./eps;
+      hkl(hkl==0) = 0;
+      if any(strcmp(m.CS.lattice,{'trigonal','hexagonal'}))                
+        cprintf(hkl.','-L','  ','-Lr',{'h' 'k' 'i' 'l'});
+      else
+        cprintf(hkl.','-L','  ','-Lr',{'h' 'k' 'l'});
+      end
+    case 'xyz'
+      xyz = round(m.xyz * eps)./eps;
+      xyz(xyz==0) = 0;      
+      cprintf(xyz.','-L','  ','-Lr',{'x' 'y' 'z'});
   end
 end

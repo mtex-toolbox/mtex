@@ -1,17 +1,17 @@
 function [S2G,ind] = subGrid(S2G,v,epsilon)
 % subgrid 
 %
-%% Syntax
+% Syntax
 %  S2G = subGrid(S2G,Ind)
 %  [S2G,ind] = subGrid(S2G,midpoint,epsilon)
 %
-%% Input
+% Input
 %  S2G - S2Grid
 %  ind - int32
 %  midpoint - vector3d
 %  epsilon  - double
 %
-%% Output
+% Output
 %  S2G   - @S2Grid (not indexed)
 %  ind - int32
 
@@ -22,10 +22,10 @@ else
   ind = v;
 end
 
-S2G.vector3d = S2G.vector3d(ind);
+S2G.x = S2G.x(ind);
+S2G.y = S2G.y(ind);
+S2G.z = S2G.z(ind);
 
-if check_option(S2G,'indexed')
-  S2G.rho = subGrid(S2G.rho,ind);
-  S2G.theta = subGrid(S2G.theta,GridLength(S2G.rho)>0);
-  S2G.rho(GridLength(S2G.rho)==0) = [];
-end
+S2G.rhoGrid = subGrid(S2G.rhoGrid,ind);
+S2G.thetaGrid = subGrid(S2G.thetaGrid,GridLength(S2G.rhoGrid)>0);
+S2G.rhoGrid(GridLength(S2G.rhoGrid)==0) = [];

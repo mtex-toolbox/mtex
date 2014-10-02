@@ -1,20 +1,20 @@
 function Y = sphericalY(l, theta, rho,varargin)
 % spherical harmonics of degree l
 %
-%% Description
+% Description
 % Y = sphericalY(l,theta,rho) return a vector Y = (Y_l^-l,...,Y_l^l) of the
 % spherical harmonics of degree l using the Condon-Shortley phase
 % convention
 %
-%% Input
+% Input
 %  l     - degree
 %  theta - polar angle
 %  rho   - azimuth angle
 %
-%% Output
+% Output
 %  Y - (2l+1) x numel(theta,rho) matrix of function values
 %
-%% See also
+% See also
 % wignerD
 
 if isa(theta,'vector3d'), [theta,rho] = polar(theta); end
@@ -45,8 +45,6 @@ if check_option(varargin,'nfsft') && l > 0
   
   return
 end
-
-
 
 % calculate assoziated legendre functions
 L = sqrt(2/(2*l+1))*reshape(legendre(l,cos(theta(:)),'norm').',numel(theta),l+1); % nodes x order

@@ -15,7 +15,7 @@
 % A tensor is defined by its entries and a crystal symmetry. Let us
 % consider a simple example. First we define some crystal symmetry
 
-cs = symmetry('-1');
+cs = crystalSymmetry('1');
 
 %%
 % Next we define a two rank tensor by its matrix
@@ -35,7 +35,7 @@ T = tensor(diag([10 3 1]),cs)
 
 fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
 
-cs = symmetry('mmm',[4.7646 10.2296 5.9942]);
+cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942],'mineral','olivine');
 
 C = loadTensor(fname,cs,'name','stiffness')
 
@@ -44,7 +44,7 @@ C = loadTensor(fname,cs,'name','stiffness')
 % The default plot for each tensor is its directional magnitude, i.e. for each direction
 % x it is plotted Q(x) = T_ijkl x_i x_j x_k x_l
 
-setpref('mtex','defaultColorMap',seismicColorMap);
+setMTEXpref('defaultColorMap',blue2redColorMap);
 plot(C,'complete')
 
 %%
@@ -110,6 +110,4 @@ c = EinsteinSum(C,[-1 -2 -3 -3],v,-1,v,-2)
 %%
 % set back the default color map.
 
-setpref('mtex','defaultColorMap',WhiteJetColorMap)
-
-
+setMTEXpref('defaultColorMap',WhiteJetColorMap)

@@ -6,204 +6,228 @@
 %% Contents
 %
 %%
-% Reconstructing grains and grain boundaries is one of the central problems
-% when analyzing EBSD data. It is instrumental for ODF estimation from EBSD
-% data as well as <GrainMisorientationAnalysis.html misorientation analysis>.
+% This section discusses the different grain reconstruction methods
+% implement in MTEX. 
 %
 
 %% Grain Reconstruction
-% Let us first import some standard EBSD data with a [[matlab:edit
-% mtexdata, script file]]
+% Let us first import some [[matlab:edit mtexdata, example EBSD
+% data]] and reduce it to a subregion of interest.
 
-mtexdata aachen
 plotx2east
+mtexdata forsterite
+close all
 
-%%
-% Grain reconstruction in MTEX is done via the command
-% <EBSD.calcGrains.html calcGrains>. As an optional argument the desired
-% threshold angle for misorientation defining a grains boundary can be
-% specified.
-
-grains = calcGrains(ebsd,'threshold',2.5*degree)
-
-%%
-% The reconstructed grains are stored in the variable *grains* which
-% describes the EBSD data by <GrainSet_index.html incidence and adjacency
-% matrices>. In order to verify the result let us plot the grain boundaries
-% into the spatial EBSD plot.
+ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
 plot(ebsd)
+
+
+%%
+% We see that there are a lot of not indexed locations. For grain
+% reconstruction we have to two different choices how to deal with these
+% unindexed regions:
+%
+% # assign them to the surrounding grains
+% # leaf them unindexed
+%
+% By default MTEX uses the first method. 
+%
+% The second parameter that is involved in grain reconstruction is the
+% threshold misorientation angle indicating a grain boundary. By default
+% this value is set to 10 degree. 
+%
+% All grain reconstruction methods in MTEX are accessable via the command 
+% <EBSD.calcGrains.html calcGrains> which takes as input an EBSD data set
+% and returns a list of grain.
+
+grains = calcGrains(ebsd)
+
+%%
+% The reconstructed grains are stored in the variable *grains*.
+% To visualize the grains we can plot its boundaries by the command
+% <Grain2d.plotBoundary.html plotBoundary>.
+
+% start overide mode
 hold on
-plotBoundary(grains)
+
+% plot the boundary of all grains
+plot(grains.boundary,'linewidth',1.5)
+
+% mark two grains by location
+plot(grains(12000,4000).boundary,'linecolor','r','linewidth',2)
+plot(grains(11300,6100).boundary,'linecolor','r','linewidth',2)
+
+% stop overide mode
 hold off
 
 %%
-% When plotting the grains directly the associated color is defined by the
-% mean orientation within each grain.
-
-close, plot(grains)
+% We observe, especially in the marked grains, how MTEX fills notindexed
+% regions and connects otherwise seperate measurements to grains.
 
 %%
-% The capabilities <GrainSpatialPlots.html plotting grains> are a key for
-% understanding the specimen.
+% In order to supress this filling the option *keepNotIndexed* can be used.
+
+grains = calcGrains(ebsd,'keepNotIndexed')
+
+
+% plot the ebsd data
+plot(ebsd)
+
+% start overide mode
+hold on
+
+% plot grain boundaries
+plot(grains.boundary)
+
+% mark two grains by location
+plot(grains(12000,4000).boundary,'linecolor','r','linewidth',2)
+plot(grains(11300,6100).boundary,'linecolor','r','linewidth',2)
+
+
+% stop overide mode
+hold off
+
+%% 
+% Note how the one marked grain has been seperated into two grains and the
+% other marked grain has been seperated into many very small grains.
+
+%% Grain reconstruction by the multiscale clustering method
 %
-%% Computing grain properties
-% There are a couple of properties that can be computed for each indiviual
-% grain, e.g. perimeter, diameter, area,  grainSize (no. of measurements)
-% which can be simply calculated by the commands
+% When analyzing grains with gradual and subtle boundaries the threshold
+% based method may not lead to the desired result.
+%
+% Let us consider the following example
 
-perimeter(grains);
-diameter(grains);
-area(grains);
-grainSize(grains);
+mtexdata single
 
-%%
-% As an example let us explore the relation between the grain area coverage
-% over the specimen. first, we sort the area of grain in ascending order
+oM = ipdfHSVOrientationMapping(ebsd);
+oM.inversePoleFigureDirection = mean(ebsd) * oM.whiteCenter;
+oM.colorStretching = 5;
 
-A = sort(area(grains));
+plot(ebsd,oM.orientation2color(ebsd.orientations))
 
 %%
-% then, we can plot the probability to access a random grain from the
-% GrainSet which is smaller than a certain area
+% We obeserve that the are no rapid changes in orientation which would
+% allow for applying the threshold based algorithm. Setting the threshold
+% angle to a very small value would include many irrelevant or false regions.
 
-close, semilogx(A,(1:numel(A))./numel(A))
-set(gca,'xtick',5*10.^(-2:2)) % adjust the ticks
-grid on
-xlabel('area'),ylabel('cumulative percentage')
+grains_high = calcGrains(ebsd,'angle',1*degree);
+grains_low  = calcGrains(ebsd,'angle',0.5*degree);
+
+figure('position',[100 100 800 350])
+plot(ebsd,oM.orientation2color(ebsd.orientations))
+hold on
+plot(grains_high.boundary)
+hold off
+
+figure('position',[500 100 800 350])
+plot(ebsd,oM.orientation2color(ebsd.orientations))
+hold on
+plot(grains_low.boundary)
+hold off
+%%
+% As an alternative MTEX includes the fast multiscale clustering method
+% (FMC method) which  constructs clusters in a hierarchical manner from
+% single pixels using fuzzy logic to account for local, as well as global
+% information.
+%
+% Analogous with the threshold angle, a  single parameter, C_Maha controls
+% the sensitivity of the segmentation. A C_Maha value of 3.5 properly 
+% identifies the  subgrain features. A C_Maha value of 3 captures more
+% general features, while a value of 4 identifies finer features but is
+% slightly oversegmented.
+%
+
+grains_FMC = calcGrains(ebsd,'FMC',3.5)
+
+% smooth grains to remove staircase effect
+grains_FMC = smooth(grains_FMC);
 
 %%
-% alternatively, we can plot the area fraction, i.e. the probability to
-% pick spatially a grain less than a certain area.
+% We observe how this method nicely splits the measurements into clusters
+% of similar orientation
 
-close, semilogx(A,cumsum(A)./sum(A))
-set(gca,'xtick',5*10.^(-2:2)) % adjust the ticks
-grid on
-xlabel('area'),ylabel('cumulative area fraction')
+plot(ebsd,oM.orientation2color(ebsd.orientations))
 
-%% Accessing individual grains
-% Individual grains can be accessed by indexing, where the index refers to
-% the n-th grain.
+% start overide mode
+hold on
+plot(grains_FMC.boundary,'linewidth',1.5)
 
-grains(1)
-close, plot(grains([327 1065]))
-
-%%
-% Selecting a single phase works like previously done with the EBSD data.
-
-selected_grains = grains('Fe')
-
-%%
-% Moreover, grains allow logical indexing
-
-selected_grains = grains(grainSize(grains) > 10)
-
-%%
-% Logical indexing allows more complex queries, e.g. selecting grains with
-% at least 10 measurements within one phase
-
-selected_grains = grains(grainSize(grains) >= 10 & grains('mg'))
-
-%%
-% One can also use these selected grains for further queries.
-
-large_grains = grains( perimeter(grains) > 150  | selected_grains )
-
-close, plot(large_grains)
-
-%%
-% Also, one can select grains by its spatial location
-
-grains_by_xy = findByLocation(grains,[146  137])
-
-close, plot(grains_by_xy)
-hold on, plot(146,137,'marker','d','markerfacecolor','r','markersize',10)
-
-%%
-% or by a specific orientation.
-
-grains_by_orientation = findByOrientation(grains('fe'),idquaternion, 10*degree)
-
-close, plot(grains_by_orientation)
+% stop overide mode
+hold off
 
 %% Correcting poor grains
 % Sometimes measurements belonging to grains with very few measurements can
-% be regarded as inaccurate. In order to detect such measuremens we have
-% first to reconstruct grains from the EBSD measurements using the command
-% <EBSD.calcGrains.html calcGrains>. This time, we explicitely keep the not
-% indexed measurements by the flag *keepNotIndexed*
+% be regarded as inaccurate. This time, we explicitely keep the not
+% indexed measurements by the flag |keepNotIndexed|
 
-grains = calcGrains(ebsd,'angle',5*degree,'keepNotIndexed')
+mtexdata forsterite
 
-close, plot(grains)
+[grains,ebsd] = calcGrains(ebsd,'angle',5*degree,'keepNotIndexed')
 
-%%
-% The histogram of the grainsize shows a lot of grains consisting only of
-% very few measurements.
-
-p = histc(grainSize(grains),1:5)'./numel(grains)
-sum(p)
+close all
+plot(grains)
 
 %%
-% and we calculate the area fraction for small grains.
+% The number of measurements per grain can be accessed by the command
+% <GrainSet.grainSize.html GrainSize>. Let us determine the number of
+% grains with less then 10 measurements
 
-A = area(grains);
-sum(A(grainSize(grains)<=5))/ sum(A)
+nnz(grains.grainSize < 5)
 
-%%
-% grains with less than 5 measurements make up >80% of the constructed
-% grains but cover only 13% of the specimen, i.e. there might be some
-% corruption of the data present, which we are going to eliminate.
-%%
-% Next, let us take a closer look, how the small grains are distributed
-% over the phases
-
-p = [sum(grainSize(grains('notIndexed')) <= 5) ...
-  sum(grainSize(grains('Fe')) <= 5) ...
-  sum(grainSize(grains('Mg')) <= 5)]./numel(grains)
+% or the percentage of those grains relative to the total number of grains
+100 * nnz(grains.grainSize < 10) / length(grains)
 
 %%
-% It is possible to select different grains by size and phase. E.g. not
-% indexed grains with more than 20 measurments, which can be considered as
-% large areas of missing data and which should not be assigned to any
-% conventional grain. We further consider iron grains with less than 5
-% measurments as not suitable.
+% We see that almost 92 percent of all grains consist of less then ten
+% measurement points. Next, we compute the percentage of small grains for
+% the individuell phases
 
-large_grains = grains( ...
-  (grains('notIndexed') & grainSize(grains)>=20) |...
-  (grains('fe') & grainSize(grains)>=5 ) | ...
-  grains('mg'))
-
-close, plotBoundary(large_grains)
-hold on,
-plot(grains(~large_grains),'facecolor','r')
+p = 100*[nnz(grains('notIndexed').grainSize < 10); ...
+  nnz(grains('forsterite').grainSize < 10); ...
+  nnz(grains('enstatite').grainSize < 10); ...
+  nnz(grains('diopside').grainSize < 10)]./length(grains)
 
 %%
-% Indeed, there are a lot of small not indexed grains, mostly located at
-% grain boundaries. Next, we use the EBSD data of the computed grain set to
-% do the reconstruction again.
+% We see that almost all small grains are acually not indexed. In order to
+% allow filling in those holes we remove these small not indexed grains
+% completely from the data set
 
-grains_corrected = calcGrains(large_grains,'keepNotIndexed','angle',5*degree)
+condition = grains.grainSize >=10 | grains.phase > 0;
 
-close, plot(grains_corrected,'property','phase')
-
-%%
-% Now, let us compare the grain size the both distribution, between the
-% uncorreted and corrected GrainSet.
-
-Auncorr = sort(area(grains));
-Acorr   = sort(area(grains_corrected));
+grains(condition)
 
 %%
-% As the following plots indicate, the small grains are now assigned to
-% larger grains
+% If we now perform grain reconstruction a second time these small holes
+% will be assigned to the neighbouring grains
 
-close,   semilogx(Auncorr,cumsum(Auncorr)/sum(Auncorr),'b')
-hold on, semilogx(Acorr,cumsum(Acorr)/sum(Acorr),'r')
-set(gca,'xtick',5*10.^(-2:2)) % adjust the ticks
-grid on
-legend('uncorrected','corrected')
-xlabel('area'), ylabel('cumulative area fraction')
+grains = calcGrains(ebsd(grains(condition)),'keepNotIndexed')
 
+plot(grains)
 
+%%
+% We see that all small unindexed regions has been filled. Another way for
+% correcting EBSD data is to filter them accoring to quality measures like
+% MAD or band contrast. Lets plot the band contrast of our measurements
 
+plot(ebsd,ebsd.bc)
+
+colorbar
+
+%%
+% We see that there is a rectangular region in top left corner which low
+% band contrast. In order to filter out all measurements with low band
+% contrast we can do
+
+condition = ebsd.bc > 80;
+
+plot(ebsd(condition))
+
+%%
+% Although this filtering has cleared out large regions. The grain
+% reconstruction algorithm works still well.
+
+grains = calcGrains(ebsd(condition))
+
+plot(grains)

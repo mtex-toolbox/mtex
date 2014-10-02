@@ -12,21 +12,26 @@ function out = extract_option(option_list,option,types)
 %% See also
 % get_option set_option delete_option
 
-if ~iscell(option), option = {option};end
-if nargin > 2 && ~iscell(types), types = {types};end
+%% extract options with argument
+if nargin > 2
 
-out = {};
-for o = 1:length(option)
-
-  if nargin > 2 && o <= length(types)
-    pos = find_option(option_list,option{o},types{o});
-    p = 1;
-  else
-    pos = find_option(option_list,option{o});
-    p = 0;
-  end
+  option = ensurecell(option);  
+  types = ensurecell(types);
+  out = {};
   
-  if pos 
-    out = [out,option_list(pos-p:pos)]; %#ok<AGROW>
-  end 
+  for o = 1:length(option)
+
+    pos = find_option(option_list,option{o},types{o});
+      
+    if pos
+      out = [out,option_list(pos-1:pos)]; %#ok<AGROW>
+    end
+  end
+    
+%% extract options without argument  
+else
+
+  ind = cellfun(@(a) ischar(a) && any(strcmpi(a,option)) ,option_list);
+  out = option_list(ind);
+  
 end

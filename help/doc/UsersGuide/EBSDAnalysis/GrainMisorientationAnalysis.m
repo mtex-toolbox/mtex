@@ -7,9 +7,9 @@
 %
 %% Definition
 %
-% In MTEX the misorientation between two orientations x, y is defined as
+% In MTEX the misorientation between two orientations o1, o2 is defined as
 %
-% $$ mis(x,y) = x^{-1} * y  $$
+% $$ mis(o_1,o_2) = o_1^{-1} * o_2  $$
 %
 % In the case of EBSD data, intergranular misorientations, misorientations
 % between neighbouring grains, and misorientations between random
@@ -19,13 +19,13 @@
 %% The sample data set
 % Let us first import some EBSD data by a [[matlab:edit mtexdata, script file]]
 
-mtexdata aachen
+mtexdata forsterite
 plotx2east
 
 %%
 % and <EBSD.calcGrains.html reconstruct> grains by
 
-grains = calcGrains(ebsd,'threshold',5*degree);
+[grains,ebsd] = calcGrains(ebsd,'threshold',5*degree);
 
 
 %% Intergranular misorientations
@@ -35,23 +35,63 @@ grains = calcGrains(ebsd,'threshold',5*degree);
 % <ebsd_get.html,get>.
 
 % get the misorientations to mean
-mori = get(grains('Fe'),'mis2mean')
+mori = ebsd('Fo').mis2mean
 
 % plot a histogram of the misorientation angles
-hist(angle(mori)/degree)
+plotAngleDistribution(mori)
 xlabel('Misorientation angles in degree')
 
 %%
 % The visualization of the misorientation can be done by
 
-close,   plot(grains,'property','mis2mean')
-hold on, plotBoundary(grains,'edgecolor','k','linewidth',0.5)
+close all
+plot(ebsd('Forsterite'),ebsd('Forsterite').mis2mean.angle./degree)
+mtexColorMap WhiteJet
+colorbar
+hold on
+plot(grains.boundary,'edgecolor','k','linewidth',.5)
+hold off
+
+%%
+
+cs = ebsd('Forsterite').CS.Laue;
+oM = axisAngleOrientationMapping(cs)
+%oM.maxAngle = 50*degree;
+
+plot(ebsd('Forsterite'),oM.orientation2color(ebsd('Forsterite').mis2mean))
+hold on
+plot(grains.boundary,'edgecolor','k','linewidth',.5)
+hold off
+
 
 %% Boundary misorientations
 % The misorientation between adjacent grains can be computed by the command
-% <GrainSet.calcMisorientation.html>
+% <grainBoundary.misorientation.html>
 
-calcMisorientation(grains(5),grains(6))
+plot(grains)
+
+hold on
+
+bnd_FoFo = grains.boundary('Fo','Fo')
+
+plot(bnd_FoFo,'linecolor','r')
+
+hold off
+
+bnd_FoFo.misorientation
+
+
+%%
+
+plot(ebsd,'facealpha',0.5)
+
+hold on
+plot(grains.boundary)
+plot(bnd_FoFo,bnd_FoFo.misorientation.angle./degree,'linewidth',2)
+mtexColorMap blue2red
+colorbar
+hold off
+
 
 %%
 % In order to visualize the the misorientation between any two adjacent
@@ -65,7 +105,8 @@ calcMisorientation(grains(5),grains(6))
 % The following command plot the angle distribution of all misorientations
 % grouped according to phase trasistions.
 
-close, plotAngleDistribution(grains)
+close all
+plotAngleDistribution(grains.boundary)
 
 %%
 % The above angle distributions can be compared with the uncorrelated angle
@@ -79,7 +120,9 @@ close, plotAngleDistribution(grains)
 %
 % All these steps are performed by the single command
 
-hold on, plotAngleDistribution(grains,'ODF')
+close all
+plotAngleDistribution(ebsd)
+
 
 %%
 % Another possibility is to compute an uncorrelated angle distribution from
@@ -87,41 +130,32 @@ hold on, plotAngleDistribution(grains,'ODF')
 % that are sufficently far from each other (uncorrelated points). The uncorrelated angle
 % distribution is plotted by
 
-close, plotAngleDistribution(grains,'uncorrelated')
+%plotAngleDistribution(ebsd,'ODF')
 
 %%
 % In order to consider only a specific phase transistion one can use the
 % syntax
 
-close, plotAngleDistribution(grains('Fe'),grains('Mg'),'uncorrelated')
+close all
+plotAngleDistribution(ebsd('Fo'),ebsd('En'))
 
 %% The axis distribution
 % 
 % Let's start here with the uncorrelated axis distribution, which depends
 % only on the underlying ODFs. 
 
-figure('position',[100.0000 100.8000 450 300]);
-plotAxisDistribution(grains('Fe'),...
-  'uncorrelated','contourf','antipodal')
-
-colorbar
+close all
+mtexFig = newMtexFigure;
+plotAxisDistribution(ebsd('Fo'),'smooth','parent',mtexFig.gca)
+title('uncorrelated axis distribution')
 
 %%
 % We may plot the axes of the boundary misorientations directly into this
 % plot
 
-hold on
-plotAxisDistribution(grains('Fe'),'antipodal','SampleSize',100,...
-  'MarkerSize',4,'MarkerFaceColor','none','MarkerEdgeColor','red','gray')
-hold off
-
-%%
-% However, this might serve only for a qualitative comparison. For a better
-% comparison we plot the axis distribiution of the boundary misorientations
-% also as a density plot.
-
-close, plotAxisDistribution(grains('Fe'),'antipodal','contourf')
-
+mtexFig.nextAxis
+plotAxisDistribution(grains.boundary('Fo','Fo'),'smooth','parent',mtexFig.gca)
+title('boundary axis distribution')
 colorbar
 
 %%

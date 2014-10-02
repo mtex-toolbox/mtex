@@ -1,0 +1,26 @@
+function n = nfold(cs,axis)
+% maximal n-fold of symmetry axes
+
+if nargin == 1
+  switch cs.LaueName
+    case {'2/m','mmm'}
+      n = 2;
+    case {'m-3','-3','-3m'}
+      n = 3;
+    case {'4/m','4/mmm','m-3m'}
+      n = 4;
+    case {'6/m','6/mmm'}
+      n = 6;
+    otherwise
+      n = 1;
+  end
+else
+  n = ones(size(axis));
+  for i = 1:length(axis)
+    ind = isnull(angle(cs.axis,axis(i))) & cs.angle>0;
+    if any(ind)
+      n(i) = 2*pi / min(cs.subSet(ind).angle);
+    end
+  end
+  
+end

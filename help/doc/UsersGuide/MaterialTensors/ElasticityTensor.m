@@ -16,7 +16,7 @@
 
 fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
 
-cs = symmetry('mmm',[4.7646 10.2296 5.9942],'mineral','Olivin');
+cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942],'mineral','Olivin');
 
 C = loadTensor(fname,cs,'propertyname','elastic stiffness','unit','Pa','interface','generic')
 
@@ -31,8 +31,8 @@ E = YoungsModulus(C,x)
 % It can be plotted by passing the option *YoungsModulus* to the
 % <tensor.plot.html plot> command.
 
-setpref('mtex','defaultColorMap',seismicColorMap);
-plot(C,'PlotType','YoungsModulus','complete','north')
+setMTEXpref('defaultColorMap',blue2redColorMap);
+plot(C,'PlotType','YoungsModulus','complete','upper')
 
 %% Linear Compressibility
 % The linear compressibility is the deformation of an arbitrarily shaped
@@ -47,7 +47,7 @@ beta = linearCompressibility(C,x)
 % It can be plotted by passing the option *linearCompressibility* to the
 % <tensor.plot.html plot> command.
 
-plot(C,'PlotType','linearCompressibility','complete','north')
+plot(C,'PlotType','linearCompressibility','complete','upper')
 
 %% Christoffel Tensor
 % The Christoffel Tensor is symmetric because of the symmetry of the
@@ -66,37 +66,45 @@ T = ChristoffelTensor(C,x)
 %% Elastic Wave Velocity
 % The Christoffel tensor is the basis for computing the direction dependent
 % wave velocities of the p, s1, and s2 wave, as well as of the polarisation
-% directions. In MTEX this is done by the command <tensor.velocity.html
+% directions. Therefore, we need also the density of the material, e.g.,
+
+rho = 2.3
+
+%%
+% which we can write directly into the ellastic stiffness tensor
+C = addOption(C,'density',rho)
+
+%%
+% Then the velocities are computed by the command <tensor.velocity.html
 % velocity>
 
-[vp,vs1,vs2,pp,ps1,ps2] = velocity(C,xvector,1)
+[vp,vs1,vs2,pp,ps1,ps2] = velocity(C,xvector)
 
 %%
 % In order to visualize these quantities there are several posibilities.
 % Let us first plot the direction dependend wave speed of the p-wave
 
-plot(C,'PlotType','velocity','vp','complete','north')
-
+plot(C,'PlotType','velocity','vp','complete','upper')
 
 %%
 % Next we plot on the top of this plot the p-wave polarisation direction.
 
 hold on
-plot(C,'PlotType','velocity','pp','complete','north')
+plot(C,'PlotType','velocity','pp','complete','upper')
 hold off
 
 %%
 % Finally we visualize the speed difference between the s1 and s2 waves
 % together with the  fast shear-wave polarization.
 
-plot(C,'PlotType','velocity','vs1-vs2','complete','north')
+plot(C,'PlotType','velocity','vs1-vs2','complete','upper')
 
 hold on
-plot(C,'PlotType','velocity','ps1','complete','north')
+plot(C,'PlotType','velocity','ps1','complete','upper')
 hold off
 
 
 %%
 % set back default colormap
 
-setpref('mtex','defaultColorMap',WhiteJetColorMap)
+setMTEXpref('defaultColorMap',WhiteJetColorMap)

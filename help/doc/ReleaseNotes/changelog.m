@@ -1,8 +1,479 @@
 %% MTEX Changelog
 %
-%% Contents
+%% MTEX 4.0.0 - 08/2014
+% 
+% MTEX 4 is a complete rewrite of the internal class system which was
+% required to keep MTEX compatible with upcomming Matlab releases. Note
+% that MTEX 3.5 will not work on Matlab versions later then 2014a. As a
+% positive side effect the syntax has been made more consisent and
+% powerfull. On the bad side MTEX 3.5. code will need some
+% adaption to run on MTEX 4. There are three general principles to consider
 %
-%% MTEX 3.3.0 - 03/2012
+% *Use dot indexing istead of get and set methods*
+%
+% The syntax
+%
+%   h = get(m,'h')
+%   m = set(m,'h',h+1)
+%
+% is obsolete. |set| and |get| methods are not longer supported by any MTEX
+% class. Instead use dot indexing
+%
+%   h = m.h
+%   m.h = h + 1
+%
+% Note, that this syntax can be nested, i.e., one can write
+%
+%   ebsd('Forsterite').orientations.angle
+%
+% to get the rotational angle of all Forsterite orientations, or,
+%
+%   cs.axes(1).x
+%
+% to get the x coordinate of the first crystallographic coordinate axis -
+% the a-axis. As an nice bonus you can now use TAB completion to cycle
+% through all possible properties and methods of a class.
+%
+% *Use camelCaseCommands instead of under_score_commands*
+%
+% Formerly, MTEX used different naming conventions for functions. Starting
+% with MTEX 4.0 all function names consisting of several words, have the
+% first word spelled with lowercase latters and the consecutive words
+% starting with a capital letter. Most notable changes are
+%  * |plotPDF|
+%  * |plotIPDF|
+%  * |plotODF|
+%  * |calcError|
+%
+% *Grain boundaries are now directly accessable*
+%
+% MTEX 4.0 introduces a new type of variables called |grainBoundary| which 
+% allows to represent arbitary grain boundaries and to to work with them as
+% with grains. The following lines give some examples. Much more is possible.
+%
+%   % select boundary from specific grains
+%   grains.boundary 
+%
+%   % select boundary by phase transistion
+%   gB = grains.boundary('Forstarite','Enstatite') 
+%
+%   % select boundary by misorientation angle
+%   gB(gB.misorientation.angle>100*degree)
+%
+%   % compute misorientation angle distribution for specific grain boundaries
+%   plotAngleDistribution(gB)
+%
+% *Plotting EBSD, grain, grainBoundary data has different syntax*
+%
+% The syntax of the plot commands has made more consistent throughout MTEX.
+% It is now
+%
+%   plot(obj,data)
+%
+% where obj is the object to be plotted, i.e., EBSD data, grains, 
+% grain boundaries, spherical vectors, pole figures, etc., and the data are 
+% either pure numbers or RGB values describing the color. Examples are
+%
+%   % plot MAD values of EBSD data
+%   plot(ebsd,ebsd.mad)
+%
+%   % colorize grains according to area
+%   plot(grains,grains.area)
+%
+%   % colorize grain boundary according to misorientation angle
+%   gB = grains.boundary('Forsterite','Enstatite')
+%   plot(gB,gB.misorientation.angle)   
+%
+% Colorization according to phase or phase transition is the new default 
+% when calling without data argument, i.e., the following results in a 
+% phase plot
+%
+%   plot(ebsd)
+%
+% In order to colorize according to orientations one has first to define a
+% orientationMapping by
+% 
+%   oM = ipdfHSVOrientationMapping(ebsd('Forsterite'))
+%
+% Then one can use the command |oM.orientation2color| to compute RGB values
+% for the orientations
+%
+%   plot(ebsd('Forsterite'),oM.orientation2color(ebsd('Forsterite').orientations))
+%
+% The orientation mapping can be visualized by
+%
+%   plot(oM)
+%
+% *EBSD data are alway spatialy indexed*
+%
+% Starting with MTEX 4.0 EBSD data alway have to have x and y coordinates.
+% EBSD data without spatial coordinates are imported simply as orientations.
+% As a consequence, all orientation related functionalities of EBSD data
+% have been moved to |orientations|, i.e., you can not do anymore
+%
+%   plotpdf(ebsd('Fo'),Miller(1,0,0))
+%   calcODF(ebsd('Fo'))
+%   volume((ebsd('Fo'))
+%
+% But you have to explicitely state that you operate on the orientations, i.e.
+%
+%   plotpdf(ebsd('Fo').orientations,Miller(1,0,0,ebsd('Fo').CS))
+%   calcODF(ebsd('Fo').orientations)
+%   volume((ebsd('Fo').orientations)
+%
+% This makes it more easy to apply the same functions to misorientations 
+% to grain mean orientations |grains.meanOrientation|, ebsd misorientation 
+% to mean |mean |ebsd.mis2mean| or boundary misorientations 
+% |grains.boundary.misorientation|
+%
+% *MTEX 4.0 distingueshes between crystal and specimen symmetry*
+%
+% In MTEX 4.0 two new variable types |specimenSymmetry| and 
+% |crystalSymmetry| have been introduced to clearly distinguesh between 
+% these two types of symmetry. Calling
+%
+%   cs = symmetry('m-3m')
+%   ss = symmetry('triclinic')
+%
+% is not allowed anymore! Please use instead
+%
+%   cs = crystalSymmetry('m-3m','mineral','phaseName')
+%   ss = specimenSymmetry('triclinic')
+%
+% *Pole figure indexing is now analogously to EBSD data*
+%
+% You can now index pole figure data by conditions in the same manner as
+% EBSD data. E.g. the condition
+%
+%   condition = pf.r.theta < 80 * degree
+%
+% is a index to all pole figure data with polar angle smaller then 80
+% degree. To restrict the pole figure variable |pf| to the data write
+%
+%   pf_restrcited = pf(condition)
+%
+% In the same manner we can also remove all negative intensities
+% 
+%   condition = pf.intensities < 0
+%   pf(condition) = []
+%
+% In order to address individuell pole figures within a array of pole
+% figures |pf| use the syntax
+%
+%   pf('111')
+%
+% or
+%
+%   pf(Miller(1,1,1,cs))
+%
+% The old syntax
+%
+%   pf(1)
+%
+% for accessing the first pole figure will not work anymore as it now refers to
+% the first pole figure measurement. The direct replacement for the above
+% command is
+%
+%   pf({1})
+%
+% *MTEX 4.0 supports all 32 point groups*
+%
+% In MTEX 4.0 it is for the first time possible to calculate with
+% reflections and inversions. As a consequence all 32 point groups are
+% supported. This is particularly important when working with
+% piezoellectric tensors and symmetries like 4mm. Moreover, 
+% MTEX distingueshes between the point groups 112, 121, 112 up to -3m1 and
+% -31m. 
+%
+% Care should be taken, when using non Laue groups for pole figure or EBSD
+% data. 
+%
+% *Support for three digit notation for Miller indices of trigonal
+% symmetries*
+%
+% MTEX 4.0 understands now uvw and UVTW notation for trigonal symmetries.
+% The following two commands define the same crystallographic direction,
+% namely the a1-axis
+%
+%   Miller(1,0,0,crystalSymmetry('-3m'),'uvw')
+%
+%   Miller(2,-1,-1,0,crystalSymmetry('-3m'),'UVTW')
+%
+% *Improved graphics*
+%
+% MTEX can now display colorbars next to pole figure, tensor or ODF plots 
+% and offers much more powerfull options to customize the plots with titles,
+% legends, etc. 
+%
+% *density is now an optional property of ellastic tensors*
+%
+% TODO: write about it
+%
+% *Functionality that has been (temporarily) removed*
+%
+% This can be seen as a todo list.
+%
+% * 3d EBSD data handling + 3d grains
+% * some grain functions like aspectRation, equivalent diamter
+% * logarithmic scaling of plots
+% * 3d plot of ODFs
+% * some of the orientation color maps
+% * fibreVolume
+% * Dirichlet kernel
+% * patala colorcoding
+% * v.x = 0 
+% * misorientation analysis is not yet complete
+% * some colormaps, e.g. blue2red switched
+% * histogram of valume fractions of CSL boundaries
+% * remove id from EBSD?
+% * changing the phase of a grain should change phases in boundary
+% * KAM and GOSS
+%
+%% MTEX 3.5.0 - 12/2013
+%
+% *Misorientation colorcoding*
+%
+% * Patala colormap for misorientations
+% * publication:  S. Patala, J. K. Mason, and C. A. Schuh, Improved
+% representations of misorientation information for grain boundary, science
+% and engineering, Prog. Mater. Sci., vol. 57, no. 8, pp. 1383-1425, 2012.
+% * implementation: Oliver Johnson
+% * syntax:
+%
+%   plotBoundary(grains('Fo'),'property','misorientation','colorcoding','patala')
+%
+% *Fast multiscale clustering (FMC) method for grain reconstruction*
+%
+% * grain reconstruction algorithm for highly deformed materials without
+% sharp grain boundaries
+% * publication: C. McMahon, B. Soe, A. Loeb, A. Vemulkar, M. Ferry, 
+% L. Bassman, Boundary identification in EBSD data with a generalization of
+% fast multiscale clustering, Ultramicroscopy, 2013, 133:16-25.
+% * implementation: Andrew Loeb
+% * syntax:
+%
+%    grains = calcGrains(ebsd,'FMC')
+%
+% *Misc changes*
+%
+% * one can now access the grain id by
+%
+%   get(grains,'id')
+%
+% * the flags |'north'| and |'south'| are obsolete and have been replaced
+% by |'upper'| and |'lower'|
+% * you can specify the outer boundary for grain reconstruction in non
+% convex EBSD data set by the option |'boundary'|
+%
+%   poly = [ [x1,y1];[x2,y2];[xn,yn];[x1,y1] ]
+%   grains = calcGrains(ebsd,'boundary',poly)
+% 
+% * you can select a polygon interactively with the mouse using the command
+%
+%   poly = selectPolygon
+%
+% *Bug fixes*
+%
+% * .osc, .rw1 interfaces improved
+% * .ang, .ctf interfaces give a warning if called without one of the
+% options |convertSpatial2EulerReferenceFrame| or
+% |convertEuler2SpatialReferenceFrame|
+% * fixed: entropy should never be imaginary
+% * removed function |SO3Grid/union|
+% * improved MTEX startup
+% * many other bug fixes
+% * MTEX-3.5.0 should be compatible with Matlab 2008a
+%
+%% MTEX 3.4.2 - 06/2013
+%
+% *bugfix release*
+%
+% * fixed some inverse pole figure color codings
+% * option south is working again in pole figure plots
+% * geometric mean in tensor averagin, thanks to Julian Mecklenburgh
+% * improved support of osc EBSD format
+% * tensor symmetry check error can be turned of and has more detailed
+% error message
+% * improved syntax for Miller
+%   Miller(x,y,z,'xyz',CS)
+%   Miller('polar',theta,rho,CS)
+% * ensure same marker size in EBSD pole figure plots
+% * allow plotting Schmid factor for grains and EBSD data
+% * allow to anotate Miller to AxisDistribution plots
+% * improved figure export
+% * allow for negative phase indices in EBSD data
+% * bug fix: https://code.google.com/p/mtex/issues/detail?id=115
+% * improved ODF fibre plot
+%
+%% MTEX 3.4.1 - 04/2013
+%
+% *bugfix release*
+%
+% * much improved graphics export to png and jpg files
+% * improved import wizard
+% * Miller(2,0,0) is now different from Miller(1,0,0)
+% * new EBSD interfaces h5, Bruker, Dream3d
+% * various speedups
+% * fix: startup error http://code.google.com/p/mtex/issues/detail?id=99
+% * fix: Rigaku csv interface
+%
+%% MTEX 3.4.0 - 03/2013
+%
+% *New plotting engine*
+%
+% MTEX 3.4 features a completely rewritten plotting engine. New features
+% includes
+%
+% * The alignment of the axes in the plot is now described by the options
+% |xAxisDirection| which can be |north|, |west|, |south|, or |east|, and
+% |zAxisDirection| which can be |outOfPlane| or |intoPlane|. Accordinly,
+% there are now the commands
+%
+%   plotzOutOfPlane, plotzIntoPlane
+%
+% * The alignment of the axes can be changed interactively using the new
+% MTEX menu which is located in the menubar of each figure.
+% * northern and southern hemisphere are now separate axes that can be
+% stacked arbitrarily and are marked as north and south.
+% * Arbitary plots can be combined in one figure. The syntax is
+%
+%   ax = subplot(2,2,1)
+%   plot(ax,xvector)
+%
+% * One can now arbitrarily switch between scatter, contour and smooth
+% plots for any data. E.g. instead of a scatter plot the following command
+% generates now a filled contour plot
+%
+%   plotpdf(ebsd,Miller(1,0,0),'contourf')
+%
+% * obsolete options: |fliplr|, |flipud|, |gray|,
+%
+% *Colormap handling*
+%
+% * User defined colormap can now be stored in the folder |colormaps|, e.g.
+% as |red2blueColorMap.m| and can set interactively from the MTEX menu or
+% by the command
+%
+%   mtexColorMap red2blue
+%
+% *ODF*
+%
+% * The default ODF plot are now phi2 sections with plain projection and (0,0)
+% beeing at the top left corner. This can be changed interactivly in the
+% new MTEX menu.
+% * The computation of more then one maximum is back. Use the command
+%
+%   [modes, values] = calcModes(odf,n)
+%
+% *EBSD data*
+%
+% * MTEX is now aware about inconsistent coordinate system used in CTF and
+% HKL EBSD files for Euler angles and spatial coordinates. The user can now
+% convert either the spatial coordinates or the Euler angles such that they
+% become consistent. This can be easily done by the import wizard or via
+% the commands
+%
+%   % convert spatial coordinates to Euler angle coordinate system
+%   loadEBSD('filename','convertSpatial2EulerReferenceFrame')
+%
+%   % convert Euler angles to spatial coordinate system
+%   loadEBSD('filename','convertEuler2SpatialReferenceFrame')
+%
+% * It is now possible to store a color within the variable describing a
+%  certain mineral. This makes phase plots of EBSD data and grains more
+%  consistent and customizable.
+%
+%   CS = symmetry('cubic','mineral','Mg','color','red')
+%
+% * Better rule of thumb for the kernel width when computing an ODF from
+% individual orientations via kernel density estimation.
+% * inpolygon can be called as
+%
+%   inpolygon(ebsd,[xmin ymin xmax ymax])
+%
+% *Tensors*
+%
+% * new command to compute the Schmid tensor
+%
+%   R = SchmidTensor(m,n)
+%
+% * new command to compute Schmid factor and active slip system
+%
+%   [tauMax,mActive,nActive,tau,ind] = calcShearStress(stressTensor,m,n,'symmetrise')
+%
+% * it is now possible to define a tensor only by its relevant entries.
+% Missing entries are filled such that the symmetry properties are
+% satisfied.
+%
+% * faster, more stable tensor implementation
+% * new syntax in tensor indexing to be compatible with other MTEX classes.
+% For a 4 rank thensor |C| we have now
+%
+%   % extract entry 1,1,1,1 in tensor notation
+%   C{1,1,1,1}
+%
+%   % extract entry 1,1 in Voigt notation
+%   C{1,1}
+%
+% * For a list of tensors |C| we have
+%
+%   % extract the first tensor
+%   C(1)
+%
+% *Import / Export*
+%
+% * command to export orientations
+%
+%   export(ori,'fname')
+%
+% * command to import vector3d
+%
+%   v = loadVector3d('fname','ColumnNames',{'x','y','z'})
+%   v = loadVector3d('fname','ColumnNames',{'latitude','longitude'})
+%
+% * new interface for DRex
+% * new interface for Rigaku
+% * new interface for Saclay
+%
+% *General*
+%
+% * improved instalation / uninstalation
+% * new setting system
+%
+%   setpref('mtex','propertyName','propertyValue')
+%
+% has been replaced by
+%
+%   setMTEXpref('propertyName','propertyValue')
+%
+%
+%% MTEX 3.3.2 - 01/2013
+%
+% *bugfix release*
+%
+% * fix: better startup when using different MTEX versions
+% * fix: backport of the tensor fixes from MTEX 3.4
+% * fix: show normal colorbar in ebsd plot if scalar property is plotted
+% * fix: http://code.google.com/p/mtex/issues/detail?id=82
+% * fix: http://code.google.com/p/mtex/issues/detail?id=76
+% * fix: http://code.google.com/p/mtex/issues/detail?id=48
+% * fix: http://code.google.com/p/mtex/issues/detail?id=71
+% * fix: http://code.google.com/p/mtex/issues/detail?id=70
+% * fix: http://code.google.com/p/mtex/issues/detail?id=69
+% * fix: http://code.google.com/p/mtex/issues/detail?id=65
+% * fix: http://code.google.com/p/mtex/issues/detail?id=68
+%
+%% MTEX 3.3.1 - 07/2012
+%
+% *bugfix release*
+%
+% * fix: single/double convention get sometimes wrong with tensors
+% * fix: tensor checks did not respect rounding errors
+% * fix: ingorePhase default is now none
+% * fix: calcAngleDistribution works with ODF option
+% * fix: respect rounding errors when importing pole figures and ODFs
+%
+%% MTEX 3.3.0 - 06/2012
 %
 % *Grains: change of internal representation*
 %
@@ -14,10 +485,10 @@
 % * The class @GrainSet explicitely stores @EBSD. To access @EBSD data
 % within a single grain or a set of grains use
 %
-%  get(grains,'EBSD')
+%   get(grains,'EBSD')
 %
 % * the grain selector tool for spatial grain plots was removed,
-% nevertheless, grains still can be [[GrainSingleAnalysis.html,selected spatially]].
+% nevertheless, grains still can be <GrainSingleAnalysis.html selected spatially>.
 % * scripts using the old grain engine may not work properly, for more
 % details of the functionalities and functioning of the @GrainSet please
 % see the documention.
@@ -26,22 +497,27 @@
 % *EBSD*
 %
 % * Behavior of the |'ignorePhase'| changed. Now it is called in general
-% |'not indexed'| and the not indexed data [[ImportEBSDData.html,is
-% imported generally]]. If the crystal symmetry of an @EBSD phase is set to a
+% |'not indexed'| and the not indexed data <ImportEBSDData.html is
+% imported generally>. If the crystal symmetry of an @EBSD phase is set to a
 % string value, it will be treated as not indexed. e.g. mark the first
 % phase as |'not indexed'|
-% 
-%  CS = {'not indexed',...
-%        symmetry('cubic','mineral','Fe'),...
-%        symmetry('cubic','mineral','Mg')};
+%
+%   CS = {'not indexed',...
+%         symmetry('cubic','mineral','Fe'),...
+%         symmetry('cubic','mineral','Mg')};
 %
 % By default, |calcGrains| does also use the |'not Indexed'| phase.
 %
 % * create custemized orientation colormaps
 %
+% *Other*
+%
+% * the comand |set_mtex_option| is obsolete. Use the matlab command
+% |setMTEXpref(...)| instead. Additionally, one can now see all options
+% by the command |getpref('mtex')|
 %
 %% MTEX 3.2.3 - 03/2012
-% 
+%
 % *bugfix release*
 %
 % * allow zooming for multiplot objects again; change the z-order of axes
@@ -94,7 +570,7 @@
 % * computation of the uncorrelated misorientation distribution (MDF) for
 % one or two ODFs
 % * computation of the theoretical angle distribution of an ODF or MDF
-% * computation of the misorienation to mean for EBSD data
+% * computation of the misorientation to mean for EBSD data
 %
 % *New Syntax for EBSD and grain variables*
 %
@@ -344,10 +820,10 @@
 %
 % * ODF reconstruction and PDF calculation is about *10 times faster* now
 % (thanks to the new NFFT 4.0 library)
-% * ODF plotting and the calculation of [[ODF.volume.html,volume
-% fractions]], the [[ODF.textureindex.html,texture index]], the
-% [[ODF.entropy.html,entropy]] and [[ODF.calcFourier.html,Fourier
-% coefficients]] is about *100 times faster*
+% * ODF plotting and the calculation of <ODF.volume.html volume
+% fractions>, the <ODF.textureindex.html texture index>, the
+% <ODF.entropy.html entropy> and <ODF.calcFourier.html Fourier
+% coefficients> is about *100 times faster*
 %
 % *New Support of EBSD Data Analysis*
 %
@@ -388,22 +864,22 @@
 %
 %% MTEX 0.3 - 10/2007
 %
-% * new function [[ODF.Fourier.html,fourier]] to calculate the
+% * new function <ODF.Fourier.html fourier> to calculate the
 % Fouriercoefficents of an arbitrary ODF
 % * new option |ghost correction| in function
-% [[PoleFigure.calcODF.html,calcODF]]
-% * new option |zero range| in function [[PoleFigure.calcODF.html,calcODF]]
-% * new function [[loadEBSD]] to import EBSD data
+% <PoleFigure.calcODF.html calcODF>
+% * new option |zero range| in function <PoleFigure.calcODF.html calcODF>
+% * new function <loadEBSD.html loadEBSD> to import EBSD data
 % * simplified syntax for the import of diffraction data
 % * new import wizard for pole figure data
-% * support of triclinic crystal [[symmetry_index.html,symmetry]] with
+% * support of triclinic crystal <symmetry_index.html symmetry> with
 % arbitrary angles between the axes
 % * default plotting options may now be specified in mtex_settings.m
 % * new plot option _3d_ for a three dimensional spherical plot of pole
 % figures
 % * contour levels may be specified explicitely in all plot functions
-% [[ODF.plotodf.html,plotodf]],[[ODF.plotpdf.html,plotpdf]] and
-% [[ODF.plotipdf.html,plotipdf]]
+% <ODF.plotodf.html plotodf>,<ODF.plotpdf.html plotpdf> and
+% <ODF.plotipdf.html,plotipdf>
 % * new plot option _logarithmic_
 % * many bugfixes
 %

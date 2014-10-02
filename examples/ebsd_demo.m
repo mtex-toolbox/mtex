@@ -13,16 +13,15 @@
 % specify crystal and specimen symmetry
 CS = {...
   'Not Indexed',...
-  symmetry('m-3m','mineral','Fe'),... % crystal symmetry phase 1
-  symmetry('m-3m','mineral','Mg')};   % crystal symmetry phase 2
-SS = symmetry('-1');   % specimen symmetry
+  crystalSymmetry('m-3m','mineral','Fe'),... % crystal symmetry phase 1
+  crystalSymmetry('m-3m','mineral','Mg')};   % crystal symmetry phase 2
 
 %% import ebsd data
 
 % file name
 fname = fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt');
 
-ebsd = loadEBSD(fname,CS,SS,'interface','generic',...
+ebsd = loadEBSD(fname,'CS',CS,'interface','generic',...
   'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'Mad' 'BC'},...
   'Columns', [2 3 4 5 6 7 8 9],...
   'ignorePhase', 0, 'Bunge');
@@ -35,9 +34,9 @@ plot(ebsd)
 
 %% Plot Pole Figures as Scatter Plots
 
-h = [Miller(1,0,0),Miller(1,1,0),Miller(1,1,1)];
+h = [Miller(1,0,0,CS{2}),Miller(1,1,0,CS{2}),Miller(1,1,1,CS{2})];
 close; figure('position',[100,100,600,300])
-plotpdf(ebsd('Fe'),h,'points',500,'antipodal')
+plotPDF(ebsd('Fe').orientations,h,'points',500,'antipodal')
 
 %% Kernel Density Estimation
 %
@@ -47,39 +46,43 @@ plotpdf(ebsd('Fe'),h,'points',500,'antipodal')
 % then the ODF (compare plot of ODF1). If the halfwidth is chosen to wide
 % the estimated ODF becomes very smooth (ODF2).
 %
-odf1 = calcODF(ebsd('Fe'))
-odf2 = calcODF(ebsd('Fe'),'halfwidth',5*degree)
+odf1 = calcODF(ebsd('Fe').orientations)
+odf2 = calcODF(ebsd('Fe').orientations,'halfwidth',5*degree)
 
 %% Plot pole figures
 
 close all;figure('position',[160   389   632   216])
-plotpdf(odf1,h,'antipodal')
+plotPDF(odf1,h,'antipodal')
 figure('position',[160   389   632   216])
-plotpdf(odf2,h,'antipodal')
+plotPDF(odf2,h,'antipodal')
 
 %% Plot ODF
 
 close;figure('position',[46   300   702   300]);
-plotodf(odf2,'sections',9,'resolution',2*degree,...
+plotODF(odf2,'sections',9,'resolution',2*degree,...
   'FontSize',10,'silent')
 
 %% Estimation of Fourier Coefficients
 %
 % Once, a ODF has been estimated from EBSD data it is straight forward to
 % calculate Fourier coefficients. E.g. by
-F2 = Fourier(odf2,'order',4);
+close all
+odf2 = FourierODF(odf2);
+imagesc(abs(odf2.calcFourier('order',10)))
+colorbar
 
 %%
 % However this is a biased estimator of the Fourier coefficents which
 % underestimates the true Fourier coefficients by a factor that
 % correspondes to the decay rate of the Fourier coeffients of the kernel
-% used for ODF estimation. One obtains a *unbiased* estimator of the
+% used for ODF estimation. One obtains an *unbiased* estimator of the
 % Fourier coefficients if they are calculated from the ODF estimated with
 % the help fo the Direchlet kernel. I.e.
 
-dirichlet = kernel('dirichlet',32);
-odf3 = calcODF(ebsd('Fe'),'kernel',dirichlet);
-F3 = Fourier(odf3,'order',4);
+dirichlet = DirichletKernel(32);
+odf3 = calcODF(ebsd('Fe').orientations,'kernel',dirichlet);
+imagesc(abs(odf3.calcFourier('order',10)))
+colorbar
 
 %%
 % Let us compare the Fourier coefficients obtained by both methods.
@@ -93,20 +96,21 @@ hold off
 %% A Sythetic Example
 %
 % Simulate EBSD data from a given standard ODF
-CS = symmetry('trigonal');
-fibre_odf = 0.5*uniformODF(CS,SS) + 0.5*fibreODF(Miller(0,0,0,1),zvector,CS,SS);
-plotodf(fibre_odf,'sections',6,'silent')
-ebsd = calcEBSD(fibre_odf,10000)
+
+CS = crystalSymmetry('trigonal');
+fibre_odf = 0.5*uniformODF(CS) + 0.5*fibreODF(Miller(0,0,0,1,CS),zvector);
+plotODF(fibre_odf,'sections',6,'silent')
+ori = calcOrientations(fibre_odf,10000)
 
 %%
 % Estimate an ODF from the simulated EBSD data
 
-odf = calcODF(ebsd)
+odf = calcODF(ori)
 
 %%
 % plot the estimated ODF
 
-plotodf(odf,'sections',6,'silent')
+plotODF(odf,'sections',6,'silent')
 
 %%
 % calculate estimation error
@@ -128,7 +132,7 @@ import_wizard('ebsd')
 %%
 % b) Estimate an ODF from the above EBSD data.
 
-odf = calcODF(ebsd)
+odf = calcODF(ori)
 
 
 %%

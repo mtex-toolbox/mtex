@@ -1,67 +1,75 @@
-function varargout = text(v,varargin)
+function h = text(v,varargin)
+% display a text in a spherical plot
 %
-%% Syntax
-%   scatter(v,s)  %
+% Syntax
+%   text(v,s)  %
 %
-%% Input
+% Input
 %  v  - @vector3d
 %  s  - string
 %
-%% Options
+% Options
 %
-%% Output
-%
-%% See also
+% See also
 
-%% plot prepertations
-
-% where to plot
-[ax,v,varargin] = getAxHandle(v,varargin{:});
+% initialize spherical plot
+sP = newSphericalPlot(v,varargin{:},'hold');
 h = [];
+interpreter = getMTEXpref('textInterpreter');
+fs = getMTEXpref('FontSize');
 
-% extract text
-strings = varargin{1};
-varargin = varargin(2:end);
+for j = 1:numel(sP)
 
-% special option -> labeled
-if check_option(varargin,'labeled')
-  
-  strings = cell(1,numel(v));
-  for i = 1:numel(v), strings{i} = char(subsref(v,i),getpref('mtex','textInterpreter')); end
-    
-  c = colormap;
-  if ~all(equal(c,2)), varargin = [{'BackGroundColor','w'},varargin];end
-  
-else % ensure cell as input
-  
-  strings = ensurecell(strings);
-  if numel(v)>1 && numel(strings)==1
-    strings = repmat(strings,numel(v),1);
+  % project data
+  [x,y] = project(sP(j).proj,v,varargin{:});
+
+  % special option -> labeled
+  if check_option(varargin,'labeled')
+
+    strings = cell(1,length(v));
+    for i = 1:length(v), strings{i} = char(v.subSet(i),getMTEXpref('textInterpreter')); end
+
+  else % ensure cell as input
+
+    strings = ensurecell(varargin{1});
+    if length(v)>1 && length(strings)==1
+      strings = repmat(strings,length(v),1);
+    end
+
   end
   
+  % print labels  
+  for i = 1:length(strings)
+    
+    if isnan(x(i)), continue; end
+    
+    s = strings{i};
+    if ~ischar(s), s = char(s,interpreter);end
+
+    if strcmpi(interpreter,'LaTeX') && ~isempty(regexp(s,'[\\\^_]','ONCE'))
+      s = ['$' s '$']; %#ok<AGROW>
+    end
+
+    if check_option(varargin,'addMarkerSpacing'),
+      tag = {'tag','addMarkerSpacing','UserData',[x(i),y(i)]};
+    else
+      tag = {};
+    end
+    
+    h = [h,optiondraw(text(x(i),y(i),s,'interpreter',interpreter,...
+      'HorizontalAlignment','center','VerticalAlignment','middle',...
+      tag{:},'margin',0.001,'parent',sP(j).ax),'FontSize',fs,varargin{2:end})]; %#ok<AGROW>    
+    
+  end
+
+  % finish plot
+  if isappdata(sP(1).parent,'mtexFig')
+    mtexFig = getappdata(sP(1).parent,'mtexFig');
+    mtexFig.drawNow(varargin{:});
+  end
 end
 
-% extract plot options
-projection = getProjection(ax,v,varargin{:});
+if nargout == 0, clear h;end
 
-% project data
-[x,y] = project(v,projection);
-
-
-%% print labels
-for i = 1:numel(strings)
-  s = strings{i};
-  if ~ischar(s), s = char(s,getpref('mtex','textInterpreter'));end
-  h(end+1) = smarttext(x(i),y(i),s,projection.bounds,'Margin',0.1,'parent',ax,varargin{2:end}); %#ok<AGROW>
 end
 
-%% finalize the plot
-
-% plot a spherical grid
-plotGrid(ax,projection,varargin{:});
-
-% output
-if nargout > 0
-  varargout{1} = ax;
-  varargout{2} = h;
-end

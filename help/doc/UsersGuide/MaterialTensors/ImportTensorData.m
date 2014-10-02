@@ -17,6 +17,6 @@ import_wizard('tensor');
 
 fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
 
-cs = symmetry('mmm',[4.7646 10.2296 5.9942],'mineral','Olivin');
+cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942],'mineral','Olivin');
 
 C = loadTensor(fname,cs,'name','ellastic stiffness','unit','Pa','interface','generic')

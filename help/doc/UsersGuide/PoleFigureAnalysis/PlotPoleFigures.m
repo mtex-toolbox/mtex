@@ -17,13 +17,15 @@ mtexdata ptx
 % measurement position of a pole figure an coloring it corresponding to
 % the measured intensity.
 
-plot(pf,'position',[100 100 600 300])
+plot(pf)
+colorbar
 
 %%
 % MTEX tries to guess the right size of circle in order to produce a
 % pleasing result. However, you can adjust this size using the option *MarkerSize*.
 
-plot(pf,'MarkerSize',5)
+plot(pf,'MarkerSize',4)
+colorbar
 
 %% Contour Plots
 % Some people like to have there raw pole figures to be drawn as contour
@@ -37,20 +39,15 @@ plot(pf,'MarkerSize',5)
 % measurement grids.
 
 plot(pf,'contourf')
-
-%%
-% Sometimes, it is desirable to draw all regions below or equal to zero
-% white. This can be done using the command <setcolorrange.html setcolorrange>.
-
-setcolorrange('zero2white');
-
+colorbar
 
 %%
 % When drawing a colorbar next to the pole figure plots it is necessary
 % to have the same color coding in all plots. This can be done as following
 
-setcolorrange('equal');
-colorbar
+colorbar % remove colorbars
+CLim(gcm,'equal');
+colorbar % add a single colorbar
 
 %% Plotting Recalculated Pole Figures
 %
@@ -61,4 +58,4 @@ odf = calcODF(pf,'silent')
 %%
 % Now smooth pole figures can be plotted for arbitrary crystallographic directions.
 
-plotpdf(odf,get(pf,'Miller'),'antipodal')
+plotPDF(odf,pf.h,'antipodal')

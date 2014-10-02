@@ -1,49 +1,38 @@
-function [q,rho] = rotation_special(cs,varargin)
+function rot = rotation_special(cs,varargin)
 % returns symmetry elements different from rotation about c-axis
 %
-%% Input:
+% Input:
 %  cs - @symmetry
 %
-%% Output
+% Output
 %  q   - symmetry elements other then rotation about the z--axis
 %  rho - position of the mirroring plane
 
-if nargout == 1
-  switch cs.laue
-    case {'-1','2/m'}
-      q = cs.rotation;
-    case {'mmm','-3m','4/mmm','6/mmm'}
-      q = reshape(cs.rotation,[],2);
-      q = q(1,:);
-    case {'-3','4/m','6/m'}
-      q = cs.rotation(1);      
-    case {'m-3','m-3m'}
-      q = reshape(cs.rotation,[],6);
-      q = q(1,:);
-  end
-  q = q(:);
-else
-  
-  switch cs.laue
-    case {'-1','2/m'}
-      q = cs.rotation;
-      v = vector3d;
-    case {'mmm','-3m','4/mmm','6/mmm'}
-      q = cs.rotation(1);
-      v = Miller(1,0,0,cs,'uvw');
-    case {'-3','4/m','6/m'}
-      q = cs.rotation(1);
-      v = vector3d;
-    case 'm-3'
-      q = Axis(vector3d(1,1,1),3);
-      v = vector3d;
-    case 'm-3m'
-      q = Axis(vector3d(1,1,1),3);
-      v = vector3d(1,1,0);
-  end
-  
-  rho = mod(get(v,'rho'),rotangle_max_z(cs));
-  
-  q = q(:);
+ll0axis = vector3d(1,1,0);
+lllaxis = vector3d(1,1,1);
+
+if isa(cs,'crystalSymmetry')
+  a1 = cs.axes(1);
+  a2 = cs.axes(2);
+  m = a1 - a2;
 end
 
+switch symmetry.pointGroups(cs.id).properId
+  case {1, 3, 6} % 1, 211, 121
+    rot = quaternion(cs);
+  case {9, 17,25, 33} % 112, 3, 4, 6
+    rot = idquaternion;
+  case {12, 28,36} % 222, 422, 622
+    rot = symAxis(a1,2);
+  case 19 % 321
+    rot = symAxis(a1,2);
+  case 22 % 312
+    rot = symAxis(m,2);
+  case 41 % 23
+    rot = symAxis(lllaxis,3) * symAxis(a1,2);
+  case 43 % 23
+    rot = symAxis(lllaxis,3) * symAxis(ll0axis,2);
+end
+
+
+end

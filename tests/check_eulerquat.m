@@ -1,6 +1,6 @@
 %% check SO3Grid/subGrid
 %
-% compare subGrid function with the max_angle option to SO3Grid
+% compare subGrid function with the maxAngle option to SO3Grid
 %
 
 q = quaternion(SO3Grid(100000,symmetry,symmetry));
@@ -9,7 +9,7 @@ q = [q,-q];
 
 [alpha,beta,gamma] = Euler(q,'Bunge');
 
-qq = euler2quat(alpha,beta,gamma,'Bunge');
+qq = rotation('Euler',alpha,beta,gamma,'Bunge');
 
 e  = abs(dot(q,qq));
 if mean(e) < 0.999

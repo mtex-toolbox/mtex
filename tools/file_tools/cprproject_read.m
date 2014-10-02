@@ -26,6 +26,6 @@ for k=1:length(phasePos)
     
     laue =  Laue{ sscanf(cf{pos+11},'LaueGroup=%u') };
     
-    phases{phase} = symmetry(laue,axis,angle,'mineral',mineral);
+    phases{phase} = crystalSymmetry(laue,axis,angle,'mineral',mineral);
   end
 end

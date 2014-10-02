@@ -11,30 +11,36 @@
 %
 % Let us first define some model ODFs to be plotted later on.
 
-cs = symmetry('-3m'); ss = symmetry('-1');
-mod1 = orientation('Euler',30*degree,40*degree,10*degree);
-mod2 = orientation('Euler',10*degree,80*degree,70*degree);
-odf = 0.7*unimodalODF(mod1,cs,ss) + 0.3*unimodalODF(mod2,cs,ss);
+cs = crystalSymmetry('-3m');
+mod1 = orientation('Euler',30*degree,40*degree,10*degree,cs);
+mod2 = orientation('Euler',10*degree,80*degree,70*degree,cs);
+odf = 0.7*unimodalODF(mod1) + 0.3*unimodalODF(mod2)
 
 
 %% Adding a Colorbar
 %
-% Adding a colorbar is simply done by clicking the corresponding button in
-% the figure toolbar or using the command <colorbar.html colorbar>. Note
-% that the color range is automatically set to *equal* when adding a colorbar
-% to a figure with  more then one plot (see. <ColorCoding_demo.html Color Coding>).
+% Adding colorbars is done by using the command <mtexFigure.colorbar.html
+% colorbar>. 
 
-plotpdf(odf,[Miller(1,0,0),Miller(1,1,1)],'antipodal')
+plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],'antipodal')
 colorbar
-
 
 %%
 % Executing the command <colorbar.html colorbar> twice deletes the colorbar.
 % You can also have a horizontal colorbar at the bottom of the figure using
 % the option *south*.
 
-colorbar           % delete vertical colorbar
-colorbar('south')  % add horizontal colorbar
+colorbar                            % delete vertical colorbar
+colorbar('location','southOutSide') % add horizontal colorbars
+
+%%
+% If color range is equal in all plots of one figure only one colorbar
+% is added (see. <ColorCoding_demo.html Color Coding>).
+
+colorbar           % delete colorbar
+CLim(gcm,'equal'); % set equal color range to all plots
+colorbar           % create a new colorbar
+
 
 %% Adding Specimen and Crystal Directions
 %
@@ -43,24 +49,25 @@ colorbar('south')  % add horizontal colorbar
 % <annotate.html annotate> one can easily add <vector3d_index.html specimen
 % coordinate axes> to a pole figure plot.
 
-annotate([xvector,yvector,zvector],'label',{'x','y','z'},...
-  'BackgroundColor','w');
+annotate([xvector,yvector,zvector],'label',{'X','Y','Z'},'BackgroundColor','w')
 
 %%
 % The command <annotate.html annotate> allows also to plot
 % <Miller_index.html crystal directions> to inverse pole figures.
 
-plotipdf(odf,[xvector,zvector],'gray','antipodal','marginx',10,'minmax','off')
-annotate([Miller(1,0,0),Miller(1,1,0),Miller(0,0,1),Miller(2,-1,0)],'all','labeled')
-set(gcf,'position',[139 258 672 266])
+plotIPDF(odf,[xvector,zvector],'antipodal','marginx',10,'minmax','off')
+mtexColorMap white2black
+annotate([Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(0,0,1,cs),Miller(2,-1,0,cs)],...
+  'all','labeled','BackgroundColor','w')
 
 
 %% Adding Preferred Orientations
 %
-% One can also mark specific orientations in the pole figures or in the inverse pole
-% figures
+% One can also mark specific orientations in the pole figures or in the
+% inverse pole figures
 
-plotipdf(odf,[xvector,zvector],'gray','antipodal','marginx',10,'minmax','off')
+plotIPDF(odf,[xvector,zvector],'antipodal')
+mtexColorMap white2black
 annotate(mod1,...
     'marker','s','MarkerSize',6,'MarkerFaceColor','r',...
     'label','A','color','w')
@@ -70,9 +77,10 @@ annotate(mod2,...
     'label','B')
 
 %%
-% also ODF plots
+% as well as in ODF plots
 
-plot(odf,'sections',12,'gray','position',[100,100,500,380])
+plot(odf,'sections',18,'sigma')
+mtexColorMap white2black
 annotate(mod1,...
     'MarkerSize',15,'MarkerEdgeColor','r','MarkerFaceColor','none')
 
@@ -80,10 +88,10 @@ annotate(mod2,...
   'MarkerSize',15,'MarkerEdgeColor','g','MarkerFaceColor','none')
   
 %%
-% or EBSD scatter plots
+% or orientation scatter plots
 
-ebsd = calcEBSD(odf,200);
-scatter(ebsd,'center',mod1);
+ori = calcOrientations(odf,200);
+scatter(ori,'center',mod1);
 annotate(mod1,...
   'MarkerSize',10,'MarkerEdgeColor','r','MarkerFaceColor','r')
 annotate(mod2,...
@@ -98,19 +106,22 @@ annotate(mod2,...
 % The following example compares the Fourier coefficients of the fibre ODF
 % with the Fourier co,'margin'}efficients of an unimodal ODF.
 
-plotFourier(odf)
+close all
+plotFourier(FourierODF(odf,32))
 hold all
-plotFourier(fibreODF(Miller(1,0,0),zvector,cs,ss))
+fodf = fibreODF(Miller(1,0,0,cs),zvector);
+plotFourier(FourierODF(fodf,32));
 hold off
 
 legend({'Fibre ODF','Unimodal ODF'})
 
-%% Adding a Spherical Grid
+%%
+% Adding a Spherical Grid
 %
 % Sometimes it is usefull to have a spherical grid in your plot to make the
 % projection easier to understand or if you need to know some angular relationships. 
 % For this reason there is the option *grid*, which enables the grid and the 
 % option *grid_res*, which allows to specifiy the spacing of the grid lines.
 
-plotpdf(odf,[Miller(1,0,0),Miller(0,0,1)],'grid','grid_res',15*degree,...
-  'gray','antipodal');
+plotPDF(odf,[Miller(1,0,0,cs),Miller(0,0,1,cs)],'grid','grid_res',15*degree,'antipodal');
+mtexColorMap white2black

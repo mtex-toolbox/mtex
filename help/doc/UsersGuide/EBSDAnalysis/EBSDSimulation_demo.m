@@ -16,37 +16,36 @@
 %
 % Let us first define a simple fibre symmetric ODF.
 
-cs = symmetry('trigonal');
-ss = symmetry('triclinic');
-fibre_odf = 0.5*uniformODF(cs,ss) + 0.5*fibreODF(Miller(0,0,0,1),zvector,cs,ss);
+cs = crystalSymmetry('32');
+fibre_odf = 0.5*uniformODF(cs) + 0.5*fibreODF(Miller(0,0,0,1,cs),zvector);
 
 %%
 %
-plotodf(fibre_odf,'sections',6,'silent')
+plotODF(fibre_odf,'sections',6,'silent')
 
 
 %% Simulate EBSD Data
 %
 % This ODF we use now to simulate 10000 individual orientations.
 
-ebsd = calcEBSD(fibre_odf,10000)
+ori = calcOrientations(fibre_odf,10000)
 
 %% ODF Estimation from EBSD Data
 %
 % From the 10000 individual orientations we can now estimate an ODF. First
 % we determine the optimal kernel function
 
-psi = calcKernel(ebsd)
+psi = calcKernel(ori)
 
 %%
 % and then we use this kernel function for kernel density estimation
 
-odf = calcODF(ebsd,'kernel',psi)
+odf = calcODF(ori,'kernel',psi)
 
 %%
 % which can be plotted,
 
-plotodf(odf,'sections',6,'silent')
+plotODF(odf,'sections',6,'silent')
 
 
 %%
@@ -64,21 +63,28 @@ calcError(odf,fibre_odf,'resolution',5*degree)
 e = [];
 for i = 1:6
 
-  ebsd = calcEBSD(fibre_odf,10^i);
+  ori = calcOrientations(fibre_odf,10^i,'silent');
   
-  psi = calcKernel(ebsd);
-  odf = calcODF(ebsd,'kernel',psi);
+  psi1 = calcKernel(ori,'SamplingSize',10000,'silent');
+  odf = calcODF(ori,'kernel',psi1,'silent');
   e(i,1) = calcError(odf,fibre_odf,'resolution',2.5*degree);
   
-  psi = calcKernel(ebsd,'method','RuleOfThumb');
-  odf = calcODF(ebsd,'kernel',psi);
+  psi2 = calcKernel(ori,'method','RuleOfThumb','silent');
+  odf = calcODF(ori,'kernel',psi2,'silent');
   e(i,2) = calcError(odf,fibre_odf,'resolution',2.5*degree);  
 
+  disp(['Rule of thumb: ' int2str(psi2.halfwidth/degree) mtexdegchar ...
+    'Kullback Leibler cross validation: ' int2str(psi1.halfwidth/degree) mtexdegchar]);
+  
 end
+
 
 %% 
 % Plot the error in dependency of the number of single orientations.
 
 close all;
 semilogx(10.^(1:length(e)),e)
-
+legend('Default','RuleOfThumb')
+xlabel('Number of orientations')
+ylabel('Estimation Error')
+title('Error between original fibre ODF model and simulated ebsd','FontWeight','bold')

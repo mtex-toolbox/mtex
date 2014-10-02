@@ -13,45 +13,46 @@
 
 %%
 % A bimodal ODF:
-cs = symmetry('orthorhombic');ss = symmetry('triclinic');
-odf1 = unimodalODF(orientation('Euler',0,0,0,cs,ss)) + ...
-  unimodalODF(orientation('Euler',30*degree,0,0,cs,ss))
+cs = crystalSymmetry('mmm');
+odf1 = unimodalODF(orientation('Euler',0,0,0,cs)) + ...
+  unimodalODF(orientation('Euler',30*degree,0,0,cs))
 
 %% 
 % A fibre ODF:
-odf2 = fibreODF(Miller(0,0,1),xvector,cs,ss)
+
+odf2 = fibreODF(Miller(0,0,1,cs),xvector)
 
 %%
-% An ODF estimated from diffraction data:
+% An ODF estimated from diffraction data
 
 mtexdata dubna
 
-odf3 = calcODF(pf,'resolution',5*degree,'iter_max',10)
+odf3 = calcODF(pf,'resolution',5*degree,'zero_Range')
 
 
 %% Modal Orientations
 % The modal orientation of an ODF is the crystallographic prefered
 % orientation of the texture. It is characterized as the maximum of the
 % ODF. In MTEX it can be computed by the command 
-% <ODF.calcModes.html,calcModes>
+% <ODF.calcModes.html calcModes>
 
 %%
 % Determine the modalorientation as an
-% >orientation_index.html,orientation>:
+% <orientation_index.html orientation>:
 center = calcModes(odf3)
 
 %% 
 % Lets mark this prefered orientation in the pole figures
 
-plotpdf(odf3,h,'antipodal','superposition',c);
+plotPDF(odf3,h,'antipodal','superposition',c);
 annotate(center,'marker','s','MarkerFaceColor','black')
 
 %% Texture Characteristics
 %
 % Texture characteristics are used for a rough classification of ODF into
 % sharp and weak ones. The two most common texture characteristcs are the
-% [[ODF.entropy.html,entropy]] and the 
-% [[ODF.textureindex.html,texture index]]. 
+% <ODF.entropy.html entropy> and the 
+% <ODF.textureindex.html texture index>. 
 
 %%
 % Compute the texture index:
@@ -67,19 +68,20 @@ entropy(odf2)
 % Volume portions describes the relative volume of crystals having a
 % certain orientation. The relative volume of crystals having a orientation
 % close to a given orientation is computed by the command
-% [[ODF.volume.html,volume]] and the relative volume of crystals having a 
+% <ODF.volume.html volume> and the relative volume of crystals having a 
 % orientation close to a given fibre is computed by the command
-% [[ODF.fibreVolume.html,fibreVolume]]
+% <ODF.fibreVolume.html fibreVolume>
 
 %%
-% The relative volume of crystals with missorientation maximum 30 degree
-% from the modal orientation:
-volume(odf3,calcModes(odf3),30*degree)  
+% The relative volume in percent of crystals with missorientation maximum
+% 30 degree from the modal orientation:
+volume(odf3,calcModes(odf3),30*degree)*100
 
 %%
 % The relative volume of crystals with missorientation maximum 20 degree
-% from the prefered fibre:
-fibreVolume(odf2,Miller(0,0,1),xvector,20*degree)  
+% from the prefered fibre in percent:
+% TODO
+%fibreVolume(odf2,Miller(0,0,1),xvector,20*degree) * 100 
 
 
 %% Fourier Coefficients
@@ -93,40 +95,49 @@ fibreVolume(odf2,Miller(0,0,1),xvector,20*degree)
 % Moreover, the decay of the Fourier coefficients is directly related to
 % the smoothness of the ODF. The decay of the Fourier coefficients might
 % also hint for the presents of a ghost effect. See 
-% [[ghost_demo.html,ghost effect]].
+% <ghost_demo.html ghost effect>.
+
+%%
+% transform into an odf given by Fourier coefficients
+fodf = FourierODF(odf3,32)
 
 %%
 % The Fourier coefficients of order 2:
-Fourier(odf2,'order',2)              
+reshape(fodf.components{1}.f_hat(11:35),5,5)
 
 %%
 % The decay of the Fourier coefficients:
 close all;
-plotFourier(odf3,'bandwidth',32)
+plotFourier(fodf)
 
 %% Pole Figures and Values at Specific Orientations
 %
 % Using the command <ODF.eval.html eval> any ODF can be evaluated at any
 % (set of) orientation(s).
 
-eval(odf1,orientation('Euler',0*degree,20*degree,30*degree))
+odf1.eval(orientation('Euler',0*degree,20*degree,30*degree,cs))
 
 %%
 % For a more complex example let us define a fibre and plot the ODF there.
 
-fibre = orientation('fibre',Miller(1,0,0),yvector);
+fibre = orientation('fibre',Miller(1,0,0,cs),yvector);
 
-plot(eval(odf2,fibre));
+plot(odf2.eval(fibre))
 
 %%
 % Evaluation of the corresponding pole figure or inverse pole figure is
-% done using the command <ODF.pdf.html pdf>.
+% done using the command <ODF.calcPDF.html calcPDF>.
 
-pdf(odf2,Miller(1,0,0),xvector)
+odf2.calcPDF(Miller(1,0,0,cs),xvector)
 
 %% Extract Internal Representation
-%
-% As allway the <ODF.get.html> and <ODF.set.html set> offers a simple way
-% to addres the internal ODF representation of MTEX.
+% The internal representation of the ODF can be adressed by the command
 
-get(odf3,'center')
+properties(odf3.components{1})
+
+%%
+% The properties in this list can be accessed by
+
+odf3.components{1}.center
+
+odf3.components{1}.psi

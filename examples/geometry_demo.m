@@ -36,8 +36,9 @@ plot([v,w],'FontSize',20)
 % *Definition*
 rot = rotation('Euler',10*degree,20*degree,30*degree);
 rot = rotation('axis',xvector,'angle',30*degree);
-rot = rotation('map',Miller(1,0,0),yvector,Miller(0,1,1),zvector);
-rot = rotation('quaternion',0.5,0.5,0.5,0.5)
+rot = rotation('map',xvector,yvector,vector3d(0,1,1),zvector);
+rot = rotation('quaternion',0.5,0.5,0.5,0.5);
+rot = reflection(zvector)
 
 %%
 % *Calculations*
@@ -49,26 +50,26 @@ rot2 = rot * rot
 %%
 % *plotting*
 
-plot([rot rot2])
+scatter([rot rot2])
 
 %%
 % *Basic Functions*
 angle(rot)
 axis(rot)
 angle(rot, rot2)
-inverse(rot)
+inv(rot)
 [alpha, beta ,gamma] = Euler(rot)
 
 %% Crystal and Specimen Symmetries
 
 %%
 % *Definition*
-S = symmetry('triclinic',[1.1 1.3 2.3],[80 110 120]*degree);
-CS = symmetry('-3m',[2,2,1],'X||a','mineral','iron');
-SS = symmetry ('mmm');
+S = crystalSymmetry('triclinic',[1.1 1.3 2.3],[80 110 120]*degree);
+CS = crystalSymmetry('-3m',[2,2,1],'X||a','mineral','iron');
+SS = specimenSymmetry ('mmm');
 
 % load from a cif file
-symmetry('quartz.cif')
+loadCIF('quartz')
 
 %%
 % *Basic Functions*
@@ -112,7 +113,7 @@ plot([h1,h2],'all','labeled')
 
 ori = orientation(rot,CS,SS)
 ori = orientation('Euler',alpha,beta,gamma,CS,SS)
-ori = orientation('brass',symmetry('cubic'),symmetry('triclinic'))
+ori = orientation('brass',crystalSymmetry('cubic'))
 ori = orientation('Miller',[1 0 0],[1 1 1],CS,SS)
 
 %%
@@ -134,7 +135,7 @@ angle(ori)
 %%
 % *Plotting*
 
-plot([ori,ori2])
+plotPDF([ori,ori2],Miller(1,0,0,CS))
 
 
 
@@ -142,10 +143,10 @@ plot([ori,ori2])
 %
 % 1) Consider trigonal crystal symmetry.
 %
-% a) Find all crystallographic directions symmetrically equivalent to $h =
-% (1, 0, \bar 1, 0)$ (Miller indices)!
+% a) Find all crystallographic directions symmetrically equivalent to h =
+% (1, 0, -1, 0) (Miller indices)!
 
-CS = symmetry('-3m')
+CS = crystalSymmetry('-3m')
 h = Miller(1,0,-1,0,CS);
 symmetrise(h)
 
@@ -193,56 +194,4 @@ r2 = yvector;
 ori = orientation('map',h1,r1,h2,r2,CS)
 
 ori * [h1,h2]
-
-
-%% Extra Topic - Grids
-%
-% *Two Dimensioal Grids*
-
-%%
-% create
-S2G = S2Grid(zvector);
-S2G = S2Grid('regular','RESOLUTION',5*pi/180,'north')
-S2G = S2Grid('equispaced','points',1000,'antipodal');
-
-%%
-% operations
-
-q = axis2quat(1,1,1,60*degree);
-
-rotate(S2G,q);
-delete(S2G,get(S2G,'theta')==pi/2);
-subGrid(S2G,get(S2G,'theta')<=80*degree);
-
-%%
-% plot
-plot(S2G)
-
-%%
-% operations:
-% *subgrid
-% *transformation to spherical coordinates
-%
-%%
-% * orientation grids*
-
-%%
-% create
-SO3G = SO3Grid(q);
-SO3G = SO3Grid(5*pi/180,CS,SS);
-SO3G = SO3Grid(500,CS,SS)
-
-%%
-% operate
-set(gcf,'position',[ 67   242   777   384]);
-plot(SO3G * xvector)
-
-%%
-%
-plot(SO3G * symmetrise(xvector,CS))
-
-%%
-% plot
-close all;
-plot(SO3G,'RODRIGUES')
 

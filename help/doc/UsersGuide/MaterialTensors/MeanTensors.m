@@ -9,18 +9,18 @@
 %
 %%
 % set up a nice colormap
-setpref('mtex','defaultColorMap',seismicColorMap);
+setMTEXpref('defaultColorMap',blue2redColorMap);
 
 %% Import EBSD Data
 % We start by importing some ebsd data of Glaucophane and Epidote.
 
 ebsd = loadEBSD([mtexDataPath '/EBSD/data.ctf'],...
-  'ignorePhase',[0 3 4])
+  'convertEuler2SpatialReferenceFrame')
 
 %%
-% Lets visualize the data
+% Lets visualize a subset of the data
 
-plot(ebsd,'colorcoding','hkl','region',[2000 0 3400 375])
+plot(ebsd(inpolygon(ebsd,[2000 0 1400 375])))
 
 
 %% Data Correction
@@ -29,11 +29,10 @@ plot(ebsd,'colorcoding','hkl','region',[2000 0 3400 375])
 % define maximum acceptable MAD value
 MAD_MAXIMUM= 1.3;
 
-% extract MAD
-MAD = get(ebsd,'mad');
-
 % eliminate all meassurements with MAD larger than MAD_MAXIMUM
-ebsd(MAD>MAD_MAXIMUM) = []
+ebsd(ebsd.mad >MAD_MAXIMUM) = []
+
+plot(ebsd(inpolygon(ebsd,[2000 0 1400 375])))
 
 %% Define Elastic Stiffness Tensors for Glaucophane and Epidote
 %
@@ -52,7 +51,7 @@ MGlaucophane =....
   [   0.00    0.00    0.00   8.89   0.00  51.24]];
 
 % define the reference frame
-csGlaucophane = symmetry('2/m',[9.5334,17.7347,5.3008],...
+csGlaucophane = crystalSymmetry('2/m',[9.5334,17.7347,5.3008],...
   [90.00,103.597,90.00]*degree,'X||a*','Z||c','mineral','Glaucophane');
 
 % define the tensor
@@ -75,7 +74,7 @@ MEpidote =....
   [   0.00     0.00     0.00    -2.30      0.00    79.50]];
 
 % define the reference frame
-csEpidote= symmetry('2/m',[8.8877,5.6275,10.1517],...
+csEpidote= crystalSymmetry('2/m',[8.8877,5.6275,10.1517],...
   [90.00,115.383,90.00]*degree,'X||a*','Z||c','mineral','Epidote');
 
 % define the tensor
@@ -84,7 +83,7 @@ CEpidote = tensor(MEpidote,csEpidote)
 %% The Average Tensor from EBSD Data
 % The Voigt, Reuss, and Hill averages for all phases are computed by
 
-[CVoigt,CReuss,CHill] =  calcTensor(ebsd,CGlaucophane,CEpidote)
+[CVoigt,CReuss,CHill] =  calcTensor(ebsd({'Epidote','Glaucophane'}),CGlaucophane,CEpidote)
 
 %%
 % for a single phase the syntax is
@@ -95,7 +94,7 @@ CEpidote = tensor(MEpidote,csEpidote)
 %% ODF Estimation
 % Next we estimate an ODF for the Epidote phase
 
-odfEpidote = calcODF(ebsd('Epidote'),'halfwidth',10*degree)
+odfEpidote = calcODF(ebsd('Epidote').orientations,'halfwidth',10*degree)
 
 
 %% The Average Tensor from an ODF
@@ -105,5 +104,4 @@ odfEpidote = calcODF(ebsd('Epidote'),'halfwidth',10*degree)
   calcTensor(odfEpidote,CEpidote)
 
 % set back the colormap
-setpref('mtex','defaultColorMap',WhiteJetColorMap);
-
+setMTEXpref('defaultColorMap',WhiteJetColorMap);

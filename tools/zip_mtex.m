@@ -50,7 +50,7 @@ if fid>0
 end
 % end
 
-verRev = strtrim(regexprep(lower(getpref('mtex','version')),'mtex',''));
+verRev = strtrim(regexprep(lower(getMTEXpref('version')),'mtex',''));
 if rev > 0
   verRev = [verRev '.' num2str(rev)];
 end
@@ -64,4 +64,3 @@ file = file([file.isdir] & ~strncmp({file.name},'.',1));
 for k=1:length(file)
   dirs = [dirs getSubDirs(fullfile(root,file(k).name))];
 end
-

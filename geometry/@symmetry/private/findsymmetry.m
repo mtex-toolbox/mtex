@@ -1,15 +1,19 @@
-function sym = findsymmetry(name)
+function id = findsymmetry(name)
 % search for specific symmetry
 
-sl = SymList;
+% import list of point groups
+sl = symmetry.pointGroups;
 
-names = {sl.Schoen;sl.Inter;sl.Rot;sl.System};
-match = any(strcmp(name,names.'),2);
-
-sym = find(match,1,'last'); 
-
-if isempty(sym)
-	error('symmetry "%s" not found',name);
+% search for point group
+id = [];
+for i = numel(sl):-1:1
+  if any(strcmp(name,[{sl(i).Schoen,sl(i).Inter,sl(i).lattice},sl(i).altNames]))
+    id = i;
+    break;
+  end
 end
 
-sym = sl(sym);
+% if nothing found convert space to point group
+if isempty(id)
+  id = findsymmetry(hms2point(name));
+end

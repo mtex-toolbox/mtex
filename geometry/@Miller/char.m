@@ -1,64 +1,74 @@
 function c = char(m,varargin)
 % Miller indece to string
 %
-%% Options
-%  NO_SCOPES
-%  LATEX
+% Options
+%  no_scopes
+%  latex
+%  commasep
 
-c = cell(numel(m),1);
+c = cell(length(m),1);
+
+% output format
+format = extract_option(varargin,{'hkl','uvw','UVTW'});
+if ~isempty(format), m.dispStyle = format{1};end
 
 for i = 1:length(m)
   
-  if check_option(m,{'uvw','directions'}) || ...
-      check_option(varargin,{'uvw','directions'})
+  abc = m.subSet(i).(m.dispStyle);
+  
+  switch m.dispStyle
+
+    case {'uvw','UVTW'}
+     
+      if check_option(varargin,{'tex','latex'})
+        leftBracket = '['; %'\left\langle ';
+        rightBracket = ']';% '\right\rangle';
+      else
+        leftBracket = '[';%'<';
+        rightBracket = ']';%'>';
+      end
     
-    h = v2d(subsref(m,i));
+    case {'hkl','hkil'}
     
-    if check_option(varargin,{'tex','latex'})
-      leftBracket = '\left\langle ';
-      rightBracket = '\right\rangle';
-    else
-      leftBracket = '<';
-      rightBracket = '>';
-    end
-    
+      if check_option(varargin,{'tex','latex'})
+        leftBracket = '(';%'\{';
+        rightBracket = ')';% '\}';
+      else
+        leftBracket = '(';%'{';
+        rightBracket = ')';% '}';
+      end
+      
+    otherwise
+      leftBracket = '';
+      rightBracket = '';
+      
+  end
+
+  
+  % only display rounded results
+  if strcmpi(m.dispStyle,'xyz')
+    s = xnum2str(abc);
+  elseif all(isappr(round(abc),abc))
+    s = barchar(abc,varargin{:});
   else
-    
-    h = v2m(subsref(m,i),varargin{:});
-    if check_option(varargin,{'tex','latex'})
-      leftBracket = '\{';
-      rightBracket = '\}';
-    else
-      leftBracket = '{';
-      rightBracket = '}';
-    end
-    
-    if all(round(h)==h)
-      s = barchar(h,varargin{:});
-    else
-      s = '---';
-    end
-    
-    if ~check_option(varargin,'NO_SCOPES')
-      s = ['\{',s,'\}']; %#ok<AGROW>
-    end
+    s = '---';
   end
   
-  s = [leftBracket barchar(h,varargin{:}) rightBracket];
-  if check_option(varargin,'LaTeX')
-    s = ['$' s '$'];
-  end
+  % add scopes
+  if ~check_option(varargin,'NO_SCOPES'), s = [leftBracket s rightBracket]; end %#ok<AGROW>
+  if check_option(varargin,'LaTeX'), s = ['$' s '$']; end %#ok<AGROW>
   
   c{i} = s;
 end
 
-if ~check_option(varargin,'cell')
-  c = strcat(c{:});
-end
+if ~check_option(varargin,'cell'), c = strcat(c{:});end
 
+% -----------------------------------------------------------------
 
 function s=barchar(i,varargin)
 
+comma = check_option(varargin,'commasep');
+i = round(i);
 s = '';
 for j = 1:length(i)
   if (i(j)<0) && check_option(varargin,'latex')
@@ -66,19 +76,8 @@ for j = 1:length(i)
   else
     s = [s,int2str(i(j))]; %#ok<AGROW>
   end
+  
+  if comma && j < length(i)
+    s = [s,','];
+  end
 end
-
-function [l,r] = localBrackets(b,varargin)
-
-l = b(1); r = b(2);
-if check_option(varargin,{'tex','latex'})
-  l = ['\' l]; r = ['\' r];
-end
-
-
-
-
-
-
-
-

@@ -1,6 +1,7 @@
 %%
 
-E = set(tensor,'name','elasticity')
+e = tensor;
+E.name = elasticity;
 
 %% Young's Modulus
 

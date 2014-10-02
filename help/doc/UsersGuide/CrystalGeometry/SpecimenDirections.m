@@ -82,7 +82,6 @@ w = w ./ norm(w)
 % The [[vector3d.plot.html,plot]] function allows you to visualize an 
 % arbitrary number of specimen directions in a spherical projection
 
-cla reset;set(gcf,'position',[43   362   200   200])
-plot([zvector,xvector+yvector+zvector],'labeled')
+plot([zvector,vector3d(1,1,1),yvector-zvector],'labeled')
 
  

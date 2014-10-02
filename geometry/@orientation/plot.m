@@ -1,35 +1,43 @@
-function varargout = plot(o,varargin)
-% plot function
+function plot(ori,varargin)
+% annotate a orientation to an existing plot
 %
-%% Input
-%  o - @orientation
+% Input
+%  ori - @orientation
 %
-%% Options
-%  RODRIGUES - plot in rodrigues space
-%  AXISANGLE - plot in axis / angle
+% Options
 %
-%% See also
+% See also
 % orientation/scatter Plotting
 
-newMTEXplot;
+hold on
+[mtexFig,isNew] = newMtexFigure(varargin{:});
 
-if ~(ishold && strcmp(get(gca,'tag'),'ebsd_raster')) && ...
-    ~check_option(varargin,{'scatter','rodrigues','axisangle'})
+if isNew
+  disp('Do something fancy here.');
+  return;  
+end
 
-  washold = ishold;
-  hold all
-  for i = 1:numel(o)
+% plotting
+switch get(mtexFig.parent,'tag')
+  
+  case 'quaternionScatter' % quaternion scatter plot      
+      
+    scatter(ori,varargin{:});          
+  
+  case 'pdf' % pole figure annotations
+      
+    plotPDF(ori,[],varargin{:});
     
-    h = [Miller(1,0,0),Miller(0,1,0),Miller(0,0,1)];
-    plot(subsref(o,i) * h,'label',...
-      char(h,getpref('mtex','textInterpreter'),'cell'),...
-      varargin{:});
-  end
+  case {'ipdf','hkl','AxisDistribution'} % inverse pole figure annotations
+      
+    plotIPDF(ori,[],varargin{:});
   
-  if ~washold, hold off;end
+  case 'odf' % ODF sections plot
     
-else % scatter plot
-  
-  scatter(o,varargin{:});
-  
+    plotODF(ori,varargin{:});
+    
+  otherwise
+    
+    error('Do not know how to plot orientation.')
+    
 end

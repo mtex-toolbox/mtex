@@ -13,15 +13,14 @@
 % specify crystal and specimen symmetry
 CS = {...
   'not Indexed',...
-  symmetry('m-3m','mineral','Fe'),... % crystal symmetry phase 1
-  symmetry('m-3m','mineral','Mg')};   % crystal symmetry phase 2
-SS = symmetry('-1');   % specimen symmetry
+  crystalSymmetry('m-3m','mineral','Fe'),... % crystal symmetry phase 1
+  crystalSymmetry('m-3m','mineral','Mg')};   % crystal symmetry phase 2
 
 %% Import ebsd data
 
 fname = fullfile(mtexDataPath,'EBSD','85_829grad_07_09_06.txt');
 
-ebsd = loadEBSD(fname,CS,SS,'interface','generic',...
+ebsd = loadEBSD(fname,'CS',CS,'interface','generic',...
   'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'MAD' 'BC'},...
   'Columns', [2 3 4 5 6 7 8 9],'Bunge','IgnorePhase',0);
 
@@ -44,21 +43,19 @@ grains = calcGrains(ebsd,'angle',[0 10 5]*degree)
 %%
 % Plot grain-boundaries
 
-plotBoundary(grains,'color',[0.25 0.1 0.5])
-hold on, plotBoundary(grains,'internal','color','red','linewidth',2)
+plot(grains.boundary,'color',[0.25 0.1 0.5])
+%TODO: internal grain boundaries
+hold on, plot(grains.boundary,'linecolor','red','linewidth',2)
 
 %%
 % on application of this would be to take a look on the grainsize
 % distribution
 
-% make a expotential bin size
-x = fix(exp(.5:.5:7.5));
-figure, bar( hist(grainSize(grains),x) );
+hist(grains)
 
 
 %% Accessing geometric properties
 %
 area(grains); perimeter(grains);
-shapefactor(grains); 
-
+shapeFactor(grains); 
 

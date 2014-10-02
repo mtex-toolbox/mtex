@@ -10,8 +10,8 @@
 %% Introduction
 %
 % MTEX supports four type of spherical projection which are avaiable for
-% all spherical plot, e.g. <ODF.plotpdf.html polefigure plots>,
-% <ODF.plotipdf.html inverse polefigure plots> or <ODF.plotodf.html
+% all spherical plot, e.g. <ODF.plotPDF.html polefigure plots>,
+% <ODF.plotIPDF.html inverse polefigure plots> or <ODF.plotODF.html
 % ODF plots>. These are the equal area projection (Schmidt projection), the
 % equal distance projetion, the stereographic projection (equal angle
 % projection), the three dimensional projection and the flat projection.
@@ -19,8 +19,8 @@
 % In order to demostrate the different projections we start by defining a
 % model ODF.
 
-cs = symmetry('-3m'); ss = symmetry('-1');
-odf = fibreODF(Miller(1,1,0),zvector,cs,ss)
+cs = crystalSymmetry('-3m');
+odf = fibreODF(Miller(1,1,0,cs),zvector)
 
 
 %% Alignment of the Hemishpheres
@@ -28,27 +28,27 @@ odf = fibreODF(Miller(1,1,0),zvector,cs,ss)
 % *Partial Spherical Plots*
 %
 % If an ODF has triclinic specimen symmetry its pole figures differs in
-% general on the northern hemisphere and the southern hemisphere. By
-% default MTEX plots in this case both hemispheres. The northern on the
-% left hand side and the southern on the right hand side.
+% general on the upper hemisphere and the lower hemisphere. By
+% default MTEX plots in this case both hemispheres. The upper on the
+% left hand side and the lower on the right hand side.
 
-plotpdf(odf,Miller(1,1,0))
+plotPDF(odf,Miller(1,1,0,cs))
 
 %%
 %
-% MTEX allows also to plot only the northern or the southern by passing the
-% options *north* or *south*.
+% MTEX allows also to plot only the upper or the lower hemisphere by
+% passing the options |upper| or |lower|.
 
-plotpdf(odf,Miller(1,1,0),'south')
+plotPDF(odf,Miller(1,1,0,cs),'lower')
 
 %%
 % Due to Friedels law meassured pole figures are a superposition of the
-% nothern and the southern hemisphere (since antipodal directions are
+% upper and the lower hemisphere (since antipodal directions are
 % associated). In order to plot pole figures as a superposition of the
-% northern and southern hemisphere one has to enforce <AxialDirectional.html
+% upper and lower hemisphere one has to enforce <AxialDirectional.html
 % antipodal symmetry>. This is done by the option *antipodal*.
 
-plotpdf(odf,Miller(1,1,0),'antipodal')
+plotPDF(odf,Miller(1,1,0,cs),'antipodal')
 
 
 %% Alignment of the Coordinate Axes
@@ -65,14 +65,14 @@ plotpdf(odf,Miller(1,1,0),'antipodal')
 
 plotx2north
 
-plotpdf(odf,Miller(1,0,0),'antipodal')
-annotate([xvector,yvector,zvector],{'X','Y','Z'},'backgroundcolor','w');
+plotPDF(odf,Miller(1,0,0,cs),'antipodal')
+annotate([xvector,yvector,zvector],'label',{'X','Y','Z'},'backgroundcolor','w');
 
 %%
 plotx2east
 
-plotpdf(odf,Miller(1,0,0),'antipodal')
-annotate([xvector,yvector,zvector],{'X','Y','Z'},'backgroundcolor','w');
+plotPDF(odf,Miller(1,0,0,cs),'antipodal')
+annotate([xvector,yvector,zvector],'label',{'X','Y','Z'},'backgroundcolor','w');
 
 
 %% Equal Area Projection (Schmidt Projection)
@@ -82,7 +82,7 @@ annotate([xvector,yvector,zvector],{'X','Y','Z'},'backgroundcolor','w');
 % by area equal area projection is the default projection in MTEX. In can
 % be set explicetly by the flags *earea* or *schmidt*.
 
-plotpdf(odf,Miller(1,0,0),'antipodal')
+plotPDF(odf,Miller(1,0,0,cs),'antipodal')
 
 
 
@@ -93,8 +93,8 @@ plotpdf(odf,Miller(1,0,0),'antipodal')
 % origin. Hence it might be a more intuitive projection if you look at
 % crystal directions.
 
-cs = symmetry('m-3m');
-plot(cs,'projection','edist','grid_res',15*degree,'antipodal')
+cs = crystalSymmetry('m-3m');
+plotHKL(cs,'projection','edist','upper','grid_res',15*degree,'BackGroundColor','w')
 
 
 %% Stereographic Projection (Equal Angle Projection)
@@ -103,7 +103,7 @@ plot(cs,'projection','edist','grid_res',15*degree,'antipodal')
 % which preserves the angle between arbitrary great circles. It
 % can be chosen by setting the option *stereo* or *eangle*.
 
-plot(cs,'projection','eangle','antipodal','grid_res',15*degree)
+plotHKL(cs,'projection','eangle','upper','grid_res',15*degree,'BackGroundColor','w')
 
 
 %% Plain Projection
@@ -111,9 +111,9 @@ plot(cs,'projection','eangle','antipodal','grid_res',15*degree)
 % *Plain* means that the polar angles theta / rho are plotted in a simple
 % rectangular plot. This projection is often chosen for ODF plots, e.g.
 
-close; figure('position',[46 171 752 486]);
-plotodf(SantaFe,'alpha','sections',18,'resolution',5*degree,...
-  'projection','plain','gray','contourf','FontSize',10,'silent')
+plotODF(SantaFe,'alpha','sections',18,'resolution',5*degree,...
+  'projection','plain','contourf','FontSize',10,'silent')
+mtexColorMap white2black
 
 
 %% Three Dimensional Plots
@@ -121,9 +121,4 @@ plotodf(SantaFe,'alpha','sections',18,'resolution',5*degree,...
 % MTEX also offers a three dimensional plot of pole figures which even
 % might be rotated freely in space
 
-close all;
-plotpdf(odf,Miller(1,0,0),'3d')
-
-
-
-
+plotPDF(odf,Miller(1,0,0,odf.CS),'3d')

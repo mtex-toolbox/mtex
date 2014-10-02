@@ -1,5 +1,5 @@
 function check(s,varargin)
 % check symmetry
 
-d = dot_outer(s.rotation,s.rotation);
-mypcolor(d);
+d = dot_outer(rotation(s),rotation(s));
+imagesc(d)

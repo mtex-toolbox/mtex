@@ -2,18 +2,16 @@
 %
 % This script was automatically created by the import wizard. You should
 % run the whoole script or parts of it in order to import your data. There
-% is no problem in making any chages to this scrip.
+% is no problem in making any changes to this script.
 
 %% Specify Crystal and Specimen Symmetries
 
 % crystal symmetry
 CS = {crystal symmetry};
 
-% specimen symmetry
-SS = {specimen symmetry};
-
 % plotting convention
-{plotting convention}
+setMTEXpref('xAxisDirection',{xAxisDirection});
+setMTEXpref('zAxisDirection',{zAxisDirection});
 
 %% Specify File Names
 
@@ -30,11 +28,9 @@ Z = {Z-values};
 %% Import the Data
 
 % create an EBSD variable containing the data
-ebsd = loadEBSD(fname,CS,SS,'interface',{interface} ...
-  ,{options});
+ebsd = loadEBSD(fname,CS,'interface',{interface},{Z},{options});
 
+%% Correct Data
 
-
-
-
-
+rot = rotation('Euler',{phi1},{Phi},{phi2});
+ebsd = rotate(ebsd,rot,{rotationOption});

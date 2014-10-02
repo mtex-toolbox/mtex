@@ -1,35 +1,36 @@
-function [S2G, data]= project2ODFsection(o,type,sec,varargin)
-% project orientation to ODF sections used by plotodf
+function [v, data]= project2ODFsection(o,type,sec,varargin)
+% project orientation to ODF sections used by plotODF
 %
-%% Input
+% Input
 %  o  - @SO3Grid
 %  type - section type
 %  sec  - sections
 %
-%% Output
+% Output
 %  S2G  - vector of @S2Grid
 %
-%% Options
+% Options
 %  tolerance -
 
-%% get input
+%TODO: remove loop as we have a loop already in plotODF
 
+% get input
 if length(sec) >= 2
-  tol = min(5*degree,abs(sec(1)-sec(2))/2);
+  tol = min(10*degree,abs(sec(1)-sec(2))/2);
 else
   tol = 5*degree;
 end
 tol = get_option(varargin,'tolerance',tol);
 
-S2G = repcell(S2Grid(vector3d,varargin{:}),numel(sec),1);
+% TODO
+v = repcell(vector3d,length(sec),1);
 
-%% axis angle
-
+% ------------ axis angle projection -------------------
 if strcmpi(type,'axisangle')
   
-  for i=1:numel(sec)
+  for i=1:length(sec)
     ind(:,i) = angle(o)-tol < sec(i) & sec(i) < angle(o)+tol;
-    S2G{i} = S2Grid(axis(subsref(o,ind(:,i))));
+    v{i} = axis(o.subSet(ind(:,i)));
   end
   
   if nargout > 1 && check_option(varargin,'data')
@@ -43,8 +44,7 @@ if strcmpi(type,'axisangle')
   return
 end
 
-%% symmetries and convert to Euler angle
-
+% symmetries and convert to Euler angle
 q = symmetrise(o);
 
 switch lower(type)
@@ -56,10 +56,13 @@ end
 
 if strcmpi(type,'omega')
   hpos = find_type(varargin,'Miller');
-  if hpos > 0, h = varargin{hpos}(1);
-  else h = Miller(0,0,1,get(o,'CS')); end
+  if hpos > 0
+    h = varargin{hpos}(1);
+  else
+    h = Miller(0,0,1,o.CS); 
+  end
   [alpha,beta] = polar(h);
-  q = q*euler2quat(beta,alpha,0,'ABG');
+  q = q*rotation('Euler',beta,alpha,0,'ABG');
 end
 
 [e1,e2,e3] = Euler(q,convention);
@@ -76,15 +79,14 @@ switch lower(type)
     rho = e1;
 end
 
-%% difference to the sections
-
-sec_angle = repmat(sec_angle(:),1,numel(sec));
+% difference to the sections
+sec_angle = repmat(sec_angle(:),1,length(sec));
 sec = repmat(sec(:)',size(sec_angle,1),1);
 
 d = abs(mod(sec_angle - sec+pi,2*pi) -pi);
 dmin = min(d,[],2);
 
-%% restrict to those within tolerance
+% restrict to those within tolerance
 
 ind = dmin < tol;
 if ~any(ind)
@@ -98,23 +100,20 @@ rho = rho(ind);
 d = d(ind,:);
 dmin = dmin(ind);
 
-%% Find closest section
-
+% find closest section
 ind2 = isappr(d,repmat(dmin,1,size(sec,2)));
 
-%% construct output
-
-for i = 1:size(sec,2)
-  
-  S2G{i} = S2Grid(sph2vec(e2(ind2(:,i)),mod(rho(ind2(:,i)),2*pi)),varargin{:});
-  
+% construct output
+% TODO
+for i = 1:size(sec,2)  
+  v{i} = vector3d('polar',e2(ind2(:,i)),mod(rho(ind2(:,i)),2*pi),varargin{:});
 end
 
 
 if nargout > 1 && check_option(varargin,'data')
   dat = get_option(varargin,'data');
   if ~isempty(dat)
-    dat = repmat(dat,numel(o.CS),numel(o.SS));
+    dat = repmat(dat,length(o.CS),length(o.SS));
     
     dat = dat(ind);
     for i = 1:size(sec,2)

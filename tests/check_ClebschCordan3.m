@@ -36,5 +36,5 @@ C3 = EinsteinSum(CG3,[1 3 -1],D3,[-1 -2],CG3,[2 4 -2])
 
 a = reshape(matrix(C0 + C1 + C2 + C3),[9,25]) ./ D1D2_ref;
 
-mypcolor(real(a))
+imagesc(real(a))
 

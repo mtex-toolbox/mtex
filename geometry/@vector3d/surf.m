@@ -1,98 +1,46 @@
-function varargout = surf(v,varargin)
+function h = surf(v,cdata,varargin)
 %
-%% Syntax
+% Syntax
 %
-%% Input
+% Input
 %
-%% Output
+% Output
 %
-%% Options
+% Options
 %
-%% See also
+% See also
 %
 
-%% get input
 
-% where to plot
-[ax,v,varargin] = getAxHandle(v,varargin{:});
+% initialize spherical plot
+sP = newSphericalPlot(v,varargin{:});
 
-% extract plot options
-projection = getProjection(ax,v,varargin{:});
+for j = 1:numel(sP)
 
-% initalize handles
-h = [];
-
-% why should I do this?
-hfig = get(ax,'parent');
-set(hfig,'color',[1 1 1]);
-
-% extract colors 
-cdata = varargin{1};
-
-set(gcf,'renderer','zBuffer');
-shading interp
-
-%% draw surface
-
-
-if strcmpi(projection.type,'plain') % plain plot
-  
-  [xu,yu] = project(v,projection);
-  
-  w = reshape(w,size(xu));
-  [CM,h(end+1)] = contourf(ax,xu,yu,w,contours); %#ok<ASGLU>
-
-
-else % spherical plot  
-  
-  hold(ax,'on')
+  % draw surface
+      
+  % project data
+  [x,y] = project(sP(j).proj,v,'removeAntipodal');
     
-  % plot upper hemisphere
-  if projection.minTheta < pi/2-0.0001 
+  % extract non nan data
+  ind = ~isnan(x);
+  x = submatrix(x,ind);
+  y = submatrix(y,ind);
+  data = reshape(submatrix(cdata,ind),[size(x) 3]);
   
-    % split data according to upper and lower hemisphere
-    ind = v.z > -1e-5;
-    v_upper = submatrix(v,ind);
-    data_upper = reshape(submatrix(cdata,ind),[size(v_upper) 3]);
-    
-    % project data
-    [xu,yu] = project(v_upper,projection);
-    
-    % plot surface
-    h(end+1) = surf(ax,xu,yu,zeros(size(xu)),real(data_upper));
-    
-  end
+  % otherwise surf would change current axes settings
+  hold(sP(j).ax,'on')
   
-  % plot lower hemisphere
-  if isnumeric(projection.maxTheta) && projection.maxTheta > pi/2 + 1e-4
+  % plot surface  
+  h(j) = surf(x,y,zeros(size(x)),real(data),'parent',sP(j).ax);
+  shading(sP(j).ax,'interp');
     
-    % split data according to upper and lower hemisphere
-    ind = v.z < 1e-5;
-    v_lower = submatrix(v,ind);
-    data_lower = reshape(submatrix(cdata,ind),[size(v_lower) 3]);
-    
-    % plot surface
-    [xl,yl] = project(v_lower,projection,'equator2south');
-    h(end+1) = surf(ax,xl,yl,zeros(size(xl)),real(data_lower));
-  end
+  hold(sP(j).ax,'off')
   
-  hold(ax,'off')
+  % set styles
+  optiondraw(h(j),'LineStyle','none','Fill','on',varargin{:});
+
 end
 
-% set styles
-optiondraw(h,'LineStyle','none',varargin{:});
-optiondraw(h,'Fill','on',varargin{:});
-
-%% finalize the plot
-
-% plot polar grid
-plotGrid(ax,projection,varargin{:});
-
-% plot annotations
-plotAnnotate(ax,varargin{:})
-
-% output
-if nargout > 0
-  varargout{1} = h;
-end
-
+set(sP(1).parent,'renderer','zBuffer');
+if nargout == 0, clear h; end

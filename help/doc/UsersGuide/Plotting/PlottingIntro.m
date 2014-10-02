@@ -91,11 +91,3 @@
 % the MATLAB function *save as* in the figure menu or using the command
 % <savefigure.html savefigure>
 %
-%% Changing the Default Plotting Options
-%
-% If you want to change the default plotting options, e.g. set color coding
-% to *equal* in each plot or allways use the option *antipodal*. Then the
-% desired options can be added in the start up file
-% [[matlab: edit mtex_settings.m,mtex_settings]] to the option
-% *default_plot_options*.
-%

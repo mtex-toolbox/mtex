@@ -14,11 +14,15 @@ TARGET= glnxa64
 #
 # please correct the following installation directories:
 #
-# path to FFTW, i.e. to lib/libfftw3.a
-FFTWPATH = /usr
+# path to FFTW, i.e. to libfftw3.a
+FFTW_LIB_PATH = /usr/lib/x86_64-linux-gnu/
+# path to FFTW header file, i.e., to fftw3.h
+FFTW_H_PATH = /usr/include/
 #
-# path to the NFFT, i.e. to /lib/libnfft3.a
-NFFTPATH = /usr
+# path to NFFT, i.e. to libnfft3.a
+NFFT_LIB_PATH = /usr/local/lib
+# path the NFFT header file, i.e., to nfft.h
+NFFT_H_PATH = /usr/local/include/
 #
 # matlab path
 MATLABPATH = /opt/matlab
@@ -28,9 +32,9 @@ CFLAGS= -c -O3 -Wall -fomit-frame-pointer -fstrict-aliasing -ffast-math -mfpmath
 LDFLAGS= -lm #-lpthread
 # MEX flags
 # for 32 bit systems set
-MEXFLAGS=-$(TARGET) -compatibleArrayDims
+#MEXFLAGS=-$(TARGET) -compatibleArrayDims
 # for 64 bit systems set
-#MEXFLAGS=-$(TARGET) -largeArrayDims
+MEXFLAGS=-$(TARGET) -largeArrayDims
 #
 #--------------- end editable section ---------------------------------
 #
@@ -38,52 +42,37 @@ MEXFLAGS=-$(TARGET) -compatibleArrayDims
 BPATH = c/bin/$(TARGET)/
 SUBDIRS = c/kernel.dir c/test.dir c/mex.dir
 
+
 # top-level rule, to compile everything.
 all: $(SUBDIRS)
 
+
 # descent into subdirectories
 %.dir:
-	$(MAKE) -e CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" NFFTPATH=$(NFFTPATH) FFTWPATH=$(FFTWPATH) MATLABPATH=$(MATLABPATH) MEXFLAGS="$(MEXFLAGS)" TARGET="$(TARGET)" -C $*
+	$(MAKE) -e CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" NFFT_LIB_PATH=$(NFFT_LIB_PATH) NFFT_H_PATH=$(NFFT_H_PATH) FFTW_LIB_PATH=$(FFTW_LIB_PATH) FFTW_H_PATH=$(FFTW_H_PATH) MATLABPATH=$(MATLABPATH) MEXFLAGS="$(MEXFLAGS)" TARGET="$(TARGET)" -C $*
 	$(MAKE) TARGET="$(TARGET)" install -C $*
+
 
 # rule for cleaning re-compilable files.
 clean:
 # rm -f c/bin/*
 	find . -name '*~' -or -name '*.log' -or -name '.directory' -or -name '*.o' -or -name '*.mex*' | xargs /bin/rm -rf
 
-# rule for installing as root
-install:
-	rm -rf $(MATLABPATH)/toolbox/mtex/*.*
-	cp -f startup_root.m  $(MATLABPATH)/toolbox/local/startup.m
-	mkdir -p $(MATLABPATH)/toolbox/mtex
-	cp -rf * $(MATLABPATH)/toolbox/mtex/
-	echo "installation complete"
-
-# rule for checking installation
-check:
-	echo "check installation"
-# comment the next line out if you have a intel/amd processor
-	c/bin/$(TARGET)/pf2odf c/test/pf2odf.txt check
-# comment the next line out if you have a ibm power cpu
-#	c/bin/$(TARGET)/pf2odf c/test/pf2odf_mac.txt check
-
-uninstall:
-	rm -f $(MATLABPATH)/toolbox/local/startup.m
-	rm -rf $(MATLABPATH)/toolbox/mtex
 
 # rule for making release
-RNAME = mtex-3.3.1
+RNAME = mtex-4.0.beta3
 RDIR = ../..
 release:
 	rm -rf $(RDIR)/$(RNAME)*
 	cp -R . $(RDIR)/$(RNAME)
-	rm -rf $(RDIR)/$(RNAME)/help/tmp 
+	rm -rf $(RDIR)/$(RNAME)/help/tmp
 	chmod -R a+rX $(RDIR)/$(RNAME)
 	rm -rf $(RDIR)/$(RNAME)/.hg
 	rm -rf $(RDIR)/$(RNAME)/.hg*
 	find $(RDIR)/$(RNAME) -name '*~' -or -name '*.log' -or -name '*.o' -or -name '*.orig' -or -name '.directory' -or -name '*.mat' | xargs /bin/rm -rf
 	rm -f $(RDIR)/$(RNAME)/c/nsoft/test_nfsoft_adjoint
 	rm -rf $(RDIR)/$(RNAME)/help/html
+	rm -rf $(RDIR)/$(RNAME).zip
 
 	cd $(RDIR); zip -rq  $(RNAME).zip $(RNAME)
 

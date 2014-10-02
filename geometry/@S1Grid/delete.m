@@ -1,11 +1,11 @@
-function G = delete(S1G,ind)
+function S1G = delete(S1G,ind)
 % delte points from S1Grid
-%% Input
+%
+% Input
 %  S1G - @S1Grid
 %  ind - indece of points to be deleted
 %
-%% Output
+% Output
 %  G   - @S1Grid
 
-G = S1G;
-G.points(ind) = [];
+S1G.points(ind) = [];
