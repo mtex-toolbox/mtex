@@ -3,7 +3,7 @@ function q = euler2quat(alpha,beta,gamma,varargin)
 %
 %% Description
 % The method *euler2quat* defines a [[quaternion_index.html,rotation]]
-% by Euler angles. You can choose whether to use the Bunge (phi,psi,phi2)
+% by Euler angles. You can choose whether to use the Bunge (phi,Phi,phi2)
 % convention or the Matthies (alpha,beta,gamma) convention.
 %
 %% Syntax
@@ -54,7 +54,7 @@ switch lower(convention)
   case {'bunge','zxz'}  % Bunge -> Matthies
 
     alpha = alpha - pi/2;
-    gamma = gamma - 3*pi/2;
+    gamma = gamma - 3*pi/2; % According to Kocks, this should be pi/2 + gamma
 
   case {'kocks'}        % Kocks -> Matthies
 

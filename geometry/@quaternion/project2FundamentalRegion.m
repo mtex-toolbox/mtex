@@ -18,7 +18,7 @@ q = quaternion(q);
 %% no specimen symmetry
 if nargin <=2 || numel(SS) <= 1 
     
-  % may be we can skip something
+  % maybe we can skip something
   omega = abs(dot(q,q_ref));
   ind = omega < cos(20*degree);
 
@@ -27,7 +27,7 @@ if nargin <=2 || numel(SS) <= 1
     return;
   end
 
-  % symetry elements
+  % symmetry elements
   qSym = quaternion(CS);
   
   % compute all distances to the fundamental regions

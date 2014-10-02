@@ -1,5 +1,5 @@
 function omega = angle(o1,o2)
-% calcualtes rotational angle between orientations
+% calculates rotational angle between orientations
 %
 %% Syntax  
 %  omega = angle(o)
