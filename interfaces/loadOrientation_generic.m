@@ -47,8 +47,6 @@ function [ori,options] = loadOrientation_generic(fname,varargin)
 % See also
 % loadOrientation
 
-max_num_phases = 40;
-
 try
 
   % load data
@@ -139,19 +137,7 @@ try
   % In some software, selecting/partitioning data points is done by setting
   % the phase value to -1. All phase values must be positive integers in
   % mtex. To fix this, add a 'dummy' phase to contain the excluded points.
-  if any(phase < 0)
-      loc = check_option(varargin, 'cs');
-      tmp=varargin{loc+1};
-      assignin('base','tmp2',tmp)
-      phase(phase < 0) = max(phase)+1;
-      tmp{length(tmp)+1} = symmetry('1', 'mineral', 'Excluded points');
-      assignin('base','tmp3',tmp)
-      varargin{loc+1} = tmp(:);      
-      clear tmp
-  end  
-  warning('MTEX:toomanyphases', ...
-      ['Found more than ' num2str(max_num_phases) '. I''m going to ignore them all.']);
-
+  
   % return varargin as options
   options = varargin;
 
