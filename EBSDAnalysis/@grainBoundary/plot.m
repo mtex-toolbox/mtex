@@ -50,7 +50,7 @@ function h = plot(gB,varargin)
 
 % create a new plot
 [mtexFig,isNew] = newMtexFigure(varargin{:});
-mP = newMapPlot('scanUnit',gB.scanUnit,varargin{:});
+mP = newMapPlot('scanUnit',gB.scanUnit,'parent',mtexFig.gca,varargin{:});
 
 obj.Faces    = gB.F;
 obj.Vertices = gB.V;
@@ -73,6 +73,8 @@ else % color given directly
   obj.EdgeColor = get_option(varargin,{'linecolor','edgecolor','facecolor'},'k');
   
 end
+
+obj.hitTest = 'off';
 
 h = optiondraw(patch(obj),varargin{:});
 

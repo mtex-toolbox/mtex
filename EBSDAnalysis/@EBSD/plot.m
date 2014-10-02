@@ -27,7 +27,7 @@ function h = plot(ebsd,varargin)
 
 % create a new plot
 [mtexFig,isNew] = newMtexFigure(varargin{:});
-mP = newMapPlot('scanUnit',ebsd.scanUnit,varargin{:});
+mP = newMapPlot('scanUnit',ebsd.scanUnit,'parent',mtexFig.gca,varargin{:});
 
 % transform orientations to color
 if nargin>1 && isa(varargin{1},'orientation')
@@ -75,7 +75,9 @@ end
   
 % keep track of the extend of the graphics
 % this is needed for the zoom: TODO maybe this can be done better
+%if isNew, ; end % TODO set axis tight removes all the plot
 axis(mP.ax,'tight')
+set(mP.ax,'dataAspectRatio',[1000 1000 1]);
 mP.extend(1) = min(mP.extend(1),min(ebsd.prop.x(:)));
 mP.extend(2) = max(mP.extend(2),max(ebsd.prop.x(:)));
 mP.extend(3) = min(mP.extend(3),min(ebsd.prop.y(:)));

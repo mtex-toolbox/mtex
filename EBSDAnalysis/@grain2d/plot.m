@@ -17,7 +17,7 @@ function h = plot(grains,varargin)
 
 % create a new plot
 [mtexFig,isNew] = newMtexFigure(varargin{:});
-mP = newMapPlot('scanUnit',grains.scanUnit,varargin{:});
+mP = newMapPlot('scanUnit',grains.scanUnit,'parent',mtexFig.gca,varargin{:});
 
 if isempty(grains)
   if nargout==1, h = [];end
@@ -119,13 +119,14 @@ end
 
 if numel(grain)>0
 
+  grain = grain.subSet(1);
   txt{1} = ['Grain: '  num2str(unique(grain.id))];
   txt{2} = ['Phase: ', grain.mineral];
   if grain.isIndexed
     txt{3} = ['Orientation: ' char(grain.meanOrientation,'nodegree')];
   end
   if ~isempty(value)
-    txt{end+1} = ['Value: ' xnum2str(value)];
+    txt{end+1} = ['Value: ' xnum2str(value(1))];
   end
 else
   txt = 'no data';
