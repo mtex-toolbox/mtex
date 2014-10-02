@@ -32,5 +32,5 @@ hold(mtexFig.gca,washold)
 % postprocess figure
 setappdata(gcf,'CS',s);
 set(gcf,'tag','ipdf');
-mtexFig.drawNow(varargin{:});
+mtexFig.drawNow('position','auto',varargin{:});
     

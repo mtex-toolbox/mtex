@@ -15,6 +15,8 @@ function plot(T,varargin)
 %
 %
 
+[mtexFig,isNew] = newMtexFigure(varargin{:});
+
 if check_option(varargin,'section')
   omega = linspace(-pi,pi,361);
   
@@ -147,5 +149,6 @@ end
 
 set(gcf,'tag','tensor');
 
+if isNew, mtexFig.drawNow('position','auto',varargin{:}); end
 
 %plot(S2,'data',d,'antipodal','smooth',varargin{:});
