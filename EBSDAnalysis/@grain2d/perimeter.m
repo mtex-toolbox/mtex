@@ -11,10 +11,10 @@ function  peri = perimeter(grains,varargin)
 %   peri = grains.perimeter
 %
 % See also
-% grain2d/equivalentperimeter
+% grain2d/equivalentPerimeter
 
 
-% reduce to first loop
+% ignore holes
 poly = cellfun(@(x) x(1:find(x(2:end) == x(1),1)),grains.poly,'uniformOutput',false);
 
 peri =  cellfun(@(ind) sum(sqrt(sum(diff(grains.V(ind,:)).^2,2))),poly);

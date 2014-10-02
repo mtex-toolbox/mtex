@@ -1,4 +1,4 @@
-function r = equivalentradius(grains)
+function r = equivalentRadius(grains)
 % returns the equivalent radius of grain-polygon
 %
 % defined as 
@@ -14,6 +14,6 @@ function r = equivalentradius(grains)
 %  r  - radius
 %
 % See also
-% grain2d/deltaarea grain2d/equivalentperimeter grain2d/paris
+% grain2d/deltaarea grain2d/equivalentPerimeter grain2d/paris
 
 r = sqrt(area(grains)/pi);

@@ -54,8 +54,6 @@ hold off
 
 %%
 
-
-
 cs = ebsd('Forsterite').CS.Laue;
 oM = axisAngleOrientationMapping(cs)
 %oM.maxAngle = 50*degree;

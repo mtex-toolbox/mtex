@@ -19,7 +19,7 @@ function  peri = perimeter(gb,varargin)
 % p = perimeter(grains,property,...,param,val,...) -
 %
 % See also
-% Grain2d/equivalentperimeter
+% Grain2d/equivalentPerimeter
 
 
 F = reshape(nonzeros(gb.F),[],2);

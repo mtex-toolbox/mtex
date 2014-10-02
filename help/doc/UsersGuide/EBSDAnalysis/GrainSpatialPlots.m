@@ -71,7 +71,7 @@ mtexColorMap black2white
 % number of grains.
 
 close all
-plot(grains,shapefactor(grains))
+plot(grains,shapeFactor(grains))
 
 
 %% Visualizing grain boundaries
