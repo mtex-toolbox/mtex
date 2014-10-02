@@ -16,19 +16,35 @@ if strcmpi(get(ax,'visible'),'off')
   tightInset = get(ax,'tightInset');
   set(ax,'xTickLabel',xtl,'yTickLabel',ytl,'xlabel',xl,'ylabel',yl);
   
-elseif strcmpi(get(ax,'PlotBoxAspectRatioMode'),'auto')
+  % consider text labels
+  txt = findobj(ax,'type','text','unit','data');
+  if ~isempty(txt)
+    set(txt,'unit','pixel')
+    ext = cell2mat(ensurecell(get(txt,'extent')));
+    set(txt,'units','data');
+    pos = get(ax,'position');
+    tightInset(1:2) = max([tightInset(1:2);-ext(:,1:2)]);
+    tightInset(3:4) = max([tightInset(3:4);ext(:,1:2)+ext(:,3:4)-repmat(pos(3:4),size(ext,1),1)]);
+  end
   
+elseif all(get(ax,'ticklength') == 0)
+  
+  xt = get(ax,'xtick');
+  yt = get(ax,'ytick');
+  set(ax,'xtick',[],'ytick',[]);
+  %axis(ax,'normal');
+  tightInset = get(ax,'tightInset');  
+  %axis(ax,'equal','tight');
+  set(ax,'xtick',xt,'ytick',yt);
+  
+else %if strcmpi(get(ax,'PlotBoxAspectRatioMode'),'auto')
+
   tightInset = get(ax,'tightInset');
-  
-else
-  
-  axis(ax,'normal');
-  tightInset = get(ax,'tightInset');
-  axis(ax,'equal','tight');
-  
+
 end
-    
- % consider also colorbar  
+
+
+ % consider colorbar  
  if ~isempty(mtexFig.cBarAxis)
       
    pos = get(mtexFig.cBarAxis(1),'position');

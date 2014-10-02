@@ -57,7 +57,7 @@ for ax = mtexFig.children(:).'
   set(ax,'xlim',1.1*get(ax,'xlim'));
   set(ax,'ylim',1.1*get(ax,'ylim'));  
 end
-mtexFig.drawNow(varargin{:});
+mtexFig.drawNow('position','auto',varargin{:});
 
 hold off
 

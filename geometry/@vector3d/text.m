@@ -41,6 +41,8 @@ for j = 1:numel(sP)
   % print labels  
   for i = 1:length(strings)
     
+    if isnan(x(i)), continue; end
+    
     s = strings{i};
     if ~ischar(s), s = char(s,interpreter);end
 

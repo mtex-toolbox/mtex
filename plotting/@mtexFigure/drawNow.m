@@ -41,7 +41,7 @@ if check_option(varargin,'position')
 else
 
   position = get(mtexFig.parent,'Position'); 
-  figSize = position(3:4) - 2*mtexFig.outerPlotSpacing;
+  figSize = position(3:4);
   
 end
 
