@@ -35,7 +35,7 @@ for i = 1:length(r)
 
   % plot
   h.smooth(p,'parent',mtexFig.gca,'doNotDraw',varargin{:});
-  title(mtexFig.gca,char(r(i)),'FontSize',getMTEXpref('FontSize'));
+  mtexTitle(mtexFig.gca,char(r(i),'LaTeX'));
 
 end
 

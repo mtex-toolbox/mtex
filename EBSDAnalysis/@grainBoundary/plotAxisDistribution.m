@@ -26,7 +26,7 @@ for ip = 1:size(pairs,1)
   if ~isempty(h), mtexFig.nextAxis; end
   
   h = [h,plotAxisDistribution(gB_ip.misorientation,'doNotDraw','parent',mtexFig.gca,varargin{:})];
-  title(mtexFig.gca,[gB_ip.mineral{1} ' - ' gB_ip.mineral{2}]);
+  mtexTitle(mtexFig.gca,[gB_ip.mineral{1} ' - ' gB_ip.mineral{2}]);
   
 end
 
