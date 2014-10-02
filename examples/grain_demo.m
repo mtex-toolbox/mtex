@@ -57,5 +57,5 @@ hist(grains)
 %% Accessing geometric properties
 %
 area(grains); perimeter(grains);
-shapefactor(grains); 
+shapeFactor(grains); 
 

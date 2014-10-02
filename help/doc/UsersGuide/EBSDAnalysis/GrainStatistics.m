@@ -190,18 +190,22 @@ grains(grain_id) = []
 plot(grains)
 
 %% 
-% TODO
 % Beside the area there are various other geometric properties that can be
-% computed for grains, e.g., the <grain2d.perimeter.html perimeter>,
-% the <grain2d.diameter.html diameter>, the <grain2d.equivalentradius.html
-% equivalentradius>, the <grain2d.equivalentperimeter.html
-% equivalentperimeter>, the <grain2d.aspectratio.html aspectratio>,
-% and the <grain2d.shapefactor.html shapefactor>. The following is a simple
-% scatter plot of shapefactor against aspactratio to check for correlation.
+% computed for grains, e.g., the <grain2d.perimeter.html perimeter>, the
+% <grain2d.diameter.html diameter>, the <grain2d.equivalentRadius.html
+% equivalentRadius>, the <grain2d.equivalentPerimeter.html
+% equivalentPerimeter>, the <grain2d.aspectRatio.html aspectRatio>, and the
+% <grain2d.shapeFactor.html shapeFactor>. The following is a simple scatter
+% plot of shape factor against aspact ratio to check for correlation.
 %
 
 % the size of the dots corresponds to the area of the grains
-%scatter(grains.shapefactor, grains.aspectratio, 50*ar./max(ar) )
+close all
+scatter(grains.shapeFactor, grains.aspectRatio, 70*grains.area./max(grains.area))
+
+%%
+
+plot(grains,log(grains.aspectRatio))
 
 
 %% Spatial Dependencies
