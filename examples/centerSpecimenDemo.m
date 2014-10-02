@@ -9,7 +9,7 @@
 %%
 % some preliminary variables
 
-plotx2north
+%plotx2north
 
 CS = crystalSymmetry('cubic');
 SS = specimenSymmetry('222');
