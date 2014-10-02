@@ -63,7 +63,7 @@ for i = 1:numel(ph1)
     
   mori = calcMisorientation(objSplit{ph1(i)},objSplit{ph2(i)},varargin{:});
   plot(mori.axis,'doNotDraw','symmetrised','parent',mtexFig.gca,'FundamentalRegion',varargin{:});
-  title(mtexFig.gca,[mori.CS.mineral ' - ' mori.SS.mineral])
+  mtexTitle(mtexFig.gca,[mori.CS.mineral ' - ' mori.SS.mineral])
   
 end
 

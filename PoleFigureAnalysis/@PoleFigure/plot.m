@@ -27,7 +27,7 @@ for i = 1:length(pf.allH)
   
   pf.allR{i}.plot(data{i},...
     'dynamicMarkerSize','parent',mtexFig.gca,'doNotDraw',varargin{:});
-  title(mtexFig.gca,char(pf.allH{i}),'FontSize',getMTEXpref('FontSize'));
+  mtexTitle(mtexFig.gca,char(pf.allH{i},'LaTeX'));
 end
 
 if isNew % finalize plot

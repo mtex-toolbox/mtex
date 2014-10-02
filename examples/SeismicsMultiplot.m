@@ -175,6 +175,7 @@ titleOpt = {'FontSize',getMTEXpref('FontSize'),'visible','on'}; %{'FontSize',15}
 % Setup multiplot
 % define plot size [origin X,Y,Width,Height]
 mtexFig = mtexFigure('position',[0 0 1000 1000]);
+mtexFig.innerPlotSpacing = 20;
 
 % Standard Seismic plot with 8 subplots in 3 by 3 matrix
 %
@@ -192,7 +193,7 @@ mtexFig = mtexFigure('position',[0 0 1000 1000]);
 % Plot P-wave velocity (km/s)
 plot(C,'PlotType','velocity','vp','complete','contourf','parent',mtexFig.gca)
 
-title('Vp (km/s)',titleOpt{:})
+mtexTitle('Vp (km/s)',titleOpt{:})
 % percentage anisotropy
 AVpS = ['Vp Anisotropy = ',num2str(AVp,'%6.1f')];
 % N.B. x and y reversed in subplot
@@ -213,7 +214,7 @@ mtexFig.nextAxis
 % Plot S-wave anisotropy (percent)
 plot(C,'PlotType','velocity','200*(vs1-vs2)./(vs1+vs2)',...
   'complete','contourf','parent',mtexFig.gca);
-title('S-wave anisotropy (%)',titleOpt{:})
+mtexTitle('S-wave anisotropy (%)',titleOpt{:})
 
 % Max percentage anisotropy
 AVsS = ['Max Vs Anisotropy = ',num2str(AVs_max_value,'%6.1f')];
@@ -237,7 +238,7 @@ mtexFig.nextAxis
 
 plot(C,'PlotType','velocity','200*(vs1-vs2)./(vs1+vs2)','complete',...
   'contourf','parent',mtexFig.gca);
-title('Vs1 polarization',titleOpt{:})
+mtexTitle('Vs1 polarization',titleOpt{:})
 
 hold on
 plot(C,'PlotType','velocity','ps1',...
@@ -250,7 +251,7 @@ hold off
 mtexFig.nextAxis
 
 plot(C,'PlotType','velocity','vs1','complete','contourf','parent',mtexFig.gca);
-title('Vs1 (km/s)',titleOpt{:})
+mtexTitle('Vs1 (km/s)',titleOpt{:})
 
 % Percentage anisotropy
 AVs1S = ['Vs1 Anisotropy = ',num2str(AVs1,'%6.1f')];
@@ -272,7 +273,7 @@ hold off
 mtexFig.nextAxis
 
 plot(C,'PlotType','velocity','vs2','complete','contourf','parent',mtexFig.gca);
-title('Vs2 (km/s)',titleOpt{:})
+mtexTitle('Vs2 (km/s)',titleOpt{:})
 
 % Percentage anisotropy
 AVs2S = ['Vs2 Anisotropy = ',num2str(AVs2,'%6.1f')];
@@ -294,7 +295,7 @@ hold off
 mtexFig.nextAxis
 
 plot(C,'PlotType','velocity','vs1-vs2','complete','contourf','parent',mtexFig.gca);
-title('dVs=Vs1-Vs2 (km/s)',titleOpt{:})
+mtexTitle('dVs=Vs1-Vs2 (km/s)',titleOpt{:})
 
 % Max percentage anisotropy
 AdVsS = ['Max dVs (km/s) = ',num2str(dVs_max_value,'%6.2f')];
@@ -312,7 +313,7 @@ hold off
 mtexFig.nextAxis
 
 plot(C,'PlotType','velocity','vp./vs1','complete','contourf','parent',mtexFig.gca);
-title('Vp/Vs1',titleOpt{:})
+mtexTitle('Vp/Vs1',titleOpt{:})
 
 % Percentage anisotropy
 AVpVs1S = ['Vp/Vs1 Anisotropy = ',num2str(AVpVs1,'%6.1f')];
@@ -330,7 +331,7 @@ hold off
 mtexFig.nextAxis
 
 plot(C,'PlotType','velocity','vp./vs2','complete','contourf','parent',mtexFig.gca);
-title('Vp/Vs2',titleOpt{:})
+mtexTitle('Vp/Vs2',titleOpt{:})
 
 % Percentage anisotropy
 AVpVs2S = ['Vp/Vs2 Anisotropy = ',num2str(AVpVs2,'%6.1f')];
@@ -345,7 +346,7 @@ hold off
 %%
 
 % add colorbars to all plots
-mtexFig.colorbar
+colorbar
 
 %%
 %
