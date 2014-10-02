@@ -65,7 +65,7 @@ try
       cs{phase+1} = crystalSymmetry(laue,lattice(1:3)',lattice(4:6)'*degree,'mineral',mineral,options{:}); %#ok<AGROW>
       ReplaceExpr{i} = {mineral,int2str(i)};
     end
-    assert(~isempty(cs));
+    assert(numel(cs)>1);
   catch %#ok<CTCH>
     interfaceError(fname);
   end
