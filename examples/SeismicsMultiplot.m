@@ -170,12 +170,17 @@ blackMarker = {'Marker','s','MarkerSize',10,...
   'MarkerEdgeColor','white','MarkerFaceColor','black'};
 whiteMarker = {'Marker','o','MarkerSize',10,...
   'MarkerEdgeColor','black','MarkerFaceColor','white'};
-titleOpt = {'FontSize',getMTEXpref('FontSize'),'visible','on'}; %{'FontSize',15};
+
+% some global options for the titles
+%titleOpt = {'FontSize',getMTEXpref('FontSize'),'visible','on'}; %{'FontSize',15};
+titleOpt = {};
 
 % Setup multiplot
 % define plot size [origin X,Y,Width,Height]
 mtexFig = mtexFigure('position',[0 0 1000 1000]);
-mtexFig.innerPlotSpacing = 20;
+
+% set up spacing between subplots default is 10 pixel
+%mtexFig.innerPlotSpacing = 20;
 
 % Standard Seismic plot with 8 subplots in 3 by 3 matrix
 %
@@ -347,6 +352,7 @@ hold off
 
 % add colorbars to all plots
 colorbar
+drawNow(gcm,'position','auto')
 
 %%
 %

@@ -1,7 +1,10 @@
 function tightInset = calcTightInset(mtexFig)
 % determine tight inset for each axis
   
+
 tightInset = zeros(1,4);
+
+%return
 
 if isempty(mtexFig.children), return; end
 ax = mtexFig.children(1);
@@ -17,11 +20,15 @@ if strcmpi(get(ax,'visible'),'off')
   set(ax,'xTickLabel',xtl,'yTickLabel',ytl,'xlabel',xl,'ylabel',yl);
   
   % consider text labels
-  txt = findobj(ax,'type','text','unit','data');
+  txt = findall(ax,'type','text','unit','data');
+  s = get(txt,'string'); ind = cellfun(@isempty,s);
+  txt = txt(~ind);
   if ~isempty(txt)
+    pos = ensurecell(get(txt,'position'));
     set(txt,'unit','pixel')
     ext = cell2mat(ensurecell(get(txt,'extent')));
-    set(txt,'units','data');
+    %set(txt,'units','data');
+    for i=1:length(txt), set(txt(i),'units','data','position',pos{i}); end
     pos = get(ax,'position');
     tightInset(1:2) = max([tightInset(1:2);-ext(:,1:2)]);
     tightInset(3:4) = max([tightInset(3:4);ext(:,1:2)+ext(:,3:4)-repmat(pos(3:4),size(ext,1),1)]);
@@ -58,7 +65,7 @@ end
    catch
      tiPos = [3.5,1.5]*get(mtexFig.cBarAxis(1),'FontSize');
    end
-   pos(pos>0) = pos(pos>0) + tiPos(pos>0);
+   pos(pos>0) = pos(pos>0) + tiPos(pos>0) + 10;
     
    if numel(mtexFig.cBarAxis) == numel(mtexFig.children)
      tightInset = tightInset + [0,pos(2),pos(1),0];
