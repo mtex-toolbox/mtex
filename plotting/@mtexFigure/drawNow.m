@@ -23,6 +23,7 @@ if check_option(varargin,'position')
   if any(strcmpi(position,{'auto','large','normal','small'}))
     screenExtend = get(0,'MonitorPositions');
     
+    mtexFig.keepAspectRatio = true;
     figSize = screenExtend(1,3:4) - [0,120]; % consider only the first monitor
 
     switch position
