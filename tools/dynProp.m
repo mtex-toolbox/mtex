@@ -79,15 +79,12 @@ classdef dynProp
           end
       
         case '.'
-          try
-        
-            varargout{1} = subsref(dp.prop,s);
-        
-          catch 
-                
+          if ismethod(dp,s(1).subs) || isprop(dp,s(1).subs)
             [varargout{1:nargout}] = builtin('subsref',dp,s);
-    
+          else
+            varargout{1} = subsref(dp.prop,s);
           end
+          
       end
     end
       
