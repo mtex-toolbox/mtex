@@ -6,7 +6,7 @@ if numel(subs)==2 && all(cellfun(@isnumeric, subs))
   ind = ebsd.findByLocation([subs{:}]);
   return
 else
-  ind = true(1,length(ebsd));
+  ind = true(length(ebsd),1);
 end
   
 for i = 1:length(subs)
@@ -16,28 +16,28 @@ for i = 1:length(subs)
     ind = ind & ebsd.isIndexed;
   
   % ebsd('mineralname') or ebsd({'mineralname1','mineralname2'})
-  if ischar(subs{i}) || iscellstr(subs{i})
+  elseif ischar(subs{i}) || iscellstr(subs{i})
     
     mineralsSubs = ensurecell(subs{i});
-    phaseNumbers = cellfun(@num2str,num2cell(ebsd.phaseMap(:)'),'Uniformoutput',false);
+    phaseNumbers = cellfun(@num2str,num2cell(ebsd.phaseMap(:)),'Uniformoutput',false);
     
     phases = false(numel(ebsd.CSList),1);
     
     for k=1:numel(mineralsSubs)
       phases = phases ...
-        | strcmpi(ebsd.mineralList,mineralsSubs{k}) ...
+        | strcmpi(ebsd.mineralList(:),mineralsSubs{k}) ...
         | strcmpi(phaseNumbers,mineralsSubs{k});
     end
 
-    % if now complete match was found allow also for partial match
+    % if no complete match was found allow also for partial match
     if ~any(phases)
       for k=1:numel(mineralsSubs)
         phases = phases ...
-          | strncmpi(ebsd.mineralList,mineralsSubs{k},length(mineralsSubs{k}));
+          | strncmpi(ebsd.mineralList(:),mineralsSubs{k},length(mineralsSubs{k}));
       end
     end
     
-    ind = ind & phases(ebsd.phaseId(:).');
+    ind = ind & phases(ebsd.phaseId);
     
   elseif isa(subs{i},'symmetry')
     
@@ -55,25 +55,21 @@ for i = 1:length(subs)
     if ~ebsd.isProp('grainId')
       error('%s\n\n%s\n',['There is no grainId stored within your EBSD data. ' ...
         'You should compute grains by the command'],...
-        '  [grains,ebsd] = calcGrains(ebsd)');
+        '  [grains,ebsd.grainId] = calcGrains(ebsd)');
     end
-    ind = ind & ismember(ebsd.prop.grainId,subs{i}.id)';
+    ind = ind & ismember(ebsd.prop.grainId,subs{i}.id);
     
   elseif isa(subs{i},'logical')
     
     sub = any(subs{i}, find(size(subs{i}')==max(size(ind)),1));
     
-    ind = ind & reshape(sub,size(ind));
+    ind = ind & sub(:);
     
   elseif isnumeric(subs{i})
     
     iind = false(size(ind));
     iind(subs{i}) = true;
     ind = ind & iind;
-    
-    %   elseif isa(subs{i},'polygon')
-    
-    %     ind = ind & inpolygon(ebsd,subs{i})';
     
   end
 end
