@@ -10,7 +10,11 @@ ind = true(length(grains),1);
       
 for i = 1:length(subs)
   
-  if ischar(subs{i}) || iscellstr(subs{i})
+  if ischar(subs{i}) && strcmpi(subs{i},'indexed')
+  
+    ind = ind & grains.isIndexed;
+  
+  elseif ischar(subs{i}) || iscellstr(subs{i})
     
     miner = ensurecell(subs{i});
     alt_mineral = cellfun(@num2str,num2cell(grains.phaseMap),'Uniformoutput',false);
