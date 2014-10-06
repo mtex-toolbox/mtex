@@ -120,13 +120,14 @@ end
 if numel(grain)>0
 
   grain = grain.subSet(1);
-  txt{1} = ['Grain: '  num2str(unique(grain.id))];
-  txt{2} = ['Phase: ', grain.mineral];
+  txt{1} = ['grainId  '  num2str(unique(grain.id))];
+  txt{2} = ['phase    ', grain.mineral];
+  txt{3} = ['x,y       ', xnum2str(pos(1)) ', ' xnum2str(pos(2))];
   if grain.isIndexed
-    txt{3} = ['Orientation: ' char(grain.meanOrientation,'nodegree')];
+    txt{4} = ['Euler    ' char(grain.meanOrientation,'nodegree')];
   end
   if ~isempty(value)
-    txt{end+1} = ['Value: ' xnum2str(value(1))];
+    txt{end+1} = ['Value    ' xnum2str(value(1))];
   end
 else
   txt = 'no data';
