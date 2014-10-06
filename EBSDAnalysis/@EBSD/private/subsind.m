@@ -11,13 +11,17 @@ end
   
 for i = 1:length(subs)
 
+  if ischar(subs{i}) && strcmpi(subs{i},'indexed')
+  
+    ind = ind & ebsd.isIndexed;
+  
   % ebsd('mineralname') or ebsd({'mineralname1','mineralname2'})
   if ischar(subs{i}) || iscellstr(subs{i})
     
     mineralsSubs = ensurecell(subs{i});
     phaseNumbers = cellfun(@num2str,num2cell(ebsd.phaseMap(:)'),'Uniformoutput',false);
     
-    phases = false(1,numel(ebsd.CSList));
+    phases = false(numel(ebsd.CSList),1);
     
     for k=1:numel(mineralsSubs)
       phases = phases ...
@@ -44,7 +48,7 @@ for i = 1:length(subs)
         phases(k) = true;
       end
     end
-    ind = ind & phases(ebsd.phaseId(:).');
+    ind = ind & phases(ebsd.phaseId);
     
   elseif isa(subs{i},'grain2d')
     
