@@ -26,10 +26,6 @@ for i = 1:length(subs)
     end
     ind = ind & phases(grains.phaseId(:));
     
-    %   elseif isa(subs{i},'grain')
-    
-    %     ind = ind & ismember(ebsd.options.grain_id,get(subs{i},'id'))';
-    
   elseif isa(subs{i},'logical')
     
     sub = any(subs{i}, find(size(subs{i}')==max(size(ind)),1));
