@@ -76,8 +76,7 @@ end
 % keep track of the extend of the graphics
 % this is needed for the zoom: TODO maybe this can be done better
 %if isNew, ; end % TODO set axis tight removes all the plot
-axis(mP.ax,'tight')
-set(mP.ax,'dataAspectRatio',[1000 1000 1]);
+axis(mP.ax,'tight'); set(mP.ax,'zlim',[0,1]);
 mP.extend(1) = min(mP.extend(1),min(ebsd.prop.x(:)));
 mP.extend(2) = max(mP.extend(2),max(ebsd.prop.x(:)));
 mP.extend(3) = min(mP.extend(3),min(ebsd.prop.y(:)));

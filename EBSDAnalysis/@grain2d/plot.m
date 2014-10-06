@@ -89,7 +89,7 @@ warning on
 
 % keep track of the extend of the graphics
 % this is needed for the zoom: TODO maybe this can be done better
-axis(mP.ax,'tight');
+axis(mP.ax,'tight'); set(mP.ax,'zlim',[0,1]);
 
 if nargout == 0, clear h;end
 

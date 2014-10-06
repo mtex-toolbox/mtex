@@ -78,6 +78,14 @@ obj.hitTest = 'off';
 
 h = optiondraw(patch(obj),varargin{:});
 
+% if no DisplayName is set remove patch from legend
+if ~check_option(varargin,'DisplayName')
+  set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+end
+legend('-DynamicLegend','location','NorthEast');
+
+axis(mP.ax,'tight'); set(mP.ax,'zlim',[0,1]);
+
 if nargout == 0, clear h; end
 if isNew, mtexFig.drawNow('position','large',varargin{:}); end
 mtexFig.keepAspectRatio = false;
