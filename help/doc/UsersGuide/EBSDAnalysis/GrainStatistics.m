@@ -150,7 +150,10 @@ plot(grains_selected)
 % we consider the complete data set.
 
 mtexdata forsterite
-[grains,ebsd] = calcGrains(ebsd)
+% consider only indexed data for grain segmentation
+ebsd = ebsd('indexed');
+% perform grain segmentation
+[grains,ebsd.grainId] = calcGrains(ebsd)
 
 %%
 % Then the following command gives you a nice overview over the grain size

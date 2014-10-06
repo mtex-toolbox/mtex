@@ -1,4 +1,4 @@
-function [grains,ebsd] = calcGrains(ebsd,varargin)
+function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 % 2d and 3d construction of GrainSets from spatially indexed EBSD data
 %
 % Syntax
@@ -20,17 +20,6 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 % See also
 % GrainSet/GrainSet
 
-
-% remove not indexed phases 
-if ~all(ebsd.isIndexed) && ~check_option(varargin,'keepNotIndexed')
-
-  disp('  I''m removing all not indexed phases. The option "keepNotIndexed" keeps them.');
-  ebsd = subSet(ebsd,ebsd.isIndexed);
-end
-
-% remove dublicated data points
-ebsd = removeDublicated(ebsd);
-
 % subdivide the domain into cells according to the measurement locations,
 % i.e. by Voronoi teselation or unit cell
 [V,F,I_FD] = spatialDecomposition([ebsd.prop.x(:), ebsd.prop.y(:)],ebsd.unitCell,varargin{:});
@@ -48,31 +37,49 @@ ebsd = removeDublicated(ebsd);
 % I_DG - incidence matrix cells to grains
 I_DG = sparse(1:length(ebsd),double(connectedComponents(A_Do)),1);
 
-% store grain id
-[grainId,~] = find(I_DG.'); ebsd.prop.grainId = grainId(:);
+% compute grain ids
+[grainId,~] = find(I_DG.'); ebsd.prop.grainId = grainId;
 
 % setup grains
 grains = grain2d(ebsd,V,F,I_DG,I_FD,A_Db);
 
-% store mis2mean
-ebsd.prop.mis2meanRotation = inv(ebsd.rotations) .* ...
-  grains.meanRotation(grainId(:));
+% calc mean orientations, GOS and mis2mean
+% ----------------------------------------
 
+[d,g] = find(I_DG);
+
+grainRange    = [0;cumsum(grains.grainSize)];        %
+firstD        = d(grainRange(2:end));
+q             = quaternion(ebsd.rotations);
+meanRotation  = q(firstD);
+GOS = zeros(length(grains),1);
+
+% choose between equivalent orientations in one grain such that all are
+% close together
+for p = grains.indexedPhasesId
+  ndx = ebsd.phaseId(d) == p;
+  if ~any(ndx), continue; end
+  q(d(ndx)) = project2FundamentalRegion(q(d(ndx)),ebsd.CSList{p},meanRotation(g(ndx)));
 end
 
-function ebsd = removeDublicated(ebsd)
-  % remove duplicated data points
-
-  % sort spatial coordinates
-  [~,m,n]  = unique([ebsd.prop.y(:),ebsd.prop.x(:)],'first','rows');
-
-  if numel(m) ~= numel(n)
-    warning('mtex:GrainGeneration','spatially duplicated data points, perceed by erasing them')
-  end
+% compute mean orientation and GOS
+doMeanCalc = find(grains.grainSize>1 & grains.isIndexed);
+for k = 1:numel(doMeanCalc)
   
-  % sort X and remove duplicated data
-  ebsd = subSet(ebsd,m); 
+  qind = subSet(q,d(grainRange(doMeanCalc(k))+1:grainRange(doMeanCalc(k)+1)));
+  mq = mean(qind);
+  meanRotation = setSubSet(meanRotation,doMeanCalc(k),mq);
+  GOS(doMeanCalc(k)) = mean(angle(mq,qind));
+  
 end
+
+% save 
+grains.prop.GOS = GOS;
+grains.prop.meanRotation = meanRotation;
+mis2mean = inv(rotation(q)) .* meanRotation(grainId(:));
+
+end
+
 
 function [A_Db,A_Do] = doSegmentation(I_FD,ebsd,varargin)
 % segmentation 
@@ -120,3 +127,4 @@ A_Db = sparse(double(Dl(~connect)),double(Dr(~connect)),true,length(ebsd),length
 A_Db = A_Db | A_Db';
 
 end
+

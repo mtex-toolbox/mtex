@@ -25,10 +25,13 @@ plotx2east
 %%
 % and <EBSD.calcGrains.html reconstruct> grains by
 
-[grains,ebsd] = calcGrains(ebsd,'threshold',5*degree);
+% consider only indexed data for grain segmentation
+ebsd = ebsd('indexed');
+% perform grain segmentation
+[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd,'threshold',5*degree);
 
 
-%% Intergranular misorientations
+%% Intergranular misorientations %%TODO
 % The intergranular misorientation is automatically computed while
 % reconstructing the grain structure. It is stored as the property
 % *mis2mean* within the ebsd variable and can be accessed by the command

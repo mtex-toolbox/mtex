@@ -1,35 +1,32 @@
 %% Grain Reconstruction
-% Explanation how to create grains from EBSD data.
+% Grain Reconstruction from EBSD data.
 %
 %% Open in Editor
 %
 %% Contents
-%
-%%
-% This section discusses the different grain reconstruction methods
-% implement in MTEX. 
-%
 
-%% Grain Reconstruction
-% Let us first import some [[matlab:edit mtexdata, example EBSD
-% data]] and reduce it to a subregion of interest.
+%% 
+% Let us first import some example EBSD data and reduce it to a subregion
+% of interest.
 
 plotx2east
 mtexdata forsterite
-close all
 
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
+close all
 plot(ebsd)
 
 
-%%
-% We see that there are a lot of not indexed locations. For grain
-% reconstruction we have to two different choices how to deal with these
+%% Basic grain reconstruction
+% We see that there are a lot of not indexed measurements. For grain
+% reconstruction we have to three different choices how to deal with these
 % unindexed regions:
 %
-% # assign them to the surrounding grains
 % # leaf them unindexed
+% # assign them to the surrounding grains
+% # a mixture of both, e.g., assign small notindexed regions to the
+% surrounding grains but keep large notindexed regions
 %
 % By default MTEX uses the first method. 
 %
@@ -41,10 +38,14 @@ plot(ebsd)
 % <EBSD.calcGrains.html calcGrains> which takes as input an EBSD data set
 % and returns a list of grain.
 
-grains = calcGrains(ebsd)
+grains = calcGrains(ebsd,'angle',10*degree)
+
 
 %%
 % The reconstructed grains are stored in the variable *grains*.
+% Note that also the notIndexed measurements are grouped into grains. This
+% allows later to analyse the shape of these unindexed regions.
+%
 % To visualize the grains we can plot its boundaries by the command
 % <Grain2d.plotBoundary.html plotBoundary>.
 
@@ -54,43 +55,216 @@ hold on
 % plot the boundary of all grains
 plot(grains.boundary,'linewidth',1.5)
 
+% stop overide mode
+hold off
+
+%% The grainId and how to select EBSD inside specific grains
+% Beside the list of grains the command <EBSD.calcGrains.html calcGrains>
+% returns also two other output arguments. 
+
+[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd,'angle',7.5*degree)
+
+%%
+% ´The second output argument grainId is a list with the same size as the
+% EBSD measurements that stores for each mesurement the corresponding
+% grainId. The above syntax stores this list directly inside the ebsd
+% variable. This enables MTEX to select EBSD data by grains. The following
+% command returns all the EBSD data that belong to grain number 33.
+
+ebsd(grains(33))
+
+%%
+% and is equivalent to the command
+
+ebsd(ebsd.grainId == 33) 
+
+
+%% Misorientation to mean orientation
+%
+% The third output argument is again a list of the same size as the ebsd
+% measurements. The entries are the misorientation to the mean orientation
+% of the corresponding grain.
+
+plot(ebsd,ebsd.mis2mean.angle ./ degree)
+
+hold on
+plot(grains.boundary)
+hold off
+
+colorbar
+
+%%
+% We can examine the misorientation to mean for one specific grain as
+% follows
+
+% select a grain by coordinates
+myGrain = grains(9075,3275)
+plot(myGrain.boundary,'linewidth',2)
+
+% plot mis2mean angle for this specific grain
+hold on
+plot(ebsd(myGrain),ebsd(myGrain).mis2mean.angle ./ degree)
+hold off
+colorbar
+
+
+%% Filling not indexed holes
+%
+% It is important to understand that MTEX distinguishes the following two
+% situations
+%
+% # a location is marked as not indexed
+% # a location does not occur in the data set
+%
+% A location marked as *not indexed* is interpreted by MTEX as: at this
+% position there is *no crystal*, whereas for a location that does not
+% occur in the data set is interpreted by MTEX as: it is not known whether
+% there is a crystal or not. Just to remind you, the later assumption is
+% nothing special as it applies at all locations but the measurement
+% points.
+%
+% A location that does not occur in the data is assigned in MTEX to the
+% same grain and phase as the closest measurement point - this may also be
+% a not indexed point. Hence, filling holes in MTEX means to erasing them
+% from the list of measurements, i.e., instead of telling MTEX there is no
+% no crystal we are telling MTEX: we do not know what there is.
+
+%%
+% The exremal case is to say whenever there is a not indexed measurement we
+% actually do not know anything and allow MTEX to freely guess what happens
+% there. This is realized by removing all not indexed measurements or,
+% equivalently, computing the grains only from the indexed measurements
+
+% compute the grains from the indexed measurements only
+grains = calcGrains(ebsd('indexed'))
+
+plot(ebsd)
+
+% start overide mode
+hold on
+
+% plot the boundary of all grains
+plot(grains.boundary,'linewidth',1.5)
+
 % mark two grains by location
-plot(grains(12000,4000).boundary,'linecolor','r','linewidth',2)
-plot(grains(11300,6100).boundary,'linecolor','r','linewidth',2)
+plot(grains(11300,6100).boundary,'linecolor','m','linewidth',2,...
+  'DisplayName','grain A')
+plot(grains(12000,4000).boundary,'linecolor','r','linewidth',2,...
+  'DisplayName','grain B')
 
 % stop overide mode
 hold off
 
 %%
 % We observe, especially in the marked grains, how MTEX fills notindexed
-% regions and connects otherwise seperate measurements to grains.
+% regions and connects otherwise seperate measurements to grains. As all
+% information about not indexed regions were removed the reconstructed
+% grains fill the map completely
+
+plot(grains,'linewidth',2)
+
 
 %%
-% In order to supress this filling the option *keepNotIndexed* can be used.
+% Inside of grain B there is a large not indexed region and we might argue
+% that is not very meaningfull to assign such a large region to some grain
+% but should have kept it not indexed. In order to decide which not indexed
+% region is large enaugh to be kept not indexed and which not indexed
+% regions can be filled it is helpfull to know that the command calcGrains
+% also seperates the not indexed regions into "grains" and we can standard
+% grain functions like area or perimeter to analyze these regions.
 
-grains = calcGrains(ebsd,'keepNotIndexed')
+[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd);
+notIndexed = grains('notIndexed')
+
+%%
+% We see that we have 1139 not indexed regions. A good measure for compact
+% regions vs. cluttered regions is the quotient between the area and the
+% boundary length.
+
+% plot the not indexed regions colorcoded according the the quotient between
+% number of measurements and number of boundary segments
+plot(notIndexed,log(notIndexed.grainSize ./ notIndexed.boundarySize))
+colorbar
+
+%%
+% Regions with a high quotient are blocks which can be hardly correctly
+% assigned to a grain. Hence, we should keep these regions as not indexed
+% and only remove the not indexed information from locations with a low
+% quotient.
+
+% the "not indexed grains" we want to remove
+toRemove = notIndexed(notIndexed.grainSize ./ notIndexed.boundarySize<0.8)
+
+% now we remove the corresponding EBSD measurements
+ebsd(toRemove) = []
+
+% and perform grain reconstruction with the reduces EBSD data set
+[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd);
+
+plot(grains)
+
+%%
+% We see that there are some not indexed regions are left blank. Finally,
+% the image with the raw EBSD data and on top the grain boundaries.
 
 
-% plot the ebsd data
+% plot the raw data
 plot(ebsd)
 
 % start overide mode
 hold on
 
-% plot grain boundaries
-plot(grains.boundary)
+% plot the boundary of all grains
+plot(grains.boundary,'linewidth',1.5)
 
 % mark two grains by location
-plot(grains(12000,4000).boundary,'linecolor','r','linewidth',2)
-plot(grains(11300,6100).boundary,'linecolor','r','linewidth',2)
-
+plot(grains(11300,6100).boundary,'linecolor','m','linewidth',2,...
+  'DisplayName','grain A')
+plot(grains(12000,4000).boundary,'linecolor','r','linewidth',2,...
+  'DisplayName','grain B')
 
 % stop overide mode
 hold off
 
-%% 
-% Note how the one marked grain has been seperated into two grains and the
-% other marked grain has been seperated into many very small grains.
+%% Grain smoothing
+% The reconstructed grains show the typicaly staircase effect. This effect
+% can be reduced by smoothing the grains. This is particulary important
+% when working with the direction of the boundary segments
+
+% plot the raw data
+plot(ebsd)
+
+% start overide mode
+hold on
+
+% plot the boundary of all grains
+plot(grains.boundary,angle(grains.boundary.direction,xvector)./degree,'linewidth',3.5)
+colorbar
+
+% stop overide mode
+hold off
+
+%%
+% We see that the angle between the grain bounday direction and the x-axis
+% takes only values 0, 45 and 90 degree. After applying smoothing we obtain
+% a much better result
+
+% smooth the grain boundaries
+grains = smooth(grains)
+
+% plot the raw data
+plot(ebsd)
+
+% start overide mode
+hold on
+
+% plot the boundary of all grains
+plot(grains.boundary,angle(grains.boundary.direction,xvector)./degree,'linewidth',3.5)
+colorbar
+
+% stop overide mode
+hold off
+
 
 %% Grain reconstruction by the multiscale clustering method
 %
@@ -157,6 +331,9 @@ plot(grains_FMC.boundary,'linewidth',1.5)
 % stop overide mode
 hold off
 
+%% ------------------------------------------------------
+%% this has to be reworked 
+
 %% Correcting poor grains
 % Sometimes measurements belonging to grains with very few measurements can
 % be regarded as inaccurate. This time, we explicitely keep the not
@@ -164,7 +341,7 @@ hold off
 
 mtexdata forsterite
 
-[grains,ebsd] = calcGrains(ebsd,'angle',5*degree,'keepNotIndexed')
+[grains,ebsd.grainId] = calcGrains(ebsd,'angle',5*degree);
 
 close all
 plot(grains)
