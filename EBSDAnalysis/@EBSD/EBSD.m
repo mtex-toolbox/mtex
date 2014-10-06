@@ -38,7 +38,8 @@ classdef EBSD < phaseList & dynProp & dynOption & misorientationAnalysis
   properties (Dependent = true)
     orientations    % rotation including symmetry
     weights         %
-    mis2mean        % 
+    grainId         % id of the grain to which the EBSD measurement belongs to
+    mis2mean        % misorientation to the mean orientation of the corresponding grain    
   end
   
   methods
@@ -52,7 +53,7 @@ classdef EBSD < phaseList & dynProp & dynOption & misorientationAnalysis
       
       ebsd.rotations = rotation(rot(:));
       ebsd = ebsd.init(phases,CSList);      
-      ebsd.id = 1:length(phases);
+      ebsd.id = (1:length(phases)).';
             
       % extract additional properties
       ebsd.prop = get_option(varargin,'options',struct);
@@ -72,8 +73,30 @@ classdef EBSD < phaseList & dynProp & dynOption & misorientationAnalysis
     
     % --------------------------------------------------------------
 
-    function ori = get.mis2mean(ebsd)
-      ori = orientation(ebsd.prop.mis2meanRotation,ebsd.CS,ebsd.CS);
+    function ori = get.mis2mean(ebsd)      
+      ori = ebsd.prop.mis2mean;
+      try
+        ori = orientation(ori,ebsd.CS,ebsd.CS);
+      catch        
+      end
+    end
+        
+    function ebsd = set.mis2mean(ebsd,ori)
+      ebsd.prop.mis2mean = rotation(ori);      
+    end
+    
+    function grainId = get.grainId(ebsd)
+      try
+        grainId = ebsd.prop.grainId;
+      catch
+        error('No grainId stored in the EBSD variable. \n%s\n\n%s\n',...
+          'Use the following command to store the grainId within the EBSD data',...
+          '[grains,ebsd.grainId] = calcGrains(ebsd)')
+      end
+    end
+    
+    function ebsd = set.grainId(ebsd,grainId)
+      ebsd.prop.grainId = grainId(:);      
     end
       
     function ori = get.orientations(ebsd)

@@ -12,7 +12,11 @@
 close all
 mtexdata forsterite
 plotx2east
-[grains,ebsd] = calcGrains(ebsd)
+
+% consider only indexed data for grain segmentation
+ebsd = ebsd('indexed');
+% perform grain segmentation
+[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd);
 
 %%
 % The <GrainSet_index.html GrainSet> contains the EBSD data it was reconstructed from. We can

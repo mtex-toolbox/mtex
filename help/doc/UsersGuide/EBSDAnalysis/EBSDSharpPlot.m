@@ -116,12 +116,13 @@ plot(oM,'resolution',0.25*degree)
 % grains
 
 mtexdata forsterite
+ebsd = ebsd('indexed');
 
 % segment grains
-[grains,ebsd] = calcGrains(ebsd)
+[grains,ebsd.grainId] = calcGrains(ebsd)
 
 % find largest grains
-largeGrains = grains(grains.grainSize>500)
+largeGrains = grains(grains.grainSize>800)
 
 ebsd = ebsd(largeGrains(1))
 

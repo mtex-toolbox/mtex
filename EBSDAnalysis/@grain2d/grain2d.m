@@ -69,9 +69,7 @@ classdef grain2d < phaseList & dynProp
       grains.innerBoundary = grainBoundary(V,F,I_FDint,ebsd);
       
       grains.poly = calcPolygons(I_FDext * I_DG,F,V);
-      
-      [grains.prop.meanRotation,grains.prop.GOS] = calcMeanRotation;
-      
+
       
       function [I_FDext,I_FDint] = calcBoundary
         % distinguish between interior and exterior grain boundaries      
@@ -99,42 +97,7 @@ classdef grain2d < phaseList & dynProp
         D_Fsub  = diag(sum(abs(I_FD(:,ix)) & abs(I_FD(:,iy)),2)>0);
         I_FDint = D_Fsub*I_FD;
         
-      end
-      
-     
-      function [meanRotation,GOS] = calcMeanRotation
-
-        [d,g] = find(I_DG);
-
-        grainRange    = [0;cumsum(grains.grainSize)];        %
-        firstD        = d(grainRange(2:end));
-        phaseId       = ebsd.phaseId(firstD);
-        q             = quaternion(ebsd.rotations);
-        meanRotation  = q(firstD);
-        GOS           = zeros(length(grains),1);
-        indexedPhases = ~cellfun('isclass',grains.CSList(:),'char');
-
-        % choose between equivalent orientations in one grain
-        % such that all are close together
-        for p = grains.indexedPhasesId
-          ndx = ebsd.phaseId(d) == p;
-          if any(ndx)
-            q(d(ndx)) = project2FundamentalRegion(...
-              q(d(ndx)),grains.CSList{p},meanRotation(g(ndx)));
-          end
-        end
-        ebsd.rotations = rotation(q);
-        
-        doMeanCalc    = find(grains.grainSize>1 & indexedPhases(phaseId));
-        for k = 1:numel(doMeanCalc)
-          
-          qind = subSet(q,d(grainRange(doMeanCalc(k))+1:grainRange(doMeanCalc(k)+1)));
-          mq = mean(qind);
-          meanRotation = setSubSet(meanRotation,doMeanCalc(k),mq);
-          GOS(doMeanCalc(k)) = mean(angle(mq,qind));
-        
-        end
-      end      
+      end           
     end
     
     function V = get.V(grains)

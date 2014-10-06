@@ -13,7 +13,8 @@ close all
 mtexdata forsterite
 plotx2east
 
-[grains,ebsd] = calcGrains(ebsd)
+ebsd = ebsd('indexed');
+[grains,ebsd.grainId] = calcGrains(ebsd)
 
 %% The grain boundary
 % The grain boundary of a list of grains can be extracted by
