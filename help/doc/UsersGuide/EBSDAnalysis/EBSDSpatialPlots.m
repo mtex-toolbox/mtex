@@ -198,7 +198,7 @@ plot(oM,'complete')
 % Suppose the mode of the ODF somewhere in our spatial distribution of
 % grains (the orientation map).
 
-mode = 
+mode = idquaternion
 
 %%
 % The definition of colors for certain orientations is carried out similarly as 
