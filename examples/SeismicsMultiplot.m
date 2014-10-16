@@ -352,7 +352,7 @@ hold off
 
 % add colorbars to all plots
 colorbar
-drawNow(gcm,'position','auto')
+drawNow(gcm,'figSize','large')
 
 %%
 %

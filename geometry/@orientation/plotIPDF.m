@@ -70,7 +70,7 @@ for ir = 1:length(r)
 end
 
 if isNew
-  mtexFig.drawNow('Position','auto',varargin{:});
+  mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 end
 
 % --------------- Tooltip function ------------------

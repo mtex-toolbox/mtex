@@ -42,7 +42,7 @@ end
 
 if isNew % finalize plot
   
-  mtexFig.drawNow('Position','auto',varargin{:});
+  mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
   setappdata(gcf,'inversePoleFigureDirection',r);
   setappdata(gcf,'CS',odf.CS);
   setappdata(gcf,'SS',odf.SS);

@@ -86,7 +86,7 @@ for i = 1:length(h)
 
 end
 
-if isNew, mtexFig.drawNow('Position','auto',varargin{:}); end
+if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end
 
 % ----------- Tooltip function ------------------------
 function txt = tooltip(varargin)

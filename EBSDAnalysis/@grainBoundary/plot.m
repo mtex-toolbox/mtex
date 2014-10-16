@@ -87,5 +87,5 @@ legend('-DynamicLegend','location','NorthEast');
 axis(mP.ax,'tight'); set(mP.ax,'zlim',[0,1]);
 
 if nargout == 0, clear h; end
-if isNew, mtexFig.drawNow('position','large',varargin{:}); end
+if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end
 mtexFig.keepAspectRatio = false;

@@ -149,6 +149,6 @@ end
 
 set(gcf,'tag','tensor');
 
-if isNew, mtexFig.drawNow('position','auto',varargin{:}); end
+if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end
 
 %plot(S2,'data',d,'antipodal','smooth',varargin{:});

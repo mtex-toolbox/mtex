@@ -20,25 +20,32 @@ if check_option(varargin,'position')
   position = get_option(varargin,'position');
   figSize = position(3:4);
   
-  if any(strcmpi(position,{'auto','large','normal','small'}))
-    screenExtend = get(0,'MonitorPositions');
+elseif check_option(varargin,'figSize')
+  
+  screenExtend = get(0,'MonitorPositions');
     
-    mtexFig.keepAspectRatio = true;
-    figSize = screenExtend(1,3:4) - [0,120]; % consider only the first monitor
+  mtexFig.keepAspectRatio = true;
+  figSize = screenExtend(1,3:4) - [0,120]; % consider only the first monitor
 
-    switch position
-      case 'auto'
-        n = numel(mtexFig.children);
-        figSize = figSize .* min([1 1],[n/4, (1 + (n>4))/2]);
-      case 'large'
-        figSize = figSize .* 0.9;
-      case 'normal'
-        figSize = figSize .* 0.5;
-      case 'small'
-        figSize = figSize .* 0.25;
-    end
+  switch get_option(varargin,'figSize')
+    case 'large'
+      figSize = figSize .* 1;
+    case 'normal'
+      figSize = figSize .* 0.75;
+    case 'small'
+      figSize = figSize .* 0.5;
+    case 'tiny'
+      figSize = figSize .* 0.25;
+    otherwise
+      figSize = figSize .* get_option(varargin,'figSize');
   end
   
+  n = numel(mtexFig.children);
+  if isappdata(mtexFig.children(1),'sphericalPlot') ...
+      || n > 1
+    figSize = figSize .* min([1 1],[n/4, (1 + (n>4))/2]);
+  end
+        
 else
 
   position = get(mtexFig.parent,'Position'); 

@@ -59,7 +59,7 @@ if isNew % finalize plot
   setappdata(gcf,'h',h);
   set(gcf,'Name',['Pole figures of "',inputname(1),'"']);
   
-  mtexFig.drawNow('Position','auto',varargin{:});
+  mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 end
 
 % -------------- Tooltip function ---------------------------------
