@@ -1,20 +1,20 @@
 function out = check_option(option_list,option,varargin)
 % check for option in option list
 %
-%% Syntax
-% out = check_option(option_list,option_name,type)
-% out = check_option(option_list,option_name,[],option)
+% Syntax
+%   out = check_option(option_list,option_name,type)
+%   out = check_option(option_list,option_name,[],option)
 %
-%% Input
+% Input
 %  option_list - Cell Array
 %  option_name - String
 %  option      - String
 %  type        - class
 %
-%% Output
+% Output
 %  out         - true / false
 %
-%% See also
+% See also
 % get_option set_option find_option
 
 if isempty_cell(option_list)
