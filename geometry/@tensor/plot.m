@@ -108,7 +108,17 @@ switch lower(plotType)
       end
     end
         
-    [vp,vs1,vs2,pp,ps1,ps2] = velocity(T,S2); %#ok<ASGLU>
+    if isfield(T.opt,'density')
+      rho = T.opt.density;
+    elseif check_option(varargin,'density')
+      rho = get_option(varargin,'density',1);
+    else
+      error(['No density given! For computing wave velocities '...
+        'the material density has to be specified. ' ...
+        'Please use the option ..''density'',value.. to do this.']);
+    end
+        
+    [vp,vs1,vs2,pp,ps1,ps2] = velocity(T,S2,rho); %#ok<ASGLU>
     d = eval(get_option(varargin,'velocity','pp','char'));
     
   otherwise
