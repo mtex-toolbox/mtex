@@ -7,7 +7,12 @@ switch s(1).type
     v.x = subsref(v.x,s(1));
     v.y = subsref(v.y,s(1));
     v.z = subsref(v.z,s(1));
-      
+    
+    if v.isOption('plot')
+      v.opt = rmfield(v.opt,{'theta','rho','plot','resolution'});
+    end
+    
+    
     if numel(s)>1
       [varargout{1:nargout}] = builtin('subsref',v,s(2:end));
     else
