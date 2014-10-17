@@ -103,7 +103,14 @@ api.Progress.enableFinish(false);
     data = api.getDataTransformed();
     
     figure
-    plot(data,'silent');
+    
+    if isa(data,'EBSD') && numel(data.indexedPhasesId) == 1
+      
+      plot(data('indexed'),data('indexed').orientations);
+      
+    else    
+      plot(data,'silent');
+    end
     
   end
 
