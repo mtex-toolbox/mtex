@@ -3,6 +3,7 @@
 % visualizing sharp data. Let us consider the following data set which
 % restrict to the calcite phase
 
+plotx2east
 mtexdata sharp
 
 ebsd = ebsd('calcite');
@@ -35,8 +36,8 @@ caxis([20 30]);
 
 % by the following lines we colorcode the outliers in purple.
 cmap = colormap;
-cmap(end,:) = [1 0 1];
-cmap(1,:) = [1 0 1];
+cmap(end,:) = [1 0 1]; % make last color purple
+cmap(1,:) = [1 0 1];   % make first color purple
 colormap(cmap)
 
 %%
@@ -53,21 +54,6 @@ cmap = colormap;
 cmap(end,:) = [1 0 1];
 cmap(1,:) = [1 0 1];
 colormap(cmap)
-
-%%
-% TODO: maybe remove this
-
-close all;
-
-oM = ipdfAzimuthOrientationMapping(ebsd)
-oM.inversePoleFigureDirection = zvector;
-
-color = oM.orientation2color(ebsd.orientations);
-
-plot(ebsd,color)
-
-caxis([20 30]);
-colormap(cmap);
 
 %% Sharpening the default colorcoding
 % Next we want to apply the same ideas as above to the default MTEX
@@ -92,8 +78,8 @@ oM.colorStretching = 30;
 plot(ebsd,oM.orientation2color(ebsd.orientations))
 
 %%
-% You may play around with the option |colorStretching| to obtain the best
-% result. As for interpretation keep in mind that white color represents
+% You may play around with the option |colorStretching| to obtain better
+% results. As for interpretation keep in mind that white color represents
 % the mean orientation and the color becomes more saturated and later dark
 % as the orientation to color diverges from the mean orientation.
 %

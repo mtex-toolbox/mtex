@@ -91,7 +91,7 @@ set(dcm_obj,'UpdateFcn',{@tooltip,ebsd});
 
 datacursormode on;
 
-if isNew, mtexFig.drawNow('position','large',varargin{:}); end
+if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end
 mtexFig.keepAspectRatio = false;
 
 end

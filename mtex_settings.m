@@ -16,6 +16,10 @@ function mtex_settings
 setMTEXpref('xAxisDirection','north');
 setMTEXpref('zAxisDirection','outOfPlane');
 
+% default figure size, possible values are 'small', 'normal', 'large', or a
+% factor between 0 and 1
+setMTEXpref('figSize','normal');
+
 % default spacing between muliple plots
 setMTEXpref('outerPlotSpacing',10);
 setMTEXpref('innerPlotSpacing',10);

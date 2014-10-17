@@ -133,7 +133,7 @@ for i = 1:numel(sP)
 
   if isappdata(sP(1).parent,'mtexFig')
     mtexFig = getappdata(sP(1).parent,'mtexFig');
-    mtexFig.drawNow('Position','auto',varargin{:});
+    mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
   end
 end
 

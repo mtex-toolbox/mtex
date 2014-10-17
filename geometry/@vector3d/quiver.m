@@ -27,7 +27,7 @@ for j = 1:numel(sP)
 
   % make the quiver plot
 
-  mhs = get_option(varargin,'MaxHeadSize',0.9);
+  mhs = get_option(varargin,'MaxHeadSize',0.9*d.antipodal);
   arrowSize = get_option(varargin,'arrowSize',0.03);
 
   proj = sP(j).proj;

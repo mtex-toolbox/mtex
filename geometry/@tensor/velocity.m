@@ -63,6 +63,6 @@ for i = 1:length(x)
 
 end
 
-pp = vector3d(pp);
-ps1 = vector3d(ps1);
-ps2 = vector3d(ps2);
+pp = vector3d(pp,'antipodal');
+ps1 = vector3d(ps1,'antipodal');
+ps2 = vector3d(ps2,'antipodal');

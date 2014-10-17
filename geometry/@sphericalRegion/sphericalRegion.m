@@ -54,10 +54,10 @@ classdef sphericalRegion
         sR.N = [sR.N,vector3d('theta',90*degree,'rho',[90*degree+minRho,maxRho-90*degree])];
         sR.alpha = [sR.alpha,0,0];
       end
-            
+      
+      if check_option(varargin,{'complete','3d'}), sR = sphericalRegion; end
       if check_option(varargin,'upper'), sR = sR.restrict2Upper; end
       if check_option(varargin,'lower'), sR = sR.restrict2Lower; end
-      if check_option(varargin,{'complete','3d'}), sR = sphericalRegion; end
       
     end
             

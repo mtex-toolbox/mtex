@@ -17,16 +17,21 @@ classdef vector3d < dynOption
     
     function v = vector3d(x,y,z,varargin)
       % Constructor
+      %
       % Syntax
-      %  v = vector3d(1,2,3)
+      %   v = vector3d(x,y,z)
       %
-      %
+      % Input
       %  x,y,z - cart. coordinates
-      %  v     - @vector3d
-      %  empty -> vector3d(0,0,0)
+      %
+      % Flags
+      %   antipodal - consider vector as an axis and not as an direction
+      %
+      % See also
+      % AxialDirectional
 
       if nargin == 0
-      elseif nargin ==1
+      elseif nargin <= 2
         if isa(x,'vector3d') % copy-constructor
           [v.x,v.y,v.z] = double(x);
           v.antipodal = x.antipodal;

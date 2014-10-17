@@ -27,8 +27,8 @@ cross(v, w)
 %%
 % *plotting*
 
-close;figure('position',[43   362   300   300])
-plot([v,w],'FontSize',20)
+close all
+plot([v,w])
 
 %% Rotations
 
@@ -47,10 +47,6 @@ v = rot * xvector
 rot \ v
 rot2 = rot * rot
 
-%%
-% *plotting*
-
-scatter([rot rot2])
 
 %%
 % *Basic Functions*
@@ -69,7 +65,9 @@ CS = crystalSymmetry('-3m',[2,2,1],'X||a','mineral','iron');
 SS = specimenSymmetry ('mmm');
 
 % load from a cif file
-loadCIF('quartz')
+CS = loadCIF('quartz')
+
+
 
 %%
 % *Basic Functions*
@@ -81,8 +79,8 @@ rotation(CS)
 
 %%
 % *plotting*
-set(gcf,'position',[50,50,400,400]);
-plot(CS,'FontSize',15,'antipodal')
+
+plot(CS)
 
 %%
 %
@@ -104,7 +102,7 @@ h2 = [Miller(1,1,-2,3,CS),Miller(0,1,-1,0,CS)]
 eq(h1,h2)
 angle(h1,h2,'antipodal')
 symmetrise(h)
-plot([h1,h2],'all','labeled')
+plot([h1,h2],'all','labeled','backGroundColor','w')
 
 %% Orientations
 

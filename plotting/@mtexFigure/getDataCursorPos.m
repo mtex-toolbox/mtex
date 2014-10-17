@@ -21,12 +21,6 @@ end
 % convert pos to vector3d for spherical plots
 ax = get(target,'Parent');
 
-% for spherical plots convert to polar coordinates
-sP = getappdata(ax,'sphericalPlot');
-if ~isempty(sP)
-  pos = sP.proj.iproject(pos(1),pos(2));
-end
-
 % get value
 value = [];
 zd = get(target,'zdata');
@@ -40,9 +34,15 @@ if size(xd,1) ~= 1 && size(xd,2) == numel(zd)
   yd = mean(yd);  
 end
 
-[~,value] = min((xd-pos(1)).^2 + (yd-pos(2)).^2);
+[~,value] = min((xd(:)-pos(1)).^2 + (yd(:)-pos(2)).^2);
 
 if numel(zd) == numel(xd), value = zd(value); end
  
+% for spherical plots convert to polar coordinates
+sP = getappdata(ax,'sphericalPlot');
+if ~isempty(sP)
+  pos = sP.proj.iproject(pos(1),pos(2));
+end
+
 end
 

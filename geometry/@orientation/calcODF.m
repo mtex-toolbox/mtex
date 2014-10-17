@@ -1,44 +1,46 @@
 function odf = calcODF(ori,varargin)
-% calculate ODF from individuel orientations via kernel density estimation
+% computes an ODF from individuel orientations
 %
-% *calcODF* is one of the core function of the MTEX toolbox.
-% It estimates an ODF from a set of individual crystal orientations by
-% <EBSD2odf.html kernel density estimation>.
+% The function *calcODF* applies one of the following algorithms to compute
+% an ODF from a list of orientations.
 %
-% The function *calcODF* has several options to control the halfwidth of
-% the kernel functions, the resolution, etc. Most important the estimated
-% ODF is affected by the *halfwidth* of the kernel function.
-%
-% If the halfwidth is large the estimated ODF is smooth whereas a small halfwidth
-% results in a sharp ODF. It depends on your prior information about the
-% ODF to choose this parameter right. Look at this
-% <EBSDSimulation_demo.html description> for exhausive discussion.
+% # direct kernel density estimation 
+% # kernel density estimation via Fourier series
+% # Bingham estimation
 %
 % Syntax
-%   calcODF(ori)
+%
+%   % use kernel density estimation with a 10 degree kernel
+%   odf = calcODF(ori,'halfwidth',10*degree) 
+%
+%   % use a specific kernel
+%   psi = AbelPoissonKernel('halfwidth',10*degree)
+%   odf = calcODF(ori,'kernel',psi) 
+%
+%   % compute the ODF as a Fourier series of order 16
+%   odf = calcODF(ori,'order',16) 
 %
 % Input
 %  ori  - @orientation
-%  ebsd - @EBSD
 %
 % Output
 %  odf - @ODF
 %
 % Options
-%  HALFWIDTH        - halfwidth of the kernel function
-%  RESOLUTION       - resolution of the grid where the ODF is approximated
-%  KERNEL           - kernel function (default -- de la Valee Poussin kernel)
-%  L/HARMONICDEGREE - (if Fourier) order up to which Fourier coefficients are calculated
+%  halfwidth  - halfwidth of the kernel function
+%  resolution - resolution of the grid where the ODF is approximated
+%  kernel     - kernel function (default -- de la Valee Poussin kernel)
+%  order      - order up to which Fourier coefficients are calculated
 %
 % Flags
-%  SILENT           - no output
-%  EXACT            - no approximation to a corser grid
-%  FOURIER          - force Fourier method
-%  BINGHAM          - model bingham odf
+%  silent           - no output
+%  exact            - no approximation to a corser grid
+%  Fourier          - force Fourier method
+%  Bingham          - model bingham odf
 %  noFourier        - no Fourier method
 %
 % See also
-% ebsd_demo EBSD2odf EBSDSimulation_demo loadEBSD ODF/calcEBSD EBSD/calcKernel kernel/kernel
+% orientation/calcFourierODF orientation/calcKernelODF orientation/calcBinghamODF ebsd_demo EBSD2odf EBSDSimulation_demo 
 
 % Bingham ODF estimation
 if check_option(varargin,'bingham')  

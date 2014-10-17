@@ -29,7 +29,7 @@ pf = loadPoleFigure(fname,h,CS,SS,'interface','dubna','superposition',c);
 
 close;figure('position',[100 100 900 300])
 plot(pf)
-
+colorbar
 
 %% Extract information from imported pole figure data
 %

@@ -33,7 +33,7 @@ colorbar
 % but also, we can plot the whole crystal behavior
 
 close all
-plot(P,'complete','smooth')
+plot(P,'complete','smooth','upper')
 colorbar
 
 %%
@@ -84,7 +84,7 @@ colorbar
 %
 
 close all
-plot(Pm,'complete')
+plot(Pm,'complete','upper')
 colorbar
 
 setMTEXpref('defaultColorMap',WhiteJetColorMap)

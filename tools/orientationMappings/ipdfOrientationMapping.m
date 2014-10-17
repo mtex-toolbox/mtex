@@ -74,7 +74,7 @@ classdef ipdfOrientationMapping < orientationMapping
             h.dispStyle = 'uvw';
         end
         annotate(unique(round(h)),'MarkerFaceColor','k','labeled','symmetrised');
-        mtexFig.drawNow('Position','auto',varargin{:});
+        mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
       end
 
     end

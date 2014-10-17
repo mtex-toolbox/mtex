@@ -69,7 +69,7 @@ if isNew % finalize plot
     setappdata(gcf,'h',h);
   end
 
-  mtexFig.drawNow('Position','auto',varargin{:});
+  mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
   
 end
 
