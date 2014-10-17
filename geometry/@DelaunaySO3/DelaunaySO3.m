@@ -1,5 +1,10 @@
 classdef (InferiorClasses = {?rotation,?quaternion}) DelaunaySO3 < orientation
-
+% 
+% Syntax
+%   
+%   % define a Delaunay trinangulation from a list of orientations
+%   DSO3 = DelaunaySO3(ori) 
+%
   properties
         
     tetra          % list of vertices of the tetrahegons
