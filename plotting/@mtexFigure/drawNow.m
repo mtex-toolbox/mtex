@@ -29,21 +29,22 @@ elseif check_option(varargin,'figSize')
 
   switch get_option(varargin,'figSize')
     case 'large'
-      figSize = figSize .* 1;
+      fac = 1;
     case 'normal'
-      figSize = figSize .* 0.75;
+      fac = 0.75;
     case 'small'
-      figSize = figSize .* 0.5;
+      fac = 0.5;
     case 'tiny'
-      figSize = figSize .* 0.25;
+      fac =  0.25;
     otherwise
-      figSize = figSize .* get_option(varargin,'figSize');
+      fac = get_option(varargin,'figSize');
   end
+  figSize = figSize .* fac;
   
   n = numel(mtexFig.children);
   if isappdata(mtexFig.children(1),'sphericalPlot') ...
       || n > 1
-    figSize = figSize .* min([1 1],[n/4, (1 + (n>4))/2]);
+    figSize = figSize .* min([1 1]./fac,0.75*[n/(1+(n>4)), (1 + (n>4))]);
   end
         
 else
