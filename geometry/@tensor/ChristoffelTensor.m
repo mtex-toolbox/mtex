@@ -15,4 +15,4 @@ function E = ChristoffelTensor(C,n)
 
 E = EinsteinSum(C,[1 -1 2 -2],n,-1,n,-2);
 
-E.opt.name = 'Cristoffel';
+E.opt.name = 'Christoffel';

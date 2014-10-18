@@ -27,7 +27,7 @@ else
     'I''m going to use the density rho=1.']);        
 end
 
-% compute CristoffelTensor
+% compute ChristoffelTensor
 E = ChristoffelTensor(C,x);
 
 % from output
