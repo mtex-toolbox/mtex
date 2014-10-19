@@ -61,7 +61,7 @@ pf = loadPoleFigure(fname,h,cs,'superposition',c)
 % more informations.
 
 figure
-plot(pf,'position',[100 100 600 300])
+plot(pf)
 
 %% SUB: Manipulate pole digure data
 %
@@ -91,8 +91,7 @@ plot(pf)
 % <PoleFigure2odf.html here>
 
 odf = calcODF(pf,'zero_range','silent')
-plotPDF(odf,h,'superposition',c,...
-  'antipodal','position',[100 100 800 300])
+plotPDF(odf,h,'superposition',c,'antipodal')
 
 
 %% SUB: Simulate pole figure data

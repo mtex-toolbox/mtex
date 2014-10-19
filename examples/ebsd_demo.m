@@ -35,7 +35,7 @@ plot(ebsd)
 %% Plot Pole Figures as Scatter Plots
 
 h = [Miller(1,0,0,CS{2}),Miller(1,1,0,CS{2}),Miller(1,1,1,CS{2})];
-close; figure('position',[100,100,600,300])
+
 plotPDF(ebsd('Fe').orientations,h,'points',500,'antipodal')
 
 %% Kernel Density Estimation
@@ -51,14 +51,12 @@ odf2 = calcODF(ebsd('Fe').orientations,'halfwidth',5*degree)
 
 %% Plot pole figures
 
-close all;figure('position',[160   389   632   216])
 plotPDF(odf1,h,'antipodal')
-figure('position',[160   389   632   216])
+figure
 plotPDF(odf2,h,'antipodal')
 
 %% Plot ODF
 
-close;figure('position',[46   300   702   300]);
 plotODF(odf2,'sections',9,'resolution',2*degree,...
   'FontSize',10,'silent')
 

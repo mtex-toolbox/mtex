@@ -9,7 +9,9 @@ end
 
 clear
 close all
-plotx2east
+setMTEXpref('FontSize',12)
+setMTEXpref('figSize',0.4)
+
 
 %%
 
@@ -33,7 +35,7 @@ mtexFunctionFiles = [...
   DocFile( fullfile(mtex_path,'geometry')) ...
   DocFile( fullfile(mtex_path,'tools')) ];
 
-mtexFunctionFiles = exclude(mtexFunctionFiles,'Patala');
+%mtexFunctionFiles = exclude(mtexFunctionFiles,'Patala');
 
 mtexExampleFiles = ...
   DocFile( getFiles(fullfile(mtex_path,'examples'),'*.m',false));

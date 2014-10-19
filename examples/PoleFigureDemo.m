@@ -27,7 +27,6 @@ c = {1,[0.52 ,1.23],1};
 % import data
 pf = loadPoleFigure(fname,h,CS,SS,'interface','dubna','superposition',c);
 
-close;figure('position',[100 100 900 300])
 plot(pf)
 colorbar
 
@@ -108,7 +107,7 @@ calcError(pf_SantaFe,rec_ng)
 %%
 % *Difference plot*
 
-plotDiff(pf_SantaFe,rec,'position',[100 100 900 300])
+plotDiff(pf_SantaFe,rec)
 
 
 %%

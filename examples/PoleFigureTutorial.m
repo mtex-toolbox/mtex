@@ -27,7 +27,6 @@ pf = loadPoleFigure(fname,h,cs,'superposition',c,...
 
 %% Plot pole figures
 
-close;figure('position',[359 450 749 249])
 plot(pf)
 
 %% Estimate an ODF

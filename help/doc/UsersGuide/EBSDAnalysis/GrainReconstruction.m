@@ -289,13 +289,13 @@ plot(ebsd,oM.orientation2color(ebsd.orientations))
 grains_high = calcGrains(ebsd,'angle',1*degree);
 grains_low  = calcGrains(ebsd,'angle',0.5*degree);
 
-figure('position',[100 100 800 350])
+figure
 plot(ebsd,oM.orientation2color(ebsd.orientations))
 hold on
 plot(grains_high.boundary)
 hold off
 
-figure('position',[500 100 800 350])
+figure
 plot(ebsd,oM.orientation2color(ebsd.orientations))
 hold on
 plot(grains_low.boundary)

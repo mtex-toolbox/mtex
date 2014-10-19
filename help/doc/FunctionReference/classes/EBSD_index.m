@@ -46,7 +46,6 @@ ebsd = loadEBSD(fname,'CS',cs,...
 % It assigns a color to each orientation and plots a map of these colors.
 % There are several options to specify the way the colors are assigned.
 
-figure('position',[100 100 600 300])
 oM = ipdfHSVOrientationMapping(ebsd);
 plot(ebsd,oM.orientation2color(ebsd.orientations))
 

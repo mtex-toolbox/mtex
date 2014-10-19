@@ -30,7 +30,6 @@ plotx2east
 % First we make a spatial plot of the orientations of the crystals of phase
 % 1
 
-figure('position',[100 100 800 350])
 plot(ebsd('Fe'))
 
 %%
@@ -51,7 +50,6 @@ grains = calcGrains(ebsd)
 %%
 % and plot them into our orientation plot
 
-figure('position',[100 100 800 350])
 plot(ebsd('Fe'))
 hold on
 plot(grains.boundary,'linewidth',1.5)
@@ -59,7 +57,6 @@ plot(grains.boundary,'linewidth',1.5)
 %%
 % One can also plot all the grains together with their mean orientation
 
-figure('position',[100 100 800 350])
 plot(grains('Fe'))
 
 %% ODF estimation
@@ -78,6 +75,6 @@ odf = calcODF(ebsd('Fe').orientations,'kernel',psi)
 % is available.
 
 plotPDF(odf,[Miller(1,0,0,CS{2}),Miller(1,1,0,CS{2}),Miller(1,1,1,CS{2})],...
-  'antipodal','silent','position',[100 100 600 200])
+  'antipodal','silent')
 
 
