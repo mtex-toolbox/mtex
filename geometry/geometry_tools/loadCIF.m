@@ -25,7 +25,12 @@ if ~iscell(fname)
   
   % load file
   if ~exist(fullfile(pathstr,[name ext]),'file')
-    fname = copyonline(fname);
+    try
+      fname = copyonline(fname);
+    catch %#ok<CTCH>
+      dir(fullfile(mtexCifPath,'*.cif'))
+      error('I could not find the corresponding cif. Above you see the list of localy avaible cif files.')
+    end
   else
     fname = fullfile(pathstr,[name ext]);
   end
