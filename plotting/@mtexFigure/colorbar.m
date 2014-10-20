@@ -14,12 +14,23 @@ if isempty(mtexFig.cBarAxis) % create some new colorbars
     
   end
   
+  % adjust width of the colorbars
+  pos = ensurecell(get(mtexFig.cBarAxis,'position'));
+  for i = 1:numel(pos)
+    if pos{i}(3)<pos{i}(4)
+      pos{i}(3)=getMTEXpref('FontSize');
+    else
+      pos{i}(4)=getMTEXpref('FontSize');
+    end
+    set(mtexFig.cBarAxis(i),'position',pos{i});
+  end
+  
 else % remove old colorbars
   delete(mtexFig.cBarAxis);
   mtexFig.cBarAxis = [];
 end
 
-mtexFig.drawNow(varargin{:});
+mtexFig.drawNow('keepAxisSize',varargin{:});
 
   function h = addColorbar(peer,varargin)
     
@@ -32,14 +43,7 @@ mtexFig.drawNow(varargin{:});
     fs = getMTEXpref('FontSize');  
     h = optiondraw(buildinColorbar('peer',peer,'eastoutside','units','pixel',...
       'FontSize',fs),varargin{:});
-    
-    pos = get(h,'position');
-    if pos(3)<pos(4)
-      pos(3)=getMTEXpref('FontSize');
-    else
-      pos(4)=getMTEXpref('FontSize');
-    end
-    set(h,'position',pos);
+        
   end  
 
   function eq = equalScale

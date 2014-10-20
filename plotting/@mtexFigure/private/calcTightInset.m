@@ -1,8 +1,9 @@
-function tightInset = calcTightInset(mtexFig)
+function [tightInset,figTightInset] = calcTightInset(mtexFig)
 % determine tight inset for each axis
   
 
 tightInset = zeros(1,4);
+figTightInset = mtexFig.outerPlotSpacing * [1,1,1,1];
 
 %return
 
@@ -70,7 +71,7 @@ end
    if numel(mtexFig.cBarAxis) == numel(mtexFig.children)
      tightInset = tightInset + [0,pos(2),pos(1),0];
    else
-        
+     figTightInset = figTightInset + [0,pos(2),pos(1),0];
    end
  end
 end

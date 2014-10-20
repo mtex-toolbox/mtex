@@ -27,8 +27,7 @@ classdef mtexFigure < handle
     parent            % the parent figure    
     children          % the axes
     cBarAxis          % the colorbar axes
-    outerPlotSpacing  % 
-    innerPlotSpacing  %  
+    innerPlotSpacing  %
     keepAspectRatio   % 
     nrows = 1         % number of rows
     ncols = 1         % number of columns
@@ -37,6 +36,7 @@ classdef mtexFigure < handle
     cbx = 0           % colorbar width
     cby = 0           % colorbar height
     tightInset = [0,0,0,0] % is added to axisSize
+    figTightInset = [10,10,10,10] % is added to figSize
   end
   
   properties (Dependent = true)        
@@ -45,6 +45,7 @@ classdef mtexFigure < handle
     axesWidth
     axesHeight
     currentAxis
+    outerPlotSpacing  % 
   end
    
   methods    
@@ -156,13 +157,20 @@ classdef mtexFigure < handle
       end      
     end
     
+    function w = get.outerPlotSpacing(mtexFig)  
+      w = min(mtexFig.figTightInset);
+    end
+    
+    function set.outerPlotSpacing(mtexFig,w)  
+      mtexFig.figTightInset = w * [1,1,1,1];
+    end
     
     function aw = get.axesWidth(mtexFig)
       % the width of all axes is the number of columns times the width of
       % each single axis + inner and outer spacing
       
       aw = mtexFig.ncols * (mtexFig.axisWidth + sum(mtexFig.tightInset([1,3])))...
-        + 2*mtexFig.outerPlotSpacing + ...
+        + sum(mtexFig.figTightInset([1,3])) + ...
         (mtexFig.ncols-1) * mtexFig.innerPlotSpacing;
     end
     
@@ -171,7 +179,7 @@ classdef mtexFigure < handle
       % each single axis + inner and outer spacing
       
       ah = mtexFig.nrows * (mtexFig.axisHeight + sum(mtexFig.tightInset([2,4])))...
-        + 2*mtexFig.outerPlotSpacing + ...
+        + sum(mtexFig.figTightInset([2,4])) + ...
         (mtexFig.nrows-1) * mtexFig.innerPlotSpacing;
     end
 

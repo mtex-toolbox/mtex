@@ -9,10 +9,12 @@ mtexFig.children = flipud(findobj(mtexFig.parent,'type','axes',...
   '-not','tag','Colorbar','-and','-not','tag','legend'));
 
 % this seems to be necesarry to get tight inset right
-updateLayout(mtexFig);
+if ~check_option(varargin,'keepAxisSize')
+  updateLayout(mtexFig);
+end
 
 % compute surounding box of each axis in pixel
-mtexFig.tightInset = calcTightInset(mtexFig);
+[mtexFig.tightInset,mtexFig.figTightInset] = calcTightInset(mtexFig);
 
 % determine prelimary figure size
 if check_option(varargin,'position')
@@ -46,7 +48,13 @@ elseif check_option(varargin,'figSize')
       || n > 1
     figSize = figSize .* min([1 1]./fac,0.75*[n/(1+(n>4)), (1 + (n>4))]);
   end
-        
+ 
+  % try to compensate tight inset
+  figSize(1) = figSize(1) + sum(mtexFig.figTightInset([1,3])) + ...
+    mtexFig.ncols * sum(mtexFig.tightInset([1,3]));
+  figSize(2) = figSize(2) + sum(mtexFig.figTightInset([2,4])) + ...
+    mtexFig.nrows * sum(mtexFig.tightInset([2,4]));
+    
 else
 
   position = get(mtexFig.parent,'Position'); 
@@ -54,11 +62,15 @@ else
   
 end
 
-figSize = figSize - 2*mtexFig.outerPlotSpacing;
+figSize = figSize - sum(reshape(mtexFig.figTightInset,2,2),2).';
 
 % compute layout
-[mtexFig.ncols,mtexFig.nrows] = calcPartition(mtexFig,figSize);
-[mtexFig.axisWidth,mtexFig.axisHeight] = calcAxesSize(mtexFig,figSize);
+if ~check_option(varargin,'keepAxisSize')
+  [mtexFig.ncols,mtexFig.nrows] = calcPartition(mtexFig,figSize);
+  [mtexFig.axisWidth,mtexFig.axisHeight] = calcAxesSize(mtexFig,figSize);
+else
+  screenExtend = get(0,'MonitorPositions');
+end
 
 % resize figure
 if exist('screenExtend','var')
