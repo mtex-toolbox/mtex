@@ -23,7 +23,6 @@ pf = calcPoleFigure(SantaFe,h,r);
 pf = noisepf(pf,100);
 
 % plot them
-close; figure('position',[100,100,800,300])
 plot(pf,'MarkerSize',5)
 mtexColorMap LaboTeX
 
@@ -40,7 +39,6 @@ rec2 = calcODF(pf,'NoGhostCorrection')
 calcError(rec,SantaFe)
 
 % difference plot between meassured and recalculated pole figures
-close; figure('position',[100,100,800,300])
 plotDiff(pf,rec)
  
 %% Plot estimated pole figures
@@ -49,7 +47,6 @@ plotPDF(rec,pf.h,'antipodal')
 
 %% Plot estimated ODF (Ghost Corrected)
 
-close; figure('position',[46 171 752 486]);
 plot(rec,'alpha','sections',18,'resolution',5*degree,...
   'projection','plain','contourf','FontSize',10,'silent')
 mtexColorMap white2black
@@ -57,7 +54,6 @@ mtexColorMap white2black
 
 %% Plot odf
 
-close; figure('position',[46 171 752 486]);
 plot(SantaFe,'alpha','sections',18,...
   'projection','plain','contourf','FontSize',10,'silent')
 mtexColorMap white2black

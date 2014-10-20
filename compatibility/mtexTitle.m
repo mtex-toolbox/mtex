@@ -19,7 +19,7 @@ s = ['\bf{' regexprep(s,'\$([^\$]*)\$','\$\\mathbf{$1}\$') '}'];
 s = strrep(s,'$$','');
 s = strrep(s,'%','\%');
 [varargout{1:nargout}] = title(ax,s,...
-  'interpreter','LaTeX','FontSize',round(getMTEXpref('FontSize')*1.2),varargin{:});
+  'interpreter','LaTeX','FontSize',round(getMTEXpref('FontSize')*1.1),varargin{:});
 
 end
 

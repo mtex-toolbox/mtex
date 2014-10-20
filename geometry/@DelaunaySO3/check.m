@@ -1,4 +1,7 @@
+function check
+% ignore this
 
+%%
 
 cs = crystalSymmetry('-3m',[1.4 1.4 1.5])
 ori = equispacedSO3Grid(cs,specimenSymmetry,'resolution',20*degree)

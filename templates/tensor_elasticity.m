@@ -20,7 +20,7 @@ linearCompressibility(E,x)
 
 plot(E,'PlotType','linearCompressibility')
 
-%% Cristoffel Tensor
+%% Christoffel Tensor
 
 C = ChristoffelTensor(E,x)
 

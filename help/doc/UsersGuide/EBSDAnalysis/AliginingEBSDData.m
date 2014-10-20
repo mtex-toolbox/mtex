@@ -11,9 +11,9 @@
 % First, let us import some example <mtexdata.html EBSD data> and plot
 % the raw data
 
-plotx2east; plotzOutOfPlane
 mtexdata forsterite;
-figure('position',[100 100 800 400])
+
+plotx2east; plotzOutOfPlane
 plot(ebsd)
 
 %%
@@ -32,7 +32,6 @@ plotPDF(ebsd('forsterite').orientations,Miller(1,2,3,CS),'contourf')
 % need to do
 
 plotzIntoPlane;
-figure('position',[100 100 800 400])
 plot(ebsd)
 
 %%
@@ -64,8 +63,6 @@ rot = rotation('axis',zvector,'angle',5*degree);
 ebsd_rot = rotate(ebsd,rot);
 
 % plot the rotated EBSD data
-close
-figure('position',[100 100 800 400])
 plot(ebsd_rot)
 
 %%
@@ -91,8 +88,6 @@ plotPDF(ebsd_rot('fo').orientations,Miller(1,2,3,CS),'contourf')
 ebsd_rot = rotate(ebsd,rot,'keepEuler');
 
 % plot the rotated EBSD data
-close
-figure('position',[100 100 800 400])
 plot(ebsd_rot)
 
 %%

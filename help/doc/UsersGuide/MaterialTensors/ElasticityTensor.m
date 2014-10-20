@@ -4,7 +4,7 @@
 %%
 % MTEX offers a very simple way to compute elasticity properties of
 % materials. This includes Young's modulus, linear compressibility,
-% Cristoffel tensor, and elastic wave velocities.
+% Christoffel tensor, and elastic wave velocities.
 %
 %% Open in Editor
 %

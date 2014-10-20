@@ -32,7 +32,6 @@ pf = loadPoleFigure(fname,h,cs,'superposition',c)
 
 %% plot pole figures
 
-figure('position',[359 450 749 249])
 plot(pf)
 
 %% Correct pole figures
@@ -76,7 +75,6 @@ plotIPDF(odf,vector3d(1,1,2))
 
 %% plot recalculated ODF
 
-close all;figure('position',[15 111 920 508])
 plot(odf,'sections',18,'silent','sigma')
 
 %% rotate ODF back

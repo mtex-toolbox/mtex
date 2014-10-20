@@ -30,6 +30,5 @@ S2G = equispacedS2Grid('points',100,'MAXTHETA',75*degree);  % specifiy maximum t
 
 %% SUB: Plots
 
-set(gcf,'position',[100,100,200,200])
 plot(equispacedS2Grid('points',100,'antipodal'))  % plot grid of nodes
 

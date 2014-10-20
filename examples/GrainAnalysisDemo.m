@@ -22,7 +22,6 @@ plotx2east
 % Phase map of multi-phase rock specimen with Andesina (blue), Quartz (red),
 % Biotite (green) and Orthoclase (yellow)
 
-figure('position',[100 100  750 300]);
 plot(ebsd)
 
 %% Restrict to the region of interest (RoI)
@@ -46,7 +45,6 @@ grains = calcGrains(ebsd_region,'angle',15*degree)
 % (RoI) Detailed phase map with measurement locations and reconstructed grain
 % boundaries.
 
-figure('position',[100 100  750 300]);
 hold on
 plot(ebsd_region)
 hold on
@@ -58,7 +56,6 @@ hold off
 % (RoI) Individual orientation measurements of quartz together with the grain
 % boundaries.
 
-figure('position',[100 100 750 300]);
 plot(grains({'Andesina','Biotite','Orthoclase'}),'FaceAlpha',0.2)
 hold on
 plot(grains.boundary,'color','black');
@@ -80,7 +77,6 @@ plot(oM,'Position',[825 100 300 300])
 % their mean orientation while the remaining grains are colored according to
 % there phase.
 
-figure('position',[100 100  750 300]);
 plot(grains({'Andesina','Biotite','Orthoclase'}),'FaceAlpha',0.2)
 hold on
 plot(grains('Quartz'))
@@ -102,12 +98,8 @@ hist(angle./degree)
 
 %%
 
-
-figure('position',[100 100  750 300]);
 plot(grains,'FaceAlpha',0.4)
 hold on
 
 plot(AOboundary(angle>160*degree),'linewidth',2,'linecolor','red')
 hold off
-
-

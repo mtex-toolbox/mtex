@@ -52,9 +52,9 @@ if isNew || ~isappdata(mtexFig.children(1),'sphericalPlot')
     % display upper/lower if needed
     if numel(proj)>1          
       if ~proj(i).sR.isUpper
-        tr = {'TR','lower'};
+        tr = {'TL','lower'};
       elseif ~proj(i).sR.isLower
-        tr = {'TR','upper'};
+        tr = {'TL','upper'};
       else
         tr = {};
       end

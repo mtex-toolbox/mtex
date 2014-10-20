@@ -51,19 +51,19 @@ odf = unimodalODF(o(:),CS,psi,'weights',c)
 %%
 %
 
-plotPDF(odf,h,'antipodal','position',[100 100 900 300],'contourf',8,'silent')
+plotPDF(odf,h,'antipodal','contourf',8,'silent')
 
 %% 
 % 'simulated' rotation of odf (rodf)
 
 rodf = rotate(odf,rotation('euler',5*degree,2*degree,4*degree));
-figure, plotPDF(rodf,h,'antipodal','position',[100 100 900 300],'contourf',8,'silent');
+figure, plotPDF(rodf,h,'antipodal','contourf',8,'silent');
 
 %% 
 % back rotatated odf (bodf)
 
 [bodf,rr] = centerSpecimen(rodf,xvector)
-figure, plotPDF(bodf,h,'antipodal','position',[100 100 900 300],'contourf',8,'silent')
+figure, plotPDF(bodf,h,'antipodal','contourf',8,'silent')
 
 %% 
 % error analysis 
@@ -94,20 +94,21 @@ pf = loadPoleFigure(fname,h,CS,symmetry,'interface','aachen_exp');
 %%
 %
 
-plot(pf,'position',[100 100 900 250],'silent')
+plot(pf,'silent')
 
 %% 
 % calc an odf for these data
 
 odf = calcODF(pf)
-figure, plotPDF(odf,h,'antipodal','position',[100 100 900 250],'silent')
+
+plotPDF(odf,h,'antipodal','silent')
 
 %%
 % sometimes its better to start with an other center
 
 [rodf,r] = centerSpecimen(odf,yvector);
 rodf = rotate(rodf,axis2quat(zvector,90*degree));
-figure, plotPDF(rodf,h,'antipodal','position',[100 100 900 250],'silent');
+figure, plotPDF(rodf,h,'antipodal','silent');
 
 Euler(r)
 

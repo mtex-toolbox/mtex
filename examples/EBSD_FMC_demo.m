@@ -20,7 +20,6 @@ oM = ipdfHSVOrientationMapping(ebsd);
 oM.inversePoleFigureDirection = mean(ebsd.orientations) * oM.whiteCenter;
 oM.colorStretching = 3
 
-figure('position',[100 100 350 350])
 plot(ebsd,oM.orientation2color(ebsd.orientations))
 
 %% Segment with thresholding
@@ -45,7 +44,6 @@ grains_FMC = calcGrains(ebsd,'FMC',3.5)
 
 %%
 % plot the grains
-figure('position',[100 100 350 350])
 plot(ebsd,oM.orientation2color(ebsd.orientations))
 hold on
 plot(grains_FMC.boundary,'linewidth',1.5)

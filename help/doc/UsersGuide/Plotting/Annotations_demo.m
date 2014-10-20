@@ -41,7 +41,6 @@ colorbar           % delete colorbar
 CLim(gcm,'equal'); % set equal color range to all plots
 colorbar           % create a new colorbar
 
-
 %% Adding Specimen and Crystal Directions
 %
 % Pole figures and inverse pole figures are much more readable if they
@@ -75,6 +74,8 @@ annotate(mod1,...
 annotate(mod2,...
     'marker','s','MarkerSize',6,'MarkerFaceColor','g',...
     'label','B')
+  
+drawNow(gcm,'figSize','normal')  
 
 %%
 % as well as in ODF plots
@@ -85,7 +86,7 @@ annotate(mod1,...
     'MarkerSize',15,'MarkerEdgeColor','r','MarkerFaceColor','none')
 
 annotate(mod2,...
-  'MarkerSize',15,'MarkerEdgeColor','g','MarkerFaceColor','none')
+  'MarkerSize',15,'MarkerEdgeColor','b','MarkerFaceColor','none')
   
 %%
 % or orientation scatter plots
