@@ -34,36 +34,57 @@ classdef phaseList
         
       pL.phaseMap(isnan(pL.phaseMap)) = 0;
       
-      % TODO!!
-      % if all phases are zero replace them by 1
-      %if all(ebsd.phase == 0), ebsd.phase = ones(length(ebsd),1);end
-
       pL.CSList = ensurecell(CSList);
       
       % check number of symmetries and phases coincides
       if numel(pL.phaseMap)>1 && length(pL.CSList) == 1
-          
+        
+        % if only one symmetry was specified 
+        % apply this symmetry to all phases except a zero phase
         pL.CSList = repmat(pL.CSList,numel(pL.phaseMap),1);
           
         if pL.phaseMap(1) <= 0, pL.CSList{1} = 'notIndexed'; end
+
+      elseif numel(pL.phaseMap) > length(pL.CSList)
+        
+        % if to few symmetries have been specified
+        % prepend as many  not indexed phases as required
+        pL.CSList = [repcell('notIndexed',1,numel(pL.phaseMap)-length(pL.CSList)),pL.CSList];
+        
+      elseif numel(pL.phaseMap) < length(pL.CSList) 
+        
+        % if more symmetries have been specified then phases are present in
+        % the data 
+        
+        first = isa(pL.CSList{1},'symmetry');
+        
+        if ~first + max(pL.phaseMap) <= numel(pL.CSList)
           
-      elseif max([0;pL.phaseMap(:)]) < length(pL.CSList)
+          pL.phaseId = ~first + pL.phaseMap(pL.phaseId);
+          pL.phaseMap = first + (0:numel(pL.CSList)-1);
           
-        pL.CSList = pL.CSList(pL.phaseMap+1);
+        else
+        
+          % no zero phase - maybe everything was indexed
+          if pL.phaseMap(1) > 0 && isa(pL.CSList{1},'symmetry');
+            pL.phaseId = pL.phaseId + 1;
+            pL.phaseMap = [0;pL.phaseMap];
+          end
           
-      elseif sum(pL.phaseMap>0) == numel(pL.CSList)
-          
-        pL.CSList(pL.phaseMap>0) = pL.CSList;
-        pL.CSList(pL.phaseMap<=0) = repcell('notIndexed',1,sum(pL.phaseMap<=0));
-          
-      elseif numel(pL.phaseMap) ~= length(pL.CSList)
-        error('symmetry mismatch')
+          % append some phase numbers for the not existing phases
+          pL.phaseMap = [pL.phaseMap;max(pL.phaseMap) + (1:length(pL.CSList)-numel(pL.phaseMap))];
+        end
       end
 
       % ensure that there is at least one notIndexed phase
+      % by appending it
       if all(cellfun(@(x) isa(x,'symmetry'),pL.CSList))
-        pL.CSList = [pL.CSList,{'not indexed'}];
-        pL.phaseMap = [pL.phaseMap;0];
+        pL.CSList = [pL.CSList(:);{'not indexed'}];
+        if  ismember(0,pL.phaseMap)
+          pL.phaseMap = [pL.phaseMap;-1];
+        else
+          pL.phaseMap = [pL.phaseMap;0];
+        end
       end
       
       % apply colors

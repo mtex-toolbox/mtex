@@ -35,40 +35,31 @@ try
   nphase = sscanf(hl{phase_line},'%s\t%u');
   nphase = nphase(end);
   
-  ss = specimenSymmetry;
-  
   % Crystallogaphic Parameters of all phases
   Laue = {'-1','2/m','mmm','4/m','4/mmm',...
     '-3','-3m','6/m','6/mmm','m3','m3m'};
   
-  % phases to be ignored
-  ignorePhase = get_option(varargin,'ignorePhase',[]);
-  
-  for K = 0:nphase
+  cs{1} = 'notIndexed';
+  for K = 1:nphase
     
-    if any(K==ignorePhase) || K == 0,
-      cs{K+1} = 'notIndexed';
-    else
-      
-      % load phase
-      mpara = regexpsplit(hl{phase_line+K},'\t');
-      
-      
-      abc = sscanf( strrep(mpara{1},',','.'),'%f;%f;%f'); % Lattice ABC
-      abg = sscanf( mpara{2},'%f;%f;%f'); % Lattice alpha beta gamma
-      
-      % Phase name
-      mineral = mpara{3};
-      
-      % Laue group (class) number
-      laue = Laue{sscanf(mpara{4},'%u')};
-      cs{K+1} = crystalSymmetry(laue,abc(:)',abg(:)','mineral',mineral); %#ok<AGROW>
-    end
+    % load phase
+    mpara = regexpsplit(hl{phase_line+K},'\t');
+    
+    
+    abc = sscanf( strrep(mpara{1},',','.'),'%f;%f;%f'); % Lattice ABC
+    abg = sscanf( mpara{2},'%f;%f;%f'); % Lattice alpha beta gamma
+    
+    % Phase name
+    mineral = mpara{3};
+    
+    % Laue group (class) number
+    laue = Laue{sscanf(mpara{4},'%u')};
+    cs{K+1} = crystalSymmetry(laue,abc(:)',abg(:)','mineral',mineral); %#ok<AGROW>
   end
   
-  ebsd = loadEBSD_generic(fname,'cs',cs,'ss',ss,'bunge','degree',...
+  ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','degree',...
     'ColumnNames',{'Phase' 'X' 'Y' 'Bands' 'Error' 'Euler 1' 'Euler 2' 'Euler 3' 'MAD' 'BC' 'BS'}, ...
-    'Columns',1:11,'phaseMap',0:nphase,'IgnorePhase',ignorePhase,varargin{:});
+    'Columns',1:11,'phaseMap',0:nphase,varargin{:});
   
   
   % x||a*, z||c

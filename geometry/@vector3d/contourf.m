@@ -14,6 +14,8 @@ function h = contourf( v, data, varargin )
 % See also
 % vector3d/plot vector3d/contour
 
+if nargin == 1, data = []; end
+
 h = v.smooth(data,'contours',10,'LineStyle','none','fill','on',varargin{:});
 
 h = [h,v.smooth(data,'contours',10,'LineStyle','-','LineColor','k','fill','off','hold',varargin{:})];
