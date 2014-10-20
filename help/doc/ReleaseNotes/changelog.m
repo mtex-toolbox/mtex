@@ -1,15 +1,15 @@
 %% MTEX Changelog
 %
-%% MTEX 4.0.0 - 08/2014
+%% MTEX 4.0.0 - 10/2014
 % 
 % MTEX 4 is a complete rewrite of the internal class system which was
 % required to keep MTEX compatible with upcomming Matlab releases. Note
 % that MTEX 3.5 will not work on Matlab versions later then 2014a. As a
 % positive side effect the syntax has been made more consisent and
 % powerfull. On the bad side MTEX 3.5. code will need some
-% adaption to run on MTEX 4. There are three general principles to consider
+% adaption to run on MTEX 4. There are two general principles to consider
 %
-% *Use dot indexing istead of get and set methods*
+% *Use dot indexing instead of get and set methods*
 %
 % The syntax
 %
@@ -84,14 +84,14 @@
 %   gB = grains.boundary('Forsterite','Enstatite')
 %   plot(gB,gB.misorientation.angle)   
 %
-% Colorization according to phase or phase transition is the new default 
-% when calling without data argument, i.e., the following results in a 
-% phase plot
+% Colorization according to phase or phase transition is the new default
+% when calling |plot| without data argument, i.e., the following results in
+% a phase plot
 %
 %   plot(ebsd)
 %
-% In order to colorize according to orientations one has first to define a
-% orientationMapping by
+% In order to colorize ebsd data according to orientations one has first to
+% define an orientationMapping by
 % 
 %   oM = ipdfHSVOrientationMapping(ebsd('Forsterite'))
 %
@@ -111,11 +111,12 @@
 % As a consequence, all orientation related functionalities of EBSD data
 % have been moved to |orientations|, i.e., you can not do anymore
 %
-%   plotpdf(ebsd('Fo'),Miller(1,0,0))
+%   plotpdf(ebsd('Fo'),Miller(1,0,0,CS))
 %   calcODF(ebsd('Fo'))
 %   volume((ebsd('Fo'))
 %
-% But you have to explicitely state that you operate on the orientations, i.e.
+% But instead you have to explicitely state that you operate on the
+% orientations, i.e.
 %
 %   plotpdf(ebsd('Fo').orientations,Miller(1,0,0,ebsd('Fo').CS))
 %   calcODF(ebsd('Fo').orientations)
@@ -125,6 +126,27 @@
 % to grain mean orientations |grains.meanOrientation|, ebsd misorientation 
 % to mean |mean |ebsd.mis2mean| or boundary misorientations 
 % |grains.boundary.misorientation|
+%
+% *Different syntax for reconstructing grains from EBSD data*
+%
+% In MTEX 3.5 the command
+%
+%   grains = calcGrains(ebsd)
+%
+% duplicates the ebsd data into the grain variable allowing to acces the
+% EBSD data belonging to a specific grain by
+%
+%   get(grains(1),'EBSD')
+%
+% In MTEX 4.0 the command |calcGrains| returns as an additional output the
+% a list of grainIds that is associated to the EBSD data. When storing
+% these grainIds directly inside the EBSD data, i.e., by
+%
+%   [grains,ebsd.grainId] calcGrains(ebsd)
+%
+% one can access the EBSD data belonging to a specific grain by the command
+%
+%   ebsd(grains(1))
 %
 % *MTEX 4.0 distingueshes between crystal and specimen symmetry*
 %
@@ -181,12 +203,11 @@
 % In MTEX 4.0 it is for the first time possible to calculate with
 % reflections and inversions. As a consequence all 32 point groups are
 % supported. This is particularly important when working with
-% piezoellectric tensors and symmetries like 4mm. Moreover, 
-% MTEX distingueshes between the point groups 112, 121, 112 up to -3m1 and
-% -31m. 
+% piezoellectric tensors and symmetries like 4mm. Moreover, MTEX
+% distingueshes between the point groups 112, 121, 112 up to -3m1 and -31m.
 %
 % Care should be taken, when using non Laue groups for pole figure or EBSD
-% data. 
+% data.
 %
 % *Support for three digit notation for Miller indices of trigonal
 % symmetries*
@@ -205,29 +226,25 @@
 % and offers much more powerfull options to customize the plots with titles,
 % legends, etc. 
 %
-% *density is now an optional property of ellastic tensors*
-%
-% TODO: write about it
-%
 % *Functionality that has been (temporarily) removed*
 %
 % This can be seen as a todo list.
 %
 % * 3d EBSD data handling + 3d grains
-% * some grain functions like aspectRation, equivalent diamter
+% * some grain functions like aspectRatio, equivalent diamter
 % * logarithmic scaling of plots
 % * 3d plot of ODFs
 % * some of the orientation color maps
-% * fibreVolume
+% * fibreVolume in the presence of specimen symmetry
 % * Dirichlet kernel
-% * patala colorcoding
+% * patala colorcoding for some symmetry groups
 % * v.x = 0 
 % * misorientation analysis is not yet complete
 % * some colormaps, e.g. blue2red switched
 % * histogram of valume fractions of CSL boundaries
 % * remove id from EBSD?
 % * changing the phase of a grain should change phases in boundary
-% * KAM and GOSS
+% * KAM and GOSS may be improved
 %
 %% MTEX 3.5.0 - 12/2013
 %
@@ -615,7 +632,7 @@
 % * advanced visualization
 % * computation of avaraged tensors from EBSD data and ODFs
 % * computation of standard elasticity tensors like: Youngs modulus, linear
-% compressibility, Cristoffel tensor, elastic wave velocities
+% compressibility, Christoffel tensor, elastic wave velocities
 %
 % *Other Enhangments*
 %

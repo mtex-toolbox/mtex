@@ -12,6 +12,9 @@ close all
 setMTEXpref('FontSize',12)
 setMTEXpref('figSize',0.4)
 
+addpath(fullfile(pwd,'..','..','mtex-doc'))
+addpath(fullfile(pwd,'..','..','mtex-doc','tools'))
+
 
 %%
 

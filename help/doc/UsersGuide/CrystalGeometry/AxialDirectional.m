@@ -12,32 +12,31 @@
 % directions or as axes. The key option to distinguish between both
 % interpretations is *antipodal*.
 %
-% By default the pair of vectors
+% Consider a pair of vectors
 
 v1 = vector3d(1,1,2);
 v2 = vector3d(1,1,-2);
 
 %%
-% when plotted at the sphere
+% and plots them in a spherical projection
 
 plot([v1,v2],'label',{'v_1','v_2'})
 
 %%
-% these vectors will appear either on the upper or on the lower hemisphere. In order to treat
-% these vectors as axes, i.e. in order to assume antipodal symmetry - one
-% has to use the keyword *antipodal*.
+% These vectors will appear either on the upper or on the lower hemisphere.
+% In order to treat these vectors as axes, i.e. in order to assume
+% antipodal symmetry - one has to use the keyword *antipodal*.
 
 plot([v1,v2],'label',{'v_1','v_2'},'antipodal')
 
 %%
-% Now the direction v_2 is identified with the direction -v_2 which
+% Now the direction |v_2| is identified with the direction |-v_2| which
 % plots at the upper hemisphere.
 
 %% The Angle between Directions and Axes
 %
-% Another example, where it matters whether antipodal symmetry is assumed
-% or not is the angle between two vectors. In the absence of antipodal
-% geometry we have
+% Another example, where antipodal symmetry matters is the angle between
+% two vectors. In the absence of antipodal geometry we have
 
 angle(v1,v2) / degree
 
@@ -48,23 +47,19 @@ angle(v1,v2,'antipodal') / degree
 
 %% Antipodal Symmetry in Experimental Pole Figures
 %
-% Due to Friedel's law experimental pole figures always provide antipodal symmetry. One
-% consequence of this fact is that MTEX plots pole figure data always on
-% the upper hemisphere
+% Due to Friedel's law experimental pole figures always provide antipodal
+% symmetry. One consequence of this fact is that MTEX plots pole figure
+% data always on the upper hemisphere. Moreover if you annotate a certain
+% direction to pole figure data, it is always interpreted as an axis, i.e.
+% projected to the upper hemisphere if necessary
 
 mtexdata dubna
 
 % plot the first pole figure
 plot(pf({1}))
 
-%%
-% Moreover if you annotate a certain direction to pole figure data, it is
-% always interpreted as an axis, i.e. projected to the upper hemisphere if
-% necessary
-
-
+% annotate a axis on the souther hemisphere
 annotate(vector3d(1,0,-1),'labeled','backgroundColor','w')
-
 
 %% Antipodal Symmetry in Recalculated Pole Figures
 %
@@ -118,15 +113,31 @@ mtexdata forsterite
 
 %%
 % Now we plot these data with a colorcoding according to the inverse
-% (1,0,0) pole figure. Here no antipodal symmetry is present.
-% TODO: explain oM
+% (1,0,0) pole figure. If we use the Laue group for inverse pole figure
+% color coding we add antipodal symmetry to the inverse pole figure
 
-close all
-plot(ebsd('fo'))
+oM = ipdfHSVOrientationMapping(ebsd('fo').CS.Laue);
+
+% the colorcode
+plot(oM)
 
 %%
-% Compare to the result when antipodal symmetry is introduced.
+% Here the colorized data
 
-close all
-plot(ebsd('fo'),'antipodal')
+plot(ebsd('fo'),oM.orientation2color(ebsd('fo').orientations))
+
+
+%%
+% If we use the point group of proper rotations this antipodal symmetry is
+% not present and a larger region of the inverse pole figure is colorized
+
+oM = ipdfHSVOrientationMapping(ebsd('fo').CS.properGroup);
+
+% the colorcode
+plot(oM)
+
+%%
+% Here the colorized data
+
+plot(ebsd('fo'),oM.orientation2color(ebsd('fo').orientations))
 
