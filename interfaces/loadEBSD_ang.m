@@ -23,22 +23,14 @@ try
   hl = file2cell(fname,1000);
   
   phasePos = strmatch('# Phase',hl);
-  
-  % phases to be ignored
-  ignorePhase = get_option(varargin,'ignorePhase',[]);
-  
-  cs{1} = 'notIndexed';
-  
+        
   try
     for i = 1:length(phasePos)
       pos = phasePos(i);
       
       % load phase number
       phase = sscanf(hl{pos},'# Phase %u');
-      
-      % may be its to be ignored
-      if any(phase==ignorePhase), continue;end
-      
+           
       % load mineral data
       mineral = hl{pos+1}(15:end);
       mineral = strtrim(mineral);
@@ -62,10 +54,10 @@ try
           end
       end
       
-      cs{phase+1} = crystalSymmetry(laue,lattice(1:3)',lattice(4:6)'*degree,'mineral',mineral,options{:}); %#ok<AGROW>
-      ReplaceExpr{i} = {mineral,int2str(i)};
+      cs{phase} = crystalSymmetry(laue,lattice(1:3)',lattice(4:6)'*degree,'mineral',mineral,options{:}); %#ok<AGROW>
+      ReplaceExpr{i} = {mineral,int2str(i)}; %#ok<AGROW>
     end
-    assert(numel(cs)>1);
+    assert(numel(cs)>0);
   catch %#ok<CTCH>
     interfaceError(fname);
   end

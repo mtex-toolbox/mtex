@@ -58,7 +58,7 @@ api.clearAllData();
 
   function setInterfaceOptions(opts)
     
-    Export.interfaceOptions = opts;
+    Export.interfaceOptions = delete_option(opts,'wizard');
     
   end
 
