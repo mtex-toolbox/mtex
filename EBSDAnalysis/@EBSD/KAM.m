@@ -3,24 +3,39 @@ function kam = KAM(ebsd,varargin)
 %
 % Syntax
 %
-%   kam = KAM(ebsd,'threshold',10*degree)
-%   kam = KAM(ebsd,'secondOrder')
+%   % ignore misorientation angles > threshold
+%   kam = KAM(ebsd,'threshold',10*degree);
 %   plot(ebsd,ebsd.KAM./degree)
 %
+%   % ignore grain boundary misorientations
+%   [ebsd, ebsd.grainId] = calcGrains(ebsd)
+%   kam = KAM(ebsd); 
+%   plot(ebsd,ebsd.KAM./degree)
+%
+%   % consider also second order neigbors
+%   kam = KAM(ebsd,'order',2);
+%
 % Input
-%  grains - @grain2d
+%  ebsd - @ebsd
 %
-% Flags
-%  secondorder -  include second order neighbors
+% Options
+%  threshold - ignore misorientation angles larger then threshold
+%  order     - consider neighbors of order n
 %
+% See alo
+% grain2d.GOS
 
 % compute adjacent measurements
 [~,~,I_FD] = spatialDecomposition([ebsd.prop.x(:), ebsd.prop.y(:)],ebsd.unitCell,'unitCell');
 A_D = I_FD.' * I_FD;
 
-if check_option(varargin,{'second','secondorder'})
-  A_D = A_D + A_D*A_D;
+n = get_option(varargin,'order',1);
+
+A_D1 = A_D;
+for i = 1:n  
+  A_D = A_D + A_D*A_D1 + A_D1*A_D;
 end
+clear A_D1
 
 % extract adjacent pairs
 [Dl, Dr] = find(A_D);
@@ -46,8 +61,17 @@ for p=1:numel(ebsd.phaseMap)
   end
 end
 
+% decide which orientations to consider
+if isfield(ebsd.prop,'grainId') && ~check_option(varargin,'threshold')  
+  % ignore grain boundaries
+  ind = ebsd.prop.grainId(Dl) == ebsd.prop.grainId(Dr);
+else
+  % ignore also internal grain boundaries
+  ind = omega < get_option(varargin,'threshold',10*degree);
+end
+
+
 % compute kernel average misorientation
-ind = omega < get_option(varargin,'threshold',10*degree);
 kam = sparse(Dl(ind),Dr(ind),omega(ind),length(ebsd),length(ebsd));
 kam = kam+kam';
 kam = full(sum(kam,2)./sum(kam>0,2));
