@@ -98,17 +98,18 @@ classdef dynProp
       
           if numel(s)>1, value =  subsasgn(subsref(dp,s(1)),s(2:end),value); end
                          
-          fn = fieldnames(dp.prop);
-                                  
           if isempty(value)
-            
+          
+            fn = fieldnames(dp.prop);
             for i = 1:numel(fn)
               dp.prop.(fn{i}) = subsasgn(dp.prop.(fn{i}),s(1),[]);
             end
             
           else
             
+            fn = fieldnames(value.prop);
             for i = 1:numel(fn)
+              if ~isfield(dp.prop,fn{i}), dp.prop.(fn{i})= zeros(size(dp));end
               dp.prop.(fn{i}) = subsasgn(dp.prop.(fn{i}),s(1),value.prop.(fn{i}));
             end
             
