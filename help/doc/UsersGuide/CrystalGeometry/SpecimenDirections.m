@@ -7,60 +7,82 @@
 %
 %%
 % Specimen directions are three dimensional vectors in the Euclidean space
-% represented by coordinates with respect to an external specimen coordinate
-% system x, y, z. Im MTEX, specimen directions are represented by variables
-% of the class <vector3d_index.html *vector3d*>.
+% represented by coordinates with respect to an external specimen
+% coordinate system X, Y, Z. In MTEX, specimen directions are represented
+% by variables of the class <vector3d_index.html *vector3d*>.
 %
-%% Defining Specimen Directions
+%% Cartesian Coordinates
 %
 % The standard way to define specimen directions is by its coordinates. 
 
-v = vector3d(1,1,0); 
+v = vector3d(1,2,3)
 
 %%
 % This gives a single vector with coordinates (1,1,0) with respect to the
-% x, y , z coordinate system. A second way to define specimen directions
-% is by its spherical coordinates, i.e. by its polar angle and its azimuth
-% angle. This is done by the option *polar*. 
+% X, Y, Z coordinate system. Lets visualize this vector
+
+plot(v)
+annotate([xvector,yvector,zvector],'label',{'X','Y','Z'},'backgroundcolor','w')
+
+%%
+% Note that the alignment of the X, Y, Z axes is only a plotting
+% convention, which can be easily changed without changing the coordinates,
+% e.g., by setting
+
+plotx2north
+plot(v,'grid')
+annotate([xvector,yvector,zvector],'label',{'X','Y','Z'},'backgroundcolor','w')
+
+%%
+% One can easily acces the coordinates of any vector by
+
+v.x
+
+%%
+% or change it by
+
+v.x = 0
+
+
+%% Polar Coordinates
+%
+% A second way to define specimen directions is by polar coordinates, i.e.
+% by its polar angle and its azimuth angle. This is done by the option
+% *polar*.
 
 polar_angle = 60*degree;
 azimuth_angle = 45*degree;
-v = vector3d('polar',polar_angle,azimuth_angle); 
+v = vector3d('polar',polar_angle,azimuth_angle)
+
+plotx2east
+plot(v,'grid')
+annotate([xvector,yvector,zvector],'label',{'X','Y','Z'},'backgroundcolor','w')
 
 %%
-% Finally one can also define a vector as a linear combination of the
-% predefined vectors <xvector.html xvector>, <yvector.html yvector>, and
-% <zvector.html zvector>
+% Analogously as for the cartesian coordinates we can acces and change
+% polar coordinates directly by
 
-v = xvector + 2*yvector; 
+v.rho ./ degree   % the azimuth angle in degree
+v.theta ./ degree % the polar angle in degree
 
 
 %% Calculating with Specimen Directions
 %
-% As we have seen in the last example, one can calculate with specimen
-% directions as with ordinary numbers. Moreover, all basic vector operations as 
-% [[vector3d.plus.html,"+"]], [[vector3d.minus.html,"-"]], 
-% [[vector3d.times.html,"*"]], [[vector3d.dot.html,inner product]], 
-% [[vector3d.cross.html,cross product]] are implemented in MTEX. 
+% In MTEX, one can calculate with specimen directions as with ordinary
+% numbers, i.e. we can use the predifined vectors  <xvector.html xvector>,
+% <yvector.html yvector>, and <zvector.html zvector> and set
 
-u = dot(v,xvector) * yvector + 2 * cross(v,zvector);
-
-%% 
-% Using the brackets |v = [v1,v2]| two specimen directions can be concatenated. Now each
-% single vector is accessible via |v(1)| and |v(2)|.
-
-w = [v,u];
-w(1)
-w(2)
+v = xvector + 2*yvector
 
 %%
-% When calculating with concatenated specimen directions all operations are
-% performed componentwise for each specimen direction.
+% Moreover, all basic vector operations as <vector3d.plus.html "+">,
+% <vector3d.minus.html "-">, <vector3d.times.html "*">, <vector3d.dot.html
+% inner product>, <vector3d.cross.html,cross product> are implemented in
+% MTEX.
 
-w = w + v;
+u = dot(v,xvector) * yvector + 2 * cross(v,zvector)
 
 %%
-%
 % Beside the standard linear algebra operations there are also the
 % following functions available in MTEX.
 %
@@ -70,18 +92,33 @@ w = w + v;
 %  [[vector3d.norm.html,norm(v)]]      % length of the specimen directions
 %  [[vector3d.sum.html,sum(v)]]       % sum over all specimen directions in v
 %  [[vector3d.mean.html,mean(v)]]      % mean over all specimen directions in v  
-%  [[vector3d.polar.html,polar(v)]]   % conversion to spherical coordinates
+%  [[vector3d.polar.html,polar(v)]]     % conversion to spherical coordinates
 %
-% A simple example to apply the norm function is to normalize a set of
-% specimen directions
+% A simple example to apply the norm function is to normalize specimen
+% directions
 
-w = w ./ norm(w)
+v ./ norm(v)
 
-%% Plotting three dimensional vectors
-% 
-% The [[vector3d.plot.html,plot]] function allows you to visualize an 
-% arbitrary number of specimen directions in a spherical projection
 
-plot([zvector,vector3d(1,1,1),yvector-zvector],'labeled')
+%% Lists of vectors
+%
+% As any other MTEX variable you can combine several vectors to a list of
+% vectors and all bevor mentioned operators operations will work
+% elementwise on a list of vectors. See < WorkinWithLists.html Working with
+% lists> on how to manipulate lists in Matlab. 
 
- 
+%%
+% Large lists of vectors can be imported from a text file by the command
+
+v = loadVector3d('file.txt','ColumnNames',{'x','y','z'})
+
+%%
+% In order to visualize large lists of specimen directions scatter plots
+
+scatter(v)
+
+%%
+% or contour plots may be helpfull
+
+contourf(v)
+
