@@ -94,7 +94,7 @@ for i = 1:length(sec)
     
 end
 
-if isNew
+if isNew || check_option(varargin,'figSize')
   
   setappdata(gcf,'sections',sec);
   setappdata(gcf,'SectionType',sectype);
