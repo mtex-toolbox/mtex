@@ -1,4 +1,4 @@
-function [grains_merged,grains] = merge(grains, gB)
+function [grains_merged,parentId] = merge(grains, gB)
 % merge grains along certain grain boundaries
 %
 % The function merges grains where the special boundary is determined by
@@ -10,7 +10,7 @@ function [grains_merged,grains] = merge(grains, gB)
 %
 % Output
 %  grains_merged - @grain2d
-%  grains - 
+%  parentId      - a list of the same size as grains containing the ids of the merged grains
 %
 % Example:
 %
@@ -19,7 +19,7 @@ function [grains_merged,grains] = merge(grains, gB)
 %
 %   % merge all neigbouring Diopside grains
 %   gB = grains.boundary('Diopside','Diopside')
-%   [grains_m,grains] = merge(grains,gB)
+%   [grains_m,parentId] = merge(grains,gB)
 
 
 % 1. determine grainId of gB except for inner gB and gB with specimen boundary
@@ -44,14 +44,14 @@ grains_merged.id = (1:numNewGrains).';
 grains_merged.poly = cell(numNewGrains,1);
 grains_merged.phaseId = zeros(numNewGrains,1);
 grains_merged.grainSize = zeros(numNewGrains,1);
-grains_merged.meanRotation = idRotation(numNewGrains,1);
+grains_merged.prop.meanRotation = idRotation(numNewGrains,1);
 
 % 5. set new grainIds in grains.boundary
 ind = grains.boundary.grainId > 0;
 grains_merged.boundary.grainId(ind) = old2newId(grains.boundary.grainId(ind));
 
 % and in the old grains
-grains.prop.parentId = old2newId(grains.id);
+parentId = old2newId(grains.id);
 
 % 6. remove "new inner" grain boundaries 
 inner = diff(grains_merged.boundary.grainId,1,2) == 0;
@@ -62,7 +62,7 @@ newInd = old2newId(keepId);
 grains_merged.poly(newInd) = grains.poly(keepInd);
 grains_merged.phaseId(newInd) = grains.phaseId(keepInd);
 grains_merged.grainSize(newInd) = grains.grainSize(keepInd);
-grains_merged.meanRotation(newInd) = grains.meanRotation(keepInd);
+grains_merged.prop.meanRotation(newInd) = grains.prop.meanRotation(keepInd);
 
 % 8. set up merged polygons
 I_FG = grains_merged.boundary.I_FG;
@@ -82,8 +82,8 @@ grains_merged.phaseId = max(phaseId,[],2);
   
 % update meanRotation
 for i = 1:numel(newInd)
-  ind = grains.prop.parentId == newInd(i);
+  ind = parentId == newInd(i);
   cs = grains.CSList{grains_merged.phaseId(newInd(i))};
-  grains_merged.meanRotation(newInd(i)) = rotation(...
-    mean(orientation(grains.meanRotation(ind),cs),'weights',grains.grainSize(ind)));
+  grains_merged.prop.meanRotation(newInd(i)) = rotation(...
+    mean(orientation(grains.prop.meanRotation(ind),cs),'weights',grains.grainSize(ind)));
 end
