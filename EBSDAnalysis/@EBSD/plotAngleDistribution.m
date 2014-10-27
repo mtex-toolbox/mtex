@@ -60,7 +60,9 @@ for i = 1:numel(ph1)
     
 end
 
+warning('off','MATLAB:legend:PlotEmpty');
 legend(mtexFig.gca,'-DynamicLegend','Location','northwest')
+warning('on','MATLAB:legend:PlotEmpty');
 
 mtexFig.drawNow(varargin{:})
 

@@ -82,7 +82,9 @@ h = optiondraw(patch(obj),varargin{:});
 if ~check_option(varargin,'DisplayName')
   set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
 end
+warning('off','MATLAB:legend:PlotEmpty');
 legend('-DynamicLegend','location','NorthEast');
+warning('on','MATLAB:legend:PlotEmpty');
 
 axis(mP.ax,'tight'); set(mP.ax,'zlim',[0,1]);
 

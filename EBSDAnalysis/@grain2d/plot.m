@@ -83,9 +83,9 @@ hh = plot(grains.boundary,varargin{:});
 set(get(get(hh,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
 hold off
 
-warning off
+warning('off','MATLAB:legend:PlotEmpty');
 legend('-DynamicLegend','location','NorthEast');
-warning on
+warning('on','MATLAB:legend:PlotEmpty');
 
 % keep track of the extend of the graphics
 % this is needed for the zoom: TODO maybe this can be done better

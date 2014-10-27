@@ -27,6 +27,8 @@ for ip = 1:size(pairs,1)
 
 end
 
+warning('off','MATLAB:legend:PlotEmpty');
 legend(mtexFig.gca,'-DynamicLegend','Location','northwest')
+warning('on','MATLAB:legend:PlotEmpty');
 
 if nargout==0, clear h;end
