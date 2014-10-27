@@ -28,6 +28,11 @@ function [ebsd,interface,options] = loadEBSD(fname,varargin)
 % extract file names
 fname = getFileNames(fname);
 
+if nargin > 1 && (isa(varargin{1},'crystalSymmetry') || ...(
+    iscell(varargin{1}))
+  varargin = [{'CS'},varargin];
+end
+
 % determine interface 
 if check_option(varargin,'interface')
   interface = get_option(varargin,'interface');
