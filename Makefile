@@ -60,8 +60,8 @@ clean:
 
 
 # rule for making release
-RNAME = mtex-4.0.2
-RDIR = ../..
+RNAME = mtex-4.0.4
+RDIR = ../releases
 release:
 	rm -rf $(RDIR)/$(RNAME)*
 	cp -R . $(RDIR)/$(RNAME)

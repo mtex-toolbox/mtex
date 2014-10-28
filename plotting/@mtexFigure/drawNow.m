@@ -30,12 +30,14 @@ elseif check_option(varargin,'figSize')
   figSize = screenExtend(1,3:4) - [0,120]; % consider only the first monitor
 
   switch get_option(varargin,'figSize')
-    case 'large'
+    case 'huge'
       fac = 1;
+    case 'large'
+      fac = 0.8;
     case 'normal'
-      fac = 0.75;
-    case 'small'
       fac = 0.5;
+    case 'small'
+      fac = 0.35;
     case 'tiny'
       fac =  0.25;
     otherwise

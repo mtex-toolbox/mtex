@@ -82,7 +82,18 @@ classdef EBSD < phaseList & dynProp & dynOption & misorientationAnalysis
     end
         
     function ebsd = set.mis2mean(ebsd,ori)
-      ebsd.prop.mis2mean = rotation(ori);      
+      
+      if length(ori) == length(ebsd)
+        ebsd.prop.mis2mean = rotation(ori(:));
+      elseif length(ori) == nnz(ebsd.isIndexed)
+        ebsd.prop.mis2mean = idRotation(length(ebsd),1);
+        ebsd.prop.mis2mean(ebsd.isIndexed) = rotation(ori);
+      elseif length(ori) == 1
+        ebsd.prop.mis2mean = rotation(ori) .* idRotation(length(ebsd),1);
+      else
+        error('The list of mis2mean has to have the same size as the list of ebsd data.')
+      end
+      
     end
     
     function grainId = get.grainId(ebsd)
@@ -96,7 +107,16 @@ classdef EBSD < phaseList & dynProp & dynOption & misorientationAnalysis
     end
     
     function ebsd = set.grainId(ebsd,grainId)
-      ebsd.prop.grainId = grainId(:);      
+      if numel(grainId) == length(ebsd)
+        ebsd.prop.grainId = grainId(:);
+      elseif numel(grainId) == nnz(ebsd.isIndexed)
+        ebsd.prop.grainId = zeros(length(ebsd),1);
+        ebsd.prop.grainId(ebsd.isIndexed) = grainId;
+      elseif numel(grainId) == 1
+        ebsd.prop.grainId = grainId * ones(length(ebsd),1);
+      else
+        error('The list of grainId has to have the same size as the list of ebsd data.')
+      end
     end
       
     function ori = get.orientations(ebsd)

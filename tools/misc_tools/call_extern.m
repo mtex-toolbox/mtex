@@ -1,29 +1,30 @@
 function varargout = call_extern(prg,varargin)
 % execute extern program with arguments
 %
-%% Syntax
-%  varargout = call_extern(prg,variable_name,variable_value,...,flags,....)
+% Syntax
+%   varargout = call_extern(prg,variable_name,variable_value,...,flags,....)
 %
-%% Input
-% *prg - command to be executed
-% *varaiable_name - name of a variable
-% *varaiable_name - value of a variable
+% Input
+%  prg            - command to be executed
+%  varaiable_name - name of a variable
+%  varaiable_name - value of a variable
 %
-%% Flags
-% *SILENT
-% *VERBOSE
-% *EXTERN
-% *INTERN
+% Flags
+%  SILENT
+%  VERBOSE
+%  EXTERN
+%  INTERN
 %
-%% Output
+% Output
 %  varagout - list of output parameters
 %
 
-%% check input
-
+% check input
+% -----------
 if ispc, mtex_ext = '.exe';else mtex_ext = '';end
 
-prg = fullfile(mtex_path,'c','bin',getMTEXpref('architecture'),prg);
+arch = getMTEXpref('architecture');
+prg = fullfile(mtex_path,'c','bin',arch,prg);
 
 if ~exist([prg,mtex_ext],'file')
   error(['Can not find ',[prg,mtex_ext],'!']);
@@ -31,7 +32,7 @@ end
 
 mtex_tmppath = getMTEXpref('tempdir',tempdir);
 
-%% local flags
+% local flags
 inline = 0;
 verbose = 0;
 suffix = int2str(100*cputime);
@@ -39,7 +40,8 @@ suffix = int2str(100*cputime);
 name = [name,suffix];
 iname = cell(1,length(varargin)+1);
 
-%% generate parameter file
+% generate parameter file
+% -----------------------
 fid = fopen(fullfile(mtex_tmppath,[name '.txt']),'w');
 for i=1:nargin-1
 
@@ -124,7 +126,8 @@ end
 fclose(fid);
 
 
-%% run linux command
+% run external program
+% -----------------
 vdisp(verbose,['  call ',prg]);
 if isunix
   cmd = [getMTEXpref('prefix_cmd'),prg,' ',mtex_tmppath,name,...
@@ -146,11 +149,17 @@ if getMTEXpref('debugMode')
   disp('hit enter if finished')
   pause
 else
+  if strcmp(arch,'maci64')
+    env = getenv('DYLD_LIBRARY_PATH');
+    setenv('DYLD_LIBRARY_PATH', fullfile(mtex_path,'c','bin','maci64'));
+  end
   status = system(cmd,'-echo');
+  if strcmp(arch,'maci64'), setenv('DYLD_LIBRARY_PATH', env); end
   if status ~= 0, error('Error running external program:\n\n %s',cmd);end
 end
 
 % get output
+% ----------
 varargout = readdata(name,verbose,nargout);
 
 % check output
@@ -163,7 +172,7 @@ cleanup(name,verbose);
 end % function
 
 
-%% retrieve information
+% retrieve information
 function out = readdata(name,verbose,nout)
 
 mtex_tmppath = getMTEXpref('tempdir',tempdir);
@@ -171,7 +180,7 @@ for i=1:nout
   vdisp(verbose,['  read result file ',int2str(i)]);
   fdata = fopen([mtex_tmppath,name,'_res',int2str(i),'.dat'],'r');
   if fdata == -1
-    out{1} = []; %#ok<AGROW>
+    out{1} = [];
     return
   end
   out{i} = fread(fdata,'double'); %#ok<AGROW>
@@ -179,7 +188,7 @@ for i=1:nout
 end
 end
 
-%% cleanup
+% cleanup
 function cleanup(name,verbose)
 
 mtex_tmppath = getMTEXpref('tempdir',tempdir);

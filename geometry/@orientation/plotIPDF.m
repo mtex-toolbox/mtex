@@ -69,7 +69,7 @@ for ir = 1:length(r)
 
 end
 
-if isNew
+if isNew || check_option(varargin,'figSize')
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 end
 

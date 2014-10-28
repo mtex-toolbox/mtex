@@ -54,7 +54,13 @@ switch lower(type)
     
 end
 
+
+
 h = optiondraw(patch(obj,'parent',ax),varargin{:});
+
+if ~check_option(varargin,'DisplayName')
+  set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+end
 
 if nargout == 0, clear h;end
 
