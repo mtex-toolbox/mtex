@@ -78,7 +78,7 @@ classdef crystalSymmetry < symmetry
       s = s@symmetry(varargin{:});
                   
       if nargin > 1
-        if ischar(varargin{1}) && any(strcmpi(varargin{1},{'pointId','LaueId'}))
+        if ischar(varargin{1}) && any(strcmpi(varargin{1},{'pointId','LaueId','spaceId'}))
           varargin(1:2) = [];
         else
           varargin(1) = [];

@@ -22,7 +22,7 @@ for i = 1:length(subs)
     
     for k=1:numel(miner)
       phases = phases | ~cellfun('isempty',regexpi(grains.mineralList(:),['^' miner{k}])) | ...
-        strcmpi(alt_mineral,miner{k});
+        strcmpi(alt_mineral(:),miner{k});
     end
     ind = ind & phases(grains.phaseId(:));
     
