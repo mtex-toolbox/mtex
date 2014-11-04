@@ -1,6 +1,0 @@
-SpecimenDirections
-Rotations
-CrystalSymmetries
-CrystalDirections
-CrystalOrientations
-AxialDirectional

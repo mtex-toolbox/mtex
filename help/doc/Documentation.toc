@@ -1,5 +1,0 @@
-GettingStarted greenarrowicon
-UsersGuide book_mat
-FunctionReference chain
-examples demoicon
-ReleaseNotes pagesicon

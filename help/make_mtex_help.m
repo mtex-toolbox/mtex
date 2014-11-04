@@ -12,8 +12,8 @@ close all
 setMTEXpref('FontSize',12)
 setMTEXpref('figSize',0.4)
 
-addpath(fullfile(pwd,'..','..','mtex-doc'))
-addpath(fullfile(pwd,'..','..','mtex-doc','tools'))
+addpath(fullfile(pwd,'..','..','doc'))
+addpath(fullfile(pwd,'..','..','doc','tools'))
 
 
 %%
@@ -25,8 +25,6 @@ mtex_progress = 0;
 
 setMTEXpref('generatingHelpMode',true);
 set(0,'FormatSpacing','compact')
-
-c = get(0,'DefaultFigureColor');
 set(0,'DefaultFigureColor','white');
 
 
@@ -34,35 +32,31 @@ set(0,'DefaultFigureColor','white');
 %
 
 mtexFunctionFiles = [...
-  DocFile( fullfile(mtex_path,'qta')) ...
+  DocFile( fullfile(mtex_path,'EBSDAnalysis')) ...
+  DocFile( fullfile(mtex_path,'ODFAnalysis')) ...
+  DocFile( fullfile(mtex_path,'PoleFigureAnalysis')) ...
+  DocFile( fullfile(mtex_path,'plotting')) ...
   DocFile( fullfile(mtex_path,'geometry')) ...
+  DocFile( fullfile(mtex_path,'interfaces')) ...
   DocFile( fullfile(mtex_path,'tools')) ];
 
 %mtexFunctionFiles = exclude(mtexFunctionFiles,'Patala');
 
-mtexExampleFiles = ...
-  DocFile( getFiles(fullfile(mtex_path,'examples'),'*.m',false));
 mtexDocFiles = ...
-  DocFile( fullfile(mtex_path,'help','doc'));
+  DocFile( fullfile(mtex_path,'doc'));
 
-mtexHelpFiles = [mtexFunctionFiles mtexExampleFiles mtexDocFiles];
-
-mtexDocPictures = DocFile(getFiles(fullfile(mtex_path,'help','doc'),'*.png',true));
+mtexHelpFiles = [mtexFunctionFiles mtexDocFiles];
 
 mtexGeneralFiles = [DocFile(fullfile(mtex_path,'COPYING.txt')) ...
   DocFile(fullfile(mtex_path,'README.txt')) ...
   DocFile(fullfile(mtex_path,'VERSION'))];
 
 
-%%
-
-
-docPath = fullfile(mtex_path,'help','mtex');
 outputDir = fullfile(mtex_path,'help','mtex');
 tempDir = fullfile(mtex_path,'help','tmp');
 
 
-%%
+%% make productpage
 %
 
 makeToolboxXML('name','MTEX',...
@@ -70,14 +64,10 @@ makeToolboxXML('name','MTEX',...
   'versionname',getMTEXpref('version'),...
   'procuctpage','mtex_product_page.html')
 
-
-%%
-
-copy(mtexDocPictures,outputDir)
+%
 copy(mtexGeneralFiles,outputDir)
 
-%% Copy productpage
-
+% 
 productpage = DocFile(fullfile(mtex_path,'help','general','mtex_product_page.html'));
 copy(productpage,outputDir)
 
@@ -85,42 +75,16 @@ copy(productpage,outputDir)
 
 makeFunctionsReference(mtexHelpFiles,'FunctionReference','outputDir',outputDir);
 
-%% make help toc
-
+% make help toc
 makeHelpToc(mtexHelpFiles,'Documentation','FunctionMainFile','FunctionReference','outputDir',outputDir);
-%copyfile(fullfile(outputDir,'helptoc.xml'), docPath);
 
-%% Publish Function Reference
-
+% Publish Function Reference
 publish(mtexFunctionFiles,'outputDir',outputDir,'tempDir',tempDir,'evalCode',true,'force',false);
-
-%% Publish Examples Reference
-
-publish(mtexExampleFiles,'outputDir',outputDir,'tempDir',tempDir,'evalCode',true,'force',false);
-
-
-%%
-
-makeDemoToc(mtexExampleFiles,'outputDir',outputDir);
-copyfile(fullfile(outputDir,'demos.xml'), fullfile(mtex_path,'examples'));
-
-
-%%
-
-src = struct(mtexExampleFiles);
-src = [src.sourceInfo];
-
-for k=1:numel(src)
-  temp = DocFile(getFiles(outputDir,[src(k).docName '*']));
-  copy(temp,fullfile(mtex_path,'examples','html'));
-end
-copy(DocFile(getPublishGeneral),fullfile(mtex_path,'examples','html'));
 
 
 %% Publish Doc
 
 publish(mtexDocFiles,'outputDir',outputDir,'tempDir',tempDir,'evalCode',true,'force',false);
-%copy(mtexDocFiles,fullfile(mtex_path,'examples','UsersGuide'));
 
 %%
 
@@ -132,11 +96,6 @@ view(mtexHelpFiles,options)
 
 
 %%
-
-view(mtexExampleFiles,outputDir);
-
-%%
-
 deadlink(mtexDocFiles,outputDir);
 
 %% Enable search in documentation
