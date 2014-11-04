@@ -28,21 +28,10 @@ function [T,options] = loadTensor_generic(fname,varargin)
 % loadData
 
 % remove option "check"
-varargin = delete_option(varargin,'check');
+varargin = delete_option(varargin,{'check','wizard','InfoLevel'});
 
-fid = efopen(fname,'r');
-while ~feof(fid)
-  l = fgetl(fid);
-  n = sscanf(l,'%f');
-  if ~isempty(n)
-    T(:,end+1) =  n';
-  else
-    T = [];
-  end
-end
-fclose(fid);
+T = txt2mat(fname,'InfoLevel',0);
 
-varargin = delete_option(varargin,'InfoLevel');
 T = tensor(T,varargin{:});
 
 options = varargin;

@@ -230,7 +230,7 @@ api.clearAllData();
       case slotAlias{4}
         data = applyPFCorrection(data,dataAlias);
       otherwise
-        data = [data.obj{:}]; % maybe tensors don't like that
+        data = [data.obj{:}];
     end
     
     data = applyRotation(data);
