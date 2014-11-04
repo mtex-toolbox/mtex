@@ -31,7 +31,7 @@ classdef phaseList
     function pL = init(pL,phases,CSList)
       % extract phases
       [pL.phaseMap,~,pL.phaseId] =  unique(phases);
-        
+              
       pL.phaseMap(isnan(pL.phaseMap)) = 0;
       
       pL.CSList = ensurecell(CSList);
@@ -66,7 +66,7 @@ classdef phaseList
         else
         
           % no zero phase - maybe everything was indexed
-          if pL.phaseMap(1) > 0 && isa(pL.CSList{1},'symmetry');
+          if pL.phaseMap(1) > 0 && isa(pL.CSList{1},'symmetry')
             pL.phaseId = pL.phaseId + 1;
             pL.phaseMap = [0;pL.phaseMap];
           end
@@ -77,15 +77,17 @@ classdef phaseList
       end
 
       % ensure that there is at least one notIndexed phase
-      % by appending it
-      if all(cellfun(@(x) isa(x,'symmetry'),pL.CSList))
-        pL.CSList = [pL.CSList(:);{'not indexed'}];
-        if  ismember(0,pL.phaseMap)
-          pL.phaseMap = [pL.phaseMap;-1];
-        else
-          pL.phaseMap = [pL.phaseMap;0];
-        end
-      end
+      % by prepending it !! TODO
+      % this probably requires to specify phaseMap as an option    
+      %if all(cellfun(@(x) isa(x,'symmetry'),pL.CSList))
+      %  pL.CSList = [{'not indexed'},pL.CSList(:)];
+      %  pL.phaseId = pL.phaseId + 1;
+      %  if  ismember(0,pL.phaseMap)
+      %    pL.phaseMap = [-1;pL.phaseMap];
+      %  else
+      %    pL.phaseMap = [0;pL.phaseMap];
+      %  end
+      %end
       
       % apply colors
       colorOrder = getMTEXpref('EBSDColorNames');
