@@ -67,8 +67,12 @@ classdef crystalSymmetry < symmetry
     alpha       % angle between b and c
     beta        % angle between c and a
     gamma       % angle between a and b
-    
-    
+    aAxis       % a-axis
+    bAxis       % b-axis
+    cAxis       % c-axis
+    aAxisRec    % a*-axis reciprocal coordinate system
+    bAxisRec    % b*-axis reciprocal coordinate system
+    cAxisRec    % c*-axis reciprocal coordinate system
   end
   
   methods
@@ -116,7 +120,31 @@ classdef crystalSymmetry < symmetry
       s = calcQuat(s,s.axes);
             
     end
-    
+
+    function a = get.aAxis(cs)
+      a = Miller(1,0,0,cs,'uvw');
+    end
+
+    function b = get.bAxis(cs)
+      b = Miller(0,1,0,cs,'uvw');
+    end
+
+    function c = get.cAxis(cs)
+      c = Miller(0,0,1,cs,'uvw');
+    end
+
+    function a = get.aAxisRec(cs)
+      a = Miller(1,0,0,cs,'hkl');
+    end
+
+    function b = get.bAxisRec(cs)
+      b = Miller(0,1,0,cs,'hkl');
+    end
+
+    function c = get.cAxisRec(cs)
+      c = Miller(0,0,1,cs,'hkl');
+    end
+
     function alpha = get.alpha(cs)
       alpha = angle(cs.axes(2),cs.axes(3));
     end
