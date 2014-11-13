@@ -19,16 +19,4 @@ function t = textureindex(odf,varargin)
 % See also
 % ODF/norm ODF/entropy ODF/volume ODF_index ODF/calcFourier
 
-if check_option(varargin,'fourier')
-  
-  t = norm(Fourier(odf,'l2-normalization',varargin{:})).^2;
-  
-else
-  % discretisation
-  S3G = extract_SO3grid(odf,varargin{:});
-
-  % eval odf
-  t = eval(odf,S3G,varargin{:});
-  t = t / sum(t) * length(t);
-  t = sum(t.^2)/length(S3G);
-end
+t = norm(odf,varargin{:}).^2;
