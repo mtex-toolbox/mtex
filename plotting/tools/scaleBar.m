@@ -70,10 +70,24 @@ methods
     sB.scanUnit = scanUnit;
     sB.hgt = hgtransform('parent',mP.ax);
     sB.txt = text('parent',sB.hgt,'string','1mm','position',[NaN,NaN],...
-      'FontSize',getMTEXpref('FontSize'));
+      'Interpreter',getMTEXpref('textInterpreter'),'FontSize',getMTEXpref('FontSize'));
     sB.shadow = patch('parent',sB.hgt,'Faces',1,'Vertices',[NaN NaN NaN]);
     sB.ruler = patch('parent',sB.hgt,'Faces',1,'Vertices',[NaN NaN NaN]);
     
+    % set resize function
+    hax = handle(mP.ax);
+    try      
+      hListener(1) = handle.listener(hax, findprop(hax, 'Position'), ...
+        'PropertyPostSet',@(a,b) sB.update);
+      % save listener, otherwise  callback may die
+      setappdata(hax, 'updatePos', hListener);
+    catch
+      if ~isappdata(hax, 'updatePos')
+        hListener = addlistener(hax,'Position','PostSet',...
+          @(obj,events) sB.update);
+        setappdata(hax, 'updatePos', hListener);
+      end
+    end  
   end
   
   function update(sB)
@@ -94,7 +108,7 @@ methods
     % We do this so that we never display 10000 nm and always something like
     % 10 microns. Also, the correct choice of units will avoid decimals.
     [sBLength, sBUnit, factor] = switchUnit(0.3*abs(diff(dx)), sB.scanUnit);   
-    if strcmpi(sBUnit,'um'), sBUnit = '\mum';end
+    if strcmpi(sBUnit,'um'), sBUnit = '$\mu$m';end
     
     % we would like to have SBlength beeing a nice number
     goodValues = [1 2 5 10 15 20 25 50 75 100 125 150 200 500 750]; % Possible values for scale bar length  
@@ -127,8 +141,8 @@ methods
     
     % update text
     set(sB.txt,'string',[num2str(sBLength) ' ' sBUnit],'HorizontalAlignment', 'Center',...
-      'VerticalAlignment', 'bottom','color','w',...
-      'Position', cP([boxx+boxWidth/2,boxy+2.5*gapY,0.2]));
+      'VerticalAlignment', 'baseline','color','w',...
+      'Position', cP([boxx+boxWidth/2,boxy+3*gapY,0.2]));
 
     % Create line as a patch. The z-coordinate is used to layer the patch over
     % top of the bounding box.

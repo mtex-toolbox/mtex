@@ -25,8 +25,7 @@ classdef mapPlot < handle
       end
       
       mP.ax = ax;
-      mP.parent = get(ax,'parent');
-      mP.micronBar = scaleBar(mP,get_option(varargin,'scanUnit','um'));
+      mP.parent = get(ax,'parent');      
       
       % general settings
       axis(ax,'equal','tight','on');
@@ -38,7 +37,7 @@ classdef mapPlot < handle
         'XTickLabel',{},...
         'yTickLabel',{},...
         'Layer','top',...
-        'box','on');
+        'box','on','FontSize',getMTEXpref('FontSize'));
       grid(ax,'off');
       xlabel(ax,'x','visible','off')
       ylabel(ax,'y','visible','off')
@@ -56,6 +55,9 @@ classdef mapPlot < handle
         end
       catch %#ok<CTCH>
       end
+      
+      % add a micron bar
+      mP.micronBar = scaleBar(mP,get_option(varargin,'scanUnit','um'));
       
     end
     
@@ -146,6 +148,9 @@ end
 % restore units
 set(mP.parent,'units',old_fig_units);
 set(mP.ax,'units',old_ax_units);
+
+% update micronbar
+mP.micronBar.update;
 
 end
 
