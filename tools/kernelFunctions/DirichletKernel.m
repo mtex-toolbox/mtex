@@ -1,5 +1,8 @@
 classdef DirichletKernel < kernel
-% the Dirichlet kernel
+%the Dirichlet kernel in the orientation space
+%
+% Syntax
+%   psi = DirichletKernel(bandwidth)
 
   methods
     
@@ -13,13 +16,26 @@ classdef DirichletKernel < kernel
       c = ['Dirichlet, bandwidth ' num2str(psi.bandwidth)];
     end
     
-%     function value = K(psi,co2)
-%       % the kernel function on SO(3)
-%       value   =  ((2*psi.bandwidth + 1)*sin((2*psi.bandwidth+3)*acos(co2)) - ...
-%       (2*psi.bandwidth+3)*sin((2*psi.bandwidth + 1)*acos(co2))) ...
-%       ./ (4*sin(acos(co2).^3));
-%     end
-        
+    function value = K(psi,co2)
+      % the kernel function on SO(3)
+      
+      N = psi.bandwidth;
+      
+      ind = co2 > 1-eps;
+       value(ind) = (1+N)*(1+2*N)*(3+2*N)/3;
+       
+       value(~ind) = csc(acos(co2)).^3 .* ...
+         ((3+2*N)*sin((1+2*N)*acos(co2)) - ...
+         (1+2*N)*sin((3+2*N)*acos(co2)))./4;
+       
+    end
+    
+    function hw = halfwidth(psi)
+      hw = fminbnd(@(omega) (psi.K(1)-2*psi.K(cos(omega/2))).^2,0,2*pi/psi.bandwidth);
+    end
+    
+    
+    
   end
   
 end

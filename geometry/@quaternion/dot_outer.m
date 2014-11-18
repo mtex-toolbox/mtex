@@ -1,11 +1,13 @@
 function d = dot_outer(g1,g2)
 % outer inner product between two quaternions
-%% Input
+%
+% Input
 %  g1, g2 - @quaternion
-%% Output
+%
+% Output
 %  d - double
 %
-%% formuala:
+% Formuala
 % cos angle(g1,g2)/2 = dot(g1,g2)
 
 if ~isempty(g1) && ~isempty(g2)

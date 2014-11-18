@@ -39,6 +39,6 @@ switch method
     S3G = extract_SO3grid(odf,varargin{:},'resolution',5*degree);
 
     % eval ODF
-    t = sqrt(mean(eval(odf,S3G).^2));
+    t = sqrt(mean(eval(odf,S3G(:)).^2));
     
 end

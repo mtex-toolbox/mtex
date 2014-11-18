@@ -7,7 +7,7 @@ classdef EBSD < phaseList & dynProp & dynOption & misorientationAnalysis
   % from an ODF by the command <ODF.calcEBSD.html calcEBSD>.
   %
   % Syntax
-  %   ebsd = EBSD(orientations,CS,...,param,val,...)
+  %   ebsd = EBSD(rotations,phases,CSList)
   %
   % Input
   %  orientations - @orientation
