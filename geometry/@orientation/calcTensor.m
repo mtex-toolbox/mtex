@@ -1,30 +1,30 @@
 function [TVoigt, TReuss, THill] = calcTensor(ori,T,varargin)
 % compute the average tensor for a vector of orientations
 %
-%% Syntax
-% [TVoigt, TReuss, THill] = calcTensor(ori,T,'weights',w) - returns
-%    the Voigt--, Reuss-- and Hill-- average @tensor of T
+% Syntax
+%   %returns the Voigt--, Reuss-- and Hill-- average @tensor of T
+%   [TVoigt, TReuss, THill] = calcTensor(ori,T,'weights',w) - 
+%   
+%   % returns the specified @tensor, i.e. 'Hill' in this case
+%   THill = calcTensor(ori,T,'Hill')
 %
-% THill = calcTensor(ori,T,'Hill') - returns the specified
-%    @tensor, i.e. 'Hill' in this case
+%   % uses geometric mean instead of arithmetric one
+%   TVoigt = calcTensor(ori,T,'geometricMean')
 %
-% TVoigt = calcTensor(ori,T,'geometricMean') - uses
-% geometric mean instead of arithmetric one
-%
-%% Input
+% Input
 %  ori     - @orientation
 %  T       - @tensor
 %  w       - weights for each orientation
 %
-%% Output
+% Output
 %  TVoigt, TReuss, THill - @tensor
 %
-%% Options
+% Options
 %  Voigt - voigt mean
 %  Reuss - reuss mean
 %  Hill  - hill mean
 %
-%% See also
+% See also
 %
 
 weights = get_option(varargin,'weights',ones(numel(ori),1)./numel(ori));
