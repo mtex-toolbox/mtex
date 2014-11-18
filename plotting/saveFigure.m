@@ -50,7 +50,7 @@ end
 if all(~strcmpi(ext,{'.eps','.pdf'}))
   try
     oldColor = get(gcf,'color');
-    set(gcf,'color','none');
+    set(gcf,'color','w');
     export_fig(gcf,fname,'-m1.5');
     %export_fig(gcf,fname);
     if exist(fname,'file'),
