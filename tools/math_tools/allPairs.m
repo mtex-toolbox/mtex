@@ -1,12 +1,44 @@
 function pairs = allPairs(x,y)
-% returns all pairs of elements of the vector x
+% all pairs of elements of x and y modulo permutation
 %
+
+if nargin == 1
+
+  [x,y] = meshgrid(x,x);
+
+  x = x(tril(ones(size(x)))>0);
+  y = y(tril(ones(size(y)))>0);
+
+  pairs = [x(:),y(:)];
+  
+else
+  
+  %
+  x = x(:);
+  y = y(:);
+  iseq = bsxfun(@eq,x,y.');
+  
+  [ix,iy] = find(iseq);
+  
+  x = [x(ix);x(~any(iseq,2))];
+  y = [y(iy);y(~any(iseq,1))];
+  
+  % all pairs
+  [x,y] = meshgrid(x,y);
+
+  % remove double pars
+  A = zeros(size(x));
+  A(1:length(ix),1:length(ix)) = 1;
+  A = ~triu(A,1);
+  
+  x = x(A);
+  y = y(A);
+
+  pairs = [x(:),y(:)];
+  
+  
+end
 
 if nargin == 1, y = x; end
 
-[x,y] = meshgrid(x,y);
 
-x = x(tril(ones(size(x)))>0);
-y = y(tril(ones(size(y)))>0);
-
-pairs = [x(:),y(:)];
