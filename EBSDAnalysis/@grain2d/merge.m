@@ -27,7 +27,7 @@ mergeId = gB.grainId;
 mergeId(any(mergeId==0,2) | diff(mergeId,[],2) == 0,:) = [];
 
 % 2. determine grains not to touch
-[keepId,keepInd] = setdiff(grains.id,mergeId);
+[keepId,keepInd] = setdiff(grains.id,mergeId(:));
 old2newId = zeros(max(grains.id),1);
 old2newId(keepId) = 1:numel(keepId);
 
