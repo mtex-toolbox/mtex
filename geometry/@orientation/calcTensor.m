@@ -27,7 +27,7 @@ function [TVoigt, TReuss, THill] = calcTensor(ori,T,varargin)
 % See also
 %
 
-weights = get_option(varargin,'weights',ones(numel(ori),1)./numel(ori));
+weights = get_option(varargin,'weights',ones(length(ori),1)./length(ori));
   
 rotT = rotate(T,ori);
 rotInvT = rotate(inv(T),ori);
