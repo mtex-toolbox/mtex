@@ -1,4 +1,4 @@
-function mori = CSL(sigma,varargin)
+function  [mori,hkl,omega,sigma] = CSL(sigma,varargin)
 % coincidence site lattice misorientations for cubic symmetry
 %
 % Syntax
@@ -14,12 +14,22 @@ function mori = CSL(sigma,varargin)
 
 csl = generateCubicCSL(varargin{:});
 
-ndx = find( [csl.sigma] == sigma );
+if nargin > 0
+  ndx = find( [csl.sigma] == sigma );
+else
+  ndx = 1:numel(csl);
+end
 
 cs = getClass(varargin,'symmetry',crystalSymmetry('cubic'));
 mori = orientation(cs,cs);
+hkl = zeros(0,3);
+omega = []; sigma = [];
+
 for k = ndx
-  mori(end+1) =  orientation('axis',vector3d(csl(k).axis),'angle',csl(k).angle,cs,cs);
+  hkl(end+1,:) = csl(k).axis;
+  omega(end+1) = csl(k).angle;
+  sigma(end+1) = csl(k).sigma;
+  mori(end+1) =  orientation('axis',vector3d(hkl(end,:)),'angle',omega(end),cs,cs);
 end
 
 mori = unique(mori);

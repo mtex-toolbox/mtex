@@ -58,8 +58,11 @@ obj.parent = mP.ax;
 obj.FaceColor = 'none';
 
 % color given by second argument
-if nargin > 1 && isnumeric(varargin{1}) && size(varargin{1},1) == length(gB)
+if nargin > 1 && isnumeric(varargin{1}) && ...
+    (size(varargin{1},1) == length(gB) || size(varargin{1},2) == length(gB))
 
+  if size(varargin{1},1) ~= length(gB), varargin{1} = varargin{1}.'; end
+  
   obj.Faces(:,3) = size(obj.Vertices,1)+1;
   obj.Vertices(end+1,:) = NaN;
   obj.Vertices = obj.Vertices(obj.Faces',:);
