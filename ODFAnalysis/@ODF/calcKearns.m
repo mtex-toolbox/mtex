@@ -1,4 +1,4 @@
-function [f1,f2,f3] = Kearns(odf_o)
+function [f1,f2,f3] = calcKearns(odf_o)
 % Calculate Kearns factor of a hexagonal material
 % Input parameters
 %   odf_o=Orientation Distribution function, centred along direction 1;
