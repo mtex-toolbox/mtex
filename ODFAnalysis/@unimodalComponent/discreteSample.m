@@ -24,5 +24,5 @@ r = rand(npoints,1);
 angle = 2 * acos(t ./ M);
 
 % set up orientations
-ori = orientation(quaternion(component.center,ic(:)) .* ...
+ori = orientation(quaternion(component.center(:),ic) .* ...
   axis2quat(axis,angle),component.CS,component.SS);
