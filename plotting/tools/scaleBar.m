@@ -69,9 +69,9 @@ methods
     
     sB.scanUnit = scanUnit;
     sB.hgt = hgtransform('parent',mP.ax);
-    sB.txt = text('parent',sB.hgt,'string','1mm','position',[NaN,NaN],...
-      'Interpreter',getMTEXpref('textInterpreter'),'FontSize',getMTEXpref('FontSize'));
     sB.shadow = patch('parent',sB.hgt,'Faces',1,'Vertices',[NaN NaN NaN]);
+    sB.txt = text('parent',sB.hgt,'string','1mm','position',[NaN,NaN],...
+      'Interpreter',getMTEXpref('textInterpreter'),'FontSize',getMTEXpref('FontSize'));    
     sB.ruler = patch('parent',sB.hgt,'Faces',1,'Vertices',[NaN NaN NaN]);
     
     % set resize function
@@ -119,7 +119,7 @@ methods
     % A gap around the bar of 1% of bar length looks nice
     set(sB.txt,'position',[dx(1),dy(1)])
     textHeight = get(sB.txt, 'Extent');
-    textHeight = textHeight(4-mod(xDir,2)) * sign(diff(dy));
+    textHeight = min(textHeight(3:4)) * sign(diff(dy));
     gapY = textHeight/3;
     gapX = abs(gapY) * sign(diff(dx));
 
@@ -130,10 +130,10 @@ methods
         
     % Make bounding box. The z-coordinate is used to put the box under the
     % line.
-    verts = [boxx, boxy, 0.1;
-      boxx, boxy +  3*gapY + textHeight, 0.1;
-      boxx + boxWidth, boxy + 3*gapY + textHeight, 0.1;
-      boxx + boxWidth, boxy, 0.1];
+    verts = [boxx, boxy;
+      boxx, boxy +  3*gapY + textHeight;
+      boxx + boxWidth, boxy + 3*gapY + textHeight;
+      boxx + boxWidth, boxy];
     set(sB.shadow,'Vertices', cP(verts), ...
       'Faces', [1 2 3 4], ...
       'FaceColor', sB.backgroundColor , 'EdgeColor', 'none', ...
@@ -142,20 +142,23 @@ methods
     % update text
     set(sB.txt,'string',[num2str(sBLength) ' ' sBUnit],'HorizontalAlignment', 'Center',...
       'VerticalAlignment', 'baseline','color','w',...
-      'Position', cP([boxx+boxWidth/2,boxy+3*gapY,0.2]));
+      'Position', cP([boxx+boxWidth/2,boxy+3*gapY]));
 
     % Create line as a patch. The z-coordinate is used to layer the patch over
     % top of the bounding box.
-    set(sB.ruler,'Vertices',cP([boxx+gapX, boxy+gapY, 0.2; ...
-      boxx + gapX, boxy+2*gapY, 0.2; ...
-      boxx + gapX + rulerLength, boxy + 2*gapY, 0.2; ...
-      boxx + gapX + rulerLength, boxy + gapY, 0.2]), ...
+    set(sB.ruler,'Vertices',cP([boxx+gapX, boxy+gapY; ...
+      boxx + gapX, boxy+2*gapY; ...
+      boxx + gapX + rulerLength, boxy + 2*gapY; ...
+      boxx + gapX + rulerLength, boxy + gapY]), ...
       'Faces',[1 2 3 4], 'FaceColor','w', 'FaceAlpha',1);
+    
+    
+    uistack(sB.hgt,'top')
+    
     
     function pos = cP(pos)
       % interchange x and y if needed
-      if mod(xDir,2), pos(:,[1,2]) = pos(:,[2,1]); end
-      pos(:,3) = (-1)^(az<0) * pos(:,3);
+      if mod(xDir,2), pos(:,[1,2]) = pos(:,[2,1]); end      
     end
     
   end

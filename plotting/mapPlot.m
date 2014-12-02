@@ -41,8 +41,8 @@ classdef mapPlot < handle
       grid(ax,'off');
       xlabel(ax,'x','visible','off')
       ylabel(ax,'y','visible','off')
-            
-      setCamera(varargin{:});
+                  
+      setCamera(ax,'default',varargin{:});
       
       setappdata(ax,'mapPlot',mP);
       

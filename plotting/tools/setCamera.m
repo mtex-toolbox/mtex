@@ -11,9 +11,16 @@ else
   ax = gca;
 end
 
+if check_option(varargin,'default')
+  xAxis = getMTEXpref('xAxisDirection');
+  zAxis = getMTEXpref('zAxisDirection');
+else
+  [xAxis,zAxis] = getCamera(ax);
+end
+
 % exract x- and z-axis direction
-xAxis = get_option(varargin,'xAxisDirection',getMTEXpref('xAxisDirection'));
-zAxis = get_option(varargin,'zAxisDirection',getMTEXpref('zAxisDirection'));
+xAxis = get_option(varargin,'xAxisDirection',xAxis);
+zAxis = get_option(varargin,'zAxisDirection',zAxis);
 
 % set camera according to projection
 el = (1-NWSE(xAxis))*90;

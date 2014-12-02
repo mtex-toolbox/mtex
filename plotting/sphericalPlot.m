@@ -82,7 +82,7 @@ classdef sphericalPlot < handle
         'YLim',[bounds(1)-delta,bounds(3)+delta]);
       
       % set view point
-      setCamera(ax,varargin{:});
+      setCamera(ax,'default',varargin{:});
       
     end
 
