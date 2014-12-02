@@ -42,7 +42,7 @@ function [pf,varargin] = loadPoleFigure_generic(fname,varargin)
 [d,varargin,header,columns] = load_generic(fname,varargin{:});
 
 % no data found
-if size(d,1) < 10 || size(d,2) < 3
+if size(d,2) < 3
   error('Generic interface could not detect any numeric data in %s',fname);
 end
 

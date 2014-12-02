@@ -130,7 +130,7 @@ rgb = reshape([rgb;rgb],100,2,3);
 
 subplot(1,2,1)
 surf(ones(100,2),[rgb]), shading flat
-setCamera
+setCamera('default')
 
 % next the rescalled rainbow colors. Put both plots side by sie
 
@@ -156,4 +156,4 @@ rgb = reshape([rgb;rgb],100,2,3);
 
 subplot(1,2,2)
 surf(ones(100,2),rgb), shading flat
-setCamera
+setCamera('default')
