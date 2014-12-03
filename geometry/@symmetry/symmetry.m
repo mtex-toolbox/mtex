@@ -85,7 +85,7 @@ classdef symmetry < rotation
         ndx = nnz([list{:,1}] < get_option(varargin,'SpaceId'));
         varargin = delete_option(varargin,'SpaceId');
         if ndx>31, error('I''m sorry, I know only 230 space groups ...'); end
-        s.id = ndx+1;
+        s.id = findsymmetry(list(ndx+1,2));
         
       else
 
