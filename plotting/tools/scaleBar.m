@@ -89,6 +89,10 @@ methods
       end
     end  
   end
+
+  function setOnTop(sB)
+    uistack(sB.hgt,'top')
+  end
   
   function update(sB)
     
@@ -151,10 +155,8 @@ methods
       boxx + gapX + rulerLength, boxy + 2*gapY; ...
       boxx + gapX + rulerLength, boxy + gapY]), ...
       'Faces',[1 2 3 4], 'FaceColor','w', 'FaceAlpha',1);
-    
-    
-    uistack(sB.hgt,'top')
-    
+        
+    sB.setOnTop;
     
     function pos = cP(pos)
       % interchange x and y if needed
