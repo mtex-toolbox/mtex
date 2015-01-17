@@ -1,10 +1,19 @@
 function [S3G,S2G,sec] = plotSO3Grid(CS,SS,varargin)
 % give a regular grid in orientation space
 %
+% Syntax
+%   plotSO3Grid(CS,SS,'phi2')
+%
 % Input
 %
 % Output
 %
+
+if check_option(varargin,{'axisAngle','angle'})
+  [S3G,S2G,sec] = axisAngleGrid(CS,SS,varargin{:});
+  return
+end
+
 
 % determine sectioning type
 sectypes = {...
@@ -51,7 +60,6 @@ sec = get_option(varargin,sectype,sec,'double');
 nsec = length(sec);
   
 % no sectioning angles
-
 sR = sphericalRegion('maxTheta',max_theta,'maxRho',max_rho);
 S2G = plotS2Grid(sR,varargin{:});
 [theta,rho] = polar(S2G);
@@ -76,5 +84,24 @@ S3G = orientation('Euler',sec_angle,theta,rho,convention,CS,SS);
 
 % store gridding, @TODO: check when its required
 % S2G = [sec_angle(:),theta(:),rho(:)];
+
+end
+
+function [S3G,S2G,sec] = axisAngleGrid(CS,SS,varargin)
+
+sym = disjoint(CS,SS);
+
+% get sections
+if check_option(varargin,'angle')
+  sec = get_option(varargin,'angle');
+else
+  sec = (5:5:180)*degree;
+  sec(sec>sym.maxAngle) = [];  
+end
+
+for i = 1:length(sec)
+  S2G{i} = plotS2Grid(sym.Laue.fundamentalSector('angle',sec(i)),varargin{:}); %#ok<AGROW>
+  S3G{i} = orientation('axis',S2G{i},'angle',sec(i)); %#ok<AGROW>
+end
 
 end
