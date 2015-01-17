@@ -114,7 +114,7 @@ for p = 1:numel(ebsd.phaseMap)
   if any(ndx)
     
     connect(ndx) = feval(['gbc_' gbc],...
-      ebsd.rotations,ebsd.CSList{p},Dl(ndx),Dr(ndx),gbcValue(p),varargin{:});
+      quaternion(ebsd.rotations),ebsd.CSList{p},Dl(ndx),Dr(ndx),gbcValue(p),varargin{:});
     
   end  
 end
