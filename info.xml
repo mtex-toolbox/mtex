@@ -3,57 +3,10 @@
   xsi:noNamespaceSchemaLocation="optional">
 <?xml-stylesheet type="text/xsl" href="optional"?>
 
-<matlabrelease>14</matlabrelease>
+<matlabrelease>R2015a</matlabrelease>
 <name>MTEX</name>
 <type>toolbox</type>
 <icon>mtex_icon.gif</icon>
 <help_location>help/mtex</help_location>
-
-<list>
-
-<listitem>
-<label>Start</label>
-<callback>startup_mtex</callback>
-<icon>$toolbox/matlab/icons/greenarrowicon.gif</icon>
-</listitem>
-
-<listitem>
-<label>Import Wizard</label>
-<callback>import_wizard</callback>
-<icon>$toolbox/matlab/icons/figureicon.gif</icon>
-</listitem>
-
-<listitem>
-<label>Help</label>
-<callback>doc mtex/</callback>
-<icon>$toolbox/matlab/icons/helpicon.gif</icon>
-</listitem>
-
-
-<listitem>
-<label>Demos</label>
-<callback>demo toolbox MTEX</callback>
-<icon>$toolbox/matlab/icons/demoicon.gif</icon>
-</listitem>
-
-<listitem>
-<label>Check Installation</label>
-<callback>check_mtex</callback>
-<icon>$toolbox/matlab/icons/tool_rotate_3d.gif</icon>
-</listitem>
-
-<listitem>
-<label>Configure</label>
-<callback>edit mtex_settings.m</callback>
-<icon>$toolbox/matlab/icons/boardicon.gif</icon>
-</listitem>
-
-<listitem>
-<label>MTEX Web Site</label>
-<callback>web http://mtex.googlecode.com -browser;</callback>
-<icon>$toolbox/matlab/icons/webicon.gif</icon>
-</listitem>
-
-</list>
 
 </productinfo>
