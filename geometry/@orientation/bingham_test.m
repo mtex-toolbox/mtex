@@ -20,7 +20,7 @@ if strfind(test_fun,'chat')
   [kappa, lambda, Tv, n] = c_hat(ori);
 else
   [q, lambda, Tv, kappa] = mean(ori,varargin{:});
-  n = numel(ori);
+  n = length(ori);
 end
 
 if isempty(strfind(test_fun,'chat'))
