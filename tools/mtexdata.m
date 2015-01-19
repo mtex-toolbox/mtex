@@ -231,7 +231,13 @@ ebsd = loadEBSD([mtexDataPath '/EBSD/data.ctf'],'ignorePhase',[0 3 4],...
 % ----------------------------------------------------------------------
 function ebsd = mtexdata_forsterite
 
+plotx2east; plotzOutOfPlane
 ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','Forsterite.ctf'),'convertEuler2spatialReferenceFrame');
+
+function ebsd = mtexdata_twins
+
+plotx2east; plotzOutOfPlane
+ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','twins.ctf'),'convertEuler2spatialReferenceFrame');
 
 
 % -----------------------------------------------------------------------
