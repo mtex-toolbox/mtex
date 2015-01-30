@@ -19,6 +19,12 @@ if ~isempty(s.color)
   propV{end+1} = s.color;
 end
 
+fn = fieldnames(s.opt);
+for i = 1:length(fn)
+  props{end+1} = fn{i}; 
+  propV{end+1} = s.opt.(fn{i});  
+end
+
 
 % add symmetry
 props{end+1} = 'symmetry'; 
