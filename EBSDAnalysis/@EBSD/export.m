@@ -32,10 +32,10 @@ fn = [EulerNames.';'phase';fn];
 
 % add properties
 for j = 5:numel(fn)
-  if isnumeric(ebsd.options.(fn{j}))
-    d(:,j) = vertcat(ebsd.options.(fn{j}));
-  elseif isa(ebsd.options.(fn{j}),'quaternion')
-    d(:,j) = angle(ebsd.options.(fn{j})) / degree;
+  if isnumeric(ebsd.prop.(fn{j}))
+    d(:,j) = vertcat(ebsd.prop.(fn{j}));
+  elseif isa(ebsd.prop.(fn{j}),'quaternion')
+    d(:,j) = angle(ebsd.prop.(fn{j})) / degree;
   end
 end
  

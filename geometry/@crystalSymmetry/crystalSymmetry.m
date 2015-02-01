@@ -116,6 +116,10 @@ classdef crystalSymmetry < symmetry
       s.mineral = get_option(varargin,'mineral','');
       s.color = get_option(varargin,'color','');
       
+      if check_option(varargin,'density')
+        s.opt.density = get_option(varargin,'density','');
+      end
+      
       % compute symmetry operations
       s = calcQuat(s,s.axes);
             

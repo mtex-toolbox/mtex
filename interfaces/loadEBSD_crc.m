@@ -10,7 +10,7 @@ try
   
   cpr = localCPRParser(cprFile);
   
-  CS  = getCS(cpr);
+  CS  = get_option(varargin,'CS',getCS(cpr));
   param = getJobParam(cpr);
   
   if check_option(varargin,'check')
@@ -23,12 +23,6 @@ try
   q       = loader.getRotations();
   phases  = loader.getColumnData('Phase');
   options = loader.getOptions('ignoreColumns','phase');
-  
-  uphases = unique(phases);
-  CS = CS(uphases(uphases>0));
-  if any(uphases == 0)
-    CS = ['notIndexed',CS];
-  end
   
   ebsd = EBSD(q,phases,CS,'unitCell',param.unitCell,'options', options);
   

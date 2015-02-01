@@ -15,6 +15,8 @@ if isa(cs,'crystalSymmetry')
   a1 = cs.axes(1);
   a2 = cs.axes(2);
   m = a1 - a2;
+else
+  a1 = xvector;
 end
 
 switch symmetry.pointGroups(cs.id).properId

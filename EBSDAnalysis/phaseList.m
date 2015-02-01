@@ -113,7 +113,7 @@ classdef phaseList
       
       if numel(phase) == 1
         phase = repmat(phase,size(pL.phaseId));
-      elseif numel(phase) == numel(pl.phaseId)
+      elseif numel(phase) == numel(pL.phaseId)
         phase = reshape(phase,size(pL.phaseId));
       else
         error('List of phases has wrong size.')

@@ -1,4 +1,4 @@
-function colorbar(mtexFig,varargin)
+function h = colorbar(mtexFig,varargin)
 
 if isempty(mtexFig.cBarAxis) % create some new colorbars
     
@@ -31,6 +31,8 @@ else % remove old colorbars
 end
 
 mtexFig.drawNow('keepAxisSize',varargin{:});
+
+if nargout == 1, h = mtexFig.cBarAxis; end
 
   function h = addColorbar(peer,varargin)
     

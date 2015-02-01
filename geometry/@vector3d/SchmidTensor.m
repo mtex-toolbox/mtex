@@ -2,7 +2,7 @@ function m = SchmidTensor(n,b,varargin)
 % computes the Schmidt tensor
 %
 % Input
-%  n - normal vector the the slip or twinning plane
+%  n - normal vector of the slip or twinning plane
 %  b - Burgers vector (slip) or twin shear direction (twinning)
 %
 % Output
@@ -33,7 +33,8 @@ else
   
 end
 
-%if isa(n,'Miller'), m = set(m,'CS',get(n,'CS'),'noTrafo'); end
+% this should not be a crystal tensor - explain why!!
+%if isa(n,'Miller'), m.CS = n.CS; end
 
 end
 

@@ -23,6 +23,7 @@ end
 
 for i = 1:length(pf.allH)
   
+  if isempty(pf.allI{i}), continue; end
   if i>1, mtexFig.nextAxis; end
   
   pf.allR{i}.plot(data{i},...

@@ -27,12 +27,12 @@ if cs.isLaue || ss.isLaue || (cs.isProper && ss.isProper ...
   cs = cs.properGroup; ss = ss.properGroup;
   
   if check_option(varargin,'all')
-    d = dot_outer(g1,symmetrise(g2,cs,ss).');
-    d = reshape(d,length(g1),length(g2),[]);
+    d = dot_outer_quat(o1,symmetrise(o2,cs,ss).');
+    d = reshape(d,length(o1),length(o2),[]);
   elseif (l1 < l2) && (l1>0)
-    d = dot_outer_quat(o2,o1,cs,ss).';   
+    d = dot_outer_quat_cs(o2,o1,cs,ss).';   
   else 
-    d = dot_outer_quat(o1,o2,cs,ss);  
+    d = dot_outer_quat_cs(o1,o2,cs,ss);  
   end    
   
 else
@@ -53,7 +53,19 @@ d = max(min(d,1),-1);
 
 end
 
-function d = dot_outer_quat(g1,g2,cs,ss)
+function d = dot_outer_quat(g1,g2)
+% quick version that ignores inversion
+
+q1 = [g1.a(:) g1.b(:) g1.c(:) g1.d(:)];
+a2 = g2.a; b2 = g2.b; c2 = g2.c; d2 = g2.d;
+  
+% this is implicite dot_outer
+d = abs(q1 * [a2(:,1).';b2(:,1).';c2(:,1).';d2(:,1).']); 
+
+end
+
+
+function d = dot_outer_quat_cs(g1,g2,cs,ss)
 % quick version that ignores inversion
 
 g2rot = symmetrise(quaternion(g2),cs,ss).'; % g2 x CS x SS

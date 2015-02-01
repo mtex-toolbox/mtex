@@ -52,9 +52,9 @@ uimenu(m,'label','Set Outer Margin','callback',{@setMargin,'outer'});
 % annotations
 
 an = uimenu(m,'label','Anotations');
-uimenu(an,'label','Show min/max','checked','off','callback',{@setVisible,'minmax'});
-uimenu(an,'label','Show labels','checked','off','callback',{@setVisible,'labels'});
-uimenu(an,'label','Show coordinates','checked','off','callback',{@setVisible,'ticks'});
+uimenu(an,'label','Show min/max','checked',isVisible('minmax'),'callback',{@setVisible,'minmax'});
+uimenu(an,'label','Show labels','checked',isVisible('labels'),'callback',{@setVisible,'labels'});
+uimenu(an,'label','Show coordinates','checked',isVisible('ticks'),'callback',{@setVisible,'ticks'});
 uimenu(an,'label','Show grid','checked','off','callback',{@setVisible,'grid'});
 
 
@@ -167,6 +167,48 @@ mtexFig.drawNow
 
 end
 
+% Grid Visibility
+function onOff = isVisible(element)
+
+  onOff = 'off';
+  if isempty(mtexFig.children), return; end
+  ax = mtexFig.children(1);
+
+switch element
+  case 'minmax'
+    if isappdata(ax(a),'annotation')
+      hh = getappdata(ax,'annotation');
+      hh = hh.h;
+      onOff = get(hh(1),'visible');
+    end
+  
+  case 'labels'
+    xl = get(gca,'xlabel');    
+    onOff = get(xl,'visible');
+    
+  case 'ticks'
+    
+    if isempty(get(ax,'xtickLabel'))
+      onOff = 'off';
+    else
+      onOff = 'on';
+    end
+      
+  otherwise
+    
+    if isappdata(ax(a),'sphericalPlot')
+      sP = getappdata(ax(a),'sphericalPlot');
+      if isempty(sP.grid)
+        set(ax(a),'XGrid',onoff,'YGrid',onoff);
+      else
+        set(sP.(element),'visible',onoff);
+      end
+    else
+        
+    end
+
+end
+end
 
 
 % X Axis Direction
