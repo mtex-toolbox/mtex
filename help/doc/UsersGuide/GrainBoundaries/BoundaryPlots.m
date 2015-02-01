@@ -33,22 +33,26 @@ plot(grains(931).boundary)
 %%
 % lets combine it with the orientation measurements inside
 
+% define the colorcoding such that the meanorientation becomes white
 oM = ipdfHSVOrientationMapping(grains(931));
 oM.inversePoleFigureDirection = grains(931).meanOrientation * oM.whiteCenter;
 oM.colorStretching = 50;
 
+% get the ebsd data of grain 931
+ebsd_931 = ebsd(grains(931));
+
+% plot the orientation data
 hold on
-plot(ebsd(grains(931)),oM.orientation2color(ebsd(grains(931)).orientations))
+plot(ebsd_931,oM.orientation2color(ebsd_931.orientations))
 hold off
 
 
 %% Visualizing special grain boundaries
-% Most interesting is a closer look at special grain boundaries.
 %
 %% SUB: Phase boundaries
-% For multi-phase system, the location of specific phase transboundaries may be of
-% interest. The following plot highlights all Forsterite to Enstatite phase
-% transitions
+% For multi-phase system, the location of specific phase transistions may
+% be of interest. The following plot highlights all Forsterite to Enstatite
+% phase transitions
 
 close all
 plot(grains,'faceAlpha',.3)
@@ -57,15 +61,14 @@ plot(grains.boundary('Fo','En'),'linecolor','r','linewidth',1.5)
 hold off
 
 %% SUB: Subboundaries
-% Another special type of boundaries, are boundaries that are located
-% within a grain, nevertheless this happens, if two adjacent measurements
-% are somehow conneted by a lattice rotation within a grain.
-% TODO:
+% Another type of boundaries, are boundaries between measurements that
+% belong to the same grain. This happens if a grain has a texture gradient
+% that loops around these two measurements.
 
-%close all
-%plot(grains.boundary,'external')
-%hold on
-%plot(grains.boundary,'internal','linecolor','r','linewidth',2)
+close all
+plot(grains.boundary)
+hold on
+plot(grains.innerBoundary,'linecolor','r','linewidth',2)
 
 
 %% SUB: Misorientation
@@ -84,7 +87,7 @@ colorbar
 
 %%
 % The more sophisticated way is to colorize the misorientation space and
-% apply the color to the respectibe grain boundaries. 
+% apply the color to the respective grain boundaries. 
 % TODO: apply here patala colorcoding!!!
 
 close all
