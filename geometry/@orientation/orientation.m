@@ -76,12 +76,7 @@ methods
         
     % copy constructor
     switch class(varargin{1})
-      
-      case 'orientation'
-
-        o.CS = varargin{1}.CS;
-        o.SS = varargin{1}.SS;
-        
+       
       case 'char'
   
         switch lower(varargin{1})
