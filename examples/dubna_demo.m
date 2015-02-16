@@ -63,6 +63,7 @@ calcError(pf_corrected,odf,'RP',1)
 % difference plot
 plotDiff(pf,odf)
 
+colorbar
 
 %% Recalculate c-axis pole figures
 
@@ -75,7 +76,7 @@ plotIPDF(odf,vector3d(1,1,2))
 
 %% plot recalculated ODF
 
-plot(odf,'sections',18,'silent','sigma')
+plot(odf,'sections',6,'silent','sigma')
 
 %% rotate ODF back
 
