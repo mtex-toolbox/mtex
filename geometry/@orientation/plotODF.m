@@ -40,7 +40,8 @@ if isNew
 
   % get fundamental plotting region
   [max_rho,max_theta,max_sec] = getFundamentalRegion(o.CS,o.SS,varargin{:});
-
+  sR = sphericalRegion('maxTheta',max_theta,'maxRho',max_rho);
+  
   if any(strcmp(sectype,{'alpha','phi1'}))
     dummy = max_sec; max_sec = max_rho; max_rho = dummy;
   elseif strcmpi(sectype,'omega')
@@ -51,7 +52,7 @@ if isNew
   sec = linspace(0,max_sec,nsec+1); sec(end) = [];
   sec = get_option(varargin,sectype,sec,'double');
     
-  varargin = [varargin,'maxrho',max_rho,'maxtheta',max_theta];  
+  varargin = [varargin,{'maxrho',max_rho,'maxtheta',max_theta,sR}];
   
 else
   sectype = getappdata(gcf,'SectionType');
