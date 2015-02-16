@@ -2,12 +2,19 @@ function ori = transformReferenceFrame(ori,cs)
 
 % only applicable for crystal symmetry
 if ~isa(cs,'crystalSymmetry')
+  warning('Symmetry missmatch!')
   ori.CS = cs;
   return
 end
-  
+   
 % basis transformation into reference frame
 M = transformationMatrix(ori.CS,cs);
+
+% check symmetries are compatible
+if ori.CS.id ~= cs.id || norm(eye(3)-M*M.')>0.01
+  warning('Symmetry missmatch!')
+end
+
 rot = rotation(ori) * rotation('matrix',M^-1);
 
 ori = orientation(rot,cs,ori.SS);
