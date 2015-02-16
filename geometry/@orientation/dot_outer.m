@@ -57,10 +57,10 @@ function d = dot_outer_quat(g1,g2)
 % quick version that ignores inversion
 
 q1 = [g1.a(:) g1.b(:) g1.c(:) g1.d(:)];
-a2 = g2.a; b2 = g2.b; c2 = g2.c; d2 = g2.d;
+q2 = [g2.a(:) g2.b(:) g2.c(:) g2.d(:)];
   
 % this is implicite dot_outer
-d = abs(q1 * [a2(:,1).';b2(:,1).';c2(:,1).';d2(:,1).']); 
+d = abs(q1 * q2.'); 
 
 end
 
