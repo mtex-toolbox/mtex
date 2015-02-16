@@ -27,12 +27,27 @@ else
   
   % cast to rotation
   a = rotation(a);
-  b = rotation(b);
-  
-  % apply proper rotation
-  r = times@quaternion(a,b);
+  if isa(b,'orientation')
+    if ~b.SS.id > 2 && any(max(dot_outer(b.SS,a))<0.99)      
+      warning('Symmetry mismatch');
+    end
     
-  % apply inversion
-  r.i = xor(a.i,b.i);
+    % apply proper rotation
+    r = times@quaternion(a,b);
+    
+    % apply inversion
+    r.i = xor(a.i,b.i);
+    
+    r = orientation(r,b.CS,b.SS);
+    
+  else
+    b = rotation(b);
+    
+    % apply proper rotation
+    r = times@quaternion(a,b);
+    
+    % apply inversion
+    r.i = xor(a.i,b.i);
+  end
     
 end
