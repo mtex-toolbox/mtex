@@ -17,6 +17,7 @@ function q = vec42quat(u1,v1,u2,v2)
 % quaternion_index quaternion/quaternion axis2quat Miller2quat 
 % euler2quat hr2quat idquaternion 
 
+% normalize input
 u1 = normalize(vector3d(u1));
 v1 = normalize(vector3d(v1));
 u2 = normalize(vector3d(u2));
@@ -29,11 +30,48 @@ if any(abs(dot(u1,u2)-dot(v1,v2))>1E-3)
     num2str(max(abs(acos(dot(u1,u2))-acos(dot(v1,v2))))/degree),mtexdegchar]) %#ok<WNTAG>
 end
 
+% check vectors are not colinear
+if any(abs(dot(u1,u2))>1-eps)
+  warning('Input vectors should not be colinear!');
+end
+
+% a third orthogonal vector
+u3 = normalize(cross(u1,u2));
+v3 = normalize(cross(v1,v2));
+
+% make also the second vector orthogonal to the first one
+u2t = normalize(cross(u3,u1));
+v2t = normalize(cross(v3,v1));
+
+% define the transformation matrix
+M = squeeze(double([v1,v2t,v3])).' * squeeze(double([u1,u2t,u3]));
+
+% convert to quaternion
+q = mat2quat(M);
+
+return
+
+% old algorithm which has a bug with
+
+u1 = vector3d(0.985371,0.168621,-0.0247103);
+v1 = xvector;
+u2 = vector3d(-0.159403,0.96321,0.216374);
+v2 = yvector;
+q1 = vec42quat(u1,v1,u2,v2)
+q1*u1
+q1*u2
+
+% ckeck whether points have the same angle relative to each other
+if any(abs(dot(u1,u2)-dot(v1,v2))>1E-3)
+  warning(['Inconsitent pairs of vectors encounterd!',...
+    ' Maximum distorsion: ',...
+    num2str(max(abs(acos(dot(u1,u2))-acos(dot(v1,v2))))/degree),mtexdegchar]) %#ok<WNTAG>
+end
+
 q = repmat(idquaternion,size(u1));
 
 d1 = u1 - v1;
 d2 = u2 - v2;
-
 
 % case 1: u1 = v1 & u2 = v2
 % -> nothing has to be done, see initialisation
