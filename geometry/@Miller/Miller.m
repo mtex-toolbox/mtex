@@ -68,7 +68,9 @@ methods
   
       elseif isa(varargin{1},'Miller') % copy constructor
   
-        m = varargin{1};
+        if ~isempty(m.CSprivate), varargin{1}.CSprivate = m.CSprivate;end
+        m = varargin{1};        
+        
         return;
   
       elseif ischar(varargin{1})
