@@ -17,10 +17,8 @@ function [odf,rot,v1,v2] = centerSpecimen(odf,v0,varargin)
 %  v1,v2  - normal vector of the two fold symmetry axes
 %
 % Options
-%  delta      - stepsize for evaluating the gradient
-%  itermax    - maximum number of newton iterations (default 5)
 %  SO3Grid    - a @SO3Grid the @ODF is evaluatete on
-%  maxpolar   - specifies the opening angle for the initial search grid around input center
+%  delta      - specifies the opening angle for the initial search grid around input center
 %  resolution - specifies the resolution for the initial search grid
 %  silent     - dont verbose number of initial axes and the newton iteration
 %
@@ -55,10 +53,7 @@ function [odf,rot,v1,v2] = centerSpecimen(odf,v0,varargin)
 
 % get options
 if nargin < 2, v0 = xvector; end
-delta = get_option(varargin,'delta',0.5*degree);
-maxangle = get_option(varargin,'maxpolar',15*degree);
-verbose = ~check_option(varargin,'silent');
-itermax = get_option(varargin,'itermax',5);
+delta = get_option(varargin,'delta',15*degree);
 
 % the ODF should not yet have a specimen symmetry
 odf.SS = specimenSymmetry;
@@ -75,27 +70,34 @@ else
   y0 = odf.eval(SO3);
 end
 
-vdisp('  searching for first two fold symmetry axes',varargin{:});
+vdisp('  searching for a first two fold symmetry axes',varargin{:});
 v0 = hr2quat(zvector,v0) * ...
-  equispacedS2Grid('maxtheta',maxangle,'resolution',5*degree,varargin{:});
+  equispacedS2Grid('maxtheta',delta,'resolution',5*degree,varargin{:});
 v1 = initialSearch(v0);
 v1 = hr2quat(zvector,v1) * ...
   equispacedS2Grid('maxtheta',2.5*degree,'resolution',0.75*degree);
 v1 = initialSearch(v1);
-%v1 = newton(v1);
 
-vdisp('  searching for second two fold symmetry axes',varargin{:});
+vdisp('  searching for a second two fold symmetry axes',varargin{:});
 v0 = rotation('axis',v1,'angle',(-45:5:45)*degree) * orth(v1);
 v2 = initialSearch(v0);
 % refine search
 v2 = rotation('axis',v1,'angle',(-5:.5:5)*degree) * v2;
 v2 = initialSearch(v2);
 
-rot = inv(rotation('map',v1,xvector,v2,yvector));
-if all(isfinite(double(rot))), odf = rotate(odf,rot); end
+rot = rotation('map',v1,closesAxis(v1),v2,closesAxis(v2));
+odf = rotate(odf,rot);
 
 % ------------------- local functions -----------------------------------
 % -----------------------------------------------------------------------
+
+  function a = closesAxis(u)
+    
+    aa = [xvector,yvector,zvector]; aa = [aa,-aa];
+    [~,i] = min(angle(u,aa));
+    a = aa(i);
+    
+  end
 
   function v = initialSearch(v)
     
@@ -110,69 +112,8 @@ if all(isfinite(double(rot))), odf = rotate(odf,rot); end
 
     [fval,i] = min(val); v = v(i);
 
-    if verbose, fprintf('  fit: %f\n', fval); end
+    vdisp(['  fit: ', xnum2str((1-fval)*100) '%']);
     
-  end
-
-  function v = newton(v)
-    % perform newton iteration on the polar coordinates of v such that v
-    % becomes a two fold symmetry axis
-
-    p = zeros(2,1);
-    [p(1),p(2)] = polar(vector3d(v));
-
-    iter = 0;
-    while  iter < itermax
-  
-      iter = iter + 1;
-  
-      % jacobian
-      jf = jacobian(p);
-  
-      % defect
-      df = gradient(p);
-  
-      p = p - jf \ df;
-  
-      fval = f(p);
-      
-      if verbose, fprintf('  fit at iteration %d: %f\n',iter, fval ); end
-    end
-
-    v = vector3d('theta',p(1),'rho',p(2));
-
-  end
-
-  function jf = jacobian(p)
-    % the jacobian
-
-    jf = zeros(2,2);
-    for k=1:2
-      jp = p; jm = p;
-      
-      jp(k) = p(k) + delta/2;
-      jm(k) = p(k) - delta/2;
-      
-      jf(:,k) = gradient(jp) - gradient(jm);
-    end
-    jf = jf./delta;
-    
-  end
-
-  function df = gradient(d)
-    % discrete  gradient
-
-    df = zeros(2,1);
-    for k=1:2
-      dp = d; dm = d;
-      
-      dp(k) = d(k) + delta/2;
-      dm(k) = d(k) - delta/2;
-      
-      df(k) = f(dp) - f(dm);
-    end
-    df = df./delta;
-
   end
 
   function y = f(v)
