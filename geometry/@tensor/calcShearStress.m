@@ -26,8 +26,8 @@ function [tauMax,m,n,tau,ind] = calcShearStress(sigma,m,n,varargin)
 
 if check_option(varargin,'symmetrise')
   
-  [m,l] = symmetrise(m,'antipodal'); %#ok<NASGU>
-  [n,l] = symmetrise(n,'antipodal'); %#ok<NASGU>
+  [m,l] = symmetrise(m,'antipodal');
+  [n,l] = symmetrise(n,'antipodal');
   
   %m = symmetrise(m);
   %n = symmetrise(n);
@@ -52,8 +52,9 @@ for i = 1:length(m)
 end
 
 if length(m)>1
-  [tauMax,ind] = max(abs(tau));
-
+  %[tauMax,ind] = max(abs(tau));
+  [~,ind] = max(abs(tau));
+  tauMax = tau(sub2ind(size(tau),ind,1:size(tau,2)));
   m = m(ind);
   n = n(ind);
 else
