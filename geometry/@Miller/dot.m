@@ -15,6 +15,9 @@ function d = dot(m1,m2,varargin)
 %  antipodal - consider m1,m2 with antipodal symmetry
 %  all       -
 
+if ~isa(m1,'Miller') || ~isa(m2,'Miller') || m1.CS ~= m2.CS
+  warning('Symmetry mismatch')
+end
 
 if length(m1) == 1 || length(m2) == 1
   d = dot_outer(m1,m2,varargin{:});
