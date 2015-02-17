@@ -150,6 +150,7 @@ elseif check_option(varargin,'3d')
 else
   
   if isa(d,'vector3d')
+    d.antipodal = true;
     quiver(S2,d,varargin{:});
   else
     plot(S2,d,'contourf',varargin{:});
