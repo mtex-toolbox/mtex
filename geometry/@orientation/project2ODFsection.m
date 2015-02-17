@@ -104,9 +104,11 @@ dmin = dmin(ind);
 ind2 = isappr(d,repmat(dmin,1,size(sec,2)));
 
 % construct output
-% TODO
+% TODO check inside?
 for i = 1:size(sec,2)  
-  v{i} = vector3d('polar',e2(ind2(:,i)),mod(rho(ind2(:,i)),2*pi),varargin{:});
+  th = e2(ind2(:,i));
+  rh = mod(rho(ind2(:,i)),2*pi);  
+  v{i} = vector3d('polar',th,rh,varargin{:});
 end
 
 
