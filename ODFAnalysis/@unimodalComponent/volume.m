@@ -10,7 +10,8 @@ if radius > pi / component.CS.multiplicityZ || ...
 else
 
   % compute distances
-  d = reshape(component.center.angle_outer(center,'all'),[],length(component.center));
+  d = reshape(component.center.angle_outer(center,'all'),...
+    length(component.center),[]).';
 
   % precompute volumes
   [vol,r] = volume(component.psi,radius);

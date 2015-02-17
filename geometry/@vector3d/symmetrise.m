@@ -15,6 +15,7 @@ function [v,l] = symmetrise(v,S,varargin)
 % TODO
 % symmetrise behaviour for case 1 and option 'antipodal' is not very
 % intuitive
+% we should use the option unique to get the unique symmetric equivalent!!
 
 if nargout == 2
   

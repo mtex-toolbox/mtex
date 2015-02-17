@@ -22,10 +22,7 @@ end
 ax = get(target,'Parent');
 
 % get value
-value = [];
 zd = get(target,'zdata');
-if isempty(zd), return; end
-  
 xd = get(target,'xdata');
 yd = get(target,'ydata');
 
