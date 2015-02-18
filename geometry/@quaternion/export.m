@@ -2,15 +2,15 @@ function export(q,fname,varargin)
 % export quaternions to a ascii file
 %
 % Input
-%  ebsd - @EBSD
+%  q - @quaternion
 %  fname - filename
 %
 % Options
-%  quaternion - store as quaternion values
-%  Bunge   - Bunge convention (default)
-%  Matthies     - Matthies convention (alpha beta gamma)
-%  degree  - output in degree (default)
-%  radians - output in radians
+%  quaternion - export quaternion values
+%  Bunge      - export Bunge Euler angles (default)
+%  Matthies   - export Matthies Euler angles (alpha beta gamma)
+%  degree     - output in degree (default)
+%  radians    - output in radians
 
 if check_option(varargin,'quaternion')
 

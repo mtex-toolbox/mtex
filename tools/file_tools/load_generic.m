@@ -1,9 +1,7 @@
 function [d,options,header,c] = load_generic(fname,varargin)
 % load file using import data and txt2mat
 
-if ~exist(fname,'file')
-  error(['File ' fname ' not found!']);
-end
+if ~exist(fname,'file'), error(['File ' fname ' not found!']); end
 
 % get options
 if check_option(varargin,'header')
@@ -12,9 +10,11 @@ else
   options = {};  
 end    
 
+minColumns = get_option(varargin,'minColumns',3);
+
 c = extract_option(varargin,'ReplaceExpr','cell');
 InfoLevel = get_option(varargin,'InfoLevel',1);
-options = {options{:},c{:}};
+options = [options,c];
 
 d = [];
 
@@ -42,7 +42,7 @@ if ~check_option(varargin,'noascii')
   end
   
   % data found?
-  if size(d,1)>0 && size(d,2)>2,
+  if size(d,1)>0 && size(d,2)>=minColumns,
     c = extract_colnames(header,size(d,2));
     options = delete_option(varargin,'check');
     return;
