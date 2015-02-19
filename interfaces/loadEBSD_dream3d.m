@@ -1,7 +1,5 @@
 function ebsd = loadEBSD_dream3d(fname,varargin)
 
-ebsd = EBSD;
-
 try 
   api = localGetApi(fname);
 catch %#ok<CTCH>
@@ -12,7 +10,7 @@ end
 [opts,data]     = localGetFields(api,opts);
 
 uphases = unique(data.Phases);
-CS = repmat({crystalSymmetry('cubic')},numel(uphases),1);
+CS = get_option(varargin,'CS',repmat({crystalSymmetry('cubic')},numel(uphases),1));
 
 ebsd = EBSD(data.Rotations,data.Phases,CS,'unitCell', unitCell,'Options',opts);
 

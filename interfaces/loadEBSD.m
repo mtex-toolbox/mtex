@@ -53,7 +53,7 @@ for k = 1:numel(fname)
 
   % load the data
   ebsd{k} = feval(['loadEBSD_',char(interface)],...
-    fname{k},options{:},'InfoLevel',~is3d);   %#ok<AGROW>
+    fname{k},options{:},'InfoLevel',~is3d,varargin{:});   %#ok<AGROW>
   
   % assign Z - value
   if is3d

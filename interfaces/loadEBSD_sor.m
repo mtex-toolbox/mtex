@@ -41,15 +41,15 @@ try
   else
     options = {'ColumnNames',{'Euler1','Euler2','Euler3','Weight'}};
   end
-  if d{10}==0, options = {options{:},'degree'};end
+  if d{10}==0, options = [options,{'degree'}];end
   if d{11}==0,
-    options = {options{:},'Bunge'};
+    options = [options,{'Bunge'}];
   else
-    options = {options{:},'Roe'};
+    options = [options,{'Roe'}];
   end
   
   fclose(fid);
-  
+  cs = get_option(varargin,'CS',cs);
   ebsd = loadEBSD_generic(fname,'cs',cs,options{:});
   
 catch
