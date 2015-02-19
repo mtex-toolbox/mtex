@@ -95,18 +95,18 @@ for i = 1:numel(sP)
     h(i) = optiondraw(patch(patchArgs{:},...
       'MarkerFaceColor',mfc,...
       'MarkerEdgeColor',mec),varargin{:}); %#ok<AGROW>
-    
-    % this is for legend only
+    % remove from legend
     set(get(get(h(i),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
-    %h(i) = optiondraw(scatter(x,y,...
-    %  'MarkerFaceColor',mfc,...
-    %  'MarkerEdgeColor',mec),varargin{:}); %#ok<AGROW>
-    holdState = get(sP(i).ax,'nextPlot');
-    set(sP(i).ax,'nextPlot','add');
-    optiondraw(scatter(0,0,'parent',sP(i).ax,'MarkerFaceColor',mfc,...
-      'MarkerEdgeColor',mec,'visible','off'),varargin{:});
-    set(sP(i).ax,'nextPlot',holdState);
     
+    % since the legend entry for patch object is not nice we draw an
+    % invisible scatter dot just for legend
+    if check_option(varargin,'DisplayName')      
+      holdState = get(sP(i).ax,'nextPlot');
+      set(sP(i).ax,'nextPlot','add');
+      optiondraw(scatter(0,0,'parent',sP(i).ax,'MarkerFaceColor',mfc,...
+        'MarkerEdgeColor',mec,'visible','off'),varargin{:});
+      set(sP(i).ax,'nextPlot',holdState);
+    end
   end
 
   % set resize function for dynamic marker sizes
