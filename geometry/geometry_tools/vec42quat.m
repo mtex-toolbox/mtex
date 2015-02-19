@@ -17,18 +17,33 @@ function q = vec42quat(u1,v1,u2,v2)
 % quaternion_index quaternion/quaternion axis2quat Miller2quat 
 % euler2quat hr2quat idquaternion 
 
+
+u1 = vector3d(u1); v1 = vector3d(v1);
+
+% ckeck whether points have the same angle relative to each other
+if any(abs(dot(u1,vector3d(u2))-dot(v1,vector3d(v2)))>1E-3)
+  
+  if isa(u2,'Miller'), u2 = u2.CS * u2; end
+  if isa(v2,'Miller'), v2 = v2.CS * v2; end
+  
+  delta = abs(acos(repmat(dot(u1,u2),1,length(v2))) ...
+    - acos(repmat(dot(v1,v2),1,size(u2,1)).'));
+  [i,j] = find(delta<1*degree,1);
+  
+  if isempty(i)
+    warning(['Inconsitent pairs of vectors!',...
+      ' Angle difference: ',num2str(min(delta)),mtexdegchar]) %#ok<WNTAG>
+  else
+    u2 = u2(i);
+    v2 = v2(j);    
+  end
+end
+
 % normalize input
 u1 = normalize(vector3d(u1));
 v1 = normalize(vector3d(v1));
 u2 = normalize(vector3d(u2));
 v2 = normalize(vector3d(v2));
-
-% ckeck whether points have the same angle relative to each other
-if any(abs(dot(u1,u2)-dot(v1,v2))>1E-3)
-  warning(['Inconsitent pairs of vectors encounterd!',...
-    ' Maximum distorsion: ',...
-    num2str(max(abs(acos(dot(u1,u2))-acos(dot(v1,v2))))/degree),mtexdegchar]) %#ok<WNTAG>
-end
 
 % check vectors are not colinear
 if any(abs(dot(u1,u2))>1-eps)
