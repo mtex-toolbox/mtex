@@ -109,17 +109,36 @@ v ./ norm(v)
 
 %%
 % Large lists of vectors can be imported from a text file by the command
-% TODO
 
-%v = loadVector3d('file.txt','ColumnNames',{'x','y','z'})
+fname = fullfile(mtexDataPath,'vector3d','vectors.txt');
+v = loadVector3d(fname,'ColumnNames',{'polar angle','azimuth angle'})
+
+%%
+% and exported by the command 
+
+export(v,fname,'polar')
 
 %%
 % In order to visualize large lists of specimen directions scatter plots
 
-scatter(v)
+scatter(v,'upper')
 
 %%
 % or contour plots may be helpfull
 
 contourf(v)
+
+%% Indexing lists of vectors
+%
+% A list of vectors can be indexed directly by specifying the ids of the
+% vectores one is interested in, e.g.
+
+v([1:5])
+
+%%
+% gives the first 5 vectors from the list, or by logiacal indexing. The
+% following command plots all vectors with an polar angle smaller then 60
+% degree
+
+scatter(v(v.theta<60*degree),'grid','on')
 

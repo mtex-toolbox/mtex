@@ -114,6 +114,8 @@ cs = crystalSymmetry('cubic');
 % the file name
 fname = [mtexDataPath '/ODF/odf.txt'];
 
+% TODO: write about halfwidth and the missing 1-1 relationship between ODF
+% and single orientations.
 % the resolution used for the reconstruction of the ODF
 res = 10*degree;
 
