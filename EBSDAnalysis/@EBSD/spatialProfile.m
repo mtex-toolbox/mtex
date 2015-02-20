@@ -1,46 +1,40 @@
-function varargout = spatialProfile(ebsd,lineX,varargin)
-% selects property values on a given line segment
+function [ebsd,distList] = spatialProfile(ebsd,lineX,varargin)
+% select EBSD data along line segments
 % 
 % Syntax
-%   % plots a profile of property bc
-%   spatialProfile(ebsd,lineX,'property','bc') 
-%
-%   % returns a sorted list p, where p a property and a distance |dist| to begin of line segment 
-%   [p,dist] = spatialProfile(ebsd,lineX,'property','bc')
+%   % returns a sorted list of ebsd data along lineX
+%   [ebsd_lineX,dist] = spatialProfile(ebsd,lineX)
 %
 % Input
 %  ebsd  - @EBSD
 %  lineX - list of spatial coordinates |[x(:) y(:)]| of if 3d |[x(:) y(:) z(:)]|, 
 %    where $x_i,x_{i+1}$ defines a line segment
-% Options
-%  property - by default orientation, otherwise a property field.
+%
+% Output
+%  ebsd - @EBSD restrcited to the line of interest
+%  dist - double distance along the line to the initial point
 %
 % Example
 %
 %   plot(ebsd)
 %   lineX = ginput(2)
-%   spatialProfile(ebsd,lineX,'property','mad')
-%
+%   ebsd_lineX = spatialProfile(ebsd,lineX)
+%   plot(ebsd_lineX.x,angle(ebsd_lineX(1).orientations,ebsd_lineX.orientations))
+%   xlabel('x'), ylabel('misorientation angle')
 
 if all(isfield(ebsd.prop,{'x','y','z'}))
   x_D = [ebsd.prop.x,ebsd.prop.y,ebsd.prop.z];
-elseif all(isfield(ebsd.prop,{'x','y'}))
-  x_D = [ebsd.prop.x,ebsd.prop.y];
 else
-  error('mtex:SpatialProfile','no Spatial Data!');
+  x_D = [ebsd.prop.x,ebsd.prop.y];
 end
-
-
-prop = get_option(varargin,'property','orientations');
-propVal = ebsd.(prop);
 
 radius = unitCellDiameter(ebsd.unitCell)/2;
 
 % work with homogenous coordinates
 x_D(:,end+1) = 1;
 
-dist = 0;
-p = propVal(1);
+distList = 0;
+idList = [];
 
 dim = size(lineX,2);
 for k=1:size(lineX,1)-1
@@ -48,52 +42,33 @@ for k=1:size(lineX,1)-1
   % line from A to B
   dX = lineX(k+1,:)-lineX(k,:);
   
-  [s,b,D] = svd(dX./norm(dX));
+  [s,~,D] = svd(dX./norm(dX));
   
   % if s is negative, shift into B, else shift into A
   D(dim+1,dim+1) = 1;
   D(:,end) =  [-lineX(k+double(s<0),:) 1] * D';
   
-  % homogen linear tranformation�
+  % homogen linear tranformation
   x_DX = x_D*D';
+
+  % detect which ebsd data are close to the current segment
+  id =  find(sqrt(sum(x_DX(:,2:end-1).^2,2)) <= radius &  ... distance to line
+    0 <= x_DX(:,1) & x_DX(:,1) <= norm(dX)); % length of line segment
   
-  sel =  sqrt(sum(x_DX(:,2:end-1).^2,2)) <= radius &  ... distance to line
-    0 <= x_DX(:,1) & x_DX(:,1) <= norm(dX); % length of line segment
+  % distance to the starting point of the line segment
+  dist = x_DX(id,1);
   
-  % append to the list
-  t = x_DX(sel,1);
+  % if we start with B, reverse the distance
+  if double(s<0), dist = max(dist)-dist; end
   
-  % if we start with the B, reverse the distance
-  if double(s<0), t = max(t)-t; end
-  
-  [t ndx] = sort(t);
-  ptemp = propVal(sel);
-  p = [p; ptemp(ndx)];
-  dist = [dist; dist(end)+t];
+  [dist, ndx] = sort(dist);
+  idList = [idList; id(ndx)]; %#ok<AGROW>
+  distList = [distList; distList(end)+dist]; %#ok<AGROW>
   
 end
 
-p(1) = []; dist(1) = [];
-
-if nargout > 0
-  
-  varargout{1} = p;
-  varargout{2} = dist;
-  
-else
-  
-  if isa(p,'quaternion')
-    p = angle(p,p(1))/degree;
-    prop = mtexdegchar;
-  else
-    p = p - p(1);
-  end
-  
-  optiondraw(plot(dist,p),varargin{:});
-  ylabel(['\Delta in ' prop])
-  xlabel('distance')
-  
-end
+distList(1) = [];
+ebsd = ebsd.subSet(idList);
 
 
 % ----------------------------------------------------------------

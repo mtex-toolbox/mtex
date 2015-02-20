@@ -27,17 +27,21 @@ ebsd_selected = ebsd(grain_selected)
 
 %%
 % A more convinient way to select grains in daily practice, is by spatial
-% coordinates. Note, that the plotting conventions have fairly to be
-% adjusted to match the spatial coordinates, present in the EBSD or
-% GrainSet.
+% coordinates. 
 
 grain_selected = grains(12000,3000)
-
 
 %%
 % you can get the id of this grain by
 
 grain_selected.id
+
+%%
+% lets look for the grain with the largest grain orientation spread
+
+[~,id] = max(grains.GOS)
+grain_selected = grains(id)
+
 
 %%
 %
@@ -93,41 +97,42 @@ T_oblate    = bingham_test(ori,'oblate',   'approximated');
 % We proceed by specifiing such a line segment
 
 close,   plot(grain_selected.boundary,'linewidth',2)
-hold on, plot(ebsd(grain_selected),ebsd(grain_selected).orientations.angle)
+hold on, plot(ebsd(grain_selected),ebsd(grain_selected).orientations)
 
 % line segment
-x =  [11000   2500; ...
-      13500  5000];
+lineSec =  [18826   6438; 18089 10599];
 
-line(x(:,1),x(:,2),'linewidth',2)
-
-%%
-% The command <EBSD.spatialProfile.html spatialProfile> extracts
-% orientations along a line segment
-
-[o,dist] = spatialProfile(ebsd(grain_selected),x);
+line(lineSec(:,1),lineSec(:,2),'linewidth',2)
 
 %%
-% where the first output argument is a set of orientations ordered along
-% the line segment, and the second is the distance from the starting point.
+% The command <EBSD.spatialProfile.html spatialProfile> restricts the EBSD
+% data to this line
+
+ebsd_line = spatialProfile(ebsd(grain_selected),lineSec);
+
 %% 
-% So, we compute misorientation angle and plot as a profile
+% Next, we plot the misorientation angle to the first point of the line
+% as well as the orientation gradient
 
-m = o(1) \ o
+close all % close previous plots
 
-close, plot(dist,angle(m)/degree)
+% misorientation angle to the first orientation on the line
+plot(ebsd_line.y,...
+  angle(ebsd_line(1).orientations,ebsd_line.orientations)/degree)
 
-m = o(1:end-1) .\ o(2:end)
+% misorientation gradient
+hold all
+plot(0.5*(ebsd_line.y(1:end-1)+ebsd_line.y(2:end)),...
+  angle(ebsd_line(1:end-1).orientations,ebsd_line(2:end).orientations)/degree)
+hold off
 
-hold on, plot(dist(1:end-1)+diff(dist)./2,... % shift 
-  angle(m)/degree,'color','r')
-xlabel('distance'); ylabel('orientation difference in degree')
+xlabel('y'); ylabel('misorientation angle in degree')
 
-legend('to reference orientation','to neighbour')
+legend('to reference orientation','orientation gradient')
 
 %%
 % We can also observe the rotation axis, here we colorize after the
 % distance
 
-close, plot(axis(o),dist,'markersize',3,'antipodal')
+close, plot(axis(ebsd_line),dist,'markersize',3,'antipodal')
 
