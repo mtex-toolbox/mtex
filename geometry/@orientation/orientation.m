@@ -64,6 +64,9 @@ methods
     if ~isempty(varargin) && isa(varargin{1},'orientation')
       o.CS = varargin{1}.CS;
       o.SS = varargin{1}.SS;
+    elseif ~isempty(varargin) && ischar(varargin{1}) && strcmpi(varargin{1},'map')
+      if isa(varargin{2},'Miller'), o.CS = varargin{2}.CS; end
+      if isa(varargin{3},'Miller'), o.SS = varargin{3}.CS; end
     end
     if ~isempty(sym), o.CS = sym{1};end
     if length(sym) > 1, o.SS = sym{2};end

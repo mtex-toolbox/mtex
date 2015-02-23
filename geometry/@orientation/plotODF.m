@@ -73,7 +73,7 @@ if ~check_option(varargin,'all') && length(o) > 2000 || check_option(varargin,'p
   disp(['  plotting ', int2str(points) ,' random orientations out of ', ...
     int2str(length(o)),' given orientations']);
 
-  samples = discretesample(ones(1,length(o)),points);
+  samples = discretesample(length(o),points);
   o= o.subSet(samples);
   if ~isempty(data)
     data = data(samples); end

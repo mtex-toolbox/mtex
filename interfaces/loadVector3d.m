@@ -29,7 +29,7 @@ if iscell(fname), fname = fname{1};end
 
 %  determine interface 
 if ~check_option(varargin,'interface')
-  [interface,options] = check_interfaces(fname,'vector3d',varargin{:});
+  [interface,options] = check_interfaces(fname,'Vector3d',varargin{:});
 else
   interface = get_option(varargin,'interface');
   options = delete_option(varargin,'interface',1);

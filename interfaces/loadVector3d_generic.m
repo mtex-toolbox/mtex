@@ -1,28 +1,28 @@
 function [v,options] = loadVector3d_generic(fname,varargin)
 % load pole figure data from (alpha,beta,gamma) files
 %
-%% Description
+% Description
 %
 % *loadVector3d_generic* is a  function that reads any txt or exel files 
 % The assoziation of the columns as cartesian coordinates or polar angles 
 % is specified by the options |ColumnNames| and |Columns|. The files can be
 % contain any number of header lines.
 %
-%% Syntax
+% Syntax
 %  v   = loadVector3d_generic(fname,'ColumnNames',{'x','y','z'})
 %  v   = loadVector3d_generic(fname,'ColumnNames',{'latitude','longitude'})
 %  v   = loadVector3d_generic(fname,'ColumnNames',{'polar angle','azimuth'})
 %
-%% Input
+% Input
 %  fname - file name (text files only)
 %
-%% Options
+% Options
 %  ColumnNames       - names of the colums to be imported
 %  Columns           - postions of the columns to be imported
 %  RADIANS           - treat input in radiand
 %  DELIMITER         - delimiter between numbers
 %
-%% See also
+% See also
 % 
 % azimuth, longitude - angle in the xy plane
 % polar angle, colatitude
@@ -30,7 +30,7 @@ function [v,options] = loadVector3d_generic(fname,varargin)
 % 
 
 % load data
-[d,options,header,c] = load_generic(char(fname),varargin{:});
+[d,options,header,c] = load_generic(char(fname),'minColumns',2,varargin{:});
 
 varargin = options;
 

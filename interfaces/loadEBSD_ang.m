@@ -71,7 +71,7 @@ try
   if numel(sscanf(hl{end},'%f')) < 11
     varargin = [{'ReplaceExpr',ReplaceExpr},varargin];
   end
-  
+     
   % get number of columns
   if isempty(sscanf(hl{nh+1},'%*f %*f %*f %*f %*f %*f %*f %*f %*f %*f\n'))
   

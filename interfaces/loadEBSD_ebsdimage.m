@@ -1,22 +1,22 @@
 function ebsd = loadEBSD_ebsdimage(fname,varargin)
 
-%% Check extension
+% Check extension
 [~, basename, ext] = fileparts(fname);
 if ~strcmp(ext, '.zip')
   error('MTEX:wrongInterface','Interface EBSD-Image does not fit file format!');
 end
 
-%% Create temporary folder to extract ZIP
+% Create temporary folder to extract ZIP
 zipdir = fullfile(tempdir, basename);
 status = mkdir(zipdir);
 if ~status
   error('MTEX:wrongInterface','Cannot create temporary folder');
 end
 
-%% Extract ZIP
+% Extract ZIP
 unzip(fname, zipdir);
 
-%% Read alias.properties
+% Read alias.properties
 text = fileread(fullfile(zipdir, 'alias.properties'));
 
 expr = '[\w\.\-\_]+=(\w+)[^\n]*';
@@ -34,7 +34,7 @@ if isempty(lookup)
   error('MTEX:wrongInterface', 'No map in zip');
 end
 
-%% Setup pixel coordinates
+% Setup pixel coordinates
 % Read calibration
 text = fileread(fullfile(zipdir, 'multimap.properties'));
 
@@ -106,7 +106,7 @@ options.y = ys;
 
 unitCell = calcUnitCell([xs, ys], 'GridType', 'rectangular');
 
-%% Read phases
+% Read phases
 
 if isKey(lookup, 'Phases')
   phases = reshape(readMap(fullfile(zipdir, lookup('Phases'))), ...
@@ -119,7 +119,7 @@ else
   phases = ones(data_length, 1, 'int32');
 end
 
-%% Read orientations
+% Read orientations
 if isKey(lookup, {'Q0', 'Q1', 'Q2', 'Q3'})
   q0 = reshape(readMap(fullfile(zipdir, lookup('Q0'))), data_length, 1);
   q1 = reshape(readMap(fullfile(zipdir, lookup('Q1'))), data_length, 1);
@@ -139,7 +139,7 @@ end
 
 rotations = rotation(quaternion(q0, q1, q2, q3));
 
-%% Read other maps
+% Read other maps
 lookup_keys = keys(lookup);
 for i = 1:numel(lookup_keys)
   key = lookup_keys{i};
@@ -150,13 +150,13 @@ for i = 1:numel(lookup_keys)
   options.(fieldname) = data;
 end
 
-%% Remove temporary folder
+% Remove temporary folder
 status = rmdir(zipdir, 's');
 if ~status
   warning('MTEX:wrongInterface','Cannot remove temporary folder');
 end
 
-%% Construct EBSD object
+% Construct EBSD object
 
 ebsd = EBSD(rotations, 'phase', phases, 'unitCell', unitCell, ...
             'options', options);

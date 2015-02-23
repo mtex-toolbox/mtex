@@ -60,6 +60,11 @@ if isNew % finalize plot
   set(gcf,'Name',['Pole figures of "',inputname(1),'"']);
   
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
+  
+  if check_option(varargin,'3d')
+    rotate3d(gcf);
+    linkprop(mtexFig.children, 'CameraPosition');
+  end
 end
 
 % -------------- Tooltip function ---------------------------------

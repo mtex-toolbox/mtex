@@ -1,4 +1,5 @@
 function s = char(sR)
+% convert spherical region to char
 
 switch length(length(sR.N))  
   case 0

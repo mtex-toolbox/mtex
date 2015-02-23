@@ -51,7 +51,7 @@ if ~check_option(varargin,{'all','contour','contourf','smooth'}) && ...
   disp('  You can specify the the number points by the option "points".'); 
   disp('  The option "all" ensures that all data are plotted');
   
-  samples = discretesample(ones(1,length(o)),points);
+  samples = discretesample(length(o),points);
   o= o.subSet(samples);
   if ~isempty(data), data = data(samples); end
 end

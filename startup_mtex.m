@@ -119,7 +119,6 @@ end
 function setMTEXPath(local_path)
 
 addpath_recurse(local_path,{'c','data','help','templates'});
-addpath_recurse(fullfile(local_path,'help','doc','UsersGuide'));
 
 end
 
