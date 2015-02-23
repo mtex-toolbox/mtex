@@ -1,9 +1,10 @@
 %% Detecting sample symmetry
+% Explains how to detect orthotropic symmetry in an ODF.
 %
-
 %% Open in Editor
 %
-
+%% Contents
+%
 %% A synthetic example
 % We start by modelling a orthotropic ODF with cubic crystal symmetry.
 
@@ -60,7 +61,7 @@ plotPDF(odf_corrected,h,'antipodal',8,'silent')
 angle(rot,inv(rot_inv)) / degree
 
 
-%% Real world example
+%% Sample symmetry in an ODF computed from pole figure data
 %
 % In the next example we apply the function |centerSpecimen| to an ODF
 % estimated from pole figure data. Lets start by importing them
@@ -73,7 +74,7 @@ plot(pf,'silent')
 %% 
 % In a second step we compute an ODF from the pole figure data
 
-odf = calcODF(pf)
+odf = calcODF(pf,'silent')
 
 plotPDF(odf,h,'antipodal','silent')
 
