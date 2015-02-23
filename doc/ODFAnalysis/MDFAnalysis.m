@@ -37,7 +37,7 @@ plotPDF(mdf_boundary,Miller(1,0,0,ebsd('Fo').CS))
 % Alternatively the uncorelated misorientation distribution function can be
 % computed by providing the option *uncorelated*
 
-mori = calcMisorientation(ebsd('Fo'),ebsd('En'))
+mori = calcMisorientation(ebsd('En'),ebsd('Fo'))
 mdf_uncor = calcODF(mori)
 
 %%
@@ -75,6 +75,7 @@ plotPDF(mdf,Miller(1,0,0,ebsd('Fo').CS))
 % misorientations with the theoretical angle distribution of the
 % uncorrelated MDF.
 
+close all
 plotAngleDistribution(grains.boundary('fo','en'))
 
 hold on

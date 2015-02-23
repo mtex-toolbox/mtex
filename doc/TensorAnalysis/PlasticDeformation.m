@@ -136,7 +136,7 @@ sigma
 [tauMax,mActive,nActive,tau,ind] = calcShearStress(sigma,m,n,'symmetrise');
 
 % pot the maximum Schmidt factor
-contourf(r,tauMax);
+contourf(r,abs(tauMax));
 colorbar
 
 %%
@@ -150,7 +150,7 @@ mtexColorMap black2white
 % We can even visualize the active slip system
 
 % take as directions the centers of the fundamental regions
-r = symmetrise([Miller(1,3,5,CS),Miller(-1,3,5,CS)]);
+r = symmetrise(CS.fundamentalSector.center,CS);
 sigma = EinsteinSum(tensor(r),1,r,2)
 
 % compute active slip system
@@ -213,7 +213,7 @@ title('Schmidt factors for (010)[100]')
 % to be much less computational demanding for large data sets.
 
 % compute grains
-grains = calcGrains(ebsd)
+grains = calcGrains(ebsd('indexed'))
 
 % extract the orientations
 ori = grains('Forsterite').meanOrientation;

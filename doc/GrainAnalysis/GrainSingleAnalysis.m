@@ -131,8 +131,10 @@ xlabel('y'); ylabel('misorientation angle in degree')
 legend('to reference orientation','orientation gradient')
 
 %%
-% We can also observe the rotation axis, here we colorize after the
-% distance
+% We can also plot the orientations along this line into inverse pole
+% figures and colorize them according to their y-coordinate
 
-close, plot(axis(ebsd_line),dist,'markersize',3,'antipodal')
+close, plotIPDF(ebsd_line.orientations,[xvector,yvector,zvector],...
+  'property',ebsd_line.y,'markersize',3,'antipodal')
 
+colorbar

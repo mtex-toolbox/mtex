@@ -11,7 +11,8 @@
 %
 % Since crystal directions are always subject to a certain crystal
 % reference frame, the starting point for any crystal direction is the
-% definition of a variable of type <symmetry_index.html symmetry>
+% definition of a variable of type <crystalSymmetry_index.html
+% crystalSymmetry>
 
 cs = crystalSymmetry('triclinic',[5.29,9.18,9.42],[90.4,98.9,90.1]*degree,...
   'X||a*','Z||c','mineral','Talc');
@@ -41,16 +42,22 @@ plot(m,'upper','labeled','grid')
 %%
 % Alternatively, a crystal direction may also be defined in the reciprocal
 % space, i.e. with respect to the dual axes a*, b*, c*. The corresponding
-% coordinates are usually denoted by |h|, |k|, |l|,
+% coordinates are usually denoted by |h|, |k|, |l|. Note that for non
+% Euclidean crystal frames uvw and hkl notations usually lead to different
+% directions.
 
 m = Miller(1,0,1,cs,'hkl')
-hold on, plot(m,'upper','labeled'), hold off
+hold on
+plot(m,'upper','labeled')
+% the corresponding lattice plane
+plot(m,'plane','linecolor','r','linewidth',2)
+hold off
 
-%%
-% Note that for non Euclidean crystal frames uvw and hkl notations usually
-% lead to different directions. In the case of trigonal and hexagonal
-% crystal symmetry, the convention of using four Miller indices h, k, i, l,
-% and U, V, T, W is supported as well.
+%% Trigonal and Hexagonal Convention
+%
+% In the case of trigonal and hexagonal crystal symmetry, the convention of
+% using four Miller indices h, k, i, l, and U, V, T, W is supported as
+% well.
 
 cs = loadCIF('quartz')
 m = Miller(2,1,-3,1,cs,'UVTW')

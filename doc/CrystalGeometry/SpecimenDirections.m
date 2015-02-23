@@ -126,7 +126,7 @@ scatter(v,'upper')
 %%
 % or contour plots may be helpfull
 
-contourf(v)
+contourf(v,'upper')
 
 %% Indexing lists of vectors
 %

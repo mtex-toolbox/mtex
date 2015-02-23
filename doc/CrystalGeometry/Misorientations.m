@@ -54,13 +54,14 @@ round(inv(mori) * Miller(2,-1,-1,0,CS))
 
 m = Miller({1,0,-1,0},{1,1,-2,0},{1,0,-1,1},{1,1,-2,1},{1,1,-2,2},{0,0,0,1},CS);
 
+close all
 % cycle through all major lattice planes
 for im = 1:length(m)
   
   % plot the lattice planes of grains 80 with respect to the 
   % reference frame of grain 70
   plot(mori * symmetrise(m(im)),'symmetrised','MarkerSize',10,...
-    'DisplayName',char(m(im)),'fundamentalRegion')
+    'DisplayName',char(m(im)),'fundamentalRegion','figSize','normal')
   hold all
 end
 hold off
@@ -68,7 +69,6 @@ annotate(m,'labeled')
 
 % show legend
 legend({},'location','NorthWest','FontSize',13);
-
 
 %%
 % we observe an almost perfect math between the {11-20} lattice planes
@@ -137,8 +137,8 @@ CS_Hem = loadCIF('Hematite')
 
 %%
 % The phase transition from Magnetite to Hematite is described in
-% literature by {111}_m || {0001}_h and {-101}_m || {10-10}_h The
-% corresponding misorientation is defined in MTEX by
+% literature by {111}_m parallel {0001}_h and {-101}_m parallel {10-10}_h
+% The corresponding misorientation is defined in MTEX by
 
 Mag2Hem = orientation('map',...
   Miller(1,1,1,CS_Mag),Miller(0,0,0,1,CS_Hem),...

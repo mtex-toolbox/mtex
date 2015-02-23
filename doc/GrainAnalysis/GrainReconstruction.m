@@ -6,17 +6,13 @@
 %% Contents
 
 %% 
-% Let us first import some example EBSD data and reduce it to a subregion
+% Let us first import some example EBSD data and restrict it to a subregion
 % of interest.
 
-plotx2east
+close all; plotx2east
 mtexdata forsterite
-
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
-
-close all
 plot(ebsd)
-
 
 %% Basic grain reconstruction
 % We see that there are a lot of not indexed measurements. For grain
@@ -40,7 +36,6 @@ plot(ebsd)
 
 grains = calcGrains(ebsd,'angle',10*degree)
 
-
 %%
 % The reconstructed grains are stored in the variable *grains*.
 % Note that also the notIndexed measurements are grouped into grains. This
@@ -62,10 +57,12 @@ hold off
 % Beside the list of grains the command <EBSD.calcGrains.html calcGrains>
 % returns also two other output arguments. 
 
-[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd,'angle',7.5*degree)
+[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd,'angle',7.5*degree);
+grains
+ebsd
 
 %%
-% ´The second output argument grainId is a list with the same size as the
+% The second output argument grainId is a list with the same size as the
 % EBSD measurements that stores for each mesurement the corresponding
 % grainId. The above syntax stores this list directly inside the ebsd
 % variable. This enables MTEX to select EBSD data by grains. The following

@@ -76,8 +76,9 @@ o = rotation('axis',xvector,'angle',30*degree)
 o = rotation('map',xvector,yvector,zvector,zvector)
 
 %%
-% If only two vectors are specified, then the rotation with the smaller angle is
-% returned and gives the rotation from first vector onto the second one.
+% If only two vectors are specified, then the rotation with the smallest
+% angle is returned and gives the rotation from first vector onto the
+% second one.
 
 o = rotation('map',xvector,yvector)
 
@@ -85,8 +86,8 @@ o = rotation('map',xvector,yvector)
 % *A fibre of rotations*
 %
 % The set of all rotations that rotate a certain vector u onto a certain
-% vector v define a fibre in the rotation space. A discretisation of such
-% a fibre is defined by
+% vector v define a fibre in the rotation space. A discretisation of such a
+% fibre is defined by
 
 u = xvector;
 v = yvector;
@@ -129,7 +130,8 @@ o = rotation('Euler',90*degree,90*degree,0*degree)
 v = o * xvector
 
 %%
-% The inverse rotation is computed via the <rotation.mldivide.html backslash operator>
+% The inverse rotation is computed via the <rotation.mldivide.html
+% backslash operator>
 
 o \ v
 
@@ -155,16 +157,16 @@ rot = rot2 * rot1
 % <quaternion.angle.html angle(rot)> and
 % <quaternion.axis.html axis(rot)>
 
-angle(rot)/degree
+rot.angle / degree
 
-axis(rot)
+rot.axis
 
 %%
 % If two rotations are specifies the command
 % <quaternion.angle.html angle(rot1,rot2)> computes the rotational angle
 % between both rotations
 
-angle(rot1,rot2)/degree
+angle(rot1,rot2) / degree
 
 
 %%
@@ -174,6 +176,39 @@ angle(rot1,rot2)/degree
 % <quaternion.inv.html inv(rot)>
 
 inv(rot)
+
+%% Improper Rotations
+% Improper rotations are coordinate transformations from a left hand into a
+% right handed coordinate system as, e.g. mirroring or inversion.
+% In MTEX the inversion is defined as the negative identy rotation
+
+I = - rotation('Euler',0,0,0)
+
+%%
+% Note that this is convinient as both groupings of the operations "-" and
+% "*" should give the same result
+
+- (rotation('Euler',0,0,0) * xvector)
+(- rotation('Euler',0,0,0)) * xvector
+
+%%
+% *Mirroring*
+%
+% As a mirroring is nothing else then a rotation about 180 degree about the
+% normal of the mirroring plane followed by a inversion we can defined
+% a mirroring about the axis (111) by
+
+mir = -rotation('axis',vector3d(1,1,1),'angle',180*degree)
+
+%%
+% A convinient shortcut is the command
+
+mir = reflection(vector3d(1,1,1))
+
+%%
+% To check whether a rotation is improper or not you can do
+
+mir.isImproper
 
 %% Conversion into Euler Angles and Rodrigues Parametrisation
 %
@@ -189,8 +224,11 @@ inv(rot)
 
 %% Plotting Rotations
 %
-% The <quaternion.plot.html plot> function allows you to visualize a
-% rotation by plotting how the standard basis x,y,z transforms under the
-% rotation.
+% The <quaternion.scatter.html scatter> function allows you to visualize a
+% rotation in Rodriguez space.
 
-plot(rot)
+% define 100 random rotations
+rot = randq(100)
+
+% and plot the Rodriguez space
+scatter(rot)

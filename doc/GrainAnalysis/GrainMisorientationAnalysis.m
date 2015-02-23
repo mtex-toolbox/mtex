@@ -148,7 +148,7 @@ plotAngleDistribution(ebsd('Fo'),ebsd('En'))
 close all
 mtexFig = newMtexFigure;
 plotAxisDistribution(ebsd('Fo'),'smooth','parent',mtexFig.gca)
-title('uncorrelated axis distribution')
+mtexTitle('uncorrelated axis distribution')
 
 %%
 % We may plot the axes of the boundary misorientations directly into this
@@ -156,7 +156,7 @@ title('uncorrelated axis distribution')
 
 mtexFig.nextAxis
 plotAxisDistribution(grains.boundary('Fo','Fo'),'smooth','parent',mtexFig.gca)
-title('boundary axis distribution')
+mtexTitle('boundary axis distribution')
 colorbar
 
 %%
