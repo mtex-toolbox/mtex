@@ -7,7 +7,7 @@
 %
 %% Contents
 %
-%%
+%% Misorientations between grains
 % Let us import some EBSD data set, compute grains and plot the colorized
 % according to their meanorientation and lets highlight grain 70 and grain
 % 80
@@ -47,7 +47,7 @@ round(mori * Miller(1,1,-2,0,CS))
 round(inv(mori) * Miller(2,-1,-1,0,CS))
 
 
-%%
+%% Coinsident lattice planes
 % The coincidence between major lattice planes may suggest that the
 % misorientation is a twinning misorientation. Lets analyse whether there
 % are some more alignments between major lattice planes.
@@ -83,7 +83,7 @@ angle(mori * Miller(0,0,0,1,CS) ,Miller(1,0,-1,0,CS)) / degree
 angle(mori * Miller(1,1,-2,2,CS),Miller(1,0,-1,0,CS)) / degree
 angle(mori * Miller(1,0,-1,0,CS),Miller(1,1,-2,2,CS)) / degree
 
-%%
+%% Twinning misorientations
 % Lets define a misorientation that makes a perfect fit between the {11-20}
 % lattice planes and between the {10-11} lattice planes
 
@@ -112,7 +112,7 @@ annotate(m,'labeled')
 legend({},'location','NorthWest','FontSize',13);
 
 
-%%
+%% Highlight twinning boundaries
 % It turns out that in the previous EBSD map many grain boudaries have a
 % misorientation close to the twinning misorientation we just defined. Lets
 % higlight such twinning boundaries
