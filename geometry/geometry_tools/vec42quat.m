@@ -17,10 +17,64 @@ function q = vec42quat(u1,v1,u2,v2)
 % quaternion_index quaternion/quaternion axis2quat Miller2quat 
 % euler2quat hr2quat idquaternion 
 
+
+u1 = vector3d(u1); v1 = vector3d(v1);
+
+% ckeck whether points have the same angle relative to each other
+if any(abs(dot(u1,vector3d(u2))-dot(v1,vector3d(v2)))>1E-3)
+  
+  if isa(u2,'Miller'), u2 = u2.CS * u2; end
+  if isa(v2,'Miller'), v2 = v2.CS * v2; end
+  
+  delta = abs(acos(repmat(dot(u1,u2),1,length(v2))) ...
+    - acos(repmat(dot(v1,v2),1,size(u2,1)).'));
+  [i,j] = find(delta<1*degree,1);
+  
+  if isempty(i)
+    warning(['Inconsitent pairs of vectors!',...
+      ' Angle difference: ',num2str(min(delta)),mtexdegchar]) %#ok<WNTAG>
+  else
+    u2 = u2(i);
+    v2 = v2(j);    
+  end
+end
+
+% normalize input
 u1 = normalize(vector3d(u1));
 v1 = normalize(vector3d(v1));
 u2 = normalize(vector3d(u2));
 v2 = normalize(vector3d(v2));
+
+% check vectors are not colinear
+if any(abs(dot(u1,u2))>1-eps)
+  warning('Input vectors should not be colinear!');
+end
+
+% a third orthogonal vector
+u3 = normalize(cross(u1,u2));
+v3 = normalize(cross(v1,v2));
+
+% make also the second vector orthogonal to the first one
+u2t = normalize(cross(u3,u1));
+v2t = normalize(cross(v3,v1));
+
+% define the transformation matrix
+M = squeeze(double([v1,v2t,v3])).' * squeeze(double([u1,u2t,u3]));
+
+% convert to quaternion
+q = mat2quat(M);
+
+return
+
+% old algorithm which has a bug with
+
+u1 = vector3d(0.985371,0.168621,-0.0247103);
+v1 = xvector;
+u2 = vector3d(-0.159403,0.96321,0.216374);
+v2 = yvector;
+q1 = vec42quat(u1,v1,u2,v2)
+q1*u1
+q1*u2
 
 % ckeck whether points have the same angle relative to each other
 if any(abs(dot(u1,u2)-dot(v1,v2))>1E-3)
@@ -33,7 +87,6 @@ q = repmat(idquaternion,size(u1));
 
 d1 = u1 - v1;
 d2 = u2 - v2;
-
 
 % case 1: u1 = v1 & u2 = v2
 % -> nothing has to be done, see initialisation

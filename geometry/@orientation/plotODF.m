@@ -40,7 +40,8 @@ if isNew
 
   % get fundamental plotting region
   [max_rho,max_theta,max_sec] = getFundamentalRegion(o.CS,o.SS,varargin{:});
-
+  sR = sphericalRegion('maxTheta',max_theta,'maxRho',max_rho);
+  
   if any(strcmp(sectype,{'alpha','phi1'}))
     dummy = max_sec; max_sec = max_rho; max_rho = dummy;
   elseif strcmpi(sectype,'omega')
@@ -51,7 +52,7 @@ if isNew
   sec = linspace(0,max_sec,nsec+1); sec(end) = [];
   sec = get_option(varargin,sectype,sec,'double');
     
-  varargin = [varargin,'maxrho',max_rho,'maxtheta',max_theta];  
+  varargin = [varargin,{'maxrho',max_rho,'maxtheta',max_theta,sR}];
   
 else
   sectype = getappdata(gcf,'SectionType');
@@ -72,7 +73,7 @@ if ~check_option(varargin,'all') && length(o) > 2000 || check_option(varargin,'p
   disp(['  plotting ', int2str(points) ,' random orientations out of ', ...
     int2str(length(o)),' given orientations']);
 
-  samples = discretesample(ones(1,length(o)),points);
+  samples = discretesample(length(o),points);
   o= o.subSet(samples);
   if ~isempty(data)
     data = data(samples); end

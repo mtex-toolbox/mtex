@@ -1,8 +1,0 @@
-ImportEBSDData file_new
-AligningEBSDData
-EBSDModifyData
-EBSD2odf
-EBSDOrientationPlots
-EBSDSpatialPlots
-EBSDSimulation_demo
-EBSDSimulation_spatial

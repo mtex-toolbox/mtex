@@ -7,5 +7,6 @@ if nargin < 2 || length(ss) <= 1
 else
   % as we don't now which rotation axes fall together make it general.
   omega = angle_outer(quaternion(cs),quaternion(ss));
-  omega = min([pi/2;omega(omega>1e-1)/2]);
+  omega = omega(omega>1e-1);
+  omega = min([pi/2;omega(:)/2]);
 end

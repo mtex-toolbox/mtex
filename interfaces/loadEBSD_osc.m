@@ -5,7 +5,7 @@ ebsd = EBSD;
 
 try
   
-  CS = oscHeader(fname);
+  CS = get_option(varargin,'CS',oscHeader(fname));
   
   if check_option(varargin,'check')
     return

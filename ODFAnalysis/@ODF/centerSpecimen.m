@@ -1,5 +1,5 @@
-function [odf,r,v1,v2] = centerSpecimen(odf,center,varargin)
-% rotatates an odf with specime symmetry into its symmetry axes
+function [odf,rot,v1,v2] = centerSpecimen(odf,v0,varargin)
+% rotatates an odf with specimen symmetry into its symmetry axes
 %
 % centerSpecimen(odf,center) trys to find the normal vectors of orthorhombic
 % symmetry for the x mirror and y mirror plane and calculates an rotation needed
@@ -8,26 +8,23 @@ function [odf,r,v1,v2] = centerSpecimen(odf,center,varargin)
 % xvector) to find a starting value for newton iteration.
 %
 % Input
-%  odf    - @ODF
-%  center - look arround center for a suiteable start value (default xvector)
+%  odf - @ODF
+%  v0  - @vector3d initial gues for a symmetry axis (default xvector)
 %
 % Output
 %  odf    - rotated @ODF
-%  r      - its rotation rotate(odf_out,r) = odf_in
-%  v1,v2  - normal vector of the mirrorplans
+%  rot    - @rotation such that rotate(odf_out,r) = odf_in
+%  v1,v2  - normal vector of the two fold symmetry axes
 %
 % Options
-%  delta      - stepsize for evaluating the gradient
-%  itermax    - maximum number of newton iterations (default 5)
 %  SO3Grid    - a @SO3Grid the @ODF is evaluatete on
-%  maxpolar   - specifies the opening angle for the initial search grid around input center
+%  delta      - specifies the opening angle for the initial search grid around input center
 %  resolution - specifies the resolution for the initial search grid
 %  silent     - dont verbose number of initial axes and the newton iteration
-%  plot        - plot objective function around center as axis distribution
 %
 %  fourier    - use fourier coefficents as objective function
 %
-% Examples
+% Example:
 % Starting with an synthetic odf with orthorhombic symmetry
 %
 %       CS = crystalSymmetry('cubic')
@@ -54,201 +51,99 @@ function [odf,r,v1,v2] = centerSpecimen(odf,center,varargin)
 %
 %
 
-return
+% get options
+if nargin < 2, v0 = xvector; end
+delta = get_option(varargin,'delta',15*degree);
 
-options.delta = get_option(varargin,'delta',0.5*degree);
+% the ODF should not yet have a specimen symmetry
+odf.SS = specimenSymmetry;
 
-if nargin < 2
-  center = xvector;
+% two different algorithms
+useFourier = check_option(varargin,'Fourier') || odf.isFourier;
+% first Fourier based
+if useFourier
+  L = get_option(varargin,{'bandwidth','L'},16);
+  D0 = odf.calcFourier(L);
+else
+  SO3 = get_option(varargin,'SO3Grid',...
+    equispacedSO3Grid(odf.CS,odf.SS,varargin{:}));
+  y0 = odf.eval(SO3);
 end
 
+vdisp('  searching for a first two fold symmetry axes',varargin{:});
+v0 = hr2quat(zvector,v0) * ...
+  equispacedS2Grid('maxtheta',delta,'resolution',5*degree,varargin{:});
+v1 = initialSearch(v0);
+v1 = hr2quat(zvector,v1) * ...
+  equispacedS2Grid('maxtheta',2.5*degree,'resolution',0.75*degree);
+v1 = initialSearch(v1);
 
-if check_option(varargin,'Fourier')
-  if ~check_option(odf,'fourier')
-    L = get_option(varargin,{'bandwidth','L'},16);
-    odf.SS = specimenSymmetry;
-    odf = FourierODF(odf,L);
+vdisp('  searching for a second two fold symmetry axes',varargin{:});
+v0 = rotation('axis',v1,'angle',(-45:5:45)*degree) * orth(v1);
+v2 = initialSearch(v0);
+% refine search
+v2 = rotation('axis',v1,'angle',(-5:.5:5)*degree) * v2;
+v2 = initialSearch(v2);
+
+rot = rotation('map',v1,closesAxis(v1),v2,closesAxis(v2));
+odf = rotate(odf,rot);
+
+% ------------------- local functions -----------------------------------
+% -----------------------------------------------------------------------
+
+  function a = closesAxis(u)
+    
+    aa = [xvector,yvector,zvector]; aa = [aa,-aa];
+    [~,i] = min(angle(u,aa));
+    a = aa(i);
+    
   end
-  options.odf = odf;
-  options.c_hat = Fourier(odf);
-else
-  options.odf = odf;
-  options.SO3 = get_option(varargin,'SO3Grid',...
-    equispacedSO3Grid(odf.CS,odf.SS,'resolution',5*degree,varargin{:}));
-  options.y = eval(options.odf,options.SO3);
-end
 
-options.resolution = get_option(varargin,'resolution',5*degree);
-options.maxangle = get_option(varargin,'maxpolar',15*degree);
-options.verbose = ~check_option(varargin,'silent');
-options.itermax = get_option(varargin,'itermax',5);
-options.plot = check_option(varargin,'plot');
+  function v = initialSearch(v)
+    
+    global mtex_progress, mtex_progress = 1;
+    progress(0,length(v));
 
+    val = zeros(size(v));
+    for k=1:length(v)
+      progress(k,length(v));
+      val(k) = f(v(k));
+    end
 
+    [fval,i] = min(val); v = v(i);
 
-if options.plot
-  initialSearch(center,options);
-  return
-end
-
-v1 = newton(initialSearch(center,options),options);
-v2 = newton(initialSearch(orth(v1),options),options);
-
-r = inv(rotation('map',v1,xvector,v2,yvector));
-if all(isfinite(double(r)))
-  odf = rotate(odf,r);
-end
-
-
-
-function v_start = initialSearch(center, options)
-
-if options.plot
-  %   v = S2Grid('plot','resolution',options.resolution,'maxtheta',110*degree,'mintheta',80*degree)
-  v = plotS2Grid('resolution',options.resolution,'maxtheta',options.maxangle);
-else
-  v = equispacedS2Grid('resolution',options.resolution,'maxtheta',options.maxangle);
-end
-
-q = hr2quat(zvector,center);
-vc = q*vector3d(v);
-
-if options.verbose
-  fprintf(' looking at %d rotational axes\n', numel(v))
-end
-
-n = length(vc);
-val = zeros(size(vc));
-global mtex_progress
-mtex_progress = 1;
-progress(0,n);
-for k=1:length(vc)
-  progress(k,n);
-  val(k) = f(vc(k),options);
-end
-
-if options.plot
-  figure, imagesc(reshape(val,size(v)))
-  figure, plot(v,val,'smooth');
-else
-  [valm,i] = min(val);
-  v_start = vector3d(vc(i));
-end
-
-function v = newton(v, options)
-
-p = zeros(2,1);
-[p(1),p(2)] = polar(vector3d(v));
-
-fval = f(p,options);
-
-if options.verbose
-  fprintf(' starting at %f\n', fval)
-end
-
-oldfval = 0;
-iter = 0;
-
-while  iter < options.itermax  %&& (fval-oldfval) > 0
-  oldfval = fval;
-  iter = iter + 1;
-  
-  % jacobian
-  jf = jacobian(p,options);
-  
-  % defect
-  df = gradient(p,options);
-  
-  p = p - jf\df;
-  
-  fval = f(p,options);
-  
-  if options.verbose
-    fprintf(' defect at iteration %d: %f\n',iter, fval );
+    vdisp(['  fit: ', xnum2str((1-fval)*100) '%']);
+    
   end
-end
 
-v = vector3d('theta',p(1),'rho',p(2));
+  function y = f(v)
+    % objective function - compare original ODF with the ODF rotate along v
+    % about 180 degree
+    
+    if isnumeric(v), v = vector3d('theta',v(1),'rho',v(2));end
+    rot = axis2quat(v,pi);
+    
+    % y = textureindex(rotate(odf,r) - odf);
+    if useFourier
+      
+      DRot = wignerD(rot,'bandwidth',L);
+      
+      D1  = zeros(deg2dim(L+1),1);
+      for l = 0:L
+        d2d = deg2dim(l)+1:deg2dim(l+1);
+        s = 2*l+1;
+        D1(d2d) = reshape(DRot(d2d),s,s) * reshape(D0(d2d),s,s);
+      end
+      y = sum(abs(D1-D0).^2) ./ sum(abs(D0).^2);
+      
+    else
+      
+      % TODO: maybe one can use interpolation here instead of evaluating the
+      % ODF again
+      yr = eval(rotate(odf,rot),SO3); %#ok<EVLC>
+      y = sum((y0 - yr).^2) ./ sum(y0.^2);
+    end
 
-
-function jf = jacobian(j,options)
-% the jacobian
-
-if isa(j,'vector3d')
-  [j(1) j(2)] = polar(j);
-end
-
-delta = options.delta;
-
-jf = zeros(2,2);
-for k=1:2
-  jp = j; jm = j;
-  
-  jp(k) = j(k) + delta/2;
-  jm(k) = j(k) - delta/2;
-  
-  jf(:,k) = (gradient(jp,options) - gradient(jm,options));
-end
-jf = jf./delta;
-
-
-function df = gradient(d,options)
-% the gradient
-
-if isa(d,'vector3d')
-  [d(1) d(2)] = polar(d);
-end
-
-delta = options.delta;
-
-df = zeros(2,1);
-for k=1:2
-  dp = d; dm = d;
-  
-  dp(k) = d(k) + delta/2;
-  dm(k) = d(k) - delta/2;
-  
-  df(k) = (f(dp,options) - f(dm,options));
-end
-df = df./delta;
-
-
-function y = f(v,options)
-% objective function
-
-if isnumeric(v)
-  r = axis2quat(vector3d('theta',v(1),'rho',v(2)),pi);
-else
-  r = axis2quat(v,pi);
-end
-
-% y = textureindex(rotate(options.odf,r)-options.odf);
-if isfield(options,'c_hat')
-  D2 = options.c_hat;
-  L = dim2deg(numel(D2));
-  D1 = wignerD(r,'bandwidth',L);
-  
-  D3  = zeros(deg2dim(L+1),1);
-  
-  for l = 0:L
-    d2d = deg2dim(l)+1:deg2dim(l+1);
-    s = 2*l+1;
-    D3(d2d) = ...
-      reshape(D1(d2d),s,s) * ...
-      reshape(D2(d2d),s,s);
   end
-  y = sum(abs(D3-D2).^2);
-  
-  % y = abs(sum(D3-D2));
-  % odf = FourierODF(D3-D2,get(options.SO3,'CS'),get(options.SO3,'CS'));
-  % y = sum((eval(odf,options.SO3)).^2);
-else
-  odf = rotate(options.odf,r);
-  yo = options.y;
-  yr = eval(odf,options.SO3);
-  
-  y = sum((yo - yr).^2);
+
 end
-
-
-

@@ -1,5 +1,9 @@
 classdef ODFComponent
-     
+% abstract class representing an ODF component
+%
+% This is an abstract class. Subclasses are uniformODF, unimodalODF,
+% fibreODF, BinghamODF and FourierODF
+
   properties (Abstract)
     CS % crystal symmetry
     SS % specimen symmetry

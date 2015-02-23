@@ -106,6 +106,10 @@ end
 % set styles
 optiondraw(h,'LineStyle','none','Fill','on',varargin{:});
 
+if isappdata(sP(1).parent,'mtexFig')
+  mtexFig = getappdata(sP(1).parent,'mtexFig');
+  mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
+end
 
 if nargout == 0, clear h; end
 

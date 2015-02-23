@@ -78,7 +78,7 @@ end
 if exist('screenExtend','var')
   width = mtexFig.axesWidth;
   height = mtexFig.axesHeight;
-  position = [(screenExtend(3)-width)/2,(screenExtend(4)-height)/2,width,height];
+  position = [(screenExtend(1,3)-width)/2,(screenExtend(1,4)-height)/2,width,height];
 end
 
 % draw layout

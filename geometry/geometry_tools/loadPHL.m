@@ -1,6 +1,26 @@
 function cs = loadPHL(fname)
 % 
 
+[pathstr, name, ext] = fileparts(fname);
+  
+if isempty(ext), ext = '.phl';end
+if isempty(pathstr) && ~exist([name,ext],'file')
+  pathstr = mtexCifPath;
+end
+
+% load file
+if ~exist(fullfile(pathstr,[name ext]),'file')
+  try
+    fname = copyonline(fname);
+  catch %#ok<CTCH>
+    dir(fullfile(mtexCifPath,'*.phl'))
+    error(['I could not find the corresponding phl file.' ...
+      'Above you see the list of localy avaible phl files.'])
+  end
+else
+  fname = fullfile(pathstr,[name ext]);
+end
+
 cs = {};
 doc = xmlread(fname);
 root = doc.getDocumentElement();

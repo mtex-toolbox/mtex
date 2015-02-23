@@ -23,6 +23,13 @@ r = rand(npoints,1);
 [~,t] = histc(r,c);
 angle = 2 * acos(t ./ M);
 
+cs = component.CS.properGroup;
+ss = component.SS.properGroup;
+ics = discretesample(length(cs),npoints,1);
+iss = discretesample(length(ss),npoints,1);
+
+q = ss(iss(:)) .* quaternion(component.center(:),ic) .* ...
+  axis2quat(axis,angle) .* cs(ics(:));
+
 % set up orientations
-ori = orientation(quaternion(component.center(:),ic) .* ...
-  axis2quat(axis,angle),component.CS,component.SS);
+ori = orientation(q,component.CS,component.SS);

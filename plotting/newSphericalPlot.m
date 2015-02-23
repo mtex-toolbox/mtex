@@ -86,9 +86,11 @@ function sR = getPlotRegion(varargin)
 
 % default values from the vectors to plot
 if isa(varargin{1},'vector3d'),
-  varargin{1} = varargin{1}.region(varargin{2:end});
+  sR = varargin{1}.region(varargin{2:end});
+else
+  sR = sphericalRegion;
 end
-sR = getClass(varargin,'sphericalRegion',sphericalRegion);
+sR = getClass(varargin,'sphericalRegion',sR);
 
 % check for simple options
 if check_option(varargin,'complete')

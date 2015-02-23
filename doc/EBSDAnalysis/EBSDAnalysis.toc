@@ -1,0 +1,11 @@
+EBSDTutorial
+ImportEBSDData file_new
+AligningEBSDData
+EBSDModifyData
+AnalyzeEBSDData
+EBSDOrientationPlots
+EBSD2odf
+EBSDBingham
+EBSDSpatialPlots
+EBSDSharpPlot
+EBSDSimulation_demo

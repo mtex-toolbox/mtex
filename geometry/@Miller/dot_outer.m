@@ -10,6 +10,10 @@ function d = dot_outer(m1,m2,varargin)
 % Output
 %  d - m1 . m2
 
+if ~isa(m1,'Miller') || ~isa(m2,'Miller') || m1.CS ~= m2.CS
+  warning('Symmetry mismatch')
+end
+
 % symmetrise
 m1 = symmetrise(m1,varargin{:});
 s = [size(m1),length(m2)];
