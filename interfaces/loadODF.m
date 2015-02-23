@@ -27,4 +27,5 @@ function [odf,interface,options] = loadODF(fname,varargin)
 % See also
 % ImportEBSDData EBSD/calcODF ebsd_demo loadEBSD_generic
 
+% TODO: remove call to loadData
 [odf,interface,options] = loadData(fname,'ODF',varargin{:});
