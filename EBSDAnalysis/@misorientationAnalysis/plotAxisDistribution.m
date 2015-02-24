@@ -16,10 +16,15 @@ function plotAxisDistribution(obj,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
+[mtexFig,isNew] = newMtexFigure(varargin{:});
+
 % calc axis distribution
 axes = calcAxisDistribution(obj,'SampleSize',10000,varargin{:});
 
 % plot
 plot(axes,'all','FundamentalRegion',varargin{:});
 
-set(gcf,'Name','Axis Distribution');
+if isNew % finalize plot
+  set(gcf,'Name','Misorientation Axes Distribution');
+  mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); 
+end

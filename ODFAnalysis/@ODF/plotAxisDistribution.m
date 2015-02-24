@@ -1,4 +1,4 @@
-function plotAxisDistribution(odf,varargin)
+function h = plotAxisDistribution(odf,varargin)
 % plot axis distribution
 %
 % Input
@@ -15,17 +15,24 @@ function plotAxisDistribution(odf,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
+[mtexFig,isNew] = newMtexFigure(varargin{:});
+
 % plotting grid
 sR = fundamentalSector(disjoint(odf.CS,odf.SS),'antipodal',varargin{:});
 h = plotS2Grid(sR,'antipodal',varargin{:});
 
 % plot
-smooth(h,pos(calcAxisDistribution(odf,h,varargin{:})),varargin{:});
+h = smooth(h,pos(calcAxisDistribution(odf,h,varargin{:})),varargin{:},'doNotDraw');
 
-setappdata(gcf,'CS',odf.CS);
+if isNew % finalize plot
+  setappdata(gcf,'CS',odf.CS);
+  name = inputname(1);
+  set(gcf,'Name',['Axis Distribution of ',name]);
+  mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); 
+end
 
-name = inputname(1);
-set(gcf,'Name',['Axis Distribution of ',name]);
+if nargout == 0, clear h; end
+
 
 function d = pos(d)
 
