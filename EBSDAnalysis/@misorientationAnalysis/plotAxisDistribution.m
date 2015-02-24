@@ -22,6 +22,4 @@ axes = calcAxisDistribution(obj,'SampleSize',10000,varargin{:});
 % plot
 plot(axes,'all','FundamentalRegion',varargin{:});
 
-set(gcf,'tag','AxisDistribution');
-setappdata(gcf,'CS',axes.CS);
 set(gcf,'Name','Axis Distribution');

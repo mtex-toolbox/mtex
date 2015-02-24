@@ -15,12 +15,10 @@ function varargout = plotAxisDistribution(ori,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-mtexFig = newMtexFigure('ensureTag','AxisDistribution',varargin{:});
+mtexFig = newMtexFigure(varargin{:});
 
 % plot
 axes = ori.axis;
 [varargout{1:nargout}] = plot(axes,'symmetrised','FundamentalRegion',varargin{:},'parent',mtexFig.gca);
 
-set(gcf,'tag','AxisDistribution');
-setappdata(gcf,'CS',axes.CS);
 set(gcf,'Name','Axis Distribution');

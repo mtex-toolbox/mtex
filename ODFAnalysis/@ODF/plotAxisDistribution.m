@@ -23,8 +23,6 @@ h = plotS2Grid(sR,'antipodal',varargin{:});
 smooth(h,pos(calcAxisDistribution(odf,h,varargin{:})),varargin{:});
 
 setappdata(gcf,'CS',odf.CS);
-setappdata(gcf,'SS',odf.SS);
-set(gcf,'tag','AxisDistribution');
 
 name = inputname(1);
 set(gcf,'Name',['Axis Distribution of ',name]);

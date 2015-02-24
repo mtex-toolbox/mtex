@@ -67,8 +67,6 @@ for i = 1:numel(ph1)
   
 end
 
-%set(gcf,'tag','AxisDistribution');
-%setappdata(gcf,'CS',axes.CS);
 set(gcf,'Name','Axis Distribution');
 mtexFig.drawNow
 
