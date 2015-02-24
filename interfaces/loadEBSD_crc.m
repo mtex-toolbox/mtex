@@ -59,6 +59,7 @@ end
         [phase.alpha phase.beta phase.gamma]*degree,...
         'mineral',phase.structurename);
     end
+    CS = ['notIndexed',CS];
   end
 
   function param = getJobParam(cpr)
