@@ -8,11 +8,7 @@
 %% Data import and grain detection
 %
 % Lets import some iron data and segment grains within the data set.
-
-CS = crystalSymmetry('cubic','mineral','iron')
-ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','CNR.txt'),CS,...
-  'interface','generic',...
-  'ColumnNames',{'phase','x','y','phi1','Phi','phi2','IQ','CI','error'})
+mtexdata csl
 
 % grain segementation
 [grains,ebsd.grainId] = calcGrains(ebsd('indexed'))
@@ -24,48 +20,56 @@ grains = smooth(grains,2)
 plot(grains,grains.meanOrientation)
 
 %%
+% Next we plot image quality as it makes the grain boundaries visible.
 
-plot(ebsd,ebsd.prop.iq,'figSize','large')
+plot(ebsd,log(ebsd.prop.iq),'figSize','large')
 mtexColorMap black2white
+CLim(gcm,[.5,5])
 
-%%
+% and overlay it with the orientation map
+hold on
+plot(grains,grains.meanOrientation,'FaceAlpha',0.4)
+hold off
 
+%% Detecting CSL Boundaries
+% In order to detect CSL boundaries within the data set we first restrict
+% the grain boundaries to iron to iron phase transitions and check then
+% the boundary misorientations to be a CSL(3) misorientation with threshold
+% of 3 degree.
+
+% restrict to iron to iron phase transition
 gB = grains.boundary('iron','iron')
 
+% select CSL(3) grain boundaries
+gB3 = gB(angle(gB.misorientation,CSL(3)) < 3*degree);
+
+% overlay CSL(3) grain boundaries with the existing plot
 hold on
-plot(grains.boundary)
+plot(gB3,'lineColor','g','linewidth',2,'DisplayName','CSL 3')
 hold off
 
-%%
+%% Merging grains with common CSL(3) boundary
+% Next we merge all grains together which have a common CSL(3) boundary.
+% This is done with the command <grain2d_merge.html merge>.
 
-hold on
-gB3 = gB(angle(gB.misorientation,CSL(3))<3*degree);
-plot(gB3,'lineColor','b','linewidth',2,'DisplayName','CSL 3')
-hold off
-
-%%
-
+% this merges the grains
 [mergedGrains,parentIds] = merge(grains,gB3);
 
+% overlay the boundaries of the merged grains with the previous plot
 hold on
-plot(mergedGrains.boundary,'linecolor','g','linewidth',2)
-
-
+plot(mergedGrains.boundary,'linecolor','w','linewidth',2)
+hold off
 
 %%
+% Finaly, we check for all other types of CSL boundaries and overlay them
+% with our plot.
 
 delta = 5*degree;
-gB3 = gB(gB.isTwinning(CSL(3),delta))
 gB5 = gB(gB.isTwinning(CSL(5),delta))
 gB7 = gB(gB.isTwinning(CSL(7),delta))
 gB9 = gB(gB.isTwinning(CSL(9),delta))
 gB11 = gB(gB.isTwinning(CSL(11),delta))
 
-
-%%
-
-hold on
-plot(gB3,'lineColor','g','linewidth',2,'DisplayName','CSL 3')
 hold on
 plot(gB5,'lineColor','b','linewidth',2,'DisplayName','CSL 5')
 hold on
