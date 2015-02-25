@@ -20,6 +20,7 @@ switch s(1).type
       
       grains = subsasgn@dynProp(grains,s(1),b);
       grains.id = subsasgn(grains.id,s(1),b.id);
+      grains.phaseId = subsasgn(grains.phaseId,s(1),b.phaseId);
       grains.grainSize = subsasgn(grains.grainSize,s(1),b.grainSize);
       grains.poly = subsasgn(grains.poly,s(1),b.poly);
       grains.CSList = b.CSList;
