@@ -1,11 +1,12 @@
-function [n,pairs] = neighbors(grains)
+function [counts,pairs] = neighbors(grains)
 % returns the number of neighboring grains
 %
-%% Input
-% grains - @GrainSet
-%% Output
-% n     - number of neighbors per grain
-% pairs - index list of size N x 2, where  
+% Input
+%  grains - @GrainSet
+%
+% Output
+%  counts - number of neighbors per grain
+%  pairs  - index list of size N x 2, where  
 %    $$N = 2 \sum n_i $$
 %    is the total number of neighborhood relations (without self--reference).
 %
@@ -15,11 +16,20 @@ function [n,pairs] = neighbors(grains)
 %
 %    selects two neighbored grains.
 %
-s = logical(grains);
 
-A_G = grains.A_G(s,s);
-A_G = A_G | A_G' - diag(diag(A_G));
+% extract grainIds for each boundary segment
+gbid = grains.boundary.grainId;
+gbid(any(gbid == 0,2),:) = [];
 
-[a,b,n] = find(sum(A_G,2));
-[a,b] = find(triu(A_G,1));
-pairs = [a,b];
+% sort columnwise
+gbid = sort(gbid,2);
+
+% get unique pairs
+pairs = unique(gbid,'rows');
+
+% get the number of neighbours per grain
+ng = max(grains.id);
+countIds = full(sparse(pairs(pairs<=ng),1,1,ng,1));
+
+% rearange with respect to grain order
+counts = countIds(grains.id);
