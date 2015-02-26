@@ -79,15 +79,15 @@ classdef phaseList
       % ensure that there is at least one notIndexed phase
       % by prepending it !! TODO
       % this probably requires to specify phaseMap as an option    
-      %if all(cellfun(@(x) isa(x,'symmetry'),pL.CSList))
-      %  pL.CSList = [{'not indexed'},pL.CSList(:)];
-      %  pL.phaseId = pL.phaseId + 1;
-      %  if  ismember(0,pL.phaseMap)
-      %    pL.phaseMap = [-1;pL.phaseMap];
-      %  else
-      %    pL.phaseMap = [0;pL.phaseMap];
-      %  end
-      %end
+      if all(cellfun(@(x) isa(x,'symmetry'),pL.CSList))
+        pL.CSList = [{'not indexed'},pL.CSList(:)];
+        pL.phaseId = pL.phaseId + 1;
+        if  ismember(0,pL.phaseMap)
+          pL.phaseMap = [-1;pL.phaseMap];
+        else
+          pL.phaseMap = [0;pL.phaseMap];
+        end
+      end
       
       % apply colors
       colorOrder = getMTEXpref('EBSDColorNames');

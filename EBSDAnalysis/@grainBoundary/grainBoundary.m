@@ -79,6 +79,29 @@ classdef grainBoundary < phaseList & dynProp
         .* ebsd.rotations(gB.ebsdId(isNotBoundary,2));
     
     end
+
+    function gB = cat(dim,varargin)
+      
+      gB = cat@dynProp(dim,varargin{:});
+
+      for k = 2:numel(varargin)
+
+        ngB = varargin{k};
+        
+        gB.F = [gB.F;ngB.F];
+        gB.grainId = [gB.grainId; ngB.grainId];
+        gB.ebsdId = [gB.ebsdId; ngB.ebsdId];
+        gB.misrotation = [gB.misrotation;ngB.misrotation];
+        gB.phaseId = [gB.phaseId; ngB.phaseId];        
+  
+      end
+      
+      % remove duplicates
+      [~,ind] = unique(gB.F,'rows');      
+      gB = gB.subSet(ind);
+      
+    end
+    
     
     function mori = get.misorientation(gB)
             

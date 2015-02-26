@@ -16,7 +16,7 @@ function plotAxisDistribution(ebsd1,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-mtexFig = newMtexFigure(varargin{:});
+[mtexFig,isNew] = newMtexFigure(varargin{:});
 
 % get phases
 if nargin > 1 && isa(varargin{1},'EBSD')
@@ -62,14 +62,15 @@ for i = 1:numel(ph1)
   if i > 1, mtexFig.nextAxis; end
     
   mori = calcMisorientation(objSplit{ph1(i)},objSplit{ph2(i)},varargin{:});
-  plot(mori.axis,'doNotDraw','symmetrised','parent',mtexFig.gca,'FundamentalRegion',varargin{:});
+  plot(mori.axis,'doNotDraw','symmetrised','parent',mtexFig.gca,...
+    'FundamentalRegion',varargin{:});
   mtexTitle(mtexFig.gca,[mori.CS.mineral ' - ' mori.SS.mineral])
   
 end
 
-%set(gcf,'tag','AxisDistribution');
-%setappdata(gcf,'CS',axes.CS);
-set(gcf,'Name','Axis Distribution');
-mtexFig.drawNow
+if isNew % finalize plot
+  set(gcf,'Name','Misorientation Axes Distribution');
+  mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); 
+end
 
 if nargout == 0, clear h; end

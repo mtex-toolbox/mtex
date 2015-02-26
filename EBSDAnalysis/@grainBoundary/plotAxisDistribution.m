@@ -8,7 +8,7 @@ function h = plotAxisDistribution( gB, varargin )
 % orientation/calcAngleDistribution
 %
 
-mtexFig = newMtexFigure(varargin{:});
+[mtexFig,isNew] = newMtexFigure(varargin{:});
 h = [];
 
 % only consider indexed data
@@ -30,5 +30,11 @@ for ip = 1:size(pairs,1)
   
 end
 
-mtexFig.drawNow;
+if isNew % finalize plot
+
+  set(gcf,'Name','Misorientation Axes Distribution');
+  mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
+  
+end
+
 if nargout==0, clear h;end

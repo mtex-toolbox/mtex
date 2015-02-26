@@ -96,6 +96,9 @@ classdef sphericalRegion
     
     function [thetaMin, thetaMax] = thetaRange(sR,rho)
       
+      % antipodal should not increase spherical region
+      sR.antipodal = false;
+      
       if nargin == 2
         
         theta = linspace(0,pi,10000);
@@ -134,11 +137,8 @@ classdef sphericalRegion
           thetaMax = max(acos(sR.alpha) + angle(sR.N,zvector));
         else
           thetaMax = pi;
-        end
-        
-      end
-      
-      
+        end        
+      end            
     end
 
     

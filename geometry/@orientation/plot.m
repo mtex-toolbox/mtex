@@ -28,7 +28,7 @@ switch get(mtexFig.parent,'tag')
       
     plotPDF(ori,[],varargin{:});
     
-  case {'ipdf','hkl','AxisDistribution'} % inverse pole figure annotations
+  case 'ipdf' % inverse pole figure annotations
       
     plotIPDF(ori,[],varargin{:});
   

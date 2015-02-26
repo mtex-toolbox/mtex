@@ -203,6 +203,13 @@ ebsd = mtexdata_forsterite;
 region = [33 4.5 3 3]*10^3;
 ebsd = ebsd(ebsd.inpolygon(region));
 
+% --------------------------------------------------------------
+function ebsd = mtexdata_csl
+
+CS = crystalSymmetry('m-3m','mineral','iron');
+ebsd = loadEBSD_generic(fullfile(mtexDataPath,'EBSD','CSL.txt'),'CS',CS,...
+  'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'IQ' 'CI' 'Error'});
+
 
 % ----------------------------------------------------------------------
 function ebsd = mtexdata_3d
