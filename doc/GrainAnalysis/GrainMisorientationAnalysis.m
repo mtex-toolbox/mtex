@@ -32,8 +32,7 @@ plotx2east
 %% Intergranular misorientations %%TODO
 % The intergranular misorientation is automatically computed while
 % reconstructing the grain structure. It is stored as the property
-% *mis2mean* within the ebsd variable and can be accessed by the command
-% <ebsd_get.html,get>.
+% |mis2mean| within the ebsd variable and can be accessed by
 
 % get the misorientations to mean
 mori = ebsd('Fo').mis2mean
@@ -149,6 +148,7 @@ close all
 mtexFig = newMtexFigure;
 plotAxisDistribution(ebsd('Fo'),'smooth','parent',mtexFig.gca)
 mtexTitle('uncorrelated axis distribution')
+mtexFig.drawNow('figSize','normal')
 
 %%
 % We may plot the axes of the boundary misorientations directly into this
