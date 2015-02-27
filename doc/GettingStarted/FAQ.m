@@ -14,4 +14,9 @@
 
 setMTEXpref('LaTex',false);
 
-%%
+%% I get crazy plots, empty plots, plot with wrong colors
+%
+% This is most likely a Matlab rendering issue. You can change the renderer
+% Matlab uses for plotting by
+
+set(gcf,'renderer','zBuffer')
