@@ -138,23 +138,46 @@ classdef dynProp
     function out = isProp(dp,name)
       out = isfield(dp.prop,name);
     end
+    
     % -----------------------------------------------
-    function c = char(dp)
+    function c = char(dp,varargin)
       
       fn = fieldnames(dp.prop);
+      fn_ext = [];
+      
       if ~isempty(fn) && length(dp.prop.(fn{1}))<=20
-        d = zeros(length(dp.prop.(fn{1})),numel(fn));
-        for j = 1:numel(fn)
-          if isnumeric(dp.prop.(fn{j}))
-            d(:,j) = vertcat(dp.prop.(fn{j}));
-          elseif isa(dp.prop.(fn{j}),'quaternion')
-            d(:,j) = angle(dp.prop.(fn{j})) / degree;
-          end
+        
+        d = zeros(length(dp.prop.(fn{1})),0);
+        
+        for i = 1:2:length(varargin)
+          [propName,value] = prop2list(varargin{i:i+1});
+          d = [d,value];%#ok<AGROW>
+          fn_ext = [fn_ext,propName];%#ok<AGROW>
         end
-        c  = cprintf(d,'-Lc',fn,'-L',' ','-d','   ','-ic',true);
+        
+        for j = 1:numel(fn)
+          [propName,value] = prop2list(fn{j},vertcat(dp.prop.(fn{j})));
+          fn_ext = [fn_ext,propName]; %#ok<AGROW>
+          d = [d,value]; %#ok<AGROW>          
+        end
+        
+        c  = cprintf(d,'-Lc',fn_ext,'-L',' ','-d','   ','-ic',true);
       else
-        c  = cprintf(fn(:)','-L',' Properties: ','-d',', ','-ic',true);        
-      end      
+        c  = cprintf(fn(:)','-L',' Properties: ','-d',', ','-ic',true);
+      end  
+      
+      
+      function [prop,value] = prop2list(prop,value)
+        
+        if isa(value,'quaternion')
+          [w1,w2,w3,prop] = Euler(value);
+          value = round([w1(:),w2(:),w3(:)]/degree);
+        else
+          prop = {prop};
+        end 
+        
+      end
+        
     end
     
     % -----------------------------------------------
