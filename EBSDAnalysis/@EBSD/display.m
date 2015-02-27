@@ -64,6 +64,7 @@ cprintf(matrix,'-L',' ','-Lc',...
   '-d','  ','-ic',true);
 
 disp(' ');
-disp(char(dynProp(ebsd.prop)));
+disp(char(dynProp(ebsd.prop),'Id',ebsd.id,'Phase',ebsd.phase,...
+  'orientation',ebsd.rotations));
 disp([' Scan unit : ',ebsd.scanUnit]);
 disp(' ');

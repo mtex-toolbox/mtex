@@ -60,7 +60,7 @@ clean:
 
 
 # rule for making release
-RNAME = mtex-4.0.13
+RNAME = mtex-4.0.14
 RDIR = ../releases
 release:
 	rm -rf $(RDIR)/$(RNAME)*
