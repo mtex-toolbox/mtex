@@ -11,7 +11,7 @@ classdef kernel
     function psi = kernel(A)
       if nargin > 0
         psi.A = A(:);
-        psi = cutA(psi);
+        %psi.A = cutA(psi);
       end
     end
   
