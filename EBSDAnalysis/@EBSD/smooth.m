@@ -33,37 +33,31 @@ function [ebsd,alpha] = smooth(ebsd,alpha)
 ext = ebsd.extend;
 dx = ebsd.unitCell(1,1)-ebsd.unitCell(4,1);
 dy = ebsd.unitCell(1,2)-ebsd.unitCell(2,2);
-[xgrid,ygrid] = meshgrid(ext(1):dx:ext(2),ext(3):dy:ext(4));
-% ygrid runs first
-
+[xgrid,ygrid] = meshgrid(ext(1):dx:ext(2),ext(3):dy:ext(4)); % ygrid runs first
 
 % detect position within grid
 xpos = 1 + round((ebsd.prop.x - ext(1))/dx);
 ypos = 1 + round((ebsd.prop.y - ext(3))/dy);
 
-% fill interpolation matrix
+% compute components in Lie algebra
 [qmean,~,~,~,q] = mean(ebsd.orientations);
 q = inv(qmean)*q; %#ok<MINV>
-[a12,a13,a23] = log(q);
+tq = log(q);
 
-A12 = nan(size(xgrid));
-A13 = nan(size(xgrid));
-A23 = nan(size(xgrid));
-A12(sub2ind(size(A12),ypos,xpos)) = a12;
-A13(sub2ind(size(A12),ypos,xpos)) = a13;
-A23(sub2ind(size(A12),ypos,xpos)) = a23;
-
-
-if nargin < 2, alpha = []; end
+% fill interpolation matrix
+Tq = nan(numel(xgrid),3);
+Tq(sub2ind(size(xgrid),ypos,xpos),:) = tq;
+Tq = reshape(Tq,[size(xgrid),3]);
 
 % perform smoothing
-[A,alpha] = smoothn({A12,A13,A23},alpha,'robust');
+if nargin < 2, alpha = []; end
+[T,alpha] = smoothn({Tq(:,:,1),Tq(:,:,2),Tq(:,:,3)},alpha,'robust');
 
 % fill ebsd variable
 ebsd.prop.x = xgrid(:);
 ebsd.prop.y = ygrid(:);
 ebsd.id = (1:numel(xgrid)).';
-ebsd.rotations = reshape(rotation(quaternion(qmean)*expquat(A{1},A{2},A{3})),[],1);
+ebsd.rotations = reshape(rotation(quaternion(qmean)*expquat([T{:}])),[],1);
 ebsd.phaseId = repmat(ebsd.phaseId(1),numel(xgrid),1);
 
 % delete all other properties

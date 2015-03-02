@@ -1,4 +1,4 @@
-function q = expquat(a12,a13,a23)
+function q = expquat(tq)
 % matrix exponential to convert skew symmetric matrices into quaternions
 %
 % Syntax
@@ -16,12 +16,10 @@ function q = expquat(a12,a13,a23)
 %
 % Description
 
-mat = zeros(3,3,numel(a12));
-
-% TODO: make this faster
-for i = 1:numel(a12)
-  skewmat = [[0 a12(i) a13(i)];[-a12(i) 0 a23(i)];[-a13(i) -a23(i) 0]];  
-  mat(:,:,i) = expm(skewmat);  
-end
-
-q = mat2quat(mat);
+tq = reshape(tq,[],3);
+omega = sqrt(sum(tq.^2,2));
+a = cos(omega./2);
+b = tq(:,1) .* sin(omega./2) ./ omega;
+c = tq(:,2) .* sin(omega./2) ./ omega;
+d = tq(:,3) .* sin(omega./2) ./ omega; 
+q =  quaternion(a,b,c,d);
