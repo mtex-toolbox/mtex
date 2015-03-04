@@ -11,9 +11,9 @@ function loader = loadHelper( d, varargin )
 %  KeepNaN
 %  Radians
 %  passive rotation
-% ...
+%
 % Output
-% loader  - structure with some funs
+%  loader  - structure with some funs
 %
 
 
@@ -170,7 +170,7 @@ columns = get_option(varargin,'Columns',1:length(columnNames));
 
 assert(length(columnNames) == length(columns), 'Length of ColumnNames and Columns differ');
 
-[columnNames m] = unique(columnNames);
+[columnNames, m] = unique(columnNames);
 columns = columns(m);
 
 columnNames = stripws(columnNames(:));
