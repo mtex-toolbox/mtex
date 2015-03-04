@@ -35,6 +35,8 @@ for j = 1:numel(sP)
     
   end
 
+  sP(j).updateMinMax(cdata);
+  
   % interpolate if no regular grid was given
   if ~isOption(S2G,'plot') || ~S2G.opt.plot
     

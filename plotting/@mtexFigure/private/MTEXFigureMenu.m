@@ -129,9 +129,16 @@ set(obj,'checked',onoff);
 ax = findobj(gcf,'type','axes');
 for a = 1:numel(ax)
 
-  for element = cellstr(varargin)
-    switch char(element)
+  switch element
+    case 'minmax'
+      
+      sP = getappdata(ax(a),'sphericalPlot');
 
+ if ~isempty(sP)
+        sP.dispMinMax = strcmp(get(obj,'checked'),'on');
+        sP.updateMinMax;
+      end
+      
       case 'micronBar'
         
         mP  = getappdata(ax(a),'mapPlot');
@@ -158,14 +165,12 @@ for a = 1:numel(ax)
           if isempty(sP.grid)
             set(ax(a),'XGrid',onoff,'YGrid',onoff);
           else
-            set(sP.(char(element)),'visible',onoff);
+          set(sP.(element),'visible',onoff);
           end
         else
         end
-        
     end
   end
-end
 
 mtexFig.drawNow
 
