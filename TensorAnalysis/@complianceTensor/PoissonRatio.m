@@ -2,7 +2,7 @@ function nu = PoissonRatio(C,x,y)
 % computes the Poisson ratio of an elasticity tensor
 %
 % Input
-%  C - elastic compliance @tensor
+%  C - elastic @stiffnessTensor
 %  x - @vector3d
 %  y - @vector3d
 %

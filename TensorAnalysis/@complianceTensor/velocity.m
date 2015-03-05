@@ -3,7 +3,7 @@ function [vp,vs1,vs2,pp,ps1,ps2] = velocity(C,x,rho)
 % the elastic stiffness Cijkl tensor and density (g/cm3)
 %
 % Input
-%  C   - elasticity stiffness tensor Cijkl (UNITS GPa) @tensor
+%  C   - elasticity @stiffnessTensor Cijkl (UNITS GPa) @tensor
 %  x   - list of propagation directions (@vector3d)
 %  rho - material density (UNITS g/cm3)
 %

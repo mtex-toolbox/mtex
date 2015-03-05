@@ -6,7 +6,7 @@ function E = shearModulus(C,h,u)
 % $$G = \frac{1}{4 S_{ijkl} h_i u_j h_k u_l}$$
 %
 % Input
-%  C - elastic stiffness @tensor
+%  C - elastic @stiffnessTensor
 %  h - shear plane @vector3d
 %  u - shear direction @vector3d
 %

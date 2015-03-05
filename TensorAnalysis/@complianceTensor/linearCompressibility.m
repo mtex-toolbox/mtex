@@ -6,7 +6,7 @@ function beta = linearCompressibility(C,x)
 % $$\beta(x) = S_{ijkk} x_i x_j$$
 %
 % Input
-%  C - elastic stiffness @tensor
+%  C - elastic stiffnessTensor
 %  x - list of @vector3d
 %
 % Output
