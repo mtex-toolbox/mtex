@@ -53,6 +53,7 @@ end
 
 for ir = 1:length(r)
 
+  % TODO: it might happen that the spherical region needs two axes
   if ir>1, mtexFig.nextAxis; end  
   
   % the crystal directions

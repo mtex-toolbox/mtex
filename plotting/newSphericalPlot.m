@@ -18,6 +18,7 @@ if check_option(varargin,'parent')
   else % set up a new spherical axes if required
     
     % extract spherical region
+    % TODO: it might happen that the spherical region needs two axes
     sR = getPlotRegion(v,varargin{:});
     
     % extract projection
