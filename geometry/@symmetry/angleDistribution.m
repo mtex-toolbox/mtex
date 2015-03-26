@@ -96,7 +96,7 @@ end
 
 % compute output
 ad = 2 * length(cs) * xchi .* sin(omega ./ 2).^2;
-%ad = ad ./ mean(ad);
+ad = ad ./ mean(ad);
 ad(ad<0) = 0;
 
 ang = get_option(varargin,{'angle','threshold'},[]);
