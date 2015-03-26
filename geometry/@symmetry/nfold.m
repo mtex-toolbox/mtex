@@ -3,9 +3,9 @@ function n = nfold(cs,axis)
 
 if nargin == 1
   switch cs.LaueName
-    case {'2/m','mmm'}
+    case {'112/m','2/m11','12/m1','mmm'}
       n = 2;
-    case {'m-3','-3','-3m'}
+    case {'m-3','-3','-3m1','-31m'}
       n = 3;
     case {'4/m','4/mmm','m-3m'}
       n = 4;
