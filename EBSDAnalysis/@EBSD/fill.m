@@ -13,9 +13,8 @@ F = TriScatteredInterp([ebsd.prop.x,ebsd.prop.y],(1:length(ebsd)).','nearest');
 
 % generate regular grid
 ext = ebsd.extend;
-dx = ebsd.unitCell(1,1)-ebsd.unitCell(4,1);
-dy = ebsd.unitCell(1,2)-ebsd.unitCell(2,2);
-[xi,yi] = meshgrid(ext(1):dx:ext(2),ext(3):dy:ext(4));
+dxy = max(ebsd.unitCell) - min(ebsd.unitCell);
+[xi,yi] = meshgrid(ext(1):dxy(1):ext(2),ext(3):dxy(2):ext(4));
 
 % find nearest neigbour
 ci = fix(F(xi,yi));
