@@ -52,7 +52,7 @@ uimenu(m,'label','Set Outer Margin','callback',{@setMargin,'outer'});
 % annotations
 
 an = uimenu(m,'label','Anotations');
-uimenu(an,'label','Show min/max','checked',isVisible('minmax'),'callback',{@setVisible,'minmax'});
+uimenu(an,'label','Show min/max','checked',isVisible('minmax'),'callback',{@setVisible,'TL','BL'});
 uimenu(an,'label','Show labels','checked',isVisible('labels'),'callback',{@setVisible,'labels'});
 uimenu(an,'label','Show coordinates','checked',isVisible('ticks'),'callback',{@setVisible,'ticks'});
 uimenu(an,'label','Show grid','checked','off','callback',{@setVisible,'grid'});
@@ -114,7 +114,7 @@ end
 
 
 % Grid Visibility
-function setVisible(obj,event,element)
+function setVisible(obj,event,varargin)
 
 if strcmp(get(obj,'checked'),'on')
   onoff = 'off';
@@ -128,38 +128,36 @@ set(obj,'checked',onoff);
 ax = findobj(gcf,'type','axes');
 for a = 1:numel(ax)
 
-  switch element
-    case 'minmax'
-      if ~isappdata(ax(a),'annotation'), continue;end
-      an = getappdata(ax(a),'annotation');
-      set(an.h([1,3]),'visible',onoff);
-  
-    case 'labels'
-      la = [get(ax(a),'xlabel'),get(ax(a),'ylabel')];
-      set(la,'visible',onoff);
+  for element = cellstr(varargin)
+    switch char(element)
+      
+      case 'labels'
+        la = [get(ax(a),'xlabel'),get(ax(a),'ylabel')];
+        set(la,'visible',onoff);
 
-    case 'ticks'
+      case 'ticks'
       
-      if strcmp(onoff,'on')
-        set(ax(a),'xtickLabelMode','auto','ytickLabelMode','auto');
-        set(ax(a),'tickLength',[0.01,0.01]);
-      else
-        set(ax(a),'xtickLabel',{},'ytickLabel',{});
-        set(ax(a),'tickLength',[0,0]);
-      end
-      
-    otherwise
-    
-      if isappdata(ax(a),'sphericalPlot')
-        sP = getappdata(ax(a),'sphericalPlot');
-        if isempty(sP.grid)
-          set(ax(a),'XGrid',onoff,'YGrid',onoff);
+        if strcmp(onoff,'on')
+          set(ax(a),'xtickLabelMode','auto','ytickLabelMode','auto');
+          set(ax(a),'tickLength',[0.01,0.01]);
         else
-          set(sP.(element),'visible',onoff);
+          set(ax(a),'xtickLabel',{},'ytickLabel',{});
+          set(ax(a),'tickLength',[0,0]);
         end
-      else
+      
+      otherwise
+    
+        if isappdata(ax(a),'sphericalPlot')
+          sP = getappdata(ax(a),'sphericalPlot');
+          if isempty(sP.grid)
+            set(ax(a),'XGrid',onoff,'YGrid',onoff);
+          else
+            set(sP.(char(element)),'visible',onoff);
+          end
+        else
+        end
         
-      end
+    end
   end
 end
 

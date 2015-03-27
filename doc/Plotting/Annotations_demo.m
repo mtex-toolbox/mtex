@@ -54,7 +54,7 @@ annotate([xvector,yvector,zvector],'label',{'X','Y','Z'},'BackgroundColor','w')
 % The command <annotate.html annotate> allows also to plot
 % <Miller_index.html crystal directions> to inverse pole figures.
 
-plotIPDF(odf,[xvector,zvector],'antipodal','marginx',10,'minmax','off')
+plotIPDF(odf,[xvector,zvector],'antipodal','marginx',10)
 mtexColorMap white2black
 annotate([Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(0,0,1,cs),Miller(2,-1,0,cs)],...
   'all','labeled','BackgroundColor','w')

@@ -63,6 +63,16 @@ for i = 1:numel(sP)
     cdata = varargin{1};
     if numel(cdata) == length(v)
       cdata = reshape(cdata,[],1);
+      
+      % scale the data
+      [cdata,~,minData,maxData] = scaleData(cdata,varargin{:});
+            
+      % add annotations for min and max
+      if check_option(varargin,'minmax')
+        set(sP(i).TL,'string',{'Max:',xnum2str(maxData)});
+        set(sP(i).BL,'string',{'Min:',xnum2str(minData)});
+      end
+      
     else
       cdata = reshape(cdata,[],3);
     end
@@ -73,12 +83,6 @@ for i = 1:numel(sP)
       'markerfacecolor','flat',...
       'markeredgecolor','flat'),varargin{2:end}); %#ok<AGROW>
     set(get(get(h(i),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
-    
-    % add annotations for min and max
-    %if numel(cdata) == length(v)
-    %  set(sP(i).TL,'string',{'Max:',xnum2str(max(cdata(:)))});
-    %  set(sP(i).BL,'string',{'Min:',xnum2str(min(cdata(:)))});
-    %end
       
   else % --------- colorcoding according to nextStyle -----------------
       
