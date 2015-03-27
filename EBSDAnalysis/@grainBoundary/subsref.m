@@ -2,8 +2,8 @@ function varargout = subsref(gB,s)
 % access subsets of a GrainSet
 %
 % Syntax
-%   gB(1:10)          % the 10 first boundaries
-%   grains('Fe')          % only Fe grains
+%   gB(1:10)               % the 10 first boundaries
+%   gB('Forsterite','Epidote')  % only Forsterite - Epidote boundaries
 %   grains( ~grains('fe') ) % all grains but Fe
 %                           logical array with size of the complete
 %                           GrainSet
