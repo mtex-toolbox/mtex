@@ -18,23 +18,26 @@ function varargout = scatter(m,varargin)
 if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetrise')  
   
   % restrict to fundamental region
-  varargin = [varargin,{'removeAntipodal','skipSymmetrise'}];
+  %varargin = [varargin,{'removeAntipodal','skipSymmetrise'}];
+  varargin = [varargin,{'skipSymmetrise'}]; % we do not need to symmtrise twice
+  % the option 'removeAntipodal' is used in symmetrise below as antipodal
+  % symmetry is treaded seperately by the plot command
   
   % symmetrise data with repetition
   if numel(varargin) > 0 && isnumeric(varargin{1}) && ~isempty(varargin{1});
   
     % first dimension cs - second dimension m
-    m = symmetrise(m,varargin{:});
+    m = symmetrise(m,'removeAntipodal',varargin{:});
     
     varargin{1} = repmat(varargin{1}(:)',size(m,1),1);    
       
   elseif length(m) < 100 || check_option(varargin,{'labeled','label'}) 
   
-      [m,l] = symmetrise(m); % symmetrise without repetition
+      [m,l] = symmetrise(m,'removeAntipodal',varargin{:}); % symmetrise without repetition
         
   else 
     
-    m = symmetrise(m,varargin{:}); % symmetrise with repetition
+    m = symmetrise(m,'removeAntipodal',varargin{:}); % symmetrise with repetition
     
   end
   

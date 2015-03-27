@@ -34,7 +34,7 @@ elseif check_option(varargin,'figSize')
       fac = 1;
     case 'large'
       fac = 0.8;
-    case 'normal'
+    case {'normal','medium'}
       fac = 0.5;
     case 'small'
       fac = 0.35;

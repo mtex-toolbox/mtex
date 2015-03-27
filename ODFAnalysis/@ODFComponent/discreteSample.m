@@ -17,9 +17,8 @@ else
 end
 
 d(d<0) = 0;
-    
 r1 = discretesample(d,npoints);
-r2 = discretesample(length(S3G_local),npoints,'XX');
 
-ori = orientation(quaternion(S3G_global(r1(:))) ...
-  .* quaternion(S3G_local(r2(:))),component.CS,component.SS);
+ori = orientation(reshape(quaternion(S3G_global(r1)),[],1) ...
+  .* reshape(quaternion(discreteSample(S3G_local,npoints)),[],1),...
+  component.CS,component.SS);

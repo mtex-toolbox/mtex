@@ -19,10 +19,11 @@ function h = plotAxisDistribution(odf,varargin)
 
 % plotting grid
 sR = fundamentalSector(disjoint(odf.CS,odf.SS),'antipodal',varargin{:});
-h = plotS2Grid(sR,'antipodal',varargin{:});
+h = plotS2Grid(sR,'antipodal','resolution',2.5*degree,varargin{:});
 
 % plot
-h = smooth(h,pos(calcAxisDistribution(odf,h,varargin{:})),varargin{:},'doNotDraw');
+density = pos(calcAxisDistribution(odf,h,varargin{:}));
+h = smooth(h,density,'parent',mtexFig.gca,varargin{:},'doNotDraw');
 
 if isNew % finalize plot
   setappdata(gcf,'CS',odf.CS);

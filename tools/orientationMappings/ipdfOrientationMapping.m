@@ -68,7 +68,7 @@ classdef ipdfOrientationMapping < orientationMapping
         if length(unique(h,'antipodal')) <=2, h = [h,xvector,yvector,zvector]; end
         h = Miller(unique(h),oM.CS1);
         switch oM.CS1.lattice
-          case {'hexagonal','tetragonal'}
+          case {'hexagonal','trigonal'}
             h.dispStyle = 'UVTW';
           otherwise
             h.dispStyle = 'uvw';

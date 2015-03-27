@@ -31,13 +31,13 @@ rmag = tan(omega./2);
 
 switch cs.LaueName
           
-  case {'2/m','-3','4/m','6/m'}
+  case {'12/m1','2/m11','112/m','-3','4/m','6/m'}
                     
     % first region  -> nfold axis is working
     ind = rmag > xhn;
     xchi(ind) = xhn ./rmag(ind);
         
-  case {'mmm','-3m','4/mmm','6/mmm'}
+  case {'mmm','-3m1','-31m','4/mmm','6/mmm'}
    
     % first region -> nfold axis is working
     ind = rmag > xhn;
@@ -96,7 +96,7 @@ end
 
 % compute output
 ad = 2 * length(cs) * xchi .* sin(omega ./ 2).^2;
-%ad = ad ./ mean(ad);
+ad = ad ./ mean(ad);
 ad(ad<0) = 0;
 
 ang = get_option(varargin,{'angle','threshold'},[]);

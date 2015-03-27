@@ -47,4 +47,4 @@ if isreal(double(T)),
 end
 
 % invert Reuss back
-TReuss = inv(TReuss);
+if check_option(varargin,{'Reuss','Hill'}), TReuss = inv(TReuss); end

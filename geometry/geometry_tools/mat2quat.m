@@ -67,6 +67,6 @@ if any(qind)
   Quat(4,qind)=squeeze(mat(2,3,qind)+mat(3,2,qind)).'.*0.25./absQ(4,qind);
 end
 
-q = quaternion(Quat);
+q = quaternion(real(Quat));
 q = q./norm(q);
 q = q';

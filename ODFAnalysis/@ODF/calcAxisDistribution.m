@@ -43,7 +43,7 @@ else
     %ind = abs(omega) <= omega2 + 0.00001;
     
     ind = checkFundamentalRegion(S3G,'onlyAngle');
-    w = length(union(odf.CS,odf.SS));
+    w = length(union(odf.CS.properGroup,odf.SS.properGroup));
     
   end
   

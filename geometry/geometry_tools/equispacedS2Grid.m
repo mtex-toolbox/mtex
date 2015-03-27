@@ -62,26 +62,24 @@ theta = bounds.VR{1} + theta;
 % define azimuth angles
 identified = check_option(varargin,'antipodal');
 
+rhGrid = repmat(S1Grid([],bounds.FR{3},bounds.FR{4} + pi,'periodic'),...
+  1,length(theta));
 for j = 1:length(theta)
   
   th = theta(j);
-  if isappr(th,pi/2) && isappr(bounds.drho,2*pi) && identified
-    
-    rh = bounds.VR{3} + res*(0.5*mod(j,2)+(0:2*ntheta-1));
-    rho(j) = S1Grid(rh,bounds.FR{3},bounds.FR{3} + pi,'periodic'); %#ok<AGROW>
-    
+  if isappr(th,pi/2) && isappr(bounds.drho,2*pi) && identified        
+    rhGrid(j).max = bounds.FR{3} + pi;
+    rhGrid(j).points = bounds.VR{3} + res*(0.5*mod(j,2)+(0:2*ntheta-1));    
   else
-    
     steps = max(round(sin(th) * bounds.drho / bounds.dtheta * ntheta),1);
-    rh = bounds.VR{3} + (0:steps-1 )* bounds.drho /steps + ...
+    rhGrid(j).points = bounds.VR{3} + (0:steps-1 )* bounds.drho /steps + ...
       mod(j,2) * bounds.drho/steps/2;
-    rho(j) = S1Grid(rh,bounds.FR{3},bounds.FR{4},'periodic'); %#ok<AGROW>
   end
 end
 
 theta = S1Grid(theta,bounds.FR{1},bounds.FR{2});
 
-S2G = S2Grid(theta,rho);
+S2G = S2Grid(theta,rhGrid);
 S2G = S2G.setOption('resolution',res);
 
 end
