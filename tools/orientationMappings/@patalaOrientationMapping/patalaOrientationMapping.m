@@ -57,7 +57,14 @@ classdef patalaOrientationMapping < orientationMapping
           rgb = colormap432(v);
         case 'mmm'
           rgb = colormap222(v);
-        case {'-3m1','-31m'}
+        case {'m-3'}
+          rgb = colormap23(v);
+        case {'4/mmm'}
+          rgb = colormap422(v);
+        case {'6/mmm'}
+          rgb = colormap622(v);
+        otherwise
+          error('For symmetry %s patala colorcoding is not yet supported.',cs.pointGroup)
       end
       rgb = reshape(rgb,[size(mori) 3]);
     end

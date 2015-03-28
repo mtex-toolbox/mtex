@@ -69,7 +69,7 @@ maxomega = 0;
 
 for j = 1:numel(CS)
   if isa(CS{j},'symmetry') && any(ph == phMap(j))
-    maxomega = max(maxomega,getMaxAngleFundamentalRegion(CS{j}));
+    maxomega = max(maxomega,CS{j}.maxAngle);
   end
 end
 

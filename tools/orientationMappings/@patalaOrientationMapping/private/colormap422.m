@@ -15,7 +15,10 @@
 %     You should have received a copy of the GNU General Public License
 %     along with MisorientationMaps.  If not, see <http://www.gnu.org/licenses/>.
 
-function S = colormap422(pts)
+function S = colormap422(v)
+
+pts = reshape(double(v),[],3);
+
 %%%%%% Fund ---> expandz %%%%%%%
 pts = [pts(:,1) pts(:,2) pts(:,3)./(tan(pi/8))];
 
