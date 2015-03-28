@@ -81,9 +81,8 @@ switch lower(get_option(varargin,'test',''))
   case 'lcp'
     
     api.loadDataFiles(4,fullfile(mtexDataPath,'PoleFigure','BearTex','Test_2.XPa'));
- api.loadDataFiles(4,fullfile(mtexDataPath,'PoleFigure','beartex.XPa'));
+    api.loadDataFiles(4,fullfile(mtexDataPath,'PoleFigure','beartex.XPa'));
  
-    
   otherwise
     
     api.loadDataFiles(4,fullfile(mtexDataPath,'PoleFigure','dubna','Q(02-21)_amp.cnv'));

@@ -480,13 +480,13 @@ end
     
     function str = getODFKernelName()
       
-      str = ['''' data.psi.name ''''];
+      str = class(data.components{1}.psi);
       
     end
     
     function str = getODFHalfwidth()
       
-      str = [xnum2str(data.psi.halfwidth/degree) '*degree'];
+      str = [xnum2str(data.components{1}.psi.halfwidth/degree) '*degree'];
       
     end
     
