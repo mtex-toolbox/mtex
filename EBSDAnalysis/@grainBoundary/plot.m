@@ -69,7 +69,8 @@ if nargin > 1 && isnumeric(varargin{1}) && ...
   obj.Faces = 1:size(obj.Vertices,1);
   
   obj.EdgeColor = 'flat';
-  obj.FaceVertexCData = reshape(repmat(varargin{1},1,3)',size(varargin{1},2),[])';
+  color = squeeze(varargin{1});
+  obj.FaceVertexCData = reshape(repmat(color,1,3)',size(color,2),[])';
 
 else % color given directly
     
