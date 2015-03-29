@@ -14,10 +14,10 @@ function [ad,omega] = angleDistribution(cs,omega,varargin)
 %
 
 if nargin < 2
-  omega = linspace(0,cs.getMaxAngleFundamentalRegion,300);
+  omega = linspace(0,cs.maxAngle,300);
 else
   % restrict omega
-  omega = omega(omega < cs.getMaxAngleFundamentalRegion + 1e-8);
+  omega = omega(omega < cs.maxAngle + 1e-8);
 end
 
 % multiplier

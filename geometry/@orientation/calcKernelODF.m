@@ -66,7 +66,7 @@ else
   M = sparse(1:length(ori),find(S3G,ori),weights,length(ori),length(S3G));
 
   % compute weights
-  weights = full(sum(M));
+  weights = full(sum(M,1));
   weights = weights ./ sum(weights);
 
   % eliminate spare rotations in grid

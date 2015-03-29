@@ -38,11 +38,14 @@ set(gui.hApprox      ,'Callback',@localChange)
     
     kname = get(gui.hKernel,'String');
     kname = kname{get(gui.hKernel,'Value')};
+    kname = [strrep(kname,' ',''),'Kernel'];
     
     hw    = str2num(get(gui.hHalfwidth,'String'))*degree;
-    psi   = kernel(kname,'halfwidth',hw);
+    psi   = eval([kname,'(''halfwidth'',hw)']);
+        
+    data = api.getData();
+    data{1}.components{1}.psi = psi;
     
-    data  = cellfun(@(x)set(x,'psi',psi),api.getData(),'Uniformoutput',false);
     api.setData(data);
     
     setODF('method',get(gui.hMethod(2),'Value'));
@@ -59,9 +62,12 @@ set(gui.hApprox      ,'Callback',@localChange)
     data = api.getData();
     data = [data{:}];
     
-    psi = data.psi;
+    psi = data.components{1}.psi;
     
-    kname = psi.name;
+    kname = class(psi);
+    kname = regexprep(kname,'Kernel','');
+    kname = strtrim(regexprep(kname,'([A-Z])',' $1'));
+        
     hw    = psi.halfwidth;
     
     set(gui.hKernel,'Value',...
@@ -82,13 +88,13 @@ set(gui.hApprox      ,'Callback',@localChange)
     
   end
 
-  function plotKernel(k,CS)
+  function plotKernel(psi,CS)
     
     try
       ma = 2* pi / CS.multiplicityZ;
       omega = linspace(-ma/2,ma/2,5000);
       
-      v = eval(k,omega); %#ok<EVLC>
+      v = real(psi.K(cos(omega/2)));
       plot(gui.hKernelAxis,omega/degree,v,'linewidth',2);
       set(gui.hKernelAxis,'ylim',[min([0,v]),max(v)],'yTick',[]);
       set(gui.hKernelAxis,'xlim',[min(omega)/degree,max(omega)/degree]);
@@ -142,10 +148,8 @@ set(gui.hApprox      ,'Callback',@localChange)
       'Position',left(bH,bH*2/3));
     
     
-    knames = kernel('names');
-    rm = cellfun(@(s) strmatch(s,knames),{'Laplace','Fourier','user'});
-    knames(rm) = [];
-    
+    knames = {'de La Valee Poussin','Abel Poisson','von Mises Fisher'};
+        
     kern = uicontrol(...
       'Parent',kg,...
       'BackgroundColor',[1 1 1],...

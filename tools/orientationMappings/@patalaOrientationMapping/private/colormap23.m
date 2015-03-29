@@ -15,7 +15,9 @@
 %     You should have received a copy of the GNU General Public License
 %     along with MisorientationMaps.  If not, see <http://www.gnu.org/licenses/>.
 
-function S = colormap23(pts)
+function S = colormap23(v)
+
+pts = reshape(double(v),[],3);
 
 pts(pts(:,1) > 1,1)=1;
 pts(pts(:,2) > 1,2)=1;

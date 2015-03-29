@@ -27,7 +27,7 @@ fname = {file names};
 %% Import the Data
 
 % specify kernel
-psi = kernel({kernel name},'halfwidth',{halfwidth});
+psi = {kernel name}('halfwidth',{halfwidth});
 
 % create an EBSD variable containing the data
 odf = loadODF(fname,CS,SS,{method},'kernel',psi,'resolution',{resolution},...

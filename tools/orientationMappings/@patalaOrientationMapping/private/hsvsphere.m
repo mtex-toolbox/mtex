@@ -34,14 +34,14 @@ rho = mod(rho,maxrho)./maxrho;
 
 ind1 = find(theta(:) >= pi/2); ind2 = find(theta(:) < pi/2);
 if(size(ind2,1)>0)
-c(ind2,:) = hsv2rgb([rho(ind2),(2*r(ind2)./(1+r(ind2))).* ...
-    theta(ind2)./pi*2,0.5 + r(ind2)./2]);
+c(ind2,:) = hsv2rgb(min(1,[rho(ind2),(2*r(ind2)./(1+r(ind2))).* ...
+    theta(ind2)./pi*2,0.5 + r(ind2)./2]));
 
 end
 if(size(ind1,1)>0)
 vval = r(ind1).*(2-theta(ind1)./pi*2) + 0.5 - r(ind1)./2;
-c(ind1,:)  = hsv2rgb([rho(ind1) ,1-(1-r(ind1))./ ...
-    (2*(vval) + 1*(vval == 0)), vval]);
+c(ind1,:)  = hsv2rgb(min(1,[rho(ind1) ,1-(1-r(ind1))./ ...
+    (2*(vval) + 1*(vval == 0)), vval]));
 
 end
 

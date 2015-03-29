@@ -41,7 +41,7 @@ elseif check_option(varargin,'figSize')
     case 'tiny'
       fac =  0.25;
     otherwise
-      fac = get_option(varargin,'figSize');
+      fac = get_option(varargin,'figSize',0.5,'double');
   end
   figSize = figSize .* fac;
   
