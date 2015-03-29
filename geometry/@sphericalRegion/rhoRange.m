@@ -30,7 +30,7 @@ end
 
 rho = sort(mod(rho,2*pi));
 
-ind = find(abs(diff(rho))>3*degree);
+ind = find(abs(diff(rho))>20*degree);
 
 if isempty(ind)
   
