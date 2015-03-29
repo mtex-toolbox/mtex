@@ -79,3 +79,26 @@ plot(gB9,'lineColor','m','linewidth',2,'DisplayName','CSL 9')
 hold on
 plot(gB11,'lineColor','c','linewidth',2,'DisplayName','CSL 11')
 hold off
+
+%% Colorizing misorientations 
+%
+
+oM = patalaOrientationMapping(gB)
+
+plot(ebsd,log(ebsd.prop.iq),'figSize','large')
+mtexColorMap black2white
+CLim(gcm,[.5,5])
+
+% and overlay it with the orientation map
+hold on
+plot(grains,grains.meanOrientation,'FaceAlpha',0.4)
+
+hold on
+plot(gB,oM.orientation2color(gB.misorientation),'linewidth',2)
+hold off
+
+%%
+% The corresponding colormap is shown by
+
+plot(oM)
+
