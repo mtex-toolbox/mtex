@@ -35,6 +35,7 @@ h = optiondraw(plot(omega/degree,faktor * max(0,f),'parent',mtexFig.gca),...
 if isNew
   xlabel(mtexFig.gca,'Misorientation angle (degrees)')
   ylabel(mtexFig.gca,['Frequency (' unit ')'])
+  drawNow(mtexFig,varargin{:});
 end
 
 if nargout == 0, clear h; end

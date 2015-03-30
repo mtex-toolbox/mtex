@@ -21,7 +21,7 @@ function [x,omega] = plotFibre(odf,varargin)
 % SphericalProjection_demo
 
 % get axis
-ax = get_option(varargin,'parent',gca);
+[mtexFig,isNew] = newMtexFigure(varargin{:});
 
 %
 if isa(varargin{1},'vector3d')
@@ -77,13 +77,17 @@ end
 
 x = eval(odf,fibre,varargin{:});%#ok<EVLC>
 
-optiondraw(plot(1:numel(ind),x,'parent',ax),varargin{:});
-xlim(gca,[1,numel(ind)]);
+optiondraw(plot(1:numel(ind),x,'parent',mtexFig.gca),varargin{:});
 
-label = arrayfun(@(i) char(fibre(i),'nodegree'),find(ind),'uniformoutput',false);
-try
-  xticklabel_rotate(find(ind),90,label);
-catch
+if isNew
+  xlim(mtexFig.gca,[1,numel(ind)]);
+  ylabel(mtexFig.gca,'Frequency (mrd)')
+  label = arrayfun(@(i) char(fibre(i),'nodegree'),find(ind),'uniformoutput',false);
+  try
+    xticklabel_rotate(find(ind),90,label);
+  catch
+  end
+  drawNow(mtexFig,varargin{:})
 end
 
 if nargout == 0, clear x omega; end

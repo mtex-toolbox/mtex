@@ -32,9 +32,9 @@ legend(mtexFig.gca,'-DynamicLegend','Location','northwest')
 warning('on','MATLAB:legend:PlotEmpty');
 
 if isNew
-  xlabel(mtexFig.gca,'Misorientation angle (degrees)')
-  ylabel(mtexFig.gca,'Frequency (%)')
+  xlabel(mtexFig.gca,'Misorientation angle (degrees)');
+  ylabel(mtexFig.gca,'Frequency (%)');
+  drawNow(mtexFig,varargin{:});
 end
-
 
 if nargout==0, clear h;end

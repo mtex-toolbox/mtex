@@ -11,6 +11,8 @@ function plotFourier(odf,varargin)
 % See also
 % ODF_calcFourier ODF_Fourier
 
+[mtexFig,isNew] = newMtexFigure(varargin{:});
+
 L = get_option(varargin,'bandwidth',32);
 
 odf_hat = calcFourier(odf,'bandwidth',L,'l2-normalization');
@@ -19,9 +21,11 @@ for l = 0:L
   f(l+1) = norm(odf_hat(deg2dim(l)+1:deg2dim(l+1)));
 end
 
-optionplot(0:L,f,'Marker','o','linestyle',':',varargin{:});
+optionplot(0:L,f,'Marker','o','linestyle',':','parent',mtexFig.gca,varargin{:});
 
-xlim([0,L])
-xlabel('harmonic degree');
-ylabel('power');
-figure(gcf);
+if isNew
+  xlim(mtexFig.gca,[0,L])
+  xlabel(mtexFig.gca,'harmonic degree');
+  ylabel(mtexFig.gca,'power');
+  drawNow(mtexFig,varargin{:});
+end
