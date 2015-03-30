@@ -8,7 +8,7 @@ function h = plotAngleDistribution( gB, varargin )
 % orientation/calcAngleDistribution
 %
 
-mtexFig = newMtexFigure(varargin{:});
+[mtexFig,isNew] = newMtexFigure(varargin{:});
 
 % only consider indexed data
 gB  = subSet(gB,gB.isIndexed);
@@ -30,5 +30,11 @@ end
 warning('off','MATLAB:legend:PlotEmpty');
 legend(mtexFig.gca,'-DynamicLegend','Location','northwest')
 warning('on','MATLAB:legend:PlotEmpty');
+
+if isNew
+  xlabel(mtexFig.gca,'Misorientation angle (degrees)');
+  ylabel(mtexFig.gca,'Frequency (%)');
+  drawNow(mtexFig,varargin{:});
+end
 
 if nargout==0, clear h;end
