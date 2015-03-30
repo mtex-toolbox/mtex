@@ -105,6 +105,7 @@ for j = 1:numel(sP)
 end
 
 % set styles
+varargin = delete_option(varargin,'parent');
 optiondraw(h,'LineStyle','none','Fill','on',varargin{:});
 
 if isappdata(sP(1).parent,'mtexFig')
@@ -161,7 +162,8 @@ if numel(unique(data)) > 1
   end
 
 elseif ~check_option(varargin,'fill',[],'off')
-  h = fill(X,Y,data,'LineStyle','none','parent',ax);
+  % transpose here seems to be needed due to a MATLAB bug
+  h = fill(X.',Y.',data.','LineStyle','none','parent',ax);
 end
 
 end
