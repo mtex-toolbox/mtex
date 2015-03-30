@@ -1,4 +1,4 @@
-function plotAngleDistribution(odf,varargin)
+function h = plotAngleDistribution(odf,varargin)
 % plot axis distribution
 %
 % Input
@@ -25,7 +25,9 @@ else
   faktor = 1;
 end
 
-optiondraw(plot(omega/degree,faktor * max(0,f),'parent',mtexFig.gca),...
+h = optiondraw(plot(omega/degree,faktor * max(0,f),'parent',mtexFig.gca),...
   'LineWidth',2,varargin{:});
 
 xlabel(mtexFig.gca,'orientation angle in degree')
+
+if nargout == 0, clear h; end
