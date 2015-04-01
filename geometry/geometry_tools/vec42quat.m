@@ -26,8 +26,8 @@ if any(abs(dot(u1,vector3d(u2))-dot(v1,vector3d(v2)))>1E-3)
   if isa(u2,'Miller'), u2 = u2.CS * u2; end
   if isa(v2,'Miller'), v2 = v2.CS * v2; end
   
-  delta = abs(acos(repmat(dot(u1,u2),1,length(v2))) ...
-    - acos(repmat(dot(v1,v2),1,size(u2,1)).'));
+  delta = abs(repmat(angle(u1,u2),1,length(v2)) ...
+    - repmat(angle(v1,v2),1,size(u2,1)).');
   [i,j] = find(delta<1*degree,1);
   
   if isempty(i)
