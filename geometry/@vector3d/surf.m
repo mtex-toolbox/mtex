@@ -17,13 +17,12 @@ sP = newSphericalPlot(v,varargin{:});
 
 for j = 1:numel(sP)
 
-  % draw surface
-      
   % project data
   [x,y] = project(sP(j).proj,v,'removeAntipodal');
     
   % extract non nan data
   ind = ~isnan(x);
+  cdata = reshape(cdata,size(x,1),size(x,2),[]);
   x = submatrix(x,ind);
   y = submatrix(y,ind);
   data = reshape(submatrix(cdata,ind),[size(x) 3]);
@@ -32,7 +31,7 @@ for j = 1:numel(sP)
   hold(sP(j).ax,'on')
   
   % plot surface  
-  h(j) = surf(x,y,zeros(size(x)),real(data),'parent',sP(j).ax);
+  h(j) = surf(x,y,zeros(size(x)),real(data),'parent',sP(j).ax); %#ok<AGROW>
   shading(sP(j).ax,'interp');
     
   hold(sP(j).ax,'off')
