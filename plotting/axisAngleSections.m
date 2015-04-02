@@ -3,9 +3,8 @@ classdef axisAngleSections < ODFSections
   properties
     angles
     axesSectors    
-    S2G
   end
-  
+    
   methods
     
     function oS = axisAngleSections(CS1,CS2,varargin)
@@ -22,45 +21,59 @@ classdef axisAngleSections < ODFSections
       
     end
     
-    
-    function [sec] = project(oS)
-    
+    function ori = makeGrid(oS,varargin)
+      ori = orientation(oS.CS1,oS.CS2);
+      oS.gridSize(1) = 0;
+      for s = 1:length(oS.angles)
+        sR = fundamentalSector(oS.CS,oS.CS2,'angle',oS.angles(s));
+        oS.plotGrid{s} = plotS2Grid(sR,varargin{:});
+        oS.gridSize(s+1) = oS.gridSize(s) + length(oS.plotGrid{s});
+        ori(1+oS.gridSize(s):oS.gridSize(s+1)) = ...
+          orientation('axis',oS.plotGrid{s},'angle',oS.angles(s));
+      end     
+    end
+
+    function n = numSections(oS)
+      n = numel(oS.angles);
     end
     
-    function makeGrid(oS)
-      S2G = plotS2Grid(oM.CS1.Laue.fundamentalSector('angle',omega(i)),varargin{:});
-  
-      mori = orientation('axis',S2G,'angle',omega(i));
+    function [S2Pos,secPos] = project(oS,ori)
+    
+      S2Pos = ori.axis;
       
-      rgb = oM.orientation2color(mori);
+      % this builds a list 
+      bounds = sort(unique([oS.angles - oS.tol,oS.angles + oS.tol]));
+      [~,secPos] = histc(ori.angle,bounds);
+      secPos(iseven(secPos)) = -1;
+      secPos = (secPos + 1)./2;
+      
     end
-    
-    function plot(oS,varargin)
-
-      mtexFig = newMtexFigure(varargin{:});
-
-      sR = oS.CS1.Laue.fundamentalSector;
-
-      for i = 1:length(oS.angle)
-  
-        if i>1, mtexFig.nextAxis; end
         
-        % plot boundary
-        plot(sR,'parent',mtexFig.gca,'TR',[int2str(oS.angle(i)./degree),'^\circ'],...
-          'color',[0.8 0.8 0.8],'doNotDraw');
+    function h = plotSection(oS,ax,sec,v,data,varargin)
+      
+      angle = oS.angles(sec);
+      
+      % plot outer boundary
+      plot(fundamentalSector(oS.CS1.Laue,oS.CS2.Laue),'parent',ax,...
+        'TR',[int2str(oS.angles(sec)./degree),'^\circ'],'color',[0.8 0.8 0.8],'doNotDraw');
         
-        % rescale the figures according to actual volume
-        x = get(mtexFig.gca,'xLim');
-        y = get(mtexFig.gca,'yLim');
-        x = x .* sin(oM.CS1.maxAngle/2) / sin(omega(i)/2);
-        y = y .* sin(oM.CS1.maxAngle/2) / sin(omega(i)/2);
-        xlim(mtexFig.gca,x);
-        ylim(mtexFig.gca,y);
+      % rescale the axes according to actual volume
+      x = get(ax,'xLim');
+      y = get(ax,'yLim');
+      x = x .* sin(max(oS.angles)/2) / sin(angle/2);
+      y = y .* sin(max(oS.angles)/2) / sin(angle/2);
+      xlim(ax,x);
+      ylim(ax,y);
     
-        hold on
-        plot(oS.grid.S2G{i},data(),'parent',mtexFig.gca,varargin{:},'doNotDraw');
-        hold off
-      end      
-    end        
+      hold on
+      sRSec = fundamentalSector(oS.CS1.Laue,oS.CS2.Laue,'angle',angle);
+      % plot inner boundary
+      plot(sRSec,'parent',ax,'color','k',varargin{:},'doNotDraw');
+      
+      % plot data
+      h = plot(v,data{:},sRSec,'parent',ax,varargin{:},'doNotDraw','symmetrised');
+      hold off
+
+    end
   end
 end
