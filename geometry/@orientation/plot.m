@@ -13,8 +13,16 @@ hold on
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 
 if isNew
+
   disp('Do something fancy here.');
-  return;  
+  return;
+
+elseif isappdata(mtexFig.parent,'ODFSections')
+
+  oS = getappdata(mtexFig.parent,'ODFSections');
+  oS.plot(ori,varargin{:});
+  return
+  
 end
 
 % plotting
