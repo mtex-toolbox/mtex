@@ -24,20 +24,20 @@ classdef sigmaSections < ODFSections
       
       oS.sigma = linspace(0,phi2,7);
       oS.sigma(end) = [];
-      oS.sigma = get_option(varargin,'sigma',oS.sigma);      
+      oS.sigma = get_option(varargin,'sigma',oS.sigma);
       
     end
     
     function ori = makeGrid(oS,varargin)
-      ori = orientation(oS.CS1,oS.CS2);
-      oS.gridSize(1) = 0;
-      for s = 1:length(oS.angles)
-        sR = fundamentalSector(oS.CS,oS.CS2,'angle',oS.angles(s));
-        oS.plotGrid{s} = plotS2Grid(sR,varargin{:});
-        oS.gridSize(s+1) = oS.gridSize(s) + length(oS.plotGrid{s});
-        ori(1+oS.gridSize(s):oS.gridSize(s+1)) = ...
-          orientation('axis',oS.plotGrid{s},'angle',oS.angles(s));
-      end     
+      
+      oS.plotGrid = plotS2Grid(oS.sR,varargin{:});
+      oS.gridSize = (0:numel(oS.sigma)) * length(oS.plotGrid);
+      phi1 = repmat(oS.plotGrid.rho,1,1,numel(oS.sigma));
+      Phi = repmat(oS.plotGrid.theta,1,1,numel(oS.sigma));      
+      sigma = repmat(reshape(oS.sigma,1,1,[]),[size(oS.plotGrid) 1]);
+      
+      ori = orientation('Euler',phi1,Phi,sigma - phi1,'ZYZ');
+      
     end
 
     function n = numSections(oS)
@@ -46,7 +46,7 @@ classdef sigmaSections < ODFSections
     
     function [S2Pos,secPos] = project(oS,ori)
     
-      [e1,e2,e3] = Euler(ori,'ABG');
+      [e1,e2,e3] = Euler(ori,'ZYZ');
 
       sigma = mod(e1 + e3,oS.maxSigma); %#ok<*PROP>
             

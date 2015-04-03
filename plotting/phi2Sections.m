@@ -26,16 +26,14 @@ classdef phi2Sections < ODFSections
     
     function ori = makeGrid(oS,varargin)
     
-      ori = orientation(oS.CS1,oS.CS2);
-      oS.gridSize(1) = 0;
-      for s = 1:length(oS.angles)
-        sR = fundamentalSector(oS.CS,oS.CS2,'angle',oS.angles(s));
-        oS.plotGrid{s} = plotS2Grid(sR,varargin{:});
-        oS.gridSize(s+1) = oS.gridSize(s) + length(oS.plotGrid{s});
-        ori(1+oS.gridSize(s):oS.gridSize(s+1)) = ...
-          orientation('axis',oS.plotGrid{s},'angle',oS.angles(s));
-      end     
+      oS.plotGrid = plotS2Grid(oS.sR,varargin{:});
+      oS.gridSize = (0:numel(oS.phi2)) * length(oS.plotGrid);
+      phi1 = repmat(oS.plotGrid.rho,1,1,numel(oS.phi2));
+      Phi = repmat(oS.plotGrid.theta,1,1,numel(oS.phi2));      
+      phi2 = repmat(reshape(oS.phi2,1,1,[]),[size(oS.plotGrid) 1]);
       
+      ori = orientation('Euler',phi1,Phi,phi2,'Bunge');
+
     end
 
     function n = numSections(oS)
