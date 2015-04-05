@@ -43,16 +43,20 @@ if exist('ori','var') || isempty(oS.plotGrid)
     if ~isempty(data), data = data(samples,:); end
   end
   
-  [v,secAngle] = project(oS,ori);
+  % symmetrise
+  symOri = ori.symmetrise('proper');
+  % avoid symmetrising the data to save some memory
+  
+  [vec,secAngle] = project(oS,symOri);
   %TODO: v.resolution = ori.resolution;      
   
   for s = 1:oS.numSections
     
     if s>1, mtexFig.nextAxis; end
     
-    ind = secAngle == s;
-    if ~isempty(data), secData = {data(ind,:)}; end
-    plotSection(oS,mtexFig.gca,s,v(ind),secData,varargin{:},'parent',mtexFig.gca);
+    ind = find(secAngle == s);
+    if ~isempty(data), secData = {data(1+mod(ind-1,length(ori)),:)}; end
+    plotSection(oS,mtexFig.gca,s,vec(ind),secData,varargin{:});
     
   end
   
@@ -74,7 +78,7 @@ else
       secS2Grid = oS.plotGrid;
     end
     
-    plotSection(oS,mtexFig.gca,s,secS2Grid,secData,varargin{:},'parent',mtexFig.gca);
+    plotSection(oS,mtexFig.gca,s,secS2Grid,secData,varargin{:});
     
   end
     
