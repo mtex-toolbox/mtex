@@ -17,16 +17,16 @@ classdef ODFSections < handle
   % plot(oS,ori)
   
   properties
-    CS1 % crystal symmetry 1
-    CS2 % crystal symmetry 2 or specimen symmetry
-    tol % tolerance   
+    CS1 % crystal symmetry of phase 1
+    CS2 % crystal symmetry of phase 2
+    tol % tolerance
     plotGrid
     gridSize
   end
   
   properties (Dependent=true)
-    CS
-    SS
+    CS % crystal symmetry
+    SS % specimen symmetry
   end
     
   methods
@@ -37,13 +37,13 @@ classdef ODFSections < handle
     end
         
     function CS = get.CS(oS), CS = oS.CS1; end
-    function SS = get.SS(oS), SS = oS.CS2; end
-    
+    function SS = get.SS(oS), SS = oS.CS2; end    
   end
 
   methods (Abstract = true)
     makeGrid(oS,varargin)
     [S2Pos,secPos] = project(oS,ori)
+    ori = iproject(oS,rho,theta,secAngle)
     h = plotSection(oS,ax,sec,v,data,varargin)
     n = numSections(oS)
   end

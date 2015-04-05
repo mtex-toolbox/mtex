@@ -28,11 +28,11 @@ classdef phi2Sections < ODFSections
     
       oS.plotGrid = plotS2Grid(oS.sR,varargin{:});
       oS.gridSize = (0:numel(oS.phi2)) * length(oS.plotGrid);
-      phi1 = repmat(oS.plotGrid.rho,1,1,numel(oS.phi2));
-      Phi = repmat(oS.plotGrid.theta,1,1,numel(oS.phi2));      
+      phi1 = repmat(oS.plotGrid.rho,[1,1,numel(oS.phi2)]);
+      Phi = repmat(oS.plotGrid.theta,[1,1,numel(oS.phi2)]);
       phi2 = repmat(reshape(oS.phi2,1,1,[]),[size(oS.plotGrid) 1]);
       
-      ori = orientation('Euler',phi1,Phi,phi2,'Bunge');
+      ori = orientation('Euler',phi1,Phi,phi2,'Bunge',oS.CS,oS.SS);
 
     end
 
@@ -53,6 +53,10 @@ classdef phi2Sections < ODFSections
 
     end
         
+    function ori = iproject(oS,phi1,Phi,iphi2)
+      ori = orientation('Euler',phi1,Phi,oS.phi2(iphi2),'Bunge',oS.CS,oS.SS);
+    end
+    
     function h = plotSection(oS,ax,sec,v,data,varargin)
       
       % plot data

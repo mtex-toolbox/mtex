@@ -48,6 +48,11 @@ classdef axisAngleSections < ODFSections
       secPos = (secPos + 1)./2;
       
     end
+    
+    function ori = iproject(oS,rho,theta,iangle)
+      ori = orientation('axis',vector3d('polar',theta,rho),'angle',...
+        oS.angle(iangle),oS.CS,oS.SS);
+    end
         
     function h = plotSection(oS,ax,sec,v,data,varargin)
       

@@ -20,11 +20,10 @@ classdef sigmaSections < ODFSections
       oS.maxSigma = min(phi1,phi2);
       oS.sR = sphericalRegion('maxTheta',Phi,'maxRho',max(phi1,phi2));
       
-      % get sections
-      
-      oS.sigma = linspace(0,phi2,7);
+      % get sections      
+      oS.sigma = linspace(0,phi2,get_option(varargin,'sections',7));
       oS.sigma(end) = [];
-      oS.sigma = get_option(varargin,'sigma',oS.sigma);
+      oS.sigma = get_option(varargin,'sigma',oS.sigma,'double');
       
     end
     
@@ -36,7 +35,7 @@ classdef sigmaSections < ODFSections
       Phi = repmat(oS.plotGrid.theta,1,1,numel(oS.sigma));      
       sigma = repmat(reshape(oS.sigma,1,1,[]),[size(oS.plotGrid) 1]);
       
-      ori = orientation('Euler',phi1,Phi,sigma - phi1,'ZYZ');
+      ori = orientation('Euler',phi1,Phi,sigma - phi1,'ZYZ',oS.CS,oS.SS);
       
     end
 
@@ -59,7 +58,11 @@ classdef sigmaSections < ODFSections
       S2Pos = vector3d('polar',e2,e1);
 
     end
-        
+    
+    function ori = iproject(oS,phi1,Phi,isigma)
+      ori = orientation('Euler',phi1,Phi,oS.sigma(isigma)-phi1,'ZYZ',oS.CS,oS.SS);
+    end
+    
     function h = plotSection(oS,ax,sec,v,data,varargin)
       
       % plot data
