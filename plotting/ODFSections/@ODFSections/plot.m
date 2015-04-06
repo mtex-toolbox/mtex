@@ -48,7 +48,8 @@ if exist('ori','var') || isempty(oS.plotGrid)
   % avoid symmetrising the data to save some memory
   
   [vec,secAngle] = project(oS,symOri);
-  %TODO: v.resolution = ori.resolution;      
+  vec.resolution = min(10*degree,max(1*degree,...
+    round(500000*degree/(length(ori.SS)*length(ori.CS)*length(ori)).^(1/3))));
   
   for s = 1:oS.numSections
     

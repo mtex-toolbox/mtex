@@ -11,13 +11,9 @@ classdef axisAngleSections < ODFSections
       
       oS = oS@ODFSections(CS1,CS2);
       
-      % get sections
-      if check_option(varargin,{'omega','angles'})
-        oS.angles = get_option(varargin,{'omega','angles'});
-      else
-        oS.angles = (5:10:180)*degree;
-        oS.angles(oS.angles>maxAngle(oS.CS1,oS.CS2)) = [];
-      end
+      % get sections      
+      oS.angles = get_option(varargin,'axisAngle',(5:10:180)*degree,'double');
+      oS.angles(oS.angles>maxAngle(oS.CS1,oS.CS2)) = [];
       
     end
     
@@ -25,11 +21,11 @@ classdef axisAngleSections < ODFSections
       ori = orientation(oS.CS1,oS.CS2);
       oS.gridSize(1) = 0;
       for s = 1:length(oS.angles)
-        sR = fundamentalSector(oS.CS,oS.CS2,'angle',oS.angles(s));
+        sR = fundamentalSector(oS.CS,oS.CS2,varargin{:},'angle',oS.angles(s));
         oS.plotGrid{s} = plotS2Grid(sR,varargin{:});
         oS.gridSize(s+1) = oS.gridSize(s) + length(oS.plotGrid{s});
         ori(1+oS.gridSize(s):oS.gridSize(s+1)) = ...
-          orientation('axis',oS.plotGrid{s},'angle',oS.angles(s));
+          orientation('axis',oS.plotGrid{s},'angle',oS.angles(s),oS.CS1,oS.CS2);
       end     
     end
 
@@ -51,32 +47,39 @@ classdef axisAngleSections < ODFSections
     
     function ori = iproject(oS,rho,theta,iangle)
       ori = orientation('axis',vector3d('polar',theta,rho),'angle',...
-        oS.angle(iangle),oS.CS,oS.SS);
+        oS.angles(iangle),oS.CS,oS.SS);
     end
         
     function h = plotSection(oS,ax,sec,v,data,varargin)
       
       angle = oS.angles(sec);
       
-      % plot outer boundary
-      plot(fundamentalSector(oS.CS1.Laue,oS.CS2.Laue),'parent',ax,...
-        'TR',[int2str(oS.angles(sec)./degree),'^\circ'],'color',[0.8 0.8 0.8],'doNotDraw');
+      % plot outer boundary TODO: do not plot this twice
+      if isempty(findall(ax,'tag','outerBoundary'))
+        plot(fundamentalSector(oS.CS1.Laue,oS.CS2.Laue,varargin{:}),'parent',ax,...
+          'TR',[int2str(oS.angles(sec)./degree),'^\circ'],'color',[0.8 0.8 0.8],...
+          'doNotDraw','tag','outerBoundary');
+      end
         
-      % rescale the axes according to actual volume
-      x = get(ax,'xLim');
-      y = get(ax,'yLim');
-      x = x .* sin(max(oS.angles)/2) / sin(angle/2);
-      y = y .* sin(max(oS.angles)/2) / sin(angle/2);
-      xlim(ax,x);
-      ylim(ax,y);
-    
+      % rescale the axes according to actual volume      
+      sP = getappdata(ax,'sphericalPlot');
+      bounds = sP.bounds * sin(max(oS.angles)/2) / sin(angle/2);
+      set(ax,'xlim',bounds([1,3]),'ylim',bounds([2,4]))
+          
       hold on
-      sRSec = fundamentalSector(oS.CS1.Laue,oS.CS2.Laue,'angle',angle);
-      % plot inner boundary
-      plot(sRSec,'parent',ax,'color','k',varargin{:},'doNotDraw');
-      
-      % plot data
-      h = plot(v,data{:},sRSec,'parent',ax,varargin{:},'doNotDraw','symmetrised');
+      sRSec = fundamentalSector(oS.CS1.Laue,oS.CS2.Laue,varargin{:},'angle',angle);
+            
+      % plot data 
+      % TODO: if we use symmetrised here we do not need to symmetrise
+      % orientations
+      h = plot(vector3d(v),data{:},sRSec,'parent',ax,varargin{:},'doNotDraw');
+            
+      % plot inner boundary TODO: do not plot this twice
+      if isempty(findall(ax,'tag','innerBoundary'))
+        varargin = extract_option(varargin,{'color'});
+        plot(sRSec,'parent',ax,'color','k',varargin{:},...
+          'doNotDraw','tag','innerBoundary');
+      end
       hold off
 
     end
