@@ -43,13 +43,10 @@ if exist('ori','var') || isempty(oS.plotGrid)
     if ~isempty(data), data = data(samples,:); end
   end
   
-  % symmetrise
-  symOri = ori.symmetrise('proper');
-  % avoid symmetrising the data to save some memory
+  [vec,secAngle] = project(oS,ori);
   
-  [vec,secAngle] = project(oS,symOri);
   vec.resolution = min(10*degree,max(1*degree,...
-    round(500000*degree/(length(ori.SS)*length(ori.CS)*length(ori)).^(1/3))));
+    round(500000*degree/(length(oS.SS)*length(oS.CS)*length(ori)).^(1/3))));
   
   for s = 1:oS.numSections
     
@@ -90,16 +87,10 @@ if isNew || check_option(varargin,'figSize')
   
   dcm = datacursormode(mtexFig.parent);
   set(dcm,'enable','on')  
-  
-  hcmenu = dcm.createContextMenu;
-  %hcmenu = dcm.CurrentDataCursor.uiContextMenu;
-  if numel(get(hcmenu,'children'))<10
-    uimenu(hcmenu, 'Label', 'Mark equivalent orientations', 'Callback', @markEquivalent);
-    %mcolor = uimenu(hcmenu, 'Label', 'Marker color', 'Callback', @display);
-    %msize = uimenu(hcmenu, 'Label', 'Marker size', 'Callback', @display);
-    %mshape = uimenu(hcmenu, 'Label', 'Marker shape', 'Callback', @display);
-  end
+  hcmenu = get(dcm,'UIContextMenu') ;
+  uimenu(hcmenu, 'Label', 'Mark equivalent orientations', 'Callback', @markEquivalent);
   set(dcm,'UIContextMenu',hcmenu)
+
   set(dcm,'UpdateFcn',@tooltip)
      
 end

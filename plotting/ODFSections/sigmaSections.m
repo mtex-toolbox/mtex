@@ -17,8 +17,8 @@ classdef sigmaSections < ODFSections
       
       % get fundamental plotting region
       [phi1,Phi,phi2] = getFundamentalRegion(CS1,CS2,varargin{:});
-      oS.maxSigma = min(phi1,phi2);
-      oS.sR = sphericalRegion('maxTheta',Phi,'maxRho',max(phi1,phi2));
+      oS.maxSigma = phi2;
+      oS.sR = CS2.fundamentalSector(varargin{:});
       
       % get sections      
       oS.sigma = linspace(0,phi2,get_option(varargin,'sections',7));
@@ -44,7 +44,10 @@ classdef sigmaSections < ODFSections
     end
     
     function [S2Pos,secPos] = project(oS,ori)
-    
+
+      % maybe this can be done more efficiently
+      ori = ori.symmetrise('proper').';
+
       [e1,e2,e3] = Euler(ori,'ZYZ');
 
       sigma = mod(e1 + e3,oS.maxSigma); %#ok<*PROP>
@@ -66,7 +69,7 @@ classdef sigmaSections < ODFSections
     function h = plotSection(oS,ax,sec,v,data,varargin)
       
       % plot data
-      h = plot(v,data{:},'TR',[int2str(oS.sigma(sec)./degree),'^\circ'],...
+      h = plot(v,data{:},oS.sR,'TR',[int2str(oS.sigma(sec)./degree),'^\circ'],...
         'parent',ax,varargin{:},'doNotDraw');
 
     end

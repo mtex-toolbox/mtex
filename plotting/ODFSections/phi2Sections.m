@@ -42,6 +42,8 @@ classdef phi2Sections < ODFSections
     
     function [S2Pos,secPos] = project(oS,ori)
     
+      % maybe this can be done more efficiently
+      ori = ori.symmetrise('proper').';
       [phi1,Phi,phi2] = Euler(ori,'Bunge');
 
       bounds = sort(unique([oS.phi2 - oS.tol,oS.phi2 + oS.tol]));
