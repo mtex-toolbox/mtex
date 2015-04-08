@@ -33,6 +33,14 @@ elseif check_option(varargin,'colorRange','double')
     colorRange = log10(colorRange);
   end
   
+  if isinf(colorRange(1)) 
+    if isfinite(minData)
+      colorRange(1) = minData;
+    else
+      colorRange(1) = colorRange(2)-2*eps;
+    end
+  end
+  
 end
  
 % correct for allmost constant data

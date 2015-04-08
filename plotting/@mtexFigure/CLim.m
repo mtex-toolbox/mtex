@@ -38,8 +38,7 @@ elseif length(varargin)>=1 && isa(varargin{1},'double') &&...
   p = varargin{1};
   
   % logarithmic scale?
-  %if any(strcmp(get(mtexFig.cBarAxis,'zscale'),'log')), p = log10(p);end
-         
+  if check_option(varargin,{'log','logarithmic'}), p = log10(p);end
 else
   
   error('First argument must either be the color range or the flag ''equal''');  
