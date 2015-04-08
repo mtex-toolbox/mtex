@@ -13,6 +13,6 @@ A = zeros(length(grains.poly),1);
 poly = grains.poly;
 V = grains.V;
 
-for ig = 1:length(grains.poly)
+for ig = 1:length(poly)
   A(ig) = polySgnArea(V(poly{ig},1),V(poly{ig},2));
 end
