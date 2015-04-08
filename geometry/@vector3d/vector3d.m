@@ -125,16 +125,18 @@ classdef vector3d < dynOption
       
       if v.isOption('resolution')
         res = v.getOption('resolution');
-      elseif length(v)>4
+      elseif length(v) <= 4
+        res = 2*pi;
+      elseif length(v) > 50000
+        res = 1*pi;
+      else
         try
           a = calcVoronoiArea(v);
           res = sqrt(median(a));
           assert(res>0);
         catch
-          res = 2*pi;
-        end
-      else
-        res = 2*pi;
+            res = 2*pi;
+        end        
       end
     end
     
