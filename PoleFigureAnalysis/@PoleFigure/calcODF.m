@@ -143,8 +143,6 @@ vdisp('Call c-routine',varargin{:});
 vdisp(['required time: ',int2str(toc),'s'],varargin{:});
 
 % return ODF
-S3G.CS = pf.CS; 
-S3G.SS = pf.SS;
 odf = unimodalODF(S3G,psi,'weights',c./sum(c));
 
 if check_option(varargin,'noGhostCorrection'), return;end
@@ -159,7 +157,7 @@ for ip = 1:pf.numPF
 end
 
 if phon > 0.99
-  odf = uniformODF(pf.CS,pf.SS);
+  odf = uniformODF(CS,SS);
   return
 elseif phon > 0.1
   vdisp('ghost correction',varargin{:});
@@ -182,9 +180,7 @@ c0 = (1-phon)/length(S3G)*ones(length(S3G),1);
   'EXTERN',P,r,gh,A,c0,w,char(extract_option(varargin,'silent')));
 
 % return ODF
-S3G.CS = pf.CS; 
-S3G.SS = pf.SS;
-odf = phon * uniformODF(pf.CS,pf.SS) + ... 
+odf = phon * uniformODF(CS,SS) + ... 
   (1-phon) * unimodalODF(S3G,psi,'weights',c./sum(c));
 
 end
