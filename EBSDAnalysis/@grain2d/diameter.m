@@ -1,28 +1,22 @@
 function [d] = diameter(grains)
-% diameter of a grain (longest distance between any two vertices of a grain
-% boundary)
+% diameter of a grain 
+% longest distance between any two vertices of the grain boundary
 
-
+% do extract this as it is much faster
 V = grains.V;
-dim = size(V,2);
-
-[v,g] = find(grains.I_VG);
-
-cs = [0; find(diff(g));size(g,1)];
+poly = grains.poly;
 
 d = zeros(size(grains));
 
-for k=1:size(grains,1)
-  Vg = V(v(cs(k)+1:cs(k+1)),:);
-  nv = size(Vg,1);
+for ig = 1:length(grains)
   
-  if nv > 100 % if it is a large Vertex-Set, reduce it to its convex hull
-    Vg = Vg(convhulln(Vg),:);
-    nv = size(Vg,1);
-  end
-
-  diffVg = bsxfun(@minus,reshape(Vg,[nv,1,dim]),reshape(Vg,[1,nv,dim]));
+  Vg = V(poly{ig},:);
+  
+  % if it is a large Vertex-Set, reduce it to its convex hull
+  if size(Vg,1) > 100, Vg = Vg(convhulln(Vg),:); end
+  
+  diffVg = bsxfun(@minus,reshape(Vg,[],1,2),reshape(Vg,1,[],2));
   diffVg = sum(diffVg.^2,3);
   
-  d(k) = sqrt(max(diffVg(:)));  
+  d(ig) = sqrt(max(diffVg(:)));  
 end
