@@ -97,8 +97,58 @@ hold on
 plot(gB,oM.orientation2color(gB.misorientation),'linewidth',2)
 hold off
 
+
 %%
 % The corresponding colormap is shown by
 
-plot(oM)
+plot(oM,'axisAngle',(5:5:60)*degree)
 
+hold on
+plot(gB.misorientation,'points',1000,...
+  'MarkerFaceColor','none','MarkerEdgeColor','w')
+hold off
+
+%%
+
+mdf = calcODF(gB.misorientation,'halfwidth',2.5*degree)
+
+
+%%
+
+plot(mdf,'axisAngle',(25:5:60)*degree,'colorRange',[0 15])
+
+annotate(CSL(3),'label','$CSL_3$','backgroundcolor','w')
+annotate(CSL(5),'label','$CSL_5$','backgroundcolor','w')
+annotate(CSL(7),'label','$CSL_7$','backgroundcolor','w')
+annotate(CSL(9),'label','$CSL_9$','backgroundcolor','w')
+
+
+%%
+
+mori = mdf.calcModes(2)
+
+%%
+
+volume(gB.misorientation,CSL(3),2*degree)
+
+volume(gB.misorientation,CSL(9),2*degree)
+
+
+%%
+
+%annotate(mori(2),'markerFaceColor','r')
+
+%%
+
+omega = linspace(0,55*degree);
+fibre100 = orientation('axis',xvector,'angle',omega,mdf.CS,mdf.SS)
+fibre111 = orientation('axis',vector3d(1,1,1),'angle',omega,mdf.CS,mdf.SS)
+fibre101 = orientation('axis',vector3d(1,0,1),'angle',omega,mdf.CS,mdf.SS)
+
+plot(omega ./ degree,mdf.eval(fibre101))
+
+%%
+
+mori = orientation('Euler',15*degree,28*degree,14*degree,mdf.CS,mdf.CS)
+
+mdf.eval(mori)
