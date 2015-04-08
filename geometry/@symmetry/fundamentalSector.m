@@ -16,6 +16,12 @@ function  sR = fundamentalSector(cs,varargin)
 %  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
 %
 
+% maybe there is nothing to do
+if check_option(varargin,'complete')
+  sR = sphericalRegion(varargin{:});
+  return
+end
+
 % antipodal symmetry is nothing else then adding inversion to the symmetry
 % group
 if check_option(varargin,'antipodal'), cs = cs.Laue; end
