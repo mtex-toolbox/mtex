@@ -29,7 +29,7 @@ setMTEXpref('FontSize',13);
 
 % default annotation style
 setMTEXpref('annotationStyle',...
-  {'marker','s','MarkerEdgeColor','w','MarkerFaceColor','k'});
+  {'marker','s','MarkerEdgeColor','w','MarkerFaceColor','k','hitTest','off'});
 
 %% Euler angle convention
 % default Euler angle convention
