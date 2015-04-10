@@ -184,8 +184,3 @@ odf = phon * uniformODF(CS,SS) + ...
   (1-phon) * unimodalODF(S3G,psi,'weights',c./sum(c));
 
 end
-
-
-function vdisp(s,varargin)
-if ~check_option(varargin,'silent'), disp(s);end
-end
