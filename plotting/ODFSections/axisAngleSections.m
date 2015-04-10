@@ -88,7 +88,7 @@ classdef axisAngleSections < ODFSections
       % plot data 
       h = plot(v,data{:},'parent',ax,varargin{:},'doNotDraw','symmetrised');
       
-      % plot inner boundary TODO: do not plot this twice
+      % plot inner boundary
       if isempty(findall(ax,'tag','innerBoundary'))
         varargin = extract_option(varargin,{'color'});
         plot(oS.axesSectors{sec},'parent',ax,'color','k',varargin{:},...

@@ -104,7 +104,7 @@ hold off
 plot(oM,'axisAngle',(5:5:60)*degree)
 
 hold on
-plot(gB.misorientation,'points',1000,...
+plot(gB.misorientation,'points',300,...
   'MarkerFaceColor','none','MarkerEdgeColor','w')
 hold off
 
