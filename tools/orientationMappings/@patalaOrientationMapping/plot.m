@@ -9,7 +9,7 @@ mtexFig = newMtexFigure(varargin{:});
 if check_option(varargin,'omega')
   omega = get_option(varargin,'omega');
 else
-  omega = (5:5:180)*degree;
+  omega = (5:10:180)*degree;
   omega(omega>oM.CS1.maxAngle) = [];  
 end
 sR = oM.CS1.Laue.fundamentalSector;

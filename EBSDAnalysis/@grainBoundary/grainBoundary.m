@@ -32,6 +32,8 @@ classdef grainBoundary < phaseList & dynProp
     A_F            % adjecency matrix faces - faces
     segmentId      % connected component id
     segmentSize    % number of faces that form a segment
+    x              % x coordinates of the vertices of the grains
+    y              % y coordinates of the vertices of the grains
   end
   
   methods
@@ -113,6 +115,14 @@ classdef grainBoundary < phaseList & dynProp
       v1 = vector3d(gB.V(gB.F(:,1),1),gB.V(gB.F(:,1),2),zeros(length(gB),1),'antipodal');
       v2 = vector3d(gB.V(gB.F(:,2),1),gB.V(gB.F(:,2),2),zeros(length(gB),1));
       dir = normalize(v1-v2);
+    end
+    
+    function x = get.x(gB)
+      x = gB.V(unique(gB.F(:)),1);
+    end
+    
+    function y = get.y(gB)
+      y = gB.V(unique(gB.F(:)),2);
     end
     
     function I_VF = get.I_VF(gB)

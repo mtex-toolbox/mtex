@@ -20,6 +20,8 @@ classdef grain2d < phaseList & dynProp
     scanUnit         % unit of the vertice coordinates
     id2ind           % 
     GOS              % intergranular average misorientation angle    
+    x                % x coordinates of the vertices of the grains
+    y                % y coordinates of the vertices of the grains
   end
   
   properties (Dependent = true, Access = protected)
@@ -102,6 +104,14 @@ classdef grain2d < phaseList & dynProp
     
     function V = get.V(grains)
       V = grains.boundary.V;
+    end
+    
+    function x = get.x(grains)
+      x = grains.boundary.x;
+    end
+    
+    function y = get.y(grains)
+      y = grains.boundary.y;
     end
     
     function grains = set.V(grains,V)

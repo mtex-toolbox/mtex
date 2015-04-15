@@ -9,7 +9,7 @@ function h = plotAngleDistribution( ori, varargin )
 % orientation/plotAxisDistribution
 %
 
-mtexFig = newMtexFigure(varargin{:});
+[mtexFig,isNew] = newMtexFigure(varargin{:});
 mtexFig.keepAspectRatio = false;
 
 % compute angles
@@ -60,7 +60,9 @@ end
 
 xlabel(mtexFig.gca,'angle in degree')
 ylabel(mtexFig.gca,'percent')
-%xlim(mtexFig.gca,[0,max(bins)/degree])
-mtexFig.drawNow(varargin{:})
+if isNew
+  mtexFig.drawNow(varargin{:})
+  xlim(mtexFig.gca,[0,max(bins)/degree])
+end
 
 if nargout == 0, clear h;end

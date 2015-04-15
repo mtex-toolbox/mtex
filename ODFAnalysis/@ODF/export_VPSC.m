@@ -17,8 +17,8 @@ function export_VPSC(odf,filename,varargin)
 % get number of points
 points = get_option(varargin,'points',10000);
 
-% simulate EBSD
-ebsd = calcEBSD(odf,points,varargin{:});
+% simulate orientations
+ori = calcOrientations(odf,points,varargin{:});
 
 % export EBSD
-export_VPSC(ebsd,filename,varargin{:});
+export_VPSC(ori,filename,varargin{:});

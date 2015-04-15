@@ -30,23 +30,4 @@ switch cs.LaueName
     
 end
 
-return
-
-switch cs.id
-  case [vec2cell(1:11),{17,18,25,26,33,34}] % 11x, 1x1, x11, 3,-3,4,-4,6,-6
-    omega = pi;
-  case vec2cell(12:16)       % 222, 
-    omega = 2*pi/3;    
-  case vec2cell(28:32)       % 422
-    k = tan(pi/8);
-    omega = 2*atan(sqrt(1+2*k^2));  
-  case vec2cell(36:40)       % 622
-    k = tan(pi/12);
-    omega = 2*atan(sqrt(1+2*k^2));
-  case {41,42}               % 23
-    omega = pi/2; 
-  case {43,44,45}            % 432
-    k = tan(pi/8);
-    omega = 2*atan(sqrt(6*k^2-4*k+1));
-end
 

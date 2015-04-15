@@ -6,7 +6,13 @@ classdef ipdfHSVOrientationMapping < ipdfOrientationMapping & HSVOrientationMapp
   
   methods
     function oM = ipdfHSVOrientationMapping(varargin)
-      oM = oM@HSVOrientationMapping(varargin{:});      
+      oM = oM@HSVOrientationMapping(varargin{:});
+      
+       if isa(oM.CS2,'crystalSymmetry')
+        oM.inversePoleFigureDirection = Miller(oM.whiteCenter,oM.CS2);
+      else
+        oM.inversePoleFigureDirection = zvector;
+      end
     end
     
     function rgb = Miller2color(oM,h)

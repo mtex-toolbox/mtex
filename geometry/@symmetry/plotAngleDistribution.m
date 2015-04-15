@@ -9,6 +9,7 @@ function h = plotAngleDistribution(CS,varargin)
 %
 
 [mtexFig,isNew] = newMtexFigure(varargin{:}); 
+mtexFig.keepAspectRatio = false;
 
 % compute angle distribution
 [f,omega] = angleDistribution(CS);

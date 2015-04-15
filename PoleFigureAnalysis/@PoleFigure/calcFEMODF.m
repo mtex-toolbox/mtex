@@ -74,7 +74,3 @@ c = lsqnonneg(M,b);
 odf = femODF(DSO3,'weights',c);
 
 end
-
-function vdisp(s,varargin)
-if ~check_option(varargin,'silent'), disp(s);end
-end

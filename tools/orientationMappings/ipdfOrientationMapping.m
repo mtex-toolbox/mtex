@@ -3,7 +3,7 @@ classdef ipdfOrientationMapping < orientationMapping
   %   Detailed explanation goes here
   
   properties
-    inversePoleFigureDirection = zvector  
+    inversePoleFigureDirection
   end
   
   methods
@@ -13,6 +13,8 @@ classdef ipdfOrientationMapping < orientationMapping
       
       if isa(oM.CS2,'crystalSymmetry')
         oM.inversePoleFigureDirection = Miller(oM.inversePoleFigureDirection,oM.CS2);
+      else
+        oM.inversePoleFigureDirection = zvector;
       end
       
     end
@@ -37,8 +39,10 @@ classdef ipdfOrientationMapping < orientationMapping
         defaultPlotCMD = 'pcolor';
       end
       plot(h,d,defaultPlotCMD,'parent',mtexFig.gca,varargin{:});
-      tt = mtexTitle(mtexFig.gca,char(oM(1).inversePoleFigureDirection));
-      set(tt,'string',['IPF ' get(tt,'string')]);
+      if ~check_option(varargin,'noTitle')
+        tt = mtexTitle(mtexFig.gca,char(oM(1).inversePoleFigureDirection));
+        set(tt,'string',['IPF ' get(tt,'string')]);
+      end
       
       if isempty(oM.CS1.mineral)
         name = ['"' oM.CS1.pointGroup '"'];
@@ -63,7 +67,7 @@ classdef ipdfOrientationMapping < orientationMapping
         arrow3d(oM.CS1.axes(3),'facecolor',gray)
         text3(Miller(0,0,1,'uvw',oM.CS1),'c','verticalAlignment','bottom')
         hold off
-      else
+      elseif ~check_option(varargin,'noLabel')
         h = sR.vertices;
         if length(unique(h,'antipodal')) <=2, h = [h,xvector,yvector,zvector]; end
         h = Miller(unique(h),oM.CS1);

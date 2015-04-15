@@ -53,9 +53,14 @@ if size(d,2)>15 || ...
   % determine specimen directions
   if ~(~isempty(varargin) && isa(varargin{1},'vector3d') && size(varargin{1}) == size(d))
 
+    % sometimes last line is a duplication of the first line
+    if ~iseven(size(d,1)) && all(d(1,:) == d(end,:))
+      d(end,:) = []; 
+    end
+    
     r = regularS2Grid('points',size(d),'antipodal',varargin{:});
     
-    if ~check_option(varargin,'maxtheta')
+    if ~check_option(varargin,'maxtheta') && size(d,2) ~= 19
       warning(['No grid of specimen directions was specified' ...
         ' I''m going to use a regular grid with ' size2str(d) ' points.' ...
         'You may use the option ''maxTheta'' to control the maximum polar angle. ' ...

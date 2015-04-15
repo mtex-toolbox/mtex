@@ -29,7 +29,7 @@ plotx2east
 [grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd('indexed'),'threshold',5*degree);
 
 
-%% Intergranular misorientations %%TODO
+%% Intergranular misorientations
 % The intergranular misorientation is automatically computed while
 % reconstructing the grain structure. It is stored as the property
 % |mis2mean| within the ebsd variable and can be accessed by
@@ -42,7 +42,7 @@ plotAngleDistribution(mori)
 xlabel('Misorientation angles in degree')
 
 %%
-% The visualization of the misorientation can be done by
+% The visualization of the misorientation angle can be done by
 
 close all
 plot(ebsd('Forsterite'),ebsd('Forsterite').mis2mean.angle./degree)
@@ -53,10 +53,20 @@ plot(grains.boundary,'edgecolor','k','linewidth',.5)
 hold off
 
 %%
+% In order to visualize the misorientation by an ipdf colorcoding we first
+% define an orientation to colormapping and set the |colorStretching| to
+% increase the contrast around the white center. Note that the
+% inversPoleFigureDirection of the ipdf map is automatically set to the
+% white center to colorize grains with a small texture gradient with light
+% colors.
 
-cs = ebsd('Forsterite').CS.Laue;
-oM = axisAngleOrientationMapping(cs)
-%oM.maxAngle = 50*degree;
+oM = ipdfHSVOrientationMapping(mori)
+oM.colorStretching = 5;
+
+plot(oM)
+
+%%
+
 
 plot(ebsd('Forsterite'),oM.orientation2color(ebsd('Forsterite').mis2mean))
 hold on

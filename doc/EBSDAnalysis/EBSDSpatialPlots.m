@@ -33,7 +33,7 @@ ebsd('Diopside').color
 
 ebsd('Diopside').color = [1 0 0];
 
-plot(ebsd)
+plot(ebsd('indexed'))
 
 %%
 % By default, not indexed phases are plotted as white. To directly specify 
