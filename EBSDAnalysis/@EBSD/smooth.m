@@ -131,3 +131,17 @@ ebsd.rotations = rot;
     
 end
   
+%mtexdata forsterite
+%ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
+%[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd('indexed'))
+%grains = smooth(grains)
+%oM = ipdfHSVOrientationMapping(ebsd('fo').CS.properGroup)
+%oM.inversePoleFigureDirection = Miller(oM.whiteCenter,ebsd('fo').CS.properGroup);
+%oM.colorStretching = 5;
+%plot(ebsd('fo'),oM.orientation2color(ebsd('fo').mis2mean))
+%hold on
+%plot(grains.boundary)
+%hold off
+%figure
+%plot(oM)
+
