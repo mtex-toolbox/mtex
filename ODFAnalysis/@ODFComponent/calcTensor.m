@@ -12,20 +12,16 @@ TVoigt = T; TReuss = T;
 
 % Voigt mean
 if check_option(varargin,{'Voigt','Hill'})
-
-  % rotate tensor according to the grid
-  T = rotate(T,S3G);
-
+    
+  % rotate tensor according to the grid and
   % take the mean of the tensor according to the weight
-  TVoigt = sum(f .* T);
+  TVoigt = sum(f .* rotate(T,S3G));
  
 end
 
 if check_option(varargin,{'Reuss','Hill'})
 
-  % for Reuss tensor invert tensor
-  Tinv = inv(T);
-  Tinv = rotate(Tinv,S3G);
-  TReuss = inv(sum(f .* Tinv));
+  % for Reuss tensor invert tensor  
+  TReuss = inv(sum(f .* rotate(inv(T),S3G)));
     
 end
