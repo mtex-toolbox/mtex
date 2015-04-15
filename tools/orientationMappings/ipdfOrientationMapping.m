@@ -3,7 +3,7 @@ classdef ipdfOrientationMapping < orientationMapping
   %   Detailed explanation goes here
   
   properties
-    inversePoleFigureDirection = zvector  
+    inversePoleFigureDirection
   end
   
   methods
@@ -13,6 +13,8 @@ classdef ipdfOrientationMapping < orientationMapping
       
       if isa(oM.CS2,'crystalSymmetry')
         oM.inversePoleFigureDirection = Miller(oM.inversePoleFigureDirection,oM.CS2);
+      else
+        oM.inversePoleFigureDirection = zvector;
       end
       
     end
