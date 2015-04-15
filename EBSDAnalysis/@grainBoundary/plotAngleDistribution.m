@@ -9,6 +9,7 @@ function h = plotAngleDistribution( gB, varargin )
 %
 
 [mtexFig,isNew] = newMtexFigure(varargin{:});
+mtexFig.keepAspectRatio = false;
 
 % only consider indexed data
 gB  = subSet(gB,gB.isIndexed);

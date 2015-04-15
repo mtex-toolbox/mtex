@@ -2,6 +2,9 @@ function hist(grains,varargin)
 %
 %
 
+[mtexFig,isNew] = newMtexFigure(varargin{:});
+mtexFig.keepAspectRatio = false;
+
 if nargin>1 && isnumeric(varargin{1})
   nbins = varargin{1};
 else
@@ -32,11 +35,13 @@ end
 
 % plot the result as a bar plot
 binCenter = 0.5*(bins(1:end-1)+bins(2:end));
-bar(binCenter,100*cumArea,'BarWidth',1.5)
-xlim([bins(1),bins(end)])
-xlabel('grain area')
-ylabel('relative volume (%)')
-title('grain size distribution')
+bar(binCenter,100*cumArea,'BarWidth',1.5,'parent',mtexFig.gca)
+xlim(mtexFig.gca,[bins(1),bins(end)])
+xlabel(mtexFig.gca,'grain area')
+ylabel(mtexFig.gca,'relative volume (%)')
+title(mtexFig.gca,'grain size distribution')
 
 min = grains.mineralList(idList);
 legend(min{:})
+
+if isNew, mtexFig.drawNow(varargin{:});end
