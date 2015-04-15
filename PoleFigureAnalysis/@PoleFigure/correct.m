@@ -60,7 +60,7 @@ end
 
 % check for identical specimen directions
 if all(pf.r == pf_orig.r)
-  pf_orig.intensities = pf.intensities;
+  pf_orig.allI = pf.allI;
   return
 end
 
