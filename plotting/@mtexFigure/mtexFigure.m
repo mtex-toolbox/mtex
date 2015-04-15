@@ -95,6 +95,9 @@ classdef mtexFigure < handle
       
       MTEXFigureMenu(mtexFig,varargin{:});
       
+      h = findall(mtexFig.parent,'ToolTipString','Insert Colorbar');
+      set(h,'ClickedCallback',@(a,b) mtexColorbar(mtexFig,a,b));
+      
       function updateChildren(a,b)
         
         % prevent that this is called by colorbar
