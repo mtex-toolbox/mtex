@@ -34,8 +34,7 @@ ebsd({'Fo','En'})
 % As an example, let us plot the Forsterite data. 
 
 close all
-plot(ebsd('Forsterite'))
-%plot(ebsd('notIndexed'),'facecolor','r')
+plot(ebsd('Forsterite'),ebsd.orientations)
 
 %%
 % The data are colorized according to its orientation. By default color of
