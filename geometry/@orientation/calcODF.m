@@ -13,6 +13,9 @@ function odf = calcODF(ori,varargin)
 %   % use kernel density estimation with a 10 degree kernel
 %   odf = calcODF(ori,'halfwidth',10*degree) 
 %
+%   % use grain area as weights for the orientations
+%   odf = calcODF(grains.meanOrientation,'weights',grains.area)
+%
 %   % use a specific kernel
 %   psi = AbelPoissonKernel('halfwidth',10*degree)
 %   odf = calcODF(ori,'kernel',psi) 
@@ -27,6 +30,7 @@ function odf = calcODF(ori,varargin)
 %  odf - @ODF
 %
 % Options
+%  weights    - list of weights for the orientations
 %  halfwidth  - halfwidth of the kernel function
 %  resolution - resolution of the grid where the ODF is approximated
 %  kernel     - kernel function (default -- de la Valee Poussin kernel)
@@ -63,4 +67,3 @@ else
   odf = calcKernelODF(ori,varargin{:},'kernel',psi);
   
 end
-
