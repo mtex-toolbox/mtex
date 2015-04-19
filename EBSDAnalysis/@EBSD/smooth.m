@@ -82,6 +82,10 @@ if nargin < 2, alpha = []; end
 
 % extract data for speed reasons
 rot = reshape(ebsd.rotations,sGrid);
+rot.a(~ebsd.isIndexed) = NaN;
+rot.b(~ebsd.isIndexed) = NaN;
+rot.c(~ebsd.isIndexed) = NaN;
+rot.d(~ebsd.isIndexed) = NaN;
 
 CSList = ebsd.CSList;
 
@@ -102,15 +106,15 @@ for id = grainIds
   indLocal = sub2ind([nRow,nCol],irow - minRow + 1,icol - minCol + 1);
     
   % skip small grains
-  if nRow < 3 || nCol < 3, continue, end
-    
-  % remove NaN values 
   notNaN = ~isnan(rot.a(ind));
+  if nnz(notNaN)<10 || nRow < 3 || nCol < 3, continue, end
+    
+  % remove NaN values   
   indLocal = indLocal(notNaN);
   ori = orientation(rot(ind),CSList{2});   
   
   % compute components in the Lie algebra
-  [qmean,~,~,~,q] = mean(ori(notNaN));
+  [qmean,q] = mean(ori(notNaN));
   q = inv(qmean)*q; %#ok<MINV>  
   tq1 = NaN(nCol,nRow); tq2 = tq1; tq3 = tq1;
   tq = log(q);
@@ -127,7 +131,7 @@ for id = grainIds
 end
 
 % store to EBSD variable
-ebsd.rotations = rot;
+ebsd.rotations = rot(:);
     
 end
   
@@ -137,11 +141,20 @@ end
 %grains = smooth(grains)
 %oM = ipdfHSVOrientationMapping(ebsd('fo').CS.properGroup)
 %oM.inversePoleFigureDirection = Miller(oM.whiteCenter,ebsd('fo').CS.properGroup);
-%oM.colorStretching = 5;
+%oM.colorStretching = 7;
 %plot(ebsd('fo'),oM.orientation2color(ebsd('fo').mis2mean))
 %hold on
 %plot(grains.boundary)
 %hold off
 %figure
 %plot(oM)
+%ebsd_smoothed = smooth(ebsd)
 
+% [~,id] = max(grains.area)
+% ebsd = ebsd(grains(id))
+% oM = ipdfHSVOrientationMapping(ebsd('fo').CS.properGroup)
+% oM.inversePoleFigureDirection = grains(id).meanOrientation*oM.whiteCenter;
+% oM.colorStretching = 7;
+% plot(ebsd,oM.orientation2color(ebsd.orientations))
+% ebsd_smoothed = smooth(ebsd)
+% plot(ebsd_smoothed,oM.orientation2color(ebsd_smoothed.orientations))
