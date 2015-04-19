@@ -21,4 +21,4 @@ if isempty(ori), odf = ODF; return, end
 [~,~,ev,kappa] = mean(ori,varargin{:});
 
 % set up Bingham ODF
-odf = BinghamODF(kappa,ev,CS,SS);
+odf = BinghamODF(kappa,ev,ori.CS,ori.SS);
