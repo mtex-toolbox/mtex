@@ -1,4 +1,4 @@
-function [o, lambda, eigv, kappa, q]  = mean(o,varargin)
+function [o, q, lambda, eigv, kappa]  = mean(o,varargin)
 % mean of a list of orientations, principle axes and moments of inertia
 %
 % Syntax
@@ -24,7 +24,6 @@ if length(o) == 1
   
   if nargout > 1
     eigv = eye(4);
-    lambda = [1 0 0 0]';
     kappa = [Inf 0 0 0]';
     q = quaternion(o);
   end
@@ -55,6 +54,3 @@ o.i = false;
 
 lambda = diag(lambda);
 
-if nargout > 3
-  kappa = evalkappa(lambda,varargin{:});
-end
