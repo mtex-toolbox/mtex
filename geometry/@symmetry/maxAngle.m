@@ -7,8 +7,12 @@ function  omega = maxAngle(cs,ss)
 %  omega = min([pi/2;omega(omega>1e-1)/2]);
 %  return
 %end
- 
-if nargin > 1, cs = union(cs,ss);end
+
+% TODO: this needs to be rethought
+if nargin > 1
+  omega = min(maxAngle(cs),maxAngle(ss));
+  %cs = union(cs,ss);
+end
 
 switch cs.LaueName
   
