@@ -12,6 +12,9 @@ function [q,m,n] = unique(q,varargin)
 
 % q = cunion(q,@(a,b) eq(a,b,varargin{:}));
 
+% maybe there is nothing to do
+if length(q) == 1 && nargout <= 1, return; end
+
 a = q.a(:);
 b = q.b(:);
 c = q.c(:);
