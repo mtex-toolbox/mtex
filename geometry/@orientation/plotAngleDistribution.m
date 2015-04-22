@@ -14,43 +14,55 @@ mtexFig.keepAspectRatio = false;
 
 % compute angles
 omega = ori.angle;
+maxOmega = maxAngle(ori.CS,ori.SS);
 
 % seach for existing bar plots
 h = findobj(mtexFig.gca,'type','bar','-or','type','hgGroup');
 
 if ~isempty(h)
-  bins = ensurecell(get(h,'XData'));
-  bins = bins{1}*degree;
-  
+       
+  midPoints = ensurecell(get(h,'XData'));
+  midPoints= midPoints{1}*degree;
+  bins = [2*midPoints(1)-midPoints(2),midPoints,2*midPoints(end)-midPoints(end-1)];
+  bins = (bins(1:end-1) + bins(2:end))/2;
   density = ensurecell(get(h,'YData'));
   density = cellfun(@(x) x(:),density,'UniformOutput',false);
-  density = horzcat(density{:},zeros(size(density{1})));
+  density = horzcat(density{:});
   lg = ensurecell(get(h,'DisplayName'));
   delete(h); % remove old bars
   
-  %TODO: maybe we have to enlarge bins
-  
+  % add a new column
+  density(:,end+1) = 0;
+    
+  % maybe we have to enlarge bins
+  if maxOmega > max(bins)
+    bins = 0:(bins(2)-bins(1)):maxOmega + 0.01;
+    density(end+1:length(bins)-1,:) = 0;    
+  end
+
 else
+ 
   % bin size given?
   if ~isempty(varargin) && isscalar(varargin{1})
     nbins = varargin{1};
   else
-    nbins = 20;
+    nbins = 19;
   end
 
-  % compute bins
-  maxomega = max(omega);
-  bins = linspace(0,maxomega,nbins);
-  bins = 0.5 .* (bins(2:end)+bins(1:end-1));
+  % compute bins  
+  bins = linspace(-eps,maxOmega+0.01,nbins);
   density = zeros(nbins-1,1);
   lg = {};
 end
 
 % compute angle distributions
 d = histc(omega,bins).';
-density(:,end) = 100 * d ./ sum(d);
+midPoints = 0.5*(bins(1:end-1) + bins(2:end));
+density(:,end) = 100 * d(1:end-1) ./ sum(d);
 
-h = optiondraw(bar(bins/degree,density,'parent',mtexFig.gca),varargin{:});
+
+h = optiondraw(bar(midPoints/degree,density,'parent',mtexFig.gca),varargin{:});
+xlim(mtexFig.gca,[0,max(bins)/degree])
 
 % update legend
 lg = [lg;{[ori.CS.mineral '-' ori.SS.mineral]}];
@@ -58,11 +70,10 @@ for i=1:length(h)
   set(h(i),'DisplayName',lg{i});
 end
 
-xlabel(mtexFig.gca,'angle in degree')
-ylabel(mtexFig.gca,'percent')
 if isNew
+  xlabel(mtexFig.gca,'angle in degree')
+  ylabel(mtexFig.gca,'percent')
   mtexFig.drawNow(varargin{:})
-  xlim(mtexFig.gca,[0,max(bins)/degree])
 end
 
 if nargout == 0, clear h;end

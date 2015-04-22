@@ -67,3 +67,4 @@ warning('on','MATLAB:legend:PlotEmpty');
 mtexFig.drawNow(varargin{:})
 
 if nargout==0, clear h;end
+hold off
