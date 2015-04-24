@@ -67,8 +67,8 @@ colorbar
 % some process, we are interessed in quantifications.
 
 cs = ebsd(grain_selected).CS;
-plotPDF(ebsd(grain_selected).orientations,...
-  [Miller(0,0,1,cs),Miller(0,1,1,cs),Miller(1,1,1,cs)],'antipodal')
+ori = ebsd(grain_selected).orientations;
+plotPDF(ori,[Miller(0,0,1,cs),Miller(0,1,1,cs),Miller(1,1,1,cs)],'antipodal')
 
 
 %%
@@ -76,12 +76,11 @@ plotPDF(ebsd(grain_selected).orientations,...
 % would reject the hypothesis for some level of significance, since the
 % distribution is highly concentrated and the numerical results vague.
 
-[qm,lambda,U,kappa] = mean(ebsd(grain_selected).orientations,'approximated');
-num2str(kappa')
+calcBinghamODF(ori,'approximated')
 
 %%
 %
-ori = ebsd(grain_selected).orientations;
+
 T_spherical = bingham_test(ori,'spherical','approximated');
 T_prolate   = bingham_test(ori,'prolate',  'approximated');
 T_oblate    = bingham_test(ori,'oblate',   'approximated');

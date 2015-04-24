@@ -6,9 +6,14 @@ function d = dot_outer(o1,o2,varargin)
 %
 % Output
 % d - double of size length(o1) < length(o2)
+%
+% TODO: does not work for orientations of different phase!!
 
 % get symmetries and ensure both arguments are at least rotations
 if isa(o1,'orientation')
+  if isa(o2,'orientation') && o1.CS ~= o2.CS
+    error('comparing orientations of different phase not yet supported');
+  end
   cs = o1.CS; ss = o1.SS;
   o2 = rotation(o2);
 else

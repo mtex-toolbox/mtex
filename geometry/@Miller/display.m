@@ -19,7 +19,7 @@ if length(m) < 20 && ~isempty(m)
   
   eps = 1e4;
   
-  switch m.dispStyle
+  switch lower(m.dispStyle)
     
     case 'uvw'
       
@@ -28,7 +28,7 @@ if length(m) < 20 && ~isempty(m)
       
       cprintf(uvtw.','-L','  ','-Lr',{'u' 'v' 'w'});
           
-    case 'UVTW'
+    case 'uvtw'
       
       uvtw = round(m.UVTW * eps)./eps;
       uvtw(uvtw==0) = 0;

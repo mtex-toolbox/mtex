@@ -17,22 +17,21 @@ function [q,omega] = project2FundamentalRegion(q,CS1,CS2,q_ref)
 %
 
 % get quaternions
-qCS1 = quaternion(CS1);
-
+qCS1 = unique(quaternion(CS1),'antipodal');
 
 if nargin == 2, 
   q_ref = idquaternion;
   qCS2  = idquaternion;
 elseif nargin == 3
   if isa(CS2,'symmetry')
-    qCS2  = quaternion(CS2); 
+    qCS2  = unique(quaternion(CS2),'antipodal'); 
     q_ref = idquaternion;
   else
     qCS2  = idquaternion;
     q_ref = quaternion(CS2);
   end
 else
-  qCS2  = quaternion(CS2);
+  qCS2  = unique(quaternion(CS2),'antipodal');
   q_ref = quaternion(q_ref);
 end
 

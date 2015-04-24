@@ -59,7 +59,8 @@ methods
       
       % check for symmetry
       m.CSprivate = getClass(varargin,'crystalSymmetry',[]);
-      assert(~isempty(m.CSprivate),['Starting with MTEX 4.0 Miller ' ...
+      assert(isa(varargin{1},'Miller') || ~isempty(m.CSprivate),...
+        ['Starting with MTEX 4.0 Miller ' ...
         'indices always require to specify a crystal symmetry!']);
 
       if nargin == 0 %empty constructor
@@ -69,7 +70,9 @@ methods
       elseif isa(varargin{1},'Miller') % copy constructor
   
         if ~isempty(m.CSprivate), varargin{1}.CSprivate = m.CSprivate;end
-        m = varargin{1};        
+        m = varargin{1};
+        dispStyle = extract_option(varargin,{'uvw','UVTW','hkl','hkil','xyz'}); %#ok<*PROP>
+        if ~isempty(dispStyle), m.dispStyle = dispStyle{1}; end
         
         return;
   

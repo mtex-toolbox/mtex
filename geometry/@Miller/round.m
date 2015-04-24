@@ -2,11 +2,11 @@ function h = round(h,varargin)
 % tries to round miller indizes to greatest common divisor
 
 
-switch h.dispStyle
+switch lower(h.dispStyle)
   
   case  'uvw'
     mOld = h.uvw;
-  case 'UVTW'
+  case 'uvtw'
     mOld = h.UVTW;  
   case 'hkl'
     mOld = h.hkl;
@@ -44,11 +44,11 @@ end
 h = h .* multiplier;
 
 % now round
-switch h.dispStyle
+switch lower(h.dispStyle)
   
-  case  'uvw'
+  case 'uvw'
     h.uvw = round(h.uvw);
-  case 'UVTW'
+  case 'uvtw'
     h.UVTW = round(h.UVTW);
   case 'hkl'
     h.hkl = round(h.hkl);
