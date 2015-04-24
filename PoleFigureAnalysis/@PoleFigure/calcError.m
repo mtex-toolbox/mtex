@@ -44,3 +44,8 @@ for i = 1:pf.numPF
   end
 end
 
+% TODO: implement a nice default output  
+%if nargout == 0
+%  disp('TODO')
+%  clear e;
+%end

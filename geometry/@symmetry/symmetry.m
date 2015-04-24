@@ -107,6 +107,10 @@ classdef symmetry < rotation
       r = cs.id == symmetry.pointGroups(cs.id).LaueId;
     end
     
+    function r = isRotational(cs)      
+      r = cs.id == symmetry.pointGroups(cs.id).properId;
+    end
+    
     function r = get.isProper(cs)
       r = ~any(cs.i(:));
     end
