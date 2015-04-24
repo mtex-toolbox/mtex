@@ -14,7 +14,8 @@ function omega = angle(o1,o2)
 if nargin == 1
   
   [~,omega] = project2FundamentalRegion(o1);
-
+  omega = reshape(omega,size(o1));
+  
 else
   
   omega = real(2*acos(dot(o1,o2)));
