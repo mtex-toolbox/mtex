@@ -1,18 +1,20 @@
 function out = extract_option(option_list,option,types)
 % extract options from option list
 %
-%% Input
+% Syntax
+%
+% Input
 %  option_list - Cell Array
 %  option      - String Array
 %  types       - class names
 %
-%% Output
+% Output
 %  out         - Cell Array
 %
-%% See also
+% See also
 % get_option set_option delete_option
 
-%% extract options with argument
+% extract options with argument
 if nargin > 2
 
   option = ensurecell(option);  
@@ -28,7 +30,7 @@ if nargin > 2
     end
   end
     
-%% extract options without argument  
+% extract options without argument  
 else
 
   ind = cellfun(@(a) ischar(a) && any(strcmpi(a,option)) ,option_list);
