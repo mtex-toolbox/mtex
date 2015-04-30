@@ -2,13 +2,13 @@ function pf = loadPoleFigure_beartex(fname,varargin)
 % import data fom BeaTex file
 %
 % Syntax
-%   pf = loadPoleFigure_beartex(fname,<options>)
+%   pf = loadPoleFigure_beartex(fname)
 %
 % Input
-%  fname    - filename
+%  fname - filename
 %
 % Output
-%  pf - vector of @PoleFigure
+%  pf - @PoleFigure
 %
 % See also
 % ImportPoleFigureData loadPoleFigure
@@ -27,7 +27,7 @@ try
       % c = textscan(fid,'%s',7,'delimiter','\n','whitespace','');
       comment = deblank(c{1}(1:50));
     catch
-      if ~exist('pf','var')
+      if ~exist('data','var')
         error('format BearTex does not match file %s',fname);
       else
         break
@@ -55,24 +55,19 @@ try
     end
     
     fgetl(fid);
-        
-    
-    % mintheta = info(1);  maxtheta = info(2);
-        
-    
+            
+    % mintheta = info(1);  maxtheta = info(2);            
     ipf = ipf+1;
   end
   
   pf = PoleFigure(h,r,data,cs,ss,'comment',comment,varargin{:});
+
+  pf(pf.r.theta < info(1)*degree-eps | pf.r.theta > info(2)*degree+eps) = [];
+
+  fclose(fid);
   
 catch
   if ~exist('pf','var')
     interfaceError(fname,fid);
   end
 end
-
-pf(pf.r.theta < info(1)*degree-eps | pf.r.theta > info(2)*degree+eps) = [];
-
-
-fclose(fid);
-
