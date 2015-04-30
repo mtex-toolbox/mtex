@@ -1,5 +1,5 @@
 classdef sphericalPlot < handle
-  %sphericalProjection
+  % sphericalPlot is responsible for visualizing spherical data  
   
   properties
     proj = sphericalProjection
@@ -163,7 +163,6 @@ classdef sphericalPlot < handle
         isgrid = ismember(childs,[sP.grid(:);sP.boundary(:)]);
         istext = strcmp(get(childs,'type'),'text');
   
-        % TODO: this crahes on MATLAB 2014b
         set(sP.ax,'Children',[childs(istext); sP.boundary(:); sP.grid(:);childs(~isgrid & ~istext)]);
       end
     end    
@@ -174,12 +173,9 @@ classdef sphericalPlot < handle
     function plotPlainGrid(sP,varargin)
       
       % the ticks
-      %dgrid = get_option(varargin,'grid_res',30*degree);
       polarRange = sP.sphericalRegion.polarRange;
       theta = round(linspace(polarRange(1),polarRange(3),4)/degree);
-      rho = round(linspace(polarRange(2),polarRange(4),4)/degree);      
-      %theta = round((polarRange(1):dgrid:polarRange(3))/degree);
-      %rho = round((polarRange(2):dgrid:polarRange(4))/degree);
+      rho = round(linspace(polarRange(2),polarRange(4),4)/degree);            
       
       set(sP.ax,'XTick',rho);
       set(sP.ax,'YTick',theta);
@@ -205,8 +201,6 @@ classdef sphericalPlot < handle
       for i = 1:length(theta), circ(sP,theta(i)); end
       
       % draw meridians
-      %rho = 0:dgrid:2*pi-dgrid;
-      %for i = 1:length(rho), plotMeridian(sP,rho(i)); end
       plotMeridians(sP,0:dgrid:pi-dgrid);
 
     end
@@ -247,29 +241,3 @@ classdef sphericalPlot < handle
   end
 end
 
-% 
-% 
-% % control legend entry
-% try
-%   hAnnotation = get(l,'Annotation');
-%   hLegendEntry = get([hAnnotation{:}],'LegendInformation');
-%   set([hLegendEntry{:}],'IconDisplayStyle','off')
-% catch %#ok<CTCH>
-% end
-% 
-% % labels
-% 
-% 
-% if any(isnan(X)), return;end
-% if check_option(varargin,'ticks'), v = 'on';else v = 'off';end
-% 
-% % set back color index
-% if isappdata(gca,'PlotColorIndex')
-%   if isempty(colorIndex)
-%     setappdata(gca,'PlotColorIndex',1);
-%   else
-%     setappdata(gca,'PlotColorIndex',colorIndex);
-%   end
-% end
-% 
-% end
