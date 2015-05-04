@@ -33,7 +33,7 @@ n_rows_2 = length(gB);
 X1 = repmat(xy1(:,1),1,n_rows_2);
 Y1 = repmat(xy1(:,2),1,n_rows_2);
 X2 = repmat(xy2(:,1),1,n_rows_2);
-Y2 = repmat(xy1(:,2),1,n_rows_2);
+Y2 = repmat(xy2(:,2),1,n_rows_2);
 
 % end points boundary segments
 X3 = repmat(gB.V(gB.F(:,1),1).',n_rows_1,1);
