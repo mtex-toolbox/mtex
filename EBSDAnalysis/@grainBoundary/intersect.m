@@ -1,8 +1,9 @@
-function  [x,y] = intersect(gB,xy1,xy2,varargin)
+function  [x,y,segLength] = intersect(gB,xy1,xy2,varargin)
 % length of a boundary segment
 %
 % Syntax
 %   [x,y] = intersect(gB,xy1,xy2)
+%   [x,y,segLength] = intersect(gB,xy1,xy2)
 %
 % Input
 %  gb - @grainBoundary
@@ -16,9 +17,9 @@ function  [x,y] = intersect(gB,xy1,xy2,varargin)
 %  grains = calcGrains(ebsd)
 %  plot(grains.boundary)
 %  % define some line
-%  xy1 = [0,170]
-%  xy2 = [510,170] 
-%  line([xy1(1);xy2(1)],[xy1(2);xy2(2)],'linestyle',':','linewidth',2,'color','cyan')
+%  xy1 = [0,10];  % staring point
+%  xy2 = [31,41]; % end point
+%  line([xy1(1);xy2(1)],[xy1(2);xy2(2)],'linewidth',1.5,'color','g')
 %  [x,y] = grains.boundary.intersect(xy1,xy2);
 %  hold on
 %  scatter(x,y,'red')
@@ -62,6 +63,11 @@ y = Y1 + Y2_Y1 .* u_a;
 x(~inside) = NaN;
 y(~inside) = NaN;
 
-%PAR_B = denominator == 0;
-%COINC_B = (numerator_a == 0 & numerator_b == 0 & PAR_B);
+% sort by distance to starting point
+d = sqrt((x(~isnan(x))-xy1(1)).^2 + (y(~isnan(x))-xy1(1)).^2);
+[~,ind] = sort(d);
+
+segLength = diff(d(ind));
+
+
 
