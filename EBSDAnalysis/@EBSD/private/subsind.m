@@ -67,9 +67,8 @@ for i = 1:length(subs)
     
   elseif isnumeric(subs{i})
     
-    iind = false(size(ind));
-    iind(subs{i}) = true;
-    ind = ind & iind;
+    ind = subs{i};
+    return
     
   end
 end
