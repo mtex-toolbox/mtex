@@ -2,17 +2,18 @@ function pf = loadPoleFigure_beartex(fname,varargin)
 % import data fom BeaTex file
 %
 % Syntax
-%   pf = loadPoleFigure_beartex(fname,<options>)
+%   pf = loadPoleFigure_beartex(fname)
 %
 % Input
-%  fname    - filename
+%  fname - filename
 %
 % Output
-%  pf - vector of @PoleFigure
+%  pf - @PoleFigure
 %
 % See also
 % ImportPoleFigureData loadPoleFigure
 
+pf = PoleFigure;
 fid = efopen(fname);
 
 ipf = 1;
@@ -27,7 +28,7 @@ try
       % c = textscan(fid,'%s',7,'delimiter','\n','whitespace','');
       comment = deblank(c{1}(1:50));
     catch
-      if ~exist('pf','var')
+      if ~exist('data','var')
         error('format BearTex does not match file %s',fname);
       else
         break
@@ -43,6 +44,7 @@ try
     hkl = sscanf(c{7},'%f',3);
     h{ipf} = Miller(hkl(1),hkl(2),hkl(3),cs);
     
+       
     info = str2num(reshape(c{7}(11:40),5,[])');
     
     %  theta = 0:info(3):90-info(3);
@@ -53,26 +55,24 @@ try
       l = fgetl(fid);
       data{ipf}(:,k) = str2num( reshape(l(2:end),4,[]).' );
     end
+  
+    % restrict to the mesured region
+    ind = r.theta < info(1)*degree-eps | r.theta > info(2)*degree+eps;
+    allR{ipf} = r(~ind);
+    data{ipf}(ind) = [];
     
     fgetl(fid);
-        
-    
-    % mintheta = info(1);  maxtheta = info(2);
-        
-    
+            
+    % mintheta = info(1);  maxtheta = info(2);            
     ipf = ipf+1;
   end
   
-  pf = PoleFigure(h,r,data,cs,ss,'comment',comment,varargin{:});
+  pf = PoleFigure(h,allR,data,cs,ss,'comment',comment,varargin{:});
+
+  fclose(fid);
   
 catch
   if ~exist('pf','var')
     interfaceError(fname,fid);
   end
 end
-
-pf(pf.r.theta < info(1)*degree-eps | pf.r.theta > info(2)*degree+eps) = [];
-
-
-fclose(fid);
-

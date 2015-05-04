@@ -7,10 +7,10 @@ function  sR = fundamentalSector(cs,varargin)
 %   sector of rotational axes for a specific rotation angle omega
 %
 % Input
-%  cs - symmetry
+%  cs - @symmetry
 %
 % Ouput
-%  sR - spherical Region
+%  sR - @sphericalRegion
 %
 % Options
 %  antipodal - include [[AxialDirectional.html,antipodal symmetry]]

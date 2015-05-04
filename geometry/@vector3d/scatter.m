@@ -35,6 +35,16 @@ for i = 1:numel(sP)
   % check that there is something left to plot
   if all(isnan(x) | isnan(y)), continue; end
     
+  % add some nans if lines are plotted
+  if check_option(varargin,'edgecolor')
+    d = sqrt(diff(x).^2 + diff(y).^2);
+    ind = find(d > 2.5);
+    for k = 1:numel(ind)
+      x = [x(1:ind(k)+k-1);nan;x(ind(k)+k:end)];
+      y = [y(1:ind(k)+k-1);nan;y(ind(k)+k:end)];
+    end
+  end
+  
   % default arguments
   patchArgs = {'parent',sP(i).ax,...
     'vertices',[x(:) y(:)],...

@@ -4,6 +4,8 @@ function pf = cat(dim,varargin)
 % concatenate properties
 pf = cat@dynProp(dim,varargin{:});
 
+varargin(cellfun(@isempty,varargin)) = []; 
+
 warning('off','MATLAB:structOnObject');
 for k=1:numel(varargin)
   s(k) = struct(varargin{k}); %#ok<AGROW>

@@ -37,9 +37,8 @@ for i = 1:length(subs)
       error('Out of range; index must be a positive integer or logical.')
     end
     
-    iind = false(size(ind));
-    iind(subs{i}) = true;
-    ind = ind & iind;
+    ind = subs{i};
+    return
     
   elseif isa(subs{i},'polygon')
     
