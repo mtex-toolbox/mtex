@@ -1,16 +1,24 @@
 function q = cross(q1, q2, q3)
 % pointwise cross product of three quaternions
 %
-%% Input
+% Input
 %  q1,q2,q3 - @quaternion
 %
-%% Output
+% Output
 %  @quaternion
 %
 
-[a1,b1,c1,d1] = double(q1);
-[a2,b2,c2,d2] = double(q2);
-[a3,b3,c3,d3] = double(q3);
+if nargin == 3
+  [a1,b1,c1,d1] = double(q1);
+  [a2,b2,c2,d2] = double(q2);
+  [a3,b3,c3,d3] = double(q3);
+else
+  [a,b,c,d] = double(q1);
+  a1 = a(:,1); a2 = a(:,2); a3 = a(:,3);
+  b1 = b(:,1); b2 = b(:,2); b3 = b(:,3);
+  c1 = c(:,1); c2 = c(:,2); c3 = c(:,3);  
+  d1 = d(:,1); d2 = d(:,2); d3 = d(:,3);  
+end
 
 % Calculate cross product
 q = q1;
