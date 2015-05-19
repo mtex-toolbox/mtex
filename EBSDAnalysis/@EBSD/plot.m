@@ -1,4 +1,4 @@
-function h = plot(ebsd,varargin)
+function [h,mP] = plot(ebsd,varargin)
 % spatial EBSD plot
 %
 % Input

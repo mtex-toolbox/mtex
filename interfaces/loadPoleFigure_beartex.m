@@ -72,7 +72,5 @@ try
   fclose(fid);
   
 catch
-  if ~exist('pf','var')
-    interfaceError(fname,fid);
-  end
+  if isempty(pf), interfaceError(fname,fid); end
 end

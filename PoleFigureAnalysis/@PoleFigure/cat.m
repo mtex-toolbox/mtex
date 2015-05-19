@@ -5,6 +5,7 @@ function pf = cat(dim,varargin)
 pf = cat@dynProp(dim,varargin{:});
 
 varargin(cellfun(@isempty,varargin)) = []; 
+if isempty(varargin), return; end
 
 warning('off','MATLAB:structOnObject');
 for k=1:numel(varargin)

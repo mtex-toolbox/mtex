@@ -95,7 +95,7 @@ set(gui.hSearchCIF,'CallBack',@lookupMineral);
       set(gui.hIndexed(1),'Value',1);
       set(gui.hIndexed(2),'Value',0);
       
-      csname = strmatch(CS.LaueName,SymmetryList);
+      csname = strmatch(CS.pointGroup,SymmetryList);
       set(gui.hCrystal,'value',csname(1));
       
       color = strmatch(CS.color,getMTEXpref('EBSDColorNames'));

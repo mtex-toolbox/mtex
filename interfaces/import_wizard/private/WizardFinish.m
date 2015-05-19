@@ -429,8 +429,7 @@ end
     
     function str = hasCoefficient()
       
-      % TODO
-      if length(data.c) > length(data)
+      if any(cellfun(@length,data.c)>1)
         str = {'''superposition'',c'};
       else
         str = '';
@@ -440,9 +439,8 @@ end
     
     function str = getCoefficients()
       
-      % TODO
       % specifiy structural coefficients for superposed pole figures
-      if length(data.c) > length(data)
+      if any(cellfun(@length,data.c)>1)
         c = [];
         for k = 1:data.numPF
           c = strcat(c,n2s(data.c{k}),',');

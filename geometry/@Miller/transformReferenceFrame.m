@@ -1,5 +1,5 @@
 function m = transformReferenceFrame(m,cs)
-% change reference frame
+% change reference frame while keeping hkl or uvw
 
 % recompute representation in cartesian coordinates
 if m.CSprivate ~= cs

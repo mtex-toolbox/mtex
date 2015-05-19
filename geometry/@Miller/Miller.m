@@ -174,7 +174,9 @@ methods
       
           otherwise        
             m.CSprivate = cs;
-        end  
+        end        
+      else
+        m.CSprivate = cs;
       end      
     end
     
