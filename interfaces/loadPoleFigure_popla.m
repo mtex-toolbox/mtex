@@ -59,10 +59,7 @@ try
       while ~isempty(l) && ischar(l) %length(d) < length(r)
         l = l(1+mod(numel(l),4):end);
         data = str2num(reshape(l,4,[])');
-        d = [d; data(1:18) ./ scaling];
-        if numel(data)>18  % then there is bg
-          d(end-numel(rho)+1:end) = d(end-numel(rho)+1:end)-bg*data(19);
-        end
+        d = [d; data(1:18) ./ scaling];        
         l = fgetl(fid);
       end
       
