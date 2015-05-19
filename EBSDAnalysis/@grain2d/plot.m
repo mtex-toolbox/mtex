@@ -1,4 +1,4 @@
-function h = plot(grains,varargin)
+function [h,mP] = plot(grains,varargin)
 % colorize grains
 %
 % Syntax

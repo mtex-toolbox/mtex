@@ -1,4 +1,4 @@
-function h = plot(gB,varargin)
+function [h,mP] = plot(gB,varargin)
 % plot grain boundaries
 %
 % The function plots grain boundaries where the boundary is determined by
