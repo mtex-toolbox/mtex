@@ -30,7 +30,17 @@ function a = axis(o1,o2)
 % See also
 % orientation/angle
 
-if nargin == 2
+
+if nargin == 1
+
+  % project to Fundamental region to get the axis with the smallest angle
+  o1 = project2FundamentalRegion(o1);
+  a = axis@quaternion(o1);
+
+  % add symmetry to axis
+  if isa(o1.SS,'crystalSymmetry'), a = Miller(a,o1.SS); end
+
+else
   
   [l,d,r] = factor(o1.CS,o2.CS);
   l = l * d;
@@ -61,15 +71,8 @@ if nargin == 2
   q = reshape(inv(r(irMax)),size(q21)) .* q21 .* reshape(l(ilMax),size(q21));
     
   % now the misorientation axis is given by in specimen coordinates is
-  % given by l(il) * q.axis or equivalently by  
-  a = r(irMax) .* q.axis;
+  % given by o2 * l(il) * q.axis or equivalently by  
+  a = q2 .* r(irMax) .* axis@quaternion(q);
   
-  return
 end
 
-% project to Fundamental region to get the axis with the smallest angle
-o1 = project2FundamentalRegion(o1);
-a = axis@quaternion(o1);
-
-% add symmetry to axis
-if isa(o1.SS,'crystalSymmetry') > 1, a = Miller(a,o1.SS); end
