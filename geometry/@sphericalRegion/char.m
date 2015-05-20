@@ -1,7 +1,7 @@
 function s = char(sR)
 % convert spherical region to char
 
-switch length(length(sR.N))  
+switch length(sR.N)
   case 0
     s = 'full sphere';
   case 1
@@ -10,7 +10,8 @@ switch length(length(sR.N))
     else
       s = 'lower hemisphere';
     end
-  case 2
+  otherwise
+    s = 'sector';
 end
 
 end
