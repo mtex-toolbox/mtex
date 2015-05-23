@@ -11,7 +11,7 @@ function grains = cat(dim,varargin)
 % See also
 % GrainSet/vertcat
 
-grains = cat@dynProp(dim,varargin{:});
+grains = cat@dynProp(1,varargin{:});
 
 for k = 2:numel(varargin)
 
