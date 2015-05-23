@@ -42,10 +42,11 @@ classdef mtexFigure < handle
   properties (Dependent = true)        
     currentAxes       % current axis
     currentId         % current axis id
-    axesWidth
-    axesHeight
-    currentAxis
-    outerPlotSpacing  % 
+    axesWidth         %
+    axesHeight        %
+    currentAxis       %
+    outerPlotSpacing  %
+    dataCursorMenu    % handle of the data cursor context menu  
   end
    
   methods    
@@ -83,7 +84,7 @@ classdef mtexFigure < handle
       if check_option(varargin,'datacursormode')
         dcm_obj = datacursormode(mtexFig.parent);
         set(dcm_obj,'SnapToDataVertex','off')
-        set(dcm_obj,'UpdateFcn',{get_option(varargin,'datacursormode')});
+        set(dcm_obj,'UpdateFcn',ensurecell(get_option(varargin,'datacursormode')));
         datacursormode on;      
       end
       
@@ -132,8 +133,7 @@ classdef mtexFigure < handle
     function set.currentAxes(mtexFig,ax)
       set(mtexFig.parent,'CurrentAxes',ax);
     end
-    
-    
+        
     function id = get.currentId(mtexFig)
       if isempty(mtexFig.currentAxes)
         id = 0;
@@ -189,6 +189,13 @@ classdef mtexFigure < handle
         setCamera(mtexFig.children(a),varargin{:});        
       end
       mtexFig.drawNow;
+    end
+    
+    function dcm = get.dataCursorMenu(mtexFig)
+      
+     dcm_obj = datacursormode(mtexFig.parent);        
+     dcm = dcm_obj.UIContextMenu;
+
     end
     
   end

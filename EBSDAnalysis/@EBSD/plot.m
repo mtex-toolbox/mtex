@@ -26,7 +26,7 @@ function [h,mP] = plot(ebsd,varargin)
 % EBSD/plot
 
 % create a new plot
-[mtexFig,isNew] = newMtexFigure(varargin{:});
+[mtexFig,isNew] = newMtexFigure('datacursormode',{@tooltip,ebsd},varargin{:});
 mP = newMapPlot('scanUnit',ebsd.scanUnit,'parent',mtexFig.gca,varargin{:});
 
 % transform orientations to color
@@ -87,14 +87,10 @@ mP.extend(4) = max(mP.extend(4),max(ebsd.prop.y(:)));
 
 if nargout==0, clear h; end
 
-% set data cursor
-dcm_obj = datacursormode(gcf);
-set(dcm_obj,'SnapToDataVertex','on')
-set(dcm_obj,'UpdateFcn',{@tooltip,ebsd});
+if isNew
+  mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
+end
 
-datacursormode on;
-
-if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end
 mtexFig.keepAspectRatio = false;
 
 end

@@ -59,6 +59,13 @@ if isNew % finalize plot
   setappdata(gcf,'h',h);
   set(gcf,'Name',['Pole figures of "',inputname(1),'"']);
   
+  dcm = mtexFig.dataCursorMenu;
+  uimenu(dcm, 'Label', 'Mark Equivalent Modes', 'Callback', @markEquivalent);
+  uimenu(dcm, 'Label', 'Plot Fibre', 'Callback', @localPlotFibre);
+  %mcolor = uimenu(hcmenu, 'Label', 'Marker color', 'Callback', @display);
+  %msize = uimenu(hcmenu, 'Label', 'Marker size', 'Callback', @display);
+  %mshape = uimenu(hcmenu, 'Label', 'Marker shape', 'Callback', @display);
+  
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
   
   if check_option(varargin,'3d')
@@ -70,21 +77,6 @@ end
 % -------------- Tooltip function ---------------------------------
 
   function txt = tooltip(varargin)
-
-    %
-    dcm_obj = datacursormode(gcf);
-
-    hcmenu = dcm_obj.createContextMenu;
-    %hcmenu = dcm_obj.CurrentDataCursor.uiContextMenu;
-
-    if numel(get(hcmenu,'children'))<10
-      uimenu(hcmenu, 'Label', 'Mark Equivalent Modes', 'Callback', @markEquivalent);
-      uimenu(hcmenu, 'Label', 'Plot Fibre', 'Callback', @localPlotFibre);
-      mcolor = uimenu(hcmenu, 'Label', 'Marker color', 'Callback', @display);
-      msize = uimenu(hcmenu, 'Label', 'Marker size', 'Callback', @display);
-      mshape = uimenu(hcmenu, 'Label', 'Marker shape', 'Callback', @display);
-      dcm_obj.UIContextMenu = hcmenu;
-    end
 
     [r_local,v] = getDataCursorPos(mtexFig);
 
