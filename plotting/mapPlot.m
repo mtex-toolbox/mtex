@@ -60,16 +60,9 @@ classdef mapPlot < handle
       mP.micronBar = scaleBar(mP,get_option(varargin,'scanUnit','um'));
       
     end
-    
-    function datacursormode
-      
-      % set data cursor
-      dcm_obj = datacursormode(gcf);
-      set(dcm_obj,'SnapToDataVertex','off')
-      set(dcm_obj,'UpdateFcn',{@tooltip,ebsd});
-      
-    end
+        
   end
+  
 end
 
 % function for zooming

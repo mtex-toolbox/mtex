@@ -69,72 +69,56 @@ if isNew % finalize plot
     setappdata(gcf,'h',h);
   end
 
+  dcm = mtexFig.dataCursorMenu;
+  uimenu(dcm, 'Label', 'Mark equivalent orientations', 'Callback', @markEquivalent);  
+  
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
   
 end
 
 % --------------- Tooltip function -------------------------------
 function txt = tooltip(varargin)
-
-% 
-dcm_obj = datacursormode(mtexFig.parent);
-
-hcmenu = dcm_obj.createContextMenu;
-%hcmenu = dcm_obj.CurrentDataCursor.uiContextMenu;
-if numel(get(hcmenu,'children'))<10
-  uimenu(hcmenu, 'Label', 'Mark equivalent orientations', 'Callback', @markEquivalent);
-  mcolor = uimenu(hcmenu, 'Label', 'Marker color', 'Callback', @display);
-  msize = uimenu(hcmenu, 'Label', 'Marker size', 'Callback', @display);
-  mshape = uimenu(hcmenu, 'Label', 'Marker shape', 'Callback', @display);
+  [ori,v] = currentOrientation;
+  txt = [xnum2str(v) ' at ' char(ori,'nodegree')];
 end
 
-%
-[ori,v] = currentOrientation;
-
-txt = [xnum2str(v) ' at ' char(ori,'nodegree')];
-
-end
-
-%
 function markEquivalent(varargin)
-
-annotate(currentOrientation);
-
+  annotate(currentOrientation);
 end
 
 
 function [ori,value] = currentOrientation
 
-[pos,value,ax] = getDataCursorPos(mtexFig);
+  [pos,value,ax] = getDataCursorPos(mtexFig);
 
-iax = mtexFig.children == ax;
+  iax = mtexFig.children == ax;
 
-switch getappdata(gcf,'SectionType')
-  case 'phi1'
-    euler1 = sec(iax);
-    euler2 = pos.theta;
-    euler3 = pos.rho;
-    convention = 'Bunge';
-  case 'phi2'
-    euler3 = sec(iax);
-    euler2 = pos.theta;
-    euler1 = pos.rho;
-    convention = 'Bunge';
-  case 'alpha'
-    euler3 = sec(iax);
-    euler2 = pos.theta;
-    euler1 = pos.rho;
-    convention = 'Matthies';
-  case 'sigma'
-    euler1 = pos.rho;
-    euler2 = pos.theta;
-    euler3 = sec(iax) - pos.rho;
-    convention = 'Matthies';
-  otherwise
-    error('unknown sectioning!')
-end
+  switch getappdata(gcf,'SectionType')
+    case 'phi1'
+      euler1 = sec(iax);
+      euler2 = pos.theta;
+      euler3 = pos.rho;
+      convention = 'Bunge';
+    case 'phi2'
+      euler3 = sec(iax);
+      euler2 = pos.theta;
+      euler1 = pos.rho;
+      convention = 'Bunge';
+    case 'alpha'
+      euler3 = sec(iax);
+      euler2 = pos.theta;
+      euler1 = pos.rho;
+      convention = 'Matthies';
+    case 'sigma'
+      euler1 = pos.rho;
+      euler2 = pos.theta;
+      euler3 = sec(iax) - pos.rho;
+      convention = 'Matthies';
+    otherwise
+      error('unknown sectioning!')
+  end
 
-ori = orientation('Euler',euler1,euler2,euler3,convention,odf.CS,odf.SS);
+  ori = orientation('Euler',euler1,euler2,euler3,convention,odf.CS,odf.SS);
 
 end
 

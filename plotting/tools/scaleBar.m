@@ -52,6 +52,11 @@ properties (Access = private)
   ruler
 end
 
+
+properties (Dependent = true)
+  visible
+end
+
 properties (SetObservable)
   backgroundColor = 'k'    % background color (ColorSpec)
   backgroundAlpha = 0.6    % background transparency (scalar 0<=a<=1)
@@ -94,6 +99,15 @@ methods
     uistack(sB.hgt,'top')
   end
   
+  
+  function set.visible(sB,value)
+    set(sB.hgt,'visible',value);
+  end
+  
+  function value = get.visible(sB)
+    value = get(sB.hgt,'visible');
+  end
+  
   function update(sB)
     
     % get axes orientation
@@ -131,7 +145,7 @@ methods
     boxWidth = rulerLength + 2.0 * gapX;
     boxx = dx(1) + gapX;
     boxy = dy(1) + gapY;
-        
+    
     % Make bounding box. The z-coordinate is used to put the box under the
     % line.
     verts = [boxx, boxy;

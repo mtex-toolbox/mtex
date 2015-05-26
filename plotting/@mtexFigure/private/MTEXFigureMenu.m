@@ -51,11 +51,12 @@ uimenu(m,'label','Set Outer Margin','callback',{@setMargin,'outer'});
 
 % annotations
 
-an = uimenu(m,'label','Anotations');
-uimenu(an,'label','Show min/max','checked',isVisible('minmax'),'callback',{@setVisible,'TL','BL'});
-uimenu(an,'label','Show labels','checked',isVisible('labels'),'callback',{@setVisible,'labels'});
-uimenu(an,'label','Show coordinates','checked',isVisible('ticks'),'callback',{@setVisible,'ticks'});
-uimenu(an,'label','Show grid','checked','off','callback',{@setVisible,'grid'});
+an = uimenu(m,'label','Annotations');
+uimenu(an,'label','Min/Max','checked',isVisible('minmax'),'callback',{@setVisible,'TL','BL'});
+uimenu(an,'label','Axes Labels','checked',isVisible('labels'),'callback',{@setVisible,'labels'});
+uimenu(an,'label','Coordinates','checked',isVisible('ticks'),'callback',{@setVisible,'ticks'});
+uimenu(an,'label','Grid','checked','off','callback',{@setVisible,'grid'});
+uimenu(an,'label','Micronbar','checked','on','callback',{@setVisible,'micronBar'});
 
 
 
@@ -130,6 +131,11 @@ for a = 1:numel(ax)
 
   for element = cellstr(varargin)
     switch char(element)
+
+      case 'micronBar'
+        
+        mP  = getappdata(ax(a),'mapPlot');
+        if ~isempty(mP), mP.micronBar.visible = onoff;end
       
       case 'labels'
         la = [get(ax(a),'xlabel'),get(ax(a),'ylabel')];

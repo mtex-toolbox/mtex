@@ -16,7 +16,7 @@ function [h,mP] = plot(grains,varargin)
 % --------------------- compute colorcoding ------------------------
 
 % create a new plot
-[mtexFig,isNew] = newMtexFigure(varargin{:});
+[mtexFig,isNew] = newMtexFigure('datacursormode',{@tooltip,grains},varargin{:});
 mP = newMapPlot('scanUnit',grains.scanUnit,'parent',mtexFig.gca,varargin{:});
 
 if isempty(grains)
@@ -93,14 +93,6 @@ axis(mP.ax,'tight'); set(mP.ax,'zlim',[0,1]);
 
 if nargout == 0, clear h;end
 
-
-% set data cursor
-dcm_obj = datacursormode(gcf);
-set(dcm_obj,'SnapToDataVertex','off')
-set(dcm_obj,'UpdateFcn',{@tooltip,grains});
-
-datacursormode on;
-
 if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end
 mtexFig.keepAspectRatio = false;
 
@@ -108,7 +100,6 @@ end
 
 % ------------------ Tooltip function -----------------------------
 function txt = tooltip(empt,eventdata,grains) %#ok<INUSL>
-
 
 [pos,value] = getDataCursorPos(gcm);
 try
