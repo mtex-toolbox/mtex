@@ -7,23 +7,23 @@
 g = rotation('Euler',-72*degree,88*degree,134*degree);
 
 % we want to express the product of two wigner D functions
-D1 = wignerD(g,'order',1);
+D1 = WignerD(g,'order',1);
 D1D1_ref = D1(:) * D1(:).'
 
 %% expansion into Wigner functions of lower order
 
 % zero order component
-D0 = wignerD(g,'order',0);
+D0 = WignerD(g,'order',0);
 CG0 = ClebschGordanTensor(0);
 C0 = D0*EinsteinSum(CG0,[1 3],CG0,[2 4])
 
 % first order component
-D1 = wignerD(g,'order',1);
+D1 = WignerD(g,'order',1);
 CG1 = ClebschGordanTensor(1);
 C1 = EinsteinSum(CG1,[1 3 -1],D1,[-1 -2],CG1,[2 4 -2])
 
 % second order component
-D2 = wignerD(g,'order',2);
+D2 = WignerD(g,'order',2);
 CG2 = ClebschGordanTensor(2);
 C2 = EinsteinSum(CG2,[1 3 -1],D2,[-1 -2],CG2,[2 4 -2])
 
