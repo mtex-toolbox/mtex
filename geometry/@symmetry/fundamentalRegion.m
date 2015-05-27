@@ -21,7 +21,7 @@ if nargin == 2 && isa(varargin{1},'symmetry')
 end
 
 % take +- minimal angles for each axis
-q(isnull(q.angle)) = [];
+q(abs(q.angle)<1e-5) = [];
 axes = q.axis;
 
 [axes,~,c] = unique(axes,'antipodal');
