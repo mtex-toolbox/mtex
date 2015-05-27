@@ -41,7 +41,8 @@ q = reshape(q,[],1);
 omega = abs(dot(quaternion(q),q_ref));
 
 % may be we can skip something
-ind   = omega < cos(getMaxAngle(CS1,qCS2)/2);
+oR = fundamentalRegion(CS1,qCS2);
+ind   = omega < cos(oR.minAngle);
 if ~any(ind) || length(qCS1) == 1
   omega = 2*acos(min(1,omega));
   return
