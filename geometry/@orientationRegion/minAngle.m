@@ -11,5 +11,6 @@ function  omega = minAngle(oR,varargin)
 if isempty(oR.N)
   omega = pi;
 else
-  omega = min(pi-oR.N.angle);
+  ind = oR.N.angle < pi - 1e-4;
+  omega = min(pi-oR.N(ind).angle);
 end

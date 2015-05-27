@@ -9,7 +9,7 @@ function oR = cleanUp(oR)
 Nq = unique(oR.N);
 
 % the normals should be inside itself
-Nq = Nq.subSet(oR.checkInside(reciprocal(Nq)));
+Nq = Nq.subSet(oR.checkInside(-reciprocal(Nq)));
 oR.N = Nq;
 
 % compute vertices
@@ -78,6 +78,6 @@ end
 
 function q = reciprocal(q)
 
-q = inv(q) .* rotation('axis',q.axis,'angle',pi);
+q = q .* rotation('axis',-q.axis,'angle',pi);
 
 end
