@@ -14,11 +14,12 @@ end
 if numel(is1) == 1, s = crystalSymmetry; return; end
 
 % take the equal ones
-s = unique(s1.subSet(is1));
+s = quaternion(s1);
+s = unique(s.subSet(is1));
 
 % find a symmetry that exactly contains s
 % TODO!!
-for i=1:32 % check all Laue groups
+for i=1:45 % check all Laue groups
   
   ss = crystalSymmetry('pointId',i);
   
