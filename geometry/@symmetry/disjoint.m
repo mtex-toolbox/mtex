@@ -10,15 +10,16 @@ end
 % check for equal rotations
 [is1,is2] = find(isappr(dot_outer(s1,s2),1));
 
-% no common rotation -> take triclinic
-if numel(is1) == 1, s = crystalSymmetry; return; end
+% the trivial cases 
+if numel(is1) == 1, s = crystalSymmetry; return; end 
+if numel(is1) == length(s1), s = s1; return; end
+if numel(is2) == length(s2), s = s2; return; end
 
 % take the equal ones
 s = quaternion(s1);
 s = unique(s.subSet(is1));
 
 % find a symmetry that exactly contains s
-% TODO!!
 for i=1:45 % check all Laue groups
   
   ss = crystalSymmetry('pointId',i);
@@ -29,12 +30,3 @@ for i=1:45 % check all Laue groups
   end
   
 end
-
-% TODO:
-% if length(s) == 6
-%   s.laue = '-3m';
-% elseif length(s) == 12
-%   s.laue = '6/mmm';
-% else
-%   s.laue = 'unknown';
-% end
