@@ -8,7 +8,7 @@ classdef orientationRegion
     N = quaternion % the nornal vectors of the bounding circles
     V = quaternion % list of vertices
     F = {}         % list of faces             
-    antipodal = false
+    antipodal = false % whether to identify q and inv(q)
   end
     
   methods
@@ -21,6 +21,7 @@ classdef orientationRegion
       end  
       
       % compute vertices
+      oR.antipodal = check_option(varargin,'antipodal');
       oR = oR.cleanUp;
       
     end            

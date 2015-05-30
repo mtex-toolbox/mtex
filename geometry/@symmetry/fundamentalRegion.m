@@ -16,10 +16,11 @@ function  oR = fundamentalRegion(cs,varargin)
 %
 
 q = unique(quaternion(cs),'antipodal');
-if nargin == 2 && isa(varargin{1},'symmetry')
+if nargin >= 2 && isa(varargin{1},'symmetry')
   q = q * unique(quaternion(varargin{1}),'antipodal');
   dcs = disjoint(cs,varargin{1});
-  N0 = rotation('axis',dcs.fundamentalSector.N,'angle',pi-1e-5);  
+  sR = dcs.fundamentalSector(varargin{:});
+  N0 = rotation('axis',sR.N,'angle',pi-1e-5);
 else
   N0 = quaternion;
 end
@@ -43,4 +44,4 @@ else
 end
 
 
-oR = orientationRegion([Nq(:).',N0(:).']);
+oR = orientationRegion([Nq(:).',N0(:).'],varargin{:});
