@@ -19,10 +19,18 @@ if check_option(varargin,'rodriguez')
   
 else
 
-  r = plotS2Grid;
+  ind = oR.N.angle > pi-1e-3;
+  sR = sphericalRegion(oR.N(ind).axis,zeros(nnz(ind),1));
+  r = plotS2Grid(sR,'resolution',15*degree);
   r = oR.maxAngle(r) .* r;
-
-  surf(r.x,r.y,r.z,'faceColor','k','facealpha',0.1,'edgecolor','none')
+  %surf(r.x,r.y,r.z,'faceColor','k','facealpha',0.1,'edgecolor','none')
+  surf(r.x,r.y,r.z,'faceColor','none','edgecolor',0.2*[1 1 1],'edgealpha',0.3)
+  hold on
+  r = plotS2Grid(sR,'resolution',1*degree);
+  r = oR.maxAngle(r) .* r;
+  %surf(r.x,r.y,r.z,'faceColor','k','facealpha',0.1,'edgecolor','none')
+  surf(r.x,r.y,r.z,'faceColor',0.2*[1 1 1],'facealpha',0.1,...
+    'edgecolor','none')
   hold on
   t = linspace(0,1);
   for i = 1:length(oR.F)
@@ -39,6 +47,7 @@ else
 end
 
 axis equal off
+fcw
 
 if nargout == 0, clear h; end
 
