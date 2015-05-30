@@ -12,10 +12,14 @@ function  omega = maxAngle(oR,varargin)
 
 if isempty(oR.V) || check_option(varargin,'complete')
   omega = pi;
-elseif nargin>1 && isa(varargin{1},'vector3d')  
-  omega = 2*min(abs(acot(dot_outer(tan(oR.N.angle/2) .* oR.N.axis,...
-    normalize(varargin{1})))));
+elseif nargin>1 && isa(varargin{1},'vector3d')
+  d = dot_outer(-tan(oR.N.angle/2) .* oR.N.axis,...
+    normalize(varargin{1}));
+  d = acot(d);
+  d(d<0) = inf;
+  omega = 2*min(d);
   omega = reshape(omega,size(varargin{1}));
+  omega(omega<1e-4) = 0;
 else
   omega = max(oR.V.angle);
 end
