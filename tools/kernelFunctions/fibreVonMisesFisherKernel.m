@@ -36,10 +36,13 @@ classdef fibreVonMisesFisherKernel < kernel
          
     function value = RK(psi,t)
       % the radon transformed kernel function at       
+      t = cut2unitI(t);
       value  =  psi.kappa/sinh(psi.kappa)*exp(psi.kappa*t);      
     end
     
     function value = RRK(psi,dh,dr)
+      dh = cut2unitI(dh);
+      dr = cut2unitI(dr);
       value = psi.kappa/sinh(psi.kappa) * ...
         besseli(0,psi.kappa * sqrt((1-dh.^2)*(1-dr.^2))).*...
         exp(psi.kappa * dh * dr);

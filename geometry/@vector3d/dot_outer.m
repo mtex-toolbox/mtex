@@ -17,7 +17,6 @@ if ~isempty(v1) && ~isempty(v2)
 			
 	d = v1.x(:) * v2.x(:).' + v1.y(:) * v2.y(:).' + v1.z(:) * v2.z(:).';
 
-  warning('check abs(d)<=1');
   if check_option(varargin,'antipodal') || v1.antipodal || v2.antipodal
     d = abs(d);
   end

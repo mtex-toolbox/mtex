@@ -38,7 +38,7 @@ classdef bumpKernel < kernel
   
     function value = RK(psi,t)
       % the radon transformed kernel function at 
-      
+      t = cut2unitI(t);
       value = zeros(size(t));
       s = cos(psi.delta/2)./sqrt((1+t)./2);
       ind = s<=1;
