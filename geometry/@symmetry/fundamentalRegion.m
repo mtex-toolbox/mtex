@@ -15,9 +15,9 @@ function  oR = fundamentalRegion(cs,varargin)
 %  invSymmetry - wheter mori == inv(mori)
 %
 
-q = quaternion(cs);
+q = unique(quaternion(cs),'antipodal');
 if nargin == 2 && isa(varargin{1},'symmetry')
-  q = q * quaternion(varargin{1});
+  q = q * unique(quaternion(varargin{1}),'antipodal');
   dcs = disjoint(cs,varargin{1});
   N0 = rotation('axis',dcs.fundamentalSector.N,'angle',pi-1e-5);  
 else
@@ -35,8 +35,8 @@ for i = 1:length(axes)
   angles(i) = min(q(c==i).angle);
 end
 
-N = [axes,-axes];
-Nq = axis2quat(N,pi-[angles,angles]/2);
+N = [axes;-axes];
+Nq = axis2quat(N,pi-[angles;angles]/2);
 
 
-oR = orientationRegion([Nq,N0(:).']);
+oR = orientationRegion([Nq(:).',N0(:).']);
