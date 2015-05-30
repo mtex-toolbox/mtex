@@ -36,7 +36,11 @@ for i = 1:length(axes)
 end
 
 N = [axes;-axes];
-Nq = axis2quat(N,pi-[angles;angles]/2);
+if ~isempty(N)
+  Nq = axis2quat(N,pi-[angles;angles]/2); 
+else 
+  Nq = quaternion;
+end
 
 
 oR = orientationRegion([Nq(:).',N0(:).']);

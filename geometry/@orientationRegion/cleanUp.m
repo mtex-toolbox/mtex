@@ -11,6 +11,24 @@ Nq = unique(oR.N);
 % the normals should be inside itself
 Nq = Nq.subSet(oR.checkInside(-reciprocal(Nq)));
 oR.N = Nq;
+nqa = unique(Nq.axis,'antipodal');
+
+if isempty(nqa)
+  
+  oR.V = quaternion;
+  oR.F = {};
+  return
+  
+elseif length(nqa)==1
+  
+  v = perp(nqa);
+  rot = rotation('axis',nqa,'angle',(0:90:270)*degree);
+  oR.V = rotation('axis',rot*v,'angle',pi*ones(4,1));
+  oR.F = repcell(1:4,size(oR.N));
+  
+  return
+end
+
 
 % compute vertices
 
