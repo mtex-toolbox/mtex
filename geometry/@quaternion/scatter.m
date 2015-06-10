@@ -10,7 +10,7 @@ function h = scatter(q,varargin)
 %
 
 % prepare axis
-mtexFig = newMtexFigure('ensureTag','quaternionScatter',varargin{:});
+mtexFig = newMtexFigure(varargin{:});
 
 % create a new scatter plot
 if isappdata(mtexFig.gca,'projection')

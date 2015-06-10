@@ -9,12 +9,11 @@ function plot(ori,varargin)
 % See also
 % orientation/scatter Plotting
 
-hold on
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 
 if isNew
-
-  disp('Do something fancy here.');
+  
+  scatter(ori,varargin{:})
   return;
 
 elseif isappdata(mtexFig.parent,'ODFSections')
@@ -27,10 +26,6 @@ end
 
 % plotting
 switch get(mtexFig.parent,'tag')
-  
-  case 'quaternionScatter' % quaternion scatter plot      
-      
-    scatter(ori,varargin{:});          
   
   case 'pdf' % pole figure annotations
       
@@ -46,6 +41,6 @@ switch get(mtexFig.parent,'tag')
     
   otherwise
     
-    error('Do not know how to plot orientation.')
+    scatter(ori,varargin{:});              
     
 end
