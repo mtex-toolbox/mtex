@@ -34,7 +34,7 @@ ebsd({'Fo','En'})
 % As an example, let us plot the Forsterite data. 
 
 close all
-plot(ebsd('Forsterite'),ebsd.orientations)
+plot(ebsd('Forsterite'),ebsd('Forsterite').orientations)
 
 %%
 % The data are colorized according to its orientation. By default color of
@@ -97,14 +97,14 @@ plot(ebsd)
 
 close all
 plot(ebsd,ebsd.mad)
-colorbar
+mtexColorbar
 
 %%
 % or
 
 close all
 plot(ebsd,ebsd.bc)
-colorbar
+mtexColorbar
 
 %%
 % Here we will use the MAD to identify and eliminate

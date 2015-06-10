@@ -47,7 +47,7 @@ xlabel('Misorientation angles in degree')
 close all
 plot(ebsd('Forsterite'),ebsd('Forsterite').mis2mean.angle./degree)
 mtexColorMap WhiteJet
-colorbar
+mtexColorbar
 hold on
 plot(grains.boundary,'edgecolor','k','linewidth',.5)
 hold off
@@ -99,7 +99,7 @@ hold on
 plot(grains.boundary)
 plot(bnd_FoFo,bnd_FoFo.misorientation.angle./degree,'linewidth',2)
 mtexColorMap blue2red
-colorbar
+mtexColorbar
 hold off
 
 
@@ -167,7 +167,7 @@ mtexFig.drawNow('figSize','normal')
 mtexFig.nextAxis
 plotAxisDistribution(grains.boundary('Fo','Fo'),'smooth','parent',mtexFig.gca)
 mtexTitle('boundary axis distribution')
-colorbar
+mtexColorbar
 
 %%
 % This shows a much stronger preference of the (1,1,1) axis in comparison

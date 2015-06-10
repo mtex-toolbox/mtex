@@ -164,11 +164,9 @@ plotAxisDistribution(mdf)
 
 plotAngleDistribution(mdf)
 hold all
-plotAngleDistribution(uniformODF(cs,cs))
+plotAngleDistribution(cs,cs)
 hold off
 legend('model ODF','uniform ODF')
-
-
 
 %%
 % Finally, lets set back the default colormap.
