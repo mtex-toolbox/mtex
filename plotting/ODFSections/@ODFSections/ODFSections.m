@@ -31,8 +31,8 @@ classdef ODFSections < handle
     
   methods
     function oS = ODFSections(CS1,CS2,varargin)
-      oS.CS1 = CS1;
-      oS.CS2 = CS2;
+      oS.CS1 = CS1.properGroup;
+      oS.CS2 = CS2.properGroup;
       oS.tol = get_option(varargin,'tolerance',2.4*degree);
     end
         
