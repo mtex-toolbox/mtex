@@ -1,5 +1,10 @@
-function [ad,omega] = angleDistribution(cs,omega,varargin)
+function [ad,omega] = angleDistribution(cs,varargin)
 % compute the angle distribution of a uniform ODF for a crystal symmetry
+%
+% Syntax
+%   [ad,omega] = angleDistribution(cs1)
+%   [ad,omega] = angleDistribution(cs1,cs2)
+%   [ad,omega] = angleDistribution(cs1,omega)
 %
 % Input
 %  cs - crystal @symmetry
@@ -13,11 +18,27 @@ function [ad,omega] = angleDistribution(cs,omega,varargin)
 %  angle|threshold - distribution with the angles within  a threshold
 %
 
-if nargin < 2
-  omega = linspace(0,cs.maxAngle,300);
+% better TODO!!!!
+oR = fundamentalRegion(cs,varargin{:});
+% [ad,omega] = oR.angleDistribution(varargin{:});
+
+if ~isempty(varargin) && isa(varargin{1},'symmetry')
+  
+  % TODO: This is not correct
+  % cs = union(cs,varargin{1});
+  if length(cs) <  length(varargin{1})
+    cs = varargin{1};
+  end
+  varargin(1) = [];
+  
+end
+
+if isempty(varargin)
+  omega = linspace(0,oR.maxAngle,300);
 else
   % restrict omega
-  omega = omega(omega < cs.maxAngle + 1e-8);
+  omega = varargin{1};
+  omega = omega(omega < oR.maxAngle + 1e-8);
 end
 
 % multiplier
