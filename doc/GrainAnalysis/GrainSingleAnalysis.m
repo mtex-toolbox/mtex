@@ -59,7 +59,7 @@ plot(grain_selected.boundary,'linewidth',2)
 hold on
 plot(ebsd(grain_selected),ebsd(grain_selected).mis2mean.angle./degree)
 hold off
-colorbar
+mtexColorbar
 
 %% Testing on Bingham distribution for a single grain
 % Although the orientations of an individual grain are highly concentrated,
@@ -136,4 +136,4 @@ legend('to reference orientation','orientation gradient')
 close, plotIPDF(ebsd_line.orientations,[xvector,yvector,zvector],...
   'property',ebsd_line.y,'markersize',3,'antipodal')
 
-colorbar
+mtexColorbar

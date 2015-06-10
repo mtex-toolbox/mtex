@@ -51,7 +51,7 @@ plot(ebsd,ebsd.bc)
 
 colormap gray % this makes the image grayscale
 
-colorbar
+mtexColorbar
 
 %% Visualizing orientations
 % Actually, we can pass any list of numbers or colors as a second input
@@ -61,7 +61,7 @@ colorbar
 % orientation its rotational angle. This is done by the command
 
 plot(ebsd('Forsterite'),ebsd('Forsterite').orientations.angle./degree)
-colorbar
+mtexColorbar
 
 %%
 % Lets make things a bit more formal. Therefore we define first a
@@ -79,7 +79,7 @@ color = oM.orientation2color(ebsd('Fo').orientations);
 %%
 % and we can visuallize it by
 plot(ebsd('Forsterite'),color)
-colorbar
+mtexColorbar
 
 %%
 % While for the previous case this seems to be unnecesarily complicated it
@@ -205,7 +205,7 @@ mode = idquaternion
 % in the case of fibres
 
 oM = centerOrientationMapping(ebsd('Fo'));
-oM.center = mean(ebsd('Forsterite'));
+oM.center = mean(ebsd('Forsterite').orientations);
 oM.color = [0,0,1];
 oM.psi = deLaValeePoussinKernel('halfwidth',20*degree);
 
@@ -227,7 +227,7 @@ vol = 100 * volume(ebsd('fo').orientations,oM.center,20*degree)
 close all
 odf = calcODF(ebsd('fo').orientations,'halfwidth',10*degree,'silent');
 plot(odf,'sections',9,'antipodal','silent','sigma')
-colorbar
+mtexColorbar
 
 
 %% Combining different plots

@@ -67,7 +67,7 @@ plotODF(odf2,'sections',9,'resolution',2*degree,...
 close all
 odf2 = FourierODF(odf2);
 imagesc(abs(odf2.calcFourier('order',10)))
-colorbar
+mtexColorbar
 
 %%
 % However this is a biased estimator of the Fourier coefficents which
@@ -80,7 +80,7 @@ colorbar
 dirichlet = DirichletKernel(32);
 odf3 = calcODF(ebsd('Fe').orientations,'kernel',dirichlet);
 imagesc(abs(odf3.calcFourier('order',10)))
-colorbar
+mtexColorbar
 
 %%
 % Let us compare the Fourier coefficients obtained by both methods.

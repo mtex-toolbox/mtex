@@ -28,7 +28,7 @@ c = {1,[0.52 ,1.23],1};
 pf = loadPoleFigure(fname,h,CS,SS,'interface','dubna','superposition',c);
 
 plot(pf)
-colorbar
+mtexColorbar
 
 %% Extract information from imported pole figure data
 %
@@ -68,7 +68,7 @@ plot(pf_modified)
 rec = calcODF(pf,'RESOLUTION',10*degree,'iter_max',6)
 
 plotPDF(rec,h)
-colorbar
+mtexColorbar
 
 %%
 %

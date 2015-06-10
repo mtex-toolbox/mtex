@@ -23,23 +23,23 @@ odf = 0.7*unimodalODF(mod1) + 0.3*unimodalODF(mod2)
 % colorbar>. 
 
 plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],'antipodal')
-colorbar
+mtexColorbar
 
 %%
 % Executing the command <colorbar.html colorbar> twice deletes the colorbar.
 % You can also have a horizontal colorbar at the bottom of the figure using
 % the option *south*.
 
-colorbar                            % delete vertical colorbar
-colorbar('location','southOutSide') % add horizontal colorbars
+mtexColorbar                        % delete vertical colorbar
+mtexColorbar('location','southOutSide') % add horizontal colorbars
 
 %%
 % If color range is equal in all plots of one figure only one colorbar
 % is added (see. <ColorCoding_demo.html Color Coding>).
 
-colorbar           % delete colorbar
+mtexColorbar       % delete colorbar
 CLim(gcm,'equal'); % set equal color range to all plots
-colorbar           % create a new colorbar
+mtexColorbar       % create a new colorbar
 
 %% Adding Specimen and Crystal Directions
 %
@@ -92,7 +92,7 @@ annotate(mod2,...
 % or orientation scatter plots
 
 ori = calcOrientations(odf,200);
-scatter(ori,'center',mod1);
+scatter(ori);
 annotate(mod1,...
   'MarkerSize',10,'MarkerEdgeColor','r','MarkerFaceColor','r')
 annotate(mod2,...

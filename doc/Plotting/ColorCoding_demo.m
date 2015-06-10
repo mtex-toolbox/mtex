@@ -113,7 +113,7 @@ CLim(gcm,[0.38,3.9])
 %close all;
 %plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],'antipodal','logarithmic')
 %setcolorrange([0.01 12]);
-%colorbar
+%mtexColorbar
 
 %%
 % Finally, lets set back the default colormap.
