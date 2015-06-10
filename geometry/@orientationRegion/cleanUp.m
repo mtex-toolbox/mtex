@@ -43,10 +43,13 @@ for j = 1:length(Nq)
   [~,j0] = min(angle(Nqj,oNq) + angle(Nqj.axis,oNq.axis));
   
   % rotate axis such that current face is z-direction
-  % and closest plane 
-  aNq0 = oNq(j0).axis - dot(oNq(j0).axis,Nqj.axis)*Nqj.axis;
-  rot = rotation('map',Nqj.axis,zvector,aNq0,xvector);  
-  aNq = rot * oNq.axis; % the rotated axes
+  % and closest plane
+  aNq = oNq.axis;
+  aNq0 = aNq(j0);
+  aNqj = Nqj.axis;
+  aNq0 = aNq0 - dot(aNq0,aNqj) * aNqj;
+  rot = rotation('map',aNqj,zvector,aNq0,xvector);  
+  aNq = rot * aNq; % the rotated axes
   
   % order the other normals according to
   % 1. angle to aNq0

@@ -16,7 +16,7 @@ classdef orientationRegion
     function oR = orientationRegion(N,varargin)
       %
 
-      if ~check_option(varargin,'complete')
+      if nargin > 0 && ~check_option(varargin,'complete') 
         oR.N = N;
       end  
       
