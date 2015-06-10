@@ -18,10 +18,14 @@ classdef sphericalRegion
       %
 
       % default syntax sphericalRegion(N,alpha)
-      if nargin>=2 && isa(varargin{1},'vector3d') && isa(varargin{2},'double')
-        sR.N = varargin{1}.normalize;
-        sR.alpha = varargin{2};
-      else
+      if nargin>=1 && isa(varargin{1},'vector3d')
+        sR.N = normalize(varargin{1});
+        if nargin>=2 && isa(varargin{1},'double')
+          sR.alpha = varargin{2};
+        else
+          sR.alpha = zeros(size(sR.N));
+        end
+      else      
         sR.N = vector3d;
         sR.alpha = [];
       end
@@ -165,10 +169,16 @@ classdef sphericalRegion
       
       v = planeIntersect(sR.N(l),sR.N(r),sR.alpha(l),sR.alpha(r));
       
-      ind = sR.checkInside(v);
+      ind = (imag(v.x).^2 + imag(v.y).^2 + imag(v.z).^2) < 1e-5;
+      ind = ind & sR.checkInside(v);
       l = [l(:),l(:)]; r = [r(:),r(:)];
       e = [reshape(l(ind),[],1),reshape(r(ind),[],1)];
       v(~ind) = [];
+      
+      % e - gives for each vertex the corresponding normal ids
+      % 
+      % I = sparse()
+      
       
     end
     
