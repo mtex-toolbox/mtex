@@ -40,7 +40,7 @@ q = quaternion(o);
 iter = 1;
 while iter < 5 && (isempty(old_mean) || (abs(dot(q_mean,old_mean))<0.999))
   old_mean = q_mean;
-  [q,omega] = project2FundamentalRegion(q,o.CS,old_mean);
+  q = project2FundamentalRegion(q,o.CS,old_mean);
   [q_mean, lambda, eigv] = mean(q,varargin{:});
   iter = iter + 1;
 end

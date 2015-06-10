@@ -1,4 +1,4 @@
-function [q,omega] = project2FundamentalRegion(q,CS1,CS2,q_ref)
+function q = project2FundamentalRegion(q,CS1,CS2,varargin)
 % projects quaternions to a fundamental region
 %
 % Syntax
@@ -16,68 +16,29 @@ function [q,omega] = project2FundamentalRegion(q,CS1,CS2,q_ref)
 %  omega - rotational angle to reference quaternion
 %
 
-% get quaternions
-qCS1 = unique(quaternion(CS1),'antipodal');
 
-if nargin == 2, 
-  q_ref = idquaternion;
-  qCS2  = idquaternion;
-elseif nargin == 3
+% distingish different cases
+if nargin == 2
+  
+  q = project2FR(q,CS1,idquaternion);
+
+else
+  
   if isa(CS2,'symmetry')
-    qCS2  = unique(quaternion(CS2),'antipodal'); 
-    q_ref = idquaternion;
+  
+    if nargin > 3 && isa(varargin{1},'quaternion')
+  
+      q = project2FRCS2_ref(q,CS1,CS2,quaternion(varargin{1}));
+      
+    else
+      
+      q = project2FRCS2(q,CS1,CS2,varargin{:});
+  
+    end
   else
-    qCS2  = idquaternion;
-    q_ref = quaternion(CS2);
+    
+    q = project2FR_ref(q,CS1,CS2);
+    
   end
-else
-  qCS2  = unique(quaternion(CS2),'antipodal');
-  q_ref = quaternion(q_ref);
+  
 end
-
-q = reshape(q,[],1);
-
-% compute distance to reference orientation
-omega = abs(dot(quaternion(q),q_ref));
-
-% may be we can skip something
-oR = fundamentalRegion(CS1,qCS2);
-ind   = omega < cos(oR.minAngle);
-if ~any(ind) || length(qCS1) == 1
-  omega = 2*acos(min(1,omega));
-  return
-end
-
-% restrict to quaternion which are not yet it FR
-if length(q) == numel(ind)
-  q_sub = quaternion(q.subSet(ind));
-else
-  q_sub = quaternion(q);
-end
-
-% if q_ref was a list of reference rotations
-if length(q_ref) == numel(ind), q_ref = q_ref.subSet(ind); end
-
-% use that angle( CS2*q*CS1 ) =  angle( q * CS1 * inv(CS2) )
-[uCS,m,~] = unique(qCS1*inv(qCS2),'antipodal'); %#ok<MINV>
-[i,j]     = ind2sub([length(qCS1),length(qCS2)],m);
-
-% compute all distances to the fundamental regions
-omegaSym  = abs(dot_outer(inv(q_sub).*q_ref,uCS));
-
-% find symmetry elements projecting to fundamental region
-[omega(ind),nx] = max(omegaSym,[],2);
-
-% project to fundamental region
-qn = reshape(inv(qCS2.subSet(j(nx))),[],1) ...
-  .* reshape(q_sub,[],1) .* reshape(qCS1.subSet(i(nx)),[],1);
-
-% replace projected quaternions
-q.a(ind) = qn.a;
-q.b(ind) = qn.b;
-q.c(ind) = qn.c;
-q.d(ind) = qn.d;
-
-% compute angle
-omega = 2*acos(min(1,omega));
-

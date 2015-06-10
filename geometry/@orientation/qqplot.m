@@ -7,7 +7,7 @@ function qqplot(o)
 %     qqplot(SO3Grid(2.5*degree,crystalSymmetry('m-3m')))
 %
 
-[o,h] = project2FundamentalRegion(o);
+angles = o.angle;
 [pdf,omegas] = o.CS.angleDistribution;
 
 pdf = cumsum(pdf);
@@ -16,8 +16,7 @@ pdf = pdf./pdf(end);
 omegas(pdf == 0) = [];
 pdf(pdf == 0) = [];
 
-mof = hist(h,omegas);
-mof = cumsum(hist(h,omegas));
+mof = cumsum(hist(angles,omegas));
 mof = mof./mof(end);
 
 figure

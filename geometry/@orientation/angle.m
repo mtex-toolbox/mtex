@@ -1,4 +1,4 @@
-function omega = angle(o1,o2)
+function omega = angle(o1,o2,varargin)
 % calculates rotational angle between orientations
 %
 % Syntax  
@@ -13,11 +13,13 @@ function omega = angle(o1,o2)
 
 if nargin == 1
   
-  [~,omega] = project2FundamentalRegion(o1);
-  omega = reshape(omega,size(o1));
+  % do not care about inversion
+  o1.i = o1.i | ~o1.i;
+  
+  omega = real(2*acos(dot(o1,idquaternion,varargin{:})));
   
 else
   
-  omega = real(2*acos(dot(o1,o2)));
+  omega = real(2*acos(dot(o1,o2,varargin{:})));
   
 end
