@@ -9,7 +9,7 @@ omega = linspace(0,2*pi,361);
 
 % start with equator
 v = vector3d('theta',pi/2,'rho',omega);
-rho = v(sR.checkInside(v)).rho;
+rho = v.rho(sR.checkInside(v));
 
 % cylce through boundary
 for i = 1:length(sR.N)
@@ -24,7 +24,7 @@ for i = 1:length(sR.N)
   % as we can not determine rho very well
   b(abs(b.theta-pi/2)>pi/2-1e-4)= [];
   
-  rho = [rho,b(sR.checkInside(b)).rho]; %#ok<AGROW>
+  rho = [rho,b.rho(sR.checkInside(b))]; %#ok<AGROW>
     
 end
 

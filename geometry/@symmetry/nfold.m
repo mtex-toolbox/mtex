@@ -18,7 +18,7 @@ else
   n = ones(size(axis));
   for i = 1:length(axis)
     ind = isnull(angle(cs.axis,axis(i))) & cs.angle>0;
-    if any(ind)
+    if any(ind(:))
       n(i) = 2*pi / min(cs.subSet(ind).angle);
     end
   end
