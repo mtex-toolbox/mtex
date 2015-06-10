@@ -67,6 +67,8 @@ classdef ipdfOrientationMapping < orientationMapping
         arrow3d(oM.CS1.axes(3),'facecolor',gray)
         text3(Miller(0,0,1,'uvw',oM.CS1),'c','verticalAlignment','bottom')
         hold off
+        if isNew, fcw; end
+        
       elseif ~check_option(varargin,'noLabel')
         h = sR.vertices;
         if length(unique(h,'antipodal')) <=2, h = [h,xvector,yvector,zvector]; end
