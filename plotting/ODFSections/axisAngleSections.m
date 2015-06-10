@@ -4,6 +4,7 @@ classdef axisAngleSections < ODFSections
     angles
     axesSectors 
     jointCS
+    oR
   end
     
   methods
@@ -11,20 +12,20 @@ classdef axisAngleSections < ODFSections
     function oS = axisAngleSections(CS1,CS2,varargin)
       
       oS = oS@ODFSections(CS1,CS2);
-      
-      if CS1 == CS2
-        oS.jointCS = CS1.Laue;
-      else
-        oS.jointCS = disjoint(CS1,CS2);
+      oS.CS1 = CS1.properGroup;
+      oS.CS2 = CS2.properGroup;
+      oS.jointCS = disjoint(oS.CS1,oS.CS2);      
+      if check_option(varargin,'antipodal')
+        oS.jointCS = oS.jointCS.Laue;
       end
+      oS.oR = fundamentalRegion(oS.CS1,oS.CS2,varargin{:});
       
       % get sections      
       oS.angles = get_option(varargin,'axisAngle',(5:10:180)*degree,'double');
-      oS.angles(oS.angles>min(maxAngle(CS1),maxAngle(CS2))) = [];
+      oS.angles(oS.angles>oS.oR.maxAngle) = [];
 
       for s=1:length(oS.angles)
-        oS.axesSectors{s} = ...
-          fundamentalSector(oS.jointCS,varargin{:},'angle',oS.angles(s));
+        oS.axesSectors{s} = oS.oR.axisSector(oS.angles(s));
       end
       
     end
@@ -50,9 +51,12 @@ classdef axisAngleSections < ODFSections
       % symmetrise
       if check_option(varargin,'complete')
         ori = quaternion(ori.symmetrise('proper'));
+      else
+        ori = quaternion(ori.project2FundamentalRegion);
       end
 
-      [S2Pos,angle] = axis(ori);
+      S2Pos = ori.axis;
+      angle = ori.angle;
       
       % this builds a list 
       bounds = sort(unique([oS.angles - oS.tol,oS.angles + oS.tol]));
@@ -86,7 +90,7 @@ classdef axisAngleSections < ODFSections
       hold on
                   
       % plot data 
-      h = plot(v,data{:},'parent',ax,varargin{:},'doNotDraw','symmetrised');
+      h = plot(v,data{:},'parent',ax,varargin{:},'doNotDraw');
       
       % plot inner boundary
       if isempty(findall(ax,'tag','innerBoundary'))
