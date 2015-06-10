@@ -2,7 +2,7 @@ function oS = newODFSectionPlot(CS,SS,varargin)
 % generate a new ODF section plot
 
 [mtexFig,isNew] = newMtexFigure('ensureAppdata',...
-  {{'ODFSections',[]},{'CS',CS},{'SS',SS}},varargin{:});
+  {{'ODFSections',[]}},varargin{:});
 
 if ~isNew
   oS = getappdata(mtexFig.parent,'ODFSections');
@@ -22,4 +22,4 @@ switch get_flag(varargin,{'phi2','phi1','sigma','axisAngle'},'phi2')
     error('Unknown section type')
 end
 
-setappdata(mtexFig.parent,'oS',oS);
+setappdata(mtexFig.parent,'ODFSections',oS);

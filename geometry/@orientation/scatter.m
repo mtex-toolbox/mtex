@@ -24,30 +24,12 @@ if length(o) > 2000 || check_option(varargin,'points')
   o = o.discreteSample(fix(points));
 end
 
-[mtexFig,isNew] = newMtexFigure('ensureTag','quaternionScatter',...
-  'ensureAppdata',{{'CS',o.CS},{'SS',o.SS}},varargin{:});
+[mtexFig,isNew] = newMtexFigure(varargin{:});
+
+% plot
+[varargout{1:nargout}]= scatter@rotation(rotation(o),'parent',mtexFig.gca,varargin{:});
 
 if isNew
-  
-  % reference orientation for fundamental region
-  if check_option(varargin,'center')
-    center = get_option(varargin,'center');    
-  else
-    center = mean(o);
-  end  
-  setappdata(mtexFig.parent,'center',center);
-
-  setappdata(mtexFig.parent,'CS',o.CS);
-  setappdata(mtexFig.parent,'SS',o.SS);  
-  
-else
-  center = getappdata(mtexFig.parent,'center');    
+  set(mtexFig.parent,'Name',['Scatter plot of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
+  fcw
 end
-
-varargin = delete_option(varargin,'center');
-q = rotation(project2FundamentalRegion(o,center));
-  
-% plot
-[varargout{1:nargout}]= scatter@rotation(q,'parent',mtexFig.gca,varargin{:});
-
-set(mtexFig.parent,'Name',['Scatter plot of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
