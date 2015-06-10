@@ -113,6 +113,10 @@ classdef vector3d < dynOption
       
     end
   
+    function n = numArgumentsFromSubscript(varargin)
+      n = 1;
+    end
+    
     function rho = get.rho(v)
       rho = getRho(v);
     end

@@ -107,5 +107,9 @@ classdef (InferiorClasses = {?quaternion,?rotation,?orientation}) tensor < dynOp
     function [varargout] = calcTensor(obj,varargin)
       [varargout{1:nargout}] = obj.calcTensor(varargin{:});
     end
+    
+    function n = numArgumentsFromSubscript(varargin)
+      n = 1;
+    end
   end
 end

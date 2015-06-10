@@ -15,6 +15,11 @@ classdef dynProp
     end
       
     % ----------------------------------------------------
+    
+    function n = numArgumentsFromSubscript(varargin)
+      n = 1;
+    end
+    
     function dp = cat(dim,varargin)
       
       dp = varargin{1};
