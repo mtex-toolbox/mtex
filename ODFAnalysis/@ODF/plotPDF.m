@@ -69,10 +69,13 @@ if isNew % finalize plot
   
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
   
-  if check_option(varargin,'3d')
-    rotate3d(gcf);
-    linkprop(mtexFig.children, 'CameraPosition');
+  
+  if check_option(varargin,'3d')  
+    datacursormode off
+    fcw(gcf,'-link');
   end
+  
+  
 end
 
 % -------------- Tooltip function ---------------------------------

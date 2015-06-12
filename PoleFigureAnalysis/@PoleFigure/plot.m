@@ -38,8 +38,5 @@ if isNew % finalize plot
   set(gcf,'Name',['Pole Figures of Specimen ',inputname(1)]);
   set(gcf,'Tag','pdf');  
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
-  if check_option(varargin,'3d')
-    rotate3d(gcf);
-    linkprop(mtexFig.children, 'CameraPosition');
-  end
+  if check_option(varargin,'3d'), fcw(gcf,'-link'); end
 end

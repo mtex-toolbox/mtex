@@ -90,6 +90,11 @@ if isNew || check_option(varargin,'figSize')
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); 
 end
 
+if check_option(varargin,'3d')  
+  datacursormode off
+  fcw(gcf,'-link'); 
+end
+
 % ----------- Tooltip function ------------------------
 function txt = tooltip(varargin)
 
