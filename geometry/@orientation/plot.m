@@ -37,7 +37,7 @@ switch get(mtexFig.parent,'tag')
   
   case 'odf' % ODF sections plot
     
-    plotODF(ori,varargin{:});
+    plotSection(ori,varargin{:});
     
   otherwise
     

@@ -5,6 +5,8 @@ function plot(odf,varargin)
 
 if check_option(varargin,'fibre')
   plotFibre(odf,varargin{:});
+elseif check_option(varargin,'3d')
+  plot3d(odf,varargin{:});
 else
-  plotODF(odf,varargin{:});
+  plotSection(odf,varargin{:});
 end

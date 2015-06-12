@@ -1,4 +1,4 @@
-function plotODF(ori,varargin)
+function plotSection(ori,varargin)
 % plot orientations to ODF sections
 %
 % Input

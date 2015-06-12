@@ -1,4 +1,4 @@
-function plotODF(odf,varargin)
+function plotSection(odf,varargin)
 % plot ODF sections
 %
 % Options
