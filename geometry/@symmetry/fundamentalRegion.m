@@ -20,7 +20,7 @@ if nargin >= 2 && isa(varargin{1},'symmetry')
   q = q * unique(quaternion(varargin{1}),'antipodal');
   dcs = disjoint(cs.properGroup,varargin{1}.properGroup);
   if check_option(varargin,'antipodal')
-    dcs = dcs.LaueGroup;
+    dcs = dcs.Laue;
   end
   sR = dcs.fundamentalSector(varargin{:});
   N0 = rotation('axis',sR.N,'angle',pi-1e-5);
