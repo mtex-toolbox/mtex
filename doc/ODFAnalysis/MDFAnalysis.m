@@ -94,7 +94,7 @@ hold off
 % The same we can do with the axis distribution. First the actual angle distribution of the boundary
 % misorientations
 
-plotAxisDistribution(grains.boundary('fo','en'),'smooth')
+plotAxisDistribution(grains.boundary('fo','en').misorientation,'smooth')
 
 %%
 % Now the theoretical axis distribution of the

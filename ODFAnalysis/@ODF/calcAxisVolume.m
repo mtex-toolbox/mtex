@@ -16,7 +16,7 @@ function v = calcAxisVolume(odf,axis,radius,varargin)
 %  v   - volumeportion of all axes within the specified radius around axis
 %
 % See also
-% ODF/plotAxisDistribution
+% plotAxisDistribution
 
 % get resolution for quadrature
 res = get_option(varargin,'resolution',radius/5);

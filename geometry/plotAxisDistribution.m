@@ -3,6 +3,8 @@ function h = plotAxisDistribution(obj,varargin)
 %
 % Input
 %  odf - @ODF
+%  ori - @orientation
+%  cs1, cs2 - crystal symmetry
 %
 % Options
 %  RESOLUTION - resolution of the plots
@@ -17,24 +19,35 @@ function h = plotAxisDistribution(obj,varargin)
 
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 
-if isa(obj,'grainBoundary')
-
-else
-  
-  if isa(obj,'ODF')
-    cs1 = obj.CS;
-    cs2 = obj.SS;
-  elseif isa(obj,'symmetry')
-    cs1 = obj;
-    if nargin > 1 && isa(varargin{1},'symmetry')
-      cs2 = varargin{1};
-    else
-      cs2 = specimenSymmetry;
-    end
+if isa(obj,'symmetry')
+  cs1 = obj;
+  if nargin > 1 && isa(varargin{1},'symmetry')
+    cs2 = varargin{1};
+  else
+    cs2 = specimenSymmetry;
   end
+else
+  cs1 = obj.CS;
+  cs2 = obj.SS;
+end
+cs1 = cs1.properGroup;
+cs2 = cs2.properGroup;
+
+dcs = disjoint(cs1,cs2);
+if check_option(varargin,'antipodal')
+  dcs = dcs.Laue;
+end
+
+if isa(obj,'quaternion')
+
+  axes = Miller(obj.axis,dcs);
+
+  h = plot(axes,'parent',mtexFig.gca,'symmetrised','FundamentalRegion',varargin{:});    
+  
+else
 
   % plotting grid
-  sR = fundamentalSector(disjoint(cs1,cs2),varargin{:});
+  sR = fundamentalSector(dcs,varargin{:});
   h = plotS2Grid(sR,'antipodal','resolution',2.5*degree,varargin{:});
 
   % plot
@@ -56,3 +69,4 @@ if nargout == 0, clear h; end
 function d = pos(d)
 
 if min(d(:)) > -1e-5, d = max(d,0);end
+

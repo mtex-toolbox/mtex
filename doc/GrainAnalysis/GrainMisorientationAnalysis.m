@@ -63,7 +63,7 @@ hold off
 oM = ipdfHSVOrientationMapping(mori)
 oM.colorStretching = 5;
 
-plot(oM)
+plot(oM,'noTitle')
 
 %%
 
@@ -156,7 +156,8 @@ plotAngleDistribution(ebsd('Fo'),ebsd('En'))
 
 close all
 mtexFig = newMtexFigure;
-plotAxisDistribution(ebsd('Fo'),'smooth','parent',mtexFig.gca)
+mori = calcMisorientation(ebsd('Fo'));
+plotAxisDistribution(mori,'smooth','parent',mtexFig.gca)
 mtexTitle('uncorrelated axis distribution')
 mtexFig.drawNow('figSize','normal')
 
@@ -165,7 +166,7 @@ mtexFig.drawNow('figSize','normal')
 % plot
 
 mtexFig.nextAxis
-plotAxisDistribution(grains.boundary('Fo','Fo'),'smooth','parent',mtexFig.gca)
+plotAxisDistribution(bnd_FoFo.misorientation,'smooth','parent',mtexFig.gca)
 mtexTitle('boundary axis distribution')
 mtexColorbar
 
