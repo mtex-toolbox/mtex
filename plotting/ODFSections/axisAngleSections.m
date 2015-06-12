@@ -5,6 +5,7 @@ classdef axisAngleSections < ODFSections
     axesSectors 
     jointCS
     oR
+    volumeScaling
   end
     
   methods
@@ -19,6 +20,7 @@ classdef axisAngleSections < ODFSections
         oS.jointCS = oS.jointCS.Laue;
       end
       oS.oR = fundamentalRegion(oS.CS1,oS.CS2,varargin{:});
+      oS.volumeScaling = get_option(varargin,'volumeScaling',true);
       
       % get sections      
       oS.angles = get_option(varargin,'axisAngle',(5:10:180)*degree,'double');
@@ -81,11 +83,13 @@ classdef axisAngleSections < ODFSections
           'TL',['\omega = ' int2str(oS.angles(sec)./degree),'^\circ'],'color',[0.8 0.8 0.8],...
           'doNotDraw','tag','outerBoundary','hitTest','off');
       end
-        
+      
       % rescale the axes according to actual volume      
-      sP = getappdata(ax,'sphericalPlot');
-      bounds = sP.bounds * sin(max(oS.angles)/2) / sin(angle/2);
-      set(ax,'xlim',bounds([1,3]),'ylim',bounds([2,4]))
+      if oS.volumeScaling
+        sP = getappdata(ax,'sphericalPlot');
+        bounds = sP.bounds * sin(max(oS.angles)/2) / sin(angle/2);
+        set(ax,'xlim',bounds([1,3]),'ylim',bounds([2,4]))
+      end
           
       hold on
                   
