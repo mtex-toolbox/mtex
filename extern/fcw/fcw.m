@@ -40,7 +40,7 @@ for a = 1:nargin
     v = varargin{a};
     if ischar(v) && strcmp(v, '-link')
         link = true;
-    elseif isscalar && ishandle(v)
+    elseif ishandle(v)
         fig = ancestor(v, 'figure');
         assert(~isempty(fig), 'Unrecognized handle');
     elseif iscell(v) && numel(v) == 4 && all(cellfun(@ischar, v))
@@ -49,8 +49,7 @@ for a = 1:nargin
         error('Input not recognized');
     end
 end
-% Flush any pending draws
-drawnow;
+
 % Clear any visualization modes we might be in
 pan(fig, 'off');
 zoom(fig, 'off');
