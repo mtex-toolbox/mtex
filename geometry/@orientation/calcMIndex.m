@@ -1,11 +1,12 @@
-function m = mIndex(obj,varargin)
+function m = calcMIndex(ori,varargin)
+% TODO!!!
 
 % experimental angle distribution
-[RO,theta] = calcAngleDistribution(obj);
+[RO,theta] = calcAngleDistribution(ori);
 RO = RO ./ mean(RO);
 
 % theoretic angle distribution
-RT = angleDistribution(obj.CS,theta);
+RT = calcAngleDistribution(ori.CS,ori.SS,theta);
 RT = RT(:) ./ mean(RT);
 
 m = 0.5 * mean(abs(RT-RO));

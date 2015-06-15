@@ -34,10 +34,10 @@ if ~check_option(varargin,'fast')
   if check_option(varargin,'omega')
     omega = get_option(varargin,'omega',[]);
     density = zeros(size(omega));
-    d = angleDistribution(cs1,cs2,omega); 
+    d = calcAngleDistribution(cs1,cs2,omega); 
     density(1:numel(d)) = d;
   else
-    [density,omega] = angleDistribution(cs1,cs2);
+    [density,omega] = calcAngleDistribution(cs1,cs2);
   end
   
   sR = csD.fundamentalSector;

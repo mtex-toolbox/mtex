@@ -38,7 +38,7 @@ if check_option(varargin,'antipodal')
   dcs = dcs.Laue;
 end
 
-if isa(obj,'quaternion')
+if isa(obj,'quaternion') && ~isa(obj,'symmetry')
 
   axes = Miller(obj.axis,dcs);
 
@@ -48,7 +48,7 @@ else
 
   % plotting grid
   sR = fundamentalSector(dcs,varargin{:});
-  h = plotS2Grid(sR,'antipodal','resolution',2.5*degree,varargin{:});
+  h = plotS2Grid(sR,'antipodal','resolution',.5*degree,varargin{:});
 
   % plot
   %h = project2FundamentalRegion(h,disjoint(cs1,cs2))

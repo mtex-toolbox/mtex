@@ -8,7 +8,7 @@ function qqplot(o)
 %
 
 angles = o.angle;
-[pdf,omegas] = o.CS.angleDistribution;
+[pdf,omegas] = calcAngleDistribution(o.CS,o.SS);
 
 pdf = cumsum(pdf);
 pdf = pdf./pdf(end);
