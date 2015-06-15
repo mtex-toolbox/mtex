@@ -14,7 +14,7 @@ if numel(is2) == length(s2), s = s2; return; end
 
 % take the equal ones
 s = quaternion(s1);
-s = unique(s.subSet(is1));
+s = unique(s.subSet(is1),'antipodal');
 
 % find a symmetry that exactly contains s
 for i=1:45 % check all Laue groups
