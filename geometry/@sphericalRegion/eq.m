@@ -15,4 +15,5 @@ if nnz(fit) ~= length(sR1.alpha), return; end
 % alphas should fit
 [u,v] = find(fit);
 
-out = all(sR1.alpha(u) == sR2.alpha(v));
+a1 = sR1.alpha(u); a2 = sR2.alpha(v);
+out = all(a1(:) == a2(:));
