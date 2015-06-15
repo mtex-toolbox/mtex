@@ -5,12 +5,32 @@ function oR = cleanUp(oR)
 % cs = crystalSymmetry('222');
 % oR = cs.fundamentalRegion;
 
-% 
-Nq = unique(oR.N);
+% we need to restrict to the relevant normals
+% this works nice if rotations about 180 degree are present
+is180 = abs(oR.N.angle)>pi - 1e-3;
+if ~any(is180)
+  
+  % then the normals should be inside itself
+  Nq = unique(oR.N); 
+  Nq = Nq.subSet(oR.checkInside(-reciprocal(Nq)));
+  oR.N = Nq;  
+  
+else % otherwise the condition seems to strict 
 
-% the normals should be inside itself
-Nq = Nq.subSet(oR.checkInside(-reciprocal(Nq)));
-oR.N = Nq;
+  % we consider first the case without 180 degree rotations
+  oRfull = oR;
+  oRfull.N(is180) = [];
+  oRfull = oRfull.cleanUp;
+  
+  ind = oR.checkInside(oRfull.V);
+  
+  inside = cellfun(@(x) any(ind(x)), oRfull.F);
+  
+  Nq = [oRfull.N(inside),oR.N(is180)];
+  oR.N = Nq;
+end
+
+
 nqa = unique(Nq.axis,'antipodal');
 
 if isempty(nqa)
