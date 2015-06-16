@@ -75,7 +75,7 @@ CS = loadCIF('quartz')
 symmetrise(xvector,SS)
 symmetrise(rotation('Euler',0,0,0),CS,SS)
 rotation(CS)
-[alpha_max,bet_max,gamma_max] = getFundamentalRegion(CS,SS)
+[alpha_max,bet_max,gamma_max] = fundamentalRegionEuler(CS,SS)
 
 %%
 % *plotting*

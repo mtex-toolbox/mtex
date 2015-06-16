@@ -1,7 +1,7 @@
 function lookup = calcLookUp(DSO3,res)
 % compute lookup table
 
-[max_phi1,max_Phi,max_phi2] = getFundamentalRegion(DSO3.CS,DSO3.SS);
+[max_phi1,max_Phi,max_phi2] = fundamentalRegionEuler(DSO3.CS,DSO3.SS);
 
 phi1 = 0:res:max_phi1;
 Phi = 0:res:max_Phi;

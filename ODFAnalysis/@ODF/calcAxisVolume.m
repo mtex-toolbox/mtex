@@ -26,9 +26,7 @@ h = equispacedS2Grid('resolution',res,varargin{:});
 
 % restrict to fundamental region
 sym = disjoint(odf.CS,odf.SS);
-h = Miller(h,sym);
-ind = checkFundamentalRegion(h,'antipodal');
-h = h(ind);
+h= h(sym.fundamentalSector.checkInside(h,'antipodal'));
 
 % find those within the ball
 ind = angle(h,vector3d(axis)) < radius;

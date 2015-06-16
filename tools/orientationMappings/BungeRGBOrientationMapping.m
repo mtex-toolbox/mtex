@@ -15,7 +15,7 @@ classdef BungeRGBOrientationMapping < orientationMapping
       
       oM = oM@orientationMapping(varargin{:});
       
-      [maxphi1,maxPhi,maxphi2] = getFundamentalRegion(oM.CS1,oM.CS2);
+      [maxphi1,maxPhi,maxphi2] = fundamentalRegionEuler(oM.CS1,oM.CS2);
       
       oM.phi1Range = [0,maxphi1];
       oM.phi2Range = [0,maxphi2];

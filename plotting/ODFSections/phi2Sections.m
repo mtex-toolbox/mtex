@@ -13,7 +13,7 @@ classdef phi2Sections < ODFSections
       oS = oS@ODFSections(CS1,CS2);
       
       % get fundamental plotting region
-      [phi1,Phi,oS.maxphi2] = getFundamentalRegion(CS1,CS2,varargin{:}); %#ok<*PROP>
+      [phi1,Phi,oS.maxphi2] = fundamentalRegionEuler(CS1,CS2,varargin{:}); %#ok<*PROP>
       oS.sR = sphericalRegion('maxTheta',Phi,'maxRho',phi1);
       
       % get sections

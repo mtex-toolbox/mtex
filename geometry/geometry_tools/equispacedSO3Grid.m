@@ -15,7 +15,7 @@ if ~isa(SS,'symmetry')
 end
 
 % get fundamental region
-[maxAlpha,maxBeta,maxGamma] = getFundamentalRegion(CS,SS,'SO3Grid');
+[maxAlpha,maxBeta,maxGamma] = fundamentalRegionEuler(CS,SS,'SO3Grid');
 maxGamma = maxGamma/2;
 if ~check_option(varargin,'center'), maxGamma = min(maxGamma,maxAngle);end
 

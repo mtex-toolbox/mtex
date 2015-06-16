@@ -35,7 +35,7 @@ else % convention given
 end
 
 % get bounds
-[max_rho,max_theta,max_sec] = getFundamentalRegion(CS,SS,varargin{:});
+[max_rho,max_theta,max_sec] = fundamentalRegionEuler(CS,SS,varargin{:});
   
 % make the sectioning variable to be the last one
 if any(strcmpi(sectype,{'alpha','phi1','Psi'}))
