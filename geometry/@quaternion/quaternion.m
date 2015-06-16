@@ -58,7 +58,7 @@ classdef quaternion
     end
     
     function n = numArgumentsFromSubscript(varargin)
-      n = 1;
+      n = 0;
     end
     
   end
