@@ -1,5 +1,138 @@
 %% MTEX Changelog
 %
+%
+%% MTEX 4.1.beta
+%
+% MTEX 4.1 introduces new possibilities to analysis of misorientations. For
+% the first time it covers all geometric aspects of misorientations between
+% arbitrary crystal symmetries. 
+%
+% *Support for antipodal symmetry for misorientations*
+%
+% When working with boundary misorientations between the same phase one can
+% not distinguish between an misorientation |mori| and its inverse
+% |inv(mori). Starting with MTEX 4.1 this symmetry is supported for
+% misorientations and misorientation distribution functions.
+%
+%   mori = inv(ori1) * ori2;
+%   mori.antipodal = true;
+%
+%   mdf = calcMDF(odf1,odf2,'antipodal')
+%
+% Antipodal symmetry effects the asymetric region in orientation space as
+% described below, as well as the distanc between misorientations. Boundary
+% misorientations between the same phase have set the flag |antipodal| by
+% default.
+%
+% *Asymetric regions in orientation space*
+%
+% MTEX 4.1 has now full support of asymmetric regions in orientation space.
+% For any combination of crystal symmetries they can be defined by
+%
+%   oR = fundamentalRegion(cs1,cs2)
+%
+% and visualized by
+%
+%   plot(oR)
+%
+% One can check, whether an orientation is within the fundamental region by
+%
+%   oR.checkInside(ori)
+%
+% similarly as for a sphericalRegion. The fundamental region with antipodal
+% symmetry is defined by.
+%
+%   oR = fundamentalRegion(cs1,cs2,'antipodal')
+%
+% For a fixed rotational angle |omega| the intersection of the fundamental
+% region with the sphere with radius omega gives the fundamental sector for
+% the corresponding rotational axes. The axis sector can be computed by
+%
+%   sR = oR.axisSector(omega)
+%
+% *Axis and angle distributions*
+% 
+% Thanks to the implementation of the asymetric region
+% |plotAxisDistribution| and |plotAngleDistribution| works in MTEX 4.1 for
+% any combination of crystal symmetries.
+%
+% *Axis angle plots*
+%
+% (Mis)Orientation, ODFs and MDFs can now be plotted in axis angles
+% sections. Those plots respect the fundamental sector depending on the
+% misorientation angle and for all combinations of crystal symmetries. The
+% angle sections are scaled such that they represent the corrsponding
+% volume in orientation space. This can be switch of as described below
+%
+%   plotSection(mori,'axisAngle',55*degree)
+%   plotSection(mdf,'axisAngle',[15:10:55*degree])
+%   plotSection(mdf,'axisAngle',[15:10:55*degree],'volumeScaling',false)
+%   plotSection(mdf,'axisAngle',[15:10:55*degree],'antipodal')
+%
+% *Replace plotODF by plotSection* 
+%
+% In most cases you can replace |plotODF| by |plot|. Only for
+% misorientations the default plot is |scatter|.
+%
+% *Other improvements since MTEX 4.0.0*
+% During the minor revisions of MTEX also several minor improvments has
+% been added which are summarized below
+%
+% * allow syntax
+%
+%   plot(odf,pf.h,'superposition',pf.c)
+%
+% * allow to show / hide the scale bar by the MTEX menu or by
+%
+%   [~,mP] = plot(ebsd)
+%   mP.micronBar.visible = 'off'
+%
+% * new EBSD interface to ACOM Nanomegas *.ang files
+%
+% * misorientation axis with respect to crystal and specimen reference
+% frame
+%
+%   a = axis(o1,o2)  % misorientation axis with respect to sample coordinate system
+%
+%   a = axis(inv(o2)*o1)  % misorientation axis with respect to crystal coordinate system
+%
+% * new function |intersect| to compute intersections between grain
+% boundary segments an a line
+%
+%  [x,y] = grains.boundary.intersect(xy1,xy2);
+%
+% * option for plotting angle distributions in percent
+%
+%   plotAngleDsitribution(mori,'percent')
+%
+% * reintroduced min/max in pole figure like plot
+%
+%   plot(pf,'minmax')
+%
+% * 3d plots of pole figures can now be simultanously rotated
+% * you can now restrict an EBSD data set to a line to plot profiles
+%
+%   ebsd_prof = ebsd.spatialProfile(ebsd,some_line)
+%
+% * additional syntax to define a list if Miller indices
+%
+%   h = Miller({1,0,0},{1,1,1},{2,3,4},CS,'uvw')
+%
+% * interface to Bruker phl files
+% * new properties for grainBoundary |gB|
+%
+%   gB.segmentLength % length of the corresponding connected segment
+%   gB.isTwinning(mori,threshold) % check boundary for twinning
+%
+% * for a crystal symmetry |cs| you can access a, b ,c and reciprocal axes
+% by
+%
+%   cs.Aaxis
+%   cs.AaxisRec
+%
+% * compute KAM with misorientation angle threshold or grain boundary threshold
+%
+%
 %% MTEX 4.0.0 - 10/2014
 % 
 % MTEX 4 is a complete rewrite of the internal class system which was
