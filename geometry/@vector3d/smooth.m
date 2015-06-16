@@ -43,7 +43,7 @@ for j = 1:numel(sP)
       S2G = plotS2Grid(sP(j).sphericalRegion,'resolution',2.5*degree,varargin{:});
       cdata = interp(v,cdata,S2G);
       
-    elseif ~isa(sP.proj,'plainRojection')
+    elseif ~isa(sP(j).proj,'plainProjection')
       
       % close the gap between 0 and 2*pi
       varargin = set_option(varargin,'correctContour');
