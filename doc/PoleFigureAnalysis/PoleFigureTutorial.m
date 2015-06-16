@@ -122,7 +122,7 @@ calcError(odf,pf)
 
 %% Visualize the ODF
 
-plotODF(odf)
+plot(odf)
 mtexColorMap LaboTeX
 
 %%

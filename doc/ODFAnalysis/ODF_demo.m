@@ -123,7 +123,7 @@ close all;plotIPDF(odf,vector3d(1,1,3))
 % c) Plot the ODF in sigma and phi2 - sections. How many mods do
 % you observe?
 
-close all;plotODF(odf,'sections',6)
+close all; plot(odf,'sections',6)
 
 %%
 % d) Compute the volume of the ODF that is within a distance of 10 degree of

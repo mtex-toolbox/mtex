@@ -73,7 +73,7 @@ toc
 
 %%
 
-plotODF(fodf,'sigma')
+plot(fodf,'sigma')
 
 %%
 %plot(fodf)

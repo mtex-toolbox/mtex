@@ -1,5 +1,5 @@
-function [v, data]= project2ODFsection(o,type,sec,varargin)
-% project orientation to ODF sections used by plotODF
+function [v, data]= project(o,type,sec,varargin)
+% project orientation to ODF sections used by plotSection
 %
 % Input
 %  o  - @SO3Grid
@@ -12,7 +12,7 @@ function [v, data]= project2ODFsection(o,type,sec,varargin)
 % Options
 %  tolerance -
 
-%TODO: remove loop as we have a loop already in plotODF
+%TODO: remove loop as we have a loop already in plotSection
 
 % get input
 if length(sec) >= 2

@@ -11,7 +11,7 @@
 %
 % MTEX supports four type of spherical projection which are avaiable for
 % all spherical plot, e.g. <ODF.plotPDF.html polefigure plots>,
-% <ODF.plotIPDF.html inverse polefigure plots> or <ODF.plotODF.html
+% <ODF.plotIPDF.html inverse polefigure plots> or <ODF.plotSection.html
 % ODF plots>. These are the equal area projection (Schmidt projection), the
 % equal distance projetion, the stereographic projection (equal angle
 % projection), the three dimensional projection and the flat projection.
@@ -111,7 +111,7 @@ plotHKL(cs,'projection','eangle','upper','grid_res',15*degree,'BackGroundColor',
 % *Plain* means that the polar angles theta / rho are plotted in a simple
 % rectangular plot. This projection is often chosen for ODF plots, e.g.
 
-plotODF(SantaFe,'alpha','sections',18,'resolution',5*degree,...
+plot(SantaFe,'alpha','sections',18,'resolution',5*degree,...
   'projection','plain','contourf','FontSize',10,'silent')
 mtexColorMap white2black
 

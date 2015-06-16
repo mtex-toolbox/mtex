@@ -57,7 +57,7 @@ plotPDF(odf2,h,'antipodal')
 
 %% Plot ODF
 
-plotODF(odf2,'sections',9,'resolution',2*degree,...
+plot(odf2,'sections',9,'resolution',2*degree,...
   'FontSize',10,'silent')
 
 %% Estimation of Fourier Coefficients
@@ -97,7 +97,7 @@ hold off
 
 CS = crystalSymmetry('trigonal');
 fibre_odf = 0.5*uniformODF(CS) + 0.5*fibreODF(Miller(0,0,0,1,CS),zvector);
-plotODF(fibre_odf,'sections',6,'silent')
+plot(fibre_odf,'sections',6,'silent')
 ori = calcOrientations(fibre_odf,10000)
 
 %%
@@ -108,7 +108,7 @@ odf = calcODF(ori)
 %%
 % plot the estimated ODF
 
-plotODF(odf,'sections',6,'silent')
+plot(odf,'sections',6,'silent')
 
 %%
 % calculate estimation error

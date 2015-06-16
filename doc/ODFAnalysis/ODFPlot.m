@@ -89,7 +89,7 @@ plotIPDF(odf,[xvector,zvector],'antipodal','complete')
 %% ODF Sections
 %
 % Plotting an ODF in two dimensional sections through the orientation space
-% is done using the command <ODF.plotODF.html plot>. By default the
+% is done using the command <ODF.plotSection.html plot>. By default the
 % sections are at constant angles phi2. The number of sections can be
 % specified by the option |sections|
 

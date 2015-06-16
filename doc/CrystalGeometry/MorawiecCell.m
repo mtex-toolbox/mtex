@@ -46,11 +46,11 @@ hold off
 % sections along the Euler angles or along the rotational angle. The latter
 % one should be demonstrated next:
 
-plotODF(rotZ,'MarkerColor','b','axisAngle',(30:30:180)*degree)
+plotSection(rotZ,'MarkerColor','b','axisAngle',(30:30:180)*degree)
 hold on
-plotODF(rotX,'MarkerColor','g')
+plotSection(rotX,'MarkerColor','g')
 hold on
-plotODF(rotY,'MarkerColor','r')
+plotSection(rotY,'MarkerColor','r')
 hold off
 
 %% Crystal Symmetries
@@ -160,11 +160,11 @@ hold off
 % Again we can plot constant angle sections through the fundamental
 % region. This is done by
 
-plotODF(mori,'axisAngle')
+plotSection(mori,'axisAngle')
 
 %%
 % Note that in the previous plot we distinguish between |mori| and
 % |inv(mori)|. Adding antipodal symmetry those are considered as equivalent
 
-plotODF(mori,'axisAngle','antipodal')
+plotSection(mori,'axisAngle','antipodal')
 

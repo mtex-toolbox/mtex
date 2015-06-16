@@ -37,12 +37,12 @@ plotIPDF(ebsd('Fo').orientations,xvector)
 
 %% Scatter Plot in ODF Sections
 % The plotting og scatter points in sections of the orientation space is carried out by the
-% command <orientation.plotODF.html plotODF>. In the above examples the number
+% command <orientation.plotSection.html plotSection>. In the above examples the number
 % of plotted orientations was chosen automatically such that the
 % plots not to become too crowed with points. The number of randomly chosen orientations
 % can be specified by the option *points*.
 
-plotODF(ebsd('Fo').orientations,'points',1000,'sigma','sections',9)
+plotSection(ebsd('Fo').orientations,'points',1000,'sigma','sections',9)
 
 
 %% Scatter Plot in Axis Angle or Rodrigues Space
@@ -91,7 +91,7 @@ plotPDF(ebsd('Fo').orientations,...
 %%
 % or some arbitrary data vector
 
-plotODF(grains('Fo').meanOrientation,'antipodal','sections',9,'MarkerSize',3,...
+plotSection(grains('Fo').meanOrientation,'antipodal','sections',9,'MarkerSize',3,...
   'property',grains('Fo').area,'sigma');
 
 
