@@ -15,44 +15,23 @@ function x = calcAxisDistribution(odf,h,varargin)
 %
 % See also
 
-res = get_option(varargin,'resolution',2.5*degree)/8;
-
-% angle discretisation
-omega = -pi:res:pi-res;
-weight = sin(omega./2).^2 ./ length(omega);
+oR = fundamentalRegion(odf.CS,odf.SS,varargin{:});
+maxOmega = oR.maxAngle(project2FundamentalRegion(h,disjoint(odf.CS,odf.SS)));
+res = get_option(varargin,'resolution',2.5*degree);
+nOmega = round(max(maxOmega(:))/res);
 
 % define a grid for quadrature
-h = repmat(h(:),1,length(omega));
-omega = repmat(omega,size(h,1),1);
+omega = linspace(0,1,nOmega);
+omega = maxOmega(:) * omega(:).'; 
+h = repmat(h(:),1,nOmega);
 S3G = orientation('axis',h,'angle',omega,odf.CS,odf.SS);
 
-if check_option(varargin,'allAngles')
-  
-  f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
-  w = 1;
- 
-else
-    
-  if check_option(varargin,'largestAngle')
-    omega2 = angle(S3G);
-    ind = abs(omega) >= omega2 - 0.00001;
-    
-    w = 1;
-  else % smallest angle - default
-    %omega2 = angle(S3G);
-    %ind = abs(omega) <= omega2 + 0.00001;
-    
-    ind = checkFundamentalRegion(S3G,'onlyAngle');
-    w = length(union(odf.CS.properGroup,odf.SS.properGroup));
-    
-  end
-  
-  [i,j] = find(ind);
+% quadrature weights
+weights = sin(omega./2).^2 ./ nOmega;
 
-  f = eval(odf,S3G(ind),varargin{:}); %#ok<EVLC>
-  f = sparse(i,j,f,size(S3G,1),size(S3G,2));
-  
-end
+% eval ODF
+f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
 
-x = 2 * f * weight(:) * w;
-%x = x./mean(x);
+% sum along axes
+x = 2 / pi * length(unique(odf.CS*odf.SS,'antipodal')) * ...
+  sum(f .* weights,2) .* maxOmega(:);

@@ -1,4 +1,4 @@
-function  [oR,dcs] = fundamentalRegion(cs,varargin)
+function  [oR,dcs,nSym] = fundamentalRegion(cs,varargin)
 % get the fundamental sector for a symmetry in the inverse pole figure
 %
 % Syntax
@@ -17,7 +17,7 @@ function  [oR,dcs] = fundamentalRegion(cs,varargin)
 
 q = unique(quaternion(cs),'antipodal');
 if nargin >= 2 && isa(varargin{1},'symmetry')
-  q = q * unique(quaternion(varargin{1}),'antipodal');
+  q = unique(q * quaternion(varargin{1}),'antipodal');
   dcs = disjoint(cs.properGroup,varargin{1}.properGroup);
   if check_option(varargin,'antipodal')
     dcs = dcs.Laue;
@@ -26,7 +26,10 @@ if nargin >= 2 && isa(varargin{1},'symmetry')
   N0 = rotation('axis',sR.N,'angle',pi-1e-5);
 else
   N0 = quaternion;
+  dcs = cs.properGroup;
+  if check_option(varargin,'antipodal'), dcs = dcs.Laue; end
 end
+nSym = length(q);
 
 % take +- minimal angles for each axis
 q(abs(q.angle)<1e-5) = [];
