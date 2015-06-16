@@ -42,18 +42,22 @@ if isa(obj,'quaternion') && ~isa(obj,'symmetry')
 
   axes = Miller(obj.axis,dcs);
 
-  h = plot(axes,'parent',mtexFig.gca,'symmetrised','FundamentalRegion',varargin{:});    
+  h = plot(axes,'symmetrised','FundamentalRegion',varargin{:});    
   
 else
 
   % plotting grid
   sR = fundamentalSector(dcs,varargin{:});
-  h = plotS2Grid(sR,'antipodal','resolution',.5*degree,varargin{:});
+  if isa(obj,'symmetry')
+    h = plotS2Grid(sR,'resolution',.5*degree,varargin{:});
+  else
+    h = plotS2Grid(sR,'resolution',2.5*degree,varargin{:});
+  end
 
-  % plot
-  %h = project2FundamentalRegion(h,disjoint(cs1,cs2))
+  % plot  
+  varargin = delete_option(varargin,'complete');
   density = pos(calcAxisDistribution(obj,h,varargin{:}));
-  h = smooth(h,density,'parent',mtexFig.gca,varargin{:},'doNotDraw');
+  h = smooth(h,density,varargin{:});
 
 end
   
