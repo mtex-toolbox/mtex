@@ -8,7 +8,7 @@ function ebsd = fillByGrainId(ebsd)
 %   ebsd_filled = fill(ebsd)
 %
 
-% generaze a regular grid
+% generate a regular grid
 ext = ebsd.extend;
 dx = max(ebsd.unitCell(:,1))-min(ebsd.unitCell(:,1));
 dy = max(ebsd.unitCell(:,2))-min(ebsd.unitCell(:,2));

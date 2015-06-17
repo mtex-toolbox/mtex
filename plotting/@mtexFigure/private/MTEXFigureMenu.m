@@ -52,7 +52,7 @@ uimenu(m,'label','Set Outer Margin','callback',{@setMargin,'outer'});
 % annotations
 
 an = uimenu(m,'label','Annotations');
-uimenu(an,'label','Min/Max','checked',isVisible('minmax'),'callback',{@setVisible,'TL','BL'});
+uimenu(an,'label','Min/Max','checked',isVisible('minmax'),'callback',{@setVisible,'minmax'});
 uimenu(an,'label','Axes Labels','checked',isVisible('labels'),'callback',{@setVisible,'labels'});
 uimenu(an,'label','Coordinates','checked',isVisible('ticks'),'callback',{@setVisible,'ticks'});
 uimenu(an,'label','Grid','checked','off','callback',{@setVisible,'grid'});
@@ -129,15 +129,17 @@ set(obj,'checked',onoff);
 ax = findobj(gcf,'type','axes');
 for a = 1:numel(ax)
 
-  switch element
-    case 'minmax'
-      
-      sP = getappdata(ax(a),'sphericalPlot');
+  for element = cellstr(varargin)
+    switch char(element)
 
- if ~isempty(sP)
-        sP.dispMinMax = strcmp(get(obj,'checked'),'on');
-        sP.updateMinMax;
-      end
+      case 'minmax'
+      
+        sP = getappdata(ax(a),'sphericalPlot');
+
+        if ~isempty(sP)
+          sP.dispMinMax = strcmp(get(obj,'checked'),'on');
+          sP.updateMinMax;
+        end
       
       case 'micronBar'
         
@@ -172,8 +174,9 @@ for a = 1:numel(ax)
     end
   end
 
-mtexFig.drawNow
+  mtexFig.drawNow
 
+end
 end
 
 % Grid Visibility
