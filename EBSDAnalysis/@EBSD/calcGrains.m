@@ -89,7 +89,7 @@ grainBoundaryCiterions = dir([mtex_path '/EBSDAnalysis/@EBSD/private/gbc*.m']);
 grainBoundaryCiterions = {grainBoundaryCiterions.name};
 
 gbc      = get_flag(regexprep(grainBoundaryCiterions,'gbc_(\w*)\.m','$1'),varargin,'angle');
-gbcValue = get_option(varargin,gbc,15*degree,'double');
+gbcValue = get_option(varargin,{gbc,'threshold'},15*degree,'double');
 
 if numel(gbcValue) == 1 && length(ebsd.CSList) > 1
   gbcValue = repmat(gbcValue,size(ebsd.CSList));

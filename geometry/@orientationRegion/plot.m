@@ -23,7 +23,7 @@ end
 color = get_option(varargin,'color',[0 0 0]);
 
 switch lower(projection)
-  case 'rodriguez'
+  case {'rodriguez','rodrigues'}
 
     % embedd into NaN matrix
     FF = nan(length(oR.F),max(cellfun(@length,oR.F)));

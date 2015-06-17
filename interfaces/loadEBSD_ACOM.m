@@ -93,7 +93,7 @@ try
         end
         
         % #ok<AGROW>
-        cs{phaseCount} = symmetry(laue,lattice(1:3)',lattice(4:6)'*degree,'mineral',mineral,options{:});
+        cs{phaseCount} = crystalSymmetry(laue,lattice(1:3)',lattice(4:6)'*degree,'mineral',mineral,options{:});
         
         B(A(:,8)==phase)=phaseCount;
         hl{pos}(9)=num2str(phaseCount);
