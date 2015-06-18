@@ -93,6 +93,13 @@ CSList = ebsd.CSList;
 % loop through all grains
 grainIds = unique(grainId).';
 progress(0,length(grainIds));
+
+% find the largest grain
+[~,m] = max(histc(ebsd.grainId,0.5:1:max(ebsd.grainId)+0.5))
+
+% and sort it first
+grainIds = [m,grainIds(grainIds~=m)];
+
 for id = grainIds
 
   progress(id,length(grainIds));
