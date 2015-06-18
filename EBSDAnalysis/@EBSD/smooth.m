@@ -121,24 +121,20 @@ for id = grainIds
   indLocal = indLocal(notNaN);
   ori = orientation(rot(ind),CSList{2});   
   
-  % compute components in the Lie algebra
+  % rotate such that mean is in identity
   [qmean,~,~,~,q] = mean(ori(notNaN));
-  q = inv(qmean)*q; %#ok<MINV>  
-  tq1 = NaN(nRow,nCol); tq2 = tq1; tq3 = tq1;
-  tq = log(q);
-  tq1(indLocal) = tq(:,1);
-  tq2(indLocal) = tq(:,2);
-  tq3(indLocal) = tq(:,3);
-    
-  % perform smoothing
-  [T,alpha] = smoothn({tq1,tq2,tq3},alpha,'robust');
+  q = inv(qmean)*q; %#ok<MINV>
+  qgrid = nanquaternion(nRow,nCol);
+  qgrid(indLocal) = q;
 
-  %rot(minRow + (0:nRow-1),minCol + (0:nCol-1)) = ...
-  %  reshape(rotation(quaternion(qmean)*expquat([T{:}])),nRow,nCol);
-  rotLocal = quaternion(qmean)*expquat([T{:}]);
-  rot(ind) = rotLocal(indLocal);
+  % perform local smoothing
+  %qgrid = splineSmoothing(qgrid,alpha);
+  qgrid = medianFilter(qgrid,alpha);
+  %qgrid = meanFilter(qgrid);
   
-  
+  % rotate back
+  rot(ind) = quaternion(qmean) * qgrid(indLocal);
+    
 end
 
 % store to EBSD variable
