@@ -164,21 +164,26 @@ hist(grains)
 %%
 % Sometimes it is desireable to remove all boundary grains as they might
 % distort grain statistics. To do so one should remember that each grain
-% boundary has a property |phaseId| which is zero if the face has an outer
-% boundary. 
+% boundary has a property |grainId| which stores the ids of the neigbouring
+% grains. In the case of an outer grain boundary one of the neighbouring
+% grains has the id zero. We can filter out all these boundary segments by
 
-% first we get all faces that have an outer boundary
-face_id = grains.boundary.hasPhaseId(0);
+% ids of the outer boundary segment 
+outerBoundary_id = any(grains.boundary.grainId==0,2);
 
 plot(grains)
 hold on
-plot(grains.boundary(face_id),'linecolor','red','linewidth',2)
+plot(grains.boundary(outerBoundary_id),'linecolor','red','linewidth',2)
 hold off
 
 %%
+% Now |grains.boundary(outerBoundary_id).grainId| is a list of grain ids
+% where the first column is zero, indicating the outer boundary, and the
+% second column contains the id of the boundary grain. Hence, it remains to
+% remove all grains with these ids.
 
 % next we compute the corresponding grain_id
-grain_id = grains.boundary(face_id).grainId;
+grain_id = grains.boundary(outerBoundary_id).grainId;
 
 % remove all zeros
 grain_id(grain_id==0) = [];
