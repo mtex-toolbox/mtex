@@ -1,4 +1,4 @@
-function [ebsd,alpha] = smooth(ebsd,alpha)
+function [ebsd,alpha] = smooth(ebsd,varargin)
 % smooth spatial EBSD 
 %
 % Input
@@ -74,8 +74,6 @@ end
 
 % ---------------------------------
 
-if nargin < 2, alpha = []; end
-
 % generate a regular grid for the ebsd data
 % set grainId correctly
 % set orientation to NaN
@@ -99,6 +97,8 @@ progress(0,length(grainIds));
 
 % and sort it first
 grainIds = [m,grainIds(grainIds~=m)];
+
+alpha = get_option(varargin,'alpha',[]);
 
 for id = grainIds
 
@@ -128,10 +128,19 @@ for id = grainIds
   qgrid(indLocal) = q;
 
   % perform local smoothing
-  %qgrid = splineSmoothing(qgrid,alpha);
-  qgrid = medianFilter(qgrid,alpha);
-  %qgrid = meanFilter(qgrid);
-  
+  switch get_option(varargin,'filter','spline')
+    case 'spline'
+      [qgrid,alpha] = splineSmoothing(qgrid,alpha);
+    case 'median'
+      qgrid = medianFilter(qgrid);
+    case 'mean'
+      qgrid = meanFilter(qgrid);
+    case 'halfquad'
+      qgrid = halfQuadraticSmoothing(qgrid,alpha);
+    otherwise 
+      error('Unknown filter!')
+  end
+    
   % rotate back
   rot(ind) = quaternion(qmean) * qgrid(indLocal);
     
