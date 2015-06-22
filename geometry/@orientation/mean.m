@@ -32,7 +32,7 @@ if length(o) == 1
 end
 
 % first approximation
-q_mean = get_option(varargin,'q0',quaternion(o,1));
+q_mean = get_option(varargin,'q0',quaternion(o,find(~isnan(o.a),1)));
 old_mean = [];
 q = quaternion(o);
 
