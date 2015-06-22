@@ -14,7 +14,7 @@ function omega = angle(o1,o2,varargin)
 if nargin == 1
   
   % do not care about inversion
-  o1.i = o1.i | ~o1.i;
+  o1.i = o1.i & ~o1.i;
   
   omega = real(2*acos(dot(o1,idquaternion,varargin{:})));
   
