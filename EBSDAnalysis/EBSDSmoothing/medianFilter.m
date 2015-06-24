@@ -1,47 +1,69 @@
-function [q,alpha] = medianFilter(q,alpha)
-% smooth spatial orientation data
-%
-% Input
-%  q     - @quaternion
-%  alpha - smoothing parameter
+classdef medianFilter2 < EBSDFilter
+  
+  properties
+    numNeighbours % number of neigbours to consider (default 1)
+  end
+  
+  methods
 
-% make q a bit larger
-nanRow = nanquaternion(1,size(q,2)+2);
-nanCol = nanquaternion(size(q,1),1);
-
-q = [nanRow;[nanCol,q,nanCol];nanRow];
-
-meanDist = zeros([size(q)-2,3,3]);
-
-for i = 1:3
-  for j = 1:3
+    function F = medianFilter2(varargin)
+      %
+      
+      F.numNeighbours = get_option(varargin,'neighbours',1);
+            
+    end
     
-    qq = q(i+(0:end-3),j+(0:end-3));
-    meanDist(:,:,i,j) = nanmean(cat(3,...
-      angle(qq,q(1:end-2,1:end-2)), ...
-      angle(qq,q(1:end-2,2:end-1)), ...
-      angle(qq,q(1:end-2,3:end-0)), ...
-      angle(qq,q(2:end-1,1:end-2)), ...
-      angle(qq,q(2:end-1,2:end-1)), ...
-      angle(qq,q(2:end-1,3:end-0)), ...
-      angle(qq,q(3:end-0,1:end-2)), ...
-      angle(qq,q(3:end-0,2:end-1)), ...
-      angle(qq,q(3:end-0,3:end-0))),3);
-    
+    function q = smooth(F,q)
+      
+      % some shortcuts
+      nn = F.numNeighbours;
+      dn = 1+2*nn;
+      
+      % the mean distance from every candiate to all others
+      meanDist = zeros([size(q),2*F.numNeighbours+1,2*F.numNeighbours+1]);
+      
+      % make q a bit larger
+      q = [nanquaternion(F.numNeighbours,size(q,2)+2*F.numNeighbours);...
+        [nanquaternion(size(q,1),F.numNeighbours),...
+        q,nanquaternion(size(q,1),F.numNeighbours)];...
+        nanquaternion(F.numNeighbours,size(q,2)+2*F.numNeighbours)];
+
+      for i1 = 1:dn
+        for j1 = 1:dn
+          
+          % the candidate
+          qq = q(i1+(0:end-dn),j1+(0:end-dn));
+          count = zeros(size(qq));
+          
+          % compute the distance from the candidate to all other candidates
+          for i2 = 1:dn
+            for j2 = 1:dn
+              
+              omega = angle(qq,q(i2+(0:end-dn),j2+(0:end-dn)));          
+              [meanDist(:,:,i1,j1),count] = nanplus(meanDist(:,:,i1,j1),omega,count);
+              
+            end
+          end
+          
+          meanDist(:,:,i1,j1) = meanDist(:,:,i1,j1) ./ count;
+                  
+        end
+      end
+
+      % find median
+      meanDist = reshape(meanDist,[size(qq),(2*F.numNeighbours+1)^2,]);
+      [~,id] = min(meanDist,[],3);
+
+      [i,j] = ind2sub(size(qq),1:length(qq));
+      [ii,jj] = ind2sub([2*F.numNeighbours+1 2*F.numNeighbours+1],id);
+
+      ii(isnan(q.a(1+nn:end-nn,1+nn:end-nn))) = nn+1;
+      jj(isnan(q.a(1+nn:end-nn,1+nn:end-nn))) = nn+1;
+      ind = sub2ind(size(q),i(:)+ii(:)-1,j(:)+jj(:)-1);
+
+      % switch to median
+      q = q(ind);
+      
+    end
   end
 end
-
-% find median
-meanDist = reshape(meanDist,[size(qq),9]);
-[~,id] = min(meanDist,[],3);
-
-[i,j] = ind2sub(size(qq),1:prod(size(qq)));
-[ii,jj] = ind2sub([3 3],id);
-
-ii(isnan(q.a(2:end-1,2:end-1))) = 2;
-jj(isnan(q.a(2:end-1,2:end-1))) = 2;
-ind = sub2ind(size(q),i(:)+ii(:)-1,j(:)+jj(:)-1);
-
-% store median
-q = q(ind);
-
