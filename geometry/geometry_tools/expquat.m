@@ -1,8 +1,9 @@
-function q = expquat(tq)
+function q = expquat(tq,q)
 % matrix exponential to convert skew symmetric matrices into quaternions
 %
 % Syntax
-%   q = expquat(mat)
+%   q = expquat(tq,q)
+%   q = expquat(tq)
 %
 % Input
 %  a12,a13,a23 - the matrix entries of the skew symmetric matrix
@@ -16,10 +17,19 @@ function q = expquat(tq)
 %
 % Description
 
-tq = reshape(tq,[],3);
-omega = sqrt(sum(tq.^2,2));
-a = cos(omega./2);
-b = tq(:,1) .* sin(omega./2) ./ omega;
-c = tq(:,2) .* sin(omega./2) ./ omega;
-d = tq(:,3) .* sin(omega./2) ./ omega; 
-q =  quaternion(a,b,c,d);
+
+if isnumeric(tq), tq = vector3d(reshape(tq,[],3).').'; end
+
+omega = norm(tq);
+mask = omega ~=0;
+tq(mask) = tq(mask) ./ omega(mask);
+tq(~mask)=0*tq(~mask);
+
+if nargin == 2
+  q =  q .* quaternion(cos(omega/2),sin(omega/2).*tq);
+else
+  q = quaternion(cos(omega/2),sin(omega/2).*tq);
+end
+
+
+end

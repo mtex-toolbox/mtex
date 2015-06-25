@@ -12,9 +12,8 @@ classdef halfQuadraticFilter < EBSDFilter
     function q = smooth(F,q)           
       % Johannes Persch 09.06.2015
       
-      q = sign(q.a) .* q;
-      M = qSO3;
-
+      %q = sign(q.a) .* q;
+      
       static_mask = isnan(q.a); % logical mask with true for stationary pixels
       
       dims =size(q);
@@ -88,18 +87,18 @@ classdef halfQuadraticFilter < EBSDFilter
       entrance = true;
       i =0;
       
-      while max(max(M.dist(u_old,u)))>F.tol || entrance
-        if mod(i,50)==0
-          disp(['Step length at step ',num2str(i),' is ',num2str(max(max(M.dist(u_old,u))))])
-        end
+      while max(max(angle(u_old,u)))>F.tol || entrance
+        %if mod(i,50)==0
+        %  disp(['Step length at step ',num2str(i),' is ',num2str(max(max(angle(u_old,u))))])
+        %end
         
         u_old = u;
         entrance = false;
         i = i+1;
-        wx = F.weight(M.dist(u,ux),F.eps);
-        wy = F.weight(M.dist(u,uy),F.eps);
-        wxd =F.weight(M.dist(u,uxd),F.eps);
-        wyd =F.weight(M.dist(u,uyd),F.eps);
+        wx = F.weight(angle(u,ux),F.eps);
+        wy = F.weight(angle(u,uy),F.eps);
+        wxd =F.weight(angle(u,uxd),F.eps);
+        wyd =F.weight(angle(u,uyd),F.eps);
         %Nullen streichen
         wx(maskx_zero)=0;
         wy(masky_zero)=0;
@@ -120,15 +119,15 @@ classdef halfQuadraticFilter < EBSDFilter
         wyd = permute(wyd,[3:2+length(mani_dims),1,2]);
         q(mask)=u(mask);
         %berechne gradient
-        grad_u = M.log(u,q) + F.alpha(1)*wx.*M.log(u,ux) + ...
-          F.alpha(2)*wy.*M.log(u,uy)+F.alpha(1)*wxd.*M.log(u,uxd) + ...
-          F.alpha(2)*wyd.*M.log(u,uyd);
+        grad_u = log(u,q) + F.alpha(1)*wx.*log(u,ux) + ...
+          F.alpha(2)*wy.*log(u,uy)+F.alpha(1)*wxd.*log(u,uxd) + ...
+          F.alpha(2)*wyd.*log(u,uyd);
         grad_u(static_mask) = vector3d([0,0,0]);
         mult  = min(1./(~mask+F.alpha(1)*(wx+wxd)+F.alpha(2)*(wy+wyd)),1);
         near_newton = mult.*grad_u;
         near_newton(static_mask) = vector3d([0,0,0]);
         %gehe einen Schritt
-        u = M.exp(u,near_newton);
+        u = expquat(near_newton,u);
         col_u = reshape(u,[prod(mani_dims),n_1,n_2]);
         ux = col_u;
         uy = col_u;
@@ -149,7 +148,7 @@ classdef halfQuadraticFilter < EBSDFilter
         uyd = reshape(uyd,dims);
       end
       
-      disp(['Stopped after ', num2str(i) ,' iterations with last step length ',num2str(max(max(M.dist(u_old,u))))])
+      %disp(['Stopped after ', num2str(i) ,' iterations with last step length ',num2str(max(max(angle(u_old,u))))])
       q=u;
       
       function u = setzen_mit_karcher(U)

@@ -1,4 +1,4 @@
-classdef medianFilter2 < EBSDFilter
+classdef medianFilter < EBSDFilter
   
   properties
     numNeighbours % number of neigbours to consider (default 1)
@@ -6,7 +6,7 @@ classdef medianFilter2 < EBSDFilter
   
   methods
 
-    function F = medianFilter2(varargin)
+    function F = medianFilter(varargin)
       %
       
       F.numNeighbours = get_option(varargin,'neighbours',1);
@@ -28,6 +28,8 @@ classdef medianFilter2 < EBSDFilter
         q,nanquaternion(size(q,1),F.numNeighbours)];...
         nanquaternion(F.numNeighbours,size(q,2)+2*F.numNeighbours)];
 
+      % compute for any candiate the mean distance to all other points
+      % the first two loops are for the candidate
       for i1 = 1:dn
         for j1 = 1:dn
           
@@ -35,7 +37,7 @@ classdef medianFilter2 < EBSDFilter
           qq = q(i1+(0:end-dn),j1+(0:end-dn));
           count = zeros(size(qq));
           
-          % compute the distance from the candidate to all other candidates
+          % compute the distance from the candidate to all other candidates          
           for i2 = 1:dn
             for j2 = 1:dn
               
@@ -57,8 +59,12 @@ classdef medianFilter2 < EBSDFilter
       [i,j] = ind2sub(size(qq),1:length(qq));
       [ii,jj] = ind2sub([2*F.numNeighbours+1 2*F.numNeighbours+1],id);
 
+      % in regions where everything is nan take simply the center point
+      % we may later weaken this to allow inpainting
       ii(isnan(q.a(1+nn:end-nn,1+nn:end-nn))) = nn+1;
       jj(isnan(q.a(1+nn:end-nn,1+nn:end-nn))) = nn+1;
+      
+      % compute the final indece to the median
       ind = sub2ind(size(q),i(:)+ii(:)-1,j(:)+jj(:)-1);
 
       % switch to median

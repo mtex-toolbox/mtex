@@ -1,4 +1,6 @@
 classdef splineFilter < EBSDFilter
+  % smoothes quaternions by projecting them into tangential space and
+  % performing there smoothing spline approximation
   
   properties
     alpha = [] % smoothing parameter
@@ -29,7 +31,7 @@ classdef splineFilter < EBSDFilter
       end
       
       % project back to orientation space
-      q = reshape(expquat([tq{:}]),size(q));
+      q = reshape(expquat(vector3d(tq{:})),size(q));
     end
   end
 end

@@ -1,4 +1,4 @@
-classdef meanFilter2 < EBSDFilter
+classdef meanFilter < EBSDFilter
   % implements a convolution filter for quaternion
   
   properties
@@ -7,7 +7,7 @@ classdef meanFilter2 < EBSDFilter
   
   methods
 
-    function F = meanFilter2(varargin)      
+    function F = meanFilter(varargin)      
       F.weights = get_option(varargin,'weights',ones(3));
       
       %[x,y] = meshgrid(-2:2)

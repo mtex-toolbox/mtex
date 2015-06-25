@@ -1,4 +1,4 @@
-function tq = log(q)
+function tq = log(q,u)
 % quaternion to direction cosine matrix conversion
 % converts direction cosine matrix to quaternion
 %
@@ -14,12 +14,15 @@ function tq = log(q)
 % See also
 % mat2quat Euler axis2quat hr2quat
 
-ind = q.a < 0;
-q.a(ind) = -q.a(ind);
-q.b(ind) = -q.b(ind);
-q.c(ind) = -q.c(ind);
-q.d(ind) = -q.d(ind);
+if nargin == 2
+  tq = reshape(vector3d(log(q'.*u)'),size(q));
+  return
+end
 
+q = q .* sign(q.a);
 
-omega = 2 * acos(q.a) ./ sqrt(1-q.a.^2);
+omega = 2 * acos(q.a);
+denum = sqrt(1-q.a.^2);
+omega(denum ~= 0) =  omega(denum ~= 0) ./ denum(denum ~= 0);
+
 tq = [omega(:) .* q.b(:),omega(:) .* q.c(:),omega(:) .* q.d(:)];
