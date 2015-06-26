@@ -45,6 +45,8 @@ while iter < 5 && (isempty(old_mean) || (abs(dot(q_mean,old_mean))<0.999))
   iter = iter + 1;
 end
 
+q = reshape(q,size(o));
+
 o.a = q_mean.a;
 o.b = q_mean.b;
 o.c = q_mean.c;
