@@ -16,7 +16,7 @@
 %
 %   mori = inv(ori1) * ori2;
 %   mori.antipodal = true;
-%
+%   
 %   mdf = calcMDF(odf1,odf2,'antipodal')
 %
 % Antipodal symmetry effects the asymetric region in orientation space as
@@ -56,6 +56,21 @@
 % |plotAxisDistribution| and |plotAngleDistribution| works in MTEX 4.1 for
 % any combination of crystal symmetries.
 %
+% The following syntax is obsolete
+%
+%   plotAxisDistribution(grains.boundary('phase1','phase2'))
+%   plotAngleDistribution(grains.boundary('phase1','phase2'))
+%   plotAngleDistribution(ebsd)
+%
+% As replacement use the more verbose syntax
+%
+%   plotAxisDistribution(grains.boundary('phase1','phase2').misorientation)
+%   plotAngleDistribution(grains.boundary('phase1','phase2').misorientation)
+%   
+%   mori = calcMisorientation(ebsd('phase1'),ebsd('phase2'))
+%   plotAngleDistribution(mori)
+%   plotAxisDistribution(mori)
+%
 % *Axis angle plots*
 %
 % (Mis)Orientation, ODFs and MDFs can now be plotted in axis angles
@@ -75,6 +90,7 @@
 % misorientations the default plot is |scatter|.
 %
 % *Other improvements since MTEX 4.0.0*
+%
 % During the minor revisions of MTEX also several minor improvments has
 % been added which are summarized below
 %
@@ -99,7 +115,7 @@
 % * new function |intersect| to compute intersections between grain
 % boundary segments an a line
 %
-%  [x,y] = grains.boundary.intersect(xy1,xy2);
+%   [x,y] = grains.boundary.intersect(xy1,xy2);
 %
 % * option for plotting angle distributions in percent
 %
@@ -403,7 +419,7 @@
 % * implementation: Andrew Loeb
 % * syntax:
 %
-%    grains = calcGrains(ebsd,'FMC')
+%   grains = calcGrains(ebsd,'FMC')
 %
 % *Misc changes*
 %
