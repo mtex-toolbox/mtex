@@ -297,7 +297,7 @@ assert(isnumeric(OPTIONS.MaxIter) && isscalar(OPTIONS.MaxIter) &&...
 %---
 % "Tolerance on smoothed output" criterion
 if ~ismember('TolZ',OptionNames)
-    OPTIONS.TolZ = 1e-3; % default value for TolZ
+    OPTIONS.TolZ = 1e-2; % default value for TolZ
 end
 assert(isnumeric(OPTIONS.TolZ) && isscalar(OPTIONS.TolZ) &&...
     OPTIONS.TolZ>0 && OPTIONS.TolZ<1,'OPTIONS.TolZ must be in ]0,1[')
@@ -446,7 +446,7 @@ while RobustIterativeProcess
     aow = sum(Wtot(:))/noe; % 0 < aow <= 1
     %---
     while tol>OPTIONS.TolZ && nit<OPTIONS.MaxIter
-        nit = nit+1;
+      nit = nit+1;
         for i = 1:ny
             DCTy{i} = dctn(Wtot.*(y{i}-z{i})+z{i});
         end
