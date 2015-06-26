@@ -77,16 +77,7 @@ for i = 1:numel(sP)
     cdata = varargin{1};
     if numel(cdata) == length(v)
       cdata = reshape(cdata,[],1);
-      
-      % scale the data
-      [cdata,~,minData,maxData] = scaleData(cdata,varargin{:});
-            
-      % add annotations for min and max
-      if check_option(varargin,'minmax')
-        set(sP(i).TL,'string',{'Max:',xnum2str(maxData)});
-        set(sP(i).BL,'string',{'Min:',xnum2str(minData)});
-      end
-      
+      sP(i).updateMinMax(cdata);
     else
       cdata = reshape(cdata,[],3);
     end

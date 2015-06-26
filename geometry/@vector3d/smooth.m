@@ -35,6 +35,8 @@ for j = 1:numel(sP)
     
   end
 
+  sP(j).updateMinMax(cdata);
+  
   % interpolate if no regular grid was given
   if ~isOption(S2G,'plot') || ~S2G.opt.plot
     
@@ -90,12 +92,6 @@ for j = 1:numel(sP)
 
   % colormap
   colormap(sP(j).ax,getMTEXpref('defaultColorMap'));
-
-  % add annotations
-  if check_option(varargin,'minmax')
-    varargin = [{'BL',{'Min:',xnum2str(minData,0.2)},...
-      'TL',{'Max:',xnum2str(maxData,0.2)}} varargin]; %#ok<AGROW>
-  end
 
   % bring grid in front
   sP(j).doGridInFront;

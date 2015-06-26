@@ -1,4 +1,4 @@
-function [o, lambda, eigv, kappa, q]  = mean(o,varargin)
+function [o, q, lambda, eigv, kappa]  = mean(o,varargin)
 % mean of a list of orientations, principle axes and moments of inertia
 %
 % Syntax
@@ -24,7 +24,6 @@ if length(o) == 1
   
   if nargout > 1
     eigv = eye(4);
-    lambda = [1 0 0 0]';
     kappa = [Inf 0 0 0]';
     q = quaternion(o);
   end
@@ -32,7 +31,7 @@ if length(o) == 1
 end
 
 % first approximation
-q_mean = get_option(varargin,'q0',quaternion(o,1));
+q_mean = get_option(varargin,'q0',quaternion(o,find(~isnan(o.a),1)));
 old_mean = [];
 q = quaternion(o);
 
@@ -45,6 +44,8 @@ while iter < 5 && (isempty(old_mean) || (abs(dot(q_mean,old_mean))<0.999))
   iter = iter + 1;
 end
 
+q = reshape(q,size(o));
+
 o.a = q_mean.a;
 o.b = q_mean.b;
 o.c = q_mean.c;
@@ -53,6 +54,3 @@ o.i = false;
 
 lambda = diag(lambda);
 
-if nargout > 3
-  kappa = evalkappa(lambda,varargin{:});
-end

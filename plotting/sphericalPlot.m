@@ -13,6 +13,9 @@ classdef sphericalPlot < handle
     TR       %
     BL       %
     BR       %
+    minData = 0
+    maxData = 0
+    dispMinMax = false
   end
   
   properties (Dependent = true)
@@ -35,6 +38,7 @@ classdef sphericalPlot < handle
       sP.ax = ax;
       sP.parent = get(ax,'parent');
       sP.proj = proj;
+      sP.dispMinMax = check_option(varargin,'minmax');
       setappdata(ax,'sphericalPlot',sP);
       
       % store hold status
@@ -88,6 +92,21 @@ classdef sphericalPlot < handle
       
     end
 
+    function updateMinMax(sP,data)
+      if nargin == 2
+        sP.minData = nanmin([sP.minData, nanmin(data(:))]);
+        sP.maxData = nanmax([sP.maxData, nanmax(data(:))]);
+      end
+      
+      if sP.dispMinMax
+        set(sP.BL,'string',{'Max:',xnum2str(sP.maxData)},'visible','on');
+        set(sP.TL,'string',{'Min:',xnum2str(sP.minData)},'visible','on');
+      else
+        set(sP.BL,'visible','off');
+        set(sP.TL,'visible','off');
+      end
+    end
+    
     function plotAnnotate(sP,varargin)
       % tl tr bl br
     

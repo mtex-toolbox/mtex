@@ -15,7 +15,7 @@ function varargout = plot(v,varargin)
 
 % extract plot type
 plotTypes = {'contour','contourf','smooth','scatter','text','quiver',...
-  'line','plane','circle','surf','pcolor','custom','PatchPatala','3d','scatter3d'};
+  'line','plane','circle','surf','pcolor','custom','3d','scatter3d'};
 plotType = extract_option(varargin,plotTypes);
 if isempty_cell(plotType)
   plotType = 'scatter';
@@ -54,11 +54,7 @@ switch lower(plotType)
   case 'surf'
     
     [varargout{1:nargout}] = v.surf(varargin{:});
-  
-  case 'patchpatala'
-        
-    [varargout{1:nargout}] = v.patchPatala(varargin{:});
-        
+            
   case 'contourf'
     
     [varargout{1:nargout}] = v.contourf(varargin{:});

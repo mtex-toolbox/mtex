@@ -175,6 +175,8 @@ classdef HSVOrientationMapping < orientationMapping
       % compute rgb values
       rgb = ar2rgb(mod(v.rho./ 2 ./ pi,1),v.theta./pi,get_option(varargin,'grayValue',1));
 
+      rgb(isnan(h.x),:) = NaN;
+      
     end
   end
 end

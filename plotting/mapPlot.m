@@ -58,7 +58,9 @@ classdef mapPlot < handle
       
       % add a micron bar
       mP.micronBar = scaleBar(mP,get_option(varargin,'scanUnit','um'));
-      
+      onOff = {'off','on'};
+      mP.micronBar.visible = onOff{get_option(varargin,'micronbar',true)};
+            
     end
         
   end

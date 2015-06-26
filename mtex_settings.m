@@ -170,11 +170,6 @@ degree_char = native2unicode([194 176],'UTF-8');
 
 setMTEXpref('degreeChar',degree_char);
 
-%%
-
-setMTEXpref('TSPSolverPath',fullfile(mtex_path,'c','TSPSolver'))
-
-
 %% debugging
 % comment out to turn on debugging
 
