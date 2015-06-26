@@ -30,9 +30,6 @@ function [ebsd,filter] = smooth(ebsd,varargin)
 %   hold off
 
 
-% some interpolation
-F = TriScatteredInterp([ebsd.prop.x(:),ebsd.prop.y(:)],(1:length(ebsd.prop.x)).','nearest');
-
 % generate regular grid
 ext = ebsd.extend;
 dx = max(ebsd.unitCell(:,1))-min(ebsd.unitCell(:,1));
@@ -45,13 +42,43 @@ sGrid = size(xgrid);
 ind = sub2ind(sGrid, 1 + round((ebsd.prop.y - ext(3))/dy), ...
   1 + round((ebsd.prop.x - ext(1))/dx));
 
-idOld = fix(F(xgrid(:),ygrid(:)));
+% some interpolation
+if check_option(varargin,'fill')
+  F = TriScatteredInterp([ebsd.prop.x(:),ebsd.prop.y(:)],(1:length(ebsd.prop.x)).','nearest'); %#ok<DTRIINT>
+  idOld = fix(F(xgrid(:),ygrid(:)));
+  
+  ebsd.phaseId = reshape(ebsd.phaseId(idOld),[],1);
+  
+  if isfield(ebsd.prop,'grainId')
+    grainId = reshape(ebsd.prop.grainId(idOld),sGrid);
+    ebsd.prop.grainId = grainId(:);
+  else
+    grainId = ebsd.phaseId(idOld);
+  end
+else
+  % set phaseId to notIndexed at all empty grid points
+  phaseId = ones(sGrid);
+  phaseId(ind) = ebsd.phaseId;
+  ebsd.phaseId = phaseId(:);
+  
+  if isfield(ebsd.prop,'grainId')
+    grainId = zeros(sGrid);
+    grainId(ind) = ebsd.grainId;
+    ebsd.prop.grainId = grainId(:);
+  else
+    grainId = phaseId;
+  end
+  
+  clear phaseId  
+end
+
+% update spatial coordiantes
 ebsd.prop.x = xgrid(:);
 ebsd.prop.y = ygrid(:);
 ebsd.id = (1:numel(xgrid)).';
 clear xgrid ygrid
 
-% the rotations
+% update rotations
 a = nan(sGrid); b = a; c = a; d = a;
 a(ind) = ebsd.rotations.a;
 b(ind) = ebsd.rotations.b;
@@ -60,36 +87,12 @@ d(ind) = ebsd.rotations.d;
 ebsd.rotations = reshape(rotation(quaternion(a,b,c,d)),[],1);
 clear a b c d
 
-% the grainIds
-if isprop(ebsd,'grainId')
-  %grainId(ind) = ebsd.grainId;
-  %ebsd.prop.grainId = grainId(:);
-  grainId = reshape(ebsd.prop.grainId(idOld),sGrid);
-  ebsd.prop.grainId = grainId(:);
-else
-  grainId = zeros(sGrid);
-end
-
-
-% the phaseId
-%phaseId = ones(numel(ebsd.id),1);
-%phaseId(ind) = ebsd.phaseId;
-%ebsd.phaseId = phaseId;
-ebsd.phaseId = reshape(ebsd.phaseId(idOld),[],1);
-clear phaseId
-
 % delete all other properties
 for fn = fieldnames(ebsd.prop).'
   if any(strcmp(char(fn),{'x','y','z','grainId'})), continue;end
   ebsd.prop = rmfield(ebsd.prop,fn);  
 end
 
-% ---------------------------------
-
-% generate a regular grid for the ebsd data
-% set grainId correctly
-% set orientation to NaN
-%ebsd = fill(ebsd);
 
 % extract data for speed reasons
 rot = reshape(ebsd.rotations,sGrid);
@@ -110,10 +113,10 @@ progress(0,length(grainIds));
 [~,m] = max(histc(grainId(:),0.5:1:max(grainId)+0.5));
 
 % and sort it first
-phaseIds = [phaseIds(grainIds==m),phaseIds(grainIds~=m)];
-grainIds = [m,grainIds(grainIds~=m)];
-
-alpha = get_option(varargin,'alpha',[]);
+if m>1
+  phaseIds = [phaseIds(grainIds==m),phaseIds(grainIds~=m)];
+  grainIds = [m,grainIds(grainIds~=m)];
+end
 
 filter = getClass(varargin,'EBSDFilter',splineFilter);
 
@@ -124,6 +127,7 @@ for id = 1:length(grainIds)
   % the values to be smoothed
   ind = grainId == grainIds(id); 
   
+  if ~any(ind(:)), continue; end
   % check all the vertices are inside the grain
   % checkNaN = ind & isnan(rot.a);
           
@@ -139,20 +143,15 @@ for id = 1:length(grainIds)
   
   %phaseId = ebsd.phaseId(ind);
   %if ischar(CSList{phaseId(1)}), continue; end
-     
-  ori = orientation(rot(ind),CSList{phaseIds(id)});
   
-  % rotate such that mean is in identity
-  [qmean,~,~,~,q] = mean(ori);
-  q = inv(qmean)*q; %#ok<MINV>
-  qgrid = nanquaternion(nRow,nCol);
-  qgrid(indLocal) = q;
-
-  % perform local smoothing
-  qgrid = filter.smooth(qgrid);
+  ori = orientation(nanquaternion(nRow,nCol),CSList{phaseIds(id)});
+  ori(indLocal) = rot(ind);
+    
+  % perform smoothing
+  ori = filter.smooth(ori);
       
   % rotate back
-  rot(ind) = quaternion(qmean) * qgrid(indLocal);
+  rot(ind) = ori(indLocal);
     
 end
 

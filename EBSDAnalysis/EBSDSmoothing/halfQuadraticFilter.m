@@ -9,10 +9,11 @@ classdef halfQuadraticFilter < EBSDFilter
 
   methods
     
-    function q = smooth(F,q)           
+    function ori = smooth(F,ori)           
       % Johannes Persch 09.06.2015
       
-      %q = sign(q.a) .* q;
+      % this might be done better
+      [~,q] = mean(ori);
       
       static_mask = isnan(q.a); % logical mask with true for stationary pixels
       
@@ -119,9 +120,9 @@ classdef halfQuadraticFilter < EBSDFilter
         wyd = permute(wyd,[3:2+length(mani_dims),1,2]);
         q(mask)=u(mask);
         %berechne gradient
-        grad_u = log(u,q) + F.alpha(1)*wx.*log(u,ux) + ...
-          F.alpha(2)*wy.*log(u,uy)+F.alpha(1)*wxd.*log(u,uxd) + ...
-          F.alpha(2)*wyd.*log(u,uyd);
+        grad_u = log(q,u) + F.alpha(1)*wx.*log(ux,u) + ...
+          F.alpha(2)*wy.*log(uy,u)+F.alpha(1)*wxd.*log(uxd,u) + ...
+          F.alpha(2)*wyd.*log(uyd,u);
         grad_u(static_mask) = vector3d([0,0,0]);
         mult  = min(1./(~mask+F.alpha(1)*(wx+wxd)+F.alpha(2)*(wy+wyd)),1);
         near_newton = mult.*grad_u;
@@ -149,7 +150,7 @@ classdef halfQuadraticFilter < EBSDFilter
       end
       
       %disp(['Stopped after ', num2str(i) ,' iterations with last step length ',num2str(max(max(angle(u_old,u))))])
-      q=u;
+      ori = orientation(u,ori.CS,ori.SS);
       
       function u = setzen_mit_karcher(U)
         %Find the initial values for the first layer of U as means of the

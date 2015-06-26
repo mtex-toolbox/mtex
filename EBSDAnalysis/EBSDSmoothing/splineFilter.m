@@ -14,27 +14,18 @@ classdef splineFilter < EBSDFilter
       if nargin > 1, F.robust = robust; end
     end
     
-    function q = smooth(F,q)
-      
-      % project to tangential space
-      tq = log(q);
+    function ori = smooth(F,ori)
 
-      tq1 = reshape(tq(:,1),size(q));
-      tq2 = reshape(tq(:,2),size(q));
-      tq3 = reshape(tq(:,3),size(q));
+      % project to tangential space
+      [qmean,q] = mean(ori);
+      tq = log(q,quaternion(qmean));      
 
       % perform smoothing
-      if F.robust
-        [tq,F.alpha] = smoothn({tq1,tq2,tq3},F.alpha,'robust');
-      else
-        [tq,F.alpha] = smoothn({tq1,tq2,tq3},F.alpha);
-      end
-      
+      if F.robust, rob = {'robust'}; else rob = {}; end
+      [tq,F.alpha] = smoothn({tq.x,tq.y,tq.z},F.alpha,rob{:});
+            
       % project back to orientation space
-      q = reshape(expquat(vector3d(tq{:})),size(q));
+      ori = orientation(expquat(vector3d(tq{:}),quaternion(qmean)),ori.CS,ori.SS);
     end
   end
 end
-  
-  
-  

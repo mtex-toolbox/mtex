@@ -13,7 +13,9 @@ classdef medianFilter < EBSDFilter
             
     end
     
-    function q = smooth(F,q)
+    function ori = smooth(F,ori)
+      
+      [~,q] = mean(ori);
       
       % some shortcuts
       nn = F.numNeighbours;
@@ -54,21 +56,21 @@ classdef medianFilter < EBSDFilter
 
       % find median
       meanDist = reshape(meanDist,[size(qq),(2*F.numNeighbours+1)^2,]);
-      [~,id] = min(meanDist,[],3);
+      [mm,id] = min(meanDist,[],3);
 
       [i,j] = ind2sub(size(qq),1:length(qq));
       [ii,jj] = ind2sub([2*F.numNeighbours+1 2*F.numNeighbours+1],id);
 
       % in regions where everything is nan take simply the center point
       % we may later weaken this to allow inpainting
-      ii(isnan(q.a(1+nn:end-nn,1+nn:end-nn))) = nn+1;
-      jj(isnan(q.a(1+nn:end-nn,1+nn:end-nn))) = nn+1;
+      ii(isnan(mm)) = nn+1;
+      jj(isnan(mm)) = nn+1;
       
       % compute the final indece to the median
       ind = sub2ind(size(q),i(:)+ii(:)-1,j(:)+jj(:)-1);
 
       % switch to median
-      q = q(ind);
+      ori(1:length(ori)) = q(ind);
       
     end
   end

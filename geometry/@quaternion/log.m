@@ -15,7 +15,7 @@ function tq = log(q,u)
 % mat2quat Euler axis2quat hr2quat
 
 if nargin == 2
-  tq = reshape(vector3d(log(q'.*u)'),size(q));
+  tq = reshape(vector3d(log(u'.*q)'),size(q));
   return
 end
 

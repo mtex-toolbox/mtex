@@ -18,8 +18,12 @@ classdef meanFilter < EBSDFilter
       imagesc(F.weights)
     end
     
-    function q = smooth(F,q)
+    function ori = smooth(F,ori)
       
+      % map to mean
+      [qmean,q] = mean(ori);
+      q = reshape(inv(qmean)*q,size(ori)); %#ok<MINV>
+            
       % prepare the result
       tqMean = zeros([size(q),3]);
       
@@ -49,9 +53,11 @@ classdef meanFilter < EBSDFilter
       end
              
       tqMean = reshape(tqMean ./ count,[],3);
-      % map back to orientation space
-      q = reshape(expquat(tqMean),size(q) - [ncol,nrow]);
       
+      % map back to orientation space
+      q = quaternion(qmean) * reshape(expquat(tqMean),size(q) - [ncol,nrow]);
+      ori.a = q.a; ori.b = q.b; ori.c = q.c; ori.d = q.d;
+            
     end
   end
 end
