@@ -28,7 +28,8 @@ classdef orientationMapping < handle
         oM.CS2 = varargin{1};
       end
       
-      if oM.CS1.id == oM.CS1.Laue.id
+      if oM.CS1.id == oM.CS1.Laue.id && ~getMTEXpref('generatingHelpMode')
+
         disp(' ')
         disp('  Hint: You might want to use the point group')
         disp(['  ' char(oM.CS1.properGroup) ' for colorcoding!']);

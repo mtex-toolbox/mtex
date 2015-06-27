@@ -35,11 +35,13 @@ if nargin>1 && isa(varargin{1},'orientation')
   oM = ipdfHSVOrientationMapping(varargin{1});
   varargin{1} = oM.orientation2color(varargin{1});
   
-  disp('  I''m going to colorize the orientation data with the ');
-  disp('  standard MTEX colorkey. To view the colorkey do:');
+  if ~getMTEXpref('generatingHelpMode')
+    disp('  I''m going to colorize the orientation data with the ');
+    disp('  standard MTEX colorkey. To view the colorkey do:');
     disp(' ');
-  disp('  oM = ipdfHSVOrientationMapping(ori_variable_name)')
-  disp('  plot(oM)')
+    disp('  oM = ipdfHSVOrientationMapping(ori_variable_name)')
+    disp('  plot(oM)')
+  end
 end
 
 
