@@ -42,9 +42,9 @@ plotPDF(odf,[Miller(1,0,-1,0,cs),Miller(0,0,0,1,cs)])
 
 mtexFig = mtexFigure;
 
-plotPDF(odf,Miller(1,0,-1,1,cs),'TL','upper','parent',mtexFig.nextAxis)
+plotPDF(odf,Miller(1,0,-1,1,cs),'TR','upper','parent',mtexFig.nextAxis)
 
-plotPDF(odf,Miller(1,0,-1,1,cs),'TL','lower','parent',mtexFig.nextAxis)
+plotPDF(odf,Miller(1,0,-1,1,cs),'TR','lower','parent',mtexFig.nextAxis)
 
 mtexFig.drawNow
 
@@ -63,9 +63,9 @@ mtexFig.drawNow
 
 mtexFig = mtexFigure;
 
-plotPDF(odf,Miller(1,0,-1,1,cs),'TL','upper','antipodal','parent',mtexFig.nextAxis)
+plotPDF(odf,Miller(1,0,-1,1,cs),'TR','upper','antipodal','parent',mtexFig.nextAxis)
 
-plotPDF(odf,Miller(1,0,-1,1,cs),'TL','lower','antipodal','parent',mtexFig.nextAxis)
+plotPDF(odf,Miller(1,0,-1,1,cs),'TR','lower','antipodal','parent',mtexFig.nextAxis)
 
 mtexFig.drawNow
 
