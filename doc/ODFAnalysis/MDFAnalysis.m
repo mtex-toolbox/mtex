@@ -76,7 +76,7 @@ plotPDF(mdf,Miller(1,0,0,ebsd('Fo').CS))
 % uncorrelated MDF.
 
 close all
-plotAngleDistribution(grains.boundary('fo','en'))
+plotAngleDistribution(grains.boundary('fo','en').misorientation)
 
 hold on
 
