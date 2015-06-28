@@ -5,7 +5,30 @@
 %
 % MTEX 4.1 introduces new possibilities to analysis of misorientations. For
 % the first time it covers all geometric aspects of misorientations between
-% arbitrary crystal symmetries. 
+% arbitrary crystal symmetries. Furthermore, MTEX 4.1 introduces filters to
+% smooth EBSD data.
+%
+% *Smoothing of EBSD Data*
+% Smoothing of EBSD data might be necesarry if the orientation data are
+% corrupted by noise which influences the estimation of orientation
+% dependent properties like KAM or GND. The general syntax for smoothing
+% EBSD data is 
+%
+%   ebsd = smooth(ebsd)
+%
+% This applies the splineFilte> to the orientation data. Beside the spline
+% filter many other filter are available. A general discussion on this
+% topic can be found <EBSDSmoothing.html here>. To make use of a different
+% then the dafault filter use the syntax
+%
+%   F = medianFilter
+%   F.numNeighbours = 2 % this way options for the filter can be set
+%   ebsd = smooth(ebsd,F)
+%
+% The command smooth can also be used to fill not indexed measurement
+% points. This behaviour is enabled by the option |fill|
+%
+%   ebsd = smooth(ebsd,F,'fill')
 %
 % *Support for antipodal symmetry for misorientations*
 %
@@ -70,6 +93,18 @@
 %   mori = calcMisorientation(ebsd('phase1'),ebsd('phase2'))
 %   plotAngleDistribution(mori)
 %   plotAxisDistribution(mori)
+%
+% *Rotational axis in specimen coordinates*
+%
+% It is now possible to compute the misorientaion axis between two
+% orientations in specimen coordinate system. This is done by
+%
+%   axis(ori1,ori2)
+%
+% To do so with random misorientations from an EBSD data set do
+%
+%   [ori1,ori2] = calcMisorientation(ebsd('phase1'),ebsd('phase2'))
+%   plot(axis(ori1,ori2))
 %
 % *Axis angle plots*
 %
