@@ -28,7 +28,7 @@ hold off
 
 %%
 % With the default colormap we can not distinguish any orientation gradient
-% within the grain. Let adapt the colormap to this specific grain
+% within the grain. Lets adapt the colormap to this specific grain
 
 oM = ipdfHSVOrientationMapping(ebsd);
 
@@ -36,8 +36,15 @@ oM = ipdfHSVOrientationMapping(ebsd);
 % colorized white
 oM.inversePoleFigureDirection = grains(119).meanOrientation * oM.whiteCenter;
 
-% Concentrate the colors around the mean orientation
+% concentrate the colors around the mean orientation
 oM.colorStretching = 25;
+
+% plot the colormap
+plot(oM)
+
+%%
+% With the new colormap we can clearly see the noise overlapping the
+% texture gradient within the grain.
 
 % plot the grain
 plot(ebsd,oM.orientation2color(ebsd.orientations))
@@ -55,7 +62,7 @@ hold off
 F = meanFilter;
 
 % smooth the data
-ebsd_smoothed = smooth(ebsd,F)
+ebsd_smoothed = smooth(ebsd,F);
 
 % plot the smoothed data
 plot(ebsd_smoothed('indexed'),...
@@ -70,7 +77,7 @@ hold off
 % weights for the averaging. Lets define a 5x5 window with weights comming
 % from the Gaussian distribution.
 
-[x,y] = meshgrid(-2:2)
+[x,y] = meshgrid(-2:2);
 F.weights = exp(-(x.^2+y.^2)/10);
 
 % smooth the data
@@ -131,7 +138,7 @@ F.alpha
 % a later example.
 
 F = halfQuadraticFilter;
-F.alpha = 1 %set the smoothing parameter
+F.alpha = 1; %set the smoothing parameter
 
 % smooth the data
 ebsd_smoothed = smooth(ebsd,F);
@@ -198,7 +205,7 @@ plot(ebsd('En'),ebsd('En').orientations)
 plot(ebsd('Di'),ebsd('Di').orientations)
 
 % compute grains
-[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',10*degree)
+[grains,ebsd.grainId] = calcGrains(ebsd('indexed'),'angle',10*degree);
 
 % plot the boundary of all grains
 plot(grains.boundary,'linewidth',1.5)
@@ -206,8 +213,8 @@ hold off
 
 %%
 
-F = splineFilter
-ebsd_smoothed = smooth(ebsd('indexed'),F,'fill')
+F = splineFilter;
+ebsd_smoothed = smooth(ebsd('indexed'),F,'fill');
 
 plot(ebsd_smoothed('Fo'),ebsd_smoothed('Fo').orientations)
 hold on
@@ -226,7 +233,7 @@ hold off
 % the regions of not indexed orientations.
 
 % compute mis2mean for the interpolated orientations
-[~,~,ebsd_smoothed.mis2mean] = calcGrains(ebsd_smoothed,'angle',10*degree)
+[~,~,ebsd_smoothed.mis2mean] = calcGrains(ebsd_smoothed,'angle',10*degree);
 
 % plot mis2mean for all phases
 oM = ipdfHSVOrientationMapping(ebsd_smoothed('Fo').CS,ebsd_smoothed('Fo').CS);

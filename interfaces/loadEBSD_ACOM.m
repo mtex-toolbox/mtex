@@ -44,11 +44,8 @@ try
   
   phasePos = strmatch('# Phase',hl);
   
-  if isempty(phasePos)
-    phasePos=1;
-  end
-  % phases to be ignored
-  ignorePhase = get_option(varargin,'ignorePhase',[]);
+  if isempty(phasePos), phasePos=1; end
+  
   
   try
     B=zeros(length(A(:,8)),1);

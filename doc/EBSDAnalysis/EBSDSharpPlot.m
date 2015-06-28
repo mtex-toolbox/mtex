@@ -104,7 +104,7 @@ mtexdata forsterite
 ebsd = ebsd('indexed');
 
 % segment grains
-[grains,ebsd.grainId] = calcGrains(ebsd)
+[grains,ebsd.grainId] = calcGrains(ebsd);
 
 % find largest grains
 largeGrains = grains(grains.grainSize>800)

@@ -1,4 +1,6 @@
 classdef halfQuadraticFilter < EBSDFilter
+  % TODO: description
+  % copy right: Johannes Persch 09.06.2015
   
   properties
     alpha = [0.1,0.1];                      % regularization in x, y direction
@@ -10,7 +12,7 @@ classdef halfQuadraticFilter < EBSDFilter
   methods
     
     function ori = smooth(F,ori)           
-      % Johannes Persch 09.06.2015
+      % copy right: Johannes Persch 09.06.2015
       
       % this might be done better
       [~,q] = mean(ori);
