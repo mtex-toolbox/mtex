@@ -32,7 +32,7 @@ if cs.id == 19 || cs.id == 22
   ind = v.z < 0;
   vv = cs(2) * subSet(v,ind);
   v.x(ind) = vv.x; v.y(ind) = vv.y; v.z(ind) = vv.z;
-  cs = cs(1,1:3);
+  cs = cs(1:2:5);
 end
 
 symCenter = cs*sR.center;
