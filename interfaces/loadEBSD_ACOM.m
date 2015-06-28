@@ -60,10 +60,7 @@ try
       else
         phase = sscanf(hl{pos},'# Phase %u');
       end
-      
-      % maybe its to be ignored
-      if any(phase==ignorePhase), continue;end
-      
+                  
       %maybe it is not assigned in pixel
       if any(phase==PhasesInFile)
         
