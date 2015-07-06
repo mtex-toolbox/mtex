@@ -94,7 +94,9 @@ classdef axisAngleSections < ODFSections
           
       hold on
                   
-      % plot data 
+      % plot data
+      %v(~oS.axesSectors{sec}.checkInside(v)) = vector3d.nan;
+      v.opt.region = oS.axesSectors{sec};
       h = plot(v,data{:},'parent',ax,varargin{:},'doNotDraw');
       
       % plot inner boundary
