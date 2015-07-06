@@ -9,7 +9,13 @@ if ~isNew
   return
 end
 
-switch get_flag(varargin,{'phi2','phi1','sigma','axisAngle'},'phi2')
+if isa(CS,'specimenSymmetry') || isa(SS,'specimenSymmetry')
+  default = 'phi2';
+else
+  default = 'axisAngle';
+end
+
+switch get_flag(varargin,{'phi2','phi1','sigma','axisAngle'},default)
   case 'phi2'
     oS = phi2Sections(CS,SS,varargin{:});
   case 'phi1'

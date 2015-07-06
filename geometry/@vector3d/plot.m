@@ -29,6 +29,10 @@ if ~isempty(varargin) && isa(varargin{1},'vector3d')
   plotType = 'quiver';
 end
 
+if any(strcmpi(plotType,{'smooth','contourf','contour','pcolor'}))
+  varargin = ensureData(varargin);
+end
+
 % call plotting routine according to type
 switch lower(plotType)
 
@@ -91,4 +95,11 @@ switch lower(plotType)
       
     [varargout{1:nargout}] = v.plotCustom(varargin{:});      
     
+end
+end
+
+function v = ensureData(v)
+  if ~isempty(v) && ~isnumeric(v{1}) 
+    v = [{[]},v];
+  end
 end

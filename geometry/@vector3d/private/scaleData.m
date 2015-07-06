@@ -14,6 +14,13 @@ end
 colorRange = [minData,maxData];
 minData = nanmin(data(:));
 maxData = nanmax(data(:));
+if minData == maxData
+  if minData == 0
+    maxData = 1;
+  else
+    minData = 0;
+  end
+end
 
 % from options
 if check_option(varargin,{'contourf','contour'},'double')

@@ -33,7 +33,9 @@ if ~isempty(data), data = reshape(data,numData,[]); end
 if exist('ori','var') || isempty(oS.plotGrid)
   
   % subsample to reduce size
-  if ~check_option(varargin,'all') && length(ori) > 2000 || check_option(varargin,'points')
+  if (~check_option(varargin,'all') && length(ori) > 2000 && ...
+      ~check_option(varargin,{'smooth','contourf','contour','pcolor'})) || ...
+      check_option(varargin,'points')
     points = fix(get_option(varargin,'points',2000));
     disp(['  plotting ', int2str(points) ,' random orientations out of ', ...
       int2str(length(ori)),' given orientations']);
@@ -43,7 +45,7 @@ if exist('ori','var') || isempty(oS.plotGrid)
     if ~isempty(data), data = data(samples,:); end
   end
   
-  [vec,secAngle] = project(oS,ori);
+  [vec,secAngle] = project(oS,ori,varargin{:});
   
   vec.resolution = min(10*degree,max(1*degree,...
     round(500000*degree/(length(oS.SS)*length(oS.CS)*length(ori)).^(1/3))));
@@ -81,6 +83,8 @@ else
   end
       
 end
+
+mtexFig.CLim('equal');
 
 if isNew || check_option(varargin,'figSize')
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); 
