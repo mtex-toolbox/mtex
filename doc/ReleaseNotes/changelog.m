@@ -115,9 +115,9 @@
 % volume in orientation space. This can be switch of as described below
 %
 %   plotSection(mori,'axisAngle',55*degree)
-%   plotSection(mdf,'axisAngle',[15:10:55*degree])
-%   plotSection(mdf,'axisAngle',[15:10:55*degree],'volumeScaling',false)
-%   plotSection(mdf,'axisAngle',[15:10:55*degree],'antipodal')
+%   plotSection(mdf,'axisAngle',(15:10:55)*degree)
+%   plotSection(mdf,'axisAngle',(15:10:55)*degree,'volumeScaling',false)
+%   plotSection(mdf,'axisAngle',(15:10:55)*degree,'antipodal')
 %
 % *Replace plotODF by plotSection* 
 %
