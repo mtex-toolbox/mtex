@@ -150,4 +150,35 @@ classdef vector3d < dynOption
       
     end
   end
+  
+  methods (Static = true)
+    
+    function v = nan(varargin)
+      x = nan(varargin{:});
+      v = vector3d(x,x,x);
+    end
+    
+    function v = ones(varargin)
+      x = ones(varargin{:});
+      v = vector3d(x,x,x);
+    end
+    
+    function v = zeros(varargin)
+      x = zeros(varargin{:});
+      v = vector3d(x,x,x);
+    end
+        
+    function v = X(varargin)
+      v = vector3d(1,0,0);
+    end
+    
+    function v = Y(varargin)
+      v = vector3d(1,0,0);
+    end
+    
+    function v = Z(varargin)
+      v = vector3d(1,0,0);
+    end
+    
+  end
 end
