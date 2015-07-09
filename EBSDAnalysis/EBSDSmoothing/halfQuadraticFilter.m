@@ -1,175 +1,140 @@
 classdef halfQuadraticFilter < EBSDFilter
-  
-  properties
-    alpha = [0.1,0.1];                      % regularization in x, y direction
-    weight = @(t,eps) 1./(t.^2+eps^2).^(1/2); % weight function handle b^*(t,epsilon)
-    eps = 1e-1;                             % parameter for the weight function
-    tol = 1e-5                              % tolerance for gradient descent  
-  end
-
-  methods
+    % haldQuadraticFilter uses the techniques elaborated half-quadratic
+    % minmization on manifolds
+    % to smooth EBSD data.
+    % Properties:   alpha:  regularisation parameter in [x,y] direction
+    %               weight: function handle specified by the regularising
+    %                       function \varphi, @(t,eps), where eps is its
+    %                       parameter
+    %               eps:    Parameter for the weight
+    %               tol:    Tolerance for the gradient descent
+    % Methods:      smooth: Applies the HQ minimization on the quaternions
+    %                       of the given orientations
+    %
+    % For further details of the algorithm see:
+    % R. Bergmann, R. H. Chan, R. Hielscher, J. Persch, G. Steidl 
+    % Restoration of Manifold-Valued Images by Half-Quadratic Minimization.  
+    % Preprint, ArXiv #1505.07029. (2015)
+    %
+    %
+    % Written by Johannes Persch, Ronny Bergmann, 09.06.2015
+    %        <persch@mathematik.uni-kl.de>, <bergmann@mathematik.uni-kl.de>
     
-    function ori = smooth(F,ori)           
-      % Johannes Persch 09.06.2015
-      
-      % this might be done better
-      [~,q] = mean(ori);
-      
-      static_mask = isnan(q.a); % logical mask with true for stationary pixels
-      
-      dims =size(q);
-      
-      if length(F.alpha)<2, F.alpha = F.alpha*[1,1]; end
-      
-      n_2 = dims(end);
-      n_1 = dims(end-1);
-      mani_dims = dims(1:end-2);
-      mask = isnan(q.a);
-      u=q;
-      col_u = reshape(u,[prod(mani_dims),n_1,n_2]);
-      ux =col_u;
-      uy = col_u;
-      ux(:,1:end-1,:) = col_u(:,2:end,:);
-      ux(:,end,:)=col_u(:,end,:);
-      uy(:,:,1:end-1) = col_u(:,:,2:end);
-      uy(:,:,end)=col_u(:,:,end);
-      %Auxillary
-      uxd =col_u;
-      uyd= col_u;
-      uxd(:,2:end,:) = col_u(:,1:end-1,:);
-      uxd(:,1,:)=col_u(:,1,:);
-      uyd(:,:,2:end) = col_u(:,:,1:end-1);
-      uyd(:,:,1)=col_u(:,:,1);
-      
-
-      %Initialisiere u
-      B = repmat(u,[ones(1,length(dims)),5]);
-      B = reshape(B,prod(mani_dims),n_1*n_2,5);
-      B(:,:,2) = reshape(ux,prod(mani_dims),n_1*n_2);
-      B(:,:,3) = reshape(uy,prod(mani_dims),n_1*n_2);
-      B(:,:,4) = reshape(uxd,prod(mani_dims),n_1*n_2);
-      B(:,:,5) = reshape(uyd,prod(mani_dims),n_1*n_2);
-      while sum(any(isnan(squeeze(B(:,:,1).a)),1)) > 0
-        setzen = sum(squeeze(any(isnan(B(:,:,2:5).a),1)),2)<4 & any(isnan(squeeze(B(:,:,1).a)),1)';
-        B(:,setzen,1) = setzen_mit_karcher(B(:,setzen,:));
-        col_u = reshape(B(:,:,1),[ prod(mani_dims),n_1,n_2]);
-        ux =col_u;
-        uy = col_u;
-        ux(:,1:end-1,:) = col_u(:,2:end,:);
-        ux(:,end,:)=col_u(:,end,:);
-        uy(:,:,1:end-1) = col_u(:,:,2:end);
-        uy(:,:,end)=col_u(:,:,end);
-        %Auxillary
-        uxd =col_u;
-        uyd= col_u;
-        uxd(:,2:end,:) = col_u(:,1:end-1,:);
-        uxd(:,1,:)=col_u(:,1,:);
-        uyd(:,:,2:end) = col_u(:,:,1:end-1);
-        uyd(:,:,1)=col_u(:,:,1);
-        B(:,:,2) = reshape(ux,prod(mani_dims),n_1*n_2);
-        B(:,:,3) = reshape(uy,prod(mani_dims),n_1*n_2);
-        B(:,:,4) = reshape(uxd,prod(mani_dims),n_1*n_2);
-        B(:,:,5) = reshape(uyd,prod(mani_dims),n_1*n_2);
-      end
-      
-      u = reshape(col_u,dims);
-      ux = reshape(ux,dims);
-      uy = reshape(uy,dims);
-      uxd = reshape(uxd,dims);
-      uyd = reshape(uyd,dims);
-      
-      %Nullen?
-      maskx_zero = squeeze(ux.a==1 & ux.b ==0);
-      masky_zero = squeeze(uy.a==1 & uy.b ==0);
-      maskxd_zero = squeeze(uxd.a==1 & uxd.b ==0);
-      maskyd_zero = squeeze(uyd.a==1 & uyd.b ==0);
-      %
-      u_old = u;
-      entrance = true;
-      i =0;
-      
-      while max(max(angle(u_old,u)))>F.tol || entrance
-        %if mod(i,50)==0
-        %  disp(['Step length at step ',num2str(i),' is ',num2str(max(max(angle(u_old,u))))])
-        %end
+    % Should be included in the function call or the filter class
+    % uM is the unknown mask, i.e masking the pixels we want to
+    %                           inpaint
+    % dM is the domain of the image, pixels which are relevant
+    %           for the calculation
+    % rM is where we change the pixel values
+    properties
+        alpha = [0.1,0.1];                      % regularization in x, y direction
+        weight = @(t,eps) 1./(t.^2+eps^2).^(1/2); % weight function handle b^*(t,epsilon)
+        eps = 1e-1;                             % parameter for the weight function
+        tol = 1e-5                              % tolerance for gradient descent
         
-        u_old = u;
-        entrance = false;
-        i = i+1;
-        wx = F.weight(angle(u,ux),F.eps);
-        wy = F.weight(angle(u,uy),F.eps);
-        wxd =F.weight(angle(u,uxd),F.eps);
-        wyd =F.weight(angle(u,uyd),F.eps);
-        %Nullen streichen
-        wx(maskx_zero)=0;
-        wy(masky_zero)=0;
-        wyd(maskyd_zero)=0;
-        wxd(maskxd_zero)=0;
-        %
-        wx = reshape(wx,n_1,n_2);
-        wx = repmat(wx,[1,1,mani_dims]);
-        wx = permute(wx,[3:2+length(mani_dims),1,2]);
-        wxd = reshape(wxd,n_1,n_2);
-        wxd = repmat(wxd,[1,1,mani_dims]);
-        wxd = permute(wxd,[3:2+length(mani_dims),1,2]);
-        wy = reshape(wy,n_1,n_2);
-        wy = repmat(wy,[1,1,mani_dims]);
-        wy = permute(wy,[3:2+length(mani_dims),1,2]);
-        wyd = reshape(wyd,n_1,n_2);
-        wyd = repmat(wyd,[1,1,mani_dims]);
-        wyd = permute(wyd,[3:2+length(mani_dims),1,2]);
-        q(mask)=u(mask);
-        %berechne gradient
-        grad_u = log(q,u) + F.alpha(1)*wx.*log(ux,u) + ...
-          F.alpha(2)*wy.*log(uy,u)+F.alpha(1)*wxd.*log(uxd,u) + ...
-          F.alpha(2)*wyd.*log(uyd,u);
-        grad_u(static_mask) = vector3d([0,0,0]);
-        mult  = min(1./(~mask+F.alpha(1)*(wx+wxd)+F.alpha(2)*(wy+wyd)),1);
-        near_newton = mult.*grad_u;
-        near_newton(static_mask) = vector3d([0,0,0]);
-        %gehe einen Schritt
-        u = expquat(near_newton,u);
-        col_u = reshape(u,[prod(mani_dims),n_1,n_2]);
-        ux = col_u;
-        uy = col_u;
-        ux(:,1:end-1,:) = col_u(:,2:end,:);
-        ux(:,end,:)=col_u(:,end,:);
-        uy(:,:,1:end-1) = col_u(:,:,2:end);
-        uy(:,:,end) = col_u(:,:,end);
-        %Auxillary
-        uxd = col_u;
-        uyd = col_u;
-        uxd(:,2:end,:) = col_u(:,1:end-1,:);
-        uxd(:,1,:) = col_u(:,1,:);
-        uyd(:,:,2:end) = col_u(:,:,1:end-1);
-        uyd(:,:,1) = col_u(:,:,1);
-        ux = reshape(ux,dims);
-        uy = reshape(uy,dims);
-        uxd = reshape(uxd,dims);
-        uyd = reshape(uyd,dims);
-      end
-      
-      %disp(['Stopped after ', num2str(i) ,' iterations with last step length ',num2str(max(max(angle(u_old,u))))])
-      ori = orientation(u,ori.CS,ori.SS);
-      
-      function u = setzen_mit_karcher(U)
-        %Find the initial values for the first layer of U as means of the
-        %surrounding values
-        [p_m,nr_points,~] = size(U);
-        u = reshape(U(:,:,1),p_m,nr_points);
-        for j= 1:nr_points
-          if sum(sum(~squeeze(any(isnan(U(:,j,:).a),1)),2)) == 1
-            u(:,j)= U(:,j,~isnan(U(1,j,:).a));
-          else
-            points = squeeze(U(:,j,~isnan(U(1,j,:).a)));
-            points = points(~(points.a==1 & points.b==0));
-            if size(points,1) ~=0
-              u(:,j) = points(ceil(rand*length(points)));% could be fixed to eg 1
-            end
-          end
-        end
-      end      
     end
-  end
+    
+    methods
+        
+        function ori = smooth(F,ori)
+            % INPUT:    ori:   n x m vector of crystal orientations
+            %           F:     Class with specified parameters for the HQ
+            %                  minimization
+            % OUTPUT:   ori:   n x m vector of crystal orientations
+            %                  smoothed by HQ minimzation using the
+            %                  parameters specified in F
+            % Written by Johannes Persch, Ronny Bergmann, 09.06.2015
+            
+            
+            
+            
+            % this might be done better
+            [~,q] = mean(ori);
+            dims =size(q);
+            % pass the masks for readablity
+            %Logical mask Defaults
+            rM = false(dims);             % [1] Pixel is fixed
+                                          % [0] Pixel is changed
+            % should be [1] outside the respective grain and at pixels we want to
+            % preserve
+            
+            uM = false(dims);             % [1] Pixel is unknown
+                                          % [0] Pixel is known if it isnt NaN
+                       
+            dM = true(dims);              % [1] Pixel matters in the calculation
+                                          % [0] Pixel is excluded from calculation
+            % should be [0] outside the grain
+            
+            % Security check
+            if length(F.alpha)<2, F.alpha = F.alpha*[1,1]; end
+            u=q;
+            % Start inpaiting
+            if any(isnan(q.a(:))) || any(uM(:))
+                % Collapse manifold dimensions
+                uM = uM | (isnan(q.a));
+                % Set all unknowns to nan in u
+                u(uM) = nanquaternion;
+                % Remember Pixels outside the domain
+                outside =  u;
+                while any(~(~isnan(u(:).a) | ~dM(:)))
+                    % Set pixels Outside the domain to NaN, since they should
+                    % not be used for the initialisation
+                    u(~dM) = nanquaternion;
+                    % Collect the neighborhood of each pixel
+                    B = reshape(cat(3,u,u([2:end end],:),u(:,[2:end end]),u([1 1:end-1],:),u(:,[1 1:end-1])),[prod(dims),5]);
+                    setVals = sum(isnan(B(:,2:5).a),2)<4 ...
+                        & isnan(u(:).a);
+                    % Exclude Pixels outside the Domain
+                    setVals = setVals & dM(:);
+                    ut = B(setVals,:); % collect all points that can be initialized in this step
+                    for j=1:size(ut,1)
+                        points = ut(j,~any(isnan(ut(j,:).a),1)); %Collect existing neighbor points
+                        ut(j,1) = points(:,1); % first nonnan neighbor.
+                    end
+                    u = reshape(u,[1,prod(dims)]);
+                    u(setVals) = ut(:,1); % set new values
+                    u = reshape(u,dims);
+                end
+                % Readjust values outside the domain
+                u( ~dM) = outside(~dM);
+                % NaN values outside the domain (the only oney remaining)
+                % are set to the identity
+                u(isnan(u.a))=idquaternion;
+            end
+            
+            u_old = u;
+            entrance = true;
+            
+            while max(max(angle(u_old,u)))>F.tol || entrance
+                u_old = u;
+                entrance = false;
+                % Calculate weight
+                wx = F.weight(angle(u,u([2:end end],:)),F.eps);
+                % Exclude pixels which are not in the Domain
+                wx(  ~dM | ~dM([2:end end],:)  ) = 0;
+                wy = F.weight(angle(u,u(:,[2:end end],:)),F.eps);
+                wy(  ~dM | ~dM(:,[2:end end],:)  ) = 0;
+                wxd =F.weight(angle(u,u([1 1:(end-1)],:)),F.eps);
+                wxd(  ~dM | ~dM([1 1:(end-1)],:)  ) = 0;
+                wyd =F.weight(angle(u,u(:,[1 1:(end-1)])),F.eps);
+                wyd(  ~dM | ~dM(:,[1 1:(end-1)])  ) = 0;
+                
+                
+                q(uM)=u(uM);% Unknown pixel are not relevent in the data term log(x,x) =0;
+                %calculate gradient
+                grad_u = log(q,u) + F.alpha(1)*wx.*log(u([2:end end],:),u) + ...
+                    F.alpha(2)*wy.*log(u(:,[2:end end],:),u)+F.alpha(1)*wxd.*log(u([1 1:(end-1)],:),u) + ...
+                    F.alpha(2)*wyd.*log(u(:,[1 1:(end-1)]),u);
+                % Step length
+                mult  = min(1./(~uM+F.alpha(1)*(wx+wxd)+F.alpha(2)*(wy+wyd)),1);
+                near_newton = mult.*grad_u;
+                % Only change pixels we want to be changed
+                near_newton(rM) = vector3d([0,0,0]);
+                %one step
+                u = expquat(near_newton,u);
+            end
+            
+            ori = orientation(u,ori.CS,ori.SS);
+        end
+    end
 end
-  
