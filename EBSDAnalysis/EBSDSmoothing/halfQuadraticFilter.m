@@ -1,4 +1,4 @@
-classdef halfQuadraticFilter_rework < EBSDFilter
+classdef halfQuadraticFilter < EBSDFilter
     % haldQuadraticFilter uses the techniques elaborated half-quadratic
     % minmization on manifolds
     % to smooth EBSD data.
