@@ -13,5 +13,7 @@ function ori = project2FundamentalRegion(ori,varargin)
 %  omega   - rotational angle to reference rotation
 %
 
-q = project2FundamentalRegion(quaternion(ori),ori.CS,ori.SS,varargin{:});
-ori = orientation(q,ori.CS,ori.SS);
+if ori.antipodal, ap = {'antipodal'}; else ap = {}; end
+q = project2FundamentalRegion(quaternion(ori),ori.CS,ori.SS,ap{:},varargin{:});
+
+ori = orientation(q,ori.CS,ori.SS,ap{:});

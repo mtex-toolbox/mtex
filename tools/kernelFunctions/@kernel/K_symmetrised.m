@@ -92,7 +92,6 @@ else
         omega = abs(dot_outer(sg,q2));      % calculate full distance matrix
       end
       
-
 %  z = find(omega>cos(epsilon));
 %  if length(z) > length(omega)/length(CS)/10, w = full(w); end
 %  w(z) = w(z) +  kk.K(omega(z));

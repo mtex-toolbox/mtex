@@ -28,6 +28,10 @@ maxPhi2 = 2*pi/cs.multiplicityZ;
 % Phi
 maxPhi = pi / min(2,max(cs.multiplicityPerpZ, ss.multiplicityPerpZ));
 
+% for antipodal symmetry we can reduce either phi1 or phi2 to one half
+if check_option(varargin,'antipodal'), maxPhi2 = maxPhi2 / 2; end
+
+
 if check_option(varargin,'complete')
   maxPhi1 = 2*pi;
   maxPhi = pi;

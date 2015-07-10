@@ -40,7 +40,7 @@ classdef phi2Sections < ODFSections
       n = numel(oS.phi2);
     end
     
-    function [S2Pos,secPos] = project(oS,ori)
+    function [S2Pos,secPos] = project(oS,ori,varargin)
     
       % maybe this can be done more efficiently
       ori = ori.symmetrise('proper').';

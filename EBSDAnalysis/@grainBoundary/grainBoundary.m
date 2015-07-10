@@ -108,6 +108,7 @@ classdef grainBoundary < phaseList & dynProp
     function mori = get.misorientation(gB)
             
       mori = orientation(gB.misrotation,gB.CS{:});
+      mori.antipodal = equal(checkSinglePhase(gB),2);
       
     end
     

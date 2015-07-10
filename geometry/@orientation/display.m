@@ -22,6 +22,11 @@ disp(['  size: ' size2str(o)]);
 disp(char(o.CS,'verbose','symmetryType'));
 disp(char(o.SS,'verbose','symmetryType'));
 
+if o.antipodal
+  disp('  antipodal:         true');
+end
+  
+
 if length(o) < 30 && ~isempty(o), Euler(o);end
 
 disp(' ')

@@ -61,7 +61,8 @@ else
   
   % define a indexed grid
   res = get_option(varargin,'resolution',max(0.75*degree,hw / 2));
-  S3G = equispacedSO3Grid(ori.CS,ori.SS,'resolution',res);
+  if ori.antipodal, aP = {'antipodal'}; else aP = {}; end
+  S3G = equispacedSO3Grid(ori.CS,ori.SS,'resolution',res,aP{:});
 
   % construct a sparse matrix showing the relatation between both grids
   M = sparse(1:length(ori),find(S3G,ori),weights,length(ori),length(S3G));
