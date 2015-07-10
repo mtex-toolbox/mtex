@@ -3,7 +3,7 @@ classdef S1Grid
   properties
     points   % the angles
     min = 0  % start of fundamental region
-    max = 0  % rnd of fundamental region
+    max = 0  % end of fundamental region
     periodic = false;
   end
   
