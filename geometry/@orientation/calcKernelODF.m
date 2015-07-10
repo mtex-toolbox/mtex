@@ -52,7 +52,7 @@ weights = weights ./ sum(weights(:));
 psi = getKernel(ori,varargin{:});
 hw = psi.halfwidth;
 
-if check_option(varargin,'exact')
+if (check_option(varargin,'exact') || length(ori) < 1000) && ~check_option(varargin,'test')
   
   % set up exact ODF
   odf = unimodalODF(ori,psi,ori.CS,ori.SS,'weights',weights);
