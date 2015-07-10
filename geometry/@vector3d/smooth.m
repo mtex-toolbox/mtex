@@ -121,7 +121,7 @@ function h = betterContourf(ax,X,Y,data,contours,varargin)
 
 h = [];
 
-if numel(unique(data)) > 1
+if numel(unique(data)) > 1 || 1
 
   % workauround for a MATLAB Bug
   %if mean(X(:,1)) > mean(X(:,end))

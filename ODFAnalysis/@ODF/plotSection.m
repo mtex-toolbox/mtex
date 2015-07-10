@@ -28,4 +28,16 @@ S3G = oS.makeGrid('resolution',2.5*degree,varargin{:});
 Z = odf.eval(S3G);
 clear S3G
 
-oS.plot(Z,'smooth','colorRange',[min(Z(:)),max(Z(:))],varargin{:});
+cR = [min(Z(:)),max(Z(:))];
+if isempty(cR)
+  cR = [0,1];
+elseif cR(1) == cR(2)
+  if cR(1) == 0
+    cR(2) = 1;
+  else
+    cR(1) = 0;    
+  end
+end
+
+
+oS.plot(Z,'smooth','colorRange',cR,varargin{:});
