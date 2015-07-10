@@ -28,7 +28,9 @@ for j = 1:numel(sP)
     
   else % no color given -> do kernel density estimation
 
-    S2G = plotS2Grid(sP(j).sphericalRegion);
+    sR = sP(j).sphericalRegion;
+    if isfield(v.opt,'region'), sR = [sR,v.opt.region]; end
+    S2G = plotS2Grid(sR);
 
     cdata = kernelDensityEstimation(v(:),S2G,'halfwidth',5*degree,varargin{:});    
     cdata = reshape(cdata,size(S2G));
