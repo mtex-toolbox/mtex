@@ -140,8 +140,8 @@ odf = rotate(odf,rot);
       
       % TODO: maybe one can use interpolation here instead of evaluating the
       % ODF again
-      yr = eval(rotate(odf,rot),SO3); %#ok<EVLC>
-      y = sum((y0 - yr).^2) ./ sum(y0.^2);
+      yr = eval(rotate(odf,rot),SO3,'silent'); %#ok<EVLC>
+      y = sum((y0(:) - yr(:)).^2) ./ sum(y0(:).^2);
     end
 
   end
