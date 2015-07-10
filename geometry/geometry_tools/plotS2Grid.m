@@ -42,19 +42,28 @@ ind = (thetaMax > 1e-5) & (thetaMin < pi - 1e-5);
 
 ind(end) = ind(end-1); ind(1) = ind(2);
 
+% we should put some nans to seperate regions
+rho(diff(ind) == 1) = nan;
+ind(diff(ind) == 1) = true;
+
 rho(~ind) = []; thetaMin(~ind) = []; thetaMax(~ind) = [];
 
+if isempty(rho)
+  v = vector3d;
+  theta = [];
+else
 
-% generate grid
-dtheta = thetaMax - thetaMin;
-% ensure an odd number of points to have some points at the equator
-ntheta = 2*round(max(dtheta./res./2))+1;
-
-theta = linspace(0,1,ntheta).' * dtheta + repmat(thetaMin,ntheta,1);
-
-rho = repmat(rho,ntheta,1);
-
-v = vector3d('theta',theta,'rho',rho);
+  % generate grid
+  dtheta = thetaMax - thetaMin;
+  % ensure an odd number of points to have some points at the equator
+  ntheta = 2*round(max(dtheta./res./2))+1;
+  
+  theta = linspace(0,1,ntheta).' * dtheta + repmat(thetaMin,ntheta,1);
+  
+  rho = repmat(rho,ntheta,1);
+  
+  v = vector3d('theta',theta,'rho',rho);
+end
 
 v = v.setOption('plot',true,'resolution',res,'region',sR,'theta',theta,'rho',rho);
 

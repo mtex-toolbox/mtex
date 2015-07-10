@@ -54,7 +54,7 @@ for j = 1:numel(sP)
   end
   
   % scale the data
-  [cdata,colorRange,minData,maxData] = scaleData(cdata,varargin{:});
+  [cdata,colorRange] = scaleData(cdata,varargin{:});
   if ~any(isnan(colorRange)), caxis(sP(j).ax,colorRange);end
 
   % ------------- compute contour lines ------------------------
@@ -75,10 +75,11 @@ for j = 1:numel(sP)
   [x,y] = project(sP(j).proj,S2G,'removeAntipodal');
 
   % extract non nan data
-  ind = ~isnan(x);
-  x = submatrix(x,ind);
-  y = submatrix(y,ind);
-  data = reshape(submatrix(cdata,ind),size(x));
+  %ind = ~isnan(x);
+  %x = submatrix(x,ind);
+  %y = submatrix(y,ind);
+  %data = reshape(submatrix(cdata,ind),size(x));
+  data = reshape(cdata,size(x));
 
   % plot contours
   h = [h,betterContourf(sP(j).ax,x,y,data,contours,varargin{:})];
