@@ -128,7 +128,7 @@ oR = fundamentalRegion(oM.CS1,oM.CS2,'antipodal');
 plot(oR)
 
 % plot 500 random misorientations in the 3d fundamenal zone
-mori = gB.misorientation.discreteSample(500);
+mori = discreteSample(gB.misorientation,500);
 hold on
 plot(mori.project2FundamentalRegion('antipodal'))
 hold off
