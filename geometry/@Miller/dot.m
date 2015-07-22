@@ -19,7 +19,17 @@ if ~isa(m1,'Miller') || ~isa(m2,'Miller') || m1.CS ~= m2.CS
   warning('Symmetry mismatch')
 end
 
-if length(m1) == 1 || length(m2) == 1
+
+if length(m1) ~=1
+  
+  s = size(m1);
+  
+elseif length(m2) ~=1
+  
+  s = size(m2);
+
+else
+    
   d = dot_outer(m1,m2,varargin{:});
   
   if length(m1) == 1
@@ -44,5 +54,5 @@ d = dot(m1,m2);
 
 % find maximum
 if ~check_option(varargin,'all')
-  d = max(d,[],1);
+  d = reshape(max(d,[],1),s);  
 end
