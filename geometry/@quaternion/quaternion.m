@@ -63,4 +63,19 @@ classdef quaternion
     
   end
   
+  methods (Static = true)
+    
+    function q = nan(varargin)
+      a = nan(varargin{:});
+      q = quaternion(a,a,a,a);
+    end
+    
+    function q = id(varargin)
+      a = ones(varargin{:});
+      b = zeros(varargin{:});
+      q = vector3d(a,b,b,b);
+    end
+        
+  end
+  
 end
