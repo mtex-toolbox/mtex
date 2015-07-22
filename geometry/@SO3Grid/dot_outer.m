@@ -23,7 +23,9 @@ end
 epsilon = get_option(varargin,'epsilon',pi);
 
 if check_option(varargin,{'full','all'})
-  
+  if check_option(varargin,'nospecimensymmetry')
+    S3G.SS = specimenSymmetry;
+  end
   d = dot_outer(orientation(S3G),q,varargin{:});
   
 else
