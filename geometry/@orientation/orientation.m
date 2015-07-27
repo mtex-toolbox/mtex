@@ -116,6 +116,29 @@ methods
   end
 end
 
+methods (Static = true)
+  
+  function ori = nan(varargin)    
+    s = varargin(cellfun(@isnumeric,varargin));
+    q = quaternion.nan(s{:});
+    ori = orientation(q,varargin{:});
+  end
+  
+  function ori = id(varargin)    
+    s = varargin(cellfun(@isnumeric,varargin));
+    q = quaternion.id(s{:});
+    ori = orientation(q,varargin{:});
+  end
+  
+  function ori = rand(varargin)    
+    s = varargin(cellfun(@isnumeric,varargin));
+    q = quaternion.rand(s{:});
+    ori = orientation(q,varargin{:});
+  end
+  
+  
+end
+
 end
 
 % --------------- some predefined orientations ----------------------
