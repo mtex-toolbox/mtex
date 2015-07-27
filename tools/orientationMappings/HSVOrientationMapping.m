@@ -18,7 +18,7 @@ classdef HSVOrientationMapping < orientationMapping
     colorPostRotation = rotation(idquaternion)
     colorStretching = 1;
     whiteCenter = vector3d(1,0,0)
-    sR = sphericalRegion
+    sR = sphericalRegion    
   end
 
   properties (Access = private)
@@ -33,41 +33,16 @@ classdef HSVOrientationMapping < orientationMapping
       oM = oM@orientationMapping(varargin{:});
       
       if ismember(oM.CS1.id,[2,18,26])
-        warning('Not a topological correct colormap! Green to blue colorjumps possible');
+        warning(['Not a topological correct colormap! Please use the point group ' oM.CS1.char]);
       end
       
       oM.updatesR;
-      oM.updateWhiteCenter;
-      oM.updateColorPostRotation;
-    end
-
-    function green2white(oM) % rotate green 2 white
-      oM.rot = oM.rot * rotation('axis',xvector,'angle',90*degree); 
-    end
-
-    function blue2green(oM) % switch white and black
-      oM.rot = oM.rot * reflection(yvector); 
-    end
-
-    function black2white(oM) % switch white and black
-      oM.rot = reflection(zvector) * oM.rot;
     end
 
   end
   
   methods (Access=protected)
-    function updateWhiteCenter(oM)
-      % white center
-      
-      switch oM.CS1.id
-        case {5,8,11,27,35}                          % 2/m, 4/m, 6/m
-          mir = oM.CS1.isImproper & oM.CS1.angle>pi-1e-4;
-          oM.whiteCenter = oM.CS1.subSet(mir).axis;
-        case 42, oM.whiteCenter = vector3d(1,1,1);   % m-3
-        otherwise, oM.whiteCenter = oM.sR.center;
-      end
-    end
-            
+                
     function updatesR(oM)
       % spherical region to be colorized
 
@@ -77,56 +52,36 @@ classdef HSVOrientationMapping < orientationMapping
 
       % symmetry dependent settings
       switch cs.id
-        case {1,2}, oM.refl = cs.axes(2);                        % 1,-1
+        case 1, oM.refl = cs.axes(2);                            % 1
         case {3,6,9},                                            % 211, 121, 112
           pm = 1-2*isPerp(cs.subSet(2).axis,zvector);
           oM.refl = rotate(oM.sR.N,rotation('axis',cs.subSet(2).axis,'angle',pm*90*degree));
-        case 12, oM.refl = rotate(oM.sR.N(2),-90*degree);        % 222
-        case {17,18,19,22}, oM.refl = r30 .* oM.sR.N(end-1:end); % 3, -3, 321, 312
-        case {21,24}, oM.refl = rotate(oM.sR.N(2),30*degree);    % -31m, -3m1
-        case {25,28}, oM.refl = rotate(oM.sR.N(end),-45*degree); % 4,4/m,422
+        case {11,12}, oM.refl = rotate(oM.sR.N(2),-90*degree);   % 222
+        case 17, oM.refl = -rotate(sum(oM.sR.N),90*degree);      % 3
+        case {18,19,22}, oM.refl = r30 .* oM.sR.N(end-1:end);    % -3, 321, 312
+        case {21,24}, oM.refl =  rotate(sum(oM.sR.N(2:3)),90*degree); % -31m, -3m1
+        case {25,27,28}, oM.refl = rotate(oM.sR.N(end),-45*degree); % 4,4/m,422
         case 26, oM.refl = rotate(oM.sR.N(end),-90*degree);      % -4
-        case 30, oM.refl = rotate(oM.sR.N(2),45*degree);         % -42m
+        case 30, oM.refl = yvector;                              % -42m
         case 31, oM.refl = -rotate(oM.sR.N(2),45*degree);        % -4m2
-        case {33,36}, oM.refl = rotate(oM.sR.N(end),-30*degree); % 6, 622
+        case {33,35,36}, oM.refl = rotate(oM.sR.N(end),-30*degree); % 6,6/m, 622,  
         case 34, oM.refl = r30 .* oM.sR.N(end-1:end);            % -6
         case {41,43}, oM.refl = vector3d(-1,0,1);                % 23, 432
+        case 42, oM.refl = vector3d(1,-1,0);                     % m-3  
       end
       
       % reduce fundamental sector by reflectors for black-white colorcoding
       oM.sR.N = [oM.sR.N(:);oM.refl(:)];
       oM.sR.alpha = [oM.sR.alpha(:);zeros(length(oM.refl),1)];
+      oM.whiteCenter = oM.sR.center;
       
     end
-    
-    function updateColorPostRotation(oM)
-      % adjust colors
-      
-      switch oM.CS1.id
-        case 4, oM.green2white;                            % m11
-        case 5, oM.colorPostRotation = rotation('Euler',30*degree,90*degree,0*degree); % 2/m11
-        case 6, oM.black2white;                            % 121
-        case 10, oM.colorPostRotation = rotation('Euler',270*degree,90*degree,180*degree); % 11m
-        case {11,27,35}                                    % 2/m, 4/m, 6/m
-          oM.colorPostRotation = rotation('Euler',270*degree,90*degree,180*degree);
-        case 17                                            % 3
-          oM.colorPostRotation = rotation('axis',xvector,'angle',...
-            -90*degree-3*mod(round(oM.CS1.axes(1).rho/degree),60)*degree);
-        case 20, oM.green2white;                           %3m1
-        case 24, oM.black2white; oM.blue2green;            % -3m1
-        case {33,36}, oM.blue2green; oM.black2white;       % 6
-        case {37,40}                                       % 6mm,-62m,6/mmm
-          if mod(round(oM.CS1.axes(1).rho/degree),60)==30, oM.blue2green; end
-      end
-      
-      if any(oM.CS1.id==[5,7,11,27,35]), oM.alpha = 0.3; end      
-    end
-    
+       
     function rgb = h2color(oM,h,varargin)
       
       h.antipodal = false;
       h = h.project2FundamentalRegion(oM.CS1);
-      whiteCenter = oM.whiteCenter.project2FundamentalRegion(oM.CS1); %#ok<*PROP>
+      wC = oM.whiteCenter.project2FundamentalRegion(oM.CS1); %#ok<*PROP>
       switchWB = false;
       
       % copy to the reduced sector
@@ -135,15 +90,15 @@ classdef HSVOrientationMapping < orientationMapping
         ind = dot(h_sR,oM.refl(i))<1e-5;
         h_sR(ind) = reflection(oM.refl(i)) * h_sR(ind);
         
-        if dot(whiteCenter,oM.refl(i))<1e-5
-          whiteCenter = reflection(oM.refl(i)) * whiteCenter;
+        if dot(wC,oM.refl(i))<1e-5
+          wC = reflection(oM.refl(i)) * wC;
           switchWB = ~switchWB;
         end
       end
             
       % compute angle of the points "sh" relative to the center point "center"
       % this should be between 0 and 1
-      [radius,rho] = polarCoordinates(oM.sR,h_sR,whiteCenter);
+      [radius,rho] = polarCoordinates(oM.sR,h_sR,wC);
 
       % which are white
       whiteOrBlack = xor(h_sR == h,switchWB);
@@ -156,7 +111,7 @@ classdef HSVOrientationMapping < orientationMapping
 
       % stretch colors
       radius = radius*(1+oM.alpha)-oM.alpha;
-
+      
       % compute the color vector on the sphere
       v = vector3d('rho',rho,'theta',radius.*pi);
 
@@ -171,12 +126,26 @@ classdef HSVOrientationMapping < orientationMapping
       th = (th ./ pi).^oM.colorStretching .* pi;
 
       v =  vector3d('theta',th,'rho',rh);
-
+      
       % compute rgb values
       rgb = ar2rgb(mod(v.rho./ 2 ./ pi,1),v.theta./pi,get_option(varargin,'grayValue',1));
 
       rgb(isnan(h.x),:) = NaN;
       
+    end
+  end
+  
+  methods (Static = true)
+   function rot = green2white % rotate green 2 white
+      rot = rotation('axis',xvector,'angle',90*degree); 
+    end
+
+    function rot = blue2green % switch blue and green
+      rot = reflection(yvector); 
+    end
+
+    function rot = black2white % switch white and black
+      rot = reflection(zvector);
     end
   end
 end
