@@ -110,4 +110,21 @@ classdef rotation < quaternion & dynOption
    
     end
   end
+  
+  methods (Static = true)
+    
+    function r = nan(varargin)
+      r = rotation(quaternion.nan(varargin{:}));
+    end
+    
+    function r = id(varargin)
+      r = rotation(quaternion.id(varargin{:}));
+    end
+        
+    function r = rand(varargin)
+      r = rotation(quaternion.rand(varargin{:}));      
+    end
+    
+  end
+  
 end

@@ -73,7 +73,7 @@ classdef quaternion
     function q = id(varargin)
       a = ones(varargin{:});
       b = zeros(varargin{:});
-      q = vector3d(a,b,b,b);
+      q = quaternion(a,b,b,b);
     end
         
     function q = rand(varargin)
