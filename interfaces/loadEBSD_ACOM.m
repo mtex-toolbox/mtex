@@ -20,9 +20,20 @@ function ebsd = loadEBSD_ACOM(fname,varargin)
 
 ebsd = EBSD;
 
+% check that this is a ACOM text file
+fid = fopen(fname);
+h1 = fgetl(fid);
+fclose(fid);
+if isempty(strfind(h1,'ACOM RES results'));
+  error('MTEX:wrongInterface','Interface "ACOM" does not fit file format!');
+elseif check_option(varargin,'check')
+  return
+end
+
+% read data
 try
-  % read full file to be able to determine the assinged phases in all
-  % pixel of orientation map
+  % read full file to be able to determine the assinged phases in all pixel
+  % of orientation map
   [A,ffn,nh,SR,hlS,fpos]=txt2mat(fname);
   % read header into cells
   hlP = strfind(hlS,'#');
@@ -34,13 +45,6 @@ try
   
   %get the phases that are assigned in all pixel
   PhasesInFile=unique(A(:,8));
-  
-  % check that this is a ACOM text file
-  if isempty(strfind(hl{1},'ACOM RES results'));
-    error('MTEX:wrongInterface','Interface "ACOM" does not fit file format!');
-  elseif check_option(varargin,'check')
-    return
-  end
   
   phasePos = strmatch('# Phase',hl);
   
