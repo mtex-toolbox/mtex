@@ -24,7 +24,7 @@ function pdf2eps(source, dest)
 % Construct the options string for pdftops
 options = ['-q -paper match -eps -level2 "' source '" "' dest '"'];
 % Convert to eps using pdftops
-[status message] = pdftops(options);
+[status, message] = pdftops(options);
 % Check for error
 if status
     % Report error
@@ -47,5 +47,5 @@ if strcmp(str(1:min(13, end)), '% Produced by')
     fwrite(fid, '%'); % Turn ' ' into '%'
 end
 fclose(fid);
-return
+end
 
