@@ -19,17 +19,15 @@ if ~isa(m1,'Miller') || ~isa(m2,'Miller') || m1.CS ~= m2.CS
   warning('Symmetry mismatch')
 end
 
+if check_option(varargin,'all')
 
-if length(m1) ~=1
-  
-  s = size(m1);
-  
-elseif length(m2) ~=1
-  
-  s = size(m2);
+  if length(m1) == 1
+    m1 = repmat(m1,size(m2));
+  else
+    m2 = repmat(m2,size(m1));
+  end
 
-else
-    
+elseif (length(m1)==1 || length(m2) == 1) % use dot_outer whenever possible
   d = dot_outer(m1,m2,varargin{:});
   
   if length(m1) == 1
@@ -41,9 +39,9 @@ else
 end
 
 % symmetrize
+s = size(m1);
 m1 = vector3d(symmetrise(m1,varargin{:}));
 m2 = vector3d(repmat(reshape(m2,1,[]),size(m1,1),1));
-
 
 % normalize
 m1 = m1 ./ norm(m1);
