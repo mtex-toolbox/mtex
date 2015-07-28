@@ -43,7 +43,7 @@ classdef sigmaSections < ODFSections
       n = numel(oS.sigma);
     end
     
-    function [S2Pos,secPos] = project(oS,ori)
+    function [S2Pos,secPos] = project(oS,ori,varargin)
 
       % maybe this can be done more efficiently
       ori = ori.symmetrise('proper').';
