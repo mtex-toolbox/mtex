@@ -62,14 +62,10 @@ else
   if strcmp(plotType,'bar')
   
     % bin size given?
-    if ~isempty(varargin) && isscalar(varargin{1})
-      nbins = varargin{1};
-    else
-      nbins = 19;
-    end
-
-    % compute bins
     if max(obj.angle) < maxOmega/2, maxOmega = max(obj.angle);end
+    nbins = round(maxOmega/get_option(varargin,'resolution',5*degree));
+    
+    % compute bins
     bins = linspace(-eps,maxOmega+0.01,nbins);
     density = zeros(nbins-1,1);
     lg = {};
