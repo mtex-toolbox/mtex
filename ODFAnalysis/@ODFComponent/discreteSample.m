@@ -12,7 +12,7 @@ q2 = discreteSample(quaternion(S3G_local),npoints);
 
 % the global grid
 S3G_global = equispacedSO3Grid(component.CS,component.SS,'resolution',res);
-d = eval(conmponent,S3G_global); %#ok<EVLC>
+d = eval(component,S3G_global); %#ok<EVLC>
 
 % take global random samples
 d(d<0) = 0;   
