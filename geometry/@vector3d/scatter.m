@@ -157,9 +157,6 @@ function localResizeScatterCallback(h,e,hax)
 
 hax = handle(hax);
 
-% ------------ adjust label positions ----------------
-t = findobj(hax,'Tag','addMarkerSpacing');
-
 % get markerSize
 markerSize = get(findobj(hax,'type','patch'),'MarkerSize');
 if isempty(markerSize)
@@ -170,27 +167,12 @@ end
 
 markerSize = max(markerSize);
 
+% correct text positions
+t = findobj(hax,'Tag','setBelowMarker');
+correctTextPostion(t,markerSize,-1);
 
-for it = 1:length(t)
-  
-  xy = get(t(it),'UserData');
-  if any(isnan(xy)), continue; end
-  set(t(it),'unit','data','position',[xy,0]);
-  set(t(it),'unit','pixels');
-  xy = get(t(it),'position');
-  if isappdata(t(it),'extent')
-    extend = getappdata(t(it),'extent');
-  else
-    extend = get(t(it),'extent');
-    setappdata(t(it),'extent',extend);
-  end
-  margin = get(t(it),'margin');
-  xy(2) = xy(2) - extend(4)/2 - margin - markerSize/2 - 5;
-  %if isnumeric(get(t(it),'BackgroundColor')), xy(2) = xy(2) - 5;end
-  set(t(it),'position',xy);
-  set(t(it),'unit','data');
-  %get(t(it),'position')
-end
+t = findobj(hax,'Tag','setAboveMarker');
+correctTextPostion(t,markerSize,1);
 
 % ------------- scale scatterplots -------------------------------
 u = findobj(hax,'Tag','dynamicMarkerSize');
@@ -214,5 +196,30 @@ for i = 1:length(u)
 end
 
 set(p,'unit',unit);
+
+end
+
+function correctTextPostion(t,markerSize,direction)
+% adjust text positions
+
+for it = 1:length(t)
+  
+  xy = get(t(it),'UserData');
+  if any(isnan(xy)), continue; end
+  set(t(it),'unit','data','position',[xy,0]);
+  set(t(it),'unit','pixels');
+  xy = get(t(it),'position');
+  if isappdata(t(it),'extent')
+    extend = getappdata(t(it),'extent');
+  else
+    extend = get(t(it),'extent');
+    setappdata(t(it),'extent',extend);
+  end
+  margin = get(t(it),'margin');
+  xy(2) = xy(2) + direction*(extend(4)/2 + margin + markerSize/2 + 5);
+    
+  set(t(it),'position',xy);
+  set(t(it),'unit','data');
+end
 
 end
