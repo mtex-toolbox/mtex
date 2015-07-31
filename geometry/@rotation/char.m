@@ -9,7 +9,7 @@ if length(q) == 1
     degchar = mtexdegchar;
   end
   
-  s = ['(',int2str(alpha/degree),degchar,',',int2str(beta/degree),degchar,',',int2str(gamma/degree),degchar,')'];
+  s = ['(',xnum2str(alpha/degree),degchar,',',xnum2str(beta/degree),degchar,',',xnum2str(gamma/degree),degchar,')'];
   
 else
   s = ['Rotations: ',num2str(size(q,1)),'x',num2str(size(q,2))];

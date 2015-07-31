@@ -79,7 +79,7 @@ classdef ipdfOrientationMapping < orientationMapping
           otherwise
             h.dispStyle = 'uvw';
         end
-        annotate(unique(round(h)),'MarkerFaceColor','k','labeled','symmetrised');
+        annotate(unique(round(h)),'MarkerFaceColor','k','labeled','symmetrised','backgroundcolor','w');
         mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
       end
 
@@ -88,8 +88,9 @@ classdef ipdfOrientationMapping < orientationMapping
     function rgb = orientation2color(oM,ori)
     
       % compute crystal directions
+      ori.CS = oM.CS1;
       h = inv(ori) .* oM.inversePoleFigureDirection;
-
+      
       % colorize fundamental region
       rgb = Miller2color(oM,h);
       

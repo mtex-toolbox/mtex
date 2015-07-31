@@ -111,14 +111,14 @@ end
 
 if ~isempty(id)
 
-  txt{1} = ['id    '  num2str(id)];
-  txt{2} = ['phase ', ebsd.mineralList{ebsd.phaseId(id)}];
-  txt{3} = ['x,y   ', xnum2str(pos(1)) ', ' xnum2str(pos(2))];
+  txt{1} = ['id = '  num2str(id)];
+  txt{2} = ['phase = ', ebsd.mineralList{ebsd.phaseId(id)}];
+  txt{3} = ['(x,y) = ', xnum2str(pos(1)) ', ' xnum2str(pos(2))];
   if ebsd.isIndexed(id)
-    txt{4} = ['Euler ' char(ebsd.rotations(id),'nodegree')];
+    txt{4} = ['Euler = ' char(ebsd.rotations(id),'nodegree')];
   end
   if ~isempty(value)
-    txt{end+1} = ['Value ' xnum2str(value)];
+    txt{end+1} = ['Value = ' xnum2str(value)];
   end
 else
   txt = 'no data';
