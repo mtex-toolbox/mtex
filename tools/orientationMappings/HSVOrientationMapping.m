@@ -18,6 +18,7 @@ classdef HSVOrientationMapping < orientationMapping
     colorPostRotation = rotation(idquaternion)
     colorStretching = 1;
     whiteCenter = vector3d(1,0,0)
+    maxAngle = inf
     sR = sphericalRegion    
   end
 
@@ -95,19 +96,30 @@ classdef HSVOrientationMapping < orientationMapping
           switchWB = ~switchWB;
         end
       end
-            
+        
+      % which are white
+      whiteOrBlack = xor(h_sR == h,switchWB);
+      
       % compute angle of the points "sh" relative to the center point "center"
       % this should be between 0 and 1
       [radius,rho] = polarCoordinates(oM.sR,h_sR,wC);
 
-      % which are white
-      whiteOrBlack = xor(h_sR == h,switchWB);
+      if oM.maxAngle < inf
+        radius = max(0,1 - angle(h_sR(:),wC) ./ oM.maxAngle);
+        
+        % black center
+        radius(~whiteOrBlack) = 0;
+      else
+              
+        % white center
+        radius(whiteOrBlack) = 0.5+radius(whiteOrBlack)./2;
+        
+        % black center
+        radius(~whiteOrBlack) = (1-radius(~whiteOrBlack))./2;
 
-      % white center
-      radius(whiteOrBlack) = 0.5+radius(whiteOrBlack)./2;
-
-      % black center
-      radius(~whiteOrBlack) = (1-radius(~whiteOrBlack))./2;
+      end
+      
+      
 
       % stretch colors
       radius = radius*(1+oM.alpha)-oM.alpha;
