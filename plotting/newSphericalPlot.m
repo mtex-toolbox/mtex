@@ -139,7 +139,8 @@ switch get_option(varargin,'projection','earea')
     
   otherwise
     
-    error('Unknown Projection!')
+    error('%s\n%s','Unknown projection specified! Valid projections are:',...
+      'plain, stereo, eangle, edist, earea, schmidt, orthographic')
     
 end
 
