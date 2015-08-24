@@ -21,7 +21,7 @@ classdef sigmaSections < ODFSections
       oS.sR = CS2.fundamentalSector(varargin{:});
       
       % get sections      
-      oS.sigma = linspace(0,phi2,get_option(varargin,'sections',7));
+      oS.sigma = linspace(0,phi2,1+get_option(varargin,'sections',6));
       oS.sigma(end) = [];
       oS.sigma = get_option(varargin,'sigma',oS.sigma,'double');
       
