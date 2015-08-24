@@ -11,7 +11,6 @@ function h = surf(v,cdata,varargin)
 % See also
 %
 
-
 % initialize spherical plot
 sP = newSphericalPlot(v,varargin{:});
 
@@ -41,5 +40,4 @@ for j = 1:numel(sP)
 
 end
 
-set(sP(1).parent,'renderer','zBuffer');
 if nargout == 0, clear h; end

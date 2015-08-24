@@ -148,7 +148,6 @@ if numel(unique(data)) > 1 || 1
        shading flat;
      else
        shading interp;
-       set(gcf,'Renderer','zBuffer');
      end
     else
       set(gcf,'Renderer','painters');
