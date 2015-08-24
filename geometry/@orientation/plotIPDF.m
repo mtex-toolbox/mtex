@@ -1,6 +1,14 @@
 function plotIPDF(o,varargin)
 % plot orientations into inverse pole figures
 %
+% Syntax
+%   plotIPDF(ori,[r1,r2,r3])
+%   plotIPDF(ori,[r1,r2,r3],'points',100)
+%   plotIPDF(ori,[r1,r2,r3],'points','all')
+%   plotIPDF(ori,[r1,r2,r3],'contourf')
+%   plotIPDF(ori,[r1,r2,r3],'antipodal')
+%   plotIPDF(ori,data,[r1,r2,r3])
+%
 % Input
 %  ebsd - @EBSD
 %  r   - @vector3d specimen directions
@@ -22,6 +30,13 @@ function plotIPDF(o,varargin)
   'name',['Inverse Pole figures of ' o.CS.mineral],...
   'datacursormode',@tooltip,varargin{:});
 
+% extract data
+if nargin > 2 && isa(varargin{2},'vector3d')
+  [data,varargin] = extract_data(length(o),varargin);
+else
+  data = [];
+end
+
 if isNew 
   
   r = varargin{1};
@@ -33,10 +48,6 @@ else % take inverse pole figure directions from figure
   r = getappdata(mtexFig.parent,'inversePoleFigureDirection');
     
 end
-
-% color coding
-data = get_option(varargin,'property',[]);
-if size(data,2) == length(o), data = data.'; end
 
 %  subsample if needed 
 if (length(o)*length(o.CS)*length(o.SS) > 100000 || check_option(varargin,'points')) ...

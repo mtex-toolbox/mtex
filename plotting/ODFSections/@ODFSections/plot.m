@@ -19,15 +19,8 @@ end
 secData = {};
 
 % extract data
-if ~isempty(varargin) && ...
-    (prod(size(varargin{1})) == numData || ...
-    prod(size(varargin{1})) == 3 * numData) && ... % for rgb coloring
-    (isnumeric(varargin{1}) || isa(varargin{1},'vector3d')) %#ok<*PSIZE>
-  data = varargin{1};
-else
-  data = get_option(varargin,'property');
-end
-if ~isempty(data), data = reshape(data,numData,[]); end
+[data,varargin] = extract_data(numData,varargin);
+
 
 %
 if exist('ori','var') || isempty(oS.plotGrid)

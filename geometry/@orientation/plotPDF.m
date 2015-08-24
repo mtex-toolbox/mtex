@@ -1,8 +1,14 @@
-function plotPDF(o,h,varargin)
+function plotPDF(o,varargin)
 % plot orientations into pole figures
 %
 % Syntax
-%   plotPDF(ori,[h1,..,hN],<options>)
+%   plotPDF(ori,[h1,h2,h3])
+%   plotPDF(ori,[h1,h2,h3],'points',100)
+%   plotPDF(ori,[h1,h2,h3],'points','all')
+%   plotPDF(ori,[h1,h2,h3],'contourf')
+%   plotPDF(ori,[h1,h2,h3],'antipodal')
+%   plotPDF(ori,[h1,h2,h3],'superposition',{1,[1.5 0.5]})
+%   plotPDF(ori,data,[h1,h2,h3])
 %
 % Input
 %  ori - @orientation
@@ -25,8 +31,17 @@ function plotPDF(o,h,varargin)
   'ensureAppdata',{{'SS',o.SS}},...
   'datacursormode',@tooltip,varargin{:});
 
+% extract data
+if nargin > 2 && isa(varargin{2},'Miller')
+  [data,varargin] = extract_data(length(o),varargin);
+else
+  data = [];
+end
+
 if isNew % for a new plot 
   
+  h = varargin{1};
+  varargin(1) = [];
   if ~iscell(h), h = vec2cell(h);end 
   argin_check([h{:}],{'Miller'});  
   for i = 1:length(h)
@@ -39,8 +54,6 @@ else
   h = getappdata(gcf,'h');
 end
 
-% colorcoding 1 TODO this should be done differently
-data = get_option(varargin,'property',[]);
 
 % ------------------ subsample if needed --------------------------
 if ~check_option(varargin,{'all','contour','contourf','smooth'}) && ...
@@ -52,21 +65,17 @@ if ~check_option(varargin,{'all','contour','contourf','smooth'}) && ...
   disp('  The option "all" ensures that all data are plotted');
   
   samples = discretesample(length(o),points);
-  o= o.subSet(samples);
-  if ~isempty(data), data = data(samples); end
-end
-
-% colorcoding 2 TODO: remove this
-if check_option(varargin,'colorcoding')
-  colorcoding = lower(get_option(varargin,'colorcoding','angle'));
-  data = orientation2color(o,colorcoding,varargin{:});
   
   % convert RGB to ind
   if numel(data) == 3*length(o)  
+    o= o.subSet(samples);
+    data = data(samples,:);
     [data, map] = rgb2ind(reshape(data,[],1,3), 0.03,'nodither');
     set(gcf,'colormap',map);    
+  elseif ~isempty(data)
+    o= o.subSet(samples);
+    data = data(samples);
   end
-  
 end
 
 % plot
