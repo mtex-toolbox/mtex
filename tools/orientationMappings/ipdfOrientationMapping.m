@@ -38,7 +38,7 @@ classdef ipdfOrientationMapping < orientationMapping
       else
         defaultPlotCMD = 'pcolor';
       end
-      plot(h,d,defaultPlotCMD,varargin{:});
+      plot(h,d,'xAxisDirection','east','zAxisDirection','outOfPlane',defaultPlotCMD,varargin{:});
       if ~check_option(varargin,'noTitle')
         tt = mtexTitle(mtexFig.gca,char(oM(1).inversePoleFigureDirection));
         set(tt,'string',['IPF ' get(tt,'string')]);

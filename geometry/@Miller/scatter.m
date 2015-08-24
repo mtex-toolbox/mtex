@@ -29,8 +29,8 @@ if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetris
     % first dimension cs - second dimension m
     m = symmetrise(m,'removeAntipodal',varargin{:});
     
-    varargin{1} = repmat(varargin{1}(:)',size(m,1),1);    
-      
+    varargin{1} = repmat(varargin{1}(:)',size(m,1),1);
+            
   elseif length(m) < 100 || check_option(varargin,{'labeled','label'}) 
   
       [m,l] = symmetrise(m,'removeAntipodal',varargin{:}); % symmetrise without repetition
@@ -41,6 +41,12 @@ if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetris
     
   end
   
+end
+
+if numel(varargin) > 0 && isnumeric(varargin{1})
+    varargin = [varargin(1),Miller.plotOptions,varargin(2:end)];
+else
+   varargin = [Miller.plotOptions,varargin];
 end
 
 % plot them all with the same color
