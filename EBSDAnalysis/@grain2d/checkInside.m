@@ -22,7 +22,16 @@ function isInside = checkInside( grains, xy )
 % EBSD/findByLocation grain2d/findByOrientation
 
 
-if isa(xy,'grain2d'), xy = xy.centroid; end
+if isa(xy,'grain2d') 
+  
+  ind = ismember(xy.id,grains.id);
+  
+  % replace grains by its center
+  xy = xy.centroid;
+  
+  % a grain should not contain itself
+  xy(ind,:) = NaN;
+end
 
 isInside = false(size(xy,1),length(grains));
 
