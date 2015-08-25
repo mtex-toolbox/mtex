@@ -25,7 +25,7 @@ hold on
 
 % plot mirror planes
 mir = Improper & rot.angle>pi-1e-4;
-circle(rot(mir).axis,'linewidth',3,'color','k','doNotDraw');
+circle(rot(mir).axis,'linewidth',2,'color','k','doNotDraw');
 
 for i = 1:length(uaxis)
   
