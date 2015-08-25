@@ -32,9 +32,14 @@ for j = 1:numel(sP)
   mhs = get_option(varargin,'MaxHeadSize',0.9*(1-d.antipodal));
   arrowSize = get_option(varargin,'arrowSize',0.05);
   
-  % project data  
-  [x0,y0] = project(sP(j).proj,normalize(v - abs(arrowSize) * d),varargin{:});
-  [x1,y1] = project(sP(j).proj,normalize(v + abs(arrowSize) * d),varargin{:});
+  % project data
+  if check_option(varargin,'centered') || mhs == 0
+    [x0,y0] = project(sP(j).proj,normalize(v - abs(arrowSize) * d),varargin{:});
+    [x1,y1] = project(sP(j).proj,normalize(v + abs(arrowSize) * d),varargin{:});
+  else
+    [x0,y0] = project(sP(j).proj,normalize(v),varargin{:});
+    [x1,y1] = project(sP(j).proj,normalize(v + 2*abs(arrowSize) * d),varargin{:});
+  end
 
   if ~check_option(varargin,'autoArrowSize')
     arrowSize = 0;
