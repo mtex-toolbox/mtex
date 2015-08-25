@@ -156,11 +156,12 @@ sigma = EinsteinSum(tensor(r),1,r,2)
 % compute active slip system
 [tauMax,mActive,nActive] = calcShearStress(sigma,m,n,'symmetrise');
 
-hold on
 % plot active slip plane in red
+hold on
 quiver(r,mActive,'ArrowSize',0.2,'LineWidth',2,'Color','r');
 
 % plot active slip direction in green
+hold on
 quiver(r,nActive,'ArrowSize',0.2,'LineWidth',2,'Color','g');
 hold off
 

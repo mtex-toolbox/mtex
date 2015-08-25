@@ -88,15 +88,14 @@ mtexColorbar
 %%
 % The more sophisticated way is to colorize the misorientation space and
 % apply the color to the respective grain boundaries. 
-% TODO: apply here patala colorcoding!!!
+
 
 close all
 plot(grains,'translucent',.3)
 legend off
 hold on
 
-oM = axisAngleOrientationMapping(gB_Fo);
-oM.maxAngle = 180*degree;
+oM = patalaOrientationMapping(gB_Fo);
 
 plot(grains.boundary)
 hold on
