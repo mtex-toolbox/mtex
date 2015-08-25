@@ -153,7 +153,7 @@ classdef sphericalRegion
     function v = vertices(sR)
       % get the vertices of the fundamental region
       
-      v = boundary(sR);
+      v = unique(boundary(sR));
       
     end
     
