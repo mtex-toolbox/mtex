@@ -15,6 +15,7 @@ if nargin == 1
       n = 1;
   end
 else
+  axis = vector3d(axis);
   n = ones(size(axis));
   for i = 1:length(axis)
     ind = isnull(angle(cs.axis,axis(i))) & cs.angle>0;
