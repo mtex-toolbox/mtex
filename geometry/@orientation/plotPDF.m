@@ -34,6 +34,7 @@ function plotPDF(o,varargin)
 % extract data
 if nargin > 2 && isa(varargin{2},'Miller')
   [data,varargin] = extract_data(length(o),varargin);
+  data = reshape(data,[1,length(o) numel(data)/length(o)]);
 else
   data = [];
 end
@@ -65,17 +66,9 @@ if ~check_option(varargin,{'all','contour','contourf','smooth'}) && ...
   disp('  The option "all" ensures that all data are plotted');
   
   samples = discretesample(length(o),points);
-  
-  % convert RGB to ind
-  if numel(data) == 3*length(o)  
-    o= o.subSet(samples);
-    data = data(samples,:);
-    [data, map] = rgb2ind(reshape(data,[],1,3), 0.03,'nodither');
-    set(gcf,'colormap',map);    
-  elseif ~isempty(data)
-    o= o.subSet(samples);
-    data = data(samples);
-  end
+  o= o.subSet(samples);
+  data = data(:,samples,:);
+    
 end
 
 % plot
@@ -86,10 +79,12 @@ for i = 1:length(h)
   % compute specimen directions
   sh = symmetrise(h{i});
   r = reshape(o.SS * o * sh,[],1);
-     
-  r.plot(repmat(data(:).',[length(o.SS) length(sh)]),'fundamentalRegion',...
+  
+  r.plot(repmat(data,[length(o.SS) length(sh)]),'fundamentalRegion',...
     'parent',mtexFig.gca,'doNotDraw',varargin{:});
-  mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
+  if ~check_option(varargin,'noTitle')
+    mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
+  end
 
   % TODO: unifyMarkerSize
 

@@ -33,6 +33,7 @@ function plotIPDF(o,varargin)
 % extract data
 if nargin > 2 && isa(varargin{2},'vector3d')
   [data,varargin] = extract_data(length(o),varargin);
+  data = reshape(data,[1,length(o) numel(data)/length(o)]);
 else
   data = [];
 end
@@ -58,7 +59,7 @@ if (length(o)*length(o.CS)*length(o.SS) > 100000 || check_option(varargin,'point
 
   samples = discretesample(length(o),points);
   o = o.subSet(samples);
-  if ~isempty(data), data = data(samples,:); end
+  if ~isempty(data), data = data(:,samples,:); end
 
 end
 
@@ -72,7 +73,7 @@ for ir = 1:length(r)
   h = o(:) \ rSym;
   
   %  plot  
-  h.plot(repmat(data(:),1,length(rSym)),'symmetrised',...
+  h.plot(repmat(data,1,length(rSym)),'symmetrised',...
     'fundamentalRegion','parent',mtexFig.gca,'doNotDraw',varargin{:});
   
   if isNew, mtexTitle(mtexFig.gca,char(r(ir),'LaTeX')); end
