@@ -16,7 +16,7 @@ classdef sigmaSections < ODFSections
       oS = oS@ODFSections(CS1,CS2);
       
       % get fundamental plotting region
-      [phi1,Phi,phi2] = fundamentalRegionEuler(CS1,CS2,varargin{:});
+      [~,~,phi2] = fundamentalRegionEuler(CS1,CS2,varargin{:});
       oS.maxSigma = phi2;
       oS.sR = CS2.fundamentalSector(varargin{:});
       
@@ -31,11 +31,11 @@ classdef sigmaSections < ODFSections
       
       oS.plotGrid = plotS2Grid(oS.sR,varargin{:});
       oS.gridSize = (0:numel(oS.sigma)) * length(oS.plotGrid);
-      phi1 = repmat(oS.plotGrid.rho,1,1,numel(oS.sigma));
-      Phi = repmat(oS.plotGrid.theta,1,1,numel(oS.sigma));      
-      sigma = repmat(reshape(oS.sigma,1,1,[]),[size(oS.plotGrid) 1]);
+      phi1 = repmat(oS.plotGrid.rho,[1,1,numel(oS.sigma)]);
+      Phi = repmat(oS.plotGrid.theta,[1,1,numel(oS.sigma)]);      
+      sigmaLarge = repmat(reshape(oS.sigma,1,1,[]),[size(oS.plotGrid) 1]);
       
-      ori = orientation('Euler',phi1,Phi,sigma - phi1,'ZYZ',oS.CS,oS.SS);
+      ori = orientation('Euler',phi1,Phi,sigmaLarge - phi1,'ZYZ',oS.CS,oS.SS);
       
     end
 
