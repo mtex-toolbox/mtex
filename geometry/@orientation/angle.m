@@ -18,7 +18,7 @@ if nargin == 1
   
   % for misorientations we do not have to consider all symmetries
   [l,d,r] = factor(o1.CS,o1.SS);
-  dr= d * r;
+  dr = d * r;
   qs = l * dr;
   
   % may be we can skip something
@@ -29,7 +29,7 @@ if nargin == 1
   
   % compute all distances to the symmetric equivalent orientations
   % and take the minimum
-  omega(notInside) = 2 * real(acos(max(abs(dot_outer(q.subSet(notInside),qs)),[],2)));
+  omega(notInside) = 2 * real(acos(max(abs(dot_outer(q.subSet(notInside),inv(qs))),[],2)));
   
 else
   
