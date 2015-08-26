@@ -20,6 +20,9 @@ setMTEXpref('zAxisDirection','outOfPlane');
 % 'tiny', 'small', 'normal', 'large', 'huge'
 setMTEXpref('figSize','normal');
 
+% whether to show or not to show a micronbar on EBSD maps
+setMTEXpref('showMicronBar','on')
+
 % default spacing between muliple plots
 setMTEXpref('outerPlotSpacing',10);
 setMTEXpref('innerPlotSpacing',10);
