@@ -56,30 +56,35 @@ classdef ipdfOrientationMapping < orientationMapping
       
       % annotate crystal directions
       if check_option(varargin,'3d')
-        hold on
-        gray = [0.4 0.4 0.4];
-        arrow3d(oM.CS1.axes(1),'facecolor',gray)
-        text3(Miller(1,0,0,'uvw',oM.CS1),'a_1','horizontalAlignment','right')
-
-        arrow3d(oM.CS1.axes(2),'facecolor',gray)
-        text3(Miller(0,1,0,'uvw',oM.CS1),'a_2','verticalAlignment','cap','horizontalAlignment','left')
-
-        arrow3d(oM.CS1.axes(3),'facecolor',gray)
-        text3(Miller(0,0,1,'uvw',oM.CS1),'c','verticalAlignment','bottom')
-        hold off
+        if ~check_option(varargin,'noLabel')
+          hold on
+          gray = [0.4 0.4 0.4];
+          arrow3d(oM.CS1.axes(1),'facecolor',gray)
+          text3(Miller(1,0,0,'uvw',oM.CS1),'a_1','horizontalAlignment','right')
+          
+          arrow3d(oM.CS1.axes(2),'facecolor',gray)
+          text3(Miller(0,1,0,'uvw',oM.CS1),'a_2','verticalAlignment','cap','horizontalAlignment','left')
+          
+          arrow3d(oM.CS1.axes(3),'facecolor',gray)
+          text3(Miller(0,0,1,'uvw',oM.CS1),'c','verticalAlignment','bottom')
+          hold off
+        end
         if isNew, fcw; end
         
-      elseif ~check_option(varargin,'noLabel')
-        h = sR.vertices;
-        if length(unique(h,'antipodal')) <=2, h = [h,xvector,yvector,zvector]; end
-        h = Miller(unique(h),oM.CS1);
-        switch oM.CS1.lattice
-          case {'hexagonal','trigonal'}
-            h.dispStyle = 'UVTW';
-          otherwise
-            h.dispStyle = 'uvw';
+      else
+        if ~check_option(varargin,'noLabel')
+          h = sR.vertices;
+          if length(unique(h,'antipodal')) <=2, h = [h,xvector,yvector,zvector]; end
+          h = Miller(unique(h),oM.CS1);
+          switch oM.CS1.lattice
+            case {'hexagonal','trigonal'}
+              h.dispStyle = 'UVTW';
+            otherwise
+              h.dispStyle = 'uvw';
+          end
+          annotate(unique(round(h)),'MarkerFaceColor','k','labeled',...
+            'symmetrised','backgroundcolor','w',varargin{:});
         end
-        annotate(unique(round(h)),'MarkerFaceColor','k','labeled','symmetrised','backgroundcolor','w');
         mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
       end
 
