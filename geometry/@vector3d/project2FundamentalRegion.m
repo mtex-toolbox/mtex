@@ -23,16 +23,22 @@ if isempty(sR.N) || length(cs)==1, return; end
 
 % the following algorithm assumes that the center of the fundamental
 % sectors are the center of the corresponding voronoi cells. this seems to
-% be the case for all symmetries accept 321 and 312. For these special
+% be the case for all symmetries accept 321, 312, -4. For these special
 % cases we use the two fold axis first to project to the upper hemisphere
 % and the consider the problem reduced to the point group 3. Maybe this is
 % a general idea to reduce computational cost ...
 
-if cs.id == 19 || cs.id == 22
-  ind = v.z < 0;
-  vv = cs(2) * subSet(v,ind);
-  v.x(ind) = vv.x; v.y(ind) = vv.y; v.z(ind) = vv.z;
-  cs = cs(1:2:5);
+switch cs.id
+  case {19,22,26}
+    ind = v.z < 0;
+    vv = cs(2) * subSet(v,ind);
+    v.x(ind) = vv.x; v.y(ind) = vv.y; v.z(ind) = vv.z;
+    cs = cs(1:2:end);
+  case 18
+    ind = v.z < 0;
+    vv = cs(4) * subSet(v,ind);
+    v.x(ind) = vv.x; v.y(ind) = vv.y; v.z(ind) = vv.z;
+    cs = cs(1:3);
 end
 
 symCenter = cs*sR.center;
