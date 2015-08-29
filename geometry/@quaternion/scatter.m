@@ -16,22 +16,23 @@ mtexFig = newMtexFigure(varargin{:});
 if isappdata(mtexFig.gca,'projection')
   projection = getappdata(mtexFig.gca,'projection');
 else
-  if check_option(varargin,{'rodrigues'})
-    projection = 'rodrigues';
-  else
-    projection = 'axisangle';
-  end
+  projection = get_option(varargin,'projection','axisAngle');
   setappdata(mtexFig.gca,'projection',projection);
 end
 
 % project data
-switch projection
+switch lower(projection)
   case 'rodrigues'
     v = Rodrigues(q);
     v = v(abs(v) < 1e5);
     [x,y,z] = double(v);
   case 'axisangle'
     [x,y,z] = double(q.axis .* q.angle ./ degree);
+  case 'euler'
+    [x,y,z] = q.Euler(varargin{:});
+    x = x./degree;
+    y = y./degree;
+    z = z./degree;
 end
 
 % scatter plot
