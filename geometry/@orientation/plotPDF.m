@@ -32,7 +32,10 @@ function plotPDF(o,varargin)
   'datacursormode',@tooltip,varargin{:});
 
 % extract data
-if nargin > 2 && isa(varargin{2},'Miller')
+if check_option(varargin,'property')
+  data = get_option(varargin,'property');
+  data = reshape(data,[1,length(o) numel(data)/length(o)]);
+elseif nargin > 2 && isa(varargin{2},'Miller')
   [data,varargin] = extract_data(length(o),varargin);
   data = reshape(data,[1,length(o) numel(data)/length(o)]);
 else
@@ -67,7 +70,7 @@ if ~check_option(varargin,{'all','contour','contourf','smooth'}) && ...
   
   samples = discretesample(length(o),points);
   o= o.subSet(samples);
-  data = data(:,samples,:);
+  if ~isempty(data), data = data(:,samples,:); end
     
 end
 

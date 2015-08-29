@@ -31,7 +31,10 @@ function plotIPDF(o,varargin)
   'datacursormode',@tooltip,varargin{:});
 
 % extract data
-if nargin > 2 && isa(varargin{2},'vector3d')
+if check_option(varargin,'property')
+  data = get_option(varargin,'property');
+  data = reshape(data,[1,length(o) numel(data)/length(o)]);
+elseif nargin > 2 && isa(varargin{2},'vector3d')
   [data,varargin] = extract_data(length(o),varargin);
   data = reshape(data,[1,length(o) numel(data)/length(o)]);
 else
