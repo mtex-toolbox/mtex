@@ -85,10 +85,10 @@ else
   res = get_option(varargin,'resolution',2.5*degree);
   
   % simluate EBSD data
-  ebsd = calcEBSD(odf,points,'resolution',res);
+  ori = calcOrientations(odf,points,'resolution',res);
 
   % compute angles
-  angles = ebsd.orientations.angle;
+  angles = ori.angle;
 
   maxangle = max(angles);
 
