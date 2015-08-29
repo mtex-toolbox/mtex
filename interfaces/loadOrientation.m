@@ -31,7 +31,7 @@ if iscell(fname), fname = fname{1};end
 
 %  determine interface 
 if ~check_option(varargin,'interface')
-  [interface,options] = check_interfaces(fname,'orientation',varargin{:});
+  [interface,options] = check_interfaces(fname,'Orientation',varargin{:});
 else
   interface = get_option(varargin,'interface');
   options = delete_option(varargin,'interface',1);

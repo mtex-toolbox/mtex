@@ -168,7 +168,7 @@ localUpdateTableHeaders()
         
         isDegree = {true;true;false};
         isRotation = false;
-      case {'EBSD','ODF'}
+      case {'EBSD','ODF','Orientation'}
         names = {...
           'Bunge (phi1 Phi phi2) ZXZ';
           'Matthies (alpha,beta,gamma) ZYZ';
@@ -200,6 +200,9 @@ localUpdateTableHeaders()
           '--- Optional ------------','Phase','Weight','ConfidenceIndex','ReliabilityIndex','SemSignal','MAD','BC','Bands'};
         man  = false(size(opts)-[0 2]);
       case 'ODF'
+        opts = {'------------------------','Weight'};
+        man  = false;
+      case 'Orientation'
         opts = {'------------------------','Weight'};
         man  = false;
       otherwise
