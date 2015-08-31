@@ -98,7 +98,7 @@ if isempty(childs), return;end
     
 CData = ensurecell(get(childs,'CData'));
     
-out = any(cellfun(@(x) size(x,3)==3,CData));
+out = ~isempty(CData) && any(cellfun(@(x) size(x,3)==3,CData));
 
 end
 
