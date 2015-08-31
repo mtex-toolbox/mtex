@@ -33,14 +33,12 @@ classdef mapPlot < handle
       set(ax,'TickDir','out',...
         'XMinorTick','off',...
         'YMinorTick','off',...
-        'TickLength',[0,0],...
         'XTickLabel',{},...
         'yTickLabel',{},...
         'Layer','top',...
         'box','on','FontSize',getMTEXpref('FontSize'));
       grid(ax,'off');
-      xlabel(ax,'x','visible','off')
-      ylabel(ax,'y','visible','off')
+      
                   
       setCamera(ax,'default',varargin{:});
       
@@ -54,6 +52,17 @@ classdef mapPlot < handle
           set(h,'ActionPostCallback',@(e,v) resizeCanvas(e,v,mP));
         end
       catch %#ok<CTCH>
+      end
+      
+      % coordinates
+      if strcmpi(get_option(varargin,'coordinates'),'on')
+        set(ax,'xtickLabelMode','auto','ytickLabelMode','auto');
+        xlabel(ax,'x')
+        ylabel(ax,'y')
+      else
+        set(ax,'tickLength',[0,0]);
+        xlabel(ax,'x','visible','off')
+        ylabel(ax,'y','visible','off')
       end
       
       % add a micron bar
