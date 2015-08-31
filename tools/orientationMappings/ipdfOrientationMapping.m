@@ -82,6 +82,7 @@ classdef ipdfOrientationMapping < orientationMapping
             otherwise
               h.dispStyle = 'uvw';
           end
+          varargin = delete_option(varargin,'position');
           annotate(unique(round(h)),'MarkerFaceColor','k','labeled',...
             'symmetrised','backgroundcolor','w',varargin{:});
         end
