@@ -169,16 +169,27 @@ classdef vector3d < dynOption
     end
         
     function v = X(varargin)
-      v = vector3d(1,0,0);
+      x = ones(varargin{:});
+      v = vector3d(x,0,0);
     end
     
     function v = Y(varargin)
-      v = vector3d(1,0,0);
+      x = ones(varargin{:});
+      v = vector3d(0,x,0);
     end
     
     function v = Z(varargin)
-      v = vector3d(1,0,0);
+      x = ones(varargin{:});
+      v = vector3d(0,0,x);
     end
     
+    %function v = polar(polarAngle,azimuthAngle)
+    %  % Syntax
+    %  %
+    %  x = sin(polarAngle).*cos(azimuthAngle);
+    %  y = sin(polarAngle).*sin(azimuthAngle);
+    %  z = cos(polarAngle);
+    %  v = vector3d(x,y,z);
+    %end
   end
 end
