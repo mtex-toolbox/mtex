@@ -23,6 +23,9 @@ setMTEXpref('figSize','normal');
 % whether to show or not to show a micronbar on EBSD maps
 setMTEXpref('showMicronBar','on')
 
+% whether to show or not to show a coordinates on EBSD maps
+setMTEXpref('showCoordinates','off')
+
 % default spacing between muliple plots
 setMTEXpref('outerPlotSpacing',10);
 setMTEXpref('innerPlotSpacing',10);

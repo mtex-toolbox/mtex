@@ -55,7 +55,8 @@ classdef mapPlot < handle
       end
       
       % coordinates
-      if strcmpi(get_option(varargin,'coordinates'),'on')
+      showCoordinates = get_option(varargin,'coordinates',getMTEXpref('showCoordinates'));
+      if strcmpi(showCoordinates,'on')
         set(ax,'xtickLabelMode','auto','ytickLabelMode','auto');
         xlabel(ax,'x')
         ylabel(ax,'y')
