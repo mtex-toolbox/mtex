@@ -39,17 +39,11 @@ classdef ipdfOrientationMapping < orientationMapping
         defaultPlotCMD = 'pcolor';
       end
       plot(h,d,'xAxisDirection','east','zAxisDirection','outOfPlane',defaultPlotCMD,varargin{:});
-      if ~check_option(varargin,'noTitle')
-        tt = mtexTitle(mtexFig.gca,char(oM(1).inversePoleFigureDirection));
-        set(tt,'string',['IPF ' get(tt,'string')]);
-      end
-      
-      if isempty(oM.CS1.mineral)
-        name = ['"' oM.CS1.pointGroup '"'];
-      else
-        name = oM.CS1.mineral;
-      end
-      set(mtexFig.parent,'name',['Inverse pole figure coloring for ' name])      
+            
+      name = oM.CS1.pointGroup;
+      if ~isempty(oM.CS1.mineral), name = [oM.CS1.mineral ' (' name ')']; end
+        
+      set(mtexFig.parent,'name',['IPF key for ' name])      
       set(mtexFig.parent,'tag','ipdf')
       setappdata(mtexFig.parent,'CS',oM.CS1);
       setappdata(mtexFig.parent,'inversePoleFigureDirection',oM.inversePoleFigureDirection);
@@ -84,7 +78,7 @@ classdef ipdfOrientationMapping < orientationMapping
           end
           varargin = delete_option(varargin,'position');
           annotate(unique(round(h)),'MarkerFaceColor','k','labeled',...
-            'symmetrised','backgroundcolor','w',varargin{:});
+            'symmetrised','backgroundcolor','w','autoAlignText',varargin{:});
         end
         mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
       end
