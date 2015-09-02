@@ -2,7 +2,11 @@ function h = text(v,varargin)
 % display a text in a spherical plot
 %
 % Syntax
-%   text(v,s)  %
+%   text(v,s)
+%   text(v,s,'fontSize',16)
+%   text(v,s,'textAboveMarker')
+%   text(v,s,'textColor','blue')
+%   text(v,s,'textBackgroundColor','white')
 %
 % Input
 %  v  - @vector3d

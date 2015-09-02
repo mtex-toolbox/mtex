@@ -1,13 +1,18 @@
 function plot(ori,varargin)
 % annotate a orientation to an existing plot
 %
+% Syntax
+%   plot(ori)
+%   plot(ori,'label','o1')
+%
 % Input
 %  ori - @orientation
 %
 % Options
 %
 % See also
-% orientation/scatter Plotting
+% orientation/scatter orientation/plotPDF orientation/plotODF
+% orientation/plotIPDF vector3d/text
 
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 

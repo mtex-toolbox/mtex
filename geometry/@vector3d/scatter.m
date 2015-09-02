@@ -21,6 +21,7 @@ function h = scatter(v,varargin)
 % Output
 %
 % See also
+% vector3d/text
 
 % initialize spherical plots
 sP = newSphericalPlot(v,varargin{:});

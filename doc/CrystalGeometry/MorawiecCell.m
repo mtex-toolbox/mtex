@@ -1,4 +1,8 @@
 %% Fundamental Regions 
+% Thanks to crystal symmetry the orientation space can be reduced to the so
+% called fundamental or asymmetric region. Those regions play an important
+% role for the computation of axis and angle distribtions of
+% misorientations.
 % 
 %
 %% Open in Editor

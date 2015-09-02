@@ -1,5 +1,6 @@
 %% Crystal Symmetries
-% Explains how to define crystal symmetries. 
+% This section covers the unit cell of a crystal, its space, point and Laue
+% groups as well as alignments of the crystal coordinate system.
 %
 %% Open in Editor
 %

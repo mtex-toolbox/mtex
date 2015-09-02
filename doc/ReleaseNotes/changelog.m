@@ -1,12 +1,12 @@
 %% MTEX Changelog
 %
 %
-%% MTEX 4.1.beta
+%% MTEX 4.1 - 09/2015
 %
-% MTEX 4.1 introduces new possibilities to analysis of misorientations. For
-% the first time it covers all geometric aspects of misorientations between
-% arbitrary crystal symmetries. Furthermore, MTEX 4.1 introduces filters to
-% smooth EBSD data.
+% MTEX 4.1 introduces new possibilities to the analysis of misorientations.
+% For the first time it covers all geometric aspects of misorientations
+% between arbitrary crystal symmetries. Furthermore, MTEX 4.1 introduces
+% filters to smooth EBSD data.
 %
 % *Smoothing of EBSD Data*
 % Smoothing of EBSD data might be necesarry if the orientation data are
@@ -16,8 +16,8 @@
 %
 %   ebsd = smooth(ebsd)
 %
-% This applies the splineFilte> to the orientation data. Beside the spline
-% filter many other filter are available. A general discussion on this
+% This applies the spline filter to the orientation data. Beside the spline
+% filter many other filters are available. A general discussion on this
 % topic can be found <EBSDSmoothing.html here>. To make use of a different
 % then the dafault filter use the syntax
 %
@@ -129,6 +129,18 @@
 % During the minor revisions of MTEX also several minor improvments has
 % been added which are summarized below
 %
+% * check for inclusions in grains: the following command returns a list of
+% true/false depending whether a grain in |grainList| is an inclusion in
+% |hostGrain|
+%
+%   hostGrain.checkInside(grainList)
+%
+% * new MTEXpref to show/hide the micronbar in EBSD maps. This default is
+% set in |mtex_settings.m| to |on|. The following command switches them
+% off.
+%
+%   setMTEXpref('showMicronBar','off')
+%
 % * allow syntax
 %
 %   plot(odf,pf.h,'superposition',pf.c)
@@ -138,7 +150,14 @@
 %   [~,mP] = plot(ebsd)
 %   mP.micronBar.visible = 'off'
 %
+% * allow to place labels above/below the marker by
+%
+%   plot(xvector,'label','RD','textAboveMarker')
+%
 % * new EBSD interface to ACOM Nanomegas *.ang files
+%
+% * plot relative to the crystal coordinate system are now always aligned
+% such that x points to the east and y points to north
 %
 % * misorientation axis with respect to crystal and specimen reference
 % frame

@@ -1,6 +1,6 @@
 %% Rotations
-% Explains how to define rotations and how to switch between different Euler
-% angle conventions.
+% Rotations are the basic concept to understand crystal orientations and
+% crystal symmetries.
 %%
 % Rotations are represented in MTEX by the class *@rotation* which is
 % inherited from the class <quaternion_index.html quaternion> and allow to

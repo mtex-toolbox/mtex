@@ -2,19 +2,20 @@ function varargout = scatter(o,varargin)
 % plots ebsd data as scatter plot
 %
 % Syntax
-%   scatter(ebsd,<options>)
+%   scatter(ori)
 %
 % Input
-%  ebsd - @EBSD
+%  ori - @orientation
 %
 % Options
 %  axisAngle - axis angle projection
 %  Rodrigues - rodrigues parameterization
+%  Euler     - 3d Bunge Euler plot
 %  points    - number of orientations to be plotted
 %  center    - orientation center
 %
 % See also
-% EBSD/plotPDF savefigure
+% vector3d/text orientation/plot
 
 if nargin > 1 && isnumeric(varargin{1})
   data = varargin{1};
