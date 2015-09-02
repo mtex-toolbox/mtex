@@ -68,7 +68,11 @@ classdef ipdfOrientationMapping < orientationMapping
       else
         if ~check_option(varargin,'noLabel')
           h = sR.vertices;
-          if length(unique(h,'antipodal')) <=2, h = [h,xvector,yvector,zvector]; end
+          if length(unique(h,'antipodal')) <=2
+            h = [h,xvector,yvector,zvector]; 
+          else
+            varargin = ['Marker','none',varargin];
+          end
           h = Miller(unique(h),oM.CS1);
           switch oM.CS1.lattice
             case {'hexagonal','trigonal'}
