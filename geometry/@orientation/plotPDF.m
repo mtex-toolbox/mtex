@@ -53,9 +53,11 @@ if isNew % for a new plot
   end    
   setappdata(gcf,'h',h);
   set(gcf,'Name',['Pole figures of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
+  pfAnnotations = getMTEXpref('pfAnnotations');
   
 else
   h = getappdata(gcf,'h');
+  pfAnnotations = @() 1;
 end
 
 
@@ -88,7 +90,9 @@ for i = 1:length(h)
   if ~check_option(varargin,'noTitle')
     mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
   end
-
+  
+  pfAnnotations('parent',mtexFig.gca);
+  
   % TODO: unifyMarkerSize
 
 end

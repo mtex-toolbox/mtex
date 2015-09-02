@@ -14,6 +14,7 @@ function plot(pf,varargin)
 % SphericalProjection_demo 
 
 [mtexFig,isNew] = newMtexFigure(varargin{:}); 
+pfAnnotations = getMTEXpref('pfAnnotations');
 
 if nargin > 1 && isnumeric(varargin{1})
   data = mat2cell(varargin{1}(:),cellfun('prodofsize',pf.allI));
@@ -29,6 +30,8 @@ for i = 1:length(pf.allH)
   pf.allR{i}.plot(data{i},...
     'dynamicMarkerSize','parent',mtexFig.gca,'doNotDraw',varargin{:});
   mtexTitle(mtexFig.gca,char(pf.allH{i},'LaTeX'));
+  pfAnnotations('parent',mtexFig.gca);
+  
 end
 
 if isNew % finalize plot

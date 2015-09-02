@@ -41,6 +41,7 @@ r = plotS2Grid(sR,varargin{:});
 
 % create a new figure if needed
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
+pfAnnotations = getMTEXpref('pfAnnotations');
   
 for i = 1:length(h)
   
@@ -50,6 +51,8 @@ for i = 1:length(h)
   p = ensureNonNeg(odf.calcPDF(h{i},r,varargin{:},'superposition',c{i}));
   
   r.plot(p,'parent',mtexFig.gca,'smooth','doNotDraw',varargin{:});
+  pfAnnotations('parent',mtexFig.gca);
+
   mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
   
 end

@@ -26,6 +26,17 @@ setMTEXpref('showMicronBar','on')
 % whether to show or not to show a coordinates on EBSD maps
 setMTEXpref('showCoordinates','off')
 
+% how to annotate pole figure plots
+% the following line add X and Y to the plot
+% you may want to replace this by 'RD' and 'ND'
+pfAnnotations = @(varargin) text([vector3d.X,vector3d.Y],{'X','Y'},...
+  'BackgroundColor','w',varargin{:});
+
+% you can uncomment the following line to disable the annotations
+%pfAnnotations = @() do_nothing;
+setMTEXpref('pfAnnotations',pfAnnotations);
+
+
 % default spacing between muliple plots
 setMTEXpref('outerPlotSpacing',10);
 setMTEXpref('innerPlotSpacing',10);
@@ -234,3 +245,8 @@ warning('off','MATLAB:divideByZero'); %#ok<RMWRN>
 
 %% end user defined global settings
 %--------------------------------------------------------------------------
+
+  function do_nothing(varargin)
+  end
+
+end
