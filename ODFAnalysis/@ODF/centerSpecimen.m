@@ -126,7 +126,7 @@ odf = rotate(odf,rot);
     % y = textureindex(rotate(odf,r) - odf);
     if useFourier
       
-      DRot = wignerD(rot,'bandwidth',L);
+      DRot = WignerD(rot,'bandwidth',L);
       
       D1  = zeros(deg2dim(L+1),1);
       for l = 0:L
