@@ -83,9 +83,9 @@ classdef phaseList
         pL.CSList = [{'not indexed'};pL.CSList(:)];
         pL.phaseId = pL.phaseId + 1;
         if  ismember(0,pL.phaseMap)
-          pL.phaseMap = [-1;pL.phaseMap];
+          pL.phaseMap = [-1;pL.phaseMap(:)];
         else
-          pL.phaseMap = [0;pL.phaseMap];
+          pL.phaseMap = [0;pL.phaseMap(:)];
         end
       end
       
