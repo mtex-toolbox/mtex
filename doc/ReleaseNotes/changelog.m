@@ -124,6 +124,28 @@
 % In most cases you can replace |plotODF| by |plot|. Only for
 % misorientations the default plot is |scatter|.
 %
+% *More default settings for EBSD maps and pole figure plots*
+%
+% * new MTEXpref to show/hide the micronbar in EBSD maps. The default is
+% set in |mtex_settings.m| to |on|. The following command switches them
+% off.
+%
+%   setMTEXpref('showMicronBar','off')
+%
+% * new MTEXpref to show/hide the coordinates in EBSD maps. The default is
+% set in |mtex_settings.m| to |off|. The following command switches them
+% on.
+%
+%   setMTEXpref('showCoordinates','off')
+%
+% * new MTEXpref to display coordinates in pole figure plot. The default is
+% set in |mtex_settings.m| to display the directions |X| and |Y|. The
+% following command switches it to |RD| and |ND|.
+%
+%   pfAnnotations = @(varargin) text([vector3d.X,vector3d.Y],{'RD','ND'},...
+%    'BackgroundColor','w','tag','axesLabels',varargin{:});
+%   setMTEXpref('pfAnnotations',pfAnnotations);
+%
 % *Other improvements since MTEX 4.0.0*
 %
 % During the minor revisions of MTEX also several minor improvments has
@@ -134,12 +156,6 @@
 % |hostGrain|
 %
 %   hostGrain.checkInside(grainList)
-%
-% * new MTEXpref to show/hide the micronbar in EBSD maps. This default is
-% set in |mtex_settings.m| to |on|. The following command switches them
-% off.
-%
-%   setMTEXpref('showMicronBar','off')
 %
 % * allow syntax
 %
