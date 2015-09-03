@@ -11,7 +11,9 @@ R = Rodrigues(ori);
 % duplicate them 
 
 % get boundaries
-bounds = getFundamentalRegionRodrigues(ori.CS);
+% TODO
+oR = fundamentalRegion(ori.CS);
+%bounds = getFundamentalRegionRodrigues(ori.CS);
 
 % for all boundaries
 for ib = 1:length(bounds)

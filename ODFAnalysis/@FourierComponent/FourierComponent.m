@@ -5,14 +5,16 @@ classdef FourierComponent < ODFComponent
     f_hat    
     CS = crystalSymmetry
     SS = specimenSymmetry
+    antipodal = false
   end
  
   methods
     
-    function component = FourierComponent(f_hat,CS,SS)
+    function component = FourierComponent(f_hat,CS,SS,varargin)
                        
       component.CS = CS;
       if nargin>2, component.SS = SS;end
+      component.antipodal = check_option(varargin,'antipodal');
       
       % extract f_hat
       if isa(f_hat,'cell')

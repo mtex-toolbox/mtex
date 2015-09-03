@@ -52,7 +52,7 @@ uimenu(m,'label','Set Outer Margin','callback',{@setMargin,'outer'});
 % annotations
 
 an = uimenu(m,'label','Annotations');
-uimenu(an,'label','Min/Max','checked',isVisible('minmax'),'callback',{@setVisible,'TL','BL'});
+uimenu(an,'label','Min/Max','checked',isVisible('minmax'),'callback',{@setVisible,'minmax'});
 uimenu(an,'label','Axes Labels','checked',isVisible('labels'),'callback',{@setVisible,'labels'});
 uimenu(an,'label','Coordinates','checked',isVisible('ticks'),'callback',{@setVisible,'ticks'});
 uimenu(an,'label','Grid','checked','off','callback',{@setVisible,'grid'});
@@ -132,15 +132,25 @@ for a = 1:numel(ax)
   for element = cellstr(varargin)
     switch char(element)
 
+      case 'minmax'
+      
+        sP = getappdata(ax(a),'sphericalPlot');
+
+        if ~isempty(sP)
+          sP.dispMinMax = strcmp(get(obj,'checked'),'on');
+          sP.updateMinMax;
+        end
+      
       case 'micronBar'
         
         mP  = getappdata(ax(a),'mapPlot');
         if ~isempty(mP), mP.micronBar.visible = onoff;end
       
       case 'labels'
-        la = [get(ax(a),'xlabel'),get(ax(a),'ylabel')];
+        la = [get(ax(a),'xlabel');get(ax(a),'ylabel');...
+          findobj(ax(a),'tag','axesLabels')];
         set(la,'visible',onoff);
-
+        
       case 'ticks'
       
         if strcmp(onoff,'on')
@@ -158,17 +168,16 @@ for a = 1:numel(ax)
           if isempty(sP.grid)
             set(ax(a),'XGrid',onoff,'YGrid',onoff);
           else
-            set(sP.(char(element)),'visible',onoff);
+          set(sP.(element),'visible',onoff);
           end
         else
         end
-        
     end
   end
+
+  mtexFig.drawNow
+
 end
-
-mtexFig.drawNow
-
 end
 
 % Grid Visibility

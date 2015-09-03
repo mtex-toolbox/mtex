@@ -14,6 +14,7 @@ function plot(pf,varargin)
 % SphericalProjection_demo 
 
 [mtexFig,isNew] = newMtexFigure(varargin{:}); 
+pfAnnotations = getMTEXpref('pfAnnotations');
 
 if nargin > 1 && isnumeric(varargin{1})
   data = mat2cell(varargin{1}(:),cellfun('prodofsize',pf.allI));
@@ -29,6 +30,8 @@ for i = 1:length(pf.allH)
   pf.allR{i}.plot(data{i},...
     'dynamicMarkerSize','parent',mtexFig.gca,'doNotDraw',varargin{:});
   mtexTitle(mtexFig.gca,char(pf.allH{i},'LaTeX'));
+  pfAnnotations('parent',mtexFig.gca);
+  
 end
 
 if isNew % finalize plot
@@ -38,8 +41,5 @@ if isNew % finalize plot
   set(gcf,'Name',['Pole Figures of Specimen ',inputname(1)]);
   set(gcf,'Tag','pdf');  
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
-  if check_option(varargin,'3d')
-    rotate3d(gcf);
-    linkprop(mtexFig.children, 'CameraPosition');
-  end
+  if check_option(varargin,'3d'), fcw(gcf,'-link'); end
 end

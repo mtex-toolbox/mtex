@@ -31,7 +31,7 @@ figure(2);plotIPDF(odf,r)
 disp('check for equal pole figures!')
 input('(return)')
 
-%% plotODF
+%% plot ODF
 
 figure(1);plot(fodf,'sections',6,'resolution',1*degree)
 figure(2);plot(odf,'sections',6)

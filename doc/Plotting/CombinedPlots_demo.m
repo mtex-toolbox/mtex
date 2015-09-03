@@ -57,20 +57,23 @@ hold off % next plot command deletes all plots
 plotPDF(odf,h,'antipodal','contourf','grid')
 mtexColorMap white2black
 hold all
-plotPDF(ori,h,'antipodal','MarkerSize',5,'MarkerColor','b','MarkerEdgeColor','w')
+plotPDF(ori,h,'antipodal','DisplayName','EBSD 1',...
+  'MarkerSize',5,'MarkerColor','b','MarkerEdgeColor','w')
 hold all
-plotPDF(ori_rotated,h,'MarkerSize',5,'MarkerColor','r','MarkerEdgeColor','k');
+plotPDF(ori_rotated,h,'DisplayName','EBSD 2',...
+  'MarkerSize',5,'MarkerColor','r','MarkerEdgeColor','k');
 hold off
-legend({'EBSD 1','EBSD 2'},'units','normalized','position',[0.05 0.85 0.1 0.08]);
+
+legend('show','location','southeast')
 
 %%
 % and, of course, you can do the same with ODF plots:
 
-plotODF(odf,'sections',8,'contourf','sigma')
+plot(odf,'sections',8,'contourf','sigma')
 mtexColorMap white2black
 hold all
-plotODF(ori,'MarkerSize',6,'MarkerColor','b','MarkerEdgeColor','w')
-plotODF(ori_rotated,'MarkerSize',6,'MarkerColor','r','MarkerEdgeColor','k');
+plot(ori,'MarkerSize',6,'MarkerColor','b','MarkerEdgeColor','w')
+plot(ori_rotated,'MarkerSize',6,'MarkerColor','r','MarkerEdgeColor','k');
 hold off
 
 %% Add Miller Indices to an Inverse Pole Figure Plot

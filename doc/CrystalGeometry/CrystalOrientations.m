@@ -191,10 +191,29 @@ inv(o1)
 
 %% Plotting Orientations
 % 
-% The [[orientation.plot.html,plot]] function allows you to visualize a 
-% quaternion by plotting how the standard basis x,y,z transforms under the
-% rotation.
+% The function [[orientation.plot.html,plot]] plots an orientation in 3
+% dimensinal axis angle space.
 
-plot(o1)
+oR = fundamentalRegion(o1.CS,o1.SS,'complete')
+plot(oR)
+hold on
+scatter(o1,'axisAngle','markerColor','b','markerSize',10)
+axis off
 
+%%
+% Note that the orientation is not automatically projected into its
+% fundamental region, as we see if the fundamental region is visuallized
+
+hold on
+oR = fundamentalRegion(o1.CS,o1.SS)
+plot(oR,'color',[0.7 0.5 0.5])
+hold on
+
+
+%%
+
+hold on
+o2 = quaternion(o1.project2FundamentalRegion);
+scatter(o2,'axisAngle','markerColor','r','markerSize',10)
+hold off
 

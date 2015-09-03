@@ -12,7 +12,7 @@ poly = [];
 button = 1;
 hold on
 
-h = line('Color','k','MarkerFaceColor','k','MarkerEdgeColor',...
+h = line('xdata',[],'ydata',[],'Color','k','MarkerFaceColor','k','MarkerEdgeColor',...
   'w','MarkerSize',10,'LineWidth',2,'Marker','s');
 
 while button == 1

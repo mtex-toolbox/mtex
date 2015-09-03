@@ -44,7 +44,7 @@ plot(grains)
 %%
 
 plot(grains,log(grains.grainSize ./ grains.boundarySize))
-colorbar
+mtexColorbar
 
 %%
 % remove 

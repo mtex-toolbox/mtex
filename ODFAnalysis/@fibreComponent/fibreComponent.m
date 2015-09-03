@@ -7,6 +7,7 @@ classdef fibreComponent < ODFComponent
     psi = deLaValeePoussinKernel('halfwidth',10*degree);
     weights = 1;
     SS = specimenSymmetry;
+    antipodal = false
   end
 
   properties (Dependent = true)

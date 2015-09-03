@@ -37,7 +37,7 @@ for i = 1:length(subs)
       end
     end
     
-    ind = ind & phases(ebsd.phaseId);
+    ind = ind & phases(ebsd.phaseId(:));
     
   elseif isa(subs{i},'symmetry')
     

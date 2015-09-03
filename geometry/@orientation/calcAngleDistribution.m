@@ -11,10 +11,9 @@ function [density,omega] = calcAngleDistribution(ori,varargin)
 %  omega   - corresponding list of misorientation angles
 %
 % See also
-% EBSD/calcMisorientation misorientationAnalysis/plotAngleDistribution
+% EBSD/calcMisorientation plotAngleDistribution
 
-[dns,omega] = angleDistribution(ori.CS);
-omega = linspace(0,max(omega),min(50,max(5,length(ori)/20)));
+omega = linspace(0,maxAngle(ori.CS,ori.SS),min(50,max(5,length(ori)/20)));
 omega = get_option(varargin,'omega',omega);
 
 density = histc(angle(ori),omega);

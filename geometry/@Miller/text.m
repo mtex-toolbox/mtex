@@ -35,4 +35,7 @@ if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetris
   varargin = [varargin,{'removeAntipodal','skipSymmetrise'}];
 end
 
+% ensure specific plot options
+varargin = [varargin(1),Miller.plotOptions,varargin(2:end)];
+
 text@vector3d(m,varargin{:});

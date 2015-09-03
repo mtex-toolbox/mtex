@@ -28,13 +28,17 @@ for j = 1:numel(sP)
     
   else % no color given -> do kernel density estimation
 
-    S2G = plotS2Grid(sP(j).sphericalRegion);
+    sR = sP(j).sphericalRegion;
+    if isfield(v.opt,'region'), sR = [sR,v.opt.region]; end
+    S2G = plotS2Grid(sR);
 
     cdata = kernelDensityEstimation(v(:),S2G,'halfwidth',5*degree,varargin{:});    
     cdata = reshape(cdata,size(S2G));
     
   end
 
+  sP(j).updateMinMax(cdata);
+  
   % interpolate if no regular grid was given
   if ~isOption(S2G,'plot') || ~S2G.opt.plot
     
@@ -43,7 +47,7 @@ for j = 1:numel(sP)
       S2G = plotS2Grid(sP(j).sphericalRegion,'resolution',2.5*degree,varargin{:});
       cdata = interp(v,cdata,S2G);
       
-    elseif ~isa(sP.proj,'plainRojection')
+    elseif ~isa(sP(j).proj,'plainProjection')
       
       % close the gap between 0 and 2*pi
       varargin = set_option(varargin,'correctContour');
@@ -52,7 +56,7 @@ for j = 1:numel(sP)
   end
   
   % scale the data
-  [cdata,colorRange,minData,maxData] = scaleData(cdata,varargin{:});
+  [cdata,colorRange] = scaleData(cdata,varargin{:});
   if ~any(isnan(colorRange)), caxis(sP(j).ax,colorRange);end
 
   % ------------- compute contour lines ------------------------
@@ -73,10 +77,11 @@ for j = 1:numel(sP)
   [x,y] = project(sP(j).proj,S2G,'removeAntipodal');
 
   % extract non nan data
-  ind = ~isnan(x);
-  x = submatrix(x,ind);
-  y = submatrix(y,ind);
-  data = reshape(submatrix(cdata,ind),size(x));
+  %ind = ~isnan(x);
+  %x = submatrix(x,ind);
+  %y = submatrix(y,ind);
+  %data = reshape(submatrix(cdata,ind),size(x));
+  data = reshape(cdata,size(x));
 
   % plot contours
   h = [h,betterContourf(sP(j).ax,x,y,data,contours,varargin{:})];
@@ -90,12 +95,6 @@ for j = 1:numel(sP)
 
   % colormap
   colormap(sP(j).ax,getMTEXpref('defaultColorMap'));
-
-  % add annotations
-  if check_option(varargin,'minmax')
-    varargin = [{'BL',{'Min:',xnum2str(minData,0.2)},...
-      'TL',{'Max:',xnum2str(maxData,0.2)}} varargin]; %#ok<AGROW>
-  end
 
   % bring grid in front
   sP(j).doGridInFront;
@@ -122,7 +121,7 @@ function h = betterContourf(ax,X,Y,data,contours,varargin)
 
 h = [];
 
-if numel(unique(data)) > 1
+if numel(unique(data)) > 1 || 1
 
   % workauround for a MATLAB Bug
   %if mean(X(:,1)) > mean(X(:,end))
@@ -149,7 +148,6 @@ if numel(unique(data)) > 1
        shading flat;
      else
        shading interp;
-       set(gcf,'Renderer','zBuffer');
      end
     else
       set(gcf,'Renderer','painters');

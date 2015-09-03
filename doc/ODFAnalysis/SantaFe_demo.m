@@ -47,15 +47,15 @@ plotPDF(rec,pf.h,'antipodal')
 
 %% Plot estimated ODF (Ghost Corrected)
 
-plot(rec,'alpha','sections',18,'resolution',5*degree,...
-  'projection','plain','contourf','FontSize',10,'silent')
+plot(rec,'sections',18,'resolution',5*degree,...
+  'contourf','FontSize',10,'silent','figSize','large','minmax')
 mtexColorMap white2black
 
 
 %% Plot odf
 
-plot(SantaFe,'alpha','sections',18,...
-  'projection','plain','contourf','FontSize',10,'silent')
+plot(SantaFe,'sections',18,'contourf','FontSize',10,'silent',...
+  'figSize','large','minmax')
 mtexColorMap white2black
    
 %% Plot Fourier Coefficients

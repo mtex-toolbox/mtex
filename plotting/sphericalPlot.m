@@ -4,6 +4,7 @@ classdef sphericalPlot < handle
   properties
     proj = sphericalProjection
     boundary %
+    bounds   %
     grid     %
     ticks    %
     ax       %
@@ -12,6 +13,9 @@ classdef sphericalPlot < handle
     TR       %
     BL       %
     BR       %
+    minData = 0
+    maxData = 0
+    dispMinMax = false
   end
   
   properties (Dependent = true)
@@ -34,6 +38,7 @@ classdef sphericalPlot < handle
       sP.ax = ax;
       sP.parent = get(ax,'parent');
       sP.proj = proj;
+      sP.dispMinMax = check_option(varargin,'minmax');
       setappdata(ax,'sphericalPlot',sP);
       
       % store hold status
@@ -42,7 +47,8 @@ classdef sphericalPlot < handle
       if isa(sP.proj,'plainProjection')
       
         % boundary
-        bounds = sP.sphericalRegion.polarRange / degree;
+        sP.bounds = sP.sphericalRegion.polarRange / degree;
+        sP.bounds(3:4) = fliplr(sP.bounds(3:4));
         axis(ax,'on');
         set(ax,'box','on');
         
@@ -62,7 +68,7 @@ classdef sphericalPlot < handle
         % compute bounding box
         x = ensurecell(get(sP.boundary,'xData')); x = [x{:}];
         y = ensurecell(get(sP.boundary,'yData')); y = [y{:}];
-        bounds = [min(y(:)),min(x(:)),max(y(:)),max(x(:))];
+        sP.bounds = [min(x(:)),min(y(:)),max(x(:)),max(y(:))];
         if ~check_option(varargin,'grid')
           set(sP.grid,'visible','off');
         end
@@ -75,17 +81,32 @@ classdef sphericalPlot < handle
       hold(ax,washold);
       
       % set bounds to axes
-      delta = min(bounds(3:4) - bounds(1:2))*0.02;
-
-      set(ax,'DataAspectRatio',[1 1 1],...
-        'XLim',[bounds(2)-delta,bounds(4)+delta],...
-        'YLim',[bounds(1)-delta,bounds(3)+delta]);
+      delta = min(sP.bounds(3:4) - sP.bounds(1:2))*0.02;
+      sP.bounds = sP.bounds + [-1 -1 1 1] * delta;
+      
+      set(ax,'DataAspectRatio',[1 1 1],'XLim',...
+        sP.bounds([1,3]),'YLim',sP.bounds([2,4]));
       
       % set view point
       setCamera(ax,'default',varargin{:});
       
     end
 
+    function updateMinMax(sP,data)
+      if nargin == 2
+        sP.minData = nanmin([sP.minData, nanmin(data(:))]);
+        sP.maxData = nanmax([sP.maxData, nanmax(data(:))]);
+      end
+      
+      if sP.dispMinMax
+        set(sP.BL,'string',{'Max:',xnum2str(sP.maxData)},'visible','on');
+        set(sP.TL,'string',{'Min:',xnum2str(sP.minData)},'visible','on');
+      else
+        set(sP.BL,'visible','off');
+        set(sP.TL,'visible','off');
+      end
+    end
+    
     function plotAnnotate(sP,varargin)
       % tl tr bl br
     

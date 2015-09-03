@@ -29,7 +29,7 @@ elseif any(isPerpZ2)
   q = subsasgn(q,s,CS2.subSet(find(isPerpZ2,1)) * q.subSet(ind));
 end
 
-[maxphi1,~,maxphi2] = getFundamentalRegion(CS1,CS2);
+[maxphi1,~,maxphi2] = fundamentalRegionEuler(CS1,CS2);
 
 % convert to euler angles angles
 [phi1,Phi,phi2] = Euler(q,varargin{:});

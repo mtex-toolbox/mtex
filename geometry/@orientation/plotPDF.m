@@ -1,8 +1,14 @@
-function plotPDF(o,h,varargin)
+function plotPDF(o,varargin)
 % plot orientations into pole figures
 %
 % Syntax
-%   plotPDF(ori,[h1,..,hN],<options>)
+%   plotPDF(ori,[h1,h2,h3])
+%   plotPDF(ori,[h1,h2,h3],'points',100)
+%   plotPDF(ori,[h1,h2,h3],'points','all')
+%   plotPDF(ori,[h1,h2,h3],'contourf')
+%   plotPDF(ori,[h1,h2,h3],'antipodal')
+%   plotPDF(ori,[h1,h2,h3],'superposition',{1,[1.5 0.5]})
+%   plotPDF(ori,data,[h1,h2,h3])
 %
 % Input
 %  ori - @orientation
@@ -25,8 +31,21 @@ function plotPDF(o,h,varargin)
   'ensureAppdata',{{'SS',o.SS}},...
   'datacursormode',@tooltip,varargin{:});
 
+% extract data
+if check_option(varargin,'property')
+  data = get_option(varargin,'property');
+  data = reshape(data,[1,length(o) numel(data)/length(o)]);
+elseif nargin > 2 && isa(varargin{2},'Miller')
+  [data,varargin] = extract_data(length(o),varargin);
+  data = reshape(data,[1,length(o) numel(data)/length(o)]);
+else
+  data = [];
+end
+
 if isNew % for a new plot 
   
+  h = varargin{1};
+  varargin(1) = [];
   if ~iscell(h), h = vec2cell(h);end 
   argin_check([h{:}],{'Miller'});  
   for i = 1:length(h)
@@ -34,13 +53,13 @@ if isNew % for a new plot
   end    
   setappdata(gcf,'h',h);
   set(gcf,'Name',['Pole figures of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
+  pfAnnotations = getMTEXpref('pfAnnotations');
   
 else
   h = getappdata(gcf,'h');
+  pfAnnotations = @(varargin) 1;
 end
 
-% colorcoding 1 TODO this should be done differently
-data = get_option(varargin,'property',[]);
 
 % ------------------ subsample if needed --------------------------
 if ~check_option(varargin,{'all','contour','contourf','smooth'}) && ...
@@ -53,20 +72,8 @@ if ~check_option(varargin,{'all','contour','contourf','smooth'}) && ...
   
   samples = discretesample(length(o),points);
   o= o.subSet(samples);
-  if ~isempty(data), data = data(samples); end
-end
-
-% colorcoding 2 TODO: remove this
-if check_option(varargin,'colorcoding')
-  colorcoding = lower(get_option(varargin,'colorcoding','angle'));
-  data = orientation2color(o,colorcoding,varargin{:});
-  
-  % convert RGB to ind
-  if numel(data) == 3*length(o)  
-    [data, map] = rgb2ind(reshape(data,[],1,3), 0.03,'nodither');
-    set(gcf,'colormap',map);    
-  end
-  
+  if ~isempty(data), data = data(:,samples,:); end
+    
 end
 
 % plot
@@ -77,17 +84,26 @@ for i = 1:length(h)
   % compute specimen directions
   sh = symmetrise(h{i});
   r = reshape(o.SS * o * sh,[],1);
-     
-  r.plot(repmat(data(:).',[length(o.SS) length(sh)]),'fundamentalRegion',...
+  
+  r.plot(repmat(data,[length(o.SS) length(sh)]),'fundamentalRegion',...
     'parent',mtexFig.gca,'doNotDraw',varargin{:});
-  mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
-
+  if ~check_option(varargin,'noTitle')
+    mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
+  end
+  
+  pfAnnotations('parent',mtexFig.gca);
+  
   % TODO: unifyMarkerSize
 
 end
 
 if isNew || check_option(varargin,'figSize')
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); 
+end
+
+if check_option(varargin,'3d')  
+  datacursormode off
+  fcw(gcf,'-link'); 
 end
 
 % ----------- Tooltip function ------------------------

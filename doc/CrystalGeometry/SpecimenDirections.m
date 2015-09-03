@@ -1,5 +1,6 @@
 %% Specimen Directions
-% Explains how to define and calculate with specimen directions.
+% How to represent directions with respect to the sample or specimen
+% reference system.
 %
 %% Open in Editor
 %
@@ -22,7 +23,7 @@ v = vector3d(1,2,3)
 % X, Y, Z coordinate system. Lets visualize this vector
 
 plot(v)
-annotate([xvector,yvector,zvector],'label',{'X','Y','Z'},'backgroundcolor','w')
+annotate([vector3d.X,vector3d.Y,vector3d.Z],'label',{'X','Y','Z'},'backgroundcolor','w')
 
 %%
 % Note that the alignment of the X, Y, Z axes is only a plotting
@@ -31,7 +32,7 @@ annotate([xvector,yvector,zvector],'label',{'X','Y','Z'},'backgroundcolor','w')
 
 plotx2north
 plot(v,'grid')
-annotate([xvector,yvector,zvector],'label',{'X','Y','Z'},'backgroundcolor','w')
+annotate([vector3d.X,vector3d.Y,vector3d.Z],'label',{'X','Y','Z'},'backgroundcolor','w')
 
 %%
 % One can easily acces the coordinates of any vector by
@@ -56,7 +57,7 @@ v = vector3d('polar',polar_angle,azimuth_angle)
 
 plotx2east
 plot(v,'grid')
-annotate([xvector,yvector,zvector],'label',{'X','Y','Z'},'backgroundcolor','w')
+annotate([vector3d.X,vector3d.Y,vector3d.Z],'label',{'X','Y','Z'},'backgroundcolor','w')
 
 %%
 % Analogously as for the cartesian coordinates we can acces and change

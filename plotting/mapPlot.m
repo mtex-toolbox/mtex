@@ -33,14 +33,12 @@ classdef mapPlot < handle
       set(ax,'TickDir','out',...
         'XMinorTick','off',...
         'YMinorTick','off',...
-        'TickLength',[0,0],...
         'XTickLabel',{},...
         'yTickLabel',{},...
         'Layer','top',...
         'box','on','FontSize',getMTEXpref('FontSize'));
       grid(ax,'off');
-      xlabel(ax,'x','visible','off')
-      ylabel(ax,'y','visible','off')
+      
                   
       setCamera(ax,'default',varargin{:});
       
@@ -56,9 +54,27 @@ classdef mapPlot < handle
       catch %#ok<CTCH>
       end
       
+      % coordinates
+      showCoordinates = get_option(varargin,'coordinates',getMTEXpref('showCoordinates'));
+      if strcmpi(showCoordinates,'on')
+        set(ax,'xtickLabelMode','auto','ytickLabelMode','auto');
+        xlabel(ax,'x')
+        ylabel(ax,'y')
+      else
+        set(ax,'tickLength',[0,0]);
+        xlabel(ax,'x','visible','off')
+        ylabel(ax,'y','visible','off')
+      end
+      
       % add a micron bar
       mP.micronBar = scaleBar(mP,get_option(varargin,'scanUnit','um'));
-      
+      onOff = {'off','on'};            
+      vis = get_option(varargin,'micronbar',getMTEXpref('showMicronBar'));
+      if islogical(vis)
+        mP.micronBar.visible = onOff{1+vis};
+      else
+        mP.micronBar.visible = vis;
+      end
     end
         
   end

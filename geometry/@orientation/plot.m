@@ -1,28 +1,36 @@
 function plot(ori,varargin)
 % annotate a orientation to an existing plot
 %
+% Syntax
+%   plot(ori)
+%   plot(ori,'label','o1')
+%
 % Input
 %  ori - @orientation
 %
 % Options
 %
 % See also
-% orientation/scatter Plotting
+% orientation/scatter orientation/plotPDF orientation/plotODF
+% orientation/plotIPDF vector3d/text
 
-hold on
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 
 if isNew
-  disp('Do something fancy here.');
-  return;  
+  
+  scatter(ori,varargin{:})
+  return;
+
+elseif isappdata(mtexFig.parent,'ODFSections')
+
+  oS = getappdata(mtexFig.parent,'ODFSections');
+  oS.plot(ori,varargin{:});
+  return
+  
 end
 
 % plotting
 switch get(mtexFig.parent,'tag')
-  
-  case 'quaternionScatter' % quaternion scatter plot      
-      
-    scatter(ori,varargin{:});          
   
   case 'pdf' % pole figure annotations
       
@@ -34,10 +42,10 @@ switch get(mtexFig.parent,'tag')
   
   case 'odf' % ODF sections plot
     
-    plotODF(ori,varargin{:});
+    plotSection(ori,varargin{:});
     
   otherwise
     
-    error('Do not know how to plot orientation.')
+    scatter(ori,varargin{:});              
     
 end

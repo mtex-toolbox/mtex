@@ -3,8 +3,7 @@ classdef axisAngleOrientationMapping < orientationMapping & HSVOrientationMappin
   %   Detailed explanation goes here
   
   properties
-    center = idquaternion
-    maxAngle = 'auto'
+    center = idquaternion    
   end
   
   methods
@@ -17,7 +16,7 @@ classdef axisAngleOrientationMapping < orientationMapping & HSVOrientationMappin
       
       ori = ori.project2FundamentalRegion(oM.center);
       
-      if ischar(oM.maxAngle)
+      if isinf(oM.maxAngle)
         maxAngle = max(reshape(ori.angle,[],1)); %#ok<*PROP>
       else
         maxAngle = oM.maxAngle;

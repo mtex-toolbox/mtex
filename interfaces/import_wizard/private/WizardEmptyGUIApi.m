@@ -1,7 +1,7 @@
 function api = WizardEmptyGUIApi( api,varargin )
 
 
-%% get parameters
+% get parameters
 type = get_option(varargin,'type','');
 name = get_option(varargin,'name','Import Wizard','char');
 

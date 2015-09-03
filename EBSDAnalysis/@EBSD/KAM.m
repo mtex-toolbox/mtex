@@ -32,7 +32,7 @@ A_D = I_FD.' * I_FD;
 n = get_option(varargin,'order',1);
 
 A_D1 = A_D;
-for i = 1:n  
+for i = 1:n-1  
   A_D = A_D + A_D*A_D1 + A_D1*A_D;
 end
 clear A_D1
@@ -72,6 +72,6 @@ end
 
 
 % compute kernel average misorientation
-kam = sparse(Dl(ind),Dr(ind),omega(ind),length(ebsd),length(ebsd));
+kam = sparse(Dl(ind),Dr(ind),omega(ind)+0.00001,length(ebsd),length(ebsd));
 kam = kam+kam';
 kam = full(sum(kam,2)./sum(kam>0,2));

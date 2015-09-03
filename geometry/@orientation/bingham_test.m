@@ -17,9 +17,10 @@ function [T,p,v] = bingham_test(ori,varargin)
 test_fun = parseArgs(varargin{:});
 
 if strfind(test_fun,'chat')
-  [kappa, lambda, Tv, n] = c_hat(ori);
+  [kappa, lambda, ~, n] = c_hat(ori);
 else
-  [q, lambda, Tv, kappa] = mean(ori,varargin{:});
+  [~,~, lambda] = mean(ori,varargin{:});
+  kappa = evalkappa(lambda,varargin{:});
   n = length(ori);
 end
 

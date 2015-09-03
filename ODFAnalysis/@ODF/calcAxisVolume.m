@@ -16,7 +16,7 @@ function v = calcAxisVolume(odf,axis,radius,varargin)
 %  v   - volumeportion of all axes within the specified radius around axis
 %
 % See also
-% ODF/plotAxisDistribution
+% plotAxisDistribution
 
 % get resolution for quadrature
 res = get_option(varargin,'resolution',radius/5);
@@ -26,9 +26,7 @@ h = equispacedS2Grid('resolution',res,varargin{:});
 
 % restrict to fundamental region
 sym = disjoint(odf.CS,odf.SS);
-h = Miller(h,sym);
-ind = checkFundamentalRegion(h,'antipodal');
-h = h(ind);
+h= h(sym.fundamentalSector.checkInside(h,'antipodal'));
 
 % find those within the ball
 ind = angle(h,vector3d(axis)) < radius;

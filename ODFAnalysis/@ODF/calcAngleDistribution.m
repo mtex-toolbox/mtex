@@ -28,17 +28,16 @@ if ~check_option(varargin,'fast')
   iS3G = 0;
   cs1 = odf.CS;
   cs2 = odf.SS;
-  csU = union(cs1,cs2);
   csD = disjoint(cs1,cs2);
   
   % the angle distribution of the uniformODF
   if check_option(varargin,'omega')
     omega = get_option(varargin,'omega',[]);
     density = zeros(size(omega));
-    d = angleDistribution(cs1,omega); % TODO this should probably be csU
+    d = calcAngleDistribution(cs1,cs2,omega); 
     density(1:numel(d)) = d;
   else
-    [density,omega] = angleDistribution(cs1); % TODO this should probably be csU
+    [density,omega] = calcAngleDistribution(cs1,cs2);
   end
   
   sR = csD.fundamentalSector;
@@ -86,10 +85,10 @@ else
   res = get_option(varargin,'resolution',2.5*degree);
   
   % simluate EBSD data
-  ebsd = calcEBSD(odf,points,'resolution',res);
+  ori = calcOrientations(odf,points,'resolution',res);
 
   % compute angles
-  angles = ebsd.orientations.angle;
+  angles = ori.angle;
 
   maxangle = max(angles);
 

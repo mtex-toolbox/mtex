@@ -66,11 +66,11 @@ ori_spherical = calcOrientations(odf_spherical,1000);
 scatter(ori_spherical)
 
 %%
-% From this simulated ebsd data, we can estimate the parameters of the bingham
-% distribution,
+% From this simulated ebsd data, we can estimate the parameters of the
+% bingham distribution,
 
-[qm,lambda,U,kappa] = mean(ori_spherical);
-kappa'
+calcBinghamODF(ori_spherical)
+
 
 %%
 % where |U| is the orthogonal matrix of eigenvectors of the orientation
@@ -116,8 +116,7 @@ scatter(ori_prolate)
 %%
 % We estimate the parameters of the bingham distribution
 
-[qm,lambda,U,kappa] = mean(ori_prolate);
-kappa'
+calcBinghamODF(ori_prolate)
 
 %%
 % and test on the three cases
@@ -160,8 +159,7 @@ scatter(ori_oblate)
 %%
 % We estimate the parameters again
 
-[qm,lambda,U,kappa] = mean(ori_oblate);
-kappa'
+calcBinghamODF(ori_oblate)
 
 %%
 % and do the tests

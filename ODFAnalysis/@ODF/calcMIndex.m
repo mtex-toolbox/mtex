@@ -26,7 +26,7 @@ function MI = calcMIndex(odf)
 % David Mainprice 04/01/2015
 
 % Step 1 : Uniform misorientation angle distribution for Crystal symmetry (CS)
-[density_uniform,~] = angleDistribution(odf.CS);
+[density_uniform,~] = calcAngleDistribution(odf.CS,odf.SS);
 
 % normalize the misorientation angle distribution
 density_uniform = density_uniform/sum(density_uniform);

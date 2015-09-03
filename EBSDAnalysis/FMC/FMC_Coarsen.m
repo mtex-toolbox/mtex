@@ -191,7 +191,8 @@ function fmc = part7BiasWeights(fmc)
 %that to reweight the nodes.
 
 [i,j] = find(triu(fmc.W));
-[tmp,misorientation] = project2FundamentalRegion(fmc.O(i),fmc.CS,fmc.O(j));
+
+misorientation = angle(orientation(fmc.O(i),fmc.CS),orientation(fmc.O(j),fmc.CS));
 misorientation = misorientation/degree;
 
 Wthreshold = 1e-3;

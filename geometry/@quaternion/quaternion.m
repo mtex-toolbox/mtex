@@ -56,6 +56,37 @@ classdef quaternion
       end
       
     end
+    
+    function n = numArgumentsFromSubscript(varargin)
+      n = 0;
+    end
+    
+  end
+  
+  methods (Static = true)
+    
+    function q = nan(varargin)
+      a = nan(varargin{:});
+      q = quaternion(a,a,a,a);
+    end
+    
+    function q = id(varargin)
+      a = ones(varargin{:});
+      b = zeros(varargin{:});
+      q = quaternion(a,b,b,b);
+    end
+        
+    function q = rand(varargin)
+      
+      if nargin < 2, varargin = [varargin 1]; end
+
+      alpha = 2*pi*rand(varargin{:});
+      beta  = acos(2*(rand(varargin{:})-0.5));
+      gamma = 2*pi*rand(varargin{:});
+
+      q = euler2quat(alpha,beta,gamma);
+    end
+    
   end
   
 end

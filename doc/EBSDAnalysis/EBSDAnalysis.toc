@@ -2,6 +2,7 @@ EBSDTutorial
 ImportEBSDData file_new
 AligningEBSDData
 EBSDModifyData
+EBSDSmoothing
 AnalyzeEBSDData
 EBSDOrientationPlots
 EBSD2odf

@@ -3,7 +3,7 @@ function make_mtex_help(varargin)
 %
 
 if check_option(varargin,'clear')
-  !find doc/UsersGuide -exec touch {} \;
+  !find ../doc -exec touch {} \;
   mtexdata clear
 end
 

@@ -27,6 +27,7 @@ classdef kernel
       % use the Clenshaw algorithm to compute the kernel value from the
       % Chebyshev coefficients
       
+      co2 = cut2unitI(co2);
       value = ClenshawU(psi.A,acos(co2)*2);
       
       function res = ClenshawU(A,omega)
@@ -48,6 +49,7 @@ classdef kernel
       % use the Clenshaw algorithm to compute the kernel value from the
       % Legendre coefficients
       
+      d = cut2unitI(d);
       value = ClenshawL(psi.A,d);
       
       function s = ClenshawL(c,x)
@@ -55,7 +57,7 @@ classdef kernel
 
         % x - Auswertungspunkte
         % c - Koeffizienten
-
+        
         % Initialisierung
         dn = repmat(c(end),size(x));
         d1 = zeros(size(x));
@@ -79,7 +81,9 @@ classdef kernel
     function value = RRK(psi,dh,dr)
       % use the Clenshaw algorithm to compute the kernel value from the
       % Legendre coefficients
-      
+     
+      dh = cut2unitI(dh);
+      dr = cut2unitI(dr);
       value = zeros(numel(dh),numel(dr));
       if numel(dh)<numel(dr)
         for ih = 1:length(dh)
@@ -165,7 +169,8 @@ classdef kernel
         
         if small == 10, break;end
       end
-    end    
+    end
+    
   end
 end
 

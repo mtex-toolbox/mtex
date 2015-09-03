@@ -99,7 +99,7 @@
 %
 % Founded on the state of the art MATLAB plotting routines, MTEX allows you to
 % create professional plots of <ODF.plotPDF.html pole figures>,
-% <ODF.plotIPDF.html inverse pole figures>, and <ODF.plotODF.html ODF sections>.
+% <ODF.plotIPDF.html inverse pole figures>, and <ODF.plotSection.html ODF sections>.
 % There are also many <S2Grid.plot.html plotting options> to adapt the
 % plots to the specific standards of the journal you want to submit your paper. Plots may be
 % <savefigure.html saved> in any image format, e.g. as pdf, jpg, png,

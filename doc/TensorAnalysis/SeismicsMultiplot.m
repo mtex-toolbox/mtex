@@ -351,7 +351,7 @@ hold off
 %%
 
 % add colorbars to all plots
-colorbar
+mtexColorbar
 drawNow(gcm,'figSize','large')
 
 %%

@@ -357,5 +357,11 @@ methods
     end
 end
         
+methods (Static = true)
+  function opt = plotOptions
+    opt = {'xAxisDirection','east','zAxisDirection','outOfPlane'};
+  end
+end
+
 end
 

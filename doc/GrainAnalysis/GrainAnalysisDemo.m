@@ -45,12 +45,10 @@ grains = calcGrains(ebsd_region,'angle',15*degree)
 % (RoI) Detailed phase map with measurement locations and reconstructed grain
 % boundaries.
 
-hold on
 plot(ebsd_region)
 hold on
 plot(grains.boundary,'color','k')
 hold off
-% set(gcf,'renderer','zbuffer')
 
 %%
 % (RoI) Individual orientation measurements of quartz together with the grain
@@ -58,9 +56,8 @@ hold off
 
 plot(grains({'Andesina','Biotite','Orthoclase'}),'FaceAlpha',0.2)
 hold on
-plot(grains.boundary,'color','black');
-hold on
 plot(ebsd_region('Quartz'))
+plot(grains.boundary,'color','black');
 legend off
 hold off
 

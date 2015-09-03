@@ -8,8 +8,9 @@ classdef (InferiorClasses = {?rotation,?quaternion}) orientation < rotation
 
 properties
   
-  CS = crystalSymmetry('1');
-  SS = specimenSymmetry('1');
+  CS = crystalSymmetry('1');   % crystal symmetry 
+  SS = specimenSymmetry('1');  % specimen symmetry or crystal symmetry
+  antipodal = false
   
 end
 
@@ -64,6 +65,7 @@ methods
     if ~isempty(varargin) && isa(varargin{1},'orientation')
       o.CS = varargin{1}.CS;
       o.SS = varargin{1}.SS;
+      o.antipodal = varargin{1}.antipodal;
     elseif ~isempty(varargin) && ischar(varargin{1}) && strcmpi(varargin{1},'map')
       if isa(varargin{2},'Miller'), o.CS = varargin{2}.CS; end
       if isa(varargin{3},'Miller'), o.SS = varargin{3}.CS; end
@@ -107,7 +109,34 @@ methods
             end
         end
     end
+    o.antipodal = o.antipodal | check_option(varargin,'antipodal');
+    if o.CS ~= o.SS && o.antipodal
+      warning('antipodal symmetry is only meaningfull for misorientations between the same phase.')
+    end
   end
+end
+
+methods (Static = true)
+  
+  function ori = nan(varargin)    
+    s = varargin(cellfun(@isnumeric,varargin));
+    q = quaternion.nan(s{:});
+    ori = orientation(q,varargin{:});
+  end
+  
+  function ori = id(varargin)    
+    s = varargin(cellfun(@isnumeric,varargin));
+    q = quaternion.id(s{:});
+    ori = orientation(q,varargin{:});
+  end
+  
+  function ori = rand(varargin)    
+    s = varargin(cellfun(@isnumeric,varargin));
+    q = quaternion.rand(s{:});
+    ori = orientation(q,varargin{:});
+  end
+  
+  
 end
 
 end

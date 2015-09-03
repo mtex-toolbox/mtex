@@ -10,6 +10,8 @@ else
   odf.weights = 1;
 end
 
+ap = odf.antipodal;
 odf.components = {FourierComponent(f_hat,odf.CS,odf.SS)};
+odf.antipodal = ap;
 
 end

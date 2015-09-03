@@ -88,7 +88,7 @@ hold on
 plot(grains.boundary)
 hold off
 
-colorbar
+mtexColorbar
 
 %%
 % We can examine the misorientation to mean for one specific grain as
@@ -102,7 +102,7 @@ plot(myGrain.boundary,'linewidth',2)
 hold on
 plot(ebsd(myGrain),ebsd(myGrain).mis2mean.angle ./ degree)
 hold off
-colorbar
+mtexColorbar
 
 
 %% Filling not indexed holes
@@ -181,7 +181,7 @@ notIndexed = grains('notIndexed')
 % plot the not indexed regions colorcoded according the the quotient between
 % number of measurements and number of boundary segments
 plot(notIndexed,log(notIndexed.grainSize ./ notIndexed.boundarySize))
-colorbar
+mtexColorbar
 
 %%
 % Regions with a high quotient are blocks which can be hardly correctly
@@ -236,7 +236,7 @@ hold on
 
 % plot the boundary of all grains
 plot(grains.boundary,angle(grains.boundary.direction,xvector)./degree,'linewidth',3.5)
-colorbar
+mtexColorbar
 
 % stop overide mode
 hold off
@@ -257,7 +257,7 @@ hold on
 
 % plot the boundary of all grains
 plot(grains.boundary,angle(grains.boundary.direction,xvector)./degree,'linewidth',3.5)
-colorbar
+mtexColorbar
 
 % stop overide mode
 hold off
@@ -273,7 +273,7 @@ hold off
 mtexdata single
 
 oM = ipdfHSVOrientationMapping(ebsd);
-oM.inversePoleFigureDirection = mean(ebsd) * oM.whiteCenter;
+oM.inversePoleFigureDirection = mean(ebsd.orientations) * oM.whiteCenter;
 oM.colorStretching = 5;
 
 plot(ebsd,oM.orientation2color(ebsd.orientations))

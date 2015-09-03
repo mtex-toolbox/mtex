@@ -12,4 +12,4 @@ function varargout = project2EulerFR(ori,varargin)
 %  phi1, Phi, phi2 - Euler angles
 %
 
-[varargout{1:nargout}] = quaternion@project2EulerFR(ori,ori.CS,ori.SS,varargin{:});
+[varargout{1:nargout}] = project2EulerFR@quaternion(ori,ori.CS,ori.SS,varargin{:});

@@ -21,6 +21,9 @@ end
 
 % evaluate components
 f = zeros(size(g));
+
+if isempty(f), return; end
+
 for i = 1:numel(odf.components)
   f = f + odf.weights(i) * reshape(...
     eval(odf.components{i},g,varargin{:}),size(g));

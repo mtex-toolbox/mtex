@@ -25,3 +25,12 @@ h = interp1(z,f,h);
 rgb = reshape(hsv2rgb(h,s,v),[],3);
 
 end
+
+% h = linspace(0,1);
+% s = ones(size(h));
+% v = ones(size(h));
+% rgb = reshape(hsv2rgb(h,s,v),1,[],3);
+% imagesc(rgb), axis off
+%
+%
+%

@@ -20,7 +20,7 @@ function [ebsd,distList] = spatialProfile(ebsd,lineX,varargin)
 %   plot(ebsd('indexed'),ebsd('indexed').orientations)
 %   lineX = ginput(2)
 %   ebsd_lineX = spatialProfile(ebsd,lineX)
-%   clf; plot(ebsd_lineX.x,angle(ebsd_lineX(1).orientations,ebsd_lineX.orientations))
+%   clf; plot(ebsd_lineX.x,angle(ebsd_lineX(1).orientations,ebsd_lineX.orientations)./degree)
 %   xlabel('x'), ylabel('misorientation angle')
 
 if all(isfield(ebsd.prop,{'x','y','z'}))

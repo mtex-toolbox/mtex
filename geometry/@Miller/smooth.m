@@ -14,8 +14,10 @@ function varargout = smooth(m,varargin)
 x = vector3d(symmetrise(m,'skipAntipodal'));
 
 % symmetrise data
-if ~isempty(varargin) && isnumeric(varargin{1})
-  varargin{1} = repmat(varargin{1}(:).',size(x,1),1);
+if ~isempty(varargin) && isnumeric(varargin{1})  
+  varargin = [{repmat(varargin{1}(:).',size(x,1),1)},Miller.plotOptions,varargin(2:end)];
+else
+  varargin = [Miller.plotOptions,varargin];
 end
     
 % get plotting region

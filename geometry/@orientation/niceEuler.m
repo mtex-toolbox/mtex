@@ -27,7 +27,7 @@ osym = symmetrise(o);
 [phi1,Phi,phi2] = Euler(osym,varargin{:});
 
 % check for fundamental region
-[max_phi1,max_Phi,max_phi2] = getFundamentalRegion(o.CS,o.SS,varargin);
+[max_phi1,max_Phi,max_phi2] = fundamentalRegionEuler(o.CS,o.SS,varargin);
 
 penalty = phi1+Phi+phi2;
 

@@ -25,7 +25,7 @@ annotate(q_mean);
 
 %%
 
-plotODF(odf_model,'sigma','sections',9);
+plot(odf_model,'sigma','sections',9);
 
 
 %% Testing on distribution by parameters

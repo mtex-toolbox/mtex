@@ -21,6 +21,7 @@ elseif isa(a,'rotation') && isa(b,'vector3d')
   r = times@quaternion(a,b);
   
   % apply inversion
+  a.i = logical(a.i);
   r(a.i) = -r(a.i);
 
 else

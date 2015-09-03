@@ -1,6 +1,14 @@
 function plotIPDF(o,varargin)
 % plot orientations into inverse pole figures
 %
+% Syntax
+%   plotIPDF(ori,[r1,r2,r3])
+%   plotIPDF(ori,[r1,r2,r3],'points',100)
+%   plotIPDF(ori,[r1,r2,r3],'points','all')
+%   plotIPDF(ori,[r1,r2,r3],'contourf')
+%   plotIPDF(ori,[r1,r2,r3],'antipodal')
+%   plotIPDF(ori,data,[r1,r2,r3])
+%
 % Input
 %  ebsd - @EBSD
 %  r   - @vector3d specimen directions
@@ -22,6 +30,17 @@ function plotIPDF(o,varargin)
   'name',['Inverse Pole figures of ' o.CS.mineral],...
   'datacursormode',@tooltip,varargin{:});
 
+% extract data
+if check_option(varargin,'property')
+  data = get_option(varargin,'property');
+  data = reshape(data,[1,length(o) numel(data)/length(o)]);
+elseif nargin > 2 && isa(varargin{2},'vector3d')
+  [data,varargin] = extract_data(length(o),varargin);
+  data = reshape(data,[1,length(o) numel(data)/length(o)]);
+else
+  data = [];
+end
+
 if isNew 
   
   r = varargin{1};
@@ -34,10 +53,6 @@ else % take inverse pole figure directions from figure
     
 end
 
-% color coding
-data = get_option(varargin,'property',[]);
-if size(data,2) == length(o), data = data.'; end
-
 %  subsample if needed 
 if (length(o)*length(o.CS)*length(o.SS) > 100000 || check_option(varargin,'points')) ...
     && ~check_option(varargin,{'all','contourf','smooth','contour'})
@@ -47,7 +62,7 @@ if (length(o)*length(o.CS)*length(o.SS) > 100000 || check_option(varargin,'point
 
   samples = discretesample(length(o),points);
   o = o.subSet(samples);
-  if ~isempty(data), data = data(samples,:); end
+  if ~isempty(data), data = data(:,samples,:); end
 
 end
 
@@ -61,10 +76,10 @@ for ir = 1:length(r)
   h = o(:) \ rSym;
   
   %  plot  
-  h.plot(repmat(data(:),1,length(rSym)),'symmetrised',...
+  h.plot(repmat(data,1,length(rSym)),'symmetrised',...
     'fundamentalRegion','parent',mtexFig.gca,'doNotDraw',varargin{:});
   
-  mtexTitle(mtexFig.gca,char(r(ir),'LaTeX'));
+  if isNew, mtexTitle(mtexFig.gca,char(r(ir),'LaTeX')); end
 
   % TODO: unifyMarkerSize
 

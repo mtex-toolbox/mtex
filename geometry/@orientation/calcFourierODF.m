@@ -51,4 +51,4 @@ if odf.components{1}.psi.bandwidth > L,
 end
 
 odf = FourierODF(odf,get_option(varargin,{'L','bandwidth','fourier'},L,'double'));
-
+odf.antipodal = odf.antipodal || ori.antipodal;

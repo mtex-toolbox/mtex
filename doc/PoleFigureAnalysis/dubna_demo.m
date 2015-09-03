@@ -63,7 +63,7 @@ calcError(pf_corrected,odf,'RP',1)
 % difference plot
 plotDiff(pf,odf)
 
-colorbar
+mtexColorbar
 
 %% Recalculate c-axis pole figures
 

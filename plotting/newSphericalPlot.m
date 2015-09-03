@@ -53,9 +53,9 @@ if isNew || ~isappdata(mtexFig.children(1),'sphericalPlot')
     % display upper/lower if needed
     if numel(proj)>1          
       if ~proj(i).sR.isUpper
-        tr = {'TL','lower'};
+        tr = {'TR','lower'};
       elseif ~proj(i).sR.isLower
-        tr = {'TL','upper'};
+        tr = {'TR','upper'};
       else
         tr = {};
       end
@@ -139,7 +139,8 @@ switch get_option(varargin,'projection','earea')
     
   otherwise
     
-    error('Unknown Projection!')
+    error('%s\n%s','Unknown projection specified! Valid projections are:',...
+      'plain, stereo, eangle, edist, earea, schmidt, orthographic')
     
 end
 

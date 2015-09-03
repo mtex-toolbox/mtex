@@ -75,13 +75,13 @@ v = sR.vertices;
 %n1 = rx - sR.center;
 %n1 = normalize(n1 - dot(n1,sR.center) * sR.center);
 
-
 n1 = normalize(cross(rx,sR.center));
 
 r = rotation('axis',sR.center,'angle',rho(1:end-1));
 
 n = r * n1;
 
+% compute the distance between the center and any boundary point
 omega = min(angle(cross_outer(sR.N,n),sR.center));
 
 % ensure vertices are at 0, 120 and 240 degree

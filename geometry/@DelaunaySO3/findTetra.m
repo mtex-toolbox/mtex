@@ -14,7 +14,7 @@
  
  % look up table
  if ~isempty(DSO3.lookup)
-   [max_phi1,max_Phi,max_phi2] = getFundamentalRegion(DSO3.CS,DSO3.SS);
+   [max_phi1,max_Phi,max_phi2] = fundamentalRegionEuler(DSO3.CS,DSO3.SS);
    %ori = ori.project2FundamentalRegion;
    
    if max_Phi<pi

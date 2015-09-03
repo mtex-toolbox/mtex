@@ -5,6 +5,7 @@ classdef femComponent < ODFComponent
   properties
     center = DelaunaySO3;   % 
     weights = [];           %
+    antipodal = false
   end
   
   properties (Dependent = true)

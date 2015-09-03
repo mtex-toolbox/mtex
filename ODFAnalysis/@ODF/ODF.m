@@ -7,7 +7,8 @@ classdef ODF < dynOption
   
   properties (Dependent = true)
     CS % crystal symmetry for ODF
-    SS % specimen symmetry for ODF    
+    SS % specimen symmetry for ODF
+    antipodal % mori =? inv(mori)
   end
   
   methods
@@ -48,6 +49,20 @@ classdef ODF < dynOption
         SS = odf.components{1}.SS;
       else
         SS = [];
+      end      
+    end
+    
+    function odf = set.antipodal(odf,antipodal)
+      for i = 1:numel(odf.components)
+        odf.components{i}.antipodal = antipodal;
+      end
+    end
+    
+    function antipodal = get.antipodal(odf)
+      if ~isempty(odf.components)
+        antipodal = odf.components{1}.antipodal;
+      else
+        antipodal = false;
       end      
     end
     

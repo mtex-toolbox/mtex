@@ -5,6 +5,8 @@ function varargout = plot(sR,varargin)
 % boundary and adjust the axes limits properly.
 %
 
+[mtexFig,isNew] = newMtexFigure(varargin{:});
+
 % initialize spherical plots
 sP = newSphericalPlot(sR,varargin{:});
 
@@ -43,5 +45,7 @@ end
 
 % give handles back
 if nargout > 0, varargout{1} = h; end
+
+if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end
 
 end

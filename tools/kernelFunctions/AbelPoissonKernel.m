@@ -35,11 +35,13 @@ classdef AbelPoissonKernel < kernel
     
     function value = K(psi,co2)
       % the kernel function on SO(3)
+      co2 = cut2unitI(co2);
       value = AP(psi.kappa,co2);
     end
   
     function value = RK(psi,t)
       % the radon transformed kernel function at 
+      t = cut2unitI(t);
       value  = (1-psi.kappa^4)./((1-2*psi.kappa^2*t+psi.kappa^4).^(3/2));
     end
         

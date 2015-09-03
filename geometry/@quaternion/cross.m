@@ -27,3 +27,12 @@ q.b = a1.*c3.*d2 - a1.*c2.*d3 + a2.*c1.*d3 - a2.*c3.*d1 - a3.*c1.*d2 + a3.*c2.*d
 q.c = a1.*b2.*d3 - a1.*b3.*d2 - a2.*b1.*d3 + a2.*b3.*d1 + a3.*b1.*d2 - a3.*b2.*d1;
 q.d = a1.*b3.*c2 - a1.*b2.*c3 + a2.*b1.*c3 - a2.*b3.*c1 - a3.*b1.*c2 + a3.*b2.*c1;
 
+% one could also do 
+%
+%M = [[q1.a,q1.b,q1.c,q1.d];...
+%  [q2.a,q2.b,q2.c,q2.d];...
+%  [q3.a,q3.b,q3.c,q3.d]].';
+%
+%[q,~] = qr(M);
+%
+%q = quaternion(q(:,4));

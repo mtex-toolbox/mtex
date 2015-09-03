@@ -23,5 +23,5 @@ function plotDiff(odf1,odf2,varargin)
 if isa(odf2,'PoleFigure')
   plot(calcErrorPF(odf2,odf1,varargin{:}),'colorrange','equal',varargin{:})
 else
-  plotODF(odf1-odf2,varargin{:})
+  plotSection(odf1-odf2,varargin{:})
 end
