@@ -1,4 +1,4 @@
-function pairs = allPairs(x,y)
+function [x,y] = allPairs(x,y)
 % all pairs of elements of x and y modulo permutation
 %
 
@@ -8,8 +8,6 @@ if nargin == 1
 
   x = x(tril(ones(size(x)))>0);
   y = y(tril(ones(size(y)))>0);
-
-  pairs = [x(:),y(:)];
   
 else
   
@@ -33,12 +31,7 @@ else
   
   x = x(A);
   y = y(A);
-
-  pairs = [x(:),y(:)];
-  
   
 end
 
-if nargin == 1, y = x; end
-
-
+if nargout < 2, x = [x(:),y(:)]; end

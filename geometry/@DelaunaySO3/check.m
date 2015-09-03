@@ -73,7 +73,7 @@ toc
 
 %%
 
-plotODF(fodf,'sigma')
+plot(fodf,'sigma')
 
 %%
 %plot(fodf)
@@ -149,8 +149,8 @@ v = v(norm(v)<pi);
 ori = orientation('axis',v,'angle',norm(v),cs)
 
 %%
-
-ind = checkFundamentalRegion(ori);
+oR = fundamentalRegion(ori.CS,ori.SS);
+ind = oR.checkInside(ori);
 
 %%
 

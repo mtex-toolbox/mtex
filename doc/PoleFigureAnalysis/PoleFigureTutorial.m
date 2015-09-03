@@ -122,5 +122,10 @@ calcError(odf,pf)
 
 %% Visualize the ODF
 
-plotODF(odf)
+plot(odf)
 mtexColorMap LaboTeX
+
+%%
+% restore old setting
+
+setMTEXpref('xAxisDirection','east');

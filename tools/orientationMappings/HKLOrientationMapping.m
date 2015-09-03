@@ -20,7 +20,7 @@ classdef HKLOrientationMapping < ipdfOrientationMapping
       rho = rho - rho_min;
 
       % get the bounds of the fundamental region
-      sR = oM.CS1.getFundamentalRegionPF;
+      sR = oM.CS1.fundamentalSector;
 
 
       % special case Laue -1

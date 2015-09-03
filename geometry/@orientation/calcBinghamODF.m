@@ -18,7 +18,8 @@ function odf = calcBinghamODF(ori,varargin)
 if isempty(ori), odf = ODF; return, end
 
 % estimate Bingham parameters
-[~,~,ev,kappa] = mean(ori,varargin{:});
+[~,~,lambda,ev] = mean(ori,varargin{:});
+kappa = evalkappa(lambda,varargin{:});
 
 % set up Bingham ODF
 odf = BinghamODF(kappa,ev,ori.CS,ori.SS);

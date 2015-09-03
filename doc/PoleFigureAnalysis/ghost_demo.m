@@ -81,11 +81,11 @@ calcError(rec_cor,odf)
 
 %% 
 % without ghost correction:
-plotODF(rec,'sections',9,'silent','sigma')
+plot(rec,'sections',9,'silent','sigma')
 
 %% 
 % with ghost correction:
-plotODF(rec_cor,'sections',9,'silent','sigma')
+plot(rec_cor,'sections',9,'silent','sigma')
 
 %% 
 % radial plot of the true ODF

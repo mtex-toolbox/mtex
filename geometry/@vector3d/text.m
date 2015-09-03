@@ -2,7 +2,11 @@ function h = text(v,varargin)
 % display a text in a spherical plot
 %
 % Syntax
-%   text(v,s)  %
+%   text(v,s)
+%   text(v,s,'fontSize',16)
+%   text(v,s,'textAboveMarker')
+%   text(v,s,'textColor','blue')
+%   text(v,s,'textBackgroundColor','white')
 %
 % Input
 %  v  - @vector3d
@@ -17,6 +21,14 @@ sP = newSphericalPlot(v,varargin{:},'hold');
 h = [];
 interpreter = getMTEXpref('textInterpreter');
 fs = getMTEXpref('FontSize');
+
+if check_option(varargin,'textAboveMarker')
+  aboveBelow = -5;
+elseif check_option(varargin,'autoAlignText')
+  aboveBelow = 0;
+else % textBelowMarker
+  aboveBelow = 5;
+end
 
 for j = 1:numel(sP)
 
@@ -51,14 +63,20 @@ for j = 1:numel(sP)
     end
 
     if check_option(varargin,'addMarkerSpacing'),
-      tag = {'tag','addMarkerSpacing','UserData',[x(i),y(i)]};
+      tag = {'UserData',[x(i),y(i)],'tag'};
+      
+      if y(i) > mean(sP(j).bounds([2 4])) + 0.1 + aboveBelow
+        tag = [tag,'setAboveMarker'];
+      else        
+        tag = [tag,'setBelowMarker'];
+      end
     else
       tag = {};
     end
     
     h = [h,optiondraw(text(x(i),y(i),s,'interpreter',interpreter,...
       'HorizontalAlignment','center','VerticalAlignment','middle',...
-      tag{:},'margin',0.001,'parent',sP(j).ax),'FontSize',fs,varargin{2:end})]; %#ok<AGROW>    
+      tag{:},'margin',0.001,'parent',sP(j).ax),'FontSize',fs,varargin{2:end})]; %#ok<AGROW>
     
   end
 

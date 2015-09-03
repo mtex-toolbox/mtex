@@ -2,8 +2,9 @@ function plotPDF(odf,h,varargin)
 % plot pole figures
 %
 % Syntax
-%   plotPDF(odf,[h1,..,hN],<options>)
-%   plotPDF(odf,{h1,..,hN},'superposition',{c1,..,cN},<options>)
+%   plotPDF(odf,[h1,..,hN])
+%   plotPDF(odf,{[h11,h12],h2,hN],'superposition',{[c11,c12],c2,cN})
+%   plotPDF(odf,pf.h,'superposition',pf.c)
 %
 % Input
 %  odf - @ODF
@@ -11,21 +12,16 @@ function plotPDF(odf,h,varargin)
 %  c   - structure coefficients
 %
 % Options
-%  RESOLUTION    - resolution of the plots
-%  SUPERPOSITION - plot superposed pole figures
+%  resolution    - resolution of the plots
+%  superposition - plot superposed pole figures
 %
 % Flags
-%  antipodal    - include [[AxialDirectional.html,antipodal symmetry]]
-%  COMPLETE - plot entire (hemi)--sphere
+%  antipodal - include [[AxialDirectional.html,antipodal symmetry]]
+%  complete  - plot entire (hemi)--sphere
 %
 % See also
 % S2Grid/plot annotate savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
-
-% ensure crystal symmetry
-if ~iscell(h), h = vec2cell(h);end
-argin_check([h{:}],'Miller');
-for i = 1:length(h), h{i} = odf.CS.ensureCS(h{i}); end
 
 % superposition coefficients
 if check_option(varargin,'superposition')
@@ -34,12 +30,18 @@ else
   c = num2cell(ones(size(h)));
 end
 
+% ensure crystal symmetry
+if ~iscell(h), h = mat2cell(h,1,cellfun(@length,c)); end
+argin_check([h{:}],'Miller');
+for i = 1:length(h), h{i} = odf.CS.ensureCS(h{i}); end
+
 % plotting grid
 sR = fundamentalSector(odf.SS,varargin{:});
 r = plotS2Grid(sR,varargin{:});
 
 % create a new figure if needed
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
+pfAnnotations = getMTEXpref('pfAnnotations');
   
 for i = 1:length(h)
   
@@ -49,6 +51,8 @@ for i = 1:length(h)
   p = ensureNonNeg(odf.calcPDF(h{i},r,varargin{:},'superposition',c{i}));
   
   r.plot(p,'parent',mtexFig.gca,'smooth','doNotDraw',varargin{:});
+  pfAnnotations('parent',mtexFig.gca);
+
   mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
   
 end
@@ -68,10 +72,13 @@ if isNew % finalize plot
   
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
   
-  if check_option(varargin,'3d')
-    rotate3d(gcf);
-    linkprop(mtexFig.children, 'CameraPosition');
+  
+  if check_option(varargin,'3d')  
+    datacursormode off
+    fcw(gcf,'-link');
   end
+  
+  
 end
 
 % -------------- Tooltip function ---------------------------------
@@ -107,16 +114,3 @@ end
   end
 
 end
-
-
-
-%
-
-
-%
-
-
-
-
-
-

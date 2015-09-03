@@ -20,6 +20,23 @@ setMTEXpref('zAxisDirection','outOfPlane');
 % 'tiny', 'small', 'normal', 'large', 'huge'
 setMTEXpref('figSize','normal');
 
+% whether to show or not to show a micronbar on EBSD maps
+setMTEXpref('showMicronBar','on')
+
+% whether to show or not to show a coordinates on EBSD maps
+setMTEXpref('showCoordinates','off')
+
+% how to annotate pole figure plots
+% the following line add X and Y to the plot
+% you may want to replace this by 'RD' and 'ND'
+pfAnnotations = @(varargin) text([vector3d.X,vector3d.Y],{'X','Y'},...
+  'BackgroundColor','w','tag','axesLabels',varargin{:});
+
+% you can uncomment the following line to disable the annotations
+%pfAnnotations = @(varargin) do_nothing;
+setMTEXpref('pfAnnotations',pfAnnotations);
+
+
 % default spacing between muliple plots
 setMTEXpref('outerPlotSpacing',10);
 setMTEXpref('innerPlotSpacing',10);
@@ -170,11 +187,6 @@ degree_char = native2unicode([194 176],'UTF-8');
 
 setMTEXpref('degreeChar',degree_char);
 
-%%
-
-setMTEXpref('TSPSolverPath',fullfile(mtex_path,'c','TSPSolver'))
-
-
 %% debugging
 % comment out to turn on debugging
 
@@ -233,3 +245,8 @@ warning('off','MATLAB:divideByZero'); %#ok<RMWRN>
 
 %% end user defined global settings
 %--------------------------------------------------------------------------
+
+  function do_nothing(varargin)
+  end
+
+end

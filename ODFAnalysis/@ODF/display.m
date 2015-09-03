@@ -30,6 +30,7 @@ disp([h ' ' docmethods(inputname(1))]);
 % display symmtries and minerals
 if ~isempty(odf.CS), disp(char(odf.CS,'verbose','symmetryType'));end
 if ~isempty(odf.SS), disp(char(odf.SS,'verbose','symmetryType'));end
+if odf.antipodal, disp('  antipodal:         true'); end
 
 % display components
 disp(' ');

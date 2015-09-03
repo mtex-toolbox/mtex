@@ -42,6 +42,8 @@ classdef vonMisesFisherKernel < kernel
     
     function value = K(psi,co2)
       % the kernel function on SO(3)
+      
+      co2 = cut2unitI(co2);
       if psi.kappa < 500        
         value = psi.C * exp(psi.kappa*cos(acos(co2)*2));        
       else
@@ -51,6 +53,7 @@ classdef vonMisesFisherKernel < kernel
   
     function value = RK(psi,t)
       % the radon transformed kernel function at 
+      t = cut2unitI(t);
       value = exp(psi.kappa*(t-1)/2) .* ...
         besseli(0,psi.kappa *(1+t)/2)/...
         (besseli(0,psi.kappa)-besseli(1,psi.kappa));      

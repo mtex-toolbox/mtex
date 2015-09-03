@@ -55,9 +55,15 @@ while iter <= numiter
   %eval the kernel
   if along
     M = component.psi.K_symmetrised(g,component.center(ind),component.CS,component.SS,'nocubictrifoldaxis',varargin{:});
+    if component.antipodal
+      M = 0.5*(M + component.psi.K_symmetrised(g,inv(component.center(ind)),component.CS,component.SS,'nocubictrifoldaxis',varargin{:}));
+    end
     f = f + reshape(full(M) * reshape(component.weights(ind),[],1),size(f));
   else
     M = component.psi.K_symmetrised(g(ind),component.center,component.CS,component.SS,'nocubictrifoldaxis',varargin{:});
+    if component.antipodal
+      M = 0.5*(M + component.psi.K_symmetrised(inv(g(ind)),component.center,component.CS,component.SS,'nocubictrifoldaxis',varargin{:}));
+    end
     f(ind) = f(ind) + reshape(full(M) * component.weights(:),size(f(ind)));
   end
 

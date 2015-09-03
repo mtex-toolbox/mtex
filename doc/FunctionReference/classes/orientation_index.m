@@ -134,7 +134,7 @@ ss * o * cs
 % orientations. This missorientation can be calculated by the function
 % <orientation.angle.html angle>.
 
-angle(o,o1) / degree
+angle(rot * o1,o1) / degree
 
 %%
 % This missorientation angle is in general smaller then the missorientation
@@ -174,7 +174,11 @@ inv(o1)
 %% SUB: Plotting Orientations
 %
 % The [[orientation.plot.html,plot]] function allows you to visualize an
-% quaternion by plotting how the standard basis x,y,z transforms under the
-% rotation.
+% orientation in axis angle space in relation to its fundamental region.
 
-plot(o1)
+oR = fundamentalRegion(o.CS,o.SS)
+plot(oR)
+hold on
+plot(o,'markercolor','b','markerSize',10)
+plot(o.project2FundamentalRegion,'markercolor','r','markerSize',10)
+hold off

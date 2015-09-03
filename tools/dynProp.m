@@ -15,6 +15,11 @@ classdef dynProp
     end
       
     % ----------------------------------------------------
+    
+    function n = numArgumentsFromSubscript(varargin)
+      n = 1;
+    end
+    
     function dp = cat(dim,varargin)
       
       dp = varargin{1};
@@ -161,7 +166,7 @@ classdef dynProp
           d = [d,value]; %#ok<AGROW>          
         end
         
-        c  = cprintf(d,'-Lc',fn_ext,'-L',' ','-d','   ','-ic',true);
+        c  = cprintf(full(d),'-Lc',fn_ext,'-L',' ','-d','   ','-ic',true);
       else
         c  = cprintf(fn(:)','-L',' Properties: ','-d',', ','-ic',true);
       end  

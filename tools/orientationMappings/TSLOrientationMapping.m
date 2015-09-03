@@ -1,13 +1,15 @@
-classdef ipdfTSLOrientationMapping < ipdfHSVOrientationMapping
+classdef TSLOrientationMapping < ipdfHSVOrientationMapping
   % orientation mapping as it is used by TSL and HKL software
       
   methods
-    function oM = ipdfTSLOrientationMapping(varargin)
+    function oM =TSLOrientationMapping(varargin)
       oM = oM@ipdfHSVOrientationMapping(varargin{:});
       oM.CS1 = oM.CS1.Laue;
     end
-    
-    function rgb = h2HSV(oM,h,varargin)
+  end
+  
+  methods (Access=protected)
+    function rgb = h2color(oM,h,varargin)
       % in HKL all fundamental sectors a colorized by white in the center
   
       cs = oM.CS1;

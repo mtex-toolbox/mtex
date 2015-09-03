@@ -35,11 +35,13 @@ if nargin>1 && isa(varargin{1},'orientation')
   oM = ipdfHSVOrientationMapping(varargin{1});
   varargin{1} = oM.orientation2color(varargin{1});
   
-  disp('  I''m going to colorize the orientation data with the ');
-  disp('  standard MTEX colorkey. To view the colorkey do:');
+  if ~getMTEXpref('generatingHelpMode')
+    disp('  I''m going to colorize the orientation data with the ');
+    disp('  standard MTEX colorkey. To view the colorkey do:');
     disp(' ');
-  disp('  oM = ipdfHSVOrientationMapping(ori_variable_name)')
-  disp('  plot(oM)')
+    disp('  oM = ipdfHSVOrientationMapping(ori_variable_name)')
+    disp('  plot(oM)')
+  end
 end
 
 
@@ -109,14 +111,14 @@ end
 
 if ~isempty(id)
 
-  txt{1} = ['id    '  num2str(id)];
-  txt{2} = ['phase ', ebsd.mineralList{ebsd.phaseId(id)}];
-  txt{3} = ['x,y   ', xnum2str(pos(1)) ', ' xnum2str(pos(2))];
+  txt{1} = ['id = '  num2str(id)];
+  txt{2} = ['phase = ', ebsd.mineralList{ebsd.phaseId(id)}];
+  txt{3} = ['(x,y) = ', xnum2str(pos(1)) ', ' xnum2str(pos(2))];
   if ebsd.isIndexed(id)
-    txt{4} = ['Euler ' char(ebsd.rotations(id),'nodegree')];
+    txt{4} = ['Euler = ' char(ebsd.rotations(id),'nodegree')];
   end
   if ~isempty(value)
-    txt{end+1} = ['Value ' xnum2str(value)];
+    txt{end+1} = ['Value = ' xnum2str(value)];
   end
 else
   txt = 'no data';

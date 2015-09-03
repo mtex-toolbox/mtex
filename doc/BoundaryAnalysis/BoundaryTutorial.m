@@ -49,7 +49,7 @@ gB_MgMg = gB('Magnesium','Magnesium')
 % angle
 
 plot(gB_MgMg,gB_MgMg.misorientation.angle./degree,'linewidth',2)
-colorbar
+mtexColorbar
 
 %%
 

@@ -20,9 +20,20 @@ function ebsd = loadEBSD_ACOM(fname,varargin)
 
 ebsd = EBSD;
 
+% check that this is a ACOM text file
+fid = fopen(fname);
+h1 = fgetl(fid);
+fclose(fid);
+if isempty(strfind(h1,'ACOM RES results'));
+  error('MTEX:wrongInterface','Interface "ACOM" does not fit file format!');
+elseif check_option(varargin,'check')
+  return
+end
+
+% read data
 try
-  % read full file to be able to determine the assinged phases in all
-  % pixel of orientation map
+  % read full file to be able to determine the assinged phases in all pixel
+  % of orientation map
   [A,ffn,nh,SR,hlS,fpos]=txt2mat(fname);
   % read header into cells
   hlP = strfind(hlS,'#');
@@ -35,20 +46,10 @@ try
   %get the phases that are assigned in all pixel
   PhasesInFile=unique(A(:,8));
   
-  % check that this is a ACOM text file
-  if isempty(strfind(hl{1},'ACOM RES results'));
-    error('MTEX:wrongInterface','Interface "ACOM" does not fit file format!');
-  elseif check_option(varargin,'check')
-    return
-  end
-  
   phasePos = strmatch('# Phase',hl);
   
-  if isempty(phasePos)
-    phasePos=1;
-  end
-  % phases to be ignored
-  ignorePhase = get_option(varargin,'ignorePhase',[]);
+  if isempty(phasePos), phasePos=1; end
+  
   
   try
     B=zeros(length(A(:,8)),1);
@@ -63,10 +64,7 @@ try
       else
         phase = sscanf(hl{pos},'# Phase %u');
       end
-      
-      % maybe its to be ignored
-      if any(phase==ignorePhase), continue;end
-      
+                  
       %maybe it is not assigned in pixel
       if any(phase==PhasesInFile)
         
@@ -93,7 +91,7 @@ try
         end
         
         % #ok<AGROW>
-        cs{phaseCount} = symmetry(laue,lattice(1:3)',lattice(4:6)'*degree,'mineral',mineral,options{:});
+        cs{phaseCount} = crystalSymmetry(laue,lattice(1:3)',lattice(4:6)'*degree,'mineral',mineral,options{:});
         
         B(A(:,8)==phase)=phaseCount;
         hl{pos}(9)=num2str(phaseCount);

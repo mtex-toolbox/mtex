@@ -24,7 +24,7 @@ h = project2FundamentalRegion(h);
 color = h.rho ./ degree;
 
 plotIPDF(ebsd.orientations,zvector,'property',color,'MarkerSize',3,'grid')
-colorbar
+mtexColorbar
 
 %%
 % We see that all individual orientations are clustered around azimuth
@@ -60,8 +60,7 @@ colormap(cmap)
 % color mapping, i.e. we want to stretch the colors such that they cover
 % just the orientations of interest. 
 
-oM = ipdfHSVOrientationMapping(ebsd);
-oM.CS1 = oM.CS1.properGroup
+oM = ipdfHSVOrientationMapping(ebsd.CS.properGroup);
 
 % To this end, we first compute the inverse pole figure direction such that
 % the mean orientation is just at the white spot of the inverse pole figure
@@ -105,7 +104,7 @@ mtexdata forsterite
 ebsd = ebsd('indexed');
 
 % segment grains
-[grains,ebsd.grainId] = calcGrains(ebsd)
+[grains,ebsd.grainId] = calcGrains(ebsd);
 
 % find largest grains
 largeGrains = grains(grains.grainSize>800)

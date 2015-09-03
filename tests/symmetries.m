@@ -29,12 +29,12 @@ q = calcModes(odf)
 
 %%
 figure(2)
-plotODF(odf,'complete')
+plot(odf,'complete')
 mtexColorMap white2black
 
 %%
 
-plotODF(odf,'alpha','projection','plain','sections',5)
+plot(odf,'alpha','projection','plain','sections',5)
 
 %%
 

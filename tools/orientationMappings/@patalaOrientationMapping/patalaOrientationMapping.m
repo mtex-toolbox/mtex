@@ -46,11 +46,9 @@ classdef patalaOrientationMapping < orientationMapping
     
     function rgb = orientation2color(oM,mori) 
 
-      rot = rotation(mori);
+      q = quaternion(mori.project2FundamentalRegion('antipodal'));
 
-      axis = project2FundamentalRegion(rot.axis,oM.CS1.Laue);
-
-      v = Rodrigues(rotation('axis',axis(:),'angle',mori.angle));
+      v = Rodrigues(rotation('axis',q.axis,'angle',q.angle));
 
       switch oM.CS1.LaueName
         case 'm-3m'

@@ -11,6 +11,8 @@ function startup_mtex(varargin)
 if isunix && ~ismac
   try
     com.mathworks.mlwidgets.html.HtmlComponentFactory.setDefaultType('HTMLRENDERER');
+    % to revert:
+    %com.mathworks.mlwidgets.html.HtmlComponentFactory.setDefaultType([]);
   end
 end
 

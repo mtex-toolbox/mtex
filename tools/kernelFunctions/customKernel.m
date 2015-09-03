@@ -24,6 +24,7 @@ classdef customKernel < kernel
     
     function value = K(psi,co2)
       % the kernel function on SO(3)
+      co2 = cut2unitI(co2);
       value   =  psi.fun(co2);
     end    
         

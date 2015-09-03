@@ -46,6 +46,15 @@ if 10*length(component.center)*length(component.SS)*length(component.CS) >= L^3
     c = ones(1,length(component.SS));
     f_hat = multiply(gcA2fourier(abg,c,A),f_hat,length(A)-1);
   end
+  
+  if component.antipodal
+    for l = 0:length(A)-1
+      ind = deg2dim(l)+1:deg2dim(l+1);
+      f_hat(ind) = 0.5* (reshape(f_hat(ind),2*l+1,2*l+1) + ...
+        reshape(f_hat(ind),2*l+1,2*l+1)');
+    end    
+  end
+  
 end
 
 end

@@ -10,7 +10,7 @@ function [ev,ew]= principalComponents(grains,varargin)
 %
 %
 % See also
-% polygon/hullprincipalcomponents grain/plotEllipse
+% grain2d/plotEllipse
 %
 
 % ignore holes

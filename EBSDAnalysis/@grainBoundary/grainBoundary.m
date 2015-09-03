@@ -77,8 +77,8 @@ classdef grainBoundary < phaseList & dynProp
       gB.misrotation = rotation(idquaternion(length(gB.F),1));
       isNotBoundary = all(gB.ebsdId,2);
       gB.misrotation(isNotBoundary) = ...
-        inv(ebsd.rotations(gB.ebsdId(isNotBoundary,1))) ...
-        .* ebsd.rotations(gB.ebsdId(isNotBoundary,2));
+        inv(ebsd.rotations(gB.ebsdId(isNotBoundary,2))) ...
+        .* ebsd.rotations(gB.ebsdId(isNotBoundary,1));
     
     end
 
@@ -108,6 +108,7 @@ classdef grainBoundary < phaseList & dynProp
     function mori = get.misorientation(gB)
             
       mori = orientation(gB.misrotation,gB.CS{:});
+      mori.antipodal = equal(checkSinglePhase(gB),2);
       
     end
     

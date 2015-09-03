@@ -13,7 +13,14 @@ switch s(1).type
         
     if isempty(b)
       
-      s(1).subs = {~s(1).subs{1}};
+      if islogical(s(1).subs{1})
+        s(1).subs = {~s(1).subs{1}};
+      else
+        ind = true(size(grains));
+        ind(s(1).subs{1}) = false;
+        s(1).subs = {ind};
+      end
+      
       grains = subsref(grains,s(1));      
       
     else

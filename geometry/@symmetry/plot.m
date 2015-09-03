@@ -1,8 +1,12 @@
 function plot(s,varargin)
-% plot symmetry
+% visualize symmetry elements according to international table
+%
+% Syntax
+%   plot(cs)
+%   plot(cs,'symbolSize',2)
 %
 % Input
-%  s - symmetry
+%  cs - crystalSymmetry
 %
 
 symbolSize = 0.15*get_option(varargin,'symbolSize',1);
@@ -10,48 +14,58 @@ symbolSize = 0.15*get_option(varargin,'symbolSize',1);
 % extract symmetry elements
 rot = rotation(s);
 Improper = isImproper(rot);
-[axesP,angleP] = getMinAxes(rot(~Improper));
-[axesI,angleI] = getMinAxes(rot(Improper));
+
+axis = rot.axis;
+omega = round(rot.angle./degree);
+[uaxis, ~, id] = unique(axis,'antipodal');
 
 % initalize plot
 newSphericalPlot([zvector,-zvector],varargin{:});
-
 hold on
-  
-% plot mirrot planes
-mir = Improper & rot.angle>pi-1e-4;
-circle(rot(mir).axis,'linewidth',3,'color','k','doNotDraw');
 
-% plot inversion axes
-options = {'FaceColor','white','LineWidth',3};
+% plot mirror planes
+mir = Improper & rot.angle>pi-1e-4;
+circle(rot(mir).axis,'linewidth',2,'color','k','doNotDraw');
+
+for i = 1:length(uaxis)
   
-for i = 1:length(axesI)
+  angleP = min(omega(~Improper(:) & id == i & omega(:)>0));
+  angleI = min(omega(Improper(:) & id == i & omega(:)>0));
+  n = [1,-1].*uaxis(i);
+  
+  if isempty([angleP,angleI]), continue; end
     
-  switch round(angleI(i)/degree)
-    case 90
-      plotCustom(axesI(i),{@(ax,x,y) square(x,y,1.2*symbolSize,'parent',ax,options{:})});
-      plotCustom(-axesI(i),{@(ax,x,y) square(x,y,1.2*symbolSize,'parent',ax,options{:})});
-    case 60
-      plotCustom([axesI(i),-axesI(i)],{@(ax,x,y) hexagon(x,y,1.2*symbolSize,'parent',ax,options{:})});
-  end
-end
+  switch min([angleP,angleI])
   
-% plot rotational axes
-for i = 1:length(axesP)
-  plotCustom(axesP(i),{Symbol(angleP(i),axesP(i).rho)});
-  plotCustom(-axesP(i),{Symbol(angleP(i),axesP(i).rho,'FaceColor','k')});
-end
-  
-% mark three fold inversion axes
-for i = 1:length(axesI)
-  switch round(angleI(i)/degree)
+    case 180
+      if angleP == 180
+        plotCustom(n,{@(ax,x,y) ...
+          ellipse(x,y,symbolSize,0.4*symbolSize,pi/2+n(1).rho,'parent',ax,'edgecolor','w')});
+      end      
     case 120
-      % small circle
-      plotCustom([axesI(i),-axesI(i)],{@(ax,x,y) ...
-        ellipse(x,y,0.3*symbolSize,0.3*symbolSize,0,'parent',ax,'FaceColor','w')});
-  end
+      plotCustom(n,{@(ax,x,y) triangle(x,y,1.1*symbolSize,'parent',ax,'edgecolor','w')});
+    case 90
+      plotCustom(n,{@(ax,x,y) square(x,y,1.2*symbolSize,'parent',ax,'edgecolor','w')});        
+      if angleP == 180
+        plotCustom(n,{@(ax,x,y) ...
+          square(x,y,0.9*symbolSize,'parent',ax,'FaceColor','w')});
+        plotCustom(n,{@(ax,x,y) ellipse(x,y,symbolSize,0.4*symbolSize,0,'parent',ax)});      
+      end
+    case 60
+      plotCustom(n,{@(ax,x,y) hexagon(x,y,1.2*symbolSize,'parent',ax,'edgecolor','w')});        
+      if angleP == 120       
+        plotCustom(n,{@(ax,x,y) ...
+          hexagon(x,y,0.9*symbolSize,'parent',ax,'FaceColor','w')});
+        plotCustom(n,{@(ax,x,y) triangle(x,y,0.8*symbolSize,'parent',ax)});      
+      end
+  end  
 end
-    
+
+if any(rot(:)==-rotation.id)
+  plotCustom(zvector*[1,-1],{@(ax,x,y) ...
+    ellipse(x,y,0.4*symbolSize,0.4*symbolSize,0,'parent',ax,'FaceColor','w','linewidth',2)});
+end
+
 mtexFig = newMtexFigure;
 for ax = mtexFig.children(:).'
   set(ax,'xlim',1.1*get(ax,'xlim'));
@@ -61,22 +75,8 @@ mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 
 hold off
 
-function s = Symbol(angle,alpha,varargin)
-switch round(angle/degree)
-  case 180
-    s = @(ax,x,y) ellipse(x,y,0.3*symbolSize,symbolSize,alpha,'parent',ax,varargin{:});
-  case 120
-    s = @(ax,x,y) triangle(x,y,0.8*symbolSize,'parent',ax,varargin{:});
-  case 90
-    s = @(ax,x,y) square(x,y,0.7*symbolSize,'parent',ax,varargin{:});
-  case 60
-    s = @(ax,x,y) hexagon(x,y,0.75*symbolSize,'parent',ax,varargin{:});
-end
 end
 
-end
-
-%
 function ellipse(cx,cy,dx,dy,angle,varargin)
 
 A = [[cos(angle) -sin(angle)];[sin(angle) cos(angle)]];

@@ -64,7 +64,7 @@ tau = double(EinsteinSum(R,[-1,-2],sigma,[-1,-2],'name','Schmid factor'));
 
 % vizualize the Schmid factors
 contourf(r,tau)
-colorbar
+mtexColorbar
 
 %% Finding the active slip system
 % With slip direction m and slip plane n also all crystallographic
@@ -137,7 +137,7 @@ sigma
 
 % pot the maximum Schmidt factor
 contourf(r,abs(tauMax));
-colorbar
+mtexColorbar
 
 %%
 
@@ -156,11 +156,12 @@ sigma = EinsteinSum(tensor(r),1,r,2)
 % compute active slip system
 [tauMax,mActive,nActive] = calcShearStress(sigma,m,n,'symmetrise');
 
-hold on
 % plot active slip plane in red
+hold on
 quiver(r,mActive,'ArrowSize',0.2,'LineWidth',2,'Color','r');
 
 % plot active slip direction in green
+hold on
 quiver(r,nActive,'ArrowSize',0.2,'LineWidth',2,'Color','g');
 hold off
 
@@ -205,7 +206,7 @@ n = Miller(0,1,0,CS_Forsterite,'hkl');
 
 close all
 plot(ebsd('Forsterite'),tauMax')
-colorbar
+mtexColorbar
 title('Schmidt factors for (010)[100]')
 
 %%
@@ -225,7 +226,7 @@ sigmaCS = rotate(sigma001,inv(ori))
 [tauMax,mActive,nActive,tau,ind] = calcShearStress(sigmaCS,n,b,'symmetrise');
 
 plot(grains('Forsterite'),tauMax)
-colorbar
+mtexColorbar
 title('Schmidt factors for (010)[100]')
 
 %% 

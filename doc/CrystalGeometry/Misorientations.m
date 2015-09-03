@@ -1,7 +1,7 @@
 %% Misorientations
-% Explains how to define crystal orientations, how to switch between
-% different convention and how to compute crystallographic equivalent
-% orientations.
+% Misorientation describe the relative orientation of two grains with
+% respect to each other. Important concepts are are twinnings and 
+% CSL (coincidence site lattice),
 %
 %% Open in Editor
 %
@@ -71,11 +71,10 @@ annotate(m,'labeled')
 legend({},'location','NorthWest','FontSize',13);
 
 %%
-% we observe an almost perfect math between the {11-20} lattice planes
-% and the {10-11} lattice planes
-% and good coincidences for the lattice plane {10-10} to {0001} and
-% {11-22}; and for the lattice plane {10-10} to {11-22}. Lets compute the
-% angles explicitly
+% we observe an almost perfect math between the {11-20} lattice planes and
+% the {10-11} lattice planes and good coincidences for the lattice plane
+% {10-10} to {0001} and {11-22}; and for the lattice plane {10-10} to
+% {11-22}. Lets compute the angles explicitly
 
 angle(mori * Miller(1,1,-2,0,CS),Miller(1,1,-2,0,CS)) / degree
 angle(mori * Miller(-1,0,1,1,CS),Miller(1,0,-1,1,CS)) / degree
@@ -115,7 +114,7 @@ legend({},'location','NorthWest','FontSize',13);
 %% Highlight twinning boundaries
 % It turns out that in the previous EBSD map many grain boudaries have a
 % misorientation close to the twinning misorientation we just defined. Lets
-% higlight such twinning boundaries
+% Lets higlight those twinning boundaries
 
 % consider only Magnesium to Magnesium grain boundaries
 gB = grains.boundary('Mag','Mag');

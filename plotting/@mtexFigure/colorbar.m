@@ -43,7 +43,7 @@ if nargout == 1, h = mtexFig.cBarAxis; end
     end
     
     fs = getMTEXpref('FontSize');  
-    h = optiondraw(buildinColorbar('peer',peer,'eastoutside','units','pixel',...
+    h = optiondraw(colorbar('peer',peer,'eastoutside','units','pixel',...
       'FontSize',fs),varargin{:});
         
   end  

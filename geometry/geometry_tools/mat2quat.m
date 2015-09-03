@@ -33,7 +33,7 @@ absQ(2,:) = 0.5 * sqrt(1-mat(1,1,:)-mat(2,2,:)+mat(3,3,:));
 absQ(3,:) = 0.5 * sqrt(1+mat(1,1,:)-mat(2,2,:)-mat(3,3,:));
 absQ(4,:) = 0.5 * sqrt(1-mat(1,1,:)+mat(2,2,:)-mat(3,3,:));
 
-[x,ind]=max(absQ); % Select biggest for best accuracy
+[~,ind]=max(absQ); % Select biggest for best accuracy
 
 qind = ind == 1;
 if any(qind)

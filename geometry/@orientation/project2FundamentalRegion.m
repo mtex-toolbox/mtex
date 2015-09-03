@@ -1,8 +1,8 @@
-function [ori,omega] = project2FundamentalRegion(ori,varargin)
+function ori = project2FundamentalRegion(ori,varargin)
 % projects orientation to a fundamental region
 %
 % Syntax
-%   [ori,omega] = project2FundamentalRegion(ori,rot_ref)
+%   ori = project2FundamentalRegion(ori,rot_ref)
 %
 % Input
 %  ori     - @orientation
@@ -13,4 +13,7 @@ function [ori,omega] = project2FundamentalRegion(ori,varargin)
 %  omega   - rotational angle to reference rotation
 %
 
-[ori,omega] = project2FundamentalRegion@rotation(ori,ori.CS,ori.SS,varargin{:});
+if ori.antipodal, ap = {'antipodal'}; else ap = {}; end
+q = project2FundamentalRegion(quaternion(ori),ori.CS,ori.SS,ap{:},varargin{:});
+
+ori = orientation(q,ori.CS,ori.SS,ap{:});

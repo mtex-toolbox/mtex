@@ -41,17 +41,3 @@ classdef (InferiorClasses = {?rotation,?quaternion}) SO3Grid < orientation
     end
   end
 end
-
-
-% -------------------------------------------------------------------------
-function q = axisAngleGrid(varargin)
-
-% extract axes and angles
-axes = plotS2Grid('north',varargin{:});  
-angles = linspace(0,pi,6);
-angles = get_option(varargin,'angles',angles,'double');
-% compute quaternions
-q = axes2quat_outer(axes,angles);
-
-end
-

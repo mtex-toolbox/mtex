@@ -89,7 +89,7 @@ if length(q1) == 1
   if length(q2) > 1000, q1 = unique(q1,'antipodal'); end
   
   % apply rotation / quaternion dot_outer and take the maximum
-  d = reshape(max(abs(dot_outer(q1,q2))),size(q2)); 
+  d = reshape(max(abs(dot_outer(q1,q2)),[],1),size(q2)); 
       
 else
 

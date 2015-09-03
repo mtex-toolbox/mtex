@@ -1,4 +1,4 @@
-function [rot,omega] = project2FundamentalRegion(rot,varargin)
+function rot = project2FundamentalRegion(rot,varargin)
 % projects rotation to a fundamental region
 %
 % Syntax
@@ -14,4 +14,5 @@ function [rot,omega] = project2FundamentalRegion(rot,varargin)
 %  omega   - rotational angle to reference rotation
 %
 
-[rot,omega] = project2FundamentalRegion@quaternion(rot,varargin{:});
+q = project2FundamentalRegion@quaternion(quaternion(rot),varargin{:});
+rot = rotation(q);

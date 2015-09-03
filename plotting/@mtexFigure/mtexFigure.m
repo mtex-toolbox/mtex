@@ -21,7 +21,19 @@ classdef mtexFigure < handle
 %       |
 %       V
 %  calcAxesSize  -> compute axes size
-
+%
+%
+% general concept of MTEX figures:
+%
+% mtexFigure -> cBarAxis handle to each colorbar axes
+%       |
+%       V
+%    children -> mapPlot (stored in appdata of axes handle) -> micronbar
+%             -> spherical Plot (stored in appdata of axes handle)
+%              -> pfPlot     [CS,SS,h]
+%              -> MillerPlot [CS]
+%               -> ipfPlot   [r,SS]
+%
 
   properties
     parent            % the parent figure    
@@ -94,6 +106,9 @@ classdef mtexFigure < handle
         @deleteChildren);
       
       MTEXFigureMenu(mtexFig,varargin{:});
+      
+      h = findall(mtexFig.parent,'ToolTipString','Insert Colorbar');
+      set(h,'ClickedCallback',@(a,b) mtexColorbar(mtexFig,a,b));
       
       function updateChildren(a,b)
         

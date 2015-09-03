@@ -3,6 +3,7 @@ classdef BinghamComponent < ODFComponent
   properties
     A
     kappa = [1,0,0,0];
+    antipodal = false;
   end
  
   properties (Dependent = true)

@@ -9,6 +9,7 @@ classdef unimodalComponent < ODFComponent
   properties (Dependent = true)
     CS % crystal symmetry
     SS % specimen symmetry
+    antipodal % mori =? inv(mori)
   end
   
   methods
@@ -37,6 +38,14 @@ classdef unimodalComponent < ODFComponent
     
     function SS = get.SS(component)
       SS = component.center.SS;
+    end
+    
+    function component = set.antipodal(component,antipodal)
+      component.center.antipodal = antipodal;
+    end
+        
+    function antipodal = get.antipodal(component)
+      antipodal = component.center.antipodal;      
     end
     
   end

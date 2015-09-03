@@ -89,4 +89,4 @@ plotPDF(odf,Miller(1,0,0,cs),'antipodal','resolution',10*degree)
 % They can be customized by the standard MATLAB linespec
 % options. See [[matlab:doc linespec,linespec]]!
 
-%plotODF(odf,'radially','linewidth',2,'linestyle','-.')
+%plotFibre(odf,'radially','linewidth',2,'linestyle','-.')

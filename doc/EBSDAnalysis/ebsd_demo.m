@@ -57,7 +57,7 @@ plotPDF(odf2,h,'antipodal')
 
 %% Plot ODF
 
-plotODF(odf2,'sections',9,'resolution',2*degree,...
+plot(odf2,'sections',9,'resolution',2*degree,...
   'FontSize',10,'silent')
 
 %% Estimation of Fourier Coefficients
@@ -67,7 +67,7 @@ plotODF(odf2,'sections',9,'resolution',2*degree,...
 close all
 odf2 = FourierODF(odf2);
 imagesc(abs(odf2.calcFourier('order',10)))
-colorbar
+mtexColorbar
 
 %%
 % However this is a biased estimator of the Fourier coefficents which
@@ -80,7 +80,7 @@ colorbar
 dirichlet = DirichletKernel(32);
 odf3 = calcODF(ebsd('Fe').orientations,'kernel',dirichlet);
 imagesc(abs(odf3.calcFourier('order',10)))
-colorbar
+mtexColorbar
 
 %%
 % Let us compare the Fourier coefficients obtained by both methods.
@@ -97,7 +97,7 @@ hold off
 
 CS = crystalSymmetry('trigonal');
 fibre_odf = 0.5*uniformODF(CS) + 0.5*fibreODF(Miller(0,0,0,1,CS),zvector);
-plotODF(fibre_odf,'sections',6,'silent')
+plot(fibre_odf,'sections',6,'silent')
 ori = calcOrientations(fibre_odf,10000)
 
 %%
@@ -108,7 +108,7 @@ odf = calcODF(ori)
 %%
 % plot the estimated ODF
 
-plotODF(odf,'sections',6,'silent')
+plot(odf,'sections',6,'silent')
 
 %%
 % calculate estimation error

@@ -15,8 +15,8 @@ if ~isa(SS,'symmetry')
 end
 
 % get fundamental region
-[maxAlpha,maxBeta,maxGamma] = getFundamentalRegion(CS,SS,'SO3Grid');
-maxGamma = maxGamma/2;
+[maxAlpha,maxBeta,maxGamma] = fundamentalRegionEuler(CS,SS,'SO3Grid',varargin{:});
+maxGamma = maxGamma/2; % we will consider the interval -maxGamma/2 .. maxGamma/2
 if ~check_option(varargin,'center'), maxGamma = min(maxGamma,maxAngle);end
 
 % determine resolution
@@ -64,7 +64,7 @@ gamma  = dGamma+repmat(gamma.',1,length(alphabeta));
 alpha = repmat(reshape(alpha,1,[]),ap2,1);
 beta  = repmat(reshape(beta,1,[]),ap2,1);
 
-ori = orientation('Euler',alpha,beta,gamma,'ZYZ',CS,SS);
+ori = orientation('Euler',alpha,beta,gamma,'ZYZ',CS,SS,varargin{:});
 
 gamma = S1Grid(gamma,-maxGamma+dGamma(1,:),...
   maxGamma+dGamma(1,:),'periodic','matrix');
@@ -72,6 +72,7 @@ gamma = S1Grid(gamma,-maxGamma+dGamma(1,:),...
 res = 2 * maxGamma / ap2;
 
 % eliminiate 3 fold symmetry axis of cubic symmetries
+% TODO: this should be done better!!
 ind = fundamental_region(ori,CS,specimenSymmetry);
 
 if nnz(ind) ~= 0

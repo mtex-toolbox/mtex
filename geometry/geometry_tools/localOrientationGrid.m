@@ -66,7 +66,9 @@ function ind = fundamental_region2(q,center,cs,ss)
 
 % symmetrise
 c_sym = ss *  center * cs;
-omega = angle(c_sym * inv(center));
+omega = angle(c_sym * inv(center)); %#ok<MINV>
+%[~,i] = min(omega,[],2);
+%c_sym = c_sym(sub2ind(sie(c_sym,i));
 [~,c_sym] = selectMinbyRow(omega,c_sym);
 
 % convert to rodrigues space

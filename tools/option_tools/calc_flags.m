@@ -1,11 +1,11 @@
 function flags = calc_flags(args,flagbits)
 % check for optional flag
 %
-%% Input
+% Input
 %  varargin
 %  list {flag_name,bit_position}
-%% Output
-% bitsum
+% Output
+%  bitsum
 
 if check_option(args,'FLAGS')
   flags = get_option(args,'FLAGS');

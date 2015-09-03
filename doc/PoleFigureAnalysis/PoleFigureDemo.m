@@ -28,7 +28,7 @@ c = {1,[0.52 ,1.23],1};
 pf = loadPoleFigure(fname,h,CS,SS,'interface','dubna','superposition',c);
 
 plot(pf)
-colorbar
+mtexColorbar
 
 %% Extract information from imported pole figure data
 %
@@ -68,7 +68,7 @@ plot(pf_modified)
 rec = calcODF(pf,'RESOLUTION',10*degree,'iter_max',6)
 
 plotPDF(rec,h)
-colorbar
+mtexColorbar
 
 %%
 %
@@ -89,13 +89,13 @@ pf_SantaFe = calcPoleFigure(SantaFe,h,r);
 % estimate an ODF with ghost correction
 rec = calcODF(pf_SantaFe,'RESOLUTION',10*degree,'background',10)
 
-plotODF(rec,'sections',6)
+plot(rec,'sections',6)
 
 %%
 % without ghost correction
 rec_ng = calcODF(pf_SantaFe,'RESOLUTION',10*degree,'background',10,'NoGhostCorrection')
 
-plotODF(rec_ng,'sections',6)
+plot(rec_ng,'sections',6)
 
 
 %% Error Analysis

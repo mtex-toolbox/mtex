@@ -56,9 +56,9 @@ rgb = oM.orientation2color(ori)
 
 %%
 % Lets visuallize the orientation map by plotting it in orientation space
-% as phi_1 sections
+% as phi_2 sections
 
-plot(oM,'sections',6,'phi1')
+plot(oM,'sections',6,'phi2')
 
 
 %%
@@ -166,7 +166,7 @@ hold off
 % this restricts the crystal symmetries used for visualization
 % to proper rotations
 ebsd('Forsterite').CS = ebsd('Forsterite').CS.properGroup;
-oM.CS1 = oM.CS1.properGroup;
+oM = ipdfHSVOrientationMapping(ebsd('Forsterite'))
 
 %
 plot(oM)

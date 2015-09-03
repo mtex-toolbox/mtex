@@ -42,9 +42,9 @@ plotPDF(odf,[Miller(1,0,-1,0,cs),Miller(0,0,0,1,cs)])
 
 mtexFig = mtexFigure;
 
-plotPDF(odf,Miller(1,0,-1,1,cs),'TL','upper','parent',mtexFig.nextAxis)
+plotPDF(odf,Miller(1,0,-1,1,cs),'TR','upper','parent',mtexFig.nextAxis)
 
-plotPDF(odf,Miller(1,0,-1,1,cs),'TL','lower','parent',mtexFig.nextAxis)
+plotPDF(odf,Miller(1,0,-1,1,cs),'TR','lower','parent',mtexFig.nextAxis)
 
 mtexFig.drawNow
 
@@ -63,9 +63,9 @@ mtexFig.drawNow
 
 mtexFig = mtexFigure;
 
-plotPDF(odf,Miller(1,0,-1,1,cs),'TL','upper','antipodal','parent',mtexFig.nextAxis)
+plotPDF(odf,Miller(1,0,-1,1,cs),'TR','upper','antipodal','parent',mtexFig.nextAxis)
 
-plotPDF(odf,Miller(1,0,-1,1,cs),'TL','lower','antipodal','parent',mtexFig.nextAxis)
+plotPDF(odf,Miller(1,0,-1,1,cs),'TR','lower','antipodal','parent',mtexFig.nextAxis)
 
 mtexFig.drawNow
 
@@ -89,7 +89,7 @@ plotIPDF(odf,[xvector,zvector],'antipodal','complete')
 %% ODF Sections
 %
 % Plotting an ODF in two dimensional sections through the orientation space
-% is done using the command <ODF.plotODF.html plot>. By default the
+% is done using the command <ODF.plotSection.html plot>. By default the
 % sections are at constant angles phi2. The number of sections can be
 % specified by the option |sections|
 
@@ -164,11 +164,9 @@ plotAxisDistribution(mdf)
 
 plotAngleDistribution(mdf)
 hold all
-plotAngleDistribution(uniformODF(cs,cs))
+plotAngleDistribution(cs,cs)
 hold off
 legend('model ODF','uniform ODF')
-
-
 
 %%
 % Finally, lets set back the default colormap.

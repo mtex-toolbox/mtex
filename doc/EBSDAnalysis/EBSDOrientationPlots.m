@@ -37,12 +37,12 @@ plotIPDF(ebsd('Fo').orientations,xvector)
 
 %% Scatter Plot in ODF Sections
 % The plotting og scatter points in sections of the orientation space is carried out by the
-% command <orientation.plotODF.html plotODF>. In the above examples the number
+% command <orientation.plotSection.html plotSection>. In the above examples the number
 % of plotted orientations was chosen automatically such that the
 % plots not to become too crowed with points. The number of randomly chosen orientations
 % can be specified by the option *points*.
 
-plotODF(ebsd('Fo').orientations,'points',1000,'sigma','sections',9)
+plotSection(ebsd('Fo').orientations,'points',1000,'sigma','sections',9)
 
 
 %% Scatter Plot in Axis Angle or Rodrigues Space
@@ -81,20 +81,17 @@ plotIPDF(grains('Fo').meanOrientation,xvector,'points',500, 'MarkerSize',3);
 hold off
 
 %%
-% One can also use different colors on the scatter points by certain [[EBSD.get.html,EBSD
-% properties]] or [[GrainSet.get.html,grain properties]]
+% One can also use different colors on the scatter points
 
 h = [Miller(1,0,0,ebsd('Fo').CS),Miller(1,1,0,ebsd('Fo').CS)];
-plotPDF(ebsd('Fo').orientations,...
-  h,'antipodal','MarkerSize',4,'property',ebsd.mad)
+plotPDF(ebsd('Fo').orientations,ebsd('Fo').mad,h,'antipodal','MarkerSize',4)
 
 %%
 % or some arbitrary data vector
 
-plotODF(grains('Fo').meanOrientation,'antipodal','sections',9,'MarkerSize',3,...
-  'property',grains('Fo').area,'sigma');
-
-
+plotSection(grains('Fo').meanOrientation,grains('Fo').area,...
+  'sigma','antipodal','sections',9,'MarkerSize',3);
+  
 %%
 % See also <PlotTypes_demo.html#5, Scatter plots> for more information
 % about scatter plot and <SphericalProjection_demo.html,spherical

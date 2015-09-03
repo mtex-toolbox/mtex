@@ -47,7 +47,7 @@ xlabel('Misorientation angles in degree')
 close all
 plot(ebsd('Forsterite'),ebsd('Forsterite').mis2mean.angle./degree)
 mtexColorMap WhiteJet
-colorbar
+mtexColorbar
 hold on
 plot(grains.boundary,'edgecolor','k','linewidth',.5)
 hold off
@@ -63,7 +63,7 @@ hold off
 oM = ipdfHSVOrientationMapping(mori)
 oM.colorStretching = 5;
 
-plot(oM)
+plot(oM,'noTitle')
 
 %%
 
@@ -99,7 +99,7 @@ hold on
 plot(grains.boundary)
 plot(bnd_FoFo,bnd_FoFo.misorientation.angle./degree,'linewidth',2)
 mtexColorMap blue2red
-colorbar
+mtexColorbar
 hold off
 
 
@@ -112,42 +112,70 @@ hold off
 %
 %% The angle distribution
 %
-% The following command plot the angle distribution of all misorientations
-% grouped according to phase trasistions.
+% The following commands plot the angle distributions of all phase
+% transitions from Forsterite to any other phase.
 
-close all
-plotAngleDistribution(grains.boundary)
+plotAngleDistribution(grains.boundary('Fo','Fo').misorientation,...
+  'DisplayName','Forsterite-Forsterite')
+hold on
+plotAngleDistribution(grains.boundary('Fo','En').misorientation,...
+  'DisplayName','Forsterite-Enstatite')
+plotAngleDistribution(grains.boundary('Fo','Di').misorientation,...
+  'DisplayName','Forsterite-Diopside')
+hold off
+legend('show','Location','northwest')
 
 %%
-% The above angle distributions can be compared with the uncorrelated angle
-% distributions. The uncorrelated angle distributions can be obtained in
-% two ways. First one can do the following
-%
-% # estimate an ODF for each phase
-% # compute for any phase transition a misorientation distribution function
-% (MDF)
-% # compute the continuous angle distribution of the MDFs
-%
-% All these steps are performed by the single command
+% The above angle distributions can be compared with the uncorrelated
+% misorientation angle distributions. This is done by
 
-close all
-plotAngleDistribution(ebsd)
+% compute uncorrelated misorientations
+mori = calcMisorientation(ebsd('Fo'),ebsd('Fo'));
+
+% plot the angle distribution
+plotAngleDistribution(mori,'DisplayName','Forsterite-Forsterite')
+
+hold on
+
+mori = calcMisorientation(ebsd('Fo'),ebsd('En'));
+plotAngleDistribution(mori,'DisplayName','Forsterite-Enstatite')
+
+mori = calcMisorientation(ebsd('Fo'),ebsd('Di'));
+plotAngleDistribution(mori,'DisplayName','Forsterite-Diopside')
+
+hold off
+legend('show','Location','northwest')
 
 
 %%
 % Another possibility is to compute an uncorrelated angle distribution from
-% the EBSD data set by taking only into account those pairs of measurements 
+% EBSD data by taking only into account those pairs of measurements 
 % that are sufficently far from each other (uncorrelated points). The uncorrelated angle
 % distribution is plotted by
 
-%plotAngleDistribution(ebsd,'ODF')
+% compute the Forsterite ODF 
+odf_Fo = calcODF(ebsd('Fo').orientations,'Fourier')
+
+% compute the uncorrelated Forsterite to Forsterite MDF
+mdf_Fo_Fo = calcMDF(odf_Fo,odf_Fo)
+
+% plot the uncorrelated angle distribution
+hold on
+plotAngleDistribution(mdf_Fo_Fo,'DisplayName','Forsterite-Forsterite')
+hold off
+
+legend('-dynamicLegend','Location','northwest') % update legend
 
 %%
-% In order to consider only a specific phase transistion one can use the
-% syntax
+% What we have ploted above is the uncorrelated misorientation angle
+% distribution for the Forsterite ODF. We can compare it to the
+% uncorrelated misorientation angle distribution of the uniform ODF by
 
-close all
-plotAngleDistribution(ebsd('Fo'),ebsd('En'))
+hold on
+plotAngleDistribution(odf_Fo.CS,odf_Fo.CS,'DisplayName','untextured')
+hold off
+
+legend('-dynamicLegend','Location','northwest') % update legend
 
 %% The axis distribution
 % 
@@ -156,7 +184,8 @@ plotAngleDistribution(ebsd('Fo'),ebsd('En'))
 
 close all
 mtexFig = newMtexFigure;
-plotAxisDistribution(ebsd('Fo'),'smooth','parent',mtexFig.gca)
+mori = calcMisorientation(ebsd('Fo'));
+plotAxisDistribution(mori,'smooth','parent',mtexFig.gca)
 mtexTitle('uncorrelated axis distribution')
 mtexFig.drawNow('figSize','normal')
 
@@ -165,9 +194,9 @@ mtexFig.drawNow('figSize','normal')
 % plot
 
 mtexFig.nextAxis
-plotAxisDistribution(grains.boundary('Fo','Fo'),'smooth','parent',mtexFig.gca)
+plotAxisDistribution(bnd_FoFo.misorientation,'smooth','parent',mtexFig.gca)
 mtexTitle('boundary axis distribution')
-colorbar
+mtexColorbar
 
 %%
 % This shows a much stronger preference of the (1,1,1) axis in comparison

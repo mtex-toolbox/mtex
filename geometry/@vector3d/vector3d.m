@@ -113,12 +113,16 @@ classdef vector3d < dynOption
       
     end
   
+    function n = numArgumentsFromSubscript(varargin)
+      n = 0;
+    end
+    
     function rho = get.rho(v)
-      rho = getRho(v);
+      rho = atan2(v.y,v.x);
     end
     
     function theta = get.theta(v)
-      theta = getTheta(v);
+      theta = acos(v.z./v.norm);
     end
     
     function res = get.resolution(v)
@@ -145,5 +149,47 @@ classdef vector3d < dynOption
       v = v.setOption('resolution',res);
       
     end
+  end
+  
+  methods (Static = true)
+    
+    function v = nan(varargin)
+      x = nan(varargin{:});
+      v = vector3d(x,x,x);
+    end
+    
+    function v = ones(varargin)
+      x = ones(varargin{:});
+      v = vector3d(x,x,x);
+    end
+    
+    function v = zeros(varargin)
+      x = zeros(varargin{:});
+      v = vector3d(x,x,x);
+    end
+        
+    function v = X(varargin)
+      x = ones(varargin{:});
+      v = vector3d(x,0,0);
+    end
+    
+    function v = Y(varargin)
+      x = ones(varargin{:});
+      v = vector3d(0,x,0);
+    end
+    
+    function v = Z(varargin)
+      x = ones(varargin{:});
+      v = vector3d(0,0,x);
+    end
+    
+    %function v = polar(polarAngle,azimuthAngle)
+    %  % Syntax
+    %  %
+    %  x = sin(polarAngle).*cos(azimuthAngle);
+    %  y = sin(polarAngle).*sin(azimuthAngle);
+    %  z = cos(polarAngle);
+    %  v = vector3d(x,y,z);
+    %end
   end
 end
