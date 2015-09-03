@@ -57,7 +57,7 @@ if isNew % for a new plot
   
 else
   h = getappdata(gcf,'h');
-  pfAnnotations = @() 1;
+  pfAnnotations = @(varargin) 1;
 end
 
 

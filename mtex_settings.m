@@ -30,10 +30,10 @@ setMTEXpref('showCoordinates','off')
 % the following line add X and Y to the plot
 % you may want to replace this by 'RD' and 'ND'
 pfAnnotations = @(varargin) text([vector3d.X,vector3d.Y],{'X','Y'},...
-  'BackgroundColor','w',varargin{:});
+  'BackgroundColor','w','tag','axesLabels',varargin{:});
 
 % you can uncomment the following line to disable the annotations
-%pfAnnotations = @() do_nothing;
+%pfAnnotations = @(varargin) do_nothing;
 setMTEXpref('pfAnnotations',pfAnnotations);
 
 

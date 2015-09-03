@@ -147,9 +147,10 @@ for a = 1:numel(ax)
         if ~isempty(mP), mP.micronBar.visible = onoff;end
       
       case 'labels'
-        la = [get(ax(a),'xlabel'),get(ax(a),'ylabel')];
+        la = [get(ax(a),'xlabel');get(ax(a),'ylabel');...
+          findobj(ax(a),'tag','axesLabels')];
         set(la,'visible',onoff);
-
+        
       case 'ticks'
       
         if strcmp(onoff,'on')
