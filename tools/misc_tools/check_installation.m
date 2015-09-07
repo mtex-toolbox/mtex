@@ -257,7 +257,7 @@ function out = checkNfftBug
 
   TY = D3 * Y;
 
-  % check whether spherical Y are totated correctly by D
+  % check whether spherical Y are rotated correctly by D
   out = sqrt(norm(TY - gY)) < 0.001;
 
 end
