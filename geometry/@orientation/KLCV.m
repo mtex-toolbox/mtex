@@ -22,7 +22,9 @@ cN = ceil(sN / pN);
 
 c = zeros(cN,length(psi));
 iN = zeros(1,cN);
-progress(0,cN,' estimating optimal kernel halfwidth: ');
+if ~check_option(varargin,'silent')
+  progress(0,cN,' estimating optimal kernel halfwidth: ');
+end
 
 for i = 1:cN
   
@@ -42,7 +44,9 @@ for i = 1:cN
     % sum up
     c(i,k) = sum(log(sum(f,2)));
   
-    progress((i-1)*length(psi)+k,cN*length(psi),' estimate optimal kernel halfwidth: ');
+    if ~check_option(varargin,'silent')
+      progress((i-1)*length(psi)+k,cN*length(psi),' estimate optimal kernel halfwidth: ');
+    end
   end
   
   %[cm,ci] = max(sum(c));

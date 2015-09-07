@@ -52,8 +52,9 @@ if check_option(varargin,'bingham')
   return;
 end
   
-% estimate kernel function
-psi = getKernel(ori,varargin{:});
+% extract kernel function
+psi = deLaValeePoussinKernel('halfwidth',10*degree,varargin{:});
+psi = get_option(varargin,'kernel',psi);
 
 if isa(ori.SS,'crystalSymmetry') || (~check_option(varargin,{'exact','noFourier'}) && ...
     (check_option(varargin,'Fourier') || ...

@@ -48,8 +48,9 @@ else
 end
 weights = weights ./ sum(weights(:));
 
-% construct kernel
-psi = getKernel(ori,varargin{:});
+% extract kernel function
+psi = deLaValeePoussinKernel('halfwidth',10*degree,varargin{:});
+psi = get_option(varargin,'kernel',psi);
 hw = psi.halfwidth;
 
 if (check_option(varargin,'exact') || length(ori) < 1000) && ~check_option(varargin,'test')
