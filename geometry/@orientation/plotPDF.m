@@ -91,7 +91,7 @@ for i = 1:length(h)
     mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
   end
   
-  pfAnnotations('parent',mtexFig.gca);
+  pfAnnotations('parent',mtexFig.gca,'doNotDraw');
   
   % TODO: unifyMarkerSize
 

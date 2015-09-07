@@ -58,6 +58,12 @@ methods
     S2G.res = get_option(varargin,'resolution',2*pi);
   end
 
+  function v = vector3d(S2G)
+    v = vector3d(S2G.x,S2G.y,S2G.z);
+    v.opt = S2G.opt;
+    v.antipodal = S2G.antipodal;
+  end
+  
 end
 
 end

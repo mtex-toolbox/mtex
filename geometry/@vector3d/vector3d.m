@@ -33,9 +33,7 @@ classdef vector3d < dynOption
       if nargin == 0
       elseif nargin <= 2
         if isa(x,'vector3d') % copy-constructor
-          [v.x,v.y,v.z] = double(x);
-          v.antipodal = x.antipodal;
-          v.opt = x.opt;
+          v = x;
           return
         elseif isa(x,'double')
           if all(size(x) == [1,3])
@@ -57,9 +55,10 @@ classdef vector3d < dynOption
       elseif ischar(x)
         
         if strcmp(x,'polar')
-        
-          v.x = sin(y).*cos(z);
-          v.y = sin(y).*sin(z);
+          
+          sy = sin(y);
+          v.x = sy .* cos(z);
+          v.y = sy .* sin(z);
           v.z = cos(y);
           
         else

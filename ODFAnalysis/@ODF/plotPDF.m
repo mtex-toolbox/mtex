@@ -51,7 +51,7 @@ for i = 1:length(h)
   p = ensureNonNeg(odf.calcPDF(h{i},r,varargin{:},'superposition',c{i}));
   
   r.plot(p,'parent',mtexFig.gca,'smooth','doNotDraw',varargin{:});
-  pfAnnotations('parent',mtexFig.gca);
+  pfAnnotations('parent',mtexFig.gca,'doNotDraw');
 
   mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
   
