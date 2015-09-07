@@ -47,7 +47,7 @@ function mdf = calcMDF(ori,varargin)
 % orientation/calcFourierMDF orientation/calcKernelMDF orientation/calcBinghamMDF ebsd_demo EBSD2mdf EBSDSimulation_demo 
 
 if check_option(varargin,'antipoal')
-  ori = [ori(:);inv(ori(:))];
+  ori = [ori(:);inv(ori(:))]; 
 end
 
-mdf = calcODF(ori,varargin{:});
+mdf = calcODF(ori,'halfwidth',7.5*degree,varargin{:});
