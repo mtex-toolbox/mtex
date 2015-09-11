@@ -117,11 +117,19 @@ classdef vector3d < dynOption
     end
     
     function rho = get.rho(v)
-      rho = atan2(v.y,v.x);
+      try
+        rho = v.opt.rho;
+      catch
+        rho = atan2(v.y,v.x);
+      end
     end
     
     function theta = get.theta(v)
-      theta = acos(v.z./v.norm);
+      try
+        theta = v.opt.theta;
+      catch
+        theta = acos(v.z./v.norm);
+      end
     end
     
     function res = get.resolution(v)
