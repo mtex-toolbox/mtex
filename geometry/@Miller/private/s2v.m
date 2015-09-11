@@ -1,4 +1,4 @@
-function v = s2v(s,m)
+function m = s2v(s,m)
   %'[uvw]'
   %'(hkl)'
   %'[u1v1w1]\[u2v2w2]->'(hkl)'  a.k. zonen gleichung
@@ -25,15 +25,19 @@ try
     d = i(indices{1});
   end
   
-  if numel(d) == 3 || numel(d) == 4
-    if isuvw
-      v = d2v(d(1),d(2),d(end),m.CS);
-      v = set_option(v,'uvw');
+  assert(numel(d) == 3 || numel(d) == 4);
+  
+  if isuvw
+    if numel(d) == 3
+      m.uvw = d;
     else
-      v = m2v(d(1),d(2),d(end),m.CS);
+      m.UVTW = d;
     end
+  else
+    m.hkl = d;    
   end
+  
 catch e
-  error('misuse')
+  error('wrong syntax')
 end
 
