@@ -14,13 +14,13 @@ bounds.FR = {0,pi,0,2*pi};
 bounds.VR{3} = get_option(varargin,'minRho',bounds.FR{3});
 bounds.VR{4} = get_option(varargin,'maxRho',bounds.FR{4});
 
-if check_option(varargin,'south')
+if check_option(varargin,'lower')
   bounds.FR(1:2) = {pi/2,pi};  
 else
   bounds.FR{1} = 0;
   
-  if check_option(varargin,{'antipodal','north'}) && ...
-      (~check_option(varargin,'complete') ||check_option(varargin,'north'))
+  if check_option(varargin,{'antipodal','upper'}) && ...
+      (~check_option(varargin,'complete') || check_option(varargin,'upper'))
     bounds.FR{2} = pi/2;
   else
     bounds.FR{2} = pi;
