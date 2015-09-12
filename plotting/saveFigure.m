@@ -65,7 +65,7 @@ if any(strcmpi(ext,{'.pdf','.eps','.ps'}))
   end
 
   if check_option(varargin,'crop')
-    unix(['pdfcrop' ' ' fname ' ' fname]); 
+    unix(['LD_LIBRARY_PATH="" && pdfcrop' ' ' fname ' ' fname]); 
   end
   
 else % use export_fig with 50% magnification
