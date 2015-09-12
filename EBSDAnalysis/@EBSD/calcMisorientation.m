@@ -60,7 +60,7 @@ d = sqrt((X1(i1)-X2(i2)).^2 + (X1(i1)-X2(i2)).^2);
 ind = d > minDistance;
 i1 = i1(ind); i2 = i2(ind);
 
-if nargout == 1
+if nargout <= 1
   % compute misorientations
   mori = ebsd1.orientations(i1) .\ ebsd2.orientations(i2);
 else
