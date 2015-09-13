@@ -15,15 +15,16 @@ function odf = calcFourierODF(ori,varargin)
 % [[EBSDSimulation_demo.html, description]] for exhausive discussion.
 %
 % Syntax
-% calcODF(ori,...,param,var,...)
-% calcODF(ebsd,...,param,var,...)
+%   calcODF(ori)
+%   calcODF(ori,'kernel',psi)
+%   calcODF(ori,'bandwidth',32)
 %
 % Input
 %  ori  - @orientation
-%  ebsd - @EBSD
 %
 % Output
 %  odf - @ODF
+%  psi - @kernel
 %
 % Options
 %  halfwidth - halfwidth of the kernel function
@@ -46,7 +47,7 @@ L = get_option(varargin,{'L','HarmonicDegree'},...
 % check kernel has at most the requested bandwidth
 if odf.components{1}.psi.bandwidth > L,
   warning('MTEX:EBSD:calcODF',['The estimated ODF will suffer from ' ...
-    'truncation errors when truncated to harmonic degree 22. ' ...
+    'truncation errors when truncated to harmonic degree 64. ' ...
     ' You  might want to increase the harmonic degree or the halfwidth.'])
 end
 

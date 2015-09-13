@@ -1,20 +1,25 @@
-% Calculalating and plotting elastic velocities (km/s) from elasticity stiffness
-% Cijkl tensor (GPa) and density (g/cm3)
+%% Seismic velocities and anisotropy
+% Calculalating and plotting elastic velocities from elastic stiffness
+% Cijkl tensor and density (by David Mainprice).
 %
-% By David Mainprice
+%% Open in Editor
 %
-%% Crystal Symmetry
+%% Contents
+%
+%
+%% Crystal Symmetry and definition of the elastic stiffness tensor
 % 
 % crystal symmetry - Orthorhombic mmm
 % Olivine structure 
 % (4.7646 10.2296 5.9942 90.00 90.00 90.00) - Orthorhombic
 
 cs_tensor = crystalSymmetry('mmm',[4.7646,10.2296,5.9942],...
-    [90.00,90.00,90.00]*degree,'x||a','z||c','mineral','Olivine');
+  'x||a','z||c','mineral','Olivine');
 
-%% Import 4th rank tensor as 6 by 6 matrix
+%%
+% *Import 4th rank tensor as 6 by 6 matrix*
 %
-% Olivine elastic stiffness (Cij) Tensor in GPa
+% Olivine elastic stiffness (Cij) tensor in GPa
 % Abramson E.H., Brown J.M., Slutsky L.J., and Zaug J.(1997)
 % The elastic constants of San Carlos olivine to 17 GPa.
 % Journal of Geophysical Research 102: 12253-12263.
@@ -27,7 +32,6 @@ M = [[320.5  68.15  71.6     0     0     0];...
     [   0      0      0      0    77     0];...
     [   0      0      0      0     0  78.7]];
 
-
 % Define density (g/cm3)
 rho=3.355;
 
@@ -39,7 +43,7 @@ C = tensor(M,cs_tensor,'name','elastic stiffness','unit','GPa','density',rho)
 %% compute maximum and minimum velocities
 
 % Generate velocities and polarizations on a fine pole figure S2Grid
-XY_grid = equispacedS2Grid('HEMISPHERE','upper', 'resolution',1*degree);
+XY_grid = equispacedS2Grid('upper', 'resolution',1*degree);
 
 [vp,vs1,vs2,pp,ps1,ps2] = velocity(C,XY_grid);
 
@@ -354,19 +358,3 @@ hold off
 mtexColorbar
 drawNow(gcm,'figSize','large')
 
-%%
-%
-%
-% save plot as *.pdf file
-%savefigure('Plot_Olivine_Single_Crystal_seismic_analysis.pdf');
-%
-%
-% reset colour map to default for MTEX 
-setMTEXpref('defaultColorMap',WhiteJetColorMap);
-%
-disp(' ')
-disp(' Script has successfully terminated')
-disp(' ')
-%
-% End of script
-%

@@ -9,6 +9,7 @@
 %
 % Lets import some iron data and segment grains within the data set.
 mtexdata csl
+plotx2east
 
 % grain segementation
 [grains,ebsd.grainId] = calcGrains(ebsd('indexed'))
@@ -135,25 +136,23 @@ hold off
 
 
 % mark the CSL(3) misorientation
-% TODO: not yet working
-%hold on
-%plot(CSL(3),'MarkerColor','r','DisplayName','CSL 3','MarkerSize',10)
-%hold off
+hold on
+plot(CSL(3),'MarkerColor','r','DisplayName','CSL 3','MarkerSize',20)
+hold off
 
 %% Analyzing the misorientation distribution function
-% In order to analyze more quantitively the boundary misorientation
+% In order to analyze more quantitatively the boundary misorientation
 % distribution we can compute the so called misorientation distribution
 % function. The option |antipodal| is applied since we want to identify
 % |mori| and |inv(mori)|.
 
-mdf = calcMDF(gB.misorientation,'antipodal','halfwidth',2.5*degree)
+mdf = calcMDF(gB.misorientation,'halfwidth',2.5*degree,'bandwidth',54)
 
 %%
 % Next we can visualize the misorientation distribution function in axis
 % angle sections.
 
-% TODO: this antipodal should be stored later directly in the mdf
-plot(mdf,'axisAngle',(25:5:60)*degree,'colorRange',[0 15],'antipodal')
+plot(mdf,'axisAngle',(25:5:60)*degree,'colorRange',[0 15])
 
 annotate(CSL(3),'label','$CSL_3$','backgroundcolor','w')
 annotate(CSL(5),'label','$CSL_5$','backgroundcolor','w')
@@ -168,11 +167,11 @@ drawNow(gcm)
 mori = mdf.calcModes(2)
 
 %%
-% and their volumes
+% and their volumes in percent
 
-volume(gB.misorientation,CSL(3),2*degree)
+100 * volume(gB.misorientation,CSL(3),2*degree)
 
-volume(gB.misorientation,CSL(9),2*degree)
+100 * volume(gB.misorientation,CSL(9),2*degree)
 
 
 %%
@@ -184,7 +183,12 @@ fibre111 = orientation('axis',vector3d(1,1,1),'angle',omega,mdf.CS,mdf.SS)
 fibre101 = orientation('axis',vector3d(1,0,1),'angle',omega,mdf.CS,mdf.SS)
 
 close all
+plot(omega ./ degree,mdf.eval(fibre100))
+hold on
+plot(omega ./ degree,mdf.eval(fibre111))
 plot(omega ./ degree,mdf.eval(fibre101))
+hold off
+legend('100','111','101')
 
 %%
 % or to evaluate it in an misorientation directly
