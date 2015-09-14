@@ -34,8 +34,9 @@ cs1 = cs1.properGroup;
 cs2 = cs2.properGroup;
 
 dcs = disjoint(cs1,cs2);
-if check_option(varargin,'antipodal')
-  dcs = dcs.Laue;
+if check_option(varargin,'antipodal') || ...
+    ((isa(obj,'orientation') || isa(obj,'ODF')) && obj.antipodal)
+  dcs = dcs.Laue; 
 end
 
 if isa(obj,'quaternion') && ~isa(obj,'symmetry')

@@ -19,6 +19,7 @@ addpath(fullfile(pwd,'..','..','doc','tools'))
 %%
 
 plotx2east
+plotzOutOfPlane
 
 global mtex_progress;
 mtex_progress = 0;

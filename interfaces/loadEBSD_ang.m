@@ -20,7 +20,7 @@ ebsd = EBSD;
 
 try
   % read file header
-  hl = file2cell(fname,1000);
+  hl = file2cell(fname,2000);
   
   phasePos = strmatch('# Phase',hl);
         

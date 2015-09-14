@@ -43,7 +43,7 @@ for s = 1:length(sp)
     hh = h(s);
   end
   
-  % compute poledensity for all portions
+  % compute pole density for all portions
   for i = 1:length(odf.components)
     Z = Z + odf.weights(i) * sp(s) * ...
       reshape(calcPDF(odf.components{i},hh,r,varargin{:}),size(Z));

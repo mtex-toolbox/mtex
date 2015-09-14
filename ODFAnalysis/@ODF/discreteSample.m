@@ -3,7 +3,7 @@ function ori = discreteSample(odf,npoints,varargin)
 %
 %
 
-ori = orientation.id(npoint,odf.CS,odf.SS);
+ori = orientation.id(npoints,1,odf.CS,odf.SS);
 
 % which component
 icmp = discretesample(odf.weights,npoints);

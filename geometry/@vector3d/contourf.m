@@ -16,9 +16,9 @@ function h = contourf( v, data, varargin )
 
 if nargin == 1, data = []; end
 
-h = v.smooth(data,'contours',10,'LineStyle','none','fill','on',varargin{:});
+h = v.smooth(data,'contours',10,'LineStyle','none',varargin{:});
 
-h = [h,v.smooth(data,'contours',10,'LineStyle','-','LineColor','k','fill','off','hold',varargin{:})];
+h = [h,v.smooth(data,'contours',10,'LineStyle','-','LineColor','k','hold',varargin{:})];
 
 if nargout == 0, clear h; end
 

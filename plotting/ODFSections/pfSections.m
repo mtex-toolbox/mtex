@@ -101,7 +101,7 @@ classdef pfSections < ODFSections
       vF = oS.referenceField(r);
       
       if nargin == 3
-        vF = rotation('axis',r,'angle',omega) .* vF;
+        vF = rotation('axis',r(:),'angle',omega(:)) .* vF;
       end
       
     end

@@ -72,9 +72,15 @@ for i = 1:6
   psi2 = calcKernel(ori,'method','RuleOfThumb','silent');
   odf = calcODF(ori,'kernel',psi2,'silent');
   e(i,2) = calcError(odf,fibre_odf,'resolution',2.5*degree);  
+  
+  psi3 = calcKernel(ori,'method','magicRule','silent');
+  odf = calcODF(ori,'kernel',psi3,'silent');
+  e(i,3) = calcError(odf,fibre_odf,'resolution',2.5*degree);  
 
-  disp(['Rule of thumb: ' int2str(psi2.halfwidth/degree) mtexdegchar ...
-    'Kullback Leibler cross validation: ' int2str(psi1.halfwidth/degree) mtexdegchar]);
+  disp(['RuleOfThumb: ' int2str(psi2.halfwidth/degree) mtexdegchar ...
+    ' KLCV: ' int2str(psi1.halfwidth/degree) mtexdegchar ...
+    ' magicRule: ' int2str(psi3.halfwidth/degree) mtexdegchar ...
+    ]);
   
 end
 
@@ -84,7 +90,7 @@ end
 
 close all;
 semilogx(10.^(1:length(e)),e)
-legend('Default','RuleOfThumb')
+legend('Default','RuleOfThumb','magicRule')
 xlabel('Number of orientations')
 ylabel('Estimation Error')
 title('Error between original fibre ODF model and simulated ebsd','FontWeight','bold')

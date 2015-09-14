@@ -23,6 +23,7 @@ sR = fundamentalSector(odf.CS,varargin{:});
 
 % plotting grid
 h = plotS2Grid(sR,varargin{:});
+if isa(odf.CS,'crystalSymmetry'), h = Miller(h,odf.CS); end
 
 % create a new figure if needed
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});

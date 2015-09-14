@@ -78,7 +78,7 @@ methods
   
       elseif ischar(varargin{1})
         
-        [m.x,m.y,m.z] = double(s2v(varargin{1},m));
+        m = s2v(varargin{1},m);
               
       elseif isa(varargin{1},'vector3d') % vector3d
   
@@ -148,6 +148,13 @@ methods
 
     end
     
+    
+    function v = vector3d(m)
+      v = vector3d(m.x,m.y,m.z);
+      v.antipodal = m.antipodal;
+      v.opt = m.opt;
+    end
+    
     % -----------------------------------------------------------
     
     function cs = get.CS(m)
@@ -162,7 +169,7 @@ methods
     
           case 'uvw'
       
-            uvw = m.uvw;
+            uvw = m.uvw; %#ok<*PROPLC>
             m.CSprivate = cs;
             m.uvw = uvw;
       
@@ -282,13 +289,7 @@ methods
 
       % compute u, v, w coordinates
       uvw = (M \ xyz)';
-
-      % add fourth component for trigonal and hexagonal systems
-      %if any(strcmp(m.CS.lattice,{'trigonal','hexagonal'}))
-      %  uvtw(:,4) = uvtw(:,3);
-      %  uvtw(:,3) = -(uvtw(:,1) + uvtw(:,2))./3;
-      %  [uvtw(:,1), uvtw(:,2)] = deal((2*uvtw(:,1)-uvtw(:,2))./3,(2*uvtw(:,2)-uvtw(:,1))./3);  
-      %end
+     
     end
       
     function UVTW = get.UVTW(m)

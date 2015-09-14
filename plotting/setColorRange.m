@@ -1,10 +1,10 @@
-function setcolorrange(varargin)
+function setColorRange(varargin)
 % set color range for figures 
 %
 % Syntax
-%   setcolorrange([min max],'all')
-%   setcolorrange('equal','current')
-%   setcolorrange('tight','figure',figurelist)
+%   setColorRange([min max],'all')
+%   setColorRange('equal','current')
+%   setColorRange('tight','figure',figurelist)
 %
 % Input
 %  [min max]  - minimum and maximum value

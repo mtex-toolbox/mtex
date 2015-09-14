@@ -121,47 +121,42 @@ function h = betterContourf(ax,X,Y,data,contours,varargin)
 
 h = [];
 
-if numel(unique(data)) > 1 || 1
+if numel(unique(data)) == 1, data(1) = data(1) + 2*eps; end
 
-  % workauround for a MATLAB Bug
-  %if mean(X(:,1)) > mean(X(:,end))
-  %  X = fliplr(X);
-  %  Y = fliplr(Y);
-  %  data = flipdim(data,2);
-  %end
+% workauround for a MATLAB Bug
+%if mean(X(:,1)) > mean(X(:,end))
+%  X = fliplr(X);
+%  Y = fliplr(Y);
+%  data = flipdim(data,2);
+%end
 
-  % contour correction
-  if check_option(varargin,'correctContour')
-    X = [X;X(1,:)];
-    Y = [Y;Y(1,:)];
-    data = [data;data(1,:)];
-  end
+% contour correction
+if check_option(varargin,'correctContour')
+  X = [X;X(1,:)];
+  Y = [Y;Y(1,:)];
+  data = [data;data(1,:)];
+end
 
-  if check_option(varargin,'pcolor')
-    h = pcolor(ax,X,Y,data);
-    
-    % do not display in the legend
-    set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
-    
-    if numel(data) >= 500
-     if length(unique(data))<50
-       shading flat;
-     else
-       shading interp;
-     end
+if check_option(varargin,'pcolor')
+  h = pcolor(ax,X,Y,data);
+  
+  % do not display in the legend
+  set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+  
+  if numel(data) >= 500
+    if length(unique(data))<50
+      shading flat;
     else
-      set(gcf,'Renderer','painters');
+      shading interp;
     end
   else
-    [CM,h] = contourf(ax,X,Y,data,contours); %#ok<ASGLU>
-    
-    % do not display in the legend
-    set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+    set(gcf,'Renderer','painters');
   end
-
-elseif ~check_option(varargin,'fill',[],'off')
-  % transpose here seems to be needed due to a MATLAB bug
-  h = fill(X.',Y.',data.','LineStyle','none','parent',ax);
+else
+  [CM,h] = contourf(ax,X,Y,data,contours); %#ok<ASGLU>
+  
+  % do not display in the legend
+  set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
 end
 
 end

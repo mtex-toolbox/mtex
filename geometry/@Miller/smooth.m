@@ -9,20 +9,30 @@ function varargout = smooth(m,varargin)
 % See also
 % vector3d/smooth
 
-
-% symmetrise points
-x = vector3d(symmetrise(m,'skipAntipodal'));
-
-% symmetrise data
-if ~isempty(varargin) && isnumeric(varargin{1})  
-  varargin = [{repmat(varargin{1}(:).',size(x,1),1)},Miller.plotOptions,varargin(2:end)];
-else
-  varargin = [Miller.plotOptions,varargin];
-end
-    
 % get plotting region
 sR = region(m,varargin{:});
 
-% use vector3d/smooth for output
-[varargout{1:nargout}] = smooth(x(:),varargin{:},sR);
+if isfield(m.opt,'plot')
 
+  if ~isempty(varargin) && isnumeric(varargin{1})
+    varargin = [varargin{1},Miller.plotOptions,varargin(2:end)];
+  else
+    varargin = [Miller.plotOptions,varargin];
+  end
+  
+else
+
+  % symmetrise points
+  m = symmetrise(m,'skipAntipodal');
+
+  if ~isempty(varargin) && isnumeric(varargin{1})
+    varargin = [{repmat(varargin{1}(:).',size(m,1),1)},Miller.plotOptions,varargin(2:end)];
+  else
+    varargin = [Miller.plotOptions,varargin];
+  end
+  m = m(:);
+  
+end
+    
+% use vector3d/smooth for output
+[varargout{1:nargout}] = smooth@vector3d(m,varargin{:},sR);
