@@ -18,7 +18,7 @@ classdef sigmaSections < ODFSections
       % get fundamental plotting region
       [~,~,phi2] = fundamentalRegionEuler(CS1,CS2,varargin{:});
       oS.maxSigma = phi2;
-      oS.sR = CS2.fundamentalSector(varargin{:});
+      oS.sR = CS2.fundamentalSector(varargin{:},'upper');
       
       % get sections      
       oS.sigma = linspace(0,phi2,1+get_option(varargin,'sections',6));
