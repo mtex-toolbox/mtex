@@ -26,7 +26,7 @@ classdef ipdfOrientationMapping < orientationMapping
 
       % init plotting grid
       sR = oM.CS1.fundamentalSector(varargin{:});
-      h = plotS2Grid(sR,'resolution',1*degree,varargin{:});
+      h = Miller(plotS2Grid(sR,'resolution',1*degree,varargin{:}),oM.CS1);
       
       % compute colors
       d = oM.Miller2color(h);
@@ -38,7 +38,7 @@ classdef ipdfOrientationMapping < orientationMapping
       else
         defaultPlotCMD = 'pcolor';
       end
-      plot(h,d,'xAxisDirection','east','zAxisDirection','outOfPlane',defaultPlotCMD,varargin{:});
+      plot(h,d,defaultPlotCMD,varargin{:});
             
       name = oM.CS1.pointGroup;
       if ~isempty(oM.CS1.mineral), name = [oM.CS1.mineral ' (' name ')']; end
