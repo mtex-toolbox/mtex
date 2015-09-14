@@ -38,7 +38,7 @@ sR = odf.CS.fundamentalSector;
 S2G = equispacedS2Grid('resolution',res,varargin{:});
 S2G(~sR.checkInside(S2G)) = [];
 lS2G = length(S2G);
-S2G = S2G(angle(h,S2G)<radius);
+S2G = S2G(angle(h,Miller(S2G,odf.CS))<radius);
 
 % estimate volume portion of odf space
 %if radius < rotangle_max_z(odf.CS) / 8
