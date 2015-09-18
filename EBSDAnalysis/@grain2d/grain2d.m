@@ -135,8 +135,11 @@ classdef grain2d < phaseList & dynProp
     function ori = get.meanOrientation(grains)
       ori = orientation(grains.prop.meanRotation,grains.CS);
     end
-   
     
+    function grains = set.meanOrientation(grains,ori)
+      grains.prop.meanRotation = rotation(ori);
+    end
+
     function gos = get.GOS(grains)
       gos = grains.prop.GOS;
     end
