@@ -102,7 +102,7 @@ classdef HSVOrientationMapping < orientationMapping
       
       % compute angle of the points "sh" relative to the center point "center"
       % this should be between 0 and 1
-      [radius,rho] = polarCoordinates(oM.sR,h_sR,wC);
+      [radius,rho] = polarCoordinates(oM.sR,h_sR,wC,'maxAngle',oM.maxAngle);
 
       if oM.maxAngle < inf
         radius = max(0,1 - angle(h_sR(:),wC) ./ oM.maxAngle);
@@ -119,8 +119,6 @@ classdef HSVOrientationMapping < orientationMapping
 
       end
       
-      
-
       % stretch colors
       radius = radius*(1+oM.alpha)-oM.alpha;
       

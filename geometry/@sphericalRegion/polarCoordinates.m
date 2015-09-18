@@ -50,7 +50,7 @@ if any(ind) % if center is in a vertice
 elseif any(isnull(dot(sR.N,center))) % if center is at the boundary
   rho = mod(rho,pi) * 2;
 
-elseif ~isempty(sR.vertices)
+elseif ~isempty(sR.vertices) && get_option(varargin,'maxAngle',inf) == inf
   [irho,omega] = correctAngle(sR,rx);
 
   rho = interp1(irho,omega,rho);
