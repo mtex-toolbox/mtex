@@ -11,7 +11,7 @@ if check_option(varargin,'parent')
   ax = get_option(varargin,'parent');
   
   % axis is already a spherical plot
-  if isappdata(ax,'sphericalPlot') && ishold(ax)
+  if isappdata(ax,'sphericalPlot')% && ishold(ax)
   
     sP = getappdata(ax,'sphericalPlot');
     
@@ -149,6 +149,5 @@ if ~isa(proj,'plainProjection') && sR.isUpper && sR.isLower
   proj(1).sR = proj(1).sR.restrict2Upper;
   proj(2).sR = proj(2).sR.restrict2Lower;
 end
-
 
 end

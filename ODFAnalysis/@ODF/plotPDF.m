@@ -1,4 +1,4 @@
-function plotPDF(odf,h,varargin)
+function plotPDF2(odf,h,varargin)
 % plot pole figures
 %
 % Syntax
@@ -30,37 +30,27 @@ else
   c = num2cell(ones(size(h)));
 end
 
-% ensure crystal symmetry
+% format crystal symmetries to fit superposition coefficients
 if ~iscell(h), h = mat2cell(h,1,cellfun(@length,c)); end
-argin_check([h{:}],'Miller');
-for i = 1:length(h), h{i} = odf.CS.ensureCS(h{i}); end
+
+% generate empty pole figure plots
+[pfP,isNew] = pfPlot.new(odf.SS,h,varargin{:},'datacursormode',@tooltip);
 
 % plotting grid
-sR = fundamentalSector(odf.SS,varargin{:});
-r = plotS2Grid(sR,varargin{:});
+r = plotS2Grid(pfP(1).sphericalRegion,varargin{:});
 
-% create a new figure if needed
-[mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
-pfAnnotations = getMTEXpref('pfAnnotations');
+for i = 1:length(pfP)
   
-for i = 1:length(h)
-  
-  if i>1, mtexFig.nextAxis; end
-
   % compute pole figures
   p = ensureNonNeg(odf.calcPDF(h{i},r,varargin{:},'superposition',c{i}));
   
-  r.plot(p,'parent',mtexFig.gca,'smooth','doNotDraw',varargin{:});
-  pfAnnotations('parent',mtexFig.gca,'doNotDraw');
-
-  mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
-  
+  r.plot(p,'parent',pfP(i).ax,'smooth','doNotDraw',varargin{:});
+ 
 end
 
 if isNew % finalize plot
-  set(gcf,'tag','pdf');
-  setappdata(gcf,'SS',odf.SS);
-  setappdata(gcf,'h',h);
+  
+  mtexFig = gcm;
   set(gcf,'Name',['Pole figures of "',inputname(1),'"']);
   
   dcm = mtexFig.dataCursorMenu;
@@ -70,9 +60,9 @@ if isNew % finalize plot
   %msize = uimenu(hcmenu, 'Label', 'Marker size', 'Callback', @display);
   %mshape = uimenu(hcmenu, 'Label', 'Marker shape', 'Callback', @display);
   
+  pause(0.1)
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
-  
-  
+
   if check_option(varargin,'3d')  
     datacursormode off
     fcw(gcf,'-link');

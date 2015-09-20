@@ -59,7 +59,7 @@ classdef sphericalPlot < handle
         
         % plot boundary
         sP.boundary = sP.sphericalRegion.plot('parent',ax);
-                
+                        
         try sP.plotPolarGrid(varargin{:});end
 
         set(ax,'XTick',[],'YTick',[]);

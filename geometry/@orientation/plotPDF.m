@@ -27,10 +27,6 @@ function plotPDF(o,varargin)
 % Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-[mtexFig,isNew] = newMtexFigure('ensureTag','pdf',...
-  'ensureAppdata',{{'SS',o.SS}},...
-  'datacursormode',@tooltip,varargin{:});
-
 % extract data
 if check_option(varargin,'property')
   data = get_option(varargin,'property');
@@ -42,26 +38,7 @@ else
   data = [];
 end
 
-if isNew % for a new plot 
-  
-  h = varargin{1};
-  varargin(1) = [];
-  if ~iscell(h), h = vec2cell(h);end 
-  argin_check([h{:}],{'Miller'});  
-  for i = 1:length(h)
-    h{i} = o.CS.ensureCS(h{i});
-  end    
-  setappdata(gcf,'h',h);
-  set(gcf,'Name',['Pole figures of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
-  pfAnnotations = getMTEXpref('pfAnnotations');
-  
-else
-  h = getappdata(gcf,'h');
-  pfAnnotations = @(varargin) 1;
-end
-
-
-% ------------------ subsample if needed --------------------------
+%  subsample orientations if there are to many
 if ~check_option(varargin,{'all','contour','contourf','smooth'}) && ...
     (sum(length(o))*length(o.CS)*length(o.SS) > 10000 || check_option(varargin,'points'))
 
@@ -76,31 +53,24 @@ if ~check_option(varargin,{'all','contour','contourf','smooth'}) && ...
     
 end
 
-% plot
-for i = 1:length(h)
+% generate empty pole figure plots
+[pfP,isNew] = pfPlot.new(o.SS,varargin{:},'datacursormode',@tooltip);
 
-  if i>1, mtexFig.nextAxis; end
+% plot
+for i = 1:length(pfP)
 
   % compute specimen directions
-  sh = symmetrise(h{i});
+  sh = symmetrise(pfP(i).h);
   r = reshape(o.SS * o * sh,[],1);
   
   r.plot(repmat(data,[length(o.SS) length(sh)]),'fundamentalRegion',...
-    'parent',mtexFig.gca,'doNotDraw',varargin{:});
-  if ~check_option(varargin,'noTitle')
-    mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
-  end
-  
-  if isa(o.SS,'specimenSymmetry')
-    pfAnnotations('parent',mtexFig.gca,'doNotDraw');
-  end
-  
-  % TODO: unifyMarkerSize
-
+    'parent',pfP(i).ax,'doNotDraw',varargin{:});  
 end
 
 if isNew || check_option(varargin,'figSize')
-  mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); 
+  set(gcf,'Name',['Pole figures of "',inputname(1),'"']);
+  pause(1)
+  drawNow(gcm,'figSize',getMTEXpref('figSize'),varargin{:}); 
 end
 
 if check_option(varargin,'3d')  
@@ -108,7 +78,7 @@ if check_option(varargin,'3d')
   fcw(gcf,'-link'); 
 end
 
-% ----------- Tooltip function ------------------------
+% tooltip function
 function txt = tooltip(varargin)
 
 [r_local,id] = getDataCursorPos(mtexFig);
@@ -118,5 +88,3 @@ txt = ['id ' xnum2str(id) ' at (' int2str(r_local.theta/degree) ',' int2str(r_lo
 end
 
 end
-
-
