@@ -17,8 +17,12 @@ grains.phaseId = grains.phaseId(ind);
 grains.grainSize = grains.grainSize(ind);
 
 % restrict boundary
-idV = false(size(grains.V));
-idV(grains.idV) = true;
+if islogical(ind)
+  grId = grains.boundary.grainId;
+  grId(grId>0) = ind(grId(grId>0));
+  indBd = any(grId,2);
+else
+  indBd = any(ismember(grains.boundary.grainId,ind),2);
+end
 
-ind = all(idV(grains.boundary.F),2);
-grains.boundary = subSet(grains.boundary,ind);
+grains.boundary = subSet(grains.boundary,indBd);
