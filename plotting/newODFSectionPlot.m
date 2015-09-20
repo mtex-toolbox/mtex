@@ -19,7 +19,7 @@ else
   default = 'axisAngle';
 end
 
-switch get_flag(varargin,{'phi2','phi1','gamma','sigma','axisAngle','pf','ipf','omega'},default)
+switch get_flag(varargin,{'phi2','phi1','gamma','sigma','axisAngle','pf','ipf','omega','Phi'},default)
   case 'phi2'
     oS = phi2Sections(CS,SS,varargin{:});
   case 'phi1'
@@ -36,6 +36,8 @@ switch get_flag(varargin,{'phi2','phi1','gamma','sigma','axisAngle','pf','ipf','
     oS = ipfSections(CS,SS,varargin{:});
   case 'omega'
     oS = omegaSections(CS,SS,varargin{:});
+  case 'Phi'
+    oS = PhiSections(CS,SS,varargin{:});
   otherwise
     error('Unknown section type')
 end
