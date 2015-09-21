@@ -18,6 +18,7 @@ classdef HSVOrientationMapping < orientationMapping
     colorPostRotation = rotation(idquaternion)
     colorStretching = 1;
     whiteCenter = vector3d(1,0,0)
+    grayValue = 0.2
     maxAngle = inf
     sR = sphericalRegion    
   end
@@ -135,10 +136,17 @@ classdef HSVOrientationMapping < orientationMapping
       [th,rh] = polar(v);
       th = (th ./ pi).^oM.colorStretching .* pi;
 
+      % correct white -> color gradient
+      th = pi/2*(1-cos(th));
       v =  vector3d('theta',th,'rho',rh);
       
+      gray = v.theta ./ pi;
+      gray = 1 - 2*oM.grayValue*abs(gray - 0.5);
+      
+      gray = get_option(varargin,'grayValue',gray);
+      
       % compute rgb values
-      rgb = ar2rgb(mod(v.rho./ 2 ./ pi,1),v.theta./pi,get_option(varargin,'grayValue',1));
+      rgb = ar2rgb(mod(v.rho./ 2 ./ pi,1),v.theta./pi,gray);
 
       rgb(isnan(h.x),:) = NaN;
       
