@@ -25,11 +25,6 @@ function plotIPDF(o,varargin)
 % S2Grid/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-[mtexFig,isNew] = newMtexFigure('ensureTag','ipdf',...
-  'ensureAppdata',{{'CS',o.CS}},...
-  'name',['Inverse Pole figures of ' o.CS.mineral],...
-  'datacursormode',@tooltip,varargin{:});
-
 % extract data
 if check_option(varargin,'property')
   data = get_option(varargin,'property');
@@ -41,19 +36,7 @@ else
   data = [];
 end
 
-if isNew 
-  
-  r = varargin{1};
-  argin_check(r,'vector3d');
-  setappdata(mtexFig.parent,'inversePoleFigureDirection',r);
-    
-else % take inverse pole figure directions from figure
-   
-  r = getappdata(mtexFig.parent,'inversePoleFigureDirection');
-    
-end
-
-%  subsample if needed 
+%  subsample to reduce number of data points
 if (length(o)*length(o.CS)*length(o.SS) > 100000 || check_option(varargin,'points')) ...
     && ~check_option(varargin,{'all','contourf','smooth','contour'})
 
@@ -66,26 +49,24 @@ if (length(o)*length(o.CS)*length(o.SS) > 100000 || check_option(varargin,'point
 
 end
 
-for ir = 1:length(r)
+% generate empty ipf plots
+[ipfP,mtexFig,isNew] = ipfPlot.new(o.CS,varargin{:},'datacursormode',@tooltip);
 
-  % TODO: it might happen that the spherical region needs two axes
-  if ir>1, mtexFig.nextAxis; end  
-  
+% plot
+for i = 1:length(ipfP)
+
   % the crystal directions
-  rSym = symmetrise(r(ir),o.SS);
+  rSym = symmetrise(ipfP(i).r,o.SS);
   h = o(:) \ rSym;
   
   %  plot  
   h.plot(repmat(data,1,length(rSym)),'symmetrised',...
-    'fundamentalRegion','parent',mtexFig.gca,'doNotDraw',varargin{:});
+    'fundamentalRegion','parent',ipfP(i).ax,'doNotDraw',varargin{:});
   
-  if isNew, mtexTitle(mtexFig.gca,char(r(ir),'LaTeX')); end
-
-  % TODO: unifyMarkerSize
-
 end
 
 if isNew || check_option(varargin,'figSize')
+  pause(1);
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 end
 

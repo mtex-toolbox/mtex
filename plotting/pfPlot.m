@@ -12,12 +12,14 @@ classdef pfPlot < sphericalPlot
   
       if nargin == 0, return;end
       
-      pfP = pfP@sphericalPlot(ax,eareaProjection(fundamentalSector(SS,'upper',varargin{:})),varargin{:});
+      sR = SS.fundamentalSector('upper',varargin{:});
+      proj = sphericalProjection.new(sR);
+      pfP = pfP@sphericalPlot(ax,proj,varargin{:});
       pfP.h = argin_check(h,'Miller');
       pfP.SS = SS;
       if ~check_option(varargin,'noTitle')
         mtexTitle(ax,char(h,'LaTeX'));
-      end      
+      end
       pfAnnotations = getMTEXpref('pfAnnotations');
       pfAnnotations('parent',pfP.ax,'doNotDraw');
       
@@ -29,7 +31,7 @@ classdef pfPlot < sphericalPlot
   end
   
   methods (Static = true)
-    function [pfP,isNew] = new(SS,varargin)
+    function [pfP,mtexFig,isNew] = new(SS,varargin)
       
       % set up pf plots, the following cases are distinguieshed
       %
@@ -40,7 +42,6 @@ classdef pfPlot < sphericalPlot
 
       
       h = varargin{1};
-      varargin(1) = [];
       if ~iscell(h), h = vec2cell(h);end
      
       % case 1: predefined axes
@@ -54,7 +55,7 @@ classdef pfPlot < sphericalPlot
           current_pfP = getappdata(ax(i),'sphericalPlot'); 
         
           % axis not yet a pole figure plot
-          if isa(current_pfP,'pfPlots') && ishold(ax(i))
+          if isa(current_pfP,'pfPlot') && ishold(ax(i))
             pfP(i) = current_pfP; %#ok<AGROW>
           else
             % set up a new pfPlot

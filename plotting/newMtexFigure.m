@@ -33,7 +33,9 @@ if newFigure
 
   if check_option(varargin,'parent')
   
-    mtexFig.gca = get_option(varargin,'parent');
+    mtexFig.children = get_option(varargin,'parent');
+    mtexFig.gca = mtexFig.children(1);
+    
     newFigure = false;
     
   else

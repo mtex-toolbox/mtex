@@ -26,26 +26,24 @@ elseif isappdata(mtexFig.parent,'ODFSections')
   oS = getappdata(mtexFig.parent,'ODFSections');
   oS.plot(ori,varargin{:});
   return
+
+else
+  
+  for i = 1:length(mtexFig.children)
+    
+    sP = getappdata(mtexFig.children(i),'sphericalPlot');
+    
+    if isa(sP,'pfPlot')
+      plotPDF(ori,varargin{:},'parent',mtexFig.children(i));
+    elseif isa(sP,'ipfPlot')
+      plotIPDF(ori,varargin{:},'parent',mtexFig.children(i));
+    else
+      scatter(ori,varargin{:},'parent',mtexFig.children(i));
+    end
+    
+  end
   
 end
 
-% plotting
-switch get(mtexFig.parent,'tag')
-  
-  case 'pdf' % pole figure annotations
-      
-    plotPDF(ori,[],varargin{:});
-    
-  case 'ipdf' % inverse pole figure annotations
-      
-    plotIPDF(ori,[],varargin{:});
-  
-  case 'odf' % ODF sections plot
-    
-    plotSection(ori,varargin{:});
-    
-  otherwise
-    
-    scatter(ori,varargin{:});              
-    
+
 end

@@ -54,7 +54,7 @@ if ~check_option(varargin,{'all','contour','contourf','smooth'}) && ...
 end
 
 % generate empty pole figure plots
-[pfP,isNew] = pfPlot.new(o.SS,varargin{:},'datacursormode',@tooltip);
+[pfP,mtexFig,isNew] = pfPlot.new(o.SS,varargin{:},'datacursormode',@tooltip);
 
 % plot
 for i = 1:length(pfP)

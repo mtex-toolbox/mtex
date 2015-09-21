@@ -1,4 +1,4 @@
-function plotPDF2(odf,h,varargin)
+function plotPDF(odf,h,varargin)
 % plot pole figures
 %
 % Syntax
@@ -34,7 +34,7 @@ end
 if ~iscell(h), h = mat2cell(h,1,cellfun(@length,c)); end
 
 % generate empty pole figure plots
-[pfP,isNew] = pfPlot.new(odf.SS,h,varargin{:},'datacursormode',@tooltip);
+[pfP,mtexFig,isNew] = pfPlot.new(odf.SS,h,varargin{:},'datacursormode',@tooltip);
 
 % plotting grid
 r = plotS2Grid(pfP(1).sphericalRegion,varargin{:});
@@ -50,7 +50,6 @@ end
 
 if isNew % finalize plot
   
-  mtexFig = gcm;
   set(gcf,'Name',['Pole figures of "',inputname(1),'"']);
   
   dcm = mtexFig.dataCursorMenu;
@@ -67,12 +66,10 @@ if isNew % finalize plot
     datacursormode off
     fcw(gcf,'-link');
   end
-  
-  
+
 end
 
 % -------------- Tooltip function ---------------------------------
-
   function txt = tooltip(varargin)
 
     [r_local,v] = getDataCursorPos(mtexFig);
