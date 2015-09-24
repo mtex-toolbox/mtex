@@ -48,7 +48,7 @@ if check_option(varargin,{'Bunge','ZXZ'})
 elseif check_option(varargin,{'ABG','ZYZ'})
   convention = 'ZYZ';
 else
-  convention = get_flag(get(S3G,'options'),{'ZXZ','ZYZ'},'none');
+  convention = 'ZXZ';
 end
 
 % save matrix
