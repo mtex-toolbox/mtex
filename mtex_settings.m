@@ -48,6 +48,11 @@ setMTEXpref('FontSize',13);
 setMTEXpref('annotationStyle',...
   {'marker','s','MarkerEdgeColor','w','MarkerFaceColor','k','hitTest','off'});
 
+% on some systems Matlab has problems displaying RGB maps with opengl. This
+% tries to turn it off to overcome this problem. You might try to set this
+% to false as this gives usually better graphics performance.
+setMTEXpref('openglBug',true)
+
 %% Euler angle convention
 % default Euler angle convention
 
