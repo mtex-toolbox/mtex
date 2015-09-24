@@ -37,5 +37,47 @@ classdef sphericalProjection
     end
     
   end
+  
+  methods (Static = true)
     
+    function proj = new(sR,varargin)
+
+      switch get_option(varargin,'projection','earea')
+        
+        case 'plain'
+    
+          proj = plainProjection(sR);
+    
+        case {'stereo','eangle'} % equal angle
+    
+          proj = eangleProjection(sR);
+
+        case 'edist' % equal distance
+    
+          proj = edistProjection(sR);
+
+        case {'earea','schmidt'} % equal area
+
+          proj = eareaProjection(sR);
+        
+        case 'orthographic'
+
+          proj = orthographicProjection(sR);
+    
+        otherwise
+    
+          error('%s\n%s','Unknown projection specified! Valid projections are:',...
+            'plain, stereo, eangle, edist, earea, schmidt, orthographic')
+    
+      end
+
+      if ~isa(proj,'plainProjection') && sR.isUpper && sR.isLower
+        proj = [proj,proj];
+        proj(1).sR = proj(1).sR.restrict2Upper;
+        proj(2).sR = proj(2).sR.restrict2Lower;
+      end
+      
+    end
+    
+  end
 end
