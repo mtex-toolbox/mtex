@@ -9,6 +9,22 @@ function grains = subSet(grains,ind)
 %  grains - @grainSet
 %
 
+% restrict boundary
+if islogical(ind)
+  % the problem is grainId is with respect to grain.id
+  % but ind is with respect to the order of the grains
+  % therefore we have to enlarge ind
+  indLarge = false(max(grains.boundary.grainId(:)),1);
+  indLarge(grains.id) = ind;
+  
+  grId = grains.boundary.grainId;
+  grId(grId>0) = indLarge(grId(grId>0));
+  indBd = any(grId,2);
+else
+  indBd = any(ismember(grains.boundary.grainId,ind),2);
+end
+
+
 grains = subSet@dynProp(grains,ind);
 
 grains.poly = grains.poly(ind);
@@ -16,13 +32,5 @@ grains.id = grains.id(ind);
 grains.phaseId = grains.phaseId(ind);
 grains.grainSize = grains.grainSize(ind);
 
-% restrict boundary
-if islogical(ind)
-  grId = grains.boundary.grainId;
-  grId(grId>0) = ind(grId(grId>0));
-  indBd = any(grId,2);
-else
-  indBd = any(ismember(grains.boundary.grainId,ind),2);
-end
 
 grains.boundary = subSet(grains.boundary,indBd);
