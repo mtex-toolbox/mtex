@@ -73,7 +73,8 @@ end
 % define grid
 S3G = orientation('Euler',sec_angle,theta,rho,convention,CS,SS);
 
-% store gridding, @TODO: check when its required
+% store gridding, @TODO: check when its required, this is required for
+% export
 % S2G = [sec_angle(:),theta(:),rho(:)];
 
 end

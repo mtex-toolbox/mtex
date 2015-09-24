@@ -63,17 +63,17 @@ colormap(cmap)
 oM = ipdfHSVOrientationMapping(ebsd.CS.properGroup);
 
 % To this end, we first compute the inverse pole figure direction such that
-% the mean orientation is just at the white spot of the inverse pole figure
+% the mean orientation is just at the gray spot of the inverse pole figure
 oM.inversePoleFigureDirection = mean(ebsd.orientations) * oM.whiteCenter;
 
 close all;
 plot(ebsd,oM.orientation2color(ebsd.orientations))
 
 %% 
-% We observe that the orientation map is almost completly white.
+% We observe that the orientation map is almost completly gray.
 % Next we use the option |colorStretching| to increase contrast.
 
-oM.colorStretching = 30;
+oM.maxAngle = 5*degree;
 plot(ebsd,oM.orientation2color(ebsd.orientations))
 
 %%
