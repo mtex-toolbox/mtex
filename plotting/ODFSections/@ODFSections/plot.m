@@ -49,7 +49,14 @@ if exist('ori','var') || isempty(oS.plotGrid)
     
     ind = find(secAngle == s);
     if ~isempty(data), secData = {data(1+mod(ind-1,length(ori)),:)}; end
-    plotSection(oS,mtexFig.gca,s,vec(ind),secData,varargin{:});
+    if isa(vec,'vector3d')
+      iv = vec(ind);
+    else
+      iv = vec;
+      iv.phi1 = iv.phi1(ind);
+      iv.phi2 = iv.phi2(ind);
+    end
+    plotSection(oS,mtexFig.gca,s,iv,secData,varargin{:});
     
   end
   

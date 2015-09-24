@@ -9,7 +9,7 @@ mtexFig.children = flipud(findobj(mtexFig.parent,'type','axes',...
   '-not','tag','Colorbar','-and','-not','tag','legend'));
 
 % this seems to be necesarry to get tight inset right
-if ~check_option(varargin,'keepAxisSize')
+if ~check_option(varargin,'keepAxisSize') 
   updateLayout(mtexFig);
 end
 
@@ -96,6 +96,13 @@ end
 for i = 1:numel(mtexFig.children)
   mP = getappdata(mtexFig.children(i),'mapPlot');
   if ~isempty(mP), mP.micronBar.update; end  
+end
+
+% maybe we should switch to zBuffer
+if getMTEXpref('openglBug') && isRGB(mtexFig.parent)
+  try
+    set(mtexFig.parent,'renderer','zBuffer');
+  end
 end
 
 end

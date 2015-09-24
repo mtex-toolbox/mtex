@@ -18,6 +18,8 @@ classdef HSVOrientationMapping < orientationMapping
     colorPostRotation = rotation(idquaternion)
     colorStretching = 1;
     whiteCenter = vector3d(1,0,0)
+    grayValue = 0 % [0.2 0.5]
+    grayGradient = 1 % 0.5
     maxAngle = inf
     sR = sphericalRegion    
   end
@@ -88,7 +90,7 @@ classdef HSVOrientationMapping < orientationMapping
       % copy to the reduced sector
       h_sR = h;
       for i = 1:length(oM.refl)
-        ind = dot(h_sR,oM.refl(i))<1e-5;
+        ind = dot(vector3d(h_sR),oM.refl(i))<1e-5;
         h_sR(ind) = reflection(oM.refl(i)) * h_sR(ind);
         
         if dot(wC,oM.refl(i))<1e-5
@@ -102,7 +104,7 @@ classdef HSVOrientationMapping < orientationMapping
       
       % compute angle of the points "sh" relative to the center point "center"
       % this should be between 0 and 1
-      [radius,rho] = polarCoordinates(oM.sR,h_sR,wC);
+      [radius,rho] = polarCoordinates(oM.sR,h_sR,wC,'maxAngle',oM.maxAngle);
 
       if oM.maxAngle < inf
         radius = max(0,1 - angle(h_sR(:),wC) ./ oM.maxAngle);
@@ -119,8 +121,6 @@ classdef HSVOrientationMapping < orientationMapping
 
       end
       
-      
-
       % stretch colors
       radius = radius*(1+oM.alpha)-oM.alpha;
       
@@ -132,17 +132,30 @@ classdef HSVOrientationMapping < orientationMapping
       % at x and green and blue at 120 and 240 degree accordingly
       % post rotate the color
       v = oM.colorPostRotation * oM.rot * v;
-
-      % stretching of the colors
       [th,rh] = polar(v);
-      th = (th ./ pi).^oM.colorStretching .* pi;
+      
+      % stretching of the colors
+      %th = (th ./ pi) .* pi;
 
-      v =  vector3d('theta',th,'rho',rh);
+      % correct white -> color gradient
+      ind2 = th > pi/2;
+      ind = true(size(th));
+      th(ind) = ((2 * oM.grayGradient * th ./pi + ...
+        (1 - oM.grayGradient) * (1-cos(th(ind)))) ./ 2) .^ oM.colorStretching;
+      th(~ind) = th(~ind)./pi;      
+      
+      gray = th;
+      gray(ind2) = 1 - 2*oM.grayValue(1)*abs(gray(ind2) - 0.5);
+      gray(~ind2) = 1 - 2*oM.grayValue(end)*abs(gray(~ind2) - 0.5);
+      
+      gray = get_option(varargin,'grayValue',gray);
       
       % compute rgb values
-      rgb = ar2rgb(mod(v.rho./ 2 ./ pi,1),v.theta./pi,get_option(varargin,'grayValue',1));
+      rgb = ar2rgb(mod(rh./ 2 ./ pi,1),th,gray);
 
       rgb(isnan(h.x),:) = NaN;
+      
+      %rgb = rgb2gray(rgb);
       
     end
   end

@@ -187,6 +187,13 @@ fclose(fid);
 
 cpr = struct;
 lineBreaks = [0 strfind(str,sprintf('\n')) numel(str)];
+if length(lineBreaks) == 2
+  lineBreaks = [0 strfind(str,char(13)) numel(str)];
+end
+if length(lineBreaks) == 2
+  lineBreaks = [0 strfind(str,char(10)) numel(str)];
+end
+
 for k=1:numel(lineBreaks)-1
   
   line = strtrim(str(lineBreaks(k)+1:lineBreaks(k+1)-1));

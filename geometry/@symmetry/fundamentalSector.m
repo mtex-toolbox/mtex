@@ -107,7 +107,7 @@ end
 
 % this will be restricted later anyway
 if check_option(varargin,{'upper','lower','maxTheta','minTheta'})
-  N(abs(N.z)==1) = [];
+  N(N.x==0 & N.y==0) = [];
 end
 
 sR = sphericalRegion(N,zeros(size(N)),varargin{:});
