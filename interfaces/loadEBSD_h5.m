@@ -183,7 +183,7 @@ for k=1:numel(data)
     
   else
     
-    CS{k} = 'not indexed';
+    CS{k} = 'notIndexed';
     
   end
 end
