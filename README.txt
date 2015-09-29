@@ -44,7 +44,7 @@ startup.m       initialization routine automticaly called by MATLAB if the
 startup_mtex    initialization routine for MTEX - to be called at the
                 beginning of each MTEX session
 tests (dir)     some self tests
-tools           auxilary tools
+tools           auxiliary tools
 unistall_mtex   remove MTEX from the search path (permanently)
 
 
