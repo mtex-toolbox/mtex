@@ -3,6 +3,7 @@ classdef sigmaSections < ODFSections
   properties
     sigma
     sR
+    grid
   end
   
   properties (Hidden=true)
@@ -50,10 +51,10 @@ classdef sigmaSections < ODFSections
 
       [e1,e2,e3] = Euler(ori,'ZYZ');
 
-      sigma = mod(e1 + e3,oS.maxSigma); %#ok<*PROP>
+      sigma = mod(e1 + e3,oS.maxSigma); %#ok<*PROPLC,*PROP>
             
       % this builds a list 
-      bounds = sort(unique([oS.sigma - oS.tol,oS.sigma + oS.tol]));
+      bounds = sort([oS.sigma - oS.tol,oS.sigma + oS.tol]);
       [~,secPos] = histc(sigma,bounds);
       secPos(iseven(secPos)) = -1;
       secPos = (secPos + 1)./2;
@@ -72,6 +73,19 @@ classdef sigmaSections < ODFSections
       h = plot(v,data{:},oS.sR,'TR',[int2str(oS.sigma(sec)./degree),'^\circ'],...
         'parent',ax,varargin{:},'doNotDraw');
 
+      if (isempty(oS.grid) || length(oS.grid) < sec) && ~check_option(varargin,'noGrid')
+      
+        r = equispacedS2Grid(oS.sR,'resolution',15*degree);
+      
+        [theta,rho] = polar(r);
+        rot = rotation('Euler',rho,theta,-rho,'ZYZ');
+        
+        vF = rotation('axis',r,'angle',oS.sigma(sec)) .* rot * xvector;
+      
+        hold on
+        oS.grid(sec) = quiver(r,vF,'parent',ax,'doNotDraw','arrowSize',0.1,'color',0.7*[1 1 1],'HitTest','off');
+        hold off
+      end
     end
   end
 end

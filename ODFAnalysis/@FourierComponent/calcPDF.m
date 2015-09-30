@@ -2,7 +2,8 @@ function Z = calcPDF(component,h,r,varargin)
 % calculate pole figure from Fourier coefficients
 
 % use only even Fourier coefficients?
-even = 1 + (check_option(varargin,'antipodal') || r.antipodal);
+even = 1 + (check_option(varargin,'antipodal') ...
+  || r.antipodal || h.antipodal || component.CS.isLaue);
 
 if length(h) == 1  % pole figures
   in = h;

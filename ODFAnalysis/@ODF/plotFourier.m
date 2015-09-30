@@ -13,7 +13,12 @@ function plotFourier(odf,varargin)
 
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 
-L = get_option(varargin,'bandwidth',32);
+if isFourier(odf)
+  L = odf.components{1}.bandwidth;
+else
+  L = 32;
+end
+L = get_option(varargin,'bandwidth',L);
 
 odf_hat = calcFourier(odf,'bandwidth',L,'l2-normalization');
 

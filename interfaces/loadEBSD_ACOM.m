@@ -34,7 +34,7 @@ end
 try
   % read full file to be able to determine the assinged phases in all pixel
   % of orientation map
-  [A,ffn,nh,SR,hlS,fpos]=txt2mat(fname);
+  [A,ffn,nh,SR,hlS,fpos]=txt2mat(fname,'RowRange',[1,1000],'infoLevel',0);
   % read header into cells
   hlP = strfind(hlS,'#');
   hlPL=length(hlP);

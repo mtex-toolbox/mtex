@@ -14,10 +14,10 @@
 mtexdata twins
 
 % compute grains
-[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd('indexed'));
+[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd,'angle',10*degree);
 
 % restrict data to one single grain
-oneGrain = grains(119)
+oneGrain = grains(22)
 ebsd = ebsd(oneGrain)
 
 plot(ebsd,ebsd.orientations)
@@ -34,10 +34,10 @@ oM = ipdfHSVOrientationMapping(ebsd);
 
 % set inversePoleFigureDirection  such that the mean orientation is
 % colorized white
-oM.inversePoleFigureDirection = grains(119).meanOrientation * oM.whiteCenter;
+oM.inversePoleFigureDirection = grains(22).meanOrientation * oM.whiteCenter;
 
 % concentrate the colors around the mean orientation
-oM.colorStretching = 25;
+oM.maxAngle = 3*degree;
 
 % plot the colormap
 plot(oM)

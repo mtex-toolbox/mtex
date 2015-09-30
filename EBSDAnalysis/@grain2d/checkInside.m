@@ -31,6 +31,21 @@ if isa(xy,'grain2d')
   
   % a grain should not contain itself
   xy(ind,:) = NaN;
+elseif isa(xy,'EBSD')
+  
+  % extract unit cell
+  uc = xy.unitCell;
+  
+  % for EBSD data the complete unitcell should be contained
+  xy = [xy.prop.x(:),xy.prop.y(:)];
+  
+  isInside = grains.checkInside(xy+repmat(uc(1,:),size(xy,1),1));
+  for i = 2:size(uc,1)
+    isInside = isInside & grains.checkInside(xy+repmat(uc(i,:),size(xy,1),1));
+  end
+  isInside = any(isInside,2);
+  return
+  
 end
 
 isInside = false(size(xy,1),length(grains));

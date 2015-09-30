@@ -244,7 +244,7 @@ classdef phaseList
     function e = end(pL,i,n)
 
       if n==1
-        e = numel(pL.phaseId);
+        e = size(pL.phaseId,1);
       else
         e = size(pL.phaseId,i);
       end
