@@ -1,4 +1,4 @@
-function [ebsd,filter] = smooth(ebsd,varargin)
+function [ebsd,filter,filledId] = smooth(ebsd,varargin)
 % smooth spatial EBSD 
 %
 % Input
@@ -46,9 +46,14 @@ ind = sub2ind(sGrid, 1 + round((ebsd.prop.y - ext(3))/dy), ...
 if check_option(varargin,'fill')
   F = TriScatteredInterp([ebsd.prop.x(:),ebsd.prop.y(:)],(1:length(ebsd.prop.x)).','nearest'); %#ok<DTRIINT>
   idOld = fix(F(xgrid(:),ygrid(:)));
+
+  filledId = true(sGrid);
+  filledId(ind) = false;
   
+  % interpolate phaseId
   ebsd.phaseId = reshape(ebsd.phaseId(idOld),[],1);
   
+  % interpolate grainId
   if isfield(ebsd.prop,'grainId')
     grainId = reshape(ebsd.prop.grainId(idOld),sGrid);
     ebsd.prop.grainId = grainId(:);
