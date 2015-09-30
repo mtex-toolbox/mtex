@@ -67,5 +67,26 @@ classdef ODF < dynOption
     end
     
   end
+  
+  methods (Static = true)
+    
+    function odf = ambiguity1(varargin)
+
+      cs = crystalSymmetry('222');
+
+      orix = orientation('axis',xvector,'angle',90*degree,cs);
+      oriy = orientation('axis',yvector,'angle',90*degree,cs);
+      oriz = orientation('axis',zvector,'angle',90*degree,cs);
+
+      odf = unimodalODF([orix,oriy,oriz],varargin{:});
+    end
+
+    function odf = ambiguity2(varargin)
+      cs = crystalSymmetry('222');
+      ori = orientation('axis',vector3d(1,1,1),'angle',[0,120,240]*degree,cs);
+      odf = unimodalODF(ori,varargin{:});
+    end
+    
+  end
      
 end
