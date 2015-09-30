@@ -1,4 +1,4 @@
-function odf = conv(odf,psi,varargin)
+function component = conv(component,A,varargin)
 % convolute ODF with kernel psi
 %
 % Input
@@ -8,12 +8,12 @@ function odf = conv(odf,psi,varargin)
 % See also
 % ODF_calcFourier ODF_Fourier
 
-%TODO
-L = bandwidth(odf);
-A = getA(psi);
-A(end+1:L+1) = 0;
+% multiply Fourier coefficients of odf with Chebyshev coefficients
 
-% multiply Fourier coefficients of odf with Chebyshev coefficients of psi
+L = component.bandwidth;
+A(end+1:L) = 0;
+
 for l = 0:L
-  odf.c_hat(deg2dim(l)+1:deg2dim(l+1)) = A(l+1) / (2*l+1) * odf.c_hat(deg2dim(l)+1:deg2dim(l+1));
+  component.f_hat(deg2dim(l)+1:deg2dim(l+1)) = ...
+    A(l+1) * component.f_hat(deg2dim(l)+1:deg2dim(l+1));
 end

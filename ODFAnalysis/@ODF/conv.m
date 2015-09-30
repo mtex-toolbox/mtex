@@ -1,21 +1,19 @@
-function odf = conv(odf,psi,varargin)
+function odf = conv(odf,A,varargin)
 % convolute ODF with kernel psi
 %
 % Input
 %  odf - @ODF
+%  A   - Legendre coefficients 
 %  psi - convolution @kernel
 %
 % See also
 % ODF_calcFourier ODF_Fourier
 
 
-% Fourier ODF
+if isa(A,'kernel'), A = psi.A; end
 
-L = bandwidth(odf);
-A = getA(psi);
-A(end+1:L+1) = 0;
+% convert to Fourier ODF
+L = length(A)-1;
+odf = FourierODF(odf,L);
 
-
-for l = 0:L
-  odf.c_hat(deg2dim(l)+1:deg2dim(l+1)) = A(l+1) / (2*l+1) * odf.c_hat(deg2dim(l)+1:deg2dim(l+1)) ;
-end
+odf.components{1} = conv(odf.components{1},A);
