@@ -2,6 +2,7 @@ PoleFigureAnalysisIntro
 ImportPoleFigureData
 ModifyPoleFigureData
 PoleFigure2odf
+PF2ODFAmbiguity
 ghost_demo
 PoleFigureSimulation_demo
 PlotPoleFigures
