@@ -25,7 +25,7 @@ v = v.normalize;
 if check_option(varargin,'antipodal') || v.antipodal
   
   % find first non singular dimension
-  if isnumeric(varargin{1}),
+  if nargin > 1 && isnumeric(varargin{1}),
     d = varargin{1};
   else
     d = find(size(v.x)~=1, 1 );     
@@ -34,7 +34,7 @@ if check_option(varargin,'antipodal') || v.antipodal
   M = [v.x(:) v.y(:) v.z(:)];
   M = M.' * M;
   [u,~,~] = svds(M,1);
-  m = vector3d(u(1),u(2),u(3));
+  m = vector3d(u(1),u(2),u(3),'antipodal');
   
 else
   m = sum(v,varargin{:});
