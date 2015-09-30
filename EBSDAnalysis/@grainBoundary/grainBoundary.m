@@ -27,6 +27,7 @@ classdef grainBoundary < phaseList & dynProp
   properties (Dependent = true)
     misorientation % misorientation between adjecent measurements to a boundary
     direction      % direction of the boundary segment
+    midPoint       % x,y coordinates of the midpoint of the segment
     I_VF           % incidence matrix vertices - faces
     I_FG           % incidence matrix faces - grains
     A_F            % adjecency matrix faces - faces
@@ -68,7 +69,8 @@ classdef grainBoundary < phaseList & dynProp
       gB.CSList = ebsd.CSList;
       
       % sort ebsdId such that first phaseId1 <= phaseId2
-      doSort = gB.phaseId(:,1) > gB.phaseId(:,2);
+      doSort = gB.phaseId(:,1) > gB.phaseId(:,2) | ...
+        (gB.phaseId(:,1) == gB.phaseId(:,2) & gB.grainId(:,1) > gB.grainId(:,2));
       gB.phaseId(doSort,:) = fliplr(gB.phaseId(doSort,:));
       gB.ebsdId(doSort,:) = fliplr(gB.ebsdId(doSort,:));
       gB.grainId(doSort,:) = fliplr(gB.grainId(doSort,:));
@@ -124,6 +126,12 @@ classdef grainBoundary < phaseList & dynProp
     
     function y = get.y(gB)
       y = gB.V(unique(gB.F(:)),2);
+    end
+    
+    function xy = get.midPoint(gB)
+      xyA = gB.V(gB.F(:,1),:);
+      xyB = gB.V(gB.F(:,2),:);
+      xy = 0.5 * (xyA + xyB);
     end
     
     function I_VF = get.I_VF(gB)
