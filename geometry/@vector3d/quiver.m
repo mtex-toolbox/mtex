@@ -1,4 +1,4 @@
-function quiver(v, d, varargin )
+function h = quiver(v, d, varargin )
 %
 % Syntax
 %   quiver(v,d)
@@ -47,7 +47,7 @@ for j = 1:numel(sP)
   
   options = {arrowSize,'MaxHeadSize',mhs,'parent',sP(j).ax};
   
-  optiondraw(quiver(x0,y0,x1-x0,y1-y0,options{:}),varargin{:});    
+  h(j) = optiondraw(quiver(x0,y0,x1-x0,y1-y0,options{:}),varargin{:});     %#ok<AGROW>
   
 
   % finalize the plot
@@ -56,3 +56,5 @@ for j = 1:numel(sP)
   sP(j).plotAnnotate(varargin{:})
   set(sP(j).ax,'nextPlot',holdState);
 end
+
+if nargout == 0, clear('h'); end
