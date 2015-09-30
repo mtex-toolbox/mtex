@@ -1,4 +1,17 @@
 function ebsd = reduce(ebsd,fak)
+% reduce ebsd data by a factor
+% 
+%
+% Syntax
+%   ebsd = reduce(ebsd,2) % take every second pixel horiz. and vert.
+%   ebsd = reduce(ebsd,3) % take every third pixel horiz. and vert.
+%
+% Input
+%  ebsd - @EBSD
+%
+% Output
+%  ebsd - @EBSD
+%
 
 % generate regular grid
 ext = ebsd.extend;
