@@ -21,7 +21,7 @@
 % Lets demonstrate the ambiguity due to too few pole figures at the example
 % of two orhorhombic ODFs. The first ODF has three modes at the positions
 
-cs = crystalSymmetry('mmm')
+cs = crystalSymmetry('mmm');
 
 orix = orientation('axis',xvector,'angle',90*degree,cs);
 oriy = orientation('axis',yvector,'angle',90*degree,cs);
@@ -199,7 +199,7 @@ plotPDF(odf1,Miller({1,0,0},{0,1,0},{0,0,1},cs),'antipodal')
 
 odf1 = FourierODF(odf1,10)
 
-plotPDF(odf1,Miller(1,0,0,cs))
+plotPDF(odf1,Miller({1,0,0},{0,1,0},{0,0,1},cs))
 
 %%
 % We may look at the coefficients of this expansion and observe how the
