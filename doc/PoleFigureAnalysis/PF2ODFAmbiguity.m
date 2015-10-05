@@ -4,8 +4,6 @@
 %
 %% Open in Editor
 %
-%% Open in Editor
-%
 %% Contents
 %
 %% The ambiguity due to too few pole figures
@@ -23,11 +21,11 @@
 % Lets demonstrate the ambiguity due to too few pole figures at the example
 % of two orhorhombic ODFs. The first ODF has three modes at the positions
 
-cs = crystalSymmetry('222')
+cs = crystalSymmetry('mmm')
 
-orix = orientation('axis',xvector,'angle',90*degree,cs)
-oriy = orientation('axis',yvector,'angle',90*degree,cs)
-oriz = orientation('axis',zvector,'angle',90*degree,cs)
+orix = orientation('axis',xvector,'angle',90*degree,cs);
+oriy = orientation('axis',yvector,'angle',90*degree,cs);
+oriz = orientation('axis',zvector,'angle',90*degree,cs);
 
 odf1 = unimodalODF([orix,oriy,oriz])
 
@@ -36,7 +34,7 @@ odf1 = unimodalODF([orix,oriy,oriz])
 % The second ODF has three modes as well but this times at rotations about
 % the axis (1,1,1) with angles 0, 120, and 240 degree.
 
-ori = orientation('axis',vector3d(1,1,1),'angle',[0,120,240]*degree,cs)
+ori = orientation('axis',vector3d(1,1,1),'angle',[0,120,240]*degree,cs);
 odf2 = unimodalODF(ori)
 
 
@@ -48,42 +46,44 @@ figure(1)
 plot(odf1,'sigma')
 mtexColorMap LaboTeX
 
+%%
 figure(2)
 plot(odf2,'sigma')
 mtexColorMap LaboTeX
 
 %%
-% However, when it comes to pole figures 6 of them, namely, (100), (010),
-% (0,0,1), (1,1,0), (1,0,1), (0,1,1) are identical for both ODFs. Of course 
-% looking at any other pole figure makes clear that those two ODFs are
-% different.
+% However, when it comes to pole figures 7 of them, namely, (100), (010),
+% (001), (110), (101), (011) and (111), are identical for both ODFs. Of
+% course looking at any other pole figure makes clear that those two ODFs
+% are different.
 
 figure(1)
-h = Miller({1,0,0},{0,1,0},{0,0,1},{1,1,0},{1,0,1},{0,1,1},{1,1,1},{1,1,-1},cs);
+h = Miller({1,0,0},{0,1,0},{0,0,1},{1,1,0},{1,0,1},{0,1,1},{1,1,1},{1,2,0},cs);
 plotPDF(odf1,h,'contourf')
 mtexColorMap LaboTeX
 
+%%
 figure(2)
 plotPDF(odf2,h,'contourf')
 mtexColorMap LaboTeX
 
 %%
 % The question is now, how can any pole figure to ODF reconstruction
-% algorithm decide which of the two ODFs was the true one if only the six
-% indetical pole figures  (100), (010), (0,0,1), (1,1,0), (1,0,1), (0,1,1)
+% algorithm decide which of the two ODFs was the true one if only the seven
+% identical pole figures  (100), (010), (001), (110), (101), (011), (111)
 % have been measured? The answer is: this is imposible to decide. Next
 % question is: which result will I get from the MTEX reconstruction
 % algorithm? Lets check this
 
 % 1. step: simulate pole figure data
-pf = calcPoleFigure(odf1,h(1:6))
+pf = calcPoleFigure(odf1,h(1:7),'upper');
 
 plot(pf)
 
 
 %%
 % 2. step: reconstruct an ODF 
-odf = calcODF(pf)
+odf = calcODF(pf,'silent')
 
 plot(odf,'sigma')
 
@@ -95,20 +95,29 @@ plot(odf,'sigma')
 % distribution among all admissible ODFs. 
 
 %%
-% Let check what we obtain if the two distinguing pole figures as added
+% Finally we increase the number of pole figures by five more crystal
+% directions and perfrom our previous experiment once again.
 
 % 1. step: simulate pole figure data for all crystal directions
-pf = calcPoleFigure(odf1,h)
+h = [h,Miller({0,1,2},{2,0,1},{2,1,0},{0,2,1},{1,0,2},cs)];
+pf = calcPoleFigure(odf1,h,'upper');
 
 % 2. step: reconstruct an ODF 
-odf = calcODF(pf)
+odf = calcODF(pf,'silent')
 
 plot(odf,'sigma')
 
 %%
-% We observe an almost perfect reconstruction of the first ODF.
+% Though the the components of odf2 are still present in the recalculated
+% ODF they are far less pronounced compared to the components of odf1.
 
+% 1. step: simulate pole figure data for all crystal directions
+pf = calcPoleFigure(odf1,h,'upper');
 
+% 2. step: reconstruct an ODF 
+odf = calcODF(pf,'silent')
+
+plot(odf,'sigma')
 
 %% The ambiguity due to too Fridel's law
 %
@@ -178,16 +187,15 @@ hold off
 % To understand the reason for this ambiguity we consider triclinic
 % symmetry and a week unimodal ODF with prefered orientation (0,0,0).
 
-cs = crystalSymmetry('-1')
+cs = crystalSymmetry('-1');
 
 odf1 = 2/3 * uniformODF(cs) + 1/3 * unimodalODF(orientation.id(cs),'halfwidth',30*degree)
 
-plotPDF(odf,Miller(1,0,0,cs),'antipodal')
+plotPDF(odf1,Miller({1,0,0},{0,1,0},{0,0,1},cs),'antipodal')
 
 %%
 % As any other ODF we can represent it by its series expansion by harmonic
 % functions. This does not change the ODF but only its representation
-
 
 odf1 = FourierODF(odf1,10)
 
@@ -222,14 +230,14 @@ legend('odf1','odf2')
 % pole figures of odf2.
 
 
-plotPDF(odf2,Miller(1,0,0,cs),'antipodal')
+plotPDF(odf2,Miller({1,0,0},{0,1,0},{0,0,1},cs),'antipodal')
 
 %%
 % and hence, it is imposible for any reconstruction algorithm to decide
 % whether odf1 or odf2 is the correct reconstruction. In order to compare
 % odf1 and odf2 we visualize them along the alpha fibre
 
-alphaFibre = orientation('axis',zvector,'angle',(-180:180)*degree,cs)
+alphaFibre = orientation('axis',zvector,'angle',(-180:180)*degree,cs);
 
 close all
 plot(-180:180,odf1.eval(alphaFibre),'linewidth',2)
@@ -274,8 +282,8 @@ xlim([-180,180])
 % out of odf2.
 
 
-h = Miller({1,0,0},{1,0,0},{0,1,0},{0,0,1},{1,1,0},{0,1,1},{1,0,1},{1,1,1},cs)
-pf = calcPoleFigure(odf1,h)
+h = Miller({1,0,0},{1,0,0},{0,1,0},{0,0,1},{1,1,0},{0,1,1},{1,0,1},{1,1,1},cs);
+pf = calcPoleFigure(odf1,h);
 
 plot(pf)
 
@@ -284,11 +292,11 @@ plot(pf)
 % Matthies methods of maximizing the uniform portion called automatic ghost
 % correction
 
-odf_rec1 = calcODF(pf)
+odf_rec1 = calcODF(pf,'silent')
 
 %%
 % This method can be switched off by the following command
-odf_rec2 = calcODF(pf,'noGhostCorrection')
+odf_rec2 = calcODF(pf,'noGhostCorrection','silent')
 
 
 %%
@@ -344,10 +352,10 @@ mtexColorMap LaboTeX
 % and compute a two ODFs from them 
 
 % one with Ghost Correction
-rec = calcODF(pf)
+rec = calcODF(pf,'silent')
 
 % one without Ghost Correction
-rec2 = calcODF(pf,'NoGhostCorrection')
+rec2 = calcODF(pf,'NoGhostCorrection','silent')
 
 %%
 % For both reconstruction recalculated pole figures look the same as the
@@ -357,6 +365,7 @@ figure(1)
 plotPDF(rec,pf.h,'antipodal')
 mtexColorMap LaboTeX
 
+%%
 figure(2)
 plotPDF(rec2,pf.h,'antipodal')
 mtexColorMap LaboTeX
@@ -369,6 +378,7 @@ figure(1)
 plot(rec,'gray','contourf')
 mtexColorMap white2black
 
+%%
 figure(2)
 plot(rec2,'gray','contourf')
 mtexColorMap white2black
