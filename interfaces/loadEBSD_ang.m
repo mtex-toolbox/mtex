@@ -19,6 +19,9 @@ function ebsd = loadEBSD_ang(fname,varargin)
 ebsd = EBSD;
 
 try
+  assertExtension(fname,'.ang');
+
+  
   % read file header
   hl = file2cell(fname,2000);
   
