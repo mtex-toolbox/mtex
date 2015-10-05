@@ -8,7 +8,7 @@ fid = efopen(filename,'r');
 str = {};
 while length(str) < maxline
   tline = fgetl(fid);
-  if ~ischar(tline), break; end
+  if ~ischar(tline) || length(tline) > 1000, break; end
   str{end+1} = tline; %#ok<AGROW>
 end
 
