@@ -1,13 +1,9 @@
-function [ebsd,groups] = loadEBSD_h5(fname,varargin)
+function ebsd = loadEBSD_h5(fname,varargin)
 
+if ~exist(fname,'file'), error(['File ' fname ' not found!']); end
 
 try
-  
-  if ~exist(fname,'file')
-    error(['File ' fname ' not found!']);
-  end
-  
-  
+    
   ginfo = locFindEBSDGroups(fname);
   
   if numel(ginfo) > 1
@@ -34,94 +30,49 @@ try
     end
   end
   
-  if check_option(varargin,'check')
+  if check_option(varargin,'check'),  
     ebsd = EBSD;
-    groups = {ginfo.Name};
     return
   end
-  
   
   for k = 1:numel(ginfo)
     kGroup = ginfo(k);
     
     CS = locReadh5Phase(fname,kGroup);
     
-    kGroupData = kGroup.Datasets;
+    kGroupData = kGroup.Groups(1).Datasets;
     
     props = struct;
-    options = {};
-    
+        
     for j=1:numel(kGroupData)
-      switch kGroupData(j).Name
-        case 'Orientations'
-          
-          opts =[{kGroupData(j).Attributes.Name};{kGroupData(j).Attributes.Value}];
-          
-          data = h5read(fname,[kGroup.Name '/Orientations'])';
-          data = mat2cell(data,size(data,1),ones(1,size(data,2)));
-          
-          q = rotation(get_option(opts,'Parameterization','Euler'),...
-            data{:},get_option(opts,'Convention','ZXZ'));
-          
-        case 'PhaseIndex'
-          
-          phaseIndex = double(h5read(fname,[kGroup.Name '/PhaseIndex']))';
-          
-        case 'SpatialCoordinates'
-          
-          options = [{kGroupData(j).Attributes.Name};{kGroupData(j).Attributes.Value}];
-          
-          xy = double(h5read(fname,[kGroup.Name '/SpatialCoordinates']))';
-          
-          if size(xy,2) >= 2
-            props.x = xy(:,1);
-            props.y = xy(:,2);
-          end
-          
-          if size(xy,2) == 3
-            props.z = xy(:,3);
-          end
-          
-        otherwise
-          
-      end
       
-    end
-    
-    kSubGroup = kGroup.Groups;
-    
-    for j=1:numel(kSubGroup)
-      switch kSubGroup(j).Name
-        case [kGroup.Name '/Phase']
-          
-        case [kGroup.Name '/Properties']
-          kSubGroupData = kSubGroup(j).Datasets;
-          
-          for l=1:numel(kSubGroupData)
-            kField = kSubGroupData(l).Name;
-            props.(kField) = double(h5read(fname,[kGroup.Name '/Properties/' kField]))';
-          end
-          
-        otherwise
-          
-          
-      end
-      
-    end
-    
-    % TODO
-    ebsd{k} = EBSD(q,phaseIndex,CS,'options',props,'comment',kGroup.Name,options{:});
-    
-  end
-  
-  if ~check_option(varargin,'cellEBSD')
-    ebsd = [ebsd{:}];
-  end
-  
-catch
-  interfaceError(fname)
-end
+      if length(kGroupData(j).ChunkSize) > 1, continue; end
+      data = double(h5read(fname,[kGroup.Groups(1).Name '/' kGroupData(j).Name]));
 
+      name = strrep(kGroupData(j).Name,' ','_');
+      
+      name = strrep(name,'X_Position','x');
+      name = strrep(name,'Y_Position','y');
+      
+      props.(name) = data(:);
+    end
+
+    rot = rotation('Euler',props.Phi1,props.Phi,props.Phi2);
+    phases = props.Phase;
+    
+    props = rmfield(props,{'Phi','Phi1','Phi2','Phase'});
+        
+    ebsd = EBSD(rot,phases,CS,'options',props);
+     
+    ind = props.x > -11111;
+    ebsd = ebsd(ind);
+    ebsd.unitCell = calcUnitCell([ebsd.prop.x,ebsd.prop.y]);
+    
+    
+  end      
+end
+  
+end
 
 function [ginfo] = locFindEBSDGroups(fname)
 
@@ -134,8 +85,8 @@ ginfo = struct('Name',{},...
   'Links',{},...
   'Attributes',{});
 
-ginfo = locGr(fname, info,ginfo);
-
+ginfo = locGr(fname, info.Groups,ginfo);
+end
 
 function [ginfo] = locGr(fname,group,ginfo)
 
@@ -143,8 +94,10 @@ if ~isempty(group)
   
   for k=1:numel(group)
     attr  = group(k).Attributes;
+    name = group(k).Name;
     
-    if ~isempty(attr) && check_option({attr.Value},'EBSD')
+    if (~isempty(attr) && check_option({attr.Value},'EBSD')) || strcmp(name(end-4:end),'/EBSD')
+    
       ginfo(end+1) = group(k);
       
     end
@@ -152,40 +105,37 @@ if ~isempty(group)
     [ginfo] = locGr(fname,group(k).Groups,ginfo);
   end
 end
-
-
-
-function CS = locReadh5Phase(fname,group)
-
-
-phaseGroup = group.Groups(strcmp([group.Name '/Phase'],{group.Groups.Name}));
-
-
-data = phaseGroup.Datasets;
-
-for k=1:numel(data)
-  
-  attr = [{data(k).Attributes.Name}; {data(k).Attributes.Value}];
-  
-  
-  name = get_option(attr,'Name','-1');
-  
-  if check_option(attr,{'laue','a','b','c'})
-    
-    axes = [get_option(attr,'a',1); get_option(attr,'b',1);get_option(attr,'c',1)];
-    ang  = [get_option(attr,'alpha',1); get_option(attr,'beta',1);get_option(attr,'gamma',1)];
-    
-    mineral = get_option(attr,'mineral');
-    %   get_option(attr,'color')
-    alignment  =get_option(attr,'Alignment');
-    
-    CS{k} = crystalSymmetry(name,axes,ang,alignment,'mineral',mineral);
-    
-  else
-    
-    CS{k} = 'notIndexed';
-    
-  end
 end
 
 
+function CS = locReadh5Phase(fname,group)
+% load phase informations from h5 file
+  
+group = group.Groups(strcmp([group.Name '/Header'],{group.Groups.Name})); 
+group = group.Groups(strcmp([group.Name '/Phase'],{group.Groups.Name}));
+
+for iphase = 1:numel(group.Groups)
+  
+  mineral = strtrim(char(h5read(fname,[group.Groups(iphase).Name '/MaterialName'])));
+  formula = strtrim(char(h5read(fname,[group.Groups(iphase).Name '/Formula'])));
+  abc(1) = h5read(fname,[group.Groups(iphase).Name '/Lattice Constant a']);
+  abc(2) = h5read(fname,[group.Groups(iphase).Name '/Lattice Constant b']);
+  abc(3) = h5read(fname,[group.Groups(iphase).Name '/Lattice Constant c']);
+  
+  abg(1) = h5read(fname,[group.Groups(iphase).Name '/Lattice Constant alpha']);
+  abg(2) = h5read(fname,[group.Groups(iphase).Name '/Lattice Constant beta']);
+  abg(3) = h5read(fname,[group.Groups(iphase).Name '/Lattice Constant gamma']);
+  
+  pointGroup = h5read(fname,[group.Groups(iphase).Name '/Point Group']);
+  pointGroup = regexp(char(pointGroup),'\[([1-6m/\-]*)\]','tokens');
+  pointGroup = pointGroup{1};
+  
+  try  
+    CS{iphase} = crystalSymmetry(pointGroup,double(abc),double(abg)*degree,'mineral',mineral);
+  catch
+    CS{iphase} = 'notIndexed';
+  end
+end
+  
+
+end
