@@ -7,8 +7,9 @@ classdef ODFComponent
   properties (Abstract)
     CS % crystal symmetry
     SS % specimen symmetry
+    bandwidth % harmonic degree
   end
-  
+   
   methods(Abstract)
     f = eval(odf,g,varargin)
     Z = calcPDF(odf,h,r,varargin)    

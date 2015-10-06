@@ -11,7 +11,8 @@ classdef fibreComponent < ODFComponent
   end
 
   properties (Dependent = true)
-    CS % crystal symmetry
+    CS        % crystal symmetry
+    bandwidth % harmonic degree
   end
   
   methods
@@ -33,6 +34,14 @@ classdef fibreComponent < ODFComponent
     
     function CS = get.CS(component)
       CS = component.h.CS;      
+    end
+    
+    function L = get.bandwidth(component)
+      L= component.psi.bandwidth;
+    end
+    
+    function component = set.bandwidth(component,L)
+      component.psi.bandwidth = L;
     end
     
     

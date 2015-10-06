@@ -9,8 +9,9 @@ classdef femComponent < ODFComponent
   end
   
   properties (Dependent = true)
-    CS % crystal symmetry
-    SS % specimen symmetry
+    CS        % crystal symmetry
+    SS        % specimen symmetry
+    bandwidth % harmonic degree (always inf)
   end
  
  
@@ -44,6 +45,13 @@ classdef femComponent < ODFComponent
     
     function SS = get.SS(component)
       SS = component.center.SS;
+    end
+
+    function L = get.bandwidth(component) %#ok<MANU>
+      L = inf;
+    end
+    
+    function component = set.bandwidth(component,~)      
     end
     
   end  

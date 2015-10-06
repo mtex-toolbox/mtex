@@ -10,6 +10,7 @@ classdef unimodalComponent < ODFComponent
     CS % crystal symmetry
     SS % specimen symmetry
     antipodal % mori =? inv(mori)
+    bandwidth % harmonic degree
   end
   
   methods
@@ -46,6 +47,14 @@ classdef unimodalComponent < ODFComponent
         
     function antipodal = get.antipodal(component)
       antipodal = component.center.antipodal;      
+    end
+    
+    function L = get.bandwidth(component)
+      L= component.psi.bandwidth;
+    end
+    
+    function component = set.bandwidth(component,L)
+      component.psi.bandwidth = L;
     end
     
   end

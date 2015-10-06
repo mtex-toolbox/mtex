@@ -1,16 +1,16 @@
 function C = ChebCoeff(odf,varargin)
 % return Chebyshev coefficient of odf
 %
-%% Input
+% Input
 %  odf - @ODF
 %
-%% Options
+% Options
 %  bandwidth   - number of Fourier coefficients to be plotted
 %
-%% See also
+% See also
 % ODF_calcFourier ODF_Fourier
 
-L = get_option(varargin,'bandwidth',bandwidth(odf));
+L = get_option(varargin,'bandwidth',odf.bandwidth);
 
 odf_hat = Fourier(odf,'bandwidth',L,'l2-normalization');
 

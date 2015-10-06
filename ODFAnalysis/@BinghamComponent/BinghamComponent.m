@@ -9,6 +9,7 @@ classdef BinghamComponent < ODFComponent
   properties (Dependent = true)
     CS % crystal symmetry
     SS % specimen symmetry
+    bandwidth % harmonic degree
   end
   
   methods
@@ -36,6 +37,13 @@ classdef BinghamComponent < ODFComponent
     
     function SS = get.SS(component)
       SS = component.A.SS;
+    end
+  
+    function L = get.bandwidth(component) %#ok<MANU>
+      L = inf;
+    end
+    
+    function component = set.bandwidth(component,~)      
     end
     
   end
