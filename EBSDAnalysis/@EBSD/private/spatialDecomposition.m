@@ -25,7 +25,7 @@ else
   
   dummyCoordinates = calcBoundary(X,unitCell,varargin{:});
 
-  [V,D] = voronoin([X;dummyCoordinates],{'Q5','Q6','QJ'}); 
+  [V,D] = voronoin([X;dummyCoordinates],{'Q5','Q6','Qs'}); %,'QbB'
 
   D = D(1:size(X,1));
   
