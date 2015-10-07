@@ -2,39 +2,37 @@ function ebsd = loadEBSD_h5(fname,varargin)
 
 if ~exist(fname,'file'), error(['File ' fname ' not found!']); end
 
-try
-    
-  ginfo = locFindEBSDGroups(fname);
+ginfo = locFindEBSDGroups(fname);
   
-  if numel(ginfo) > 1
-    
-    groupNames = {ginfo.Name};
-    
-    patternMatch = false(size(groupNames));
-    for k=1:numel(varargin)
-      if ischar(varargin{k})
-        patternMatch = patternMatch | strncmpi(groupNames,varargin{k},numel(varargin{k}));
-      end
+if numel(ginfo) > 1
+  
+  groupNames = {ginfo.Name};
+  
+  patternMatch = false(size(groupNames));
+  for k=1:numel(varargin)
+    if ischar(varargin{k})
+      patternMatch = patternMatch | strncmpi(groupNames,varargin{k},numel(varargin{k}));
     end
+  end
+  
+  if nnz(patternMatch) == 0
+    [sel,ok] = listdlg('ListString',{ginfo.Name},'ListSize',[400 300]);
     
-    if nnz(patternMatch) == 0
-      [sel,ok] = listdlg('ListString',{ginfo.Name},'ListSize',[400 300]);
-      
-      if ok
-        ginfo = ginfo(sel);
-      else
-        return
-      end
+    if ok
+      ginfo = ginfo(sel);
     else
-      ginfo = ginfo(patternMatch);
+      return
     end
+  else
+    ginfo = ginfo(patternMatch);
   end
+end
+
+assert(numel(ginfo) > 1);
   
-  if check_option(varargin,'check'),  
-    ebsd = EBSD;
-    return
-  end
-  
+if check_option(varargin,'check'), ebsd = EBSD; return; end
+
+try
   for k = 1:numel(ginfo)
     kGroup = ginfo(k);
     
