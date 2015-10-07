@@ -90,7 +90,7 @@ plotPDF(ebsd('Fo').orientations,ebsd('Fo').mad,h,'antipodal','MarkerSize',4)
 % or some arbitrary data vector
 
 plotSection(grains('Fo').meanOrientation,grains('Fo').area,...
-  'sigma','antipodal','sections',9,'MarkerSize',3);
+  'sigma','sections',9,'MarkerSize',4);
   
 %%
 % See also <PlotTypes_demo.html#5, Scatter plots> for more information

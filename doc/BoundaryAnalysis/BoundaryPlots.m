@@ -36,7 +36,7 @@ plot(grains(931).boundary)
 % define the colorcoding such that the meanorientation becomes white
 oM = ipdfHSVOrientationMapping(grains(931));
 oM.inversePoleFigureDirection = grains(931).meanOrientation * oM.whiteCenter;
-oM.colorStretching = 50;
+oM.maxAngle = 5*degree;
 
 % get the ebsd data of grain 931
 ebsd_931 = ebsd(grains(931));

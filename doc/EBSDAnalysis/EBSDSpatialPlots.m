@@ -226,7 +226,7 @@ vol = 100 * volume(ebsd('fo').orientations,oM.center,20*degree)
 
 close all
 odf = calcODF(ebsd('fo').orientations,'halfwidth',10*degree,'silent');
-plot(odf,'sections',9,'antipodal','silent','sigma')
+plot(odf,'sections',9,'silent','sigma')
 mtexColorbar
 
 

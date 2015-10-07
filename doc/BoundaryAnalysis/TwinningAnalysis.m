@@ -14,7 +14,7 @@
 mtexdata twins
 
 % segment grains
-[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd('indexed'))
+[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd('indexed'),'angle',5*degree)
 
 % smooth them
 grains = grains.smooth
@@ -85,8 +85,10 @@ twinBoundary = gB_MgMg(isTwinning)
 
 % plot the twinning boundaries
 plot(grains,grains.meanOrientation)
+%plot(ebsd('indexed'),ebsd('indexed').orientations)
 hold on
-plot(twinBoundary,'linecolor','b','linewidth',2,'displayName','twin boundary')
+%plot(gB_MgMg,angle(gB_MgMg.misorientation,twinning),'linewidth',4)
+plot(twinBoundary,'linecolor','w','linewidth',2,'displayName','twin boundary')
 hold off
 
 %% Merge twins along twin boundaries

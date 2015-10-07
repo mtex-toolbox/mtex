@@ -17,8 +17,9 @@ mtexdata twins
 [grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd,'angle',10*degree);
 
 % restrict data to one single grain
-oneGrain = grains(22)
-ebsd = ebsd(oneGrain)
+[~,id] = max(grains.area);
+oneGrain = grains(id);
+ebsd = ebsd(oneGrain);
 
 plot(ebsd,ebsd.orientations)
 
@@ -34,13 +35,13 @@ oM = ipdfHSVOrientationMapping(ebsd);
 
 % set inversePoleFigureDirection  such that the mean orientation is
 % colorized white
-oM.inversePoleFigureDirection = grains(22).meanOrientation * oM.whiteCenter;
+oM.inversePoleFigureDirection = grains(id).meanOrientation * oM.whiteCenter;
 
 % concentrate the colors around the mean orientation
 oM.maxAngle = 3*degree;
 
 % plot the colormap
-plot(oM)
+plot(oM,'resolution',0.5*degree)
 
 %%
 % With the new colormap we can clearly see the noise overlapping the
@@ -186,7 +187,7 @@ hold off
 % We may plot the misorientation angle between the interpolated
 % orientations and the measured orientations
 
-plot(ebsd('indexed'),angle(ebsdNaN_smoothed('indexed').orientations,ebsd_smoothed('indexed').orientations)./degree)
+plot(ebsd_smoothed('indexed'),angle(ebsdNaN_smoothed('indexed').orientations,ebsd_smoothed('indexed').orientations)./degree)
 mtexColorbar
 
 hold on
@@ -229,25 +230,25 @@ hold off
 
 %%
 % In order to visualize the orientation gradient within the grains we plot
-% the mis2mean. We observe that the mis2mean varies smoothly also within
-% the regions of not indexed orientations.
+% the misorientation to the meanorientation. We observe that the mis2mean
+% varies smoothly also within the regions of not indexed orientations.
 
 % compute mis2mean for the interpolated orientations
 [~,~,ebsd_smoothed.mis2mean] = calcGrains(ebsd_smoothed,'angle',10*degree);
 
 % plot mis2mean for all phases
 oM = ipdfHSVOrientationMapping(ebsd_smoothed('Fo').CS,ebsd_smoothed('Fo').CS);
-oM.colorStretching = 10;
+oM.maxAngle = 5*degree;
 plot(ebsd_smoothed('Fo'),oM.orientation2color(ebsd_smoothed('Fo').mis2mean))
 
 hold on
 
 oM = ipdfHSVOrientationMapping(ebsd_smoothed('En').CS,ebsd_smoothed('En').CS);
-oM.colorStretching = 10;
+oM.maxAngle = 5*degree;
 plot(ebsd_smoothed('En'),oM.orientation2color(ebsd_smoothed('En').mis2mean))
 
 oM = ipdfHSVOrientationMapping(ebsd_smoothed('Di').CS,ebsd_smoothed('Di').CS);
-oM.colorStretching = 10;
+oM.maxAngle = 5*degree;
 plot(ebsd_smoothed('Di'),oM.orientation2color(ebsd_smoothed('Di').mis2mean))
 
 % plot boundary
