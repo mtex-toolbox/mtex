@@ -81,7 +81,7 @@ phaseId = sparse(old2newId(grains.id),grains.id,grains.phaseId);
 grains_merged.phaseId = max(phaseId,[],2);
 
 % remove all other properties
-grains_merged.prop = struct;
+grains_merged.prop = struct('meanRotation',grains_merged.prop.meanRotation);
 
 % update meanRotation
 for i = 1:numel(newInd)
