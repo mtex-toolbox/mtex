@@ -46,11 +46,7 @@ classdef gammaSections < ODFSections
       ori = ori.symmetrise('proper').';
       [alpha,beta,gamma] = Euler(ori,'ZYZ'); %#ok<*PROPLC>
 
-      bounds = sort(unique([oS.gamma - oS.tol,oS.gamma + oS.tol]));
-      [~,secPos] = histc(mod(gamma,oS.maxGamma),bounds);
-      secPos(iseven(secPos)) = -1;
-      secPos = (secPos + 1)./2;
-
+      secPos = oS.secList(mod(gamma,oS.maxGamma),oS.gamma);
       S2Pos = vector3d('polar',beta,alpha);
 
     end

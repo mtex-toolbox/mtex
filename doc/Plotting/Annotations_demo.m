@@ -1,69 +1,73 @@
 %% Annotations
-% Explains how to add annotations to plots. This
-% includes colorbars, legends, specimen directions and crystal directions.
+% Explains how to add annotations to plots. This includes colorbars,
+% legends, specimen directions and crystal directions.
 %
 %% Open in Editor
 %
 %% Contents
 %
 
-%% Some sample ODFs
+%% Colorbars
 %
-% Let us first define some model ODFs to be plotted later on.
+% Unlike the common Matlab command |colorbar| the MTEX command
+% <mtexColorbar.html mtexColorbar> allows you to add a colorbar to all
+% subplot in one figure.
 
+% this defines some model ODFs
 cs = crystalSymmetry('-3m');
 mod1 = orientation('Euler',30*degree,40*degree,10*degree,cs);
 mod2 = orientation('Euler',10*degree,80*degree,70*degree,cs);
-odf = 0.7*unimodalODF(mod1) + 0.3*unimodalODF(mod2)
+odf = 0.7*unimodalODF(mod1) + 0.3*unimodalODF(mod2);
 
+% plot some pole figurs
+plotPDF(odf,Miller({1,0,0},{1,1,1},cs))
 
-%% Adding a Colorbar
-%
-% Adding colorbars is done by using the command <mtexFigure.colorbar.html
-% colorbar>. 
-
-plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],'antipodal')
+% and add a colorbar to each pole figure 
 mtexColorbar
 
 %%
-% Executing the command <colorbar.html colorbar> twice deletes the colorbar.
-% You can also have a horizontal colorbar at the bottom of the figure using
-% the option *south*.
+% Executing the command <mtexColorbar.html mtexColorbar> twice deletes the
+% colorbar. You can also have a horizontal colorbar at the bottom of the
+% figure by setting the option |location| to |southOutside|. Further we can
+% set a title to the colorbar to describe the unit.
 
-mtexColorbar                        % delete vertical colorbar
-mtexColorbar('location','southOutSide') % add horizontal colorbars
+% delete vertical colorbar
+mtexColorbar              
+
+% add horizontal colorbars
+mtexColorbar('location','southOutSide','title','mrd') 
 
 %%
-% If color range is equal in all plots of one figure only one colorbar
-% is added (see. <ColorCoding_demo.html Color Coding>).
+% If color range is set to equal in an MTEX figure only one colorbar is
+% added (see. <ColorCoding_demo.html Color Coding>).
 
 mtexColorbar       % delete colorbar
 CLim(gcm,'equal'); % set equal color range to all plots
 mtexColorbar       % create a new colorbar
 
-%% Adding Specimen and Crystal Directions
+
+%% Annotating Directions, Orientations, Fibres
 %
-% Pole figures and inverse pole figures are much more readable if they
-% include specimen or crystal directions. Using the MTEX command 
+% Pole figures and inverse pole figures are much better readable if they
+% include specimen or crystal directions. Using the MTEX command
 % <annotate.html annotate> one can easily add <vector3d_index.html specimen
 % coordinate axes> to a pole figure plot.
 
-annotate([xvector,yvector,zvector],'label',{'X','Y','Z'},'BackgroundColor','w')
+annotate(zvector,'label',{'Z'},'BackgroundColor','w')
 
 %%
-% The command <annotate.html annotate> allows also to plot
-% <Miller_index.html crystal directions> to inverse pole figures.
+% The command <annotate.html annotate> allows also to mark
+% <Miller_index.html crystal directions> in inverse pole figures.
 
 plotIPDF(odf,[xvector,zvector],'antipodal','marginx',10)
 mtexColorMap white2black
+
 annotate([Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(0,0,1,cs),Miller(2,-1,0,cs)],...
   'all','labeled','BackgroundColor','w')
 
-
-%% Adding Preferred Orientations
-%
-% One can also mark specific orientations in the pole figures or in the
-% inverse pole figures
+%%
+% One can also mark specific orientations in pole figures or in inverse
+% pole figures.
 
 plotIPDF(odf,[xvector,zvector],'antipodal')
 mtexColorMap white2black
@@ -80,7 +84,7 @@ drawNow(gcm,'figSize','normal')
 %%
 % as well as in ODF plots
 
-plot(odf,'sections',18,'sigma')
+plot(odf,'sigma')
 mtexColorMap white2black
 annotate(mod1,...
     'MarkerSize',15,'MarkerEdgeColor','r','MarkerFaceColor','none')
@@ -99,7 +103,7 @@ annotate(mod2,...
   'MarkerSize',10,'MarkerEdgeColor','g','MarkerFaceColor','g')
 
 
-%% Adding a Legend
+%% Legends
 %
 % If you have multiple data in one plot then it makes sense to add a legend
 % saying which color / symbol correspond to which data set. 

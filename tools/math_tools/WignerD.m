@@ -24,7 +24,7 @@ function Psi = WignerD(ori,varargin)
 
 psi = get_option(varargin,'kernel',[],'kernel');
 if ~isempty(psi)
-  L = bandwidth(psi);
+  L = psi.bandwidth;
 else
   L = 4;
 end
@@ -163,7 +163,7 @@ cs = [0 cumsum(d)];
 
 Ahat = zeros(cs(end),1);
 A = zeros(1,max(L)+1);
-A(1:bandwidth(psi)+1) = psi.A;
+A(1:psi.bandwidth+1) = psi.A;
 for l=1:numel(L)
   Ahat(cs(l)+1:cs(l+1)) = A(L(l)+1);
 end

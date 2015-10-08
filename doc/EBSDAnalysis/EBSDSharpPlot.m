@@ -1,4 +1,12 @@
 %% Visualizing EBSD data with sharp textures
+% How visualize texturgradients within grains
+%
+%% Open in Editor
+%
+%% Contents
+%
+
+%% 
 % Using spezialized orientation mappings is particularly usefull when
 % visualizing sharp data. Let us consider the following data set which
 % restrict to the calcite phase
@@ -107,7 +115,7 @@ ebsd = ebsd('indexed');
 [grains,ebsd.grainId] = calcGrains(ebsd);
 
 % find largest grains
-largeGrains = grains(grains.grainSize>800)
+largeGrains = grains(grains.grainSize > 800)
 
 ebsd = ebsd(largeGrains(1))
 
@@ -133,6 +141,6 @@ plot(largeGrains(1).boundary,'linewidth',2)
 hold on
 oM = ipdfHSVOrientationMapping(ebsd);
 oM.inversePoleFigureDirection = mean(ebsd.orientations) * oM.whiteCenter;
-oM.colorStretching = 40;
+oM.maxAngle = 2*degree;
 plot(ebsd,oM.orientation2color(ebsd.orientations))
 hold off

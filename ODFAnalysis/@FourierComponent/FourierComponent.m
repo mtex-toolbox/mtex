@@ -8,6 +8,10 @@ classdef FourierComponent < ODFComponent
     antipodal = false
   end
  
+  properties (Dependent=true)
+    bandwidth % harmonic degree
+  end
+  
   methods
     
     function component = FourierComponent(f_hat,CS,SS,varargin)
@@ -26,5 +30,21 @@ classdef FourierComponent < ODFComponent
         component.f_hat = f_hat;
       end
     end
+    
+    function L = get.bandwidth(component)
+      L = dim2deg(numel(component.f_hat));
+    end
+    
+    function component = set.bandwidth(component,L)
+      newLength = deg2dim(L);
+      oldLength = numel(component.f_hat);
+      if newLength > oldLength
+        component.f_hat(oldLength+1:newLength) = 0;
+      else
+        component.f_hat = component.f_hat(1:newLength);
+      end
+    end
+    
+    
   end  
 end

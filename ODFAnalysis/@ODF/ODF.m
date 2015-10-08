@@ -6,9 +6,10 @@ classdef ODF < dynOption
   end
   
   properties (Dependent = true)
-    CS % crystal symmetry for ODF
-    SS % specimen symmetry for ODF
-    antipodal % mori =? inv(mori)
+    CS          % crystal symmetry for ODF
+    SS          % specimen symmetry for ODF
+    antipodal   % mori =? inv(mori)
+    bandwidth   % harmonic degree
   end
   
   methods
@@ -64,6 +65,19 @@ classdef ODF < dynOption
       else
         antipodal = false;
       end      
+    end
+    
+    function L = get.bandwidth(odf)
+      L = 0;
+      for i = 1:numel(odf.components)
+        L = max(L,odf.components{i}.bandwidth);
+      end
+    end
+    
+    function odf = set.bandwidth(odf,L)
+      for i = 1:numel(odf.components)
+        odf.components{i}.bandwidth =L;
+      end
     end
     
   end

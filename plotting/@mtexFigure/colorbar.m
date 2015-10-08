@@ -5,7 +5,7 @@ if isempty(mtexFig.cBarAxis) % create some new colorbars
   if ~mtexFig.keepAspectRatio || equalScale % one new colorbar
   
     mtexFig.cBarAxis = addColorbar(mtexFig.children(end),varargin{:});
-            
+    
   else % many new colorbars
     
     for i = 1:numel(mtexFig.children)      
@@ -45,6 +45,14 @@ if nargout == 1, h = mtexFig.cBarAxis; end
     fs = getMTEXpref('FontSize');  
     h = optiondraw(colorbar('peer',peer,'eastoutside','units','pixel',...
       'FontSize',fs),varargin{:});
+    
+    if check_option(varargin,'title')
+      try
+        h.Label.String = get_option(varargin,'title');
+      catch
+        ylabel(h,get_option(varargin,'title'))
+      end
+    end
         
   end  
 

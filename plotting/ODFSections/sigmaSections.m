@@ -52,13 +52,8 @@ classdef sigmaSections < ODFSections
       [e1,e2,e3] = Euler(ori,'ZYZ');
 
       sigma = mod(e1 + e3,oS.maxSigma); %#ok<*PROPLC,*PROP>
-            
-      % this builds a list 
-      bounds = sort([oS.sigma - oS.tol,oS.sigma + oS.tol]);
-      [~,secPos] = histc(sigma,bounds);
-      secPos(iseven(secPos)) = -1;
-      secPos = (secPos + 1)./2;
-      
+      secPos = oS.secList(sigma,oS.sigma);      
+                 
       S2Pos = vector3d('polar',e2,e1);
 
     end

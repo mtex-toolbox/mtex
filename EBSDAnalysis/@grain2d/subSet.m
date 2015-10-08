@@ -21,7 +21,7 @@ if islogical(ind)
   grId(grId>0) = indLarge(grId(grId>0));
   indBd = any(grId,2);
 else
-  indBd = any(ismember(grains.boundary.grainId,ind),2);
+  indBd = any(ismember(grains.boundary.grainId,grains.id(ind)),2);
 end
 
 

@@ -19,8 +19,8 @@ end
 [in_theta,in_rho] = polar(in(:));
 
 % bandwidth
-L = get_option(varargin,'bandwidth',bandwidth(component));
-L = min(L,bandwidth(component));
+L = get_option(varargin,'bandwidth',component.bandwidth);
+L = min(L,component.bandwidth);
 
 ipdf_hat = cumsum([0,2*(0:L)+1]);
 

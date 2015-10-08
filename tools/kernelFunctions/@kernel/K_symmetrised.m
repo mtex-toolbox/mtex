@@ -58,17 +58,15 @@ elseif (lg1>0 || lg2>0) && ~check_option(varargin,'old')
   w = sparse(abs(lg1),abs(lg2));
   
   % sum over specimen symmetry
-  ssq = quaternion(SS);
-
   if (lg1 >= lg2)              % first argument is SO3Grid
-    for issq = 1:length(ssq)
-      d = abs(dot_outer(q1,ssq(issq)*quaternion(q2),'epsilon',epsilon,...
+    for issq = 1:length(qSS)
+      d = abs(dot_outer(q1,qSS(issq)*quaternion(q2),'epsilon',epsilon,...
         'nospecimensymmetry'));
         w = w + spfun(@psi.K,d);
     end    
   else                         % second argument is SO3Grid
-    for issq = 1:length(ssq)
-      d = abs(dot_outer(q2,ssq(issq)*quaternion(q1),'epsilon',epsilon,...
+    for issq = 1:length(qSS)
+      d = abs(dot_outer(q2,qSS(issq)*quaternion(q1),'epsilon',epsilon,...
         'nospecimensymmetry'));
       w = w + spfun(@psi.K,d.');
     end

@@ -1,7 +1,7 @@
 function component = rotate(component,q,varargin)
 % called by ODF/rotate
     
-L = bandwidth(component);
+L = component.bandwidth;
 D = WignerD(q,'bandwidth',L);
 
 for l = 0:L

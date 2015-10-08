@@ -63,14 +63,10 @@ classdef ipfSections < ODFSections
       % determine omega angle
       hF = ori \ oS.r2;
       vF = vectorField(oS,h);      
-      omega = angle(hF,vF,h);
-           
-      % this builds a list 
-      bounds = sort(unique([oS.omega - oS.tol,oS.omega + oS.tol]));
-      [~,secPos] = histc(omega,bounds); %#ok<*PROPLC>
-      secPos(iseven(secPos)) = -1;
-      secPos = (secPos + 1)./2;            
-
+      
+      omega = angle(hF,vF,h); %#ok<*PROPLC>
+      secPos = oS.secList(mod(omega,oS.maxOmega),oS.omega);
+                 
     end
     
     function ori = iproject(oS,rho,theta,iOmega)

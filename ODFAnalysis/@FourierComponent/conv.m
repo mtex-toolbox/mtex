@@ -11,7 +11,7 @@ function component = conv(component,A,varargin)
 % multiply Fourier coefficients of odf with Chebyshev coefficients
 
 L = component.bandwidth;
-A(end+1:L) = 0;
+A(end+1:L+1) = 0;
 
 for l = 0:L
   component.f_hat(deg2dim(l)+1:deg2dim(l+1)) = ...

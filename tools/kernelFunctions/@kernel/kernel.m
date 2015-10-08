@@ -4,6 +4,11 @@ classdef kernel
   properties
     A=[] % Chebyshev coefficients
   end
+
+  properties (Dependent=true)
+    bandwidth % harmonic degree
+  end
+    
   
   methods
   
@@ -107,9 +112,13 @@ classdef kernel
       value = norm(psi1.A(1:L) - psi2.A(1:L)) ./ norm(psi1.A) < 1e-6;
     end
     
-    function bw = bandwidth(psi)
-      % get bandwidth
-      bw = length(psi.A)-1;
+    
+    function L = get.bandwidth(psi)
+      L = length(psi.A)-1;
+    end
+    
+    function psi = set.bandwidth(psi,L)
+      psi.A = psi.A(1:min(L+1,end));        
     end
     
     function n = norm(psi)

@@ -3,7 +3,7 @@ function mdf = calcMDF(odf1,odf2,varargin)
 
 % get bandwidth
 L = get_option(varargin,'bandwidth',32);
-L = min([bandwidth(odf1),bandwidth(odf2),L]);
+L = min([odf1.bandwidth,odf2.bandwidth,L]);
 
 % compute Fourier coefficients of mdf
 f_hat = [odf1.f_hat(1) * odf2.f_hat(1); zeros(deg2dim(L+1)-1,1)];
