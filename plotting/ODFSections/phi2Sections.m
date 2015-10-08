@@ -15,7 +15,7 @@ classdef phi2Sections < ODFSections
       % get fundamental plotting region
       [phi1,Phi,oS.maxphi2] = fundamentalRegionEuler(CS1,CS2,varargin{:}); %#ok<*PROP>
       oS.sR = sphericalRegion('maxTheta',Phi,'maxRho',phi1);
-      
+            
       % get sections
       nsec = get_option(varargin,'sections',6);
       oS.phi2 = linspace(0,oS.maxphi2,nsec+1);
@@ -44,12 +44,9 @@ classdef phi2Sections < ODFSections
     
       % maybe this can be done more efficiently
       ori = ori.symmetrise('proper').';
-      [phi1,Phi,phi2] = Euler(ori,'Bunge');
+      [phi1,Phi,phi2] = Euler(ori,'Bunge'); %#ok<*PROPLC>
 
-      bounds = sort(unique([oS.phi2 - oS.tol,oS.phi2 + oS.tol]));
-      [~,secPos] = histc(mod(phi2,oS.maxphi2),bounds);
-      secPos(iseven(secPos)) = -1;
-      secPos = (secPos + 1)./2;
+      secPos = oS.secList(mod(phi2,oS.maxphi2),oS.phi2);
       
       S2Pos = vector3d('polar',Phi,phi1);
 

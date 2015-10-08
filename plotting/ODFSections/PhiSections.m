@@ -49,11 +49,7 @@ classdef PhiSections < ODFSections
       ori = ori.symmetrise('proper').';
       [phi1,Phi,phi2] = Euler(ori,'Bunge');
 
-      bounds = sort(unique([oS.Phi - oS.tol,oS.Phi + oS.tol]));
-      [~,secPos] = histc(Phi,bounds);
-      secPos(iseven(secPos)) = -1;
-      secPos = (secPos + 1)./2;
-      
+      secPos = oS.secList(Phi,oS.Phi);       
       S2Pos = struct('phi1',phi1,'phi2',phi2);
 
     end

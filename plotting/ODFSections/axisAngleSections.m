@@ -59,13 +59,7 @@ classdef axisAngleSections < ODFSections
       end
 
       S2Pos = ori.axis;
-      angle = ori.angle;
-      
-      % this builds a list 
-      bounds = sort(unique([oS.angles - oS.tol,oS.angles + oS.tol]));
-      [~,secPos] = histc(angle,bounds);
-      secPos(iseven(secPos)) = -1;
-      secPos = (secPos + 1)./2;
+      secPos = oS.secList(ori.angle,oS.angles);
       
     end
     
