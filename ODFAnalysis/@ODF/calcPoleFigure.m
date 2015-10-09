@@ -37,7 +37,8 @@ end
 
 % ------ specimen directions -------------
 
-% check for antipodal symmetry
+% ensure antipodal symmetry if complete is not set
+% PoleFigure will set antipodal to true anyway
 if ~check_option(varargin,'complete')
   varargin = [varargin,{'antipodal'}];
 end

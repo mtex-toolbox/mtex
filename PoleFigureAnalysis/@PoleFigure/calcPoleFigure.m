@@ -2,17 +2,17 @@ function pf = calcPoleFigure(pf,odf,varargin)
 % simulate pole figure
 %
 % Syntax
-%   pf = simulatePoleFigure(pf,odf)
+%   pf = calcPoleFigure(pf,odf)
 %
 % Input
 %  pf  - meassured @PoleFigure
 %  odf - @ODF
 %
 % Output
-%  pf - simulated PoleFigure 
+%  pf - recomputed @PoleFigure 
 %
 % See also
-% ODF/simulatePoleFigure
+% ODF/calcPoleFigure
 
 pf = calcPoleFigure(odf,pf.allH,pf.allR,'superposition',pf.c,varargin{:});
 
