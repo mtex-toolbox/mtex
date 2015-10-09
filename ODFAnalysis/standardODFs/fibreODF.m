@@ -27,13 +27,17 @@ function odf = fibreODF(varargin)
 % See also
 % ODF/ODF uniformODF unimodalODF
 
-% get crystal and specimen symmetry
-SS = getClass(varargin,'symmetry',specimenSymmetry);
-                      
 % get fibre
 h = argin_check(varargin{1},'Miller');
 r = argin_check(varargin{2},'vector3d');
-           
+
+% get crystal and specimen symmetry
+if isa(r,'Miller')
+  SS = r.CS;
+else
+  SS = getClass(varargin,'specimenSymmetry',specimenSymmetry);
+end
+
 % get kernel
 if nargin > 2 && isa(varargin{3},'kernel')
   psi = varargin{3};
