@@ -16,7 +16,7 @@ api.Type     = get_option(varargin,'type','EBSD');
 api.isPublishMode       = getMTEXpref('generatingHelpMode');
 
 p = get(0,'MonitorPositions');
-api = WizardEmptyGUIApi(api,'PageHeight',min(2/3*p(4),600));
+api = WizardEmptyGUIApi(api,'PageHeight',min(2/3*p(1,4),600));
 api = GenericApi(api);
 
 waitfor(api.hFigure);
