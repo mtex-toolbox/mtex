@@ -14,8 +14,20 @@ if isa(o2,'double')
 elseif isa(o1,'double')
   
   o1 = o1 * uniformODF(o2.CS,o2.SS);  
+
+elseif o1.CS ~= o2.CS
+  
+  error('You can not add ODFs of different crystal symmetry.')
+  
+elseif o1.SS ~= o2.SS
+  
+  error('You can not add ODFs of different specimen symmetry.')  
   
 end
+
+
+
+
 
 o1.components = [o1.components(:);o2.components(:)];
 o1.weights = [o1.weights(:);o2.weights(:)];
