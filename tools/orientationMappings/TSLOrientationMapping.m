@@ -47,7 +47,7 @@ classdef TSLOrientationMapping < ipdfHSVOrientationMapping
       v = oM.colorPostRotation * rot * v;
 
       % compute rgb values
-      rgb = ar2rgb(mod(v.rho./ 2 ./ pi,1),v.theta./pi,get_option(varargin,'grayValue',1));
+      rgb = ar2rgb(mod(v.rho./ 2 ./ pi,1),v.theta./pi,get_option(varargin,'grayValue',1),'noHueCorrection');
 
     end
 
