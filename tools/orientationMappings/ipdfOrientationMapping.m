@@ -25,7 +25,7 @@ classdef ipdfOrientationMapping < orientationMapping
       [mtexFig,isNew] = newMtexFigure(varargin);
 
       % init plotting grid
-      sR = oM.CS1.fundamentalSector(varargin{:});
+      sR = getClass(varargin,'sphericalRegion',oM.CS1.fundamentalSector(varargin{:}));
       h = Miller(plotS2Grid(sR,'resolution',1*degree,varargin{:}),oM.CS1);
       
       % compute colors
@@ -91,6 +91,10 @@ classdef ipdfOrientationMapping < orientationMapping
         
     function rgb = orientation2color(oM,ori)
     
+      if ~(ori.CS.properSubGroup <= oM.CS1)
+        warning('The symmetry of the ipf key and the orientations does not fit.')
+      end
+      
       % compute crystal directions
       ori.CS = oM.CS1;
       h = inv(ori) .* oM.inversePoleFigureDirection;
