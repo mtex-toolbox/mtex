@@ -114,7 +114,27 @@ classdef symmetry < rotation
     function r = get.isProper(cs)
       r = ~any(cs.i(:));
     end
+    
+    function out = le(cs1,cs2)
+      % check wheter cs1 is a sub group of cs2
+      out = all(any(abs(dot_outer(cs1,cs2))>1-1e-6,2));
+    end
+    
+    function out = ge(cs1,cs2)
+      % check wheter cs2 is a sub group of cs1
+      out = le(cs2,cs1);
+    end
         
+    function out = lt(cs1,cs2)
+      % check wheter cs1 is a true sub group of cs2
+      out = le(cs1,cs2) & ~le(cs2,cs1);
+    end
+    
+    function out = gt(cs1,cs2)
+      % check wheter cs2 is a true sub group of cs1
+      out = lt(cs2,cs1);
+    end
+    
   end
       
 end
