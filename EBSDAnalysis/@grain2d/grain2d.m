@@ -19,7 +19,7 @@ classdef grain2d < phaseList & dynProp
     V                % vertices with x,y coordinates
     scanUnit         % unit of the vertice coordinates
     id2ind           % 
-    GOS              % intergranular average misorientation angle    
+    GOS              % intragranular average misorientation angle    
     x                % x coordinates of the vertices of the grains
     y                % y coordinates of the vertices of the grains
   end

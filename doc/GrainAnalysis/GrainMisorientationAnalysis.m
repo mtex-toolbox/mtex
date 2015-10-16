@@ -11,7 +11,7 @@
 %
 % $$ mis(o_1,o_2) = o_1^{-1} * o_2  $$
 %
-% In the case of EBSD data, intergranular misorientations, misorientations
+% In the case of EBSD data, intragranular misorientations, misorientations
 % between neighbouring grains, and misorientations between random
 % measurments are of interest.
 
@@ -29,8 +29,8 @@ plotx2east
 [grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd('indexed'),'threshold',5*degree);
 
 
-%% Intergranular misorientations
-% The intergranular misorientation is automatically computed while
+%% Intragranular misorientations
+% The intragranular misorientation is automatically computed while
 % reconstructing the grain structure. It is stored as the property
 % |mis2mean| within the ebsd variable and can be accessed by
 
