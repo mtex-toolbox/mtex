@@ -69,7 +69,8 @@ classdef ipdfOrientationMapping < orientationMapping
         if ~check_option(varargin,'noLabel')
           h = sR.vertices;
           if length(unique(h,'antipodal')) <=2
-            h = [h,xvector,yvector,zvector]; 
+            sRu = sR.restrict2Upper;
+            h = [h,sRu.vertices,zvector];
           else
             varargin = ['Marker','none',varargin];
           end
