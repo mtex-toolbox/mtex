@@ -20,8 +20,9 @@ classdef grainBoundary < phaseList & dynProp
   
   % general properties
   properties
-    V = []          % vertices x,y coordinates        
+    V = []          % vertices x,y coordinates            
     scanUnit = 'um' % unit of the vertice coordinates
+    tripelPoints    % tripel points
   end
   
   properties (Dependent = true)
@@ -34,11 +35,11 @@ classdef grainBoundary < phaseList & dynProp
     segmentId      % connected component id
     segmentSize    % number of faces that form a segment
     x              % x coordinates of the vertices of the grains
-    y              % y coordinates of the vertices of the grains
+    y              % y coordinates of the vertices of the grains    
   end
   
   methods
-    function gB = grainBoundary(V,F,I_FD,ebsd)
+    function gB = grainBoundary(V,F,I_FD,ebsd,grainsPhaseId)
       
       if nargin == 0, return; end
       
@@ -81,7 +82,17 @@ classdef grainBoundary < phaseList & dynProp
       gB.misrotation(isNotBoundary) = ...
         inv(ebsd.rotations(gB.ebsdId(isNotBoundary,2))) ...
         .* ebsd.rotations(gB.ebsdId(isNotBoundary,1));
-    
+      
+      % compute tripel points
+      I_VG = (gB.I_VF * gB.I_FG)==2;
+      itP = full(sum(I_VG,2)==3);
+      [tpGrainId,~] = find(I_VG(itP,:).');
+      tpGrainId = reshape(tpGrainId,3,[]).';      
+      tpPhaseId = full(grainsPhaseId(tpGrainId));
+            
+      gB.tripelPoints = tripelPointList(gB.V(itP,:),tpGrainId,tpGrainId,tpPhaseId,...
+        gB.phaseMap,gB.CSList);
+      
     end
 
     function gB = cat(dim,varargin)
@@ -146,9 +157,13 @@ classdef grainBoundary < phaseList & dynProp
     end   
     
     function A_F = get.A_F(gB)
-      I_VF = gB.I_VF;           
-      A_F = I_VF.' * I_VF;
+      I_VF = gB.I_VF; %#ok<PROP>
+      A_F = I_VF.' * I_VF; %#ok<PROP>
     end
+    
+    %function tp = get.tripelPoints(gB)
+       
+    %end
     
     function segmentId = get.segmentId(gB)
       segmentId = connectedComponents(gB.A_F).';

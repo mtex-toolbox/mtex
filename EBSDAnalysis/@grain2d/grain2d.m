@@ -22,6 +22,7 @@ classdef grain2d < phaseList & dynProp
     GOS              % intragranular average misorientation angle    
     x                % x coordinates of the vertices of the grains
     y                % y coordinates of the vertices of the grains
+    tripelPoints     % tripel points
   end
   
   properties (Dependent = true, Access = protected)
@@ -66,9 +67,9 @@ classdef grain2d < phaseList & dynProp
       grains.id = (1:numel(grains.phaseId)).';
       grains.grainSize = full(sum(I_DG,1)).';
                         
-      grains.boundary = grainBoundary(V,F,I_FDext,ebsd);
+      grains.boundary = grainBoundary(V,F,I_FDext,ebsd,grains.phaseId);
       grains.boundary.scanUnit = ebsd.scanUnit;
-      grains.innerBoundary = grainBoundary(V,F,I_FDint,ebsd);
+      grains.innerBoundary = grainBoundary(V,F,I_FDint,ebsd,grains.phaseId);
       
       grains.poly = calcPolygons(I_FDext * I_DG,F,V);
 
@@ -146,6 +147,10 @@ classdef grain2d < phaseList & dynProp
     
     function unit = get.scanUnit(grains)
       unit = grains.boundary.scanUnit;
+    end
+    
+    function tP = get.tripelPoints(grains)
+      tP = grains.boundary.tripelPoints;
     end
     
   end
