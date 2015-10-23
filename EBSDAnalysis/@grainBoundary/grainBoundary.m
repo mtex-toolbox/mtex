@@ -84,14 +84,24 @@ classdef grainBoundary < phaseList & dynProp
         .* ebsd.rotations(gB.ebsdId(isNotBoundary,1));
       
       % compute tripel points
-      I_VG = (gB.I_VF * gB.I_FG)==2;
+      I_VF = gB.I_VF;
+      I_VG = (I_VF * gB.I_FG)==2;
       itP = full(sum(I_VG,2)==3);
       [tpGrainId,~] = find(I_VG(itP,:).');
       tpGrainId = reshape(tpGrainId,3,[]).';      
       tpPhaseId = full(grainsPhaseId(tpGrainId));
-            
-      gB.tripelPoints = tripelPointList(gB.V(itP,:),tpGrainId,tpGrainId,tpPhaseId,...
-        gB.phaseMap,gB.CSList);
+      
+      % compute ebsdId
+      % first step: compute faces at the tripel point
+      % clean up incidence matrix
+      I_FD(~any(I_FD,2),:) = [];
+      % incidence matrix between tripel points and voronoi cells
+      %I_TD = I_VF(itP,:) * I_FD;
+      [tPBoundaryId,~] = find(I_VF(itP,:).');
+      tPBoundaryId = reshape(tPBoundaryId,3,[]).';
+      
+      gB.tripelPoints = tripelPointList(find(itP),gB.V(itP,:),...
+        tpGrainId,tPBoundaryId,tpPhaseId,gB.phaseMap,gB.CSList);
       
     end
 

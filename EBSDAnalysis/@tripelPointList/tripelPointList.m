@@ -12,9 +12,10 @@ classdef tripelPointList < phaseList & dynProp
   
   % properties with as many rows as data
   properties
+    id = zeros(0,1)      % indices of the vertices in grains.V
     V = zeros(0,2)       % vertices x,y coordinates
     grainId = zeros(0,3) % id's of the neigbouring grains to a face
-    ebsdId = zeros(0,3)  % id's of the neigbouring ebsd data to a face    
+    boundaryId = zeros(0,3)  % id's of the neigbouring ebsd data to a face    
   end
    
   properties (Dependent = true)
@@ -24,13 +25,14 @@ classdef tripelPointList < phaseList & dynProp
   end
   
   methods
-    function tP = tripelPointList(V,grainId,ebsdId,phaseId,phaseMap,CSList)
+    function tP = tripelPointList(id,V,grainId,boundaryId,phaseId,phaseMap,CSList)
       
       if nargin == 0, return; end
       
+      tP.id = id;
       tP.V = V;
       tP.grainId = grainId;
-      tP.ebsdId = ebsdId;      
+      tP.boundaryId = boundaryId;      
       tP.phaseId = phaseId;
       tP.phaseMap = phaseMap;
       tP.CSList = CSList;

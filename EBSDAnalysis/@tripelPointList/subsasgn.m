@@ -1,53 +1,53 @@
-function gB = subsasgn(gB,s,b)
+function tP = subsasgn(tP,s,b)
 % overloads subsasgn
 
-if ~isa(gB,'grainBoundary'), gB = b([]); end
+if ~isa(tP,'tripelPointList'), tP = b([]); end
 
 switch s(1).type
   
   case '()'
       
-    if numel(s)>1, b =  subsasgn(subsref(gB,s(1)),s(2:end),b); end
+    if numel(s)>1, b =  subsasgn(subsref(tP,s(1)),s(2:end),b); end
 
-    s(1).subs = {subsind(gB,s(1).subs)};
+    s(1).subs = {subsind(tP,s(1).subs)};
         
     if isempty(b)
       
       s(1).subs = {~s(1).subs{1}};
-      gB = subsref(gB,s(1));      
+      tP = subsref(tP,s(1));      
       
     else
       
-      gB = subsasgn@dynProp(gB,s(1),b);
-      gB.misrotation = subsasgn(gB.misrotation,s(1),b.misrotation);
+      tP = subsasgn@dynProp(tP,s(1),b);
+      tP.misrotation = subsasgn(tP.misrotation,s(1),b.misrotation);
       
-      id1 = subsasgn(gB.grainId(:,1),s(1),b.grainId(:,1));
-      id2 = subsasgn(gB.grainId(:,2),s(1),b.grainId(:,2));      
-      gB.grainId = [id1(:),id2(:)];
+      id1 = subsasgn(tP.grainId(:,1),s(1),b.grainId(:,1));
+      id2 = subsasgn(tP.grainId(:,2),s(1),b.grainId(:,2));      
+      tP.grainId = [id1(:),id2(:)];
       
-      id1 = subsasgn(gB.phaseId(:,1),s(1),b.phaseId(:,1));
-      id2 = subsasgn(gB.phaseId(:,2),s(1),b.phaseId(:,2));      
-      gB.phaseId = [id1(:),id2(:)];
+      id1 = subsasgn(tP.phaseId(:,1),s(1),b.phaseId(:,1));
+      id2 = subsasgn(tP.phaseId(:,2),s(1),b.phaseId(:,2));      
+      tP.phaseId = [id1(:),id2(:)];
       
-      id1 = subsasgn(gB.F(:,1),s(1),b.F(:,1));
-      id2 = subsasgn(gB.F(:,2),s(1),b.F(:,2));      
-      gB.F = [id1(:),id2(:)];
+      id1 = subsasgn(tP.F(:,1),s(1),b.F(:,1));
+      id2 = subsasgn(tP.F(:,2),s(1),b.F(:,2));      
+      tP.F = [id1(:),id2(:)];
       
-      gB.V = b.V;      
-      gB.CSList = b.CSList;
-      gB.phaseMap = b.phaseMap;
+      tP.V = b.V;      
+      tP.CSList = b.CSList;
+      tP.phaseMap = b.phaseMap;
 
     end
     
   otherwise
         
-    if gB.isProperty(s(1).subs) % otherwise a property
+    if tP.isProperty(s(1).subs) % otherwise a property
       
-      gB = subsasgn@dynProp(gB,s,b);
+      tP = subsasgn@dynProp(tP,s,b);
       
     else
       
-      gB = builtin('subsasgn',gB,s,b);
+      tP = builtin('subsasgn',tP,s,b);
       
     end
 

@@ -19,7 +19,7 @@ disp([h ' ' docmethods(inputname(1))])
 
 % empty grain boundary set 
 if isempty(tP)
-  disp('  grain boundary is empty!')
+  disp('  no tripel points in the list!')
   return
 end
 

@@ -10,6 +10,6 @@ function tP = subSet(tP,ind)
 %
 
 tP.V = tP.V(ind,:);
-tP.ebsdId = tP.ebsdId(ind,:);
+tP.boundaryId = tP.boundaryId(ind,:);
 tP.grainId = tP.grainId(ind,:);
 tP.phaseId = tP.phaseId(ind,:);

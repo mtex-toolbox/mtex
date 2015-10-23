@@ -117,6 +117,10 @@ classdef grain2d < phaseList & dynProp
     
     function grains = set.V(grains,V)
       grains.boundary.V = V;
+      
+      % update V in tripel points
+      tP = grains.tripelPoints;
+      grains.tripelPoints.V = V(tP.id,:);
     end
     
     function idV = get.idV(grains)
@@ -151,6 +155,10 @@ classdef grain2d < phaseList & dynProp
     
     function tP = get.tripelPoints(grains)
       tP = grains.boundary.tripelPoints;
+    end
+    
+    function grains = set.tripelPoints(grains,tP)
+      grains.boundary.tripelPoints = tP;
     end
     
   end
