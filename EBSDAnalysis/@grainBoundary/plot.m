@@ -1,8 +1,7 @@
 function [h,mP] = plot(gB,varargin)
 % plot grain boundaries
 %
-% The function plots grain boundaries where the boundary is determined by
-% the function <GrainSet.specialBoundary.html specialBoundary>
+% The function plots grain boundaries.
 %
 % Syntax
 %   plot(grains.boundary)
@@ -10,7 +9,8 @@ function [h,mP] = plot(gB,varargin)
 %   plot(gB('Forsterite','Forsterite'),gB('Forsterite','Forsterite').misorientation.angle)
 %
 % Input
-%  grains  - @grainBoundary
+%  grains - @grain2d
+%  gB     - @grainBoundary
 %  
 % Options
 %  linewidth

@@ -57,6 +57,7 @@ import_wizard
 % || <loadPoleFigure_philips.html **.txt*>        || Philips ASCII pole figure format.        ||
 % || <loadPoleFigure_beartex.html **.xpe, *.xpf*> || BearTex ASCII pole figure format.        ||
 % || <loadPoleFigure_slc.html **.slc*>            || SLC ASCII pole figure format.            ||
+% || <loadPoleFigure_uxd.html **.uxd*>            || Bruker UXD ASCII pole figure format.     ||
 % || <loadPoleFigure_xrd.html **.xrd, *.ras*>     || Bruker XRD ASCII pole figure format.     ||
 % || <loadPoleFigure_xrdml.html **.xrdml*>        || PANalytical XML data format.             ||
 % || <loadPoleFigure_aachen.html **.**>           || Aachen ASCII pole figure format.         ||
