@@ -3,6 +3,10 @@ function  [mori,hkl,omega,sigma] = CSL(sigma,varargin)
 %
 % Syntax
 %  q = CSL(sigma)
+%  q = CSL(sigma,CS)
+%
+% Input
+%  CS - @crystalSymmetry (default is cubic)
 %
 % Options
 %  delta    - search radius around angle or axis
