@@ -19,7 +19,7 @@
 % In order to demostrate the different projections we start by defining a
 % model ODF.
 
-cs = crystalSymmetry('-3m');
+cs = crystalSymmetry('321');
 odf = fibreODF(Miller(1,1,0,cs),zvector)
 
 
@@ -31,15 +31,16 @@ odf = fibreODF(Miller(1,1,0,cs),zvector)
 % general on the upper hemisphere and the lower hemisphere. By
 % default MTEX plots in this case both hemispheres. The upper on the
 % left hand side and the lower on the right hand side.
+% TODO: this is currently missing
 
-plotPDF(odf,Miller(1,1,0,cs))
+plotPDF(odf,Miller(1,1,0,cs),'minmax')
 
 %%
 %
 % MTEX allows also to plot only the upper or the lower hemisphere by
 % passing the options |upper| or |lower|.
 
-plotPDF(odf,Miller(1,1,0,cs),'lower')
+plotPDF(odf,Miller(1,1,0,cs),'lower','minmax')
 
 %%
 % Due to Friedels law meassured pole figures are a superposition of the
@@ -48,7 +49,7 @@ plotPDF(odf,Miller(1,1,0,cs),'lower')
 % upper and lower hemisphere one has to enforce <AxialDirectional.html
 % antipodal symmetry>. This is done by the option *antipodal*.
 
-plotPDF(odf,Miller(1,1,0,cs),'antipodal')
+plotPDF(odf,Miller(1,1,0,cs),'antipodal','minmax')
 
 
 %% Alignment of the Coordinate Axes
@@ -66,14 +67,11 @@ plotPDF(odf,Miller(1,1,0,cs),'antipodal')
 plotx2north
 
 plotPDF(odf,Miller(1,0,0,cs),'antipodal')
-annotate([xvector,yvector,zvector],'label',{'X','Y','Z'},'backgroundcolor','w');
 
 %%
 plotx2east
 
 plotPDF(odf,Miller(1,0,0,cs),'antipodal')
-annotate([xvector,yvector,zvector],'label',{'X','Y','Z'},'backgroundcolor','w');
-
 
 %% Equal Area Projection (Schmidt Projection)
 %
@@ -83,8 +81,6 @@ annotate([xvector,yvector,zvector],'label',{'X','Y','Z'},'backgroundcolor','w');
 % be set explicetly by the flags *earea* or *schmidt*.
 
 plotPDF(odf,Miller(1,0,0,cs),'antipodal')
-
-
 
 %% Equal Distance Projection
 %
@@ -96,7 +92,6 @@ plotPDF(odf,Miller(1,0,0,cs),'antipodal')
 cs = crystalSymmetry('m-3m');
 plotHKL(cs,'projection','edist','upper','grid_res',15*degree,'BackGroundColor','w')
 
-
 %% Stereographic Projection (Equal Angle Projection)
 %
 % Another famouse spherical projection is the stereographic projection
@@ -104,7 +99,6 @@ plotHKL(cs,'projection','edist','upper','grid_res',15*degree,'BackGroundColor','
 % can be chosen by setting the option *stereo* or *eangle*.
 
 plotHKL(cs,'projection','eangle','upper','grid_res',15*degree,'BackGroundColor','w')
-
 
 %% Plain Projection
 %
@@ -121,4 +115,4 @@ mtexColorMap white2black
 % MTEX also offers a three dimensional plot of pole figures which even
 % might be rotated freely in space
 
-plotPDF(odf,Miller(1,0,0,odf.CS),'3d')
+plotPDF(odf,Miller(1,1,0,odf.CS),'3d')
