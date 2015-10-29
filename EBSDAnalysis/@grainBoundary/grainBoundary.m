@@ -53,17 +53,17 @@ classdef grainBoundary < phaseList & dynProp
       
       % scale fid down to 1:length(gB)
       d = diff([0;fId]);      
-      fId = cumsum(d>0) + (d==0)*length(gB.F);
+      fId = cumsum(d>0) + (d==0)*size(gB.F,1);
             
-      gB.ebsdId = zeros(length(gB.F),2);
+      gB.ebsdId = zeros(size(gB.F,1),2);
       gB.ebsdId(fId) = eId;      
             
       % compute grainId
-      gB.grainId = zeros(length(gB.F),2);
+      gB.grainId = zeros(size(gB.F,1),2);
       gB.grainId(fId) = ebsd.grainId(eId);
       
       % compute phaseId
-      gB.phaseId = zeros(length(gB.F),2);
+      gB.phaseId = zeros(size(gB.F,1),2);
       isNotBoundary = gB.ebsdId>0;
       gB.phaseId(isNotBoundary) = ebsd.phaseId(gB.ebsdId(isNotBoundary));
       gB.phaseMap = ebsd.phaseMap;
@@ -77,7 +77,7 @@ classdef grainBoundary < phaseList & dynProp
       gB.grainId(doSort,:) = fliplr(gB.grainId(doSort,:));
       
       % compute misrotations
-      gB.misrotation = rotation(idquaternion(length(gB.F),1));
+      gB.misrotation = rotation(idquaternion(size(gB.F,1),1));
       isNotBoundary = all(gB.ebsdId,2);
       gB.misrotation(isNotBoundary) = ...
         inv(ebsd.rotations(gB.ebsdId(isNotBoundary,2))) ...
@@ -86,7 +86,9 @@ classdef grainBoundary < phaseList & dynProp
       % compute tripel points
       I_VF = gB.I_VF;
       I_VG = (I_VF * gB.I_FG)==2;
-      itP = full(sum(I_VG,2)==3);
+      % tripel points are those with exactly 3 neigbouring grains and 3
+      % boundary segments
+      itP = full(sum(I_VG,2)==3 & sum(I_VF,2)==3);
       [tpGrainId,~] = find(I_VG(itP,:).');
       tpGrainId = reshape(tpGrainId,3,[]).';      
       tpPhaseId = full(grainsPhaseId(tpGrainId));
@@ -94,7 +96,7 @@ classdef grainBoundary < phaseList & dynProp
       % compute ebsdId
       % first step: compute faces at the tripel point
       % clean up incidence matrix
-      I_FD(~any(I_FD,2),:) = [];
+      %I_FD(~any(I_FD,2),:) = [];
       % incidence matrix between tripel points and voronoi cells
       %I_TD = I_VF(itP,:) * I_FD;
       [tPBoundaryId,~] = find(I_VF(itP,:).');
