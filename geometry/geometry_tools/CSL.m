@@ -1,12 +1,11 @@
-function  [mori,hkl,omega,sigma] = CSL(sigma,varargin)
+function  [mori,hkl,omega,sigma] = CSL(sigma,CS,varargin)
 % coincidence site lattice misorientations for cubic symmetry
 %
 % Syntax
-%  q = CSL(sigma)
 %  q = CSL(sigma,CS)
 %
 % Input
-%  CS - @crystalSymmetry (default is cubic)
+%  CS - @crystalSymmetry
 %
 % Options
 %  delta    - search radius around angle or axis
@@ -16,16 +15,14 @@ function  [mori,hkl,omega,sigma] = CSL(sigma,varargin)
 %  o - @orientation
 %
 
-csl = generateCubicCSL(varargin{:});
-
-if nargin > 0
-  ndx = find( [csl.sigma] == sigma );
-else
-  ndx = 1:numel(csl);
+if nargin < 2 || ~isa(CS,'crystalSymmetry')
+  error('Starting with MTEX 4.2 the second argument to CSL should by crystal symmetry.')
 end
 
-cs = getClass(varargin,'symmetry',crystalSymmetry('cubic'));
-mori = orientation(cs,cs);
+csl = generateCubicCSL(varargin{:});
+ndx = find( [csl.sigma] == sigma );
+
+mori = orientation(CS,CS);
 hkl = zeros(0,3);
 omega = []; sigma = [];
 
@@ -33,11 +30,10 @@ for k = ndx
   hkl(end+1,:) = csl(k).axis;
   omega(end+1) = csl(k).angle;
   sigma(end+1) = csl(k).sigma;
-  mori(end+1) =  orientation('axis',vector3d(hkl(end,:)),'angle',omega(end),cs,cs);
+  mori(end+1) =  orientation('axis',vector3d(hkl(end,:)),'angle',omega(end),CS,CS);
 end
 
 mori = unique(mori);
-
 
 end
 
