@@ -2,7 +2,7 @@ function r = subsasgn(r,s,b)
 % overloads subsasgn
 
 if isempty(r)
-  r = b;
+  r = rotation(b);
   r.a = [];
   r.b = [];
   r.c = [];
