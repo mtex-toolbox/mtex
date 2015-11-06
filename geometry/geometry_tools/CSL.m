@@ -2,9 +2,10 @@ function  [mori,hkl,omega,sigma] = CSL(sigma,CS,varargin)
 % coincidence site lattice misorientations for cubic symmetry
 %
 % Syntax
-%  q = CSL(sigma,CS)
+%   q = CSL(sigma,CS)
 %
 % Input
+%  sigma - order of coincidence site lattice misorientation
 %  CS - @crystalSymmetry
 %
 % Options
@@ -30,7 +31,7 @@ for k = ndx
   hkl(end+1,:) = csl(k).axis;
   omega(end+1) = csl(k).angle;
   sigma(end+1) = csl(k).sigma;
-  mori(end+1) =  orientation('axis',vector3d(hkl(end,:)),'angle',omega(end),CS,CS);
+  mori(end+1) = orientation('axis',vector3d(hkl(end,:)),'angle',omega(end),CS,CS);
 end
 
 mori = unique(mori);

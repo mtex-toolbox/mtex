@@ -43,7 +43,7 @@ hold off
 gB = grains.boundary('iron','iron')
 
 % select CSL(3) grain boundaries
-gB3 = gB(angle(gB.misorientation,CSL(3)) < 3*degree);
+gB3 = gB(angle(gB.misorientation,CSL(3,ebsd.CS)) < 3*degree);
 
 % overlay CSL(3) grain boundaries with the existing plot
 hold on
@@ -67,10 +67,10 @@ hold off
 % with our plot.
 
 delta = 5*degree;
-gB5 = gB(gB.isTwinning(CSL(5),delta));
-gB7 = gB(gB.isTwinning(CSL(7),delta));
-gB9 = gB(gB.isTwinning(CSL(9),delta));
-gB11 = gB(gB.isTwinning(CSL(11),delta));
+gB5 = gB(gB.isTwinning(CSL(5,ebsd.CS),delta));
+gB7 = gB(gB.isTwinning(CSL(7,ebsd.CS),delta));
+gB9 = gB(gB.isTwinning(CSL(9,ebsd.CS),delta));
+gB11 = gB(gB.isTwinning(CSL(11,ebsd.CS),delta));
 
 hold on
 plot(gB5,'lineColor','b','linewidth',2,'DisplayName','CSL 5')
@@ -137,7 +137,7 @@ hold off
 
 % mark the CSL(3) misorientation
 hold on
-plot(CSL(3),'MarkerColor','r','DisplayName','CSL 3','MarkerSize',20)
+plot(CSL(3,ebsd.CS),'MarkerColor','r','DisplayName','CSL 3','MarkerSize',20)
 hold off
 
 %% Analyzing the misorientation distribution function
@@ -154,10 +154,10 @@ mdf = calcMDF(gB.misorientation,'halfwidth',2.5*degree,'bandwidth',54)
 
 plot(mdf,'axisAngle',(25:5:60)*degree,'colorRange',[0 15])
 
-annotate(CSL(3),'label','$CSL_3$','backgroundcolor','w')
-annotate(CSL(5),'label','$CSL_5$','backgroundcolor','w')
-annotate(CSL(7),'label','$CSL_7$','backgroundcolor','w')
-annotate(CSL(9),'label','$CSL_9$','backgroundcolor','w')
+annotate(CSL(3,ebsd.CS),'label','$CSL_3$','backgroundcolor','w')
+annotate(CSL(5,ebsd.CS),'label','$CSL_5$','backgroundcolor','w')
+annotate(CSL(7,ebsd.CS),'label','$CSL_7$','backgroundcolor','w')
+annotate(CSL(9,ebsd.CS),'label','$CSL_9$','backgroundcolor','w')
 
 drawNow(gcm)
 
@@ -169,9 +169,9 @@ mori = mdf.calcModes(2)
 %%
 % and their volumes in percent
 
-100 * volume(gB.misorientation,CSL(3),2*degree)
+100 * volume(gB.misorientation,CSL(3,ebsd.CS),2*degree)
 
-100 * volume(gB.misorientation,CSL(9),2*degree)
+100 * volume(gB.misorientation,CSL(9,ebsd.CS),2*degree)
 
 
 %%
