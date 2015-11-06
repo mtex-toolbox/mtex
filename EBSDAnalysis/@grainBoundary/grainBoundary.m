@@ -214,11 +214,17 @@ classdef grainBoundary < phaseList & dynProp
     
     function out = hasPhaseId(gB,phaseId,phaseId2)
       
+      if isempty(phaseId), out = false(size(gB)); return; end
+      
       if nargin == 2
         out = any(gB.phaseId == phaseId,2);
       
         % not indexed phase should include outer border as well
         if phaseId > 0 && ischar(gB.CSList{phaseId}), out = out | any(gB.phaseId == 0,2); end
+               
+      elseif isempty(phaseId2)
+        
+        out = false(size(gB));
         
       elseif phaseId == phaseId2
         
