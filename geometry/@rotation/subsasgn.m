@@ -1,8 +1,8 @@
 function r = subsasgn(r,s,b)
 % overloads subsasgn
 
-if isempty(r)
-  r = rotation(b);
+if isnumeric(r)
+  r = b;
   r.a = [];
   r.b = [];
   r.c = [];
@@ -40,8 +40,7 @@ else
         r.d = subsasgn(r.d,s(1),b.d);
         r.i = subsasgn(r.i,s(1),b.i);
       end
-    otherwise
-      
+    otherwise      
       r =  builtin('subsasgn',r,s,b);
   end      
 end
