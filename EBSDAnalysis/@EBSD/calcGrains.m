@@ -76,7 +76,7 @@ end
 % save 
 grains.prop.GOS = GOS;
 grains.prop.meanRotation = meanRotation;
-mis2mean = inv(rotation(q)) .* meanRotation(grainId(:));
+mis2mean = inv(rotation(q(:))) .* meanRotation(grainId(:));
 
 end
 

@@ -51,9 +51,9 @@ classdef EBSD < phaseList & dynProp & dynOption
       
       if nargin == 0, return; end            
       
-      ebsd.rotations = rotation(rot(:));
+      ebsd.rotations = rotation(rot);
       ebsd = ebsd.init(phases,CSList);      
-      ebsd.id = (1:length(phases)).';
+      ebsd.id = (1:numel(phases)).';
             
       % extract additional properties
       ebsd.prop = get_option(varargin,'options',struct);
