@@ -41,7 +41,7 @@ classdef meanFilter < EBSDFilter
         nanquaternion(drowL,size(q,2)+ncol)];
 
       % map quaternions into tangential space
-      tq = reshape(log(q),[size(q),3]);
+      tq = double(log(q));
       count = zeros(size(tqMean));
       
       % take the mean
