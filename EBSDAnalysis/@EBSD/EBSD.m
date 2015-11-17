@@ -39,7 +39,11 @@ classdef EBSD < phaseList & dynProp & dynOption
     orientations    % rotation including symmetry
     weights         %
     grainId         % id of the grain to which the EBSD measurement belongs to
-    mis2mean        % misorientation to the mean orientation of the corresponding grain    
+    mis2mean        % misorientation to the mean orientation of the corresponding grain
+    dx              % step size in x
+    dy              % step size in y
+    gradientX       % orientation gradient in x
+    gradientY       % orientation gradient in y
   end
   
   methods
@@ -59,7 +63,11 @@ classdef EBSD < phaseList & dynProp & dynOption
       ebsd.prop = get_option(varargin,'options',struct);
                   
       % get unit cell
-      ebsd.unitCell = get_option(varargin,'unitCell',[]);
+      if check_option(varargin,'uniCell')
+        ebsd.unitCell = get_option(varargin,'unitCell',[]);
+      else
+        ebsd.unitCell = calcUnitCell([ebsd.prop.x(:),ebsd.prop.y(:)]);
+      end
       
       % remove ignore phases
       if check_option(varargin,'ignorePhase')
@@ -140,6 +148,42 @@ classdef EBSD < phaseList & dynProp & dynOption
     
     function ebsd = set.weights(ebsd,weights)
       ebsd.prop.weights = weights;
+    end
+    
+    function dx = get.dx(ebsd)
+      uc = ebsd.unitCell;
+      if size(uc,1) == 4
+        dx = max(uc(:,1)) - min(uc(:,1));
+      elseif size(uc,1) == 6
+        dx = max(uc(:,1)) - min(uc(:,1));
+      else
+        dx = inf;
+      end
+    end
+    
+    function dy = get.dy(ebsd)
+      uc = ebsd.unitCell;
+      if size(uc,1) == 4
+        dy = max(uc(:,2)) - min(uc(:,2));
+      elseif size(uc,1) == 6
+        dy = max(uc(:,2)) - min(uc(:,2));
+      else
+        dy = inf;
+      end
+    end
+    
+    function gX = get.gradientX(ebsd)
+      ori = ebsd.orientations;
+      if min(size(ori)) <= 1
+        error('Gradient determination requires a regular grid')
+      end
+      
+      ori_ref = ori([2:end end-1],:);
+      gX = log(ori,ori_ref) ./ dx;
+      gX(end,:) = - gX(end,:);
+    end
+    
+    function gx = get.gradientY(ebsd)
     end
     
   end
