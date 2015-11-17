@@ -15,7 +15,8 @@ function f = eval(odf,g,varargin)
 % See also
 % kernel/sum_K kernel/K
 
-if isa(g,'orientation') && odf.CS ~= g.CS && odf.SS ~= g.SS
+if isa(g,'orientation') && (odf.CS.Laue ~= g.CS.Laue || ...
+    odf.SS.Laue ~= g.SS.Laue)
   warning('symmetry missmatch'); %#ok<WNTAG>
 end
 
