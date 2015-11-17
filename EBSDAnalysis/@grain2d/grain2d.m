@@ -7,7 +7,11 @@ classdef grain2d < phaseList & dynProp
     id=[]      % id of each grain    
     grainSize = [] % number of measurements per grain
   end
-    
+  
+  properties (Hidden = true)
+    inclusionId = [];
+  end
+  
   % general properties
   properties    
     boundary = grainBoundary % boundary of the grains
@@ -71,7 +75,7 @@ classdef grain2d < phaseList & dynProp
       grains.boundary.scanUnit = ebsd.scanUnit;
       grains.innerBoundary = grainBoundary(V,F,I_FDint,ebsd,grains.phaseId);
       
-      grains.poly = calcPolygons(I_FDext * I_DG,F,V);
+      [grains.poly, grains.inclusionId]  = calcPolygons(I_FDext * I_DG,F,V);
 
       
       function [I_FDext,I_FDint] = calcBoundary

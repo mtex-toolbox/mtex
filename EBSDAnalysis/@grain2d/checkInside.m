@@ -59,18 +59,14 @@ isInside = false(size(xy,1),length(grains));
 
 poly = grains.poly;
 V = grains.V;
+incl = grains.inclusionId;
 
 for i = 1:length(poly)
 
-  p = poly{i};
+  p = poly{i};  
+  if ignoreInklusions, p = p(1:end-incl(i)); end
   
-  if ignoreInklusions
-    firstloop = find(p(2:end)==p(1),1);
-    p = p(1:firstloop);
-  end
-  
-  Vx = V(p,1); Vy = V(p,2);
-  
+  Vx = V(p,1); Vy = V(p,2);  
   isInside(:,i) = inpolygon(xy(:,1),xy(:,2),Vx,Vy);
   
 end
