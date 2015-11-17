@@ -1,4 +1,4 @@
-function a = axis(o1,o2)
+function a = axis(o1,varargin)
 % rotational axis of an misorientation or two orientations
 %
 % Syntax
@@ -18,7 +18,10 @@ function a = axis(o1,o2)
 %   a = axis(inv(o2)*o1)  
 %
 %   % the misorientation axis with respect to csHex is computed by
-%   a = axis(inv(o1)*o2)  
+%   a = axis(inv(o1)*o2)
+%
+%   % compute the misorientation axis ignoring symmetry
+%   a = axis(inv(o1)*o2,'noSymmetry')
 %
 % Input
 %  mori,o1,o2 - @orientation
@@ -31,17 +34,10 @@ function a = axis(o1,o2)
 % orientation/angle
 
 
-if nargin == 1
-
-  % project to Fundamental region to get the axis with the smallest angle
-  o1 = project2FundamentalRegion(o1);
-  a = axis@quaternion(o1);
-
-  % add symmetry to axis
-  if isa(o1.SS,'crystalSymmetry'), a = Miller(a,o1.SS); end
-
-else
+if nargin >= 2 && isa(varargin{1},'quaternion')
   
+  o2 = varargin{1};
+    
   [l,d,r] = factor(o1.CS,o2.CS);
   l = l * d;
   % we are looking for l,r from L and R such that
@@ -73,6 +69,17 @@ else
   % now the misorientation axis is given by in specimen coordinates is
   % given by o2 * l(il) * q.axis or equivalently by  
   a = q2 .* r(irMax) .* axis@quaternion(q);
-  
-end
 
+else
+   
+  % project to Fundamental region to get the axis with the smallest angle
+  if ~check_option(varargin,'noSymmetry')
+    o1 = project2FundamentalRegion(o1);
+  end
+  
+  a = axis@quaternion(o1);
+
+  % add symmetry to axis
+  if isa(o1.SS,'crystalSymmetry'), a = Miller(a,o1.SS); end
+ 
+end

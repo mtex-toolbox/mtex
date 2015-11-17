@@ -1,14 +1,14 @@
 function omega = angle(q1,q2)
 % calcualtes the rotational angle between rotations q1 and q2
 %
-%% Syntax  
+% Syntax  
 %  omega = angle(q)
 %  omega = angle(q1,q2)
 %
-%% Input
+% Input
 %  q1, q2 - @quaternion
 % 
-%% Output
+% Output
 %  omega  - double
 
 if nargin == 2
