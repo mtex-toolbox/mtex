@@ -33,7 +33,10 @@ end
 res = get_option(varargin,'resolution',1*degree);
 
 [rhoMin,rhoMax] = rhoRange(sR);
-rho = linspace(rhoMin,rhoMax,round(1+(rhoMax-rhoMin)/res));
+rho = linspace(rhoMin(1),rhoMax(1),round(1+(rhoMax(1)-rhoMin(1))/res));
+for i = 2:length(rhoMin)
+  rho = [rho,nan,linspace(rhoMin(i),rhoMax(i),round(1+(rhoMax(i)-rhoMin(i))/res))]; %#ok<AGROW>
+end
 
 [thetaMin,thetaMax] = thetaRange(sR,rho);
 

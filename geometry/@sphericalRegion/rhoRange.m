@@ -30,7 +30,12 @@ end
 
 rho = sort(mod(rho,2*pi));
 
+% find all holes in the rho list
 ind = find(abs(diff(rho))>20*degree);
+
+% maybe there is also a hole in zero
+if rho(end)-rho(1)<340*degree, ind = [ind, length(rho)]; end
+
 
 if isempty(ind)
   
@@ -43,36 +48,10 @@ if isempty(ind)
   end
   
 else
-  rhoMin = rho(ind+1)-2*pi;
+  rhoMin = rho(mod(ind([end,1:end-1]),length(rho))+1);
   rhoMax = rho(ind);
+  
+  ind = rhoMin > rhoMax;
+  rhoMin(ind) = rhoMin(ind) - 2*pi;
+  
 end
-
-%   function [rhoMin,rhoMax] = rhoRange(sR)
-%       
-%       ind = angle(sR.N,zvector,'antipodal') > 1e-5;
-%       N = unique(sR.N(ind));
-%       
-%       if isempty(sR.N)
-%         rhoMin = 0;
-%         rhoMax = 2*pi;
-%       elseif length(N) == 1
-%         
-%         
-%       else
-%         
-%         if sR.isUpper && sR.isLower
-%           v = sR.restrict2Lower.vertices;
-%         else
-%           v = sR.vertices;
-%         end
-%         
-%         rhoMin = min(v.rho(~isnull(v.theta)));
-%         rhoMax = max(v.rho(~isnull(v.theta)));
-%                 
-%       end
-%       
-%       %TODO: we may need to interchange rhoMin and rhoMax
-%       
-%     end
-%     
-%   
