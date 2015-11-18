@@ -31,6 +31,16 @@
 % data set and setting up a proper analysis script. The finaly analysis
 % should, if possible, done with the entire data set.
 %
+% *New option to ignore symmetry*
+%
+% When computing the angle between crystal directions, the misorientation
+% angle between orientations and the misorientation axis symmetry can be
+% ignored with the flag |noSymmetry|
+%
+%   angle(Miller(1,0,0,cs),Miller(0,1,0,cs),'noSymmetry')
+%   angle(mori,'noSymmetry')
+%   axis(mori,'noSymmetry')
+%
 % *Axis distributions in specimen coordinates*
 %
 % In order to plot axis distributions in specimen coordinates you can now
