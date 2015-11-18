@@ -176,6 +176,12 @@ classdef vector3d < dynOption
     end
         
     function v = X(varargin)
+      % the vector (1,0,0)
+      %
+      % Syntax
+      %   x = vector3d.X % returns a single vector (1,0,0)
+      %   x = vector3d.X(3,1) % returns 3 vectors (1,0,0)
+      
       x = ones(varargin{:});
       v = vector3d(x,0,0);
     end

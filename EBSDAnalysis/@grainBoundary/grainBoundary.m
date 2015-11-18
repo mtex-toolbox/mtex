@@ -20,8 +20,9 @@ classdef grainBoundary < phaseList & dynProp
   
   % general properties
   properties
-    V = []          % vertices x,y coordinates        
+    V = []          % vertices x,y coordinates            
     scanUnit = 'um' % unit of the vertice coordinates
+    tripelPoints    % tripel points
   end
   
   properties (Dependent = true)
@@ -34,11 +35,11 @@ classdef grainBoundary < phaseList & dynProp
     segmentId      % connected component id
     segmentSize    % number of faces that form a segment
     x              % x coordinates of the vertices of the grains
-    y              % y coordinates of the vertices of the grains
+    y              % y coordinates of the vertices of the grains    
   end
   
   methods
-    function gB = grainBoundary(V,F,I_FD,ebsd)
+    function gB = grainBoundary(V,F,I_FD,ebsd,grainsPhaseId)
       
       if nargin == 0, return; end
       
@@ -52,17 +53,17 @@ classdef grainBoundary < phaseList & dynProp
       
       % scale fid down to 1:length(gB)
       d = diff([0;fId]);      
-      fId = cumsum(d>0) + (d==0)*length(gB.F);
+      fId = cumsum(d>0) + (d==0)*size(gB.F,1);
             
-      gB.ebsdId = zeros(length(gB.F),2);
+      gB.ebsdId = zeros(size(gB.F,1),2);
       gB.ebsdId(fId) = eId;      
             
       % compute grainId
-      gB.grainId = zeros(length(gB.F),2);
+      gB.grainId = zeros(size(gB.F,1),2);
       gB.grainId(fId) = ebsd.grainId(eId);
       
       % compute phaseId
-      gB.phaseId = zeros(length(gB.F),2);
+      gB.phaseId = zeros(size(gB.F,1),2);
       isNotBoundary = gB.ebsdId>0;
       gB.phaseId(isNotBoundary) = ebsd.phaseId(gB.ebsdId(isNotBoundary));
       gB.phaseMap = ebsd.phaseMap;
@@ -76,12 +77,34 @@ classdef grainBoundary < phaseList & dynProp
       gB.grainId(doSort,:) = fliplr(gB.grainId(doSort,:));
       
       % compute misrotations
-      gB.misrotation = rotation(idquaternion(length(gB.F),1));
+      gB.misrotation = rotation(idquaternion(size(gB.F,1),1));
       isNotBoundary = all(gB.ebsdId,2);
       gB.misrotation(isNotBoundary) = ...
         inv(ebsd.rotations(gB.ebsdId(isNotBoundary,2))) ...
         .* ebsd.rotations(gB.ebsdId(isNotBoundary,1));
-    
+      
+      % compute tripel points
+      I_VF = gB.I_VF;
+      I_VG = (I_VF * gB.I_FG)==2;
+      % tripel points are those with exactly 3 neigbouring grains and 3
+      % boundary segments
+      itP = full(sum(I_VG,2)==3 & sum(I_VF,2)==3);
+      [tpGrainId,~] = find(I_VG(itP,:).');
+      tpGrainId = reshape(tpGrainId,3,[]).';      
+      tpPhaseId = full(grainsPhaseId(tpGrainId));
+      
+      % compute ebsdId
+      % first step: compute faces at the tripel point
+      % clean up incidence matrix
+      %I_FD(~any(I_FD,2),:) = [];
+      % incidence matrix between tripel points and voronoi cells
+      %I_TD = I_VF(itP,:) * I_FD;
+      [tPBoundaryId,~] = find(I_VF(itP,:).');
+      tPBoundaryId = reshape(tPBoundaryId,3,[]).';
+      
+      gB.tripelPoints = tripelPointList(find(itP),gB.V(itP,:),...
+        tpGrainId,tPBoundaryId,tpPhaseId,gB.phaseMap,gB.CSList);
+      
     end
 
     function gB = cat(dim,varargin)
@@ -146,9 +169,13 @@ classdef grainBoundary < phaseList & dynProp
     end   
     
     function A_F = get.A_F(gB)
-      I_VF = gB.I_VF;           
-      A_F = I_VF.' * I_VF;
+      I_VF = gB.I_VF; %#ok<PROP>
+      A_F = I_VF.' * I_VF; %#ok<PROP>
     end
+    
+    %function tp = get.tripelPoints(gB)
+       
+    %end
     
     function segmentId = get.segmentId(gB)
       segmentId = connectedComponents(gB.A_F).';
@@ -187,11 +214,17 @@ classdef grainBoundary < phaseList & dynProp
     
     function out = hasPhaseId(gB,phaseId,phaseId2)
       
+      if isempty(phaseId), out = false(size(gB)); return; end
+      
       if nargin == 2
         out = any(gB.phaseId == phaseId,2);
       
         % not indexed phase should include outer border as well
         if phaseId > 0 && ischar(gB.CSList{phaseId}), out = out | any(gB.phaseId == 0,2); end
+               
+      elseif isempty(phaseId2)
+        
+        out = false(size(gB));
         
       elseif phaseId == phaseId2
         

@@ -1,9 +1,10 @@
-function isInside = checkInside( grains, xy )
+function isInside = checkInside(grains, xy, varargin)
 % check for points or grains to be inside a big grain
 %
 % Syntax
 %   isInside = checkInside(hostGrains, [x,y])
 %   isInside = checkInside(hostGrains, inclusionGrains)
+%   isInside = checkInside(hostGrains, ebsd)
 %
 % Input
 %  hostGrains      - @grain2d
@@ -13,6 +14,8 @@ function isInside = checkInside( grains, xy )
 % Output
 %  isInside - numInclusionGrains x numHostGrains matrix
 %
+% Options
+%
 % Example
 %  mtexdata small
 %  grains = calcGrains(ebsd('indexed'))
@@ -21,6 +24,7 @@ function isInside = checkInside( grains, xy )
 % See also
 % EBSD/findByLocation grain2d/findByOrientation
 
+ignoreInklusions = check_option(varargin,'ignoreInklusions');
 
 if isa(xy,'grain2d') 
   
@@ -31,6 +35,9 @@ if isa(xy,'grain2d')
   
   % a grain should not contain itself
   xy(ind,:) = NaN;
+  
+  ignoreInklusions = true;
+  
 elseif isa(xy,'EBSD')
   
   % extract unit cell
@@ -52,16 +59,14 @@ isInside = false(size(xy,1),length(grains));
 
 poly = grains.poly;
 V = grains.V;
+incl = grains.inclusionId;
 
 for i = 1:length(poly)
 
-  p = poly{i};
+  p = poly{i};  
+  if ignoreInklusions, p = p(1:end-incl(i)); end
   
-  firstloop = find(p(2:end)==p(1),1);
-  
-  p = p(1:firstloop);
-  Vx = V(p,1); Vy = V(p,2);
-  
+  Vx = V(p,1); Vy = V(p,2);  
   isInside(:,i) = inpolygon(xy(:,1),xy(:,2),Vx,Vy);
   
 end

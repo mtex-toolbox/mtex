@@ -18,34 +18,34 @@ pg = pointGroupList;
 pg = pg(s.id);
 
 % compute rotations
-switch pg.properId
-  case 1 % 1
+switch pg.LaueId
+  case 2 % 1
     rot = {rotation('Euler',0,0,0)};    
-  case 3 % 211
+  case 5 % 211
     rot = {symAxis(a,2)};
-  case 6 % 121
+  case 8 % 121
     rot = {symAxis(b,2)};
-  case 9 % 112
+  case 11 % 112
     rot = {symAxis(c,2)};    
-  case 12 % 222
+  case 16 % 222
     rot = {symAxis(a,2),symAxis(c,2)};
-  case 17 % 3
+  case 18 % 3
     rot = {symAxis(c,3)};
-  case 19 % 321
+  case 21 % 321
     rot = {symAxis(a1,2),symAxis(c,3)};
-  case 22 % 312
+  case 24 % 312
     rot = {symAxis(m,2),symAxis(c,3)};
-  case 25 % 4    
+  case 27 % 4    
     rot = {symAxis(c,4)};
-  case 28 % 4/mmm
+  case 32 % 4/mmm
     rot = {symAxis(a,2),symAxis(c,4)};
-  case 33 % 6
+  case 35 % 6
     rot = {symAxis(c,6)};
-  case 36 % 622
+  case 40 % 622
     rot = {symAxis(a,2),symAxis(c,6)};
-  case 41 % 23
+  case 42 % 23
     rot = {symAxis(lllaxis,3),symAxis(a,2),symAxis(c,2)};
-  case 43 % 432
+  case 45 % 432
     rot = {symAxis(lllaxis,3),symAxis(ll0axis,2),symAxis(c,4)};
 end
 

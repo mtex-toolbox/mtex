@@ -1,9 +1,11 @@
 function  peri = perimeter(grains,varargin)
-% calculates the perimeter of a grain without holes
+% calculates the perimeter of a grain without or without inclusions
 %
 % Syntax
 %
-% grains.perimeter
+%   grains.perimeter
+%   perimter(grains)
+%   perimter(grains,'withInclusions')
 %
 % Input
 %  grains - @grain2d
@@ -14,8 +16,15 @@ function  peri = perimeter(grains,varargin)
 % See also
 % grain2d/equivalentPerimeter
 
-% ignore holes
-poly = cellfun(@(x) x(1:(1+find(x(2:end) == x(1),1))),grains.poly,'uniformOutput',false);
+poly = grains.poly;
 
-peri =  cellfun(@(ind) sum(sqrt(sum(diff(grains.V(ind,:)).^2,2))),poly);
-  
+% remove inclusions
+if ~check_option(varargin,'withInclusion')
+  incl = grains.inclusionId;
+  for i = find(incl>0).'
+    poly{i} = poly{i}(1:end-incl(i));
+  end
+end
+
+V = grains.V;
+peri =  cellfun(@(ind) sum(sqrt(sum(diff(V(ind,:)).^2,2))),poly);

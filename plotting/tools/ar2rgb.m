@@ -1,4 +1,4 @@
-function rgb = ar2rgb(omega,radius,grayValue)
+function rgb = ar2rgb(omega,radius,grayValue,varargin)
 % compute rgb values from angle and radius
 
 L = (radius(:) - 0.5) .* grayValue(:) + 0.5;
@@ -10,22 +10,25 @@ S(isnan(S))=0;
 
 % the following lines correct for small yellow and cyan range in normal hsv
 % space
-z = linspace(0,1,1000);
+if ~check_option(varargin,'noHueCorrection')
+  
+  z = linspace(0,1,1000);
 
-r = 0;f = 0.5 + exp(- 200.*(mod(z-r+0.5,1)-0.5).^2);
-b = 0.6666;f = f + exp(- 200.*(mod(z-b+0.5,1)-0.5).^2);
-g = 0.3333;f = f + exp(- 200.*(mod(z-g+0.5,1)-0.5).^2);
-% some testing code for this correctiom
-%
-
-f = f./sum(f);
-f = cumsum(f);
-h = interp1(z,f,h);
-
+  r = 0;f = 0.5 + exp(- 200.*(mod(z-r+0.5,1)-0.5).^2);
+  b = 0.6666;f = f + exp(- 200.*(mod(z-b+0.5,1)-0.5).^2);
+  g = 0.3333;f = f + exp(- 200.*(mod(z-g+0.5,1)-0.5).^2);
+  
+  f = f./sum(f);
+  f = cumsum(f);
+  h = interp1(z,f,h);
+end
+  
 rgb = reshape(hsv2rgb(h,s,v),[],3);
 
 end
 
+% some testing code for this correctiom
+%
 % h = linspace(0,1);
 % s = ones(size(h));
 % v = ones(size(h));

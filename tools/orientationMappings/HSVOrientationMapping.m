@@ -18,8 +18,8 @@ classdef HSVOrientationMapping < orientationMapping
     colorPostRotation = rotation(idquaternion)
     colorStretching = 1;
     whiteCenter = vector3d(1,0,0)
-    grayValue = 0 % [0.2 0.5]
-    grayGradient = 1 % 0.5
+    grayValue = [0.2 0.5]
+    grayGradient = 0.5 % 0.25
     maxAngle = inf
     sR = sphericalRegion    
   end
@@ -138,15 +138,19 @@ classdef HSVOrientationMapping < orientationMapping
       %th = (th ./ pi) .* pi;
 
       % correct white -> color gradient
-      ind2 = th > pi/2;
-      ind = true(size(th));
-      th(ind) = ((2 * oM.grayGradient * th ./pi + ...
-        (1 - oM.grayGradient) * (1-cos(th(ind)))) ./ 2) .^ oM.colorStretching;
-      th(~ind) = th(~ind)./pi;      
+      ind = th > pi/2;
+      
+      % the white region
+      th(ind) = ((2 * oM.grayGradient(1) * th(ind) ./pi + ...
+        (1 - oM.grayGradient(1)) * (1-cos(th(ind)))) ./ 2) .^ oM.colorStretching;
+      
+      % the black region
+      th(~ind) = ((2 * oM.grayGradient(end) * th(~ind) ./pi + ...
+        (1 - oM.grayGradient(end)) * (1-cos(th(~ind)))) ./ 2) .^ oM.colorStretching;
       
       gray = th;
-      gray(ind2) = 1 - 2*oM.grayValue(1)*abs(gray(ind2) - 0.5);
-      gray(~ind2) = 1 - 2*oM.grayValue(end)*abs(gray(~ind2) - 0.5);
+      gray(ind) = 1 - 2*oM.grayValue(1)*abs(gray(ind) - 0.5);
+      gray(~ind) = 1 - 2*oM.grayValue(end)*abs(gray(~ind) - 0.5);
       
       gray = get_option(varargin,'grayValue',gray);
       

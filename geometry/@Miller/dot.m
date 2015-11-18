@@ -19,7 +19,10 @@ if ~isa(m1,'Miller') || ~isa(m2,'Miller') || m1.CS ~= m2.CS
   warning('Symmetry mismatch')
 end
 
-if check_option(varargin,'all')
+if check_option(varargin,'noSymmetry')
+  d = dot(vector3d(m1),vector3d(m2),varargin{:});
+  return
+elseif check_option(varargin,'all')
 
   if length(m1) == 1
     m1 = repmat(m1,size(m2));

@@ -1,6 +1,107 @@
 %% MTEX Changelog
 %
 %
+%% MTEX 4.2 - 11/2015
+%
+% MTEX 4.2 introduces basic functionality for tripel junction analysis in
+% grain maps.
+%
+% *Tripel points* 
+%
+% Tripel points are automatically computed during grain reconstruction and
+% can be accessed by
+%
+%   grains.tripelPoints
+%   grains.boundary.tripelPoints
+% 
+% More details on how to work with tripel points can be found
+% <TripelPoints.html here>.
+%
+% *large EBSD data sets* 
+%
+% Analyzing large EBSD data sets may be quite anoying due to memory
+% consumption and slow plottin. As a work around MTEX includes a new
+% function <EBSD.reduce.html reduce> which allows to reduce the data set to
+% each n-th pixel, i.e.,
+%
+%   ebsd_small = reduce(ebsd,2)
+%
+% contains only 25 percent of the data of the origina data set. This
+% functionality is assumed to be used for experimenting around with the
+% data set and setting up a proper analysis script. The finaly analysis
+% should, if possible, done with the entire data set.
+%
+% *New option to ignore symmetry*
+%
+% When computing the angle between crystal directions, the misorientation
+% angle between orientations and the misorientation axis symmetry can be
+% ignored with the flag |noSymmetry|
+%
+%   angle(Miller(1,0,0,cs),Miller(0,1,0,cs),'noSymmetry')
+%   angle(mori,'noSymmetry')
+%   axis(mori,'noSymmetry')
+%
+% *Axis distributions in specimen coordinates*
+%
+% In order to plot axis distributions in specimen coordinates you can now
+% do
+%
+%   [ori1,ori2] = calcMisorientation(ebsd('phaseName'))
+%   plotAxisDistribution(ori1,ori2,'contourf')
+%
+% or
+%
+%   ori = ebsd(grains.boundary('indexed').ebsdId).orientations
+%   plotAxisDistribution(ori(:,1),ori(:,2),'contourf')
+%
+% *New option to work around Matlab opengl bug*
+%
+% In <matlab:edit mtex_settings.m mtex_settings> there is a new option that
+% may help to work around the Matlab opengl bug. Switching it of may give
+% nicer graphics.
+% 
+%   setMTEXpref('openglBug',true)
+%
+% *CSL misorientations*
+%
+% The function <CSL.html CSL> requires now as a mandatory argument the
+% crystal symmetry of the phase, i.e.
+%
+%   CSL(3,crystalSymmetry('m-3m'))
+%
+% *Grain boundaries*
+%
+% Grain boundaries segments have a new option |midPoint| which may be used
+% for attaching a vector displaying the misorientation axis or some other
+% direction.
+%
+% *More ODF sections*
+%
+% * phi1
+% * Phi
+% * gamma
+% * omega
+%
+% Along with the old syntax there is now a new syntax that allow for more
+% fine control of the ODF secions.
+%
+%   oS = phi2Sections(odf.CS,odf.SS)
+%   oS.phi2 = [ 10*degree, 30*degree, 90*degree ];
+%
+%   plot(odf,oS)
+%  
+% *Ordering of crystal symmetries*
+%
+% One can now check whether a crystal symmetry |cs1| is a subgroup of
+% crystal symmetry |cs2| by
+%
+%   cs1 <= cs2
+%
+% Further, the largest proper subgroup of some crystal symmetry |cs| is now
+% accessable by
+%
+%  cs.properSubGroup
+%
 %% MTEX 4.1 - 09/2015
 %
 % MTEX 4.1 introduces new possibilities to the analysis of misorientations.
@@ -9,6 +110,7 @@
 % filters to smooth EBSD data.
 %
 % *Smoothing of EBSD Data*
+%
 % Smoothing of EBSD data might be necesarry if the orientation data are
 % corrupted by noise which influences the estimation of orientation
 % dependent properties like KAM or GND. The general syntax for smoothing

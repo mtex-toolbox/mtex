@@ -1,10 +1,19 @@
 function h = plotAxisDistribution(obj,varargin)
 % plot axis distribution
 %
+% Syntax
+%
+%   plotAxisDistribution(cs)        % random axis distribution
+%   plotAxisDistribution(cs1,cs2)   % random misorientation axis distribution
+%   plotAxisDistribution(mori)      % axes in crystal coordinates
+%   plotAxisDistribution(ori1,ori2) % axes in specimen coordinates
+%   plotAxisDistribution(odf)
+%   
 % Input
 %  odf - @ODF
-%  ori - @orientation
-%  cs1, cs2 - crystal symmetry
+%  mori - @misorientation
+%  ori1,ori2 - @orientation
+%  cs1, cs2 - @crystalSymmetry
 %
 % Options
 %  RESOLUTION - resolution of the plots
@@ -26,27 +35,29 @@ if isa(obj,'symmetry')
   else
     cs2 = specimenSymmetry;
   end
+elseif isa(obj,'orientation')
+  
+  if nargin > 1 && isa(varargin{1},'orientation')
+    % pairs of orientations given - axes in specimen coordinates
+    obj = axis(obj,varargin{1});
+  else
+    % misorientation given axis in crystal reference frame
+    obj = Miller(obj.axis,calcDisjoint(obj.CS,obj.SS,varargin{:}));
+  end
 else
   cs1 = obj.CS;
   cs2 = obj.SS;
 end
-cs1 = cs1.properGroup;
-cs2 = cs2.properGroup;
 
-dcs = disjoint(cs1,cs2);
-if check_option(varargin,'antipodal') || ...
-    ((isa(obj,'orientation') || isa(obj,'ODF')) && obj.antipodal)
-  dcs = dcs.Laue; 
-end
 
-if isa(obj,'quaternion') && ~isa(obj,'symmetry')
+if isa(obj,'vector3d')
 
-  axes = Miller(obj.axis,dcs);
-
-  h = plot(axes,'symmetrised','FundamentalRegion',varargin{:});    
+  h = plot(obj,'symmetrised','FundamentalRegion',varargin{:});    
   
 else
 
+  dcs = calcDisjoint(cs1,cs2,varargin{:});
+  
   % plotting grid
   sR = fundamentalSector(dcs,varargin{:});
   if isa(obj,'symmetry')
@@ -70,8 +81,20 @@ end
 
 if nargout == 0, clear h; end
 
+  function dcs = calcDisjoint(cs1,cs2,varargin)
+    
+    dcs = disjoint(cs1.properGroup,cs2.properGroup);
+    if check_option(varargin,'antipodal') || ...
+        ((isa(obj,'orientation') || isa(obj,'ODF')) && obj.antipodal)
+      dcs = dcs.Laue;
+    end
+  end
+
+
+end
 
 function d = pos(d)
 
 if min(d(:)) > -1e-5, d = max(d,0);end
 
+end

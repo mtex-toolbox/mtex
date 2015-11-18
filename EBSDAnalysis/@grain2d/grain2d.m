@@ -7,7 +7,11 @@ classdef grain2d < phaseList & dynProp
     id=[]      % id of each grain    
     grainSize = [] % number of measurements per grain
   end
-    
+  
+  properties (Hidden = true)
+    inclusionId = [];
+  end
+  
   % general properties
   properties    
     boundary = grainBoundary % boundary of the grains
@@ -19,9 +23,10 @@ classdef grain2d < phaseList & dynProp
     V                % vertices with x,y coordinates
     scanUnit         % unit of the vertice coordinates
     id2ind           % 
-    GOS              % intergranular average misorientation angle    
+    GOS              % intragranular average misorientation angle    
     x                % x coordinates of the vertices of the grains
     y                % y coordinates of the vertices of the grains
+    tripelPoints     % tripel points
   end
   
   properties (Dependent = true, Access = protected)
@@ -66,11 +71,11 @@ classdef grain2d < phaseList & dynProp
       grains.id = (1:numel(grains.phaseId)).';
       grains.grainSize = full(sum(I_DG,1)).';
                         
-      grains.boundary = grainBoundary(V,F,I_FDext,ebsd);
+      grains.boundary = grainBoundary(V,F,I_FDext,ebsd,grains.phaseId);
       grains.boundary.scanUnit = ebsd.scanUnit;
-      grains.innerBoundary = grainBoundary(V,F,I_FDint,ebsd);
+      grains.innerBoundary = grainBoundary(V,F,I_FDint,ebsd,grains.phaseId);
       
-      grains.poly = calcPolygons(I_FDext * I_DG,F,V);
+      [grains.poly, grains.inclusionId]  = calcPolygons(I_FDext * I_DG,F,V);
 
       
       function [I_FDext,I_FDint] = calcBoundary
@@ -116,6 +121,10 @@ classdef grain2d < phaseList & dynProp
     
     function grains = set.V(grains,V)
       grains.boundary.V = V;
+      
+      % update V in tripel points
+      tP = grains.tripelPoints;
+      grains.tripelPoints.V = V(tP.id,:);
     end
     
     function idV = get.idV(grains)
@@ -146,6 +155,14 @@ classdef grain2d < phaseList & dynProp
     
     function unit = get.scanUnit(grains)
       unit = grains.boundary.scanUnit;
+    end
+    
+    function tP = get.tripelPoints(grains)
+      tP = grains.boundary.tripelPoints;
+    end
+    
+    function grains = set.tripelPoints(grains,tP)
+      grains.boundary.tripelPoints = tP;
     end
     
   end

@@ -1,5 +1,5 @@
 function kam = KAM(ebsd,varargin)
-% intergranular average misorientation angle per orientation
+% intragranular average misorientation angle per orientation
 %
 % Syntax
 %

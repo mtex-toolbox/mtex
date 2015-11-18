@@ -1,28 +1,29 @@
 function tq = log(q,u)
-% quaternion to direction cosine matrix conversion
-% converts direction cosine matrix to quaternion
+% project a quaternion into the tangential space
 %
 % Syntax
-%   mat = matrix(q)
+%   v = log(q)       % tangential vector as vector3d
+%   v = log(q,q_ref) % tangential vector as vector3d
+%   M = logMat(q) % return tangential vector as (skew symmetric) matrix
 %
 % Input
 %  q - @quaternion
+%  q_ref - @quaternion
 %
 % Output
-%  mat - vector of matrixes
+%  v - @vector3d
 %
 % See also
-% mat2quat Euler axis2quat hr2quat
+% expquat 
 
-if nargin == 2
-  tq = reshape(vector3d(log(u'.*q)'),size(q));
-  return
-end
+% if reference point for tangential space is given - rotate
+if nargin == 2, q = u' .* q; end
 
+% the logarithm with respect to the identity 
 q = q .* sign(q.a);
 
 omega = 2 * acos(q.a);
 denum = sqrt(1-q.a.^2);
-omega(denum ~= 0) =  omega(denum ~= 0) ./ denum(denum ~= 0);
+omega(denum ~= 0) = omega(denum ~= 0) ./ denum(denum ~= 0);
 
-tq = [omega(:) .* q.b(:),omega(:) .* q.c(:),omega(:) .* q.d(:)];
+tq = omega .* vector3d( q.b, q.c, q.d );

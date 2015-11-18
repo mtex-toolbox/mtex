@@ -72,7 +72,6 @@ pf = correct(pf,'def',pf_def);
 % figure data. Next you can plot your data
 
 plot(pf)
-annotate([xvector,yvector,zvector],'label',{'X','Y','Z'},'backgroundColor','w')
 
 %%
 % Make sure that the Miller indices are correctly assigned to the pole

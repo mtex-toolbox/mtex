@@ -1,9 +1,10 @@
 function h = scatter(v,varargin)
 %
 % Syntax
-%   scatter(v)              %
-%   scatter(v,data)         %
-%   scatter(v,text)
+%   scatter(v)              % plot the directions v
+%   scatter(v,data)         % colorize directions according to data
+%   scatter(v,'label',text) % plot text below markers
+%   scatter(v,'label',text,'textaboveMarker') % plot text above markers
 %
 % Input
 %  v     - @vector3d
@@ -11,9 +12,9 @@ function h = scatter(v,varargin)
 %  rgb   - a list of rgb color values
 %
 % Options
-%  Marker            - 
-%  MarkerFaceColor   -
-%  MarkerEdgeColor   - 
+%  Marker            - 's','o','diamont','p'
+%  MarkerFaceColor   - 'r','g','w','k','b'
+%  MarkerEdgeColor   - 'r','g','w','k','b'
 %  MarkerColor       - shortcut for the above two
 %  MarkerSize        - size of the markers in pixel
 %  DynamicMarkerSize - scale marker size when plot is resized

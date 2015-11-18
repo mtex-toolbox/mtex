@@ -4,7 +4,7 @@ function obj = ensureCS(csNew,obj)
 csOld = obj.CS;
 
 % if equal, everythink is ok
-if csOld == csNew, return;end
+if csOld.Laue == csNew.Laue, return;end
 
 % check for compatibility
 axesOld = reshape(double(csOld.axes),3,3);

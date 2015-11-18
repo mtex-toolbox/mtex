@@ -56,7 +56,7 @@ plotPDF(odf,Miller(1,0,0,CS))
 %%
 % *ODF Arithmetics*
 
-0.2*odf1 + 0.3*odf2 + 0.5*odf3
+0.3*odf2 + 0.7*odf3
 
 rot = rotation('axis',yvector,'angle',90*degree);
 odf = rotate(odf,rot)

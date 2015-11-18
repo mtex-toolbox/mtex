@@ -3,7 +3,7 @@ function odf = calcBinghamODF(ori,varargin)
 %
 % *calcODF* is one of the core function of the MTEX toolbox.
 % It estimates an ODF from a set of individual crystal orientations by
-% [[EBSD2odf.html kernel,density estimation]].
+% <EBSD2odf.html kernel density estimation>.
 %
 % Input
 %  ori  - @orientation

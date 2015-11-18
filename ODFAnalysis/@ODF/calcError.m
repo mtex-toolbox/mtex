@@ -31,7 +31,7 @@ error(nargchk(2, inf, nargin))
 evaluated = ~check_option([{odf2} varargin],'evaluated');
 
 if evaluated
-  assert(odf1.CS == odf2.CS && odf1.SS == odf2.SS,...
+  assert(odf1.CS.Laue == odf2.CS.Laue && odf1.SS.Laue == odf2.SS.Laue,...
     'Input ODFs does not have same symmetry.');
 end
 

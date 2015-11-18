@@ -80,12 +80,15 @@ classdef sphericalRegion
     function rh = rhoMax(sR)
 
       [~,rh] = rhoRange(sR);
+      if length(rh) ~=1, rh = 2*pi; end
+      
       
     end
     
     function rh = rhoMin(sR)
 
       rh = rhoRange(sR);
+      if length(rh) ~=1, rh = 0; end
       
     end
     
@@ -93,7 +96,11 @@ classdef sphericalRegion
       
       [thetaMin, thetaMax] = thetaRange(sR);
       [rhoMin, rhoMax] = rhoRange(sR);
-      
+      if length(rhoMin) ~= 1      
+        rhoMin = 2*pi;
+        rhoMax = 2*pi;
+      end
+            
       bounds = [thetaMin, rhoMin, thetaMax, rhoMax];
       
     end

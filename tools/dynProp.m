@@ -152,7 +152,7 @@ classdef dynProp
       
       if ~isempty(fn) && length(dp.prop.(fn{1}))<=20
         
-        d = zeros(length(dp.prop.(fn{1})),0);
+        d = zeros(numel(dp.prop.(fn{1})),0);
         
         for i = 1:2:length(varargin)
           [propName,value] = prop2list(varargin{i:i+1});
@@ -179,6 +179,7 @@ classdef dynProp
           value = round([w1(:),w2(:),w3(:)]/degree);
         else
           prop = {prop};
+          value = value(:);
         end 
         
       end

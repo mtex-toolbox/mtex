@@ -18,9 +18,9 @@ function [h,mP] = plot(ebsd,varargin)
 %   mtexdata forsterite
 %   plot(ebsd)
 %
-%   plot(ebsd('Forsterite'))
+%   plot(ebsd('Forsterite'),ebsd('Forsterite').orientations)
 %
-%   plot(ebsd,ebsd.mad)
+%   plot(ebsd,ebsd.mad,'micronbar','off')
 %
 % See also
 % EBSD/plot

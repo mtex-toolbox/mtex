@@ -36,11 +36,6 @@ if isempty(mtexFig.children), return; end
 
 if check_option(varargin,'equal')
 
-  % ensure same scale in all plots
-  if ~equal(strcmp(get(mtexFig.cBarAxis,'zscale'),'log'),1)
-    error('You can not mix logarithmic and non logarithmic plots with equal colorrange')
-  end
-    
   % find maximum color range
   c = zeros(length(mtexFig.children),2);
   for i = 1:length(mtexFig.children)
@@ -48,40 +43,32 @@ if check_option(varargin,'equal')
   end
   mi = min(c,[],1);
   ma = max(c,[],1);
-  p = [mi(1),ma(2)];
+  limits = [mi(1),ma(2)];
 
 elseif check_option(varargin,'tight')  
   
-  p = 'auto';  
-  
+  set(mtexFig.children,'CLimMode','auto');
+  try
+    set(mtexFig.cBarAxis,'LimitsMode','auto');
+  catch
+    set(mtexFig.cBarAxis,'CLimMode','auto');
+  end
+  return
+    
 elseif length(varargin)>=1 && isa(varargin{1},'double') &&...
-    length(varargin{1})==2  
+    length(varargin{1})==2
+    
+  limits = varargin{1};
   
-  p = varargin{1};
-  
-  % logarithmic scale?
-  if any(strcmp(get(mtexFig.cBarAxis,'zscale'),'log')), p = log10(p);end
-         
 else
   
   error('First argument must either be the color range or the flag ''equal''');  
   
 end
 
-if exist('p','var')
-  
-  % set the caxis to all axes
-  for i = 1:numel(mtexFig.children)
-    caxis(mtexFig.children(i),p);
+set(mtexFig.children,'CLim',limits);
+  try
+    set(mtexFig.cBarAxis,'Limits',limits);    
+  catch
+    set(mtexFig.cBarAxis,'CLim',limits);
   end
-
-  % set the caxis to all colorbaraxes
-  for i = 1:numel(mtexFig.cBarAxis)
-    if strcmp(get(mtexFig.cBarAxis(i),'zscale'),'log')
-      caxis(mtexFig.cBarAxis(i),10.^p);
-    else
-      caxis(mtexFig.cBarAxis(i),p);
-    end
-  end
-  
-end

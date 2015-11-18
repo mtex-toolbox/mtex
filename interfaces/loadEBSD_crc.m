@@ -49,7 +49,9 @@ end
       
       if isfield(phase,'spacegroup') && phase.spacegroup>0
         Laue = {'spaceId',phase.spacegroup};
-      else
+      elseif ischar(phase.lauegroup)
+        Laue = ensurecell(phase.lauegroup);
+      else        
         LaueGroups =  {'-1','2/m','mmm','4/m','4/mmm','-3','-3m','6/m','6/mmm','m-3','m-3m'};
         Laue = LaueGroups(phase.lauegroup);
       end

@@ -1,7 +1,7 @@
 function r = subsasgn(r,s,b)
 % overloads subsasgn
 
-if isempty(r)
+if isnumeric(r)
   r = b;
   r.a = [];
   r.b = [];
@@ -40,8 +40,7 @@ else
         r.d = subsasgn(r.d,s(1),b.d);
         r.i = subsasgn(r.i,s(1),b.i);
       end
-    otherwise
-      
+    otherwise      
       r =  builtin('subsasgn',r,s,b);
   end      
 end
