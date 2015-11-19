@@ -1,5 +1,5 @@
-function [x,y,z] = allTripel(d)
-% all tripel of elements of x and y modulo permutation
+function [x,y,z] = allTriple(d)
+% all triple of elements of x and y modulo permutation
 %
 
 [x,y,z] = meshgrid(1:length(d));

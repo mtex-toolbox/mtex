@@ -1,7 +1,7 @@
 function tP = subsasgn(tP,s,b)
 % overloads subsasgn
 
-if ~isa(tP,'tripelPointList'), tP = b([]); end
+if ~isa(tP,'triplePointList'), tP = b([]); end
 
 switch s(1).type
   

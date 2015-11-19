@@ -8,7 +8,7 @@ function display(tP,varargin)
 % ---------------------------------
 
 disp(' ');
-h = doclink('tripelPointList_index','tripelPointList');
+h = doclink('triplePointList_index','triplePointList');
 
 if check_option(varargin,'vname')
   h = [get_option(varargin,'vname'), ' = ' h];
@@ -19,39 +19,39 @@ disp([h ' ' docmethods(inputname(1))])
 
 % empty grain boundary set 
 if isempty(tP)
-  disp('  no tripel points in the list!')
+  disp('  no triple points in the list!')
   return
 end
 
 disp(' ')
 
-tripel = allTripel(1:numel(tP.phaseMap));
+triple = allTriple(1:numel(tP.phaseMap));
 
 % ebsd.phaseMap
-matrix = cell(size(tripel,1),4);
+matrix = cell(size(triple,1),4);
 
 
-for ip = 1:size(tripel,1)
+for ip = 1:size(triple,1)
 
-  num(ip) = nnz(tP.hasPhaseId(tripel(ip,1),tripel(ip,2),tripel(ip,3))); %#ok<AGROW>
+  num(ip) = nnz(tP.hasPhaseId(triple(ip,1),triple(ip,2),triple(ip,3))); %#ok<AGROW>
   matrix{ip,1} = int2str(num(ip));
   
   % phases
-  if ischar(tP.CSList{tripel(ip,1)})
-    matrix{ip,2} = tP.CSList{tripel(ip,1)};
+  if ischar(tP.CSList{triple(ip,1)})
+    matrix{ip,2} = tP.CSList{triple(ip,1)};
   else
-    matrix{ip,2} = tP.CSList{tripel(ip,1)}.mineral;
+    matrix{ip,2} = tP.CSList{triple(ip,1)}.mineral;
   end
-  if ischar(tP.CSList{tripel(ip,2)})
-    matrix{ip,3} = tP.CSList{tripel(ip,2)};
+  if ischar(tP.CSList{triple(ip,2)})
+    matrix{ip,3} = tP.CSList{triple(ip,2)};
   else
-    matrix{ip,3} = tP.CSList{tripel(ip,2)}.mineral;
+    matrix{ip,3} = tP.CSList{triple(ip,2)}.mineral;
   end
   
-  if ischar(tP.CSList{tripel(ip,3)})
-    matrix{ip,4} = tP.CSList{tripel(ip,3)};
+  if ischar(tP.CSList{triple(ip,3)})
+    matrix{ip,4} = tP.CSList{triple(ip,3)};
   else
-    matrix{ip,4} = tP.CSList{tripel(ip,3)}.mineral;
+    matrix{ip,4} = tP.CSList{triple(ip,3)}.mineral;
   end
 
 end
