@@ -5,12 +5,12 @@ function h = plot(tP,varargin)
 % the function <GrainSet.specialBoundary.html specialBoundary>
 %
 % Syntax
-%   plot(grains.tripelPoints)
-%   plot(grains.tripelPoints,'color','r')
-%   plot(grains('Forsterite').tripelPoints,gB('Forsterite','Forsterite').misorientation.angle)
+%   plot(grains.triplePoints)
+%   plot(grains.triplePoints,'color','r')
+%   plot(grains('Forsterite').triplePoints,gB('Forsterite','Forsterite').misorientation.angle)
 %
 % Input
-%  tP  - @tripelPointList
+%  tP  - @triplePointList
 %  
 % Options
 %  linewidth

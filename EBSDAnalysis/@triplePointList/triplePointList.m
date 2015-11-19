@@ -1,4 +1,4 @@
-classdef tripelPointList < phaseList & dynProp
+classdef triplePointList < phaseList & dynProp
   % grainBoundary list of grain boundaries in 2-D
   %
   % grainBoundary is used to extract, analyze and visualize grain
@@ -25,7 +25,7 @@ classdef tripelPointList < phaseList & dynProp
   end
   
   methods
-    function tP = tripelPointList(id,V,grainId,boundaryId,phaseId,phaseMap,CSList)
+    function tP = triplePointList(id,V,grainId,boundaryId,phaseId,phaseMap,CSList)
       
       if nargin == 0, return; end
       

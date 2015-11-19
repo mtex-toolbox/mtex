@@ -22,7 +22,7 @@ classdef grainBoundary < phaseList & dynProp
   properties
     V = []          % vertices x,y coordinates            
     scanUnit = 'um' % unit of the vertice coordinates
-    tripelPoints    % tripel points
+    triplePoints    % triple points
   end
   
   properties (Dependent = true)
@@ -83,10 +83,10 @@ classdef grainBoundary < phaseList & dynProp
         inv(ebsd.rotations(gB.ebsdId(isNotBoundary,2))) ...
         .* ebsd.rotations(gB.ebsdId(isNotBoundary,1));
       
-      % compute tripel points
+      % compute triple points
       I_VF = gB.I_VF;
       I_VG = (I_VF * gB.I_FG)==2;
-      % tripel points are those with exactly 3 neigbouring grains and 3
+      % triple points are those with exactly 3 neigbouring grains and 3
       % boundary segments
       itP = full(sum(I_VG,2)==3 & sum(I_VF,2)==3);
       [tpGrainId,~] = find(I_VG(itP,:).');
@@ -94,15 +94,15 @@ classdef grainBoundary < phaseList & dynProp
       tpPhaseId = full(grainsPhaseId(tpGrainId));
       
       % compute ebsdId
-      % first step: compute faces at the tripel point
+      % first step: compute faces at the triple point
       % clean up incidence matrix
       %I_FD(~any(I_FD,2),:) = [];
-      % incidence matrix between tripel points and voronoi cells
+      % incidence matrix between triple points and voronoi cells
       %I_TD = I_VF(itP,:) * I_FD;
       [tPBoundaryId,~] = find(I_VF(itP,:).');
       tPBoundaryId = reshape(tPBoundaryId,3,[]).';
       
-      gB.tripelPoints = tripelPointList(find(itP),gB.V(itP,:),...
+      gB.triplePoints = triplePointList(find(itP),gB.V(itP,:),...
         tpGrainId,tPBoundaryId,tpPhaseId,gB.phaseMap,gB.CSList);
       
     end
@@ -173,7 +173,7 @@ classdef grainBoundary < phaseList & dynProp
       A_F = I_VF.' * I_VF; %#ok<PROP>
     end
     
-    %function tp = get.tripelPoints(gB)
+    %function tp = get.triplePoints(gB)
        
     %end
     
