@@ -5,5 +5,7 @@ ind = sR.alpha < -1+eps;
 sR.N(ind) = [];
 sR.alpha(ind) = [];
 
-[sR.N,ind] = unique(sR.N);
+[~,ind] = unique(sR.N);
+ind =sort(ind);
+sR.N = sR.N(ind);
 sR.alpha = sR.alpha(ind);

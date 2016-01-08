@@ -37,7 +37,8 @@ for j = 1:numel(sP)
   
   % set styles
   optiondraw(h(j),'LineStyle','none','Fill','on',varargin{:});
-
+  
+  uistack(sP(j).grid,'top')
 end
 
 if nargout == 0, clear h; end

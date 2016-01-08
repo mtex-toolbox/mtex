@@ -13,6 +13,7 @@ function [r,rho] = polarCoordinates(sR,v,center,varargin)
 % the radius
 % -------------------------------------------------------------------  
 
+v = vector3d(v);
 center = center.normalize;
 vxcenter = normalize(cross(v,center));
 
