@@ -90,3 +90,6 @@ for i = 1:numel(newInd)
   grains_merged.prop.meanRotation(newInd(i)) = rotation(...
     mean(orientation(grains.prop.meanRotation(ind),cs),'weights',grains.grainSize(ind)));
 end
+
+% update triple points
+grains_merged.boundary.triplePoints = grains_merged.boundary.calcTriplePoints(grains_merged.phaseId);
