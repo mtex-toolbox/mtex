@@ -23,7 +23,11 @@ xAxis = get_option(varargin,'xAxisDirection',xAxis);
 zAxis = get_option(varargin,'zAxisDirection',zAxis);
 
 % set camera according to projection
-el = (1-NWSE(xAxis))*90;
+if ischar(xAxis)
+  el = (1-NWSE(xAxis))*90;
+else
+  el = round(-xAxis / degree);
+end
 az = 90;
 if strcmpi(zAxis,'intoPlane')
   el = -el;
@@ -31,3 +35,7 @@ if strcmpi(zAxis,'intoPlane')
 end
 
 view(ax,el,az);
+%set(ax,'CameraTarget',[0,0,0])
+%set(ax,'CameraPosition',[0,0,10000])
+%set(ax,'CameraPositionMode','manual')
+%set(ax,'CameraUpVector',[sin((-el)*degree),cos((-el)*degree),0])

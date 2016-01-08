@@ -50,9 +50,9 @@ if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetris
 end
 
 if numel(varargin) > 0 && isnumeric(varargin{1})
-    varargin = [varargin(1),Miller.plotOptions,varargin(2:end)];
+    varargin = [varargin(1),m.plotOptions,varargin(2:end)];
 else
-   varargin = [Miller.plotOptions,varargin];
+   varargin = [m.plotOptions,varargin];
 end
 
 % plot them all with the same color

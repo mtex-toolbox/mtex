@@ -24,7 +24,7 @@ classdef HSVOrientationMapping < orientationMapping
     sR = sphericalRegion    
   end
 
-  properties (Access = private)
+  properties %(Access = private)
     refl = [];
     rot = rotation(idquaternion);
     alpha = 0;
@@ -59,18 +59,22 @@ classdef HSVOrientationMapping < orientationMapping
         case {3,6,9},                                            % 211, 121, 112
           pm = 1-2*isPerp(cs.subSet(2).axis,zvector);
           oM.refl = rotate(oM.sR.N,rotation('axis',cs.subSet(2).axis,'angle',pm*90*degree));
-        case {11,12}, oM.refl = rotate(oM.sR.N(2),-90*degree);   % 222
+        case {5,8,11,12}, oM.refl = rotate(oM.sR.N(2),-90*degree);   % 222
         case 17, oM.refl = -rotate(sum(oM.sR.N),90*degree);      % 3
-        case {18,19,22}, oM.refl = r30 .* oM.sR.N(end-1:end);    % -3, 321, 312
+        case {18,19,22}
+          oM.refl = r30 .* oM.sR.N(end-1:end);                   % -3, 321, 312
+          if angle(oM.refl(1),oM.refl(2)) < 1*degree
+            oM.refl = inv(r30) .* oM.sR.N(end-1:end);
+          end
         case {21,24}, oM.refl =  rotate(sum(oM.sR.N(2:3)),90*degree); % -31m, -3m1
         case {25,27,28}, oM.refl = rotate(oM.sR.N(end),-45*degree); % 4,4/m,422
         case 26, oM.refl = rotate(oM.sR.N(end),-90*degree);      % -4
         case 30, oM.refl = yvector;                              % -42m
         case 31, oM.refl = -rotate(oM.sR.N(2),45*degree);        % -4m2
         case {33,35,36}, oM.refl = rotate(oM.sR.N(end),-30*degree); % 6,6/m, 622,  
-        case 34, oM.refl = r30 .* oM.sR.N(end-1:end);            % -6
-        case {41,43}, oM.refl = vector3d(-1,0,1);                % 23, 432
-        case 42, oM.refl = vector3d(1,-1,0);                     % m-3  
+        case 34, oM.refl = rotate(oM.sR.N(end),-60*degree);            % -6
+        case {41}, oM.refl = vector3d(-1,0,1);                % 23, 432
+        case {42,43}, oM.refl = vector3d(1,-1,0);                     % m-3  
       end
       
       % reduce fundamental sector by reflectors for black-white colorcoding

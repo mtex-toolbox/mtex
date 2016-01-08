@@ -15,9 +15,9 @@ sR = region(m,varargin{:});
 if isfield(m.opt,'plot')
 
   if ~isempty(varargin) && isnumeric(varargin{1})
-    varargin = [varargin{1},Miller.plotOptions,varargin(2:end)];
+    varargin = [varargin{1},m.plotOptions,varargin(2:end)];
   else
-    varargin = [Miller.plotOptions,varargin];
+    varargin = [m.plotOptions,varargin];
   end
   
 else
@@ -26,9 +26,9 @@ else
   m = symmetrise(m,'skipAntipodal');
 
   if ~isempty(varargin) && isnumeric(varargin{1})
-    varargin = [{repmat(varargin{1}(:).',size(m,1),1)},Miller.plotOptions,varargin(2:end)];
+    varargin = [{repmat(varargin{1}(:).',size(m,1),1)},m.plotOptions,varargin(2:end)];
   else
-    varargin = [Miller.plotOptions,varargin];
+    varargin = [m.plotOptions,varargin];
   end
   m = m(:);
   

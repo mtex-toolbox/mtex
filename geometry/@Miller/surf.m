@@ -11,7 +11,7 @@ function h = surf(m,cdata,varargin)
 % See also
 %
 
-h = surf@vector3d(m,cdata,...
-  'xAxisDirection','east','zAxisDirection','outOfPlane',varargin{:});
+opt = m.plotOptions;
+h = surf@vector3d(m,cdata,opt{:},varargin{:});
 
 if nargout == 0, clear h; end

@@ -356,13 +356,17 @@ methods
       m.dispStyle = 'UVTW';
       
     end
+    
+    function opt = plotOptions(m)
+      % rotate the aAxis to the east
+      % but take only multiples of 90 degrees,
+      % since Matlab is not able to handle the values in between 
+      rho = -round(m.CS.aAxis.rho / 90 / degree)*90*degree;
+      opt = {'xAxisDirection',rho,'zAxisDirection','outOfPlane'};
+    end
 end
-        
-methods (Static = true)
-  function opt = plotOptions
-    opt = {'xAxisDirection','east','zAxisDirection','outOfPlane'};
-  end
-end
+  
+
 
 end
 

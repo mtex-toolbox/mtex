@@ -20,4 +20,8 @@ else
 end
 
 xDirs = {'east','north','west','south'};
-xDir = xDirs{1+mod(az/90,4)};
+try
+  xDir = xDirs{1+mod(az/90,4)};
+catch
+  xDir = -az * degree;
+end
