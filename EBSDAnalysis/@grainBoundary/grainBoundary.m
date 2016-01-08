@@ -22,7 +22,7 @@ classdef grainBoundary < phaseList & dynProp
   properties
     V = []          % vertices x,y coordinates            
     scanUnit = 'um' % unit of the vertice coordinates
-    tripelPoints    % tripel points
+    triplePoints    % triple points
   end
   
   properties (Dependent = true)
@@ -173,7 +173,7 @@ classdef grainBoundary < phaseList & dynProp
       A_F = I_VF.' * I_VF; %#ok<PROP>
     end
     
-    %function tp = get.tripelPoints(gB)
+    %function tp = get.triplePoints(gB)
        
     %end
     
