@@ -3,19 +3,19 @@
 %
 %% MTEX 4.2 - 11/2015
 %
-% MTEX 4.2 introduces basic functionality for tripel junction analysis in
+% MTEX 4.2 introduces basic functionality for triple junction analysis in
 % grain maps.
 %
-% *Tripel points* 
+% *Triple points* 
 %
-% Tripel points are automatically computed during grain reconstruction and
+% Triple points are automatically computed during grain reconstruction and
 % can be accessed by
 %
-%   grains.tripelPoints
-%   grains.boundary.tripelPoints
+%   grains.triplePoints
+%   grains.boundary.triplePoints
 % 
-% More details on how to work with tripel points can be found
-% <TripelPoints.html here>.
+% More details on how to work with triple points can be found
+% <TriplePoints.html here>.
 %
 % *large EBSD data sets* 
 %
