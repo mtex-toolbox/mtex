@@ -29,6 +29,7 @@ end
 
 % seach for existing bar plots and adjust bar center
 h = findobj(mtexFig.gca,'type','bar','-or','type','hgGroup');
+h = flipud(h(:));
 
 unit = '%';
 if ~isempty(h)
@@ -39,7 +40,7 @@ if ~isempty(h)
   bins = (bins(1:end-1) + bins(2:end))/2;
   density = ensurecell(get(h,'YData'));
   density = cellfun(@(x) x(:),density,'UniformOutput',false);
-  density = fliplr(horzcat(density{:}));
+  density = horzcat(density{:});
   lg = ensurecell(get(h,'DisplayName'));
 
   if strcmp(plotType,'bar')
@@ -103,7 +104,7 @@ else
 
   h = optiondraw(plot(omega/degree,faktor * max(0,density),...
     'parent',mtexFig.gca),'LineWidth',2,varargin{:});
-  
+
 end
   
 % finish  
