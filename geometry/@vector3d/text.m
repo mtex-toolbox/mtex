@@ -21,6 +21,7 @@ sP = newSphericalPlot(v,varargin{:},'hold');
 h = [];
 interpreter = getMTEXpref('textInterpreter');
 fs = getMTEXpref('FontSize');
+varargin = delete_option(varargin,'parent');
 
 if check_option(varargin,'textAboveMarker')
   aboveBelow = -5;
@@ -76,7 +77,7 @@ for j = 1:numel(sP)
     
     h = [h,optiondraw(text(x(i),y(i),s,'interpreter',interpreter,...
       'HorizontalAlignment','center','VerticalAlignment','middle',...
-      tag{:},'margin',0.001,'parent',sP(j).ax),'FontSize',fs,varargin{2:end})]; %#ok<AGROW>
+      tag{:},'margin',0.001,'parent',sP(j).hgt),'FontSize',fs,varargin{2:end})]; %#ok<AGROW>
     
   end
 

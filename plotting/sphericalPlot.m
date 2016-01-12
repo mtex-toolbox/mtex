@@ -7,7 +7,8 @@ classdef sphericalPlot < handle
     bounds   %
     grid     %
     ticks    %
-    ax       %
+    ax       % axis
+    hgt      % hgtransform
     parent   % the figure that contains the spherical plot
     TL       %
     TR       %
@@ -36,6 +37,8 @@ classdef sphericalPlot < handle
       end
       
       sP.ax = ax;
+      sP.hgt = hgtransform('parent',ax);
+      set(sP.hgt,'Matrix',makehgtform('zrotate',30*degree));
       sP.parent = get(ax,'parent');
       sP.proj = proj;
       sP.dispMinMax = check_option(varargin,'minmax');
@@ -64,7 +67,8 @@ classdef sphericalPlot < handle
         sP.updateBounds;
 
         set(ax,'XTick',[],'YTick',[]);
-        axis(ax,'off');            
+        axis(ax,'off');
+
         if ~check_option(varargin,'grid')
           set(sP.grid,'visible','off');
         end
@@ -85,6 +89,7 @@ classdef sphericalPlot < handle
       
       % set view point
       setCamera(ax,'default',varargin{:});
+      
       
     end
 
@@ -175,21 +180,25 @@ classdef sphericalPlot < handle
     function doGridInFront(sP)
       
       if ~isempty(sP.grid)
-        childs = allchild(sP.ax);
+        childs = allchild(sP.hgt);
   
         isgrid = ismember(childs,[sP.grid(:);sP.boundary(:)]);
         istext = strcmp(get(childs,'type'),'text');
   
-        set(sP.ax,'Children',[childs(istext); sP.boundary(:); sP.grid(:);childs(~isgrid & ~istext)]);
+        set(sP.hgt,'Children',[childs(istext); sP.boundary(:); sP.grid(:);childs(~isgrid & ~istext)]);
       end
     end
     
     
-    function updateBounds(sP)
+    function updateBounds(sP)      
       % compute bounding box
+
       x = ensurecell(get(sP.boundary,'xData')); x = [x{:}];
       y = ensurecell(get(sP.boundary,'yData')); y = [y{:}];
-      sP.bounds = [min(x(:)),min(y(:)),max(x(:)),max(y(:))];
+      M = get(sP.hgt,'Matrix');
+      xy = M(1:2,1:2) * [x;y];
+      sP.bounds = [min(xy(1,:)),min(xy(2,:)),max(xy(1,:)),max(xy(2,:))];
+      
     end
     
   end
@@ -245,7 +254,7 @@ classdef sphericalPlot < handle
       [x,y] = project(sP.proj,v.');
 
       % grid
-      sP.grid = [sP.grid(:);line(x,y,'parent',sP.ax,...
+      sP.grid = [sP.grid(:);line(x,y,'parent',sP.hgt,...
         'handlevisibility','off','color',[.8 .8 .8])];
       
     end
@@ -259,7 +268,7 @@ classdef sphericalPlot < handle
       [dx,dy] = sP.proj.project(v);
 
       % plot
-      sP.grid(end+1) = line(dx,dy,'parent',sP.ax,...
+      sP.grid(end+1) = line(dx,dy,'parent',sP.hgt,...
         'handlevisibility','off','color',[.8 .8 .8]);
 
     end    

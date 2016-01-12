@@ -34,7 +34,7 @@ if strcmpi(zAxis,'intoPlane')
   az = -az;
 end
 
-view(ax,el,az);
+%view(ax,el,az);
 %set(ax,'CameraTarget',[0,0,0])
 %set(ax,'CameraPosition',[0,0,10000])
 %set(ax,'CameraPositionMode','manual')
