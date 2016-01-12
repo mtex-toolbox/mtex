@@ -361,7 +361,8 @@ methods
       % rotate the aAxis to the east
       % but take only multiples of 90 degrees,
       % since Matlab is not able to handle the values in between 
-      rho = -round(m.CS.aAxis.rho / 90 / degree)*90*degree;
+      %rho = -fix(m.CS.aAxis.rho / 90 / degree)*90*degree;
+      rho = -m.CS.aAxis.rho;
       opt = {'xAxisDirection',rho,'zAxisDirection','outOfPlane'};
     end
 end
