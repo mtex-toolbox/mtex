@@ -63,7 +63,8 @@ for j = 1:numel(sP)
 
   % number of contour lines
   contours = get_option(varargin,'contours',50);
-
+  contours = get_option(varargin,{'contourf','contour'},contours,'double');
+  
   % specify contourlines explicitely
   if length(contours) == 1
     contours = linspace(colorRange(1),colorRange(2),contours);
