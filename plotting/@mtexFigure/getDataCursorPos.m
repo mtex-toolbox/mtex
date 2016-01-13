@@ -21,6 +21,12 @@ end
 % convert pos to vector3d for spherical plots
 ax = get(target,'Parent');
 
+if ~isgraphics(ax,'axes')
+  M = get(ax,'matrix');
+  pos = M(1:2,1:2) * pos(1:2).';
+  ax = get(ax,'parent');
+end
+
 % get value
 zd = get(target,'zdata');
 xd = get(target,'xdata');

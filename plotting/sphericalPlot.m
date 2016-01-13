@@ -38,7 +38,10 @@ classdef sphericalPlot < handle
       
       sP.ax = ax;
       sP.hgt = hgtransform('parent',ax);
-      set(sP.hgt,'Matrix',makehgtform('zrotate',30*degree));
+      
+      % set view point
+      setCamera(sP.hgt,'default',varargin{:});
+      
       sP.parent = get(ax,'parent');
       sP.proj = proj;
       sP.dispMinMax = check_option(varargin,'minmax');
@@ -86,11 +89,7 @@ classdef sphericalPlot < handle
       
       set(ax,'DataAspectRatio',[1 1 1],'XLim',...
         sP.bounds([1,3]),'YLim',sP.bounds([2,4]));
-      
-      % set view point
-      setCamera(ax,'default',varargin{:});
-      
-      
+            
     end
 
     function updateMinMax(sP,data)
