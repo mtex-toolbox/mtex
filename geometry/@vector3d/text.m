@@ -50,6 +50,9 @@ for j = 1:numel(sP)
     end
 
   end
+
+  % 
+  M = get(sP(j).hgt,'matrix');
   
   % print labels  
   for i = 1:length(strings)
@@ -64,9 +67,13 @@ for j = 1:numel(sP)
     end
 
     if check_option(varargin,'addMarkerSpacing'),
-      tag = {'UserData',[x(i),y(i)],'tag'};
       
-      if y(i) > mean(sP(j).bounds([2 4])) + 0.1 + aboveBelow
+      xy = [x(i),y(i)];
+      tag = {'UserData',xy,'tag'};
+      
+      xy = M(1:2,1:2) *  xy.';
+      
+      if xy(2) > mean(sP(j).bounds([2 4])) + 0.1 + aboveBelow
         tag = [tag,'setAboveMarker'];
       else        
         tag = [tag,'setBelowMarker'];
