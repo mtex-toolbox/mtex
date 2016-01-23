@@ -3,11 +3,11 @@ function ori = discreteSample(odf,npoints,varargin)
 %
 %
 
-ori = orientation.id(npoints,1,odf.CS,odf.SS);
+q = quaternion.id(npoints,1);
 
 % which component
 if numel(odf.weights) == 1
-  icmp = ones(size(ori));
+  icmp = ones(size(q));
 else
   icmp = discretesample(odf.weights,npoints);
 end
@@ -15,7 +15,13 @@ end
 % compute discrete sample for each component seperately
 for ic = 1:length(odf.components)
   
-  ori(icmp == ic) = discreteSample(odf.components{ic},sum(icmp==ic),varargin{:});
+  q(icmp == ic) = discreteSample(odf.components{ic},sum(icmp==ic),varargin{:});
   
 end
-  
+
+cs = odf.CS.properGroup;
+ss = odf.SS.properGroup;
+ics = discretesample(length(cs),npoints,1);
+iss = discretesample(length(ss),npoints,1);
+
+ori = orientation(ss(iss(:)) .* q .* cs(ics(:)),odf.CS,odf.SS);
