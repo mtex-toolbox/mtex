@@ -1,13 +1,13 @@
 function s = hms2point(s)
 % convert Herman – Mauguin (International) Symbol to point group
 %
-%% Input
+% Input
 %  s - Herman – Mauguin (International) space group symbol
 %
-%% Output
+% Output
 %  s - international point group symbol
 %
-%% See also
+% See also
 %
 
 % ignore first letter
