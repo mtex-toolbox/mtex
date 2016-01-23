@@ -64,6 +64,7 @@ end
 function c_hat = gcA2fourier(g,c,A)
 
 % run NFSOFT
+if length(A)< 3, A = [A;0]; end
 f = call_extern('odf2fc','EXTERN',g,c,A);
       
 % extract result
