@@ -67,4 +67,9 @@ disp(' ');
 disp(char(dynProp(ebsd.prop),'Id',ebsd.id,'Phase',ebsd.phase,...
   'orientation',ebsd.rotations));
 disp([' Scan unit : ',ebsd.scanUnit]);
+
+if min(ebsd.size) > 1
+  disp([' Grid size : ',size2str(ebsd)]);
+end
+
 disp(' ');

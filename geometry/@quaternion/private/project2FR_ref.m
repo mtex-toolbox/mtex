@@ -15,6 +15,7 @@ function q = project2FR_ref(q,qCS,q_ref)
 %
 
 q = reshape(q,[],1);
+q_ref = reshape(q_ref,[],1);
 
 % compute distance to reference orientation
 co2 = abs(dot(q,q_ref));

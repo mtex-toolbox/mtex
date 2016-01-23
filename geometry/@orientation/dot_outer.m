@@ -27,7 +27,7 @@ if l1 * l2 == 0, d = []; return; end
 
 % maybe we can shrink down everything to quaternion
 if cs.isLaue || ss.isLaue || (cs.isProper && ss.isProper ...
-    && all(o1.i == o1.i(1)) && all(o2.i == o1.i(1)))
+    && all(o1.i(:) == o1.i(1)) && all(o2.i(:) == o1.i(1)))
 
   cs = cs.properGroup; ss = ss.properGroup;
   

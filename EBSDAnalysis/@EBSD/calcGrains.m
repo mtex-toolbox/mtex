@@ -75,8 +75,8 @@ end
 
 % save 
 grains.prop.GOS = GOS;
-grains.prop.meanRotation = meanRotation;
-mis2mean = inv(rotation(q(:))) .* meanRotation(grainId(:));
+grains.prop.meanRotation = reshape(meanRotation,[],1);
+mis2mean = inv(rotation(q(:))) .* grains.prop.meanRotation(grainId(:));
 
 end
 

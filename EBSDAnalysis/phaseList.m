@@ -273,7 +273,9 @@ classdef phaseList
     function id = checkSinglePhase(pL)
       % ensure single phase
       
-      id = unique(pL.phaseId,'rows');
+      phaseId = pL.phaseId; %#ok<*PROP>
+      phaseId = phaseId(~any(isnan(pL.phaseId),2),:);
+      id = unique(phaseId,'rows');
                            
       if numel(id)>size(pL.phaseId,2)     
               

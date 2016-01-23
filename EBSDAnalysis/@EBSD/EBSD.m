@@ -40,10 +40,8 @@ classdef EBSD < phaseList & dynProp & dynOption
     weights         %
     grainId         % id of the grain to which the EBSD measurement belongs to
     mis2mean        % misorientation to the mean orientation of the corresponding grain
-    dx              % step size in x
-    dy              % step size in y
-    gradientX       % orientation gradient in x
-    gradientY       % orientation gradient in y
+%    dx              % step size in x
+%    dy              % step size in y
   end
   
   methods
@@ -54,6 +52,21 @@ classdef EBSD < phaseList & dynProp & dynOption
       %   EBSD(rot,phases,CSList)
       
       if nargin == 0, return; end            
+      
+      % copy constructor
+      if isa(rot,'EBSD')
+        ebsd.id = rot.id;
+        ebsd.rotations = rot.rotations;
+        ebsd.phaseId = rot.phaseId;
+        ebsd.phaseMap = rot.phaseMap;
+        ebsd.CSList = rot.CSList;
+        ebsd.unitCell = rot.unitCell;
+        ebsd.scanUnit = rot.scanUnit;
+        ebsd.A_D = rot.A_D;
+        ebsd.prop = rot.prop;
+        return
+      end
+      
       
       ebsd.rotations = rotation(rot);
       ebsd = ebsd.init(phases,CSList);      
@@ -116,7 +129,7 @@ classdef EBSD < phaseList & dynProp & dynOption
     
     function ebsd = set.grainId(ebsd,grainId)
       if numel(grainId) == length(ebsd)
-        ebsd.prop.grainId = grainId(:);
+        ebsd.prop.grainId = reshape(grainId,size(ebsd.id));
       elseif numel(grainId) == nnz(ebsd.isIndexed)
         ebsd.prop.grainId = zeros(length(ebsd),1);
         ebsd.prop.grainId(ebsd.isIndexed) = grainId;
@@ -150,41 +163,27 @@ classdef EBSD < phaseList & dynProp & dynOption
       ebsd.prop.weights = weights;
     end
     
-    function dx = get.dx(ebsd)
-      uc = ebsd.unitCell;
-      if size(uc,1) == 4
-        dx = max(uc(:,1)) - min(uc(:,1));
-      elseif size(uc,1) == 6
-        dx = max(uc(:,1)) - min(uc(:,1));
-      else
-        dx = inf;
-      end
-    end
-    
-    function dy = get.dy(ebsd)
-      uc = ebsd.unitCell;
-      if size(uc,1) == 4
-        dy = max(uc(:,2)) - min(uc(:,2));
-      elseif size(uc,1) == 6
-        dy = max(uc(:,2)) - min(uc(:,2));
-      else
-        dy = inf;
-      end
-    end
-    
-    function gX = get.gradientX(ebsd)
-      ori = ebsd.orientations;
-      if min(size(ori)) <= 1
-        error('Gradient determination requires a regular grid')
-      end
-      
-      ori_ref = ori([2:end end-1],:);
-      gX = log(ori,ori_ref) ./ dx;
-      gX(end,:) = - gX(end,:);
-    end
-    
-    function gx = get.gradientY(ebsd)
-    end
+%     function dx = get.dx(ebsd)
+%       uc = ebsd.unitCell;
+%       if size(uc,1) == 4
+%         dx = max(uc(:,1)) - min(uc(:,1));
+%       elseif size(uc,1) == 6
+%         dx = max(uc(:,1)) - min(uc(:,1));
+%       else
+%         dx = inf;
+%       end
+%     end
+%     
+%     function dy = get.dy(ebsd)
+%       uc = ebsd.unitCell;
+%       if size(uc,1) == 4
+%         dy = max(uc(:,2)) - min(uc(:,2));
+%       elseif size(uc,1) == 6
+%         dy = max(uc(:,2)) - min(uc(:,2));
+%       else
+%         dy = inf;
+%       end
+%     end
     
   end
       
