@@ -29,7 +29,7 @@ for im = 1:size(mOld,2)
   
   mNew = mOld(:,im) / mMax(im) * (1:maxHKL);  
   
-  e = 1e-7*round(1e7 * sum(mNew - round(mNew)).^2./sum(mNew.^2));
+  e = 1e-7*round(1e7 * sum((mNew - round(mNew)).^2)./sum(mNew.^2));
     
   [minE,n] = min(e);
   
