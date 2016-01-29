@@ -13,8 +13,11 @@ function isInside = checkInside(grains, xy, varargin)
 %
 % Output
 %  isInside - numInclusionGrains x numHostGrains matrix
+%  isInside - numEBSD x numHostGrains matrix
+%  isInside - numXY x numHostGrains matrix
 %
-% Options
+% Note, for an EBSD pixel to be inside a grain it has to be completely
+% inside the grain. Pixels at the boundary may belong to no grain.
 %
 % Example
 %  mtexdata small
@@ -50,7 +53,7 @@ elseif isa(xy,'EBSD')
   for i = 2:size(uc,1)
     isInside = isInside & grains.checkInside(xy+repmat(uc(i,:),size(xy,1),1));
   end
-  isInside = any(isInside,2);
+  
   return
   
 end
