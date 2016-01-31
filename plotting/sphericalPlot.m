@@ -58,17 +58,13 @@ classdef sphericalPlot < handle
       else
         
         % plot boundary
-        sP.boundary = sP.sphericalRegion.plot('parent',ax);
-                
+        sP.boundary = sP.sphericalRegion.plot('parent',ax);                
         try sP.plotPolarGrid(varargin{:});end
+        
+        sP.updateBounds;
 
         set(ax,'XTick',[],'YTick',[]);
-        axis(ax,'off');
-    
-        % compute bounding box
-        x = ensurecell(get(sP.boundary,'xData')); x = [x{:}];
-        y = ensurecell(get(sP.boundary,'yData')); y = [y{:}];
-        sP.bounds = [min(x(:)),min(y(:)),max(x(:)),max(y(:))];
+        axis(ax,'off');            
         if ~check_option(varargin,'grid')
           set(sP.grid,'visible','off');
         end
@@ -186,7 +182,16 @@ classdef sphericalPlot < handle
   
         set(sP.ax,'Children',[childs(istext); sP.boundary(:); sP.grid(:);childs(~isgrid & ~istext)]);
       end
-    end    
+    end
+    
+    
+    function updateBounds(sP)
+      % compute bounding box
+      x = ensurecell(get(sP.boundary,'xData')); x = [x{:}];
+      y = ensurecell(get(sP.boundary,'yData')); y = [y{:}];
+      sP.bounds = [min(x(:)),min(y(:)),max(x(:)),max(y(:))];
+    end
+    
   end
   
   methods (Access = private)
@@ -257,7 +262,7 @@ classdef sphericalPlot < handle
       sP.grid(end+1) = line(dx,dy,'parent',sP.ax,...
         'handlevisibility','off','color',[.8 .8 .8]);
 
-    end
+    end    
     
   end
 end
