@@ -24,7 +24,7 @@ if nargin == 2
 
 else
   
-  if isa(CS2,'symmetry')
+  if isa(CS2,'symmetry') && length(CS2) > 1
   
     if nargin > 3 && isa(varargin{1},'quaternion')
   
@@ -37,7 +37,7 @@ else
     end
   else
     
-    q = project2FR_ref(q,CS1,CS2);
+    q = project2FR_ref(q,CS1,quaternion(CS2));
     
   end
   
