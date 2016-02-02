@@ -26,6 +26,7 @@ function h = scatter(v,varargin)
 
 % initialize spherical plots
 sP = newSphericalPlot(v,varargin{:});
+varargin = delete_option(varargin,'parent');
 
 h = [];
 

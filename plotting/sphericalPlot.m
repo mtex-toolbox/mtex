@@ -36,12 +36,7 @@ classdef sphericalPlot < handle
         return
       end
       
-      sP.ax = ax;
-      sP.hgt = hgtransform('parent',ax);
-      
-      % set view point
-      setCamera(sP.hgt,'default',varargin{:});
-      
+      sP.ax = ax;    
       sP.parent = get(ax,'parent');
       sP.proj = proj;
       sP.dispMinMax = check_option(varargin,'minmax');
@@ -51,23 +46,26 @@ classdef sphericalPlot < handle
       washold = getHoldState(ax);
             
       if isa(sP.proj,'plainProjection')
-      
+        
         % boundary
-        sP.bounds = sP.sphericalRegion.polarRange / degree;
-        sP.bounds(3:4) = fliplr(sP.bounds(3:4));
+        sP.hgt = ax;
+        sP.updateBounds;
         axis(ax,'on');
         set(ax,'box','on');
         
         % grid
         sP.plotPlainGrid(varargin{:});
         
+        % set view point
+        setCamera(sP.ax,'default',varargin{:});
+        
       else
         
-        % plot boundary
-        sP.boundary = sP.sphericalRegion.plot('parent',ax);                
-        try sP.plotPolarGrid(varargin{:});end
+        sP.hgt = hgtransform('parent',ax);
         
-        sP.updateBounds;
+        % plot boundary
+        sP.boundary = sP.sphericalRegion.plot('parent',sP.ax);
+        try sP.plotPolarGrid(varargin{:});end
 
         set(ax,'XTick',[],'YTick',[]);
         axis(ax,'off');
@@ -75,20 +73,18 @@ classdef sphericalPlot < handle
         if ~check_option(varargin,'grid')
           set(sP.grid,'visible','off');
         end
+      
+        % set view point
+        setCamera(sP.ax,'default',varargin{:});
         
       end
       
       plotAnnotate(sP,varargin{:});
       
+      
+            
       % revert old hold status
       hold(ax,washold);
-      
-      % set bounds to axes
-      delta = min(sP.bounds(3:4) - sP.bounds(1:2))*0.02;
-      sP.bounds = sP.bounds + [-1 -1 1 1] * delta;
-      
-      set(ax,'DataAspectRatio',[1 1 1],'XLim',...
-        sP.bounds([1,3]),'YLim',sP.bounds([2,4]));
             
     end
 
@@ -192,12 +188,28 @@ classdef sphericalPlot < handle
     function updateBounds(sP)      
       % compute bounding box
 
-      x = ensurecell(get(sP.boundary,'xData')); x = [x{:}];
-      y = ensurecell(get(sP.boundary,'yData')); y = [y{:}];
-      M = get(sP.hgt,'Matrix');
-      xy = M(1:2,1:2) * [x;y];
-      sP.bounds = [min(xy(1,:)),min(xy(2,:)),max(xy(1,:)),max(xy(2,:))];
+      if isa(sP.proj,'plainProjection')
       
+        sP.bounds = sP.sphericalRegion.polarRange / degree;
+        sP.bounds(3:4) = fliplr(sP.bounds(3:4));
+        
+      else
+      
+        x = ensurecell(get(sP.boundary,'xData')); x = [x{:}];
+        y = ensurecell(get(sP.boundary,'yData')); y = [y{:}];
+        M = get(sP.hgt,'Matrix');
+        xy = M(1:2,1:2) * [x;y];
+        sP.bounds = [min(xy(1,:)),min(xy(2,:)),max(xy(1,:)),max(xy(2,:))];
+      
+      end
+        
+      % set bounds to axes
+      delta = min(sP.bounds(3:4) - sP.bounds(1:2))*0.02;
+      sP.bounds = sP.bounds + [-1 -1 1 1] * delta;
+            
+      set(sP.ax,'DataAspectRatio',[1 1 1],'XLim',...
+        sP.bounds([1,3]),'YLim',sP.bounds([2,4]));
+
     end
     
   end

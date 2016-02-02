@@ -168,7 +168,7 @@ for a = 1:numel(ax)
           if isempty(sP.grid)
             set(ax(a),'XGrid',onoff,'YGrid',onoff);
           else
-          set(sP.(element),'visible',onoff);
+          set(sP.(char(element)),'visible',onoff);
           end
         else
         end

@@ -12,7 +12,7 @@ end
 
 if isgraphics(ax,'axes') && isappdata(ax,'sphericalPlot')
   sP = getappdata(ax,'sphericalPlot');
-  ax = sP.hgt; 
+  if ~isempty(sP.hgt), ax = sP.hgt; end
 end
 
 if isgraphics(ax,'axes')

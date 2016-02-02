@@ -45,5 +45,8 @@ if isgraphics(ax,'axes')
   %set(ax,'CameraUpVector',[sin((-el)*degree),cos((-el)*degree),0])
 else
   set(ax,'Matrix',...
-    makehgtform('xrotate',pi/2-az*degree,'zrotate',-el*degree));
+    makehgtform('xrotate',pi/2-az*degree,'zrotate',-el*degree));  
+  sP.updateBounds;
 end
+
+
