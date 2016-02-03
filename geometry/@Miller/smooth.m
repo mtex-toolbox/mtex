@@ -9,6 +9,9 @@ function varargout = smooth(m,varargin)
 % See also
 % vector3d/smooth
 
+% create a new figure if needed
+[mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
+
 % get plotting region
 sR = region(m,varargin{:});
 
@@ -35,4 +38,18 @@ else
 end
     
 % use vector3d/smooth for output
-[varargout{1:nargout}] = smooth@vector3d(m,varargin{:},sR);
+%[varargout{1:nargout}] = smooth@vector3d(m,varargin{:},sR,m.CS);
+[varargout{1:nargout}] = smooth@vector3d(m,varargin{:},sR,m.CS);
+
+function txt = tooltip(varargin)
+
+[h_local,value] = getDataCursorPos(mtexFig);
+
+h_local = Miller(h_local,m.CS,'uvw');
+h_local = round(h_local,'tolerance',3*degree);
+txt = [xnum2str(value) ' at ' char(h_local)];
+
+end
+
+end
+
