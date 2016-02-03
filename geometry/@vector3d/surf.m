@@ -38,7 +38,8 @@ for j = 1:numel(sP)
   % set styles
   optiondraw(h(j),'LineStyle','none','Fill','on',varargin{:});
   
-  uistack(sP(j).grid,'top')
+  % bring grid in front
+  sP(j).doGridInFront;
 end
 
 if nargout == 0, clear h; end
