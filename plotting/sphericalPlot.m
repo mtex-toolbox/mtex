@@ -7,6 +7,7 @@ classdef sphericalPlot < handle
     bounds   %
     grid     %
     ticks    %
+    labels   %
     ax       % axis
     hgt      % hgtransform
     parent   % the figure that contains the spherical plot
@@ -45,6 +46,8 @@ classdef sphericalPlot < handle
       % store hold status
       washold = getHoldState(ax);
             
+      CS = getClass(varargin,'symmetry',[]);
+      
       if isa(sP.proj,'plainProjection')
         
         % boundary
@@ -66,6 +69,7 @@ classdef sphericalPlot < handle
         % plot boundary
         sP.boundary = sP.sphericalRegion.plot('parent',sP.ax);
         try sP.plotPolarGrid(varargin{:});end
+        sP.plotLabels(CS,varargin{:});
 
         set(ax,'XTick',[],'YTick',[]);
         axis(ax,'off');
@@ -284,6 +288,29 @@ classdef sphericalPlot < handle
 
     end    
     
+    function plotLabels(sP,CS,varargin)
+
+      if check_option(varargin,'noLabel'), return; end
+      
+      sR = sP.sphericalRegion; 
+      h = sR.vertices;
+
+      if ~isempty(CS)
+        h = Miller(unique(h),CS);
+        switch CS.lattice
+          case {'hexagonal','trigonal'}
+            h.dispStyle = 'UVTW';
+          otherwise
+            h.dispStyle = 'uvw';
+  end
+        h = round(h);
+end
+
+      sP.labels = [sP.labels,scatter(unique(h),'MarkerFaceColor','k',...
+        'labeled','Marker','none',...
+        'symmetrised','backgroundcolor','w','autoAlignText','parent',sP.ax)];
+
+    end
   end
 end
 

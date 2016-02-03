@@ -65,26 +65,6 @@ classdef ipdfOrientationMapping < orientationMapping
         end
         if isNew, fcw; end
         
-      else
-        if ~check_option(varargin,'noLabel')
-          h = sR.vertices;
-          if length(unique(h,'antipodal')) <=2
-            sRu = sR.restrict2Upper;
-            h = [h,sRu.vertices,zvector];
-          else
-            varargin = ['Marker','none',varargin];
-          end
-          h = Miller(unique(h),oM.CS1);
-          switch oM.CS1.lattice
-            case {'hexagonal','trigonal'}
-              h.dispStyle = 'UVTW';
-            otherwise
-              h.dispStyle = 'uvw';
-          end
-          varargin = delete_option(varargin,'position');
-          annotate(unique(round(h)),'MarkerFaceColor','k','labeled',...
-            'symmetrised','backgroundcolor','w','autoAlignText',varargin{:});
-        end
         mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
       end
 
