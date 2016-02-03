@@ -45,7 +45,7 @@ classdef sphericalPlot < handle
       
       % store hold status
       washold = getHoldState(ax);
-            
+        
       CS = getClass(varargin,'symmetry',[]);
       
       if isa(sP.proj,'plainProjection')
@@ -68,9 +68,14 @@ classdef sphericalPlot < handle
         
         % plot boundary
         sP.boundary = sP.sphericalRegion.plot('parent',sP.ax);
+        
+        % set view point
+        setCamera(sP.ax,'default',varargin{:});
+        
+        % plot grid, labels, ..
         try sP.plotPolarGrid(varargin{:});end
         sP.plotLabels(CS,varargin{:});
-
+        
         set(ax,'XTick',[],'YTick',[]);
         axis(ax,'off');
 
@@ -78,15 +83,12 @@ classdef sphericalPlot < handle
           set(sP.grid,'visible','off');
         end
       
-        % set view point
-        setCamera(sP.ax,'default',varargin{:});
+
         
       end
       
       plotAnnotate(sP,varargin{:});
-      
-      
-            
+                        
       % revert old hold status
       hold(ax,washold);
             
@@ -302,10 +304,10 @@ classdef sphericalPlot < handle
             h.dispStyle = 'UVTW';
           otherwise
             h.dispStyle = 'uvw';
-  end
+        end
         h = round(h);
-end
-
+      end
+      
       sP.labels = [sP.labels,scatter(unique(h),'MarkerFaceColor','k',...
         'labeled','Marker','none',...
         'symmetrised','backgroundcolor','w','autoAlignText','parent',sP.ax)];
