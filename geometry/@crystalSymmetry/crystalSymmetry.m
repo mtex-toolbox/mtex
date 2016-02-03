@@ -72,6 +72,7 @@ classdef crystalSymmetry < symmetry
     aAxisRec    % a*-axis reciprocal coordinate system
     bAxisRec    % b*-axis reciprocal coordinate system
     cAxisRec    % c*-axis reciprocal coordinate system
+    plotOptions
   end
   
   methods
@@ -159,6 +160,15 @@ classdef crystalSymmetry < symmetry
     function gamma = get.gamma(cs)
       gamma = angle(cs.axes(1),cs.axes(2));
     end    
+   
+    function opt = get.plotOptions(cs)
+      % rotate the aAxis to the east
+      % but take only multiples of 90 degrees,
+      % since Matlab is not able to handle the values in between 
+      %rho = -round(m.CS.aAxis.rho / 90 / degree)*90*degree;
+      rho = -cs.aAxis.rho;
+      opt = {'xAxisDirection',rho,'zAxisDirection','outOfPlane'};
+    end
     
   end
     
