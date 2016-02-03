@@ -1,4 +1,4 @@
-function text(m,varargin)
+function h = text(m,varargin)
 % plot Miller indece
 %
 % Input
@@ -38,6 +38,6 @@ end
 % ensure specific plot options
 varargin = [varargin(1),m.CS.plotOptions,varargin(2:end)];
 
-text@vector3d(m,varargin{:});
+h = text@vector3d(m,varargin{:});
 
 if nargout == 0, clear h; end
