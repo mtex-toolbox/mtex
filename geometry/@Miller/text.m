@@ -39,3 +39,5 @@ end
 varargin = [varargin(1),m.plotOptions,varargin(2:end)];
 
 text@vector3d(m,varargin{:});
+
+if nargout == 0, clear h; end
