@@ -30,7 +30,7 @@ for j = 1:numel(sP)
   hold(sP(j).ax,'on')
   
   % plot surface  
-  h(j) = surf(x,y,zeros(size(x)),real(data),'parent',sP(j).ax); %#ok<AGROW>
+  h(j) = surf(x,y,zeros(size(x)),real(data),'parent',sP(j).hgt); %#ok<AGROW>
   shading(sP(j).ax,'interp');
     
   hold(sP(j).ax,'off')
@@ -38,7 +38,8 @@ for j = 1:numel(sP)
   % set styles
   optiondraw(h(j),'LineStyle','none','Fill','on',varargin{:});
   
-  uistack(sP(j).grid,'top')
+  % bring grid in front
+  sP(j).doGridInFront;
 end
 
 if nargout == 0, clear h; end

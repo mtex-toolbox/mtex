@@ -26,6 +26,7 @@ function h = scatter(v,varargin)
 
 % initialize spherical plots
 sP = newSphericalPlot(v,varargin{:});
+varargin = delete_option(varargin,'parent');
 
 h = [];
 
@@ -48,7 +49,7 @@ for i = 1:numel(sP)
   end
   
   % default arguments
-  patchArgs = {'parent',sP(i).ax,...
+  patchArgs = {'parent',sP(i).hgt,...
     'vertices',[x(:) y(:)],...
     'faces',1:numel(x),...
     'facecolor','none',...
@@ -114,7 +115,7 @@ for i = 1:numel(sP)
     if check_option(varargin,'DisplayName')      
       holdState = get(sP(i).ax,'nextPlot');
       set(sP(i).ax,'nextPlot','add');
-      optiondraw(scatter(0,0,'parent',sP(i).ax,'MarkerFaceColor',mfc,...
+      optiondraw(scatter(0,0,'parent',sP(i).hgt,'MarkerFaceColor',mfc,...
         'MarkerEdgeColor',mec,'visible','off'),varargin{:});
       set(sP(i).ax,'nextPlot',holdState);
     end
@@ -182,6 +183,9 @@ u = findobj(hax,'Tag','dynamicMarkerSize');
 if isempty(u), return;end
 
 p = get(u(1),'parent');
+while ~isgraphics(p,'axes'), p = get(p,'parent'); end
+
+
 unit = get(p,'unit');
 set(p,'unit','pixel')
 pos = get(p,'position');

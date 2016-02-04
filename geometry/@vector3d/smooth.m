@@ -85,7 +85,7 @@ for j = 1:numel(sP)
   data = reshape(cdata,size(x));
 
   % plot contours
-  h = [h,betterContourf(sP(j).ax,x,y,data,contours,varargin{:})];
+  h = [h,betterContourf(sP(j).hgt,x,y,data,contours,varargin{:})];
   
   hold(sP(j).ax,'off')
   
@@ -139,7 +139,7 @@ if check_option(varargin,'correctContour')
 end
 
 if check_option(varargin,'pcolor')
-  h = pcolor(ax,X,Y,data);
+  h = pcolor(X,Y,data,'parent',ax);
   
   % do not display in the legend
   set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
@@ -154,7 +154,7 @@ if check_option(varargin,'pcolor')
     set(gcf,'Renderer','painters');
   end
 else
-  [CM,h] = contourf(ax,X,Y,data,contours); %#ok<ASGLU>
+  [CM,h] = contourf(X,Y,data,contours,'parent',ax); %#ok<ASGLU>
   
   % do not display in the legend
   set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');

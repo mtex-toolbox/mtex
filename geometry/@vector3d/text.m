@@ -21,6 +21,7 @@ sP = newSphericalPlot(v,varargin{:},'hold');
 h = [];
 interpreter = getMTEXpref('textInterpreter');
 fs = getMTEXpref('FontSize');
+varargin = delete_option(varargin,'parent');
 
 if check_option(varargin,'textAboveMarker')
   aboveBelow = -5;
@@ -49,6 +50,9 @@ for j = 1:numel(sP)
     end
 
   end
+
+  % 
+  M = get(sP(j).hgt,'matrix');
   
   % print labels  
   for i = 1:length(strings)
@@ -63,9 +67,13 @@ for j = 1:numel(sP)
     end
 
     if check_option(varargin,'addMarkerSpacing'),
-      tag = {'UserData',[x(i),y(i)],'tag'};
       
-      if y(i) > mean(sP(j).bounds([2 4])) + 0.1 + aboveBelow
+      xy = [x(i),y(i)];
+      tag = {'UserData',xy,'tag'};
+      
+      xy = M(1:2,1:2) *  xy.';
+      
+      if xy(2) > mean(sP(j).bounds([2 4])) + 0.1 + aboveBelow
         tag = [tag,'setAboveMarker'];
       else        
         tag = [tag,'setBelowMarker'];
@@ -76,7 +84,7 @@ for j = 1:numel(sP)
     
     h = [h,optiondraw(text(x(i),y(i),s,'interpreter',interpreter,...
       'HorizontalAlignment','center','VerticalAlignment','middle',...
-      tag{:},'margin',0.001,'parent',sP(j).ax),'FontSize',fs,varargin{2:end})]; %#ok<AGROW>
+      tag{:},'margin',0.001,'parent',sP(j).hgt),'FontSize',fs,varargin{2:end})]; %#ok<AGROW>
     
   end
 

@@ -53,7 +53,7 @@ uimenu(m,'label','Set Outer Margin','callback',{@setMargin,'outer'});
 
 an = uimenu(m,'label','Annotations');
 uimenu(an,'label','Min/Max','checked',isVisible('minmax'),'callback',{@setVisible,'minmax'});
-uimenu(an,'label','Axes Labels','checked',isVisible('labels'),'callback',{@setVisible,'labels'});
+uimenu(an,'label','Labels','checked',isVisible('labels'),'callback',{@setVisible,'labels'});
 uimenu(an,'label','Coordinates','checked',isVisible('ticks'),'callback',{@setVisible,'ticks'});
 uimenu(an,'label','Grid','checked','off','callback',{@setVisible,'grid'});
 uimenu(an,'label','Micronbar','checked','on','callback',{@setVisible,'micronBar'});
@@ -75,9 +75,6 @@ uimenu(fs,'label','17 points','callback',{@setFontSize,17});
 uimenu(fs,'label','18 points','callback',{@setFontSize,18});
 uimenu(fs,'label','19 points','callback',{@setFontSize,19});
 uimenu(fs,'label','20 points','callback',{@setFontSize,20});
-
-
-
 
 
 function [cm,cmd] = getColormaps
@@ -151,6 +148,11 @@ for a = 1:numel(ax)
           findobj(ax(a),'tag','axesLabels')];
         set(la,'visible',onoff);
         
+        sP = getappdata(ax(a),'sphericalPlot');
+        if ~isempty(sP) && ~isempty(sP.labels)
+          set(sP.labels,'visible',onoff);          
+        end
+        
       case 'ticks'
       
         if strcmp(onoff,'on')
@@ -168,7 +170,7 @@ for a = 1:numel(ax)
           if isempty(sP.grid)
             set(ax(a),'XGrid',onoff,'YGrid',onoff);
           else
-          set(sP.(element),'visible',onoff);
+          set(sP.(char(element)),'visible',onoff);
           end
         else
         end
