@@ -308,9 +308,9 @@ classdef sphericalPlot < handle
         h = round(h);
       end
       
-      sP.labels = [sP.labels,scatter(unique(h),'MarkerFaceColor','k',...
+      sP.labels = [sP.labels,scatter(h,'MarkerFaceColor','k',...
         'labeled','Marker','none',...
-        'symmetrised','backgroundcolor','w','autoAlignText','parent',sP.ax)];
+        'backgroundcolor','w','autoAlignText','parent',sP.ax)];
 
     end
   end
