@@ -67,8 +67,12 @@ end
 % otherwise interpolate according to theta
 try
   for i = 1:pf.numPF
-    pf_orig.allI{i} = interp1(pf.allR{i}.theta,pf.allI{i},...
-      pf_orig.allR{i}.theta,'spline');    
+    if length(unique(pf.allR{i}.rho(:))) > 4
+      pf_orig.allI{i} = interp(pf.allR{i},pf.allI{i},pf_orig.allR{i});
+    else
+      pf_orig.allI{i} = interp1(pf.allR{i}.theta,pf.allI{i},...
+        pf_orig.allR{i}.theta,'spline');
+    end
   end
 catch
   error([msg ' does not fit original pole figure data!']);

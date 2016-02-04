@@ -13,7 +13,8 @@ else
   res = v.resolution;
   psi = deLaValeePoussinKernel('halfwidth',res/2);
   
-  % take the 4 largest values out of each row
+  % take the 4 closest neighbours for each point
+  % TODO: this can be done better
   omega = angle_outer(vi,v,varargin{:});
   [so,j] = sort(omega,2);
   
