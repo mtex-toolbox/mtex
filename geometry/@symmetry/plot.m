@@ -68,8 +68,8 @@ end
 
 mtexFig = newMtexFigure;
 for ax = mtexFig.children(:).'
-  set(ax,'xlim',1.1*get(ax,'xlim'));
-  set(ax,'ylim',1.1*get(ax,'ylim'));  
+  set(ax,'xlim',1.075*get(ax,'xlim'));
+  set(ax,'ylim',1.075*get(ax,'ylim'));  
 end
 mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 
