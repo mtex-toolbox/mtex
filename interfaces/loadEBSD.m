@@ -72,6 +72,6 @@ if check_option(varargin,'3d')
   close(hw)
 end
 
-if length(ebsd.unitCell) == 4
-  ebsd = ebsd.gridify;
+if length(ebsd.unitCell) == 4, 
+  %ebsd = ebsd.gridify;
 end
