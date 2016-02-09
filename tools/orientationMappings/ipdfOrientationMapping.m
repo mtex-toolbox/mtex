@@ -63,10 +63,9 @@ classdef ipdfOrientationMapping < orientationMapping
           text3(Miller(0,0,1,'uvw',oM.CS1),'c','verticalAlignment','bottom')
           hold off
         end
-        if isNew, fcw; end
-        
-        mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
+        if isNew, fcw; end                
       end
+      mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 
     end
         
