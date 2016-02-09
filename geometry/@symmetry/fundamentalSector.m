@@ -74,6 +74,8 @@ switch cs.id
   case 18 % -3
   case {19,20,21} % 321, 3m1, -3m1
     N = rotate(N,-30*degree);    
+  case 22
+    N = rotate(N,-30*degree);    
   case {22,23,24} % 312, 31m, -31m
   case 30 %-42m
     N = rotate(N,-45*degree);

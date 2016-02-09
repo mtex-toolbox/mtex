@@ -32,7 +32,7 @@ classdef TSLOrientationMapping < ipdfHSVOrientationMapping
 
       % compute angle of the points "sh" relative to the center point "center"
       % this should be between 0 and 1
-      [radius,rho] = polarCoordinates(sR,h,center);
+      [radius,rho] = polarCoordinates(sR,h,center,xvector);
 
       % white center
       radius = 0.5+radius./2;

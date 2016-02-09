@@ -56,17 +56,22 @@ classdef HSVOrientationMapping < orientationMapping
       % symmetry dependent settings
       switch cs.id
         case 1, oM.refl = cs.axes(2);                            % 1
-        case {3,6,9},                                            % 211, 121, 112
-          pm = 1-2*isPerp(cs.subSet(2).axis,zvector);
-          oM.refl = rotate(oM.sR.N,rotation('axis',cs.subSet(2).axis,'angle',pm*90*degree));
-        case {5,8,11,12}, oM.refl = rotate(oM.sR.N(2),-90*degree);   % 222
-        case 17, oM.refl = -rotate(sum(oM.sR.N),90*degree);      % 3
-        case {18,19,22}
-          oM.refl = r30 .* oM.sR.N(end-1:end);                   % -3, 321, 312
+        case {3,9}                                               % 211, 112  
+          oM.refl = -rotate(oM.sR.N,rotation('axis',cs.subSet(2).axis,'angle',90*degree));
+        case 6,                                                  % 121
+          oM.refl = rotate(oM.sR.N,rotation('axis',cs.subSet(2).axis,'angle',90*degree));
+        case {5}, oM.refl = rotate(oM.sR.N(2),90*degree);   % 222
+        case {8,11,12}, oM.refl = rotate(oM.sR.N(2),-90*degree); % 222
+        case 17, oM.refl = -rotate(sum(oM.sR.N),90*degree);      % 3        
+        case 18, oM.refl = -rotate(sum(oM.sR.N(2:3)),90*degree); % -3
+        case 19
+          oM.refl = r30 .* oM.sR.N(end-1:end);                   % 321
           if angle(oM.refl(1),oM.refl(2)) < 1*degree
             oM.refl = inv(r30) .* oM.sR.N(end-1:end);
           end
-        case {21,24}, oM.refl =  rotate(sum(oM.sR.N(2:3)),90*degree); % -31m, -3m1
+        case 21, oM.refl =  rotate(sum(oM.sR.N(2:3)),90*degree); % -31m, -3m1
+        case 22, oM.refl =  -rotate(sum(oM.sR.N(2:3)),90*degree); % 312
+        case 24, oM.refl =  -rotate(sum(oM.sR.N(2:3)),90*degree); % -31m, -3m1
         case {25,27,28}, oM.refl = rotate(oM.sR.N(end),-45*degree); % 4,4/m,422
         case 26, oM.refl = rotate(oM.sR.N(end),-90*degree);      % -4
         case 30, oM.refl = yvector;                              % -42m
@@ -108,7 +113,8 @@ classdef HSVOrientationMapping < orientationMapping
       
       % compute angle of the points "sh" relative to the center point "center"
       % this should be between 0 and 1
-      [radius,rho] = polarCoordinates(oM.sR,h_sR,wC,'maxAngle',oM.maxAngle);
+      ref = -vector3d(oM.CS1.bAxisRec);
+      [radius,rho] = polarCoordinates(oM.sR,h_sR,wC,ref,'maxAngle',oM.maxAngle);
 
       if oM.maxAngle < inf
         radius = max(0,1 - angle(h_sR(:),wC) ./ oM.maxAngle);
