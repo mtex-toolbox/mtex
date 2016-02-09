@@ -196,6 +196,25 @@ classdef vector3d < dynOption
       v = vector3d(0,0,x);
     end
     
+    function v = rand( varargin )
+      % vector of random vector3d
+
+      if nargin < 2, varargin = [varargin 1]; end
+
+      theta = acos(2*(rand(varargin{:})-0.5));
+      rho   = 2*pi*rand(varargin{:});
+
+      v = vector3d('theta',theta,'rho',rho);
+
+    end
+    
+    function varargout = load(fname,varargin)
+      % load vectors from file
+      
+      [varargout{1:nargout}] = loadVector3d(fname,varargin{:});
+      
+    end
+    
     %function v = polar(polarAngle,azimuthAngle)
     %  % Syntax
     %  %
