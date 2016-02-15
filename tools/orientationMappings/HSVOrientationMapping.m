@@ -55,7 +55,7 @@ classdef HSVOrientationMapping < orientationMapping
 
       % symmetry dependent settings
       switch cs.id
-        case 1, oM.refl = cs.axes(2);                            % 1
+        case 1, oM.refl = cs.axes(3);                            % 1
         case {3,9}                                               % 211, 112  
           oM.refl = -rotate(oM.sR.N,rotation('axis',cs.subSet(2).axis,'angle',90*degree));
         case 6,                                                  % 121
