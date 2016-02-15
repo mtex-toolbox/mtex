@@ -57,10 +57,21 @@ classdef phaseList
         % the data 
         
         first = isa(pL.CSList{1},'symmetry');
-        
-        if ~first + max(pL.phaseMap) <= numel(pL.CSList)
+      
+        % if everything is indexed but phase is 0
+        if (max(pL.phaseMap) == 0) && ~first
           
+          pL.phaseMap = [-1;pL.phaseMap(:)];
+          pL.phaseId = 1 + pL.phaseId;
+          
+        % the normal case: there are simply some phases missing
+        % all we have to do is to extend the phaseMap
+        elseif ~first + max(pL.phaseMap) <= numel(pL.CSList)
+          
+          % 
           pL.phaseId = ~first + pL.phaseMap(pL.phaseId);
+          
+          % extend phaseMap
           pL.phaseMap = first + (0:numel(pL.CSList)-1);
           
         else
