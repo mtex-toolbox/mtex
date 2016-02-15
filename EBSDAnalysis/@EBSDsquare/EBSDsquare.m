@@ -57,7 +57,7 @@ classdef EBSDsquare < EBSD
       ori = ebsd.orientations;
           
       ori_ref = ori(:,[2:end end-1]);
-      gX = log(ori,ori_ref);% ./ ebsd.dx;
+      gX = log(ori,ori_ref) ./ ebsd.dx;
       gX(:,end) = - gX(:,end);
     end
     
@@ -65,7 +65,7 @@ classdef EBSDsquare < EBSD
       ori = ebsd.orientations;
           
       ori_ref = ori([2:end end-1],:);
-      gY = log(ori,ori_ref);% ./ ebsd.dy;
+      gY = log(ori,ori_ref) ./ ebsd.dy;
       gY(end,:) = - gY(end,:);
     end
     
