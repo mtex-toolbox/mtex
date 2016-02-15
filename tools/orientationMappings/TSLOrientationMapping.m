@@ -5,6 +5,8 @@ classdef TSLOrientationMapping < ipdfHSVOrientationMapping
     function oM =TSLOrientationMapping(varargin)
       oM = oM@ipdfHSVOrientationMapping(varargin{:});
       oM.CS1 = oM.CS1.Laue;
+      oM.sR = oM.CS1.fundamentalSector;
+      
     end
   end
   
