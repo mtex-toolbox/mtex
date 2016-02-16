@@ -20,7 +20,7 @@ function q = project2FundamentalRegion(q,CS1,CS2,varargin)
 % distingish different cases
 if nargin == 2
   
-  q = project2FR(q,CS1,idquaternion);
+  q = project2FR_ref(q,CS1,idquaternion);
 
 else
   
