@@ -16,7 +16,6 @@ classdef phaseList
     indexedPhasesId % id's of all non empty indexed phase
     color           % color of one specific phase
   end
-      
     
   methods
     
@@ -185,6 +184,16 @@ classdef phaseList
       else
         error('Assignment should be of type symmetry');
       end
+         
+      % set CSList also to all children
+      for fn = fieldnames(pL).'
+        try %#ok<TRYNC>
+         if isfield(pL.(char(fn)),'CSList')
+           pL.(char(fn)).CSList = pL.CSList;
+         end
+        end
+      end
+      
     end
     
     function mineral = get.mineral(pL)
