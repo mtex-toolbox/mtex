@@ -32,7 +32,13 @@ switch s(1).type
       grains.poly = subsasgn(grains.poly,s(1),b.poly);
       grains.inclusionId = subsasgn(grains.inclusionId,s(1),b.inclusionId);
       grains.CSList = b.CSList;
+      grains.boundary.CSList = b.CSList;
+      grains.innerBoundary.CSList = b.CSList;
+      grains.triplePoints.CSList = b.CSList;
       grains.phaseMap = b.phaseMap;
+      grains.boundary.phaseMap = b.phaseMap;
+      grains.innerBoundary.phaseMap = b.phaseMap;
+      grains.triplePoints.phaseMap = b.phaseMap;
 
     end
     

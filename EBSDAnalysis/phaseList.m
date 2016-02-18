@@ -188,7 +188,7 @@ classdef phaseList
       % set CSList also to all children
       for fn = fieldnames(pL).'
         try %#ok<TRYNC>
-         if isfield(pL.(char(fn)),'CSList')
+         if isa(pL.(char(fn)),'phaseList')
            pL.(char(fn)).CSList = pL.CSList;
          end
         end
