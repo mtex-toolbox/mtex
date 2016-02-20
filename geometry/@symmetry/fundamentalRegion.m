@@ -16,16 +16,19 @@ function  [oR,dcs,nSym] = fundamentalRegion(cs,varargin)
 %
 
 q = unique(quaternion(cs),'antipodal');
+N0 = quaternion;
 if nargin >= 2 && isa(varargin{1},'symmetry')
   q = unique(q * quaternion(varargin{1}),'antipodal');
-  dcs = disjoint(cs.properGroup,varargin{1}.properGroup);
-  if check_option(varargin,'antipodal')
-    dcs = dcs.Laue;
+  
+  if ~check_option(varargin,'ignoreCommonSymmetries')
+    dcs = disjoint(cs.properGroup,varargin{1}.properGroup);
+    if check_option(varargin,'antipodal')
+      dcs = dcs.Laue;
+    end
+    sR = dcs.fundamentalSector(varargin{:});
+    N0 = rotation('axis',sR.N,'angle',pi-1e-5);
   end
-  sR = dcs.fundamentalSector(varargin{:});
-  N0 = rotation('axis',sR.N,'angle',pi-1e-5);
-else
-  N0 = quaternion;
+else  
   dcs = cs.properGroup;
   if check_option(varargin,'antipodal'), dcs = dcs.Laue; end
 end
