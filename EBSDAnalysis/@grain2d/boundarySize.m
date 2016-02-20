@@ -5,7 +5,7 @@ function  bS = boundarySize(grains,varargin)
 %  grains - @grain2d
 %
 % Output
-%  bS - number of boundary segment
+%  bS - number of boundary segments
 %
 % Syntax
 %   peri = grains.boundarySize

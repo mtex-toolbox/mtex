@@ -1,93 +1,140 @@
-%% 
-
-
-%% Import some EBSD data
+%% First Steps and Function Overview
+% Get in touch with grains.
+%
+%% Grain reconstruction from EBSD data
+%
+% So far grains can exclusevly computed from EBSD data using the command
+% <EBSD_calcGrains.html calcGrains>. In order to demonstrate grain
+% reconstruction we import some EBSD data
 
 mtexdata forsterite
 plotx2east
 
-plot(ebsd)
-
-%% First attempt on grain reconstruction
-
-[grains,ebsd.grainId] = calcGrains(ebsd,'angle',5*degree);
-
-plot(grains)
+% plot the Forsterite phase colorized according to orientation
+plot(ebsd('fo'),ebsd('fo').orientations)
 
 
 %%
-% The resulting grains contain a lot of holes and one pixel grains due to
-% misindexing. A good measure for regions where indexing went wrong is the
-% band contrast
+% When reconstructing grain there are two basic ways how to deal with not
+% indexed measurements. The simplest way is to keep the not indexed pixels
+% seperately, i.e., do not assign them to any indexed grain.
 
-plot(ebsd,ebsd.bc)
-
-%%
-% We see its quite low at the grain boundaries and, e.g., in the top left
-% rectangle. Lets set the phase of measurements with bandcontrast
-% smaller then a certain threshold to notIndexed
-
-condition = ebsd.bc < 80;
-
-% setting the phase to zero means notIndexed
-ebsd(condition).phase = 0
-plot(ebsd)
-
+[grains, ebsd.grainId] = calcGrains(ebsd,'angle',5*degree)
 
 %%
+% We observe that there are not only grains of specific phases but also not
+% indexed grains. Let add the grain boundaries to the previous plot.
 
-[grains,ebsd.grainId] = calcGrains(ebsd,'angle',5*degree);
+hold on
+plot(grains.boundary)
+hold off
 
-plot(grains)
+%%
+% The resulting grains contain a lot of holes and one pixel grains. The
+% second way is to assign not indexed pixels to surounding grains. In MTEX
+% this is done if the not indexed data are removed from the measurements,
+% i.e.
+
+ebsd = ebsd('indexed') % this removes all not indexed data
+[grains, ebsd.grainId] = calcGrains(ebsd,'angle',5*degree)
 
 
 %%
+% Now, there are no not indexed grains computed. Lets visualize the result
+
+% plot the orientation data of the Forsterite phase
+plot(ebsd('fo'),ebsd('fo').orientations)
+
+% plot the grain boundary on top of it
+hold on
+plot(grains.boundary)
+hold off
+
+%%
+% A more detailed discussion on grain reconstruction in MTEX can be found
+% <GrainReconstruction.html here>
+
+
+%% Smoothing grain boundaries
+%
+% Due to the measurement grid the grain boundaries often show a typical
+% stair case effect. This effect can be reduced by smoothing the grain
+% boundaries. Using the command <grain2d_smooth.html smooth>.
+
+% smooth the grains
+grains = smooth(grains);
+
+% plot the orientation data of the Forsterite phase
+plot(ebsd('fo'),ebsd('fo').orientations)
+
+% plot the grain boundary on top of it
+hold on
+plot(grains.boundary)
+hold off
+
+%% Grain properties
+%
+% Grains are stored as a long list with several properties. Please find
+% below a table of most of the properties that are stored or can be
+% computed for grains
+%
+% || <grain2d_area.html *grains.area*>  || grain area in square <grain2d_index.html grains.scanUnit>  || 
+% || <grain2d_aspectRatio.html *grains.aspectRatio*>  || grain length / grain width ||
+% || <grainBoundary.html *grains.boundary*>  || list of boundary segments|| 
+% || <grain2d_boundarySize.html *grains.boundarySize*>  || number of boundary segments || 
+% || <grain2d_calcParis.html *grains.calcParis*>  || area difference between grain and its convex hull|| 
+% || <grain2d_centroid.html *grains.centroid*>  || x,y coordinates of the barycenter of the grain || 
+% || *grains.CS* || crystal symmetry (single phase only)|| 
+% || <grain2d_diameter.html *grains.diameter*>  || diameter in <grain2d_index.html grains.scanUnit>  || 
+% || <grain2d_equivalentPerimeter.html *grains.equivalentPerimeter*>  || perimeter of fitted ellipse  || 
+% || <grain2d_equivalentRadius.html *grains.equivalentRadius*>  || radius of fitted ellipse  || 
+% || *grains.GOS* || grain orientation spread|| 
+% || *grains.grainSize* || number of measurements per grain|| 
+% || <grain2d_hasHole.html *grains.hasHole*>  || check for inclusions  ||
+% || *grains.id* || grain id|| 
+% || <grainBoundary.html *grains.innBoundary*>  || list of inner boundary segments|| 
+% || *grains.meanOrientation* || meanOrientation (single phase only)|| 
+% || *grains.mineral* || mineral name (single phase only)|| 
+% || <grain2d_neigbours.html *grains.neighbours*>  || number and ids of neighbouring grains  || 
+% || *grains.phase* || phase identifier|| 
+% || <grain2d_perimeter.html *grains.perimeter*>  || perimeter in <grain2d_index.html grains.scanUnit>  || 
+% || <grain2d_principalComponents.html *grains.principalComponents*>  || length and widht of fitted ellipse || 
+% || <grain2d_shapeFactor.html *grains.shapeFactor*>  || qotient perimeter / perimeter of fitted ellipse|| 
+% || <triplePoints.html *grains.triplePoints*>  || list of  triple points|| 
+% || *grains.x* || x coordintes of the vertices|| 
+% || *grains.y* || y coordintes of the vertices|| 
+
+%%
+% Those grain properties can be used for colorization. E.g. we may colorize
+% grains according to their area.
+
+plot(grains,grains.area)
+
+%%
+% or a little bit more advanced according to the log quotient between
+% grain size and boundary size.
 
 plot(grains,log(grains.grainSize ./ grains.boundarySize))
 mtexColorbar
 
 %%
-% remove 
+% Note that some properties are available for single phase lists of grains,
+% e.g.
 
-ind = ~grains.isIndexed & log(grains.grainSize ./ grains.boundarySize) < -0.4;
+% colorize the Forsterite Phase according to its mean orientation
+plot(grains('Fo'),grains('Fo').meanOrientation)
 
-plot(ebsd)
-hold on
-plot(grains(ind),'faceColor',[0 0 0],'DisplayName','fill this')
-hold off
 
-% remove marked measurements
-ebsd(grains(ind)) = []
+%% Changing lists of grains
+%
+% As with any list in MTEX one can single out specific grains by conditions
+% using the syntax
 
-%%
-
-[grains,ebsd.grainId] = calcGrains(ebsd,'angle',5*degree);
-
-plot(grains)
-
-%%
-% fill grains that are to small
-
-ind = grains.grainSize < 5;
+% this gives all grains with more the 1000 pixels
+largeGrains = grains(grains.grainSize > 1000)
 
 hold on
-plot(grains(ind),'faceColor',[0 0 0],'DisplayName','fill this')
+% mark only large Forsterite grains
+plot(largeGrains('Fo').boundary,'linewidth',2,'lincecolor','k')
 hold off
 
-% remove marked measurements
-ebsd(grains(ind)) = []
-
-%%
-% 
-
-[grains,ebsd.grainId] = calcGrains(ebsd,'angle',5*degree);
-
-plot(grains)
-
-
-
-%% Smooth grains
-
-grains = smooth(grains,2);
-
-plot(grains)

@@ -17,7 +17,7 @@ function  [mori,hkl,omega,sigma] = CSL(sigma,CS,varargin)
 %
 
 if nargin < 2 || ~isa(CS,'crystalSymmetry')
-  error('Starting with MTEX 4.2 the second argument to CSL should by crystal symmetry.')
+  error('Starting with MTEX 4.2 the second argument to CSL should be crystal symmetry.')
 end
 
 csl = generateCubicCSL(varargin{:});
