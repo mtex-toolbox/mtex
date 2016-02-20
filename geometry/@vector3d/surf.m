@@ -30,9 +30,9 @@ for j = 1:numel(sP)
   hold(sP(j).ax,'on')
   
   % plot surface  
-  h(j) = surf(x,y,zeros(size(x)),real(data),'parent',sP(j).hgt); %#ok<AGROW>
-  shading(sP(j).ax,'interp');
-    
+  h(j) = surf(x,y,zeros(size(x)),real(data),'parent',sP(j).hgt,...
+    'edgeColor','none'); %#ok<AGROW>
+      
   hold(sP(j).ax,'off')
   
   % set styles
