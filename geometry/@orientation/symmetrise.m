@@ -12,3 +12,8 @@ o.antipodal = ap;
 if o.antipodal
   o = [o;inv(o)];
 end
+
+if check_option(varargin,'unique')
+  [~,ind] = unique(rotation(o));
+  o = subSet(o,ind);
+end
