@@ -16,7 +16,7 @@ else
   ax = gca;
 end
 
-v = 1.2.*v.normalize;
+v = 1.2.*v;
 
 h = optiondraw(text(v.x,v.y,v.z,string,'FontSize',15,'parent',ax),...
   'horizontalAlignment','center','verticalAlignment','middle',varargin{:});
@@ -25,7 +25,7 @@ h = optiondraw(text(v.x,v.y,v.z,string,'FontSize',15,'parent',ax),...
 axis(ax,'equal','vis3d','off');
 
 % st box limits
-set(ax,'XDir','rev','YDir','rev',...
-'XLim',[-1.2,1.2],'YLim',[-1.2,1.2],'ZLim',[-1.2,1.2]);
+bounds = [-1.2,1.2] * max(norm(v(:)));
+set(ax,'XDir','rev','YDir','rev','XLim',bounds,'YLim',bounds,'ZLim',bounds);
 
 if nargout == 0, clear h;end
