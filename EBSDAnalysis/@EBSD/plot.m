@@ -91,6 +91,8 @@ if nargout==0, clear h; end
 
 if isNew
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
+else
+  mP.micronBar.setOnTop  
 end
 
 mtexFig.keepAspectRatio = false;

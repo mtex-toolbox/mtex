@@ -59,7 +59,7 @@ hold off
 %
 % Due to the measurement grid the grain boundaries often show a typical
 % stair case effect. This effect can be reduced by smoothing the grain
-% boundaries. Using the command <grain2d_smooth.html smooth>.
+% boundaries. Using the command <grain2d.smooth.html smooth>.
 
 % smooth the grains
 grains = smooth(grains);
@@ -78,28 +78,28 @@ hold off
 % below a table of most of the properties that are stored or can be
 % computed for grains
 %
-% || <grain2d_area.html *grains.area*>  || grain area in square <grain2d_index.html grains.scanUnit>  || 
-% || <grain2d_aspectRatio.html *grains.aspectRatio*>  || grain length / grain width ||
+% || <grain2d.area.html *grains.area*>  || grain area in square <grain2d.index.html grains.scanUnit>  || 
+% || <grain2d.aspectRatio.html *grains.aspectRatio*>  || grain length / grain width ||
 % || <grainBoundary.html *grains.boundary*>  || list of boundary segments|| 
-% || <grain2d_boundarySize.html *grains.boundarySize*>  || number of boundary segments || 
-% || <grain2d_calcParis.html *grains.calcParis*>  || area difference between grain and its convex hull|| 
-% || <grain2d_centroid.html *grains.centroid*>  || x,y coordinates of the barycenter of the grain || 
+% || <grain2d.boundarySize.html *grains.boundarySize*>  || number of boundary segments || 
+% || <grain2d.calcParis.html *grains.calcParis*>  || area difference between grain and its convex hull|| 
+% || <grain2d.centroid.html *grains.centroid*>  || x,y coordinates of the barycenter of the grain || 
 % || *grains.CS* || crystal symmetry (single phase only)|| 
-% || <grain2d_diameter.html *grains.diameter*>  || diameter in <grain2d_index.html grains.scanUnit>  || 
-% || <grain2d_equivalentPerimeter.html *grains.equivalentPerimeter*>  || perimeter of fitted ellipse  || 
-% || <grain2d_equivalentRadius.html *grains.equivalentRadius*>  || radius of fitted ellipse  || 
+% || <grain2d.diameter.html *grains.diameter*>  || diameter in <grain2d.index.html grains.scanUnit>  || 
+% || <grain2d.equivalentPerimeter.html *grains.equivalentPerimeter*>  || perimeter of fitted ellipse  || 
+% || <grain2d.equivalentRadius.html *grains.equivalentRadius*>  || radius of fitted ellipse  || 
 % || *grains.GOS* || grain orientation spread|| 
 % || *grains.grainSize* || number of measurements per grain|| 
-% || <grain2d_hasHole.html *grains.hasHole*>  || check for inclusions  ||
+% || <grain2d.hasHole.html *grains.hasHole*>  || check for inclusions  ||
 % || *grains.id* || grain id|| 
 % || <grainBoundary.html *grains.innBoundary*>  || list of inner boundary segments|| 
 % || *grains.meanOrientation* || meanOrientation (single phase only)|| 
 % || *grains.mineral* || mineral name (single phase only)|| 
-% || <grain2d_neigbours.html *grains.neighbours*>  || number and ids of neighbouring grains  || 
+% || <grain2d.neigbours.html *grains.neighbours*>  || number and ids of neighbouring grains  || 
 % || *grains.phase* || phase identifier|| 
-% || <grain2d_perimeter.html *grains.perimeter*>  || perimeter in <grain2d_index.html grains.scanUnit>  || 
-% || <grain2d_principalComponents.html *grains.principalComponents*>  || length and widht of fitted ellipse || 
-% || <grain2d_shapeFactor.html *grains.shapeFactor*>  || qotient perimeter / perimeter of fitted ellipse|| 
+% || <grain2d.perimeter.html *grains.perimeter*>  || perimeter in <grain2d.index.html grains.scanUnit>  || 
+% || <grain2d.principalComponents.html *grains.principalComponents*>  || length and widht of fitted ellipse || 
+% || <grain2d.shapeFactor.html *grains.shapeFactor*>  || qotient perimeter / perimeter of fitted ellipse|| 
 % || <triplePoints.html *grains.triplePoints*>  || list of  triple points|| 
 % || *grains.x* || x coordintes of the vertices|| 
 % || *grains.y* || y coordintes of the vertices|| 
