@@ -76,7 +76,8 @@ classdef axisAngleSections < ODFSections
       if isempty(findall(ax,'tag','outerBoundary'))
         plot(fundamentalSector(oS.jointCS,varargin{:}),'parent',ax,...
           'TR',['\omega = ' int2str(oS.angles(sec)./degree),'^\circ'],'color',[0.8 0.8 0.8],...
-          'doNotDraw','tag','outerBoundary','xAxisDirection','east','zAxisDirection','outOfPlane','hitTest','off');
+          'doNotDraw','tag','outerBoundary','noLabel',...
+          'xAxisDirection','east','zAxisDirection','outOfPlane','hitTest','off');
       end
       
       % rescale the axes according to actual volume      
