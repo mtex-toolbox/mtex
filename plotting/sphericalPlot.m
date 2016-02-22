@@ -46,7 +46,7 @@ classdef sphericalPlot < handle
       % store hold status
       washold = getHoldState(ax);
         
-      CS = getClass(varargin,'symmetry',[]);
+      CS = getClass(varargin,'crystalSymmetry',[]);
       
       if isa(sP.proj,'plainProjection')
         
