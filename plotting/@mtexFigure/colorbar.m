@@ -42,8 +42,10 @@ if nargout == 1, h = mtexFig.cBarAxis; end
       set(peer,'CLim',[0,c(2)]);
     end
     
-    fs = getMTEXpref('FontSize');  
-    h = optiondraw(colorbar('peer',peer,'eastoutside','units','pixel',...
+    fs = getMTEXpref('FontSize');
+    location = ['eastoutside',extract_option(varargin,{'eastoutside','southoutside',...
+      'northoutside','westoutside'})];
+    h = optiondraw(colorbar('peer',peer,location{end},'units','pixel',...
       'FontSize',fs),varargin{:});
     
     if check_option(varargin,'title')
