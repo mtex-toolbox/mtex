@@ -1,6 +1,9 @@
 function inside = checkInside(oR,q,varargin)
 % check for points to be inside the orientation region
  
+% avoid q beeing orientation
+q = quaternion(q);
+
 if isempty(oR.N), inside = true(size(q)); return; end
 if isempty(q), inside = false(size(q)); return; end
 
