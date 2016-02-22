@@ -78,7 +78,6 @@ legend('-DynamicLegend','location','NorthEast');
 warning('on','MATLAB:legend:PlotEmpty');
 
 try axis(mP.ax,'tight'); end
-set(mP.ax,'zlim',[0,1]);
 mP.micronBar.setOnTop
 
 if nargout == 0, clear h; end
