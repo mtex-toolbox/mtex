@@ -38,6 +38,6 @@ else
   
   % compute all distances to the symmetric equivalent orientations
   % and take the minimum
-  omega(notInside) = 2 * real(acos(max(abs(dot_outer(q.subSet(notInside),inv(qs))),[],2)));
+  omega(notInside) = 2 * real(acos(max(abs(dot_outer(q.subSet(notInside),qs)),[],2)));
     
 end
