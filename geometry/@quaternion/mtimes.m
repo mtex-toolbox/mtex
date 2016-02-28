@@ -21,11 +21,7 @@ if isa(q1,'quaternion') && isa(q2,'quaternion')
   %    	b = a1 * b2 + b1 * a2 + c1 * d2 - d1 * c2;
   %    	c = a1 * c2 + c1 * a2 + d1 * b2 - b1 * d2;
   %    	d = a1 * d2 + d1 * a2 + b1 * c2 - c1 * b2;
- 
-elseif isa(q1,'quaternion') && isa(q2,'vector3d')
-  
-  q = rotate(q2,q1);
-  
+   
 elseif isa(q1,'quaternion') && isa(q2,'double') % einfache Zahl
   
   q.a = q1.a * q2;
@@ -43,5 +39,7 @@ elseif isa(q2,'quaternion') && isa(q1,'double') % einfache Zahl
   q = class(q,'quaternion');
   
 else
-  error('wrong type of arguments');
+    
+  q = rotate_outer(q2,q1);
+  
 end

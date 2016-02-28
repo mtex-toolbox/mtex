@@ -34,26 +34,24 @@ if inner1 ~= inner2
   end
 end
 
+% consider the cases ori * Miller, ori * tensor, ori * slipSystem
+if ~isa(b,'quaternion') && ~isnumeric(b)
+  r = rotate(b,a);
+  return
+end
+
 % rotation multiplication
 r = times@rotation(a,b);
 
-% convert back to rotation
-isCrystal = isa(right,'crystalSymmetry') || isa(left,'crystalSymmetry');
+% convert back to orientation
+if isa(right,'crystalSymmetry') || isa(left,'crystalSymmetry');
 
-if isa(b,'vector3d') && isCrystal
+  r = orientation(r,right,left);
 
-  r = Miller(r,left);
+else % otherwise it is only a rotation
 
-elseif isa(r,'quaternion')
-  
-  if isCrystal
-  
-    r = orientation(r,right,left);
-  
-  else % otherwise it is only a rotation
-  
-    r = rotation(r);
-  
-  end
+  r = rotation(r);
+
 end
+
 end
