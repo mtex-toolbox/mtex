@@ -16,8 +16,8 @@ function m = SchmidTensor(n,b,varargin)
 %
 
 % normalize and convert to tensor
-tn = tensor(n./norm(n));
-tb = tensor(b./norm(b));
+tn = tensor(n.normalize,'noCheck');
+tb = tensor(b.normalize,'noCheck');
 
 if check_option(varargin,'generalized')
   

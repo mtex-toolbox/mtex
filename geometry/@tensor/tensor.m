@@ -44,6 +44,7 @@ classdef (InferiorClasses = {?quaternion,?rotation,?orientation}) tensor < dynOp
       if isa(M,'vector3d') % conversion from vector3d
         T.M = shiftdim(double(M),ndims(M));
         r = 1;
+        if isa(M,'Miller'), T.CS = M.CS; end
       
       elseif isa(M,'quaternion') % conversion from quaternion
 
@@ -89,8 +90,6 @@ classdef (InferiorClasses = {?quaternion,?rotation,?orientation}) tensor < dynOp
       if ~isempty(args)
         T.CS = varargin{args};
         varargin(args) = [];
-      else
-        T.CS = specimenSymmetry;
       end
 
       options = delete_option(varargin,{'doubleconvention','singleconvention','InfoLevel','noCheck'});
