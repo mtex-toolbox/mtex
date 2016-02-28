@@ -10,8 +10,10 @@ if isa(obj,'symmetry')
 elseif isa(obj,'orientation')
   sym1 = obj.SS;
   sym2 = obj.CS;
-elseif isa(obj,'Miller')
-  sym1 = obj.CS;
+else
+  try
+    sym1 = obj.CS;
+  end
 end
 
 end
