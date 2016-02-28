@@ -7,8 +7,14 @@ csOld = obj.CS;
 if csOld.Laue == csNew.Laue, return;end
 
 % check for compatibility
-axesOld = reshape(double(csOld.axes),3,3);
-axesNew = reshape(double(csNew.axes),3,3);
+try
+  axesOld = reshape(double(csOld.axes),3,3);
+  axesNew = reshape(double(csNew.axes),3,3);
+catch
+  warning('MTEX:symmetry:missmatch',...
+    'The symmetries %s and %s do not match!',char(csNew),char(csOld));
+  return
+end
 M = axesOld^(-1) * axesNew;
 
 % if compatible transform to new reference frame
