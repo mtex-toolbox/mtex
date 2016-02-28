@@ -125,7 +125,13 @@ end
 % set MTEX search path
 function setMTEXPath(local_path)
 
-addpath_recurse(local_path,{'c','data','help','templates'});
+exclPath = {'c','data','help','templates'};
+
+if ~MATLABverLessThan('8.5')
+  exclPath = [exclPath,'8.4'];
+end
+
+addpath_recurse(local_path,exclPath);
 
 end
 
