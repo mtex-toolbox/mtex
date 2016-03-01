@@ -25,7 +25,6 @@ classdef Miller < vector3d
     V
     T
     W
-    xyz
   end
     
 methods
@@ -204,14 +203,7 @@ methods
       end
       
     end
-    
-    function xyz = get.xyz(m)
-      
-      xyz = [m.x(:),m.y(:),m.z(:)];
-      
-    end
-    
-    
+
     function h = get.h(m), h = m.hkl(:,1);end
     function k = get.k(m), k = m.hkl(:,2);end
     function i = get.i(m), i = m.hkl(:,3);end
