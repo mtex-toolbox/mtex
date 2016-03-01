@@ -50,6 +50,20 @@ hold on
 plot(gB3,'lineColor','g','linewidth',2,'DisplayName','CSL 3')
 hold off
 
+%% Mark triple points
+% Next we want to mark all triple points with at least 2 CSL boundaries
+
+% logical list of CSL boundaries
+isCSL3 = grains.boundary.isTwinning(CSL(3,ebsd.CS),3*degree);
+
+% logical list of triple points with at least 2 CSL boundaries
+tPid = sum(isCSL3(grains.triplePoints.boundaryId),2)>=2;
+
+% plot these triple points
+hold on
+plot(grains.triplePoints(tPid),'color','r')
+hold off
+
 %% Merging grains with common CSL(3) boundary
 % Next we merge all grains together which have a common CSL(3) boundary.
 % This is done with the command <grain2d_merge.html merge>.
