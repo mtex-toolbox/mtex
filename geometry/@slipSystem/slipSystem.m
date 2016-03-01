@@ -16,6 +16,7 @@ classdef slipSystem
         'Slip direction and plane normal should be orthogonal!')
       
       sS.b = b;
+      n.antipodal = true;
       sS.n = n;
       
     end
@@ -28,21 +29,6 @@ classdef slipSystem
       end
     end
     
-    function sS = symmetrise(sS)
-      % find all symmetrically equivalent slips systems
-        
-      % find all symmetrically equivalent
-      [m,~] = symmetrise(sS.b,'antipodal');
-      [n,~] = symmetrise(sS.n,'antipodal'); %#ok<*PROP>
-  
-      % find orthogonal ones
-      [r,c] = find(isnull(dot_outer(vector3d(m),vector3d(n))));
-
-      % restricht to the orthogonal ones
-      sS.b = m(r);
-      sS.n = n(c);
-    end
-    
     function display(sS,varargin)
       % standard output
 
@@ -52,55 +38,33 @@ classdef slipSystem
 
       disp([' size: ' size2str(sS.b)]);
 
-      if ~isa(sS.b,'Miller'), return; end
+      % display symmetry
+      if isa(sS.CS,'crystalSymmetry')
+        if ~isempty(sS.CS.mineral)
+          disp([' mineral: ',char(sS.CS,'verbose')]);
+        else
+          disp([' symmetry: ',char(sS.CS,'verbose')]);
+        end
+      end
+            
+      if numel(sS)>50, return; end
       
       % display coordinates  
-      if any(strcmp(sS.b.CS.lattice,{'hexagonal','trogonal'}))
-        d = [sS.b.UVTW sS.n.hkl];
-        d(abs(d) < 1e-10) = 0;
-        cprintf(d,'-L','  ','-Lc',{'U' 'V' 'T' 'W' '| H' 'K' 'I' 'L'});
-      else        
-        d = [sS.b.uvw sS.n.hkl];
-        d(abs(d) < 1e-10) = 0;
-        cprintf(d,'-L','  ','-Lc',{'u' 'v' 'w' '| h' 'k' 'l'});
-      end
-    end
-    
-    function value = mPrime(sS1,sS2)
-      %
-      
-      value = abs(dot(sS1.b.normalize,sS2.b.normalize,'noSymmetry') .* ...
-        dot(sS1.n.normalize,sS2.n.normalize,'noSymmetry'));
-    end
-
-    
-    function SF = SchmidFactor(sS,sigma)
-      % compute the Schmid factor
-      
-      b = sS.b.normalize; %#ok<*PROPLC>
-      n = sS.n.normalize;
-      
-      if isa(sigma,'vector3d')
-        
-        r = sigma.normalize;
-        SF = dot_outer(r,b,'noSymmetry') .* dot_outer(r,n,'noSymmetry');
-        
-      else
-   
-        SF = zeros(length(sigma),length(b));
-        for i = 1:length(sS.b)
-          SF(:,i) = double(EinsteinSum(sigma,[-1,-2],n(i),-1,b(i),-2));
+      if isa(sS.CS,'crystalSymmetry')
+        if any(strcmp(sS.b.CS.lattice,{'hexagonal','trogonal'}))
+          d = [sS.b.UVTW sS.n.hkl];
+          d(abs(d) < 1e-10) = 0;
+          cprintf(d,'-L','  ','-Lc',{'U' 'V' 'T' 'W' '| H' 'K' 'I' 'L'});
+        else
+          d = [sS.b.uvw sS.n.hkl];
+          d(abs(d) < 1e-10) = 0;
+          cprintf(d,'-L','  ','-Lc',{'u' 'v' 'w' '| h' 'k' 'l'});
         end
-        
+      else
+        d = round(100*[sS.b.xyz sS.n.xyz])./100;
+        d(abs(d) < 1e-10) = 0;
+        cprintf(d,'-L','  ','-Lc',{'x' 'y' 'z' ' |   x' 'y' 'z'});
       end
-    end
-    
-    function sS = rotate(sS,ori)
-      % rotate slip system
-      
-      sS.b = rotate(sS.b,ori);
-      sS.n = rotate(sS.n,ori);
-      
     end
     
     function n = numArgumentsFromSubscript(varargin)

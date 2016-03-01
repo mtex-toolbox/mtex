@@ -1,5 +1,5 @@
-function b = eq(v1,v2,varargin)
-% ? v1 == v2
+function b = eq(sS1,sS2,varargin)
+% ? sS1 == sS2
 %
 % Input
 %  v1, v2 - @vector3d
@@ -11,10 +11,10 @@ function b = eq(v1,v2,varargin)
 %  antipodal - include antipodal symmetry
 %
 
-if length(v1)>1 && length(v2)>1 && any(size(v2)~=size(v1))
+if sS1.CS ~= sS2.CS || ...
+    (length(sS1)>1 && length(sS2)>1 && any(size(sS2)~=size(sS1)))
   b = false;
   return
 end
 
-b = isnull(dot(v1,v2,varargin{:}) - sqrt(dot(v1,v1)) .* sqrt(dot(v2,v2)));
-
+b = sS1.b == sS2.b & sS1.n == sS2.n;

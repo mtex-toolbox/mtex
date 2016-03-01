@@ -1,20 +1,19 @@
-function v = cat(dim,varargin)
+function sS = cat(dim,varargin)
 % 
 
 % remove emtpy arguments
 varargin(cellfun('isempty',varargin)) = [];
-v = varargin{1};
+sS = varargin{1};
 
-vx = cell(size(varargin)); vy = vx; vz = vx;
+sSb = cell(size(varargin)); sSd = sSb; vz = sSb;
 for i = 1:numel(varargin)
-  vs = varargin{i};
-  if ~isempty(vs)
-    vx{i} = vs.x;
-    vy{i} = vs.y;
-    vz{i} = vs.z;
+  sS2 = varargin{i};
+  if ~isempty(sS2)
+    sSb{i} = sS2.b;
+    sSd{i} = sS2.d;
   end
 end
 
-v.x = cat(dim,vx{:});
-v.y = cat(dim,vy{:});
-v.z = cat(dim,vz{:});
+sS.b = cat(dim,sSb{:});
+sS.d = cat(dim,sSd{:});
+
