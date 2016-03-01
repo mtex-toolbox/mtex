@@ -1,4 +1,4 @@
-function b = ne(v1,v2,varargin)
-% ? v1 == v2
+function b = ne(sS1,sS2,varargin)
+% ? sS1 ~= sS2
 
-b = ~eq(v1,v2,varargin{:});
+b = ~eq(sS1,sS2,varargin{:});

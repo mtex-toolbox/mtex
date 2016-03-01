@@ -1,36 +1,33 @@
-function v = subsasgn(v,s,b)
+function sS = subsasgn(sS,s,value)
 % overloads subsasgn
 
-if ~isa(v,'vector3d') && ~isempty(b)
-  v = b;
-  v.x = [];
-  v.y = [];
-  v.z = [];
+if ~isa(sS,'slipSystem') && ~isempty(value)
+  sS = value;
+  sS.b.x = [];
+  sS.b.y = [];
+  sS.b.z = [];
+  sS.n.x = [];  
+  sS.n.y = [];  
+  sS.n.z = [];  
 end
 
 switch s(1).type
   
   case '()'
       
-    if numel(s)>1, b =  builtin('subsasgn',subsref(v,s(1)),s(2:end),b); end
+    if numel(s)>1, value =  builtin('subsasgn',subsref(sS,s(1)),s(2:end),value); end
       
-    if isempty(b)
-      v.x = subsasgn(v.x,s(1),[]);
-      v.y = subsasgn(v.y,s(1),[]);
-      v.z = subsasgn(v.z,s(1),[]);
+    if isempty(value)
+      sS.b = subsasgn(sS.b,s(1),[]);
+      sS.n = subsasgn(sS.n,s(1),[]);
     else
-      v.x = subsasgn(v.x,s(1),b.x);
-      v.y = subsasgn(v.y,s(1),b.y);
-      v.z = subsasgn(v.z,s(1),b.z);
+      sS.b = subsasgn(sS.b,s(1),value.b);
+      sS.n = subsasgn(sS.n,s(1),value.d);
     end
   otherwise
     
-    v =  builtin('subsasgn',v,s,b);    
+    sS =  builtin('subsasgn',sS,s,value);    
 
-    % ensure x,y,z have the same size
-    if numel(v.x)==1, v.x = repmat(v.x,size(v.y));end
-    if numel(v.y)==1, v.y = repmat(v.y,size(v.z));end
-    if numel(v.z)==1, v.z = repmat(v.z,size(v.x));end
 end
 
 end
