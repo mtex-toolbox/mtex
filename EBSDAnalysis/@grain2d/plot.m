@@ -54,7 +54,9 @@ elseif check_option(varargin,'FaceColor')
   h = plotFaces(grains.poly,grains.V,color,'parent', mP.ax,varargin{:});
   
   % reactivate legend information
-  set(get(get(h(end),'Annotation'),'LegendInformation'),'IconDisplayStyle','on');
+  if check_option(varargin,'displayName')
+    set(get(get(h(end),'Annotation'),'LegendInformation'),'IconDisplayStyle','on');
+  end
   
 else % otherwise phase plot
 
