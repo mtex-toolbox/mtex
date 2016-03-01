@@ -52,7 +52,7 @@ if nargout == 2
   v = Sv.';
 else
   
-  v = S * v;
+  v = reshape(S * v,length(S),length(v));
 
   if (check_option(varargin,'antipodal') || v.antipodal) ...
       && ~check_option(varargin,'skipAntipodal')
