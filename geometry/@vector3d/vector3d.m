@@ -11,6 +11,7 @@ classdef vector3d < dynOption
     theta   % polar angle
     rho     % azimuth angle
     resolution % mean distance between the points on the sphere
+    xyz
   end
   
   methods
@@ -130,6 +131,12 @@ classdef vector3d < dynOption
       catch
         theta = acos(v.z./v.norm);
       end
+    end
+    
+    function xyz = get.xyz(v)
+      
+      xyz = [v.x(:),v.y(:),v.z(:)];
+      
     end
     
     function res = get.resolution(v)
