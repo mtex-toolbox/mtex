@@ -97,6 +97,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.repmat.html">repmat</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.reshape.html">reshape</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.rotate.html">rotate</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.rotate_outer.html">rotate_outer</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.scatter.html">scatter</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.scatter3d.html">scatter3d</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.size.html">size</tocitem>
@@ -127,6 +128,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="Miller.project2FundamentalRegion.html">project2FundamentalRegion</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="Miller.region.html">region</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="Miller.rotate.html">rotate</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="Miller.rotate_outer.html">rotate_outer</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="Miller.round.html">round</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="Miller.scatter.html">scatter</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="Miller.smooth.html">smooth</tocitem>
@@ -314,6 +316,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.inv.html">inv</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.isMisorientation.html">isMisorientation</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.ldivide.html">ldivide</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.log.html">log</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.mean.html">mean</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.mldivide.html">mldivide</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.mtimes.html">mtimes</tocitem>
@@ -483,6 +486,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.findByOrientation.html">findByOrientation</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.fliplr.html">fliplr</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.flipud.html">flipud</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.gridify.html">gridify</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.inpolygon.html">inpolygon</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.mtimes.html">mtimes</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.plot.html">plot</tocitem>
@@ -493,6 +497,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.spatialProfile.html">spatialProfile</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.subSet.html">subSet</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.subsasgn.html">subsasgn</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.subsind.html">subsind</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.subsref.html">subsref</tocitem>
             </tocitem>
             <tocitem target="tensor_index.html">Material Tensors (The Class @tensor)<tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.ChristoffelTensor.html">ChristoffelTensor</tocitem>
@@ -533,6 +538,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.rdivide.html">rdivide</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.real.html">real</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.rotate.html">rotate</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.rotate_outer.html">rotate_outer</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.shearModulus.html">shearModulus</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.size.html">size</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.subsasgn.html">subsasgn</tocitem>
@@ -811,7 +817,12 @@
             <tocitem target="EBSDSimulation_demo.html#11">Exploration of the relationship between estimation error and number of single orientations</tocitem>
          </tocitem>
       </tocitem>
-      <tocitem target="GrainAnalysis.html">Grains<tocitem target="GrainReconstruction.html">Grain Reconstruction<tocitem target="GrainReconstruction.html#4">Basic grain reconstruction</tocitem>
+      <tocitem target="GrainAnalysis.html">Grains<tocitem target="GrainReconstructionDemo.html">First Steps and Function Overview<tocitem target="GrainReconstructionDemo.html#1">Grain reconstruction from EBSD data</tocitem>
+            <tocitem target="GrainReconstructionDemo.html#7">Smoothing grain boundaries</tocitem>
+            <tocitem target="GrainReconstructionDemo.html#8">Grain properties</tocitem>
+            <tocitem target="GrainReconstructionDemo.html#12">Changing lists of grains</tocitem>
+         </tocitem>
+         <tocitem target="GrainReconstruction.html">Grain Reconstruction<tocitem target="GrainReconstruction.html#4">Basic grain reconstruction</tocitem>
             <tocitem target="GrainReconstruction.html#6">The grainId and how to select EBSD inside specific grains</tocitem>
             <tocitem target="GrainReconstruction.html#9">Misorientation to mean orientation</tocitem>
             <tocitem target="GrainReconstruction.html#11">Filling not indexed holes</tocitem>
@@ -852,10 +863,11 @@
          </tocitem>
          <tocitem target="CSLBoundaries.html">CSL Boundaries<tocitem target="CSLBoundaries.html#3">Data import and grain detection</tocitem>
             <tocitem target="CSLBoundaries.html#5">Detecting CSL Boundaries</tocitem>
-            <tocitem target="CSLBoundaries.html#6">Merging grains with common CSL(3) boundary</tocitem>
-            <tocitem target="CSLBoundaries.html#8">Colorizing misorientations</tocitem>
-            <tocitem target="CSLBoundaries.html#11">Misorientations in the 3d fundamental zone</tocitem>
-            <tocitem target="CSLBoundaries.html#12">Analyzing the misorientation distribution function</tocitem>
+            <tocitem target="CSLBoundaries.html#6">Mark triple points</tocitem>
+            <tocitem target="CSLBoundaries.html#7">Merging grains with common CSL(3) boundary</tocitem>
+            <tocitem target="CSLBoundaries.html#9">Colorizing misorientations</tocitem>
+            <tocitem target="CSLBoundaries.html#12">Misorientations in the 3d fundamental zone</tocitem>
+            <tocitem target="CSLBoundaries.html#13">Analyzing the misorientation distribution function</tocitem>
          </tocitem>
          <tocitem target="TriplePoints.html">Triple points<tocitem target="TriplePoints.html#3">Calculation of triple points</tocitem>
             <tocitem target="TriplePoints.html#4">Index triple points by phase</tocitem>
