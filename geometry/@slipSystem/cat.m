@@ -5,15 +5,15 @@ function sS = cat(dim,varargin)
 varargin(cellfun('isempty',varargin)) = [];
 sS = varargin{1};
 
-sSb = cell(size(varargin)); sSd = sSb; vz = sSb;
+sSb = cell(size(varargin)); sSn = sSb;
 for i = 1:numel(varargin)
   sS2 = varargin{i};
   if ~isempty(sS2)
     sSb{i} = sS2.b;
-    sSd{i} = sS2.d;
+    sSn{i} = sS2.n;
   end
 end
 
 sS.b = cat(dim,sSb{:});
-sS.d = cat(dim,sSd{:});
+sS.n = cat(dim,sSn{:});
 
