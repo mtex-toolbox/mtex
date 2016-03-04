@@ -1,6 +1,9 @@
 function T = symmetrise(T)
 % symmetrise a tensor according to its crystal symmetry
 
+% for rank 0 and 1 tensors there is nothing to do
+if T.rank <= 1, return; end
+
 M_old = T.M;
 
 % make symmetric if neccasarry

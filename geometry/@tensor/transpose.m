@@ -14,7 +14,7 @@ switch T.rank
     
   case 2
     
-    T.M = transpose(T.M);
+    T.M = permute(T.M,[2 1 3:ndims(T.M)]);
     
   case 3
     
@@ -23,17 +23,17 @@ switch T.rank
     % check for symmetry
 
     % convert to a matrix    
-    M = tensor42(T.M);
+    M = tensor42(T.M,T.doubleConvention);
     
     % invert the matrix
-    M = transpose(M);
+    M = permute(M,[2 1 3:ndims(T.M)]);
     
     % make some corrections
     w = 1./(1+((1:6)>3));
     w = w.' * w;
     M = M .* w;
     
-    % convert to back a 4 rank tensor
-    T.M = tensor24(M);
+    % convert back to a 4 rank tensor
+    T.M = tensor24(M,T.doubleConvention);
 end
 

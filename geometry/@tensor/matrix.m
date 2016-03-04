@@ -1,4 +1,4 @@
-function m= matrix(T,varargin)
+function m = matrix(T,varargin)
 % return tensor as a matrix
 %
 % Syntax

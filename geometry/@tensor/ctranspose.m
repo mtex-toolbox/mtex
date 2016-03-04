@@ -23,7 +23,7 @@ switch T.rank
     % check for symmetry
 
     % convert to a matrix    
-    M = tensor42(T.M);
+    M = tensor42(T.M,T.doubleConvention);
     
     % invert the matrix
     M = ctranspose(M);
@@ -33,7 +33,7 @@ switch T.rank
     w = w.' * w;
     M = M .* w;
     
-    % convert to back a 4 rank tensor
-    T.M = tensor24(M);
+    % convert back to a 4 rank tensor
+    T.M = tensor24(M,T.doubleConvention);
 end
 
