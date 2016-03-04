@@ -358,7 +358,34 @@ methods
     end        
 end
   
+  methods (Static = true)
+    
+    function v = nan(varargin)
+      s = varargin(cellfun(@isnumeric,varargin));
+      v = vector3d.nan(s{:});
+      h = Miller(v,varargin{:});
+    end
+    
+    function v = ones(varargin)
+      s = varargin(cellfun(@isnumeric,varargin));
+      v = vector3d.ones(s{:});
+      h = Miller(v,varargin{:});
+    end
+    
+    function v = zeros(varargin)
+      s = varargin(cellfun(@isnumeric,varargin));
+      v = vector3d.zeros(s{:});
+      h = Miller(v,varargin{:});
+    end
+    
+    function h = rand(varargin )
+      % vector of random vector3d
 
-
+      s = varargin(cellfun(@isnumeric,varargin));
+      v = vector3d.rand(s{:});
+      h = Miller(v,varargin{:});
+            
+    end        
+  end
 end
 
