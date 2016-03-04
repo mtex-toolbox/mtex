@@ -27,11 +27,18 @@ gnd = nan(size(ebsd));
 
 % compute the GND
 for i = 1:length(ebsd)
-  
+
+  % the first two columns of the dislocation tensor are just
+  % the texture gradients
   kappa(1,:) = gX(i,:);
   kappa(2,:) = gY(i,:);
 
-  alpha = kappa - trace(kappa)*eye(3);
+  % as we do not know the texture gradient with respect to the z-direction
+  % we should add least guaranty that the trace of the tensor is zero, i.e.,
+  % it is volume preserving
+  % TODO!!!
+  % alpha = kappa - trace(kappa)*eye(3);
+  kappa(3,3) = - kappa(1,1) - kappa(2,2);
     
   gnd(i) = norm(alpha,2);
   
