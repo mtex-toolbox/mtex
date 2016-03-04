@@ -102,7 +102,7 @@ classdef (InferiorClasses = {?quaternion,?rotation,?orientation}) tensor < dynOp
         T = symmetrise(T);
       end
     end
-    
+          
     function [varargout] = calcTensor(obj,varargin)
       [varargout{1:nargout}] = obj.calcTensor(varargin{:});
     end
@@ -111,4 +111,13 @@ classdef (InferiorClasses = {?quaternion,?rotation,?orientation}) tensor < dynOp
       n = 0;
     end
   end
+  
+  methods (Static = true)
+    
+    function T = diag(d,varargin)
+      T = tensor(diag(d),varargin{:});
+    end
+    
+  end
+  
 end
