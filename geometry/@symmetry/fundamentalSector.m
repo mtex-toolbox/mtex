@@ -43,13 +43,13 @@ if length(cs) > 1+length(N)
 end
 
 try
-  aAxis = cs.axes(1);
+  omega = cs.bAxis.rho;
 catch
-  aAxis = xvector;
+  omega = (1-NWSE(getMTEXpref('xAxisDirection')))*pi/2;  
 end
 
 % rotate fundamental sector such that it start with the aAxis
-N = rotate(N,aAxis.rho);
+N = rotate(N,omega);
 
 % some special cases
 switch cs.id
@@ -61,14 +61,20 @@ switch cs.id
     if isnull(dot(getMinAxes(cs),zvector))
       N = zvector;    
     end
-  case {4,7,10} % m11, 1m1, mm1
-    N = getMinAxes(cs);
+    ind = angle(N,vector3d(cs.aAxis))< 45*degree;    
+  case 4
+    N = -getMinAxes(cs);    
+  case {7,10} % m11, 1m1, mm1
+    N = getMinAxes(cs);    
   case 5 % 2/m11
+  case 8 % 12/m1
       N = rotate(N,-90*degree);
-  case {8,11} % 12/m1 112/m      
+  case 11
   case 12 % 222
   case {13,14,15} % 2mm, m2m, mm2
     N = cs.subSet(cs.isImproper).axis; % take mirror planes
+    ind = angle(N,vector3d(cs.aAxis))< 45*degree;
+    N(ind) = -N(ind);
   case 16 % mmm    
   case 17 % 3
   case 18 % -3
@@ -84,13 +90,13 @@ switch cs.id
   case 39 % 6m2
     N = rotate(N,-30*degree);    
   case 41 % 23    
-    N = vector3d([1 1 0 0],[1 -1 1 -1],[0 0 1 1]);
+    N = rotate(vector3d([1 1 0 0],[1 -1 1 -1],[0 0 1 1]),omega);
   case {42,43} % m-3, 432
-    N = [vector3d(0,-1,1),vector3d(-1,0,1),xvector,yvector,zvector];  
+    N = rotate([vector3d(0,-1,1),vector3d(-1,0,1),xvector,yvector,zvector],omega);  
   case 44 % -43m
-    N = [vector3d(1,-1,0),vector3d(1,1,0),vector3d(-1,0,1)];
+    N = rotate([vector3d(1,-1,0),vector3d(1,1,0),vector3d(-1,0,1)],omega);
   case 45 % m-3m    
-    N = [vector3d(1,-1,0),vector3d(-1,0,1),yvector];
+    N = rotate([vector3d(1,-1,0),vector3d(-1,0,1),yvector],omega);
 end
 
 % this will be restricted later anyway

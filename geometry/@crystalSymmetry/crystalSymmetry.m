@@ -162,11 +162,8 @@ classdef crystalSymmetry < symmetry
     end    
    
     function opt = get.plotOptions(cs)
-      % rotate the aAxis to the east
-      % but take only multiples of 90 degrees,
-      % since Matlab is not able to handle the values in between 
-      %rho = -round(m.CS.aAxis.rho / 90 / degree)*90*degree;
-      rho = -cs.aAxis.rho;
+      % rotate the bAxis to the east
+      rho = -cs.bAxis.rho;
       opt = {'xAxisDirection',rho,'zAxisDirection','outOfPlane'};
     end
     
