@@ -76,11 +76,12 @@ classdef slipSystem
   methods (Static = true)
     
     function sS = fcc(cs)
-      sS = slipSystem(Miller(0,1,-1,cs,'uvw'),Miller(0,0,1,cs,'hkl'));
+      sS = slipSystem(Miller(0,1,-1,cs,'uvw'),Miller(1,1,1,cs,'hkl'));
     end
     
      function sS = bcc(cs)
-      sS = slipSystem(Miller(1,-1,1,cs,'uvw'),Miller(0,1,1,cs,'hkl'));
+      sS = [slipSystem(Miller(1,-1,1,cs,'uvw'),Miller(0,1,1,cs,'hkl')),...
+        slipSystem(Miller(-1,1,1,cs,'uvw'),Miller(2,1,1,cs,'hkl'))];
     end
     
     function sS = basal(cs)
