@@ -360,21 +360,9 @@ end
   
   methods (Static = true)
     
-    function v = nan(varargin)
+    function h = nan(varargin)
       s = varargin(cellfun(@isnumeric,varargin));
       v = vector3d.nan(s{:});
-      h = Miller(v,varargin{:});
-    end
-    
-    function v = ones(varargin)
-      s = varargin(cellfun(@isnumeric,varargin));
-      v = vector3d.ones(s{:});
-      h = Miller(v,varargin{:});
-    end
-    
-    function v = zeros(varargin)
-      s = varargin(cellfun(@isnumeric,varargin));
-      v = vector3d.zeros(s{:});
       h = Miller(v,varargin{:});
     end
     
