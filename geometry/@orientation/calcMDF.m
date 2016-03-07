@@ -1,5 +1,5 @@
-function mdf = calcMDF(ori,varargin)
-% computes an MDF from individuel orientations
+function mdf = calcMDF(mori,varargin)
+% computes an MDF from individuel orientations or misorientations
 %
 % The function *calcMDF* applies one of the following algorithms to compute
 % an MDF from a list of orientations.
@@ -11,20 +11,25 @@ function mdf = calcMDF(ori,varargin)
 % Syntax
 %
 %   % use kernel density estimation with a 10 degree kernel
-%   mdf = calcMDF(ori,'halfwidth',10*degree) 
+%   mori = grains.boundary.misorientation
+%   mdf = calcMDF(mori,'halfwidth',10*degree) 
+%
+%   % compute an uncorrelated MDF
+%   mdf = calcMDF(grains('phase1').meanorientation)
 %
 %   % use grain area as weights for the orientations
-%   mdf = calcMDF(grains.meanOrientation,'weights',grains.area)
+%   mdf = calcMDF(grains('phase1').meanOrientation,'weights',grains('phase1').diameter)
 %
 %   % use a specific kernel
 %   psi = AbelPoissonKernel('halfwidth',10*degree)
-%   mdf = calcMDF(ori,'kernel',psi) 
+%   mdf = calcMDF(mori,'kernel',psi) 
 %
 %   % compute the MDF as a Fourier series of order 16
-%   mdf = calcMDF(ori,'order',16) 
+%   mdf = calcMDF(mori,'order',16) 
 %
 % Input
 %  ori  - @orientation
+%  mori - misorientation
 %
 % Output
 %  mdf - @ODF
@@ -46,8 +51,32 @@ function mdf = calcMDF(ori,varargin)
 % See also
 % orientation/calcFourierMDF orientation/calcKernelMDF orientation/calcBinghamMDF ebsd_demo EBSD2mdf EBSDSimulation_demo 
 
-if check_option(varargin,'antipoal')
-  ori = [ori(:);inv(ori(:))]; 
+% if orientations have been specified
+if isa(mori.SS,'specimenSymmetry')
+  
+  % compute an ODF first
+  odf1 = calcFourierODF(mori,varargin{:});
+  
+  if nargin > 1 && isa(varargin{1},'orientation')
+    
+    % maybe a second ODF is needed
+    odf2 = calcFourierODF(varargin{1},varargin{:});
+    
+    % compute the MDF
+    mdf = calcMDF(odf1,odf2);
+    
+  else
+    
+    % compute the MDF
+    mdf = calcMDF(odf1);
+    
+  end
+  
+  return
 end
 
-mdf = calcODF(ori,'halfwidth',7.5*degree,varargin{:});
+if check_option(varargin,'antipoal') && mori.CS == mori.SS
+  mori = [mori(:);inv(mori(:))]; 
+end
+
+mdf = calcODF(mori,'halfwidth',7.5*degree,varargin{:});
