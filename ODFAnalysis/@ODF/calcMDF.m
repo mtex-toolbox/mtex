@@ -27,18 +27,12 @@ if check_option(varargin,'kernelMethod') && isa(odf1,'unimodalODF') && ...
   
 else % Fourier method
   
-  % determine bandwidth
-  L = get_option(varargin,'bandwidth',32);
-  
   % convert to FourierODF
-  odf1 = FourierODF(odf1,L);
-
-  % extract Fourier coefficients
-  L = min(odf1.components{1}.bandwidth,L);
-
+  odf1 = FourierODF(odf1,varargin{:});
+  
   % is second argument also an ODF?
   if nargin > 1 && isa(varargin{1},'ODF')
-    odf2 = FourierODF(varargin{1},L);
+    odf2 = FourierODF(varargin{1},odf1.components{1}.bandwidth);
   else
     odf2 = odf1;
   end

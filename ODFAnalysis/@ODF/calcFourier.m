@@ -22,7 +22,7 @@ function f_hat = calcFourier(odf,varargin)
 if nargin > 1 && isnumeric(varargin{1})
   L = max(varargin{1},4);
 else
-  L = get_option(varargin,'bandwidth',32);
+  L = get_option(varargin,'bandwidth',min(odf.bandwidth,64));
 end
 
 f_hat = zeros(deg2dim(L+1),1);
