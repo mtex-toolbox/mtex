@@ -15,8 +15,8 @@ classdef sphericalPlot < handle
     TR       %
     BL       %
     BR       %
-    minData = 0
-    maxData = 0
+    minData = NaN
+    maxData = NaN
     dispMinMax = false
   end
   
