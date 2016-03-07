@@ -292,7 +292,7 @@ classdef sphericalPlot < handle
     
     function plotLabels(sP,CS,varargin)
 
-      if check_option(varargin,'noLabel'), return; end
+      if check_option(varargin,'noLabel') || isempty(CS), return; end
       
       sR = sP.sphericalRegion; 
       h = sR.vertices;
