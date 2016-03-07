@@ -34,12 +34,9 @@ for i = 1:length(ebsd)
   kappa(2,:) = gY(i,:);
 
   % as we do not know the texture gradient with respect to the z-direction
-  % we should add least guaranty that the trace of the tensor is zero, i.e.,
-  % it is volume preserving
-  % TODO!!!
-  % alpha = kappa - trace(kappa)*eye(3);
-  kappa(3,3) = - kappa(1,1) - kappa(2,2);
-    
+  % we have to do something here TODO!!
+  alpha = kappa - trace(kappa)*eye(3);
+      
   gnd(i) = norm(alpha,2);
   
 end
