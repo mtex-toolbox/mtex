@@ -16,7 +16,6 @@ classdef phaseList
     indexedPhasesId % id's of all non empty indexed phase
     color           % color of one specific phase
   end
-      
     
   methods
     
@@ -57,10 +56,21 @@ classdef phaseList
         % the data 
         
         first = isa(pL.CSList{1},'symmetry');
-        
-        if ~first + max(pL.phaseMap) <= numel(pL.CSList)
+      
+        % if everything is indexed but phase is 0
+        if (max(pL.phaseMap) == 0) && ~first
           
+          pL.phaseMap = [-1;pL.phaseMap(:)];
+          pL.phaseId = 1 + pL.phaseId;
+          
+        % the normal case: there are simply some phases missing
+        % all we have to do is to extend the phaseMap
+        elseif ~first + max(pL.phaseMap) <= numel(pL.CSList)
+          
+          % 
           pL.phaseId = ~first + pL.phaseMap(pL.phaseId);
+          
+          % extend phaseMap
           pL.phaseMap = first + (0:numel(pL.CSList)-1);
           
         else
@@ -174,6 +184,16 @@ classdef phaseList
       else
         error('Assignment should be of type symmetry');
       end
+         
+      % set CSList also to all children
+      for fn = fieldnames(pL).'
+        try %#ok<TRYNC>
+         if isa(pL.(char(fn)),'phaseList')
+           pL.(char(fn)).CSList = pL.CSList;
+         end
+        end
+      end
+      
     end
     
     function mineral = get.mineral(pL)
@@ -253,7 +273,9 @@ classdef phaseList
     function id = checkSinglePhase(pL)
       % ensure single phase
       
-      id = unique(pL.phaseId,'rows');
+      phaseId = pL.phaseId; %#ok<*PROP>
+      phaseId = phaseId(~any(isnan(pL.phaseId),2),:);
+      id = unique(phaseId,'rows');
                            
       if numel(id)>size(pL.phaseId,2)     
               

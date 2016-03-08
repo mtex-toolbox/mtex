@@ -35,7 +35,8 @@ end
 
 % plot the result as a bar plot
 binCenter = 0.5*(bins(1:end-1)+bins(2:end));
-bar(binCenter,100*cumArea,'BarWidth',1.5,'parent',mtexFig.gca)
+binWidth = 1 + 0.5*size(cumArea,2)>1;
+bar(binCenter,100*cumArea,'BarWidth',binWidth,'parent',mtexFig.gca)
 xlim(mtexFig.gca,[bins(1),bins(end)])
 xlabel(mtexFig.gca,'grain area')
 ylabel(mtexFig.gca,'relative volume (%)')

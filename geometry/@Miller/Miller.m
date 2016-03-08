@@ -355,14 +355,25 @@ methods
       % set default display style
       m.dispStyle = 'UVTW';
       
+    end        
+end
+  
+  methods (Static = true)
+    
+    function h = nan(varargin)
+      s = varargin(cellfun(@isnumeric,varargin));
+      v = vector3d.nan(s{:});
+      h = Miller(v,varargin{:});
     end
-end
-        
-methods (Static = true)
-  function opt = plotOptions
-    opt = {'xAxisDirection','east','zAxisDirection','outOfPlane'};
-  end
-end
+    
+    function h = rand(varargin )
+      % vector of random vector3d
 
+      s = varargin(cellfun(@isnumeric,varargin));
+      v = vector3d.rand(s{:});
+      h = Miller(v,varargin{:});
+            
+    end        
+  end
 end
 

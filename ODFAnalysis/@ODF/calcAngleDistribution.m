@@ -66,7 +66,7 @@ if ~check_option(varargin,'fast')
   end
   
   % evaluate the ODF at the grid
-  f = eval(odf,S3G); %#ok<EVLC>
+  f = max(0,eval(odf,S3G)); %#ok<EVLC>
   
   % integrate
   for k = 1:numel(omega)    

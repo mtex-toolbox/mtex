@@ -10,7 +10,7 @@ function startup_mtex(varargin)
 % this is a bugfix for MATLAV having very high cpu load on idle
 if isunix && ~ismac
   try
-    com.mathworks.mlwidgets.html.HtmlComponentFactory.setDefaultType('HTMLRENDERER');
+    %com.mathworks.mlwidgets.html.HtmlComponentFactory.setDefaultType('HTMLRENDERER');
     % to revert:
     %com.mathworks.mlwidgets.html.HtmlComponentFactory.setDefaultType([]);
   end
@@ -125,7 +125,13 @@ end
 % set MTEX search path
 function setMTEXPath(local_path)
 
-addpath_recurse(local_path,{'c','data','help','templates'});
+exclPath = {'c','data','help','templates'};
+
+if ~MATLABverLessThan('8.5')
+  exclPath = [exclPath,'8.4'];
+end
+
+addpath_recurse(local_path,exclPath);
 
 end
 

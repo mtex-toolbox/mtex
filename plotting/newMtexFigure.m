@@ -65,7 +65,12 @@ else % use an existing figure
   
   % set current axis
   if check_option(varargin,'parent')
-    mtexFig.currentAxes = get_option(varargin,'parent');
+    p =  get_option(varargin,'parent');
+    if isgraphics(p,'axes')
+      mtexFig.currentAxes = p;
+    else
+      mtexFig.currentAxes = get(p,'parent');
+    end
   else
     mtexFig.currentId = 1;
   end

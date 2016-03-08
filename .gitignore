@@ -11,10 +11,11 @@ c/mex/win64/*
 c/mex/maci64/*
 c/mex/maci/*
 data/cif/*
-examples/html
+doc/html
 *.mat
 *~
 *swp
+*swo
 *.directory
 *.orig
 help/mtex/*

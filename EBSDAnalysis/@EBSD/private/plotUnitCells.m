@@ -12,7 +12,7 @@ else
   
 end
 
-if length(d) == size(xy,1)
+if numel(d) == size(xy,1) || numel(d) == 3*size(xy,1)
 
   obj.FaceVertexCData = reshape(d,size(xy,1),[]);
   %if size(d,2) == 3, set(get(ax,'parent'),'renderer','opengl');end
@@ -53,8 +53,6 @@ switch lower(type)
     obj.MarkerFaceColor = 'flat';
     
 end
-
-
 
 h = optiondraw(patch(obj,'parent',ax),varargin{:});
 

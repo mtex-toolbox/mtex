@@ -10,7 +10,13 @@ function [odf,alpha] = calcODF(pf,varargin)
 % The function *calcODF* has several options to control convergence,
 % resolution, smoothing, etc. See below for a complete description.
 %
+% Syntax
 %
+%   odf = calcODF(pf)
+%   odf = calcODF(pf,'halfwidth',5*degree)
+%   odf = calcODF(pf,'ZERO_RANGE')
+%   odf = calcODF(pf,'resolution',2.5*degree)
+% 
 % Input
 %  pf - @PoleFigure
 %

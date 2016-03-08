@@ -1,21 +1,84 @@
 %% MTEX Changelog
 %
 %
+%% MTEX 4.3 - 03/2016
+%
+% *Alignment of Miller plots*
+%
+% Starting with MTEX 4.3 plots with respect to the crystal coordinate
+% system, i.e., inverse pole figure plots, misorientation axis plot, ipf
+% keys, are always aligned such that the b-axis points towards east. This
+% follows the convention given in the International Table of
+% Crystallography. The alignment can be adjusted using the
+% option |xAxisAlignment|
+%
+%   plot(Miller(1,0,0,cs),'xAxisAlignment',30*degree)
+%
+% *Plotting vector fields at grain centers or grain boundaries*
+%
+% There are three new commands
+%
+% * <EBSD.quiver.html quiver(ebsd,dir)>
+% * <grain2d.quiver.html quiver(grains,dir)>
+% * <grainBoundary.quiver.html quiver(grains.boundary,dir)>
+% 
+% that allow to visualize directions for EBSD data, grains and at grain
+% boundaries. The input argument |dir| should be a list of |vector3d| and
+% may represent e.g. slip directions, polarization direction, etc.
+%
+% *EBSD data in raster format*
+%
+% Until MTEX 4.2 EBSD data have been always considered as a one dimensional
+% list of data, i.e., the often present structure of a regular grid was
+% completely ignored. Starting with MTEX 4.3 EBSD data can be converted in
+% a regular grid by
+%
+%   ebsd = ebsd.gridify
+% 
+% Missing data are represented as NaN in the regular representation.
+% Gridified EBSD data may be addressed analogously like matrixes, i.e.,
+%
+%   ebsd(100,200)
+%
+% will give pixel 100 in y direction and 200 in x direction. Analogously.
+%
+%   ebsd(50:100,:)
+%
+% will give the stripe if pixels with y coordinate between 50 and 100.
+%
+% *Orientation gradients and GND*
+%
+% Gridified EBSD data allows also to compture orientation gradients by
+%
+%   ebsd.gradientX
+%   ebsd.gradientY
+%
+% as well as an estimate of the gemeometrically neccessary dislocation
+% density (GND) using the command <EBSDSquare.calcGND.html calcGND>
+%
+%   ebsd.calcGND
+%
+% *Auxilary new functionality*
+%
+% * grain2d.calcParis - Percentile Average Relative Indented Surface
+% * tensor.diag
+% * <EBSD.reduce.html reduce> works now also for EBSD data on Hex grids
+%
 %% MTEX 4.2 - 11/2015
 %
 % MTEX 4.2 introduces basic functionality for triple junction analysis in
 % grain maps.
 %
-% *Tripel points* 
+% *Triple points* 
 %
-% Tripel points are automatically computed during grain reconstruction and
+% Triple points are automatically computed during grain reconstruction and
 % can be accessed by
 %
 %   grains.triplePoints
 %   grains.boundary.triplePoints
 % 
 % More details on how to work with triple points can be found
-% <TripelPoints.html here>.
+% <TriplePoints.html here>.
 %
 % *large EBSD data sets* 
 %

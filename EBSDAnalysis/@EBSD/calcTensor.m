@@ -38,7 +38,7 @@ varargin(Tind) = [];
 
 % initialize avarage tensors
 TVoigt = T{1};
-TVoigt.M = zeros(size(T{1}));
+TVoigt.M = zeros(repmat(3,1,TVoigt.rank));
 TVoigt.CS = specimenSymmetry;
 TReuss = TVoigt;
 

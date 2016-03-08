@@ -36,7 +36,7 @@ if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetris
       [m,l] = symmetrise(m,'removeAntipodal',varargin{:}); % symmetrise without repetition
         
       if check_option(varargin,'label')
-        label = get_option(varargin,'label');
+        label = ensurecell(get_option(varargin,'label'));
         label = rep(label,l);
         varargin = set_option(varargin,'label',label);
       end
@@ -50,10 +50,10 @@ if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetris
 end
 
 if numel(varargin) > 0 && isnumeric(varargin{1})
-    varargin = [varargin(1),Miller.plotOptions,varargin(2:end)];
+  varargin = [varargin(1),m.CS.plotOptions,varargin(2:end)];
 else
-   varargin = [Miller.plotOptions,varargin];
+  varargin = [m.CS.plotOptions,varargin];
 end
 
 % plot them all with the same color
-[varargout{1:nargout}] = scatter@vector3d(m,varargin{:});
+[varargout{1:nargout}] = scatter@vector3d(m,varargin{:},m.CS);

@@ -63,6 +63,7 @@ plotPDF(odf_spherical,h,'antipodal','silent')
 % axis/angle plot in which the simulated data looks like a sphere
 
 ori_spherical = calcOrientations(odf_spherical,1000);
+close all
 scatter(ori_spherical)
 
 %%
@@ -111,6 +112,7 @@ plotPDF(odf_prolate,h,'upper','silent')
 % shape in a axis/angle scatter plot reminds of a cigar
 
 ori_prolate = calcOrientations(odf_prolate,1000);
+close all
 scatter(ori_prolate)
 
 %%
@@ -154,6 +156,7 @@ plotPDF(odf_oblate,h,'antipodal','silent')
 % The oblate cases in axis/angle space reminds on a disk 
 
 ori_oblate = calcOrientations(odf_oblate,1000);
+close all
 scatter(ori_oblate)
 
 %%

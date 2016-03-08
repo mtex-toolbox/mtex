@@ -12,7 +12,7 @@ TReuss = Tinv;
 TReuss.M = zeros([repmat(3,1,T.rank) 1 1]);
 TReuss.CS = specimenSymmetry;
   
-for l = 0:T.rank
+for l = 0:min(T.rank,component.bandwidth)
   
   % calc Fourier coefficient of odf
   odf_hat = Fourier(component,'order', l)./(2*l+1);

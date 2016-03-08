@@ -49,11 +49,11 @@ end
 if nargin>1 && isnumeric(varargin{1})
   
   property = varargin{1};
-  
+    
   assert(any(numel(property) == length(ebsd) * [1,3]),...
     'The number of values should match the number of ebsd data!')
   
-  h = plotUnitCells([ebsd.prop.x, ebsd.prop.y],...
+  h = plotUnitCells([ebsd.prop.x(:), ebsd.prop.y(:)],...
     property, ebsd.unitCell, 'parent', mP.ax, varargin{:});
 
 else % phase plot
@@ -81,7 +81,7 @@ end
 % this is needed for the zoom: TODO maybe this can be done better
 %if isNew, ; end % TODO set axis tight removes all the plot
 try axis(mP.ax,'tight'); end
-set(mP.ax,'zlim',[0,1]);
+%set(mP.ax,'zlim',[0,1.1]);
 mP.extend(1) = min(mP.extend(1),min(ebsd.prop.x(:)));
 mP.extend(2) = max(mP.extend(2),max(ebsd.prop.x(:)));
 mP.extend(3) = min(mP.extend(3),min(ebsd.prop.y(:)));
@@ -91,6 +91,8 @@ if nargout==0, clear h; end
 
 if isNew
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
+else
+  mP.micronBar.setOnTop  
 end
 
 mtexFig.keepAspectRatio = false;

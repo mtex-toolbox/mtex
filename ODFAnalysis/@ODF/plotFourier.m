@@ -1,6 +1,11 @@
 function plotFourier(odf,varargin)
 % plots Fourier coefficients of the odf
 %
+% Syntax
+%
+%   plotFourier(odf)
+%   plotFourier(odf,'bandwidth',32)
+%
 % Input
 %  odf - @ODF
 %
@@ -13,20 +18,16 @@ function plotFourier(odf,varargin)
 
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 
-if isFourier(odf)
-  L = odf.components{1}.bandwidth;
-else
-  L = 32;
-end
-L = get_option(varargin,'bandwidth',L);
+L = get_option(varargin,'bandwidth',32);
 
-odf_hat = calcFourier(odf,'bandwidth',L,'l2-normalization');
+if ~isFourier(odf), odf = FourierODF(odf,L); end
 
-for l = 0:L
-  f(l+1) = norm(odf_hat(deg2dim(l)+1:deg2dim(l+1)));
-end
+power = zeros(L+1,1);
+LL = min(L,odf.bandwidth);
+power(1:LL+1) = odf.components{1}.power(1:LL+1);
 
-optionplot(0:L,f,'Marker','o','linestyle',':','parent',mtexFig.gca,varargin{:});
+optionplot(0:L,power,'Marker','o','linestyle',':',...
+  'parent',mtexFig.gca,varargin{:});
 
 if isNew
   xlim(mtexFig.gca,[0,L])

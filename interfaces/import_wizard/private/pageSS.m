@@ -61,7 +61,7 @@ set(gui.hRotAngle        ,'Callback',@localUpdateAxes)
     set(gui.hEuler2Spatial,'visible',states{s(1)});
     set(gui.hSpecimen,'visible',states{s(2)});
     
-    [p(1) p(2) p(3)] = Euler(getSS('rotate'),'ZXZ');
+    [p(1), p(2), p(3)] = Euler(getSS('rotate'),'ZXZ');
     for k=1:3
       set(gui.hRotAngle(k),'String',xnum2str((round(p(k)*1000/degree)/1000)))
     end

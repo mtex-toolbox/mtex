@@ -10,6 +10,7 @@ classdef FourierComponent < ODFComponent
  
   properties (Dependent=true)
     bandwidth % harmonic degree
+    power     % harmonic power
   end
   
   methods
@@ -29,6 +30,10 @@ classdef FourierComponent < ODFComponent
       else
         component.f_hat = f_hat;
       end
+      
+      % truncate zeros
+      component.bandwidth = find(component.power>1e-10,1,'last');
+      
     end
     
     function L = get.bandwidth(component)
@@ -45,6 +50,13 @@ classdef FourierComponent < ODFComponent
       end
     end
     
+    function pow = get.power(component)
+      fhat = abs(component.f_hat).^2;
+      pow = zeros(component.bandwidth+1,1);
+      for l = 0:length(pow)-1
+        pow(l+1) = sum(fhat(deg2dim(l)+1:deg2dim(l+1))) ./ (2*l+1);
+      end     
+    end
     
   end  
 end

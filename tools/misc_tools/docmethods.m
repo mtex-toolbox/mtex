@@ -1,11 +1,5 @@
 function varargout = docmethods(obj)
 
-% for octave skip this
-if isOctave
-  varargout{1} = '';
-  return;
-end
-
 %
 if nargout > 0 && ischar(obj)
 
@@ -24,7 +18,7 @@ if nargout > 0 && ischar(obj)
 
 else
 
-  [fun in] = methods(obj,'-full');
+  [fun, in] = methods(obj,'-full');
 
   if ischar(obj)
     classname = obj;

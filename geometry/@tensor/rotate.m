@@ -22,6 +22,9 @@ end
 % convert rotation to 3 x 3 matrix - (3 x 3 x N) for many rotation
 if ~isnumeric(R), R = matrix(R); end
 
+% store tensor type
+opt = T.opt;
+
 % mulitply the tensor with respect to every dimension with the rotation
 % matrix
 for d = 1:T.rank
@@ -32,4 +35,5 @@ for d = 1:T.rank
       
 end
 
-
+% rotating should not chage the type of a tensor
+T.opt = opt;

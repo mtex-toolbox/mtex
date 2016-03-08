@@ -190,7 +190,7 @@ e = false;
 % check for existence
 mex = {'quaternion_*','S1Grid_*','S2Grid_*','SO3Grid_*'};
 for k=1:numel(mex)
-  cfile = dir(fullfile(mexpath,'..', [mex{k} '*.c']));
+  cfile = dir(fullfile(mexpath,'..', [mex{k} '.c']));
   for c=1:numel(cfile)
     [a,cname] = fileparts(cfile(c).name);
     mexfile = fullfile(mexpath, [cname,'.' mexext]);

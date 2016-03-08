@@ -39,7 +39,9 @@ classdef EBSD < phaseList & dynProp & dynOption
     orientations    % rotation including symmetry
     weights         %
     grainId         % id of the grain to which the EBSD measurement belongs to
-    mis2mean        % misorientation to the mean orientation of the corresponding grain    
+    mis2mean        % misorientation to the mean orientation of the corresponding grain
+%    dx              % step size in x
+%    dy              % step size in y
   end
   
   methods
@@ -51,6 +53,21 @@ classdef EBSD < phaseList & dynProp & dynOption
       
       if nargin == 0, return; end            
       
+      % copy constructor
+      if isa(rot,'EBSD')
+        ebsd.id = rot.id;
+        ebsd.rotations = rot.rotations;
+        ebsd.phaseId = rot.phaseId;
+        ebsd.phaseMap = rot.phaseMap;
+        ebsd.CSList = rot.CSList;
+        ebsd.unitCell = rot.unitCell;
+        ebsd.scanUnit = rot.scanUnit;
+        ebsd.A_D = rot.A_D;
+        ebsd.prop = rot.prop;
+        return
+      end
+      
+      
       ebsd.rotations = rotation(rot);
       ebsd = ebsd.init(phases,CSList);      
       ebsd.id = (1:numel(phases)).';
@@ -59,7 +76,11 @@ classdef EBSD < phaseList & dynProp & dynOption
       ebsd.prop = get_option(varargin,'options',struct);
                   
       % get unit cell
-      ebsd.unitCell = get_option(varargin,'unitCell',[]);
+      if check_option(varargin,'uniCell')
+        ebsd.unitCell = get_option(varargin,'unitCell',[]);
+      else
+        ebsd.unitCell = calcUnitCell([ebsd.prop.x(:),ebsd.prop.y(:)]);
+      end
       
       % remove ignore phases
       if check_option(varargin,'ignorePhase')
@@ -108,7 +129,7 @@ classdef EBSD < phaseList & dynProp & dynOption
     
     function ebsd = set.grainId(ebsd,grainId)
       if numel(grainId) == length(ebsd)
-        ebsd.prop.grainId = grainId(:);
+        ebsd.prop.grainId = reshape(grainId,size(ebsd.id));
       elseif numel(grainId) == nnz(ebsd.isIndexed)
         ebsd.prop.grainId = zeros(length(ebsd),1);
         ebsd.prop.grainId(ebsd.isIndexed) = grainId;
@@ -141,6 +162,28 @@ classdef EBSD < phaseList & dynProp & dynOption
     function ebsd = set.weights(ebsd,weights)
       ebsd.prop.weights = weights;
     end
+    
+%     function dx = get.dx(ebsd)
+%       uc = ebsd.unitCell;
+%       if size(uc,1) == 4
+%         dx = max(uc(:,1)) - min(uc(:,1));
+%       elseif size(uc,1) == 6
+%         dx = max(uc(:,1)) - min(uc(:,1));
+%       else
+%         dx = inf;
+%       end
+%     end
+%     
+%     function dy = get.dy(ebsd)
+%       uc = ebsd.unitCell;
+%       if size(uc,1) == 4
+%         dy = max(uc(:,2)) - min(uc(:,2));
+%       elseif size(uc,1) == 6
+%         dy = max(uc(:,2)) - min(uc(:,2));
+%       else
+%         dy = inf;
+%       end
+%     end
     
   end
       

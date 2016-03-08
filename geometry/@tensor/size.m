@@ -5,8 +5,9 @@ s = size(T.M);
 s = s(T.rank+1:end);
 
 if nargin == 1
-  s = ones(1,2);
-  s(1:length(s)) = s;
+  if length(s) == 1
+    s = [s,1];
+  end
 elseif dim > numel(s)
   s = 1;
 else

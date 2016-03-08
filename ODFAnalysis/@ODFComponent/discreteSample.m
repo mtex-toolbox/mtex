@@ -2,6 +2,9 @@ function ori = discreteSample(component,npoints,varargin)
 % draw a random sample
 %
 
+% does not work with specimen symmetry other then triclinic
+SS = component.SS;
+component.SS = specimenSymmetry;
 res = get_option(varargin,'resolution',5*degree);
 
 % some local grid
@@ -19,4 +22,4 @@ d(d<0) = 0;
 q1 = quaternion(S3G_global,discretesample(d,npoints));
 
 % combine local and global
-ori = orientation(q1(:) .* q2(:),component.CS,component.SS);
+ori = orientation(q1(:) .* q2(:),component.CS,SS);

@@ -8,7 +8,7 @@ if any(strcmp(cs.lattice,{'triclinic','monoclinic','trigonal','hexagonal'}))
   abcStar = normalize(cs.axesDual);
   [uabc,ind] = unique([abc,abcStar]);
   
-  [y,x] = find(isappr(dot_outer(uabc,[xvector,yvector,zvector]),1));
+  [y,x] = find(isappr(abs(dot_outer(uabc,[xvector,yvector,zvector])),1));
   
   abcLabel = {'a','b','c','a*','b*','c*'};
   abcLabel = abcLabel(ind);

@@ -6,6 +6,7 @@ function h = plotAxisDistribution(obj,varargin)
 %   plotAxisDistribution(cs)        % random axis distribution
 %   plotAxisDistribution(cs1,cs2)   % random misorientation axis distribution
 %   plotAxisDistribution(mori)      % axes in crystal coordinates
+%   plotAxisDistribution(mori,cs1)  % axes in crystal coordinates
 %   plotAxisDistribution(ori1,ori2) % axes in specimen coordinates
 %   plotAxisDistribution(odf)
 %   
@@ -37,13 +38,8 @@ if isa(obj,'symmetry')
   end
 elseif isa(obj,'orientation')
   
-  if nargin > 1 && isa(varargin{1},'orientation')
-    % pairs of orientations given - axes in specimen coordinates
-    obj = axis(obj,varargin{1});
-  else
-    % misorientation given axis in crystal reference frame
-    obj = Miller(obj.axis,calcDisjoint(obj.CS,obj.SS,varargin{:}));
-  end
+  obj = axis(obj,varargin{:});
+  
 else
   cs1 = obj.CS;
   cs2 = obj.SS;
@@ -52,12 +48,16 @@ end
 
 if isa(obj,'vector3d')
 
-  h = plot(obj,'symmetrised','FundamentalRegion',varargin{:});    
+  h = plot(obj,'symmetrised','FundamentalRegion',varargin{:});
   
 else
 
-  dcs = calcDisjoint(cs1,cs2,varargin{:});
-  
+  if isa(obj,'orientation') && isa(varargin{1},'crystalSymmetry')
+    dcs = varargin{1};
+  else
+    dcs = calcDisjoint(cs1,cs2,varargin{:});
+  end
+    
   % plotting grid
   sR = fundamentalSector(dcs,varargin{:});
   if isa(obj,'symmetry')
@@ -89,7 +89,6 @@ if nargout == 0, clear h; end
       dcs = dcs.Laue;
     end
   end
-
 
 end
 

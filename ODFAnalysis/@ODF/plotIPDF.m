@@ -35,7 +35,7 @@ for i = 1:length(r)
   p = ensureNonNeg(odf.calcPDF(h,r(i),varargin{:}));
 
   % plot
-  h.smooth(p,'parent',mtexFig.gca,'doNotDraw',varargin{:});
+  h.plot(p,'parent',mtexFig.gca,'doNotDraw','smooth',varargin{:});
   mtexTitle(mtexFig.gca,char(r(i),'LaTeX'));
 
 end

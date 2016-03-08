@@ -213,9 +213,14 @@ plot(grains.boundary,'linewidth',1.5)
 hold off
 
 %%
+% Using the option |fill| the command |smooth| fills the holes inside the
+% grains. Note that the notindexed pixels at the grain boundaries kept
+% untouched. In order to allow MTEX to decide wheter a pixel is inside a
+% grain or not the |grain| variable has to be passed as additional
+% argument.
 
 F = splineFilter;
-ebsd_smoothed = smooth(ebsd('indexed'),F,'fill');
+ebsd_smoothed = smooth(ebsd('indexed'),F,'fill',grains);
 
 plot(ebsd_smoothed('Fo'),ebsd_smoothed('Fo').orientations)
 hold on
@@ -253,4 +258,21 @@ plot(ebsd_smoothed('Di'),oM.orientation2color(ebsd_smoothed('Di').mis2mean))
 
 % plot boundary
 plot(grains.boundary,'linewidth',1.5)
+hold off
+
+%%
+% If no |grain| variable is passed to the smoothing command the not indexed
+% pixels are assigned to the nearest neighbour.
+
+ebsd_smoothed = smooth(ebsd('indexed'),F,'fill');
+
+plot(ebsd_smoothed('Fo'),ebsd_smoothed('Fo').orientations)
+hold on
+plot(ebsd_smoothed('En'),ebsd_smoothed('En').orientations)
+plot(ebsd_smoothed('Di'),ebsd_smoothed('Di').orientations)
+
+% plot the boundary of all grains
+plot(grains.boundary,'linewidth',1.5)
+
+% stop overide mode
 hold off

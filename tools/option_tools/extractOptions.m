@@ -8,7 +8,7 @@ function opt = extractOptions(optList,opt)
 % Output
 %  opt     - struct
 %
-%% See also
+% See also
 % getOption setOption addOption
 
 fnames = fieldnames(opt);

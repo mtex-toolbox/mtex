@@ -72,6 +72,7 @@ classdef crystalSymmetry < symmetry
     aAxisRec    % a*-axis reciprocal coordinate system
     bAxisRec    % b*-axis reciprocal coordinate system
     cAxisRec    % c*-axis reciprocal coordinate system
+    plotOptions
   end
   
   methods
@@ -159,6 +160,12 @@ classdef crystalSymmetry < symmetry
     function gamma = get.gamma(cs)
       gamma = angle(cs.axes(1),cs.axes(2));
     end    
+   
+    function opt = get.plotOptions(cs)
+      % rotate the bAxis to the east
+      rho = -cs.bAxis.rho;
+      opt = {'xAxisDirection',rho,'zAxisDirection','outOfPlane'};
+    end
     
   end
     

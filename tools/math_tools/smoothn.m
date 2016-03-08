@@ -226,7 +226,7 @@ function [z,s,exitflag] = smoothn(varargin)
 %   href="matlab:web('http://www.biomecardio.com')">www.BiomeCardio.com</a>
 
 %% Check input arguments
-error(nargchk(1,5,nargin));
+%error(nargchk(1,5,nargin));
 OPTIONS = struct;
 NArgIn = nargin;
 if isstruct(varargin{end}) % SMOOTHN(...,OPTIONS)

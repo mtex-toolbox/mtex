@@ -71,3 +71,7 @@ if check_option(varargin,'3d')
   ebsd.unitCell = calcUnitCell([ebsd.x(:),ebsd.y(:),ebsd.z(:)],varargin{:});
   close(hw)
 end
+
+if length(ebsd.unitCell) == 4, 
+  %ebsd = ebsd.gridify;
+end

@@ -1,4 +1,4 @@
-function h = arrow3d(v,varargin)
+function h = arrow3d(vec,varargin)
 % plot three dimensional arrows
 %
 % Syntax
@@ -20,26 +20,33 @@ end
 cax = caxis(ax);
 
 % length of the arrows
-v = 1.2.*v.normalize;
+vec = 1.2.*vec;
 lengthTail = 0.9;
 radiHead = 0.05;
 radiTail = 0.02;
 
-% the center line of the arrow
-c = [vector3d(0,0,0),vector3d(0,0,0),v.*lengthTail,v.*lengthTail,v];
 
-% the radii
-r = [0,radiTail,radiTail,radiHead,0];
+for i = 1:length(vec)
+  
+  v = vec.subSet(i);
+  
+  % the center line of the arrow
+  c = [vector3d(0,0,0),vector3d(0,0,0),v.*lengthTail,v.*lengthTail,v];
 
-% a normal vector
-n = rotate(v.orth,rotation('axis',v,'angle',linspace(0,2*pi,50)));
+  % the radii
+  r = [0,radiTail,radiTail,radiHead,0] .* norm(v);
 
-% the hull of the arrow
-hull = repmat(c,length(n),1) + n * r;
+  % a normal vector
+  n = rotate(v.orth,rotation('axis',v,'angle',linspace(0,2*pi,50)));
 
-% plot as surface plot
-h = optiondraw(surf(hull.x,hull.y,hull.z,'parent',ax,...
-  'facecolor','k','edgecolor','none'),varargin{:});
+  % the hull of the arrow
+  hull = repmat(c,length(n),1) + n * r;
+
+  % plot as surface plot
+  h(i) = optiondraw(surf(hull.x,hull.y,hull.z,'parent',ax,...
+    'facecolor','k','edgecolor','none'),varargin{:});
+  
+end
 
 % set caxis back
 caxis(ax,cax);
@@ -48,7 +55,7 @@ caxis(ax,cax);
 axis(ax,'equal','vis3d','off');
 
 % st box limits
-set(ax,'XDir','rev','YDir','rev',...
-'XLim',[-1.2,1.2],'YLim',[-1.2,1.2],'ZLim',[-1.2,1.2]);
+bounds = [-1 1] * max(norm(vec(:)));
+set(ax,'XDir','rev','YDir','rev','XLim',bounds,'YLim',bounds,'ZLim',bounds);
 
 if nargout == 0, clear h;end

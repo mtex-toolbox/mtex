@@ -126,6 +126,8 @@ switch lower(plotType)
     error('Unknown plot type!')
 end
 
+if isa(d,'function_handle'), d = d(1); end
+
 if isa(d,'double') && ~isreal(d), d = real(d);end
 
 
@@ -151,9 +153,14 @@ else
   
   if isa(d,'vector3d')
     d.antipodal = true;
-    quiver(S2,d,varargin{:});
-  else
-    plot(S2,d,'contourf',varargin{:});
+    quiver(S2,d,varargin{:},T.CS);
+  else        
+    plot(S2,d,'contourf',varargin{:},T.CS);
+  end
+
+  if isNew && ~isa(T.CS,'crystalSymmetry')
+    pfAnnotations = getMTEXpref('pfAnnotations');
+    pfAnnotations('parent',mtexFig.gca);
   end
   
 end

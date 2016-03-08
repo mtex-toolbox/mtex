@@ -36,11 +36,10 @@ if any(strcmpi(ext,{'.pdf','.eps','.ps'}))
   %end
 
   % try to switch to painters mode for vector formats
-  % by converting RGB graphics to indexed graphics
-  if ~strcmpi(get(gcf,'renderer'),'painters') && isRGB
-  
-    try
-      convertFigureRGB2ind;
+  if ~strcmpi(get(gcf,'renderer'),'painters')     
+    try      
+      % converting RGB graphics to indexed graphics
+      if isRGB, convertFigureRGB2ind; end      
       set(gcf,'renderer','painters');
     catch
       warning('MTEX:export','Unable to switch to painter''s mode. You may need to export to png or jpg');

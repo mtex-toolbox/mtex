@@ -7,14 +7,16 @@ classdef sphericalPlot < handle
     bounds   %
     grid     %
     ticks    %
-    ax       %
+    labels   %
+    ax       % axis
+    hgt      % hgtransform
     parent   % the figure that contains the spherical plot
     TL       %
     TR       %
     BL       %
     BR       %
-    minData = 0
-    maxData = 0
+    minData = NaN
+    maxData = NaN
     dispMinMax = false
   end
   
@@ -35,7 +37,7 @@ classdef sphericalPlot < handle
         return
       end
       
-      sP.ax = ax;
+      sP.ax = ax;    
       sP.parent = get(ax,'parent');
       sP.proj = proj;
       sP.dispMinMax = check_option(varargin,'minmax');
@@ -43,53 +45,53 @@ classdef sphericalPlot < handle
       
       % store hold status
       washold = getHoldState(ax);
-            
-      if isa(sP.proj,'plainProjection')
+        
+      CS = getClass(varargin,'crystalSymmetry',[]);
       
+      if isa(sP.proj,'plainProjection')
+        
         % boundary
-        sP.bounds = sP.sphericalRegion.polarRange / degree;
-        sP.bounds(3:4) = fliplr(sP.bounds(3:4));
+        sP.hgt = ax;
+        sP.updateBounds;
         axis(ax,'on');
         set(ax,'box','on');
         
         % grid
         sP.plotPlainGrid(varargin{:});
         
+        % set view point
+        setCamera(sP.ax,'default',varargin{:});
+        
       else
         
+        sP.hgt = hgtransform('parent',ax);
+        
         % plot boundary
-        sP.boundary = sP.sphericalRegion.plot('parent',ax);
-                
+        sP.boundary = sP.sphericalRegion.plot('parent',sP.ax);
+        
+        % set view point
+        setCamera(sP.ax,'default',varargin{:});
+        
+        % plot grid, labels, ..
         try sP.plotPolarGrid(varargin{:});end
-
+        sP.plotLabels(CS,varargin{:});
+        
         set(ax,'XTick',[],'YTick',[]);
         axis(ax,'off');
-    
-        % compute bounding box
-        x = ensurecell(get(sP.boundary,'xData')); x = [x{:}];
-        y = ensurecell(get(sP.boundary,'yData')); y = [y{:}];
-        sP.bounds = [min(x(:)),min(y(:)),max(x(:)),max(y(:))];
+
         if ~check_option(varargin,'grid')
           set(sP.grid,'visible','off');
         end
+      
+
         
       end
       
       plotAnnotate(sP,varargin{:});
-      
+                        
       % revert old hold status
       hold(ax,washold);
-      
-      % set bounds to axes
-      delta = min(sP.bounds(3:4) - sP.bounds(1:2))*0.02;
-      sP.bounds = sP.bounds + [-1 -1 1 1] * delta;
-      
-      set(ax,'DataAspectRatio',[1 1 1],'XLim',...
-        sP.bounds([1,3]),'YLim',sP.bounds([2,4]));
-      
-      % set view point
-      setCamera(ax,'default',varargin{:});
-      
+            
     end
 
     function updateMinMax(sP,data)
@@ -179,14 +181,43 @@ classdef sphericalPlot < handle
     function doGridInFront(sP)
       
       if ~isempty(sP.grid)
-        childs = allchild(sP.ax);
+        childs = allchild(sP.hgt);
   
         isgrid = ismember(childs,[sP.grid(:);sP.boundary(:)]);
         istext = strcmp(get(childs,'type'),'text');
   
-        set(sP.ax,'Children',[childs(istext); sP.boundary(:); sP.grid(:);childs(~isgrid & ~istext)]);
+        set(sP.hgt,'Children',[childs(istext); sP.boundary(:); sP.grid(:);childs(~isgrid & ~istext)]);
       end
-    end    
+    end
+    
+    
+    function updateBounds(sP)      
+      % compute bounding box
+
+      if isa(sP.proj,'plainProjection')
+      
+        sP.bounds = sP.sphericalRegion.polarRange / degree;
+        sP.bounds(3:4) = fliplr(sP.bounds(3:4));
+        
+      else
+      
+        x = ensurecell(get(sP.boundary,'xData')); x = [x{:}];
+        y = ensurecell(get(sP.boundary,'yData')); y = [y{:}];
+        M = get(sP.hgt,'Matrix');
+        xy = M(1:2,1:2) * [x;y];
+        sP.bounds = [min(xy(1,:)),min(xy(2,:)),max(xy(1,:)),max(xy(2,:))];
+      
+      end
+        
+      % set bounds to axes
+      delta = min(sP.bounds(3:4) - sP.bounds(1:2))*0.02;
+      sP.bounds = sP.bounds + [-1 -1 1 1] * delta;
+            
+      set(sP.ax,'DataAspectRatio',[1 1 1],'XLim',...
+        sP.bounds([1,3]),'YLim',sP.bounds([2,4]));
+
+    end
+    
   end
   
   methods (Access = private)
@@ -240,7 +271,7 @@ classdef sphericalPlot < handle
       [x,y] = project(sP.proj,v.');
 
       % grid
-      sP.grid = [sP.grid(:);line(x,y,'parent',sP.ax,...
+      sP.grid = [sP.grid(:);line(x,y,'parent',sP.hgt,...
         'handlevisibility','off','color',[.8 .8 .8])];
       
     end
@@ -254,11 +285,34 @@ classdef sphericalPlot < handle
       [dx,dy] = sP.proj.project(v);
 
       % plot
-      sP.grid(end+1) = line(dx,dy,'parent',sP.ax,...
+      sP.grid(end+1) = line(dx,dy,'parent',sP.hgt,...
         'handlevisibility','off','color',[.8 .8 .8]);
 
-    end
+    end    
     
+    function plotLabels(sP,CS,varargin)
+
+      if check_option(varargin,'noLabel') || isempty(CS), return; end
+      
+      sR = sP.sphericalRegion; 
+      h = sR.vertices;
+
+      if ~isempty(CS)
+        h = Miller(unique(h),CS);
+        switch CS.lattice
+          case {'hexagonal','trigonal'}
+            h.dispStyle = 'UVTW';
+          otherwise
+            h.dispStyle = 'uvw';
+        end
+        h = round(h);
+      end
+      
+      sP.labels = [sP.labels,scatter(h,'MarkerFaceColor','k',...
+        'labeled','Marker','none',...
+        'backgroundcolor','w','autoAlignText','parent',sP.ax)];
+
+    end
   end
 end
 

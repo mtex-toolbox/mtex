@@ -1,15 +1,24 @@
 function [mori,ori2] = calcMisorientation(ebsd1,varargin)
-% calculate uncorelated misorientations between two ebsd phases
+% calculate uncorrelated misorientations between two ebsd phases
 %
 % Syntax
-%   mori = calcMisorientation(ebsd,'sampleSize',1000)
-%   mori = calcMisorientation(ebsd,'minDistance',100)
-%   mori = calcMisorientation(ebsd1,ebsd2)
-%   [ori1,ori2] = calcMisorientation(ebsd1)
-%   plot(axis(ori1,ori2))
+%
+%   % 1000 uncorrelated misorientations of phase1
+%   mori = calcMisorientation(ebsd('phase1'),'sampleSize',1000)
+%
+%   % uncorrelated misorientations with minimum distance 100
+%   mori = calcMisorientation(ebsd('phase1'),'minDistance',100)
+%
+%   %  uncorrelated misorientations between phase1 and phase2
+%   mori = calcMisorientation(ebsd('phase1'),ebsd('phase2'))
+%
+%   % compute pairs of orientations to be used to compute axis
+%   % distributions in specimen coordinates
+%   [ori1,ori2] = calcMisorientation(ebsd('phase1'))
+%   plot(axis(ori1,ori2),'contourf')
 %
 % Input 
-%  ebsd, ebsd1, ebsd2 - @EBSD
+%  ebsd - @EBSD
 %
 % Output
 %  m - @orientation, such that

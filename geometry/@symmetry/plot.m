@@ -20,7 +20,7 @@ omega = round(rot.angle./degree);
 [uaxis, ~, id] = unique(axis,'antipodal');
 
 % initalize plot
-newSphericalPlot([zvector,-zvector],varargin{:});
+newSphericalPlot([zvector,-zvector],varargin{:},s.plotOptions{:});
 hold on
 
 % plot mirror planes
@@ -68,8 +68,8 @@ end
 
 mtexFig = newMtexFigure;
 for ax = mtexFig.children(:).'
-  set(ax,'xlim',1.1*get(ax,'xlim'));
-  set(ax,'ylim',1.1*get(ax,'ylim'));  
+  set(ax,'xlim',1.075*get(ax,'xlim'));
+  set(ax,'ylim',1.075*get(ax,'ylim'));  
 end
 mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 

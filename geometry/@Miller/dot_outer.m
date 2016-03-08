@@ -14,6 +14,11 @@ if ~isa(m1,'Miller') || ~isa(m2,'Miller') || m1.CS ~= m2.CS
   warning('Symmetry mismatch')
 end
 
+if check_option(varargin,'noSymmetry')
+  d = dot_outer(vector3d(m1),vector3d(m2));
+  return
+end
+
 % symmetrise
 m1 = symmetrise(m1,varargin{:});
 s = [size(m1),length(m2)];

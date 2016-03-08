@@ -30,14 +30,16 @@ for j = 1:numel(sP)
   hold(sP(j).ax,'on')
   
   % plot surface  
-  h(j) = surf(x,y,zeros(size(x)),real(data),'parent',sP(j).ax); %#ok<AGROW>
-  shading(sP(j).ax,'interp');
-    
+  h(j) = surf(x,y,zeros(size(x)),real(data),'parent',sP(j).hgt,...
+    'edgeColor','none'); %#ok<AGROW>
+      
   hold(sP(j).ax,'off')
   
   % set styles
   optiondraw(h(j),'LineStyle','none','Fill','on',varargin{:});
-
+  
+  % bring grid in front
+  sP(j).doGridInFront;
 end
 
 if nargout == 0, clear h; end

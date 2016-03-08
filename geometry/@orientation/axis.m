@@ -15,10 +15,10 @@ function a = axis(o1,varargin)
 %   a = axis(o1,o2)  
 %
 %   % the misorientation axis with respect to csCube is computed by
-%   a = axis(inv(o2)*o1)  
+%   a = axis(inv(o1)*o2,csCube)  
 %
 %   % the misorientation axis with respect to csHex is computed by
-%   a = axis(inv(o1)*o2)
+%   a = axis(inv(o1)*o2,csHex)
 %
 %   % compute the misorientation axis ignoring symmetry
 %   a = axis(inv(o1)*o2,'noSymmetry')
@@ -33,8 +33,9 @@ function a = axis(o1,varargin)
 % See also
 % orientation/angle
 
-
-if nargin >= 2 && isa(varargin{1},'quaternion')
+% axis(ori1,ori2) should return the misorientation axis in specimen
+% coordinates
+if nargin >= 2 && isa(varargin{1},'orientation')
   
   o2 = varargin{1};
     
@@ -70,6 +71,7 @@ if nargin >= 2 && isa(varargin{1},'quaternion')
   % given by o2 * l(il) * q.axis or equivalently by  
   a = q2 .* r(irMax) .* axis@quaternion(q);
 
+ 
 else
    
   % project to Fundamental region to get the axis with the smallest angle
@@ -78,8 +80,21 @@ else
   end
   
   a = axis@quaternion(o1);
-
-  % add symmetry to axis
-  if isa(o1.SS,'crystalSymmetry'), a = Miller(a,o1.SS); end
+ 
+  % crystal symmetry specified -> apply it
+  if nargin >= 2 && isa(varargin{1},'crystalSymmetry')  
+    
+    cs = varargin{1};    
+    
+  else  % no symmetry specified - take the disjoint
+    
+    cs = disjoint(o1.CS,o1.SS);
+    
+  end
+  
+  if o1.antipodal, cs = cs.Laue; end
+    
+  % add symmetry to axis  
+  if isa(cs,'crystalSymmetry'), a = Miller(a,cs); end
  
 end

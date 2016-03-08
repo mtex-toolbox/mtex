@@ -13,7 +13,8 @@ else
   res = v.resolution;
   psi = deLaValeePoussinKernel('halfwidth',res/2);
   
-  % take the 4 largest values out of each row
+  % take the 4 closest neighbours for each point
+  % TODO: this can be done better
   omega = angle_outer(vi,v,varargin{:});
   [so,j] = sort(omega,2);
   
@@ -23,6 +24,14 @@ else
   else
     M = psi.RK(cos(so(:,1:4)));
   end
+  
+  % set point to nan which are to far away
+  if check_option(varargin,'cutOutside')
+    minO = min(omega,[],2);
+    delta = 4*quantile(minO,0.5);
+    M(so(:,1:4)>delta) = NaN;
+  end
+  
   
   M = repmat(1./sum(M,2),1,size(M,2)) .* M;
   M = sparse(i,j(:,1:4),M,size(omega,1),size(omega,2));

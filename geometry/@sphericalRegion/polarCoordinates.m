@@ -1,4 +1,4 @@
-function [r,rho] = polarCoordinates(sR,v,center,varargin)
+function [r,rho] = polarCoordinates(sR,v,center,ref,varargin)
 % compute polar coordinates of with respect to a spherical region
 %
 % Input
@@ -13,6 +13,7 @@ function [r,rho] = polarCoordinates(sR,v,center,varargin)
 % the radius
 % -------------------------------------------------------------------  
 
+v = vector3d(v);
 center = center.normalize;
 vxcenter = normalize(cross(v,center));
 
@@ -35,7 +36,7 @@ end
 
 % a reference direction for rho = 0
 if center == zvector
-  rx = xvector - center; 
+  rx = ref - center; 
 else
   rx = zvector - center;
 end

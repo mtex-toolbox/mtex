@@ -54,7 +54,9 @@ elseif check_option(varargin,'FaceColor')
   h = plotFaces(grains.poly,grains.V,color,'parent', mP.ax,varargin{:});
   
   % reactivate legend information
-  set(get(get(h(end),'Annotation'),'LegendInformation'),'IconDisplayStyle','on');
+  if check_option(varargin,'displayName')
+    set(get(get(h(end),'Annotation'),'LegendInformation'),'IconDisplayStyle','on');
+  end
   
 else % otherwise phase plot
 
@@ -89,7 +91,7 @@ warning('on','MATLAB:legend:PlotEmpty');
 
 % keep track of the extend of the graphics
 % this is needed for the zoom: TODO maybe this can be done better
-axis(mP.ax,'tight'); set(mP.ax,'zlim',[0,1]);
+axis(mP.ax,'tight');
 
 if nargout == 0, clear h;end
 

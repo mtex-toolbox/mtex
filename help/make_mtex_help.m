@@ -53,7 +53,7 @@ mtexGeneralFiles = [DocFile(fullfile(mtex_path,'COPYING.txt')) ...
   DocFile(fullfile(mtex_path,'VERSION'))];
 
 
-outputDir = fullfile(mtex_path,'help','mtex');
+outputDir = fullfile(mtex_path,'doc','html');
 tempDir = fullfile(mtex_path,'help','tmp');
 
 
