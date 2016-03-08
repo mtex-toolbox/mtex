@@ -57,11 +57,11 @@
 %
 %   ebsd.calcGND
 %
-% *Auxilary new function*
+% *Auxilary new functionality*
 %
 % * grain2d.calcParis - Percentile Average Relative Indented Surface
-% * tensor.diag       
-% * 
+% * tensor.diag
+% * <EBSD.reduce.html reduce> works now also for EBSD data on Hex grids
 %
 %% MTEX 4.2 - 11/2015
 %
