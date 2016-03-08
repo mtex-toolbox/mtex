@@ -43,7 +43,7 @@ classdef EBSDsquare < EBSD
       if check_option(varargin,'uniCell')
         ebsd.unitCell = get_option(varargin,'unitCell',[]);
       else
-        ebsd.unitCell = 0.5 * [dxy(1) * [1;1;-1;-1],dxy(1) * [1;-1;-1;1]];
+        ebsd.unitCell = 0.5 * [dxy(1) * [1;1;-1;-1],dxy(2) * [1;-1;-1;1]];
       end
     end
            
