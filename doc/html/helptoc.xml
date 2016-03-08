@@ -97,7 +97,6 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.repmat.html">repmat</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.reshape.html">reshape</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.rotate.html">rotate</tocitem>
-               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.rotate_outer.html">rotate_outer</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.scatter.html">scatter</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.scatter3d.html">scatter3d</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.size.html">size</tocitem>
@@ -128,7 +127,6 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="Miller.project2FundamentalRegion.html">project2FundamentalRegion</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="Miller.region.html">region</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="Miller.rotate.html">rotate</tocitem>
-               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="Miller.rotate_outer.html">rotate_outer</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="Miller.round.html">round</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="Miller.scatter.html">scatter</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="Miller.smooth.html">smooth</tocitem>
@@ -490,6 +488,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.inpolygon.html">inpolygon</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.mtimes.html">mtimes</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.plot.html">plot</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.quiver.html">quiver</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.reduce.html">reduce</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.rotate.html">rotate</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.shift.html">shift</tocitem>
@@ -538,7 +537,6 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.rdivide.html">rdivide</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.real.html">real</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.rotate.html">rotate</tocitem>
-               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.rotate_outer.html">rotate_outer</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.shearModulus.html">shearModulus</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.size.html">size</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.subsasgn.html">subsasgn</tocitem>
@@ -965,29 +963,30 @@
             <tocitem target="ColorCodingEBSD_demo.html#10">Colorcoding according to inverse pole figure</tocitem>
          </tocitem>
       </tocitem>
-      <tocitem target="ReleaseNotes.html">Release Notes<tocitem target="changelog.html">MTEX Changelog<tocitem target="changelog.html#1">MTEX 4.2 - 11/2015</tocitem>
-            <tocitem target="changelog.html#2">MTEX 4.1 - 09/2015</tocitem>
-            <tocitem target="changelog.html#3">MTEX 4.0.0 - 10/2014</tocitem>
-            <tocitem target="changelog.html#4">MTEX 3.5.0 - 12/2013</tocitem>
-            <tocitem target="changelog.html#5">MTEX 3.4.2 - 06/2013</tocitem>
-            <tocitem target="changelog.html#6">MTEX 3.4.1 - 04/2013</tocitem>
-            <tocitem target="changelog.html#7">MTEX 3.4.0 - 03/2013</tocitem>
-            <tocitem target="changelog.html#8">MTEX 3.3.2 - 01/2013</tocitem>
-            <tocitem target="changelog.html#9">MTEX 3.3.1 - 07/2012</tocitem>
-            <tocitem target="changelog.html#10">MTEX 3.3.0 - 06/2012</tocitem>
-            <tocitem target="changelog.html#11">MTEX 3.2.3 - 03/2012</tocitem>
-            <tocitem target="changelog.html#12">MTEX 3.2.1 - 11/2011</tocitem>
-            <tocitem target="changelog.html#13">MTEX 3.2 - 05/2011</tocitem>
-            <tocitem target="changelog.html#14">MTEX 3.1 - 03/2011</tocitem>
-            <tocitem target="changelog.html#15">MTEX 3.0 - 10/2010</tocitem>
-            <tocitem target="changelog.html#16">MTEX 2.0 - 10/2009</tocitem>
-            <tocitem target="changelog.html#17">MTEX 1.2 - 05/2009</tocitem>
-            <tocitem target="changelog.html#18">MTEX 1.1 - 12/2008</tocitem>
-            <tocitem target="changelog.html#19">MTEX 1.0 - 06/2008</tocitem>
-            <tocitem target="changelog.html#20">MTEX 0.4 - 04/2008</tocitem>
-            <tocitem target="changelog.html#21">MTEX 0.3 - 10/2007</tocitem>
-            <tocitem target="changelog.html#22">MTEX 0.2 - 07/2007</tocitem>
-            <tocitem target="changelog.html#23">MTEX 0.1 - 03/2007</tocitem>
+      <tocitem target="ReleaseNotes.html">Release Notes<tocitem target="changelog.html">MTEX Changelog<tocitem target="changelog.html#1">MTEX 4.3 - 03/2016</tocitem>
+            <tocitem target="changelog.html#2">MTEX 4.2 - 11/2015</tocitem>
+            <tocitem target="changelog.html#3">MTEX 4.1 - 09/2015</tocitem>
+            <tocitem target="changelog.html#4">MTEX 4.0.0 - 10/2014</tocitem>
+            <tocitem target="changelog.html#5">MTEX 3.5.0 - 12/2013</tocitem>
+            <tocitem target="changelog.html#6">MTEX 3.4.2 - 06/2013</tocitem>
+            <tocitem target="changelog.html#7">MTEX 3.4.1 - 04/2013</tocitem>
+            <tocitem target="changelog.html#8">MTEX 3.4.0 - 03/2013</tocitem>
+            <tocitem target="changelog.html#9">MTEX 3.3.2 - 01/2013</tocitem>
+            <tocitem target="changelog.html#10">MTEX 3.3.1 - 07/2012</tocitem>
+            <tocitem target="changelog.html#11">MTEX 3.3.0 - 06/2012</tocitem>
+            <tocitem target="changelog.html#12">MTEX 3.2.3 - 03/2012</tocitem>
+            <tocitem target="changelog.html#13">MTEX 3.2.1 - 11/2011</tocitem>
+            <tocitem target="changelog.html#14">MTEX 3.2 - 05/2011</tocitem>
+            <tocitem target="changelog.html#15">MTEX 3.1 - 03/2011</tocitem>
+            <tocitem target="changelog.html#16">MTEX 3.0 - 10/2010</tocitem>
+            <tocitem target="changelog.html#17">MTEX 2.0 - 10/2009</tocitem>
+            <tocitem target="changelog.html#18">MTEX 1.2 - 05/2009</tocitem>
+            <tocitem target="changelog.html#19">MTEX 1.1 - 12/2008</tocitem>
+            <tocitem target="changelog.html#20">MTEX 1.0 - 06/2008</tocitem>
+            <tocitem target="changelog.html#21">MTEX 0.4 - 04/2008</tocitem>
+            <tocitem target="changelog.html#22">MTEX 0.3 - 10/2007</tocitem>
+            <tocitem target="changelog.html#23">MTEX 0.2 - 07/2007</tocitem>
+            <tocitem target="changelog.html#24">MTEX 0.1 - 03/2007</tocitem>
          </tocitem>
          <tocitem target="bugs.html">List of Known Bugs<tocitem target="bugs.html#2">Open Issues</tocitem>
          </tocitem>

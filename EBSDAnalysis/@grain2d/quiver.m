@@ -1,13 +1,21 @@
 function h = quiver(grains,dir,varargin)
-% plot directions at grain boundaries
+% plot directions at grain centers
 %
 % Syntax
-%   quiver(gB,gB.direction,'linecolor','r')
+%   quiver(grains,dir,'linecolor','r')
 %
-% Example
 %   mtexdata fo
 %   grains = calcGrains(ebsd('indexed'))
-%   quiver(grains(1437).boundary,grains(1437).boundary.calcMeanDirection,'color','r')
+%   quiver(grains,grains.meanRotation.axis,'color','r')
+%
+% Input
+%  grains - @grain2d
+%  dir    - @vector3d
+%
+% Options
+%  antipodal -
+%  maxHeadSize
+%
 
 xy = grains.centroid;
 
@@ -23,9 +31,6 @@ else
     
 end
  
-
-
-
 h = optiondraw(quiver(xy(:,1),xy(:,2),dir.x,dir.y),varargin{:});
 
 if nargout == 0, clear h; end

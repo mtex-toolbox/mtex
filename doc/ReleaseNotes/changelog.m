@@ -5,32 +5,33 @@
 %
 % *Alignment of Miller plots*
 %
-% Starting with MTEX 4.3 plot with respect to the crystal coordinate system
-% are always aligned such that the b-axis points towards east. This follows
-% the convention given in the International Table of Crystallography. This
-% change effects: inverse pole figure plots, ipf keys, misorientation axes
-% plots. The alignment can be adjusted using the option |xAxisAlignment|
+% Starting with MTEX 4.3 plots with respect to the crystal coordinate
+% system, i.e., inverse pole figure plots, misorientation axis plot, ipf
+% keys, are always aligned such that the b-axis points towards east. This
+% follows the convention given in the International Table of
+% Crystallography. The alignment can be adjusted using the
+% option |xAxisAlignment|
 %
 %   plot(Miller(1,0,0,cs),'xAxisAlignment',30*degree)
 %
-% *Vector field plot at grain centers or grain boundaries*
+% *Plotting vector fields at grain centers or grain boundaries*
 %
 % There are three new commands
 %
-%  quiver(ebsd,dir)
-%  quiver(grains,dir)
-%  quiver(grains.boundary,dir)
+% * <EBSD.quiver.html quiver(ebsd,dir)>
+% * <grain2d.quiver.html quiver(grains,dir)>
+% * <grainBoundary.quiver.html quiver(grains.boundary,dir)>
 % 
 % that allow to visualize directions for EBSD data, grains and at grain
-% boundaries. |dir| should be a list of |vector3d| and may represent e.g.
-% slip directions, polarization direction, etc.
+% boundaries. The input argument |dir| should be a list of |vector3d| and
+% may represent e.g. slip directions, polarization direction, etc.
 %
-% *EBSD as data as image*
+% *EBSD data in raster format*
 %
 % Until MTEX 4.2 EBSD data have been always considered as a one dimensional
-% list of data, i.e., the often present structure of the data in a regular
-% grid was completely ignored. Starting with MTEX 4.3 EBSD data can be
-% converted in a regular grid by
+% list of data, i.e., the often present structure of a regular grid was
+% completely ignored. Starting with MTEX 4.3 EBSD data can be converted in
+% a regular grid by
 %
 %   ebsd = ebsd.gridify
 % 
@@ -53,7 +54,7 @@
 %   ebsd.gradientY
 %
 % as well as an estimate of the gemeometrically neccessary dislocation
-% density (GND) by
+% density (GND) using the command <EBSDSquare.calcGND.html calcGND>
 %
 %   ebsd.calcGND
 %
