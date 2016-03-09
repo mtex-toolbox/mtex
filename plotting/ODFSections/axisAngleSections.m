@@ -71,13 +71,16 @@ classdef axisAngleSections < ODFSections
     function h = plotSection(oS,ax,sec,v,data,varargin)
       
       angle = oS.angles(sec);
+        
+      opt = oS.jointCS.plotOptions;
       
       % plot outer boundary
       if isempty(findall(ax,'tag','outerBoundary'))
+        opt = oS.jointCS.plotOptions;
         plot(fundamentalSector(oS.jointCS,varargin{:}),'parent',ax,...
           'TR',['\omega = ' int2str(oS.angles(sec)./degree),'^\circ'],'color',[0.8 0.8 0.8],...
           'doNotDraw','tag','outerBoundary','noLabel',...
-          'xAxisDirection','east','zAxisDirection','outOfPlane','hitTest','off');
+          'xAxisDirection','east','zAxisDirection','outOfPlane','hitTest','off',opt{:});
       end
       
       % rescale the axes according to actual volume      
