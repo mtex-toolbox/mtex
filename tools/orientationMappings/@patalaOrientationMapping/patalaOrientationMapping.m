@@ -50,6 +50,9 @@ classdef patalaOrientationMapping < orientationMapping
 
       v = Rodrigues(rotation('axis',q.axis,'angle',q.angle));
 
+      % this is to adjust to the "correct" fundamental sector
+      v = rotate(v,-oM.CS1.bAxis.rho);
+      
       switch oM.CS1.LaueName
         case 'm-3m'
           rgb = colormap432(v);

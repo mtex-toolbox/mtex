@@ -17,6 +17,7 @@
 
 function rgb = colormap432(v)
 
+% this is to adjust to the "correct" fundamental sector
 v = rotation('axis',vector3d(1,1,1),'angle',120*degree) * v;
 
 pts = reshape(double(v),[],3);
