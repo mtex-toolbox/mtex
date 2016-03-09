@@ -55,7 +55,8 @@ flipthem = ~cellfun('isempty',regexpi(varargin,'\|\|[xyz]'));
 varargin(flipthem) = cellfun(@(a) [a(end:-1:end-2) a(1:end-3)],varargin(flipthem),'UniformOutput',false);
 
 % if nothing or only Y is specified set Z||c
-if ~any(cell2mat(regexpi(varargin,'[xz]\|\|')))
+if ~any(cell2mat(regexpi(varargin,'z\|\|'))) && ...
+  nnz(cell2mat(regexpi(varargin,'[xy]\|\|')))<=1
   varargin = [varargin,{'Z||c'}];
 end
 
