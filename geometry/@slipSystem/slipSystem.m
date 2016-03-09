@@ -90,25 +90,44 @@ classdef slipSystem
      function sS = bcc(cs)
       sS = [slipSystem(Miller(1,-1,1,cs,'uvw'),Miller(0,1,1,cs,'hkl')),...
         slipSystem(Miller(-1,1,1,cs,'uvw'),Miller(2,1,1,cs,'hkl'))];
-    end
+     end
     
+     function sS = hcp(cs)
+       warning('Maybe I should collect here all slipSystems below');
+       
+     end
+     
     function sS = basal(cs)
       % <11-20>{0001}
       sS = slipSystem(Miller(2,-1,-1,0,cs,'UVTW'),Miller(0,1,-1,0,cs,'HKIL'));
     end
          
-    function sS = prismatic(cs)
-      %⟨112¯0⟩{101¯0}
-      sS = slipSystem(Miller(1,1,-2,0,cs,'uvtw'),Miller(1,0,-1,0,cs,'hkl'));
+    function sS = prismaticA(cs)
+      %⟨2-1-1 0⟩{01-10}
+      sS = slipSystem(Miller(2,-1,-1,0,cs,'uvtw'),Miller(0,1,-1,0,cs,'hkil'));
     end
     
-    function sS = prismatic2a(cs)
+    function sS = prismatic2A(cs)
     %2nd order prismatic compound <a> slip system in hexagonal lattice:
-    %⟨1¯100⟩{112¯0}
-    sS = slipSystem(Miller(1,1,-2,0,cs,'uvtw'),Miller(1,0,-1,0,cs,'hkl'));
+    %⟨01-10⟩{2-1-10}
+    sS = slipSystem(Miller(0,1,-1,0,cs,'uvtw'),Miller(2,-1,-1,0,cs,'hkl'));
     end
     
+    function sS = pyramidalA(cs)
+      % first order pyramidal a slip 
+      sS = slipSystem(Miller(2,-1,-1,0,cs,'uvtw'),Miller(0,1,-1,1,cs,'hkl'));
+    end
     
+    function sS = pyramidalCA(cs)
+      % first order pyramidal <c+a> slip 
+      sS = slipSystem(Miller(2,-1,-1,3,cs,'uvtw'),Miller(-1,1,0,1,cs,'hkl'));
+    end
+    
+    function sS = pyramidal2CA(cs)
+      % second order pyramidal <c+a> slip 
+      sS = slipSystem(Miller(2,-1,-1,3,cs,'uvtw'),Miller(-2,1,1,1,cs,'hkl'));
+    end
+        
   end
   
 end
