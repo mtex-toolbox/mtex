@@ -11,6 +11,14 @@ classdef slipSystem
   
   methods
     function sS = slipSystem(b,n)
+      %
+      % Syntax
+      %   sS = slipSystem(b,n)
+      %
+      % Input
+      %  b - @Miller - Burgers vector or slip direction
+      %  n - @Miller - slip plane normal 
+      %
       
       assert(all(angle(b,n,'noSymmetry') > pi/2-1e-5),...     
         'Slip direction and plane normal should be orthogonal!')
@@ -47,7 +55,7 @@ classdef slipSystem
         end
       end
             
-      if numel(sS)>50, return; end
+      if length(sS)>50, return; end
       
       % display coordinates  
       if isa(sS.CS,'crystalSymmetry')
