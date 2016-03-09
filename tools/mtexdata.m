@@ -266,3 +266,14 @@ fname = fullfile(mtexDataPath,'EBSD','polycrystalline_aluminum.txt');
 ebsd = loadEBSD(fname, 'interface','generic', 'CS', CS,...
    'RADIANS','ColumnNames', { 'Euler 1' 'Euler 2' 'Euler 3' 'x' 'y'},...
   'Columns', [1 2 3 4 5],'ignorePhase', 0);
+
+% ----------------------------------------------------------------------
+function ebsd = mtexdata_titanium
+
+CS = crystalSymmetry('622',[3,3,4.7],'x||a','mineral','Titanium (Alpha)');
+
+fname = fullfile(mtexDataPath,'EBSD','titanium.txt');
+ebsd = loadEBSD(fname, 'interface','generic', 'CS', CS,...
+   'ColumnNames', {'phi1' 'Phi' 'phi2' 'phase' 'ci' 'iq' 'sem_signal' ...
+   'x' 'y' 'grainId'});
+
