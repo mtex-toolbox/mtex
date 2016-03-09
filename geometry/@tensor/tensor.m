@@ -35,7 +35,14 @@ classdef (InferiorClasses = {?quaternion,?rotation,?orientation}) tensor < dynOp
         return
       
       elseif isa(M,'tensor') % copy constructor
-        T = M;
+        T.M = M.M;
+        T.rank = M.rank;
+        T.CS = M.CS;
+        T.doubleConvention = M.doubleConvention;
+        T.opt = M.opt;
+        
+        % extract additional properties
+        T = T.setOption(varargin{:});
         return
       end
       
