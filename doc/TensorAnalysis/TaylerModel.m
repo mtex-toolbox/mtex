@@ -56,6 +56,53 @@ sP.plot(mori.angle./degree,'smooth')
 mtexColorbar
 
 
+%% Most active slip direction
+
+mtexdata csl
+
+grains = calcGrains(ebsd('indexed'));
+
+% remove small grains
+grains(grains.grainSize <= 2) = []
+
+%%
+
+% some strain
+q = 0;
+epsilon = tensor.diag([1 -q -(1-q)],'name','strain')
+
+sS = symmetrise(slipSystem.fcc(grains.CS));
+
+[M,b,mori] = calcTaylor(inv(grains.meanOrientation)*epsilon,sS);
+
+%%
+
+% colorize grains according to Taylor factor
+plot(grains,M)
+mtexColorbar
+
+% index of the most active slip system - largest b
+[~,bMaxId] = max(b,[],2);
+
+% rotate the moste active slip system in specimen coordinates
+sSGrains = grains.meanOrientation .* sS(bMaxId);
+
+% visualize slip direction and slip plane for each grain
+hold on
+quiver(grains,sSGrains.b,'autoScaleFactor',0.5,'displayName','Burgers vector')
+hold on
+quiver(grains,sSGrains.n,'autoScaleFactor',0.5,'displayName','slip plane trace')
+hold off
+
+%%
+% plot the most active slip directions 
+% observe that they point all towards the lower hemisphere - why?
+% they do change if q is changed 
+
+figure(2)
+plot(sSGrains.b)
+
+
 %% Texture evolution during rolling
 
 % define some random orientations
