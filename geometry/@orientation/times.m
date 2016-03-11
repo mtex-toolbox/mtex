@@ -13,6 +13,12 @@ function r = times(a,b)
 %
 % See also
 
+% special case multiplication with +-1
+if isnumeric(a) || isnumeric(b)
+  r = times@rotation(a,b);
+  return
+end
+ 
 % collect inner and outer symmetries
 [left,inner1] = extractSym(a);
 [inner2,right] = extractSym(b);
