@@ -3,17 +3,19 @@ function kam = KAM(ebsd,varargin)
 %
 % Syntax
 %
+%   plot(ebsd,ebsd.KAM ./ degree)
+%
 %   % ignore misorientation angles > threshold
 %   kam = KAM(ebsd,'threshold',10*degree);
-%   plot(ebsd,ebsd.KAM./degree)
+%   plot(ebsd,kam./degree)
 %
 %   % ignore grain boundary misorientations
 %   [ebsd, ebsd.grainId] = calcGrains(ebsd)
-%   kam = KAM(ebsd); 
 %   plot(ebsd,ebsd.KAM./degree)
 %
 %   % consider also second order neigbors
 %   kam = KAM(ebsd,'order',2);
+%   plot(ebsd,kam./degree)
 %
 % Input
 %  ebsd - @ebsd

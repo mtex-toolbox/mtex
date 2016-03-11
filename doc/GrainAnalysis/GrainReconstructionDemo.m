@@ -135,6 +135,6 @@ largeGrains = grains(grains.grainSize > 1000)
 
 hold on
 % mark only large Forsterite grains
-plot(largeGrains('Fo').boundary,'linewidth',2,'lincecolor','k')
+plot(largeGrains('Fo').boundary,'linewidth',2,'linecolor','k')
 hold off
 
