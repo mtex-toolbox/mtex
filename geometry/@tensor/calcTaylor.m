@@ -2,17 +2,18 @@ function [M,b,mori] = calcTaylor(eps,sS,varargin)
 % 
 %
 % Input
-%  eps - strain @tensor in crystal coordinates
-%  sS  - list of @slipSystem
+%  eps - strain @tensor list in crystal coordinates
+%  sS  - @slipSystem list in crystal coordinates
 %
 % Output
-%  M - taylor factor
-%  b - coefficients for the acive slip systems 
+%  M    - taylor factor
+%  b    - coefficients for the acive slip systems 
+%  mori - mis@orientation
 %
 % Example
 %   
-%   % some strain
-%   eps = tensor.diag([1 -0.75 -0.25],'name','strain')
+%   % define 10 percent strain
+%   eps = 0.1 * tensor.diag([1 -0.75 -0.25],'name','strain')
 %
 %   % define a crystal orientation
 %   cs = crystalSymmetry('cubic')
@@ -22,7 +23,7 @@ function [M,b,mori] = calcTaylor(eps,sS,varargin)
 %   sS = slipSystem.fcc(cs)
 %
 %   % compute the Taylor factor
-%   [M,b] = calcTaylor(inv(ori)*eps,sS.symmetrise)
+%   [M,b,mori] = calcTaylor(inv(ori)*eps,sS.symmetrise)
 %
 
 % ensure strain is symmetric
