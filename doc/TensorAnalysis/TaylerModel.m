@@ -55,6 +55,12 @@ mtexColorbar
 sP.plot(mori.angle./degree,'smooth')
 mtexColorbar
 
+%%
+sP = sigmaSections(cs,specimenSymmetry);
+oriGrid = sP.makeGrid('resolution',2.5*degree);
+[M,~,mori] = calcTaylor(inv(oriGrid)*epsilon,sS.symmetrise);
+sP.plot(mori.angle./degree,'smooth')
+mtexColorbar
 
 %% Most active slip direction
 
