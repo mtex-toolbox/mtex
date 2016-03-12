@@ -14,11 +14,17 @@ classdef quaternion
       
       if isa(varargin{1},'quaternion')   % copy constructor
               
+        if nargin == 1
+          q.a = varargin{1}.a;
+          q.b = varargin{1}.b;
+          q.c = varargin{1}.c;
+          q.d = varargin{1}.d;
+        else          
           q.a = varargin{1}.a(varargin{2:end});
           q.b = varargin{1}.b(varargin{2:end});
           q.c = varargin{1}.c(varargin{2:end});
           q.d = varargin{1}.d(varargin{2:end});
-          
+        end
       elseif isa(varargin{1},'vector3d')
           
         q.a = zeros(size(varargin{1}));

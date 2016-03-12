@@ -1,24 +1,25 @@
-function qq = power(q,n)
+function q = power(q,n)
 % q.^n
 %
-%% Input
+% Syntax
+%
+% q = q^(-1)
+% q = q.^2
+% q = q.^[0,1,2,3]
+%
+%
+% Input
 %  q - @quaternion
 %
-%% Output
-%  qq - @quaternion 
+% Output
+%  q - @quaternion 
 %
-%% See also
+% See also
 % quaternion/ctranspose
 
-if n < 0, q = ctranspose(q);end
+nq = expquat(n .* log(q));
 
-qq = q;
-
-for i = 2:abs(n)
-  
-  qq  = qq .* q;
-  
-end
-
-
-% 04747874527
+q.a = nq.a;
+q.b = nq.b;
+q.c = nq.c;
+q.d = nq.d;

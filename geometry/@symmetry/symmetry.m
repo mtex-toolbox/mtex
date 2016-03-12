@@ -62,11 +62,16 @@ classdef symmetry < rotation
   methods
     
     function s = symmetry(varargin)
-    
-      s = s@rotation(idquaternion);
-      
+                
       % empty constructor
-      if nargin == 0, return; end
+      if nargin == 0
+        s.a = 1;
+        s.b = 0;
+        s.c = 0;
+        s.d = 0;
+        s.i = false;
+        return; 
+      end
       
       if check_option(varargin,'PointId')
         
@@ -77,13 +82,11 @@ classdef symmetry < rotation
         % -1 2/m mmm 4/m 4/mmm m-3 m-3m -3 -3m 6/m 6/mmm
         LaueGroups = [2,8,16,27,32,42,45,18,21,35,40];
         s.id = LaueGroups(get_option(varargin,'LaueId'));
-        varargin = delete_option(varargin,'LaueId');
-      
+              
       elseif check_option(varargin,'SpaceId')
         
         list = spaceGroups;
         ndx = nnz([list{:,1}] < get_option(varargin,'SpaceId'));
-        varargin = delete_option(varargin,'SpaceId');
         if ndx>31, error('I''m sorry, I know only 230 space groups ...'); end
         s.id = findsymmetry(list(ndx+1,2));
         

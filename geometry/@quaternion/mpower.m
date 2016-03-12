@@ -1,24 +1,22 @@
 function qq = mpower(q,n)
 % q^n
 %
-%% Input
+% Input
 %  q - @quaternion
 %
-%% Output
+% Output
 %  qq - @quaternion 
 %
-%% See also
+% See also
 % quaternion/ctranspose
 
 if n < 0, q = ctranspose(q);end
 
-qq = q;
+qq = 1;
 
-for i = 2:abs(n)
+for i = 1:abs(n)
   
   qq  = qq * q;
   
 end
 
-
-% 04747874527

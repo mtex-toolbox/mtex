@@ -145,13 +145,14 @@ plot(oR)
 % plot 500 random misorientations in the 3d fundamenal zone
 mori = discreteSample(gB.misorientation,500);
 hold on
-plot(mori.project2FundamentalRegion('antipodal'))
+plot(mori.project2FundamentalRegion)
 hold off
 
 
 % mark the CSL(3) misorientation
 hold on
-plot(CSL(3,ebsd.CS),'MarkerColor','r','DisplayName','CSL 3','MarkerSize',20)
+csl3 = CSL(3,ebsd.CS);
+plot(csl3.project2FundamentalRegion('antipodal') ,'MarkerColor','r','DisplayName','CSL 3','MarkerSize',20)
 hold off
 
 %% Analyzing the misorientation distribution function

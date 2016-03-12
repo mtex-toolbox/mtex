@@ -14,6 +14,12 @@ function r = mtimes(a,b)
 % See also
 % orientation/times
 
+% special case multiplication with +-1
+if isnumeric(a) || isnumeric(b)
+  r = mtimes@rotation(a,b);
+  return
+end
+
 % orientation times vector
 if isa(a,'orientation') && isa(b,'vector3d')    
   r = rotate(b,a);

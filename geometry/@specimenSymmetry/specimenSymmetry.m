@@ -8,8 +8,11 @@ classdef specimenSymmetry < symmetry
   methods
     
     function s = specimenSymmetry(varargin)
+      
       s = s@symmetry(varargin{:});
-      s = calcQuat(s);
+      
+      if nargin > 0, s = calcQuat(s); end
+      
     end
     
     function display(s)

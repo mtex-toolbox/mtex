@@ -127,7 +127,7 @@ function setMTEXPath(local_path)
 
 exclPath = {'c','data','help','templates'};
 
-if ~MATLABverLessThan('8.5')
+if ~MATLABverLessThan('8.1')
   exclPath = [exclPath,'8.4'];
 end
 

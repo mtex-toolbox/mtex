@@ -76,9 +76,6 @@ methods
     % empty constructor -> done
     if isempty(varargin), return; end
     
-    % some predefined orientations
-    [names,phi1,Phi,phi2] = oriList;
-        
     % copy constructor
     switch class(varargin{1})
        
@@ -93,12 +90,6 @@ methods
             end
             o = orientation(Miller2quat(varargin{2:3},o.CS),o.CS,o.SS);       
   
-          case lower(names)
-      
-            found = strcmpi(varargin{1},names);
-            o = orientation('Euler',phi1(found),Phi(found),phi2(found),...
-              'Bunge',o.CS,o.SS);
-            
           otherwise
         
             if exist([varargin{1},'Orientation'],'file') 
@@ -136,40 +127,87 @@ methods (Static = true)
     ori = orientation(q,varargin{:});
   end
   
+  function ori = cube(varargin)
+    ori = orientation('Euler',0,0,0,varargin{:});
+  end
+  
+  function ori = cubeND22(varargin)
+    ori = orientation('Euler',22*degree,0,0,varargin{:});
+  end
+  
+  function ori = cubeND45(varargin)
+    ori = orientation('Euler',45*degree,0,0,varargin{:});
+  end
+  
+  function ori = cubeRD(varargin)
+    ori = orientation('Euler',0,22*degree,0,varargin{:});
+  end
+  
+  function ori = goss(varargin)
+    ori = orientation('Euler',0,45*degree,0,varargin{:});
+  end
+  
+  function ori = copper(varargin)
+    ori = orientation('Euler',90*degree,35*degree,45*degree,varargin{:});
+  end
+  
+  function ori = copper2(varargin)
+    ori = orientation('Euler',270*degree,30*degree,45*degree,varargin{:});
+  end
+  
+  function ori = SR(varargin)
+    ori = orientation('Euler',53*degree,35*degree,63*degree,varargin{:});
+  end
+  
+  function ori = SR2(varargin)
+    ori = orientation('Euler',233*degree,35*degree,63*degree,varargin{:});
+  end
+  
+  function ori = SR3(varargin)
+    ori = orientation('Euler',307*degree,35*degree,27*degree,varargin{:});
+  end
+  
+  function ori = SR4(varargin)
+    ori = orientation('Euler',127*degree,35*degree,27*degree,varargin{:});
+  end
+  
+  function ori = brass(varargin)
+    ori = orientation('Euler',35*degree,45*degree,0*degree,varargin{:});
+  end
+  
+  function ori = brass2(varargin)
+    ori = orientation('Euler',325*degree,45*degree,0*degree,varargin{:});
+  end
+  
+  function ori = PLage(varargin)
+    ori = orientation('Euler',65*degree,45*degree,0*degree,varargin{:});
+  end
+  
+  function ori = PLage2(varargin)
+    ori = orientation('Euler',245*degree,45*degree,0*degree,varargin{:});
+  end
+  
+  function ori = QLage(varargin)
+    ori = orientation('Euler',65*degree,20*degree,0*degree,varargin{:});
+  end
+  
+  function ori = QLage2(varargin)
+    ori = orientation('Euler',245*degree,20*degree,0*degree,varargin{:});
+  end
+  
+  function ori = QLage3(varargin)
+    ori = orientation('Euler',115*degree,160*degree,0*degree,varargin{:});
+  end
+  
+  function ori = QLage4(varargin)
+    ori = orientation('Euler',295*degree,160*degree,0*degree,varargin{:});
+  end
+  
+  function ori = invGoss(varargin)
+    ori = orientation('Euler',90*degree,45*degree,0*degree,varargin{:});
+  end
   
 end
 
 end
 
-% --------------- some predefined orientations ----------------------
-
-function [names,phi1,Phi,phi2] = oriList
-  
-   orientationList = {
-    {'Cube',0,0,0},...
-    {'CubeND22',22,0,0},...
-    {'CubeND45',45,0,0},...
-    {'CubeRD',0,22,0},...
-    {'Goss',0,45,0},...
-    {'Copper',90,35,45},... % this was previously 90,30,45
-    {'Copper2',270,30,45},...
-    {'SR',53,35,63},...
-    {'SR2',233,35,63},...
-    {'SR3',307,35,27},...
-    {'SR4',127,35,27},...
-    {'Brass',35,45,0},...
-    {'Brass2',325,45,0},...
-    {'PLage',65,45,0},...
-    {'PLage2',295,45,0},...
-    {'QLage',65,20,0},...
-    {'QLage2',245,20,0},...
-    {'QLage3',115,160,0},...
-    {'QLage4',295,160,0},...
-    {'invGoss',90,45,0}};
-  
-  names = cellfun(@(x) x{1},orientationList,'uniformOutput',false);
-  phi1  = cellfun(@(x) x{2},orientationList) * degree;
-  Phi   = cellfun(@(x) x{3},orientationList) * degree;
-  phi2  = cellfun(@(x) x{4},orientationList) * degree;
-    
-end

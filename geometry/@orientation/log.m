@@ -15,6 +15,8 @@ function v = log(ori,ori_ref)
 % See also
 % 
 
+if nargin == 1, ori_ref = ori.id; end
+
 ori = project2FundamentalRegion(ori,ori_ref);
 
 v = log(quaternion(ori),quaternion(ori_ref));
