@@ -14,7 +14,7 @@ function [S3G,S2G,sec,scaling] = plotSO3Grid(CS,SS,varargin)
 %
 % Output
 %  S3G - @SO3Grid
-%  S2G,axes - list of @vector3d - the plotting directions
+%  S2G,axes - list of @vector3d, the plotting directions
 %  phi2 - double 
 %  scaling - double
 %
