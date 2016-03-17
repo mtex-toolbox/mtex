@@ -1,20 +1,13 @@
 function linkText = doclink(fname,lname)
 
-% on Octave skip this
-if isOctave
-  linkText = lname;
-  return;
-end
-
-
-if exist('helpPopup','file')>0
+if 0 && exist('helpPopup','file')>0
   
   linkText = ['matlab:helpPopup(''' fname ''')'];
   
 else
   
-  linkText = ['matlab:web(''jar:file:///'  ...
-    regexprep(fullfile(mtex_path,'','help','mtex','help.jar!',fname),'\','/') '.html'',''-helpbrowser'')'];
+  linkText = ['matlab:web(''file:///'  ...
+    regexprep(fullfile(mtex_path,'','doc','html',fname),'\','/') '.html'',''-helpbrowser'')'];
   
 end
 

@@ -23,6 +23,4 @@ if isempty(javachk('desktop'))
     disp(' ');
   end
 
-  
-
 end
