@@ -153,3 +153,17 @@ mtexColorbar
 %% restore MTEX preferences
 
 setMTEXpref('pfAnnotations',storepfA);
+
+%% Inverse Taylor
+
+oS = axisAngleSections(cs,cs,'antipodal');
+oS.angles = 10*degree;
+
+mori = oS.makeGrid;
+
+[M,b,eps] = calcInvTaylor(mori,sS.symmetrise);
+
+%%
+
+plot(oS,M,'contourf')
+

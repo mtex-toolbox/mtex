@@ -44,12 +44,11 @@ CRSS = ones(length(sS),1);
 y = reshape(double(log(mori)),[],3).';
 
 % this method applies the dual simplex algorithm 
-%options = optimoptions('linprog','Algorithm','dual-simplex','Display','none');
-options = optimoptions('linprog','Algorithm','interior-point','Display','none');
+options = optimoptions('linprog','Algorithm','dual-simplex','Display','none');
+%options = optimoptions('linprog','Algorithm','interior-point','Display','none');
 
-% display what we are duing
+% shall we display what we are doing?
 isSilent = check_option(varargin,'silent');
-if ~isSilent, progress(0,size(y,2),' computing: '); end
 
 % for all misorientations do
 for i = 1:size(y,2)
@@ -60,9 +59,7 @@ for i = 1:size(y,2)
   b(i,:) = linprog(CRSS,[],[],R,y(:,i),zeros(size(R,2),1),[],[],options);
   
   % display what we are duing
-  if ~isSilent && (mod(i,100)==0 || i == size(y,2))
-    progress(i,size(y,2),' computing: ');
-  end
+  if ~isSilent, progress(i,size(y,2),' computing Taylor factor: '); end
 end
 
 % the inv Taylor factor is simply the sum of the coefficents
