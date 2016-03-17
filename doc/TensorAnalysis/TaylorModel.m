@@ -1,4 +1,4 @@
-%% Tayler Model
+%% Taylor Model
 % 
 %
 %%
@@ -8,6 +8,18 @@
 %
 %% Contents
 
+%% 
+
+% display pole figure plots with RD on top and ND west
+plotx2north
+
+storepfA = getMTEXpref('pfAnnotations');
+pfAnnotations = @(varargin) text(-[vector3d.X,vector3d.Y],{'RD','ND'},...
+  'BackgroundColor','w','tag','axesLabels',varargin{:});
+
+setMTEXpref('pfAnnotations',pfAnnotations);
+
+%% Set up 
 % consider cubic crystal symmetry
 cs = crystalSymmetry('432');
 
@@ -112,14 +124,14 @@ plot(sSGrains.b)
 %% Texture evolution during rolling
 
 % define some random orientations
-ori = orientation.rand(1000,cs);
+ori = orientation.rand(10000,cs);
 
 % 30 percent strain
 q = 0;
 epsilon = 0.3 * tensor.diag([1 -q -(1-q)],'name','strain');
 
 % 
-numIter = 10;
+numIter = 50;
 progress(0,numIter);
 for sas=1:numIter
 
@@ -131,7 +143,13 @@ for sas=1:numIter
   progress(sas,numIter);
 end
 
+%%
+
 % plot the resulting pole figures
+
 plotPDF(ori,Miller({0,0,1},{1,1,1},cs),'contourf')
 mtexColorbar
 
+%% restore MTEX preferences
+
+setMTEXpref('pfAnnotations',storepfA);
