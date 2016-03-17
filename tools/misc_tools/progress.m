@@ -2,22 +2,21 @@ function progress(i,total,comment)
 % display progress
 
 global mtex_progress;
+global prevCharCnt;
 
 if ~isempty(mtex_progress) && ~mtex_progress, return;end
 
-steps = 40;
+persistent p;
 
-cl = repmat('\b',1,steps+2);
-
-ind = round(i/total*steps);
-
-str = ['[',repmat('.',1,ind),repmat(' ',1,steps-ind),']'];
-
-if nargin <= 2, comment = 'calculate: ';end
-if i == 0
-  fprintf([comment,str]);
-elseif i == total
-  fprintf(repmat('\b',1,steps + length(comment) + 2));
-else
-  fprintf([cl,str]);
+np = round(i/total*100);
+if np < p
+  prevCharCnt = 0;
+elseif np == p
+  return;
 end
+  
+p = np;
+
+if nargin <= 2, comment = 'progress: ';end
+
+disptmp([comment int2str(p)  '%']);

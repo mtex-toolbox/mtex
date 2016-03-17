@@ -54,9 +54,8 @@ y = y([1,2,3,5,6],:);
 %options = optimoptions('linprog','Algorithm','dual-simplex','Display','none');
 options = optimoptions('linprog','Algorithm','interior-point','Display','none');
 
-% display what we are duing
+% shall we display what we are doing?
 isSilent = check_option(varargin,'silent');
-if ~isSilent, progress(0,size(y,2),' computing: '); end
 
 % for all strain tensors do
 for i = 1:size(y,2)
@@ -66,10 +65,8 @@ for i = 1:size(y,2)
   % which is the linear programming problem solved below
   b(i,:) = linprog(CRSS,[],[],A,y(:,i),zeros(size(A,2),1),[],[],options);
   
-  % display what we are duing
-  if ~isSilent && (mod(i,100)==0 || i == size(y,2))
-    progress(i,size(y,2),' computing: ');
-  end
+  % display what we are doing
+  if ~isSilent, progress(i,size(y,2),' computing Taylor factor: '); end
 end
 
 % the Taylor factor is simply the sum of the coefficents
