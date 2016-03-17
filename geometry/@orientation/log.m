@@ -15,8 +15,16 @@ function v = log(ori,ori_ref)
 % See also
 % 
 
-if nargin == 1, ori_ref = ori.id; end
+if nargin == 2
 
-ori = project2FundamentalRegion(ori,ori_ref);
+  if isa(ori.CS,'crystalSymmetry')
+    ori = inv(ori_ref) .* ori;
+  else
+    ori = ori .* inv(ori_ref);
+  end
+    
+end
+  
+ori = project2FundamentalRegion(ori);
 
-v = log(quaternion(ori),quaternion(ori_ref));
+v = log@quaternion(ori);
