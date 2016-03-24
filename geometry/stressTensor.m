@@ -11,11 +11,11 @@ classdef stressTensor < tensor
    
   methods (Static = true)
     
-    function sT = unaxial(v)
-      % define unaxial stress tensor
+    function sT = uniaxial(v)
+      % define uniaxial stress tensor
       %
       % Syntax
-      %   sT = stressTensor.unaxial(v)
+      %   sT = stressTensor.uniaxial(v)
       %
       % Input
       %  v - @vector3d
