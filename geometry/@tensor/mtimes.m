@@ -21,10 +21,16 @@ if isa(T1,'double')
 elseif isa(T2,'double')
   
   T = T1;
-  T.M = T.M * T2;
-elseif isa(T1,'rotation')
-  
-  T = rotate(T2,T1);
+  % the simple case
+  if numel(T1) == 1
+    
+    T.M = T.M * T2;
+    
+  else
+    
+    error('not yet implemented')
+    
+  end
   
 else
   
