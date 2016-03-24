@@ -1,4 +1,4 @@
-classdef (InferiorClasses = {?quaternion,?rotation,?orientation}) tensor < dynOption
+classdef tensor < dynOption
    
   properties
     M = []        % the tensor coefficients
