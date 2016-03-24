@@ -63,8 +63,9 @@ for i = 1:size(y,2)
   % determine coefficients b with A * b = y and such that sum |b_j| is
   % minimal. This is equivalent to the requirement b>=0 and 1*b -> min
   % which is the linear programming problem solved below
-  b(i,:) = linprog(CRSS,[],[],A,y(:,i),zeros(size(A,2),1),[],[],options);
-  
+  try
+    b(i,:) = linprog(CRSS,[],[],A,y(:,i),zeros(size(A,2),1),[],[],options);
+  end
   % display what we are doing
   if ~isSilent, progress(i,size(y,2),' computing Taylor factor: '); end
 end
