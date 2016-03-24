@@ -19,7 +19,7 @@ d = r.d(:);
 
 abcd = [a.^2,b.^2,c.^2,d.^2,a.*b,a.*c,a.*d,b.*c,b.*d,c.*d,r.i(:)];
 
-[ignore,m,n] = unique(round(abcd*1e7),'rows'); %#ok<ASGLU>
+[ignore,m,n] = unique(round(abcd*1e4),'rows'); %#ok<ASGLU>
 
 % remove duplicated points
 r.a = r.a(m);
