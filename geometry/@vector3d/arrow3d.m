@@ -40,7 +40,7 @@ for i = 1:length(vec)
   n = rotate(v.orth,rotation('axis',v,'angle',linspace(0,2*pi,50)));
 
   % the hull of the arrow
-  hull = repmat(c,length(n),1) + n * r;
+  hull = repmat(c,length(n),1) + reshape(n,[],1) * r;
 
   % plot as surface plot
   h(i) = optiondraw(surf(hull.x,hull.y,hull.z,'parent',ax,...
