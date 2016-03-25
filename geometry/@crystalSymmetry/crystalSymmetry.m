@@ -2,22 +2,22 @@ classdef crystalSymmetry < symmetry
 % constructor
 %
 % Syntax
-%   crystalSymmetry -
-%   crystalSymmetry('cubic') -
-%   crystalSymmetry('2/m',[8.6 13 7.2],[90 116, 90]*degree,'mineral','orthoclase') -
-%   crystalSymmetry('O') -
-%   crystalSymmetry('LaueId',9) -
-%   crystalSymmetry('SpaceId',153) -
+%   crystalSymmetry
+%   crystalSymmetry('cubic')
+%   crystalSymmetry('2/m',[8.6 13 7.2],[90 116, 90]*degree,'mineral','orthoclase')
+%   crystalSymmetry('O')
+%   crystalSymmetry('LaueId',9)
+%   crystalSymmetry('SpaceId',153)
 %
 % Input
 %  name  - Schoenflies or International notation of the Laue group
-%  axes  - [a,b,c] --> length of the crystallographic axes
-%  angle - [alpha,beta,gamma] --> angle between the axes
+%  axes  - [a,b,c] ~ length of the crystallographic axes
+%  angle - [alpha,beta,gamma] ~ angle between the axes
 %
 % Output
 %  s - @crystalSymmetry
 %
-% Remarks
+% Description
 % Supported Symmetries
 %
 %  id crystal system  Schoen-  Inter-    Laue     Rotational

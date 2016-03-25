@@ -1,5 +1,8 @@
 function [M,b,mori] = calcTaylor(eps,sS,varargin)
-% 
+% compute Taylor factor and strain dependent orientation gradient
+%
+% Syntax
+%   [M,b,mori] = calcTaylor(eps,sS)
 %
 % Input
 %  eps - strain @tensor list in crystal coordinates
@@ -8,7 +11,7 @@ function [M,b,mori] = calcTaylor(eps,sS,varargin)
 % Output
 %  M    - taylor factor
 %  b    - coefficients for the acive slip systems 
-%  mori - mis@orientation
+%  mori - misorientation
 %
 % Example
 %   

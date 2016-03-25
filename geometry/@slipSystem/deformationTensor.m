@@ -2,13 +2,12 @@ function eps = deformationTensor(sS)
 % deformation tensor
 %
 % Syntax
-%
 %   SF = SchmidFactor(sS,v)
 %   SF = SchmidFactor(sS,sigma)
 %
 % Input
 %  sS - list of @slipSystem
-%  v  - @vector3d - list of tension direction
+%  v  - @vector3d list of tension direction
 %  sigma - stress @tensor
 %
 % Output

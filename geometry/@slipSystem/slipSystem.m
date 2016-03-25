@@ -1,4 +1,5 @@
-classdef slipSystem 
+classdef slipSystem
+  % class representing slip systems
   
   properties    
     b % slip direction or burgers vector

@@ -14,7 +14,7 @@
 % Calculation and plot on GBs of m' parameter
 % Dataset from Mercier D. - cp-Ti (alpha phase - hcp)
 
-mtexdata titanium
+mtexdata csl
 
 % compute grains
 [grains, ebsd.grainId] = calcGrains(ebsd('indexed'));
@@ -30,24 +30,28 @@ hold on
 plot(grains.boundary)
 hold off
 
-%% Schmid Factor
+%% Taylor model
 % 
 
 % consider Basal slip
-sSBasal = slipSystem.basal(ebsd.CS)
+sS = slipSystem.fcc(ebsd.CS)
+
 
 % and all symmetrically equivalent variants
-sSBasal = sSBasal.symmetrise;
+sS = sS.symmetrise;
 
-% compute Schmid factor for all slip systems
-SF = sSBasal.SchmidFactor(inv(grains.meanOrientation) * xvector);
+%
+q = 0.5;
+eps = tensor.diag([-q 1 -(1-q)],'name','strain');
 
-% find the maximum Schmidt factor
-[SF,id] = max(SF,[],2);
+[M,b,ori] = calcTaylor(inv(grains.meanOrientation).*eps,sS);
 
-% and plot it for each grain
-plot(grains,SF)
-mtexColorbar
+
+
+%%
+
+% find the maximum 
+[~,id] = max(b,[],2);
 
 %%
 % The variable |id| contains now for each grain the id of the slip system
@@ -55,10 +59,14 @@ mtexColorbar
 % for each grain the slip system with largest Schmid factor in specimen
 % coordinates
 
-sSGrain = grains.meanOrientation .* sSBasal(id)
+sSGrain = grains.meanOrientation .* sS(id)
 
 % and plot then the plance normal and the Burgers vectors into the centers
 % of the grains
+
+plot(grains,M)
+
+largeGrains = grains(grains.grainSize > 10)
 
 hold on
 quiver(grains,cross(sSGrain.n,zvector),'displayName','slip plane')
@@ -86,7 +94,7 @@ plot(sSGrain.b,'contourf')
 sigma = stressTensor.uniaxial(xvector);
 
 % compute Schmid factor for all slip systems
-SF = sSBasal.SchmidFactor(inv(grains.meanOrientation) * sigma);
+SF = sS.SchmidFactor(inv(grains.meanOrientation) * sigma);
 
 % find the maximum Schmidt factor
 [SF,id] = max(SF,[],2);
@@ -96,7 +104,7 @@ plot(grains,SF)
 mtexColorbar
 
 % active slip system in specimen coordinates
-sSGrain = grains.meanOrientation .* sSBasal(id)
+sSGrain = grains.meanOrientation .* sS(id)
 
 % and plot then the plance normal and the Burgers vectors into the centers
 % of the grains
@@ -138,14 +146,14 @@ hold off
 % misorientation space
 
 % set up an axis angle plot
-sP = axisAngleSections(sSBasal.CS,sSBasal.CS)
+sP = axisAngleSections(sS.CS,sS.CS)
 
 % generate a grid of misorientations
 moriGrid = sP.makeGrid;
 
 % compute mPrime for all misorientations
-sSBasal = slipSystem.basal(ebsd.CS);
-mP = max(mPrime(sSBasal,moriGrid*sSBasal.symmetrise),[],2);
+sS = slipSystem.basal(ebsd.CS);
+mP = max(mPrime(sS,moriGrid*sS.symmetrise),[],2);
 
 % plot mPrime
 sP.plot(mP,'smooth')
