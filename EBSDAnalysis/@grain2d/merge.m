@@ -1,4 +1,4 @@
-function [grainsMerged,parentId] = merge(grains, gB)
+function [grainsMerged,parentId] = merge(grains,gB,varargin)
 % merge grains along special grain boundaries
 %
 % Whenever two grains share a grain boundary that is in the list |gB| both
