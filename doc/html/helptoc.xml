@@ -97,6 +97,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.repmat.html">repmat</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.reshape.html">reshape</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.rotate.html">rotate</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.rotate_outer.html">rotate_outer</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.scatter.html">scatter</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.scatter3d.html">scatter3d</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.size.html">size</tocitem>
@@ -127,6 +128,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="Miller.project2FundamentalRegion.html">project2FundamentalRegion</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="Miller.region.html">region</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="Miller.rotate.html">rotate</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="Miller.rotate_outer.html">rotate_outer</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="Miller.round.html">round</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="Miller.scatter.html">scatter</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="Miller.smooth.html">smooth</tocitem>
@@ -194,6 +196,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="quaternion.isempty.html">isempty</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="quaternion.length.html">length</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="quaternion.log.html">log</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="quaternion.logm.html">logm</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="quaternion.matrix.html">matrix</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="quaternion.mean.html">mean</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="quaternion.mean_CS.html">mean_CS</tocitem>
@@ -248,6 +251,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="rotation.mldivide.html">mldivide</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="rotation.mtimes.html">mtimes</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="rotation.permute.html">permute</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="rotation.power.html">power</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="rotation.project2FundamentalRegion.html">project2FundamentalRegion</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="rotation.repmat.html">repmat</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="rotation.reshape.html">reshape</tocitem>
@@ -298,6 +302,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.calcAngleDistribution.html">calcAngleDistribution</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.calcBinghamODF.html">calcBinghamODF</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.calcFourierODF.html">calcFourierODF</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.calcInvTaylor.html">calcInvTaylor</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.calcKernel.html">calcKernel</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.calcKernelODF.html">calcKernelODF</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.calcMDF.html">calcMDF</tocitem>
@@ -305,13 +310,13 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.calcODF.html">calcODF</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.calcTensor.html">calcTensor</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.crossCorrelation.html">crossCorrelation</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.ctranspose.html">ctranspose</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.display.html">display</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.dot.html">dot</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.dot_outer.html">dot_outer</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.export_VPSC.html">export_VPSC</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.fibreVolume.html">fibreVolume</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.getFundamentalRegion.html">getFundamentalRegion</tocitem>
-               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.inv.html">inv</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.isMisorientation.html">isMisorientation</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.ldivide.html">ldivide</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.log.html">log</tocitem>
@@ -324,6 +329,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.plotIPDF.html">plotIPDF</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.plotPDF.html">plotPDF</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.plotSection.html">plotSection</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.power.html">power</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.project2EulerFR.html">project2EulerFR</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.project2FundamentalRegion.html">project2FundamentalRegion</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.qqplot.html">qqplot</tocitem>
@@ -505,7 +511,9 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.PoissonRatio.html">PoissonRatio</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.Voigt.html">Voigt</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.YoungsModulus.html">YoungsModulus</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.antiSym.html">antiSym</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.calcShearStress.html">calcShearStress</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.calcTaylor.html">calcTaylor</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.char.html">char</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.checkSymmetry.html">checkSymmetry</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.conj.html">conj</tocitem>
@@ -514,6 +522,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.display.html">display</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.double.html">double</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.eig.html">eig</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.end.html">end</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.eq.html">eq</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.expm.html">expm</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.horzcat.html">horzcat</tocitem>
@@ -537,11 +546,13 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.rdivide.html">rdivide</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.real.html">real</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.rotate.html">rotate</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.rotate_outer.html">rotate_outer</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.shearModulus.html">shearModulus</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.size.html">size</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.subsasgn.html">subsasgn</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.subsref.html">subsref</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.sum.html">sum</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.sym.html">sym</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.symmetrise.html">symmetrise</tocitem>
                <tocitem target="tensor.tensor.html"/>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.tensorSize.html">tensorSize</tocitem>
@@ -912,6 +923,29 @@
             <tocitem target="SeismicsMultiplot.html#12">dVs : Plot Velocity difference Vs1-Vs2 (km/s) plus Vs1 polarizations</tocitem>
             <tocitem target="SeismicsMultiplot.html#13">Vp/Vs1 : Plot Vp/Vs1 ratio (no units)</tocitem>
             <tocitem target="SeismicsMultiplot.html#14">Vp/Vs2 : Plot Vp/Vs2 ratio (no units)</tocitem>
+         </tocitem>
+         <tocitem target="SlipSystems.html">Slip Systems<tocitem target="SlipSystems.html#4">Burgers vector and normal directions</tocitem>
+            <tocitem target="SlipSystems.html#11">Rotating slip systems</tocitem>
+         </tocitem>
+         <tocitem target="SlipTransmition.html">Slip Transmition<tocitem target="SlipTransmition.html#4">Import Titanium data</tocitem>
+            <tocitem target="SlipTransmition.html#5">Schmid Factor</tocitem>
+            <tocitem target="SlipTransmition.html#9">Resolved shear stress</tocitem>
+            <tocitem target="SlipTransmition.html#10">Compatibility of slip systems</tocitem>
+            <tocitem target="SlipTransmition.html#11">Plot m' in misorientation space</tocitem>
+         </tocitem>
+         <tocitem target="StrainAnalysis.html">Slip Transmition<tocitem target="StrainAnalysis.html#4">Import Titanium data</tocitem>
+            <tocitem target="StrainAnalysis.html#5">Taylor model</tocitem>
+            <tocitem target="StrainAnalysis.html#10">Resolved shear stress</tocitem>
+            <tocitem target="StrainAnalysis.html#11">Compatibility of slip systems</tocitem>
+            <tocitem target="StrainAnalysis.html#12">Plot m' in misorientation space</tocitem>
+         </tocitem>
+         <tocitem target="TaylorModel.html">Taylor Model<tocitem target="TaylorModel.html#5">Set up</tocitem>
+            <tocitem target="TaylorModel.html#6">The orientation dependence of the Taylor factor</tocitem>
+            <tocitem target="TaylorModel.html#7">The orientation dependency of the rotation value</tocitem>
+            <tocitem target="TaylorModel.html#9">Most active slip direction</tocitem>
+            <tocitem target="TaylorModel.html#13">Texture evolution during rolling</tocitem>
+            <tocitem target="TaylorModel.html#15">restore MTEX preferences</tocitem>
+            <tocitem target="TaylorModel.html#16">Inverse Taylor</tocitem>
          </tocitem>
       </tocitem>
       <tocitem target="Plotting.html">Plotting<tocitem target="PlottingIntro.html">Plotting Overview<tocitem target="PlottingIntro.html#3">Plotting in MTEX</tocitem>

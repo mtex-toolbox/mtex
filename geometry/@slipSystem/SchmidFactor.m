@@ -8,7 +8,7 @@ function SF = SchmidFactor(sS,sigma)
 %
 % Input
 %  sS - list of @slipSystem
-%  v  - @vector3d - list of tension direction
+%  v  - @vector3d list of tension direction
 %  sigma - stress @tensor
 %
 % Output

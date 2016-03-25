@@ -1,5 +1,8 @@
 function [M,b,eps] = calcInvTaylor(mori,sS,varargin)
-% 
+% Taylor factor from orientation gradient
+%
+% Syntax
+%   [M,b,eps] = calcInvTaylor(mori,sS)
 %
 % Input
 %  mori - mis@orientation

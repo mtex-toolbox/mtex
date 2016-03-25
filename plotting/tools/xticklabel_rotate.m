@@ -1,13 +1,13 @@
 function hText = xticklabel_rotate(XTick,rot,varargin)
-% hText = xticklabel_rotate(XTick,rot,XTickLabel,varargin)     Rotate XTickLabel
+% Rotate XTickLabel
 %
 % Syntax
 %   xticklabel_rotate
 %
-% Input:    
+% Input
 %   XTick - vector array of XTick positions & values (numeric) 
-%                           uses current XTick values or XTickLabel cell array by
-%                           default (if empty) 
+%           uses current XTick values or XTickLabel cell array by
+%           default (if empty) 
 %  rot    - angle of rotation in degrees, 90 by default
 % XTickLabel - cell array of label strings
 % [var]      - "Property-value" pairs passed to text generator
