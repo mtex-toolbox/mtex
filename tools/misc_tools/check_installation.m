@@ -1,8 +1,6 @@
 function check_installation
 % check whether all binaries are working properly
 
-
-
 % check tmp dir
 if strfind(getMTEXpref('tempdir',tempdir),' ')
   hline()
@@ -34,7 +32,8 @@ end
 % ------------ check for binaries --------------------------
 function check_binaries
 
-if fast_check_binaries, return; end
+% check binaries do exist
+fast_check_binaries;
 
 [th,rh] = polar(equispacedS2Grid('points',10));
 
@@ -86,9 +85,7 @@ end
 
 end
 
-function e = fast_check_binaries
-
-e = false;
+function fast_check_binaries
 
 if ispc, mtex_ext = '.exe';else mtex_ext = '';end
 binariespath = fullfile(mtex_path,'c','bin',getMTEXpref('architecture'));
@@ -101,11 +98,6 @@ for k=1:numel(binaries)
     warning(['missing binary ' binaries{k} mtex_ext])
     return; 
   end
-end
-
-if ispref('mtex') && getpref('mtex','binaries')
-  e = true;
-  return
 end
 
 end
@@ -201,13 +193,6 @@ for k=1:numel(mex)
   end
 end
 
-if ispref('mtex') && ispref('mtex','mex')
-  if getpref('mtex','mex')
-    e = true;
-    return
-  end
-end
-
 try
   S3G = equispacedSO3Grid(crystalSymmetry,specimenSymmetry,'points',100);
   dot_outer(S3G,idquaternion,'epsilon',pi/4);
@@ -215,8 +200,6 @@ try
 catch
   e = false;
 end
-
-setpref('mtex','mex',e);
 
 end
 
@@ -269,6 +252,7 @@ end
 function hline(st)
 
 if nargin < 1, st = '*'; end
+fprintf('\n');
 disp(repmat(st,1,80));
 
 end
