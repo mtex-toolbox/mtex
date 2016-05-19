@@ -2,6 +2,8 @@ function disptmp(s,varargin)
 
 global prevCharCnt;
 
+if isempty(prevCharCnt), prevCharCnt = 0; end
+
 % Make safe for fprintf, replace control charachters
 
 s = strrep(s,'%','%%');

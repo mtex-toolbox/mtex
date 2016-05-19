@@ -94,6 +94,8 @@ for id = 1:length(grainIds)
     
 end
 
+vdisp('',varargin{:});
+
 % store to EBSD variable
 ebsd.rotations = rot;
     
