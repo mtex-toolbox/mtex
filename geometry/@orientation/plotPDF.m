@@ -42,7 +42,9 @@ else
   data = [];
 end
 
-if isNew % for a new plot 
+h = getappdata(mtexFig.parent,'h');
+
+if isNew || isempty(h) || ~isa(mtexFig,'mtexFigure') % for a new plot 
   
   h = varargin{1};
   varargin(1) = [];
@@ -51,12 +53,14 @@ if isNew % for a new plot
   for i = 1:length(h)
     h{i} = o.CS.ensureCS(h{i});
   end    
-  setappdata(gcf,'h',h);
-  set(gcf,'Name',['Pole figures of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
+  setappdata(mtexFig.parent,'h',h);
+    
+end
+
+if isNew
   pfAnnotations = getMTEXpref('pfAnnotations');
-  
+  set(mtexFig.parent,'Name',['Pole figures of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
 else
-  h = getappdata(gcf,'h');
   pfAnnotations = @(varargin) 1;
 end
 
@@ -105,7 +109,7 @@ end
 
 if check_option(varargin,'3d')  
   datacursormode off
-  fcw(gcf,'-link'); 
+  fcw(mtexFig.parent,'-link'); 
 end
 
 % ----------- Tooltip function ------------------------
