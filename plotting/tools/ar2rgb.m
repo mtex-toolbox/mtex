@@ -1,5 +1,13 @@
 function rgb = ar2rgb(omega,radius,grayValue,varargin)
 % compute rgb values from angle and radius
+%
+% Input
+%  omega     -
+%  radius    -
+%  grayValue -
+%
+% Output
+%  rgb
 
 L = (radius(:) - 0.5) .* grayValue(:) + 0.5;
 

@@ -144,3 +144,10 @@ oM.inversePoleFigureDirection = mean(ebsd.orientations) * oM.whiteCenter;
 oM.maxAngle = 2*degree;
 plot(ebsd,oM.orientation2color(ebsd.orientations))
 hold off
+
+%%
+
+ebsd = ebsd.gridify
+
+plot(ebsd,abs(ebsd.gradientX))
+plot(ebsd,abs(ebsd.gradientY))
