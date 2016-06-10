@@ -140,6 +140,7 @@ end
 
 if check_option(varargin,'pcolor')
   h = pcolor(X,Y,data,'parent',ax);
+  set(h,'parent',ax);
   
   % do not display in the legend
   set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
