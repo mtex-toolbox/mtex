@@ -106,7 +106,7 @@ end
 
 % set styles
 varargin = delete_option(varargin,'parent');
-optiondraw(h,'LineStyle','none','Fill','on',varargin{:});
+optiondraw(h,varargin{:});
 
 if isappdata(sP(1).parent,'mtexFig')
   mtexFig = getappdata(sP(1).parent,'mtexFig');
@@ -119,8 +119,6 @@ end
 
 % ------------------------------------------------------------
 function h = betterContourf(ax,X,Y,data,contours,varargin)
-
-h = [];
 
 if numel(unique(data)) == 1, data(1) = data(1) + 2*eps; end
 
@@ -139,26 +137,25 @@ if check_option(varargin,'correctContour')
 end
 
 if check_option(varargin,'pcolor')
-  h = pcolor(X,Y,data,'parent',ax);
-  set(h,'parent',ax);
   
-  % do not display in the legend
-  set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
-  
+  opt = {};
   if numel(data) >= 500
-    if length(unique(data))<50
-      shading flat;
-    else
-      shading interp;
-    end
-  else
-    set(gcf,'Renderer','painters');
+    opt = {'LineStyle','none','FaceColor','interp'};    
   end
-else
-  [CM,h] = contourf(X,Y,data,contours,'parent',ax); %#ok<ASGLU>
   
-  % do not display in the legend
-  set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+  % pcolor is actually surface
+  h = surface(X,Y,zeros(size(X)),data,opt{:},'parent',ax);
+
+else
+
+  % extract style
+  opt = extract_argoption([{'LineStyle','none','Fill','on'},varargin],{'LineStyle','Fill','LineColor'});
+  
+  [CM,h] = contourf(X,Y,data,contours,opt{:},'parent',ax); %#ok<ASGLU>
+  
 end
+
+% do not display in the legend
+set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
 
 end
