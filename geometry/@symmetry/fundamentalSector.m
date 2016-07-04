@@ -42,14 +42,24 @@ if length(cs) > 1+length(N)
   N = [N,vector3d('theta',90*degree,'rho',[90*degree,drho-90*degree])];
 end
 
+% rotate fundamental sector such that it starts at the vector that is
+% plotted to east
 try
-  omega = cs.bAxis.rho;
-catch
-  omega = (1-NWSE(getMTEXpref('xAxisDirection')))*pi/2;  
-end
+  
+  if ~isempty(getMTEXpref('bAxisDirection',[]))
+    rho = cs.bAxis.rho - pi/2*(NWSE(getMTEXpref('bAxisDirection',[]))-1);
+  elseif ~isempty(getMTEXpref('aAxisDirection',[]))
+    rho = cs.aAxis.rho - pi/2*(NWSE(getMTEXpref('aAxisDirection',[]))-1);
+  else
+    rho = cs.bAxis.rho;
+  end
 
-% rotate fundamental sector such that it start with the aAxis
-N = rotate(N,omega);
+catch
+  rho = (1-NWSE(getMTEXpref('xAxisDirection')))*pi/2;
+end
+N = rotate(N,rho);
+
+
 
 % some special cases
 switch cs.id
@@ -78,25 +88,25 @@ switch cs.id
   case 16 % mmm    
   case 17 % 3
   case 18 % -3
-  case {19,20,21} % 321, 3m1, -3m1
-    N = rotate(N,-30*degree);    
-  case 22
-    N = rotate(N,-30*degree);    
-  case {22,23,24} % 312, 31m, -31m
+  case {19,20,21} % 321, 3m1, -3m1    
+    N = rotate(N,-mod(30+round(rho/degree),60)*degree);
+  case 22 % 312
+    N = rotate(N,-mod(30+round(rho/degree),60)*degree);    
+  case {23,24} % 312, 31m, -31m
   case 30 %-42m
     N = rotate(N,-45*degree);
   case {33,34,35,36} % 6, 622    
   case 38 % -62m
   case 39 % 6m2
-    N = rotate(N,-30*degree);    
+    N = rotate(N,-mod(30+round(rho/degree),60)*degree);
   case 41 % 23    
     N = rotate(vector3d([1 1 0 0],[1 -1 1 -1],[0 0 1 1]),omega);
   case {42,43} % m-3, 432
-    N = rotate([vector3d(0,-1,1),vector3d(-1,0,1),xvector,yvector,zvector],omega);  
+    N = rotate([vector3d(0,-1,1),vector3d(-1,0,1),xvector,yvector,zvector],rho);  
   case 44 % -43m
-    N = rotate([vector3d(1,-1,0),vector3d(1,1,0),vector3d(-1,0,1)],omega);
+    N = rotate([vector3d(1,-1,0),vector3d(1,1,0),vector3d(-1,0,1)],rho);
   case 45 % m-3m    
-    N = rotate([vector3d(1,-1,0),vector3d(-1,0,1),yvector],omega);
+    N = rotate([vector3d(1,-1,0),vector3d(-1,0,1),yvector],rho);
 end
 
 % this will be restricted later anyway

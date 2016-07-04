@@ -16,6 +16,12 @@ function mtex_settings
 setMTEXpref('xAxisDirection','north');
 setMTEXpref('zAxisDirection','outOfPlane');
 
+setMTEXpref('bAxisDirection','east');
+setMTEXpref('aAxisDirection',''); % undefined
+
+%setMTEXpref('bAxisDirection',''); % undefined
+%setMTEXpref('aAxisDirection','east');
+
 % default figure size, possible values are a factor between 0 and 1 or
 % 'tiny', 'small', 'normal', 'large', 'huge'
 setMTEXpref('figSize','normal');
