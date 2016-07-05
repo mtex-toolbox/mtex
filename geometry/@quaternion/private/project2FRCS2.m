@@ -21,7 +21,7 @@ qs = l * dr;
 % may be we can skip something
 minAngle = reshape(abs(qs.angle),[],1);
 minAngle = min([inf;minAngle(minAngle > 1e-3)]);
-notInside = 2 * acos(q.a) > minAngle/2;
+notInside = 2 * acos(abs(q.a)) > minAngle/2;
 
 % restrict to quaternion which are not yet it FR
 q_sub = q.subSet(notInside);

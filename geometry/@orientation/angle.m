@@ -14,7 +14,7 @@ function omega = angle(o1,varargin)
 
 if nargin >= 2 && isa(varargin{1},'quaternion')
 
-  omega = real(2*acos(dot(o1,varargin{:})));
+  omega = real(2*acos(abs(dot(o1,varargin{:}))));
   
 elseif check_option(varargin,'noSymmetry')
   
@@ -33,7 +33,7 @@ else
   % may be we can skip something
   minAngle = reshape(abs(qs.angle),[],1);
   minAngle = min([inf;minAngle(minAngle > 1e-3)]);
-  omega = 2 * real(acos(q.a));
+  omega = 2 * real(acos(abs(q.a)));
   notInside = omega > minAngle/2;
   
   % compute all distances to the symmetric equivalent orientations
