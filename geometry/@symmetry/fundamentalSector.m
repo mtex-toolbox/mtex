@@ -71,7 +71,6 @@ switch cs.id
     if isnull(dot(getMinAxes(cs),zvector))
       N = zvector;    
     end
-    ind = angle(N,vector3d(cs.aAxis))< 45*degree;    
   case 4
     N = -getMinAxes(cs);    
   case {7,10} % m11, 1m1, mm1
@@ -100,7 +99,7 @@ switch cs.id
   case 39 % 6m2
     N = rotate(N,-mod(30+round(rho/degree),60)*degree);
   case 41 % 23    
-    N = rotate(vector3d([1 1 0 0],[1 -1 1 -1],[0 0 1 1]),omega);
+    N = rotate(vector3d([1 1 0 0],[1 -1 1 -1],[0 0 1 1]),rho);
   case {42,43} % m-3, 432
     N = rotate([vector3d(0,-1,1),vector3d(-1,0,1),xvector,yvector,zvector],rho);  
   case 44 % -43m
