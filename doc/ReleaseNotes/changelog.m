@@ -1,6 +1,19 @@
 %% MTEX Changelog
 %
 %
+%% MTEX 4.3.2 07/2016
+%
+% *Alignment of Miller plots*
+%
+% You can now specify the alignment of the crystal a-axis or b-axis in
+% Miller plots by
+%
+%   plota2north, plota2east, plota2south, plota2west
+%   plotb2north, plotb2east, plotb2south, plotb2west
+%
+% This might also be specify in <matlab:edit mtex_settings.m
+% mtex_settings>.
+%
 %% MTEX 4.3 - 03/2016
 %
 % *Alignment of Miller plots*
