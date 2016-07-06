@@ -41,16 +41,15 @@ else
   data = [];
 end
 
-if isNew 
+% take inverse pole figure directions from figure
+r = getappdata(mtexFig.parent,'inversePoleFigureDirection');
+
+if isNew || isempty(r) || ~isa(mtexFig,'mtexFigure')
   
   r = varargin{1};
   argin_check(r,'vector3d');
   setappdata(mtexFig.parent,'inversePoleFigureDirection',r);
-    
-else % take inverse pole figure directions from figure
-   
-  r = getappdata(mtexFig.parent,'inversePoleFigureDirection');
-    
+        
 end
 
 %  subsample if needed 

@@ -9,7 +9,7 @@ function S3G = zeroRange(pf,S3G,varargin)
 %  NS3G - antipodal @SO3Grid
 %
 % Options
-%  zero_range   - which pole figures to be included
+%  zero_range   - which pole figures to be included [0.1]
 %  zr_bg        - intensity to be considered as background
 %  zr_factor    - backgound = pf_max_value / zr_factor
 %  zr_halfwidth - halfwidth of the kernel used for estimation

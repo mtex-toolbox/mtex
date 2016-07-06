@@ -162,8 +162,15 @@ classdef crystalSymmetry < symmetry
     end    
    
     function opt = get.plotOptions(cs)
-      % rotate the bAxis to the east
-      rho = -cs.bAxis.rho;
+      % rotate the aAxis or bAxis into the right direction
+      
+      if ~isempty(getMTEXpref('bAxisDirection',[]))
+        rho = -cs.bAxis.rho + pi/2*(NWSE(getMTEXpref('bAxisDirection',[]))-1);
+      elseif ~isempty(getMTEXpref('aAxisDirection',[]))
+        rho = -cs.aAxis.rho + pi/2*(NWSE(getMTEXpref('aAxisDirection',[]))-1);
+      else
+        rho = 0;
+      end
       opt = {'xAxisDirection',rho,'zAxisDirection','outOfPlane'};
     end
     

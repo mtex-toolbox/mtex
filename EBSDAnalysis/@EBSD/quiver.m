@@ -8,12 +8,12 @@ function h = quiver(ebsd,dir,varargin)
 %   quiver(ebsd,ebsd.rotations.axis)
 %
 % Input
-%  ebsd - @grain2d
-%  dir    - @vector3d
+%  ebsd - @ebsd
+%  dir  - @vector3d
 %
 % Options
-%  antipodal -
-%  maxHeadSize
+%  antipodal - plot directions or axes
+%  maxHeadSize - size of the arrow
 %
 
 xy = [ebsd.prop.x(:),ebsd.prop.y(:)];

@@ -28,7 +28,7 @@ if isa(q,'double'), q = axis2quat(zvector,q); end
 
 % rotate the orientations
 if ~check_option(varargin,'keepEuler')
-  ebsd.rotations = q .* ebsd.rotations;
+  ebsd.rotations = rotation(q .* ebsd.rotations);
 end
 
 % rotate the spatial data
@@ -44,7 +44,7 @@ if ~check_option(varargin,'keepXY')
   elseif isappr(angle(q),pi) && isnull(dot(axis(q),zvector)) 
     % rotation perpendicular to z
     
-    [x y z] = double(axis(q)); %#ok<NASGU>
+    [x,y,z] = double(axis(q)); 
     omega = atan2(y,x);
     
     A = [cos(2*omega) sin(2*omega);sin(2*omega) -cos(2*omega)];

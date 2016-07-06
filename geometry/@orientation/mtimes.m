@@ -47,10 +47,8 @@ r = mtimes@rotation(a,b);
 % convert back to orientation
 if isa(right,'crystalSymmetry') || isa(left,'crystalSymmetry')
   r = orientation(r,right,left); 
+else % otherwise it is only a rotation anymore
+  r = rotation(r);
 end
 
-% TODO!!!
-%if length(r.CS) > 1 && ...
-%    ~all(any(isappr(abs(dot_outer(b * r.CS * b^-1,r.CS)),1)))
-    
 end

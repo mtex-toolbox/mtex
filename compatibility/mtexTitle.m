@@ -21,5 +21,7 @@ s = strrep(s,'%','\%');
 [varargout{1:nargout}] = title(ax,s,...
   'interpreter','LaTeX','FontSize',round(getMTEXpref('FontSize')*1.1),varargin{:});
 
+set(get(ax,'Title'),'Visible','on');
+
 end
 

@@ -16,9 +16,16 @@ function h = contourf( v, data, varargin )
 
 if nargin == 1, data = []; end
 
-h = v.smooth(data,'contours',10,'LineStyle','none',varargin{:});
+% in older matlab version we have to plot contour and countour lines
+% seperately to avoid artefacts
+if verLessThan('matlab','9.0')
+ 
+  h = v.smooth(data,'contours',10,'LineStyle','none',varargin{:});
 
-h = [h,v.smooth(data,'contours',10,'LineStyle','-','LineColor','k','hold',varargin{:})];
+  h = [h,v.smooth(data,'contours',10,'fill','off','LineStyle','-','LineColor','k','hold',varargin{:})];
+else
+  h = v.smooth(data,'contours',10,'LineStyle','-','LineColor','k',varargin{:});
+end
 
 if nargout == 0, clear h; end
 

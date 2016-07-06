@@ -9,7 +9,7 @@ function plot(s,varargin)
 %  cs - crystalSymmetry
 %
 
-symbolSize = 0.15*get_option(varargin,'symbolSize',1);
+
 
 % extract symmetry elements
 rot = rotation(s);
@@ -20,7 +20,12 @@ omega = round(rot.angle./degree);
 [uaxis, ~, id] = unique(axis,'antipodal');
 
 % initalize plot
-newSphericalPlot([zvector,-zvector],varargin{:},s.plotOptions{:});
+sP = newSphericalPlot([zvector,-zvector],varargin{:},s.plotOptions{:});
+
+% scale symbol size according to bounds
+d = max(sP(1).bounds(3:4) - sP(1).bounds(1:2));
+symbolSize = 0.15*get_option(varargin,'symbolSize',d/3);
+
 hold on
 
 % plot mirror planes

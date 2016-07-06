@@ -68,4 +68,11 @@ else
   if size(v,2) == 1
     v = cunion(v).';
   end
+  
+  if check_option(varargin,'unique')
+    [~,ind] = unique(vector3d(v));
+    v = subSet(v,ind);
+  end
+  
+    
 end

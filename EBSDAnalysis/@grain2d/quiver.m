@@ -13,8 +13,8 @@ function h = quiver(grains,dir,varargin)
 %  dir    - @vector3d
 %
 % Options
-%  antipodal -
-%  maxHeadSize
+%  antipodal   - plot directions or axes
+%  maxHeadSize - size of the arrow
 %
 
 xy = grains.centroid;

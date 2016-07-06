@@ -33,7 +33,12 @@ if newFigure
 
   if check_option(varargin,'parent')
   
-    mtexFig.gca = get_option(varargin,'parent');
+    fig = get_option(varargin,'parent');
+    mtexFig.gca = fig;
+    while ~isempty(fig) && ~strcmp('figure', get(fig,'type'))
+      fig = get(fig,'parent');
+    end
+    mtexFig.parent = fig;
     newFigure = false;
     
   else

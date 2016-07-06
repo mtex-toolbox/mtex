@@ -1,4 +1,4 @@
-classdef ipdfAngleOM < ipdfOrientationMapping
+classdef ipdfAngleOrientationMapping < ipdfOrientationMapping
   % defines an orientation mapping based on a certain inverse pole figure
   %   Detailed explanation goes here
     
@@ -7,7 +7,7 @@ classdef ipdfAngleOM < ipdfOrientationMapping
   end
   
   methods
-    function oM = ipdfAngleOM(varargin)
+    function oM = ipdfAngleOrientationMapping(varargin)
       oM = oM@ipdfOrientationMapping(varargin{:});
       oM.convention = extract_option(varargin,{'rho','theta','both'});
       if isempty(oM.convention)
@@ -18,8 +18,8 @@ classdef ipdfAngleOM < ipdfOrientationMapping
     end
     
     function c = Miller2color(oM,h)
+            
       % compute minimum angle
-      h = h.rmOption('theta');
       h = symmetrise(Miller(h,oM.CS1));
 
       % convert to polar angles
@@ -41,9 +41,9 @@ classdef ipdfAngleOM < ipdfOrientationMapping
       end
 
       c = reshape(c,size(h))./degree;
-      [~,col] = min(abs(c-min(abs(c(:,1)))));
+      [~,col] = min(abs(c-min(abs(c(:,1)))),[],1);
       c = c(sub2ind(size(c),col,1:size(c,2)));
-
+                 
     end
   end
   

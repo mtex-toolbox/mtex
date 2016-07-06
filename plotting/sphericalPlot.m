@@ -58,40 +58,37 @@ classdef sphericalPlot < handle
         
         % grid
         sP.plotPlainGrid(varargin{:});
-        
+
         % set view point
         setCamera(sP.ax,'default',varargin{:});
-        
+
       else
-        
+
         sP.hgt = hgtransform('parent',ax);
-        
+
         % plot boundary
         sP.boundary = sP.sphericalRegion.plot('parent',sP.ax);
-        
+
         % set view point
         setCamera(sP.ax,'default',varargin{:});
-        
+
         % plot grid, labels, ..
         try sP.plotPolarGrid(varargin{:});end
         sP.plotLabels(CS,varargin{:});
         
         set(ax,'XTick',[],'YTick',[]);
-        axis(ax,'off');
-
+        
         if ~check_option(varargin,'grid')
           set(sP.grid,'visible','off');
         end
-      
 
-        
       end
-      
+
       plotAnnotate(sP,varargin{:});
-                        
+
       % revert old hold status
       hold(ax,washold);
-            
+
     end
 
     function updateMinMax(sP,data)

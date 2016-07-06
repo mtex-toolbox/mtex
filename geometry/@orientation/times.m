@@ -38,10 +38,22 @@ end
 r = times@rotation(a,b);
 
 % convert back to rotation
-if isa(right,'crystalSymmetry') || isa(left,'crystalSymmetry')
-  if isa(b,'vector3d')
-    r = Miller(r,left);
-  else
+isCrystal = isa(right,'crystalSymmetry') || isa(left,'crystalSymmetry');
+
+if isa(b,'vector3d') && isCrystal
+
+  r = Miller(r,left);
+
+elseif isa(r,'quaternion')
+  
+  if isCrystal
+  
     r = orientation(r,right,left);
+  
+  else % otherwise it is only a rotation
+  
+    r = rotation(r);
+  
   end
+end
 end

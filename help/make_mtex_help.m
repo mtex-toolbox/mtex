@@ -12,9 +12,10 @@ close all
 setMTEXpref('FontSize',12)
 setMTEXpref('figSize',0.4)
 
+warning off
 addpath(fullfile(pwd,'..','..','doc'))
 addpath(fullfile(pwd,'..','..','doc','tools'))
-
+warning on
 
 %%
 
@@ -80,12 +81,14 @@ makeFunctionsReference(mtexHelpFiles,'FunctionReference','outputDir',outputDir);
 makeHelpToc(mtexHelpFiles,'Documentation','FunctionMainFile','FunctionReference','outputDir',outputDir);
 
 % Publish Function Reference
-publish(mtexFunctionFiles,'outputDir',outputDir,'tempDir',tempDir,'evalCode',true,'force',false);
+publish(mtexFunctionFiles,'outputDir',outputDir,...
+  'tempDir',tempDir,'evalCode',true,'force',false,'viewoutput',false);
 
 
 %% Publish Doc
 
-publish(mtexDocFiles,'outputDir',outputDir,'tempDir',tempDir,'evalCode',true,'force',false);
+publish(mtexDocFiles,'outputDir',outputDir,'tempDir',tempDir,...
+  'evalCode',true,'force',false,'viewoutput',false);
 
 %%
 
@@ -93,7 +96,7 @@ options.outputDir = outputDir;
 options.publishSettings.outputDir = outputDir;
 options.tempDir = tempDir;
 
-view(mtexHelpFiles,options)
+view(mtexDocFiles,options)
 
 
 %%

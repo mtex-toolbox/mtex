@@ -29,7 +29,7 @@ else
   abcd = [a,b,c,d];
 end
 
-[ignore,m,n] = unique(round(abcd*1e7),'rows'); %#ok<ASGLU>
+[ignore,m,n] = unique(round(abcd*1e4),'rows'); %#ok<ASGLU>
 
 % remove duplicated points
 q.a = q.a(m);
