@@ -25,6 +25,9 @@ function [h,mP] = plot(ebsd,varargin)
 % See also
 % EBSD/plot
 
+%
+if isempty(ebsd), return; end
+
 % create a new plot
 [mtexFig,isNew] = newMtexFigure('datacursormode',{@tooltip,ebsd},varargin{:});
 mP = newMapPlot('scanUnit',ebsd.scanUnit,'parent',mtexFig.gca,varargin{:});
