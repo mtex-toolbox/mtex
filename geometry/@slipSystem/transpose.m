@@ -3,3 +3,4 @@ function sS=transpose(sS)
 
 sS.b = sS.b.';
 sS.n = sS.n.';
+sS.CRSS = sS.CRSS.';

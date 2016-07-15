@@ -4,6 +4,7 @@ classdef slipSystem
   properties    
     b % slip direction or burgers vector
     n % plane normal 
+    CRSS % critical resolved shear stress
   end
   
   properties (Dependent = true)
@@ -11,7 +12,7 @@ classdef slipSystem
   end
   
   methods
-    function sS = slipSystem(b,n)
+    function sS = slipSystem(b,n,CRSS)
       %
       % Syntax
       %   sS = slipSystem(b,n)
@@ -27,6 +28,11 @@ classdef slipSystem
       sS.b = b;
       n.antipodal = true;
       sS.n = n;
+      if nargin < 3, CRSS = 1; end
+      if numel(CRSS) ~= length(sS.b)
+        CRSS = repmat(CRSS,size(sS.b));
+      end
+      sS.CRSS = CRSS;
       
     end
     
@@ -43,9 +49,7 @@ classdef slipSystem
 
       disp(' ');
       disp([inputname(1) ' = ' doclink('slipSystem_index','slipSystem') ...
-        ' ' docmethods(inputname(1))]);
-
-      disp([' size: ' size2str(sS.b)]);
+        ' ' docmethods(inputname(1))]);      
 
       % display symmetry
       if isa(sS.CS,'crystalSymmetry')
@@ -55,6 +59,9 @@ classdef slipSystem
           disp([' symmetry: ',char(sS.CS,'verbose')]);
         end
       end
+      
+      disp([' CRSS: ' xnum2str(unique(sS.CRSS))]);
+      disp([' size: ' size2str(sS.b)]);
             
       if length(sS)>50, return; end
       
@@ -72,7 +79,7 @@ classdef slipSystem
       else
         d = round(100*[sS.b.xyz sS.n.xyz])./100;
         d(abs(d) < 1e-10) = 0;
-        cprintf(d,'-L','  ','-Lc',{'x' 'y' 'z' ' |   x' 'y' 'z'});
+        cprintf(d,'-L','  ','-Lc',{'x' 'y' 'z' ' |   x' 'y' 'z' });
       end
     end
     
@@ -84,51 +91,69 @@ classdef slipSystem
   
   methods (Static = true)
     
-    function sS = fcc(cs)
-      sS = slipSystem(Miller(0,1,-1,cs,'uvw'),Miller(1,1,1,cs,'hkl'));
+    % some predefined slip systems
+    % see https://damask.mpie.de/Documentation/CrystalLattice
+    
+    function sS = fcc(cs,varargin)
+      sS = slipSystem(Miller(0,1,-1,cs,'uvw'),Miller(1,1,1,cs,'hkl'),varargin{:});
     end
     
-     function sS = bcc(cs)
-      sS = [slipSystem(Miller(1,-1,1,cs,'uvw'),Miller(0,1,1,cs,'hkl')),...
-        slipSystem(Miller(-1,1,1,cs,'uvw'),Miller(2,1,1,cs,'hkl'))];
+     function sS = bcc(cs,varargin)
+      sS = [slipSystem(Miller(1,-1,1,cs,'uvw'),Miller(0,1,1,cs,'hkl'),varargin{:}),...
+        slipSystem(Miller(-1,1,1,cs,'uvw'),Miller(2,1,1,cs,'hkl'),varargin{:})];
      end
     
-     function sS = hcp(cs)
-       warning('Maybe I should collect here all slipSystems below');
-       
+     function sS = hcp(cs,varargin)
+       warning('Maybe I should collect here all slipSystems below');      
      end
      
-    function sS = basal(cs)
+    function sS = basal(cs,varargin)
       % <11-20>{0001}
-      sS = slipSystem(Miller(2,-1,-1,0,cs,'UVTW'),Miller(0,1,-1,0,cs,'HKIL'));
+      sS = slipSystem(Miller(1,1,-2,0,cs,'UVTW'),Miller(0,0,0,1,cs,'HKIL'),varargin{:});
     end
          
-    function sS = prismaticA(cs)
+    function sS = prismaticA(cs,varargin)
       %⟨2-1-1 0⟩{01-10}
-      sS = slipSystem(Miller(2,-1,-1,0,cs,'uvtw'),Miller(0,1,-1,0,cs,'hkil'));
+      sS = slipSystem(Miller(2,-1,-1,0,cs,'uvtw'),Miller(0,1,-1,0,cs,'hkil'),varargin{:});
     end
     
-    function sS = prismatic2A(cs)
+    function sS = prismatic2A(cs,varargin)
     %2nd order prismatic compound <a> slip system in hexagonal lattice:
     %⟨01-10⟩{2-1-10}
-    sS = slipSystem(Miller(0,1,-1,0,cs,'uvtw'),Miller(2,-1,-1,0,cs,'hkl'));
+    sS = slipSystem(Miller(0,1,-1,0,cs,'uvtw'),Miller(2,-1,-1,0,cs,'hkl'),varargin{:});
     end
     
-    function sS = pyramidalA(cs)
+    function sS = pyramidalA(cs,varargin)
       % first order pyramidal a slip 
-      sS = slipSystem(Miller(2,-1,-1,0,cs,'uvtw'),Miller(0,1,-1,1,cs,'hkl'));
+      sS = slipSystem(Miller(2,-1,-1,0,cs,'uvtw'),Miller(0,1,-1,1,cs,'hkl'),varargin{:});
     end
     
-    function sS = pyramidalCA(cs)
+    function sS = pyramidalCA(cs,varargin)
       % first order pyramidal <c+a> slip 
-      sS = slipSystem(Miller(2,-1,-1,3,cs,'uvtw'),Miller(-1,1,0,1,cs,'hkl'));
+      sS = slipSystem(Miller(2,-1,-1,3,cs,'uvtw'),Miller(-1,1,0,1,cs,'hkl'),varargin{:});
     end
     
-    function sS = pyramidal2CA(cs)
+    function sS = pyramidal2CA(cs,varargin)
       % second order pyramidal <c+a> slip 
-      sS = slipSystem(Miller(2,-1,-1,3,cs,'uvtw'),Miller(-2,1,1,1,cs,'hkl'));
+      sS = slipSystem(Miller(2,-1,-1,3,cs,'uvtw'),Miller(-2,1,1,2,cs,'hkl'),varargin{:});
+    end
+    
+    function sS = tensilTwinT1(cs,varargin)
+      sS = slipSystem(Miller(1,-1,0,1,cs,'uvtw'),Miller(-1,1,0,2,cs,'hkl'),varargin{:});
+    end
+    
+    function sS = tensilTwinT2(cs,varargin)
+      sS = slipSystem(Miller(2,-1,-1,6,cs,'uvtw'),Miller(-2,1,1,1,cs,'hkl'),varargin{:});
     end
         
+    function sS = compressiveTwinC1(cs,varargin)
+      sS = slipSystem(Miller(-1,1,0,-2,cs,'uvtw'),Miller(-1,1,0,1,cs,'hkl'),varargin{:});
+    end
+    
+    function sS = compressiveTwinC2(cs,varargin)
+      sS = slipSystem(Miller(2,-1,-1,-3,cs,'uvtw'),Miller(2,-1,-1,2,cs,'hkl'),varargin{:});
+    end
+    
   end
   
 end

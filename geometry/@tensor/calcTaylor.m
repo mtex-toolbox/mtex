@@ -40,7 +40,7 @@ b = zeros(length(eps),length(sS));
 
 % critical resolved shear stress - CRSS
 % by now assumed to be identical - might also be stored in sS
-CRSS = ones(length(sS),1);
+CRSS = sS.CRSS(:);%ones(length(sS),1);
 
 % decompose eps into sum of disclocation tensors, that is we look for
 % coefficients b such that sSepsSym * b = eps

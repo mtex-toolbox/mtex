@@ -4,4 +4,8 @@ function sS = rotate(sS,ori)
 sS.b = rotate(sS.b,ori);
 sS.n = rotate(sS.n,ori);
 
+if lenght(sS.CRSS) == 1
+  sS.CRSS = repmat(sS.CRSS,size(sS.b));
+end
+
 end

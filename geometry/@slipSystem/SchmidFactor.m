@@ -1,10 +1,11 @@
-function SF = SchmidFactor(sS,sigma)
+function SF = SchmidFactor(sS,sigma,varargin)
 % compute the Schmid factor 
 %
 % Syntax
 %
 %   SF = SchmidFactor(sS,v)
 %   SF = SchmidFactor(sS,sigma)
+%   SF = SchmidFactor(sS,sigma,'relative')
 %
 % Input
 %  sS - list of @slipSystem
@@ -17,6 +18,10 @@ function SF = SchmidFactor(sS,sigma)
 
 b = sS.b.normalize; %#ok<*PROPLC>
 n = sS.n.normalize;
+
+if check_option(varargin,'relative')
+   b = b./ sS.CRSS;
+end
 
 if isa(sigma,'vector3d')
   

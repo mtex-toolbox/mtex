@@ -8,7 +8,8 @@ if ~isa(sS,'slipSystem') && ~isempty(value)
   sS.b.z = [];
   sS.n.x = [];  
   sS.n.y = [];  
-  sS.n.z = [];  
+  sS.n.z = [];
+  sS.CRSS = [];
 end
 
 switch s(1).type
@@ -20,9 +21,11 @@ switch s(1).type
     if isempty(value)
       sS.b = subsasgn(sS.b,s(1),[]);
       sS.n = subsasgn(sS.n,s(1),[]);
+      sS.CRSS = subsasgn(sS.CRSS,s(1),[]);
     else
       sS.b = subsasgn(sS.b,s(1),value.b);
-      sS.n = subsasgn(sS.n,s(1),value.d);
+      sS.n = subsasgn(sS.n,s(1),value.n);
+      sS.CRSS = subsasgn(sS.CRSS,s(1),value.CRSS);
     end
   otherwise
     

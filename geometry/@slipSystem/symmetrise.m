@@ -5,6 +5,7 @@ if ~isa(sS.b,'Miller'), return; end
 
 b = [];
 n =  [];
+CRSS = [];
 for i = 1:length(sS)
 
   % find all symmetrically equivalent
@@ -17,9 +18,11 @@ for i = 1:length(sS)
   % restricht to the orthogonal ones
   b = [b;mm(r)]; %#ok<*AGROW>
   n = [n;nn(c)];
+  CRSS = [CRSS;repmat(sS.CRSS(i),length(r),1)];
 end
 
 sS.b = b;
 sS.n = n;
-  
+sS.CRSS = CRSS;  
+
 end

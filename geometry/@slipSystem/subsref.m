@@ -6,6 +6,7 @@ switch s(1).type
     
     sS.b = subsref(sS.b,s(1));
     sS.n = subsref(sS.n,s(1));
+    sS.CRSS = subsref(sS.CRSS,s(1));
       
     if numel(s)>1
       [varargout{1:nargout}] = builtin('subsref',sS,s(2:end));
