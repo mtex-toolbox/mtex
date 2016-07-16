@@ -36,7 +36,7 @@ classdef HSVOrientationMapping < orientationMapping
       oM = oM@orientationMapping(varargin{:});
       
       if ismember(oM.CS1.id,[2,18,26])
-        warning(['Not a topological correct colormap! Please use the point group ' oM.CS1.char]);
+        warning(['Not a topological correct colormap! Please use the point group ' char(oM.CS1.properGroup)]);
       end
       
       oM.updatesR;
