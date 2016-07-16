@@ -1,6 +1,26 @@
 %% MTEX Changelog
 %
 %
+%% MTEX 4.4   08/2016
+%
+% *Slip Systems*
+%
+% MTEX 4.4 introduces support for <SlipSystems.html slip systems>. Slip
+% systems are defined by a plane normal and a slip direction
+%
+%   sSFCC = slipSystem(Miller(0,1,-1,cs,'uvw'),Miller(1,1,1,cs,'hkl'));
+%
+% Slip systems are instrumental for computating the following properties
+%
+% * <slipSystem.SchmidFactor.html Schmid factor>
+% * <TaylorModel.html Taylor factor>
+% * <StrainAnalysis.html Strain transmission through grain boundaries>
+%
+% *Auxilary new functionality*
+%
+% * 3d plotting of ODFs is back
+%
+%
 %% MTEX 4.3.2 07/2016
 %
 % *Alignment of Miller plots*
