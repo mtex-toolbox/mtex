@@ -1,6 +1,8 @@
 classdef fibre
-  %FIBRE Summary of this class goes here
-  %   Detailed explanation goes here
+  %fibre is a class representing a fibre in orientation space. Examples are
+  %alpha, beta or gamma fibres. In general a fibre is defined by a crystal
+  %direction h of type <Miller_index.html Miller> and a specimen direction
+  %of type <vector3d_index.html vector3d>.
   
   properties
     h
@@ -9,6 +11,9 @@ classdef fibre
   
   properties (Dependent = true)
     CS
+    SS
+    csL
+    csR
   end
   
   
@@ -19,29 +24,90 @@ classdef fibre
     end
     
     function omega = angle(f,ori)
-      % angle between a fibre and an orientation
+      % angle fibre to orientation or fibre to fibre
+      %
+      %
       
-      omega = angle(ori \ f.r,f.h);
+      if isa(ori,'orientation')
+        omega = angle(ori .\ f.r,f.h);
+      else
+        error('not yet implemented')
+      end
       
     end
     
-    function ori = orientation(f,npoints)
+    function ori = orientation(f,varargin)
       
-      if nargin == 1, npoints = 100; end
-      
+      npoints = get_option(varargin,'points',100);
+            
       omega = linspace(0,2*pi,npoints);
       
-      ori = rotation('axis',f.r,'angle',omega) .* orientation('map',f.h,f.r);
+      ori = rotation('axis',f.r,'angle',omega) .* rotation('map',f.h,f.r);
+      
+      if isa(f.CS,'crystalSymmetry') || isa(f.SS,'crystalSymmetry')
+        ori = orientation(ori,f.CS,f.SS);
+      end
+      
+    end
+   
+    function cs = get.CS(f)
+      
+      if isa(f.h,'Miller')
+        cs = f.h.CS;
+      else
+        cs = specimenSymmetry;
+      end
       
     end
     
+    function f = set.CS(f,cs)      
+      if isa(cs,'crystalSymmetry')
+        f.h = Miller(f.h,cs);
+      else
+        f.h = vector3d(f.h);
+      end      
+    end
+    
+    function ss = get.SS(f)      
+      if isa(f.r,'Miller')
+        ss = f.r.CS;
+      else
+        ss = specimenSymmetry;
+      end      
+    end
+    
+    function f = set.SS(f,ss)      
+      if isa(ss,'crystalSymmetry')
+        f.r = Miller(f.r,ss);
+      else
+        f.r = vector3d(f.r);
+      end      
+    end
+    
+    function csL = get.csL(f)
+      csL = f.SS;
+    end
+    
+    function f = set.csL(f,csL)
+      f.SS = csL;
+    end
+    
+    function csR = get.csR(f)
+      csR = f.CS;
+    end
+    
+    function f = set.csR(f,csR)
+      f.CS = csR;
+    end
+        
   end
+  
   
   methods (Static = true)
        
     function f = alpha(cs)
       % the alpha fibre
-      % from:Comprehensive Materials Processing 
+      % from: Comprehensive Materials Processing 
       
       ori1 = orientation('Miller',[0 0 1],[1 1 0],cs);
       ori2 = orientation('Miller',[1 1 1],[1 1 0],cs);
@@ -93,8 +159,7 @@ classdef fibre
             
       f = fibre.fit(ori1,ori2);
     end
-    
-    
+        
     function f = fit(ori1,ori2)
       % determines the fibre that fits best a list of orientations
       
@@ -107,14 +172,15 @@ classdef fibre
         ori2 = ori(2);
       end
         
-      mori = rotation(ori1 * inv(ori2)); %#ok<MINV>
+      mori = ori1 * inv(ori2); %#ok<MINV>
       
-      r = mori.axis;
+      r = mori.axis('noSymmetry');
       h = ori1 \ r;
       
       f = fibre(h,r);
               
-    end  
+    end 
+    
   end    
 end
   
