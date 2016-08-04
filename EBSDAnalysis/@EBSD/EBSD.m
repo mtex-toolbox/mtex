@@ -34,7 +34,7 @@ classdef EBSD < phaseList & dynProp & dynOption
     scanUnit = 'um'       % unit of the x,y coordinates
     unitCell = []         % cell associated to a measurement
   end
-  
+   
   properties (Dependent = true)
     orientations    % rotation including symmetry
     weights         %
@@ -79,7 +79,7 @@ classdef EBSD < phaseList & dynProp & dynOption
       if check_option(varargin,'uniCell')
         ebsd.unitCell = get_option(varargin,'unitCell',[]);
       else
-        ebsd.unitCell = calcUnitCell([ebsd.prop.x(:),ebsd.prop.y(:)]);
+        ebsd.unitCell = ebsd.updateUnitCell;
       end
       
       % remove ignore phases
