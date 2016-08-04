@@ -19,15 +19,19 @@ function SF = SchmidFactor(sS,sigma,varargin)
 b = sS.b.normalize; %#ok<*PROPLC>
 n = sS.n.normalize;
 
+% compute the relative Schmid factor by dividing by the critical resolved
+% shear stress for every slip system
 if check_option(varargin,'relative')
    b = b./ sS.CRSS;
 end
 
+% Schmid factor with respect to a tension direction
 if isa(sigma,'vector3d')
   
   r = sigma.normalize;
   SF = dot_outer(r,b,'noSymmetry') .* dot_outer(r,n,'noSymmetry');
   
+% Schmid factor with respect to a stress tensor
 elseif isa(sigma,'tensor')
   
   if length(sigma) == 1
