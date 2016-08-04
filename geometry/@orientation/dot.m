@@ -1,4 +1,4 @@
-function d = dot(o1,o2)
+function d = dot(o1,o2,varargin)
 % compute minimum dot(o1,o2) modulo symmetry
 %
 % Syntax
@@ -12,6 +12,11 @@ function d = dot(o1,o2)
 %
 % See also
 % orientation/dot_outer orientation/angle
+
+if check_option(varargin,'noSymmetry')
+  d = dot@rotation(o1,o2);
+  return
+end
 
 % extract symmetries
 if isa(o1,'orientation')
