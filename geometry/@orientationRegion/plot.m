@@ -11,7 +11,7 @@ function h = plot(oR,varargin)
 if isappdata(mtexFig.gca,'projection')
   projection = getappdata(mtexFig.gca,'projection');
 else
-  if check_option(varargin,{'rodrigues'})
+  if check_option(varargin,{'rodrigues','rodriguez'})
     projection = 'rodrigues';
   else
     projection = 'axisangle';
@@ -39,17 +39,37 @@ switch lower(projection)
 
     ind = oR.N.angle > pi-1e-3;
     sR = sphericalRegion(oR.N(ind).axis,zeros(nnz(ind),1));
-    r = plotS2Grid(sR,'resolution',15*degree);
+        
+    % plot a grid
+    rho = linspace(0,2*pi,720);
+    theta = linspace(0,pi,13);
+    [rho,theta] = meshgrid(rho,theta);
+    
+    r = vector3d('theta',theta.','rho',rho.');    
+    r(~sR.checkInside(r)) = nan;
     r = oR.maxAngle(r) .* r ./ degree;
-    %surf(r.x,r.y,r.z,'faceColor','k','facealpha',0.1,'edgecolor','none')
-    surf(r.x,r.y,r.z,'faceColor','none','edgecolor',color,'edgealpha',0.3)
+    line(r.x,r.y,r.z,'color',color)
+    
+    rho = linspace(0,2*pi,25);
+    theta = linspace(0,pi,360);
+    [rho,theta] = meshgrid(rho,theta);
+    
+    r = vector3d('theta',theta,'rho',rho);    
+    r(~sR.checkInside(r)) = nan;
+    r = oR.maxAngle(r) .* r ./ degree;
+    line(r.x,r.y,r.z,'color',color)
+        
+    % plot a surface
     hold on
     r = plotS2Grid(sR,'resolution',1*degree);
-    % TODO: do not use maxAngle
+    % TODO: do not use maxAngle - because this would allow us to rotate the
+    % orientation region
     r = oR.maxAngle(r) .* r ./ degree;
     %surf(r.x,r.y,r.z,'faceColor','k','facealpha',0.1,'edgecolor','none')
     surf(r.x,r.y,r.z,'faceColor',color,'facealpha',0.1,...
       'edgecolor','none')
+    
+    %plot the edges
     hold on
     t = linspace(0,1);
     for i = 1:length(oR.F)
