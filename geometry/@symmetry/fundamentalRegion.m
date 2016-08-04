@@ -15,13 +15,16 @@ function  [oR,dcs,nSym] = fundamentalRegion(cs,varargin)
 %  invSymmetry - wheter mori == inv(mori)
 %
 
-q = unique(quaternion(cs),'antipodal');
+q = rotation(cs);
 N0 = quaternion;
 if nargin >= 2 && isa(varargin{1},'symmetry')
-  q = unique(q * quaternion(varargin{1}),'antipodal');
+  
+  q = q * rotation(varargin{1});
+  q = q(~q.isImproper);
+  q = quaternion(unique(q));
   
   if ~check_option(varargin,'ignoreCommonSymmetries')
-    dcs = disjoint(cs.properGroup,varargin{1}.properGroup);
+    dcs = disjoint(cs,varargin{1});
     if check_option(varargin,'antipodal')
       dcs = dcs.Laue;
     end
@@ -29,7 +32,9 @@ if nargin >= 2 && isa(varargin{1},'symmetry')
     N0 = rotation('axis',sR.N,'angle',pi-1e-5);
   end
 else  
-  dcs = cs.properGroup;
+  q = q(~q.isImproper);
+  q = quaternion(unique(q));
+  dcs = cs.properSubGroup;
   if check_option(varargin,'antipodal'), dcs = dcs.Laue; end
 end
 nSym = length(q);
