@@ -38,7 +38,7 @@ if isa(o1,'orientation')
       isLaue = isLaue || o2.CS.isLaue;
       qcs = o1.CS' * o2.CS;
       qcs = unique(qcs(:));
-      qss = idquaternion;
+      qss = idRotation;
     
     elseif o1.SS ~= o2.SS % comparing inverse orientations
       
@@ -49,7 +49,7 @@ if isa(o1,'orientation')
       isLaue = isLaue || o2.SS.isLaue;
       qss = o1.SS' * o2.SS;
       qss = unique(qss(:));
-      qcs = idquaternion;
+      qcs = idRotation;
     end
   end
 else
