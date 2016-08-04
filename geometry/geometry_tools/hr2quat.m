@@ -1,19 +1,19 @@
 function q = hr2quat(h,r)
 % arbitrary quaternion q with q * h = r 
 %
-%% Description
+% Description
 % The method *hr2quat* defines a [[quaternion_index.html,rotation]] |q|
 % by a crystal direction |h| and a specimen direction |r| such that 
 % |q * h = r| 
 %
-%% Input
+% Input
 %  h - @Miller or @vector3d
 %  r - @vector3d
 %
-%% Output
+% Output
 %  q - @quaternion
 %
-%% See also
+% See also
 % quaternion_index quaternion/quaternion axis2quat Miller2quat 
 % vec42quat euler2quat idquaternion 
 
@@ -34,5 +34,5 @@ else
   n(ind) = orth(r(ind));
 end
 
-q = axis2quat(n,angle(h,r));
+q = axis2quat(n,angle(h,r,'noSymmetry'));
 
