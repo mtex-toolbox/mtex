@@ -30,5 +30,7 @@ function varargout = line(rot,varargin)
 % See also
 % 
 
-[varargout{1:nargout}] = scatter(reshape(rot,[],1),varargin{:},'edgecolor',...
-  get_option(varargin,{'color','linecolor'},'k'),'Marker','none');
+[varargout{1:nargout}] = scatter(reshape(rot,[],1),'edgecolor',...
+  get_option(varargin,{'color','linecolor'},'k'),'Marker','none',varargin{:});
+
+

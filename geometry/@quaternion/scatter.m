@@ -35,6 +35,17 @@ switch lower(projection)
     z = z./degree;
 end
 
+% add some nans if lines are plotted
+if check_option(varargin,'edgecolor')
+  d = sqrt(diff(x).^2 + diff(y).^2 + diff(z).^2);
+  ind = find(d > 10);
+  for k = 1:numel(ind)
+    x = [x(1:ind(k)+k-1);nan;x(ind(k)+k:end)];
+    y = [y(1:ind(k)+k-1);nan;y(ind(k)+k:end)];
+    z = [z(1:ind(k)+k-1);nan;z(ind(k)+k:end)];
+  end
+end
+
 % scatter plot
 if nargin> 1 && isnumeric(varargin{1}) && ~isempty(varargin{1})
   h = patch(x(:),y(:),z(:),1,...
