@@ -13,16 +13,17 @@ function  omega = maxAngle(oR,varargin)
 
 if nargin>1 && isa(varargin{1},'vector3d')
 
-  if isempty(oR.N)
+  % ignore restrictions on the rotational axis
+  %N = oR.N(oR.N.angle < pi<1e-3);
+  N = oR.N;
   
+  if isempty(N)
     omega = repmat(pi,size(varargin{1}));
-    
   else
-    d = dot_outer(-tan(oR.N.angle/2) .* oR.N.axis,...
-      normalize(varargin{1}));
-    d = acot(d);
-    d(d<0) = inf;
-    omega = 2*min(d);
+    d = dot_outer(-tan(N.angle/2) .* N.axis, normalize(varargin{1}));
+    d = 2*acot(d);
+    d(d<0) = pi;
+    omega = min(d,[],1);
     omega = reshape(omega,size(varargin{1}));
     omega(omega<1e-4) = 0;
   end
