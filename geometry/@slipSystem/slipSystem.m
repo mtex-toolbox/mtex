@@ -130,27 +130,35 @@ classdef slipSystem
     
     function sS = pyramidalCA(cs,varargin)
       % first order pyramidal <c+a> slip 
-      sS = slipSystem(Miller(2,-1,-1,3,cs,'uvtw'),Miller(-1,1,0,1,cs,'hkl'),varargin{:});
+      sS = slipSystem(Miller(2,-1,-1,3,cs,'uvtw'),...
+        Miller(-1,1,0,1,cs,'hkl'),varargin{:});
     end
     
     function sS = pyramidal2CA(cs,varargin)
       % second order pyramidal <c+a> slip 
-      sS = slipSystem(Miller(2,-1,-1,3,cs,'uvtw'),Miller(-2,1,1,2,cs,'hkl'),varargin{:});
+      sS = slipSystem(Miller(2,-1,-1,3,cs,'uvtw'),...
+        Miller(-2,1,1,2,cs,'hkl'),varargin{:});
     end
     
-    function sS = tensilTwinT1(cs,varargin)
-      sS = slipSystem(Miller(1,-1,0,1,cs,'uvtw'),Miller(-1,1,0,2,cs,'hkl'),varargin{:});
+    function sS = twinT1(cs,varargin)
+      % most often tensil twin 
+      sS = slipSystem(Miller(1,-1,0,1,cs,'uvtw'),...
+        Miller(-1,1,0,2,cs,'hkl'),varargin{:});
     end
     
-    function sS = tensilTwinT2(cs,varargin)
-      sS = slipSystem(Miller(2,-1,-1,6,cs,'uvtw'),Miller(-2,1,1,1,cs,'hkl'),varargin{:});
+    function sS = twinT2(cs,varargin)
+      % tensil twinning 
+      sS = slipSystem(Miller(2,-1,-1,6,cs,'uvtw'),...
+        Miller(-2,1,1,1,cs,'hkl'),varargin{:});
     end
         
-    function sS = compressiveTwinC1(cs,varargin)
+    function sS = twinC1(cs,varargin)
+      % compressive twinning
       sS = slipSystem(Miller(-1,1,0,-2,cs,'uvtw'),Miller(-1,1,0,1,cs,'hkl'),varargin{:});
     end
     
-    function sS = compressiveTwinC2(cs,varargin)
+    function sS = twinC2(cs,varargin)
+      % compressive twinning
       sS = slipSystem(Miller(2,-1,-1,-3,cs,'uvtw'),Miller(2,-1,-1,2,cs,'hkl'),varargin{:});
     end
     

@@ -21,7 +21,6 @@ secData = {};
 % extract data
 [data,varargin] = extract_data(numData,varargin);
 
-
 %
 if exist('ori','var') || isempty(oS.plotGrid)
   
@@ -116,6 +115,3 @@ end
   end
   
 end
-  
-
-

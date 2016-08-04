@@ -77,9 +77,9 @@ classdef tensor < dynOption
         end
 
         % transform from voigt matrix representation to ordinary rank four tensor
-        if numel(T.M) == 36,
+        if numel(T.M) == 36
           T.M = tensor24(T.M,T.doubleConvention);
-        elseif numel(T.M) == 18,
+        elseif numel(T.M) == 18
           T.M = tensor23(T.M,T.doubleConvention);
         end
 
