@@ -1,4 +1,4 @@
-function v = axis(q)
+function v = axis(q,varargin)
 % rotational axis of the quaternion
 %
 % Syntax
