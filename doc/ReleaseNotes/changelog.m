@@ -16,10 +16,58 @@
 % * <TaylorModel.html Taylor factor>
 % * <StrainAnalysis.html Strain transmission through grain boundaries>
 %
+% *Fibres*
+%
+% MTEX 4.4 has experimental support for fibres in orientation space. A an
+% example the alpha fibre in cubic materials can be defined in the
+% following ways
+%
+% # as a predefined fibre
+%
+%   cs = crystalSymmetry('m-3m')
+%   f  = fibre.alpha(cs)
+%
+% # by a pair of directions
+%
+%   f = fibre(Miller(1,0,0,cs),vector3d.X)
+%
+% # by two orientations
+%
+%   ori1 = orientation('Miller',[0 0 1],[1 1 0],cs);
+%   ori2 = orientation('Miller',[1 1 1],[1 1 0],cs);
+%
+%   f = fibre.fit(ori1,ori2)
+%
+% # by a list of orientations
+%
+%   f = fibre.fit([ori1,ori2,mean(ori1,ori2)])
+%
+% Up to now the following functions are implemented for fibres
+%
+% * plot to Rodrigues space
+%
+%    oR = fundamentalRegion(cs,cs)
+%    v = orientation(oR.V,cs,cs)
+%    f = fibre.fit(v(1),v(2))
+%    plot(oR)
+%    hold on
+%    plot(fibre,'restrict2fundamentalRegion')
+%    hold off
+%
+% * rotate a fibre
+%
+% * angle between orientation and fibre
+%
+%   angle(f,ori)
+%
+% *Ignore Symmetry*
+%
+% Many functions support now the flag |noSymmetry|. Among them are |angle|,
+% |axis|, |dot|, |cunion|.
+%
 % *Auxilary new functionality*
 %
 % * 3d plotting of ODFs is back
-%
 %
 %% MTEX 4.3.2 07/2016
 %
