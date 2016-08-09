@@ -22,28 +22,29 @@ classdef fibre
       f.h = h;
       f.r = r;
     end
-    
-    function omega = angle(f,ori)
-      % angle fibre to orientation or fibre to fibre
-      %
-      %
-      
-      if isa(ori,'orientation')
-        omega = angle(ori .\ f.r,f.h);
-      else
-        error('not yet implemented')
-      end
-      
+
+    function n = numArgumentsFromSubscript(varargin)
+      n = 0;
     end
-    
+          
     function ori = orientation(f,varargin)
+      % generate a list of orientation out of a fibre
+      %
+      % Input
+      %
+      % Output
+      %
+      %
       
       npoints = get_option(varargin,'points',100);
             
       omega = linspace(0,2*pi,npoints);
       
-      ori = rotation('axis',f.r,'angle',omega) .* rotation('map',f.h,f.r);
-      
+      ori = rotation.id(length(omega),length(f.h));
+      for i = 1:length(f.h)
+        ori(:,i) = rotation('axis',f.r(i),'angle',omega) .* rotation('map',f.h(i),f.r(i));
+      end
+        
       if isa(f.CS,'crystalSymmetry') || isa(f.SS,'crystalSymmetry')
         ori = orientation(ori,f.CS,f.SS);
       end
