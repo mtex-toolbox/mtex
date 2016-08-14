@@ -59,6 +59,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.cross.html">cross</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.cross_outer.html">cross_outer</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.ctranspose.html">ctranspose</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.cunion2.html">cunion2</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.display.html">display</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.dot.html">dot</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.dot_outer.html">dot_outer</tocitem>
@@ -247,6 +248,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="rotation.dot_outer.html">dot_outer</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="rotation.getMinAxes.html">getMinAxes</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="rotation.isImproper.html">isImproper</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="rotation.line.html">line</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="rotation.matrix.html">matrix</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="rotation.mldivide.html">mldivide</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="rotation.mtimes.html">mtimes</tocitem>
@@ -504,6 +506,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.subsasgn.html">subsasgn</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.subsind.html">subsind</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.subsref.html">subsref</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.updateUnitCell.html">updateUnitCell</tocitem>
             </tocitem>
             <tocitem target="tensor_index.html">Material Tensors (The Class @tensor)<tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.ChristoffelTensor.html">ChristoffelTensor</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.EinsteinSum.html">EinsteinSum</tocitem>
