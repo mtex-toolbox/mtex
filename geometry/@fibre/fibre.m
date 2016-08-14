@@ -14,6 +14,7 @@ classdef fibre
     SS
     csL
     csR
+    antipodal
   end
   
   
@@ -36,7 +37,7 @@ classdef fibre
       %
       %
       
-      npoints = get_option(varargin,'points',100);
+      npoints = get_option(varargin,'points',1000);
             
       omega = linspace(0,2*pi,npoints);
       
@@ -99,6 +100,10 @@ classdef fibre
     
     function f = set.csR(f,csR)
       f.CS = csR;
+    end
+    
+    function a = get.antipodal(f)
+      a = f.h.antipodal || f.r.antipodal;
     end
         
   end

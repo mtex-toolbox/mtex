@@ -11,6 +11,9 @@ if nargin>1 && isa(varargin{1},'quaternion')
   ori = orientation(varargin{1},oS.CS1,oS.CS2);
   numData = length(ori);
   varargin(1) = [];
+elseif isa(varargin{1},'fibre')
+  ori = orientation(varargin{1});
+  numData = 0;
 elseif ~isempty(oS.plotGrid)
   numData = oS.gridSize(end);
 else 
