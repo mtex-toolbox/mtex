@@ -9,7 +9,21 @@ classdef gammaSections < ODFSections
   methods
 
     function oS = gammaSections(CS1,CS2,varargin)
-
+      % gamma sections for ODF and orientation plotting
+      %
+      % Syntax
+      %
+      %   oS = gammaSections(cs1,cs2,'sections',5)
+      %   oS = gammaSections(cs1,cs2,'gamma',(0:15:90)*degree)
+      %
+      % Input
+      %  cs1, cs2 - @crystalSymmetry, @specimenSymmetry
+      %
+      % Options
+      %  sections - number of sections
+      %  gamma - explicite section values
+      %
+      
       oS = oS@ODFSections(CS1,CS2);
 
       % get fundamental plotting region

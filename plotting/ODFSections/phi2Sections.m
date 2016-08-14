@@ -9,7 +9,21 @@ classdef phi2Sections < ODFSections
   methods
     
     function oS = phi2Sections(CS1,CS2,varargin)
-   
+      % phi2 sections for ODF and orientation plotting
+      %
+      % Syntax
+      %
+      %   oS = phi2Sections(cs1,cs2,'sections',5)
+      %   oS = phi2Sections(cs1,cs2,'phi2',(0:15:90)*degree)
+      %
+      % Input
+      %  cs1, cs2 - @crystalSymmetry, @specimenSymmetry
+      %
+      % Options
+      %  sections - number of sections
+      %  phi2 - explicite section values
+      %
+      
       oS = oS@ODFSections(CS1,CS2);
       
       % get fundamental plotting region

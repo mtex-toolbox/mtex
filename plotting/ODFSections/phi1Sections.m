@@ -9,6 +9,20 @@ classdef phi1Sections < ODFSections
   methods
     
     function oS = phi1Sections(CS1,CS2,varargin)
+      % phi1 sections for ODF and orientation plotting
+      %
+      % Syntax
+      %
+      %   oS = phi1Sections(cs1,cs2,'sections',5)
+      %   oS = phi1Sections(cs1,cs2,'phi1',(0:15:90)*degree)
+      %
+      % Input
+      %  cs1, cs2 - @crystalSymmetry, @specimenSymmetry
+      %
+      % Options
+      %  sections - number of sections
+      %  phi1 - explicite section values
+      %
    
       oS = oS@ODFSections(CS1,CS2);
       
@@ -68,6 +82,3 @@ classdef phi1Sections < ODFSections
     end
   end
 end
-
-
-  
