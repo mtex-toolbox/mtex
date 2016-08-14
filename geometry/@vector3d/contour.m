@@ -1,4 +1,4 @@
-function contour(v,data,varargin)
+function varargout = contour(v,data,varargin)
 % spherical contour plot
 %
 % Syntax
@@ -15,5 +15,5 @@ function contour(v,data,varargin)
 % vector3d/plot vector3d/contourf
 
 % plot
-v.smooth(data,'contours',10,...
+[varargout{1:nargout}] = v.smooth(data,'contours',10,...
   'LineStyle','-','fill','off',varargin{:});
