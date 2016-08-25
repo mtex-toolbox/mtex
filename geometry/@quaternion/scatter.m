@@ -37,7 +37,7 @@ end
 
 % add some nans if lines are plotted
 if check_option(varargin,'edgecolor')
-  d = sqrt(diff(x).^2 + diff(y).^2 + diff(z).^2);
+  d = sqrt(diff(x([1:end,1])).^2 + diff(y([1:end,1])).^2 + diff(z([1:end,1])).^2);
   ind = find(d > 10);
   for k = 1:numel(ind)
     x = [x(1:ind(k)+k-1);nan;x(ind(k)+k:end)];

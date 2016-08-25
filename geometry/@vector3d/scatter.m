@@ -40,8 +40,12 @@ for i = 1:numel(sP)
     
   % add some nans if lines are plotted
   if check_option(varargin,'edgecolor')
-    d = sqrt(diff(x).^2 + diff(y).^2);
-    ind = find(d > 2.5);
+    
+    % find large gaps
+    d = sqrt(diff(x([1:end,1])).^2 + diff(y([1:end,1])).^2);
+    ind = find(d > diff(sP(i).bounds([1,3])) / 5);
+    
+    % and fill the gaps with nans
     for k = 1:numel(ind)
       x = [x(1:ind(k)+k-1);nan;x(ind(k)+k:end)];
       y = [y(1:ind(k)+k-1);nan;y(ind(k)+k:end)];
