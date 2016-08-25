@@ -11,7 +11,7 @@
 % which means rotating the vector or may by multiplied with another 
 % quaternion which means to concatenate both rotations. 
 %
-%% SUB: Defining three dimensional vectors
+%% SUB: Defining quaternions
 %
 % The standard way is to define a quaternion q is to give its coordinates
 % (a,b,c,d). However making use of one of the following conversion methods

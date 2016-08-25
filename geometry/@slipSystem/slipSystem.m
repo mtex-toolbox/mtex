@@ -1,5 +1,15 @@
 classdef slipSystem
   % class representing slip systems
+  %
+  % Syntax
+  %   sS = slipSystem(b,n)
+  %   sS = slipSystem(b,n,CRSS)
+  %
+  % Input
+  %  b - @Miller - Burgers vector or slip direction
+  %  n - @Miller - slip plane normal
+  %  CRSS - critical resolved shear stress
+  %
   
   properties    
     b % slip direction or burgers vector
@@ -16,10 +26,12 @@ classdef slipSystem
       %
       % Syntax
       %   sS = slipSystem(b,n)
+      %   sS = slipSystem(b,n,CRSS)
       %
       % Input
       %  b - @Miller - Burgers vector or slip direction
-      %  n - @Miller - slip plane normal 
+      %  n - @Miller - slip plane normal
+      %  CRSS - critical resolved shear stress
       %
       
       assert(all(angle(b,n,'noSymmetry') > pi/2-1e-5),...     
@@ -147,7 +159,7 @@ classdef slipSystem
     end
     
     function sS = twinT2(cs,varargin)
-      % tensil twinning 
+      % tensil twinning
       sS = slipSystem(Miller(2,-1,-1,6,cs,'uvtw'),...
         Miller(-2,1,1,1,cs,'hkl'),varargin{:});
     end

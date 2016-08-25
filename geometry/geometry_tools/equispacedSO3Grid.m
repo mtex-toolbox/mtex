@@ -1,5 +1,28 @@
 function S3G = equispacedSO3Grid(CS,SS,varargin)
 % defines a equispaced grid in the orientation space
+%
+% Syntax
+%   S3G = equispacedSO3Grid(CS,SS,'points',n)
+%   S3G = equispacedSO3Grid(CS,'resolution',res)
+%
+%   % fill only a ball with radius of 20 degree
+%   S3G = equispacedSO3Grid(CS,'maxAngle',20*degree)
+%
+% Input
+%  CS  - @crystalSymmetry
+%  SS  - @specimenSymmetry
+%   n  - number of points
+%  res - resolution in radiant
+%
+% Ouptut
+%  S3G - @SO3Grid
+%
+% Options
+%  maxAngle - radius of the ball to be filles
+%  center - center of the ball
+%
+% See also
+% equispacedS2Grid, SO3Grid_index
 
 % may be we should populate only a ball
 maxAngle = get_option(varargin,'maxAngle',2*pi);

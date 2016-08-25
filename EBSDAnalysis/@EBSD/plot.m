@@ -1,29 +1,50 @@
 function [h,mP] = plot(ebsd,varargin)
 % spatial EBSD plot
 %
+% Syntax
+%
+%   % colorize according to phase
+%   plot(ebsd)
+%
+%   % colorize according to arbitrary value - here MAD
+%   plot(ebsd,ebsd.mad)
+%
+%   % colorize according to orientation
+%   plot(ebsd('phaseName'),ebsd('phaseName').orientation)
+%
+%   % colorize according to custom color
+%   oM = ipdfHSVOrientationMapping(ebsd('phaseName'))
+%   color = oM.orientation2color(ebsd('phaseName').orientations);
+%   plot(ebsd('phaseName'),color)
+%
+%   % specify the color directly and show in Legend
+%   badMAD = ebsd.mad > 1;
+%   plot(ebsd(badMAD),'faceColor','black,'DisplayName','bad values')
+%
 % Input
 %  ebsd - @EBSD
+%  color - length(ebsd) x 3 vector of RGB values
 %
 % Options
-%
-%  antipodal - include [[AxialDirectional.html,antipodal symmetry]] when
-%     using inverse PoleFigure colorization
+%  micronbar - 'on'/'off'
+%  DisplayName - add a legend entry
 %
 % Flags
 %  points   - plot dots instead of unitcells
 %
 % Example
-% plot a EBSD data set spatially with custom colorcoding
 %
 %   mtexdata forsterite
 %   plot(ebsd)
 %
+%   % colorize accoding to orientations
 %   plot(ebsd('Forsterite'),ebsd('Forsterite').orientations)
 %
+%   % colorize according to MAD
 %   plot(ebsd,ebsd.mad,'micronbar','off')
 %
 % See also
-% EBSD/plot
+% EBSDSpatialPlots
 
 %
 if isempty(ebsd), return; end
