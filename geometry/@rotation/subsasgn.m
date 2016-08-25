@@ -31,7 +31,11 @@ else
         r.b = subsasgn(r.b,s(1),b);
         r.c = subsasgn(r.c,s(1),b);
         r.d = subsasgn(r.d,s(1),b);
-        r.i = subsasgn(r.i,s(1),false(size(b)));
+        if isempty(b)
+          r.i = subsasgn(r.i,s(1),[]);
+        else
+          r.i = subsasgn(r.i,s(1),false(size(b)));
+        end
       else
         b = rotation(b);
         r.a = subsasgn(r.a,s(1),b.a);
