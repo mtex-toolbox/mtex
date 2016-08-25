@@ -10,11 +10,11 @@ classdef axisAngleSections < ODFSections
     
   methods
     
-    function oS = axisAngleSections(CS1,CS2,varargin)
+    function oS = axisAngleSections(varargin)
       
-      oS = oS@ODFSections(CS1,CS2);
-      oS.CS1 = CS1.properGroup;
-      oS.CS2 = CS2.properGroup;
+      oS = oS@ODFSections(varargin{:});
+      oS.CS1 = oS.CS1.properGroup;
+      oS.CS2 = oS.CS2.properGroup;
       oS.jointCS = disjoint(oS.CS1,oS.CS2);      
       if check_option(varargin,'antipodal')
         oS.jointCS = oS.jointCS.Laue;

@@ -8,7 +8,7 @@ classdef phi1Sections < ODFSections
     
   methods
     
-    function oS = phi1Sections(CS1,CS2,varargin)
+    function oS = phi1Sections(varargin)
       % phi1 sections for ODF and orientation plotting
       %
       % Syntax
@@ -24,10 +24,10 @@ classdef phi1Sections < ODFSections
       %  phi1 - explicite section values
       %
    
-      oS = oS@ODFSections(CS1,CS2);
+      oS = oS@ODFSections(varargin{:});
       
       % get fundamental plotting region
-      [oS.maxphi1,Phi,maxphi2] = fundamentalRegionEuler(CS1,CS2,varargin{:}); %#ok<*PROP>
+      [oS.maxphi1,Phi,maxphi2] = fundamentalRegionEuler(oS.CS1,oS.CS2,varargin{:}); %#ok<*PROP>
       oS.sR = sphericalRegion('maxTheta',Phi,'maxRho',maxphi2);
             
       % get sections

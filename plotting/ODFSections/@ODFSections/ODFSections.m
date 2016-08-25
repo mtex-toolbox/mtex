@@ -30,8 +30,9 @@ classdef ODFSections < handle
   end
     
   methods
-    function oS = ODFSections(CS1,CS2,varargin)
+    function oS = ODFSections(CS1,varargin)
       oS.CS1 = CS1.properGroup;
+      CS2 = getClass(varargin,'symmetry',specimenSymmetry);
       oS.CS2 = CS2.properGroup;
       oS.tol = get_option(varargin,'tolerance',5*degree);
     end
