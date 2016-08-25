@@ -1,12 +1,20 @@
 classdef fibre
-  %fibre is a class representing a fibre in orientation space. Examples are
-  %alpha, beta or gamma fibres. In general a fibre is defined by a crystal
-  %direction h of type <Miller_index.html Miller> and a specimen direction
-  %of type <vector3d_index.html vector3d>.
+  % fibre is a class representing a fibre in orientation space. Examples
+  % are alpha, beta or gamma fibres. In general a fibre is defined by a
+  % crystal direction h of type <Miller_index.html Miller> and a specimen
+  % direction of type <vector3d_index.html vector3d>.
+  %
+  % Syntax
+  %   cs = crystalSymmetry('432')
+  %   f = fibre.alpha(cs) % the alpha fibre
+  %
+  %   plotPDF(f,Miller(1,0,0,cs))
   
   properties
-    h
-    r
+    h % reference direction 1
+    r % reference direction 2
+    o1 % starting point
+    o2 % end point
   end
   
   properties (Dependent = true)
@@ -28,24 +36,50 @@ classdef fibre
       n = 0;
     end
           
-    function ori = orientation(f,varargin)
+    function [ori,omega] = orientation(f,varargin)
       % generate a list of orientation out of a fibre
       %
+      % Syntax
+      %   ori = orientations(f,'points',1000)
+      %
       % Input
+      %  f - @fibre
       %
       % Output
+      %  ori - @orientation
       %
+      % Options
+      %  points - number of points that are generated
       %
-      
-      npoints = get_option(varargin,'points',1000);
             
+      npoints = get_option(varargin,'points',1000);
       omega = linspace(0,2*pi,npoints);
       
-      ori = rotation.id(length(omega),length(f.h));
+      ori = rotation.id(npoints,length(f.h));
       for i = 1:length(f.h)
-        ori(:,i) = rotation('axis',f.r(i),'angle',omega) .* rotation('map',f.h(i),f.r(i));
-      end
         
+        r = f.r(i);
+        if isempty(f.o1)          
+          o1 = rotation('map',f.h(i),f.r(i));  %#ok<*PROPLC>
+        else
+          o1 = f.o1(i);
+          
+          if ~isempty(f.o2)
+            maxOmega = angle(o1,f.o2(i),'noSymmetry');
+            if maxOmega > 0
+              r = axis(f.o2(i).*inv(o1),'noSymmetry');
+              omega = linspace(0,maxOmega,npoints);
+            end
+          end
+        end
+      
+        % compute orientations
+        ori(:,i) = rotation('axis',r,'angle',omega) .* o1;
+        
+      end
+
+      
+      
       if isa(f.CS,'crystalSymmetry') || isa(f.SS,'crystalSymmetry')
         ori = orientation(ori,f.CS,f.SS);
       end
@@ -73,8 +107,10 @@ classdef fibre
     function ss = get.SS(f)      
       if isa(f.r,'Miller')
         ss = f.r.CS;
+      elseif isa(f.o1,'orientation')
+        ss = f.o1.SS;
       else
-        ss = specimenSymmetry;
+        specimenSymmetry;
       end      
     end
     
@@ -111,63 +147,74 @@ classdef fibre
   
   methods (Static = true)
        
-    function f = alpha(cs)
+    function f = alpha(varargin)
       % the alpha fibre
       % from: Comprehensive Materials Processing 
       
-      ori1 = orientation('Miller',[0 0 1],[1 1 0],cs);
-      ori2 = orientation('Miller',[1 1 1],[1 1 0],cs);
+      ori1 = orientation('Miller',[0 0 1],[1 1 0],varargin{:});
+      ori2 = orientation('Miller',[1 1 1],[1 1 0],varargin{:});
             
-      f = fibre.fit(ori1,ori2);
+      f = fibre.fit(ori1,ori2,varargin{:});
     end
     
-    function f = beta(cs)
+    function f = beta(varargin)
       % the beta fibre
       
-      ori1 = orientation('Miller',[1 1 2],[1 1 0],cs);
-      ori2 = orientation('Miller',[11 11 8],[4 4 11],cs);
+      ori1 = orientation('Miller',[1 1 2],[1 1 0],varargin{:});
+      ori2 = orientation('Miller',[11 11 8],[4 4 11],varargin{:});
             
-      f = fibre.fit(ori1,ori2);
+      f = fibre.fit(ori1,ori2,varargin{:});
     end
     
-    function f = gamma(cs)
+    function f = gamma(varargin)
       % the beta fibre
       
-      ori1 = orientation('Miller',[1 1 1],[1 1 0],cs);
-      ori2 = orientation('Miller',[1 1 1],[1 1 2],cs);
+      ori1 = orientation('Miller',[1 1 1],[1 1 0],varargin{:});
+      ori2 = orientation('Miller',[1 1 1],[1 1 2],varargin{:});
             
-      f = fibre.fit(ori1,ori2);
+      f = fibre.fit(ori1,ori2,varargin{:});
     end
     
-    function f = epsilon(cs)
+    function f = epsilon(varargin)
     % the epsilon fibre
       
-      ori1 = orientation('Miller',[0 0 1],[1 1 0],cs);
-      ori2 = orientation('Miller',[1 1 1],[1 1 2],cs);
+      ori1 = orientation('Miller',[0 0 1],[1 1 0],varargin{:});
+      ori2 = orientation('Miller',[1 1 1],[1 1 2],varargin{:});
             
-      f = fibre.fit(ori1,ori2);
+      f = fibre.fit(ori1,ori2,varargin{:});
     end
     
-    function f = eta(cs)
+    function f = eta(varargin)
     % the epsilon fibre
       
-      ori1 = orientation('Miller',[0 0 1],[1 0 0],cs);
-      ori2 = orientation('Miller',[0 1 1],[1 0 0],cs);
+      ori1 = orientation('Miller',[0 0 1],[1 0 0],varargin{:});
+      ori2 = orientation('Miller',[0 1 1],[1 0 0],varargin{:});
             
-      f = fibre.fit(ori1,ori2);
+      f = fibre.fit(ori1,ori2,varargin{:});
     end
     
-    function f = tau(cs)
+    function f = tau(varargin)
       % the beta fibre
       
-      ori1 = orientation('Miller',[0 0 1],[1 1 0],cs);
-      ori2 = orientation('Miller',[0 1 1],[1 0 0],cs);
+      ori1 = orientation('Miller',[0 0 1],[1 1 0],varargin{:});
+      ori2 = orientation('Miller',[0 1 1],[1 0 0],varargin{:});
             
-      f = fibre.fit(ori1,ori2);
+      f = fibre.fit(ori1,ori2,varargin{:});
     end
         
-    function f = fit(ori1,ori2)
+    function f = fit(ori1,ori2,varargin)
       % determines the fibre that fits best a list of orientations
+      % 
+      % Syntax
+      %   f = fibre.fit(ori1,ori2) % fibre from ori1 to ori2
+      %   f = fibre.fit(ori) % fit fibre to a list of orientations
+      %
+      % Input
+      %  ori1, ori2, ori - @orientation
+      %
+      % Output
+      %  f - @fibre
+      %
       
       if nargin == 1
         
@@ -184,6 +231,12 @@ classdef fibre
       h = ori1 \ r;
       
       f = fibre(h,r);
+      
+      f.o1 = ori1;
+      
+      if nargin >= 2 && ~check_option(varargin,'full')
+        f.o2 = ori2;
+      end
               
     end 
     

@@ -10,19 +10,20 @@ end
 disp([' size: ' size2str(f)]);
 
 % display symmetry
-if isa(f.CS,'crystalSymmetry')
-  if ~isempty(f.CS.mineral)
-    disp([' mineral: ',char(f.CS,'verbose')]);
-  else
-    disp([' symmetry: ',char(f.CS,'verbose')]);
-  end
-end
+dispSym(f.CS);
+dispSym(f.SS);
 
 if f.antipodal, disp(' antipodal: true'); end
 
+if length(f)>1, return; end
+
+% display starting and end orientation
+disp([' o1: ' char(f.o1)]);
+if isa(f.o2,'rotation'), disp([' o2: ' char(f.o2)]); end
+
 return
 
-if length(f)>50, return; end
+
 
 f = 1;
 
@@ -54,4 +55,20 @@ if ~check_option(varargin,'skipCoordinates') && ...
   d(abs(d) < 1e-10) = 0;
   
   cprintf(d,'-L','  ','-Lc',{'x' 'y' 'z'});
+end
+
+end
+
+function dispSym(s)
+
+if isa(s,'crystalSymmetry')
+  if ~isempty(s.mineral)
+    disp([' mineral: ',char(s,'verbose')]);
+  else
+    disp([' crystal symmetry:  ',char(s,'verbose')]);
+  end
+elseif s.id > 2
+  disp([' specimen symmetry: ',char(s,'verbose')]);
+end
+
 end
