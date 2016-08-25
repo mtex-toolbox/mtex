@@ -79,7 +79,7 @@ classdef EBSD < phaseList & dynProp & dynOption
       if check_option(varargin,'uniCell')
         ebsd.unitCell = get_option(varargin,'unitCell',[]);
       else
-        ebsd.unitCell = ebsd.updateUnitCell;
+        ebsd = ebsd.updateUnitCell;
       end
       
       % remove ignore phases
