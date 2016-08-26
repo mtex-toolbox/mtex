@@ -27,21 +27,21 @@ function [x,omega] = plotFibre(odf,varargin)
 % get axis
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 
-%
+% extract fibre
 if isa(varargin{1},'vector3d')
   varargin{1} = odf.CS.ensureCS(varargin{1});
-  omega = linspace(-pi,pi,501);
+  omega = linspace(0,2*pi,501);
   center = get_option(varargin,'CENTER',hr2quat(varargin{1},varargin{2}),{'quaternion','rotation','orientation'});
-  fibre = axis2quat(varargin{2},omega) .* center;
-elseif isa(varargin{1},'quaternion') || isa(varargin{1},'fibre')
-  fibre = varargin{1};
+  f = orientation(axis2quat(varargin{2},omega) .* center,odf.CS,odf.SS);
+elseif  isa(varargin{1},'fibre')
+  [f,omega] = orientation(varargin{1},odf.CS,odf.SS);
+elseif isa(varargin{1},'quaternion')
+  omega = angle(varargin{1}(1),varargin{1});
+  f = orientation(varargin{1},odf.CS,odf.SS);
 end
 
-%
-[fibre,omega] = orientation(fibre,odf.CS,odf.SS);
-
 % find loop
-delta = angle(fibre(2:end),fibre(1));
+delta = angle(f(2:end),f(1));
 fz = find(delta(:)<1e-2);
 
 % remove values to close together
@@ -49,49 +49,22 @@ fz = fz([true;diff(fz)>1]);
 
 if any(fz) && round(numel(delta) / fz(1)) == numel(fz) && ...
     ~check_option(varargin,'comlete')
-  fibre = fibre(1:find(delta<1e-2,1,'first'));
+  ind = 1:find(delta<1e-2,1,'first');
+  f = f(ind);
+  omega = omega(ind);
 end
 
-% determine some nice orientations along the fibre
-% this is quit difficult
-e = Euler(fibre) ./ degree;
+% evaluate the ODF
+x = eval(odf,f,varargin{:});%#ok<EVLC>
 
-err = sum(round(100*abs(round(e./5) - e./5)),2);
-
-ind = false(size(err));
-
-while nnz(ind) < 5
-  
-  % new candidates
-  ind2 = min(err) == err;
-  err(ind2) = inf;
-  
-  % compute the distance to the previous ticks
-  if any(ind)
-    d = arrayfun(@(x) min(abs(x-find(ind))),1:numel(ind));  
-    
-    % take only those candidates that are sufficent far away
-    ind2 = ind2 & d.' > max(d) / 1.75;
-  end
-  
-  ind = ind | ind2;
-end
-
-x = eval(odf,fibre,varargin{:});%#ok<EVLC>
-
+% plot the fibre
 optiondraw(plot(omega./degree,x,'parent',mtexFig.gca),varargin{:});
 
 if isNew
   xlim(mtexFig.gca,[min(omega),max(omega)]./degree);
   ylabel(mtexFig.gca,'Frequency (mrd)')
-  xlabel(mtexFig.gca,['misorientation angle (degree) to ' char(fibre(1))]);
-  label = arrayfun(@(i) char(fibre(i),'nodegree'),find(ind),'uniformoutput',false);
-  try
-    xticklabel_rotate(find(ind),90,label);
-  catch
-  end
+  xlabel(mtexFig.gca,['misorientation angle (degree) to ' char(f(1))]);
   drawNow(mtexFig,varargin{:})
 end
 
 if nargout == 0, clear x omega; end
-
