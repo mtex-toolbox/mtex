@@ -9,7 +9,6 @@ orientationRegion_index
 sphericalRegion_index
 fibre_index
 slipSystem_index
-
 quaternion_index
 S1Grid_index
 S2Grid_index

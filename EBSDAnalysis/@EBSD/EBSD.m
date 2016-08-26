@@ -37,11 +37,9 @@ classdef EBSD < phaseList & dynProp & dynOption
    
   properties (Dependent = true)
     orientations    % rotation including symmetry
-    weights         %
+    weights         % is this realy needed?
     grainId         % id of the grain to which the EBSD measurement belongs to
     mis2mean        % misorientation to the mean orientation of the corresponding grain
-%    dx              % step size in x
-%    dy              % step size in y
   end
   
   methods
