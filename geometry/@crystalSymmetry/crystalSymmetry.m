@@ -104,7 +104,7 @@ classdef crystalSymmetry < symmetry
         angles = varargin{1};
         if any(angles>2*pi), angles = angles * degree;end
         varargin(1) = [];
-      elseif any(strcmp(symmetry.pointGroups(s.id).lattice,{'trigonal','hexagonal'}))
+      elseif s.id>0 && any(strcmp(symmetry.pointGroups(s.id).lattice,{'trigonal','hexagonal'}))
         angles = [90 90 120] * degree;
       else
         angles = [90 90 90] * degree;

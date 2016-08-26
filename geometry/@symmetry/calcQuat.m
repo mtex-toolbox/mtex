@@ -1,6 +1,8 @@
 function s = calcQuat(s,axes)
 % calculate quaternions for Laue groups
 
+if s.id==0, return; end
+
 if nargin == 1, axes = [xvector,yvector,zvector]; end
 
 ll0axis = vector3d(1,1,0);

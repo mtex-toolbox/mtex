@@ -13,8 +13,8 @@ if numel(is1) == length(s1), s = s1; return; end
 if numel(is2) == length(s2), s = s2; return; end
 
 % take the equal ones
-s = quaternion(s1);
-s = unique(s.subSet(is1),'antipodal');
+s = rotation(s1);
+s = unique(s.subSet(is1));
 
 % find a symmetry that exactly contains s
 for i=1:45 % check all Laue groups
@@ -27,3 +27,7 @@ for i=1:45 % check all Laue groups
   end
   
 end
+
+% otherwise define a custom symmetry
+s = crystalSymmetry(s);
+
