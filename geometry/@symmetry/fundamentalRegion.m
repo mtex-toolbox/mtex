@@ -25,10 +25,11 @@ if nargin >= 2 && isa(varargin{1},'symmetry')
   
   if ~check_option(varargin,'ignoreCommonSymmetries')
     dcs = disjoint(cs,varargin{1});
-    if check_option(varargin,'antipodal')
-      dcs = dcs.Laue;
-    end
+    
+    if check_option(varargin,'antipodal'), dcs = dcs.Laue; end
+      
     sR = dcs.fundamentalSector(varargin{:});
+        
     N0 = rotation('axis',sR.N,'angle',pi-1e-5);
   end
 else  
