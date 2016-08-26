@@ -14,7 +14,7 @@ if axisLength(3) == 0, axisLength(3) = 1;end
 
 if axisLength(1) == 0, axisLength(1) = axisLength(2);end
 if axisLength(2) == 0, axisLength(2) = axisLength(1);end
-if axisLength(2) == 0, 
+if axisLength(2) == 0
   axisLength(2) = axisLength(3);
   axisLength(1) = axisLength(3);
 end
@@ -67,7 +67,7 @@ alignment = cell(1,3);
 % extract alignment for each axis
 for ia = 1:3
   
-  al = regexpi(varargin,[axes(ia) '\|\|(\w\*?)'],'tokens');
+  al = regexpi(varargin,[axes(ia) '\|\|([abcdm]*\*?)'],'tokens');
   al = [al{:}];
   alignment{ia} = char(al{:});    
   
@@ -104,7 +104,9 @@ for ia = 1:3
         xyzNew(4-ia) = a;
       end
     case 'm'
-      xyzNew(ia) = m;
+      xyzNew(ia) = a+b;
+    case 'd'
+      xyzNew(ia) = a+b+c;
   end
 end
   
