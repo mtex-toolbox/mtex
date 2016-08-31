@@ -21,26 +21,19 @@ ori = rotation.id(npoints,length(f.h));
 for i = 1:length(f.h)
   
   r = f.r(i);
-  if isempty(f.o1)
-    o1 = rotation('map',f.h(i),f.r(i));  %#ok<*PROPLC>
-  else
-    o1 = f.o1(i);
+  o1 = f.o1(i);
     
-    if ~isempty(f.o2)
-      maxOmega = angle(o1,f.o2(i),'noSymmetry');
-      if maxOmega > 0
-        r = axis(f.o2(i).*inv(o1),'noSymmetry');
-        omega = linspace(0,maxOmega,npoints);
-      end
-    end
+  maxOmega = angle(o1,f.o2(i),'noSymmetry');
+  if maxOmega > 1e-3
+    r = axis(f.o2(i).*inv(o1),'noSymmetry');
+    omega = linspace(0,maxOmega,npoints);
   end
+  
   
   % compute orientations
   ori(:,i) = rotation('axis',r,'angle',omega) .* o1;
   
 end
-
-
 
 if isa(f.CS,'crystalSymmetry') || isa(f.SS,'crystalSymmetry')
   ori = orientation(ori,f.CS,f.SS);
