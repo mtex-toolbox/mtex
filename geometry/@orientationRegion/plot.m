@@ -76,7 +76,9 @@ switch lower(projection)
       
       for j = 1:length(oR.F{i})
         
-        r = t .* oR.V(oR.F{i}(j)).axis + (1-t) .* oR.V(oR.F{i}(mod(j,length(oR.F{i}))+1)).axis;
+        % can we use axis(..,'noSymmetry') here?
+        r = t .* axis(quaternion(oR.V(oR.F{i}(j)))) + (1-t) .* ...
+          axis(quaternion(oR.V(oR.F{i}(mod(j,length(oR.F{i}))+1))));
         % TODO: plot the geodesics and do not use maxAngle
         r = normalize(r) .* oR.maxAngle(r) ./ degree;
         line(r.x,r.y,r.z,'color',color,'linewidth',1.5);

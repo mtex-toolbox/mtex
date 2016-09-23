@@ -34,7 +34,7 @@ elseif isempty(oR.V) || check_option(varargin,'complete')
 
 else
   
-  omega = max(oR.V.angle);
+  omega = max(angle(oR.V,'noSymmetry'));
   
 end
 

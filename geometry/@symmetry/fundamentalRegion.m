@@ -58,4 +58,4 @@ else
   Nq = quaternion;
 end
 
-oR = orientationRegion([Nq(:).',N0(:).'],varargin{:});
+oR = orientationRegion([Nq(:).',N0(:).'],cs,varargin{:});
