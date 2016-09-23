@@ -138,7 +138,7 @@ hold off
 % misorientation space
 
 % set up an axis angle plot
-sP = axisAngleSections(sSBasal.CS,sSBasal.CS)
+sP = axisAngleSections(sSBasal.CS,sSBasal.CS);
 
 % generate a grid of misorientations
 moriGrid = sP.makeGrid;

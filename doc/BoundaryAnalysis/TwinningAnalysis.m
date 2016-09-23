@@ -28,7 +28,7 @@ grains = grains.smooth
 plot(grains,grains.meanOrientation)
 
 % store crystal symmetry of Magnesium
-CS = grains.CS
+CS = grains.CS;
 
 %%
 % Now we can extract from the grains its boundary and save it to a seperate

@@ -23,6 +23,7 @@ classdef slipSystem
   
   methods
     function sS = slipSystem(b,n,CRSS)
+      % defines a slipSystem
       %
       % Syntax
       %   sS = slipSystem(b,n)

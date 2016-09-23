@@ -18,7 +18,7 @@
 %
 % *Fibres*
 %
-% MTEX 4.4 has experimental support for fibres in orientation space. A an
+% MTEX 4.4 adds support for fibres in orientation space. As an
 % example the alpha fibre in cubic materials can be defined in the
 % following ways
 %
@@ -36,7 +36,7 @@
 %   ori1 = orientation('Miller',[0 0 1],[1 1 0],cs);
 %   ori2 = orientation('Miller',[1 1 1],[1 1 0],cs);
 %
-%   f = fibre.fit(ori1,ori2)
+%   f = fibre(ori1,ori2)
 %
 % # by a list of orientations
 %
@@ -47,11 +47,10 @@
 % * plot to Rodrigues space
 %
 %    oR = fundamentalRegion(cs,cs)
-%    v = orientation(oR.V,cs,cs)
-%    f = fibre.fit(v(1),v(2))
+%    f = fibre(oR.V(1),oR.V(2))
 %    plot(oR)
 %    hold on
-%    plot(fibre,'restrict2fundamentalRegion')
+%    plot(fibre,'color','r','linewidth',2)
 %    hold off
 %
 % * rotate a fibre
