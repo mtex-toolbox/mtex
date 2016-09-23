@@ -1,4 +1,4 @@
-function display(s)
+function display(s,varargin)
 % standard output
 
 disp(' ');
