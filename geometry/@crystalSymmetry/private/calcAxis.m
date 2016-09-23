@@ -3,9 +3,11 @@ function abc  = calcAxis(axisLength,angle,varargin)
 % to the euclidean reference frame
 %
 % Input
-%
+%  axisLength - [a,b,c]
+%  angle - [alpha,beta,gamma]
 %
 % Output
+%  abc - @vector3d
 %
 
 % get axis length
@@ -56,8 +58,12 @@ varargin(flipthem) = cellfun(@(a) [a(end:-1:end-2) a(1:end-3)],varargin(flipthem
 
 % if nothing or only Y is specified set Z||c
 if ~any(cell2mat(regexpi(varargin,'z\|\|'))) && ...
-  nnz(cell2mat(regexpi(varargin,'[xy]\|\|')))<=1
-  varargin = [varargin,{'Z||c'}];
+    nnz(cell2mat(regexpi(varargin,'[xy]\|\|')))<=1
+  if isempty(regexpi(varargin,'[xy]\|\|[abc]\*'))
+    varargin = [varargin,{'Z||c*'}];
+  else
+    varargin = [varargin,{'Z||c'}];
+  end
 end
 
 % extract alignment for x, y, z directions
