@@ -57,6 +57,7 @@ classdef symmetry < rotation
   % this is an abstract class
   methods (Abstract = true)
     display(s)
+    dispLine(s)
   end
   
   methods
