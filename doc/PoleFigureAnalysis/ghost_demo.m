@@ -90,16 +90,17 @@ plot(rec_cor,'sections',9,'silent','sigma')
 %% 
 % radial plot of the true ODF
 close all
-plotFibre(odf,Miller(0,1,0,cs),yvector,'linewidth',2);
+f = fibre(Miller(0,1,0,cs),yvector);
+plot(odf,f,'linewidth',2);
 hold all
 
 %%
 % radial plot without ghost correction:
-plotFibre(rec,Miller(0,1,0,cs),yvector,'linewidth',2);
+plot(rec,f,'linewidth',2);
 
 %%
 % radial plot with ghost correction:
-plotFibre(rec_cor,Miller(0,1,0,cs),yvector,'linestyle','--','linewidth',2);
+plot(rec_cor,f,'linestyle','--','linewidth',2);
 hold off
 legend({'true ODF','without ghost correction','with ghost correction'})
 

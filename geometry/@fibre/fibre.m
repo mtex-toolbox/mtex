@@ -37,7 +37,8 @@ classdef fibre
   
   methods
     function f = fibre(o1,varargin)
-      
+
+      % define a fibre as all o with o*h = r
       if isa(o1,'vector3d')
         f.o1 = orientation('map',o1,varargin{:});
         f.h = o1;
@@ -49,7 +50,7 @@ classdef fibre
         f.o2 = varargin{1};
         varargin(1) = [];
       else
-        f.o2 = o1;
+        f.o2 = f.o1;
       end
       
       if ~isempty(varargin) && isa(varargin{1},'vector3d')
@@ -58,7 +59,7 @@ classdef fibre
         f.h = axis(inv(o1) .* f.o2,'noSymmetry');
       end
       
-      if check_option(varargin,'full'), f.o2 = o1; end
+      if check_option(varargin,'full'), f.o2 = f.o1; end
     end
 
     function n = numArgumentsFromSubscript(varargin)

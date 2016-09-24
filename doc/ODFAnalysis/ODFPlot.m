@@ -42,9 +42,9 @@ plotPDF(odf,[Miller(1,0,-1,0,cs),Miller(0,0,0,1,cs)])
 
 mtexFig = mtexFigure;
 
-plotPDF(odf,Miller(1,0,-1,1,cs),'TR','upper','parent',mtexFig.nextAxis)
+plotPDF(odf,Miller(1,1,-2,1,cs),'TR','upper','parent',mtexFig.nextAxis)
 
-plotPDF(odf,Miller(1,0,-1,1,cs),'TR','lower','parent',mtexFig.nextAxis)
+plotPDF(odf,Miller(1,1,-2,1,cs),'TR','lower','parent',mtexFig.nextAxis)
 
 mtexFig.drawNow
 
@@ -63,9 +63,9 @@ mtexFig.drawNow
 
 mtexFig = mtexFigure;
 
-plotPDF(odf,Miller(1,0,-1,1,cs),'TR','upper','antipodal','parent',mtexFig.nextAxis)
+plotPDF(odf,Miller(1,1,-2,1,cs),'TR','upper','antipodal','parent',mtexFig.nextAxis)
 
-plotPDF(odf,Miller(1,0,-1,1,cs),'TR','lower','antipodal','parent',mtexFig.nextAxis)
+plotPDF(odf,Miller(1,1,-2,1,cs),'TR','lower','antipodal','parent',mtexFig.nextAxis)
 
 mtexFig.drawNow
 
@@ -137,7 +137,8 @@ plot(odf,'sections',6,'silent','sigma')
 % For plotting the ODF along a certain fibre we have the command
 
 close all
-plotFibre(odf,Miller(1,2,-3,2,cs),vector3d(2,1,1),'LineWidth',2);
+f = fibre(Miller(1,2,-3,2,cs),vector3d(2,1,1));
+plot(odf,f,'LineWidth',2);
 
 %% Fourier Coefficients
 % A last way to visualize an ODF is to plot its Fourier coefficients

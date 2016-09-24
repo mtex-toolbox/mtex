@@ -14,13 +14,10 @@ function varargout = line(rot,varargin)
 %   plot(oR)
 %
 %   % connect to vertices of the fundamental region
-%   f = fibre.fit(oR.V(1),oR.V(2))
+%   f = fibre(oR.V(1),oR.V(2))
 %
 %   % determine some orientations along the fibre
 %   o = f.orientation
-%
-%   % and set those outside the fundamental sector to none
-%   o(~oR.checkInside(o))=nan
 %
 %   % plot the line
 %   hold on
