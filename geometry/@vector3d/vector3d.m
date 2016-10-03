@@ -16,11 +16,13 @@ classdef vector3d < dynOption
   
   methods
     
-    function v = vector3d(x,y,z,varargin)
+    function v = vector3d(varargin)
       % Constructor
       %
       % Syntax
       %   v = vector3d(x,y,z)
+      %   v = vector3d(x,y,z,'antipodal')
+      %   v = vector3d('polar',theta,rho)
       %
       % Input
       %  x,y,z - cart. coordinates
@@ -33,39 +35,41 @@ classdef vector3d < dynOption
 
       if nargin == 0
       elseif nargin <= 2
-        if isa(x,'vector3d') % copy-constructor
-          v = x;
+        if isa(varargin{1},'vector3d') % copy-constructor
+          v = varargin{1};
           return
-        elseif isa(x,'double')
-          if all(size(x) == [1,3])
-            x = x.';
+        elseif isa(varargin{1},'double')
+          xyz = varargin{1};
+          if all(size(xyz) == [1,3])
+            xyz = xyz.';
           end
-          v.x = x(1,:);
-          v.y = x(2,:);
-          v.z = x(3,:);
+          v.x = xyz(1,:);
+          v.y = xyz(2,:);
+          v.z = xyz(3,:);
         else
           error('wrong type of argument');
         end
         
-      elseif nargin >=3 && isnumeric(x) && isnumeric(y) && isnumeric(z)
+      elseif nargin >=3 && isnumeric(varargin{1}) && isnumeric(varargin{1})...
+          && isnumeric(varargin{1})
         
-        v.x = x;
-        v.y = y;
-        v.z = z;
+        v.x = varargin{1};
+        v.y = varargin{2};
+        v.z = varargin{3};
         
-      elseif ischar(x)
+      elseif ischar(varargin{1})
         
-        if strcmp(x,'polar')
+        if strcmp(varargin{1},'polar')
           
-          sy = sin(y);
-          v.x = sy .* cos(z);
-          v.y = sy .* sin(z);
-          v.z = cos(y);
+          sy = sin(varargin{2});
+          v.x = sy .* cos(varargin{3});
+          v.y = sy .* sin(varargin{3});
+          v.z = cos(varargin{2});
           
         else
           
-          theta = get_option([{x,y,z},varargin],{'theta','azimuth'});
-          rho = get_option([{x,y,z},varargin],{'rho','polar'});
+          theta = get_option(varargin,{'theta','azimuth'});
+          rho = get_option(varargin,{'rho','polar'});
           
           v.x = sin(theta).*cos(rho);
           v.y = sin(theta).*sin(rho);
