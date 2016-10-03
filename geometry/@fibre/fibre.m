@@ -23,11 +23,11 @@ classdef fibre
   properties
     o1 % starting point
     o2 % end point (o2 = o1 means full fibre)
-    h % gradient in id, i.e., ori = o1 * rot(h,omega)
+    h  % gradient in id, i.e., ori = o1 * rot(h,omega)
   end
   
   properties (Dependent = true)
-    r % ori * h = r
+    r % r = ori * h
     CS
     SS
     csL
