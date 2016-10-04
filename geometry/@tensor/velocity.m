@@ -16,6 +16,13 @@ function [vp,vs1,vs2,pp,ps1,ps2] = velocity(C,x,rho)
 %  ps2 - polarisation of the s2--wave (particle movement, vibration direction)
 %
 
+if isempty(x)
+  x = equispacedS2Grid('points',10000);
+  generateFun = true;
+else
+  generateFun = false;  
+end
+
 % take density from tensor if not specified differently
 if nargin == 3
 elseif isfield(C.opt,'density')
@@ -66,3 +73,13 @@ end
 pp = vector3d(pp,'antipodal');
 ps1 = vector3d(ps1,'antipodal');
 ps2 = vector3d(ps2,'antipodal');
+
+if generateFun
+  vp = sphFun(x,vp);
+  vs1 = sphFun(vp,vs1);
+  vs2 = sphFun(vp,vs2);
+  
+  pp = sphVectorField(vp,pp);
+  ps1 = sphVectorField(vp,ps1);
+  ps2 = sphVectorField(vp,ps2);
+end

@@ -39,126 +39,13 @@ rho=3.355;
 % Cij -> Cijkl - elastic stiffness tensor
 C = tensor(M,cs_tensor,'name','elastic stiffness','unit','GPa','density',rho)
 
+%%
+% Compute seismic velocities as functions on the sphere
 
-%% compute maximum and minimum velocities
-
-% Generate velocities and polarizations on a fine pole figure S2Grid
-XY_grid = equispacedS2Grid('upper', 'resolution',1*degree);
-
-[vp,vs1,vs2,pp,ps1,ps2] = velocity(C,XY_grid);
-
-%**************************************************************************
-% P-wave velocity (km/s)
-% Maximum and Minimum values and thier directions
-%**************************************************************************
-%
-Vp_max_value = max(vp);
-Vp_min_value = min(vp);
-
-% Anisotropy percent
-AVp=200*(Vp_max_value-Vp_min_value)/(Vp_max_value+Vp_min_value);
-
-% index values on S2Grid
-[~,index_max] = max(vp);
-[~,index_min] = min(vp);
-% vector in S2Grid
-Vp_max_vector = XY_grid(index_max);
-Vp_min_vector = XY_grid(index_min);
-
-%**************************************************************************
-% S-wave anisotropy percentage
-% defined as AVs = 200*(Vs1-Vs2)/(Vs1+Vs2)
-% Maximum and Minimum values and thier directions
-%**************************************************************************
-% new array AVs %
-avs = 200*(vs1-vs2)./(vs1+vs2);
-AVs_max_value = max(avs);
-AVs_min_value = min(avs);
-% index values on S2Grid
-[~,index_max] = max(avs);
-[~,index_min] = min(avs);
-% vector in S2Grid
-AVs_max_vector = XY_grid(index_max);
-AVs_min_vector = XY_grid(index_min);
-
-%**************************************************************************
-% dVs = Vs1-Vs2 (km/s)
-% Maximum and Minimum values and thier directions
-%**************************************************************************
-% new array AVs %
-dVs = vs1-vs2;
-dVs_max_value = max(dVs);
-dVs_min_value = min(dVs);
-% index values on S2Grid
-[~,index_max] = max(dVs);
-[~,index_min] = min(dVs);
-% vector in S2Grid
-dVs_max_vector = XY_grid(index_max);
-dVs_min_vector = XY_grid(index_min);
-
-%**************************************************************************
-% S1-wave velocity (km/s)
-% Maximum and Minimum values and thier directions
-%**************************************************************************
-Vs1_max_value = max(vs1);
-Vs1_min_value = min(vs1);
-% Anisotropy percent
-AVs1=200*(Vs1_max_value-Vs1_min_value)/(Vs1_max_value+Vs1_min_value);
-% index values on S2Grid
-[~,index_max] = max(vs1);
-[~,index_min] = min(vs1);
-% vector in S2Grid
-Vs1_max_vector = XY_grid(index_max);
-Vs1_min_vector = XY_grid(index_min);
-
-%**************************************************************************
-% S2-wave velocity (km/s)
-% Maximum and Minimum values and thier directions
-%**************************************************************************
-Vs2_max_value = max(vs2);
-Vs2_min_value = min(vs2);
-% Anisotropy percent
-AVs2=200*(Vs2_max_value-Vs2_min_value)/(Vs2_max_value+Vs2_min_value);
-% index values on S2Grid
-[~,index_max] = max(vs2);
-[~,index_min] = min(vs2);
-% vector in S2Grid
-Vs2_max_vector = XY_grid(index_max);
-Vs2_min_vector = XY_grid(index_min);
-%**************************************************************************
-% Vp/Vs1 (no units)
-% Maximum and Minimum values and thier directions
-%**************************************************************************
-% new array vpvs1
-vpvs1 = vp./vs1;
-VpVs1_max_value = max(vpvs1);
-VpVs1_min_value = min(vpvs1);
-% Anisotropy percent
-AVpVs1=200*(VpVs1_max_value-VpVs1_min_value)/(VpVs1_max_value+VpVs1_min_value);
-% index values on S2Grid
-[~,index_max] = max(vpvs1);
-[~,index_min] = min(vpvs1);
-% vector in S2Grid
-VpVs1_max_vector = XY_grid(index_max);
-VpVs1_min_vector = XY_grid(index_min);
-%**************************************************************************
-% Vp/Vs2 (no units)
-% Maximum and Minimum values and thier directions
-%**************************************************************************
-% new array vpvs2
-vpvs2 = vp./vs2;
-VpVs2_max_value = max(vpvs2);
-VpVs2_min_value = min(vpvs2);
-% Anisotropy percent
-AVpVs2=200*(VpVs2_max_value-VpVs2_min_value)/(VpVs2_max_value+VpVs2_min_value);
-% index values on S2Grid
-[~,index_max] = max(vpvs2);
-[~,index_min] = min(vpvs2);
-% vector in S2Grid
-VpVs2_max_vector = XY_grid(index_max);
-VpVs2_min_vector = XY_grid(index_min);
+[vp,vs1,vs2,pp,ps1,ps2] = velocity(C,[]);
 
 %% Plotting section
+% Here we set preference for a nice plot.
 
 % plotting convention - plot X-axis to north
 plotx2north;
@@ -170,14 +57,14 @@ close all
 setMTEXpref('defaultColorMap',blue2redColorMap)
 
 % some options
-blackMarker = {'Marker','s','MarkerSize',10,...
-  'MarkerEdgeColor','white','MarkerFaceColor','black'};
-whiteMarker = {'Marker','o','MarkerSize',10,...
-  'MarkerEdgeColor','black','MarkerFaceColor','white'};
+blackMarker = {'Marker','s','MarkerSize',10,'antipodal',...
+  'MarkerEdgeColor','white','MarkerFaceColor','black','doNotDraw'};
+whiteMarker = {'Marker','o','MarkerSize',10,'antipodal',...
+  'MarkerEdgeColor','black','MarkerFaceColor','white','doNotDraw'};
 
 % some global options for the titles
 %titleOpt = {'FontSize',getMTEXpref('FontSize'),'visible','on'}; %{'FontSize',15};
-titleOpt = {};
+titleOpt = {'visible','on','color','k'};
 
 % Setup multiplot
 % define plot size [origin X,Y,Width,Height]
@@ -200,32 +87,42 @@ mtexFig = mtexFigure('position',[0 0 1000 1000]);
 %**************************************************************************
 
 % Plot P-wave velocity (km/s)
-plot(C,'PlotType','velocity','vp','complete','contourf','parent',mtexFig.gca,'doNotDraw')
+plot(vp,'contourf','parent',mtexFig.gca)
 
 mtexTitle('Vp (km/s)',titleOpt{:})
+
+% extrema
+[maxVp, maxVpPos] = max(vp);
+[minVp, minVpPos] = min(vp);
+
 % percentage anisotropy
-AVpS = ['Vp Anisotropy = ',num2str(AVp,'%6.1f')];
-xlabel(AVpS,titleOpt{:})
+AVp = 200*(maxVp-minVp) / (maxVp+minVp);
+
+% N.B. x and y reversed in subplot
+xlabel(['Vp Anisotropy = ',num2str(AVp,'%6.1f')],titleOpt{:})
 
 % mark maximum with black square and minimum with white circle
 hold on
-plot(Vp_max_vector,blackMarker{:},'parent',mtexFig.gca,'doNotDraw')
-plot(Vp_min_vector,whiteMarker{:},'parent',mtexFig.gca)
+plot(maxVpPos,blackMarker{:},'parent',mtexFig.gca)
+plot(minVpPos,whiteMarker{:},'parent',mtexFig.gca)
 hold off
 
-%% AVS : Plot S-wave anisotropy percentage for each propagation direction
+%% AVS : Plot S-wave anisotropy percentage for each proppagation direction
 % defined as AVs = 200*(Vs1-Vs2)/(Vs1+Vs2)
 
 % create a new axis
 mtexFig.nextAxis
 
 % Plot S-wave anisotropy (percent)
-plot(C,'PlotType','velocity','200*(vs1-vs2)./(vs1+vs2)',...
-  'complete','contourf','parent',mtexFig.gca,'doNotDraw');
+AVs = 200*(vs1-vs2)./(vs1+vs2);
+plot(AVs,'contourf','parent',mtexFig.gca);
 mtexTitle('S-wave anisotropy (%)',titleOpt{:})
 
 % Max percentage anisotropy
-AVsS = ['Max Vs Anisotropy = ',num2str(AVs_max_value,'%6.1f')];
+[maxAVs,maxAVsPos] = max(AVs);
+[minAVs,minAVsPos] = min(AVs);
+
+AVsS = ['Max Vs Anisotropy = ',num2str(maxAVs,'%6.1f')];
 xlabel(AVsS,titleOpt{:})
 
 % mark crystal axes
@@ -235,8 +132,8 @@ text([xvector,yvector,zvector],{'[100] ','[010] ','[001]'},...
 
 % mark maximum with black square and minimum with white circle
 hold on
-plot(AVs_max_vector,blackMarker{:},'parent',mtexFig.gca,'doNotDraw')
-plot(AVs_min_vector,whiteMarker{:},'parent',mtexFig.gca)
+plot(maxAVsPos,blackMarker{:},'parent',mtexFig.gca)
+plot(minAVsPos,whiteMarker{:},'parent',mtexFig.gca)
 hold off
 
 %% S1 Polarization: Plot fastest S-wave (Vs1) polarization directions
@@ -244,13 +141,11 @@ hold off
 % create a new axis
 mtexFig.nextAxis
 
-plot(C,'PlotType','velocity','200*(vs1-vs2)./(vs1+vs2)','complete',...
-  'contourf','parent',mtexFig.gca,'doNotDraw');
+plot(AVs,'contourf','parent',mtexFig.gca);
 mtexTitle('Vs1 polarization',titleOpt{:})
 
 hold on
-plot(C,'PlotType','velocity','ps1',...
-'complete','linewidth',2,'color','black','parent',mtexFig.gca)
+plot(ps1,'linewidth',2,'color','black','parent',mtexFig.gca,'doNotDraw')
 hold off
 
 %% Vs1 : Plot Vs1 velocities (km/s)
@@ -258,21 +153,23 @@ hold off
 % create a new axis
 mtexFig.nextAxis
 
-plot(C,'PlotType','velocity','vs1','complete','contourf','parent',mtexFig.gca,'doNotDraw');
+plot(vs1,'contourf','parent',mtexFig.gca,'doNotDraw');
 mtexTitle('Vs1 (km/s)',titleOpt{:})
 
 % Percentage anisotropy
-AVs1S = ['Vs1 Anisotropy = ',num2str(AVs1,'%6.1f')];
-xlabel(AVs1S,titleOpt{:}) 
+[maxS1,maxS1pos] = max(vs1);
+[minS1,minS1pos] = min(vs1);
+AVs1=200*(maxS1-minS1)./(maxS1+minS1);
+
+xlabel(['Vs1 Anisotropy = ',num2str(AVs1,'%6.1f')],titleOpt{:}) 
 
 hold on
-plot(C,'PlotType','velocity','ps1',...
-'complete','linewidth',2,'color','black','parent',mtexFig.gca,'doNotDraw')
+plot(ps1,'linewidth',2,'color','black','parent',mtexFig.gca)
 
 % mark maximum with black square and minimum with white circle
 hold on
-plot(Vs1_max_vector,blackMarker{:},'parent',mtexFig.gca,'doNotDraw')
-plot(Vs1_min_vector,whiteMarker{:},'parent',mtexFig.gca)
+plot(maxS1pos,blackMarker{:},'parent',mtexFig.gca)
+plot(minS1pos,whiteMarker{:},'parent',mtexFig.gca)
 hold off
 
 %% Vs2 : Plot Vs2 velocities (km/s)
@@ -280,21 +177,22 @@ hold off
 % create a new axis
 mtexFig.nextAxis
 
-plot(C,'PlotType','velocity','vs2','complete','contourf','parent',mtexFig.gca,'doNotDraw');
+plot(vs2,'contourf','parent',mtexFig.gca,'doNotDraw');
 mtexTitle('Vs2 (km/s)',titleOpt{:})
 
 % Percentage anisotropy
-AVs2S = ['Vs2 Anisotropy = ',num2str(AVs2,'%6.1f')];
-xlabel(AVs2S,titleOpt{:})
-hold on
+[maxS2,maxS2pos] = max(vs2);
+[minS2,minS2pos] = min(vs2);
+AVs2=200*(maxS2-minS2)./(maxS2+minS2);
+xlabel(['Vs2 Anisotropy = ',num2str(AVs2,'%6.1f')],titleOpt{:})
 
-plot(C,'PlotType','velocity','ps2',...
-  'complete','linewidth',2,'color','black','parent',mtexFig.gca,'doNotDraw')
+hold on
+plot(ps2,'linewidth',2,'color','black','parent',mtexFig.gca)
 
 % mark maximum with black square and minimum with white circle
 hold on
-plot(Vs2_max_vector,blackMarker{:},'parent',mtexFig.gca,'doNotDraw')
-plot(Vs2_min_vector,whiteMarker{:},'parent',mtexFig.gca)
+plot(maxS2pos,blackMarker{:},'parent',mtexFig.gca)
+plot(minS2pos,whiteMarker{:},'parent',mtexFig.gca)
 hold off
 
 %% dVs : Plot Velocity difference Vs1-Vs2 (km/s) plus Vs1 polarizations
@@ -302,17 +200,20 @@ hold off
 % create a new axis
 mtexFig.nextAxis
 
-plot(C,'PlotType','velocity','vs1-vs2','complete','contourf','parent',mtexFig.gca,'doNotDraw');
+dVs = vs1-vs2;
+plot(dVs,'contourf','parent',mtexFig.gca);
 mtexTitle('dVs=Vs1-Vs2 (km/s)',titleOpt{:})
 
 % Max percentage anisotropy
-AdVsS = ['Max dVs (km/s) = ',num2str(dVs_max_value,'%6.2f')];
-xlabel(AdVsS,titleOpt{:})
+[maxdVs,maxdVsPos] = max(dVs);
+[mindVs,mindVsPos] = min(dVs);
+
+xlabel(['Max dVs (km/s) = ',num2str(maxdVs,'%6.2f')],titleOpt{:})
 
 % mark maximum with black square and minimum with white circle
 hold on
-plot(dVs_max_vector,blackMarker{:},'parent',mtexFig.gca,'doNotDraw')
-plot(dVs_min_vector,whiteMarker{:},'parent',mtexFig.gca)
+plot(maxdVsPos,blackMarker{:},'parent',mtexFig.gca)
+plot(mindVsPos,whiteMarker{:},'parent',mtexFig.gca)
 hold off
 
 %% Vp/Vs1 : Plot Vp/Vs1 ratio (no units)
@@ -320,17 +221,21 @@ hold off
 % create a new axis
 mtexFig.nextAxis
 
-plot(C,'PlotType','velocity','vp./vs1','complete','contourf','parent',mtexFig.gca,'doNotDraw');
+vpvs1 = vp./vs1;
+plot(vpvs1,'contourf','parent',mtexFig.gca);
 mtexTitle('Vp/Vs1',titleOpt{:})
 
 % Percentage anisotropy
-AVpVs1S = ['Vp/Vs1 Anisotropy = ',num2str(AVpVs1,'%6.1f')];
-xlabel(AVpVs1S,titleOpt{:})
+[maxVpVs1,maxVpVs1Pos] = max(vpvs1);
+[minVpVs1,minVpVs1Pos] = min(vpvs1);
+AVpVs1=200*(maxVpVs1-minVpVs1)/(maxVpVs1+minVpVs1);
+
+xlabel(['Vp/Vs1 Anisotropy = ',num2str(AVpVs1,'%6.1f')],titleOpt{:})
 
 % mark maximum with black square and minimum with white circle
 hold on
-plot(VpVs1_max_vector,blackMarker{:},'parent',mtexFig.gca,'doNotDraw')
-plot(VpVs1_min_vector,whiteMarker{:},'parent',mtexFig.gca)
+plot(maxVpVs1Pos,blackMarker{:},'parent',mtexFig.gca)
+plot(minVpVs1Pos,whiteMarker{:},'parent',mtexFig.gca)
 hold off
 
 %% Vp/Vs2 : Plot Vp/Vs2 ratio (no units)
@@ -338,17 +243,21 @@ hold off
 % create a new axis
 mtexFig.nextAxis
 
-plot(C,'PlotType','velocity','vp./vs2','complete','contourf','parent',mtexFig.gca,'doNotDraw');
+vpvs2 = vp./vs2;
+plot(vpvs2,'contourf','parent',mtexFig.gca);
 mtexTitle('Vp/Vs2',titleOpt{:})
 
 % Percentage anisotropy
-AVpVs2S = ['Vp/Vs2 Anisotropy = ',num2str(AVpVs2,'%6.1f')];
-xlabel(AVpVs2S,titleOpt{:})
+[maxVpVs2,maxVpVs2Pos] = max(vpvs2);
+[minVpVs2,minVpVs2Pos] = min(vpvs2);
+AVpVs2=200*(maxVpVs2-minVpVs2)/(maxVpVs2+minVpVs2);
+
+xlabel(['Vp/Vs2 Anisotropy = ',num2str(AVpVs2,'%6.1f')],titleOpt{:})
 
 % mark maximum with black square and minimum with white circle
 hold on
-plot(VpVs2_max_vector,blackMarker{:},'parent',mtexFig.gca,'doNotDraw')
-plot(VpVs2_min_vector,whiteMarker{:},'parent',mtexFig.gca)
+plot(maxVpVs2Pos,blackMarker{:},'parent',mtexFig.gca)
+plot(minVpVs2Pos,whiteMarker{:},'parent',mtexFig.gca)
 hold off
 
 %%
