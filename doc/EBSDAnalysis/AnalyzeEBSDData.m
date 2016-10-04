@@ -30,6 +30,14 @@ h = [Miller(1,0,0,cs),Miller(0,1,0,cs),Miller(0,0,1,cs)];
 plotPDF(ebsd('Forsterite').orientations,h,'antipodal')
 
 %%
+
+f = fibre.fit(ebsd('Forsterite').orientations)
+
+hold on
+plotPDF(f,'color','red','linewidth',2)
+hold off
+
+%%
 % From the {100} pole figure we might suspect a fibre texture present in our
 % data. Lets check this. First we determine the vector orhtogonal to fibre
 % in the {100} pole figure
@@ -60,25 +68,28 @@ hold off
 % |rOrth|. To this end we look at the corresponding inverse pole figure
 
 plotIPDF(ebsd('Forsterite').orientations,rOrth,'smooth')
-
-annotate(Miller(0,1,0,cs))
+mtexColorbar
 
 %%
 % From the inverse pole figure it becomes clear that the orientations are
 % close to the fibre |Miller(0,1,0)|, |rOrth|. Let check this by computing
 % the fibre volume in percent
 
-100 * fibreVolume(ebsd('Forsterite').orientations,Miller(0,1,0,cs),rOrth,10*degree)
+% define the fibre
+f = fibre(Miller(0,1,0,cs),rOrth);
+
+% compute the volume along the fibre
+100 * volume(ebsd('Forsterite').orientations,f,10*degree)
 
 %%
 % Suprisingly this value is significantly lower then the value we obtained
-% we looking only at the 100 pole figure. Finaly lets plot the ODF along
-% this fibre
+% we looking only at the (100) pole figure. In order to understand this
+% lets plot the ODF along this fibre
 
 odf = calcODF(ebsd('Forsterite').orientations)
 
-plotFibre(odf,Miller(0,1,0,cs),rOrth)
-
+% plot the odf along the fibre
+plot(odf,f)
 ylim([0,26])
 
 %%
