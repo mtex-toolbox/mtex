@@ -17,6 +17,6 @@ phi2 = repmat(reshape(oS.phi2,[1,1,length(oS.phi2)]),...
 contours = get_option(varargin,{'surf3','contour3'},10,'double');
 
 contour3s(theta./degree,rho./degree,phi2./degree,odf.eval(S3G),contours,...
-  'surf3',varargin{:},'xlabel','$\varphi_1$','ylabel','$\Phi$','zlabel','$\varphi2$');
+  'surf3',varargin{:},'xlabel','$\Phi$','ylabel','$\varphi_1$','zlabel','$\varphi2$');
  
 end
