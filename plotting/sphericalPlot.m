@@ -64,6 +64,9 @@ classdef sphericalPlot < handle
 
       else
 
+        %axis(ax,'on');
+        %xlabel(ax,[],'visible','on','color','k');
+        %ylabel(ax,[],'visible','on','color','k');
         sP.hgt = hgtransform('parent',ax);
 
         % plot boundary
@@ -77,6 +80,11 @@ classdef sphericalPlot < handle
         sP.plotLabels(CS,varargin{:});
         
         set(ax,'XTick',[],'YTick',[]);
+        try
+          %set(ax,'XColor','none','YColor','none');
+          xlabel(ax,[],'visible','on','color','k');
+          ylabel(ax,[],'visible','on','color','k');
+        end
         
         if ~check_option(varargin,'grid')
           set(sP.grid,'visible','off');
@@ -307,7 +315,7 @@ classdef sphericalPlot < handle
       
       sP.labels = [sP.labels,scatter(h,'MarkerFaceColor','k',...
         'labeled','Marker','none',...
-        'backgroundcolor','w','autoAlignText','parent',sP.ax)];
+        'backgroundcolor','w','autoAlignText','parent',sP.ax,'doNotDraw')];
 
     end
   end
