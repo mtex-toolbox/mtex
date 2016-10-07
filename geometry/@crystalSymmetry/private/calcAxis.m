@@ -59,7 +59,7 @@ varargin(flipthem) = cellfun(@(a) [a(end:-1:end-2) a(1:end-3)],varargin(flipthem
 % if nothing or only Y is specified set Z||c
 if ~any(cell2mat(regexpi(varargin,'z\|\|'))) && ...
     nnz(cell2mat(regexpi(varargin,'[xy]\|\|')))<=1
-  if isempty(regexpi(varargin,'[xy]\|\|[abc]\*'))
+  if all(cellfun(@isempty,regexpi(varargin,'[xy]\|\|[abc]\*')))
     varargin = [varargin,{'Z||c*'}];
   else
     varargin = [varargin,{'Z||c'}];
