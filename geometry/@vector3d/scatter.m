@@ -25,7 +25,7 @@ function h = scatter(v,varargin)
 % vector3d/text
 
 % initialize spherical plots
-sP = newSphericalPlot(v,varargin{:});
+sP = newSphericalPlot(v,varargin{:},'doNotDraw');
 varargin = delete_option(varargin,'parent');
 
 h = [];
