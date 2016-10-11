@@ -11,6 +11,14 @@ if strcmp(s(1).type,'{}')
     s.subs = [s.subs repcell(':',1,ndims(T.M)-T.rank)];
     varargout{1} = squeeze(subsref(MLocal,s));
   
+  elseif T.rank == 4 && length(s(1).subs) == 2
+    
+    M = tensor42(T.M,T.doubleConvention);
+    
+    s.subs = [s.subs repcell(':',1,ndims(M)-2)];
+    
+    varargout{1} = squeeze(subsref(M,s));
+    
   else
     
     s.subs = [s.subs repcell(':',1,ndims(T.M)-T.rank)];
