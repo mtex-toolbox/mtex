@@ -14,7 +14,9 @@ switch T.rank
 
   case 2
 
-    T.M = inv(T.M);
+    for j = 1:length(T)
+      T.M(:,:,j) = inv(T.M(:,:,j));
+    end
 
   case 3
 
