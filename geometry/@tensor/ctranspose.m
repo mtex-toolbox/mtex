@@ -14,7 +14,7 @@ switch T.rank
     
   case 2
     
-    T.M = ctranspose(T.M);
+    T.M = conj(permute(T.M,[2 1 3:ndims(T.M)]));
     
   case 3
     
@@ -26,7 +26,7 @@ switch T.rank
     M = tensor42(T.M,T.doubleConvention);
     
     % invert the matrix
-    M = ctranspose(M);
+    M = conj(permute(M,[2 1 3:ndims(T.M)]));
     
     % make some corrections
     w = 1./(1+((1:6)>3));
