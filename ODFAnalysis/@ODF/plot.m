@@ -13,7 +13,7 @@ function plot(odf,varargin)
 %
 % this function is only a shortcut to plotSection, plot3d and plotFibre
 
-if isa(varargin{1},'fibre')
+if nargin > 1 && isa(varargin{1},'fibre')
   plotFibre(odf,varargin{:});
 elseif check_option(varargin,'3d')
   plot3d(odf,varargin{:});
