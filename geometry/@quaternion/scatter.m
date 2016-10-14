@@ -10,7 +10,7 @@ function h = scatter(q,varargin)
 %
 
 % prepare axis
-mtexFig = newMtexFigure(varargin{:});
+[mtexFig,isNew] = newMtexFigure(varargin{:});
 
 % create a new scatter plot
 if isappdata(mtexFig.gca,'projection')
@@ -78,8 +78,10 @@ else
 end
 
 % finalize plot
-view(mtexFig.gca,3);
-grid(mtexFig.gca,'on');
-axis(mtexFig.gca,'vis3d','equal','on');
+if isNew
+  view(mtexFig.gca,3);
+  grid(mtexFig.gca,'on');
+  axis(mtexFig.gca,'vis3d','equal','on');
+end
 
 if nargout == 0, clear h;end
