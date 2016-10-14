@@ -28,7 +28,7 @@ ss = specimenSymmetry('orthorhombic');
 %%
 %
 % Now a crystal orientation is defined in the same way as a rotation. A
-% well known possibility are the so called *Euler angles*. Here two
+% well known possibility is  so called *Euler angles*. Here two
 % conventions are commonly used:
 %
 % *The Bunge Euler Angle Convention*
@@ -38,7 +38,7 @@ ss = specimenSymmetry('orthorhombic');
 % and the third again about the z-axis. Hence, one needs three angles to define an
 % orientation by Euler angles. In the literature these angles are known as
 % "triplet of Euler angles" or simply "Euler angles" and you can find many
-% definitions for them according to different authours.
+% definitions for them according to different authors.
 
 o = orientation('Euler',30*degree,50*degree,10*degree,cs,ss)
 
@@ -53,7 +53,7 @@ o = orientation('Euler',30*degree,50*degree,10*degree,'ZYZ',cs,ss)
 %%
 % *The axis angle parametrisation*
 %
-% Another possibility to specify an rotation is the give its rotational axis
+% Another possibility to specify an rotation is to give its rotational axis
 % and its rotational angle.
 
 o = orientation('axis',xvector,'angle',30*degree,cs,ss)
@@ -79,7 +79,7 @@ o = orientation('map',xvector,yvector,zvector,zvector,cs,ss)
 o = orientation('matrix',eye(3),cs,ss)
 
 %%
-% *Predifined Orientations*
+% *Predefined Orientations*
 % 
 % In the MTEX there is a list of predefined orientations:
 %
@@ -131,7 +131,7 @@ o1 = rot * o
 
 
 %%
-% Then the class of rotations crystallographically equivalent to o can be
+% Then the class of rotations crystallographically equivalent to or can be
 % computed in two ways. Either by using the command <orientation.symmetrise.html
 % symmetrise> 
 
@@ -192,7 +192,7 @@ inv(o1)
 %% Plotting Orientations
 % 
 % The function [[orientation.plot.html,plot]] plots an orientation in 3
-% dimensinal axis angle space.
+% dimensional axis angle space.
 
 oR = fundamentalRegion(o1.CS,o1.SS,'complete')
 plot(oR)
@@ -202,7 +202,7 @@ axis off
 
 %%
 % Note that the orientation is not automatically projected into its
-% fundamental region, as we see if the fundamental region is visuallized
+% fundamental region, as we see if the fundamental region is visualized
 
 hold on
 oR = fundamentalRegion(o1.CS,o1.SS)

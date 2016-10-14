@@ -36,7 +36,7 @@ plot(C,'PlotType','YoungsModulus','complete','upper')
 
 %% Linear Compressibility
 % The linear compressibility is the deformation of an arbitrarily shaped
-% specimen caused by increase in hydrostatic pressure and can be described
+% specimen caused by an increase in hydrostatic pressure and can be described
 % by a second rank tensor.
 % It is computed for a specific direction x by the
 % command <tensor.linearCompressibility.html linearCompressibility>.
@@ -54,9 +54,9 @@ plot(C,'PlotType','linearCompressibility','complete','upper')
 % elastic constants. The eigenvalues of the 3x3 Christoffel tensor are
 % three positive values of the wave moduli which corresponds to \rho Vp^2 ,
 % \rho Vs1^2 and \rho Vs2^2 of the plane waves propagating in the direction n.
-% The three eigenvectors of this tensor are then the polatiration
+% The three eigenvectors of this tensor are then the polarization
 % directions of the three waves. Because the Christoffel tensor is
-% symmetric, the polarization vectors are poerpendicular ro each other.
+% symmetric, the polarization vectors are perpendicular to each other.
 
 % It is computed for a specific direction x by the
 % command <tensor.ChristoffelTensor.html ChristoffelTensor>.
@@ -65,7 +65,7 @@ T = ChristoffelTensor(C,x)
 
 %% Elastic Wave Velocity
 % The Christoffel tensor is the basis for computing the direction dependent
-% wave velocities of the p, s1, and s2 wave, as well as of the polarisation
+% wave velocities of the p, s1, and s2 wave, as well as of the polarization
 % directions. Therefore, we need also the density of the material, e.g.,
 
 rho = 2.3
@@ -81,20 +81,20 @@ C = addOption(C,'density',rho)
 [vp,vs1,vs2,pp,ps1,ps2] = velocity(C,xvector)
 
 %%
-% In order to visualize these quantities there are several posibilities.
-% Let us first plot the direction dependend wave speed of the p-wave
+% In order to visualize these quantities, there are several possibilities.
+% Let us first plot the direction dependent wave speed of the p-wave
 
 plot(C,'PlotType','velocity','vp','complete','upper')
 
 %%
-% Next we plot on the top of this plot the p-wave polarisation direction.
+% Next, we plot on the top of this plot the p-wave polarization direction.
 
 hold on
 plot(C,'PlotType','velocity','pp','complete','upper')
 hold off
 
 %%
-% Finally we visualize the speed difference between the s1 and s2 waves
+% Finally, we visualize the speed difference between the s1 and s2 waves
 % together with the  fast shear-wave polarization.
 
 plot(C,'PlotType','velocity','vs1-vs2','complete','upper')

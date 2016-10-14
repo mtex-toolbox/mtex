@@ -4,7 +4,7 @@
 %% Open in Editor
 %
 %%
-% This sections gives you an overview over the functionality MTEX offers to
+% This section gives you an overview of the functionality MTEX offers to
 % visualize spatial orientation data.
 %
 %% Contents
@@ -18,7 +18,7 @@ mtexdata forsterite
 csFo = ebsd('Forsterite').CS
 
 %%
-% By default MTEX plots a phase map for EBSD data.
+% By default, MTEX plots a phase map for EBSD data.
 
 plot(ebsd)
 
@@ -29,7 +29,7 @@ ebsd('Diopside').color
 
 %%
 % These values are RGB values, e.g. to make the color for diopside even
-% more red we can do
+% redder we can do
 
 ebsd('Diopside').color = [1 0 0];
 
@@ -37,15 +37,15 @@ plot(ebsd('indexed'))
 
 %%
 % By default, not indexed phases are plotted as white. To directly specify 
-% a color for some ebsd data use the option |FaceColor|.
+% a color for some EBSD data use the option |FaceColor|.
 
 hold on
 plot(ebsd('notIndexed'),'FaceColor','black')
 hold off
 
 %% Visualizing arbitrary properties
-% Appart from the phase information we can use any other property to
-% colorize the EBSD data. As an example we may plot the band contrast
+% Apart from the phase information, we can use any other property to
+% colorize the EBSD data. As an example, we may plot the band contrast
 
 plot(ebsd,ebsd.bc)
 
@@ -56,7 +56,7 @@ mtexColorbar
 %% Visualizing orientations
 % Actually, we can pass any list of numbers or colors as a second input
 % argument to be visualized together with the ebsd data. In order to
-% visualize orientations in an EBSD map we have first to compute a
+% visualize orientations in an EBSD map, we have first to compute a
 % color for each orientation. The most simple way is to assign to each
 % orientation its rotational angle. This is done by the command
 
@@ -64,8 +64,8 @@ plot(ebsd('Forsterite'),ebsd('Forsterite').orientations.angle./degree)
 mtexColorbar
 
 %%
-% Lets make things a bit more formal. Therefore we define first a
-% orientation mapping that assignes to each orientation its rotational
+% Let's make things a bit more formal. Therefore we define first an
+% orientation mapping that assigns to each orientation its rotational
 % angle
 
 oM = angleOrientationMapping(ebsd('Fo'))
@@ -77,14 +77,14 @@ oM = angleOrientationMapping(ebsd('Fo'))
 color = oM.orientation2color(ebsd('Fo').orientations);
 
 %%
-% and we can visuallize it by
+% and we can visualize it by
 plot(ebsd('Forsterite'),color)
 mtexColorbar
 
 %%
-% While for the previous case this seems to be unnecesarily complicated it
-% allows us to define arbitrary complex color mapping. Consider for example
-% the following standard color mapping that uses an colorization of the
+% While for the previous case this seems to be unnecessarily complicated it
+% allows us to define the arbitrary complex color mapping. Consider for example
+% the following standard color mapping that uses a colorization of the
 % fundamental sector in the inverse pole figure to assign a color to each
 % orientation
 
@@ -106,7 +106,7 @@ plot(ebsd('Forsterite'),color)
 
 %%
 % Orientation mappings usually provide several options to alter the
-% alignment of colors. Lets give some examples
+% alignment of colors. Let's give some examples
 
 % we may interchange green and blue by setting
 oM.colorPostRotation = reflection(yvector);
@@ -133,7 +133,7 @@ plot(ebsd('Forsterite'),color)
 
 
 %%
-% Beside the recommented orientation mapping
+% Besides the recommended orientation mapping,
 % <ipdfHSVOrientationMapping.html ipdfHSVOrientationMapping> MTEX supports
 % also a lot of other color mappings as summarized below
 %
@@ -145,12 +145,12 @@ plot(ebsd('Forsterite'),color)
 %
 %% Customizing the color
 % In some cases, it might be useful to color certain orientations after
-% one needs. This can be done in two ways, either to color a certain fibre,
+% one needs. This can be done in two ways, either to color a certain fibre
 % or a certain orientation.
 
 %% SUB: Coloring certain fibres
 % To color a fibre, one has to specify the crystal direction *h* together
-% with its rgb color and the specimen direction *r*, which should be marked.
+% with its RGB color and the specimen direction *r*, which should be marked.
 
 oM = ipdfCenterOrientationMapping(csFo);
 oM.inversePoleFigureDirection = zvector;
@@ -194,8 +194,8 @@ plot(ebsd('fo'),oM.orientation2color(ebsd('fo').orientations))
 plot(oM,'complete')
 
 %% SUB: Coloring certain orientations
-% We might be interested to locate some special orientation in our orientation map. 
-% Suppose the mode of the ODF somewhere in our spatial distribution of
+% We might be interested in locating some special orientation in our orientation map. 
+% Suppose the model of the ODF somewhere in our spatial distribution of
 % grains (the orientation map).
 
 mode = idquaternion
@@ -232,7 +232,7 @@ mtexColorbar
 
 %% Combining different plots
 % Combining different plots can be done either by plotting only subsets of
-% the ebsd data, or via the option |'translucent'|. Note that the option
+% the EBSD data or via the option |'translucent'|. Note that the option
 % |'translucent'| requires the renderer of the figure to be set to
 % |'opengl'|.
 

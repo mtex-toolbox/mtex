@@ -7,8 +7,8 @@
 %
 
 %%
-% One of the central issues analizing grains is the visualization by
-% spatial maps. Therefor, let us first reconstruct some grains
+% One of the central issues analyzing grains is the visualization by
+% spatial maps. Therefore, let us first reconstruct some grains
 
 mtexdata forsterite
 plotx2east
@@ -78,8 +78,8 @@ plot(grains,shapeFactor(grains))
 
 
 %% Visualizing grain boundaries
-% Plotting grain boundaries may be a usefull task, e.g. marking special
-% grain boundaries, generally this is done by the <GrainSet.plotBoundary.html
+% Plotting grain boundaries may be a useful task, e.g. marking special
+% grain boundaries, generaly this is done by the <GrainSet.plotBoundary.html
 % plotBoundary> command.
 
 close all
@@ -94,7 +94,7 @@ plot(ebsd,ebsd.bc)
 mtexColorMap white2black
 
 %%
-% e.g. we want also to see all one pixel grains
+% e.g. we want also to see all one-pixel grains
 
 grains_selection = grains( grains.grainSize == 1) ;
 

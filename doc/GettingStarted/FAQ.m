@@ -5,7 +5,7 @@
 %% Why is there no graphical user interface?
 %
 % In contrast to almost any other texture analysis software MTEX has no
-% graphical user interface but provides a scripting languages. We believe
+% graphical user interface but provides scripting languages. We believe
 % that this has the following advantages
 %
 % * documented workflow: you will always remember all options which gave you the result
@@ -39,7 +39,7 @@ hold off
 %% Why Matlab? 
 %
 % Matlab offers a very comfortable scripting interface as well as a very
-% powerfull graphics engine. A reasonable alternative is Phyton which
+% powerful graphics engine. A reasonable alternative is Phyton which
 % would have several advantages. However, so far there are no plans for
 % migration.
 %
@@ -62,7 +62,7 @@ set(gcf,'renderer','zBuffer')
 
 %% I have crazy characters in my plots. What can I do?
 %
-% This indicates that your MATLAB installation has problems to interprete
+% This indicates that your MATLAB installation has problems to interpret
 % LaTex. As a workaround switch off LaTex by uncommenting the following
 % line in <matlab:edit('mtex_settings.m') mtex_settings.m>.
 
@@ -91,7 +91,7 @@ import_wizard
 %% MTEX fails to import EBSD OSC files
 %
 % The OSC file format is a commercial binary EBSD format that has undergone
-% heavy changes. For that reason it hard for MTEX to keep up with a
+% heavy changes. For that reason it is hard for MTEX to keep up with a
 % functional interface. As a workaround export your data to ANG file. Those
 % can be easily imported into MTEX.
 

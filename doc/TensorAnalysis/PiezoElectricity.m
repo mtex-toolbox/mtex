@@ -9,7 +9,7 @@
 %% Contents
 %
 %%
-% at first, let us import some piezo electric contants for a quartz
+% at first, let us import some piezoelectric contents for a quartz
 % specimen.
 
 CS = crystalSymmetry('32', [4.916 4.916 5.4054], 'X||a*', 'Z||c', 'mineral', 'Quartz');
@@ -20,7 +20,7 @@ P = loadTensor(fname,CS,'propertyname','piecoelectricity','unit','C/N','interfac
 
 %% Plotting the magnitude surface
 % The default plot of the magnitude, which indicates, in which direction we
-% have the most polarisation. By default, we restrict ourselfs to the
+% have the most polarization. By default, we restrict ourselves to the
 % unique region implied by crystal symmetry
 
 % set some colormap well suited for tensor visualisation
@@ -37,30 +37,30 @@ plot(P,'complete','smooth','upper')
 mtexColorbar
 
 %%
-% Most often, the polarisation is illustrated as surface magnitude
+% Most often, the polarization is illustrated as surface magnitude
 
 close all
 plot(P,'3d')
 
 %%
-% Note, that for directions of negative polarisation the surface is mapped
-% onto the axis of positive, which then let the surface appears as a double
+% Note, that for directions of negative polarization the surface is mapped
+% onto the axis of positive, which then let the surface appear as a double
 % coverage
 
 %%
-% Quite famous example in various standard litrature is a section thourgh
-% the surface, because it can easily be described as an analytical
+% Quite a famous example in various standard literature is a section through
+% the surface because it can easily be described as an analytical
 % solution. We just specify the plane normal vector
 
 plot(P,'section',zvector)
 
 %%
-% so we are plotting the polarisation in the xy-plane, or the yz-plane with
+% so we are plotting the polarization in the xy-plane, or the yz-plane with
 
 plot(P,'section',xvector)
 
 %% Mean Tensor Calculation 
-% Let us import some data, which was original published by Mainprice, D.,
+% Let us import some data, which was originally published by Mainprice, D.,
 % Lloyd, G.E. and Casey , M. (1993) Individual orientation measurements in
 % quartz polycrystals: advantages and limitations for texture and
 % petrophysical property determinations. J. of Structural Geology, 15,

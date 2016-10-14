@@ -1,5 +1,5 @@
 %% Simulating Pole Figure data
-% Simulate arbitary pole figure data
+% Simulate arbitrary pole figure data
 %
 %% Open in Editor
 %
@@ -7,8 +7,8 @@
 %
 %% Introduction
 %
-% MTEX allows to to _simulate_ an arbitary number of pole figure data from
-% any ODF. This is quit helpfull if you want to analyse the pole figure to
+% MTEX allows to _simulate_ an arbitrary number of pole figure data from
+% any ODF. This is quite helpful if you want to analyze the pole figure to
 % ODF estimation routine. Let us start with a model ODF given as the
 % superposition of 6 components.
 
@@ -30,7 +30,7 @@ plot(model_odf,'sections',6,'silent','sigma')
 
 %% Simulate Pole Figure Data
 %
-% In order to simulate pole figure data the following parameters has to be
+% In order to simulate pole figure data, the following parameters have to be
 % specified
 %
 % # an arbitrary <ODF_index.html ODF>
@@ -59,7 +59,7 @@ r = regularS2Grid('resolution',5*degree);
 pf = calcPoleFigure(model_odf,h,r)
 
 %%
-% Add some noise to the data. Here assume that the mean intensity is 1000.
+% Add some noise to the data. Here we assume that the mean intensity is 1000.
 
 pf = noisepf(pf,1000);
 
@@ -90,7 +90,7 @@ calcError(odf,model_odf,'resolution',5*degree)
 
 %% Exploration of the relationship between estimation error and number of single orientations
 %
-% For a more systematic analysis of the estimation error we vary the number
+% For a more systematic analysis of the estimation error, we vary the number
 % of pole figures used for ODF estimation from 1 to 7 and calculate for any
 % number of pole figures the approximation error. Furthermore, we also
 % apply ghost correction and compare the approximation error to the

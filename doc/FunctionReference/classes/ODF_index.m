@@ -4,7 +4,7 @@
 %
 %% Class Description
 % ODFs are at the very heart of MTEX. Almost any computation in MTEX can be
-% done by estimating ODFs from various data, analyzing modell ODFs,
+% done by estimating ODFs from various data, analyzing model ODFs,
 % simulating experimental data from ODFs, or calculating any texture
 % characteristics from an ODF. The following mindmap may give you an idea
 % what is possible in MTEX.
@@ -35,7 +35,7 @@
 %
 %% SUB: Analyzing ODFs
 %
-% MTEX provides a lot of tool to make analyzing and interpreting ODFs as
+% MTEX provides a lot of tools to make analyzing and interpreting ODFs as
 % simple as possible. The tools may be split into two groups - texture
 % characteristics and visualization tools.
 %

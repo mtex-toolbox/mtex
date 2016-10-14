@@ -9,13 +9,13 @@
 % In texture analysis crystal orientations are used to describe the
 % alignment of the crystals within the specimen. A crystal orientation is
 % defined as the rotation that maps the specimen coordinate system onto the
-% crystal coordinate system. Since, the crystal coordinate system and the
+% crystal coordinate system. Since the crystal coordinate system and the
 % specimen coordinate system are well defined only up to crystal symmetry
-% and specimen symmetry, a orientation is in general represented by a class
-% of crystallographically equivalent rotations. In MTEX the class *orientation* is an inheritant
-% of the class <rotation_index.html rotation>. In particular, every
-% function that is defined for a rotation is also available for
-% a orientation.
+% and specimen symmetry, an orientation is in general represented by a class
+% of crystallographically equivalent rotations. In MTEX the class *orientation* 
+% is an inheritance of the class <rotation_index.html rotation>. 
+% In particular, every function that is defined for a rotation is also 
+% available for an orientation.
 %
 %% SUB: Defining a Crystal Orientation
 %
@@ -55,12 +55,12 @@ o = orientation('Euler',30*degree,50*degree,10*degree,cs,ss)
 % * quaternion
 %
 % Have a look at <rotation_index.html rotation help page> for more details.
-% Beside these parameterisations for rotations there are also some
+% Besides these parameterisations for rotations there are also some
 % parameterisations which are unique for orientations
 %
-% *Miller indice*
+% *Miller indices*
 %
-% There is also a Miller indice convention for defining crystal orientations.
+% There is also a Miller indices convention for defining crystal orientations.
 
 o = orientation('Miller',[1 0 0],[0 1 1],cs,ss)
 
@@ -117,7 +117,7 @@ o1 = rot * o
 
 %%
 % Then the class of rotations crystallographically equivalent to o can be
-% computed in two way. Either by using the command <orientation.symmetrise.html
+% computed in two ways. Either by using the command <orientation.symmetrise.html
 % symmetrise>
 
 symmetrise(o)
@@ -127,24 +127,24 @@ symmetrise(o)
 
 ss * o * cs
 
-%% SUB: Caclulating Missorientations
+%% SUB: Calculating Misorientations
 %
 % Let cs and ss be crystal and specimen symmetry and o1 and o2 two crystal
-% orientations. Then one can ask for the missorientation between both
-% orientations. This missorientation can be calculated by the function
+% orientations. Then one can ask for the misorientation between both
+% orientations. This misorientation can be calculated by the function
 % <orientation.angle.html angle>.
 
 angle(rot * o1,o1) / degree
 
 %%
-% This missorientation angle is in general smaller then the missorientation
+% This misorientation angle is, in general, smaller than the misorientation
 % without crystal symmetry which can be computed via
 
 angle(rotation(o),rotation(o1)) /degree
 
 %% SUB: Calculating with Orientations and Rotations
 %
-% Beside the standard linear algebra operations there are also the
+% Besides the standard linear algebra operations there are also the
 % following functions available in MTEX. Then rotational angle and the axis
 % of rotation can be computed via then commands
 % <quaternion.angle.html angle(o)> and

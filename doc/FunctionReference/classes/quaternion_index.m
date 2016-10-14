@@ -5,16 +5,16 @@
 %
 %% Class Description
 %
-% The class quaternion allows to work with rotations in MTEX,
+% The class quaternion allows working with rotations in MTEX,
 % as they occur e.g. as crystal orientation or symmetries. Quaternions may
-% be multiplied with [[vector3d_index.html,three dimensional vecotors]] 
-% which means rotating the vector or may by multiplied with another 
+% be multiplied with [[vector3d_index.html,three-dimensional vecotors]] 
+% which means rotating the vector or may be multiplied with another 
 % quaternion which means to concatenate both rotations. 
 %
 %% SUB: Defining quaternions
 %
 % The standard way is to define a quaternion q is to give its coordinates
-% (a,b,c,d). However making use of one of the following conversion methods
+% (a,b,c,d). However, making use of one of the following conversion methods
 % is much more human readable.
 %
 %  q = [[quaternion.quaternion.html,quaternion]](a,b,c,d)          % by coordinates
@@ -31,7 +31,7 @@
 
 %% SUB: Calculating with three dimensional vectors
 %
-% Beside the standard linear algebra operations there are also the
+% Besides the standard linear algebra operations there are also the
 % following functions available in MTEX.
 %
 %  [[quaternion.angle.html,angle]](q); % rotational angle

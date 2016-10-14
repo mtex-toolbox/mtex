@@ -26,7 +26,7 @@ grain_selected = grains( grains.grainSize >=  1160)
 ebsd_selected = ebsd(grain_selected)
 
 %%
-% A more convinient way to select grains in daily practice, is by spatial
+% A more convenient way to select grains in daily practice is by spatial
 % coordinates. 
 
 grain_selected = grains(12000,3000)
@@ -37,7 +37,7 @@ grain_selected = grains(12000,3000)
 grain_selected.id
 
 %%
-% lets look for the grain with the largest grain orientation spread
+% let's look for the grain with the largest grain orientation spread
 
 [~,id] = max(grains.GOS)
 grain_selected = grains(id)
@@ -64,7 +64,7 @@ mtexColorbar
 %% Testing on Bingham distribution for a single grain
 % Although the orientations of an individual grain are highly concentrated,
 % they may vary in the shape. In particular, if the grain was deformed by
-% some process, we are interessed in quantifications.
+% some process, we are interested in quantifications.
 
 cs = ebsd(grain_selected).CS;
 ori = ebsd(grain_selected).orientations;
@@ -88,12 +88,12 @@ T_oblate    = bingham_test(ori,'oblate',   'approximated');
 [T_spherical T_prolate T_oblate]
 
 %% Profiles through a single grain
-% Sometimes, grains show large orientation difference when beeing deformed
+% Sometimes, grains show large orientation difference when being deformed
 % and then its of interest, to characterize the lattice rotation. One way
 % is to order orientations along certain line segment and look at the
 % profile.
 %%
-% We proceed by specifiing such a line segment
+% We proceed by specifying such a line segment
 
 close,   plot(grain_selected.boundary,'linewidth',2)
 hold on, plot(ebsd(grain_selected),ebsd(grain_selected).orientations)

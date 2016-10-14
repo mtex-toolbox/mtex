@@ -19,9 +19,9 @@ pf = calcPoleFigure(odf,Miller(1,0,0,cs),equispacedS2Grid('antipodal'));
 ori = calcOrientations(odf,100)
 
 %% Scatter Plots
-% In a scatter plots indivudal points are plotted. This plot is usually
+% In a scatter plots individual points are plotted. This plot is usually
 % applied when individual orientations or pole figure measurements are
-% vizualized.
+% visualized.
 %%
 % 
 
@@ -29,8 +29,8 @@ close all
 scatter(ori)
 
 %%
-% Three dimensional vectors, Miller indices, spherical grids are plotted as
-% single markers in a spherical projection. The shape, size and color of
+% Three-dimensional vectors, Miller indices, spherical grids are plotted as
+% single markers in a spherical projection. The shape, size, and color of
 % the markers can be adjusted using the following parameters (see also
 % [[matlab:doc scattergroupproperties,scattergroup_properties]])
 %
@@ -39,7 +39,7 @@ scatter(ori)
 plot(zvector,'Marker','p','MarkerSize',15,'MarkerFaceColor','red','MarkerEdgeColor','black')
 
 %%
-% One can also assign a label to a marker. The main options controling the label
+% One can also assign a label to a marker. The main options controlling the label
 % are (see [[matlab:doc text_props,text_properties]])
 %
 % |Label|, |Color|, |BackgroundColor|, |FontSize|
@@ -49,7 +49,7 @@ plot([Miller(1,1,1,cs),Miller(-1,1,1,cs)],...
   'Color','blue','BackgroundColor','yellow','FontSize',20,'grid')
 
 %%
-% A scatter plot is also used to draw raw pole figure data. In this case
+% A scatter plot is also used to draw raw pole figure data. In this case,
 % each datapoint is represented by a single dot colored accordingly to the intensity.
 
 plot(pf)
@@ -84,8 +84,8 @@ plotPDF(odf,Miller(1,0,0,cs),'antipodal','resolution',10*degree)
 
 %% Line Plots
 %
-% Line plots are used by MTEX for one dimesional ODF plots, plots of Fourier
-% coefficients and plots of kernel functions functions.
+% Line plots are used by MTEX for one-dimensional ODF plots, plots of Fourier
+% coefficients and plots of kernel functions.
 % They can be customized by the standard MATLAB linespec
 % options. See [[matlab:doc linespec,linespec]]!
 

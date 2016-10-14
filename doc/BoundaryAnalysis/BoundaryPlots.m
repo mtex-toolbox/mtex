@@ -7,7 +7,7 @@
 %
 
 %%
-% Lets import some EBSD data and compute the grains.
+% Let's import some EBSD data and compute the grains.
 
 close all
 mtexdata forsterite
@@ -24,14 +24,14 @@ gB = grains.boundary
 plot(gB)
 
 %%
-% Accordingly we can access the grain boundary of a specific grain by
+% Accordingly, we can access the grain boundary of a specific grain by
 
 grains(931).boundary
 
 plot(grains(931).boundary)
 
 %%
-% lets combine it with the orientation measurements inside
+% let's combine it with the orientation measurements inside
 
 % define the colorcoding such that the meanorientation becomes white
 oM = ipdfHSVOrientationMapping(grains(931));
@@ -50,7 +50,7 @@ hold off
 %% Visualizing special grain boundaries
 %
 %% SUB: Phase boundaries
-% For multi-phase system, the location of specific phase transistions may
+% For a multi-phase system, the location of specific phase transistions may
 % be of interest. The following plot highlights all Forsterite to Enstatite
 % phase transitions
 
@@ -61,7 +61,7 @@ plot(grains.boundary('Fo','En'),'linecolor','r','linewidth',1.5)
 hold off
 
 %% SUB: Subboundaries
-% Another type of boundaries, are boundaries between measurements that
+% Another type of boundaries is boundaries between measurements that
 % belong to the same grain. This happens if a grain has a texture gradient
 % that loops around these two measurements.
 
@@ -72,8 +72,8 @@ plot(grains.innerBoundary,'linecolor','r','linewidth',2)
 
 
 %% SUB: Misorientation
-% Basicly there are two ways to visualize misorientations along grain
-% boundary. The most simplest way is to colorize the grain boundaries
+% Basically there are two ways to visualize misorientations along the grain
+% boundary. The simplest way is to colorize the grain boundaries
 % with respect to the misorientation angle.
 
 close all
@@ -107,7 +107,7 @@ hold off
 % plot the colorcoding
 % plot(oM)
 
-%% SUB: Classifing special boundaries
+%% SUB: Classifying special boundaries
 % Actually, it might be more informative, if we classify the grain
 % boundaries after some special property. This is done by the command
 % <GrainSet.specialBoundary.html specialBoundary>, which will be invoked
@@ -174,9 +174,9 @@ legend('>2^\circ','60^\circ/[001]')
 
 %%
 % In the same manner, we can classify after predefined special rotations,
-% e.g. coincident site lattice (CSL) for cubic crystalls. Additionaly we
+% e.g. coincident site lattice (CSL) for cubic crystals. Additionaly, we
 % specify a searching radius with the option |'delta'|, in this way, we
-% control how far the misorientation of the boundary segment is actuall
+% control how far the misorientation of the boundary segment is actually
 % away from the specified rotation.
 % TODO
 
@@ -201,8 +201,8 @@ legend('>2^\circ','60^\circ/[001]')
 %   '\Sigma 11')
 
 %%
-% Another kind of special boundaries are tilt and twist boundaries. We can
-% find a tilt boundary by specifing the crystal form, which is tilted, i.e.
+% Another kind of special boundaries is tilt and twist boundaries. We can
+% find a tilt boundary by specifying the crystal form, which is tilted, i.e.
 % the misorientation maps a lattice plane $h$  of on grain onto the others grain
 % lattice plane.
 % 

@@ -11,16 +11,16 @@
 % A general problem in estimating an ODF from pole figure data is the fact
 % that the odd order Fourier coefficients of the ODF are not present
 % anymore in the pole figure data and therefore it is difficult to estimate
-% them. Artefacts in the estimated ODF that are due to underestimated odd
+% them. Artifacts in the estimated ODF that are due to underestimated odd
 % order Fourier coefficients are called *ghost effects*. It is known that
 % for sharp textures the ghost effect is relatively small due to the strict
 % non-negativity condition. For weak textures, however, the ghost effect
-% might be remarkable. For those cases *MTEX* provides the option 
+% might be remarkable. For those cases, *MTEX* provides the option 
 % *ghost_correction* which tries to determine the uniform portion of the
 % unknown ODF and to transform the unknown weak ODF into a sharp ODF by
 % substracting this uniform portion. This is almost the approach Matthies
 % proposed in his book (He called the uniform portion *phon*).
-% In this section we are going to demonstrate the power of ghost correction
+% In this section, we are going to demonstrate the power of ghost correction
 % at a simple, synthetic example.
 
 %% Construct Model ODF
@@ -105,8 +105,8 @@ hold off
 legend({'true ODF','without ghost correction','with ghost correction'})
 
 %% Calculate Fourier coefficients
-% Next we want to analyze the fit of the Fourier coefficients of the
-% reconstructed ODFs. To this end we first compute Fourier representations
+% Next, we want to analyze the fit of the Fourier coefficients of the
+% reconstructed ODFs. To this end, we first compute Fourier representations
 % for each ODF
 
 odf = FourierODF(odf,25)
@@ -127,9 +127,9 @@ calcError(rec_cor,odf,'L2')
 
 %% Plot Fourier Coefficients   
 %
-% Plotting the Fourier coefficients of the recalculated ODFs show that the
-% Fourier coefficients with ghost correction oscillates much more the
-% Fourier coefficients with ghost correction
+% Plotting the Fourier coefficients of the recalculated ODFs shows that the
+% Fourier coefficients without ghost correction oscillates much more than
+% the Fourier coefficients with ghost correction
 
 %%
 % true ODF

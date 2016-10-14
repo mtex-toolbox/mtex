@@ -49,11 +49,11 @@ plotPDF(odf,Miller(1,1,-2,1,cs),'TR','lower','parent',mtexFig.nextAxis)
 mtexFig.drawNow
 
 %%
-% We see that in general uper and lower hemisphere of the pole figure do
+% We see that in general upper and lower hemisphere of the pole figure do
 % not coincide. This is only the case if one one following reason is
 % satisfied
 %
-% * the crystal direction h is symmetricaly equivalent to -h, in the
+% * the crystal direction h is symmetrically equivalent to -h, in the
 % present example this is true for the c-axis h = (0001)
 % * the symmetry group contains the inversion, i.e., it is a Laue group
 % * we consider experimental pole figures where we have antipodal symmetry,
@@ -80,7 +80,7 @@ plotIPDF(odf,[xvector,zvector],'antipodal')
 annotate(Miller(1,0,-1,0,odf.CS,'UVTW'),'labeled')
 
 %%
-% By default MTEX alway plots only the fundamental region with respect to
+% By default MTEX always plots only the fundamental region with respect to
 % the crystal symmetry. In order to plot the complete inverse pole figure
 % you have to use the option *complete*.
 
@@ -112,7 +112,7 @@ plot(odf,'phi2',[25 30 35 40]*degree,'contourf','silent')
 % * sigma (alpha+gamma)
 %
 %%
-% In this context the authors of MTEX recommends the sigma sections as they
+% In this context the authors of MTEX recommend the sigma sections as they
 % provide a much less distorted representation of the orientation space.
 % They can be seen as the (001) pole figure splitted according to rotations
 % about the (001) axis. Lets have a look at the 001 pole figure
@@ -130,7 +130,7 @@ plot(odf,'sections',6,'silent','sigma')
 % radial symmetric portions. On the other hand the spots at 001 appear in
 % every section indicating a fibre at position [001](100). Knowing that
 % sigma sections are nothing else then the splitted 001 pole figure they
-% are much more simple to interprete then ussual phi2 sections.
+% are much more simple to interpret then usual phi2 sections.
 
 
 %% Plotting the ODF along a fibre

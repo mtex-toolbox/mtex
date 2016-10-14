@@ -50,7 +50,7 @@ annotate(center,'marker','s','MarkerFaceColor','black')
 %% Texture Characteristics
 %
 % Texture characteristics are used for a rough classification of ODF into
-% sharp and weak ones. The two most common texture characteristcs are the
+% sharp and weak ones. The two most common texture characteristics are the
 % <ODF.entropy.html entropy> and the 
 % <ODF.textureindex.html texture index>. 
 
@@ -87,7 +87,7 @@ volume(odf3,calcModes(odf3),30*degree)*100
 %% Fourier Coefficients
 % 
 % The Fourier coefficients allow for a complete characterization of the
-% ODF. The are of particular importance for the calcuation of mean
+% ODF. The are of particular importance for the calculation of mean
 % macroscopic properties e.g. the second order Fourier coefficients 
 % characterize thermal expansion, optical refraction index, and 
 % electrical conductivity whereas the fourth order Fourier
@@ -131,7 +131,7 @@ plot(odf2.eval(fibre))
 odf2.calcPDF(Miller(1,0,0,cs),xvector)
 
 %% Extract Internal Representation
-% The internal representation of the ODF can be adressed by the command
+% The internal representation of the ODF can be addressed by the command
 
 properties(odf3.components{1})
 

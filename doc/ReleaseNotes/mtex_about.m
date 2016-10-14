@@ -30,13 +30,13 @@
 %% Website
 %
 % All MTEX releases, development news, FAQs can be found on the MTEX
-% hompage
+% homepage
 %
 %  <http://mtex.googlecode.com http://mtex.googlecode.com/>
 %
 %% Credits
 %
-% The toolbox is build upon the following great software packages:
+% The toolbox is built upon the following great software packages:
 %
 % * <http://www-user.tu-chemnitz.de/~potts/nfft/ NFFT> - D. Potts, S. Kunis, J. Keiner, A. Vollrath
 % * txt2mat -  A.Tönnesmann

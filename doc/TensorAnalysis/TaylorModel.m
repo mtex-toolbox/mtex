@@ -61,7 +61,7 @@ sP.plot(M,'smooth')
 mtexColorbar
 
 
-%% The orientation dependency of the rotation value 
+%% The orientation dependence of the rotation value 
 % Compare Fig. 8 of the above paper
 
 sP.plot(mori.angle./degree,'smooth')

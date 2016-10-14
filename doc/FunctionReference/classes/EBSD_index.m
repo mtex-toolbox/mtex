@@ -50,7 +50,7 @@ oM = ipdfHSVOrientationMapping(ebsd);
 plot(ebsd,oM.orientation2color(ebsd.orientations))
 
 %%
-% In order to understand the color coding one can plot the coloring of the
+% In order to understand the color coding, one can plot the coloring of the
 % corresponding inverse pole figure via
 
 plot(oM)
@@ -66,10 +66,10 @@ hold off
 % * rotate EBSD data
 % * find outliers
 % * remove specific measurements
-% * combine EBSD data from several meassurements
+% * combine EBSD data from several measurements
 % * compute an ODF
 %
-% An exhausive introduction how to analyze and modify EBSD data can be found
+% An exhaustive introduction how to analyze and modify EBSD data can be found
 % <EBSDModifyData.html here>
 
 %% SUB: Calculate an ODF from EBSD Data
@@ -96,6 +96,6 @@ plotPDF(ori,Miller(1,0,0,cs),'antipodal','MarkerSize',3)
 
 %% SUB: Demo
 %
-% For a more exaustive description of the EBSD class have a look at the 
+% For a more exhaustive description of the EBSD class have a look at the 
 % <ebsd_demo.html EBSD demo>!
 % 

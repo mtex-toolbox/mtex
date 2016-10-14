@@ -28,14 +28,14 @@ mdf_boundary = calcODF(grains.boundary('Fo','En').misorientation,'halfwidth',10*
 [v,mori] = max(mdf_boundary)
 
 %%
-% or plot the pole figure coresponding to the crystal axis (1,0,0)
+% or plot the pole figure corresponding to the crystal axis (1,0,0)
 
 plotPDF(mdf_boundary,Miller(1,0,0,ebsd('Fo').CS))
 
 %% SUB: The uncorrelated misorientation distribution function
 % 
-% Alternatively the uncorelated misorientation distribution function can be
-% computed by providing the option *uncorelated*
+% Alternatively the uncorrelated misorientation distribution function can be
+% computed by providing the option *uncorrelated*
 
 mori = calcMisorientation(ebsd('En'),ebsd('Fo'))
 mdf_uncor = calcODF(mori)
@@ -61,7 +61,7 @@ mdf = calcMDF(odf_en,odf_fo)
 
 %%
 % This misorientation distribution function should be similar to the
-% uncorrelated misorinetation function computed directly from the ebsd data
+% uncorrelated misorientation function computed directly from the ebsd data
 
 plotPDF(mdf,Miller(1,0,0,ebsd('Fo').CS))
 
