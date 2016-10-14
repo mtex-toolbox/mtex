@@ -52,7 +52,7 @@ hold off
 ylim([-1,20])
 
 %%
-% the Fourrier coefficients of the kernels
+% the Fourier coefficients of the kernels
 
 close; figure('position',[100,100,500,450])
 hold all

@@ -9,37 +9,37 @@
 %% Class Description
 % Crystal directions are represented in MTEX by the variables of the class
 % *Miller* which in turn represent a direction with respect to the crystal
-% coordinate system. described  by three or four values h, l, k (,m) and a
+% coordinate system described  by three or four values h, l, k (,m) and a
 % <crystalSymmetry_index.html crystall symmetry>. Essentially all operations
-% defined for the @vector3d class are also available for Miller indece.
+% defined for the @vector3d class are also available for Miller indices.
 % Furthermore, You can ask for all crystallographically equivalent crystal
-% directions to one Miller indece.
+% directions to one Miller index.
 %
 %% SUB: Defining Miller indices
 %
-% Miller indice are definded by three coordinates h, k, l 
-% (four in the case of trigonal or hecagonal crystal symmetry) and by the
+% Miller indices are defined by three coordinates h, k, l 
+% (four in the case of trigonal or hexagonal crystal symmetry) and by the
 % corresponding symmetry class. It is also possible to convert a vector3d
-% object into a Miller indice.
+% object into a Miller index.
 
 cs = crystalSymmetry('trigonal');
 m = Miller(1,0,-1,1,cs)
 m = Miller(zvector,cs)
 
-%% SUB: Plotting Miller indece
+%% SUB: Plotting Miller indices
 %
-% Miller indece are plotted as spherical projections. The specific
-% projection as well as wheter to plot all equivalent directions can be
+% Miller indices are plotted as spherical projections. The specific
+% projection as well as whether to plot all equivalent directions can be
 % specified by options.
 
-plot(Miller(2,1,-3,1,cs))   % plot Miller indece
+plot(Miller(2,1,-3,1,cs))   % plot Miller indices
 
 %%
 %
 % By providing the options *all* and *labeled* all symmetrically equivalent
-% crystal directions are plotted together with there correct Miller indice.
+% crystal directions are plotted together with their correct Miller indices.
 
-plot(Miller(2,1,-3,1,cs),'all','labeled')   % plot Miller indece
+plot(Miller(2,1,-3,1,cs),'all','labeled')   % plot Miller indices
 
 %% SUB: Symmetrically Equivalent Crystal Directions
 %
@@ -51,7 +51,7 @@ m = Miller(1,1,-2,0,cs)
 symmetrise(m)
 
 %% 
-% As allways the keyword <AxialDirectional.html antipodal> adds antipodal symmetry to this
+% As always the keyword <AxialDirectional.html antipodal> adds antipodal symmetry to this
 % computation
 
 symmetrise(m,'antipodal')
@@ -71,20 +71,20 @@ eq(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'antipodal')
 %
 % The angle between two crystal directions m1 and m2 is defined as the
 % smallest angle between m1 and all symmetrically equivalent directions to
-% m2. This angle in radiand is calculated by the funtion <vector3d.angle.html
+% m2. This angle in radians is calculated by the function <vector3d.angle.html
 % angle> 
 
 angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs)) / degree
 
 %% 
-% As allways the keyword <AxialDirectional.html antipodal> adds antipodal symmetry to this
+% As always the keyword <AxialDirectional.html antipodal> adds antipodal symmetry to this
 % computation
 
 angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'antipodal') / degree
 
 %% SUB: Conversions
 %
-% Converting Miller indice into a three dimensional vector is straight
+% Converting Miller indices into a three-dimensional vector is straight
 % forward using the command <Miller.vector3d.html vectord3d>.
 
 vector3d(m)

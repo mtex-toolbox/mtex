@@ -1,7 +1,7 @@
 %% Geometry Tools
 %
-% This section of geometry tools especialy contains methods to convert
-% directions and rotations from one paramterization into another.
-% Additionlly some basic geometrical objects are predefined.
+% This section of geometry tools especially contains methods to convert
+% directions and rotations from one parametrization into another.
+% Additionally, some basic geometrical objects are predefined.
 %%
 %

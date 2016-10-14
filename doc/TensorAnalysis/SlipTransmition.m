@@ -1,5 +1,5 @@
-%% Slip Transmition
-% How to analyse slip transmition at grain boundaries
+%% Slip Transmission
+% How to analyze slip transmission at grain boundaries
 %
 %%
 %
@@ -51,13 +51,13 @@ mtexColorbar
 
 %%
 % The variable |id| contains now for each grain the id of the slip system
-% with the largest Schmidt factor. In order to visualize it we first rotate
+% with the largest Schmidt factor. In order to visualize it, we first rotate
 % for each grain the slip system with largest Schmid factor in specimen
 % coordinates
 
 sSGrain = grains.meanOrientation .* sSBasal(id)
 
-% and plot then the plance normal and the Burgers vectors into the centers
+% and then plot the plane normal and the Burgers vectors into the centers
 % of the grains
 
 hold on
@@ -67,13 +67,13 @@ quiver(grains,sSGrain.b,'displayName','slip direction')
 hold off
 
 %%
-% We may also analyse the distribution of the slip directions in a pole
+% We may also analyze the distribution of the slip directions in a pole
 % figure plot
 
 plot(sSGrain.b)
 
 %%
-% The same as a contour plot. We see a clear trend towards east.
+% The same as a contour plot. We see a clear trend towards the east.
 
 plot(sSGrain.b,'contourf')
 
@@ -109,7 +109,7 @@ hold off
 
 %% Compatibility of slip systems
 %
-% Next we want to analyze, how much geometricaly compatible the slip
+% Next, we want to analyze, how much geometrically compatible the slip
 % systems with highest Schmid factor are at the grain boundaries
 
 % some background
@@ -134,7 +134,7 @@ hold off
 
 
 %% Plot m' in misorientation space
-% Since m' depends ony the misorientation only why may plot it directly in
+% Since m' depends on the misorientation only why may plot it directly in
 % misorientation space
 
 % set up an axis angle plot

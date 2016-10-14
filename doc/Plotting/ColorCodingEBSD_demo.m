@@ -11,11 +11,11 @@
 %% Colorcoding of orientations
 %
 % In order to visualize orientation maps as they are measured by EBSD one
-% has to assign a color to each possible orientation. As an example one may
+% has to assign a color to each possible orientation. As an example, one may
 % think of representing an orientation by its Euler angles ph1, Phi, phi2
-% and taking these as the RGB values of a color. Of course there are many
+% and taking these as the RGB values of a color. Of course, there are many
 % other ways to do this. Before presenting all the possibilities MTEX
-% offers to assign a color to each orientation let us shortly summmarize
+% offers to assign a color to each orientation let us shortly summarize
 % what properties we expect from such an assignment.
 %
 % # crystallographic equivalent orientations should have the same color
@@ -28,12 +28,12 @@
 % It should be noted that it is impossible to have all the 4 points mentioned above
 % represented by a single colorcoding. This is mainly due the fact that 
 % the orientation space is three dimensional and the colorspace is only two dimensional, 
-% i.e., there are to few colors to cover the whole orientation space in a unambiguous
-% way. Hence, some compromises has to be accepted and some assumptions have to be made.
+% i.e., there are too few colors to cover the whole orientation space in an unambiguous
+% way. Hence, some compromises have to be accepted and some assumptions have to be made.
 %
 %
 %% Assigning the Euler angles to the RGB values
-% Using the Euler angles as the RGB values is probably the most simplest
+% Using the Euler angles as the RGB values is probably the simplest
 % way of mapping an orientation to a color. In MTEX such a color map is
 % defined as a variable of type <orientationMapping.html orientatiomMapping>
 
@@ -55,7 +55,7 @@ ori = orientation('Euler',10*degree,20*degree,0*degree)
 rgb = oM.orientation2color(ori)
 
 %%
-% Lets visuallize the orientation map by plotting it in orientation space
+% Lets visualize the orientation map by plotting it in orientation space
 % as phi_2 sections
 
 plot(oM,'sections',6,'phi2')
@@ -73,7 +73,7 @@ plot(oM,'sections',6,'sigma')
 %% Colorcoding according to inverse pole figure 
 %
 % The standard way of mapping orientations to colors is based on inverse
-% pole figures. The following orientation map assignes a color to each
+% pole figures. The following orientation map assigns a color to each
 % direction of the fundamental sector of the inverse pole figure
 
 oM = ipdfHSVOrientationMapping(cs)
@@ -88,7 +88,7 @@ close all
 plot(oM,'3d')
 
 %%
-% Alternatively we may plot the color mapping in 2d on the entire sphere
+% Alternatively, we may plot the color mapping in 2d on the entire sphere
 % together with the symmetry elements
 
 plot(oM,'complete')
@@ -122,7 +122,7 @@ mtexdata forsterite
 plot(ebsd)
 
 %%
-% and asume we want to colorize the Forsterite phase according to its
+% and assume we want to colorize the Forsterite phase according to its
 % orientation. Then we first define the orientation mapping.
 % Note that we can pass the phase we want to color instead of the crysta
 % symmetry
@@ -141,13 +141,13 @@ oM.inversePoleFigureDirection = zvector;
 color = oM.orientation2color(ebsd('Forsterite').orientations);
 
 %%
-% Finally, we can use these colors to visuallize the orientations of the
+% Finally, we can use these colors to visualize the orientations of the
 % Forsterite phase
 
 plot(ebsd('Forsterite'),color)
 
 %%
-% We can visuallize the orientations of the forsterite phase also the other
+% We can visualize the orientations of the forsterite phase also the other
 % way round by plotting them into the inverse pole figure map.
 
 plot(oM)
@@ -160,8 +160,8 @@ hold off
 %%
 % Since orientations measured by EBSD devices are pure rotations specified by
 % its Euler angles, we may restrict the crystal symmetry group to pure
-% rotations as well. As this group is smaller in general the corresponding
-% fundamental sector is larger, which allows to distinguish more rotations
+% rotations as well. As this group is smaller, in general, the corresponding
+% fundamental sector is larger, which allows distinguishing more rotations
 
 % this restricts the crystal symmetries used for visualization
 % to proper rotations
@@ -173,7 +173,7 @@ plot(oM)
 
 %% 
 % We observe that the fundamental sector is twice as large as for the
-% original crystal symmetry. Furthermore, the meassured Euler angles are
+% original crystal symmetry. Furthermore, the measured Euler angles are
 % not symmetric within this enlarged fundamental sector
 
 hold on

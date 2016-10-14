@@ -1,5 +1,5 @@
 %% Seismic velocities and anisotropy
-% Calculalating and plotting elastic velocities from elastic stiffness
+% Calculating and plotting elastic velocities from elastic stiffness
 % Cijkl tensor and density (by David Mainprice).
 %
 %% Open in Editor
@@ -214,7 +214,7 @@ plot(Vp_max_vector,blackMarker{:},'parent',mtexFig.gca)
 plot(Vp_min_vector,whiteMarker{:},'parent',mtexFig.gca)
 hold off
 
-%% AVS : Plot S-wave anisotropy percentage for each proppagation direction
+%% AVS : Plot S-wave anisotropy percentage for each propagation direction
 % defined as AVs = 200*(Vs1-Vs2)/(Vs1+Vs2)
 
 % create a new axis

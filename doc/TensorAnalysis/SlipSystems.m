@@ -1,5 +1,5 @@
 %% Slip Systems
-% How to analyse slip transmition at grain boundaries
+% How to analyze slip transmission at grain boundaries
 %
 %%
 %

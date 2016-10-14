@@ -1,5 +1,5 @@
 %% Importing and Exporting Data into MTEX
-% How to import and to export Pole Figure Data, EBSD Data and ODFs
+% How to import and to export Pole Figure Data, EBSD Data, and ODFs
 %
 %% Introduction
 % The central way to import any  kind of experimental data into MTEX is

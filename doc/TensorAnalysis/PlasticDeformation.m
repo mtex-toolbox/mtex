@@ -2,7 +2,7 @@
 % Schmid factor, active slip systems
 %
 %%
-% In this section we describe how to analyze the plastic deformation of
+% In this section, we describe how to analyze the plastic deformation of
 % crystals using MTEX.
 %
 %% Open in Editor
@@ -20,12 +20,12 @@ CS = crystalSymmetry('cubic',[3.523,3.523,3.523],'mineral','Nickel')
 m = Miller(1,1,1,CS)
 
 %%
-% a certain slip direction orthognal to it
+% a certain slip direction orthogonal to it
 
 n = Miller(0,-1,1,CS)
 
 %%
-% and a simple shear in direction
+% and a simple shear in the direction
 r = vector3d(0,0,1)
 
 %%
@@ -34,7 +34,7 @@ r = vector3d(0,0,1)
 tau = dot(m,r) * dot(n,r)
 
 %% The Schmid tensor
-% In tensor notation the simple shear in direction r can be expressed by
+% In tensor notation, the simple shear in direction r can be expressed by
 % the stress tensor
 
 sigma = EinsteinSum(tensor(r),1,tensor(r),2,'name','stress')
@@ -87,7 +87,7 @@ plot(nSym)
 hold off
 
 %% 
-% Next we compute the Schmid factors for  all these slip systems
+% Next, we compute the Schmid factors for  all these slip systems
 
 % define a simple shear stress tensor in 001 direction
 M = zeros(3);M(3,3) = 1;
@@ -104,7 +104,7 @@ tau = double(EinsteinSum(RSym,[-1,-2],sigmaRot,[-1,-2],'name','Schmid factor'))'
 
 %%
 % we observe that the Schmid factor is always between -0.5 and 0.5. The
-% largest value indicates the active slip system. In the above case this
+% largest value indicates the active slip system. In the above case, this
 % would be the slip system 4
 
 mSym(4)
@@ -118,7 +118,7 @@ nSym(4)
 % * find the maximum Schmid factor
 % * find the corresponding slip system 
 %
-% can be preformed by the single command <tensor.calcShearStress.html calcShearStress> 
+% can be performed by the single command <tensor.calcShearStress.html calcShearStress> 
 
 [tauMax,mActive,nActive,tau,ind] = calcShearStress(sigmaRot,m,n,'symmetrise')
 
@@ -131,7 +131,7 @@ sigma
 
 %%
 % Then we can compute the maximum Schmidt factor and the active slip system
-% for all these stress tensors by the singe command
+% for all these stress tensors by the single command
 
 [tauMax,mActive,nActive,tau,ind] = calcShearStress(sigma,m,n,'symmetrise');
 
@@ -167,9 +167,9 @@ hold off
 
 %%
 % So far we have always assumed that the stress tensor is already given
-% relatively to the crystal coordinate system. Next we want to examine the
+% relatively to the crystal coordinate system. Next, we want to examine the
 % case where the stress is given in specimen coordinates and we know the
-% orientation of the crystal. Lets assume we have simple shear stress
+% orientation of the crystal. Let's assume we have simple shear stress
 % tensor in 001 direction 
 
 M = zeros(3);M(3,3) = 1;
@@ -192,8 +192,8 @@ CS_Forsterite = ori.CS;
 sigmaCS = rotate(sigma001,inv(ori))
 
 %%
-% Next we compute maximum Schmidt factor and the active slip system for
-% every orientation in the ebsd data set
+% Next, we compute maximum Schmidt factor and the active slip system for
+% every orientation in the EBSD data set
 
 % define the slip directions and slip plane normals
 % (010)[100]

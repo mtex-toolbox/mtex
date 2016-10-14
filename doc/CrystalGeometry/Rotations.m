@@ -27,7 +27,7 @@
 % The default Euler angle convention in MTEX are the Bunge Euler angles.
 % Here a rotation is determined by three consecutive rotations,
 % the first about the z-axis, the second about the y-axis, and the third
-% again about the z-axis. Hence, one needs three angles two define an
+% again about the z-axis. Hence, one needs three angles to define an
 % rotation by Euler angles. The following command defines a rotation by its
 % three Bunge Euler angles
 
@@ -185,7 +185,7 @@ inv(rot)
 I = - rotation('Euler',0,0,0)
 
 %%
-% Note that this is convinient as both groupings of the operations "-" and
+% Note that this is convenient as both groupings of the operations "-" and
 % "*" should give the same result
 
 - (rotation('Euler',0,0,0) * xvector)
@@ -201,7 +201,7 @@ I = - rotation('Euler',0,0,0)
 mir = -rotation('axis',vector3d(1,1,1),'angle',180*degree)
 
 %%
-% A convinient shortcut is the command
+% A convenient shortcut is the command
 
 mir = reflection(vector3d(1,1,1))
 

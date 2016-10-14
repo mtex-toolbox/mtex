@@ -8,18 +8,18 @@
 %
 %% The ambiguity due to too few pole figures
 %
-% Due to experimental limitations one is usually restricted to a short list
-% of crystal directions (Miller indece) for which diffraction pole figures
-% can be measured. In general more measured pole figures implies more
-% reliable ODF reconstruction and low symmetry materials and weak textures
+% Due to experimental limitations, one is usually restricted to a short list
+% of crystal directions (Miller indices) for which diffraction pole figures
+% can be measured. In general, more measured pole figures implies more
+% reliable ODF reconstruction and low-symmetry materials and weak textures
 % usually requires more pole figures then sharp texture with a high
-% crystal symmetry. From a theoretial point of view the number of pole
+% crystal symmetry. From a theoretical point of view, the number of pole
 % figures should be at a level with the square root of the number of pole
-% points in each pole figure. This is of course far from experimentaly
+% points in each pole figure. This is of course far from experimentally
 % possible. 
 %
-% Lets demonstrate the ambiguity due to too few pole figures at the example
-% of two orhorhombic ODFs. The first ODF has three modes at the positions
+% Let's demonstrate the ambiguity due to too few pole figures at the example
+% of two orthorhombic ODFs. The first ODF has three modes at the positions
 
 cs = crystalSymmetry('mmm');
 
@@ -32,14 +32,14 @@ odf1 = unimodalODF([orix,oriy,oriz])
 
 %%
 % The second ODF has three modes as well but this times at rotations about
-% the axis (1,1,1) with angles 0, 120, and 240 degree.
+% the axis (1,1,1) with angles 0, 120, and 240 degrees.
 
 ori = orientation('axis',vector3d(1,1,1),'angle',[0,120,240]*degree,cs);
 odf2 = unimodalODF(ori)
 
 
 %%
-% These two ODFs are completely disjoint. Lets check this by plotting them
+% These two ODFs are completely disjoint. Let's check this by plotting them
 % as sigma sections
 
 figure(1)
@@ -71,9 +71,9 @@ mtexColorMap LaboTeX
 % The question is now, how can any pole figure to ODF reconstruction
 % algorithm decide which of the two ODFs was the true one if only the seven
 % identical pole figures  (100), (010), (001), (110), (101), (011), (111)
-% have been measured? The answer is: this is imposible to decide. Next
+% have been measured? The answer is: this is impossible to decide. Next
 % question is: which result will I get from the MTEX reconstruction
-% algorithm? Lets check this
+% algorithm? Let's check this
 
 % 1. step: simulate pole figure data
 pf = calcPoleFigure(odf1,h(1:7),'upper');
@@ -89,14 +89,14 @@ plot(odf,'sigma')
 
 %%
 % We observe that the reconstructed ODF is an almost perfect mixture of the
-% first and the second ODF. Acutally, any mixture of the two initial ODFs
+% first and the second ODF. Actually, any mixture of the two initial ODFs
 % would have been a correct answer. However, the ODF reconstructed by the
 % MTEX algorithm can be seen as the ODF which is closest to the uniform
 % distribution among all admissible ODFs. 
 
 %%
-% Finally we increase the number of pole figures by five more crystal
-% directions and perfrom our previous experiment once again.
+% Finally, we increase the number of pole figures by five more crystal
+% directions and perform our previous experiment once again.
 
 % 1. step: simulate pole figure data for all crystal directions
 h = [h,Miller({0,1,2},{2,0,1},{2,1,0},{0,2,1},{1,0,2},cs)];
@@ -108,7 +108,7 @@ odf = calcODF(pf,'silent')
 plot(odf,'sigma')
 
 %%
-% Though the the components of odf2 are still present in the recalculated
+% Though the components of odf2 are still present in the recalculated
 % ODF they are far less pronounced compared to the components of odf1.
 
 % 1. step: simulate pole figure data for all crystal directions
@@ -119,9 +119,9 @@ odf = calcODF(pf,'silent')
 
 plot(odf,'sigma')
 
-%% The ambiguity due to too Fridel's law
+%% The ambiguity due to too Friedel's law
 %
-% Due to Fridel's law pole figure data always impose antipodal symmetry. In
+% Due to Friedel's law pole figure data always impose antipodal symmetry. In
 % order to demonstrate the consequences of this antipodal symmetry we
 % consider crystal symmetry -43m
 
@@ -141,8 +141,8 @@ plotPDF(ori2,'MarkerSize',8)
 hold off
 
 %%
-% Obviously, both orienatations are not symmetrically equivalent as -43m
-% does not has a four fold axis. This can also be seen from the pole
+% Obviously, both orientations are not symmetrically equivalent as -43m
+% does not have a four fold axis. This can also be seen from the pole
 % figure plots above which are different for, e.g., (111). However, when
 % looking at an arbitrary pole figure with additionaly imposed antipodal
 % symmetry both orientations appears at exactly the same positions
@@ -153,7 +153,7 @@ plotPDF(ori2,'MarkerSize',8)
 hold off
 
 %%
-% The reason is that adding antipoal symmetry to all pole figures is
+% The reason is that adding antipodal symmetry to all pole figures is
 % equivalent to adding the inversion as an additional symmetry to the point
 % group, i.e., to replace it by the Laue group. Which is illustrated in the
 % following plot
@@ -169,7 +169,7 @@ hold off
 
 
 %%
-% As a consequence of Fridels law all non centrosymmetric information about
+% As a consequence of Friedels law, all noncentrosymmetric information about
 % the texture is lost in the diffraction pole figures and we can only aim
 % at recovering the centrosymmetric portion. In particular, any ODF that is
 % reconstructed by MTEX from diffraction pole figures is centrosymmetric,
@@ -183,7 +183,7 @@ hold off
 %% The inherent ambiguity of the pole figure - ODF relationship
 %
 % Unfortunately, knowing all diffraction pole figures of an ODF is even for
-% centrosymmetric symmetries not sufficent to recover the ODF unambiguisly.
+% centrosymmetric symmetries not sufficient to recover the ODF unambiguously.
 % To understand the reason for this ambiguity we consider triclinic
 % symmetry and a week unimodal ODF with prefered orientation (0,0,0).
 
@@ -194,7 +194,7 @@ odf1 = 2/3 * uniformODF(cs) + 1/3 * unimodalODF(orientation.id(cs),'halfwidth',3
 plotPDF(odf1,Miller({1,0,0},{0,1,0},{0,0,1},cs),'antipodal')
 
 %%
-% As any other ODF we can represent it by its series expansion by harmonic
+% As any other ODF, we can represent it by its series expansion by harmonic
 % functions. This does not change the ODF but only its representation
 
 odf1 = FourierODF(odf1,10)
@@ -203,7 +203,7 @@ plotPDF(odf1,Miller({1,0,0},{0,1,0},{0,0,1},cs))
 
 %%
 % We may look at the coefficients of this expansion and observe how the
-% decay to zero rapdidly. This justifies to cut the harmonic expansion at
+% decay to zero rapidly. This justifies to cut the harmonic expansion at
 % harmonic degree 10.
 
 close all
@@ -212,7 +212,7 @@ plotFourier(odf1,'linewidth',2)
 
 
 %%
-% Next we define a second ODF which differs by the first one only in the
+% Next, we define a second ODF which differs by the first one only in the
 % odd order harmonic coefficients. More precisely, we set all odd order
 % harmonic coefficients to zero
 
@@ -226,16 +226,16 @@ hold off
 legend('odf1','odf2')
 
 %%
-% The point is that all pole figures of odf1 looks exactly the same as the
+% The point is that all pole figures of odf1 look exactly the same as the
 % pole figures of odf2.
 
 
 plotPDF(odf2,Miller({1,0,0},{0,1,0},{0,0,1},cs),'antipodal')
 
 %%
-% and hence, it is imposible for any reconstruction algorithm to decide
+% and hence, it is impossible for any reconstruction algorithm to decide
 % whether odf1 or odf2 is the correct reconstruction. In order to compare
-% odf1 and odf2 we visualize them along the alpha fibre
+% odf1 and odf2, we visualize them along the alpha fibre
 
 alphaFibre = orientation('axis',zvector,'angle',(-180:180)*degree,cs);
 
@@ -267,18 +267,18 @@ xlim([-180,180])
 %%
 % We obtain two completely different ODF: odf1 has a prefered orientation
 % at (0,0,0) while odf2 has prefered orientations at all rotations about
-% 180 degree. These two ODFs have completely identical pole figures and
-% hence, it is imposible by any reconstruction method to decide which of
+% 180 degrees. These two ODFs have completely identical pole figures and
+% hence, it is impossible by any reconstruction method to decide which of
 % these two ODF was the correct one. It was the idea of Matthies to say
 % that a physical meaningful ODF usually consists of a uniform portion and
 % some components of prefered orientations. Thus in the reconstruction odf1
 % should be prefered over odf2. The idea to distinguish between odf1 and
 % odf2 is that odf1 has a larger uniform portion and hence maximizing the
-% uniform portion can be used as method to single out a physical meaningful
+% uniform portion can be used as a method to single out a physical meaningful
 % solution.
 
 %%
-% Lets demonstrate this at the given example and simulate some pole figures
+% Let's demonstrate this by the given example and simulate some pole figures
 % out of odf2.
 
 
@@ -313,10 +313,10 @@ legend('odf rec1','odf rec2')
 xlim([-180,180])
 
 %%
-% This become more clear when looking at the harmonic coefficients of the
+% This become clearer when looking at the harmonic coefficients of the
 % reconstructed ODFs. We observe that without ghost correction the
-% recovered odd order harmonic coefficients are much smaller then the
-% orginal ones.
+% recovered odd order harmonic coefficients are much smaller than the
+% original ones.
 
 close all
 plotFourier(odf1,'linewidth',2,'bandwidth',10)
@@ -328,7 +328,7 @@ hold off
 legend('odf1','odf2','odf rec1','odf rec2')
 
 %%
-% Historically, this effect was is tightly connected with the so called
+% Historically, this effect was is tightly connected with the so-called
 % SantaFe sample ODF.
 
 odf = SantaFe;
@@ -336,7 +336,7 @@ plot(odf,'contourf')
 mtexColorMap white2black
 
 %%
-% Lets simulate some diffraction pole figures
+% Let's simulate some diffraction pole figures
 
 % crystal directions
 h = Miller({1,0,0},{1,1,0},{1,1,1},{2,1,1},odf.CS);
@@ -349,7 +349,7 @@ plot(pf,'MarkerSize',5)
 mtexColorMap LaboTeX
 
 %% 
-% and compute a two ODFs from them 
+% and compute two ODFs from them 
 
 % one with Ghost Correction
 rec = calcODF(pf,'silent')
@@ -359,7 +359,7 @@ rec2 = calcODF(pf,'NoGhostCorrection','silent')
 
 %%
 % For both reconstruction recalculated pole figures look the same as the
-% inital pole figures
+% initial pole figures
 
 figure(1)
 plotPDF(rec,pf.h,'antipodal')
@@ -371,7 +371,7 @@ plotPDF(rec2,pf.h,'antipodal')
 mtexColorMap LaboTeX
 
 %%
-% However if we look at the ODF we see big differences. The so called
+% However if we look at the ODF we see big differences. The so-called
 % ghosts.
 
 figure(1)

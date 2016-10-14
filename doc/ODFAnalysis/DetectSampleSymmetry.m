@@ -6,7 +6,7 @@
 %% Contents
 %
 %% A synthetic example
-% We start by modelling a orthotropic ODF with cubic crystal symmetry.
+% We start by modeling a orthotropic ODF with cubic crystal symmetry.
 
 CS = crystalSymmetry('cubic');
 SS = specimenSymmetry('222');
@@ -23,7 +23,7 @@ c = [.4,.13,.4,.07];
 % the model odf
 odf = unimodalODF(ori(:),'weights',c,'halfwidth',12*degree)
 
-% lets plot some pole figurs
+% lets plot some pole figures
 h = [Miller(1,1,1,CS),Miller(2,0,0,CS),Miller(2,2,0,CS)];
 plotPDF(odf,h,'antipodal','silent','complete')
 
@@ -47,7 +47,7 @@ figure, plotPDF(odf_est,h,'antipodal',8,'silent');
 
 %% Detect the sample symmetry axis in the reconstructed ODF
 % We observe that the reconstructed ODF has almost orthotropic symmetry,
-% but with rescpect to axed different from x, y, z. With the following
+% but with respect to axed different from x, y, z. With the following
 % command we can determine an rotation such that the rotated ODF has almost
 % orthotropic symmetry with respect to x, y, z. The second argument is some
 % starting direction where MTEX locks for a symmetry axis.
@@ -79,7 +79,7 @@ odf = calcODF(pf,'silent')
 plotPDF(odf,h,'antipodal','silent')
 
 %%
-% Finaly, we detect the orthotropic symmetry axes a1, a2, a3 by 
+% Finally, we detect the orthotropic symmetry axes a1, a2, a3 by 
 
 [~,~,a1,a2] = centerSpecimen(odf,yvector)
 a3 = cross(a1,a2)

@@ -35,7 +35,7 @@ plot(v,'grid')
 annotate([vector3d.X,vector3d.Y,vector3d.Z],'label',{'X','Y','Z'},'backgroundcolor','w')
 
 %%
-% One can easily acces the coordinates of any vector by
+% One can easily access the coordinates of any vector by
 
 v.x
 
@@ -60,7 +60,7 @@ plot(v,'grid')
 annotate([vector3d.X,vector3d.Y,vector3d.Z],'label',{'X','Y','Z'},'backgroundcolor','w')
 
 %%
-% Analogously as for the cartesian coordinates we can acces and change
+% Analogously as for the Cartesian coordinates we can access and change
 % polar coordinates directly by
 
 v.rho ./ degree   % the azimuth angle in degree
@@ -70,7 +70,7 @@ v.theta ./ degree % the polar angle in degree
 %% Calculating with Specimen Directions
 %
 % In MTEX, one can calculate with specimen directions as with ordinary
-% numbers, i.e. we can use the predifined vectors  <xvector.html xvector>,
+% numbers, i.e. we can use the predefined vectors  <xvector.html xvector>,
 % <yvector.html yvector>, and <zvector.html zvector> and set
 
 v = xvector + 2*yvector
@@ -125,19 +125,19 @@ export(v,fname,'polar')
 scatter(v,'upper')
 
 %%
-% or contour plots may be helpfull
+% or contour plots may be helpful
 
 contourf(v,'upper')
 
 %% Indexing lists of vectors
 %
 % A list of vectors can be indexed directly by specifying the ids of the
-% vectores one is interested in, e.g.
+% vectors one is interested in, e.g.
 
 v([1:5])
 
 %%
-% gives the first 5 vectors from the list, or by logiacal indexing. The
+% gives the first 5 vectors from the list, or by logical indexing. The
 % following command plots all vectors with an polar angle smaller then 60
 % degree
 

@@ -22,13 +22,13 @@
 % * <grain2d.quiver.html quiver(grains,dir)>
 % * <grainBoundary.quiver.html quiver(grains.boundary,dir)>
 % 
-% that allow to visualize directions for EBSD data, grains and at grain
+% that allow visualizing directions for EBSD data, grains and at grain
 % boundaries. The input argument |dir| should be a list of |vector3d| and
 % may represent e.g. slip directions, polarization direction, etc.
 %
 % *EBSD data in raster format*
 %
-% Until MTEX 4.2 EBSD data have been always considered as a one dimensional
+% Until MTEX 4.2 EBSD data have been always considered as a one-dimensional
 % list of data, i.e., the often present structure of a regular grid was
 % completely ignored. Starting with MTEX 4.3 EBSD data can be converted in
 % a regular grid by
@@ -40,7 +40,7 @@
 %
 %   ebsd(100,200)
 %
-% will give pixel 100 in y direction and 200 in x direction. Analogously.
+% will give pixel 100 in the y-direction and 200 in the x-direction. Analogously.
 %
 %   ebsd(50:100,:)
 %
@@ -48,12 +48,12 @@
 %
 % *Orientation gradients and GND*
 %
-% Gridified EBSD data allows also to compture orientation gradients by
+% Gridified EBSD data allows also to compute orientation gradients by
 %
 %   ebsd.gradientX
 %   ebsd.gradientY
 %
-% as well as an estimate of the gemeometrically neccessary dislocation
+% as well as an estimate of the geometrically necessary dislocation
 % density (GND) using the command <EBSDSquare.calcGND.html calcGND>
 %
 %   ebsd.calcGND
@@ -82,17 +82,17 @@
 %
 % *large EBSD data sets* 
 %
-% Analyzing large EBSD data sets may be quite anoying due to memory
-% consumption and slow plottin. As a work around MTEX includes a new
-% function <EBSD.reduce.html reduce> which allows to reduce the data set to
+% Analyzing large EBSD data sets may be quite annoying due to memory
+% consumption and slow plotting. As a work around MTEX includes a new
+% function <EBSD.reduce.html reduce> which allows reducing the data set to
 % each n-th pixel, i.e.,
 %
 %   ebsd_small = reduce(ebsd,2)
 %
-% contains only 25 percent of the data of the origina data set. This
+% contains only 25 percent of the data of the original data set. This
 % functionality is assumed to be used for experimenting around with the
-% data set and setting up a proper analysis script. The finaly analysis
-% should, if possible, done with the entire data set.
+% data set and setting up a proper analysis script. The final analysis
+% should, if possible, be done with the entire data set.
 %
 % *New option to ignore symmetry*
 %
@@ -106,7 +106,7 @@
 %
 % *Axis distributions in specimen coordinates*
 %
-% In order to plot axis distributions in specimen coordinates you can now
+% In order to plot axis distributions in specimen coordinates, you can now
 % do
 %
 %   [ori1,ori2] = calcMisorientation(ebsd('phaseName'))
@@ -145,8 +145,8 @@
 % * gamma
 % * omega
 %
-% Along with the old syntax there is now a new syntax that allow for more
-% fine control of the ODF secions.
+% Along with the old syntax, there is now a new syntax that allows for more
+% fine control of the ODF sections.
 %
 %   oS = phi2Sections(odf.CS,odf.SS)
 %   oS.phi2 = [ 10*degree, 30*degree, 90*degree ];
@@ -161,20 +161,20 @@
 %   cs1 <= cs2
 %
 % Further, the largest proper subgroup of some crystal symmetry |cs| is now
-% accessable by
+% accessible by
 %
 %  cs.properSubGroup
 %
 %% MTEX 4.1 - 09/2015
 %
 % MTEX 4.1 introduces new possibilities to the analysis of misorientations.
-% For the first time it covers all geometric aspects of misorientations
+% For the first time, it covers all geometric aspects of misorientations
 % between arbitrary crystal symmetries. Furthermore, MTEX 4.1 introduces
 % filters to smooth EBSD data.
 %
 % *Smoothing of EBSD Data*
 %
-% Smoothing of EBSD data might be necesarry if the orientation data are
+% Smoothing of EBSD data might be necessary if the orientation data are
 % corrupted by noise which influences the estimation of orientation
 % dependent properties like KAM or GND. The general syntax for smoothing
 % EBSD data is 
@@ -182,23 +182,23 @@
 %   ebsd = smooth(ebsd)
 %
 % This applies the spline filter to the orientation data. Beside the spline
-% filter many other filters are available. A general discussion on this
+% filter, many other filters are available. A general discussion on this
 % topic can be found <EBSDSmoothing.html here>. To make use of a different
-% then the dafault filter use the syntax
+% than the dafault filter use the syntax
 %
 %   F = medianFilter
 %   F.numNeighbours = 2 % this way options for the filter can be set
 %   ebsd = smooth(ebsd,F)
 %
 % The command smooth can also be used to fill not indexed measurement
-% points. This behaviour is enabled by the option |fill|
+% points. This behavior is enabled by the option |fill|
 %
 %   ebsd = smooth(ebsd,F,'fill')
 %
 % *Support for antipodal symmetry for misorientations*
 %
 % When working with boundary misorientations between the same phase one can
-% not distinguish between an misorientation |mori| and its inverse
+% not distinguish between a misorientation |mori| and its inverse
 % |inv(mori). Starting with MTEX 4.1 this symmetry is supported for
 % misorientations and misorientation distribution functions.
 %
@@ -207,12 +207,12 @@
 %   
 %   mdf = calcMDF(odf1,odf2,'antipodal')
 %
-% Antipodal symmetry effects the asymetric region in orientation space as
-% described below, as well as the distanc between misorientations. Boundary
+% Antipodal symmetry effects the asymmetric region in orientation space as
+% described below, as well as the distance between misorientations. Boundary
 % misorientations between the same phase have set the flag |antipodal| by
 % default.
 %
-% *Asymetric regions in orientation space*
+% *Asymmetric regions in orientation space*
 %
 % MTEX 4.1 has now full support of asymmetric regions in orientation space.
 % For any combination of crystal symmetries they can be defined by
@@ -232,7 +232,7 @@
 %
 %   oR = fundamentalRegion(cs1,cs2,'antipodal')
 %
-% For a fixed rotational angle |omega| the intersection of the fundamental
+% For a fixed rotational angle |omega|, the intersection of the fundamental
 % region with the sphere with radius omega gives the fundamental sector for
 % the corresponding rotational axes. The axis sector can be computed by
 %
@@ -240,7 +240,7 @@
 %
 % *Axis and angle distributions*
 % 
-% Thanks to the implementation of the asymetric region
+% Thanks to the implementation of the asymmetric region
 % |plotAxisDistribution| and |plotAngleDistribution| works in MTEX 4.1 for
 % any combination of crystal symmetries.
 %
@@ -261,7 +261,7 @@
 %
 % *Rotational axis in specimen coordinates*
 %
-% It is now possible to compute the misorientaion axis between two
+% It is now possible to compute the misorientation axis between two
 % orientations in specimen coordinate system. This is done by
 %
 %   axis(ori1,ori2)
@@ -273,21 +273,21 @@
 %
 % *Axis angle plots*
 %
-% (Mis)Orientation, ODFs and MDFs can now be plotted in axis angles
+% (Mis)Orientation, ODFs, and MDFs can now be plotted in axis angles
 % sections. Those plots respect the fundamental sector depending on the
 % misorientation angle and for all combinations of crystal symmetries. The
-% angle sections are scaled such that they represent the corrsponding
-% volume in orientation space. This can be switch of as described below
+% angle sections are scaled such that they represent the corresponding
+% volume in orientation space. This can be switch off as described below
 %
 %   plotSection(mori,'axisAngle',55*degree)
 %   plotSection(mdf,'axisAngle',(15:10:55)*degree)
 %   plotSection(mdf,'axisAngle',(15:10:55)*degree,'volumeScaling',false)
 %   plotSection(mdf,'axisAngle',(15:10:55)*degree,'antipodal')
 %
-% *Replace plotODF by plotSection* 
+% *Replace plotODF by a plotSection* 
 %
-% In most cases you can replace |plotODF| by |plot|. Only for
-% misorientations the default plot is |scatter|.
+% In most cases, you can replace |plotODF| by a|plot|. Only for
+% misorientations, the default plot is |scattered|.
 %
 % *More default settings for EBSD maps and pole figure plots*
 %
@@ -313,7 +313,7 @@
 %
 % *Other improvements since MTEX 4.0.0*
 %
-% During the minor revisions of MTEX also several minor improvments has
+% During the minor revisions of MTEX also several minor improvements have
 % been added which are summarized below
 %
 % * check for inclusions in grains: the following command returns a list of
@@ -387,13 +387,13 @@
 %% MTEX 4.0.0 - 10/2014
 % 
 % MTEX 4 is a complete rewrite of the internal class system which was
-% required to keep MTEX compatible with upcomming Matlab releases. Note
-% that MTEX 3.5 will not work on Matlab versions later then 2014a. As a
-% positive side effect the syntax has been made more consisent and
-% powerfull. On the bad side MTEX 3.5. code will need some
+% required to keep MTEX compatible with upcoming Matlab releases. Note
+% that MTEX 3.5 will not work on Matlab versions later than 2014a. As a
+% positive side effect, the syntax has been made more consistent and
+% powerful. On the bad side MTEX 3.5. code will need some
 % adaption to run on MTEX 4. There are two general principles to consider
 %
-% *Use dot indexing instead of get and set methods*
+% *Use dot indexing instead of getting and setting methods*
 %
 % The syntax
 %
@@ -415,24 +415,24 @@
 %   cs.axes(1).x
 %
 % to get the x coordinate of the first crystallographic coordinate axis -
-% the a-axis. As an nice bonus you can now use TAB completion to cycle
+% the a-axis. As a nice bonus, you can now use TAB completion to cycle
 % through all possible properties and methods of a class.
 %
 % *Use camelCaseCommands instead of under_score_commands*
 %
 % Formerly, MTEX used different naming conventions for functions. Starting
 % with MTEX 4.0 all function names consisting of several words, have the
-% first word spelled with lowercase latters and the consecutive words
+% first word spelled with lowercase letters and the consecutive words
 % starting with a capital letter. Most notable changes are
 %  * |plotPDF|
 %  * |plotIPDF|
 %  * |plotODF|
 %  * |calcError|
 %
-% *Grain boundaries are now directly accessable*
+% *Grain boundaries are now directly accessible*
 %
 % MTEX 4.0 introduces a new type of variables called |grainBoundary| which 
-% allows to represent arbitary grain boundaries and to to work with them as
+% allows to represent arbitrary grain boundaries and to work with them as
 % with grains. The following lines give some examples. Much more is possible.
 %
 %   % select boundary from specific grains
@@ -474,7 +474,7 @@
 %
 %   plot(ebsd)
 %
-% In order to colorize ebsd data according to orientations one has first to
+% In order to colorize ebsd data according to orientations, one has first to
 % define an orientationMapping by
 % 
 %   oM = ipdfHSVOrientationMapping(ebsd('Forsterite'))
@@ -488,7 +488,7 @@
 %
 %   plot(oM)
 %
-% *EBSD data are alway spatialy indexed*
+% *EBSD data are always spatially indexed*
 %
 % Starting with MTEX 4.0 EBSD data alway have to have x and y coordinates.
 % EBSD data without spatial coordinates are imported simply as orientations.
@@ -517,13 +517,13 @@
 %
 %   grains = calcGrains(ebsd)
 %
-% duplicates the ebsd data into the grain variable allowing to acces the
+% duplicates the ebsd data into the grain variable allowing to access the
 % EBSD data belonging to a specific grain by
 %
 %   get(grains(1),'EBSD')
 %
 % In MTEX 4.0 the command |calcGrains| returns as an additional output the
-% a list of grainIds that is associated to the EBSD data. When storing
+% list of grainIds that is associated with the EBSD data. When storing
 % these grainIds directly inside the EBSD data, i.e., by
 %
 %   [grains,ebsd.grainId] calcGrains(ebsd)
@@ -532,10 +532,10 @@
 %
 %   ebsd(grains(1))
 %
-% *MTEX 4.0 distingueshes between crystal and specimen symmetry*
+% *MTEX 4.0 distinguishes between crystal and specimen symmetry*
 %
 % In MTEX 4.0 two new variable types |specimenSymmetry| and 
-% |crystalSymmetry| have been introduced to clearly distinguesh between 
+% |crystalSymmetry| have been introduced to distinguish clearly between 
 % these two types of symmetry. Calling
 %
 %   cs = symmetry('m-3m')
@@ -553,12 +553,12 @@
 %
 %   condition = pf.r.theta < 80 * degree
 %
-% is a index to all pole figure data with polar angle smaller then 80
+% is an index to all pole figure data with a polar angle smaller than 80
 % degree. To restrict the pole figure variable |pf| to the data write
 %
 %   pf_restrcited = pf(condition)
 %
-% In the same manner we can also remove all negative intensities
+% In the same manner, we can also remove all negative intensities
 % 
 %   condition = pf.intensities < 0
 %   pf(condition) = []
@@ -585,15 +585,15 @@
 % *MTEX 4.0 supports all 32 point groups*
 %
 % In MTEX 4.0 it is for the first time possible to calculate with
-% reflections and inversions. As a consequence all 32 point groups are
+% reflections and inversions. As a consequence, all 32 point groups are
 % supported. This is particularly important when working with
-% piezoellectric tensors and symmetries like 4mm. Moreover, MTEX
-% distingueshes between the point groups 112, 121, 112 up to -3m1 and -31m.
+% piezoelectric tensors and symmetries like 4mm. Moreover, MTEX
+% distinguishes between the point groups 112, 121, 112 up to -3m1 and -31m.
 %
-% Care should be taken, when using non Laue groups for pole figure or EBSD
+% Care should be taken, when using non-Laue groups for pole figure or EBSD
 % data.
 %
-% *Support for three digit notation for Miller indices of trigonal
+% *Support for three-digit notation for Miller indices of trigonal
 % symmetries*
 %
 % MTEX 4.0 understands now uvw and UVTW notation for trigonal symmetries.
@@ -615,7 +615,7 @@
 % This can be seen as a todo list.
 %
 % * 3d EBSD data handling + 3d grains
-% * some grain functions like aspectRatio, equivalent diamter
+% * some grain functions like aspectRatio, equivalent diameter
 % * logarithmic scaling of plots
 % * 3d plot of ODFs
 % * some of the orientation color maps
@@ -625,9 +625,9 @@
 % * v.x = 0 
 % * misorientation analysis is not yet complete
 % * some colormaps, e.g. blue2red switched
-% * histogram of valume fractions of CSL boundaries
+% * histogram of volume fractions of CSL boundaries
 % * remove id from EBSD?
-% * changing the phase of a grain should change phases in boundary
+% * changing the phase of a grain should change phases in the boundary
 % * KAM and GOSS may be improved
 % * write import wizard for orientations, vectors, tensors.
 %
@@ -637,8 +637,8 @@
 %
 % * Patala colormap for misorientations
 % * publication:  S. Patala, J. K. Mason, and C. A. Schuh, Improved
-% representations of misorientation information for grain boundary, science
-% and engineering, Prog. Mater. Sci., vol. 57, no. 8, pp. 1383-1425, 2012.
+% representations of misorientation information for grain boundary,
+% science, and engineering, Prog. Mater. Sci., vol. 57, no. 8, pp. 1383-1425, 2012.
 % * implementation: Oliver Johnson
 % * syntax:
 %
@@ -664,8 +664,8 @@
 %
 % * the flags |'north'| and |'south'| are obsolete and have been replaced
 % by |'upper'| and |'lower'|
-% * you can specify the outer boundary for grain reconstruction in non
-% convex EBSD data set by the option |'boundary'|
+% * you can specify the outer boundary for grain reconstruction in 
+% nonconvex EBSD data set by the option |'boundary'|
 %
 %   poly = [ [x1,y1];[x2,y2];[xn,yn];[x1,y1] ]
 %   grains = calcGrains(ebsd,'boundary',poly)
@@ -694,14 +694,14 @@
 % * option south is working again in pole figure plots
 % * geometric mean in tensor averagin, thanks to Julian Mecklenburgh
 % * improved support of osc EBSD format
-% * tensor symmetry check error can be turned of and has more detailed
+% * tensor symmetry check error can be turned of and has a more detailed
 % error message
 % * improved syntax for Miller
 %   Miller(x,y,z,'xyz',CS)
 %   Miller('polar',theta,rho,CS)
 % * ensure same marker size in EBSD pole figure plots
 % * allow plotting Schmid factor for grains and EBSD data
-% * allow to anotate Miller to AxisDistribution plots
+% * allow to annotate Miller to AxisDistribution plots
 % * improved figure export
 % * allow for negative phase indices in EBSD data
 % * bug fix: https://code.google.com/p/mtex/issues/detail?id=115
@@ -724,11 +724,11 @@
 % *New plotting engine*
 %
 % MTEX 3.4 features a completely rewritten plotting engine. New features
-% includes
+% include
 %
 % * The alignment of the axes in the plot is now described by the options
 % |xAxisDirection| which can be |north|, |west|, |south|, or |east|, and
-% |zAxisDirection| which can be |outOfPlane| or |intoPlane|. Accordinly,
+% |zAxisDirection| which can be |outOfPlane| or |intoPlane|. Accordingly,
 % there are now the commands
 %
 %   plotzOutOfPlane, plotzIntoPlane
@@ -737,7 +737,7 @@
 % MTEX menu which is located in the menubar of each figure.
 % * northern and southern hemisphere are now separate axes that can be
 % stacked arbitrarily and are marked as north and south.
-% * Arbitary plots can be combined in one figure. The syntax is
+% * Arbitrary plots can be combined in one figure. The syntax is
 %
 %   ax = subplot(2,2,1)
 %   plot(ax,xvector)
@@ -760,16 +760,16 @@
 %
 % *ODF*
 %
-% * The default ODF plot are now phi2 sections with plain projection and (0,0)
-% beeing at the top left corner. This can be changed interactivly in the
+% * The default ODF plot is now phi2 sections with plain projection and (0,0)
+% being at the top left corner. This can be changed interactively in the
 % new MTEX menu.
-% * The computation of more then one maximum is back. Use the command
+% * The computation of more than one maximum is back. Use the command
 %
 %   [modes, values] = calcModes(odf,n)
 %
 % *EBSD data*
 %
-% * MTEX is now aware about inconsistent coordinate system used in CTF and
+% * MTEX is now aware about the inconsistent coordinate system used in CTF and
 % HKL EBSD files for Euler angles and spatial coordinates. The user can now
 % convert either the spatial coordinates or the Euler angles such that they
 % become consistent. This can be easily done by the import wizard or via
@@ -787,7 +787,7 @@
 %
 %   CS = symmetry('cubic','mineral','Mg','color','red')
 %
-% * Better rule of thumb for the kernel width when computing an ODF from
+% * A better rule of thumb for the kernel width when computing an ODF from
 % individual orientations via kernel density estimation.
 % * inpolygon can be called as
 %
@@ -809,7 +809,7 @@
 %
 % * faster, more stable tensor implementation
 % * new syntax in tensor indexing to be compatible with other MTEX classes.
-% For a 4 rank thensor |C| we have now
+% For a 4 rank thensor |C|, we have now
 %
 %   % extract entry 1,1,1,1 in tensor notation
 %   C{1,1,1,1}
@@ -884,7 +884,7 @@
 % * The classes @grain, @polygon, @polyeder do not exist any longer. The
 % functionality of the classes is mainly replaced by the classes @GrainSet,
 % @Grain2d and @Grain3d
-% * The class @GrainSet explicitely stores @EBSD. To access @EBSD data
+% * The class @GrainSet explicitly stores @EBSD. To access @EBSD data
 % within a single grain or a set of grains use
 %
 %   get(grains,'EBSD')
@@ -893,12 +893,12 @@
 % nevertheless, grains still can be <GrainSingleAnalysis.html selected spatially>.
 % * scripts using the old grain engine may not work properly, for more
 % details of the functionalities and functioning of the @GrainSet please
-% see the documention.
+% see the documentation.
 % * new functionalities: merge grains with certain boundary.
 %
 % *EBSD*
 %
-% * Behavior of the |'ignorePhase'| changed. Now it is called in general
+% The behavior of the |'ignorePhase'| changed. Now it is called in general
 % |'not indexed'| and the not indexed data <ImportEBSDData.html is
 % imported generally>. If the crystal symmetry of an @EBSD phase is set to a
 % string value, it will be treated as not indexed. e.g. mark the first
@@ -910,7 +910,7 @@
 %
 % By default, |calcGrains| does also use the |'not Indexed'| phase.
 %
-% * create custemized orientation colormaps
+% * create customized orientation colormaps
 %
 % *Other*
 %
@@ -939,14 +939,14 @@
 % for the pole figure grid
 % * implemented spherical Voronoi decomposition and computation of
 % spherical quadrature weights
-% * plot odf-space in omega-sections, i.e. generalization of sigma-sections
+% * plot odf-space in omega-sections, the i.e. generalization of sigma-sections
 %
 % *Bug Fixes*
 %
 % * S2Grid behaves more like vector3d
 % * vector3d/eq takes antipodal symmetry into account
 % * Euler angle conversion was sometimes wrong
-% * tensors multipliaction was sometimes wrong
+% * tensors multiplication was sometimes wrong
 % * rank 3 tensors get options 'doubleConvention' and 'singleConvention'
 % for the conversion into the Voigt matrix representation
 % * documentation fixes
@@ -965,7 +965,7 @@
 % * visualize 3d EBSD data by plotting interactive slices through the
 % specimen
 % * 3d grain detection
-% * topology of 3d grains, i.e. boundaries, neighbouring grains, etc.
+% * the topology of 3d grains, i.e. boundaries, neighboring grains, etc.
 %
 % *Misorientation Analysis*
 %
@@ -979,7 +979,7 @@
 % EBSD and grain variables can now be indexed by phase, region or grain /
 % ebsd variables. Let us assume we have a two phase ebsd variable
 % containing 'Fe' and 'Mg' then can restrict our dataset to the Fe - phase
-% only be writting
+% only by writing
 %
 %  ebsd('Fe')
 %
@@ -999,7 +999,7 @@
 % *Other Enhangments*
 %
 % * better import and export of pole figures, odfs and EBSD data
-% * automatic centering of a specimen with repsect to its specimen symmetry
+% * automatic centering of a specimen with respect to its specimen symmetry
 % * download and import tensors from http://www.materialproperties.org/
 % * new interfaces for Rigaku, Siemens, Bruker and many other X-ray devices
 % and formats
@@ -1015,11 +1015,11 @@
 % * import of tensors via the import wizard
 % * basic tensor operations: multiplication, rotation, inversion
 % * advanced visualization
-% * computation of avaraged tensors from EBSD data and ODFs
+% * computation of averaged tensors from EBSD data and ODFs
 % * computation of standard elasticity tensors like: Youngs modulus, linear
 % compressibility, Christoffel tensor, elastic wave velocities
 %
-% *Other Enhangments*
+% *Other Enhancements*
 %
 % * support for different crystal reference frame conventions
 % * automatic conversion between different reference frames
@@ -1038,25 +1038,25 @@
 % This release contains a completely redesigned crystal geometry engine
 % which is thought to be much more intuitive and flexible. In particular,
 % it introduces two new classes <rotation_index.html rotation> and
-% <orientation_index.html orientation> which make it much more easier to
+% <orientation_index.html orientation> which make it much easier to
 % work with crystal orientations. Resulting features are
 %
 % * no more need for quaternions
 % * support for Bunge, Roe, Matthies, Kocks, and Canova Euler angle
 % convention
-% * simple definition of fibres
-% * simple check whether two orientations are symmetrically equivalent
+% * a simple definition of fibres
+% * simply check whether two orientations are symmetrically equivalent
 %
-% *Other Enhangments*
+% *Other Enhancements*
 %
 % * automatic kernel selection in ODF estimation from EBSD data
 % * support for Bingham model ODFs
-% * esimation of Bingham parameters from EBSD data
+% * estimation of Bingham parameters from EBSD data
 % * faster and more accurate EBSD simulation
 % * faster grain reconstruction
 % * improved documentation
-% * impoved output
-% * MTEX is now compatibel with NFFT 3.1.3
+% * improved output
+% * MTEX is now compatible with NFFT 3.1.3
 %
 %
 %% MTEX 2.0 - 10/2009
@@ -1102,7 +1102,7 @@
 %
 % *Improved EBSD import*
 %
-% * import weighted EBSD (e.g. from odf modeling)
+% * import-weighted EBSD (e.g. from odf modeling)
 % * new HKL and Chanel interfaces (.ang and .ctf files)
 % * import of multiple phases
 % * import of arbitrary properties as MAD, detection error, etc.
@@ -1140,7 +1140,7 @@
 %
 % *Improved Pole Figure Analysis*
 %
-% * Background correction and defocussing
+% * Background correction and defocusing
 % * Outlier detection and elimination
 %
 % *Improved EBSD Data Support*
@@ -1177,7 +1177,7 @@
 % *New ODF Class*
 %
 % * The new function <FourierODF.html FourierODF> provides an easy way to
-% define ODFs via their Fourier coefficients. In particular MTEX allows now
+% define ODFs via their Fourier coefficients. In particular, MTEX allows now
 % to calculate with those ODFs in the same manner as with any other ODFs.
 %
 % *New Interfaces*
@@ -1186,8 +1186,8 @@
 %
 % *Improved Plotting*
 %
-% * Plot EBSD data and continious ODFs into one plot
-% * Miller indeces and specimen directions can now be plotted directly into
+% * Plot EBSD data and continuous ODFs into one plot
+% * Miller indices and specimen directions can now be plotted directly into
 % pole figures or inverse pole figures.
 % * New plotting option north, south for spherical plots
 % * Improved colorbar handling
@@ -1196,14 +1196,14 @@
 %
 % *Incompatible Changes With Previous Releases*
 %
-% * The flag *hemishpere* in <S2Grid.S2Grid.html S2Grid> has been replaced
+% * The flag *hemisphere* in <S2Grid.S2Grid.html S2Grid> has been replaced
 % by *north*, *south*, and *antipodal* making it more consistent with the
 % plotting routine.
 %
 % *Improved Documentation*
 %
 % MTEX comes now with over 500 help pages explaining the mathematical
-% concepts, the philisophy behing MTEX and the syntax and usage of all 300
+% concepts, the philosophy behind MTEX and the syntax and usage of all 300
 % functions available in MTEX. Furthermore, you find numerous examples and
 % tutorials on ODF estimation, data import, calculation of texture
 % characteristics, ODF and pole figure plotting, etc.
@@ -1218,9 +1218,9 @@
 %
 %% MTEX 0.4 - 04/2008
 %
-% *Speed Improvments*
+% *Speed Improvements*
 %
-% * ODF reconstruction and PDF calculation is about *10 times faster* now
+% * ODF reconstruction and PDF calculation are about *10 times faster* now
 % (thanks to the new NFFT 4.0 library)
 % * ODF plotting and the calculation of <ODF.volume.html volume
 % fractions>, the <ODF.textureindex.html texture index>, the
@@ -1255,19 +1255,19 @@
 %
 % *Incompatible Changes With Previous Releases*
 %
-% * New, more flexibel syntax for the generation of
+% * New, more flexible syntax for the generation of
 % [[S2Grid_index.html,S2Grids]]
-% * Slightly changed syntax of [[unimodalODF.html,unimodalODF]] and
+% * Slightly changed the syntax of [[unimodalODF.html,unimodalODF]] and
 % [[fibreODF.html,fibreODF]].
 % * Default plotting options are set to {}, i.e. 'antipodal' has to add
-% manualy if desired
+% manually if desired
 % * Crystal symmetry *triclinic* is not called *tricline* anymore.
 %
 %
 %% MTEX 0.3 - 10/2007
 %
 % * new function <ODF.Fourier.html fourier> to calculate the
-% Fouriercoefficents of an arbitrary ODF
+% Fourier coefficents of an arbitrary ODF
 % * new option |ghost correction| in function
 % <PoleFigure.calcODF.html calcODF>
 % * new option |zero range| in function <PoleFigure.calcODF.html calcODF>
@@ -1277,9 +1277,9 @@
 % * support of triclinic crystal <symmetry_index.html symmetry> with
 % arbitrary angles between the axes
 % * default plotting options may now be specified in mtex_settings.m
-% * new plot option _3d_ for a three dimensional spherical plot of pole
+% * new plot option _3d_ for a three-dimensional spherical plot of pole
 % figures
-% * contour levels may be specified explicitely in all plot functions
+% * contour levels may be specified explicitly in all plot functions
 % <ODF.plotodf.html plotodf>,<ODF.plotpdf.html plotpdf> and
 % <ODF.plotipdf.html,plotipdf>
 % * new plot option _logarithmic_

@@ -1,6 +1,6 @@
 %% Misorientations
-% Misorientation describe the relative orientation of two grains with
-% respect to each other. Important concepts are are twinnings and 
+% Misorientation describes the relative orientation of two grains with
+% respect to each other. Important concepts are twinnings and 
 % CSL (coincidence site lattice),
 %
 %% Open in Editor
@@ -8,7 +8,7 @@
 %% Contents
 %
 %% Misorientations between grains
-% Let us import some EBSD data set, compute grains and plot the colorized
+% Let us import some EBSD data set, compute grains and plot and colorize
 % according to their meanorientation and lets highlight grain 70 and grain
 % 80
 
@@ -33,7 +33,7 @@ mori = inv(grains(70).meanOrientation) * grains(80).meanOrientation
 %% 
 % In the present case the misorientation describes the coordinate transform
 % from the reference frame of grain 80 into the reference frame of crystal
-% 70. Take as an expample the plane {11-20} with respect to the grain 80.
+% 70. Take as an example the plane {11-20} with respect to the grain 80.
 % Then the plane in grain 70 which aligned parallel to this plane can be
 % computed by
 
@@ -47,7 +47,7 @@ round(mori * Miller(1,1,-2,0,CS))
 round(inv(mori) * Miller(2,-1,-1,0,CS))
 
 
-%% Coinsident lattice planes
+%% Coincident lattice planes
 % The coincidence between major lattice planes may suggest that the
 % misorientation is a twinning misorientation. Lets analyse whether there
 % are some more alignments between major lattice planes.
@@ -112,9 +112,9 @@ legend({},'location','NorthWest','FontSize',13);
 
 
 %% Highlight twinning boundaries
-% It turns out that in the previous EBSD map many grain boudaries have a
+% It turns out that in the previous EBSD map many grain boundaries have a
 % misorientation close to the twinning misorientation we just defined. Lets
-% Lets higlight those twinning boundaries
+% Lets highlight those twinning boundaries
 
 % consider only Magnesium to Magnesium grain boundaries
 gB = grains.boundary('Mag','Mag');

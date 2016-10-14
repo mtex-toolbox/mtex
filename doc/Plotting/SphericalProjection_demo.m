@@ -9,28 +9,28 @@
 %
 %% Introduction
 %
-% MTEX supports four type of spherical projection which are avaiable for
+% MTEX supports four types of spherical projection which are available for
 % all spherical plot, e.g. <ODF.plotPDF.html polefigure plots>,
 % <ODF.plotIPDF.html inverse polefigure plots> or <ODF.plotSection.html
 % ODF plots>. These are the equal area projection (Schmidt projection), the
-% equal distance projetion, the stereographic projection (equal angle
-% projection), the three dimensional projection and the flat projection.
+% equal distance projection, the stereographic projection (equal angle
+% projection), the three-dimensional projection and the flat projection.
 %
-% In order to demostrate the different projections we start by defining a
+% In order to demonstrate the different projections we start by defining a
 % model ODF.
 
 cs = crystalSymmetry('321');
 odf = fibreODF(Miller(1,1,0,cs),zvector)
 
 
-%% Alignment of the Hemishpheres
+%% Alignment of the Hemispheres
 %
 % *Partial Spherical Plots*
 %
 % If an ODF has triclinic specimen symmetry its pole figures differs in
 % general on the upper hemisphere and the lower hemisphere. By
-% default MTEX plots in this case both hemispheres. The upper on the
-% left hand side and the lower on the right hand side.
+% default MTEX plots, in this case, both hemispheres. The upper on the
+% left-hand side and the lower on the right-hand side.
 % TODO: this is currently missing
 
 plotPDF(odf,Miller(1,1,0,cs),'minmax')
@@ -43,7 +43,7 @@ plotPDF(odf,Miller(1,1,0,cs),'minmax')
 plotPDF(odf,Miller(1,1,0,cs),'lower','minmax')
 
 %%
-% Due to Friedels law meassured pole figures are a superposition of the
+% Due to Friedel's law measured pole figures are a superposition of the
 % upper and the lower hemisphere (since antipodal directions are
 % associated). In order to plot pole figures as a superposition of the
 % upper and lower hemisphere one has to enforce <AxialDirectional.html
@@ -57,7 +57,7 @@ plotPDF(odf,Miller(1,1,0,cs),'antipodal','minmax')
 % *Rotate and Flip Plots*
 %
 % Sometimes it is more convenient to have the coordinate system rotated or
-% flipped in some way. For this reason all plot commands in MTEX allows for
+% flipped in some way. For this reason, all plot commands in MTEX allows for
 % the options *rotate*, *flipud* and *fliplr*. A more direct way for
 % changing the orientation of the plot is to specify the direction of the
 % x-axis by the commands <plotx2east.html plotx2east>, <plotx2north.html
@@ -78,7 +78,7 @@ plotPDF(odf,Miller(1,0,0,cs),'antipodal')
 % Equal area projection is defined by the characteristic that it preserves
 % the spherical area. Since pole figures are defined as relative frequency
 % by area equal area projection is the default projection in MTEX. In can
-% be set explicetly by the flags *earea* or *schmidt*.
+% be set explicitly by the flags *earea* or *schmidt*.
 
 plotPDF(odf,Miller(1,0,0,cs),'antipodal')
 
@@ -94,7 +94,7 @@ plotHKL(cs,'projection','edist','upper','grid_res',15*degree,'BackGroundColor','
 
 %% Stereographic Projection (Equal Angle Projection)
 %
-% Another famouse spherical projection is the stereographic projection
+% Another famous spherical projection is the stereographic projection
 % which preserves the angle between arbitrary great circles. It
 % can be chosen by setting the option *stereo* or *eangle*.
 
@@ -110,9 +110,9 @@ plot(SantaFe,'alpha','sections',18,'resolution',5*degree,...
 mtexColorMap white2black
 
 
-%% Three Dimensional Plots
+%% Three-dimensional Plots
 %
-% MTEX also offers a three dimensional plot of pole figures which even
+% MTEX also offers a three-dimensional plot of pole figures which even
 % might be rotated freely in space
 
 plotPDF(odf,Miller(1,1,0,odf.CS),'3d')

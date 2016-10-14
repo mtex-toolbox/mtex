@@ -2,8 +2,8 @@
 % how to calculate with tensors in MTEX
 %%
 % MTEX offers some basic functionality to calculate with tensors as they
-% occur in material sciense. It allows to define tensors of arbitrary rank,
-% e.g., stress, strain, elasticity or piezoelectric tensors, to visuallize
+% occur in material sciense. It allows defining tensors of arbitrary rank,
+% e.g., stress, strain, elasticity or piezoelectric tensors, to visualize
 % them and to perform various transformations.
 %
 %% Open in Editor
@@ -13,12 +13,12 @@
 %% Defining a Tensor
 %
 % A tensor is defined by its entries and a crystal symmetry. Let us
-% consider a simple example. First we define some crystal symmetry
+% consider a simple example. First, we define some crystal symmetry
 
 cs = crystalSymmetry('1');
 
 %%
-% Next we define a two rank tensor by its matrix
+% Next, we define a two rank tensor by its matrix
 
 M = [[10 3 0];[3 1 0];[0 0 1]];
 T = tensor(M,cs)
@@ -29,8 +29,8 @@ T = tensor(M,cs)
 T = tensor(diag([10 3 1]),cs)
 
 %% Importing a Tensor from a File
-% Especially for higher order tensors it is more convinient to import the
-% tensor entries from a file. As an example we load the following
+% Especially for higher order tensors, it is more convenient to import the
+% tensor entries from a file. As an example, we load the following
 % elastic stiffness tensor
 
 fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
@@ -48,13 +48,13 @@ setMTEXpref('defaultColorMap',blue2redColorMap);
 plot(C,'complete')
 
 %%
-% There are more specialized visuallition possibilities for specific
+% There are more specialized visualization possibilities for specific
 % tensors, e.g., for the elasticity tensor. See section
 % <ElasticityTensor.html Elasticity Tensor>.
 
 %% Rotating a Tensor
 % Rotation a tensor is done by the command <tensor.rotate.html rotate>.
-% Lets define a rotation
+% Let's define a rotation
 
 r = rotation('Euler',45*degree,0*degree,0*degree)
 
@@ -88,20 +88,20 @@ S = inv(C)
 %% Tensor Products
 % In MTEX tensor products are specifies according to Einsteins summation
 % convention, i.e. a tensor product of the form T_ij = E_ijkl S_kl has to
-% be interpreted as a sum over the indice k and l. In MTEX this sum can be
+% be interpreted as a sum over the indices k and l. In MTEX this sum can be
 % computed using the command <tensor.EinsteinSum.html EinsteinSum>
 
 S = EinsteinSum(C,[-1 -2 1 2],T,[-1 -2])
 
 %%
-% here the negative numbers indicates the indices which are summend up.
-% Each pair of equal negative numbers correspondes to one sum. The
+% here the negative numbers indicate the indices which are summed up.
+% Each pair of equal negative numbers corresponds to one sum. The
 % positive numbers indicate the order of the dimensions of the resulting
 % tensor.
 %
-% Let us consider a second example. The linear compressibility in a certain
-% directiom v of a specimen can be computed from it mean elasticity tensor
-% E by the formula, c = S_ijkk v_i v_j where S is the complience, i.e. the
+% Let us consider the second example. The linear compressibility in a certain
+% direction v of a specimen can be computed from it mean elasticity tensor
+% E by the formula, c = S_ijkk v_i v_j where S is the compliance, i.e. the
 % inverse of the elasticity tensor
 
 v = xvector;
