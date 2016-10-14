@@ -19,7 +19,7 @@ switch  T.rank
     error('not yet implemented!');
     m = tensor32(T.M,T.doubleConvention);
   case 2
-    A = 0.5*(T - T.');
+    A = 0.5*(T - T');
   otherwise
       error('Tensor should be of rank 2')
 end

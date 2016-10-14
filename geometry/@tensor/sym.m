@@ -11,7 +11,6 @@ function S = sym(T,varargin)
 %  S - @tensor
 %
 
-
 switch  T.rank
   case 4
     error('not yet implemented!');
@@ -20,5 +19,5 @@ switch  T.rank
     error('not yet implemented!');
     m = tensor32(T.M,T.doubleConvention);
   case 2
-    S = 0.5*(T + T.');
+    S = 0.5*(T + T');
 end
