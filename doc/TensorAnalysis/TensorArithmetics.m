@@ -26,7 +26,7 @@ T = tensor(M,cs)
 %%
 % In case the two rank tensor is diagonal the syntax simplifies to
 
-T = tensor(diag([10 3 1]),cs)
+T = tensor.diag([10 3 1],cs)
 
 %% Importing a Tensor from a File
 % Especially for higher order tensors it is more convinient to import the
@@ -45,7 +45,7 @@ C = loadTensor(fname,cs,'name','stiffness')
 % x it is plotted Q(x) = T_ijkl x_i x_j x_k x_l
 
 setMTEXpref('defaultColorMap',blue2redColorMap);
-plot(C,'complete')
+plot(C,'complete','upper')
 
 %%
 % There are more specialized visuallition possibilities for specific

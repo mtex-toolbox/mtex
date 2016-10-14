@@ -158,6 +158,7 @@ sigma = EinsteinSum(tensor(r),1,r,2)
 
 % plot active slip plane in red
 hold on
+mActive.antipodal = true;
 quiver(r,mActive,'ArrowSize',0.2,'LineWidth',2,'Color','r');
 
 % plot active slip direction in green
