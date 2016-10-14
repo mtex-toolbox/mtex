@@ -115,9 +115,9 @@ methods (Static = true)
     ori = orientation(q,varargin{:});
   end
   
-  function ori = id(varargin)    
-    s = varargin(cellfun(@isnumeric,varargin));
-    q = quaternion.id(s{:});
+  function ori = id(varargin)
+    id = find(~cellfun(@isnumeric,varargin),1)-1;
+    q = quaternion.id(varargin{1:id});
     ori = orientation(q,varargin{:});
   end
   
