@@ -38,3 +38,5 @@ KV = @(rot_angle,quat_dist,volume_radius) weight(rot_angle,quat_dist,volume_radi
 %end
 
 vol = quadv(@(rot_angle) KV(rot_angle,dist,radius),0,min(pi,5*psi.halfwidth),1e-7);
+%vol = integral(@(rot_angle) KV(rot_angle,dist,radius),0,min(pi,5*psi.halfwidth),'AbsTol',1e-7,'ArrayValued',true);
+%'AbsTol',1e-7,
