@@ -9,6 +9,7 @@ end
 
 clear
 close all
+mtex_settings
 setMTEXpref('FontSize',12)
 setMTEXpref('figSize',0.4)
 
