@@ -31,7 +31,8 @@ for i = 1:length(f.h)
   
   
   % compute orientations
-  ori(:,i) = rotation('axis',r,'angle',omega) .* o1;
+  ori(:,i) = orientation(rotation('axis',r,'angle',omega) .* ...
+    rotation(o1),o1.CS,o1.SS);
   
 end
 
