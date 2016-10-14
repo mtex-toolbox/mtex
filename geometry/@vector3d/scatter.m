@@ -119,8 +119,8 @@ for i = 1:numel(sP)
     if check_option(varargin,'DisplayName')      
       holdState = get(sP(i).ax,'nextPlot');
       set(sP(i).ax,'nextPlot','add');
-      optiondraw(scatter(0,0,'parent',sP(i).hgt,'MarkerFaceColor',mfc,...
-        'MarkerEdgeColor',mec,'visible','off'),varargin{:});
+      optiondraw(scatter([],[],'parent',sP(i).ax,'MarkerFaceColor',mfc,...
+        'MarkerEdgeColor',mec),varargin{:});
       set(sP(i).ax,'nextPlot',holdState);
     end
   end
