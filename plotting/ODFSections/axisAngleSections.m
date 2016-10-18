@@ -22,10 +22,14 @@ classdef axisAngleSections < ODFSections
       oS.oR = fundamentalRegion(oS.CS1,oS.CS2,varargin{:});
       oS.volumeScaling = get_option(varargin,'volumeScaling',true);
       
-      % get sections      
-      oS.angles = get_option(varargin,'axisAngle',(5:10:180)*degree,'double');
-      oS.angles(oS.angles>oS.oR.maxAngle) = [];
-
+      % get sections
+      if check_option(varargin,'sections')
+         omega = linspace(0,oS.oR.maxAngle, 1+get_option(varargin,'sections'));
+        oS.angles = 0.5*(omega(1:end-1) + omega(2:end));
+      else
+        oS.angles = get_option(varargin,'axisAngle',(5:10:180)*degree,'double');
+        oS.angles(oS.angles>oS.oR.maxAngle) = [];
+      end
       for s=1:length(oS.angles)
         oS.axesSectors{s} = oS.oR.axisSector(oS.angles(s));
       end
