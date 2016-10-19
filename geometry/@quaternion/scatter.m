@@ -74,6 +74,7 @@ else
     'MarkerSize',get_option(varargin,'MarkerSize',5),...
     'Marker',get_option(varargin,'Marker','o'),...
     'parent',mtexFig.gca);
+  
   optiondraw(h,varargin{:});
 end
 

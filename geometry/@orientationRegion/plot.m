@@ -88,8 +88,11 @@ switch lower(projection)
     hold off
 end
 
-axis equal off
-if isNew, fcw; end
+if isNew
+  axis equal off
+  view(mtexFig.gca,3);
+  fcw;
+end
 
 if nargout == 0, clear h; end
 
