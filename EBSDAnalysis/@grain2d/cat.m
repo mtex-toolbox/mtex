@@ -3,8 +3,6 @@ function grains = cat(dim,varargin)
 %
 % Syntax
 %   g = [grains_1, grains_2, grains_n]
-%
-% Example
 %   g = [grains('fe') grains('mg')]
 %   g = [grains(1:100) grains(500:end)]
 %

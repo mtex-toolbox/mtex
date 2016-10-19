@@ -1,6 +1,9 @@
 function S2G = neuralgas(odf,h,varargin)
 % attempt to distribute measure-sites equally according to invers polefigure density (experimental)
 %
+% Syntax
+%   S2G = neuralgas(odf,Miller(1,0,0,cs),'points',500,'epoches',25)
+%
 % Input
 %  odf - @ODF
 %  h   - @Miller
@@ -14,9 +17,6 @@ function S2G = neuralgas(odf,h,varargin)
 %  eta     - 'learing--rate' as vector: [eta_start eta_stop], default [0.1 0.02]
 %  lambda  - stimuli of 
 %  verbose - display points during optimisation
-%
-% Example
-%   S2G = neuralgas(odf,Miller(1,0,0,cs),'points',500,'epoches',25)
 %
 % See also
 % S2Grid/refine

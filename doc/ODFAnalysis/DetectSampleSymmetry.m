@@ -33,7 +33,9 @@ plotPDF(odf,h,'antipodal','silent','complete')
 % the individual orientations.
 
 % define a sample rotation 
+%rot = rotation('euler',0*degree,0*degree,1*degree);
 rot = rotation('euler',15*degree,12*degree,-5*degree);
+
 
 % Simulate individual orientations and rotate them.
 % Note that we loose the sample symmetry by rotating the orientations

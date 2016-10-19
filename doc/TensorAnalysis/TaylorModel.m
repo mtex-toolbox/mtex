@@ -131,12 +131,12 @@ q = 0;
 epsilon = 0.3 * tensor.diag([1 -q -(1-q)],'name','strain');
 
 % 
-numIter = 50;
+numIter = 10;
 progress(0,numIter);
 for sas=1:numIter
 
   % compute the Taylor factors and the orientation gradients
-  [M,~,mori] = calcTaylor(inv(ori) * epsilon ./ numIter, sS.symmetrise);
+  [M,~,mori] = calcTaylor(inv(ori) * epsilon ./ numIter, sS.symmetrise,'silent');
   
   % rotate the individual orientations
   ori = ori .* mori;

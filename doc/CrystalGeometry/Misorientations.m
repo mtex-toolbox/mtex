@@ -52,29 +52,31 @@ round(inv(mori) * Miller(2,-1,-1,0,CS))
 % misorientation is a twinning misorientation. Lets analyse whether there
 % are some more alignments between major lattice planes.
 
-m = Miller({1,0,-1,0},{1,1,-2,0},{1,0,-1,1},{1,1,-2,1},{1,1,-2,2},{0,0,0,1},CS);
+m = Miller({1,-1,0,0},{1,1,-2,0},{1,-1,0,1},{0,0,0,1},CS);
 
-close all
 % cycle through all major lattice planes
+close all
 for im = 1:length(m)
-  
   % plot the lattice planes of grains 80 with respect to the 
   % reference frame of grain 70
-  plot(mori * symmetrise(m(im)),'symmetrised','MarkerSize',10,...
-    'DisplayName',char(m(im)),'fundamentalRegion','figSize','normal')
+  plot(mori * m(im).symmetrise,'MarkerSize',10,...
+    'DisplayName',char(m(im)),'figSize','large','noLabel','upper')
   hold all
 end
 hold off
-annotate(m,'labeled')
+
+% mark the corresponding lattice planes in the twin
+mm = round(unique(mori*m.symmetrise,'noSymmetry'),'maxHKL',6);
+annotate(mm,'labeled','MarkerSize',5,'figSize','large')
 
 % show legend
-legend({},'location','NorthWest','FontSize',13);
+legend({},'location','SouthEast','FontSize',13);
 
 %%
-% we observe an almost perfect math between the {11-20} lattice planes and
-% the {10-11} lattice planes and good coincidences for the lattice plane
-% {10-10} to {0001} and {11-22}; and for the lattice plane {10-10} to
-% {11-22}. Lets compute the angles explicitly
+% we observe an almost perfect match for the lattice planes {11-20} to
+% {-2110} and {1-101} to {-1101} and good coincidences for the lattice
+% plane {1-100} to {0001} and {0001} to {0-661}. Lets compute the angles
+% explicitly
 
 angle(mori * Miller(1,1,-2,0,CS),Miller(1,1,-2,0,CS)) / degree
 angle(mori * Miller(-1,0,1,1,CS),Miller(1,0,-1,1,CS)) / degree
@@ -99,13 +101,20 @@ mori.angle / degree
 % Lets plot the same figure as before with the exact twinning
 % misorientation.
 
+% cycle through all major lattice planes
+close all
 for im = 1:length(m)
-  plot(mori * symmetrise(m(im)),'symmetrised','MarkerSize',10,...
-    'DisplayName',char(m(im)),'fundamentalRegion')
+  % plot the lattice planes of grains 80 with respect to the 
+  % reference frame of grain 70
+  plot(mori * m(im).symmetrise,'MarkerSize',10,...
+    'DisplayName',char(m(im)),'figSize','large','noLabel','upper')
   hold all
 end
 hold off
-annotate(m,'labeled')
+
+% mark the corresponding lattice planes in the twin
+mm = round(unique(mori*m.symmetrise,'noSymmetry'),'maxHKL',6);
+annotate(mm,'labeled','MarkerSize',5,'figSize','large')
 
 % show legend
 legend({},'location','NorthWest','FontSize',13);

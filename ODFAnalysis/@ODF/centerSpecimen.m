@@ -25,31 +25,28 @@ function [odf,rot,v1,v2] = centerSpecimen(odf,v0,varargin)
 %  fourier    - use fourier coefficents as objective function
 %
 % Example:
-% Starting with an synthetic odf with orthorhombic symmetry
+% 
+%   %Starting with an synthetic odf with orthorhombic symmetry
+%   CS = crystalSymmetry('cubic')
+%   SS = specimenSymmetry('orthorhombic')
+%   ori = [orientation('euler',135*degree,45*degree,120*degree,CS,SS) ...
+%          orientation('euler', 60*degree, 54.73*degree, 45*degree,CS,SS) ...
+%          orientation('euler',70*degree,90*degree,45*degree,CS,SS)...
+%          orientation('euler',0*degree,0*degree,0*degree,CS,SS)];
 %
-%       CS = crystalSymmetry('cubic')
-%       SS = specimenSymmetry('orthorhombic')
-%       h = [Miller(0,0,1),Miller(0,1,1),Miller(1,1,1)];
-%       r = [ rotation('euler', 90*degree,35*degree,30*degree) ...
-%         rotation('euler', 90*degree,35*degree,0*degree)]
+%   odf = unimodalODF(SS*ori);
 %
-%       sr = SS*r;
-%       odf = unimodalODF(sr,CS);
+%   %we define a rotational displacement
+%   r2 = rotation('euler', 6*degree,4*degree,0*degree)
+%   odf = rotate(odf,r2);
+%   h = [Miller(0,0,1,CS),Miller(0,1,1,CS),Miller(1,1,1,CS)];
+%   plotPDF(odf,h,'antipodal','complete's);
 %
-% we define a rotational displacement
+%   %and now retrive the rotation back
+%   [odr,r,v1,v2] = centerSpecimen(odf);
+%   plotPDF(odr,h,'antipodal')
 %
-%       r2 = rotation('euler', 6*degree,4*degree,0*degree)
-%       odf = rotate(odf,r2);
-%
-%       plotPDF(odf,h,'antipodal');
-%
-% and now retrive the rotation back
-%
-%       [odr,r,v1,v2] = centerSpecimen(odf);
-%       plotPDF(odr,h,'antipodal')
-%
-%
-%
+
 
 % get options
 if nargin < 2, v0 = xvector; end
@@ -140,7 +137,7 @@ odf = rotate(odf,rot);
       
       % TODO: maybe one can use interpolation here instead of evaluating the
       % ODF again
-      yr = eval(rotate(odf,rot),SO3,'silent'); %#ok<EVLC>
+      yr = eval(rotate(odf,rot),SO3,'silent');
       y = sum((y0(:) - yr(:)).^2) ./ sum(y0(:).^2);
     end
 
