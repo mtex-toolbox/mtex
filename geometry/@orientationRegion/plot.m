@@ -90,8 +90,9 @@ end
 
 if isNew
   axis equal off
-  view(mtexFig.gca,3);
   fcw;
+  view(mtexFig.gca,3);
+  
 end
 
 if nargout == 0, clear h; end

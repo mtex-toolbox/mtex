@@ -67,7 +67,7 @@ else
   end
 
   % plot  
-  varargin = delete_option(varargin,'complete');
+  varargin = [delete_option(varargin,'complete'),dcs.plotOptions];
   density = pos(calcAxisDistribution(obj,h,varargin{:}));
   h = smooth(h,density,varargin{:});
 

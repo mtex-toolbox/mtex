@@ -42,8 +42,8 @@ end
 
 if isNew
   set(mtexFig.parent,'Name',['Scatter plot of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
-  view(mtexFig.gca,3);
+  fcw
   grid(mtexFig.gca,'on');
   axis(mtexFig.gca,'vis3d','equal','on');
-  fcw
+  view(mtexFig.gca,3);
 end

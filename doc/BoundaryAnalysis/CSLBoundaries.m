@@ -140,6 +140,7 @@ hold off
 
 % compute the boundary of the fundamental zone
 oR = fundamentalRegion(oM.CS1,oM.CS2,'antipodal');
+close all
 plot(oR)
 
 % plot 500 random misorientations in the 3d fundamenal zone
@@ -161,7 +162,7 @@ hold off
 % function. The option |antipodal| is applied since we want to identify
 % |mori| and |inv(mori)|.
 
-mdf = calcMDF(gB.misorientation,'halfwidth',2.5*degree,'bandwidth',54)
+mdf = calcMDF(gB.misorientation,'halfwidth',2.5*degree,'bandwidth',32)
 
 %%
 % Next we can visualize the misorientation distribution function in axis
