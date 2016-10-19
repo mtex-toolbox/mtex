@@ -45,12 +45,17 @@ end
 % rotate fundamental sector such that it starts at the vector that is
 % plotted to east
 try
-  
+
+  % the correction angle - for some symmetries this needs to be a multiple
+  % of 60 degree - this will be fixed later in the code
+  cor = 0;
   if ~isempty(getMTEXpref('bAxisDirection',[]))
-    rho = cs.bAxis.rho - pi/2*(NWSE(getMTEXpref('bAxisDirection',[]))-1);
+    cor = pi/2*(NWSE(getMTEXpref('bAxisDirection',[]))-1);
+    rho = cs.bAxis.rho - cor;
   elseif ~isempty(getMTEXpref('aAxisDirection',[]))
-    rho = cs.aAxis.rho - pi/2*(NWSE(getMTEXpref('aAxisDirection',[]))-1);
-  else
+    cor = pi/2*(NWSE(getMTEXpref('aAxisDirection',[]))-1);
+    rho = cs.aAxis.rho - cor;
+  else    
     rho = cs.bAxis.rho;
   end
 
@@ -58,8 +63,6 @@ catch
   rho = (1-NWSE(getMTEXpref('xAxisDirection')))*pi/2;
 end
 N = rotate(N,rho);
-
-
 
 % some special cases
 switch cs.id 
@@ -91,16 +94,17 @@ switch cs.id
   case 17 % 3
   case 18 % -3
   case {19,20,21} % 321, 3m1, -3m1    
-    N = rotate(N,-mod(30+round(rho/degree),60)*degree);
-  case 22 % 312
-    N = rotate(N,-mod(30+round(rho/degree),60)*degree);    
-  case {23,24} % 312, 31m, -31m
+    N = rotate(N,-mod(30+round((cor)/degree),60)*degree);
+  case {22} % 312
+    N = rotate(N,-mod(30+round((cor)/degree),60)*degree);    
+  case {23,24} % -31m
+    N = rotate(N,-mod(round((cor)/degree),60)*degree);    
   case 30 %-42m
     N = rotate(N,-45*degree);
   case {33,34,35,36} % 6, 622    
   case 38 % -62m
   case 39 % 6m2
-    N = rotate(N,-mod(30+round(rho/degree),60)*degree);
+    N = rotate(N,-mod(30+round(cor/degree),60)*degree);
   case 41 % 23    
     N = rotate(vector3d([1 1 0 0],[1 -1 1 -1],[0 0 1 1]),rho);
   case {42,43} % m-3, 432
