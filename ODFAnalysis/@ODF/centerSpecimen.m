@@ -40,7 +40,7 @@ function [odf,rot,v1,v2] = centerSpecimen(odf,v0,varargin)
 %   r2 = rotation('euler', 6*degree,4*degree,0*degree)
 %   odf = rotate(odf,r2);
 %   h = [Miller(0,0,1,CS),Miller(0,1,1,CS),Miller(1,1,1,CS)];
-%   plotPDF(odf,h,'antipodal','complete's);
+%   plotPDF(odf,h,'antipodal','complete');
 %
 %   %and now retrive the rotation back
 %   [odr,r,v1,v2] = centerSpecimen(odf);
