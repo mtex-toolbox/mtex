@@ -45,9 +45,8 @@ else
 end
 
 % get kernel
-if nargin > 2 && isa(varargin{3},'kernel')
-  psi = varargin{3};
-else
+psi = getClass(varargin,'kernel',[]);
+if isempty(psi)
   hw = get_option(varargin,'halfwidth',10*degree);
   psi = deLaValeePoussinKernel('halfwidth',hw);
 end
