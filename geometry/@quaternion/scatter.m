@@ -16,7 +16,7 @@ function h = scatter(q,varargin)
 if isappdata(mtexFig.gca,'projection')
   projection = getappdata(mtexFig.gca,'projection');
 else
-  projection = get_option(varargin,'projection','axisAngle');
+  projection = get_option(varargin,'projection','bunge');
   setappdata(mtexFig.gca,'projection',projection);
 end
 
@@ -27,12 +27,20 @@ switch lower(projection)
     v = v(abs(v) < 1e5);
     [x,y,z] = double(v);
   case 'axisangle'
-    [x,y,z] = double(q.axis .* q.angle ./ degree);
-  case 'euler'
-    [x,y,z] = q.Euler(varargin{:});
+    [x,y,z] = double(axis(q,'noSymmetry') .* angle(q,'noSymmetry') ./ degree);
+  case {'euler','bunge'}
+    if check_option(varargin,'project2FundamentalRegion')
+      [x,y,z] = project2EulerFR(q,varargin{:});
+    else
+      [x,y,z] = q.Euler(varargin{:});
+    end
     x = x./degree;
     y = y./degree;
     z = z./degree;
+    
+    xlabel(mtexFig.gca,'$\varphi_1$','Interpreter','LaTeX');
+    ylabel(mtexFig.gca,'$\Phi$','Interpreter','LaTeX');
+    zlabel(mtexFig.gca,'$\varphi_2$','Interpreter','LaTeX');
 end
 
 % add some nans if lines are plotted

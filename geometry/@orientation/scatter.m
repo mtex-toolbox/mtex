@@ -1,5 +1,5 @@
 function varargout = scatter(o,varargin)
-% plots ebsd data as scatter plot
+% plots orientations in 3d
 %
 % Syntax
 %   scatter(ori)
@@ -25,7 +25,7 @@ else
 end
 
 % subsample to reduce size
-if length(o) > 2000 || check_option(varargin,'points')
+if (length(o) > 2000 && ~check_option(varargin,'all')) || check_option(varargin,'points') 
   points = fix(get_option(varargin,'points',2000));
   disp(['plot ', int2str(points) ,' random orientations out of ', ...
     int2str(length(o)),' given orientations']);
@@ -38,7 +38,7 @@ end
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 
 % plot
-[varargout{1:nargout}]= scatter@rotation(rotation(o),data,'parent',mtexFig.gca,varargin{:});
+[varargout{1:nargout}]= scatter@rotation(o,data,'parent',mtexFig.gca,varargin{:});
 
 if isNew
   set(mtexFig.parent,'Name',['Scatter plot of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
