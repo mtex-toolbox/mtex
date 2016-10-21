@@ -2,6 +2,17 @@ function plot(oS,varargin)
 % plot data into ODF sections
 %
 % Syntax
+%   plot(oS,ori)
+%   plot(oS,fibre)
+%
+%   grid = oS.makeGrid;
+%   values = odf.eval(grid)
+%   plot(oS,values)
+%
+% Input
+%  oS    - @ODFSections
+%  ori   - @orientation
+%  fibre - @fibre
 %
 
 [mtexFig,isNew] = newMtexFigure('ensureAppdata',{{'ODFSections',oS}},varargin{:});

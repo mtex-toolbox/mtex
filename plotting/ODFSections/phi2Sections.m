@@ -32,6 +32,7 @@ classdef phi2Sections < ODFSections
             
       % get sections
       nsec = get_option(varargin,'sections',6);
+      nsec = 1+oS.maxphi2./get_option(varargin,'secResolution',oS.maxphi2/(nsec-1));
       oS.phi2 = linspace(0,oS.maxphi2,nsec+1);
       oS.phi2(end) = [];
       oS.phi2 = get_option(varargin,'phi2',oS.phi2,'double');

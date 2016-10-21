@@ -2,19 +2,19 @@ classdef ODFSections < handle
   %ODFSECTIONS Summary of this class goes here
   %   Detailed explanation goes here
   %
-  % Example 1
+  % Example
   %
-  % cs = crystalSymmetry('mmm')
-  % oS = axisAngleSections(cs,cs)
-  % ori = oS.makeGrid('resolution');
-  % oM = patalaOrientationMapping(cs,cs)
-  % rgb = oM.orientation2color(ori);
-  % plot(oS,rgb,'surf')
+  %   cs = crystalSymmetry('mmm')
+  %   oS = axisAngleSections(cs,cs)
+  %   ori = oS.makeGrid('resolution');
+  %   oM = patalaOrientationMapping(cs,cs)
+  %   rgb = oM.orientation2color(ori);
+  %   plot(oS,rgb,'surf')
   %
-  % plot(oS,ori)
+  %   plot(oS,ori)
   %
-  % ori = orientation(randq(100),cs,cs)
-  % plot(oS,ori)
+  %   ori = orientation(randq(100),cs,cs)
+  %   plot(oS,ori)
   
   properties
     CS1 % crystal symmetry of phase 1
