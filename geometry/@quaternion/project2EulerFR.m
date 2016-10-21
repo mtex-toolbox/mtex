@@ -20,7 +20,7 @@ function [phi1,Phi,phi2] = project2EulerFR(q,CS1,CS2,varargin)
 
 isPerpZ1 = isnull(dot(CS1.axis,zvector)) & ~isnull(angle(CS1));
 isPerpZ2 = isnull(dot(CS2.axis,zvector)) & ~isnull(angle(CS2));
-ind = Phi > pi;
+ind = Phi > pi/2;
 
 s = substruct('()',{ind});
 if any(isPerpZ1)
