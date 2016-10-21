@@ -37,6 +37,9 @@ function odf = calcKernelODF(ori,varargin)
 % See also
 % ebsd_demo EBSD2odf EBSDSimulation_demo loadEBSD ODF/calcEBSD EBSD/calcKernel kernel/kernel
 
+% remove nan orientations
+ori = subSet(ori,~isnan(ori));
+
 % maybe there is nothing to do
 if isempty(ori), odf = ODF; return, end
 
