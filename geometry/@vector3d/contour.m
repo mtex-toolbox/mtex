@@ -16,4 +16,4 @@ function varargout = contour(v,data,varargin)
 
 % plot
 [varargout{1:nargout}] = v.smooth(data,'contours',10,...
-  'LineStyle','-','fill','off',varargin{:});
+  'LineStyle','-','fill','off','linecolor','flat',varargin{:});
