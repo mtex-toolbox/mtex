@@ -117,7 +117,7 @@ classdef rotation < quaternion & dynOption
     end
     
     function phi1 = get.phi1(rot)
-      phi1 = Euler(rot);
+      [phi1,~,~] = Euler(rot);
     end
     
     function Phi = get.Phi(rot)
