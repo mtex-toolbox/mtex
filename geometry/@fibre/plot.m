@@ -7,7 +7,7 @@ if isa(o,'orientation')
   if check_option(varargin,'project2FundamentalRegion')
   
     o = o.project2FundamentalRegion;
-  
+      
   elseif check_option(varargin,'restrict2FundamentalRegion')
   
     oR = fundamentalRegion(f.CS,f.SS);

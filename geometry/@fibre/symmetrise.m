@@ -3,16 +3,24 @@ function f = symmetrise(f,varargin)
 
 if isa(f.h,'Miller')
   
-  [f.h,l] = f.h.symmetrise;
+  [f.h,l,sym] = f.h.symmetrise;
 
-  f.r = repelem(f.r,l);
+  o1 = repelem(rotation(f.o1),l);
+  f.o1 = reshape(orientation(o1 .* inv(sym),f.CS,f.SS),[],1);
+  
+  o2 = repelem(rotation(f.o2),l);
+  f.o2 = reshape(orientation(o2 .* inv(sym),f.CS,f.SS),[],1);
   
 end
   
 if isa(f.r,'Miller')
   
-  [f.r,l] = f.r.symmetrise;
+  [f.r,l,sym] = f.r.symmetrise;
 
-  f.h = repelem(f.h,l);
+  o1 = repelem(rotation(f.o1),l);
+  f.o1 = reshape(orientation(sym .* o1,f.CS,f.SS),[],1);
+  
+  o2 = repelem(rotation(f.o2),l);
+  f.o2 = reshape(orientation(sym .* o2,f.CS,f.SS),[],1);
   
 end

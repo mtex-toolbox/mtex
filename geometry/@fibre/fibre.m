@@ -67,7 +67,7 @@ classdef fibre
     end
 
     function r = get.r(f)
-      r = f.o1 * f.h;
+      r = f.o1 .* f.h;
     end
     
     function cs = get.CS(f)    
