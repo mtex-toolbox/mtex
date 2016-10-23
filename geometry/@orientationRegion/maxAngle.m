@@ -14,8 +14,11 @@ function  omega = maxAngle(oR,varargin)
 if nargin>1 && isa(varargin{1},'vector3d')
 
   % ignore restrictions on the rotational axis
-  N = oR.N(oR.N.angle < pi<1e-3);
-  %N = oR.N;
+  %N = oR.N(oR.N.angle < pi<1e-3);
+  N = oR.N;
+  
+  %TODO: we need to project v to the fundamental sector
+  % 
   
   if isempty(N)
     omega = repmat(pi,size(varargin{1}));
