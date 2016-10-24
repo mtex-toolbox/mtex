@@ -16,8 +16,8 @@ for i = 1:length(sS)
   [r,c] = find(isnull(dot_outer(vector3d(mm),vector3d(nn))));
 
   % restricht to the orthogonal ones
-  b = [b;mm(r)]; %#ok<*AGROW>
-  n = [n;nn(c)];
+  b = [b;mm(r(:))]; %#ok<*AGROW>
+  n = [n;nn(c(:))];
   CRSS = [CRSS;repmat(sS.CRSS(i),length(r),1)];
 end
 
