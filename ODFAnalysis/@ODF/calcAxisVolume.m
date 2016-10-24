@@ -29,7 +29,7 @@ end
 h= h(sym.fundamentalSector.checkInside(h));
 
 % find those within the ball
-ind = angle(Miller(axis,sym),Miller(h,sym)) <= radius+1e-5;
+ind = angle(Miller(axis,sym),Miller(h,sym)) < radius+1e-5;
 h = h(ind);
 
 % remember volume of the ball
