@@ -1,4 +1,4 @@
-%% Plotting spatially indexed EBSD data
+s%% Plotting spatially indexed EBSD data
 % How to visualize EBSD data
 %
 %% Open in Editor
@@ -29,7 +29,7 @@ ebsd('Diopside').color
 
 %%
 % These values are RGB values, e.g. to make the color for diopside even
-% redder we can do
+% more red we can do
 
 ebsd('Diopside').color = [1 0 0];
 
@@ -137,10 +137,11 @@ plot(ebsd('Forsterite'),color)
 % <ipdfHSVOrientationMapping.html ipdfHSVOrientationMapping> MTEX supports
 % also a lot of other color mappings as summarized below
 %
-% * 
-% *
-% *
-% *
+% * <TSLOrientationMapping.html TSLOrientationMapping>
+% * <HKLOrientationMapping.html HKLOrientationMapping>
+% * <BungeRGBOrientationMapping.html BungeRGBOrientationMapping>
+% * <patalaOrientationMapping.html patalaOrientationMapping>
+% * <axisAngleOrientationMapping.html axisAngleOrientationMapping>
 %
 %
 %% Customizing the color
@@ -152,9 +153,13 @@ plot(ebsd('Forsterite'),color)
 % To color a fibre, one has to specify the crystal direction *h* together
 % with its RGB color and the specimen direction *r*, which should be marked.
 
+% define a fibre
+f = fibre(Miller(1,1,1,csFo),zvector);
+
+% set up coloring
 oM = ipdfCenterOrientationMapping(csFo);
-oM.inversePoleFigureDirection = zvector;
-oM.center = Miller(1,1,1,csFo);
+oM.inversePoleFigureDirection = f.r;
+oM.center = f.h;
 oM.color = [0 0 1];
 oM.psi = deLaValeePoussinKernel('halfwidth',7.5*degree);
 
@@ -167,13 +172,13 @@ plot(ebsd('fo'),oM.orientation2color(ebsd('fo').orientations))
 
 plot(oM)
 hold on
-circle(Miller(1,1,1,csFo),15*degree,'linewidth',2)
+circle(f.h.project2FundamentalRegion,15*degree,'linewidth',2)
 
 %%
 % the percentage of blue colored area in the map is equivalent to the fibre
 % volume
 
-vol = fibreVolume(ebsd('fo').orientations,Miller(1,1,1,csFo),zvector,15*degree)
+vol = volume(ebsd('fo').orientations,f,15*degree)
 
 plotIPDF(ebsd('fo').orientations,zvector,'markercolor','k','marker','x','points',200)
 hold off
@@ -194,18 +199,12 @@ plot(ebsd('fo'),oM.orientation2color(ebsd('fo').orientations))
 plot(oM,'complete')
 
 %% SUB: Coloring certain orientations
-% We might be interested in locating some special orientation in our orientation map. 
-% Suppose the model of the ODF somewhere in our spatial distribution of
-% grains (the orientation map).
-
-mode = idquaternion
-
-%%
-% The definition of colors for certain orientations is carried out similarly as 
-% in the case of fibres
+% We might be interested in locating some special orientation in our
+% orientation map. The definition of colors for certain orientations is
+% carried out similarly as in the case of fibres
 
 oM = centerOrientationMapping(ebsd('Fo'));
-oM.center = mean(ebsd('Forsterite').orientations);
+oM.center = mean(ebsd('Forsterite').orientations,'robust');
 oM.color = [0,0,1];
 oM.psi = deLaValeePoussinKernel('halfwidth',20*degree);
 
@@ -232,8 +231,8 @@ mtexColorbar
 
 %% Combining different plots
 % Combining different plots can be done either by plotting only subsets of
-% the EBSD data or via the option |'translucent'|. Note that the option
-% |'translucent'| requires the renderer of the figure to be set to
+% the EBSD data or via the option |'faceAlpha'|. Note that the option
+% |'faceAlpha'| requires the renderer of the figure to be set to
 % |'opengl'|.
 
 close all;
