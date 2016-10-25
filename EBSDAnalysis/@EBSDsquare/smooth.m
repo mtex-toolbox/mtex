@@ -37,7 +37,7 @@ filter = getClass(varargin,'EBSDFilter',splineFilter);
 try
   grainId = ebsd.grainId;
 catch
-  grainId = ebsd.phaseId;
+  grainId = reshape(ebsd.phaseId,size(ebsd));
 end
 
 % extract some locale variables
