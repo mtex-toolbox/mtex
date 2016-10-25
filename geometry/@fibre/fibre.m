@@ -53,10 +53,12 @@ classdef fibre
         f.o2 = f.o1;
       end
       
-      if ~isempty(varargin) && isa(varargin{1},'vector3d')
-        f.h = Miller(varargin{1},o1.CS);
-      else
-        f.h = axis(inv(o1) .* f.o2,'noSymmetry');
+      if isempty(f.h)
+        if ~isempty(varargin) && isa(varargin{1},'vector3d')
+          f.h = Miller(varargin{1},o1.CS);
+        else
+          f.h = axis(inv(o1) .* f.o2,'noSymmetry');
+        end
       end
       
       if check_option(varargin,'full'), f.o2 = f.o1; end
