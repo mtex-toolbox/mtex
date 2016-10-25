@@ -31,7 +31,7 @@ ss = specimenSymmetry('orthorhombic');
 % well known possibility is  so called *Euler angles*. Here two
 % conventions are commonly used:
 %
-% *The Bunge Euler Angle Convention*
+% SUB: The Bunge Euler Angle Convention
 %
 % Here an arbitrary rotation is determined by three consecutive rotations
 % in the sample reference frame. The first is about the z-axis, the second about the x-axis, 
@@ -43,7 +43,7 @@ ss = specimenSymmetry('orthorhombic');
 o = orientation('Euler',30*degree,50*degree,10*degree,cs,ss)
 
 %%
-% *The Matthies Euler Angle Convention*
+% SUB: The Matthies Euler Angle Convention
 %
 % In contrast to the Bunge convention here the three rotations are taken
 % about the z-axis, the y-axis, and the z-axis.
@@ -51,7 +51,7 @@ o = orientation('Euler',30*degree,50*degree,10*degree,cs,ss)
 o = orientation('Euler',30*degree,50*degree,10*degree,'ZYZ',cs,ss)
 
 %%
-% *The axis angle parametrisation*
+% SUB: The axis angle parametrisation
 %
 % Another possibility to specify an rotation is to give its rotational axis
 % and its rotational angle.
@@ -59,14 +59,14 @@ o = orientation('Euler',30*degree,50*degree,10*degree,'ZYZ',cs,ss)
 o = orientation('axis',xvector,'angle',30*degree,cs,ss)
 
 %%
-% *Miller indice*
+% SUB: Miller indice
 %
 % There is also a Miller indice convention for defining crystal orientations.
 
 o = orientation('Miller',[1 0 0],[0 1 1],cs,ss)
 
 %%
-% *Four vectors defining a rotation*
+% SUB: Four vectors defining a rotation
 %
 % Given four vectors u1, v1, u2, v2 there is a unique rotations q such that 
 % q u1 = v1 and q u2 = v2. 
@@ -74,22 +74,57 @@ o = orientation('Miller',[1 0 0],[0 1 1],cs,ss)
 o = orientation('map',xvector,yvector,zvector,zvector,cs,ss)
 
 %%
-% *Defining an orientation by a 3 times 3 matrix*
+% SUB: Defining an orientation by a 3 times 3 matrix
 
 o = orientation('matrix',eye(3),cs,ss)
 
 %%
-% *Predefined Orientations*
+% SUB: Predefined Orientations
 % 
-% In the MTEX there is a list of predefined orientations:
-%
-% * <cubeOrientation.html cubeOrientation>
-% * <gossOrientation.html gossOrientation>
-% * <brassOrientation.html brassOrientation>
-%
-%
+% Below you find a list of orientations predefined in MTEX:
 
-o = orientation('goss',cs,ss)
+% the cube or identical orientation
+orientation.id(cs,ss);
+orientation.cube(cs,ss);
+
+% brass orientations
+orientation.brass(cs,ss);
+orientation.brass2(cs,ss);
+
+% copper orientations
+orientation.copper(cs,ss);
+orientation.copper2(cs,ss);
+
+% other cube orientations
+orientation.cubeND22(cs,ss);
+orientation.cubeND45(cs,ss);
+orientation.cubeRD(cs,ss);
+
+orientation.goss(cs,ss);
+orientation.invGoss(cs,ss);
+
+orientation.PLage(cs,ss);
+orientation.PLage2(cs,ss);
+orientation.QLage(cs,ss);
+orientation.QLage2(cs,ss);
+orientation.QLage3(cs,ss);
+orientation.QLage4(cs,ss);
+
+orientation.SR(cs,ss);
+orientation.SR2(cs,ss);
+orientation.SR3(cs,ss);
+orientation.SR4(cs,ss);
+
+%%
+% Note that you may define a list of orientations by using the same syntax
+% as for the matlab commands ones, zeros, ..
+
+orientation.id(100,1,cs,ss)
+
+%$ SUB: Random Orientations
+% You may generate random orientations with 
+
+ori = orientation.rand(1000,cs,ss)
 
 %% Rotating Crystal Directions onto Specimen Directions
 %
@@ -191,29 +226,53 @@ inv(o1)
 
 %% Plotting Orientations
 % 
-% The function [[orientation.plot.html,plot]] plots an orientation in 3
-% dimensional axis angle space.
+%% SUB: in Euler angle space
+% By default the function the function [[orientation.plot.html,plot]]
+% plots orientations in the three dimensional Bunge Euler angle space
 
-oR = fundamentalRegion(o1.CS,o1.SS,'complete')
+ori = orientation.rand(100,cs);
+plot(ori)
+
+
+%% SUB: in axis angle space
+% Alternatively, orientations can be plotted in the three dimensional axis
+% angle space.
+
+oR = fundamentalRegion(ori.CS,ori.SS,'complete')
 plot(oR)
 hold on
-scatter(o1,'axisAngle','markerColor','b','markerSize',10)
-axis off
+plot(ori,'markerColor','b','markerSize',10)
+hold off
 
 %%
 % Note that the orientation is not automatically projected into its
 % fundamental region, as we see if the fundamental region is visualized
 
 hold on
-oR = fundamentalRegion(o1.CS,o1.SS)
-plot(oR,'color',[0.7 0.5 0.5])
-hold on
+oR = fundamentalRegion(ori.CS,ori.SS)
+plot(oR,'color',[1 0.5 0.5])
+hold off
 
 
 %%
 
+plot(oR,'color',[1 0.5 0.5])
+%o2 = quaternion(o1.project2FundamentalRegion);
 hold on
-o2 = quaternion(o1.project2FundamentalRegion);
-scatter(o2,'axisAngle','markerColor','r','markerSize',10)
+scatter(ori.project2FundamentalRegion,'markerColor','r','markerSize',10)
 hold off
 
+%% SUB: in (inverse) pole figures
+%
+
+% a pole figure plot
+plotPDF(ori,Miller({1,0,0},{1,1,1},ori.CS))
+
+%%
+% an inverse pole figure plot
+plotIPDF(ori,[vector3d.X,vector3d.Z])
+
+%% SUB: in sections of the orientations space
+
+% as phi2 sections
+plotSection(ori,'phi2')

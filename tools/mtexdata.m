@@ -244,7 +244,8 @@ ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','Forsterite.ctf'),'convertEuler2spa
 function ebsd = mtexdata_twins
 
 plotx2east; plotzOutOfPlane
-ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','twins.ctf'),'convertEuler2spatialReferenceFrame');
+CS = crystalSymmetry('6/mmm',[3.2 3.2 5.2],'mineral','Magnesium','x||a*')
+ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','twins.ctf'),CS,'convertEuler2spatialReferenceFrame');
 
 
 % -----------------------------------------------------------------------

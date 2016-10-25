@@ -1,13 +1,36 @@
-%% Fibres in orientation space (The Class @fibre)
-% This sections describes the class *fibre* and gives an overview how
-% to work with fibres in MTEX.
+%% Fibres
+% This sections describes the class <fibre_index.html fibre> and gives an
+% overview how to work with fibres in MTEX.
 %
 %% Open in Editor
 %
 %% Defining a Fibre
 %
 % A fibre in orientation space can be seen as a line connecting two
-% orientations. Since, the orientation space has no boundary a full fibre
+% orientations.
+
+% define a crystal symmetry
+cs = crystalSymmetry('432')
+ss = specimenSymmetry('222')
+
+% and two orientations
+ori1 = orientation.cube(cs,ss);
+ori2 = orientation.goss(cs,ss);
+
+% the connecting fibre
+f = fibre(ori1,ori2)
+
+% lets plot the two orientations together with the fibre
+plot(ori1,'MarkerSize',10,'MarkerFaceColor','r','MarkerEdgeColor','k')
+hold on
+plot(ori2,'MarkerSize',10,'MarkerFaceColor','b','MarkerEdgeColor','k')
+plot(f)
+hold off
+
+
+
+%%
+%Since, the orientation space has no boundary a full fibre
 % is best thought of as a circle that passes trough two fixed orientations.
 
 %% SUB: by two orientations

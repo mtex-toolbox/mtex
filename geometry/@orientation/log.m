@@ -1,5 +1,5 @@
 function v = log(ori,ori_ref)
-%
+% the inverse of the exponential map
 %
 % Syntax
 %   v = log(ori)

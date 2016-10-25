@@ -4,5 +4,6 @@ CrystalSymmetries
 CrystalDirections
 CrystalOrientations
 Misorientations
+fibre_index
 AxialDirectional
 MorawiecCell
