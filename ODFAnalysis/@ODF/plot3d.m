@@ -18,7 +18,8 @@ contours = get_option(varargin,{'surf3','contour3'},10,'double');
 
 contour3s(rho./degree,theta./degree,phi2./degree,odf.eval(S3G),contours,...
   'surf3',varargin{:},'xlabel','$\varphi_1$','ylabel','$\Phi$','zlabel','$\varphi2$');
- 
+
+setappdata(gca,'projection','Bunge');
 fcw;
 
 end

@@ -42,8 +42,18 @@ end
 
 if isNew
   set(mtexFig.parent,'Name',['Scatter plot of "',get_option(varargin,'FigureTitle',inputname(1)),'"']);
-  fcw
+  
   grid(mtexFig.gca,'on');
   axis(mtexFig.gca,'vis3d','equal','on');
-  view(mtexFig.gca,3);
+  fcw
+  view(mtexFig.gca,3);    
+  camzoom(mtexFig.gca,0.6);
+  if check_option(varargin,'noFundamentalRegion')
+    [maxphi1,maxPhi,maxphi2] = fundamentalRegionEuler(crystalSymmetry,specimenSymmetry);
+  else
+    [maxphi1,maxPhi,maxphi2] = fundamentalRegionEuler(o.CS,o.SS);
+  end
+  xlim(mtexFig.gca,[0 maxphi1./degree]);
+  ylim(mtexFig.gca,[0 maxPhi./degree]);
+  zlim(mtexFig.gca,[0 maxphi2./degree]);
 end

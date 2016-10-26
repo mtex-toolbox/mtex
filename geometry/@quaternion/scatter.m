@@ -29,10 +29,10 @@ switch lower(projection)
   case 'axisangle'
     [x,y,z] = double(axis(q,'noSymmetry') .* angle(q,'noSymmetry') ./ degree);
   case {'euler','bunge'}
-    if check_option(varargin,'project2FundamentalRegion')
-      [x,y,z] = project2EulerFR(q,varargin{:});
-    else
+    if check_option(varargin,'noFundamentalRegion')
       [x,y,z] = q.Euler(varargin{:});
+    else
+      [x,y,z] = project2EulerFR(q,varargin{:});      
     end
     x = x./degree;
     y = y./degree;
