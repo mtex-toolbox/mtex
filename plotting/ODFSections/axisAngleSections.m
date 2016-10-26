@@ -41,6 +41,11 @@ classdef axisAngleSections < ODFSections
       oS.gridSize(1) = 0;
       for s = 1:length(oS.angles)
         sR = oS.oR.axisSector(oS.angles(s));
+        
+        % consider only upper as we can't plot more
+        % TODO: we may need to inform the user about this
+        sR = sR.restrict2Upper;
+        
         oS.plotGrid{s} = plotS2Grid(sR,varargin{:});
         
         oS.gridSize(s+1) = oS.gridSize(s) + length(oS.plotGrid{s});
@@ -75,8 +80,6 @@ classdef axisAngleSections < ODFSections
     function h = plotSection(oS,ax,sec,v,data,varargin)
       
       angle = oS.angles(sec);
-        
-      opt = oS.jointCS.plotOptions;
       
       % plot outer boundary
       if isempty(findall(ax,'tag','outerBoundary'))
