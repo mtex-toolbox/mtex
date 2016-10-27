@@ -17,7 +17,7 @@
 % The class <orientation.orientation.html *orientation*> is inherited from the class <rotation_index.html
 % *rotation*> and allow to work with orientation in MTEX.
 %
-%% Defining a Crystal Orientation
+%% Defining a crystal orientation
 %
 % In order to define a crystal orientation one has to define crystal and
 % specimen symmetry first.
@@ -31,7 +31,7 @@ ss = specimenSymmetry('orthorhombic');
 % well known possibility is  so called *Euler angles*. Here two
 % conventions are commonly used:
 %
-% SUB: The Bunge Euler Angle Convention
+% SUB: Bunge Euler angle convention
 %
 % Here an arbitrary rotation is determined by three consecutive rotations
 % in the sample reference frame. The first is about the z-axis, the second about the x-axis, 
@@ -43,7 +43,7 @@ ss = specimenSymmetry('orthorhombic');
 o = orientation('Euler',30*degree,50*degree,10*degree,cs,ss)
 
 %%
-% SUB: The Matthies Euler Angle Convention
+% SUB: Matthies Euler angle convention
 %
 % In contrast to the Bunge convention here the three rotations are taken
 % about the z-axis, the y-axis, and the z-axis.
@@ -51,7 +51,7 @@ o = orientation('Euler',30*degree,50*degree,10*degree,cs,ss)
 o = orientation('Euler',30*degree,50*degree,10*degree,'ZYZ',cs,ss)
 
 %%
-% SUB: The axis angle parametrisation
+% SUB: Axis angle parametrisation
 %
 % Another possibility to specify an rotation is to give its rotational axis
 % and its rotational angle.
@@ -79,7 +79,7 @@ o = orientation('map',xvector,yvector,zvector,zvector,cs,ss)
 o = orientation('matrix',eye(3),cs,ss)
 
 %%
-% SUB: Predefined Orientations
+% SUB: Predefined orientations
 % 
 % Below you find a list of orientations predefined in MTEX:
 
@@ -121,108 +121,86 @@ orientation.SR4(cs,ss);
 
 orientation.id(100,1,cs,ss)
 
-%$ SUB: Random Orientations
+%% SUB: Random orientations
 % You may generate random orientations with 
 
 ori = orientation.rand(1000,cs,ss)
 
-%% Rotating Crystal Directions onto Specimen Directions
+%% Coordinate transformations
 %
-% Let 
+% Orientations are essentially coordinate transformations that transform a
+% direction (tensor, slip system ...) given by crystal coordinates into the
+% same object given in specimen coordinates. 
+%
+% As an example consider the crystal direction
 
 h = Miller(1,0,0,cs)
 
 %%
-% be a certain crystal direction and 
+% and the orientation
 
 o = orientation('Euler',90*degree,90*degree,0*degree,cs,ss)
 
 %%
-% a crystal orientation. Then the alignment of this crystal direction with
-% respect to the specimen coordinate system can be computed via
+% Then in specimen coordinates the direction |h| has the coordinates
 
 r = o * h
 
 %%
-% Conversely the crystal direction that is mapped onto a certain specimen
-% direction can be computed via the <orientation.mldivide.html backslash operator>
+% Conversely, we can go back from specimen coordinates to crystal
+% coordinates by multiplying with the inverse orientation
 
-o \ r
+inv(o) * r
 
-%% Concatenating Rotations
-%
-% Let 
+%%
+% Assume next that the specimen is rotated about the X-axis about 60
+% degree. We may define this rotation by
 
-o = orientation('Euler',90*degree,0,0,cs);
 rot = rotation('Euler',0,60*degree,0);
 
 %%
-% be a crystal orientation and a rotation of the specimen coordinate
-% system. Then the orientation of the crystal with respect to the rotated
-% specimen coordinate system calculates by
+% Then a given orientation
+
+o = orientation('Euler',90*degree,0,0,cs);
+
+%%
+% translates into a orientation with respect to the rotated
+% specimen coordinate system by multiplying it with the rotation
 
 o1 = rot * o
 
-
-
-%%
-% Then the class of rotations crystallographically equivalent to or can be
-% computed in two ways. Either by using the command <orientation.symmetrise.html
+%% Symmetric equivalence
+%
+% Crystal orientations always appear as a class of symmetrically equivalent
+% orientations which are physicaly not distinguishable. For a given
+% orientation |o| the complete list of all symmetrically equivalent
+% orientations is given by the command <orientation.symmetrise.html
 % symmetrise> 
 
 symmetrise(o)
 
 %%
-% or by using multiplication
+% Alternatively the list can be computed by multiplying with the specimen
+% and the crystal symmetry from the left and from the right.
 
 ss * o * cs
 
-%% Calculating Misorientations
-%
-% Let cs and ss be crystal and specimen symmetry and o1 and o2 two crystal
-% orientations. Then one can ask for the misorientation between both
-% orientations. This misorientation can be calculated by the function
-% <orientation.angle.html angle>.
-
-angle(o,o1) / degree
-
-%%
-% This misorientation angle is in general smaller then the misorientation
-% without crystal symmetry which can be computed via
-
-angle(rotation(o),rotation(o1)) /degree
-
-%% Calculating with Orientations and Rotations
-%
-% Beside the standard linear algebra operations there are also the
-% following functions available in MTEX:
-% 
-% <quaternion.angle.html angle(o)> and
-% <quaternion.axis.html axis(o)> 
-
-% Then rotational angle and the axis of rotation
-% can be computed via then commands
-
-angle(o1)/degree
-
-axis(o1)
-%%
-% To obtain the inverse orientation to o, one can use the command
-% <quaternion.inv.html inv(q)>
-
-inv(o1)
-
-%% Conversion into Euler Angles and Rodrigues Parametrisation
+%% Conversion into Euler angles, matrix, quaternion or Rodrigues vector
 %
 % There are methods to transform quaternion in almost any other
 % parameterization of rotations as they are:
-%
-% * [[quaternion.Euler.html,Euler(o)]]   in Euler angle
-% * [[quaternion.Rodrigues.html,Rodrigues(o)]] % in Rodrigues parameter
-%
 
-[phi1,Phi,phi2] = Euler(o1)
+% as Euler angles
+o1.phi1, o1.Phi, o1.phi2
 
+% as quaternion
+quaternion(o1)
+
+% as matrix
+o1.matrix
+
+% as Rodrigues vector
+o1.Rodrigues
 
 %% Plotting Orientations
 % 
@@ -233,7 +211,6 @@ inv(o1)
 ori = orientation.rand(100,cs);
 plot(ori)
 
-
 %% SUB: in axis angle space
 % Alternatively, orientations can be plotted in the three dimensional axis
 % angle space.
@@ -241,7 +218,7 @@ plot(ori)
 oR = fundamentalRegion(ori.CS,ori.SS,'complete')
 plot(oR)
 hold on
-plot(ori,'markerColor','b','markerSize',10)
+plot(ori,'markerEdgeColor',[0 0 0.8],'markerSize',8)
 hold off
 
 %%

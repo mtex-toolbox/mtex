@@ -17,10 +17,7 @@ odf = 0.2*unimodalODF(mod1) ...
   + 0.3*unimodalODF(mod2) ...
   + 0.5*fibreODF(Miller(0,0,1,cs),vector3d(1,0,0),'halfwidth',10*degree)
   
-
 %odf = 0.2*unimodalODF(mod2) 
-  
-  
 
 %%
 % and lets switch to the LaboTex colormap

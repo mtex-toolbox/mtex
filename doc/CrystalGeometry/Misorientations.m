@@ -7,28 +7,69 @@
 %
 %% Contents
 %
-%% Misorientations between grains
-% Let us import some EBSD data set, compute grains and plot and colorize
-% according to their meanorientation and lets highlight grain 70 and grain
+%%  The misorientation angle
+% First we import some EBSD data set, compute grains and plot them
+% according to their mean orientation. Next we highlight grain 70 and grain
 % 80
 
 mtexdata twins
+% use only proper symmetry operations
+ebsd('M').CS = ebsd('M').CS.properGroup; 
 grains = calcGrains(ebsd('indexed'))
 CS = grains.CS; % extract crystal symmetry
 
-plot(grains,grains.meanOrientation)
+plot(grains,grains.meanOrientation,'micronbar','off')
 hold on
 plot(grains([70,80]).boundary,'edgecolor','w','linewidth',2)
 
-%%
-% The misorientation between those two grains can be computed from the
-% meanorientations of the grains. Remember that an orientation always maps
-% crystal coordinates into specimen coordinates. Hence, the product of an
-% inverse orientation with another orientation transfers crystal
-% coordinates from one crystal reference frame into crystal coordinates
-% with respect to another crystal reference frame.
+text(grains([70,80]),{'1','2'})
 
-mori = inv(grains(70).meanOrientation) * grains(80).meanOrientation
+
+%%
+% After extracting the mean orientation of grain 70 and 80
+
+ori1 = grains(70).meanOrientation
+ori2 = grains(80).meanOrientation
+
+%%
+% we may compute the misorientation angle between both orientations by
+
+angle(ori1, ori2) ./ degree
+
+%%
+% Note that the misorientation angle is computed by default modulo crystal
+% symmetry, i.e., the angle is always the smallest angles between all
+% possible pairs of symmetrically equivalent orientations. In our example
+% this means that symmetrisation of one orienation has no impact on the
+% angle
+
+angle(ori1, ori2.symmetrise) ./ degree
+
+%%
+% The misorientation angle neglecting crystal symmetry can be computed by
+
+angle(ori1, ori2.symmetrise,'noSymmetry')./ degree
+
+%%
+% We see that smallest angle indeed coincides with the angle computed
+% before.
+
+%% The misorientation axis
+% The rotational axis corresponding to the smallest misorientation angle is
+% computed by
+
+axis(ori1,ori2)
+
+
+
+%% Misorientations
+% Remember that both orientations or1 and ori2 map crystal coordinates into
+% specimen coordinates. Hence, the product of an inverse orientation with
+% another orientation transfers crystal coordinates from one crystal
+% reference frame into crystal coordinates with respect to another crystal
+% reference frame.
+
+mori = inv(ori1) * ori2
 
 %% 
 % In the present case the misorientation describes the coordinate transform
@@ -98,7 +139,7 @@ round(mori.axis)
 mori.angle / degree
 
 %%
-% Lets plot the same figure as before with the exact twinning
+% and plot the same figure as before with the exact twinning
 % misorientation.
 
 % cycle through all major lattice planes
@@ -127,14 +168,34 @@ legend({},'location','NorthWest','FontSize',13);
 
 % consider only Magnesium to Magnesium grain boundaries
 gB = grains.boundary('Mag','Mag');
+
 % check for small deviation from the twinning misorientation
 isTwinning = angle(gB.misorientation,mori) < 5*degree;
 
 % plot the grains and highlight the twinning boundaries
-plot(grains,grains.meanOrientation)
+plot(grains,grains.meanOrientation,'micronbar','off')
 hold on
 plot(gB(isTwinning),'edgecolor','w','linewidth',2)
 hold off
+
+%%
+% From this picture we see that large fraction of grain boudaries are
+% twinning boundaries. To make this observation more evident we may plot
+% the boundary misorientation angle distribution function. This is simply
+% the angle distribution of all boundary misorientations and can be
+% displayed with
+
+close all
+plotAngleDistribution(gB.misorientation)
+
+%%
+% From this we observe that we have about 50 percent twinning boundaries.
+% Analogously we may also plot the axis distribution
+
+plotAxisDistribution(gB.misorientation,'contour')
+
+%%
+% which emphasises a strong portion of rotations about the (-12-10) axis.
 
 %% Phase transitions
 % Misorientations may not only be defined between crystal frames of the
