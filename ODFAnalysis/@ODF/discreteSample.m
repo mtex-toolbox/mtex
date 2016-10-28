@@ -3,6 +3,7 @@ function ori = discreteSample(odf,npoints,varargin)
 %
 %
 
+% preallocate orientations
 q = quaternion.id(npoints,1);
 
 % which component
@@ -14,11 +15,10 @@ end
 
 % compute discrete sample for each component seperately
 for ic = 1:length(odf.components)
-  
-  q(icmp == ic) = discreteSample(odf.components{ic},sum(icmp==ic),varargin{:});
-  
+  q(icmp == ic) = discreteSample(odf.components{ic},sum(icmp==ic),varargin{:});  
 end
 
+% take random symmetrically equivalent samples
 cs = odf.CS.properGroup;
 ss = odf.SS.properGroup;
 ics = discretesample(length(cs),npoints,1);

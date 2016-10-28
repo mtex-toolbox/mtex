@@ -1,7 +1,7 @@
 %% Fundamental Regions 
 % Thanks to crystal symmetry the orientation space can be reduced to the so
 % called fundamental or asymmetric region. Those regions play an important
-% role for the computation of axis and angle distribtions of
+% role for the computation of axis and angle distributions of
 % misorientations.
 % 
 %
@@ -58,9 +58,9 @@ plotSection(rotY,'MarkerColor','r')
 hold off
 
 %% Crystal Symmetries
-% In case of crystal symmetries the orientation space can divded into as
+% In case of crystal symmetries the orientation space can divided into as
 % many equivalent segments as the symmetry group has elements. E.g. in the
-% case of orthorombic symmetry the orientation space is subdived into four
+% case of orthorombic symmetry the orientation space is subdivided into four
 % equal parts, the central one looking like
 
 cs = crystalSymmetry('222')
@@ -104,7 +104,7 @@ hold off
 % segment data into grains
 [grains,ebsd.grainId] = calcGrains(ebsd('indexed'));
 
-% take the orientaions of the largest on
+% take the orientations of the largest on
 [~,id] = max(grains.area);
 largeGrain = grains(id)
 ori = ebsd(largeGrain).orientations
@@ -138,7 +138,7 @@ hold off
 %% Fundamental regions of misorientations with antipodal symmetry
 %
 % Note that for boundary misorientations between the same phase we can
-% *not* distinguish between a misorintation and its inverse. This is not
+% *not* distinguish between a misorientation and its inverse. This is not
 % the case for misorientations between different phases or the
 % misorientation between the mean orientation of a grain and all other
 % orientations. The inverse of a misorientation is axis - angle

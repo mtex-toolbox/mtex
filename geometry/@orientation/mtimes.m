@@ -21,8 +21,8 @@ if isnumeric(a) || isnumeric(b)
 end
 
 % orientation times vector
-if isa(a,'orientation') && isa(b,'vector3d')    
-  r = rotate(b,a);
+if isa(a,'orientation') && ~isa(b,'quaternion')  && ~isnumeric(b)
+  r = rotate_outer(b,a);
   return 
 end
 

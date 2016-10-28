@@ -35,7 +35,7 @@ nqa = unique(Nq.axis,'antipodal');
 
 if isempty(nqa)
   
-  oR.V = quaternion;
+  oR.V = orientation(oR.CS1,oR.CS2);
   oR.F = {};
   return
   
@@ -43,7 +43,7 @@ elseif length(nqa)==1
   
   v = perp(nqa);
   rot = rotation('axis',nqa,'angle',(0:90:270)*degree);
-  oR.V = rotation('axis',rot*v,'angle',pi*ones(4,1));
+  oR.V = orientation('axis',rot*v,'angle',pi*ones(4,1),oR.CS1,oR.CS2);
   oR.F = repcell(1:4,size(oR.N));
   
   return
@@ -110,7 +110,8 @@ end
 
 % make a unique list of vertices
 sV = cellfun(@length,V);
-[oR.V,~,iV] = unique([V{:}]);
+[V,~,iV] = unique([V{:}]);
+oR.V = orientation(V,oR.CS1,oR.CS2);
 F = 1:sum(sV);
 F = mat2cell(F,1,sV);
 oR.F = cellfun(@(x) iV(x),F,'uniformOutput',false);

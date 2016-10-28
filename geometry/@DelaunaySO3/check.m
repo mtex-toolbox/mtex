@@ -87,12 +87,13 @@ plotPDF(fodf,Miller(1,1,1,cs),'antipodal','pcolor')
 toc
 
 %%
+f = fibre(Miller(1,1,1,cs),xvector);
 tic
-plotFibre(fodf,Miller(1,1,1,cs),xvector);
+plot(fodf,f);
 toc
 hold all
 tic
-plotFibre(odf,Miller(1,1,1,cs),xvector);
+plot(odf,f);
 toc
 hold off
 

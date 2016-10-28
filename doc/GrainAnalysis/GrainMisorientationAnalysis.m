@@ -1,5 +1,5 @@
 %% Misorientation Analysis
-% How to analyse misorientations.
+% How to analyze misorientations.
 %
 %% Open in Editor
 %
@@ -13,7 +13,7 @@
 %
 % In the case of EBSD data, intragranular misorientations, misorientations
 % between neighbouring grains, and misorientations between random
-% measurments are of interest.
+% measurements are of interest.
 
 
 %% The sample data set
@@ -53,7 +53,7 @@ plot(grains.boundary,'edgecolor','k','linewidth',.5)
 hold off
 
 %%
-% In order to visualize the misorientation by an ipdf colorcoding we first
+% In order to visualize the misorientation by an ipdf colorcoding, we first
 % define an orientation to colormapping and set the |colorStretching| to
 % increase the contrast around the white center. Note that the
 % inversPoleFigureDirection of the ipdf map is automatically set to the
@@ -104,8 +104,8 @@ hold off
 
 
 %%
-% In order to visualize the the misorientation between any two adjacent
-% grains there are two possibilities in MTEX.
+% In order to visualize the misorientation between any two adjacent
+% grains, there are two possibilities in MTEX.
 %
 % * plot the angle distribution for all phase combinations
 % * plot the axis distribution for all phase combinations
@@ -150,7 +150,7 @@ legend('show','Location','northwest')
 %%
 % Another possibility is to compute an uncorrelated angle distribution from
 % EBSD data by taking only into account those pairs of measurements 
-% that are sufficently far from each other (uncorrelated points). The uncorrelated angle
+% that are sufficiently far from each other (uncorrelated points). The uncorrelated angle
 % distribution is plotted by
 
 % compute the Forsterite ODF 
@@ -167,7 +167,7 @@ hold off
 legend('-dynamicLegend','Location','northwest') % update legend
 
 %%
-% What we have ploted above is the uncorrelated misorientation angle
+% What we have plotted above is the uncorrelated misorientation angle
 % distribution for the Forsterite ODF. We can compare it to the
 % uncorrelated misorientation angle distribution of the uniform ODF by
 

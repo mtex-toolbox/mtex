@@ -18,7 +18,7 @@ function a = angle(v1,v2,varargin)
 
 if nargin == 3 && isa(varargin{1},'vector3d')
   
-  N = varargin{1};
+  N = normalize(varargin{1});
   v1 = normalize(v1 - dot(v1,N) .* N);
   v2 = normalize(v2 - dot(v2,N) .* N);
   

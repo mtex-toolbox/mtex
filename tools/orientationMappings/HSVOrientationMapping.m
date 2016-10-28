@@ -36,7 +36,7 @@ classdef HSVOrientationMapping < orientationMapping
       oM = oM@orientationMapping(varargin{:});
       
       if ismember(oM.CS1.id,[2,18,26])
-        warning(['Not a topological correct colormap! Please use the point group ' oM.CS1.char]);
+        warning(['Not a topological correct colormap! Please use the point group ' char(oM.CS1.properGroup)]);
       end
       
       oM.updatesR;
@@ -94,35 +94,47 @@ classdef HSVOrientationMapping < orientationMapping
       
       h.antipodal = false;
       h = h.project2FundamentalRegion(oM.CS1);
-      wC = oM.whiteCenter.project2FundamentalRegion(oM.CS1); %#ok<*PROP>
-      switchWB = false;
       
-      % copy to the reduced sector
-      h_sR = h;
-      for i = 1:length(oM.refl)
-        ind = dot(vector3d(h_sR),oM.refl(i))<1e-5;
-        h_sR(ind) = reflection(oM.refl(i)) * h_sR(ind);
-        
-        if dot(wC,oM.refl(i))<1e-5
-          wC = reflection(oM.refl(i)) * wC;
-          switchWB = ~switchWB;
-        end
-      end
-        
-      % which are white
-      whiteOrBlack = xor(h_sR == h,switchWB);
-      
-      % compute angle of the points "sh" relative to the center point "center"
-      % this should be between 0 and 1
-      ref = vector3d(oM.CS1.aAxisRec);
-      [radius,rho] = polarCoordinates(oM.sR,h_sR,wC,ref,'maxAngle',oM.maxAngle);
-
       if oM.maxAngle < inf
-        radius = max(0,1 - angle(h_sR(:),wC) ./ oM.maxAngle);
         
-        % black center
-        radius(~whiteOrBlack) = 0;
+        wC = project2FundamentalRegion(oM.whiteCenter,oM.CS1);
+        if angle(vector3d.Z,vector3d(wC)) < 1*degree
+          owC = orth(wC);
+        else
+          owC = vector3d.Z;
+        end
+        
+        h.antipodal = false;
+        h = project2FundamentalRegion(vector3d(h),oM.CS1,wC);
+        
+        rho = angle(h,owC,vector3d(wC));        
+        radius = max(0,1 - angle(h,wC) ./ oM.maxAngle);
+      
       else
+        
+        wC = oM.whiteCenter.project2FundamentalRegion(oM.CS1); %#ok<*PROP>
+        switchWB = false;
+      
+        % copy to the reduced sector
+        h_sR = h;
+        for i = 1:length(oM.refl)
+          ind = dot(vector3d(h_sR),oM.refl(i))<1e-5;
+          h_sR(ind) = reflection(oM.refl(i)) * h_sR(ind);
+          
+          if dot(wC,oM.refl(i))<1e-5
+            wC = reflection(oM.refl(i)) * wC;
+            switchWB = ~switchWB;
+          end
+        end
+      
+        % which are white
+        whiteOrBlack = xor(h_sR == h,switchWB);
+      
+        % compute angle of the points "sh" relative to the center point "center"
+        % this should be between 0 and 1
+        ref = vector3d(oM.CS1.aAxisRec);
+        [radius,rho] = polarCoordinates(oM.sR,h_sR,wC,ref,'maxAngle',oM.maxAngle);
+
               
         % white center
         radius(whiteOrBlack) = 0.5+radius(whiteOrBlack)./2;

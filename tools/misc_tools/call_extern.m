@@ -24,10 +24,11 @@ function varargout = call_extern(prg,varargin)
 if ispc, mtex_ext = '.exe';else mtex_ext = '';end
 
 arch = getMTEXpref('architecture');
-prg = fullfile(mtex_path,'c','bin',arch,prg);
+prgFull = fullfile(mtex_path,'c','bin',arch,prg);
 
-if ~exist([prg,mtex_ext],'file')
-  error(['Can not find ',[prg,mtex_ext],'!']);
+if ~exist([prgFull,mtex_ext],'file')
+  error('  Can not find file "%s" at directory \n   %s',[prg,mtex_ext],...
+    fullfile(mtex_path,'c','bin',arch));
 end
 
 mtex_tmppath = getMTEXpref('tempdir',tempdir);
@@ -36,7 +37,7 @@ mtex_tmppath = getMTEXpref('tempdir',tempdir);
 inline = 0;
 verbose = 0;
 suffix = int2str(100*cputime);
-[path, name] = fileparts(prg);
+[path, name] = fileparts(prgFull);
 name = [name,suffix];
 iname = cell(1,length(varargin)+1);
 
@@ -128,16 +129,16 @@ fclose(fid);
 
 % run external program
 % -----------------
-vdisp(verbose,['  call ',prg]);
+vdisp(verbose,['  call ',prgFull]);
 if isunix
-  cmd = [getMTEXpref('prefix_cmd'),prg,' ',mtex_tmppath,name,...
+  cmd = [getMTEXpref('prefix_cmd'),prgFull,' ',mtex_tmppath,name,...
     '.txt 2>> ',getMTEXpref('logfile'),getMTEXpref('postfix_cmd')];
 else
 
   %enclose whitespaces into parenthis
-  prg = regexprep(prg,'[^\\]*\s+[^\\]*','"$0"');
+  prgFull = regexprep(prgFull,'[^\\]*\s+[^\\]*','"$0"');
 
-  cmd = [getMTEXpref('prefix_cmd'),prg,'.exe ',mtex_tmppath,name,...
+  cmd = [getMTEXpref('prefix_cmd'),prgFull,'.exe ',mtex_tmppath,name,...
     '.txt',getMTEXpref('postfix_cmd')];
 end
 if check_option(varargin,'silent') && (isunix || ispc), cmd = [cmd,' >> ',getMTEXpref('logfile')]; end
@@ -155,7 +156,11 @@ else
   end
   status = system(cmd,'-echo');
   if strcmp(arch,'maci64'), setenv('DYLD_LIBRARY_PATH', env); end
-  if status ~= 0, error('Error running external program:\n\n %s',cmd);end
+  if status ~= 0
+    error(['  Error running external program: %s ' ...
+    '<a href="matlab:edit %s">show logfile</a>'],...
+      prg, getMTEXpref('logfile'));
+  end
 end
 
 % get output

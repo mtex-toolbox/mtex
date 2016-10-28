@@ -12,8 +12,8 @@
 % $$ f(g;K,U) = _1F_1 \left(\frac{1}{2},2,K \right)^{-1} \exp
 % \left\{ g^T UKU  g \right\},\qquad g\in S^3, $$
 %
-% where $U$ is a $4 \times 4$ orthogonal matrix with unit quaternions
-% $u_{1,..,4}\in S^3$ in column and $K$ is a $4 \times 4$ diagonal matrix
+% where $U$ are an $4 \times 4$ orthogonal matrix with unit quaternions
+% $u_{1,..,4}\in S^3$ in the column and $K$  a $4 \times 4$ diagonal matrix
 % with the entries $k_1,..,k_4$ describing the shape of the distribution.
 % $_1F_1(,,)$ is the hypergeometric function with matrix argument normalizing
 % the density.
@@ -23,11 +23,11 @@
 % * a _bipolar_   distribution, if $k_1 + k_4 > k_2 + k_3$,
 % * a _circular_  distribution, if $k_1 + k_4 = k_2 + k_3$,
 % * a _spherical_ distribution, if $k_1 + k_4 < k_2 + k_3$,
-% * an _uniform_  distribution, if $k_1 = k_2 = k_3 = k_4$,
+% * a _uniform_  distribution, if $k_1 = k_2 = k_3 = k_4$,
 %
 % in unit quaternion space. Since the quaternion +g and -g describes the same rotation, the
 % _bipolar_ distribution corresponds to an unimodal distribution in
-% orientation space. Moreover we would call the _circular_ distribution a
+% orientation space. Moreover, we would call the _circular_ distribution a
 % fibre in orientation space.
 %
 %%
@@ -49,7 +49,7 @@ plotPDF(odf,h,'antipodal','silent');
 
 % plot(odf,'sections',10)
 %% The bipolar case and unimodal distribution
-% First we define some unimodal odf
+% First, we define some unimodal odf
 
 odf_spherical = unimodalODF(idquaternion,crystalSymmetry,specimenSymmetry,'halfwidth',20*degree)
 
@@ -59,7 +59,7 @@ odf_spherical = unimodalODF(idquaternion,crystalSymmetry,specimenSymmetry,'halfw
 plotPDF(odf_spherical,h,'antipodal','silent')
 
 %%
-% Next we simulate individual orientations from this odf, in a scattered
+% Next, we simulate individual orientations from this odf, in a scattered
 % axis/angle plot in which the simulated data looks like a sphere
 
 ori_spherical = calcOrientations(odf_spherical,1000);
@@ -67,8 +67,8 @@ close all
 scatter(ori_spherical)
 
 %%
-% From this simulated ebsd data, we can estimate the parameters of the
-% bingham distribution,
+% From this simulated EBSD data, we can estimate the parameters of the
+% Bingham distribution,
 
 calcBinghamODF(ori_spherical)
 
@@ -108,15 +108,15 @@ odf_prolate = fibreODF(Miller(0,0,1,crystalSymmetry('1')),zvector,...
 plotPDF(odf_prolate,h,'upper','silent')
 
 %%
-% As before, we generate some random orientations from an model odf. The
-% shape in a axis/angle scatter plot reminds of a cigar
+% As before, we generate some random orientations from a model odf. The
+% shape in an axis/angle scatter plot reminds of a cigar
 
 ori_prolate = calcOrientations(odf_prolate,1000);
 close all
 scatter(ori_prolate)
 
 %%
-% We estimate the parameters of the bingham distribution
+% We estimate the parameters of the Bingham distribution
 
 calcBinghamODF(ori_prolate)
 
@@ -131,7 +131,7 @@ t = [T_spherical T_oblate T_prolate]
 
 %%
 % The test clearly rejects the spherical and prolate case, but not the
-% prolate. We construct the bingham distribution from the parameters, it
+% prolate. We construct the Bingham distribution from the parameters, it
 % might show some skewness
 
 odf_prolate = BinghamODF(kappa,U,crystalSymmetry,specimenSymmetry)
@@ -142,7 +142,7 @@ odf_prolate = BinghamODF(kappa,U,crystalSymmetry,specimenSymmetry)
 plotPDF(odf_prolate,h,'antipodal','silent')
 
 %% Oblate case
-% The oblate case of the bingham distribution has no direct counterpart in
+% The oblate case of the Bingham distribution has no direct counterpart in
 % terms of texture components, thus we can construct it straightforward
 
 odf_oblate = BinghamODF([50 50 50 0],eye(4),crystalSymmetry,specimenSymmetry)
@@ -153,7 +153,7 @@ odf_oblate = BinghamODF([50 50 50 0],eye(4),crystalSymmetry,specimenSymmetry)
 plotPDF(odf_oblate,h,'antipodal','silent')
 
 %%
-% The oblate cases in axis/angle space reminds on a disk 
+% The oblate cases in axis/angle space remind on a disk 
 
 ori_oblate = calcOrientations(odf_oblate,1000);
 close all

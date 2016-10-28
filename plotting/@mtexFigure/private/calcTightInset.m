@@ -10,15 +10,16 @@ figTightInset = mtexFig.outerPlotSpacing * [1,1,1,1];
 if isempty(mtexFig.children), return; end
 ax = mtexFig.children(1);
     
-if strcmpi(get(ax,'visible'),'off')
+if strcmpi(get(ax,'visible'),'off')% || strcmpi(get(ax,'XColor'),'none')
   
   xtl = get(ax,'xTickLabel');
   ytl = get(ax,'yTickLabel');
-  xl = get(ax,'xLabel');
-  yl = get(ax,'yLabel');
+  %xl = get(ax,'xLabel');
+  %yl = get(ax,'yLabel');
   set(ax,'xTickLabel',[],'yTickLabel',[],'units','pixel');
   tightInset = get(ax,'tightInset');
-  set(ax,'xTickLabel',xtl,'yTickLabel',ytl,'xlabel',xl,'ylabel',yl);
+  %set(ax,'xTickLabel',xtl,'yTickLabel',ytl,'xlabel',xl,'ylabel',yl);
+  set(ax,'xTickLabel',xtl,'yTickLabel',ytl);
   
   % consider text labels
   txt = findall(ax,'type','text','unit','data');

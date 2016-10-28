@@ -5,8 +5,8 @@ m = uimenu('label','MTEX');
 
 % make it second position
 mnchlds = allchild(gcf);
-p = findall(mnchlds,'Tag','figMenuFile');
-mnchlds = [mnchlds(2:find(p == mnchlds)-1) ; mnchlds(1) ; p]; % permutate positions
+p = find(mnchlds==findall(mnchlds,'Tag','figMenuFile'));
+mnchlds = [mnchlds(2:p-1) ; mnchlds(1) ; mnchlds(p:end)]; % permutate positions
 set(gcf,'Children',mnchlds)
   
 uimenu(m,'label','Export Image','callback',@Export);

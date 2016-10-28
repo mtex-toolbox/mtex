@@ -71,11 +71,9 @@ if check_option(varargin,'DisplayName') && exist('defColor','var')
     'MarkerFaceColor',get(h,'MarkerFaceColor'),...
     'MarkerEdgeColor',get(h,'MarkerEdgeColor')),varargin{:});
   set(mP.ax,'nextPlot',holdState);
+  
+  legend('-DynamicLegend','location','NorthEast');
 end
-
-warning('off','MATLAB:legend:PlotEmpty');
-legend('-DynamicLegend','location','NorthEast');
-warning('on','MATLAB:legend:PlotEmpty');
 
 try axis(mP.ax,'tight'); end
 mP.micronBar.setOnTop

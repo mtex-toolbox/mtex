@@ -1,11 +1,11 @@
 function ebsd = fillByGrainId(ebsd)
 % extrapolate spatial EBSD data by nearest neighbour for tetragonal lattice
 %
+% Syntax
+%   ebsd = fill(ebsd)
+%
 % Input
 %  ebsd - @EBSD
-%
-% Example
-%   ebsd_filled = fill(ebsd)
 %
 
 % generate a regular grid

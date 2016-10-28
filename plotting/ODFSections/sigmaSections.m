@@ -12,14 +12,14 @@ classdef sigmaSections < ODFSections
     
   methods
     
-    function oS = sigmaSections(CS1,CS2,varargin)
+    function oS = sigmaSections(varargin)
       
-      oS = oS@ODFSections(CS1,CS2);
+      oS = oS@ODFSections(varargin{:});
       
       % get fundamental plotting region
-      [~,~,phi2] = fundamentalRegionEuler(CS1,CS2,varargin{:});
+      [~,~,phi2] = fundamentalRegionEuler(oS.CS1,oS.CS2,varargin{:});
       oS.maxSigma = phi2;
-      oS.sR = CS2.fundamentalSector(varargin{:},'upper');
+      oS.sR = oS.CS2.fundamentalSector(varargin{:},'upper');
       
       % get sections      
       oS.sigma = linspace(0,phi2,1+get_option(varargin,'sections',6));

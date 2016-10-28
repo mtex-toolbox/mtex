@@ -13,7 +13,7 @@
 mtexdata dubna
 
 %%
-% See <ImportPoleFigureData.html interfaces> for more infomations how to import
+% See <ImportPoleFigureData.html interfaces> for more infomation how to import
 % pole figure data and to create a pole figure object. 
 
 % plot pole figures
@@ -30,7 +30,7 @@ odf = calcODF(pf)
 %% 
 % There are a lot of options to the function <PoleFigure.calcODF.html
 % calcODF>. You can specify the discretization, the functional to minimize,
-% the number of iteration or regularization to be applied. Furthermore you
+% the number of iteration or regularization to be applied. Furthermore, you
 % can specify ghost correction or the zero range method to be applied.
 % These options are discussed below.
 %
@@ -41,9 +41,9 @@ odf = calcODF(pf)
 plotPDF(odf,h,'antipodal','silent','superposition',c)
 
 
-%% Error analyis
+%% Error analysis
 %
-% For a more quantitative description of the reconstruction quality one can
+% For a more quantitative description of the reconstruction quality, one can
 % use the function <PoleFigure.calcError.html calcError> to compute the
 % fit between the reconstructed ODF and the measured pole figure
 % intensities. The following measured are available:
@@ -55,7 +55,7 @@ plotPDF(odf,h,'antipodal','silent','superposition',c)
 calcError(pf,odf,'RP',1)
 
 %%
-% In order to recognize bad pole figure intensities it is often usfull to
+% In order to recognize bad pole figure intensities, it is often useful to
 % plot difference pole figures between the normalized measured intensities
 % and the recalculated ODF. This can be done by the command
 % <PoleFigure.plotDiff.html PlotDiff>.
@@ -63,9 +63,9 @@ calcError(pf,odf,'RP',1)
 plotDiff(pf,odf)
 
 %%
-% Assuming you have drived two ODFs from different pole figure measurements
-% or by ODF modelling. Then one can ask for the difference between both.
-% This difference is computet by the command <ODF.calcError.html
+% Assuming you have driven two ODFs from different pole figure measurements
+% or by ODF modeling. Then one can ask for the difference between both.
+% This difference is computed by the command <ODF.calcError.html
 % calcError>.
 
 % define a unimodal ODF with the same modal orientation
@@ -81,10 +81,10 @@ calcError(odf_model,odf)
 %
 % In MTEX the ODF is approximated by a superposition of up to 10,000,000
 % unimodal components. By exact number and position of these  components,
-% as well as its shape can be specified by the user. By default the positions
+% as well as its shape can be specified by the user. By default, the positions
 % are chosen equispaced in the orientation space with 1.5 times the
 % resolution of the pole figures and the components are de la Vallee
-% Poussin shaped with the same halfwidth as the resoltion of the positions.
+% Poussin shaped with the same halfwidth as the resolution of the positions.
 %
 % Next an example how to change the default resolution:
 
@@ -102,12 +102,12 @@ plotPDF(odf,h,'antipodal','silent','superposition',c)
 %
 % If the flag *zero_range* is set the ODF is forced to be zero at
 % all orientation where there is a corresponding zero in the pole figure.
-% This technique is especially usfull for sharp ODF with large areas in the
-% pole figure beeing zero. In this case the calculation time is greatly
-% improved and much higher resolution of the ODF can be achived.
+% This technique is especially useful for sharp ODF with large areas in the
+% pole figure being zero. In this case, the calculation time is greatly
+% improved and much higher resolution of the ODF can be achieved.
 %
-% In the following example the zero range method is applied with a the
-% treshhold 100. For more options to control the zero range method see the
+% In the following example, the zero range method is applied with a
+% threshold 100. For more options to control the zero range method see the
 % documentation of <PoleFigure.zero_range.html zero_range> or <PoleFigure.plot_zero_range.html
 % plot_zero_range>.
 
@@ -130,5 +130,5 @@ plotPDF(odf,h,'antipodal','silent','superposition',c)
 %
 % $$f_{est} = argmin \sum_{i=1}^N \sum_{j=1}^{N_i}\frac{|\alpha_i R f(h_i,r_{ij}) - I_{ij})|^2}{I_{ij}  }$$
 % 
-% A precise description of the estimator and the algorithm can be foun in
+% A precise description of the estimator and the algorithm can be found in
 % the paper _Pole Figure Inversion - The MTEX Algorithm_.

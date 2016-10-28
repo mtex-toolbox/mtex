@@ -12,19 +12,19 @@
 setMTEXpref('defaultColorMap',blue2redColorMap);
 
 %% Import EBSD Data
-% We start by importing some ebsd data of Glaucophane and Epidote.
+% We start by importing some EBSD data of Glaucophane and Epidote.
 
 ebsd = loadEBSD([mtexDataPath '/EBSD/data.ctf'],...
   'convertEuler2SpatialReferenceFrame')
 
 %%
-% Lets visualize a subset of the data
+% Let's visualize a subset of the data
 
 plot(ebsd(inpolygon(ebsd,[2000 0 1400 375])))
 
 
 %% Data Correction
-% next we correct the data by excluding orientations with large MAD value
+% next, we correct the data by excluding orientations with large MAD value
 
 % define maximum acceptable MAD value
 MAD_MAXIMUM= 1.3;
@@ -61,7 +61,7 @@ CGlaucophane = tensor(MGlaucophane,csGlaucophane)
 % Epidote elastic stiffness (Cij) Tensor in GPa
 % Aleksandrov, K.S., Alchikov, U.V., Belikov, B.P., Zaslavskii, B.I. and Krupnyi, A.I.: 1974
 % 'Velocities of elastic waves in minerals at atmospheric pressure and
-% increasing precision of elastic constants by means of EVM (in Russian)',
+% increasing the precision of elastic constants by means of EVM (in Russian)',
 % Izv. Acad. Sci. USSR, Geol. Ser.10, 15-24.
 
 % define the tensor coefficients
@@ -92,7 +92,7 @@ CEpidote = tensor(MEpidote,csEpidote)
 
 
 %% ODF Estimation
-% Next we estimate an ODF for the Epidote phase
+% Next, we estimate an ODF for the Epidote phase
 
 odfEpidote = calcODF(ebsd('Epidote').orientations,'halfwidth',10*degree)
 

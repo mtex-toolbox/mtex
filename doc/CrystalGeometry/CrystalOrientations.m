@@ -17,7 +17,7 @@
 % The class <orientation.orientation.html *orientation*> is inherited from the class <rotation_index.html
 % *rotation*> and allow to work with orientation in MTEX.
 %
-%% Defining a Crystal Orientation
+%% Defining a crystal orientation
 %
 % In order to define a crystal orientation one has to define crystal and
 % specimen symmetry first.
@@ -28,22 +28,22 @@ ss = specimenSymmetry('orthorhombic');
 %%
 %
 % Now a crystal orientation is defined in the same way as a rotation. A
-% well known possibility are the so called *Euler angles*. Here two
+% well known possibility is  so called *Euler angles*. Here two
 % conventions are commonly used:
 %
-% *The Bunge Euler Angle Convention*
+% SUB: Bunge Euler angle convention
 %
 % Here an arbitrary rotation is determined by three consecutive rotations
 % in the sample reference frame. The first is about the z-axis, the second about the x-axis, 
 % and the third again about the z-axis. Hence, one needs three angles to define an
 % orientation by Euler angles. In the literature these angles are known as
 % "triplet of Euler angles" or simply "Euler angles" and you can find many
-% definitions for them according to different authours.
+% definitions for them according to different authors.
 
 o = orientation('Euler',30*degree,50*degree,10*degree,cs,ss)
 
 %%
-% *The Matthies Euler Angle Convention*
+% SUB: Matthies Euler angle convention
 %
 % In contrast to the Bunge convention here the three rotations are taken
 % about the z-axis, the y-axis, and the z-axis.
@@ -51,22 +51,22 @@ o = orientation('Euler',30*degree,50*degree,10*degree,cs,ss)
 o = orientation('Euler',30*degree,50*degree,10*degree,'ZYZ',cs,ss)
 
 %%
-% *The axis angle parametrisation*
+% SUB: Axis angle parametrisation
 %
-% Another possibility to specify an rotation is the give its rotational axis
+% Another possibility to specify an rotation is to give its rotational axis
 % and its rotational angle.
 
 o = orientation('axis',xvector,'angle',30*degree,cs,ss)
 
 %%
-% *Miller indice*
+% SUB: Miller indice
 %
 % There is also a Miller indice convention for defining crystal orientations.
 
 o = orientation('Miller',[1 0 0],[0 1 1],cs,ss)
 
 %%
-% *Four vectors defining a rotation*
+% SUB: Four vectors defining a rotation
 %
 % Given four vectors u1, v1, u2, v2 there is a unique rotations q such that 
 % q u1 = v1 and q u2 = v2. 
@@ -74,146 +74,182 @@ o = orientation('Miller',[1 0 0],[0 1 1],cs,ss)
 o = orientation('map',xvector,yvector,zvector,zvector,cs,ss)
 
 %%
-% *Defining an orientation by a 3 times 3 matrix*
+% SUB: Defining an orientation by a 3 times 3 matrix
 
 o = orientation('matrix',eye(3),cs,ss)
 
 %%
-% *Predifined Orientations*
+% SUB: Predefined orientations
 % 
-% In the MTEX there is a list of predefined orientations:
-%
-% * <cubeOrientation.html cubeOrientation>
-% * <gossOrientation.html gossOrientation>
-% * <brassOrientation.html brassOrientation>
-%
-%
+% Below you find a list of orientations predefined in MTEX:
 
-o = orientation('goss',cs,ss)
+% the cube or identical orientation
+orientation.id(cs,ss);
+orientation.cube(cs,ss);
 
-%% Rotating Crystal Directions onto Specimen Directions
+% brass orientations
+orientation.brass(cs,ss);
+orientation.brass2(cs,ss);
+
+% copper orientations
+orientation.copper(cs,ss);
+orientation.copper2(cs,ss);
+
+% other cube orientations
+orientation.cubeND22(cs,ss);
+orientation.cubeND45(cs,ss);
+orientation.cubeRD(cs,ss);
+
+orientation.goss(cs,ss);
+orientation.invGoss(cs,ss);
+
+orientation.PLage(cs,ss);
+orientation.PLage2(cs,ss);
+orientation.QLage(cs,ss);
+orientation.QLage2(cs,ss);
+orientation.QLage3(cs,ss);
+orientation.QLage4(cs,ss);
+
+orientation.SR(cs,ss);
+orientation.SR2(cs,ss);
+orientation.SR3(cs,ss);
+orientation.SR4(cs,ss);
+
+%%
+% Note that you may define a list of orientations by using the same syntax
+% as for the matlab commands ones, zeros, ..
+
+orientation.id(100,1,cs,ss)
+
+%% SUB: Random orientations
+% You may generate random orientations with 
+
+ori = orientation.rand(1000,cs,ss)
+
+%% Coordinate transformations
 %
-% Let 
+% Orientations are essentially coordinate transformations that transform a
+% direction (tensor, slip system ...) given by crystal coordinates into the
+% same object given in specimen coordinates. 
+%
+% As an example consider the crystal direction
 
 h = Miller(1,0,0,cs)
 
 %%
-% be a certain crystal direction and 
+% and the orientation
 
 o = orientation('Euler',90*degree,90*degree,0*degree,cs,ss)
 
 %%
-% a crystal orientation. Then the alignment of this crystal direction with
-% respect to the specimen coordinate system can be computed via
+% Then in specimen coordinates the direction |h| has the coordinates
 
 r = o * h
 
 %%
-% Conversely the crystal direction that is mapped onto a certain specimen
-% direction can be computed via the <orientation.mldivide.html backslash operator>
+% Conversely, we can go back from specimen coordinates to crystal
+% coordinates by multiplying with the inverse orientation
 
-o \ r
+inv(o) * r
 
-%% Concatenating Rotations
-%
-% Let 
+%%
+% Assume next that the specimen is rotated about the X-axis about 60
+% degree. We may define this rotation by
 
-o = orientation('Euler',90*degree,0,0,cs);
 rot = rotation('Euler',0,60*degree,0);
 
 %%
-% be a crystal orientation and a rotation of the specimen coordinate
-% system. Then the orientation of the crystal with respect to the rotated
-% specimen coordinate system calculates by
+% Then a given orientation
+
+o = orientation('Euler',90*degree,0,0,cs);
+
+%%
+% translates into a orientation with respect to the rotated
+% specimen coordinate system by multiplying it with the rotation
 
 o1 = rot * o
 
-
-
-%%
-% Then the class of rotations crystallographically equivalent to o can be
-% computed in two ways. Either by using the command <orientation.symmetrise.html
+%% Symmetric equivalence
+%
+% Crystal orientations always appear as a class of symmetrically equivalent
+% orientations which are physicaly not distinguishable. For a given
+% orientation |o| the complete list of all symmetrically equivalent
+% orientations is given by the command <orientation.symmetrise.html
 % symmetrise> 
 
 symmetrise(o)
 
 %%
-% or by using multiplication
+% Alternatively the list can be computed by multiplying with the specimen
+% and the crystal symmetry from the left and from the right.
 
 ss * o * cs
 
-%% Calculating Misorientations
-%
-% Let cs and ss be crystal and specimen symmetry and o1 and o2 two crystal
-% orientations. Then one can ask for the misorientation between both
-% orientations. This misorientation can be calculated by the function
-% <orientation.angle.html angle>.
-
-angle(o,o1) / degree
-
-%%
-% This misorientation angle is in general smaller then the misorientation
-% without crystal symmetry which can be computed via
-
-angle(rotation(o),rotation(o1)) /degree
-
-%% Calculating with Orientations and Rotations
-%
-% Beside the standard linear algebra operations there are also the
-% following functions available in MTEX:
-% 
-% <quaternion.angle.html angle(o)> and
-% <quaternion.axis.html axis(o)> 
-
-% Then rotational angle and the axis of rotation
-% can be computed via then commands
-
-angle(o1)/degree
-
-axis(o1)
-%%
-% To obtain the inverse orientation to o, one can use the command
-% <quaternion.inv.html inv(q)>
-
-inv(o1)
-
-%% Conversion into Euler Angles and Rodrigues Parametrisation
+%% Conversion into Euler angles, matrix, quaternion or Rodrigues vector
 %
 % There are methods to transform quaternion in almost any other
 % parameterization of rotations as they are:
-%
-% * [[quaternion.Euler.html,Euler(o)]]   in Euler angle
-% * [[quaternion.Rodrigues.html,Rodrigues(o)]] % in Rodrigues parameter
-%
 
-[phi1,Phi,phi2] = Euler(o1)
+% as Euler angles
+o1.phi1, o1.Phi, o1.phi2
 
+% as quaternion
+quaternion(o1)
+
+% as matrix
+o1.matrix
+
+% as Rodrigues vector
+o1.Rodrigues
 
 %% Plotting Orientations
 % 
-% The function [[orientation.plot.html,plot]] plots an orientation in 3
-% dimensinal axis angle space.
+%% SUB: in Euler angle space
+% By default the function the function [[orientation.plot.html,plot]]
+% plots orientations in the three dimensional Bunge Euler angle space
 
-oR = fundamentalRegion(o1.CS,o1.SS,'complete')
+ori = orientation.rand(100,cs);
+plot(ori)
+
+%% SUB: in axis angle space
+% Alternatively, orientations can be plotted in the three dimensional axis
+% angle space.
+
+oR = fundamentalRegion(ori.CS,ori.SS,'complete')
 plot(oR)
 hold on
-scatter(o1,'axisAngle','markerColor','b','markerSize',10)
-axis off
+plot(ori,'markerEdgeColor',[0 0 0.8],'markerSize',8)
+hold off
 
 %%
 % Note that the orientation is not automatically projected into its
-% fundamental region, as we see if the fundamental region is visuallized
+% fundamental region, as we see if the fundamental region is visualized
 
 hold on
-oR = fundamentalRegion(o1.CS,o1.SS)
-plot(oR,'color',[0.7 0.5 0.5])
-hold on
+oR = fundamentalRegion(ori.CS,ori.SS)
+plot(oR,'color',[1 0.5 0.5])
+hold off
 
 
 %%
 
+plot(oR,'color',[1 0.5 0.5])
+%o2 = quaternion(o1.project2FundamentalRegion);
 hold on
-o2 = quaternion(o1.project2FundamentalRegion);
-scatter(o2,'axisAngle','markerColor','r','markerSize',10)
+scatter(ori.project2FundamentalRegion,'markerColor','r','markerSize',10)
 hold off
 
+%% SUB: in (inverse) pole figures
+%
+
+% a pole figure plot
+plotPDF(ori,Miller({1,0,0},{1,1,1},ori.CS))
+
+%%
+% an inverse pole figure plot
+plotIPDF(ori,[vector3d.X,vector3d.Z])
+
+%% SUB: in sections of the orientations space
+
+% as phi2 sections
+plotSection(ori,'phi2')

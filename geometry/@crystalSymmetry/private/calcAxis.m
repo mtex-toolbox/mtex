@@ -3,9 +3,11 @@ function abc  = calcAxis(axisLength,angle,varargin)
 % to the euclidean reference frame
 %
 % Input
-%
+%  axisLength - [a,b,c]
+%  angle - [alpha,beta,gamma]
 %
 % Output
+%  abc - @vector3d
 %
 
 % get axis length
@@ -14,7 +16,7 @@ if axisLength(3) == 0, axisLength(3) = 1;end
 
 if axisLength(1) == 0, axisLength(1) = axisLength(2);end
 if axisLength(2) == 0, axisLength(2) = axisLength(1);end
-if axisLength(2) == 0, 
+if axisLength(2) == 0
   axisLength(2) = axisLength(3);
   axisLength(1) = axisLength(3);
 end
@@ -56,8 +58,12 @@ varargin(flipthem) = cellfun(@(a) [a(end:-1:end-2) a(1:end-3)],varargin(flipthem
 
 % if nothing or only Y is specified set Z||c
 if ~any(cell2mat(regexpi(varargin,'z\|\|'))) && ...
-  nnz(cell2mat(regexpi(varargin,'[xy]\|\|')))<=1
-  varargin = [varargin,{'Z||c'}];
+    nnz(cell2mat(regexpi(varargin,'[xy]\|\|')))<=1
+  if all(cellfun(@isempty,regexpi(varargin,'[xy]\|\|[abc]\*')))
+    varargin = [varargin,{'Z||c*'}];
+  else
+    varargin = [varargin,{'Z||c'}];
+  end
 end
 
 % extract alignment for x, y, z directions
@@ -67,7 +73,7 @@ alignment = cell(1,3);
 % extract alignment for each axis
 for ia = 1:3
   
-  al = regexpi(varargin,[axes(ia) '\|\|(\w\*?)'],'tokens');
+  al = regexpi(varargin,[axes(ia) '\|\|([abcdm]*\*?)'],'tokens');
   al = [al{:}];
   alignment{ia} = char(al{:});    
   
@@ -104,7 +110,9 @@ for ia = 1:3
         xyzNew(4-ia) = a;
       end
     case 'm'
-      xyzNew(ia) = m;
+      xyzNew(ia) = a+b;
+    case 'd'
+      xyzNew(ia) = a+b+c;
   end
 end
   

@@ -12,9 +12,9 @@
 %
 %% SUB: Defining a S2Grid
 %
-% There are various ways to define a S2Grid. Next you find some exaples.
+% There are various ways to define a S2Grid. Next, you find some examples.
 % For a detailed description of possible specifications look for the
-% documentation of the copnstructor [[S2Grid_index.html,S2Grid]]. 
+% documentation of the constructor [[S2Grid_index.html,S2Grid]]. 
 
 % equidistributions
 S2G = equispacedS2Grid('points',100,'antipodal');  % specified by number of points
@@ -23,12 +23,12 @@ S2G = equispacedS2Grid('RESOLUTION',5*degree,'antipodal');  % specified by resol
 % regular grids
 S2G = regularS2Grid('points',[72,19]); % specified by number of theta and rho steps
 S2G = regularS2Grid('theta',linspace(0,2*pi,72),...
-             'rho',linspace(0,pi/2,19)); % explicitely determine theta and rho values
+             'rho',linspace(0,pi/2,19)); % explicitly determine theta and rho values
 
 % restrictes grids
-S2G = equispacedS2Grid('points',100,'MAXTHETA',75*degree);  % specifiy maximum theta angle
+S2G = equispacedS2Grid('points',100,'MAXTHETA',75*degree);  % specify maximum theta angle
 
 %% SUB: Plots
 
-plot(equispacedS2Grid('points',100,'antipodal'))  % plot grid of nodes
+plot(equispacedS2Grid('points',100,'antipodal'))  % plot the grid of nodes
 

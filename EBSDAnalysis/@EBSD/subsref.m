@@ -4,7 +4,7 @@ function varargout = subsref(ebsd,s)
 % Syntax
 %   ebsd('Fe')        - returns data of phase Fe
 %   ebsd({'Fe','Mg'}) - returns data of phase Fe and Mg
-%   ebsd(1:end)       - returns data 
+%   ebsd(1:end)       - returns 
 %
 
 if strcmp(s(1).type,'()')

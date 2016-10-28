@@ -10,13 +10,13 @@ function h = scatter(q,varargin)
 %
 
 % prepare axis
-mtexFig = newMtexFigure(varargin{:});
+[mtexFig,isNew] = newMtexFigure(varargin{:});
 
 % create a new scatter plot
 if isappdata(mtexFig.gca,'projection')
   projection = getappdata(mtexFig.gca,'projection');
 else
-  projection = get_option(varargin,'projection','axisAngle');
+  projection = get_option(varargin,'projection','bunge');
   setappdata(mtexFig.gca,'projection',projection);
 end
 
@@ -27,12 +27,31 @@ switch lower(projection)
     v = v(abs(v) < 1e5);
     [x,y,z] = double(v);
   case 'axisangle'
-    [x,y,z] = double(q.axis .* q.angle ./ degree);
-  case 'euler'
-    [x,y,z] = q.Euler(varargin{:});
+    [x,y,z] = double(axis(q,'noSymmetry') .* angle(q,'noSymmetry') ./ degree);
+  case {'euler','bunge'}
+    if check_option(varargin,'noFundamentalRegion')
+      [x,y,z] = q.Euler(varargin{:});
+    else
+      [x,y,z] = project2EulerFR(q,varargin{:});      
+    end
     x = x./degree;
     y = y./degree;
     z = z./degree;
+    
+    xlabel(mtexFig.gca,'$\varphi_1$','Interpreter','LaTeX');
+    ylabel(mtexFig.gca,'$\Phi$','Interpreter','LaTeX');
+    zlabel(mtexFig.gca,'$\varphi_2$','Interpreter','LaTeX');
+end
+
+% add some nans if lines are plotted
+if check_option(varargin,'edgecolor')
+  d = sqrt(diff(x([1:end,1])).^2 + diff(y([1:end,1])).^2 + diff(z([1:end,1])).^2);
+  ind = find(d > 10);
+  for k = 1:numel(ind)
+    x = [x(1:ind(k)+k-1);nan;x(ind(k)+k:end)];
+    y = [y(1:ind(k)+k-1);nan;y(ind(k)+k:end)];
+    z = [z(1:ind(k)+k-1);nan;z(ind(k)+k:end)];
+  end
 end
 
 % scatter plot
@@ -63,11 +82,16 @@ else
     'MarkerSize',get_option(varargin,'MarkerSize',5),...
     'Marker',get_option(varargin,'Marker','o'),...
     'parent',mtexFig.gca);
+  
+  optiondraw(h,varargin{:});
 end
 
 % finalize plot
-view(mtexFig.gca,3);
-grid(mtexFig.gca,'on');
-axis(mtexFig.gca,'vis3d','equal','on');
+if isNew
+  fcw;
+  view(mtexFig.gca,3);
+  grid(mtexFig.gca,'on');
+  axis(mtexFig.gca,'vis3d','equal','on');
+end
 
 if nargout == 0, clear h;end

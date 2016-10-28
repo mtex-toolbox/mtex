@@ -55,10 +55,10 @@ h = optiondraw(patch(obj),varargin{:});
 % if no DisplayName is set remove patch from legend
 if ~check_option(varargin,'DisplayName')
   set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+else
+  legend('-DynamicLegend','location','NorthEast');
 end
-warning('off','MATLAB:legend:PlotEmpty');
-legend('-DynamicLegend','location','NorthEast');
-warning('on','MATLAB:legend:PlotEmpty');
+
 
 try axis(mP.ax,'tight'); end
 mP.micronBar.setOnTop

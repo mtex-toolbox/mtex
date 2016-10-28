@@ -1,15 +1,15 @@
 function T = times(T1,T2)
 % multiply a tensor by a scalar
 
-if isa(T1,'tensor') && isa(T2,'double')
+if isa(T2,'double')
   
   T = EinsteinSum(T1,1:T1.rank,T2,[]);
   
-elseif isa(T2,'tensor') && isa(T1,'double')
+elseif isa(T1,'double')
   
   T = times(T2,T1);
-  
-elseif isa(T2,'tensor') && isa(T2,'tensor')
+
+elseif isa(T1,'tensor') && isa(T2,'tensor')
   
   if T1.rank < T2.rank
     r = size(T2.M);
@@ -25,5 +25,9 @@ elseif isa(T2,'tensor') && isa(T2,'tensor')
   
   T = T1;
   T.M = T.M .* T2.M;
+
+else
+  
+  error('I don''t know what to do.')
   
 end

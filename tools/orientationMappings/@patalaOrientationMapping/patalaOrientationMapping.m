@@ -1,38 +1,9 @@
 classdef patalaOrientationMapping < orientationMapping
-% converts misorientations to rgb values
-%-------------------------------------------------------------------------%
-%Filename:  om_patala.m
-%Author:    Oliver Johnson
-%Date:      7/12/2013
+% converts misorientations to rgb values as described in 
 %
-% OM_MISORIENTATION provides colorcoding using the Patala colorcoding
-% scheme [1], for colorcoding grainboundaries according to misorientation.
-%
-% Inputs:
-%   o - An array of MTEX orientation objects (or an S2Grid object) defining
-%       the misorientations for which the computation of disorientations is
-%       desired. In the case that o is an S2Grid object, the grid points
-%       define misorientation axes and the misorientation angle must be
-%       supplied separately (see omega below).
-%   CS - (optional) If o is an S2Grid object, then one must provide, as an
-%        additional property/value pair of arguments, the crystal symmetry,
-%        for example om_patala(o,'CS',symmetry('432'))
-%   omega - (optional) If o is an S2Grid object, then one must provide, as
-%           an additional property/value pair of arguments, the
-%           misorientation angle. omega must be a scalar, which defines the
-%           misorientation angle for all misorientation axes provided in o.
-%
-% Outputs:
-%   rgb - A numel(o)-by-3 array defining the colors assigned to each of the 
-%         misorientations in o. rgb(i,:) is a 3 element vector of the form
-%         [r_value g_value b_value] indicating the color assigned to the
-%         misorientation o(i) according to the Patala coloring scheme.
-%
-% [1] S. Patala, J. K. Mason, and C. A. Schuh, Improved representations of
-%     misorientation information for grain boundary science and 
-%     engineering, Prog. Mater. Sci., vol. 57, no. 8, pp. 1383-1425, 2012.
-%-------------------------------------------------------------------------
-
+% S. Patala, J. K. Mason, and C. A. Schuh, Improved representations of
+% misorientation information for grain boundary science and engineering,
+% Prog. Mater. Sci., vol. 57, no. 8, pp. 1383-1425, 2012.
   
   properties
     

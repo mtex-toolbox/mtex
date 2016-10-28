@@ -71,7 +71,7 @@ try
 
   assert(length(cols) == length(names), 'Length of ColumnNames and Columns differ');
 
-  [names m] = unique(names);
+  [names, m] = unique(names);
   cols = cols(m);
 
   istype = @(in, a) all(cellfun(@(x) any(find(strcmpi(stripws(in),stripws(x)))),a));
@@ -93,7 +93,7 @@ try
     dg = degree + (1-degree)*check_option(varargin,{'radians','radiant','radiand'});
   
     % eliminate nans
-    if ~check_option(varargin,'keepNaN'),
+    if ~check_option(varargin,'keepNaN')
       d(any(isnan(d(:,layout)),2),:) = [];
     end
   

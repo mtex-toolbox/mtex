@@ -1,9 +1,15 @@
 function v = project2FundamentalRegion(v,cs,varargin)
 % projects vectors to the fundamental sector of the inverse pole figure
 %
+% Syntax
+%   v = project2FundamentalRegion(v,cs)
+%   v = project2FundamentalRegion(v,cs,'antipodal')
+%   v = project2FundamentalRegion(v,cs,center)
+%
 % Input
-%  v  - @vector3d
-%  cs - @symmetry
+%  v      - @vector3d
+%  cs     - @symmetry
+%  center - @vector3d
 %
 % Options
 %  antipodal  - include <AxialDirectional.html antipodal symmetry>
@@ -28,20 +34,25 @@ if isempty(sR.N) || length(cs)==1, return; end
 % and the consider the problem reduced to the point group 3. Maybe this is
 % a general idea to reduce computational cost ...
 
-switch cs.id
-  case {19,22,26}
-    ind = v.z < 0;
-    vv = cs(2) * subSet(v,ind);
-    v.x(ind) = vv.x; v.y(ind) = vv.y; v.z(ind) = vv.z;
-    cs = cs(1:2:end);
-  case 18
-    ind = v.z < 0;
-    vv = cs(4) * subSet(v,ind);
-    v.x(ind) = vv.x; v.y(ind) = vv.y; v.z(ind) = vv.z;
-    cs = cs(1:3);
-end
+if nargin >= 3 && isa(varargin{1},'vector3d')
+  symCenter = cs * varargin{1};
+else
 
-symCenter = cs*sR.center;
+  switch cs.id
+    case {19,22,26}
+      ind = v.z < 0;
+      vv = cs(2) * subSet(v,ind);
+      v.x(ind) = vv.x; v.y(ind) = vv.y; v.z(ind) = vv.z;
+      cs = cs(1:2:end);
+    case 18
+      ind = v.z < 0;
+      vv = cs(4) * subSet(v,ind);
+      v.x(ind) = vv.x; v.y(ind) = vv.y; v.z(ind) = vv.z;
+      cs = cs(1:3);
+  end
+  symCenter = cs * sR.center;
+  
+end
 
 dist = dot_outer(vector3d(v),symCenter);
 

@@ -25,7 +25,7 @@ function h = scatter(v,varargin)
 % vector3d/text
 
 % initialize spherical plots
-sP = newSphericalPlot(v,varargin{:});
+sP = newSphericalPlot(v,varargin{:},'doNotDraw');
 varargin = delete_option(varargin,'parent');
 
 h = [];
@@ -40,8 +40,12 @@ for i = 1:numel(sP)
     
   % add some nans if lines are plotted
   if check_option(varargin,'edgecolor')
-    d = sqrt(diff(x).^2 + diff(y).^2);
-    ind = find(d > 2.5);
+    
+    % find large gaps
+    d = sqrt(diff(x([1:end,1])).^2 + diff(y([1:end,1])).^2);
+    ind = find(d > diff(sP(i).bounds([1,3])) / 5);
+    
+    % and fill the gaps with nans
     for k = 1:numel(ind)
       x = [x(1:ind(k)+k-1);nan;x(ind(k)+k:end)];
       y = [y(1:ind(k)+k-1);nan;y(ind(k)+k:end)];
@@ -115,8 +119,8 @@ for i = 1:numel(sP)
     if check_option(varargin,'DisplayName')      
       holdState = get(sP(i).ax,'nextPlot');
       set(sP(i).ax,'nextPlot','add');
-      optiondraw(scatter(0,0,'parent',sP(i).hgt,'MarkerFaceColor',mfc,...
-        'MarkerEdgeColor',mec,'visible','off'),varargin{:});
+      optiondraw(scatter([],[],'parent',sP(i).ax,'MarkerFaceColor',mfc,...
+        'MarkerEdgeColor',mec),varargin{:});
       set(sP(i).ax,'nextPlot',holdState);
     end
   end

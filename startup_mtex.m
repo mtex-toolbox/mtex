@@ -7,7 +7,7 @@ function startup_mtex(varargin)
 %
 
 
-% this is a bugfix for MATLAV having very high cpu load on idle
+% this is a bugfix for MATLAB having very high cpu load on idle
 if isunix && ~ismac
   try
     %com.mathworks.mlwidgets.html.HtmlComponentFactory.setDefaultType('HTMLRENDERER');
@@ -94,28 +94,49 @@ end
 % -----------------
 function do_install(local_path)
 
-% check wether local_path is in search path
+% extract matlab search path
 cellpath = regexp(path,['(.*?)\' pathsep],'tokens');
 cellpath = [cellpath{:}]; %cellpath = regexp(path, pathsep,'split');
-if isappdata(0,'mtex'), rmappdata(0,'mtex'); end
+
+% if there is already an MTEX version running
+% --> remove it
+if isappdata(0,'mtex')
+  
+  oldMTEX = getappdata(0,'mtex');
+  if ~strcmpi(oldMTEX.mtexPath,local_path) 
+  
+    rmappdata(0,'mtex');
+    disp('I found another version of MTEX and remove it from the current search path!');
+  
+    close all
+    evalin('base','clear classes')
+          
+    inst_dir = cellpath(~cellfun('isempty',strfind(cellpath,oldMTEX.mtexPath)));
+    if ~isempty(inst_dir), rmpath(inst_dir{:}); end
+    
+    % update search path
+    cellpath = regexp(path,['(.*?)\' pathsep],'tokens');
+    cellpath = [cellpath{:}]; %cellpath = regexp(path, pathsep,'split');
+    
+    local_path = fileparts(mfilename('fullpath'));
+  end
+end
+
+% MTEX is "installed" if the root directory is part of the search path
 if any(strcmpi(local_path,cellpath))
   setappdata(0,'MTEXInstalled',true);
-  if ispref('mtex'), rmpref('mtex');end % remove old settings
-  return;
 else
   setappdata(0,'MTEXInstalled',false);
 end
 
-% look for older version
-if any(strfind(path,'mtex'))
-  disp('I found an older version of MTEX and remove it from the current search path!');
-
-  close all
-  evalin('base','clear classes')
-
-  inst_dir = cellpath(~cellfun('isempty',strfind(cellpath,'mtex')));
+% there should not be any other directory part of the search path execpt
+% for the mtex root directory
+% remove all previous mtex pathes from search path
+if any(strcmpi(fullfile(local_path,'geometry'),cellpath))
+  
+  inst_dir = cellpath(~cellfun('isempty',strfind(cellpath,local_path)));
   if ~isempty(inst_dir), rmpath(inst_dir{:}); end
-  local_path = fileparts(mfilename('fullpath'));
+  
 end
 
 addpath(local_path);

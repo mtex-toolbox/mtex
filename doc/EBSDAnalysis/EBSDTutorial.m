@@ -22,12 +22,12 @@ ebsd = loadEBSD(fileName)
 plot(ebsd)
 
 %%
-% MTEX supports a wide varity of EBSD file formats. Recommended are text
+% MTEX supports a wide variety of EBSD file formats. Recommended are text-
 % base file formats like |.ang| and |.ctf| over binary file formats like
 % |.osc|. Special attention has to be paid to the alignment of sample
 % reference frame X Y Z. Different vendors use different conventions. Even
 % the reference frame for the Euler angles and for the spatial coordinates
-% do not nee to coincide. How to deal with this is discussed in a seperate
+% do not need to coincide. How to deal with this is discussed in a separate
 % <ImportEBSDData.html section>.
 %
 %% Visualize EBSD data

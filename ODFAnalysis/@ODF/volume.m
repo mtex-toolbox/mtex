@@ -20,6 +20,12 @@ function v = volume(odf,center,radius,varargin)
 % See also
 % ODF/fibreVolume ODF/entropy ODF/textureindex
 
+if isa(center,'fibre')
+  v = fibreVolume(odf,center.h,center.r,radius,varargin{:});
+  return
+end
+
+
 % check input
 argin_check(center,'quaternion');
 argin_check(radius,'double');

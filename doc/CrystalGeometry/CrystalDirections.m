@@ -19,7 +19,7 @@ cs = crystalSymmetry('triclinic',[5.29,9.18,9.42],[90.4,98.9,90.1]*degree,...
 
 %%
 % The variable |cs| containes the geometry of the crystal reference frame
-% and, in particular, the aligment of the crystalographic a,b, and, c axis.
+% and, in particular, the alignment of the crystallographic a,b, and, c axis.
 
 a = cs.aAxis
 b = cs.bAxis
@@ -27,7 +27,7 @@ c = cs.cAxis
 
 %%
 % A crystal direction |m = u * a + v * b + w * c| is a vector with
-% coordinates u, v, w with respect to these crystalographic axes. In MTEX a
+% coordinates u, v, w with respect to these crystallographic axes. In MTEX a
 % crystal direction is represented by a variable of type <Miller_index.html
 % Miller> which is defined by
 
@@ -99,7 +99,7 @@ eq(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'antipodal')
 %
 % The angle between two crystal directions m1 and m2 is defined as the
 % smallest angle between m1 and all symmetrically equivalent directions to
-% m2. This angle is in radians and it is calculated by the funtion <vector3d.angle.html
+% m2. This angle is in radians and it is calculated by the function <vector3d.angle.html
 % angle>
 
 angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs)) / degree
@@ -129,7 +129,7 @@ vector3d(m)
 %
 % Essentially all the operations defined for general directions, i.e. for
 % variables of type [[vector3d_index.html,vector3d]] are also available for
-% Miller indices. In addtion Miller indices interact with crystal
+% Miller indices. In addition Miller indices interact with crystal
 % orientations. Consider the crystal orientation
 
 o = orientation('Euler',10*degree,20*degree,30*degree,cs)

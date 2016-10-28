@@ -17,11 +17,11 @@ function [modes, values] = calcModes(odf,varargin)
 %  accuracy    - in radians
 %
 % Example
-%  find the local maxima of the [[SantaFe.html,SantaFe]] ODF
 %
-%    mode = calcModes(SantaFe)
-%    plotPDF(SantaFe,Miller(0,0,1))
-%    annotate(mode)
+%   %find the local maxima of the [[SantaFe.html,SantaFe]] ODF
+%   mode = calcModes(SantaFe)
+%   plotPDF(SantaFe,Miller(0,0,1,mode.CS))
+%   annotate(mode)
 %
 % See also
 % ODF/max

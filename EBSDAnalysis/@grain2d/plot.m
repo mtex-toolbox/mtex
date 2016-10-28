@@ -74,9 +74,12 @@ else % otherwise phase plot
 
     % reactivate legend information
     set(get(get(h{k}(end),'Annotation'),'LegendInformation'),'IconDisplayStyle','on');
-
+        
   end
 
+  % dummy set DisplayName to display legend
+  varargin = [varargin,{'DisplayName',''}];
+  
 end
 
 % we have to plot grain boundary individually
@@ -85,9 +88,9 @@ hh = plot(grains.boundary,varargin{:});
 set(get(get(hh,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
 hold off
 
-warning('off','MATLAB:legend:PlotEmpty');
-legend('-DynamicLegend','location','NorthEast');
-warning('on','MATLAB:legend:PlotEmpty');
+if check_option(varargin,'DisplayName') 
+  legend('-DynamicLegend','location','NorthEast');
+end
 
 % keep track of the extend of the graphics
 % this is needed for the zoom: TODO maybe this can be done better

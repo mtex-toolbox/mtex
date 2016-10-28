@@ -1,17 +1,18 @@
 function d = dot(v1,v2,varargin)
 % pointwise inner product
 %
-% Usage
-% d = dot(v1,v2)
+% Syntax
+%   d = dot(v1,v2)
+%   d = dot(v1,v2,'antipodal')
 %
 % Input
 %  v1, v2 - @vector3d
 %
 % Options
-%  antipodal - 
+%  antipodal - consider v1, v2 as axes
 %
 % Output
-%  double
+%  d - double
 
 % if second argument is Miller call corresponding method
 if isa(v2,'Miller')

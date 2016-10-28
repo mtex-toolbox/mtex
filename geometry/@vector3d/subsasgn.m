@@ -14,10 +14,10 @@ switch s(1).type
       
     if numel(s)>1, b =  builtin('subsasgn',subsref(v,s(1)),s(2:end),b); end
       
-    if isempty(b)
-      v.x = subsasgn(v.x,s(1),[]);
-      v.y = subsasgn(v.y,s(1),[]);
-      v.z = subsasgn(v.z,s(1),[]);
+    if isnumeric(b)
+      v.x = subsasgn(v.x,s(1),b);
+      v.y = subsasgn(v.y,s(1),b);
+      v.z = subsasgn(v.z,s(1),b);
     else
       v.x = subsasgn(v.x,s(1),b.x);
       v.y = subsasgn(v.y,s(1),b.y);

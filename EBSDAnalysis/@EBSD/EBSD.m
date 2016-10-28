@@ -34,14 +34,12 @@ classdef EBSD < phaseList & dynProp & dynOption
     scanUnit = 'um'       % unit of the x,y coordinates
     unitCell = []         % cell associated to a measurement
   end
-  
+   
   properties (Dependent = true)
     orientations    % rotation including symmetry
-    weights         %
+    weights         % is this realy needed?
     grainId         % id of the grain to which the EBSD measurement belongs to
     mis2mean        % misorientation to the mean orientation of the corresponding grain
-%    dx              % step size in x
-%    dy              % step size in y
   end
   
   methods
@@ -79,7 +77,7 @@ classdef EBSD < phaseList & dynProp & dynOption
       if check_option(varargin,'uniCell')
         ebsd.unitCell = get_option(varargin,'unitCell',[]);
       else
-        ebsd.unitCell = calcUnitCell([ebsd.prop.x(:),ebsd.prop.y(:)]);
+        ebsd = ebsd.updateUnitCell;
       end
       
       % remove ignore phases

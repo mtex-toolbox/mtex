@@ -4,7 +4,7 @@
 % 
 %% Download
 % 
-% The MTEX toolbox is available for Windows, Linux and MAC-OSX at
+% The MTEX toolbox is available for Windows, Linux, and MAC-OSX at
 % <http://mtex-toolbox.github.io/>
 % 
 %% MATLAB 
@@ -12,7 +12,7 @@
 % Since MTEX is a MATLAB toolbox <http://www.mathworks.com MATLAB> has to
 % be installed in order to use MTEX. It works fine with the student version
 % and does not require any additional toolboxes, addons or packages. Check
-% table below to see whether MTEX will run on your Matlab version.
+% the table below to see whether MTEX will run on your Matlab version.
 %
 % <html>
 % <table border=0 align="center">
@@ -63,7 +63,7 @@
 %
 %% Installation
 %
-% In order to install MTEX proceed as follows
+% In order to install, MTEX proceeds as follows
 %
 % # extract MTEX to an arbitrary folder
 % # start MATLAB
@@ -74,7 +74,7 @@
 %
 %% Configuration and Troubleshooting
 %
-% You can <configuration.html configure> your MTEX installation by editting
+% You can <configuration.html configure> your MTEX installation by editing
 % the file <matlab:edit('mtex_settings.m') mtex_settings.m>. This includes
 % also some workarounds for known problems.
 %
@@ -83,8 +83,8 @@
 %
 %% Compiling MTEX
 %
-% Compiling MTEX is only neccesary if the provided binaries does not run on
-% your system or if you want to optimize them to you specific system.
-% Compiling intstructions can be found <compilation.html here>.
+% Compiling MTEX is only necessary if the provided binaries do not run on
+% your system or if you want to optimize them for your specific system.
+% Compiling instructions can be found <compilation.html here>.
 %
 

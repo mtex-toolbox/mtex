@@ -1,7 +1,34 @@
 function varargout = subsref(T,s)
 %overloads subsref
 
-if strcmp(s(1).type,'()')
+if strcmp(s(1).type,'{}')
+
+  s(1).type = '()';
+  
+  if T.rank>1 && length(s(1).subs) == 1
+  
+    MLocal = reshape(T.M,[3^T.rank size(T) 1]);
+    s.subs = [s.subs repcell(':',1,ndims(T.M)-T.rank)];
+    varargout{1} = squeeze(subsref(MLocal,s));
+  
+  elseif T.rank == 4 && length(s(1).subs) == 2
+    
+    M = tensor42(T.M,T.doubleConvention);
+    
+    s.subs = [s.subs repcell(':',1,ndims(M)-2)];
+    
+    varargout{1} = squeeze(subsref(M,s));
+    
+  else
+    
+    s.subs = [s.subs repcell(':',1,ndims(T.M)-T.rank)];
+    
+    varargout{1} = squeeze(subsref(T.M,s));
+  end
+  
+  return
+  
+elseif strcmp(s(1).type,'()')
 
   s.subs = [repcell(':',1,T.rank) s.subs];
     

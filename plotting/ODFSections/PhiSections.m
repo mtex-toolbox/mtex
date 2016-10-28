@@ -9,12 +9,12 @@ classdef PhiSections < ODFSections
     
   methods
     
-    function oS = PhiSections(CS1,CS2,varargin)
+    function oS = PhiSections(varargin)
    
-      oS = oS@ODFSections(CS1,CS2);
+      oS = oS@ODFSections(varargin{:});
       
       % get fundamental plotting region
-      [oS.maxphi1,oS.maxPhi,oS.maxphi2] = fundamentalRegionEuler(CS1,CS2,varargin{:});
+      [oS.maxphi1,oS.maxPhi,oS.maxphi2] = fundamentalRegionEuler(oS.CS1,oS.CS2,varargin{:});
             
       % get sections
       nsec = get_option(varargin,'sections',6);
@@ -27,7 +27,7 @@ classdef PhiSections < ODFSections
       
       res = get_option(varargin,'resolution',2.5*degree);
       phi1 = linspace(0,oS.maxphi1,round(oS.maxphi1/res)+1);
-      phi2 = linspace(0,oS.maxphi2,round(oS.maxphi1/res)+1);
+      phi2 = linspace(0,oS.maxphi2,round(oS.maxphi2/res)+1);
       [phi1,phi2] = meshgrid(phi1,phi2);
       oS.plotGrid.phi1 = phi1;
       oS.plotGrid.phi2 = phi2;

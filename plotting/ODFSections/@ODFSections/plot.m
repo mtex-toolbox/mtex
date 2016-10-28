@@ -2,6 +2,17 @@ function plot(oS,varargin)
 % plot data into ODF sections
 %
 % Syntax
+%   plot(oS,ori)
+%   plot(oS,fibre)
+%
+%   grid = oS.makeGrid;
+%   values = odf.eval(grid)
+%   plot(oS,values)
+%
+% Input
+%  oS    - @ODFSections
+%  ori   - @orientation
+%  fibre - @fibre
 %
 
 [mtexFig,isNew] = newMtexFigure('ensureAppdata',{{'ODFSections',oS}},varargin{:});
@@ -11,6 +22,9 @@ if nargin>1 && isa(varargin{1},'quaternion')
   ori = orientation(varargin{1},oS.CS1,oS.CS2);
   numData = length(ori);
   varargin(1) = [];
+elseif isa(varargin{1},'fibre')
+  ori = orientation(varargin{1});
+  numData = 0;
 elseif ~isempty(oS.plotGrid)
   numData = oS.gridSize(end);
 else 
@@ -20,7 +34,6 @@ secData = {};
 
 % extract data
 [data,varargin] = extract_data(numData,varargin);
-
 
 %
 if exist('ori','var') || isempty(oS.plotGrid)
@@ -116,6 +129,3 @@ end
   end
   
 end
-  
-
-

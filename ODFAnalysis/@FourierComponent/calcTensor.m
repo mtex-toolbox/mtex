@@ -41,7 +41,7 @@ for l = 0:min(T.rank,component.bandwidth)
 end
 
 % ensure tensors to be real valued
-if isreal(double(T)),
+if isreal(double(T))
   TVoigt = real(TVoigt); 
   TReuss = real(TReuss); 
 end

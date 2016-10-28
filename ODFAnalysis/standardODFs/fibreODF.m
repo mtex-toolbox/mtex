@@ -28,8 +28,14 @@ function odf = fibreODF(varargin)
 % ODF/ODF uniformODF unimodalODF
 
 % get fibre
-h = argin_check(varargin{1},'Miller');
-r = argin_check(varargin{2},'vector3d');
+if isa(varargin{1},'fibre')
+  h = varargin{1}.h;
+  r = varargin{1}.r;
+  varargin(1) = [];
+else
+  h = argin_check(varargin{1},'Miller');
+  r = argin_check(varargin{2},'vector3d');
+end
 
 % get crystal and specimen symmetry
 if isa(r,'Miller')
@@ -39,9 +45,8 @@ else
 end
 
 % get kernel
-if nargin > 2 && isa(varargin{3},'kernel')
-  psi = varargin{3};
-else
+psi = getClass(varargin,'kernel',[]);
+if isempty(psi)
   hw = get_option(varargin,'halfwidth',10*degree);
   psi = deLaValeePoussinKernel('halfwidth',hw);
 end

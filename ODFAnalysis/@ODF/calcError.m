@@ -23,13 +23,9 @@ function e = calcError(odf1,odf2,varargin)
 % compare with a pole figure
 if isa(odf2,'PoleFigure'), e = calcError(odf2,odf1,varargin{:}); return;end
 
-% compare two odfs
-
-% check for equal symmetries
-error(nargchk(2, inf, nargin))
-
 evaluated = ~check_option([{odf2} varargin],'evaluated');
 
+% compare two odfs
 if evaluated
   assert(odf1.CS.Laue == odf2.CS.Laue && odf1.SS.Laue == odf2.SS.Laue,...
     'Input ODFs does not have same symmetry.');

@@ -15,8 +15,8 @@ function x = calcAxisDistribution(odf,h,varargin)
 %
 % See also
 
-oR = fundamentalRegion(odf.CS,odf.SS,varargin{:});
-maxOmega = oR.maxAngle(project2FundamentalRegion(h,disjoint(odf.CS,odf.SS)));
+[oR,dcs,nSym] = fundamentalRegion(odf.CS,odf.SS,varargin{:});
+maxOmega = oR.maxAngle(project2FundamentalRegion(h,dcs));
 res = get_option(varargin,'resolution',2.5*degree);
 nOmega = round(max(maxOmega(:))/res);
 
@@ -33,5 +33,4 @@ weights = sin(omega./2).^2 ./ nOmega;
 f = eval(odf,S3G,varargin{:}); %#ok<EVLC>
 
 % sum along axes
-x = 2 / pi * length(unique(odf.CS*odf.SS,'antipodal')) * ...
-  sum(f .* weights,2) .* maxOmega(:);
+x = 2*nSym / pi * sum(f .* weights,2) .* maxOmega(:);

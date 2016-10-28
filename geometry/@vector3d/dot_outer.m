@@ -9,7 +9,7 @@ function d = dot_outer(v1,v2,varargin)
 
 % if second argument is Miller call corresponding method
 if isa(v2,'Miller')
-  d = dot_outer(v2,v1,varargin{:}); % TODO: check this!!!!
+  d = dot_outer(v2,v1,varargin{:}).'; % TODO: check this!!!!
   return
 end
 

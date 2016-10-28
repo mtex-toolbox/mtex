@@ -10,11 +10,11 @@ classdef axisAngleSections < ODFSections
     
   methods
     
-    function oS = axisAngleSections(CS1,CS2,varargin)
+    function oS = axisAngleSections(varargin)
       
-      oS = oS@ODFSections(CS1,CS2);
-      oS.CS1 = CS1.properGroup;
-      oS.CS2 = CS2.properGroup;
+      oS = oS@ODFSections(varargin{:});
+      oS.CS1 = oS.CS1.properGroup;
+      oS.CS2 = oS.CS2.properGroup;
       oS.jointCS = disjoint(oS.CS1,oS.CS2);      
       if check_option(varargin,'antipodal')
         oS.jointCS = oS.jointCS.Laue;
@@ -22,10 +22,14 @@ classdef axisAngleSections < ODFSections
       oS.oR = fundamentalRegion(oS.CS1,oS.CS2,varargin{:});
       oS.volumeScaling = get_option(varargin,'volumeScaling',true);
       
-      % get sections      
-      oS.angles = get_option(varargin,'axisAngle',(5:10:180)*degree,'double');
-      oS.angles(oS.angles>oS.oR.maxAngle) = [];
-
+      % get sections
+      if check_option(varargin,'sections')
+         omega = linspace(0,oS.oR.maxAngle, 1+get_option(varargin,'sections'));
+        oS.angles = 0.5*(omega(1:end-1) + omega(2:end));
+      else
+        oS.angles = get_option(varargin,'axisAngle',(5:10:180)*degree,'double');
+        oS.angles(oS.angles>oS.oR.maxAngle) = [];
+      end
       for s=1:length(oS.angles)
         oS.axesSectors{s} = oS.oR.axisSector(oS.angles(s));
       end
@@ -37,6 +41,11 @@ classdef axisAngleSections < ODFSections
       oS.gridSize(1) = 0;
       for s = 1:length(oS.angles)
         sR = oS.oR.axisSector(oS.angles(s));
+        
+        % consider only upper as we can't plot more
+        % TODO: we may need to inform the user about this
+        sR = sR.restrict2Upper;
+        
         oS.plotGrid{s} = plotS2Grid(sR,varargin{:});
         
         oS.gridSize(s+1) = oS.gridSize(s) + length(oS.plotGrid{s});
@@ -71,8 +80,6 @@ classdef axisAngleSections < ODFSections
     function h = plotSection(oS,ax,sec,v,data,varargin)
       
       angle = oS.angles(sec);
-        
-      opt = oS.jointCS.plotOptions;
       
       % plot outer boundary
       if isempty(findall(ax,'tag','outerBoundary'))

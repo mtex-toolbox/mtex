@@ -10,7 +10,7 @@
 % statistical, shape as well as for spatial analysis
 %
 %%
-% Let us first import some EBSD data and reconstruct grainss
+% Let us first import some EBSD data and reconstruct grains
 
 plotx2east
 mtexdata forsterite
@@ -24,8 +24,8 @@ hold off
 
 
 %% Accessing individual grains
-% The variabe |grains| is essentially a large vector of grains. Thus when
-% applying a function like <Grain2d.area.html area> to this variabe we
+% The variable |grains| is essentially a large vector of grains. Thus when
+% applying a function like <Grain2d.area.html area> to this variable we
 % obtain a vector of the same lenght with numbers representing the area of
 % each grain
 
@@ -39,15 +39,15 @@ grain_area = grains.area;
 plot(grains,grain_area)
 
 %%
-% As a second application we can ask for the largest grain within our data
-% set. The maximum value and its position within a vector is found by the
+% As a second application, we can ask for the largest grain within our data
+% set. The maximum value and its position within a vector are found by the
 % Matlab command |max|.
 
 [max_area,max_id] = max(grain_area)
 
 %%
-% The number |max_id| is the position of the grain with maximum area within
-% the variabe |grains|. We can access this specific grain by direct
+% The number |max_id| is the position of the grain with a maximum area within
+% the variable |grains|. We can access this specific grain by direct
 % indexing
 
 grains(max_id)
@@ -60,7 +60,7 @@ plot(grains(max_id).boundary,'linecolor','red','linewidth',1.5)
 hold off
 
 %%
-% Note that this way of addressing individuell grains can be generalized to
+% Note that this way of addressing individual grains can be generalized to
 % many grains. E.g. assume we are interested in the largest 5 grains. Then
 % we can sort the vector |grain_area| and take the indices of the 5 largest
 % grains.
@@ -86,7 +86,7 @@ plot(grains(condition).boundary,'linecolor','red','linewidth',1.5)
 hold off
 
 %%
-% This is a very powerfull way of accessing grains as the condition can be
+% This is a very powerful way of accessing grains as the condition can be
 % build up using any grain property. As an example let us consider the
 % phase. The phase of the first five grains we get by
 
@@ -107,7 +107,7 @@ grains('forsterite')
 
 %%
 % Logical indexing allows also for more complex queries, e.g. selecting all
-% grains perimeter larger then 6000 and at least 600 measurements within
+% grains perimeter larger than 6000 and at least 600 measurements within
 
 condition = grains.perimeter>6000 & grains.grainSize >= 600;
 
@@ -146,7 +146,7 @@ grains_selected = grains_fo(angle(grains_fo.meanOrientation,ori)<20*degree)
 plot(grains_selected)
 
 %% Grain-size Analysis
-% Lets go back to the grain size and analyze its distribution. To this end
+% Let's go back to the grain size and analyze its distribution. To this end,
 % we consider the complete data set.
 
 mtexdata forsterite
@@ -162,10 +162,10 @@ ebsd = ebsd('indexed');
 hist(grains)
 
 %%
-% Sometimes it is desireable to remove all boundary grains as they might
+% Sometimes it is desirable to remove all boundary grains as they might
 % distort grain statistics. To do so one should remember that each grain
 % boundary has a property |grainId| which stores the ids of the neigbouring
-% grains. In the case of an outer grain boundary one of the neighbouring
+% grains. In the case of an outer grain boundary, one of the neighbouring
 % grains has the id zero. We can filter out all these boundary segments by
 
 % ids of the outer boundary segment 
@@ -192,19 +192,19 @@ grain_id(grain_id==0) = [];
 plot(grains(grain_id))
 
 %%
-% finally we can remove the boundary grains by
+% finally, we can remove the boundary grains by
 grains(grain_id) = []
 
 plot(grains)
 
 %% 
-% Beside the area there are various other geometric properties that can be
+% Beside the area, there are various other geometric properties that can be
 % computed for grains, e.g., the <grain2d.perimeter.html perimeter>, the
 % <grain2d.diameter.html diameter>, the <grain2d.equivalentRadius.html
 % equivalentRadius>, the <grain2d.equivalentPerimeter.html
 % equivalentPerimeter>, the <grain2d.aspectRatio.html aspectRatio>, and the
 % <grain2d.shapeFactor.html shapeFactor>. The following is a simple scatter
-% plot of shape factor against aspact ratio to check for correlation.
+% plot of shape factor against aspect ratio to check for correlation.
 %
 
 % the size of the dots corresponds to the area of the grains
@@ -217,8 +217,8 @@ plot(grains,log(grains.aspectRatio))
 
 
 %% Spatial Dependencies
-% One interessting question would be, wether a polyphase system has
-% dependence in the spatial arrangement or not, therefor we can count the
+% One interesting question would be, whether a polyphase system has
+% dependence in the spatial arrangement or not, therefore, we can count the
 % transitions to a neighbour grain
 
 %[J, T, p ] = joinCount(grains,grains.phase)

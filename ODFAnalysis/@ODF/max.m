@@ -13,11 +13,10 @@ function [m,ori]= max(odf,varargin)
 %  accuracy    - in radians
 %
 % Example
-%  find the local maxima of the [[SantaFe.html,SantaFe]] ODF
-%
-%    [m,ori] = max(SantaFe)
-%    plotPDF(SantaFe,Miller(0,0,1))
-%    annotate(ori)
+%  %find the local maxima of the [[SantaFe.html,SantaFe]] ODF
+%  [m,ori] = max(SantaFe)
+%  plotPDF(SantaFe,Miller(0,0,1,ori.CS))
+%  annotate(ori)
 %
 %
 % See also
