@@ -1,4 +1,4 @@
-function [v,l] = symmetrise(v,S,varargin)
+function [v,l,sym] = symmetrise(v,S,varargin)
 % symmetrcially equivalent directions and its multiple
 %
 % Input
@@ -17,9 +17,10 @@ function [v,l] = symmetrise(v,S,varargin)
 % intuitive
 % we should use the option unique to get the unique symmetric equivalent!!
 
-if nargout == 2
+if nargout > 1
   
   l = zeros(size(v));
+  sym = rotation;
   
   Sv = v;
   Sv.x = []; Sv.y = []; Sv.z = [];
@@ -31,6 +32,8 @@ if nargout == 2
   for i=1:length(v)
 	
     u = v.subSet(i);
+    sym = [sym,S(1)];
+    
     h = S * u;
     if isAnti && keepAnti
       h = [h;-h]; %#ok<AGROW>
@@ -42,6 +45,7 @@ if nargout == 2
       if ~any(isnull(norm(u-hj))) ...
           && ~(~keepAnti && isAnti && any(isnull(norm(u + hj))))
         u = [u,hj]; %#ok<AGROW>
+        sym = [sym,S(j)]; %#ok<AGROW>
       end
       
     end
@@ -52,7 +56,7 @@ if nargout == 2
   v = Sv.';
 else
   
-  v = S * v;
+  v = reshape(S * v,length(S),length(v));
 
   if (check_option(varargin,'antipodal') || v.antipodal) ...
       && ~check_option(varargin,'skipAntipodal')

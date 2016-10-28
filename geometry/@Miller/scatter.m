@@ -24,7 +24,7 @@ if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetris
   % symmetry is treaded seperately by the plot command
   
   % symmetrise data with repetition
-  if numel(varargin) > 0 && isnumeric(varargin{1}) && ~isempty(varargin{1});
+  if numel(varargin) > 0 && isnumeric(varargin{1}) && ~isempty(varargin{1})
   
     % first dimension cs - second dimension m
     m = symmetrise(m,'removeAntipodal',varargin{:});

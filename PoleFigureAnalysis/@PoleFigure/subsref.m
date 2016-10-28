@@ -1,8 +1,10 @@
 function varargout = subsref(pf,s)
+% overide polefigure() and polefigure{}
 
-if strcmp(s(1).type,'()')
+if any(strcmp(s(1).type,{'()','{}'}))
     
-  if iscell(s(1).subs{1}) || ischar(s(1).subs{1}) || isa(s(1).subs{1},'Miller')
+  if strcmp(s(1).type,'{}') || iscell(s(1).subs{1}) || ...
+      ischar(s(1).subs{1}) || isa(s(1).subs{1},'Miller')
   
     pf = pf.select(s(1).subs);
        

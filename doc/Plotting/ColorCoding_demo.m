@@ -6,10 +6,10 @@
 %%
 % A central issue when interpreting plots is to have a consistent color
 % coding among all plots. In MTEX this can be achieved in two ways. If the
-% the minimum and maximum value is known then one can
+% minimum and maximum values are known then one can
 % specify the color range directly using the options *colorrange* or
 % *contourf*, or the command <setcolorrange.html setcolorrange> is used
-% which allows to set the color range afterwards.
+% which allows setting the color range afterward.
 %
 %% Contents
 %
@@ -26,13 +26,13 @@ pf = calcPoleFigure(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],...
 
 %% Setting a Colormap
 %
-% By default MTEX uses the default MATLAB colormap *jet*, which varies from
+% By default, MTEX uses the default MATLAB colormap *jet*, which varies from
 % blue to red for increasing values.
 
 plot(pf)
 
 %%
-% However, sometimes more simple colormaps are preffered, like the LaboTeX
+% However, sometimes more simple colormaps are preferred, like the LaboTeX
 % colormap
 
 mtexColorMap LaboTeX
@@ -53,7 +53,7 @@ setMTEXpref('defaultColorMap',LaboTeXColorMap);
 
 %% Tight Colorcoding
 %
-% When <PoleFigure.plot.html plot> is called without any other option,
+% When the <PoleFigure.plot.html plot> is called without any other option,
 % the chosen color coding is the one called  *tight*, which ranges the data independently
 % from the other plots, i.e., for each subplot the largest value is assigned
 % to the maximum color and the smallest value is assigned to the minimum
@@ -72,7 +72,7 @@ plot(pf)
 plot(pf,'colorrange','equal')
 
 
-%% Setting an Explicite Colorrange
+%% Setting an Explicit Colorrange
 %
 % If you want to have a unified colorcoding for several figures you can
 % set the colorrange directly in the <ODF.plotPDF.html plot command>
@@ -87,7 +87,7 @@ plotPDF(.5*odf+.5*uniformODF(cs),[Miller(1,0,0,cs),Miller(1,1,1,cs)],...
 
 %% Setting the Contour Levels
 %
-% In the case of contoured plots you can also specify the *contour levels*
+% In the case of contoured plots, you can also specify the *contour levels*
 % directly
 
 close all
@@ -97,7 +97,7 @@ plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],...
 
 %% Modifying the Color range After Plotting
 %
-% The color range of the figures can also be adjusted afterwards using the
+% The color range of the figures can also be adjusted afterward using the
 % command <setcolorrange.html setcolorrange>
 
 CLim(gcm,[0.38,3.9])

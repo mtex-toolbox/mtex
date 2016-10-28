@@ -7,9 +7,9 @@
 %% Contents
 %
 %% Class Description 
-% Specimen directions are three dimensional vectors in the Euclidean space
-% represented by coordinates with respect to a outer specimen coordinate
-% system x, y, z. Im MTEX Specimen directions are represented by variables
+% Specimen directions are three-dimensional vectors in the Euclidean space
+% represented by coordinates with respect to an outer specimen coordinate
+% system x, y, z. In MTEX Specimen directions are represented by variables
 % of the class *vector3d*. 
 %
 %% SUB: Defining Specimen Directions
@@ -29,7 +29,7 @@ azimuth_angle = 45*degree;
 v = vector3d('polar',polar_angle,azimuth_angle); 
 
 %%
-% Finally one can also define a vector as a linear combination of the
+% Finally, one can also define a vector as a linear combination of the
 % predefined vectors <xvector.html xvector>, <yvector.html yvector>, and
 % <zvector.html zvector>
 
@@ -61,7 +61,7 @@ w(2)
 w = w + v;
 
 %%
-% Beside the standard linear algebra operations there are also the
+% Besides the standard linear algebra operations, there are also the
 % following functions available in MTEX.
 %
 %  [[vector3d.angle.html">angle(v1,v2)]] % angle between two specimen  directions
@@ -72,7 +72,7 @@ w = w + v;
 %  [[vector3d.mean.html,mean(v)]]      % mean over all specimen directions in v  
 %  [[vector3d.polar.html,polar(v)]]     % conversion to spherical coordinates
 
-% A simple example for apply the norm function is to normalize a set of
+% A simple example for applying the norm function is to normalize a set of
 % specimen directions
 
 w = w ./ norm(w)

@@ -5,4 +5,4 @@ function oR = rotate(oR,r,l)
 if nargin == 2, l = idquaternion; end
 
 oR.N =  quaternion(l) * oR.N * quaternion(r);
-oR.V = quaternion(l) * oR.V * quaternion(r);
+oR.V = orientation(quaternion(l) * quaternion(oR.V) * quaternion(r),oR.CS1,oR.CS2);

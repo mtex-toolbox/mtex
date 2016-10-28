@@ -42,6 +42,11 @@ switch s(1).type
       
       ebsd = subsasgn@dynProp(ebsd,s,b);
       
+      % maybe we should update the unit cell
+      if any(strcmp(s(1).subs,{'x','y'}))
+        ebsd = ebsd.updateUnitCell;
+      end
+      
     else
       
       ebsd = builtin('subsasgn',ebsd,s,b);

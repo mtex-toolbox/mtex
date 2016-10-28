@@ -28,6 +28,12 @@ classdef rotation < quaternion & dynOption
     i = []; % 0 stands for proper rotation, 1 for improper rotation
   end
   
+  properties (Dependent = true)
+    phi1 % Bunge Euler angle 1
+    Phi  % Bunge Euler angle 2
+    phi2 % Bunge Euler angle 3
+  end
+  
   methods
     function rot = rotation(varargin)
 
@@ -109,6 +115,19 @@ classdef rotation < quaternion & dynOption
       if isempty(rot.i), rot.i = false(size(quat));end
    
     end
+    
+    function phi1 = get.phi1(rot)
+      [phi1,~,~] = Euler(rot);
+    end
+    
+    function Phi = get.Phi(rot)
+      [~,Phi,~] = Euler(rot);
+    end
+    
+    function phi2 = get.phi2(rot)
+      [~,~,phi2] = Euler(rot);
+    end
+    
   end
   
   methods (Static = true)

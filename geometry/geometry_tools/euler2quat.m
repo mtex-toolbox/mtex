@@ -1,32 +1,32 @@
 function q = euler2quat(alpha,beta,gamma,varargin)
 % converts euler angle to quaternion
 %
-%% Description
+% Description
 % The method *euler2quat* defines a [[quaternion_index.html,rotation]]
 % by Euler angles. You can choose whether to use the Bunge (phi,Phi,phi2)
 % convention or the Matthies (alpha,beta,gamma) convention.
 %
-%% Syntax
+% Syntax
 %
-%  q = euler2quat(alpha,beta,gamma) -
-%  q = euler2quat(phi1,Phi,phi2,'Bunge') -
+%   q = euler2quat(alpha,beta,gamma) -
+%   q = euler2quat(phi1,Phi,phi2,'Bunge') -
 %
-%% Input
+% Input
 %  alpha, beta, gamma - double
 %  phi1, Phi, phi2    - double
 %
-%% Output
+% Output
 %  q - @quaternion
 %
-%% Options
+% Options
 %  ABG, ZYZ   - Matthies (alpha, beta, gamma) convention (default)
 %  BUNGE, ZXZ - Bunge (phi1,Phi,phi2) convention
 %
-%% See also
+% See also
 % quaternion_index quaternion/quaternion axis2quat Miller2quat
 % vec42quat hr2quat idquaternion
 
-%% maybe euler angles are given as a matrix
+% maybe euler angles are given as a matrix
 if nargin == 1 && size(alpha,2)==3
 
   gamma = alpha(:,3);
@@ -35,12 +35,12 @@ if nargin == 1 && size(alpha,2)==3
 
 end
 
-%% may forgotten * degree
+% may forgotten * degree
 if any([alpha(:);beta(:);gamma(:)] > 9)
   warning('Some Euler angles appears to be quite large. Maybe you forgot ''* degree'' to switch from degree to radians.');
 end
 
-%% transform to right convention
+% transform to right convention
 
 conventions = {'nfft','ZYZ','ABG','Matthies','Roe','Kocks','Bunge','ZXZ','Canova'};
 convention = get_flag(varargin,conventions,getMTEXpref('EulerAngleConvention'));
@@ -68,7 +68,7 @@ switch lower(convention)
 end
 
 
-%% construct quaternion
+% construct quaternion
 
 zero = zeros(size(alpha));
 

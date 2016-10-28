@@ -12,8 +12,8 @@
 mtexdata forsterite
 
 %%
-% These data consist of two indexed phases, _Iron_ and _Magnesium_. The not
-% indexed phase called phase _not Indexed_. The phases can be visualized by
+% These data consist of two indexed phases, _Iron_, and _Magnesium_. The not
+% indexed phase called _not Indexed_. The phases can be visualized by
 
 close all; plotx2east
 plot(ebsd)
@@ -25,8 +25,8 @@ plot(ebsd)
 ebsd('Forsterite')
 
 %%
-% contains only the Forterite measurements. In order to extract a couple of
-% phases, the mineral names have to be grouped in curled parethesis.
+% contains only the Forsterite measurements. In order to extract a couple of
+% phases, the mineral names have to be grouped in curled parenthesis.
 
 ebsd({'Fo','En'})
 
@@ -37,7 +37,7 @@ close all
 plot(ebsd('Forsterite'),ebsd('Forsterite').orientations)
 
 %%
-% The data are colorized according to its orientation. By default color of
+% The data is colorized according to its orientation. By default color of
 % an orientation is determined by its position in the 001 inverse pole
 % figure which itself is colored as
 

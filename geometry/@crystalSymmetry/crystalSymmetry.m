@@ -2,22 +2,22 @@ classdef crystalSymmetry < symmetry
 % constructor
 %
 % Syntax
-%   crystalSymmetry -
-%   crystalSymmetry('cubic') -
-%   crystalSymmetry('2/m',[8.6 13 7.2],[90 116, 90]*degree,'mineral','orthoclase') -
-%   crystalSymmetry('O') -
-%   crystalSymmetry('LaueId',9) -
-%   crystalSymmetry('SpaceId',153) -
+%   crystalSymmetry
+%   crystalSymmetry('cubic')
+%   crystalSymmetry('2/m',[8.6 13 7.2],[90 116, 90]*degree,'mineral','orthoclase')
+%   crystalSymmetry('O')
+%   crystalSymmetry('LaueId',9)
+%   crystalSymmetry('SpaceId',153)
 %
 % Input
 %  name  - Schoenflies or International notation of the Laue group
-%  axes  - [a,b,c] --> length of the crystallographic axes
-%  angle - [alpha,beta,gamma] --> angle between the axes
+%  axes  - [a,b,c] ~ length of the crystallographic axes
+%  angle - [alpha,beta,gamma] ~ angle between the axes
 %
 % Output
 %  s - @crystalSymmetry
 %
-% Remarks
+% Description
 % Supported Symmetries
 %
 %  id crystal system  Schoen-  Inter-    Laue     Rotational
@@ -104,7 +104,7 @@ classdef crystalSymmetry < symmetry
         angles = varargin{1};
         if any(angles>2*pi), angles = angles * degree;end
         varargin(1) = [];
-      elseif any(strcmp(symmetry.pointGroups(s.id).lattice,{'trigonal','hexagonal'}))
+      elseif s.id>0 && any(strcmp(symmetry.pointGroups(s.id).lattice,{'trigonal','hexagonal'}))
         angles = [90 90 120] * degree;
       else
         angles = [90 90 90] * degree;

@@ -11,7 +11,7 @@
 %% Introduction
 %
 % MTEX provides a very simple way to define model ODFs. Generally, there are
-% five types to descripe an ODF in MTEX:
+% five types to describe an ODF in MTEX:
 % 
 % * uniform ODF
 % * unimodal ODF
@@ -20,10 +20,10 @@
 % * Fourier ODF
 %
 % The central idea is that MTEX allows you to calculate mixture models, by
-% adding and subtracting arbitary ODFs. Model ODFs may be used as
+% adding and subtracting arbitrary ODFs. Model ODFs may be used as
 % references for ODFs estimated from pole figure data or EBSD data and are
 % instrumental for <PoleFigureSimulation_demo.html pole figure simulations>
-% and <EBSDSimulation_demo.html sinle orientation simulations>. These
+% and <EBSDSimulation_demo.html single orientation simulations>. These
 % relationships are visualized in the following chart.
 %
 % <<odf.png>>
@@ -62,8 +62,8 @@ odf = unimodalODF(ori,psi)
 plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal')
 
 %%
-% For simplicity one can also ommit the kernel function. In this case the
-% default de la Vallee Poussin kernel is choosen with halfwidth of 10 degree.
+% For simplicity one can also omit the kernel function. In this case the
+% default de la Vallee Poussin kernel is chosen with half width of 10 degree.
 
 
 %% Fibre ODFs
@@ -73,11 +73,11 @@ plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal')
 %
 % $$g*h = r.$$
 %
-% A fibre ODF may be writte as
+% A fibre ODF may be written as
 %
 % $$f(g; h,r) = \psi(\angle(g*h,r)),\quad g \in SO(3),$$
 %
-% with an arbitary <kernel_index.html radially symmetrial
+% with an arbitrary <kernel_index.html radially symmetrial
 % function> $\psi$. In order to define a fibre ODF one needs
 %
 % * a <Miller_index.html crystal direction> *h0*
@@ -94,7 +94,7 @@ plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal')
 %% ODFs given by Fourier coefficients
 %
 % In order to define a ODF by it *Fourier coefficients* the Fourier
-% coefficients *C* has to be give as a literaly ordered, complex valued
+% coefficients *C* has to be given as a literally ordered, complex valued
 % vector of the form
 %
 % $$ C = [C_0,C_1^{-1-1},\ldots,C_1^{11},C_2^{-2-2},\ldots,C_L^{LL}] $$
@@ -162,7 +162,7 @@ odf = BinghamODF([-10,10,10,10],quaternion(eye(4)),cs)
 plot(odf,'sections',6,'silent','sigma');
 
 %% Combining model ODFs
-% All the above can be arbitrarily rotated and combinend. For instance, the
+% All the above can be arbitrarily rotated and combined. For instance, the
 % classical Santafe example can be defined by commands
 
 cs = crystalSymmetry('cubic');

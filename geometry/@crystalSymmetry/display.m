@@ -1,4 +1,4 @@
-function display(s)
+function display(s,varargin)
 % standard output
 
 disp(' ');
@@ -28,7 +28,11 @@ end
 
 % add symmetry
 props{end+1} = 'symmetry'; 
-propV{end+1} = [symmetry.pointGroups(s.id).Inter];
+if s.id>0
+  propV{end+1} = [symmetry.pointGroups(s.id).Inter];
+else
+  propV{end+1} = 'unkwown';
+end
 
 % add axis length
 props{end+1} = 'a, b, c';

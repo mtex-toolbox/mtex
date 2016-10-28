@@ -1,5 +1,5 @@
 %% Visualizing EBSD data with sharp textures
-% How visualize texturgradients within grains
+% How visualize texture gradients within grains
 %
 %% Open in Editor
 %
@@ -7,9 +7,9 @@
 %
 
 %% 
-% Using spezialized orientation mappings is particularly usefull when
+% Using specialized orientation mappings is particularly useful when
 % visualizing sharp data. Let us consider the following data set which
-% restrict to the calcite phase
+% restricts to the calcite phase
 
 plotx2east
 mtexdata sharp
@@ -22,25 +22,25 @@ close all;
 plot(ebsd,oM.orientation2color(ebsd.orientations))
 
 %%
-% and have a look into the 001 inverse pole figure.
+% and have a look into the 100 inverse pole figure.
 
 % compute the positions in the inverse pole figure
-h = ebsd.orientations .\ zvector;
+h = ebsd.orientations .\ vector3d.X;
 h = project2FundamentalRegion(h);
 
 % compute the azimuth angle in degree
 color = h.rho ./ degree;
 
-plotIPDF(ebsd.orientations,zvector,'property',color,'MarkerSize',3,'grid')
+plotIPDF(ebsd.orientations,vector3d.X,'property',color,'MarkerSize',3,'grid')
 mtexColorbar
 
 %%
 % We see that all individual orientations are clustered around azimuth
-% angle 25 degree with some outliers at 90 and 120 degree. In order to
-% increase the contrast for the main group we restrict the colorrange from
-% 20 degree to 29 degree.
+% angle 115 degrees with some outliers at 125 and 130 degree. In order to
+% increase the contrast for the main group, we restrict the color range from
+% 110 degree to 120 degree.
 
-caxis([90 100]);
+caxis([110 120]);
 
 % by the following lines we colorcode the outliers in purple.
 cmap = colormap;
@@ -54,8 +54,8 @@ colormap(cmap)
 % plot the data with the customized color
 plot(ebsd,color)
 
-% set scaling of the angles to 20 - 29 degree
-caxis([90 100]);
+% set scaling of the angles to 110 - 120 degree
+caxis([110 120]);
 
 % colorize outliers in purple.
 cmap = colormap;
@@ -64,7 +64,7 @@ cmap(1,:) = [1 0 1];
 colormap(cmap)
 
 %% Sharpening the default colorcoding
-% Next we want to apply the same ideas as above to the default MTEX
+% Next, we want to apply the same ideas as above to the default MTEX
 % color mapping, i.e. we want to stretch the colors such that they cover
 % just the orientations of interest. 
 
@@ -72,35 +72,37 @@ oM = ipdfHSVOrientationMapping(ebsd.CS.properGroup);
 
 % To this end, we first compute the inverse pole figure direction such that
 % the mean orientation is just at the gray spot of the inverse pole figure
-oM.inversePoleFigureDirection = mean(ebsd.orientations) * oM.whiteCenter;
+oM.inversePoleFigureDirection = mean(ebsd.orientations,'robust') * oM.whiteCenter;
 
 close all;
 plot(ebsd,oM.orientation2color(ebsd.orientations))
 
 %% 
-% We observe that the orientation map is almost completly gray.
-% Next we use the option |colorStretching| to increase contrast.
+% We observe that the orientation map is almost completely gray, except for
+% the  outliers which appears black. Next, we use the option |maxAngle| to
+% increase contrast in the grayish part
 
-oM.maxAngle = 5*degree;
+oM.maxAngle = 7.5*degree;
 plot(ebsd,oM.orientation2color(ebsd.orientations))
 
 %%
-% You may play around with the option |colorStretching| to obtain better
+% You may play around with the option |maxAngle| to obtain better
 % results. As for interpretation keep in mind that white color represents
 % the mean orientation and the color becomes more saturated and later dark
 % as the orientation to color diverges from the mean orientation.
 %
-% Lets have a look at the corresponding color map.
+% Let's have a look at the corresponding color map.
 
 plot(oM,'resolution',0.25*degree)
 
+% TODO: Check this!!!
 %hold on
 %plotIPDF(ebsd.orientations,'points',10,'MarkerSize',1,'MarkerFaceColor','w','MarkerEdgeColor','w')
 %hold off
 %%
 % observe how in the inverse pole figure the orientations are scattered
 % closely around the white center. Together with the fact that the
-% transition from white to color is quite rappidly this gives a high
+% transition from white to color is quite rapidly, this gives a high
 % contrast.
 
 
@@ -134,7 +136,7 @@ hold off
 % when applying the option sharp MTEX colors the mean orientation as white
 % and scales the maximum saturation to fit the maximum misorientation
 % angle. This way deviations of the orientation within one grain can be
-% visualised. 
+% visualized. 
 
 % plot a grain 
 plot(largeGrains(1).boundary,'linewidth',2)

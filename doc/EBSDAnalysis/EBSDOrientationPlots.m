@@ -1,10 +1,10 @@
 %% Plotting Individual Orientations
-% Basics to the plot types for individual orientations data
+% Basics of the plot types for individual orientations data
 %
 %% Open in Editor
 %
 %% 
-% This sections gives an overview over the possibilities that MTEX offers to
+% This section gives an overview over the possibilities that MTEX offers to
 % visualize orientation data.
 %
 %% Contents
@@ -36,10 +36,10 @@ plotIPDF(ebsd('Fo').orientations,xvector)
 
 
 %% Scatter Plot in ODF Sections
-% The plotting og scatter points in sections of the orientation space is carried out by the
-% command <orientation.plotSection.html plotSection>. In the above examples the number
+% The plotting of scatter points in sections of the orientation space is carried out by the
+% command <orientation.plotSection.html plotSection>. In the above examples, the number
 % of plotted orientations was chosen automatically such that the
-% plots not to become too crowed with points. The number of randomly chosen orientations
+% plots not to become too crowded with points. The number of randomly chosen orientations
 % can be specified by the option *points*.
 
 plotSection(ebsd('Fo').orientations,'points',1000,'sigma','sections',9)
@@ -74,7 +74,7 @@ grains = calcGrains(ebsd);
 plotIPDF(ebsd('Fo').orientations,xvector,'points',1000, 'MarkerSize',3);
 
 %%
-% In the same way the mean orientations of grains can be visualized
+% In the same way, the mean orientations of grains can be visualized
 
 hold all
 plotIPDF(grains('Fo').meanOrientation,xvector,'points',500, 'MarkerSize',3);

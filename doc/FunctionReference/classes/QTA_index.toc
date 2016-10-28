@@ -5,5 +5,4 @@ PoleFigure_index
 EBSD_index
 GrainSet_index
 Grain2d_index
-Grain3d_index
 tensor_index

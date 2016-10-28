@@ -28,7 +28,7 @@ mtexColorbar
 %%
 % Executing the command <mtexColorbar.html mtexColorbar> twice deletes the
 % colorbar. You can also have a horizontal colorbar at the bottom of the
-% figure by setting the option |location| to |southOutside|. Further we can
+% figure by setting the option |location| to |southOutside|. Further, we can
 % set a title to the colorbar to describe the unit.
 
 % delete vertical colorbar
@@ -109,7 +109,7 @@ annotate(mod2,...
 % saying which color / symbol correspond to which data set. 
 %
 % The following example compares the Fourier coefficients of the fibre ODF
-% with the Fourier co,'margin'}efficients of an unimodal ODF.
+% with the Fourier coefficients of an unimodal ODF.
 
 close all
 plotFourier(FourierODF(odf,32))
@@ -123,10 +123,10 @@ legend({'Fibre ODF','Unimodal ODF'})
 %%
 % Adding a Spherical Grid
 %
-% Sometimes it is usefull to have a spherical grid in your plot to make the
+% Sometimes it is useful to have a spherical grid in your plot to make the
 % projection easier to understand or if you need to know some angular relationships. 
-% For this reason there is the option *grid*, which enables the grid and the 
-% option *grid_res*, which allows to specifiy the spacing of the grid lines.
+% For this reason, there is the option *grid*, which enables the grid and the 
+% option *grid_res*, which allows to specify the spacing of the grid lines.
 
 plotPDF(odf,[Miller(1,0,0,cs),Miller(0,0,1,cs)],'grid','grid_res',15*degree,'antipodal');
 mtexColorMap white2black

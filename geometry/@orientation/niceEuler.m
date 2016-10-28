@@ -5,18 +5,21 @@ function varargout = niceEuler(o,varargin)
 % calculates the Euler angle for a rotation |q|
 %
 % Syntax
-% [alpha,beta,gamma] = Euler(quat) - 
-% [phi1,Phi,phi2] = Euler(quat,'Bunge') -
-% euler = Euler(quat,'Bunge') -
+%   [alpha,beta,gamma] = niceEuler(ori) - 
+%   [phi1,Phi,phi2] = niceEuler(ori,'Bunge') -
+%   euler = Euler(ori,'Bunge') -
 %
 % Input
-%  quat - @quaternion
+%  ori - @orientation
+%
 % Output
 %  alpha, beta, gamma  - Matthies
 %  phi1, Phi, phi2     - BUNGE
+%
 % Options
 %  ABG, ZYZ   - Matthies (alpha,beta,gamma) convention (default)
 %  BUNGE, ZXZ - Bunge (phi, Phi, phi2) convention
+%
 % See also
 % quaternion/Rodrigues
 

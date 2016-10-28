@@ -3,9 +3,13 @@ function qqplot(o)
 % misorientation
 %
 % Example
+%   cs = crystalSymmetry('-43m');
+%   odf1 = unimodalODF(orientation.id(cs),'halfwidth',20*degree);
+%   odf2 = unimodalODF(orientation.id(cs),'halfwidth',50*degree);
 %
-%     qqplot(SO3Grid(2.5*degree,crystalSymmetry('m-3m')))
-%
+%   qqplot(odf1.calcOrientations(1000))
+%   qqplot(odf2.calcOrientations(1000))
+% 
 
 angles = o.angle;
 [pdf,omegas] = calcAngleDistribution(o.CS,o.SS);

@@ -1,4 +1,4 @@
-%% Combinded Plots
+%% Combined Plots
 % Explains how to combine several plots, e.g. plotting on the
 % top of an inverse pole figure some important crystal directions. 
 %
@@ -10,7 +10,7 @@
 %% General Principle
 % In order to tell MATLAB to plot one plot right on the top of an older
 % plot one has to use the commands [[matlab:doc hold,hold all]] and
-% <matlab:doc hold hold off>. Let's demostrate this using a simple example.
+% <matlab:doc hold hold off>. Let's demonstrate this using a simple example.
 
 plot([2 2])
 
@@ -21,7 +21,7 @@ plot([1 3])
 hold off
 
 %% Combine Different EBSD Data
-% First we want to show up two different EBSD data sets in one plot
+% First, we want to show up two different EBSD data sets in one plot
 
 %%
 % let's simulate some EBSD data
@@ -77,7 +77,7 @@ plot(ori_rotated,'MarkerSize',6,'MarkerColor','r','MarkerEdgeColor','k');
 hold off
 
 %% Add Miller Indices to an Inverse Pole Figure Plot
-% Next we are going to add some Miller indices to an inverse pole figure
+% Next, we are going to add some Miller indices to an inverse pole figure
 % plot.
 
 plotIPDF(odf,xvector);
@@ -91,14 +91,14 @@ plot(Miller(0,1,-1,1,cs),'symmetrised','labeled','backgroundColor','w')
 hold off % next plot command deletes all plots
 
 %% Combining different plots in one figure
-% The next example demonstrates how to arrange arbitary plots into one
+% The next example demonstrates how to arrange arbitrary plots into one
 % figure
 
 % let us import some pole figure data
 mtexdata dubna
 
 %%
-% next we compute an ODF out of them
+% next, we compute an ODF out of them
 odf = calcODF(pf)
 
 %%

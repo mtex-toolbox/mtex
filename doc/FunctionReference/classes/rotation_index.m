@@ -7,13 +7,13 @@
 %% Contents
 %
 %% Class Description
-% The class *rotation* is an inheritant of the class <quaternion_index.html
+% The class *rotation* is an inheritance of the class <quaternion_index.html
 % *quaternion*> and allow to work with rotations as with matrixes in MTEX.
 %
 %% SUB: Euler Angle Conventions
 %
 % There are several ways to specify a rotation in MTEX. A
-% well known possibility are the so called *Euler angles*. In texture
+% well-known possibility are the so called *Euler angles*. In texture
 % analysis the following conventions are commonly used
 %
 % * Bunge (phi1,Phi,phi2)       - ZXZ
@@ -27,7 +27,7 @@
 % The default Euler angle convention in MTEX are the Bunge Euler angles.
 % Here a rotation is determined by three consecutive rotations,
 % the first about the z-axis, the second about the y-axis, and the third
-% again about the z-axis. Hence, one needs three angles two define an
+% again about the z-axis. Hence, one needs three angles to define an
 % rotation by Euler angles. The following command defines a rotation by its
 % three Bunge Euler angles
 
@@ -62,7 +62,7 @@ o
 %
 % *The axis angle parametrisation*
 %
-% A very simple posibility to specify a rotation is to specify the
+% A very simple possibility to specify a rotation is to specify the
 % rotational axis and the rotational angle.
 
 o = rotation('axis',xvector,'angle',30*degree)
@@ -76,7 +76,7 @@ o = rotation('axis',xvector,'angle',30*degree)
 o = rotation('map',xvector,yvector,zvector,zvector)
 
 %%
-% If only two vectors are specified the rotation with the smalles angle is
+% If only two vectors are specified the rotation with the smallest angle is
 % returned that maps the first vector onto the second one.
 
 o = rotation('map',xvector,yvector)
@@ -84,9 +84,9 @@ o = rotation('map',xvector,yvector)
 %%
 % *A fibre of rotations*
 %
-% The set of all rotations that rotate a certaion vector u onto a certain
+% The set of all rotations that rotate a certain vector u onto a certain
 % vector v define a fibre in the rotation space. A discretisation of such
-% an fibre is defined by
+% a fibre is defined by
 
 u = xvector;
 v = yvector;
@@ -94,12 +94,12 @@ o = rotation('fibre',u,v)
 
 
 %%
-% *Defining an rotation by a 3 times 3 matrix*
+% *Defining a rotation by a 3 times 3 matrix*
 
 o = rotation('matrix',eye(3))
 
 %%
-% *Defining an rotation by a quaternion*
+% *Defining a rotation by a quaternion*
 %
 % A last possibility is to define a rotation by a quaternion, i.e., by its
 % components a,b,c,d.
@@ -160,7 +160,7 @@ angle(rot)/degree
 axis(rot)
 
 %%
-% If two rotations are specifies the command
+% If two rotations are specified the command
 % <quaternion.angle.html angle(rot1,rot2)> computes the rotational angle
 % between both rotations
 

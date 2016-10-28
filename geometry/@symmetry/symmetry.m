@@ -57,6 +57,7 @@ classdef symmetry < rotation
   % this is an abstract class
   methods (Abstract = true)
     display(s)
+    dispLine(s)
   end
   
   methods
@@ -90,6 +91,15 @@ classdef symmetry < rotation
         if ndx>31, error('I''m sorry, I know only 230 space groups ...'); end
         s.id = findsymmetry(list(ndx+1,2));
         
+      elseif isa(varargin{1},'quaternion')
+        
+        s.a = varargin{1}.a;
+        s.b = varargin{1}.b;
+        s.c = varargin{1}.c;
+        s.d = varargin{1}.d;
+        try s.i = varargin{1}.i;catch, end
+        s.id = 0;
+                
       else
 
         s.id = findsymmetry(varargin{1});
@@ -99,7 +109,11 @@ classdef symmetry < rotation
     end
     
     function l = get.lattice(cs)
-      l = symmetry.pointGroups(cs.id).lattice;
+      if cs.id>0
+        l = symmetry.pointGroups(cs.id).lattice;
+      else
+        l = 'unknown';
+      end
     end
     
     function pg = get.pointGroup(cs)

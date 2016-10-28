@@ -7,8 +7,8 @@
 %% Contents
 %
 %% 
-% MTEX allows one to simulate an arbitary number of EBSD data from any ODF.
-% This is quite helpful if you want to analyse the EBSD to ODF estimation
+% MTEX allows one to simulate an arbitrary number of EBSD data from any ODF.
+% This is quite helpful if you want to analyze the EBSD to ODF estimation
 % routine.
 %
 %% 
@@ -32,8 +32,8 @@ ori = calcOrientations(fibre_odf,10000)
 
 %% ODF Estimation from EBSD Data
 %
-% From the 10000 individual orientations we can now estimate an ODF. First
-% we determine the optimal kernel function
+% From the 10000 individual orientations, we can now estimate an ODF.
+% First, we determine the optimal kernel function
 
 psi = calcKernel(ori)
 
@@ -56,7 +56,7 @@ calcError(odf,fibre_odf,'resolution',5*degree)
 
 %% Exploration of the relationship between estimation error and number of single orientations
 %
-% For a more systematic analysis of the estimation error we simulate 10,
+% For a more systematic analysis of the estimation error, we simulate 10,
 % 100, ..., 1000000 single orientations of the model ODF and 
 % calculate the approximation error for the ODFs estimated from these data.
 

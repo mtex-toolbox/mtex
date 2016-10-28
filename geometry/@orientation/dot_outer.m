@@ -1,6 +1,8 @@
 function d = dot_outer(o1,o2,varargin)
 % dot_outer
 %
+% Syntax
+%
 % Input
 %  o1, o2 - @orientation
 %
@@ -8,6 +10,11 @@ function d = dot_outer(o1,o2,varargin)
 % d - double of size length(o1) < length(o2)
 %
 % TODO: does not work for orientations of different phase!!
+
+if check_option(varargin,'noSymmetry')
+  d = dot_outer@rotation(o1,o2);
+  return
+end
 
 % get symmetries and ensure both arguments are at least rotations
 if isa(o1,'orientation')

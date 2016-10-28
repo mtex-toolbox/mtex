@@ -29,11 +29,12 @@ else
   m = symmetrise(m,'skipAntipodal');
 
   if ~isempty(varargin) && isnumeric(varargin{1})
-    varargin = [{repmat(varargin{1}(:).',size(m,1),1)},m.CS.plotOptions,varargin(2:end)];
+    data = repmat(varargin{1}(:).',size(m,1),1);
+    varargin = [{data(:)},m.CS.plotOptions,varargin(2:end)];
   else
     varargin = [m.CS.plotOptions,varargin];
   end
-  m = m(:);
+  m = reshape(m,[],1);
   
 end
     

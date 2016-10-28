@@ -1,5 +1,11 @@
 function T = transpose(T)
-% conjugate of a tensor
+% transpose a list of a tensors
+%
+% If T is a m x n list of rank r tensors so T.' is a n x m list of rank r
+% tensors.
+%
+% Syntax
+%  T = T.'
 %
 % Input
 %  T - @tensor
@@ -8,32 +14,5 @@ function T = transpose(T)
 %  T - @tensor
 %
 
-switch T.rank
+T.M = permute(T.M,[1:T.rank T.rank + [2 1] (T.rank + 3):ndims(T.M)]);
   
-  case 1
-    
-  case 2
-    
-    T.M = permute(T.M,[2 1 3:ndims(T.M)]);
-    
-  case 3
-    
-  case 4
-
-    % check for symmetry
-
-    % convert to a matrix    
-    M = tensor42(T.M,T.doubleConvention);
-    
-    % invert the matrix
-    M = permute(M,[2 1 3:ndims(T.M)]);
-    
-    % make some corrections
-    w = 1./(1+((1:6)>3));
-    w = w.' * w;
-    M = M .* w;
-    
-    % convert back to a 4 rank tensor
-    T.M = tensor24(M,T.doubleConvention);
-end
-

@@ -12,7 +12,7 @@ function h = surf(v,cdata,varargin)
 %
 
 % initialize spherical plot
-sP = newSphericalPlot(v,varargin{:});
+sP = newSphericalPlot(v,varargin{:},'doNotDraw');
 
 for j = 1:numel(sP)
 

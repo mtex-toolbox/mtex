@@ -1,13 +1,14 @@
 function s = xnum2str(n,m)
 % convert number to string
 %
-%% Syntax
-%  s = xnum2str(n)
+% Syntax
+%   s = xnum2str(n)
 %
-%% Input
+% Input
 %  n - double | int
+%  m - precission
 %
-%% Output
+% Output
 % s - string
 
 if nargin == 1, m = n;end

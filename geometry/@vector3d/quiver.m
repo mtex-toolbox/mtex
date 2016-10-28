@@ -17,7 +17,7 @@ function h = quiver(v, d, varargin )
 % See also
 
 % initialize spherical plot
-sP = newSphericalPlot(v,varargin{:});
+sP = newSphericalPlot(v,varargin{:},'doNotDraw');
 
 v = vector3d(v);
 if length(d) == length(v), d = reshape(d,size(v)); end

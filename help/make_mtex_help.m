@@ -9,6 +9,7 @@ end
 
 clear
 close all
+mtex_settings
 setMTEXpref('FontSize',12)
 setMTEXpref('figSize',0.4)
 
@@ -17,7 +18,7 @@ addpath(fullfile(pwd,'..','..','doc'))
 addpath(fullfile(pwd,'..','..','doc','tools'))
 warning on
 
-%%
+%
 
 plotx2east
 plotzOutOfPlane
@@ -30,7 +31,7 @@ set(0,'FormatSpacing','compact')
 set(0,'DefaultFigureColor','white');
 
 
-%% DocFiles
+% DocFiles
 %
 
 mtexFunctionFiles = [...
@@ -58,7 +59,7 @@ outputDir = fullfile(mtex_path,'doc','html');
 tempDir = fullfile(mtex_path,'help','tmp');
 
 
-%% make productpage
+% make productpage
 %
 
 makeToolboxXML('name','MTEX',...
@@ -73,7 +74,7 @@ copy(mtexGeneralFiles,outputDir)
 productpage = DocFile(fullfile(mtex_path,'help','general','mtex_product_page.html'));
 copy(productpage,outputDir)
 
-%% make function reference overview pages
+% make function reference overview pages
 
 makeFunctionsReference(mtexHelpFiles,'FunctionReference','outputDir',outputDir);
 
@@ -85,12 +86,12 @@ publish(mtexFunctionFiles,'outputDir',outputDir,...
   'tempDir',tempDir,'evalCode',true,'force',false,'viewoutput',false);
 
 
-%% Publish Doc
+% Publish Doc
 
 publish(mtexDocFiles,'outputDir',outputDir,'tempDir',tempDir,...
   'evalCode',true,'force',false,'viewoutput',false);
 
-%%
+%
 
 options.outputDir = outputDir;
 options.publishSettings.outputDir = outputDir;
@@ -99,22 +100,20 @@ options.tempDir = tempDir;
 view(mtexDocFiles,options)
 
 
-%%
+%
 deadlink(mtexDocFiles,outputDir);
 
-%% Enable search in documentation
+% Enable search in documentation
 % (also F1 Help in recent matlab)
 
 builddocsearchdb(outputDir);
 %copyfile(fullfile(outputDir,'helpsearch'),fullfile(docPath,'helpsearch'));
 
 
-%% Build the help.jar
-
+% Build the help.jar
 %system(['jar -cf ' fullfile(docPath,'help.jar') ' -C ' outputDir ' .']);
 
-%% set back mtex options
-
+% set back mtex options
 setMTEXpref('generatingHelpMode',false);
 
 end

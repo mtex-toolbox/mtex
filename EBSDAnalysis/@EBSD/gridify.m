@@ -1,14 +1,21 @@
 function [ebsdGrid,newId] = gridify(ebsd,varargin)
 % extend EBSD data to an grid
 %
+% Description
+% This function transforms EBSD on non regular grids into regular grids. No
+% interpolation is done herby. Grid points in the regular grid that do not
+% have a correspondence in the regular grid are set to NaN.
+%
 % Syntax
 %   [ebsdGrid,newId] = gridify(ebsd)
 %
 % Input
+%  ebsd - an @EBSD data set with a non regular grid
 %
 % Output
-%  ebsdGrid - 
-%  newId    - 
+%  ebsd - @EBSDSquare data on a regular grid 
+%  newId - closest regular grid point for every non regular grid point
+%
 
 % generate regular grid
 prop = ebsd.prop;

@@ -96,7 +96,8 @@ end
     [r_local,~,ax] = getDataCursorPos(mtexFig);
 
     figure
-    odf.plotFibre(h{mtexFig.children==ax},r_local);
+    f = fibre(h{mtexFig.children==ax},r_local);
+    odf.plot(f);
 
   end
 

@@ -16,7 +16,7 @@ plot(ebsd)
 
 %% Basic grain reconstruction
 % We see that there are a lot of not indexed measurements. For grain
-% reconstruction we have to three different choices how to deal with these
+% reconstruction, we have  three different choices how to deal with these
 % unindexed regions:
 %
 % # leaf them unindexed
@@ -24,13 +24,13 @@ plot(ebsd)
 % # a mixture of both, e.g., assign small notindexed regions to the
 % surrounding grains but keep large notindexed regions
 %
-% By default MTEX uses the first method. 
+% By default, MTEX uses the first method. 
 %
 % The second parameter that is involved in grain reconstruction is the
-% threshold misorientation angle indicating a grain boundary. By default
-% this value is set to 10 degree. 
+% threshold misorientation angle indicating a grain boundary. By default,
+% this value is set to 10 degrees. 
 %
-% All grain reconstruction methods in MTEX are accessable via the command 
+% All grain reconstruction methods in MTEX are accessible via the command 
 % <EBSD.calcGrains.html calcGrains> which takes as input an EBSD data set
 % and returns a list of grain.
 
@@ -39,7 +39,7 @@ grains = calcGrains(ebsd,'angle',10*degree)
 %%
 % The reconstructed grains are stored in the variable *grains*.
 % Note that also the notIndexed measurements are grouped into grains. This
-% allows later to analyse the shape of these unindexed regions.
+% allows later to analyze the shape of these unindexed regions.
 %
 % To visualize the grains we can plot its boundaries by the command
 % <Grain2d.plotBoundary.html plotBoundary>.
@@ -54,7 +54,7 @@ plot(grains.boundary,'linewidth',1.5)
 hold off
 
 %% The grainId and how to select EBSD inside specific grains
-% Beside the list of grains the command <EBSD.calcGrains.html calcGrains>
+% Besides, the list of grains the command <EBSD.calcGrains.html calcGrains>
 % returns also two other output arguments. 
 
 [grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd,'angle',7.5*degree);
@@ -63,7 +63,7 @@ ebsd
 
 %%
 % The second output argument grainId is a list with the same size as the
-% EBSD measurements that stores for each mesurement the corresponding
+% EBSD measurements that stores for each measurement the corresponding
 % grainId. The above syntax stores this list directly inside the ebsd
 % variable. This enables MTEX to select EBSD data by grains. The following
 % command returns all the EBSD data that belong to grain number 33.
@@ -105,16 +105,16 @@ hold off
 mtexColorbar
 
 
-%% Filling not indexed holes
+%% Filling notindexed holes
 %
 % It is important to understand that MTEX distinguishes the following two
 % situations
 %
-% # a location is marked as not indexed
+% # a location is marked as notindexed
 % # a location does not occur in the data set
 %
-% A location marked as *not indexed* is interpreted by MTEX as: at this
-% position there is *no crystal*, whereas for a location that does not
+% A location marked as *notindexed* is interpreted by MTEX as at this
+% position, there is *no crystal*, whereas for a location that does not
 % occur in the data set is interpreted by MTEX as: it is not known whether
 % there is a crystal or not. Just to remind you, the later assumption is
 % nothing special as it applies at all locations but the measurement
@@ -122,12 +122,12 @@ mtexColorbar
 %
 % A location that does not occur in the data is assigned in MTEX to the
 % same grain and phase as the closest measurement point - this may also be
-% a not indexed point. Hence, filling holes in MTEX means to erasing them
-% from the list of measurements, i.e., instead of telling MTEX there is no
+% a notindexed point. Hence, filling holes in MTEX means to erase them
+% from the list of measurements, i.e., instead of telling MTEX there is
 % no crystal we are telling MTEX: we do not know what there is.
 
 %%
-% The exremal case is to say whenever there is a not indexed measurement we
+% The extremal case is to say whenever there is a not indexed measurement we
 % actually do not know anything and allow MTEX to freely guess what happens
 % there. This is realized by removing all not indexed measurements or,
 % equivalently, computing the grains only from the indexed measurements
@@ -154,7 +154,7 @@ hold off
 
 %%
 % We observe, especially in the marked grains, how MTEX fills notindexed
-% regions and connects otherwise seperate measurements to grains. As all
+% regions and connects otherwise separate measurements to grains. As all
 % information about not indexed regions were removed the reconstructed
 % grains fill the map completely
 
@@ -162,12 +162,12 @@ plot(grains,'linewidth',2)
 
 
 %%
-% Inside of grain B there is a large not indexed region and we might argue
-% that is not very meaningfull to assign such a large region to some grain
+% Inside of grain B, there is a large not indexed region and we might argue
+% that is not very meaningful to assign such a large region to some grain
 % but should have kept it not indexed. In order to decide which not indexed
-% region is large enaugh to be kept not indexed and which not indexed
-% regions can be filled it is helpfull to know that the command calcGrains
-% also seperates the not indexed regions into "grains" and we can standard
+% region is large enough to be kept not indexed and which not indexed
+% regions can be filled it is helpful to know that the command calcGrains
+% also separates the not indexed regions into "grains" and we can standard
 % grain functions like area or perimeter to analyze these regions.
 
 [grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd);
@@ -201,7 +201,7 @@ ebsd(toRemove) = []
 plot(grains)
 
 %%
-% We see that there are some not indexed regions are left blank. Finally,
+% We see that there are some, not indexed regions are left blank. Finally,
 % the image with the raw EBSD data and on top the grain boundaries.
 
 
@@ -224,7 +224,7 @@ plot(grains(12000,4000).boundary,'linecolor','r','linewidth',2,...
 hold off
 
 %% Grain smoothing
-% The reconstructed grains show the typicaly staircase effect. This effect
+% The reconstructed grains show the typical staircase effect. This effect
 % can be reduced by smoothing the grains. This is particulary important
 % when working with the direction of the boundary segments
 
@@ -242,8 +242,8 @@ mtexColorbar
 hold off
 
 %%
-% We see that the angle between the grain bounday direction and the x-axis
-% takes only values 0, 45 and 90 degree. After applying smoothing we obtain
+% We see that the angle between the grain boundary direction and the x-axis
+% takes only values 0, 45 and 90 degrees. After applying smoothing we obtain
 % a much better result
 
 % smooth the grain boundaries
@@ -279,7 +279,7 @@ oM.colorStretching = 5;
 plot(ebsd,oM.orientation2color(ebsd.orientations))
 
 %%
-% We obeserve that the are no rapid changes in orientation which would
+% We obeserve that the are no rapid changes in the orientation which would
 % allow for applying the threshold based algorithm. Setting the threshold
 % angle to a very small value would include many irrelevant or false regions.
 

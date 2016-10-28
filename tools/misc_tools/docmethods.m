@@ -1,4 +1,5 @@
 function varargout = docmethods(obj)
+% display all methods for a certain class
 
 %
 if nargout > 0 && ischar(obj)
@@ -18,7 +19,8 @@ if nargout > 0 && ischar(obj)
 
 else
 
-  [fun, in] = methods(obj,'-full');
+  [~, fun] = methods(obj,'-full');
+  fun = fun(:,4);
 
   if ischar(obj)
     classname = obj;
@@ -27,14 +29,13 @@ else
   end
 
   for k=1:numel(fun)
-    fun{k} = regexpsplit(fun{k},'  % Inherited from ');
-    if numel(fun{k}) < 2, fun{k}{2} = classname;  end
+    fun{k} = regexpsplit(fun{k},'\.');   
   end
 
-  f  = cellfun(@(x) x{1},fun,'UniformOutput',false);
-  [ig,ndx] = sort(lower(f));
+  f  = cellfun(@(x) x{2},fun,'UniformOutput',false);
+  [~,ndx] = sort(lower(f));
   f = f(ndx);
-  c  = cellfun(@(x) x{2},fun(ndx),'UniformOutput',false);
+  c  = cellfun(@(x) x{1},fun(ndx),'UniformOutput',false);
   ds = cellfun(@(f,c) doclink([c '.' f],f),f,c,'UniformOutput',false);
 
   isInherited = ~strcmpi(c,classname);

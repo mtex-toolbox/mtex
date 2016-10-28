@@ -29,7 +29,7 @@ classdef EBSDsquare < EBSD
       
       sGrid = size(rot);
       ebsd.rotations = rotation(rot);
-      ebsd.phaseId = phaseId;
+      ebsd.phaseId = phaseId(:);
       ebsd.phaseMap = phaseMap;
       ebsd.CSList = CSList;
       ebsd.id = reshape(1:prod(sGrid),sGrid);

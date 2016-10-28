@@ -1,42 +1,41 @@
 function v = calcAxisVolume(odf,axis,radius,varargin)
-% compute the axis distribution of an ODF or MDF
+% amount of orientations with a specific misorientation axis 
 %
+% Syntax
+%   vol = calcAxisVolume(odf,axis,radius)
 %
 % Input
 %  odf  - @ODF
 %  axis - @vector3d / @Miller
 %  radius - double
 %
-% Flags
-%  smallesAngle - use axis corresponding to the smalles angle
-%  largestAngle - use axis corresponding to the largest angle
-%  allAngles    - use all axes
-%
 % Output
-%  v   - volumeportion of all axes within the specified radius around axis
+%  vol - volumeportion of all axes within the specified radius around axis
 %
 % See also
 % plotAxisDistribution
 
 % get resolution for quadrature
-res = get_option(varargin,'resolution',radius/5);
+res = get_option(varargin,'resolution',min(radius/5,2.5*degree));
 
 % define a grid for quadrature
 h = equispacedS2Grid('resolution',res,varargin{:});
 
 % restrict to fundamental region
 sym = disjoint(odf.CS,odf.SS);
-h= h(sym.fundamentalSector.checkInside(h,'antipodal'));
+if odf.antipodal || check_option(varargin,'antipodal')
+  sym = sym.Laue;
+end
+h= h(sym.fundamentalSector.checkInside(h));
 
 % find those within the ball
-ind = angle(h,vector3d(axis)) < radius;
+ind = angle(Miller(axis,sym),Miller(h,sym)) < radius+1e-5;
 h = h(ind);
 
 % remember volume of the ball
 vol = nnz(ind)/numel(ind);
 
 % compute axis distrubtion
+w = calcAxisDistribution(odf,h,varargin{:});
 
-w = calcAxisDistribution(odf,h);
-
-v = mean(w) * vol;
+v = min(mean(w) * vol,1);

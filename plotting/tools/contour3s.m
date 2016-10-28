@@ -80,7 +80,7 @@ if check_option(varargin,'contour3')
   alpha = (c./nrm).^2;
   alpha(~isfinite(alpha)) = 0;
    
-  h = patch('Faces',1:size(lines,1),'Vertices',lines,'EdgeColor','flat',...
+  patch('Faces',1:size(lines,1),'Vertices',lines,'EdgeColor','flat',...
     'FaceVertexCData',c,'EdgeAlpha','flat','FaceVertexAlphaData',alpha);
 
 elseif check_option(varargin,{'surf3','slice3'})
@@ -88,8 +88,8 @@ elseif check_option(varargin,{'surf3','slice3'})
     cdata = 0;  fac = [NaN NaN NaN]; vert = [0 0 0];
 
     for k=1:numel(v)
-      [faces verts] = isosurface(x,y,z,Z,v(k));
-      fac = [fac; faces+size(vert,1)];
+      [faces, verts] = isosurface(x,y,z,Z,v(k));
+      fac = [fac; faces+size(vert,1)]; %#ok<*AGROW>
       vert = [vert; verts];    
       cdata = [cdata; v(k).*ones(size(faces,1),1)];
     end
@@ -162,7 +162,7 @@ end
 function sliceitz(e,c,x,y,z,Z)
 
 fx = get(e,'Value');
-[xd yd zd] = meshgrid(linspace(0,max(x(:)),numel(x)*2),linspace(0,max(y(:)),numel(y)*2),fx*max(z));
+[xd, yd, zd] = meshgrid(linspace(0,max(x(:)),numel(x)*2),linspace(0,max(y(:)),numel(y)*2),fx*max(z));
   
 if isappdata(gcbo,'slicingz')
   delete(getappdata(gcbo,'slicingz'));
@@ -181,7 +181,7 @@ end
 function sliceity(e,c,x,y,z,Z)
 
 fx = get(e,'Value');
-[xd zd yd] = meshgrid(linspace(0,max(x(:)),numel(x)*2),linspace(0,max(z(:)),numel(z)*2),fx*max(y(:)));
+[xd, zd, yd] = meshgrid(linspace(0,max(x(:)),numel(x)*2),linspace(0,max(z(:)),numel(z)*2),fx*max(y(:)));
   
 if isappdata(gcbo,'slicingy')
   delete(getappdata(gcbo,'slicingy'));
@@ -202,7 +202,7 @@ function sliceitx(e,c,x,y,z,Z)
 fx = get(e,'Value');
 
 zd = fx*ones(size(x));
-[yd zd xd] = meshgrid(linspace(0,max(y(:)),numel(y)*2),linspace(0,max(z(:)),numel(z)*2),fx*max(x(:)));
+[yd, zd, xd] = meshgrid(linspace(0,max(y(:)),numel(y)*2),linspace(0,max(z(:)),numel(z)*2),fx*max(x(:)));
   
 if isappdata(gcbo,'slicingx')
   delete(getappdata(gcbo,'slicingx'));

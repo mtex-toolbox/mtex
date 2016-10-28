@@ -6,7 +6,7 @@
 %%
 % Importing pole figure data in MTEX means to create a
 % <PoleFigure_index.html PoleFigure> object from data files containing
-% diffration data. Once such an object has been created the data can be
+% diffraction data. Once such an object has been created the data can be
 % <ModifyPoleFigureData.html analyzed and processed> in many ways.
 % Furthermore, such a PoleFigure object is the starting point for
 % <PoleFigure2odf.html PoleFigure to ODF estimation>.
@@ -22,7 +22,7 @@ import_wizard
 % or by using the start menu item *Start/Toolboxes/MTEX/Import Wizard*.
 % Pole figure data can be also imported via the <matlab:filebrowser file
 % browser> by choosing *Import Data* from the context menu of the selected
-% file, if its file extension was previoully registered with the
+% file if its file extension was previously registered with the
 % <matlab:opentoline(fullfile(mtex_path,'mtex_settings.m'),25,1)
 % |mtex_settings.m|>
 %
@@ -33,7 +33,7 @@ import_wizard
 % * specimen symmetry and plotting conventions
 % * <Miller_index.html Miller indices> of pole figures.
 % 
-% In the end the imported wizard creates a workspace variable or generates
+% In the end, the imported wizard creates a workspace variable or generates
 % a m-file loading the data automatically. Furthermore appending a template
 % script allows radip data processing.
 %
@@ -62,7 +62,7 @@ import_wizard
 % || <loadPoleFigure_xrdml.html **.xrdml*>        || PANalytical XML data format.             ||
 % || <loadPoleFigure_aachen.html **.**>           || Aachen ASCII pole figure format.         ||
 %
-% See <loadPoleFigure.html loadPoleFigure> for futher information or follow
+% See <loadPoleFigure.html loadPoleFigure> for further information or follow
 % the hyperlinks of the table above for an example.
 %
 % If the interface is not automatically recognized, but the data has the
@@ -76,12 +76,12 @@ import_wizard
 %  .       .           .
 %  polar_n azimuthal_n intensity_n
 %
-% an additional tool ask you to associated the columns with the
+% an additional tool asks you to associate the columns with the
 % corresponding property. See also <loadPoleFigure_generic.html
 % loadPoleFigure_generic>, which provides an easy way to import diffraction
 % data from such an ASCII list. The list may contain an arbitrary number of
 % header lines, columns or comments and the actual order of the columns may
-% specified by options.
+% be specified by options.
 %
 % If you have any comments, remarks or request on interfaces please contact
 % us.
@@ -91,7 +91,7 @@ import_wizard
 % Diffraction data stored in one of the formats above can also be imported
 % using the command <loadPoleFigure.html loadPoleFigure>. It automatically
 % detects the data format and imports the data. In dependency of the data
-% format it might be neccesary to specify the Miller indices and the
+% format, it might be necessary to specify the Miller indices and the
 % structure coefficients. The general syntax is
 %
 %%
@@ -124,16 +124,16 @@ plot(pf)
 %
 % MTEX also provides a way to import data from formats currently not
 % supported directly. Therefore you can to use all standard MATLAB input
-% and output commands to read the pole figure informations, e.g. intensities,
+% and output commands to read the pole figure information, e.g. intensities,
 % specimen directions, crystal directions directly from the data files.
 % Then you have to call the constructor
 % <PoleFigure.PoleFigure.html PoleFigure> with these data to generate
-% a PoleFigure obejct.
+% a PoleFigure object.
 %
 % Once you have written an interface that reads data from certain data
 % files and generates a PoleFigure object you can integrate this method
 % into MTEX by copying it into the folder |MTEX/qta/interfaces|. Then
-% it will be automatical called by the methods loadPoleFigure and
+% it will be automatically called by the methods loadPoleFigure and
 % import_wizard. Examples how to write such an interface can be found in
 % the directory |MTEX/qta/interfaces|.
 %

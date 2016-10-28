@@ -22,15 +22,16 @@ classdef fibreVonMisesFisherKernel < kernel
       % compute Legendre coefficients
       psi.A = ones(1,L+1);
       for i=1:L
-        psi.A(i+1) = (2*i+1)*sqrt(pi*p/2) * besseli(i+0.5,p)/sinh(p);
+        psi.A(i+1) = (2*i+1)*sqrt(pi*psi.kappa/2) *...
+          besseli(i+0.5,psi.kappa)/sinh(psi.kappa);
       end      
 
-      psi = psi.cutA;
+      psi.A = psi.cutA;
           
     end
   
     function c = char(psi)
-      c = ['de la Vallee Poussin, halfwidth ' ...
+      c = ['fibre von Mises Fisher kernel, halfwidth ' ...
         xnum2str(psi.halfwidth/degree) mtexdegchar];
     end
          

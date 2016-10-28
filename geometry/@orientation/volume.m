@@ -16,6 +16,11 @@ function v = volume(ori,center,radius,varargin)
 % See also
 % ODF/volume
 
+if isa(center,'fibre')
+  v = fibreVolume(ori,center.h,center.r,radius,varargin{:});
+  return
+end
+
 % compute volume
 if isempty(ori)
   v = 0;

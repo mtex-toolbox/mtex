@@ -21,7 +21,6 @@ function f = eval(component,g,varargin)
 %
 % $$s(g1_i) = sum_j c_j K(g1_i,g2_j) $$
 
-
 % decide along which dimension to split the summation matrix
 if isa(g,'SO3Grid')
   lg1 = length(g);
@@ -47,7 +46,7 @@ iter = 0; numiter = 1; ind = 1; %for first run
 
 % now iterate along the splitting
 while iter <= numiter
-  if iter > 0,% split
+  if iter > 0% split
     ind = 1 + (1+(iter-1)*diter:min(num-1,iter*diter));
     if isempty(ind), return; end
   end
@@ -69,7 +68,7 @@ while iter <= numiter
 
   if num == 1
     return
-  elseif iter == 0, % iterate due to memory restrictions?
+  elseif iter == 0 % iterate due to memory restrictions?
     numiter = ceil( max(1,nnz(M))*num / getMTEXpref('memory',300 * 1024) );
     diter = ceil(num / numiter);
   end

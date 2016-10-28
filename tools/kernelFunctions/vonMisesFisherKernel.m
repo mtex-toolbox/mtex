@@ -28,9 +28,6 @@ classdef vonMisesFisherKernel < kernel
       b = besseli(0:L+1,psi.kappa);
       psi.A(2:end) = diff(b(2:end)) ./ (b(2)-b(1));
     
-
-      for l=0:L, psi.A(l+1) = (2*l+1) * psi.A(l+1); end
-
       psi.A = psi.cutA;
           
     end

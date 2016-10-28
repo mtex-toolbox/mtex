@@ -8,16 +8,31 @@ classdef phi2Sections < ODFSections
     
   methods
     
-    function oS = phi2Sections(CS1,CS2,varargin)
-   
-      oS = oS@ODFSections(CS1,CS2);
+    function oS = phi2Sections(varargin)
+      % phi2 sections for ODF and orientation plotting
+      %
+      % Syntax
+      %
+      %   oS = phi2Sections(cs1,cs2,'sections',5)
+      %   oS = phi2Sections(cs1,cs2,'phi2',(0:15:90)*degree)
+      %
+      % Input
+      %  cs1, cs2 - @crystalSymmetry, @specimenSymmetry
+      %
+      % Options
+      %  sections - number of sections
+      %  phi2 - explicite section values
+      %
+      
+      oS = oS@ODFSections(varargin{:});
       
       % get fundamental plotting region
-      [phi1,Phi,oS.maxphi2] = fundamentalRegionEuler(CS1,CS2,varargin{:}); %#ok<*PROP>
+      [phi1,Phi,oS.maxphi2] = fundamentalRegionEuler(oS.CS1,oS.CS2,varargin{:}); %#ok<*PROP>
       oS.sR = sphericalRegion('maxTheta',Phi,'maxRho',phi1);
             
       % get sections
       nsec = get_option(varargin,'sections',6);
+      nsec = 1+oS.maxphi2./get_option(varargin,'secResolution',oS.maxphi2/(nsec-1));
       oS.phi2 = linspace(0,oS.maxphi2,nsec+1);
       oS.phi2(end) = [];
       oS.phi2 = get_option(varargin,'phi2',oS.phi2,'double');

@@ -33,11 +33,14 @@ else % Fourier method
   % is second argument also an ODF?
   if nargin > 1 && isa(varargin{1},'ODF')
     odf2 = FourierODF(varargin{1},odf1.components{1}.bandwidth);
+    antipodal = false;
   else
     odf2 = odf1;
+    antipodal = true;    
   end
 
   % compute MDF
   mdf = calcMDF(odf1.components{1},odf2.components{1});
-
+  mdf.antipodal = antipodal;
+  
 end

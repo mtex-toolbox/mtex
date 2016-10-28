@@ -8,12 +8,26 @@ classdef gammaSections < ODFSections
 
   methods
 
-    function oS = gammaSections(CS1,CS2,varargin)
-
-      oS = oS@ODFSections(CS1,CS2);
+    function oS = gammaSections(varargin)
+      % gamma sections for ODF and orientation plotting
+      %
+      % Syntax
+      %
+      %   oS = gammaSections(cs1,cs2,'sections',5)
+      %   oS = gammaSections(cs1,cs2,'gamma',(0:15:90)*degree)
+      %
+      % Input
+      %  cs1, cs2 - @crystalSymmetry, @specimenSymmetry
+      %
+      % Options
+      %  sections - number of sections
+      %  gamma - explicite section values
+      %
+      
+      oS = oS@ODFSections(varargin{:});
 
       % get fundamental plotting region
-      [alpha,beta,oS.maxGamma] = fundamentalRegionEuler(CS1,CS2,varargin{:}); %#ok<*PROP>
+      [alpha,beta,oS.maxGamma] = fundamentalRegionEuler(oS.CS1,oS.CS2,varargin{:}); %#ok<*PROP>
       oS.sR = sphericalRegion('maxTheta',beta,'maxRho',alpha);
 
       % get sections

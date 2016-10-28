@@ -19,7 +19,7 @@ end
 if isa(b,'vector3d')
   
   % apply rotation
-  r = rotate(b,a);
+  r = rotate_outer(b,a);
     
 elseif isa(b,'quaternion')
   

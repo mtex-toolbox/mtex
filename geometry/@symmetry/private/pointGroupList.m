@@ -63,7 +63,6 @@ l = addSym(l,'Td' ,'-43m' ,7,41,45,[1 -1 -1]);
 l = addSym(l,'Oh' ,'m-3m' ,7,43,45,[[1 1 1];[-1 -1 -1]],'m3m','4/m-32/m');
 
 
-
 function nl = addSym(l,Schoen,Inter,latticeId,properId,LaueId,inv,varargin)
 
 latticeList = {'triclinic','monoclinic','orthorhombic','trigonal','tetragonal','hexagonal','cubic'};

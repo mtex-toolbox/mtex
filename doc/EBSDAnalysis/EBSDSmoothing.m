@@ -6,9 +6,9 @@
 %% Contents
 %
 
-%% Smoothing a single grains
+%% Smoothing a single grain
 %
-% Lets start out analysis by considering a single magnesium grain
+% Let's start out analysis by considering a single magnesium grain
 
 % import standard data set
 mtexdata twins
@@ -28,8 +28,8 @@ plot(oneGrain.boundary,'micronbar','off')
 hold off
 
 %%
-% With the default colormap we can not distinguish any orientation gradient
-% within the grain. Lets adapt the colormap to this specific grain
+% With the default colormap, we can not distinguish any orientation gradient
+% within the grain. Let's adapt the colormap to this specific grain
 
 oM = ipdfHSVOrientationMapping(ebsd);
 
@@ -44,7 +44,7 @@ oM.maxAngle = 3*degree;
 plot(oM,'resolution',0.5*degree)
 
 %%
-% With the new colormap we can clearly see the noise overlapping the
+% With the new colormap, we can clearly see the noise overlapping the
 % texture gradient within the grain.
 
 % plot the grain
@@ -55,9 +55,9 @@ plot(oneGrain.boundary,'micronbar','off')
 hold off
 
 %% SUB: The Mean Filter
-% The most simplest filter to apply to the orientation data is the
-% |meanFilter| which simple takes the mean of all orientations within a
-% certain neighbourhood.
+% The simplest filter to apply to the orientation data is the
+% |meanFilter| which simply takes the mean of all orientations within a
+% certain neighborhood.
 
 % define the meanFilter
 F = meanFilter;
@@ -74,8 +74,8 @@ plot(oneGrain.boundary,'micronbar','off')
 hold off
 
 %%
-% As an additional option one can specify the size of the neighbourhood and
-% weights for the averaging. Lets define a 5x5 window with weights comming
+% As an additional option, one can specify the size of the neighborhood and
+% weights for the averaging. Let's define a 5x5 window with weights coming
 % from the Gaussian distribution.
 
 [x,y] = meshgrid(-2:2);
@@ -94,7 +94,7 @@ hold off
 
 %% SUB: The Median Filter
 % The disadvantage of the mean filter is that is smoothes away all subgrain
-% boundaries and is quite sensitiv agains outliers. A more robust filter
+% boundaries and is quite sensitive against outliers. A more robust filter
 % which also preserves subgrain boundaries is the median filter
 
 F = medianFilter;
@@ -115,7 +115,7 @@ hold off
 
 %% SUB: The Smoothing Spline Filter
 % The smoothing spline filter is up to now the only filter that
-% automatically callibrates the smoothing paramter
+% automatically calibrates the smoothing parameter
 
 F = splineFilter;
 
@@ -135,7 +135,7 @@ F.alpha
 
 %% SUB: The halfquadratic Filter
 % The halfquadratic filter differs from the smoothing spline filter by the
-% fact that it better preserves inner grain boundaries. We will see this at
+% fact that it better preserves inner grain boundaries. We will see this in
 % a later example.
 
 F = halfQuadraticFilter;
@@ -158,7 +158,7 @@ hold off
 % orientations.
 %
 %% SUB: A synthetic example
-% In the following example we randomly set 50 percent of the measured
+% In the following example, we randomly set 50 percent of the measured
 % orientations to |nan|.
 
 ebsdNaN = ebsd;
@@ -174,7 +174,7 @@ plot(oneGrain.boundary,'micronbar','off')
 hold off
 
 %%
-% By default all orientations that are set to |nan| are interpolated.
+% By default, all orientations that are set to |nan| are interpolated.
 
 % interpolate the missing data with the smoothing spline filter
 ebsdNaN_smoothed = smooth(ebsdNaN,splineFilter);
@@ -195,7 +195,7 @@ plot(oneGrain.boundary,'micronbar','off')
 hold off
 
 %% SUB: A real world example
-% Lets consider a subset of the 
+% Let's consider a subset of the 
 
 close all; plotx2east
 mtexdata forsterite
@@ -214,9 +214,9 @@ hold off
 
 %%
 % Using the option |fill| the command |smooth| fills the holes inside the
-% grains. Note that the notindexed pixels at the grain boundaries kept
-% untouched. In order to allow MTEX to decide wheter a pixel is inside a
-% grain or not the |grain| variable has to be passed as additional
+% grains. Note that the nonindexed pixels at the grain boundaries kept
+% untouched. In order to allow MTEX to decide whether a pixel is inside a
+% grain or not, the |grain| variable has to be passed as an additional
 % argument.
 
 F = splineFilter;
@@ -234,7 +234,7 @@ plot(grains.boundary,'linewidth',1.5)
 hold off
 
 %%
-% In order to visualize the orientation gradient within the grains we plot
+% In order to visualize the orientation gradient within the grains, we plot
 % the misorientation to the meanorientation. We observe that the mis2mean
 % varies smoothly also within the regions of not indexed orientations.
 
@@ -262,7 +262,7 @@ hold off
 
 %%
 % If no |grain| variable is passed to the smoothing command the not indexed
-% pixels are assigned to the nearest neighbour.
+% pixels are assigned to the nearest neighbor.
 
 ebsd_smoothed = smooth(ebsd('indexed'),F,'fill');
 

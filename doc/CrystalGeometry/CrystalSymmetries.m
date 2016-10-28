@@ -41,7 +41,7 @@ plot(cs,'upper')
 % Group*
 %
 % If not the name of a point group was specified but the name of a space
-% group MTEX auomatically determines the corresponding point group and
+% group MTEX automatically determines the corresponding point group and
 % assigns it to the variable.
 
 cs = crystalSymmetry('Td');
@@ -62,7 +62,7 @@ cs = loadCIF('quartz')
 % import a list of crystal symmetries
 cs_list = loadPHL('crystal.phl');
 
-% acces the first symmetry in list
+% access the first symmetry in list
 cs_list{1}
 
 %%
@@ -76,7 +76,7 @@ cs.Laue
 
 %%
 % Furthermore, the purely rotational part of the corresponding Laue group
-% can extracted by the command
+% can be extracted by the command
 
 cs.properGroup
 
@@ -92,8 +92,8 @@ rotation(cs)
 % *Alignment of the Two Fold Axes and the Mirroring Planes*
 %
 % MTEX supports different alignments of two fold axes and mirroring planes.
-% Look at the difference between the following plots. The red dot marks
-% allways the a-axis
+% Look at the difference between the following plots. The red dot always marks
+% the a-axis
 
 cs = crystalSymmetry('2mm');
 plot(cs)
@@ -115,10 +115,10 @@ annotate(cs.aAxis,'MarkerFaceColor','r','label','a','backgroundColor','w')
 %% The Crystal Coordinate System
 %
 % Beside the symmetry group a variable of type <crystalSymmetry_index.html
-% crystalSymmetry> also contain information about the crystal coordinate
-% system. It is specified by the a list [a,b,c] of axes length and a list
+% crystalSymmetry> also contains information about the crystal coordinate
+% system. It is specified by a list [a,b,c] of axes length and a list
 % [alpha,beta,gamma] of angles between the axes. For crystal symmetries
-% with fixed angles the last argument can be ommited. The syntax for a
+% with fixed angles the last argument can be ommitted. The syntax for a
 % triclinic crystal system is
 
 close all
@@ -128,10 +128,10 @@ cs = crystalSymmetry('triclinic',[1,2.2,3.1],[80*degree,85*degree,95*degree])
 % *Aligning the Orthogonal Crystal Reference Frame to the Crystal Axes*
 %
 % As Euler angles and tensors are usually specified not with respect to a
-% skew crystal coordiante frame but with respect to a orthogonal reference
+% skew crystal coordinate frame but with respect to a orthogonal reference
 % frame the relationship between the latter one to the crystal coordinate
 % system has to be specified. In the case of orthorhombic and cubic crystal
-% frames no choise has to be made. In the case of triclinic, monoclinic,
+% frames no choice has to be made. In the case of triclinic, monoclinic,
 % trigonal and hexagonal symmetries one should explicitly define which of
 % the crystal axes a, b, c is parallel to X, Y, Z of the orthogonal
 % reference frame. For the axes of the dual crystal frame the notation a*,

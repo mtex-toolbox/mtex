@@ -15,14 +15,20 @@ function d = dot(m1,m2,varargin)
 %  antipodal - consider m1,m2 with antipodal symmetry
 %  all       -
 
+% maybe we should ignore symmetry
+if check_option(varargin,'noSymmetry')
+  d = dot(vector3d(m1),vector3d(m2),varargin{:});
+  return
+end
+
+% if we should consider symmetry - it must be the same on both sides
 if ~isa(m1,'Miller') || ~isa(m2,'Miller') || m1.CS ~= m2.CS
   warning('Symmetry mismatch')
 end
 
-if check_option(varargin,'noSymmetry')
-  d = dot(vector3d(m1),vector3d(m2),varargin{:});
-  return
-elseif check_option(varargin,'all')
+% maybe we should return a full matrix of dot products to all symmetrically
+% equivalent directions
+if check_option(varargin,'all')
 
   if length(m1) == 1
     m1 = repmat(m1,size(m2));
