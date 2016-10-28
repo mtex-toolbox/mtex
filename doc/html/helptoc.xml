@@ -59,7 +59,6 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.cross.html">cross</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.cross_outer.html">cross_outer</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.ctranspose.html">ctranspose</tocitem>
-               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.cunion2.html">cunion2</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.display.html">display</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.dot.html">dot</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.dot_outer.html">dot_outer</tocitem>
@@ -519,6 +518,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.fliplr.html">fliplr</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.flipud.html">flipud</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.gridify.html">gridify</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.id2ind.html">id2ind</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.inpolygon.html">inpolygon</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.mtimes.html">mtimes</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="EBSD.plot.html">plot</tocitem>
@@ -666,19 +666,18 @@
             <tocitem target="CrystalDirections.html#16">Conversions</tocitem>
             <tocitem target="CrystalDirections.html#18">Calculations</tocitem>
          </tocitem>
-         <tocitem target="CrystalOrientations.html">Crystal Orientations<tocitem target="CrystalOrientations.html#5">Defining a Crystal Orientation</tocitem>
-            <tocitem target="CrystalOrientations.html#14">Rotating Crystal Directions onto Specimen Directions</tocitem>
-            <tocitem target="CrystalOrientations.html#18">Concatenating Rotations</tocitem>
-            <tocitem target="CrystalOrientations.html#22">Calculating Misorientations</tocitem>
-            <tocitem target="CrystalOrientations.html#24">Calculating with Orientations and Rotations</tocitem>
-            <tocitem target="CrystalOrientations.html#26">Conversion into Euler Angles and Rodrigues Parametrisation</tocitem>
-            <tocitem target="CrystalOrientations.html#27">Plotting Orientations</tocitem>
+         <tocitem target="CrystalOrientations.html">Crystal Orientations<tocitem target="CrystalOrientations.html#5">Defining a crystal orientation</tocitem>
+            <tocitem target="CrystalOrientations.html#15">Coordinate transformations</tocitem>
+            <tocitem target="CrystalOrientations.html#22">Symmetric equivalence</tocitem>
+            <tocitem target="CrystalOrientations.html#24">Conversion into Euler angles, matrix, quaternion or Rodrigues vector</tocitem>
+            <tocitem target="CrystalOrientations.html#25">Plotting Orientations</tocitem>
          </tocitem>
-         <tocitem target="Misorientations.html">Misorientations<tocitem target="Misorientations.html#3">Misorientations between grains</tocitem>
-            <tocitem target="Misorientations.html#7">Coincident lattice planes</tocitem>
-            <tocitem target="Misorientations.html#9">Twinning misorientations</tocitem>
-            <tocitem target="Misorientations.html#11">Highlight twinning boundaries</tocitem>
-            <tocitem target="Misorientations.html#12">Phase transitions</tocitem>
+         <tocitem target="Misorientations.html">Misorientations<tocitem target="Misorientations.html#3">The misorientation angle</tocitem>
+            <tocitem target="Misorientations.html#9">Misorientations</tocitem>
+            <tocitem target="Misorientations.html#12">Coincident lattice planes</tocitem>
+            <tocitem target="Misorientations.html#14">Twinning misorientations</tocitem>
+            <tocitem target="Misorientations.html#16">Highlight twinning boundaries</tocitem>
+            <tocitem target="Misorientations.html#20">Phase transitions</tocitem>
          </tocitem>
          <tocitem target="fibre_index.html">Fibres<tocitem target="fibre_index.html#2">Defining a Fibre</tocitem>
             <tocitem target="fibre_index.html#12">Visualize an ODF along a fibre</tocitem>
@@ -870,7 +869,7 @@
             <tocitem target="EBSDSpatialPlots.html#9">Visualizing arbitrary properties</tocitem>
             <tocitem target="EBSDSpatialPlots.html#10">Visualizing orientations</tocitem>
             <tocitem target="EBSDSpatialPlots.html#20">Customizing the color</tocitem>
-            <tocitem target="EBSDSpatialPlots.html#30">Combining different plots</tocitem>
+            <tocitem target="EBSDSpatialPlots.html#29">Combining different plots</tocitem>
          </tocitem>
          <tocitem target="EBSDSharpPlot.html">Visualizing EBSD data with sharp textures<tocitem target="EBSDSharpPlot.html#7">Sharpening the default colorcoding</tocitem>
          </tocitem>
