@@ -15,21 +15,21 @@
 mtexdata twins
 % use only proper symmetry operations
 ebsd('M').CS = ebsd('M').CS.properGroup; 
-grains = calcGrains(ebsd('indexed'))
+grains = calcGrains(ebsd('indexed'),'threshold',5*degree)
 CS = grains.CS; % extract crystal symmetry
 
 plot(grains,grains.meanOrientation,'micronbar','off')
 hold on
-plot(grains([70,80]).boundary,'edgecolor','w','linewidth',2)
+plot(grains([74,85]).boundary,'edgecolor','w','linewidth',2)
 
-text(grains([70,80]),{'1','2'})
+text(grains([74,85]),{'1','2'})
 
 
 %%
 % After extracting the mean orientation of grain 70 and 80
 
-ori1 = grains(70).meanOrientation
-ori2 = grains(80).meanOrientation
+ori1 = grains(74).meanOrientation
+ori2 = grains(85).meanOrientation
 
 %%
 % we may compute the misorientation angle between both orientations by
@@ -54,20 +54,12 @@ angle(ori1, ori2.symmetrise,'noSymmetry')./ degree
 % We see that smallest angle indeed coincides with the angle computed
 % before.
 
-%% The misorientation axis
-% The rotational axis corresponding to the smallest misorientation angle is
-% computed by
-
-axis(ori1,ori2)
-
-
-
 %% Misorientations
-% Remember that both orientations or1 and ori2 map crystal coordinates into
-% specimen coordinates. Hence, the product of an inverse orientation with
-% another orientation transfers crystal coordinates from one crystal
+% Remember that both orientations ori1 and ori2 map crystal coordinates
+% into specimen coordinates. Hence, the product of an inverse orientation
+% with another orientation transfers crystal coordinates from one crystal
 % reference frame into crystal coordinates with respect to another crystal
-% reference frame.
+% reference frame. This transformation is called misorientation
 
 mori = inv(ori1) * ori2
 

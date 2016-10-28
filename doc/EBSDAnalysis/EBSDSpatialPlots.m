@@ -1,4 +1,4 @@
-s%% Plotting spatially indexed EBSD data
+%% Plotting spatially indexed EBSD data
 % How to visualize EBSD data
 %
 %% Open in Editor
