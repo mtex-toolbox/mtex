@@ -6,4 +6,4 @@ function ext = extend(ebsd)
 %
 
 ext = [nanmin(ebsd.prop.x(:)) nanmax(ebsd.prop.x(:)) ...
-  nanmin(ebsd.prop.x(:)) nanmax(ebsd.prop.y(:))];
+  nanmin(ebsd.prop.y(:)) nanmax(ebsd.prop.y(:))];
