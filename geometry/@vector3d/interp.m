@@ -1,6 +1,10 @@
 function yi = interp(v,y,vi,varargin)
 % dirty spherical interpolation - including some smoothing
 
+% we need unqiue input data
+[v,ind] = unique(v);
+y = y(ind);
+
 if check_option(varargin,'nearest')
   
   [ind,d] = find(v,vi);
