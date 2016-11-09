@@ -33,7 +33,8 @@ else
   if check_option(varargin,'cutOutside')
     minO = min(omega,[],2);
     delta = 4*quantile(minO,0.5);
-    M(so(:,1:4)>delta) = NaN;
+    M(all(so(:,1:4)>delta),:) = NaN;
+    %M(so(:,1:4)>delta) = NaN;
   end
   
   
