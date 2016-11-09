@@ -1,6 +1,5 @@
 function oR = cleanUp(oR)
 
-
 % testing:
 % cs = crystalSymmetry('222');
 % oR = cs.fundamentalRegion;
@@ -101,8 +100,17 @@ for j = 1:length(Nq)
     % check vertex is inside
     if ~oR.checkInside(v), continue; end
     
+    % if the rotational angle is 180 degree then +- axis is possible
+    % take the quaternion is the axis inside the fundamental region
+    
+    if abs(v.a)<1e-5, v.a = sign(v.a)*1e-5; end
+    
+    if ~oR.axisSector.checkInside(v.axis) && (abs(v.a) < 1e-4)
+      v.a = -v.a;
+    end
+    
     % if we have found a vertice - store it
-    V{j}(end+1) = v;
+    V{j}(end+1) = v./norm(v);
     e = order(i);
     
   end
@@ -112,9 +120,11 @@ end
 sV = cellfun(@length,V);
 [V,~,iV] = unique([V{:}]);
 oR.V = orientation(V,oR.CS1,oR.CS2);
+sV = sV(sV>0);
 F = 1:sum(sV);
 F = mat2cell(F,1,sV);
-oR.F = cellfun(@(x) iV(x),F,'uniformOutput',false);
+F = cellfun(@(x) iV(x),F,'uniformOutput',false);
+oR.F = cellfun(@(x) x([diff(x)~=0; true]),F,'uniformOutput',false);
 
 end
 
