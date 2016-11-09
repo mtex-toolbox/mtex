@@ -2,6 +2,8 @@ function h = plot(f,varargin)
 
 o = f.orientation(varargin{:});
 
+if isempty(o), return; end
+
 if isa(o,'orientation')
 
   if check_option(varargin,'project2FundamentalRegion')
