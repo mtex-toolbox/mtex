@@ -48,12 +48,14 @@ if isNew
   fcw
   view(mtexFig.gca,3);    
   camzoom(mtexFig.gca,0.6);
-  if check_option(varargin,'noFundamentalRegion')
-    [maxphi1,maxPhi,maxphi2] = fundamentalRegionEuler(crystalSymmetry,specimenSymmetry);
-  else
-    [maxphi1,maxPhi,maxphi2] = fundamentalRegionEuler(o.CS,o.SS);
+  if strcmpi(getappdata(gca,'projection'),'Bunge')
+    if check_option(varargin,'noFundamentalRegion')
+      [maxphi1,maxPhi,maxphi2] = fundamentalRegionEuler(crystalSymmetry,specimenSymmetry);
+    else
+      [maxphi1,maxPhi,maxphi2] = fundamentalRegionEuler(o.CS,o.SS);
+    end
+    xlim(mtexFig.gca,[0 maxphi1./degree]);
+    ylim(mtexFig.gca,[0 maxPhi./degree]);
+    zlim(mtexFig.gca,[0 maxphi2./degree]);
   end
-  xlim(mtexFig.gca,[0 maxphi1./degree]);
-  ylim(mtexFig.gca,[0 maxPhi./degree]);
-  zlim(mtexFig.gca,[0 maxphi2./degree]);
 end
