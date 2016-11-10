@@ -19,10 +19,11 @@ else
 end
 
 % plot
+%v = v .* reshape(data,size(v));
 [varargout{1:nargout}] = surf(v.x,v.y,v.z,reshape(data,size(v,1),size(v,2),[]),'parent',ax);
 
 shading(ax,'interp');
 axis(ax,'equal','vis3d','off');
 
 set(ax,'XDir','rev','YDir','rev',...
-'XLim',[-1,1],'YLim',[-1,1],'ZLim',[-1,1]);
+  'XLim',[-1,1],'YLim',[-1,1],'ZLim',[-1,1]);
