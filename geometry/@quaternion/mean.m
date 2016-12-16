@@ -21,7 +21,7 @@ l = diag(lambda);
 pos = find(max(l)==l,1);
 qm = quaternion(V(:,pos));
 
-if check_option(varargin,'robust')
+if check_option(varargin,'robust') && length(q)>4
   omega = angle(qm,q);
   id = omega < quantile(omega,0.8);
   varargin = delete_option(varargin,'robust');
