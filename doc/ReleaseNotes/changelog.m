@@ -64,6 +64,31 @@
 % Many functions support now the flag |noSymmetry|. Among them are |angle|,
 % |axis|, |dot|, |cunion|.
 %
+% *Clustering of orientations*
+%
+% The new command <orientation_cluster.html cluster> allows to cluster a
+% given set of orientations into a given number of clusters.
+%
+%   % generate orientation clustered around 5 centers
+%   cs = crystalSymmetry('m-3m');
+%   center = orientation.rand(5,cs); 
+%   odf = unimodalODF(center,'halfwidth',5*degree)
+%   ori = odf.calcOrientations(3000);
+%
+%   % find the clusters and its centers
+%   [c,centerRec] = cluster(ori,5);
+%
+%   % visualize result
+%   oR = fundamentalRegion(cs);
+%   plot(oR)
+% 
+%   hold on
+%   plot(ori.project2FundamentalRegion,c)
+%   caxis([1,5])
+%   plot(center.project2FundamentalRegion,'MarkerSize',10,'MarkerFaceColor','k','MarkerEdgeColor','k')
+%   plot(centerRec.project2FundamentalRegion,'MarkerSize',10,'MarkerFaceColor','r','MarkerEdgeColor','k')
+%   hold off 
+%
 % *Auxilary new functionality*
 %
 % * 3d plotting of ODFs is back
