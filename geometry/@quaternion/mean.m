@@ -1,5 +1,9 @@
-function [qm,lambda, V] = mean(q,varargin)
+function [qm, lambda, V] = mean(q,varargin)
 % mean of a list of quaternions, principle axes and moments of inertia
+%
+% Syntax
+%
+%   [m, lambda, V] = mean(q,varargin)
 %
 % Input
 %  q        - list of @quaternion
@@ -8,9 +12,9 @@ function [qm,lambda, V] = mean(q,varargin)
 %  weights  - list of weights
 %
 % Output
-%  mean     - mean orientation
-%  lambda   - principle moments of inertia
-%  V        - principle axes of inertia (@orientation)
+%  m      - mean orientation
+%  lambda - principle moments of inertia
+%  V      - principle axes of inertia (@quaternion)
 %
 % See also
 % orientation/mean

@@ -1,8 +1,8 @@
-function [o, q, lambda, eigv, kappa]  = mean(o,varargin)
+function [o, q, lambda, eigv]  = mean(o,varargin)
 % mean of a list of orientations, principle axes and moments of inertia
 %
 % Syntax
-% [m, lambda, V, kappa, q]  = mean(o)
+%   [m, q, lambda, V]  = mean(o)
 %
 % Input
 %  o        - list of @orientation
@@ -14,7 +14,6 @@ function [o, q, lambda, eigv, kappa]  = mean(o,varargin)
 %  m      - mean @orientation
 %  lambda - principle moments of inertia
 %  V      - principle axes of inertia (@orientation)
-%  kappa  - form parameters of bingham distribution
 %  q      - crystallographic equivalent @quaternion projected to fundamental region
 %
 % See also
@@ -24,7 +23,6 @@ if length(o) == 1
   
   if nargout > 1
     eigv = eye(4);
-    kappa = [Inf 0 0 0]';
     q = quaternion(o);
   end
   return;
@@ -53,4 +51,3 @@ o.d = q_mean.d;
 o.i = false;
 
 lambda = diag(lambda);
-
