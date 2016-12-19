@@ -43,4 +43,3 @@ classdef orientationRegion
   end
   
   end
-

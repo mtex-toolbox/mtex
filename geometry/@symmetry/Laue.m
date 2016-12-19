@@ -10,7 +10,9 @@ s.c = [s.c(:),s.c(:)];
 s.d = [s.d(:),s.d(:)];
 s.i = repmat([0,1],size(s.a,1),1);
 
-s.id = symmetry.pointGroups(s.id).LaueId;
+if s.id > 0
+  s.id = symmetry.pointGroups(s.id).LaueId;
+end
 
 
 

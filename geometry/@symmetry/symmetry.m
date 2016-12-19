@@ -117,11 +117,19 @@ classdef symmetry < rotation
     end
     
     function pg = get.pointGroup(cs)
-      pg = symmetry.pointGroups(cs.id).Inter;
+      if cs.id>0
+        pg = symmetry.pointGroups(cs.id).Inter;
+      else
+        pg = 'unknown';
+      end
     end
             
     function r = get.isLaue(cs)
-      r = cs.id == symmetry.pointGroups(cs.id).LaueId;
+      try
+        r = cs.id == symmetry.pointGroups(cs.id).LaueId;
+      catch % this is required for custom symmetries
+        r = any(rotation(cs) == -rotation.id); 
+      end
     end
     
     function r = isRotational(cs)      

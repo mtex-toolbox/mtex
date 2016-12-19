@@ -2,8 +2,12 @@ function b = eq(S1,S2)
 % check S1 == S2
 
 if ~isa(S1,'crystalSymmetry') || ~isa(S2,'crystalSymmetry')
-  
-  b = S1.Laue.id == S2.Laue.id;
+
+  try
+    b = S1.Laue.id == S2.Laue.id;
+  catch
+    b = false;
+  end
   
 else
 
