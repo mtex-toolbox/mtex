@@ -1,4 +1,4 @@
-function [c,ori] = cluster(ori,n)
+function [c,center] = cluster(ori,n,varargin)
 % sort orientations into clusters
 %
 % Syntax
@@ -12,60 +12,132 @@ function [c,ori] = cluster(ori,n)
 %  c - list of clusters
 %  center - center of the clusters
 %
+% Example 
+%
+%   % generate orientation clustered around 5 centers
+%   cs = crystalSymmetry('m-3m');
+%   center = orientation.rand(5,cs); 
+%   odf = unimodalODF(center,'halfwidth',5*degree)
+%   ori = odf.calcOrientations(3000);
+%
+%   % find the clusters and its centers
+%   tic; [c,centerRec] = cluster(ori,5); toc
+%
+%   % visualize result
+%   oR = fundamentalRegion(cs)
+%   plot(oR)
+% 
+%   hold on
+%   plot(ori.project2FundamentalRegion,c)
+%   caxis([1,5])
+%   plot(center.project2FundamentalRegion,'MarkerSize',10,'MarkerFaceColor','k','MarkerEdgeColor','k')
+%   plot(centerRec.project2FundamentalRegion,'MarkerSize',10,'MarkerFaceColor','r','MarkerEdgeColor','k')
+%   hold off 
+%
+%   %check the accuracy of the recomputed centers
+%   min(angle_outer(center,centerRec)./degree)
+%
+%   odfRec = calcODF(ori)
+%   [~,centerRec2] = max(odfRec,5)
+%   min(angle_outer(center,centerRec2)./degree)
+%
+
+% If the statistics toolbox is installed the following is also possible
+% though it does not work so well
+% d = angle_outer(ori,ori);
+% tic;z = linkage(d);toc
+% c = cluster(z,'maxclust',5);
+
+
+% extract weights
+weights = get_option(varargin,'weights',ones(size(ori)));
+
+if length(ori)>1000 && ~check_option(varargin,'exact')
+
+  % define a indexed grid
+  res = get_option(varargin,'resolution',2.5*degree);
+  if ori.antipodal, aP = {'antipodal'}; else, aP = {}; end
+  S3G = equispacedSO3Grid(ori.CS,ori.SS,'resolution',res,aP{:});
+
+  % construct a sparse matrix showing the relatation between both grids
+  M = sparse(1:length(ori),find(S3G,ori),weights,length(ori),length(S3G));
+
+  % compute weights
+  weights = full(sum(M,1)).';
+  
+  % eliminate spare rotations in grid
+  S3G = subGrid(S3G,weights~=0);
+  weights = weights(weights~=0);
+
+  % apply clustering to grid
+  [~,center] = cluster(S3G,n,'weights',weights,'exact');
+
+  % performe one step 
+  d = angle_outer(ori,center);
+  [~,c] = min(d,[],2);
+  
+  % recompute center
+  center = repmat(ori.subSet(1),n,1);
+  for i = 1:n
+    center = subsasgn(center,i,mean(ori.subSet(c==i),'robust'));
+  end
+  
+  % performe one step 
+  d = angle_outer(ori,center);
+  [~,c] = min(d,[],2);
+  
+  return
+end
 
 % start with as many clusters as orientations
 % incidence matrix orientations - clusters
-I_OC = speye(length(ori));
+I_OC = spdiags(weights(:),0,length(weights),length(weights));
 
 % compute the distance between all orientations
-d = angle_outer(ori,ori) + 100*eye(length(ori));
+%d = full(abs(dot_outer(ori,ori,'epsilon',20*degree)));
+d = full(abs(dot_outer(ori,ori,'epsilon',20*degree)));
+d(sub2ind(size(d),1:length(ori),1:length(ori))) = 0;
+center = orientation(ori);
 
-while length(ori) > n
+progress(0,length(ori)-n);
+while length(center) > n
 
-  % find smalles pair
-  [~,id] = min(d(:));
+  % find smallest pair
+  [~,id] = max(d(:));
   [i,j] = ind2sub(size(d),id);
 
   % update orientations
-  m = mean(ori.subSet([i,j]),full(sum(I_OC(:,[i,j]))),'robust');
-  ori.a(i) = m.a;
-  ori.b(i) = m.b;
-  ori.c(i) = m.c;
-  ori.d(i) = m.d;
+  %  m = mean(ori.subSet([i,j]),full(sum(I_OC(:,[i,j]))),'robust');
+  %m = mean(ori.subSet([i,j]),);
+  
+  weights = full(sum(I_OC(:,[i,j]),2));
+  m = mean(ori.subSet(weights>0),weights(weights>0),'robust');
+  
+  center.a(i) = m.a;
+  center.b(i) = m.b;
+  center.c(i) = m.c;
+  center.d(i) = m.d;
   
   % update incidence matrix
   I_OC(:,i) = I_OC(:,i) + I_OC(:,j);
   I_OC(:,j) = [];
 
   % update distance matrix
-  d(i,:) = angle(m,ori);
-  d(:,i) = d(i,:).';
-  d(i,i) = 100;
+  dd = dot(m,center);
+  dd(i) = 0;
+  d(i,:) = dd;
+  d(:,i) = dd.';
   d(:,j) = [];
   d(j,:) = [];
-  ori.a(j) = [];
-  ori.b(j) = [];
-  ori.c(j) = [];
-  ori.d(j) = [];
-  ori.i(j) = [];
+  center.a(j) = [];
+  center.b(j) = [];
+  center.c(j) = [];
+  center.d(j) = [];
+  center.i(j) = [];
+  
+  progress(length(ori)-length(center),length(weights)-n);
 end
 
 [c,~] = find(I_OC.');
 
 end
-
-
-% testing code
-% cs = crystalSymmetry('mmm');
-% ori = orientation.rand(5,cs); 
-% odf = unimodalODF(ori)
-% ori = odf.calcOrientations(1000);
-% tic; c = cluster(ori,5); toc
-% oR = fundamentalRegion(cs)
-% plot(oR)
-% 
-% hold on,plot(ori.project2FundamentalRegion,c), hold off
-% caxis([1,5])
-
-
-
