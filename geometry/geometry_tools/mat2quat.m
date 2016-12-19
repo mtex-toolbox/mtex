@@ -2,7 +2,7 @@ function q = mat2quat(mat,varargin)
 % converts direction cosine matrix to quaternion
 %
 % Syntax
-%   q = matrix2quat(mat)
+%   q = mat2quat(mat)
 %
 % Input
 %  mat - vector of matrixes
