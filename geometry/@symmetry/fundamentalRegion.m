@@ -1,5 +1,5 @@
 function  [oR,dcs,nSym] = fundamentalRegion(cs,varargin)
-% get the fundamental sector for a symmetry in the inverse pole figure
+% fundamental region in orientation space for a (pair) of symmetries 
 %
 % Syntax
 %   oR = fundamentalRegion(cs)
@@ -12,14 +12,14 @@ function  [oR,dcs,nSym] = fundamentalRegion(cs,varargin)
 %  sR - @orientationRegion
 %
 % Options
-%  invSymmetry - wheter mori == inv(mori)
+%  antipodal - wheter mori == inv(mori)
 %
 
 q = rotation(cs);
 N0 = quaternion;
-if nargin >= 2 && isa(varargin{1},'symmetry')
+if nargin >= 2 && (isa(varargin{1},'symmetry')||isa(varargin{1},'rotation'))
   
-  q = q * rotation(varargin{1});
+  q = rotation(varargin{1}) * q;
   q = q(~q.isImproper);
   q = quaternion(unique(q));
   
@@ -53,8 +53,8 @@ end
 
 N = [axes;-axes];
 if ~isempty(N)
-  Nq = axis2quat(N,[pi-angles/2;angles/2]); 
-else 
+  Nq = axis2quat(N,[angles/2;pi-angles/2]);
+else
   Nq = quaternion;
 end
 
