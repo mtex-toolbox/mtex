@@ -77,7 +77,7 @@ switch lower(projection)
     f = fibre(left,right);
     
     % some of the edges should not be ploted
-    f = f(angle(f.o1,f.o2,'noSymmetry')>1e-5);
+    f = f(angle(f.o1,f.o2,'noSymmetry')>1e-3);
     f = f(angle(f.o1,'noSymmetry')<pi | angle(f.o2,'noSymmetry')<pi);
     
     % plot the fibres

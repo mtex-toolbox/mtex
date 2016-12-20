@@ -70,7 +70,7 @@ classdef sphericalPlot < handle
         sP.hgt = hgtransform('parent',ax);
 
         % plot boundary
-        sP.boundary = sP.sphericalRegion.plot('parent',sP.ax);
+        sP.boundary = sP.sphericalRegion.plot('parent',sP.ax,varargin{:});
 
         % set view point
         setCamera(sP.ax,'default',varargin{:});

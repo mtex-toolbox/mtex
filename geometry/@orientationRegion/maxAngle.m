@@ -32,7 +32,7 @@ if nargin>1 && isa(varargin{1},'vector3d')
     
     d = dot_outer(N.axis, normalize(h));
     dtan = repmat(-tan(N(:).angle./2),1,size(d,2));
-    d(abs(d)<1e-3)=0;
+    d(abs(d)<1e-2)=0;
     d = dtan .* d;
     
     %d = dot_outer(-tan(N.angle/2) .* N.axis, normalize(varargin{1}));
