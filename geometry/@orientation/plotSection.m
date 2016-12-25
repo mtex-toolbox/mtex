@@ -18,7 +18,7 @@ function plotSection(ori,varargin)
 % See also
 % vector3d/scatter saveFigure 
 
-if ori.antipodal, varargin = ['antipodal',varargin]; end
+if ori.antipodal, varargin = [varargin,'antipodal']; end
 oS = newODFSectionPlot(ori.CS,ori.SS,varargin{:});
 
 oS.plot(ori,varargin{:});
