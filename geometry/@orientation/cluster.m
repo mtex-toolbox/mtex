@@ -1,12 +1,14 @@
-function [c,center] = cluster(ori,n,varargin)
+function [c,center] = cluster(ori,varargin)
 % sort orientations into clusters
 %
 % Syntax
-%   [c,center] = cluster(ori,n)
+%   [c,center] = cluster(ori,'numCluster',n)
+%   [c,center] = cluster(ori,'maxAngle',omega)
 %
 % Input
 %  ori - @orientation
 %  n   - number of clusters
+%  omega - maximum angle 
 %
 % Output
 %  c - list of clusters
@@ -21,7 +23,7 @@ function [c,center] = cluster(ori,n,varargin)
 %   ori = odf.calcOrientations(3000);
 %
 %   % find the clusters and its centers
-%   tic; [c,centerRec] = cluster(ori,5); toc
+%   tic; [c,centerRec] = cluster(ori,'numCenter',5); toc
 %
 %   % visualize result
 %   oR = fundamentalRegion(cs)
@@ -70,15 +72,15 @@ if length(ori)>1000 && ~check_option(varargin,'exact')
   weights = weights(weights~=0);
 
   % apply clustering to grid
-  [~,center] = cluster(S3G,n,'weights',weights,'exact');
+  [~,center] = cluster(S3G,varargin{:},'weights',weights,'exact');
 
   % performe one step 
   d = angle_outer(ori,center);
   [~,c] = min(d,[],2);
   
   % recompute center
-  center = repmat(ori.subSet(1),n,1);
-  for i = 1:n
+  %center = repmat(ori.subSet(1),n,1);
+  for i = 1:length(center)
     center = subsasgn(center,i,mean(ori.subSet(c==i),'robust'));
   end
   
@@ -88,6 +90,9 @@ if length(ori)>1000 && ~check_option(varargin,'exact')
   
   return
 end
+
+n = get_option(varargin,'numCluster',2);
+maxOmega = get_option(varargin,'maxAngle',inf);
 
 % start with as many clusters as orientations
 % incidence matrix orientations - clusters
@@ -99,11 +104,16 @@ d = full(abs(dot_outer(ori,ori,'epsilon',20*degree)));
 d(sub2ind(size(d),1:length(ori),1:length(ori))) = 0;
 center = orientation(ori);
 
-progress(0,length(ori)-n);
-while length(center) > n
-
+progress(0,length(ori));
+while 1
+  
+  if length(center) <= n, break; end
+    
   % find smallest pair
-  [~,id] = max(d(:));
+  [omega,id] = max(d(:));
+  
+  if omega<cos(maxOmega), break; end
+  
   [i,j] = ind2sub(size(d),id);
 
   % update orientations
@@ -135,8 +145,10 @@ while length(center) > n
   center.d(j) = [];
   center.i(j) = [];
   
-  progress(length(ori)-length(center),length(weights)-n);
+  progress(length(ori)-length(center),length(ori));
 end
+
+progress(length(ori),length(ori));
 
 [c,~] = find(I_OC.');
 
