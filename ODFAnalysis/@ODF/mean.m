@@ -1,9 +1,9 @@
-function [m, kappa, v] = mean(odf,varargin)
+function [m, lambda, v] = mean(odf,varargin)
 % expected value of an ODF
 %
 % Syntax
 %
-%   [m, kappa, v] = mean(odf)
+%   [m, lambda, v] = mean(odf)
 %
 % Input
 %  odf       - @ODF
@@ -18,6 +18,6 @@ function [m, kappa, v] = mean(odf,varargin)
 
 S3G = extract_SO3grid(odf,varargin);
 
-[m, ~, kappa, v] = mean(S3G,'weights',eval(odf,S3G)); %#ok<EVLC>
+[m, ~, lambda, v] = mean(S3G,'weights',eval(odf,S3G)); %#ok<EVLC>
 
 m = orientation(m);
