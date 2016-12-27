@@ -5,93 +5,58 @@ function h = plot(oR,varargin)
 % boundary and adjust the axes limits properly.
 %
 
-[mtexFig,isNew] = newMtexFigure(varargin{:});
-
-% create a new scatter plot
-if isappdata(mtexFig.gca,'projection')
-  projection = getappdata(mtexFig.gca,'projection');
-else
-  if check_option(varargin,{'rodrigues','rodriguez'})
-    projection = 'rodrigues';
-  else
-    projection = 'axisangle';
-  end
-  setappdata(mtexFig.gca,'projection',projection);
-end
-
-
+oP = newOrientationPlot(oR.CS1,oR.CS2,varargin{:});
+hold on
 color = get_option(varargin,'color',[0 0 0]);
 
-switch lower(projection)
-  case {'rodriguez','rodrigues'}
+% find the sector
+ind = oR.N.angle > pi-1e-3;
+sR = sphericalRegion(oR.N(ind).axis,zeros(nnz(ind),1));
 
-    % embedd into NaN matrix
-    FF = nan(length(oR.F),max(cellfun(@length,oR.F)));
-    for i = 1:length(oR.F)
-      FF(i,1:length(oR.F{i})) = oR.F{i};
-    end
-  
-    VR = reshape(double(oR.V.Rodrigues),[],3);
-    clf;
-    h = patch('faces',FF,'vertices',VR,'faceAlpha',0.1);
-  
-  case 'axisangle'
+% plot a grid
+rho = linspace(0,2*pi,720);
+theta = linspace(0,pi,13);
+[rho,theta] = meshgrid(rho,theta);
 
-    ind = oR.N.angle > pi-1e-3;
-    sR = sphericalRegion(oR.N(ind).axis,zeros(nnz(ind),1));
-        
-    % plot a grid
-    rho = linspace(0,2*pi,720);
-    theta = linspace(0,pi,13);
-    [rho,theta] = meshgrid(rho,theta);
-    
-    r = vector3d('theta',theta.','rho',rho.');    
-    r(~sR.checkInside(r)) = nan;
-    r = oR.maxAngle(r) .* r ./ degree;
-    line(r.x,r.y,r.z,'color',color)
-    
-    rho = linspace(0,2*pi,25);
-    theta = linspace(0,pi,360);
-    [rho,theta] = meshgrid(rho,theta);
-    
-    r = vector3d('theta',theta,'rho',rho);    
-    r(~sR.checkInside(r)) = nan;
-    r = oR.maxAngle(r) .* r ./ degree;
-    line(r.x,r.y,r.z,'color',color)
-        
-    % plot a surface
-    hold on
-    r = plotS2Grid(sR,'resolution',1*degree);
-    % TODO: do not use maxAngle - because this would allow us to rotate the
-    % orientation region
-    r = oR.maxAngle(r) .* r ./ degree;
-    surf(r.x,r.y,r.z,'faceColor',color,'facealpha',0.1,...
-      'edgecolor','none')
-    
-    % extract the vertices 
-    left = oR.V(vertcat(oR.F{:}));
-    right = cellfun(@(x) circshift(x,1), oR.F,'UniformOutput',false);
-    right = oR.V(vertcat(right{:}));
-    
-    % edges are just fibres connecting the vertices
-    f = fibre(left,right);
-    
-    % some of the edges should not be ploted
-    f = f(angle(f.o1,f.o2,'noSymmetry')>1e-3);
-    f = f(angle(f.o1,'noSymmetry')<pi | angle(f.o2,'noSymmetry')<pi);
-    
-    % plot the fibres
-    plot(f,'color',color,'linewidth',1.5)
-    
-    hold off
-    
-end
+r = vector3d('theta',theta.','rho',rho.');
+r(~sR.checkInside(r)) = nan;
+q = orientation('axis',r,'angle',oR.maxAngle(r),oP.CS1,oP.CS2);
+h1 = line(q,'color',color,'parent',oP.ax,'noBoundaryCheck');
 
-if isNew
-  axis equal off
-  fcw;
-  view(mtexFig.gca,3);
-end
+rho = linspace(0,2*pi,25);
+theta = linspace(0,pi,360);
+[rho,theta] = meshgrid(rho,theta);
 
-if nargout == 0, clear h; end
+r = vector3d('theta',theta,'rho',rho);
+r(~sR.checkInside(r)) = nan;
+q = orientation('axis',r,'angle',oR.maxAngle(r),oP.CS1,oP.CS2);
+h2 = line(q,'color',color,'parent',oP.ax,'noBoundaryCheck');
+
+% plot a surface
+r = plotS2Grid(sR,'resolution',1*degree);
+% TODO: do not use maxAngle - because this would allow us to rotate the
+% orientation region
+q = orientation('axis',r,'angle',oR.maxAngle(r),oP.CS1,oP.CS2);
+
+[x,y,z] = oP.project(q,'noBoundaryCheck');
+h3 = surf(x,y,z,'faceColor',color,'facealpha',0.1,'edgecolor','none');
+
+% extract the vertices
+left = oR.V(vertcat(oR.F{:}));
+right = cellfun(@(x) circshift(x,1), oR.F,'UniformOutput',false);
+right = oR.V(vertcat(right{:}));
+
+% edges are just fibres connecting the vertices
+f = fibre(left,right);
+
+% some of the edges should not be ploted
+f = f(angle(f.o1,f.o2,'noSymmetry')>1e-3);
+f = f(angle(f.o1,'noSymmetry')<pi | angle(f.o2,'noSymmetry')<pi);
+
+% plot the fibres
+h4 = plot(f,'color',color,'linewidth',1.5,'noBoundaryCheck','parent',oP.ax);
+
+hold off
+
+if nargout ~= 0, h = [h1,h2,h3,h4]; end
 
