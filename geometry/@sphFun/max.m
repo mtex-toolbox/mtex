@@ -5,6 +5,7 @@ if nargin == 1
   [sF,pos] = max(sF1.values(:));
   
   v = sF1.vertices(pos);
+  v = v.rmOption('resolution');
   
 elseif isnumeric(sF1)
   
