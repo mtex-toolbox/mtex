@@ -5,7 +5,8 @@ if nargin == 1
   [sF,pos] = min(sF1.values(:));
            
   v = sF1.vertices(pos);
-    
+  v = v.rmOption('resolution');
+  
 elseif isnumeric(sF1)
             
   sF = sF2;
