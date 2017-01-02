@@ -7,7 +7,8 @@ function oP = newOrientationPlot(CS1,CS2,varargin)
 if ~isNew && isappdata(mtexFig.gca,'orientationPlot')
   oP = getappdata(mtexFig.gca,'orientationPlot');
   
-  if oP.CS1.properGroup == CS1.properGroup && oP.CS2.properGroup == CS2.properGroup
+  if oP.CS1.properGroup.id == CS1.properGroup.id ...
+      && oP.CS2.properGroup.id == CS2.properGroup.id
     return, 
   end
 end
