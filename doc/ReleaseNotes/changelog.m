@@ -1,7 +1,18 @@
 %% MTEX Changelog
 %
 %
-%% MTEX 4.4   01/2018
+%% MTEX 4.5.beta.1 01/2017
+%
+% *3d orientation plots*
+%
+% MTEX 4.5 supports plotting of orientations, fibres, and ODFs in 3d in
+% various projections like
+%
+% * Bunge Euler angles
+% * Rodrigues Frank space
+% * axis angles space
+%
+%% MTEX 4.4   01/2017
 %
 % *Slip Systems*
 %
