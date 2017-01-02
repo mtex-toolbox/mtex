@@ -20,7 +20,7 @@ classdef orientationPlot < handle
     CS1 % crystal symmetry of phase 1
     CS2 % crystal symmetry of phase 2
     ax
-    fRMode % restrict2FundamentalRegion | project2FundamentalRegion | 
+    fRMode % restrict2FundamentalRegion | project2FundamentalRegion | ignoreFundamentalRegion
     plotGrid
     gridSize
   end
@@ -36,7 +36,11 @@ classdef orientationPlot < handle
       oP.CS1 = CS1.properGroup;
       CS2 = getClass(varargin,'symmetry',specimenSymmetry);
       oP.CS2 = CS2.properGroup;
-      oP.fRMode = char(extract_option(varargin,{'restrict2FundamentalRegion','project2FundamentalRegion'}));
+      oP.fRMode = char(extract_option(varargin,...
+        {'restrict2FundamentalRegion','project2FundamentalRegion','ignoreFundamentalRegion'}));
+      if isempty(oP.fRMode)
+        oP.fRMode = 'project2FundamentalRegion';
+      end
       setappdata(oP.ax,'orientationPlot',oP);
     end
         

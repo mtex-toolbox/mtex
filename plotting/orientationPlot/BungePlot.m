@@ -17,7 +17,7 @@ classdef BungePlot < orientationPlot
         [maxphi1,maxPhi,maxphi2] = fundamentalRegionEuler(oP.CS1,oP.CS2);
       end
       
-      if check_option(varargin,{'restrict2FundamentalRegion','project2FundamentalRegion'})
+      if any(strcmpi(oP.fRMode,{'restrict2FundamentalRegion','project2FundamentalRegion'}))
         xlim(oP.ax,[0 maxphi1./degree]);
         ylim(oP.ax,[0 maxPhi./degree]);
         zlim(oP.ax,[0 maxphi2./degree]);
@@ -26,6 +26,9 @@ classdef BungePlot < orientationPlot
         ylim(oP.ax,[0 180]);
         zlim(oP.ax,[0 360]);
       end
+      set(oP.ax,'XTick',0:30:max(xlim))
+      set(oP.ax,'YTick',0:30:max(ylim))
+      set(oP.ax,'ZTick',0:30:max(zlim))
     end
       
   
