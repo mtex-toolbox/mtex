@@ -23,7 +23,7 @@ sS = getClass(varargin,'slipSystem');
 % is so - compute the corresponding deformation tensor
 if ~isempty(sS)
   CRSS = sS.CRSS(:); % critical resolved shear stress
-  dT = sS.deformationTensor;
+  dT = sS.deformationTensor; % versetungstesnor - Schraubung + stufe
   % if the symmetric part is needed take dT.sym
   A = reshape(matrix(dT),9,[]);
   A = A([1,2,3,5,6],:);
@@ -63,6 +63,9 @@ for i = 1:length(ebsd)
       b = linprog(CRSS,[],[],A,kappa(1:2,:),zeros(size(A,2),1),[],[],options);
     end
     kappa = dT * b;
+    
+    gnd(i) = sum(b);
+    continue
     
   end
     

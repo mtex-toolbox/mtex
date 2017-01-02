@@ -1,6 +1,10 @@
 function yi = interp(v,y,vi,varargin)
 % dirty spherical interpolation - including some smoothing
 
+% we need unqiue input data
+[v,ind] = unique(v);
+y = y(ind);
+
 if check_option(varargin,'nearest')
   
   [ind,d] = find(v,vi);
@@ -29,7 +33,8 @@ else
   if check_option(varargin,'cutOutside')
     minO = min(omega,[],2);
     delta = 4*quantile(minO,0.5);
-    M(so(:,1:4)>delta) = NaN;
+    M(all(so(:,1:4)>delta),:) = NaN;
+    %M(so(:,1:4)>delta) = NaN;
   end
   
   

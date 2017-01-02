@@ -56,16 +56,16 @@ classdef EBSDsquare < EBSD
     function gX = get.gradientX(ebsd)
       ori = ebsd.orientations;
           
-      ori_ref = ori(:,[2:end end-1]);
-      gX = log(ori,ori_ref) ./ ebsd.dx;
+      ori_right = ori(:,[2:end end-1]);
+      gX = log(ori_right,ori) ./ ebsd.dx;
       gX(:,end) = - gX(:,end);
     end
     
     function gY = get.gradientY(ebsd)
       ori = ebsd.orientations;
           
-      ori_ref = ori([2:end end-1],:);
-      gY = log(ori,ori_ref) ./ ebsd.dy;
+      ori_up = ori([2:end end-1],:);
+      gY = log(ori_up,ori) ./ ebsd.dy;
       gY(end,:) = - gY(end,:);
     end
     

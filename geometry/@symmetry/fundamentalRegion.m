@@ -1,5 +1,5 @@
 function  [oR,dcs,nSym] = fundamentalRegion(cs,varargin)
-% get the fundamental sector for a symmetry in the inverse pole figure
+% fundamental region in orientation space for a (pair) of symmetries 
 %
 % Syntax
 %   oR = fundamentalRegion(cs)
@@ -12,16 +12,22 @@ function  [oR,dcs,nSym] = fundamentalRegion(cs,varargin)
 %  sR - @orientationRegion
 %
 % Options
-%  invSymmetry - wheter mori == inv(mori)
+%  antipodal  - wheter mori == inv(mori)
+%  LaueGroup  - consider only Laue groups (default)
+%  pointGroup - consider point groups
 %
+
+if ~check_option(varargin,'pointGroup'), cs = cs.properGroup; end
 
 q = rotation(cs);
 N0 = quaternion;
-if nargin >= 2 && isa(varargin{1},'symmetry')
+if nargin >= 2 && (isa(varargin{1},'symmetry')||isa(varargin{1},'rotation'))
   
-  q = q * rotation(varargin{1});
-  q = q(~q.isImproper);
-  q = quaternion(unique(q));
+  q = rotation(varargin{1}) * q;
+  
+  % in the usual setting we don't care about reflections
+  if check_option(varargin,'pointGroup'), q = q(~q.isImproper); end
+  q = unique(quaternion(q));
   
   if ~check_option(varargin,'ignoreCommonSymmetries')
     dcs = disjoint(cs,varargin{1});
@@ -32,7 +38,7 @@ if nargin >= 2 && isa(varargin{1},'symmetry')
         
     N0 = rotation('axis',sR.N,'angle',pi-1e-5);
   end
-else  
+else
   q = q(~q.isImproper);
   q = quaternion(unique(q));
   dcs = cs.properSubGroup;
@@ -53,8 +59,8 @@ end
 
 N = [axes;-axes];
 if ~isempty(N)
-  Nq = axis2quat(N,[pi-angles/2;angles/2]); 
-else 
+  Nq = axis2quat(N,[angles/2;pi-angles/2]);
+else
   Nq = quaternion;
 end
 

@@ -18,21 +18,21 @@ npoints = get_option(varargin,'points',1000);
 omega = linspace(0,2*pi,npoints);
 
 ori = rotation.id(npoints,length(f.h));
+
+o1 = quaternion(f.o1);
+o2 = quaternion(f.o2);
+r = f.r;
+
 for i = 1:length(f.h)
   
-  r = f.r(i);
-  o1 = f.o1(i);
-    
-  maxOmega = angle(o1,f.o2(i),'noSymmetry');
+  maxOmega = angle(o1(i),o2(i));
   if maxOmega > 1e-3
-    r = axis(f.o2(i).*inv(o1),'noSymmetry');
+    r(i) = axis(o2(i).*inv(o1(i)));
     omega = linspace(0,maxOmega,npoints);
   end
   
-  
   % compute orientations
-  ori(:,i) = orientation(rotation('axis',r,'angle',omega) .* ...
-    rotation(o1),o1.CS,o1.SS);
+  ori(:,i) = rotation('axis',r(i),'angle',omega) .* o1(i);
   
 end
 

@@ -27,12 +27,14 @@ switch lower(projection)
     v = v(abs(v) < 1e5);
     [x,y,z] = double(v);
   case 'axisangle'
-    [x,y,z] = double(axis(q,'noSymmetry') .* angle(q,'noSymmetry') ./ degree);
+    q = quaternion(q);
+    [x,y,z] = double(q.axis .* q.angle ./ degree);
   case {'euler','bunge'}
-    if check_option(varargin,'noFundamentalRegion')
-      [x,y,z] = q.Euler(varargin{:});
-    else
+    if (isa(q,'orientation') || (nargin > 1 &&isa(varargin{1},'symmetry'))) && ...
+        ~check_option(varargin,'noFundamentalRegion')       
       [x,y,z] = project2EulerFR(q,varargin{:});      
+    else
+      [x,y,z] = q.Euler(varargin{:});      
     end
     x = x./degree;
     y = y./degree;

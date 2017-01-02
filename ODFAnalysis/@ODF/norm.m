@@ -3,7 +3,7 @@ function t = norm(odf,varargin)
 %
 % The normx of an ODF f is defined as:
 %
-% $$ t = -\int f(g)^2 dg$$
+% $$ t = \sqrt(-\int f(g)^2 dg)$$
 %
 % Input
 %  odf - @ODF 

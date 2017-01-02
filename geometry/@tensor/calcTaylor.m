@@ -55,7 +55,7 @@ y = y([1,2,3,5,6],:);
 
 % this method applies the dual simplex algorithm 
 %options = optimoptions('linprog','Algorithm','dual-simplex','Display','none');
-options = optimoptions('linprog','Algorithm','interior-point','Display','none');
+options = optimoptions('linprog','Algorithm','interior-point-legacy','Display','none');
 
 % shall we display what we are doing?
 isSilent = check_option(varargin,'silent');

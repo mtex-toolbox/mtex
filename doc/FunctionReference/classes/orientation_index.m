@@ -173,12 +173,15 @@ inv(o1)
 
 %% SUB: Plotting Orientations
 %
-% The [[orientation.plot.html,plot]] function allows you to visualize an
+% The <orientation.plot.html plot> function allows you to visualize an
 % orientation in axis angle space in relation to its fundamental region.
 
-oR = fundamentalRegion(o.CS,o.SS)
+oR = fundamentalRegion(o1.CS,o1.SS)
 plot(oR)
 hold on
-plot(o,'markercolor','b','markerSize',10)
-plot(o.project2FundamentalRegion,'markercolor','r','markerSize',10)
+% plot the orientation as it is
+plot(o1,'markercolor','b','markerSize',10)
+
+% plot the orientation within the fundamental zone
+plot(o1.project2FundamentalRegion,'markercolor','r','markerSize',10)
 hold off

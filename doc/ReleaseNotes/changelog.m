@@ -1,7 +1,7 @@
 %% MTEX Changelog
 %
 %
-%% MTEX 4.4   08/2016
+%% MTEX 4.4   01/2017
 %
 % *Slip Systems*
 %
@@ -22,29 +22,37 @@
 % example the alpha fibre in cubic materials can be defined in the
 % following ways
 %
-% # as a predefined fibre
+% * as a predefined fibre
 %
 %   cs = crystalSymmetry('m-3m')
 %   f  = fibre.alpha(cs)
 %
-% # by a pair of directions
+% * by a pair of directions
 %
 %   f = fibre(Miller(1,0,0,cs),vector3d.X)
 %
-% # by two orientations
+% * by two orientations
 %
 %   ori1 = orientation('Miller',[0 0 1],[1 1 0],cs);
 %   ori2 = orientation('Miller',[1 1 1],[1 1 0],cs);
 %
 %   f = fibre(ori1,ori2)
 %
-% # by a list of orientations
+% * by a list of orientations
 %
 %   f = fibre.fit([ori1,ori2,mean(ori1,ori2)])
 %
+% All commands that took a pair of directions to specify a fibre, e.g.,
+% <fibreODF.html fibreODF>, <ODF.fibreVolume.html fibreVolume>,
+% <ODF.plotFibre.html plotFibre> have been rewritten to accept a fibre as a
+% single input argument. I.e. a fibre ODF is now defined by
+%
+%   odf = fibreODF(fibre.alpha(cs))
+%
 % Up to now the following functions are implemented for fibres
 %
-% * plot to Rodrigues space
+% * plot to Rodrigues space, Euler space, pole figures, inverse pole
+% figures
 %
 %    oR = fundamentalRegion(cs,cs)
 %    f = fibre(oR.V(1),oR.V(2))
@@ -53,9 +61,7 @@
 %    plot(fibre,'color','r','linewidth',2)
 %    hold off
 %
-% * rotate a fibre
-%
-% * angle between orientation and fibre
+% * compute the angle between orientation and fibre
 %
 %   angle(f,ori)
 %
@@ -64,9 +70,30 @@
 % Many functions support now the flag |noSymmetry|. Among them are |angle|,
 % |axis|, |dot|, |cunion|.
 %
-% *Auxilary new functionality*
+% *Clustering of orientations*
 %
-% * 3d plotting of ODFs is back
+% The new command <orientation.cluster.html cluster> allows to cluster a
+% given set of orientations into a given number of clusters.
+%
+%   % generate orientation clustered around 5 centers
+%   cs = crystalSymmetry('m-3m');
+%   center = orientation.rand(5,cs); 
+%   odf = unimodalODF(center,'halfwidth',5*degree)
+%   ori = odf.calcOrientations(3000);
+%
+%   % find the clusters and its centers
+%   [c,centerRec] = cluster(ori,'numCluster',5);
+%
+%   % visualize result
+%   oR = fundamentalRegion(cs);
+%   plot(oR)
+% 
+%   hold on
+%   plot(ori.project2FundamentalRegion,c)
+%   caxis([1,5])
+%   plot(center.project2FundamentalRegion,'MarkerSize',10,'MarkerFaceColor','k','MarkerEdgeColor','k')
+%   plot(centerRec.project2FundamentalRegion,'MarkerSize',10,'MarkerFaceColor','r','MarkerEdgeColor','k')
+%   hold off 
 %
 %% MTEX 4.3.2 07/2016
 %

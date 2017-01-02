@@ -1,4 +1,4 @@
-function omega = angle(q1,q2)
+function omega = angle(q1,q2,varargin)
 % calcualtes the rotational angle between rotations q1 and q2
 %
 % Syntax  
@@ -11,7 +11,7 @@ function omega = angle(q1,q2)
 % Output
 %  omega  - double
 
-if nargin == 2
+if nargin >= 2
   
   omega = 2*real(acos(abs(dot(q1,q2))));
   

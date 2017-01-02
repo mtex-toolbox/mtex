@@ -57,7 +57,7 @@ classdef fibre
         if ~isempty(varargin) && isa(varargin{1},'vector3d')
           f.h = Miller(varargin{1},o1.CS);
         else
-          f.h = axis(inv(o1) .* f.o2,'noSymmetry');
+          f.h = axis(inv(o1) .* f.o2,o1.CS,'noSymmetry');
         end
       end
       

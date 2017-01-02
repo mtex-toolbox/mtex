@@ -22,12 +22,13 @@ if nargin>1 && isa(varargin{1},'quaternion')
   ori = orientation(varargin{1},oS.CS1,oS.CS2);
   numData = length(ori);
   varargin(1) = [];
-elseif isa(varargin{1},'fibre')
+elseif nargin>1 && isa(varargin{1},'fibre')
   ori = orientation(varargin{1});
   numData = 0;
 elseif ~isempty(oS.plotGrid)
   numData = oS.gridSize(end);
 else 
+  ori = orientation;
   numData = 0;
 end
 secData = {};
@@ -39,7 +40,7 @@ secData = {};
 if exist('ori','var') || isempty(oS.plotGrid)
   
   % subsample to reduce size
-  if (~check_option(varargin,'all') && length(ori) > 2000 && ...
+  if (~check_option(varargin,'all') && numData > 2000 && ...
       ~check_option(varargin,{'smooth','contourf','contour','pcolor'})) || ...
       check_option(varargin,'points')
     points = fix(get_option(varargin,'points',2000));

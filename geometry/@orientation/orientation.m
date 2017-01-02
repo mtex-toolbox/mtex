@@ -101,7 +101,7 @@ methods
         end
     end
     o.antipodal = o.antipodal | check_option(varargin,'antipodal');
-    if o.CS ~= o.SS && o.antipodal
+    if o.antipodal && o.CS ~= o.SS
       warning('antipodal symmetry is only meaningfull for misorientations between the same phase.')
     end
   end
@@ -206,6 +206,31 @@ methods (Static = true)
   function ori = invGoss(varargin)
     ori = orientation('Euler',90*degree,45*degree,0*degree,varargin{:});
   end
+
+  function mori = orientation.Bain(csAlpha,csGamma)    
+    mori = orientation('map',Miller(1,0,0,csAlpha),Miller(1,0,0,csGamma),...
+      Miller(0,1,1,csAlpha,'uvw'),Miller(0,1,0,csGamma,'uvw'));
+  end
+  
+  function mori = orientation.KurdjumovSachs(csAlpha,csGamma)
+    
+    mori = orientation('map',Miller(0,1,1,csAlpha),Miller(1,1,1,csGamma),...
+      Miller(-1,-1,1,csAlpha,'uvw'),Miller(-1,0,1,csGamma,'uvw'));
+  end
+  
+  function mori = orientation.NishiyamaWassermann(csAlpha,csGamma)
+    
+    mori = orientation('map',Miller(0,1,1,csAlpha),Miller(1,1,1,csGamma),...
+      Miller(0,-1,1,csAlpha,'uvw'),Miller(1,1,-2,csGamma,'uvw'));
+  end
+  
+  function mori = orientation.Pitch(csAlpha,csGamma)
+    
+    mori = orientation('map',Miller(1,0,1,csAlpha),Miller(0,1,0,csGamma),...
+      Miller(-1,1,1,csAlpha,'uvw'),Miller(1,0,1,csGamma,'uvw'));
+  end
+  
+  
   
   function ori = exp(T,varargin)
     
