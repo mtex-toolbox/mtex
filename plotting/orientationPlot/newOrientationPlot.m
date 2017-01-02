@@ -56,8 +56,8 @@ end
 
 % compare different representations
 % omega = linspace(0,pi).';
-% plot(omega,[omega,2*sin(omega./2),2*tan(omega./2),2*(3./4.*(omega-sin(omega))).^(1/3),4*tan(omega./4)])
-% ylim([0,pi])
+% plot(omega./degree,[omega,2*sin(omega./2),2*tan(omega./2),2*(3./4.*(omega-sin(omega))).^(1/3),4*tan(omega./4)]./degree)
+% ylim([0,180])
 % legend('angle','quaternion','Rodrigues','homochoric','conformal')
  
 
