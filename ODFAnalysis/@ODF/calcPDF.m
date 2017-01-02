@@ -1,7 +1,7 @@
 function Z = calcPDF(odf,h,r,varargin)
 % calculate pdf 
 %
-% pdf is a lowlevel function to evaluate the PDF corresponding to an ODF 
+% calcPDF is a lowlevel function to evaluate the PDF corresponding to an ODF 
 % at a list of crystal and specimen directions
 %
 % Input
@@ -17,6 +17,13 @@ function Z = calcPDF(odf,h,r,varargin)
 %
 % See also
 % ODF/plotPDF ODF/plotIPDF ODF/calcPoleFigure
+
+if nargin == 2 || isempty(r)
+  r = equispacedS2Grid('points',10000);
+  generateFun = true;
+else
+  generateFun = false;  
+end
 
 % check crystal symmetry
 if isa(h,'Miller'), h = odf.CS.ensureCS(h);end
@@ -47,6 +54,14 @@ for s = 1:length(sp)
   for i = 1:length(odf.components)
     Z = Z + odf.weights(i) * sp(s) * ...
       reshape(calcPDF(odf.components{i},hh,r,varargin{:}),size(Z));
+  end
+end
+
+if generateFun
+  if length(h) == numel(sp)
+    Z = sphFun(r,Z);
+  else
+    Z = sphFun(h,Z);
   end
 end
 
