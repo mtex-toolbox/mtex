@@ -1,7 +1,7 @@
 %% MTEX Changelog
 %
 %
-%% MTEX 4.4   08/2016
+%% MTEX 4.4   01/2018
 %
 % *Slip Systems*
 %
@@ -94,10 +94,6 @@
 %   plot(center.project2FundamentalRegion,'MarkerSize',10,'MarkerFaceColor','k','MarkerEdgeColor','k')
 %   plot(centerRec.project2FundamentalRegion,'MarkerSize',10,'MarkerFaceColor','r','MarkerEdgeColor','k')
 %   hold off 
-%
-% *Auxilary new functionality*
-%
-% * 3d plotting of ODFs is back
 %
 %% MTEX 4.3.2 07/2016
 %
