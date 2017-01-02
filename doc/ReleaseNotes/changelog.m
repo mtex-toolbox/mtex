@@ -1,7 +1,7 @@
 %% MTEX Changelog
 %
 %
-%% MTEX 4.4   01/2018
+%% MTEX 4.4   01/2017
 %
 % *Slip Systems*
 %
