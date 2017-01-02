@@ -5,7 +5,7 @@ function h = plot(oR,varargin)
 % boundary and adjust the axes limits properly.
 %
 
-oP = newOrientationPlot(oR.CS1,oR.CS2,varargin{:});
+oP = newOrientationPlot(oR.CS1,oR.CS2,'axisAngle','noBoundary',varargin{:});
 hold on
 color = get_option(varargin,'color',[0 0 0]);
 

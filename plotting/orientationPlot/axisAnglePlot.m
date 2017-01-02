@@ -11,13 +11,13 @@ classdef axisAnglePlot < orientationPlot
       
       oP = oP@orientationPlot(varargin{:});
       
-      oP.oR = fundamentalRegion(oP.CS1,oP.CS2);
+      oP.oR = fundamentalRegion(oP.CS1,oP.CS2,char(extract_option(varargin,'antipodal')));
 
       xlabel(oP.ax,'$x$','Interpreter','LaTeX');
       ylabel(oP.ax,'$y$','Interpreter','LaTeX');
       zlabel(oP.ax,'$z$','Interpreter','LaTeX');
       
-      if ~check_option(varargin,'noBoundary')
+      if ~check_option(varargin,'noBoundary') && ~strcmpi(oP.fRMode,'ignoreFundamentalRegion')
         plot(oP.oR,'parent',oP.ax,'noBoundaryCheck');
       end
       
