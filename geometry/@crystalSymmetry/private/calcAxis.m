@@ -48,21 +48,21 @@ cstar = normalize(cross(a,b));
 
 % extract alignment options
 % restrict to strings
-varargin = varargin(cellfun(@(s) ischar(s),varargin));
+alignOpt = varargin(cellfun(@(s) ischar(s),varargin));
 
 % which arguments should be flipped
-flipthem = ~cellfun('isempty',regexpi(varargin,'\|\|[xyz]'));
+flipthem = ~cellfun('isempty',regexpi(alignOpt,'\|\|[xyz]'));
 
 % now flip them
-varargin(flipthem) = cellfun(@(a) [a(end:-1:end-2) a(1:end-3)],varargin(flipthem),'UniformOutput',false);
+alignOpt(flipthem) = cellfun(@(a) [a(end:-1:end-2) a(1:end-3)],alignOpt(flipthem),'UniformOutput',false);
 
 % if nothing or only Y is specified set Z||c
-if ~any(cell2mat(regexpi(varargin,'z\|\|'))) && ...
-    nnz(cell2mat(regexpi(varargin,'[xy]\|\|')))<=1
-  if all(cellfun(@isempty,regexpi(varargin,'[xy]\|\|[abc]\*')))
-    varargin = [varargin,{'Z||c*'}];
+if ~any(cell2mat(regexpi(alignOpt,'z\|\|'))) && ...
+    nnz(cell2mat(regexpi(alignOpt,'[xy]\|\|')))<=1
+  if all(cellfun(@isempty,regexpi(alignOpt,'[xy]\|\|[abc]\*')))
+    alignOpt = [alignOpt,{'Z||c*'}];
   else
-    varargin = [varargin,{'Z||c'}];
+    alignOpt = [alignOpt,{'Z||c'}];
   end
 end
 
@@ -73,7 +73,7 @@ alignment = cell(1,3);
 % extract alignment for each axis
 for ia = 1:3
   
-  al = regexpi(varargin,[axes(ia) '\|\|([abcdm]*\*?)'],'tokens');
+  al = regexpi(alignOpt,[axes(ia) '\|\|([abcdm]*\*?)'],'tokens');
   al = [al{:}];
   alignment{ia} = char(al{:});    
   
@@ -135,3 +135,7 @@ if det(M) < 0, M(2,:) = -M(2,:);end
 
 % now compute the new a, b, c axes
 abc = vector3d((M * reshape(double(normalize([a,b,c])),3,3).')) .* axisLength(:).';
+
+if check_option(varargin,'rotAxes')
+  abc = get_option(varargin,'rotAxes') * abc;
+end
