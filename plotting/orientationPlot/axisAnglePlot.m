@@ -47,17 +47,16 @@ classdef axisAnglePlot < orientationPlot
     function [ori,S2G,omega] = makeGrid(oP,varargin)
       
       res = get_option(varargin,'resolution',2.5*degree);
-      oR = oP.oR;
-      
+            
       % compute rotational axes
-      S2G = plotS2Grid(oR.axisSector,'resolution',res);
+      S2G = plotS2Grid(oP.oR.axisSector,'resolution',res);
       
       % compute rotational angles
-      omega = (0:res:oR.maxAngle)./oR.maxAngle;
+      omega = (0:res:oP.oR.maxAngle)./oP.oR.maxAngle;
       omega = repmat(omega(:),[1 size(S2G)]);
       omega = shiftdim(omega,1);
       
-      maxOmega = oR.maxAngle(S2G);
+      maxOmega = oP.oR.maxAngle(S2G);
       omega = bsxfun(@times,omega,maxOmega);
       
       S2G = repmat(S2G,[1 1 size(omega,3)]);

@@ -59,6 +59,9 @@ classdef orientationPlot < handle
     function h = plot(oP,ori,varargin)
       % plot orientations into 3d space
 
+      % ensure correct symmetry
+      ori = oP.CS1.ensureCS(ori);
+      
       % extract data
       if nargin > 2 && isnumeric(varargin{1})
         data = varargin{1};

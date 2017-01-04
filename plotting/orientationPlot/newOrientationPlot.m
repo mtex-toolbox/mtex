@@ -1,5 +1,31 @@
 function oP = newOrientationPlot(CS1,CS2,varargin)
-  
+% prepare a 3d orientation plot
+%
+% Description
+% Checks whether a compatible 3d orientation plot already exist - then plot
+% into this one - otherwise create a new one.
+%
+% Syntax
+%
+%   oP = newOrientationPlot(CS1,CS2)
+%   oP = newOrientationPlot(CS,SS,'Bunge')
+%   oP = newOrientationPlot(CS1,CS2,'axisAngle')
+%   oP = newOrientationPlot(CS1,CS2,'Rodrigues','antipodal')
+%   oP = newOrientationPlot(CS1,CS2,'ignoreFundamentalRegion')
+%   oP = newOrientationPlot(CS1,CS2,'noBoundary')
+% 
+% Input
+%  CS, CS1, CS2 - @crystalSymmetry
+%  SS - @specimenSymmetry
+%
+% Flags
+%  Bunge, axisAngle, Rodrigues, homochoric, quaternion, conformal
+%  ignoreFundamentalRegion - plot orientation as they are
+%  project2FundamentalRegion - project orientations to fundamentalRegion (default)
+%  restrict2FundamentalRegion - ignore all orientations outside the fundamentalRegion
+%  noBoundary - do not plot the boundary
+%
+
 % create a new mtexFigure or get a reference to it
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 
@@ -7,10 +33,11 @@ function oP = newOrientationPlot(CS1,CS2,varargin)
 if ~isNew && isappdata(mtexFig.gca,'orientationPlot')
   oP = getappdata(mtexFig.gca,'orientationPlot');
   
-  if oP.CS1.properGroup.id == CS1.properGroup.id ...
-      && oP.CS2.properGroup.id == CS2.properGroup.id
-    return, 
+  if oP.CS1.properGroup.id ~= CS1.properGroup.id ...
+      || oP.CS2.properGroup.id ~= CS2.properGroup.id
+    warning('Possible symmetry mismach!')
   end
+  return, 
 end
 
 % basic 3d settings
