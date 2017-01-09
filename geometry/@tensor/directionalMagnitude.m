@@ -14,6 +14,14 @@ function q = directionalMagnitude(T,v)
 %
 % See Also
 
+% TODO this should be a function specified by Fourier coefficients
+if nargin == 1 || isempty(v)
+  v = equispacedS2Grid('points',10000);
+  generateFun = true;
+else
+  generateFun = false;  
+end
+
 % compute tensor products with directions v with respect to all dimensions
 while T.rank > 0
   T = EinsteinSum(T,[-1 1:T.rank-1],v.normalize,-1);
@@ -22,4 +30,8 @@ end
 q = T.M;
 if length(v)>1
   q = reshape(q,size(v));
+end
+
+if generateFun
+  q = sphFunTri(v,q);
 end

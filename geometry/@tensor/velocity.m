@@ -75,9 +75,9 @@ ps1 = vector3d(ps1,'antipodal');
 ps2 = vector3d(ps2,'antipodal');
 
 if generateFun
-  vp = sphFun(x,vp);
-  vs1 = sphFun(vp,vs1);
-  vs2 = sphFun(vp,vs2);
+  vp = sphFunTri(x,vp);
+  vs1 = sphFunTri(vp,vs1);
+  vs2 = sphFunTri(vp,vs2);
   
   pp = sphVectorField(vp,pp);
   ps1 = sphVectorField(vp,ps1);
