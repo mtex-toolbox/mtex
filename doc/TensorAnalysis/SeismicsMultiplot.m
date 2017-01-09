@@ -355,5 +355,7 @@ hold off
 
 % add colorbars to all plots
 mtexColorbar
+drawNow(gcm,'figSize','large')
 
-
+% reset old colormap
+setMTEXpref('defaultColorMap',WhiteJetColorMap)
