@@ -30,29 +30,6 @@ classdef sphVectorField < sphTriangulation
     
   end
 
-  
-  methods (Static = true)
-    
-    function demo
-      
-      %mtexdata dubna;
-      
-      %sF = sphFun(pf({1}).r,pf({1}).intensities);
-      
-      %plot(sF,'upper');
-       
-      odf = SantaFe;
-      
-      v = equispacedS2Grid('points',10000,'upper');
-      
-      values = odf.calcPDF(Miller(1,0,0,odf.CS),v);
-      
-      sF = sphFun(v,values)
-      
-      plot(sF,'upper')
-      
-    end
-  end
 end
   
 
