@@ -126,6 +126,14 @@ nSym(4)
 % This command allows also to compute the maximum Schmidt factor and the
 % active slip system for a list of stress tensors in parallel. Consider
 % again the list of simple stress tensors corresponding to any direction
+% but this time restricted to the fundamental sector
+
+% define a grid of tension directions
+sR = fundamentalSector(CS)
+r = plotS2Grid(sR,'resolution',0.5*degree)
+
+% define the coressponding list of simple shear stress tensors 
+sigma = EinsteinSum(tensor(r),1,tensor(r),2,'name','stress tensor')
 
 sigma
 
@@ -136,7 +144,7 @@ sigma
 [tauMax,mActive,nActive,tau,ind] = calcShearStress(sigma,m,n,'symmetrise');
 
 % pot the maximum Schmidt factor
-contourf(r,abs(tauMax));
+contourf(r,abs(tauMax),'xAxisDirection','south');
 mtexColorbar
 
 %%
