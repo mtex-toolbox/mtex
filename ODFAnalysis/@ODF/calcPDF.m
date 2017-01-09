@@ -59,9 +59,9 @@ end
 
 if generateFun
   if length(h) == numel(sp)
-    Z = sphFun(r,Z);
+    Z = interp(r,Z);
   else
-    Z = sphFun(h,Z);
+    Z = interp(h,Z);
   end
 end
 

@@ -1,5 +1,27 @@
 function yi = interp(v,y,vi,varargin)
-% dirty spherical interpolation - including some smoothing
+% spherical interpolation - including some smoothing
+%
+% Syntax
+%   sF = interp(v,y)              % linear interpolation
+%   yi = interp(v,y,vi,'linear')  % linear interpolation
+%   yi = interp(v,y,vi,'spline')  % spline interpolation (default)
+%   yi = interp(v,y,vi,'nearest') % nearest neigbour interpolation
+%   yi = interp(v,y,vi,'inverseDistance') % inverse distance interpolation
+%
+% Input
+%  v - data points @vector3d
+%  y - data values
+%  vi - interpolation points @vector3d
+%
+% Output
+%  sF - @sphFun
+%  yi - interpolation values
+%
+
+if nargin == 2 || isempty(vi)
+  yi = sphFunTri(v,y);
+  return
+end
 
 % we need unqiue input data
 [v,ind] = unique(v);
@@ -12,7 +34,14 @@ if check_option(varargin,'nearest')
   yi(d > 2*v.resolution) = nan;
   yi = reshape(yi,size(vi));
   
+  
+elseif check_option(varargin,'linear') % linear interpolation
+  
+  sF = sphFunTri(v,y);
+  yi = sF.eval(vi);
+  
 else
+% TODO: do this in Fourier domain and return a sphFunHarmonic  
   
   res = v.resolution;
   psi = deLaValeePoussinKernel('halfwidth',res/2);

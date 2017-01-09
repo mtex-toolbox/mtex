@@ -64,4 +64,5 @@ Al = Al(1:min(bw,length(Al)));
   
 sF = call_extern('odf2pf','EXTERN',gh,r,c,Al);
 
-if generateFun, sF = sphFunTriang(out,sF); end
+% TODO: generate sphFunHarmonic
+if generateFun, sF = sphFunTri(out,sF); end
