@@ -8,6 +8,7 @@ function [ind,d] = find(SO3G,o,epsilon,varargin)
 %  SO3G   - @SO3Grid
 %  nodes  - @quaternion
 %  radius - double
+%
 % Output
 %  ind  - index of the closes grid point
 %  dist - misorientation angle
@@ -15,12 +16,12 @@ function [ind,d] = find(SO3G,o,epsilon,varargin)
 
 if check_option(varargin,'exact')
 
-  d = angle_outer(SO3G,o);
+  d = dot_outer(SO3G,o);
   
   if isempty(epsilon)
     [d,ind] = max(d,[],1);
   else
-    ind = d<epsilon;
+    ind = d>cos(epsilon/2);
   end
 
 elseif isempty(SO3G)
