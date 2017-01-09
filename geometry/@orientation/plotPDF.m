@@ -88,8 +88,8 @@ for i = 1:length(h)
   % compute specimen directions
   sh = symmetrise(h{i});
   r = reshape(o.SS * o * sh,[],1);
-  
-  r.plot(repmat(data,[length(o.SS) length(sh)]),'fundamentalRegion',...
+    
+  r.plot(repmat(data,[length(o.SS) length(sh)]),o.SS.fundamentalSector(varargin{:}),...
     'parent',mtexFig.gca,'doNotDraw',varargin{:});
   if ~check_option(varargin,'noTitle')
     mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
