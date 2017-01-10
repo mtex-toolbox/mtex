@@ -82,9 +82,6 @@ else % we have to live with inversion
 
 end
 
-% ensure the long vector is the last one
-if length(q2) == 1, [q2,q1] = deal(q1,q2); end
-
 % we have different algorithms depending whether one vector is single 
 if length(q1) == 1
   
@@ -100,7 +97,7 @@ else
 
   % symmetrise
   q1 = qss * q1;
-  q2 = reshape(q2 * qcs,[1,length(q2),length(qcs)]);
+  q2 = reshape(q2 * inv(qcs),[1,length(q2),length(qcs)]);
   
   % inline dot product for speed reasons
   d = abs(bsxfun(@times,q1.a,q2.a) + bsxfun(@times,q1.b,q2.b) + ...
