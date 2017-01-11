@@ -37,7 +37,7 @@ classdef patalaOrientationMapping < orientationMapping
           rgb = colormap622(v);       
         otherwise
           error('For symmetry %s patala colorcoding is not defined.',...
-            cs.pointGroup)
+            oM.CS1.pointGroup)
       end
       rgb = reshape(rgb,[size(mori) 3]);
     end

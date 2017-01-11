@@ -1,23 +1,40 @@
-function ori = transformReferenceFrame(ori,cs)
+function ori = transformReferenceFrame(ori,cs1,cs2)
+% change reference frame of an orientation
+%
+% Orientations are always described with respect to a cartesian reference
+% frame x, y, z aligned in a fixed way with the crystal coordiante system
+% a, b, c. Typical alignments are x||a and z||c* or x||a* and z||c. This
+% function allows to change the aligment of the reference frame while NOT
+% changing the orientation.
+% 
+% Syntax
+%   ori = ori.transformReferenceFrame(cs)
+%   mori = mori.transformReferenceFrame(cs1,cs2)
+%
+% Input
+%  ori - @orientation
+%  mori - misorientation
+%  cs, cs1, cs2 - @crystalSymmetry
+%
 
 % only applicable for crystal symmetry
-if ~isa(cs,'crystalSymmetry')
+if ~isa(cs1,'crystalSymmetry')
   warning('Symmetry missmatch!')
-  ori.CS = cs;
+  ori.CS = cs1;
   return
 end
    
 % basis transformation into reference frame
-M = transformationMatrix(ori.CS,cs);
+M = transformationMatrix(ori.CS,cs1);
 
 % check symmetries are compatible
-if ori.CS.id ~= cs.id || norm(eye(3)-M*M.')>0.01
+if ori.CS.id ~= cs1.id || norm(eye(3)-M*M.')>0.01
   warning('Symmetry missmatch!')
 end
 
 rot = rotation(ori) * rotation('matrix',M^-1);
 
-ori = orientation(rot,cs,ori.SS);
+ori = orientation(rot,cs1,ori.SS);
 
 % this is some testing code
 % cs1 = crystalSymmetry('triclinic',[1 2 3],[70 80 120]*degree,'Z||a*')

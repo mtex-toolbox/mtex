@@ -17,10 +17,6 @@ function contour3s(x,y,z,Z,v,varargin)
 nrm = max(Z(:));
 if numel(v) == 1, v = linspace(0,nrm,v); end
  
-labelx = get_option(varargin,'xlabel','x');
-labely = get_option(varargin,'ylabel','y');
-labelz = get_option(varargin,'zlabel','z');
-
 if check_option(varargin,'contour3')
    
   slicetype = get_flag(varargin,{'x','y','z','xy','xz','yz','xyz'},'z');
@@ -29,8 +25,8 @@ if check_option(varargin,'contour3')
   % contour slice in Z-dir
   if ~isempty(strfind(slicetype,'z'))
     for i=1:size(Z,3)
-      C = contourc(x,y,squeeze(Z(:,:,i)),v); 
-      C(3,:) = z(i);
+      C = contourc(x(1,:,1),y(:,1,1),squeeze(Z(:,:,i)),v); 
+      C(3,:) = z(1,1,i);
       T = [T C];
     end
   end
@@ -152,10 +148,6 @@ axis equal
 axis ([min(x(:)) max(x(:)) min(y(:)) max(y(:))  min(z(:)) max(z(:))])
 grid on
   
-xlabel(labelx,'interpreter','LaTeX');
-ylabel(labely,'interpreter','LaTeX');
-zlabel(labelz,'interpreter','LaTeX');
-
 end
 
 % -----------------------------------------------------------------

@@ -118,7 +118,7 @@ methods (Static = true)
   function ori = id(varargin)
     id = find(~cellfun(@isnumeric,varargin),1)-1;
     q = quaternion.id(varargin{1:id});
-    ori = orientation(q,varargin{:});
+    ori = orientation(q,varargin{id+1:end});
   end
   
   function ori = rand(varargin)    
