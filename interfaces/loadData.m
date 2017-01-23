@@ -92,7 +92,7 @@ end
 
 for k = 1:numel(fname)
   if exist('hw','var')
-    [pp,fn,ext] = fileparts(fname{k});
+    [~,fn,ext] = fileparts(fname{k});
     waitbar(k/numel(fname),hw,['Loading data file ',[fn ext]]);
   end
   
@@ -107,13 +107,13 @@ idata = cellfun('prodofsize',data);
 
 % set file name
 for i = 1:numel(data)
-  data{i} = data{i}.setOption('file_name',ls(fname{i})); %#ok<AGROW>
+  data{i} = data{i}.setOption('file_name',ls(fname{i}));
 end
 
 if strcmpi(type,'EBSD') && check_option(varargin,'3d')
   Z = get_option(varargin,'3d',1:numel(data),'double');
   for k=1:numel(data)
-    data{k}.z = repmat(Z(k),length(data{k}),1);     %#ok<AGROW>
+    data{k}.z = repmat(Z(k),length(data{k}),1);
   end
   data = [data{:}];
   data.unitCell = calcUnitCell([data.x(:),data.y(:),data.z(:)],varargin{:});
@@ -121,7 +121,7 @@ end
 
 % set crystal and specimen symmetry, specimen direction
 if ~any(strcmpi(type,{'tensor','vector3d'}))
-  if iscell(data),
+  if iscell(data)
     data = cellfun(@(d,f) setOption(d,'file_name',strtrim(ls(f))),data,fname,'UniformOutput',false);
     data = [data{:}];
   end
@@ -133,18 +133,18 @@ if ~any(strcmpi(type,{'tensor','vector3d'}))
 else
   data = [data{:}];
   
-  if exist('cs','var'),
+  if exist('cs','var')
     if iscell(data)
       for i = 1:numel(data), data{i}.CS = cs; end
     else
       data.CS = cs;
     end
-    if exist('ss','var'),
+    if exist('ss','var')
       if iscell(data)
         for i = 1:numel(data), data{i}.SS = ss; end
       else
         data.SS = ss;
-      end;
+      end
     end
   end
   
@@ -158,7 +158,7 @@ end
 % --------------------------------------------------------------
 function v = checkClass(var,className)
 
-if iscell(var) && ~isempty(var), 
+if iscell(var) && ~isempty(var)
   v = any(cellfun('isclass',var,className));
 else
   v = isa(var,className);
