@@ -33,28 +33,39 @@ q = orientation('axis',r,'angle',oR.maxAngle(r),oP.CS1,oP.CS2);
 h2 = line(q,'color',color,'parent',oP.ax,'noBoundaryCheck');
 
 % plot a surface
-r = plotS2Grid(sR,'resolution',1*degree);
-% TODO: do not use maxAngle - because this would allow us to rotate the
-% orientation region
-q = orientation('axis',r,'angle',oR.maxAngle(r),oP.CS1,oP.CS2);
-
-[x,y,z] = oP.project(q,'noBoundaryCheck');
-h3 = surf(x,y,z,'faceColor',color,'facealpha',0.1,'edgecolor','none');
+if ~check_option(varargin,'noSurface')
+  r = plotS2Grid(sR,'resolution',1*degree);
+  % TODO: do not use maxAngle - because this would allow us to rotate the
+  % orientation region
+  q = orientation('axis',r,'angle',oR.maxAngle(r),oP.CS1,oP.CS2);
+  
+  [x,y,z] = oP.project(q,'noBoundaryCheck');  
+  h3 = surf(x,y,z,'faceColor',color,'facealpha',0.1,'edgecolor','none');
+else
+  h3 = [];
+end
 
 % extract the vertices
-left = oR.V(vertcat(oR.F{:}));
-right = cellfun(@(x) circshift(x,1), oR.F,'UniformOutput',false);
-right = oR.V(vertcat(right{:}));
+edges = oR.V(oR.E);
 
 % edges are just fibres connecting the vertices
-f = fibre(left,right);
+f = fibre(edges(:,1),edges(:,2));
+
+%
+color = get_option(varargin,'edgeColor',color);
 
 % some of the edges should not be ploted
 f = f(angle(f.o1,f.o2,'noSymmetry')>1e-3);
 f = f(angle(f.o1,'noSymmetry')<pi | angle(f.o2,'noSymmetry')<pi);
 
 % plot the fibres
-h4 = plot(f,'color',color,'linewidth',1.5,'noBoundaryCheck','parent',oP.ax);
+if all(size(color) == [length(f),3])
+  for i = 1:length(f)
+    h4(i) = plot(f(i),'color',color(i,:),'linewidth',3,'noBoundaryCheck','parent',oP.ax);
+  end
+else
+  h4 = plot(f,'color',color,'linewidth',1.5,'noBoundaryCheck','parent',oP.ax);
+end
 
 hold off
 
