@@ -100,3 +100,27 @@ grains_selection = grains( grains.grainSize == 1) ;
 
 hold on
 plot(grains_selection.boundary,'linecolor','r','linewidth',2)
+
+%% Visualizing directions
+% 
+% We may also visualize directions by arrows placed at the center of the
+% grains.
+
+% load some single phase data set
+mtexdata csl
+
+% compute and plot grains
+[grains,ebsd.grainId] = calcGrains(ebsd);
+plot(grains,grains.meanOrientation)
+
+% next we want to visualize the direction of the 100 axis
+dir = grains.meanOrientation * Miller(1,0,0,grains.CS);
+
+% the lenght of the vectors should depend on the grain diameter
+len = 0.25*grains.diameter;
+
+% arrows are plotted using the command quiver. We need to switch of auto
+% scaling of the arrow length
+hold on
+quiver(grains,len.*dir,'autoScale','off')
+hold off
