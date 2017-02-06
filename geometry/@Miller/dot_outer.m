@@ -10,13 +10,13 @@ function d = dot_outer(m1,m2,varargin)
 % Output
 %  d - m1 . m2
 
-if ~isa(m1,'Miller') || ~isa(m2,'Miller') || m1.CS ~= m2.CS
-  warning('Symmetry mismatch')
-end
-
 if check_option(varargin,'noSymmetry')
   d = dot_outer(vector3d(m1),vector3d(m2));
   return
+end
+
+if ~isa(m1,'Miller') || ~isa(m2,'Miller') || m1.CS ~= m2.CS
+  warning('Symmetry mismatch')
 end
 
 % symmetrise

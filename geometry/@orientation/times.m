@@ -25,7 +25,8 @@ end
 
 % ensure inner symmetries coincide
 if inner1 ~= inner2
-  if isa(a,'orientation')
+  if isa(inner2,'specimenSymmetry') && isa(inner1,'specimenSymmetry')
+  elseif isa(a,'orientation')
     a = a.transformReferenceFrame(inner2);
   elseif all(isnull(min(angle_outer(inner2,a))))
     left = inner2;
@@ -44,7 +45,7 @@ end
 r = times@rotation(a,b);
 
 % convert back to orientation
-if isa(right,'crystalSymmetry') || isa(left,'crystalSymmetry');
+if isa(right,'crystalSymmetry') || isa(left,'crystalSymmetry')
 
   r = orientation(r,right,left);
 

@@ -50,6 +50,9 @@ edges = oR.V(oR.E);
 
 % edges are just fibres connecting the vertices
 f = fibre(edges(:,1),edges(:,2));
+% ensure the right symmetry
+f.CS = oP.CS;
+f.SS = oP.SS;
 
 %
 color = get_option(varargin,'edgeColor',color);

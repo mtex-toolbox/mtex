@@ -16,6 +16,10 @@ if nargin >= 2 && isa(varargin{1},'quaternion')
 
   omega = real(2*acos(abs(dot(o1,varargin{:}))));
   
+elseif nargin >= 2 && isa(varargin{1},'fibre')
+  
+    omega = angle(varargin{1},o1,varargin{2:end});
+  
 elseif check_option(varargin,'noSymmetry')
   
   omega = angle@quaternion(o1);
