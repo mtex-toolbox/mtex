@@ -274,7 +274,8 @@ mtexdata single
 
 oM = ipdfHSVOrientationMapping(ebsd);
 oM.inversePoleFigureDirection = mean(ebsd.orientations) * oM.whiteCenter;
-oM.colorStretching = 5;
+%oM.colorStretching = 5;
+oM.maxAngle = 5*degree;
 
 plot(ebsd,oM.orientation2color(ebsd.orientations))
 
@@ -310,16 +311,19 @@ hold off
 % slightly oversegmented.
 %
 
-grains_FMC = calcGrains(ebsd,'FMC',3.5)
+grains_FMC = calcGrains(ebsd('indexed'),'FMC',3.5)
+grains = calcGrains(ebsd('indexed'))
 
 % smooth grains to remove staircase effect
 grains_FMC = smooth(grains_FMC);
+grains = smooth(grains);
 
 %%
 % We observe how this method nicely splits the measurements into clusters
 % of similar orientation
 
-plot(ebsd,oM.orientation2color(ebsd.orientations))
+%plot(ebsd,oM.orientation2color(ebsd.orientations))
+plot(ebsd('fo'),ebsd('fo').orientations)
 
 % start overide mode
 hold on
