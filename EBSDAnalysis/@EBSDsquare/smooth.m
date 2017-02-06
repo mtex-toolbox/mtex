@@ -1,6 +1,10 @@
 function [ebsd,filter] = smooth(ebsd,varargin)
 % smooth spatial EBSD data
 %
+% Synatx
+%   ebsd = ebsd.gridify
+%   ebsd = smooth(ebsd)
+%
 % Input
 %  ebsd - @EBSD
 %
