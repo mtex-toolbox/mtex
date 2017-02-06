@@ -80,9 +80,7 @@ mtexdata forsterite
 %%
 % we can visualize the Forsterite orientations by
 
-hold on
-plot(ebsd('Fo').orientations)
-hold off
+plot(ebsd('Fo').orientations,'axisAngle')
 
 %%
 % We see that all orientations are automatically projected inside the
@@ -111,9 +109,9 @@ plot(rotate(oR,largeGrain.meanOrientation))
 % orientation
 ori = ori.project2FundamentalRegion(largeGrain.meanOrientation)
 
-hold on
-plot(ori)
-hold off
+
+plot(ori,'axisAngle')
+
 
 
 %% Fundamental regions of misorientations
