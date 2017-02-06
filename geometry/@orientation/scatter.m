@@ -17,7 +17,7 @@ function varargout = scatter(o,varargin)
 % See also
 % vector3d/text orientation/plot
 
-if o.antipodal, varargin = ['antipodal',varargin]; end
+if o.antipodal, varargin = [varargin,'antipodal']; end
 
 oP = newOrientationPlot(o.CS,o.SS,varargin{:});
 
