@@ -13,12 +13,18 @@ if any(checkSym)
 end
 del   = 2*real(acosd(d));
 
+% compute all misorientations
+% [i,j] = find(fmc.A_D);
+% del = angle(fmc.O(i),fmc.O(j));
+
+
 fmc.W = sparse(i, j, exp(-fmc.cmaha0*(del)), N, N);
 clear q del
 
 % RunFMC
 vdisp('starting RunFMC')
 fmc.W = fmc.W + fmc.W';
+% make adjecency matrix symmetric
 fmc.A_D = fmc.A_D | fmc.A_D';
 
 %
