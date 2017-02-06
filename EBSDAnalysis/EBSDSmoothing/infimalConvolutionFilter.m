@@ -40,9 +40,14 @@ classdef infimalConvolutionFilter < EBSDFilter
 
       [M,N] = size(ori);
 
-      u_0 = double(ori);
+      
+      [qmean,q] = mean(ori);
+      u_0 = double(log(q,quaternion(qmean)));
+      
+      %u_0 = double(ori);
 
-      mask = repmat(~ori.isnan,1,1,4);
+      dim = size(u_0,3);
+      mask = repmat(~ori.isnan,1,1,dim);
       
       % computing the matrix nabla
       DM = spdiags([-ones(M,1), ones(M,1)],[0,1],M,M);
@@ -81,8 +86,8 @@ classdef infimalConvolutionFilter < EBSDFilter
       H = [DXX;DYY];
             
       % initialization
-      u_0 = reshape(u_0,M*N,4);
-      mask = reshape(mask,M*N,4);
+      u_0 = reshape(u_0,M*N,dim);
+      mask = reshape(mask,M*N,dim);
       u_sav = u_0;
       u_0(~mask) = 0;
       u = u_0;
@@ -152,14 +157,15 @@ classdef infimalConvolutionFilter < EBSDFilter
         
         % minimization w.r.t. v
         
-        u = projection_sphere(v+w + 1/F.gamma * p);
+        u = v+w + 1/F.gamma * p;
+        %u = projection_sphere(v+w + 1/F.gamma * p);
         
         % minimization w.r.t. w
         
         b = L * v + 1/F.gamma * q;        % helper variable
         b_norm = sqrt(sum(b.^2,2));
         
-        vt = repmat(max(b_norm-F.lambda/F.gamma,0)./b_norm,1,4) .* b;
+        vt = repmat(max(b_norm-F.lambda/F.gamma,0)./b_norm,1,dim) .* b;
         vt(isnan(vt)) = 0;                % set to zero if it was divided by zero
         
         
@@ -168,7 +174,7 @@ classdef infimalConvolutionFilter < EBSDFilter
         b = H * w + 1/F.gamma * r;        % helper variable
         b_norm = sqrt(sum(b.^2,2));
         
-        wt = repmat(max(b_norm-F.mu/F.gamma,0)./b_norm,1,4) .* b;
+        wt = repmat(max(b_norm-F.mu/F.gamma,0)./b_norm,1,dim) .* b;
         wt(isnan(wt)) = 0;                % set to zero if it was divided by zero
         
         
@@ -187,12 +193,14 @@ classdef infimalConvolutionFilter < EBSDFilter
       diff(iteration:end) = [];
       
       u(~mask) = u_sav(~mask);
-      u_hat = reshape(u,M,N,4);
+      u_hat = reshape(u,M,N,dim);
       
-      ori.a = u_hat(:,:,1);
-      ori.b = u_hat(:,:,2);
-      ori.c = u_hat(:,:,3);
-      ori.d = u_hat(:,:,4);
+      ori = orientation(expquat(vector3d(u_hat(:,:,1),u_hat(:,:,2),u_hat(:,:,3)),quaternion(qmean)),ori.CS,ori.SS);
+      
+      %ori.a = u_hat(:,:,1);
+      %ori.b = u_hat(:,:,2);
+      %ori.c = u_hat(:,:,3);
+      %ori.d = u_hat(:,:,4);
       
       function v = projection_sphere(u)
         % function projections_sphere projects the rows of a given matrix u onto
