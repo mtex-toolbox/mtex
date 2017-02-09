@@ -1,5 +1,19 @@
 function ebsd = subsasgn(ebsd,s,b)
 % overloads subsasgn
+%
+% Syntax
+%
+%   ebsd(1:5).phaseId = 2
+%   ebsd{2}.CS = crystalSymmetry('m-3m')
+%
+
+
+if strcmp(s(1).type,'{}')
+  s(1).type = '()';
+  s(1).subs{1} = ebsd.id2ind(s(1).subs{1});
+  ebsd = subsasgn(ebsd,s,b);
+  return
+end
 
 if ~isa(ebsd,'EBSD')
   ebsd = EBSD;
