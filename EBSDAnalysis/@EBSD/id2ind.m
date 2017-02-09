@@ -1,13 +1,14 @@
 function ind = id2ind(ebsd,id)
-% indexing of EBSD data
+% find ind such that ebsd.id(ind) == id
 %
 % Syntax
 %   ind = id2ind(ebsd,id)
 %
+% Input
+%  ebsd - @EBSD
+%  id - a list of id's as stored in ebsd.id
+%
+% Output
+%  ind - a list indeces such that ebsd.id(ind) == id
 
-ind = zeros(size(id));
-ebsdId = ebsd.id;
-
-for i = 1:numel(id)
-  ind(i) = find(ebsdId == id(i));
-end
+[~,ind] = ismember(id,ebsd.id);
