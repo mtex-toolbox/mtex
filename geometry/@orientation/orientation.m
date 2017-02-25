@@ -207,24 +207,24 @@ methods (Static = true)
     ori = orientation('Euler',90*degree,45*degree,0*degree,varargin{:});
   end
 
-  function mori = orientation.Bain(csAlpha,csGamma)    
+  function mori = Bain(csAlpha,csGamma)    
     mori = orientation('map',Miller(1,0,0,csAlpha),Miller(1,0,0,csGamma),...
       Miller(0,1,1,csAlpha,'uvw'),Miller(0,1,0,csGamma,'uvw'));
   end
   
-  function mori = orientation.KurdjumovSachs(csAlpha,csGamma)
+  function mori = KurdjumovSachs(csAlpha,csGamma)
     
     mori = orientation('map',Miller(0,1,1,csAlpha),Miller(1,1,1,csGamma),...
       Miller(-1,-1,1,csAlpha,'uvw'),Miller(-1,0,1,csGamma,'uvw'));
   end
   
-  function mori = orientation.NishiyamaWassermann(csAlpha,csGamma)
+  function mori = NishiyamaWassermann(csAlpha,csGamma)
     
     mori = orientation('map',Miller(0,1,1,csAlpha),Miller(1,1,1,csGamma),...
       Miller(0,-1,1,csAlpha,'uvw'),Miller(1,1,-2,csGamma,'uvw'));
   end
   
-  function mori = orientation.Pitch(csAlpha,csGamma)
+  function mori = Pitch(csAlpha,csGamma)
     
     mori = orientation('map',Miller(1,0,1,csAlpha),Miller(0,1,0,csGamma),...
       Miller(-1,1,1,csAlpha,'uvw'),Miller(1,0,1,csGamma,'uvw'));
