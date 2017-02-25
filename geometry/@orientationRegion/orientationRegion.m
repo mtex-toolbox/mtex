@@ -53,7 +53,11 @@ classdef orientationRegion
     
     function c = get.faceCenter(oR)
       
-      c = orientation.nan(oR.CS1,oR.CS2);
+      if oR.antipodal
+        c = orientation.nan(oR.CS1,oR.CS2,'antipodal');
+      else
+        c = orientation.nan(oR.CS1,oR.CS2);
+      end
       for j = 1:length(oR.F)
         
         c(j) = mean(oR.V(unique(oR.F{j})),'noSymmetry');
