@@ -12,7 +12,9 @@ classdef patalaOrientationMapping < orientationMapping
   methods
    
     function oM = patalaOrientationMapping(varargin)
-      oM = oM@orientationMapping(varargin{:});
+      % patala orientation mapping is only defined for grain exchange
+      % symmetry -> antipodal
+      oM = oM@orientationMapping(varargin{:},'antipodal');
     end
     
     function rgb = orientation2color(oM,mori) 
