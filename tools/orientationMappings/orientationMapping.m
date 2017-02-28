@@ -17,7 +17,7 @@ classdef orientationMapping < handle
       elseif isa(ebsd,'orientation')
         oM.CS1 = ebsd.CS;
         oM.CS2 = ebsd.SS;
-        oM.antipodal = ensd.antipodal;
+        oM.antipodal = ebsd.antipodal;
       elseif isa(ebsd,'grainBoundary')
         [oM.CS1,oM.CS2] = deal(ebsd.CS{:});
         oM.CS1 = oM.CS1;
