@@ -15,6 +15,10 @@ function h = contourf( v, data, varargin )
 % vector3d/plot vector3d/contour
 
 if nargin == 1, data = []; end
+if ischar(data)
+  varargin = [data,varargin];
+  data = [];
+end
 
 % in older matlab version we have to plot contour and countour lines
 % seperately to avoid artefacts
