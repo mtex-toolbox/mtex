@@ -85,7 +85,7 @@ grainsMerged.poly(newInd) = ...
 
 % new grain size is sum of old grain sizes
 gS = sparse(old2newId(grains.id),grains.id,grains.grainSize);
-grainsMerged.grainSize= sum(gS,2);
+grainsMerged.grainSize= full(sum(gS,2));
   
 % new phase id is max of old phase ids
 phaseId = sparse(old2newId(grains.id),grains.id,grains.phaseId);
