@@ -8,4 +8,7 @@ end
 ind = ~isnan(b);
 
 a(ind) = a(ind) + alpha * b(ind);
-count = count + alpha * ind;
+
+if nargin > 2
+  count = count + alpha * ind;
+end
