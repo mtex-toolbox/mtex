@@ -42,9 +42,9 @@ classdef infimalConvolutionFilter < EBSDFilter
 
       
       [qmean,q] = mean(ori);
-      u_0 = double(log(q,quaternion(qmean)));
+      %u_0 = double(log(q,quaternion(qmean)));
       
-      %u_0 = double(ori);
+      u_0 = double(ori);
 
       dim = size(u_0,3);
       mask = repmat(~ori.isnan,1,1,dim);
@@ -157,8 +157,8 @@ classdef infimalConvolutionFilter < EBSDFilter
         
         % minimization w.r.t. v
         
-        u = v+w + 1/F.gamma * p;
-        %u = projection_sphere(v+w + 1/F.gamma * p);
+        %u = v+w + 1/F.gamma * p;
+        u = projection_sphere(v+w + 1/F.gamma * p);
         
         % minimization w.r.t. w
         
@@ -195,12 +195,12 @@ classdef infimalConvolutionFilter < EBSDFilter
       u(~mask) = u_sav(~mask);
       u_hat = reshape(u,M,N,dim);
       
-      ori = orientation(expquat(vector3d(u_hat(:,:,1),u_hat(:,:,2),u_hat(:,:,3)),quaternion(qmean)),ori.CS,ori.SS);
+      %ori = orientation(expquat(vector3d(u_hat(:,:,1),u_hat(:,:,2),u_hat(:,:,3)),quaternion(qmean)),ori.CS,ori.SS);
       
-      %ori.a = u_hat(:,:,1);
-      %ori.b = u_hat(:,:,2);
-      %ori.c = u_hat(:,:,3);
-      %ori.d = u_hat(:,:,4);
+      ori.a = u_hat(:,:,1);
+      ori.b = u_hat(:,:,2);
+      ori.c = u_hat(:,:,3);
+      ori.d = u_hat(:,:,4);
       
       function v = projection_sphere(u)
         % function projections_sphere projects the rows of a given matrix u onto
