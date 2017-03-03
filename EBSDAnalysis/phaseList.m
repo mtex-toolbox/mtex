@@ -114,7 +114,7 @@ classdef phaseList
     end
     
     function phase = get.phase(pL)
-      phase = zeros(size(pL.phaseId));
+      phase = zeros(size(pL));
       isIndex = pL.phaseId>0;
       phase(isIndex) = pL.phaseMap(pL.phaseId(isIndex));
     end

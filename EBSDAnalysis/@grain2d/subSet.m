@@ -30,7 +30,7 @@ grains = subSet@dynProp(grains,ind);
 grains.poly = grains.poly(ind);
 grains.inclusionId = grains.inclusionId(ind);
 grains.id = grains.id(ind);
-grains.phaseId = grains.phaseId(ind);
+grains.phaseId = reshape(grains.phaseId(ind),[],1);
 grains.grainSize = grains.grainSize(ind);
 
 

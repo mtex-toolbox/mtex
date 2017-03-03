@@ -141,6 +141,10 @@ classdef grain2d < phaseList & dynProp
       id2ind(grains.id) = 1:length(grains);
     end
     
+    function varargout = size(grains,varargin)
+      [varargout{1:nargout}] = size(grains.id,varargin{:});
+    end
+    
     function ori = get.meanOrientation(grains)
       ori = orientation(grains.prop.meanRotation,grains.CS);
     end

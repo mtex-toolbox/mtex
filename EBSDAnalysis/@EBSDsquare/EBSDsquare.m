@@ -49,10 +49,6 @@ classdef EBSDsquare < EBSD
            
     % --------------------------------------------------------------
     
-    function varargout = size(ebsd,varargin)
-      [varargout{1:nargout}] = size(ebsd.id,varargin{:});
-    end
-           
     function gX = get.gradientX(ebsd)
       ori = ebsd.orientations;
           
