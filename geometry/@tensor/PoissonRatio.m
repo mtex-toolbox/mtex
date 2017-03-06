@@ -35,6 +35,6 @@ nu = -double(EinsteinSum(S,[-1 -2 -3 -4],x,-1,x,-2,y,-3,y,-4)) ./ ...
 % generate a function if required
 if generateFun == 1
   nu = sphFunTri(x,nu);
-else
+elseif generateFun == 2
   nu = sphFunTri(y,nu);
 end  
