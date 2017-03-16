@@ -26,7 +26,7 @@ T = tensor(M,cs)
 %%
 % In case the two rank tensor is diagonal the syntax simplifies to
 
-T = tensor.diag([10 3 1],cs)
+T = tensor(diag([10 3 1]),cs)
 
 %% Importing a Tensor from a File
 % Especially for higher order tensors, it is more convenient to import the

@@ -28,7 +28,7 @@ sS = slipSystem.fcc(cs);
 
 % some strain
 q = 0;
-epsilon = tensor.diag([1 -q -(1-q)],'name','strain')
+epsilon = tensor(diag([1 -q -(1-q)]),'name','strain')
 
 % define a crystal orientation
 ori = orientation('Euler',0,30*degree,15*degree,cs)
@@ -87,7 +87,7 @@ grains(grains.grainSize <= 2) = []
 
 % some strain
 q = 0;
-epsilon = tensor.diag([1 -q -(1-q)],'name','strain')
+epsilon = tensor(diag([1 -q -(1-q)]),'name','strain')
 
 sS = symmetrise(slipSystem.fcc(grains.CS));
 
@@ -128,7 +128,7 @@ ori = orientation.rand(10000,cs);
 
 % 30 percent strain
 q = 0;
-epsilon = 0.3 * tensor.diag([1 -q -(1-q)],'name','strain');
+epsilon = 0.3 * tensor(diag([1 -q -(1-q)]),'name','strain');
 
 % 
 numIter = 10;
