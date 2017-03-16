@@ -18,22 +18,32 @@ function gnd = calcGND(ebsd,varargin)
 % Output
 
 % maybe slip systems are given
-sS = getClass(varargin,'slipSystem');
+dS = getClass(varargin,'dislocationSystem');
 
-% is so - compute the corresponding deformation tensor
-if ~isempty(sS)
-  CRSS = sS.CRSS(:); % critical resolved shear stress
-  dT = sS.deformationTensor; % versetungstesnor - Schraubung + stufe
-  % if the symmetric part is needed take dT.sym
-  A = reshape(matrix(dT),9,[]);
-  A = A([1,2,3,5,6],:);
-
-  options = optimoptions('linprog','Algorithm','interior-point','Display','none');
+% if so - compute the corresponding deformation tensor
+if ~isempty(dS)
+  dS.b = [dS.b,dS.b];
+  dS.l = [dS.l,-dS.l];
+  CRSS = [dS.CRSS(:);dS.CRSS(:)]; % what is the correct name here?
+  dT = dS.dislocationTensor;
+  dT = dT - 0.5 * diag(trace(dT));
+  
+  options = optimset('algorithm','interior-point','Display','off',...
+                       'TolX',10^-12,'TolFun',10^-12); 
 end
-
+  
 % compute the gradients
-gX = double(ebsd.gradientX(:));
-gY = double(ebsd.gradientY(:));
+ori = ebsd.orientations;
+gX = ebsd.gradientX(:);
+gY = ebsd.gradientY(:);
+
+% 
+delta = get_option(varargin,'threshold',5*degree);
+gX(norm(gX)>delta) = NaN;
+gY(norm(gX)>delta) = NaN;
+
+gX = double(gX);
+gY = double(gY);
 
 % initialize an empty matrix for the dislocation tensor
 kappa = zeros(3,3);
@@ -44,7 +54,7 @@ gnd = nan(size(ebsd));
 % compute the GND
 for i = 1:length(ebsd)
 
-  % the first two columns of the dislocation tensor are just
+  % the first two columns of the curvature tensor are just
   % the texture gradients
   kappa(1,:) = gX(i,:);
   kappa(2,:) = gY(i,:);
@@ -53,24 +63,24 @@ for i = 1:length(ebsd)
   % if slip systems are specified try to find coefficients
   % b_1,...,b_n such that b_1 + b_2 + ... b_n is minimal and
   % b_1 dT_1(1:2,:) + b_2 dT_2(1:2,:) + ... + b_n dT_n(1:2,:) = kappa(1:2,:)
-  if ~isempty(sS)
-    % TODO: not yet implemented !!!
+  if ~isempty(dS) && ~isnan(ori(i))
     
-    % determine coefficients b with A * b = y and such that sum |b_j| is
-    % minimal. This is equivalent to the requirement b>=0 and 1*b -> min
-    % which is the linear programming problem solved below
-    try
-      b = linprog(CRSS,[],[],A,kappa(1:2,:),zeros(size(A,2),1),[],[],options);
+    % rotate the dislocation tensor into specimen coordinates
+    dT_specimen = rotate(dT,ori(i));
+    A = reshape(matrix(dT_specimen),9,[]);
+    
+    % determine coefficients rho with A * rho = y and such that sum |rho_j|
+    % is minimal. This is equivalent to the requirement rho>=0 and 1*rho ->
+    % min which is the linear programming problem solved below
+    try %#ok<TRYNC>
+    
+      rho = linprog(CRSS,[],[],A(1:6,:),kappa(1:6)',...
+        zeros(size(A,2),1),[],1,options);
+
     end
-    kappa = dT * b;
-    
-    gnd(i) = sum(b);
-    continue
-    
+    kappa = dT * rho;
   end
     
-  % as we do not know the texture gradient with respect to the z-direction
-  % we have to do something here TODO!!
   alpha = kappa - trace(kappa)*eye(3);
   
   gnd(i) = norm(alpha,2);
