@@ -22,7 +22,7 @@ end
 
 % in older matlab version we have to plot contour and countour lines
 % seperately to avoid artefacts
-if verLessThan('matlab','9.0')
+if verLessThan('matlab','8.5')
  
   h = v.smooth(data,'contours',10,'LineStyle','none',varargin{:});
 
