@@ -35,6 +35,8 @@ classdef slipSystem
       %  CRSS - critical resolved shear stress
       %
       
+      if nargin == 0, return; end
+      
       assert(all(angle(b,n,'noSymmetry') > pi/2-1e-5),...     
         'Slip direction and plane normal should be orthogonal!')
       
