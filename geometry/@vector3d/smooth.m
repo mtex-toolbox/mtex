@@ -14,7 +14,7 @@ function h = smooth(v,varargin)
 h = [];
 
 % initialize spherical plot
-opt = delete_option(varargin,{'lineStyle','lineColor','lineWidth'});
+opt = delete_option(varargin,{'lineStyle','lineColor','lineWidth','color'});
 sP = newSphericalPlot(v,opt{:},'doNotDraw');
 
 for j = 1:numel(sP)
