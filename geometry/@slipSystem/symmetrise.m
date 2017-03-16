@@ -12,8 +12,10 @@ for i = 1:length(sS)
   [mm,~] = symmetrise(sS.b(i),varargin{:});
   [nn,~] = symmetrise(sS.n(i),'antipodal'); %#ok<*PROP>
   
-  % find orthogonal ones
-  [r,c] = find(isnull(dot_outer(vector3d(mm),vector3d(nn))));
+  % find those which have the same angles as the original system
+  % for slip system this is of course 90 degree
+  [r,c] = find(isnull(dot(sS.n(i),sS.b(i),'noSymmetry')-...
+    dot_outer(mm,nn,'noSymmetry')));
 
   % restricht to the orthogonal ones
   b = [b;mm(r(:))]; %#ok<*AGROW>
