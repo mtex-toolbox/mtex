@@ -29,6 +29,7 @@ if nargin >= 2 && (isa(varargin{1},'symmetry')||isa(varargin{1},'rotation'))
   if ~check_option(varargin,'pointGroup'), cs2 = cs2.properGroup; end
   
   q = rotation(cs2) * q;   
+  q = q(~q.isImproper);
   q = unique(quaternion(q));
   
   if ~check_option(varargin,'ignoreCommonSymmetries')
