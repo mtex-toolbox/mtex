@@ -1,7 +1,21 @@
 function dir = calcMeanDirection(gB,n)
 % compute a smoothed direction that ignores staircasing 
 %
+% Syntax
+%   dir = calcMeanDirection(gB)
+%   dir = calcMeanDirection(gB,2)
 %
+% Description
+% This is very similar to direction with the only difference that it takes
+% the average over 2*n+1 directions
+%
+% Input
+%  gB - @grainBoundary
+%
+% Ouptput
+%  dir - @vector3d
+%
+
 
 if nargin == 1, n = 1; end
 
