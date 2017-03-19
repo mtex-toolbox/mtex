@@ -21,7 +21,7 @@ function q = expquat(tq,q)
 % quaternion_matrix Euler axis2quat hr2quat
 
 % for tensors extract correct matrix entries
-if isa(tq,'tensor') && tq.rank == 2)
+if isa(tq,'tensor') && tq.rank == 2
   tq = tq{[2,3,6]};
 end
 
