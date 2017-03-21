@@ -8,13 +8,13 @@ function mtexdata(name,varargin)
 % Input
 %
 % Flags
-% aachen -
-% 3d - serial section 3d EBSD data from Leo Kestens
-% mylonite - collected by Daniel Rutte (Brad R. Hacker)
-% epidote - data provided by David Mainprice
+%    aachen -
+%        3d - serial section 3d EBSD data from Leo Kestens
+%  mylonite - collected by Daniel Rutte (Brad R. Hacker)
+%   epidote - data provided by David Mainprice
 %
-% dubna - collected by Florian Wobbe at Dubna
-% ptx -
+%     dubna - collected by Florian Wobbe at Dubna
+%       ptx -
 % geesthacht -
 %
 %
@@ -198,7 +198,7 @@ ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','sharp.txt'),'CS',CS,...
 
 function ebsd = mtexdata_small
 
-
+plotx2east
 ebsd = mtexdata_forsterite;
 region = [33 4.5 3 3]*10^3;
 ebsd = ebsd(ebsd.inpolygon(region));
@@ -238,8 +238,12 @@ ebsd = loadEBSD([mtexDataPath '/EBSD/data.ctf'],'ignorePhase',[0 3 4],...
 % ----------------------------------------------------------------------
 function ebsd = mtexdata_forsterite
 
-plotx2east; plotzOutOfPlane
+plotx2east; 
+plotzOutOfPlane
 ebsd = loadEBSD(fullfile(mtexDataPath,'EBSD','Forsterite.ctf'),'convertEuler2spatialReferenceFrame');
+
+% rotate only the spatial data about the y-axis
+% ebsd = rotate(ebsd,rotation('axis',xvector,'angle',180*degree),'keepEuler');
 
 function ebsd = mtexdata_twins
 
