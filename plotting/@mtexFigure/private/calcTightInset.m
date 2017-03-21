@@ -65,7 +65,11 @@ end
      tiPos = tiPos(1:2) + tiPos(3:4);
         
    catch
-     tiPos = [3.5,1.5]*get(mtexFig.cBarAxis(1),'FontSize');
+     if isempty(mtexFig.cBarAxis(1).Label)
+       tiPos = [3.5,1.5]*get(mtexFig.cBarAxis(1),'FontSize');
+     else
+       tiPos = [5.5,1.5]*get(mtexFig.cBarAxis(1),'FontSize');
+     end
    end
    pos(pos>0) = pos(pos>0) + tiPos(pos>0) + 10;
     

@@ -25,6 +25,10 @@ if isempty(mtexFig.cBarAxis) % create some new colorbars
     set(mtexFig.cBarAxis(i),'position',pos{i});
   end
   
+  if check_option(varargin,'title')
+    ylabel(mtexFig.cBarAxis,get_option(varargin,'title'));
+  end
+  
 else % remove old colorbars
   delete(mtexFig.cBarAxis);
   mtexFig.cBarAxis = [];
@@ -38,7 +42,7 @@ if nargout == 1, h = mtexFig.cBarAxis; end
     
     % if lower bound is close to zero - make it exactly zero
     c = get(peer,'CLim');
-    if abs(c(1) / (c(2)-c(1)))<1e-3;
+    if abs(c(1) / (c(2)-c(1)))<1e-3
       set(peer,'CLim',[0,c(2)]);
     end
     
