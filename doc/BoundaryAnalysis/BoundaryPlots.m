@@ -131,15 +131,10 @@ hist(mAngle)
 plot(gB,'linecolor','k')
 
 hold on
-plot(gB_Fo(id==1),'linecolor','b','linewidth',2)
-plot(gB_Fo(id==2),'linecolor','g','linewidth',2)
-plot(gB_Fo(id==3),'linecolor','r','linewidth',2)
-plot(gB_Fo(id==4),'linecolor','r','linewidth',2)
-
-legend('>40^\circ',...
-  '20^\circ-40^\circ',...
-  '10^\circ-20^\circ',...
-  '< 10^\circ')
+plot(gB_Fo(id==1),'linecolor','b','linewidth',2,'DisplayName','>40^\circ')
+plot(gB_Fo(id==2),'linecolor','g','linewidth',2,'DisplayName','20^\circ-40^\circ')
+plot(gB_Fo(id==3),'linecolor','r','linewidth',2,'DisplayName','10^\circ-20^\circ')
+plot(gB_Fo(id==4),'linecolor','r','linewidth',2,'DisplayName','< 10^\circ')
 
 hold off
 
@@ -152,13 +147,12 @@ hold on
 
 ind = angle(gB_Fo.misorientation.axis,xvector)<5*degree;
 
-plot(gB_Fo(ind),'linecolor','b','linewidth',2)
+plot(gB_Fo(ind),'linecolor','b','linewidth',2,'DisplayName','[100]')
 
-legend('>5^\circ','[100]')
 
 %% 
-% Or we mark a special rotation between neighboured grains. If a
-% linecolor is not specified, then the boundary is colorcoded after its angular
+% Or we mark a special rotation between neighboured grains. If a linecolor
+% is not specified, then the boundary is colorcoded after its angular
 % difference to the given rotation.
 
 rot = rotation('axis',vector3d(1,1,1),'angle',60*degree);
@@ -167,7 +161,7 @@ ind = angle(gB_Fo.misorientation,rot)<10*degree;
 close all
 plot(gB)
 hold on
-plot(gB_Fo(ind),'linewidth',1.5,'linecolor','r')
+plot(gB_Fo(ind),'lineWidth',1.5,'lineColor','r')
 
 legend('>2^\circ','60^\circ/[001]')
 
