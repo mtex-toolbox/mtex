@@ -1,5 +1,5 @@
 %% Misorientations at grain boundaries
-% 
+% Analyse misorientations along grain boundaries
 %
 %% Import EBSD data and select a subregion
 %
@@ -8,11 +8,6 @@ mtexdata forsterite
 %
 % correct EBSD spatial coordinates
 %
-% rotate only the spatial data about the z-axis
-ebsd = rotate(ebsd,180*degree,'keepEuler');
-% rotate only the spatial data about the y-axis
-ebsd = rotate(ebsd,rotation('axis',yvector,'angle',180*degree),'keepEuler');
-
 %
 %             O************O xmax,ymax
 %             *            *
@@ -21,16 +16,14 @@ ebsd = rotate(ebsd,rotation('axis',yvector,'angle',180*degree),'keepEuler');
 %             *            *
 %   xmin,ymin O************O
 %
-xmin = 27100;
-ymin =-7555;
-xmax = 29400;
-ymax = -5350;
+xmin = 7000;
+ymin = 4500;
+xmax = 20000;
+ymax = 8100;
 region = [xmin ymin xmax-xmin ymax-ymin];
 
 plot(ebsd)
 rectangle('position',region,'edgecolor','r','linewidth',2)
-
-%% Manuel selection of rectanglar subregion of ebsd map
 
 % select EBSD data within region and printout to command window
 condition = inpolygon(ebsd,region); % select indices by polygon
@@ -38,7 +31,6 @@ ebsd = ebsd(condition);
 
 %% Grain modelling prototcole - using indexed points and segmentation angle
 % and re-calculate grain model to cleanup grain boundaries
-%**************************************************************************
 
 % segmentation angle typically 10 to 15 degrees
 seg_angle = 10;
@@ -58,10 +50,12 @@ ebsd = ebsd(grains);
 [grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd('indexed'),'angle',seg_angle*degree);
 
 % smooth grains
-grains = smooth(grains,2)
+grains = smooth(grains,4)
 
+%%
 % plot the data
-plot(ebsd('fo'),ebsd('fo').orientations,'micronbar','off')
+%plot(ebsd('fo'),ebsd('fo').orientations,'micronbar','off')
+plot(grains('fo'),grains('fo').meanOrientation,'micronbar','off','figSize','large')
 hold on
 plot(grains.boundary)
 hold off
@@ -69,19 +63,22 @@ hold off
 %% Visualize the misorientation angle at grain boundaries
 
 % Use boundary('Fo','Fo') to chose only Fo-Fo boundaries
-gB_FoFo = grains.boundary('Fo','Fo');
+gB = grains.boundary.reorder;
+gB_FoFo = gB('Fo','Fo');
 
 % visualize the misorientation angle
 % draw the boundary in black very thick 
 hold on
-plot(gB_FoFo,'linewidth',7);
+plotOrdered(gB_FoFo,'linewidth',4);
 
 % and on top of it the boundary colorized according to the misorientation
 % angle
-plot(gB_FoFo,gB_FoFo.misorientation.angle./degree,'linewidth',5);
+hold on
+plotOrdered(gB_FoFo,gB_FoFo.misorientation.angle./degree,'linewidth',2);
+%plot(gB_FoFo,gB_FoFo.misorientation.angle./degree,'linewidth',5);
 hold off
 mtexColorMap jet
-mtexColorbar 
+mtexColorbar('title','misorientation angle')
 
 %% Visualize the misorientation axes in specimen coordinates
 % Computing the misorientation axes in specimen coordinates can not be done
@@ -89,8 +86,8 @@ mtexColorbar
 % orientations on both sides of the grain boundary. Lets extract them
 % first.
 
-% do only consider every second boundary segment
-Sampling_N=2;
+% do only consider every third boundary segment
+Sampling_N=3;
 gB_FoFo = gB_FoFo(1:Sampling_N:end);
 
 % the following command gives a Nx2 matrix of orientations which contains
@@ -102,7 +99,7 @@ gB_axes_FoFo = axis(ori(:,1),ori(:,2));
 
 % axes can be plotted using the command quiver
 hold on
-quiver(gB_FoFo,gB_axes_FoFo,'linewidth',2,'color','k','autoScaleFactor',0.3)
+quiver(gB_FoFo,gB_axes_FoFo,'linewidth',1,'color','k','autoScaleFactor',0.3)
 hold off
 
 %%
