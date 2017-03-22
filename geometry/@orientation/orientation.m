@@ -208,26 +208,26 @@ methods (Static = true)
   end
 
   function mori = Bain(csAlpha,csGamma)    
-    mori = orientation('map',Miller(1,0,0,csAlpha),Miller(1,0,0,csGamma),...
-      Miller(0,1,1,csAlpha,'uvw'),Miller(0,1,0,csGamma,'uvw'));
+    mori = orientation('map',Miller(1,0,0,csGamma),Miller(1,0,0,csAlpha),...
+      Miller(0,1,0,csGamma,'uvw'),Miller(0,1,1,csAlpha,'uvw'));
   end
   
   function mori = KurdjumovSachs(csAlpha,csGamma)
     
-    mori = orientation('map',Miller(0,1,1,csAlpha),Miller(1,1,1,csGamma),...
-      Miller(-1,-1,1,csAlpha,'uvw'),Miller(-1,0,1,csGamma,'uvw'));
+    mori = orientation('map',Miller(1,1,1,csGamma),Miller(0,1,1,csAlpha),...
+      Miller(-1,0,1,csGamma,'uvw'),Miller(-1,-1,1,csAlpha,'uvw'));
   end
   
   function mori = NishiyamaWassermann(csAlpha,csGamma)
     
-    mori = orientation('map',Miller(0,1,1,csAlpha),Miller(1,1,1,csGamma),...
-      Miller(0,-1,1,csAlpha,'uvw'),Miller(1,1,-2,csGamma,'uvw'));
+    mori = orientation('map',Miller(1,1,1,csGamma),Miller(0,1,1,csAlpha),...
+      Miller(1,1,-2,csGamma,'uvw'),Miller(0,-1,1,csAlpha,'uvw'));
   end
   
   function mori = Pitch(csAlpha,csGamma)
     
-    mori = orientation('map',Miller(1,0,1,csAlpha),Miller(0,1,0,csGamma),...
-      Miller(-1,1,1,csAlpha,'uvw'),Miller(1,0,1,csGamma,'uvw'));
+    mori = orientation('map',Miller(0,1,0,csGamma),Miller(1,0,1,csAlpha),...
+      Miller(1,0,1,csGamma,'uvw'),Miller(-1,1,1,csAlpha,'uvw'));
   end
   
   
