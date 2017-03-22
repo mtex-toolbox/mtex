@@ -78,34 +78,41 @@ plot(grains.innerBoundary,'linecolor','r','linewidth',2)
 
 close all
 gB_Fo = grains.boundary('Fo','Fo');
-plot(grains,'translucent',.3)
+plot(grains,'translucent',.3,'micronbar','off')
 legend off
 hold on
 plot(gB_Fo,gB_Fo.misorientation.angle./degree,'linewidth',1.5)
 hold off
-mtexColorbar
+mtexColorbar('title','misorientation angle')
 
 %%
 % The more sophisticated way is to colorize the misorientation space and
 % apply the color to the respective grain boundaries. 
 
-
 close all
-plot(grains,'translucent',.3)
+plot(grains,'translucent',.3,'micronbar','off')
 legend off
 hold on
 
+gB_Fo = gB_Fo.reorder;
+
 oM = patalaOrientationMapping(gB_Fo);
 
-plot(grains.boundary)
+plotOrdered(gB_Fo,'linewidth',4)
+% on my computer setting the renderer to painters gives a much more
+% pleasent result
+set(gcf,'Renderer','painters') 
 hold on
 
-plot(gB_Fo,oM.orientation2color(gB_Fo.misorientation),'linewidth',1.5)
+plotOrdered(gB_Fo,oM.orientation2color(gB_Fo.misorientation),'linewidth',2)
 
 hold off
 
-% plot the colorcoding
-% plot(oM)
+%%
+% Lets visualize the color key as axis angle sections through the
+% misorientation space
+
+plot(oM)
 
 %% SUB: Classifying special boundaries
 % Actually, it might be more informative, if we classify the grain
@@ -134,7 +141,7 @@ hold on
 plot(gB_Fo(id==1),'linecolor','b','linewidth',2,'DisplayName','>40^\circ')
 plot(gB_Fo(id==2),'linecolor','g','linewidth',2,'DisplayName','20^\circ-40^\circ')
 plot(gB_Fo(id==3),'linecolor','r','linewidth',2,'DisplayName','10^\circ-20^\circ')
-plot(gB_Fo(id==4),'linecolor','r','linewidth',2,'DisplayName','< 10^\circ')
+plot(gB_Fo(id==4),'linecolor','y','linewidth',2,'DisplayName','< 10^\circ')
 
 hold off
 
@@ -166,33 +173,6 @@ plot(gB_Fo(ind),'lineWidth',1.5,'lineColor','r')
 legend('>2^\circ','60^\circ/[001]')
 
 
-%%
-% In the same manner, we can classify after predefined special rotations,
-% e.g. coincident site lattice (CSL) for cubic crystals. Additionaly, we
-% specify a searching radius with the option |'delta'|, in this way, we
-% control how far the misorientation of the boundary segment is actually
-% away from the specified rotation.
-% TODO
-
-% close all
-% plot(gB)
-% 
-% 
-% hold on
-% plot(gB_Fo(angle(gB_Fo.misorientation,CSL(3))<2*degree),...
-%   'linecolor','b','linewidth',2)
-% plot(gB_Fo(angle(gB_Fo.misorientation,CSL(5))<4*degree),...
-%   'linecolor','m','linewidth',2)
-% plot(gB_Fo(angle(gB_Fo.misorientation,CSL(7))<4*degree),...
-%   'linecolor','g','linewidth',2)
-% plot(gB_Fo(angle(gB_Fo.misorientation,CSL(11))<4*degree),...
-%   'linecolor','r','linewidth',2)
-% 
-% legend('>2^\circ',...
-%   '\Sigma 3',...
-%   '\Sigma 5',...
-%   '\Sigma 7',...
-%   '\Sigma 11')
 
 %%
 % Another kind of special boundaries is tilt and twist boundaries. We can
