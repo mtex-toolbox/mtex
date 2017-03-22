@@ -65,9 +65,11 @@ end
      tiPos = tiPos(1:2) + tiPos(3:4);
         
    catch
-     if isempty(mtexFig.cBarAxis(1).Label)
+     l = get(mtexFig.cBarAxis(1),'Label');
+     s = get(l,'String');
+     if isempty(s)
        tiPos = [3.5,1.5]*get(mtexFig.cBarAxis(1),'FontSize');
-     elseif mtexFig.cBarAxis(1).Label.Rotation == 0
+     elseif get(l,'Rotation') == 0
        tiPos = [3.5,3.5]*get(mtexFig.cBarAxis(1),'FontSize');
      else
        tiPos = [5.5,1.5]*get(mtexFig.cBarAxis(1),'FontSize');

@@ -26,7 +26,9 @@ if isempty(mtexFig.cBarAxis) % create some new colorbars
   end
   
   if check_option(varargin,'title')
-    ylabel(mtexFig.cBarAxis,get_option(varargin,'title'));
+    for i = 1:numel(mtexFig.cBarAxis)
+      ylabel(mtexFig.cBarAxis(i),get_option(varargin,'title'));
+    end
   end
   
 else % remove old colorbars
