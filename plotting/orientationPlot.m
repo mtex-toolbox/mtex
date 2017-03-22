@@ -19,6 +19,7 @@ classdef orientationPlot < handle
   properties
     CS1 % crystal symmetry of phase 1
     CS2 % crystal symmetry of phase 2
+    antipodal = false
     ax
     fRMode % restrict2FundamentalRegion | project2FundamentalRegion | ignoreFundamentalRegion
     plotGrid
@@ -36,6 +37,11 @@ classdef orientationPlot < handle
       oP.CS1 = CS1.properGroup;
       CS2 = getClass(varargin,'symmetry',specimenSymmetry);
       oP.CS2 = CS2.properGroup;
+      
+      if oP.CS1 == oP.CS2
+        oP.antipodal = check_option(varargin,'antipodal');
+      end
+      
       oP.fRMode = char(extract_option(varargin,...
         {'restrict2FundamentalRegion','project2FundamentalRegion','ignoreFundamentalRegion'}));
       if isempty(oP.fRMode)
@@ -65,6 +71,7 @@ classdef orientationPlot < handle
       else
         ori = orientation(ori,oP.CS1,oP.CS2);
       end
+      ori.antipodal = oP.antipodal;
       
       % extract data
       if nargin > 2 && isnumeric(varargin{1})
