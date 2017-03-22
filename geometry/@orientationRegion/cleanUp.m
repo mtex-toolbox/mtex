@@ -43,7 +43,7 @@ elseif length(nqa)==1
   v = perp(nqa);
   rot = rotation('axis',nqa,'angle',(0:90:270)*degree);
   oR.V = orientation('axis',rot*v,'angle',pi*ones(4,1),oR.CS1,oR.CS2);
-  oR.F = repcell(1:4,size(oR.N));
+  oR.F = repcell((1:4).',size(oR.N));
   
   return
 end
