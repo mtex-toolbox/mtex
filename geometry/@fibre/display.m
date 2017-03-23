@@ -15,7 +15,7 @@ dispLine(f.SS);
 
 if f.antipodal, disp(' antipodal: true'); end
 
-if length(f)>1, return; end
+if length(f)~=1, return; end
 
 % display starting and end orientation
 disp([' o1: ' char(f.o1)]);
