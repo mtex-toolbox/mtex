@@ -17,7 +17,8 @@ function h = quiver(v, d, varargin )
 % See also
 
 % initialize spherical plot
-sP = newSphericalPlot(v,varargin{:},'doNotDraw');
+opt = delete_option(varargin,{'lineStyle','lineColor','lineWidth','color'});
+sP = newSphericalPlot(v,opt{:},'doNotDraw');
 
 v = vector3d(v);
 if length(d) == length(v), d = reshape(d,size(v)); end
@@ -30,7 +31,7 @@ for j = 1:numel(sP)
   
   % make the quiver plot
   mhs = get_option(varargin,'MaxHeadSize',0.9*(1-d.antipodal));
-  arrowSize = get_option(varargin,'arrowSize',0.05);
+  arrowSize = get_option(varargin,'arrowSize',0.05/max(norm(d(:))));
   
   % project data
   if check_option(varargin,'centered') || mhs == 0

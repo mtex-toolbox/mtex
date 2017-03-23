@@ -5,93 +5,78 @@ function h = plot(oR,varargin)
 % boundary and adjust the axes limits properly.
 %
 
-[mtexFig,isNew] = newMtexFigure(varargin{:});
+if oR.antipodal, varargin = ['antipodal',varargin]; end
+oP = newOrientationPlot(oR.CS1,oR.CS2,'axisAngle','noBoundary',varargin{:});
+hold on
+color = get_option(varargin,{'color','boundaryColor'},[0 0 0]);
 
-% create a new scatter plot
-if isappdata(mtexFig.gca,'projection')
-  projection = getappdata(mtexFig.gca,'projection');
+% find the sector
+ind = oR.N.angle > pi-1e-3;
+sR = sphericalRegion(oR.N(ind).axis,zeros(nnz(ind),1));
+
+% plot a grid
+rho = linspace(0,2*pi,720);
+theta = linspace(0,pi,13);
+[rho,theta] = meshgrid(rho,theta);
+
+r = vector3d('theta',theta.','rho',rho.');
+r(~sR.checkInside(r)) = nan;
+q = orientation('axis',r,'angle',oR.maxAngle(r),oP.CS1,oP.CS2);
+h1 = line(q,'color',color,'parent',oP.ax,'noBoundaryCheck');
+
+rho = linspace(0,2*pi,25);
+theta = linspace(0,pi,360);
+[rho,theta] = meshgrid(rho,theta);
+
+r = vector3d('theta',theta,'rho',rho);
+r(~sR.checkInside(r)) = nan;
+q = orientation('axis',r,'angle',oR.maxAngle(r),oP.CS1,oP.CS2);
+h2 = line(q,'color',color,'parent',oP.ax,'noBoundaryCheck');
+
+% plot a surface
+if ~check_option(varargin,'noSurface')
+  r = plotS2Grid(sR,'resolution',1*degree);
+  % TODO: do not use maxAngle - because this would allow us to rotate the
+  % orientation region
+  q = orientation('axis',r,'angle',oR.maxAngle(r),oP.CS1,oP.CS2);
+  
+  [x,y,z] = oP.project(q,'noBoundaryCheck');  
+  h3 = surf(x,y,z,'faceColor',color,'facealpha',0.1,'edgecolor','none');
 else
-  if check_option(varargin,{'rodrigues','rodriguez'})
-    projection = 'rodrigues';
-  else
-    projection = 'axisangle';
+  h3 = [];
+end
+
+% extract the vertices
+edges = oR.V(oR.E);
+
+% edges are just fibres connecting the vertices
+if isempty(edges)
+  f = fibre;
+else
+  f = fibre(edges(:,1),edges(:,2));
+end
+
+% ensure the right symmetry
+f.CS = oP.CS;
+f.SS = oP.SS;
+
+%
+color = get_option(varargin,'edgeColor',color);
+
+% some of the edges should not be ploted
+f = f(angle(f.o1,f.o2,'noSymmetry')>1e-3);
+f = f(angle(f.o1,'noSymmetry')<pi | angle(f.o2,'noSymmetry')<pi);
+
+% plot the fibres
+if all(size(color) == [length(f),3])
+  for i = 1:length(f)
+    h4(i) = plot(f(i),'color',color(i,:),'linewidth',3,'noBoundaryCheck','parent',oP.ax);
   end
-  setappdata(mtexFig.gca,'projection',projection);
+else
+  h4 = plot(f,'color',color,'linewidth',1.5,'noBoundaryCheck','parent',oP.ax);
 end
 
+hold off
 
-color = get_option(varargin,'color',[0 0 0]);
-
-switch lower(projection)
-  case {'rodriguez','rodrigues'}
-
-    % embedd into NaN matrix
-    FF = nan(length(oR.F),max(cellfun(@length,oR.F)));
-    for i = 1:length(oR.F)
-      FF(i,1:length(oR.F{i})) = oR.F{i};
-    end
-  
-    VR = reshape(double(oR.V.Rodrigues),[],3);
-    clf;
-    h = patch('faces',FF,'vertices',VR,'faceAlpha',0.1);
-  
-  case 'axisangle'
-
-    ind = oR.N.angle > pi-1e-3;
-    sR = sphericalRegion(oR.N(ind).axis,zeros(nnz(ind),1));
-        
-    % plot a grid
-    rho = linspace(0,2*pi,720);
-    theta = linspace(0,pi,13);
-    [rho,theta] = meshgrid(rho,theta);
-    
-    r = vector3d('theta',theta.','rho',rho.');    
-    r(~sR.checkInside(r)) = nan;
-    r = oR.maxAngle(r) .* r ./ degree;
-    line(r.x,r.y,r.z,'color',color)
-    
-    rho = linspace(0,2*pi,25);
-    theta = linspace(0,pi,360);
-    [rho,theta] = meshgrid(rho,theta);
-    
-    r = vector3d('theta',theta,'rho',rho);    
-    r(~sR.checkInside(r)) = nan;
-    r = oR.maxAngle(r) .* r ./ degree;
-    line(r.x,r.y,r.z,'color',color)
-        
-    % plot a surface
-    hold on
-    r = plotS2Grid(sR,'resolution',1*degree);
-    % TODO: do not use maxAngle - because this would allow us to rotate the
-    % orientation region
-    r = oR.maxAngle(r) .* r ./ degree;
-    surf(r.x,r.y,r.z,'faceColor',color,'facealpha',0.1,...
-      'edgecolor','none')
-    
-    % extract the vertices 
-    left = oR.V(vertcat(oR.F{:}));
-    right = cellfun(@(x) circshift(x,1), oR.F,'UniformOutput',false);
-    right = oR.V(vertcat(right{:}));
-    
-    % edges are just fibres connecting the vertices
-    f = fibre(left,right);
-    
-    % some of the edges should not be ploted
-    f = f(angle(f.o1,f.o2,'noSymmetry')>1e-3);
-    f = f(angle(f.o1,'noSymmetry')<pi | angle(f.o2,'noSymmetry')<pi);
-    
-    % plot the fibres
-    plot(f,'color',color,'linewidth',1.5)
-    
-    hold off
-    
-end
-
-if isNew
-  axis equal off
-  fcw;
-  view(mtexFig.gca,3);
-end
-
-if nargout == 0, clear h; end
+if nargout ~= 0, h = [h1,h2,h3,h4]; end
 

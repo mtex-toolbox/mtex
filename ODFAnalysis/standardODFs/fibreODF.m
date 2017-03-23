@@ -31,17 +31,18 @@ function odf = fibreODF(varargin)
 if isa(varargin{1},'fibre')
   h = varargin{1}.h;
   r = varargin{1}.r;
+  SS = varargin{1}.SS;
   varargin(1) = [];
 else
   h = argin_check(varargin{1},'Miller');
   r = argin_check(varargin{2},'vector3d');
-end
-
-% get crystal and specimen symmetry
-if isa(r,'Miller')
-  SS = r.CS;
-else
-  SS = getClass(varargin,'specimenSymmetry',specimenSymmetry);
+  
+  % get specimen symmetry
+  if isa(r,'Miller')
+    SS = r.CS;
+  else
+    SS = getClass(varargin,'specimenSymmetry',specimenSymmetry);
+  end
 end
 
 % get kernel

@@ -4,7 +4,7 @@ classdef ODFSections < handle
   %
   % Example
   %
-  %   cs = crystalSymmetry('mmm')
+  %   cs = crystalSymmetry('222')
   %   oS = axisAngleSections(cs,cs)
   %   ori = oS.makeGrid('resolution');
   %   oM = patalaOrientationMapping(cs,cs)
@@ -31,9 +31,14 @@ classdef ODFSections < handle
     
   methods
     function oS = ODFSections(CS1,varargin)
-      oS.CS1 = CS1.properGroup;
       CS2 = getClass(varargin,'symmetry',specimenSymmetry);
-      oS.CS2 = CS2.properGroup;
+      if check_option(varargin,'pointGroup')
+        oS.CS1 = CS1;
+        oS.CS2 = CS2;
+      else
+        oS.CS1 = CS1.properGroup;
+        oS.CS2 = CS2.properGroup;
+      end
       oS.tol = get_option(varargin,'tolerance',5*degree);
     end
         

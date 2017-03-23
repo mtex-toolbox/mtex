@@ -92,6 +92,10 @@ classdef EBSD < phaseList & dynProp & dynOption
     
     % --------------------------------------------------------------
 
+    function varargout = size(ebsd,varargin)
+      [varargout{1:nargout}] = size(ebsd.id,varargin{:});
+    end
+    
     function ori = get.mis2mean(ebsd)      
       ori = ebsd.prop.mis2mean;
       try

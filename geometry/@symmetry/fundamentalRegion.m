@@ -22,15 +22,18 @@ if ~check_option(varargin,'pointGroup'), cs = cs.properGroup; end
 q = rotation(cs);
 N0 = quaternion;
 if nargin >= 2 && (isa(varargin{1},'symmetry')||isa(varargin{1},'rotation'))
-  
-  q = rotation(varargin{1}) * q;
-  
+
+  cs2 = varargin{1};
+  varargin(1) = [];
   % in the usual setting we don't care about reflections
-  if check_option(varargin,'pointGroup'), q = q(~q.isImproper); end
+  if ~check_option(varargin,'pointGroup'), cs2 = cs2.properGroup; end
+  
+  q = rotation(cs2) * q;   
+  q = q(~q.isImproper);
   q = unique(quaternion(q));
   
   if ~check_option(varargin,'ignoreCommonSymmetries')
-    dcs = disjoint(cs,varargin{1});
+    dcs = disjoint(cs,cs2);
     
     if check_option(varargin,'antipodal'), dcs = dcs.Laue; end
       
@@ -43,6 +46,7 @@ else
   q = quaternion(unique(q));
   dcs = cs.properSubGroup;
   if check_option(varargin,'antipodal'), dcs = dcs.Laue; end
+  cs2 = {};
 end
 nSym = length(q);
 
@@ -64,4 +68,4 @@ else
   Nq = quaternion;
 end
 
-oR = orientationRegion([Nq(:).',N0(:).'],cs,varargin{:});
+oR = orientationRegion([Nq(:).',N0(:).'],cs,cs2,varargin{:});

@@ -6,7 +6,7 @@ classdef Miller < vector3d
   end
 
   properties (Access = private)
-    CSprivate % crystal symmetry
+    CSprivate = crystalSymmetry % crystal symmetry
   end
 
   properties (Dependent = true)
@@ -55,6 +55,8 @@ methods
       %
       % See also
       % vector3d_index symmetry_index
+      
+      if nargin == 0, return; end
       
       % check for symmetry
       m.CSprivate = getClass(varargin,'crystalSymmetry',[]);

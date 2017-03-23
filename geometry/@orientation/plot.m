@@ -16,7 +16,7 @@ function plot(ori,varargin)
 
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 
-if isNew
+if isNew || isappdata(mtexFig.gca,'orientationPlot')
   
   scatter(ori,varargin{:})
   return;

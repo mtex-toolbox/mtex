@@ -121,10 +121,6 @@ classdef tensor < dynOption
   
   methods (Static = true)
     
-    function T = diag(d,varargin)
-      T = tensor(diag(d),varargin{:});
-    end
-    
   end
   
 end

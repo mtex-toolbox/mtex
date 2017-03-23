@@ -23,7 +23,7 @@ function [c,center] = cluster(ori,varargin)
 %   ori = odf.calcOrientations(3000);
 %
 %   % find the clusters and its centers
-%   tic; [c,centerRec] = cluster(ori,'numCenter',5); toc
+%   tic; [c,centerRec] = cluster(ori,'numCluster',5); toc
 %
 %   % visualize result
 %   oR = fundamentalRegion(cs)

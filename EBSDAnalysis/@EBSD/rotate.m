@@ -9,13 +9,19 @@ function ebsd = rotate(ebsd,q,varargin)
 %   % rotate about the x-axis
 %   ebsd = rotate(ebsd,rotation('axis',xvector,'angle',180*degree)) 
 %   
-%   % roate only the spatial data
-%   ebsd = rotate(ebsd,180*degree,'keepEuler') 
+%   % rotate only the spatial data
+%   ebsd = rotate(ebsd,180*degree,'keepEuler')
+%
+%   % rotate about a specific point
+%   ebsd = rotate(ebsd,180*degree,'center',[0,0])
 %
 % Input
 %  ebsd - @EBSD
 %  angle - double
 %  q    - @quaternion
+%
+% Options
+%  center - [x,y] center of rotation, default is center of the map
 %
 % Flags
 %  keepXY    - rotate only the orientation data, i.e. the Euler angles
@@ -34,13 +40,17 @@ end
 % rotate the spatial data
 if ~check_option(varargin,'keepXY')
   
+  center = [mean(ebsd.prop.x(:));mean(ebsd.prop.y(:))];
+  center = get_option(varargin,'center',center);
+  
+  ebsd = affinetrans(ebsd,[],-center(:));
   if isappr(abs(dot(axis(q),zvector)),1) 
     % rotation about z
     
     omega = dot(axis(q),zvector) * angle(q);
     A = [cos(omega) -sin(omega);sin(omega) cos(omega)];
     ebsd = affinetrans(ebsd,A);
-    
+      
   elseif isappr(angle(q),pi) && isnull(dot(axis(q),zvector)) 
     % rotation perpendicular to z
     
@@ -54,4 +64,5 @@ if ~check_option(varargin,'keepXY')
     warning('MTEX:rotate',...
       'Spatial rotation of EBSD data is only supported for rotations about the z-axis. I''m going to rotate only the orientation data!');
   end
+  ebsd = affinetrans(ebsd,[],center(:));
 end

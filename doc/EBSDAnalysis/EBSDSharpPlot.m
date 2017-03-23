@@ -85,6 +85,21 @@ plot(ebsd,oM.orientation2color(ebsd.orientations))
 oM.maxAngle = 7.5*degree;
 plot(ebsd,oM.orientation2color(ebsd.orientations))
 
+
+%%
+
+ebsd = ebsd.gridify;
+
+F = infimalConvolutionFilter;
+F.lambda = 0.02; %smoothing parameter for the gradient
+F.mu = 0.01;% smoothing parameter for the hessian
+
+ebsd_smoothed = smooth(ebsd,F);
+
+plot(ebsd_smoothed,oM.orientation2color(ebsd_smoothed.orientations))
+
+
+
 %%
 % You may play around with the option |maxAngle| to obtain better
 % results. As for interpretation keep in mind that white color represents

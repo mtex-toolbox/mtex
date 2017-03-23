@@ -8,7 +8,7 @@ if isempty(javachk('desktop'))
   else
     s = ['<strong>' getMTEXpref('version') '</strong>'];
   end
-  disp(['  ' s  ...
+  disp([ s  ...
     ' (<a href="matlab:MTEXdoc(''mtex'')">show documentation</a>)'])
   disp('  <a href="matlab:import_wizard(''PoleFigure'')">Import pole figure data</a>')
   disp('  <a href="matlab:import_wizard(''EBSD'')">Import EBSD data</a>')

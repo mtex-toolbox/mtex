@@ -205,38 +205,40 @@ o1.Rodrigues
 %% Plotting Orientations
 % 
 %% SUB: in Euler angle space
-% By default the function the function [[orientation.plot.html,plot]]
+% By default the function <orientation.plot.html plot>
 % plots orientations in the three dimensional Bunge Euler angle space
 
 ori = orientation.rand(100,cs);
 plot(ori)
 
+%%
+% Note that the orientations are automatically projected into the
+% fundamental region. In the case of cubic symmetry this means that the
+% Euler angles $\Phi$ and $\phi_2$ are restricted to 90 degrees. If the
+% orientations should be plotted at their specified Euler angles the option
+% |ignoreFundamentalRegion| has to be used.
+
+
+plot(ori,'ignoreFundamentalRegion')
+
 %% SUB: in axis angle space
 % Alternatively, orientations can be plotted in the three dimensional axis
 % angle space.
 
-oR = fundamentalRegion(ori.CS,ori.SS,'complete')
-plot(oR)
-hold on
-plot(ori,'markerEdgeColor',[0 0 0.8],'markerSize',8)
-hold off
+plot(ori,'AxisAngle','markerEdgeColor',[0 0 0.8],'markerSize',8)
+
 
 %%
-% Note that the orientation is not automatically projected into its
-% fundamental region, as we see if the fundamental region is visualized
+% Note again that the orientations are automatically projected into its
+% fundamental region. Again, this can be switched off with the option
+% |ignoreFundamentalRegion|.
 
+plot(ori,'axisAngle','ignoreFundamentalRegion','markerEdgeColor',[0 0 0.8],'markerSize',8) 
+
+% visualize the fundamental region
 hold on
 oR = fundamentalRegion(ori.CS,ori.SS)
-plot(oR,'color',[1 0.5 0.5])
-hold off
-
-
-%%
-
-plot(oR,'color',[1 0.5 0.5])
-%o2 = quaternion(o1.project2FundamentalRegion);
-hold on
-scatter(ori.project2FundamentalRegion,'markerColor','r','markerSize',10)
+plot(oR,'color',[1 0.5 0.5]),
 hold off
 
 %% SUB: in (inverse) pole figures

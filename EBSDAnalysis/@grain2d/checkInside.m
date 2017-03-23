@@ -16,6 +16,10 @@ function isInside = checkInside(grains, xy, varargin)
 %  isInside - numEBSD x numHostGrains matrix
 %  isInside - numXY x numHostGrains matrix
 %
+% Options
+%  includeBoundary - points on the boundary are considered as inside
+%  ignoreInclusions - points within inclusions belong to the host grain
+%
 % Note, for an EBSD pixel to be inside a grain it has to be completely
 % inside the grain. Pixels at the boundary may belong to no grain.
 %
@@ -27,21 +31,24 @@ function isInside = checkInside(grains, xy, varargin)
 % See also
 % EBSD/findByLocation grain2d/findByOrientation
 
-ignoreInklusions = check_option(varargin,'ignoreInklusions');
+ignoreInclusions = check_option(varargin,'ignoreInclusions');
+includeBoundary = check_option(varargin,'includeBoundary');
 
-if isa(xy,'grain2d') 
+if isa(xy,'grain2d') % check grains inside grains
   
-  ind = ismember(xy.id,grains.id);
+  grainsIncl = xy;
+    
+  % we need a point that is for sure inside the grain
+  % here we take an arbitrary boundary point
+  xy = grainsIncl.V(cellfun(@(x) x(1),grainsIncl.poly),:);
   
-  % replace grains by its center
-  xy = xy.centroid;
+  % check whether the boundary point is strictly inside another grain
+  % we need of course ignore inclusions
+  isInside = grains.checkInside(xy,'ignoreInclusions');
   
-  % a grain should not contain itself
-  xy(ind,:) = NaN;
+  return
   
-  ignoreInklusions = true;
-  
-elseif isa(xy,'EBSD')
+elseif isa(xy,'EBSD') % check ebsd unitcells entirely inside grain
   
   % extract unit cell
   uc = xy.unitCell;
@@ -49,14 +56,17 @@ elseif isa(xy,'EBSD')
   % for EBSD data the complete unitcell should be contained
   xy = [xy.prop.x(:),xy.prop.y(:)];
   
-  isInside = grains.checkInside(xy+repmat(uc(1,:),size(xy,1),1));
+  % we have to allow boundary here
+  isInside = grains.checkInside(xy+repmat(uc(1,:),size(xy,1),1),'includeBoundary');
   for i = 2:size(uc,1)
-    isInside = isInside & grains.checkInside(xy+repmat(uc(i,:),size(xy,1),1));
+    isInside = isInside & grains.checkInside(xy+repmat(uc(i,:),size(xy,1),1),'includeBoundary');
   end
   
   return
   
 end
+
+% --- check points inside grains ---
 
 isInside = false(size(xy,1),length(grains));
 
@@ -66,10 +76,19 @@ incl = grains.inclusionId;
 
 for i = 1:length(poly)
 
-  p = poly{i};  
-  if ignoreInklusions, p = p(1:end-incl(i)); end
+  % extract boundary
+  p = poly{i};
   
-  Vx = V(p,1); Vy = V(p,2);  
-  isInside(:,i) = inpolygon(xy(:,1),xy(:,2),Vx,Vy);
+  % consider only the outer boundary
+  if ignoreInclusions, p = p(1:end-incl(i)); end
+  
+  % extract xy values of the boundary and use inpolygon
+  Vx = V(p,1); Vy = V(p,2);
+  [in,on] = inpolygon(xy(:,1),xy(:,2),Vx,Vy);
+  if includeBoundary
+    isInside(:,i) = in;
+  else
+    isInside(:,i) = in - on;
+  end
   
 end

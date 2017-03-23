@@ -223,6 +223,52 @@ plot(grains(12000,4000).boundary,'linecolor','r','linewidth',2,...
 % stop overide mode
 hold off
 
+%% Non convex data sets
+% 
+% By default MTEX uses the convex hull when computing the outer boundary
+% for an EBSD data set. This leads to poor results in the case of non
+% convex EBSD data sets
+%
+
+% cut of a non convex region from our previous data set
+poly = 1.0e+04 *[...
+  0.6853    0.2848
+  0.7102    0.6245
+  0.8847    0.3908
+  1.1963    0.6650
+  1.1371    0.2880
+  0.6853    0.2833
+  0.6853    0.2848];
+
+ebsdP = ebsd(ebsd.inpolygon(poly))
+  
+plot(ebsdP,'micronBar','off')
+legend off
+
+% compute the grains
+grains = calcGrains(ebsdP('indexed'))
+
+% plot the grain boundary
+hold on
+plot(grains.boundary,'linewidth',1.5)
+hold off  
+
+%%
+% We see that the grains badly fill up the entire convex hull of the data
+% points. This can be avoided by specifying the option |tight| for the
+% determination of the outer boundary.
+
+plot(ebsdP,'micronBar','off')
+legend off
+
+% compute the grains
+grains = calcGrains(ebsdP('indexed'),'boundary','tight')
+
+% plot the grain boundary
+hold on
+plot(grains.boundary,'linewidth',1.5)
+hold off  
+
 %% Grain smoothing
 % The reconstructed grains show the typical staircase effect. This effect
 % can be reduced by smoothing the grains. This is particulary important
@@ -274,7 +320,7 @@ mtexdata single
 
 oM = ipdfHSVOrientationMapping(ebsd);
 oM.inversePoleFigureDirection = mean(ebsd.orientations) * oM.whiteCenter;
-oM.colorStretching = 5;
+oM.maxAngle = 5*degree;
 
 plot(ebsd,oM.orientation2color(ebsd.orientations))
 
@@ -310,15 +356,18 @@ hold off
 % slightly oversegmented.
 %
 
-grains_FMC = calcGrains(ebsd,'FMC',3.5)
+grains_FMC = calcGrains(ebsd('indexed'),'FMC',3.8)
+grains = calcGrains(ebsd('indexed'))
 
 % smooth grains to remove staircase effect
 grains_FMC = smooth(grains_FMC);
+grains = smooth(grains);
 
 %%
 % We observe how this method nicely splits the measurements into clusters
 % of similar orientation
 
+%plot(ebsd,oM.orientation2color(ebsd.orientations))
 plot(ebsd,oM.orientation2color(ebsd.orientations))
 
 % start overide mode

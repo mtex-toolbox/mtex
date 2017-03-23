@@ -35,6 +35,8 @@ classdef slipSystem
       %  CRSS - critical resolved shear stress
       %
       
+      if nargin == 0, return; end
+      
       assert(all(angle(b,n,'noSymmetry') > pi/2-1e-5),...     
         'Slip direction and plane normal should be orthogonal!')
       
@@ -126,13 +128,13 @@ classdef slipSystem
     end
          
     function sS = prismaticA(cs,varargin)
-      %⟨2-1-1 0⟩{01-10}
+      %<2-1-1 0>{01-10}
       sS = slipSystem(Miller(2,-1,-1,0,cs,'uvtw'),Miller(0,1,-1,0,cs,'hkil'),varargin{:});
     end
     
     function sS = prismatic2A(cs,varargin)
     %2nd order prismatic compound <a> slip system in hexagonal lattice:
-    %⟨01-10⟩{2-1-10}
+    %<01-10>{2-1-10}
     sS = slipSystem(Miller(0,1,-1,0,cs,'uvtw'),Miller(2,-1,-1,0,cs,'hkl'),varargin{:});
     end
     

@@ -210,6 +210,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.calcMIndex.html">calcMIndex</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.calcODF.html">calcODF</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.calcTensor.html">calcTensor</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.cluster.html">cluster</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.crossCorrelation.html">crossCorrelation</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.ctranspose.html">ctranspose</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.display.html">display</tocitem>
@@ -234,6 +235,8 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.project2EulerFR.html">project2EulerFR</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.project2FundamentalRegion.html">project2FundamentalRegion</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.qqplot.html">qqplot</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.rVariant.html">rVariant</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.round2Miller.html">round2Miller</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.scatter.html">scatter</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.sphereVolume.html">sphereVolume</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.symmetrise.html">symmetrise</tocitem>
@@ -547,6 +550,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.checkSymmetry.html">checkSymmetry</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.conj.html">conj</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.ctranspose.html">ctranspose</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.diag.html">diag</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.directionalMagnitude.html">directionalMagnitude</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.display.html">display</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.double.html">double</tocitem>
@@ -586,6 +590,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.tensor.html">tensor</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.tensorSize.html">tensorSize</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.times.html">times</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.trace.html">trace</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.transform.html">transform</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.transformReferenceFrame.html">transformReferenceFrame</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="tensor.transpose.html">transpose</tocitem>
@@ -714,8 +719,8 @@
             <tocitem target="MorawiecCell.html#6">Crystal Symmetries</tocitem>
             <tocitem target="MorawiecCell.html#10">Change the center of the fundamental region</tocitem>
             <tocitem target="MorawiecCell.html#11">Fundamental regions of misorientations</tocitem>
-            <tocitem target="MorawiecCell.html#12">Fundamental regions of misorientations with antipodal symmetry</tocitem>
-            <tocitem target="MorawiecCell.html#14">Axis angle sections</tocitem>
+            <tocitem target="MorawiecCell.html#13">Fundamental regions of misorientations with antipodal symmetry</tocitem>
+            <tocitem target="MorawiecCell.html#16">Axis angle sections</tocitem>
          </tocitem>
       </tocitem>
       <tocitem target="ODFAnalysis.html">ODFs<tocitem target="SantaFe_demo.html">The SantaFe example<tocitem target="SantaFe_demo.html#2">Simulate pole figures</tocitem>
@@ -845,7 +850,7 @@
             <tocitem target="EBSDModifyData.html#16">Remove Inaccurate Orientation Measurements</tocitem>
          </tocitem>
          <tocitem target="EBSDSmoothing.html">Smoothing of EBSD Data<tocitem target="EBSDSmoothing.html#3">Smoothing a single grain</tocitem>
-            <tocitem target="EBSDSmoothing.html#11">Interpolating Missing Data</tocitem>
+            <tocitem target="EBSDSmoothing.html#13">Interpolating Missing Data</tocitem>
          </tocitem>
          <tocitem target="AnalyzeEBSDData.html">Analyze EBSD Data<tocitem target="AnalyzeEBSDData.html#4">Data import</tocitem>
             <tocitem target="AnalyzeEBSDData.html#5">Orientation plot</tocitem>
@@ -887,8 +892,9 @@
             <tocitem target="GrainReconstruction.html#6">The grainId and how to select EBSD inside specific grains</tocitem>
             <tocitem target="GrainReconstruction.html#9">Misorientation to mean orientation</tocitem>
             <tocitem target="GrainReconstruction.html#11">Filling notindexed holes</tocitem>
-            <tocitem target="GrainReconstruction.html#18">Grain smoothing</tocitem>
-            <tocitem target="GrainReconstruction.html#20">Grain reconstruction by the multiscale clustering method</tocitem>
+            <tocitem target="GrainReconstruction.html#18">Non convex data sets</tocitem>
+            <tocitem target="GrainReconstruction.html#20">Grain smoothing</tocitem>
+            <tocitem target="GrainReconstruction.html#22">Grain reconstruction by the multiscale clustering method</tocitem>
          </tocitem>
          <tocitem target="GrainStatistics.html">Working with Grains<tocitem target="GrainStatistics.html#5">Accessing individual grains</tocitem>
             <tocitem target="GrainStatistics.html#11">Indexing by a Condition</tocitem>
@@ -898,6 +904,7 @@
          </tocitem>
          <tocitem target="GrainSpatialPlots.html">Plotting grains<tocitem target="GrainSpatialPlots.html#4">Plotting grains and combined plots</tocitem>
             <tocitem target="GrainSpatialPlots.html#11">Visualizing grain boundaries</tocitem>
+            <tocitem target="GrainSpatialPlots.html#14">Visualizing directions</tocitem>
          </tocitem>
          <tocitem target="GrainSingleAnalysis.html">Analyzing Individual Grains<tocitem target="GrainSingleAnalysis.html#3">Connection between grains and EBSD data</tocitem>
             <tocitem target="GrainSingleAnalysis.html#9">Visualize the misorientation within a grain</tocitem>
@@ -914,6 +921,11 @@
       </tocitem>
       <tocitem target="BoundaryAnalysis.html">Grain Boundaries<tocitem target="BoundaryPlots.html">Grain Boundaries<tocitem target="BoundaryPlots.html#4">The grain boundary</tocitem>
             <tocitem target="BoundaryPlots.html#7">Visualizing special grain boundaries</tocitem>
+         </tocitem>
+         <tocitem target="BoundaryMisorientations.html">Misorientations at grain boundaries<tocitem target="BoundaryMisorientations.html#1">Import EBSD data and select a subregion</tocitem>
+            <tocitem target="BoundaryMisorientations.html#2">Grain modelling prototcole - using indexed points and segmentation angle</tocitem>
+            <tocitem target="BoundaryMisorientations.html#4">Visualize the misorientation angle at grain boundaries</tocitem>
+            <tocitem target="BoundaryMisorientations.html#5">Visualize the misorientation axes in specimen coordinates</tocitem>
          </tocitem>
          <tocitem target="TwinningAnalysis.html">Twinning Analysis<tocitem target="TwinningAnalysis.html#3">Data import and grain detection</tocitem>
             <tocitem target="TwinningAnalysis.html#6">Properties of grain boundaries</tocitem>
@@ -957,10 +969,10 @@
             <tocitem target="ElasticityTensor.html#9">Christoffel Tensor</tocitem>
             <tocitem target="ElasticityTensor.html#10">Elastic Wave Velocity</tocitem>
          </tocitem>
-         <tocitem target="PlasticDeformation.html">Plastic Deformation<tocitem target="PlasticDeformation.html#4">Schmidt factor</tocitem>
-            <tocitem target="PlasticDeformation.html#9">The Schmid tensor</tocitem>
-            <tocitem target="PlasticDeformation.html#13">Finding the active slip system</tocitem>
-            <tocitem target="PlasticDeformation.html#16">Finding the active slip system</tocitem>
+         <tocitem target="PlasticDeformation.html">Schmid Factor Analysis<tocitem target="PlasticDeformation.html#3">Geometric Definition</tocitem>
+            <tocitem target="PlasticDeformation.html#11">Stress Tensor</tocitem>
+            <tocitem target="PlasticDeformation.html#13">Active Slip System</tocitem>
+            <tocitem target="PlasticDeformation.html#19">The Schmid factor for EBSD data</tocitem>
          </tocitem>
          <tocitem target="PiezoElectricity.html">The Piezoelectricity Tensor<tocitem target="PiezoElectricity.html#5">Plotting the magnitude surface</tocitem>
             <tocitem target="PiezoElectricity.html#11">Mean Tensor Calculation</tocitem>
@@ -985,11 +997,11 @@
             <tocitem target="SlipTransmition.html#10">Compatibility of slip systems</tocitem>
             <tocitem target="SlipTransmition.html#11">Plot m' in misorientation space</tocitem>
          </tocitem>
-         <tocitem target="StrainAnalysis.html">Slip Transmition<tocitem target="StrainAnalysis.html#4">Import Titanium data</tocitem>
-            <tocitem target="StrainAnalysis.html#5">Taylor model</tocitem>
-            <tocitem target="StrainAnalysis.html#10">Resolved shear stress</tocitem>
-            <tocitem target="StrainAnalysis.html#11">Compatibility of slip systems</tocitem>
-            <tocitem target="StrainAnalysis.html#12">Plot m' in misorientation space</tocitem>
+         <tocitem target="StrainAnalysis.html">Slip Transmition<tocitem target="StrainAnalysis.html#3">Import Titanium data</tocitem>
+            <tocitem target="StrainAnalysis.html#4">Taylor model</tocitem>
+            <tocitem target="StrainAnalysis.html#9">Resolved shear stress</tocitem>
+            <tocitem target="StrainAnalysis.html#10">Compatibility of slip systems</tocitem>
+            <tocitem target="StrainAnalysis.html#11">Plot m' in misorientation space</tocitem>
          </tocitem>
          <tocitem target="TaylorModel.html">Taylor Model<tocitem target="TaylorModel.html#5">Set up</tocitem>
             <tocitem target="TaylorModel.html#6">The orientation dependence of the Taylor factor</tocitem>
@@ -1049,32 +1061,33 @@
             <tocitem target="ColorCodingEBSD_demo.html#10">Colorcoding according to inverse pole figure</tocitem>
          </tocitem>
       </tocitem>
-      <tocitem target="ReleaseNotes.html">Release Notes<tocitem target="changelog.html">MTEX Changelog<tocitem target="changelog.html#1">MTEX 4.4   08/2016</tocitem>
-            <tocitem target="changelog.html#2">MTEX 4.3.2 07/2016</tocitem>
-            <tocitem target="changelog.html#3">MTEX 4.3 - 03/2016</tocitem>
-            <tocitem target="changelog.html#4">MTEX 4.2 - 11/2015</tocitem>
-            <tocitem target="changelog.html#5">MTEX 4.1 - 09/2015</tocitem>
-            <tocitem target="changelog.html#6">MTEX 4.0.0 - 10/2014</tocitem>
-            <tocitem target="changelog.html#7">MTEX 3.5.0 - 12/2013</tocitem>
-            <tocitem target="changelog.html#8">MTEX 3.4.2 - 06/2013</tocitem>
-            <tocitem target="changelog.html#9">MTEX 3.4.1 - 04/2013</tocitem>
-            <tocitem target="changelog.html#10">MTEX 3.4.0 - 03/2013</tocitem>
-            <tocitem target="changelog.html#11">MTEX 3.3.2 - 01/2013</tocitem>
-            <tocitem target="changelog.html#12">MTEX 3.3.1 - 07/2012</tocitem>
-            <tocitem target="changelog.html#13">MTEX 3.3.0 - 06/2012</tocitem>
-            <tocitem target="changelog.html#14">MTEX 3.2.3 - 03/2012</tocitem>
-            <tocitem target="changelog.html#15">MTEX 3.2.1 - 11/2011</tocitem>
-            <tocitem target="changelog.html#16">MTEX 3.2 - 05/2011</tocitem>
-            <tocitem target="changelog.html#17">MTEX 3.1 - 03/2011</tocitem>
-            <tocitem target="changelog.html#18">MTEX 3.0 - 10/2010</tocitem>
-            <tocitem target="changelog.html#19">MTEX 2.0 - 10/2009</tocitem>
-            <tocitem target="changelog.html#20">MTEX 1.2 - 05/2009</tocitem>
-            <tocitem target="changelog.html#21">MTEX 1.1 - 12/2008</tocitem>
-            <tocitem target="changelog.html#22">MTEX 1.0 - 06/2008</tocitem>
-            <tocitem target="changelog.html#23">MTEX 0.4 - 04/2008</tocitem>
-            <tocitem target="changelog.html#24">MTEX 0.3 - 10/2007</tocitem>
-            <tocitem target="changelog.html#25">MTEX 0.2 - 07/2007</tocitem>
-            <tocitem target="changelog.html#26">MTEX 0.1 - 03/2007</tocitem>
+      <tocitem target="ReleaseNotes.html">Release Notes<tocitem target="changelog.html">MTEX Changelog<tocitem target="changelog.html#1">MTEX 4.5 03/2017</tocitem>
+            <tocitem target="changelog.html#2">MTEX 4.4   01/2017</tocitem>
+            <tocitem target="changelog.html#3">MTEX 4.3.2 07/2016</tocitem>
+            <tocitem target="changelog.html#4">MTEX 4.3 - 03/2016</tocitem>
+            <tocitem target="changelog.html#5">MTEX 4.2 - 11/2015</tocitem>
+            <tocitem target="changelog.html#6">MTEX 4.1 - 09/2015</tocitem>
+            <tocitem target="changelog.html#7">MTEX 4.0.0 - 10/2014</tocitem>
+            <tocitem target="changelog.html#8">MTEX 3.5.0 - 12/2013</tocitem>
+            <tocitem target="changelog.html#9">MTEX 3.4.2 - 06/2013</tocitem>
+            <tocitem target="changelog.html#10">MTEX 3.4.1 - 04/2013</tocitem>
+            <tocitem target="changelog.html#11">MTEX 3.4.0 - 03/2013</tocitem>
+            <tocitem target="changelog.html#12">MTEX 3.3.2 - 01/2013</tocitem>
+            <tocitem target="changelog.html#13">MTEX 3.3.1 - 07/2012</tocitem>
+            <tocitem target="changelog.html#14">MTEX 3.3.0 - 06/2012</tocitem>
+            <tocitem target="changelog.html#15">MTEX 3.2.3 - 03/2012</tocitem>
+            <tocitem target="changelog.html#16">MTEX 3.2.1 - 11/2011</tocitem>
+            <tocitem target="changelog.html#17">MTEX 3.2 - 05/2011</tocitem>
+            <tocitem target="changelog.html#18">MTEX 3.1 - 03/2011</tocitem>
+            <tocitem target="changelog.html#19">MTEX 3.0 - 10/2010</tocitem>
+            <tocitem target="changelog.html#20">MTEX 2.0 - 10/2009</tocitem>
+            <tocitem target="changelog.html#21">MTEX 1.2 - 05/2009</tocitem>
+            <tocitem target="changelog.html#22">MTEX 1.1 - 12/2008</tocitem>
+            <tocitem target="changelog.html#23">MTEX 1.0 - 06/2008</tocitem>
+            <tocitem target="changelog.html#24">MTEX 0.4 - 04/2008</tocitem>
+            <tocitem target="changelog.html#25">MTEX 0.3 - 10/2007</tocitem>
+            <tocitem target="changelog.html#26">MTEX 0.2 - 07/2007</tocitem>
+            <tocitem target="changelog.html#27">MTEX 0.1 - 03/2007</tocitem>
          </tocitem>
          <tocitem target="bugs.html">List of Known Bugs<tocitem target="bugs.html#2">Open Issues</tocitem>
          </tocitem>

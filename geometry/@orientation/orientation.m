@@ -118,7 +118,7 @@ methods (Static = true)
   function ori = id(varargin)
     id = find(~cellfun(@isnumeric,varargin),1)-1;
     q = quaternion.id(varargin{1:id});
-    ori = orientation(q,varargin{:});
+    ori = orientation(q,varargin{id+1:end});
   end
   
   function ori = rand(varargin)    
@@ -207,27 +207,27 @@ methods (Static = true)
     ori = orientation('Euler',90*degree,45*degree,0*degree,varargin{:});
   end
 
-  function mori = orientation.Bain(csAlpha,csGamma)    
-    mori = orientation('map',Miller(1,0,0,csAlpha),Miller(1,0,0,csGamma),...
-      Miller(0,1,1,csAlpha,'uvw'),Miller(0,1,0,csGamma,'uvw'));
+  function mori = Bain(csAlpha,csGamma)    
+    mori = orientation('map',Miller(1,0,0,csGamma),Miller(1,0,0,csAlpha),...
+      Miller(0,1,0,csGamma,'uvw'),Miller(0,1,1,csAlpha,'uvw'));
   end
   
-  function mori = orientation.KurdjumovSachs(csAlpha,csGamma)
+  function mori = KurdjumovSachs(csAlpha,csGamma)
     
-    mori = orientation('map',Miller(0,1,1,csAlpha),Miller(1,1,1,csGamma),...
-      Miller(-1,-1,1,csAlpha,'uvw'),Miller(-1,0,1,csGamma,'uvw'));
+    mori = orientation('map',Miller(1,1,1,csGamma),Miller(0,1,1,csAlpha),...
+      Miller(-1,0,1,csGamma,'uvw'),Miller(-1,-1,1,csAlpha,'uvw'));
   end
   
-  function mori = orientation.NishiyamaWassermann(csAlpha,csGamma)
+  function mori = NishiyamaWassermann(csAlpha,csGamma)
     
-    mori = orientation('map',Miller(0,1,1,csAlpha),Miller(1,1,1,csGamma),...
-      Miller(0,-1,1,csAlpha,'uvw'),Miller(1,1,-2,csGamma,'uvw'));
+    mori = orientation('map',Miller(1,1,1,csGamma),Miller(0,1,1,csAlpha),...
+      Miller(1,1,-2,csGamma,'uvw'),Miller(0,-1,1,csAlpha,'uvw'));
   end
   
-  function mori = orientation.Pitch(csAlpha,csGamma)
+  function mori = Pitch(csAlpha,csGamma)
     
-    mori = orientation('map',Miller(1,0,1,csAlpha),Miller(0,1,0,csGamma),...
-      Miller(-1,1,1,csAlpha,'uvw'),Miller(1,0,1,csGamma,'uvw'));
+    mori = orientation('map',Miller(0,1,0,csGamma),Miller(1,0,1,csAlpha),...
+      Miller(1,0,1,csGamma,'uvw'),Miller(-1,1,1,csAlpha,'uvw'));
   end
   
   

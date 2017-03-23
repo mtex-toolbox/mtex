@@ -21,9 +21,9 @@ classdef fibre
   %
   
   properties
-    o1 % starting point
-    o2 % end point (o2 = o1 means full fibre)
-    h  % gradient in id, i.e., ori = o1 * rot(h,omega)
+    o1 = orientation % starting point
+    o2 = orientation % end point (o2 = o1 means full fibre)
+    h = Miller  % gradient in id, i.e., ori = o1 * rot(h,omega)
   end
   
   properties (Dependent = true)
@@ -38,6 +38,8 @@ classdef fibre
   methods
     function f = fibre(o1,varargin)
 
+      if nargin == 0, return; end
+      
       % define a fibre as all o with o*h = r
       if isa(o1,'vector3d')
         f.o1 = orientation('map',o1,varargin{:});

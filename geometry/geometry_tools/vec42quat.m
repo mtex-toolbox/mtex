@@ -31,7 +31,7 @@ if any(abs(dot(u1,vector3d(u2))-dot(v1,vector3d(v2)))>1E-3)
   [i,j] = find(delta<1*degree,1);
   
   if isempty(i)
-    warning(['Inconsitent pairs of vectors!',...
+    error(['Inconsitent pairs of vectors!',...
       ' Angle difference: ',num2str(min(delta)),mtexdegchar]) %#ok<WNTAG>
   else
     u2 = u2(i);

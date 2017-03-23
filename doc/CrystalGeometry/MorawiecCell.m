@@ -80,21 +80,14 @@ mtexdata forsterite
 %%
 % we can visualize the Forsterite orientations by
 
-hold on
-plot(ebsd('Fo').orientations)
-hold off
+plot(ebsd('Fo').orientations,'axisAngle')
 
 %%
-% We see that not all orientations are inside the fundamental region.
-% However, as there is for each orientation exactly one represent inside
-% the fundamental region we can project the orientations inside this
-% region. This is done by
+% We see that all orientations are automatically projected inside the
+% fundamental region. In order to compute explicitly the represent inside
+% the fundamental region we can do
 
 ori =  ebsd('Fo').orientations.project2FundamentalRegion
-
-hold on
-plot(ori,'MarkerColor','g')
-hold off
 
 %% Change the center of the fundamental region
 % There is no necessity that the fundamental region has to be centered in
@@ -116,9 +109,9 @@ plot(rotate(oR,largeGrain.meanOrientation))
 % orientation
 ori = ori.project2FundamentalRegion(largeGrain.meanOrientation)
 
-hold on
-plot(ori)
-hold off
+
+plot(ori,'axisAngle')
+
 
 
 %% Fundamental regions of misorientations
@@ -130,10 +123,11 @@ oR = fundamentalRegion(ebsd('Fo').CS,ebsd('En').CS);
 
 plot(oR)
 
+%%
 % Let plot grain boundary misorientations within this fundamental region
-hold on
-plot(grains.boundary('fo','En').misorientation.project2FundamentalRegion)
-hold off
+
+plot(grains.boundary('fo','En').misorientation)
+
 
 %% Fundamental regions of misorientations with antipodal symmetry
 %
@@ -152,12 +146,19 @@ plot(oR)
 
 %%
 % We see that the fundamental region with antipodal symmetry has only half
-% the size as without. In order to project into this fundamental region use
+% the size as without. In the case of misorientations between the same
+% phase MTEX automatically sets the antipodal flag to the misorientations
+% and plots them accordingly.
 
-hold on
 mori = grains.boundary('Fo','Fo').misorientation
-plot(mori.project2FundamentalRegion('antipodal'))
-hold off
+plot(mori)
+
+%%
+% If you want to avoid this you can remove the anitpodal flag by
+
+mori.antipodal = false;
+
+plot(mori)
 
 %% Axis angle sections
 %

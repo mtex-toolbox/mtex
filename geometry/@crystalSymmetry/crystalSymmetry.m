@@ -8,6 +8,8 @@ classdef crystalSymmetry < symmetry
 %   crystalSymmetry('O')
 %   crystalSymmetry('LaueId',9)
 %   crystalSymmetry('SpaceId',153)
+%   rot = rotation('map',vector3d(1,1,1),vector3d.Z,vector3d(0,-1,1),vector3d.X)
+%   crystalSymmetry('432','rotAxes',rot)
 %
 % Input
 %  name  - Schoenflies or International notation of the Laue group

@@ -22,7 +22,7 @@ function T = EinsteinSum(T1,dimT1,varargin)
 
 % sum over equal negative values in dimT1
 [T1.M,dimT1] = innerSum(T1.M,dimT1);
-
+T1.rank = numel(dimT1);
 
 % for each tensor in varargin
 while ~isempty(varargin) && ~ischar(varargin{1})
@@ -81,7 +81,6 @@ while ~isempty(varargin) && ~ischar(varargin{1})
   else
     sTa = []; sTb = [];
   end
-  
     
   % ------------------ join matrix 1 and matrix 2 -------------
   if ~isempty(M2)
@@ -127,8 +126,10 @@ while ~isempty(varargin) && ~ischar(varargin{1})
     
     % combine rank
     dimT1 = [dimT1 dimT2]; %#ok<AGROW>
+    
+    % set rank
     T1.rank = numel(dimT1);
-        
+    
   end
     
 end

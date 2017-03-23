@@ -38,7 +38,7 @@ oM = ipdfHSVOrientationMapping(ebsd);
 oM.inversePoleFigureDirection = grains(id).meanOrientation * oM.whiteCenter;
 
 % concentrate the colors around the mean orientation
-oM.maxAngle = 3*degree;
+oM.maxAngle = 1.5*degree;
 
 % plot the colormap
 plot(oM,'resolution',0.5*degree)
@@ -113,6 +113,24 @@ hold on
 plot(oneGrain.boundary,'micronbar','off')
 hold off
 
+%% SUB: The Kuwahara Filer
+%
+%
+
+F = KuwaharaFilter;
+F.numNeighbours = 5;
+
+% smooth the data
+ebsd_smoothed = smooth(ebsd,F);
+
+% plot the smoothed data
+plot(ebsd_smoothed('indexed'),...
+  oM.orientation2color(ebsd_smoothed('indexed').orientations),'micronbar','off')
+
+hold on
+plot(oneGrain.boundary)
+hold off
+
 %% SUB: The Smoothing Spline Filter
 % The smoothing spline filter is up to now the only filter that
 % automatically calibrates the smoothing parameter
@@ -139,7 +157,28 @@ F.alpha
 % a later example.
 
 F = halfQuadraticFilter;
-F.alpha = 1; %set the smoothing parameter
+F.alpha = 0.25; %set the smoothing parameter
+
+% smooth the data
+ebsd_smoothed = smooth(ebsd,F);
+
+% plot the smoothed data
+plot(ebsd_smoothed('indexed'),...
+  oM.orientation2color(ebsd_smoothed('indexed').orientations))
+
+hold on
+plot(oneGrain.boundary,'micronbar','off')
+hold off
+
+
+%% SUB: The Infimal Convolution Filter
+% The infimal convolution filter differs from the smoothing spline filter by the
+% fact that it better preserves inner grain boundaries. We will see this in
+% a later example.
+
+F = infimalConvolutionFilter;
+F.lambda = 0.01; %smoothing parameter for the gradient
+F.mu = 0.005;% smoothing parameter for the hessian
 
 % smooth the data
 ebsd_smoothed = smooth(ebsd,F);

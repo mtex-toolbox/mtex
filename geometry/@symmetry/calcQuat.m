@@ -5,9 +5,6 @@ if s.id==0, return; end
 
 if nargin == 1, axes = [xvector,yvector,zvector]; end
 
-ll0axis = vector3d(1,1,0);
-lllaxis = vector3d(1,1,1);
-
 a = axes(1);
 b = axes(2);
 c = axes(3);
@@ -15,6 +12,9 @@ c = axes(3);
 a1 = axes(1);
 a2 = axes(2);
 m = a1 - a2;
+
+ll0axis = a+b;
+lllaxis = a+b+c;
 
 pg = pointGroupList;
 pg = pg(s.id);
