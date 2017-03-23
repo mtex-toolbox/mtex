@@ -8,7 +8,7 @@ if check_option(varargin,'vname')
   h = [get_option(varargin,'vname'), ' = ' h];
 elseif ~isempty(inputname(1))
   h = [inputname(1), ' = ' h];
-end;
+end
 
 disp([h ' ' docmethods(inputname(1))])
 
@@ -66,9 +66,11 @@ disp(' ')
 % show boundary and triple points
 disp([' ' varlink([inputname(1),'.boundary'],'boundary segments') ': ',int2str(length(grains.boundary))])
 disp([' ' varlink([inputname(1),'.triplePoints'],'triple points') ': ',int2str(length(grains.triplePoints))])
+disp(' ');
+
+if isempty(grains), return; end
 
 % show properties
-disp(' ');
 disp(char(dynProp(grains.prop),...
   'Id',grains.id,'Phase',grains.phase,'Pixels',grains.grainSize))
 disp(' ')
