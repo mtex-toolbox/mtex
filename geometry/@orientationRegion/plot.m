@@ -8,7 +8,7 @@ function h = plot(oR,varargin)
 if oR.antipodal, varargin = ['antipodal',varargin]; end
 oP = newOrientationPlot(oR.CS1,oR.CS2,'axisAngle','noBoundary',varargin{:});
 hold on
-color = get_option(varargin,'color',[0 0 0]);
+color = get_option(varargin,{'color','boundaryColor'},[0 0 0]);
 
 % find the sector
 ind = oR.N.angle > pi-1e-3;

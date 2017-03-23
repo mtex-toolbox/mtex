@@ -18,7 +18,8 @@ classdef axisAnglePlot < orientationPlot
       zlabel(oP.ax,'$z$','Interpreter','LaTeX');
       
       if ~check_option(varargin,'noBoundary') && ~strcmpi(oP.fRMode,'ignoreFundamentalRegion')
-        plot(oP.oR,'parent',oP.ax,'noBoundaryCheck');
+        opt = delete_option(varargin,{'color','linewidth'});
+        plot(oP.oR,'parent',oP.ax,'noBoundaryCheck',opt{:});
       end
       
     end
