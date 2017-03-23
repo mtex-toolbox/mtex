@@ -1,7 +1,7 @@
 %% MTEX Changelog
 %
 %
-%% MTEX 4.5.beta.1 01/2017
+%% MTEX 4.5 03/2017
 %
 % *3d orientation plots*
 %
@@ -11,6 +11,49 @@
 % * Bunge Euler angles
 % * Rodrigues Frank space
 % * axis angles space
+%
+% *Misorientations*
+%
+% * MTEX introduces <orientation.round2Miller.html round2Miller> which
+% determines to an arbitrary misorientation |mori| two pairs of lower order
+% Miller indeces such that which are aligned by |mori|
+%
+% * MTEX includes now some of the important misorientation
+% relationsships like
+%
+%   orientation.Bain(cs)
+%   orientation.KurdjumovSachs(cs)
+%   orientation.NishiyamaWassermann(cs)
+%   orientation.Pitch(cs)
+%
+% *Grain Reconstruction
+%
+% New option to handle non convex other shapes of EBSD data sets
+%
+%   calcGrains(ebsd,'boundary','tight')
+%
+% *Tensors*
+%
+% New functions <tensor.diag.html diag>, <tensor.trace.html trace>,
+%
+% *EBSD* 
+%
+% Rotating, flipping of EBSD data is now done with respect to the center of
+% the map. Previously all these opertions where done relatively to the
+% point (0,0). Use
+%
+%   rotate(ebsd,180*degree,'center',[0,0])
+%
+% to get back the behavior of previous versions.
+%
+% *Colorbar*
+%
+% |MTEXColorbar| allows now to have a title next to it. Use
+%
+%   mtexColorbar('Title','this is a title')
+%
+% *Bug Fix*
+% This release contains several important bug fixes compare to MTEX 4.4.
 %
 %% MTEX 4.4   01/2017
 %
