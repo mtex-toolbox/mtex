@@ -1,28 +1,44 @@
-function [h1,h2,d1,d2] = round2Miller(mori,varargin)
-% find h1,h2,d1,d2 such that ori * h1 = h2 and ori*d1=d2
+function [n1,n2,d1,d2] = round2Miller(mori,varargin)
+% find lattice alignements for arbitrary misorientations
+%
+% Description
+%
+% Given a misorientation mori find corresponding face normals n1, n2 and
+% crystal directions d1, d2, i.e., such that ori * n1 = n2 and ori * d1 =
+% d2.
 %
 % Syntax
-%   [h1,h2,d1,d2] = round2Miller(mori)
-%   [h1,h2,d1,d2] = round2Miller(mori,'penalty',0.01)
-%   [h1,h2,d1,d2] = round2Miller(mori,'maxIndex',6)
+%   [n1,n2,d1,d2] = round2Miller(mori)
+%   [n1,n2,d1,d2] = round2Miller(mori,'penalty',0.01)
+%   [n1,n2,d1,d2] = round2Miller(mori,'maxIndex',6)
 %
 % Input
 %  mori - mis@orientation
 %
 % Output
-%  h1,h2,d1,d2 - @Miller
+%  n1,n2,d1,d2 - @Miller
+%
+% Example
+%   % revert sigma3 misorientation relationship
+%   [n1,n2,d1,d2] = round2Miller(CSL(3,crystalSymmetry('432')))
+%
+%   % revert back Bain misorientation ship
+%   cs_alpha = crystalSymmetry('m-3m', [2.866 2.866 2.866], 'mineral', 'Ferrite');
+%   cs_gamma = crystalSymmetry('m-3m', [3.66 3.66 3.66], 'mineral', 'Austenite');
+%   mori = orientation.Bain(cs_alpha,cs_gamma)
+%   [n_gamma,n_alpha,d_gamma,d_alpha] = round2Miller(mori)
 %
 % See also
-% 
+% CSL
 
 % maybe more then one orientation should be transformed
 if length(mori) > 1
-  h1 = Miller.nan(size(mori),mori.CS);
-  h2 = Miller.nan(size(mori),mori.SS);
+  n1 = Miller.nan(size(mori),mori.CS);
+  n2 = Miller.nan(size(mori),mori.SS);
   d1 = Miller.nan(size(mori),mori.CS);
   d2 = Miller.nan(size(mori),mori.SS);
-  for i = 1:length(ori)
-    [h1(i),h2(i),d1(i),d2(i)] = round2Miller(mori.subSet(i),varargin{:});
+  for i = 1:length(mori)
+    [n1(i),n2(i),d1(i),d2(i)] = round2Miller(mori.subSet(i),varargin{:});
   end
   return
 end
@@ -33,13 +49,13 @@ maxIndex = get_option(varargin,'maxIndex',4);
 
 % all plane normales
 [h,k,l] =meshgrid(0:maxIndex,-maxIndex:maxIndex,-maxIndex:maxIndex);
-h1 = Miller(h(:),k(:),l(:),mori.CS);
-h2 = mori * h1;
-rh2 = round(h2);
+n1 = Miller(h(:),k(:),l(:),mori.CS);
+n2 = mori * n1;
+rh2 = round(n2);
 hkl2 = rh2.hkl;
 
 % fit of planes
-omega_h = angle(rh2,h2) + ...
+omega_h = angle(rh2,n2) + ...
   (h(:).^2 + k(:).^2 + l(:).^2 + sum(hkl2.^2,2)) * penalty;
 
 % all directions
@@ -54,14 +70,14 @@ omega_d = angle(rd2,d2) + ...
   (u(:).^2 + v(:).^2 + w(:).^2 + sum(uvw2.^2,2)) * penalty;
 
 % directions should be orthognal to normals
-fit = bsxfun(@plus,omega_h(:),omega_d(:).') + 10*(pi/2-angle_outer(h1,d1));
+fit = bsxfun(@plus,omega_h(:),omega_d(:).') + 10*(abs(pi/2-angle_outer(n1,d1,'noSymmetry')));
 
 [~,ind] = nanmin(fit(:));
 [ih,id] = ind2sub(size(fit),ind);
 
-h1 = h1(ih);
+n1 = n1(ih);
 d1 = d1(id);
-h2 = round(mori * h1);
+n2 = round(mori * n1);
 d2 = round(mori * d1);
 
 end
