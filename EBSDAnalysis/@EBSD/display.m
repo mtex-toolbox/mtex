@@ -31,12 +31,12 @@ for ip = 1:numel(ebsd.phaseMap)
 
   % orientations
   numPhase = nnz(ebsd.phaseId == ip);
-  matrix{ip,2} = [int2str(numPhase) ' (' xnum2str(100*numPhase./length(ebsd.phase)) '%)'];
+  matrix{ip,2} = [int2str(numPhase) ' (' xnum2str(100*numPhase./numel(ebsd.phase)) '%)'];
   
     % mineral
   CS = ebsd.CSList{ip};
   % abort in special cases
-  if isempty(CS), 
+  if isempty(CS)
     continue
   elseif ischar(CS)
     matrix{ip,3} = CS;  
