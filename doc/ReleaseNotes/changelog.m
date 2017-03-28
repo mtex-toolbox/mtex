@@ -26,11 +26,16 @@
 %   orientation.NishiyamaWassermann(cs)
 %   orientation.Pitch(cs)
 %
-% *Grain Reconstruction
+% *Grain Reconstruction*
 %
 % New option to handle non convex other shapes of EBSD data sets
 %
 %   calcGrains(ebsd,'boundary','tight')
+%
+% * Grain boundary indexing*
+% The commands
+%   gB('phase1','phase2').misorientation
+% returns now always a misorientation from phase1 to phase2
 %
 % *Tensors*
 %
