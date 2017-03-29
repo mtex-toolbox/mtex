@@ -1,12 +1,13 @@
-function [ev,ew]= principalComponents(grains,varargin)
+function [omega,a,b]= principalComponents(grains,varargin)
 % returns the principalcomponents of grain polygon, without Holes
 %
 % Input
 %  grains - @grain2d
 %
 % Output
-%  cmp   - angle of components as complex
-%  v     - length of axis
+%  omega - angle of the ellipse
+%  a     - length largest axis
+%  b     - length smallest axis
 %
 %
 % See also
@@ -22,24 +23,39 @@ V = grains.V;
 % centroids
 c = grains.centroid;
 
-ew = zeros(2,2,numel(poly));
-ev = zeros(2,2,numel(poly));
+omega = zeros(size(poly));
+a = zeros(size(poly));
+b = zeros(size(poly));
+
 for k=1:numel(poly)
   
   % center polygon in centroid
-  Vg = bsxfun(@minus,V(poly{k},:), c(k,:));
+  Vg = bsxfun(@minus,V(poly{k}(1:end-1),:), c(k,:));
+  
+  %
+  if check_option(varargin,'hull')
+    ind = convhulln(Vg);
+    Vg = Vg(ind(:,1),:);
+  end
   
   % compute length of line segments
-  ind = poly{k};
-  dist = sqrt(sum((V(ind(1:end-1),:) - V(ind(2:end),:)).^2,2));
-  weight = ([dist;0] + [0;dist])./2;
+  dist = sqrt(sum((Vg(:,:) - Vg([2:end 1],:)).^2,2));
+  
+  dist = 0.5*(dist(1:end) + [dist(end);dist(1:end-1)]);
   
   % weight vertices according to half the length of the adjacent faces
-  Vg = bsxfun(@times,Vg, weight);
-  
+  Vg = bsxfun(@times,Vg, dist./mean(dist));
+    
   % pca
-  [ev(:,:,k), ew(:,:,k)] = svd(Vg'*Vg);
-  ew(:,:,k)  = nthroot(2*sqrt(2).*ew(:,:,k),2)./(nthroot(size(Vg,1),2));
+  [ev, ew] = svd(Vg'*Vg);
+  
+  omega(k) = atan2(ev(2),ev(1));
+  
+  ew = sqrt(sqrt(2) * ew / length(dist));
+  
+  a(k) = ew(1);
+  b(k) = ew(4);
+ 
 end
 
 end
