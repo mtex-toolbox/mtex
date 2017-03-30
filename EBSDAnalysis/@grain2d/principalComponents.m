@@ -11,6 +11,8 @@ function [omega,a,b]= principalComponents(grains,varargin)
 %
 % Options
 %  hull  - consider convex hull
+%  area - scale a,b such that the corresponding ellipse has the same area as the grain (default)    - 
+%  boundary - scale a,b such that the corresponding ellipse has the boundary length as the grain
 %
 % See also
 % plotEllipse
@@ -35,7 +37,7 @@ for k=1:numel(poly)
   Vg = bsxfun(@minus,V(poly{k},:), c(k,:));
   
   %
-  if check_option(varargin,'hull')
+  if check_option(varargin,{'hull','boundary'})
     ind = convhulln(Vg);
     Vg = Vg(ind(:,1),:);
   end
@@ -60,7 +62,7 @@ for k=1:numel(poly)
   % extract the eigenvectors and scale them  such that area of the
   % corresponding ellipse is equal to the grain area
   if check_option(varargin,'boundary') % boundary length fit
-    [~,E] = ellipke(sqrt(ew(1).^2 - ew(2)^2)./ew(1));
+    [~,E] = ellipke(sqrt(ew(1).^2 - ew(4)^2)./ew(1));
     scaling = sum(dist) ./ ew(1) ./ 4 ./ E;
   else % area fit   
     scaling = sqrt(polySgnArea(Vg(:,1),Vg(:,2)) ./ ew(1) ./ ew(4) ./pi);

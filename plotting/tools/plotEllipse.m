@@ -4,7 +4,7 @@ function plotEllipse(cxy,a,b,omega,varargin)
 % Syntax
 %
 %  [omega,a,b] = principalComponents(grains);
-%  plotEllipse(grains.centroid,a,b,omega,'lineColor','w')
+%  plotEllipse(grains.centroid,a,b,omega,'lineColor','r')
 %
 % Input
 %  cxy - center of the ellipse 
