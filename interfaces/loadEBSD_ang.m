@@ -87,6 +87,14 @@ try
     ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
       'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Phase' 'SEM_signal' 'Fit'},...
       'Columns',1:10,varargin{:},'header',nh);
+      
+  elseif isempty(sscanf(hl{nh+1},'%*f %*f %*f %*f %*f %*f %*f %*f %*f %*f %*f %*f %*f %*f %s\n'))
+      % replace minearal names by numbers
+    replaceExpr = arrayfun(@(i) {cs{i}.mineral,num2str(i)},1:numel(cs),'UniformOutput',false);
+    
+    ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
+      'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Fit' 'phase' 'unknown1' 'unknown2' 'unknown3'  'unknown4'  'unknown5' },...
+      'Columns',1:14,varargin{:},'header',nh,'ReplaceExpr',replaceExpr);
     
   else
     % replace minearal names by numbers
@@ -111,4 +119,3 @@ else
     'coordinates and Euler angles. You may want to use one of the options ' ...
     '''convertSpatial2EulerReferenceFrame'' or ''convertEuler2SpatialReferenceFrame'' to correct for this']);  
 end
-  
