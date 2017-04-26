@@ -234,6 +234,10 @@ methods (Static = true)
     
     mori = orientation('map',Miller(0,1,0,csGamma),Miller(1,0,1,csAlpha),...
       Miller(1,0,1,csGamma,'uvw'),Miller(-1,1,1,csAlpha,'uvw'));
+  
+    %mori = orientation('map',Miller(1,1,0,csGamma),Miller(1,1,1,csAlpha),...
+    %  Miller(0,0,1,csGamma,'uvw'),Miller(-1,1,0,csAlpha,'uvw'));
+  
   end
   
   
