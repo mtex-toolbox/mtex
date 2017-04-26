@@ -4,7 +4,7 @@ function [n1,n2,d1,d2] = round2Miller(mori,varargin)
 % Description
 %
 % Given a misorientation mori find corresponding face normals n1, n2 and
-% crystal directions d1, d2, i.e., such that ori * n1 = n2 and ori * d1 =
+% crystal directions d1, d2, i.e., such that mori * n1 = n2 and mori * d1 =
 % d2.
 %
 % Syntax
