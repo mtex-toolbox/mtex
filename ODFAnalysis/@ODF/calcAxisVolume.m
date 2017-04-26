@@ -22,7 +22,7 @@ res = get_option(varargin,'resolution',min(radius/5,2.5*degree));
 h = equispacedS2Grid('resolution',res,varargin{:});
 
 % restrict to fundamental region
-sym = disjoint(odf.CS,odf.SS);
+sym = properGroup(disjoint(odf.CS,odf.SS));
 if odf.antipodal || check_option(varargin,'antipodal')
   sym = sym.Laue;
 end
