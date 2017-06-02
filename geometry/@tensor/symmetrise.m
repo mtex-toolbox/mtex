@@ -26,6 +26,7 @@ T = rotate(T,T.CS);
 
 % set all entries that contain missing values to NaN
 T.M(~isnull(imag(T.M))) = NaN;
+T.M = real(T.M);
 
 % take the mean 
 T.M = nanmean(T.M,T.rank+1);
