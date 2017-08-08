@@ -71,7 +71,7 @@ loader = loadHelper(d,varargin{:});
 q      = loader.getRotations();
 
 % get weights
-weights = loader.getColumnData('weights');
+weights = loader.getColumnData({'weights','weight'});
 
 % if no weights given - set to one
 if isempty(weights), weights = ones(size(q)); end
