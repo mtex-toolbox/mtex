@@ -25,7 +25,10 @@ try
   % read file header
   hl = file2cell(fname,2000);
   
-  phasePos = strmatch('# Phase',hl);
+  phasePos = strmatch('# Phase ',hl);
+  if isempty(phasePos)
+    phasePos = strmatch('# MaterialName ',hl)-1;
+  end
         
   try
     for i = 1:length(phasePos)
@@ -33,6 +36,7 @@ try
       
       % load phase number
       phase = sscanf(hl{pos},'# Phase %u');
+      if isempty(phase), phase = i; end     
            
       % load mineral data
       mineral = hl{pos+1}(15:end);
