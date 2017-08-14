@@ -21,7 +21,6 @@ ebsd = EBSD;
 try
   assertExtension(fname,'.ang');
 
-  
   % read file header
   hl = file2cell(fname,2000);
   
@@ -35,15 +34,14 @@ try
       pos = phasePos(i);
       
       % load phase number
-      phase = sscanf(hl{pos},'# Phase %u');
-      if isempty(phase), phase = i; end     
-           
+      phase = readByToken(hl(pos:pos+100),'# Phase',i);
+            
       % load mineral data
-      mineral = hl{pos+1}(15:end);
-      mineral = strtrim(mineral);
-      %mineral = sscanf(hl{pos+1},'# MaterialName %s %s %s');
-      laue = sscanf(hl{pos+4},'# Symmetry %s');
-      lattice = sscanf(hl{pos+5},'# LatticeConstants %f %f %f %f %f %f');
+      mineral = readByToken(hl(pos:pos+100),'# MaterialName');
+      laue = readByToken(hl(pos:pos+100),'# Symmetry');
+      lattice = readByToken(hl(pos:pos+100),'# LatticeConstants',[1 1 1 90 90 90]);
+      
+      % setup crytsal symmetry
       options = {};
       switch laue
         case {'-3m' '32' '3' '62' '6'}
@@ -60,8 +58,9 @@ try
             options = {'X||a'};
           end
       end
-      
       cs{phase} = crystalSymmetry(laue,lattice(1:3)',lattice(4:6)'*degree,'mineral',mineral,options{:}); %#ok<AGROW>
+      
+      % detect mineral names in orientation table
       ReplaceExpr{i} = {mineral,int2str(i)}; %#ok<AGROW>
     end
     assert(numel(cs)>0);
@@ -122,4 +121,24 @@ else
   warning(['.ang files have usualy inconsistent conventions for spatial ' ...
     'coordinates and Euler angles. You may want to use one of the options ' ...
     '''convertSpatial2EulerReferenceFrame'' or ''convertEuler2SpatialReferenceFrame'' to correct for this']);  
+end
+end
+
+function value = readByToken(cellStr,token,default)
+
+  values = regexp(cellStr,[token '\s*(.*)'],'tokens');
+  id = find(~cellfun(@isempty,values),1);
+  if ~isempty(id)
+    value = strtrim(char(values{id}{1}));
+    
+    if nargin > 2 && ~isempty(default) && isnumeric(default)
+      value = str2num(value);
+    end
+    
+  elseif nargin > 2
+    value = default;
+  else 
+    value = [];
+  end
+  
 end
