@@ -60,8 +60,6 @@ try
       end
       cs{phase} = crystalSymmetry(laue,lattice(1:3)',lattice(4:6)'*degree,'mineral',mineral,options{:}); %#ok<AGROW>
       
-      % detect mineral names in orientation table
-      ReplaceExpr{i} = {mineral,int2str(i)}; %#ok<AGROW>
     end
     assert(numel(cs)>0);
   catch %#ok<CTCH>
@@ -74,40 +72,56 @@ try
   nh = find(strmatch('#',hl),1,'last');
   
   % mineral name to phase number conversion needed?
-  if numel(sscanf(hl{end},'%f')) < 11
-    varargin = [{'ReplaceExpr',ReplaceExpr},varargin];
-  end
-     
-  % get number of columns
-  if isempty(sscanf(hl{nh+1},'%*f %*f %*f %*f %*f %*f %*f %*f %*f %*f\n'))
+  parts = regexpsplit(hl{end-1},'\s*');
+  parts(cellfun(@isempty,parts)) = [];
+  isnum = cellfun(@(x) ~isempty(str2num(x)),parts);
   
-    ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
-      'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Phase' 'SEM_signal'},...
-      'Columns',1:9,varargin{:},'header',nh);
-    
-  elseif isempty(sscanf(hl{nh+1},'%*f %*f %*f %*f %*f %*f %*f %*f %*f %*f %s\n'))
-        
-    ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
-      'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Phase' 'SEM_signal' 'Fit'},...
-      'Columns',1:10,varargin{:},'header',nh);
-      
-  elseif isempty(sscanf(hl{nh+1},'%*f %*f %*f %*f %*f %*f %*f %*f %*f %*f %*f %*f %*f %*f %s\n'))
-      % replace minearal names by numbers
-    replaceExpr = arrayfun(@(i) {cs{i}.mineral,num2str(i)},1:numel(cs),'UniformOutput',false);
-    
-    ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
-      'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Fit' 'phase' 'unknown1' 'unknown2' 'unknown3'  'unknown4'  'unknown5' },...
-      'Columns',1:14,varargin{:},'header',nh,'ReplaceExpr',replaceExpr);
-    
+  if any(~isnum) % if there are any strings
+    % try to replace minearal names by numbers
+    ReplaceExpr = arrayfun(@(i) {cs{i}.mineral,num2str(i)},1:numel(cs),'UniformOutput',false);
+    ReplaceExpr = {'ReplaceExpr',ReplaceExpr};
   else
-    % replace minearal names by numbers
-    replaceExpr = arrayfun(@(i) {cs{i}.mineral,num2str(i)},1:numel(cs),'UniformOutput',false);
-    
-    ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
-      'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Fit' 'unknown1' 'unknown2' 'phase'},...
-      'Columns',1:11,varargin{:},'header',nh,'ReplaceExpr',replaceExpr);
-    
+    ReplaceExpr = {};
   end
+  
+  % read some data
+  data = txt2mat(fname,'RowRange',[1 10000],ReplaceExpr{:},'infoLevel',0);
+    
+  % we need to guess one of the following conventions
+  % Euler 1 Euler 2 Euler 3 X Y IQ CI Phase SEM_signal Fit
+  % Euler 1 Euler 2 Euler 3 X Y IQ CI Fit phase
+  % Euler 1 Euler 2 Euler 3 X Y IQ CI Fit unknown1 unknown2 phase
+  % most important is the position of the phase
+  
+  % if there was text then it describes the phase
+  if any(~isnum)
+    phaseCol = find(~isnum,1);
+  elseif size(data,2) <= 8 
+    phaseCol = 8;
+  else % take 8 or 9 depending which is more likely
+    col8 = unique(data(:,8));
+    col9 = unique(data(:,9));
+    
+    if ~all(ismember(col8,0:length(cs))), col8 = []; end
+    if ~all(ismember(col9,0:length(cs))), col9 = []; end
+    
+    phaseCol = 8 + (length(col9)>length(col8));
+  end
+  
+  % set up columnnames
+  ColumnNames = {'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Fit' 'unknown1' 'unknown2' 'unknown3'  'unknown4'  'unknown5' 'unknown6' 'unknown7'};
+  switch phaseCol
+    case 8
+      ColumnNames = {'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Phase' 'SEM_signal' 'Fit' 'unknown1' 'unknown2' 'unknown3' 'unknown4' 'unknown5' 'unknown6'};
+    otherwise
+      ColumnNames{phaseCol} = 'Phase';     
+  end       
+  ColumnNames = get_option(varargin,'ColumnNames',ColumnNames(1:length(isnum)));
+  
+  % import the data
+  ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
+    'ColumnNames',ColumnNames,varargin{:},'header',nh,ReplaceExpr{:});
+  
 catch
   interfaceError(fname);
 end
