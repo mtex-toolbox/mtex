@@ -1,0 +1,12 @@
+{
+"calcGrains":
+{
+    "inputs":
+    [
+        {"name":"ebsd", "kind":"required",   "type":"EBSD"},
+        {"name":"halfwidth", "kind":"namevalue", "type":"double"},
+        {"name":"kernel", "kind":"namevalue", "type":"kernel"},
+        {"name":"order", "kind":"namevalue", "type":"double"}
+    ]
+}
+}
