@@ -1,6 +1,22 @@
-function mtexColorMap(name,varargin)
+function mtexColorMap(arg1,varargin)
 % define an MTEX colormap
 
+% get input
+if ishandle(arg1) 
+  ax = arg1;
+  name = varargin{1};
+else
+  ax = gcf;
+  name = arg1;
+end
+
+% get axes
+if isa(ax,'Figure')
+  mtexFig = getappdata(ax,'mtexFig');
+  ax = mtexFig.children;
+end
+
+% detect colormap
 if ischar(name)
   if isempty(which([name '.m']))
     name = [name,'ColorMap'];
@@ -15,13 +31,7 @@ else
   map = name;
 end
 
-if isappdata(gcf,'mtexFig')
-  mtexFig = getappdata(gcf,'mtexFig');
-  for i = 1:numel(mtexFig.children)
-    colormap(mtexFig.children(i),map);
-  end  
-else
-  colormap(map);
-end
+% apply the colormap
+for i = 1:length(ax), colormap(ax(i),map); end
 
-  
+end
