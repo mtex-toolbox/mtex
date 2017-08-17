@@ -11,7 +11,7 @@ else
 end
 
 % get axes
-if isa(ax,'Figure')
+try
   mtexFig = getappdata(ax,'mtexFig');
   ax = mtexFig.children;
 end
