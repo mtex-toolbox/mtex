@@ -23,6 +23,7 @@ classdef grainBoundary < phaseList & dynProp
     V = []          % vertices x,y coordinates            
     scanUnit = 'um' % unit of the vertice coordinates
     triplePoints    % triple points
+    quadruplePoints % quadruple points
   end
   
   properties (Dependent = true)
@@ -94,7 +95,8 @@ classdef grainBoundary < phaseList & dynProp
         .* ebsd.rotations(gB.ebsdId(isNotBoundary,1));
       
       % compute triple points
-      gB.triplePoints = gB.calcTriplePoints(grainsPhaseId);      
+      gB.triplePoints = gB.calcTriplePoints(grainsPhaseId);
+      gB.quadruplePoints = gB.calcQuadruplePoints(grainsPhaseId);
       
     end
 

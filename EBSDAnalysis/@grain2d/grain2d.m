@@ -27,6 +27,7 @@ classdef grain2d < phaseList & dynProp
     x                % x coordinates of the vertices of the grains
     y                % y coordinates of the vertices of the grains
     triplePoints     % triple points
+    quadruplePoints  % quadruple points
   end
   
   properties (Dependent = true, Access = protected)
@@ -122,9 +123,12 @@ classdef grain2d < phaseList & dynProp
     function grains = set.V(grains,V)
       grains.boundary.V = V;
       
-      % update V in triple points
+      % update V in triple and qudruple points
       tP = grains.triplePoints;
       grains.triplePoints.V = V(tP.id,:);
+
+      tQ = grains.qudruplePoints;
+      grains.qudruplePoints.V = V(tQ.id,:);
     end
     
     function idV = get.idV(grains)
@@ -163,6 +167,10 @@ classdef grain2d < phaseList & dynProp
     
     function tP = get.triplePoints(grains)
       tP = grains.boundary.triplePoints;
+    end
+    
+    function tP = get.quadruplePoints(grains)
+      tP = grains.boundary.quadruplePoints;
     end
     
     function grains = set.triplePoints(grains,tP)
