@@ -9,10 +9,10 @@ function q = expquat(tq,q)
 %   q = expquat(tq,q) % exponential map relative to quaternion q
 %
 % Input
-%  M - skew symmetric matrix - element of the Lie algebra
+%  M - skew symmetric matrix ~ element of the Lie algebra
 %  T - skew symmetric rank 2 tensor
 %  tq - @vector3d element of the tangential space
-%  a - [a12,a13,a23]  matrix entries of the skew symmetric matrix
+%  a - [a12, a13, a23] matrix entries of the skew symmetric matrix
 %
 % Output
 %  q - @quaternion

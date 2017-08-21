@@ -368,8 +368,7 @@ localUpdateTableHeaders()
     colnames =  api.Columns;
     data     = api.Data;
     
-    message1 = {'The data format could not be detected automatically. ' ...
-      'Please specify how the columns should be interpreted!'};
+    message1 = {'Please specify the data type of each column! Use the values from the pop up list if possible!'};
     
     message2 = 'The following data matrix was extracted from the file.';
     
