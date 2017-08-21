@@ -1,13 +1,16 @@
-function WizardFinish( api )
+function e = WizardFinish( api )
 
+e = 1;
 if ~api.Export.getGenerateScriptFile()
-  
-  assignin('base',api.Export.getWorkspaceName(),api.getDataTransformed());
-  
+  if api.getDataType() == 2
+    errordlg('Select "Import to script file" for ODFs!')
+  else
+    assignin('base',api.Export.getWorkspaceName(),api.getDataTransformed());
+    e = 0;
+  end
 else
-  
   generateScript();
-  
+  e = 0;
 end
 
   function generateScript()
