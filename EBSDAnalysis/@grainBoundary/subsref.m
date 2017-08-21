@@ -16,7 +16,7 @@ if strcmp(s(1).type,'()')
   % change the order of boundary
   phId = find(cellfun(@ischar,s(1).subs),1);
   
-  if ~isempty(phId)
+  if ~isempty(phId) && ~strcmpi(s(1).subs{phId},'indexed')
     ph = s(1).subs{phId};
     alt_mineral = cellfun(@num2str,num2cell(gB.phaseMap),'Uniformoutput',false);
     ph = ~cellfun('isempty',regexpi(gB.mineralList(:),['^' ph])) | ...
