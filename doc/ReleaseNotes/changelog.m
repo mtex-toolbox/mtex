@@ -1,6 +1,18 @@
 %% MTEX Changelog
 %
 %
+%% MTEX 4.5.1 08/2017
+%
+% This is mainly a bug fix release
+%
+% * some functions get tab completetion for input arguments
+% * allow different colormaps in one figure
+% * updated interfaces
+% * added Levi Civita permutation tensor
+% * improved round2Miller
+% * grains.boundary('phase2','phase1') rearranges the misorientation to be
+% from phase2 to phase 1
+%
 %% MTEX 4.5 03/2017
 %
 % *3d orientation plots*
