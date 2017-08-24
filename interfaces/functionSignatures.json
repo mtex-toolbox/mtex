@@ -38,5 +38,12 @@
         {"name":"filename1", "kind":"required",   "type":"filepath"},
         {"name":"CS", "kind":"namevalue", "type":"crystalSymmetry"}
     ]
+},
+"loadOrientation":
+{
+    "inputs":
+    [
+        {"name":"filename1", "kind":"required",   "type":"filepath"}
+    ]
 }
 }
