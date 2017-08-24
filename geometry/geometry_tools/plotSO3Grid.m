@@ -21,7 +21,7 @@ function [S3G,S2G,sec,scaling] = plotSO3Grid(CS,SS,varargin)
 
 % the axis / angle grid
 if check_option(varargin,{'axisAngle','angle'})
-  sym = disjoint(CS,SS);
+  sym = properGroup(disjoint(CS,SS));
 
   % get sections
   if check_option(varargin,'angle')

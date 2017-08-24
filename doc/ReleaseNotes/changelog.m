@@ -1,6 +1,18 @@
 %% MTEX Changelog
 %
 %
+%% MTEX 4.5.1 08/2017
+%
+% This is mainly a bug fix release
+%
+% * some functions get tab completetion for input arguments
+% * allow different colormaps in one figure
+% * updated interfaces
+% * added Levi Civita permutation tensor
+% * improved round2Miller
+% * grains.boundary('phase2','phase1') rearranges the misorientation to be
+% from phase2 to phase 1
+%
 %% MTEX 4.5 03/2017
 %
 % *3d orientation plots*
@@ -26,11 +38,16 @@
 %   orientation.NishiyamaWassermann(cs)
 %   orientation.Pitch(cs)
 %
-% *Grain Reconstruction
+% *Grain Reconstruction*
 %
 % New option to handle non convex other shapes of EBSD data sets
 %
 %   calcGrains(ebsd,'boundary','tight')
+%
+% * Grain boundary indexing*
+% The commands
+%   gB('phase1','phase2').misorientation
+% returns now always a misorientation from phase1 to phase2
 %
 % *Tensors*
 %

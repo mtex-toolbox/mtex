@@ -69,6 +69,12 @@ methods
     elseif ~isempty(varargin) && ischar(varargin{1}) && strcmpi(varargin{1},'map')
       if isa(varargin{2},'Miller'), o.CS = varargin{2}.CS; end
       if isa(varargin{3},'Miller'), o.SS = varargin{3}.CS; end
+    else
+      try %#ok<TRYNC>
+        a = get_option(varargin,'axis');
+        o.CS = a.CS;
+        o.SS = a.CS;
+      end
     end
     if ~isempty(sym), o.CS = sym{1};end
     if length(sym) > 1, o.SS = sym{2};end
@@ -228,6 +234,10 @@ methods (Static = true)
     
     mori = orientation('map',Miller(0,1,0,csGamma),Miller(1,0,1,csAlpha),...
       Miller(1,0,1,csGamma,'uvw'),Miller(-1,1,1,csAlpha,'uvw'));
+  
+    %mori = orientation('map',Miller(1,1,0,csGamma),Miller(1,1,1,csAlpha),...
+    %  Miller(0,0,1,csGamma,'uvw'),Miller(-1,1,0,csAlpha,'uvw'));
+  
   end
   
   

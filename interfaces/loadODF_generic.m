@@ -46,13 +46,16 @@ function [odf,options] = loadODF_generic(fname,varargin)
 
 % get options
 ischeck = check_option(varargin,'check');
-cs = get_option(varargin,'cs',crystalSymmetry('m-3m'));
+cs = get_option(varargin,'cs');
 ss = get_option(varargin,'ss',specimenSymmetry('1'));
+if ~isa(cs,'crystalSymmetry') && ~ischeck && ~check_option(varargin,'wizard')
+  error('\nNo crystal Symmetry specified!\n','')
+end
 
 % load data
 [d,varargin,header,c] = load_generic(char(fname),varargin{:});
 
-% no data found
+% no data found<
 if size(d,1) < 1 || size(d,2) < 3
   error('Generic interface could not detect any numeric data in %s',fname);
 end
@@ -71,7 +74,7 @@ loader = loadHelper(d,varargin{:});
 q      = loader.getRotations();
 
 % get weights
-weights = loader.getColumnData('weights');
+weights = loader.getColumnData({'weights','weight'});
 
 % if no weights given - set to one
 if isempty(weights), weights = ones(size(q)); end
@@ -86,40 +89,29 @@ else
   defaultMethod = 'density';
 end
 
+if isempty(cs)
+  ori = orientation(q,crystalSymmetry,ss);
+  odf = unimodalODF(ori,'weights',weights);
+  return
+else
+  ori = orientation(q,cs,ss,varargin{:});
+end
+
 method = get_flag(varargin,{'interp','density'},defaultMethod);
 
 switch method
   
   case 'density'
-
+    
     % load single orientations
     if ~check_option(varargin,{'exact','resolution'}), varargin = [varargin,'exact'];end
-    ori = orientation(q,cs,ss,varargin{:});
-    
+      
     % calc ODF
     odf = calcODF(ori,'weights',weights,'silent',varargin{:});    
     
   case 'interp'
   
     disp('  Interpolating the ODF. This might take some time...')
-    res = get_option(varargin,'resolution',3*degree);
-  
-    % interpolate
-    S3G = equispacedSO3Grid(cs,ss,'resolution',res);
-
-    % get kernel
-    psi = get_option(varargin,'kernel',deLaValeePoussinKernel('halfwidth',res));
-
-    M = psi.K_symmetrised(S3G,q,cs,ss);
-
-    MM = M * M';
-    mw = M * weights;
-    w = pcg(MM,mw,1e-2,30);
-    %sum(w)
-    odf = unimodalODF(S3G,psi,cs,ss,'weights',w./sum(w));
-    
+    odf = ODF.interp(ori,weights,varargin{:});
+        
 end
-
-% TODO
-% store method
-%odf = set_option(odf,method);

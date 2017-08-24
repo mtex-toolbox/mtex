@@ -1,13 +1,13 @@
 classdef dislocationSystem < slipSystem
-  % class representing dislocation systems
-  %
-  % Syntax
-  %   dS = slipSystem(b,l)
-  %
-  % Input
-  %  b - @Miller - Burgers vector
-  %  l - @Miller - line of dislocations
-  %
+% class representing dislocation systems
+%
+% Syntax
+%   dS = slipSystem(b,l)
+%
+% Input
+%  b - @Miller Burgers vector
+%  l - @Miller line of dislocations
+%
   
   properties (Dependent = true)
     l % 

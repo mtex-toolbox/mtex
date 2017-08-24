@@ -3,6 +3,7 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 %
 % Syntax
 %   grains = calcGrains(ebsd,'angle',10*degree)
+%   grains = calcGrains(ebsd,'unitCell')
 %
 % Input
 %  ebsd   - @EBSD

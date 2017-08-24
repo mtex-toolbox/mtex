@@ -1,0 +1,16 @@
+{
+"calcODF":
+{
+    "inputs":
+    [
+        {"name":"ori", "kind":"required",   "type":"orientation"},
+        {"name":"halfwidth", "kind":"namevalue", "type":"double"},
+        {"name":"kernel", "kind":"namevalue", "type":"kernel"},
+        {"name":"weights", "kind":"namevalue", "type":"double"},
+        {"name":"resolution", "kind":"namevalue", "type":"double"},
+        {"name":"order", "kind":"namevalue", "type":"double"},
+        {"name":"method", "kind":"flag", "type":"choices={'Fourier', 'Bingham', 'noFourier'}"},
+        {"name":"method2", "kind":"flag", "type":"choices={'exact'}"}
+    ]
+}
+}

@@ -1,15 +1,15 @@
 classdef slipSystem
-  % class representing slip systems
-  %
-  % Syntax
-  %   sS = slipSystem(b,n)
-  %   sS = slipSystem(b,n,CRSS)
-  %
-  % Input
-  %  b - @Miller - Burgers vector or slip direction
-  %  n - @Miller - slip plane normal
-  %  CRSS - critical resolved shear stress
-  %
+% class representing slip systems
+%
+% Syntax
+%   sS = slipSystem(b,n)
+%   sS = slipSystem(b,n,CRSS)
+%
+% Input
+%  b - @Miller Burgers vector or slip direction
+%  n - @Miller slip plane normal
+%  CRSS - critical resolved shear stress
+%
   
   properties    
     b % slip direction or burgers vector

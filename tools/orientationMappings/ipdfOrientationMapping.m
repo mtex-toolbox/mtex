@@ -22,7 +22,7 @@ classdef ipdfOrientationMapping < orientationMapping
     function plot(oM,varargin)
       
       
-      [mtexFig,isNew] = newMtexFigure(varargin);
+      [mtexFig,isNew] = newMtexFigure(varargin{:});
 
       % init plotting grid
       sR = getClass(varargin,'sphericalRegion',oM.CS1.fundamentalSector(varargin{:}));
@@ -65,7 +65,10 @@ classdef ipdfOrientationMapping < orientationMapping
         end
         if isNew, fcw; end                
       end
-      mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
+      
+      try
+        mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
+      end
 
     end
         

@@ -21,7 +21,7 @@ if nargin>1 && isa(varargin{1},'vector3d')
   N = oR.N;
   
   % project v to the fundamental sector
-  dcs = disjoint(oR.CS1,oR.CS2);
+  dcs = properGroup(disjoint(oR.CS1,oR.CS2));
   if oR.antipodal, dcs = dcs.Laue; end
   h = varargin{1};
   h = reshape(project2FundamentalRegion(h,dcs),size(h));

@@ -42,7 +42,7 @@ if ~check_option(varargin,'noascii')
   end
   
   % data found?
-  if size(d,1)>0 && size(d,2)>=minColumns,
+  if size(d,1)>0 && size(d,2)>=minColumns
     c = extract_colnames(header,size(d,2));
     options = delete_option(varargin,'check');
     return;

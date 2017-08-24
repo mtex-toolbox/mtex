@@ -59,7 +59,7 @@ else
   % generate grid
   dtheta = thetaMax - thetaMin;
   % ensure an odd number of points to have some points at the equator
-  ntheta = 2*round(max(dtheta./res./2))+1;
+  ntheta = max(3,2*round(max(dtheta./res./2))+1);
   
   theta = linspace(0,1,ntheta).' * dtheta + repmat(thetaMin,ntheta,1);
   

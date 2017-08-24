@@ -16,14 +16,31 @@ for i = 1:length(subs)
   
   elseif ischar(subs{i}) || iscellstr(subs{i})
     
-    miner = ensurecell(subs{i});
-    alt_mineral = cellfun(@num2str,num2cell(grains.phaseMap),'Uniformoutput',false);
-    phases = false(length(grains.phaseMap),1);
     
-    for k=1:numel(miner)
-      phases = phases | ~cellfun('isempty',regexpi(grains.mineralList(:),['^' miner{k}])) | ...
-        strcmpi(alt_mineral(:),miner{k});
+    phases = false(length(grains.phaseMap),1);
+    mineralsSubs = ensurecell(subs{i});
+    phaseNumbers = cellfun(@num2str,num2cell(grains.phaseMap(:)),'Uniformoutput',false);
+    
+    for k=1:numel(mineralsSubs)
+      phases = phases ...
+        | strcmpi(grains.mineralList(:),mineralsSubs{k}) ...
+        | strcmpi(phaseNumbers,mineralsSubs{k});
     end
+
+    % if no complete match was found allow also for partial match
+    if ~any(phases)
+      for k=1:numel(mineralsSubs)
+        phases = phases ...
+          | strncmpi(grains.mineralList(:),mineralsSubs{k},length(mineralsSubs{k}));
+      end
+    end
+    
+    %miner = ensurecell(subs{i});
+    %alt_mineral = cellfun(@num2str,num2cell(grains.phaseMap),'Uniformoutput',false);    
+    %for k=1:numel(miner)
+    %  phases = phases | ~cellfun('isempty',regexpi(grains.mineralList(:),['^' miner{k}])) | ...
+    %    strcmpi(alt_mineral(:),miner{k});
+    %end
     ind = ind & phases(grains.phaseId(:));
     
   elseif isa(subs{i},'logical')

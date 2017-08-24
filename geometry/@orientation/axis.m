@@ -88,7 +88,7 @@ else
     
   else  % no symmetry specified - take the disjoint
     
-    cs = disjoint(o1.CS,o1.SS);
+    cs = properGroup(disjoint(o1.CS,o1.SS));
     
   end
   

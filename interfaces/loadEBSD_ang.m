@@ -21,25 +21,27 @@ ebsd = EBSD;
 try
   assertExtension(fname,'.ang');
 
-  
   % read file header
   hl = file2cell(fname,2000);
   
-  phasePos = strmatch('# Phase',hl);
+  phasePos = strmatch('# Phase ',hl);
+  if isempty(phasePos)
+    phasePos = strmatch('# MaterialName ',hl)-1;
+  end
         
   try
     for i = 1:length(phasePos)
       pos = phasePos(i);
       
       % load phase number
-      phase = sscanf(hl{pos},'# Phase %u');
-           
+      phase = readByToken(hl(pos:pos+100),'# Phase',i);
+            
       % load mineral data
-      mineral = hl{pos+1}(15:end);
-      mineral = strtrim(mineral);
-      %mineral = sscanf(hl{pos+1},'# MaterialName %s %s %s');
-      laue = sscanf(hl{pos+4},'# Symmetry %s');
-      lattice = sscanf(hl{pos+5},'# LatticeConstants %f %f %f %f %f %f');
+      mineral = readByToken(hl(pos:pos+100),'# MaterialName');
+      laue = readByToken(hl(pos:pos+100),'# Symmetry');
+      lattice = readByToken(hl(pos:pos+100),'# LatticeConstants',[1 1 1 90 90 90]);
+      
+      % setup crytsal symmetry
       options = {};
       switch laue
         case {'-3m' '32' '3' '62' '6'}
@@ -56,9 +58,8 @@ try
             options = {'X||a'};
           end
       end
-      
       cs{phase} = crystalSymmetry(laue,lattice(1:3)',lattice(4:6)'*degree,'mineral',mineral,options{:}); %#ok<AGROW>
-      ReplaceExpr{i} = {mineral,int2str(i)}; %#ok<AGROW>
+      
     end
     assert(numel(cs)>0);
   catch %#ok<CTCH>
@@ -71,40 +72,56 @@ try
   nh = find(strmatch('#',hl),1,'last');
   
   % mineral name to phase number conversion needed?
-  if numel(sscanf(hl{end},'%f')) < 11
-    varargin = [{'ReplaceExpr',ReplaceExpr},varargin];
-  end
-     
-  % get number of columns
-  if isempty(sscanf(hl{nh+1},'%*f %*f %*f %*f %*f %*f %*f %*f %*f %*f\n'))
+  parts = regexpsplit(hl{end-1},'\s*');
+  parts(cellfun(@isempty,parts)) = [];
+  isnum = cellfun(@(x) ~isempty(str2num(x)),parts);
   
-    ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
-      'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Phase' 'SEM_signal'},...
-      'Columns',1:9,varargin{:},'header',nh);
-    
-  elseif isempty(sscanf(hl{nh+1},'%*f %*f %*f %*f %*f %*f %*f %*f %*f %*f %s\n'))
-        
-    ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
-      'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Phase' 'SEM_signal' 'Fit'},...
-      'Columns',1:10,varargin{:},'header',nh);
-      
-  elseif isempty(sscanf(hl{nh+1},'%*f %*f %*f %*f %*f %*f %*f %*f %*f %*f %*f %*f %*f %*f %s\n'))
-      % replace minearal names by numbers
-    replaceExpr = arrayfun(@(i) {cs{i}.mineral,num2str(i)},1:numel(cs),'UniformOutput',false);
-    
-    ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
-      'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Fit' 'phase' 'unknown1' 'unknown2' 'unknown3'  'unknown4'  'unknown5' },...
-      'Columns',1:14,varargin{:},'header',nh,'ReplaceExpr',replaceExpr);
-    
+  if any(~isnum) % if there are any strings
+    % try to replace minearal names by numbers
+    ReplaceExpr = arrayfun(@(i) {cs{i}.mineral,num2str(i)},1:numel(cs),'UniformOutput',false);
+    ReplaceExpr = {'ReplaceExpr',ReplaceExpr};
   else
-    % replace minearal names by numbers
-    replaceExpr = arrayfun(@(i) {cs{i}.mineral,num2str(i)},1:numel(cs),'UniformOutput',false);
-    
-    ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
-      'ColumnNames',{'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Fit' 'unknown1' 'unknown2' 'phase'},...
-      'Columns',1:11,varargin{:},'header',nh,'ReplaceExpr',replaceExpr);
-    
+    ReplaceExpr = {};
   end
+  
+  % read some data
+  data = txt2mat(fname,'RowRange',[1 10000],ReplaceExpr{:},'infoLevel',0);
+    
+  % we need to guess one of the following conventions
+  % Euler 1 Euler 2 Euler 3 X Y IQ CI Phase SEM_signal Fit
+  % Euler 1 Euler 2 Euler 3 X Y IQ CI Fit phase
+  % Euler 1 Euler 2 Euler 3 X Y IQ CI Fit unknown1 unknown2 phase
+  % most important is the position of the phase
+  
+  % if there was text then it describes the phase
+  if any(~isnum)
+    phaseCol = find(~isnum,1);
+  elseif size(data,2) <= 8 
+    phaseCol = 8;
+  else % take 8 or 9 depending which is more likely
+    col8 = unique(data(:,8));
+    col9 = unique(data(:,9));
+    
+    if ~all(ismember(col8,0:length(cs))), col8 = []; end
+    if ~all(ismember(col9,0:length(cs))), col9 = []; end
+    
+    phaseCol = 8 + (length(col9)>length(col8));
+  end
+  
+  % set up columnnames
+  ColumnNames = {'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Fit' 'unknown1' 'unknown2' 'unknown3'  'unknown4'  'unknown5' 'unknown6' 'unknown7'};
+  switch phaseCol
+    case 8
+      ColumnNames = {'Euler 1' 'Euler 2' 'Euler 3' 'X' 'Y' 'IQ' 'CI' 'Phase' 'SEM_signal' 'Fit' 'unknown1' 'unknown2' 'unknown3' 'unknown4' 'unknown5' 'unknown6'};
+    otherwise
+      ColumnNames{phaseCol} = 'Phase';     
+  end       
+  ColumnNames = get_option(varargin,'ColumnNames',ColumnNames(1:length(isnum)));
+  
+  % import the data
+  ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
+    'ColumnNames',ColumnNames,varargin{:},'header',nh,ReplaceExpr{:});
+  
 catch
   interfaceError(fname);
 end
@@ -118,4 +135,24 @@ else
   warning(['.ang files have usualy inconsistent conventions for spatial ' ...
     'coordinates and Euler angles. You may want to use one of the options ' ...
     '''convertSpatial2EulerReferenceFrame'' or ''convertEuler2SpatialReferenceFrame'' to correct for this']);  
+end
+end
+
+function value = readByToken(cellStr,token,default)
+
+  values = regexp(cellStr,[token '\s*(.*)'],'tokens');
+  id = find(~cellfun(@isempty,values),1);
+  if ~isempty(id)
+    value = strtrim(char(values{id}{1}));
+    
+    if nargin > 2 && ~isempty(default) && isnumeric(default)
+      value = str2num(value);
+    end
+    
+  elseif nargin > 2
+    value = default;
+  else 
+    value = [];
+  end
+  
 end
