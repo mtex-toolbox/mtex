@@ -92,9 +92,9 @@ classdef grainBoundary < phaseList & dynProp
       gB.misrotation(isNotBoundary) = ...
         inv(ebsd.rotations(gB.ebsdId(isNotBoundary,2))) ...
         .* ebsd.rotations(gB.ebsdId(isNotBoundary,1));
-      
+
       % compute triple points
-      gB.triplePoints = gB.calcTriplePoints(grainsPhaseId);      
+      gB.triplePoints = gB.calcTriplePoints(grainsPhaseId);
       
     end
 
