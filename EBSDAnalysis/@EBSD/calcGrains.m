@@ -68,7 +68,7 @@ doMeanCalc = find(grains.grainSize>1 & grains.isIndexed);
 for k = 1:numel(doMeanCalc)
   
   qind = subSet(q,d(grainRange(doMeanCalc(k))+1:grainRange(doMeanCalc(k)+1)));
-  mq = mean(qind);
+  mq = mean(qind,'robust');
   meanRotation = setSubSet(meanRotation,doMeanCalc(k),mq);
   GOS(doMeanCalc(k)) = mean(angle(mq,qind));
   
