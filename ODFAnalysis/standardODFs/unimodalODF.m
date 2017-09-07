@@ -55,7 +55,14 @@ weights = get_option(varargin,'weights',ones(size(center)));
 assert(numel(weights) == length(center),...
   'Number of orientations and weights must be equal!');
 
-component = unimodalComponent(center,psi,weights);
+% remove to small values
+id = weights > 1e-2 / psi.K(1);
+try
+  center = center.subGrid(id);
+catch
+  center = center(id);
+end
+component = unimodalComponent(center,psi,weights(id));
 
 odf = ODF(component,1);
 

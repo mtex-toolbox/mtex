@@ -121,7 +121,7 @@ for k=1:length(cx)-1
   ls(id) = true;  
   ids(k) = ls(:,k)==0;
   
-  if nnz(ids)>=num, break,end;
+  if nnz(ids)>=num, break,end
 end
 
 % the retrived maximas

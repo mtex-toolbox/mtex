@@ -3,12 +3,12 @@ function [qm, lambda, V] = mean(q,varargin)
 %
 % Syntax
 %
-%   [m, lambda, V] = mean(q,varargin)
+%   [m, lambda, V] = mean(q)
+%   [m, lambda, V] = mean(q,'robust')
+%   [m, lambda, V] = mean(q,'weights',weights)
 %
 % Input
 %  q        - list of @quaternion
-%
-% Options
 %  weights  - list of weights
 %
 % Output
