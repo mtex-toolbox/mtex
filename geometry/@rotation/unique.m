@@ -3,6 +3,8 @@ function [r,m,n] = unique(r,varargin)
 %
 % Syntax
 %   r = unique(r)
+%   r = unique(r,'tolerance',0.01)
+%   [r,m,n] = unique(r)
 %
 % Input
 %  r - @rotation
@@ -20,7 +22,13 @@ i = r.i(:);
 
 abcd = [a.^2,b.^2,c.^2,d.^2,a.*b,a.*c,a.*d,b.*c,b.*d,c.*d,i];
 
-[ignore,m,n] = unique(round(abcd*1e4),'rows'); %#ok<ASGLU>
+tol = get_option(varargin,'tolerance',1e-3);
+
+try
+  [~,m,n] = uniquetol(1+abcd,tol,'ByRows',true);
+catch
+  [~,m,n] = unique(round(abcd./tol),'rows');
+end
 
 % remove duplicated points
 r.a = a(m);
