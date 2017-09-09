@@ -25,3 +25,10 @@ ics = discretesample(length(cs),npoints,1);
 iss = discretesample(length(ss),npoints,1);
 
 ori = orientation(ss(iss(:)) .* q .* cs(ics(:)),odf.CS,odf.SS);
+
+% the antipodal case
+if  odf.antipodal
+  ori.antipodal =true;
+  doInv = 1==discretesample(2,npoints,1);
+  ori(doInv)=inv(ori(doInv));
+end
