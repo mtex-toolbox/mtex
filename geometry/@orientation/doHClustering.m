@@ -1,9 +1,9 @@
-function [c,center] = doHierarchicalClustering(ori,varargin)
+function [c,center] = doHClustering(ori,varargin)
 % sort orientations into clusters
 %
 % Syntax
-%   [c,center] = cluster(ori,'numCluster',n)
-%   [c,center] = cluster(ori,'maxAngle',omega)
+%   [c,center] = doHCluster(ori,'numCluster',n)
+%   [c,center] = doHCluster(ori,'maxAngle',omega)
 %
 % Input
 %  ori - @orientation

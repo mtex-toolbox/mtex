@@ -8,9 +8,8 @@ function g = grad(component,ori,varargin)
 %  component - @unimodalComponent
 %  ori - @orientation
 %
-% Options
-%  exact -
-%  epsilon -
+% Output
+%  g - @vector3d
 %
 % Description
 % general formula:
@@ -22,6 +21,9 @@ function g = grad(component,ori,varargin)
 q2 = quaternion(ori);
 center = component.center;
 qSS = unique(quaternion(component.SS));
+% forget about second symmetry
+center.SS = specimenSymmetry;
+
 psi = component.psi;
 epsilon = min(pi,get_option(varargin,'epsilon',psi.halfwidth*3.5));
 
@@ -33,17 +35,20 @@ for issq = 1:length(qSS)
   d = abs(dot_outer(center,qSS(issq) * q2,'epsilon',epsilon,...
     'nospecimensymmetry'));
   
-  d(d<=cos(epsilon/2)) = 0;
-  
+  % make matrix sparse
+  d(d<=cos(epsilon/2)) = 0;  
   [i,j] = find(d>cos(epsilon/2));
   
   % the normalized logarithm
-  v = log(center(i),reshape(qSS(issq) * ori(j),[],1));
+  v = log(center(i),reshape(qSS(issq) * q2(j),[],1));
   nv = norm(v);
   v(nv>0) = v(nv>0)./nv(nv>0);
   
+  % set up vector3d matrix - a tangential vector for any pair of
+  % orientations
   v = sparse(i,j,v,length(center),length(ori)) .* spfun(@psi.DK,d);
   
+  % sum over all neighbours
   g = g - v.' * component.weights;
   
 end

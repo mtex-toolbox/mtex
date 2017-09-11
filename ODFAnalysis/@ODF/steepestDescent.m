@@ -27,7 +27,7 @@ for k = 1:maxIter
   ori = line_ori(sub2ind(size(line_ori),(1:length(ori)).',id));
   
   if all(id == 1), break; end
-  
+  fprintf('.')
 end
 
 % [o2,v1,v2] = unique(ori)
