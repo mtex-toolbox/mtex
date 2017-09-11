@@ -25,7 +25,8 @@ function h = scatter(v,varargin)
 % vector3d/text
 
 % initialize spherical plots
-opt = delete_option(varargin,{'lineStyle','lineColor','lineWidth','color','edgeColor'});
+opt = delete_option(varargin,...
+  {'lineStyle','lineColor','lineWidth','color','edgeColor','MarkerSize','Marker'});
 sP = newSphericalPlot(v,opt{:},'doNotDraw');
 varargin = delete_option(varargin,'parent');
 
@@ -89,13 +90,22 @@ for i = 1:numel(sP)
     else
       cdata = reshape(cdata,[],3);
     end
+
+    if numel(MarkerSize) > 1
       
-    % draw patches
-    h(i) = optiondraw(patch(patchArgs{:},...
-      'facevertexcdata',cdata,...
-      'markerfacecolor','flat',...
-      'markeredgecolor','flat'),varargin{2:end}); %#ok<AGROW>
-    set(get(get(h(i),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+      h(i) = optiondraw(scatter(x,y,MarkerSize,cdata,'filled',...
+        'parent',sP(i).hgt),varargin{:}); %#ok<AGROW>
+
+      set(get(get(h(i),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+            
+    else % draw patches
+    
+      h(i) = optiondraw(patch(patchArgs{:},...
+        'facevertexcdata',cdata,...
+        'markerfacecolor','flat',...
+        'markeredgecolor','flat'),varargin{2:end}); %#ok<AGROW>
+      set(get(get(h(i),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+    end
       
   else % --------- colorcoding according to nextStyle -----------------
       
@@ -109,20 +119,28 @@ for i = 1:numel(sP)
     mec = get_option(varargin,'MarkerEdgeColor',mfc);
   
     % draw patches
-    h(i) = optiondraw(patch(patchArgs{:},...
-      'MarkerFaceColor',mfc,...
-      'MarkerEdgeColor',mec),varargin{:}); %#ok<AGROW>
-    % remove from legend
-    set(get(get(h(i),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+    if numel(MarkerSize) > 1
+      
+      h(i) = optiondraw(scatter(x,y,MarkerSize,'parent',sP(i).hgt,...
+        'MarkerFaceColor',mfc,'MarkerEdgeColor',mec),varargin{:}); %#ok<AGROW>      
     
-    % since the legend entry for patch object is not nice we draw an
-    % invisible scatter dot just for legend
-    if check_option(varargin,'DisplayName')      
-      holdState = get(sP(i).ax,'nextPlot');
-      set(sP(i).ax,'nextPlot','add');
-      optiondraw(scatter([],[],'parent',sP(i).ax,'MarkerFaceColor',mfc,...
-        'MarkerEdgeColor',mec),varargin{:});
-      set(sP(i).ax,'nextPlot',holdState);
+    else
+       
+      h(i) = optiondraw(patch(patchArgs{:},...
+        'MarkerFaceColor',mfc,...
+        'MarkerEdgeColor',mec),varargin{:}); %#ok<AGROW>
+      % remove from legend
+      set(get(get(h(i),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+    
+      % since the legend entry for patch object is not nice we draw an
+      % invisible scatter dot just for legend
+      if check_option(varargin,'DisplayName')
+        holdState = get(sP(i).ax,'nextPlot');
+        set(sP(i).ax,'nextPlot','add');
+        optiondraw(scatter([],[],'parent',sP(i).ax,'MarkerFaceColor',mfc,...
+          'MarkerEdgeColor',mec),varargin{:});
+        set(sP(i).ax,'nextPlot',holdState);
+      end
     end
   end
 
