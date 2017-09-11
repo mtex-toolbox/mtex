@@ -239,27 +239,7 @@ methods (Static = true)
     %  Miller(0,0,1,csGamma,'uvw'),Miller(-1,1,0,csAlpha,'uvw'));
   
   end
-  
-  
-  
-  function ori = exp(T,varargin)
     
-    % make sure T is an antisymmetric tensor
-    T = antiSym(tensor(T));
-    
-    % form the gradient vector
-    v = vector3d(T{3,2},-T{3,1},T{2,1});
-    
-    % compute the orientation 
-    ori = orientation(expquat(v),varargin{:});
-    
-    % if T was with respect to crystal reference frame
-    % ori becomes an misorientation
-    if isa(T.CS,'crystalSymmetry')
-      ori.CS = T.CS;
-      ori.SS = T.CS;
-    end
-  end    
 end
 
 end
