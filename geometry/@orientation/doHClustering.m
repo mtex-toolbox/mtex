@@ -1,4 +1,4 @@
-function [c,center] = cluster(ori,varargin)
+function [c,center] = doHierarchicalClustering(ori,varargin)
 % sort orientations into clusters
 %
 % Syntax
