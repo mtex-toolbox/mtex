@@ -19,7 +19,7 @@ function g = grad(component,ori,varargin)
 
 % we need to consider all symmetrically equivalent centers
 q2 = quaternion(ori);
-center = component.center;
+center = component.center(:);
 qSS = unique(quaternion(component.SS));
 % forget about second symmetry
 center.SS = specimenSymmetry;
@@ -49,7 +49,7 @@ for issq = 1:length(qSS)
   v = sparse(i,j,v,length(center),length(ori)) .* spfun(@psi.DK,d);
   
   % sum over all neighbours
-  g = g - v.' * component.weights;
+  g = g - v.' * component.weights(:);
   
 end
 

@@ -31,17 +31,23 @@ omega(omega<res) = [];
 omega = [0,omega];
 
 % initial seed
-modes = odf.components{end}.center;
-centerId = 1:length(modes);
-weights = odf.components{end}.weights;
-
+if check_option(varargin,'seed')
+  modes = reshape(get_option(varargin,'seed'),[],1);
+  weights = get_option(varargin,'weights',...
+    odf.eval(modes));
+else
+  modes = odf.components{end}.center;
+  weights = odf.components{end}.weights;
+end
 id = weights>0;
 modes = reshape(modes(id),[],1);
 weights = weights(id);
 weights = weights ./ sum(weights);
 
+centerId = 1:length(modes);
+
 % join orientations if possible
-[modes,~,id2] = unique(modes);
+[modes,~,id2] = unique(modes,'tolerance',1e-2);
 centerId = id2(centerId);
 weights = accumarray(id2,weights);
 
@@ -68,7 +74,7 @@ for k = 1:maxIter
   if all(finished), break; end
 
   % join orientations if possible
-  [modes,~,id2] = unique(modes);
+  [modes,~,id2] = unique(modes,'tolerance',1e-2);
   centerId = id2(centerId);
   
   weights = accumarray(id2,weights);
@@ -76,9 +82,15 @@ for k = 1:maxIter
 %  [length(modes), k, sum(finished)]
 end
 
+% sort components according to volume
 [weights,id] = sort(weights,'descend');
 modes = modes(id);
+iid(id) = 1:length(id);
+centerId = iid(centerId);
 
+% weights = [2 1 5 3 4] -> [1 2 3 4 5]
+% id -> [2 1 5 3 4]
+% centerId = 3 -> 5 
 end
 
 function test

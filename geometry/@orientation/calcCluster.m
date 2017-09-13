@@ -47,10 +47,10 @@ switch method
     weights = get_option(varargin,'weights',ones(size(ori)));
 
     % set up an ODF
-    odf = unimodalODF(ori,weights,varargin{:});
+    odf = calcKernelODF(ori,'weights',weights,'halfwidth',2.5*degree,varargin{:});
 
     % find the modes of the ODF
-    [center,~,c] = calcComponents(odf,varargin{:});
+    [center,~,c] = calcComponents(odf,'seed',ori,varargin{:});
   case 'hierarchical'
     [c,center] = doHClustering(ori,varargin{:});
     
