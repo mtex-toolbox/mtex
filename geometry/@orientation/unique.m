@@ -18,7 +18,7 @@ if check_option(varargin,'noSymmetry')
 else
   rot = rotation(symmetrise(ori,varargin{:}));
   
-  [tmp1,tmp2,pos] = unique(rot); %#ok<ASGLU>
+  [tmp1,tmp2,pos] = unique(rot,varargin{:}); %#ok<ASGLU>
 
   [tmp,ndx,pos] = unique(min(reshape(pos,size(rot)),[],1)); %#ok<ASGLU>
  
