@@ -14,9 +14,11 @@ mtexdata forsterite
 plotx2east
 
 % define a sub region
-xmin = 7000;
-xmax = 16000;
+xmin = 25000;
+xmax = 35000;
+ymin = 4500;
 ymax = 9000;
+
 region = [xmin ymin xmax-xmin ymax-ymin];
 
 % visualize the whole data set
