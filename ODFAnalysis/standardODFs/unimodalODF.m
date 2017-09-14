@@ -56,7 +56,7 @@ assert(numel(weights) == length(center),...
   'Number of orientations and weights must be equal!');
 
 % remove to small values
-id = weights > 1e-2 / psi.K(1);
+id = weights./sum(weights(:)) > 1e-2 / psi.K(1) / numel(weights);
 try
   center = center.subGrid(id);
 catch
