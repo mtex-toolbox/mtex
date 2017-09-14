@@ -27,10 +27,10 @@ function [c,center] = calcCluster(ori,varargin)
 %   [c,centerRec] = calcCluster(ori);
 %
 %   % visualize result
-%   for i = 1:length(modes)
+%   for i = 1:length(centerRec)
 %     plot(ori(cId==i),'axisAngle')
 %     hold on
-%     plot(modes(i),'MarkerFaceColor','k','MarkerSize',10)
+%     plot(centerRec(i),'MarkerFaceColor','k','MarkerSize',10)
 %   end
 %   hold off
 %
@@ -51,6 +51,22 @@ switch method
 
     % find the modes of the ODF
     [center,~,c] = calcComponents(odf,'seed',ori,varargin{:});
+    
+    % post process cluster
+    for i = 1:min(length(center),20)
+    
+      % remove points to far from the center
+      ori_c = ori.subSet(c==i);
+      omega = angle(ori_c,center.subSet(i));
+      c(c==i) = i * (omega < quantile(omega,0.9));
+      
+      % recompute center
+      odf = unimodalODF(ori_c,weights(c==i),'halfwidth',2.5*degree,varargin{:});
+      center = subsasgn(center,i,odf.steepestDescent(center.subSet(i)));
+      
+    end
+    
+    
   case 'hierarchical'
     [c,center] = doHClustering(ori,varargin{:});
     
