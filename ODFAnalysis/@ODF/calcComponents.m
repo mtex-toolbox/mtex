@@ -29,6 +29,7 @@ res = get_option(varargin,'resolution',0.05*degree);
 omega = 1.5.^(-7:1:4) * degree;
 omega(omega<res) = [];
 omega = [0,omega];
+tol = 1e-3;
 
 % initial seed
 if check_option(varargin,'seed')
@@ -47,7 +48,7 @@ weights = weights ./ sum(weights);
 centerId = 1:length(modes);
 
 % join orientations if possible
-[modes,~,id2] = unique(modes,'tolerance',1e-2);
+[modes,~,id2] = unique(modes,'tolerance',tol);
 centerId = id2(centerId);
 weights = accumarray(id2,weights);
 
@@ -74,7 +75,7 @@ for k = 1:maxIter
   if all(finished), break; end
 
   % join orientations if possible
-  [modes,~,id2] = unique(modes,'tolerance',1e-2);
+  [modes,~,id2] = unique(modes,'tolerance',tol);
   centerId = id2(centerId);
   
   weights = accumarray(id2,weights);
