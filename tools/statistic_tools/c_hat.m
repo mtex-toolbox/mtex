@@ -19,8 +19,8 @@ if isa(varargin{1},'EBSD')
 end
 
 if isa(varargin{1},'orientation')
-  n = numel(varargin{1});
-  [qm, T, Tv, kappa, q] = mean(varargin{:},'approximated');
+  n = length(varargin{1});
+  [~, T, Tv] = mean(varargin{:},'approximated');
   [T, nd]=sort(T,'descend');
   Tv = Tv(:,nd);
   x = reshape(double(q),[],4);
