@@ -239,6 +239,13 @@ methods (Static = true)
     %  Miller(0,0,1,csGamma,'uvw'),Miller(-1,1,0,csAlpha,'uvw'));
   
   end
+  
+  function mori = GreningerTrojano(csAlpha,csGamma)
+    
+    mori = orientation('Euler',2.7*degree,46.6*degree,7.5*degree,csAlpha,csGamma);
+    
+  end
+  
     
 end
 
