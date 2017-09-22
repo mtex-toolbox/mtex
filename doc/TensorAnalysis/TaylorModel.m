@@ -97,6 +97,7 @@ sS = symmetrise(slipSystem.fcc(grains.CS));
 
 % colorize grains according to Taylor factor
 plot(grains,M)
+mtexColorMap white2black
 mtexColorbar
 
 % index of the most active slip system - largest b
@@ -109,7 +110,7 @@ sSGrains = grains.meanOrientation .* sS(bMaxId);
 hold on
 quiver(grains,sSGrains.b,'autoScaleFactor',0.5,'displayName','Burgers vector')
 hold on
-quiver(grains,sSGrains.n,'autoScaleFactor',0.5,'displayName','slip plane trace')
+quiver(grains,sSGrains.trace,'autoScaleFactor',0.5,'displayName','slip plane trace')
 hold off
 
 %%
