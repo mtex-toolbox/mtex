@@ -12,5 +12,19 @@
         {"name":"method", "kind":"flag", "type":"choices={'Fourier', 'Bingham', 'noFourier'}"},
         {"name":"method2", "kind":"flag", "type":"choices={'exact'}"}
     ]
+},
+"plot":
+{
+    "inputs":
+    [
+        {"name":"ori", "kind":"required",   "type":"orientation"},
+       {"name":"MarkerColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
+        {"name":"MarkerFaceColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
+        {"name":"MarkerEdgeColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
+        {"name":"MarkerSize", "kind":"namevalue", "type":"int8"},
+        {"name":"Marker", "kind":"namevalue", "type":"choices={'o', '.','none','x','s','d','p'}"},
+        {"name":"label", "kind":"namevalue", "type":"string"},
+        {"name":"backgroundColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"}
+    ]
 }
 }
