@@ -1,4 +1,4 @@
-function ori = exp(ori,v)
+function ori = exp(ori,v,varargin)
 % exponential function
 %
 % Syntax
@@ -23,7 +23,11 @@ if isa(v,'tensor')
 end
 
 % compute the orientation
-q = quaternion(ori).*expquat(v);
+if check_option(varargin,'left')
+  q = expquat(v).*quaternion(ori);
+else
+  q = quaternion(ori).*expquat(v);
+end
 
 if ori.antipodal
   ori = orientation(q,ori.CS,ori.SS,'antipodal');
