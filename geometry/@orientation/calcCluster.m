@@ -58,7 +58,7 @@ switch method
       % remove points to far from the center
       ori_c = ori.subSet(c==i);
       omega = angle(ori_c,center.subSet(i));
-      c(c==i) = i * (omega < quantile(omega,0.9));
+      c(c==i) = i * (omega < 1.001*quantile(omega,0.9));
       
       % recompute center
       odf = unimodalODF(ori_c,weights(c==i),'halfwidth',2.5*degree,varargin{:});
