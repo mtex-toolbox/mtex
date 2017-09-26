@@ -26,7 +26,7 @@ function h = scatter(v,varargin)
 
 % initialize spherical plots
 opt = delete_option(varargin,...
-  {'lineStyle','lineColor','lineWidth','color','edgeColor','MarkerSize','Marker'});
+  {'lineStyle','lineColor','lineWidth','color','edgeColor','MarkerSize','Marker','MarkerFaceColor','MarkerEdgeColor','MarkerColor'});
 sP = newSphericalPlot(v,opt{:},'doNotDraw');
 varargin = delete_option(varargin,'parent');
 
@@ -93,7 +93,7 @@ for i = 1:numel(sP)
 
     if numel(MarkerSize) > 1
       
-      h(i) = optiondraw(scatter(x,y,MarkerSize,cdata,'filled',...
+      h(i) = optiondraw(scatter(x(:),y(:),MarkerSize(:),cdata,'filled',...
         'parent',sP(i).hgt),varargin{:}); %#ok<AGROW>
 
       set(get(get(h(i),'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
@@ -121,7 +121,7 @@ for i = 1:numel(sP)
     % draw patches
     if numel(MarkerSize) > 1
       
-      h(i) = optiondraw(scatter(x,y,MarkerSize,'parent',sP(i).hgt,...
+      h(i) = optiondraw(scatter(x(:),y(:),MarkerSize(:),'parent',sP(i).hgt,...
         'MarkerFaceColor',mfc,'MarkerEdgeColor',mec),varargin{:}); %#ok<AGROW>      
     
     else
