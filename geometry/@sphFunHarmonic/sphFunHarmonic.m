@@ -15,6 +15,9 @@ classdef sphFunHarmonic < sphFun
     end
 
   end    
+	methods(Static)
+		sF = approximation(v,y,varargin);
+	end
 
   
   methods (Static = true)

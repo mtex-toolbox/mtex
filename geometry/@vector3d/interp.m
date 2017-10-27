@@ -3,6 +3,7 @@ function yi = interp(v,y,vi,varargin)
 %
 % Syntax
 %   sF = interp(v,y)              % linear interpolation
+%	sF = interp(v,y,'harmonicApproximation') % approximation with spherical Harmonics
 %   yi = interp(v,y,vi,'linear')  % linear interpolation
 %   yi = interp(v,y,vi,'spline')  % spline interpolation (default)
 %   yi = interp(v,y,vi,'nearest') % nearest neigbour interpolation
@@ -19,7 +20,11 @@ function yi = interp(v,y,vi,varargin)
 %
 
 if nargin == 2 || isempty(vi)
-  yi = sphFunTri(v,y);
+  if check_option(varargin,'harmonicApproximation')
+	yi = sphFunHarmonic.approximation(v,y);
+  else
+	yi = sphFunTri(v,y);
+  end
   return
 end
 
