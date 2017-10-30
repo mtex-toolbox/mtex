@@ -9,14 +9,19 @@ function f =  eval(sF,v)
 % Output
 %  f - function values
 
-[out_theta,out_rho] = polar(v(:));
-out_theta = fft_theta(out_theta); 
-out_rho   = fft_rho(out_rho);
+v = v(:);
+M = sqrt(length(sF.fhat))-1;
 
-r = [reshape(out_rho,1,[]);reshape(out_theta,1,[])];
-
-P_hat = [real(sF.fhat(:)),-imag(sF.fhat(:))].';
-
-f = call_extern('pdf2pf','EXTERN',r,P_hat);
+% initialize nfsft
+nfsft('precompute', M, 1000, 0, 0);
+plan = nfsft('init', M, length(v));
+nfsft('set_x', plan, [v.rho'; v.theta']); % set vertices
+nfsft('precompute_x', plan);
+% nfsft
+nfsft('set_f_hat_linear', plan, sF.fhat); % set fourier coefficients
+nfsft('trafo', plan);
+f = real(nfsft('get_f', plan));
+% finalize nfsft
+nfsft('finalize', plan);
 
 end

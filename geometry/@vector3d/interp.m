@@ -3,11 +3,12 @@ function yi = interp(v,y,vi,varargin)
 %
 % Syntax
 %   sF = interp(v,y)              % linear interpolation
-%	sF = interp(v,y,'harmonicApproximation') % approximation with spherical Harmonics
+%   sF = interp(v,y,'harmonicApproximation') % approximation with spherical harmonics
 %   yi = interp(v,y,vi,'linear')  % linear interpolation
 %   yi = interp(v,y,vi,'spline')  % spline interpolation (default)
 %   yi = interp(v,y,vi,'nearest') % nearest neigbour interpolation
 %   yi = interp(v,y,vi,'inverseDistance') % inverse distance interpolation
+%   sF = interp(v,y,vi,'harmonicApproximation') % approximation with spherical harmonics
 %
 % Input
 %  v - data points @vector3d
@@ -19,13 +20,18 @@ function yi = interp(v,y,vi,varargin)
 %  yi - interpolation values
 %
 
-if nargin == 2 || isempty(vi)
-  if check_option(varargin,'harmonicApproximation')
-	yi = sphFunHarmonic.approximation(v,y);
-  else
-	yi = sphFunTri(v,y);
-  end
+if nargin == 2
+  yi = sphFunTri(v,y);
   return
+end
+
+if not(isnumeric(vi)) || isempty(vi)
+	if strcmp(vi,'harmonicApproximation') || check_option(varargin,'sphericalApproximation')
+		yi = sphFunHarmonic.approximation(v,y,varargin{:});
+	else
+		yi = sphFunTri(v,y);
+	end
+	return
 end
 
 % we need unqiue input data
@@ -43,6 +49,11 @@ if check_option(varargin,'nearest')
 elseif check_option(varargin,'linear') % linear interpolation
   
   sF = sphFunTri(v,y);
+  yi = sF.eval(vi);
+  
+elseif check_option(varargin,'sphericalApproximation')
+  
+  sF = sphFunharmonic(v,y);
   yi = sF.eval(vi);
   
 else
