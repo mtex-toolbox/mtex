@@ -168,8 +168,8 @@ for p=numel(Parts):-1:1
     obj.Faces(k,1:s(k)) = Faces( cs(k)+1:cs(k+1) );
   end
 
-  if check_option(varargin,{'transparent','translucent'})
-    s = get_option(varargin,{'transparent','translucent'},1,'double');
+  if check_option(varargin,{'transparent','translucent','FaceAlpha'})
+    s = get_option(varargin,{'transparent','translucent','FaceAlpha'},1,'double');
     dg = obj.FaceVertexCData;
     if size(d,2) == 3 % rgb
       obj.FaceVertexAlphaData = s.*(1-min(dg,[],2));
