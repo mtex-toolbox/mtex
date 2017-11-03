@@ -14,7 +14,7 @@ M = sqrt(length(sF.fhat))-1;
 
 % initialize nfsft
 nfsft('precompute', M, 1000, 0, 0);
-plan = nfsft('init', M, length(v));
+plan = nfsft('init_advanced', M, length(v), 1);
 nfsft('set_x', plan, [v.rho'; v.theta']); % set vertices
 nfsft('precompute_x', plan);
 % nfsft
