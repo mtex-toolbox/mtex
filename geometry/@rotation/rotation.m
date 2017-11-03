@@ -8,6 +8,9 @@ classdef rotation < quaternion & dynOption
 %   rot = rotation('matrix',A) -
 %   rot = rotation('map',u1,v1) -
 %   rot = rotation('map',u1,v1,u2,v2) -
+%   rot = rotation('reflection',b) -
+%   rot = rotation('inversion',b) -
+%   rot = rotation('rodrigues',v) -
 %   rot = rotation('fibre',u1,v1,'resolution',5*degree) -
 %   rot = rotation('quaternion',a,b,c,d) -
 %   rot = rotation(q) -
@@ -16,7 +19,7 @@ classdef rotation < quaternion & dynOption
 %  q         - @quaternion
 %  u1,u2     - @vector3d
 %  v, v1, v2 - @vector3d
-%  name      - {'brass','goss','cube'}
+%  n         - @vector3d
 %
 % Ouptut
 %  rot - @rotation
