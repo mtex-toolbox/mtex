@@ -1,4 +1,36 @@
 {
+"orientation":
+{
+    "inputs":
+    [
+        {"name":"map", "kind":"namevalue", "type":"vector3d"},
+        {"name":"Euler", "kind":"namevalue", "type":"double"},
+        {"name":"axis", "kind":"namevalue", "type":"double"},
+        {"name":"angle", "kind":"namevalue", "type":"double"},
+        {"name":"matrix", "kind":"namevalue", "type":"double"},
+        {"name":"reflection", "kind":"namevalue", "type":"double"},
+        {"name":"mirroring", "kind":"namevalue", "type":"double"},
+        {"name":"inversion", "kind":"namevalue", "type":"double"},
+        {"name":"rodrigues", "kind":"namevalue", "type":"double"},
+        {"name":"antipodal", "kind":"flag"}
+    ]
+},
+"rotation":
+{
+    "inputs":
+    [
+        {"name":"map", "kind":"namevalue", "type":"vector3d"},
+        {"name":"Euler", "kind":"namevalue", "type":"double"},
+        {"name":"axis", "kind":"namevalue", "type":"double"},
+        {"name":"angle", "kind":"namevalue", "type":"double"},
+        {"name":"matrix", "kind":"namevalue", "type":"double"},
+        {"name":"reflection", "kind":"namevalue", "type":"double"},
+        {"name":"mirroring", "kind":"namevalue", "type":"double"},
+        {"name":"inversion", "kind":"namevalue", "type":"double"},
+        {"name":"rodrigues", "kind":"namevalue", "type":"double"},
+        {"name":"antipodal", "kind":"flag"}
+    ]
+},
 "calcODF":
 {
     "inputs":
@@ -18,7 +50,54 @@
     "inputs":
     [
         {"name":"ori", "kind":"required",   "type":"orientation"},
+        {"name":"antipodal", "kind":"flag"},
        {"name":"MarkerColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
+        {"name":"MarkerFaceColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
+        {"name":"MarkerEdgeColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
+        {"name":"MarkerSize", "kind":"namevalue", "type":"int8"},
+        {"name":"Marker", "kind":"namevalue", "type":"choices={'o', '.','none','x','s','d','p'}"},
+        {"name":"label", "kind":"namevalue", "type":"string"},
+        {"name":"backgroundColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"}
+    ]
+},
+"plot":
+{
+    "inputs":
+    [
+        {"name":"ori", "kind":"required", "type":"vector3d"},
+        {"name":"antipodal", "kind":"flag"},
+        {"name":"contourf", "kind":"flag"},
+        {"name":"MarkerColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
+        {"name":"MarkerFaceColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
+        {"name":"MarkerEdgeColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
+        {"name":"MarkerSize", "kind":"namevalue", "type":"int8"},
+        {"name":"Marker", "kind":"namevalue", "type":"choices={'o', '.','none','x','s','d','p'}"},
+        {"name":"label", "kind":"namevalue", "type":"string"},
+        {"name":"backgroundColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"}
+    ]
+},
+"plotPDF":
+{
+    "inputs":
+    [
+        {"name":"ori", "kind":"required",   "type":"orientation"},
+        {"name":"antipodal", "kind":"flag"},
+        {"name":"MarkerColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
+        {"name":"MarkerFaceColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
+        {"name":"MarkerEdgeColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
+        {"name":"MarkerSize", "kind":"namevalue", "type":"int8"},
+        {"name":"Marker", "kind":"namevalue", "type":"choices={'o', '.','none','x','s','d','p'}"},
+        {"name":"label", "kind":"namevalue", "type":"string"},
+        {"name":"backgroundColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"}
+    ]
+},
+"plotIPDF":
+{
+    "inputs":
+    [
+        {"name":"ori", "kind":"required",   "type":"orientation"},
+        {"name":"antipodal", "kind":"flag"},
+        {"name":"MarkerColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
         {"name":"MarkerFaceColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
         {"name":"MarkerEdgeColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
         {"name":"MarkerSize", "kind":"namevalue", "type":"int8"},
