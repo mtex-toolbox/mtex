@@ -2,10 +2,12 @@ function [o, q, lambda, eigv]  = mean(o,varargin)
 % mean of a list of orientations, principle axes and moments of inertia
 %
 % Syntax
-%   [m, q, lambda, V]  = mean(o)
+%   [m, q, lambda, V] = mean(ori)
+%   [m, q, lambda, V] = mean(ori,'robust')
+%   [m, q, lambda, V] = mean(ori,'weights',weights)
 %
 % Input
-%  o        - list of @orientation
+%  ori      - list of @orientation
 %
 % Options
 %  weights  - list of weights
