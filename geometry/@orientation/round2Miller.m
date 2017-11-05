@@ -50,7 +50,7 @@ maxIndex = get_option(varargin,'maxIndex',4);
 % all plane normales
 [h,k,l] =meshgrid(0:maxIndex,-maxIndex:maxIndex,-maxIndex:maxIndex);
 n1 = Miller(h(:),k(:),l(:),mori.CS);
-n2 = mori * n1;
+n2 = reshape(mori * n1,[],1);
 rh2 = round(n2);
 hkl2 = rh2.hkl;
 
@@ -61,7 +61,7 @@ omega_h = angle(rh2,n2) + ...
 % all directions
 [u,v,w] = meshgrid(0:maxIndex,-maxIndex:maxIndex,-maxIndex:maxIndex);
 d1 = Miller(u(:),v(:),w(:),mori.CS,'uvw');
-d2 = mori * d1;
+d2 = reshape(mori * d1,[],1);
 rd2 = round(d2);
 uvw2 = rd2.uvw;
 
