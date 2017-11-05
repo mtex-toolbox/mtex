@@ -39,17 +39,16 @@ classdef HSVOrientationMapping < orientationMapping
         warning(['Not a topological correct colormap! Please use the point group ' char(oM.CS1.properGroup)]);
       end
       
-      oM.updatesR;
+      oM.updatesR(oM.CS1);
     end
 
   end
   
   methods (Access=protected)
                 
-    function updatesR(oM)
+    function updatesR(oM,cs)
       % spherical region to be colorized
 
-      cs = oM.CS1;
       oM.sR = cs.fundamentalSector;
       r30 = rotation('axis',zvector,'angle',[30,-30]*degree);
 
