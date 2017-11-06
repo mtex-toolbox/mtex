@@ -1,9 +1,7 @@
 function sF = abs(sF)
 % absolute value of a function
-   
-S2G = sF.grid;
-v = abs(sF.eval(S2G));
 
-sF = interp(S2G,v,[],'harmonic',sF.degree);
-    
+f = @(v) abs(eval(sF, v));
+sF = sphFunHarmonic.quadrature(f);
+
 end
