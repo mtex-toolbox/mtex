@@ -23,8 +23,9 @@ function kam = KAM(ebsd,varargin)
 % Options
 %  threshold - ignore misorientation angles larger then threshold
 %  order     - consider neighbors of order n
+%  max       - take not the mean but the maximum misorientation angle
 %
-% See alo
+% See also
 % grain2d.GOS
 
 % compute adjacent measurements
@@ -76,4 +77,9 @@ end
 % compute kernel average misorientation
 kam = sparse(Dl(ind),Dr(ind),omega(ind)+0.00001,length(ebsd),length(ebsd));
 kam = kam+kam';
-kam = reshape(full(sum(kam,2)./sum(kam>0,2)),size(ebsd));
+
+if check_option(varargin,'max')
+  kam = reshape(full(max(kam,2)),size(ebsd));
+else
+  kam = reshape(full(sum(kam,2)./sum(kam>0,2)),size(ebsd));
+end
