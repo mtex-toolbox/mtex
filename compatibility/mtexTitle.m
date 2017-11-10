@@ -6,6 +6,8 @@ function varargout = mtexTitle(s,varargin)
 %s = regexprep(s,'-(\d)','\\bar{$1}');
 %s = ['$\mathbf{' s '}$'];
 
+if check_option(varargin,'noTitle'), return; end
+
 if ishandle(s)
   ax = s;
   s = varargin{1};
