@@ -25,7 +25,7 @@ elseif isa(b,'quaternion')
   
   a = rotation(a);
   if isa(b,'orientation')
-    if ~b.SS.id > 2 && any(max(dot_outer(b.SS,a))<0.99)      
+    if b.SS.id > 2 && any(max(dot_outer(b.SS,a))<0.99)
       warning('Symmetry mismatch');
     end
     r = mtimes@quaternion(a,b);
