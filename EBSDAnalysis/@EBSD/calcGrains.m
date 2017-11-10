@@ -1,5 +1,5 @@
 function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
-% 2d and 3d construction of GrainSets from spatially indexed EBSD data
+% grains reconstruction from 2d EBSD data
 %
 % Syntax
 %   grains = calcGrains(ebsd,'angle',10*degree)
@@ -9,7 +9,7 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 %  ebsd   - @EBSD
 %
 % Output
-%  grains  - @Grain2d | @Grain3d
+%  grains  - @grain2d
 %
 % Options
 %  threshold|angle - array of threshold angles per phase of mis/disorientation in radians
@@ -19,7 +19,7 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 %  unitcell     - omit voronoi decomposition and treat a unitcell lattice
 %
 % See also
-% GrainSet/GrainSet
+% 
 
 % subdivide the domain into cells according to the measurement locations,
 % i.e. by Voronoi teselation or unit cell

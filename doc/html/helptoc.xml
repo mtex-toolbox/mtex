@@ -48,6 +48,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.angle_outer.html">angle_outer</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.arrow3d.html">arrow3d</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.calcDelaunay.html">calcDelaunay</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.calcDensity.html">calcDensity</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.calcQuadratureWeights.html">calcQuadratureWeights</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.calcVoronoi.html">calcVoronoi</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.calcVoronoiArea.html">calcVoronoiArea</tocitem>
@@ -71,7 +72,6 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.interp.html">interp</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.isPerp.html">isPerp</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.isempty.html">isempty</tocitem>
-               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.kernelDensityEstimation.html">kernelDensityEstimation</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.length.html">length</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.line.html">line</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.mean.html">mean</tocitem>
@@ -91,6 +91,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.polar.html">polar</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.project2FundamentalRegion.html">project2FundamentalRegion</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.quiver.html">quiver</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.quiver3.html">quiver3</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.rdivide.html">rdivide</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.refine.html">refine</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.region.html">region</tocitem>
@@ -102,6 +103,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.scatter3d.html">scatter3d</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.size.html">size</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.smooth.html">smooth</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.sparse.html">sparse</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.subSet.html">subSet</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.subsasgn.html">subsasgn</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.subsref.html">subsref</tocitem>
@@ -202,6 +204,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.bingham_test.html">bingham_test</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.calcAngleDistribution.html">calcAngleDistribution</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.calcBinghamODF.html">calcBinghamODF</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.calcCluster.html">calcCluster</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.calcFourierODF.html">calcFourierODF</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.calcInvTaylor.html">calcInvTaylor</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.calcKernel.html">calcKernel</tocitem>
@@ -210,16 +213,19 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.calcMIndex.html">calcMIndex</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.calcODF.html">calcODF</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.calcTensor.html">calcTensor</tocitem>
-               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.cluster.html">cluster</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.childVariants.html">childVariants</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.crossCorrelation.html">crossCorrelation</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.ctranspose.html">ctranspose</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.display.html">display</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.doHClustering.html">doHClustering</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.dot.html">dot</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.dot_outer.html">dot_outer</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.exp.html">exp</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.export_VPSC.html">export_VPSC</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.fibreVolume.html">fibreVolume</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.getFundamentalRegion.html">getFundamentalRegion</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.isMisorientation.html">isMisorientation</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.lVariants.html">lVariants</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.ldivide.html">ldivide</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.log.html">log</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.mean.html">mean</tocitem>
@@ -227,6 +233,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.mtimes.html">mtimes</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.niceEuler.html">niceEuler</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.orientation.html">orientation</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.parentVariants.html">parentVariants</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.plot.html">plot</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.plotIPDF.html">plotIPDF</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.plotPDF.html">plotPDF</tocitem>
@@ -243,6 +250,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.times.html">times</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.transformReferenceFrame.html">transformReferenceFrame</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.unique.html">unique</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.variants.html">variants</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.volume.html">volume</tocitem>
             </tocitem>
             <tocitem target="fibre_index.html">Fibres<tocitem target="fibre_index.html#2">Defining a Fibre</tocitem>
@@ -392,6 +400,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.calcAngleDistribution.html">calcAngleDistribution</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.calcAxisDistribution.html">calcAxisDistribution</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.calcAxisVolume.html">calcAxisVolume</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.calcComponents.html">calcComponents</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.calcError.html">calcError</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.calcFourier.html">calcFourier</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.calcMDF.html">calcMDF</tocitem>
@@ -403,6 +412,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.calcTensor.html">calcTensor</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.calcpdf_special3.html">calcpdf_special3</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.centerSpecimen.html">centerSpecimen</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.char.html">char</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.concentration.html">concentration</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.conv.html">conv</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.discreteSample.html">discreteSample</tocitem>
@@ -414,6 +424,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.export_generic.html">export_generic</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.export_mtex.html">export_mtex</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.fibreVolume.html">fibreVolume</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.grad.html">grad</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.hist.html">hist</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.isFourier.html">isFourier</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.max.html">max</tocitem>
@@ -438,6 +449,8 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.rotate.html">rotate</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.slope.html">slope</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.smooth.html">smooth</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.steepestDescent.html">steepestDescent</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.steepestDescentX.html">steepestDescentX</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.textureindex.html">textureindex</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.times.html">times</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="ODF.uminus.html">uminus</tocitem>
@@ -613,6 +626,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="euler2quat.html">euler2quat</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="expquat.html">expquat</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="fibre2quat.html">fibre2quat</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="fit_ellipse.html">fit_ellipse</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="gossOrientation.html">gossOrientation</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="guessfibre.html">guessfibre</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="hr2quat.html">hr2quat</tocitem>
@@ -923,9 +937,9 @@
             <tocitem target="BoundaryPlots.html#7">Visualizing special grain boundaries</tocitem>
          </tocitem>
          <tocitem target="BoundaryMisorientations.html">Misorientations at grain boundaries<tocitem target="BoundaryMisorientations.html#1">Import EBSD data and select a subregion</tocitem>
-            <tocitem target="BoundaryMisorientations.html#2">Grain modelling prototcole - using indexed points and segmentation angle</tocitem>
-            <tocitem target="BoundaryMisorientations.html#4">Visualize the misorientation angle at grain boundaries</tocitem>
-            <tocitem target="BoundaryMisorientations.html#5">Visualize the misorientation axes in specimen coordinates</tocitem>
+            <tocitem target="BoundaryMisorientations.html#2">Grain modelling</tocitem>
+            <tocitem target="BoundaryMisorientations.html#3">Visualize the misorientation angle at grain boundaries</tocitem>
+            <tocitem target="BoundaryMisorientations.html#4">Visualize the misorientation axes in specimen coordinates</tocitem>
          </tocitem>
          <tocitem target="TwinningAnalysis.html">Twinning Analysis<tocitem target="TwinningAnalysis.html#3">Data import and grain detection</tocitem>
             <tocitem target="TwinningAnalysis.html#6">Properties of grain boundaries</tocitem>
@@ -978,9 +992,8 @@
             <tocitem target="PiezoElectricity.html#11">Mean Tensor Calculation</tocitem>
          </tocitem>
          <tocitem target="SeismicsMultiplot.html">Seismic velocities and anisotropy<tocitem target="SeismicsMultiplot.html#3">Crystal Symmetry and definition of the elastic stiffness tensor</tocitem>
-            <tocitem target="SeismicsMultiplot.html#5">compute maximum and minimum velocities</tocitem>
             <tocitem target="SeismicsMultiplot.html#6">Plotting section</tocitem>
-            <tocitem target="SeismicsMultiplot.html#8">AVS : Plot S-wave anisotropy percentage for each propagation direction</tocitem>
+            <tocitem target="SeismicsMultiplot.html#8">AVS : Plot S-wave anisotropy percentage for each proppagation direction</tocitem>
             <tocitem target="SeismicsMultiplot.html#9">S1 Polarization: Plot fastest S-wave (Vs1) polarization directions</tocitem>
             <tocitem target="SeismicsMultiplot.html#10">Vs1 : Plot Vs1 velocities (km/s)</tocitem>
             <tocitem target="SeismicsMultiplot.html#11">Vs2 : Plot Vs2 velocities (km/s)</tocitem>
@@ -1061,33 +1074,34 @@
             <tocitem target="ColorCodingEBSD_demo.html#10">Colorcoding according to inverse pole figure</tocitem>
          </tocitem>
       </tocitem>
-      <tocitem target="ReleaseNotes.html">Release Notes<tocitem target="changelog.html">MTEX Changelog<tocitem target="changelog.html#1">MTEX 4.5 03/2017</tocitem>
-            <tocitem target="changelog.html#2">MTEX 4.4   01/2017</tocitem>
-            <tocitem target="changelog.html#3">MTEX 4.3.2 07/2016</tocitem>
-            <tocitem target="changelog.html#4">MTEX 4.3 - 03/2016</tocitem>
-            <tocitem target="changelog.html#5">MTEX 4.2 - 11/2015</tocitem>
-            <tocitem target="changelog.html#6">MTEX 4.1 - 09/2015</tocitem>
-            <tocitem target="changelog.html#7">MTEX 4.0.0 - 10/2014</tocitem>
-            <tocitem target="changelog.html#8">MTEX 3.5.0 - 12/2013</tocitem>
-            <tocitem target="changelog.html#9">MTEX 3.4.2 - 06/2013</tocitem>
-            <tocitem target="changelog.html#10">MTEX 3.4.1 - 04/2013</tocitem>
-            <tocitem target="changelog.html#11">MTEX 3.4.0 - 03/2013</tocitem>
-            <tocitem target="changelog.html#12">MTEX 3.3.2 - 01/2013</tocitem>
-            <tocitem target="changelog.html#13">MTEX 3.3.1 - 07/2012</tocitem>
-            <tocitem target="changelog.html#14">MTEX 3.3.0 - 06/2012</tocitem>
-            <tocitem target="changelog.html#15">MTEX 3.2.3 - 03/2012</tocitem>
-            <tocitem target="changelog.html#16">MTEX 3.2.1 - 11/2011</tocitem>
-            <tocitem target="changelog.html#17">MTEX 3.2 - 05/2011</tocitem>
-            <tocitem target="changelog.html#18">MTEX 3.1 - 03/2011</tocitem>
-            <tocitem target="changelog.html#19">MTEX 3.0 - 10/2010</tocitem>
-            <tocitem target="changelog.html#20">MTEX 2.0 - 10/2009</tocitem>
-            <tocitem target="changelog.html#21">MTEX 1.2 - 05/2009</tocitem>
-            <tocitem target="changelog.html#22">MTEX 1.1 - 12/2008</tocitem>
-            <tocitem target="changelog.html#23">MTEX 1.0 - 06/2008</tocitem>
-            <tocitem target="changelog.html#24">MTEX 0.4 - 04/2008</tocitem>
-            <tocitem target="changelog.html#25">MTEX 0.3 - 10/2007</tocitem>
-            <tocitem target="changelog.html#26">MTEX 0.2 - 07/2007</tocitem>
-            <tocitem target="changelog.html#27">MTEX 0.1 - 03/2007</tocitem>
+      <tocitem target="ReleaseNotes.html">Release Notes<tocitem target="changelog.html">MTEX Changelog<tocitem target="changelog.html#1">MTEX 4.5.1 08/2017</tocitem>
+            <tocitem target="changelog.html#2">MTEX 4.5 03/2017</tocitem>
+            <tocitem target="changelog.html#3">MTEX 4.4   01/2017</tocitem>
+            <tocitem target="changelog.html#4">MTEX 4.3.2 07/2016</tocitem>
+            <tocitem target="changelog.html#5">MTEX 4.3 - 03/2016</tocitem>
+            <tocitem target="changelog.html#6">MTEX 4.2 - 11/2015</tocitem>
+            <tocitem target="changelog.html#7">MTEX 4.1 - 09/2015</tocitem>
+            <tocitem target="changelog.html#8">MTEX 4.0.0 - 10/2014</tocitem>
+            <tocitem target="changelog.html#9">MTEX 3.5.0 - 12/2013</tocitem>
+            <tocitem target="changelog.html#10">MTEX 3.4.2 - 06/2013</tocitem>
+            <tocitem target="changelog.html#11">MTEX 3.4.1 - 04/2013</tocitem>
+            <tocitem target="changelog.html#12">MTEX 3.4.0 - 03/2013</tocitem>
+            <tocitem target="changelog.html#13">MTEX 3.3.2 - 01/2013</tocitem>
+            <tocitem target="changelog.html#14">MTEX 3.3.1 - 07/2012</tocitem>
+            <tocitem target="changelog.html#15">MTEX 3.3.0 - 06/2012</tocitem>
+            <tocitem target="changelog.html#16">MTEX 3.2.3 - 03/2012</tocitem>
+            <tocitem target="changelog.html#17">MTEX 3.2.1 - 11/2011</tocitem>
+            <tocitem target="changelog.html#18">MTEX 3.2 - 05/2011</tocitem>
+            <tocitem target="changelog.html#19">MTEX 3.1 - 03/2011</tocitem>
+            <tocitem target="changelog.html#20">MTEX 3.0 - 10/2010</tocitem>
+            <tocitem target="changelog.html#21">MTEX 2.0 - 10/2009</tocitem>
+            <tocitem target="changelog.html#22">MTEX 1.2 - 05/2009</tocitem>
+            <tocitem target="changelog.html#23">MTEX 1.1 - 12/2008</tocitem>
+            <tocitem target="changelog.html#24">MTEX 1.0 - 06/2008</tocitem>
+            <tocitem target="changelog.html#25">MTEX 0.4 - 04/2008</tocitem>
+            <tocitem target="changelog.html#26">MTEX 0.3 - 10/2007</tocitem>
+            <tocitem target="changelog.html#27">MTEX 0.2 - 07/2007</tocitem>
+            <tocitem target="changelog.html#28">MTEX 0.1 - 03/2007</tocitem>
          </tocitem>
          <tocitem target="bugs.html">List of Known Bugs<tocitem target="bugs.html#2">Open Issues</tocitem>
          </tocitem>

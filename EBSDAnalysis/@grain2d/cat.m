@@ -1,5 +1,5 @@
 function grains = cat(dim,varargin)
-% concatenation of grains from the same GrainSet
+% implements [grain1, grain2]
 %
 % Syntax
 %   g = [grains_1, grains_2, grains_n]
@@ -7,7 +7,7 @@ function grains = cat(dim,varargin)
 %   g = [grains(1:100) grains(500:end)]
 %
 % See also
-% GrainSet/vertcat
+% grain2d/vertcat
 
 grains = cat@dynProp(1,varargin{:});
 

@@ -127,9 +127,7 @@ plot(oM)
 
 %% SUB: Classifying special boundaries
 % Actually, it might be more informative, if we classify the grain
-% boundaries after some special property. This is done by the command
-% <GrainSet.specialBoundary.html specialBoundary>, which will be invoked
-% by the plotting routine.
+% boundaries after some special property. 
 %%
 % We can mark grain boundaries after its misorientation angle is in a
 % certain range

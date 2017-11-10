@@ -1,12 +1,16 @@
 function varargout = subsref(grains,s)
-% access subsets of a GrainSet
+% implements grains(1:3)
 %
 % Syntax
-%   grains(1:10)          % the 10 first grains of a GrainSet
-%   grains('Fe')          % only Fe grains
+%   grains(1:10)            % the 10 first grains
+%   grains('Fe')            % only Fe grains
 %   grains( ~grains('fe') ) % all grains but Fe
-%                           logical array with size of the complete
-%                           GrainSet
+%   grains(cond)        
+%
+% Input
+%  grains - @grain2d
+%  cond   - logical array with same size as grains
+%
 
 if strcmp(s(1).type,'()')
   

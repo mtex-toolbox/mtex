@@ -1,5 +1,5 @@
 %% Analyzing Individual Grains
-% Explanation how to extract and work with single grains from EBSD data
+% how to work with single grains
 %
 %
 %% Open in Editor
@@ -7,7 +7,7 @@
 %% Contents
 %
 %% Connection between grains and EBSD data
-% As usual, let us first import some EBSD data construct some grains
+% As usual, we start by importing some EBSD data and computing grains
 
 close all
 mtexdata forsterite
@@ -15,11 +15,13 @@ plotx2east
 
 % consider only indexed data for grain segmentation
 ebsd = ebsd('indexed');
-% perform grain segmentation
+
+% compute the grains
 [grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd);
 
 %%
-% The <GrainSet_index.html GrainSet> contains the EBSD data it was reconstructed from. We can
+% 
+% The <grain2d_index.html grains> contain. We can
 % access these data by
 
 grain_selected = grains( grains.grainSize >=  1160)
