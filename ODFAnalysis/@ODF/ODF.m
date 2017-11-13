@@ -84,10 +84,11 @@ classdef ODF < dynOption
   
   methods (Static = true)
     
-    function odf = interp(ori,values,varargin)
+    function [odf,resvec] = interp(ori,values,varargin)
       % compute an ODF by interpolating orientations and weights
 
       % construct the uniform portion first
+      values = values(:);
       m = min(values);
       values = values - m;
       
@@ -102,8 +103,8 @@ classdef ODF < dynOption
 
       % system matrix
       M = psi.K_symmetrised(S3G,ori,ori.CS,ori.SS);
-
-      [w,flag] = lsqr(M',values,1e-2,30);
+      
+      [w,flag,relres,iter,resvec] = lsqr(M',values,1e-2,30);
 
       % err = abs(M'*w - values);
       % disp(['   maximum error during interpolating ODF: ',xnum2str(max(err))]);
