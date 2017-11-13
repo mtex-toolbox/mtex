@@ -1,16 +1,14 @@
-function [S2G, W] = quadratureS2Grid(type, M)
+function [S2G, W] = quadratureS2Grid(M, varargin)
 %
-% [S2G, W] = get_quadrature_grid(type, m)
+% [S2G, W] = get_quadrature_grid(m) quadrature grid of type gauss
+% [S2G, W] = get_quadrature_grid(m, 'chebyshev') quadrature grid of thype chebyshev
 %
 
 path = mfilename('fullpath');
-if strcmp(type, 'gauss')
+if check_option(varargin, 'gauss')
 	path = [mtex_path '/data/quadratureS2Grid_gauss/'];
-elseif strcmp(type, 'chebyshev')
-	path = [mtex_path '/data/quadratureS2Grid_chebyshev/'];
 else
-	error('wrong quadrature grid type');
-	return;
+	path = [mtex_path '/data/quadratureS2Grid_chebyshev/'];
 end
 files = dir( fullfile(path,'*') );
 tmp = {files.name}';
@@ -32,7 +30,7 @@ for ii = 1:size(data, 1)
 end
 
 S2G = S2Grid(data(:, 1), rhGrid);
-if strcmp(type, 'gauss')
+if check_option(varargin, 'gauss')
 	W = data(:, 3);
 else
 	W = 4*pi/size(data, 1);

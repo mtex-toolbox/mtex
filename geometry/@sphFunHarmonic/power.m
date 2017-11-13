@@ -1,5 +1,15 @@
 function sF = power(sF1,sF2)
-        
-warning('not yet implemented')
+
+if isnumeric(sF1)
+	warning('not yet implemented');
+
+elseif isnumeric(sF2)
+	f = @(v) sF1.eval(v).^sF2;
+	sF = sphFunHarmonic.quadrature(f);
+
+else
+	warning('not yet implemented');
+
+end
 
 end

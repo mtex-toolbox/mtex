@@ -4,7 +4,12 @@ function sF = quadrature(f, varargin)
 %
 
 M = get_option(varargin, 'm', 50);
-[v, W] = quadratureS2Grid('chebyshev', 2*M);
+if check_option(varargin, 'gauss')
+	[v, W] = quadratureS2Grid(2*M, 'gauss');
+else
+	[v, W] = quadratureS2Grid(2*M);
+end
+
 v = v(:);
 y = f(v);
 
