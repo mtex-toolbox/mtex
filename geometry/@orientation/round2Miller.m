@@ -55,7 +55,7 @@ rh2 = round(n2);
 hkl2 = rh2.hkl;
 
 % fit of planes
-omega_h = angle(rh2,n2) + ...
+omega_h = angle(rh2(:),n2(:)) + ...
   (h(:).^2 + k(:).^2 + l(:).^2 + sum(hkl2.^2,2)) * penalty;
 
 % all directions
@@ -66,7 +66,7 @@ rd2 = round(d2);
 uvw2 = rd2.uvw;
 
 % fit of directions
-omega_d = angle(rd2,d2) + ...
+omega_d = angle(rd2(:),d2(:)) + ...
   (u(:).^2 + v(:).^2 + w(:).^2 + sum(uvw2.^2,2)) * penalty;
 
 % directions should be orthognal to normals
@@ -84,4 +84,3 @@ end
 
 % mori = orientation('map',Miller(1,1,-2,0,CS),Miller(2,-1,-1,0,CS),Miller(-1,0,1,1,CS),Miller(1,0,-1,1,CS)) * orientation('axis',vector3d.rand(1),'angle',1*degree,CS,CS)
 % 
-
