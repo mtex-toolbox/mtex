@@ -22,20 +22,15 @@ if isa(b,'vector3d')
   r = rotate_outer(b,a);
     
 elseif isa(b,'quaternion')
-  
+
+  % ensure that both have an inversion flag
   a = rotation(a);
-  if isa(b,'orientation')
-    if b.SS.id > 2 && any(max(dot_outer(b.SS,a))<0.99)
-      warning('Symmetry mismatch');
-    end
-    r = mtimes@quaternion(a,b);
-    r.i = bsxfun(@xor,a.i(:),b.i(:).');
-    r = orientation(r,b.CS,b.SS);
-  else
-    b = rotation(b);
-    r = mtimes@quaternion(a,b);
-    r.i = bsxfun(@xor,a.i(:),b.i(:).');
-  end   
+  b = rotation(b);
+  
+  r = mtimes@quaternion(a,b);
+  r.i = bsxfun(@xor,a.i(:),b.i(:).');
+  
+end
     
   
     
