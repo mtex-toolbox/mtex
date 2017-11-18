@@ -24,13 +24,13 @@ function [c,center] = calcCluster(ori,varargin)
 %   ori = odf.calcOrientations(1500);
 %
 %   % find the clusters and its centers
-%   [c,centerRec] = calcCluster(ori);
+%   [cId,centerRec] = calcCluster(ori);
 %
 %   % visualize result
 %   for i = 1:length(centerRec)
 %     plot(ori(cId==i),'axisAngle')
 %     hold on
-%     plot(centerRec(i),'MarkerFaceColor','k','MarkerSize',10)
+%     plot(centerRec(i),'MarkerFaceColor','k','MarkerSize',15)
 %   end
 %   hold off
 %
