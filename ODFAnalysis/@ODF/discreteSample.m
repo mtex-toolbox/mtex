@@ -19,12 +19,12 @@ for ic = 1:length(odf.components)
 end
 
 % take random symmetrically equivalent samples
-cs = odf.CS.properGroup;
-ss = odf.SS.properGroup;
-ics = discretesample(length(cs),npoints,1);
-iss = discretesample(length(ss),npoints,1);
+qcs = quaternion(odf.CS.properGroup);
+qss = quaternion(odf.SS.properGroup);
+ics = discretesample(length(qcs),npoints,1);
+iss = discretesample(length(qss),npoints,1);
 
-ori = orientation(ss(iss(:)) .* q .* cs(ics(:)),odf.CS,odf.SS);
+ori = orientation(qss(iss(:)) .* q .* qcs(ics(:)),odf.CS,odf.SS);
 
 % the antipodal case
 if  odf.antipodal
