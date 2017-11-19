@@ -20,7 +20,13 @@ if isa(b,'vector3d')
   
   % apply rotation
   r = rotate_outer(b,a);
-    
+
+elseif isa(a,'symmetry') && isa(b,'orientation')
+  % if right is an orientation this should be handled by orientation.mtimes
+  
+  % symmetry times orientation
+  r = inv(mtimes(inv(b),inv(a))).';
+  
 elseif isa(b,'quaternion')
 
   % ensure that both have an inversion flag
