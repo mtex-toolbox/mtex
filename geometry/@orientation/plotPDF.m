@@ -21,6 +21,7 @@ function plotPDF(o,varargin)
 % Flags
 %  antipodal - include <AxialDirectional.html antipodal symmetry>
 %  complete  - plot entire (hemi)--sphere
+%  noSymmetry - ignore symmetricaly equivalent points
 %
 % See also
 % orientation/plotIPDF S2Grid/plot savefigure
@@ -86,7 +87,11 @@ for i = 1:length(h)
   if i>1, mtexFig.nextAxis; end
 
   % compute specimen directions
-  sh = symmetrise(h{i});
+  if check_option(varargin,'noSymmetry')
+    sh = h{i};
+  else
+    sh = symmetrise(h{i});
+  end
   r = reshape(o.SS * o * sh,[],1);
   opt = replicateMarkerSize(varargin,length(o.SS)*length(sh));
   
