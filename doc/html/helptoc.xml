@@ -48,7 +48,6 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.angle_outer.html">angle_outer</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.arrow3d.html">arrow3d</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.calcDelaunay.html">calcDelaunay</tocitem>
-               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.calcDensity.html">calcDensity</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.calcQuadratureWeights.html">calcQuadratureWeights</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.calcVoronoi.html">calcVoronoi</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.calcVoronoiArea.html">calcVoronoiArea</tocitem>
@@ -72,6 +71,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.interp.html">interp</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.isPerp.html">isPerp</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.isempty.html">isempty</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.kernelDensityEstimation.html">kernelDensityEstimation</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.length.html">length</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.line.html">line</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.mean.html">mean</tocitem>
@@ -91,7 +91,6 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.polar.html">polar</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.project2FundamentalRegion.html">project2FundamentalRegion</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.quiver.html">quiver</tocitem>
-               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.quiver3.html">quiver3</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.rdivide.html">rdivide</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.refine.html">refine</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="vector3d.region.html">region</tocitem>
@@ -213,7 +212,6 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.calcMIndex.html">calcMIndex</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.calcODF.html">calcODF</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.calcTensor.html">calcTensor</tocitem>
-               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.childVariants.html">childVariants</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.crossCorrelation.html">crossCorrelation</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.ctranspose.html">ctranspose</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.display.html">display</tocitem>
@@ -225,7 +223,6 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.fibreVolume.html">fibreVolume</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.getFundamentalRegion.html">getFundamentalRegion</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.isMisorientation.html">isMisorientation</tocitem>
-               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.lVariants.html">lVariants</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.ldivide.html">ldivide</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.log.html">log</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.mean.html">mean</tocitem>
@@ -233,7 +230,7 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.mtimes.html">mtimes</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.niceEuler.html">niceEuler</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.orientation.html">orientation</tocitem>
-               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.parentVariants.html">parentVariants</tocitem>
+               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.parents.html">parents</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.plot.html">plot</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.plotIPDF.html">plotIPDF</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.plotPDF.html">plotPDF</tocitem>
@@ -242,7 +239,6 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.project2EulerFR.html">project2EulerFR</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.project2FundamentalRegion.html">project2FundamentalRegion</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.qqplot.html">qqplot</tocitem>
-               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.rVariant.html">rVariant</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.round2Miller.html">round2Miller</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.scatter.html">scatter</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="orientation.sphereVolume.html">sphereVolume</tocitem>
@@ -317,7 +313,6 @@
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="quaternion.norm.html">norm</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="quaternion.normalize.html">normalize</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="quaternion.permute.html">permute</tocitem>
-               <tocitem image="$toolbox/matlab/icons/help_fx.png" target="quaternion.pertube.html">pertube</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="quaternion.perturbe.html">perturbe</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="quaternion.plot.html">plot</tocitem>
                <tocitem image="$toolbox/matlab/icons/help_fx.png" target="quaternion.plus.html">plus</tocitem>
@@ -916,9 +911,13 @@
             <tocitem target="GrainStatistics.html#18">Grain-size Analysis</tocitem>
             <tocitem target="GrainStatistics.html#25">Spatial Dependencies</tocitem>
          </tocitem>
-         <tocitem target="GrainSpatialPlots.html">Plotting grains<tocitem target="GrainSpatialPlots.html#4">Plotting grains and combined plots</tocitem>
-            <tocitem target="GrainSpatialPlots.html#11">Visualizing grain boundaries</tocitem>
-            <tocitem target="GrainSpatialPlots.html#14">Visualizing directions</tocitem>
+         <tocitem target="GrainSpatialPlots.html">Plotting grains<tocitem target="GrainSpatialPlots.html#4">Phase maps</tocitem>
+            <tocitem target="GrainSpatialPlots.html#7">Orientation Maps</tocitem>
+            <tocitem target="GrainSpatialPlots.html#10">Plotting arbitrary properties</tocitem>
+            <tocitem target="GrainSpatialPlots.html#13">Colorizing circular properties</tocitem>
+            <tocitem target="GrainSpatialPlots.html#14">Plotting the orientation within a grain</tocitem>
+            <tocitem target="GrainSpatialPlots.html#16">Visualizing directions</tocitem>
+            <tocitem target="GrainSpatialPlots.html#17">Labeling Grains</tocitem>
          </tocitem>
          <tocitem target="GrainSingleAnalysis.html">Analyzing Individual Grains<tocitem target="GrainSingleAnalysis.html#3">Connection between grains and EBSD data</tocitem>
             <tocitem target="GrainSingleAnalysis.html#9">Visualize the misorientation within a grain</tocitem>
@@ -992,8 +991,9 @@
             <tocitem target="PiezoElectricity.html#11">Mean Tensor Calculation</tocitem>
          </tocitem>
          <tocitem target="SeismicsMultiplot.html">Seismic velocities and anisotropy<tocitem target="SeismicsMultiplot.html#3">Crystal Symmetry and definition of the elastic stiffness tensor</tocitem>
+            <tocitem target="SeismicsMultiplot.html#5">compute maximum and minimum velocities</tocitem>
             <tocitem target="SeismicsMultiplot.html#6">Plotting section</tocitem>
-            <tocitem target="SeismicsMultiplot.html#8">AVS : Plot S-wave anisotropy percentage for each proppagation direction</tocitem>
+            <tocitem target="SeismicsMultiplot.html#8">AVS : Plot S-wave anisotropy percentage for each propagation direction</tocitem>
             <tocitem target="SeismicsMultiplot.html#9">S1 Polarization: Plot fastest S-wave (Vs1) polarization directions</tocitem>
             <tocitem target="SeismicsMultiplot.html#10">Vs1 : Plot Vs1 velocities (km/s)</tocitem>
             <tocitem target="SeismicsMultiplot.html#11">Vs2 : Plot Vs2 velocities (km/s)</tocitem>
