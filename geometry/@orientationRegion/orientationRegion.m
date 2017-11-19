@@ -20,11 +20,14 @@ classdef orientationRegion
   
   methods
         
-    function oR = orientationRegion(N,varargin)
+    function oR = orientationRegion(varargin)
       %
 
-      if nargin > 0 && ~check_option(varargin,'complete') 
-        oR.N = N;
+      if nargin > 0 
+        if isa(varargin{1},'quaternion') && ~isa(varargin{1},'symmetry') && ~check_option(varargin,'complete') 
+          oR.N = varargin{1};
+          varargin{1} = [];
+        end
       end
       
       % compute vertices

@@ -44,7 +44,8 @@ classdef infimalConvolutionFilter < EBSDFilter
       [qmean,q] = mean(ori);
       %u_0 = double(log(q,quaternion(qmean)));
       
-      u_0 = double(ori);
+      %u_0 = double(ori);
+      u_0 = double(q);
 
       dim = size(u_0,3);
       mask = repmat(~ori.isnan,1,1,dim);

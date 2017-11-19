@@ -21,7 +21,7 @@ classdef unimodalComponent < ODFComponent
       
       component.center = center;
       component.psi = psi;
-      component.weights = weights;
+      component.weights = reshape(weights,size(center));
       
     end
   

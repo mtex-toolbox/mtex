@@ -1,10 +1,33 @@
-function [S3G,S2G,sec] = regularSO3Grid(CS,SS,varargin)
-% give a regular grid in orientation space
+function [S3G,S2G,sec] = regularSO3Grid(CS,varargin)
+% regular grid in Euler orientation space
+%
+% Syntax
+%   S3G = regularSO3Grid(cs)
+%   S3G = regularSO3Grid(cs,ss,'resolution',2.5*degree)     % specify the resolution
+%   S3G = regularSO3Grid(cs,ss,'resolution',5*degree,'ZYZ') % use ZYZ convention
+%   S3G = regularSO3Grid(cs,ss,'phi2','sections',10) % 10 phi2 sections
+%   S3G = regularSO3Grid
 %
 % Input
+%  cs - @crystalSymmetry
+%  ss - @specimenSymmetry
+%
+% Options
+%  resolution - Euler angle resolution
+%  sections - number of sections
+%
+% Flags
+%  phi1 | Phi | phi2 - sections along which variable
 %
 % Output
 %
+
+if nargin > 1 && isa(varargin{1},'symmetry')
+  SS = varargin{1};
+  varargin(1) = [];
+else
+  SS = specimenSymmetry;
+end
 
 % determine sectioning type
 sectypes = {...

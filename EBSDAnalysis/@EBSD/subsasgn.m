@@ -35,6 +35,8 @@ switch s(1).type
       ebsd.id = subsasgn(ebsd.id,s(1),[]);
       ebsd.phaseId = subsasgn(ebsd.phaseId,s(1),[]);      
       
+      ebsd = EBSD(ebsd)
+      
     elseif ischar(b)
       
       phId = find(strcmpi(b,ebsd.mineralList),1);

@@ -1,19 +1,15 @@
 function f = eval(component,g,varargin)
-% evaluate an odf at orientation g
-%
-% sum up kernels modulo symmetries
+% evaluate sum of unimodal components at orientation g
 %
 % Syntax
-%   w = sum_K(kk,g1,g2,CS,SS,c,<options>)
+%   w = eval(component,g)
 %
 % Input
-%  kk     - @kernel
-%  g1, g2 - @quaternion(s)
-%  CS, SS - crystal , specimen @symmetry
-%  c      - double
+%  component - @unimodalComponent
+%  g - @orientation
 %
 % Options
-%  EXACT -
+%  exact -
 %  EPSILON -
 %
 % Description

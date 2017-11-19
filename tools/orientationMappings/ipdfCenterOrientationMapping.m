@@ -22,7 +22,7 @@ classdef ipdfCenterOrientationMapping < ipdfOrientationMapping
     function rgb = Miller2color(oM,h)
       
       s = size(h);
-      rgb = ones([s,3]);
+      rgb = ones(length(h),3);
 
       for k=1:length(oM.center)
 
@@ -30,7 +30,7 @@ classdef ipdfCenterOrientationMapping < ipdfOrientationMapping
   
         cdata = rgb2hsv(repmat(oM.color(k,:),length(h),1));
         cdata(:,2) = w(:).*cdata(:,2);
-        cdata = reshape(hsv2rgb(cdata),[s,3]);
+        cdata = reshape(hsv2rgb(cdata),[],3);
         rgb = rgb.*cdata;
       end
     end

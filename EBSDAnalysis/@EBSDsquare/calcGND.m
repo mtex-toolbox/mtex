@@ -1,4 +1,4 @@
-function gnd = calcGND(ebsd,varargin)
+function [gnd,rho] = calcGND(ebsd,varargin)
 % compute the geometrically necessary dislocation
 %
 % Formulae are taken from the paper:

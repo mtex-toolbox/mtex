@@ -16,7 +16,7 @@ function map = findByLocation( ebsd, xy )
 %   g = findByLocation(ebsd,p)
 %
 % See also
-% EBSD/findByLocation GrainSet/findByOrientation
+% EBSD/findByLocation grain2d/findByOrientation
 
 if all(isfield(ebsd.prop,{'x','y','z'}))
   x_D = [ebsd.prop.x,ebsd.prop.y,ebsd.prop.z];

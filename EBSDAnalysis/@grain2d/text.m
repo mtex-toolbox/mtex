@@ -15,7 +15,8 @@ function h = text(grains,txt,varargin)
 
 xy = grains.centroid;
 
-h = optiondraw(text(xy(:,1),xy(:,2),txt),varargin{:});
+h = optiondraw(text(xy(:,1),xy(:,2),txt,...
+  'HorizontalAlignment','center','VerticalAlignment','middle'),varargin{:});
 
 if nargout == 0, clear h; end
 

@@ -10,6 +10,10 @@ classdef fibre
   %
   %   plotPDF(f,Miller(1,0,0,cs))
   %
+  %   f = fibre(o1,o2) % the fibre from o1 to o2
+  %   f=  fibre(h,r)   % the fibre mapping h to r    
+  
+  %
   % *Predefined fibres*
   %
   %  * fibre.alpha

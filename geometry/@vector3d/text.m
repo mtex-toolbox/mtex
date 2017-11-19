@@ -66,7 +66,7 @@ for j = 1:numel(sP)
       s = ['$' s '$']; %#ok<AGROW>
     end
 
-    if check_option(varargin,'addMarkerSpacing'),
+    if check_option(varargin,'addMarkerSpacing')
       
       xy = [x(i),y(i)];
       tag = {'UserData',xy,'tag'};

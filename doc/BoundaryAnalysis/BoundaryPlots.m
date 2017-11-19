@@ -14,7 +14,16 @@ mtexdata forsterite
 plotx2east
 
 ebsd = ebsd('indexed');
-[grains,ebsd.grainId] = calcGrains(ebsd)
+[grains,ebsd.grainId] = calcGrains(ebsd);
+
+% remove very small grains
+ebsd(grains(grains.grainSize<=5)) = [];
+
+% and recompute grains
+[grains,ebsd.grainId] = calcGrains(ebsd);
+
+% smooth the grains a bit
+grains =smooth(grains,4)
 
 %% The grain boundary
 % The grain boundary of a list of grains can be extracted by
@@ -26,20 +35,20 @@ plot(gB)
 %%
 % Accordingly, we can access the grain boundary of a specific grain by
 
-grains(931).boundary
+grains(267).boundary
 
-plot(grains(931).boundary)
+plot(grains(267).boundary)
 
 %%
 % let's combine it with the orientation measurements inside
 
 % define the colorcoding such that the meanorientation becomes white
-oM = ipdfHSVOrientationMapping(grains(931));
-oM.inversePoleFigureDirection = grains(931).meanOrientation * oM.whiteCenter;
+oM = ipdfHSVOrientationMapping(grains(267));
+oM.inversePoleFigureDirection = grains(267).meanOrientation * oM.whiteCenter;
 oM.maxAngle = 5*degree;
 
-% get the ebsd data of grain 931
-ebsd_931 = ebsd(grains(931));
+% get the ebsd data of grain 267
+ebsd_931 = ebsd(grains(267));
 
 % plot the orientation data
 hold on
@@ -94,17 +103,19 @@ plot(grains,'translucent',.3,'micronbar','off')
 legend off
 hold on
 
+% this reorders the boundary segement a a connected graph which results in
+% a smoother plot
 gB_Fo = gB_Fo.reorder;
 
 oM = patalaOrientationMapping(gB_Fo);
 
-plotOrdered(gB_Fo,'linewidth',4)
+plot(gB_Fo,'linewidth',4)
 % on my computer setting the renderer to painters gives a much more
 % pleasent result
 set(gcf,'Renderer','painters') 
 hold on
 
-plotOrdered(gB_Fo,oM.orientation2color(gB_Fo.misorientation),'linewidth',2)
+plot(gB_Fo,oM.orientation2color(gB_Fo.misorientation),'linewidth',2)
 
 hold off
 
@@ -116,9 +127,7 @@ plot(oM)
 
 %% SUB: Classifying special boundaries
 % Actually, it might be more informative, if we classify the grain
-% boundaries after some special property. This is done by the command
-% <GrainSet.specialBoundary.html specialBoundary>, which will be invoked
-% by the plotting routine.
+% boundaries after some special property. 
 %%
 % We can mark grain boundaries after its misorientation angle is in a
 % certain range

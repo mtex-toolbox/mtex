@@ -30,6 +30,8 @@ if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetris
     m = symmetrise(m,'removeAntipodal',varargin{:});
     
     varargin{1} = repmat(varargin{1}(:)',size(m,1),1);
+    
+    varargin = replicateMarkerSize(varargin,size(m,1));
             
   elseif length(m) < 100 || check_option(varargin,{'labeled','label'}) 
   
@@ -44,6 +46,7 @@ if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetris
   else 
     
     m = symmetrise(m,'removeAntipodal',varargin{:}); % symmetrise with repetition
+    varargin = replicateMarkerSize(varargin,size(m,1));
     
   end
   
@@ -57,3 +60,15 @@ end
 
 % plot them all with the same color
 [varargout{1:nargout}] = scatter@vector3d(m,varargin{:},m.CS);
+
+end
+
+function opt = replicateMarkerSize(opt,n)
+
+ms = get_option(opt,'MarkerSize');
+if length(ms)>1 && n > 1
+  ms = repmat(ms(:).',n,1);
+  opt = set_option(opt,'MarkerSize',ms);
+end
+  
+end

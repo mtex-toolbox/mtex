@@ -2,7 +2,7 @@ function [counts,pairs] = neighbors(grains)
 % returns the number of neighboring grains
 %
 % Input
-%  grains - @GrainSet
+%  grains - @grain2d
 %
 % Output
 %  counts - number of neighbors per grain

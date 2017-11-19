@@ -213,24 +213,57 @@ methods (Static = true)
     ori = orientation('Euler',90*degree,45*degree,0*degree,varargin{:});
   end
 
-  function mori = Bain(csAlpha,csGamma)    
+  function mori = Bain(csGamma,csAlpha)
+    %
+    % Syntax:
+    %   mori = Bain(csGamma,csAlpha)
+    %
+    % Input
+    %  csGamma - parent @crystalSymmetry (cubic fcc)
+    %  csAlpha - child @crystalSymmetry (cubic bcc)
+    %
+    
     mori = orientation('map',Miller(1,0,0,csGamma),Miller(1,0,0,csAlpha),...
       Miller(0,1,0,csGamma,'uvw'),Miller(0,1,1,csAlpha,'uvw'));
   end
   
-  function mori = KurdjumovSachs(csAlpha,csGamma)
+  function mori = KurdjumovSachs(csGamma,csAlpha)
+    %
+    % Syntax:
+    %   mori = KurdjumovSachs(csGamma,csAlpha)
+    %
+    % Input
+    %  csGamma - parent @crystalSymmetry (cubic fcc)
+    %  csAlpha - child @crystalSymmetry (cubic bcc)
+    %
     
     mori = orientation('map',Miller(1,1,1,csGamma),Miller(0,1,1,csAlpha),...
       Miller(-1,0,1,csGamma,'uvw'),Miller(-1,-1,1,csAlpha,'uvw'));
   end
   
-  function mori = NishiyamaWassermann(csAlpha,csGamma)
+  function mori = NishiyamaWassermann(csGamma,csAlpha)
+    %
+    % Syntax:
+    %   mori = NishiyamaWassermann(csGamma,csAlpha)
+    %
+    % Input
+    %  csGamma - parent @crystalSymmetry (cubic fcc)
+    %  csAlpha - child @crystalSymmetry (cubic bcc)
+    %
     
     mori = orientation('map',Miller(1,1,1,csGamma),Miller(0,1,1,csAlpha),...
       Miller(1,1,-2,csGamma,'uvw'),Miller(0,-1,1,csAlpha,'uvw'));
   end
   
-  function mori = Pitch(csAlpha,csGamma)
+  function mori = Pitch(csGamma,csAlpha)
+    %
+    % Syntax:
+    %   mori = Pitch(csGamma,csAlpha)
+    %
+    % Input
+    %  csGamma - parent @crystalSymmetry (cubic fcc)
+    %  csAlpha - child @crystalSymmetry (cubic bcc)
+    %
     
     mori = orientation('map',Miller(0,1,0,csGamma),Miller(1,0,1,csAlpha),...
       Miller(1,0,1,csGamma,'uvw'),Miller(-1,1,1,csAlpha,'uvw'));
@@ -240,26 +273,21 @@ methods (Static = true)
   
   end
   
+  function mori = GreningerTrojano(csGamma,csAlpha)
+    %
+    % Syntax:
+    %   mori = GreningerTrojano(csGamma,csAlpha)
+    %
+    % Input
+    %  csGamma - parent @crystalSymmetry (cubic fcc)
+    %  csAlpha - child @crystalSymmetry (cubic bcc)
+    %
+    % cube cube
+    mori = inv(orientation('Euler',2.7*degree,46.6*degree,7.5*degree,csAlpha,csGamma));
+    
+  end
   
-  
-  function ori = exp(T,varargin)
     
-    % make sure T is an antisymmetric tensor
-    T = antiSym(tensor(T));
-    
-    % form the gradient vector
-    v = vector3d(T{3,2},-T{3,1},T{2,1});
-    
-    % compute the orientation 
-    ori = orientation(expquat(v),varargin{:});
-    
-    % if T was with respect to crystal reference frame
-    % ori becomes an misorientation
-    if isa(T.CS,'crystalSymmetry')
-      ori.CS = T.CS;
-      ori.SS = T.CS;
-    end
-  end    
 end
 
 end
