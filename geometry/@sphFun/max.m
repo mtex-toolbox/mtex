@@ -1,15 +1,9 @@
-function [sF,v] = max(sF1, sF2)
-        
+function v = max(sF1, sF2)
+
 if nargin == 1
-           
-  [sF,v] = min(-sF1);
-           
-  sF = -sF;
-  
+	v = min(-sF1);
 else
-  
-  sF = -min(-sF1,-sF2);
-   
+	v = -min(-sF1,-sF2);
 end
-        
+
 end

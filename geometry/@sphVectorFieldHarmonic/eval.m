@@ -11,6 +11,17 @@ function f = eval(sVF,v)
 
 v = v(:);
 
-f = vector3d(sVF.sF_x.eval(v), sVF.sF_y.eval(v), sVF.sF_z.eval(v));
+if sVF.n == 0
+	xi_theta = vector3d('polar', pi/2+v.theta, v.rho);
+	xi_rho = vector3d('polar', pi/2, v.rho+pi/2);
+	f = sVF.theta.eval(v).*xi_theta+...
+		sin(v.theta).^2.*sVF.rho.eval(v).*xi_rho;
+else
+	xi_theta = vector3d('polar', pi/2+v.theta, v.rho);
+	xi_rho = vector3d('polar', pi/2, v.rho+pi/2);
+	f = sVF.theta.eval(v).*xi_theta+...
+		sin(v.theta).^2.*sVF.rho.eval(v).*xi_rho+...
+		sVF.n.eval(v).*v;
+end
 
 end

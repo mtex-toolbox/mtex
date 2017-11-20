@@ -11,6 +11,10 @@ classdef sphFun
     f = eval(sF,v,varargin)
     
   end
+
+	methods (Sealed = true)
+		h = plot(sF,varargin)
+	end
 end
   
 

@@ -3,7 +3,7 @@ function sF = quadrature(f, varargin)
 %  fun = sphFunHarmonic.quadrature(S2Grid, f)
 %
 
-M = get_option(varargin, 'm', 50);
+M = get_option(varargin, 'm', 100);
 if check_option(varargin, 'gauss')
 	[v, W] = quadratureS2Grid(2*M, 'gauss');
 else
@@ -28,6 +28,7 @@ fhat = nfsft('get_f_hat_linear', plan);
 
 % finalize nfsft
 nfsft('finalize', plan);
-sF = sphFunHarmonic(fhat);
+
+sF = sphFunHarmonic(fhat, varargin{:});
 
 end

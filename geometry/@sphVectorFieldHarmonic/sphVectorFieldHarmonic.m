@@ -2,19 +2,23 @@ classdef sphVectorFieldHarmonic < sphVectorField
 % a class represeneting a function on the sphere
 
 properties
-	sF_x
-	sF_y
-	sF_z
+	theta
+	rho
+	n
 end
 
 methods
 
-	function sVF = sphVectorFieldHarmonic(sF_x, sF_y, sF_z)
+	function sVF = sphVectorFieldHarmonic(sF_theta, sF_rho, varargin)
 	% initialize a spherical vector field
 
-	sVF.sF_x = sF_x;
-	sVF.sF_y = sF_y;
-	sVF.sF_z = sF_z;
+	sVF.theta = sF_theta;
+	sVF.rho = sF_rho;
+	if nargin > 2 & isa(varargin(1), 'sphFun')
+		sVF.n = vargin(1);
+	else
+		sVF.n = 0;
+	end
 
 	end
 

@@ -23,13 +23,8 @@ if isempty(index)
 end
 
 data = load([path, files(index).name]);
+S2G = vector3d('polar', data(:, 1), data(:, 2));
 
-rhGrid = repmat(S1Grid([], -pi, pi), 1, size(data, 1));
-for ii = 1:size(data, 1)
-	rhGrid(ii).points = data(ii, 2);
-end
-
-S2G = S2Grid(data(:, 1), rhGrid);
 if check_option(varargin, 'gauss')
 	W = data(:, 3);
 else
