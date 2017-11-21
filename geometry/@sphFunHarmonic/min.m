@@ -1,13 +1,29 @@
 function v = min(sF, varargin)
-%
+% calculates the minimum of a spherical harminc or the pointwise minimum of two spherical harmonics
 % Syntax
-%   min(sF)
-%   sF = min(sF1,sF2)
+%   v = min(sF)
+%   v = min(sF, 'm', M)
+%   sF = min(sF1, sF2)
+%   sF = min(sF1, sF2, 'n', N, 'lambda', LAMBDA, 'tau', TAU, 'mu', MU, 'kmax', KMAX, 'tauLS', TAULS, 'kmaxLS', KMAXLS)
 %
+% Options
+%  M      - minimal degree of the spherical harmonic
+%  N      -  number of points
+%  LAMBDA -  regularization parameter
+%  TAU    -  tolerance
+%  MU     -  in (0, 0.5) for Armijo condition
+%  KMAX   -  maximal iterations
+%  TAULS  -  in (0, 1) alpha(k+1) = tauLS*alpha(k)
+%  KMAXLS -  maximal iterations for line search
+%  
 
 % pointwise minimum of two spherical harmonics{{{
 if nargin > 1 & isa(varargin{1}, 'sphFunHarmonic')
-	f = @(v) 1/2*(sF+varargin{1}-abs(sF-varargin{1}));
+	if checkoption(varargin, 'm')
+		f = @(v) 1/2*(sF+varargin{1}-abs(sF-varargin{1}, 'm', get_option(varargin, 'm')));
+	else
+		f = @(v) 1/2*(sF+varargin{1}-abs(sF-varargin{1}));
+	end
 	v = sphFunHarmonic.quadrature(f);
 	return;
 end
@@ -15,7 +31,7 @@ end
 
 % minimization of one spherical harmonic
 % parameters{{{
-N 		= get_option(varargin, 'N', 2^10); % number of points
+N 		= get_option(varargin, 'n', 2^10); % number of points
 lambda 	= get_option(varargin, 'lambda', sqrt(N)/10); % regularization parameter
 tau 	= get_option(varargin, 'tau', 1e-8); % tolerance
 mu 		= get_option(varargin, 'mu', 0.4); % in (0, 0.5) for Armijo condition
@@ -41,10 +57,10 @@ H(1, :, :) = [Gthth.eval(v) Gthrh.eval(v)-G.rho.eval(v).*cot(v.theta)]';
 H(2, :, :) = [Gthrh.eval(v)-G.rho.eval(v).*cot(v.theta) Grhrh.eval(v)+G.theta.eval(v).*sin(v.theta).*cos(v.theta)]';
 %}}}
 while 1/length(v)*sum(norm(g)) > tau & k < kmax
-	clf;
-	plot3d(sF);
-	scatter3d(v, ones(3, length(v)));
-	drawnow;
+%	clf;
+%	plot3d(sF);
+%	scatter3d(v, ones(3, length(v)));
+%	drawnow;
 	% initial step length{{{
 	h = zeros(length(v), 1);
 	for ii = 1:length(v)

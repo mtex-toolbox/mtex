@@ -1,14 +1,19 @@
 function sF = approximation(v, y, varargin)
-%
 % computes a least square problem to get an approximation
-%  fun = sphFunHarmonic.approximation(S2Grid, f)
+% Syntax
+%  sF = sphFunHarmonic.approximation(S2Grid, f)
+%  sF = sphFunHarmonic.approximation(S2Grid, f, 'm', M, 'tol', TOL, 'maxit', MAXIT, 'weights', W)
 %
-% available options are:
-%  'm' - maximum degree of the spherical harmonics used to approximate the function
-%  'tol' - tolerance for lsqm
-%  'maxit' - number of iterations for lsqm
-%  'weights' - weight w_n for the node v_n
-% 
+% Input
+%  S2Grid - grid on the sphere
+%  f      - function values on the grid
+%
+% Options
+%  M     - maximum degree of the spherical harmonics used to approximate the function
+%  TOL   - tolerance for lsqm
+%  MAXIT - maximum number of iterations for lsqm
+%  W     - weight w_n for the node v_n (default: voronoi weights)
+%
 
 v = v(:);
 

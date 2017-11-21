@@ -1,10 +1,16 @@
 function sF = plus(sF1, sF2)
+%
+% Syntax
+%  sF = sF1+sF2
+%  sF = a+sF1
+%  sF = sF1+a
+%
 
 if isnumeric(sF1)
   sF = sF2;
   sF.fhat(1) = sF.fhat(1)+sF1;
-  
-elseif isa(sF2,'numeric')
+
+elseif isnumeric(sF2)
   sF = sF1;
   sF.fhat(1) = sF.fhat(1)+sF2;
 

@@ -1,13 +1,10 @@
 function f =  eval(sF,v)
-%
+% evaluates the spherical harmonic on a given set of points
 % Syntax
 %  f = eval(sF,v)
 %
 % Input
 %  v - @vector3d interpolation nodes 
-%
-% Output
-%  f - function values
 %
 
 v = v(:);

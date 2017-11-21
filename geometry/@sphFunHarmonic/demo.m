@@ -4,17 +4,17 @@ function demo
 %f = @(v) exp(v.x+v.y+v.z)+50*(v.y-cos(pi/3)).^3.*((v.y-cos(pi/3)).^3>0);
 f = @(v) sin(8*v.rho).*sin(8*v.theta);
 
-sF = sphFunHarmonic.quadrature(f, 'm', 200);
-sVF = grad(sF);
-v = min(sF);
+sF = sphFunHarmonic.quadrature(f)
+%sVF = grad(sF);
+%v = min(sF);
 
 figure(1);
 clf;
 plot3d(sF);
-hold on;
-quiver3(sVF);
-scatter3d(v, ones(3, length(v)));
-hold off;
+%hold on;
+%quiver3(sVF);
+%scatter3d(v, ones(3, length(v)));
+%hold off;
 
 %figure(2);
 %plot(sVF);

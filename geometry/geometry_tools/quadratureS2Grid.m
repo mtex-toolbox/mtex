@@ -1,7 +1,7 @@
-function [S2G, W] = quadratureS2Grid(M, varargin)
+function [S2G, W, M2] = quadratureS2Grid(M, varargin)
 %
-% [S2G, W] = get_quadrature_grid(m) quadrature grid of type gauss
-% [S2G, W] = get_quadrature_grid(m, 'chebyshev') quadrature grid of thype chebyshev
+% [S2G, W, M2] = get_quadrature_grid(M) quadrature grid of type gauss
+% [S2G, W, M2] = get_quadrature_grid(M, 'chebyshev') quadrature grid of thype chebyshev
 %
 
 path = mfilename('fullpath');
@@ -18,9 +18,11 @@ tmp = str2double(tmp);
 tmp2 = (tmp >= M);
 index = find(tmp2, 1);
 if isempty(index)
-	error('M is too large');
-	return;
+	index = length(tmp);
+	warning('M is too large, instead we are giving you the largest quadrature grid we got.');
 end
+
+M2 = tmp(index);
 
 data = load([path, files(index).name]);
 S2G = vector3d('polar', data(:, 1), data(:, 2));
